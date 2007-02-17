@@ -1,0 +1,54 @@
+PROJECTM README FILE
+--------------------------------
+
+QUICK OVERVIEW
+----------------------
+projectM started initially as a reimplementation of the Win32/DirectX based music visualizer Milkdrop under Linux/SDL/OpenGl/XMMS. 
+It currently supports up to Milkdrop 1.04b presets, but there are some bugs with certain presets containing 1.04 features This project
+is 100% GPL'ed - feel free to use the code for whatever. 
+
+INSTALL
+----------------------------
+
+[1] Install libprojectM
+
+[2] Install xmms-projectM-pbuffers
+
+If you haven't already, download the latest tarball release from http://xmms-projectm.sourceforge.net.
+
+Then run
+
+sh> ./configure
+
+followed by
+
+sh> make
+
+and as root
+
+sh> make install
+
+This will install projectM into XMMS's Visualization plugin directory. projectM's configuration
+files, including the default packaged presets are in $prefix/share/projectM.
+
+Enable projectM by loading XMMS and pressing CTRL-v. This will bring up the vis plugin menu. Highlight
+projectM in the list (if it's not there something went wrong during installation), and click the enable
+button. Sit back and enjoy the trippy visuals...
+
+CONFIGURE
+----------
+
+edit ~/.projectM/config
+
+
+CREDIT / CONTACT
+------------------
+
+Main Developers:
+
+Carmelo Piccione: w1z7ard@sourceforge.net
+Peter Sperl: psperl@sourceforge.net
+
+
+
+

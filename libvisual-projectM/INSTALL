@@ -1,0 +1,3 @@
+If from CVS, run autogen.sh first.
+
+ ./configure, make, make install.
