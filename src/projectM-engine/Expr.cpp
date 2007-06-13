@@ -23,17 +23,18 @@
 
 #include "Expr.h"
 #include "Eval.h"
+#include <cassert>
 
 float GenExpr::eval_gen_expr() {
   float l;
- 	
+
   switch(type) {
-  case VAL_T:  
+  case VAL_T:
     return ((ValExpr*)item)->eval_val_expr();
   case PREFUN_T:
     l = ((PrefunExpr *)item)->eval_prefun_expr();
     //if (EVAL_DEBUG) DWRITE( "eval_gen_expr: prefix function return value: %f\n", l);
-    return l;		
+    return l;
   case TREE_T:
     return ((TreeExpr*)(item))->eval_tree_expr();
   default:
@@ -41,8 +42,8 @@ float GenExpr::eval_gen_expr() {
     DWRITE( "eval_gen_expr: general expression matched no cases!\n");
     #endif
     return EVAL_ERROR;
-  }  
-	
+  }
+
 }
 
 /* Evaluates functions in prefix form */
@@ -50,37 +51,37 @@ float PrefunExpr::eval_prefun_expr() {
 
 	int i;
 	float rv;
-       
-	
+
+
 	/* This is slightly less than safe, since
-	   who knows if the passed argument is valid. For 
+	   who knows if the passed argument is valid. For
 	   speed purposes we'll go with this */
 	float *arg_list = (float *)wipemalloc( sizeof( float ) * num_args );
-	
+
 	#ifdef EVAL_DEBUG_DOUBLE
 		DWRITE( "fn[");
 	#endif
 	/* Evaluate each argument before calling the function itself */
 	for (i = 0; i < num_args; i++) {
 		arg_list[i] = expr_list[i]->eval_gen_expr();
-		#ifdef EVAL_DEBUG_DOUBLE 
+		#ifdef EVAL_DEBUG_DOUBLE
 			if (i < (num_args - 1))
 				DWRITE( ", ");
 		#endif
 	}
-	
-	#ifdef EVAL_DEBUG_DOUBLE 
+
+	#ifdef EVAL_DEBUG_DOUBLE
 		DWRITE( "]");
 	#endif
-	
-	/* Now we call the function, passing a list of 	
+
+	/* Now we call the function, passing a list of
 	   floats as its argument */
-     
-    rv = (func_ptr)(arg_list);	
+
+    rv = (func_ptr)(arg_list);
     free( arg_list );
     arg_list = NULL;
     return rv;
-}	
+}
 
 /* Evaluates a value expression */
 float ValExpr::eval_val_expr() {
@@ -88,7 +89,7 @@ float ValExpr::eval_val_expr() {
   /* Shouldn't happen */
   /* Value is a constant, return the float value */
   if (type == CONSTANT_TERM_T) {
-    #ifdef EVAL_DEBUG 
+    #ifdef EVAL_DEBUG
 		DWRITE( "%.4f", term.constant);
     #endif
     return (term.constant);
@@ -97,34 +98,31 @@ float ValExpr::eval_val_expr() {
   /* Value is variable, dereference it */
   if (type == PARAM_TERM_T) {
    	switch (term.param->type) {
-		
+
 	case P_TYPE_BOOL:
-		#ifdef EVAL_DEBUG 
-			DWRITE( "(%s:%.4f)", term.param->name, (float)(*((int*)(term.param->engine_val))));
-		#endif
-	       
-		  
-		return (float)(*((int*)(term.param->engine_val)));
-	case P_TYPE_INT:
-		#ifdef EVAL_DEBUG 
+		#ifdef EVAL_DEBUG
 			DWRITE( "(%s:%.4f)", term.param->name, (float)(*((int*)(term.param->engine_val))));
 		#endif
 
-	     
+
 		return (float)(*((int*)(term.param->engine_val)));
-	case P_TYPE_DOUBLE:		
-		#ifdef EVAL_DEBUG_DOUBLE 
+	case P_TYPE_INT:
+		#ifdef EVAL_DEBUG
+			DWRITE( "(%s:%.4f)", term.param->name, (float)(*((int*)(term.param->engine_val))));
+		#endif
+
+
+		return (float)(*((int*)(term.param->engine_val)));
+	case P_TYPE_DOUBLE:
+		#ifdef EVAL_DEBUG_DOUBLE
 			DWRITE( "(%s:%.4f)", term.param->name, (*((float*)term.param->engine_val)));
 		#endif
 
 		if (term.param->matrix_flag | (term.param->flags & P_FLAG_ALWAYS_MATRIX)) {
+
 		/** Sanity check the matrix is there... */
-		if ( term.param->matrix == NULL ) {
-#ifdef EVAL_DEBUG_DOUBLE
-		    DWRITE( "param->matrix == NULL! [%s]\tmesh: %d x %d\n", term.param->name, projectM::currentEngine->mesh_i, projectM::currentEngine->mesh_j );
-#endif
-		    return EVAL_ERROR;
-		  }
+		assert(term.param->matrix != NULL );
+
 		  if (projectM::currentEngine->mesh_i >= 0) {
 			  if (projectM::currentEngine->mesh_j >= 0) {
 			    return (((float**)term.param->matrix)[projectM::currentEngine->mesh_i][projectM::currentEngine->mesh_j]);
@@ -135,7 +133,7 @@ float ValExpr::eval_val_expr() {
 		}
 		return *((float*)(term.param->engine_val));
 	default:
-	  return EVAL_ERROR;	
+	  return EVAL_ERROR;
     }
   }
   /* Unknown type, return failure */
@@ -144,9 +142,9 @@ float ValExpr::eval_val_expr() {
 
 /* Evaluates an expression tree */
 float TreeExpr::eval_tree_expr() {
-		
-	float left_arg, right_arg;	
-	
+
+	float left_arg, right_arg;
+
 	/* A leaf node, evaluate the general expression. If the expression is null as well, return zero */
 	if (infix_op == NULL) {
 		if (gen_expr == NULL)
@@ -154,22 +152,22 @@ float TreeExpr::eval_tree_expr() {
 		else
 	  		return gen_expr->eval_gen_expr();
 	}
-	
+
 	/* Otherwise, this node is an infix operator. Evaluate
 	   accordingly */
-	
-	#ifdef EVAL_DEBUG 
+
+	#ifdef EVAL_DEBUG
 		DWRITE( "(");
 	#endif
-	
+
 	left_arg = left->eval_tree_expr();
 
-	#ifdef EVAL_DEBUG 
-		
+	#ifdef EVAL_DEBUG
+
 		switch (infix_op->type) {
 		case INFIX_ADD:
 			DWRITE( "+");
-			break;		
+			break;
 		case INFIX_MINUS:
 			DWRITE( "-");
 			break;
@@ -191,32 +189,32 @@ float TreeExpr::eval_tree_expr() {
 		default:
 			DWRITE( "?");
 		}
-	
+
 	#endif
-	
+
 	right_arg = right->eval_tree_expr();
-	
+
 	#ifdef EVAL_DEBUG
 		DWRITE( ")");
 	#endif
-	
+
 #ifdef EVAL_DEBUG
     DWRITE( "\n" );
 #endif
 
-	switch (infix_op->type) {		
+	switch (infix_op->type) {
 	case INFIX_ADD:
-	  return (left_arg + right_arg);		
+	  return (left_arg + right_arg);
 	case INFIX_MINUS:
 		return (left_arg - right_arg);
 	case INFIX_MULT:
 		return (left_arg * right_arg);
 	case INFIX_MOD:
 	  if ((int)right_arg == 0) {
-	    #ifdef EVAL_DEBUG 
+	    #ifdef EVAL_DEBUG
 	    DWRITE( "eval_tree_expr: modulo zero!\n");
 	    #endif
-	    return PROJECTM_DIV_BY_ZERO; 
+	    return PROJECTM_DIV_BY_ZERO;
 	  }
 	  return ((int)left_arg % (int)right_arg);
 	case INFIX_OR:
@@ -225,21 +223,21 @@ float TreeExpr::eval_tree_expr() {
 		return ((int)left_arg & (int)right_arg);
 	case INFIX_DIV:
 	  if (right_arg == 0) {
-	    #ifdef EVAL_DEBUG 
+	    #ifdef EVAL_DEBUG
 	    DWRITE( "eval_tree_expr: division by zero!\n");
 	    #endif
 	    return MAX_DOUBLE_SIZE;
-	  }		
+	  }
 	  return (left_arg / right_arg);
 	default:
-          #ifdef EVAL_DEBUG 
+          #ifdef EVAL_DEBUG
 	    DWRITE( "eval_tree_expr: unknown infix operator!\n");
           #endif
 		return EVAL_ERROR;
 	}
-	
+
 	return EVAL_ERROR;
-}	
+}
 
 /* Converts a float value to a general expression */
 GenExpr * GenExpr::const_to_expr(float val) {
@@ -247,9 +245,9 @@ GenExpr * GenExpr::const_to_expr(float val) {
   GenExpr * gen_expr;
   ValExpr * val_expr;
   Term term;
-  
+
   term.constant = val;
-    
+
   if ((val_expr = ValExpr::new_val_expr(CONSTANT_TERM_T, &term)) == NULL)
     return NULL;
 
@@ -258,7 +256,7 @@ GenExpr * GenExpr::const_to_expr(float val) {
   if (gen_expr == NULL) {
 	delete val_expr;
   }
-  
+
   return gen_expr;
 }
 
@@ -271,29 +269,29 @@ GenExpr * GenExpr::param_to_expr(Param * param) {
 
   if (param == NULL)
     return NULL;
- 
+
   /* This code is still a work in progress. We need
-     to figure out if the initial condition is used for 
+     to figure out if the initial condition is used for
      each per frame equation or not. I am guessing that
      it isn't, and it is thusly implemented this way */
-  
+
   /* Current guess of true behavior (08/01/03) note from carm
-     First try to use the per_pixel_expr (with cloning). 
+     First try to use the per_pixel_expr (with cloning).
      If it is null however, use the engine variable instead. */
-  
+
   /* 08/20/03 : Presets are now objects, as well as per pixel equations. This ends up
      making the parser handle the case where parameters are essentially per pixel equation
      substitutions */
-       
-  
+
+
   term.param = param;
   if ((val_expr = ValExpr::new_val_expr(PARAM_TERM_T, &term)) == NULL)
     return NULL;
-  
+
   if ((gen_expr = GenExpr::new_gen_expr(VAL_T, (void*)val_expr)) == NULL) {
     delete val_expr;
-	return NULL;	  
-  } 
+	return NULL;
+  }
   return gen_expr;
 }
 
@@ -302,14 +300,14 @@ GenExpr * GenExpr::prefun_to_expr(float (*func_ptr)(void *), GenExpr ** expr_lis
 
   GenExpr * gen_expr;
   PrefunExpr * prefun_expr;
-  
+
 
   /* Malloc a new prefix function expression */
   prefun_expr = (PrefunExpr*)wipemalloc(sizeof(PrefunExpr));
 
   if (prefun_expr == NULL)
 	  return NULL;
-  
+
   prefun_expr->num_args = num_args;
   prefun_expr->func_ptr =(float (*)(void*)) func_ptr;
   prefun_expr->expr_list = expr_list;
@@ -318,7 +316,7 @@ GenExpr * GenExpr::prefun_to_expr(float (*func_ptr)(void *), GenExpr ** expr_lis
 
   if (gen_expr == NULL)
 	  delete prefun_expr;
-  
+
   return gen_expr;
 }
 
@@ -327,7 +325,7 @@ TreeExpr *TreeExpr::new_tree_expr(InfixOp * infix_op, GenExpr * gen_expr, TreeEx
 
 		TreeExpr * tree_expr;
 		tree_expr = (TreeExpr*)wipemalloc(sizeof(TreeExpr));
-	
+
 		if (tree_expr == NULL)
 			return NULL;
 		tree_expr->infix_op = infix_op;
@@ -363,7 +361,7 @@ GenExpr * GenExpr::new_gen_expr(int type, void * item) {
 	if (gen_expr == NULL)
 		return NULL;
 	gen_expr->type = type;
-	gen_expr->item = item;	
+	gen_expr->item = item;
 
 	return gen_expr;
 }
@@ -381,14 +379,14 @@ GenExpr::~GenExpr() {
 	case TREE_T:
 		delete ((TreeExpr*)item);
 		break;
-	}	
+	}
 }
 
 /* Frees a function in prefix notation */
 PrefunExpr::~PrefunExpr() {
 
 	int i;
-	
+
 	/* Free every element in expression list */
 	for (i = 0 ; i < num_args; i++) {
 		delete expr_list[i];
@@ -407,16 +405,16 @@ TreeExpr::~TreeExpr() {
     if ( left != NULL ) {
 	    delete left;
       }
-	
+
 	/* free general expression object */
     if ( gen_expr != NULL ) {
 	    delete gen_expr;
       }
-	
+
 	/* Note that infix operators are always
-	   stored in memory unless the program 
+	   stored in memory unless the program
 	   exits, so we don't remove them here */
-	
+
 	/* free right tree */
     if ( right != NULL ) {
         delete right;
@@ -453,7 +451,7 @@ GenExpr *GenExpr::clone_gen_expr() {
     }
     new_gen_expr->item = (void*)val_expr;
     break;
-    
+
   case PREFUN_T: /* prefix function expression */
     if ((prefun_expr = ((PrefunExpr*)item)->clone_prefun_expr()) == NULL) {
       free(new_gen_expr);
@@ -462,7 +460,7 @@ GenExpr *GenExpr::clone_gen_expr() {
     }
     new_gen_expr->item = (void*)prefun_expr;
     break;
-    
+
   case TREE_T:  /* tree expression */
     if ((tree_expr = ((TreeExpr*)item)->clone_tree_expr()) == NULL) {
       free(new_gen_expr);
@@ -471,13 +469,13 @@ GenExpr *GenExpr::clone_gen_expr() {
     }
     new_gen_expr->item = (void*)tree_expr;
     break;
-    
+
   default: /* unknown type, ut oh.. */
     free(new_gen_expr);
       new_gen_expr = NULL;
     return NULL;
   }
-  
+
   return new_gen_expr; /* Return the new (cloned) general expression */
 }
 
@@ -488,9 +486,9 @@ TreeExpr *TreeExpr::clone_tree_expr() {
   TreeExpr * new_tree_expr;
 
   /* Out of memory */
-  if ((new_tree_expr = (TreeExpr*)wipemalloc(sizeof(TreeExpr))) == NULL) 
+  if ((new_tree_expr = (TreeExpr*)wipemalloc(sizeof(TreeExpr))) == NULL)
     return NULL;
-  
+
   /* Set each argument in TreeExpr struct */
   new_tree_expr->infix_op = infix_op;  /* infix operators are in shared memory */
   new_tree_expr->gen_expr = gen_expr->clone_gen_expr(); /* clone the general expression */
@@ -500,20 +498,20 @@ TreeExpr *TreeExpr::clone_tree_expr() {
   return new_tree_expr; /* Return the new (cloned) tree expression */
 }
 
-/* Clones a value expression, currently only passes the pointer to 
+/* Clones a value expression, currently only passes the pointer to
    the value that this object represents, not a pointer to a copy of the value */
 ValExpr *ValExpr::clone_val_expr() {
 
   ValExpr * new_val_expr;
 
   /* Allocate space, check for out of memory */
-  if ((new_val_expr = (ValExpr*)wipemalloc(sizeof(ValExpr))) == NULL) 
+  if ((new_val_expr = (ValExpr*)wipemalloc(sizeof(ValExpr))) == NULL)
     return NULL;
 
   /* Set the values in the ValExpr struct */
   new_val_expr->type = type;
   new_val_expr->term = term;
-  
+
   /* Return the new (cloned) value expression */
   return new_val_expr;
 }
@@ -523,11 +521,11 @@ PrefunExpr *PrefunExpr::clone_prefun_expr() {
 
   int i;
   PrefunExpr * new_prefun_expr;
-  
+
   /* Out of memory */
-  if ((new_prefun_expr = (PrefunExpr*)wipemalloc(sizeof(PrefunExpr))) == NULL) 
+  if ((new_prefun_expr = (PrefunExpr*)wipemalloc(sizeof(PrefunExpr))) == NULL)
     return NULL;
-  
+
   /* Set the function argument paired with its number of arguments */
   new_prefun_expr->num_args = num_args;
   new_prefun_expr->func_ptr = func_ptr;
@@ -540,9 +538,9 @@ PrefunExpr *PrefunExpr::clone_prefun_expr() {
   }
 
   /* Now copy each general expression from the argument expression list */
-  for (i = 0; i < new_prefun_expr->num_args;i++) 
+  for (i = 0; i < new_prefun_expr->num_args;i++)
     new_prefun_expr->expr_list[i] = expr_list[i]->clone_gen_expr();
-  
+
   /* Finally, return the new (cloned) prefix function expression */
   return new_prefun_expr;
 }
