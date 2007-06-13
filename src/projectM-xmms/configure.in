@@ -1,0 +1,51 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_PREREQ(2.53)
+AC_INIT(main.c)
+AC_CANONICAL_TARGET([])
+AM_INIT_AUTOMAKE(xmms-projectm, 0.9.0)
+AM_CONFIG_HEADER(config.h)
+AM_DISABLE_STATIC
+AC_PROG_CC
+AC_PROG_CPP
+AM_PROG_CC_STDC
+AC_HEADER_STDC
+AC_PROG_INSTALL
+AM_PROG_LIBTOOL
+AC_PATH_X
+AM_PATH_GLIB(1.2.2,,AC_MSG_ERROR([*** GLIB >= 1.2.2 not installed - please install first ***]))
+AM_PATH_XMMS(1.2.4,,AC_MSG_ERROR([*** XMMS >= 1.2.4 not installed - please install first ***]))
+AM_PATH_GTK(1.2.2,,AC_MSG_ERROR([*** GTK+ >= 1.2.2 not installed - please install first ***]),gthread)
+AM_PATH_SDL(1.2.7,,AC_MSG_ERROR([*** SDL >= 1.2.7 not installed - please install first ***]))
+LIBS_save=$LIBS
+LIBS="$LIBS $GTK_LIBS"
+MATHLIB="-lm"
+AC_PATH_X
+AC_PATH_XTRA
+if test x$have_x = xyes; then
+   CFLAGS="$CFLAGS $X_CFLAGS"
+   SYS_GL_LIBS="$X_LIBS -lGL -lGLU"
+else
+   SYS_GL_LIBS="-lGL -lGLU"
+fi
+dnl Check for OpenGL
+AC_MSG_CHECKING(for OpenGL support)
+have_opengl=no
+AC_TRY_COMPILE([
+ #include <GL/gl.h>
+ #include <GL/glu.h>
+],[
+],[
+have_opengl=yes
+])
+AC_MSG_RESULT($have_opengl)
+if test x$have_opengl = xyes; then
+    CFLAGS="$CFLAGS -DHAVE_OPENGL"
+    GL_LIBS="$SYS_GL_LIBS"
+else
+    AC_MSG_ERROR(Unable to find OpenGL headers and libraries)
+fi
+AC_SUBST(GL_LIBS)
+CPPFLAGS=$CPPFLAGS_save
+LIBS=$LIBS_save
+AC_OUTPUT(Makefile)
+

@@ -1,0 +1,81 @@
+# 
+# projectM -- Milkdrop-esque visualisation SDK
+# Copyright (C)2003-2004 projectM Team
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+# 
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# See 'LICENSE.txt' included within this release
+
+SUBDIRS=
+RANLIB=ranlib
+
+INCLUDES=-I. -I.. -I../projectm -I../include -I/usr/local/include \
+         -I/System/Library/Frameworks/AGL.framework/Headers \
+         -I/System/Library/Frameworks/OpenGL.framework/Headers \
+         -I/System/Library/Frameworks/QuickTime.framework/Headers \
+         -I/Developer/Headers/FlatCarbon
+
+DEFINES= -DMACOS -DHAVE_OPENGL -DHAVE_CONFIG_H -D_THREAD_SAFE -DDEBUG
+CFLAGS=-O2
+#CFLAGS=-g
+LIBRARIES= -framework QuickTime -framework IOKit -framework Cocoa -framework Carbon -framework AGL -framework OpenGL /usr/local/lib/libSDLmain.a /usr/local/lib/libSDL.a
+#LD_FLAGS=-bundle -L/usr/local/lib $(LIBRARIES)
+LD_FLAGS=-lprojectm -L../projectm -L/usr/local/lib $(LIBRARIES)
+
+SRCS=\
+projectMmovie.c \
+mov123.c
+OBJS=$(SRCS:.c=.o)
+
+.SUFFIXES: .c
+
+all: projectMmovie
+
+### Relinks the executable
+projectMmovie: $(OBJS)
+	rm -f projectMmovie
+	$(CC) -o projectMmovie $(OBJS) $(LD_FLAGS)
+	/Developer/Tools/Rez -t APPL Carbon.r -o projectMmovie
+
+$(LIB_TOP):
+	@( if [ ! -d $(LIB_TOP) ]; then \
+	( mkdir $(LIB_TOP) ) \
+	fi )
+
+$(OBJS): %.o: %.c
+	$(CC) -c $(INCLUDES) $(CFLAGS) $(DEFINES) $*.c -o $*.o
+
+clean:
+	rm -f *.o
+	rm -f projectMmovie
+
+distcln: cln
+	rm -f config.log
+	rm -f config.cache
+	rm -f config.status
+
+bundle: projectMmovie
+	rm -rf projectMmovie.app    
+	mkdir -p projectMmovie.app/Contents
+	mkdir -p projectMmovie.app/Contents/MacOS
+	mkdir -p projectMmovie.app/Contents/Resources
+	cp projectMmovie projectMmovie.app/Contents/MacOS/projectMmovie
+	cp Info.plist projectMmovie.app/Contents
+	cp projectM.icns projectMmovie.app/Contents/Resources/projectM.icns
+	cp -r ../../fonts projectMmovie.app/Contents/Resources
+	cp -r ../../presets projectMmovie.app/Contents/Resources
+
+image: bundle
+	rm -f projectMmovie.dmg
+	hdiutil create -srcfolder projectMmovie.app projectMmovie.dmg

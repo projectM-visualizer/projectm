@@ -1,0 +1,73 @@
+
+projectM -- Milkdrop-esque visualisation SDK
+Copyright (C)2003-2007 projectM Team
+
+This library is free software; you can redistribute it and/or
+modify it under the terms of the GNU Lesser General Public
+License as published by the Free Software Foundation; either
+version 2.1 of the License, or (at your option) any later version.
+
+This library is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+Lesser General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public
+License along with this library; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+See 'LICENSE.txt' included within this release
+
+Installation of projectM iTunes plugin for MacOS X
+==================================================
+
+Simply drag the projectM.bundle folder from the mounted disk image
+to the folder called "Library/iTunes/iTunes Plug-ins" in your home
+folder in Finder.
+
+Restart iTunes
+
+In the "Visualizer" menu, you should now see an entry called "projectM".
+Select this option.
+
+Now, turn the visualiser on and enjoy the visuals!
+
+Special Keys
+============
+
+' ': Pauses/unpauses music
+F1: Show help screen
+F3: Toggle preset name rendering
+F5: Toggle frame rate rendering
+F8: Toggle between screen and studio modes. Useful for debugging per-pixel
+    equations
+R: Jump to a new random preset
+N: Go to the next alphanumeric preset
+P: Go to the previous alphanumeric preset
+
+Presets
+=======
+
+A selection of presets are installed in 
+
+Library/iTunes/iTunes Plug-ins/projectM.bundle/Contents/Resources/presets
+
+Feel free to remove files from this folder or copy different presets in
+place. After altering the contents of this folder, you must restart projectM
+by turning off, then on, the visualiser in iTunes to refresh the preset
+list.
+
+Caveats
+=======
+
+ATI 3D accelerator cards are known to *NOT WORK* with this plugin currently.
+We are investigating the reasons behind this and a fix will be released
+as soon as the problem is sorted.
+
+Fullscreen resolution is fixed at 1280x1024. Future releases will enable you
+to change this on-the-fly
+
+Mesh size is fixed at 48x36. This generates an acceptable tradeoff between
+visual quality and frame rate. Again, this will be selectable in a 
+configuration dialog in the near future.
+
+Returning from Fullscreen mode can shift windows around

@@ -1,0 +1,32 @@
+===========================
+$Id$
+
+projectM TODO List
+
+$Log$
+===========================
+
+projectM-engine
+===============
+
+Correct errors in remaining presets
+Correct waveforms 4,5
+Soft transitions
+Refactor browser/console interfaces
+General post-refactor clean up
+
+projectM-iTunes
+======
+
+Fullscreen on MacOS
+Stability fixes on MacOS
+
+projectM-wmp
+============
+
+Needs written
+
+projectM-movie
+==============
+
+Finish this off -- MOV write needs completed with audio/video sync

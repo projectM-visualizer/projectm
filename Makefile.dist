@@ -1,0 +1,21 @@
+#
+
+VERSION=1.00
+
+SUBDIRS=\
+src
+
+dist: clean
+	find . -name '.DS_Store' -exec rm -f {} \;
+	( cd .. ; tar zcvf projectM-$(VERSION).tar.gz projectM-$(VERSION) )
+
+### Go through each subdir
+subdirs: 
+	@for i in $(SUBDIRS); do \
+	( cd $$i ; make -f Makefile.dist ) \
+	done
+
+clean:
+	@for i in $(SUBDIRS); do \
+	( cd $$i ; make -f Makefile.dist clean ) \
+	done

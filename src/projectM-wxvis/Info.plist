@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist SYSTEM "file://localhost/System/Library/DTDs/PropertyList.dtd">
+<plist version="0.9">
+<dict>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.projectM.projectMvis</string>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>projectMvis</string>
+	<key>CFBundleIconFile</key>
+	<string>projectM.icns</string>
+	<key>CFBundleName</key>
+	<string>projectMvis</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>0.95</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.95</string>
+	<key>CFBundleGetInfoString</key>
+	<string>projectMvis 0.95, (c)2004 projectM Team</string>
+	<key>CFBundleLongVersionString</key>
+	<string>projectMvis 0.95, (c)2004 projectM Team</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright (c)2004 projectM Team</string>
+	<key>LSRequiresCarbon</key>
+        <false/>
+	<key>CSResourcesFileMapped</key>
+	<true/>
+</dict>
+</plist>

@@ -1,0 +1,26 @@
+lib_LTLIBRARIES = libprojectm.la
+libdir = @XMMS_VISUALIZATION_PLUGIN_DIR@
+AM_CFLAGS = -Wall @XMMS_CFLAGS@ @CFLAGS@ -I$(top_builddir) -I$(top_srcdir) \
+         @GTK_CFLAGS@ @SDL_CFLAGS@
+LIBS = @XMMS_LIBS@ @SDL_LIBS@ @GL_LIBS@
+libprojectm_la_LDFLAGS = -module -avoid-version
+libprojectm_la_SOURCES =  main.c video_init.h video_init.c ../projectM/beat_detect.c ../projectM/eval.c ../projectM/menu.c ../projectM/beat_detect.h ../projectM/eval.h ../projectM/menu.h ../projectM/projectM.h ../projectM/browser.c ../projectM/event.h ../projectM/param.c ../projectM/browser.h ../projectM/expr_types.h ../projectM/param.h ../projectM/builtin_funcs.c ../projectM/fatal.h ../projectM/param_types.h ../projectM/builtin_funcs.h ../projectM/fftsg.c ../projectM/parser.c ../projectM/common.h ../projectM/fftsg.h ../projectM/parser.h ../projectM/splaytree.c ../projectM/func.c ../projectM/PCM.c ../projectM/splaytree.h ../projectM/config.h ../projectM/func.h ../projectM/PCM.h ../projectM/splaytree_types.h ../projectM/console_interface.c ../projectM/func_types.h ../projectM/per_frame_eqn.c ../projectM/timer.c ../projectM/console_interface.h ../projectM/glConsole.c ../projectM/per_frame_eqn.h ../projectM/timer.h ../projectM/custom_shape.c ../projectM/glConsole.h ../projectM/per_frame_eqn_types.h ../projectM/tree_types.c ../projectM/custom_shape.h ../projectM/glf.c ../projectM/per_pixel_eqn.c ../projectM/tree_types.h ../projectM/custom_shape_types.h ../projectM/glf.h ../projectM/per_pixel_eqn.h ../projectM/custom_wave.c ../projectM/idle_preset.h ../projectM/per_pixel_eqn_types.h ../projectM/custom_wave.h ../projectM/init_cond.c ../projectM/per_point_types.h ../projectM/wipemalloc.c ../projectM/custom_wave_types.h ../projectM/init_cond.h ../projectM/preset.c ../projectM/wipemalloc.h ../projectM/init_cond_types.h ../projectM/preset.h ../projectM/editor.c ../projectM/interface_types.h ../projectM/preset_types.h ../projectM/editor.h ../projectM/projectM.c
+
+
+projectmconfigdir = /etc/projectM
+projectmconfig_DATA = config config.fastcomputers config.slowcomputers
+
+projectmfontdir = /etc/projectM/fonts
+projectmfont_DATA = ../../fonts/arial1.glf ../../fonts/times_new1.glf ../../fonts/courier1.glf
+
+projectmpresetdir = /etc/projectM/presets
+projectmpreset_DATA= 
+
+
+install-data-hook:
+	chown root /etc/projectM -R
+	chmod 755 /etc/projectM -R
+	tar -xf /etc/projectM/presets/presets.tar -C /etc/projectM/presets
+	rm /etc/projectM/presets/presets.tar
+	chown root /etc/projectM/presets -R
+	chmod 755 /etc/projectM/presets -R
