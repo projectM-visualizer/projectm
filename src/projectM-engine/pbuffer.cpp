@@ -40,170 +40,53 @@ void createPBuffers( int width, int height, RenderTarget *target ) {
     int mindim = 0;
     int origtexsize = 0;
 
-    printf( "createPBuffers()\n" );
-#ifdef FBO
-    printf( "FBO init\n" );
+#ifdef USE_FBO
     DWRITE( "FBO init: usePbuffers: %d\n", target->usePbuffers );
-    if(target->usePbuffers)
-      {
-	glewInit();
+    if(target->usePbuffers) {
+	    glewInit();
 	
-	GLuint   fb, color_rb, depth_rb, rgba_tex, depth_tex, i, other_tex;
-	glGenFramebuffersEXT(1, &fb);
-	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fb );
+	    GLuint   fb, color_rb, depth_rb, rgba_tex, depth_tex, i, other_tex;
+	    glGenFramebuffersEXT(1, &fb);
+	    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fb );
 	
-	glGenRenderbuffersEXT(1, &depth_rb);
-	glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depth_rb );
-	glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, target->texsize,target->texsize  );
-	glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depth_rb );         
-	target->fbuffer[0] = depth_rb;
-	
-	glGenTextures(1, &other_tex);
-	glBindTexture(GL_TEXTURE_2D,other_tex);
- 	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, target->texsize, target->texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//glGenerateMipmapEXT(GL_TEXTURE_2D);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-
-	
-	glGenTextures(1, &rgba_tex);
-	glBindTexture(GL_TEXTURE_2D, rgba_tex); 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, target->texsize, target->texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	//glGenerateMipmapEXT(GL_TEXTURE_2D);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-
-	
-	glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, rgba_tex, 0 );         
-	target->textureID[0] = rgba_tex;
-	target->textureID[1] = other_tex; 
-
-	GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-	if (status == GL_FRAMEBUFFER_COMPLETE_EXT) return;
-	else goto fallback;
-      }
+	    glGenRenderbuffersEXT(1, &depth_rb);
+	    glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depth_rb );
+	    glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, target->texsize,target->texsize  );
+	    glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depth_rb );         
+	    target->fbuffer[0] = depth_rb;
+    	
+	    glGenTextures(1, &other_tex);
+	    glBindTexture(GL_TEXTURE_2D,other_tex);
+ 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, target->texsize, target->texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	    //glGenerateMipmapEXT(GL_TEXTURE_2D);
+	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
     
+    
+    	
+	    glGenTextures(1, &rgba_tex);
+	    glBindTexture(GL_TEXTURE_2D, rgba_tex); 
+	    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, target->texsize, target->texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	    //glGenerateMipmapEXT(GL_TEXTURE_2D);
+	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    
+    
+    	
+	    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, rgba_tex, 0 );         
+	    target->textureID[0] = rgba_tex;
+	    target->textureID[1] = other_tex; 
+    
+	    GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+	    if (status == GL_FRAMEBUFFER_COMPLETE_EXT) {
+	        return;
+	      } 
+      }
 #endif
-
-#ifdef MACOS2
-#ifdef MACOSX_10_3
-    /** PBuffers are only supported in MacOS X 10.3+ */
-    AGLPbuffer pbuffer, pbuffer2;
-    AGLPixelFormat pixelFormat;
-    AGLContext context;
-    GLint attrib[] =
-        { AGL_RGBA, AGL_PIXEL_SIZE, 32, AGL_ACCELERATED, AGL_NONE };
-
-    pixelFormat = aglChoosePixelFormat( NULL, 0, attrib );
-    if ( pixelFormat == NULL ) {
-
-        goto fallback;
-      } else {
-
-      }
-
-    /** Fetch the original context for rendering directly */
-    /** Only AGL can be used, otherwise, it'll fall back to texhack */
-    /** Try AGL first */
-    target->origContext = (void *)aglGetCurrentContext();
-    if ( target->origContext == NULL ) {
-        /** Try NSGL */
-//        target->origContext = (void *)nsglGetCurrentContext();
-        target->origContext = NULL;
-        if ( target->origContext == NULL ) {
-            /** Try CGL */
-            target->origContext = (void *)CGLGetCurrentContext();
-            if ( target->origContext != NULL ) {
-                target->origContext = NULL;
-                target->origContextType = CGL_CONTEXT;
-              }
-          } else {
-            target->origContext = NULL;
-            target->origContextType = NSGL_CONTEXT;
-          }
-      } else {
-        target->origContextType = AGL_CONTEXT;
-      }
-
-    /** 
-     * If we can't stash the original context for switching, don't use
-     * pbuffers
-     */
-    if ( target->origContext == NULL ) {
-
-        goto fallback;
-      } else {
-
-      }
-
-    context = aglCreateContext( pixelFormat, target->origContext );
-    if ( context == NULL ) {
-
-        aglDestroyPixelFormat( pixelFormat );
-        goto fallback;
-      } else {
-        aglDestroyPixelFormat( pixelFormat );
-
-      }
-
-    /** Stash the context and pbuffer */
-    target->pbufferContext = (void *)context;
-
-    /** Create the pass1 pbuffer */
-    aglCreatePBuffer( target->texsize, target->texsize, GL_TEXTURE_2D,
-                      GL_RGBA, 0, &pbuffer );
-    if ( pbuffer == NULL ) {
-
-      } else {
-        target->pbuffer = pbuffer;
-
-      }
-
-    /** Finally, bind the target texture ID */
-    aglSetCurrentContext( target->origContext );
-    glGenTextures( 2, &target->textureID[0] );
-
-    glBindTexture( GL_TEXTURE_2D, target->textureID[0] );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-
-    if ( aglTexImagePBuffer( target->origContext, target->pbuffer, GL_FRONT ) == 0 ) {
-
-      }
-    glBindTexture( GL_TEXTURE_2D, 0 );
-
-    glBindTexture( GL_TEXTURE_2D, target->textureID[1] );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexImage2D(GL_TEXTURE_2D,
-		    0,
-		    GL_RGB,
-		    target->texsize, target->texsize,
-		    0,
-		    GL_RGB,
-		    GL_UNSIGNED_BYTE,
-		    NULL);
-    glBindTexture( GL_TEXTURE_2D, 0 );
-
-    glBindTexture( GL_TEXTURE_2D, target->textureID[0] );
-
-    return;
-
-#endif /** MACOSX_10_3 */
-
-    goto fallback;
-
-#else
-#endif /** !MACOS */
-
-    /** Successful creation */
-    // return;
 
 fallback:
     DWRITE( "using teximage hack fallback\n" );
@@ -246,6 +129,9 @@ fallback:
 		    GL_UNSIGNED_BYTE,
 		    NULL);
       }
+
+    target->usePbuffers = 0;
+
     return;
   }
 
@@ -254,36 +140,19 @@ fallback:
 /** Locks the pbuffer */
 void lockPBuffer( RenderTarget *target, PBufferPass pass ) {
 
-#ifdef FBO
+#ifdef USE_FBO
   if(target->usePbuffers)
     { 
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, target->fbuffer[0]);     
     }
   
 #endif
-
-#ifdef MACOS2
-    if ( target->pbufferContext != NULL &&
-         target->pbuffer != NULL ) {
-        GLint vs;
-        DWRITE( "-> locking pbuffer: %d\n", pass );
-        if ( !aglSetCurrentContext( (AGLContext)target->pbufferContext ) ) {
-            DWRITE( "lockPBuffer(): failed to set context\n" );
-          }
-        vs = aglGetVirtualScreen ( (AGLContext)target->origContext );
-        if ( pass == PBUFFER_PASS1 ) {
-            aglSetPBuffer( (AGLContext)target->pbufferContext, (AGLPbuffer)target->pbuffer, 0, 0, vs );
-//            glBindTexture( GL_TEXTURE_2D, target->textureID[0] );
-          }
-      }
-#endif
   }
 
 /** Unlocks the pbuffer */
 void unlockPBuffer( RenderTarget *target ) {
 
-#ifdef FBO
- 
+#ifdef USE_FBO
   if(target->usePbuffers)
     {
       glBindTexture( GL_TEXTURE_2D, target->textureID[1] );
@@ -294,39 +163,6 @@ void unlockPBuffer( RenderTarget *target ) {
       return;
     }
 
-#endif
-
-#ifdef MACOS2
-    if ( target->pbufferContext != NULL &&
-         target->pbuffer != NULL ) {
-        DWRITE( "<- unlocking pbuffer\n" );
-
-        /** Flush the pbuffer */
-        glFlush();
-
-        /** Reset the texture ID to the pbuffer */
-        glBindTexture( GL_TEXTURE_2D, target->textureID[0] );
-        glBindTexture( GL_TEXTURE_2D, 0 );
-        glBindTexture( GL_TEXTURE_2D, target->textureID[1] );
-        glCopyTexSubImage2D( GL_TEXTURE_2D,
-                             0, 0, 0, 0, 0, 
-                             target->texsize, target->texsize );
-        glBindTexture( GL_TEXTURE_2D, 0 );
-        glBindTexture( GL_TEXTURE_2D, target->textureID[0] );
-
-        /** Reset the OpenGL context to the original context */
-        aglSetCurrentContext( NULL );
-        if ( target->origContext != NULL ) {
-            if ( !aglSetCurrentContext( target->origContext ) ) {
-                DWRITE( "failed to setting origContext current\n" );
-              } else {
-                DWRITE( "setting origContext current\n" );
-              }
-          }
-
-
-        return;
-     }
 #endif
 
     /** Fallback texture path */
@@ -377,5 +213,3 @@ int nearestPower2( int value, TextureScale scaleRule ) {
       }
     return 0;
   }
-
-
