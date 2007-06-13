@@ -28,11 +28,11 @@
 #ifndef _RENDERTARGET_H
 #define _RENDERTARGET_H
 
-#ifdef FBO
+#ifdef USE_FBO
 #include <GL/glew.h>
 #endif
 
-#if defined(MACOS) && !defined(FBO)
+#if defined(MACOS) && !defined(USE_FBO)
 #include <gl.h>
 #endif /** MACOS */
 
@@ -65,21 +65,19 @@ typedef struct RENDERTARGET {
     /** Application context */
     ContextType origContextType;
 
-  int usePbuffers;
-
-
+    int usePbuffers;
    
     /** Opaque pbuffer context and pbuffer */
 #ifdef MACOS
- void *origContext;
+    void *origContext;
     void *pbufferContext;
     void *pbuffer;
 #endif
 
     /** Render target texture ID for non-pbuffer systems */
     GLuint textureID[2];
-  GLuint fbuffer[1]; 
-  GLuint depthb[1];
+    GLuint fbuffer[1]; 
+    GLuint depthb[1];
   } RenderTarget;
 
 extern void createPBuffers( int width, int height, RenderTarget *target );
