@@ -21,6 +21,7 @@ For the purposes of the copyright statement in the preamble of each source
 code file comprising projectM, the projectM team are:
 
 Carmelo Piccione
+    Parser
     Evaluator
 
 Peter Sperl
@@ -34,5 +35,5 @@ Alligator Descartes
     DVD application (projectM-movie)
     Win32 screensaver (projectM-screensaver)
 
-Roger Dannenburgh
+Roger Dannenburg
     Advice & Support
