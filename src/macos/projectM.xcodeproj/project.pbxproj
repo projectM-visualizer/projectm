@@ -74,9 +74,6 @@
 /* End PBXApplicationTarget section */
 
 /* Begin PBXBuildFile section */
-		0C4C83D209DDC8DA00126FB8 /* arial1.glf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0C4C748509DDC6FF00126FB8 /* arial1.glf */; };
-		0C4C83D309DDC8DA00126FB8 /* courier1.glf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0C4C748609DDC6FF00126FB8 /* courier1.glf */; };
-		0C4C83D409DDC8DA00126FB8 /* times_new1.glf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0C4C748709DDC6FF00126FB8 /* times_new1.glf */; };
 		0C4C83DD09DDC91100126FB8 /* ---ar()mo-- - Spirit of East v2.milk in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0C4C748909DDC6FF00126FB8 /* ---ar()mo-- - Spirit of East v2.milk */; };
 		0C4C83DE09DDC91100126FB8 /* Aderrasi - Agitator.milk in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0C4C748A09DDC6FF00126FB8 /* Aderrasi - Agitator.milk */; };
 		0C4C83DF09DDC91100126FB8 /* Aderrasi - Aimless (Gravity Directive Mix).milk in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0C4C748B09DDC6FF00126FB8 /* Aderrasi - Aimless (Gravity Directive Mix).milk */; };
@@ -728,12 +725,16 @@
 		0C4C866509DDC91100126FB8 /* Zylot and Rovastar - Iouo Stone Morphic Fusion.milk in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0C4C771109DDC70200126FB8 /* Zylot and Rovastar - Iouo Stone Morphic Fusion.milk */; };
 		0C4C866F09DDCDB600126FB8 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AAC046055464E500DB518D /* libprojectM.a */; };
 		0C4C867009DDCDBA00126FB8 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AAC046055464E500DB518D /* libprojectM.a */; };
+		0C74DBCE0C20822A0043103D /* PkgInfo in Resources */ = {isa = PBXBuildFile; fileRef = 0C74DBCD0C20822A0043103D /* PkgInfo */; };
+		0C74DBD00C2082310043103D /* PkgInfo in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0C74DBCD0C20822A0043103D /* PkgInfo */; };
+		0CB611D00C1F2D1E0060821A /* Vera.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0CB611CE0C1F2D1E0060821A /* Vera.ttf */; };
+		0CB611D10C1F2D1E0060821A /* VeraMono.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0CB611CF0C1F2D1E0060821A /* VeraMono.ttf */; };
+		0CB611D20C1F2D440060821A /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2AAC046055464E500DB518D /* libprojectM.a */; };
 		0CBE3BDD0A74118500F42C68 /* projectMvis.cc in Sources */ = {isa = PBXBuildFile; fileRef = 0CBE3BDC0A74118500F42C68 /* projectMvis.cc */; };
 		0CBFA8420C1AB0F2007E9382 /* BeatDetect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CBFA8320C1AB0F2007E9382 /* BeatDetect.cpp */; };
 		0CBFA8430C1AB0F2007E9382 /* BeatDetect.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CBFA8330C1AB0F2007E9382 /* BeatDetect.h */; };
 		0CBFA8440C1AB0F2007E9382 /* browser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CBFA8340C1AB0F2007E9382 /* browser.cpp */; };
 		0CBFA8450C1AB0F2007E9382 /* browser.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CBFA8350C1AB0F2007E9382 /* browser.h */; };
-		0CBFA8460C1AB0F2007E9382 /* builtin_funcs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CBFA8360C1AB0F2007E9382 /* builtin_funcs.cpp */; };
 		0CBFA8470C1AB0F2007E9382 /* builtin_funcs.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CBFA8370C1AB0F2007E9382 /* builtin_funcs.h */; };
 		0CBFA8480C1AB0F2007E9382 /* carbontoprojectM.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CBFA8380C1AB0F2007E9382 /* carbontoprojectM.h */; };
 		0CBFA8490C1AB0F2007E9382 /* common.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CBFA8390C1AB0F2007E9382 /* common.h */; };
@@ -797,9 +798,8 @@
 		0CBFA8C90C1AB2F3007E9382 /* wxvisFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CBFA8C50C1AB2F3007E9382 /* wxvisFrame.cpp */; };
 		0CBFA8D50C1AB4FE007E9382 /* iprojectM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CBFA8D40C1AB4FE007E9382 /* iprojectM.cpp */; };
 		0CBFA8D90C1AB50E007E9382 /* iTunesAPI.c in Sources */ = {isa = PBXBuildFile; fileRef = 0CBFA8D60C1AB50E007E9382 /* iTunesAPI.c */; };
-		0CBFA8DA0C1AB50E007E9382 /* iTunesAPI.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0CBFA8D70C1AB50E007E9382 /* iTunesAPI.h */; };
-		0CBFA8DB0C1AB50E007E9382 /* iTunesVisualAPI.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 0CBFA8D80C1AB50E007E9382 /* iTunesVisualAPI.h */; };
 		0CCF40050C0A2F870030828E /* projectM.icns in Resources */ = {isa = PBXBuildFile; fileRef = 0CCF40040C0A2F870030828E /* projectM.icns */; };
+		0CDBB8220C1F4540007A1868 /* libglew.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CDBB8210C1F4540007A1868 /* libglew.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -833,11 +833,8 @@
 			dstPath = fonts;
 			dstSubfolderSpec = 7;
 			files = (
-				0C4C83D209DDC8DA00126FB8 /* arial1.glf in CopyFiles */,
-				0C4C83D309DDC8DA00126FB8 /* courier1.glf in CopyFiles */,
-				0C4C83D409DDC8DA00126FB8 /* times_new1.glf in CopyFiles */,
-				0CBFA8DA0C1AB50E007E9382 /* iTunesAPI.h in CopyFiles */,
-				0CBFA8DB0C1AB50E007E9382 /* iTunesVisualAPI.h in CopyFiles */,
+				0CB611D00C1F2D1E0060821A /* Vera.ttf in CopyFiles */,
+				0CB611D10C1F2D1E0060821A /* VeraMono.ttf in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1502,32 +1499,21 @@
 		0CCF40020C0A2F680030828E /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
-			dstPath = "";
+			dstPath = ..;
 			dstSubfolderSpec = 7;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0CCF40150C0A30020030828E /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 16;
-			files = (
+				0C74DBD00C2082310043103D /* PkgInfo in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0C3EBFC60C06389F0041F14F /* projectM-wxvis.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "projectM-wxvis.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C3EBFC60C06389F0041F14F /* wxprojectM.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = wxprojectM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C3EBFC80C06389F0041F14F /* projectM-wxvis-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "projectM-wxvis-Info.plist"; sourceTree = "<group>"; };
 		0C4C742E09DDC18200126FB8 /* sdlprojectM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = sdlprojectM.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		0C4C745C09DDC4B900126FB8 /* iprojectM.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iprojectM.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		0C4C745C09DDC4B900126FB8 /* projectM.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = projectM.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		0C4C745D09DDC4BA00126FB8 /* projectM-iTunes-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "projectM-iTunes-Info.plist"; sourceTree = "<group>"; };
-		0C4C748509DDC6FF00126FB8 /* arial1.glf */ = {isa = PBXFileReference; lastKnownFileType = file; path = arial1.glf; sourceTree = "<group>"; };
-		0C4C748609DDC6FF00126FB8 /* courier1.glf */ = {isa = PBXFileReference; lastKnownFileType = file; path = courier1.glf; sourceTree = "<group>"; };
-		0C4C748709DDC6FF00126FB8 /* times_new1.glf */ = {isa = PBXFileReference; lastKnownFileType = file; path = times_new1.glf; sourceTree = "<group>"; };
 		0C4C748909DDC6FF00126FB8 /* ---ar()mo-- - Spirit of East v2.milk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "---ar()mo-- - Spirit of East v2.milk"; sourceTree = "<group>"; };
 		0C4C748A09DDC6FF00126FB8 /* Aderrasi - Agitator.milk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "Aderrasi - Agitator.milk"; sourceTree = "<group>"; };
 		0C4C748B09DDC6FF00126FB8 /* Aderrasi - Aimless (Gravity Directive Mix).milk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "Aderrasi - Aimless (Gravity Directive Mix).milk"; sourceTree = "<group>"; };
@@ -2177,12 +2163,14 @@
 		0C4C770F09DDC70200126FB8 /* Zylot - Waves Of Blood.milk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "Zylot - Waves Of Blood.milk"; sourceTree = "<group>"; };
 		0C4C771009DDC70200126FB8 /* Zylot - Winding Path Over The Blue Abyss.milk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "Zylot - Winding Path Over The Blue Abyss.milk"; sourceTree = "<group>"; };
 		0C4C771109DDC70200126FB8 /* Zylot and Rovastar - Iouo Stone Morphic Fusion.milk */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = "Zylot and Rovastar - Iouo Stone Morphic Fusion.milk"; sourceTree = "<group>"; };
+		0C74DBCD0C20822A0043103D /* PkgInfo */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = PkgInfo; path = "../projectM-iTunes/PkgInfo"; sourceTree = SOURCE_ROOT; };
+		0CB611CE0C1F2D1E0060821A /* Vera.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Vera.ttf; sourceTree = "<group>"; };
+		0CB611CF0C1F2D1E0060821A /* VeraMono.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = VeraMono.ttf; sourceTree = "<group>"; };
 		0CBE3BDC0A74118500F42C68 /* projectMvis.cc */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = projectMvis.cc; path = ../projectMvis/projectMvis.cc; sourceTree = SOURCE_ROOT; };
 		0CBFA8320C1AB0F2007E9382 /* BeatDetect.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = BeatDetect.cpp; path = "../projectM-engine/BeatDetect.cpp"; sourceTree = SOURCE_ROOT; };
 		0CBFA8330C1AB0F2007E9382 /* BeatDetect.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = BeatDetect.h; path = "../projectM-engine/BeatDetect.h"; sourceTree = SOURCE_ROOT; };
 		0CBFA8340C1AB0F2007E9382 /* browser.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = browser.cpp; path = "../projectM-engine/browser.cpp"; sourceTree = SOURCE_ROOT; };
 		0CBFA8350C1AB0F2007E9382 /* browser.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = browser.h; path = "../projectM-engine/browser.h"; sourceTree = SOURCE_ROOT; };
-		0CBFA8360C1AB0F2007E9382 /* builtin_funcs.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = builtin_funcs.cpp; path = "../projectM-engine/builtin_funcs.cpp"; sourceTree = SOURCE_ROOT; };
 		0CBFA8370C1AB0F2007E9382 /* builtin_funcs.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = builtin_funcs.h; path = "../projectM-engine/builtin_funcs.h"; sourceTree = SOURCE_ROOT; };
 		0CBFA8380C1AB0F2007E9382 /* carbontoprojectM.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = carbontoprojectM.h; path = "../projectM-engine/carbontoprojectM.h"; sourceTree = SOURCE_ROOT; };
 		0CBFA8390C1AB0F2007E9382 /* common.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = common.h; path = "../projectM-engine/common.h"; sourceTree = SOURCE_ROOT; };
@@ -2252,6 +2240,7 @@
 		0CBFA8D70C1AB50E007E9382 /* iTunesAPI.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = iTunesAPI.h; path = "../projectM-iTunes/macos/iTunesAPI.h"; sourceTree = SOURCE_ROOT; };
 		0CBFA8D80C1AB50E007E9382 /* iTunesVisualAPI.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = iTunesVisualAPI.h; path = "../projectM-iTunes/macos/iTunesVisualAPI.h"; sourceTree = SOURCE_ROOT; };
 		0CCF40040C0A2F870030828E /* projectM.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = projectM.icns; sourceTree = "<group>"; };
+		0CDBB8210C1F4540007A1868 /* libglew.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglew.a; path = ../../../glew/build/macos/glew/build/Release/libglew.a; sourceTree = SOURCE_ROOT; };
 		D2AAC046055464E500DB518D /* libprojectM.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libprojectM.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -2260,6 +2249,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0CB611D20C1F2D440060821A /* libprojectM.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2276,6 +2266,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C4C867009DDCDBA00126FB8 /* libprojectM.a in Frameworks */,
+				0CDBB8220C1F4540007A1868 /* libglew.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2292,6 +2283,8 @@
 		08FB7794FE84155DC02AAC07 /* projectM */ = {
 			isa = PBXGroup;
 			children = (
+				0C74DBCD0C20822A0043103D /* PkgInfo */,
+				0CDBB8210C1F4540007A1868 /* libglew.a */,
 				0CCF40040C0A2F870030828E /* projectM.icns */,
 				0C4C748409DDC6FF00126FB8 /* fonts */,
 				0C4C748809DDC6FF00126FB8 /* presets */,
@@ -2390,9 +2383,8 @@
 		0C4C748409DDC6FF00126FB8 /* fonts */ = {
 			isa = PBXGroup;
 			children = (
-				0C4C748509DDC6FF00126FB8 /* arial1.glf */,
-				0C4C748609DDC6FF00126FB8 /* courier1.glf */,
-				0C4C748709DDC6FF00126FB8 /* times_new1.glf */,
+				0CB611CE0C1F2D1E0060821A /* Vera.ttf */,
+				0CB611CF0C1F2D1E0060821A /* VeraMono.ttf */,
 			);
 			name = fonts;
 			path = ../../fonts;
@@ -3103,7 +3095,6 @@
 			children = (
 				0CBFA8320C1AB0F2007E9382 /* BeatDetect.cpp */,
 				0CBFA8340C1AB0F2007E9382 /* browser.cpp */,
-				0CBFA8360C1AB0F2007E9382 /* builtin_funcs.cpp */,
 				0CBFA83B0C1AB0F2007E9382 /* console_interface.cpp */,
 				0CBFA83D0C1AB0F2007E9382 /* CustomShape.cpp */,
 				0CBFA83F0C1AB0F2007E9382 /* CustomWave.cpp */,
@@ -3137,8 +3128,8 @@
 			children = (
 				D2AAC046055464E500DB518D /* libprojectM.a */,
 				0C4C742E09DDC18200126FB8 /* sdlprojectM.app */,
-				0C4C745C09DDC4B900126FB8 /* iprojectM.bundle */,
-				0C3EBFC60C06389F0041F14F /* projectM-wxvis.app */,
+				0C4C745C09DDC4B900126FB8 /* projectM.bundle */,
+				0C3EBFC60C06389F0041F14F /* wxprojectM.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -3214,7 +3205,7 @@
 			);
 			name = "projectM-wxvis";
 			productName = wxprojectM;
-			productReference = 0C3EBFC60C06389F0041F14F /* projectM-wxvis.app */;
+			productReference = 0C3EBFC60C06389F0041F14F /* wxprojectM.app */;
 			productType = "com.apple.product-type.application";
 		};
 		0C4C745B09DDC4B900126FB8 /* projectM-iTunes */ = {
@@ -3227,7 +3218,6 @@
 				0C4C83C809DDC7BD00126FB8 /* CopyFiles */,
 				0C4C83D909DDC8FC00126FB8 /* CopyFiles */,
 				0CCF40020C0A2F680030828E /* CopyFiles */,
-				0CCF40150C0A30020030828E /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -3236,7 +3226,7 @@
 			);
 			name = "projectM-iTunes";
 			productName = iprojectM;
-			productReference = 0C4C745C09DDC4B900126FB8 /* iprojectM.bundle */;
+			productReference = 0C4C745C09DDC4B900126FB8 /* projectM.bundle */;
 			productType = "com.apple.product-type.bundle";
 		};
 		D2AAC045055464E500DB518D /* projectM-engine */ = {
@@ -3295,6 +3285,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0CCF40050C0A2F870030828E /* projectM.icns in Resources */,
+				0C74DBCE0C20822A0043103D /* PkgInfo in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3344,7 +3335,6 @@
 			files = (
 				0CBFA8420C1AB0F2007E9382 /* BeatDetect.cpp in Sources */,
 				0CBFA8440C1AB0F2007E9382 /* browser.cpp in Sources */,
-				0CBFA8460C1AB0F2007E9382 /* builtin_funcs.cpp in Sources */,
 				0CBFA84B0C1AB0F2007E9382 /* console_interface.cpp in Sources */,
 				0CBFA84D0C1AB0F2007E9382 /* CustomShape.cpp in Sources */,
 				0CBFA84F0C1AB0F2007E9382 /* CustomWave.cpp in Sources */,
@@ -3556,6 +3546,10 @@
 		0C4C746009DDC4BA00126FB8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(NATIVE_ARCH)",
+					i386,
+				);
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -3567,17 +3561,22 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					MACOS,
 					DEBUG,
-					FBO,
+					USE_FBO,
 				);
 				HEADER_SEARCH_PATHS = (
-					/Developer/Headers/FlatCarbon,
 					/System/Library/Frameworks/AGL.framework/Headers,
 					/System/Library/Frameworks/OpenGL.framework/Headers,
-					/usr/local/include,
+					/Developer/Headers/FlatCarbon,
+					../../../glew/include,
+					"$(HEADER_SEARCH_PATHS)",
 				);
 				INFOPLIST_FILE = "projectM-iTunes-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
-				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../glew/build/macos/glew/build/Release\"";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Carbon,
@@ -3588,7 +3587,7 @@
 					"-lGLEW",
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = iprojectM;
+				PRODUCT_NAME = projectM;
 				USER_HEADER_SEARCH_PATHS = ".. $(USER_HEADER_SEARCH_PATHS)";
 				WRAPPER_EXTENSION = bundle;
 				ZERO_LINK = YES;
@@ -3598,19 +3597,34 @@
 		0C4C746109DDC4BA00126FB8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(NATIVE_ARCH)",
+					i386,
+				);
 				COPY_PHASE_STRIP = YES;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/Carbon.framework/Headers/Carbon.h";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					MACOS,
+					USE_FBO,
+				);
 				HEADER_SEARCH_PATHS = (
-					/Developer/Headers/FlatCarbon,
 					/System/Library/Frameworks/AGL.framework/Headers,
 					/System/Library/Frameworks/OpenGL.framework/Headers,
+					/Developer/Headers/FlatCarbon,
+					../../../glew/include,
+					"$(HEADER_SEARCH_PATHS)",
 				);
 				INFOPLIST_FILE = "projectM-iTunes-Info.plist";
 				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib,
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+				);
+				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/../../../glew/build/macos/glew/build/Release\"";
 				OTHER_LDFLAGS = (
 					"-framework",
 					Carbon,
@@ -3620,7 +3634,7 @@
 					AGL,
 				);
 				PREBINDING = NO;
-				PRODUCT_NAME = iprojectM;
+				PRODUCT_NAME = projectM;
 				USER_HEADER_SEARCH_PATHS = ".. $(USER_HEADER_SEARCH_PATHS)";
 				WRAPPER_EXTENSION = bundle;
 				ZERO_LINK = YES;
@@ -3652,6 +3666,10 @@
 		1DEB91EC08733DB70010E9CD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = (
+					"$(NATIVE_ARCH)",
+					i386,
+				);
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = "";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -3661,14 +3679,14 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					MACOS,
 					DEBUG,
-					FBO,
+					USE_FBO,
 				);
 				GCC_USE_GCC3_PFE_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
 					/System/Library/Frameworks/AGL.framework/Headers,
 					/System/Library/Frameworks/OpenGL.framework/Headers,
 					/Developer/Headers/FlatCarbon,
-					/usr/local/include,
+					../../../glew/include,
 					"$(HEADER_SEARCH_PATHS)",
 				);
 				INSTALL_PATH = /usr/local/lib;
@@ -3691,12 +3709,13 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					MACOS,
 					"$(GCC_PREPROCESSOR_DEFINITIONS)",
+					USE_FBO,
 				);
 				HEADER_SEARCH_PATHS = (
 					/System/Library/Frameworks/AGL.framework/Headers,
 					/System/Library/Frameworks/OpenGL.framework/Headers,
 					/Developer/Headers/FlatCarbon,
-					/usr/local/include,
+					../../../glew/include,
 					"$(HEADER_SEARCH_PATHS)",
 				);
 				INSTALL_PATH = /usr/local/lib;
