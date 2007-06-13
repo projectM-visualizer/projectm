@@ -801,7 +801,7 @@ int glConsoleDraw( gl_console_t * console) {
 
 	
         //Figure out size of one console unit  
-	other_font->FaceSize(16*(vh/512.0));
+	other_font->FaceSize((unsigned)(16*(vh/512.0)));
 	advance=other_font->Advance("W");
 	other_font->BBox("qpg_XT[",llx,lly,llx,urx,ury,urz);
 
