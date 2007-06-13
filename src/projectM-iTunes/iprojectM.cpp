@@ -66,7 +66,7 @@ int fullscreenWidth, fullscreenHeight;
 #endif /** MACOS */
 
 #ifdef MACOS
-#define kTVisualPluginName                      "\piprojectM"
+#define kTVisualPluginName                      "\pprojectM"
 #define kTVisualPluginCreator           'hook'
 #define kTVisualPluginMajorVersion      1
 #define kTVisualPluginMinorVersion      0
@@ -243,6 +243,7 @@ void InitializeGL( CGrafPtr destPort, int isFullScreen ) {
     /** Stash the target port */
     port = destPort;
 
+#ifdef PANTS
     if ( isFullScreen ) {
         CGCaptureAllDisplays();
         displayCaptured = 1;
@@ -263,6 +264,7 @@ void InitializeGL( CGrafPtr destPort, int isFullScreen ) {
               }
           }
       }
+#endif
 
     /** Chuck out the old context if one exists */
     if ( context != NULL ) {
@@ -271,6 +273,7 @@ void InitializeGL( CGrafPtr destPort, int isFullScreen ) {
       }
 
     /** Choose the OpenGL pixel format */
+#ifdef PANTS
     if ( isFullScreen ) {
         attrib[0] = AGL_RGBA;
         attrib[1] = AGL_DOUBLEBUFFER;
@@ -281,6 +284,7 @@ void InitializeGL( CGrafPtr destPort, int isFullScreen ) {
         attrib[6] = AGL_SINGLE_RENDERER;
         attrib[6] = AGL_NONE;
       } else {
+#endif
         attrib[0] = AGL_RGBA;
         attrib[1] = AGL_DOUBLEBUFFER;
         attrib[2] = AGL_ACCELERATED;
@@ -289,7 +293,7 @@ void InitializeGL( CGrafPtr destPort, int isFullScreen ) {
         attrib[5] = AGL_NO_RECOVERY;
         attrib[6] = AGL_SINGLE_RENDERER;
         attrib[5] = AGL_NONE;
-      }
+//      }
 
     GDHandle mainDevice = GetMainDevice();
     pixelFormat = aglChoosePixelFormat( &mainDevice, 1, attrib );
@@ -310,15 +314,15 @@ void InitializeGL( CGrafPtr destPort, int isFullScreen ) {
         DWRITE( "created context OK\n" );
       }
 
-    if ( !isFullScreen ) {
+//    if ( !isFullScreen ) {
         if ( !aglSetDrawable( context, destPort ) ) {
             DWRITE( "failed to set drawable\n" );
           } else {
             DWRITE( "set drawable OK\n" );
           }
-      } else {
-        aglSetDrawable( context, NULL );
-      }
+//      } else {
+//        aglSetDrawable( context, NULL );
+//      }
 
     if ( !aglSetCurrentContext( context ) ) {
         DWRITE( "failed to make context current\n" );
@@ -326,7 +330,7 @@ void InitializeGL( CGrafPtr destPort, int isFullScreen ) {
         DWRITE( "set current context OK\n" );
       }
 
-    if ( !isFullScreen ) {
+//    if ( !isFullScreen ) {
         if ( !aglUpdateContext( context ) ) {
             DWRITE( "failed to update context\n" );
           } else {
@@ -336,6 +340,7 @@ void InitializeGL( CGrafPtr destPort, int isFullScreen ) {
         if ( globalPM != NULL ) {
             globalPM->fullscreen = 0;
           }
+#ifdef PANTS
       } else {
         aglSetFullScreen( context, 800, 600, 0, 0 );
         if ( globalPM != NULL ) {
@@ -348,8 +353,9 @@ void InitializeGL( CGrafPtr destPort, int isFullScreen ) {
         fullscreenWidth = displayCaps[0];
         fullscreenHeight = displayCaps[1];
       }
+#endif
 
-#ifdef PANTS
+#ifdef WIN32
     // enable v-sync if WGL_EXT_swap_control is supported
     PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = NULL;
     wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
@@ -412,6 +418,7 @@ void ResizeGL( CGrafPtr destPort, Rect windowRect, int isFullScreen ) {
 
     DWRITE( "ResizeGL(): in: %d\n", isFullScreen );
 
+#ifdef PANTS
     if ( isFullScreen ) {
 #ifdef MACOS
         aglDisable( context, AGL_BUFFER_RECT );
@@ -422,6 +429,7 @@ void ResizeGL( CGrafPtr destPort, Rect windowRect, int isFullScreen ) {
             globalPM->projectM_resetGL( fullscreenWidth, fullscreenHeight );
           }
       } else {
+#endif
         windowWidth = windowRect.right - windowRect.left;
         windowHeight = windowRect.bottom - windowRect.top;
 
@@ -464,7 +472,7 @@ void ResizeGL( CGrafPtr destPort, Rect windowRect, int isFullScreen ) {
 #endif
             globalPM->projectM_resetGL( windowWidth, windowHeight );
           }
-      }
+//      }
   }
 
 // cleanup OpenGL rendering context
@@ -487,6 +495,7 @@ void CleanupGL()
 #else
 #ifdef MACOS
     /** Release the held main display */
+#ifdef PANTS
     if ( displayCaptured ) {
         DWRITE( "%s\n", "switching to non-fullscreen" );
         CGDisplaySwitchToMode( kCGDirectMainDisplay, desktopMode );
@@ -494,6 +503,7 @@ void CleanupGL()
         DWRITE( "%s\n", "releasing displays" );
         CGReleaseAllDisplays();
       }
+#endif
     DWRITE( "pre-context destroy\n" );
     if ( context != NULL ) {
         aglSetCurrentContext( NULL );
@@ -502,12 +512,7 @@ void CleanupGL()
       }
 #endif /** MACOS */
 #endif /** WIN32 */
-
-    if ( globalPM != NULL ) {
-        /** Cleanup projectM */
-      }
-
-}
+  }
 
 // handle messages sent by iTunes
 OSStatus pluginMessageHandler( OSType message, 
@@ -539,9 +544,10 @@ OSStatus pluginMessageHandler( OSType message,
 
         // redraw the screne while idle
         case kVisualPluginIdleMessage: {
-//            DWRITE( "*** %s\n", "kVisualPluginIdleMessage" );
-//            if (playing == false)
-//                RenderGL();
+            DWRITE( "*** %s\n", "kVisualPluginIdleMessage" );
+            if (playing == false) {
+                RenderGL();
+              }
 
             break;
           }
@@ -556,12 +562,12 @@ OSStatus pluginMessageHandler( OSType message,
 #else
 #ifdef MACOS
             InitializeGL( messageInfo->u.showWindowMessage.port,
-                          messageInfo->u.showWindowMessage.options );
+                          /* messageInfo->u.showWindowMessage.options */ 0 );
 #endif /** MACOS */
 #endif /** WIN32 */
             ResizeGL( messageInfo->u.showWindowMessage.port,
                       messageInfo->u.setWindowMessage.drawRect,
-                      messageInfo->u.setWindowMessage.options);
+                      /* messageInfo->u.setWindowMessage.options */ 0 );
             RenderGL();
         
             break;
@@ -574,6 +580,7 @@ OSStatus pluginMessageHandler( OSType message,
             break;
           }
 
+#ifdef PANTS
         // sent when visualizer viewport size is changed
         case kVisualPluginSetWindowMessage: {
             DWRITE( "*** kVisualPluginSetWindowMessage( %d )\n",
@@ -585,6 +592,7 @@ OSStatus pluginMessageHandler( OSType message,
 
             break;
           }
+#endif
 
         // sent when visualizer should render a frame
         case kVisualPluginRenderMessage: {
@@ -713,33 +721,40 @@ OSStatus registerPlugin(PluginMessageInfo *messageInfo) {
 
     // plugin constants
 #ifdef WIN32
-    const char *pluginTitle = "iprojectM";
+    const char *pluginTitle = "projectM";
     const UInt32 pluginCreator = '\?\?\?\?';
 #else
 #ifdef MACOS
-    const char *pluginTitle = "iprojectM";
+    const char *pluginTitle = "projectM";
     const UInt32 pluginCreator = 'hook';
 #endif /** MACOS */
 #endif /** WIN32 */
-    const UInt8 pluginMajorVersion = 1;
-    const UInt8 pluginMinorVersion = 0;
+    const UInt8 pluginMajorVersion = 10;
+    const UInt8 pluginMinorVersion = 9;
 
     PlayerMessageInfo playerMessageInfo;
-    memset(&playerMessageInfo.u.registerVisualPluginMessage, 0, sizeof(playerMessageInfo.u.registerVisualPluginMessage));
+    memset( &playerMessageInfo.u.registerVisualPluginMessage, 
+            0, sizeof(playerMessageInfo.u.registerVisualPluginMessage));
 
     // copy in name length byte first
-    playerMessageInfo.u.registerVisualPluginMessage.name[0] = (UInt8)strlen( pluginTitle );
+    playerMessageInfo.u.registerVisualPluginMessage.name[0] =
+        (UInt8)strlen( pluginTitle );
 
     // now copy in actual name
-    memcpy(&playerMessageInfo.u.registerVisualPluginMessage.name[1], pluginTitle, strlen( pluginTitle ));
+    memcpy( &playerMessageInfo.u.registerVisualPluginMessage.name[1],
+            pluginTitle, strlen( pluginTitle ));
 
-    SetNumVersion(&playerMessageInfo.u.registerVisualPluginMessage.pluginVersion, pluginMajorVersion, pluginMinorVersion, 0x80, 0);
+    SetNumVersion( &playerMessageInfo.u.registerVisualPluginMessage.pluginVersion,
+                   pluginMajorVersion, pluginMinorVersion, 0x80, 0);
 
-    playerMessageInfo.u.registerVisualPluginMessage.options = kVisualWantsIdleMessages;
+    playerMessageInfo.u.registerVisualPluginMessage.options =
+        kVisualWantsIdleMessages;
 #ifdef WIN32
-    playerMessageInfo.u.registerVisualPluginMessage.handler = pluginMessageHandler;
+    playerMessageInfo.u.registerVisualPluginMessage.handler =
+        pluginMessageHandler;
 #else
-    playerMessageInfo.u.registerVisualPluginMessage.handler = (VisualPluginProcPtr)pluginMessageHandler;
+    playerMessageInfo.u.registerVisualPluginMessage.handler =
+        (VisualPluginProcPtr)pluginMessageHandler;
 #endif
     playerMessageInfo.u.registerVisualPluginMessage.registerRefCon = 0;
     playerMessageInfo.u.registerVisualPluginMessage.creator = pluginCreator;
@@ -756,18 +771,12 @@ OSStatus registerPlugin(PluginMessageInfo *messageInfo) {
     playerMessageInfo.u.registerVisualPluginMessage.maxFullScreenBitDepth = 0;
     playerMessageInfo.u.registerVisualPluginMessage.windowAlignmentInBytes = 0;
 
-    status = PlayerRegisterVisualPlugin(messageInfo->u.initMessage.appCookie, messageInfo->u.initMessage.appProc, &playerMessageInfo);
+    status = PlayerRegisterVisualPlugin(messageInfo->u.initMessage.appCookie,
+                                        messageInfo->u.initMessage.appProc,
+                                        &playerMessageInfo);
 
     appCookie = messageInfo->u.initMessage.appCookie;
     appProc = messageInfo->u.initMessage.appProc;
-
-#ifdef DEBUG
-#ifdef MACOS
-    debugFile = fopen( "/Users/descarte/iprojectM.txt", "wb" );
-    fprintf( debugFile, "InitialiseGL(): in\n" );
-    fflush( debugFile );
-#endif /** MACOS */
-#endif /** DEBUG */
 
     return status;
 }
@@ -787,63 +796,75 @@ extern "C"
 #endif
 IMPEXP OSStatus MAIN (OSType message, PluginMessageInfo *messageInfo, void *refCon)
 {
-    OSStatus status;
+    OSStatus status = noErr;
     char fname[1024];
     char fontURL[1024];
     char presetURL[1024];
 
-    switch (message)
-    {
+    switch (message) {
         case kPluginInitMessage: {
-            DWRITE( "%s\n", "kPluginInitMessage" );
-            status = registerPlugin(messageInfo);
-#ifdef MACOS
-            desktopMode = CGDisplayCurrentMode( kCGDirectMainDisplay );
-            fullscreenMode = 
-                CGDisplayBestModeForParameters( kCGDirectMainDisplay,
-                                                32, 800, 600, NULL );
 #ifdef DEBUG
-            if ( debugFile != NULL ) {
-                long dwidth = 0, dheight = 0;
-                /** Get the desktop mode */
-                /* Get the height, width, bpp, and refresh rate of this display mode. Print them out. */
-                CFNumberRef number ;
-                number = (CFNumberRef)CFDictionaryGetValue( desktopMode, kCGDisplayWidth ) ;
-                CFNumberGetValue( number, kCFNumberLongType, &dwidth ) ;
-                number = (CFNumberRef)CFDictionaryGetValue( desktopMode, kCGDisplayHeight ) ;
-                CFNumberGetValue( number, kCFNumberLongType, &dheight ) ;
+#ifdef MACOS
+            debugFile = fopen( "/Users/descarte/iprojectM.txt", "wb" );
+            fprintf( debugFile, "registerPlugin: %d\n", status );
+            fflush( debugFile );
+#endif /** MACOS */
+#endif /** DEBUG */
 
-                DWRITE( "stashing desktop mode: %d x %d -> %d\n",
-                        dwidth, dheight, exactMatch );
+            DWRITE( "%s: %d\t%d\n", 
+                    "kPluginInitMessage",
+                    messageInfo->u.initMessage.majorVersion, 
+                    messageInfo->u.initMessage.minorVersion );
+            status = registerPlugin(messageInfo);
+            if ( status == noErr ) {
+#ifdef MACOS
+                desktopMode = CGDisplayCurrentMode( kCGDirectMainDisplay );
+                fullscreenMode = 
+                    CGDisplayBestModeForParameters( kCGDirectMainDisplay,
+                                                    32, 800, 600, NULL );
+#ifdef DEBUG
+                if ( debugFile != NULL ) {
+                    long dwidth = 0, dheight = 0;
+                    /** Get the desktop mode */
+                    /* Get the height, width, bpp, and refresh rate of this display mode. Print them out. */
+                    CFNumberRef number ;
+                    number = (CFNumberRef)CFDictionaryGetValue( desktopMode, kCGDisplayWidth ) ;
+                    CFNumberGetValue( number, kCFNumberLongType, &dwidth ) ;
+                    number = (CFNumberRef)CFDictionaryGetValue( desktopMode, kCGDisplayHeight ) ;
+                    CFNumberGetValue( number, kCFNumberLongType, &dheight ) ;
+    
+                    DWRITE( "stashing desktop mode: %d x %d -> %d\n",
+                            dwidth, dheight, exactMatch );
+                  }
+#endif
+#endif
+
+                /** Initialise projectM */
+                globalPM = new projectM();
+                globalPM->projectM_reset();
+    
+                /** Set basic rendering options */
+                globalPM->renderTarget->usePbuffers = 1;
+                globalPM->fullscreen = 0;
+                globalPM->renderTarget->texsize = 1024;
+                globalPM->showfps = 1;
+            
+                /** Get the font and preset locations */
+                PlayerGetPluginFileSpec( appCookie, appProc, &pluginSpec );
+                fss2path( &pluginSpec, fname );
+                DWRITE( "fsspace name: %s\n", fname );
+                sprintf( fontURL, "%s/Contents/Resources/fonts", fname );
+                globalPM->fontURL = (char *)malloc( sizeof( char ) * 1024 );
+                strncpy( globalPM->fontURL, fontURL, strlen( fontURL ) + 1 );
+            
+                DWRITE( "fontURL: %s\n", globalPM->fontURL );
+            
+                sprintf( presetURL, "%s/Contents/Resources/presets", fname );
+                globalPM->presetURL = (char *)malloc( sizeof( char ) * 1024 );
+                strncpy( globalPM->presetURL, presetURL, strlen( presetURL ) + 1 );
+        
+                DWRITE( "presetURL: %s\n", globalPM->presetURL );
               }
-#endif
-#endif
-
-            /** Initialise projectM */
-            globalPM = new projectM();
-            globalPM->projectM_reset();
-
-            /** Set basic rendering options */
-            globalPM->renderTarget->usePbuffers = 1;
-            globalPM->fullscreen = 0;
-            globalPM->renderTarget->texsize = 1024;
-            globalPM->showfps = 1;
-        
-            /** Get the font and preset locations */
-            PlayerGetPluginFileSpec( appCookie, appProc, &pluginSpec );
-            fss2path( &pluginSpec, fname );
-            DWRITE( "fsspace name: %s\n", fname );
-            sprintf( fontURL, "%s/Contents/Resources/fonts", fname );
-            globalPM->fontURL = (char *)malloc( sizeof( char ) * 1024 );
-            strncpy( globalPM->fontURL, fontURL, strlen( fontURL ) + 1 );
-        
-            DWRITE( "fontURL: %s\n", globalPM->fontURL );
-        
-            sprintf( presetURL, "%s/Contents/Resources/presets", fname );
-            globalPM->presetURL = (char *)malloc( sizeof( char ) * 1024 );
-            strncpy( globalPM->presetURL, presetURL, strlen( presetURL ) + 1 );
-        
-            DWRITE( "presetURL: %s\n", globalPM->presetURL );
 
             break;
           }
