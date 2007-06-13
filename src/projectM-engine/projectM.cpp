@@ -979,7 +979,7 @@ void projectM::draw_custom_waves() {
 
 void projectM::darken_center() {
 
-  int unit=0.05f;
+  float unit=0.05f;
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix(); 
@@ -1801,7 +1801,7 @@ void projectM::draw_title() {
   //  glScalef(this->vw*.015,this->vh*.025,0);
 
       glRasterPos2f(0.01, 0.05);
-      title_font->FaceSize( 20*(this->vh/512.0));
+      title_font->FaceSize( (unsigned)(20*(this->vh/512.0)));
        
       if ( this->title != NULL ) {
        	 title_font->Render(this->title );
@@ -1825,9 +1825,9 @@ void projectM::draw_preset() {
    
         glRasterPos2f(0.01, 0.01);
 
-	title_font->FaceSize(12*(this->vh/512.0));
+	title_font->FaceSize((unsigned)(12*(this->vh/512.0)));
 	if(this->noSwitch) title_font->Render("[LOCKED]  " );
-	title_font->FaceSize(20*(this->vh/512.0));
+	title_font->FaceSize((unsigned)(20*(this->vh/512.0)));
         title_font->Render(this->presetName );
 
                  
@@ -1848,7 +1848,7 @@ void projectM::draw_help( ) {
       //glScalef(this->vw*.02,this->vh*.02 ,0);
 
      
-       title_font->FaceSize( 18*(this->vh/512.0));
+       title_font->FaceSize((unsigned)( 18*(this->vh/512.0)));
 
       glRasterPos2f(0.01, -0.05);
        title_font->Render("Help");  
@@ -1912,7 +1912,7 @@ sprintf( buffer, " (%f)", this->aspect);
 
 
   glRasterPos2f(0, -.09+offset);
-  other_font->FaceSize(18*(this->vh/512.0));
+  other_font->FaceSize((unsigned)(18*(this->vh/512.0)));
 
   sprintf( buffer, " texsize: %d", this->renderTarget->texsize);
   other_font->Render(buffer);
@@ -1946,7 +1946,7 @@ void projectM::draw_fps( float realfps ) {
   glPushMatrix();
   glTranslatef(0.01,1, 0);
   glRasterPos2f(0, -0.05);
-  title_font->FaceSize(20*(this->vh/512.0));
+  title_font->FaceSize((unsigned)(20*(this->vh/512.0)));
    title_font->Render(bufferfps);
   
   glPopMatrix();
