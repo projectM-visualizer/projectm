@@ -88,13 +88,6 @@ inline void DWRITE( char *fmt, ... ) {
         vprintf( fmt, args );\
       }
 #endif
-
-#ifdef LINUX
-  FILE*  debugFile = fopen ("/home/pete/projectM.debug","a");
-  
-vfprintf(debugFile, fmt, args );
-fclose(debugFile);
-#endif
 #endif
     va_end( args );
   }
