@@ -1,0 +1,17 @@
+PROJECT(actor_projectM)
+ADD_LIBRARY(actor_projectM SHARED actor_projectM.cpp lvtoprojectM.h)
+
+INCLUDE(FindPkgConfig.cmake)
+
+FIND_PACKAGE(OpenGL)
+pkg_search_module(LIBVISUAL REQUIRED libvisual-0.4)
+pkg_search_module(PROJECTM REQUIRED libprojectM)
+
+ADD_DEFINITIONS(-DLINUX)
+
+INCLUDE_DIRECTORIES(${PROJECTM_INCLUDEDIR} ${LIBVISUAL_INCLUDEDIR})
+LINK_DIRECTORIES(${PROJECTM_LDFLAGS} ${LIBVISUAL_LDFLAGS})
+
+TARGET_LINK_LIBRARIES(actor_projectM projectM)
+
+INSTALL(TARGETS actor_projectM DESTINATION ${LIBVISUAL_PREFIX}/lib/libvisual-0.4/actor )

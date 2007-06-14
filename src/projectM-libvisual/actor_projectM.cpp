@@ -24,6 +24,8 @@ using namespace std;
 #define PRESETS_DIR "/presets"
 #define FONTS_DIR "/fonts"
 
+#define PROJECTM_DATADIR "/usr/share/projectM"
+
 void read_config();
 
 int texsize=512;
@@ -123,6 +125,7 @@ extern "C" int lv_projectm_init (VisPluginData *plugin)
 	priv->PM->gy=gy;
 	priv->PM->fps=fps;
 
+	
 
 	strcpy(projectM_data, PROJECTM_DATADIR);
 	strcpy(projectM_data+strlen(PROJECTM_DATADIR), FONTS_DIR);
