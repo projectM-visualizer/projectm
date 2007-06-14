@@ -111,7 +111,7 @@
 #define PROJECTM_DATADIR "/usr/share/projectM"
 
 /* libprojectM configuration dir */
-#define PROJECTM_SYSCONFDIR "/usr/etc/projectM"
+#define PROJECTM_SYSCONFDIR "/etc/projectM"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1

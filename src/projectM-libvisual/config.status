@@ -341,7 +341,7 @@ Copyright (C) 2006 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/home/pete/prjM1/projectM-1.00/src/projectM-libvisual'
+ac_pwd='/home/carm/projects/projectM/trunk/src/projectM-libvisual'
 srcdir='.'
 INSTALL='/usr/bin/install -c'
 # If no file are specified by the user, then we need to provide default
@@ -537,19 +537,19 @@ s,@INSTALL_DATA@,|#_!!_#|${INSTALL} -m 644,g
 s,@CYGPATH_W@,|#_!!_#|echo,g
 s,@PACKAGE@,|#_!!_#|libvisual-projectm,g
 s,@VERSION@,|#_!!_#|0.98,g
-s,@ACLOCAL@,|#_!!_#|${SHELL} /home/pete/prjM1/projectM-1.00/src/projectM-libvisual/missing --run aclocal-1.9,g
-s,@AUTOCONF@,|#_!!_#|${SHELL} /home/pete/prjM1/projectM-1.00/src/projectM-libvisual/missing --run autoconf,g
-s,@AUTOMAKE@,|#_!!_#|${SHELL} /home/pete/prjM1/projectM-1.00/src/projectM-libvisual/missing --run automake-1.9,g
-s,@AUTOHEADER@,|#_!!_#|${SHELL} /home/pete/prjM1/projectM-1.00/src/projectM-libvisual/missing --run autoheader,g
-s,@MAKEINFO@,|#_!!_#|${SHELL} /home/pete/prjM1/projectM-1.00/src/projectM-libvisual/missing --run makeinfo,g
-s,@install_sh@,|#_!!_#|/home/pete/prjM1/projectM-1.00/src/projectM-libvisual/install-sh,g
+s,@ACLOCAL@,|#_!!_#|${SHELL} /home/carm/projects/projectM/trunk/src/projectM-libvisual/missing --run aclocal-1.9,g
+s,@AUTOCONF@,|#_!!_#|${SHELL} /home/carm/projects/projectM/trunk/src/projectM-libvisual/missing --run autoconf,g
+s,@AUTOMAKE@,|#_!!_#|${SHELL} /home/carm/projects/projectM/trunk/src/projectM-libvisual/missing --run automake-1.9,g
+s,@AUTOHEADER@,|#_!!_#|${SHELL} /home/carm/projects/projectM/trunk/src/projectM-libvisual/missing --run autoheader,g
+s,@MAKEINFO@,|#_!!_#|${SHELL} /home/carm/projects/projectM/trunk/src/projectM-libvisual/missing --run makeinfo,g
+s,@install_sh@,|#_!!_#|/home/carm/projects/projectM/trunk/src/projectM-libvisual/install-sh,g
 s,@STRIP@,|#_!!_#|strip,g
 s,@INSTALL_STRIP_PROGRAM@,|#_!!_#|${SHELL} $(install_sh) -c -s,g
 s,@mkdir_p@,|#_!!_#|mkdir -p --,g
 s,@AWK@,|#_!!_#|gawk,g
 s,@SET_MAKE@,|#_!!_#|,g
 s,@am__leading_dot@,|#_!!_#|.,g
-s,@AMTAR@,|#_!!_#|${SHELL} /home/pete/prjM1/projectM-1.00/src/projectM-libvisual/missing --run tar,g
+s,@AMTAR@,|#_!!_#|${SHELL} /home/carm/projects/projectM/trunk/src/projectM-libvisual/missing --run tar,g
 s,@am__tar@,|#_!!_#|${AMTAR} chof - "$$tardir",g
 s,@am__untar@,|#_!!_#|${AMTAR} xf -,g
 s,@CC@,|#_!!_#|gcc,g
@@ -600,7 +600,7 @@ s,@ac_ct_F77@,|#_!!_#|gfortran,g
 s,@LIBTOOL@,|#_!!_#|$(SHELL) $(top_builddir)/libtool,g
 s,@PKG_CONFIG@,|#_!!_#|/usr/bin/pkg-config,g
 s,@LIBPROJECTM_CFLAGS@,|#_!!_#| ,g
-s,@LIBPROJECTM_LIBS@,|#_!!_#|-L/usr/lib  ,g
+s,@LIBPROJECTM_LIBS@,|#_!!_#| ,g
 s,@LIBVISUAL_CFLAGS@,|#_!!_#|-I/usr/include/libvisual-0.4  ,g
 s,@LIBVISUAL_LIBS@,|#_!!_#|-lpthread -lm -ldl -lvisual-0.4  ,g
 s,@FTGL_CFLAGS@,|#_!!_#|-I/usr/include/FTGL -I/usr/include/freetype2  ,g
@@ -890,7 +890,7 @@ s,^\([	 #]*\)[^	 ]*\([	 ]*HAVE_INTTYPES_H\)[	 (].*,\1define\2 1 ,
 s,^\([	 #]*\)[^	 ]*\([	 ]*HAVE_STDINT_H\)[	 (].*,\1define\2 1 ,
 s,^\([	 #]*\)[^	 ]*\([	 ]*HAVE_UNISTD_H\)[	 (].*,\1define\2 1 ,
 s,^\([	 #]*\)[^	 ]*\([	 ]*HAVE_DLFCN_H\)[	 (].*,\1define\2 1 ,
-s,^\([	 #]*\)[^	 ]*\([	 ]*PROJECTM_SYSCONFDIR\)[	 (].*,\1define\2 "/usr/etc/projectM" ,
+s,^\([	 #]*\)[^	 ]*\([	 ]*PROJECTM_SYSCONFDIR\)[	 (].*,\1define\2 "/etc/projectM" ,
 s,^\([	 #]*\)[^	 ]*\([	 ]*PROJECTM_DATADIR\)[	 (].*,\1define\2 "/usr/share/projectM" ,
 s,^\([	 #]*\)[^	 ]*\([	 ]*HAVE_X11_KEYSYM_H\)[	 (].*,\1define\2 1 ,
 s,^\([	 #]*\)[^	 ]*\([	 ]*HAVE_X11_X_H\)[	 (].*,\1define\2 1 ,
