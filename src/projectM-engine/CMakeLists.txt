@@ -26,11 +26,13 @@ IF(USE_FTGL)
 ENDIF(USE_FTGL)
 
 CONFIGURE_FILE("libprojectM.pc.in" "libprojectM.pc" @ONLY)
+CONFIGURE_FILE("config.1.00.in" "config.1.00" @ONLY)
+
 INSTALL(FILES "${CMAKE_BINARY_DIR}/libprojectM.pc" DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
 
 INSTALL(TARGETS projectM DESTINATION lib)
 INSTALL(FILES projectM.h pbuffer.h PCM.h BeatDetect.h Preset.h event.h console_interface.h dlldefs.h fatal.h  PCM.h DESTINATION include/libprojectM)
-INSTALL(FILES config DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM)
+INSTALL(FILES config.1.00 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM)
 FILE(GLOB presets "presets/*.milk")
 INSTALL(FILES ${presets} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/presets)
 FILE(GLOB fonts "fonts/*.ttf")
