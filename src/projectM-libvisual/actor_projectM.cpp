@@ -23,7 +23,7 @@ using namespace std;
 #define CONFIG_FILE "/share/projectM/config.1.00"
 #define FONTS_DIR "/share/projectM/fonts"
 
-#define PROJECTM_PREFIX "/usr"
+//#define PROJECTM_PREFIX /usr
 //#define PROJECTM_DATADIR "/usr/share/projectM"
 
 void read_config();
@@ -132,7 +132,7 @@ extern "C" int lv_projectm_init (VisPluginData *plugin)
 	strcpy(projectM_data, PROJECTM_PREFIX);
 	strcpy(projectM_data+strlen(PROJECTM_PREFIX), FONTS_DIR);
 	projectM_data[strlen(PROJECTM_PREFIX)+strlen(FONTS_DIR)]='\0';
-	
+       
 	priv->PM->fontURL = (char *)malloc( sizeof( char ) * 512 );
 	strcpy( priv->PM->fontURL, projectM_data );	
 	
@@ -286,7 +286,7 @@ void read_config()
    strcpy(projectM_config, PROJECTM_PREFIX);
    strcpy(projectM_config+strlen(PROJECTM_PREFIX), CONFIG_FILE);
    projectM_config[strlen(PROJECTM_PREFIX)+strlen(CONFIG_FILE)]='\0';
-
+   printf("dir:%s \n",projectM_config);
    home=getenv("HOME");
    strcpy(projectM_home, home);
    strcpy(projectM_home+strlen(home), "/.projectM/config.1.00");
