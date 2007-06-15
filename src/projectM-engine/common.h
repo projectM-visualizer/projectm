@@ -88,6 +88,9 @@ inline void DWRITE( char *fmt, ... ) {
         vprintf( fmt, args );\
       }
 #endif
+#ifdef LINUX
+ vprintf( fmt, args );
+#endif
 #endif
     va_end( args );
   }

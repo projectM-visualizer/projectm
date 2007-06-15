@@ -12,7 +12,7 @@ FIND_PACKAGE(OpenGL)
 INCLUDE(FindPkgConfig.cmake)
 
 IF(USE_DEBUG)
-	ADD_DEFINITIONS(-DUSE_DEBUG)
+	ADD_DEFINITIONS(-DDEBUG)
 ENDIF(USE_DEBUG)
 
 TARGET_LINK_LIBRARIES(projectM GLEW m)
@@ -30,10 +30,10 @@ CONFIGURE_FILE("config.1.00.in" "config.1.00" @ONLY)
 
 INSTALL(FILES "${CMAKE_BINARY_DIR}/libprojectM.pc" DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
 
-INSTALL(TARGETS projectM DESTINATION lib)
-INSTALL(FILES projectM.h pbuffer.h PCM.h BeatDetect.h Preset.h event.h console_interface.h dlldefs.h fatal.h  PCM.h DESTINATION include/libprojectM)
-INSTALL(FILES config.1.00 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM)
 FILE(GLOB presets "presets/*.milk")
 INSTALL(FILES ${presets} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/presets)
 FILE(GLOB fonts "fonts/*.ttf")
 INSTALL(FILES ${fonts} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/fonts)
+INSTALL(FILES config.1.00 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM)
+INSTALL(FILES projectM.h pbuffer.h PCM.h BeatDetect.h Preset.h event.h console_interface.h dlldefs.h fatal.h  PCM.h DESTINATION include/libprojectM)
+INSTALL(TARGETS projectM DESTINATION lib)
