@@ -1,17 +1,12 @@
-Go to src/projectM and run make to compile the projectM library, then do the standard ./configure, make , make install here in lv-xmms.
+libvisual-projectM
+-----------------------------------
+You will need to have libvisual-0.4, libprojectM and cmake installed to compile libvisual-projectM.
 
-Configuration:
-	./configure
-		To set a prefix use --prefix, other options can be seen by
-		using ./configure --help
+After installing the above, ru nthe following in the libvisual-projectM directory.
 
-Building:
-	make
-		This will compile the plugins
+cmake 
+make
+make install (as root)
 
-Installing:
-	make install
-		This will install the plugins
-
-
-
+-----------------------------------
+Peter Sperl - psperl@sourceforge.net
