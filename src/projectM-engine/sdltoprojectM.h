@@ -35,9 +35,8 @@
 #ifndef _SDLTOPROJECTM_H
 #define _SDLTOPROJECTM_H
 
-#include "event.h"
+#include "libprojectM/event.h"
 
- //#include "projectM/projectM.h"
 #ifdef WIN32
 #include <SDL.h>
 #else
