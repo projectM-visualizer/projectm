@@ -13,6 +13,25 @@
 extern SDL_Surface *screen;
 extern int texsize;
 void setup_opengl( int w, int h );
+
+void close_display() {
+  SDL_Quit();
+}
+
+void resize_display(int w, int h, int f) {
+  int flags;
+  if (f) flags =  SDL_OPENGL|SDL_HWSURFACE|SDL_FULLSCREEN;
+  else   flags =  SDL_OPENGL|SDL_HWSURFACE|SDL_RESIZABLE;
+//  SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+  screen = SDL_SetVideoMode( w, h, 0, flags ) ;
+  if(screen == 0 ) {
+      fprintf( stderr, "Video mode set failed: %s\n", SDL_GetError( ) );
+      return;
+  }
+  setup_opengl(w,h);
+  SDL_ShowCursor(f ? SDL_DISABLE : SDL_ENABLE);
+}
+
 //init_display
 //
 //Sets screen to new width and height (w,h)
@@ -27,9 +46,9 @@ void init_display(int w, int h, int f)
   /* Flags we will pass into SDL_SetVideoMode. */
   int flags = 0;
   /* First, initialize SDL's video subsystem. */
-  if( SDL_Init( SDL_INIT_VIDEO ) < 0 ) {
+  if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) < 0 ) {
     /* Failed, exit. */
-    printf( stderr, "Video initialization failed: %s\n",
+    fprintf( stderr, "Video initialization failed: %s\n",
              SDL_GetError( ) );
     //projectM_vtable.disable_plugin (&projectM_vtable);
     return;
@@ -39,7 +58,7 @@ void init_display(int w, int h, int f)
   info = SDL_GetVideoInfo( );
   if( !info ) {
     /* This should probably never happen. */
-    printf( stderr, "Video query failed: %s\n",
+    fprintf( stderr, "Video query failed: %s\n",
              SDL_GetError( ) );
     //    projectM_vtable.disable_plugin (&projectM_vtable);
     return;
@@ -54,8 +73,8 @@ void init_display(int w, int h, int f)
   // SDL_GL_SetAttribute( SDL_GL_ACCUM_RED_SIZE, 8 );
   //  SDL_GL_SetAttribute( SDL_GL_ACCUM_GREEN_SIZE, 8 );
   //  SDL_GL_SetAttribute( SDL_GL_ACCUM_BLUE_SIZE, 8 );
-  // SDL_GL_SetAttribute( SDL_GL_APLHA_SIZE, 8 );
-  //SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
+  SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 8 );
+  SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
   SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
   if (f==0)
@@ -70,7 +89,7 @@ void init_display(int w, int h, int f)
      * including DISPLAY not being set, the specified
      * resolution not being available, etc.
      */
-   printf( stderr, "Video mode set failed: %s\n",
+   fprintf( stderr, "Video mode set failed: %s\n",
 	     SDL_GetError( ) );
     
    // projectM_vtable.disable_plugin (&projectM_vtable);
@@ -79,7 +98,7 @@ void init_display(int w, int h, int f)
   }
   
   
-  setup_opengl(w,h);
+  // setup_opengl(w,h);
   //gluOrtho2D(0, w, 0, h);
 }
 
