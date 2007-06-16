@@ -461,22 +461,16 @@ void read_config()
 
      fgets(num, 80, in);
      if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &wvh);  
-
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &fvw);  
-
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &fvh);  
-
+   
      fgets(num, 80, in);
      if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &fps);
 
      fgets(num, 80, in);
      if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &fullscreen);
      fgets(num, 80, in);
+
      if(fgets(num, 512, in) != NULL)  strcpy(preset_dir, num);
      preset_dir[strlen(preset_dir)-1]='\0';
-     fgets(num, 80, in);
     
      /*
      fgets(num, 80, in);
