@@ -163,7 +163,7 @@ int worker_func(void*)
  char projectM_data[1024]; 
  SDL_TimerID title_timer = NULL;
   read_config();
-  init_display(wvw,wvh,fullscreen);   
+  init_display(wvw,wvh,&fvw,&fvh,fullscreen);   
   SDL_WM_SetCaption("projectM v1.00", "projectM v1.00");
 
 
@@ -239,7 +239,7 @@ int worker_func(void*)
 		wvh=event.resize.h;
 	       
 		
-		init_display(wvw,wvh,fullscreen);
+		resize_display(wvw,wvh,fullscreen);
 		globalPM->projectM_resetGL( wvw, wvh ); 
  
               } 

@@ -37,7 +37,7 @@ void resize_display(int w, int h, int f) {
 //Sets screen to new width and height (w,h)
 //Also switches between fullscreen and windowed
 //with the boolean f (fullscreen)
-void init_display(int w, int h, int f)
+void init_display(int w, int h, int *fvw, int *fvh, int f)
 {
   
   /* Information about the current video settings. */
@@ -64,6 +64,10 @@ void init_display(int w, int h, int f)
     return;
   }
   
+  printf("Screen Resolution: %d x %d\n", info->current_w, info->current_h);
+  *fvw = info->current_w;
+  *fvh = info->current_h;
+
   bpp = info->vfmt->BitsPerPixel;
   
   //SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 8 );
@@ -148,51 +152,4 @@ glDrawBuffer(GL_BACK);
   
     
 }
-#if 0
-void CreateRenderTarget(int texsize,int *RenderTargetTextureID, int *RenderTarget )
-{
-    /* Create the texture that will be bound to the render target */
-    glGenTextures(1, RenderTargetTextureID);
-    glBindTexture(GL_TEXTURE_2D, *RenderTargetTextureID);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-    /* Create the render target */
-    *RenderTarget = SDL_GL_CreateRenderTarget(texsize,texsize, NULL);
-        if ( *RenderTarget ) {
-    
-	int value;
-	//printf("Created render target:\n");
-	SDL_GL_GetRenderTargetAttribute( *RenderTarget, SDL_GL_RED_SIZE, &value );
-	//	printf( "SDL_GL_RED_SIZE: %d\n", value);
-	SDL_GL_GetRenderTargetAttribute( *RenderTarget, SDL_GL_GREEN_SIZE, &value );
-	//	printf( "SDL_GL_GREEN_SIZE: %d\n", value);
-	SDL_GL_GetRenderTargetAttribute( *RenderTarget, SDL_GL_BLUE_SIZE, &value );
-	//	printf( "SDL_GL_BLUE_SIZE: %d\n", value);
-	SDL_GL_GetRenderTargetAttribute( *RenderTarget, SDL_GL_ALPHA_SIZE, &value );
-	//	printf( "SDL_GL_ALPHA_SIZE: %d\n", value);
-	SDL_GL_GetRenderTargetAttribute( *RenderTarget, SDL_GL_DEPTH_SIZE, &value );
-	//	printf( "SDL_GL_DEPTH_SIZE: %d\n", value );
-
-	SDL_GL_BindRenderTarget(*RenderTarget, *RenderTargetTextureID);
-       
-    } else {
-        /* We can fake a render target in this demo by rendering to the
-         * screen and copying to a texture before we do normal rendering.
-         */
-	printf("Failed to create render target, using screen buffer\n");
-
-        glBindTexture(GL_TEXTURE_2D, *RenderTargetTextureID);
-        glTexImage2D(GL_TEXTURE_2D,
-			0,
-			GL_RGB,
-			texsize, texsize,
-			0,
-			GL_RGB,
-			GL_UNSIGNED_BYTE,
-			NULL);
-    }
-
-
-}
-#endif

@@ -31,7 +31,6 @@ void read_config();
 int texsize=512;
 int gx=32,gy=24;
 int wvw=512,wvh=512;
-int fvw=1024,fvh=768;
 int fps=30, fullscreen=0;
 char preset_dir[512];
 char fonts_dir[512];
@@ -357,13 +356,7 @@ void read_config()
 
      fgets(num, 80, in);
      if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &wvh);  
-
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &fvw);  
-
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &fvh);  
-
+  
      fgets(num, 80, in);
      if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &fps);
 
