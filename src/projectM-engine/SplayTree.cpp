@@ -679,7 +679,7 @@ Param *SplayTree::find_param_db(char * name, int create_flag) {
 		return NULL;
 	
 	/* Now, create the user defined parameter given the passed name */
-	if ((param = Param::create_user_param(name)) == NULL)
+	if ((param = new Param(name)) == NULL)
 		return NULL;
 	
 	/* Finally, insert the new parameter into this preset's proper splaytree */

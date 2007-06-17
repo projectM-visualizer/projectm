@@ -67,9 +67,14 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define MAX_INT_SIZE  10000000
 #define MIN_INT_SIZE -10000000
 
-#define DEFAULT_DOUBLE_IV 0.0 /* default float initial value */
-#define DEFAULT_DOUBLE_LB MIN_DOUBLE_SIZE /* default float lower bound */
-#define DEFAULT_DOUBLE_UB MAX_DOUBLE_SIZE /* default float upper bound */
+/* default float initial value */
+#define DEFAULT_DOUBLE_IV 0.0 
+
+/* default float lower bound */
+#define DEFAULT_DOUBLE_LB MIN_DOUBLE_SIZE 
+
+/* default float upper bound */
+#define DEFAULT_DOUBLE_UB MAX_DOUBLE_SIZE 
 
 #ifdef WIN32
 #include <float.h>

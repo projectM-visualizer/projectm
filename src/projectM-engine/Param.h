@@ -78,7 +78,8 @@ public:
            CValue lower_bound);
     ~Param();
 
-    static Param *create_user_param( char *name );
+    /** Create a user defined parameter **/ 
+    Param( char *name );
     static int init_user_param_db();
     static int destroy_user_param_db();
 

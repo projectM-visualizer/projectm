@@ -47,7 +47,7 @@
 #include "Eval.h"
 #include "Param.h"
 #include "Parser.h"
-#include "Preset.h"
+#include "Preset.hpp"
 #include "PerPixelEqn.h"
 #include "console_interface.h"
 #include "menu.h"
@@ -62,13 +62,15 @@ FTGLPixmapFont *other_font;
 FTGLPolygonFont *poly_font;
 #endif /** USE_FTGL */
 
+
+
 /** Stash current engine */    
 projectM *projectM::currentEngine = NULL;
 
 /** Constructor */
 DLLEXPORT projectM::projectM() {
     beatDetect = NULL;
-  }
+}
 
 /** Renders a single frame */
 DLLEXPORT void projectM::renderFrame() { 
@@ -97,11 +99,11 @@ int x, y;
              this->frame, Time, this->progress, this->avgtime, this->ang_per_pixel,
              this->rot );
       if (progress>1.0) progress=1.0;
+
 //       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
-     
 //      Preset::active_preset->evalInitConditions();
       Preset::active_preset->evalPerFrameEquations();
-       
+
 //      Preset::active_preset->evalCustomWaveInitConditions();
 //      Preset::active_preset->evalCustomShapeInitConditions();
  
@@ -3073,416 +3075,7 @@ void projectM::switchToIdlePreset() {
 
 }
 
-/* destroyPresetLoader: closes the preset
-   loading library. This should be done when 
-   projectM does cleanup */
 
-int projectM::destroyPresetLoader() {
-  
-  if ((Preset::active_preset != NULL) && (Preset::active_preset != Preset::idle_preset)) {	
-  	Preset::active_preset->close_preset();
-  }	
-
-  Preset::active_preset = NULL;
-  
-  Preset::destroy_idle_preset();
-  destroy_builtin_param_db();
-  destroy_builtin_func_db();
-  Eval::destroy_infix_ops();
-
-  return PROJECTM_SUCCESS;
-
-}
-
-/* load_preset_file: private function that loads a specific preset denoted
-   by the given pathname */
-int projectM::load_preset_file(const char * pathname, Preset * preset) { 
-
-  FILE * fs;
-  int retval;
-    int lineno;
-    line_mode_t line_mode;
-
-  if (pathname == NULL)
-	  return PROJECTM_FAILURE;
-  if (preset == NULL)
-	  return PROJECTM_FAILURE;
-  
-  /* Open the file corresponding to pathname */
-  if ((fs = fopen(pathname, "rb")) == 0) {
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE( "load_preset_file: loading of file %s failed!\n", pathname);
-#endif    
-    return PROJECTM_ERROR;	
-  }
-
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE( "load_preset_file: file stream \"%s\" opened successfully\n", pathname);
-#endif
-
-  /* Parse any comments */
-  if (Parser::parse_top_comment(fs) < 0) {
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE( "load_preset_file: no left bracket found...\n");
-#endif
-    fclose(fs);
-    return PROJECTM_FAILURE;
-  }
-  
-  /* Parse the preset name and a left bracket */
-  if (Parser::parse_preset_name(fs, preset->name) < 0) {
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE( "load_preset_file: loading of preset name in file \"%s\" failed\n", pathname);
-#endif
-    fclose(fs);
-    return PROJECTM_ERROR;
-  }
-  
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-   DWRITE( "load_preset_file: preset \"%s\" parsed\n", preset->name);
-#endif
-
-  /* Parse each line until end of file */
-    lineno = 0;
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE( "load_preset_file: beginning line parsing...\n");
-#endif
-  while ((retval = Parser::parse_line(fs, preset)) != EOF) {
-    if (retval == PROJECTM_PARSE_ERROR) {
-	line_mode = NORMAL_LINE_MODE;
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE( "load_preset_file: parse error in file \"%s\": line %d\n", pathname,lineno);
-#endif
-    }
-    lineno++;
-  }
-  
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE("load_preset_file: finished line parsing successfully\n"); 
-#endif
-
-  /* Now the preset has been loaded.
-     Evaluation calls can be made at appropiate
-     times in the frame loop */
-  
-  fclose(fs);
-   
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE("load_preset_file: file \"%s\" closed, preset ready\n", pathname);
-#endif
-  return PROJECTM_SUCCESS;
-}
-
-/* Returns nonzero if string 'name' contains .milk or
-   (the better) .prjm extension. Not a very strong function currently */
-int is_valid_extension(const struct dirent* ent) {
-	const char* ext = 0;
-	
-	if (!ent) return FALSE;
-	
-	ext = strrchr(ent->d_name, '.');
-	if (!ext) ext = ent->d_name;
-	
-	if (0 == strcasecmp(ext, MILKDROP_FILE_EXTENSION)) return TRUE;
-	if (0 == strcasecmp(ext, PROJECTM_FILE_EXTENSION)) return TRUE;
-
-	return FALSE;
-}
-
-/* Loads all builtin parameters, limits are also defined here */
-int projectM::load_all_builtin_param() {
-
-  load_builtin_param_float("fRating", (void*)&fRating, NULL, P_FLAG_NONE, 0.0 , 5.0, 0.0, NULL);
-  load_builtin_param_float("fWaveScale", (void*)&fWaveScale, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("gamma", (void*)&fGammaAdj, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fGammaAdj");
-  load_builtin_param_float("echo_zoom", (void*)&fVideoEchoZoom, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fVideoEchoZoom");
-  load_builtin_param_float("echo_alpha", (void*)&fVideoEchoAlpha, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fVideoEchoAlpha");
-  load_builtin_param_float("wave_a", (void*)&fWaveAlpha, NULL, P_FLAG_NONE, 0.0, 1.0, 0, "fWaveAlpha");
-  load_builtin_param_float("fWaveSmoothing", (void*)&fWaveSmoothing, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);  
-  load_builtin_param_float("fModWaveAlphaStart", (void*)&fModWaveAlphaStart, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
-  load_builtin_param_float("fModWaveAlphaEnd", (void*)&fModWaveAlphaEnd, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
-  load_builtin_param_float("fWarpAnimSpeed",  (void*)&fWarpAnimSpeed, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
-  //  load_builtin_param_float("warp", (void*)&warp, warp_mesh, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
-	
-  load_builtin_param_float("fShader", (void*)&fShader, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
-  load_builtin_param_float("decay", (void*)&decay, NULL, P_FLAG_NONE, 0.0, 1.0, 0, "fDecay");
-
-  load_builtin_param_int("echo_orient", (void*)&nVideoEchoOrientation, P_FLAG_NONE, 0, 3, 0, "nVideoEchoOrientation");
-  load_builtin_param_int("wave_mode", (void*)&nWaveMode, P_FLAG_NONE, 0, 7, 0, "nWaveMode");
-  
-  load_builtin_param_bool("wave_additive", (void*)&bAdditiveWaves, P_FLAG_NONE, FALSE, "bAdditiveWaves");
-  load_builtin_param_bool("bModWaveAlphaByVolume", (void*)&bModWaveAlphaByVolume, P_FLAG_NONE, FALSE, NULL);
-  load_builtin_param_bool("wave_brighten", (void*)&bMaximizeWaveColor, P_FLAG_NONE, FALSE, "bMaximizeWaveColor");
-  load_builtin_param_bool("wrap", (void*)&bTexWrap, P_FLAG_NONE, FALSE, "bTexWrap");
-  load_builtin_param_bool("darken_center", (void*)&bDarkenCenter, P_FLAG_NONE, FALSE, "bDarkenCenter");
-  load_builtin_param_bool("bRedBlueStereo", (void*)&bRedBlueStereo, P_FLAG_NONE, FALSE, NULL);
-  load_builtin_param_bool("brighten", (void*)&bBrighten, P_FLAG_NONE, FALSE, "bBrighten");
-  load_builtin_param_bool("darken", (void*)&bDarken, P_FLAG_NONE, FALSE, "bDarken");
-  load_builtin_param_bool("solarize", (void*)&bSolarize, P_FLAG_NONE, FALSE, "bSolarize");
-  load_builtin_param_bool("invert", (void*)&bInvert, P_FLAG_NONE, FALSE, "bInvert");
-  load_builtin_param_bool("bMotionVectorsOn", (void*)&bMotionVectorsOn, P_FLAG_NONE, FALSE, NULL);
-  load_builtin_param_bool("wave_dots", (void*)&bWaveDots, P_FLAG_NONE, FALSE, "bWaveDots");
-  load_builtin_param_bool("wave_thick", (void*)&bWaveThick, P_FLAG_NONE, FALSE, "bWaveThick");
- 
-  
-  
-  load_builtin_param_float("zoom", (void*)&zoom, zoom_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
-  load_builtin_param_float("rot", (void*)&rot, rot_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("zoomexp", (void*)&zoomexp, zoomexp_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fZoomExponent");
- 
-  load_builtin_param_float("cx", (void*)&cx, cx_mesh, P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, 1.0, 0, NULL);
-  load_builtin_param_float("cy", (void*)&cy, cy_mesh, P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, 1.0, 0, NULL);
-  load_builtin_param_float("dx", (void*)&dx, dx_mesh,  P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("dy", (void*)&dy, dy_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("sx", (void*)&sx, sx_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
-  load_builtin_param_float("sy", (void*)&sy, sy_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
-
-  load_builtin_param_float("wave_r", (void*)&wave_r, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("wave_g", (void*)&wave_g, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("wave_b", (void*)&wave_b, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("wave_x", (void*)&wave_x, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("wave_y", (void*)&wave_y, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("wave_mystery", (void*)&wave_mystery, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "fWaveParam");
-  
-  load_builtin_param_float("ob_size", (void*)&ob_size, NULL, P_FLAG_NONE, 0.0, 0.5, 0, NULL);
-  load_builtin_param_float("ob_r", (void*)&ob_r, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("ob_g", (void*)&ob_g, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("ob_b", (void*)&ob_b, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("ob_a", (void*)&ob_a, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-
-  load_builtin_param_float("ib_size", (void*)&ib_size,  NULL,P_FLAG_NONE, 0.0, .5, 0.0, NULL);
-  load_builtin_param_float("ib_r", (void*)&ib_r,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("ib_g", (void*)&ib_g,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("ib_b", (void*)&ib_b,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("ib_a", (void*)&ib_a,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-
-  load_builtin_param_float("mv_r", (void*)&mv_r,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("mv_g", (void*)&mv_g,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("mv_b", (void*)&mv_b,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("mv_x", (void*)&mv_x,  NULL,P_FLAG_NONE, 0.0, 64.0, 0.0, "nMotionVectorsX");
-  load_builtin_param_float("mv_y", (void*)&mv_y,  NULL,P_FLAG_NONE, 0.0, 48.0, 0.0, "nMotionVectorsY");
-  load_builtin_param_float("mv_l", (void*)&mv_l,  NULL,P_FLAG_NONE, 0.0, 5.0, 0.0, NULL);
-  load_builtin_param_float("mv_dy", (void*)&mv_dy, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
-  load_builtin_param_float("mv_dx", (void*)&mv_dx,  NULL,P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
-  load_builtin_param_float("mv_a", (void*)&mv_a,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-
-  load_builtin_param_float("time", (void*)&Time,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0.0, NULL);        
-  load_builtin_param_float("bass", (void*)&beatDetect->bass,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0.0, NULL);
-  load_builtin_param_float("mid", (void*)&beatDetect->mid,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, NULL);      
-  load_builtin_param_float("bass_att", (void*)&beatDetect->bass_att,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
-  load_builtin_param_float("mid_att", (void*)&beatDetect->mid_att,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
-  load_builtin_param_float("treb_att", (void*)&beatDetect->treb_att,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
-  load_builtin_param_int("frame", (void*)&frame, P_FLAG_READONLY, 0, MAX_INT_SIZE, 0, NULL);
-  load_builtin_param_float("progress", (void*)&progress,  NULL,P_FLAG_READONLY, 0.0, 1, 0, NULL);
-  load_builtin_param_int("fps", (void*)&fps, P_FLAG_NONE, 15, MAX_INT_SIZE, 0, NULL);
-
-  load_builtin_param_float("x", (void*)&x_per_pixel, x_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX, 
-			    0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("y", (void*)&y_per_pixel, y_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX |P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX, 
-			    0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("ang", (void*)&ang_per_pixel, theta_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX, 
-			    0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);      
-  load_builtin_param_float("rad", (void*)&rad_per_pixel, rad_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX, 
-			    0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-
-  load_builtin_param_float("q1", (void*)&q1,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("q2", (void*)&q2,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("q3", (void*)&q3,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("q4", (void*)&q4,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("q5", (void*)&q5,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("q6", (void*)&q6,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("q7", (void*)&q7,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("q8", (void*)&q8,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-
-
-
-  /* variables added in 1.04 */
-  load_builtin_param_int("meshx", (void*)&gx, P_FLAG_READONLY, 32, 96, 8, NULL);
-  load_builtin_param_int("meshy", (void*)&gy, P_FLAG_READONLY, 24, 72, 6, NULL);
-
-  return PROJECTM_SUCCESS;  
-}
-
-/* Initialize the builtin parameter database.
-   Should only be necessary once */
-int projectM::init_builtin_param_db() {
-	
-  /* Create the builtin parameter splay tree (go Sleator...) */
-  if ((builtin_param_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_string,(void* (*)(void*)) copy_string, (void (*)(void*))free_string)) == NULL) {
-	  if (PARAM_DEBUG) printf("init_builtin_param_db: failed to initialize database (FATAL)\n");  
-	  return PROJECTM_OUTOFMEM_ERROR;
-  } 
-
-  if (PARAM_DEBUG) {
-	  printf("init_builtin_param: loading database...");
-	  fflush(stdout);
-  }
-  
-  /* Loads all builtin parameters into the database */
-  if (projectM::load_all_builtin_param() < 0) {
-	if (PARAM_DEBUG) printf("failed loading builtin parameters (FATAL)\n");
-    return PROJECTM_ERROR;
-  }
-  
-  if (PARAM_DEBUG) printf("success!\n");
-	  
-  /* Finished, no errors */
-  return PROJECTM_SUCCESS;
-}
-
-/* Destroy the builtin parameter database.
-   Generally, do this on projectm exit */
-int projectM::destroy_builtin_param_db() {
-  
-  builtin_param_tree->splay_traverse((void (*)(void*))free_param_helper);
-  delete builtin_param_tree;
-  builtin_param_tree = NULL;
-  return PROJECTM_SUCCESS;	
-}
-
-
-/* Insert a parameter into the database with an alternate name */
-int projectM::insert_param_alt_name(Param *param, char * alt_name) {
-  
-  if (alt_name == NULL)
-	  return PROJECTM_ERROR;
-  	
-  builtin_param_tree->splay_insert_link(alt_name, param->name);
-
-  return PROJECTM_SUCCESS;
-}
-
-Param * projectM::find_builtin_param(char * name) {
-
-  /* Null argument checks */
-  if (name == NULL)
-	  return NULL;
-    
-  return  (Param*)builtin_param_tree->splay_find(name);
-
-}
-
-/* Loads a float parameter into the builtin database */
-int projectM::load_builtin_param_float(char * name, void * engine_val, void * matrix, short int flags, 
-						float init_val, float upper_bound, float lower_bound, char * alt_name) {
-
-  Param * param = NULL;
-  CValue iv, ub, lb;
-
-  iv.float_val = init_val;
-  ub.float_val = upper_bound;
-  lb.float_val = lower_bound;
-							
-  /* Create new parameter of type float */
-  if (PARAM_DEBUG == 2) {
-	  printf("load_builtin_param_float: (name \"%s\") (alt_name = \"%s\") ", name, alt_name);
-	  fflush(stdout);
-  }  
-  
- if ((param = new Param(name, P_TYPE_DOUBLE, flags, engine_val, matrix, iv, ub, lb)) == NULL) {
-    return PROJECTM_OUTOFMEM_ERROR;
-  }
-  
-  if (PARAM_DEBUG == 2) {
-	printf("created...");
-	fflush(stdout);
-   }	  
-   
-  /* Insert the paremeter into the database */
-
-  if (insert_builtin_param( param ) < 0) {
-	delete param;
-    return PROJECTM_ERROR;
-  }
-
-  if (PARAM_DEBUG == 2) {
-	  printf("inserted...");
-	  fflush(stdout);
-  }  
-  
-  /* If this parameter has an alternate name, insert it into the database as link */
-  
-  if (alt_name != NULL) {
-	insert_param_alt_name(param,alt_name); 
-
-  if (PARAM_DEBUG == 2) {
-	  printf("alt_name inserted...");
-	  fflush(stdout);
-  	}
-  
-	
-  }  	  
-
-  if (PARAM_DEBUG == 2) printf("finished\n");	  
-  /* Finished, return success */
-  return PROJECTM_SUCCESS;
-}
-
-/* Loads a integer parameter into the builtin database */
-int projectM::load_builtin_param_int(char * name, void * engine_val, short int flags,
-						int init_val, int upper_bound, int lower_bound, char * alt_name) {
-
-  Param * param;
-  CValue iv, ub, lb;
-
-  iv.int_val = init_val;
-  ub.int_val = upper_bound;
-  lb.int_val = lower_bound;	
-							
-  param = new Param(name, P_TYPE_INT, flags, engine_val, NULL, iv, ub, lb);
-
-  if (param == NULL) {
-    return PROJECTM_OUTOFMEM_ERROR;
-  }
-
-  if (insert_builtin_param( param ) < 0) {
-	delete param;
-    return PROJECTM_ERROR;
-  }
-  
-  if (alt_name != NULL) {
-	insert_param_alt_name(param,alt_name);  	 
-  }  
-  
-  return PROJECTM_SUCCESS;
-
-}							
-							
-/* Loads a boolean parameter */
-int projectM::load_builtin_param_bool(char * name, void * engine_val, short int flags, 
-								int init_val, char * alt_name) {
-
-  Param * param;
-  CValue iv, ub, lb;
-
-  iv.int_val = init_val;
-  ub.int_val = TRUE;
-  lb.int_val = FALSE;	
-																
-  param = new Param(name, P_TYPE_BOOL, flags, engine_val, NULL, iv, ub, lb);
-
-  if (param == NULL) {
-    return PROJECTM_OUTOFMEM_ERROR;
-  }
-
-  if (insert_builtin_param(param) < 0) {
-	delete param;
-    return PROJECTM_ERROR;
-  }
-  
-  if (alt_name != NULL) {
-	insert_param_alt_name(param,alt_name);  	 
-  }  
-  
-  return PROJECTM_SUCCESS;
-
-}
-
-/* Inserts a parameter into the builtin database */
-int projectM::insert_builtin_param( Param *param ) {
-
-	return builtin_param_tree->splay_insert(param, param->name);	
-}
 
 /* Initialize the builtin function database.
    Should only be necessary once */
@@ -3620,7 +3213,4 @@ int projectM::load_all_builtin_func() {
   return PROJECTM_SUCCESS;
 }
 
-void projectM::load_init_conditions() {
-    builtin_param_tree->splay_traverse( (void (*)(void*))load_init_cond_helper);
-  }
 

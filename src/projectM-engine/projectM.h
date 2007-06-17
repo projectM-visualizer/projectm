@@ -73,7 +73,7 @@
 
 class BeatDetect;
 class Func;
-class Param;
+
 class Preset;
 class SplayTree;
 
@@ -111,18 +111,45 @@ typedef enum {
     BROWSER_INTERFACE
   } interface_t;
 
-typedef enum {
-    ALPHA_NEXT,
-    ALPHA_PREVIOUS,
-    RANDOM_NEXT,
-    RESTART_ACTIVE,
-  } switch_mode_t;
 
-#define IDLE_PRESET_STRING "[idlepreset]\n"
+ static const char *  IDLE_PRESET_STRING = "[idlepreset]\n";
+
+
+struct PresetInputs {
+
+    /* PER_PIXEL CONSTANTS BEGIN */
+
+    float x_per_pixel;
+    float y_per_pixel;
+    float rad_per_pixel;
+    float ang_per_pixel;
+
+    /* PER_PIXEL CONSTANT END */
+
+  int fps;
+
+
+  float time;
+  float bass;
+  float mid;
+  float bass_att;
+  float mid_att;
+  float treb_att;
+  int frame;
+  float progress;
+  
+
+  /* variables added in 1.04 */
+    int meshx;
+    int meshy;
+
+
+};
+
 
 class projectM {
 public:
-    static projectM *currentEngine;
+    static projectM * currentEngine;
 
     char *presetURL;
     char *presetName;
@@ -146,6 +173,7 @@ public:
     GLubyte *fbuffer;
 
     /** Preset information */
+   /// bug: move
     int preset_index;               /** Index into the preset dir */
 
 #ifndef WIN32
@@ -179,12 +207,12 @@ public:
   
     int correction;
     float aspect;
-    
+
     //per pixel equation variables
     float **gridx;  //grid containing interpolated mesh 
-    float **gridy;  
+    float **gridy;
     float **origtheta;  //grid containing interpolated mesh reference values
-    float **origrad;  
+    float **origrad;
     float **origx;  //original mesh 
     float **origy;
     float **origx2;  //original mesh 
@@ -192,11 +220,14 @@ public:
 
     int mesh_i, mesh_j;
 
+    // All builtin functions are store here
+    SplayTree *builtin_func_tree;
+
     /** Timing information */
-    int mspf;      
+    int mspf;
     int timed;
     int timestart;
-    int nohard;    
+    int nohard;
     int count;
     float realfps,
            fpsstart;
@@ -204,145 +235,15 @@ public:
     /** Various toggles */
     int doPerPixelEffects;
     int doIterative;
-
-    /** ENGINE VARIABLES */
-    /** From engine_vars.h */
-    char preset_name[256];
-
-    /* PER FRAME CONSTANTS BEGIN */
-    float zoom;
-    float zoomexp;
-    float rot;
-    float warp;
-
-    float sx;
-    float sy;
-    float dx;
-    float dy;
-    float cx;
-    float cy;
-
-    int gy;
-    int gx;
-
-    float decay;
-
-    float wave_r;
-    float wave_g;
-    float wave_b;
-    float wave_x;
-    float wave_y;
-    float wave_mystery;
-
-    float ob_size;
-    float ob_r;
-    float ob_g;
-    float ob_b;
-    float ob_a;
-
-    float ib_size;
-    float ib_r;
-    float ib_g;
-    float ib_b;
-    float ib_a;
-
-    int meshx;
-    int meshy;
-
-    float mv_a ;
-    float mv_r ;
-    float mv_g ;
-    float mv_b ;
-    float mv_l;
-    float mv_x;
-    float mv_y;
-    float mv_dy;
-    float mv_dx;
-
-    float progress ;
-    int frame ;
-
         /* PER_FRAME CONSTANTS END */
-
-    /* PER_PIXEL CONSTANTS BEGIN */
-
-    float x_per_pixel;
-    float y_per_pixel;
-    float rad_per_pixel;
-    float ang_per_pixel;
-
-    /* PER_PIXEL CONSTANT END */
-
-
-    float fRating;
-    float fGammaAdj;
-    float fVideoEchoZoom;
-    float fVideoEchoAlpha;
-    
-    int nVideoEchoOrientation;
-    int nWaveMode;
-    int bAdditiveWaves;
-    int bWaveDots;
-    int bWaveThick;
-    int bModWaveAlphaByVolume;
-    int bMaximizeWaveColor;
-    int bTexWrap;
-    int bDarkenCenter;
-    int bRedBlueStereo;
-    int bBrighten;
-    int bDarken;
-    int bSolarize;
-    int bInvert;
-    int bMotionVectorsOn;
-    int fps; 
-    
-    float fWaveAlpha ;
-    float fWaveScale;
-    float fWaveSmoothing;
-    float fWaveParam;
-    float fModWaveAlphaStart;
-    float fModWaveAlphaEnd;
-    float fWarpAnimSpeed;
-    float fWarpScale;
-    float fShader;
-    
-    
-    /* Q VARIABLES START */
-
-    float q1;
-    float q2;
-    float q3;
-    float q4;
-    float q5;
-    float q6;
-    float q7;
-    float q8;
-
-
-    /* Q VARIABLES END */
-
-    float **zoom_mesh;
-    float **zoomexp_mesh;
-    float **rot_mesh;
-
-    float **sx_mesh;
-    float **sy_mesh;
-    float **dx_mesh;
-    float **dy_mesh;
-    float **cx_mesh;
-    float **cy_mesh;
-
-    float **x_mesh;
-    float **y_mesh;
-    float **rad_mesh;
-    float **theta_mesh;
 
     /** Beat detection engine */
     BeatDetect *beatDetect;
 
-    /** Builtin databases */
-    SplayTree *builtin_param_tree;
-    SplayTree *builtin_func_tree;
+    /** All readonly variables (that is not beat detection) 
+     *  which are passed as inputs 
+     * to presets. See struct defintition above */
+    PresetInputs presetInputs;
 
     /** Functions */
     DLLEXPORT projectM();
@@ -391,39 +292,6 @@ public:
                       projectMKeycode keycode, projectMModifier modifier );
     void default_key_handler( projectMEvent event, projectMKeycode keycode );
 
-    /** Preset switching */
-    int loadPresetDir( char *dir );
-    int closePresetDir();
-    int switchPreset( switch_mode_t switch_mode, int cut_type );
-    void switchToIdlePreset();
-    int loadPresetByFile( char *filename );
-    int initPresetLoader();
-    int destroyPresetLoader();
-    int load_preset_file( const char *filename, Preset *preset );
-
-    /** Idle preset */
-    int initIdlePreset();
-    int destroyIdlePreset();
-
-    /** Param database */
-    int load_all_builtin_param();
-    void load_init_conditions();
-    int init_builtin_param_db();
-    int destroy_builtin_param_db();
-
-    int insert_param_alt_name( Param *param, char *alt_name );
-    Param *find_builtin_param( char *name );
-    int load_builtin_param_float( char *name, void *engine_val, void *matrix,
-                                  short int flags,
-                                  float init_val, float upper_bound,
-                                  float lower_bound, char *alt_name );
-    int load_builtin_param_int( char *name, void *engine_val, short int flags,
-                                int init_val, int upper_bound,
-                                int lower_bound, char *alt_name );
-    int load_builtin_param_bool( char *name, void *engine_val, short int flags,
-                                int init_val, char *alt_name );
-    int insert_builtin_param( Param *param );
-
     /** Func database */
     int init_builtin_func_db();
     int destroy_builtin_func_db();
@@ -434,7 +302,5 @@ public:
     int remove_func( Func *func );
     Func *find_func( char *name );
   };
-
-extern int is_valid_extension( const struct dirent *ent );
 
 #endif /** !_PROJECTM_H */
