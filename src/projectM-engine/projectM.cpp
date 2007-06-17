@@ -1728,7 +1728,7 @@ void projectM::draw_title_to_texture() {
       glColor4f(1.0,1.0,1.0,1.0);
       glPushMatrix();
      
-      glTranslatef(0,0.5, -1);
+      glTranslatef(0.1,0.5, -1);
     
       glScalef(0.0025,-0.0025,30*.0025);
       //glTranslatef(0,0, 1.0);
@@ -1763,7 +1763,7 @@ void projectM::draw_title_to_screen() {
 
 
       //glTranslatef(this->vw*.5,this->vh*.5 , -1.0);
-      glTranslatef(0,0.5 , -1.0);
+      glTranslatef(0.1,0.5 , -1.0);
 
       glScalef(easein3,easein3,30*.0025);
 
