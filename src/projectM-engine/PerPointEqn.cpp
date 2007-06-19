@@ -44,8 +44,8 @@ void PerPointEqn::evalPerPointEqn() {
   int samples, size;
   float * param_matrix;
   GenExpr * eqn_ptr;
-
-  samples = CustomWave::interface_wave->samples;
+abort();
+//  samples = CustomWave::interface_wave->samples;
   eqn_ptr = gen_expr;
  
   if (param->matrix == NULL) {

@@ -40,16 +40,19 @@ public:
     char name[MAX_TOKEN_SIZE];  
     float (*func_ptr)(float*);
     int num_args;
-    static SplayTree *builtin_func_tree;
+
+    Func() {}
 
     /* Public Prototypes */
     DLLEXPORT ~Func();
     static Func *create_func ( char *name, float (*func_ptr)(float*), int num_args );
+    static void * copy_func_key(char * string);
+    int compare_func(char * name, char * name2);
   };
 
 /** Splay traversal */
 inline void free_func_helper( void *func ) {
     delete (Func *)func;
-  }
-    
+}
+
 #endif /** !_FUNC_H */

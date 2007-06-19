@@ -27,7 +27,7 @@
 #include "common.h"
 #include "fatal.h"
 
-#include "builtin_funcs.h"
+#include "BuiltinFuncs.hpp"
 #include "CustomWave.h"
 #include "CustomShape.h"
 #include "Expr.h"
@@ -35,7 +35,7 @@
 #include "Func.h"
 #include "InitCond.h"
 #include "Param.h"
-#include "Preset.h"
+#include "Preset.hpp"
 #include "Parser.h"
 #include "PerFrameEqn.h"
 #include "PerPixelEqn.h"
@@ -602,7 +602,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
   case tLPr:
     
     /* CASE 1 (Left Parentice): See if the previous string before this parentice is a function name */
-    if ((func = projectM::currentEngine->find_func(string)) != NULL) {
+    if ((func = BuiltinFuncs::find_func(string)) != NULL) {
         if (PARSE_DEBUG) {
             DWRITE( "parse_gen_expr: found prefix function (name = %s) (LINE %d)\n", func->name, line_count);
             
@@ -721,17 +721,17 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
 	delete tree_expr;
 	return NULL;
       }
-      
+
       /* Parse the rest of the line */
-      return parse_infix_op(fs, token, insert_gen_expr(gen_expr, &tree_expr), preset);          
-    
+      return parse_infix_op(fs, token, insert_gen_expr(gen_expr, &tree_expr), preset);
+
     }
 
-      
+
     /* CASE 4: custom shape variable */
     if (current_shape != NULL) {
       if ((param = current_shape->param_tree->find_param_db(string, FALSE)) == NULL) {
-	if ((param = projectM::currentEngine->find_builtin_param(string)) == NULL)
+	if ((param = preset->builtinParams.find_builtin_param(string)) == NULL)
 	  if ((param = current_shape->param_tree->find_param_db(string, TRUE)) == NULL) {
 	    delete tree_expr;
 	    return NULL;
@@ -758,7 +758,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
     /* CASE 5: custom wave variable */
     if (current_wave != NULL) {
       if ((param = current_wave->param_tree->find_param_db(string, FALSE)) == NULL) {
-	if ((param = projectM::currentEngine->find_builtin_param(string)) == NULL) 
+	if ((param = preset->builtinParams.find_builtin_param(string)) == NULL) 
 	  if ((param = current_wave->param_tree->find_param_db(string, TRUE)) == NULL) {
 	    delete tree_expr;
 	    return NULL;
@@ -792,7 +792,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
 	    
       }  
     
-		/* Convert parameter to an expression */
+      /* Convert parameter to an expression */
       if ((gen_expr = GenExpr::param_to_expr(param)) == NULL) {
 	delete tree_expr;
 	return NULL;

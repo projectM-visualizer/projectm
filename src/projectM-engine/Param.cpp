@@ -35,7 +35,7 @@
 #include "Expr.h"
 #include "InitCond.h"
 #include "Param.h"
-#include "Preset.h"
+#include "Preset.hpp"
 #include "SplayTree.h"
 
 #include "wipemalloc.h"
@@ -56,8 +56,8 @@ Param::Param( char * name, short int type, short int flags, void * engine_val, v
     strncpy(this->name, name, MAX_TOKEN_SIZE-1);
 
     /** @@FIX THIS */
-    this->gx = projectM::currentEngine->gx;
-    this->gy = projectM::currentEngine->gy;
+    //this->gx = projectM::currentEngine->gx;
+    //this->gy = projectM::currentEngine->gy;
 }
 
 
@@ -82,8 +82,8 @@ Param::Param(char * name) :
 
 
     /** @@FIX THIS */
-    this->gx = projectM::currentEngine->gx;
-    this->gy = projectM::currentEngine->gy;
+    //this->gx = projectM::currentEngine->gx;
+    //this->gy = projectM::currentEngine->gy;
 }
 
 /* Free's a parameter type */
@@ -91,7 +91,7 @@ Param::~Param() {
 
     int x;
     if (flags & P_FLAG_USERDEF) {
-        delete(engine_val);
+        free(engine_val);
     }
 
     //if (!(param->flags & P_FLAG_DONT_FREE_MATRIX)) {
@@ -191,53 +191,6 @@ void Param::set_param( float val) {
     return;
 }
 
-/* Find a parameter given its name, will create one if not found */
-Param * Param::find_param(char * name, Preset * preset, int flags) {
-
-    Param * param = NULL;
-
-    /* Null argument checks */
-    if (name == NULL)
-        return NULL;
-    if (preset == NULL)
-        return NULL;
-
-    /* First look in the builtin database */
-    param = (Param *)projectM::currentEngine->builtin_param_tree->splay_find(name);
-
-    /* If the search failed, check the user database */
-    if (param == NULL) {
-        param = (Param*)preset->user_param_tree->splay_find(name);
-    }
-    /* If it doesn't exist in the user (or builtin) database and
-    	  create_flag is set, then make it and insert into the database 
-    */
-
-    if ((param == NULL) && (flags & P_CREATE)) {
-
-        /* Check if string is valid */
-        if (!is_valid_param_string(name)) {
-            if (PARAM_DEBUG) printf("find_param: invalid parameter name:\"%s\"\n", name);
-            return NULL;
-        }
-        /* Now, create the user defined parameter given the passed name */
-        if ((param = new Param(name)) == NULL) {
-            if (PARAM_DEBUG) printf("find_param: failed to create a new user parameter!\n");
-            return NULL;
-        }
-        /* Finally, insert the new parameter into this preset's proper splaytree */
-        if (preset->user_param_tree->splay_insert(param, param->name) < 0) {
-            if (PARAM_DEBUG) printf("PARAM \"%s\" already exists in user parameter tree!\n", param->name);
-            delete param;
-            return NULL;
-        }
-
-    }
-
-    /* Return the found (or created) parameter. Note that if P_CREATE is not set, this could be null */
-    return param;
-
-}
 
 /* Loads a float parameter into the builtin database */
 Param * Param::new_param_float(char * name, short int flags, void * engine_val, void * matrix,
@@ -296,9 +249,15 @@ Param * Param::new_param_bool(char * name, short int flags, void * engine_val,
     /* Finished, return success */
     return param;
 }
+	
 
+
+/// @bug this is fucked
 void Param::load_init_cond() {
 
+    // bullshit
+    int type;
+    void *engine_val;
     InitCond * init_cond;
     CValue init_val;
 
@@ -308,10 +267,12 @@ void Param::load_init_cond() {
 
     /* If initial condition was not defined by the preset file, force a default one
        with the following code */
-    if ((init_cond = (InitCond*)(Preset::active_preset->init_cond_tree->splay_find(name))) == NULL) {
+abort();
+
+//    if ((init_cond = (InitCond*)(init_cond_tree->splay_find(name))) == NULL) {
 
         /* Make sure initial condition does not exist in the set of per frame initial equations */
-        if ((init_cond = (InitCond*)(Preset::active_preset->per_frame_init_eqn_tree->splay_find(name))) != NULL)
+//        if ((init_cond = (InitCond*)(per_frame_init_eqn_tree->splay_find(name))) != NULL)
             return;
 
         if (type == P_TYPE_BOOL)
@@ -328,105 +289,11 @@ void Param::load_init_cond() {
             return;
 
         /* Insert the initial condition into this presets tree */
-        if (Preset::active_preset->init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
+//        if (this->init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
             delete init_cond;
             return;
-        }
+  //      }
 
-    }
-
-}
-
-void Param::load_unspec_init_cond() {
-
-    InitCond * init_cond;
-    CValue init_val;
-
-    /* Don't count these parameters as initial conditions */
-    if (flags & P_FLAG_READONLY)
-        return;
-    if (flags & P_FLAG_QVAR)
-        return;
-    if (flags & P_FLAG_TVAR)
-        return;
-    if (flags & P_FLAG_USERDEF)
-        return;
-
-    /* If initial condition was not defined by the preset file, force a default one
-       with the following code */
-    if ((init_cond = (InitCond*)CustomWave::interface_wave->init_cond_tree->splay_find(name)) == NULL) {
-
-        /* Make sure initial condition does not exist in the set of per frame initial equations */
-        if ((init_cond = (InitCond*)CustomWave::interface_wave->per_frame_init_eqn_tree->splay_find(name)) != NULL)
-            return;
-
-        if (type == P_TYPE_BOOL)
-            init_val.bool_val = 0;
-
-        else if (type == P_TYPE_INT)
-            init_val.int_val = *(int*)engine_val;
-
-        else if (type == P_TYPE_DOUBLE)
-            init_val.float_val = *(float*)engine_val;
-
-        //printf("%s\n", param->name);
-        /* Create new initial condition */
-        if ((init_cond = new InitCond(this, init_val)) == NULL)
-            return;
-
-        /* Insert the initial condition into this presets tree */
-        if (CustomWave::interface_wave->init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
-            delete init_cond;
-            return;
-        }
-
-    }
-
-}
-
-void Param::load_unspec_init_cond_shape() {
-
-    InitCond * init_cond;
-    CValue init_val;
-
-    /* Don't count read only parameters as initial conditions */
-    if (flags & P_FLAG_READONLY)
-        return;
-    if (flags & P_FLAG_QVAR)
-        return;
-    if (flags & P_FLAG_TVAR)
-        return;
-    if (flags & P_FLAG_USERDEF)
-        return;
-
-    /* If initial condition was not defined by the preset file, force a default one
-       with the following code */
-    if ((init_cond =(InitCond*)CustomShape::interface_shape->init_cond_tree->splay_find(name)) == NULL) {
-
-        /* Make sure initial condition does not exist in the set of per frame initial equations */
-        if ((init_cond = (InitCond*)CustomShape::interface_shape->per_frame_init_eqn_tree->splay_find(name)) != NULL)
-            return;
-
-        if (type == P_TYPE_BOOL)
-            init_val.bool_val = 0;
-
-        else if (type == P_TYPE_INT)
-            init_val.int_val = *(int*)engine_val;
-
-        else if (type == P_TYPE_DOUBLE)
-            init_val.float_val = *(float*)engine_val;
-
-        //printf("%s\n", param->name);
-        /* Create new initial condition */
-        if ((init_cond = new InitCond(this, init_val)) == NULL)
-            return;
-
-        /* Insert the initial condition into this presets tree */
-        if (CustomShape::interface_shape->init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
-            delete init_cond;
-            return;
-        }
-
-    }
+//    }
 
 }

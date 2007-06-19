@@ -24,7 +24,6 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "builtin_funcs.h"
 #include "common.h"
 #include "fatal.h"
 
@@ -33,10 +32,11 @@
 
 #include "wipemalloc.h"
 
-SplayTree *Func::builtin_func_tree = NULL;
+
+
 
 /* Private function prototypes */
-void *copy_func_key(char * string) {
+void *Func::copy_func_key(char * string) {
 	
 	char * clone_string;
 	
@@ -49,7 +49,7 @@ void *copy_func_key(char * string) {
 }	
 
 /* Compare string name with function name */
-int compare_func(char * name, char * name2) {
+int Func::compare_func(char * name, char * name2) {
 
   int cmpval;
 

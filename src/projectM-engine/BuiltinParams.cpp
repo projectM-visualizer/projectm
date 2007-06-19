@@ -1,19 +1,21 @@
 
 
 #include "BuiltinParams.hpp"
+#include "projectM.h"
 
 
+BuiltinParams::BuiltinParams() {}
 
-BuiltinParams::BuiltinParams() {
+BuiltinParams::BuiltinParams(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
 
     int ret;
-    if ((ret = init_builtin_param_db()) != PROJECTM_SUCCESS) {
+    if ((ret = init_builtin_param_db(presetInputs, presetOutputs)) != PROJECTM_SUCCESS) {
         throw ret;
     }
 
 }
 
-~BuiltinParams::BuiltinParams() {
+BuiltinParams::~BuiltinParams() {
    destroy_builtin_param_db();
 }
 
@@ -88,7 +90,7 @@ int BuiltinParams::destroy_builtin_param_db() {
 
 
 /* Insert a parameter into the database with an alternate name */
-int BuiltinParams::insert_param_alt_name(BuiltinParams *param, char * alt_name) {
+int BuiltinParams::insert_param_alt_name(Param *param, char * alt_name) {
 
     if (alt_name == NULL)
         return PROJECTM_ERROR;
@@ -170,7 +172,7 @@ int BuiltinParams::load_builtin_param_bool(char * name, void * engine_val, short
 }
 
 /* Inserts a parameter into the builtin database */
-int BuiltinParams::insert_builtin_param( BuiltinParams *param ) {
+int BuiltinParams::insert_builtin_param( Param *param ) {
 
     return builtin_param_tree->splay_insert(param, param->name);
 }
@@ -179,7 +181,7 @@ int BuiltinParams::insert_builtin_param( BuiltinParams *param ) {
 
 /* Initialize the builtin parameter database.
    Should only be necessary once */
-int BuiltinParams::init_builtin_param_db() {
+int BuiltinParams::init_builtin_param_db(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
 
     /* Create the builtin parameter splay tree (go Sleator...) */
     if ((this->builtin_param_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_string,(void* (*)(void*)) copy_string, (void (*)(void*))free_string)) == NULL) {
@@ -193,7 +195,7 @@ int BuiltinParams::init_builtin_param_db() {
     }
 
     /* Loads all builtin parameters into the database */
-    if (BuiltinParams::load_all_builtin_param() < 0) {
+    if (load_all_builtin_param(presetInputs, presetOutputs) < 0) {
         if (BUILTIN_PARAMS_DEBUG) printf("failed loading builtin parameters (FATAL)\n");
         return PROJECTM_ERROR;
     }
@@ -205,113 +207,116 @@ int BuiltinParams::init_builtin_param_db() {
 }
 
 
+void BuiltinParams::traverse(void (*func_ptr)(void*)) {
+	builtin_param_tree->splay_traverse(func_ptr);
+}
 
 /* Loads all builtin parameters, limits are also defined here */
-int  BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
+int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
 
-  load_builtin_param_float("fRating", (void*)&presetOutputs->fRating, NULL, P_FLAG_NONE, 0.0 , 5.0, 0.0, NULL);
-  load_builtin_param_float("fWaveScale", (void*)&presetOutputs->fWaveScale, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("gamma", (void*)&presetOutputs->fGammaAdj, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fGammaAdj");
-  load_builtin_param_float("echo_zoom", (void*)&presetOutputs->fVideoEchoZoom, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fVideoEchoZoom");
-  load_builtin_param_float("echo_alpha", (void*)&presetOutputs->fVideoEchoAlpha, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fVideoEchoAlpha");
-  load_builtin_param_float("wave_a", (void*)&presetOutputs->fWaveAlpha, NULL, P_FLAG_NONE, 0.0, 1.0, 0, "fWaveAlpha");
-  load_builtin_param_float("fWaveSmoothing", (void*)&presetOutputs->fWaveSmoothing, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);  
-  load_builtin_param_float("fModWaveAlphaStart", (void*)&presetOutputs->fModWaveAlphaStart, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
-  load_builtin_param_float("fModWaveAlphaEnd", (void*)&presetOutputs->fModWaveAlphaEnd, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
-  load_builtin_param_float("fWarpAnimSpeed",  (void*)&presetOutputs->fWarpAnimSpeed, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
-  //  load_builtin_param_float("warp", (void*)&presetOutputs->warp, warp_mesh, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
+  load_builtin_param_float("fRating", (void*)&presetOutputs.fRating, NULL, P_FLAG_NONE, 0.0 , 5.0, 0.0, NULL);
+  load_builtin_param_float("fWaveScale", (void*)&presetOutputs.fWaveScale, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
+  load_builtin_param_float("gamma", (void*)&presetOutputs.fGammaAdj, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fGammaAdj");
+  load_builtin_param_float("echo_zoom", (void*)&presetOutputs.fVideoEchoZoom, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fVideoEchoZoom");
+  load_builtin_param_float("echo_alpha", (void*)&presetOutputs.fVideoEchoAlpha, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fVideoEchoAlpha");
+  load_builtin_param_float("wave_a", (void*)&presetOutputs.fWaveAlpha, NULL, P_FLAG_NONE, 0.0, 1.0, 0, "fWaveAlpha");
+  load_builtin_param_float("fWaveSmoothing", (void*)&presetOutputs.fWaveSmoothing, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);  
+  load_builtin_param_float("fModWaveAlphaStart", (void*)&presetOutputs.fModWaveAlphaStart, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
+  load_builtin_param_float("fModWaveAlphaEnd", (void*)&presetOutputs.fModWaveAlphaEnd, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
+  load_builtin_param_float("fWarpAnimSpeed",  (void*)&presetOutputs.fWarpAnimSpeed, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
+  //  load_builtin_param_float("warp", (void*)&presetOutputs.warp, warp_mesh, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
 	
-  load_builtin_param_float("fShader", (void*)&presetOutputs->fShader, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
-  load_builtin_param_float("decay", (void*)&presetOutputs->decay, NULL, P_FLAG_NONE, 0.0, 1.0, 0, "fDecay");
+  load_builtin_param_float("fShader", (void*)&presetOutputs.fShader, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
+  load_builtin_param_float("decay", (void*)&presetOutputs.decay, NULL, P_FLAG_NONE, 0.0, 1.0, 0, "fDecay");
 
-  load_builtin_param_int("echo_orient", (void*)&presetOutputs->nVideoEchoOrientation, P_FLAG_NONE, 0, 3, 0, "nVideoEchoOrientation");
-  load_builtin_param_int("wave_mode", (void*)&presetOutputs->nWaveMode, P_FLAG_NONE, 0, 7, 0, "nWaveMode");
+  load_builtin_param_int("echo_orient", (void*)&presetOutputs.nVideoEchoOrientation, P_FLAG_NONE, 0, 3, 0, "nVideoEchoOrientation");
+  load_builtin_param_int("wave_mode", (void*)&presetOutputs.nWaveMode, P_FLAG_NONE, 0, 7, 0, "nWaveMode");
   
-  load_builtin_param_bool("wave_additive", (void*)&presetOutputs->bAdditiveWaves, P_FLAG_NONE, FALSE, "bAdditiveWaves");
-  load_builtin_param_bool("bModWaveAlphaByVolume", (void*)&presetOutputs->bModWaveAlphaByVolume, P_FLAG_NONE, FALSE, NULL);
-  load_builtin_param_bool("wave_brighten", (void*)&presetOutputs->bMaximizeWaveColor, P_FLAG_NONE, FALSE, "bMaximizeWaveColor");
-  load_builtin_param_bool("wrap", (void*)&presetOutputs->bTexWrap, P_FLAG_NONE, FALSE, "bTexWrap");
-  load_builtin_param_bool("darken_center", (void*)&presetOutputs->bDarkenCenter, P_FLAG_NONE, FALSE, "bDarkenCenter");
-  load_builtin_param_bool("bRedBlueStereo", (void*)&presetOutputs->bRedBlueStereo, P_FLAG_NONE, FALSE, NULL);
-  load_builtin_param_bool("brighten", (void*)&presetOutputs->bBrighten, P_FLAG_NONE, FALSE, "bBrighten");
-  load_builtin_param_bool("darken", (void*)&presetOutputs->bDarken, P_FLAG_NONE, FALSE, "bDarken");
-  load_builtin_param_bool("solarize", (void*)&presetOutputs->bSolarize, P_FLAG_NONE, FALSE, "bSolarize");
-  load_builtin_param_bool("invert", (void*)&presetOutputs->bInvert, P_FLAG_NONE, FALSE, "bInvert");
-  load_builtin_param_bool("bMotionVectorsOn", (void*)&presetOutputs->bMotionVectorsOn, P_FLAG_NONE, FALSE, NULL);
-  load_builtin_param_bool("wave_dots", (void*)&presetOutputs->bWaveDots, P_FLAG_NONE, FALSE, "bWaveDots");
-  load_builtin_param_bool("wave_thick", (void*)&presetOutputs->bWaveThick, P_FLAG_NONE, FALSE, "bWaveThick");
+  load_builtin_param_bool("wave_additive", (void*)&presetOutputs.bAdditiveWaves, P_FLAG_NONE, FALSE, "bAdditiveWaves");
+  load_builtin_param_bool("bModWaveAlphaByVolume", (void*)&presetOutputs.bModWaveAlphaByVolume, P_FLAG_NONE, FALSE, NULL);
+  load_builtin_param_bool("wave_brighten", (void*)&presetOutputs.bMaximizeWaveColor, P_FLAG_NONE, FALSE, "bMaximizeWaveColor");
+  load_builtin_param_bool("wrap", (void*)&presetOutputs.bTexWrap, P_FLAG_NONE, FALSE, "bTexWrap");
+  load_builtin_param_bool("darken_center", (void*)&presetOutputs.bDarkenCenter, P_FLAG_NONE, FALSE, "bDarkenCenter");
+  load_builtin_param_bool("bRedBlueStereo", (void*)&presetOutputs.bRedBlueStereo, P_FLAG_NONE, FALSE, NULL);
+  load_builtin_param_bool("brighten", (void*)&presetOutputs.bBrighten, P_FLAG_NONE, FALSE, "bBrighten");
+  load_builtin_param_bool("darken", (void*)&presetOutputs.bDarken, P_FLAG_NONE, FALSE, "bDarken");
+  load_builtin_param_bool("solarize", (void*)&presetOutputs.bSolarize, P_FLAG_NONE, FALSE, "bSolarize");
+  load_builtin_param_bool("invert", (void*)&presetOutputs.bInvert, P_FLAG_NONE, FALSE, "bInvert");
+  load_builtin_param_bool("bMotionVectorsOn", (void*)&presetOutputs.bMotionVectorsOn, P_FLAG_NONE, FALSE, NULL);
+  load_builtin_param_bool("wave_dots", (void*)&presetOutputs.bWaveDots, P_FLAG_NONE, FALSE, "bWaveDots");
+  load_builtin_param_bool("wave_thick", (void*)&presetOutputs.bWaveThick, P_FLAG_NONE, FALSE, "bWaveThick");
 
-  load_builtin_param_float("zoom", (void*)&presetOutputs->zoom, presetOutputs->zoom_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
-  load_builtin_param_float("rot", (void*)&presetOutputs->rot, presetOutputs->rot_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("zoomexp", (void*)&presetOutputs->zoomexp, presetOutputs->zoomexp_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fZoomExponent");
+  load_builtin_param_float("zoom", (void*)&presetOutputs.zoom, presetOutputs.zoom_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
+  load_builtin_param_float("rot", (void*)&presetOutputs.rot, presetOutputs.rot_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, NULL);
+  load_builtin_param_float("zoomexp", (void*)&presetOutputs.zoomexp, presetOutputs.zoomexp_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fZoomExponent");
  
-  load_builtin_param_float("cx", (void*)&presetOutputs->cx, presetOutputs->cx_mesh, P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, 1.0, 0, NULL);
-  load_builtin_param_float("cy", (void*)&presetOutputs->cy, presetOutputs->cy_mesh, P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, 1.0, 0, NULL);
-  load_builtin_param_float("dx", (void*)&presetOutputs->dx, presetOutputs->dx_mesh,  P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("dy", (void*)&presetOutputs->dy, presetOutputs->dy_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("sx", (void*)&presetOutputs->sx, presetOutputs->sx_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
-  load_builtin_param_float("sy", (void*)&presetOutputs->sy, presetOutputs->sy_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
+  load_builtin_param_float("cx", (void*)&presetOutputs.cx, presetOutputs.cx_mesh, P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, 1.0, 0, NULL);
+  load_builtin_param_float("cy", (void*)&presetOutputs.cy, presetOutputs.cy_mesh, P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, 1.0, 0, NULL);
+  load_builtin_param_float("dx", (void*)&presetOutputs.dx, presetOutputs.dx_mesh,  P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, NULL);
+  load_builtin_param_float("dy", (void*)&presetOutputs.dy, presetOutputs.dy_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, NULL);
+  load_builtin_param_float("sx", (void*)&presetOutputs.sx, presetOutputs.sx_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
+  load_builtin_param_float("sy", (void*)&presetOutputs.sy, presetOutputs.sy_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
 
-  load_builtin_param_float("wave_r", (void*)&presetOutputs->wave_r, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("wave_g", (void*)&presetOutputs->wave_g, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("wave_b", (void*)&presetOutputs->wave_b, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("wave_x", (void*)&presetOutputs->wave_x, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("wave_y", (void*)&presetOutputs->wave_y, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("wave_mystery", (void*)&presetOutputs->wave_mystery, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "fWaveParam");
+  load_builtin_param_float("wave_r", (void*)&presetOutputs.wave_r, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("wave_g", (void*)&presetOutputs.wave_g, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("wave_b", (void*)&presetOutputs.wave_b, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("wave_x", (void*)&presetOutputs.wave_x, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("wave_y", (void*)&presetOutputs.wave_y, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("wave_mystery", (void*)&presetOutputs.wave_mystery, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "fWaveParam");
   
-  load_builtin_param_float("ob_size", (void*)&presetOutputs->ob_size, NULL, P_FLAG_NONE, 0.0, 0.5, 0, NULL);
-  load_builtin_param_float("ob_r", (void*)&presetOutputs->ob_r, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("ob_g", (void*)&presetOutputs->ob_g, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("ob_b", (void*)&presetOutputs->ob_b, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("ob_a", (void*)&presetOutputs->ob_a, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("ob_size", (void*)&presetOutputs.ob_size, NULL, P_FLAG_NONE, 0.0, 0.5, 0, NULL);
+  load_builtin_param_float("ob_r", (void*)&presetOutputs.ob_r, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("ob_g", (void*)&presetOutputs.ob_g, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("ob_b", (void*)&presetOutputs.ob_b, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("ob_a", (void*)&presetOutputs.ob_a, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
 
-  load_builtin_param_float("ib_size", (void*)&presetOutputs->ib_size,  NULL,P_FLAG_NONE, 0.0, .5, 0.0, NULL);
-  load_builtin_param_float("ib_r", (void*)&presetOutputs->ib_r,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("ib_g", (void*)&presetOutputs->ib_g,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("ib_b", (void*)&presetOutputs->ib_b,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("ib_a", (void*)&presetOutputs->ib_a,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("ib_size", (void*)&presetOutputs.ib_size,  NULL,P_FLAG_NONE, 0.0, .5, 0.0, NULL);
+  load_builtin_param_float("ib_r", (void*)&presetOutputs.ib_r,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("ib_g", (void*)&presetOutputs.ib_g,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("ib_b", (void*)&presetOutputs.ib_b,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("ib_a", (void*)&presetOutputs.ib_a,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
 
-  load_builtin_param_float("mv_r", (void*)&presetOutputs->mv_r,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("mv_g", (void*)&presetOutputs->mv_g,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("mv_b", (void*)&presetOutputs->mv_b,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
-  load_builtin_param_float("mv_x", (void*)&presetOutputs->mv_x,  NULL,P_FLAG_NONE, 0.0, 64.0, 0.0, "nMotionVectorsX");
-  load_builtin_param_float("mv_y", (void*)&presetOutputs->mv_y,  NULL,P_FLAG_NONE, 0.0, 48.0, 0.0, "nMotionVectorsY");
-  load_builtin_param_float("mv_l", (void*)&presetOutputs->mv_l,  NULL,P_FLAG_NONE, 0.0, 5.0, 0.0, NULL);
-  load_builtin_param_float("mv_dy", (void*)&presetOutputs->mv_dy, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
-  load_builtin_param_float("mv_dx", (void*)&presetOutputs->mv_dx,  NULL,P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
-  load_builtin_param_float("mv_a", (void*)&presetOutputs->mv_a,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("mv_r", (void*)&presetOutputs.mv_r,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("mv_g", (void*)&presetOutputs.mv_g,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("mv_b", (void*)&presetOutputs.mv_b,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
+  load_builtin_param_float("mv_x", (void*)&presetOutputs.mv_x,  NULL,P_FLAG_NONE, 0.0, 64.0, 0.0, "nMotionVectorsX");
+  load_builtin_param_float("mv_y", (void*)&presetOutputs.mv_y,  NULL,P_FLAG_NONE, 0.0, 48.0, 0.0, "nMotionVectorsY");
+  load_builtin_param_float("mv_l", (void*)&presetOutputs.mv_l,  NULL,P_FLAG_NONE, 0.0, 5.0, 0.0, NULL);
+  load_builtin_param_float("mv_dy", (void*)&presetOutputs.mv_dy, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
+  load_builtin_param_float("mv_dx", (void*)&presetOutputs.mv_dx,  NULL,P_FLAG_NONE, 0.0, 1.0, -1.0, NULL);
+  load_builtin_param_float("mv_a", (void*)&presetOutputs.mv_a,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, NULL);
 
-  load_builtin_param_float("time", (void*)&presetInputs->Time,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0.0, NULL);
-  load_builtin_param_float("bass", (void*)&presetInputs->bass,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0.0, NULL);
-  load_builtin_param_float("mid", (void*)&bpresetInputs->mid,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
-  load_builtin_param_float("bass_att", (void*)&presetInputs->bass_att,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
-  load_builtin_param_float("mid_att", (void*)&presetInputs->mid_att,  NULL, P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
-  load_builtin_param_float("treb_att", (void*)&presetInputs->treb_att,  NULL, P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
-  load_builtin_param_int("frame", (void*)&presetInputs->frame, P_FLAG_READONLY, 0, MAX_INT_SIZE, 0, NULL);
-  load_builtin_param_float("progress", (void*)&presetInputs->progress,  NULL,P_FLAG_READONLY, 0.0, 1, 0, NULL);
-  load_builtin_param_int("fps", (void*)&presetInputs->fps, P_FLAG_READONLY, 15, MAX_INT_SIZE, 0, NULL);
+  load_builtin_param_float("time", (void*)&presetInputs.time,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0.0, NULL);
+  load_builtin_param_float("bass", (void*)&presetInputs.bass,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0.0, NULL);
+  load_builtin_param_float("mid", (void*)&presetInputs.mid,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
+  load_builtin_param_float("bass_att", (void*)&presetInputs.bass_att,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
+  load_builtin_param_float("mid_att", (void*)&presetInputs.mid_att,  NULL, P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
+  load_builtin_param_float("treb_att", (void*)&presetInputs.treb_att,  NULL, P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
+  load_builtin_param_int("frame", (void*)&presetInputs.frame, P_FLAG_READONLY, 0, MAX_INT_SIZE, 0, NULL);
+  load_builtin_param_float("progress", (void*)&presetInputs.progress,  NULL,P_FLAG_READONLY, 0.0, 1, 0, NULL);
+  load_builtin_param_int("fps", (void*)&presetInputs.fps, P_FLAG_READONLY, 15, MAX_INT_SIZE, 0, NULL);
 
-  load_builtin_param_float("x", (void*)&presetInputs>x_per_pixel, presetInputs->x_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX, 
+  load_builtin_param_float("x", (void*)&presetInputs.x_per_pixel, presetInputs.x_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX, 
 			    0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("y", (void*)&presetInputs->y_per_pixel, presetInputs->y_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX |P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX, 
+  load_builtin_param_float("y", (void*)&presetInputs.y_per_pixel, presetInputs.y_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX |P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX, 
 			    0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("ang", (void*)&presetInputs->ang_per_pixel, presetInputs->theta_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX, 
+  load_builtin_param_float("ang", (void*)&presetInputs.ang_per_pixel, presetInputs.theta_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX, 
 			    0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("rad", (void*)&presetInputs->rad_per_pixel, presetInputs->rad_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX,
+  load_builtin_param_float("rad", (void*)&presetInputs.rad_per_pixel, presetInputs.rad_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX,
 			    0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
 
-  load_builtin_param_float("q1", (void*)&presetOutputs->q1,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("q2", (void*)&presetOutputs->q2,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("q3", (void*)&presetOutputs->q3,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("q4", (void*)&presetOutputs->q4,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("q5", (void*)&presetOutputs->q5,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("q6", (void*)&presetOutputs->q6,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("q7", (void*)&presetOutputs->q7,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("q8", (void*)&presetOutputs->q8,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
+  load_builtin_param_float("q1", (void*)&presetOutputs.q1,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
+  load_builtin_param_float("q2", (void*)&presetOutputs.q2,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
+  load_builtin_param_float("q3", (void*)&presetOutputs.q3,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
+  load_builtin_param_float("q4", (void*)&presetOutputs.q4,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
+  load_builtin_param_float("q5", (void*)&presetOutputs.q5,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
+  load_builtin_param_float("q6", (void*)&presetOutputs.q6,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
+  load_builtin_param_float("q7", (void*)&presetOutputs.q7,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
+  load_builtin_param_float("q8", (void*)&presetOutputs.q8,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, NULL);
 
   /* variables added in 1.04 */
-  load_builtin_param_int("meshx", (void*)&presetInputs->gx, P_FLAG_READONLY, 32, 96, 8, NULL);
-  load_builtin_param_int("meshy", (void*)&presetInputs->gy, P_FLAG_READONLY, 24, 72, 6, NULL);
+  load_builtin_param_int("meshx", (void*)&presetInputs.gx, P_FLAG_READONLY, 32, 96, 8, NULL);
+  load_builtin_param_int("meshy", (void*)&presetInputs.gy, P_FLAG_READONLY, 24, 72, 6, NULL);
 
   return PROJECTM_SUCCESS;
 

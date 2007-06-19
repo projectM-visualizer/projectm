@@ -30,17 +30,16 @@
 #include <time.h>
 
 #include "Preset.hpp"
-
-
+#include "Parser.h"
 
 Preset::Preset() {}
 
-Preset::Preset(const std::string & filename) {
+Preset::Preset(const PresetInputs * presetInputs, PresetOutputs * presetOutputs, const std::string & filename):
+	builtinParams(*presetInputs, *presetOutputs)
+{
 
-int ret;
+initialize(filename);
 
-if ((ret = load_preset_file(filename.c_str())) != PROJECTM_SUCCESS)
-	throw ret;
 }
 
 
@@ -52,25 +51,25 @@ Preset::~Preset() {
 
   init_cond_tree->splay_traverse((void (*)(void*))free_init_cond_helper);
   delete init_cond_tree;
-  
+
   per_frame_init_eqn_tree->splay_traverse((void (*)(void*))free_init_cond_helper);
   delete per_frame_init_eqn_tree;
-  
+
   per_pixel_eqn_tree->splay_traverse((void (*)(void*))free_per_pixel_eqn_helper);
   delete per_pixel_eqn_tree;
-  
+
   per_frame_eqn_tree->splay_traverse((void (*)(void*))free_per_frame_eqn_helper);
   delete per_frame_eqn_tree;
-  
+
   user_param_tree->splay_traverse((void (*)(void*))free_param_helper);
   delete user_param_tree;
-  
+
   custom_wave_tree->splay_traverse((void (*)(void*))free_custom_wave_helper);
   delete custom_wave_tree;
 
   custom_shape_tree->splay_traverse((void (*)(void*))free_custom_shape_helper);
   delete custom_shape_tree;
-
+ 
 #if defined(PRESET_DEBUG) && defined(DEBUG)
     DWRITE( "~Preset(): out\n" );
 #endif
@@ -200,7 +199,7 @@ printf( "reloadPerFrame()\n" );
 }
 
 
-void Preset::initalize() {
+void Preset::initialize(const std::string & pathname) {
 
   /* Initialize equation trees */
   init_cond_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_string, (void* (*)(void*))copy_string, (void (*)(void*))free_string);
@@ -222,13 +221,14 @@ void Preset::initalize() {
   memset(this->per_pixel_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
   memset(this->per_frame_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
   memset(this->per_frame_init_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
-
-  if (Preset::currentEngine->load_preset_file(pathname, preset) < 0) {
+  int retval;
+  if ((retval = load_preset_file(pathname.c_str())) < 0) {
 #ifdef PRESET_DEBUG
 	if (PRESET_DEBUG) printf("load_preset: failed to load file \"%s\"\n", pathname);
 #endif
-	this->close_preset();
-	return NULL;
+	//this->close_preset();
+	/// @bug how should we handle this problem? a well define exception?
+	throw retval;
   }
 
   /* It's kind of ugly to reset these values here. Should definitely be placed in the parser somewhere */
@@ -406,7 +406,8 @@ void Preset::load_custom_wave_init_conditions() {
 }
 
 void Preset::load_custom_shape_init_conditions() {
-  custom_shape_tree->splay_traverse((void (*)(void*))load_custom_shape_init_helper);
+   abort();
+  //custom_shape_tree->splay_traverse((void (*)(void*))load_custom_shape_init_helper);
 }
 
 /** Returns the next custom waveform in the wave database */
@@ -449,12 +450,13 @@ CustomShape * Preset::nextCustomShape() {
 
 /** Evaluates all per-pixel equations */
 void Preset::evalPerPixelEqns() {
+
     /* Evaluate all per pixel equations using splay traversal */
     per_pixel_eqn_tree->splay_traverse((void (*)(void*))eval_per_pixel_eqn_helper);
 
     /* Set mesh i / j values to -1 so engine vars are used by default again */
-    Preset::currentEngine->mesh_i = -1;
-    Preset::currentEngine->mesh_j = -1;
+    this->mesh_i = -1;
+    this->mesh_j = -1;
 }
 
 /** Is the opcode a per-pixel equation? */
@@ -472,7 +474,7 @@ int Preset::resetPerPixelEqnFlags() {
       }
 
     return PROJECTM_SUCCESS;
-  }
+}
 
 /* Adds a per pixel equation according to its string name. This
    will be used only by the parser */
@@ -564,7 +566,7 @@ InitCond * Preset::get_init_cond( Param *param ) {
 
     if (param->type == P_TYPE_BOOL)
       init_val.bool_val = 0;
-    
+
     else if (param->type == P_TYPE_INT)
       init_val.int_val = *(int*)param->engine_val;
 
@@ -574,7 +576,7 @@ InitCond * Preset::get_init_cond( Param *param ) {
     /* Create new initial condition */
     if ((init_cond = new InitCond(param, init_val)) == NULL)
       return NULL;
-    
+
     /* Insert the initial condition into this presets tree */
     if (init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
       delete init_cond;
@@ -592,19 +594,17 @@ int Preset::load_preset_file(const char * pathname) {
 
   FILE * fs;
   int retval;
-    int lineno;
-    line_mode_t line_mode;
+  int lineno;
+   line_mode_t line_mode;
 
   if (pathname == NULL)
-	  return PROJECTM_FAILURE;
-  if (preset == NULL)
 	  return PROJECTM_FAILURE;
   
   /* Open the file corresponding to pathname */
   if ((fs = fopen(pathname, "rb")) == 0) {
 #if defined(PRESET_DEBUG) && defined(DEBUG)
     DWRITE( "load_preset_file: loading of file %s failed!\n", pathname);
-#endif    
+#endif
     return PROJECTM_ERROR;	
   }
 
@@ -620,15 +620,18 @@ int Preset::load_preset_file(const char * pathname) {
     fclose(fs);
     return PROJECTM_FAILURE;
   }
-  
+
   /* Parse the preset name and a left bracket */
-  if (Parser::parse_preset_name(fs, this->name) < 0) {
+  char tmp_name[MAX_TOKEN_SIZE];
+
+  if (Parser::parse_preset_name(fs, tmp_name) < 0) {
 #if defined(PRESET_DEBUG) && defined(DEBUG)
     DWRITE( "load_preset_file: loading of preset name in file \"%s\" failed\n", pathname);
 #endif
     fclose(fs);
     return PROJECTM_ERROR;
   }
+  name = std::string(tmp_name);
 
 #if defined(PRESET_DEBUG) && defined(DEBUG)
    DWRITE( "load_preset_file: preset \"%s\" parsed\n", this->name);
@@ -664,25 +667,56 @@ int Preset::load_preset_file(const char * pathname) {
   return PROJECTM_SUCCESS;
 }
 
-/* Returns nonzero if string 'name' contains .milk or
-   (the better) .prjm extension. Not a very strong function currently */
-int Preset::is_valid_extension(const struct dirent* ent) {
-	const char* ext = 0;
-	
-	if (!ent) return FALSE;
-	
-	ext = strrchr(ent->d_name, '.');
-	if (!ext) ext = ent->d_name;
-	
-	if (0 == strcasecmp(ext, MILKDROP_FILE_EXTENSION)) return TRUE;
-	if (0 == strcasecmp(ext, PROJECTM_FILE_EXTENSION)) return TRUE;
-
-	return FALSE;
-}
-
-
 
 void Preset::load_init_conditions() {
-    builtin_param_tree->splay_traverse( (void (*)(void*))load_init_cond_helper);
+   builtinParams.traverse(load_init_cond_helper);
+
   }
+
+
+/* Find a parameter given its name, will create one if not found */
+Param * Preset::find_param(char * name, int flags) {
+
+    Param * param = NULL;
+
+    /* Null argument checks */
+    if (name == NULL)
+        return NULL;
+
+    /* First look in the builtin database */
+    param = (Param *)this->builtinParams.find_builtin_param(name);
+
+    /* If the search failed, check the user database */
+    if (param == NULL) {
+        param = (Param*)this->user_param_tree->splay_find(name);
+    }
+    /* If it doesn't exist in the user (or builtin) database and
+    	  create_flag is set, then make it and insert into the database 
+    */
+
+    if ((param == NULL) && (flags & P_CREATE)) {
+
+        /* Check if string is valid */
+        if (!Param::is_valid_param_string(name)) {
+            if (PARAM_DEBUG) printf("find_param: invalid parameter name:\"%s\"\n", name);
+            return NULL;
+        }
+        /* Now, create the user defined parameter given the passed name */
+        if ((param = new Param(name)) == NULL) {
+            if (PARAM_DEBUG) printf("find_param: failed to create a new user parameter!\n");
+            return NULL;
+        }
+        /* Finally, insert the new parameter into this preset's proper splaytree */
+        if (this->user_param_tree->splay_insert(param, param->name) < 0) {
+            if (PARAM_DEBUG) printf("PARAM \"%s\" already exists in user parameter tree!\n", param->name);
+            delete param;
+            return NULL;
+        }
+
+    }
+
+    /* Return the found (or created) parameter. Note that if P_CREATE is not set, this could be null */
+    return param;
+
+}
 

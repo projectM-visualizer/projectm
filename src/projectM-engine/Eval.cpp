@@ -31,7 +31,7 @@
 #include "Expr.h"
 #include "Param.h"
 #include "Func.h"
-#include "builtin_funcs.h"
+#include "BuiltinFuncs.hpp"
 #include "wipemalloc.h"
 
 InfixOp *Eval::infix_add = NULL;

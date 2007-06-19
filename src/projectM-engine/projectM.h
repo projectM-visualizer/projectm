@@ -67,7 +67,8 @@
 #include "dlldefs.h"
 #include "event.h"
 #include "fatal.h"
-
+#include "PresetFrameIO.hpp"
+#include "Preset.hpp"
 
 //#include <dmalloc.h>
 
@@ -112,44 +113,10 @@ typedef enum {
   } interface_t;
 
 
- static const char *  IDLE_PRESET_STRING = "[idlepreset]\n";
-
-
-struct PresetInputs {
-
-    /* PER_PIXEL CONSTANTS BEGIN */
-
-    float x_per_pixel;
-    float y_per_pixel;
-    float rad_per_pixel;
-    float ang_per_pixel;
-
-    /* PER_PIXEL CONSTANT END */
-
-  int fps;
-
-
-  float time;
-  float bass;
-  float mid;
-  float bass_att;
-  float mid_att;
-  float treb_att;
-  int frame;
-  float progress;
-  
-
-  /* variables added in 1.04 */
-    int meshx;
-    int meshy;
-
-
-};
-
-
 class projectM {
 public:
     static projectM * currentEngine;
+    static Preset * activePreset;
 
     char *presetURL;
     char *presetName;
@@ -220,9 +187,6 @@ public:
 
     int mesh_i, mesh_j;
 
-    // All builtin functions are store here
-    SplayTree *builtin_func_tree;
-
     /** Timing information */
     int mspf;
     int timed;
@@ -240,10 +204,14 @@ public:
     /** Beat detection engine */
     BeatDetect *beatDetect;
 
-    /** All readonly variables (that is not beat detection) 
+    /** All readonly variables 
      *  which are passed as inputs 
      * to presets. See struct defintition above */
     PresetInputs presetInputs;
+
+    /** The presets modify these values. For now this is declared on stack
+     * but might be better on heap for sake of smooth preset switching */
+    PresetOutputs presetOutputs;
 
     /** Functions */
     DLLEXPORT projectM();
@@ -292,15 +260,7 @@ public:
                       projectMKeycode keycode, projectMModifier modifier );
     void default_key_handler( projectMEvent event, projectMKeycode keycode );
 
-    /** Func database */
-    int init_builtin_func_db();
-    int destroy_builtin_func_db();
-    int load_all_builtin_func();
-    int load_builtin_func( char * name, float (*func_ptr)(float*), int num_args );
-
-    int insert_func( Func *func );
-    int remove_func( Func *func );
-    Func *find_func( char *name );
+    int initPresetTools();
   };
 
 #endif /** !_PROJECTM_H */

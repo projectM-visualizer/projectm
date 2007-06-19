@@ -111,6 +111,7 @@ public:
     void load_custom_shape_init();
     void load_unspecified_init_conds_shape();
     void eval_custom_shape_init_conds();
+    void load_unspec_init_cond_shape();
   };
 
 /** Splaytree traversal helpers */

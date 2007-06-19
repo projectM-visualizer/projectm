@@ -27,20 +27,26 @@
 #ifndef _BUILTIN_PARAMS_HPP
 #define _BUILTIN_PARAMS_HPP
 
-#include "projectM.h"
+#include "PresetFrameIO.hpp"
+#include "Param.h"
+
 
 class BuiltinParams {
 
 public:
 
-    /** Default constructor initalizes the entire builtin database */
+    /** Default constructor leaves database in an uninitialized state.  */
     BuiltinParams();
+
+    /** Construct a new builtin parameter database with variables references given by
+     * the preset input and output structures */
+     BuiltinParams(const struct PresetInputs &  presetInputs, struct PresetOutputs & presetOutputs);
 
     ~BuiltinParams();
 
-    /** Param database */
-    int load_all_builtin_param();
-    int init_builtin_param_db();
+    /** Param database initalizer / destructor functions */
+    int init_builtin_param_db(const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
+    int load_all_builtin_param(const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
     int destroy_builtin_param_db();
 
     int insert_param_alt_name( Param *param, char *alt_name );
@@ -56,9 +62,10 @@ public:
                                 int init_val, char *alt_name );
     int insert_builtin_param( Param *param );
 
+    void traverse(void (*func_ptr)(void*));
 
 private:
-    static const bool BUILTIN_PARAM_DEBUG = false;
+    static const bool BUILTIN_PARAMS_DEBUG = false;
     SplayTree *builtin_param_tree;
 };
 #endif

@@ -26,15 +26,16 @@
 #include "fatal.h"
 #include "menu.h"
 #include "console_interface.h"
-#include "Preset.h"
+#include "Preset.hpp"
 #include "browser.h"
 #include "editor.h"
 #include "event.h"
 #include "BeatDetect.h"
+#include "PresetSwitcher.hpp"
 
 Preset *active_preset;
 
-interface_t current_interface = DEFAULT_INTERFACE;
+interface_t current_interface;// = DEFAULT_INTERFACE;
 
 void refreshConsole() {
 
@@ -70,7 +71,7 @@ void projectM::key_handler( projectMEvent event,
 	  //default_key_handler();
 	  switch (current_interface) 
 	    {
-	      
+
 	    case MENU_INTERFACE:
 //	      menu_key_handler(this, event, keycode);
 	      break;
@@ -89,20 +90,17 @@ void projectM::key_handler( projectMEvent event,
 	    default:
 	      default_key_handler(event,keycode);
 	      break;
-	      
+
 	    }
 	  break;
 	}
 }
 
 void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode) {
-  
 
-  
 	switch( event ) {
 
 	case PROJECTM_KEYDOWN:
-	 		    
 	  switch( keycode )
 	    {
 	    case PROJECTM_K_UP:
@@ -157,21 +155,21 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_b:
 	      break;
             case PROJECTM_K_n:
-	      if (switchPreset(ALPHA_NEXT, HARD_CUT) < 0) {
-		printf("WARNING: Bad preset file, loading idle preset\n");
-		switchToIdlePreset();
+	      if (PresetSwitcher::switchPreset(ALPHA_NEXT, HARD_CUT) < 0) {
+		printf("WARNING: Bad preset file, not handling this..aborting!\n");
+		abort();
 	      }		
 	      break;
 	    case PROJECTM_K_r:
-	      if (switchPreset(RANDOM_NEXT, HARD_CUT) < 0) {
+	      if (PresetSwitcher::switchPreset(RANDOM_NEXT, HARD_CUT) < 0) {
 		printf("WARNING: Bad preset file, loading idle preset\n");
-		switchToIdlePreset();
+		abort();
 	      }	
 	      break;
 	    case PROJECTM_K_p:
-	      if ((switchPreset(ALPHA_PREVIOUS, HARD_CUT)) < 0){
+	      if ((PresetSwitcher::switchPreset(ALPHA_PREVIOUS, HARD_CUT)) < 0){
 		printf("WARNING: Bad preset file, loading idle preset\n");
-		switchToIdlePreset();
+		abort();	
 	      }
 	      break;
 	    case PROJECTM_K_l:
@@ -179,7 +177,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      //	      current_interface = BROWSER_INTERFACE;
 	      //	      loadBrowser();
 	      break;
-	    case PROJECTM_K_e:      	      	    
+	    case PROJECTM_K_e:
 	      current_interface = EDITOR_INTERFACE;
 //	      loadEditor(active_preset->per_frame_eqn_string_buffer,(void (*)()) reloadPerFrame, 
 //			 80, 24, 140, 60, 0, 0);
@@ -193,16 +191,16 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
             DWRITE( "PROJECTM_K_i\n" );
 	        doIterative = !doIterative;
 	        break;
-	    case PROJECTM_K_z:      	     	      	     
+	    case PROJECTM_K_z:
 	      break;
-	    case PROJECTM_K_0:      
-	      nWaveMode=0;
+	    case PROJECTM_K_0:
+//	      nWaveMode=0;
 	      break;
 	    case PROJECTM_K_6:
-	      nWaveMode=6;
+//	      nWaveMode=6;
 	      break;
 	    case PROJECTM_K_7:
-	      nWaveMode=7;
+//	      nWaveMode=7;
 	      break;
 	    case PROJECTM_K_m:
 	      showhelp=0;

@@ -54,7 +54,7 @@ public:
     float constant; /* static variable */
     Param *param; /* pointer to a changing variable */
 
-    Term() { this->constant = 0; this->param = NULL; }
+    Term() { this->constant = 0; this->param = 0; }
   };
 
 /* General Expression Type */

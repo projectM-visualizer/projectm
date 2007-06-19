@@ -35,14 +35,14 @@
 #include "Param.h"
 #include "PerFrameEqn.h"
 #include "PerPointEqn.h"
-#include "Preset.h"
+#include "Preset.hpp"
 #include "SplayTree.h"
 
 #include "wipemalloc.h"
 
 #define MAX_SAMPLE_SIZE 4096
 
-CustomWave *CustomWave::interface_wave = NULL;
+
 int interface_id = 0;
 
 CustomWave * CustomWave::new_custom_wave(int id) {
@@ -578,17 +578,65 @@ void CustomWave::evalPerPointEqns() {
 
  
   /* Evaluate per pixel equations */
-    interface_wave = this;
+    abort(); 
     per_point_eqn_tree->splay_traverse((void (*)(void*))eval_per_point_eqn_helper); 
-    interface_wave = NULL;
+
 
   /* Reset index */
   projectM::currentEngine->mesh_i = -1;
 }
 
 void CustomWave::load_unspecified_init_conds_wave() {
-    interface_wave = this;
+//    interface_wave = this;
     param_tree->splay_traverse((void (*)(void*))load_unspec_init_cond_helper);
-    interface_wave = NULL;
+//    interface_wave = NULL;
   }
 
+
+void CustomWave::load_unspec_init_cond() {
+abort();
+#if 0
+    InitCond * init_cond;
+    CValue init_val;
+
+    /* Don't count these parameters as initial conditions */
+    if (flags & P_FLAG_READONLY)
+        return;
+    if (flags & P_FLAG_QVAR)
+        return;
+    if (flags & P_FLAG_TVAR)
+        return;
+    if (flags & P_FLAG_USERDEF)
+        return;
+
+    /* If initial condition was not defined by the preset file, force a default one
+       with the following code */
+    if ((init_cond = (InitCond*)init_cond_tree->splay_find(name)) == NULL) {
+
+        /* Make sure initial condition does not exist in the set of per frame initial equations */
+        if ((init_cond = (InitCond*)per_frame_init_eqn_tree->splay_find(name)) != NULL)
+            return;
+
+        if (type == P_TYPE_BOOL)
+            init_val.bool_val = 0;
+
+        else if (type == P_TYPE_INT)
+            init_val.int_val = *(int*)engine_val;
+
+        else if (type == P_TYPE_DOUBLE)
+            init_val.float_val = *(float*)engine_val;
+
+        //printf("%s\n", param->name);
+        /* Create new initial condition */
+        if ((init_cond = new InitCond(this, init_val)) == NULL)
+            return;
+
+        /* Insert the initial condition into this presets tree */
+        if (init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
+            delete init_cond;
+            return;
+        }
+
+    }
+#endif
+}

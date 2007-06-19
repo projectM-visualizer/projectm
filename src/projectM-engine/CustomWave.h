@@ -45,6 +45,7 @@ class PerPointEqn;
 class Preset;
 
 #include "common.h"
+#include "Param.h"
 
 class SplayTree;
 
@@ -53,9 +54,6 @@ public:
     /* Numerical id */
     int id;
     int per_frame_count;
-    
-    /** Current wave being processed */
-    static CustomWave *interface_wave;
 
     /* Parameter tree associated with this custom wave */
     SplayTree * param_tree;
@@ -130,7 +128,7 @@ public:
     void evalPerPointEqns();
     CustomWave *nextCustomWave( Preset *preset);
     void load_unspecified_init_conds_wave();
-
+    void load_unspec_init_cond() ;
     void eval_custom_wave_init_conds();
     void load_unspec_init_cond(Param * param);
     void destroy_per_point_eqn_tree(SplayTree * tree);

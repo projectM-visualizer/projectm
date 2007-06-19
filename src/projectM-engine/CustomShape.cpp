@@ -32,7 +32,7 @@
 #include "InitCond.h"
 #include "Param.h"
 #include "PerFrameEqn.h"
-#include "Preset.h"
+#include "Preset.hpp"
 #include "SplayTree.h"
 
 #include "wipemalloc.h"
@@ -298,8 +298,55 @@ void CustomShape::eval_custom_shape_init_conds() {
 }
 
 void CustomShape::load_unspecified_init_conds_shape() {
-    interface_shape = this;
+
     param_tree->splay_traverse((void (*)(void*))load_unspec_init_cond_shape_helper);
     interface_shape = NULL;
   }
 
+void CustomShape::load_unspec_init_cond_shape() {
+abort();
+#if 0
+    InitCond * init_cond;
+    CValue init_val;
+
+    /* Don't count read only parameters as initial conditions */
+    if (flags & P_FLAG_READONLY)
+        return;
+    if (flags & P_FLAG_QVAR)
+        return;
+    if (flags & P_FLAG_TVAR)
+        return;
+    if (flags & P_FLAG_USERDEF)
+        return;
+
+    /* If initial condition was not defined by the preset file, force a default one
+       with the following code */
+    if ((init_cond =(InitCond*)CustomShape::interface_shape->init_cond_tree->splay_find(name)) == NULL) {
+
+        /* Make sure initial condition does not exist in the set of per frame initial equations */
+        if ((init_cond = (InitCond*)CustomShape::interface_shape->per_frame_init_eqn_tree->splay_find(name)) != NULL)
+            return;
+
+        if (type == P_TYPE_BOOL)
+            init_val.bool_val = 0;
+
+        else if (type == P_TYPE_INT)
+            init_val.int_val = *(int*)engine_val;
+
+        else if (type == P_TYPE_DOUBLE)
+            init_val.float_val = *(float*)engine_val;
+
+        //printf("%s\n", param->name);
+        /* Create new initial condition */
+        if ((init_cond = new InitCond(this, init_val)) == NULL)
+            return;
+
+        /* Insert the initial condition into this presets tree */
+        if (CustomShape::interface_shape->init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
+            delete init_cond;
+            return;
+        }
+
+    }
+#endif
+}

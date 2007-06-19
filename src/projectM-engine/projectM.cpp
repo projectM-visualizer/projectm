@@ -27,7 +27,7 @@
 #endif /** USE_FTGL */
 
 #include "wipemalloc.h"
-#include "builtin_funcs.h"
+#include "BuiltinFuncs.hpp"
 #include "fatal.h"
 #include "common.h"
 #include "compare.h"
@@ -84,7 +84,7 @@ int x, y;
   
 //     printf("Start of loop at %d\n",timestart);
 
-      mspf=(int)(1000.0/(float)fps); //milliseconds per frame
+      mspf=(int)(1000.0/(float)presetInputs.fps); //milliseconds per frame
       totalframes++; //total amount of frames since startup
 
 #ifndef WIN32
@@ -93,19 +93,19 @@ int x, y;
         Time = getTicks( startTime ) * 0.001;
 #endif /** !WIN32 */
       
-      frame++;  //number of frames for current preset
-      progress= frame/(float)avgtime;
+      presetInputs.frame++;  //number of frames for current preset
+      presetInputs.progress= presetInputs.frame/(float)avgtime;
     DWRITE( "frame: %d\ttime: %f\tprogress: %f\tavgtime: %d\tang: %f\trot: %f\n",
-             this->frame, Time, this->progress, this->avgtime, this->ang_per_pixel,
-             this->rot );
-      if (progress>1.0) progress=1.0;
+             this->presetInputs.frame, Time, this->presetInputs.progress, this->avgtime, this->presetInputs.ang_per_pixel,
+             this->presetOutputs.rot );
+      if (presetInputs.progress>1.0) presetInputs.progress=1.0;
 
 //       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
-//      Preset::active_preset->evalInitConditions();
-      Preset::active_preset->evalPerFrameEquations();
+//      this->activePreset->evalInitConditions();
+      this->activePreset->evalPerFrameEquations();
 
-//      Preset::active_preset->evalCustomWaveInitConditions();
-//      Preset::active_preset->evalCustomShapeInitConditions();
+//      this->activePreset->evalCustomWaveInitConditions();
+//      this->activePreset->evalCustomShapeInitConditions();
  
 //     printf("%f %d\n",Time,frame);
  
@@ -124,7 +124,7 @@ int x, y;
           { 
 //              printf("%f %d %d\n", beatDetect->bass-beatDetect->bass_old,this->frame,this->avgtime);
 //              switchPreset(RANDOM_NEXT, HARD_CUT);
-              nohard=fps*5;
+              nohard=presetInputs.fps*5;
           }
       }
 
@@ -199,7 +199,7 @@ int x, y;
     draw_shapes();
     draw_custom_waves();
     draw_waveform();
-    if(this->bDarkenCenter)darken_center();
+    if(this->presetOutputs.bDarkenCenter)darken_center();
     draw_borders();               //draw borders
 
     /** Restore original view state */
@@ -212,10 +212,9 @@ int x, y;
     /** Restore all original attributes */
     //  glPopAttrib();
     glFlush();
-  
-   
+
         unlockPBuffer( this->renderTarget );
-      
+
 
 #ifdef DEBUG
     GLint msd = 0,
@@ -300,7 +299,7 @@ int x, y;
 DLLEXPORT void projectM::projectM_reset() {
 
     DWRITE( "projectM_reset(): in\n" );
-    Preset::active_preset = NULL;
+    this->activePreset = NULL;
  
     this->presetURL = NULL;
     this->fontURL = NULL;
@@ -350,8 +349,8 @@ DLLEXPORT void projectM::projectM_reset() {
     this->fullscreen = 0;
 
     /** Configurable mesh size */
-    this->gx = 48;
-    this->gy = 36;
+    this->presetInputs.gx = 48;
+    this->presetInputs.gy = 36;
 
     /** Frames per preset */
     this->avgtime = 500;
@@ -414,10 +413,7 @@ DLLEXPORT void projectM::projectM_init() {
     beatDetect = new BeatDetect();
 
     /* Preset loading function */
-    initPresetLoader();
-    if ( loadPresetDir( presetURL ) == PROJECTM_ERROR ) {
-        switchToIdlePreset();
-      }
+    initPresetTools();
 
   /* Load default preset directory */
 #ifdef MACOS2
@@ -479,7 +475,7 @@ DLLEXPORT void projectM::projectM_init() {
         strcpy( fontURL, "/Users/descarte/tmp/projectM/fonts" );
         this->fontURL[34] = '\0';
 //        loadPresetDir( "../../presets/" );
-        loadPresetDir( "/Users/descarte/tmp/projectM-1.00/presets_projectM" );
+//        loadPresetDir( "/Users/descarte/tmp/projectM-1.00/presets_projectM" );
       } else {
         printf( "PresetDir: %s\n", this->presetURL );
         loadPresetDir( presetURL );
@@ -499,13 +495,13 @@ DLLEXPORT void projectM::projectM_init() {
 #endif
         DWRITE( "loading font URL directly: %s\n", this->fontURL );
 #ifdef WIN32
-        loadPresetDir( "c:\\tmp\\projectM\\presets_projectM" );
+  //      loadPresetDir( "c:\\tmp\\projectM\\presets_projectM" );
 #else
-        loadPresetDir( "/Users/descarte/tmp/projectM-1.00/presets_projectM" );
+    //    loadPresetDir( "/Users/descarte/tmp/projectM-1.00/presets_projectM" );
 #endif
       } else {
         printf( "PresetDir: %s\n", this->presetURL );
-        loadPresetDir( presetURL );
+        //loadPresetDir( presetURL );
       }
 
 #endif
@@ -514,7 +510,7 @@ printf( "pre init_display()\n" );
 
 printf( "post init_display()\n" );
 
-    mspf=(int)(1000.0/(float)fps);
+    mspf=(int)(1000.0/(float)presetInputs.fps);
 
 
    
@@ -528,7 +524,7 @@ printf( "post CreaterenderTarget\n" );
     initMenu();  
 //DWRITE( "post initMenu()\n" );
 
-    printf("mesh: %d %d\n", this->gx,this->gy );
+    printf("mesh: %d %d\n", this->presetInputs.gx,this->presetInputs.gy );
 
 #ifdef PANTS
     printf( "maxsamples: %d\n", this->maxsamples );
@@ -536,7 +532,7 @@ printf( "post CreaterenderTarget\n" );
 DWRITE( "post PCM init\n" );
 #endif
 
- this->avgtime=this->fps*20;
+ this->avgtime=this->presetInputs.fps*20;
 
     this->hasInit = 1;
 
@@ -550,7 +546,7 @@ void projectM::free_per_pixel_matrices() {
 
   int x;
 
- for(x = 0; x < this->gx; x++)
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
       
       free(this->gridx[x]);
@@ -561,10 +557,10 @@ void projectM::free_per_pixel_matrices() {
       free(this->origy[x]);
       free(this->origx2[x]);
       free(this->origy2[x]);
-      free(this->x_mesh[x]);
-      free(this->y_mesh[x]);
-      free(this->rad_mesh[x]);
-      free(this->theta_mesh[x]);
+      free(this->presetInputs.x_mesh[x]);
+      free(this->presetInputs.y_mesh[x]);
+      free(this->presetInputs.rad_mesh[x]);
+      free(this->presetInputs.theta_mesh[x]);
       
     }
 
@@ -575,10 +571,10 @@ void projectM::free_per_pixel_matrices() {
   free(this->origy2);
   free(this->gridx);
   free(this->gridy);
-  free(this->x_mesh);
-  free(this->y_mesh);
-  free(this->rad_mesh);
-  free(this->theta_mesh);
+  free(this->presetInputs.x_mesh);
+  free(this->presetInputs.y_mesh);
+  free(this->presetInputs.rad_mesh);
+  free(this->presetInputs.theta_mesh);
 
   this->origx = NULL;
   this->origy = NULL;
@@ -586,10 +582,10 @@ void projectM::free_per_pixel_matrices() {
   this->origy2 = NULL;
   this->gridx = NULL;
   this->gridy = NULL;
-  this->x_mesh = NULL;
-  this->y_mesh = NULL;
-  this->rad_mesh = NULL;
-  this->theta_mesh = NULL;
+  this->presetInputs.x_mesh = NULL;
+  this->presetInputs.y_mesh = NULL;
+  this->presetInputs.rad_mesh = NULL;
+  this->presetInputs.theta_mesh = NULL;
 }
 
 
@@ -597,122 +593,122 @@ void projectM::init_per_pixel_matrices() {
 
   int x,y; 
   
-  this->gridx=(float **)wipemalloc(this->gx * sizeof(float *));
-   for(x = 0; x < this->gx; x++)
+  this->gridx=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+   for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->gridx[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->gridx[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->gridy=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->gridy=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->gridy[x] = (float *)wipemalloc(this->gy * sizeof(float)); 
+      this->gridy[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float)); 
     }
-  this->origtheta=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->origtheta=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->origtheta[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->origtheta[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->origrad=(float **)wipemalloc(this->gx * sizeof(float *));
-     for(x = 0; x < this->gx; x++)
+  this->origrad=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+     for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->origrad[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->origrad[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->origx=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->origx=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->origx[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->origx[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->origy=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->origy=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->origy[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->origy[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->origx2=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->origx2=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->origx2[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->origx2[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }  
-this->origy2=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+this->origy2=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->origy2[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->origy2[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->x_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->presetInputs.x_mesh=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->x_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->presetInputs.x_mesh[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->y_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->presetInputs.y_mesh=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->y_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->presetInputs.y_mesh[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     
     }
-  this->rad_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->presetInputs.rad_mesh=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->rad_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->presetInputs.rad_mesh[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->theta_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->presetInputs.theta_mesh=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->theta_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->presetInputs.theta_mesh[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->sx_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->presetOutputs.sx_mesh=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->sx_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->presetOutputs.sx_mesh[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->sy_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->presetOutputs.sy_mesh=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->sy_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->presetOutputs.sy_mesh[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->dx_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->presetOutputs.dx_mesh=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->dx_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->presetOutputs.dx_mesh[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->dy_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->presetOutputs.dy_mesh=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->dy_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->presetOutputs.dy_mesh[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->cx_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->presetOutputs.cx_mesh=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->cx_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->presetOutputs.cx_mesh[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->cy_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->presetOutputs.cy_mesh=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->cy_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->presetOutputs.cy_mesh[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->zoom_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->presetOutputs.zoom_mesh=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->zoom_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->presetOutputs.zoom_mesh[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->zoomexp_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->presetOutputs.zoomexp_mesh=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     {
-      this->zoomexp_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->presetOutputs.zoomexp_mesh[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
-  this->rot_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->presetOutputs.rot_mesh=(float **)wipemalloc(this->presetInputs.gx * sizeof(float *));
+ for(x = 0; x < this->presetInputs.gx; x++)
     { 
-      this->rot_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->presetOutputs.rot_mesh[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
     }
 
 
 
   //initialize reference grid values
-  for (x=0;x<this->gx;x++)
+  for (x=0;x<this->presetInputs.gx;x++)
     {
-      for(y=0;y<this->gy;y++)
+      for(y=0;y<this->presetInputs.gy;y++)
 	{
-	   this->origx[x][y]=x/(float)(this->gx-1);
-	   this->origy[x][y]=-((y/(float)(this->gy-1))-1);
+	   this->origx[x][y]=x/(float)(this->presetInputs.gx-1);
+	   this->origy[x][y]=-((y/(float)(this->presetInputs.gy-1))-1);
 	   this->origrad[x][y]=hypot((this->origx[x][y]-.5)*2,(this->origy[x][y]-.5)*2) * .7071067;
   	   this->origtheta[x][y]=atan2(((this->origy[x][y]-.5)*2),((this->origx[x][y]-.5)*2));
 	   this->gridx[x][y]=this->origx[x][y]*this->renderTarget->texsize;
@@ -730,132 +726,132 @@ void projectM::do_per_pixel_math() {
   int x,y;
   float fZoom2,fZoom2Inv;
 
-  Preset::active_preset->evalPerPixelEqns();
+  this->activePreset->evalPerPixelEqns();
 
-  if(!Preset::active_preset->isPerPixelEqn(CX_OP))
+  if(!this->activePreset->isPerPixelEqn(CX_OP))
        { 
-      for (x=0;x<this->gx;x++){
+      for (x=0;x<this->presetInputs.gx;x++){
        
-	for(y=0;y<this->gy;y++){
-	  this->cx_mesh[x][y]=this->cx;
+	for(y=0;y<this->presetInputs.gy;y++){
+	  this->presetOutputs.cx_mesh[x][y]=this->presetOutputs.cx;
 	}
 	
       }
     }
 
-  if(!Preset::active_preset->isPerPixelEqn(CY_OP))
+  if(!this->activePreset->isPerPixelEqn(CY_OP))
         { 
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  this->cy_mesh[x][y]=this->cy;
+      for (x=0;x<this->presetInputs.gx;x++){
+	for(y=0;y<this->presetInputs.gy;y++){
+	  this->presetOutputs.cy_mesh[x][y]=this->presetOutputs.cy;
 	}}
     }
   
-  if(!Preset::active_preset->isPerPixelEqn(SX_OP))
+  if(!this->activePreset->isPerPixelEqn(SX_OP))
     { 
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  this->sx_mesh[x][y]=this->sx;
+      for (x=0;x<this->presetInputs.gx;x++){
+	for(y=0;y<this->presetInputs.gy;y++){
+	  this->presetOutputs.sx_mesh[x][y]=this->presetOutputs.sx;
 	}}
     }
   
-  if(!Preset::active_preset->isPerPixelEqn(SY_OP))
+  if(!this->activePreset->isPerPixelEqn(SY_OP))
     { 
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  this->sy_mesh[x][y]=this->sy;
+      for (x=0;x<this->presetInputs.gx;x++){
+	for(y=0;y<this->presetInputs.gy;y++){
+	  this->presetOutputs.sy_mesh[x][y]=this->presetOutputs.sy;
 	}}
     }
 
-  if(!Preset::active_preset->isPerPixelEqn(ZOOM_OP))
+  if(!this->activePreset->isPerPixelEqn(ZOOM_OP))
     {       
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  this->zoom_mesh[x][y]=this->zoom;
+      for (x=0;x<this->presetInputs.gx;x++){
+	for(y=0;y<this->presetInputs.gy;y++){
+	  this->presetOutputs.zoom_mesh[x][y]=this->presetOutputs.zoom;
 	}}
     }
  
-  if(!Preset::active_preset->isPerPixelEqn(ZOOMEXP_OP))
+  if(!this->activePreset->isPerPixelEqn(ZOOMEXP_OP))
     {
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  this->zoomexp_mesh[x][y]=this->zoomexp;
+      for (x=0;x<this->presetInputs.gx;x++){
+	for(y=0;y<this->presetInputs.gy;y++){
+	  this->presetOutputs.zoomexp_mesh[x][y]=this->presetOutputs.zoomexp;
 	}}
     }
 
-  if(!Preset::active_preset->isPerPixelEqn(ROT_OP))
+  if(!this->activePreset->isPerPixelEqn(ROT_OP))
     {       
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  this->rot_mesh[x][y]=this->rot;
+      for (x=0;x<this->presetInputs.gx;x++){
+	for(y=0;y<this->presetInputs.gy;y++){
+	  this->presetOutputs.rot_mesh[x][y]=this->presetOutputs.rot;
 	}
       }
     }
 
   /*
-  for (x=0;x<this->gx;x++){
-    for(y=0;y<this->gy;y++){	  	  
-      this->x_mesh[x][y]=(this->x_mesh[x][y]-.5)*2; 
+  for (x=0;x<this->presetInputs.gx;x++){
+    for(y=0;y<this->presetInputs.gy;y++){	  	  
+      this->presetInputs.x_mesh[x][y]=(this->presetInputs.x_mesh[x][y]-.5)*2; 
     }
   }
  
-  for (x=0;x<this->gx;x++){
-    for(y=0;y<this->gy;y++){	  	  
-      this->y_mesh[x][y]=(this->y_mesh[x][y]-.5)*2; 
+  for (x=0;x<this->presetInputs.gx;x++){
+    for(y=0;y<this->presetInputs.gy;y++){	  	  
+      this->presetInputs.y_mesh[x][y]=(this->presetInputs.y_mesh[x][y]-.5)*2; 
     }
   }
   */
 
-  for (x=0;x<this->gx;x++){
-    for(y=0;y<this->gy;y++){
-      fZoom2 = powf( this->zoom_mesh[x][y], powf( this->zoomexp_mesh[x][y], this->rad_mesh[x][y]*2.0f - 1.0f));
+  for (x=0;x<this->presetInputs.gx;x++){
+    for(y=0;y<this->presetInputs.gy;y++){
+      fZoom2 = powf( this->presetOutputs.zoom_mesh[x][y], powf( this->presetOutputs.zoomexp_mesh[x][y], this->presetInputs.rad_mesh[x][y]*2.0f - 1.0f));
       fZoom2Inv = 1.0f/fZoom2;
-      this->x_mesh[x][y]= this->origx2[x][y]*0.5f*fZoom2Inv + 0.5f;
-      this->y_mesh[x][y]= this->origy2[x][y]*0.5f*fZoom2Inv + 0.5f;
+      this->presetInputs.x_mesh[x][y]= this->origx2[x][y]*0.5f*fZoom2Inv + 0.5f;
+      this->presetInputs.y_mesh[x][y]= this->origy2[x][y]*0.5f*fZoom2Inv + 0.5f;
     }
   }
 	
-  for (x=0;x<this->gx;x++){
-    for(y=0;y<this->gy;y++){
-      this->x_mesh[x][y]  = ( this->x_mesh[x][y] - this->cx_mesh[x][y])/this->sx_mesh[x][y] + this->cx_mesh[x][y];
+  for (x=0;x<this->presetInputs.gx;x++){
+    for(y=0;y<this->presetInputs.gy;y++){
+      this->presetInputs.x_mesh[x][y]  = ( this->presetInputs.x_mesh[x][y] - this->presetOutputs.cx_mesh[x][y])/this->presetOutputs.sx_mesh[x][y] + this->presetOutputs.cx_mesh[x][y];
     }
   }
   
-  for (x=0;x<this->gx;x++){
-    for(y=0;y<this->gy;y++){
-      this->y_mesh[x][y] = ( this->y_mesh[x][y] - this->cy_mesh[x][y])/this->sy_mesh[x][y] + this->cy_mesh[x][y];
+  for (x=0;x<this->presetInputs.gx;x++){
+    for(y=0;y<this->presetInputs.gy;y++){
+      this->presetInputs.y_mesh[x][y] = ( this->presetInputs.y_mesh[x][y] - this->presetOutputs.cy_mesh[x][y])/this->presetOutputs.sy_mesh[x][y] + this->presetOutputs.cy_mesh[x][y];
     }
   }	   
 	 
 
- for (x=0;x<this->gx;x++){
-   for(y=0;y<this->gy;y++){
-     float u2 = this->x_mesh[x][y] - this->cx_mesh[x][y];
-     float v2 = this->y_mesh[x][y] - this->cy_mesh[x][y];
+ for (x=0;x<this->presetInputs.gx;x++){
+   for(y=0;y<this->presetInputs.gy;y++){
+     float u2 = this->presetInputs.x_mesh[x][y] - this->presetOutputs.cx_mesh[x][y];
+     float v2 = this->presetInputs.y_mesh[x][y] - this->presetOutputs.cy_mesh[x][y];
      
-     float cos_rot = cosf(this->rot_mesh[x][y]);
-     float sin_rot = sinf(this->rot_mesh[x][y]);
+     float cos_rot = cosf(this->presetOutputs.rot_mesh[x][y]);
+     float sin_rot = sinf(this->presetOutputs.rot_mesh[x][y]);
      
-     this->x_mesh[x][y] = u2*cos_rot - v2*sin_rot + this->cx_mesh[x][y];
-     this->y_mesh[x][y] = u2*sin_rot + v2*cos_rot + this->cy_mesh[x][y];
+     this->presetInputs.x_mesh[x][y] = u2*cos_rot - v2*sin_rot + this->presetOutputs.cx_mesh[x][y];
+     this->presetInputs.y_mesh[x][y] = u2*sin_rot + v2*cos_rot + this->presetOutputs.cy_mesh[x][y];
 
   }
  }	  
 
- if(Preset::active_preset->isPerPixelEqn(DX_OP))
+ if(this->activePreset->isPerPixelEqn(DX_OP))
    {
-     for (x=0;x<this->gx;x++){
-       for(y=0;y<this->gy;y++){	      
-	 this->x_mesh[x][y] -= this->dx_mesh[x][y];
+     for (x=0;x<this->presetInputs.gx;x++){
+       for(y=0;y<this->presetInputs.gy;y++){	      
+	 this->presetInputs.x_mesh[x][y] -= this->presetOutputs.dx_mesh[x][y];
        }
      }
    }
  
- if(Preset::active_preset->isPerPixelEqn(DY_OP))
+ if(this->activePreset->isPerPixelEqn(DY_OP))
    {
-     for (x=0;x<this->gx;x++){
-       for(y=0;y<this->gy;y++){	      
-	 this->y_mesh[x][y] -= this->dy_mesh[x][y];
+     for (x=0;x<this->presetInputs.gx;x++){
+       for(y=0;y<this->presetInputs.gy;y++){	      
+	 this->presetInputs.y_mesh[x][y] -= this->presetOutputs.dy_mesh[x][y];
        }
      }
 		  	
@@ -867,47 +863,47 @@ void projectM::reset_per_pixel_matrices() {
 
   int x,y;
   /*
-  for (x=0;x<this->gx;x++)
+  for (x=0;x<this->presetInputs.gx;x++)
     {
-      memcpy(this->x_mesh[x],this->origx[x],sizeof(float)*this->gy);
+      memcpy(this->presetInputs.x_mesh[x],this->origx[x],sizeof(float)*this->presetInputs.gy);
     }
-  for (x=0;x<this->gx;x++)
+  for (x=0;x<this->presetInputs.gx;x++)
     {
-      memcpy(this->y_mesh[x],this->origy[x],sizeof(float)*this->gy);
+      memcpy(this->presetInputs.y_mesh[x],this->origy[x],sizeof(float)*this->presetInputs.gy);
     }
-  for (x=0;x<this->gx;x++)
+  for (x=0;x<this->presetInputs.gx;x++)
     {
-      memcpy(this->rad_mesh[x],this->origrad[x],sizeof(float)*this->gy);
+      memcpy(this->presetInputs.rad_mesh[x],this->origrad[x],sizeof(float)*this->presetInputs.gy);
     }
-  for (x=0;x<this->gx;x++)
+  for (x=0;x<this->presetInputs.gx;x++)
     {
-      memcpy(this->theta_mesh[x],this->origtheta[x],sizeof(float)*this->gy);
+      memcpy(this->presetInputs.theta_mesh[x],this->origtheta[x],sizeof(float)*this->presetInputs.gy);
     }
   */
   
-    for (x=0;x<this->gx;x++)
+    for (x=0;x<this->presetInputs.gx;x++)
     {
-      for(y=0;y<this->gy;y++)
+      for(y=0;y<this->presetInputs.gy;y++)
 	{   
-          this->x_mesh[x][y]=this->origx[x][y];
-	  this->y_mesh[x][y]=this->origy[x][y];
-	  this->rad_mesh[x][y]=this->origrad[x][y];
-	  this->theta_mesh[x][y]=this->origtheta[x][y];	  
+          this->presetInputs.x_mesh[x][y]=this->origx[x][y];
+	  this->presetInputs.y_mesh[x][y]=this->origy[x][y];
+	  this->presetInputs.rad_mesh[x][y]=this->origrad[x][y];
+	  this->presetInputs.theta_mesh[x][y]=this->origtheta[x][y];	  
 	}
     }
   
-  //memcpy(this->x_mesh,this->origx,sizeof(float)*this->gy*this->gx);
-  //memcpy(this->y_mesh,this->origy,sizeof(float)*this->gy*this->gx);
-  //memcpy(this->rad_mesh,this->origrad,sizeof(float)*this->gy*this->gx);
-  //memcpy(this->theta_mesh,this->origtheta,sizeof(float)*this->gy*this->gx);
+  //memcpy(this->presetInputs.x_mesh,this->origx,sizeof(float)*this->presetInputs.gy*this->presetInputs.gx);
+  //memcpy(this->presetInputs.y_mesh,this->origy,sizeof(float)*this->presetInputs.gy*this->presetInputs.gx);
+  //memcpy(this->presetInputs.rad_mesh,this->origrad,sizeof(float)*this->presetInputs.gy*this->presetInputs.gx);
+  //memcpy(this->presetInputs.theta_mesh,this->origtheta,sizeof(float)*this->presetInputs.gy*this->presetInputs.gx);
  }
 
 void projectM::rescale_per_pixel_matrices() {
 
     int x, y;
 
-    for ( x = 0 ; x < this->gx ; x++ ) {
-        for ( y = 0 ; y < this->gy ; y++ ) {
+    for ( x = 0 ; x < this->presetInputs.gx ; x++ ) {
+        for ( y = 0 ; y < this->presetInputs.gy ; y++ ) {
             this->gridx[x][y]=this->origx[x][y];
             this->gridy[x][y]=this->origy[x][y];
 
@@ -926,7 +922,7 @@ void projectM::draw_custom_waves() {
 
   glPointSize(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512); 
  
-  while ((wavecode = Preset::active_preset->nextCustomWave()) != NULL)
+  while ((wavecode = this->activePreset->nextCustomWave()) != NULL)
     {
      
       if(wavecode->enabled==1)
@@ -941,7 +937,7 @@ void projectM::draw_custom_waves() {
 	  // printf("%f\n",pcmL[0]);
 
 
-	  float mult=wavecode->scaling*this->fWaveScale*(wavecode->bSpectrum ? 0.015f :1.0f);
+	  float mult=wavecode->scaling*this->presetOutputs.fWaveScale*(wavecode->bSpectrum ? 0.015f :1.0f);
 
 	  for(x=0;x<wavecode->samples;x++)
 	    {wavecode->value1[x]*=mult;}
@@ -1023,7 +1019,7 @@ void projectM::draw_shapes() {
     glPushMatrix();
     glTranslatef( 0, 0, -1 );
   
-  while ((shapecode = Preset::active_preset->nextCustomShape()) != NULL)
+  while ((shapecode = this->activePreset->nextCustomShape()) != NULL)
     {
 
       if(shapecode->enabled==1)
@@ -1128,7 +1124,7 @@ void projectM::draw_shapes() {
 
 	   	 
 	  }
-	    if (this->bWaveThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
+	    if (this->presetOutputs.bWaveThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
 	      glBegin(GL_LINE_LOOP);
 	      glColor4f(shapecode->border_r,shapecode->border_g,shapecode->border_b,shapecode->border_a);
 	      for ( i=1;i<shapecode->sides+1;i++)
@@ -1141,7 +1137,7 @@ void projectM::draw_shapes() {
 		  //glVertex3f(shapecode->radius*cos(theta)+xval,shapecode->radius*sin(theta)+yval,-1);
 		}
 	      glEnd();
-	  if (this->bWaveThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
+	  if (this->presetOutputs.bWaveThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
 	  
 	  glPopMatrix();
 	}
@@ -1169,7 +1165,7 @@ void projectM::draw_waveform() {
   float cos_rot;
   float sin_rot;    
 
-    DWRITE( "draw_waveform: %d\n", this->nWaveMode );
+    DWRITE( "draw_waveform: %d\n", this->presetOutputs.nWaveMode );
 
     glMatrixMode( GL_MODELVIEW );
     glPushMatrix();
@@ -1177,28 +1173,28 @@ void projectM::draw_waveform() {
   modulate_opacity_by_volume(); 
   maximize_colors();
   
-  if(this->bWaveDots==1) glEnable(GL_LINE_STIPPLE);
+  if(this->presetOutputs.bWaveDots==1) glEnable(GL_LINE_STIPPLE);
   
-  offset=this->wave_x-.5;
+  offset=this->presetOutputs.wave_x-.5;
   scale=505.0/512.0;
 
 
   
 
   //Thick wave drawing
-  if (this->bWaveThick==1)  glLineWidth( (this->renderTarget->texsize < 512 ) ? 2 : 2*this->renderTarget->texsize/512);
+  if (this->presetOutputs.bWaveThick==1)  glLineWidth( (this->renderTarget->texsize < 512 ) ? 2 : 2*this->renderTarget->texsize/512);
 
   //Additive wave drawing (vice overwrite)
-  if (this->bAdditiveWaves==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+  if (this->presetOutputs.bAdditiveWaves==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
   else    glBlendFunc(GL_SRC_ALPHA, GL_ONE); 
  
-      switch(this->nWaveMode)
+      switch(this->presetOutputs.nWaveMode)
 	{
 	  
 	case 8://monitor
 
 	  glTranslatef(0.5,0.5, 0);
-	  glRotated(-this->wave_mystery*90,0,0,1);
+	  glRotated(-this->presetOutputs.wave_mystery*90,0,0,1);
 
 	     glTranslatef(-0.5,-0.825, 0);
 	     glTranslatef( 0, 0, -1 );
@@ -1208,11 +1204,11 @@ void projectM::draw_waveform() {
 	       {
 		 glBegin(GL_LINE_STRIP);
 		 glColor4f(1.0-(x/15.0),.5,x/15.0,1.0);
-		 glVertex3f((this->totalframes%256)*2*scale, -this->beat_val[x]*this->fWaveScale+renderTarget->texsize*wave_y,-1);
+		 glVertex3f((this->totalframes%256)*2*scale, -this->beat_val[x]*this->presetOutputs.fWaveScale+renderTarget->texsize*wave_y,-1);
 		 glColor4f(.5,.5,.5,1.0);
-		 glVertex3f((this->totalframes%256)*2*scale, this->renderTarget->texsize*this->wave_y,-1);   
+		 glVertex3f((this->totalframes%256)*2*scale, this->renderTarget->texsize*this->presetOutputs.wave_y,-1);   
 		 glColor4f(1.0,1.0,0,1.0);
-		 //glVertex3f((this->totalframes%256)*scale*2, this->beat_val_att[x]*this->fWaveScale+this->renderTarget->texsize*this->wave_y,-1);
+		 //glVertex3f((this->totalframes%256)*scale*2, this->beat_val_att[x]*this->presetOutputs.fWaveScale+this->renderTarget->texsize*this->presetOutputs.wave_y,-1);
 		 glEnd();
 	       
 		 glTranslatef(0,this->renderTarget->texsize*(1/36.0), 0);
@@ -1224,32 +1220,32 @@ void projectM::draw_waveform() {
  
 	     glBegin(GL_LINE_STRIP);
 	     glColor4f(1.0,1.0,0.5,1.0);
-	     glVertex2f((this->totalframes%256)*2*scale, beatDetect->treb_att*5*this->fWaveScale+this->wave_y);
+	     glVertex2f((this->totalframes%256)*2*scale, beatDetect->treb_att*5*this->presetOutputs.fWaveScale+this->presetOutputs.wave_y);
 	     glColor4f(.2,.2,.2,1.0);
-	     glVertex2f((this->totalframes%256)*2*scale, this->wave_y);   
+	     glVertex2f((this->totalframes%256)*2*scale, this->presetOutputs.wave_y);   
 	     glColor4f(1.0,1.0,0,1.0);
-	     glVertex2f((this->totalframes%256)*scale*2, beatDetect->treb*-5*this->fWaveScale+this->wave_y);
+	     glVertex2f((this->totalframes%256)*scale*2, beatDetect->treb*-5*this->presetOutputs.fWaveScale+this->presetOutputs.wave_y);
 	     glEnd();
 	       
 	       glTranslatef(0,.075, 0);
 	     glBegin(GL_LINE_STRIP);
 	     glColor4f(0,1.0,0.0,1.0);
-	     glVertex2f((this->totalframes%256)*2*scale, beatDetect->mid_att*5*this->fWaveScale+this->wave_y);
+	     glVertex2f((this->totalframes%256)*2*scale, beatDetect->mid_att*5*this->presetOutputs.fWaveScale+this->presetOutputs.wave_y);
 	     glColor4f(.2,.2,.2,1.0);
-	     glVertex2f((this->totalframes%256)*2*scale, this->wave_y);   
+	     glVertex2f((this->totalframes%256)*2*scale, this->presetOutputs.wave_y);   
 	     glColor4f(.5,1.0,.5,1.0);
-	     glVertex2f((this->totalframes%256)*scale*2, beatDetect->mid*-5*this->fWaveScale+this->wave_y);
+	     glVertex2f((this->totalframes%256)*scale*2, beatDetect->mid*-5*this->presetOutputs.fWaveScale+this->presetOutputs.wave_y);
 	     glEnd(); 
 	  
 	   
 	     glTranslatef(0,.075, 0);
 	     glBegin(GL_LINE_STRIP);
 	     glColor4f(1.0,0,0,1.0);
-	     glVertex2f((this->totalframes%256)*2*scale, beatDetect->bass_att*5*this->fWaveScale+this->wave_y);
+	     glVertex2f((this->totalframes%256)*2*scale, beatDetect->bass_att*5*this->presetOutputs.fWaveScale+this->presetOutputs.wave_y);
 	     glColor4f(.2,.2,.2,1.0);
-	     glVertex2f((this->totalframes%256)*2*scale, this->wave_y);   
+	     glVertex2f((this->totalframes%256)*2*scale, this->presetOutputs.wave_y);   
 	     glColor4f(1.0,.5,.5,1.0);
-	     glVertex2f((this->totalframes%256)*scale*2, beatDetect->bass*-5*this->fWaveScale+this->wave_y);
+	     glVertex2f((this->totalframes%256)*scale*2, beatDetect->bass*-5*this->presetOutputs.fWaveScale+this->presetOutputs.wave_y);
 	     glEnd(); 
 	     
 	  break;
@@ -1268,7 +1264,7 @@ void projectM::draw_waveform() {
 
     glTranslatef( 0, 0, -1 );
 
-	  this->wave_y=-1*(this->wave_y-1.0);
+	  this->presetOutputs.wave_y=-1*(this->presetOutputs.wave_y-1.0);
  
 	  glBegin(GL_LINE_STRIP);
 
@@ -1279,29 +1275,29 @@ void projectM::draw_waveform() {
 	    //co= -(fabs(x-((beatDetect->pcm->numsamples*.5)-1))/beatDetect->pcm->numsamples)+1;
 	      // printf("%d %f\n",x,co);
 	      //theta=x*(6.28/beatDetect->pcm->numsamples);
-	      //r= ((1+2*this->wave_mystery)*(this->renderTarget->texsize/5.0)+
+	      //r= ((1+2*this->presetOutputs.wave_mystery)*(this->renderTarget->texsize/5.0)+
 	      //  ( co*beatDetect->pcm->pcmdataL[x]+ (1-co)*beatDetect->pcm->pcmdataL[-(x-(beatDetect->pcm->numsamples-1))])
-	      //  *25*this->fWaveScale);
-	      r=(0.5 + 0.4f*.12*beatDetect->pcm->pcmdataR[x]*this->fWaveScale + this->wave_mystery)*.5;
+	      //  *25*this->presetOutputs.fWaveScale);
+	      r=(0.5 + 0.4f*.12*beatDetect->pcm->pcmdataR[x]*this->presetOutputs.fWaveScale + this->presetOutputs.wave_mystery)*.5;
 	      theta=(x)*inv_nverts_minus_one*6.28f + this->Time*0.2f;
 	      /* 
 	      if (x < 51)
 		{
 		  float mix = x/51.0;
 		  mix = 0.5f - 0.5f*cosf(mix * 3.1416f);
-		  float rad_2 = 0.5f + 0.4f*.12*beatDetect->pcm->pcmdataR[x]*this->fWaveScale + this->wave_mystery;
+		  float rad_2 = 0.5f + 0.4f*.12*beatDetect->pcm->pcmdataR[x]*this->presetOutputs.fWaveScale + this->presetOutputs.wave_mystery;
 		  r = rad_2*(1.0f-mix) + r*(mix);
 		}
 	      */
-  glVertex2f((r*cos(theta)*(this->correction ? this->aspect : 1.0)+this->wave_x), (r*sin(theta)+this->wave_y));
+  glVertex2f((r*cos(theta)*(this->correction ? this->aspect : 1.0)+this->presetOutputs.wave_x), (r*sin(theta)+this->presetOutputs.wave_y));
 	     
 	    }
 
-	  //	  r= ( (1+2*this->wave_mystery)*(this->renderTarget->texsize/5.0)+
+	  //	  r= ( (1+2*this->presetOutputs.wave_mystery)*(this->renderTarget->texsize/5.0)+
 	  //     (0.5*beatDetect->pcm->pcmdataL[0]+ 0.5*beatDetect->pcm->pcmdataL[beatDetect->pcm->numsamples-1])
-	  //      *20*this->fWaveScale);
+	  //      *20*this->presetOutputs.fWaveScale);
       
-	  //glVertex3f(r*cos(0)+(this->wave_x*this->renderTarget->texsize),r*sin(0)+(this->wave_y*this->renderTarget->texsize),-1);
+	  //glVertex3f(r*cos(0)+(this->presetOutputs.wave_x*this->renderTarget->texsize),r*sin(0)+(this->presetOutputs.wave_y*this->renderTarget->texsize),-1);
 
 	  glEnd();
 	  /*
@@ -1310,9 +1306,9 @@ void projectM::draw_waveform() {
 	  for ( x=0;x<(512/pcmbreak);x++)
 	    {
 	      theta=(blockstart+x)*((6.28*pcmbreak)/512.0);
-	      r= ((1+2*this->wave_mystery)*(this->renderTarget->texsize/5.0)+fdata_buffer[fbuffer][0][blockstart+x]*.0025*this->fWaveScale);
+	      r= ((1+2*this->presetOutputs.wave_mystery)*(this->renderTarget->texsize/5.0)+fdata_buffer[fbuffer][0][blockstart+x]*.0025*this->presetOutputs.fWaveScale);
 	      
-	      glVertex3f(r*cos(theta)+(this->wave_x*this->renderTarget->texsize),r*sin(theta)+(wave_y*this->renderTarget->texsize),-1);
+	      glVertex3f(r*cos(theta)+(this->presetOutputs.wave_x*this->renderTarget->texsize),r*sin(theta)+(wave_y*this->renderTarget->texsize),-1);
 	    }
 	  glEnd();
 	  */
@@ -1328,7 +1324,7 @@ void projectM::draw_waveform() {
 	  glTranslatef((-.5) ,(-.5),0);   
 	  glTranslatef( 0, 0, -1 );
 
-	  this->wave_y=-1*(this->wave_y-1.0);
+	  this->presetOutputs.wave_y=-1*(this->presetOutputs.wave_y-1.0);
 
 	  glBegin(GL_LINE_STRIP);
 	  //theta=(frame%512)*(6.28/512.0);
@@ -1337,20 +1333,20 @@ void projectM::draw_waveform() {
 	    {
 	      //co= -(abs(x-255)/512.0)+1;
 	      // printf("%d %f\n",x,co);
-	      //theta=((this->frame%256)*(2*6.28/512.0))+beatDetect->pcm->pcmdataL[x]*.2*this->fWaveScale;
-	      //r= ((1+2*this->wave_mystery)*(this->renderTarget->texsize/5.0)+
-	      //   (beatDetect->pcm->pcmdataL[x]-beatDetect->pcm->pcmdataL[x-1])*80*this->fWaveScale);
-	      theta=beatDetect->pcm->pcmdataL[x+32]*0.06*this->fWaveScale * 1.57 + this->Time*2.3;
-	      r=(0.53 + 0.43*beatDetect->pcm->pcmdataR[x]*0.12*this->fWaveScale+ this->wave_mystery)*.5;
+	      //theta=((this->frame%256)*(2*6.28/512.0))+beatDetect->pcm->pcmdataL[x]*.2*this->presetOutputs.fWaveScale;
+	      //r= ((1+2*this->presetOutputs.wave_mystery)*(this->renderTarget->texsize/5.0)+
+	      //   (beatDetect->pcm->pcmdataL[x]-beatDetect->pcm->pcmdataL[x-1])*80*this->presetOutputs.fWaveScale);
+	      theta=beatDetect->pcm->pcmdataL[x+32]*0.06*this->presetOutputs.fWaveScale * 1.57 + this->Time*2.3;
+	      r=(0.53 + 0.43*beatDetect->pcm->pcmdataR[x]*0.12*this->presetOutputs.fWaveScale+ this->presetOutputs.wave_mystery)*.5;
 
 	     
- glVertex2f((r*cos(theta)*(this->correction ? this->aspect : 1.0)+this->wave_x),(r*sin(theta)+this->wave_y));
+ glVertex2f((r*cos(theta)*(this->correction ? this->aspect : 1.0)+this->presetOutputs.wave_x),(r*sin(theta)+this->presetOutputs.wave_y));
 	    }
 
 	  glEnd(); 
 	  /*
-	  this->wave_y=-1*(this->wave_y-1.0);  
-	  wave_x_temp=(this->wave_x*.75)+.125;	
+	  this->presetOutputs.wave_y=-1*(this->presetOutputs.wave_y-1.0);  
+	  wave_x_temp=(this->presetOutputs.wave_x*.75)+.125;	
 	  wave_x_temp=-(wave_x_temp-1); 
 
 	  glBegin(GL_LINE_STRIP);
@@ -1359,9 +1355,9 @@ void projectM::draw_waveform() {
 	  
 	  for (x=0; x<512-32; x++)
 	    {
-	      float rad = (.53 + 0.43*beatDetect->pcm->pcmdataR[x]) + this->wave_mystery;
+	      float rad = (.53 + 0.43*beatDetect->pcm->pcmdataR[x]) + this->presetOutputs.wave_mystery;
 	      float ang = beatDetect->pcm->pcmdataL[x+32] * 1.57f + this->Time*2.3f;
-	      glVertex3f((rad*cosf(ang)*.2*scale*this->fWaveScale + wave_x_temp)*this->renderTarget->texsize,(rad*sinf(ang)*this->fWaveScale*.2*scale + this->wave_y)*this->renderTarget->texsize,-1);
+	      glVertex3f((rad*cosf(ang)*.2*scale*this->presetOutputs.fWaveScale + wave_x_temp)*this->renderTarget->texsize,(rad*sinf(ang)*this->presetOutputs.fWaveScale*.2*scale + this->presetOutputs.wave_y)*this->renderTarget->texsize,-1);
 	      
 	    }
 	  glEnd();
@@ -1372,7 +1368,7 @@ void projectM::draw_waveform() {
 	case 2://EXPERIMENTAL
 
         glTranslatef( 0, 0, -1 );
-	  this->wave_y=-1*(this->wave_y-1.0);  
+	  this->presetOutputs.wave_y=-1*(this->presetOutputs.wave_y-1.0);  
 
 
 	  glBegin(GL_LINE_STRIP);
@@ -1380,7 +1376,7 @@ void projectM::draw_waveform() {
 	  for (x=0; x<512-32; x++)
 	    {
 	   
-  glVertex2f((beatDetect->pcm->pcmdataR[x]*this->fWaveScale*0.5*(this->correction ? this->aspect : 1.0) + this->wave_x),( (beatDetect->pcm->pcmdataL[x+32]*this->fWaveScale*0.5 + this->wave_y)));
+  glVertex2f((beatDetect->pcm->pcmdataR[x]*this->presetOutputs.fWaveScale*0.5*(this->correction ? this->aspect : 1.0) + this->presetOutputs.wave_x),( (beatDetect->pcm->pcmdataL[x+32]*this->presetOutputs.fWaveScale*0.5 + this->presetOutputs.wave_y)));
 	    }
 	  glEnd();	
 	  
@@ -1389,8 +1385,8 @@ void projectM::draw_waveform() {
 	case 3://EXPERIMENTAL
 
 	    glTranslatef( 0, 0, -9 );
-	  this->wave_y=-1*(this->wave_y-1.0);  
-	  //wave_x_temp=(this->wave_x*.75)+.125;	
+	  this->presetOutputs.wave_y=-1*(this->presetOutputs.wave_y-1.0);  
+	  //wave_x_temp=(this->presetOutputs.wave_x*.75)+.125;	
 	  //wave_x_temp=-(wave_x_temp-1); 
 	  
 	 
@@ -1400,7 +1396,7 @@ void projectM::draw_waveform() {
 	  for (x=0; x<512-32; x++)
 	    {
 	      
-	      glVertex2f((beatDetect->pcm->pcmdataR[x] * this->fWaveScale*0.5 + this->wave_x),( (beatDetect->pcm->pcmdataL[x+32]*this->fWaveScale*0.5 + this->wave_y)));
+	      glVertex2f((beatDetect->pcm->pcmdataR[x] * this->presetOutputs.fWaveScale*0.5 + this->presetOutputs.wave_x),( (beatDetect->pcm->pcmdataL[x+32]*this->presetOutputs.fWaveScale*0.5 + this->presetOutputs.wave_y)));
  
 	    }
 	  glEnd();	
@@ -1409,22 +1405,22 @@ void projectM::draw_waveform() {
 
 	case 4://single x-axis derivative waveform
 	  {
-	  this->wave_y=-1*(this->wave_y-1.0);	  
+	  this->presetOutputs.wave_y=-1*(this->presetOutputs.wave_y-1.0);	  
 	  glTranslatef(.5,.5, 0);
-	  glRotated(-this->wave_mystery*90,0,0,1);
+	  glRotated(-this->presetOutputs.wave_mystery*90,0,0,1);
 	  glTranslatef(-.5,-.5, 0);
         glTranslatef( 0, 0, -1 );
 	 
-	  float w1 = 0.45f + 0.5f*(this->wave_mystery*0.5f + 0.5f);	       
+	  float w1 = 0.45f + 0.5f*(this->presetOutputs.wave_mystery*0.5f + 0.5f);	       
 	  float w2 = 1.0f - w1;
 	  float xx[512],yy[512];
 				
 	  glBegin(GL_LINE_STRIP);
 	  for (int i=0; i<512; i++)
 	    {
-	     xx[i] = -1.0f + 2.0f*(i/512.0) + this->wave_x;
-	     yy[i] =0.4* beatDetect->pcm->pcmdataL[i]*0.47f*this->fWaveScale + this->wave_y;
-	     xx[i] += 0.4*beatDetect->pcm->pcmdataR[i]*0.44f*this->fWaveScale;				      
+	     xx[i] = -1.0f + 2.0f*(i/512.0) + this->presetOutputs.wave_x;
+	     yy[i] =0.4* beatDetect->pcm->pcmdataL[i]*0.47f*this->presetOutputs.fWaveScale + this->presetOutputs.wave_y;
+	     xx[i] += 0.4*beatDetect->pcm->pcmdataR[i]*0.44f*this->presetOutputs.fWaveScale;				      
 	      
 	      if (i>1)
 		{
@@ -1437,14 +1433,14 @@ void projectM::draw_waveform() {
 	  glEnd();
 
 	  /*
-	  this->wave_x=(this->wave_x*.75)+.125;	  
-	  this->wave_x=-(this->wave_x-1); 
+	  this->presetOutputs.wave_x=(this->presetOutputs.wave_x*.75)+.125;	  
+	  this->presetOutputs.wave_x=-(this->presetOutputs.wave_x-1); 
 	  glBegin(GL_LINE_STRIP);
 	 
 	  for ( x=1;x<512;x++)
 	    {
-	      dy_adj=  beatDetect->pcm->pcmdataL[x]*20*this->fWaveScale-beatDetect->pcm->pcmdataL[x-1]*20*this->fWaveScale;
-	      glVertex3f((x*(this->renderTarget->texsize/512))+dy_adj, beatDetect->pcm->pcmdataL[x]*20*this->fWaveScale+this->renderTarget->texsize*this->wave_x,-1);
+	      dy_adj=  beatDetect->pcm->pcmdataL[x]*20*this->presetOutputs.fWaveScale-beatDetect->pcm->pcmdataL[x-1]*20*this->presetOutputs.fWaveScale;
+	      glVertex3f((x*(this->renderTarget->texsize/512))+dy_adj, beatDetect->pcm->pcmdataL[x]*20*this->presetOutputs.fWaveScale+this->renderTarget->texsize*this->presetOutputs.wave_x,-1);
 	    }
 	  glEnd(); 
 	  */
@@ -1455,7 +1451,7 @@ void projectM::draw_waveform() {
 	  	  
         glTranslatef( 0, 0, -5 );	
 	  
-	  this->wave_y=-1*(this->wave_y-1.0);  
+	  this->presetOutputs.wave_y=-1*(this->presetOutputs.wave_y-1.0);  
 	 
 	  cos_rot = cosf(this->Time*0.3f);
 	  sin_rot = sinf(this->Time*0.3f);
@@ -1467,7 +1463,7 @@ void projectM::draw_waveform() {
 	      float x0 = (beatDetect->pcm->pcmdataR[x]*beatDetect->pcm->pcmdataL[x+32] + beatDetect->pcm->pcmdataL[x+32]*beatDetect->pcm->pcmdataR[x]);
 	      float y0 = (beatDetect->pcm->pcmdataR[x]*beatDetect->pcm->pcmdataR[x] - beatDetect->pcm->pcmdataL[x+32]*beatDetect->pcm->pcmdataL[x+32]);
 	      
-          glVertex2f(((x0*cos_rot - y0*sin_rot)*this->fWaveScale*0.5*(this->correction ? this->aspect : 1.0) + this->wave_x),( (x0*sin_rot + y0*cos_rot)*this->fWaveScale*0.5 + this->wave_y));
+          glVertex2f(((x0*cos_rot - y0*sin_rot)*this->presetOutputs.fWaveScale*0.5*(this->correction ? this->aspect : 1.0) + this->presetOutputs.wave_x),( (x0*sin_rot + y0*cos_rot)*this->presetOutputs.fWaveScale*0.5 + this->presetOutputs.wave_y));
  
 	    }
 	  glEnd();	
@@ -1482,13 +1478,13 @@ void projectM::draw_waveform() {
 	  //	  	  glLoadIdentity();
 	  
 	  glTranslatef(.5,.5, 0);
-	  glRotated(-this->wave_mystery*90,0,0,1);
+	  glRotated(-this->presetOutputs.wave_mystery*90,0,0,1);
 	  glTranslatef(0,0, -1);
 	  
-	  wave_x_temp=-2*0.4142*(fabs(fabs(this->wave_mystery)-.5)-.5);
+	  wave_x_temp=-2*0.4142*(fabs(fabs(this->presetOutputs.wave_mystery)-.5)-.5);
 	  glScalef(1.0+wave_x_temp,1.0,1.0);
 	  glTranslatef(-.5,-.5, 0);
-	  wave_x_temp=-1*(this->wave_x-1.0);
+	  wave_x_temp=-1*(this->presetOutputs.wave_x-1.0);
 
 	  glBegin(GL_LINE_STRIP);
 	  //	  wave_x_temp=(wave_x*.75)+.125;	  
@@ -1497,7 +1493,7 @@ void projectM::draw_waveform() {
 	    {
      
 	      //glVertex3f(x*scale, fdata_buffer[fbuffer][0][blockstart+x]*.0012*fWaveScale+renderTarget->texsize*wave_x_temp,-1);
-	      glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataR[x]*.04*this->fWaveScale+wave_x_temp);
+	      glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataR[x]*.04*this->presetOutputs.fWaveScale+wave_x_temp);
 
 	      //glVertex3f(x*scale, renderTarget->texsize*wave_y_temp,-1);
 	    }
@@ -1508,21 +1504,21 @@ void projectM::draw_waveform() {
 	case 7://dual waveforms
 
 	  glTranslatef(.5,.5, 0);
-	  glRotated(-this->wave_mystery*90,0,0,1);
+	  glRotated(-this->presetOutputs.wave_mystery*90,0,0,1);
 	  
-	  wave_x_temp=-2*0.4142*(fabs(fabs(this->wave_mystery)-.5)-.5);
+	  wave_x_temp=-2*0.4142*(fabs(fabs(this->presetOutputs.wave_mystery)-.5)-.5);
 	  glScalef(1.0+wave_x_temp,1.0,1.0);
 	     glTranslatef(-.5,-.5, -1);
     glTranslatef( 0, 0, -1 );
 
-         wave_y_temp=-1*(this->wave_x-1);
+         wave_y_temp=-1*(this->presetOutputs.wave_x-1);
 
 		  glBegin(GL_LINE_STRIP);
 	 
 	  for ( x=0;x<beatDetect->pcm->numsamples;x++)
 	    {
      
-	      glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataL[x]*.04*this->fWaveScale+(wave_y_temp+(this->wave_y*this->wave_y*.5)));
+	      glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataL[x]*.04*this->presetOutputs.fWaveScale+(wave_y_temp+(this->presetOutputs.wave_y*this->presetOutputs.wave_y*.5)));
 	    }
 	  glEnd(); 
 
@@ -1532,7 +1528,7 @@ void projectM::draw_waveform() {
 	  for ( x=0;x<beatDetect->pcm->numsamples;x++)
 	    {
      
-	      glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataR[x]*.04*this->fWaveScale+(wave_y_temp-(this->wave_y*this->wave_y*.5)));
+	      glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataR[x]*.04*this->presetOutputs.fWaveScale+(wave_y_temp-(this->presetOutputs.wave_y*this->presetOutputs.wave_y*.5)));
 	    }
 	  glEnd(); 
 	  glPopMatrix();
@@ -1547,7 +1543,7 @@ void projectM::draw_waveform() {
 	      theta=(x)*(6.28/512.0);
 	      r= (0.2+beatDetect->pcm->pcmdataL[x]*.002);
 	      
-	      glVertex2f(r*cos(theta)+this->wave_x,r*sin(theta)+this->wave_y);
+	      glVertex2f(r*cos(theta)+this->presetOutputs.wave_x,r*sin(theta)+this->presetOutputs.wave_y);
 	    }
 	  glEnd();
 
@@ -1555,7 +1551,7 @@ glBegin(GL_LINE_STRIP);
 	
 	  for ( x=0;x<512;x++)
 	    {
-	      glVertex3f(x*scale, beatDetect->pcm->pcmdataL[x]*.04*this->fWaveScale+((this->wave_x+.1)),-1);
+	      glVertex3f(x*scale, beatDetect->pcm->pcmdataL[x]*.04*this->presetOutputs.fWaveScale+((this->presetOutputs.wave_x+.1)),-1);
 	    }
 	  glEnd();
 	  
@@ -1563,12 +1559,12 @@ glBegin(GL_LINE_STRIP);
 	  
 	 for ( x=0;x<512;x++)
 	    {
-	      glVertex3f(x*scale, beatDetect->pcm->pcmdataR[x]*.04*this->fWaveScale+((this->wave_x-.1)),-1);
+	      glVertex3f(x*scale, beatDetect->pcm->pcmdataR[x]*.04*this->presetOutputs.fWaveScale+((this->presetOutputs.wave_x-.1)),-1);
 	      
 	    }
 	  glEnd();
      break;
-         if (this->bWaveThick==1)  glLineWidth( (this->renderTarget->texsize < 512) ? 1 : 2*this->renderTarget->texsize/512); 
+         if (this->presetOutputs.bWaveThick==1)  glLineWidth( (this->renderTarget->texsize < 512) ? 1 : 2*this->renderTarget->texsize/512); 
 }	
       glLineWidth( this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
       glDisable(GL_LINE_STIPPLE);
@@ -1583,59 +1579,59 @@ void projectM::maximize_colors() {
       //
       //forces max color value to 1.0 and scales
       // the rest accordingly
- if(this->nWaveMode==2 || this->nWaveMode==5)
+ if(this->presetOutputs.nWaveMode==2 || this->presetOutputs.nWaveMode==5)
    {
 	switch(this->renderTarget->texsize)
 			{
-			case 256:  this->wave_o *= 0.07f; break;
-			case 512:  this->wave_o *= 0.09f; break;
-			case 1024: this->wave_o *= 0.11f; break;
-			case 2048: this->wave_o *= 0.13f; break;
+			case 256:  this->presetOutputs.wave_o *= 0.07f; break;
+			case 512:  this->presetOutputs.wave_o *= 0.09f; break;
+			case 1024: this->presetOutputs.wave_o *= 0.11f; break;
+			case 2048: this->presetOutputs.wave_o *= 0.13f; break;
 			}
    }
 
- else if(this->nWaveMode==3)
+ else if(this->presetOutputs.nWaveMode==3)
    {
 	switch(this->renderTarget->texsize)
 			{
-			case 256:  this->wave_o *= 0.075f; break;
-			case 512:  this->wave_o *= 0.15f; break;
-			case 1024: this->wave_o *= 0.22f; break;
-			case 2048: this->wave_o *= 0.33f; break;
+			case 256:  this->presetOutputs.wave_o *= 0.075f; break;
+			case 512:  this->presetOutputs.wave_o *= 0.15f; break;
+			case 1024: this->presetOutputs.wave_o *= 0.22f; break;
+			case 2048: this->presetOutputs.wave_o *= 0.33f; break;
 			}
-	this->wave_o*=1.3f;
-	this->wave_o*=powf(beatDetect->treb ,2.0f);
+	this->presetOutputs.wave_o*=1.3f;
+	this->presetOutputs.wave_o*=powf(beatDetect->treb ,2.0f);
    }
 
-      if (this->bMaximizeWaveColor==1)  
+      if (this->presetOutputs.bMaximizeWaveColor==1)  
 	{
-	  if(this->wave_r>=this->wave_g && this->wave_r>=this->wave_b)   //red brightest
+	  if(this->presetOutputs.wave_r>=this->presetOutputs.wave_g && this->presetOutputs.wave_r>=this->presetOutputs.wave_b)   //red brightest
 	    {
-	      wave_b_switch=this->wave_b*(1/this->wave_r);
-	      wave_g_switch=this->wave_g*(1/this->wave_r);
+	      wave_b_switch=this->presetOutputs.wave_b*(1/this->presetOutputs.wave_r);
+	      wave_g_switch=this->presetOutputs.wave_g*(1/this->presetOutputs.wave_r);
 	      wave_r_switch=1.0;
 	    }
-	  else if   (this->wave_b>=this->wave_g && this->wave_b>=this->wave_r)         //blue brightest
+	  else if   (this->presetOutputs.wave_b>=this->presetOutputs.wave_g && this->presetOutputs.wave_b>=this->presetOutputs.wave_r)         //blue brightest
 	    {  
-	      wave_r_switch=this->wave_r*(1/this->wave_b);
-	      wave_g_switch=this->wave_g*(1/this->wave_b);
+	      wave_r_switch=this->presetOutputs.wave_r*(1/this->presetOutputs.wave_b);
+	      wave_g_switch=this->presetOutputs.wave_g*(1/this->presetOutputs.wave_b);
 	      wave_b_switch=1.0;
 	      
 	    }	
 	
-	  else  if (this->wave_g>=this->wave_b && this->wave_g>=this->wave_r)         //green brightest
+	  else  if (this->presetOutputs.wave_g>=this->presetOutputs.wave_b && this->presetOutputs.wave_g>=this->presetOutputs.wave_r)         //green brightest
 	    {
-	      wave_b_switch=this->wave_b*(1/this->wave_g);
-	      wave_r_switch=this->wave_r*(1/this->wave_g);
+	      wave_b_switch=this->presetOutputs.wave_b*(1/this->presetOutputs.wave_g);
+	      wave_r_switch=this->presetOutputs.wave_r*(1/this->presetOutputs.wave_g);
 	      wave_g_switch=1.0;
 	    }
  
 	
-	  glColor4f(wave_r_switch, wave_g_switch, wave_b_switch, this->wave_o);
+	  glColor4f(wave_r_switch, wave_g_switch, wave_b_switch, this->presetOutputs.wave_o);
 	}
       else
 	{ 
-	  glColor4f(this->wave_r, this->wave_g, this->wave_b, this->wave_o);
+	  glColor4f(this->presetOutputs.wave_r, this->presetOutputs.wave_g, this->presetOutputs.wave_b, this->presetOutputs.wave_o);
 	}
       
 }
@@ -1650,33 +1646,33 @@ void projectM::modulate_opacity_by_volume() {
       //based on current volume
 
 
-      if (this->bModWaveAlphaByVolume==1)
-	{if (beatDetect->vol<=this->fModWaveAlphaStart)  this->wave_o=0.0;       
-	else if (beatDetect->vol>=this->fModWaveAlphaEnd) this->wave_o=this->fWaveAlpha;
-	else this->wave_o=this->fWaveAlpha*((beatDetect->vol-this->fModWaveAlphaStart)/(this->fModWaveAlphaEnd-this->fModWaveAlphaStart));}
-      else this->wave_o=this->fWaveAlpha;
+      if (this->presetOutputs.bModWaveAlphaByVolume==1)
+	{if (beatDetect->vol<=this->presetOutputs.fModWaveAlphaStart)  this->presetOutputs.wave_o=0.0;       
+	else if (beatDetect->vol>=this->presetOutputs.fModWaveAlphaEnd) this->presetOutputs.wave_o=this->presetOutputs.fWaveAlpha;
+	else this->presetOutputs.wave_o=this->presetOutputs.fWaveAlpha*((beatDetect->vol-this->presetOutputs.fModWaveAlphaStart)/(this->presetOutputs.fModWaveAlphaEnd-this->presetOutputs.fModWaveAlphaStart));}
+      else this->presetOutputs.wave_o=this->presetOutputs.fWaveAlpha;
 }
 
 void projectM::draw_motion_vectors() {
 
     int x,y;
 
-    float offsetx=this->mv_dx, intervalx=1.0/(float)this->mv_x;
-    float offsety=this->mv_dy, intervaly=1.0/(float)this->mv_y;
+    float offsetx=this->presetOutputs.mv_dx, intervalx=1.0/(float)this->presetOutputs.mv_x;
+    float offsety=this->presetOutputs.mv_dy, intervaly=1.0/(float)this->presetOutputs.mv_y;
     
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 
-    glPointSize(this->mv_l);
-    glColor4f(this->mv_r, this->mv_g, this->mv_b, this->mv_a);
+    glPointSize(this->presetOutputs.mv_l);
+    glColor4f(this->presetOutputs.mv_r, this->presetOutputs.mv_g, this->presetOutputs.mv_b, this->presetOutputs.mv_a);
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glTranslatef( 0, 0, -1 );
 
     glBegin(GL_POINTS);
-    for (x=0;x<this->mv_x;x++){
-        for(y=0;y<this->mv_y;y++){
+    for (x=0;x<this->presetOutputs.mv_x;x++){
+        for(y=0;y<this->presetOutputs.mv_y;y++){
             float lx, ly, lz;
             lx = offsetx+x*intervalx;
             ly = offsety+y*intervaly;
@@ -1694,14 +1690,14 @@ void projectM::draw_motion_vectors() {
 void projectM::draw_borders() {
 
     //Draw Borders
-    float of=this->ob_size*.5;
-    float iff=this->ib_size*.5;
+    float of=this->presetOutputs.ob_size*.5;
+    float iff=this->presetOutputs.ib_size*.5;
     float texof=1.0-of;
 
     //no additive drawing for borders
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
   
-    glColor4d(this->ob_r,this->ob_g,this->ob_b,this->ob_a);
+    glColor4d(this->presetOutputs.ob_r,this->presetOutputs.ob_g,this->presetOutputs.ob_b,this->presetOutputs.ob_a);
   
     glMatrixMode( GL_MODELVIEW );
     glPushMatrix();
@@ -1711,7 +1707,7 @@ void projectM::draw_borders() {
     glRectd(of,0,texof,of);
     glRectd(texof,0,1,1);
     glRectd(of,1,texof,texof);
-    glColor4d(this->ib_r,this->ib_g,this->ib_b,this->ib_a);
+    glColor4d(this->presetOutputs.ib_r,this->presetOutputs.ib_g,this->presetOutputs.ib_b,this->presetOutputs.ib_a);
     glRectd(of,of,of+iff,texof);
     glRectd(of+iff,of,texof-iff,of+iff);
     glRectd(texof-iff,of,texof,texof);
@@ -1927,7 +1923,7 @@ sprintf( buffer, " (%f)", this->aspect);
   other_font->Render((this->renderTarget->usePbuffers ? "     FBO: on" : "     FBO: off"));
 
   glRasterPos2f(0, -.21+offset); 
-  sprintf( buffer, "    mesh: %d x %d", this->gx,this->gy);
+  sprintf( buffer, "    mesh: %d x %d", this->presetInputs.gx,this->presetInputs.gy);
   other_font->Render(buffer);
 
 
@@ -1967,7 +1963,7 @@ void projectM::render_interpolation() {
 //    glLoadIdentity();
     glTranslated( 0, 0, -1 );
   
-    glColor4f(0.0, 0.0, 0.0,this->decay);
+    glColor4f(0.0, 0.0, 0.0,this->presetOutputs.decay);
     
     glEnable(GL_TEXTURE_2D);
     //glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID[0] );
@@ -1985,12 +1981,12 @@ void projectM::render_interpolation() {
       }
 #endif
   
-  for (x=0;x<this->gx - 1;x++){
+  for (x=0;x<this->presetInputs.gx - 1;x++){
     glBegin(GL_TRIANGLE_STRIP);
-    for(y=0;y<this->gy;y++){
-      glTexCoord2f(this->x_mesh[x][y], this->y_mesh[x][y]); 
+    for(y=0;y<this->presetInputs.gy;y++){
+      glTexCoord2f(this->presetInputs.x_mesh[x][y], this->presetInputs.y_mesh[x][y]); 
       glVertex2f(this->gridx[x][y], this->gridy[x][y]);
-      glTexCoord2f(this->x_mesh[x+1][y], this->y_mesh[x+1][y]); 
+      glTexCoord2f(this->presetInputs.x_mesh[x+1][y], this->presetInputs.y_mesh[x+1][y]); 
       glVertex2f(this->gridx[x+1][y], this->gridy[x+1][y]);
     }
     glEnd();	
@@ -2015,7 +2011,7 @@ void projectM::do_per_frame() {
   glTranslated(0, 0, -9);
 
   //Texture wrapping( clamp vs. wrap)
-  if (this->bTexWrap==0){
+  if (this->presetOutputs.bTexWrap==0){
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);}
   else{ glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -2037,22 +2033,22 @@ void projectM::do_per_frame() {
       glLoadIdentity();
 
       /*
-      glTranslatef(this->cx,this->cy, 0);
+      glTranslatef(this->presetOutputs.cx,this->presetOutputs.cy, 0);
      if(this->correction)  glScalef(1,this->vw/(float)this->vh,1);
 
       if(!isPerPixelEqn(ROT_OP)) {
 	//	printf("ROTATING: rot = %f\n", rot);
-	glRotatef(this->rot*90, 0, 0, 1);
+	glRotatef(this->presetOutputs.rot*90, 0, 0, 1);
       }
-      if(!isPerPixelEqn(SX_OP)) glScalef(1/this->sx,1,1);     
-      if(!isPerPixelEqn(SY_OP)) glScalef(1,1/this->sy,1); 
+      if(!isPerPixelEqn(SX_OP)) glScalef(1/this->presetOutputs.sx,1,1);     
+      if(!isPerPixelEqn(SY_OP)) glScalef(1,1/this->presetOutputs.sy,1); 
 
       if(this->correction)glScalef(1,this->vh/(float)this->vw,1);
-            glTranslatef((-this->cx) ,(-this->cy),0);  
+            glTranslatef((-this->presetOutputs.cx) ,(-this->presetOutputs.cy),0);  
       */
 
-      if(!Preset::active_preset->isPerPixelEqn(DX_OP)) glTranslatef(-this->dx,0,0);   
-      if(!Preset::active_preset->isPerPixelEqn(DY_OP)) glTranslatef(0 ,-this->dy,0);  
+      if(!this->activePreset->isPerPixelEqn(DX_OP)) glTranslatef(-this->presetOutputs.dx,0,0);   
+      if(!this->activePreset->isPerPixelEqn(DY_OP)) glTranslatef(0 ,-this->presetOutputs.dy,0);  
 }
 
 
@@ -2115,12 +2111,12 @@ void projectM::render_texture_to_screen() {
        glMatrixMode(GL_TEXTURE);
 
       //draw video echo
-      glColor4f(0.0, 0.0, 0.0,this->fVideoEchoAlpha);
+      glColor4f(0.0, 0.0, 0.0,this->presetOutputs.fVideoEchoAlpha);
       glTranslatef(.5,.5,0);
-      glScalef(1.0/this->fVideoEchoZoom,1.0/this->fVideoEchoZoom,1);
+      glScalef(1.0/this->presetOutputs.fVideoEchoZoom,1.0/this->presetOutputs.fVideoEchoZoom,1);
        glTranslatef(-.5,-.5,0);    
 
-      switch (((int)this->nVideoEchoOrientation))
+      switch (((int)this->presetOutputs.nVideoEchoOrientation))
 	{
 	case 0: flipx=1;flipy=1;break;
 	case 1: flipx=-1;flipy=1;break;
@@ -2140,7 +2136,7 @@ void projectM::render_texture_to_screen() {
       glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 
-      if (this->bBrighten==1)
+      if (this->presetOutputs.bBrighten==1)
 	{ 
 	  glColor4f(1.0, 1.0, 1.0,1.0);
 	  glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
@@ -2169,7 +2165,7 @@ void projectM::render_texture_to_screen() {
 
 	} 
 
-      if (this->bDarken==1)
+      if (this->presetOutputs.bDarken==1)
 	{ 
 	  
 	  glColor4f(1.0, 1.0, 1.0,1.0);
@@ -2188,7 +2184,7 @@ void projectM::render_texture_to_screen() {
 	} 
     
 
-      if (this->bSolarize==1)
+      if (this->presetOutputs.bSolarize)
 	{ 
        
 	  glColor4f(1.0, 1.0, 1.0,1.0);
@@ -2212,7 +2208,7 @@ void projectM::render_texture_to_screen() {
 
 	} 
 
-      if (this->bInvert==1)
+      if (this->presetOutputs.bInvert)
 	{ 
 	  glColor4f(1.0, 1.0, 1.0,1.0);
 	  glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
@@ -2293,12 +2289,12 @@ void projectM::render_texture_to_studio() {
       glMatrixMode(GL_TEXTURE);
 
       //draw video echo
-      glColor4f(0.0, 0.0, 0.0,this->fVideoEchoAlpha);
+      glColor4f(0.0, 0.0, 0.0,this->presetOutputs.fVideoEchoAlpha);
       glTranslated(.5,.5,0);
-      glScaled(1/this->fVideoEchoZoom,1/this->fVideoEchoZoom,1);
+      glScaled(1/this->presetOutputs.fVideoEchoZoom,1/this->presetOutputs.fVideoEchoZoom,1);
       glTranslated(-.5,-.5,0);    
 
-      switch (((int)this->nVideoEchoOrientation))
+      switch (((int)this->presetOutputs.nVideoEchoOrientation))
 	{
 	case 0: flipx=1;flipy=1;break;
 	case 1: flipx=-1;flipy=1;break;
@@ -2320,7 +2316,7 @@ void projectM::render_texture_to_studio() {
  // if (bDarken==1) { glAccum(GL_ACCUM,fVideoEchoAlpha); glAccum(GL_RETURN,1);}
 
 
-      if (this->bInvert==1)
+      if (this->presetOutputs.bInvert)
 	{ 
 	  glColor4f(1.0, 1.0, 1.0,1.0);
 	  glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
@@ -2349,19 +2345,19 @@ void projectM::render_texture_to_studio() {
       glScalef(.5,.5,1);
        glColor4f(1.0,1.0,1.0,1.0);
 
-       for (x=0;x<this->gx;x++){
+       for (x=0;x<this->presetInputs.gx;x++){
 	 glBegin(GL_LINE_STRIP);
-	 for(y=0;y<this->gy;y++){
-	   glVertex4f((this->x_mesh[x][y]-.5), (this->y_mesh[x][y]-.5),-1,1);
+	 for(y=0;y<this->presetInputs.gy;y++){
+	   glVertex4f((this->presetInputs.x_mesh[x][y]-.5), (this->presetInputs.y_mesh[x][y]-.5),-1,1);
 	   //glVertex4f((origx[x+1][y]-.5) * vw, (origy[x+1][y]-.5) *vh ,-1,1);
 	 }
 	 glEnd();	
        }    
        
-       for (y=0;y<this->gy;y++){
+       for (y=0;y<this->presetInputs.gy;y++){
 	 glBegin(GL_LINE_STRIP);
-	 for(x=0;x<this->gx;x++){
-	   glVertex4f((this->x_mesh[x][y]-.5), (this->y_mesh[x][y]-.5),-1,1);
+	 for(x=0;x<this->presetInputs.gx;x++){
+	   glVertex4f((this->presetInputs.x_mesh[x][y]-.5), (this->presetInputs.y_mesh[x][y]-.5),-1,1);
 	   //glVertex4f((origx[x+1][y]-.5) * vw, (origy[x+1][y]-.5) *vh ,-1,1);
 	 }
 	 glEnd();	
@@ -2370,9 +2366,9 @@ void projectM::render_texture_to_studio() {
         glEnable( GL_TEXTURE_2D );
       
        /*
-       for (x=0;x<this->gx-1;x++){
+       for (x=0;x<this->presetInputs.gx-1;x++){
 	 glBegin(GL_POINTS);
-	 for(y=0;y<this->gy;y++){
+	 for(y=0;y<this->presetInputs.gy;y++){
 	   glVertex4f((this->origx[x][y]-.5)* this->vw, (this->origy[x][y]-.5)*this->vh,-1,1);
 	   glVertex4f((this->origx[x+1][y]-.5) * this->vw, (this->origy[x+1][y]-.5) *this->vh ,-1,1);
 	 }
@@ -2436,132 +2432,132 @@ void projectM::render_texture_to_studio() {
 DLLEXPORT void projectM::projectM_initengine() {
 
 /* PER FRAME CONSTANTS BEGIN */
- this->zoom=1.0;
- this->zoomexp= 1.0;
- this->rot= 0.0;
- this->warp= 0.0;
+ this->presetOutputs.zoom=1.0;
+ this->presetOutputs.zoomexp= 1.0;
+ this->presetOutputs.rot= 0.0;
+ this->presetOutputs.warp= 0.0;
 
- this->sx= 1.0;
- this->sy= 1.0;
- this->dx= 0.0;
- this->dy= 0.0;
- this->cx= 0.5;
- this->cy= 0.5;
+ this->presetOutputs.sx= 1.0;
+ this->presetOutputs.sy= 1.0;
+ this->presetOutputs.dx= 0.0;
+ this->presetOutputs.dy= 0.0;
+ this->presetOutputs.cx= 0.5;
+ this->presetOutputs.cy= 0.5;
 
- this->decay=.98;
+ this->presetOutputs.decay=.98;
 
- this->wave_r= 1.0;
- this->wave_g= 0.2;
- this->wave_b= 0.0;
- this->wave_x= 0.5;
- this->wave_y= 0.5;
- this->wave_mystery= 0.0;
+ this->presetOutputs.wave_r= 1.0;
+ this->presetOutputs.wave_g= 0.2;
+ this->presetOutputs.wave_b= 0.0;
+ this->presetOutputs.wave_x= 0.5;
+ this->presetOutputs.wave_y= 0.5;
+ this->presetOutputs.wave_mystery= 0.0;
 
- this->ob_size= 0.0;
- this->ob_r= 0.0;
- this->ob_g= 0.0;
- this->ob_b= 0.0;
- this->ob_a= 0.0;
+ this->presetOutputs.ob_size= 0.0;
+ this->presetOutputs.ob_r= 0.0;
+ this->presetOutputs.ob_g= 0.0;
+ this->presetOutputs.ob_b= 0.0;
+ this->presetOutputs.ob_a= 0.0;
 
- this->ib_size = 0.0;
- this->ib_r = 0.0;
- this->ib_g = 0.0;
- this->ib_b = 0.0;
- this->ib_a = 0.0;
+ this->presetOutputs.ib_size = 0.0;
+ this->presetOutputs.ib_r = 0.0;
+ this->presetOutputs.ib_g = 0.0;
+ this->presetOutputs.ib_b = 0.0;
+ this->presetOutputs.ib_a = 0.0;
 
- this->mv_a = 0.0;
- this->mv_r = 0.0;
- this->mv_g = 0.0;
- this->mv_b = 0.0;
- this->mv_l = 1.0;
- this->mv_x = 16.0;
- this->mv_y = 12.0;
- this->mv_dy = 0.02;
- this->mv_dx = 0.02;
+ this->presetOutputs.mv_a = 0.0;
+ this->presetOutputs.mv_r = 0.0;
+ this->presetOutputs.mv_g = 0.0;
+ this->presetOutputs.mv_b = 0.0;
+ this->presetOutputs.mv_l = 1.0;
+ this->presetOutputs.mv_x = 16.0;
+ this->presetOutputs.mv_y = 12.0;
+ this->presetOutputs.mv_dy = 0.02;
+ this->presetOutputs.mv_dx = 0.02;
   
- this->meshx = 0;
- this->meshy = 0;
+ //this->presetInputs.meshx = 0;
+ //this->presetInputs.meshy = 0;
  
  this->Time = 0;
- this->progress = 0;
- this->frame = 0;
+ this->presetInputs.progress = 0;
+ this->presetInputs.frame = 0;
 
     this->avgtime = 600;
 //bass_thresh = 0;
 
 /* PER_FRAME CONSTANTS END */
- this->fRating = 0;
- this->fGammaAdj = 1.0;
- this->fVideoEchoZoom = 1.0;
- this->fVideoEchoAlpha = 0;
- this->nVideoEchoOrientation = 0;
+ this->presetOutputs.fRating = 0;
+ this->presetOutputs.fGammaAdj = 1.0;
+ this->presetOutputs.fVideoEchoZoom = 1.0;
+ this->presetOutputs.fVideoEchoAlpha = 0;
+ this->presetOutputs.nVideoEchoOrientation = 0;
  
- this->nWaveMode = 7;
- this->bAdditiveWaves = 0;
- this->bWaveDots = 0;
- this->bWaveThick = 0;
- this->bModWaveAlphaByVolume = 0;
- this->bMaximizeWaveColor = 0;
- this->bTexWrap = 0;
- this->bDarkenCenter = 0;
- this->bRedBlueStereo = 0;
- this->bBrighten = 0;
- this->bDarken = 0;
- this->bSolarize = 0;
- this->bInvert = 0;
- this->bMotionVectorsOn = 1;
+ this->presetOutputs.nWaveMode = 7;
+ this->presetOutputs.bAdditiveWaves = 0;
+ this->presetOutputs.bWaveDots = 0;
+ this->presetOutputs.bWaveThick = 0;
+ this->presetOutputs.bModWaveAlphaByVolume = 0;
+ this->presetOutputs.bMaximizeWaveColor = 0;
+ this->presetOutputs.bTexWrap = 0;
+ this->presetOutputs.bDarkenCenter = 0;
+ this->presetOutputs.bRedBlueStereo = 0;
+ this->presetOutputs.bBrighten = 0;
+ this->presetOutputs.bDarken = 0;
+ this->presetOutputs.bSolarize = 0;
+ this->presetOutputs.bInvert = 0;
+ this->presetOutputs.bMotionVectorsOn = 1;
  
- this->fWaveAlpha =1.0;
- this->fWaveScale = 1.0;
- this->fWaveSmoothing = 0;
- this->fWaveParam = 0;
- this->fModWaveAlphaStart = 0;
- this->fModWaveAlphaEnd = 0;
- this->fWarpAnimSpeed = 0;
- this->fWarpScale = 0;
- this->fShader = 0;
+ this->presetOutputs.fWaveAlpha =1.0;
+ this->presetOutputs.fWaveScale = 1.0;
+ this->presetOutputs.fWaveSmoothing = 0;
+ this->presetOutputs.fWaveParam = 0;
+ this->presetOutputs.fModWaveAlphaStart = 0;
+ this->presetOutputs.fModWaveAlphaEnd = 0;
+ this->presetOutputs.fWarpAnimSpeed = 0;
+ this->presetOutputs.fWarpScale = 0;
+ this->presetOutputs.fShader = 0;
 
 
 /* PER_PIXEL CONSTANTS BEGIN */
-this->x_per_pixel = 0;
-this->y_per_pixel = 0;
-this->rad_per_pixel = 0;
-this->ang_per_pixel = 0;
+this->presetInputs.x_per_pixel = 0;
+this->presetInputs.y_per_pixel = 0;
+this->presetInputs.rad_per_pixel = 0;
+this->presetInputs.ang_per_pixel = 0;
 
 /* PER_PIXEL CONSTANT END */
 
 
 /* Q AND T VARIABLES START */
 
-this->q1 = 0;
-this->q2 = 0;
-this->q3 = 0;
-this->q4 = 0;
-this->q5 = 0;
-this->q6 = 0;
-this->q7 = 0;
-this->q8 = 0;
+this->presetOutputs.q1 = 0;
+this->presetOutputs.q2 = 0;
+this->presetOutputs.q3 = 0;
+this->presetOutputs.q4 = 0;
+this->presetOutputs.q5 = 0;
+this->presetOutputs.q6 = 0;
+this->presetOutputs.q7 = 0;
+this->presetOutputs.q8 = 0;
 
 
 /* Q AND T VARIABLES END */
 
 //per pixel meshes
- this->zoom_mesh = NULL;
- this->zoomexp_mesh = NULL;
- this->rot_mesh = NULL;
+ this->presetOutputs.zoom_mesh = NULL;
+ this->presetOutputs.zoomexp_mesh = NULL;
+ this->presetOutputs.rot_mesh = NULL;
  
 
- this->sx_mesh = NULL;
- this->sy_mesh = NULL;
- this->dx_mesh = NULL;
- this->dy_mesh = NULL;
- this->cx_mesh = NULL;
- this->cy_mesh = NULL;
+ this->presetOutputs.sx_mesh = NULL;
+ this->presetOutputs.sy_mesh = NULL;
+ this->presetOutputs.dx_mesh = NULL;
+ this->presetOutputs.dy_mesh = NULL;
+ this->presetOutputs.cx_mesh = NULL;
+ this->presetOutputs.cy_mesh = NULL;
 
- this->x_mesh = NULL;
- this->y_mesh = NULL;
- this->rad_mesh = NULL;
- this->theta_mesh = NULL;
+ this->presetInputs.x_mesh = NULL;
+ this->presetInputs.y_mesh = NULL;
+ this->presetInputs.rad_mesh = NULL;
+ this->presetInputs.theta_mesh = NULL;
 
 //custom wave per point meshes
   }
@@ -2572,113 +2568,114 @@ DLLEXPORT void projectM::projectM_resetengine() {
   this->doPerPixelEffects = 1;
   this->doIterative = 1;
 
-  this->zoom=1.0;
-  this->zoomexp= 1.0;
-  this->rot= 0.0;
-  this->warp= 0.0;
+  this->presetOutputs.zoom=1.0;
+  this->presetOutputs.zoomexp= 1.0;
+  this->presetOutputs.rot= 0.0;
+  this->presetOutputs.warp= 0.0;
   
-  this->sx= 1.0;
-  this->sy= 1.0;
-  this->dx= 0.0;
-  this->dy= 0.0;
-  this->cx= 0.5;
-  this->cy= 0.5;
+  this->presetOutputs.sx= 1.0;
+  this->presetOutputs.sy= 1.0;
+  this->presetOutputs.dx= 0.0;
+  this->presetOutputs.dy= 0.0;
+  this->presetOutputs.cx= 0.5;
+  this->presetOutputs.cy= 0.5;
 
-  this->decay=.98;
+  this->presetOutputs.decay=.98;
   
-  this->wave_r= 1.0;
-  this->wave_g= 0.2;
-  this->wave_b= 0.0;
-  this->wave_x= 0.5;
-  this->wave_y= 0.5;
-  this->wave_mystery= 0.0;
+  this->presetOutputs.wave_r= 1.0;
+  this->presetOutputs.wave_g= 0.2;
+  this->presetOutputs.wave_b= 0.0;
+  this->presetOutputs.wave_x= 0.5;
+  this->presetOutputs.wave_y= 0.5;
+  this->presetOutputs.wave_mystery= 0.0;
 
-  this->ob_size= 0.0;
-  this->ob_r= 0.0;
-  this->ob_g= 0.0;
-  this->ob_b= 0.0;
-  this->ob_a= 0.0;
+  this->presetOutputs.ob_size= 0.0;
+  this->presetOutputs.ob_r= 0.0;
+  this->presetOutputs.ob_g= 0.0;
+  this->presetOutputs.ob_b= 0.0;
+  this->presetOutputs.ob_a= 0.0;
 
-  this->ib_size = 0.0;
-  this->ib_r = 0.0;
-  this->ib_g = 0.0;
-  this->ib_b = 0.0;
-  this->ib_a = 0.0;
+  this->presetOutputs.ib_size = 0.0;
+  this->presetOutputs.ib_r = 0.0;
+  this->presetOutputs.ib_g = 0.0;
+  this->presetOutputs.ib_b = 0.0;
+  this->presetOutputs.ib_a = 0.0;
 
-  this->mv_a = 0.0;
-  this->mv_r = 0.0;
-  this->mv_g = 0.0;
-  this->mv_b = 0.0;
-  this->mv_l = 1.0;
-  this->mv_x = 16.0;
-  this->mv_y = 12.0;
-  this->mv_dy = 0.02;
-  this->mv_dx = 0.02;
+  this->presetOutputs.mv_a = 0.0;
+  this->presetOutputs.mv_r = 0.0;
+  this->presetOutputs.mv_g = 0.0;
+  this->presetOutputs.mv_b = 0.0;
+  this->presetOutputs.mv_l = 1.0;
+  this->presetOutputs.mv_x = 16.0;
+  this->presetOutputs.mv_y = 12.0;
+  this->presetOutputs.mv_dy = 0.02;
+  this->presetOutputs.mv_dx = 0.02;
   
-  this->meshx = 0;
-  this->meshy = 0;
+  /// @bug think these are just gx/gy
+  //this->meshx = 0;
+  //this->meshy = 0;
  
   this->Time = 0;
     if ( beatDetect != NULL ) {
         beatDetect->reset();
       }
-  this->progress = 0;
-  this->frame = 0;
+  this->presetInputs.progress = 0;
+  this->presetInputs.frame = 0;
 
 // bass_thresh = 0;
 
 /* PER_FRAME CONSTANTS END */
-  this->fRating = 0;
-  this->fGammaAdj = 1.0;
-  this->fVideoEchoZoom = 1.0;
-  this->fVideoEchoAlpha = 0;
-  this->nVideoEchoOrientation = 0;
+  this->presetOutputs.fRating = 0;
+  this->presetOutputs.fGammaAdj = 1.0;
+  this->presetOutputs.fVideoEchoZoom = 1.0;
+  this->presetOutputs.fVideoEchoAlpha = 0;
+  this->presetOutputs.nVideoEchoOrientation = 0;
  
-  this->nWaveMode = 7;
-  this->bAdditiveWaves = 0;
-  this->bWaveDots = 0;
-  this->bWaveThick = 0;
-  this->bModWaveAlphaByVolume = 0;
-  this->bMaximizeWaveColor = 0;
-  this->bTexWrap = 0;
-  this->bDarkenCenter = 0;
-  this->bRedBlueStereo = 0;
-  this->bBrighten = 0;
-  this->bDarken = 0;
-  this->bSolarize = 0;
- this->bInvert = 0;
- this->bMotionVectorsOn = 1;
+  this->presetOutputs.nWaveMode = 7;
+  this->presetOutputs.bAdditiveWaves = 0;
+  this->presetOutputs.bWaveDots = 0;
+  this->presetOutputs.bWaveThick = 0;
+  this->presetOutputs.bModWaveAlphaByVolume = 0;
+  this->presetOutputs.bMaximizeWaveColor = 0;
+  this->presetOutputs.bTexWrap = 0;
+  this->presetOutputs.bDarkenCenter = 0;
+  this->presetOutputs.bRedBlueStereo = 0;
+  this->presetOutputs.bBrighten = 0;
+  this->presetOutputs.bDarken = 0;
+  this->presetOutputs.bSolarize = 0;
+  this->presetOutputs.bInvert = 0;
+  this->presetOutputs.bMotionVectorsOn = 1;
  
-  this->fWaveAlpha =1.0;
-  this->fWaveScale = 1.0;
-  this->fWaveSmoothing = 0;
-  this->fWaveParam = 0;
-  this->fModWaveAlphaStart = 0;
-  this->fModWaveAlphaEnd = 0;
-  this->fWarpAnimSpeed = 0;
-  this->fWarpScale = 0;
-  this->fShader = 0;
+  this->presetOutputs.fWaveAlpha =1.0;
+  this->presetOutputs.fWaveScale = 1.0;
+  this->presetOutputs.fWaveSmoothing = 0;
+  this->presetOutputs.fWaveParam = 0;
+  this->presetOutputs.fModWaveAlphaStart = 0;
+  this->presetOutputs.fModWaveAlphaEnd = 0;
+  this->presetOutputs.fWarpAnimSpeed = 0;
+  this->presetOutputs.fWarpScale = 0;
+  this->presetOutputs.fShader = 0;
 
 
 /* PER_PIXEL CONSTANTS BEGIN */
- this->x_per_pixel = 0;
- this->y_per_pixel = 0;
- this->rad_per_pixel = 0;
- this->ang_per_pixel = 0;
+ this->presetInputs.x_per_pixel = 0;
+ this->presetInputs.y_per_pixel = 0;
+ this->presetInputs.rad_per_pixel = 0;
+ this->presetInputs.ang_per_pixel = 0;
 
 /* PER_PIXEL CONSTANT END */
 
 
 /* Q VARIABLES START */
 
- this->q1 = 0;
- this->q2 = 0;
- this->q3 = 0;
- this->q4 = 0;
- this->q5 = 0;
- this->q6 = 0;
- this->q7 = 0;
- this->q8 = 0;
+ this->presetOutputs.q1 = 0;
+ this->presetOutputs.q2 = 0;
+ this->presetOutputs.q3 = 0;
+ this->presetOutputs.q4 = 0;
+ this->presetOutputs.q5 = 0;
+ this->presetOutputs.q6 = 0;
+ this->presetOutputs.q7 = 0;
+ this->presetOutputs.q8 = 0;
 
 
  /* Q VARIABLES END */
@@ -2793,222 +2790,16 @@ DLLEXPORT void projectM::projectM_setTitle( char *title ) {
   */
 }
 
-/* loadPresetDir: opens the directory buffer
-   denoted by 'dir' to load presets */
-int projectM::loadPresetDir(char * dir) {
-	/* we no longer do anything here and instead look in PM->presetURL in switchPreset
-		this allows us to find new preset files on the fly */
 
-  /* Start the prefix index right before the first entry, so next preset
-     starts at the top of the list */
-//#define PRESET_KLUDGE
-#ifndef PRESET_KLUDGE
-  preset_index = -1;
-#else
-  /** KLUDGE */
-  preset_index = 30;
-#endif
-
-  /* Start the first preset */
-  switchPreset( RANDOM_NEXT, HARD_CUT );
-  
-  return PROJECTM_SUCCESS;
-}
-
-/* closePresetDir: closes the current
-   preset directory buffer */
-int projectM::closePresetDir() {
-
-	/* because we don't open we don't have to close ;) */
-  destroyPresetLoader();
-
-  return PROJECTM_SUCCESS;
-}
-
-/* switchPreset: loads the next preset from the directory stream.
-   loadPresetDir() must be called first. This is a
-   sequential load function */
-
-int projectM::switchPreset(switch_mode_t switch_mode, int cut_type) {
-
-  Preset * new_preset = 0;
-	
-  int switch_index;
-  int sindex = 0;
-  int slen = 0;
-
-    DWRITE( "switchPreset(): in\n" );
-    DWRITE( "switchPreset(): %s\n", presetURL );
-
-	switch (switch_mode) {	  
-	case ALPHA_NEXT:
-		preset_index = switch_index = preset_index + 1;
-		break;
-	case ALPHA_PREVIOUS:
-		preset_index = switch_index = preset_index - 1;
-		break;  
-	case RANDOM_NEXT:
-		switch_index = rand();
-		break;
-	case RESTART_ACTIVE:
-		switch_index = preset_index;
-		break;
-	default:
-		return PROJECTM_FAILURE;
-	}
-
-    DWRITE( "switch_index: %d\n", switch_index );
-
-	// iterate through the presetURL directory looking for the next entry 
-	{
-		struct dirent** entries;
-		int dir_size = scandir(presetURL, &entries, /* is_valid_extension */ NULL, alphasort);
-        DWRITE( "dir_size: %d\n", dir_size );
-		if (dir_size > 0) {
-			int i;
-
-            DWRITE( "nentries: %d\n", dir_size );
-			
-			switch_index %= dir_size;
-			if (switch_index < 0) switch_index += dir_size;			
-			for (i = 0; i < dir_size; ++i) {
-				if (switch_index == i) {
-					// matching entry
-					const size_t len = strlen(presetURL);
-					char* path = (char *) malloc(len + strlen(entries[i]->d_name) + 2);
-					if (path) {					
-						strcpy(path, presetURL);
-						if (len && ((path[len - 1] != '/')||(path[len - 1] != '\\'))) {
-#ifdef WIN32
-							strcat(path + len, "\\");
-#else
-							strcat(path + len, "/");
-#endif
-						}
-						strcat(path + len, entries[i]->d_name);
-						
-						new_preset = Preset::load_preset(path);
-						free(path);
-						
-						// we must keep iterating to free the remaining entries
-					}
-				  }
-				free(entries[i]);
-			}
-			free(entries);
-		}
-	}
-
-#ifdef WIN32
-    new_preset = Preset::load_preset( "c:\\tmp\\projectM-1.00\\presets_test\\C.milk" );
-#else
-//    new_preset = Preset::load_preset( "/Users/descarte/tmp/projectM-1.00/presets_test/B.milk" );
-//    new_preset = NULL;
-#endif
-	
-	if (!new_preset) {
-		switchToIdlePreset();
-		return PROJECTM_ERROR;
-	}
-
-
-  /* Closes a preset currently loaded, if any */
-  if ((Preset::active_preset != NULL) && (Preset::active_preset != Preset::idle_preset)) {
-        Preset::active_preset->close_preset();
-    }
-
-  /* Sets global Preset::active_preset pointer */
-  Preset::active_preset = new_preset;
-
-#ifndef PANTS
-  /** Split out the preset name from the path */
-  slen = strlen( new_preset->file_path );
-  sindex = slen;
-  while ( new_preset->file_path[sindex] != WIN32_PATH_SEPARATOR && 
-          new_preset->file_path[sindex] != UNIX_PATH_SEPARATOR && sindex > 0 ) {
-    sindex--;
-  }
-  sindex++;
-  if ( presetName != NULL ) {
-    free( presetName );
-    presetName = NULL;
-  }
-  presetName = (char *)wipemalloc( sizeof( char ) * (slen - sindex + 1) );
-  strncpy( presetName, new_preset->file_path + sindex, slen - sindex );
-  presetName[slen - sindex] = '\0';
-#endif
-
-  /* Reinitialize the engine variables to sane defaults */
-  projectM_resetengine();
-
-  /* Add any missing initial conditions */
-  load_init_conditions();
-
-  /* Add any missing initial conditions for each wave */
-  Preset::active_preset->load_custom_wave_init_conditions();
-
-/* Add any missing initial conditions for each shape */
-  Preset::active_preset->load_custom_shape_init_conditions();
-
-  /* Need to evaluate the initial conditions once */
-  Preset::active_preset->evalInitConditions();
-  Preset::active_preset->evalCustomWaveInitConditions();
-  Preset::active_preset->evalCustomShapeInitConditions();
-  //  evalInitPerFrameEquations();
-  return PROJECTM_SUCCESS;
-}
-
-/* Loads a specific preset by absolute path */
-int projectM::loadPresetByFile(char * filename) {
-
-  Preset * new_preset;
- 
-  /* Finally, load the preset using its actual path */
-  if ((new_preset = Preset::load_preset(filename)) == NULL) {
-#ifdef PRESET_DEBUG
-	printf("loadPresetByFile: failed to load preset!\n");
-#endif
-	return PROJECTM_ERROR;	  
-  }
-
-  /* Closes a preset currently loaded, if any */
-  if ((Preset::active_preset != NULL) && (Preset::active_preset != Preset::idle_preset))
-    Preset::active_preset->close_preset(); 
-
-  /* Sets active preset global pointer */
-  Preset::active_preset = new_preset;
-
-  /* Reinitialize engine variables */
-  projectM_resetengine();
-
- 
-  /* Add any missing initial conditions for each wave */
-  Preset::active_preset->load_custom_wave_init_conditions();
-
- /* Add any missing initial conditions for each wave */
-  Preset::active_preset->load_custom_shape_init_conditions();
-
-  /* Add any missing initial conditions */
-  load_init_conditions();
-  
-  /* Need to do this once for menu */
-  Preset::active_preset->evalInitConditions();
-  //  evalPerFrameInitEquations();
-
-  return PROJECTM_SUCCESS;
-}
 
 /* initPresetLoader: initializes the preset
    loading library. this should be done before
    any parsing */
-int projectM::initPresetLoader() {
-
-  /* Initializes the builtin parameter database */
-  init_builtin_param_db();
+int projectM::initPresetTools() {
 
   /* Initializes the builtin function database */
-  init_builtin_func_db();
-	
+  BuiltinFuncs::init_builtin_func_db();
+
   /* Initializes all infix operators */
   Eval::init_infix_ops();
 
@@ -3018,198 +2809,17 @@ int projectM::initPresetLoader() {
 #endif
 
   /* Initialize the 'idle' preset */
-  Preset::init_idle_preset();
+  //Preset::init_idle_preset();
 
   projectM_resetengine();
 
-//  Preset::active_preset = Preset::idle_preset;
-  presetName = NULL;
-  switchToIdlePreset();
-  load_init_conditions();
+  //switchToIdlePreset();
+  //load_init_conditions();
 
   /* Done */
 #ifdef PRESET_DEBUG
     printf("initPresetLoader: finished\n");
 #endif
-  return PROJECTM_SUCCESS;
-}
-
-/* Sort of experimental code here. This switches
-   to a hard coded preset. Useful if preset directory
-   was not properly loaded, or a preset fails to parse */
-
-void projectM::switchToIdlePreset() {
-
-    if ( Preset::idle_preset == NULL ) {
-        return;
-      }
-
-  /* Idle Preset already activated */
-  if (Preset::active_preset == Preset::idle_preset)
-    return;
-
-
-  /* Close active preset */
-  if (Preset::active_preset != NULL)
-    Preset::active_preset->close_preset();
-
-  /* Sets global Preset::active_preset pointer */
-  Preset::active_preset = Preset::idle_preset;
-
-    /** Stash the preset name */
-    if ( presetName != NULL ) {
-        free( presetName );
-      }
-    presetName = (char *)wipemalloc( sizeof( char ) * 5 );
-    strncpy( presetName, "IDLE", 4 );
-    presetName[4] = '\0';
-
-  /* Reinitialize the engine variables to sane defaults */
-  projectM_resetengine();
-
-  /* Add any missing initial conditions */
-  load_init_conditions();
-
-  /* Need to evaluate the initial conditions once */
-  Preset::active_preset->evalInitConditions();
-
-}
-
-
-
-/* Initialize the builtin function database.
-   Should only be necessary once */
-int projectM::init_builtin_func_db() {
-  int retval;
-
-  builtin_func_tree = 
-    SplayTree::create_splaytree((int (*)(void*,void*))compare_string, (void*(*)(void*))copy_string, (void(*)(void*))free_string);
-
-  if (builtin_func_tree == NULL)
-    return PROJECTM_OUTOFMEM_ERROR;
-
-  retval = load_all_builtin_func();
-  return PROJECTM_SUCCESS;
-}
-
-
-/* Destroy the builtin function database.
-   Generally, do this on projectm exit */
-int projectM::destroy_builtin_func_db() {
-
-  builtin_func_tree->splay_traverse((void (*)(void*))free_func_helper);
-  return PROJECTM_SUCCESS;
-}
-
-/* Insert a function into the database */
-int projectM::insert_func( Func *func ) {
-
-  builtin_func_tree->splay_insert(func, func->name);
-
-  return PROJECTM_SUCCESS;
-}
-
-/* Remove a function from the database */
-int projectM::remove_func( Func *func ) {
-
-    builtin_func_tree->splay_delete(func->name);
-
-  return PROJECTM_SUCCESS;
-}
-
-/* Find a function given its name */
-Func *projectM::find_func(char * name) {
-
-  Func * func = NULL;
-
-  /* First look in the builtin database */
-  func = (Func *)builtin_func_tree->splay_find(name);
-	
-  return func;
-
-}
-
-/* Loads a builtin function */
-int projectM::load_builtin_func(char * name,  float (*func_ptr)(float*), int num_args) {
-
-  Func * func; 
-  int retval; 
-
-  /* Create new function */
-  func = Func::create_func(name, func_ptr, num_args);
-
-  if (func == NULL)
-    return PROJECTM_OUTOFMEM_ERROR;
-
-  retval = insert_func( func );
-
-  return retval;
-
-}
-
-/* Loads all builtin functions */
-int projectM::load_all_builtin_func() {
-  
-  if (load_builtin_func("int", int_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("abs", abs_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("sin", sin_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("cos", cos_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("tan", tan_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("asin", asin_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("acos", acos_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("atan", atan_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("sqr", sqr_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("sqrt", sqrt_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("pow", pow_wrapper, 2) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("exp", exp_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("log", log_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("log10", log10_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("sign", sign_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("min", min_wrapper, 2) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("max", max_wrapper, 2) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("sigmoid", sigmoid_wrapper, 2) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("atan2", atan2_wrapper, 2) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("rand", rand_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("band", band_wrapper, 2) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("bor", bor_wrapper, 2) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("bnot", bnot_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("if", if_wrapper, 3) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("equal", equal_wrapper, 2) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("above", above_wrapper, 2) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("below",below_wrapper, 2) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("nchoosek", nchoosek_wrapper, 2) < 0)
-    return PROJECTM_ERROR;
-  if (load_builtin_func("fact", fact_wrapper, 1) < 0)
-    return PROJECTM_ERROR;
-
-
   return PROJECTM_SUCCESS;
 }
 
