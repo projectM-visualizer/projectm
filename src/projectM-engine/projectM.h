@@ -69,6 +69,7 @@
 #include "fatal.h"
 #include "PresetFrameIO.hpp"
 #include "Preset.hpp"
+#include "Renderer.hpp"
 
 //#include <dmalloc.h>
 
@@ -115,12 +116,16 @@ typedef enum {
 
 class projectM {
 public:
-    static projectM * currentEngine;
-    static Preset * activePreset;
+    static projectM *currentEngine;
+    static Preset *activePreset;
+    static Renderer *renderer; 
 
     char *presetURL;
     char *presetName;
     char *fontURL;
+
+    int gx,gy;
+    int texsize;
 
     int hasInit;
 
@@ -152,7 +157,7 @@ public:
     float Time;
 
     /** Render target texture ID */
-    RenderTarget *renderTarget;
+   
 
     char disp[80];
 

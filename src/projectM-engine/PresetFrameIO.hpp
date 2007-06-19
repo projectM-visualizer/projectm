@@ -113,6 +113,16 @@ public:
     float **cx_mesh;
     float **cy_mesh;
 
+    bool zoom_is_mesh;
+    bool zoomexp_is_mesh;
+    bool rot_is_mesh;
+
+    bool sx_is_mesh;
+    bool sy_is_mesh;
+    bool dx_is_mesh;
+    bool dy_is_mesh;
+    bool cx_is_mesh;
+    bool cy_is_mesh;
 
 
 };
@@ -149,8 +159,9 @@ public:
  int gx,gy;
 
  /// @bug are these in use?
-    //int meshx;
-    //int meshy;
+  /// @bugfix YES, presets reference meshx and meshy
+    int meshx;
+    int meshy;
 float **x_mesh;
     float **y_mesh;
     float **rad_mesh;
