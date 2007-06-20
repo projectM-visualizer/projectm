@@ -126,7 +126,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      break;
 	    case PROJECTM_K_F3: {
 	      showpreset++;
-	      printf( "F3 pressed: %d\n", showpreset );
+	      DWRITE( "F3 pressed: %d\n", showpreset );
 	      break;
 	     }
 	    case PROJECTM_K_F2:
