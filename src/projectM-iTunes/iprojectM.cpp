@@ -805,7 +805,7 @@ IMPEXP OSStatus MAIN (OSType message, PluginMessageInfo *messageInfo, void *refC
         case kPluginInitMessage: {
 #ifdef DEBUG
 #ifdef MACOS
-            debugFile = fopen( "/Users/descarte/iprojectM.txt", "wb" );
+            debugFile = fopen( "/tmp/iprojectM.txt", "wb" );
             fprintf( debugFile, "registerPlugin: %d\n", status );
             fflush( debugFile );
 #endif /** MACOS */
