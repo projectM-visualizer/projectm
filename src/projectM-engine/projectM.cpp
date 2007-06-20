@@ -20,6 +20,10 @@
  */
 #include "pbuffer.h"
 
+#ifdef USE_GLF
+#include "glf.h"
+#endif /** USE_GLF */
+
 #ifdef USE_FTGL
 #include <FTGL/FTGL.h>
 #include <FTGL/FTGLPixmapFont.h>
@@ -68,6 +72,8 @@ projectM *projectM::currentEngine = NULL;
 /** Constructor */
 DLLEXPORT projectM::projectM() {
     beatDetect = NULL;
+	title_font = -1;
+	other_font = -1;
   }
 
 /** Renders a single frame */
@@ -243,6 +249,10 @@ int x, y;
       glMatrixMode(GL_PROJECTION);
       glLoadIdentity();  
       glOrtho(-0.5, 0.5, -0.5,0.5,10,40);
+
+      glMatrixMode( GL_MODELVIEW );
+      glLoadIdentity();
+        glTranslatef( 0, 0, -1 );
      	
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 
@@ -255,7 +265,8 @@ int x, y;
 
       //preset editing menu
       glMatrixMode(GL_MODELVIEW);
-      glTranslated(-0.5,-0.5,-1);  
+      glTranslated(-0.5,-0.5,0);  
+        glDisable( GL_DEPTH_TEST );
 
       refreshConsole();
       draw_title_to_screen();
@@ -264,7 +275,7 @@ int x, y;
       if(this->showfps%2)draw_fps(this->realfps);
       if(this->showpreset%2)draw_preset();
       if(this->showstats%2)draw_stats();
-      glTranslatef(0.5 ,0.5,1);
+      glTranslatef(0.5, 0.5, 1 );
 
     DWRITE( "end pass2\n" );
 
@@ -1746,6 +1757,30 @@ void projectM::draw_title_to_texture() {
       this->drawtitle=0;
     }
 #endif /** USE_FTGL */
+
+#ifdef USE_GLF
+	DWRITE( "title_font: %d\n", this->title_font );
+	if ( this->drawtitle > 80 ) {
+      glfSetCurrentFont(this->title_font);
+      glColor4f(1.0,1.0,1.0,1.0);
+      glPushMatrix();
+     
+      glTranslatef(this->renderTarget->texsize*.095,this->renderTarget->texsize*.5, -5);
+      glScalef(this->renderTarget->texsize*.025,-this->renderTarget->texsize*.025,0);
+      glfSetSymbolSpace((0.05/512.0)*this->renderTarget->texsize);
+      if ( this->title != NULL ) {
+//        glfDrawSolidString(this->title);
+//        glfDrawWiredString(this->title);
+		glfDrawSolidString( "Test" );
+		glfDrawWiredString( "Test" );
+      } else {
+        glfDrawSolidString( "Unknown" );
+        glfDrawWiredString( "Unknown" );
+      }
+      glPopMatrix();
+      this->drawtitle=0;
+	}
+#endif /** USE_GLF */
 }
 
 void projectM::draw_title_to_screen() {
@@ -1789,6 +1824,26 @@ void projectM::draw_title_to_screen() {
 
     }
 #endif /** USE_FTGL */
+
+#ifdef USE_GLF
+  if(this->drawtitle>0)
+    { glfSetCurrentFont(this->title_font);
+      glColor4f(1.0,1.0,1.0,1.0);
+      glPushMatrix();
+      glTranslatef(this->vw*.095,this->vh*.5, -1);
+      glScalef(this->vw*.025,this->vh*.025,0);
+      glfSetSymbolSpace((0.05/512.0)*this->vw);
+      if ( this->title != NULL ) {
+        glfDrawSolidString(this->title);
+        glfDrawWiredString(this->title);
+      } else {
+        glfDrawSolidString( "Unknown" );
+        glfDrawWiredString( "Unknown" );
+      }
+      glPopMatrix();
+      this->drawtitle++;
+    }
+#endif /** USE_GLF */
 }
 
 void projectM::draw_title() {
@@ -1812,6 +1867,26 @@ void projectM::draw_title() {
       //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
      
 #endif /** USE_FTGL */
+
+#ifdef USE_GLF
+	glLineWidth(1);
+   glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
+    glfSetCurrentFont(this->title_font);
+      glColor4f(1.0,1.0,1.0,1.0);
+      glPushMatrix();
+      glTranslatef(this->vw*.001,this->vh*.03, -1);
+      glScalef(this->vw*.015,this->vh*.025,0);
+      glfSetSymbolSpace((0.05/512.0)*this->vw);
+      if ( this->title != NULL ) {
+        glfDrawSolidString(this->title);
+        glfDrawWiredString(this->title);
+      } else {
+        glfDrawSolidString( "Unknown" );
+        glfDrawWiredString( "Unknown" );
+      }
+      glPopMatrix();
+      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+#endif /** USE_GLF */
 }
 void projectM::draw_preset() { 
 #ifdef USE_FTGL
@@ -1835,6 +1910,27 @@ void projectM::draw_preset() {
 	//glPopMatrix();
 	// glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 #endif /** USE_FTGL */    
+
+#ifdef USE_GLF
+	DWRITE( "draw_preset: %d x %d\t%s\n",
+	        this->vw, this->vh, this->presetName );
+//   glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
+    glDisable( GL_TEXTURE_2D );
+    glfSetCurrentFont(this->other_font);
+      glColor4f(1.0,1.0,1.0,1.0);
+      glMatrixMode( GL_MODELVIEW );
+      glPushMatrix();
+      glLoadIdentity();
+      glTranslatef( vw * -0.00035, vh * -0.0005, -15 );
+      glScalef(this->vw*.000015,this->vh*.000025,0);
+//      glTranslatef(this->vw*.001,this->vh*-.01, 0);
+      glfSetSymbolSpace(0.0001*this->vw);
+//        glfDrawWiredString( this->presetName );
+        glfDrawSolidString( this->presetName );
+      glPopMatrix();
+//      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glEnable( GL_TEXTURE_2D );
+#endif
 }
 
 void projectM::draw_help( ) { 
@@ -1892,6 +1988,57 @@ void projectM::draw_help( ) {
       //         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
        DWRITE("post-help");
 #endif /** USE_FTGL */
+
+#ifdef USE_GLF
+glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
+	
+   
+    glfSetCurrentFont(this->title_font);
+      glColor4f(1.0,1.0,1.0,1.0);
+      glPushMatrix();
+      glTranslatef(this->vw*.001,this->vh, -1);
+      glScalef(this->vw*.02,this->vh*.02 ,0);
+      glfSetSymbolSpace(0.0001*this->vw);
+      glfDrawSolidString("Help");  
+      glTranslatef(0,-2, 0);
+      glfDrawSolidString("----------------------------");  
+      
+      glTranslatef(0,-2, 0);    
+      glfDrawSolidString("F1: This help menu");
+  
+      glTranslatef(0,-2, 0);
+      glfDrawSolidString("F2: Show song title");
+      
+      glTranslatef(0,-2, 0);
+      glfDrawSolidString("F3: Show preset name");
+ 
+      glTranslatef(0,-4, 0);
+      glfDrawSolidString("F5: Show FPS");
+
+
+
+      glTranslatef(0,-2, 0); 
+      glfDrawSolidString("F: Fullscreen");
+
+      glTranslatef(0,-2, 0);
+      glfDrawSolidString("L: Lock/Unlock Preset");
+
+      glTranslatef(0,-2, 0);
+      glfDrawSolidString("M: Show Menu");
+       glTranslatef(0,-4, 0);
+
+      glfDrawSolidString("R: Random preset");
+      glTranslatef(0,-2, 0);
+
+      glfDrawSolidString("N: Next preset");
+ 
+      glTranslatef(0,-2, 0);
+      glfDrawSolidString("P: Previous preset");
+
+      glPopMatrix();
+	glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    
+#endif
 }
 
 void projectM::draw_stats() {
@@ -1953,6 +2100,22 @@ void projectM::draw_fps( float realfps ) {
   // glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     
 #endif /** USE_FTGL */    
+
+#ifdef USE_GLF
+  char bufferfps[20];  
+  sprintf( bufferfps, "%.1f fps", realfps);
+ glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
+  glfSetCurrentFont(this->other_font);
+  glColor4f(1.0,1.0,1.0,1.0);
+  glPushMatrix();
+  glTranslatef(this->vw*.9,this->vh, -1);
+  glScalef(this->vw*.02,this->vh*.02,0);
+  glfSetSymbolSpace((0.05/512.0)*this->vw);
+  glfDrawSolidString(bufferfps);
+  // glfDrawWiredString(pm->bufferfps);
+  glPopMatrix();
+     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+#endif
 }
 //Here we render the interpolated mesh, and then apply the texture to it.  
 //Well, we actually do the inverse, but its all the same.
@@ -2749,16 +2912,41 @@ DLLEXPORT void projectM::projectM_resetGL( int w, int h ) {
     glLineStipple(2, 0xAAAA);
 
     /** (Re)create the offscreen for pass 1 */
-   
 
     rescale_per_pixel_matrices();
 
     /** Load TTF font **/
-   
+#ifdef USE_GLF
+    /** Load the standard fonts */
+    float minx, miny, maxx, maxy;
+    if ( this->title_font == -1 && this->other_font == -1 ) {
+        glfInit();   
+        sprintf( path, "%s%ctimes_new1.glf", this->fontURL, PATH_SEPARATOR );
+        title_font = glfLoadFont( path );
+        glfSetCurrentFont( title_font );
 
+        glfGetStringBounds( "Ugh", &minx, &miny, &maxx, &maxy );
+        this->title_font_xsize = maxx - minx;
+        this->title_font_ysize = maxy - miny;
+
+        DWRITE( "title_font: %d\t%f x %f\n", 
+                title_font, title_font_xsize, title_font_ysize );
+
+        sprintf( path, "%s%carial1.glf", this->fontURL, PATH_SEPARATOR );
+        other_font = glfLoadFont( path );
+        glfSetCurrentFont( other_font );
+
+        glfGetStringBounds( "Ugh", &minx, &miny, &maxx, &maxy );
+        this->other_font_xsize = maxx - minx;
+        this->other_font_ysize = maxy - miny;
+
+        DWRITE( "other_font: %d\t%f x %f\n", 
+                other_font, other_font_xsize, other_font_ysize );
+      }
+#endif
 
 #ifdef USE_FTGL
-    /**f Load the standard fonts */
+    /** Load the standard fonts */
     if ( title_font == NULL && other_font == NULL ) {
        
 

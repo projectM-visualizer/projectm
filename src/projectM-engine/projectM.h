@@ -336,6 +336,15 @@ public:
     float **y_mesh;
     float **rad_mesh;
     float **theta_mesh;
+	
+#ifdef USE_GLF
+	int title_font,
+		other_font;
+    float title_font_xsize,
+          title_font_ysize;
+    float other_font_xsize,
+          other_font_ysize;
+#endif /** USE_GLF */
 
     /** Beat detection engine */
     BeatDetect *beatDetect;
