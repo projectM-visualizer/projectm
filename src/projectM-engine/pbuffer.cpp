@@ -43,52 +43,57 @@ void createPBuffers( int width, int height, RenderTarget *target ) {
 #ifdef USE_FBO
     DWRITE( "FBO init: usePbuffers: %d\n", target->usePbuffers );
     if(target->usePbuffers) {
-	    glewInit();
+	    if ( glewInit() == GLEW_OK ) {
+    	    DWRITE( "FBO: glewInit() OK\n" );
+
+            /** Check for the extensions we need */
+            if ( GLEW_EXT_framebuffer_object ) {
+        	    DWRITE( "FBO: locate EXT_framebuffer_object\n" );
+        	    GLuint   fb, color_rb, depth_rb, rgba_tex, depth_tex, i, other_tex;
+	            glGenFramebuffersEXT(1, &fb);
+	            glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fb );
 	
-	    GLuint   fb, color_rb, depth_rb, rgba_tex, depth_tex, i, other_tex;
-	    glGenFramebuffersEXT(1, &fb);
-	    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fb );
-	
-	    glGenRenderbuffersEXT(1, &depth_rb);
-	    glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depth_rb );
-	    glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, target->texsize,target->texsize  );
-	    glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depth_rb );         
-	    target->fbuffer[0] = depth_rb;
-    	
-	    glGenTextures(1, &other_tex);
-	    glBindTexture(GL_TEXTURE_2D,other_tex);
- 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, target->texsize, target->texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-	    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	    //glGenerateMipmapEXT(GL_TEXTURE_2D);
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    
-    
-    	
-	    glGenTextures(1, &rgba_tex);
-	    glBindTexture(GL_TEXTURE_2D, rgba_tex); 
-	    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, target->texsize, target->texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	    //glGenerateMipmapEXT(GL_TEXTURE_2D);
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    
-    
-    	
-	    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, rgba_tex, 0 );         
-	    target->textureID[0] = rgba_tex;
-	    target->textureID[1] = other_tex; 
-    
-	    GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-	    if (status == GL_FRAMEBUFFER_COMPLETE_EXT) {
-	        return;
-	      } 
+        	    glGenRenderbuffersEXT(1, &depth_rb);
+        	    glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depth_rb );
+        	    glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, target->texsize,target->texsize  );
+        	    glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depth_rb );         
+        	    target->fbuffer[0] = depth_rb;
+            	
+        	    glGenTextures(1, &other_tex);
+        	    glBindTexture(GL_TEXTURE_2D,other_tex);
+         	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, target->texsize, target->texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+        	    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        	    //glGenerateMipmapEXT(GL_TEXTURE_2D);
+        	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            
+            
+            	
+        	    glGenTextures(1, &rgba_tex);
+        	    glBindTexture(GL_TEXTURE_2D, rgba_tex); 
+        	    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, target->texsize, target->texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+        	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        	    //glGenerateMipmapEXT(GL_TEXTURE_2D);
+        	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+            
+        	    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, rgba_tex, 0 );         
+        	    target->textureID[0] = rgba_tex;
+        	    target->textureID[1] = other_tex; 
+            
+        	    GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        	    if (status == GL_FRAMEBUFFER_COMPLETE_EXT) {
+        	        return;
+        	      } 
+              } else {
+                DWRITE( "FBO: Cannot locate EXT_framebuffer_object\n" );
+              }
+          }
       }
 #endif
 
-fallback:
     DWRITE( "using teximage hack fallback\n" );
 
     /** Fallback pbuffer creation via teximage hack */
