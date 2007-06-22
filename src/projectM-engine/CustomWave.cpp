@@ -45,341 +45,420 @@
 
 int interface_id = 0;
 
-CustomWave * CustomWave::new_custom_wave(int id) {
-
-  CustomWave * custom_wave;
+CustomWave::CustomWave(int id):id(id)
+{
+	
   Param * param;
   
-  if ((custom_wave = (CustomWave*)wipemalloc(sizeof(CustomWave))) == NULL)
-    return NULL;
+/// @bug: should put these in member init list
+  this->per_frame_count = 0;
 
-  custom_wave->id = id;
-  custom_wave->per_frame_count = 0;
+  this->samples = 512;
+  this->bSpectrum = 0;
+  this->enabled = 1;
+  this->sep = 1;
+  this->smoothing = 0.0;
+  this->bUseDots = 0;
+  this->bAdditive = 0;
+  this->r = this->g = this->b = this->a = 0.0;
+  this->scaling = 1.0;
+  this->per_frame_eqn_string_index = 0;
+  this->per_frame_init_eqn_string_index = 0;
+  this->per_point_eqn_string_index = 0;
 
-  custom_wave->samples = 512;
-  custom_wave->bSpectrum = 0;
-  custom_wave->enabled = 1;
-  custom_wave->sep = 1;
-  custom_wave->smoothing = 0.0;
-  custom_wave->bUseDots = 0;
-  custom_wave->bAdditive = 0;
-  custom_wave->r = custom_wave->g = custom_wave->b = custom_wave->a = 0.0;
-  custom_wave->scaling = 1.0;
-  custom_wave->per_frame_eqn_string_index = 0;
-  custom_wave->per_frame_init_eqn_string_index = 0;
-  custom_wave->per_point_eqn_string_index = 0;
-
-  custom_wave->r_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  custom_wave->g_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  custom_wave->b_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  custom_wave->a_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  custom_wave->x_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  custom_wave->y_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  custom_wave->value1 = (float*) wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  custom_wave->value2 = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  custom_wave->sample_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
+  this->r_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
+  this->g_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
+  this->b_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
+  this->a_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
+  this->x_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
+  this->y_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
+  this->value1 = (float*) wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
+  this->value2 = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
+  this->sample_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
 
   /* Initialize tree data structures */
   
-  if ((custom_wave->param_tree = 
+  if ((this->param_tree = 
        SplayTree::create_splaytree((int (*)(void*, void*))compare_string, (void* (*)(void*))copy_string, (void (*)(void*))free_string)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+    delete(this);
+  abort();
   }
 
-  if ((custom_wave->per_point_eqn_tree = 
+  if ((this->per_point_eqn_tree = 
        SplayTree::create_splaytree((int (*)(void*, void*))compare_int, (void* (*)(void*))copy_int, (void (*)(void*))free_int)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+    delete(this);
+    abort();
   }
 
-  if ((custom_wave->per_frame_eqn_tree = 
+  if ((this->per_frame_eqn_tree = 
        SplayTree::create_splaytree((int (*)(void*, void*))compare_int,(void* (*)(void*)) copy_int,(void (*)(void*)) free_int)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+    delete(this);
+    abort();
   }
 
-  if ((custom_wave->init_cond_tree = 
+  if ((this->init_cond_tree = 
        SplayTree::create_splaytree((int (*)(void*, void*))compare_string, (void*(*)(void*))copy_string,(void (*)(void*)) free_string)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+    delete(this);
+    /// @bug make exception
+    abort();
   }
   
-  if ((custom_wave->per_frame_init_eqn_tree = 
+  if ((this->per_frame_init_eqn_tree = 
        SplayTree::create_splaytree((int (*)(void*, void*))compare_string, (void*(*)(void*))copy_string, (void (*)(void*))free_string)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+    delete(this);
+    /// @bug make exception
+    abort();
   }
 
   
   /* Start: Load custom wave parameters */
 
-  if ((param = Param::new_param_float("r", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &custom_wave->r, custom_wave->r_mesh, 1.0, 0.0, .5)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("r", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->r, this->r_mesh, 1.0, 0.0, .5)) == NULL) {
+    delete(this);
+    /// @bug make exception
+    abort();
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    /// @bug make exception
+    abort();
   }
  
-  if ((param = Param::new_param_float("g", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &custom_wave->g,  custom_wave->g_mesh, 1.0, 0.0, .5)) == NULL){
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("g", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->g,  this->g_mesh, 1.0, 0.0, .5)) == NULL){
+    delete(this);
+/// @bug make exception
+    abort();
+    
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+/// @bug make exception
+    abort();
+    
   }
 
-  if ((param = Param::new_param_float("b", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &custom_wave->b,  custom_wave->b_mesh, 1.0, 0.0, .5)) == NULL){
-    custom_wave->free_custom_wave();
-    return NULL;				       
+  if ((param = Param::new_param_float("b", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->b,  this->b_mesh, 1.0, 0.0, .5)) == NULL){
+    delete(this);
+/// @bug make exception
+    abort();
+
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+/// @bug make exception
+    abort();
+
   }
 
-  if ((param = Param::new_param_float("a", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &custom_wave->a,  custom_wave->a_mesh, 1.0, 0.0, .5)) == NULL){
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("a", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->a,  this->a_mesh, 1.0, 0.0, .5)) == NULL){
+    delete(this);
+/// @bug make exception
+    abort();
+
+
   }
   
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+/// @bug make exception
+    abort();
+
   }
 
-  if ((param = Param::new_param_float("x", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &custom_wave->x,  custom_wave->x_mesh, 1.0, 0.0, .5)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("x", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->x,  this->x_mesh, 1.0, 0.0, .5)) == NULL) {
+    delete(this);
+/// @bug make exception
+    abort();
+
+
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+/// @bug make exception
+    abort();
+
   }
 
-  if ((param = Param::new_param_float("y", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &custom_wave->y,  custom_wave->y_mesh, 1.0, 0.0, .5)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("y", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->y,  this->y_mesh, 1.0, 0.0, .5)) == NULL) {
+    delete(this);
+/// @bug make exception
+    abort();
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+
+/// @bug make exception
+    abort();
+
   }
 
-  if ((param = Param::new_param_bool("enabled", P_FLAG_NONE, &custom_wave->enabled, 1, 0, 0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_bool("enabled", P_FLAG_NONE, &this->enabled, 1, 0, 0)) == NULL) {
+    delete(this);
+/// @bug make exception
+    abort();
+
+
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+
+/// @bug make exception
+    abort();
+
   }
 
-  if ((param = Param::new_param_int("sep", P_FLAG_NONE, &custom_wave->sep, 100, -100, 0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_int("sep", P_FLAG_NONE, &this->sep, 100, -100, 0)) == NULL) {
+    delete(this);
+/// @bug make exception
+    abort();
+
+
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+/// @bug make exception
+    abort();
+
+
   }
 
-  if ((param = Param::new_param_bool("bSpectrum", P_FLAG_NONE, &custom_wave->bSpectrum, 1, 0, 0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_bool("bSpectrum", P_FLAG_NONE, &this->bSpectrum, 1, 0, 0)) == NULL) {
+    delete(this);
+/// @bug make exception
+    abort();
+
+
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+/// @bug make exception
+    abort();
+
   }
 
-  if ((param = Param::new_param_bool("bDrawThick", P_FLAG_NONE, &custom_wave->bDrawThick, 1, 0, 0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_bool("bDrawThick", P_FLAG_NONE, &this->bDrawThick, 1, 0, 0)) == NULL) {
+    delete(this);
+/// @bug make exception
+    abort();
+
+
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+/// @bug make exception
+    abort();
+
   }
 
-  if ((param = Param::new_param_bool("bUseDots", P_FLAG_NONE, &custom_wave->bUseDots, 1, 0, 0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_bool("bUseDots", P_FLAG_NONE, &this->bUseDots, 1, 0, 0)) == NULL) {
+    delete(this);
+/// @bug make exception
+    abort();
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
   }
  
-  if ((param = Param::new_param_bool("bAdditive", P_FLAG_NONE, &custom_wave->bAdditive, 1, 0, 0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_bool("bAdditive", P_FLAG_NONE, &this->bAdditive, 1, 0, 0)) == NULL) {
+    delete(this);
+    abort();
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
   }
 
-  if ((param = Param::new_param_int("samples", P_FLAG_NONE, &custom_wave->samples, 2048, 1, 512)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_int("samples", P_FLAG_NONE, &this->samples, 2048, 1, 512)) == NULL) {
+    delete(this);
+    abort();
   }
  
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
   }
 
   if ((param = Param::new_param_float("sample", P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT,
-				&custom_wave->sample, custom_wave->sample_mesh, 1.0, 0.0, 0.0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+				&this->sample, this->sample_mesh, 1.0, 0.0, 0.0)) == NULL) {
+    delete(this);
+    abort();
   }
  
- if (custom_wave->param_tree->insert_param(param) < 0) {
+ if (this->param_tree->insert_param(param) < 0) {
     printf("failed to insert sample\n");
-    custom_wave->free_custom_wave();
-    return NULL;
+    delete(this);
+    abort();
   }
 
-  if ((param = Param::new_param_float("value1", P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &custom_wave->v1, custom_wave->value1, 1.0, -1.0, 0.0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("value1", P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v1, this->value1, 1.0, -1.0, 0.0)) == NULL) {
+    delete(this);
+    abort();
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
   }
 
-  if ((param = Param::new_param_float("value2", P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &custom_wave->v2, custom_wave->value2, 1.0, -1.0, 0.0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("value2", P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v2, this->value2, 1.0, -1.0, 0.0)) == NULL) {
+    delete(this);
+    abort();
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
   }
 
-  if ((param = Param::new_param_float("smoothing", P_FLAG_NONE, &custom_wave->smoothing, NULL, 1.0, 0.0, 0.0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("smoothing", P_FLAG_NONE, &this->smoothing, NULL, 1.0, 0.0, 0.0)) == NULL) {
+    delete(this);
+    abort();
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
   }
 
-  if ((param = Param::new_param_float("scaling", P_FLAG_NONE, &custom_wave->scaling, NULL, MAX_DOUBLE_SIZE, 0.0, 1.0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("scaling", P_FLAG_NONE, &this->scaling, NULL, MAX_DOUBLE_SIZE, 0.0, 1.0)) == NULL) {
+    delete(this);
+    abort();
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
   }
  
-  if ((param = Param::new_param_float("t1", P_FLAG_PER_POINT | P_FLAG_TVAR, &custom_wave->t1, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("t1", P_FLAG_PER_POINT | P_FLAG_TVAR, &this->t1, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
+    delete(this);
+    abort();
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
   }
 
-  if ((param = Param::new_param_float("t2",  P_FLAG_PER_POINT |P_FLAG_TVAR, &custom_wave->t2, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("t2",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t2, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
+    delete(this);
+    abort();
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
   }
 
-  if ((param = Param::new_param_float("t3",  P_FLAG_PER_POINT |P_FLAG_TVAR, &custom_wave->t3, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("t3",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t3, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
+    delete(this);
+    abort();
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
   }
-  if ((param = Param::new_param_float("t4",  P_FLAG_PER_POINT |P_FLAG_TVAR, &custom_wave->t4, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("t4",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t4, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
+    delete(this);
+    abort();
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
   }
-  if ((param = Param::new_param_float("t5", P_FLAG_TVAR, &custom_wave->t5, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("t5", P_FLAG_TVAR, &this->t5, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
+    delete(this);
+    abort();
   }
  
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
   }
-  if ((param = Param::new_param_float("t6", P_FLAG_TVAR | P_FLAG_PER_POINT, &custom_wave->t6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
-  }
-
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
-  }
-  if ((param = Param::new_param_float("t7", P_FLAG_TVAR | P_FLAG_PER_POINT, &custom_wave->t7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("t6", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
+    delete(this);
+    abort();
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
+  }
+  if ((param = Param::new_param_float("t7", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
+    delete(this);
+    abort();
   }
 
-  if ((param = Param::new_param_float("t8", P_FLAG_TVAR | P_FLAG_PER_POINT, &custom_wave->t8, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
   }
 
-  if (custom_wave->param_tree->insert_param(param) < 0) {
-    custom_wave->free_custom_wave();
-    return NULL;
+  if ((param = Param::new_param_float("t8", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t8, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
+    delete(this);
+    abort();
+  }
+
+  if (this->param_tree->insert_param(param) < 0) {
+    delete(this);
+    abort();
   }
   
   /* End of parameter loading. Note that the read only parameters associated
-     with custom waves (ie, sample) are global variables, and not specific to 
-     the custom wave datastructure. */
-
-
-  return custom_wave;
+     with custom waves (ie, sample) are variables stored in PresetFrameIO.hpp,
+     and not specific to the custom wave datastructure. */
 
 }
+
+CustomWave::~CustomWave() {
+
+  if (param_tree == NULL)
+    return;
+
+  destroy_per_point_eqn_tree(per_point_eqn_tree);
+  destroy_per_frame_eqn_tree(per_frame_eqn_tree);
+  destroy_init_cond_tree(init_cond_tree);
+  destroy_param_db_tree(param_tree);
+  destroy_per_frame_init_eqn_tree();
+
+  free(r_mesh);
+  free(g_mesh);
+  free(b_mesh);
+  free(a_mesh);
+  free(x_mesh);
+  free(y_mesh);
+  free(value1);
+  free(value2);
+  free(sample_mesh);
+
+  r_mesh = NULL;
+  g_mesh = NULL;
+  b_mesh = NULL;
+  a_mesh = NULL;
+  x_mesh = NULL;
+  y_mesh = NULL;
+  value1 = NULL;
+  value2 = NULL;
+  sample_mesh = NULL;
+
+
+}
+
+
 
 void CustomWave::destroy_per_frame_init_eqn_tree() {
 
@@ -434,45 +513,6 @@ void CustomWave::destroy_param_db_tree(SplayTree * tree) {
 
 }
 
-/* Frees a custom wave form object */
-void CustomWave::free_custom_wave() {
-
-  if (param_tree == NULL)
-    return;
-
-  destroy_per_point_eqn_tree(per_point_eqn_tree);
-  destroy_per_frame_eqn_tree(per_frame_eqn_tree);
-  destroy_init_cond_tree(init_cond_tree);
-  destroy_param_db_tree(param_tree);
-  destroy_per_frame_init_eqn_tree();
-
-  free(r_mesh);
-  free(g_mesh);
-  free(b_mesh);
-  free(a_mesh);
-  free(x_mesh);
-  free(y_mesh);
-  free(value1);
-  free(value2);
-  free(sample_mesh);
-
-  r_mesh = NULL;
-  g_mesh = NULL;
-  b_mesh = NULL;
-  a_mesh = NULL;
-  x_mesh = NULL;
-  y_mesh = NULL;
-  value1 = NULL;
-  value2 = NULL;
-  sample_mesh = NULL;
-
-//  free(custom_wave);
-//  custom_wave = NULL;
-
-  return;
-
-}
-
 
 
 int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr) {
@@ -518,40 +558,6 @@ int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr) {
  return PROJECTM_SUCCESS;
 }
 
-CustomWave * CustomWave::find_custom_wave(int id, Preset * preset, int create_flag) {
-
-  CustomWave * custom_wave = NULL;
-
-  if (preset == NULL)
-    return NULL;
-  
-  if ((custom_wave = (CustomWave*)preset->custom_wave_tree->splay_find(&id)) == NULL) {
-
-    if (CUSTOM_WAVE_DEBUG) { printf("find_custom_wave: creating custom wave (id = %d)...", id);fflush(stdout);}
-
-    if (create_flag == FALSE) {
-      if (CUSTOM_WAVE_DEBUG) printf("you specified not to (create flag = false), returning null\n");
-       return NULL;
-    }
-
-    if ((custom_wave = new_custom_wave(id)) == NULL) {
-      if (CUSTOM_WAVE_DEBUG) printf("failed...out of memory?\n");
-      return NULL;
-    }
-
-    if  (CUSTOM_WAVE_DEBUG) {printf("success.Inserting..."); fflush(stdout);}
-
-   if (preset->custom_wave_tree->splay_insert(custom_wave, &custom_wave->id) < 0) {
-     if (CUSTOM_WAVE_DEBUG) printf("failed!\n");
-     custom_wave->free_custom_wave();
-     return NULL;
-    }
- 
-   if (CUSTOM_WAVE_DEBUG) printf("done.\n");
-  }
- 
-  return custom_wave;
-}
 
 void CustomWave::eval_custom_wave_init_conds() {
   init_cond_tree->splay_traverse((void (*)(void*))eval_init_cond_helper );

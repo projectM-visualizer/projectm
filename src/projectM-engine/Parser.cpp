@@ -518,7 +518,7 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
       CustomWave * custom_wave;
 
       /* Retrieve custom shape associated with this id */
-      if ((custom_wave = CustomWave::find_custom_wave(last_custom_wave_id, preset, TRUE)) == NULL)
+      if ((custom_wave = preset->find_custom_wave(last_custom_wave_id, TRUE)) == NULL)
 	return PROJECTM_FAILURE;
       return parse_wave_per_frame_eqn(fs, custom_wave, preset);
 
@@ -1419,7 +1419,7 @@ int Parser::parse_wavecode(char * token, FILE * fs, Preset * preset) {
 
   /* Retrieve custom wave information from preset. The 3rd argument
      if true creates a custom wave if one does not exist */
-  if ((custom_wave = CustomWave::find_custom_wave(id, preset, TRUE)) == NULL) {
+  if ((custom_wave = preset->find_custom_wave(id, TRUE)) == NULL) {
     //if (PARSE_DEBUG) printf("parse_wavecode: failed to load (or create) custom wave (id = %d)!\n", id);
     return PROJECTM_FAILURE;
   }
@@ -1757,7 +1757,7 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
    InitCond * init_cond;
 
   /* Retrieve custom wave associated with this id */
-  if ((custom_wave = CustomWave::find_custom_wave(id, preset, TRUE)) == NULL) {
+  if ((custom_wave = preset->find_custom_wave(id, TRUE)) == NULL) {
     if (PARSE_DEBUG) printf("parse_wave_helper: custom wave id %d not found!\n", id);
     return PROJECTM_FAILURE;
   }

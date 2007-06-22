@@ -51,6 +51,16 @@ class SplayTree;
 
 class CustomWave {
 public:
+
+     /** Empty constructor leaves wave in undefined state **/
+     CustomWave() {}
+
+     /** Initializes a custom wave id given the integer id */
+     CustomWave(int id);
+
+    /** Destructor is necessary so we can free the per point matrices **/
+    ~CustomWave();
+
     /* Numerical id */
     int id;
     int per_frame_count;
@@ -103,12 +113,12 @@ public:
     SplayTree * per_frame_eqn_tree;
     SplayTree * per_point_eqn_tree;
     SplayTree * per_frame_init_eqn_tree;
-    
+
     /* Denotes the index of the last character for each string buffer */
     int per_point_eqn_string_index;
     int per_frame_eqn_string_index;
     int per_frame_init_eqn_string_index;
-    
+
     /* String buffers for per point and per frame equations */
     char per_point_eqn_string_buffer[STRING_BUFFER_SIZE];
     char per_frame_eqn_string_buffer[STRING_BUFFER_SIZE];
@@ -117,16 +127,12 @@ public:
     /* Per point equation array */
     GenExpr * per_point_eqn_array[NUM_POINT_OPS];
 
-    void free_custom_wave();
-    static CustomWave *new_custom_wave( int id );
-
     void reset_per_point_eqn_array(CustomWave *custom_wave );
-    static CustomWave * find_custom_wave(int id, Preset *preset, int create_flag);
 
     int add_per_point_eqn(char * name, GenExpr * gen_expr);
     void evalCustomWaveInitConditions(Preset *preset);
     void evalPerPointEqns();
-    CustomWave *nextCustomWave( Preset *preset);
+
     void load_unspecified_init_conds_wave();
     void load_unspec_init_cond() ;
     void eval_custom_wave_init_conds();
@@ -141,7 +147,7 @@ public:
 
 /** Splaytree traversal helpers */
 inline void free_custom_wave_helper( void *custom_wave ) {
-    ((CustomWave *)custom_wave)->free_custom_wave();
+    delete((CustomWave *)custom_wave);
   }
 
 inline void load_custom_wave_init_helper( void *custom_wave ) {

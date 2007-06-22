@@ -209,6 +209,4 @@ inline bool StaticArray<T, STATIC_ARRAY_MAX_SIZE> ::operator> (const StaticArray
 	return ((!((*this) == rhs)) && (!((*this) < rhs)));
 }
 
-
-
 #endif

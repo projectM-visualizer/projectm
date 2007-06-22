@@ -657,7 +657,33 @@ void Preset::load_init_conditions() {
 }
 
 
-CustomShape * Preset::find_custom_shape(int id, int create_flag) {
+
+CustomWave * Preset::find_custom_wave(int id, bool create_flag) {
+  CustomWave * custom_wave = NULL;
+
+  if ((custom_wave = this->customWaves[id]) == NULL) {
+
+    if (CUSTOM_WAVE_DEBUG) { printf("find_custom_wave: creating custom wave (id = %d)...", id);fflush(stdout);}
+
+    if (create_flag == FALSE) {
+      if (CUSTOM_WAVE_DEBUG) printf("you specified not to (create flag = false), returning null\n");
+       return NULL;
+    }
+
+    if ((custom_wave = new CustomWave(id)) == NULL) {
+      if (CUSTOM_WAVE_DEBUG) printf("failed...out of memory?\n");
+      return NULL;
+    }
+
+    customWaves.push_back(custom_wave);
+  }
+ 
+  return custom_wave;
+
+}
+
+
+CustomShape * Preset::find_custom_shape(int id, bool create_flag) {
 
   CustomShape * custom_shape = NULL;
 

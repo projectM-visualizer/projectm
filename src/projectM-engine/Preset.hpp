@@ -76,7 +76,8 @@ public:
     int mesh_i,mesh_j;
 
     void load_init_conditions();
-     CustomShape * find_custom_shape(int id, int create_flag);
+     CustomShape * find_custom_shape(int id, bool create_flag);
+     CustomWave * find_custom_wave(int id, bool create_flag);
 
     int per_pixel_eqn_string_index;
     int per_frame_eqn_string_index;
