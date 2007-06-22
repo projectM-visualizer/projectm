@@ -21,7 +21,7 @@
 /**
  * $Id: pbuffer.c,v 1.1.1.1 2005/12/23 18:05:00 psperl Exp $
  *
- * Render target methods
+ * Render this methods
  */
 
 #include <stdio.h>
@@ -35,14 +35,15 @@
 #endif /** MACOS */
 
 /** Creates new pbuffers */
-void createPBuffers( int width, int height, RenderTarget *target ) {
+RenderTarget::RenderTarget(int texsize, int width, int height) {
 
     int mindim = 0;
     int origtexsize = 0;
+    int usePbuffers = 1;
 
 #ifdef USE_FBO
-    DWRITE( "FBO init: usePbuffers: %d\n", target->usePbuffers );
-    if(target->usePbuffers) {
+    DWRITE( "FBO init: usePbuffers: %d\n", usePbuffers );
+    if(usePbuffers) {
 	    glewInit();
 	
 	    GLuint   fb, color_rb, depth_rb, rgba_tex, depth_tex, i, other_tex;
@@ -51,13 +52,13 @@ void createPBuffers( int width, int height, RenderTarget *target ) {
 	
 	    glGenRenderbuffersEXT(1, &depth_rb);
 	    glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depth_rb );
-	    glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, target->texsize,target->texsize  );
+	    glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, this->texsize,this->texsize  );
 	    glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depth_rb );         
-	    target->fbuffer[0] = depth_rb;
+	    this->fbuffer[0] = depth_rb;
     	
 	    glGenTextures(1, &other_tex);
 	    glBindTexture(GL_TEXTURE_2D,other_tex);
- 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, target->texsize, target->texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+ 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
 	    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	    //glGenerateMipmapEXT(GL_TEXTURE_2D);
@@ -69,7 +70,7 @@ void createPBuffers( int width, int height, RenderTarget *target ) {
 	    glGenTextures(1, &rgba_tex);
 	    glBindTexture(GL_TEXTURE_2D, rgba_tex); 
 	    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, target->texsize, target->texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
 	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	    //glGenerateMipmapEXT(GL_TEXTURE_2D);
 	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -78,8 +79,8 @@ void createPBuffers( int width, int height, RenderTarget *target ) {
     
     	
 	    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, rgba_tex, 0 );         
-	    target->textureID[0] = rgba_tex;
-	    target->textureID[1] = other_tex; 
+	    this->textureID[0] = rgba_tex;
+	    this->textureID[1] = other_tex; 
     
 	    GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 	    if (status == GL_FRAMEBUFFER_COMPLETE_EXT) {
@@ -96,24 +97,24 @@ fallback:
     /** If the viewport is smaller, then we'll need to scale the texture size down */
     /** If the viewport is larger, scale it up */
     mindim = width < height ? width : height;
-    origtexsize = target->texsize;
-    target->texsize = nearestPower2( mindim, SCALE_MINIFY );      
+    origtexsize = this->texsize;
+    this->texsize = nearestPower2( mindim, SCALE_MINIFY );      
 
-    /* Create the texture that will be bound to the render target */
-    if ( glIsTexture( target->textureID[0] ) ) {
+    /* Create the texture that will be bound to the render this */
+    if ( glIsTexture( this->textureID[0] ) ) {
         DWRITE( "texture already exists\n" );
-        if ( target->texsize != origtexsize ) {
+        if ( this->texsize != origtexsize ) {
             DWRITE( "deleting existing texture due to resize\n" );
-            glDeleteTextures( 1, &target->textureID[0] );
+            glDeleteTextures( 1, &this->textureID[0] );
           }
       }
 
-    if ( !glIsTexture( target->textureID[0] ) ) {
-        glGenTextures(1, &target->textureID[0] );
+    if ( !glIsTexture( this->textureID[0] ) ) {
+        glGenTextures(1, &this->textureID[0] );
 
         DWRITE( "allocate texture: %d\ttexsize: %d x %d\n", 
-                target->textureID[0], target->texsize, target->texsize );
-        glBindTexture(GL_TEXTURE_2D, target->textureID[0] );
+                this->textureID[0], this->texsize, this->texsize );
+        glBindTexture(GL_TEXTURE_2D, this->textureID[0] );
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
@@ -123,14 +124,14 @@ fallback:
         glTexImage2D(GL_TEXTURE_2D,
 		    0,
 		    3,
-		    target->texsize, target->texsize,
+		    this->texsize, this->texsize,
 		    0,
 		    GL_RGB,
 		    GL_UNSIGNED_BYTE,
 		    NULL);
       }
 
-    target->usePbuffers = 0;
+    this->usePbuffers = 0;
 
     return;
   }
@@ -138,27 +139,27 @@ fallback:
 /** Destroys the pbuffer */
 
 /** Locks the pbuffer */
-void lockPBuffer( RenderTarget *target, PBufferPass pass ) {
+void RenderTarget::lock() {
 
 #ifdef USE_FBO
-  if(target->usePbuffers)
+  if(this->usePbuffers)
     { 
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, target->fbuffer[0]);     
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->fbuffer[0]);     
     }
   
 #endif
   }
 
 /** Unlocks the pbuffer */
-void unlockPBuffer( RenderTarget *target ) {
+void RenderTarget::unlock() {
 
 #ifdef USE_FBO
-  if(target->usePbuffers)
+  if(this->usePbuffers)
     {
-      glBindTexture( GL_TEXTURE_2D, target->textureID[1] );
+      glBindTexture( GL_TEXTURE_2D, this->textureID[1] );
       glCopyTexSubImage2D( GL_TEXTURE_2D,
                          0, 0, 0, 0, 0, 
-                         target->texsize, target->texsize );
+                         this->texsize, this->texsize );
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
       return;
     }
@@ -167,17 +168,17 @@ void unlockPBuffer( RenderTarget *target ) {
 
     /** Fallback texture path */
     DWRITE( "copying framebuffer to texture\n" );
-    glBindTexture( GL_TEXTURE_2D, target->textureID[0] );
+    glBindTexture( GL_TEXTURE_2D, this->textureID[0] );
     glCopyTexSubImage2D( GL_TEXTURE_2D,
                          0, 0, 0, 0, 0, 
-                         target->texsize, target->texsize );
+                         this->texsize, this->texsize );
   }
 
 /** 
  * Calculates the nearest power of two to the given number using the
  * appropriate rule
  */
-int nearestPower2( int value, TextureScale scaleRule ) {
+int RenderTarget::nearestPower2( int value, TextureScale scaleRule ) {
 
     int x = value;
     int power = 0;

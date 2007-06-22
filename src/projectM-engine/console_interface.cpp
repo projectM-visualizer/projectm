@@ -112,30 +112,30 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			if (beatDetect->beat_sensitivity < 0) beatDetect->beat_sensitivity = 0;
 	      break;
 	    case PROJECTM_K_F1:
-	      showhelp++;
-	      showstats=0;
-	      showfps=0;
+	      renderer->showhelp++;
+	      renderer->showstats=0;
+	      renderer->showfps=0;
 	      break;
 	    case PROJECTM_K_F5:
-	      if(showhelp%2==0) showfps++;
+	      if(renderer->showhelp%2==0) renderer->showfps++;
 	      break;
 	    case PROJECTM_K_F4:
-	       if(showhelp%2==0) showstats++;
+	       if(renderer->showhelp%2==0) renderer->showstats++;
 	      break;
 	    case PROJECTM_K_F3: {
-	      showpreset++;
-	      printf( "F3 pressed: %d\n", showpreset );
+	      renderer->showpreset++;
+	      printf( "F3 pressed: %d\n", renderer->showpreset );
 	      break;
 	     }
 	    case PROJECTM_K_F2:
-	      showtitle++;
+	      renderer->showtitle++;
 	      break;
 #ifndef MACOS
 	    case PROJECTM_K_F9:
 #else
         case PROJECTM_K_F8:
 #endif
-	      studio++;
+	      renderer->studio++;
 	      break;
 
 	    case PROJECTM_K_ESCAPE: {
@@ -146,10 +146,10 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	   
 	      break; 
 	    case PROJECTM_K_a:
-	        if (correction) {
-	            correction = 0;
+	        if (renderer->correction) {
+	            renderer->correction = 0;
 	          } else {
-	            correction = 1;
+	            renderer->correction = 1;
 	          }
 	        break;
 	    case PROJECTM_K_b:
@@ -183,13 +183,13 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 //			 80, 24, 140, 60, 0, 0);
 	      break;
 	    case PROJECTM_K_s:
-            studio++;
+            renderer->studio++;
 //	      current_interface = EDITOR_INTERFACE;
 //	      loadEditor("[FILE NAME HERE]", (void (*)())savePreset, 
 //			 50, 1, 100, 5, 0, .92);
 	    case PROJECTM_K_i:
             DWRITE( "PROJECTM_K_i\n" );
-	        doIterative = !doIterative;
+	        
 	        break;
 	    case PROJECTM_K_z:
 	      break;
@@ -203,9 +203,9 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 //	      nWaveMode=7;
 	      break;
 	    case PROJECTM_K_m:
-	      showhelp=0;
-	      showstats=0;
-	      showfps=0;
+	      renderer->showhelp=0;
+	      renderer->showstats=0;
+	      renderer->showfps=0;
 	      current_interface = MENU_INTERFACE;
 	      showMenu();
 	      break;	     

@@ -175,12 +175,6 @@ DLLEXPORT void projectM::projectM_reset() {
     this->freqframes = 0;
     this->totalframes = 1;
 
-    this->showfps = 0;
-    this->showtitle = 0;
-    this->showpreset = 0;
-    this->showhelp = 0;
-    this->showstats = 0;
-    this->studio = 0;   
    
     this->fvw = 800;
     this->fvh = 600;
@@ -188,28 +182,10 @@ DLLEXPORT void projectM::projectM_reset() {
     this->wvh = 512;
     this->fullscreen = 0;
 
-    /** Configurable mesh size */
-    this->gx = 48;
-    this->gy = 36;
-    this->texsize=512;
-
     /** Frames per preset */
     this->avgtime = 500;
 
     this->title = NULL;    
-
-    /** Other stuff... */
-    this->correction = 1;
-    this->aspect=1.33333333;
-   
-
-    /** Per pixel equation variables */
-    this->gridx = NULL;
-    this->gridy = NULL;
-    this->origtheta = NULL;
-    this->origrad = NULL;
-    this->origx = NULL;
-    this->origy = NULL;
 
     /** More other stuff */
     this->mspf = 0;
@@ -223,7 +199,7 @@ DLLEXPORT void projectM::projectM_reset() {
     projectM_resetengine();
   }
 
-DLLEXPORT void projectM::projectM_init() {
+DLLEXPORT void projectM::projectM_init(int gx, int gy, int texsize, int width, int height) {
 
 #ifdef USE_FTGL
     /** Reset fonts */
@@ -347,25 +323,14 @@ DLLEXPORT void projectM::projectM_init() {
 
 #endif
 
-printf( "pre init_display()\n" );
-
-printf( "post init_display()\n" );
 
     mspf=(int)(1000.0/(float)presetInputs.fps);
 
 
-   
-  //create off-screen pbuffer (or not if unsupported)
-//  CreateRenderTarget(this->renderTarget->texsize, &this->textureID, &this->renderTarget);
-printf( "post CreaterenderTarget\n" );
-  
-    
-//fps = 0;
-
     initMenu();  
 //DWRITE( "post initMenu()\n" );
 
-    printf("mesh: %d %d\n", this->presetInputs.gx,this->presetInputs.gy );
+    printf("mesh: %d %d\n", gx,gy );
 
 #ifdef PANTS
     printf( "maxsamples: %d\n", this->maxsamples );
@@ -377,8 +342,11 @@ DWRITE( "post PCM init\n" );
 
     this->hasInit = 1;
 
+ this->renderTarget = new RenderTarget(texsize, width, height);
+this->presetInputs.gx = gx;
+this->presetInputs.gy = gy;
 
-    renderer = new Renderer(gx,gy,texsize);
+    this->renderer = new Renderer(width, height, gx, gy, renderTarget);
 
 printf( "exiting projectM_init()\n" );
 }
@@ -389,626 +357,6 @@ printf( "exiting projectM_init()\n" );
 //calculate matrices for per_pixel
 
 
-
-void projectM::draw_title_to_texture() {
-  
-#ifdef USE_FTGL 
-    if (this->drawtitle>80) 
-      //    if(1)
-      {
-      glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-      glColor4f(1.0,1.0,1.0,1.0);
-      glPushMatrix();
-     
-      glTranslatef(0,0.5, -1);
-    
-      glScalef(0.0025,-0.0025,30*.0025);
-      //glTranslatef(0,0, 1.0);
-      poly_font->FaceSize( 22);
-    
-      glRasterPos2f(0.0, 0.0);
-
-   if ( this->title != NULL ) {
-      poly_font->Render(this->title );
-      } else {
-	poly_font->Render("Unknown" );
-      }
-      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-      glPopMatrix();
-      this->drawtitle=0;
-    }
-#endif /** USE_FTGL */
-}
-
-void projectM::draw_title_to_screen() {
-
-#ifdef USE_FTGL
-  if(this->drawtitle>0)
-    { 
-      float easein = ((80-this->drawtitle)*.0125);
-      float easein2 = easein * easein;
-      float easein3 = .0025/((-easein2)+1.0);
-
-      glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-      glColor4f(1.0,1.0,1.0,1.0);
-      glPushMatrix();
-
-
-      //glTranslatef(this->vw*.5,this->vh*.5 , -1.0);
-      glTranslatef(0,0.5 , -1.0);
-
-      glScalef(easein3,easein3,30*.0025);
-
-      glRotatef(easein2*360,1,0,0);
-
-
-      //glTranslatef(-.5*this->vw,0, 0.0);
-      
-      //poly_font->Depth(1.0);  
-      poly_font->FaceSize(22);
-
-      glRasterPos2f(0.0, 0.0);
-      if ( this->title != NULL ) {
-	poly_font->Render(this->title );
-      } else {
-	poly_font->Render("Unknown" );
-      }
-      // poly_font->Depth(0.0);
-      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-      glPopMatrix();	
-      
-      this->drawtitle++;
-
-    }
-#endif /** USE_FTGL */
-}
-
-void projectM::draw_title() {
-#ifdef USE_FTGL
-  //glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-
-    glColor4f(1.0,1.0,1.0,1.0);
-  //  glPushMatrix();
-  //  glTranslatef(this->vw*.001,this->vh*.03, -1);
-  //  glScalef(this->vw*.015,this->vh*.025,0);
-
-      glRasterPos2f(0.01, 0.05);
-      title_font->FaceSize( (unsigned)(20*(this->vh/512.0)));
-       
-      if ( this->title != NULL ) {
-       	 title_font->Render(this->title );
-      } else {
-       	 title_font->Render("Unknown" );
-      }
-      //  glPopMatrix();
-      //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-     
-#endif /** USE_FTGL */
-}
-void projectM::draw_preset() { 
-#ifdef USE_FTGL
-  //glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-    
-  glColor4f(1.0,1.0,1.0,1.0);
-      //      glPushMatrix();
-      //glTranslatef(this->vw*.001,this->vh*-.01, -1);
-      //glScalef(this->vw*.003,this->vh*.004,0);
-
-   
-        glRasterPos2f(0.01, 0.01);
-
-	title_font->FaceSize((unsigned)(12*(this->vh/512.0)));
-	if(this->noSwitch) title_font->Render("[LOCKED]  " );
-	title_font->FaceSize((unsigned)(20*(this->vh/512.0)));
-        title_font->Render(this->presetName );
-
-                 
-        
-	//glPopMatrix();
-	// glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-#endif /** USE_FTGL */    
-}
-
-void projectM::draw_help( ) { 
-
-#ifdef USE_FTGL
-//glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-  DWRITE("pre-help");
-      glColor4f(1.0,1.0,1.0,1.0);
-      glPushMatrix();
-       glTranslatef(0,1, 0);
-      //glScalef(this->vw*.02,this->vh*.02 ,0);
-
-     
-       title_font->FaceSize((unsigned)( 18*(this->vh/512.0)));
-
-      glRasterPos2f(0.01, -0.05);
-       title_font->Render("Help");  
-      
-      glRasterPos2f(0.01, -0.09);     
-       title_font->Render("----------------------------");  
-      
-      glRasterPos2f(0.01, -0.13); 
-       title_font->Render("F1: This help menu");
-  
-      glRasterPos2f(0.01, -0.17);
-       title_font->Render("F2: Show song title");
-      
-      glRasterPos2f(0.01, -0.21);
-       title_font->Render("F3: Show preset name");
- 
-       glRasterPos2f(0.01, -0.25);
-       title_font->Render("F4: Show Rendering Settings");
- 
-      glRasterPos2f(0.01, -0.29);
-       title_font->Render("F5: Show FPS");
-
-      glRasterPos2f(0.01, -0.35);
-       title_font->Render("F: Fullscreen");
-
-      glRasterPos2f(0.01, -0.39);
-       title_font->Render("L: Lock/Unlock Preset");
-
-      glRasterPos2f(0.01, -0.43);
-       title_font->Render("M: Show Menu");
-      
-      glRasterPos2f(0.01, -0.49);
-       title_font->Render("R: Random preset");
-      glRasterPos2f(0.01, -0.53);
-       title_font->Render("N: Next preset");
- 
-      glRasterPos2f(0.01, -0.57);
-       title_font->Render("P: Previous preset");
-
-       glPopMatrix();
-      //         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-       DWRITE("post-help");
-#endif /** USE_FTGL */
-}
-
-void projectM::draw_stats() {
-
-#ifdef USE_FTGL
- char buffer[128];  
-  float offset= (this->showfps%2 ? -0.05 : 0.0);
-  // glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
- 
-  glColor4f(1.0,1.0,1.0,1.0);
-  glPushMatrix();
-  glTranslatef(0.01,1, 0);
- glRasterPos2f(0, -.05+offset);  
-  other_font->Render(this->correction ? "  aspect: corrected" : "  aspect: stretched");  
-sprintf( buffer, " (%f)", this->aspect);
-    other_font->Render(buffer);
-
-
-
-  glRasterPos2f(0, -.09+offset);
-  other_font->FaceSize((unsigned)(18*(this->vh/512.0)));
-
-  sprintf( buffer, " texsize: %d", this->texsize);
-  other_font->Render(buffer);
-
-  glRasterPos2f(0, -.13+offset);
-  sprintf( buffer, "viewport: %d x %d", this->vw, this->vh);
-  other_font->Render(buffer);
-  /* REME: FIX
-  glRasterPos2f(0, -.17+offset);  
-  other_font->Render((this->renderer->renderTarget->usePbuffers ? "     FBO: on" : "     FBO: off"));
-  */
-  glRasterPos2f(0, -.21+offset); 
-  sprintf( buffer, "    mesh: %d x %d", this->presetInputs.gx,this->presetInputs.gy);
-  other_font->Render(buffer);
-
-
-  glPopMatrix();
-  // glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    
- 
-    
-#endif /** USE_FTGL */    
-}
-void projectM::draw_fps( float realfps ) {
-#ifdef USE_FTGL
-  char bufferfps[20];  
-  sprintf( bufferfps, "%.1f fps", realfps);
-  // glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
- 
-  glColor4f(1.0,1.0,1.0,1.0);
-  glPushMatrix();
-  glTranslatef(0.01,1, 0);
-  glRasterPos2f(0, -0.05);
-  title_font->FaceSize((unsigned)(20*(this->vh/512.0)));
-   title_font->Render(bufferfps);
-  
-  glPopMatrix();
-  // glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-    
-#endif /** USE_FTGL */    
-}
-//Here we render the interpolated mesh, and then apply the texture to it.  
-//Well, we actually do the inverse, but its all the same.
-void projectM::render_interpolation() {
-  
- 
-  }
-
-
-//Actually draws the texture to the screen
-//
-//The Video Echo effect is also applied here
-void projectM::render_texture_to_screen() { 
-
-      int flipx=1,flipy=1;
-      //glBindTexture( GL_TEXTURE_2D,this->renderTarget->textureID[0] );
-     glMatrixMode(GL_TEXTURE);  
-     glLoadIdentity();
-
-    glClear( GL_DEPTH_BUFFER_BIT );
-    glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
-      glTranslatef(0, 0, -15);  
-     
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
-      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
-      glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-      
-      //       glClear(GL_ACCUM_BUFFER_BIT);
-      glColor4d(0.0, 0.0, 0.0,1.0f);
-
-    DWRITE( "rendering texture to screen\n" );
-
-   glBegin(GL_QUADS);
-    glVertex3d( 0, 0, -1 );
-     glVertex4d(-0.5,-0.5,-1,1);
-     glVertex4d(-0.5,  0.5,-1,1);
-     glVertex4d(0.5,  0.5,-1,1);
-     glVertex4d(0.5, -0.5,-1,1);
-      glEnd();
-     
-      
-      glEnable(GL_TEXTURE_2D); 
-      //glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID[0] );
-//      glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID );
-
-      // glAccum(GL_LOAD,0);
-      // if (bDarken==1)  glBlendFunc(GL_SRC_COLOR,GL_ZERO); 
-	
-      //Draw giant rectangle and texture it with our texture!
-      glBegin(GL_QUADS);
-      glTexCoord4d(0, 1,0,1); glVertex4d(-0.5,-0.5,-1,1);
-      glTexCoord4d(0, 0,0,1); glVertex4d(-0.5,  0.5,-1,1);
-      glTexCoord4d(1, 0,0,1); glVertex4d(0.5,  0.5,-1,1);
-      glTexCoord4d(1, 1,0,1); glVertex4d(0.5, -0.5,-1,1);
-      glEnd();
-       
-  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-  //  if (bDarken==1)  glBlendFunc(GL_SRC_COLOR,GL_ONE_MINUS_SRC_ALPHA); 
-
-  // if (bDarken==1) { glAccum(GL_ACCUM,1-fVideoEchoAlpha); glBlendFunc(GL_SRC_COLOR,GL_ZERO); }
-
-       glMatrixMode(GL_TEXTURE);
-
-      //draw video echo
-      glColor4f(0.0, 0.0, 0.0,this->presetOutputs.fVideoEchoAlpha);
-      glTranslatef(.5,.5,0);
-      glScalef(1.0/this->presetOutputs.fVideoEchoZoom,1.0/this->presetOutputs.fVideoEchoZoom,1);
-       glTranslatef(-.5,-.5,0);    
-
-      switch (((int)this->presetOutputs.nVideoEchoOrientation))
-	{
-	case 0: flipx=1;flipy=1;break;
-	case 1: flipx=-1;flipy=1;break;
-  	case 2: flipx=1;flipy=-1;break;
-	case 3: flipx=-1;flipy=-1;break;
-	default: flipx=1;flipy=1; break;
-	}
-      glBegin(GL_QUADS);
-      glTexCoord4d(0, 1,0,1); glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
-      glTexCoord4d(0, 0,0,1); glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
-      glTexCoord4d(1, 0,0,1); glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
-      glTexCoord4d(1, 1,0,1); glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
-      glEnd();
-
-    
-      glDisable(GL_TEXTURE_2D);
-      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-
-      if (this->presetOutputs.bBrighten==1)
-	{ 
-	  glColor4f(1.0, 1.0, 1.0,1.0);
-	  glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-	  glBegin(GL_QUADS);
-	  glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
-	  glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
-	  glEnd();
-	  glBlendFunc(GL_ZERO, GL_DST_COLOR);
-	  glBegin(GL_QUADS);
-	  glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
-	  glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
-	  glEnd();
-	  glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-	  glBegin(GL_QUADS);
-	  glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
-	  glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
-	  glEnd();
-
-	  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-	} 
-
-      if (this->presetOutputs.bDarken==1)
-	{ 
-	  
-	  glColor4f(1.0, 1.0, 1.0,1.0);
-	  glBlendFunc(GL_ZERO,GL_DST_COLOR);
-	  glBegin(GL_QUADS);
-	  glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
-	  glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
-	  glEnd();
-	  
-
-
-	  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-	} 
-    
-
-      if (this->presetOutputs.bSolarize)
-	{ 
-       
-	  glColor4f(1.0, 1.0, 1.0,1.0);
-	  glBlendFunc(GL_ZERO,GL_ONE_MINUS_DST_COLOR);
-	  glBegin(GL_QUADS);
-	  glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
-	  glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
-	  glEnd();
-	  glBlendFunc(GL_DST_COLOR,GL_ONE);
-	  glBegin(GL_QUADS);
-	  glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
-	  glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
-	  glEnd();
-
-
-	  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-	} 
-
-      if (this->presetOutputs.bInvert)
-	{ 
-	  glColor4f(1.0, 1.0, 1.0,1.0);
-	  glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-	  glBegin(GL_QUADS);
-	  glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
-	  glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
-	  glEnd();
-	  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-	} 
-}
-void projectM::render_texture_to_studio() { 
-
-      int x,y;
-      int flipx=1,flipy=1;
- 
-     glMatrixMode(GL_TEXTURE);  
-     glLoadIdentity();
-
-    glClear( GL_DEPTH_BUFFER_BIT );
-    glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
-      glTranslatef(0, 0, -15);  
-     
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
-      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
-      glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-      
-      //       glClear(GL_ACCUM_BUFFER_BIT);
-      glColor4f(0.0, 0.0, 0.0,0.04);
-      
-
-   glBegin(GL_QUADS);
-     glVertex4d(-0.5,-0.5,-1,1);
-     glVertex4d(-0.5,  0.5,-1,1);
-     glVertex4d(0.5,  0.5,-1,1);
-     glVertex4d(0.5, -0.5,-1,1);
-      glEnd();
-
-
-      glColor4f(0.0, 0.0, 0.0,1.0);
-      
-      glBegin(GL_QUADS);
-      glVertex4d(-0.5,0,-1,1);
-      glVertex4d(-0.5,  0.5,-1,1);
-      glVertex4d(0.5,  0.5,-1,1);
-      glVertex4d(0.5, 0,-1,1);
-      glEnd();
-     
-     glBegin(GL_QUADS);
-     glVertex4d(0,-0.5,-1,1);
-     glVertex4d(0,  0.5,-1,1);
-     glVertex4d(0.5,  0.5,-1,1);
-     glVertex4d(0.5, -0.5,-1,1);
-     glEnd();
-
-     glPushMatrix();
-     glTranslatef(.25, .25, 0);
-     glScalef(.5,.5,1);
-     
-     glEnable(GL_TEXTURE_2D);
-    
-
-      //Draw giant rectangle and texture it with our texture!
-      glBegin(GL_QUADS);
-      glTexCoord4d(0, 1,0,1); glVertex4d(-0.5,-0.5,-1,1);
-      glTexCoord4d(0, 0,0,1); glVertex4d(-0.5,  0.5,-1,1);
-      glTexCoord4d(1, 0,0,1); glVertex4d(0.5,  0.5,-1,1);
-      glTexCoord4d(1, 1,0,1); glVertex4d(0.5, -0.5,-1,1);
-      glEnd();
-       
-      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
- 
-
-      glMatrixMode(GL_TEXTURE);
-
-      //draw video echo
-      glColor4f(0.0, 0.0, 0.0,this->presetOutputs.fVideoEchoAlpha);
-      glTranslated(.5,.5,0);
-      glScaled(1/this->presetOutputs.fVideoEchoZoom,1/this->presetOutputs.fVideoEchoZoom,1);
-      glTranslated(-.5,-.5,0);    
-
-      switch (((int)this->presetOutputs.nVideoEchoOrientation))
-	{
-	case 0: flipx=1;flipy=1;break;
-	case 1: flipx=-1;flipy=1;break;
-  	case 2: flipx=1;flipy=-1;break;
-	case 3: flipx=-1;flipy=-1;break;
-	default: flipx=1;flipy=1; break;
-	}
-      glBegin(GL_QUADS);
-      glTexCoord4d(0, 1,0,1); glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
-      glTexCoord4d(0, 0,0,1); glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
-      glTexCoord4d(1, 0,0,1); glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
-      glTexCoord4d(1, 1,0,1); glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
-      glEnd();
-
-    
-      //glDisable(GL_TEXTURE_2D);
-      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
- // if (bDarken==1) { glAccum(GL_ACCUM,fVideoEchoAlpha); glAccum(GL_RETURN,1);}
-
-
-      if (this->presetOutputs.bInvert)
-	{ 
-	  glColor4f(1.0, 1.0, 1.0,1.0);
-	  glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-	  glBegin(GL_QUADS);
-	  glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
-	  glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
-	  glEnd();
-	  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-	} 
-
-      //  glTranslated(.5,.5,0);
-  //  glScaled(1/fVideoEchoZoom,1/fVideoEchoZoom,1);
-      //   glTranslated(-.5,-.5,0);    
-      //glTranslatef(0,.5*vh,0);
-
-      /** Per-pixel mesh display -- bottom-right corner */
-      //glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-       
-      glDisable(GL_TEXTURE_2D);
-      glMatrixMode(GL_MODELVIEW);
-      glPopMatrix();
-      glPushMatrix();
-      glTranslatef(.25, -.25, 0);
-      glScalef(.5,.5,1);
-       glColor4f(1.0,1.0,1.0,1.0);
-
-       for (x=0;x<this->presetInputs.gx;x++){
-	 glBegin(GL_LINE_STRIP);
-	 for(y=0;y<this->presetInputs.gy;y++){
-	   glVertex4f((this->presetInputs.x_mesh[x][y]-.5), (this->presetInputs.y_mesh[x][y]-.5),-1,1);
-	   //glVertex4f((origx[x+1][y]-.5) * vw, (origy[x+1][y]-.5) *vh ,-1,1);
-	 }
-	 glEnd();	
-       }    
-       
-       for (y=0;y<this->presetInputs.gy;y++){
-	 glBegin(GL_LINE_STRIP);
-	 for(x=0;x<this->presetInputs.gx;x++){
-	   glVertex4f((this->presetInputs.x_mesh[x][y]-.5), (this->presetInputs.y_mesh[x][y]-.5),-1,1);
-	   //glVertex4f((origx[x+1][y]-.5) * vw, (origy[x+1][y]-.5) *vh ,-1,1);
-	 }
-	 glEnd();	
-       }    
-
-        glEnable( GL_TEXTURE_2D );
-      
-       /*
-       for (x=0;x<this->presetInputs.gx-1;x++){
-	 glBegin(GL_POINTS);
-	 for(y=0;y<this->presetInputs.gy;y++){
-	   glVertex4f((this->origx[x][y]-.5)* this->vw, (this->origy[x][y]-.5)*this->vh,-1,1);
-	   glVertex4f((this->origx[x+1][y]-.5) * this->vw, (this->origy[x+1][y]-.5) *this->vh ,-1,1);
-	 }
-	 glEnd();	
-       }    
-       */
- // glTranslated(-.5,-.5,0);     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA); 
-
-    /** Waveform display -- bottom-left */
-    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-       glMatrixMode(GL_MODELVIEW);
-       glPushMatrix();
-   glTranslatef(-.5,0, 0);
-
-    glTranslatef(0,-0.10, 0);
-   glBegin(GL_LINE_STRIP);
-	     glColor4f(0,1.0,1.0,1.0);
-	     glVertex3f((((this->totalframes%256)/551.0)), beatDetect->treb_att*-7,-1);
-	     glColor4f(1.0,1.0,1.0,1.0);
-	     glVertex3f((((this->totalframes%256)/551.0)),0 ,-1);   
-	     glColor4f(.5,1.0,1.0,1.0);
-	     glVertex3f((((this->totalframes%256)/551.0)), beatDetect->treb*7,-1);
-	     glEnd(); 	
-	       
-	       glTranslatef(0,-0.13, 0);
- glBegin(GL_LINE_STRIP);
-	      glColor4f(0,1.0,0.0,1.0);
-	     glVertex3f((((this->totalframes%256)/551.0)), beatDetect->mid_att*-7,-1);
-	     glColor4f(1.0,1.0,1.0,1.0);
-	     glVertex3f((((this->totalframes%256)/551.0)),0 ,-1);   
-	     glColor4f(.5,1.0,0.0,0.5);
-	     glVertex3f((((this->totalframes%256)/551.0)), beatDetect->mid*7,-1);
-	     glEnd();
-	  
-	   
-	     glTranslatef(0,-0.13, 0);
- glBegin(GL_LINE_STRIP);
-	     glColor4f(1.0,0.0,0.0,1.0);
-	     glVertex3f((((this->totalframes%256)/551.0)), beatDetect->bass_att*-7,-1);
-	     glColor4f(1.0,1.0,1.0,1.0);
-	     glVertex3f((((this->totalframes%256)/551.0)),0 ,-1);   
-	     glColor4f(.7,0.2,0.2,1.0);
-	     glVertex3f((((this->totalframes%256)/551.0)), beatDetect->bass*7,-1);
-	     glEnd();
-
- glTranslatef(0,-0.13, 0);
- glBegin(GL_LINES);
-	     
-	     glColor4f(1.0,1.0,1.0,1.0);
-	     glVertex3f((((this->totalframes%256)/551.0)),0 ,-1);   
-	     glColor4f(1.0,0.6,1.0,1.0);
-	     glVertex3f((((this->totalframes%256)/551.0)), beatDetect->vol*7,-1);
-	     glEnd();
-
-	     glPopMatrix();
-
-   glDisable(GL_TEXTURE_2D);
-}
 
 
 DLLEXPORT void projectM::projectM_initengine() {
@@ -1147,9 +495,6 @@ this->presetOutputs.q8 = 0;
 /* Reinitializes the engine variables to a default (conservative and sane) value */
 DLLEXPORT void projectM::projectM_resetengine() {
 
-  this->doPerPixelEffects = 1;
-  this->doIterative = 1;
-
   this->presetOutputs.zoom=1.0;
   this->presetOutputs.zoomexp= 1.0;
   this->presetOutputs.rot= 0.0;
@@ -1275,9 +620,8 @@ DLLEXPORT void projectM::projectM_resetGL( int w, int h ) {
     DWRITE( "projectM_resetGL(): in: %d x %d\n", w, h );
 
     /** Stash the new dimensions */
-    this->vw = w;
-    this->vh = h;
-    this->aspect=(float)h / (float)w;
+ 
+
 
     renderer->reset(w,h);
   }

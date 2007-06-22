@@ -583,7 +583,7 @@ void CustomWave::evalPerPointEqns() {
 
 
   /* Reset index */
-  projectM::currentEngine->mesh_i = -1;
+  projectM::currentEngine->renderer->mesh_i = -1;
 }
 
 void CustomWave::load_unspecified_init_conds_wave() {

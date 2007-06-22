@@ -963,8 +963,11 @@ void menu_key_handler( projectMEvent event, projectMKeycode key ) {
 	    case PROJECTM_K_f:
 	      
 	      if (projectM::currentEngine->fullscreen==1)
-    {projectM::currentEngine->vw=projectM::currentEngine->wvw;projectM::currentEngine->vh=projectM::currentEngine->wvh;projectM::currentEngine->fullscreen=0;}
-  else{projectM::currentEngine->vw=projectM::currentEngine->fvw; projectM::currentEngine->vh=projectM::currentEngine->fvh;projectM::currentEngine->fullscreen=1;}
+    {projectM::currentEngine->renderer->reset(projectM::currentEngine->wvw,projectM::currentEngine->wvh);
+projectM::currentEngine->fullscreen=0;}
+  else{projectM::currentEngine->renderer->reset(projectM::currentEngine->fvw,projectM::currentEngine->fvh);
+projectM::currentEngine->fullscreen=1;
+}
 
 //  init_display(projectM::currentEngine->vw,projectM::currentEngine->vh,projectM::currentEngine->fullscreen);
 

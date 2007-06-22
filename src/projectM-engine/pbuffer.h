@@ -57,8 +57,10 @@ typedef enum {
 
 typedef enum { PBUFFER_PASS1, PBUFFER_PASS2 } PBufferPass;
 
-typedef struct RENDERTARGET {
+class RenderTarget {
 
+
+public:
     /** Texture size */
     int texsize;
 
@@ -67,22 +69,26 @@ typedef struct RENDERTARGET {
 
     int usePbuffers;
    
+  
+  RenderTarget( int texsize, int width, int height );
+  void lock();
+  void unlock();
+  int nearestPower2( int value, TextureScale scaleRule );
+
     /** Opaque pbuffer context and pbuffer */
+/*
 #ifdef MACOS
     void *origContext;
     void *pbufferContext;
     void *pbuffer;
 #endif
-
+*/
     /** Render target texture ID for non-pbuffer systems */
     GLuint textureID[2];
     GLuint fbuffer[1]; 
     GLuint depthb[1];
-  } RenderTarget;
+  };
 
-extern void createPBuffers( int width, int height, RenderTarget *target );
-extern void lockPBuffer( RenderTarget *target, PBufferPass pass );
-extern void unlockPBuffer( RenderTarget *target );
-extern int nearestPower2( int value, TextureScale scaleRule );
+
 
 #endif /** !_RENDERTARGET_H */

@@ -119,13 +119,11 @@ public:
     static projectM *currentEngine;
     static Preset *activePreset;
     static Renderer *renderer; 
+    static RenderTarget *renderTarget;
 
     char *presetURL;
     char *presetName;
     char *fontURL;
-
-    int gx,gy;
-    int texsize;
 
     int hasInit;
 
@@ -134,13 +132,6 @@ public:
     int freqframes;
     int totalframes;
 
-    int showfps;
-    int showtitle;
-    int showpreset;
-    int showhelp;
-    int showstats;
-
-    int studio;
 
     GLubyte *fbuffer;
 
@@ -168,8 +159,7 @@ public:
     int fvh;
     int wvw;      //windowed dimensions
     int wvh;
-    int vw;           //runtime dimensions
-    int vh;
+    
     int fullscreen;
     
     int avgtime;  //# frames per preset
@@ -177,20 +167,7 @@ public:
     char *title;
     int drawtitle;
   
-    int correction;
-    float aspect;
-
-    //per pixel equation variables
-    float **gridx;  //grid containing interpolated mesh 
-    float **gridy;
-    float **origtheta;  //grid containing interpolated mesh reference values
-    float **origrad;
-    float **origx;  //original mesh 
-    float **origy;
-    float **origx2;  //original mesh 
-    float **origy2;
-
-    int mesh_i, mesh_j;
+ 
 
     /** Timing information */
     int mspf;
@@ -202,8 +179,6 @@ public:
            fpsstart;
 
     /** Various toggles */
-    int doPerPixelEffects;
-    int doIterative;
         /* PER_FRAME CONSTANTS END */
 
     /** Beat detection engine */
@@ -221,7 +196,7 @@ public:
     /** Functions */
     DLLEXPORT projectM();
 
-    DLLEXPORT void projectM_init();
+    DLLEXPORT void projectM_init(int gx, int gy, int texsize, int width, int height);
     DLLEXPORT void projectM_reset();
     DLLEXPORT void projectM_resetGL( int width, int height );
     DLLEXPORT void projectM_setTitle( char *title );

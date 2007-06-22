@@ -18,19 +18,32 @@ class Renderer
   float **origy2;
   int gx;
   int gy;
-  
-  int mesh_i, mesh_j;
+
+  int vw; 
+  int vh;
+   
+    float aspect;
+ 
   
  public:
- 
-  Renderer(int gx, int gy, int texsize);
+  int mesh_i, mesh_j;
+ int showfps;
+    int showtitle;
+    int showpreset;
+    int showhelp;
+    int showstats;
+
+    int studio;
+    int correction;
+
+  Renderer( int width, int height, int gx, int gy, RenderTarget *renderTarget);
   ~Renderer();
   void RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
   void reset(int w, int h);
 
 private:
 
-  void PerFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
+  void PerFrame(PresetOutputs *presetOutputs);
   void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
   void PerPixelMath(PresetOutputs *presetOutputs);
   void reset_per_pixel_matrices();
