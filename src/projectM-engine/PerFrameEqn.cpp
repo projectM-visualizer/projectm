@@ -79,29 +79,21 @@ void eval_per_frame_init_eqn(PerFrameEqn * per_frame_eqn) {
 }
 */
 
-/* Frees perframe equation structure */
+/* Frees perframe equation structure. Warning: assumes gen_expr pointer is not freed by anyone else! */
 PerFrameEqn::~PerFrameEqn() {
 
   delete gen_expr;
-  /** Destroy param? */
+
+  /** @bug Destroy param? - great question, don't know yet*/
 }
 
 /* Create a new per frame equation */
-PerFrameEqn * PerFrameEqn::new_per_frame_eqn(int index, Param * param, GenExpr * gen_expr) {
+PerFrameEqn::PerFrameEqn(int index, Param * param, GenExpr * gen_expr) :
+	index(index), param(param), gen_expr(gen_expr) {
 
-  PerFrameEqn * per_frame_eqn;
-
-  per_frame_eqn = (PerFrameEqn*)wipemalloc(sizeof(PerFrameEqn));
-
-  if (per_frame_eqn == NULL)
-    return NULL;
-
-  per_frame_eqn->param = param;
-  per_frame_eqn->gen_expr = gen_expr;
-  per_frame_eqn->index = index;
   /* Set per frame eqn name */
+    /// @bug why are we commented out?
   //  memset(per_frame_eqn->name, 0, MAX_TOKEN_SIZE);
   //strncpy(per_frame_eqn->name, name, MAX_TOKEN_SIZE-1);
-  return per_frame_eqn;
 
 }

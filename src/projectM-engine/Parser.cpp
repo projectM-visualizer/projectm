@@ -1190,7 +1190,7 @@ PerFrameEqn * Parser::parse_per_frame_eqn(FILE * fs, int index, Preset * preset)
   //if (PARSE_DEBUG) printf("parse_per_frame_eqn: finished per frame equation evaluation (LINE %d)\n", line_count);
 
   /* Create a new per frame equation */
-  if ((per_frame_eqn = PerFrameEqn::new_per_frame_eqn(index, param, gen_expr)) == NULL) {
+  if ((per_frame_eqn = new PerFrameEqn(index, param, gen_expr)) == NULL) {
     //if (PARSE_DEBUG) printf("parse_per_frame_eqn: failed to create a new per frame eqn, out of memory?\n");
     delete gen_expr;
     return NULL;
@@ -1238,7 +1238,7 @@ PerFrameEqn * Parser::parse_implicit_per_frame_eqn(FILE * fs, char * param_strin
   //if (PARSE_DEBUG) printf("parse_implicit_per_frame_eqn: finished per frame equation evaluation (LINE %d)\n", line_count);
 
   /* Create a new per frame equation */
-  if ((per_frame_eqn = PerFrameEqn::new_per_frame_eqn(index, param, gen_expr)) == NULL) {
+  if ((per_frame_eqn = new PerFrameEqn(index, param, gen_expr)) == NULL) {
     //if (PARSE_DEBUG) printf("parse_implicit_per_frame_eqn: failed to create a new per frame eqn, out of memory?\n");
     delete gen_expr;
     return NULL;
@@ -1829,7 +1829,7 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
     //if (PARSE_DEBUG) printf("parse_wave (per_frame): [finished parsing equation] (LINE %d)\n", line_count);
   
     /* Create a new per frame equation */
-    if ((per_frame_eqn = PerFrameEqn::new_per_frame_eqn(custom_wave->per_frame_count++, param, gen_expr)) == NULL) {
+    if ((per_frame_eqn = new PerFrameEqn(custom_wave->per_frame_count++, param, gen_expr)) == NULL) {
       //if (PARSE_DEBUG) printf("parse_wave (per_frame): failed to create a new per frame eqn, out of memory?\n");
       delete gen_expr;
       return PROJECTM_FAILURE;
@@ -2100,7 +2100,7 @@ char string[MAX_TOKEN_SIZE];
     //if (PARSE_DEBUG) printf("parse_shape (per_frame): [finished parsing equation] (LINE %d)\n", line_count);
 
     /* Create a new per frame equation */
-    if ((per_frame_eqn = PerFrameEqn::new_per_frame_eqn(custom_shape->per_frame_count++, param, gen_expr)) == NULL) {
+    if ((per_frame_eqn = new PerFrameEqn(custom_shape->per_frame_count++, param, gen_expr)) == NULL) {
       //if (PARSE_DEBUG) printf("parse_shape (per_frame): failed to create a new per frame eqn, out of memory?\n");
       delete gen_expr;
       return PROJECTM_FAILURE;
@@ -2167,7 +2167,7 @@ char string[MAX_TOKEN_SIZE];
     //if (PARSE_DEBUG) printf("parse_shape (per_frame): [finished parsing equation] (LINE %d)\n", line_count);
   
     /* Create a new per frame equation */
-    if ((per_frame_eqn = PerFrameEqn::new_per_frame_eqn(custom_wave->per_frame_count++, param, gen_expr)) == NULL) {
+    if ((per_frame_eqn = new PerFrameEqn(custom_wave->per_frame_count++, param, gen_expr)) == NULL) {
       //if (PARSE_DEBUG) printf("parse_shape (per_frame): failed to create a new per frame eqn, out of memory?\n");
       delete gen_expr;
       return PROJECTM_FAILURE;
