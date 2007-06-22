@@ -44,6 +44,8 @@
 #include "PresetFrameIO.hpp"
 #include "SplayTree.h"
 #include "InitCond.h"
+#include <vector>
+#include "StaticArray.hpp"
 
 class CustomWave;
 class InitCond;
@@ -53,19 +55,10 @@ class InitCond;
 class Preset {
 protected:	
 
-	/// @idea dynamically allocate this instead (allow pointer to one in constructor, or blank to 
-	/// allocate separately)
-	/// Benefits: lighter weight presets, but "heavier" ones are still supported too
-	/// Negatives: heap is slower, extra pointer dereference 
-	//PresetOutputs * presetOutputs;
-	//PresetOutputs * presetOutputs;
-	 /* preset name as parsed in file */
 
 public:
     /** Default constructor is *not* a properly initalized preset **/
     Preset();
-
-
 
   /**  Load a preset by filename with input and output buffers specified. 
    * Most common way to allocate new preset */
@@ -73,19 +66,18 @@ public:
 
     ~Preset();
 
+    /** Evaluates the preset for a frame given the current values of preset inputs / outputs */
+    void evaluateFrame();
+
      BuiltinParams builtinParams;
 
     std::string name;
     std::string file_path;
     int mesh_i,mesh_j;
 
-    /** IDs of current waves/shapes */
-    int interface_id, cwave_interface_id;
-    CustomWave * active_wave;
-    CustomShape * active_shape;
-
     void load_init_conditions();
-  
+     CustomShape * find_custom_shape(int id, int create_flag);
+
     int per_pixel_eqn_string_index;
     int per_frame_eqn_string_index;
     int per_frame_init_eqn_string_index;
@@ -108,23 +100,11 @@ public:
     SplayTree * custom_wave_tree; /* custom wave forms for this preset */
     SplayTree * custom_shape_tree; /* custom shapes for this preset */
  
-    /** Methods */
-    void evalInitConditions();
-    void evalCustomWaveInitConditions();
-    void evalCustomShapeInitConditions();
-
-    void evalPerFrameEquations();
-
     int add_per_pixel_eqn( char *name, GenExpr *gen_expr );
     int isPerPixelEqn( int op );
-    void evalPerPixelEqns();
+    
     int resetPerPixelEqns();
     int resetPerPixelEqnFlags();
-
-    void evalPerPointEqns();
-
-    CustomWave *nextCustomWave();
-    CustomShape *nextCustomShape();
 
     InitCond *get_init_cond( Param *param );
 
@@ -146,16 +126,37 @@ public:
     int write_per_frame_init_equations( FILE *fs );
     int write_per_frame_equations( FILE *fs );
     int write_per_pixel_equations( FILE *fs );
-   Param * find_param(char * name, int flags) ;
+    Param * find_param(char * name, int flags) ;
     int destroy();
-void load_init_cond(char *name, int flags);
+    void load_init_cond(char *name, int flags);
+
 	/** Splaytree traversal helpers */
    inline void load_custom_shape_init_helper( void *custom_shape ) {
     ((CustomShape *)custom_shape)->load_custom_shape_init();
     
   }
 
-  
+  private:
+	static const std::size_t ARRAY_MAX_SIZE;
+
+	//typedef  StaticArray<CustomWave *, ARRAY_MAX_SIZE> cwave_container;
+	//typedef  StaticArray<CustomShape *, ARRAY_MAX_SIZE> cshape_container;
+	typedef  std::vector<CustomWave*>  cwave_container;
+
+	typedef  std::vector<CustomShape*>  cshape_container;
+
+    void evalPerPointEqns();
+    void evalCustomWavePerFrameEquations();
+    void evalCustomShapePerFrameEquations();	
+    void evalInitConditions();
+    void evalCustomWaveInitConditions();
+    void evalCustomShapeInitConditions();
+    void evalPerPixelEqns();
+    void evalPerFrameEquations();
+
+    cwave_container customWaves;
+    cshape_container customShapes;
+
 };
 
 #endif /** !_PRESET_HPP */

@@ -9,7 +9,7 @@ public:
     /// @bug should this be here?
     //int mesh_i, mesh_j;
 
-    /* PER FRAME CONSTANTS BEGIN */
+    /* PER FRAME VARIABLES BEGIN */
     float zoom;
     float zoomexp;
     float rot;
@@ -54,7 +54,7 @@ public:
     float mv_dy;
     float mv_dx;
 
-     /* PER_FRAME CONSTANTS END */
+     /* PER_FRAME VARIABLES END */
 
     float fRating;
     float fGammaAdj;
@@ -133,16 +133,16 @@ public:
 class PresetInputs {
 
 public:
-    /* PER_PIXEL CONSTANTS BEGIN */
+    /* PER_PIXEL VARIBLES BEGIN */
 
     float x_per_pixel;
     float y_per_pixel;
     float rad_per_pixel;
     float ang_per_pixel;
-    
-    /* PER_PIXEL CONSTANT END */
 
-  int fps;
+    /* PER_PIXEL VARIBLES END */
+
+   int fps;
 
 
   float time;
@@ -155,14 +155,14 @@ public:
   float progress;
   
 
-  /* variables added in 1.04 */
+  /* variables were added in milkdrop 1.04 */
  int gx,gy;
 
  /// @bug are these in use?
   /// @bugfix YES, presets reference meshx and meshy
     int meshx;
     int meshy;
-float **x_mesh;
+    float **x_mesh;
     float **y_mesh;
     float **rad_mesh;
     float **theta_mesh;

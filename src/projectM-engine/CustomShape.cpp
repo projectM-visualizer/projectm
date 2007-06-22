@@ -37,7 +37,7 @@
 
 #include "wipemalloc.h"
 
-CustomShape *CustomShape::interface_shape = NULL;
+
 
 void eval_custom_shape_init_conds(CustomShape * custom_shape);
 void load_unspec_init_cond_shape(Param * param);
@@ -254,40 +254,6 @@ CustomShape::~CustomShape() {
 }
 
 
-CustomShape * CustomShape::find_custom_shape(int id, Preset * preset, int create_flag) {
-
-  CustomShape * custom_shape = NULL;
-
-  if (preset == NULL)
-    return NULL;
-  
-  if ((custom_shape = (CustomShape*)preset->custom_shape_tree->splay_find(&id)) == NULL) {
-    
-    if (CUSTOM_SHAPE_DEBUG) { printf("find_custom_shape: creating custom shape (id = %d)...", id);fflush(stdout);}
-    
-    if (create_flag == FALSE) {
-      if (CUSTOM_SHAPE_DEBUG) printf("you specified not to (create flag = false), returning null\n");
-      return NULL;
-    }
-    
-    if ((custom_shape = new CustomShape(id)) == NULL) {
-      if (CUSTOM_SHAPE_DEBUG) printf("failed...out of memory?\n");
-      return NULL;
-    }
-    
-    if (CUSTOM_SHAPE_DEBUG) { printf("success.Inserting..."); fflush(stdout);}
-    
-    if (preset->custom_shape_tree->splay_insert(custom_shape, &custom_shape->id) < 0) {
-      if (CUSTOM_SHAPE_DEBUG) printf("failed, probably a duplicated!!\n");
-      delete custom_shape;
-      return NULL;
-    }
-    
-    if (CUSTOM_SHAPE_DEBUG) printf("done.\n");
-  }
-  
-  return custom_shape;
-}
 
 void CustomShape::load_custom_shape_init() {
     load_unspecified_init_conds_shape();
@@ -300,9 +266,10 @@ void CustomShape::eval_custom_shape_init_conds() {
 void CustomShape::load_unspecified_init_conds_shape() {
 
     param_tree->splay_traverse((void (*)(void*))load_unspec_init_cond_shape_helper);
-    interface_shape = NULL;
+
   }
 
+/// @bug BROKEN: FIX ME (carm)
 void CustomShape::load_unspec_init_cond_shape() {
 abort();
 #if 0

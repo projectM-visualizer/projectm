@@ -40,7 +40,7 @@ public:
     int index;
     Param *param; /* parameter to be assigned a value */
     GenExpr *gen_expr;   /* expression that paremeter is equal to */
-    
+
     ~PerFrameEqn();
     static PerFrameEqn * new_per_frame_eqn(int index, Param *param, GenExpr * gen_expr);
     void eval_per_frame_eqn();

@@ -85,6 +85,25 @@ void Preset::evalCustomWaveInitConditions() {
     custom_wave_tree->splay_traverse( eval_custom_wave_init_conds_helper );
   }
 
+
+void Preset::evalCustomWavePerFrameEquations() {
+
+    for (cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos) {
+    	(*pos)->init_cond_tree->splay_traverse((void (*)(void*))eval_init_cond_helper);
+    	(*pos)->per_frame_eqn_tree->splay_traverse((void (*)(void*))eval_per_frame_eqn_helper);
+   }
+
+}
+
+void Preset::evalCustomShapePerFrameEquations() {
+
+    for (cshape_container::iterator pos = customShapes.begin(); pos != customShapes.end(); ++pos) {
+    	(*pos)->init_cond_tree->splay_traverse((void (*)(void*))eval_init_cond_helper);
+    	(*pos)->per_frame_eqn_tree->splay_traverse((void (*)(void*))eval_per_frame_eqn_helper);
+   }
+
+}
+
 void Preset::evalInitConditions() {
   per_frame_init_eqn_tree->splay_traverse((void (*)(void*))eval_init_cond_helper);
 }
@@ -406,47 +425,12 @@ void Preset::load_custom_wave_init_conditions() {
 }
 
 void Preset::load_custom_shape_init_conditions() {
+  /// @bug  busted
    abort();
   //custom_shape_tree->splay_traverse((void (*)(void*))load_custom_shape_init_helper);
 }
 
-/** Returns the next custom waveform in the wave database */
-CustomWave * Preset::nextCustomWave() {
 
-    CustomWave * interface_wave = NULL;
-
-    if ( (interface_wave = (CustomWave *)custom_wave_tree->splay_find(&interface_id) ) == NULL ) {
-        interface_id = 0;
-        return interface_wave;
-      }
-
-    interface_id++;
-
-    /** Evaluate all per frame equations associated with this wave */
-    interface_wave->init_cond_tree->splay_traverse((void (*)(void*))eval_init_cond_helper);
-    interface_wave->per_frame_eqn_tree->splay_traverse((void (*)(void*))eval_per_frame_eqn_helper);
-
-    return interface_wave;
-  }
-
-/** Returns the next custom shape in the shape database */
-CustomShape * Preset::nextCustomShape() {
-
-    CustomShape *interface_shape = NULL;
-
-    if ( (interface_shape = (CustomShape *)custom_shape_tree->splay_find(&cwave_interface_id) ) == NULL ) {
-        cwave_interface_id = 0;
-        return interface_shape;
-      }
-
-    cwave_interface_id++;
-
-    /** Evaluate all per frame equations associated with this wave */
-    interface_shape->init_cond_tree->splay_traverse((void (*)(void*))eval_init_cond_helper);
-    interface_shape->per_frame_eqn_tree->splay_traverse((void (*)(void*))eval_per_frame_eqn_helper);
-
-    return interface_shape;
-  }
 
 /** Evaluates all per-pixel equations */
 void Preset::evalPerPixelEqns() {
@@ -552,7 +536,7 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr) {
  return PROJECTM_SUCCESS;
 }
 
-/* Finds / Creates (if necessary) initial condition associated with passed parameter */
+/** Finds / Creates (if necessary) initial condition associated with passed parameter */
 InitCond * Preset::get_init_cond( Param *param ) {
 
   InitCond * init_cond;
@@ -670,9 +654,33 @@ int Preset::load_preset_file(const char * pathname) {
 
 void Preset::load_init_conditions() {
    builtinParams.traverse(load_init_cond_helper);
+}
+
+
+CustomShape * Preset::find_custom_shape(int id, int create_flag) {
+
+  CustomShape * custom_shape = NULL;
+
+  if ((custom_shape = (CustomShape*)this->customShapes[id]) == NULL) {
+
+    if (CUSTOM_SHAPE_DEBUG) { printf("find_custom_shape: creating custom shape (id = %d)...", id);fflush(stdout);}
+
+    if (create_flag == FALSE) {
+      if (CUSTOM_SHAPE_DEBUG) printf("you specified not to (create flag = false), returning null\n");
+      return NULL;
+    }
+
+    if ((custom_shape = new CustomShape(id)) == NULL) {
+      if (CUSTOM_SHAPE_DEBUG) printf("failed...out of memory?\n");
+      return NULL;
+    }
+
+    customShapes.push_back(custom_shape);
 
   }
 
+  return custom_shape;
+}
 
 /* Find a parameter given its name, will create one if not found */
 Param * Preset::find_param(char * name, int flags) {
@@ -680,8 +688,7 @@ Param * Preset::find_param(char * name, int flags) {
     Param * param = NULL;
 
     /* Null argument checks */
-    if (name == NULL)
-        return NULL;
+    assert(name);
 
     /* First look in the builtin database */
     param = (Param *)this->builtinParams.find_builtin_param(name);
@@ -690,6 +697,7 @@ Param * Preset::find_param(char * name, int flags) {
     if (param == NULL) {
         param = (Param*)this->user_param_tree->splay_find(name);
     }
+
     /* If it doesn't exist in the user (or builtin) database and
     	  create_flag is set, then make it and insert into the database 
     */

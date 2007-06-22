@@ -103,8 +103,8 @@ int x, y;
 
 //       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
 //      this->activePreset->evalInitConditions();
-      this->activePreset->evalPerFrameEquations();
-      this->activePreset->evalPerPixelEqns();
+      this->activePreset->evaluateFrame();
+
 //      this->activePreset->evalCustomWaveInitConditions();
 //      this->activePreset->evalCustomShapeInitConditions();
  
@@ -647,9 +647,10 @@ DLLEXPORT void projectM::projectM_setTitle( char *title ) {
 
 
 
-/* initPresetLoader: initializes the preset
+/// @bug:move to header file
+/** initPresetTools: initializes the preset
    loading library. this should be done before
-   any parsing */
+   any parsing. function in limbo, may be dumped */
 int projectM::initPresetTools() {
 
   /* Initializes the builtin function database */

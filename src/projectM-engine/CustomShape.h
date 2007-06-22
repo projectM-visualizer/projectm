@@ -40,10 +40,6 @@ public:
     int id;
     int per_frame_count;
 
-    /** Shape currently being processed */
-    static CustomShape *interface_shape;
-    static int cwave_interface_id;
-
     /* Parameter tree associated with this custom shape */
     SplayTree * param_tree;
 
@@ -106,7 +102,7 @@ public:
 
     int checkTrees();       /** Checks all internal trees are built correctly */
 
-    static CustomShape *find_custom_shape(int id, Preset * preset, int create_flag );
+    
     void evalCustomShapeInitConditions( Preset *preset );
     void load_custom_shape_init();
     void load_unspecified_init_conds_shape();

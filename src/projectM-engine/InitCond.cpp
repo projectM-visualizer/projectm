@@ -117,7 +117,7 @@ void InitCond::init_cond_to_string() {
 			break;
 		default:
 			return;
-	}		
+	}
 		
 	/* Compute the length of the string */
 	string_length = strlen(string);
