@@ -102,8 +102,6 @@ public:
 
     int checkTrees();       /** Checks all internal trees are built correctly */
 
-    
-    void evalCustomShapeInitConditions( Preset *preset );
     void load_custom_shape_init();
     void load_unspecified_init_conds_shape();
     void eval_custom_shape_init_conds();

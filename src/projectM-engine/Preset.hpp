@@ -136,7 +136,7 @@ public:
     ((CustomShape *)custom_shape)->load_custom_shape_init();
     
   }
-
+    
   private:
 	static const std::size_t ARRAY_MAX_SIZE;
 
@@ -146,7 +146,6 @@ public:
 
 	typedef  std::vector<CustomShape*>  cshape_container;
 
-    void evalPerPointEqns();
     void evalCustomWavePerFrameEquations();
     void evalCustomShapePerFrameEquations();	
     void evalInitConditions();

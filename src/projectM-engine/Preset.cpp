@@ -432,6 +432,20 @@ void Preset::load_custom_shape_init_conditions() {
 
 
 
+void Preset::evaluateFrame() {
+
+	/* Evaluate all equation objects in same order as the renderer */
+
+	evalInitConditions();
+	evalPerFrameEquations();
+	evalPerPixelEqns();
+        evalCustomWaveInitConditions();
+        evalCustomShapeInitConditions();
+	evalCustomWavePerFrameEquations();
+	evalCustomShapePerFrameEquations();
+
+}
+
 /** Evaluates all per-pixel equations */
 void Preset::evalPerPixelEqns() {
 
