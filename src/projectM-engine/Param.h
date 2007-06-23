@@ -108,6 +108,7 @@ public:
                            int upper_bound, int lower_bound, int init_val );
     static Param * new_param_bool( char * name, short int flags, void * engine_val,
                             int upper_bound, int lower_bound, int init_val );
+
 };
 
 #endif /** !_PARAM_TYPES_H */

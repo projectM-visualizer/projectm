@@ -61,6 +61,10 @@ public:
     /** Destructor is necessary so we can free the per point matrices **/
     ~CustomWave();
 
+    /** Search for parameter 'name' in 'database', if create_flag is true, then generate the parameter
+   and insert it into 'database' */
+    Param * findParam(char * name, bool create_flag);
+
     /* Numerical id */
     int id;
     int per_frame_count;

@@ -440,7 +440,7 @@ int SplayTree<Data>::splay_insert(Data * data, void * key) {
 	key_clone = copy_key(key);
 
 	/* Create a new splaynode (of regular type) */
-	if ((splaynode = new SplayNode<Data>(REGULAR_NODE_TYPE, key_clone, data, this)) == NULL) {
+	if ((splaynode = new SplayNode<Data>(REGULAR_NODE_TYPE, key_clone, data, free_key)) == NULL) {
 		free_key(key_clone);
 	    printf ("splay_insert: out of memory?\n");
 		return PROJECTM_OUTOFMEM_ERROR;		

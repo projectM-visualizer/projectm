@@ -644,4 +644,49 @@ void CustomWave::load_unspec_init_cond(Param * param) {
         }
     }
 
+
 }
+
+/* Inserts a parameter into the builtin database */
+int SplayTree::insert_param(Param * param) {
+
+	if (param == NULL)
+	  return PROJECTM_FAILURE;
+
+	return splay_insert(param, param->name);
+}
+
+Param * CustomWave::findParam(char * name, bool create_flag) {
+
+  assert(name);
+
+  Param * param = NULL;
+
+
+  /* First look in the builtin database */
+  param = (Param *)splay_find(name);
+
+
+  if (((param = (Param *)param_tree->splay_find(name)) == NULL) && (create_flag == TRUE)) {
+
+	/* Check if string is valid */
+	if (!param->is_valid_param_string(name))
+		return NULL;
+
+	/* Now, create the user defined parameter given the passed name */
+	if ((param = Param::create_user_param(name)) == NULL)
+		return NULL;
+
+	/* Finally, insert the new parameter into this preset's proper splaytree */
+	if (splay_insert(param, param->name) < 0) {
+		delete param;
+		return NULL;
+	}
+
+  }
+
+  /* Return the found (or created) parameter. Note that this could be null */
+  return param;
+
+}
+

@@ -90,9 +90,9 @@ public:
     /* Data structure to hold per frame  / per frame init equations */
     SplayTree<InitCond> * init_cond_tree;
     SplayTree<PerFrameEqn> * per_frame_eqn_tree;
-    SplayTree<PerFrameEqn> * per_frame_init_eqn_tree;
+    SplayTree<InitCond> * per_frame_init_eqn_tree;
     
-    /* Denotes the index of the last character for each string buffer */
+    /* Denotes the index of the last character for each stdring buffer */
     int per_frame_eqn_string_index;
     int per_frame_init_eqn_string_index;
     
@@ -104,7 +104,11 @@ public:
     CustomShape( int id );
     ~CustomShape();
 
-    int checkTrees();       /** Checks all internal trees are built correctly */
+    /** Checks all internal trees are built correctly */
+    int checkTrees();   
+
+     /// @bug same as CustomWave::findParam, refactor
+     Param * findParam(char * name, bool create_flag);
 
     void load_custom_shape_init();
     void load_unspecified_init_conds_shape();

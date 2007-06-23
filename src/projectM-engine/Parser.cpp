@@ -40,6 +40,8 @@
 #include "PerFrameEqn.h"
 #include "PerPixelEqn.h"
 #include "SplayTree.hpp"
+#include "ParamUtils.hpp"
+
 #include "wipemalloc.h"
 
 /* Grabs the next token from the file. The second argument points
@@ -729,9 +731,9 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
 
     /* CASE 4: custom shape variable */
     if (current_shape != NULL) {
-      if ((param = current_shape->param_tree->find_param_db(string, FALSE)) == NULL) {
+      if ((param = current_shape->findParam(string, FALSE)) == NULL) {
 	if ((param = preset->builtinParams.find_builtin_param(string)) == NULL)
-	  if ((param = current_shape->param_tree->find_param_db(string, TRUE)) == NULL) {
+	  if ((param = current_shape->findParam(string, TRUE)) == NULL) {
 	    delete tree_expr;
 	    return NULL;
 	  }
@@ -756,9 +758,9 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
     
     /* CASE 5: custom wave variable */
     if (current_wave != NULL) {
-      if ((param = current_wave->param_tree->find_param_db(string, FALSE)) == NULL) {
+      if ((param = current_wave->findParam(string, FALSE)) == NULL) {
 	if ((param = preset->builtinParams.find_builtin_param(string)) == NULL) 
-	  if ((param = current_wave->param_tree->find_param_db(string, TRUE)) == NULL) {
+	  if ((param = current_wave->findParam(string, TRUE)) == NULL) {
 	    delete tree_expr;
 	    return NULL;
 	  }
@@ -1311,7 +1313,7 @@ InitCond * Parser::parse_init_cond(FILE * fs, char * name, Preset * preset) {
 }
 
 /* Parses a per frame init equation, not sure if this works right now */
-InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, SplayTree * database) {
+InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, SplayTree<Param> * database) {
 
   char name[MAX_TOKEN_SIZE];
   Param * param = NULL;
@@ -1332,7 +1334,7 @@ InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, SplayTre
   
 
   /* If a database was specified,then use Param::find_param_db instead */
-  if ((database != NULL) && ((param = database->find_param_db(name, TRUE)) == NULL)) {
+  if ((database != NULL) && ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(name, database)) == NULL)) {
     return NULL;
   }
 
@@ -1426,7 +1428,7 @@ int Parser::parse_wavecode(char * token, FILE * fs, Preset * preset) {
   //if (PARSE_DEBUG) printf("parse_wavecode: custom wave found (id = %d)\n", custom_wave->id);
 
   /* Retrieve parameter from this custom waves parameter db */
-  if ((param = custom_wave->param_tree->find_param_db(var_string, TRUE)) == NULL)
+  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(var_string,custom_wave->param_tree)) == NULL)
     return PROJECTM_FAILURE;
 
   //if (PARSE_DEBUG) printf("parse_wavecode: custom wave parameter found (name = %s)\n", param->name);
@@ -1507,7 +1509,9 @@ int Parser::parse_shapecode(char * token, FILE * fs, Preset * preset) {
   //if (PARSE_DEBUG) printf("parse_shapecode: custom shape found (id = %d)\n", custom_shape->id);
 
   /* Retrieve parameter from this custom shapes parameter db */
-  if ((param = custom_shape->param_tree->find_param_db(var_string, TRUE)) == NULL) {
+
+
+  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(var_string, custom_shape->param_tree)) == NULL) {
     //if (PARSE_DEBUG) printf("parse_shapecode: failed to create parameter.\n");
     return PROJECTM_FAILURE;
   }
@@ -1802,7 +1806,7 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
     }
   
     /* Find the parameter associated with the string in the custom wave database */
-    if ((param = custom_wave->param_tree->find_param_db(string, TRUE)) == NULL) { 
+    if ((param =  ParamUtils::find<ParamUtils::AUTO_CREATE>(string, custom_wave->param_tree)) == NULL) { 
       //if (PARSE_DEBUG) printf("parse_wave (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string);
       return PROJECTM_FAILURE;	
     }
@@ -2074,7 +2078,7 @@ char string[MAX_TOKEN_SIZE];
     }
   
     /* Find the parameter associated with the string in the custom shape database */
-    if ((param = custom_shape->param_tree->find_param_db(string, TRUE)) == NULL) { 
+    if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string, custom_shape->param_tree)) == NULL) { 
       //if (PARSE_DEBUG) printf("parse_shape (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string);
       return PROJECTM_FAILURE;	
     }
@@ -2141,7 +2145,7 @@ char string[MAX_TOKEN_SIZE];
     }
   
     /* Find the parameter associated with the string in the custom shape database */
-    if ((param = custom_wave->param_tree->find_param_db(string, TRUE)) == NULL) { 
+    if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string, custom_wave->param_tree)) == NULL) { 
       //if (PARSE_DEBUG) printf("parse_shape (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string);
       return PROJECTM_FAILURE;	
     }
