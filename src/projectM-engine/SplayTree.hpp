@@ -26,8 +26,8 @@
  * $Log$
  */
 
-#ifndef _SPLAYTREE_H
-#define _SPLAYTREE_H
+#ifndef _SPLAYTREE_HPP
+#define _SPLAYTREE_HPP
 
 #define REGULAR_NODE_TYPE 0
 #define SYMBOLIC_NODE_TYPE 1
@@ -35,16 +35,16 @@
 #define PERFECT_MATCH 0
 #define CLOSEST_MATCH 1
 
-#include "projectM.h"
 #include "SplayNode.hpp"
 #include "compare.h"
-#include "Param.h"
+#include "fatal.h"
 
-typedef void Object;
-
-template <class Data = Object>
+template <class Data>
 class SplayTree {
+
 public:
+    static const int SPLAYTREE_FAILURE = PROJECTM_FAILURE;
+    static const int SPLAYTREE_SUCCESS = PROJECTM_SUCCESS;
     SplayNode<Data> *root;
     int (*compare)(void*,void*);
     void * (*copy_key)(void *);
@@ -79,15 +79,11 @@ public:
     void *splay_find_below_max(void * key);
     void splay_find_below_max_helper( void *min_key, void **closest_key,
                                        SplayNode<Data> *root, int (*compare)(void *,void *));
-    void *splay_find_min();
-    void *splay_find_max();
+    Data *splay_find_min();
+    Data *splay_find_max();
 
 	template <class Fun>
 	void traverse(Fun & functor);
-
-    /** Helper functions */
-    int insert_param( Param *param );
-    Param *find_param_db( char *name, int create_flag );
 
 private:
 	void splay_traverse_helper (void (*func_ptr)(void*), SplayNode<Data> * splaynode);
@@ -188,8 +184,9 @@ void SplayTree<Data>::splay_traverse_helper (void (*func_ptr)(void *), SplayNode
 
 
 /* Helper function to traverse the entire splaytree */
+template <class Data>
 template <class Fun>
-void SplayTree<Data>::traverseRec (Fun & fun, SplayNode<Data> * splaynode) {  
+void SplayTree<Data>::traverseRec (Fun & fun, SplayNode<Data> * splaynode) {
 
   /* Normal if this happens, its a base case of recursion */
   if (splaynode == NULL)
@@ -254,7 +251,8 @@ void * SplayTree<Data>::splay_find(void * key) {
 }
 
 /* Gets the splaynode that the given key points to */
-  SplayNode<Data> * SplayTree::get_splaynode_of(void * key) {
+template <class Data>
+  SplayNode<Data> * SplayTree<Data>::get_splaynode_of(void * key) {
 
   SplayNode<Data> * splaynode;
   int match_type;
@@ -340,13 +338,13 @@ int SplayTree<Data>::splay_delete(void * key) {
 
   /* Use helper function to delete the node and return the resulting tree */
   if ((splaynode = splay_delete_helper(key, root, compare, free_key)) == NULL)
-	  return PROJECTM_FAILURE;
+	  return SPLAYTREE_FAILURE;
   
   /* Set new splaytree root equal to the returned splaynode after deletion */
   root = splaynode;
   
   /* Finished, no errors */
-  return PROJECTM_SUCCESS;
+  return SPLAYTREE_SUCCESS;
 }
 
 /* Deletes a splay node */
@@ -399,14 +397,14 @@ int SplayTree<Data>::splay_insert_link(void * alias_key, void * orig_key) {
 
    /* Null arguments */	
    if (alias_key == NULL)
-	   	return PROJECTM_FAILURE;
+	   	return SPLAYTREE_FAILURE;
 
    if (orig_key == NULL)
-	   	return PROJECTM_FAILURE;
+	   	return SPLAYTREE_FAILURE;
    
    /* Find the splaynode corresponding to the original key */
    if ((data_node = get_splaynode_of(orig_key)) == NULL)
-	   return PROJECTM_FAILURE;
+	   return SPLAYTREE_FAILURE;
    
    /* Create a new splay node of symbolic link type */
    if ((splaynode = new SplayNode<Data>(SYMBOLIC_NODE_TYPE, (key_clone = copy_key(alias_key)), data_node, this)) == NULL) {
@@ -418,11 +416,11 @@ int SplayTree<Data>::splay_insert_link(void * alias_key, void * orig_key) {
    if ((splay_insert_node(splaynode)) < 0) {
      splaynode->left=splaynode->right = NULL;
      delete splaynode;
-     return PROJECTM_FAILURE;
+     return SPLAYTREE_FAILURE;
    }		
 	
    /* Done, return success */
-   return PROJECTM_SUCCESS;
+   return SPLAYTREE_SUCCESS;
 }	
 
 /* Inserts 'data' into the 'splaytree' paired with the passed 'key' */
@@ -436,7 +434,7 @@ int SplayTree<Data>::splay_insert(Data * data, void * key) {
 	/* Null argument checks */
 	if (key == NULL) {
 		printf ("splay_insert: null key as argument, returning failure\n");
-		return PROJECTM_FAILURE;
+		return SPLAYTREE_FAILURE;
 	}
 	/* Clone the key argument */
 	key_clone = copy_key(key);
@@ -453,11 +451,11 @@ int SplayTree<Data>::splay_insert(Data * data, void * key) {
 	  printf ("splay_insert: failed to insert node.\n");
 	  splaynode->left=splaynode->right=NULL;
 	  delete splaynode;
-	  return PROJECTM_FAILURE;		
+	  return SPLAYTREE_FAILURE;		
 	}	
      
 
-	return PROJECTM_SUCCESS;
+	return SPLAYTREE_SUCCESS;
 }
 
 /* Helper function to insert splaynodes into the splaytree */
@@ -470,7 +468,7 @@ int SplayTree<Data>::splay_insert_node(SplayNode<Data> * splaynode) {
 	
   /* Null argument checks */
   if (splaynode == NULL)
-	return PROJECTM_FAILURE;
+	return SPLAYTREE_FAILURE;
   
   key = splaynode->key;
   
@@ -481,7 +479,7 @@ int SplayTree<Data>::splay_insert_node(SplayNode<Data> * splaynode) {
   if (t == NULL) {
 	splaynode->left = splaynode->right = NULL;
 	root = splaynode;
-	return PROJECTM_SUCCESS;
+	return SPLAYTREE_SUCCESS;
 
   }
   
@@ -492,7 +490,7 @@ int SplayTree<Data>::splay_insert_node(SplayNode<Data> * splaynode) {
 	splaynode->right = t;
 	t->left = NULL;
 	root = splaynode;
-	return PROJECTM_SUCCESS;
+	return SPLAYTREE_SUCCESS;
 
   } 
 
@@ -501,13 +499,13 @@ int SplayTree<Data>::splay_insert_node(SplayNode<Data> * splaynode) {
 	splaynode->left = t;
 	t->right = NULL; 
 	root = splaynode;
-	return PROJECTM_SUCCESS;
+	return SPLAYTREE_SUCCESS;
    } 
    
    /* Item already exists in tree, don't reinsert */
   else {
     printf("splay_insert_node: duplicate key detected, ignoring...\n");
-    return PROJECTM_FAILURE;
+    return SPLAYTREE_FAILURE;
   }
 }
 
@@ -629,7 +627,7 @@ void SplayTree<Data>::splay_find_above_min_helper(void * max_key, void ** closes
 
 /* Find the minimum entry of the splay tree */
 template <class Data>
-void * SplayTree<Data>::splay_find_min() {
+Data * SplayTree<Data>::splay_find_min() {
 
 	SplayNode<Data> * splaynode;
 	
@@ -667,7 +665,7 @@ template <class Data>
 int SplayTree<Data>::splay_size() {
 
 	if ( root == NULL ) {
-	    return PROJECTM_FAILURE;
+	    return SPLAYTREE_FAILURE;
 	  }
 	return splay_rec_size(root);
 }
@@ -682,120 +680,5 @@ int SplayTree<Data>::splay_rec_size(SplayNode<Data> * splaynode) {
 
 }
 
-/** tree_types.cpp */
-/* Compares integer value numbers in 32 bit range */
-int SplayKeyFunctions::compare_int(int * num1, int * num2) {
 
-	if ((*num1) < (*num2))
-		return -1;
-	if ((*num1) > (*num2))
-		return 1;
-	
-	return 0;
-}
-
-/* Compares strings in lexographical order */
-int SplayKeyFunctions::compare_string(char * str1, char * str2) {
-
-  //  printf("comparing \"%s\" to \"%s\"\n", str1, str2);
-  //return strcmp(str1, str2);
-  return strncmp(str1, str2, MAX_TOKEN_SIZE-1);
-	
-}	
-
-/* Compares a string in version order. That is, file1 < file2 < file10 */
-int SplayKeyFunctions::compare_string_version(char * str1, char * str2) {
-
-  return strcmp( str1, str2 );
-#ifdef PANTS
-  return strverscmp(str1, str2);
-#endif
-}
-
-
-static void SplayKeyFunctions::free_int(int * num) {
-	free(num);
-}
-
-
-
- void SplayKeyFunctions::free_string(char * string) {	
-	free(string);	
-}
- 
-
-
- void * SplayKeyFunctions::copy_int(int * num) {
-	
-	int * new_num;
-	
-	if ((new_num = (int*)wipemalloc(sizeof(int))) == NULL)
-		return NULL;
-
-	*new_num = *num;
-	
-	return (void*)new_num;
-}	
-
-
-void * SplayKeyFunctions::copy_string(char * string) {
-	
-	char * new_string;
-	
-	if ((new_string = (char*)wipemalloc(MAX_TOKEN_SIZE)) == NULL)
-		return NULL;
-	
-	strncpy(new_string, string, MAX_TOKEN_SIZE-1);
-	
-	return (void*)new_string;
-}
-
-/* Inserts a parameter into the builtin database */
-template <class Data>
-int SplayTree::insert_param(Param * param) {
-
-	if (param == NULL)
-	  return PROJECTM_FAILURE;
-
-	return splay_insert(param, param->name);	
-}
-
-/* Search for parameter 'name' in 'database', if create_flag is true, then generate the parameter 
-   and insert it into 'database' */
-template <class Data>
-Param *SplayTree::find_param_db(char * name, int create_flag) {
-
-  Param * param = NULL;
-
-  /* Null argument checks */
-  if (name == NULL)
-    return NULL;
-  
-  /* First look in the builtin database */
-  param = (Param *)splay_find(name);
-
-  
-  if (((param = (Param *)splay_find(name)) == NULL) && (create_flag == TRUE)) {
-	
-	/* Check if string is valid */
-	if (!param->is_valid_param_string(name))
-		return NULL;
-	
-	/* Now, create the user defined parameter given the passed name */
-	if ((param = new Param(name)) == NULL)
-		return NULL;
-	
-	/* Finally, insert the new parameter into this preset's proper splaytree */
-	if (splay_insert(param, param->name) < 0) {
-		delete param;
-		return NULL;
-	}	 
-	
-  }	  
-  
-  /* Return the found (or created) parameter. Note that this could be null */
-  return param;
-
-}
-
-#endif /** !_SPLAYTREE_H */
+#endif /** !_SPLAYTREE_HPP */

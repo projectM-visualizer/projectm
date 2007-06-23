@@ -54,7 +54,7 @@
 #include "PCM.h"                    //Sound data handler (buffering, FFT, etc.)
 #include "CustomWave.h"
 #include "CustomShape.h"
-#include "SplayTree.h"
+#include "SplayTree.hpp"
 #include "Renderer.hpp"
 
 #ifdef USE_FTGL

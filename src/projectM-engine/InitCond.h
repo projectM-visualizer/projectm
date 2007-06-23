@@ -36,7 +36,7 @@
 
 class InitCond;
 class Param;
-class SplayTree;
+#include "SplayTree.hpp"
 
 class InitCond {
 public:
@@ -50,7 +50,6 @@ public:
     ~InitCond();
     void eval_init_cond();
 
-    static char * create_init_cond_string_buffer( SplayTree * init_cond_tree);
     void init_cond_to_string();
     void write_init();
   };

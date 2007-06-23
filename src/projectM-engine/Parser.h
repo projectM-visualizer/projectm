@@ -157,7 +157,7 @@ public:
     static int insert_infix_rec(InfixOp * infix_op, TreeExpr * root);
     static GenExpr * parse_gen_expr(FILE * fs, TreeExpr * tree_expr, Preset * preset);
     static PerFrameEqn * parse_implicit_per_frame_eqn(FILE * fs, char * param_string, int index, Preset * preset);
-    static InitCond * parse_per_frame_init_eqn(FILE * fs, Preset * preset, SplayTree * database);
+    static InitCond * parse_per_frame_init_eqn(FILE * fs, Preset * preset, SplayTree<InitCond> * database);
     static int parse_wavecode_prefix(char * token, int * id, char ** var_string);
     static int parse_wavecode(char * token, FILE * fs, Preset * preset);
     static int parse_wave_prefix(char * token, int * id, char ** eqn_string);

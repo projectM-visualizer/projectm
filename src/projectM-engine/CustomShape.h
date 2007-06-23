@@ -30,9 +30,13 @@
 #define _CUSTOM_SHAPE_H
 
 #define CUSTOM_SHAPE_DEBUG 0
+#include "SplayTree.hpp"
+#include "Param.h"
+#include "PerFrameEqn.h"
+#include "InitCond.h"
 
 class Preset;
-class SplayTree;
+
 
 class CustomShape {
 public:
@@ -41,7 +45,7 @@ public:
     int per_frame_count;
 
     /* Parameter tree associated with this custom shape */
-    SplayTree * param_tree;
+    SplayTree<Param> * param_tree;
 
     /* Engine variables */
     int sides;
@@ -84,9 +88,9 @@ public:
     float t8;
     
     /* Data structure to hold per frame  / per frame init equations */
-    SplayTree * init_cond_tree;
-    SplayTree * per_frame_eqn_tree;
-    SplayTree * per_frame_init_eqn_tree;
+    SplayTree<InitCond> * init_cond_tree;
+    SplayTree<PerFrameEqn> * per_frame_eqn_tree;
+    SplayTree<PerFrameEqn> * per_frame_init_eqn_tree;
     
     /* Denotes the index of the last character for each string buffer */
     int per_frame_eqn_string_index;

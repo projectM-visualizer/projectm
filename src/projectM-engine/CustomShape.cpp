@@ -33,7 +33,7 @@
 #include "Param.h"
 #include "PerFrameEqn.h"
 #include "Preset.hpp"
-#include "SplayTree.h"
+#include "SplayTree.hpp"
 
 #include "wipemalloc.h"
 

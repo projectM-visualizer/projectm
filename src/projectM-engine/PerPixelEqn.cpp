@@ -32,7 +32,7 @@
 #include "Eval.h"
 #include "Param.h"
 #include "PerPixelEqn.h"
-#include "SplayTree.h"
+#include "SplayTree.hpp"
 
 #include "wipemalloc.h"
 

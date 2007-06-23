@@ -210,7 +210,7 @@ return (float)result;
 class BuiltinFuncs {
 
 public:
-    static SplayTree  * builtin_func_tree;
+    static SplayTree<Func>  * builtin_func_tree;
     static int init_builtin_func_db();
     static int destroy_builtin_func_db();
     static int load_all_builtin_func();

@@ -66,6 +66,6 @@ public:
 
 private:
     static const bool BUILTIN_PARAMS_DEBUG = false;
-    SplayTree *builtin_param_tree;
+    SplayTree<Param> *builtin_param_tree;
 };
 #endif

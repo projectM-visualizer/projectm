@@ -36,7 +36,7 @@
 #include "InitCond.h"
 #include "Param.h"
 #include "Preset.hpp"
-#include "SplayTree.h"
+#include "SplayTree.hpp"
 
 #include "wipemalloc.h"
 

@@ -34,7 +34,7 @@
 #include "Param.h"
 #include "PerPixelEqn.h"
 #include "PerPointEqn.h"
-#include "SplayTree.h"
+#include "SplayTree.hpp"
 
 #include "wipemalloc.h"
 

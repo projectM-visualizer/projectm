@@ -30,7 +30,7 @@
 #include "Expr.h"
 #include "InitCond.h"
 #include "Param.h"
-#include "SplayTree.h"
+#include "SplayTree.hpp"
 
 #include "wipemalloc.h"
 
@@ -135,15 +135,3 @@ void InitCond::init_cond_to_string() {
 	init_cond_string_buffer_index+= string_length + 1;
 }
 
-
-char *InitCond::create_init_cond_string_buffer( SplayTree * init_cond_tree ) {
-
-	if (init_cond_tree == NULL)
-		return NULL;
-	
-	init_cond_string_buffer_index = 0;
-	
-	init_cond_tree->splay_traverse((void (*)(void*))init_cond_to_string_helper);
-	
-	return init_cond_string_buffer;
-}

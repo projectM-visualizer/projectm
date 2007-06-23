@@ -55,7 +55,7 @@
 class InitCond;
 class Param;
 class Preset;
-class SplayTree;
+#include "SplayTree.hpp"
 
 /* Parameter Type */
 class Param {
@@ -86,7 +86,7 @@ public:
 
     int remove_param();
     static Param * find_param( char *name, Preset *preset, int flags );
-    int insert_param( SplayTree *database );
+    //int insert_param( SplayTree *database );
     void load_init_cond();
     void load_unspec_init_cond();
     void load_unspec_init_cond_shape();
@@ -109,23 +109,6 @@ public:
     static Param * new_param_bool( char * name, short int flags, void * engine_val,
                             int upper_bound, int lower_bound, int init_val );
 };
-
-/** Splaytree traversal helpers */
-inline void free_param_helper( void *param ) {
-    delete ((Param *)param);
-  }
-
-inline void load_init_cond_helper( void *param ) {
-    ((Param *)param)->load_init_cond();
-  }
-
-inline void load_unspec_init_cond_wave_helper( void *param ) {
-    ((Param *)param)->load_unspec_init_cond();
-}
-
-inline void load_unspec_init_cond_shape_helper( void *param ) {
-    ((Param *)param)->load_unspec_init_cond_shape();
-}
 
 #endif /** !_PARAM_TYPES_H */
 

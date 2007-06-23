@@ -39,7 +39,7 @@
 #include "Parser.h"
 #include "PerFrameEqn.h"
 #include "PerPixelEqn.h"
-#include "SplayTree.h"
+#include "SplayTree.hpp"
 #include "wipemalloc.h"
 
 /* Grabs the next token from the file. The second argument points

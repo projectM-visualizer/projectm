@@ -77,7 +77,7 @@ class BeatDetect;
 class Func;
 
 class Preset;
-class SplayTree;
+#include "SplayTree.hpp"
 
 #ifdef WIN32
 #pragma warning (disable:4244)

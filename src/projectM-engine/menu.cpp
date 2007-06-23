@@ -33,7 +33,7 @@
 #include "common.h"
 #include "fatal.h"
 #include "Param.h"
-#include "SplayTree.h"
+#include "SplayTree.hpp"
 
 #include "InitCond.h"
 

@@ -26,10 +26,10 @@
  * $Log$
  */
 
-#ifndef _SPLAYNODE_H
-#define _SPLAYNODE_H
+#ifndef _SPLAYNODE_HPP
+#define _SPLAYNODE_HPP
 
-#include "projectM.h"
+//#include "projectM.h"
 
 #include "compare.h"
 
@@ -38,13 +38,13 @@ template <class Data = Object>
 class SplayNode {
 public:
     int type;
-    SplayTree *tree;
+    
     SplayNode *left, *right;
     Data *data;
-    void *key;
-
+    void *key;    
+   void (*free_key)(void*);
     SplayNode();
-    SplayNode( int type, void *key, void *data, SplayTree *tree );
+    SplayNode( int type, void *key, Data *data, void (*free_key)(void*));
     ~SplayNode();
   };
 
@@ -54,33 +54,23 @@ SplayNode<Data>::SplayNode() {
     this->data = NULL;
     this->type = -1;
     this->key = NULL;
-    this->tree = NULL;
+    this->free_key = free_key;
   }
 
 /* Create a new splay node type */
 template <class Data>
-SplayNode<Data>::SplayNode(int type, void * key, Data * data, SplayTree *tree) {
+SplayNode<Data>::SplayNode(int type, void * key, Data * data, void (*free_key)(void*)) {
 
 	/* Creates the new splay node struct */
 	this->data = data;
 	this->type = type;
 	this->key = key;
-    this->tree = tree;
+        this->free_key = free_key;
   }
 
 /* Recursively free all the splaynodes */
 template <class Data>
 SplayNode<Data>::~SplayNode() {
-
-    if ( tree == NULL ) {
-        if ( key != NULL || data != NULL ) {
-            /** This shouldn't happen */
-            printf( "~SplayNode: tree is NULL with non-NULL key/data!\n" );
-            printf( "\tleft: %X\tright: %X\tdata: %X\tkey: %X\n",
-                    left, right, data, key );
-          }
-        return;
-      }
 
   /* Ok if this happens, a recursive base case */
   /* Free left node */
@@ -95,10 +85,11 @@ SplayNode<Data>::~SplayNode() {
   
     /* Free this node's key */
 //    printf( "~SplayNode: %X\t%X\n", key, tree->free_key );
-    tree->free_key(key);
+
+    this->free_key(key);
   
   /* Note that the data pointers are not freed here.
      Should be freed with a splay traversal function */
   }
 
-#endif /** !_SPLAYTREE_H */
+#endif /** !_SPLAYNODE_HPP */

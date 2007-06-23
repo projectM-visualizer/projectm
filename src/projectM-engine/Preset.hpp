@@ -42,14 +42,14 @@
 #include "PerFrameEqn.h"
 #include "BuiltinParams.hpp"
 #include "PresetFrameIO.hpp"
-#include "SplayTree.h"
+#include "SplayTree.hpp"
 #include "InitCond.h"
 #include <vector>
 #include "StaticArray.hpp"
 
 class CustomWave;
 class InitCond;
-//class SplayTree;
+//#include "SplayTree.hpp"
 
 
 class Preset {
@@ -92,14 +92,14 @@ public:
     char per_frame_init_eqn_string_buffer[STRING_BUFFER_SIZE];
 
     /* Data structures that contain equation and initial condition information */
-    SplayTree * per_frame_eqn_tree;   /* per frame equations */
-    SplayTree * per_pixel_eqn_tree; /* per pixel equation tree */
+    SplayTree<PerFrameEqn> * per_frame_eqn_tree;   /* per frame equations */
+    SplayTree<PerPixelEqn> * per_pixel_eqn_tree; /* per pixel equation tree */
     GenExpr * per_pixel_eqn_array[NUM_OPS]; /* per pixel equation array */
-    SplayTree * per_frame_init_eqn_tree; /* per frame initial equations */
-    SplayTree * init_cond_tree; /* initial conditions */
-    SplayTree * user_param_tree; /* user parameter splay tree */
-    SplayTree * custom_wave_tree; /* custom wave forms for this preset */
-    SplayTree * custom_shape_tree; /* custom shapes for this preset */
+    SplayTree<InitCond> * per_frame_init_eqn_tree; /* per frame initial equations */
+    SplayTree<InitCond> * init_cond_tree; /* initial conditions */
+    SplayTree<Param> * user_param_tree; /* user parameter splay tree */
+    SplayTree<CustomWave> * custom_wave_tree; /* custom wave forms for this preset */
+    SplayTree<CustomShape> * custom_shape_tree; /* custom shapes for this preset */
  
     int add_per_pixel_eqn( char *name, GenExpr *gen_expr );
     int isPerPixelEqn( int op );

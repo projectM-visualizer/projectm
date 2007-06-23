@@ -28,7 +28,7 @@
 #include "fatal.h"
 
 #include "Func.h"
-#include "SplayTree.h"
+#include "SplayTree.hpp"
 
 #include "wipemalloc.h"
 

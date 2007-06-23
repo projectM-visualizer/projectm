@@ -47,7 +47,7 @@ class Preset;
 #include "common.h"
 #include "Param.h"
 
-class SplayTree;
+#include "SplayTree.hpp"
 
 class CustomWave {
 public:
@@ -66,7 +66,7 @@ public:
     int per_frame_count;
 
     /* Parameter tree associated with this custom wave */
-    SplayTree * param_tree;
+    SplayTree<Param> * param_tree;
     
     /* Engine variables */
     float x; /* x position for per point equations */
@@ -109,10 +109,10 @@ public:
     float v1,v2;
 
     /* Data structure to hold per frame and per point equations */
-    SplayTree * init_cond_tree;
-    SplayTree * per_frame_eqn_tree;
-    SplayTree * per_point_eqn_tree;
-    SplayTree * per_frame_init_eqn_tree;
+    SplayTree<InitCond> * init_cond_tree;
+    SplayTree<PerFrameEqn> * per_frame_eqn_tree;
+    SplayTree <PerPointEqn> * per_point_eqn_tree;
+    SplayTree<InitCond> *  per_frame_init_eqn_tree;
 
     /* Denotes the index of the last character for each string buffer */
     int per_point_eqn_string_index;
@@ -137,11 +137,11 @@ public:
     void load_unspec_init_cond() ;
     void eval_custom_wave_init_conds();
     void load_unspec_init_cond(Param * param);
-    void destroy_per_point_eqn_tree(SplayTree * tree);
-    void destroy_param_db_tree(SplayTree * tree);
-    void destroy_per_frame_eqn_tree(SplayTree * tree);
+    void destroy_per_point_eqn_tree(SplayTree<PerPointEqn> * tree);
+    void destroy_param_db_tree(SplayTree<Param> * tree);
+    void destroy_per_frame_eqn_tree(SplayTree<PerFrameEqn> * tree);
     void destroy_per_frame_init_eqn_tree();
-    void destroy_init_cond_tree(SplayTree * tree);
+    void destroy_init_cond_tree(SplayTree<InitCond> * tree);
     void evalPerPointEqn(PerPointEqn * per_point_eqn);
   };
 
