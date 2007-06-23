@@ -72,10 +72,11 @@ public:
     int gx, gy;
 
     /* Function prototypes */
-    Param( char *name, short int type, short int flags, 
+    Param(char *name, short int type, short int flags, 
            void * eqn_val, void *matrix,
            CValue default_init_val, CValue upper_bound, 
            CValue lower_bound);
+
     ~Param();
 
     /** Create a user defined parameter **/ 
@@ -118,13 +119,13 @@ inline void load_init_cond_helper( void *param ) {
     ((Param *)param)->load_init_cond();
   }
 
-inline void load_unspec_init_cond_helper( void *param ) {
+inline void load_unspec_init_cond_wave_helper( void *param ) {
     ((Param *)param)->load_unspec_init_cond();
-  }
+}
 
 inline void load_unspec_init_cond_shape_helper( void *param ) {
     ((Param *)param)->load_unspec_init_cond_shape();
-  }
+}
 
 #endif /** !_PARAM_TYPES_H */
 

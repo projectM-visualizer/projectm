@@ -133,7 +133,7 @@ public:
     void evalCustomWaveInitConditions(Preset *preset);
     void evalPerPointEqns();
 
-    void load_unspecified_init_conds_wave();
+    void load_unspecified_init_conds();
     void load_unspec_init_cond() ;
     void eval_custom_wave_init_conds();
     void load_unspec_init_cond(Param * param);
@@ -151,7 +151,7 @@ inline void free_custom_wave_helper( void *custom_wave ) {
   }
 
 inline void load_custom_wave_init_helper( void *custom_wave ) {
-    ((CustomWave *)custom_wave)->load_unspecified_init_conds_wave();
+    ((CustomWave *)custom_wave)->load_unspecified_init_conds();
   }
    
 inline void eval_custom_wave_init_conds_helper( void *custom_wave ) {

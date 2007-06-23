@@ -548,12 +548,13 @@ int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr) {
 	 return PROJECTM_FAILURE;
  if (CUSTOM_WAVE_DEBUG) 
    printf("add_per_point_eqn: created new equation (index = %d) (name = \"%s\")\n", per_point_eqn->index, per_point_eqn->param->name);
+
  /* Insert the per pixel equation into the preset per pixel database */
  if (per_point_eqn_tree->splay_insert(per_point_eqn, &per_point_eqn->index) < 0) {
 	delete per_point_eqn;
-	return PROJECTM_FAILURE;	 
- }
-	 
+	return PROJECTM_FAILURE;
+}
+
  /* Done */ 
  return PROJECTM_SUCCESS;
 }
@@ -582,55 +583,54 @@ void CustomWave::evalPerPointEqns() {
   for (x = 0; x < samples; x++)
     y_mesh[x] = y;
 
- 
   /* Evaluate per pixel equations */
-    abort(); 
-    per_point_eqn_tree->splay_traverse((void (*)(void*))eval_per_point_eqn_helper); 
-
+    abort();
+    per_point_eqn_tree->splay_traverse((void (*)(void*))eval_per_point_eqn_helper);
 
   /* Reset index */
   projectM::currentEngine->renderer->mesh_i = -1;
 }
 
-void CustomWave::load_unspecified_init_conds_wave() {
+void CustomWave::load_unspecified_init_conds() {
 //    interface_wave = this;
-    param_tree->splay_traverse((void (*)(void*))load_unspec_init_cond_helper);
+    param_tree->traverse(this->load_unspec_init_cond);
 //    interface_wave = NULL;
-  }
+}
 
 
-void CustomWave::load_unspec_init_cond() {
-abort();
-#if 0
+void CustomWave::load_unspec_init_cond(Param * param) {
+
+
+
     InitCond * init_cond;
     CValue init_val;
 
     /* Don't count these parameters as initial conditions */
-    if (flags & P_FLAG_READONLY)
+    if (param->flags & P_FLAG_READONLY)
         return;
-    if (flags & P_FLAG_QVAR)
+    if (param->flags & P_FLAG_QVAR)
         return;
-    if (flags & P_FLAG_TVAR)
+    if (param->flags & P_FLAG_TVAR)
         return;
-    if (flags & P_FLAG_USERDEF)
+    if (param->flags & P_FLAG_USERDEF)
         return;
 
     /* If initial condition was not defined by the preset file, force a default one
        with the following code */
-    if ((init_cond = (InitCond*)init_cond_tree->splay_find(name)) == NULL) {
+    if ((init_cond = (InitCond*)init_cond_tree>splay_find(param->name)) == NULL) {
 
         /* Make sure initial condition does not exist in the set of per frame initial equations */
-        if ((init_cond = (InitCond*)per_frame_init_eqn_tree->splay_find(name)) != NULL)
+        if ((init_cond = (InitCond*)per_frame_init_eqn_tree->splay_find(param->name)) != NULL)
             return;
 
         if (type == P_TYPE_BOOL)
             init_val.bool_val = 0;
 
         else if (type == P_TYPE_INT)
-            init_val.int_val = *(int*)engine_val;
+            init_val.int_val = *(int*)param->engine_val;
 
         else if (type == P_TYPE_DOUBLE)
-            init_val.float_val = *(float*)engine_val;
+            init_val.float_val = *(float*)param->engine_val;
 
         //printf("%s\n", param->name);
         /* Create new initial condition */
@@ -642,7 +642,6 @@ abort();
             delete init_cond;
             return;
         }
-
     }
-#endif
+
 }
