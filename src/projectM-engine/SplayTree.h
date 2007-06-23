@@ -189,7 +189,7 @@ void SplayTree<Data>::splay_traverse_helper (void (*func_ptr)(void *), SplayNode
 
 /* Helper function to traverse the entire splaytree */
 template <class Fun>
-void SplayTree::traverseRec (Fun & fun, SplayNode<Data> * splaynode) {  
+void SplayTree<Data>::traverseRec (Fun & fun, SplayNode<Data> * splaynode) {  
 
   /* Normal if this happens, its a base case of recursion */
   if (splaynode == NULL)
