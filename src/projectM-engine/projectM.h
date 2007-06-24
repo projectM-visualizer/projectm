@@ -75,7 +75,7 @@
 
 class BeatDetect;
 class Func;
-
+class Renderer;
 class Preset;
 #include "SplayTree.hpp"
 
@@ -118,19 +118,18 @@ class projectM {
 public:
     static projectM *currentEngine;
     static Preset *activePreset;
-    static Renderer *renderer; 
+    static Renderer *renderer;
     static RenderTarget *renderTarget;
 
     char *presetURL;
-    char *presetName;
+    
     char *fontURL;
 
     int hasInit;
 
-    int noSwitch;
     int pcmframes;
     int freqframes;
-    int totalframes;
+
 
 
     GLubyte *fbuffer;
@@ -145,8 +144,7 @@ public:
 #else
     long startTime;
 #endif /** !WIN32 */
-    float Time;
-
+   
     /** Render target texture ID */
    
 
@@ -164,8 +162,7 @@ public:
     
     int avgtime;  //# frames per preset
     
-    char *title;
-    int drawtitle;
+    
   
  
 
@@ -175,8 +172,7 @@ public:
     int timestart;
     int nohard;
     int count;
-    float realfps,
-           fpsstart;
+    float fpsstart;
 
     /** Various toggles */
         /* PER_FRAME CONSTANTS END */

@@ -2,20 +2,28 @@
 #include "wipemalloc.h"
 #include "math.h"
 #include "common.h"
+#include "console_interface.h"
 
-Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget)
+
+
+Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, BeatDetect *beatDetect, char* fontURL)
 {
   int x; int y; 
   
   this->gx=gx;
   this->gy=gy;
 
+  this->totalframes = 1;
+  this->noSwitch = 0;
   this->showfps = 0;
   this->showtitle = 0;
   this->showpreset = 0;
   this->showhelp = 0;
   this->showstats = 0;
   this->studio = 0;   
+this->realfps=0;
+
+  this->title = NULL;
    
     /** Other stuff... */
     this->correction = 1;
@@ -31,26 +39,7 @@ Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTa
     {
       this->gridy[x] = (float *)wipemalloc(gy * sizeof(float)); 
     }
-  this->origtheta=(float **)wipemalloc(gx * sizeof(float *));
- for(x = 0; x < gx; x++)
-    {
-      this->origtheta[x] = (float *)wipemalloc(gy * sizeof(float));
-    }
-  this->origrad=(float **)wipemalloc(gx * sizeof(float *));
-     for(x = 0; x < gx; x++)
-    {
-      this->origrad[x] = (float *)wipemalloc(gy * sizeof(float));
-    }
-  this->origx=(float **)wipemalloc(gx * sizeof(float *));
- for(x = 0; x < gx; x++)
-    {
-      this->origx[x] = (float *)wipemalloc(gy * sizeof(float));
-    }
-  this->origy=(float **)wipemalloc(gx * sizeof(float *));
- for(x = 0; x < gx; x++)
-    {
-      this->origy[x] = (float *)wipemalloc(gy * sizeof(float));
-    }
+ 
   this->origx2=(float **)wipemalloc(gx * sizeof(float *));
  for(x = 0; x < gx; x++)
     {
@@ -67,23 +56,32 @@ this->origy2=(float **)wipemalloc(gx * sizeof(float *));
   for (x=0;x<gx;x++)
     {
       for(y=0;y<gy;y++)
-	{
-	   this->origx[x][y]=x/(float)(gx-1);
-	   this->origy[x][y]=-((y/(float)(gy-1))-1);
-	   this->origrad[x][y]=hypot((this->origx[x][y]-.5)*2,(this->origy[x][y]-.5)*2) * .7071067;
-  	   this->origtheta[x][y]=atan2(((this->origy[x][y]-.5)*2),((this->origx[x][y]-.5)*2));
-	   this->gridx[x][y]=this->origx[x][y]*renderTarget->texsize;
-	   this->gridy[x][y]=this->origy[x][y]*renderTarget->texsize;
-	   this->origx2[x][y]=( this->origx[x][y]-.5)*2;
-	   this->origy2[x][y]=( this->origy[x][y]-.5)*2;
+	{	
+
+           float origx=x/(float)(gx-1);
+	   float origy=-((y/(float)(gy-1))-1);
+	   this->gridx[x][y]=origx*renderTarget->texsize;
+	   this->gridy[x][y]=origy*renderTarget->texsize;
+	   this->origx2[x][y]=( origx-.5)*2;
+	   this->origy2[x][y]=( origy-.5)*2;
 	}}
 
-this->renderTarget = renderTarget; 
+this->renderTarget = renderTarget;
+this->beatDetect = beatDetect;
+this->fontURL = fontURL;
+
+#ifdef USE_FTGL
+    /** Reset fonts */
+    title_font = NULL;
+    other_font = NULL;
+    poly_font = NULL;
+#endif /** USE_FTGL */
 
 }
 
 void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 {
+totalframes++;
   reset_per_pixel_matrices();
 
     DWRITE( "start Pass 1 \n" );
@@ -133,7 +131,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     DWRITE( "renderFrame: renderTarget->texsize: %d x %d\n", this->renderTarget->texsize, this->renderTarget->texsize );
     
   
-     PerPixelMath(presetOutputs);
+     PerPixelMath(presetOutputs, presetInputs);
 
     if(this->renderTarget->usePbuffers)
       {
@@ -148,13 +146,13 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 
 //    if(!this->renderTarget->usePbuffers)
       {
-	draw_motion_vectors();        //draw motion vectors
+	draw_motion_vectors(presetOutputs);        //draw motion vectors
       }
-    draw_shapes();
-    draw_custom_waves();
-    draw_waveform();
+    draw_shapes(presetOutputs);
+    draw_custom_waves(presetOutputs);
+    draw_waveform(presetOutputs, presetInputs);
     if(presetOutputs->bDarkenCenter)darken_center();
-    draw_borders();               //draw borders
+    draw_borders(presetOutputs);               //draw borders
 
     /** Restore original view state */
     glMatrixMode( GL_MODELVIEW );
@@ -202,8 +200,9 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 
       glLineWidth( this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512.0);
-      if(this->studio%2)render_texture_to_studio();
-      else render_texture_to_screen();
+      //if(this->studio%2)render_texture_to_studio();
+      //else 
+      render_texture_to_screen(presetOutputs);
 
       // glClear(GL_COLOR_BUFFER_BIT);     
       //render_Studio();
@@ -218,7 +217,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
       if(this->showtitle%2)draw_title();
       if(this->showfps%2)draw_fps(this->realfps);
       if(this->showpreset%2)draw_preset();
-      if(this->showstats%2)draw_stats();
+      if(this->showstats%2)draw_stats(presetInputs);
       glTranslatef(0.5 ,0.5,1);
 
     DWRITE( "end pass2\n" );
@@ -253,7 +252,7 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
     glBegin(GL_TRIANGLE_STRIP);
     for(y=0;y<presetInputs->gy;y++){
       glTexCoord2f(presetInputs->x_mesh[x][y], presetInputs->y_mesh[x][y]); 
-      glVertex2f(this->gridx[x][-], this->gridy[x][y]);
+      glVertex2f(this->gridx[x][y], this->gridy[x][y]);
       glTexCoord2f(presetInputs->x_mesh[x+1][y], presetInputs->y_mesh[x+1][y]); 
       glVertex2f(this->gridx[x+1][y], this->gridy[x+1][y]);
     }
@@ -321,54 +320,37 @@ void Renderer::PerFrame(PresetOutputs *presetOutputs)
     }
 
 
-~Renderer() {
+Renderer::~Renderer() {
 
   int x;
 
- for(x = 0; x < presetInputs.gx; x++)
+ for(x = 0; x < this->gx; x++)
     {
       
       free(this->gridx[x]);
-      free(this->gridy[x]); 
-      free(this->origtheta[x]);
-      free(this->origrad[x]);
-      free(this->origx[x]);
-      free(this->origy[x]);
+      free(this->gridy[x]);    
       free(this->origx2[x]);
       free(this->origy2[x]);
-      free(presetInputs.x_mesh[x]);
-      free(presetInputs.y_mesh[x]);
-      free(presetInputs.rad_mesh[x]);
-      free(presetInputs.theta_mesh[x]);
+     
       
     }
 
-  
-  free(this->origx);
-  free(this->origy);
   free(this->origx2);
   free(this->origy2);
   free(this->gridx);
   free(this->gridy);
-  free(presetInputs.x_mesh);
-  free(presetInputs.y_mesh);
-  free(presetInputs.rad_mesh);
-  free(presetInputs.theta_mesh);
+ 
 
-  this->origx = NULL;
-  this->origy = NULL;
+  
   this->origx2 = NULL;
   this->origy2 = NULL;
   this->gridx = NULL;
   this->gridy = NULL;
-  presetInputs.x_mesh = NULL;
-  presetInputs.y_mesh = NULL;
-  presetInputs.rad_mesh = NULL;
-  presetInputs.theta_mesh = NULL;
+ 
 }
 
 
-void Renderer::PerPixelMath(PresetOutputs *presetOutputs) {
+void Renderer::PerPixelMath(PresetOutputs *presetOutputs, PresetInputs *presetInputs) {
 
   int x,y;
   float fZoom2,fZoom2Inv;
@@ -380,7 +362,7 @@ void Renderer::PerPixelMath(PresetOutputs *presetOutputs) {
       for (x=0;x<this->gx;x++){
        
 	for(y=0;y<this->gy;y++){
-	  presetOutputs->cx_mesh[x][y]=presetOutputss.cx;
+	  presetOutputs->cx_mesh[x][y]=presetOutputs->cx;
 	}
 	
       }
@@ -451,54 +433,54 @@ void Renderer::PerPixelMath(PresetOutputs *presetOutputs) {
 
   for (x=0;x<this->gx;x++){
     for(y=0;y<this->gy;y++){
-      fZoom2 = powf( presetOutputs->zoom_mesh[x][y], powf( presetOutputs->zoomexp_mesh[x][y], rad_mesh[x][y]*2.0f - 1.0f));
+      fZoom2 = powf( presetOutputs->zoom_mesh[x][y], powf( presetOutputs->zoomexp_mesh[x][y], presetInputs->rad_mesh[x][y]*2.0f - 1.0f));
       fZoom2Inv = 1.0f/fZoom2;
-      x_mesh[x][y]= this->origx2[x][y]*0.5f*fZoom2Inv + 0.5f;
-      y_mesh[x][y]= this->origy2[x][y]*0.5f*fZoom2Inv + 0.5f;
+      presetInputs->x_mesh[x][y]= this->origx2[x][y]*0.5f*fZoom2Inv + 0.5f;
+      presetInputs->y_mesh[x][y]= this->origy2[x][y]*0.5f*fZoom2Inv + 0.5f;
     }
   }
 	
   for (x=0;x<this->gx;x++){
     for(y=0;y<this->gy;y++){
-      x_mesh[x][y]  = ( x_mesh[x][y] - presetOutputs->cx_mesh[x][y])/presetOutputs->sx_mesh[x][y] + presetOutputs->cx_mesh[x][y];
+      presetInputs->x_mesh[x][y]  = ( presetInputs->x_mesh[x][y] - presetOutputs->cx_mesh[x][y])/presetOutputs->sx_mesh[x][y] + presetOutputs->cx_mesh[x][y];
     }
   }
   
   for (x=0;x<this->gx;x++){
     for(y=0;y<this->gy;y++){
-      y_mesh[x][y] = ( y_mesh[x][y] - presetOutputs->cy_mesh[x][y])/presetOutputs->sy_mesh[x][y] + presetOutputs->cy_mesh[x][y];
+      presetInputs->y_mesh[x][y] = ( presetInputs->y_mesh[x][y] - presetOutputs->cy_mesh[x][y])/presetOutputs->sy_mesh[x][y] + presetOutputs->cy_mesh[x][y];
     }
   }	   
 	 
 
  for (x=0;x<this->gx;x++){
    for(y=0;y<this->gy;y++){
-     float u2 = x_mesh[x][y] - presetOutputs->cx_mesh[x][y];
-     float v2 = y_mesh[x][y] - presetOutputs->cy_mesh[x][y];
+     float u2 = presetInputs->x_mesh[x][y] - presetOutputs->cx_mesh[x][y];
+     float v2 = presetInputs->y_mesh[x][y] - presetOutputs->cy_mesh[x][y];
      
      float cos_rot = cosf(presetOutputs->rot_mesh[x][y]);
      float sin_rot = sinf(presetOutputs->rot_mesh[x][y]);
      
-     x_mesh[x][y] = u2*cos_rot - v2*sin_rot + presetOutputs->cx_mesh[x][y];
-     y_mesh[x][y] = u2*sin_rot + v2*cos_rot + presetOutputs->cy_mesh[x][y];
+     presetInputs->x_mesh[x][y] = u2*cos_rot - v2*sin_rot + presetOutputs->cx_mesh[x][y];
+     presetInputs->y_mesh[x][y] = u2*sin_rot + v2*cos_rot + presetOutputs->cy_mesh[x][y];
 
   }
  }	  
 
- if(presetOutput->dx_is_mesh)
+ if(presetOutputs->dx_is_mesh)
    {
      for (x=0;x<this->gx;x++){
        for(y=0;y<this->gy;y++){	      
-	 x_mesh[x][y] -= presetOutputs->dx_mesh[x][y];
+	 presetInputs->x_mesh[x][y] -= presetOutputs->dx_mesh[x][y];
        }
      }
    }
  
- if(presetOutput->dy_is_mesh)
+ if(presetOutputs->dy_is_mesh)
    {
      for (x=0;x<this->gx;x++){
        for(y=0;y<this->gy;y++){	      
-	 y_mesh[x][y] -= presetOutputs->dy_mesh[x][y];
+	 presetInputs->y_mesh[x][y] -= presetOutputs->dy_mesh[x][y];
        }
      }
 		  	
@@ -506,18 +488,7 @@ void Renderer::PerPixelMath(PresetOutputs *presetOutputs) {
 
 }
 
-void Renderer::rescale_per_pixel_matrices() {
 
-    int x, y;
-
-    for ( x = 0 ; x < this->gx ; x++ ) {
-        for ( y = 0 ; y < this->gy ; y++ ) {
-            this->gridx[x][y]=this->origx[x][y];
-            this->gridy[x][y]=this->origy[x][y];
-
-          }
-      }
-  }
 
 void Renderer::reset(int w, int h)
 {
@@ -525,15 +496,10 @@ void Renderer::reset(int w, int h)
     this -> vw = w;
     this -> vh = h;
 
-  if (!this->renderTarget->usePbuffers) {
-      createPBuffers(w,h,this->renderTarget);
-      }
-
-    if ( this->fbuffer != NULL ) {
-        free( this->fbuffer );
-      }
-    this->fbuffer = 
-        (GLubyte *)malloc( sizeof( GLubyte ) * this->renderTarget->texsize * this->renderTarget->texsize * 3 );
+//FIXME maybe needs called elsewhere
+  //if (!this->renderTarget->usePbuffers) {
+   //   renderTarge->createPBuffers(w,h,this->renderTarget);
+   //   }
 
     /* Our shading model--Gouraud (smooth). */
     glShadeModel( GL_SMOOTH);
@@ -587,7 +553,7 @@ void Renderer::reset(int w, int h)
 #ifdef USE_FTGL
     /**f Load the standard fonts */
     if ( title_font == NULL && other_font == NULL ) {
-       
+       char path[1024];
 
         sprintf( path, "%s%cVera.ttf", this->fontURL, PATH_SEPARATOR );
         title_font = new FTGLPixmapFont(path);
@@ -599,27 +565,11 @@ void Renderer::reset(int w, int h)
 #endif /** USE_FTGL */      
 }
 
-void Renderer::reset_per_pixel_matrices() {
-
-  int x,y;
- 
-  
-    for (x=0;x<this->gx;x++)
-    {
-      for(y=0;y<this->gy;y++)
-	{   
-          x_mesh[x][y]=this->origx[x][y];
-	  y_mesh[x][y]=this->origy[x][y];
-	  rad_mesh[x][y]=this->origrad[x][y];
-	  theta_mesh[x][y]=this->origtheta[x][y];	  
-	}
-    }
- 
- }
 
 
 
-void Renderer::draw_custom_waves() {
+
+void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
 
   int x;
   CustomWave *wavecode;
@@ -684,7 +634,7 @@ void Renderer::draw_custom_waves() {
 }
 
 
-void Renderer::draw_shapes() { 
+void Renderer::draw_shapes(PresetOutputs *presetOutputs) { 
 
   int i;
 
@@ -833,7 +783,7 @@ void Renderer::draw_shapes() {
 }
 
 
-void Renderer::draw_waveform() {
+void Renderer::draw_waveform(PresetOutputs *presetOutputs, PresetInputs *presetInputs) {
 
   int x;
   
@@ -856,7 +806,7 @@ void Renderer::draw_waveform() {
     glMatrixMode( GL_MODELVIEW );
     glPushMatrix();
 
-  modulate_opacity_by_volume(); 
+  modulate_opacity_by_volume(presetOutputs); 
   maximize_colors();
   
   if(presetOutputs->bWaveDots==1) glEnable(GL_LINE_STIPPLE);
@@ -965,7 +915,7 @@ void Renderer::draw_waveform() {
 	      //  ( co*beatDetect->pcm->pcmdataL[x]+ (1-co)*beatDetect->pcm->pcmdataL[-(x-(beatDetect->pcm->numsamples-1))])
 	      //  *25*presetOutputs->fWaveScale);
 	      r=(0.5 + 0.4f*.12*beatDetect->pcm->pcmdataR[x]*presetOutputs->fWaveScale + presetOutputs->wave_mystery)*.5;
-	      theta=(x)*inv_nverts_minus_one*6.28f + this->Time*0.2f;
+	      theta=(x)*inv_nverts_minus_one*6.28f + presetInputs->time*0.2f;
 	      /* 
 	      if (x < 51)
 		{
@@ -1022,7 +972,7 @@ void Renderer::draw_waveform() {
 	      //theta=((this->frame%256)*(2*6.28/512.0))+beatDetect->pcm->pcmdataL[x]*.2*presetOutputs->fWaveScale;
 	      //r= ((1+2*presetOutputs->wave_mystery)*(this->renderTarget->texsize/5.0)+
 	      //   (beatDetect->pcm->pcmdataL[x]-beatDetect->pcm->pcmdataL[x-1])*80*presetOutputs->fWaveScale);
-	      theta=beatDetect->pcm->pcmdataL[x+32]*0.06*presetOutputs->fWaveScale * 1.57 + this->Time*2.3;
+	      theta=beatDetect->pcm->pcmdataL[x+32]*0.06*presetOutputs->fWaveScale * 1.57 + presetInputs->time*2.3;
 	      r=(0.53 + 0.43*beatDetect->pcm->pcmdataR[x]*0.12*presetOutputs->fWaveScale+ presetOutputs->wave_mystery)*.5;
 
 	     
@@ -1139,8 +1089,8 @@ void Renderer::draw_waveform() {
 	  
 	  presetOutputs->wave_y=-1*(presetOutputs->wave_y-1.0);  
 	 
-	  cos_rot = cosf(this->Time*0.3f);
-	  sin_rot = sinf(this->Time*0.3f);
+	  cos_rot = cosf(presetInputs->time*0.3f);
+	  sin_rot = sinf(presetInputs->time*0.3f);
 
 	  glBegin(GL_LINE_STRIP);
 
@@ -1346,7 +1296,7 @@ void Renderer::darken_center() {
 }
 
 
-void Renderer::modulate_opacity_by_volume() {
+void Renderer::modulate_opacity_by_volume(PresetOutputs *presetOutputs) {
 
  //modulate volume by opacity
       //
@@ -1362,7 +1312,7 @@ void Renderer::modulate_opacity_by_volume() {
       else presetOutputs->wave_o=presetOutputs->fWaveAlpha;
 }
 
-void Renderer::draw_motion_vectors() {
+void Renderer::draw_motion_vectors(PresetOutputs *presetOutputs) {
 
     int x,y;
 
@@ -1396,7 +1346,7 @@ void Renderer::draw_motion_vectors() {
 }
 
 
-void Renderer::draw_borders() {
+void Renderer::draw_borders(PresetOutputs *presetOutputs) {
 
     //Draw Borders
     float of=presetOutputs->ob_size*.5;
@@ -1603,7 +1553,7 @@ void Renderer::draw_help( ) {
 #endif /** USE_FTGL */
 }
 
-void Renderer::draw_stats() {
+void Renderer::draw_stats(PresetInputs *presetInputs) {
 
 #ifdef USE_FTGL
  char buffer[128];  
@@ -1623,7 +1573,7 @@ sprintf( buffer, " (%f)", this->aspect);
   glRasterPos2f(0, -.09+offset);
   other_font->FaceSize((unsigned)(18*(this->vh/512.0)));
 
-  sprintf( buffer, " texsize: %d", this->texsize);
+  sprintf( buffer, " texsize: %d", this->renderTarget->texsize);
   other_font->Render(buffer);
 
   glRasterPos2f(0, -.13+offset);
@@ -1668,7 +1618,7 @@ void Renderer::draw_fps( float realfps ) {
 //Actually draws the texture to the screen
 //
 //The Video Echo effect is also applied here
-void Renderer::render_texture_to_screen() { 
+void Renderer::render_texture_to_screen(PresetOutputs *presetOutputs) { 
 
       int flipx=1,flipy=1;
       //glBindTexture( GL_TEXTURE_2D,this->renderTarget->textureID[0] );
@@ -1834,6 +1784,7 @@ void Renderer::render_texture_to_screen() {
 	  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	} 
 }
+/*
 void Renderer::render_texture_to_studio() { 
 
       int x,y;
@@ -1947,7 +1898,7 @@ void Renderer::render_texture_to_studio() {
       //   glTranslated(-.5,-.5,0);    
       //glTranslatef(0,.5*vh,0);
 
-      /** Per-pixel mesh display -- bottom-right corner */
+     
       //glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
        
       glDisable(GL_TEXTURE_2D);
@@ -1978,19 +1929,10 @@ void Renderer::render_texture_to_studio() {
 
         glEnable( GL_TEXTURE_2D );
       
-       /*
-       for (x=0;x<presetInputs->gx-1;x++){
-	 glBegin(GL_POINTS);
-	 for(y=0;y<presetInputs->gy;y++){
-	   glVertex4f((this->origx[x][y]-.5)* this->vw, (this->origy[x][y]-.5)*this->vh,-1,1);
-	   glVertex4f((this->origx[x+1][y]-.5) * this->vw, (this->origy[x+1][y]-.5) *this->vh ,-1,1);
-	 }
-	 glEnd();	
-       }    
-       */
+       
  // glTranslated(-.5,-.5,0);     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA); 
 
-    /** Waveform display -- bottom-left */
+    // Waveform display -- bottom-left 
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
        glMatrixMode(GL_MODELVIEW);
        glPushMatrix();
@@ -2040,3 +1982,6 @@ void Renderer::render_texture_to_studio() {
 
    glDisable(GL_TEXTURE_2D);
 }
+
+*/
+

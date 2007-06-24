@@ -166,6 +166,13 @@ public:
     float **y_mesh;
     float **rad_mesh;
     float **theta_mesh;
+
+    float **origtheta;  //grid containing interpolated mesh reference values
+    float **origrad;
+    float **origx;  //original mesh 
+    float **origy;
+
+    void ResetMesh();
 };
 
 #endif

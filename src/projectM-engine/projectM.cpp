@@ -20,11 +20,7 @@
  */
 #include "pbuffer.h"
 
-#ifdef USE_FTGL
-#include <FTGL/FTGL.h>
-#include <FTGL/FTGLPixmapFont.h>
-#include <FTGL/FTGLPolygonFont.h>
-#endif /** USE_FTGL */
+
 
 #include "wipemalloc.h"
 #include "BuiltinFuncs.hpp"
@@ -49,7 +45,6 @@
 #include "Parser.h"
 #include "Preset.hpp"
 #include "PerPixelEqn.h"
-#include "console_interface.h"
 #include "menu.h"
 #include "PCM.h"                    //Sound data handler (buffering, FFT, etc.)
 #include "CustomWave.h"
@@ -57,11 +52,6 @@
 #include "SplayTree.hpp"
 #include "Renderer.hpp"
 
-#ifdef USE_FTGL
-FTGLPixmapFont *title_font;
-FTGLPixmapFont *other_font;
-FTGLPolygonFont *poly_font;
-#endif /** USE_FTGL */
 
 
 
@@ -86,18 +76,18 @@ int x, y;
 //     printf("Start of loop at %d\n",timestart);
 
       mspf=(int)(1000.0/(float)presetInputs.fps); //milliseconds per frame
-      totalframes++; //total amount of frames since startup
+      
 
 #ifndef WIN32
-      Time = getTicks( &startTime ) * 0.001;
+      presetInputs.time = getTicks( &startTime ) * 0.001;
 #else
-        Time = getTicks( startTime ) * 0.001;
+        presetInputs.time = getTicks( startTime ) * 0.001;
 #endif /** !WIN32 */
       
       presetInputs.frame++;  //number of frames for current preset
       presetInputs.progress= presetInputs.frame/(float)avgtime;
     DWRITE( "frame: %d\ttime: %f\tprogress: %f\tavgtime: %d\tang: %f\trot: %f\n",
-             this->presetInputs.frame, Time, this->presetInputs.progress, this->avgtime, this->presetInputs.ang_per_pixel,
+             this->presetInputs.frame, presetInputs.time, this->presetInputs.progress, this->avgtime, this->presetInputs.ang_per_pixel,
              this->presetOutputs.rot );
       if (presetInputs.progress>1.0) presetInputs.progress=1.0;
 
@@ -117,7 +107,7 @@ int x, y;
         DWRITE( "=== bass_att: %f ===\n",
                  beatDetect->bass_att );
 
-      if (noSwitch==0) {
+      if (renderer->noSwitch==0) {
           nohard--;
           if((beatDetect->bass-beatDetect->bass_old>beatDetect->beat_sensitivity ||
              avgtime ) && nohard<0)
@@ -136,7 +126,7 @@ int x, y;
       /** Frame-rate limiter */
       /** Compute once per preset */
       if (this->count%100==0) {
-	  this->realfps=100.0/((getTicks(&this->startTime)-this->fpsstart)/1000);
+	  this->renderer->realfps=100.0/((getTicks(&this->startTime)-this->fpsstart)/1000);
 	  this->fpsstart=getTicks(&this->startTime);      	          
       	}
 
@@ -170,10 +160,9 @@ DLLEXPORT void projectM::projectM_reset() {
     /** Default variable settings */
     this->hasInit = 0;
 
-    this->noSwitch = 0;
     this->pcmframes = 1;
     this->freqframes = 0;
-    this->totalframes = 1;
+    
 
    
     this->fvw = 800;
@@ -185,7 +174,7 @@ DLLEXPORT void projectM::projectM_reset() {
     /** Frames per preset */
     this->avgtime = 500;
 
-    this->title = NULL;    
+    
 
     /** More other stuff */
     this->mspf = 0;
@@ -193,7 +182,7 @@ DLLEXPORT void projectM::projectM_reset() {
     this->timestart = 0;   
     this->nohard = 0;
     this->count = 0;
-    this->realfps = 0;
+    
     this->fpsstart = 0;
 
     projectM_resetengine();
@@ -201,12 +190,7 @@ DLLEXPORT void projectM::projectM_reset() {
 
 DLLEXPORT void projectM::projectM_init(int gx, int gy, int texsize, int width, int height) {
 
-#ifdef USE_FTGL
-    /** Reset fonts */
-    title_font = NULL;
-    other_font = NULL;
-    poly_font = NULL;
-#endif /** USE_FTGL */
+
 
     /** Initialise engine variables */
     projectM_initengine();
@@ -346,7 +330,7 @@ DWRITE( "post PCM init\n" );
 this->presetInputs.gx = gx;
 this->presetInputs.gy = gy;
 
-    this->renderer = new Renderer(width, height, gx, gy, renderTarget);
+    this->renderer = new Renderer(width, height, gx, gy, renderTarget, beatDetect, fontURL);
 
 printf( "exiting projectM_init()\n" );
 }
@@ -408,7 +392,7 @@ DLLEXPORT void projectM::projectM_initengine() {
  //this->presetInputs.meshx = 0;
  //this->presetInputs.meshy = 0;
  
- this->Time = 0;
+ 
  this->presetInputs.progress = 0;
  this->presetInputs.frame = 0;
 
@@ -542,7 +526,6 @@ DLLEXPORT void projectM::projectM_resetengine() {
   //this->meshx = 0;
   //this->meshy = 0;
  
-  this->Time = 0;
     if ( beatDetect != NULL ) {
         beatDetect->reset();
       }
@@ -614,7 +597,7 @@ DLLEXPORT void projectM::projectM_resetengine() {
 /** Resets OpenGL state */
 DLLEXPORT void projectM::projectM_resetGL( int w, int h ) {
    
-    char path[1024];
+    
     int mindim, origtexsize;
 
     DWRITE( "projectM_resetGL(): in: %d x %d\n", w, h );

@@ -173,7 +173,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      }
 	      break;
 	    case PROJECTM_K_l:
-	      if (noSwitch==0)noSwitch=1; else  noSwitch=0;
+	      if (renderer->noSwitch==0)renderer->noSwitch=1; else  renderer->noSwitch=0;
 	      //	      current_interface = BROWSER_INTERFACE;
 	      //	      loadBrowser();
 	      break;
