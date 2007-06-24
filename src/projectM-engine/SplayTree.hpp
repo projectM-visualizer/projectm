@@ -183,17 +183,7 @@ void SplayTree<Data>::splay_traverse_helper (void (*func_ptr)(void *), SplayNode
   splay_traverse_helper(func_ptr, splaynode->left);
   
   
-  /* Node is a of regular type, so its ok to perform the function on it */
-  if (splaynode->type == REGULAR_NODE_TYPE)
   	func_ptr(splaynode->data);
-  
-  /* Node is of symbolic link type, do nothing */
-  else if (splaynode->type == SYMBOLIC_NODE_TYPE)
-	;
-  
-  /* Unknown node type */
-  else
-    ;
   
   /* Recursively traverse to the right */
   splay_traverse_helper(func_ptr, splaynode->right);
@@ -215,17 +205,7 @@ void SplayTree<Data>::traverseRec (Fun & fun, SplayNode<Data> * splaynode) {
   /* Recursively traverse to the left */
   traverseRec(fun, splaynode->left);
 
-  /* Node is a of regular type, so its ok to perform the function on it */
-  if (splaynode->type == REGULAR_NODE_TYPE)
   	fun(splaynode->data);
-  
-  /* Node is of symbolic link type, do nothing */
-  /* NOTE: Ignored for speed */
-  //else if (splaynode->type == SYMBOLIC_NODE_TYPE) ;
-
-  /* Unknown node type */
-  else
-    ;
 
   /* Recursively traverse to the right */
   traverseRec(fun, splaynode->right);
@@ -256,18 +236,9 @@ Data * SplayTree<Data>::splay_find(void * key) {
   /* This shouldn't happen because of the match type check, but whatever */
   if (root == NULL)
 	  return NULL;
-  
-  /* Node is a regular type, return its data pointer */
-  if (root->type == REGULAR_NODE_TYPE) /* regular node */
+
   	return root->data;
-  
-  /* If the node is a symlink, pursue one link */
-  if (root->type == SYMBOLIC_NODE_TYPE) /* symbolic node */
-	return ((SplayNode<Data>*)root->data)->data;
-    
-  
-  /* Unknown type */
-  return NULL;
+
 }
 
 /* Gets the splaynode that the given key points to */
@@ -408,41 +379,6 @@ SplayNode<Data> * SplayTree<Data>::splay_delete_helper(void * key, SplayNode<Dat
 	
 }
 
-/* Inserts a link into the splay tree */
-template <class Data>
-int SplayTree<Data>::splay_insert_link(void * alias_key, void * orig_key) {
-
-   SplayNode<Data> * splaynode, * data_node;
-   void * key_clone;
-
-   /* Null arguments */	
-   if (alias_key == NULL)
-	   	return SPLAYTREE_FAILURE;
-
-   if (orig_key == NULL)
-	   	return SPLAYTREE_FAILURE;
-   
-   /* Find the splaynode corresponding to the original key */
-   if ((data_node = get_splaynode_of(orig_key)) == NULL)
-	   return SPLAYTREE_FAILURE;
-   
-   /* Create a new splay node of symbolic link type */
-   if ((splaynode = new SplayNode<SplayNode<Data> >(SYMBOLIC_NODE_TYPE, (key_clone = copy_key(alias_key)), data_node, free_key)) == NULL) {
-		free_key(key_clone);
-		return PROJECTM_OUTOFMEM_ERROR;
-   }
-
-   /* Insert the splaynode into the given splaytree */
-   if ((splay_insert_node(splaynode)) < 0) {
-     splaynode->left=splaynode->right = NULL;
-     delete splaynode;
-     return SPLAYTREE_FAILURE;
-   }		
-	
-   /* Done, return success */
-   return SPLAYTREE_SUCCESS;
-}	
-
 /* Inserts 'data' into the 'splaytree' paired with the passed 'key' */
 
 template <class Data>
@@ -460,7 +396,7 @@ int SplayTree<Data>::splay_insert(Data * data, void * key) {
 	key_clone = copy_key(key);
 
 	/* Create a new splaynode (of regular type) */
-	if ((splaynode = new SplayNode<Data>(REGULAR_NODE_TYPE, key_clone, data, free_key)) == NULL) {
+	if ((splaynode = new SplayNode<Data>(key_clone, data, free_key)) == NULL) {
 		free_key(key_clone);
 	    printf ("splay_insert: out of memory?\n");
 		return PROJECTM_OUTOFMEM_ERROR;		

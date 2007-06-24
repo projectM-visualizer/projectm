@@ -37,14 +37,12 @@ typedef void Object;
 template <class Data = Object>
 class SplayNode {
 public:
-    int type;
-    
     SplayNode *left, *right;
     Data *data;
-    void *key;    
+    void *key;
    void (*free_key)(void*);
     SplayNode();
-    SplayNode( int type, void *key, Data *data, void (*free_key)(void*));
+    SplayNode(void *key, Data *data, void (*free_key)(void*));
     ~SplayNode();
   };
 
@@ -52,18 +50,16 @@ public:
 template <class Data>
 SplayNode<Data>::SplayNode() {
     this->data = NULL;
-    this->type = -1;
     this->key = NULL;
     this->free_key = free_key;
   }
 
 /* Create a new splay node type */
 template <class Data>
-SplayNode<Data>::SplayNode(int type, void * key, Data * data, void (*free_key)(void*)) {
+SplayNode<Data>::SplayNode(void * key, Data * data, void (*free_key)(void*)) {
 
 	/* Creates the new splay node struct */
-	this->data = data;
-	this->type = type;
+	this->data = data;	
 	this->key = key;
         this->free_key = free_key;
   }
