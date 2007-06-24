@@ -62,6 +62,15 @@ public:
                                 int init_val, char *alt_name );
     int insert_builtin_param( Param *param );
 
+    template <class Fun>
+    void traverse(Fun & fun) {
+	builtin_param_tree->traverse(fun);
+    }
+
+//void BuiltinParams::traverse(void (*func_ptr)(void*)) {
+//	builtin_param_tree->splay_traverse(func_ptr);
+//}
+
     void traverse(void (*func_ptr)(void*));
 
 private:

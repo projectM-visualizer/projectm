@@ -87,7 +87,6 @@ public:
     int remove_param();
     static Param * find_param( char *name, Preset *preset, int flags );
     //int insert_param( SplayTree *database );
-    void load_init_cond();
     void load_unspec_init_cond();
     void load_unspec_init_cond_shape();
 

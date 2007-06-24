@@ -147,6 +147,17 @@ public:
     void destroy_per_frame_init_eqn_tree();
     void destroy_init_cond_tree(SplayTree<InitCond> * tree);
     void evalPerPointEqn(PerPointEqn * per_point_eqn);
+
+  class LoadUnspecInitCond {
+	public:
+
+	LoadUnspecInitCond(CustomWave & customWave) ;
+
+	void operator()(Param * param);
+
+	private:
+		CustomWave & m_customWave;
+};
   };
 
 /** Splaytree traversal helpers */

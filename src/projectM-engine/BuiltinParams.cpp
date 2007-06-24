@@ -82,7 +82,7 @@ int BuiltinParams::load_builtin_param_float(char * name, void * engine_val, void
    Generally, do this on projectm exit */
 int BuiltinParams::destroy_builtin_param_db() {
 
-    builtin_param_tree->splay_traverse((void (*)(void*))free_param_helper);
+    builtin_param_tree->splay_traverse((void (*)(void*))delete);
     delete builtin_param_tree;
     builtin_param_tree = NULL;
     return PROJECTM_SUCCESS;
@@ -207,9 +207,6 @@ int BuiltinParams::init_builtin_param_db(const PresetInputs & presetInputs, Pres
 }
 
 
-void BuiltinParams::traverse(void (*func_ptr)(void*)) {
-	builtin_param_tree->splay_traverse(func_ptr);
-}
 
 /* Loads all builtin parameters, limits are also defined here */
 int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {

@@ -37,7 +37,7 @@
 #include "PerPointEqn.h"
 #include "Preset.hpp"
 #include "SplayTree.hpp"
-
+#include "ParamUtils.hpp"
 #include "wipemalloc.h"
 
 #define MAX_SAMPLE_SIZE 4096
@@ -79,32 +79,32 @@ CustomWave::CustomWave(int id):id(id)
   /* Initialize tree data structures */
   
   if ((this->param_tree = 
-       SplayTree::create_splaytree((int (*)(void*, void*))compare_string, (void* (*)(void*))copy_string, (void (*)(void*))free_string)) == NULL) {
+       SplayTree<Param>::create_splaytree((int (*)(void*, void*))SplayKeyFunctions::compare_string, (void* (*)(void*))SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string)) == NULL) {
     delete(this);
   abort();
   }
 
   if ((this->per_point_eqn_tree = 
-       SplayTree::create_splaytree((int (*)(void*, void*))compare_int, (void* (*)(void*))copy_int, (void (*)(void*))free_int)) == NULL) {
+       SplayTree<PerPointEqn>::create_splaytree((int (*)(void*, void*))SplayKeyFunctions::compare_int, (void* (*)(void*))SplayKeyFunctions::copy_int, (void (*)(void*))SplayKeyFunctions::free_int)) == NULL) {
     delete(this);
     abort();
   }
 
   if ((this->per_frame_eqn_tree = 
-       SplayTree::create_splaytree((int (*)(void*, void*))compare_int,(void* (*)(void*)) copy_int,(void (*)(void*)) free_int)) == NULL) {
+       SplayTree<PerFrameEqn>::create_splaytree((int (*)(void*, void*))SplayKeyFunctions::compare_int,(void* (*)(void*)) SplayKeyFunctions::copy_int,(void (*)(void*)) SplayKeyFunctions::free_int)) == NULL) {
     delete(this);
     abort();
   }
 
   if ((this->init_cond_tree = 
-       SplayTree::create_splaytree((int (*)(void*, void*))compare_string, (void*(*)(void*))copy_string,(void (*)(void*)) free_string)) == NULL) {
+       SplayTree<InitCond>::create_splaytree((int (*)(void*, void*))SplayKeyFunctions::compare_string, (void*(*)(void*))SplayKeyFunctions::copy_string,(void (*)(void*)) SplayKeyFunctions::free_string)) == NULL) {
     delete(this);
     /// @bug make exception
     abort();
   }
   
   if ((this->per_frame_init_eqn_tree = 
-       SplayTree::create_splaytree((int (*)(void*, void*))compare_string, (void*(*)(void*))copy_string, (void (*)(void*))free_string)) == NULL) {
+       SplayTree<InitCond>::create_splaytree((int (*)(void*, void*))SplayKeyFunctions::compare_string, (void*(*)(void*))SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string)) == NULL) {
     delete(this);
     /// @bug make exception
     abort();
@@ -119,7 +119,8 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     /// @bug make exception
     abort();
@@ -132,11 +133,10 @@ CustomWave::CustomWave(int id):id(id)
     
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, param_tree) < 0) {
     delete(this);
 /// @bug make exception
     abort();
-    
   }
 
   if ((param = Param::new_param_float("b", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->b,  this->b_mesh, 1.0, 0.0, .5)) == NULL){
@@ -146,7 +146,7 @@ CustomWave::CustomWave(int id):id(id)
 
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
 /// @bug make exception
     abort();
@@ -161,7 +161,7 @@ CustomWave::CustomWave(int id):id(id)
 
   }
   
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
 /// @bug make exception
     abort();
@@ -176,7 +176,7 @@ CustomWave::CustomWave(int id):id(id)
 
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
 /// @bug make exception
     abort();
@@ -189,7 +189,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
 
 /// @bug make exception
@@ -205,7 +205,7 @@ CustomWave::CustomWave(int id):id(id)
 
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
 
 /// @bug make exception
@@ -221,7 +221,7 @@ CustomWave::CustomWave(int id):id(id)
 
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
 /// @bug make exception
     abort();
@@ -237,7 +237,7 @@ CustomWave::CustomWave(int id):id(id)
 
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
 /// @bug make exception
     abort();
@@ -252,7 +252,7 @@ CustomWave::CustomWave(int id):id(id)
 
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
 /// @bug make exception
     abort();
@@ -265,7 +265,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -275,7 +275,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -285,7 +285,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
  
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -296,7 +296,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
  
- if (this->param_tree->insert_param(param) < 0) {
+ if (ParamUtils::insert(param, this->param_tree) < 0) {
     printf("failed to insert sample\n");
     delete(this);
     abort();
@@ -307,7 +307,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -317,7 +317,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -327,7 +327,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -337,7 +337,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -347,7 +347,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -357,7 +357,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -367,7 +367,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -376,7 +376,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -385,7 +385,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
  
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -394,7 +394,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -403,7 +403,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -413,7 +413,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-  if (this->param_tree->insert_param(param) < 0) {
+  if (ParamUtils::insert(param, this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -471,49 +471,6 @@ void CustomWave::destroy_per_frame_init_eqn_tree() {
 }
 
 
-void CustomWave::destroy_per_point_eqn_tree(SplayTree * tree) {
-
-  if (!tree)
-    return;
-
-  tree->splay_traverse((void (*)(void*))free_per_point_eqn_helper);
-  delete tree;
-
-}
-
-void CustomWave::destroy_init_cond_tree(SplayTree * tree) {
-
-  if (!tree)
-    return;
-
-  tree->splay_traverse((void (*)(void*))free_init_cond_helper);
-  delete tree;
-
-}
-
-void CustomWave::destroy_per_frame_eqn_tree(SplayTree * tree) {
-
-
-  if (!tree)
-    return;
-
-  tree->splay_traverse((void (*)(void*))free_per_frame_eqn_helper);
-  delete tree;
-
-}
-
-
-void CustomWave::destroy_param_db_tree(SplayTree * tree) {
-
-  if (!tree)
-    return;
-
-  tree->splay_traverse((void (*)(void*))free_param_helper);
-  delete tree;
-
-}
-
-
 
 int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr) {
 
@@ -531,7 +488,7 @@ int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr) {
 
  /* Search for the parameter so we know what matrix the per pixel equation is referencing */
 
- if ((param = param_tree->find_param_db(name, TRUE)) == NULL) {
+ if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(name,param_tree)) == NULL) {
    if (CUSTOM_WAVE_DEBUG) printf("add_per_point_eqn: failed to allocate a new parameter!\n");
    return PROJECTM_FAILURE;
  
@@ -592,14 +549,15 @@ void CustomWave::evalPerPointEqns() {
 }
 
 void CustomWave::load_unspecified_init_conds() {
-//    interface_wave = this;
-    param_tree->traverse(this->load_unspec_init_cond);
-//    interface_wave = NULL;
+
+	LoadUnspecInitCond fun(*this);
+    	param_tree->traverse(fun);
+
 }
 
+CustomWave::LoadUnspecInitCond::LoadUnspecInitCond(CustomWave & customWave):m_customWave(customWave) {}
 
-void CustomWave::load_unspec_init_cond(Param * param) {
-
+void CustomWave::LoadUnspecInitCond::operator() (Param * param) {
 
 
     InitCond * init_cond;
@@ -617,28 +575,28 @@ void CustomWave::load_unspec_init_cond(Param * param) {
 
     /* If initial condition was not defined by the preset file, force a default one
        with the following code */
-    if ((init_cond = (InitCond*)init_cond_tree>splay_find(param->name)) == NULL) {
+    if ((init_cond = (InitCond*)m_customWave.init_cond_tree->splay_find(param->name)) == NULL) {
 
         /* Make sure initial condition does not exist in the set of per frame initial equations */
-        if ((init_cond = (InitCond*)per_frame_init_eqn_tree->splay_find(param->name)) != NULL)
+        if ((init_cond = (InitCond*)m_customWave.per_frame_init_eqn_tree->splay_find(param->name)) != NULL)
             return;
 
-        if (type == P_TYPE_BOOL)
+        if (param->type == P_TYPE_BOOL)
             init_val.bool_val = 0;
 
-        else if (type == P_TYPE_INT)
+        else if (param->type == P_TYPE_INT)
             init_val.int_val = *(int*)param->engine_val;
 
-        else if (type == P_TYPE_DOUBLE)
+        else if (param->type == P_TYPE_DOUBLE)
             init_val.float_val = *(float*)param->engine_val;
 
         //printf("%s\n", param->name);
         /* Create new initial condition */
-        if ((init_cond = new InitCond(this, init_val)) == NULL)
+        if ((init_cond = new InitCond(param, init_val)) == NULL)
             return;
 
         /* Insert the initial condition into this presets tree */
-        if (init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
+        if (m_customWave.init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
             delete init_cond;
             return;
         }
@@ -647,46 +605,4 @@ void CustomWave::load_unspec_init_cond(Param * param) {
 
 }
 
-/* Inserts a parameter into the builtin database */
-int SplayTree::insert_param(Param * param) {
-
-	if (param == NULL)
-	  return PROJECTM_FAILURE;
-
-	return splay_insert(param, param->name);
-}
-
-Param * CustomWave::findParam(char * name, bool create_flag) {
-
-  assert(name);
-
-  Param * param = NULL;
-
-
-  /* First look in the builtin database */
-  param = (Param *)splay_find(name);
-
-
-  if (((param = (Param *)param_tree->splay_find(name)) == NULL) && (create_flag == TRUE)) {
-
-	/* Check if string is valid */
-	if (!param->is_valid_param_string(name))
-		return NULL;
-
-	/* Now, create the user defined parameter given the passed name */
-	if ((param = Param::create_user_param(name)) == NULL)
-		return NULL;
-
-	/* Finally, insert the new parameter into this preset's proper splaytree */
-	if (splay_insert(param, param->name) < 0) {
-		delete param;
-		return NULL;
-	}
-
-  }
-
-  /* Return the found (or created) parameter. Note that this could be null */
-  return param;
-
-}
 

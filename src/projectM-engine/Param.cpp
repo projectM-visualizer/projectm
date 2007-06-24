@@ -249,51 +249,5 @@ Param * Param::new_param_bool(char * name, short int flags, void * engine_val,
     /* Finished, return success */
     return param;
 }
-	
 
 
-/// @bug this is fucked
-void Param::load_init_cond() {
-
-    // bullshit
-    int type;
-    void *engine_val;
-    InitCond * init_cond;
-    CValue init_val;
-
-    /* Don't count read only parameters as initial conditions */
-    if (flags & P_FLAG_READONLY)
-        return;
-
-    /* If initial condition was not defined by the preset file, force a default one
-       with the following code */
-abort();
-
-//    if ((init_cond = (InitCond*)(init_cond_tree->splay_find(name))) == NULL) {
-
-        /* Make sure initial condition does not exist in the set of per frame initial equations */
-//        if ((init_cond = (InitCond*)(per_frame_init_eqn_tree->splay_find(name))) != NULL)
-            return;
-
-        if (type == P_TYPE_BOOL)
-            init_val.bool_val = 0;
-
-        else if (type == P_TYPE_INT)
-            init_val.int_val = *(int*)engine_val;
-
-        else if (type == P_TYPE_DOUBLE)
-            init_val.float_val = *(float*)engine_val;
-
-        /* Create new initial condition */
-        if ((init_cond = new InitCond(this, init_val)) == NULL)
-            return;
-
-        /* Insert the initial condition into this presets tree */
-//        if (this->init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
-            delete init_cond;
-            return;
-  //      }
-
-//    }
-
-}

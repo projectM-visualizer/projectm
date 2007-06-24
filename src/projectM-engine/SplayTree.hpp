@@ -82,9 +82,18 @@ public:
     Data *splay_find_min();
     Data *splay_find_max();
 
+	/** Traverses the splay tree at each node in order with the passed in functor */
 	template <class Fun>
 	void traverse(Fun & functor);
 
+	/** Traverses the splay tree at each node in order by constructing a functor on the fly
+	 * and using it to traverse the entire tree. This is a convenience function for functors that dont return
+	 * any useful state to the caller. Note that the functor is assumed to take one template type which
+         * matches the datatype of the splay tree.  See implementation for more details.
+ 	 */ 
+	template <class Fun>
+	void traverse();
+	
 private:
 	void splay_traverse_helper (void (*func_ptr)(void*), SplayNode<Data> * splaynode);
 
@@ -126,11 +135,22 @@ SplayTree<Data>::~SplayTree() {
 }
 
 
-/* Traverses the entire splay tree with the given function func_ptr */
 template <class Data>
 template <class Fun>
 void SplayTree<Data>::traverse(Fun & functor) {
 
+  /* Call recursive helper function */
+  traverseRec(functor, root);
+
+  return;
+}
+
+
+template <class Data>
+template <class Fun>
+void SplayTree<Data>::traverse() {
+
+  Fun functor;
   /* Call recursive helper function */
   traverseRec(functor, root);
 
@@ -680,5 +700,15 @@ int SplayTree<Data>::splay_rec_size(SplayNode<Data> * splaynode) {
 
 }
 
+namespace SplayTreeFunctors {
+template <class Data>
+class Delete {
+public:
+void operator() (Data * data) {
+	delete(data);
+}
+
+};
+}
 
 #endif /** !_SPLAYTREE_HPP */

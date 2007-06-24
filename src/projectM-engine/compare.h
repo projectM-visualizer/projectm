@@ -30,6 +30,7 @@
 
 /// @bug this will be ripped away when splaytree is more standardly written or its removed in favor of stl-esque data structure
 class SplayKeyFunctions {
+public:
 static int compare_int(int * num1, int * num2);
 static int compare_string(char * string1, char * string2);
 
@@ -43,7 +44,7 @@ static int compare_string_version(char * str1, char * str2);
 
 /** tree_types.cpp */
 /* Compares integer value numbers in 32 bit range */
-int SplayKeyFunctions::compare_int(int * num1, int * num2) {
+inline int SplayKeyFunctions::compare_int(int * num1, int * num2) {
 
 	if ((*num1) < (*num2))
 		return -1;
@@ -54,7 +55,7 @@ int SplayKeyFunctions::compare_int(int * num1, int * num2) {
 }
 
 /* Compares strings in lexographical order */
-int SplayKeyFunctions::compare_string(char * str1, char * str2) {
+inline int SplayKeyFunctions::compare_string(char * str1, char * str2) {
 
   //  printf("comparing \"%s\" to \"%s\"\n", str1, str2);
   //return strcmp(str1, str2);
@@ -63,7 +64,7 @@ int SplayKeyFunctions::compare_string(char * str1, char * str2) {
 }	
 
 /* Compares a string in version order. That is, file1 < file2 < file10 */
-int SplayKeyFunctions::compare_string_version(char * str1, char * str2) {
+inline int SplayKeyFunctions::compare_string_version(char * str1, char * str2) {
 
   return strcmp( str1, str2 );
 #ifdef PANTS
