@@ -53,7 +53,7 @@ public:
     static SplayTree<Data> *create_splaytree(int (*compare)(void*,void*), void * (*copy_key)(void*), void (*free_key)(void*));
     ~SplayTree();
 
-    void *splay_find(void * key);
+    Data  *splay_find(void * key);
     int splay_insert(Data * data, void * key);
     int splay_insert_node( SplayNode<Data> *node );
     int splay_insert_link(void * alias_key, void * orig_key);
@@ -119,7 +119,7 @@ SplayTree<Data> * SplayTree<Data>::create_splaytree(int (*compare)(void *,void*)
   splaytree->compare = compare;
   splaytree->copy_key = copy_key;
   splaytree->free_key = free_key;
-  
+
   /* Return instantiated splay tree */
   return splaytree;
 }
@@ -235,7 +235,7 @@ void SplayTree<Data>::traverseRec (Fun & fun, SplayNode<Data> * splaynode) {
 }
 /* Find the node corresponding to the given key in splaytree, return its data pointer */
 template <class Data>
-void * SplayTree<Data>::splay_find(void * key) {
+Data * SplayTree<Data>::splay_find(void * key) {
 
   SplayNode<Data> * splaynode;
   int match_type;
@@ -427,7 +427,7 @@ int SplayTree<Data>::splay_insert_link(void * alias_key, void * orig_key) {
 	   return SPLAYTREE_FAILURE;
    
    /* Create a new splay node of symbolic link type */
-   if ((splaynode = new SplayNode<Data>(SYMBOLIC_NODE_TYPE, (key_clone = copy_key(alias_key)), data_node, this)) == NULL) {
+   if ((splaynode = new SplayNode<SplayNode<Data> >(SYMBOLIC_NODE_TYPE, (key_clone = copy_key(alias_key)), data_node, free_key)) == NULL) {
 		free_key(key_clone);
 		return PROJECTM_OUTOFMEM_ERROR;
    }

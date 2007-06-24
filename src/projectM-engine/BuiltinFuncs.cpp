@@ -127,7 +127,7 @@ int BuiltinFuncs::init_builtin_func_db() {
   int retval;
 
   builtin_func_tree = 
-    SplayTree::create_splaytree((int (*)(void*,void*))compare_string, (void*(*)(void*))copy_string, (void(*)(void*))free_string);
+    SplayTree<Func>::create_splaytree((int (*)(void*,void*))SplayKeyFunctions::compare_string, (void*(*)(void*))SplayKeyFunctions::copy_string, (void(*)(void*))SplayKeyFunctions::free_string);
 
   if (builtin_func_tree == NULL)
     return PROJECTM_OUTOFMEM_ERROR;

@@ -35,6 +35,7 @@
 #include "Preset.hpp"
 #include "SplayTree.hpp"
 #include "ParamUtils.hpp"
+#include "InitCondUtils.hpp"
 #include "wipemalloc.h"
 
 
@@ -199,20 +200,18 @@ CustomShape::~CustomShape() {
     return;
 
   abort();
-  per_frame_eqn_tree->traverse<SplayTreeFunctors::Delete<PerFrameEqn>();
-  init_cond_tree->trave
-  param_tree;
-  per_frame_init_eqn_tree;
+  per_frame_eqn_tree->traverse<SplayTreeFunctors::Delete<PerFrameEqn> >();
+  init_cond_tree->traverse<SplayTreeFunctors::Delete<InitCond> >();
+  param_tree->traverse<SplayTreeFunctors::Delete<Param> > ();
+  per_frame_init_eqn_tree->traverse<SplayTreeFunctors::Delete<InitCond> > ();
   
   return;
 
 }
 
-
-
 void CustomShape::load_custom_shape_init() {
     load_unspecified_init_conds_shape();
-  }
+}
 
 void CustomShape::eval_custom_shape_init_conds() {
   per_frame_init_eqn_tree->splay_traverse((void (*)(void*))eval_init_cond_helper );
@@ -220,91 +219,8 @@ void CustomShape::eval_custom_shape_init_conds() {
 
 void CustomShape::load_unspecified_init_conds_shape() {
 
-    param_tree->splay_traverse((void (*)(void*))load_unspec_init_cond_shape_helper);
+	InitCondUtils::LoadUnspecInitCond fun(*this->init_cond_tree, *this->per_frame_init_eqn_tree);
 
-  }
-
-
-
-Param * CustomShape::findParam(char * name, bool create_flag) {
-
-  assert(name);
-
-  Param * param = NULL;
-
-
-  /* First look in the builtin database */
-  param = (Param *)splay_find(name);
-
-
-  if (((param = (Param *)param_tree->splay_find(name)) == NULL) && (create_flag == TRUE)) {
-
-	/* Check if string is valid */
-	if (!param->is_valid_param_string(name))
-		return NULL;
-
-	/* Now, create the user defined parameter given the passed name */
-	if ((param = Param::create_user_param(name)) == NULL)
-		return NULL;
-
-	/* Finally, insert the new parameter into this preset's proper splaytree */
-	if (splay_insert(param, param->name) < 0) {
-		delete param;
-		return NULL;
-	}
-
-  }
-
-  /* Return the found (or created) parameter. Note that this could be null */
-  return param;
-
-}
-
-/// @bug BROKEN: FIX ME (carm)
-void CustomShape::load_unspec_init_cond_shape() {
-abort();
-#if 0
-    InitCond * init_cond;
-    CValue init_val;
-
-    /* Don't count read only parameters as initial conditions */
-    if (flags & P_FLAG_READONLY)
-        return;
-    if (flags & P_FLAG_QVAR)
-        return;
-    if (flags & P_FLAG_TVAR)
-        return;
-    if (flags & P_FLAG_USERDEF)
-        return;
-
-    /* If initial condition was not defined by the preset file, force a default one
-       with the following code */
-    if ((init_cond =(InitCond*)CustomShape::interface_shape->init_cond_tree->splay_find(name)) == NULL) {
-
-        /* Make sure initial condition does not exist in the set of per frame initial equations */
-        if ((init_cond = (InitCond*)CustomShape::interface_shape->per_frame_init_eqn_tree->splay_find(name)) != NULL)
-            return;
-
-        if (type == P_TYPE_BOOL)
-            init_val.bool_val = 0;
-
-        else if (type == P_TYPE_INT)
-            init_val.int_val = *(int*)engine_val;
-
-        else if (type == P_TYPE_DOUBLE)
-            init_val.float_val = *(float*)engine_val;
-
-        //printf("%s\n", param->name);
-        /* Create new initial condition */
-        if ((init_cond = new InitCond(this, init_val)) == NULL)
-            return;
-
-        /* Insert the initial condition into this presets tree */
-        if (CustomShape::interface_shape->init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
-            delete init_cond;
-            return;
-        }
-
-    }
-#endif
+	param_tree->traverse(fun);
+	
 }

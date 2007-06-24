@@ -61,10 +61,6 @@ public:
     /** Destructor is necessary so we can free the per point matrices **/
     ~CustomWave();
 
-    /** Search for parameter 'name' in 'database', if create_flag is true, then generate the parameter
-   and insert it into 'database' */
-    Param * findParam(char * name, bool create_flag);
-
     /* Numerical id */
     int id;
     int per_frame_count;
@@ -131,7 +127,7 @@ public:
     /* Per point equation array */
     GenExpr * per_point_eqn_array[NUM_POINT_OPS];
 
-    void reset_per_point_eqn_array(CustomWave *custom_wave );
+    void reset_per_point_eqn_array(CustomWave *custom_wave);
 
     int add_per_point_eqn(char * name, GenExpr * gen_expr);
     void evalCustomWaveInitConditions(Preset *preset);
@@ -148,17 +144,8 @@ public:
     void destroy_init_cond_tree(SplayTree<InitCond> * tree);
     void evalPerPointEqn(PerPointEqn * per_point_eqn);
 
-  class LoadUnspecInitCond {
-	public:
 
-	LoadUnspecInitCond(CustomWave & customWave) ;
-
-	void operator()(Param * param);
-
-	private:
-		CustomWave & m_customWave;
 };
-  };
 
 /** Splaytree traversal helpers */
 inline void free_custom_wave_helper( void *custom_wave ) {

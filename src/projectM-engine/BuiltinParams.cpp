@@ -82,7 +82,8 @@ int BuiltinParams::load_builtin_param_float(char * name, void * engine_val, void
    Generally, do this on projectm exit */
 int BuiltinParams::destroy_builtin_param_db() {
 
-    builtin_param_tree->splay_traverse((void (*)(void*))delete);
+    builtin_param_tree->traverse
+	<SplayTreeFunctors::Delete<Param> >();
     delete builtin_param_tree;
     builtin_param_tree = NULL;
     return PROJECTM_SUCCESS;
@@ -184,7 +185,7 @@ int BuiltinParams::insert_builtin_param( Param *param ) {
 int BuiltinParams::init_builtin_param_db(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
 
     /* Create the builtin parameter splay tree (go Sleator...) */
-    if ((this->builtin_param_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_string,(void* (*)(void*)) copy_string, (void (*)(void*))free_string)) == NULL) {
+    if ((this->builtin_param_tree = SplayTree<Param>::create_splaytree((int (*)(void*,void*))SplayKeyFunctions::compare_string,(void* (*)(void*)) SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string)) == NULL) {
         if (BUILTIN_PARAMS_DEBUG) printf("init_builtin_param_db: failed to initialize database (FATAL)\n");
         return PROJECTM_OUTOFMEM_ERROR;
     }

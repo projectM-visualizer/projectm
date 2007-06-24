@@ -758,18 +758,17 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
     
     /* CASE 5: custom wave variable */
     if (current_wave != NULL) {
-      if ((param = current_wave->findParam(string, FALSE)) == NULL) {
+      if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(string, current_wave->param_tree)) == NULL) {
 	if ((param = preset->builtinParams.find_builtin_param(string)) == NULL) 
-	  if ((param = current_wave->findParam(string, TRUE)) == NULL) {
+	  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string, current_wave->param_tree)) == NULL) {
 	    delete tree_expr;
 	    return NULL;
 	  }
-        
       }
 
       if (PARSE_DEBUG) {
 	    DWRITE("parse_gen_expr: custom wave parameter (name = %s)... \n", param->name);
-	    
+
       }
 	
 	/* Convert parameter to an expression */
@@ -782,12 +781,12 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
 	
 	/* Parse the rest of the line */
 	return parse_infix_op(fs, token, insert_gen_expr(gen_expr, &tree_expr), preset);
-      
+
     }
 
     /* CASE 6: regular parameter. Will be created if necessary and the string has no invalid characters */
     if ((param = Param::find_param(string, preset, P_CREATE)) != NULL) {
-      
+
       if (PARSE_DEBUG) {
 	    DWRITE("parse_gen_expr: parameter (name = %s)...\n", param->name);
 	    

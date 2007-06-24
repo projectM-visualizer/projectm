@@ -20,6 +20,7 @@ public:
 }
 
     static const int AUTO_CREATE = 1;
+    static const int NO_CREATE = 0;
 
     template <int FLAGS>
     static Param * find(char * name, SplayTree<Param> * paramTree) {
