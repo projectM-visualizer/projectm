@@ -93,22 +93,23 @@ int BuiltinParams::destroy_builtin_param_db() {
 /* Insert a parameter into the database with an alternate name */
 int BuiltinParams::insert_param_alt_name(Param *param, char * alt_name) {
 
-    if (alt_name == NULL)
-        return PROJECTM_ERROR;
+    assert(alt_name);
 
-    builtin_param_tree->splay_insert_link(alt_name, param->name);
+    aliasMap.insert(std::make_pair(std::string(alt_name), std::string(param->name)));
 
     return PROJECTM_SUCCESS;
 }
 
 Param * BuiltinParams::find_builtin_param(char * name) {
 
-    /* Null argument checks */
-    if (name == NULL)
-        return NULL;
+    assert(name);
 
-    return  (Param*)builtin_param_tree->splay_find(name);
+    AliasMap::iterator pos = aliasMap.find(std::string(name));
 
+    if (pos == aliasMap.end())
+    	return builtin_param_tree->splay_find(name);
+    else
+	return builtin_param_tree->splay_find(pos->second.c_str());
 }
 
 
@@ -185,7 +186,7 @@ int BuiltinParams::insert_builtin_param( Param *param ) {
 int BuiltinParams::init_builtin_param_db(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
 
     /* Create the builtin parameter splay tree (go Sleator...) */
-    if ((this->builtin_param_tree = SplayTree<Param>::create_splaytree((int (*)(void*,void*))SplayKeyFunctions::compare_string,(void* (*)(void*)) SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string)) == NULL) {
+    if ((this->builtin_param_tree = SplayTree<Param>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_string,(void* (*)(void*)) SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string)) == NULL) {
         if (BUILTIN_PARAMS_DEBUG) printf("init_builtin_param_db: failed to initialize database (FATAL)\n");
         return PROJECTM_OUTOFMEM_ERROR;
     }

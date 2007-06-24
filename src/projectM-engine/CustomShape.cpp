@@ -55,16 +55,16 @@ CustomShape::CustomShape( int id ) {
 
   /* Initialize tree data structures */
   this->param_tree = 
-       SplayTree<Param>::create_splaytree( (int (*)(void*,void*))SplayKeyFunctions::compare_string, (void* (*)(void*)) SplayKeyFunctions::copy_string,(void (*)(void*)) SplayKeyFunctions::free_string);
+       SplayTree<Param>::create_splaytree( (int (*)(const void*,const void*))SplayKeyFunctions::compare_string, (void* (*)(void*)) SplayKeyFunctions::copy_string,(void (*)(void*)) SplayKeyFunctions::free_string);
   
   this->per_frame_eqn_tree = 
-       SplayTree<PerFrameEqn>::create_splaytree((int (*)(void*, void*))SplayKeyFunctions::compare_int, (void* (*)(void*))SplayKeyFunctions::copy_int,(void (*)(void*))SplayKeyFunctions::free_int);
+       SplayTree<PerFrameEqn>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_int, (void* (*)(void*))SplayKeyFunctions::copy_int,(void (*)(void*))SplayKeyFunctions::free_int);
 
   this->init_cond_tree = 
-       SplayTree<InitCond>::create_splaytree((int (*)(void*, void*))SplayKeyFunctions::compare_string, (void* (*)(void*)) SplayKeyFunctions::copy_string,(void (*)(void*)) SplayKeyFunctions::free_string);
+       SplayTree<InitCond>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_string, (void* (*)(void*)) SplayKeyFunctions::copy_string,(void (*)(void*)) SplayKeyFunctions::free_string);
   
   this->per_frame_init_eqn_tree = 
-       SplayTree<InitCond>::create_splaytree((int (*)(void*, void*)) SplayKeyFunctions::compare_string, (void* (*)(void*))SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string);
+       SplayTree<InitCond>::create_splaytree((int (*)(const void*, const void*)) SplayKeyFunctions::compare_string, (void* (*)(void*))SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string);
 
   /* Start: Load custom shape parameters */
   param = Param::new_param_float("r", P_FLAG_NONE, &this->r, NULL, 1.0, 0.0, 0.5);

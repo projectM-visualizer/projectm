@@ -29,11 +29,12 @@
 
 #include "PresetFrameIO.hpp"
 #include "Param.h"
-
+#include <map>
 
 class BuiltinParams {
 
 public:
+   typedef std::map<std::string, std::string> AliasMap;
 
     /** Default constructor leaves database in an uninitialized state.  */
     BuiltinParams();
@@ -67,14 +68,12 @@ public:
 	builtin_param_tree->traverse(fun);
     }
 
-//void BuiltinParams::traverse(void (*func_ptr)(void*)) {
-//	builtin_param_tree->splay_traverse(func_ptr);
-//}
 
     void traverse(void (*func_ptr)(void*));
 
 private:
     static const bool BUILTIN_PARAMS_DEBUG = false;
-    SplayTree<Param> *builtin_param_tree;
+    AliasMap aliasMap;
+    SplayTree<Param> * builtin_param_tree;
 };
 #endif

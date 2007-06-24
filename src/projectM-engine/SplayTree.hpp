@@ -46,25 +46,25 @@ public:
     static const int SPLAYTREE_FAILURE = PROJECTM_FAILURE;
     static const int SPLAYTREE_SUCCESS = PROJECTM_SUCCESS;
     SplayNode<Data> *root;
-    int (*compare)(void*,void*);
+    int (*compare)(const void*,const void*);
     void * (*copy_key)(void *);
     void (*free_key)(void*);
 
-    static SplayTree<Data> *create_splaytree(int (*compare)(void*,void*), void * (*copy_key)(void*), void (*free_key)(void*));
+    static SplayTree<Data> *create_splaytree(int (*compare)(const void*,const void*), void * (*copy_key)(void*), void (*free_key)(void*));
     ~SplayTree();
 
-    Data  *splay_find(void * key);
+    Data  *splay_find(const void * key);
     int splay_insert(Data * data, void * key);
     int splay_insert_node( SplayNode<Data> *node );
     int splay_insert_link(void * alias_key, void * orig_key);
     int splay_delete(void * key);
     SplayNode<Data> *splay_delete_helper( void *key, SplayNode<Data> *node,
-                                     int (*compare)(void*,void*), 
+                                     int (*compare)(const void *,const void*),
                                      void (*free_key)(void*) );
     int splay_size();
     int splay_rec_size( SplayNode<Data> *node );
 
-    SplayNode<Data> *splay( void *key, SplayNode<Data> *t, int *match_type, int (*compare)(void *,void *) );
+    SplayNode<Data> *splay( const void *key, SplayNode<Data> *t, int *match_type, int (*compare)(const void *,const void *) );
 
     /** Traverses the entire splaytree in order given a function pointer 
       * @deprecated Use the traverse method instead
@@ -106,7 +106,7 @@ private:
 /* Creates a splay tree given a compare key function, copy key function, and free key function.
    Ah yes, the wonders of procedural programming */
 template <class Data>
-SplayTree<Data> * SplayTree<Data>::create_splaytree(int (*compare)(void *,void*), void * (*copy_key)(void *), void (*free_key)(void*)) {
+SplayTree<Data> * SplayTree<Data>::create_splaytree(int (*compare)(const void *,const void*), void * (*copy_key)(void *), void (*free_key)(void*)) {
 
   SplayTree * splaytree;
 
@@ -215,7 +215,7 @@ void SplayTree<Data>::traverseRec (Fun & fun, SplayNode<Data> * splaynode) {
 }
 /* Find the node corresponding to the given key in splaytree, return its data pointer */
 template <class Data>
-Data * SplayTree<Data>::splay_find(void * key) {
+Data * SplayTree<Data>::splay_find(const void * key) {
 
   SplayNode<Data> * splaynode;
   int match_type;
@@ -268,7 +268,7 @@ template <class Data>
 
 /* Finds the desired node, and changes the tree such that it is the root */
 template <class Data>
-SplayNode<Data> * SplayTree<Data>::splay (void * key, SplayNode<Data> * t, int * match_type, int (*compare)(void*,void*)) {
+SplayNode<Data> * SplayTree<Data>::splay (const void * key, SplayNode<Data> * t, int * match_type, int (*compare)(const void*,const void*)) {
   
 /* Simple top down splay, not requiring key to be in the tree t. 
    What it does is described above. */
@@ -341,7 +341,7 @@ int SplayTree<Data>::splay_delete(void * key) {
 /* Deletes a splay node */
 template <class Data>
 SplayNode<Data> * SplayTree<Data>::splay_delete_helper(void * key, SplayNode<Data> * splaynode,
-                int (*compare)(void*,void*), void (*free_key)(void*)) {
+                int (*compare)(const void*,const void*), void (*free_key)(void*)) {
 	
     SplayNode<Data> * new_root;
     int match_type;

@@ -128,7 +128,7 @@ void Preset::reloadPerPixel(char *s) {
   per_pixel_eqn_tree->splay_traverse((void (*)(void*))free_per_pixel_eqn_helper);
   delete per_pixel_eqn_tree;
   per_pixel_eqn_tree = SplayTree<PerPixelEqn>::create_splaytree
-	((int (*)(void*,void*))SplayKeyFunctions::compare_int, (void* (*)(void*))SplayKeyFunctions::copy_int, (void (*)(void*))SplayKeyFunctions::free_int);
+	((int (*)(const void*,const void*))SplayKeyFunctions::compare_int, (void* (*)(void*))SplayKeyFunctions::copy_int, (void (*)(void*))SplayKeyFunctions::free_int);
 
   /* Convert string to a stream */
 #if !defined(MACOS) && !defined(WIN32)
@@ -180,7 +180,7 @@ void Preset::reloadPerFrame(char * s) {
   /* Clear previous per frame equations */
   per_frame_eqn_tree->splay_traverse((void (*)(void*))free_per_frame_eqn_helper );
   delete per_frame_eqn_tree;
-  per_frame_eqn_tree = SplayTree<PerFrameEqn>::create_splaytree((int (*)(void*,void*))SplayKeyFunctions::compare_int,(void* (*)(void*)) SplayKeyFunctions::copy_int, (void (*)(void*))SplayKeyFunctions::free_int);
+  per_frame_eqn_tree = SplayTree<PerFrameEqn>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_int,(void* (*)(void*)) SplayKeyFunctions::copy_int, (void (*)(void*))SplayKeyFunctions::free_int);
 
   /* Convert string to a stream */
   //FIXME
@@ -225,13 +225,13 @@ printf( "reloadPerFrame()\n" );
 void Preset::initialize(const std::string & pathname) {
 
   /* Initialize equation trees */
-  init_cond_tree = SplayTree<InitCond>::create_splaytree((int (*)(void*,void*))SplayKeyFunctions::compare_string, (void* (*)(void*))SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string);
-  this->user_param_tree = SplayTree<Param>::create_splaytree((int (*)(void*,void*))SplayKeyFunctions::compare_string,(void* (*)(void*)) SplayKeyFunctions::copy_string,  (void (*)(void*))SplayKeyFunctions::free_string);
-  this->per_frame_eqn_tree = SplayTree<PerFrameEqn>::create_splaytree((int (*)(void*,void*))SplayKeyFunctions::compare_int,(void* (*)(void*)) SplayKeyFunctions::copy_int, (void (*)(void*)) SplayKeyFunctions::free_int);
-  this->per_pixel_eqn_tree = SplayTree<PerPixelEqn>::create_splaytree((int (*)(void*,void*))SplayKeyFunctions::compare_int,(void* (*)(void*)) SplayKeyFunctions::copy_int, (void (*)(void*))SplayKeyFunctions::free_int);
-  this->per_frame_init_eqn_tree = SplayTree<InitCond>::create_splaytree((int (*)(void*,void*))SplayKeyFunctions::compare_string,(void* (*)(void*)) SplayKeyFunctions::copy_string, (void (*)(void*)) SplayKeyFunctions::free_string);
-  this->custom_wave_tree = SplayTree<CustomWave>::create_splaytree((int (*)(void*,void*))SplayKeyFunctions::compare_int, (void* (*)(void*))SplayKeyFunctions::copy_int, (void (*)(void*)) SplayKeyFunctions::free_int);
-  this->custom_shape_tree = SplayTree<CustomShape>::create_splaytree((int (*)(void*,void*))SplayKeyFunctions::compare_int, (void* (*)(void*))SplayKeyFunctions::copy_int, (void (*)(void*))SplayKeyFunctions::free_int);
+  init_cond_tree = SplayTree<InitCond>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_string, (void* (*)(void*))SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string);
+  this->user_param_tree = SplayTree<Param>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_string,(void* (*)(void*)) SplayKeyFunctions::copy_string,  (void (*)(void*))SplayKeyFunctions::free_string);
+  this->per_frame_eqn_tree = SplayTree<PerFrameEqn>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_int,(void* (*)(void*)) SplayKeyFunctions::copy_int, (void (*)(void*)) SplayKeyFunctions::free_int);
+  this->per_pixel_eqn_tree = SplayTree<PerPixelEqn>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_int,(void* (*)(void*)) SplayKeyFunctions::copy_int, (void (*)(void*))SplayKeyFunctions::free_int);
+  this->per_frame_init_eqn_tree = SplayTree<InitCond>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_string,(void* (*)(void*)) SplayKeyFunctions::copy_string, (void (*)(void*)) SplayKeyFunctions::free_string);
+  this->custom_wave_tree = SplayTree<CustomWave>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_int, (void* (*)(void*))SplayKeyFunctions::copy_int, (void (*)(void*)) SplayKeyFunctions::free_int);
+  this->custom_shape_tree = SplayTree<CustomShape>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_int, (void* (*)(void*))SplayKeyFunctions::copy_int, (void (*)(void*))SplayKeyFunctions::free_int);
 
   memset(this->per_pixel_flag, 0, sizeof(int)*NUM_OPS);
 

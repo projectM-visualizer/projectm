@@ -31,20 +31,20 @@
 /// @bug this will be ripped away when splaytree is more standardly written or its removed in favor of stl-esque data structure
 class SplayKeyFunctions {
 public:
-static int compare_int(int * num1, int * num2);
-static int compare_string(char * string1, char * string2);
+static int compare_int(const int * num1, const int * num2);
+static int compare_string(const char * string1, const char * string2);
 
 static void free_int(int * num);
 static void free_string(char * string);
 static void * copy_int(int * num);
 static void * copy_string(char * string);
-static int compare_string_version(char * str1, char * str2);
+static int compare_string_version(const char * str1, const char * str2);
 };
 
 
 /** tree_types.cpp */
 /* Compares integer value numbers in 32 bit range */
-inline int SplayKeyFunctions::compare_int(int * num1, int * num2) {
+inline int SplayKeyFunctions::compare_int(const int * num1, const int * num2) {
 
 	if ((*num1) < (*num2))
 		return -1;
@@ -55,7 +55,7 @@ inline int SplayKeyFunctions::compare_int(int * num1, int * num2) {
 }
 
 /* Compares strings in lexographical order */
-inline int SplayKeyFunctions::compare_string(char * str1, char * str2) {
+inline int SplayKeyFunctions::compare_string(const char * str1, const char * str2) {
 
   //  printf("comparing \"%s\" to \"%s\"\n", str1, str2);
   //return strcmp(str1, str2);
@@ -64,7 +64,7 @@ inline int SplayKeyFunctions::compare_string(char * str1, char * str2) {
 }	
 
 /* Compares a string in version order. That is, file1 < file2 < file10 */
-inline int SplayKeyFunctions::compare_string_version(char * str1, char * str2) {
+inline int SplayKeyFunctions::compare_string_version(const char * str1, const char * str2) {
 
   return strcmp( str1, str2 );
 #ifdef PANTS
