@@ -374,13 +374,11 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
       if (update_string_buffer(preset->per_frame_eqn_string_buffer, 
 			       &preset->per_frame_eqn_string_index) < 0)
 	return PROJECTM_FAILURE;
-      
-      
-      
+
       return PROJECTM_SUCCESS;
-      
+
     }
-    
+
     /* Wavecode initial condition case */
     if (!strncmp(eqn_string, WAVECODE_STRING, WAVECODE_STRING_LENGTH)) {
       

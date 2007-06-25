@@ -6,7 +6,7 @@ class CustomWave;
 class CustomShape;
 
 typedef std::vector<CustomWave*> cwave_container;
- typedef std::vector<CustomShape*> cshape_container;
+typedef std::vector<CustomShape*> cshape_container;
 
 /** Container for all preset writeable engine variables. It's a struct
  * so that it's light weight. Access is done directly on
