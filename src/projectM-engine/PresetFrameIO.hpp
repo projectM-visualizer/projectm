@@ -1,11 +1,22 @@
 #ifndef PRESET_FRAME_IO_HPP
 #define PRESET_FRAME_IO_HPP
+#include <vector>
+
+class CustomWave;
+class CustomShape;
+
+typedef std::vector<CustomWave*> cwave_container;
+ typedef std::vector<CustomShape*> cshape_container;
 
 /** Container for all preset writeable engine variables. It's a struct
  * so that it's light weight. Access is done directly on
  * members for Mr. Sperl's convenience */
 class PresetOutputs {
 public:
+
+    cwave_container customWaves;
+    cshape_container customShapes;
+
     /// @bug should this be here?
     //int mesh_i, mesh_j;
 
@@ -113,6 +124,7 @@ public:
     float **cx_mesh;
     float **cy_mesh;
 
+    /// SPERL: document these for me
     bool zoom_is_mesh;
     bool zoomexp_is_mesh;
     bool rot_is_mesh;

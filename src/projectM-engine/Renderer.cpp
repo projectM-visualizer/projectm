@@ -579,10 +579,10 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
     glTranslatef( 0, 0, -1 );
 
   glPointSize(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512); 
- 
-  abort();
-  while (true)
-  //while ((wavecode = this->activePreset->nextCustomWave()) != NULL)
+
+  /// @bug SPERL: this is a starting point at least  
+  for (cwave_container::const_iterator pos = presetOutputs->customWaves.begin();
+	pos != presetOutputs->customWaves.end(); ++pos) 
     {
      
       if(wavecode->enabled==1)
@@ -657,10 +657,9 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
     glPushMatrix();
     glTranslatef( 0, 0, -1 );
   
-/// @bug broken, fix
-abort();
-while (true)
-//  while ((shapecode = this->activePreset->nextCustomShape()) != NULL)
+/// @bug SPERL: this is a starting point at least  
+  for (cshape_container::const_iterator pos = presetOutputs->customShapes.begin();
+	pos != presetOutputs->customShapes.end(); ++pos) 
     {
 
       if(shapecode->enabled==1)

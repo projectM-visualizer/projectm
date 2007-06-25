@@ -2,7 +2,7 @@
 
 #include "BuiltinParams.hpp"
 #include "projectM.h"
-
+#include <cassert>
 
 BuiltinParams::BuiltinParams() {}
 

@@ -7,6 +7,7 @@
 
 #include "Param.h"
 #include "SplayTree.hpp"
+#include <cassert>
 
 class ParamUtils {
 public:

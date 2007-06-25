@@ -41,7 +41,7 @@ public:
 
     /** Construct a new builtin parameter database with variables references given by
      * the preset input and output structures */
-     BuiltinParams(const struct PresetInputs &  presetInputs, struct PresetOutputs & presetOutputs);
+     BuiltinParams(const PresetInputs &  presetInputs, PresetOutputs & presetOutputs);
 
     ~BuiltinParams();
 

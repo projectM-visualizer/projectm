@@ -33,10 +33,12 @@
 #include "Parser.h"
 #include "ParamUtils.hpp"
 
-Preset::Preset() {}
+
 
 Preset::Preset(const PresetInputs * presetInputs, PresetOutputs * presetOutputs, const std::string & filename):
-	builtinParams(*presetInputs, *presetOutputs)
+	builtinParams(*presetInputs, *presetOutputs),
+	customWaves(presetOutputs->customWaves),
+	customShapes(presetOutputs->customShapes)
 {
 
 initialize(filename);
@@ -436,6 +438,7 @@ void Preset::load_custom_shape_init_conditions() {
 
 
 
+
 void Preset::evaluateFrame() {
 
 	/* Evaluate all equation objects in same order as the renderer */
@@ -443,7 +446,7 @@ void Preset::evaluateFrame() {
 	evalInitConditions();
 	evalPerFrameEquations();
 	evalPerPixelEqns();
-        evalCustomWaveInitConditions();
+        evalInitConditions();
         evalCustomShapeInitConditions();
 	evalCustomWavePerFrameEquations();
 	evalCustomShapePerFrameEquations();
@@ -682,7 +685,7 @@ void Preset::load_init_conditions() {
 CustomWave * Preset::find_custom_wave(int id, bool create_flag) {
   CustomWave * custom_wave = NULL;
 
-  if ((custom_wave = this->customWaves[id]) == NULL) {
+  if ((custom_wave = customWaves[id]) == NULL) {
 
     if (CUSTOM_WAVE_DEBUG) { printf("find_custom_wave: creating custom wave (id = %d)...", id);fflush(stdout);}
 
