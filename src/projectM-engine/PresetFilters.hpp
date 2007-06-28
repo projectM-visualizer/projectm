@@ -17,7 +17,7 @@ public:
 		;
 	}
 
-	Preset & getMergedPreset() {
+	PresetOutputs & getMergedOutputs() {
 		return m_presetAB;
 	}
 	
@@ -27,12 +27,12 @@ public:
 
 private:
 	float m_alpha;
-	Preset & m_presetAB;
+	PresetOutputs & m_presetAB;
 
 };
 
 template <class MergeFunctor>
-static void merge(const Preset & presetA, const Preset & presetB, MergeFunctor & functor);
+static void merge(const PresetOutput & outputsA, const Preset & outputsB, MergeFunctor & functor);
 
 
 
