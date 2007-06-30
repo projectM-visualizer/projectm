@@ -1,42 +1,38 @@
 #ifndef PRESET_FILTERS_HPP
 #define PRESET_FILTERS_HPP
 #include "Preset.hpp"
-/// This is probably where merging stuff will be placed
-/// ISSUE: merge presets or just PresetInputs?
+
 class PresetFilters {
 
 /// The merge functor decides how to put the presets together.
 /// Assumes getMergedPreset() is implemented.
 /// A sample is below
+/// @bug this is screwed up, but functor idea still has merit once design is resolved
 class LinearMergeFunctor {
 
 public:
-	LinearMergeFunctor(Preset & presetAB):m_alpha(0), m_presetAB(presetAB) {}
+	LinearMergeFunctor(PresetOutputs & presetOutputsAB):m_presetOutputsAB(presetOutputsAB) {}
 
-	void operator() (const Preset & presetA, const Preset & presetB) {
-		;
+	
+	void operator() (const PresetInputs & inputsA, const PresetInputs & inputsB, 
+		const PresetOutputs & outputsA, const PresetOutputs & outputsB) {
+				
+		// use time variables from inputsA/B to determine how presets should be merged
+				
 	}
 
 	PresetOutputs & getMergedOutputs() {
 		return m_presetAB;
 	}
 	
-	void setAlpha(float alpha) {
-		m_alpha = alpha;
-	}
 
-private:
-	float m_alpha;
-	PresetOutputs & m_presetAB;
+private:	
+	PresetOutputs & m_presetOutputsAB;
 
 };
 
 template <class MergeFunctor>
 static void merge(const PresetOutput & outputsA, const Preset & outputsB, MergeFunctor & functor);
 
-
-
-
 };
-
 #endif
