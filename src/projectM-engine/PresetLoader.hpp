@@ -1,33 +1,25 @@
 #ifndef __PRESET_LOADER_HPP
 #define __PRESET_LOADER_HPP
 
+#include <string>
 #include "Preset.hpp"
 
-#ifdef LINUX
-extern "C" {
- #include <sys/inotify.h>
-}
-#endif
-
-#include "StaticArray.hpp"
 
 class PresetLoader {
-
-	
 	public:
-		static const std::string PROJECTM_FILE_EXTENSION = ".prjm";
-		static const std::string MILKDROP_FILE_EXTENSION = ".milk";
+		static const std::string PROJECTM_FILE_EXTENSION;
+		static const std::string MILKDROP_FILE_EXTENSION;
 		
 		#ifdef LINUX 
-			static const std::string PATH_SEPARTOR = "/";
+			static const char PATH_SEPARTOR = '/';
 		#endif
 
 		#ifdef MACOS
-			static const std::string PATH_SEPARTOR = "/";
+			static const char  PATH_SEPARTOR = '/';
 		#endif
 
 		#ifdef WIN32
-			static const std::string PATH_SEPARTOR = "\";
+			static const char PATH_SEPARATOR = '\';
 		#endif
 	
 	
@@ -39,8 +31,8 @@ class PresetLoader {
 
 		/** Load a preset by indexing the collection of presets from a directory */
 		/** Autopointers: when you take it, I leave it */
-		auto_ptr<Preset> loadPreset(unsigned int index);
-		auto_ptr<Preset> loadPreset(std::string filename);
+//		auto_ptr<Preset> loadPreset(unsigned int index, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
+//		auto_ptr<Preset> loadPreset(std::string filename);
 		
 		/** Returns the number of presets in the active directory */
 		inline std::size_t getNumPresets() {
@@ -48,15 +40,15 @@ class PresetLoader {
 		}
 					
 		/** Sets the directory where the loader will search for files */	
-		void setScanDirectory(std::string pathname);		
+		void setScanDirectory(std::string pathname);
 		
 		/** Rescans the active preset directory */
 		void rescan();
 
 		
 	private:
-		const std::string m_dirname;
-		int m_activeIndex;
+		void handleDirectoryError();
+		std::string m_dirname;		
 		DIR * m_dir;
 		std::vector<std::string> m_entries;
 };

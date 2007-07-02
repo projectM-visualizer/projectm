@@ -10,6 +10,8 @@
 //
 //
 
+#if 0
+
 #include "PresetSwitcher.hpp"
 
 int PresetSwitcher::destroyPresetLoader() {
@@ -394,3 +396,4 @@ int PresetSwitcher::is_valid_extension(const struct dirent* ent) {
     return FALSE;
 }
 
+#endif

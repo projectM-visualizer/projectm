@@ -35,16 +35,30 @@
 
 
 
+
+Preset::Preset(const std::string & filename):
+	file_path(filename),
+	customWaves(0),
+	customShapes(0) {}
+
 Preset::Preset(const PresetInputs * presetInputs, PresetOutputs * presetOutputs, const std::string & filename):
+	file_path(filename),
 	builtinParams(*presetInputs, *presetOutputs),
-	customWaves(presetOutputs->customWaves),
-	customShapes(presetOutputs->customShapes)
+	customWaves(&presetOutputs->customWaves),
+	customShapes(&presetOutputs->customShapes)
 {
 
 initialize(filename);
 
 }
 
+/// @bug is memory properly deallocated? verify
+void Preset::setIO(const PresetInputs * presetInputs, PresetOutputs * presetOutputs) {
+	builtinParams = BuiltinParams(*presetInputs, *presetOutputs);
+	customWaves = &presetOutputs->customWaves;
+	customShapes = &presetOutputs->customShapes;
+	initialize(file_path);
+}
 
 Preset::~Preset() {
 
@@ -93,7 +107,7 @@ void Preset::evalCustomWaveInitConditions() {
 
 void Preset::evalCustomWavePerFrameEquations() {
 
-    for (cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos) {
+    for (cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos) {
     	(*pos)->init_cond_tree->splay_traverse((void (*)(void*))eval_init_cond_helper);
     	(*pos)->per_frame_eqn_tree->splay_traverse((void (*)(void*))eval_per_frame_eqn_helper);
    }
@@ -102,7 +116,7 @@ void Preset::evalCustomWavePerFrameEquations() {
 
 void Preset::evalCustomShapePerFrameEquations() {
 
-    for (cshape_container::iterator pos = customShapes.begin(); pos != customShapes.end(); ++pos) {
+    for (cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos) {
     	(*pos)->init_cond_tree->splay_traverse((void (*)(void*))eval_init_cond_helper);
     	(*pos)->per_frame_eqn_tree->splay_traverse((void (*)(void*))eval_per_frame_eqn_helper);
    }
@@ -685,7 +699,9 @@ void Preset::load_init_conditions() {
 CustomWave * Preset::find_custom_wave(int id, bool create_flag) {
   CustomWave * custom_wave = NULL;
 
-  if ((custom_wave = customWaves[id]) == NULL) {
+  assert(customWaves);
+
+  if ((custom_wave = (*customWaves)[id]) == NULL) {
 
     if (CUSTOM_WAVE_DEBUG) { printf("find_custom_wave: creating custom wave (id = %d)...", id);fflush(stdout);}
 
@@ -699,7 +715,7 @@ CustomWave * Preset::find_custom_wave(int id, bool create_flag) {
       return NULL;
     }
 
-    customWaves.push_back(custom_wave);
+    customWaves->push_back(custom_wave);
   }
  
   return custom_wave;
@@ -710,8 +726,8 @@ CustomWave * Preset::find_custom_wave(int id, bool create_flag) {
 CustomShape * Preset::find_custom_shape(int id, bool create_flag) {
 
   CustomShape * custom_shape = NULL;
-
-  if ((custom_shape = (CustomShape*)this->customShapes[id]) == NULL) {
+  assert(customShapes);
+  if ((custom_shape = (*customShapes)[id]) == NULL) {
 
     if (CUSTOM_SHAPE_DEBUG) { printf("find_custom_shape: creating custom shape (id = %d)...", id);fflush(stdout);}
 
@@ -725,7 +741,7 @@ CustomShape * Preset::find_custom_shape(int id, bool create_flag) {
       return NULL;
     }
 
-    customShapes.push_back(custom_shape);
+    customShapes->push_back(custom_shape);
 
   }
 

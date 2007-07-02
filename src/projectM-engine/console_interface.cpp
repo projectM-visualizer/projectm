@@ -155,22 +155,22 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_b:
 	      break;
             case PROJECTM_K_n:
-	      if (PresetSwitcher::switchPreset(ALPHA_NEXT, HARD_CUT) < 0) {
+//	      if (PresetSwitcher::switchPreset(ALPHA_NEXT, HARD_CUT) < 0) {
 		printf("WARNING: Bad preset file, not handling this..aborting!\n");
 		abort();
-	      }		
+//	      }		
 	      break;
 	    case PROJECTM_K_r:
-	      if (PresetSwitcher::switchPreset(RANDOM_NEXT, HARD_CUT) < 0) {
+//	      if (PresetSwitcher::switchPreset(RANDOM_NEXT, HARD_CUT) < 0) {
 		printf("WARNING: Bad preset file, loading idle preset\n");
 		abort();
-	      }	
+//	      }	
 	      break;
 	    case PROJECTM_K_p:
-	      if ((PresetSwitcher::switchPreset(ALPHA_PREVIOUS, HARD_CUT)) < 0){
+//	      if ((PresetSwitcher::switchPreset(ALPHA_PREVIOUS, HARD_CUT)) < 0){
 		printf("WARNING: Bad preset file, loading idle preset\n");
 		abort();	
-	      }
+//	      }
 	      break;
 	    case PROJECTM_K_l:
 	      if (renderer->noSwitch==0)renderer->noSwitch=1; else  renderer->noSwitch=0;

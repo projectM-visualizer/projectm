@@ -64,7 +64,14 @@ public:
      * Most common way to allocate new preset */
     Preset(const PresetInputs * presetInputs, PresetOutputs * presetOutputs, const std::string & filename);
 
+    /** Initializes a preset object and stores the filename associated with it. The preset is NOT properly initialize
+     *  until a call to member function setIO is made */
+    Preset(const std::string & filename);
+
     ~Preset();
+
+    /** Set or reset the input and output associations for this preset. */
+    void setIO(const PresetInputs * presetInputs, PresetOutputs * presetOutputs);
 
     /** Evaluates the preset for a frame given the current values of preset inputs / outputs */
     void evaluateFrame();
@@ -148,8 +155,8 @@ private:
     void evalPerPixelEqns();
     void evalPerFrameEquations();
 
-    cwave_container & customWaves;
-    cshape_container & customShapes;
+    cwave_container * customWaves;
+    cshape_container * customShapes;
 
 };
 

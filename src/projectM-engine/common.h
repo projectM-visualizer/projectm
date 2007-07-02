@@ -58,8 +58,6 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define FALSE 0
 #endif 
 
-#define PROJECTM_FILE_EXTENSION ".prjm"
-#define MILKDROP_FILE_EXTENSION ".milk"
 
 #define MAX_DOUBLE_SIZE  10000000.0
 #define MIN_DOUBLE_SIZE -10000000.0

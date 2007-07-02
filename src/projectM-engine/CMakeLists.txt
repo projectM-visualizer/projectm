@@ -6,7 +6,7 @@ Func.h Func.cpp Eval.cpp wipemalloc.h browser.cpp PerFrameEqn.cpp PerPointEqn.cp
 CValue.h Expr.h timer.cpp  wipemalloc.cpp PerFrameEqn.h PerPixelEqn.h PerPointEqn.h browser.h BuiltinFuncs.hpp 
 BuiltinFuncs.cpp compare.h editor.h event.h fatal.h SplayTree.hpp fftsg.h glConsole.h menu.h timer.h SplayNode.hpp 
 BuiltinParams.hpp BuiltinParams.cpp Preset.hpp PresetSwitcher.hpp PresetSwitcher.cpp Renderer.cpp Renderer.hpp 
-ParamUtils.hpp)
+ParamUtils.hpp PresetLoader.cpp PresetLoader.hpp)
 
 OPTION(USE_FTGL "Use FTGL for on-screen fonts" ON)
 

@@ -11,27 +11,34 @@
 //
 #include "PresetLoader.hpp"
 #include <iostream>
-
+#include <sstream>
 extern "C" {
 #include <errno.h>
-#include <linux/types.h>
-#include <linux/dirent.h>
-
+#include <dirent.h>
 }
 
-PresetLoader::PresetLoader(std::string pathame) {
+PresetLoader::PresetLoader(std::string dirname) :m_dirname(dirname)
+{
+	// Do one scan
+	rescan();
 }
 
+void PresetLoader::setScanDirectory(std::string dirname) {
+	m_dirname = dirname;			
+}
 
 void PresetLoader::rescan() {
 
+// Clear the directory entry collection
+m_entries.clear();
+
 // If directory already opened, close it first
  if (m_dir) {
-	closedir(dir);
+	closedir(m_dir);
  } 
 
 // Allocate a new a stream given the current diectory name
-if ((m_dir = opendir(m_dirname)) == NULL) {
+if ((m_dir = opendir(m_dirname.c_str())) == NULL) {
 	handleDirectoryError();
 }
 
@@ -50,14 +57,13 @@ while ((dir_entry = readdir(m_dir)) != NULL) {
 		continue;
 
 	// Create full path name
-	out << dirname << PATH_SEPARATOR << filename;
+	out << m_dirname << PATH_SEPARATOR << filename;
 
-	// Save to our directory entry collcetion
-	m_entries.add(out.str());
+	// Add to our directory entry collection
+	m_entries.push_back(out.str());
 
 	// We can now toss out the directory entry struct
 	free(dir_entry);
-
 }
 
 }
