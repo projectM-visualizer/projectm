@@ -32,9 +32,9 @@ class PresetSwitcher {
 public:
 
     /** Preset switching */
-     int loadPresetDir( char *dir );
+    int loadPresetDir( char *dir );
     int closePresetDir();
-    int switchPreset( switch_mode_t switch_mode, int cut_type );
+    int switchPreset( switch_mode_t switch_mode, int cut_type);
     int loadPresetByFile( char *filename );
     int initPresetLoader();
     int destroyPresetLoader();
