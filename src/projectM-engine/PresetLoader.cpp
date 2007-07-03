@@ -16,6 +16,7 @@ extern "C" {
 #include <errno.h>
 #include <dirent.h>
 }
+#include <cassert>
 
 PresetLoader::PresetLoader(std::string dirname) :m_dirname(dirname)
 {
@@ -37,13 +38,13 @@ m_entries.clear();
 	closedir(m_dir);
  } 
 
-// Allocate a new a stream given the current diectory name
+// Allocate a new a stream given the current directory name
 if ((m_dir = opendir(m_dirname.c_str())) == NULL) {
 	handleDirectoryError();
 }
 
-std::string fullPath;
-std::ostringstream out(fullPath);
+
+std::ostringstream out;
 
 struct dirent * dir_entry;
 while ((dir_entry = readdir(m_dir)) != NULL) {
@@ -67,6 +68,17 @@ while ((dir_entry = readdir(m_dir)) != NULL) {
 }
 
 }
+
+std::auto_ptr<Preset> PresetLoader::loadPreset(unsigned int index, const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
+	
+	// Check that index isn't insane
+	assert(index >= 0);
+	assert(index < m_entries.size());
+
+	// Return a new auto pointer to a present
+	return std::auto_ptr<Preset>(new Preset(m_entries[index], presetInputs, presetOutputs));
+}
+
 
 
 void PresetLoader::handleDirectoryError() {	

@@ -144,9 +144,8 @@ public:
 #else
     long startTime;
 #endif /** !WIN32 */
-   
+
     /** Render target texture ID */
-   
 
     char disp[80];
 
@@ -157,14 +156,10 @@ public:
     int fvh;
     int wvw;      //windowed dimensions
     int wvh;
-    
+
     int fullscreen;
-    
+
     int avgtime;  //# frames per preset
-    
-    
-  
- 
 
     /** Timing information */
     int mspf;

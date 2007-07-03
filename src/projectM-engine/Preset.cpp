@@ -35,29 +35,15 @@
 
 
 
-
-Preset::Preset(const std::string & filename):
+Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
 	file_path(filename),
-	customWaves(0),
-	customShapes(0) {}
-
-Preset::Preset(const PresetInputs * presetInputs, PresetOutputs * presetOutputs, const std::string & filename):
-	file_path(filename),
-	builtinParams(*presetInputs, *presetOutputs),
-	customWaves(&presetOutputs->customWaves),
-	customShapes(&presetOutputs->customShapes)
+	builtinParams(presetInputs, presetOutputs),
+	customWaves(&presetOutputs.customWaves),
+	customShapes(&presetOutputs.customShapes)
 {
 
 initialize(filename);
 
-}
-
-/// @bug is memory properly deallocated? verify
-void Preset::setIO(const PresetInputs * presetInputs, PresetOutputs * presetOutputs) {
-	builtinParams = BuiltinParams(*presetInputs, *presetOutputs);
-	customWaves = &presetOutputs->customWaves;
-	customShapes = &presetOutputs->customShapes;
-	initialize(file_path);
 }
 
 Preset::~Preset() {

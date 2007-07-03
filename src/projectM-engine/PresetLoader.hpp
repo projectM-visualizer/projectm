@@ -1,9 +1,9 @@
 #ifndef __PRESET_LOADER_HPP
 #define __PRESET_LOADER_HPP
 
-#include <string>
-#include "Preset.hpp"
-
+#include <string> // used for path / filename stuff
+#include "Preset.hpp" // used to allocate presets via loadDir
+#include <memory> // for auto pointers
 
 class PresetLoader {
 	public:
@@ -19,7 +19,7 @@ class PresetLoader {
 		#endif
 
 		#ifdef WIN32
-			static const char PATH_SEPARATOR = '\';
+			static const char PATH_SEPARATOR = '\\';
 		#endif
 	
 	
@@ -28,11 +28,11 @@ class PresetLoader {
 
 		/** Destructor will remove all alllocated presets */
 		~PresetLoader();
-
-		/** Load a preset by indexing the collection of presets from a directory */
-		/** Autopointers: when you take it, I leave it */
-//		auto_ptr<Preset> loadPreset(unsigned int index, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
-//		auto_ptr<Preset> loadPreset(std::string filename);
+	
+		/** Load a preset by specifying a filename of the directory (that is, NOT full path) */
+		/** Autopointers: when you take it, I leave it */		
+		std::auto_ptr<Preset> loadPreset(unsigned int index, const PresetInputs & presetInputs, 
+			PresetOutputs & presetOutputs);
 		
 		/** Returns the number of presets in the active directory */
 		inline std::size_t getNumPresets() {
@@ -45,11 +45,12 @@ class PresetLoader {
 		/** Rescans the active preset directory */
 		void rescan();
 
-		
 	private:
 		void handleDirectoryError();
 		std::string m_dirname;		
 		DIR * m_dir;
+
+		// vector chosen for speed, but not great for reverse index lookups
 		std::vector<std::string> m_entries;
 };
 
