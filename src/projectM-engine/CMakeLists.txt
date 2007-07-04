@@ -5,8 +5,8 @@ Param.cpp CustomWave.cpp CustomShape.h CustomShape.cpp Param.h CustomWave.h Beat
 Func.h Func.cpp Eval.cpp wipemalloc.h browser.cpp PerFrameEqn.cpp PerPointEqn.cpp editor.cpp fftsg.cpp glConsole.cpp 
 CValue.h Expr.h timer.cpp  wipemalloc.cpp PerFrameEqn.h PerPixelEqn.h PerPointEqn.h browser.h BuiltinFuncs.hpp 
 BuiltinFuncs.cpp compare.h editor.h event.h fatal.h SplayTree.hpp fftsg.h glConsole.h menu.h timer.h SplayNode.hpp 
-BuiltinParams.hpp BuiltinParams.cpp Preset.hpp PresetSwitcher.hpp PresetSwitcher.cpp Renderer.cpp Renderer.hpp 
-ParamUtils.hpp PresetLoader.cpp PresetLoader.hpp)
+BuiltinParams.hpp BuiltinParams.cpp Preset.hpp Renderer.cpp Renderer.hpp 
+ParamUtils.hpp PresetLoader.cpp PresetLoader.hpp PresetChooser.hpp PresetChooser.cpp)
 
 OPTION(USE_FTGL "Use FTGL for on-screen fonts" ON)
 

@@ -31,9 +31,10 @@
 #include "editor.h"
 #include "event.h"
 #include "BeatDetect.h"
-#include "PresetSwitcher.hpp"
+#include "PresetChooser.hpp"
 
-Preset *active_preset;
+PresetChooser::PresetIterator presetPos;
+PresetChooser * activeChooser;
 
 interface_t current_interface;// = DEFAULT_INTERFACE;
 
@@ -167,6 +168,12 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 //	      }	
 	      break;
 	    case PROJECTM_K_p:
+		if (presetPos != activeChooser->begin()) {
+			--presetPos;
+			// ...mroe
+		}
+
+			
 //	      if ((PresetSwitcher::switchPreset(ALPHA_PREVIOUS, HARD_CUT)) < 0){
 		printf("WARNING: Bad preset file, loading idle preset\n");
 		abort();	

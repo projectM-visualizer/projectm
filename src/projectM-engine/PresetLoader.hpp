@@ -32,10 +32,10 @@ class PresetLoader {
 		/** Load a preset by specifying a filename of the directory (that is, NOT full path) */
 		/** Autopointers: when you take it, I leave it */		
 		std::auto_ptr<Preset> loadPreset(unsigned int index, const PresetInputs & presetInputs, 
-			PresetOutputs & presetOutputs);
+			PresetOutputs & presetOutputs) const;
 		
 		/** Returns the number of presets in the active directory */
-		inline std::size_t getNumPresets() {
+		inline std::size_t getNumPresets() const {
 			return m_entries.size();
 		}
 					

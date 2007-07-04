@@ -69,7 +69,7 @@ while ((dir_entry = readdir(m_dir)) != NULL) {
 
 }
 
-std::auto_ptr<Preset> PresetLoader::loadPreset(unsigned int index, const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
+std::auto_ptr<Preset> PresetLoader::loadPreset(unsigned int index, const PresetInputs & presetInputs, PresetOutputs & presetOutputs) const {
 	
 	// Check that index isn't insane
 	assert(index >= 0);
