@@ -11,6 +11,7 @@
 #include <FTGL/FTGLPolygonFont.h>
 #endif /** USE_FTGL */
 
+class BeatDetect;
 
 class Renderer
 {
@@ -37,7 +38,7 @@ FTGLPolygonFont *poly_font;
 
   
  public:
-  int mesh_i, mesh_j;
+ 
  int showfps;
     int showtitle;
     int showpreset;

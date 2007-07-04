@@ -70,9 +70,9 @@ void PerPixelEqn::evalPerPixelEqn() {
     printf("something is seriously wrong...\n");
 
 //    param->matrix_flag = 0;         /** Force matrix ignore to update time */
-  for (projectM::currentEngine->renderer->mesh_i = 0; projectM::currentEngine->renderer->mesh_i < param->gx; projectM::currentEngine->renderer->mesh_i++) {    
-    for (projectM::currentEngine->renderer->mesh_j = 0; projectM::currentEngine->renderer->mesh_j < param->gy; projectM::currentEngine->renderer->mesh_j++) {     
-      param_matrix[projectM::currentEngine->renderer->mesh_i][projectM::currentEngine->renderer->mesh_j] = eqn_ptr->eval_gen_expr();
+  for (projectM::currentEngine->mesh_i = 0; projectM::currentEngine->mesh_i < param->gx; projectM::currentEngine->mesh_i++) {    
+    for (projectM::currentEngine->mesh_j = 0; projectM::currentEngine->mesh_j < param->gy; projectM::currentEngine->mesh_j++) {     
+      param_matrix[projectM::currentEngine->mesh_i][projectM::currentEngine->mesh_j] = eqn_ptr->eval_gen_expr();
     }
   }
   

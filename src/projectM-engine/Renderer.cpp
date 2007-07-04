@@ -3,8 +3,8 @@
 #include "math.h"
 #include "common.h"
 #include "console_interface.h"
-
-
+#include "CustomShape.h"
+#include "CustomWave.h"
 
 Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, BeatDetect *beatDetect, char* fontURL)
 {

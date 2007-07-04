@@ -27,6 +27,7 @@
 #ifndef _COMPARE_H
 #define _COMPARE_H
 #include "wipemalloc.h"
+#include "common.h"
 
 /// @bug this will be ripped away when splaytree is more standardly written or its removed in favor of stl-esque data structure
 class SplayKeyFunctions {

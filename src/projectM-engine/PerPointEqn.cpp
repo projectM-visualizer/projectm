@@ -56,8 +56,8 @@ abort();
   else 
     param_matrix = (float*)param->matrix;
   
-  for (projectM::currentEngine->renderer->mesh_i = 0; projectM::currentEngine->renderer->mesh_i < samples; projectM::currentEngine->renderer->mesh_i++) {    
-      param_matrix[projectM::currentEngine->renderer->mesh_i] = eqn_ptr->eval_gen_expr();
+  for (projectM::currentEngine->mesh_i = 0; projectM::currentEngine->mesh_i < samples; projectM::currentEngine->mesh_i++) {    
+      param_matrix[projectM::currentEngine->mesh_i] = eqn_ptr->eval_gen_expr();
   }
   
   /* Now that this parameter has been referenced with a per

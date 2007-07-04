@@ -18,10 +18,6 @@
  * See 'LICENSE.txt' included within this release
  *
  */
-#include "pbuffer.h"
-
-
-
 #include "wipemalloc.h"
 #include "BuiltinFuncs.hpp"
 #include "fatal.h"
@@ -188,7 +184,7 @@ DLLEXPORT void projectM::projectM_reset() {
     projectM_resetengine();
   }
 
-DLLEXPORT void projectM::projectM_init(int gx, int gy, int texsize, int width, int height) {
+DLLEXPORT void projectM::projectM_init(int gx, int gy, int fps, int texsize, int width, int height) {
 
 
 
@@ -209,6 +205,8 @@ DLLEXPORT void projectM::projectM_init(int gx, int gy, int texsize, int width, i
 
     /** Initialise per-pixel matrix calculations */
     
+
+    presetInputs.fps = fps;
 
     /** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
     beatDetect = new BeatDetect();

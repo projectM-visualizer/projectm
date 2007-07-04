@@ -546,7 +546,7 @@ void CustomWave::evalPerPointEqns() {
     per_point_eqn_tree->splay_traverse((void (*)(void*))eval_per_point_eqn_helper);
 
   /* Reset index */
-  projectM::currentEngine->renderer->mesh_i = -1;
+  projectM::currentEngine->mesh_i = -1;
 }
 
 void CustomWave::load_unspecified_init_conds() {

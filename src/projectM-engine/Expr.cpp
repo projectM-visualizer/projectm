@@ -123,11 +123,11 @@ float ValExpr::eval_val_expr() {
 		/** Sanity check the matrix is there... */
 		assert(term.param->matrix != NULL );
 
-		  if (projectM::currentEngine->renderer->mesh_i >= 0) {
-			  if (projectM::currentEngine->renderer->mesh_j >= 0) {
-			    return (((float**)term.param->matrix)[projectM::currentEngine->renderer->mesh_i][projectM::currentEngine->renderer->mesh_j]);
+		  if (projectM::currentEngine->mesh_i >= 0) {
+			  if (projectM::currentEngine->mesh_j >= 0) {
+			    return (((float**)term.param->matrix)[projectM::currentEngine->mesh_i][projectM::currentEngine->mesh_j]);
 			  } else {
-			    return (((float*)term.param->matrix)[projectM::currentEngine->renderer->mesh_i]);
+			    return (((float*)term.param->matrix)[projectM::currentEngine->mesh_i]);
 			  }
 		  }
 		}

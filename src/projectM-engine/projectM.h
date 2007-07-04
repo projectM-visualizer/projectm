@@ -68,16 +68,15 @@
 #include "event.h"
 #include "fatal.h"
 #include "PresetFrameIO.hpp"
-#include "Preset.hpp"
+//#include "Preset.hpp"
 #include "Renderer.hpp"
 
 //#include <dmalloc.h>
-
 class BeatDetect;
 class Func;
 class Renderer;
 class Preset;
-#include "SplayTree.hpp"
+//#include "SplayTree.hpp"
 
 #ifdef WIN32
 #pragma warning (disable:4244)
@@ -89,8 +88,8 @@ class Preset;
 #endif
 
 /** KEEP THIS UP TO DATE! */
-#define PROJECTM_VERSION "0.99.10"
-#define PROJECTM_TITLE "projectM 0.99.10"
+#define PROJECTM_VERSION "1.02.00"
+#define PROJECTM_TITLE "projectM 1.02.00"
 
 /** Per-platform path separators */
 #define WIN32_PATH_SEPARATOR '\\'
@@ -130,7 +129,7 @@ public:
     int pcmframes;
     int freqframes;
 
-
+ int mesh_i, mesh_j;
 
     GLubyte *fbuffer;
 
@@ -187,7 +186,7 @@ public:
     /** Functions */
     DLLEXPORT projectM();
 
-    DLLEXPORT void projectM_init(int gx, int gy, int texsize, int width, int height);
+    DLLEXPORT void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
     DLLEXPORT void projectM_reset();
     DLLEXPORT void projectM_resetGL( int width, int height );
     DLLEXPORT void projectM_setTitle( char *title );

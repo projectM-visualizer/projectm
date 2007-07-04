@@ -35,6 +35,7 @@ typedef enum {
     PROJECTM_KEYUP,
     PROJECTM_KEYDOWN,
     PROJECTM_VIDEORESIZE,
+    PROJECTM_VIDEOQUIT,
   } projectMEvent;
 
 typedef enum {

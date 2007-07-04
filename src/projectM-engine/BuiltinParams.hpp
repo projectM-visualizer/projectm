@@ -27,6 +27,7 @@
 #ifndef _BUILTIN_PARAMS_HPP
 #define _BUILTIN_PARAMS_HPP
 
+#include <string>
 #include "PresetFrameIO.hpp"
 #include "Param.h"
 #include <map>
