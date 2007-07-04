@@ -40,7 +40,7 @@ public:
 
         void operator++() {
             assert(m_currentIndex < m_presetChooser->getNumPresets());
-            m_currentIndex++;		
+            m_currentIndex++;				
         }
 
         bool operator !=(const PresetIterator & presetPos) {
@@ -49,7 +49,7 @@ public:
 
         void operator--() {
             assert(m_currentIndex > 0);
-            m_currentIndex--;
+            m_currentIndex--;	    
 	
         }
 

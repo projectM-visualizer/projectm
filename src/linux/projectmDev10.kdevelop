@@ -157,7 +157,7 @@
     </qt>
     <codecompletion>
       <automaticCodeCompletion>true</automaticCodeCompletion>
-      <automaticArgumentsHint>true</automaticArgumentsHint>
+      <automaticArgumentsHint>false</automaticArgumentsHint>
       <automaticHeaderCompletion>true</automaticHeaderCompletion>
       <codeCompletionDelay>100</codeCompletionDelay>
       <argumentsHintDelay>400</argumentsHintDelay>
@@ -205,10 +205,7 @@
       <hidenonprojectfiles>false</hidenonprojectfiles>
       <hidepatterns>*.o,*.lo,CVS</hidepatterns>
     </tree>
-    <groups>
-      <hidenonprojectfiles>false</hidenonprojectfiles>
-      <hidenonlocation>false</hidenonlocation>
-    </groups>
+    <groups/>
   </kdevfileview>
   <kdevdocumentation>
     <projectdoc>
@@ -217,4 +214,9 @@
       <usermanualurl></usermanualurl>
     </projectdoc>
   </kdevdocumentation>
+  <ctagspart>
+    <customArguments></customArguments>
+    <customTagfilePath>/home/carm/projects/projectM/dev-1.0/tags</customTagfilePath>
+    <activeTagsFiles/>
+  </ctagspart>
 </kdevelop>
