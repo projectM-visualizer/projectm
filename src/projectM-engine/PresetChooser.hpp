@@ -40,7 +40,7 @@ public:
 
         void operator++() {
             assert(m_currentIndex < m_presetChooser->getNumPresets());
-            m_currentIndex++;				
+            m_currentIndex++;			
         }
 
         bool operator !=(const PresetIterator & presetPos) {
@@ -49,7 +49,7 @@ public:
 
         void operator--() {
             assert(m_currentIndex > 0);
-            m_currentIndex--;	    
+            m_currentIndex--;
 	
         }
 
@@ -89,7 +89,7 @@ public:
     public:
         UniformRandomFunctor(std::size_t collectionSize):m_collectionSize(collectionSize) {}
 
-        std::size_t operator() (std::size_t index) {
+        float  operator() (std::size_t index) {
             return (1.0 / m_collectionSize);
 
         }
@@ -122,7 +122,7 @@ public:
     std::auto_ptr<Preset> weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) const {
 
         WeightFunctor weightFunctor(m_presetLoader->getNumPresets());
-        doWeightedSample(weightFunctor);
+        doWeightedSample(weightFunctor, presetInputs, presetOutputs);
 
     }
 
@@ -144,6 +144,6 @@ private:
 
 
     private:
-		const PresetLoader * m_presetLoader;
+	const PresetLoader * m_presetLoader;
 };
 #endif
