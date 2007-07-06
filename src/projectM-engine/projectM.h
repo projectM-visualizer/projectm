@@ -76,6 +76,9 @@ class BeatDetect;
 class Func;
 class Renderer;
 class Preset;
+class PresetChooser;
+class PresetLoader;
+
 //#include "SplayTree.hpp"
 
 #ifdef WIN32
@@ -115,6 +118,8 @@ typedef enum {
 
 class projectM {
 public:
+    static const std::string PROJECTM_PRESET_PATH;
+
     static projectM *currentEngine;
     static Preset *activePreset;
     static Renderer *renderer;
@@ -231,6 +236,14 @@ public:
     void default_key_handler( projectMEvent event, projectMKeycode keycode );
 
     int initPresetTools();
+   private:
+
+	// Required by the preset chooser. Manages a loaded preset directory
+	PresetLoader * m_presetLoader;
+
+	// Provides accessor functions to choose presets
+	PresetChooser * m_presetChooser;
+
   };
 
 #endif /** !_PROJECTM_H */

@@ -156,10 +156,15 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_b:
 	      break;
             case PROJECTM_K_n:
-//	      if (PresetSwitcher::switchPreset(ALPHA_NEXT, HARD_CUT) < 0) {
-		printf("WARNING: Bad preset file, not handling this..aborting!\n");
-		abort();
-//	      }		
+		// paranoia but could be useful if directory is empty
+		/// @bug implement == operator
+		if (!(presetPos != activeChooser->end()))
+			return;		
+		activeChooser->getNumPresets();
+		++presetPos;
+		/// @bug implement == operator
+		if (!(presetPos != activeChooser->end()))
+			--presetPos;
 	      break;
 	    case PROJECTM_K_r:
 //	      if (PresetSwitcher::switchPreset(RANDOM_NEXT, HARD_CUT) < 0) {
@@ -167,7 +172,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		abort();
 //	      }	
 	      break;
-	    case PROJECTM_K_p:
+	    case PROJECTM_K_p:		
 		if (presetPos != activeChooser->begin()) {
 			--presetPos;
 			// ...mroe

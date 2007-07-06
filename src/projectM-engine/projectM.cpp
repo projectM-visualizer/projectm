@@ -47,9 +47,20 @@
 #include "CustomShape.h"
 #include "SplayTree.hpp"
 #include "Renderer.hpp"
+#include "PresetChooser.hpp"
+
+#ifdef LINUX
+const std::string PROJECTM_PRESET_PATH("/usr/share/projectM/presets/");
+#endif
+
+#ifdef MACOS
+const std::string PROJECTM_PRESET_PATH("/usr/share/projectM/presets/");
+#endif
 
 
-
+#ifdef WIN32
+const std::string PROJECTM_PRESET_PATH("C:\\Program Files\\ProjectM\\presets");
+#endif
 
 /** Stash current engine */    
 projectM *projectM::currentEngine = NULL;
@@ -650,9 +661,17 @@ int projectM::initPresetTools() {
 
   projectM_resetengine();
 
-  //switchToIdlePreset();
-  //load_init_conditions();
+  if (m_presetLoader = new PresetLoader(PROJECTM_PRESET_PATH)) {
+	m_presetLoader = 0;
+	return PROJECTM_FAILURE;
+  }
 
+  if (m_presetChooser = new PresetChooser(*m_presetLoader)) {
+	delete(m_presetLoader);
+	m_presetChooser = 0;
+	return PROJECTM_FAILURE;
+}
+  
   /* Done */
 #ifdef PRESET_DEBUG
     printf("initPresetLoader: finished\n");

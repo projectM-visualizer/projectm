@@ -6,6 +6,8 @@
 #include "CustomShape.h"
 #include "CustomWave.h"
 
+class Preset;
+
 Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, BeatDetect *beatDetect, char* fontURL)
 {
   int x; int y; 
@@ -211,6 +213,7 @@ totalframes++;
       glMatrixMode(GL_MODELVIEW);
       glTranslated(-0.5,-0.5,-1);  
 
+      // When console refreshes, there is a chance the preset has been changed by the user
       refreshConsole();
       draw_title_to_screen();
       if(this->showhelp%2)draw_help();

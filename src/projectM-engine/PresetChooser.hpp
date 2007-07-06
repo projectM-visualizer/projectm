@@ -15,7 +15,7 @@ class PresetChooser {
 
 public:
 
-    /// \brief Initializes a chooser with an established preset loader.
+    /// Initializes a chooser with an established preset loader.
     /// \param presetLoader an initalized preset loader to choose presets from
     /// \note The preset loader is refreshed via events or otherwise outside this class's scope
     PresetChooser(const PresetLoader & presetLoader);
@@ -56,11 +56,11 @@ public:
 
     typedef PresetIterator iterator;
 
-    /// \brief Choose a preset via the passed in index. Must be between 0 and num valid presets in directory
+    /// Choose a preset via the passed in index. Must be between 0 and num valid presets in directory
     std::auto_ptr<Preset> directoryIndex(std::size_t index, const PresetInputs & presetInputs,
                                          PresetOutputs & presetOutputs) const;
 
-    /// \brief Gets the number of presets last believed to exist in the preset loader's filename collection
+    /// Gets the number of presets last believed to exist in the preset loader's filename collection
     std::size_t getNumPresets() const;
 
     /// \brief A functor, for all preset indices, returns probability 1 / (number of presets in directory)
