@@ -118,18 +118,18 @@ inline std::size_t PresetChooser::PresetIterator::operator*() const {
 inline PresetChooser::PresetIterator::PresetIterator(std::size_t start):m_currentIndex(start) {}
 
 
-inline        void PresetChooser::PresetIterator::operator++() {
+inline void PresetChooser::PresetIterator::operator++() {
     assert(m_currentIndex < m_presetChooser->getNumPresets());
     m_currentIndex++;
 }
 
-inline        void PresetChooser::PresetIterator::operator--() {
+inline void PresetChooser::PresetIterator::operator--() {
     assert(m_currentIndex > 0);
     m_currentIndex--;
 }
 
 
-inline        bool PresetChooser::PresetIterator::operator !=(const PresetIterator & presetPos) const {
+inline bool PresetChooser::PresetIterator::operator !=(const PresetIterator & presetPos) const {
     return (*presetPos != **this);
 }
 
@@ -153,8 +153,6 @@ inline PresetChooser::PresetIterator PresetChooser::end() {
     return pos;
 }
 
-
-/** Samples from the preset collection **/
 template <class WeightFunctor>
 std::auto_ptr<Preset> PresetChooser::weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs, WeightFunctor & weightFunctor) const {
     doWeightedSample(weightFunctor);
@@ -168,15 +166,15 @@ inline  std::auto_ptr<Preset> PresetChooser::weightedRandom(const PresetInputs &
 
 }
 
-
-
 template <class WeightFunctor>
 inline std::auto_ptr<Preset> PresetChooser::doWeightedSample(WeightFunctor & weightFunctor, const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
 
-    // Choose a random index from the preset directory
+    // Choose a random mass bounded mass between 0 and 1
     float cutoff = ((float)(random())) / RAND_MAX;
-    float mass = 0;
 
+    // Sum up mass, stopping when cutoff is reached. This is the typical
+    // weighted sampling algorithm.
+    float mass = 0;
     for (PresetIterator pos = this->begin();pos != this->end() ; ++pos) {
         mass += weightFunctor(*pos);
         if (mass >= cutoff)
