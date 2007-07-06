@@ -18,7 +18,7 @@ public:
 		const PresetOutputs & outputsA, const PresetOutputs & outputsB) {
 				
 		// use time variables from inputsA/B to determine how presets should be merged
-				
+						
 	}
 
 	PresetOutputs & getMergedOutputs() {

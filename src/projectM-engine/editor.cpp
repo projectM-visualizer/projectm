@@ -45,7 +45,6 @@
 #define KEY_REFRESH_RATE 2
 #define KEY_DELAY_TIME 15
 
-extern Preset *active_preset;
 extern interface_t current_interface;
 
 typedef enum {
@@ -165,7 +164,8 @@ void key_helper( projectMKeycode key, projectMEvent event, projectMModifier modi
 	break;
   case PROJECTM_K_RETURN:
     if (modifier== PROJECTM_KMOD_LCTRL) {
-      callfunc(editor_buffer, active_preset);
+///  @bug editor is busted
+//      callfunc(editor_buffer, active_preset);
     }
     else {
       writeChar('\n');
@@ -354,7 +354,6 @@ int moveCursorUp() {
     glConsoleMoveCursorForward(editor_console);
     dist1--;
   }
-  
   return return_flag;
 }
 

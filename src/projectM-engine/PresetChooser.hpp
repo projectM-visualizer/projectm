@@ -1,16 +1,6 @@
 /** PresetChooser.hpp:
- * 	This class is a WIP that provides methods to load presets, switch presets, and
- *	merge them. The user of this class decides when / how to switch by calling functions
- *	of this class at the appropriate times in the renderer.
- *	DECISION: Merging / etc. goes in PresetFilters.hpp! Loading goes in here, switching goes in here
+ * Provides functions to select presets. Requires a preset loader.
  */
-
-/// More specifically, we need to
-/// (1) load presets from a path(s)
-/// (2) set which preset is the "active" presets
-/// (3) merge two presets together - probably doesn't belong in this class
-///      how about another class called PresetFilters?
-
 
 /// @idea Weighted random based on user stats
 
@@ -28,71 +18,61 @@ public:
     /// \brief Initializes a chooser with an established preset loader.
     /// \param presetLoader an initalized preset loader to choose presets from
     /// \note The preset loader is refreshed via events or otherwise outside this class's scope
-    PresetChooser(const PresetLoader & presetLoader): m_presetLoader(&presetLoader) {}
+    PresetChooser(const PresetLoader & presetLoader);
 
+     ///  \brief A simple iterator class to traverse back and forth a preset directory
     class PresetIterator {
 	
 	public:
         PresetIterator()  {}
 
 	/** @brief Instantiate a preset iterator at the given starting position **/
-	PresetIterator(std::size_t start):m_currentIndex(start) {}
+	PresetIterator(std::size_t start);
 
-        void operator++() {
-            assert(m_currentIndex < m_presetChooser->getNumPresets());
-            m_currentIndex++;			
-        }
+	///  \brief Move iterator forward
+        void operator++();
 
-        bool operator !=(const PresetIterator & presetPos) {
-		return (*presetPos != **this);
-        }
+	///  \brief Move backword iterator
+        void operator--() ;
 
-        void operator--() {
-            assert(m_currentIndex > 0);
-            m_currentIndex--;
-	
-        }
+        bool operator !=(const PresetIterator & presetPos) const ;
 
-        std::size_t operator*() const {
-            return m_currentIndex;
-        }
+	/// Returns an integer value representing the iterator pos. 
+	/// @bug might become internal
+	/// \brief Returns the indexing value used by the current iterator. 
+        std::size_t operator*() const;
 
-        std::auto_ptr<Preset> allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
-            return m_presetChooser->directoryIndex(m_currentIndex, presetInputs, presetOutputs);
-        }
+	/// \brief Allocate a new preset given this iterator's associated preset name
+        std::auto_ptr<Preset> allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
-
-    // Used for aribtrary randomness
-    typedef PresetIterator iterator;
-
-        inline void setChooser(const PresetChooser & chooser) {
-            m_presetChooser = &chooser;
-        }
+        /// \brief Set the chooser asocciated with this iterator
+  	void setChooser(const PresetChooser & chooser);
 
     private:
         std::size_t m_currentIndex;
         const PresetChooser * m_presetChooser;
 
-
     };
 
-    /** Choose a preset via the passed in index. Must be between 0 and num valid presets in directory **/
+    typedef PresetIterator iterator;
+
+    /// \brief Choose a preset via the passed in index. Must be between 0 and num valid presets in directory
     std::auto_ptr<Preset> directoryIndex(std::size_t index, const PresetInputs & presetInputs,
                                          PresetOutputs & presetOutputs) const;
 
-    std::size_t getNumPresets() const {
-	return m_presetLoader->getNumPresets();
-    }
+    /// \brief Gets the number of presets last believed to exist in the preset loader's filename collection
+    std::size_t getNumPresets() const;
 
+    /// \brief A functor, for all preset indices, returns probability 1 / (number of presets in directory)
     class UniformRandomFunctor {
 
     public:
-        UniformRandomFunctor(std::size_t collectionSize):m_collectionSize(collectionSize) {}
+	/// \brief Initialize a new functor with collection size
+	/// \param collectionSize the number of presets one is sampling over
+        UniformRandomFunctor(std::size_t collectionSize);
 
-        float  operator() (std::size_t index) {
-            return (1.0 / m_collectionSize);
-
-        }
+	/// \brief Returns uniform (fixed) probability for any index
+        float  operator() (std::size_t index) const;
 
     private:
         std::size_t m_collectionSize;
@@ -100,26 +80,88 @@ public:
     };
 
    
-    PresetIterator begin() {
+    /// \brief An STL-esque iterator to beginning traversing presets from a directory
+    PresetIterator begin();
+
+     /// \brief An STL-esque iterator to retrieve an end position from a directory
+    PresetIterator end();
+
+    /// \brief Do a weighted sample given a weight functor. 
+    template <class WeightFunctor>
+    std::auto_ptr<Preset> weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs, WeightFunctor & weightFunctor) const;
+
+
+    /// \brief Do a weighted sample given a weight functor and default construction (ie. element size) of the weight functor
+    template <class WeightFunctor>
+	std::auto_ptr<Preset> weightedRandom(const PresetInputs & presetInputs, PresetOutputs & preseOutputs) const;
+
+private:
+    template <class WeightFunctor>
+    std::auto_ptr<Preset> doWeightedSample(WeightFunctor & weightFunctor, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
+
+    const PresetLoader * m_presetLoader;
+};
+
+
+inline std::size_t PresetChooser::getNumPresets() const {
+	return m_presetLoader->getNumPresets();
+}
+
+inline void PresetChooser::PresetIterator::setChooser(const PresetChooser & chooser) {
+            m_presetChooser = &chooser;
+}
+
+inline std::size_t PresetChooser::PresetIterator::operator*() const {
+            return m_currentIndex;
+}
+
+inline PresetChooser::PresetIterator::PresetIterator(std::size_t start):m_currentIndex(start) {}
+
+	
+inline        void PresetChooser::PresetIterator::operator++() {
+            assert(m_currentIndex < m_presetChooser->getNumPresets());
+            m_currentIndex++;			
+        }
+	
+inline        void PresetChooser::PresetIterator::operator--() {
+            assert(m_currentIndex > 0);
+            m_currentIndex--;	
+        }
+
+
+inline        bool PresetChooser::PresetIterator::operator !=(const PresetIterator & presetPos) const {
+		return (*presetPos != **this);
+        }
+
+inline std::auto_ptr<Preset> PresetChooser::PresetIterator::allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
+            return m_presetChooser->directoryIndex(m_currentIndex, presetInputs, presetOutputs);
+ }
+
+inline float PresetChooser::UniformRandomFunctor::operator() (std::size_t index) const {
+            return (1.0 / m_collectionSize);
+}
+
+   
+inline PresetChooser::PresetIterator PresetChooser::begin() {
 	PresetIterator pos;
 	pos.setChooser(*this);
 	return pos;		
     }
 
-    PresetIterator end() {
+inline PresetChooser::PresetIterator PresetChooser::end() {
 	PresetIterator pos(m_presetLoader->getNumPresets());
 	return pos;	
-    }
+}
+
 
     /** Samples from the preset collection **/
     template <class WeightFunctor>
-    std::auto_ptr<Preset> weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs, WeightFunctor & weightFunctor) const {
+    std::auto_ptr<Preset> PresetChooser::weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs, WeightFunctor & weightFunctor) const {
         doWeightedSample(weightFunctor);
     }
 
-    /** Samples from the preset collection **/
     template <class WeightFunctor>
-    std::auto_ptr<Preset> weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) const {
+inline  std::auto_ptr<Preset> PresetChooser::weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) const {
 
         WeightFunctor weightFunctor(m_presetLoader->getNumPresets());
         doWeightedSample(weightFunctor, presetInputs, presetOutputs);
@@ -127,9 +169,9 @@ public:
     }
 
 
-private:
+
     template <class WeightFunctor>
-    std::auto_ptr<Preset> doWeightedSample(WeightFunctor & weightFunctor, const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
+    inline std::auto_ptr<Preset> PresetChooser::doWeightedSample(WeightFunctor & weightFunctor, const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
 
         // Choose a random index from the preset directory
         float cutoff = ((float)(random())) / RAND_MAX;
@@ -142,8 +184,4 @@ private:
         }
     }
 
-
-    private:
-	const PresetLoader * m_presetLoader;
-};
 #endif
