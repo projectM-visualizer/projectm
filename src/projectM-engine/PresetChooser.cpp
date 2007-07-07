@@ -12,5 +12,3 @@
 
 #include "PresetChooser.hpp"
 
-
-

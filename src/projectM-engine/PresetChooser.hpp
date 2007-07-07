@@ -6,11 +6,13 @@
 
 #ifndef PRESET_CHOOSER_HPP
 #define PRESET_CHOOSER_HPP
-#include "Preset.hpp"
-#include "projectM.h"
-#include "PresetLoader.hpp"
-#include <cassert>
 
+#include "Preset.hpp"
+
+#include "PresetLoader.hpp"
+
+#include <cassert>
+#include <memory>
 class PresetChooser {
 
 public:
@@ -20,7 +22,7 @@ public:
     /// \note The preset loader is refreshed via events or otherwise outside this class's scope
     PresetChooser(const PresetLoader & presetLoader);
 
-    ///  \brief A simple iterator class to traverse back and forth a preset directory
+    ///  A simple iterator class to traverse back and forth a preset directory
     class PresetIterator {
 
     public:
@@ -29,10 +31,10 @@ public:
         /** @brief Instantiate a preset iterator at the given starting position */
         PresetIterator(std::size_t start);
 
-        ///  \brief Move iterator forward
+        ///  Move iterator forward
         void operator++();
 
-        ///  \brief Move iterator backword
+        ///   Move iterator backword
         void operator--() ;
 
         bool operator !=(const PresetIterator & presetPos) const ;
@@ -42,10 +44,10 @@ public:
         /// \brief Returns the indexing value used by the current iterator.
         std::size_t operator*() const;
 
-        /// \brief Allocate a new preset given this iterator's associated preset name
+        ///  Allocate a new preset given this iterator's associated preset name
         std::auto_ptr<Preset> allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
-        /// \brief Set the chooser asocciated with this iterator
+        /// \ Set the chooser asocciated with this iterator
         void setChooser(const PresetChooser & chooser);
 
     private:
@@ -134,7 +136,7 @@ inline bool PresetChooser::PresetIterator::operator !=(const PresetIterator & pr
 }
 
 inline std::auto_ptr<Preset> PresetChooser::PresetIterator::allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
-    return m_presetChooser->directoryIndex(m_currentIndex, presetInputs, presetOutputs);
+     return m_presetChooser->directoryIndex(m_currentIndex, presetInputs, presetOutputs);
 }
 
 inline float PresetChooser::UniformRandomFunctor::operator() (std::size_t index) const {

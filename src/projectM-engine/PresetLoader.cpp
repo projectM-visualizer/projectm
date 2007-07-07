@@ -10,6 +10,7 @@
 //
 //
 #include "PresetLoader.hpp"
+#include "Preset.hpp"
 #include <iostream>
 #include <sstream>
 extern "C" {

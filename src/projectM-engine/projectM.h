@@ -71,14 +71,18 @@
 //#include "Preset.hpp"
 #include "Renderer.hpp"
 
+#include "PresetChooser.hpp"
+
 //#include <dmalloc.h>
 class BeatDetect;
 class Func;
 class Renderer;
 class Preset;
-class PresetChooser;
-class PresetLoader;
 
+
+class PresetLoader;
+class PresetChooser;
+#include <memory>
 //#include "SplayTree.hpp"
 
 #ifdef WIN32
@@ -238,12 +242,17 @@ public:
     int initPresetTools();
    private:
 
+	// The current position of the directory iterator
+	PresetChooser::PresetIterator m_presetPos;
+
 	// Required by the preset chooser. Manages a loaded preset directory
 	PresetLoader * m_presetLoader;
 
 	// Provides accessor functions to choose presets
 	PresetChooser * m_presetChooser;
 
+	// Currently loaded preset- will be fancier when smooth preset switching
+	std::auto_ptr<Preset> m_activePreset;
   };
 
 #endif /** !_PROJECTM_H */

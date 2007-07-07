@@ -32,7 +32,7 @@
 void default_key_handler(projectM *PM, projectMEvent event, projectMKeycode keycode);
 void refreshConsole();
 #if defined(__CPLUSPLUS) && !defined(MACOS)
-extern "C" void key_handler(projectM *PM, projectMEvent event, projectMKeycode keycode, projectMModifier modifier );
+xtern "C" void key_handler(projectM *PM, projectMEvent event, projectMKeycode keycode, projectMModifier modifier );
 #else
 extern void key_handler(projectM *PM, projectMEvent event, projectMKeycode keycode, projectMModifier modifier );
 #endif

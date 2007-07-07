@@ -671,7 +671,10 @@ int projectM::initPresetTools() {
 	m_presetChooser = 0;
 	return PROJECTM_FAILURE;
 }
-  
+
+ // Start the iterator
+ m_presetPos = m_presetChooser->begin();
+
   /* Done */
 #ifdef PRESET_DEBUG
     printf("initPresetLoader: finished\n");

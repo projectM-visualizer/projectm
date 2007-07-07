@@ -33,8 +33,6 @@
 #include <string>
 //#define PRESET_DEBUG 2 /* 0 for no debugging, 1 for normal, 2 for insane */
 
-#include "projectM.h"
-
 #include "CustomShape.h"
 #include "CustomWave.h"
 #include "Expr.h"

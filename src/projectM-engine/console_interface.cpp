@@ -33,8 +33,6 @@
 #include "BeatDetect.h"
 #include "PresetChooser.hpp"
 
-PresetChooser::PresetIterator presetPos;
-PresetChooser * activeChooser;
 
 interface_t current_interface;// = DEFAULT_INTERFACE;
 
@@ -57,7 +55,7 @@ void refreshConsole() {
     break;
   default:
     break;
-  }
+  } 
  
 }
 
@@ -70,7 +68,7 @@ void projectM::key_handler( projectMEvent event,
 	case PROJECTM_KEYDOWN:
 
 	  //default_key_handler();
-	  switch (current_interface) 
+	  switch (current_interface)
 	    {
 
 	    case MENU_INTERFACE:
@@ -158,13 +156,13 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
             case PROJECTM_K_n:
 		// paranoia but could be useful if directory is empty
 		/// @bug implement == operator
-		if (!(presetPos != activeChooser->end()))
+		if (!(m_presetPos != m_presetChooser->end()))
 			return;		
-		activeChooser->getNumPresets();
-		++presetPos;
+		m_presetChooser->getNumPresets();
+		++m_presetPos;
 		/// @bug implement == operator
-		if (!(presetPos != activeChooser->end()))
-			--presetPos;
+		if (!(m_presetPos != m_presetChooser->end()))
+			--m_presetPos;
 	      break;
 	    case PROJECTM_K_r:
 //	      if (PresetSwitcher::switchPreset(RANDOM_NEXT, HARD_CUT) < 0) {
@@ -173,8 +171,8 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 //	      }	
 	      break;
 	    case PROJECTM_K_p:		
-		if (presetPos != activeChooser->begin()) {
-			--presetPos;
+		if (m_presetPos != m_presetChooser->begin()) {
+			--m_presetPos;
 			// ...mroe
 		}
 

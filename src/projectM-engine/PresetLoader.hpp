@@ -2,8 +2,14 @@
 #define __PRESET_LOADER_HPP
 
 #include <string> // used for path / filename stuff
-#include "Preset.hpp" // used to allocate presets via loadDir
+
 #include <memory> // for auto pointers
+#include <sys/types.h>
+#include <dirent.h>
+#include <vector>
+class Preset;
+class PresetInputs;
+class PresetOutputs;
 
 class PresetLoader {
 	public:
@@ -11,11 +17,11 @@ class PresetLoader {
 		static const std::string MILKDROP_FILE_EXTENSION;
 		
 		#ifdef LINUX 
-			static const char PATH_SEPARTOR = '/';
+			static const char PATH_SEPARATOR = '/';
 		#endif
 
 		#ifdef MACOS
-			static const char  PATH_SEPARTOR = '/';
+			static const char  PATH_SEPARATOR = '/';
 		#endif
 
 		#ifdef WIN32
