@@ -73,6 +73,8 @@
 
 #include "PresetChooser.hpp"
 
+#include <memory>
+
 //#include <dmalloc.h>
 class BeatDetect;
 class Func;
@@ -125,7 +127,8 @@ public:
     static const std::string PROJECTM_PRESET_PATH;
 
     static projectM *currentEngine;
-    static Preset *activePreset;
+    /// @bug: why is this static?
+    static std::auto_ptr<Preset> activePreset;
     static Renderer *renderer;
     static RenderTarget *renderTarget;
 
@@ -141,10 +144,6 @@ public:
  int mesh_i, mesh_j;
 
     GLubyte *fbuffer;
-
-    /** Preset information */
-   /// bug: move
-    int preset_index;               /** Index into the preset dir */
 
 #ifndef WIN32
     /* The first ticks value of the application */
@@ -239,7 +238,12 @@ public:
                       projectMKeycode keycode, projectMModifier modifier );
     void default_key_handler( projectMEvent event, projectMKeycode keycode );
 
+    /// Initializes preset loading / management libraries
     int initPresetTools();
+
+    /// Deinitialize all preset related tools. Usually done before projectM cleanup
+    void destroyPresetTools();
+
    private:
 
 	// The current position of the directory iterator

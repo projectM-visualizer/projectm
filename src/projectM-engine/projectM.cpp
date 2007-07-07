@@ -159,7 +159,9 @@ int x, y;
 DLLEXPORT void projectM::projectM_reset() {
 
     DWRITE( "projectM_reset(): in\n" );
-    this->activePreset = NULL;
+ 
+    /// @bug it's very possible this is a hack
+    this->activePreset = std::auto_ptr<Preset>(0);
  
     this->presetURL = NULL;
     this->fontURL = NULL;
@@ -638,11 +640,6 @@ DLLEXPORT void projectM::projectM_setTitle( char *title ) {
 }
 
 
-
-/// @bug:move to header file
-/** initPresetTools: initializes the preset
-   loading library. this should be done before
-   any parsing. function in limbo, may be dumped */
 int projectM::initPresetTools() {
 
   /* Initializes the builtin function database */
@@ -682,4 +679,15 @@ int projectM::initPresetTools() {
   return PROJECTM_SUCCESS;
 }
 
+void projectM::destroyPresetTools() {
 
+ if(m_presetChooser)
+ 	delete(m_presetChooser);
+
+ if (m_presetLoader)
+ 	delete(m_presetLoader);
+
+ Eval::destroy_infix_ops();
+ BuiltinFuncs::destroy_builtin_func_db();
+
+}
