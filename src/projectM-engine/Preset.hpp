@@ -146,8 +146,8 @@ private:
     void evalPerPixelEqns();
     void evalPerFrameEquations();
 
-    cwave_container * customWaves;
-    cshape_container * customShapes;
+    PresetOutputs::cwave_container * customWaves;
+    PresetOutputs::cshape_container * customShapes;
 
 };
 

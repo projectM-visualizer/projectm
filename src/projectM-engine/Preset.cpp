@@ -93,7 +93,7 @@ void Preset::evalCustomWaveInitConditions() {
 
 void Preset::evalCustomWavePerFrameEquations() {
 
-    for (cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos) {
+    for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos) {
     	(*pos)->init_cond_tree->splay_traverse((void (*)(void*))eval_init_cond_helper);
     	(*pos)->per_frame_eqn_tree->splay_traverse((void (*)(void*))eval_per_frame_eqn_helper);
    }
@@ -102,7 +102,7 @@ void Preset::evalCustomWavePerFrameEquations() {
 
 void Preset::evalCustomShapePerFrameEquations() {
 
-    for (cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos) {
+    for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos) {
     	(*pos)->init_cond_tree->splay_traverse((void (*)(void*))eval_init_cond_helper);
     	(*pos)->per_frame_eqn_tree->splay_traverse((void (*)(void*))eval_per_frame_eqn_helper);
    }
@@ -262,7 +262,10 @@ void Preset::initialize(const std::string & pathname) {
 
 }
 
+/// @bug broken / unimplemented
 void Preset::savePreset(char * filename) {
+
+return;
 
 #ifdef PANTS
   FILE * fs;
@@ -326,7 +329,7 @@ int Preset::write_preset_name(FILE * fs) {
     return PROJECTM_FAILURE;
 
   /* Format the preset name in a string */
-  sprintf(s, "[%s]\n", name);
+   sprintf(s, "[%s]\n", name);
 
   len = strlen(s);
 

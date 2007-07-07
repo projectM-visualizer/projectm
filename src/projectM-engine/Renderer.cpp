@@ -584,7 +584,7 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
   glPointSize(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512); 
 
   /// @bug SPERL: this is a starting point at least  
-  for (cwave_container::const_iterator pos = presetOutputs->customWaves.begin();
+  for (PresetOutputs::cwave_container::const_iterator pos = presetOutputs->customWaves.begin();
 	pos != presetOutputs->customWaves.end(); ++pos) 
     {
      
@@ -661,7 +661,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
     glTranslatef( 0, 0, -1 );
   
 /// @bug SPERL: this is a starting point at least  
-  for (cshape_container::const_iterator pos = presetOutputs->customShapes.begin();
+  for (PresetOutputs::cshape_container::const_iterator pos = presetOutputs->customShapes.begin();
 	pos != presetOutputs->customShapes.end(); ++pos) 
     {
 

@@ -68,7 +68,6 @@
 #include "event.h"
 #include "fatal.h"
 #include "PresetFrameIO.hpp"
-//#include "Preset.hpp"
 #include "Renderer.hpp"
 
 #include "PresetChooser.hpp"
@@ -82,10 +81,7 @@ class Renderer;
 class Preset;
 
 
-class PresetLoader;
-class PresetChooser;
 #include <memory>
-//#include "SplayTree.hpp"
 
 #ifdef WIN32
 #pragma warning (disable:4244)
