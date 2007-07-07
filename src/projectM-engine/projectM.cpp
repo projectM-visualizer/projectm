@@ -50,16 +50,16 @@
 #include "PresetChooser.hpp"
 
 #ifdef LINUX
-const std::string PROJECTM_PRESET_PATH("/usr/share/projectM/presets/");
+const std::string projectM::PROJECTM_PRESET_PATH("/usr/share/projectM/presets/");
 #endif
 
 #ifdef MACOS
-const std::string PROJECTM_PRESET_PATH("/usr/share/projectM/presets/");
+const std::string projectM::PROJECTM_PRESET_PATH("/usr/share/projectM/presets/");
 #endif
 
 
 #ifdef WIN32
-const std::string PROJECTM_PRESET_PATH("C:\\Program Files\\ProjectM\\presets");
+const std::string projectM::PROJECTM_PRESET_PATH("C:\\Program Files\\ProjectM\\presets");
 #endif
 
 /** Stash current engine */    

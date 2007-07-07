@@ -16,6 +16,8 @@
 /* Loads a builtin function */
 #include "BuiltinFuncs.hpp"
 
+SplayTree<Func>  * BuiltinFuncs::builtin_func_tree  = 0;
+
 int BuiltinFuncs::load_builtin_func(char * name,  float (*func_ptr)(float*), int num_args) {
 
   Func * func; 
