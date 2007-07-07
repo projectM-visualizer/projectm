@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <vector>
+
 class Preset;
 class PresetInputs;
 class PresetOutputs;
@@ -16,19 +17,6 @@ class PresetLoader {
 		static const std::string PROJECTM_FILE_EXTENSION;
 		static const std::string MILKDROP_FILE_EXTENSION;
 		
-		#ifdef LINUX 
-			static const char PATH_SEPARATOR = '/';
-		#endif
-
-		#ifdef MACOS
-			static const char  PATH_SEPARATOR = '/';
-		#endif
-
-		#ifdef WIN32
-			static const char PATH_SEPARATOR = '\\';
-		#endif
-	
-	
 		/** Initializes the preset loader with the target directory specified */
 		PresetLoader(std::string pathname);
 
@@ -53,12 +41,11 @@ class PresetLoader {
 
 	private:
 		void handleDirectoryError();
-		std::string m_dirname;		
+		std::string m_dirname;
 		DIR * m_dir;
 
 		// vector chosen for speed, but not great for reverse index lookups
 		std::vector<std::string> m_entries;
 };
-
 
 #endif

@@ -24,7 +24,7 @@ ENDIF(USE_FTGL)
 TARGET_LINK_LIBRARIES(projectM GLEW m)
 
 INSTALL(TARGETS projectM DESTINATION lib)
-INSTALL(FILES projectM.h pbuffer.h PCM.h BeatDetect.h Preset.hpp event.h console_interface.h dlldefs.h fatal.h  PresetFrameIO.hpp PCM.h Renderer.hpp DESTINATION include/libprojectM)
+INSTALL(FILES projectM.h pbuffer.h PCM.h BeatDetect.h Preset.hpp event.h console_interface.h dlldefs.h fatal.h   PresetFrameIO.hpp PCM.h Renderer.hpp PresetChooser.hpp DESTINATION include/libprojectM)
 INSTALL(FILES config DESTINATION share/projectM)
 FILE(GLOB presets "presets/*.milk")
 INSTALL(FILES ${presets} DESTINATION share/projectM/presets)

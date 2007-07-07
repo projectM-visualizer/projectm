@@ -156,14 +156,14 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
             case PROJECTM_K_n:
 		// paranoia but could be useful if directory is empty
 		/// @bug implement == operator
-		if (!(m_presetPos != m_presetChooser->end()))
+		if (!(*m_presetPos != m_presetChooser->end()))
 			return;
 		m_presetChooser->getNumPresets();
-		++m_presetPos;
+		++(*m_presetPos);
 		/// @bug implement == operator
-		if (!(m_presetPos != m_presetChooser->end()))
-			--m_presetPos;
-		this->activePreset = m_presetPos.allocate(this->presetInputs, this->presetOutputs);
+		if (!((*m_presetPos) != m_presetChooser->end()))
+			--(*m_presetPos);
+		this->activePreset = m_presetPos->allocate(this->presetInputs, this->presetOutputs);
 		//this->activePreset = m_presetPos.allocate(
 	      break;
 	    case PROJECTM_K_r:
@@ -173,8 +173,8 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 //	      }	
 	      break;
 	    case PROJECTM_K_p:		
-		if (m_presetPos != m_presetChooser->begin()) {
-			--m_presetPos;
+		if (*m_presetPos != m_presetChooser->begin()) {
+			--(*m_presetPos);
 			// ...mroe
 		}
 

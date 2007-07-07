@@ -13,50 +13,53 @@
 
 #include <cassert>
 #include <memory>
+
+
+class PresetChooser;
+
+///  A simple iterator class to traverse back and forth a preset directory
+class PresetIterator {
+
+public:
+    PresetIterator()  {}
+
+    /** @brief Instantiate a preset iterator at the given starting position */
+    PresetIterator(std::size_t start);
+
+    ///  Move iterator forward
+    void operator++();
+
+    ///   Move iterator backword
+    void operator--() ;
+
+    bool operator !=(const PresetIterator & presetPos) const ;
+
+    /// Returns an integer value representing the iterator pos.
+    /// @bug might become internal
+    /// \brief Returns the indexing value used by the current iterator.
+    std::size_t operator*() const;
+
+    ///  Allocate a new preset given this iterator's associated preset name
+    std::auto_ptr<Preset> allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
+
+    ///  Set the chooser asocciated with this iterator
+    void setChooser(const PresetChooser & chooser);
+
+private:
+    std::size_t m_currentIndex;
+    const PresetChooser * m_presetChooser;
+
+};
+
 class PresetChooser {
 
 public:
-
+    typedef PresetIterator iterator;
     /// Initializes a chooser with an established preset loader.
     /// \param presetLoader an initalized preset loader to choose presets from
     /// \note The preset loader is refreshed via events or otherwise outside this class's scope
     PresetChooser(const PresetLoader & presetLoader);
 
-    ///  A simple iterator class to traverse back and forth a preset directory
-    class PresetIterator {
-
-    public:
-        PresetIterator()  {}
-
-        /** @brief Instantiate a preset iterator at the given starting position */
-        PresetIterator(std::size_t start);
-
-        ///  Move iterator forward
-        void operator++();
-
-        ///   Move iterator backword
-        void operator--() ;
-
-        bool operator !=(const PresetIterator & presetPos) const ;
-
-        /// Returns an integer value representing the iterator pos.
-        /// @bug might become internal
-        /// \brief Returns the indexing value used by the current iterator.
-        std::size_t operator*() const;
-
-        ///  Allocate a new preset given this iterator's associated preset name
-        std::auto_ptr<Preset> allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
-
-        /// \ Set the chooser asocciated with this iterator
-        void setChooser(const PresetChooser & chooser);
-
-    private:
-        std::size_t m_currentIndex;
-        const PresetChooser * m_presetChooser;
-
-    };
-
-    typedef PresetIterator iterator;
 
     /// Choose a preset via the passed in index. Must be between 0 and num valid presets in directory
     std::auto_ptr<Preset> directoryIndex(std::size_t index, const PresetInputs & presetInputs,
@@ -109,34 +112,34 @@ inline std::size_t PresetChooser::getNumPresets() const {
     return m_presetLoader->getNumPresets();
 }
 
-inline void PresetChooser::PresetIterator::setChooser(const PresetChooser & chooser) {
+inline void PresetIterator::setChooser(const PresetChooser & chooser) {
     m_presetChooser = &chooser;
 }
 
-inline std::size_t PresetChooser::PresetIterator::operator*() const {
+inline std::size_t PresetIterator::operator*() const {
     return m_currentIndex;
 }
 
-inline PresetChooser::PresetIterator::PresetIterator(std::size_t start):m_currentIndex(start) {}
+inline PresetIterator::PresetIterator(std::size_t start):m_currentIndex(start) {}
 
 
-inline void PresetChooser::PresetIterator::operator++() {
+inline void PresetIterator::operator++() {
     assert(m_currentIndex < m_presetChooser->getNumPresets());
     m_currentIndex++;
 }
 
-inline void PresetChooser::PresetIterator::operator--() {
+inline void PresetIterator::operator--() {
     assert(m_currentIndex > 0);
     m_currentIndex--;
 }
 
 
-inline bool PresetChooser::PresetIterator::operator !=(const PresetIterator & presetPos) const {
+inline bool PresetIterator::operator !=(const PresetIterator & presetPos) const {
     return (*presetPos != **this);
 }
 
-inline std::auto_ptr<Preset> PresetChooser::PresetIterator::allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
-     return m_presetChooser->directoryIndex(m_currentIndex, presetInputs, presetOutputs);
+inline std::auto_ptr<Preset> PresetIterator::allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
+    return m_presetChooser->directoryIndex(m_currentIndex, presetInputs, presetOutputs);
 }
 
 inline float PresetChooser::UniformRandomFunctor::operator() (std::size_t index) const {
@@ -144,13 +147,13 @@ inline float PresetChooser::UniformRandomFunctor::operator() (std::size_t index)
 }
 
 
-inline PresetChooser::PresetIterator PresetChooser::begin() {
+inline PresetIterator PresetChooser::begin() {
     PresetIterator pos;
     pos.setChooser(*this);
     return pos;
 }
 
-inline PresetChooser::PresetIterator PresetChooser::end() {
+inline PresetIterator PresetChooser::end() {
     PresetIterator pos(m_presetLoader->getNumPresets());
     return pos;
 }

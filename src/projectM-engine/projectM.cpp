@@ -670,7 +670,8 @@ int projectM::initPresetTools() {
 }
 
  // Start the iterator
- m_presetPos = m_presetChooser->begin();
+  m_presetPos = new PresetIterator();
+ *m_presetPos = m_presetChooser->begin();
 
   /* Done */
 #ifdef PRESET_DEBUG

@@ -18,6 +18,7 @@ extern "C" {
 #include <dirent.h>
 }
 #include <cassert>
+#include "projectM.h"
 
 PresetLoader::PresetLoader(std::string dirname) :m_dirname(dirname)
 {

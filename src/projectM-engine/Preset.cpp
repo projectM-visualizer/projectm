@@ -329,7 +329,8 @@ int Preset::write_preset_name(FILE * fs) {
     return PROJECTM_FAILURE;
 
   /* Format the preset name in a string */
-   sprintf(s, "[%s]\n", name);
+/// @bug removed, code is dead
+//   sprintf(s, "[%s]\n", name);
 
   len = strlen(s);
 

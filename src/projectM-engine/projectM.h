@@ -69,20 +69,19 @@
 #include "fatal.h"
 #include "PresetFrameIO.hpp"
 #include "Renderer.hpp"
-
-#include "PresetChooser.hpp"
+//#include "PresetChooser.hpp"
 
 #include <memory>
 
-//#include <dmalloc.h>
 class BeatDetect;
 class Func;
 class Renderer;
 class Preset;
-
+class PresetIterator;
+class PresetChooser;
+class PresetLoader;
 
 #include <memory>
-
 #ifdef WIN32
 #pragma warning (disable:4244)
 #pragma warning (disable:4305)
@@ -243,7 +242,7 @@ public:
    private:
 
 	// The current position of the directory iterator
-	PresetChooser::PresetIterator m_presetPos;
+        PresetIterator * m_presetPos;
 
 	// Required by the preset chooser. Manages a loaded preset directory
 	PresetLoader * m_presetLoader;
