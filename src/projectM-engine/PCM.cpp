@@ -31,7 +31,7 @@
 #include "Common.hpp"
 #include "wipemalloc.h"
 #include "fftsg.h"
-#include "PCM.h"
+#include "PCM.hpp"
 
 //initPCM(int samples)
 //

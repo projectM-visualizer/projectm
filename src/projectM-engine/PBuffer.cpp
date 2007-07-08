@@ -28,7 +28,7 @@
 //#include <GL/gl.h>
 
 #include "Common.hpp"
-#include "pbuffer.h"
+#include "PBuffer.hpp"
 
 #ifdef MACOS
 #include <agl.h>

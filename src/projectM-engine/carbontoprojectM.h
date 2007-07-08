@@ -19,7 +19,7 @@
  *
  */
 /**
- * $Id: carbontoprojectM.h,v 1.2 2004/11/12 15:12:58 cvs Exp $
+ * $Id: carbontoprojectM.hpp,v 1.2 2004/11/12 15:12:58 cvs Exp $
  *
  * Translates CARBON -> projectM variables
  *
@@ -29,7 +29,7 @@
 #ifndef _CARBONTOPROJECTM_H
 #define _CARBONTOPROJECTM_H
 
-#include "projectM.h"
+#include "projectM.hpp"
 #ifdef WIN32
 #else
 #endif

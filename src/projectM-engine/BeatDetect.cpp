@@ -32,9 +32,9 @@
 #include "wipemalloc.h"
 
 #include "Common.hpp"
-#include "projectM.h"
-#include "BeatDetect.h"
-#include "PCM.h"
+#include "projectM.hpp"
+#include "BeatDetect.hpp"
+#include "PCM.hpp"
 
 DLLEXPORT BeatDetect::BeatDetect() {
   int x,y; 

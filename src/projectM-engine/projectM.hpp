@@ -19,7 +19,7 @@
  *
  */
 /**
- * $Id: projectM.h,v 1.1.1.1 2005/12/23 18:05:11 psperl Exp $
+ * $Id: projectM.hpp,v 1.1.1.1 2005/12/23 18:05:11 psperl Exp $
  *
  * Encapsulation of ProjectM engine
  *
@@ -29,7 +29,7 @@
 #ifndef _PROJECTM_H
 #define _PROJECTM_H
 
-#include "pbuffer.h"
+#include "PBuffer.hpp"
 
 #ifdef WIN32
 #include "win32-dirent.h"

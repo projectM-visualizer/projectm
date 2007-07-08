@@ -24,7 +24,7 @@
 
 #include "Common.hpp"
 #include "fatal.h"
-#include "projectM.h"
+#include "projectM.hpp"
 #include "glConsole.h"
 #include "event.h"
 

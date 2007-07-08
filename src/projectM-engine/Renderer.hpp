@@ -1,9 +1,9 @@
 #ifndef Renderer_HPP
 #define Renderer_HPP
 
-#include "pbuffer.h"
+#include "PBuffer.hpp"
 #include "PresetFrameIO.hpp"
-#include "BeatDetect.h"
+#include "BeatDetect.hpp"
 
 #ifdef USE_FTGL
 #include <FTGL/FTGL.h>

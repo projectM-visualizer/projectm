@@ -18,7 +18,7 @@ extern "C" {
 #include <dirent.h>
 }
 #include <cassert>
-#include "projectM.h"
+#include "projectM.hpp"
 
 const std::string PresetLoader::PROJECTM_FILE_EXTENSION(".prjm");
 const std::string PresetLoader::MILKDROP_FILE_EXTENSION(".milk");

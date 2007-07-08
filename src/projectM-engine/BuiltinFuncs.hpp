@@ -17,7 +17,7 @@
 #include "Func.hpp"
 #include <cmath>
 #include <cstdlib>
-#include "projectM.h"
+#include "projectM.hpp"
 /* Wrappers for all the builtin functions
    The arg_list pointer is a list of floats. Its
    size is equal to the number of arguments the parameter

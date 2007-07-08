@@ -21,7 +21,7 @@
 
 #include <stdio.h>
 
-#include "projectM.h"
+#include "projectM.hpp"
 #include "Common.hpp"
 #include "fatal.h"
 //#include "menu.h"
@@ -30,7 +30,7 @@
 #include "browser.h"
 #include "editor.h"
 #include "event.h"
-#include "BeatDetect.h"
+#include "BeatDetect.hpp"
 #include "PresetChooser.hpp"
 
 

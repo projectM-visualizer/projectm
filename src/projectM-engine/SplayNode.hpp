@@ -29,7 +29,7 @@
 #ifndef _SPLAYNODE_HPP
 #define _SPLAYNODE_HPP
 
-//#include "projectM.h"
+//#include "projectM.hpp"
 
 #include "compare.h"
 

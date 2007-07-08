@@ -19,7 +19,7 @@
  *
  */
 /**
- * $Id: pbuffer.h,v 1.1.1.1 2005/12/23 18:05:00 psperl Exp $
+ * $Id: PBuffer.hpp,v 1.1.1.1 2005/12/23 18:05:00 psperl Exp $
  *
  * Opaque render target
  *

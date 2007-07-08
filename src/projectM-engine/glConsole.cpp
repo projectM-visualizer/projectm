@@ -34,7 +34,7 @@
 #endif /** MACOS */
 #include <time.h>
 
-#include "projectM.h"
+#include "projectM.hpp"
 
 #ifdef MACOS
 #include <gl.h>

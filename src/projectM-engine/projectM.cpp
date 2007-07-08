@@ -34,15 +34,15 @@
 #endif
 
 //#include <xmms/plugin.h>
-#include "projectM.h"
-#include "BeatDetect.h"
+#include "projectM.hpp"
+#include "BeatDetect.hpp"
 #include "Eval.hpp"
 #include "Param.hpp"
 #include "Parser.hpp"
 #include "Preset.hpp"
 #include "PerPixelEqn.hpp"
 //#include "menu.h"
-#include "PCM.h"                    //Sound data handler (buffering, FFT, etc.)
+#include "PCM.hpp"                    //Sound data handler (buffering, FFT, etc.)
 #include "CustomWave.hpp"
 #include "CustomShape.hpp"
 #include "SplayTree.hpp"
