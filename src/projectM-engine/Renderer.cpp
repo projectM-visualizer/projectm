@@ -814,7 +814,7 @@ void Renderer::draw_waveform(PresetOutputs *presetOutputs, PresetInputs *presetI
     glPushMatrix();
 
   modulate_opacity_by_volume(presetOutputs); 
-  maximize_colors();
+  maximize_colors(presetOutputs);
   
   if(presetOutputs->bWaveDots==1) glEnable(GL_LINE_STIPPLE);
   
