@@ -23,7 +23,7 @@ class PresetIterator {
 public:
     PresetIterator()  {}
 
-    /** @brief Instantiate a preset iterator at the given starting position */
+    /// Instantiate a preset iterator at the given starting position 
     PresetIterator(std::size_t start);
 
     ///  Move iterator forward

@@ -128,7 +128,7 @@ public:
     static RenderTarget *renderTarget;
 
     char *presetURL;
-    
+
     char *fontURL;
 
     int hasInit;
