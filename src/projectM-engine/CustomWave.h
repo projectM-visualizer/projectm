@@ -68,7 +68,7 @@ public:
 
     /* Parameter tree associated with this custom wave */
     SplayTree<Param> * param_tree;
-    
+
     /* Engine variables */
     float x; /* x position for per point equations */
     float y; /* y position for per point equations */
@@ -109,7 +109,7 @@ public:
     float t8;
     float v1,v2;
 
-    /* Data structure to hold per frame and per point equations */
+    /* Data structures to hold per frame and per point equations */
     SplayTree<InitCond> * init_cond_tree;
     SplayTree<PerFrameEqn> * per_frame_eqn_tree;
     SplayTree <PerPointEqn> * per_point_eqn_tree;
@@ -138,11 +138,6 @@ public:
     void load_unspec_init_cond() ;
     void eval_custom_wave_init_conds();
     void load_unspec_init_cond(Param * param);
-    void destroy_per_point_eqn_tree(SplayTree<PerPointEqn> * tree);
-    void destroy_param_db_tree(SplayTree<Param> * tree);
-    void destroy_per_frame_eqn_tree(SplayTree<PerFrameEqn> * tree);
-    void destroy_per_frame_init_eqn_tree();
-    void destroy_init_cond_tree(SplayTree<InitCond> * tree);
     void evalPerPointEqn(PerPointEqn * per_point_eqn);
 
 

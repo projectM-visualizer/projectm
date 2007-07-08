@@ -430,12 +430,14 @@ CustomWave::~CustomWave() {
   if (param_tree == NULL)
     return;
 
-  destroy_per_point_eqn_tree(per_point_eqn_tree);
-  destroy_per_frame_eqn_tree(per_frame_eqn_tree);
-  destroy_init_cond_tree(init_cond_tree);
-  destroy_param_db_tree(param_tree);
-  destroy_per_frame_init_eqn_tree();
+  
+  per_point_eqn_tree->traverse<SplayTreeFunctors::Delete<PerPointEqn> >();
+  per_frame_eqn_tree->traverse<SplayTreeFunctors::Delete<PerFrameEqn> >();
+  init_cond_tree->traverse<SplayTreeFunctors::Delete<InitCond> >();
+  param_tree->traverse<SplayTreeFunctors::Delete<Param> > ();
+  per_frame_init_eqn_tree->traverse<SplayTreeFunctors::Delete<InitCond> > ();
 
+  
   free(r_mesh);
   free(g_mesh);
   free(b_mesh);
@@ -460,16 +462,6 @@ CustomWave::~CustomWave() {
 }
 
 
-
-void CustomWave::destroy_per_frame_init_eqn_tree() {
-
-  if (!per_frame_init_eqn_tree)
-    return;
-
-  per_frame_init_eqn_tree->splay_traverse((void (*)(void*))free_init_cond_helper);
-  delete per_frame_init_eqn_tree;
-
-}
 
 
 

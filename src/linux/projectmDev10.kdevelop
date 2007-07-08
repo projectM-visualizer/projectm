@@ -191,7 +191,9 @@
       <synchronize>true</synchronize>
       <orientation>Vertical</orientation>
     </splitheadersource>
-    <references/>
+    <references>
+      <pcs>automatic_%2Fhome%2Fcarm%2Fprojects%2FprojectM%2Fdev-1.0</pcs>
+    </references>
   </kdevcppsupport>
   <cppsupportpart>
     <filetemplates>
@@ -205,7 +207,10 @@
       <hidenonprojectfiles>false</hidenonprojectfiles>
       <hidepatterns>*.o,*.lo,CVS</hidepatterns>
     </tree>
-    <groups/>
+    <groups>
+      <hidenonprojectfiles>false</hidenonprojectfiles>
+      <hidenonlocation>false</hidenonlocation>
+    </groups>
   </kdevfileview>
   <kdevdocumentation>
     <projectdoc>

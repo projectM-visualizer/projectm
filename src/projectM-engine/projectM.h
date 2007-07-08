@@ -201,10 +201,6 @@ public:
     void draw_title();
     void draw_stats();
 
-    void modulate_opacity_by_volume();
-    void maximize_colors();
-    void darken_center();
-
     void do_per_pixel_math();
     void do_per_frame();
 
@@ -212,14 +208,6 @@ public:
     void render_texture_to_screen();
     void render_texture_to_studio();
 
-    void draw_motion_vectors();
-    void draw_borders();
-    void draw_shapes();
-    void draw_waveform();
-    void draw_custom_waves();
-
-    void draw_title_to_screen();
-    void draw_title_to_texture();
     void get_title();
 
     void reset_per_pixel_matrices();

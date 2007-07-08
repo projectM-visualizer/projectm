@@ -199,7 +199,6 @@ CustomShape::~CustomShape() {
   if (param_tree == NULL)
     return;
 
-  abort();
   per_frame_eqn_tree->traverse<SplayTreeFunctors::Delete<PerFrameEqn> >();
   init_cond_tree->traverse<SplayTreeFunctors::Delete<InitCond> >();
   param_tree->traverse<SplayTreeFunctors::Delete<Param> > ();
