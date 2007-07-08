@@ -29,7 +29,7 @@
 #ifndef _FUNC_H
 #define _FUNC_H
 
-#include "common.h"
+#include "Common.hpp"
 
 class Func;
 #include "SplayTree.hpp"

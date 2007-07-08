@@ -26,14 +26,14 @@
 #include "projectM.h"
 
 #include "fatal.h"
-#include "common.h"
+#include "Common.hpp"
 
 #include "CustomWave.hpp"
-#include "Eval.h"
-#include "Expr.h"
+#include "Eval.hpp"
+#include "Expr.hpp"
 #include "Param.hpp"
-#include "PerPixelEqn.h"
-#include "PerPointEqn.h"
+#include "PerPixelEqn.hpp"
+#include "PerPointEqn.hpp"
 #include "SplayTree.hpp"
 
 #include "wipemalloc.h"

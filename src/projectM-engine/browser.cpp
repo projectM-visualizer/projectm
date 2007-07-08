@@ -22,7 +22,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "common.h"
+#include "Common.hpp"
 #include "fatal.h"
 #include "projectM.h"
 #include "glConsole.h"

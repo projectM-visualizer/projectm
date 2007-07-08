@@ -21,7 +21,7 @@
 #include "wipemalloc.h"
 #include "BuiltinFuncs.hpp"
 #include "fatal.h"
-#include "common.h"
+#include "Common.hpp"
 #include "compare.h"
 #ifdef WIN32
 #include "win32-dirent.h"
@@ -36,11 +36,11 @@
 //#include <xmms/plugin.h>
 #include "projectM.h"
 #include "BeatDetect.h"
-#include "Eval.h"
+#include "Eval.hpp"
 #include "Param.hpp"
 #include "Parser.hpp"
 #include "Preset.hpp"
-#include "PerPixelEqn.h"
+#include "PerPixelEqn.hpp"
 //#include "menu.h"
 #include "PCM.h"                    //Sound data handler (buffering, FFT, etc.)
 #include "CustomWave.hpp"

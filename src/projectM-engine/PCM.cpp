@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "common.h"
+#include "Common.hpp"
 #include "wipemalloc.h"
 #include "fftsg.h"
 #include "PCM.h"

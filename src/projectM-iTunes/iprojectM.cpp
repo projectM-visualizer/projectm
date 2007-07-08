@@ -30,7 +30,7 @@
 #endif
 
 #include <projectM-engine/carbontoprojectM.h>
-#include <projectM-engine/common.h>
+#include <projectM-engine/Common.hpp>
 #include <projectM-engine/BeatDetect.h>
 #include <projectM-engine/PCM.h>
 #include <projectM-engine/projectM.h>

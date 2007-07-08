@@ -24,13 +24,13 @@
 #include <stdlib.h>
 
 #include "projectM.h"
-#include "common.h"
+#include "Common.hpp"
 #include "fatal.h"
 
-#include "Eval.h"
-#include "Expr.h"
+#include "Eval.hpp"
+#include "Expr.hpp"
 #include "Param.hpp"
-#include "Func.h"
+#include "Func.hpp"
 #include "BuiltinFuncs.hpp"
 #include "wipemalloc.h"
 

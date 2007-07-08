@@ -29,14 +29,14 @@
 #ifndef _PRESET_HPP
 #define _PRESET_HPP
 
-#include "common.h"
+#include "Common.hpp"
 #include <string>
 //#define PRESET_DEBUG 2 /* 0 for no debugging, 1 for normal, 2 for insane */
 
 #include "CustomShape.hpp"
 #include "CustomWave.hpp"
-#include "Expr.h"
-#include "PerPixelEqn.h"
+#include "Expr.hpp"
+#include "PerPixelEqn.hpp"
 #include "PerFrameEqn.h"
 #include "BuiltinParams.hpp"
 #include "PresetFrameIO.hpp"

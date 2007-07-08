@@ -30,7 +30,7 @@
 #define _MENU_H
 
 #include "event.h"
-#include "common.h"
+#include "Common.hpp"
 #include "Param.hpp"
 
 #define MENU_DEBUG 0

@@ -24,10 +24,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "common.h"
+#include "Common.hpp"
 #include "fatal.h"
 
-#include "Expr.h"
+#include "Expr.hpp"
 #include "InitCond.hpp"
 #include "Param.hpp"
 #include "SplayTree.hpp"

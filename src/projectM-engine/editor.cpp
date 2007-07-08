@@ -30,7 +30,7 @@
 #else
 #include <GL/gl.h>
 #endif /** MACOS */
-#include "common.h"
+#include "Common.hpp"
 #include "fatal.h"
 #include "event.h"
 

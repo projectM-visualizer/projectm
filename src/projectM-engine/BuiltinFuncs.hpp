@@ -13,8 +13,8 @@
 #ifndef _BUILTIN_FUNCS_HPP
 #define _BUILTIN_FUNCS_HPP
 
-#include "common.h"
-#include "Func.h"
+#include "Common.hpp"
+#include "Func.hpp"
 #include <cmath>
 #include <cstdlib>
 #include "projectM.h"

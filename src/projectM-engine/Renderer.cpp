@@ -1,7 +1,7 @@
 #include "Renderer.hpp"
 #include "wipemalloc.h"
 #include "math.h"
-#include "common.h"
+#include "Common.hpp"
 #include "console_interface.h"
 #include "CustomShape.hpp"
 #include "CustomWave.hpp"

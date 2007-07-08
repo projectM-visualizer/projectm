@@ -22,7 +22,7 @@
 #include <stdio.h>
 
 #include "projectM.h"
-#include "common.h"
+#include "Common.hpp"
 #include "fatal.h"
 //#include "menu.h"
 #include "console_interface.h"

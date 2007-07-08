@@ -21,8 +21,8 @@
 
 #include "wipemalloc.h"
 
-#include "Expr.h"
-#include "Eval.h"
+#include "Expr.hpp"
+#include "Eval.hpp"
 #include <cassert>
 
 float GenExpr::eval_gen_expr() {

@@ -26,12 +26,12 @@
 #include "projectM.h"
 
 #include "fatal.h"
-#include "common.h"
+#include "Common.hpp"
 
-#include "Expr.h"
-#include "Eval.h"
+#include "Expr.hpp"
+#include "Eval.hpp"
 #include "Param.hpp"
-#include "PerPixelEqn.h"
+#include "PerPixelEqn.hpp"
 #include "SplayTree.hpp"
 
 #include "wipemalloc.h"

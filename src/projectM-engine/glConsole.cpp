@@ -42,7 +42,7 @@
 #include <GL/gl.h>
 #endif /** MACOS */
 #include "glConsole.h"
-#include "common.h"
+#include "Common.hpp"
 #include "fatal.h"
 
 #include "wipemalloc.h"

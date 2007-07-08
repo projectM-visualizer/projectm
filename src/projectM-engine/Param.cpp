@@ -28,11 +28,11 @@
 #include "projectM.h"
 
 #include "fatal.h"
-#include "common.h"
+#include "Common.hpp"
 
 #include "CustomShape.hpp"
-#include "Eval.h"
-#include "Expr.h"
+#include "Eval.hpp"
+#include "Expr.hpp"
 #include "InitCond.hpp"
 #include "Param.hpp"
 #include "Preset.hpp"

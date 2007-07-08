@@ -31,7 +31,7 @@
 
 #include "wipemalloc.h"
 
-#include "common.h"
+#include "Common.hpp"
 #include "projectM.h"
 #include "BeatDetect.h"
 #include "PCM.h"

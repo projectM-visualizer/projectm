@@ -25,16 +25,16 @@
 
 #include "projectM.h"
 
-#include "common.h"
+#include "Common.hpp"
 #include "fatal.h"
 
 #include "CustomWave.hpp"
-#include "Eval.h"
-#include "Expr.h"
+#include "Eval.hpp"
+#include "Expr.hpp"
 #include "InitCond.hpp"
 #include "Param.hpp"
 #include "PerFrameEqn.h"
-#include "PerPointEqn.h"
+#include "PerPointEqn.hpp"
 #include "Preset.hpp"
 #include "SplayTree.hpp"
 #include "ParamUtils.hpp"

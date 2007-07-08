@@ -32,7 +32,7 @@
 #define _EVAL_H
 
 #include "projectM.h"
-#include "Func.h"
+#include "Func.hpp"
 #include "Param.hpp"
 
 //#define EVAL_DEBUG 2

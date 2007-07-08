@@ -44,7 +44,7 @@ class GenExpr;
 class PerPointEqn;
 class Preset;
 
-#include "common.h"
+#include "Common.hpp"
 #include "Param.hpp"
 #include "PerFrameEqn.h"
 

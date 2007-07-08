@@ -24,21 +24,21 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "common.h"
+#include "Common.hpp"
 #include "fatal.h"
 
 #include "BuiltinFuncs.hpp"
 #include "CustomWave.hpp"
 #include "CustomShape.hpp"
-#include "Expr.h"
-#include "Eval.h"
-#include "Func.h"
+#include "Expr.hpp"
+#include "Eval.hpp"
+#include "Func.hpp"
 #include "InitCond.hpp"
 #include "Param.hpp"
 #include "Preset.hpp"
 #include "Parser.hpp"
 #include "PerFrameEqn.h"
-#include "PerPixelEqn.h"
+#include "PerPixelEqn.hpp"
 #include "SplayTree.hpp"
 #include "ParamUtils.hpp"
 

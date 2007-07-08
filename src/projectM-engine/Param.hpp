@@ -49,8 +49,8 @@
 #define P_FLAG_PER_PIXEL (1 << 6)
 #define P_FLAG_PER_POINT (1 << 7)
 
-#include "Expr.h"
-#include "common.h"
+#include "Expr.hpp"
+#include "Common.hpp"
 
 class InitCond;
 class Param;
