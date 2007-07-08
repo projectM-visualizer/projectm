@@ -29,11 +29,11 @@
 #include <windows.h>
 #endif
 
-#include <projectM-engine/carbontoprojectM.h>
+#include <projectM-engine/carbontoprojectM.hpp>
 #include <projectM-engine/Common.hpp>
-#include <projectM-engine/BeatDetect.h>
-#include <projectM-engine/PCM.h>
-#include <projectM-engine/projectM.h>
+#include <projectM-engine/BeatDetect.hpp>
+#include <projectM-engine/PCM.hpp>
+#include <projectM-engine/projectM.hpp>
 //#include <projectM-engine/menu.h>
 
 #ifdef WIN32

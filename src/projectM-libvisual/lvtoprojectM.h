@@ -19,11 +19,11 @@
  *
  */
 /**
- * $Id: sdltoprojectM.h,v 1.1 2004/10/08 00:35:28 cvs Exp $
+ * $Id: sdltoprojectM.hpp,v 1.1 2004/10/08 00:35:28 cvs Exp $
  *
  * Translates SDL -> projectM variables
  *
- * $Log: sdltoprojectM.h,v $
+ * $Log: sdltoprojectM.hpp,v $
  * Revision 1.1  2004/10/08 00:35:28  cvs
  * Moved and imported
  *

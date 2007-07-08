@@ -20,8 +20,8 @@
  */
 
 #include <math.h>
-#include <projectM.h>
-#include <sdltoprojectM.h>
+#include <projectM.hpp>
+#include <sdltoprojectM.hpp>
 
 #ifdef DEBUG
 FILE *debugFile = NULL;

@@ -11,11 +11,11 @@ using namespace std;
 #include <sys/types.h>
 
 #include <libvisual/libvisual.h>
-#include <libprojectM/BeatDetect.h>
-#include <libprojectM/PCM.h>
-#include <libprojectM/projectM.h>
+#include <libprojectM/BeatDetect.hpp>
+#include <libprojectM/PCM.hpp>
+#include <libprojectM/projectM.hpp>
 #include <libprojectM/console_interface.h>
-#include "lvtoprojectM.h"
+#include "lvtoprojectM.hpp"
 
 #if HAVE_CONFIG_H
 #include <config.h>

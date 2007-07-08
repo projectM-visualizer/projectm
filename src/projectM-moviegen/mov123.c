@@ -47,7 +47,7 @@
 #include <QuickTime/QTML.h>
 #endif
 
-#include <projectM.h>
+#include <projectM.hpp>
 
 #define kVideoTimeScale 600
 
