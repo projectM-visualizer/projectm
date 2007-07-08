@@ -20,6 +20,9 @@ extern "C" {
 #include <cassert>
 #include "projectM.h"
 
+const std::string PresetLoader::PROJECTM_FILE_EXTENSION(".prjm");
+const std::string PresetLoader::MILKDROP_FILE_EXTENSION(".milk");
+
 PresetLoader::PresetLoader(std::string dirname) :m_dirname(dirname)
 {
 	// Do one scan
