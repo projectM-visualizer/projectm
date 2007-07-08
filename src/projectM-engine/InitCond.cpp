@@ -28,7 +28,7 @@
 #include "fatal.h"
 
 #include "Expr.h"
-#include "InitCond.h"
+#include "InitCond.hpp"
 #include "Param.h"
 #include "SplayTree.hpp"
 

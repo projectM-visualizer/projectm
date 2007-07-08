@@ -1,7 +1,7 @@
 #ifndef _INIT_COND_UTILS_HPP
 #define _INIT_COND_UTILS_HPP
 #include "SplayTree.hpp"
-#include "InitCond.h"
+#include "InitCond.hpp"
 
 namespace InitCondUtils {
 class LoadUnspecInitCond {

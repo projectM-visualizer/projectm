@@ -36,7 +36,7 @@
 
 #include "Expr.h"
 #include "PerFrameEqn.h"
-#include "InitCond.h"
+#include "InitCond.hpp"
 #include "Preset.hpp"
 
 /* Strings that prefix (and denote the type of) equations */

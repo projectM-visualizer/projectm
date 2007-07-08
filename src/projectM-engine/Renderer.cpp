@@ -565,7 +565,7 @@ void Renderer::reset(int w, int h)
         other_font = new FTGLPixmapFont(path);
    
       }
-#endif /** USE_FTGL */      
+#endif /** USE_FTGL */
 }
 
 

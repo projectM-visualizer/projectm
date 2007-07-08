@@ -41,7 +41,7 @@
 #include "BuiltinParams.hpp"
 #include "PresetFrameIO.hpp"
 #include "SplayTree.hpp"
-#include "InitCond.h"
+#include "InitCond.hpp"
 #include <vector>
 
 

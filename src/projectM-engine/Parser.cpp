@@ -33,7 +33,7 @@
 #include "Expr.h"
 #include "Eval.h"
 #include "Func.h"
-#include "InitCond.h"
+#include "InitCond.hpp"
 #include "Param.h"
 #include "Preset.hpp"
 #include "Parser.h"

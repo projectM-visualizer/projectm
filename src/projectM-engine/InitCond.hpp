@@ -26,8 +26,8 @@
  * $Log$
  */
 
-#ifndef _INIT_COND_H
-#define _INIT_COND_H
+#ifndef _INIT_COND_HPP
+#define _INIT_COND_HPP
 
 //#define INIT_COND_DEBUG 2
 #define INIT_COND_DEBUG 0

@@ -35,7 +35,7 @@
 #include "Param.h"
 #include "SplayTree.hpp"
 
-#include "InitCond.h"
+#include "InitCond.hpp"
 
 #include "glConsole.h"
 

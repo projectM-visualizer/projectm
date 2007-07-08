@@ -33,7 +33,7 @@
 #include "SplayTree.hpp"
 #include "Param.h"
 #include "PerFrameEqn.h"
-#include "InitCond.h"
+#include "InitCond.hpp"
 
 class Preset;
 

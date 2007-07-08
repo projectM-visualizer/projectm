@@ -29,7 +29,7 @@
 #include "CustomShape.h"
 #include "Eval.h"
 #include "Expr.h"
-#include "InitCond.h"
+#include "InitCond.hpp"
 #include "Param.h"
 #include "PerFrameEqn.h"
 #include "Preset.hpp"
