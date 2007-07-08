@@ -18,7 +18,7 @@ class PresetLoader {
 		static const std::string MILKDROP_FILE_EXTENSION;
 		
 		/** Initializes the preset loader with the target directory specified */
-		PresetLoader(std::string pathname);
+		PresetLoader(std::string dirname);
 
 		/** Destructor will remove all alllocated presets */
 		~PresetLoader();

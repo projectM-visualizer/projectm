@@ -29,9 +29,12 @@ PresetLoader::PresetLoader(std::string dirname) :m_dirname(dirname)
 	rescan();
 }
 
+PresetLoader::~PresetLoader() {}
+
 void PresetLoader::setScanDirectory(std::string dirname) {
 	m_dirname = dirname;			
 }
+
 
 void PresetLoader::rescan() {
 
