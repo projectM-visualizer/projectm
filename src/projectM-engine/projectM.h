@@ -122,8 +122,6 @@ public:
     static const std::string PROJECTM_PRESET_PATH;
 
     static projectM *currentEngine;
-    /// @bug: why is this static?
-    static std::auto_ptr<Preset> activePreset;
     static Renderer *renderer;
     static RenderTarget *renderTarget;
 

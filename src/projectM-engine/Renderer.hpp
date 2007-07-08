@@ -30,14 +30,16 @@ class Renderer
    
     float aspect;
  
+
+  
+ public:
+ /// @bug hack to get glConsol
+
 #ifdef USE_FTGL
 FTGLPixmapFont *title_font;
 FTGLPixmapFont *other_font;
 FTGLPolygonFont *poly_font;
 #endif /** USE_FTGL */
-
-  
- public:
  
  int showfps;
     int showtitle;

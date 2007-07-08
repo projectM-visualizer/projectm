@@ -24,7 +24,7 @@
 #include "projectM.h"
 #include "common.h"
 #include "fatal.h"
-#include "menu.h"
+//#include "menu.h"
 #include "console_interface.h"
 #include "Preset.hpp"
 #include "browser.h"
@@ -41,7 +41,7 @@ void refreshConsole() {
   switch (current_interface) {
 
   case MENU_INTERFACE:
-    refreshMenu();
+//    refreshMenu();
     break;
   case SHELL_INTERFACE:
     break;
@@ -163,7 +163,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		/// @bug implement == operator
 		if (!((*m_presetPos) != m_presetChooser->end()))
 			--(*m_presetPos);
-		this->activePreset = m_presetPos->allocate(this->presetInputs, this->presetOutputs);
+		m_activePreset = m_presetPos->allocate(this->presetInputs, this->presetOutputs);
 		//this->activePreset = m_presetPos.allocate(
 	      break;
 	    case PROJECTM_K_r:
@@ -218,8 +218,8 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      renderer->showhelp=0;
 	      renderer->showstats=0;
 	      renderer->showfps=0;
-	      current_interface = MENU_INTERFACE;
-	      showMenu();
+//	      current_interface = MENU_INTERFACE;
+//	      showMenu();
 	      break;	     
 	    case PROJECTM_K_t:
 	      break;

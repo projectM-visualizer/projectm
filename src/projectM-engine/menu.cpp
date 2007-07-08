@@ -47,7 +47,7 @@
 #define HIGHLIGHT_COLOR 1
 #define DEFAULT_COLOR 0
 #define LOCKED_COLOR 2
-
+#if 0
 extern Preset *activePreset;
 extern interface_t current_interface;
 
@@ -1030,3 +1030,4 @@ projectM::currentEngine->fullscreen=1;
 
 
 }
+#endif

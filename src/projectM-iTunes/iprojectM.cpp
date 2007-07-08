@@ -34,7 +34,7 @@
 #include <projectM-engine/BeatDetect.h>
 #include <projectM-engine/PCM.h>
 #include <projectM-engine/projectM.h>
-#include <projectM-engine/menu.h>
+//#include <projectM-engine/menu.h>
 
 #ifdef WIN32
 #include "win32/iTunesVisualAPI.h"

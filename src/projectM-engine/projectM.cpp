@@ -41,7 +41,7 @@
 #include "Parser.h"
 #include "Preset.hpp"
 #include "PerPixelEqn.h"
-#include "menu.h"
+//#include "menu.h"
 #include "PCM.h"                    //Sound data handler (buffering, FFT, etc.)
 #include "CustomWave.h"
 #include "CustomShape.h"
@@ -104,11 +104,8 @@ DLLEXPORT void projectM::renderFrame() {
     if (presetInputs.progress>1.0) presetInputs.progress=1.0;
 
 //       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
-//      this->activePreset->evalInitConditions();
-    this->activePreset->evaluateFrame();
+    m_activePreset->evaluateFrame();
 
-//      this->activePreset->evalCustomWaveInitConditions();
-//      this->activePreset->evalCustomShapeInitConditions();
 
 //     printf("%f %d\n",Time,frame);
 
@@ -162,7 +159,7 @@ DLLEXPORT void projectM::projectM_reset() {
     DWRITE( "projectM_reset(): in\n" );
 
     /// @bug it's very possible this is a hack
-    this->activePreset = std::auto_ptr<Preset>(0);
+    m_activePreset = std::auto_ptr<Preset>(0);
 
     this->presetURL = NULL;
     this->fontURL = NULL;
@@ -323,7 +320,7 @@ DLLEXPORT void projectM::projectM_init(int gx, int gy, int fps, int texsize, int
     mspf=(int)(1000.0/(float)presetInputs.fps);
 
 
-    initMenu();
+//    initMenu();
 //DWRITE( "post initMenu()\n" );
 
     printf("mesh: %d %d\n", gx,gy );

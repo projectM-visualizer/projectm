@@ -29,9 +29,6 @@
 #ifndef _SPLAYTREE_HPP
 #define _SPLAYTREE_HPP
 
-#define REGULAR_NODE_TYPE 0
-#define SYMBOLIC_NODE_TYPE 1
-
 #define PERFECT_MATCH 0
 #define CLOSEST_MATCH 1
 
@@ -87,7 +84,7 @@ public:
 	void traverse(Fun & functor);
 
 	/** Traverses the splay tree at each node in order by constructing a functor on the fly
-	 * and using it to traverse the entire tree. This is a convenience function for functors that dont return
+	 * and using it to traverse the entire tree. This is a convenience function for functors that don't return
 	 * any useful state to the caller. Note that the functor is assumed to take one template type which
          * matches the datatype of the splay tree.  See implementation for more details.
  	 */ 

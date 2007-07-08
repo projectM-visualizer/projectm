@@ -123,7 +123,7 @@ totalframes++;
       
       glMatrixMode( GL_PROJECTION );
       glPushMatrix();
-      glLoadIdentity();  
+      glLoadIdentity();
       glOrtho(0.0, 1, 0.0, 1,10,40);
       
       glMatrixMode( GL_MODELVIEW );

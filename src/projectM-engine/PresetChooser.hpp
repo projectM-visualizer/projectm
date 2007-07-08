@@ -122,7 +122,6 @@ inline std::size_t PresetIterator::operator*() const {
 
 inline PresetIterator::PresetIterator(std::size_t start):m_currentIndex(start) {}
 
-
 inline void PresetIterator::operator++() {
     assert(m_currentIndex < m_presetChooser->getNumPresets());
     m_currentIndex++;
@@ -132,7 +131,6 @@ inline void PresetIterator::operator--() {
     assert(m_currentIndex > 0);
     m_currentIndex--;
 }
-
 
 inline bool PresetIterator::operator !=(const PresetIterator & presetPos) const {
     return (*presetPos != **this);

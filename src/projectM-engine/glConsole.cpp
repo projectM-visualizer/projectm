@@ -64,13 +64,8 @@ int clear_console_scroll_buffer(gl_console_t * gl_console);
 //float screen_width = 800;
 //float screen_height = 600;
 
-#ifdef USE_FTGL
-extern  FTGLPixmapFont *other_font;
-#endif /** USE_FTGL */
-
 extern projectM *PM;
 int refresh_count = 0;
-
 
 /* Creates a new console of (width X height) with left corner at
    (x, y) */
@@ -801,9 +796,9 @@ int glConsoleDraw( gl_console_t * console) {
 
 	
         //Figure out size of one console unit  
-	other_font->FaceSize((unsigned)(16*(vh/512.0)));
-	advance=other_font->Advance("W");
-	other_font->BBox("qpg_XT[",llx,lly,llx,urx,ury,urz);
+	PM->renderer->other_font->FaceSize((unsigned)(16*(vh/512.0)));
+	advance=PM->renderer->other_font->Advance("W");
+	PM->renderer->other_font->BBox("qpg_XT[",llx,lly,llx,urx,ury,urz);
 
 
         float invfix=1.0/512;
@@ -897,7 +892,7 @@ int glConsoleDraw( gl_console_t * console) {
 	gl_console_set_color(console_char->fg_color);
 	glRasterPos2f(0,0);
 
-        other_font->Render(buffer);
+        PM->renderer->other_font->Render(buffer);
  
 	 
 	  /* New line, shift down the size of the symbol plus some extra space */
@@ -1028,3 +1023,4 @@ int glConsoleSetCursorStyle(int style_num, gl_console_t * gl_console) {
 
 	return PROJECTM_SUCCESS;
 }
+
