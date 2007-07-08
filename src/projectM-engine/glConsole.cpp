@@ -797,7 +797,9 @@ int glConsoleDraw( gl_console_t * console) {
 	
         //Figure out size of one console unit  
 	PM->renderer->other_font->FaceSize((unsigned)(16*(vh/512.0)));
-	advance=PM->renderer->other_font->Advance("W");
+
+	/// @bug commented out to get projectM working
+	//advance=PM->renderer->other_font->Advance("W");
 	PM->renderer->other_font->BBox("qpg_XT[",llx,lly,llx,urx,ury,urz);
 
 
