@@ -8,7 +8,7 @@ BuiltinFuncs.cpp compare.h editor.h event.h fatal.h SplayTree.hpp fftsg.h glCons
 
 OPTION(USE_FTGL "Use FTGL for on-screen fonts" ON)
 
-ADD_DEFINITIONS(-DLINUX -DFBO)
+ADD_DEFINITIONS(-DLINUX -DUSE_FBO)
 
 FIND_PACKAGE(OpenGL)
 
