@@ -30,7 +30,7 @@
 
 #include "Expr.h"
 #include "Eval.h"
-#include "Param.h"
+#include "Param.hpp"
 #include "PerPixelEqn.h"
 #include "SplayTree.hpp"
 

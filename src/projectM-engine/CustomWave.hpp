@@ -45,7 +45,7 @@ class PerPointEqn;
 class Preset;
 
 #include "common.h"
-#include "Param.h"
+#include "Param.hpp"
 #include "PerFrameEqn.h"
 
 #include "SplayTree.hpp"

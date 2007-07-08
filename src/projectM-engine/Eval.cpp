@@ -29,7 +29,7 @@
 
 #include "Eval.h"
 #include "Expr.h"
-#include "Param.h"
+#include "Param.hpp"
 #include "Func.h"
 #include "BuiltinFuncs.hpp"
 #include "wipemalloc.h"

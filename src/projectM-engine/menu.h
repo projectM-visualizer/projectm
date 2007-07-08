@@ -31,7 +31,7 @@
 
 #include "event.h"
 #include "common.h"
-#include "Param.h"
+#include "Param.hpp"
 
 #define MENU_DEBUG 0
 

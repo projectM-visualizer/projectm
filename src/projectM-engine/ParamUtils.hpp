@@ -5,7 +5,7 @@
 #ifndef _PARAM_UTILS_HPP
 #define _PARAM_UTILS_HPP
 
-#include "Param.h"
+#include "Param.hpp"
 #include "SplayTree.hpp"
 #include <cassert>
 

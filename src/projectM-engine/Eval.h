@@ -33,7 +33,7 @@
 
 #include "projectM.h"
 #include "Func.h"
-#include "Param.h"
+#include "Param.hpp"
 
 //#define EVAL_DEBUG 2
 //#define EVAL_DEBUG_DOUBLE 2

@@ -29,10 +29,11 @@
 #ifndef _INIT_COND_HPP
 #define _INIT_COND_HPP
 
+
 //#define INIT_COND_DEBUG 2
 #define INIT_COND_DEBUG 0
 
-#include "Param.h"
+#include "Param.hpp"
 
 class InitCond;
 class Param;

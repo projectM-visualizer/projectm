@@ -32,7 +32,7 @@
 #endif /** MACOS */
 #include "common.h"
 #include "fatal.h"
-#include "Param.h"
+#include "Param.hpp"
 #include "SplayTree.hpp"
 
 #include "InitCond.hpp"

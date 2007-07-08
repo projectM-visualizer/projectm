@@ -26,7 +26,7 @@
 #include "fatal.h"
 #include "common.h"
 
-#include "Param.h"
+#include "Param.hpp"
 #include "PerFrameEqn.h"
 
 #include "Eval.h"

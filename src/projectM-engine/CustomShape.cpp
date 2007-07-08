@@ -30,7 +30,7 @@
 #include "Eval.h"
 #include "Expr.h"
 #include "InitCond.hpp"
-#include "Param.h"
+#include "Param.hpp"
 #include "PerFrameEqn.h"
 #include "Preset.hpp"
 #include "SplayTree.hpp"

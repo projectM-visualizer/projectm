@@ -31,7 +31,7 @@
 
 #define CUSTOM_SHAPE_DEBUG 0
 #include "SplayTree.hpp"
-#include "Param.h"
+#include "Param.hpp"
 #include "PerFrameEqn.h"
 #include "InitCond.hpp"
 

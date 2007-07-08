@@ -34,7 +34,7 @@
 #include "Eval.h"
 #include "Expr.h"
 #include "InitCond.hpp"
-#include "Param.h"
+#include "Param.hpp"
 #include "Preset.hpp"
 #include "SplayTree.hpp"
 

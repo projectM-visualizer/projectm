@@ -32,7 +32,7 @@
 #include "Eval.h"
 #include "Expr.h"
 #include "InitCond.hpp"
-#include "Param.h"
+#include "Param.hpp"
 #include "PerFrameEqn.h"
 #include "PerPointEqn.h"
 #include "Preset.hpp"

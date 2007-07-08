@@ -29,7 +29,7 @@
 
 #include "Expr.h"
 #include "InitCond.hpp"
-#include "Param.h"
+#include "Param.hpp"
 #include "SplayTree.hpp"
 
 #include "wipemalloc.h"

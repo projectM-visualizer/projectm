@@ -31,7 +31,7 @@
 #include "CustomWave.hpp"
 #include "Eval.h"
 #include "Expr.h"
-#include "Param.h"
+#include "Param.hpp"
 #include "PerPixelEqn.h"
 #include "PerPointEqn.h"
 #include "SplayTree.hpp"
