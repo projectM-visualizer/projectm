@@ -28,8 +28,8 @@
 #include "fatal.h"
 
 #include "BuiltinFuncs.hpp"
-#include "CustomWave.h"
-#include "CustomShape.h"
+#include "CustomWave.hpp"
+#include "CustomShape.hpp"
 #include "Expr.h"
 #include "Eval.h"
 #include "Func.h"

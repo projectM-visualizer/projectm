@@ -43,8 +43,8 @@
 #include "PerPixelEqn.h"
 //#include "menu.h"
 #include "PCM.h"                    //Sound data handler (buffering, FFT, etc.)
-#include "CustomWave.h"
-#include "CustomShape.h"
+#include "CustomWave.hpp"
+#include "CustomShape.hpp"
 #include "SplayTree.hpp"
 #include "Renderer.hpp"
 #include "PresetChooser.hpp"

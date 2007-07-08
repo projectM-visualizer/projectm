@@ -28,7 +28,7 @@
 #include "common.h"
 #include "fatal.h"
 
-#include "CustomWave.h"
+#include "CustomWave.hpp"
 #include "Eval.h"
 #include "Expr.h"
 #include "InitCond.hpp"

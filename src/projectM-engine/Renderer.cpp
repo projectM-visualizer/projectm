@@ -3,8 +3,8 @@
 #include "math.h"
 #include "common.h"
 #include "console_interface.h"
-#include "CustomShape.h"
-#include "CustomWave.h"
+#include "CustomShape.hpp"
+#include "CustomWave.hpp"
 
 class Preset;
 

@@ -30,7 +30,7 @@
 #include "fatal.h"
 #include "common.h"
 
-#include "CustomShape.h"
+#include "CustomShape.hpp"
 #include "Eval.h"
 #include "Expr.h"
 #include "InitCond.hpp"

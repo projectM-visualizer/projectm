@@ -26,7 +26,7 @@
 #include "common.h"
 #include "fatal.h"
 
-#include "CustomShape.h"
+#include "CustomShape.hpp"
 #include "Eval.h"
 #include "Expr.h"
 #include "InitCond.hpp"
