@@ -1,6 +1,12 @@
-#include "PresetFrameIO.cpp"
+#include "PresetFrameIO.hpp"
+#include "wipemalloc.h"
+#include <math.h>
 
-PresetInputs(int gx, int gy)
+PresetInputs::PresetInputs()
+{
+}
+
+void PresetInputs::Initialize(int gx, int gy)
 {
   int x, y;
 
@@ -10,7 +16,7 @@ PresetInputs(int gx, int gy)
   this->x_mesh=(float **)wipemalloc(gx * sizeof(float *));
   for(x = 0; x < gx; x++)
     {
-      this->presetInputs.x_mesh[x] = (float *)wipemalloc(this->presetInputs.gy * sizeof(float));
+      this->x_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
     }
   this->y_mesh=(float **)wipemalloc(gx * sizeof(float *));
   for(x = 0; x < gx; x++)
@@ -63,58 +69,63 @@ for (x=0;x<gx;x++)
   
 }
 
-PresetOutputs(int gx, int gy)
+PresetOutputs::PresetOutputs()
 {
-  this->sx_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+}
+
+void PresetOutputs::Initialize(int gx, int gy)
+{
+  int x;
+  this->sx_mesh=(float **)wipemalloc(gx * sizeof(float *));
+ for(x = 0; x < gx; x++)
     {
-      this->sx_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->sx_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
     }
-  this->sy_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->sy_mesh=(float **)wipemalloc(gx * sizeof(float *));
+ for(x = 0; x < gx; x++)
     {
-      this->sy_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->sy_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
     }
-  this->dx_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->dx_mesh=(float **)wipemalloc(gx * sizeof(float *));
+ for(x = 0; x < gx; x++)
     {
-      this->dx_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->dx_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
     }
-  this->dy_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->dy_mesh=(float **)wipemalloc(gx * sizeof(float *));
+ for(x = 0; x < gx; x++)
     {
-      this->dy_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->dy_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
     }
-  this->cx_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->cx_mesh=(float **)wipemalloc(gx * sizeof(float *));
+ for(x = 0; x < gx; x++)
     {
-      this->cx_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->cx_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
     }
-  this->cy_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->cy_mesh=(float **)wipemalloc(gx * sizeof(float *));
+ for(x = 0; x < gx; x++)
     {
-      this->cy_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->cy_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
     }
-  this->zoom_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->zoom_mesh=(float **)wipemalloc(gx * sizeof(float *));
+ for(x = 0; x < gx; x++)
     {
-      this->zoom_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->zoom_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
     }
-  this->zoomexp_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->zoomexp_mesh=(float **)wipemalloc(gx * sizeof(float *));
+ for(x = 0; x < gx; x++)
     {
-      this->zoomexp_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->zoomexp_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
     }
-  this->rot_mesh=(float **)wipemalloc(this->gx * sizeof(float *));
- for(x = 0; x < this->gx; x++)
+  this->rot_mesh=(float **)wipemalloc(gx * sizeof(float *));
+ for(x = 0; x < gx; x++)
     { 
-      this->rot_mesh[x] = (float *)wipemalloc(this->gy * sizeof(float));
+      this->rot_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
     }
 }
 
-~presetInputs()
+PresetInputs::~PresetInputs()
 {
- for(x = 0; x < this->gx; x++)
+ for(int x = 0; x < this->gx; x++)
     {
       
      
@@ -124,7 +135,7 @@ PresetOutputs(int gx, int gy)
       free(this->origy[x]);
     
       free(this->x_mesh[x]);
-      free(this->mesh[x]);
+      free(this->y_mesh[x]);
       free(this->rad_mesh[x]);
       free(this->theta_mesh[x]);
       
@@ -152,7 +163,7 @@ PresetOutputs(int gx, int gy)
   this->theta_mesh = NULL;
 }
 
-PresetInputs::ResetMesh()
+void PresetInputs::ResetMesh()
 {
   int x,y;
  

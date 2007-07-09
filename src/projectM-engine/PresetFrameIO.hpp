@@ -17,9 +17,8 @@ public:
     cwave_container customWaves;
     cshape_container customShapes;
 
-    /// @bug should this be here?
-    //int mesh_i, mesh_j;
-
+ void Initialize(int gx, int gy);
+PresetOutputs();
     /* PER FRAME VARIABLES BEGIN */
     float zoom;
     float zoomexp;
@@ -185,6 +184,9 @@ public:
     float **origy;
 
     void ResetMesh();
+  ~PresetInputs();
+PresetInputs();
+  void Initialize(int gx, int gy);
 };
 
 #endif

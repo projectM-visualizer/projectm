@@ -104,6 +104,7 @@ DLLEXPORT void projectM::renderFrame() {
     if (presetInputs.progress>1.0) presetInputs.progress=1.0;
 
 //       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
+    presetInputs.ResetMesh();
     m_activePreset->evaluateFrame();
 
 
@@ -200,6 +201,8 @@ DLLEXPORT void projectM::projectM_init(int gx, int gy, int fps, int texsize, int
 
 
     /** Initialise engine variables */
+  presetInputs.Initialize(gx, gy);
+  presetOutputs.Initialize(gx, gy);
     projectM_initengine();
 
     DWRITE("projectM plugin: Initializing\n");
