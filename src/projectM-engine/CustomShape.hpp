@@ -32,7 +32,7 @@
 #define CUSTOM_SHAPE_DEBUG 0
 #include "SplayTree.hpp"
 #include "Param.hpp"
-#include "PerFrameEqn.h"
+#include "PerFrameEqn.hpp"
 #include "InitCond.hpp"
 
 class Preset;

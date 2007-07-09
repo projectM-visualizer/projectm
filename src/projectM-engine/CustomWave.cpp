@@ -33,7 +33,7 @@
 #include "Expr.hpp"
 #include "InitCond.hpp"
 #include "Param.hpp"
-#include "PerFrameEqn.h"
+#include "PerFrameEqn.hpp"
 #include "PerPointEqn.hpp"
 #include "Preset.hpp"
 #include "SplayTree.hpp"

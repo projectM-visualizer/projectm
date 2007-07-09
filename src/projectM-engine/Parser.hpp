@@ -35,7 +35,7 @@
 #include <stdio.h>
 
 #include "Expr.hpp"
-#include "PerFrameEqn.h"
+#include "PerFrameEqn.hpp"
 #include "InitCond.hpp"
 #include "Preset.hpp"
 

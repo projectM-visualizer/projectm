@@ -37,7 +37,7 @@
 #include "Param.hpp"
 #include "Preset.hpp"
 #include "Parser.hpp"
-#include "PerFrameEqn.h"
+#include "PerFrameEqn.hpp"
 #include "PerPixelEqn.hpp"
 #include "SplayTree.hpp"
 #include "ParamUtils.hpp"

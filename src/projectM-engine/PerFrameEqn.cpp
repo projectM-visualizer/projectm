@@ -27,7 +27,7 @@
 #include "Common.hpp"
 
 #include "Param.hpp"
-#include "PerFrameEqn.h"
+#include "PerFrameEqn.hpp"
 
 #include "Eval.hpp"
 #include "Expr.hpp"

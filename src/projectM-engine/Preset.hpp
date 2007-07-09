@@ -37,7 +37,7 @@
 #include "CustomWave.hpp"
 #include "Expr.hpp"
 #include "PerPixelEqn.hpp"
-#include "PerFrameEqn.h"
+#include "PerFrameEqn.hpp"
 #include "BuiltinParams.hpp"
 #include "PresetFrameIO.hpp"
 #include "SplayTree.hpp"

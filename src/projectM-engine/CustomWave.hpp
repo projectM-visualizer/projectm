@@ -46,7 +46,7 @@ class Preset;
 
 #include "Common.hpp"
 #include "Param.hpp"
-#include "PerFrameEqn.h"
+#include "PerFrameEqn.hpp"
 
 #include "SplayTree.hpp"
 
