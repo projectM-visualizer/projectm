@@ -108,6 +108,8 @@ private:
 };
 
 
+inline PresetChooser::PresetChooser(const PresetLoader & presetLoader):m_presetLoader(&presetLoader) {}
+
 inline std::size_t PresetChooser::getNumPresets() const {
     return m_presetLoader->getNumPresets();
 }
@@ -167,6 +169,12 @@ inline  std::auto_ptr<Preset> PresetChooser::weightedRandom(const PresetInputs &
     WeightFunctor weightFunctor(m_presetLoader->getNumPresets());
     doWeightedSample(weightFunctor, presetInputs, presetOutputs);
 
+}
+
+inline std::auto_ptr<Preset> PresetChooser::directoryIndex(std::size_t index, const PresetInputs & presetInputs,
+                                         PresetOutputs & presetOutputs) const {
+
+	return m_presetLoader->loadPreset(index,presetInputs, presetOutputs);
 }
 
 template <class WeightFunctor>

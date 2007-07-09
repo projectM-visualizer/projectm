@@ -65,7 +65,7 @@
       <prio>0</prio>
       <dontact>false</dontact>
       <makebin>make</makebin>
-      <defaulttarget>install</defaulttarget>
+      <defaulttarget></defaulttarget>
       <makeoptions></makeoptions>
       <selectedenvironment>default</selectedenvironment>
       <environments>
