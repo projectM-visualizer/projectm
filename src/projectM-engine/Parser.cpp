@@ -783,7 +783,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
     }
 
     /* CASE 6: regular parameter. Will be created if necessary and the string has no invalid characters */
-    if ((param = Param::find_param(string, preset, P_CREATE)) != NULL) {
+    if ((param = ParamUtils::find(string, &preset->builtinParams, preset->user_param_tree)) != NULL) {
 
       if (PARSE_DEBUG) {
 	    DWRITE("parse_gen_expr: parameter (name = %s)...\n", param->name);
@@ -1170,7 +1170,7 @@ PerFrameEqn * Parser::parse_per_frame_eqn(FILE * fs, int index, Preset * preset)
   }
   
   /* Find the parameter associated with the string, create one if necessary */
-  if ((param = Param::find_param(string, preset, P_CREATE)) == NULL) {
+  if ((param = ParamUtils::find(string, &preset->builtinParams, preset->user_param_tree)) == NULL) {
     return NULL;	
   }
   
@@ -1216,7 +1216,7 @@ PerFrameEqn * Parser::parse_implicit_per_frame_eqn(FILE * fs, char * param_strin
 
   //rintf("param string: %s\n", param_string);
   /* Find the parameter associated with the string, create one if necessary */
-  if ((param = Param::find_param(param_string, preset, P_CREATE)) == NULL) { 
+  if ((param = ParamUtils::find(param_string, &preset->builtinParams, preset->user_param_tree)) == NULL) { 
     return NULL;	
   }
 
@@ -1261,7 +1261,7 @@ InitCond * Parser::parse_init_cond(FILE * fs, char * name, Preset * preset) {
     return NULL;
   
   /* Search for the paramater in the database, creating it if necessary */
-  if ((param = Param::find_param(name, preset, P_CREATE)) == NULL) {
+  if ((param = ParamUtils::find(name, &preset->builtinParams, preset->user_param_tree)) == NULL) {
     return NULL;
   }
   
@@ -1330,13 +1330,13 @@ InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, SplayTre
     return NULL;
   
 
-  /* If a database was specified,then use Param::find_param_db instead */
+  /* If a database was specified,then use ParamUtils::find_db instead */
   if ((database != NULL) && ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(name, database)) == NULL)) {
     return NULL;
   }
 
   /* Otherwise use the builtin parameter and user databases. This is confusing. Sorry. */
-  if ((param == NULL) && ((param = Param::find_param(name, preset, P_CREATE)) == NULL)) {
+  if ((param == NULL) && ((param = ParamUtils::find(name, &preset->builtinParams, preset->user_param_tree)) == NULL)) {
     return NULL;
   }
   

@@ -9,6 +9,9 @@
 #include "SplayTree.hpp"
 #include <cassert>
 
+
+class BuiltinParams;
+
 class ParamUtils {
 public:
     static int insert(Param * param, SplayTree<Param> * paramTree) {
@@ -18,6 +21,7 @@ public:
 
 
 	return paramTree->splay_insert(param, param->name);
+	
 }
 
     static const int AUTO_CREATE = 1;
@@ -59,7 +63,19 @@ public:
 
     }
 
+/// Checks attempt
+static Param * find(char * name, BuiltinParams * builtinParams , SplayTree<Param> * insertionTree) {
 
+Param * param;
+
+// Check first db
+if ((param = builtinParams->find_builtin_param(name)) != 0)
+	return param;
+
+// Check second db, create if necessary
+return find<AUTO_CREATE>(name, insertionTree);
+
+}
 
 class LoadInitCondFunctor {
 public:

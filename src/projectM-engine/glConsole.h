@@ -58,7 +58,7 @@ typedef struct CONSOLE_CHAR_T {
 	color_t fg_color;
 	color_t bg_color;
 } console_char_t;
-	
+
 
 typedef struct GL_CONSOLE_T {
   float start_x;

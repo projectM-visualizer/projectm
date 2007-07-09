@@ -125,7 +125,7 @@ public:
     int write_per_frame_init_equations( FILE *fs );
     int write_per_frame_equations( FILE *fs );
     int write_per_pixel_equations( FILE *fs );
-    Param * find_param(char * name, int flags) ;
+    Param * find(char * name, int flags) ;
     int destroy();
     void load_init_cond(char *name, int flags);
 

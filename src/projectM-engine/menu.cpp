@@ -227,28 +227,28 @@ menu_t * load_waveform_menu() {
 	
 	if ((waveform_menu = new_menu(main_menu)) == NULL)
 		return NULL;
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("wave type", Param::find_param("nWaveMode", activePreset, P_CREATE))));
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("size", Param::find_param("fWaveScale", activePreset, P_CREATE))));
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("smoothing", Param::find_param("fWaveSmoothing", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("wave type", ParamUtils::find("nWaveMode", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("size", ParamUtils::find("fWaveScale", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("smoothing", ParamUtils::find("fWaveSmoothing", activePreset, P_CREATE))));
     
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("mystery parameter", Param::find_param("wave_mystery", activePreset, P_CREATE))));
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("opacity", Param::find_param("fWaveAlpha", activePreset, P_CREATE))));
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("position (x)", Param::find_param("wave_x", activePreset, P_CREATE))));
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("position (y)", Param::find_param("wave_y", activePreset, P_CREATE))));
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("color (red)", Param::find_param("wave_r", activePreset, P_CREATE))));
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("color (green)", Param::find_param("wave_g", activePreset, P_CREATE))));
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("color (blue)", Param::find_param("wave_b", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("mystery parameter", ParamUtils::find("wave_mystery", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("opacity", ParamUtils::find("fWaveAlpha", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("position (x)", ParamUtils::find("wave_x", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("position (y)", ParamUtils::find("wave_y", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("color (red)", ParamUtils::find("wave_r", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("color (green)", ParamUtils::find("wave_g", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("color (blue)", ParamUtils::find("wave_b", activePreset, P_CREATE))));
 	
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("use dots", Param::find_param("bWaveDots", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("use dots", ParamUtils::find("bWaveDots", activePreset, P_CREATE))));
 	
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("draw thick", Param::find_param("bWaveThick", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("draw thick", ParamUtils::find("bWaveThick", activePreset, P_CREATE))));
 
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("modulate opacity by volume", Param::find_param("bModWaveAlphaByVolume", activePreset, P_CREATE))));
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("mod. lower threshold", Param::find_param("fModWaveAlphaStart", activePreset, P_CREATE))));
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("mod. uppper threshold", Param::find_param("fModWaveAlphaEnd", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("modulate opacity by volume", ParamUtils::find("bModWaveAlphaByVolume", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("mod. lower threshold", ParamUtils::find("fModWaveAlphaStart", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("mod. uppper threshold", ParamUtils::find("fModWaveAlphaEnd", activePreset, P_CREATE))));
 	
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("additive drawing", Param::find_param("bAdditiveWaves", activePreset, P_CREATE))));
-	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("color brightening", Param::find_param("bMaximizeWaveColor", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("additive drawing", ParamUtils::find("bAdditiveWaves", activePreset, P_CREATE))));
+	append_menu_item(waveform_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("color brightening", ParamUtils::find("bMaximizeWaveColor", activePreset, P_CREATE))));
 	waveform_menu->selected_item = waveform_menu->start_item;	
 	
 	return waveform_menu;
@@ -261,28 +261,28 @@ menu_t * load_augmentations_menu() {
 	if ((augmentations_menu = new_menu(main_menu)) == NULL)
 		return NULL;
 	
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("outer border thickness", Param::find_param("ob_size", activePreset, P_CREATE))));	
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" color (red)", Param::find_param("ob_r", activePreset, P_CREATE))));
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" color (green)", Param::find_param("ob_g", activePreset, P_CREATE))));
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" color (blue)", Param::find_param("ob_b", activePreset, P_CREATE))));
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" opacity", Param::find_param("ob_a", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("outer border thickness", ParamUtils::find("ob_size", activePreset, P_CREATE))));	
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" color (red)", ParamUtils::find("ob_r", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" color (green)", ParamUtils::find("ob_g", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" color (blue)", ParamUtils::find("ob_b", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" opacity", ParamUtils::find("ob_a", activePreset, P_CREATE))));
 
 	
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("inner border thickness", Param::find_param("ib_size", activePreset, P_CREATE))));	
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" color (red)", Param::find_param("ib_r", activePreset, P_CREATE))));
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" color (green)", Param::find_param("ib_g", activePreset, P_CREATE))));
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" color (blue)", Param::find_param("ib_b", activePreset, P_CREATE))));
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" opacity", Param::find_param("ib_a", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("inner border thickness", ParamUtils::find("ib_size", activePreset, P_CREATE))));	
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" color (red)", ParamUtils::find("ib_r", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" color (green)", ParamUtils::find("ib_g", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" color (blue)", ParamUtils::find("ib_b", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj(" opacity", ParamUtils::find("ib_a", activePreset, P_CREATE))));
 	
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("motion vector opacity", Param::find_param("mv_a", activePreset, P_CREATE))));
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("num. mot. vector (X)", Param::find_param("mv_x", activePreset, P_CREATE))));
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("num. mot. vector (Y)", Param::find_param("mv_y", activePreset, P_CREATE))));
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("offset (X)", Param::find_param("mv_dx", activePreset, P_CREATE))));
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("offset (Y)", Param::find_param("mv_dy", activePreset, P_CREATE))));
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("trail length", Param::find_param("mv_l", activePreset, P_CREATE))));
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("color (red)", Param::find_param("mv_r", activePreset, P_CREATE))));
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("color (green)", Param::find_param("mv_g", activePreset, P_CREATE))));
-	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("color (blue)", Param::find_param("mv_b", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("motion vector opacity", ParamUtils::find("mv_a", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("num. mot. vector (X)", ParamUtils::find("mv_x", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("num. mot. vector (Y)", ParamUtils::find("mv_y", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("offset (X)", ParamUtils::find("mv_dx", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("offset (Y)", ParamUtils::find("mv_dy", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("trail length", ParamUtils::find("mv_l", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("color (red)", ParamUtils::find("mv_r", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("color (green)", ParamUtils::find("mv_g", activePreset, P_CREATE))));
+	append_menu_item(augmentations_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("color (blue)", ParamUtils::find("mv_b", activePreset, P_CREATE))));
 
 
 	augmentations_menu->selected_item = augmentations_menu->start_item;	
@@ -298,15 +298,15 @@ menu_t * load_motion_menu() {
 		return NULL;
 	
 	  
-	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("zoom amount", Param::find_param("zoom", activePreset, P_CREATE))));
-	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("zoom exponent", Param::find_param("zoomexp", activePreset, P_CREATE))));
-	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("rotation amount", Param::find_param("rot", activePreset, P_CREATE))));
-	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("rot., center of (X)", Param::find_param("cx", activePreset, P_CREATE))));
-	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("rot., center of (Y)", Param::find_param("cy", activePreset, P_CREATE))));
-	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("translation (X)", Param::find_param("dx", activePreset, P_CREATE))));
-	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("translation (Y)", Param::find_param("dy", activePreset, P_CREATE))));
-	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("scaling (X)", Param::find_param("sx", activePreset, P_CREATE))));
-	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("scaling (Y)", Param::find_param("sy", activePreset, P_CREATE))));
+	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("zoom amount", ParamUtils::find("zoom", activePreset, P_CREATE))));
+	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("zoom exponent", ParamUtils::find("zoomexp", activePreset, P_CREATE))));
+	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("rotation amount", ParamUtils::find("rot", activePreset, P_CREATE))));
+	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("rot., center of (X)", ParamUtils::find("cx", activePreset, P_CREATE))));
+	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("rot., center of (Y)", ParamUtils::find("cy", activePreset, P_CREATE))));
+	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("translation (X)", ParamUtils::find("dx", activePreset, P_CREATE))));
+	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("translation (Y)", ParamUtils::find("dy", activePreset, P_CREATE))));
+	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("scaling (X)", ParamUtils::find("sx", activePreset, P_CREATE))));
+	append_menu_item(motion_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("scaling (Y)", ParamUtils::find("sy", activePreset, P_CREATE))));
 	
 	motion_menu->selected_item = motion_menu->start_item;
 	
@@ -319,19 +319,19 @@ menu_t * load_postprocessing_menu() {
 	if ((postprocessing_menu = new_menu(main_menu)) == NULL)
 		return NULL;
 	
-	append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("sustain level", Param::find_param("fDecay", activePreset, P_CREATE))));
+	append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("sustain level", ParamUtils::find("fDecay", activePreset, P_CREATE))));
 
-    append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("darken center", Param::find_param("bDarkenCenter", activePreset, P_CREATE))));
+    append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("darken center", ParamUtils::find("bDarkenCenter", activePreset, P_CREATE))));
 
-	append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("gamma adjustment", Param::find_param("fDecay", activePreset, P_CREATE))));
-	append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("video echo: alpha", Param::find_param("fVideoEchoAlpha", activePreset, P_CREATE))));
-	append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("video echo: scale", Param::find_param("fVideoEchoZoom", activePreset, P_CREATE))));
-	append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("video echo: orientation", Param::find_param("nVideoEchoOrientation", activePreset, P_CREATE))));
-	append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("texture wrapping", Param::find_param("bTexWrap", activePreset, P_CREATE)))); 
-	append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("darken filter", Param::find_param("bDarken", activePreset, P_CREATE))));
- append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("brighten filter", Param::find_param("bBrighten", activePreset, P_CREATE))));
- append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("solarize filter", Param::find_param("bSolarize", activePreset, P_CREATE))));
- append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("invert filter", Param::find_param("bInvert", activePreset, P_CREATE))));
+	append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("gamma adjustment", ParamUtils::find("fDecay", activePreset, P_CREATE))));
+	append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("video echo: alpha", ParamUtils::find("fVideoEchoAlpha", activePreset, P_CREATE))));
+	append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("video echo: scale", ParamUtils::find("fVideoEchoZoom", activePreset, P_CREATE))));
+	append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("video echo: orientation", ParamUtils::find("nVideoEchoOrientation", activePreset, P_CREATE))));
+	append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("texture wrapping", ParamUtils::find("bTexWrap", activePreset, P_CREATE)))); 
+	append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("darken filter", ParamUtils::find("bDarken", activePreset, P_CREATE))));
+ append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("brighten filter", ParamUtils::find("bBrighten", activePreset, P_CREATE))));
+ append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("solarize filter", ParamUtils::find("bSolarize", activePreset, P_CREATE))));
+ append_menu_item(postprocessing_menu, new_menu_item(PARAM_ADJ_TYPE, new_param_adj("invert filter", ParamUtils::find("bInvert", activePreset, P_CREATE))));
 
 	
 	postprocessing_menu->selected_item = postprocessing_menu->start_item;	

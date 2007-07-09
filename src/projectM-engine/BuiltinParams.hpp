@@ -74,7 +74,11 @@ public:
 
 private:
     static const bool BUILTIN_PARAMS_DEBUG = false;
+
+    // Used to associate multiple string names to one parameter
     AliasMap aliasMap;
+
+    // Internal datastructure to store the parameters
     SplayTree<Param> * builtin_param_tree;
 };
 #endif

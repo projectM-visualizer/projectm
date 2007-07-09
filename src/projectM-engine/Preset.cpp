@@ -522,7 +522,7 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr) {
  
  /* Search for the parameter so we know what matrix the per pixel equation is referencing */
 
- param = Param::find_param(name, this, TRUE);
+ param = ParamUtils::find(name, &this->builtinParams, this->user_param_tree);
  if ( !param ) {
    if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: failed to allocate a new parameter!\n");
    return PROJECTM_FAILURE;
@@ -739,7 +739,7 @@ CustomShape * Preset::find_custom_shape(int id, bool create_flag) {
 }
 
 /* Find a parameter given its name, will create one if not found */
-Param * Preset::find_param(char * name, int flags) {
+Param * Preset::find(char * name, int flags) {
 
     Param * param = NULL;
 
@@ -762,12 +762,12 @@ Param * Preset::find_param(char * name, int flags) {
 
         /* Check if string is valid */
         if (!Param::is_valid_param_string(name)) {
-            if (PARAM_DEBUG) printf("find_param: invalid parameter name:\"%s\"\n", name);
+            if (PARAM_DEBUG) printf("find: invalid parameter name:\"%s\"\n", name);
             return NULL;
         }
         /* Now, create the user defined parameter given the passed name */
         if ((param = new Param(name)) == NULL) {
-            if (PARAM_DEBUG) printf("find_param: failed to create a new user parameter!\n");
+            if (PARAM_DEBUG) printf("find: failed to create a new user parameter!\n");
             return NULL;
         }
         /* Finally, insert the new parameter into this preset's proper splaytree */

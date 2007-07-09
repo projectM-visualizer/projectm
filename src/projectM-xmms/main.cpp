@@ -40,9 +40,9 @@ www.gamedev.net/reference/programming/features/beatdetection/
 #include <xmms/xmmsctrl.h>
 #include <math.h>
 
-#include <libprojectM/BeatDetect.h>
-#include <libprojectM/PCM.h>
-#include <libprojectM/projectM.h>
+#include <libprojectM/BeatDetect.hpp>
+#include <libprojectM/PCM.hpp>
+#include <libprojectM/projectM.hpp>
 #include <libprojectM/console_interface.h>
 #include "sdltoprojectM.h"
 #include "video_init.h"

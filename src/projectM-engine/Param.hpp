@@ -85,12 +85,11 @@ public:
     static int destroy_user_param_db();
 
     int remove_param();
-    static Param * find_param( char *name, Preset *preset, int flags );
     //int insert_param( SplayTree *database );
     void load_unspec_init_cond();
     void load_unspec_init_cond_shape();
 
-    /** Finds/creates the initial condition associated with the param */
+    
     int compare_param( char *name, char *name2 );
     static int is_valid_param_string( char *string );
     void set_param( float val );

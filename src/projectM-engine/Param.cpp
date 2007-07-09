@@ -211,9 +211,8 @@ Param * Param::new_param_float(char * name, short int flags, void * engine_val, 
     return param;
 }
 
-
 /* Creates a new parameter of type int */
-Param * Param::new_param_int(char * name, short int flags, void * engine_val,
+Param * Param::new_param_int(char * name, short int flags, void * engine_val,	
                              int upper_bound, int lower_bound, int init_val) {
 
     Param * param;
