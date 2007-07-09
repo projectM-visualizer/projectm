@@ -30,7 +30,7 @@
 #define _EXPR_H
 
 #include "dlldefs.h"
-#include "CValue.h"
+#include "CValue.hpp"
 
 class Param;
 
