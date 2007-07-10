@@ -201,9 +201,9 @@ DLLEXPORT void projectM::projectM_init(int gx, int gy, int fps, int texsize, int
 
 
     /** Initialise engine variables */
-abort();
-//  presetInputs.Initialize(gx, gy);
-//  presetOutputs.Initialize(gx, gy);
+
+    presetInputs.Initialize(gx, gy);
+    presetOutputs.Initialize(gx, gy);
     projectM_initengine();
 
     DWRITE("projectM plugin: Initializing\n");
