@@ -148,7 +148,7 @@ private:
 
     PresetOutputs::cwave_container * customWaves;
     PresetOutputs::cshape_container * customShapes;
-
+    PresetOutputs & m_presetOutputs;
 };
 
 #endif /** !_PRESET_HPP */

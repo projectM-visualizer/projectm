@@ -39,8 +39,11 @@ Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, 
 	file_path(filename),
 	builtinParams(presetInputs, presetOutputs),
 	customWaves(&presetOutputs.customWaves),
-	customShapes(&presetOutputs.customShapes)
+	customShapes(&presetOutputs.customShapes),
+	m_presetOutputs(presetOutputs)
+
 {
+
 
 initialize(filename);
 
@@ -80,6 +83,82 @@ Preset::~Preset() {
 #endif
 
 
+}
+/* Adds a per pixel equation according to its string name. This
+   will be used only by the parser */
+
+int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr) {
+
+  PerPixelEqn * per_pixel_eqn = NULL;
+  int index;
+  Param * param = NULL;
+
+  /* Argument checks */
+  if (gen_expr == NULL)
+	  return PROJECTM_FAILURE;
+  if (name == NULL)
+	  return PROJECTM_FAILURE;
+  
+ if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: per pixel equation (name = \"%s\")\n", name);
+ 
+ if (!strncmp(name, "dx", strlen("dx"))) 
+   this->m_presetOutputs.dx_is_mesh = true;
+ else if (!strncmp(name, "dy", strlen("dy"))) 
+   this->m_presetOutputs.dy_is_mesh = true;
+ else if (!strncmp(name, "cx", strlen("cx")))
+   this->m_presetOutputs.cx_is_mesh = true;
+ else if (!strncmp(name, "cy", strlen("cy")))
+   this->m_presetOutputs.cy_is_mesh = true;
+ else if (!strncmp(name, "zoom", strlen("zoom")))
+   this->m_presetOutputs.zoom_is_mesh = true;
+ else if (!strncmp(name, "zoomexp", strlen("zoomexp"))) 
+   this->m_presetOutputs.zoomexp_is_mesh = true;
+ else if (!strncmp(name, "rot", strlen("rot")))
+   this->m_presetOutputs.rot_is_mesh= true;
+ else if (!strncmp(name, "sx", strlen("sx")))
+   this->m_presetOutputs.sx_is_mesh = true;
+ else if (!strncmp(name, "sy", strlen("sy")))
+    this->m_presetOutputs.sy_is_mesh = true;
+ 
+ /* Search for the parameter so we know what matrix the per pixel equation is referencing */
+
+ param = ParamUtils::find(name, &this->builtinParams, this->user_param_tree);
+ if ( !param ) {
+   if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: failed to allocate a new parameter!\n");
+   return PROJECTM_FAILURE;
+ } 	 
+
+/**
+ if ( !param->matrix ) {
+    if (PER_PIXEL_EQN_DEBUG) printf( "add_per_pixel_eqn: failed to locate param matrix\n" );
+    return PROJECTM_FAILURE;
+  }
+*/
+
+ /* Find most largest index in the splaytree */
+ if ((per_pixel_eqn = (PerPixelEqn *)per_pixel_eqn_tree->splay_find_max()) == NULL)
+  index = 0;
+  else
+ index = per_pixel_eqn_tree->splay_size();
+   
+ /* Create the per pixel equation given the index, parameter, and general expression */
+ if ((per_pixel_eqn = PerPixelEqn::new_per_pixel_eqn(index, param, gen_expr)) == NULL) {
+   if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: failed to create new per pixel equation!\n");
+   return PROJECTM_FAILURE;
+
+ }
+
+ if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: new equation (index = %d,matrix=%X) (param = \"%s\")\n", 
+				 per_pixel_eqn->index, per_pixel_eqn->param->matrix, per_pixel_eqn->param->name);
+ /* Insert the per pixel equation into the preset per pixel database */
+ if (per_pixel_eqn_tree->splay_insert(per_pixel_eqn, &per_pixel_eqn->index) < 0) {
+   per_pixel_eqn->free_per_pixel_eqn();
+   printf("failed to add per pixel eqn!\n");
+   return PROJECTM_FAILURE;	 
+ }
+
+ /* Done */ 
+ return PROJECTM_SUCCESS;
 }
 
 void Preset::evalCustomShapeInitConditions() {
@@ -483,82 +562,6 @@ int Preset::resetPerPixelEqnFlags() {
       }
 
     return PROJECTM_SUCCESS;
-}
-
-/* Adds a per pixel equation according to its string name. This
-   will be used only by the parser */
-int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr) {
-
-  PerPixelEqn * per_pixel_eqn = NULL;
-  int index;
-  Param * param = NULL;
-
-  /* Argument checks */
-  if (gen_expr == NULL)
-	  return PROJECTM_FAILURE;
-  if (name == NULL)
-	  return PROJECTM_FAILURE;
-  
- if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: per pixel equation (name = \"%s\")\n", name);
- 
- if (!strncmp(name, "dx", strlen("dx"))) 
-   per_pixel_flag[DX_OP] = TRUE;
- else if (!strncmp(name, "dy", strlen("dy"))) 
-   per_pixel_flag[DY_OP] = TRUE;
- else if (!strncmp(name, "cx", strlen("cx")))
-   per_pixel_flag[CX_OP] = TRUE;
- else if (!strncmp(name, "cy", strlen("cy")))
-   per_pixel_flag[CX_OP] = TRUE;
- else if (!strncmp(name, "zoom", strlen("zoom")))
-   per_pixel_flag[ZOOM_OP] = TRUE;
- else if (!strncmp(name, "zoomexp", strlen("zoomexp"))) 
-   per_pixel_flag[ZOOMEXP_OP] = TRUE;
- else if (!strncmp(name, "rot", strlen("rot")))
-   per_pixel_flag[ROT_OP] = TRUE;
- else if (!strncmp(name, "sx", strlen("sx")))
-   per_pixel_flag[SX_OP] = TRUE;
- else if (!strncmp(name, "sy", strlen("sy")))
-   per_pixel_flag[SY_OP] = TRUE;
- 
- /* Search for the parameter so we know what matrix the per pixel equation is referencing */
-
- param = ParamUtils::find(name, &this->builtinParams, this->user_param_tree);
- if ( !param ) {
-   if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: failed to allocate a new parameter!\n");
-   return PROJECTM_FAILURE;
- } 	 
-
-/**
- if ( !param->matrix ) {
-    if (PER_PIXEL_EQN_DEBUG) printf( "add_per_pixel_eqn: failed to locate param matrix\n" );
-    return PROJECTM_FAILURE;
-  }
-*/
-
- /* Find most largest index in the splaytree */
- if ((per_pixel_eqn = (PerPixelEqn *)per_pixel_eqn_tree->splay_find_max()) == NULL)
-  index = 0;
-  else
- index = per_pixel_eqn_tree->splay_size();
-   
- /* Create the per pixel equation given the index, parameter, and general expression */
- if ((per_pixel_eqn = PerPixelEqn::new_per_pixel_eqn(index, param, gen_expr)) == NULL) {
-   if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: failed to create new per pixel equation!\n");
-   return PROJECTM_FAILURE;
-
- }
-
- if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: new equation (index = %d,matrix=%X) (param = \"%s\")\n", 
-				 per_pixel_eqn->index, per_pixel_eqn->param->matrix, per_pixel_eqn->param->name);
- /* Insert the per pixel equation into the preset per pixel database */
- if (per_pixel_eqn_tree->splay_insert(per_pixel_eqn, &per_pixel_eqn->index) < 0) {
-   per_pixel_eqn->free_per_pixel_eqn();
-   printf("failed to add per pixel eqn!\n");
-   return PROJECTM_FAILURE;	 
- }
-
- /* Done */ 
- return PROJECTM_SUCCESS;
 }
 
 /** Finds / Creates (if necessary) initial condition associated with passed parameter */

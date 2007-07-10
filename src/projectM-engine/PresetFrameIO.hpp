@@ -6,19 +6,20 @@ class CustomWave;
 class CustomShape;
 
 
-/** Container for all preset writeable engine variables. It's a struct
- * so that it's light weight. Access is done directly on
- * members for Mr. Sperl's convenience */
+/** A light weight container for all preset writeable engine variables. 
+ *  Access is done directly on members for Mr. Sperl's convenience */
 class PresetOutputs {
 public:
+
 	typedef std::vector<CustomWave*> cwave_container;
 	typedef std::vector<CustomShape*> cshape_container;
 
     cwave_container customWaves;
     cshape_container customShapes;
 
- void Initialize(int gx, int gy);
-PresetOutputs();
+    /// @bug should this be here?
+    //int mesh_i, mesh_j;
+    
     /* PER FRAME VARIABLES BEGIN */
     float zoom;
     float zoomexp;
@@ -109,6 +110,16 @@ PresetOutputs();
     float q7;
     float q8;
 
+    /// All the per pixel matrix mesh boolean variables
+		bool zoom_is_mesh;
+    		bool zoomexp_is_mesh;
+    		bool rot_is_mesh;
+    		bool sx_is_mesh;
+    		bool sy_is_mesh;
+    		bool dx_is_mesh;
+    		bool dy_is_mesh;
+    		bool cx_is_mesh;
+    		bool cy_is_mesh;
 
     /* Q VARIABLES END */
 
@@ -123,18 +134,8 @@ PresetOutputs();
     float **cx_mesh;
     float **cy_mesh;
 
-    /// SPERL: document these for me
-    bool zoom_is_mesh;
-    bool zoomexp_is_mesh;
-    bool rot_is_mesh;
-
-    bool sx_is_mesh;
-    bool sy_is_mesh;
-    bool dx_is_mesh;
-    bool dy_is_mesh;
-    bool cx_is_mesh;
-    bool cy_is_mesh;
-
+    
+    
 
 };
 
@@ -144,6 +145,10 @@ PresetOutputs();
 class PresetInputs {
 
 public:
+   /// @bug projectM may be implicitly calling this functor, phucking $hit up
+   PresetInputs() {}
+
+   PresetInputs(int gx, int gy);
     /* PER_PIXEL VARIBLES BEGIN */
 
     float x_per_pixel;
@@ -184,9 +189,6 @@ public:
     float **origy;
 
     void ResetMesh();
-  ~PresetInputs();
-PresetInputs();
-  void Initialize(int gx, int gy);
 };
 
 #endif

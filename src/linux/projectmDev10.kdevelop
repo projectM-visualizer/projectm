@@ -159,7 +159,7 @@
       <automaticCodeCompletion>true</automaticCodeCompletion>
       <automaticArgumentsHint>false</automaticArgumentsHint>
       <automaticHeaderCompletion>true</automaticHeaderCompletion>
-      <codeCompletionDelay>100</codeCompletionDelay>
+      <codeCompletionDelay>300</codeCompletionDelay>
       <argumentsHintDelay>400</argumentsHintDelay>
       <headerCompletionDelay>250</headerCompletionDelay>
       <showOnlyAccessibleItems>false</showOnlyAccessibleItems>

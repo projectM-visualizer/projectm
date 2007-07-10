@@ -70,6 +70,7 @@ private:
   void PerFrame(PresetOutputs *presetOutputs);
   void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
   void PerPixelMath(PresetOutputs *presetOutputs,  PresetInputs *presetInputs);
+  void reset_per_pixel_matrices();
   void rescale_per_pixel_matrices();
   void maximize_colors(PresetOutputs *presetOutputs);
   void render_texture_to_screen(PresetOutputs *presetOutputs);

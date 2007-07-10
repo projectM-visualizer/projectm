@@ -111,3 +111,6 @@ void PerPixelEqn::free_per_pixel_eqn() {
 	
 	return;
 }
+
+
+
