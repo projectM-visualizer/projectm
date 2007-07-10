@@ -66,6 +66,8 @@ for (x=0;x<gx;x++)
   	   this->origtheta[x][y]=atan2(((this->origy[x][y]-.5)*2),((this->origx[x][y]-.5)*2));
         }
     }
+
+   
   
 }
 
@@ -121,6 +123,17 @@ void PresetOutputs::Initialize(int gx, int gy)
     { 
       this->rot_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
     }
+ zoom_is_mesh = false;
+ zoomexp_is_mesh =false;
+   rot_is_mesh =false;
+
+     sx_is_mesh =false;
+    sy_is_mesh = false;
+     dx_is_mesh = false;
+     dy_is_mesh =false;
+     cx_is_mesh = false;
+    cy_is_mesh = false;;
+
 }
 
 PresetInputs::~PresetInputs()

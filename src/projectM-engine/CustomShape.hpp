@@ -105,10 +105,7 @@ public:
     ~CustomShape();
 
     /** Checks all internal trees are built correctly */
-    int checkTrees();   
-
-     /// @bug same as CustomWave::findParam, refactor
-     Param * findParam(char * name, bool create_flag);
+    int checkTrees();
 
     void load_custom_shape_init();
     void load_unspecified_init_conds_shape();

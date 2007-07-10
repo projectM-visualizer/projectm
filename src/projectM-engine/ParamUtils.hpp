@@ -36,10 +36,10 @@ public:
 
 
         /* First look in the builtin database */
-        param = (Param *)paramTree->splay_find(name);
+        param = paramTree->splay_find(name);
 
 
-        if (((FLAGS == AUTO_CREATE) && ((param = (Param *)paramTree->splay_find(name)) == NULL))) {
+        if (((FLAGS == AUTO_CREATE) && ((param = paramTree->splay_find(name)) == NULL))) {
 
             /* Check if string is valid */
             if (!param->is_valid_param_string(name))

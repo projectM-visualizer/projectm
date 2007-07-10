@@ -729,9 +729,9 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
 
     /* CASE 4: custom shape variable */
     if (current_shape != NULL) {
-      if ((param = current_shape->findParam(string, FALSE)) == NULL) {
+      if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(string, current_shape->param_tree)) == NULL) {
 	if ((param = preset->builtinParams.find_builtin_param(string)) == NULL)
-	  if ((param = current_shape->findParam(string, TRUE)) == NULL) {
+		if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string, current_shape->param_tree)) == NULL) {
 	    delete tree_expr;
 	    return NULL;
 	  }

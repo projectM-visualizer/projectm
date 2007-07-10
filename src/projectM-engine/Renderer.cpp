@@ -395,7 +395,7 @@ void Renderer::PerPixelMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
     }
 
   if(!presetOutputs->zoom_is_mesh)
-    {       
+    {
       for (x=0;x<this->gx;x++){
 	for(y=0;y<this->gy;y++){
 	  presetOutputs->zoom_mesh[x][y]=presetOutputs->zoom;

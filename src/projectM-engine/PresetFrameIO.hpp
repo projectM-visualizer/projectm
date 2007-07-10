@@ -11,14 +11,14 @@ class CustomShape;
  * members for Mr. Sperl's convenience */
 class PresetOutputs {
 public:
-	typedef std::vector<CustomWave*> cwave_container;
-	typedef std::vector<CustomShape*> cshape_container;
+    typedef std::vector<CustomWave*> cwave_container;
+    typedef std::vector<CustomShape*> cshape_container;
 
     cwave_container customWaves;
     cshape_container customShapes;
 
- void Initialize(int gx, int gy);
-PresetOutputs();
+    void Initialize(int gx, int gy);
+    PresetOutputs();
     /* PER FRAME VARIABLES BEGIN */
     float zoom;
     float zoomexp;
@@ -64,7 +64,7 @@ PresetOutputs();
     float mv_dy;
     float mv_dx;
 
-     /* PER_FRAME VARIABLES END */
+    /* PER_FRAME VARIABLES END */
 
     float fRating;
     float fGammaAdj;
@@ -123,7 +123,6 @@ PresetOutputs();
     float **cx_mesh;
     float **cy_mesh;
 
-    /// SPERL: document these for me
     bool zoom_is_mesh;
     bool zoomexp_is_mesh;
     bool rot_is_mesh;
@@ -153,24 +152,24 @@ public:
 
     /* PER_PIXEL VARIBLES END */
 
-   int fps;
+    int fps;
 
 
-  float time;
-  float bass;
-  float mid;
-  float bass_att;
-  float mid_att;
-  float treb_att;
-  int frame;
-  float progress;
-  
+    float time;
+    float bass;
+    float mid;
+    float bass_att;
+    float mid_att;
+    float treb_att;
+    int frame;
+    float progress;
 
-  /* variables were added in milkdrop 1.04 */
- int gx,gy;
 
- /// @bug are these in use?
-  /// @bugfix YES, presets reference meshx and meshy
+    /* variables were added in milkdrop 1.04 */
+    int gx,gy;
+
+/// @bug are these in use?
+    /// @bugfix YES, presets reference meshx and meshy
     int meshx;
     int meshy;
     float **x_mesh;
@@ -180,13 +179,13 @@ public:
 
     float **origtheta;  //grid containing interpolated mesh reference values
     float **origrad;
-    float **origx;  //original mesh 
+    float **origx;  //original mesh
     float **origy;
 
     void ResetMesh();
-  ~PresetInputs();
-PresetInputs();
-  void Initialize(int gx, int gy);
+    ~PresetInputs();
+    PresetInputs();
+    void Initialize(int gx, int gy);
 };
 
 #endif
