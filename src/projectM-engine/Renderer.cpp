@@ -83,8 +83,7 @@ this->fontURL = fontURL;
 
 void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 {
-totalframes++;
-  reset_per_pixel_matrices();
+    totalframes++;  
 
     DWRITE( "start Pass 1 \n" );
 
