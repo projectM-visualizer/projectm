@@ -36,6 +36,8 @@
 #include "compare.h"
 #include "fatal.h"
 
+#define SPLAYTEE_DUMP_FILE "./splay-dump"
+
 template <class Data>
 class SplayTree {
 
@@ -50,7 +52,7 @@ public:
     static SplayTree<Data> *create_splaytree(int (*compare)(const void*,const void*), void * (*copy_key)(void*), void (*free_key)(void*));
     ~SplayTree();
 
-    Data  *splay_find(const void * key);
+    Data  * splay_find(const void * key);
     int splay_insert(Data * data, void * key);
     int splay_insert_node( SplayNode<Data> *node );
     int splay_insert_link(void * alias_key, void * orig_key);
@@ -311,7 +313,7 @@ SplayNode<Data> * SplayTree<Data>::splay (const void * key, SplayNode<Data> * t,
     r->left = t->right;
     t->left = N.right;
     t->right = N.left;
-    
+
     return t;
 
     //return NULL;
