@@ -34,7 +34,7 @@
 #include "Param.hpp"
 #include "PerPixelEqn.hpp"
 #include "PerPointEqn.hpp"
-#include "SplayTree.hpp"
+#include <map>
 
 #include "wipemalloc.h"
 

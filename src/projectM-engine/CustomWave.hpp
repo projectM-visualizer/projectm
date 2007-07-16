@@ -48,7 +48,7 @@ class Preset;
 #include "Param.hpp"
 #include "PerFrameEqn.hpp"
 
-#include "SplayTree.hpp"
+#include <map>
 
 class CustomWave {
 public:
@@ -67,7 +67,7 @@ public:
     int per_frame_count;
 
     /* Parameter tree associated with this custom wave */
-    SplayTree<Param> * param_tree;
+    std::map<std::string,Param*> * param_tree;
 
     /* Engine variables */
     float x; /* x position for per point equations */
@@ -110,10 +110,10 @@ public:
     float v1,v2;
 
     /* Data structures to hold per frame and per point equations */
-    SplayTree<InitCond> * init_cond_tree;
-    SplayTree<PerFrameEqn> * per_frame_eqn_tree;
-    SplayTree <PerPointEqn> * per_point_eqn_tree;
-    SplayTree<InitCond> *  per_frame_init_eqn_tree;
+    std::map<std::string,InitCond*> * init_cond_tree;
+    std::map<int, PerFrameEqn*> * per_frame_eqn_tree;
+    std::map<int, PerPointEqn*> * per_point_eqn_tree;
+    std::map<std::string,InitCond*> *  per_frame_init_eqn_tree;
 
     /* Denotes the index of the last character for each string buffer */
     int per_point_eqn_string_index;

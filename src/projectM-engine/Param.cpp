@@ -36,13 +36,14 @@
 #include "InitCond.hpp"
 #include "Param.hpp"
 #include "Preset.hpp"
-#include "SplayTree.hpp"
+#include <map>
 
 #include "wipemalloc.h"
 
 /** Constructor */
-Param::Param( char * name, short int type, short int flags, void * engine_val, void * matrix,
+Param::Param( std::string name, short int type, short int flags, void * engine_val, void * matrix,
               CValue default_init_val, CValue upper_bound, CValue lower_bound):
+	m_name(name),
         type(type),
         flags (flags),
         matrix_flag (0),
@@ -52,8 +53,6 @@ Param::Param( char * name, short int type, short int flags, void * engine_val, v
         upper_bound (upper_bound),
         lower_bound (lower_bound)
     {
-
-    strncpy(this->name, name, MAX_TOKEN_SIZE-1);
 
     /** @@FIX THIS */
     //this->gx = projectM::currentEngine->gx;
@@ -123,7 +122,7 @@ int Param::compare_param( char * name, char * name2 ) {
 }
 
 /* Returns nonzero if the string is valid parameter name */
-int Param::is_valid_param_string( char * string ) {
+int Param::is_valid_param_string( const char * string ) {
 
     if (string == NULL)
         return FALSE;

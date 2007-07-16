@@ -36,7 +36,7 @@
 #include "PerFrameEqn.hpp"
 #include "PerPointEqn.hpp"
 #include "Preset.hpp"
-#include "SplayTree.hpp"
+#include <map>
 #include "ParamUtils.hpp"
 #include "InitCondUtils.hpp"
 #include "wipemalloc.h"
@@ -80,32 +80,32 @@ CustomWave::CustomWave(int id):id(id)
   /* Initialize tree data structures */
   
   if ((this->param_tree = 
-       SplayTree<Param>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_string, (void* (*)(void*))SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string)) == NULL) {
+       std::map<std::string,Param*>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_string, (void* (*)(void*))SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string)) == NULL) {
     delete(this);
   abort();
   }
 
   if ((this->per_point_eqn_tree = 
-       SplayTree<PerPointEqn>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_int, (void* (*)(void*))SplayKeyFunctions::copy_int, (void (*)(void*))SplayKeyFunctions::free_int)) == NULL) {
+       std::map<int, PerPointEqn*>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_int, (void* (*)(void*))SplayKeyFunctions::copy_int, (void (*)(void*))SplayKeyFunctions::free_int)) == NULL) {
     delete(this);
     abort();
   }
 
   if ((this->per_frame_eqn_tree = 
-       SplayTree<PerFrameEqn>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_int,(void* (*)(void*)) SplayKeyFunctions::copy_int,(void (*)(void*)) SplayKeyFunctions::free_int)) == NULL) {
+       std::map<int, PerFrameEqn*>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_int,(void* (*)(void*)) SplayKeyFunctions::copy_int,(void (*)(void*)) SplayKeyFunctions::free_int)) == NULL) {
     delete(this);
     abort();
   }
 
   if ((this->init_cond_tree = 
-       SplayTree<InitCond>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_string, (void*(*)(void*))SplayKeyFunctions::copy_string,(void (*)(void*)) SplayKeyFunctions::free_string)) == NULL) {
+       std::map<std::string,InitCond*>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_string, (void*(*)(void*))SplayKeyFunctions::copy_string,(void (*)(void*)) SplayKeyFunctions::free_string)) == NULL) {
     delete(this);
     /// @bug make exception
     abort();
   }
   
   if ((this->per_frame_init_eqn_tree = 
-       SplayTree<InitCond>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_string, (void*(*)(void*))SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string)) == NULL) {
+       std::map<std::string,InitCond*>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_string, (void*(*)(void*))SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string)) == NULL) {
     delete(this);
     /// @bug make exception
     abort();

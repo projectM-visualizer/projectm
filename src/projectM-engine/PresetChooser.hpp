@@ -56,7 +56,7 @@ class PresetChooser {
 public:
     typedef PresetIterator iterator;
     /// Initializes a chooser with an established preset loader.
-    /// \param presetLoader an initalized preset loader to choose presets from
+    /// \param presetLoader an initialized preset loader to choose presets from
     /// \note The preset loader is refreshed via events or otherwise outside this class's scope
     PresetChooser(const PresetLoader & presetLoader);
 
@@ -68,7 +68,7 @@ public:
     /// Gets the number of presets last believed to exist in the preset loader's filename collection
     std::size_t getNumPresets() const;
 
-    /// \brief A functor, for all preset indices, returns probability 1 / (number of presets in directory)
+    /// A functor, for all preset indices, returns probability 1 / (number of presets in directory)
     class UniformRandomFunctor {
 
     public:
@@ -89,7 +89,7 @@ public:
     PresetIterator begin();
 
     /// \brief An STL-esque iterator to retrieve an end position from a directory
-    PresetIterator end();
+    PresetIterator end() const;
 
     /// \brief Do a weighted sample given a weight functor.
     template <class WeightFunctor>
@@ -153,7 +153,7 @@ inline PresetIterator PresetChooser::begin() {
     return pos;
 }
 
-inline PresetIterator PresetChooser::end() {
+inline PresetIterator PresetChooser::end() const {
     PresetIterator pos(m_presetLoader->getNumPresets());
     return pos;
 }
@@ -180,7 +180,7 @@ inline std::auto_ptr<Preset> PresetChooser::directoryIndex(std::size_t index, co
 template <class WeightFunctor>
 inline std::auto_ptr<Preset> PresetChooser::doWeightedSample(WeightFunctor & weightFunctor, const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
 
-    // Choose a random mass bounded mass between 0 and 1
+    // Choose a random bounded mass between 0 and 1
     float cutoff = ((float)(random())) / RAND_MAX;
 
     // Sum up mass, stopping when cutoff is reached. This is the typical

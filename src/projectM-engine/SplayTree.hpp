@@ -635,15 +635,5 @@ int SplayTree<Data>::splay_rec_size(SplayNode<Data> * splaynode) {
 
 }
 
-namespace SplayTreeFunctors {
-template <class Data>
-class Delete {
-public:
-void operator() (Data * data) {
-	delete(data);
-}
-
-};
-}
 
 #endif /** !_SPLAYTREE_HPP */

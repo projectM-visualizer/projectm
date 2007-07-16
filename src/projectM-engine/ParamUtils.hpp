@@ -6,124 +6,133 @@
 #define _PARAM_UTILS_HPP
 
 #include "Param.hpp"
-#include "SplayTree.hpp"
+#include <map>
 #include <cassert>
 
 
 class BuiltinParams;
 
-class ParamUtils {
+class ParamUtils
+{
 public:
-    static int insert(Param * param, SplayTree<Param> * paramTree) {
+  static void insert(Param * param, std::map<std::string,Param*> * paramTree)
+  {
 
-	assert(param);
-	assert(paramTree);
+    assert(param);
+    assert(paramTree);
 
 
-	return paramTree->splay_insert(param, param->name);
+    paramTree->insert(std::make_pair(param->name,param))
+    ;
+
+  }
+
+  static const int AUTO_CREATE = 1;
+  static const int NO_CREATE = 0;
+
+  template <int FLAGS>
+  static Param * find(std::string name, std::map<std::string,Param*> * paramTree)
+  {
+
+    Param * param = NULL;
+
+
+    /* First look in the builtin database */
+    std::map<std::string,Param*>::iterator pos = paramTree->find(name);
+		
+
+    if ((FLAGS == AUTO_CREATE) && ((pos == paramTree->end())))
+    {
+	param = pos->second;
+      /* Check if string is valid */
+      if (!Param::is_valid_param_string(name.c_str()))
+        return NULL;
+
+      /* Now, create the user defined parameter given the passed name */
+      if ((param = new Param(name)) == NULL)
+        return NULL;
+
+      /* Finally, insert the new parameter into this preset's proper splaytree */
+      std::pair<std::map<std::string,Param*>::iterator, bool>  insertRetPair = 
+		paramTree->insert(std::make_pair(param->name, param));
+
+	if (insertRetPair.second)
+		param = insertRetPair.first->second;
 	
-}
+    } else 
+	param = pos->second;
+	
 
-    static const int AUTO_CREATE = 1;
-    static const int NO_CREATE = 0;
-
-    template <int FLAGS>
-    static Param * find(char * name, SplayTree<Param> * paramTree) {
-
-        assert(name);
-
-        Param * param = NULL;
+    /* Return the found (or created) parameter. Note that this could be null */
+    return param;
 
 
-        /* First look in the builtin database */
-        param = paramTree->splay_find(name);
+  }
 
+  /// Checks attempt
+  static Param * find(const std::string & name, BuiltinParams * builtinParams, std::map<std::string,Param*> * insertionTree)
+  {
 
-        if (((FLAGS == AUTO_CREATE) && ((param = paramTree->splay_find(name)) == NULL))) {
+    Param * param;
 
-            /* Check if string is valid */
-            if (!param->is_valid_param_string(name))
-                return NULL;
+    // Check first db
+    if ((param = builtinParams->find_builtin_param(name)) != 0)
+      return param;
 
-            /* Now, create the user defined parameter given the passed name */
-            if ((param = new Param(name)) == NULL)
-                return NULL;
+    // Check second db, create if necessary
+    return find<AUTO_CREATE>(name, insertionTree);
 
-            /* Finally, insert the new parameter into this preset's proper splaytree */
-            if (paramTree->splay_insert(param, param->name) < 0) {
-                delete param;
-                return NULL;
-            }
+  }
 
-        }
-
-        /* Return the found (or created) parameter. Note that this could be null */
-        return param;
-
-
-    }
-
-/// Checks attempt
-static Param * find(char * name, BuiltinParams * builtinParams , SplayTree<Param> * insertionTree) {
-
-Param * param;
-
-// Check first db
-if ((param = builtinParams->find_builtin_param(name)) != 0)
-	return param;
-
-// Check second db, create if necessary
-return find<AUTO_CREATE>(name, insertionTree);
-
-}
-
-class LoadInitCondFunctor {
-public:
+  class LoadInitCondFunctor
+  {
+  public:
     LoadInitCondFunctor(Preset * preset) :m_preset(preset) {}
 
-    void operator() (Param * param) {
+    void operator() (Param * param)
+    {
 
-        InitCond * init_cond;
-        CValue init_val;
+      InitCond * init_cond;
+      CValue init_val;
 
-        /* Don't count read only parameters as initial conditions */
-        if (param->flags & P_FLAG_READONLY)
-            return;
+      /* Don't count read only parameters as initial conditions */
+      if (param->flags & P_FLAG_READONLY)
+        return;
 
-        /* If initial condition was not defined by the preset file, force a default one
-           with the following code */
-        if ((init_cond = (InitCond*)(m_preset->init_cond_tree->splay_find(param->name))) == NULL) {
+      /* If initial condition was not defined by the preset file, force a default one
+         with the following code */
+      std::map<std::string,InitCond*>::iterator pos;
+      if ((pos = (m_preset->init_cond_tree->find(param->name))) == m_preset->init_cond_tree->end())
+      {
 
-            /* Make sure initial condition does not exist in the set of per frame initial equations */
-            if ((init_cond = (InitCond*)(m_preset->per_frame_init_eqn_tree->splay_find(param->name))) != NULL)
-                return;
+        std::map<std::string,InitCond*>::iterator per_frame_init_pos;
+        /* Make sure initial condition does not exist in the set of per frame initial equations */
+        if ((per_frame_init_pos = (m_preset->per_frame_init_eqn_tree->find(param->name))) != m_preset->per_frame_init_eqn_tree->end())
+          return;
 
-            if (param->type == P_TYPE_BOOL)
-                init_val.bool_val = 0;
+        if (param->type == P_TYPE_BOOL)
+          init_val.bool_val = 0;
 
-            else if (param->type == P_TYPE_INT)
-                init_val.int_val = *(int*)param->engine_val;
+        else if (param->type == P_TYPE_INT)
+          init_val.int_val = *(int*)param->engine_val;
 
-            else if (param->type == P_TYPE_DOUBLE)
-                init_val.float_val = *(float*)param->engine_val;
+        else if (param->type == P_TYPE_DOUBLE)
+          init_val.float_val = *(float*)param->engine_val;
 
-            /* Create new initial condition */
-            if ((init_cond = new InitCond(param, init_val)) == NULL)
-                return;
+        /* Create new initial condition */
+        if ((init_cond = new InitCond(param, init_val)) == NULL)
+          return;
 
-            /* Insert the initial condition into this presets tree */
-            if (m_preset->init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
-                delete init_cond;
-                return;
-            }
-
-        }
+        /* Insert the initial condition into this presets tree */
+        /// @bug not error checking
+        m_preset->init_cond_tree->insert(std::make_pair(init_cond->param->name,init_cond));
+      }
 
     }
 
-private :
+  private :
     Preset * m_preset;
-};
+  };
 
 };
 

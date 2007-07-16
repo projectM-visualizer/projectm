@@ -37,7 +37,7 @@
 
 class InitCond;
 class Param;
-#include "SplayTree.hpp"
+#include <map>
 
 class InitCond {
 public:
@@ -58,10 +58,6 @@ public:
 /** Splaytree traversal helpers */
 inline void eval_init_cond_helper( void *init_cond ) {
     ((InitCond *)init_cond)->eval_init_cond();
-  }
-
-inline void free_init_cond_helper( void *init_cond ) {
-    delete ((InitCond *)init_cond);
   }
 
 inline void write_init_helper( void *init_cond ) {

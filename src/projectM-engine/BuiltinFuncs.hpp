@@ -206,7 +206,7 @@ return (float)result;
 }
 };
 
-
+#include <map>
 class BuiltinFuncs {
 
 public:
@@ -220,7 +220,7 @@ public:
     static int remove_func( Func *func );
     static Func *find_func( char *name );
 private:
-     static SplayTree<Func>  * builtin_func_tree;
+     static std::map<std::string, Func*>  * builtin_func_tree;
 };
 
 #endif

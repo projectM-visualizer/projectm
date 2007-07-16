@@ -31,6 +31,7 @@
 #include "PresetFrameIO.hpp"
 #include "Param.hpp"
 #include <map>
+#include "Algorithms.hpp"
 
 class BuiltinParams {
 
@@ -52,7 +53,7 @@ public:
     int destroy_builtin_param_db();
 
     int insert_param_alt_name( Param *param, char *alt_name );
-    Param *find_builtin_param( char *name );
+    Param *find_builtin_param( const std::string & name );
     int load_builtin_param_float( char *name, void *engine_val, void *matrix,
                                   short int flags,
                                   float init_val, float upper_bound,
@@ -66,7 +67,7 @@ public:
 
     template <class Fun>
     void traverse(Fun & fun) {
-	builtin_param_tree->traverse(fun);
+	Algorithms::traverse(builtin_param_tree, fun);
     }
 
 
@@ -79,6 +80,6 @@ private:
     AliasMap aliasMap;
 
     // Internal datastructure to store the parameters
-    SplayTree<Param> * builtin_param_tree;
+    std::map<std::string,Param*> * builtin_param_tree;
 };
 #endif

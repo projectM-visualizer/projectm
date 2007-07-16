@@ -33,7 +33,7 @@
 #include "Common.hpp"
 #include "fatal.h"
 #include "Param.hpp"
-#include "SplayTree.hpp"
+#include <map>
 
 #include "InitCond.hpp"
 

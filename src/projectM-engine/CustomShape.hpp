@@ -30,7 +30,7 @@
 #define _CUSTOM_SHAPE_H
 
 #define CUSTOM_SHAPE_DEBUG 0
-#include "SplayTree.hpp"
+#include <map>
 #include "Param.hpp"
 #include "PerFrameEqn.hpp"
 #include "InitCond.hpp"
@@ -45,7 +45,7 @@ public:
     int per_frame_count;
 
     /* Parameter tree associated with this custom shape */
-    SplayTree<Param> * param_tree;
+    std::map<std::string,Param*> * param_tree;
 
     /* Engine variables */
     int sides;
@@ -88,19 +88,20 @@ public:
     float t8;
     
     /* Data structure to hold per frame  / per frame init equations */
-    SplayTree<InitCond> * init_cond_tree;
-    SplayTree<PerFrameEqn> * per_frame_eqn_tree;
-    SplayTree<InitCond> * per_frame_init_eqn_tree;
+    std::map<std::string,InitCond*> * init_cond_tree;
+    std::map<int, PerFrameEqn*> * per_frame_eqn_tree;
+    std::map<std::string,InitCond*> * per_frame_init_eqn_tree;
     
     /* Denotes the index of the last character for each stdring buffer */
     int per_frame_eqn_string_index;
     int per_frame_init_eqn_string_index;
     
+
     /* String buffers for per frame / per frame init equations */
     char per_frame_eqn_string_buffer[STRING_BUFFER_SIZE];
     char per_frame_init_eqn_string_buffer[STRING_BUFFER_SIZE];
+
     /* Per point equation array */
-      
     CustomShape( int id );
     ~CustomShape();
 

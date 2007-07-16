@@ -40,7 +40,7 @@
 #include "PerFrameEqn.hpp"
 #include "BuiltinParams.hpp"
 #include "PresetFrameIO.hpp"
-#include "SplayTree.hpp"
+#include <map>
 #include "InitCond.hpp"
 #include <vector>
 
@@ -49,7 +49,7 @@ class CustomWave;
 class CustomShape;
 class InitCond;
 
-//#include "SplayTree.hpp"
+//#include <map>
 
 
 class Preset {
@@ -90,14 +90,14 @@ public:
     char per_frame_init_eqn_string_buffer[STRING_BUFFER_SIZE];
 
     /* Data structures that contain equation and initial condition information */
-    SplayTree<PerFrameEqn> * per_frame_eqn_tree;   /* per frame equations */
-    SplayTree<PerPixelEqn> * per_pixel_eqn_tree; /* per pixel equation tree */
+    std::map<int, PerFrameEqn*> * per_frame_eqn_tree;   /* per frame equations */
+    std::map<int, PerPixelEqn*> * per_pixel_eqn_tree; /* per pixel equation tree */
     GenExpr * per_pixel_eqn_array[NUM_OPS]; /* per pixel equation array */
-    SplayTree<InitCond> * per_frame_init_eqn_tree; /* per frame initial equations */
-    SplayTree<InitCond> * init_cond_tree; /* initial conditions */
-    SplayTree<Param> * user_param_tree; /* user parameter splay tree */
-    SplayTree<CustomWave> * custom_wave_tree; /* custom wave forms for this preset */
-    SplayTree<CustomShape> * custom_shape_tree; /* custom shapes for this preset */
+    std::map<std::string,InitCond*> * per_frame_init_eqn_tree; /* per frame initial equations */
+    std::map<std::string,InitCond*> * init_cond_tree; /* initial conditions */
+    std::map<std::string,Param*> * user_param_tree; /* user parameter splay tree */
+    std::map<int, CustomWave *> * custom_wave_tree; /* custom wave forms for this preset */
+    std::map<int, CustomShape *> * custom_shape_tree; /* custom shapes for this preset */
 
     int add_per_pixel_eqn( char *name, GenExpr *gen_expr );
     int isPerPixelEqn( int op );

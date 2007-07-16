@@ -32,7 +32,7 @@
 #include "Common.hpp"
 
 class Func;
-#include "SplayTree.hpp"
+//#include <map>
 
 /* Function Type */
 class Func {

@@ -1,20 +1,20 @@
 #ifndef _INIT_COND_UTILS_HPP
 #define _INIT_COND_UTILS_HPP
-#include "SplayTree.hpp"
+#include <map>
 #include "InitCond.hpp"
 
 namespace InitCondUtils {
 class LoadUnspecInitCond {
 	public:
 	
-	LoadUnspecInitCond(SplayTree<InitCond> & initCondTree, SplayTree<InitCond> & perFrameInitEqnTree):
+	LoadUnspecInitCond(std::map<std::string,InitCond*> & initCondTree, std::map<std::string,InitCond*> & perFrameInitEqnTree):
 		 m_initCondTree(initCondTree), m_perFrameInitEqnTree(perFrameInitEqnTree) {}
 
 	void operator()(Param * param);
 
 	private:
-		SplayTree<InitCond> & m_initCondTree;
-		SplayTree<InitCond> & m_perFrameInitEqnTree;
+		std::map<std::string,InitCond*> & m_initCondTree;
+		std::map<std::string,InitCond*> & m_perFrameInitEqnTree;
 };
 
 

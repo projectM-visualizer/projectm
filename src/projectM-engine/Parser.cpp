@@ -39,7 +39,7 @@
 #include "Parser.hpp"
 #include "PerFrameEqn.hpp"
 #include "PerPixelEqn.hpp"
-#include "SplayTree.hpp"
+#include <map>
 #include "ParamUtils.hpp"
 
 #include "wipemalloc.h"
@@ -335,13 +335,8 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
       }	
       
       /* Insert the equation in the per frame equation tree */
-      if (preset->per_frame_init_eqn_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
-	//if (PARSE_DEBUG) printf("parse_line: failed to add a perframe equation (ERROR)\n");
-	delete init_cond; /* will free the gen expr too */		
-	return PROJECTM_PARSE_ERROR;
-      }
-      
-     
+      preset->per_frame_init_eqn_tree->insert(std::make_pair(init_cond->param->name, init_cond));
+	
       if (update_string_buffer(preset->per_frame_init_eqn_string_buffer, 
 			       &preset->per_frame_init_eqn_string_index) < 0)
 	{	return PROJECTM_FAILURE;}
@@ -365,11 +360,7 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
       }	
       
       /* Insert the equation in the per frame equation tree */
-      if (preset->per_frame_eqn_tree->splay_insert(per_frame_eqn, &per_frame_eqn_count) < 0) {
-	if (PARSE_DEBUG) printf("parse_line: failed to add a perframe equation (ERROR)\n");
-	delete per_frame_eqn; /* will free the gen expr too */		
-	return PROJECTM_PARSE_ERROR;
-      }
+      preset->per_frame_eqn_tree->insert(std::make_pair(per_frame_eqn_count, per_frame_eqn));
     
       if (update_string_buffer(preset->per_frame_eqn_string_buffer, 
 			       &preset->per_frame_eqn_string_index) < 0)
@@ -465,12 +456,8 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
 	return PROJECTM_PARSE_ERROR;
 
       /* Insert the equation in the per frame equation tree */
-      if (preset->per_frame_eqn_tree->splay_insert(per_frame_eqn, &per_frame_eqn_count) < 0) {
-	if (PARSE_DEBUG) printf("parse_line: failed to add a perframe equation (ERROR)\n");
-	delete per_frame_eqn;       /* will free the gen expr too */		
-	return PROJECTM_PARSE_ERROR;
-      }
-
+      preset->per_frame_eqn_tree->insert(std::make_pair(per_frame_eqn_count, per_frame_eqn));
+	
       if (update_string_buffer(preset->per_frame_eqn_string_buffer, 
 			       &preset->per_frame_eqn_string_index) < 0)
 	return PROJECTM_FAILURE;
@@ -485,11 +472,8 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
     ++per_frame_init_eqn_count;
 
       /* Insert the equation in the per frame equation tree */
-      if (preset->per_frame_init_eqn_tree->splay_insert(init_cond, &per_frame_init_eqn_count) < 0) {
-	if (PARSE_DEBUG) printf("parse_line: failed to add a per frame init equation (ERROR)\n");
-	delete init_cond; /* will free the gen expr too */		
-	return PROJECTM_PARSE_ERROR;
-      }
+      preset->per_frame_init_eqn_tree->insert(std::make_pair(init_cond->param->name, init_cond));
+	
 
       if (update_string_buffer(preset->per_frame_init_eqn_string_buffer, 
 			       &preset->per_frame_init_eqn_string_index) < 0)
@@ -558,12 +542,7 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
     }
 
     /* Add equation to initial condition tree */
-    if (preset->init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
-      if (PARSE_DEBUG) printf("parse_line: failed to add initial condition \"%s\" to equation tree (LINE %d)\n", 
-      		      init_cond->param->name, line_count);
-      delete init_cond;
-      return PROJECTM_FAILURE;
-    }
+    preset->init_cond_tree->insert(std::make_pair(init_cond->param->name, init_cond));
 
     /* Finished with initial condition line */
     //    if (PARSE_DEBUG) printf("parse_line: initial condition parsed successfully\n");
@@ -738,7 +717,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
       }
       
       if (PARSE_DEBUG) {
-	    DWRITE( "parse_gen_expr: custom shape parameter (name = %s)... \n", param->name);
+	    DWRITE( "parse_gen_expr: custom shape parameter (name = %s)... \n", param->name.c_str());
 	    
       }  
       
@@ -765,7 +744,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
       }
 
       if (PARSE_DEBUG) {
-	    DWRITE("parse_gen_expr: custom wave parameter (name = %s)... \n", param->name);
+	    DWRITE("parse_gen_expr: custom wave parameter (name = %s)... \n", param->name.c_str());
 
       }
 	
@@ -786,7 +765,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
     if ((param = ParamUtils::find(string, &preset->builtinParams, preset->user_param_tree)) != NULL) {
 
       if (PARSE_DEBUG) {
-	    DWRITE("parse_gen_expr: parameter (name = %s)...\n", param->name);
+	    DWRITE("parse_gen_expr: parameter (name = %s)...\n", param->name.c_str());
 	    
       }  
     
@@ -1310,7 +1289,7 @@ InitCond * Parser::parse_init_cond(FILE * fs, char * name, Preset * preset) {
 }
 
 /* Parses a per frame init equation, not sure if this works right now */
-InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, SplayTree<Param> * database) {
+InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, std::map<std::string,Param*> * database) {
 
   char name[MAX_TOKEN_SIZE];
   Param * param = NULL;
@@ -1340,7 +1319,7 @@ InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, SplayTre
     return NULL;
   }
   
-  if (PARSE_DEBUG) printf("parse_per_frame_init_eqn: parameter = \"%s\" (LINE %d)\n", param->name, line_count);
+  if (PARSE_DEBUG) printf("parse_per_frame_init_eqn: parameter = \"%s\" (LINE %d)\n", param->name.c_str(), line_count);
   
   if (param->flags & P_FLAG_READONLY) {
     //if (PARSE_DEBUG) printf("pars_per_frame_init_eqn: builtin parameter \"%s\" marked as read only!\n", param->name);
@@ -1458,11 +1437,8 @@ int Parser::parse_wavecode(char * token, FILE * fs, Preset * preset) {
       return PROJECTM_FAILURE;
   }
   
-  if (custom_wave->init_cond_tree->splay_insert(init_cond, param->name) < 0) {
-    delete init_cond;
-    return PROJECTM_PARSE_ERROR;
-  }
-
+  custom_wave->init_cond_tree->insert(std::make_pair(param->name, init_cond));
+  
   line_mode = CUSTOM_WAVE_WAVECODE_LINE_MODE;
 
   //if (PARSE_DEBUG) printf("parse_wavecode: [success]\n");
@@ -1542,11 +1518,7 @@ int Parser::parse_shapecode(char * token, FILE * fs, Preset * preset) {
       return PROJECTM_FAILURE;
   }
  
-  if (custom_shape->init_cond_tree->splay_insert(init_cond, param->name) < 0) {
-    delete init_cond;
-    //if (PARSE_DEBUG) printf("parse_shapecode: initial condition already set, not reinserting it (param = \"%s\")\n", param->name);
-    return PROJECTM_PARSE_ERROR;
-  }
+  custom_shape->init_cond_tree->insert(std::make_pair(param->name,init_cond));
   line_mode = CUSTOM_SHAPE_SHAPECODE_LINE_MODE;
 
   //if (PARSE_DEBUG) printf("parse_shapecode: [success]\n");
@@ -1775,12 +1747,8 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
     }	
 
     /* Insert the equation in the per frame equation tree */
-    if (custom_wave->per_frame_init_eqn_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
-      if (PARSE_DEBUG) printf("parse_wave_helper (per frame init): failed to add equation (ERROR)\n");
-       delete init_cond; /* will free the gen expr too */		
-      return PROJECTM_FAILURE;
-    }
-   
+    custom_wave->per_frame_init_eqn_tree->insert(std::make_pair(init_cond->param->name,init_cond));
+
     if (update_string_buffer(custom_wave->per_frame_init_eqn_string_buffer, 
 			     &custom_wave->per_frame_init_eqn_string_index) < 0) {
 	if (PARSE_DEBUG) printf("parse_wave_helper: failed to update string buffer (LINE %d)\n", line_count);
@@ -1836,11 +1804,7 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
       return PROJECTM_FAILURE;
     }
  
-    if (custom_wave->per_frame_eqn_tree->splay_insert(per_frame_eqn, &per_frame_eqn->index) < 0) {
-      delete per_frame_eqn;
-      return PROJECTM_FAILURE;
-    }
-       
+    custom_wave->per_frame_eqn_tree->insert(std::make_pair(per_frame_eqn->index, per_frame_eqn)); 
     //if (PARSE_DEBUG) printf("parse_wave (per_frame): equation %d associated with custom wave %d [success]\n", 
     //			    per_frame_eqn->index, custom_wave->id);
 
@@ -2045,12 +2009,7 @@ int Parser::parse_shape_per_frame_init_eqn(FILE * fs, CustomShape * custom_shape
     }
 
     /* Insert the equation in the per frame equation tree */
-    if (custom_shape->per_frame_init_eqn_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
-      //if (PARSE_DEBUG) printf("parse_shape (per frame init): failed to add equation (ERROR)\n");
-      delete init_cond; /* will free the gen expr too */		
-      return PROJECTM_PARSE_ERROR;
-    }
-
+    custom_shape->per_frame_init_eqn_tree->insert(std::make_pair(init_cond->param->name,init_cond));
     if (update_string_buffer(custom_shape->per_frame_init_eqn_string_buffer, 
 			     &custom_shape->per_frame_init_eqn_string_index) < 0)
       return PROJECTM_FAILURE;
@@ -2107,14 +2066,7 @@ char string[MAX_TOKEN_SIZE];
       return PROJECTM_FAILURE;
     }
  
-    if (custom_shape->per_frame_eqn_tree->splay_insert(per_frame_eqn, &per_frame_eqn->index) < 0) {
-      delete per_frame_eqn;
-      return PROJECTM_FAILURE;
-    }
-
-    //if (PARSE_DEBUG) printf("parse_shape (per_frame): equation %d associated with custom shape %d [success]\n", 
-    //			    per_frame_eqn->index, custom_shape->id);
-
+    custom_shape->per_frame_eqn_tree->insert(std::make_pair(per_frame_eqn->index, per_frame_eqn));
 
     /* Need to add stuff to string buffer so the editor can read the equations.
        Why not make a nice little helper function for this? - here it is: */
@@ -2174,11 +2126,7 @@ char string[MAX_TOKEN_SIZE];
       return PROJECTM_FAILURE;
     }
  
-    if (custom_wave->per_frame_eqn_tree->splay_insert(per_frame_eqn, &per_frame_eqn->index) < 0) {
-      delete per_frame_eqn;
-      return PROJECTM_FAILURE;
-    }
-       
+    custom_wave->per_frame_eqn_tree->insert(std::make_pair(per_frame_eqn->index, per_frame_eqn));
     //if (PARSE_DEBUG) printf("parse_shape (per_frame): equation %d associated with custom shape %d [success]\n", 
     //			    per_frame_eqn->index, custom_shape->id);
 

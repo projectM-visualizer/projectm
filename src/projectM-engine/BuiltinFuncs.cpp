@@ -16,7 +16,7 @@
 /* Loads a builtin function */
 #include "BuiltinFuncs.hpp"
 
-SplayTree<Func>  * BuiltinFuncs::builtin_func_tree  = 0;
+std::map<std::string, Func*>  * BuiltinFuncs::builtin_func_tree  = 0;
 
 int BuiltinFuncs::load_builtin_func(char * name,  float (*func_ptr)(float*), int num_args) {
 
@@ -129,7 +129,7 @@ int BuiltinFuncs::init_builtin_func_db() {
   int retval;
 
   builtin_func_tree = 
-    SplayTree<Func>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_string, (void*(*)(void*))SplayKeyFunctions::copy_string, (void(*)(void*))SplayKeyFunctions::free_string);
+    std::map<std::string, Func*>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_string, (void*(*)(void*))SplayKeyFunctions::copy_string, (void(*)(void*))SplayKeyFunctions::free_string);
 
   if (builtin_func_tree == NULL)
     return PROJECTM_OUTOFMEM_ERROR;

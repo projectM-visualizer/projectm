@@ -30,7 +30,7 @@
 #include "Expr.hpp"
 #include "InitCond.hpp"
 #include "Param.hpp"
-#include "SplayTree.hpp"
+#include <map>
 
 #include "wipemalloc.h"
 
@@ -45,7 +45,7 @@ InitCond::InitCond( Param * param, CValue init_val ) {
 
   if ( INIT_COND_DEBUG ) {
     DWRITE( "InitCond::InitCond: %s -> %X -> %X\n", 
-             this->param->name, this->param, this->param->engine_val );
+             this->param->name.c_str(), this->param, this->param->engine_val );
   }
 }
 
@@ -63,7 +63,7 @@ void InitCond::eval_init_cond() {
   param->matrix_flag = 0;
   if (param->type == P_TYPE_BOOL) {
 	 if (INIT_COND_DEBUG) {
-        DWRITE( "init_cond: %s = %d (TYPE BOOL)\n", param->name, init_val.bool_val); 
+        DWRITE( "init_cond: %s = %d (TYPE BOOL)\n", param->name.c_str(), init_val.bool_val); 
       }
 	 *((int*)param->engine_val) = init_val.bool_val;
      return;
@@ -72,10 +72,10 @@ void InitCond::eval_init_cond() {
   /* Parameter is an integer type, just like C */
   
   if ( param->type == P_TYPE_INT) {
-    if (strcmp( param->name, "wave_mode" ) == 0 ) {
+    if ((param->name == "wave_mode") == 0 ) {
       }
 	 if (INIT_COND_DEBUG) {
-        DWRITE( "init_cond: %s = %d (TYPE INT)\n", param->name, init_val.int_val);
+        DWRITE( "init_cond: %s = %d (TYPE INT)\n", param->name.c_str(), init_val.int_val);
      }
 	 *((int*)param->engine_val) = init_val.int_val;
      return;
@@ -85,7 +85,7 @@ void InitCond::eval_init_cond() {
 
   if (param->type == P_TYPE_DOUBLE) {
 	if (INIT_COND_DEBUG) {
-	    DWRITE( "init_cond: %s = %f (TYPE DOUBLE) -> %f -> %X -> %X\n", param->name, 
+	    DWRITE( "init_cond: %s = %f (TYPE DOUBLE) -> %f -> %X -> %X\n", param->name.c_str(), 
 	            init_val.float_val, *((float *)param->engine_val),
 	            param, param->engine_val );
 	  }
@@ -107,13 +107,13 @@ void InitCond::init_cond_to_string() {
 	switch (param->type) {
 		
 		case P_TYPE_BOOL:
-			sprintf(string, "%s=%d\n", param->name, init_val.bool_val);
+			sprintf(string, "%s=%d\n", param->name.c_str(), init_val.bool_val);
 			break; 
 		case P_TYPE_INT:
-			sprintf(string, "%s=%d\n", param->name, init_val.int_val);
+			sprintf(string, "%s=%d\n", param->name.c_str(), init_val.int_val);
 			break;
 		case P_TYPE_DOUBLE:
-			sprintf(string, "%s=%f\n", param->name, init_val.float_val);
+			sprintf(string, "%s=%f\n", param->name.c_str(), init_val.float_val);
 			break;
 		default:
 			return;

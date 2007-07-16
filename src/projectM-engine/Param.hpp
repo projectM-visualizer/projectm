@@ -51,16 +51,16 @@
 
 #include "Expr.hpp"
 #include "Common.hpp"
-
+#include <string>
 class InitCond;
 class Param;
 class Preset;
-#include "SplayTree.hpp"
+//#include <map>
 
 /* Parameter Type */
 class Param {
 public:
-    char name[MAX_TOKEN_SIZE]; /* name of the parameter, not necessary but useful neverthless */
+    std::string name; /* name of the parameter, not necessary but useful neverthless */
     short int type; /* parameter number type (int, bool, or float) */	
     short int flags; /* read, write, user defined, etc */	
     short int matrix_flag; /* for optimization purposes */
@@ -80,7 +80,7 @@ public:
     ~Param();
 
     /** Create a user defined parameter **/ 
-    Param( char *name );
+    Param( std::string name );
     static int init_user_param_db();
     static int destroy_user_param_db();
 
@@ -91,7 +91,7 @@ public:
 
     
     int compare_param( char *name, char *name2 );
-    static int is_valid_param_string( char *string );
+    static int is_valid_param_string( const char *string );
     void set_param( float val );
 
     static Param *new_param_float( char *name, short int flags, void *engine_val,

@@ -45,7 +45,7 @@
 #include "PCM.hpp"                    //Sound data handler (buffering, FFT, etc.)
 #include "CustomWave.hpp"
 #include "CustomShape.hpp"
-#include "SplayTree.hpp"
+#include <map>
 #include "Renderer.hpp"
 #include "PresetChooser.hpp"
 
