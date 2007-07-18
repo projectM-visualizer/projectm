@@ -56,19 +56,11 @@ public:
     GenExpr *gen_expr;	
 
     void evalPerPixelEqns( Preset *preset );
-    void evalPerPixelEqn();
+    void evaluate();
 
-    void free_per_pixel_eqn();
-    static PerPixelEqn *new_per_pixel_eqn( int index, Param *param, GenExpr * gen_expr);
+    PerPixelEqn(int index, Param * param, GenExpr * gen_expr);
+
   };
 
-/** Splaytree traversal helpers */
-inline void free_per_pixel_eqn_helper( void *per_pixel_eqn ) {
-    ((PerPixelEqn *)per_pixel_eqn)->free_per_pixel_eqn();
-  }
-
-inline void eval_per_pixel_eqn_helper( void *per_pixel_eqn ) {
-    ((PerPixelEqn *)per_pixel_eqn)->evalPerPixelEqn();
-  }
 
 #endif /** !_PER_PIXEL_EQN_H */

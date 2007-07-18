@@ -35,7 +35,7 @@
 #include "wipemalloc.h"
 
 /* Evaluate an equation */
-void PerFrameEqn::eval_per_frame_eqn() {
+void PerFrameEqn::evaluate() {
 
      if (PER_FRAME_EQN_DEBUG) { 
 		 printf("per_frame_%d=%s= ", index, param->name);

@@ -54,7 +54,7 @@ InitCond::~InitCond() {
   }
 
 /* Evaluate an initial conditon */
-void InitCond::eval_init_cond() {
+void InitCond::evaluate() {
 
   /* Parameter is of boolean type, either a 1 or 0 value integer */
   /* Set matrix flag to zero. This ensures

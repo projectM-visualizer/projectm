@@ -96,8 +96,6 @@ public:
     std::map<std::string,InitCond*> * per_frame_init_eqn_tree; /* per frame initial equations */
     std::map<std::string,InitCond*> * init_cond_tree; /* initial conditions */
     std::map<std::string,Param*> * user_param_tree; /* user parameter splay tree */
-    std::map<int, CustomWave *> * custom_wave_tree; /* custom wave forms for this preset */
-    std::map<int, CustomShape *> * custom_shape_tree; /* custom shapes for this preset */
 
     int add_per_pixel_eqn( char *name, GenExpr *gen_expr );
     int isPerPixelEqn( int op );

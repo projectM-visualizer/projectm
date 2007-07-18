@@ -114,14 +114,6 @@ public:
     void load_unspec_init_cond_shape();
   };
 
-/** Splaytree traversal helpers */
-inline void free_custom_shape_helper( void *custom_shape ) {
-    delete ((CustomShape *)custom_shape);
-  }
-
-inline void eval_custom_shape_init_conds_helper( void *custom_shape ) {
-    ((CustomShape *)custom_shape)->eval_custom_shape_init_conds();
-  }
 
 #endif /** !_CUSTOM_SHAPE_H */
 

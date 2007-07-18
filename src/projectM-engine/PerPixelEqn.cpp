@@ -37,7 +37,7 @@
 #include "wipemalloc.h"
 
 /* Evaluates a per pixel equation */
-void PerPixelEqn::evalPerPixelEqn() {
+void PerPixelEqn::evaluate() {
 
   float ** param_matrix = NULL;
   GenExpr * eqn_ptr = NULL;
@@ -83,34 +83,10 @@ void PerPixelEqn::evalPerPixelEqn() {
    param->flags |= P_FLAG_PER_PIXEL;
 }
 
-PerPixelEqn *PerPixelEqn::new_per_pixel_eqn( int index, Param * param, 
-                                             GenExpr * gen_expr) {
+PerPixelEqn(int _index, Param * _param, GenExrp *_gen_expr):index(_index), param(_param), gen_expr(_gen_expr) {
 
-	PerPixelEqn * per_pixel_eqn;
-	
-	if (index < 0)
-	  return NULL;
-	if (param == NULL)
-	  return NULL;
-	if (gen_expr == NULL)
-	  return NULL;
-	
-	if ((per_pixel_eqn = (PerPixelEqn*)wipemalloc(sizeof(PerPixelEqn))) == NULL)
-	  return NULL;
-	
-	per_pixel_eqn->index = index;
-	per_pixel_eqn->param = param;
-	per_pixel_eqn->gen_expr = gen_expr;
-	
-	return per_pixel_eqn;	
+	assert(index >= 0);
+	assert(param != NULL);
+	assert(gen_expr != null);
 }
-
-void PerPixelEqn::free_per_pixel_eqn() {
-
-	delete gen_expr;
-	
-	return;
-}
-
-
 

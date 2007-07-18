@@ -44,17 +44,9 @@ public:
     PerFrameEqn(int index, Param * param, GenExpr * gen_expr);
     ~PerFrameEqn();
 
-    void eval_per_frame_eqn();
+    void evaluate();
     void eval_per_frame_init_eqn( PerFrameEqn *per_frame_eqn );
   };
 
-/** Splaytree traversal helpers */
-inline void eval_per_frame_eqn_helper( void *per_frame_eqn ) {
-    ((PerFrameEqn *)per_frame_eqn)->eval_per_frame_eqn();
-  }
-
-inline void free_per_frame_eqn_helper( void *per_frame_eqn ) {
-    delete (PerFrameEqn *)per_frame_eqn;
-  }
 
 #endif /** !_PER_FRAME_EQN_H */

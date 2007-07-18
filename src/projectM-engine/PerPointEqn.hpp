@@ -45,13 +45,9 @@ public:
     static PerPointEqn *new_per_point_eqn( int index, Param *param, GenExpr *gen_expr);
  };
 
-/** Splaytree traversal helpers */
-inline void free_per_point_eqn_helper( void *per_point_eqn ) {
-    delete ((PerPointEqn *)per_point_eqn);
-  }
 
-inline void eval_per_point_eqn_helper( void *per_point_eqn ) {
-    ((PerPointEqn *)per_point_eqn)->evalPerPointEqn();
-  }
+//inline void eval_per_point_eqn_helper( void *per_point_eqn ) {
+//    ((PerPointEqn *)per_point_eqn)->evalPerPointEqn();
+//  }
 
 #endif /** !_PER_POINT_EQN_H */

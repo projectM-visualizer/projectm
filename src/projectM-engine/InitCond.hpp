@@ -49,23 +49,11 @@ public:
 
     InitCond( Param * param, CValue init_val );
     ~InitCond();
-    void eval_init_cond();
+    void evaluate();
 
     void init_cond_to_string();
     void write_init();
   };
 
-/** Splaytree traversal helpers */
-inline void eval_init_cond_helper( void *init_cond ) {
-    ((InitCond *)init_cond)->eval_init_cond();
-  }
-
-inline void write_init_helper( void *init_cond ) {
-    ((InitCond *)init_cond)->write_init();
-  }
-
-inline void init_cond_to_string_helper( void *init_cond ) {
-    ((InitCond *)init_cond)->init_cond_to_string();
-  }
 
 #endif /** !_INIT_COND_H */
