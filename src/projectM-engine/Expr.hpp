@@ -40,77 +40,86 @@ class Param;
 #define EVAL_ERROR -1
 
 /* Infix Operator Function */
-class InfixOp {
+class InfixOp
+{
 public:
-    int type;
-    int precedence;  
+  int type;
+  int precedence;
 
-    DLLEXPORT InfixOp( int type, int precedence );
-  };
+  DLLEXPORT InfixOp( int type, int precedence );
+};
 
 /** Term */
-class Term {
+class Term
+{
 public:
-    float constant; /* static variable */
-    Param *param; /* pointer to a changing variable */
+  float constant; /* static variable */
+  Param *param; /* pointer to a changing variable */
 
-    Term() { this->constant = 0; this->param = 0; }
-  };
+  Term() { this->constant = 0; this->param = 0; }
+};
 
 /* General Expression Type */
-class GenExpr {
+class GenExpr
+{
 public:
-    int type;
-    void * item;
+  int type;
+  void * item;
 
-    ~GenExpr();
+  ~GenExpr();
 
-    static GenExpr *new_gen_expr( int type, void *item );
-    GenExpr *clone_gen_expr();
-    float eval_gen_expr();
-
-    static GenExpr *const_to_expr( float val );
-    static GenExpr *param_to_expr( Param *param );
-    static GenExpr *prefun_to_expr( float (*func_ptr)(void *), GenExpr **expr_list, int num_args );
-  };
+  static GenExpr *new_gen_expr( int type, void *item );
+  GenExpr *clone_gen_expr();
+  float eval_gen_expr(int mesh_i, int mesh_j);
+ 
+  static GenExpr *const_to_expr( float val );
+  static GenExpr *param_to_expr( Param *param );
+  static GenExpr *prefun_to_expr( float (*func_ptr)(void *), GenExpr **expr_list, int num_args );
+};
 
 /* Value expression, contains a term union */
-class ValExpr {
+class ValExpr
+{
 public:
-    int type;
-    Term term;
+  int type;
+  Term term;
 
-    ~ValExpr();
-    static ValExpr *new_val_expr( int type, Term *term );
-    ValExpr *clone_val_expr();
+  ~ValExpr();
+  static ValExpr *new_val_expr( int type, Term *term );
+  ValExpr *clone_val_expr();
 
-    float eval_val_expr();
-  };
+  float eval_val_expr(int mesh_i, int mesh_j);
+};
 
 /* A binary expression tree ordered by operator precedence */
-class TreeExpr {
+class TreeExpr
+{
 public:
-    InfixOp * infix_op; /* null if leaf */
-    GenExpr * gen_expr;
-    TreeExpr *left, *right;
+  InfixOp * infix_op; /* null if leaf */
+  GenExpr * gen_expr;
+  TreeExpr *left, *right;
 
-    ~TreeExpr();
-    static TreeExpr *new_tree_expr( InfixOp *infix_op, GenExpr *gen_expr, 
-                                    TreeExpr *left, TreeExpr *right );
-    TreeExpr *clone_tree_expr();
-    float eval_tree_expr();
-  };
+  ~TreeExpr();
+  static TreeExpr *new_tree_expr( InfixOp *infix_op, GenExpr *gen_expr,
+                                  TreeExpr *left, TreeExpr *right );
+  TreeExpr *clone_tree_expr();
+  float eval_tree_expr(int mesh_i, int mesh_j);
+};
 
 /* A function expression in prefix form */
-class PrefunExpr {
+class PrefunExpr
+{
 public:
-    float (*func_ptr)(void*);
-    int num_args;
-    GenExpr **expr_list;
+  float (*func_ptr)(void*);
+  int num_args;
+  GenExpr **expr_list;
 
-    ~PrefunExpr();
-    PrefunExpr *clone_prefun_expr();
-    float eval_prefun_expr();
-  };
+  ~PrefunExpr();
+  PrefunExpr *clone_prefun_expr();
+
+  /* Evaluates functions in prefix form */
+  float eval_prefun_expr(int mesh_i, int mesh_j);
+
+};
 
 #endif /** _EXPR_H */

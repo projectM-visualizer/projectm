@@ -26,7 +26,7 @@
  * $Log$
  */
 
-/* eval.h: evaluation functions of expressions */
+/* Eval.hpp: evaluation functions of expressions */
 
 #ifndef _EVAL_H
 #define _EVAL_H

@@ -35,7 +35,7 @@
 #include <map>
 
 #include "wipemalloc.h"
-
+#include <cassert>
 /* Evaluates a per pixel equation */
 void PerPixelEqn::evaluate() {
 
@@ -46,8 +46,8 @@ void PerPixelEqn::evaluate() {
   eqn_ptr = gen_expr; 
  if (param->matrix == NULL) {
     if (PER_PIXEL_EQN_DEBUG) printf("evalPerPixelEqn: [begin initializing matrix] (index = %d) (name = %s)\n", 
-  			  index, param->name);
-    
+  			  index, param->name.c_str());
+
     param_matrix = (float**)wipemalloc(param->gx*sizeof(float*));
     param->matrix = param_matrix;
 
@@ -58,10 +58,6 @@ void PerPixelEqn::evaluate() {
       for (y = 0; y < param->gy; y++)
 	    param_matrix[x][y] = 0.0;
 
-    if (param->name == NULL)
-      printf("null parameter?\n");
-
-    //    printf("PARAM MATRIX: \"%s\" initialized.\n", per_pixel_eqn->param->name);
   }
   else 
     param_matrix = (float**)param->matrix;
@@ -70,23 +66,23 @@ void PerPixelEqn::evaluate() {
     printf("something is seriously wrong...\n");
 
 //    param->matrix_flag = 0;         /** Force matrix ignore to update time */
-  for (projectM::currentEngine->mesh_i = 0; projectM::currentEngine->mesh_i < param->gx; projectM::currentEngine->mesh_i++) {    
-    for (projectM::currentEngine->mesh_j = 0; projectM::currentEngine->mesh_j < param->gy; projectM::currentEngine->mesh_j++) {     
-      param_matrix[projectM::currentEngine->mesh_i][projectM::currentEngine->mesh_j] = eqn_ptr->eval_gen_expr();
+  for (int mesh_i = 0; mesh_i < param->gx; mesh_i++) { 
+    for (int mesh_j = 0; mesh_j < param->gy; mesh_j++) {
+      param_matrix[mesh_i][mesh_j] = eqn_ptr->eval_gen_expr(mesh_i, mesh_j);
     }
   }
   
   /* Now that this parameter has been referenced with a per
      pixel equation, we let the evaluator know by setting
      this flag */
-  param->matrix_flag = 1; 
+  param->matrix_flag = true; 
    param->flags |= P_FLAG_PER_PIXEL;
 }
 
-PerPixelEqn(int _index, Param * _param, GenExrp *_gen_expr):index(_index), param(_param), gen_expr(_gen_expr) {
+PerPixelEqn::PerPixelEqn(int _index, Param * _param, GenExpr * _gen_expr):index(_index), param(_param), gen_expr(_gen_expr) {
 
 	assert(index >= 0);
-	assert(param != NULL);
-	assert(gen_expr != null);
+	assert(param != 0);
+	assert(gen_expr != 0);
 }
 

@@ -88,9 +88,9 @@ public:
     float t8;
     
     /* Data structure to hold per frame  / per frame init equations */
-    std::map<std::string,InitCond*> * init_cond_tree;
-    std::map<int, PerFrameEqn*> * per_frame_eqn_tree;
-    std::map<std::string,InitCond*> * per_frame_init_eqn_tree;
+    std::map<std::string,InitCond*>  init_cond_tree;
+    std::map<int, PerFrameEqn*>  per_frame_eqn_tree;
+    std::map<std::string,InitCond*>  per_frame_init_eqn_tree;
     
     /* Denotes the index of the last character for each stdring buffer */
     int per_frame_eqn_string_index;

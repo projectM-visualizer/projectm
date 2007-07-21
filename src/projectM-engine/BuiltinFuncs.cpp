@@ -15,6 +15,10 @@
 
 /* Loads a builtin function */
 #include "BuiltinFuncs.hpp"
+#include <string>
+#include "Algorithms.hpp"
+
+using namespace Algorithms;
 
 std::map<std::string, Func*>  * BuiltinFuncs::builtin_func_tree  = 0;
 
@@ -40,23 +44,19 @@ int BuiltinFuncs::load_builtin_func(char * name,  float (*func_ptr)(float*), int
 /* Find a function given its name */
 Func * BuiltinFuncs::find_func(char * name) {
 
-  Func * func = NULL;
-
+  
   /* First look in the builtin database */
-  func = (Func *)builtin_func_tree->splay_find(name);
-	
-  return func;
+  std::map<std::string, Func*>::iterator pos = builtin_func_tree->find(std::string(name));
+
+  if (pos == builtin_func_tree->end())
+	return 0;
+
+  return pos->second;
 
 }
 
 
-/* Remove a function from the database */
-int BuiltinFuncs::remove_func( Func *func ) {
 
-    builtin_func_tree->splay_delete(func->name);
-
-  return PROJECTM_SUCCESS;
-}
 
 int BuiltinFuncs::load_all_builtin_func() {
 
@@ -129,7 +129,7 @@ int BuiltinFuncs::init_builtin_func_db() {
   int retval;
 
   builtin_func_tree = 
-    std::map<std::string, Func*>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_string, (void*(*)(void*))SplayKeyFunctions::copy_string, (void(*)(void*))SplayKeyFunctions::free_string);
+    new std::map<std::string, Func*>();
 
   if (builtin_func_tree == NULL)
     return PROJECTM_OUTOFMEM_ERROR;
@@ -144,14 +144,15 @@ int BuiltinFuncs::init_builtin_func_db() {
    Generally, do this on projectm exit */
 int BuiltinFuncs::destroy_builtin_func_db() {
 
-  builtin_func_tree->splay_traverse((void (*)(void*))free_func_helper);
-  return PROJECTM_SUCCESS;
+traverse<TraverseFunctors::DeleteFunctor<Func> >(*builtin_func_tree);
+return PROJECTM_SUCCESS;
 }
 
 /* Insert a function into the database */
 int BuiltinFuncs::insert_func( Func *func ) {
 
-  builtin_func_tree->splay_insert(func, func->name);
+  /// @bug check to see if this inserts properly 
+  builtin_func_tree->insert(std::make_pair(std::string(func->name), func));
 
   return PROJECTM_SUCCESS;
 }

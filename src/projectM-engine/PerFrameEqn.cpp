@@ -38,12 +38,13 @@
 void PerFrameEqn::evaluate() {
 
      if (PER_FRAME_EQN_DEBUG) { 
-		 printf("per_frame_%d=%s= ", index, param->name);
+		 printf("per_frame_%d=%s= ", index, param->name.c_str());
 		 fflush(stdout);
 	 }
 	 
     //*((float*)per_frame_eqn->param->engine_val) = eval_gen_expr(per_frame_eqn->gen_expr);
-	param->set_param(gen_expr->eval_gen_expr());
+	
+	param->set_param(gen_expr->eval_gen_expr(-1,-1));
      if (PER_FRAME_EQN_DEBUG) printf(" = %.4f\n", *((float*)param->engine_val)); 
 		 
 }

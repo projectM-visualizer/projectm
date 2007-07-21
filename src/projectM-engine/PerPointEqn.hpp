@@ -37,12 +37,13 @@ class PerPointEqn;
 class PerPointEqn {
 public:
     int index;
+    int samples; // the number of samples to iterate over
     Param *param;
     GenExpr * gen_expr;
-
+    
     ~PerPointEqn();
-    void evalPerPointEqn();
-    static PerPointEqn *new_per_point_eqn( int index, Param *param, GenExpr *gen_expr);
+    void evaluate();
+    PerPointEqn( int index, Param *param, GenExpr *gen_expr, int samples);
  };
 
 

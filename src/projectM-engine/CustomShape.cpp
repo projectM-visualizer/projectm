@@ -37,8 +37,10 @@
 #include "ParamUtils.hpp"
 #include "InitCondUtils.hpp"
 #include "wipemalloc.h"
+#include "Algorithms.hpp"
 
 
+using namespace Algorithms;
 
 void eval_custom_shape_init_conds(CustomShape * custom_shape);
 void load_unspec_init_cond_shape(Param * param);
@@ -54,17 +56,17 @@ CustomShape::CustomShape( int id ) {
   this->per_frame_init_eqn_string_index = 0;
 
   /* Initialize tree data structures */
-  this->param_tree = 
-       std::map<std::string,Param*>::create_splaytree( (int (*)(const void*,const void*))SplayKeyFunctions::compare_string, (void* (*)(void*)) SplayKeyFunctions::copy_string,(void (*)(void*)) SplayKeyFunctions::free_string);
-  
+  this->param_tree = new 
+       std::map<std::string,Param*>();
+
   this->per_frame_eqn_tree = 
-       std::map<int, PerFrameEqn*>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_int, (void* (*)(void*))SplayKeyFunctions::copy_int,(void (*)(void*))SplayKeyFunctions::free_int);
+       std::map<int, PerFrameEqn*>();
 
   this->init_cond_tree = 
-       std::map<std::string,InitCond*>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_string, (void* (*)(void*)) SplayKeyFunctions::copy_string,(void (*)(void*)) SplayKeyFunctions::free_string);
-  
+       std::map<std::string,InitCond*>();
+
   this->per_frame_init_eqn_tree = 
-       std::map<std::string,InitCond*>::create_splaytree((int (*)(const void*, const void*)) SplayKeyFunctions::compare_string, (void* (*)(void*))SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string);
+       std::map<std::string,InitCond*>();
 
   /* Start: Load custom shape parameters */
   param = Param::new_param_float("r", P_FLAG_NONE, &this->r, NULL, 1.0, 0.0, 0.5);
@@ -199,11 +201,11 @@ CustomShape::~CustomShape() {
   if (param_tree == NULL)
     return;
 
-  per_frame_eqn_tree->traverse<SplayTreeFunctors::Delete<PerFrameEqn> >();
-  init_cond_tree->traverse<SplayTreeFunctors::Delete<InitCond> >();
-  param_tree->traverse<SplayTreeFunctors::Delete<Param> > ();
-  per_frame_init_eqn_tree->traverse<SplayTreeFunctors::Delete<InitCond> > ();
-  
+  traverse<TraverseFunctors::DeleteFunctor<PerFrameEqn> >(per_frame_eqn_tree);
+  traverse<TraverseFunctors::DeleteFunctor<InitCond> >(init_cond_tree);
+  traverse<TraverseFunctors::DeleteFunctor<Param> >(*param_tree);
+  traverse<TraverseFunctors::DeleteFunctor<InitCond> >(per_frame_init_eqn_tree);
+
   return;
 
 }
@@ -213,13 +215,15 @@ void CustomShape::load_custom_shape_init() {
 }
 
 void CustomShape::eval_custom_shape_init_conds() {
-  per_frame_init_eqn_tree->splay_traverse((void (*)(void*))eval_init_cond_helper );
+
+  for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end();++pos)
+	pos->second->evaluate();
 }
 
 void CustomShape::load_unspecified_init_conds_shape() {
 
-	InitCondUtils::LoadUnspecInitCond fun(*this->init_cond_tree, *this->per_frame_init_eqn_tree);
+	InitCondUtils::LoadUnspecInitCond fun(this->init_cond_tree, this->per_frame_init_eqn_tree);
 
-	param_tree->traverse(fun);
+ 	traverse(*param_tree, fun);
 	
 }

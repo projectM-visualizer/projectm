@@ -3,6 +3,9 @@
 #include "BuiltinParams.hpp"
 #include "projectM.hpp"
 #include <cassert>
+#include "Algorithms.hpp"
+
+using namespace Algorithms;
 
 BuiltinParams::BuiltinParams() {}
 
@@ -94,8 +97,7 @@ int BuiltinParams::load_builtin_param_float(char * name, void * engine_val, void
 int BuiltinParams::destroy_builtin_param_db()
 {
 
-  builtin_param_tree->traverse
-  <SplayTreeFunctors::Delete<Param> >();
+  Algorithms::traverse<TraverseFunctors::DeleteFunctor<Param> >(*builtin_param_tree);
   delete builtin_param_tree;
   builtin_param_tree = NULL;
   return PROJECTM_SUCCESS;
@@ -209,8 +211,9 @@ int BuiltinParams::load_builtin_param_bool(char * name, void * engine_val, short
 /* Inserts a parameter into the builtin database */
 int BuiltinParams::insert_builtin_param( Param *param )
 {
+  std::pair<std::map<std::string, Param*>::iterator, bool> inserteePos = builtin_param_tree->insert(std::make_pair(param->name, param));
 
-  return builtin_param_tree->splay_insert(param, param->name);
+  return inserteePos.second;
 }
 
 
@@ -221,7 +224,7 @@ int BuiltinParams::init_builtin_param_db(const PresetInputs & presetInputs, Pres
 {
 
   /* Create the builtin parameter splay tree (go Sleator...) */
-  if ((this->builtin_param_tree = std::map<std::string,Param*>::create_splaytree((int (*)(const void*,const void*))SplayKeyFunctions::compare_string,(void* (*)(void*)) SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string)) == NULL)
+  if ((this->builtin_param_tree = new std::map<std::string,Param*>()) == NULL)
   {
     if (BUILTIN_PARAMS_DEBUG) printf("init_builtin_param_db: failed to initialize database (FATAL)\n");
     return PROJECTM_OUTOFMEM_ERROR;

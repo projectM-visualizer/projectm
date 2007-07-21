@@ -15,15 +15,14 @@ class BuiltinParams;
 class ParamUtils
 {
 public:
-  static void insert(Param * param, std::map<std::string,Param*> * paramTree)
+  static bool insert(Param * param, std::map<std::string,Param*> * paramTree)
   {
 
     assert(param);
     assert(paramTree);
 
-
-    paramTree->insert(std::make_pair(param->name,param))
-    ;
+    
+    return ((paramTree->insert(std::make_pair(param->name,param))).second);
 
   }
 

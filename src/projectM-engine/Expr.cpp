@@ -25,18 +25,19 @@
 #include "Eval.hpp"
 #include <cassert>
 
-float GenExpr::eval_gen_expr() {
+
+float GenExpr::eval_gen_expr(int mesh_i, int mesh_j) {
   float l;
 
   switch(type) {
   case VAL_T:
-    return ((ValExpr*)item)->eval_val_expr();
+    return ((ValExpr*)item)->eval_val_expr(mesh_i, mesh_j);
   case PREFUN_T:
-    l = ((PrefunExpr *)item)->eval_prefun_expr();
+    l = ((PrefunExpr *)item)->eval_prefun_expr(mesh_i, mesh_j);
     //if (EVAL_DEBUG) DWRITE( "eval_gen_expr: prefix function return value: %f\n", l);
     return l;
   case TREE_T:
-    return ((TreeExpr*)(item))->eval_tree_expr();
+    return ((TreeExpr*)(item))->eval_tree_expr(mesh_i, mesh_j);
   default:
     #ifdef EVAL_DEBUG
     DWRITE( "eval_gen_expr: general expression matched no cases!\n");
@@ -47,7 +48,7 @@ float GenExpr::eval_gen_expr() {
 }
 
 /* Evaluates functions in prefix form */
-float PrefunExpr::eval_prefun_expr() {
+float PrefunExpr::eval_prefun_expr(int mesh_i, int mesh_j) {
 
 	int i;
 	float rv;
@@ -63,7 +64,7 @@ float PrefunExpr::eval_prefun_expr() {
 	#endif
 	/* Evaluate each argument before calling the function itself */
 	for (i = 0; i < num_args; i++) {
-		arg_list[i] = expr_list[i]->eval_gen_expr();
+		arg_list[i] = expr_list[i]->eval_gen_expr(mesh_i, mesh_j);
 		#ifdef EVAL_DEBUG_DOUBLE
 			if (i < (num_args - 1))
 				DWRITE( ", ");
@@ -83,8 +84,9 @@ float PrefunExpr::eval_prefun_expr() {
     return rv;
 }
 
+
 /* Evaluates a value expression */
-float ValExpr::eval_val_expr() {
+float ValExpr::eval_val_expr(int mesh_i, int mesh_j) {
 
   /* Shouldn't happen */
   /* Value is a constant, return the float value */
@@ -120,7 +122,7 @@ float ValExpr::eval_val_expr() {
 
 		if (term.param->matrix_flag | (term.param->flags & P_FLAG_ALWAYS_MATRIX)) {
 
-		/** Sanity check the matrix is there... */
+		/* Sanity check the matrix is there... */
 		assert(term.param->matrix != NULL );
 
 		  if (projectM::currentEngine->mesh_i >= 0) {
@@ -141,7 +143,7 @@ float ValExpr::eval_val_expr() {
 }
 
 /* Evaluates an expression tree */
-float TreeExpr::eval_tree_expr() {
+float TreeExpr::eval_tree_expr(int mesh_i, int mesh_j) {
 
 	float left_arg, right_arg;
 
@@ -150,7 +152,7 @@ float TreeExpr::eval_tree_expr() {
 		if (gen_expr == NULL)
 			return 0;
 		else
-	  		return gen_expr->eval_gen_expr();
+	  		return gen_expr->eval_gen_expr( mesh_i, mesh_j);
 	}
 
 	/* Otherwise, this node is an infix operator. Evaluate
@@ -160,7 +162,7 @@ float TreeExpr::eval_tree_expr() {
 		DWRITE( "(");
 	#endif
 
-	left_arg = left->eval_tree_expr();
+	left_arg = left->eval_tree_expr(mesh_i, mesh_j);
 
 	#ifdef EVAL_DEBUG
 
@@ -192,7 +194,7 @@ float TreeExpr::eval_tree_expr() {
 
 	#endif
 
-	right_arg = right->eval_tree_expr();
+	right_arg = right->eval_tree_expr(mesh_i, mesh_j);
 
 	#ifdef EVAL_DEBUG
 		DWRITE( ")");

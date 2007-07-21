@@ -1337,7 +1337,7 @@ InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, std::map
   }
  
   /* Compute initial condition value */
-  val = gen_expr->eval_gen_expr();
+  val = gen_expr->eval_gen_expr(-1,-1);
   
   /* Free the general expression now that we are done with it */
   delete gen_expr;
@@ -1390,7 +1390,7 @@ int Parser::parse_wavecode(char * token, FILE * fs, Preset * preset) {
   /* token should be in the form wavecode_N_var, such as wavecode_1_samples */
   
   /* Get id and variable name from token string */
-  if (parse_wavecode_prefix(token, &id, &var_string) < 0)   
+  if (parse_wavecode_prefix(token, &id, &var_string) < 0)
     return PROJECTM_PARSE_ERROR;
   
   //if (PARSE_DEBUG) printf("parse_wavecode: wavecode id = %d, parameter = \"%s\"\n", id, var_string);
@@ -1437,7 +1437,7 @@ int Parser::parse_wavecode(char * token, FILE * fs, Preset * preset) {
       return PROJECTM_FAILURE;
   }
   
-  custom_wave->init_cond_tree->insert(std::make_pair(param->name, init_cond));
+  custom_wave->init_cond_tree.insert(std::make_pair(param->name, init_cond));
   
   line_mode = CUSTOM_WAVE_WAVECODE_LINE_MODE;
 
@@ -1518,7 +1518,7 @@ int Parser::parse_shapecode(char * token, FILE * fs, Preset * preset) {
       return PROJECTM_FAILURE;
   }
  
-  custom_shape->init_cond_tree->insert(std::make_pair(param->name,init_cond));
+  custom_shape->init_cond_tree.insert(std::make_pair(param->name,init_cond));
   line_mode = CUSTOM_SHAPE_SHAPECODE_LINE_MODE;
 
   //if (PARSE_DEBUG) printf("parse_shapecode: [success]\n");
@@ -1747,7 +1747,7 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
     }	
 
     /* Insert the equation in the per frame equation tree */
-    custom_wave->per_frame_init_eqn_tree->insert(std::make_pair(init_cond->param->name,init_cond));
+    custom_wave->per_frame_init_eqn_tree.insert(std::make_pair(init_cond->param->name,init_cond));
 
     if (update_string_buffer(custom_wave->per_frame_init_eqn_string_buffer, 
 			     &custom_wave->per_frame_init_eqn_string_index) < 0) {
@@ -1804,7 +1804,7 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
       return PROJECTM_FAILURE;
     }
  
-    custom_wave->per_frame_eqn_tree->insert(std::make_pair(per_frame_eqn->index, per_frame_eqn)); 
+    custom_wave->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn->index, per_frame_eqn)); 
     //if (PARSE_DEBUG) printf("parse_wave (per_frame): equation %d associated with custom wave %d [success]\n", 
     //			    per_frame_eqn->index, custom_wave->id);
 
@@ -1837,14 +1837,14 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
                 }
          } 
     
-    /* Parse right side of equation as an expression */
+    /* Parse right side of equation as an expression, First tell parser we are parsing a custom wave */
     current_wave = custom_wave;
     if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL) {
       if (PARSE_DEBUG) printf("parse_wave_helper (per_point): equation evaluated to null? (LINE %d)\n", line_count);
       
       return PROJECTM_PARSE_ERROR;
     }
-    current_wave = NULL;
+    
 
     /* Add the per point equation */
     if (custom_wave->add_per_point_eqn(string, gen_expr) < 0) {
@@ -1852,7 +1852,8 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
      
       return PROJECTM_PARSE_ERROR;
     }
-
+    // This tells the parser we are no longer parsing a custom wave
+    current_wave = NULL;
    
     if (update_string_buffer(custom_wave->per_point_eqn_string_buffer, &custom_wave->per_point_eqn_string_index) < 0)
       return PROJECTM_FAILURE;
@@ -2009,7 +2010,7 @@ int Parser::parse_shape_per_frame_init_eqn(FILE * fs, CustomShape * custom_shape
     }
 
     /* Insert the equation in the per frame equation tree */
-    custom_shape->per_frame_init_eqn_tree->insert(std::make_pair(init_cond->param->name,init_cond));
+    custom_shape->per_frame_init_eqn_tree.insert(std::make_pair(init_cond->param->name,init_cond));
     if (update_string_buffer(custom_shape->per_frame_init_eqn_string_buffer, 
 			     &custom_shape->per_frame_init_eqn_string_index) < 0)
       return PROJECTM_FAILURE;
@@ -2066,7 +2067,7 @@ char string[MAX_TOKEN_SIZE];
       return PROJECTM_FAILURE;
     }
  
-    custom_shape->per_frame_eqn_tree->insert(std::make_pair(per_frame_eqn->index, per_frame_eqn));
+    custom_shape->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn->index, per_frame_eqn));
 
     /* Need to add stuff to string buffer so the editor can read the equations.
        Why not make a nice little helper function for this? - here it is: */
@@ -2126,7 +2127,7 @@ char string[MAX_TOKEN_SIZE];
       return PROJECTM_FAILURE;
     }
  
-    custom_wave->per_frame_eqn_tree->insert(std::make_pair(per_frame_eqn->index, per_frame_eqn));
+    custom_wave->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn->index, per_frame_eqn));
     //if (PARSE_DEBUG) printf("parse_shape (per_frame): equation %d associated with custom shape %d [success]\n", 
     //			    per_frame_eqn->index, custom_shape->id);
 

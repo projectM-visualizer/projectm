@@ -72,7 +72,7 @@ public:
     int gx, gy;
 
     /* Function prototypes */
-    Param(char *name, short int type, short int flags, 
+    Param(std::string name, short int type, short int flags, 
            void * eqn_val, void *matrix,
            CValue default_init_val, CValue upper_bound, 
            CValue lower_bound);
@@ -84,9 +84,6 @@ public:
     static int init_user_param_db();
     static int destroy_user_param_db();
 
-    int remove_param();
-    //int insert_param( SplayTree *database );
-    void load_unspec_init_cond();
     void load_unspec_init_cond_shape();
 
     

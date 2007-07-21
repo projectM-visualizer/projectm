@@ -110,10 +110,10 @@ public:
     float v1,v2;
 
     /* Data structures to hold per frame and per point equations */
-    std::map<std::string,InitCond*> * init_cond_tree;
-    std::map<int, PerFrameEqn*> * per_frame_eqn_tree;
-    std::map<int, PerPointEqn*> * per_point_eqn_tree;
-    std::map<std::string,InitCond*> *  per_frame_init_eqn_tree;
+    std::map<std::string,InitCond*>  init_cond_tree;
+    std::map<int, PerFrameEqn*>  per_frame_eqn_tree;
+    std::map<int, PerPointEqn*>  per_point_eqn_tree;
+    std::map<std::string,InitCond*>  per_frame_init_eqn_tree;
 
     /* Denotes the index of the last character for each string buffer */
     int per_point_eqn_string_index;
@@ -135,9 +135,8 @@ public:
     void evalPerPointEqns();
 
     void load_unspecified_init_conds();
-    void load_unspec_init_cond() ;
+    
     void eval_custom_wave_init_conds();
-    void load_unspec_init_cond(Param * param);
     void evalPerPointEqn(PerPointEqn * per_point_eqn);
 
 

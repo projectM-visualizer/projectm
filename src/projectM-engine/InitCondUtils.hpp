@@ -35,12 +35,14 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
 
     /* If initial condition was not defined by the preset file, force a default one
        with the following code */
-    if ((init_cond = m_initCondTree.splay_find(param->name)) == NULL) {
+
+    if (m_initCondTree.find(param->name) == m_initCondTree.end()) {
 
         /* Make sure initial condition does not exist in the set of per frame initial equations */
-        if ((init_cond = m_perFrameInitEqnTree.splay_find(param->name)) != NULL)
-            return;
+	if (m_perFrameInitEqnTree.find(param->name) != m_perFrameInitEqnTree.end())
+		return;
 
+	// Set an initial vialue via correct union member
         if (param->type == P_TYPE_BOOL)
             init_val.bool_val = 0;
 
@@ -56,10 +58,9 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
             return;
 
         /* Insert the initial condition into this presets tree */
-        if (m_initCondTree.splay_insert(init_cond, init_cond->param->name) < 0) {
-            delete init_cond;
-            return;
-        }
+	/// @bug check the reult status of insert
+	m_initCondTree.insert(std::make_pair(init_cond->param->name, init_cond));
+
     }
 
 

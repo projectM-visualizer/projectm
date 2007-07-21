@@ -41,9 +41,9 @@
 #include "wipemalloc.h"
 
 /** Constructor */
-Param::Param( std::string name, short int type, short int flags, void * engine_val, void * matrix,
+Param::Param( std::string _name, short int type, short int flags, void * engine_val, void * matrix,
               CValue default_init_val, CValue upper_bound, CValue lower_bound):
-	m_name(name),
+	name(_name),
         type(type),
         flags (flags),
         matrix_flag (0),
@@ -61,11 +61,12 @@ Param::Param( std::string name, short int type, short int flags, void * engine_v
 
 
 /* Creates a user defined parameter */
-Param::Param(char * name) :
+Param::Param(std::string _name) :
         type(P_TYPE_DOUBLE),
         flags(P_FLAG_USERDEF),
         matrix_flag(0),
-        matrix(0)
+        matrix(0),
+	name(_name)
         {
 
 	engine_val = new float();
@@ -73,12 +74,7 @@ Param::Param(char * name) :
 	default_init_val.float_val = DEFAULT_DOUBLE_IV;
         upper_bound.float_val = DEFAULT_DOUBLE_UB;
         lower_bound.float_val = DEFAULT_DOUBLE_LB;
-
-    /* Copy given name into parameter structure */
-    strncpy(this->name, name, MAX_TOKEN_SIZE-1);
-
-    (*(float*)this->engine_val) = DEFAULT_DOUBLE_IV;
-
+   
 
     /** @@FIX THIS */
     //this->gx = projectM::currentEngine->gx;
@@ -107,7 +103,7 @@ Param::~Param() {
         }
     }
 
-    if (PARAM_DEBUG) printf("free_param: freeing \"%s\".\n", name);
+    if (PARAM_DEBUG) printf("free_param: freeing \"%s\".\n", name.c_str());
 }
 
 /* Compare string name with parameter name */

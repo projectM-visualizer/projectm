@@ -77,40 +77,6 @@ CustomWave::CustomWave(int id):id(id)
   this->value2 = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
   this->sample_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
 
-  /* Initialize tree data structures */
-  
-  if ((this->param_tree = 
-       std::map<std::string,Param*>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_string, (void* (*)(void*))SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string)) == NULL) {
-    delete(this);
-  abort();
-  }
-
-  if ((this->per_point_eqn_tree = 
-       std::map<int, PerPointEqn*>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_int, (void* (*)(void*))SplayKeyFunctions::copy_int, (void (*)(void*))SplayKeyFunctions::free_int)) == NULL) {
-    delete(this);
-    abort();
-  }
-
-  if ((this->per_frame_eqn_tree = 
-       std::map<int, PerFrameEqn*>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_int,(void* (*)(void*)) SplayKeyFunctions::copy_int,(void (*)(void*)) SplayKeyFunctions::free_int)) == NULL) {
-    delete(this);
-    abort();
-  }
-
-  if ((this->init_cond_tree = 
-       std::map<std::string,InitCond*>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_string, (void*(*)(void*))SplayKeyFunctions::copy_string,(void (*)(void*)) SplayKeyFunctions::free_string)) == NULL) {
-    delete(this);
-    /// @bug make exception
-    abort();
-  }
-  
-  if ((this->per_frame_init_eqn_tree = 
-       std::map<std::string,InitCond*>::create_splaytree((int (*)(const void*, const void*))SplayKeyFunctions::compare_string, (void*(*)(void*))SplayKeyFunctions::copy_string, (void (*)(void*))SplayKeyFunctions::free_string)) == NULL) {
-    delete(this);
-    /// @bug make exception
-    abort();
-  }
-
   
   /* Start: Load custom wave parameters */
 
@@ -120,9 +86,7 @@ CustomWave::CustomWave(int id):id(id)
     abort();
   }
 
-
   if (ParamUtils::insert(param, this->param_tree) < 0) {
-    delete(this);
     /// @bug make exception
     abort();
   }
@@ -431,13 +395,22 @@ CustomWave::~CustomWave() {
     return;
 
   
-  per_point_eqn_tree->traverse<SplayTreeFunctors::Delete<PerPointEqn> >();
-  per_frame_eqn_tree->traverse<SplayTreeFunctors::Delete<PerFrameEqn> >();
-  init_cond_tree->traverse<SplayTreeFunctors::Delete<InitCond> >();
-  param_tree->traverse<SplayTreeFunctors::Delete<Param> > ();
-  per_frame_init_eqn_tree->traverse<SplayTreeFunctors::Delete<InitCond> > ();
+  for (std::map<int, PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end(); ++pos)
+  	delete(pos->second);
 
-  
+  for (std::map<int, PerFrameEqn*>::iterator pos = per_frame_eqn_tree.begin(); pos != per_frame_eqn_tree.end(); ++pos)
+  	delete(pos->second);
+
+  for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos)
+  	delete(pos->second);
+
+  for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos)
+  	delete(pos->second);
+
+  for (std::map<std::string, Param*>::iterator pos = param_tree->begin(); pos != param_tree->end(); ++pos)
+  	delete(pos->second);
+
+
   free(r_mesh);
   free(g_mesh);
   free(b_mesh);
@@ -488,22 +461,24 @@ int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr) {
  } 	 
 
  /* Find most largest index in the splaytree */
- if ((per_point_eqn = (PerPointEqn*)per_point_eqn_tree->splay_find_max()) == NULL)
+ 
+ std::map<int, PerPointEqn*>::iterator pos = --per_point_eqn_tree.end();
+ 
+ if (pos == per_point_eqn_tree.end())
    index = 0;
  else
-   index = per_point_eqn->index+1;
+   index = pos->second->index+1;
 
  /* Create the per pixel equation given the index, parameter, and general expression */
- if ((per_point_eqn = PerPointEqn::new_per_point_eqn(index, param, gen_expr)) == NULL)
+	
+ if ((per_point_eqn = new PerPointEqn(index, param, gen_expr, samples)) == NULL)
 	 return PROJECTM_FAILURE;
  if (CUSTOM_WAVE_DEBUG) 
-   printf("add_per_point_eqn: created new equation (index = %d) (name = \"%s\")\n", per_point_eqn->index, per_point_eqn->param->name);
+   printf("add_per_point_eqn: created new equation (index = %d) (name = \"%s\")\n", per_point_eqn->index, per_point_eqn->param->name.c_str());
 
  /* Insert the per pixel equation into the preset per pixel database */
- if (per_point_eqn_tree->splay_insert(per_point_eqn, &per_point_eqn->index) < 0) {
-	delete per_point_eqn;
-	return PROJECTM_FAILURE;
-}
+  
+ per_point_eqn_tree.insert(std::make_pair(per_point_eqn->index, per_point_eqn)); 
 
  /* Done */ 
  return PROJECTM_SUCCESS;
@@ -511,8 +486,12 @@ int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr) {
 
 
 void CustomWave::eval_custom_wave_init_conds() {
-  init_cond_tree->splay_traverse((void (*)(void*))eval_init_cond_helper );
-  per_frame_init_eqn_tree->splay_traverse((void (*)(void*))eval_init_cond_helper );
+
+  for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos)
+	pos->second->evaluate();
+
+  for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos)
+   	pos->second->evaluate();
 }
 
 /** Evaluate per-point equations */
@@ -534,8 +513,8 @@ void CustomWave::evalPerPointEqns() {
     y_mesh[x] = y;
 
   /* Evaluate per pixel equations */
-    abort();
-    per_point_eqn_tree->splay_traverse((void (*)(void*))eval_per_point_eqn_helper);
+    for (std::map<int, PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos)
+	pos->second->evaluate();
 
   /* Reset index */
   projectM::currentEngine->mesh_i = -1;
@@ -543,9 +522,8 @@ void CustomWave::evalPerPointEqns() {
 
 void CustomWave::load_unspecified_init_conds() {
 
-	InitCondUtils::LoadUnspecInitCond fun(*this->init_cond_tree, *this->per_frame_init_eqn_tree);
-    	param_tree->traverse(fun);
-
+	InitCondUtils::LoadUnspecInitCond fun(this->init_cond_tree, this->per_frame_init_eqn_tree);
+	Algorithms::traverse(*param_tree, fun);
 }
 
 
