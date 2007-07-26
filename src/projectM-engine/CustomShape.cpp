@@ -211,19 +211,17 @@ CustomShape::~CustomShape() {
 }
 
 void CustomShape::load_custom_shape_init() {
-    load_unspecified_init_conds_shape();
-}
 
-void CustomShape::eval_custom_shape_init_conds() {
-
-  for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end();++pos)
-	pos->second->evaluate();
-}
-
-void CustomShape::load_unspecified_init_conds_shape() {
+    // NOTE: This is verified to be same behavior as trunk
 
 	InitCondUtils::LoadUnspecInitCond fun(this->init_cond_tree, this->per_frame_init_eqn_tree);
 
  	traverse(*param_tree, fun);
-	
+}
+
+void CustomShape::eval_custom_shape_init_conds() {
+
+  // NOTE: This is verified to be same behavior as trunk
+  for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end();++pos)
+	pos->second->evaluate();
 }

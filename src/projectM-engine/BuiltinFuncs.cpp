@@ -17,6 +17,7 @@
 #include "BuiltinFuncs.hpp"
 #include <string>
 #include "Algorithms.hpp"
+#include <iostream>
 
 using namespace Algorithms;
 
@@ -41,16 +42,15 @@ int BuiltinFuncs::load_builtin_func(char * name,  float (*func_ptr)(float*), int
 
 
 
-/* Find a function given its name */
 Func * BuiltinFuncs::find_func(char * name) {
 
-  
-  /* First look in the builtin database */
   std::map<std::string, Func*>::iterator pos = builtin_func_tree->find(std::string(name));
 
+  // Case: function not found, return null
   if (pos == builtin_func_tree->end())
 	return 0;
 
+  // Case: function found, return a pointer to it
   return pos->second;
 
 }
@@ -151,8 +151,14 @@ return PROJECTM_SUCCESS;
 /* Insert a function into the database */
 int BuiltinFuncs::insert_func( Func *func ) {
 
-  /// @bug check to see if this inserts properly 
-  builtin_func_tree->insert(std::make_pair(std::string(func->name), func));
+  std::pair<std::map<std::string, Func*>::iterator, bool> inserteePair =
+  	builtin_func_tree->insert(std::make_pair(std::string(func->name), func));
+  
+  if (!inserteePair.second) {
+	std::cerr << "Failed to insert builtin function \"" << func->name << "\" into collection! Bailing..." << std::endl;
+	abort();
+
+  }
 
   return PROJECTM_SUCCESS;
 }

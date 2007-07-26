@@ -88,7 +88,6 @@ float PrefunExpr::eval_prefun_expr(int mesh_i, int mesh_j) {
 /* Evaluates a value expression */
 float ValExpr::eval_val_expr(int mesh_i, int mesh_j) {
 
-  /* Shouldn't happen */
   /* Value is a constant, return the float value */
   if (type == CONSTANT_TERM_T) {
     #ifdef EVAL_DEBUG
@@ -125,6 +124,7 @@ float ValExpr::eval_val_expr(int mesh_i, int mesh_j) {
 		/* Sanity check the matrix is there... */
 		assert(term.param->matrix != NULL );
 
+		  /// @slow boolean check could be expensive in this critical (and common) step of evaluation
 		  if (projectM::currentEngine->mesh_i >= 0) {
 			  if (projectM::currentEngine->mesh_j >= 0) {
 			    return (((float**)term.param->matrix)[projectM::currentEngine->mesh_i][projectM::currentEngine->mesh_j]);

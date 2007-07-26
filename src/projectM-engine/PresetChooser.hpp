@@ -1,5 +1,5 @@
 /** PresetChooser.hpp:
- * Provides functions to select presets. Requires a preset loader.
+ * Provides functions and iterators to select presets. Requires a preset loader upon construction.
  */
 
 /// @idea Weighted random based on user stats
@@ -26,20 +26,24 @@ public:
     /// Instantiate a preset iterator at the given starting position 
     PresetIterator(std::size_t start);
 
-    ///  Move iterator forward
+    /// Move iterator forward
     void operator++();
 
-    ///   Move iterator backword
+    /// Move iterator backword
     void operator--() ;
-
+ 
+    /// Not equal comparator
     bool operator !=(const PresetIterator & presetPos) const ;
 
-    /// Returns an integer value representing the iterator pos.
+    /// Returns an integer value representing the iterator position
     /// @bug might become internal
     /// \brief Returns the indexing value used by the current iterator.
     std::size_t operator*() const;
 
     ///  Allocate a new preset given this iterator's associated preset name
+    /// \param presetInputs the preset inputs to associate with the preset upon construction
+    /// \param presetOutputs the preset outputs to associate with the preset upon construction
+    /// \returns an auto pointer of the newly allocated preset
     std::auto_ptr<Preset> allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
     ///  Set the chooser asocciated with this iterator
@@ -55,6 +59,7 @@ class PresetChooser {
 
 public:
     typedef PresetIterator iterator;
+
     /// Initializes a chooser with an established preset loader.
     /// \param presetLoader an initialized preset loader to choose presets from
     /// \note The preset loader is refreshed via events or otherwise outside this class's scope
@@ -62,21 +67,26 @@ public:
 
 
     /// Choose a preset via the passed in index. Must be between 0 and num valid presets in directory
+    /// \param index An index lying in the interval [0, this->getNumPresets()]
+    /// \param presetInputs the preset inputs to associate with the preset upon construction
+    /// \param presetOutputs the preset outputs to associate with the preset upon construction
     std::auto_ptr<Preset> directoryIndex(std::size_t index, const PresetInputs & presetInputs,
                                          PresetOutputs & presetOutputs) const;
 
     /// Gets the number of presets last believed to exist in the preset loader's filename collection
+    /// \returns the number of presets in the collection
     std::size_t getNumPresets() const;
 
     /// A functor, for all preset indices, returns probability 1 / (number of presets in directory)
     class UniformRandomFunctor {
 
     public:
-        /// \brief Initialize a new functor with collection size
+        /// Initialize a new functor with a particular collection size
         /// \param collectionSize the number of presets one is sampling over
         UniformRandomFunctor(std::size_t collectionSize);
 
-        /// \brief Returns uniform (fixed) probability for any index
+        /// Returns uniform (fixed) probability for any index
+	/// \param index the index position of the preset to load
         float  operator() (std::size_t index) const;
 
     private:
@@ -85,18 +95,28 @@ public:
     };
 
 
-    /// \brief An STL-esque iterator to beginning traversing presets from a directory
+    /// An STL-esque iterator to beginning traversing presets from a directory
+    /// \returns the position of the first preset in the collection
     PresetIterator begin();
 
-    /// \brief An STL-esque iterator to retrieve an end position from a directory
+    /// An STL-esque iterator to retrieve an end position from a directory
+    /// \returns the end position of the collection
     PresetIterator end() const;
 
-    /// \brief Do a weighted sample given a weight functor.
+    /// Perform a weighted sample to select a preset given a weight functor.
+    /// \param presetInputs the preset inputs to associate with the preset upon construction
+    /// \param presetOutputs the preset outputs to associate with the preset upon construction
+    /// \param WeightFunctor a functor that returns a probability for each index (see UniformRandomFunctor)
+    /// \returns an auto pointer of the newly allocated preset
     template <class WeightFunctor>
     std::auto_ptr<Preset> weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs, WeightFunctor & weightFunctor) const;
 
 
-    /// \brief Do a weighted sample given a weight functor and default construction (ie. element size) of the weight functor
+    /// Do a weighted sample given a weight functor and default construction (ie. element size) of the weight functor
+    /// \param presetInputs the preset inputs to associate with the preset upon construction
+    /// \param presetOutputs the preset outputs to associate with the preset upon construction
+    /// \param WeightFunctor a functor that returns a probability for each index (see UniformRandomFunctor)
+    /// \returns an auto pointer of the newly allocated preset
     template <class WeightFunctor>
     std::auto_ptr<Preset> weightedRandom(const PresetInputs & presetInputs, PresetOutputs & preseOutputs) const;
 

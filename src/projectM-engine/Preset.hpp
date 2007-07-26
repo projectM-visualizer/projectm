@@ -127,13 +127,6 @@ public:
     int destroy();
     void load_init_cond(char *name, int flags);
 
-
-    /** Splaytree traversal helpers */
-    inline void load_custom_shape_init_helper( void *custom_shape ) {
-        ((CustomShape *)custom_shape)->load_custom_shape_init();
-
-    }
-
 private:
 
     void evalCustomWavePerFrameEquations();

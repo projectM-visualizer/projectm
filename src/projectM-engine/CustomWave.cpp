@@ -46,27 +46,28 @@
 
 int interface_id = 0;
 
-CustomWave::CustomWave(int id):id(id)
+CustomWave::CustomWave(int _id):
+	id(_id),
+	per_frame_count(0),
+	samples(512),
+	bSpectrum(0),
+	sep(1),
+	smoothing(0.0),
+	bUseDots(0),
+	bAdditive(0),
+	r(0),
+	g(0),
+	b(0),
+	a(0),
+	scaling(1.0),
+	per_frame_eqn_string_index(0),
+	per_frame_init_eqn_string_index(0),
+	per_point_eqn_string_index(0)
 {
 	
   Param * param;
   
-/// @bug: should put these in member init list
-  this->per_frame_count = 0;
-
-  this->samples = 512;
-  this->bSpectrum = 0;
-  this->enabled = 1;
-  this->sep = 1;
-  this->smoothing = 0.0;
-  this->bUseDots = 0;
-  this->bAdditive = 0;
-  this->r = this->g = this->b = this->a = 0.0;
-  this->scaling = 1.0;
-  this->per_frame_eqn_string_index = 0;
-  this->per_frame_init_eqn_string_index = 0;
-  this->per_point_eqn_string_index = 0;
-
+  /// @bug deprecate the use of wipemalloc 
   this->r_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
   this->g_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
   this->b_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));

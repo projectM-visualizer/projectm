@@ -77,6 +77,7 @@ Param::Param(std::string _name) :
    
 
     /** @@FIX THIS */
+    /// @bug listen to above's advice!
     //this->gx = projectM::currentEngine->gx;
     //this->gy = projectM::currentEngine->gy;
 }
@@ -103,19 +104,9 @@ Param::~Param() {
         }
     }
 
-    if (PARAM_DEBUG) printf("free_param: freeing \"%s\".\n", name.c_str());
+    if (PARAM_DEBUG) printf("~Param: freeing \"%s\".\n", name.c_str());
 }
 
-/* Compare string name with parameter name */
-int Param::compare_param( char * name, char * name2 ) {
-
-    int cmpval;
-    printf("am i used\n");
-    /* Uses string comparison function */
-    cmpval = strncmp(name, name2, MAX_TOKEN_SIZE-1);
-
-    return cmpval;
-}
 
 /* Returns nonzero if the string is valid parameter name */
 int Param::is_valid_param_string( const char * string ) {

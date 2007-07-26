@@ -59,8 +59,6 @@ void PerPointEqn::evaluate() {
   else 
     param_matrix = (float*)param->matrix;
 
-
-  
   for (int i = 0; i < samples; i++) {
       // -1 is because per points only use one dimension
       param_matrix[i] = eqn_ptr->eval_gen_expr(i, -1);

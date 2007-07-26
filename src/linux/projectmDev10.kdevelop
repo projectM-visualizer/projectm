@@ -1,8 +1,8 @@
 <?xml version = '1.0'?>
 <kdevelop>
   <general>
-    <author>Carmelo Piccione</author>
-    <email>carmelo.piccione@gmail.com</email>
+    <author>Carmelo Piccione, Peter Sperl</author>
+    <email>carmelo.piccione@gmail.com, psperl@gmail.com</email>
     <version>1</version>
     <projectmanagement>KDevCustomProject</projectmanagement>
     <primarylanguage>C++</primarylanguage>
@@ -12,12 +12,12 @@
     <absoluteprojectpath>false</absoluteprojectpath>
     <description/>
     <defaultencoding/>
-    <versioncontrol>kdevsubversion</versioncontrol>
+    <versioncontrol/>
   </general>
   <kdevcustomproject>
     <run>
       <directoryradio>executable</directoryradio>
-      <mainprogram>/usr/bin/xmms</mainprogram>
+      <mainprogram/>
       <programargs/>
       <globaldebugarguments/>
       <globalcwd>/home/carm/projects/projectM/dev-1.0</globalcwd>
@@ -27,6 +27,7 @@
       <autoinstall>true</autoinstall>
       <autokdesu>false</autokdesu>
       <envvars/>
+      <customdirectory>/</customdirectory>
     </run>
     <filetypes>
       <filetype>*.java</filetype>
@@ -47,7 +48,7 @@
     <blacklist/>
     <build>
       <buildtool>make</buildtool>
-      <builddir>/home/carm/projects/projectM/dev-1.0/src/</builddir>
+      <builddir>/home/carm/projects/dev-1.0/src</builddir>
     </build>
     <other>
       <prio>0</prio>
@@ -83,6 +84,7 @@
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
+      <programargs/>
     </general>
     <display>
       <staticmembers>false</staticmembers>
@@ -159,7 +161,7 @@
       <automaticCodeCompletion>true</automaticCodeCompletion>
       <automaticArgumentsHint>false</automaticArgumentsHint>
       <automaticHeaderCompletion>true</automaticHeaderCompletion>
-      <codeCompletionDelay>300</codeCompletionDelay>
+      <codeCompletionDelay>150</codeCompletionDelay>
       <argumentsHintDelay>400</argumentsHintDelay>
       <headerCompletionDelay>250</headerCompletionDelay>
       <showOnlyAccessibleItems>false</showOnlyAccessibleItems>
@@ -177,6 +179,10 @@
       <usePermanentCaching>true</usePermanentCaching>
       <alwaysIncludeNamespaces>true</alwaysIncludeNamespaces>
       <includePaths>.;</includePaths>
+      <includeGlobalFunctions>true</includeGlobalFunctions>
+      <includeTypes>true</includeTypes>
+      <includeEnums>true</includeEnums>
+      <includeTypedefs>true</includeTypedefs>
     </codecompletion>
     <creategettersetter>
       <prefixGet/>
@@ -191,9 +197,7 @@
       <synchronize>true</synchronize>
       <orientation>Vertical</orientation>
     </splitheadersource>
-    <references>
-      <pcs>automatic_%2Fhome%2Fcarm%2Fprojects%2FprojectM%2Fdev-1.0</pcs>
-    </references>
+    <references/>
   </kdevcppsupport>
   <cppsupportpart>
     <filetemplates>

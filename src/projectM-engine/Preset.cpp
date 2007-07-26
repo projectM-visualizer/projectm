@@ -473,8 +473,9 @@ int Preset::write_per_pixel_equations(FILE * fs)
 
 void Preset::load_custom_wave_init_conditions()
 {
+  
   for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
-    (*pos)->load_unspec_init_cond();
+    (*pos)->load_unspecified_init_conds();
 
 }
 
@@ -484,7 +485,7 @@ void Preset::load_custom_shape_init_conditions()
   //     void eval_custom_shape_init_conds();
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
-    (*pos)->load_unspec_init_cond_shape();
+    (*pos)->load_custom_shape_init();
 }
 
 
