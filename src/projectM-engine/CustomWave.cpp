@@ -517,8 +517,6 @@ void CustomWave::evalPerPointEqns() {
     for (std::map<int, PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos)
 	pos->second->evaluate();
 
-  /* Reset index */
-  projectM::currentEngine->mesh_i = -1;
 }
 
 void CustomWave::load_unspecified_init_conds() {

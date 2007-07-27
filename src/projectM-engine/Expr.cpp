@@ -125,11 +125,11 @@ float ValExpr::eval_val_expr(int mesh_i, int mesh_j) {
 		assert(term.param->matrix != NULL );
 
 		  /// @slow boolean check could be expensive in this critical (and common) step of evaluation
-		  if (projectM::currentEngine->mesh_i >= 0) {
-			  if (projectM::currentEngine->mesh_j >= 0) {
-			    return (((float**)term.param->matrix)[projectM::currentEngine->mesh_i][projectM::currentEngine->mesh_j]);
+		  if (mesh_i >= 0) {
+			  if (mesh_j >= 0) {
+			    return (((float**)term.param->matrix)[mesh_i][mesh_j]);
 			  } else {
-			    return (((float*)term.param->matrix)[projectM::currentEngine->mesh_i]);
+			    return (((float*)term.param->matrix)[mesh_i]);
 			  }
 		  }
 		}

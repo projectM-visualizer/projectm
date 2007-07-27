@@ -28,7 +28,7 @@
 #endif
 
 #include "timer.h"
-
+#include <iostream>
 #ifdef LINUX
 #include "time.h"
 #endif
@@ -105,6 +105,8 @@ DLLEXPORT void projectM::renderFrame() {
 
 //       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
     presetInputs.ResetMesh();
+
+    assert(m_activePreset.get());
     m_activePreset->evaluateFrame();
 
 
@@ -202,9 +204,10 @@ DLLEXPORT void projectM::projectM_init(int gx, int gy, int fps, int texsize, int
 
     /** Initialise engine variables */
 
+    
+    projectM_initengine();
     presetInputs.Initialize(gx, gy);
     presetOutputs.Initialize(gx, gy);
-    projectM_initengine();
 
     DWRITE("projectM plugin: Initializing\n");
 
@@ -469,6 +472,7 @@ DLLEXPORT void projectM::projectM_initengine() {
     /* Q AND T VARIABLES END */
 
 //per pixel meshes
+/*
     this->presetOutputs.zoom_mesh = NULL;
     this->presetOutputs.zoomexp_mesh = NULL;
     this->presetOutputs.rot_mesh = NULL;
@@ -485,7 +489,8 @@ DLLEXPORT void projectM::projectM_initengine() {
     this->presetInputs.y_mesh = NULL;
     this->presetInputs.rad_mesh = NULL;
     this->presetInputs.theta_mesh = NULL;
-
+*/
+ 
 //custom wave per point meshes
 }
 
@@ -535,9 +540,6 @@ DLLEXPORT void projectM::projectM_resetengine() {
     this->presetOutputs.mv_dy = 0.02;
     this->presetOutputs.mv_dx = 0.02;
 
-    /// @bug think these are just gx/gy
-    //this->meshx = 0;
-    //this->meshy = 0;
 
     if ( beatDetect != NULL ) {
         beatDetect->reset();
@@ -655,25 +657,31 @@ int projectM::initPresetTools() {
     srand(time(NULL));
 #endif
 
-    /* Initialize the 'idle' preset */
-    //Preset::init_idle_preset();
-
-    projectM_resetengine();
-
-    if (m_presetLoader = new PresetLoader(PROJECTM_PRESET_PATH)) {
+    if ((m_presetLoader = new PresetLoader(PROJECTM_PRESET_PATH)) == 0) {
         m_presetLoader = 0;
+	std::cerr << "[projectM] error allocating preset loader" << std::endl;
         return PROJECTM_FAILURE;
     }
 
-    if (m_presetChooser = new PresetChooser(*m_presetLoader)) {
+    if ((m_presetChooser = new PresetChooser(*m_presetLoader)) == 0) {
         delete(m_presetLoader);
         m_presetChooser = 0;
+	std::cerr << "[projectM] error allocating preset chooser" << std::endl;
         return PROJECTM_FAILURE;
     }
 
 // Start the iterator
     m_presetPos = new PresetIterator();
     *m_presetPos = m_presetChooser->begin();
+   if (*m_presetPos == m_presetChooser->end()) {
+	std::cerr << "[projectM] error: no valid files found in preset directory \"" << PROJECTM_PRESET_PATH << "\"" << std::endl;
+   }
+	  
+   std::cerr << "[projectM] Allocating first preset..." << std::endl;   
+   m_activePreset = m_presetPos->allocate(presetInputs, presetOutputs);
+  
+    std::cerr << "[projectM] First preset allocated. Name is \"" << m_activePreset->name << "\"" << std::endl;
+    projectM_resetengine();
 
     /* Done */
 #ifdef PRESET_DEBUG

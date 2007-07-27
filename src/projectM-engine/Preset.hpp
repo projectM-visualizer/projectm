@@ -31,7 +31,7 @@
 
 #include "Common.hpp"
 #include <string>
-//#define PRESET_DEBUG 2 /* 0 for no debugging, 1 for normal, 2 for insane */
+#define PRESET_DEBUG 2 /* 0 for no debugging, 1 for normal, 2 for insane */
 
 #include "CustomShape.hpp"
 #include "CustomWave.hpp"

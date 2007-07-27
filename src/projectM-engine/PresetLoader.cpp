@@ -70,16 +70,17 @@ void PresetLoader::rescan()
   std::ostringstream out;
 
   struct dirent * dir_entry;
-  std::cerr << "iterating " << m_dirname << std::endl;
+  
   while ((dir_entry = readdir(m_dir)) != NULL)
   {
 
     // Convert char * to friendly string
     std::string filename(dir_entry->d_name);
 
+    
     // Verify extension is projectm or milkdrop
-    if (filename.rfind(PROJECTM_FILE_EXTENSION) <= 0
-        || filename.rfind(MILKDROP_FILE_EXTENSION) <= 0)
+    if ((filename.rfind(PROJECTM_FILE_EXTENSION) != (filename.length() - PROJECTM_FILE_EXTENSION.length()))
+        && (filename.rfind(MILKDROP_FILE_EXTENSION) != (filename.length() - MILKDROP_FILE_EXTENSION.length())))
       continue;
 
     // Create full path name
@@ -88,7 +89,7 @@ void PresetLoader::rescan()
     // Add to our directory entry collection
     m_entries.push_back(out.str());
 
-    // the directory entry struct is free elsewhere
+    // the directory entry struct is freed elsewhere
   }
 
 }

@@ -40,9 +40,9 @@ public:
     float beat_buffer[32][80],
           beat_instant[32],
           beat_history[32];
-    float *beat_val,
-          *beat_att,
-          *beat_variance;
+    float beat_val[32],
+          beat_att[32],
+          beat_variance[32];
     int beat_buffer_pos;
     float vol_buffer[80],
           vol_instant,

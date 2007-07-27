@@ -35,6 +35,10 @@ public:
     /// Not equal comparator
     bool operator !=(const PresetIterator & presetPos) const ;
 
+
+    /// Equality comparator
+    bool operator ==(const PresetIterator & presetPos) const ;
+
     /// Returns an integer value representing the iterator position
     /// @bug might become internal
     /// \brief Returns the indexing value used by the current iterator.
@@ -158,6 +162,11 @@ inline bool PresetIterator::operator !=(const PresetIterator & presetPos) const 
     return (*presetPos != **this);
 }
 
+
+inline bool PresetIterator::operator ==(const PresetIterator & presetPos) const {
+    return (*presetPos == **this);
+}
+
 inline std::auto_ptr<Preset> PresetIterator::allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
     return m_presetChooser->directoryIndex(m_currentIndex, presetInputs, presetOutputs);
 }
@@ -168,7 +177,7 @@ inline float PresetChooser::UniformRandomFunctor::operator() (std::size_t index)
 
 
 inline PresetIterator PresetChooser::begin() {
-    PresetIterator pos;
+    PresetIterator pos(0);
     pos.setChooser(*this);
     return pos;
 }

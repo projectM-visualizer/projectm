@@ -33,7 +33,7 @@
 #include "Parser.hpp"
 #include "ParamUtils.hpp"
 #include "fatal.h"
-
+#include <iostream>
 
 Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
     file_path(filename),
@@ -133,26 +133,14 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
     return PROJECTM_FAILURE;
   }
 
-  /**
-   if ( !param->matrix ) {
-      if (PER_PIXEL_EQN_DEBUG) printf( "add_per_pixel_eqn: failed to locate param matrix\n" );
-      return PROJECTM_FAILURE;
-    }
-  */
-
-  /* Find most largest index in the splaytree */
-  std::map<int, PerPixelEqn*>::iterator lastPos = per_pixel_eqn_tree->end();
-  --lastPos;
-
-  if (lastPos == per_pixel_eqn_tree->end())
+  if (per_pixel_eqn_tree->empty())
   {
-    per_pixel_eqn = 0;
     index = 0;
   }
   else
   {
+    std::map<int, PerPixelEqn*>::iterator lastPos = per_pixel_eqn_tree->end();
     index = per_pixel_eqn_tree->size();
-    per_pixel_eqn = lastPos->second;
   }
 
   /* Create the per pixel equation given the index, parameter, and general expression */
@@ -274,10 +262,13 @@ void Preset::initialize(const std::string & pathname)
   memset(this->per_frame_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
   memset(this->per_frame_init_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
   int retval;
+  
   if ((retval = load_preset_file(pathname.c_str())) < 0)
   {
+
 #ifdef PRESET_DEBUG
-    if (PRESET_DEBUG) printf("load_preset: failed to load file \"%s\"\n", pathname);
+    if (PRESET_DEBUG) std::cerr << "[Preset] failed to load file \"" << 
+	pathname << "\"!" << std::endl;
 #endif
     //this->close_preset();
     /// @bug how should we handle this problem? a well define exception?

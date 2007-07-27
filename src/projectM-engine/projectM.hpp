@@ -134,8 +134,7 @@ public:
     int pcmframes;
     int freqframes;
 
- int mesh_i, mesh_j;
-
+ 
     GLubyte *fbuffer;
 
 #ifndef WIN32
@@ -177,7 +176,7 @@ public:
 
     /** All readonly variables 
      *  which are passed as inputs 
-     * to presets. See struct defintition above */
+     * to presets. See struct definitition above */
     PresetInputs presetInputs;
 
     /** The presets modify these values. For now this is declared on stack

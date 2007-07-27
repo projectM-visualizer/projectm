@@ -33,8 +33,9 @@ public:
   static Param * find(std::string name, std::map<std::string,Param*> * paramTree)
   {
 
-    Param * param = NULL;
+    assert(paramTree);
 
+    Param * param = NULL;
 
     /* First look in the builtin database */
     std::map<std::string,Param*>::iterator pos = paramTree->find(name);
@@ -42,7 +43,6 @@ public:
 
     if ((FLAGS == AUTO_CREATE) && ((pos == paramTree->end())))
     {
-	param = pos->second;
       /* Check if string is valid */
       if (!Param::is_valid_param_string(name.c_str()))
         return NULL;

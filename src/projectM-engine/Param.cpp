@@ -55,8 +55,11 @@ Param::Param( std::string _name, short int type, short int flags, void * engine_
     {
 
     /** @@FIX THIS */
-    //this->gx = projectM::currentEngine->gx;
-    //this->gy = projectM::currentEngine->gy;
+    /// @bug listen to above's advice! 
+    /// @NOTE this is a hack, but will probably work fine
+    this->gx = projectM::currentEngine->presetInputs.gx;
+    this->gy = projectM::currentEngine->presetInputs.gy;
+    
 }
 
 
@@ -77,9 +80,10 @@ Param::Param(std::string _name) :
    
 
     /** @@FIX THIS */
-    /// @bug listen to above's advice!
-    //this->gx = projectM::currentEngine->gx;
-    //this->gy = projectM::currentEngine->gy;
+    /// @bug listen to above's advice! 
+    /// @NOTE this is a hack, but will probably work fine
+    this->gx = projectM::currentEngine->presetInputs.gx;
+    this->gy = projectM::currentEngine->presetInputs.gy;
 }
 
 /* Free's a parameter type */

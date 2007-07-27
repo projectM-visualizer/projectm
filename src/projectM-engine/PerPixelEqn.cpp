@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <iostream>
 #include "projectM.hpp"
 
 #include "fatal.h"
@@ -68,6 +68,7 @@ void PerPixelEqn::evaluate() {
 //    param->matrix_flag = 0;         /** Force matrix ignore to update time */
   for (int mesh_i = 0; mesh_i < param->gx; mesh_i++) { 
     for (int mesh_j = 0; mesh_j < param->gy; mesh_j++) {
+//	std::cout << "gx,gy is " << param->gx << "," << param->gy << std::endl;
       param_matrix[mesh_i][mesh_j] = eqn_ptr->eval_gen_expr(mesh_i, mesh_j);
     }
   }

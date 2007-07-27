@@ -1,7 +1,8 @@
 #include "PresetFrameIO.hpp"
 #include "wipemalloc.h"
 #include <math.h>
-
+#include <cassert>
+#include <iostream>
 PresetInputs::PresetInputs()
 {
 }
@@ -12,8 +13,9 @@ void PresetInputs::Initialize(int gx, int gy)
 
   this->gx =gx; 
   this->gy=gy;
-
+  std::cerr << "Allocating x_mesh, gx,gy is " << gx << "," << gy << std::endl;
   this->x_mesh=(float **)wipemalloc(gx * sizeof(float *));
+  assert(x_mesh);
   for(x = 0; x < gx; x++)
     {
       this->x_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
@@ -159,7 +161,8 @@ PresetInputs::~PresetInputs()
   free(this->origy);
   free(this->origrad);
   free(this->origtheta);
-  
+ 
+  //std::cerr << "freeing x_mesh" <<std::endl; 
   free(this->x_mesh);
   free(this->y_mesh);
   free(this->rad_mesh);
@@ -180,11 +183,16 @@ void PresetInputs::ResetMesh()
 {
   int x,y;
  
-  
+    assert(x_mesh);
+    
+    assert(y_mesh);
+    assert(rad_mesh);
+    assert(theta_mesh);
+
     for (x=0;x<this->gx;x++)
     {
       for(y=0;y<this->gy;y++)
-	{   
+	{
           x_mesh[x][y]=this->origx[x][y];
 	  y_mesh[x][y]=this->origy[x][y];
 	  rad_mesh[x][y]=this->origrad[x][y];

@@ -39,28 +39,24 @@
 DLLEXPORT BeatDetect::BeatDetect() {
   int x,y; 
 
-  vol_instant=0;
-  vol_history=0;
+  this->vol_instant=0;
+  this->vol_history=0;
 
   for (y=0;y<80;y++)
     {
-      vol_buffer[y]=0;
+      this->vol_buffer[y]=0;
     }
 
-  beat_buffer_pos=0;
-
-  beat_val=(float *)wipemalloc(32*sizeof(float));
-  beat_att=(float *)wipemalloc(32*sizeof(float));
-  beat_variance=(float *)wipemalloc(32*sizeof(float));
+  this->beat_buffer_pos=0;
 
   for (x=0;x<32;x++) {
-      beat_instant[x]=0;
-      beat_history[x]=0;
-      beat_val[x]=1.0;
-      beat_att[x]=1.0;
-      beat_variance[x]=0;
+      this->beat_instant[x]=0;
+      this->beat_history[x]=0;
+      this->beat_val[x]=1.0;
+      this->beat_att[x]=1.0;
+      this->beat_variance[x]=0;
       for (y=0;y<80;y++) {
-	    beat_buffer[x][y]=0;
+	    this->beat_buffer[x][y]=0;
 	    }
     }
 
@@ -74,27 +70,23 @@ DLLEXPORT BeatDetect::BeatDetect() {
     this->bass_att = 0;
     this->vol = 0;
 
-    pcm = new PCM();
+    this->pcm = new PCM();
   }
 
-void BeatDetect::initBeatDetect() {
-
-  } 
-
 void BeatDetect::reset() {
-  treb = 0;
-  mid = 0;
-  bass = 0;
-  treb_att = 0;
-  mid_att = 0;
-  bass_att = 0;
+  this->treb = 0;
+  this->mid = 0;
+  this->bass = 0;
+  this->treb_att = 0;
+  this->mid_att = 0;
+  this->bass_att = 0;
   }
 
 void BeatDetect::detectFromSamples() {
     bass_old = bass;
     bass=0;mid=0;treb=0;
 
-    getBeatVals(pcm->vdataL,pcm->vdataR);
+    getBeatVals(pcm->pcmdataL,pcm->pcmdataR);
   }
 
 void BeatDetect::getBeatVals( float *vdataL,float *vdataR ) {
@@ -104,7 +96,6 @@ void BeatDetect::getBeatVals( float *vdataL,float *vdataR ) {
   float temp2=0;
 
   vol_instant=0;
-
       for ( x=0;x<16;x++)
 	{
 	  
@@ -116,7 +107,7 @@ void BeatDetect::getBeatVals( float *vdataL,float *vdataR ) {
 	      vol_instant+=((vdataL[y]*vdataL[y])+(vdataR[y]*vdataR[y]))*(1.0/512.0);
 
 	    }
-	  
+//printf("1");	  
 	  linear=y/2;
 	  beat_history[x]-=(beat_buffer[x][beat_buffer_pos])*.0125;
 	  beat_buffer[x][beat_buffer_pos]=beat_instant[x];
@@ -126,10 +117,10 @@ void BeatDetect::getBeatVals( float *vdataL,float *vdataR ) {
 	  
 	  beat_att[x]+=(beat_instant[x])/(beat_history[x]);
 
-
+//printf("2\n");
  	  
 	}
-      
+//printf("b\n");      
       vol_history-=(vol_buffer[beat_buffer_pos])*.0125;
       vol_buffer[beat_buffer_pos]=vol_instant;
       vol_history+=(vol_instant)*.0125;
@@ -150,6 +141,7 @@ void BeatDetect::getBeatVals( float *vdataL,float *vdataR ) {
 	      treb+=(beat_instant[x]);
 	      temp2+=(beat_history[x]);
 	    }
+//printf("c\n");
 	  treb=treb/(1.5*temp2);
 //	  *vol=vol_instant/(1.5*vol_history);
 	  vol=vol_instant/(1.5*vol_history);
@@ -180,13 +172,4 @@ void BeatDetect::getBeatVals( float *vdataL,float *vdataR ) {
 	
 }
 
-void BeatDetect::freeBeatDetect() {
 
-  free(beat_att);
-  free(beat_val);
-  free(beat_variance);
-
-  beat_att = NULL;
-  beat_val = NULL;
-  beat_variance = NULL;
-}
