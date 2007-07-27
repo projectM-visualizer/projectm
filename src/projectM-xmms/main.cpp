@@ -68,6 +68,8 @@ char fonts_dir[512];
 
 //extern preset_t * active_preset;
 
+FILE * debugFile = fopen("./dwrite-dump", "wb");
+
 // Callback functions
 VisPlugin projectM_vtable = {
   NULL, // Handle, filled in by xmms

@@ -10,15 +10,15 @@
     <projectname>projectmDev10</projectname>
     <projectdirectory>../../</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
+    <description></description>
     <defaultencoding/>
     <versioncontrol/>
   </general>
   <kdevcustomproject>
     <run>
-      <directoryradio>executable</directoryradio>
-      <mainprogram/>
-      <programargs/>
+      <directoryradio>custom</directoryradio>
+      <mainprogram>/usr/local/bin/xmms</mainprogram>
+      <programargs></programargs>
       <globaldebugarguments/>
       <globalcwd>/home/carm/projects/projectM/dev-1.0</globalcwd>
       <useglobalprogram>false</useglobalprogram>
@@ -27,7 +27,7 @@
       <autoinstall>true</autoinstall>
       <autokdesu>false</autokdesu>
       <envvars/>
-      <customdirectory>/</customdirectory>
+      <customdirectory>/home/carm/projects/dev-1.0/src/</customdirectory>
     </run>
     <filetypes>
       <filetype>*.java</filetype>
@@ -66,8 +66,8 @@
       <prio>0</prio>
       <dontact>false</dontact>
       <makebin>make</makebin>
-      <defaulttarget/>
-      <makeoptions/>
+      <defaulttarget></defaulttarget>
+      <makeoptions></makeoptions>
       <selectedenvironment>default</selectedenvironment>
       <environments>
         <default/>
@@ -76,18 +76,18 @@
   </kdevcustomproject>
   <kdevdebugger>
     <general>
-      <dbgshell/>
-      <gdbpath/>
-      <configGdbScript/>
-      <runShellScript/>
-      <runGdbScript/>
+      <dbgshell></dbgshell>
+      <gdbpath></gdbpath>
+      <configGdbScript></configGdbScript>
+      <runShellScript></runShellScript>
+      <runGdbScript></runGdbScript>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
-      <programargs/>
+      <programargs></programargs>
     </general>
     <display>
-      <staticmembers>false</staticmembers>
+      <staticmembers>true</staticmembers>
       <demanglenames>true</demanglenames>
       <outputradix>10</outputradix>
     </display>
@@ -185,7 +185,7 @@
       <includeTypedefs>true</includeTypedefs>
     </codecompletion>
     <creategettersetter>
-      <prefixGet/>
+      <prefixGet></prefixGet>
       <prefixSet>set</prefixSet>
       <prefixVariable>m_,_</prefixVariable>
       <parameterName>theValue</parameterName>

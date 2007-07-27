@@ -83,14 +83,14 @@ inline void DWRITE( char *fmt, ... ) {
     va_list args;
     va_start( args, fmt );
 #ifdef DEBUG
-#ifdef MACOS
+//#ifdef MACOS
     if ( debugFile != NULL ) {\
         vfprintf( debugFile, fmt, args );\
         fflush( debugFile );\
       } else {\
         vprintf( fmt, args );\
       }
-#endif
+//#endif
 #endif
     va_end( args );
   }
