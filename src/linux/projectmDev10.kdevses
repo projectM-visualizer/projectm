@@ -6,7 +6,7 @@
    <View0 Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/ParamUtils.hpp" >
-   <View0 line="24" Type="Source" />
+   <View0 Type="Source" />
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/BuiltinParams.cpp" >
    <View0 Type="Source" />
@@ -21,7 +21,7 @@
    <View0 Type="Source" />
   </Doc5>
   <Doc6 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/InitCond.cpp" >
-   <View0 line="34" Type="Source" />
+   <View0 Type="Source" />
   </Doc6>
   <Doc7 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Parser.cpp" >
    <View0 Type="Source" />
@@ -36,7 +36,7 @@
    <View0 Type="Source" />
   </Doc10>
   <Doc11 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/InitCond.hpp" >
-   <View0 line="48" Type="Source" />
+   <View0 Type="Source" />
   </Doc11>
   <Doc12 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PerPointEqn.hpp" >
    <View0 Type="Source" />
@@ -66,55 +66,55 @@
    <View0 Type="Source" />
   </Doc20>
   <Doc21 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/CustomWave.cpp" >
-   <View0 line="69" Type="Source" />
+   <View0 Type="Source" />
   </Doc21>
   <Doc22 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PerPointEqn.cpp" >
-   <View0 line="72" Type="Source" />
+   <View0 Type="Source" />
   </Doc22>
   <Doc23 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Expr.cpp" >
-   <View0 line="0" Type="Source" />
+   <View0 Type="Source" />
   </Doc23>
   <Doc24 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Eval.hpp" >
    <View0 Type="Source" />
   </Doc24>
   <Doc25 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Eval.cpp" >
-   <View0 line="34" Type="Source" />
+   <View0 Type="Source" />
   </Doc25>
   <Doc26 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Parser.hpp" >
-   <View0 line="110" Type="Source" />
+   <View0 Type="Source" />
   </Doc26>
   <Doc27 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/CustomShape.cpp" >
-   <View0 line="226" Type="Source" />
+   <View0 Type="Source" />
   </Doc27>
   <Doc28 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/BuiltinFuncs.cpp" >
-   <View0 line="20" Type="Source" />
+   <View0 Type="Source" />
   </Doc28>
   <Doc29 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/BuiltinFuncs.hpp" >
-   <View0 line="56" Type="Source" />
+   <View0 Type="Source" />
   </Doc29>
   <Doc30 NumberOfViews="1" URL="file:///home/carm/projects/trunk/src/projectM-engine/CustomShape.cpp" >
-   <View0 line="14" Type="Source" />
+   <View0 Type="Source" />
   </Doc30>
   <Doc31 NumberOfViews="1" URL="file:///home/carm/projects/trunk/src/projectM-engine/CustomShape.h" >
-   <View0 line="126" Type="Source" />
+   <View0 Type="Source" />
   </Doc31>
   <Doc32 NumberOfViews="1" URL="file:///home/carm/projects/trunk/src/projectM-engine/InitCond.cpp" >
-   <View0 line="75" Type="Source" />
+   <View0 Type="Source" />
   </Doc32>
   <Doc33 NumberOfViews="1" URL="file:///home/carm/projects/trunk/src/projectM-engine/InitCond.h" >
-   <View0 line="57" Type="Source" />
+   <View0 Type="Source" />
   </Doc33>
   <Doc34 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-xmms/CMakeFiles/xmms_projectM.dir/build.make" >
-   <View0 line="17" Type="Source" />
+   <View0 Type="Source" />
   </Doc34>
   <Doc35 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/AUTHORS.txt" >
-   <View0 line="0" Type="Source" />
+   <View0 Type="Source" />
   </Doc35>
   <Doc36 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PresetChooser.cpp" >
-   <View0 line="0" Type="Source" />
+   <View0 Type="Source" />
   </Doc36>
   <Doc37 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PresetChooser.hpp" >
-   <View0 line="30" Type="Source" />
+   <View0 line="26" Type="Source" />
   </Doc37>
  </DocsAndViews>
  <pluginList>
