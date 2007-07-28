@@ -39,29 +39,29 @@
 /* Evaluates a per pixel equation */
 void PerPixelEqn::evaluate() {
 
-  float ** param_matrix = NULL;
-  GenExpr * eqn_ptr = NULL;
+  GenExpr * eqn_ptr = 0;
   int x,y;
 
-  eqn_ptr = gen_expr; 
- if (param->matrix == NULL) {
+ eqn_ptr = this->gen_expr;
+
+ float ** param_matrix = (float**)this->param->matrix;
+
+ if (param_matrix == 0) {
     if (PER_PIXEL_EQN_DEBUG) printf("evalPerPixelEqn: [begin initializing matrix] (index = %d) (name = %s)\n", 
   			  index, param->name.c_str());
 
     param_matrix = (float**)wipemalloc(param->gx*sizeof(float*));
-    param->matrix = param_matrix;
-
     for(x = 0; x < param->gx; x++)
       param_matrix[x] = (float *)wipemalloc(param->gy * sizeof(float));
 
     for (x = 0; x < param->gx; x++)
-      for (y = 0; y < param->gy; y++)
+      for (y = 0; y < param->gy; y++) {
+	    /// @slow is this necessary?
 	    param_matrix[x][y] = 0.0;
-
+      }
+    this->param->matrix = param_matrix;
   }
-  else 
-    param_matrix = (float**)param->matrix;
- 
+
   assert(!(eqn_ptr == NULL || param_matrix == NULL));
 
 //    param->matrix_flag = 0;         /** Force matrix ignore to update time */
@@ -75,8 +75,9 @@ void PerPixelEqn::evaluate() {
   /* Now that this parameter has been referenced with a per
      pixel equation, we let the evaluator know by setting
      this flag */
-  param->matrix_flag = true; 
-   param->flags |= P_FLAG_PER_PIXEL;
+  /// @bug review and verify this behavior
+  param->matrix_flag = true;
+  param->flags |= P_FLAG_PER_PIXEL;
 }
 
 PerPixelEqn::PerPixelEqn(int _index, Param * _param, GenExpr * _gen_expr):index(_index), param(_param), gen_expr(_gen_expr) {
@@ -84,5 +85,6 @@ PerPixelEqn::PerPixelEqn(int _index, Param * _param, GenExpr * _gen_expr):index(
 	assert(index >= 0);
 	assert(param != 0);
 	assert(gen_expr != 0);
+	
 }
 
