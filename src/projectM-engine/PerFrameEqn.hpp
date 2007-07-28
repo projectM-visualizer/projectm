@@ -29,7 +29,7 @@
 #ifndef _PER_FRAME_EQN_H
 #define _PER_FRAME_EQN_H
 
-#define PER_FRAME_EQN_DEBUG 0
+#define PER_FRAME_EQN_DEBUG 1
 
 class GenExpr;
 class Param;

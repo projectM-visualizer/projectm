@@ -33,6 +33,7 @@
 #include "Expr.hpp"
 
 #include "wipemalloc.h"
+#include <cassert>
 
 /* Evaluate an equation */
 void PerFrameEqn::evaluate() {
@@ -43,7 +44,8 @@ void PerFrameEqn::evaluate() {
 	 }
 	 
     //*((float*)per_frame_eqn->param->engine_val) = eval_gen_expr(per_frame_eqn->gen_expr);
-	
+	assert(gen_expr);
+	assert(param);
 	param->set_param(gen_expr->eval_gen_expr(-1,-1));
      if (PER_FRAME_EQN_DEBUG) printf(" = %.4f\n", *((float*)param->engine_val)); 
 		 
@@ -89,8 +91,8 @@ PerFrameEqn::~PerFrameEqn() {
 }
 
 /* Create a new per frame equation */
-PerFrameEqn::PerFrameEqn(int index, Param * param, GenExpr * gen_expr) :
-	index(index), param(param), gen_expr(gen_expr) {
+PerFrameEqn::PerFrameEqn(int _index, Param * _param, GenExpr * _gen_expr) :
+	index(_index), param(_param), gen_expr(_gen_expr) {
 
   /* Set per frame eqn name */
     /// @bug why are we commented out?

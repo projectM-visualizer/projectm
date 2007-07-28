@@ -67,13 +67,14 @@ void PresetLoader::rescan()
     abort();
   }
 
-  std::ostringstream out;
-
   struct dirent * dir_entry;
   
   while ((dir_entry = readdir(m_dir)) != NULL)
   {
 
+    
+
+    std::ostringstream out;
     // Convert char * to friendly string
     std::string filename(dir_entry->d_name);
 
@@ -86,6 +87,7 @@ void PresetLoader::rescan()
     // Create full path name
     out << m_dirname << PATH_SEPARATOR << filename;
 
+   // std::cerr << "[PresetLoader]" << filename << std::endl;
     // Add to our directory entry collection
     m_entries.push_back(out.str());
 

@@ -58,21 +58,16 @@ Preset::~Preset()
 
 
 
-  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(*init_cond_tree);
-  delete init_cond_tree;
+  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(init_cond_tree);
 
-  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(*per_frame_init_eqn_tree);
-  delete per_frame_init_eqn_tree;
+  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(per_frame_init_eqn_tree);
 
-  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<PerPixelEqn> >(*per_pixel_eqn_tree);
-  delete per_pixel_eqn_tree;
-
-  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<PerFrameEqn> >(*per_frame_eqn_tree);
-  delete per_frame_eqn_tree;
-
-  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<Param> >(*user_param_tree);
-  delete user_param_tree;
-
+  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<PerPixelEqn> >(per_pixel_eqn_tree);
+ 
+  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<PerFrameEqn> >(per_frame_eqn_tree);
+ 
+  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<Param> >(user_param_tree);
+ 
   /// @note no need to clear the actual container itself
   for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
     delete(*pos);
@@ -126,21 +121,21 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
 
   /* Search for the parameter so we know what matrix the per pixel equation is referencing */
 
-  param = ParamUtils::find(name, &this->builtinParams, this->user_param_tree);
+  param = ParamUtils::find(name, &this->builtinParams, &this->user_param_tree);
   if ( !param )
   {
     if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: failed to allocate a new parameter!\n");
     return PROJECTM_FAILURE;
   }
 
-  if (per_pixel_eqn_tree->empty())
+  if (per_pixel_eqn_tree.empty())
   {
     index = 0;
   }
   else
   {
-    std::map<int, PerPixelEqn*>::iterator lastPos = per_pixel_eqn_tree->end();
-    index = per_pixel_eqn_tree->size();
+    std::map<int, PerPixelEqn*>::iterator lastPos = per_pixel_eqn_tree.end();
+    index = per_pixel_eqn_tree.size();
   }
 
   /* Create the per pixel equation given the index, parameter, and general expression */
@@ -155,7 +150,7 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
                                     per_pixel_eqn->index, per_pixel_eqn->param->matrix, per_pixel_eqn->param->name.c_str());
 
   /* Insert the per pixel equation into the preset per pixel database */
-  std::pair<std::map<int, PerPixelEqn*>::iterator, bool> inserteeOption = per_pixel_eqn_tree->insert
+  std::pair<std::map<int, PerPixelEqn*>::iterator, bool> inserteeOption = per_pixel_eqn_tree.insert
       (std::make_pair(per_pixel_eqn->index, per_pixel_eqn));
 
   if (!inserteeOption.second)
@@ -223,7 +218,7 @@ void Preset::evalCustomShapePerFrameEquations()
 void Preset::evalInitConditions()
 {
 
-  for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree->begin(); pos != per_frame_init_eqn_tree->end(); ++pos)
+  for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos)
     pos->second->evaluate();
 
 }
@@ -231,10 +226,10 @@ void Preset::evalInitConditions()
 void Preset::evalPerFrameEquations()
 {
 
-  for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree->begin(); pos != init_cond_tree->end(); ++pos)
+  for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos)
     pos->second->evaluate();
 
-  for (std::map<int, PerFrameEqn*>::iterator pos = per_frame_eqn_tree->begin(); pos != per_frame_eqn_tree->end(); ++pos)
+  for (std::map<int, PerFrameEqn*>::iterator pos = per_frame_eqn_tree.begin(); pos != per_frame_eqn_tree.end(); ++pos)
     pos->second->evaluate();
 
 }
@@ -243,14 +238,12 @@ void Preset::evalPerFrameEquations()
 void Preset::initialize(const std::string & pathname)
 {
 
-  /* Initialize equation trees */
-  init_cond_tree = new std::map<std::string,InitCond*>();
-  this->user_param_tree = new std::map<std::string,Param*>();
-  this->per_frame_eqn_tree = new std::map<int, PerFrameEqn*>();
-  this->per_pixel_eqn_tree = new std::map<int, PerPixelEqn*>();
-  this->per_frame_init_eqn_tree = new std::map<std::string,InitCond*>();
-
-  memset(this->per_pixel_flag, 0, sizeof(int)*NUM_OPS);
+  // Clear equation trees
+  init_cond_tree.clear();
+  user_param_tree.clear();
+  per_frame_eqn_tree.clear();
+  per_pixel_eqn_tree.clear();
+  per_frame_init_eqn_tree.clear();
 
   /* Set initial index values */
   this->per_pixel_eqn_string_index = 0;
@@ -376,7 +369,7 @@ int Preset::write_init_conditions(FILE * fs)
   if (fs == NULL)
     return PROJECTM_FAILURE;
 
-  init_cond_tree->splay_traverse( (void (*)(void*))write_init);
+  init_cond_tree.splay_traverse( (void (*)(void*))write_init);
 
   return PROJECTM_SUCCESS;
 }
@@ -502,33 +495,13 @@ void Preset::evalPerPixelEqns()
 {
 
   /* Evaluate all per pixel equations using splay traversal */
-  for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree->begin();
-       pos != per_pixel_eqn_tree->end(); ++pos)
+  for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin();
+       pos != per_pixel_eqn_tree.end(); ++pos)
     pos->second->evaluate();
 
   /* Set mesh i / j values to -1 so engine vars are used by default again */
   this->mesh_i = -1;
   this->mesh_j = -1;
-}
-
-/** Is the opcode a per-pixel equation? */
-int Preset::isPerPixelEqn( int op )
-{
-  return per_pixel_flag[op];
-}
-
-/** Reset all per-pixel equation flags */
-int Preset::resetPerPixelEqnFlags()
-{
-
-  int i;
-
-  for (i = 0; i < NUM_OPS;i++)
-  {
-    per_pixel_flag[i] = FALSE;
-  }
-
-  return PROJECTM_SUCCESS;
 }
 
 /** Finds / Creates (if necessary) initial condition associated with passed parameter */
@@ -540,9 +513,9 @@ InitCond * Preset::get_init_cond( Param *param )
 
   assert(param);
 
-  std::map<std::string, InitCond*>::iterator pos = init_cond_tree->find(param->name);
+  std::map<std::string, InitCond*>::iterator pos = init_cond_tree.find(param->name);
 
-  init_cond = pos == init_cond_tree->end() ? 0 : pos->second;
+  init_cond = pos == init_cond_tree.end() ? 0 : pos->second;
 
   if (init_cond  == NULL)
   {
@@ -562,7 +535,7 @@ InitCond * Preset::get_init_cond( Param *param )
 
     /* Insert the initial condition into this presets tree */
     std::pair<std::map<std::string, InitCond*>::iterator, bool> inserteePair =
-      init_cond_tree->insert(std::make_pair(init_cond->param->name, init_cond));
+      init_cond_tree.insert(std::make_pair(init_cond->param->name, init_cond));
 
     if (!inserteePair.second)
     {
@@ -747,9 +720,9 @@ Param * Preset::find(char * name, int flags)
   /* If the search failed, check the user database */
   if (param == NULL)
   {
-    std::map<std::string, Param*>::iterator pos = user_param_tree->find(name);
+    std::map<std::string, Param*>::iterator pos = user_param_tree.find(name);
 
-    if (pos == user_param_tree->end())
+    if (pos == user_param_tree.end())
       param = 0;
     else
       param = pos->second;
@@ -776,7 +749,7 @@ Param * Preset::find(char * name, int flags)
     }
     /* Finally, insert the new parameter into this preset's proper splaytree */
     std::pair<std::map<std::string, Param*>::iterator, bool> inserteePair
-    = user_param_tree->insert(std::make_pair(param->name, param));
+    = user_param_tree.insert(std::make_pair(param->name, param));
 
     if (!inserteePair.second)
     {

@@ -44,7 +44,7 @@
 #include <SDL/SDL.h>
 #endif
 
-projectMEvent sdl2pmEvent( SDL_Event event ) { \
+inline projectMEvent sdl2pmEvent( SDL_Event event ) { \
 							
     switch ( event.type ) { \
         case SDL_VIDEORESIZE:
@@ -58,7 +58,7 @@ projectMEvent sdl2pmEvent( SDL_Event event ) { \
       } \
   } \
 
-projectMKeycode sdl2pmKeycode( SDLKey keysym ) { \
+inline projectMKeycode sdl2pmKeycode( SDLKey keysym ) { \
     switch ( keysym ) { \
         case SDLK_F1: \
             return PROJECTM_K_F1; \
@@ -158,7 +158,7 @@ projectMKeycode sdl2pmKeycode( SDLKey keysym ) { \
       } \
   } \
 
-projectMModifier sdl2pmModifier( SDLMod mod ) { \
+inline projectMModifier sdl2pmModifier( SDLMod mod ) { \
     return PROJECTM_KMOD_LSHIFT; \
   } \
 

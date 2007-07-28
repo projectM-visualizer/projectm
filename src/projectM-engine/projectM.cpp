@@ -473,22 +473,22 @@ DLLEXPORT void projectM::projectM_initengine() {
 
 //per pixel meshes
 /*
-    this->presetOutputs.zoom_mesh = NULL;
-    this->presetOutputs.zoomexp_mesh = NULL;
-    this->presetOutputs.rot_mesh = NULL;
+   // this->presetOutputs.zoom_mesh = NULL;
+   // this->presetOutputs.zoomexp_mesh = NULL;
+    //this->presetOutputs.rot_mesh = NULL;
 
 
-    this->presetOutputs.sx_mesh = NULL;
-    this->presetOutputs.sy_mesh = NULL;
-    this->presetOutputs.dx_mesh = NULL;
-    this->presetOutputs.dy_mesh = NULL;
-    this->presetOutputs.cx_mesh = NULL;
-    this->presetOutputs.cy_mesh = NULL;
+   // this->presetOutputs.sx_mesh = NULL;
+   // this->presetOutputs.sy_mesh = NULL;
+   // this->presetOutputs.dx_mesh = NULL;
+   // this->presetOutputs.dy_mesh = NULL;
+   // this->presetOutputs.cx_mesh = NULL;
+   // this->presetOutputs.cy_mesh = NULL;
 
-    this->presetInputs.x_mesh = NULL;
-    this->presetInputs.y_mesh = NULL;
-    this->presetInputs.rad_mesh = NULL;
-    this->presetInputs.theta_mesh = NULL;
+   // this->presetInputs.x_mesh = NULL;
+   / this->presetInputs.y_mesh = NULL;
+   // this->presetInputs.rad_mesh = NULL;
+   // this->presetInputs.theta_mesh = NULL;
 */
  
 //custom wave per point meshes

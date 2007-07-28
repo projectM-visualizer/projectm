@@ -22,8 +22,10 @@ Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTa
   this->showpreset = 0;
   this->showhelp = 0;
   this->showstats = 0;
-  this->studio = 0;   
+  this->studio = 0; 
 this->realfps=0;
+
+ this->drawtitle=0;
 
   this->title = NULL;
    
@@ -84,7 +86,7 @@ this->fontURL = fontURL;
 void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 {
     totalframes++;  
-
+   
     DWRITE( "start Pass 1 \n" );
 
       //BEGIN PASS 1
@@ -411,7 +413,7 @@ void Renderer::PerPixelMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
     }
 
   if(!presetOutputs->rot_is_mesh)
-    {       
+    {    
       for (x=0;x<this->gx;x++){
 	for(y=0;y<this->gy;y++){
 	  presetOutputs->rot_mesh[x][y]=presetOutputs->rot;

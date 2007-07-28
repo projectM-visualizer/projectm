@@ -101,12 +101,12 @@ public:
       /* If initial condition was not defined by the preset file, force a default one
          with the following code */
       std::map<std::string,InitCond*>::iterator pos;
-      if ((pos = (m_preset->init_cond_tree->find(param->name))) == m_preset->init_cond_tree->end())
+      if ((pos = (m_preset->init_cond_tree.find(param->name))) == m_preset->init_cond_tree.end())
       {
 
         std::map<std::string,InitCond*>::iterator per_frame_init_pos;
         /* Make sure initial condition does not exist in the set of per frame initial equations */
-        if ((per_frame_init_pos = (m_preset->per_frame_init_eqn_tree->find(param->name))) != m_preset->per_frame_init_eqn_tree->end())
+        if ((per_frame_init_pos = (m_preset->per_frame_init_eqn_tree.find(param->name))) != m_preset->per_frame_init_eqn_tree.end())
           return;
 
         if (param->type == P_TYPE_BOOL)
@@ -124,7 +124,7 @@ public:
 
         /* Insert the initial condition into this presets tree */
         /// @bug not error checking
-        m_preset->init_cond_tree->insert(std::make_pair(init_cond->param->name,init_cond));
+        m_preset->init_cond_tree.insert(std::make_pair(init_cond->param->name,init_cond));
       }
 
     }

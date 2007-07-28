@@ -62,7 +62,7 @@ void PerPixelEqn::evaluate() {
   else 
     param_matrix = (float**)param->matrix;
  
-  if (eqn_ptr == NULL || param_matrix == NULL )
+  assert(!(eqn_ptr == NULL || param_matrix == NULL));
     printf("something is seriously wrong...\n");
 
 //    param->matrix_flag = 0;         /** Force matrix ignore to update time */

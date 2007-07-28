@@ -35,7 +35,7 @@
 #endif /** MACOS */
 
 /** Creates new pbuffers */
-RenderTarget::RenderTarget(int texsize, int width, int height) {
+RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(true) {
 
     int mindim = 0;
     int origtexsize = 0;

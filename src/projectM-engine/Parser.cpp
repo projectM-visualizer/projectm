@@ -335,7 +335,7 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
       }	
       
       /* Insert the equation in the per frame equation tree */
-      preset->per_frame_init_eqn_tree->insert(std::make_pair(init_cond->param->name, init_cond));
+      preset->per_frame_init_eqn_tree.insert(std::make_pair(init_cond->param->name, init_cond));
 	
       if (update_string_buffer(preset->per_frame_init_eqn_string_buffer, 
 			       &preset->per_frame_init_eqn_string_index) < 0)
@@ -360,7 +360,7 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
       }	
       
       /* Insert the equation in the per frame equation tree */
-      preset->per_frame_eqn_tree->insert(std::make_pair(per_frame_eqn_count, per_frame_eqn));
+      preset->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn_count, per_frame_eqn));
     
       if (update_string_buffer(preset->per_frame_eqn_string_buffer, 
 			       &preset->per_frame_eqn_string_index) < 0)
@@ -456,7 +456,7 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
 	return PROJECTM_PARSE_ERROR;
 
       /* Insert the equation in the per frame equation tree */
-      preset->per_frame_eqn_tree->insert(std::make_pair(per_frame_eqn_count, per_frame_eqn));
+      preset->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn_count, per_frame_eqn));
 	
       if (update_string_buffer(preset->per_frame_eqn_string_buffer, 
 			       &preset->per_frame_eqn_string_index) < 0)
@@ -472,7 +472,7 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
     ++per_frame_init_eqn_count;
 
       /* Insert the equation in the per frame equation tree */
-      preset->per_frame_init_eqn_tree->insert(std::make_pair(init_cond->param->name, init_cond));
+      preset->per_frame_init_eqn_tree.insert(std::make_pair(init_cond->param->name, init_cond));
 	
 
       if (update_string_buffer(preset->per_frame_init_eqn_string_buffer, 
@@ -542,7 +542,7 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
     }
 
     /* Add equation to initial condition tree */
-    preset->init_cond_tree->insert(std::make_pair(init_cond->param->name, init_cond));
+    preset->init_cond_tree.insert(std::make_pair(init_cond->param->name, init_cond));
 
     /* Finished with initial condition line */
     //    if (PARSE_DEBUG) printf("parse_line: initial condition parsed successfully\n");
@@ -762,7 +762,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
     }
 
     /* CASE 6: regular parameter. Will be created if necessary and the string has no invalid characters */
-    if ((param = ParamUtils::find(string, &preset->builtinParams, preset->user_param_tree)) != NULL) {
+    if ((param = ParamUtils::find(string, &preset->builtinParams, &preset->user_param_tree)) != NULL) {
 
       if (PARSE_DEBUG) {
 	    DWRITE("parse_gen_expr: parameter (name = %s)...\n", param->name.c_str());
@@ -1149,7 +1149,7 @@ PerFrameEqn * Parser::parse_per_frame_eqn(FILE * fs, int index, Preset * preset)
   }
   
   /* Find the parameter associated with the string, create one if necessary */
-  if ((param = ParamUtils::find(string, &preset->builtinParams, preset->user_param_tree)) == NULL) {
+  if ((param = ParamUtils::find(string, &preset->builtinParams, &preset->user_param_tree)) == NULL) {
     return NULL;	
   }
   
@@ -1195,7 +1195,7 @@ PerFrameEqn * Parser::parse_implicit_per_frame_eqn(FILE * fs, char * param_strin
 
   //rintf("param string: %s\n", param_string);
   /* Find the parameter associated with the string, create one if necessary */
-  if ((param = ParamUtils::find(param_string, &preset->builtinParams, preset->user_param_tree)) == NULL) { 
+  if ((param = ParamUtils::find(param_string, &preset->builtinParams, &preset->user_param_tree)) == NULL) { 
     return NULL;	
   }
 
@@ -1240,7 +1240,7 @@ InitCond * Parser::parse_init_cond(FILE * fs, char * name, Preset * preset) {
     return NULL;
   
   /* Search for the paramater in the database, creating it if necessary */
-  if ((param = ParamUtils::find(name, &preset->builtinParams, preset->user_param_tree)) == NULL) {
+  if ((param = ParamUtils::find(name, &preset->builtinParams, &preset->user_param_tree)) == NULL) {
     return NULL;
   }
   
@@ -1315,7 +1315,7 @@ InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, std::map
   }
 
   /* Otherwise use the builtin parameter and user databases. This is confusing. Sorry. */
-  if ((param == NULL) && ((param = ParamUtils::find(name, &preset->builtinParams, preset->user_param_tree)) == NULL)) {
+  if ((param == NULL) && ((param = ParamUtils::find(name, &preset->builtinParams, &preset->user_param_tree)) == NULL)) {
     return NULL;
   }
   

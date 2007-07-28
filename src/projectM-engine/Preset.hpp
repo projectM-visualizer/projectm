@@ -84,18 +84,17 @@ public:
     int per_frame_eqn_count,
     per_frame_init_eqn_count;
 
-    int per_pixel_flag[NUM_OPS];
     char per_pixel_eqn_string_buffer[STRING_BUFFER_SIZE];
     char per_frame_eqn_string_buffer[STRING_BUFFER_SIZE];
     char per_frame_init_eqn_string_buffer[STRING_BUFFER_SIZE];
 
     /* Data structures that contain equation and initial condition information */
-    std::map<int, PerFrameEqn*> * per_frame_eqn_tree;   /* per frame equations */
-    std::map<int, PerPixelEqn*> * per_pixel_eqn_tree; /* per pixel equation tree */
+    std::map<int, PerFrameEqn*>  per_frame_eqn_tree;   /* per frame equations */
+    std::map<int, PerPixelEqn*>  per_pixel_eqn_tree; /* per pixel equation tree */
     GenExpr * per_pixel_eqn_array[NUM_OPS]; /* per pixel equation array */
-    std::map<std::string,InitCond*> * per_frame_init_eqn_tree; /* per frame initial equations */
-    std::map<std::string,InitCond*> * init_cond_tree; /* initial conditions */
-    std::map<std::string,Param*> * user_param_tree; /* user parameter splay tree */
+    std::map<std::string,InitCond*>  per_frame_init_eqn_tree; /* per frame initial equations */
+    std::map<std::string,InitCond*>  init_cond_tree; /* initial conditions */
+    std::map<std::string,Param*> user_param_tree; /* user parameter splay tree */
 
     int add_per_pixel_eqn( char *name, GenExpr *gen_expr );
     int isPerPixelEqn( int op );

@@ -41,17 +41,17 @@
 #include "wipemalloc.h"
 
 /** Constructor */
-Param::Param( std::string _name, short int type, short int flags, void * engine_val, void * matrix,
-              CValue default_init_val, CValue upper_bound, CValue lower_bound):
+Param::Param( std::string _name, short int _type, short int _flags, void * _engine_val, void * _matrix,
+              CValue _default_init_val, CValue _upper_bound, CValue _lower_bound):
 	name(_name),
-        type(type),
-        flags (flags),
+        type(_type),
+        flags (_flags),
         matrix_flag (0),
-        matrix (matrix),
-        engine_val( engine_val),
-        default_init_val (default_init_val),
-        upper_bound (upper_bound),
-        lower_bound (lower_bound)
+        matrix (_matrix),
+        engine_val(_engine_val),
+        default_init_val (_default_init_val),
+        upper_bound (_upper_bound),
+        lower_bound (_lower_bound)
     {
 
     /** @@FIX THIS */
@@ -174,6 +174,7 @@ void Param::set_param( float val) {
             *((float*)engine_val) = val;
         break;
     default:
+	abort();
         break;
 
     }
