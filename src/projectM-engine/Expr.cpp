@@ -24,7 +24,7 @@
 #include "Expr.hpp"
 #include "Eval.hpp"
 #include <cassert>
-
+#include <iostream>
 
 float GenExpr::eval_gen_expr(int mesh_i, int mesh_j) {
   float l;
@@ -115,10 +115,7 @@ float ValExpr::eval_val_expr(int mesh_i, int mesh_j) {
 
 		return (float)(*((int*)(term.param->engine_val)));
 	case P_TYPE_DOUBLE:
-		#ifdef EVAL_DEBUG_DOUBLE
-			DWRITE( "(%s:%.4f)", term.param->name.c_str(), (*((float*)term.param->engine_val)));
-		#endif
-
+		
 		if (term.param->matrix_flag | (term.param->flags & P_FLAG_ALWAYS_MATRIX)) {
 
 		/* Sanity check the matrix is there... */
@@ -133,6 +130,7 @@ float ValExpr::eval_val_expr(int mesh_i, int mesh_j) {
 			  }
 		  }
 		}
+		//std::cout << term.param->name << ": " << (*((float*)term.param->engine_val)) << std::endl;
 		return *((float*)(term.param->engine_val));
 	default:
 	  return EVAL_ERROR;
