@@ -34,7 +34,7 @@
 #include "PresetChooser.hpp"
 
 
-interface_t current_interface;// = DEFAULT_INTERFACE;
+interface_t current_interface = DEFAULT_INTERFACE;
 
 void refreshConsole() {
 
@@ -100,6 +100,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	switch( event ) {
 
 	case PROJECTM_KEYDOWN:
+	 
 	  switch( keycode )
 	    {
 	    case PROJECTM_K_UP:
@@ -113,7 +114,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_F1:
 	      renderer->showhelp++;
 	      renderer->showstats=0;
-	      renderer->showfps=0;
+	      renderer->showfps=0;	     
 	      break;
 	    case PROJECTM_K_F5:
 	      if(renderer->showhelp%2==0) renderer->showfps++;
@@ -217,7 +218,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      renderer->showhelp=0;
 	      renderer->showstats=0;
 	      renderer->showfps=0;
-//	      current_interface = MENU_INTERFACE;
+//	      current_interface = MENU_INTERFACE;	      
 //	      showMenu();
 	      break;	     
 	    case PROJECTM_K_t:

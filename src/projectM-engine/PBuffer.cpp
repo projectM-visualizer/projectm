@@ -44,7 +44,8 @@ RenderTarget::RenderTarget(int texsize, int width, int height) {
     this->texsize=texsize;
 
 #ifdef USE_FBO
-  
+   if(this->usePbuffers)
+    { 
 	    glewInit();
 	
 	    GLuint   fb, color_rb, depth_rb, rgba_tex, depth_tex, i, other_tex;
@@ -86,8 +87,8 @@ RenderTarget::RenderTarget(int texsize, int width, int height) {
 	    GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
 	    if (status == GL_FRAMEBUFFER_COMPLETE_EXT) {
 	        return;
-	      
-      }
+	    }	      
+    }
 #endif
 
 fallback:
@@ -132,8 +133,7 @@ fallback:
 		    NULL);
       }
 
-    this->usePbuffers = 0;
-
+    this->usePbuffers=0;
     return;
   }
 
