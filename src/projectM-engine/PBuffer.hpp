@@ -67,7 +67,7 @@ public:
     /** Application context */
     ContextType origContextType;
 
-    int usePbuffers;
+  
    
   
   RenderTarget( int texsize, int width, int height );
