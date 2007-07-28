@@ -63,7 +63,6 @@ void PerPixelEqn::evaluate() {
     param_matrix = (float**)param->matrix;
  
   assert(!(eqn_ptr == NULL || param_matrix == NULL));
-    printf("something is seriously wrong...\n");
 
 //    param->matrix_flag = 0;         /** Force matrix ignore to update time */
   for (int mesh_i = 0; mesh_i < param->gx; mesh_i++) { 
