@@ -120,10 +120,10 @@ void PresetOutputs::Initialize(int gx, int gy)
     {
       this->zoomexp_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
     }
-  this->rot_mesh=(float **)wipemalloc(gy * sizeof(float *));
+  this->rot_mesh=(float **)wipemalloc(gx * sizeof(float *));
  for(x = 0; x < gx; x++)
     { 
-      this->rot_mesh[x] = (float *)wipemalloc(gx * sizeof(float));
+      this->rot_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
     }
  zoom_is_mesh = false;
  zoomexp_is_mesh =false;
