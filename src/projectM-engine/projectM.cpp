@@ -123,11 +123,11 @@ int x, y;
 
       if (noSwitch==0) {
           nohard--;
-          if((beatDetect->bass-beatDetect->bass_old>beatDetect->beat_sensitivity ||
-             avgtime ) && nohard<0)
+          if((beatDetect->bass-beatDetect->bass_old > beatDetect->beat_sensitivity ||
+             progress >= 1.0 ) && nohard<0)
           { 
 //              printf("%f %d %d\n", beatDetect->bass-beatDetect->bass_old,this->frame,this->avgtime);
-//              switchPreset(RANDOM_NEXT, HARD_CUT);
+              switchPreset(RANDOM_NEXT, HARD_CUT);
               nohard=fps*5;
           }
       }
@@ -3022,6 +3022,8 @@ int projectM::switchPreset(switch_mode_t switch_mode, int cut_type) {
   int switch_index;
   int sindex = 0;
   int slen = 0;
+
+  frame = 0;
 
     DWRITE( "switchPreset(): in\n" );
     DWRITE( "switchPreset(): %s\n", presetURL );
