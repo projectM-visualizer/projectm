@@ -1,139 +1,26 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="38" >
-  <Doc0 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Algorithms.hpp" >
-   <View0 Type="Source" />
-  </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/ParamUtils.hpp" >
-   <View0 Type="Source" />
-  </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/BuiltinParams.cpp" >
-   <View0 Type="Source" />
-  </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/BuiltinParams.hpp" >
-   <View0 Type="Source" />
-  </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Param.cpp" >
-   <View0 Type="Source" />
-  </Doc4>
-  <Doc5 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Param.hpp" >
-   <View0 Type="Source" />
-  </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/InitCond.cpp" >
-   <View0 Type="Source" />
-  </Doc6>
-  <Doc7 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Parser.cpp" >
-   <View0 Type="Source" />
-  </Doc7>
-  <Doc8 NumberOfViews="1" URL="file:///usr/lib/gcc/i686-pc-linux-gnu/4.1.2/include/g%2B%2B-v4/bits/stl_pair.h" >
-   <View0 Type="Source" />
-  </Doc8>
-  <Doc9 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/CustomShape.hpp" >
-   <View0 Type="Source" />
-  </Doc9>
-  <Doc10 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Preset.cpp" >
-   <View0 Type="Source" />
-  </Doc10>
-  <Doc11 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/InitCond.hpp" >
-   <View0 Type="Source" />
-  </Doc11>
-  <Doc12 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PerPointEqn.hpp" >
-   <View0 Type="Source" />
-  </Doc12>
-  <Doc13 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PerPixelEqn.hpp" >
-   <View0 Type="Source" />
-  </Doc13>
-  <Doc14 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PerPixelEqn.cpp" >
-   <View0 Type="Source" />
-  </Doc14>
-  <Doc15 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PerFrameEqn.hpp" >
-   <View0 Type="Source" />
-  </Doc15>
-  <Doc16 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PerFrameEqn.cpp" >
-   <View0 Type="Source" />
-  </Doc16>
-  <Doc17 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Preset.hpp" >
-   <View0 Type="Source" />
-  </Doc17>
-  <Doc18 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/CustomWave.hpp" >
-   <View0 Type="Source" />
-  </Doc18>
-  <Doc19 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/InitCondUtils.hpp" >
-   <View0 Type="Source" />
-  </Doc19>
-  <Doc20 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Expr.hpp" >
-   <View0 Type="Source" />
-  </Doc20>
-  <Doc21 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/CustomWave.cpp" >
-   <View0 Type="Source" />
-  </Doc21>
-  <Doc22 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PerPointEqn.cpp" >
-   <View0 Type="Source" />
-  </Doc22>
-  <Doc23 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Expr.cpp" >
-   <View0 Type="Source" />
-  </Doc23>
-  <Doc24 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Eval.hpp" >
-   <View0 Type="Source" />
-  </Doc24>
-  <Doc25 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Eval.cpp" >
-   <View0 Type="Source" />
-  </Doc25>
-  <Doc26 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Parser.hpp" >
-   <View0 Type="Source" />
-  </Doc26>
-  <Doc27 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/CustomShape.cpp" >
-   <View0 Type="Source" />
-  </Doc27>
-  <Doc28 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/BuiltinFuncs.cpp" >
-   <View0 Type="Source" />
-  </Doc28>
-  <Doc29 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/BuiltinFuncs.hpp" >
-   <View0 Type="Source" />
-  </Doc29>
-  <Doc30 NumberOfViews="1" URL="file:///home/carm/projects/trunk/src/projectM-engine/CustomShape.cpp" >
-   <View0 Type="Source" />
-  </Doc30>
-  <Doc31 NumberOfViews="1" URL="file:///home/carm/projects/trunk/src/projectM-engine/CustomShape.h" >
-   <View0 Type="Source" />
-  </Doc31>
-  <Doc32 NumberOfViews="1" URL="file:///home/carm/projects/trunk/src/projectM-engine/InitCond.cpp" >
-   <View0 Type="Source" />
-  </Doc32>
-  <Doc33 NumberOfViews="1" URL="file:///home/carm/projects/trunk/src/projectM-engine/InitCond.h" >
-   <View0 Type="Source" />
-  </Doc33>
-  <Doc34 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-xmms/CMakeFiles/xmms_projectM.dir/build.make" >
-   <View0 Type="Source" />
-  </Doc34>
-  <Doc35 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/AUTHORS.txt" >
-   <View0 Type="Source" />
-  </Doc35>
-  <Doc36 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PresetChooser.cpp" >
-   <View0 Type="Source" />
-  </Doc36>
-  <Doc37 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PresetChooser.hpp" >
-   <View0 line="26" Type="Source" />
-  </Doc37>
- </DocsAndViews>
+ <DocsAndViews NumberOfDocuments="0" />
  <pluginList>
   <kdevdebugger>
    <breakpointList/>
+   <showInternalCommands value="0" />
   </kdevdebugger>
+  <kdevastyle>
+   <Extensions ext="*.cpp *.h,*.c *.h,*.cxx *.hxx,*.c++ *.h++,*.cc *.hh,*.C *.H,*.diff,*.inl,*.java,*.moc,*.patch,*.tlh,*.xpm,*.hpp" />
+   <AStyle IndentPreprocessors="0" FillCount="4" PadParenthesesOut="1" IndentNamespaces="1" IndentLabels="1" Fill="Tabs" MaxStatement="40" Brackets="Attach" MinConditional="-1" IndentBrackets="0" PadParenthesesUn="1" BlockBreak="0" KeepStatements="1" KeepBlocks="1" BlockIfElse="0" IndentSwitches="1" PadOperators="0" FStyle="KR" IndentCases="0" FillEmptyLines="1" BracketsCloseHeaders="0" BlockBreakAll="0" PadParenthesesIn="1" IndentClasses="1" IndentBlocks="0" FillForce="1" />
+  </kdevastyle>
   <kdevbookmarks>
    <bookmarks>
-    <bookmark url="/home/carm/projects/dev-1.0/src/projectM-engine/CustomShape.cpp" >
-     <mark line="214" />
-    </bookmark>
     <bookmark url="/home/carm/projects/projectM/dev-1.0/src/projectM-engine/console_interface.cpp" >
      <mark line="166" />
     </bookmark>
-    <bookmark url="/home/carm/projects/dev-1.0/src/projectM-engine/PerPointEqn.cpp" >
-     <mark line="60" />
-    </bookmark>
    </bookmarks>
   </kdevbookmarks>
+  <kdevsubversion>
+   <subversion base="" />
+  </kdevsubversion>
   <kdevvalgrind>
    <executable path="" params="" />
    <valgrind path="" params="" />

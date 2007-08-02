@@ -1,8 +1,8 @@
 <?xml version = '1.0'?>
 <kdevelop>
   <general>
-    <author>Carmelo Piccione, Peter Sperl</author>
-    <email>carmelo.piccione@gmail.com, psperl@gmail.com</email>
+    <author>Carmelo Piccione</author>
+    <email>carmelo.piccione@gmail.com</email>
     <version>1</version>
     <projectmanagement>KDevCustomProject</projectmanagement>
     <primarylanguage>C++</primarylanguage>
@@ -10,24 +10,23 @@
     <projectname>projectmDev10</projectname>
     <projectdirectory>../../</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description></description>
+    <description/>
     <defaultencoding/>
-    <versioncontrol/>
+    <versioncontrol>kdevsubversion</versioncontrol>
   </general>
   <kdevcustomproject>
     <run>
-      <directoryradio>custom</directoryradio>
-      <mainprogram>/usr/local/bin/xmms</mainprogram>
-      <programargs></programargs>
+      <directoryradio>executable</directoryradio>
+      <mainprogram>/home/pete/personal/carm/dev-1.0</mainprogram>
+      <programargs/>
       <globaldebugarguments/>
-      <globalcwd>/home/carm/projects/projectM/dev-1.0</globalcwd>
+      <globalcwd>/home/pete/personal/carm/dev-1.0</globalcwd>
       <useglobalprogram>false</useglobalprogram>
       <terminal>false</terminal>
-      <autocompile>true</autocompile>
-      <autoinstall>true</autoinstall>
+      <autocompile>false</autocompile>
+      <autoinstall>false</autoinstall>
       <autokdesu>false</autokdesu>
       <envvars/>
-      <customdirectory>/home/carm/projects/dev-1.0/src/</customdirectory>
     </run>
     <filetypes>
       <filetype>*.java</filetype>
@@ -48,7 +47,7 @@
     <blacklist/>
     <build>
       <buildtool>make</buildtool>
-      <builddir>/home/carm/projects/dev-1.0/src</builddir>
+      <builddir>src</builddir>
     </build>
     <other>
       <prio>0</prio>
@@ -66,8 +65,8 @@
       <prio>0</prio>
       <dontact>false</dontact>
       <makebin>make</makebin>
-      <defaulttarget></defaulttarget>
-      <makeoptions></makeoptions>
+      <defaulttarget/>
+      <makeoptions/>
       <selectedenvironment>default</selectedenvironment>
       <environments>
         <default/>
@@ -76,18 +75,17 @@
   </kdevcustomproject>
   <kdevdebugger>
     <general>
-      <dbgshell></dbgshell>
-      <gdbpath></gdbpath>
-      <configGdbScript></configGdbScript>
-      <runShellScript></runShellScript>
-      <runGdbScript></runGdbScript>
+      <dbgshell/>
+      <gdbpath/>
+      <configGdbScript/>
+      <runShellScript/>
+      <runGdbScript/>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
-      <programargs></programargs>
     </general>
     <display>
-      <staticmembers>true</staticmembers>
+      <staticmembers>false</staticmembers>
       <demanglenames>true</demanglenames>
       <outputradix>10</outputradix>
     </display>
@@ -161,7 +159,7 @@
       <automaticCodeCompletion>true</automaticCodeCompletion>
       <automaticArgumentsHint>false</automaticArgumentsHint>
       <automaticHeaderCompletion>true</automaticHeaderCompletion>
-      <codeCompletionDelay>150</codeCompletionDelay>
+      <codeCompletionDelay>300</codeCompletionDelay>
       <argumentsHintDelay>400</argumentsHintDelay>
       <headerCompletionDelay>250</headerCompletionDelay>
       <showOnlyAccessibleItems>false</showOnlyAccessibleItems>
@@ -179,13 +177,9 @@
       <usePermanentCaching>true</usePermanentCaching>
       <alwaysIncludeNamespaces>true</alwaysIncludeNamespaces>
       <includePaths>.;</includePaths>
-      <includeGlobalFunctions>true</includeGlobalFunctions>
-      <includeTypes>true</includeTypes>
-      <includeEnums>true</includeEnums>
-      <includeTypedefs>true</includeTypedefs>
     </codecompletion>
     <creategettersetter>
-      <prefixGet></prefixGet>
+      <prefixGet/>
       <prefixSet>set</prefixSet>
       <prefixVariable>m_,_</prefixVariable>
       <parameterName>theValue</parameterName>
@@ -197,7 +191,9 @@
       <synchronize>true</synchronize>
       <orientation>Vertical</orientation>
     </splitheadersource>
-    <references/>
+    <references>
+      <pcs>automatic_%2Fhome%2Fpete%2Fpersonal%2Fcarm%2Fdev-1.0</pcs>
+    </references>
   </kdevcppsupport>
   <cppsupportpart>
     <filetemplates>

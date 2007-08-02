@@ -210,11 +210,14 @@ int worker_func(void*)
         while ( SDL_PollEvent( &event ) ) {
             /** Translate into projectM codes and process */
             evt = sdl2pmEvent( event );
+            if (!((event.type == SDL_KEYDOWN) || (event.type == SDL_KEYUP)))
+		continue;
+
             key = sdl2pmKeycode( event.key.keysym.sym );
             mod = sdl2pmModifier( event.key.keysym.mod );
 
             if ( evt == PROJECTM_KEYDOWN ) {                 
-     
+	      printf("menu-imp\n");
 
 	      if(key == PROJECTM_K_f)
 		{
