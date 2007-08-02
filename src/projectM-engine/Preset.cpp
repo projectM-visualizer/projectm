@@ -499,9 +499,7 @@ void Preset::evalPerPixelEqns()
        pos != per_pixel_eqn_tree.end(); ++pos)
     pos->second->evaluate();
 
-  /* Set mesh i / j values to -1 so engine vars are used by default again */
-  this->mesh_i = -1;
-  this->mesh_j = -1;
+
 }
 
 /** Finds / Creates (if necessary) initial condition associated with passed parameter */

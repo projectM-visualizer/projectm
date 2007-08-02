@@ -29,7 +29,8 @@
 float GenExpr::eval_gen_expr(int mesh_i, int mesh_j) {
   float l;
 
-  switch(type) {
+  assert(item);
+  switch(this->type) {
   case VAL_T:
     return ((ValExpr*)item)->eval_val_expr(mesh_i, mesh_j);
   case PREFUN_T:
@@ -50,25 +51,29 @@ float GenExpr::eval_gen_expr(int mesh_i, int mesh_j) {
 /* Evaluates functions in prefix form */
 float PrefunExpr::eval_prefun_expr(int mesh_i, int mesh_j) {
 
-	int i;
-	float rv;
 
-
+	assert(func_ptr);
 	/* This is slightly less than safe, since
 	   who knows if the passed argument is valid. For
 	   speed purposes we'll go with this */
-	float *arg_list = (float *)wipemalloc( sizeof( float ) * num_args );
+	float arg_list[this->num_args];
 
 	#ifdef EVAL_DEBUG_DOUBLE
 		DWRITE( "fn[");
-	#endif
+	#endif 
+
+		//printf("numargs %d", num_args);
+
 	/* Evaluate each argument before calling the function itself */
-	for (i = 0; i < num_args; i++) {
+	for (int i = 0; i < num_args; i++) {
 		arg_list[i] = expr_list[i]->eval_gen_expr(mesh_i, mesh_j);
 		#ifdef EVAL_DEBUG_DOUBLE
 			if (i < (num_args - 1))
 				DWRITE( ", ");
 		#endif
+			//printf("numargs %x", arg_list[i]);
+
+	
 	}
 
 	#ifdef EVAL_DEBUG_DOUBLE
@@ -78,10 +83,8 @@ float PrefunExpr::eval_prefun_expr(int mesh_i, int mesh_j) {
 	/* Now we call the function, passing a list of
 	   floats as its argument */
 
-    rv = (func_ptr)(arg_list);
-    free( arg_list );
-    arg_list = NULL;
-    return rv;
+    return (func_ptr)(arg_list);
+
 }
 
 
@@ -129,6 +132,7 @@ float ValExpr::eval_val_expr(int mesh_i, int mesh_j) {
 			    return (((float*)term.param->matrix)[mesh_i]);
 			  }
 		  }
+		  //assert(mesh_i >=0);
 		}
 		//std::cout << term.param->name << ": " << (*((float*)term.param->engine_val)) << std::endl;
 		return *((float*)(term.param->engine_val));
@@ -325,9 +329,8 @@ TreeExpr *TreeExpr::new_tree_expr(InfixOp * infix_op, GenExpr * gen_expr, TreeEx
 
 		TreeExpr * tree_expr;
 		tree_expr = (TreeExpr*)wipemalloc(sizeof(TreeExpr));
+		assert(tree_expr);
 
-		if (tree_expr == NULL)
-			return NULL;
 		tree_expr->infix_op = infix_op;
 		tree_expr->gen_expr = gen_expr;
 		tree_expr->left = left;
@@ -337,7 +340,7 @@ TreeExpr *TreeExpr::new_tree_expr(InfixOp * infix_op, GenExpr * gen_expr, TreeEx
 
 
 /* Creates a new value expression */
-ValExpr *ValExpr::new_val_expr(int type, Term *term) {
+ValExpr *ValExpr::new_val_expr(int _type, Term * _term) {
 
   ValExpr * val_expr;
   val_expr = (ValExpr*)wipemalloc(sizeof(ValExpr));
@@ -345,23 +348,23 @@ ValExpr *ValExpr::new_val_expr(int type, Term *term) {
   if (val_expr == NULL)
     return NULL;
 
-  val_expr->type = type;
-  val_expr->term.constant = term->constant;
-    val_expr->term.param = term->param;
+  val_expr->type = _type;
+  val_expr->term.constant = _term->constant;
+    val_expr->term.param = _term->param;
 
   return val_expr;
 }
 
 /* Creates a new general expression */
-GenExpr * GenExpr::new_gen_expr(int type, void * item) {
+GenExpr * GenExpr::new_gen_expr(int _type, void * _item) {
 
 	GenExpr * gen_expr;
 
 	gen_expr = (GenExpr*)wipemalloc(sizeof(GenExpr));
 	if (gen_expr == NULL)
 		return NULL;
-	gen_expr->type = type;
-	gen_expr->item = item;
+	gen_expr->type = _type;
+	gen_expr->item = _item;
 
 	return gen_expr;
 }

@@ -168,10 +168,7 @@ public:
     /* variables were added in milkdrop 1.04 */
     int gx,gy;
 
-/// @bug are these in use?
-    /// @bugfix YES, presets reference meshx and meshy
-    int meshx;
-    int meshy;
+
     float **x_mesh;
     float **y_mesh;
     float **rad_mesh;

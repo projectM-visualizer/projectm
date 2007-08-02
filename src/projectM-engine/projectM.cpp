@@ -105,8 +105,9 @@ DLLEXPORT void projectM::renderFrame() {
 
 //       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
     presetInputs.ResetMesh();
+   
 
-    assert(m_activePreset.get());
+ //   assert(m_activePreset.get());
     m_activePreset->evaluateFrame();
 
 

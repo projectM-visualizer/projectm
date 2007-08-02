@@ -184,7 +184,6 @@ void PresetInputs::ResetMesh()
   int x,y;
  
     assert(x_mesh);
-    
     assert(y_mesh);
     assert(rad_mesh);
     assert(theta_mesh);

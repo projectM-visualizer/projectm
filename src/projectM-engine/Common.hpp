@@ -82,16 +82,16 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 inline void DWRITE( char *fmt, ... ) {
     va_list args;
     va_start( args, fmt );
-#ifdef DEBUG
+//#ifdef DEBUG
 //#ifdef MACOS
-    if ( debugFile != NULL ) {\
-        vfprintf( debugFile, fmt, args );\
-        fflush( debugFile );\
-      } else {\
-        vprintf( fmt, args );\
-      }
+   // if ( debugFile != NULL ) {\
+        vprintf(fmt, args );
+       // fflush( debugFile );\
+     // } else {\
+       // printf( fmt, args );\
+     // }
 //#endif
-#endif
+//#endif
     va_end( args );
   }
 

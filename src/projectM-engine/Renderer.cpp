@@ -1495,7 +1495,8 @@ void Renderer::draw_preset() {
 	title_font->FaceSize((unsigned)(12*(this->vh/512.0)));
 	if(this->noSwitch) title_font->Render("[LOCKED]  " );
 	title_font->FaceSize((unsigned)(20*(this->vh/512.0)));
-        title_font->Render(this->presetName );
+	if (this->presetName)
+        	title_font->Render(this->presetName );
 
                  
         

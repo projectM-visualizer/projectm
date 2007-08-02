@@ -29,7 +29,7 @@
 #ifndef _PER_FRAME_EQN_H
 #define _PER_FRAME_EQN_H
 
-#define PER_FRAME_EQN_DEBUG 1
+#define PER_FRAME_EQN_DEBUG 0
 
 class GenExpr;
 class Param;
@@ -44,8 +44,9 @@ public:
     PerFrameEqn(int index, Param * param, GenExpr * gen_expr);
     ~PerFrameEqn();
 
+    /// Evaluate the per frame equation
     void evaluate();
-    void eval_per_frame_init_eqn( PerFrameEqn *per_frame_eqn );
+
   };
 
 

@@ -71,7 +71,6 @@ public:
 
     std::string name;
     std::string file_path;
-    int mesh_i,mesh_j;
 
     void load_init_conditions();
     CustomShape * find_custom_shape(int id, bool create_flag);
@@ -91,14 +90,12 @@ public:
     /* Data structures that contain equation and initial condition information */
     std::map<int, PerFrameEqn*>  per_frame_eqn_tree;   /* per frame equations */
     std::map<int, PerPixelEqn*>  per_pixel_eqn_tree; /* per pixel equation tree */
-    GenExpr * per_pixel_eqn_array[NUM_OPS]; /* per pixel equation array */
     std::map<std::string,InitCond*>  per_frame_init_eqn_tree; /* per frame initial equations */
     std::map<std::string,InitCond*>  init_cond_tree; /* initial conditions */
     std::map<std::string,Param*> user_param_tree; /* user parameter splay tree */
 
     int add_per_pixel_eqn( char *name, GenExpr *gen_expr );
-    int isPerPixelEqn( int op );
-
+  
     int resetPerPixelEqns();
     int resetPerPixelEqnFlags();
 
