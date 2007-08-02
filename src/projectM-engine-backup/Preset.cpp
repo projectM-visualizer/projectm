@@ -70,10 +70,10 @@ Preset::~Preset()
  
   /// @note no need to clear the actual container itself
   for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
-    delete(*pos);
+    delete(pos->second);
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
-    delete(*pos);
+    delete(pos->second);
 
 
 #if defined(PRESET_DEBUG) && defined(DEBUG)
@@ -168,7 +168,7 @@ void Preset::evalCustomShapeInitConditions()
 {
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
-    (*pos)->eval_custom_shape_init_conds();
+    pos->second->eval_custom_shape_init_conds();
 }
 
 
@@ -176,7 +176,7 @@ void Preset::evalCustomWaveInitConditions()
 {
 
   for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
-    (*pos)->eval_custom_wave_init_conds();
+    pos->second->eval_custom_wave_init_conds();
 }
 
 
@@ -187,11 +187,11 @@ void Preset::evalCustomWavePerFrameEquations()
   for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
   {
 
-    std::map<std::string, InitCond*> & init_cond_tree = (*pos)->init_cond_tree;
+    std::map<std::string, InitCond*> & init_cond_tree = pos->second->init_cond_tree;
     for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos)
       _pos->second->evaluate();
 
-    std::map<int, PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
+    std::map<int, PerFrameEqn*> & per_frame_eqn_tree = pos->second->per_frame_eqn_tree;
     for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
       _pos->second->evaluate();
   }
@@ -204,11 +204,11 @@ void Preset::evalCustomShapePerFrameEquations()
   for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
   {
 
-    std::map<std::string, InitCond*> & init_cond_tree = (*pos)->init_cond_tree;
+    std::map<std::string, InitCond*> & init_cond_tree = pos->second->init_cond_tree;
     for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos)
       _pos->second->evaluate();
 
-    std::map<int, PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
+    std::map<int, PerFrameEqn*> & per_frame_eqn_tree = pos->second->per_frame_eqn_tree;
     for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
       _pos->second->evaluate();
   }
@@ -459,7 +459,7 @@ void Preset::load_custom_wave_init_conditions()
 {
   
   for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
-    (*pos)->load_unspecified_init_conds();
+    pos->second->load_unspecified_init_conds();
 
 }
 
@@ -469,7 +469,7 @@ void Preset::load_custom_shape_init_conditions()
   //     void eval_custom_shape_init_conds();
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
-    (*pos)->load_custom_shape_init();
+    pos->second->load_custom_shape_init();
 }
 
 
@@ -499,7 +499,9 @@ void Preset::evalPerPixelEqns()
        pos != per_pixel_eqn_tree.end(); ++pos)
     pos->second->evaluate();
 
-
+  /* Set mesh i / j values to -1 so engine vars are used by default again */
+  this->mesh_i = -1;
+  this->mesh_j = -1;
 }
 
 /** Finds / Creates (if necessary) initial condition associated with passed parameter */
@@ -643,65 +645,8 @@ void Preset::load_init_conditions()
 
 
 
-CustomWave * Preset::find_custom_wave(int id, bool create_flag)
-{
-  CustomWave * custom_wave = NULL;
-
-  assert(customWaves);
-
-  if ((custom_wave = (*customWaves)[id]) == NULL)
-  {
-
-    if (CUSTOM_WAVE_DEBUG) { printf("find_custom_wave: creating custom wave (id = %d)...", id);fflush(stdout);}
-
-    if (create_flag == FALSE)
-    {
-      if (CUSTOM_WAVE_DEBUG) printf("you specified not to (create flag = false), returning null\n");
-      return NULL;
-    }
-
-    if ((custom_wave = new CustomWave(id)) == NULL)
-    {
-      if (CUSTOM_WAVE_DEBUG) printf("failed...out of memory?\n");
-      return NULL;
-    }
-
-    customWaves->push_back(custom_wave);
-  }
-
-  return custom_wave;
-
-}
 
 
-CustomShape * Preset::find_custom_shape(int id, bool create_flag)
-{
-
-  CustomShape * custom_shape = NULL;
-  assert(customShapes);
-  if ((custom_shape = (*customShapes)[id]) == NULL)
-  {
-
-    if (CUSTOM_SHAPE_DEBUG) { printf("find_custom_shape: creating custom shape (id = %d)...", id);fflush(stdout);}
-
-    if (create_flag == FALSE)
-    {
-      if (CUSTOM_SHAPE_DEBUG) printf("you specified not to (create flag = false), returning null\n");
-      return NULL;
-    }
-
-    if ((custom_shape = new CustomShape(id)) == NULL)
-    {
-      if (CUSTOM_SHAPE_DEBUG) printf("failed...out of memory?\n");
-      return NULL;
-    }
-
-    customShapes->push_back(custom_shape);
-
-  }
-
-  return custom_shape;
-}
 
 /* Find a parameter given its name, will create one if not found */
 Param * Preset::find(char * name, int flags)

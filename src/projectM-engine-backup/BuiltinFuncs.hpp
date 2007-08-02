@@ -17,7 +17,6 @@
 #include "Func.hpp"
 #include <cmath>
 #include <cstdlib>
-#include <cassert>
 #include "projectM.hpp"
 /* Wrappers for all the builtin functions
    The arg_list pointer is a list of floats. Its
@@ -118,13 +117,8 @@ static inline float below_wrapper(float * arg_list) {
 return (arg_list[0] < arg_list[1]);
 }
 
-static float sin_wrapper(float * arg_list) {
-
-  assert(arg_list);
-//return .5;
-float d = sinf(*arg_list);
-return d;
-//return (sin (arg_list[0]));
+static inline float sin_wrapper(float * arg_list) {
+return (sin (arg_list[0]));
 }
 
 

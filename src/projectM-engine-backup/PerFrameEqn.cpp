@@ -51,6 +51,36 @@ void PerFrameEqn::evaluate() {
 		 
 }
 
+/*
+void eval_per_frame_init_eqn(PerFrameEqn * per_frame_eqn) {
+
+   float val;
+   init_cond_t * init_cond;
+   if (per_frame_eqn == NULL)
+     return;
+
+     if (PER_FRAME_EQN_DEBUG) { 
+		 printf("per_frame_init: %s = ", per_frame_eqn->param->name);
+		 fflush(stdout);
+	 }
+	 		
+	
+    val = *((float*)per_frame_eqn->param->engine_val) = eval_gen_expr(per_frame_eqn->gen_expr);
+    if (PER_FRAME_EQN_DEBUG) printf(" = %f\n", *((float*)per_frame_eqn->param->engine_val)); 
+     
+	if (per_frame_eqn->param->flags & P_FLAG_QVAR) {
+		
+		per_frame_eqn->param->init_val.float_val = val;
+		if ((init_cond = new_init_cond(per_frame_eqn->param)) == NULL)
+			return;
+		
+		if ((list_append(init_cond_list, init_cond)) < 0) {
+			free_init_cond(init_cond);
+			return;
+		}
+    }
+}
+*/
 
 /* Frees perframe equation structure. Warning: assumes gen_expr pointer is not freed by anyone else! */
 PerFrameEqn::~PerFrameEqn() {
@@ -62,4 +92,11 @@ PerFrameEqn::~PerFrameEqn() {
 
 /* Create a new per frame equation */
 PerFrameEqn::PerFrameEqn(int _index, Param * _param, GenExpr * _gen_expr) :
-	index(_index), param(_param), gen_expr(_gen_expr) {}
+	index(_index), param(_param), gen_expr(_gen_expr) {
+
+  /* Set per frame eqn name */
+    /// @bug why are we commented out?
+  //  memset(per_frame_eqn->name, 0, MAX_TOKEN_SIZE);
+  //strncpy(per_frame_eqn->name, name, MAX_TOKEN_SIZE-1);
+
+}

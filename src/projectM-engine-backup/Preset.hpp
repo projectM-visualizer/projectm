@@ -31,6 +31,8 @@
 
 #include "Common.hpp"
 #include <string>
+#include <cassert>
+
 #define PRESET_DEBUG 2 /* 0 for no debugging, 1 for normal, 2 for insane */
 
 #include "CustomShape.hpp"
@@ -42,14 +44,14 @@
 #include "PresetFrameIO.hpp"
 #include <map>
 #include "InitCond.hpp"
-#include <vector>
+
 
 
 class CustomWave;
 class CustomShape;
 class InitCond;
 
-//#include <map>
+
 
 
 class Preset {
@@ -71,10 +73,11 @@ public:
 
     std::string name;
     std::string file_path;
+    int mesh_i,mesh_j;
 
     void load_init_conditions();
-    CustomShape * find_custom_shape(int id, bool create_flag);
-    CustomWave * find_custom_wave(int id, bool create_flag);
+    template <class CustomObject>
+    static CustomObject * find_custom_object(int id, bool create_flag, std::map<int,CustomObject*> & customObjects);
 
     int per_pixel_eqn_string_index;
     int per_frame_eqn_string_index;
@@ -90,12 +93,14 @@ public:
     /* Data structures that contain equation and initial condition information */
     std::map<int, PerFrameEqn*>  per_frame_eqn_tree;   /* per frame equations */
     std::map<int, PerPixelEqn*>  per_pixel_eqn_tree; /* per pixel equation tree */
+    GenExpr * per_pixel_eqn_array[NUM_OPS]; /* per pixel equation array */
     std::map<std::string,InitCond*>  per_frame_init_eqn_tree; /* per frame initial equations */
     std::map<std::string,InitCond*>  init_cond_tree; /* initial conditions */
     std::map<std::string,Param*> user_param_tree; /* user parameter splay tree */
 
     int add_per_pixel_eqn( char *name, GenExpr *gen_expr );
-  
+    int isPerPixelEqn( int op );
+
     int resetPerPixelEqns();
     int resetPerPixelEqnFlags();
 
@@ -123,6 +128,9 @@ public:
     int destroy();
     void load_init_cond(char *name, int flags);
 
+    PresetOutputs::cwave_container * customWaves;
+    PresetOutputs::cshape_container * customShapes;
+    
 private:
 
     void evalCustomWavePerFrameEquations();
@@ -133,9 +141,42 @@ private:
     void evalPerPixelEqns();
     void evalPerFrameEquations();
 
-    PresetOutputs::cwave_container * customWaves;
-    PresetOutputs::cshape_container * customShapes;
     PresetOutputs & m_presetOutputs;
 };
 
+template <class CustomObject>
+CustomObject * Preset::find_custom_object(int id, bool create_flag, std::map<int, CustomObject*> & customObjects)
+{
+
+  CustomObject * custom_object = NULL;
+  
+
+  typename std::map<int, CustomObject*>::iterator pos = customObjects.find(id);
+
+  if (pos == customObjects.end())
+  {
+    if (create_flag == FALSE)
+    {
+      return NULL;
+    }
+
+    if ((custom_object = new CustomObject(id)) == NULL)
+    {
+      return NULL;
+    }
+
+    std::pair<typename std::map<int,CustomObject*>::iterator, bool> inserteePair = 
+	customObjects.insert(std::make_pair(custom_object->id, custom_object));
+
+    assert(inserteePair.second);
+
+    custom_object = inserteePair.first->second;
+
+  } else 
+	custom_object = pos->second;
+  
+
+  assert(custom_object);
+  return custom_object;
+}
 #endif /** !_PRESET_HPP */
