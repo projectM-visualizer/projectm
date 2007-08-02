@@ -62,7 +62,8 @@ CustomWave::CustomWave(int _id):
 	scaling(1.0),
 	per_frame_eqn_string_index(0),
 	per_frame_init_eqn_string_index(0),
-	per_point_eqn_string_index(0)
+	per_point_eqn_string_index(0),
+	param_tree(new std::map<std::string, Param*>())
 {
 	
   Param * param;

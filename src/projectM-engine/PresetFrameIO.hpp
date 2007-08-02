@@ -1,6 +1,6 @@
 #ifndef PRESET_FRAME_IO_HPP
 #define PRESET_FRAME_IO_HPP
-#include <vector>
+#include <map>
 
 class CustomWave;
 class CustomShape;
@@ -11,8 +11,8 @@ class CustomShape;
  * members for Mr. Sperl's convenience */
 class PresetOutputs {
 public:
-    typedef std::vector<CustomWave*> cwave_container;
-    typedef std::vector<CustomShape*> cshape_container;
+    typedef std::map<int, CustomWave*> cwave_container;
+    typedef std::map<int, CustomShape*> cshape_container;
 
     cwave_container customWaves;
     cshape_container customShapes;
@@ -167,7 +167,6 @@ public:
 
     /* variables were added in milkdrop 1.04 */
     int gx,gy;
-
 
     float **x_mesh;
     float **y_mesh;
