@@ -70,9 +70,7 @@ projectM *projectM::currentEngine = NULL;
 RenderTarget * projectM::renderTarget = NULL;
 Renderer * projectM::renderer = NULL;
 
-
-DLLEXPORT projectM::projectM() {
-    beatDetect = NULL;
+DLLEXPORT projectM::projectM():beatDetect(0), m_activePreset(0) {
 }
 
 
@@ -162,8 +160,7 @@ DLLEXPORT void projectM::projectM_reset() {
 
     DWRITE( "projectM_reset(): in\n" );
 
-    /// @bug it's very possible this is a hack
-    m_activePreset = std::auto_ptr<Preset>(0);
+    m_activePreset = 0;
 
     this->presetURL = NULL;
     this->fontURL = NULL;
@@ -679,9 +676,9 @@ int projectM::initPresetTools() {
    }
 	  
    std::cerr << "[projectM] Allocating first preset..." << std::endl;   
-   m_activePreset = m_presetPos->allocate(presetInputs, presetOutputs);
+   m_activePreset =  m_presetPos->allocate(presetInputs, presetOutputs);
   
-    std::cerr << "[projectM] First preset allocated. Name is \"" << m_activePreset->name << "\"" << std::endl;
+    std::cerr << "[projectM] First preset allocated. File path is \"" << m_activePreset->file_path << "\"" << std::endl;
     projectM_resetengine();
 
     /* Done */

@@ -499,7 +499,6 @@ void Preset::evalPerPixelEqns()
        pos != per_pixel_eqn_tree.end(); ++pos)
     pos->second->evaluate();
 
-  
 }
 
 /** Finds / Creates (if necessary) initial condition associated with passed parameter */

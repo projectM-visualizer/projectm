@@ -1,5 +1,6 @@
 #ifndef PROJECTM_ALGORITHMS_HPP
 #define PROJECTM_ALGORITHMS_HPP
+#include <cassert>
 
 namespace Algorithms
 {
@@ -39,6 +40,7 @@ namespace Algorithms
 
       void operator() (Data * data)
       {
+        assert(data);
         delete(data);
       }
 

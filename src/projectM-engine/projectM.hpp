@@ -236,7 +236,6 @@ public:
 	PresetChooser * m_presetChooser;
 
 	// Currently loaded preset- will be fancier when smooth preset switching
-	std::auto_ptr<Preset> m_activePreset;
-  };
-
-#endif /** !_PROJECTM_H */
+	Preset * m_activePreset;
+};
+#endif

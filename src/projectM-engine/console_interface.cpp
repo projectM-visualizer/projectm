@@ -164,7 +164,8 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		/// @bug implement == operator
 		if (!((*m_presetPos) != m_presetChooser->end()))
 			--(*m_presetPos);
-		m_activePreset = m_presetPos->allocate(this->presetInputs, this->presetOutputs);
+		delete(m_activePreset);
+	m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs );
 	      break;
 	    case PROJECTM_K_r:
 //	      if (PresetSwitcher::switchPreset(RANDOM_NEXT, HARD_CUT) < 0) {
