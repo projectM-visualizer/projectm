@@ -103,7 +103,7 @@ Preset * PresetLoader::loadPreset(unsigned int index, const PresetInputs & prese
   assert(index >= 0);
   assert(index < m_entries.size());
 
-  // Return a new auto pointer to a present
+  // Return a new pointer to a present
   return new Preset(m_entries[index], presetInputs, presetOutputs);
 }
 
@@ -119,7 +119,7 @@ void PresetLoader::handleDirectoryError()
   case ENOMEM:
     std::cerr << "[PresetLoader] out of memory! Are you running Windows?" << std::endl;
     abort();
-  case ENOTDIR:
+ case ENOTDIR:
     std::cerr << "[PresetLoader] directory specified is not a preset directory! Cannot continue." << std::endl;
     break;
   case ENFILE:

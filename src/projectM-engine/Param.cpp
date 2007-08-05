@@ -57,8 +57,7 @@ Param::Param( std::string _name, short int _type, short int _flags, void * _engi
     /** @@FIX THIS */
     /// @bug listen to above's advice! 
     /// @NOTE this is a hack, but will probably work fine
-    this->gx = projectM::currentEngine->presetInputs.gx;
-    this->gy = projectM::currentEngine->presetInputs.gy;
+    projectM::currentEngine->getCurrentMeshSize(this->gx, this->gy);
     
 }
 
@@ -78,12 +77,12 @@ Param::Param(std::string _name) :
         upper_bound.float_val = DEFAULT_DOUBLE_UB;
         lower_bound.float_val = DEFAULT_DOUBLE_LB;
    
-
     /** @@FIX THIS */
     /// @bug listen to above's advice! 
     /// @NOTE this is a hack, but will probably work fine
-    this->gx = projectM::currentEngine->presetInputs.gx;
-    this->gy = projectM::currentEngine->presetInputs.gy;
+    projectM::currentEngine->getCurrentMeshSize(this->gx, this->gy);
+
+   
 }
 
 /* Free's a parameter type */

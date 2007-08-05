@@ -80,6 +80,7 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #endif /** WIN32 */
 
 inline void DWRITE( char *fmt, ... ) {
+	return;
     va_list args;
     va_start( args, fmt );
 //#ifdef DEBUG

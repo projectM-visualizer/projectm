@@ -172,16 +172,9 @@ public:
         /* PER_FRAME CONSTANTS END */
 
     /** Beat detection engine */
-    BeatDetect *beatDetect;
+    BeatDetect * beatDetect;
 
-    /** All readonly variables 
-     *  which are passed as inputs 
-     * to presets. See struct definitition above */
-    PresetInputs presetInputs;
-
-    /** The presets modify these values. For now this is declared on stack
-     * but might be better on heap for sake of smooth preset switching */
-    PresetOutputs presetOutputs;
+  
 
     /** Functions */
     DLLEXPORT projectM();
@@ -223,7 +216,7 @@ public:
 
     /// Deinitialize all preset related tools. Usually done before projectM cleanup
     void destroyPresetTools();
-
+    void getCurrentMeshSize(int & x, int &y);
    private:
 
 	// The current position of the directory iterator
@@ -237,5 +230,14 @@ public:
 
 	// Currently loaded preset- will be fancier when smooth preset switching
 	Preset * m_activePreset;
+
+  /** All readonly variables 
+     *  which are passed as inputs 
+     * to presets. See struct definitition above */
+    PresetInputs presetInputs;
+
+    /** The presets modify these values. For now this is declared on stack
+     * but might be better on heap for sake of smooth preset switching */
+    PresetOutputs presetOutputs;
 };
 #endif

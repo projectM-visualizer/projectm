@@ -408,12 +408,13 @@ void Renderer::PerPixelMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
     {
       for (x=0;x<this->gx;x++){
 	for(y=0;y<this->gy;y++){
-	  presetOutputs->zoomexp_mesh[x][y]=presetOutputs->zoomexp;
-	}}
+	  presetOutputs->zoomexp_mesh[x][y]=presetOutputs->zoomexp; 
+	}
+	}
     }
 
   if(!presetOutputs->rot_is_mesh)
-    {    
+    {
       for (x=0;x<this->gx;x++){
 	for(y=0;y<this->gy;y++){
 	  presetOutputs->rot_mesh[x][y]=presetOutputs->rot;

@@ -32,7 +32,7 @@
 #include "event.h"
 #include "BeatDetect.hpp"
 #include "PresetChooser.hpp"
-
+#include <iostream>
 
 interface_t current_interface = DEFAULT_INTERFACE;
 
@@ -155,35 +155,35 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_b:
 	      break;
             case PROJECTM_K_n:
+
 		// paranoia but could be useful if directory is empty
-		/// @bug implement == operator
-		if (!(*m_presetPos != m_presetChooser->end()))
-			return;
-		m_presetChooser->getNumPresets();
+		if ((*m_presetPos == m_presetChooser->end()))
+			break;
+
 		++(*m_presetPos);
-		/// @bug implement == operator
-		if (!((*m_presetPos) != m_presetChooser->end()))
+
+		if (((*m_presetPos) == m_presetChooser->end())) {
 			--(*m_presetPos);
-		delete(m_activePreset);
-	m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs );
-	      break;
-	    case PROJECTM_K_r:
-//	      if (PresetSwitcher::switchPreset(RANDOM_NEXT, HARD_CUT) < 0) {
-		printf("WARNING: Bad preset file, loading idle preset\n");
-		abort();
-//	      }	
-	      break;
-	    case PROJECTM_K_p:		
-		if (*m_presetPos != m_presetChooser->begin()) {
-			--(*m_presetPos);
-			// ...mroe
+			break;
 		}
 
-			
-//	      if ((PresetSwitcher::switchPreset(ALPHA_PREVIOUS, HARD_CUT)) < 0){
-		printf("WARNING: Bad preset file, loading idle preset\n");
-		abort();	
-//	      }
+		if (m_activePreset)
+			delete(m_activePreset);
+		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs );
+	      break;
+	    case PROJECTM_K_r:
+		std::cout << "Warning: random unimplemented" << std::endl;
+		break;
+	    case PROJECTM_K_p:
+		
+		if (*m_presetPos != m_presetChooser->begin()) {
+			--(*m_presetPos);
+		if (m_activePreset)
+			delete(m_activePreset);
+		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs );
+	   	   
+			// ...mroe
+		}
 	      break;
 	    case PROJECTM_K_l:
 	      if (renderer->noSwitch==0)renderer->noSwitch=1; else  renderer->noSwitch=0;

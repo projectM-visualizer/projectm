@@ -841,6 +841,8 @@ IMPEXP OSStatus MAIN (OSType message, PluginMessageInfo *messageInfo, void *refC
 #endif
 
                 /** Initialise projectM */
+		if (globalPM != 0)
+			delete(globalPM);
                 globalPM = new projectM();
                 globalPM->projectM_reset();
     

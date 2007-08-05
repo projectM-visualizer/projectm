@@ -106,7 +106,7 @@ SDL_Surface *screen;
 //SDL_RenderTarget *RenderTarget = NULL;
 //GLuint RenderTargetTextureID;
 
-projectM *globalPM = NULL;
+static projectM * globalPM = NULL;
 
 int maxsamples=512;
 

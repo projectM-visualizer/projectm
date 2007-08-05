@@ -40,9 +40,18 @@ Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, 
     builtinParams(presetInputs, presetOutputs),
     customWaves(&presetOutputs.customWaves),
     customShapes(&presetOutputs.customShapes),
-    m_presetOutputs(presetOutputs)
+    m_presetOutputs(presetOutputs) {
 
-{
+    m_presetOutputs.zoom_is_mesh = false;
+    m_presetOutputs.zoomexp_is_mesh =false;
+    m_presetOutputs.rot_is_mesh =false;
+     m_presetOutputs.sx_is_mesh =false;
+     m_presetOutputs.sy_is_mesh = false;
+     m_presetOutputs.dx_is_mesh = false;
+     m_presetOutputs.dy_is_mesh =false;
+     m_presetOutputs.cx_is_mesh = false;
+     m_presetOutputs.cy_is_mesh = false;
+ 
 
 
   initialize(filename);
@@ -51,12 +60,7 @@ Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, 
 
 Preset::~Preset()
 {
-
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-  DWRITE( "~preset(): in\n" );
-#endif
-
-
+  std::cout << "Preset destructor!" << std::endl;
 
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(init_cond_tree);
 
@@ -74,12 +78,6 @@ Preset::~Preset()
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
     delete(pos->second);
-
-
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-  DWRITE( "~Preset(): out\n" );
-#endif
-
 
 }
 /* Adds a per pixel equation according to its string name. This

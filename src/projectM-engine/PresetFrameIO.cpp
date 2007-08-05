@@ -5,6 +5,7 @@
 #include <iostream>
 PresetInputs::PresetInputs()
 {
+
 }
 
 void PresetInputs::Initialize(int gx, int gy)
@@ -23,8 +24,7 @@ void PresetInputs::Initialize(int gx, int gy)
   this->y_mesh=(float **)wipemalloc(gx * sizeof(float *));
   for(x = 0; x < gx; x++)
     {
-      this->y_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
-      
+      this->y_mesh[x] = (float *)wipemalloc(gy * sizeof(float)); 
     }
   this->rad_mesh=(float **)wipemalloc(gx * sizeof(float *));
   for(x = 0; x < gx; x++)
@@ -79,6 +79,7 @@ PresetOutputs::PresetOutputs()
 
 void PresetOutputs::Initialize(int gx, int gy)
 {
+
   int x;
   this->sx_mesh=(float **)wipemalloc(gx * sizeof(float *));
  for(x = 0; x < gx; x++)
@@ -125,8 +126,8 @@ void PresetOutputs::Initialize(int gx, int gy)
     { 
       this->rot_mesh[x] = (float *)wipemalloc(gy * sizeof(float));
     }
- zoom_is_mesh = false;
- zoomexp_is_mesh =false;
+   zoom_is_mesh = false;
+   zoomexp_is_mesh =false;
    rot_is_mesh =false;
 
      sx_is_mesh =false;
