@@ -60,11 +60,17 @@ protected:
 
 public:
 
-    /**  Load a preset by filename with input and output buffers specified.
-     * This is the only poper way to allocate a new preset.  */
+    ///  Load a preset by filename with input and output buffers specified.
+    ///  This is the only poper way to allocate a new preset. 
+    /// \param filename the absolute file path of a preset to load from the file system
+    /// \param presetInputs a const reference to only read only projectM engine variables
+    /// \param presetOutputs initialized and filled with data parsed from a preset
     Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
-    ~Preset();
+    /// A special preset destructor. Very important: the preset destructor is currently responsible 
+    /// for clearing out all heap memory it allocated in presetOutputs. This might change in future.
+    /// Conclusion: It does NOT necessarily reset or clear any values. It only deallocates.
+      ~Preset();
 
     /** Evaluates the preset for a frame given the current values of preset inputs / outputs */
     void evaluateFrame();
@@ -110,24 +116,14 @@ public:
     void load_custom_wave_init( CustomWave *customWave );
     void load_custom_shape_init_conditions();
     void load_custom_shape_init( CustomShape *customShape );
-    void initialize(const std::string & pathname);
+    
 
-    void reloadPerFrame(char * s);
-    void reloadPerFrameInit(char *s);
-    void reloadPerPixel(char *s);
     int load_preset_file(const char * pathname);
     static Preset *load_preset( const char *pathname );
-    void savePreset(char * name);
-    int write_preset_name( FILE *fs );
-    int write_init_conditions( FILE *fs );
-    int write_init( InitCond *initCond );
-    int write_per_frame_init_equations( FILE *fs );
-    int write_per_frame_equations( FILE *fs );
-    int write_per_pixel_equations( FILE *fs );
-    Param * find(char * name, int flags) ;
-    int destroy();
-    void load_init_cond(char *name, int flags);
+     Param * find(char * name, int flags) ;
 
+    void load_init_cond(char *name, int flags);	
+    inline void clearMeshChecks();
     PresetOutputs::cwave_container * customWaves;
     PresetOutputs::cshape_container * customShapes;
     
@@ -140,6 +136,7 @@ private:
     void evalCustomShapeInitConditions();
     void evalPerPixelEqns();
     void evalPerFrameEquations();
+    void initialize(const std::string & pathname);
 
     PresetOutputs & m_presetOutputs;
 };
@@ -179,4 +176,19 @@ CustomObject * Preset::find_custom_object(int id, bool create_flag, std::map<int
   assert(custom_object);
   return custom_object;
 }
+
+
+inline void Preset::clearMeshChecks() {
+     m_presetOutputs.zoom_is_mesh = false;
+     m_presetOutputs.zoomexp_is_mesh = false;
+     m_presetOutputs.rot_is_mesh =false;
+     m_presetOutputs.sx_is_mesh =false;
+     m_presetOutputs.sy_is_mesh = false;
+     m_presetOutputs.dx_is_mesh = false;
+     m_presetOutputs.dy_is_mesh =false;
+     m_presetOutputs.cx_is_mesh = false;
+     m_presetOutputs.cy_is_mesh = false;
+
+}
+
 #endif /** !_PRESET_HPP */

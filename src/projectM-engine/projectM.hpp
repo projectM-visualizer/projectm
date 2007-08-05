@@ -216,7 +216,7 @@ public:
 
     /// Deinitialize all preset related tools. Usually done before projectM cleanup
     void destroyPresetTools();
-    void getCurrentMeshSize(int & x, int &y);
+    void getCurrentMeshSize(int & x, int & y);
    private:
 
 	// The current position of the directory iterator

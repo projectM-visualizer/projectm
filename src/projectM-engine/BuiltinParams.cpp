@@ -108,6 +108,7 @@ int BuiltinParams::destroy_builtin_param_db()
 int BuiltinParams::insert_param_alt_name(Param *param, char * alt_name)
 {
 
+  assert(param);
   assert(alt_name);
 
   aliasMap.insert(std::make_pair(std::string(alt_name), std::string(param->name)));

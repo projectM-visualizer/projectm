@@ -42,19 +42,11 @@ Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, 
     customShapes(&presetOutputs.customShapes),
     m_presetOutputs(presetOutputs) {
 
-    m_presetOutputs.zoom_is_mesh = false;
-    m_presetOutputs.zoomexp_is_mesh =false;
-    m_presetOutputs.rot_is_mesh =false;
-     m_presetOutputs.sx_is_mesh =false;
-     m_presetOutputs.sy_is_mesh = false;
-     m_presetOutputs.dx_is_mesh = false;
-     m_presetOutputs.dy_is_mesh =false;
-     m_presetOutputs.cx_is_mesh = false;
-     m_presetOutputs.cy_is_mesh = false;
- 
+     customWaves->clear(); 
+     customShapes->clear();
+     clearMeshChecks();
 
-
-  initialize(filename);
+     initialize(filename);
 
 }
 
@@ -72,14 +64,16 @@ Preset::~Preset()
  
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<Param> >(user_param_tree);
  
-  /// @note no need to clear the actual container itself
+  /// @note We do not clear the actual container itself and instead let whoever initializes the preset inputs class to do it
   for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
     delete(pos->second);
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
     delete(pos->second);
-
+ 
+    
 }
+
 /* Adds a per pixel equation according to its string name. This
    will be used only by the parser */
 
@@ -181,7 +175,6 @@ void Preset::evalCustomWaveInitConditions()
 void Preset::evalCustomWavePerFrameEquations()
 {
 
-  /// @bug see above
   for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
   {
 
@@ -272,186 +265,6 @@ void Preset::initialize(const std::string & pathname)
 
 }
 
-/// @bug broken / unimplemented
-void Preset::savePreset(char * filename)
-{
-
-  return;
-
-#ifdef PANTS
-  FILE * fs;
-
-  if (filename == NULL)
-    return;
-
-  /* Open the file corresponding to pathname */
-  if ((fs = fopen(filename, "w+")) == 0)
-  {
-#ifdef PRESET_DEBUG
-    if (PRESET_DEBUG) printf("savePreset: failed to create filename \"%s\"!\n", filename);
-#endif
-    return;
-  }
-
-  write_stream = fs;
-
-  if (write_preset_name(fs) < 0)
-  {
-    write_stream = NULL;
-    fclose(fs);
-    return;
-  }
-
-  if (write_init_conditions(fs) < 0)
-  {
-    write_stream = NULL;
-    fclose(fs);
-    return;
-  }
-
-  if (write_per_frame_init_equations(fs) < 0)
-  {
-    write_stream = NULL;
-    fclose(fs);
-    return;
-  }
-
-  if (write_per_frame_equations(fs) < 0)
-  {
-    write_stream = NULL;
-    fclose(fs);
-    return;
-  }
-
-  if (write_per_pixel_equations(fs) < 0)
-  {
-    write_stream = NULL;
-    fclose(fs);
-    return;
-  }
-
-  write_stream = NULL;
-  fclose(fs);
-#endif
-}
-
-int Preset::write_preset_name(FILE * fs)
-{
-
-  char s[256];
-  int len;
-
-  memset(s, 0, 256);
-
-  if (fs == NULL)
-    return PROJECTM_FAILURE;
-
-  /* Format the preset name in a string */
-  /// @bug removed, code is dead
-  //   sprintf(s, "[%s]\n", name);
-
-  len = strlen(s);
-
-  /* Write preset name to file stream */
-  if (fwrite(s, 1, len, fs) != len)
-    return PROJECTM_FAILURE;
-
-  return PROJECTM_SUCCESS;
-
-}
-
-#ifdef NEEDS_MOVED
-int Preset::write_init_conditions(FILE * fs)
-{
-
-  if (fs == NULL)
-    return PROJECTM_FAILURE;
-
-  init_cond_tree.splay_traverse( (void (*)(void*))write_init);
-
-  return PROJECTM_SUCCESS;
-}
-
-void Preset::write_init( InitCond * init_cond )
-{
-
-  char s[512];
-  int len;
-
-  if (write_stream == NULL)
-    return;
-
-  memset(s, 0, 512);
-
-  if (init_cond->param->type == P_TYPE_BOOL)
-    sprintf(s, "%s=%d\n", init_cond->param->name, init_cond->init_val.bool_val);
-
-  else if (init_cond->param->type == P_TYPE_INT)
-    sprintf(s, "%s=%d\n", init_cond->param->name, init_cond->init_val.int_val);
-
-  else if (init_cond->param->type == P_TYPE_DOUBLE)
-    sprintf(s, "%s=%f\n", init_cond->param->name, init_cond->init_val.float_val);
-
-else { printf("write_init: unknown parameter type!\n"); return; }
-
-  len = strlen(s);
-
-  if ((fwrite(s, 1, len, write_stream)) != len)
-    printf("write_init: failed writing to file stream! Out of disk space?\n");
-
-}
-
-
-int Preset::write_per_frame_init_equations(FILE * fs)
-{
-
-  int len;
-
-  if (fs == NULL)
-    return PROJECTM_FAILURE;
-
-  len = strlen(per_frame_init_eqn_string_buffer);
-
-  if (fwrite(per_frame_init_eqn_string_buffer, 1, len, fs) != len)
-    return PROJECTM_FAILURE;
-
-  return PROJECTM_SUCCESS;
-}
-
-
-int Preset::write_per_frame_equations(FILE * fs)
-{
-
-  int len;
-
-  if (fs == NULL)
-    return PROJECTM_FAILURE;
-
-  len = strlen(per_frame_eqn_string_buffer);
-
-  if (fwrite(per_frame_eqn_string_buffer, 1, len, fs) != len)
-    return PROJECTM_FAILURE;
-
-  return PROJECTM_SUCCESS;
-}
-
-
-int Preset::write_per_pixel_equations(FILE * fs)
-{
-
-  int len;
-
-  if (fs == NULL)
-    return PROJECTM_FAILURE;
-
-  len = strlen(per_pixel_eqn_string_buffer);
-
-  if (fwrite(per_pixel_eqn_string_buffer, 1, len, fs) != len)
-    return PROJECTM_FAILURE;
-
-  return PROJECTM_SUCCESS;
-}
-#endif /** NEEDS_MOVED */
 
 void Preset::load_custom_wave_init_conditions()
 {
@@ -463,8 +276,6 @@ void Preset::load_custom_wave_init_conditions()
 
 void Preset::load_custom_shape_init_conditions()
 {
-
-  //     void eval_custom_shape_init_conds();
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
     pos->second->load_custom_shape_init();
