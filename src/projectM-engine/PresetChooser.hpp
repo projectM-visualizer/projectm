@@ -13,7 +13,7 @@
 
 #include <cassert>
 #include <memory>
-
+#include <iostream>
 
 class PresetChooser;
 
@@ -35,7 +35,6 @@ public:
     /// Not equal comparator
     bool operator !=(const PresetIterator & presetPos) const ;
 
-
     /// Equality comparator
     bool operator ==(const PresetIterator & presetPos) const ;
 
@@ -47,7 +46,7 @@ public:
     ///  Allocate a new preset given this iterator's associated preset name
     /// \param presetInputs the preset inputs to associate with the preset upon construction
     /// \param presetOutputs the preset outputs to associate with the preset upon construction
-    /// \returns an auto pointer of the newly allocated preset
+    /// \returns a pointer of the newly allocated preset
     Preset * allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
     ///  Set the chooser asocciated with this iterator
@@ -113,7 +112,7 @@ public:
     /// \param WeightFuncstor a functor that returns a probability for each index (see UniformRandomFunctor)
     /// \returns an pointer of the newly allocated preset - you must free this object!
     template <class WeightFunctor>
-    Preset * weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs, WeightFunctor & weightFunctor) const;
+    Preset * weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs, WeightFunctor & weightFunctor);
 
 
     /// Do a weighted sample given a weight functor and default construction (ie. element size) of the weight functor
@@ -122,7 +121,7 @@ public:
     /// \param WeightFunctor a functor that returns a probability for each index (see UniformRandomFunctor)
     /// \returns a pointer of the newly allocated preset - you must free this object!
     template <class WeightFunctor>
-    Preset * weightedRandom(const PresetInputs & presetInputs, PresetOutputs & preseOutputs) const;
+    Preset * weightedRandom(const PresetInputs & presetInputs, PresetOutputs & preseOutputs);
 
 private:
     template <class WeightFunctor>
@@ -175,6 +174,7 @@ inline float PresetChooser::UniformRandomFunctor::operator() (std::size_t index)
     return (1.0 / m_collectionSize);
 }
 
+inline PresetChooser::UniformRandomFunctor::UniformRandomFunctor(std::size_t collectionSize):m_collectionSize(collectionSize) {}
 
 inline PresetIterator PresetChooser::begin() {
     PresetIterator pos(0);
@@ -188,12 +188,12 @@ inline PresetIterator PresetChooser::end() const {
 }
 
 template <class WeightFunctor>
-Preset * PresetChooser::weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs, WeightFunctor & weightFunctor) const {
+Preset * PresetChooser::weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs, WeightFunctor & weightFunctor) {
     doWeightedSample(weightFunctor);
 }
 
 template <class WeightFunctor>
-inline  Preset * PresetChooser::weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs) const {
+inline  Preset * PresetChooser::weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs){
 
     WeightFunctor weightFunctor(m_presetLoader->getNumPresets());
     doWeightedSample(weightFunctor, presetInputs, presetOutputs);
@@ -212,16 +212,21 @@ inline Preset * PresetChooser::doWeightedSample(WeightFunctor & weightFunctor, c
     // Choose a random bounded mass between 0 and 1
     float cutoff = ((float)(random())) / RAND_MAX;
 
+    std::cerr << "cutoff: " << cutoff << std::endl;
     // Sum up mass, stopping when cutoff is reached. This is the typical
     // weighted sampling algorithm.
     float mass = 0;
     for (PresetIterator pos = this->begin();pos != this->end() ; ++pos) {
         mass += weightFunctor(*pos);
-		abort();
-
      if (mass >= cutoff)
         return pos.allocate(presetInputs, presetOutputs);
     }
+
+    // Just in case something slips through the cracks
+    PresetIterator pos = this->end();
+    --pos;
+    std::cerr << "mass: " << mass << std::endl;
+    return pos.allocate(presetInputs, presetOutputs);
 }
 
 #endif

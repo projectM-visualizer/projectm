@@ -172,7 +172,11 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs );
 	      break;
 	    case PROJECTM_K_r:
-		std::cout << "Warning: random unimplemented" << std::endl;
+		if (m_activePreset)
+			delete(m_activePreset);
+		m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
+			(this->presetInputs, this->presetOutputs);
+		assert(m_activePreset);
 		break;
 	    case PROJECTM_K_p:
 		
