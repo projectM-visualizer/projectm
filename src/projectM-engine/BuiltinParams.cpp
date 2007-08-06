@@ -4,6 +4,7 @@
 #include "projectM.hpp"
 #include <cassert>
 #include "Algorithms.hpp"
+#include <iostream>
 
 using namespace Algorithms;
 
@@ -117,9 +118,10 @@ int BuiltinParams::insert_param_alt_name(Param *param, char * alt_name)
 Param * BuiltinParams::find_builtin_param(const std::string & name)
 {
 
+
   AliasMap::iterator pos = aliasMap.find(name);
   Param * param = 0;
-
+  std::cerr << "[BuiltinParams] find_builtin_param: name is " << name << std::endl;
   if (pos == aliasMap.end())
   {
     std::map<std::string, Param*>::iterator builtinPos = builtin_param_tree.find(name);
@@ -282,7 +284,7 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("zoom", (void*)&presetOutputs.zoom, presetOutputs.zoom_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
   load_builtin_param_float("rot", (void*)&presetOutputs.rot, presetOutputs.rot_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, NULL);
   /// @note added huge bug fix here potentially by prevening zoomexp_mesh from being freed when presets dealloc
-  load_builtin_param_float("zoomexp", (void*)&presetOutputs.zoomexp, presetOutputs.zoomexp_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE|P_FLAG_DONT_FREE_MATRIX , 0.0, MAX_DOUBLE_SIZE, 0, "fZoomExponent");
+  load_builtin_param_float("zoomexp", (void*)&presetOutputs.zoomexp, presetOutputs.zoomexp_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX , 0.0, MAX_DOUBLE_SIZE, 0, "fZoomExponent");
 
   load_builtin_param_float("cx", (void*)&presetOutputs.cx, presetOutputs.cx_mesh, P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, 1.0, 0, NULL);
   load_builtin_param_float("cy", (void*)&presetOutputs.cy, presetOutputs.cy_mesh, P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, 1.0, 0, NULL);

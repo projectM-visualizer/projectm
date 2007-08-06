@@ -35,7 +35,7 @@ public:
 
     assert(paramTree);
 
-    Param * param = NULL;
+    Param * param;
 
     /* First look in the builtin database */
     std::map<std::string,Param*>::iterator pos = paramTree->find(name);
@@ -58,9 +58,10 @@ public:
 	if (insertRetPair.second)
 		param = insertRetPair.first->second;
 	
-    } else 
+    } else if (pos != paramTree->end())
 	param = pos->second;
-	
+    else
+	param = NULL;	
 
     /* Return the found (or created) parameter. Note that this could be null */
     return param;

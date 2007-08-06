@@ -10,17 +10,17 @@
     <projectname>projectmDev10</projectname>
     <projectdirectory>../../</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
-    <description/>
-    <defaultencoding/>
+    <description></description>
+    <defaultencoding></defaultencoding>
     <versioncontrol/>
   </general>
   <kdevcustomproject>
     <run>
       <directoryradio>custom</directoryradio>
       <mainprogram>/usr/local/bin/xmms</mainprogram>
-      <programargs/>
-      <globaldebugarguments/>
-      <globalcwd>/home/carm/projects/projectM/dev-1.0</globalcwd>
+      <programargs></programargs>
+      <globaldebugarguments></globaldebugarguments>
+      <globalcwd></globalcwd>
       <useglobalprogram>false</useglobalprogram>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
@@ -52,9 +52,9 @@
     </build>
     <other>
       <prio>0</prio>
-      <otherbin/>
-      <defaulttarget/>
-      <otheroptions/>
+      <otherbin></otherbin>
+      <defaulttarget></defaulttarget>
+      <otheroptions></otheroptions>
       <selectedenvironment>default</selectedenvironment>
       <environments>
         <default/>
@@ -66,8 +66,8 @@
       <prio>0</prio>
       <dontact>false</dontact>
       <makebin>make</makebin>
-      <defaulttarget/>
-      <makeoptions/>
+      <defaulttarget></defaulttarget>
+      <makeoptions></makeoptions>
       <selectedenvironment>default</selectedenvironment>
       <environments>
         <default/>
@@ -76,11 +76,11 @@
   </kdevcustomproject>
   <kdevdebugger>
     <general>
-      <dbgshell/>
-      <gdbpath/>
-      <configGdbScript/>
-      <runShellScript/>
-      <runGdbScript/>
+      <dbgshell></dbgshell>
+      <gdbpath></gdbpath>
+      <configGdbScript></configGdbScript>
+      <runShellScript></runShellScript>
+      <runGdbScript></runGdbScript>
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
@@ -161,7 +161,7 @@
       <automaticCodeCompletion>true</automaticCodeCompletion>
       <automaticArgumentsHint>false</automaticArgumentsHint>
       <automaticHeaderCompletion>true</automaticHeaderCompletion>
-      <codeCompletionDelay>150</codeCompletionDelay>
+      <codeCompletionDelay>250</codeCompletionDelay>
       <argumentsHintDelay>400</argumentsHintDelay>
       <headerCompletionDelay>250</headerCompletionDelay>
       <showOnlyAccessibleItems>false</showOnlyAccessibleItems>
@@ -185,7 +185,7 @@
       <includeTypedefs>true</includeTypedefs>
     </codecompletion>
     <creategettersetter>
-      <prefixGet/>
+      <prefixGet></prefixGet>
       <prefixSet>set</prefixSet>
       <prefixVariable>m_,_</prefixVariable>
       <parameterName>theValue</parameterName>
@@ -220,9 +220,9 @@
   </kdevfileview>
   <kdevdocumentation>
     <projectdoc>
-      <docsystem/>
-      <docurl/>
-      <usermanualurl/>
+      <docsystem></docsystem>
+      <docurl></docurl>
+      <usermanualurl></usermanualurl>
     </projectdoc>
   </kdevdocumentation>
   <ctagspart>

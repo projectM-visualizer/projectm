@@ -439,7 +439,7 @@ CustomWave::~CustomWave() {
 
 
 
-
+// Comments: index is not passed, so we assume monotic increment by 1 is ok here
 int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr) {
 
   PerPointEqn * per_point_eqn;
@@ -463,13 +463,7 @@ int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr) {
  } 	 
 
  /* Find most largest index in the splaytree */
- 
- std::map<int, PerPointEqn*>::iterator pos = --per_point_eqn_tree.end();
- 
- if (pos == per_point_eqn_tree.end())
-   index = 0;
- else
-   index = pos->second->index+1;
+   index = per_point_eqn_tree.size();
 
  /* Create the per pixel equation given the index, parameter, and general expression */
 	
@@ -480,9 +474,9 @@ int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr) {
 
  /* Insert the per pixel equation into the preset per pixel database */
   
- per_point_eqn_tree.insert(std::make_pair(per_point_eqn->index, per_point_eqn)); 
+ per_point_eqn_tree.insert(std::make_pair(per_point_eqn->index, per_point_eqn));
 
- /* Done */ 
+ /* Done */
  return PROJECTM_SUCCESS;
 }
 

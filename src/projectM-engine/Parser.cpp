@@ -21,7 +21,9 @@
 /* parser.c */
 
 #include <stdio.h>
-#include <string.h>
+#include <string>
+#include <cstring>
+#include <iostream>
 #include <stdlib.h>
 
 #include "Common.hpp"
@@ -602,6 +604,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
       if ((gen_expr = GenExpr::prefun_to_expr((float (*)(void *))func->func_ptr, expr_list, func->num_args)) == NULL)  { 	
 	  if (PARSE_DEBUG) printf("parse_prefix_args: failed to convert prefix function to general expression (LINE %d) \n", 
 	  				line_count);
+	if (tree_expr)
 	delete tree_expr;
 	for (i = 0; i < func->num_args;i++)
 	  delete expr_list[i];
@@ -627,6 +630,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
        multiplication operator. For now treat it as an error */
     if (*string != 0) {
       if (PARSE_DEBUG) printf("parse_gen_expr: implicit multiplication case unimplemented!\n");
+      if (tree_expr)
       delete tree_expr;
       return NULL;
     }
@@ -636,6 +640,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
     
     if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL) {
       //if (PARSE_DEBUG) printf("parse_gen_expr:  found left parentice, but failed to create new expression tree \n");
+      if (tree_expr);
       delete tree_expr;
       return NULL;
     }
@@ -689,6 +694,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
         DWRITE( "parse_gen_expr: empty string coupled with infix op (ERROR!) (LINE %d) \n", line_count);
         
         }
+	if (tree_expr)
       delete tree_expr;
       return NULL;
     }
@@ -696,6 +702,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
     /* CASE 1: Check if string is a just a floating point number */
     if (string_to_float(string, &val) != PROJECTM_PARSE_ERROR) {
       if ((gen_expr = GenExpr::const_to_expr(val)) == NULL) {
+	if (tree_expr)
 	delete tree_expr;
 	return NULL;
       }
@@ -708,17 +715,18 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
 
     /* CASE 4: custom shape variable */
     if (current_shape != NULL) {
-      if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(string, current_shape->param_tree)) == NULL) {
-	if ((param = preset->builtinParams.find_builtin_param(string)) == NULL)
-		if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string, current_shape->param_tree)) == NULL) {
+      if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(std::string(string), current_shape->param_tree)) == NULL) {
+	if ((param = preset->builtinParams.find_builtin_param(std::string(string))) == NULL)
+		if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(std::string(string), current_shape->param_tree)) == NULL) {
+	    if (tree_expr)
 	    delete tree_expr;
 	    return NULL;
 	  }
       }
       
       if (PARSE_DEBUG) {
-	    DWRITE( "parse_gen_expr: custom shape parameter (name = %s)... \n", param->name.c_str());
-	    
+	    std::cerr <<  "parse_gen_expr: custom shape parameter (name = "
+		 << param->name << ")" << std::endl;
       }  
       
       /* Convert parameter to an expression */
@@ -735,16 +743,18 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
     
     /* CASE 5: custom wave variable */
     if (current_wave != NULL) {
-      if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(string, current_wave->param_tree)) == NULL) {
-	if ((param = preset->builtinParams.find_builtin_param(string)) == NULL) 
-	  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string, current_wave->param_tree)) == NULL) {
+      if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(std::string(string), current_wave->param_tree)) == NULL) {
+	if ((param = preset->builtinParams.find_builtin_param(std::string(string))) == NULL) 
+	  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(std::string(string), current_wave->param_tree)) == NULL) {
+		if (tree_expr)
 	    delete tree_expr;
 	    return NULL;
 	  }
       }
+      assert(param);
 
       if (PARSE_DEBUG) {
-	    DWRITE("parse_gen_expr: custom wave parameter (name = %s)... \n", param->name.c_str());
+	    std::cerr << "parse_gen_expr: custom wave parameter (name = " <<  param->name << ")" << std::endl;
 
       }
 	
@@ -787,6 +797,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
         DWRITE( "parse_gen_expr: syntax error [string = \"%s\"] (LINE %d)\n", string, line_count);
         
     }
+    if (tree_expr)
     delete tree_expr;
     return NULL;
   }
