@@ -67,7 +67,7 @@ public:
 
     template <class Fun>
     void traverse(Fun & fun) {
-	Algorithms::traverse(*builtin_param_tree, fun);
+	Algorithms::traverse(builtin_param_tree, fun);
     }
 
 
@@ -80,6 +80,6 @@ private:
     AliasMap aliasMap;
 
     // Internal datastructure to store the parameters
-    std::map<std::string,Param*> * builtin_param_tree;
+    std::map<std::string,Param*> builtin_param_tree;
 };
 #endif

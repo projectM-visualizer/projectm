@@ -1,29 +1,43 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="0" />
+ <DocsAndViews NumberOfDocuments="1" >
+  <Doc0 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PresetFrameIO.cpp" >
+   <View0 Encoding="" line="0" Type="Source" />
+  </Doc0>
+ </DocsAndViews>
  <pluginList>
   <kdevdebugger>
    <breakpointList/>
    <showInternalCommands value="0" />
   </kdevdebugger>
   <kdevastyle>
-   <Extensions ext="*.cpp *.h,*.c *.h,*.cxx *.hxx,*.c++ *.h++,*.cc *.hh,*.C *.H,*.diff,*.inl,*.java,*.moc,*.patch,*.tlh,*.xpm,*.hpp" />
-   <AStyle IndentPreprocessors="0" FillCount="4" PadParenthesesOut="1" IndentNamespaces="1" IndentLabels="1" Fill="Tabs" MaxStatement="40" Brackets="Attach" MinConditional="-1" IndentBrackets="0" PadParenthesesUn="1" BlockBreak="0" KeepStatements="1" KeepBlocks="1" BlockIfElse="0" IndentSwitches="1" PadOperators="0" FStyle="KR" IndentCases="0" FillEmptyLines="1" BracketsCloseHeaders="0" BlockBreakAll="0" PadParenthesesIn="1" IndentClasses="1" IndentBlocks="0" FillForce="1" />
+   <Extensions ext="*.cpp *.h,*.c *.h,*.cxx *.hxx,*.c++ *.h++,*.cc *.hh,*.C *.H,*.diff,*.inl,*.java,*.moc,*.patch,*.tlh,*.xpm" />
+   <AStyle IndentPreprocessors="0" FillCount="4" PadParenthesesOut="1" IndentNamespaces="1" IndentLabels="1" Fill="Tabs" MaxStatement="40" Brackets="Break" MinConditional="-1" IndentBrackets="0" PadParenthesesUn="1" BlockBreak="0" KeepStatements="1" KeepBlocks="1" BlockIfElse="0" IndentSwitches="1" PadOperators="0" FStyle="UserDefined" IndentCases="0" FillEmptyLines="0" BracketsCloseHeaders="0" BlockBreakAll="0" PadParenthesesIn="1" IndentClasses="1" IndentBlocks="0" FillForce="0" />
   </kdevastyle>
   <kdevbookmarks>
    <bookmarks>
+    <bookmark url="/home/carm/projects/dev-1.0/src/projectM-engine/PresetChooser.cpp" >
+     <mark line="3" />
+    </bookmark>
+    <bookmark url="/home/carm/projects/dev-1.0/src/projectM-engine/CustomShape.cpp" >
+     <mark line="214" />
+    </bookmark>
     <bookmark url="/home/carm/projects/projectM/dev-1.0/src/projectM-engine/console_interface.cpp" >
      <mark line="166" />
     </bookmark>
+    <bookmark url="/home/carm/projects/dev-1.0/src/projectM-engine/PerPointEqn.cpp" >
+     <mark line="60" />
+    </bookmark>
+    <bookmark url="/home/carm/projects/dev-1.0/src/projectM-engine/Expr.cpp" >
+     <mark line="136" />
+     <mark line="88" />
+    </bookmark>
    </bookmarks>
   </kdevbookmarks>
-  <kdevsubversion>
-   <subversion base="" />
-  </kdevsubversion>
   <kdevvalgrind>
    <executable path="" params="" />
-   <valgrind path="" params="" />
+   <valgrind path="valgrind" params="--tool=memcheck --tool=memcheck --tool=memcheck --tool=memcheck --tool=memcheck --leak-check=yes" />
    <calltree path="" params="" />
    <kcachegrind path="" />
   </kdevvalgrind>

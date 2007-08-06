@@ -703,29 +703,36 @@ int projectM::initPresetTools()
 	if ( ( m_presetChooser = new PresetChooser ( *m_presetLoader ) ) == 0 )
 	{
 		delete ( m_presetLoader );
+
 		m_presetChooser = 0;
+		m_presetLoader = 0;
+
 		std::cerr << "[projectM] error allocating preset chooser" << std::endl;
 		return PROJECTM_FAILURE;
 	}
 
-// Start the iterator
+	// Start the iterator
 	m_presetPos = new PresetIterator();
 	*m_presetPos = m_presetChooser->begin();
+
+	// Case where no valid presets exist in directory
 	if ( *m_presetPos == m_presetChooser->end() )
 	{
-		std::cerr << "[projectM] error: no valid files found in preset directory \"" << PROJECTM_PRESET_PATH << "\"" << std::endl;
+		std::cerr << "[projectM] error: no valid files found in preset directory \"" 
+			<< PROJECTM_PRESET_PATH << "\"" << std::endl;
+
+		/// @bug handle this better, load builtin preset perhaps
+		abort();
 	}
 
+	// First preset
 	std::cerr << "[projectM] Allocating first preset..." << std::endl;
+	assert(m_activePreset == 0);
 	m_activePreset =  m_presetPos->allocate ( presetInputs, presetOutputs );
 
 	std::cerr << "[projectM] First preset allocated. File path is \"" << m_activePreset->file_path << "\"" << std::endl;
 	projectM_resetengine();
 
-	/* Done */
-#ifdef PRESET_DEBUG
-	printf ( "initPresetLoader: finished\n" );
-#endif
 	return PROJECTM_SUCCESS;
 }
 
@@ -735,15 +742,21 @@ void projectM::destroyPresetTools()
 	if ( m_presetChooser )
 		delete ( m_presetChooser );
 
+	/// @slow might not be necessary
+	m_presetChooser = 0;
+
 	if ( m_presetLoader )
 		delete ( m_presetLoader );
+
+	/// @slow might not be necessary
+	m_presetLoader = 0;
 
 	Eval::destroy_infix_ops();
 	BuiltinFuncs::destroy_builtin_func_db();
 
 }
 
-void projectM::getCurrentMeshSize(int & x, int &y) {
+void projectM::getCurrentMeshSize(int & x, int & y) {
 	x = this->presetInputs.gx;
 	y = this->presetInputs.gy;
 }

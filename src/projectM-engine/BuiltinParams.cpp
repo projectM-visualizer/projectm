@@ -97,9 +97,7 @@ int BuiltinParams::load_builtin_param_float(char * name, void * engine_val, void
 int BuiltinParams::destroy_builtin_param_db()
 {
 
-  Algorithms::traverse<TraverseFunctors::DeleteFunctor<Param> >(*builtin_param_tree);
-  delete builtin_param_tree;
-  builtin_param_tree = NULL;
+  Algorithms::traverse<TraverseFunctors::DeleteFunctor<Param> >(builtin_param_tree);
   return PROJECTM_SUCCESS;
 }
 
@@ -124,17 +122,17 @@ Param * BuiltinParams::find_builtin_param(const std::string & name)
 
   if (pos == aliasMap.end())
   {
-    std::map<std::string, Param*>::iterator builtinPos = builtin_param_tree->find(name);
+    std::map<std::string, Param*>::iterator builtinPos = builtin_param_tree.find(name);
 
-    if (builtinPos != builtin_param_tree->end())
+    if (builtinPos != builtin_param_tree.end())
       param = builtinPos->second;
   }
   else
   {
 
-    std::map<std::string, Param*>::iterator builtinPos = builtin_param_tree->find(pos->second);
+    std::map<std::string, Param*>::iterator builtinPos = builtin_param_tree.find(pos->second);
 
-    if (builtinPos != builtin_param_tree->end())
+    if (builtinPos != builtin_param_tree.end())
       param = builtinPos->second;
   }
   return param;
@@ -212,7 +210,7 @@ int BuiltinParams::load_builtin_param_bool(char * name, void * engine_val, short
 /* Inserts a parameter into the builtin database */
 int BuiltinParams::insert_builtin_param( Param *param )
 {
-  std::pair<std::map<std::string, Param*>::iterator, bool> inserteePos = builtin_param_tree->insert(std::make_pair(param->name, param));
+  std::pair<std::map<std::string, Param*>::iterator, bool> inserteePos = builtin_param_tree.insert(std::make_pair(param->name, param));
 
   return inserteePos.second;
 }
@@ -223,13 +221,6 @@ int BuiltinParams::insert_builtin_param( Param *param )
    Should only be necessary once */
 int BuiltinParams::init_builtin_param_db(const PresetInputs & presetInputs, PresetOutputs & presetOutputs)
 {
-
-  /* Create the builtin parameter splay tree (go Sleator...) */
-  if ((this->builtin_param_tree = new std::map<std::string,Param*>()) == NULL)
-  {
-    if (BUILTIN_PARAMS_DEBUG) printf("init_builtin_param_db: failed to initialize database (FATAL)\n");
-    return PROJECTM_OUTOFMEM_ERROR;
-  }
 
   if (BUILTIN_PARAMS_DEBUG)
   {
@@ -290,7 +281,8 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
 
   load_builtin_param_float("zoom", (void*)&presetOutputs.zoom, presetOutputs.zoom_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
   load_builtin_param_float("rot", (void*)&presetOutputs.rot, presetOutputs.rot_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, NULL);
-  load_builtin_param_float("zoomexp", (void*)&presetOutputs.zoomexp, presetOutputs.zoomexp_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fZoomExponent");
+  /// @note added huge bug fix here potentially by prevening zoomexp_mesh from being freed when presets dealloc
+  load_builtin_param_float("zoomexp", (void*)&presetOutputs.zoomexp, presetOutputs.zoomexp_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE|P_FLAG_DONT_FREE_MATRIX , 0.0, MAX_DOUBLE_SIZE, 0, "fZoomExponent");
 
   load_builtin_param_float("cx", (void*)&presetOutputs.cx, presetOutputs.cx_mesh, P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, 1.0, 0, NULL);
   load_builtin_param_float("cy", (void*)&presetOutputs.cy, presetOutputs.cy_mesh, P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, 1.0, 0, NULL);

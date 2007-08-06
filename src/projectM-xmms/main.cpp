@@ -54,7 +54,7 @@ www.gamedev.net/reference/programming/features/beatdetection/
 extern "C" void projectM_xmms_init(void); 
 extern "C" void projectM_cleanup(void);
 extern "C" void projectM_about(void);
-extern "C" void projectM_configure(void);
+extern "C" void projectM_configure(void)
 extern "C" void projectM_playback_start(void);
 extern "C" void projectM_playback_stop(void);
 extern "C" void projectM_render_pcm(gint16 pcm_data[2][512]);
@@ -176,7 +176,7 @@ int worker_func(void*)
   
   globalPM->fullscreen = fullscreen;
   //globalPM->renderTarget->texsize = texsize;
-  //globalPM->renderTarget->usePbuffers = 1;
+  //globalPM->renderTarget->usePbuffers = 0;
   // globalPM->gx=gx;
   //globalPM->gy=gy;
   // globalPM->fps=fps;

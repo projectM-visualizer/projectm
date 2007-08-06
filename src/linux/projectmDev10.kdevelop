@@ -1,8 +1,8 @@
 <?xml version = '1.0'?>
 <kdevelop>
   <general>
-    <author>Carmelo Piccione</author>
-    <email>carmelo.piccione@gmail.com</email>
+    <author>Carmelo Piccione, Peter Sperl</author>
+    <email>carmelo.piccione@gmail.com, psperl@gmail.com</email>
     <version>1</version>
     <projectmanagement>KDevCustomProject</projectmanagement>
     <primarylanguage>C++</primarylanguage>
@@ -12,21 +12,22 @@
     <absoluteprojectpath>false</absoluteprojectpath>
     <description/>
     <defaultencoding/>
-    <versioncontrol>kdevsubversion</versioncontrol>
+    <versioncontrol/>
   </general>
   <kdevcustomproject>
     <run>
-      <directoryradio>executable</directoryradio>
-      <mainprogram>/home/pete/personal/carm/dev-1.0</mainprogram>
+      <directoryradio>custom</directoryradio>
+      <mainprogram>/usr/local/bin/xmms</mainprogram>
       <programargs/>
       <globaldebugarguments/>
-      <globalcwd>/home/pete/personal/carm/dev-1.0</globalcwd>
+      <globalcwd>/home/carm/projects/projectM/dev-1.0</globalcwd>
       <useglobalprogram>false</useglobalprogram>
       <terminal>false</terminal>
-      <autocompile>false</autocompile>
-      <autoinstall>false</autoinstall>
+      <autocompile>true</autocompile>
+      <autoinstall>true</autoinstall>
       <autokdesu>false</autokdesu>
       <envvars/>
+      <customdirectory>/home/carm/projects/dev-1.0/src/</customdirectory>
     </run>
     <filetypes>
       <filetype>*.java</filetype>
@@ -47,7 +48,7 @@
     <blacklist/>
     <build>
       <buildtool>make</buildtool>
-      <builddir>src</builddir>
+      <builddir>/home/carm/projects/dev-1.0/src/projectM-engine</builddir>
     </build>
     <other>
       <prio>0</prio>
@@ -83,9 +84,10 @@
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
+      <programargs/>
     </general>
     <display>
-      <staticmembers>false</staticmembers>
+      <staticmembers>true</staticmembers>
       <demanglenames>true</demanglenames>
       <outputradix>10</outputradix>
     </display>
@@ -159,7 +161,7 @@
       <automaticCodeCompletion>true</automaticCodeCompletion>
       <automaticArgumentsHint>false</automaticArgumentsHint>
       <automaticHeaderCompletion>true</automaticHeaderCompletion>
-      <codeCompletionDelay>300</codeCompletionDelay>
+      <codeCompletionDelay>150</codeCompletionDelay>
       <argumentsHintDelay>400</argumentsHintDelay>
       <headerCompletionDelay>250</headerCompletionDelay>
       <showOnlyAccessibleItems>false</showOnlyAccessibleItems>
@@ -177,6 +179,10 @@
       <usePermanentCaching>true</usePermanentCaching>
       <alwaysIncludeNamespaces>true</alwaysIncludeNamespaces>
       <includePaths>.;</includePaths>
+      <includeGlobalFunctions>true</includeGlobalFunctions>
+      <includeTypes>true</includeTypes>
+      <includeEnums>true</includeEnums>
+      <includeTypedefs>true</includeTypedefs>
     </codecompletion>
     <creategettersetter>
       <prefixGet/>
@@ -192,7 +198,7 @@
       <orientation>Vertical</orientation>
     </splitheadersource>
     <references>
-      <pcs>automatic_%2Fhome%2Fpete%2Fpersonal%2Fcarm%2Fdev-1.0</pcs>
+      <pcs>automatic_%2Fhome%2Fcarm%2Fprojects%2Fdev-1.0</pcs>
     </references>
   </kdevcppsupport>
   <cppsupportpart>

@@ -70,8 +70,7 @@ Preset::~Preset()
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
     delete(pos->second);
- 
-    
+
 }
 
 /* Adds a per pixel equation according to its string name. This
