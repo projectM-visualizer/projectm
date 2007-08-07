@@ -109,7 +109,7 @@ DLLEXPORT void projectM::renderFrame()
 
 
 //   assert(m_activePreset.get());
-	m_activePreset->evaluateFrame();
+
 
 
 //     printf("%f %d\n",Time,frame);
@@ -121,6 +121,14 @@ DLLEXPORT void projectM::renderFrame()
 	DWRITE ( "=== bass_att: %f ===\n",
 	         beatDetect->bass_att );
 
+        presetInputs.bass = beatDetect->bass; 
+	presetInputs.mid = beatDetect->mid; 
+	presetInputs.treb = beatDetect->treb; 
+	presetInputs.bass_att = beatDetect->bass_att; 
+	presetInputs.mid_att = beatDetect->mid_att; 
+	presetInputs.treb_att = beatDetect->treb_att; 
+
+	m_activePreset->evaluateFrame();
 	if ( renderer->noSwitch==0 )
 	{
 		nohard--;
@@ -134,7 +142,7 @@ DLLEXPORT void projectM::renderFrame()
 	}
 
 	count++;
-	renderer->presetName = m_activePreset->absoluteFilePath();
+	//	renderer->presetName = m_activePreset->absoluteFilePath();
        
 	renderer->RenderFrame ( &presetOutputs, &presetInputs );
 

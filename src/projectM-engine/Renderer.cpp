@@ -107,7 +107,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
        
       glEnable( GL_TEXTURE_2D );
       if(this->renderTarget->usePbuffers)
-	{
+	{	
 	  glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
 	}
       else
@@ -146,14 +146,14 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     PerFrame(presetOutputs);               //apply per-frame effects
     Interpolation(presetOutputs,presetInputs);       //apply per-pixel effects
    
-    draw_title_to_texture();      //draw title to texture
+        draw_title_to_texture();      //draw title to texture
 
 //    if(!this->renderTarget->usePbuffers)
       {
 	draw_motion_vectors(presetOutputs);        //draw motion vectors
       }
-    draw_shapes(presetOutputs);
-    draw_custom_waves(presetOutputs);
+          draw_shapes(presetOutputs);
+      draw_custom_waves(presetOutputs);
     draw_waveform(presetOutputs, presetInputs);
     if(presetOutputs->bDarkenCenter)darken_center();
     draw_borders(presetOutputs);               //draw borders
@@ -193,9 +193,9 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     glViewport( 0, 0, this->vw, this->vh );
     glClear( GL_COLOR_BUFFER_BIT );
 
-    if ( this->renderTarget ) {
+    
         glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID[0] );
-      }
+      
 
       glMatrixMode(GL_PROJECTION);
       glLoadIdentity();  
@@ -252,7 +252,7 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
 #endif
       }
 #endif
-  
+    
   for (x=0;x<presetInputs->gx - 1;x++){
     glBegin(GL_TRIANGLE_STRIP);
     for(y=0;y<presetInputs->gy;y++){
