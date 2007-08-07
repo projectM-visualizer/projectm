@@ -13,7 +13,7 @@ BuiltinParams::BuiltinParams() {}
 BuiltinParams::BuiltinParams(const PresetInputs & presetInputs, PresetOutputs & presetOutputs)
 {
 
-  int ret;
+ int ret;
   if ((ret = init_builtin_param_db(presetInputs, presetOutputs)) != PROJECTM_SUCCESS)
   {
     throw ret;
@@ -121,13 +121,13 @@ Param * BuiltinParams::find_builtin_param(const std::string & name)
 
   AliasMap::iterator pos = aliasMap.find(name);
   Param * param = 0;
-  std::cerr << "[BuiltinParams] find_builtin_param: name is " << name << std::endl;
+  //std::cerr << "[BuiltinParams] find_builtin_param: name is " << name << std::endl;
   if (pos == aliasMap.end())
   {
     std::map<std::string, Param*>::iterator builtinPos = builtin_param_tree.find(name);
 
     if (builtinPos != builtin_param_tree.end()) {
-      std::cerr << "[BuiltinParams] find_builtin_param: found it directly." << std::endl;
+    //  std::cerr << "[BuiltinParams] find_builtin_param: found it directly." << std::endl;
       param = builtinPos->second;
      }
   }
@@ -137,7 +137,7 @@ Param * BuiltinParams::find_builtin_param(const std::string & name)
     std::map<std::string, Param*>::iterator builtinPos = builtin_param_tree.find(pos->second);
 
     if (builtinPos != builtin_param_tree.end()) {
-      std::cerr << "[BuiltinParams] find_builtin_param: found it indirectly." << std::endl;
+      //std::cerr << "[BuiltinParams] find_builtin_param: found it indirectly." << std::endl;
       param = builtinPos->second;
 
 }

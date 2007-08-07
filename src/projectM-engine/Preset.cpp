@@ -228,7 +228,8 @@ void Preset::evalPerFrameEquations()
 void Preset::initialize(const std::string & pathname)
 {
 
-  // Clear equation trees
+  // Clear equation trees 
+  /// @slow unnecessary if we ensure this method is private
   init_cond_tree.clear();
   user_param_tree.clear();
   per_frame_eqn_tree.clear();
@@ -241,6 +242,7 @@ void Preset::initialize(const std::string & pathname)
   this->per_frame_init_eqn_string_index = 0;
 
   /* Clear string buffers */
+  /// @bug replace with ostringstream?
   memset(this->per_pixel_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
   memset(this->per_frame_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
   memset(this->per_frame_init_eqn_string_buffer, 0, STRING_BUFFER_SIZE);

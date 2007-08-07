@@ -51,6 +51,7 @@
 
 #include "Expr.hpp"
 #include "Common.hpp"
+#include <cmath>
 #include <string>
 class InitCond;
 class Param;
@@ -105,6 +106,51 @@ public:
                             int upper_bound, int lower_bound, int init_val );
 
 };
+
+
+/* Sets the parameter engine value to value val.
+	clipping occurs if necessary */
+inline void Param::set_param( float val) {
+
+    switch (type) {
+
+    case P_TYPE_BOOL:
+        if (val < 0)
+            *((int*)engine_val) = 0;
+        else if (val > 0)
+            *((int*)engine_val) = 1;
+        else
+            *((int*)engine_val) = 0;
+        break;
+    case P_TYPE_INT:
+        /* Make sure value is an integer */
+        val = floor(val);
+        if (val < lower_bound.int_val)
+            *((int*)engine_val) = lower_bound.int_val;
+        else if (val > upper_bound.int_val)
+            *((int*)engine_val) = upper_bound.int_val;
+        else
+            *((int*)engine_val) = (int)val;
+        break;
+    case P_TYPE_DOUBLE:
+        /* Make sure value is an integer */
+
+
+        if (val < lower_bound.float_val)
+            *((float*)engine_val) = lower_bound.float_val;
+        else if (val > upper_bound.float_val)
+            *((float*)engine_val) = upper_bound.float_val;
+        else
+            *((float*)engine_val) = val;
+        break;
+    default:
+	abort();
+        break;
+
+    }
+
+    return;
+}
 
 #endif /** !_PARAM_TYPES_H */
 

@@ -50,8 +50,7 @@ InitCond::InitCond( Param * param, CValue init_val ) {
 }
 
 /* Frees initial condition structure */
-InitCond::~InitCond() {
-  }
+InitCond::~InitCond() {}
 
 /* Evaluate an initial conditon */
 void InitCond::evaluate() {

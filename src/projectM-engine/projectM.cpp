@@ -126,6 +126,8 @@ DLLEXPORT void projectM::renderFrame()
 	presetInputs.mid_att = beatDetect->mid_att; 
 	presetInputs.treb_att = beatDetect->treb_att; 
 
+	assert(m_activePreset.get());
+
 	m_activePreset->evaluateFrame();
 	if ( renderer->noSwitch==0 )
 	{
@@ -746,10 +748,9 @@ int projectM::initPresetTools()
 
 	// First preset
 	std::cerr << "[projectM] Allocating first preset..." << std::endl;
-	
 	m_activePreset =  m_presetPos->allocate ( presetInputs, presetOutputs );
 
-	std::cerr << "[projectM] First preset allocated. File path is \"" << m_activePreset->file_path << "\"" << std::endl;
+	std::cerr << "[projectM] First preset allocated. File path is \"" << m_activePreset->absoluteFilePath() << "\"" << std::endl;
 	projectM_resetengine();
 
 	return PROJECTM_SUCCESS;
