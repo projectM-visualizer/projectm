@@ -5,6 +5,7 @@
 #include "console_interface.h"
 #include "CustomShape.hpp"
 #include "CustomWave.hpp"
+#include <iostream>
 
 class Preset;
 
@@ -1478,7 +1479,7 @@ void Renderer::draw_title() {
       //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
      
 #endif /** USE_FTGL */
-}
+
 void Renderer::draw_preset() { 
 #ifdef USE_FTGL
   //glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
@@ -1489,12 +1490,13 @@ void Renderer::draw_preset() {
       //glScalef(this->vw*.003,this->vh*.004,0);
 
    
-        glRasterPos2f(0.01, 0.01);
+      glRasterPos2f(0.01, 0.01);
 
 	title_font->FaceSize((unsigned)(12*(this->vh/512.0)));
 	if(this->noSwitch) title_font->Render("[LOCKED]  " );
 	title_font->FaceSize((unsigned)(20*(this->vh/512.0)));
-	//if (this->presetName) title_font->Render(this->presetName );
+	//        std::cout << this->presetName;
+		title_font->Render(this->presetName.c_str() );
 
                  
         

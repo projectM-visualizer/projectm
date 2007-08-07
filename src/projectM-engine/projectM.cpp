@@ -34,6 +34,7 @@
 #endif
 
 //#include <xmms/plugin.h>
+#include <iostream>
 #include "projectM.hpp"
 #include "BeatDetect.hpp"
 #include "Eval.hpp"
@@ -133,7 +134,8 @@ DLLEXPORT void projectM::renderFrame()
 	}
 
 	count++;
-
+	renderer->presetName = m_activePreset->absoluteFilePath();
+       
 	renderer->RenderFrame ( &presetOutputs, &presetInputs );
 
 #ifndef WIN32

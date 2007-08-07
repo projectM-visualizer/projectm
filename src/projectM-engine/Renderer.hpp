@@ -4,6 +4,7 @@
 #include "PBuffer.hpp"
 #include "PresetFrameIO.hpp"
 #include "BeatDetect.hpp"
+#include <string>
 
 #ifdef USE_FTGL
 #include <FTGL/FTGL.h>
@@ -51,6 +52,7 @@ FTGLPolygonFont *poly_font;
     int correction;
 
     char *fontURL;
+    std::string presetName;
 
     int noSwitch;
 
