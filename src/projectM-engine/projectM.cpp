@@ -102,15 +102,7 @@ DLLEXPORT void projectM::renderFrame()
 	DWRITE ( "frame: %d\ttime: %f\tprogress: %f\tavgtime: %d\tang: %f\trot: %f\n",
 	         this->presetInputs.frame, presetInputs.time, this->presetInputs.progress, this->avgtime, this->presetInputs.ang_per_pixel,
 	         this->presetOutputs.rot );
-	if ( presetInputs.progress>1.0 )
-	  {
-	    presetInputs.progress=0.0;
-	    presetInputs.frame = 0;
-	    if (m_activePreset)
-	    	delete(m_activePreset);
-	    m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
-		(presetInputs, presetOutputs);
-	  }
+
 
 //       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
 	presetInputs.ResetMesh();
@@ -136,21 +128,36 @@ DLLEXPORT void projectM::renderFrame()
 	m_activePreset->evaluateFrame();
 	if ( renderer->noSwitch==0 )
 	{
-		nohard--;
-		if ( ( beatDetect->bass-beatDetect->bass_old>beatDetect->beat_sensitivity ||
-		        avgtime ) && nohard<0 )
-		{
-//              printf("%f %d %d\n", beatDetect->bass-beatDetect->bass_old,this->frame,this->avgtime);
-//              switchPreset(RANDOM_NEXT, HARD_CUT);
-			nohard=presetInputs.fps*5;
-		}
+	  if ( presetInputs.progress>1.0 )
+	    {
+	      presetInputs.progress=0.0;
+	      presetInputs.frame = 0;
+	      if (m_activePreset)
+	    	delete(m_activePreset);
+	      m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
+		(presetInputs, presetOutputs);
+             nohard=presetInputs.fps*5;
+              printf("SOFT CUT");
+	    }	  	  
+	  else if ( ( beatDetect->bass-beatDetect->bass_old>beatDetect->beat_sensitivity ) && nohard<0 )
+	    {
+	      //            printf("%f %d %d\n", beatDetect->bass-beatDetect->bass_old,this->frame,this->avgtime);
+	      printf("HARD CUT");
+	      if (m_activePreset)
+	    	delete(m_activePreset);
+	      m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
+		(presetInputs, presetOutputs);
+	      nohard=presetInputs.fps*5;
+	    }
+	  else nohard--;
 	}
 
-	count++;
-	//	renderer->presetName = m_activePreset->absoluteFilePath();
        
+	//	renderer->presetName = m_activePreset->absoluteFilePath();
+       	m_activePreset->evaluateFrame();
 	renderer->RenderFrame ( &presetOutputs, &presetInputs );
 
+	count++;
 #ifndef WIN32
 	/** Frame-rate limiter */
 	/** Compute once per preset */
