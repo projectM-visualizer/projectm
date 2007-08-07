@@ -715,9 +715,9 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
 
     /* CASE 4: custom shape variable */
     if (current_shape != NULL) {
-      if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(std::string(string), current_shape->param_tree)) == NULL) {
+      if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(std::string(string), &current_shape->param_tree)) == NULL) {
 	if ((param = preset->builtinParams.find_builtin_param(std::string(string))) == NULL)
-		if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(std::string(string), current_shape->param_tree)) == NULL) {
+		if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(std::string(string), &current_shape->param_tree)) == NULL) {
 	    if (tree_expr)
 	    delete tree_expr;
 	    return NULL;
@@ -1495,7 +1495,7 @@ int Parser::parse_shapecode(char * token, FILE * fs, Preset * preset) {
   /* Retrieve parameter from this custom shapes parameter db */
 
 
-  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(var_string, custom_shape->param_tree)) == NULL) {
+  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(var_string, &custom_shape->param_tree)) == NULL) {
     //if (PARSE_DEBUG) printf("parse_shapecode: failed to create parameter.\n");
     return PROJECTM_FAILURE;
   }
@@ -2015,7 +2015,7 @@ int Parser::parse_shape_per_frame_init_eqn(FILE * fs, CustomShape * custom_shape
     //if (PARSE_DEBUG) printf("parse_shape (per frame init): [begin] (LINE %d)\n", line_count);
 
     /* Parse the per frame equation */
-    if ((init_cond = parse_per_frame_init_eqn(fs, preset, custom_shape->param_tree)) == NULL) {
+    if ((init_cond = parse_per_frame_init_eqn(fs, preset, &custom_shape->param_tree)) == NULL) {
       //if (PARSE_DEBUG) printf("parse_shape (per frame init): equation parsing failed (LINE %d)\n", line_count);
       return PROJECTM_PARSE_ERROR;
     }
@@ -2046,7 +2046,7 @@ char string[MAX_TOKEN_SIZE];
     }
   
     /* Find the parameter associated with the string in the custom shape database */
-    if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string, custom_shape->param_tree)) == NULL) { 
+    if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string, &custom_shape->param_tree)) == NULL) { 
       //if (PARSE_DEBUG) printf("parse_shape (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string);
       return PROJECTM_FAILURE;	
     }

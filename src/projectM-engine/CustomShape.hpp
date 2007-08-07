@@ -45,7 +45,7 @@ public:
     int per_frame_count;
 
     /* Parameter tree associated with this custom shape */
-    std::map<std::string,Param*> * param_tree;
+    std::map<std::string,Param*> param_tree;
 
     /* Engine variables */
     int sides;
