@@ -212,7 +212,6 @@ inline Preset * PresetChooser::doWeightedSample(WeightFunctor & weightFunctor, c
     // Choose a random bounded mass between 0 and 1
     float cutoff = ((float)(random())) / RAND_MAX;
 
-    std::cerr << "cutoff: " << cutoff << std::endl;
     // Sum up mass, stopping when cutoff is reached. This is the typical
     // weighted sampling algorithm.
     float mass = 0;
@@ -225,7 +224,7 @@ inline Preset * PresetChooser::doWeightedSample(WeightFunctor & weightFunctor, c
     // Just in case something slips through the cracks
     PresetIterator pos = this->end();
     --pos;
-    std::cerr << "mass: " << mass << std::endl;
+
     return pos.allocate(presetInputs, presetOutputs);
 }
 
