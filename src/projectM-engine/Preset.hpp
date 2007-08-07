@@ -120,10 +120,16 @@ public:
 
     int load_preset_file(const char * pathname);
     static Preset *load_preset( const char *pathname );
-     Param * find(char * name, int flags) ;
+    Param * find(char * name, int flags) ;
 
     void load_init_cond(char *name, int flags);	
     inline void clearMeshChecks();
+
+	std::string absoluteFilePath() const
+	{
+		return file_path;
+	}
+	
     PresetOutputs::cwave_container * customWaves;
     PresetOutputs::cshape_container * customShapes;
     
