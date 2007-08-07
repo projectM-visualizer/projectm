@@ -1479,6 +1479,7 @@ void Renderer::draw_title() {
       //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
      
 #endif /** USE_FTGL */
+}
 
 void Renderer::draw_preset() { 
 #ifdef USE_FTGL
