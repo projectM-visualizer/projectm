@@ -68,7 +68,7 @@ public:
 
   ~GenExpr();
 
-  static GenExpr *new_gen_expr( int type, void *item );
+  GenExpr( int type, void *item );
   GenExpr *clone_gen_expr();
   float eval_gen_expr(int mesh_i, int mesh_j);
  
@@ -85,7 +85,7 @@ public:
   Term term;
 
   ~ValExpr();
-  static ValExpr *new_val_expr( int type, Term *term );
+  ValExpr( int type, Term *term );
   ValExpr *clone_val_expr();
 
   float eval_val_expr(int mesh_i, int mesh_j);
@@ -100,7 +100,7 @@ public:
   TreeExpr *left, *right;
 
   ~TreeExpr();
-  static TreeExpr *new_tree_expr( InfixOp *infix_op, GenExpr *gen_expr,
+  TreeExpr( InfixOp *infix_op, GenExpr *gen_expr,
                                   TreeExpr *left, TreeExpr *right );
   TreeExpr *clone_tree_expr();
   float eval_tree_expr(int mesh_i, int mesh_j);
@@ -113,7 +113,7 @@ public:
   float (*func_ptr)(void*);
   int num_args;
   GenExpr **expr_list;
-
+  PrefunExpr();
   ~PrefunExpr();
   PrefunExpr *clone_prefun_expr();
 
