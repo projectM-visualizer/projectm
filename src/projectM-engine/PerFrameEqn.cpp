@@ -40,8 +40,8 @@ void PerFrameEqn::evaluate() {
 
      if (PER_FRAME_EQN_DEBUG) { 
 		 printf("per_frame_%d=%s= ", index, param->name.c_str());
-		 fflush(stdout);
-	 }
+		 fflush(stdout); 
+     }
 	 
     //*((float*)per_frame_eqn->param->engine_val) = eval_gen_expr(per_frame_eqn->gen_expr);
 	assert(gen_expr);
@@ -57,7 +57,8 @@ PerFrameEqn::~PerFrameEqn() {
 
   delete gen_expr;
 
-  /** @bug Destroy param? - great question, don't know yet*/
+  // param is freed in param_tree container of some other class
+
 }
 
 /* Create a new per frame equation */

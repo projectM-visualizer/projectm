@@ -71,7 +71,8 @@ projectM *projectM::currentEngine = NULL;
 RenderTarget * projectM::renderTarget = NULL;
 Renderer * projectM::renderer = NULL;
 
-DLLEXPORT projectM::projectM() :beatDetect ( 0 ), m_activePreset ( 0 )
+
+DLLEXPORT projectM::projectM() :beatDetect ( 0 )
 {
 
 }
@@ -132,8 +133,6 @@ DLLEXPORT void projectM::renderFrame()
 	    {
 	      presetInputs.progress=0.0;
 	      presetInputs.frame = 0;
-	      if (m_activePreset)
-	    	delete(m_activePreset);
 	      m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
 		(presetInputs, presetOutputs);
              nohard=presetInputs.fps*5;
@@ -143,8 +142,6 @@ DLLEXPORT void projectM::renderFrame()
 	    {
 	      //            printf("%f %d %d\n", beatDetect->bass-beatDetect->bass_old,this->frame,this->avgtime);
 	      printf("HARD CUT");
-	      if (m_activePreset)
-	    	delete(m_activePreset);
 	      m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
 		(presetInputs, presetOutputs);
 	      nohard=presetInputs.fps*5;
@@ -749,7 +746,7 @@ int projectM::initPresetTools()
 
 	// First preset
 	std::cerr << "[projectM] Allocating first preset..." << std::endl;
-	assert(m_activePreset == 0);
+	
 	m_activePreset =  m_presetPos->allocate ( presetInputs, presetOutputs );
 
 	std::cerr << "[projectM] First preset allocated. File path is \"" << m_activePreset->file_path << "\"" << std::endl;

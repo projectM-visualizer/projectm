@@ -229,7 +229,7 @@ public:
 	PresetChooser * m_presetChooser;
 
 	// Currently loaded preset- will be fancier when smooth preset switching
-	Preset * m_activePreset;
+	std::auto_ptr<Preset> m_activePreset;
 
   /** All readonly variables 
      *  which are passed as inputs 

@@ -67,7 +67,7 @@ public:
     int per_frame_count;
 
     /* Parameter tree associated with this custom wave */
-    std::map<std::string,Param*> * param_tree;
+    std::map<std::string,Param*> param_tree;
 
     /* Engine variables */
     float x; /* x position for per point equations */
@@ -142,17 +142,4 @@ public:
 
 };
 
-/** Splaytree traversal helpers */
-inline void free_custom_wave_helper( void *custom_wave ) {
-    delete((CustomWave *)custom_wave);
-  }
-
-inline void load_custom_wave_init_helper( void *custom_wave ) {
-    ((CustomWave *)custom_wave)->load_unspecified_init_conds();
-  }
-   
-inline void eval_custom_wave_init_conds_helper( void *custom_wave ) {
-    ((CustomWave *)custom_wave)->eval_custom_wave_init_conds();
-  }
- 
 #endif /** !_CUSTOM_WAVE_H */

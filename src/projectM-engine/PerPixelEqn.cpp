@@ -58,7 +58,7 @@ void PerPixelEqn::evaluate() {
       for (y = 0; y < param->gy; y++) {
 	    /// @slow is this necessary?
 	    param_matrix[x][y] = 0.0;
-      }
+    }
     this->param->matrix = param_matrix;
   }
 

@@ -62,8 +62,7 @@ CustomWave::CustomWave(int _id):
 	scaling(1.0),
 	per_frame_eqn_string_index(0),
 	per_frame_init_eqn_string_index(0),
-	per_point_eqn_string_index(0),
-	param_tree(new std::map<std::string, Param*>())
+	per_point_eqn_string_index(0)
 {
 	
   Param * param;
@@ -87,7 +86,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &param_tree) < 0) {
     /// @bug make exception
     abort();
   }
@@ -98,7 +97,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, param_tree) < 0) {
+  if (ParamUtils::insert(param, &param_tree) < 0) {
     delete(this);
 /// @bug make exception
     abort();
@@ -111,7 +110,7 @@ CustomWave::CustomWave(int _id):
 
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
 /// @bug make exception
     abort();
@@ -123,7 +122,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
   
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
 /// @bug make exception
     abort();
@@ -135,7 +134,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
 /// @bug make exception
     abort();
@@ -147,7 +146,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
 
 /// @bug make exception
@@ -163,7 +162,7 @@ CustomWave::CustomWave(int _id):
 
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
 
 /// @bug make exception
@@ -179,7 +178,7 @@ CustomWave::CustomWave(int _id):
 
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
 /// @bug make exception
     abort();
@@ -195,7 +194,7 @@ CustomWave::CustomWave(int _id):
 
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
 /// @bug make exception
     abort();
@@ -210,7 +209,7 @@ CustomWave::CustomWave(int _id):
 
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
 /// @bug make exception
     abort();
@@ -223,7 +222,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -233,7 +232,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -243,7 +242,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
  
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -254,7 +253,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
  
- if (ParamUtils::insert(param, this->param_tree) < 0) {
+ if (ParamUtils::insert(param, &this->param_tree) < 0) {
     printf("failed to insert sample\n");
     delete(this);
     abort();
@@ -265,7 +264,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -275,7 +274,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -285,7 +284,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -295,7 +294,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -305,7 +304,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -315,7 +314,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -325,7 +324,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -334,7 +333,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -343,7 +342,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
  
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -352,7 +351,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -361,7 +360,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -371,7 +370,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if (ParamUtils::insert(param, this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0) {
     delete(this);
     abort();
   }
@@ -383,9 +382,6 @@ CustomWave::CustomWave(int _id):
 }
 
 CustomWave::~CustomWave() {
-
-  if (param_tree == NULL)
-    return;
 
   
   for (std::map<int, PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end(); ++pos)
@@ -400,11 +396,8 @@ CustomWave::~CustomWave() {
   for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos)
   	delete(pos->second);
 
-  for (std::map<std::string, Param*>::iterator pos = param_tree->begin(); pos != param_tree->end(); ++pos)
+  for (std::map<std::string, Param*>::iterator pos = param_tree.begin(); pos != param_tree.end(); ++pos)
   	delete(pos->second);
-
-
-  delete(param_tree);
 
   free(r_mesh);
   free(g_mesh);
@@ -449,7 +442,7 @@ int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr) {
 
  /* Search for the parameter so we know what matrix the per pixel equation is referencing */
 
- if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(name,param_tree)) == NULL) {
+ if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(name,&param_tree)) == NULL) {
    if (CUSTOM_WAVE_DEBUG) printf("add_per_point_eqn: failed to allocate a new parameter!\n");
    return PROJECTM_FAILURE;
  
@@ -510,7 +503,7 @@ void CustomWave::evalPerPointEqns() {
 void CustomWave::load_unspecified_init_conds() {
 
 	InitCondUtils::LoadUnspecInitCond fun(this->init_cond_tree, this->per_frame_init_eqn_tree);
-	Algorithms::traverse(*param_tree, fun);
+	Algorithms::traverse(param_tree, fun);
 }
 
 

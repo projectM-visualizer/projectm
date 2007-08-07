@@ -133,7 +133,7 @@ void PresetOutputs::Initialize ( int gx, int gy )
 	dx_is_mesh = false;
 	dy_is_mesh =false;
 	cx_is_mesh = false;
-	cy_is_mesh = false;;
+	cy_is_mesh = false;
 
 }
 

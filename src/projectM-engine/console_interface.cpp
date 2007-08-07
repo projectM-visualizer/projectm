@@ -162,32 +162,29 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 
 		++(*m_presetPos);
 
+		// Case: already at last preset, loop to beginning
 		if (((*m_presetPos) == m_presetChooser->end())) {
-			--(*m_presetPos);
-			break;
+			*m_presetPos = m_presetChooser->begin();
 		}
 
-		if (m_activePreset)
-			delete(m_activePreset);
-		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs );
+		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
 	      break;
+
 	    case PROJECTM_K_r:
-		if (m_activePreset)
-			delete(m_activePreset);
 		m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
 			(this->presetInputs, this->presetOutputs);
-		assert(m_activePreset);
 		break;
 	    case PROJECTM_K_p:
 		
 		if (*m_presetPos != m_presetChooser->begin()) {
-			--(*m_presetPos);
-		if (m_activePreset)
-			delete(m_activePreset);
-		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs );
-	   	   
-			// ...mroe
+			--(*m_presetPos);			
+		} else {
+		   *m_presetPos = m_presetChooser->end();
+		   --(*m_presetPos);
 		}
+
+		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
+
 	      break;
 	    case PROJECTM_K_l:
 	      if (renderer->noSwitch==0)renderer->noSwitch=1; else  renderer->noSwitch=0;

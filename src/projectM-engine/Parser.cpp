@@ -743,9 +743,9 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
     
     /* CASE 5: custom wave variable */
     if (current_wave != NULL) {
-      if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(std::string(string), current_wave->param_tree)) == NULL) {
+      if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(std::string(string), &current_wave->param_tree)) == NULL) {
 	if ((param = preset->builtinParams.find_builtin_param(std::string(string))) == NULL) 
-	  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(std::string(string), current_wave->param_tree)) == NULL) {
+	  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(std::string(string), &current_wave->param_tree)) == NULL) {
 		if (tree_expr)
 	    delete tree_expr;
 	    return NULL;
@@ -1416,7 +1416,7 @@ int Parser::parse_wavecode(char * token, FILE * fs, Preset * preset) {
   //if (PARSE_DEBUG) printf("parse_wavecode: custom wave found (id = %d)\n", custom_wave->id);
 
   /* Retrieve parameter from this custom waves parameter db */
-  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(var_string,custom_wave->param_tree)) == NULL)
+  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(var_string,&custom_wave->param_tree)) == NULL)
     return PROJECTM_FAILURE;
 
   //if (PARSE_DEBUG) printf("parse_wavecode: custom wave parameter found (name = %s)\n", param->name);
@@ -1753,7 +1753,7 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
    if (PARSE_DEBUG) printf("parse_wave_helper (per frame init): [begin] (LINE %d)\n", line_count);
 
     /* Parse the per frame init equation */
-    if ((init_cond = parse_per_frame_init_eqn(fs, preset, custom_wave->param_tree)) == NULL) {
+    if ((init_cond = parse_per_frame_init_eqn(fs, preset, &custom_wave->param_tree)) == NULL) {
       if (PARSE_DEBUG) printf("parse_wave_helper (per frame init): equation parsing failed (LINE %d)\n", line_count);
       return PROJECTM_PARSE_ERROR;
     }	
@@ -1783,7 +1783,7 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
     }
   
     /* Find the parameter associated with the string in the custom wave database */
-    if ((param =  ParamUtils::find<ParamUtils::AUTO_CREATE>(string, custom_wave->param_tree)) == NULL) { 
+    if ((param =  ParamUtils::find<ParamUtils::AUTO_CREATE>(string, &custom_wave->param_tree)) == NULL) { 
       //if (PARSE_DEBUG) printf("parse_wave (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string);
       return PROJECTM_FAILURE;	
     }
@@ -2107,7 +2107,7 @@ char string[MAX_TOKEN_SIZE];
     }
   
     /* Find the parameter associated with the string in the custom shape database */
-    if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string, custom_wave->param_tree)) == NULL) { 
+    if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string, &custom_wave->param_tree)) == NULL) { 
       //if (PARSE_DEBUG) printf("parse_shape (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string);
       return PROJECTM_FAILURE;	
     }

@@ -96,7 +96,7 @@ void PresetLoader::rescan()
 
 }
 
-Preset * PresetLoader::loadPreset(unsigned int index, const PresetInputs & presetInputs, PresetOutputs & presetOutputs) const
+std::auto_ptr<Preset> PresetLoader::loadPreset(unsigned int index, const PresetInputs & presetInputs, PresetOutputs & presetOutputs) const
 {
 
   // Check that index isn't insane
@@ -104,7 +104,7 @@ Preset * PresetLoader::loadPreset(unsigned int index, const PresetInputs & prese
   assert(index < m_entries.size());
 
   // Return a new pointer to a present
-  return new Preset(m_entries[index], presetInputs, presetOutputs);
+  return std::auto_ptr<Preset>(new Preset(m_entries[index], presetInputs, presetOutputs));
 }
 
 
