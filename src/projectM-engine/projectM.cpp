@@ -102,7 +102,11 @@ DLLEXPORT void projectM::renderFrame()
 	DWRITE ( "frame: %d\ttime: %f\tprogress: %f\tavgtime: %d\tang: %f\trot: %f\n",
 	         this->presetInputs.frame, presetInputs.time, this->presetInputs.progress, this->avgtime, this->presetInputs.ang_per_pixel,
 	         this->presetOutputs.rot );
-	if ( presetInputs.progress>1.0 ) presetInputs.progress=1.0;
+	if ( presetInputs.progress>1.0 )
+	  {
+	    presetInputs.progress=0.0;
+	    presetInputs.frame = 0;
+	  }
 
 //       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
 	presetInputs.ResetMesh();
