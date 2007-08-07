@@ -38,8 +38,6 @@
 #include "Preset.hpp"
 #include <map>
 
-#include "wipemalloc.h"
-
 /** Constructor */
 Param::Param( std::string _name, short int _type, short int _flags, void * _engine_val, void * _matrix,
               CValue _default_init_val, CValue _upper_bound, CValue _lower_bound):
@@ -90,7 +88,7 @@ Param::~Param() {
 
     int x;
     if (flags & P_FLAG_USERDEF) {
-        free(engine_val);
+        delete((double*)engine_val);
     }
 
     //if (!(param->flags & P_FLAG_DONT_FREE_MATRIX)) {
