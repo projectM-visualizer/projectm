@@ -106,13 +106,14 @@ DLLEXPORT void projectM::renderFrame()
 	  {
 	    presetInputs.progress=0.0;
 	    presetInputs.frame = 0;
+	    if (m_activePreset)
+	    	delete(m_activePreset);
+	    m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
+		(presetInputs, presetOutputs);
 	  }
 
 //       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
 	presetInputs.ResetMesh();
-
-
-//   assert(m_activePreset.get());
 
 
 
