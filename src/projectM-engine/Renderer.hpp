@@ -50,7 +50,6 @@ FTGLPolygonFont *poly_font;
     int studio;
     int correction;
 
-    char *presetName;
     char *fontURL;
 
     int noSwitch;

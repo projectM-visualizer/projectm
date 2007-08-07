@@ -1494,8 +1494,7 @@ void Renderer::draw_preset() {
 	title_font->FaceSize((unsigned)(12*(this->vh/512.0)));
 	if(this->noSwitch) title_font->Render("[LOCKED]  " );
 	title_font->FaceSize((unsigned)(20*(this->vh/512.0)));
-	if (this->presetName)
-        	title_font->Render(this->presetName );
+	//if (this->presetName) title_font->Render(this->presetName );
 
                  
         
@@ -1586,11 +1585,11 @@ sprintf( buffer, " (%f)", this->aspect);
 
   glRasterPos2f(0, -.13+offset);
   sprintf( buffer, "viewport: %d x %d", this->vw, this->vh);
+
   other_font->Render(buffer);
-  /* REME: FIX
   glRasterPos2f(0, -.17+offset);  
-  other_font->Render((this->renderer->renderTarget->usePbuffers ? "     FBO: on" : "     FBO: off"));
-  */
+  other_font->Render((this->renderTarget->usePbuffers ? "     FBO: on" : "     FBO: off"));
+  
   glRasterPos2f(0, -.21+offset); 
   sprintf( buffer, "    mesh: %d x %d", presetInputs->gx,presetInputs->gy);
   other_font->Render(buffer);

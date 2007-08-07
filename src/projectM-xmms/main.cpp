@@ -54,7 +54,7 @@ www.gamedev.net/reference/programming/features/beatdetection/
 extern "C" void projectM_xmms_init(void); 
 extern "C" void projectM_cleanup(void);
 extern "C" void projectM_about(void);
-extern "C" void projectM_configure(void)
+extern "C" void projectM_configure(void);
 extern "C" void projectM_playback_start(void);
 extern "C" void projectM_playback_stop(void);
 extern "C" void projectM_render_pcm(gint16 pcm_data[2][512]);
@@ -192,8 +192,8 @@ int worker_func(void*)
 	globalPM->presetURL = (char *)malloc( sizeof( char ) * 512 );
 	strcpy( globalPM->presetURL, preset_dir );	
  
-
-    globalPM->projectM_init(gx, gy, texsize, fps, fullscreen ? fvw:wvw, fullscreen? fvh:wvh);
+      
+    globalPM->projectM_init(gx, gy, fps, texsize, fullscreen ? fvw:wvw, fullscreen? fvh:wvh);
   
     globalPM->projectM_resetGL( wvw, wvh );
 
@@ -209,16 +209,13 @@ int worker_func(void*)
         SDL_Event event;
         while ( SDL_PollEvent( &event ) ) {
             /** Translate into projectM codes and process */
-            evt = sdl2pmEvent( event );
-            if (!((event.type == SDL_KEYDOWN) || (event.type == SDL_KEYUP)))
-		continue;
+            evt = sdl2pmEvent( event );	  
 
             key = sdl2pmKeycode( event.key.keysym.sym );
             mod = sdl2pmModifier( event.key.keysym.mod );
 
             if ( evt == PROJECTM_KEYDOWN ) {                 
-	      printf("menu-imp\n");
-
+	   
 	      if(key == PROJECTM_K_f)
 		{
 		 
@@ -240,6 +237,9 @@ int worker_func(void*)
               }
 	    else if ( evt == PROJECTM_VIDEORESIZE )
 	      {
+
+	       
+
 		wvw=event.resize.w;
 		wvh=event.resize.h;
 	       

@@ -39,7 +39,7 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(fal
 
     int mindim = 0;
     int origtexsize = 0;
-    int usePbuffers = 1;
+    this->usePbuffers = 1;
 
     this->texsize=texsize;
 
