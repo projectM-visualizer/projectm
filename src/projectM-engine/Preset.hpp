@@ -137,7 +137,7 @@ private:
 
     void evalCustomWavePerFrameEquations();
     void evalCustomShapePerFrameEquations();
-    void evalInitConditions();
+    void evalPerFrameInitEquations();
     void evalCustomWaveInitConditions();
     void evalCustomShapeInitConditions();
     void evalPerPixelEqns();

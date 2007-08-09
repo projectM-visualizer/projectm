@@ -47,7 +47,7 @@ public:
     static char init_cond_string_buffer[STRING_BUFFER_SIZE];
     static int init_cond_string_buffer_index;
 
-    InitCond( Param * param, CValue init_val );
+    InitCond( Param * param, CValue init_val);
     ~InitCond();
     void evaluate();
 

@@ -65,11 +65,15 @@ Preset::~Preset()
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<Param> >(user_param_tree);
  
   /// @note We do not clear the actual container itself and instead let whoever initializes the preset inputs class to do it
-  for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
+  for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos) {
+    assert(pos->second);
     delete(pos->second);
+}
 
-  for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
+  for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos) {
+    assert(pos->second);
     delete(pos->second);
+  }
 
 }
 
@@ -170,12 +174,15 @@ void Preset::evalCustomWavePerFrameEquations()
   {
 
     std::map<std::string, InitCond*> & init_cond_tree = pos->second->init_cond_tree;
-    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos)
+    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos) {
+      assert(_pos->second);
       _pos->second->evaluate();
-
+}
     std::map<int, PerFrameEqn*> & per_frame_eqn_tree = pos->second->per_frame_eqn_tree;
-    for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
+    for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos) {
+	assert(_pos->second);
       _pos->second->evaluate();
+    }
   }
 
 }
@@ -187,32 +194,41 @@ void Preset::evalCustomShapePerFrameEquations()
   {
 
     std::map<std::string, InitCond*> & init_cond_tree = pos->second->init_cond_tree;
-    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos)
+    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos) {
+      assert(_pos->second);
       _pos->second->evaluate();
-
+}
     std::map<int, PerFrameEqn*> & per_frame_eqn_tree = pos->second->per_frame_eqn_tree;
-    for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
+    for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos) {
+      assert(_pos->second);
       _pos->second->evaluate();
+}
   }
 
 }
 
-void Preset::evalInitConditions()
+void Preset::evalPerFrameInitEquations()
 {
 
-  for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos)
+  for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos) {
+    assert(pos->second);
     pos->second->evaluate();
+}
 
 }
 
 void Preset::evalPerFrameEquations()
 {
 
-  for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos)
+  for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos) {
+    assert(pos->second);
     pos->second->evaluate();
+}
 
-  for (std::map<int, PerFrameEqn*>::iterator pos = per_frame_eqn_tree.begin(); pos != per_frame_eqn_tree.end(); ++pos)
+  for (std::map<int, PerFrameEqn*>::iterator pos = per_frame_eqn_tree.begin(); pos != per_frame_eqn_tree.end(); ++pos) {
+assert(pos->second);
     pos->second->evaluate();
+}
 
 }
 
@@ -262,16 +278,21 @@ void Preset::initialize(const std::string & pathname)
 void Preset::load_custom_wave_init_conditions()
 {
   
-  for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
+  for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos) {
+    assert(pos->second);
     pos->second->load_unspecified_init_conds();
+	
+}
 
 }
 
 void Preset::load_custom_shape_init_conditions()
 {
 
-  for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
+  for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos) {
+    assert(pos->second);
     pos->second->load_custom_shape_init();
+}
 }
 
 
@@ -282,10 +303,10 @@ void Preset::evaluateFrame()
 
   /* Evaluate all equation objects in same order as the renderer */
 
-  evalInitConditions();
+  evalPerFrameInitEquations();
   evalPerFrameEquations();
   evalPerPixelEqns();
-  evalInitConditions();
+  evalCustomWaveInitConditions();
   evalCustomShapeInitConditions();
   evalCustomWavePerFrameEquations();
   evalCustomShapePerFrameEquations();

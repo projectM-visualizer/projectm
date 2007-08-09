@@ -41,6 +41,8 @@ int InitCond::init_cond_string_buffer_index = 0;
 /* Creates a new initial condition */
 InitCond::InitCond( Param * param, CValue init_val ) {
 
+  assert(param);
+
   this->param = param;
   this->init_val = init_val;
 
