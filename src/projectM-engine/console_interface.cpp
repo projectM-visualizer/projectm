@@ -166,6 +166,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		if (((*m_presetPos) == m_presetChooser->end())) {
 			*m_presetPos = m_presetChooser->begin();
 		}
+		m_activePreset = std::auto_ptr<Preset>(0);
 
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
 	      break;

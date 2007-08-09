@@ -119,16 +119,8 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
     return PROJECTM_FAILURE;
   }
 
-  if (per_pixel_eqn_tree.empty())
-  {
-    index = 0;
-  }
-  else
-  {
-    std::map<int, PerPixelEqn*>::iterator lastPos = per_pixel_eqn_tree.end();
     index = per_pixel_eqn_tree.size();
-  }
-
+  
   /* Create the per pixel equation given the index, parameter, and general expression */
   if ((per_pixel_eqn = new PerPixelEqn(index, param, gen_expr)) == NULL)
   {

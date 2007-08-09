@@ -481,6 +481,14 @@ void CustomWave::evalPerPointEqns() {
 
   int x;
 
+  assert(samples > 0);
+  assert(r_mesh);
+assert(g_mesh);
+assert(b_mesh);
+assert(a_mesh);
+assert(x_mesh);
+assert(y_mesh);
+
   for (x = 0; x < samples; x++)
     r_mesh[x] = r;
   for (x = 0; x < samples; x++)
