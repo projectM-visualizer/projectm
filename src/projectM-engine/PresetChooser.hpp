@@ -184,6 +184,7 @@ inline PresetIterator PresetChooser::begin() {
 
 inline PresetIterator PresetChooser::end() const {
     PresetIterator pos(m_presetLoader->getNumPresets());
+    pos.setChooser(*this);
     return pos;
 }
 
