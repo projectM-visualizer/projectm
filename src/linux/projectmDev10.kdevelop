@@ -11,16 +11,16 @@
     <projectdirectory>../../</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
     <description></description>
-    <defaultencoding></defaultencoding>
-    <versioncontrol/>
+    <defaultencoding/>
+    <versioncontrol>kdevsubversion</versioncontrol>
   </general>
   <kdevcustomproject>
     <run>
       <directoryradio>custom</directoryradio>
       <mainprogram>/usr/local/bin/xmms</mainprogram>
       <programargs></programargs>
-      <globaldebugarguments></globaldebugarguments>
-      <globalcwd></globalcwd>
+      <globaldebugarguments/>
+      <globalcwd/>
       <useglobalprogram>false</useglobalprogram>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
@@ -52,9 +52,9 @@
     </build>
     <other>
       <prio>0</prio>
-      <otherbin></otherbin>
-      <defaulttarget></defaulttarget>
-      <otheroptions></otheroptions>
+      <otherbin/>
+      <defaulttarget/>
+      <otheroptions/>
       <selectedenvironment>default</selectedenvironment>
       <environments>
         <default/>
@@ -84,7 +84,7 @@
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
-      <programargs/>
+      <programargs></programargs>
     </general>
     <display>
       <staticmembers>true</staticmembers>
@@ -220,9 +220,9 @@
   </kdevfileview>
   <kdevdocumentation>
     <projectdoc>
-      <docsystem></docsystem>
-      <docurl></docurl>
-      <usermanualurl></usermanualurl>
+      <docsystem/>
+      <docurl/>
+      <usermanualurl/>
     </projectdoc>
   </kdevdocumentation>
   <ctagspart>

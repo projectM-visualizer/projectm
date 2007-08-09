@@ -78,8 +78,10 @@ Param::Param(std::string _name) :
     /** @@FIX THIS */
     /// @bug listen to above's advice! 
     /// @NOTE this is a hack, but will probably work fine
-    projectM::currentEngine->getCurrentMeshSize(this->gx, this->gy);
 
+    projectM::currentEngine->getCurrentMeshSize(this->gx, this->gy);
+    assert(this->gx > 0);
+    assert(this->gy > 0); 
    
 }
 

@@ -33,6 +33,7 @@
 #include <map>
 
 #include "wipemalloc.h"
+#include <cassert>
 
 char InitCond::init_cond_string_buffer[STRING_BUFFER_SIZE];
 int InitCond::init_cond_string_buffer_index = 0;
@@ -64,6 +65,8 @@ void InitCond::evaluate() {
 	 if (INIT_COND_DEBUG) {
         DWRITE( "init_cond: %s = %d (TYPE BOOL)\n", param->name.c_str(), init_val.bool_val); 
       }
+	assert(param->engine_val);
+
 	 *((int*)param->engine_val) = init_val.bool_val;
      return;
   }
