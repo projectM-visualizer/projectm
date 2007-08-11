@@ -71,8 +71,6 @@ public:
     }
 
 
-    void traverse(void (*func_ptr)(void*));
-
 private:
     static const bool BUILTIN_PARAMS_DEBUG = false;
 

@@ -51,7 +51,7 @@ public:
       if ((param = new Param(name)) == NULL)
         return NULL;
 
-      /* Finally, insert the new parameter into this preset's proper splaytree */
+      /* Finally, insert the new parameter into this preset's parameter tree */
       std::pair<std::map<std::string,Param*>::iterator, bool>  insertRetPair = 
 		paramTree->insert(std::make_pair(param->name, param));
 
@@ -87,14 +87,14 @@ public:
   class LoadInitCondFunctor
   {
   public:
-    LoadInitCondFunctor(Preset * preset) :m_preset(preset) {}
+    LoadInitCondFunctor(Preset * preset) :m_preset(preset) {assert(preset);}
 
     void operator() (Param * param)
     {
 
       InitCond * init_cond;
       CValue init_val;
-
+      assert(param);
       /* Don't count read only parameters as initial conditions */
       if (param->flags & P_FLAG_READONLY)
         return;

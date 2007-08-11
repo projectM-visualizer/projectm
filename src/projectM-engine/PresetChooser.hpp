@@ -68,12 +68,11 @@ public:
     /// \note The preset loader is refreshed via events or otherwise outside this class's scope
     PresetChooser(const PresetLoader & presetLoader);
 
-
     /// Choose a preset via the passed in index. Must be between 0 and num valid presets in directory
     /// \param index An index lying in the interval [0, this->getNumPresets()]
     /// \param presetInputs the preset inputs to associate with the preset upon construction
     /// \param presetOutputs the preset outputs to associate with the preset upon construction
-   std::auto_ptr<Preset> directoryIndex(std::size_t index, const PresetInputs & presetInputs,
+    std::auto_ptr<Preset> directoryIndex(std::size_t index, const PresetInputs & presetInputs,
                                          PresetOutputs & presetOutputs) const;
 
     /// Gets the number of presets last believed to exist in the preset loader's filename collection
@@ -90,11 +89,10 @@ public:
 
         /// Returns uniform (fixed) probability for any index
 	/// \param index the index position of the preset to load
-        float  operator() (std::size_t index) const;
+        float operator() (std::size_t index) const;
 
     private:
         std::size_t m_collectionSize;
-
     };
 
 
@@ -110,7 +108,7 @@ public:
     /// \param presetInputs the preset inputs to associate with the preset upon construction
     /// \param presetOutputs the preset outputs to associate with the preset upon construction
     /// \param WeightFuncstor a functor that returns a probability for each index (see UniformRandomFunctor)
-    /// \returns an pointer of the newly allocated preset - you must free this object!
+    /// \returns an auto pointer of the newly allocated preset
     template <class WeightFunctor>
     std::auto_ptr<Preset> weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs, WeightFunctor & weightFunctor);
 
@@ -119,7 +117,7 @@ public:
     /// \param presetInputs the preset inputs to associate with the preset upon construction
     /// \param presetOutputs the preset outputs to associate with the preset upon construction
     /// \param WeightFunctor a functor that returns a probability for each index (see UniformRandomFunctor)
-    /// \returns a pointer of the newly allocated preset - you must free this object!
+    /// \returns an auto pointer of the newly allocated preset
     template <class WeightFunctor>
     std::auto_ptr<Preset> weightedRandom(const PresetInputs & presetInputs, PresetOutputs & preseOutputs);
 

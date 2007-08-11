@@ -33,7 +33,7 @@
 #include <string>
 #include <cassert>
 
-#define PRESET_DEBUG 2 /* 0 for no debugging, 1 for normal, 2 for insane */
+#define PRESET_DEBUG 0 /* 0 for no debugging, 1 for normal, 2 for insane */
 
 #include "CustomShape.hpp"
 #include "CustomWave.hpp"
@@ -61,9 +61,9 @@ protected:
 public:
 
     ///  Load a preset by filename with input and output buffers specified.
-    ///  This is the only poper way to allocate a new preset. 
+    ///  This is the only proper way to allocate a new preset. 
     /// \param filename the absolute file path of a preset to load from the file system
-    /// \param presetInputs a const reference to only read only projectM engine variables
+    /// \param presetInputs a const reference to read only projectM engine variables
     /// \param presetOutputs initialized and filled with data parsed from a preset
     Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
@@ -113,9 +113,7 @@ public:
     InitCond *get_init_cond( Param *param );
 
     void load_custom_wave_init_conditions();
-    void load_custom_wave_init( CustomWave *customWave );
     void load_custom_shape_init_conditions();
-    void load_custom_shape_init( CustomShape *customShape );
     
 
     int load_preset_file(const char * pathname);
@@ -143,6 +141,7 @@ private:
     void evalPerPixelEqns();
     void evalPerFrameEquations();
     void initialize(const std::string & pathname);
+    void loadUnspecInitConds();
 
     PresetOutputs & m_presetOutputs;
 };

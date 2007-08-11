@@ -34,22 +34,19 @@
 
 #include "wipemalloc.h"
 #include <cassert>
+#include <iostream>
 
 char InitCond::init_cond_string_buffer[STRING_BUFFER_SIZE];
 int InitCond::init_cond_string_buffer_index = 0;
 
 /* Creates a new initial condition */
-InitCond::InitCond( Param * param, CValue init_val ) {
+InitCond::InitCond( Param * _param, CValue _init_val ):param(_param), init_val(_init_val) {
 
+
+  std::cerr <<  "InitCond::InitCond: " << this->param->name << std::endl;
+ 
   assert(param);
-
-  this->param = param;
-  this->init_val = init_val;
-
-  if ( INIT_COND_DEBUG ) {
-    DWRITE( "InitCond::InitCond: %s -> %X -> %X\n", 
-             this->param->name.c_str(), this->param, this->param->engine_val );
-  }
+  assert(param->engine_val);
 }
 
 /* Frees initial condition structure */
@@ -58,29 +55,35 @@ InitCond::~InitCond() {}
 /* Evaluate an initial conditon */
 void InitCond::evaluate() {
 
+
+
+   assert(this);
+
   /* Parameter is of boolean type, either a 1 or 0 value integer */
   /* Set matrix flag to zero. This ensures
      its constant value will be used rather than a matrix value 
   */
+
   param->matrix_flag = 0;
   if (param->type == P_TYPE_BOOL) {
-	 if (INIT_COND_DEBUG) {
-        DWRITE( "init_cond: %s = %d (TYPE BOOL)\n", param->name.c_str(), init_val.bool_val); 
-      }
+
+        printf( "init_cond: %s = %d (TYPE BOOL)\n", param->name.c_str(), init_val.bool_val); 
+      
+	
 	assert(param->engine_val);
 
 	 *((int*)param->engine_val) = init_val.bool_val;
+
      return;
   }
   
   /* Parameter is an integer type, just like C */
   
   if ( param->type == P_TYPE_INT) {
-    if ((param->name == "wave_mode") == 0 ) {
-      }
 	 if (INIT_COND_DEBUG) {
         DWRITE( "init_cond: %s = %d (TYPE INT)\n", param->name.c_str(), init_val.int_val);
      }
+	assert(param->engine_val);
 	 *((int*)param->engine_val) = init_val.int_val;
      return;
   }
@@ -93,6 +96,7 @@ void InitCond::evaluate() {
 	            init_val.float_val, *((float *)param->engine_val),
 	            param, param->engine_val );
 	  }
+	assert(param->engine_val);
 	*((float*)param->engine_val) = init_val.float_val;
     return;
   }
@@ -130,8 +134,7 @@ void InitCond::init_cond_to_string() {
 	if ((init_cond_string_buffer_index + string_length + 1)  > (STRING_BUFFER_SIZE - 1))
 		return;
 	
-	/* Copy the string into the initial condition string buffer */
-	
+	/* Copy the string into the initial condition string buffer */	
 	strncpy(init_cond_string_buffer + init_cond_string_buffer_index, string, string_length);
 	
 	/* Increment the string buffer, offset by one for the null terminator, which will be

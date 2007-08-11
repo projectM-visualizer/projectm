@@ -23,6 +23,9 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
     InitCond * init_cond;
     CValue init_val;
 
+    assert(param);
+    assert(param->engine_val);
+
     /* Don't count these parameters as initial conditions */
     if (param->flags & P_FLAG_READONLY)
         return;
@@ -58,7 +61,7 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
             return;
 
         /* Insert the initial condition into this presets tree */
-	/// @bug check the reult status of insert
+	/// @bug check the result status of insert
 	m_initCondTree.insert(std::make_pair(init_cond->param->name, init_cond));
 
     }

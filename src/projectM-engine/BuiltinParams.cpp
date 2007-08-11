@@ -4,6 +4,7 @@
 #include "projectM.hpp"
 #include <cassert>
 #include "Algorithms.hpp"
+#include "InitCondUtils.hpp"
 #include <iostream>
 
 using namespace Algorithms;
@@ -190,7 +191,7 @@ int BuiltinParams::load_builtin_param_bool(char * name, void * engine_val, short
 
   iv.int_val = init_val;
   ub.int_val = TRUE;
-  lb.int_val = FALSE;
+  lb.int_val = false;
 
   param = new Param(name, P_TYPE_BOOL, flags, engine_val, NULL, iv, ub, lb);
 
@@ -272,19 +273,19 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_int("echo_orient", (void*)&presetOutputs.nVideoEchoOrientation, P_FLAG_NONE, 0, 3, 0, "nVideoEchoOrientation");
   load_builtin_param_int("wave_mode", (void*)&presetOutputs.nWaveMode, P_FLAG_NONE, 0, 7, 0, "nWaveMode");
 
-  load_builtin_param_bool("wave_additive", (void*)&presetOutputs.bAdditiveWaves, P_FLAG_NONE, FALSE, "bAdditiveWaves");
-  load_builtin_param_bool("bModWaveAlphaByVolume", (void*)&presetOutputs.bModWaveAlphaByVolume, P_FLAG_NONE, FALSE, NULL);
-  load_builtin_param_bool("wave_brighten", (void*)&presetOutputs.bMaximizeWaveColor, P_FLAG_NONE, FALSE, "bMaximizeWaveColor");
-  load_builtin_param_bool("wrap", (void*)&presetOutputs.bTexWrap, P_FLAG_NONE, FALSE, "bTexWrap");
-  load_builtin_param_bool("darken_center", (void*)&presetOutputs.bDarkenCenter, P_FLAG_NONE, FALSE, "bDarkenCenter");
-  load_builtin_param_bool("bRedBlueStereo", (void*)&presetOutputs.bRedBlueStereo, P_FLAG_NONE, FALSE, NULL);
-  load_builtin_param_bool("brighten", (void*)&presetOutputs.bBrighten, P_FLAG_NONE, FALSE, "bBrighten");
-  load_builtin_param_bool("darken", (void*)&presetOutputs.bDarken, P_FLAG_NONE, FALSE, "bDarken");
-  load_builtin_param_bool("solarize", (void*)&presetOutputs.bSolarize, P_FLAG_NONE, FALSE, "bSolarize");
-  load_builtin_param_bool("invert", (void*)&presetOutputs.bInvert, P_FLAG_NONE, FALSE, "bInvert");
-  load_builtin_param_bool("bMotionVectorsOn", (void*)&presetOutputs.bMotionVectorsOn, P_FLAG_NONE, FALSE, NULL);
-  load_builtin_param_bool("wave_dots", (void*)&presetOutputs.bWaveDots, P_FLAG_NONE, FALSE, "bWaveDots");
-  load_builtin_param_bool("wave_thick", (void*)&presetOutputs.bWaveThick, P_FLAG_NONE, FALSE, "bWaveThick");
+  load_builtin_param_bool("wave_additive", (void*)&presetOutputs.bAdditiveWaves, P_FLAG_NONE, false, "bAdditiveWaves");
+  load_builtin_param_bool("bModWaveAlphaByVolume", (void*)&presetOutputs.bModWaveAlphaByVolume, P_FLAG_NONE, false, NULL);
+  load_builtin_param_bool("wave_brighten", (void*)&presetOutputs.bMaximizeWaveColor, P_FLAG_NONE, false, "bMaximizeWaveColor");
+  load_builtin_param_bool("wrap", (void*)&presetOutputs.bTexWrap, P_FLAG_NONE, false, "bTexWrap");
+  load_builtin_param_bool("darken_center", (void*)&presetOutputs.bDarkenCenter, P_FLAG_NONE, false, "bDarkenCenter");
+  load_builtin_param_bool("bRedBlueStereo", (void*)&presetOutputs.bRedBlueStereo, P_FLAG_NONE, false, NULL);
+  load_builtin_param_bool("brighten", (void*)&presetOutputs.bBrighten, P_FLAG_NONE, false, "bBrighten");
+  load_builtin_param_bool("darken", (void*)&presetOutputs.bDarken, P_FLAG_NONE, false, "bDarken");
+  load_builtin_param_bool("solarize", (void*)&presetOutputs.bSolarize, P_FLAG_NONE, false, "bSolarize");
+  load_builtin_param_bool("invert", (void*)&presetOutputs.bInvert, P_FLAG_NONE, false, "bInvert");
+  load_builtin_param_bool("bMotionVectorsOn", (void*)&presetOutputs.bMotionVectorsOn, P_FLAG_NONE, false, NULL);
+  load_builtin_param_bool("wave_dots", (void*)&presetOutputs.bWaveDots, P_FLAG_NONE, false, "bWaveDots");
+  load_builtin_param_bool("wave_thick", (void*)&presetOutputs.bWaveThick, P_FLAG_NONE, false, "bWaveThick");
 
   load_builtin_param_float("zoom", (void*)&presetOutputs.zoom, presetOutputs.zoom_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, NULL);
   load_builtin_param_float("rot", (void*)&presetOutputs.rot, presetOutputs.rot_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, NULL);
@@ -365,3 +366,4 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   return PROJECTM_SUCCESS;
 
 }
+

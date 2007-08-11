@@ -162,7 +162,6 @@ void PCM::addPCM16(short PCMdata[2][512])
              PCMd[1][j % maxsamples] = (float)0;
           }
 	   }
-       
  
 	 // printf("Added %d samples %d %d %f\n",samples,start,(start+samples)%maxsamples,PCM[0][start+10]); 
 
@@ -261,10 +260,7 @@ void PCM::getPCM(float *PCMdata, int samples, int channel, int freq, float smoot
        rdft(samples, 1, temppcm, ip, w);
        for (int j=0;j<samples;j++)
 	 {PCMdata[j]=(float)temppcm[j];}
-      
-    
      }
-    
 
    
 }
@@ -284,7 +280,6 @@ int PCM::getPCMnew(float *PCMdata, int channel, int freq, float smoothing, int d
    if (index<0) index=maxsamples+index;
 
    PCMdata[0]=PCMd[channel][index];
-   
    for(i=1;i<newsamples;i++)
      {
        index=start-1-i;

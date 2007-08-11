@@ -1,14 +1,13 @@
 #ifndef PRESET_FRAME_IO_HPP
 #define PRESET_FRAME_IO_HPP
 #include <map>
-
 class CustomWave;
 class CustomShape;
 
 
-/** Container for all preset writeable engine variables. It's a struct
- * so that it's light weight. Access is done directly on
- * members for Mr. Sperl's convenience */
+/// Container class for all preset writeable engine variables. This is the important glue 
+/// between the presets and renderer to facilitate smooth preset switching
+/// Every preset object needs a reference to one of these.
 class PresetOutputs {
 public:
     typedef std::map<int, CustomWave*> cwave_container;
@@ -137,9 +136,8 @@ public:
 
 };
 
-/** Container for all *read only* engine variables. It's a struct
- * so that it's light weight. Access is done directly on
- * members for Mr. Sperl's convenience */
+/// Container for all *read only* engine variables a preset requires to 
+/// evaluate milkdrop equations. Every preset object needs a reference to one of these.
 class PresetInputs {
 
 public:

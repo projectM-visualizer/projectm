@@ -1,7 +1,7 @@
 #ifndef PROJECTM_ALGORITHMS_HPP
 #define PROJECTM_ALGORITHMS_HPP
 #include <cassert>
-
+/// A collection of algorithms generically written over map style containers
 namespace Algorithms
 {
 
@@ -13,6 +13,7 @@ namespace Algorithms
 
     for (typename Container::iterator pos = container.begin(); pos != container.end(); ++pos)
     {
+      assert(pos->second);
       functor(pos->second);
     }
 
@@ -25,6 +26,7 @@ namespace Algorithms
 
     for (typename Container::iterator pos = container.begin(); pos != container.end(); ++pos)
     {
+      assert(pos->second);
       functor(pos->second);
     }
 

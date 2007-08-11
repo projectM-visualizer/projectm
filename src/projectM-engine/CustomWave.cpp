@@ -384,7 +384,7 @@ CustomWave::CustomWave(int _id):
 CustomWave::~CustomWave() {
 
   
-  for (std::map<int, PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end(); ++pos)
+  for (std::map<int, PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end(); ++pos) 
   	delete(pos->second);
 
   for (std::map<int, PerFrameEqn*>::iterator pos = per_frame_eqn_tree.begin(); pos != per_frame_eqn_tree.end(); ++pos)
@@ -408,16 +408,6 @@ CustomWave::~CustomWave() {
   free(value1);
   free(value2);
   free(sample_mesh);
-
-  r_mesh = NULL;
-  g_mesh = NULL;
-  b_mesh = NULL;
-  a_mesh = NULL;
-  x_mesh = NULL;
-  y_mesh = NULL;
-  value1 = NULL;
-  value2 = NULL;
-  sample_mesh = NULL;
 
 
 }

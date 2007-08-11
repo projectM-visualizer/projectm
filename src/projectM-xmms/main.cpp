@@ -367,7 +367,8 @@ extern "C" void projectM_playback_stop(void)
 extern "C" void projectM_render_pcm(gint16 pcm_data[2][512])
 {
   	SDL_mutexP(mutex);
-       
+      
+       	/// @bug sperl: might want to look at this. crashes here sometimes 
         globalPM->beatDetect->pcm->addPCM16(pcm_data);
 	 
 	SDL_mutexV(mutex);

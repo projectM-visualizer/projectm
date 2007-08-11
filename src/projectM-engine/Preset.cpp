@@ -32,6 +32,7 @@
 #include "Preset.hpp"
 #include "Parser.hpp"
 #include "ParamUtils.hpp"
+#include "InitCondUtils.hpp"
 #include "fatal.h"
 #include <iostream>
 
@@ -40,37 +41,39 @@ Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, 
     builtinParams(presetInputs, presetOutputs),
     customWaves(&presetOutputs.customWaves),
     customShapes(&presetOutputs.customShapes),
-    m_presetOutputs(presetOutputs) {
+    m_presetOutputs(presetOutputs)
+{
 
-     customWaves->clear(); 
-     customShapes->clear();
-     clearMeshChecks();
+  customWaves->clear();
+  customShapes->clear();
+  clearMeshChecks();
 
-     initialize(filename);
+  initialize(filename);
 
 }
 
 Preset::~Preset()
 {
-  std::cout << "Preset destructor!" << std::endl;
 
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(init_cond_tree);
 
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(per_frame_init_eqn_tree);
 
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<PerPixelEqn> >(per_pixel_eqn_tree);
- 
+
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<PerFrameEqn> >(per_frame_eqn_tree);
- 
+
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<Param> >(user_param_tree);
- 
+
   /// @note We do not clear the actual container itself and instead let whoever initializes the preset inputs class to do it
-  for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos) {
+  for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
+  {
     assert(pos->second);
     delete(pos->second);
-}
+  }
 
-  for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos) {
+  for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
+  {
     assert(pos->second);
     delete(pos->second);
   }
@@ -87,11 +90,8 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
   int index;
   Param * param = NULL;
 
-  /* Argument checks */
-  if (gen_expr == NULL)
-    return PROJECTM_FAILURE;
-  if (name == NULL)
-    return PROJECTM_FAILURE;
+  assert(gen_expr);
+  assert(name);
 
   if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: per pixel equation (name = \"%s\")\n", name);
 
@@ -123,8 +123,8 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
     return PROJECTM_FAILURE;
   }
 
-    index = per_pixel_eqn_tree.size();
-  
+  index = per_pixel_eqn_tree.size();
+
   /* Create the per pixel equation given the index, parameter, and general expression */
   if ((per_pixel_eqn = new PerPixelEqn(index, param, gen_expr)) == NULL)
   {
@@ -174,13 +174,15 @@ void Preset::evalCustomWavePerFrameEquations()
   {
 
     std::map<std::string, InitCond*> & init_cond_tree = pos->second->init_cond_tree;
-    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos) {
+    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos)
+    {
       assert(_pos->second);
       _pos->second->evaluate();
-}
+    }
     std::map<int, PerFrameEqn*> & per_frame_eqn_tree = pos->second->per_frame_eqn_tree;
-    for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos) {
-	assert(_pos->second);
+    for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
+    {
+      assert(_pos->second);
       _pos->second->evaluate();
     }
   }
@@ -194,15 +196,17 @@ void Preset::evalCustomShapePerFrameEquations()
   {
 
     std::map<std::string, InitCond*> & init_cond_tree = pos->second->init_cond_tree;
-    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos) {
+    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos)
+    {
       assert(_pos->second);
       _pos->second->evaluate();
-}
+    }
     std::map<int, PerFrameEqn*> & per_frame_eqn_tree = pos->second->per_frame_eqn_tree;
-    for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos) {
+    for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
+    {
       assert(_pos->second);
       _pos->second->evaluate();
-}
+    }
   }
 
 }
@@ -210,25 +214,28 @@ void Preset::evalCustomShapePerFrameEquations()
 void Preset::evalPerFrameInitEquations()
 {
 
-  for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos) {
+  for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos)
+  {
     assert(pos->second);
     pos->second->evaluate();
-}
+  }
 
 }
 
 void Preset::evalPerFrameEquations()
 {
 
-  for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos) {
+  for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos)
+  {
     assert(pos->second);
     pos->second->evaluate();
-}
+  }
 
-  for (std::map<int, PerFrameEqn*>::iterator pos = per_frame_eqn_tree.begin(); pos != per_frame_eqn_tree.end(); ++pos) {
-assert(pos->second);
+  for (std::map<int, PerFrameEqn*>::iterator pos = per_frame_eqn_tree.begin(); pos != per_frame_eqn_tree.end(); ++pos)
+  {
+    assert(pos->second);
     pos->second->evaluate();
-}
+  }
 
 }
 
@@ -236,7 +243,7 @@ assert(pos->second);
 void Preset::initialize(const std::string & pathname)
 {
 
-  // Clear equation trees 
+  // Clear equation trees
   /// @slow unnecessary if we ensure this method is private
   init_cond_tree.clear();
   user_param_tree.clear();
@@ -255,13 +262,13 @@ void Preset::initialize(const std::string & pathname)
   memset(this->per_frame_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
   memset(this->per_frame_init_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
   int retval;
-  
+
   if ((retval = load_preset_file(pathname.c_str())) < 0)
   {
 
 #ifdef PRESET_DEBUG
-    if (PRESET_DEBUG) std::cerr << "[Preset] failed to load file \"" << 
-	pathname << "\"!" << std::endl;
+    if (PRESET_DEBUG) std::cerr << "[Preset] failed to load file \"" <<
+      pathname << "\"!" << std::endl;
 #endif
     //this->close_preset();
     /// @bug how should we handle this problem? a well define exception?
@@ -272,27 +279,39 @@ void Preset::initialize(const std::string & pathname)
   this->per_frame_eqn_count = 0;
   this->per_frame_init_eqn_count = 0;
 
+  this->loadUnspecInitConds();
+  this->load_custom_wave_init_conditions();
+  this->load_custom_shape_init_conditions();
 }
 
 
+void Preset::loadUnspecInitConds() {
+
+
+  InitCondUtils::LoadUnspecInitCond loadUnspecInitCond(this->init_cond_tree, this->per_frame_init_eqn_tree);
+
+  this->builtinParams.traverse(loadUnspecInitCond);
+
+}
 void Preset::load_custom_wave_init_conditions()
 {
-  
-  for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos) {
+
+  for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
+  {
     assert(pos->second);
     pos->second->load_unspecified_init_conds();
-	
-}
+  }
 
 }
 
 void Preset::load_custom_shape_init_conditions()
 {
 
-  for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos) {
+  for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
+  {
     assert(pos->second);
     pos->second->load_custom_shape_init();
-}
+  }
 }
 
 
@@ -317,7 +336,7 @@ void Preset::evaluateFrame()
 void Preset::evalPerPixelEqns()
 {
 
-  /* Evaluate all per pixel equations using splay traversal */
+  /* Evaluate all per pixel equations in the tree datastructure */
   for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin();
        pos != per_pixel_eqn_tree.end(); ++pos)
     pos->second->evaluate();
@@ -368,7 +387,7 @@ InitCond * Preset::get_init_cond( Param *param )
 
 }
 
-/* load_preset_file: private function that loads a specific preset denoted
+/* preset_file: private function that loads a specific preset denoted
    by the given pathname */
 int Preset::load_preset_file(const char * pathname)
 {
