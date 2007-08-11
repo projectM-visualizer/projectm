@@ -56,7 +56,7 @@ this->origy2=(float **)wipemalloc(gx * sizeof(float *));
       this->origy2[x] = (float *)wipemalloc(gy * sizeof(float));
     }
 
- 
+ printf("[%d, %d, tex:%d]",gx,gy, renderTarget->texsize);
   //initialize reference grid values
   for (x=0;x<gx;x++)
     {
@@ -65,10 +65,11 @@ this->origy2=(float **)wipemalloc(gx * sizeof(float *));
 
            float origx=x/(float)(gx-1);
 	   float origy=-((y/(float)(gy-1))-1);
-	   this->gridx[x][y]=origx*renderTarget->texsize;
-	   this->gridy[x][y]=origy*renderTarget->texsize;
+	   this->gridx[x][y]=origx                      ;
+	   this->gridy[x][y]=origy                   ;
 	   this->origx2[x][y]=( origx-.5)*2;
 	   this->origy2[x][y]=( origy-.5)*2;
+	   printf("(%f,%f:%f,%f)",origx,origy,this->gridx[x][y],this->gridy[x][y]);
 	}}
 
 this->renderTarget = renderTarget;
@@ -143,8 +144,8 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     	//unlockPBuffer( this->renderTarget);
     	//lockPBuffer( this->renderTarget, PBUFFER_PASS1 );
       }
-    PerFrame(presetOutputs);               //apply per-frame effects
-    Interpolation(presetOutputs,presetInputs);       //apply per-pixel effects
+     PerFrame(presetOutputs);               //apply per-frame effects
+     Interpolation(presetOutputs,presetInputs);       //apply per-pixel effects
    
         draw_title_to_texture();      //draw title to texture
 
@@ -156,7 +157,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
       draw_custom_waves(presetOutputs);
     draw_waveform(presetOutputs, presetInputs);
     if(presetOutputs->bDarkenCenter)darken_center();
-    draw_borders(presetOutputs);               //draw borders
+    // draw_borders(presetOutputs);               //draw borders
 
     /** Restore original view state */
     glMatrixMode( GL_MODELVIEW );
@@ -204,9 +205,8 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 
       glLineWidth( this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512.0);
-      //if(this->studio%2)render_texture_to_studio();
-      //else 
-      render_texture_to_screen(presetOutputs);
+      if(this->studio%2)render_texture_to_studio(presetOutputs, presetInputs);
+      else render_texture_to_screen(presetOutputs);
 
       // glClear(GL_COLOR_BUFFER_BIT);     
       //render_Studio();
@@ -231,45 +231,33 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 
 void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 {
-   int x,y;  
-  
+  //int x,y;  
+   
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glTranslated( 0, 0, -1 );
   
     glColor4f(0.0, 0.0, 0.0,presetOutputs->decay);
-    
+  
     glEnable(GL_TEXTURE_2D);
     
-#ifdef MACOS2
-    /** Bind the stashed texture */
-    if ( this->renderTarget->pbuffer != NULL ) {
-       glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID[0] );
-#ifdef DEBUG
-        if ( glGetError() ) {
-            DWRITE( "failed to bind texture\n" );
-          }
-#endif
-      }
-#endif
+
     
-  for (x=0;x<presetInputs->gx - 1;x++){
+  for (int x=0;x<presetInputs->gx - 1;x++){
     glBegin(GL_TRIANGLE_STRIP);
-    for(y=0;y<presetInputs->gy;y++){
+    for(int y=0;y<presetInputs->gy;y++){
       glTexCoord2f(presetInputs->x_mesh[x][y], presetInputs->y_mesh[x][y]); 
-      glVertex2f(this->gridx[x][y], this->gridy[x][y]);
+      glVertex2f(this->gridx[x][y], this->gridy[x][y]);         
       glTexCoord2f(presetInputs->x_mesh[x+1][y], presetInputs->y_mesh[x+1][y]); 
       glVertex2f(this->gridx[x+1][y], this->gridy[x+1][y]);
     }
     glEnd();	
   }
 
-#ifdef MACOS2
+
     /** Re-bind the pbuffer */
-    if ( this->renderTarget->pbuffer != NULL ) {
-      glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID[0] );
-      }
-#endif
+  
+      
 
     glDisable(GL_TEXTURE_2D);
 
@@ -1794,8 +1782,8 @@ void Renderer::render_texture_to_screen(PresetOutputs *presetOutputs) {
 	  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 	} 
 }
-/*
-void Renderer::render_texture_to_studio() { 
+
+void Renderer::render_texture_to_studio(PresetOutputs *presetOutputs, PresetInputs *presetInputs) { 
 
       int x,y;
       int flipx=1,flipy=1;
@@ -1993,5 +1981,5 @@ void Renderer::render_texture_to_studio() {
    glDisable(GL_TEXTURE_2D);
 }
 
-*/
+
 
