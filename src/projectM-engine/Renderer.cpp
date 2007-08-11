@@ -156,7 +156,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
       draw_custom_waves(presetOutputs);
     draw_waveform(presetOutputs, presetInputs);
     if(presetOutputs->bDarkenCenter)darken_center();
-    // draw_borders(presetOutputs);               //draw borders
+     draw_borders(presetOutputs);               //draw borders
 
     /** Restore original view state */
     glMatrixMode( GL_MODELVIEW );
