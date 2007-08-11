@@ -56,7 +56,6 @@ this->origy2=(float **)wipemalloc(gx * sizeof(float *));
       this->origy2[x] = (float *)wipemalloc(gy * sizeof(float));
     }
 
- printf("[%d, %d, tex:%d]",gx,gy, renderTarget->texsize);
   //initialize reference grid values
   for (x=0;x<gx;x++)
     {
@@ -65,11 +64,11 @@ this->origy2=(float **)wipemalloc(gx * sizeof(float *));
 
            float origx=x/(float)(gx-1);
 	   float origy=-((y/(float)(gy-1))-1);
-	   this->gridx[x][y]=origx                      ;
-	   this->gridy[x][y]=origy                   ;
+	   this->gridx[x][y]=origx;
+	   this->gridy[x][y]=origy;
 	   this->origx2[x][y]=( origx-.5)*2;
 	   this->origy2[x][y]=( origy-.5)*2;
-	   printf("(%f,%f:%f,%f)",origx,origy,this->gridx[x][y],this->gridy[x][y]);
+	   
 	}}
 
 this->renderTarget = renderTarget;
