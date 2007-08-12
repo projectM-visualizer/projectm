@@ -5,8 +5,8 @@
 class PresetMerger 
 {
 public:
-    void MergePresets(PresetOutputs *A, const PresetOutputs *B, double ratio);
-
+  static void MergePresets(PresetOutputs & A,  PresetOutputs & B, double ratio, int gx, int gy);
+  static void mergeMesh(bool & isMeshA, bool & isMeshB, float & varA, float & varB,  float** meshA, float** meshB, int gx, int gy, float ratio);
 };
 
 #endif
