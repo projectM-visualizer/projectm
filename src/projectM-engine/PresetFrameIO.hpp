@@ -133,6 +133,9 @@ public:
     bool cx_is_mesh;
     bool cy_is_mesh;
 
+    float **x_mesh;
+    float **y_mesh;
+
 
 };
 

@@ -15,7 +15,6 @@ void PresetInputs::Initialize ( int gx, int gy )
 	this->gy=gy;
 	std::cerr << "Allocating x_mesh, gx,gy is " << gx << "," << gy << std::endl;
 	this->x_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	assert ( x_mesh );
 	for ( x = 0; x < gx; x++ )
 	{
 		this->x_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
@@ -79,6 +78,16 @@ void PresetOutputs::Initialize ( int gx, int gy )
 {
 
 	int x;
+	this->x_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
+	for ( x = 0; x < gx; x++ )
+	{
+		this->x_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
+	}
+	this->y_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
+	for ( x = 0; x < gx; x++ )
+	{
+		this->y_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
+	}
 	this->sx_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
 	for ( x = 0; x < gx; x++ )
 	{

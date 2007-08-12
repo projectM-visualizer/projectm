@@ -134,6 +134,8 @@ public:
     int pcmframes;
     int freqframes;
 
+  
+  int smoothFrame;
  
     GLubyte *fbuffer;
 
@@ -230,6 +232,7 @@ public:
 
 	// Currently loaded preset- will be fancier when smooth preset switching
 	std::auto_ptr<Preset> m_activePreset;
+	std::auto_ptr<Preset> m_activePreset2;
 
   /** All readonly variables 
      *  which are passed as inputs 
@@ -239,5 +242,6 @@ public:
     /** The presets modify these values. For now this is declared on stack
      * but might be better on heap for sake of smooth preset switching */
     PresetOutputs presetOutputs;
+    PresetOutputs presetOutputs2;
 };
 #endif

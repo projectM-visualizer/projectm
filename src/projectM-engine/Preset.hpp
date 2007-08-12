@@ -59,7 +59,7 @@ protected:
 
 
 public:
-
+  PresetOutputs & m_presetOutputs;
     ///  Load a preset by filename with input and output buffers specified.
     ///  This is the only proper way to allocate a new preset. 
     /// \param filename the absolute file path of a preset to load from the file system
@@ -143,7 +143,7 @@ private:
     void initialize(const std::string & pathname);
     void loadUnspecInitConds();
 
-    PresetOutputs & m_presetOutputs;
+    
 };
 
 template <class CustomObject>

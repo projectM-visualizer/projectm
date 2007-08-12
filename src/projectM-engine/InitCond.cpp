@@ -43,7 +43,7 @@ int InitCond::init_cond_string_buffer_index = 0;
 InitCond::InitCond( Param * _param, CValue _init_val ):param(_param), init_val(_init_val) {
 
 
-  std::cerr <<  "InitCond::InitCond: " << this->param->name << std::endl;
+  //  std::cerr <<  "InitCond::InitCond: " << this->param->name << std::endl;
  
   assert(param);
   assert(param->engine_val);
@@ -67,7 +67,7 @@ void InitCond::evaluate() {
   param->matrix_flag = 0;
   if (param->type == P_TYPE_BOOL) {
 
-        printf( "init_cond: %s = %d (TYPE BOOL)\n", param->name.c_str(), init_val.bool_val); 
+    //        printf( "init_cond: %s = %d (TYPE BOOL)\n", param->name.c_str(), init_val.bool_val); 
       
 	
 	assert(param->engine_val);

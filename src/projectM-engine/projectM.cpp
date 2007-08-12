@@ -42,11 +42,13 @@
 #include "Parser.hpp"
 #include "Preset.hpp"
 #include "PerPixelEqn.hpp"
+#include "PresetMerge.hpp"
 //#include "menu.h"
 #include "PCM.hpp"                    //Sound data handler (buffering, FFT, etc.)
 #include "CustomWave.hpp"
 #include "CustomShape.hpp"
 #include <map>
+
 #include "Renderer.hpp"
 #include "PresetChooser.hpp"
 
@@ -71,6 +73,9 @@ projectM *projectM::currentEngine = NULL;
 RenderTarget * projectM::renderTarget = NULL;
 Renderer * projectM::renderer = NULL;
 
+float smoothTime = 5;
+//int smoothFrame = 0;
+int oldFrame = 0;
 
 DLLEXPORT projectM::projectM() :beatDetect ( 0 )
 {
@@ -81,44 +86,43 @@ DLLEXPORT projectM::projectM() :beatDetect ( 0 )
 DLLEXPORT void projectM::renderFrame()
 {
 
-#ifdef DEBUG
-	char fname[1024];
-	FILE *f = NULL;
-	int index = 0;
-	int x, y;
+#ifdef DEBUG 
+  char fname[1024];
+  FILE *f = NULL;
+  int index = 0;
+  int x, y;
 #endif
-
-//     printf("Start of loop at %d\n",timestart);
-	mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps ); //milliseconds per frame
-
-
+  
+  //     printf("Start of loop at %d\n",timestart);
+  mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps ); //milliseconds per frame
+  
+  
 #ifndef WIN32
-	presetInputs.time = getTicks ( &startTime ) * 0.001;
+  presetInputs.time = getTicks ( &startTime ) * 0.001;
 #else
-	presetInputs.time = getTicks ( startTime ) * 0.001;
+  presetInputs.time = getTicks ( startTime ) * 0.001;
 #endif /** !WIN32 */
-
-	presetInputs.frame++;  //number of frames for current preset
-	presetInputs.progress= presetInputs.frame/ ( float ) avgtime;
-	DWRITE ( "frame: %d\ttime: %f\tprogress: %f\tavgtime: %d\tang: %f\trot: %f\n",
-	         this->presetInputs.frame, presetInputs.time, this->presetInputs.progress, this->avgtime, this->presetInputs.ang_per_pixel,
-	         this->presetOutputs.rot );
+  
+  
+  //DWRITE ( "frame: %d\ttime: %f\tprogress: %f\tavgtime: %d\tang: %f\trot: %f\n",
+  // this->presetInputs.frame, presetInputs.time, this->presetInputs.progress, this->avgtime, this->presetInputs.ang_per_pixel,
+  //this->presetOutputs.rot );
 
 
 //       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
-	presetInputs.ResetMesh();
-
+  presetInputs.ResetMesh();
+ 
 
 
 //     printf("%f %d\n",Time,frame);
 
 
-	beatDetect->detectFromSamples();
-	DWRITE ( "=== vol: %f\tbass: %f\tmid: %f\ttreb: %f ===\n",
-	         beatDetect->vol,beatDetect->bass,beatDetect->mid,beatDetect->treb );
-	DWRITE ( "=== bass_att: %f ===\n",
+  beatDetect->detectFromSamples();
+  DWRITE ( "=== vol: %f\tbass: %f\tmid: %f\ttreb: %f ===\n",
+	   beatDetect->vol,beatDetect->bass,beatDetect->mid,beatDetect->treb );
+  DWRITE ( "=== bass_att: %f ===\n",
 	         beatDetect->bass_att );
-
+  
         presetInputs.bass = beatDetect->bass; 
 	presetInputs.mid = beatDetect->mid; 
 	presetInputs.treb = beatDetect->treb; 
@@ -129,32 +133,76 @@ DLLEXPORT void projectM::renderFrame()
 	assert(m_activePreset.get());
 
 	m_activePreset->evaluateFrame();
+
 	if ( renderer->noSwitch==0 )
 	{
 	  if ( presetInputs.progress>1.0 )
 	    {
 	      presetInputs.progress=0.0;
 	      presetInputs.frame = 0;
-	      m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
-		(presetInputs, presetOutputs);
-             nohard=presetInputs.fps*5;
-              printf("SOFT CUT");
+
+	      m_activePreset2 = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
+		(presetInputs, &m_activePreset->m_presetOutputs == &presetOutputs ? presetOutputs2 : presetOutputs);
+             nohard=(int)(presetInputs.fps*3.5);
+             smoothFrame = (int)(presetInputs.fps * smoothTime);
+	    
+              printf("SOFT CUT - Smooth started\n");
 	    }	  	  
-	  else if ( ( beatDetect->bass-beatDetect->bass_old>beatDetect->beat_sensitivity ) && nohard<0 )
+	  else if ( ( beatDetect->bass-beatDetect->bass_old>beatDetect->beat_sensitivity ) && nohard<0 && false )//@REMOVE
 	    {
 	      //            printf("%f %d %d\n", beatDetect->bass-beatDetect->bass_old,this->frame,this->avgtime);
 	      printf("HARD CUT");
 	      m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
 		(presetInputs, presetOutputs);
 	      nohard=presetInputs.fps*5;
+	      smoothFrame=0;
 	    }
 	  else nohard--;
 	}
 
-       
+
+      
+        if (smoothFrame > 1)
+	  {
+	    int frame = presetInputs.frame++;
+	    presetInputs.frame = oldFrame;
+	    presetInputs.progress= 1.0;
+	    m_activePreset->evaluateFrame();
+	    renderer->PerPixelMath(&m_activePreset->m_presetOutputs, &presetInputs);
+
+	    presetInputs.frame = frame;
+	    presetInputs.progress= frame /(float) avgtime;
+	    m_activePreset2->evaluateFrame();	    
+	    renderer->PerPixelMath(&m_activePreset2->m_presetOutputs, &presetInputs);
+
+	    double ratio = smoothFrame / (presetInputs.fps * smoothTime); 
+
+	    PresetMerger::MergePresets(m_activePreset->m_presetOutputs,m_activePreset2->m_presetOutputs,ratio,presetInputs.gx, presetInputs.gy);
+
+            //printf("Smooth:%d\n",smoothFrame);
+
+	    smoothFrame--;
+	   
+	  }
+	else
+	  {
+	    if (smoothFrame == 1)
+	      {
+		m_activePreset = m_activePreset2;
+		smoothFrame=0;
+		printf("Smooth Finished\n");
+	      } 
+	
+	    presetInputs.frame++;  //number of frames for current preset
+	    presetInputs.progress= presetInputs.frame/ ( float ) avgtime;
+	    m_activePreset->evaluateFrame();
+	    renderer->PerPixelMath(&m_activePreset->m_presetOutputs, &presetInputs);
+	  }
+	
+	//	std::cout<< m_activePreset->absoluteFilePath()<<std::endl;
 	//	renderer->presetName = m_activePreset->absoluteFilePath();
-       	m_activePreset->evaluateFrame();
-	renderer->RenderFrame ( &presetOutputs, &presetInputs );
+
+	renderer->RenderFrame ( &m_activePreset->m_presetOutputs, &presetInputs );
 
 	count++;
 #ifndef WIN32
@@ -240,6 +288,7 @@ DLLEXPORT void projectM::projectM_init ( int gx, int gy, int fps, int texsize, i
 	projectM_initengine();
 	presetInputs.Initialize ( gx, gy );
 	presetOutputs.Initialize ( gx, gy );
+	presetOutputs2.Initialize ( gx, gy );
 
 	DWRITE ( "projectM plugin: Initializing\n" );
 
@@ -389,7 +438,7 @@ DLLEXPORT void projectM::projectM_init ( int gx, int gy, int fps, int texsize, i
 	DWRITE ( "post PCM init\n" );
 #endif
 
-	this->avgtime=this->presetInputs.fps*20;
+	this->avgtime=this->presetInputs.fps*10;
 
 	this->hasInit = 1;
 

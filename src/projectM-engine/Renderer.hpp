@@ -65,12 +65,13 @@ char *title;
   ~Renderer();
   void RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
   void reset(int w, int h);
+  void PerPixelMath(PresetOutputs *presetOutputs,  PresetInputs *presetInputs);
 
 private:
 
   void PerFrame(PresetOutputs *presetOutputs);
   void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
-  void PerPixelMath(PresetOutputs *presetOutputs,  PresetInputs *presetInputs);
+
   void rescale_per_pixel_matrices();
   void maximize_colors(PresetOutputs *presetOutputs);
   void render_texture_to_screen(PresetOutputs *presetOutputs);

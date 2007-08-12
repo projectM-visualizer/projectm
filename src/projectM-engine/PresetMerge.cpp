@@ -19,25 +19,48 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
       pos->second->a *= invratio;
       pos->second->a2 *= invratio;
       pos->second->border_a *= invratio;
-      A.customShapes[pos->first>>4]=pos->second;
+      A.customShapes[pos->first>>8]=pos->second;
 
     }
  for (PresetOutputs::cwave_container::iterator pos = A.customWaves.begin();
 	pos != A.customWaves.end(); ++pos) 
     {
-      pos->second->a *= ratio;     
+      pos->second->a *= ratio;    
+      for (int x; x <  pos->second->samples; x++)
+	{
+	  pos->second->a_mesh[x]=pos->second->a_mesh[x]*ratio;
+	}
     }
 
   for (PresetOutputs::cwave_container::iterator pos = B.customWaves.begin();
 	pos != B.customWaves.end(); ++pos) 
     {
-      pos->second->a *= invratio;    
-      A.customWaves[pos->first>>4]=pos->second;
-
+      pos->second->a *= invratio;        
+      for (int x; x <  pos->second->samples; x++)
+	{
+	  pos->second->a_mesh[x]=pos->second->a_mesh[x]*invratio;
+	}
+      A.customWaves[pos->first>>8]=pos->second;
     }
 
 
+  for (int x=0;x<gx;x++)
+    {
+      for(int y=0;y<gy;y++)
+	{
+	  A.x_mesh[x][y]  = A.x_mesh[x][y]* invratio + B.x_mesh[x][y]*ratio;
+	}
+    }
+ for (int x=0;x<gx;x++)
+    {
+      for(int y=0;y<gy;y++)
+	{
+	  A.y_mesh[x][y]  = A.y_mesh[x][y]* invratio + B.y_mesh[x][y]*ratio;
+	}
+    }
 
+
+  /*
  PresetMerger::mergeMesh(A.zoom_is_mesh, B.zoom_is_mesh, A.zoom, B.zoom,  A.zoom_mesh, B.zoom_mesh, gx, gy, ratio);
  PresetMerger:: mergeMesh(A.zoomexp_is_mesh, B.zoomexp_is_mesh, A.zoomexp, B.zoomexp,  A.zoomexp_mesh, B.zoomexp_mesh, gx, gy, ratio);
   PresetMerger::mergeMesh(A.rot_is_mesh, B.rot_is_mesh, A.rot, B.rot,  A.rot_mesh, B.rot_mesh, gx, gy, ratio);
@@ -49,7 +72,7 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
   PresetMerger::mergeMesh(A.dy_is_mesh, B.dy_is_mesh, A.dy, B.dy,  A.dy_mesh, B.dy_mesh, gx, gy, ratio);
   PresetMerger::mergeMesh(A.cx_is_mesh, B.cx_is_mesh, A.cx, B.cx,  A.cx_mesh, B.cx_mesh, gx, gy, ratio);
   PresetMerger::mergeMesh(A.cy_is_mesh, B.cy_is_mesh, A.cy, B.cy,  A.cy_mesh, B.cy_mesh, gx, gy, ratio);
- 
+  */
 
   A.decay = A.decay * invratio + B.decay * ratio;
   
@@ -122,44 +145,3 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
   return;
 }
 
-void PresetMerger::mergeMesh(bool & isMeshA, bool & isMeshB, float & varA, float & varB,  float** meshA, float** meshB, int gx, int gy, float ratio)
-{
-  float invratio = 1.0 - ratio;
-
-  if (!isMeshA && !isMeshB)
-    {
-      varA = varA * invratio + varB * ratio;
-    }
-  else if(isMeshA && !isMeshB)
-    {
-      for (int x=0;x<gx;x++)
-	{
-	  for(int y=0;y<gy;y++)
-	    {
-	      meshA[x][y]=meshA[x][y] * ratio + varB * invratio;
-	    }
-	}
-    }
- else if(isMeshA && isMeshB)
-    {
-      for (int x=0;x<gx;x++)
-	{
-	  for(int y=0;y<gy;y++)
-	    {
-	      meshA[x][y]=meshA[x][y] * ratio + meshB[x][y] * invratio;
-	    }
-	}
-    }
-  else
-    {
-      for (int x=0;x<gx;x++)
-	{
-	  for(int y=0;y<gy;y++)
-	    {
-	      meshA[x][y]=varA * ratio + meshB[x][y] * invratio;
-	    }
-	}
-
-      isMeshA = true;
-    }
-}

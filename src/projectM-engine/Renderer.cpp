@@ -13,6 +13,8 @@ Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTa
 {
   int x; int y; 
   
+  this->presetName = "None";
+
   this->gx=gx;
   this->gy=gy;
 
@@ -135,7 +137,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     DWRITE( "renderFrame: renderTarget->texsize: %d x %d\n", this->renderTarget->texsize, this->renderTarget->texsize );
     
   
-     PerPixelMath(presetOutputs, presetInputs);
+    //PerPixelMath(presetOutputs, presetInputs);
 
     if(this->renderTarget->usePbuffers)
       {
@@ -245,9 +247,9 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
   for (int x=0;x<presetInputs->gx - 1;x++){
     glBegin(GL_TRIANGLE_STRIP);
     for(int y=0;y<presetInputs->gy;y++){
-      glTexCoord2f(presetInputs->x_mesh[x][y], presetInputs->y_mesh[x][y]); 
+      glTexCoord2f(presetOutputs->x_mesh[x][y], presetOutputs->y_mesh[x][y]); 
       glVertex2f(this->gridx[x][y], this->gridy[x][y]);         
-      glTexCoord2f(presetInputs->x_mesh[x+1][y], presetInputs->y_mesh[x+1][y]); 
+      glTexCoord2f(presetOutputs->x_mesh[x+1][y], presetOutputs->y_mesh[x+1][y]); 
       glVertex2f(this->gridx[x+1][y], this->gridy[x+1][y]);
     }
     glEnd();	
@@ -307,8 +309,8 @@ void Renderer::PerFrame(PresetOutputs *presetOutputs)
             glTranslatef((-presetOutputs->cx) ,(-presetOutputs->cy),0);  
       */
 
-      if(!presetOutputs->dx_is_mesh) glTranslatef(-presetOutputs->dx,0,0);   
-      if(!presetOutputs->dy_is_mesh) glTranslatef(0 ,-presetOutputs->dy,0);  
+      //if(!presetOutputs->dx_is_mesh) glTranslatef(-presetOutputs->dx,0,0);   
+      //if(!presetOutputs->dy_is_mesh) glTranslatef(0 ,-presetOutputs->dy,0);  
     }
 
 
@@ -342,7 +344,7 @@ Renderer::~Renderer() {
 }
 
 
-void Renderer::PerPixelMath(PresetOutputs *presetOutputs, PresetInputs *presetInputs) {
+void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * presetInputs) {
 
   int x,y;
   float fZoom2,fZoom2Inv;
@@ -381,6 +383,21 @@ void Renderer::PerPixelMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
       for (x=0;x<this->gx;x++){
 	for(y=0;y<this->gy;y++){
 	  presetOutputs->sy_mesh[x][y]=presetOutputs->sy;
+	}}
+    }
+ if(!presetOutputs->dx_is_mesh)
+    { 
+      for (x=0;x<this->gx;x++){
+	for(y=0;y<this->gy;y++){
+	  presetOutputs->dx_mesh[x][y]=presetOutputs->dx;
+	}}
+    }
+  
+  if(!presetOutputs->dy_is_mesh)
+    { 
+      for (x=0;x<this->gx;x++){
+	for(y=0;y<this->gy;y++){
+	  presetOutputs->dy_mesh[x][y]=presetOutputs->dy;
 	}}
     }
 
@@ -428,56 +445,54 @@ void Renderer::PerPixelMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
     for(y=0;y<this->gy;y++){
       fZoom2 = powf( presetOutputs->zoom_mesh[x][y], powf( presetOutputs->zoomexp_mesh[x][y], presetInputs->rad_mesh[x][y]*2.0f - 1.0f));
       fZoom2Inv = 1.0f/fZoom2;
-      presetInputs->x_mesh[x][y]= this->origx2[x][y]*0.5f*fZoom2Inv + 0.5f;
-      presetInputs->y_mesh[x][y]= this->origy2[x][y]*0.5f*fZoom2Inv + 0.5f;
+      presetOutputs->x_mesh[x][y]= this->origx2[x][y]*0.5f*fZoom2Inv + 0.5f;
+      presetOutputs->y_mesh[x][y]= this->origy2[x][y]*0.5f*fZoom2Inv + 0.5f;
     }
   }
 	
   for (x=0;x<this->gx;x++){
     for(y=0;y<this->gy;y++){
-      presetInputs->x_mesh[x][y]  = ( presetInputs->x_mesh[x][y] - presetOutputs->cx_mesh[x][y])/presetOutputs->sx_mesh[x][y] + presetOutputs->cx_mesh[x][y];
+      presetOutputs->x_mesh[x][y]  = ( presetOutputs->x_mesh[x][y] - presetOutputs->cx_mesh[x][y])/presetOutputs->sx_mesh[x][y] + presetOutputs->cx_mesh[x][y];
     }
   }
   
   for (x=0;x<this->gx;x++){
     for(y=0;y<this->gy;y++){
-      presetInputs->y_mesh[x][y] = ( presetInputs->y_mesh[x][y] - presetOutputs->cy_mesh[x][y])/presetOutputs->sy_mesh[x][y] + presetOutputs->cy_mesh[x][y];
+      presetOutputs->y_mesh[x][y] = ( presetOutputs->y_mesh[x][y] - presetOutputs->cy_mesh[x][y])/presetOutputs->sy_mesh[x][y] + presetOutputs->cy_mesh[x][y];
     }
   }	   
 	 
 
  for (x=0;x<this->gx;x++){
    for(y=0;y<this->gy;y++){
-     float u2 = presetInputs->x_mesh[x][y] - presetOutputs->cx_mesh[x][y];
-     float v2 = presetInputs->y_mesh[x][y] - presetOutputs->cy_mesh[x][y];
+     float u2 = presetOutputs->x_mesh[x][y] - presetOutputs->cx_mesh[x][y];
+     float v2 = presetOutputs->y_mesh[x][y] - presetOutputs->cy_mesh[x][y];
      
      float cos_rot = cosf(presetOutputs->rot_mesh[x][y]);
      float sin_rot = sinf(presetOutputs->rot_mesh[x][y]);
      
-     presetInputs->x_mesh[x][y] = u2*cos_rot - v2*sin_rot + presetOutputs->cx_mesh[x][y];
-     presetInputs->y_mesh[x][y] = u2*sin_rot + v2*cos_rot + presetOutputs->cy_mesh[x][y];
+     presetOutputs->x_mesh[x][y] = u2*cos_rot - v2*sin_rot + presetOutputs->cx_mesh[x][y];
+     presetOutputs->y_mesh[x][y] = u2*sin_rot + v2*cos_rot + presetOutputs->cy_mesh[x][y];
 
   }
  }	  
 
- if(presetOutputs->dx_is_mesh)
-   {
+ 
      for (x=0;x<this->gx;x++){
        for(y=0;y<this->gy;y++){	      
-	 presetInputs->x_mesh[x][y] -= presetOutputs->dx_mesh[x][y];
+	 presetOutputs->x_mesh[x][y] -= presetOutputs->dx_mesh[x][y];
        }
      }
-   }
+   
  
- if(presetOutputs->dy_is_mesh)
-   {
+ 
      for (x=0;x<this->gx;x++){
        for(y=0;y<this->gy;y++){	      
-	 presetInputs->y_mesh[x][y] -= presetOutputs->dy_mesh[x][y];
+	 presetOutputs->y_mesh[x][y] -= presetOutputs->dy_mesh[x][y];
        }
      }
 		  	
-   }
+   
 
 }
 
@@ -1483,8 +1498,8 @@ void Renderer::draw_preset() {
 	title_font->FaceSize((unsigned)(12*(this->vh/512.0)));
 	if(this->noSwitch) title_font->Render("[LOCKED]  " );
 	title_font->FaceSize((unsigned)(20*(this->vh/512.0)));
-	//        std::cout << this->presetName;
-		title_font->Render(this->presetName.c_str() );
+       
+	//	title_font->Render(this->presetName.c_str() );
 
                  
         
@@ -1909,7 +1924,7 @@ void Renderer::render_texture_to_studio(PresetOutputs *presetOutputs, PresetInpu
        for (x=0;x<presetInputs->gx;x++){
 	 glBegin(GL_LINE_STRIP);
 	 for(y=0;y<presetInputs->gy;y++){
-	   glVertex4f((presetInputs->x_mesh[x][y]-.5), (presetInputs->y_mesh[x][y]-.5),-1,1);
+	   glVertex4f((presetOutputs->x_mesh[x][y]-.5), (presetOutputs->y_mesh[x][y]-.5),-1,1);
 	   //glVertex4f((origx[x+1][y]-.5) * vw, (origy[x+1][y]-.5) *vh ,-1,1);
 	 }
 	 glEnd();	
@@ -1918,7 +1933,7 @@ void Renderer::render_texture_to_studio(PresetOutputs *presetOutputs, PresetInpu
        for (y=0;y<presetInputs->gy;y++){
 	 glBegin(GL_LINE_STRIP);
 	 for(x=0;x<presetInputs->gx;x++){
-	   glVertex4f((presetInputs->x_mesh[x][y]-.5), (presetInputs->y_mesh[x][y]-.5),-1,1);
+	   glVertex4f((presetOutputs->x_mesh[x][y]-.5), (presetOutputs->y_mesh[x][y]-.5),-1,1);
 	   //glVertex4f((origx[x+1][y]-.5) * vw, (origy[x+1][y]-.5) *vh ,-1,1);
 	 }
 	 glEnd();	

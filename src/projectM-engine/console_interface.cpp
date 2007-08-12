@@ -169,6 +169,9 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		m_activePreset = std::auto_ptr<Preset>(0);
 
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
+
+                presetInputs.frame = 0;
+		smoothFrame = 0;
 	      break;
 
 	    case PROJECTM_K_r:
