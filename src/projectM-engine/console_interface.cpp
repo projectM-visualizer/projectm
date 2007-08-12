@@ -177,6 +177,8 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_r:
 		m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
 			(this->presetInputs, this->presetOutputs);
+		presetInputs.frame = 0;
+		smoothFrame = 0;
 		break;
 	    case PROJECTM_K_p:
 		
@@ -188,7 +190,8 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		}
 
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
-
+                presetInputs.frame = 0;
+		smoothFrame = 0;
 	      break;
 	    case PROJECTM_K_l:
 	      if (renderer->noSwitch==0)renderer->noSwitch=1; else  renderer->noSwitch=0;

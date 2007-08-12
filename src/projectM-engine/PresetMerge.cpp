@@ -8,39 +8,39 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
   for (PresetOutputs::cshape_container::iterator pos = A.customShapes.begin();
 	pos != A.customShapes.end(); ++pos) 
     {
-      pos->second->a *= ratio;
-      pos->second->a2 *= ratio;
-      pos->second->border_a *= ratio;
-    }
-
-  for (PresetOutputs::cshape_container::iterator pos = B.customShapes.begin();
-	pos != B.customShapes.end(); ++pos) 
-    {
       pos->second->a *= invratio;
       pos->second->a2 *= invratio;
       pos->second->border_a *= invratio;
-      A.customShapes[pos->first>>8]=pos->second;
+    }
+  
+  for (PresetOutputs::cshape_container::iterator pos = B.customShapes.begin();
+	pos != B.customShapes.end(); ++pos) 
+    {
+      pos->second->a *= ratio;
+      pos->second->a2 *= ratio;
+      pos->second->border_a *= ratio;
+        A.customShapes[pos->first>>8]=pos->second;
 
     }
  for (PresetOutputs::cwave_container::iterator pos = A.customWaves.begin();
 	pos != A.customWaves.end(); ++pos) 
     {
-      pos->second->a *= ratio;    
+      pos->second->a *= invratio;    
       for (int x; x <  pos->second->samples; x++)
 	{
-	  pos->second->a_mesh[x]=pos->second->a_mesh[x]*ratio;
+	  pos->second->a_mesh[x]=pos->second->a_mesh[x]*invratio;
 	}
     }
 
   for (PresetOutputs::cwave_container::iterator pos = B.customWaves.begin();
 	pos != B.customWaves.end(); ++pos) 
     {
-      pos->second->a *= invratio;        
+      pos->second->a *= ratio;        
       for (int x; x <  pos->second->samples; x++)
 	{
-	  pos->second->a_mesh[x]=pos->second->a_mesh[x]*invratio;
+	  pos->second->a_mesh[x]=pos->second->a_mesh[x]*ratio;
 	}
-      A.customWaves[pos->first>>8]=pos->second;
+       A.customWaves[pos->first>>8]=pos->second;
     }
 
 
