@@ -1391,13 +1391,9 @@ int Parser::parse_wavecode(char * token, FILE * fs, Preset * preset) {
   CValue init_val;
   Param * param;
 
-  /* Null argument checks */
-  if (preset == NULL)
-    return PROJECTM_FAILURE;
-  if (fs == NULL)
-    return PROJECTM_FAILURE;
-  if (token == NULL)
-    return PROJECTM_FAILURE;
+  assert(preset);
+  assert(fs); 
+  assert(token);
 
   /* token should be in the form wavecode_N_var, such as wavecode_1_samples */
   
@@ -1407,12 +1403,14 @@ int Parser::parse_wavecode(char * token, FILE * fs, Preset * preset) {
   
   //if (PARSE_DEBUG) printf("parse_wavecode: wavecode id = %d, parameter = \"%s\"\n", id, var_string);
 
-  /* Retrieve custom wave information from preset. The 3rd argument
-     if true creates a custom wave if one does not exist */
+  /* Retrieve custom wave information from preset, allocating new one if necessary */
   if ((custom_wave = Preset::find_custom_object(id, true, *preset->customWaves)) == NULL) {
-    //if (PARSE_DEBUG) printf("parse_wavecode: failed to load (or create) custom wave (id = %d)!\n", id);
+    std::cerr << "parse_wavecode: failed to load (or create) custom wave (id = " 
+	<< id << ")!\n" << std::endl;
+
     return PROJECTM_FAILURE;
   }
+
   //if (PARSE_DEBUG) printf("parse_wavecode: custom wave found (id = %d)\n", custom_wave->id);
 
   /* Retrieve parameter from this custom waves parameter db */
@@ -1442,15 +1440,18 @@ int Parser::parse_wavecode(char * token, FILE * fs, Preset * preset) {
     //if (PARSE_DEBUG) printf("parse_wavecode: unknown parameter type!\n");
     return PROJECTM_PARSE_ERROR;
   }
-  
+
   /* Create new initial condition */
   if ((init_cond = new InitCond(param, init_val)) == NULL) {
       //if (PARSE_DEBUG) printf("parse_wavecode: new_init_cond failed!\n");
       return PROJECTM_FAILURE;
   }
-  
-  custom_wave->init_cond_tree.insert(std::make_pair(param->name, init_cond));
-  
+
+  std::pair<std::map<std::string, InitCond*>::iterator, bool> inserteePair =
+	custom_wave->init_cond_tree.insert(std::make_pair(init_cond->param->name, init_cond));
+
+  assert(inserteePair.second);
+
   line_mode = CUSTOM_WAVE_WAVECODE_LINE_MODE;
 
   //if (PARSE_DEBUG) printf("parse_wavecode: [success]\n");

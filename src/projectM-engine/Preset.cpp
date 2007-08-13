@@ -263,14 +263,14 @@ void Preset::initialize(const std::string & pathname)
   memset(this->per_frame_init_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
   int retval;
 
-  if ((retval = load_preset_file(pathname.c_str())) < 0)
+  if ((retval = loadPresetFile(pathname)) < 0)
   {
 
 #ifdef PRESET_DEBUG
     if (PRESET_DEBUG) std::cerr << "[Preset] failed to load file \"" <<
       pathname << "\"!" << std::endl;
 #endif
-    //this->close_preset();
+   
     /// @bug how should we handle this problem? a well define exception?
     throw retval;
   }
@@ -279,13 +279,13 @@ void Preset::initialize(const std::string & pathname)
   this->per_frame_eqn_count = 0;
   this->per_frame_init_eqn_count = 0;
 
-  this->loadUnspecInitConds();
-  this->load_custom_wave_init_conditions();
-  this->load_custom_shape_init_conditions();
+  this->loadBuiltinParamsUnspecInitConds();
+  this->loadCustomWaveUnspecInitConds();
+  this->loadCustomShapeUnspecInitConds();
 }
 
 
-void Preset::loadUnspecInitConds() {
+void Preset::loadBuiltinParamsUnspecInitConds() {
 
 
   InitCondUtils::LoadUnspecInitCond loadUnspecInitCond(this->init_cond_tree, this->per_frame_init_eqn_tree);
@@ -293,7 +293,8 @@ void Preset::loadUnspecInitConds() {
   this->builtinParams.traverse(loadUnspecInitCond);
 
 }
-void Preset::load_custom_wave_init_conditions()
+
+void Preset::loadCustomWaveUnspecInitConds()
 {
 
   for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
@@ -304,7 +305,7 @@ void Preset::load_custom_wave_init_conditions()
 
 }
 
-void Preset::load_custom_shape_init_conditions()
+void Preset::loadCustomShapeUnspecInitConds()
 {
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
@@ -313,8 +314,6 @@ void Preset::load_custom_shape_init_conditions()
     pos->second->load_custom_shape_init();
   }
 }
-
-
 
 
 void Preset::evaluateFrame()
@@ -332,7 +331,7 @@ void Preset::evaluateFrame()
 
 }
 
-/** Evaluates all per-pixel equations */
+// Evaluates all per-pixel equations 
 void Preset::evalPerPixelEqns()
 {
 
@@ -343,53 +342,9 @@ void Preset::evalPerPixelEqns()
 
 }
 
-/** Finds / Creates (if necessary) initial condition associated with passed parameter */
-InitCond * Preset::get_init_cond( Param *param )
-{
-
-  InitCond * init_cond;
-  CValue init_val;
-
-  assert(param);
-
-  std::map<std::string, InitCond*>::iterator pos = init_cond_tree.find(param->name);
-
-  init_cond = pos == init_cond_tree.end() ? 0 : pos->second;
-
-  if (init_cond  == NULL)
-  {
-
-    if (param->type == P_TYPE_BOOL)
-      init_val.bool_val = 0;
-
-    else if (param->type == P_TYPE_INT)
-      init_val.int_val = *(int*)param->engine_val;
-
-    else if (param->type == P_TYPE_DOUBLE)
-      init_val.float_val = *(float*)param->engine_val;
-
-    /* Create new initial condition */
-    if ((init_cond = new InitCond(param, init_val)) == NULL)
-      return NULL;
-
-    /* Insert the initial condition into this presets tree */
-    std::pair<std::map<std::string, InitCond*>::iterator, bool> inserteePair =
-      init_cond_tree.insert(std::make_pair(init_cond->param->name, init_cond));
-
-    if (!inserteePair.second)
-    {
-      delete init_cond;
-      return NULL;
-    }
-  }
-
-  return init_cond;
-
-}
-
-/* preset_file: private function that loads a specific preset denoted
+/* loadPresetFile: private function that loads a specific preset denoted
    by the given pathname */
-int Preset::load_preset_file(const char * pathname)
+int Preset::loadPresetFile(std::string pathname)
 {
 
   FILE * fs;
@@ -397,27 +352,24 @@ int Preset::load_preset_file(const char * pathname)
   int lineno;
   line_mode_t line_mode;
 
-  if (pathname == NULL)
-    return PROJECTM_FAILURE;
-
   /* Open the file corresponding to pathname */
-  if ((fs = fopen(pathname, "rb")) == 0)
+  if ((fs = fopen(pathname.c_str(), "rb")) == 0)
   {
 #if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE( "load_preset_file: loading of file %s failed!\n", pathname);
+    DWRITE( "loadPresetFile: loading of file %s failed!\n", pathname);
 #endif
     return PROJECTM_ERROR;
   }
 
 #if defined(PRESET_DEBUG) && defined(DEBUG)
-  DWRITE( "load_preset_file: file stream \"%s\" opened successfully\n", pathname);
+  DWRITE( "loadPresetFile: file stream \"%s\" opened successfully\n", pathname);
 #endif
 
   /* Parse any comments */
   if (Parser::parse_top_comment(fs) < 0)
   {
 #if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE( "load_preset_file: no left bracket found...\n");
+    DWRITE( "loadPresetFile: no left bracket found...\n");
 #endif
     fclose(fs);
     return PROJECTM_FAILURE;
@@ -429,7 +381,7 @@ int Preset::load_preset_file(const char * pathname)
   if (Parser::parse_preset_name(fs, tmp_name) < 0)
   {
 #if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE( "load_preset_file: loading of preset name in file \"%s\" failed\n", pathname);
+    DWRITE( "loadPresetFile: loading of preset name in file \"%s\" failed\n", pathname);
 #endif
     fclose(fs);
     return PROJECTM_ERROR;
@@ -437,13 +389,13 @@ int Preset::load_preset_file(const char * pathname)
   name = std::string(tmp_name);
 
 #if defined(PRESET_DEBUG) && defined(DEBUG)
-  DWRITE( "load_preset_file: preset \"%s\" parsed\n", this->name);
+  DWRITE( "loadPresetFile: preset \"%s\" parsed\n", this->name);
 #endif
 
   /* Parse each line until end of file */
   lineno = 0;
 #if defined(PRESET_DEBUG) && defined(DEBUG)
-  DWRITE( "load_preset_file: beginning line parsing...\n");
+  DWRITE( "loadPresetFile: beginning line parsing...\n");
 #endif
   while ((retval = Parser::parse_line(fs, this)) != EOF)
   {
@@ -451,7 +403,7 @@ int Preset::load_preset_file(const char * pathname)
     {
       line_mode = NORMAL_LINE_MODE;
 #if defined(PRESET_DEBUG) && defined(DEBUG)
-      DWRITE( "load_preset_file: parse error in file \"%s\": line %d\n", pathname,lineno);
+      DWRITE( "loadPresetFile: parse error in file \"%s\": line %d\n", pathname,lineno);
 #endif
 
     }
@@ -459,7 +411,7 @@ int Preset::load_preset_file(const char * pathname)
   }
 
 #if defined(PRESET_DEBUG) && defined(DEBUG)
-  DWRITE("load_preset_file: finished line parsing successfully\n");
+  DWRITE("loadPresetFile: finished line parsing successfully\n");
 #endif
 
   /* Now the preset has been loaded.
@@ -468,81 +420,8 @@ int Preset::load_preset_file(const char * pathname)
 
   fclose(fs);
 #if defined(PRESET_DEBUG) && defined(DEBUG)
-  DWRITE("load_preset_file: file \"%s\" closed, preset ready\n", pathname);
+  DWRITE("loadPresetFile: file \"%s\" closed, preset ready\n", pathname);
 #endif
   return PROJECTM_SUCCESS;
 }
 
-
-void Preset::load_init_conditions()
-{
-
-  ParamUtils::LoadInitCondFunctor functor(this);
-  builtinParams.traverse(functor);
-
-}
-
-
-
-
-
-
-/* Find a parameter given its name, will create one if not found */
-Param * Preset::find(char * name, int flags)
-{
-
-  Param * param = NULL;
-
-  /* Null argument checks */
-  assert(name);
-
-  /* First look in the builtin database */
-  param = (Param *)this->builtinParams.find_builtin_param(name);
-
-  /* If the search failed, check the user database */
-  if (param == NULL)
-  {
-    std::map<std::string, Param*>::iterator pos = user_param_tree.find(name);
-
-    if (pos == user_param_tree.end())
-      param = 0;
-    else
-      param = pos->second;
-  }
-
-  /* If it doesn't exist in the user (or builtin) database and
-  	  create_flag is set, then make it and insert into the database 
-  */
-
-  if ((param == NULL) && (flags & P_CREATE))
-  {
-
-    /* Check if string is valid */
-    if (!Param::is_valid_param_string(name))
-    {
-      if (PARAM_DEBUG) printf("find: invalid parameter name:\"%s\"\n", name);
-      return NULL;
-    }
-    /* Now, create the user defined parameter given the passed name */
-    if ((param = new Param(name)) == NULL)
-    {
-      if (PARAM_DEBUG) printf("find: failed to create a new user parameter!\n");
-      return NULL;
-    }
-    /* Finally, insert the new parameter into this preset's proper splaytree */
-    std::pair<std::map<std::string, Param*>::iterator, bool> inserteePair
-    = user_param_tree.insert(std::make_pair(param->name, param));
-
-    if (!inserteePair.second)
-    {
-      if (PARAM_DEBUG) printf("PARAM \"%s\" already exists in user parameter tree!\n", param->name.c_str());
-      delete param;
-      return NULL;
-    }
-
-  }
-
-  /* Return the found (or created) parameter. Note that if P_CREATE is not set, this could be null */
-  return param;
-
-}

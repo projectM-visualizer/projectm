@@ -125,11 +125,6 @@ public:
     char per_frame_eqn_string_buffer[STRING_BUFFER_SIZE];
     char per_frame_init_eqn_string_buffer[STRING_BUFFER_SIZE];
 
-    /* Per point equation array */
-    GenExpr * per_point_eqn_array[NUM_POINT_OPS];
-
-    void reset_per_point_eqn_array(CustomWave *custom_wave);
-
     int add_per_point_eqn(char * name, GenExpr * gen_expr);
     void evalCustomWaveInitConditions(Preset *preset);
     void evalPerPointEqns();

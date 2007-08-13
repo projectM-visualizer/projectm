@@ -1,3 +1,4 @@
+
 /**
  * projectM -- Milkdrop-esque visualisation SDK
  * Copyright (C)2003-2007 projectM Team
@@ -32,6 +33,7 @@
 #include "Common.hpp"
 #include <string>
 #include <cassert>
+#include <map>
 
 #define PRESET_DEBUG 0 /* 0 for no debugging, 1 for normal, 2 for insane */
 
@@ -42,108 +44,116 @@
 #include "PerFrameEqn.hpp"
 #include "BuiltinParams.hpp"
 #include "PresetFrameIO.hpp"
-#include <map>
 #include "InitCond.hpp"
-
-
 
 class CustomWave;
 class CustomShape;
 class InitCond;
 
 
-
-
-class Preset {
+class Preset
+{
 protected:
 
 
 public:
-  PresetOutputs & m_presetOutputs;
-    ///  Load a preset by filename with input and output buffers specified.
-    ///  This is the only proper way to allocate a new preset. 
-    /// \param filename the absolute file path of a preset to load from the file system
-    /// \param presetInputs a const reference to read only projectM engine variables
-    /// \param presetOutputs initialized and filled with data parsed from a preset
-    Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
-
-    /// A special preset destructor. Very important: the preset destructor is currently responsible 
-    /// for clearing out all heap memory it allocated in presetOutputs. This might change in future.
-    /// Conclusion: It does NOT necessarily reset or clear any values. It only deallocates.
-      ~Preset();
-
-    /** Evaluates the preset for a frame given the current values of preset inputs / outputs */
-    void evaluateFrame();
-
-    BuiltinParams builtinParams;
-
-    std::string name;
-    std::string file_path;
 
 
-    void load_init_conditions();
-    template <class CustomObject>
-    static CustomObject * find_custom_object(int id, bool create_flag, std::map<int,CustomObject*> & customObjects);
+  ///  Load a preset by filename with input and output buffers specified.
+  ///  This is the only proper way to allocate a new preset.
+  /// \param filename the absolute file path of a preset to load from the file system
+  /// \param presetInputs a const reference to read only projectM engine variables
+  /// \param presetOutputs initialized and filled with data parsed from a preset
+  Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
-    int per_pixel_eqn_string_index;
-    int per_frame_eqn_string_index;
-    int per_frame_init_eqn_string_index;
+  /// A special preset destructor. Very important: the preset destructor is currently responsible
+  /// for clearing out all heap memory it allocated in presetOutputs. This might change in future.
+  /// Conclusion: It does NOT necessarily reset or clear any values. It only deallocates.
+  ~Preset();
 
-    int per_frame_eqn_count,
-    per_frame_init_eqn_count;
+  /// Evaluates the preset for a frame given the current values of preset inputs / outputs
+  /// All calculated values are stored in the associated preset outputs instance
+  void evaluateFrame();
 
-    char per_pixel_eqn_string_buffer[STRING_BUFFER_SIZE];
-    char per_frame_eqn_string_buffer[STRING_BUFFER_SIZE];
-    char per_frame_init_eqn_string_buffer[STRING_BUFFER_SIZE];
+  /// All "builtin" parameters for this preset. Anything *but* user defined parameters and
+  /// custom waves / shapes objects go here.
+  /// @bug encapsulate
+  BuiltinParams builtinParams;
 
-    /* Data structures that contain equation and initial condition information */
-    std::map<int, PerFrameEqn*>  per_frame_eqn_tree;   /* per frame equations */
-    std::map<int, PerPixelEqn*>  per_pixel_eqn_tree; /* per pixel equation tree */
-    GenExpr * per_pixel_eqn_array[NUM_OPS]; /* per pixel equation array */
-    std::map<std::string,InitCond*>  per_frame_init_eqn_tree; /* per frame initial equations */
-    std::map<std::string,InitCond*>  init_cond_tree; /* initial conditions */
-    std::map<std::string,Param*> user_param_tree; /* user parameter splay tree */
+  /// Preset name, very boring, like [preset00]
+  std::string name;
 
-    int add_per_pixel_eqn( char *name, GenExpr *gen_expr );
+  /// Used by parser to find/create custom waves and shapes. May be refactored
+  template <class CustomObject>
+  static CustomObject * find_custom_object(int id, bool create_flag, std::map<int,CustomObject*> & customObjects);
 
 
-    int resetPerPixelEqns();
-    int resetPerPixelEqnFlags();
+  int per_pixel_eqn_string_index;
+  int per_frame_eqn_string_index;
+  int per_frame_init_eqn_string_index;
 
-    InitCond *get_init_cond( Param *param );
+  int per_frame_eqn_count,
+  per_frame_init_eqn_count;
 
-    void load_custom_wave_init_conditions();
-    void load_custom_shape_init_conditions();
-    
+  char per_pixel_eqn_string_buffer[STRING_BUFFER_SIZE];
+  char per_frame_eqn_string_buffer[STRING_BUFFER_SIZE];
+  char per_frame_init_eqn_string_buffer[STRING_BUFFER_SIZE];
 
-    int load_preset_file(const char * pathname);
-    static Preset *load_preset( const char *pathname );
-    Param * find(char * name, int flags) ;
+  /// Used by parser
+  /// @bug refactor
+  int add_per_pixel_eqn( char *name, GenExpr *gen_expr );
 
-    void load_init_cond(char *name, int flags);	
-    inline void clearMeshChecks();
+  /// Accessor method to retrieve the absolute file path of the loaded preset
+  /// \returns a file path string 
+  std::string absoluteFilePath() const
+  {
+    return file_path;
+  }
 
-	std::string absoluteFilePath() const
-	{
-		return file_path;
-	}
-	
-    PresetOutputs::cwave_container * customWaves;
-    PresetOutputs::cshape_container * customShapes;
-    
+  /// Accessor method for the preset outputs instance associated with this preset
+  /// \returns A preset output instance with values computed from most recent evaluateFrame()
+  PresetOutputs & presetOutputs() const
+  {
+    return m_presetOutputs;
+  }
+
+  /// @bug encapsulate
+  PresetOutputs::cwave_container * customWaves;
+  PresetOutputs::cshape_container * customShapes;
+
+  /// @bug encapsulate
+  /* Data structures that contain equation and initial condition information */
+  std::map<int, PerFrameEqn*>  per_frame_eqn_tree;   /* per frame equations */
+  std::map<int, PerPixelEqn*>  per_pixel_eqn_tree; /* per pixel equation tree */
+  std::map<std::string,InitCond*>  per_frame_init_eqn_tree; /* per frame initial equations */
+  std::map<std::string,InitCond*>  init_cond_tree; /* initial conditions */
+  std::map<std::string,Param*> user_param_tree; /* user parameter splay tree */
+
 private:
 
-    void evalCustomWavePerFrameEquations();
-    void evalCustomShapePerFrameEquations();
-    void evalPerFrameInitEquations();
-    void evalCustomWaveInitConditions();
-    void evalCustomShapeInitConditions();
-    void evalPerPixelEqns();
-    void evalPerFrameEquations();
-    void initialize(const std::string & pathname);
-    void loadUnspecInitConds();
+  // The absolute file path of the preset
+  std::string file_path;
 
-    
+  void initialize(const std::string & pathname);
+  int loadPresetFile(std::string pathname);
+
+  void loadBuiltinParamsUnspecInitConds();
+  void loadCustomWaveUnspecInitConds();
+  void loadCustomShapeUnspecInitConds();
+
+  void evalCustomWavePerFrameEquations();
+  void evalCustomShapePerFrameEquations();
+  void evalPerFrameInitEquations();
+  void evalCustomWaveInitConditions();
+  void evalCustomShapeInitConditions();
+  void evalPerPixelEqns();
+  void evalPerFrameEquations();
+
+
+  inline void clearMeshChecks();
+
+  PresetOutputs & m_presetOutputs;
+
 };
 
 template <class CustomObject>
@@ -151,13 +161,13 @@ CustomObject * Preset::find_custom_object(int id, bool create_flag, std::map<int
 {
 
   CustomObject * custom_object = NULL;
-  
+
 
   typename std::map<int, CustomObject*>::iterator pos = customObjects.find(id);
 
   if (pos == customObjects.end())
   {
-    if (create_flag == FALSE)
+    if (create_flag == false)
     {
       return NULL;
     }
@@ -167,32 +177,34 @@ CustomObject * Preset::find_custom_object(int id, bool create_flag, std::map<int
       return NULL;
     }
 
-    std::pair<typename std::map<int,CustomObject*>::iterator, bool> inserteePair = 
-	customObjects.insert(std::make_pair(custom_object->id, custom_object));
+    std::pair<typename std::map<int,CustomObject*>::iterator, bool> inserteePair =
+      customObjects.insert(std::make_pair(custom_object->id, custom_object));
 
     assert(inserteePair.second);
 
     custom_object = inserteePair.first->second;
 
-  } else 
-	custom_object = pos->second;
-  
+  }
+  else
+    custom_object = pos->second;
+
 
   assert(custom_object);
   return custom_object;
 }
 
 
-inline void Preset::clearMeshChecks() {
-     m_presetOutputs.zoom_is_mesh = false;
-     m_presetOutputs.zoomexp_is_mesh = false;
-     m_presetOutputs.rot_is_mesh =false;
-     m_presetOutputs.sx_is_mesh =false;
-     m_presetOutputs.sy_is_mesh = false;
-     m_presetOutputs.dx_is_mesh = false;
-     m_presetOutputs.dy_is_mesh =false;
-     m_presetOutputs.cx_is_mesh = false;
-     m_presetOutputs.cy_is_mesh = false;
+inline void Preset::clearMeshChecks()
+{
+  m_presetOutputs.zoom_is_mesh = false;
+  m_presetOutputs.zoomexp_is_mesh = false;
+  m_presetOutputs.rot_is_mesh = false;
+  m_presetOutputs.sx_is_mesh = false;
+  m_presetOutputs.sy_is_mesh = false;
+  m_presetOutputs.dx_is_mesh = false;
+  m_presetOutputs.dy_is_mesh = false;
+  m_presetOutputs.cx_is_mesh = false;
+  m_presetOutputs.cy_is_mesh = false;
 
 }
 

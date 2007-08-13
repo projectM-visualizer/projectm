@@ -40,34 +40,31 @@
 #include "ParamUtils.hpp"
 #include "InitCondUtils.hpp"
 #include "wipemalloc.h"
-
 #define MAX_SAMPLE_SIZE 4096
 
 
-int interface_id = 0;
-
 CustomWave::CustomWave(int _id):
-	id(_id),
-	per_frame_count(0),
-	samples(512),
-	bSpectrum(0),
-	sep(1),
-	smoothing(0.0),
-	bUseDots(0),
-	bAdditive(0),
-	r(0),
-	g(0),
-	b(0),
-	a(0),
-	scaling(1.0),
-	per_frame_eqn_string_index(0),
-	per_frame_init_eqn_string_index(0),
-	per_point_eqn_string_index(0)
+    id(_id),
+    per_frame_count(0),
+    samples(512),
+    bSpectrum(0),
+    sep(1),
+    smoothing(0.0),
+    bUseDots(0),
+    bAdditive(0),
+    r(0),
+    g(0),
+    b(0),
+    a(0),
+    scaling(1.0),
+    per_frame_eqn_string_index(0),
+    per_frame_init_eqn_string_index(0),
+    per_point_eqn_string_index(0)
 {
-	
+
   Param * param;
-  
-  /// @bug deprecate the use of wipemalloc 
+
+  /// @bug deprecate the use of wipemalloc
   this->r_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
   this->g_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
   this->b_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
@@ -80,324 +77,377 @@ CustomWave::CustomWave(int _id):
 
   /* Start: Load custom wave parameters */
 
-  if ((param = Param::new_param_float("r", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->r, this->r_mesh, 1.0, 0.0, .5)) == NULL) {
+  if ((param = Param::new_param_float("r", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->r, this->r_mesh, 1.0, 0.0, .5)) == NULL)
+  {
     delete(this);
     /// @bug make exception
     abort();
   }
 
-  if (ParamUtils::insert(param, &param_tree) < 0) {
+  if (ParamUtils::insert(param, &param_tree) < 0)
+  {
     /// @bug make exception
     abort();
   }
- 
-  if ((param = Param::new_param_float("g", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->g,  this->g_mesh, 1.0, 0.0, .5)) == NULL) {
+
+  if ((param = Param::new_param_float("g", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->g,  this->g_mesh, 1.0, 0.0, .5)) == NULL)
+  {
     delete(this);
-/// @bug make exception
+    /// @bug make exception
     abort();
   }
 
-  if (ParamUtils::insert(param, &param_tree) < 0) {
+  if (ParamUtils::insert(param, &param_tree) < 0)
+  {
     delete(this);
-/// @bug make exception
+    /// @bug make exception
     abort();
   }
 
-  if ((param = Param::new_param_float("b", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->b,  this->b_mesh, 1.0, 0.0, .5)) == NULL){
+  if ((param = Param::new_param_float("b", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->b,  this->b_mesh, 1.0, 0.0, .5)) == NULL)
+  {
     delete(this);
-/// @bug make exception
-    abort();
-
-  }
-
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
-    delete(this);
-/// @bug make exception
-    abort();
-  }
-
-  if ((param = Param::new_param_float("a", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->a,  this->a_mesh, 1.0, 0.0, .5)) == NULL){
-    delete(this);
-/// @bug make exception
-    abort();
-  }
-  
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
-    delete(this);
-/// @bug make exception
-    abort();
-  }
-
-  if ((param = Param::new_param_float("x", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->x,  this->x_mesh, 1.0, 0.0, .5)) == NULL) {
-    delete(this);
-/// @bug make exception
-    abort();
-  }
-
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
-    delete(this);
-/// @bug make exception
-    abort();
-  }
-
-  if ((param = Param::new_param_float("y", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->y,  this->y_mesh, 1.0, 0.0, .5)) == NULL) {
-    delete(this);
-/// @bug make exception
-    abort();
-  }
-
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
-    delete(this);
-
-/// @bug make exception
+    /// @bug make exception
     abort();
 
   }
 
-  if ((param = Param::new_param_bool("enabled", P_FLAG_NONE, &this->enabled, 1, 0, 0)) == NULL) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
-/// @bug make exception
+    /// @bug make exception
     abort();
+  }
 
+  if ((param = Param::new_param_float("a", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->a,  this->a_mesh, 1.0, 0.0, .5)) == NULL)
+  {
+    delete(this);
+    /// @bug make exception
+    abort();
+  }
+
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
+    delete(this);
+    /// @bug make exception
+    abort();
+  }
+
+  if ((param = Param::new_param_float("x", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->x,  this->x_mesh, 1.0, 0.0, .5)) == NULL)
+  {
+    delete(this);
+    /// @bug make exception
+    abort();
+  }
+
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
+    delete(this);
+    /// @bug make exception
+    abort();
+  }
+
+  if ((param = Param::new_param_float("y", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->y,  this->y_mesh, 1.0, 0.0, .5)) == NULL)
+  {
+    delete(this);
+    /// @bug make exception
+    abort();
+  }
+
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
+    delete(this);
+
+    /// @bug make exception
+    abort();
 
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
+  if ((param = Param::new_param_bool("enabled", P_FLAG_NONE, &this->enabled, 1, 0, 0)) == NULL)
+  {
     delete(this);
-
-/// @bug make exception
-    abort();
-
-  }
-
-  if ((param = Param::new_param_int("sep", P_FLAG_NONE, &this->sep, 100, -100, 0)) == NULL) {
-    delete(this);
-/// @bug make exception
+    /// @bug make exception
     abort();
 
 
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
-/// @bug make exception
+
+    /// @bug make exception
+    abort();
+
+  }
+
+  if ((param = Param::new_param_int("sep", P_FLAG_NONE, &this->sep, 100, -100, 0)) == NULL)
+  {
+    delete(this);
+    /// @bug make exception
     abort();
 
 
   }
 
-  if ((param = Param::new_param_bool("bSpectrum", P_FLAG_NONE, &this->bSpectrum, 1, 0, 0)) == NULL) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
-/// @bug make exception
+    /// @bug make exception
     abort();
 
 
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
+  if ((param = Param::new_param_bool("bSpectrum", P_FLAG_NONE, &this->bSpectrum, 1, 0, 0)) == NULL)
+  {
     delete(this);
-/// @bug make exception
-    abort();
-
-  }
-
-  if ((param = Param::new_param_bool("bDrawThick", P_FLAG_NONE, &this->bDrawThick, 1, 0, 0)) == NULL) {
-    delete(this);
-/// @bug make exception
+    /// @bug make exception
     abort();
 
 
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
-/// @bug make exception
+    /// @bug make exception
     abort();
 
   }
 
-  if ((param = Param::new_param_bool("bUseDots", P_FLAG_NONE, &this->bUseDots, 1, 0, 0)) == NULL) {
+  if ((param = Param::new_param_bool("bDrawThick", P_FLAG_NONE, &this->bDrawThick, 1, 0, 0)) == NULL)
+  {
     delete(this);
-/// @bug make exception
+    /// @bug make exception
+    abort();
+
+
+  }
+
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
+    delete(this);
+    /// @bug make exception
+    abort();
+
+  }
+
+  if ((param = Param::new_param_bool("bUseDots", P_FLAG_NONE, &this->bUseDots, 1, 0, 0)) == NULL)
+  {
+    delete(this);
+    /// @bug make exception
     abort();
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
-    delete(this);
-    abort();
-  }
- 
-  if ((param = Param::new_param_bool("bAdditive", P_FLAG_NONE, &this->bAdditive, 1, 0, 0)) == NULL) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
     abort();
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
+  if ((param = Param::new_param_bool("bAdditive", P_FLAG_NONE, &this->bAdditive, 1, 0, 0)) == NULL)
+  {
     delete(this);
     abort();
   }
 
-  if ((param = Param::new_param_int("samples", P_FLAG_NONE, &this->samples, 2048, 1, 512)) == NULL) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
     abort();
   }
- 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
+
+  if ((param = Param::new_param_int("samples", P_FLAG_NONE, &this->samples, 2048, 1, 512)) == NULL)
+  {
+    delete(this);
+    abort();
+  }
+
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
     abort();
   }
 
   if ((param = Param::new_param_float("sample", P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT,
-				&this->sample, this->sample_mesh, 1.0, 0.0, 0.0)) == NULL) {
+                                      &this->sample, this->sample_mesh, 1.0, 0.0, 0.0)) == NULL)
+  {
     delete(this);
     abort();
   }
- 
- if (ParamUtils::insert(param, &this->param_tree) < 0) {
+
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     printf("failed to insert sample\n");
     delete(this);
     abort();
   }
 
-  if ((param = Param::new_param_float("value1", P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v1, this->value1, 1.0, -1.0, 0.0)) == NULL) {
+  if ((param = Param::new_param_float("value1", P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v1, this->value1, 1.0, -1.0, 0.0)) == NULL)
+  {
     delete(this);
     abort();
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
     abort();
   }
 
-  if ((param = Param::new_param_float("value2", P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v2, this->value2, 1.0, -1.0, 0.0)) == NULL) {
+  if ((param = Param::new_param_float("value2", P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v2, this->value2, 1.0, -1.0, 0.0)) == NULL)
+  {
     delete(this);
     abort();
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
     abort();
   }
 
-  if ((param = Param::new_param_float("smoothing", P_FLAG_NONE, &this->smoothing, NULL, 1.0, 0.0, 0.0)) == NULL) {
+  if ((param = Param::new_param_float("smoothing", P_FLAG_NONE, &this->smoothing, NULL, 1.0, 0.0, 0.0)) == NULL)
+  {
     delete(this);
     abort();
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
     abort();
   }
 
-  if ((param = Param::new_param_float("scaling", P_FLAG_NONE, &this->scaling, NULL, MAX_DOUBLE_SIZE, 0.0, 1.0)) == NULL) {
+  if ((param = Param::new_param_float("scaling", P_FLAG_NONE, &this->scaling, NULL, MAX_DOUBLE_SIZE, 0.0, 1.0)) == NULL)
+  {
     delete(this);
     abort();
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
-    delete(this);
-    abort();
-  }
- 
-  if ((param = Param::new_param_float("t1", P_FLAG_PER_POINT | P_FLAG_TVAR, &this->t1, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
     abort();
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
+  if ((param = Param::new_param_float("t1", P_FLAG_PER_POINT | P_FLAG_TVAR, &this->t1, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  {
     delete(this);
     abort();
   }
 
-  if ((param = Param::new_param_float("t2",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t2, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
     abort();
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
+  if ((param = Param::new_param_float("t2",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t2, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  {
     delete(this);
     abort();
   }
 
-  if ((param = Param::new_param_float("t3",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t3, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
     abort();
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
-    delete(this);
-    abort();
-  }
-  if ((param = Param::new_param_float("t4",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t4, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
-    delete(this);
-    abort();
-  }
-
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
-    delete(this);
-    abort();
-  }
-  if ((param = Param::new_param_float("t5", P_FLAG_TVAR, &this->t5, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
-    delete(this);
-    abort();
-  }
- 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
-    delete(this);
-    abort();
-  }
-  if ((param = Param::new_param_float("t6", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
+  if ((param = Param::new_param_float("t3",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t3, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  {
     delete(this);
     abort();
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
     abort();
   }
-  if ((param = Param::new_param_float("t7", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
-    delete(this);
-    abort();
-  }
-
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
-    delete(this);
-    abort();
-  }
-
-  if ((param = Param::new_param_float("t8", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t8, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL) {
+  if ((param = Param::new_param_float("t4",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t4, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  {
     delete(this);
     abort();
   }
 
-  if (ParamUtils::insert(param, &this->param_tree) < 0) {
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
     delete(this);
     abort();
   }
-  
+  if ((param = Param::new_param_float("t5", P_FLAG_TVAR, &this->t5, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  {
+    delete(this);
+    abort();
+  }
+
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
+    delete(this);
+    abort();
+  }
+  if ((param = Param::new_param_float("t6", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  {
+    delete(this);
+    abort();
+  }
+
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
+    delete(this);
+    abort();
+  }
+  if ((param = Param::new_param_float("t7", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  {
+    delete(this);
+    abort();
+  }
+
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
+    delete(this);
+    abort();
+  }
+
+  if ((param = Param::new_param_float("t8", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t8, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  {
+    delete(this);
+    abort();
+  }
+
+  if (ParamUtils::insert(param, &this->param_tree) < 0)
+  {
+    delete(this);
+    abort();
+  }
+
   /* End of parameter loading. Note that the read only parameters associated
      with custom waves (ie, sample) are variables stored in PresetFrameIO.hpp,
      and not specific to the custom wave datastructure. */
 
 }
 
-CustomWave::~CustomWave() {
+CustomWave::~CustomWave()
+{
 
-  
-  for (std::map<int, PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end(); ++pos) 
-  	delete(pos->second);
+
+  for (std::map<int, PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end(); ++pos)
+    delete(pos->second);
 
   for (std::map<int, PerFrameEqn*>::iterator pos = per_frame_eqn_tree.begin(); pos != per_frame_eqn_tree.end(); ++pos)
-  	delete(pos->second);
+    delete(pos->second);
 
   for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos)
-  	delete(pos->second);
+    delete(pos->second);
 
   for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos)
-  	delete(pos->second);
+    delete(pos->second);
 
   for (std::map<std::string, Param*>::iterator pos = param_tree.begin(); pos != param_tree.end(); ++pos)
-  	delete(pos->second);
+    delete(pos->second);
 
   free(r_mesh);
   free(g_mesh);
@@ -409,14 +459,14 @@ CustomWave::~CustomWave() {
   free(value2);
   free(sample_mesh);
 
-
 }
 
 
 
 
 // Comments: index is not passed, so we assume monotic increment by 1 is ok here
-int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr) {
+int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr)
+{
 
   PerPointEqn * per_point_eqn;
   int index;
@@ -424,60 +474,68 @@ int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr) {
 
   /* Argument checks */
   if (gen_expr == NULL)
-	  return PROJECTM_FAILURE;
+    return PROJECTM_FAILURE;
   if (name == NULL)
-	  return PROJECTM_FAILURE;
-  
- if (CUSTOM_WAVE_DEBUG) printf("add_per_point_eqn: per pixel equation (name = \"%s\")\n", name);
+    return PROJECTM_FAILURE;
 
- /* Search for the parameter so we know what matrix the per pixel equation is referencing */
+  if (CUSTOM_WAVE_DEBUG) printf("add_per_point_eqn: per pixel equation (name = \"%s\")\n", name);
 
- if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(name,&param_tree)) == NULL) {
-   if (CUSTOM_WAVE_DEBUG) printf("add_per_point_eqn: failed to allocate a new parameter!\n");
-   return PROJECTM_FAILURE;
- 
- } 	 
+  /* Search for the parameter so we know what matrix the per pixel equation is referencing */
 
- /* Find most largest index in the splaytree */
-   index = per_point_eqn_tree.size();
+  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(name,&param_tree)) == NULL)
+  {
+    if (CUSTOM_WAVE_DEBUG) printf("add_per_point_eqn: failed to allocate a new parameter!\n");
+    return PROJECTM_FAILURE;
 
- /* Create the per pixel equation given the index, parameter, and general expression */
-	
- if ((per_point_eqn = new PerPointEqn(index, param, gen_expr, samples)) == NULL)
-	 return PROJECTM_FAILURE;
- if (CUSTOM_WAVE_DEBUG) 
-   printf("add_per_point_eqn: created new equation (index = %d) (name = \"%s\")\n", per_point_eqn->index, per_point_eqn->param->name.c_str());
+  }
 
- /* Insert the per pixel equation into the preset per pixel database */
-  
- per_point_eqn_tree.insert(std::make_pair(per_point_eqn->index, per_point_eqn));
+  /* Get largest index in the tree */
+  index = per_point_eqn_tree.size();
 
- /* Done */
- return PROJECTM_SUCCESS;
+  /* Create the per point equation given the index, parameter, and general expression */
+  if ((per_point_eqn = new PerPointEqn(index, param, gen_expr, samples)) == NULL)
+    return PROJECTM_FAILURE;
+  if (CUSTOM_WAVE_DEBUG)
+    printf("add_per_point_eqn: created new equation (index = %d) (name = \"%s\")\n", per_point_eqn->index, per_point_eqn->param->name.c_str());
+
+  /* Insert the per pixel equation into the preset per pixel database */
+
+  per_point_eqn_tree.insert(std::make_pair(per_point_eqn->index, per_point_eqn));
+
+  /* Done */
+  return PROJECTM_SUCCESS;
 }
 
 
-void CustomWave::eval_custom_wave_init_conds() {
+void CustomWave::eval_custom_wave_init_conds()
+{
 
   for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos)
-	pos->second->evaluate();
+  {
+    assert(pos->second);
+    pos->second->evaluate();
+  }
 
   for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos)
-   	pos->second->evaluate();
+  {
+    assert(pos->second);
+    pos->second->evaluate();
+  }
 }
 
 /** Evaluate per-point equations */
-void CustomWave::evalPerPointEqns() { 
+void CustomWave::evalPerPointEqns()
+{
 
   int x;
 
   assert(samples > 0);
   assert(r_mesh);
-assert(g_mesh);
-assert(b_mesh);
-assert(a_mesh);
-assert(x_mesh);
-assert(y_mesh);
+  assert(g_mesh);
+  assert(b_mesh);
+  assert(a_mesh);
+  assert(x_mesh);
+  assert(y_mesh);
 
   for (x = 0; x < samples; x++)
     r_mesh[x] = r;
@@ -493,17 +551,15 @@ assert(y_mesh);
     y_mesh[x] = y;
 
   /* Evaluate per pixel equations */
-    for (std::map<int, PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos)
-	pos->second->evaluate();
+  for (std::map<int, PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos)
+    pos->second->evaluate();
 
 }
 
-void CustomWave::load_unspecified_init_conds() {
+void CustomWave::load_unspecified_init_conds()
+{
 
-	InitCondUtils::LoadUnspecInitCond fun(this->init_cond_tree, this->per_frame_init_eqn_tree);
-	Algorithms::traverse(param_tree, fun);
+  InitCondUtils::LoadUnspecInitCond fun(this->init_cond_tree, this->per_frame_init_eqn_tree);
+  Algorithms::traverse(param_tree, fun);
 }
-
-
-
 

@@ -37,7 +37,7 @@ public:
 
     Param * param;
 
-    /* First look in the builtin database */
+    /* First look in the suggested database */
     std::map<std::string,Param*>::iterator pos = paramTree->find(name);
 		
 
@@ -55,8 +55,7 @@ public:
       std::pair<std::map<std::string,Param*>::iterator, bool>  insertRetPair = 
 		paramTree->insert(std::make_pair(param->name, param));
 
-	if (insertRetPair.second)
-		param = insertRetPair.first->second;
+      assert(insertRetPair.second);
 	
     } else if (pos != paramTree->end())
 	param = pos->second;
@@ -69,7 +68,7 @@ public:
 
   }
 
-  /// Checks attempt
+
   static Param * find(const std::string & name, BuiltinParams * builtinParams, std::map<std::string,Param*> * insertionTree)
   {
 
@@ -83,56 +82,6 @@ public:
     return find<AUTO_CREATE>(name, insertionTree);
 
   }
-
-  class LoadInitCondFunctor
-  {
-  public:
-    LoadInitCondFunctor(Preset * preset) :m_preset(preset) {assert(preset);}
-
-    void operator() (Param * param)
-    {
-
-      InitCond * init_cond;
-      CValue init_val;
-      assert(param);
-      /* Don't count read only parameters as initial conditions */
-      if (param->flags & P_FLAG_READONLY)
-        return;
-
-      /* If initial condition was not defined by the preset file, force a default one
-         with the following code */
-      std::map<std::string,InitCond*>::iterator pos;
-      if ((pos = (m_preset->init_cond_tree.find(param->name))) == m_preset->init_cond_tree.end())
-      {
-
-        std::map<std::string,InitCond*>::iterator per_frame_init_pos;
-        /* Make sure initial condition does not exist in the set of per frame initial equations */
-        if ((per_frame_init_pos = (m_preset->per_frame_init_eqn_tree.find(param->name))) != m_preset->per_frame_init_eqn_tree.end())
-          return;
-
-        if (param->type == P_TYPE_BOOL)
-          init_val.bool_val = 0;
-
-        else if (param->type == P_TYPE_INT)
-          init_val.int_val = *(int*)param->engine_val;
-
-        else if (param->type == P_TYPE_DOUBLE)
-          init_val.float_val = *(float*)param->engine_val;
-
-        /* Create new initial condition */
-        if ((init_cond = new InitCond(param, init_val)) == NULL)
-          return;
-
-        /* Insert the initial condition into this presets tree */
-        /// @bug not error checking
-        m_preset->init_cond_tree.insert(std::make_pair(init_cond->param->name,init_cond));
-      }
-
-    }
-
-  private :
-    Preset * m_preset;
-  };
 
 };
 

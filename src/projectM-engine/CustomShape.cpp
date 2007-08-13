@@ -42,9 +42,6 @@
 
 using namespace Algorithms;
 
-void eval_custom_shape_init_conds ( CustomShape * custom_shape );
-void load_unspec_init_cond_shape ( Param * param );
-
 
 CustomShape::CustomShape ( int id )
 {

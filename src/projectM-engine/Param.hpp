@@ -72,7 +72,7 @@ public:
     CValue lower_bound; /* this parameter's lower bound */
     int gx, gy;
 
-    /* Function prototypes */
+    /// Create a new parameter
     Param(std::string name, short int type, short int flags, 
            void * eqn_val, void *matrix,
            CValue default_init_val, CValue upper_bound, 
@@ -80,16 +80,11 @@ public:
 
     ~Param();
 
-    /** Create a user defined parameter **/ 
+    /// Create a user defined floating point parameter
     Param( std::string name );
-    static int init_user_param_db();
-    static int destroy_user_param_db();
 
-    void load_unspec_init_cond_shape();
-
-    
     int compare_param( char *name, char *name2 );
-    static int is_valid_param_string( const char *string );
+    static bool is_valid_param_string( const char *string );
     void set_param( float val );
 
     static Param *new_param_float( char *name, short int flags, void *engine_val,

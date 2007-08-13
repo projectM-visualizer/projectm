@@ -1,106 +1,52 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="33" >
-  <Doc0 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PresetFrameIO.cpp" >
-   <View0 Type="Source" />
+ <DocsAndViews NumberOfDocuments="15" >
+  <Doc0 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Preset.cpp" >
+   <View0 line="382" Type="Source" />
   </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/CustomShape.cpp" >
-   <View0 Type="Source" />
+  <Doc1 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Preset.hpp" >
+   <View0 line="137" Type="Source" />
   </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Func.cpp" >
-   <View0 Type="Source" />
+  <Doc2 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/ParamUtils.hpp" >
+   <View0 line="64" Type="Source" />
   </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Func.hpp" >
-   <View0 Type="Source" />
+  <Doc3 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/projectM.cpp" >
+   <View0 line="133" Type="Source" />
   </Doc3>
   <Doc4 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/CustomWave.cpp" >
-   <View0 Type="Source" />
+   <View0 line="542" Type="Source" />
   </Doc4>
   <Doc5 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/CustomWave.hpp" >
-   <View0 Type="Source" />
+   <View0 line="131" Type="Source" />
   </Doc5>
-  <Doc6 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Parser.cpp" >
-   <View0 Type="Source" />
+  <Doc6 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/InitCondUtils.hpp" >
+   <View0 line="69" Type="Source" />
   </Doc6>
-  <Doc7 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PerFrameEqn.cpp" >
-   <View0 Type="Source" />
+  <Doc7 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Renderer.cpp" >
+   <View0 line="1521" Type="Source" />
   </Doc7>
-  <Doc8 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PerPixelEqn.cpp" >
-   <View0 Type="Source" />
+  <Doc8 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-xmms/main.cpp" >
+   <View0 line="272" Type="Source" />
   </Doc8>
-  <Doc9 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/projectM.cpp" >
-   <View0 Type="Source" />
+  <Doc9 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Parser.cpp" >
+   <View0 line="1401" Type="Source" />
   </Doc9>
-  <Doc10 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Expr.cpp" >
-   <View0 Type="Source" />
+  <Doc10 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Param.cpp" >
+   <View0 line="122" Type="Source" />
   </Doc10>
-  <Doc11 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/BuiltinParams.cpp" >
-   <View0 Type="Source" />
+  <Doc11 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Param.hpp" >
+   <View0 line="84" Type="Source" />
   </Doc11>
-  <Doc12 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Preset.cpp" >
-   <View0 Type="Source" />
+  <Doc12 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/CustomShape.cpp" >
+   <View0 line="218" Type="Source" />
   </Doc12>
-  <Doc13 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Algorithms.hpp" >
-   <View0 Type="Source" />
+  <Doc13 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/InitCond.cpp" >
+   <View0 line="76" Type="Source" />
   </Doc13>
-  <Doc14 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/InitCond.cpp" >
-   <View0 Type="Source" />
+  <Doc14 NumberOfViews="1" URL="file:///usr/lib/gcc/i686-pc-linux-gnu/4.1.2/include/g%2B%2B-v4/bits/stl_tree.h" >
+   <View0 line="591" Type="Source" />
   </Doc14>
-  <Doc15 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Param.hpp" >
-   <View0 Type="Source" />
-  </Doc15>
-  <Doc16 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Param.cpp" >
-   <View0 Type="Source" />
-  </Doc16>
-  <Doc17 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Parser.hpp" >
-   <View0 Type="Source" />
-  </Doc17>
-  <Doc18 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-xmms/main.cpp" >
-   <View0 Type="Source" />
-  </Doc18>
-  <Doc19 NumberOfViews="1" URL="file:///usr/lib/gcc/i686-pc-linux-gnu/4.1.2/include/g%2B%2B-v4/memory" >
-   <View0 Type="Source" />
-  </Doc19>
-  <Doc20 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/console_interface.cpp" >
-   <View0 Type="Source" />
-  </Doc20>
-  <Doc21 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Renderer.cpp" >
-   <View0 Type="Source" />
-  </Doc21>
-  <Doc22 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/BuiltinFuncs.hpp" >
-   <View0 Type="Source" />
-  </Doc22>
-  <Doc23 NumberOfViews="1" URL="file:///usr/lib/gcc/i686-pc-linux-gnu/4.1.2/include/g%2B%2B-v4/bits/stl_tree.h" >
-   <View0 Type="Source" />
-  </Doc23>
-  <Doc24 NumberOfViews="1" URL="file:///usr/lib/gcc/i686-pc-linux-gnu/4.1.2/include/g%2B%2B-v4/bits/stl_map.h" >
-   <View0 Type="Source" />
-  </Doc24>
-  <Doc25 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/ParamUtils.hpp" >
-   <View0 Type="Source" />
-  </Doc25>
-  <Doc26 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/InitCond.hpp" >
-   <View0 Type="Source" />
-  </Doc26>
-  <Doc27 NumberOfViews="1" URL="file:///home/carm/projects/trunk/src/projectM-engine/Preset.cpp" >
-   <View0 Type="Source" />
-  </Doc27>
-  <Doc28 NumberOfViews="1" URL="file:///home/carm/projects/trunk/src/projectM-engine/projectM.cpp" >
-   <View0 Type="Source" />
-  </Doc28>
-  <Doc29 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Preset.hpp" >
-   <View0 Type="Source" />
-  </Doc29>
-  <Doc30 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PresetChooser.cpp" >
-   <View0 Type="Source" />
-  </Doc30>
-  <Doc31 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PresetChooser.hpp" >
-   <View0 Type="Source" />
-  </Doc31>
-  <Doc32 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/PCM.cpp" >
-   <View0 line="282" Type="Source" />
-  </Doc32>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>
@@ -113,13 +59,6 @@
     </bookmark>
     <bookmark url="/home/carm/projects/dev-1.0/src/projectM-engine/CustomShape.cpp" >
      <mark line="214" />
-    </bookmark>
-    <bookmark url="/home/carm/projects/dev-1.0/src/projectM-engine/CustomWave.cpp" >
-     <mark line="491" />
-     <mark line="492" />
-    </bookmark>
-    <bookmark url="/home/carm/projects/dev-1.0/src/projectM-engine/ParamUtils.hpp" >
-     <mark line="50" />
     </bookmark>
     <bookmark url="/home/carm/projects/projectM/dev-1.0/src/projectM-engine/console_interface.cpp" >
      <mark line="166" />

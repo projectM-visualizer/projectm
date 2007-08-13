@@ -142,7 +142,9 @@ DLLEXPORT void projectM::renderFrame()
 	      presetInputs.frame = 0;
 
 	      m_activePreset2 = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
-		(presetInputs, &m_activePreset->m_presetOutputs == &presetOutputs ? presetOutputs2 : presetOutputs);
+		(presetInputs, &m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
+	      assert(m_activePreset2.get());
+
              nohard=(int)(presetInputs.fps*3.5);
              smoothFrame = (int)(presetInputs.fps * smoothTime);
 	    
@@ -154,6 +156,7 @@ DLLEXPORT void projectM::renderFrame()
 	      printf("HARD CUT");
 	      m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
 		(presetInputs, presetOutputs);
+	      assert(m_activePreset.get());
 	      nohard=presetInputs.fps*5;
 	      smoothFrame=0;
 	    }
@@ -167,17 +170,19 @@ DLLEXPORT void projectM::renderFrame()
 	    int frame = presetInputs.frame++;
 	    presetInputs.frame = oldFrame;
 	    presetInputs.progress= 1.0;
+	    assert(m_activePreset.get());
 	    m_activePreset->evaluateFrame();
-	    renderer->PerPixelMath(&m_activePreset->m_presetOutputs, &presetInputs);
+	    renderer->PerPixelMath(&m_activePreset->presetOutputs(), &presetInputs);
 
 	    presetInputs.frame = frame;
 	    presetInputs.progress= frame /(float) avgtime;
-	    m_activePreset2->evaluateFrame();	    
-	    renderer->PerPixelMath(&m_activePreset2->m_presetOutputs, &presetInputs);
+	    assert(m_activePreset2.get());
+	    m_activePreset2->evaluateFrame();
+	    renderer->PerPixelMath(&m_activePreset2->presetOutputs(), &presetInputs);
 
 	    double ratio = smoothFrame / (presetInputs.fps * smoothTime); 
 
-	    PresetMerger::MergePresets(m_activePreset->m_presetOutputs,m_activePreset2->m_presetOutputs,ratio,presetInputs.gx, presetInputs.gy);
+	    PresetMerger::MergePresets(m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),ratio,presetInputs.gx, presetInputs.gy);
 
             //printf("Smooth:%d\n",smoothFrame);
 
@@ -196,13 +201,13 @@ DLLEXPORT void projectM::renderFrame()
 	    presetInputs.frame++;  //number of frames for current preset
 	    presetInputs.progress= presetInputs.frame/ ( float ) avgtime;
 	    m_activePreset->evaluateFrame();
-	    renderer->PerPixelMath(&m_activePreset->m_presetOutputs, &presetInputs);
+	    renderer->PerPixelMath(&m_activePreset->presetOutputs(), &presetInputs);
 	  }
 	
 	//	std::cout<< m_activePreset->absoluteFilePath()<<std::endl;
 	//	renderer->presetName = m_activePreset->absoluteFilePath();
 
-	renderer->RenderFrame ( &m_activePreset->m_presetOutputs, &presetInputs );
+	renderer->RenderFrame ( &m_activePreset->presetOutputs(), &presetInputs );
 
 	count++;
 #ifndef WIN32

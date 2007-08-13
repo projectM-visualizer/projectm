@@ -24,15 +24,13 @@
 #include "projectM.hpp"
 #include "Common.hpp"
 #include "fatal.h"
-//#include "menu.h"
 #include "console_interface.h"
-#include "Preset.hpp"
-#include "browser.h"
-#include "editor.h"
 #include "event.h"
 #include "BeatDetect.hpp"
 #include "PresetChooser.hpp"
 #include <iostream>
+
+class Preset;
 
 interface_t current_interface = DEFAULT_INTERFACE;
 
@@ -41,17 +39,18 @@ void refreshConsole() {
   switch (current_interface) {
 
   case MENU_INTERFACE:
-//    refreshMenu();
+    // unimplemented
     break;
   case SHELL_INTERFACE:
+    // unimplemented
     break;
   case EDITOR_INTERFACE:
-    refreshEditor();
+    // unimplemented
     break;
   case DEFAULT_INTERFACE:
     break;
   case BROWSER_INTERFACE:
-    refreshBrowser();
+    // unimplemented
     break;
   default:
     break;
@@ -78,10 +77,10 @@ void projectM::key_handler( projectMEvent event,
 	      //shell_key_handler();
 	      break;
 	    case EDITOR_INTERFACE:
-	      editor_key_handler(event,keycode);
+//	      editor_key_handler(event,keycode);
 	      break;
 	    case BROWSER_INTERFACE:
-	      browser_key_handler(event,keycode,modifier);
+//	      browser_key_handler(event,keycode,modifier);
 	      break;
 	    case DEFAULT_INTERFACE:
 	      default_key_handler(event,keycode);

@@ -89,6 +89,8 @@ Param::Param(std::string _name) :
 Param::~Param() {
 
     int x;
+
+    // I hate this, but will let it be for now
     if (flags & P_FLAG_USERDEF) {
         delete((double*)engine_val);
     }
@@ -98,12 +100,13 @@ Param::~Param() {
 
         if (flags & P_FLAG_PER_POINT) {
             free(matrix);
+	    matrix = 0;
         } //FIX THIS NOW XMAS05
         else if (flags & P_FLAG_PER_PIXEL) {
             for (x = 0; x < gx; x++)
                 free(((float**)matrix)[x]);
             free(matrix);
-            matrix = NULL;
+            matrix = 0;
         }
     }
 
@@ -112,28 +115,28 @@ Param::~Param() {
 
 
 /* Returns nonzero if the string is valid parameter name */
-int Param::is_valid_param_string( const char * string ) {
+bool Param::is_valid_param_string( const char * string ) {
 
     if (string == NULL)
-        return FALSE;
+        return false;
 
     /* This ensures the first character is non numeric */
     if ( ((*string) >= 48) && ((*string) <= 57))
-        return FALSE;
+        return false;
 
     /* These probably should never happen */
     if (*string == '.')
-        return FALSE;
+        return false;
 
     if (*string == '+')
-        return FALSE;
+        return false;
 
     if (*string == '-')
-        return FALSE;
+        return false;
 
     /* Could also add checks for other symbols. May do later */
 
-    return TRUE;
+    return true;
 
 }
 

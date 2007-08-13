@@ -58,18 +58,20 @@ void InitCond::evaluate() {
 
 
    assert(this);
+   assert(param);
 
   /* Parameter is of boolean type, either a 1 or 0 value integer */
   /* Set matrix flag to zero. This ensures
      its constant value will be used rather than a matrix value 
   */
-
+   
   param->matrix_flag = 0;
   if (param->type == P_TYPE_BOOL) {
 
     //        printf( "init_cond: %s = %d (TYPE BOOL)\n", param->name.c_str(), init_val.bool_val); 
-      
-	
+	std::cerr << "[InitCond] param is a boolean of with name " 
+		<< param->name << std::endl;
+
 	assert(param->engine_val);
 
 	 *((int*)param->engine_val) = init_val.bool_val;
