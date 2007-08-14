@@ -121,6 +121,11 @@ public:
     template <class WeightFunctor>
     std::auto_ptr<Preset> weightedRandom(const PresetInputs & presetInputs, PresetOutputs & preseOutputs);
 
+
+
+    /// True if no presets in directory 
+    bool empty() const;
+
 private:
     template <class WeightFunctor>
     std::auto_ptr<Preset> doWeightedSample(WeightFunctor & weightFunctor, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
@@ -191,6 +196,11 @@ std::auto_ptr<Preset> PresetChooser::weightedRandom(const PresetInputs & presetI
     return doWeightedSample(weightFunctor);
 }
 
+inline bool PresetChooser::empty() const {
+	return m_presetLoader->getNumPresets() == 0;
+
+}
+
 template <class WeightFunctor>
 inline  std::auto_ptr<Preset> PresetChooser::weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs){
 
@@ -202,7 +212,7 @@ inline  std::auto_ptr<Preset> PresetChooser::weightedRandom(const PresetInputs &
 inline std::auto_ptr<Preset> PresetChooser::directoryIndex(std::size_t index, const PresetInputs & presetInputs,
                                          PresetOutputs & presetOutputs) const {
 
-	return m_presetLoader->loadPreset(index,presetInputs, presetOutputs);
+	return m_presetLoader->loadPreset(index, presetInputs, presetOutputs);
 }
 
 template <class WeightFunctor>

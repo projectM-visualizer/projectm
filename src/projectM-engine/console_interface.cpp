@@ -169,7 +169,6 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		if (((*m_presetPos) == m_presetChooser->end())) {
 			*m_presetPos = m_presetChooser->begin();
 		}
-		m_activePreset = std::auto_ptr<Preset>(0);
 
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
 
@@ -178,13 +177,19 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      break;
 
 	    case PROJECTM_K_r:
+
+		if (m_presetChooser->empty())
+			break;
+
 		m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
 			(this->presetInputs, this->presetOutputs);
 		presetInputs.frame = 0;
 		smoothFrame = 0;
 		break;
 	    case PROJECTM_K_p:
-		
+		if (m_presetChooser->empty())
+			break;
+
 		if (*m_presetPos != m_presetChooser->begin()) {
 			--(*m_presetPos);			
 		} else {
