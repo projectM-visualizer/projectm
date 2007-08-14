@@ -54,7 +54,9 @@ Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, 
 
 Preset::~Preset()
 {
-
+  /// testing
+  customWaves->clear();
+  customShapes->clear();
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(init_cond_tree);
 
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(per_frame_init_eqn_tree);
@@ -152,16 +154,20 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
 void Preset::evalCustomShapeInitConditions()
 {
 
-  for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
+  for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos) {
+    assert(pos->second);
     pos->second->evalInitConds();
+  }
 }
 
 
 void Preset::evalCustomWaveInitConditions()
 {
 
-  for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
+  for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos) {
+    assert(pos->second);
     pos->second->evalInitConds();
+}
 }
 
 
@@ -262,13 +268,14 @@ void Preset::initialize(const std::string & pathname)
   memset(this->per_frame_init_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
   int retval;
 
+  std::cerr << "[Preset] loading file \"" << pathname << "\"..." << std::endl;
+
   if ((retval = loadPresetFile(pathname)) < 0)
   {
 
-#ifdef PRESET_DEBUG
-    if (PRESET_DEBUG) std::cerr << "[Preset] failed to load file \"" <<
+
+     std::cerr << "[Preset] failed to load file \"" <<
       pathname << "\"!" << std::endl;
-#endif
    
     /// @bug how should we handle this problem? a well define exception?
     throw retval;
@@ -286,7 +293,6 @@ void Preset::initialize(const std::string & pathname)
 
 void Preset::loadBuiltinParamsUnspecInitConds() {
 
-std::cerr << "builtin params unspec" << std::endl;
   InitCondUtils::LoadUnspecInitCond loadUnspecInitCond(this->init_cond_tree, this->per_frame_init_eqn_tree);
 
   this->builtinParams.traverse(loadUnspecInitCond);
@@ -296,11 +302,11 @@ std::cerr << "builtin params unspec" << std::endl;
 void Preset::loadCustomWaveUnspecInitConds()
 {
 
-  std::cerr << "custom wave unspec" << std::endl;
+
   for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
   {
     assert(pos->second);
-    pos->second->load_unspecified_init_conds();
+    pos->second->loadUnspecInitConds();
   }
 
 }
@@ -308,11 +314,10 @@ void Preset::loadCustomWaveUnspecInitConds()
 void Preset::loadCustomShapeUnspecInitConds()
 {
 
-std::cerr << "custom shape unspec" << std::endl;
   for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
   {
     assert(pos->second);
-    pos->second->load_custom_shape_init();
+    pos->second->loadUnspecInitConds();
   }
 }
 

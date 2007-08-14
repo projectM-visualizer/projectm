@@ -69,8 +69,8 @@ void InitCond::evaluate() {
   if (param->type == P_TYPE_BOOL) {
 
     //        printf( "init_cond: %s = %d (TYPE BOOL)\n", param->name.c_str(), init_val.bool_val); 
-	std::cerr << "[InitCond] param is a boolean of with name " 
-		<< param->name << std::endl;
+	//std::cerr << "[InitCond] param is a boolean of with name " 
+	//	<< param->name << std::endl;
 
 	assert(param->engine_val);
 

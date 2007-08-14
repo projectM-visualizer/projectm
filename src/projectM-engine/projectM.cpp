@@ -77,7 +77,7 @@ float smoothTime = 5;
 //int smoothFrame = 0;
 int oldFrame = 0;
 
-DLLEXPORT projectM::projectM() :smoothFrame(0),beatDetect ( 0 )
+DLLEXPORT projectM::projectM() :smoothFrame(0), beatDetect ( 0 )
 {
 
 }

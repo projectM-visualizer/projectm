@@ -21,7 +21,7 @@ class LoadUnspecInitCond {
 
 inline void LoadUnspecInitCond::operator() (Param * param) {
 
-    InitCond * init_cond;
+    InitCond * init_cond = 0;
     CValue init_val;
 
     assert(param);
@@ -58,18 +58,20 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
 
         //printf("%s\n", param->name);
         /* Create new initial condition */
-	std::cerr << "[InitCondUtils] creating an unspecified initial condition of name " << param->name << std::endl;
-        if ((init_cond = new InitCond(param, init_val)) == NULL)
-            return;
+	//std::cerr << "[InitCondUtils] creating an unspecified initial condition of name " << param->name << std::endl;
+        if ((init_cond = new InitCond(param, init_val)) == NULL) {
+	    abort();
+        }
 
         /* Insert the initial condition into this presets tree */
 	std::pair<std::map<std::string, InitCond*>::iterator, bool> inserteePair =
 		m_initCondTree.insert(std::make_pair(init_cond->param->name, init_cond));
 	assert(inserteePair.second);
+	assert(inserteePair.first->second);
+    } else
+	assert(m_initCondTree.find(param->name)->second);
 
-    }
-
-
+    
 }
 }
 #endif

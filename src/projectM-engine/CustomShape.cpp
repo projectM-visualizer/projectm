@@ -222,7 +222,7 @@ CustomShape::~CustomShape()
 
 }
 
-void CustomShape::load_custom_shape_init()
+void CustomShape::loadUnspecInitConds()
 {
 
 	// NOTE: This is verified to be same behavior as trunk

@@ -108,7 +108,7 @@ public:
     /** Checks all internal trees are built correctly */
     int checkTrees();
 
-    void load_custom_shape_init();
+    void loadUnspecInitConds();
     void evalInitConds();
   };
 

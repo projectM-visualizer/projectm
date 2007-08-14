@@ -129,7 +129,7 @@ public:
     void evalCustomWaveInitConditions(Preset *preset);
     void evalPerPointEqns();
 
-    void load_unspecified_init_conds();
+    void loadUnspecInitConds();
     
     void evalInitConds();
 
