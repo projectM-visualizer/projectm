@@ -54,9 +54,7 @@ Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, 
 
 Preset::~Preset()
 {
-  /// testing
-  customWaves->clear();
-  customShapes->clear();
+
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(init_cond_tree);
 
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(per_frame_init_eqn_tree);
@@ -79,6 +77,10 @@ Preset::~Preset()
     assert(pos->second);
     delete(pos->second);
   }
+
+  /// testing
+  customWaves->clear();
+  customShapes->clear();
 
 }
 
