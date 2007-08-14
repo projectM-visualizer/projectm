@@ -523,13 +523,14 @@ void CustomWave::evalInitConds()
     assert(pos->second);
     pos->second->evaluate();
   }
+
 }
 
 /** Evaluate per-point equations */
 void CustomWave::evalPerPointEqns()
 {
 
-  int x;
+  
 
   assert(samples > 0);
   assert(r_mesh);
@@ -539,18 +540,19 @@ void CustomWave::evalPerPointEqns()
   assert(x_mesh);
   assert(y_mesh);
 
-  for (x = 0; x < samples; x++)
-    r_mesh[x] = r;
-  for (x = 0; x < samples; x++)
-    g_mesh[x] = g;
-  for (x = 0; x < samples; x++)
-    b_mesh[x] = b;
-  for (x = 0; x < samples; x++)
-    a_mesh[x] = a;
-  for (x = 0; x < samples; x++)
-    x_mesh[x] = x;
-  for (x = 0; x < samples; x++)
-    y_mesh[x] = y;
+  int k;
+  for (k = 0; k < samples; k++)
+    r_mesh[k] = r;
+  for (k = 0; k < samples; k++)
+    g_mesh[k] = g;
+  for (k = 0; k < samples; k++)
+    b_mesh[k] = b;
+  for (k = 0; k < samples; k++)
+    a_mesh[k] = a;
+  for (k = 0; k < samples; k++)
+    x_mesh[k] = x;
+  for (k = 0; k < samples; k++)
+    y_mesh[k] = y;
 
   /* Evaluate per pixel equations */
   for (std::map<int, PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos)
