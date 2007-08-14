@@ -77,7 +77,7 @@ float smoothTime = 5;
 //int smoothFrame = 0;
 int oldFrame = 0;
 
-DLLEXPORT projectM::projectM() :beatDetect ( 0 )
+DLLEXPORT projectM::projectM() :smoothFrame(0),beatDetect ( 0 )
 {
 
 }
@@ -722,8 +722,7 @@ DLLEXPORT void projectM::projectM_resetGL ( int w, int h )
 {
 
 
-	int mindim, origtexsize;
-
+	
 	DWRITE ( "projectM_resetGL(): in: %d x %d\n", w, h );
 
 	/** Stash the new dimensions */
@@ -803,7 +802,7 @@ int projectM::initPresetTools()
 	// First preset
 	std::cerr << "[projectM] Allocating first preset..." << std::endl;
 	m_activePreset =  m_presetPos->allocate ( presetInputs, presetOutputs );
-
+//	m_activePreset2 = m_p
 	std::cerr << "[projectM] First preset allocated. File path is \"" << m_activePreset->absoluteFilePath() << "\"" << std::endl;
 	projectM_resetengine();
 

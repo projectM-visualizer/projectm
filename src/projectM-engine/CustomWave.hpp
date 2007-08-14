@@ -131,7 +131,7 @@ public:
 
     void load_unspecified_init_conds();
     
-    void eval_custom_wave_init_conds();
+    void evalInitConds();
 
 };
 

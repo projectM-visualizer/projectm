@@ -37,10 +37,10 @@
 #include <iostream>
 
 Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
-    file_path(filename),
     builtinParams(presetInputs, presetOutputs),
     customWaves(&presetOutputs.customWaves),
     customShapes(&presetOutputs.customShapes),
+    file_path(filename),
     m_presetOutputs(presetOutputs)
 {
 
@@ -133,8 +133,6 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
 
   }
 
-  if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: new equation (index = %d,matrix=%X) (param = \"%s\")\n",
-                                    per_pixel_eqn->index, per_pixel_eqn->param->matrix, per_pixel_eqn->param->name.c_str());
 
   /* Insert the per pixel equation into the preset per pixel database */
   std::pair<std::map<int, PerPixelEqn*>::iterator, bool> inserteeOption = per_pixel_eqn_tree.insert
@@ -155,7 +153,7 @@ void Preset::evalCustomShapeInitConditions()
 {
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
-    pos->second->eval_custom_shape_init_conds();
+    pos->second->evalInitConds();
 }
 
 
@@ -163,7 +161,7 @@ void Preset::evalCustomWaveInitConditions()
 {
 
   for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
-    pos->second->eval_custom_wave_init_conds();
+    pos->second->evalInitConds();
 }
 
 
@@ -179,6 +177,7 @@ void Preset::evalCustomWavePerFrameEquations()
       assert(_pos->second);
       _pos->second->evaluate();
     }
+
     std::map<int, PerFrameEqn*> & per_frame_eqn_tree = pos->second->per_frame_eqn_tree;
     for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
     {
@@ -287,7 +286,7 @@ void Preset::initialize(const std::string & pathname)
 
 void Preset::loadBuiltinParamsUnspecInitConds() {
 
-
+std::cerr << "builtin params unspec" << std::endl;
   InitCondUtils::LoadUnspecInitCond loadUnspecInitCond(this->init_cond_tree, this->per_frame_init_eqn_tree);
 
   this->builtinParams.traverse(loadUnspecInitCond);
@@ -297,6 +296,7 @@ void Preset::loadBuiltinParamsUnspecInitConds() {
 void Preset::loadCustomWaveUnspecInitConds()
 {
 
+  std::cerr << "custom wave unspec" << std::endl;
   for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
   {
     assert(pos->second);
@@ -308,6 +308,7 @@ void Preset::loadCustomWaveUnspecInitConds()
 void Preset::loadCustomShapeUnspecInitConds()
 {
 
+std::cerr << "custom shape unspec" << std::endl;
   for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
   {
     assert(pos->second);

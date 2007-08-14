@@ -64,6 +64,7 @@ void projectM::key_handler( projectMEvent event,
 	switch( event ) {
 
 
+
 	case PROJECTM_KEYDOWN:
 
 	  //default_key_handler();
@@ -91,6 +92,9 @@ void projectM::key_handler( projectMEvent event,
 
 	    }
 	  break;
+	default:
+		break;
+
 	}
 }
 
@@ -234,5 +238,8 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    default:
 	      break;
 	    }
+	default:
+		break;
+
 	}
 }

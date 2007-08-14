@@ -73,9 +73,10 @@ if (!param->matrix_flag)
 
 PerPointEqn::PerPointEqn(int _index, Param * _param, GenExpr * _gen_expr, int _samples):
 	index(_index),
+	samples(_samples),
 	param(_param),
-	gen_expr(_gen_expr),
-	samples(_samples)
+	gen_expr(_gen_expr)
+
 {}
 
 

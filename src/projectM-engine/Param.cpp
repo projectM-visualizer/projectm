@@ -45,8 +45,8 @@ Param::Param( std::string _name, short int _type, short int _flags, void * _engi
         type(_type),
         flags (_flags),
         matrix_flag (0),
-        matrix (_matrix),
         engine_val(_engine_val),
+        matrix (_matrix),
         default_init_val (_default_init_val),
         upper_bound (_upper_bound),
         lower_bound (_lower_bound)
@@ -62,11 +62,11 @@ Param::Param( std::string _name, short int _type, short int _flags, void * _engi
 
 /* Creates a user defined parameter */
 Param::Param(std::string _name) :
+	name(_name),
         type(P_TYPE_DOUBLE),
-        flags(P_FLAG_USERDEF),
+	flags(P_FLAG_USERDEF),
         matrix_flag(0),
-        matrix(0),
-	name(_name)
+        matrix(0)
         {
 
 	engine_val = new float();
@@ -148,6 +148,7 @@ Param * Param::new_param_float(char * name, short int flags, void * engine_val, 
 
     Param * param;
     CValue iv, ub, lb;
+    assert(engine_val);
 
     iv.float_val = init_val;
     ub.float_val = upper_bound;
@@ -167,6 +168,7 @@ Param * Param::new_param_int(char * name, short int flags, void * engine_val,
 
     Param * param;
     CValue iv, ub, lb;
+    assert(engine_val);
 
     iv.int_val = init_val;
     ub.int_val = upper_bound;
@@ -186,6 +188,7 @@ Param * Param::new_param_bool(char * name, short int flags, void * engine_val,
 
     Param * param;
     CValue iv, ub, lb;
+    assert(engine_val);
 
     iv.bool_val = init_val;
     ub.bool_val = upper_bound;

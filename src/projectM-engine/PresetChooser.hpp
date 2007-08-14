@@ -96,7 +96,7 @@ public:
     };
 
 
-    /// An STL-esque iterator to beginning traversing presets from a directory
+    /// An STL-esque iterator to begin traversing presets from a directory
     /// \returns the position of the first preset in the collection
     PresetIterator begin();
 
@@ -188,7 +188,7 @@ inline PresetIterator PresetChooser::end() const {
 
 template <class WeightFunctor>
 std::auto_ptr<Preset> PresetChooser::weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs, WeightFunctor & weightFunctor) {
-    doWeightedSample(weightFunctor);
+    return doWeightedSample(weightFunctor);
 }
 
 template <class WeightFunctor>

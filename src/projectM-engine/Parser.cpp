@@ -377,14 +377,6 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
       
           line_mode = CUSTOM_WAVE_WAVECODE_LINE_MODE;
 
-      //if (PARSE_DEBUG) 
-      //      printf("parse_line: wavecode prefix found: \"%s\"\n", eqn_string);
-
-	  //      printf("string:%d\n", 5);
-
-	  //SUPER MYSTERIO-BUG - Don't Remove
-	  printf("");
-	
       return parse_wavecode(eqn_string, fs, preset);
     }
     
@@ -484,7 +476,7 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
      return PROJECTM_SUCCESS;
     } else if (line_mode == PER_PIXEL_LINE_MODE) { 
 
-	if (PARSE_DEBUG) printf("parse_line: implicit per pixel eqn\n", line_count);
+	if (PARSE_DEBUG) printf("parse_line: implicit per pixel eqn (LINE %d)\n", line_count);
 	return parse_per_pixel_eqn(fs, preset, eqn_string);
 	
 
@@ -1726,7 +1718,6 @@ int Parser::parse_wave(char * token, FILE * fs, Preset * preset) {
     return PROJECTM_FAILURE;
   }
 
-  int last_custom_wave_id = id;
   strncpy(last_eqn_type, eqn_type, MAX_TOKEN_SIZE);
 
   return parse_wave_helper(fs, preset, id, eqn_type, 0);
@@ -1884,9 +1875,8 @@ int Parser::parse_shape(char * token, FILE * fs, Preset * preset) {
 
   int id;
   char * eqn_type;
-  char string[MAX_TOKEN_SIZE];
   CustomShape * custom_shape;
-  InitCond * init_cond;
+  
 
   if (token == NULL)
 

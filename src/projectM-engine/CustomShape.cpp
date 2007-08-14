@@ -232,7 +232,7 @@ void CustomShape::load_custom_shape_init()
 	traverse ( param_tree, fun );
 }
 
-void CustomShape::eval_custom_shape_init_conds()
+void CustomShape::evalInitConds()
 {
 
 	// NOTE: This is verified to be same behavior as trunk

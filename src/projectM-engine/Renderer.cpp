@@ -646,10 +646,8 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 
   int i;
 
-  float theta;
   float radius;
 
-  CustomShape *pos;
  
   float pi = 3.14159265;
   float start,inc,xval,yval;
@@ -806,7 +804,6 @@ void Renderer::draw_waveform(PresetOutputs *presetOutputs, PresetInputs *presetI
   float wave_x_temp=0;
   float wave_y_temp=0;
   float dy_adj;
-  float xx,yy; 
 
   float cos_rot;
   float sin_rot;    

@@ -48,7 +48,7 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(fal
     { 
 	    glewInit();
 	
-	    GLuint   fb, color_rb, depth_rb, rgba_tex, depth_tex, i, other_tex;
+	    GLuint   fb,  depth_rb, rgba_tex,  other_tex;
 	    glGenFramebuffersEXT(1, &fb);
 	    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fb );
 	
@@ -91,7 +91,7 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(fal
     }
 #endif
 
-fallback:
+
     DWRITE( "using teximage hack fallback\n" );
 
     /** Fallback pbuffer creation via teximage hack */

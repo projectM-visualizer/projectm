@@ -109,7 +109,7 @@ public:
     int checkTrees();
 
     void load_custom_shape_init();
-    void eval_custom_shape_init_conds();
+    void evalInitConds();
   };
 
 

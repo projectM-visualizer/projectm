@@ -46,20 +46,22 @@
 CustomWave::CustomWave(int _id):
     id(_id),
     per_frame_count(0),
-    samples(512),
-    bSpectrum(0),
-    sep(1),
-    smoothing(0.0),
-    bUseDots(0),
-    bAdditive(0),
     r(0),
     g(0),
     b(0),
     a(0),
+    samples(512),
+    bSpectrum(0),
+    bUseDots(0),
+    bAdditive(0),
+
     scaling(1.0),
+    smoothing(0.0),
+
+    per_point_eqn_string_index(0),
     per_frame_eqn_string_index(0),
-    per_frame_init_eqn_string_index(0),
-    per_point_eqn_string_index(0)
+    per_frame_init_eqn_string_index(0)
+
 {
 
   Param * param;
@@ -76,7 +78,7 @@ CustomWave::CustomWave(int _id):
   this->sample_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
 
   /* Start: Load custom wave parameters */
-
+ 
   if ((param = Param::new_param_float("r", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->r, this->r_mesh, 1.0, 0.0, .5)) == NULL)
   {
     delete(this);
@@ -507,7 +509,7 @@ int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr)
 }
 
 
-void CustomWave::eval_custom_wave_init_conds()
+void CustomWave::evalInitConds()
 {
 
   for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos)
