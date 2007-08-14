@@ -156,7 +156,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
       }
           draw_shapes(presetOutputs);
       draw_custom_waves(presetOutputs);
-    draw_waveform(presetOutputs, presetInputs);
+    draw_waveform(presetOutputs);
     if(presetOutputs->bDarkenCenter)darken_center();
      draw_borders(presetOutputs);               //draw borders
 
@@ -791,7 +791,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 }
 
 
-void Renderer::draw_waveform(PresetOutputs *presetOutputs, PresetInputs *presetInputs) {
+void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetInputs) {
 
   int x;
   
@@ -806,262 +806,142 @@ void Renderer::draw_waveform(PresetOutputs *presetOutputs, PresetInputs *presetI
   float dy_adj;
 
   float cos_rot;
-  float sin_rot;    
+  float sin_rot;
 
-    DWRITE( "draw_waveform: %d\n", presetOutputs->nWaveMode );
-
-    glMatrixMode( GL_MODELVIEW );
-    glPushMatrix();
-
-  modulate_opacity_by_volume(presetOutputs); 
-  maximize_colors(presetOutputs);
-  
-  if(presetOutputs->bWaveDots==1) glEnable(GL_LINE_STIPPLE);
-  
-  offset=presetOutputs->wave_x-.5;
+ offset=presetOutputs->wave_x-.5;
   scale=505.0/512.0;
 
+    DWRITE( "WaveformMath: %d\n", presetOutputs->nWaveMode );
 
-  
-
-  //Thick wave drawing
-  if (presetOutputs->bWaveThick==1)  glLineWidth( (this->renderTarget->texsize < 512 ) ? 2 : 2*this->renderTarget->texsize/512);
-
-  //Additive wave drawing (vice overwrite)
-  if (presetOutputs->bAdditiveWaves==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
-  else    glBlendFunc(GL_SRC_ALPHA, GL_ONE); 
- 
       switch(presetOutputs->nWaveMode)
 	{
 	  
-	case 8://monitor
-
-	  glTranslatef(0.5,0.5, 0);
-	  glRotated(-presetOutputs->wave_mystery*90,0,0,1);
-
-	     glTranslatef(-0.5,-0.825, 0);
-	     glTranslatef( 0, 0, -1 );
-	     
-	     /*
-	     for (x=0;x<16;x++)
-	       {
-		 glBegin(GL_LINE_STRIP);
-		 glColor4f(1.0-(x/15.0),.5,x/15.0,1.0);
-		 glVertex3f((this->totalframes%256)*2*scale, -this->beat_val[x]*presetOutputs->fWaveScale+renderTarget->texsize*wave_y,-1);
-		 glColor4f(.5,.5,.5,1.0);
-		 glVertex3f((this->totalframes%256)*2*scale, this->renderTarget->texsize*presetOutputs->wave_y,-1);   
-		 glColor4f(1.0,1.0,0,1.0);
-		 //glVertex3f((this->totalframes%256)*scale*2, this->beat_val_att[x]*presetOutputs->fWaveScale+this->renderTarget->texsize*presetOutputs->wave_y,-1);
-		 glEnd();
-	       
-		 glTranslatef(0,this->renderTarget->texsize*(1/36.0), 0);
-	       }
-	  */
-	     
-	    glTranslatef(0,(1/18.0), 0);
-
- 
-	     glBegin(GL_LINE_STRIP);
-	     glColor4f(1.0,1.0,0.5,1.0);
-	     glVertex2f((this->totalframes%256)*2*scale, beatDetect->treb_att*5*presetOutputs->fWaveScale+presetOutputs->wave_y);
-	     glColor4f(.2,.2,.2,1.0);
-	     glVertex2f((this->totalframes%256)*2*scale, presetOutputs->wave_y);   
-	     glColor4f(1.0,1.0,0,1.0);
-	     glVertex2f((this->totalframes%256)*scale*2, beatDetect->treb*-5*presetOutputs->fWaveScale+presetOutputs->wave_y);
-	     glEnd();
-	       
-	       glTranslatef(0,.075, 0);
-	     glBegin(GL_LINE_STRIP);
-	     glColor4f(0,1.0,0.0,1.0);
-	     glVertex2f((this->totalframes%256)*2*scale, beatDetect->mid_att*5*presetOutputs->fWaveScale+presetOutputs->wave_y);
-	     glColor4f(.2,.2,.2,1.0);
-	     glVertex2f((this->totalframes%256)*2*scale, presetOutputs->wave_y);   
-	     glColor4f(.5,1.0,.5,1.0);
-	     glVertex2f((this->totalframes%256)*scale*2, beatDetect->mid*-5*presetOutputs->fWaveScale+presetOutputs->wave_y);
-	     glEnd(); 
+	
 	  
-	   
-	     glTranslatef(0,.075, 0);
-	     glBegin(GL_LINE_STRIP);
-	     glColor4f(1.0,0,0,1.0);
-	     glVertex2f((this->totalframes%256)*2*scale, beatDetect->bass_att*5*presetOutputs->fWaveScale+presetOutputs->wave_y);
-	     glColor4f(.2,.2,.2,1.0);
-	     glVertex2f((this->totalframes%256)*2*scale, presetOutputs->wave_y);   
-	     glColor4f(1.0,.5,.5,1.0);
-	     glVertex2f((this->totalframes%256)*scale*2, beatDetect->bass*-5*presetOutputs->fWaveScale+presetOutputs->wave_y);
-	     glEnd(); 
-	     
-	  break;
-	  
-	case 0://circular waveforms 
-	  //  float co;
-	  //	  glPushMatrix(); 
-	  /*
-	  if(this->correction)
-	    {
-	      glTranslatef(this->renderTarget->texsize*.5,this->renderTarget->texsize*.5, 0);
-	      glScalef(1.0,this->vw/(float)this->vh,1.0);
-	      glTranslatef((-this->renderTarget->texsize*.5) ,(-this->renderTarget->texsize*.5),0);   
-	    }
-	  */
+	case 0:
 
-    glTranslatef( 0, 0, -1 );
-
+	  // glTranslatef( 0, 0, -1 );
+	  presetOutputs->wave_rot =   0;
+	  presetOutputs->wave_scale =1.0;
 	  presetOutputs->wave_y=-1*(presetOutputs->wave_y-1.0);
  
-	  glBegin(GL_LINE_STRIP);
+	  // glBegin(GL_LINE_STRIP);
 
     DWRITE( "nsamples: %d\n", beatDetect->pcm->numsamples );
-	 
-	  for ( x=0;x<beatDetect->pcm->numsamples;x++)
-	    { float inv_nverts_minus_one = 1.0f/(float)(beatDetect->pcm->numsamples);
-	    //co= -(fabs(x-((beatDetect->pcm->numsamples*.5)-1))/beatDetect->pcm->numsamples)+1;
-	      // printf("%d %f\n",x,co);
-	      //theta=x*(6.28/beatDetect->pcm->numsamples);
-	      //r= ((1+2*presetOutputs->wave_mystery)*(this->renderTarget->texsize/5.0)+
-	      //  ( co*beatDetect->pcm->pcmdataL[x]+ (1-co)*beatDetect->pcm->pcmdataL[-(x-(beatDetect->pcm->numsamples-1))])
-	      //  *25*presetOutputs->fWaveScale);
+
+    presetOutputs->wave_samples = beatDetect->pcm->numsamples;
+	  presetOutputs->wave_samples= 512-32;
+	  for ( x=0;x<	  presetOutputs->wave_samples;x++)
+	    { float inv_nverts_minus_one = 1.0f/(float)(	  presetOutputs->wave_samples);
+	   
 	      r=(0.5 + 0.4f*.12*beatDetect->pcm->pcmdataR[x]*presetOutputs->fWaveScale + presetOutputs->wave_mystery)*.5;
 	      theta=(x)*inv_nverts_minus_one*6.28f + presetInputs->time*0.2f;
-	      /* 
-	      if (x < 51)
-		{
-		  float mix = x/51.0;
-		  mix = 0.5f - 0.5f*cosf(mix * 3.1416f);
-		  float rad_2 = 0.5f + 0.4f*.12*beatDetect->pcm->pcmdataR[x]*presetOutputs->fWaveScale + presetOutputs->wave_mystery;
-		  r = rad_2*(1.0f-mix) + r*(mix);
-		}
-	      */
-  glVertex2f((r*cos(theta)*(this->correction ? this->aspect : 1.0)+presetOutputs->wave_x), (r*sin(theta)+presetOutputs->wave_y));
+	   
+	      presetOutputs->wavearray_x[x]=(r*cos(theta)*(this->correction ? this->aspect : 1.0)+presetOutputs->wave_x);
+	      presetOutputs->wavearray_y[x]=(r*sin(theta)+presetOutputs->wave_y);
+	      //glVertex2f((r*cos(theta)*(this->correction ? this->aspect : 1.0)+presetOutputs->wave_x), (r*sin(theta)+presetOutputs->wave_y));
 	     
 	    }
 
-	  //	  r= ( (1+2*presetOutputs->wave_mystery)*(this->renderTarget->texsize/5.0)+
-	  //     (0.5*beatDetect->pcm->pcmdataL[0]+ 0.5*beatDetect->pcm->pcmdataL[beatDetect->pcm->numsamples-1])
-	  //      *20*presetOutputs->fWaveScale);
-      
-	  //glVertex3f(r*cos(0)+(presetOutputs->wave_x*this->renderTarget->texsize),r*sin(0)+(presetOutputs->wave_y*this->renderTarget->texsize),-1);
-
-	  glEnd();
-	  /*
-	  glBegin(GL_LINE_LOOP);
-	  
-	  for ( x=0;x<(512/pcmbreak);x++)
-	    {
-	      theta=(blockstart+x)*((6.28*pcmbreak)/512.0);
-	      r= ((1+2*presetOutputs->wave_mystery)*(this->renderTarget->texsize/5.0)+fdata_buffer[fbuffer][0][blockstart+x]*.0025*presetOutputs->fWaveScale);
-	      
-	      glVertex3f(r*cos(theta)+(presetOutputs->wave_x*this->renderTarget->texsize),r*sin(theta)+(wave_y*this->renderTarget->texsize),-1);
-	    }
-	  glEnd();
-	  */
-	  //glPopMatrix();
+	 
+	  // glEnd();
+	 
 
 	  break;	
 	
 	case 1://circularly moving waveform
-	  //  float co;
+      
 	  
-	  glTranslatef(.5,.5, 0);
-	  glScalef(1.0,this->vw/(float)this->vh,1.0);
-	  glTranslatef((-.5) ,(-.5),0);   
-	  glTranslatef( 0, 0, -1 );
+	  // glTranslatef(.5,.5, 0);
+	  //glScalef(1.0,this->vw/(float)this->vh,1.0);
+	  //glTranslatef((-.5) ,(-.5),0);   
+
+	  presetOutputs->wave_rot =   0;
+	  presetOutputs->wave_scale = this->vh/(float)this->vw;
+	  //  glTranslatef( 0, 0, -1 );
 
 	  presetOutputs->wave_y=-1*(presetOutputs->wave_y-1.0);
 
-	  glBegin(GL_LINE_STRIP);
-	  //theta=(frame%512)*(6.28/512.0);
-
-	  for ( x=1;x<(512-32);x++)
+	  //  glBegin(GL_LINE_STRIP);
+	  
+	  presetOutputs->wave_samples = 512-32;
+	  for ( x=0;x<(512-32);x++)
 	    {
-	      //co= -(abs(x-255)/512.0)+1;
-	      // printf("%d %f\n",x,co);
-	      //theta=((this->frame%256)*(2*6.28/512.0))+beatDetect->pcm->pcmdataL[x]*.2*presetOutputs->fWaveScale;
-	      //r= ((1+2*presetOutputs->wave_mystery)*(this->renderTarget->texsize/5.0)+
-	      //   (beatDetect->pcm->pcmdataL[x]-beatDetect->pcm->pcmdataL[x-1])*80*presetOutputs->fWaveScale);
+	    
 	      theta=beatDetect->pcm->pcmdataL[x+32]*0.06*presetOutputs->fWaveScale * 1.57 + presetInputs->time*2.3;
 	      r=(0.53 + 0.43*beatDetect->pcm->pcmdataR[x]*0.12*presetOutputs->fWaveScale+ presetOutputs->wave_mystery)*.5;
 
-	     
- glVertex2f((r*cos(theta)*(this->correction ? this->aspect : 1.0)+presetOutputs->wave_x),(r*sin(theta)+presetOutputs->wave_y));
+	      presetOutputs->wavearray_x[x]=(r*cos(theta)*(this->correction ? this->aspect : 1.0)+presetOutputs->wave_x);
+	      presetOutputs->wavearray_y[x]=(r*sin(theta)+presetOutputs->wave_y);
+	  // glVertex2f((r*cos(theta)*(this->correction ? this->aspect : 1.0)+presetOutputs->wave_x),(r*sin(theta)+presetOutputs->wave_y));
 	    }
 
-	  glEnd(); 
-	  /*
-	  presetOutputs->wave_y=-1*(presetOutputs->wave_y-1.0);  
-	  wave_x_temp=(presetOutputs->wave_x*.75)+.125;	
-	  wave_x_temp=-(wave_x_temp-1); 
-
-	  glBegin(GL_LINE_STRIP);
-
-	    
-	  
-	  for (x=0; x<512-32; x++)
-	    {
-	      float rad = (.53 + 0.43*beatDetect->pcm->pcmdataR[x]) + presetOutputs->wave_mystery;
-	      float ang = beatDetect->pcm->pcmdataL[x+32] * 1.57f + this->Time*2.3f;
-	      glVertex3f((rad*cosf(ang)*.2*scale*presetOutputs->fWaveScale + wave_x_temp)*this->renderTarget->texsize,(rad*sinf(ang)*presetOutputs->fWaveScale*.2*scale + presetOutputs->wave_y)*this->renderTarget->texsize,-1);
-	      
-	    }
-	  glEnd();
-	  */
-
+	  // glEnd(); 
+	 
 	  break;
 	  
 	case 2://EXPERIMENTAL
 
-        glTranslatef( 0, 0, -1 );
+	  //  glTranslatef( 0, 0, -1 );
 	  presetOutputs->wave_y=-1*(presetOutputs->wave_y-1.0);  
 
-
-	  glBegin(GL_LINE_STRIP);
+	  presetOutputs->wave_samples = 512-32;
+	  // glBegin(GL_LINE_STRIP);
 
 	  for (x=0; x<512-32; x++)
 	    {
-	   
-  glVertex2f((beatDetect->pcm->pcmdataR[x]*presetOutputs->fWaveScale*0.5*(this->correction ? this->aspect : 1.0) + presetOutputs->wave_x),( (beatDetect->pcm->pcmdataL[x+32]*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y)));
-	    }
-	  glEnd();	
+	      presetOutputs->wavearray_x[x]=(beatDetect->pcm->pcmdataR[x]*presetOutputs->fWaveScale*0.5*(this->correction ? this->aspect : 1.0));
+					
+	      presetOutputs->wavearray_y[x]=( (beatDetect->pcm->pcmdataL[x+32]*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y));
+					//glVertex2f((beatDetect->pcm->pcmdataR[x]*presetOutputs->fWaveScale*0.5*(this->correction ? this->aspect : 1.0) + presetOutputs->wave_x),( (beatDetect->pcm->pcmdataL[x+32]*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y)));
+	      	    }
+	  // glEnd();	
 	  
 	  break;
 
 	case 3://EXPERIMENTAL
 
-	    glTranslatef( 0, 0, -9 );
+	  //glTranslatef( 0, 0, -9 );
 	  presetOutputs->wave_y=-1*(presetOutputs->wave_y-1.0);  
-	  //wave_x_temp=(presetOutputs->wave_x*.75)+.125;	
-	  //wave_x_temp=-(wave_x_temp-1); 
-	  
 	 
+	    presetOutputs->wave_rot =   0;
+	    presetOutputs->wave_scale =1.0;
 
-	  glBegin(GL_LINE_STRIP);
+	 
+	  presetOutputs->wave_samples = 512-32;
+	  // glBegin(GL_LINE_STRIP);
 
 	  for (x=0; x<512-32; x++)
 	    {
-	      
-	      glVertex2f((beatDetect->pcm->pcmdataR[x] * presetOutputs->fWaveScale*0.5 + presetOutputs->wave_x),( (beatDetect->pcm->pcmdataL[x+32]*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y)));
+	      presetOutputs->wavearray_x[x]=(beatDetect->pcm->pcmdataR[x] * presetOutputs->fWaveScale*0.5 + presetOutputs->wave_x);
+	      presetOutputs->wavearray_y[x]=( (beatDetect->pcm->pcmdataL[x+32]*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y));
+	      // glVertex2f((beatDetect->pcm->pcmdataR[x] * presetOutputs->fWaveScale*0.5 + presetOutputs->wave_x),( (beatDetect->pcm->pcmdataL[x+32]*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y)));
  
 	    }
-	  glEnd();	
+	  // glEnd();	
 	  
 	  break;
 
 	case 4://single x-axis derivative waveform
 	  {
+
+	    presetOutputs->wave_rot =   -presetOutputs->wave_mystery*90;
+	    presetOutputs->wave_scale =1.0;
+
 	  presetOutputs->wave_y=-1*(presetOutputs->wave_y-1.0);	  
-	  glTranslatef(.5,.5, 0);
-	  glRotated(-presetOutputs->wave_mystery*90,0,0,1);
-	  glTranslatef(-.5,-.5, 0);
-        glTranslatef( 0, 0, -1 );
+	  // glTranslatef(.5,.5, 0);
+	  //glRotated(-presetOutputs->wave_mystery*90,0,0,1);
+	  //glTranslatef(-.5,-.5, 0);
+	  // glTranslatef( 0, 0, -1 );
 	 
 	  float w1 = 0.45f + 0.5f*(presetOutputs->wave_mystery*0.5f + 0.5f);	       
 	  float w2 = 1.0f - w1;
 	  float xx[512],yy[512];
-				
-	  glBegin(GL_LINE_STRIP);
-	  for (int i=0; i<512; i++)
+		  presetOutputs->wave_samples = 512-32;		
+		  // glBegin(GL_LINE_STRIP);
+	  for (int i=0; i<512-32; i++)
 	    {
-	     xx[i] = -1.0f + 2.0f*(i/512.0) + presetOutputs->wave_x;
+	     xx[i] = -1.0f + 2.0f*(i/512.0-32.0) + presetOutputs->wave_x;
 	     yy[i] =0.4* beatDetect->pcm->pcmdataL[i]*0.47f*presetOutputs->fWaveScale + presetOutputs->wave_y;
 	     xx[i] += 0.4*beatDetect->pcm->pcmdataR[i]*0.44f*presetOutputs->fWaveScale;				      
 	      
@@ -1070,46 +950,40 @@ void Renderer::draw_waveform(PresetOutputs *presetOutputs, PresetInputs *presetI
 		  xx[i] = xx[i]*w2 + w1*(xx[i-1]*2.0f - xx[i-2]);
 		  yy[i] = yy[i]*w2 + w1*(yy[i-1]*2.0f - yy[i-2]);
 		}
-	      glVertex2f(xx[i],yy[i]);
+	      presetOutputs->wavearray_x[x]=xx[i];
+	      presetOutputs->wavearray_y[x]=yy[i];
+	      //	      glVertex2f(xx[i],yy[i]);
 	    }
 
-	  glEnd();
+	  // glEnd();
 
-	  /*
-	  presetOutputs->wave_x=(presetOutputs->wave_x*.75)+.125;	  
-	  presetOutputs->wave_x=-(presetOutputs->wave_x-1); 
-	  glBegin(GL_LINE_STRIP);
 	 
-	  for ( x=1;x<512;x++)
-	    {
-	      dy_adj=  beatDetect->pcm->pcmdataL[x]*20*presetOutputs->fWaveScale-beatDetect->pcm->pcmdataL[x-1]*20*presetOutputs->fWaveScale;
-	      glVertex3f((x*(this->renderTarget->texsize/512))+dy_adj, beatDetect->pcm->pcmdataL[x]*20*presetOutputs->fWaveScale+this->renderTarget->texsize*presetOutputs->wave_x,-1);
-	    }
-	  glEnd(); 
-	  */
 	  }
 	  break;
 
 	case 5://EXPERIMENTAL
 	  	  
-        glTranslatef( 0, 0, -5 );	
-	  
+	  //glTranslatef( 0, 0, -5 );	
+	   presetOutputs->wave_rot = 0;
+	  presetOutputs->wave_scale =1.0;
+
 	  presetOutputs->wave_y=-1*(presetOutputs->wave_y-1.0);  
 	 
 	  cos_rot = cosf(presetInputs->time*0.3f);
 	  sin_rot = sinf(presetInputs->time*0.3f);
+	  presetOutputs->wave_samples = 512-32;
+	  //glBegin(GL_LINE_STRIP);
 
-	  glBegin(GL_LINE_STRIP);
-
-	  for (x=0; x<512; x++)
+	  for (x=0; x<512-32; x++)
 	    {	      
 	      float x0 = (beatDetect->pcm->pcmdataR[x]*beatDetect->pcm->pcmdataL[x+32] + beatDetect->pcm->pcmdataL[x+32]*beatDetect->pcm->pcmdataR[x]);
 	      float y0 = (beatDetect->pcm->pcmdataR[x]*beatDetect->pcm->pcmdataR[x] - beatDetect->pcm->pcmdataL[x+32]*beatDetect->pcm->pcmdataL[x+32]);
-	      
-          glVertex2f(((x0*cos_rot - y0*sin_rot)*presetOutputs->fWaveScale*0.5*(this->correction ? this->aspect : 1.0) + presetOutputs->wave_x),( (x0*sin_rot + y0*cos_rot)*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y));
+	      presetOutputs->wavearray_x[x]=((x0*cos_rot - y0*sin_rot)*presetOutputs->fWaveScale*0.5*(this->correction ? this->aspect : 1.0) + presetOutputs->wave_x);
+	      presetOutputs->wavearray_y[x]=( (x0*sin_rot + y0*cos_rot)*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y);
+	      //  glVertex2f(((x0*cos_rot - y0*sin_rot)*presetOutputs->fWaveScale*0.5*(this->correction ? this->aspect : 1.0) + presetOutputs->wave_x),( (x0*sin_rot + y0*cos_rot)*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y));
  
 	    }
-	  glEnd();	
+	  //glEnd();	
 	  
 	 
 	  break;
@@ -1119,65 +993,79 @@ void Renderer::draw_waveform(PresetOutputs *presetOutputs, PresetInputs *presetI
 
 	  //glMatrixMode(GL_MODELVIEW);
 	  //	  	  glLoadIdentity();
-	  
-	  glTranslatef(.5,.5, 0);
-	  glRotated(-presetOutputs->wave_mystery*90,0,0,1);
-	  glTranslatef(0,0, -1);
-	  
 	  wave_x_temp=-2*0.4142*(fabs(fabs(presetOutputs->wave_mystery)-.5)-.5);
-	  glScalef(1.0+wave_x_temp,1.0,1.0);
-	  glTranslatef(-.5,-.5, 0);
-	  wave_x_temp=-1*(presetOutputs->wave_x-1.0);
 
-	  glBegin(GL_LINE_STRIP);
-	  //	  wave_x_temp=(wave_x*.75)+.125;	  
-	  //	  wave_x_temp=-(wave_x_temp-1);
-	  for ( x=0;x<beatDetect->pcm->numsamples;x++)
+	  presetOutputs->wave_rot = -presetOutputs->wave_mystery*90;
+	  presetOutputs->wave_scale =1.0+wave_x_temp;
+
+	  //glTranslatef(.5,.5, 0);
+	  // glRotated(-presetOutputs->wave_mystery*90,0,0,1);
+	  //	  glTranslatef(0,0, -1);
+	  
+	  // wave_x_temp=-2*0.4142*(fabs(fabs(presetOutputs->wave_mystery)-.5)-.5);
+	  // glScalef(1.0+wave_x_temp,1.0,1.0);
+	  // glTranslatef(-.5,-.5, 0);
+	  wave_x_temp=-1*(presetOutputs->wave_x-1.0);
+	  presetOutputs->wave_samples = beatDetect->pcm->numsamples;
+	  presetOutputs->wave_samples= 512-32;
+	  // glBegin(GL_LINE_STRIP);
+	
+	  for ( x=0;x<  presetOutputs->wave_samples;x++)
 	    {
      
-	      //glVertex3f(x*scale, fdata_buffer[fbuffer][0][blockstart+x]*.0012*fWaveScale+renderTarget->texsize*wave_x_temp,-1);
-	      glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+wave_x_temp);
+	      presetOutputs->wavearray_x[x]=x/(float)  presetOutputs->wave_samples;
+	      presetOutputs->wavearray_y[x]=beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+wave_x_temp;
+	      //glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+wave_x_temp);
 
-	      //glVertex3f(x*scale, renderTarget->texsize*wave_y_temp,-1);
+	     
 	    }
 	  //	  printf("%f %f\n",renderTarget->texsize*wave_y_temp,wave_y_temp);
-	  glEnd(); 
+	  // glEnd(); 
 	  break;
 	  
 	case 7://dual waveforms
 
-	  glTranslatef(.5,.5, 0);
-	  glRotated(-presetOutputs->wave_mystery*90,0,0,1);
-	  
+	  presetOutputs->wave_samples = beatDetect->pcm->numsamples;
+	  presetOutputs->wave_samples= 512-32;
 	  wave_x_temp=-2*0.4142*(fabs(fabs(presetOutputs->wave_mystery)-.5)-.5);
-	  glScalef(1.0+wave_x_temp,1.0,1.0);
-	     glTranslatef(-.5,-.5, -1);
-    glTranslatef( 0, 0, -1 );
+	  // glTranslatef(.5,.5, 0);
+	  presetOutputs->wave_rot = -presetOutputs->wave_mystery*90;
+	  presetOutputs->wave_scale =1.0+wave_x_temp;
+	  //  glRotated(-presetOutputs->wave_mystery*90,0,0,1);
+	  
+	  
+	  //glScalef(1.0+wave_x_temp,1.0,1.0);
+	  // glTranslatef(-.5,-.5, -1);
+	     //glTranslatef( 0, 0, -1 );
 
          wave_y_temp=-1*(presetOutputs->wave_x-1);
 
-		  glBegin(GL_LINE_STRIP);
+	 //	  glBegin(GL_LINE_STRIP);
 	 
-	  for ( x=0;x<beatDetect->pcm->numsamples;x++)
+	  for ( x=0;x<  presetOutputs->wave_samples *0.5 ;x++)
 	    {
-     
-	      glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataL[x]*.04*presetOutputs->fWaveScale+(wave_y_temp+(presetOutputs->wave_y*presetOutputs->wave_y*.5)));
+	      presetOutputs->wavearray_x[x]=x/((float)  presetOutputs->wave_samples*0.5);
+	      presetOutputs->wavearray_y[x]= beatDetect->pcm->pcmdataL[x]*.04*presetOutputs->fWaveScale+(wave_y_temp+(presetOutputs->wave_y*presetOutputs->wave_y*.5));
+	      // glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataL[x]*.04*presetOutputs->fWaveScale+(wave_y_temp+(presetOutputs->wave_y*presetOutputs->wave_y*.5)));
 	    }
-	  glEnd(); 
+	  // glEnd(); 
 
-	  glBegin(GL_LINE_STRIP);
+	  // glBegin(GL_LINE_STRIP);
 	 
-
-	  for ( x=0;x<beatDetect->pcm->numsamples;x++)
+	 
+	  for ( x=0;x<  presetOutputs->wave_samples *0.5;x++)
 	    {
-     
-	      glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+(wave_y_temp-(presetOutputs->wave_y*presetOutputs->wave_y*.5)));
+	      int index =   presetOutputs->wave_samples*0.5 + x;
+	      presetOutputs->wavearray_x[index]=x/((float)  presetOutputs->wave_samples*0.5);
+	      presetOutputs->wavearray_y[index]=beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+(wave_y_temp-(presetOutputs->wave_y*presetOutputs->wave_y*.5));
+	      // glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+(wave_y_temp-(presetOutputs->wave_y*presetOutputs->wave_y*.5)));
 	    }
-	  glEnd(); 
-	  glPopMatrix();
+	  // glEnd(); 
+	  // glPopMatrix();
      break;
      
-	default:  
+     //default:  
+	  /*
  glTranslatef( 0, 0, -1 );
  glBegin(GL_LINE_LOOP);
 	  
@@ -1207,12 +1095,49 @@ glBegin(GL_LINE_STRIP);
 	    }
 	  glEnd();
      break;
-         if (presetOutputs->bWaveThick==1)  glLineWidth( (this->renderTarget->texsize < 512) ? 1 : 2*this->renderTarget->texsize/512); 
-}	
-      glLineWidth( this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
-      glDisable(GL_LINE_STIPPLE);
+	  */
+	}
+      //	  if (presetOutputs->bWaveThick==1)  glLineWidth( (this->renderTarget->texsize < 512) ? 1 : 2*this->renderTarget->texsize/512); 
+      //else glLineWidth( this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
+   
+}
 
-    glPopMatrix();
+void Renderer::draw_waveform(PresetOutputs * presetOutputs)
+{
+
+  glMatrixMode( GL_MODELVIEW );
+  glPushMatrix();
+  
+  modulate_opacity_by_volume(presetOutputs); 
+  maximize_colors(presetOutputs);
+  
+  if(presetOutputs->bWaveDots==1) glEnable(GL_LINE_STIPPLE);
+  
+  
+  //Thick wave drawing
+  if (presetOutputs->bWaveThick==1)  glLineWidth( (this->renderTarget->texsize < 512 ) ? 2 : 2*this->renderTarget->texsize/512);
+  else glLineWidth( (this->renderTarget->texsize < 512 ) ? 1 : this->renderTarget->texsize/512);
+  
+  //Additive wave drawing (vice overwrite)
+  if (presetOutputs->bAdditiveWaves==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+  else    glBlendFunc(GL_SRC_ALPHA, GL_ONE); 
+
+  glTranslatef(.5,.5, 0);
+  glRotated(presetOutputs->wave_rot,0,0,1);	 
+  glScalef(presetOutputs->wave_scale,1.0,1.0);
+  glTranslatef(-.5,-.5, -1);   
+
+  glBegin(GL_LINE_STRIP);
+  for (int x = 0;x<presetOutputs->wave_samples;x++)
+    {
+      glVertex2f(presetOutputs->wavearray_x[x],presetOutputs->wavearray_y[x]);
+    }
+  
+  glEnd();
+  
+  if(presetOutputs->bWaveDots==1) glDisable(GL_LINE_STIPPLE);
+  
+  glPopMatrix();
 }
 
 void Renderer::maximize_colors(PresetOutputs *presetOutputs) {

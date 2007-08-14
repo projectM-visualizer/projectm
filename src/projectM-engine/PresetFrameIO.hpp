@@ -136,6 +136,11 @@ public:
     float **x_mesh;
     float **y_mesh;
 
+  double wavearray_x[2048];
+  double wavearray_y[2048];
+  int wave_samples;
+  double wave_rot;
+  double wave_scale;
 
 };
 

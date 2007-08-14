@@ -173,13 +173,15 @@ DLLEXPORT void projectM::renderFrame()
 	    assert(m_activePreset.get());
 	    m_activePreset->evaluateFrame();
 	    renderer->PerPixelMath(&m_activePreset->presetOutputs(), &presetInputs);
+	    renderer->WaveformMath(&m_activePreset->presetOutputs(), &presetInputs);
 
 	    presetInputs.frame = frame;
 	    presetInputs.progress= frame /(float) avgtime;
 	    assert(m_activePreset2.get());
 	    m_activePreset2->evaluateFrame();
 	    renderer->PerPixelMath(&m_activePreset2->presetOutputs(), &presetInputs);
-
+	    renderer->WaveformMath(&m_activePreset2->presetOutputs(), &presetInputs);
+ 
 	    double ratio = smoothFrame / (presetInputs.fps * smoothTime); 
 
 	    PresetMerger::MergePresets(m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),ratio,presetInputs.gx, presetInputs.gy);
@@ -201,7 +203,10 @@ DLLEXPORT void projectM::renderFrame()
 	    presetInputs.frame++;  //number of frames for current preset
 	    presetInputs.progress= presetInputs.frame/ ( float ) avgtime;
 	    m_activePreset->evaluateFrame();
+
 	    renderer->PerPixelMath(&m_activePreset->presetOutputs(), &presetInputs);
+	    renderer->WaveformMath(&m_activePreset->presetOutputs(), &presetInputs);
+
 	  }
 	
 	//	std::cout<< m_activePreset->absoluteFilePath()<<std::endl;

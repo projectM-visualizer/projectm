@@ -66,9 +66,10 @@ char *title;
   void RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
   void reset(int w, int h);
   void PerPixelMath(PresetOutputs *presetOutputs,  PresetInputs *presetInputs);
+  void WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
 
 private:
-
+  void draw_waveform(PresetOutputs * presetOutputs);
   void PerFrame(PresetOutputs *presetOutputs);
   void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
 
@@ -88,7 +89,7 @@ private:
   void draw_borders(PresetOutputs *presetOutputs);
   void draw_shapes(PresetOutputs *presetOutputs);
   void draw_custom_waves(PresetOutputs *presetOutputs);
-  void draw_waveform(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
+
   void modulate_opacity_by_volume(PresetOutputs *presetOutputs) ;
   void darken_center();
 };

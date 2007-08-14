@@ -4,7 +4,17 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
 {
   double invratio =  ratio;
   ratio = 1.0 - invratio;
+ 
+
+  A.wave_rot = A.wave_rot* invratio + B.wave_rot*ratio;
+  A.wave_scale = A.wave_scale* invratio + B.wave_scale*ratio;
   
+  for (int x = 0; x<A.wave_samples;x++)
+    {
+      A.wavearray_x[x] = A.wavearray_x[x]* invratio + B.wavearray_x[x]*ratio;
+      A.wavearray_y[x] = A.wavearray_y[x]* invratio + B.wavearray_y[x]*ratio;
+    }
+ 
   for (PresetOutputs::cshape_container::iterator pos = A.customShapes.begin();
 	pos != A.customShapes.end(); ++pos) 
     {
@@ -60,19 +70,7 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
     }
 
 
-  /*
- PresetMerger::mergeMesh(A.zoom_is_mesh, B.zoom_is_mesh, A.zoom, B.zoom,  A.zoom_mesh, B.zoom_mesh, gx, gy, ratio);
- PresetMerger:: mergeMesh(A.zoomexp_is_mesh, B.zoomexp_is_mesh, A.zoomexp, B.zoomexp,  A.zoomexp_mesh, B.zoomexp_mesh, gx, gy, ratio);
-  PresetMerger::mergeMesh(A.rot_is_mesh, B.rot_is_mesh, A.rot, B.rot,  A.rot_mesh, B.rot_mesh, gx, gy, ratio);
- //mergeMesh(A.warp_is_mesh, B.warp_is_mesh, A.warp, B.warp,  A.warp_mesh, B.warp_mesh, gx, gy, ratio);
-
-  PresetMerger::mergeMesh(A.sx_is_mesh, B.sx_is_mesh, A.sx, B.sx,  A.sx_mesh, B.sx_mesh, gx, gy, ratio);
-  PresetMerger::mergeMesh(A.sy_is_mesh, B.sy_is_mesh, A.sy, B.sy,  A.sy_mesh, B.sy_mesh, gx, gy, ratio);
-  PresetMerger::mergeMesh(A.dx_is_mesh, B.dx_is_mesh, A.dx, B.dx,  A.dx_mesh, B.dx_mesh, gx, gy, ratio);
-  PresetMerger::mergeMesh(A.dy_is_mesh, B.dy_is_mesh, A.dy, B.dy,  A.dy_mesh, B.dy_mesh, gx, gy, ratio);
-  PresetMerger::mergeMesh(A.cx_is_mesh, B.cx_is_mesh, A.cx, B.cx,  A.cx_mesh, B.cx_mesh, gx, gy, ratio);
-  PresetMerger::mergeMesh(A.cy_is_mesh, B.cy_is_mesh, A.cy, B.cy,  A.cy_mesh, B.cy_mesh, gx, gy, ratio);
-  */
+ 
 
   A.decay = A.decay * invratio + B.decay * ratio;
   
