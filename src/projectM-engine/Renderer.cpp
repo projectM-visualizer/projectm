@@ -791,7 +791,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 }
 
 
-void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetInputs) {
+void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetInputs, bool isSmoothing) {
 
   int x;
   
@@ -811,6 +811,8 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
  offset=presetOutputs->wave_x-.5;
   scale=505.0/512.0;
 
+  presetOutputs->two_waves = false;
+
     DWRITE( "WaveformMath: %d\n", presetOutputs->nWaveMode );
 
       switch(presetOutputs->nWaveMode)
@@ -827,8 +829,8 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 
     DWRITE( "nsamples: %d\n", beatDetect->pcm->numsamples );
 
-    presetOutputs->wave_samples = beatDetect->pcm->numsamples;
-	  presetOutputs->wave_samples= 512-32;
+    presetOutputs->wave_samples = isSmoothing ? 512-32 : beatDetect->pcm->numsamples;
+    // presetOutputs->wave_samples= 512-32;
 	  for ( x=0;x<presetOutputs->wave_samples-1;x++)
 	    { float inv_nverts_minus_one = 1.0f/(float)(	  presetOutputs->wave_samples);
 	   
@@ -996,9 +998,9 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 	  // glScalef(1.0+wave_x_temp,1.0,1.0);
 	  // glTranslatef(-.5,-.5, 0);
 	  wave_x_temp=-1*(presetOutputs->wave_x-1.0);
-	  presetOutputs->wave_samples = beatDetect->pcm->numsamples;
-	  presetOutputs->wave_samples= 512-32;
-	 
+	  //presetOutputs->wave_samples = beatDetect->pcm->numsamples;
+	  //presetOutputs->wave_samples= 512-32;
+	     presetOutputs->wave_samples = isSmoothing ? 512-32 : beatDetect->pcm->numsamples;
 	
 	  for ( x=0;x<  presetOutputs->wave_samples;x++)
 	    {
@@ -1015,35 +1017,34 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 	  
 	case 7://dual waveforms
 
-	  presetOutputs->wave_samples = beatDetect->pcm->numsamples;
-	  presetOutputs->wave_samples= 512-32;
+	  // presetOutputs->wave_samples = beatDetect->pcm->numsamples;
+	  //presetOutputs->wave_samples= 512-32;
 	  wave_x_temp=-2*0.4142*(fabs(fabs(presetOutputs->wave_mystery)-.5)-.5);
 	  // glTranslatef(.5,.5, 0);
 	  presetOutputs->wave_rot = -presetOutputs->wave_mystery*90;
 	  presetOutputs->wave_scale =1.0+wave_x_temp;
 	  //  glRotated(-presetOutputs->wave_mystery*90,0,0,1);
 	  
-	  
+	  presetOutputs->wave_samples = isSmoothing ? 512-32 : beatDetect->pcm->numsamples;
+	  presetOutputs->two_waves = true;
 	  //glScalef(1.0+wave_x_temp,1.0,1.0);
 	  // glTranslatef(-.5,-.5, -1);
       
 
-         wave_y_temp=-1*(presetOutputs->wave_x-1);
-
-     
-	 
-	  for ( x=0;x<  presetOutputs->wave_samples *0.5 ;x++)
+	  wave_y_temp=-1*(presetOutputs->wave_x-1);
+     	 
+	  for ( x=0;x<  presetOutputs->wave_samples ;x++)
 	    {
-	      presetOutputs->wavearray_x[x]=x/((float)  presetOutputs->wave_samples*0.5);
+	      presetOutputs->wavearray_x[x]=x/((float)  presetOutputs->wave_samples);
 	      presetOutputs->wavearray_y[x]= beatDetect->pcm->pcmdataL[x]*.04*presetOutputs->fWaveScale+(wave_y_temp+(presetOutputs->wave_y*presetOutputs->wave_y*.5));
 	      // glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataL[x]*.04*presetOutputs->fWaveScale+(wave_y_temp+(presetOutputs->wave_y*presetOutputs->wave_y*.5)));
 	    }       	 
 	 
-	  for ( x=0;x<  presetOutputs->wave_samples *0.5;x++)
+	  for ( x=0;x<  presetOutputs->wave_samples;x++)
 	    {
-	      int index =   presetOutputs->wave_samples*0.5 + x;
-	      presetOutputs->wavearray_x[index]=x/((float)  presetOutputs->wave_samples*0.5);
-	      presetOutputs->wavearray_y[index]=beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+(wave_y_temp-(presetOutputs->wave_y*presetOutputs->wave_y*.5));
+	      
+	      presetOutputs->wavearray2_x[x]=x/((float)  presetOutputs->wave_samples);
+	      presetOutputs->wavearray2_y[x]=beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+(wave_y_temp-(presetOutputs->wave_y*presetOutputs->wave_y*.5));
 	      // glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+(wave_y_temp-(presetOutputs->wave_y*presetOutputs->wave_y*.5)));
 	    }
 	

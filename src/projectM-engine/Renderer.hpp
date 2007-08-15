@@ -66,7 +66,7 @@ char *title;
   void RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
   void reset(int w, int h);
   void PerPixelMath(PresetOutputs *presetOutputs,  PresetInputs *presetInputs);
-  void WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
+  void WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetInputs, bool isSmoothing);
 
 private:
   void draw_waveform(PresetOutputs * presetOutputs);

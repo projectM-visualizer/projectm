@@ -173,14 +173,14 @@ DLLEXPORT void projectM::renderFrame()
 	    assert(m_activePreset.get());
 	    m_activePreset->evaluateFrame();
 	    renderer->PerPixelMath(&m_activePreset->presetOutputs(), &presetInputs);
-	    renderer->WaveformMath(&m_activePreset->presetOutputs(), &presetInputs);
+	    renderer->WaveformMath(&m_activePreset->presetOutputs(), &presetInputs, true);
 
 	    presetInputs.frame = frame;
 	    presetInputs.progress= frame /(float) avgtime;
 	    assert(m_activePreset2.get());
 	    m_activePreset2->evaluateFrame();
 	    renderer->PerPixelMath(&m_activePreset2->presetOutputs(), &presetInputs);
-	    renderer->WaveformMath(&m_activePreset2->presetOutputs(), &presetInputs);
+	    renderer->WaveformMath(&m_activePreset2->presetOutputs(), &presetInputs, true);
  
 	    double ratio = smoothFrame / (presetInputs.fps * smoothTime); 
 
@@ -205,7 +205,7 @@ DLLEXPORT void projectM::renderFrame()
 	    m_activePreset->evaluateFrame();
 
 	    renderer->PerPixelMath(&m_activePreset->presetOutputs(), &presetInputs);
-	    renderer->WaveformMath(&m_activePreset->presetOutputs(), &presetInputs);
+	    renderer->WaveformMath(&m_activePreset->presetOutputs(), &presetInputs, false);
 
 	  }
 	

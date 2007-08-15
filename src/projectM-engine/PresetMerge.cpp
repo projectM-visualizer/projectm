@@ -9,10 +9,44 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
   A.wave_rot = A.wave_rot* invratio + B.wave_rot*ratio;
   A.wave_scale = A.wave_scale* invratio + B.wave_scale*ratio;
   
-  for (int x = 0; x<A.wave_samples;x++)
+  if (A.two_waves && B.two_waves)
     {
-      A.wavearray_x[x] = A.wavearray_x[x]* invratio + B.wavearray_x[x]*ratio;
-      A.wavearray_y[x] = A.wavearray_y[x]* invratio + B.wavearray_y[x]*ratio;
+      for (int x = 0; x<A.wave_samples;x++)
+	{
+	  A.wavearray_x[x] = A.wavearray_x[x]* invratio + B.wavearray_x[x]*ratio;
+	  A.wavearray_y[x] = A.wavearray_y[x]* invratio + B.wavearray_y[x]*ratio;
+	  A.wavearray2_x[x] = A.wavearray2_x[x]* invratio + B.wavearray2_x[x]*ratio;
+	  A.wavearray2_y[x] = A.wavearray2_y[x]* invratio + B.wavearray2_y[x]*ratio;
+	}
+    }
+  else if (A.two_waves)
+    {
+      for (int x = 0; x<A.wave_samples;x++)
+	{
+	  A.wavearray_x[x] = A.wavearray_x[x]* invratio + B.wavearray_x[x]*ratio;
+	  A.wavearray_y[x] = A.wavearray_y[x]* invratio + B.wavearray_y[x]*ratio;
+	  A.wavearray2_x[x] = A.wavearray2_x[x]* invratio + B.wavearray_x[x]*ratio;
+	  A.wavearray2_y[x] = A.wavearray2_y[x]* invratio + B.wavearray_y[x]*ratio;
+	}
+    }
+  else if (B.two_waves)
+    {
+      A.two_waves=true;
+      for (int x = 0; x<A.wave_samples;x++)
+	{
+	  A.wavearray_x[x] = A.wavearray_x[x]* invratio + B.wavearray_x[x]*ratio;
+	  A.wavearray_y[x] = A.wavearray_y[x]* invratio + B.wavearray_y[x]*ratio;
+	  A.wavearray2_x[x] = A.wavearray_x[x]* invratio + B.wavearray_x[x]*ratio;
+	  A.wavearray2_y[x] = A.wavearray_y[x]* invratio + B.wavearray_y[x]*ratio;
+	}
+    }
+  else
+    {
+      for (int x = 0; x<A.wave_samples;x++)
+	{
+	  A.wavearray_x[x] = A.wavearray_x[x]* invratio + B.wavearray_x[x]*ratio;
+	  A.wavearray_y[x] = A.wavearray_y[x]* invratio + B.wavearray_y[x]*ratio;
+	}
     }
  
   for (PresetOutputs::cshape_container::iterator pos = A.customShapes.begin();

@@ -138,7 +138,10 @@ public:
 
   double wavearray_x[2048];
   double wavearray_y[2048];
+  double wavearray2_x[2048];
+  double wavearray2_y[2048];
   int wave_samples;
+  bool two_waves;
   double wave_rot;
   double wave_scale;
 
