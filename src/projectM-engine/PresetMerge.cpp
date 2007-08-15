@@ -5,7 +5,10 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
   double invratio =  ratio;
   ratio = 1.0 - invratio;
  
-
+  //Merge Simple Waveforms
+  //
+  // All the mess is because of Waveform 7, which is two lines. 
+  //
   A.wave_rot = A.wave_rot* invratio + B.wave_rot*ratio;
   A.wave_scale = A.wave_scale* invratio + B.wave_scale*ratio;
   
@@ -49,6 +52,8 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
 	}
     }
  
+  //Merge Custom Shapes and Custom Waves 
+
   for (PresetOutputs::cshape_container::iterator pos = A.customShapes.begin();
 	pos != A.customShapes.end(); ++pos) 
     {
@@ -88,6 +93,8 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
     }
 
 
+  //Interpolate Per-Pixel mesh
+
   for (int x=0;x<gx;x++)
     {
       for(int y=0;y<gy;y++)
@@ -105,6 +112,7 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
 
 
  
+ //Interpolate PerFrame floats
 
   A.decay = A.decay * invratio + B.decay * ratio;
   
@@ -137,14 +145,25 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
   A.mv_y = A.mv_y* invratio + B.mv_y*ratio;
   A.mv_dy = A.mv_dy* invratio + B.mv_dy*ratio;
   A.mv_dx = A.mv_dx* invratio + B.mv_dx*ratio;
-  
-  /* PER_FRAME VARIABLES END */
+
   
   A.fRating = A.fRating* invratio + B.fRating*ratio;
   A.fGammaAdj = A.fGammaAdj* invratio + B.fGammaAdj*ratio;
   A.fVideoEchoZoom = A.fVideoEchoZoom* invratio + B.fVideoEchoZoom*ratio;
   A.fVideoEchoAlpha = A.fVideoEchoAlpha* invratio + B.fVideoEchoAlpha*ratio;
-  
+ 
+  A.fWaveAlpha = A.fWaveAlpha* invratio + B.fWaveAlpha*ratio;
+  A.fWaveScale = A.fWaveScale* invratio + B.fWaveScale*ratio;
+  A.fWaveSmoothing = A.fWaveSmoothing* invratio + B.fWaveSmoothing*ratio;
+  A.fWaveParam = A.fWaveParam* invratio + B.fWaveParam*ratio;
+  A.fModWaveAlphaStart = A.fModWaveAlphaStart* invratio + B.fModWaveAlphaStart*ratio;
+  A.fModWaveAlphaEnd = A.fModWaveAlphaEnd * invratio + B.fModWaveAlphaEnd *ratio;
+  A.fWarpAnimSpeed = A.fWarpAnimSpeed* invratio + B.fWarpAnimSpeed*ratio;
+  A.fWarpScale = A.fWarpScale* invratio + B.fWarpScale*ratio;
+  A.fShader = A.fShader* invratio + B.fShader*ratio;   
+
+  //Switch bools and discrete values halfway.  Maybe we should do some interesting stuff here.
+ 
   if (ratio > 0.5)
     {
       A.nVideoEchoOrientation = B.nVideoEchoOrientation;
@@ -162,17 +181,7 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
       A.bSolarize = B.bSolarize;
       A.bInvert = B.bInvert;
       A.bMotionVectorsOn = B.bMotionVectorsOn;
-    }
-  
-  A.fWaveAlpha = A.fWaveAlpha* invratio + B.fWaveAlpha*ratio;
-  A.fWaveScale = A.fWaveScale* invratio + B.fWaveScale*ratio;
-  A.fWaveSmoothing = A.fWaveSmoothing* invratio + B.fWaveSmoothing*ratio;
-  A.fWaveParam = A.fWaveParam* invratio + B.fWaveParam*ratio;
-  A.fModWaveAlphaStart = A.fModWaveAlphaStart* invratio + B.fModWaveAlphaStart*ratio;
-  A.fModWaveAlphaEnd = A.fModWaveAlphaEnd * invratio + B.fModWaveAlphaEnd *ratio;
-  A.fWarpAnimSpeed = A.fWarpAnimSpeed* invratio + B.fWarpAnimSpeed*ratio;
-  A.fWarpScale = A.fWarpScale* invratio + B.fWarpScale*ratio;
-  A.fShader = A.fShader* invratio + B.fShader*ratio;   
+    }   
 
   return;
 }
