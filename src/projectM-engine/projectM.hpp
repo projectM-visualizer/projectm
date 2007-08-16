@@ -176,7 +176,7 @@ public:
     BeatDetect * beatDetect;
 
   
-
+    
     /** Functions */
     DLLEXPORT projectM();
 

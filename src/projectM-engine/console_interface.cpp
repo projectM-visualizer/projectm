@@ -171,7 +171,8 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		}
 
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
-
+		renderer->setPresetName(m_activePreset->absoluteFilePath());
+	
                 presetInputs.frame = 0;
 		smoothFrame = 0;
 	      break;
@@ -183,6 +184,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 
 		m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
 			(this->presetInputs, this->presetOutputs);
+		renderer->setPresetName(m_activePreset->absoluteFilePath());
 		presetInputs.frame = 0;
 		smoothFrame = 0;
 		break;
@@ -198,6 +200,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		}
 
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
+		renderer->setPresetName(m_activePreset->absoluteFilePath());
                 presetInputs.frame = 0;
 		smoothFrame = 0;
 	      break;

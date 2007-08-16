@@ -97,7 +97,7 @@ DLLEXPORT void projectM::renderFrame()
   //     printf("Start of loop at %d\n",timestart);
   mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps ); //milliseconds per frame
   
-  
+
 #ifndef WIN32
   presetInputs.time = getTicks ( &startTime ) * 0.001;
 #else
@@ -460,6 +460,7 @@ DLLEXPORT void projectM::projectM_init ( int gx, int gy, int fps, int texsize, i
 	this->presetInputs.gy = gy;
 
 	this->renderer = new Renderer ( width, height, gx, gy, renderTarget, beatDetect, fontURL );
+	renderer->setPresetName(m_activePreset->absoluteFilePath());
 
 	printf ( "exiting projectM_init()\n" );
 }

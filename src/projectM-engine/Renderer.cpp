@@ -9,12 +9,10 @@
 
 class Preset;
 
-Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, BeatDetect *beatDetect, char* fontURL)
+Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, BeatDetect *beatDetect, char* fontURL): m_presetName("None")
 {
   int x; int y; 
-  
-  this->presetName = "None";
-
+ 
   this->gx=gx;
   this->gy=gy;
 
@@ -1419,7 +1417,8 @@ void Renderer::draw_preset() {
 	if(this->noSwitch) title_font->Render("[LOCKED]  " );
 	title_font->FaceSize((unsigned)(20*(this->vh/512.0)));
        
-	//	title_font->Render(this->presetName.c_str() );
+        std::cerr << "displaying preset name:\"" << presetName() << "\"" << std::endl;
+	title_font->Render(this->presetName().c_str() );
 
                  
         
