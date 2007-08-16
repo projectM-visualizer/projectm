@@ -1417,7 +1417,6 @@ void Renderer::draw_preset() {
 	if(this->noSwitch) title_font->Render("[LOCKED]  " );
 	title_font->FaceSize((unsigned)(20*(this->vh/512.0)));
        
-        std::cerr << "displaying preset name:\"" << presetName() << "\"" << std::endl;
 	title_font->Render(this->presetName().c_str() );
 
                  
