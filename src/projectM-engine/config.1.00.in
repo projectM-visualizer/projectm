@@ -10,10 +10,6 @@ Windowed Width (Initial window width)
 512
 Windowed Height (Initial window width)
 512
-Fullscreen Width (set to your native screen resolution)
-1024
-Fullscreen Height (set to your native screen resolution)
-768
 FPS (Higher the Better) 30-90 is realisitc
 35
 Fullscreen on Startup (1=yes, 0=no)
