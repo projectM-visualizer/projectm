@@ -771,9 +771,9 @@ int projectM::initPresetTools()
 #ifdef WIN32
 	srand ( time ( NULL ) );
 #endif
-
+	
 	//	if ( ( m_presetLoader = new PresetLoader ( PROJECTM_PRESET_PATH ) ) == 0 )
-	if ( ( m_presetLoader = new PresetLoader ( *(new std::string(presetURL))) ) == 0 )
+	if ( ( m_presetLoader = new PresetLoader (std::string(presetURL))) == 0 )
 	{
 		m_presetLoader = 0;
 		std::cerr << "[projectM] error allocating preset loader" << std::endl;

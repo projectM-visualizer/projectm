@@ -38,8 +38,6 @@
 
 Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
     builtinParams(presetInputs, presetOutputs),
-    customWaves(presetOutputs.customWaves),
-    customShapes(presetOutputs.customShapes),
     file_path(filename),
     m_presetOutputs(presetOutputs)
 {
