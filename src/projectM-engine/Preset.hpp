@@ -66,9 +66,6 @@ public:
   /// \param presetOutputs initialized and filled with data parsed from a preset
   Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
-  /// A special preset destructor. Very important: the preset destructor is currently responsible
-  /// for clearing out all heap memory it allocated in presetOutputs. This might change in future.
-  /// Conclusion: It does NOT necessarily reset or clear any values. It only deallocates.
   ~Preset();
 
   /// Evaluates the preset for a frame given the current values of preset inputs / outputs
@@ -85,7 +82,7 @@ public:
 
   /// Used by parser to find/create custom waves and shapes. May be refactored
   template <class CustomObject>
-  static CustomObject * find_custom_object(int id, bool create_flag, std::map<int,CustomObject*> & customObjects);
+  static CustomObject * find_custom_object(int id, std::vector<CustomObject*> & customObjects);
 
 
   int per_pixel_eqn_string_index;
@@ -118,8 +115,8 @@ public:
   }
 
   /// @bug encapsulate
-  PresetOutputs::cwave_container * customWaves;
-  PresetOutputs::cshape_container * customShapes;
+  PresetOutputs::cwave_container customWaves;
+  PresetOutputs::cshape_container customShapes;
 
   /// @bug encapsulate
   /* Data structures that contain equation and initial condition information */
@@ -157,37 +154,30 @@ private:
 };
 
 template <class CustomObject>
-CustomObject * Preset::find_custom_object(int id, bool create_flag, std::map<int, CustomObject*> & customObjects)
+CustomObject * Preset::find_custom_object(int id, std::vector<CustomObject*> & customObjects)
 {
 
   CustomObject * custom_object = NULL;
 
 
-  typename std::map<int, CustomObject*>::iterator pos = customObjects.find(id);
+  for (typename std::vector<CustomObject*>::iterator pos = customObjects.begin(); pos != customObjects.end();++pos) {
+	if ((*pos)->id == id) {
+		custom_object = *pos;
+		break;
+	}
+  }
 
-  if (pos == customObjects.end())
+  if (custom_object == NULL)
   {
-    if (create_flag == false)
-    {
-      return NULL;
-    }
 
     if ((custom_object = new CustomObject(id)) == NULL)
     {
       return NULL;
     }
 
-    std::pair<typename std::map<int,CustomObject*>::iterator, bool> inserteePair =
-      customObjects.insert(std::make_pair(custom_object->id, custom_object));
-
-    assert(inserteePair.second);
-
-    custom_object = inserteePair.first->second;
+      customObjects.push_back(custom_object);
 
   }
-  else
-    custom_object = pos->second;
-
 
   assert(custom_object);
   return custom_object;

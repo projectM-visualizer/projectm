@@ -496,7 +496,7 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
       CustomWave * custom_wave;
 
       /* Retrieve custom shape associated with this id */
-      if ((custom_wave = Preset::find_custom_object(last_custom_wave_id, true, *preset->customWaves)) == NULL)
+      if ((custom_wave = Preset::find_custom_object(last_custom_wave_id, preset->customWaves)) == NULL)
 	return PROJECTM_FAILURE;
       return parse_wave_per_frame_eqn(fs, custom_wave, preset);
 
@@ -511,7 +511,7 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
 	CustomShape * custom_shape;
 
 	  /* Retrieve custom shape associated with this id */
-  	if ((custom_shape = Preset::find_custom_object(last_custom_shape_id, true, *preset->customShapes)) == NULL)
+  	if ((custom_shape = Preset::find_custom_object(last_custom_shape_id, preset->customShapes)) == NULL)
     		return PROJECTM_FAILURE;
 
 	return parse_shape_per_frame_eqn(fs, custom_shape, preset);
@@ -521,7 +521,7 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
 	CustomShape * custom_shape;
 
 	  /* Retrieve custom shape associated with this id */
-  	if ((custom_shape = preset->find_custom_object(last_custom_shape_id, true, *preset->customShapes)) == NULL)
+  	if ((custom_shape = preset->find_custom_object(last_custom_shape_id, preset->customShapes)) == NULL)
     		return PROJECTM_FAILURE;
 
 	return parse_shape_per_frame_init_eqn(fs, custom_shape, preset);
@@ -1392,11 +1392,13 @@ int Parser::parse_wavecode(char * token, FILE * fs, Preset * preset) {
   /* Get id and variable name from token string */
   if (parse_wavecode_prefix(token, &id, &var_string) < 0)
     return PROJECTM_PARSE_ERROR;
-  
+
+   last_custom_wave_id = id;
+
   //if (PARSE_DEBUG) printf("parse_wavecode: wavecode id = %d, parameter = \"%s\"\n", id, var_string);
 
   /* Retrieve custom wave information from preset, allocating new one if necessary */
-  if ((custom_wave = Preset::find_custom_object(id, true, *preset->customWaves)) == NULL) {
+  if ((custom_wave = Preset::find_custom_object(id, preset->customWaves)) == NULL) {
     std::cerr << "parse_wavecode: failed to load (or create) custom wave (id = " 
 	<< id << ")!\n" << std::endl;
 
@@ -1480,7 +1482,7 @@ int Parser::parse_shapecode(char * token, FILE * fs, Preset * preset) {
   /* Retrieve custom shape information from preset. The 3rd argument
      if true creates a custom shape if one does not exist */
 
-  if ((custom_shape = Preset::find_custom_object(id, true, *preset->customShapes)) == NULL) {
+  if ((custom_shape = Preset::find_custom_object(id,  preset->customShapes)) == NULL) {
     //if (PARSE_DEBUG) printf("parse_shapecode: failed to load (or create) custom shape (id = %d)!\n", id);
     return PROJECTM_FAILURE;
   }
@@ -1734,7 +1736,7 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
    InitCond * init_cond;
 
   /* Retrieve custom wave associated with this id */
-  if ((custom_wave = Preset::find_custom_object(id, true, *preset->customWaves)) == NULL) {
+  if ((custom_wave = Preset::find_custom_object(id,  preset->customWaves)) == NULL) {
     if (PARSE_DEBUG) printf("parse_wave_helper: custom wave id %d not found!\n", id);
     return PROJECTM_FAILURE;
   }
@@ -1893,7 +1895,7 @@ int Parser::parse_shape(char * token, FILE * fs, Preset * preset) {
   }
 
   /* Retrieve custom shape associated with this id */
-  if ((custom_shape = Preset::find_custom_object(id,true,*preset->customShapes)) == NULL)
+  if ((custom_shape = Preset::find_custom_object(id,preset->customShapes)) == NULL)
     return PROJECTM_FAILURE;
 
 

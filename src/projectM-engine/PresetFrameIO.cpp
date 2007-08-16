@@ -13,7 +13,7 @@ void PresetInputs::Initialize ( int gx, int gy )
 
 	this->gx =gx;
 	this->gy=gy;
-	std::cerr << "Allocating x_mesh, gx,gy is " << gx << "," << gy << std::endl;
+
 	this->x_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
 	for ( x = 0; x < gx; x++ )
 	{
@@ -185,6 +185,7 @@ PresetInputs::~PresetInputs()
 	this->rad_mesh = NULL;
 	this->theta_mesh = NULL;
 }
+
 
 void PresetInputs::ResetMesh()
 {

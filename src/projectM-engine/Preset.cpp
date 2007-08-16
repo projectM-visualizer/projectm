@@ -38,14 +38,12 @@
 
 Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
     builtinParams(presetInputs, presetOutputs),
-    customWaves(&presetOutputs.customWaves),
-    customShapes(&presetOutputs.customShapes),
+    customWaves(presetOutputs.customWaves),
+    customShapes(presetOutputs.customShapes),
     file_path(filename),
     m_presetOutputs(presetOutputs)
 {
 
-  customWaves->clear();
-  customShapes->clear();
   clearMeshChecks();
 
   initialize(filename);
@@ -65,22 +63,15 @@ Preset::~Preset()
 
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<Param> >(user_param_tree);
 
-  /// @note We do not clear the actual container itself and instead let whoever initializes the preset inputs class to do it
-  for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
+  for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos)
   {
-    assert(pos->second);
-    delete(pos->second);
+    	delete(*pos);
   }
 
-  for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
+  for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); pos != customShapes.end(); ++pos)
   {
-    assert(pos->second);
-    delete(pos->second);
+    	delete(*pos);
   }
-
-  /// testing
-  customWaves->clear();
-  customShapes->clear();
 
 }
 
@@ -156,9 +147,9 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
 void Preset::evalCustomShapeInitConditions()
 {
 
-  for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos) {
-    assert(pos->second);
-    pos->second->evalInitConds();
+  for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); pos != customShapes.end(); ++pos) {
+    assert(*pos);
+    (*pos)->evalInitConds();
   }
 }
 
@@ -166,9 +157,9 @@ void Preset::evalCustomShapeInitConditions()
 void Preset::evalCustomWaveInitConditions()
 {
 
-  for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos) {
-    assert(pos->second);
-    pos->second->evalInitConds();
+  for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos) {
+    assert(*pos);
+   (*pos)->evalInitConds();
 }
 }
 
@@ -176,17 +167,17 @@ void Preset::evalCustomWaveInitConditions()
 void Preset::evalCustomWavePerFrameEquations()
 {
 
-  for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
+  for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos)
   {
 
-    std::map<std::string, InitCond*> & init_cond_tree = pos->second->init_cond_tree;
+    std::map<std::string, InitCond*> & init_cond_tree = (*pos)->init_cond_tree;
     for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos)
     {
       assert(_pos->second);
       _pos->second->evaluate();
     }
 
-    std::map<int, PerFrameEqn*> & per_frame_eqn_tree = pos->second->per_frame_eqn_tree;
+    std::map<int, PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
     for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
     {
       assert(_pos->second);
@@ -199,16 +190,16 @@ void Preset::evalCustomWavePerFrameEquations()
 void Preset::evalCustomShapePerFrameEquations()
 {
 
-  for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
+  for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); pos != customShapes.end(); ++pos)
   {
 
-    std::map<std::string, InitCond*> & init_cond_tree = pos->second->init_cond_tree;
+    std::map<std::string, InitCond*> & init_cond_tree = (*pos)->init_cond_tree;
     for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos)
     {
       assert(_pos->second);
       _pos->second->evaluate();
     }
-    std::map<int, PerFrameEqn*> & per_frame_eqn_tree = pos->second->per_frame_eqn_tree;
+    std::map<int, PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
     for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
     {
       assert(_pos->second);
@@ -305,10 +296,10 @@ void Preset::loadCustomWaveUnspecInitConds()
 {
 
 
-  for (PresetOutputs::cwave_container::iterator pos = customWaves->begin(); pos != customWaves->end(); ++pos)
+  for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos)
   {
-    assert(pos->second);
-    pos->second->loadUnspecInitConds();
+    assert(*pos);
+    (*pos)->loadUnspecInitConds();
   }
 
 }
@@ -316,10 +307,10 @@ void Preset::loadCustomWaveUnspecInitConds()
 void Preset::loadCustomShapeUnspecInitConds()
 {
 
-  for (PresetOutputs::cshape_container::iterator pos = customShapes->begin(); pos != customShapes->end(); ++pos)
+  for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); pos != customShapes.end(); ++pos)
   {
-    assert(pos->second);
-    pos->second->loadUnspecInitConds();
+    assert(*pos);
+    (*pos)->loadUnspecInitConds();
   }
 }
 
@@ -337,7 +328,13 @@ void Preset::evaluateFrame()
   evalCustomWavePerFrameEquations();
   evalCustomShapePerFrameEquations();
 
+  // Setup pointers of the custom waves and shapes to the preset outputs instance
+  /// @slow an extra O(N) per frame, could do this during eval
+  m_presetOutputs.customWaves = PresetOutputs::cwave_container(customWaves); 
+  m_presetOutputs.customShapes = PresetOutputs::cshape_container(customShapes);
+
 }
+
 
 // Evaluates all per-pixel equations 
 void Preset::evalPerPixelEqns()

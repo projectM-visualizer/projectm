@@ -1,6 +1,6 @@
 #ifndef PRESET_FRAME_IO_HPP
 #define PRESET_FRAME_IO_HPP
-#include <map>
+#include <vector>
 class CustomWave;
 class CustomShape;
 
@@ -10,8 +10,8 @@ class CustomShape;
 /// Every preset object needs a reference to one of these.
 class PresetOutputs {
 public:
-    typedef std::map<int, CustomWave*> cwave_container;
-    typedef std::map<int, CustomShape*> cshape_container;
+    typedef std::vector<CustomWave*> cwave_container;
+    typedef std::vector<CustomShape*> cshape_container;
 
     cwave_container customWaves;
     cshape_container customShapes;

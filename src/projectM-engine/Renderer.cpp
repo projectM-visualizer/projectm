@@ -586,46 +586,45 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
 
   glPointSize(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512); 
 
-  /// @bug SPERL: this is a starting point at least  
   for (PresetOutputs::cwave_container::const_iterator pos = presetOutputs->customWaves.begin();
 	pos != presetOutputs->customWaves.end(); ++pos) 
     {
      
-      if(pos->second->enabled==1)
+      if( (*pos)->enabled==1)
 	{
 	
-	  if (pos->second->bAdditive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+	  if ( (*pos)->bAdditive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 	  else    glBlendFunc(GL_SRC_ALPHA, GL_ONE); 
-	  if (pos->second->bDrawThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
+	  if ( (*pos)->bDrawThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
 	  
-	   beatDetect->pcm->getPCM(pos->second->value1,pos->second->samples,0,pos->second->bSpectrum,pos->second->smoothing,0);
-	   beatDetect->pcm->getPCM(pos->second->value2,pos->second->samples,1,pos->second->bSpectrum,pos->second->smoothing,0);
+	   beatDetect->pcm->getPCM( (*pos)->value1, (*pos)->samples,0, (*pos)->bSpectrum, (*pos)->smoothing,0);
+	   beatDetect->pcm->getPCM( (*pos)->value2, (*pos)->samples,1, (*pos)->bSpectrum, (*pos)->smoothing,0);
 	  // printf("%f\n",pcmL[0]);
 
 
-	  float mult=pos->second->scaling*presetOutputs->fWaveScale*(pos->second->bSpectrum ? 0.015f :1.0f);
+	  float mult= (*pos)->scaling*presetOutputs->fWaveScale*( (*pos)->bSpectrum ? 0.015f :1.0f);
 
-	  for(x=0;x<pos->second->samples;x++)
-	    {pos->second->value1[x]*=mult;}
+	  for(x=0;x< (*pos)->samples;x++)
+	    { (*pos)->value1[x]*=mult;}
 	  
-	  for(x=0;x<pos->second->samples;x++)
-	    {pos->second->value2[x]*=mult;}
+	  for(x=0;x< (*pos)->samples;x++)
+	    { (*pos)->value2[x]*=mult;}
 
-	   for(x=0;x<pos->second->samples;x++)
-	     {pos->second->sample_mesh[x]=((float)x)/((float)(pos->second->samples-1));}
+	   for(x=0;x< (*pos)->samples;x++)
+	     { (*pos)->sample_mesh[x]=((float)x)/((float)( (*pos)->samples-1));}
 	  
 	  // printf("mid inner loop\n");  
-	  pos->second->evalPerPointEqns();
+	   (*pos)->evalPerPointEqns();
 	
 	  //put drawing code here
-	  if (pos->second->bUseDots==1)   glBegin(GL_POINTS);
+	  if ( (*pos)->bUseDots==1)   glBegin(GL_POINTS);
 	  else   glBegin(GL_LINE_STRIP);
 	  
-	  for(x=0;x<pos->second->samples;x++)
+	  for(x=0;x< (*pos)->samples;x++)
 	    {
 	     
-	      glColor4f(pos->second->r_mesh[x],pos->second->g_mesh[x],pos->second->b_mesh[x],pos->second->a_mesh[x]);
-	      glVertex3f(pos->second->x_mesh[x],-(pos->second->y_mesh[x]-1),-1);
+	      glColor4f( (*pos)->r_mesh[x], (*pos)->g_mesh[x], (*pos)->b_mesh[x], (*pos)->a_mesh[x]);
+	      glVertex3f( (*pos)->x_mesh[x],-( (*pos)->y_mesh[x]-1),-1);
 	    }
 	  glEnd();
 	  glPointSize(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512); 
@@ -649,8 +648,9 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
   float radius;
 
  
-  float pi = 3.14159265;
-  float start,inc,xval,yval;
+//  float pi = 3.14159265;
+//  float start,inc
+  float xval,yval;
   
   float t;
 
@@ -666,14 +666,14 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	pos != presetOutputs->customShapes.end(); ++pos) 
     {
 
-      if(pos->second->enabled==1)
+      if( (*pos)->enabled==1)
 	{
-	  // printf("drawing shape %f\n",pos->second->ang);
-	  pos->second->y=-((pos->second->y)-1);
+	  // printf("drawing shape %f\n", (*pos)->ang);
+	   (*pos)->y=-(( (*pos)->y)-1);
 	  radius=.5;
-	  pos->second->radius=pos->second->radius*(.707*.707*.707*1.04);
+	   (*pos)->radius= (*pos)->radius*(.707*.707*.707*1.04);
 	  //Additive Drawing or Overwrite
-	  if (pos->second->additive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+	  if ( (*pos)->additive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 	  else    glBlendFunc(GL_SRC_ALPHA, GL_ONE); 
 	  
 	  glMatrixMode(GL_MODELVIEW);
@@ -687,10 +687,10 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 		     }
 		   */
 	
-	   xval=pos->second->x;
-	   yval=pos->second->y;
+	   xval= (*pos)->x;
+	   yval= (*pos)->y;
 	  
-	  if (pos->second->textured)
+	  if ( (*pos)->textured)
 	    {
 	      glMatrixMode(GL_TEXTURE);
 	       glPushMatrix();
@@ -701,9 +701,9 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	      //glTranslatef(.5,.5, 0);
 	      //if (this->correction) glScalef(1,this->vw/(float)this->vh,1);
    
-	      //glRotatef((pos->second->tex_ang*360/6.280), 0, 0, 1);
+	      //glRotatef(( (*pos)->tex_ang*360/6.280), 0, 0, 1);
 	      
-	      //glScalef(1/(pos->second->tex_zoom),1/(pos->second->tex_zoom),1); 
+	      //glScalef(1/( (*pos)->tex_zoom),1/( (*pos)->tex_zoom),1); 
 	      
 	      // glScalef(1,vh/(float)vw,1);
 	      //glTranslatef((-.5) ,(-.5),0);  
@@ -712,25 +712,25 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	      	     
 
 	      glBegin(GL_TRIANGLE_FAN);
-	      glColor4f(0.0,0.0,0.0,pos->second->a);
-	      //glColor4f(pos->second->r,pos->second->g,pos->second->b,pos->second->a);
+	      glColor4f(0.0,0.0,0.0, (*pos)->a);
+	      //glColor4f( (*pos)->r, (*pos)->g, (*pos)->b, (*pos)->a);
 	   
 	      glTexCoord2f(.5,.5);
 	      glVertex3f(xval,yval,-1);	 
-	      //glColor4f(pos->second->r2,pos->second->g2,pos->second->b2,pos->second->a2);  
-	      glColor4f(0.0,0.0,0.0,pos->second->a2);
+	      //glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);  
+	      glColor4f(0.0,0.0,0.0, (*pos)->a2);
 
-	      for ( i=1;i<pos->second->sides+2;i++)
+	      for ( i=1;i< (*pos)->sides+2;i++)
 		{
 		 
 		  //		  theta+=inc;
-		  //  glColor4f(pos->second->r2,pos->second->g2,pos->second->b2,pos->second->a2);
+		  //  glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);
 		  //glTexCoord2f(radius*cos(theta)+.5 ,radius*sin(theta)+.5 );
-		  //glVertex3f(pos->second->radius*cos(theta)+xval,pos->second->radius*sin(theta)+yval,-1);  
-		  t = (i-1)/(float)pos->second->sides;
+		  //glVertex3f( (*pos)->radius*cos(theta)+xval, (*pos)->radius*sin(theta)+yval,-1);  
+		  t = (i-1)/(float) (*pos)->sides;
 		  
-		  glTexCoord2f(  0.5f + 0.5f*cosf(t*3.1415927f*2 + pos->second->tex_ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)/pos->second->tex_zoom, 0.5f + 0.5f*sinf(t*3.1415927f*2 + pos->second->tex_ang + 3.1415927f*0.25f)/pos->second->tex_zoom);
-		   glVertex3f(pos->second->radius*cosf(t*3.1415927f*2 + pos->second->ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)+xval, pos->second->radius*sinf(t*3.1415927f*2 + pos->second->ang + 3.1415927f*0.25f)+yval,-1);   
+		  glTexCoord2f(  0.5f + 0.5f*cosf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)/ (*pos)->tex_zoom, 0.5f + 0.5f*sinf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)/ (*pos)->tex_zoom);
+		   glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,-1);   
 		}	
 	      glEnd();
 
@@ -742,26 +742,26 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	      glMatrixMode(GL_MODELVIEW);          
 	    }
 	  else{//Untextured (use color values)
-	    //printf("untextured %f %f %f @:%f,%f %f %f\n",pos->second->a2,pos->second->a,pos->second->border_a, pos->second->x,pos->second->y,pos->second->radius,pos->second->ang);
+	    //printf("untextured %f %f %f @:%f,%f %f %f\n", (*pos)->a2, (*pos)->a, (*pos)->border_a,  (*pos)->x, (*pos)->y, (*pos)->radius, (*pos)->ang);
 	    //draw first n-1 triangular pieces
 	      glBegin(GL_TRIANGLE_FAN);
 	      
-	      glColor4f(pos->second->r,pos->second->g,pos->second->b,pos->second->a);
+	      glColor4f( (*pos)->r, (*pos)->g, (*pos)->b, (*pos)->a);
 	    
 	      // glTexCoord2f(.5,.5);
 	      glVertex3f(xval,yval,-1);	 
-	     glColor4f(pos->second->r2,pos->second->g2,pos->second->b2,pos->second->a2);
+	     glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);
 
-	      for ( i=1;i<pos->second->sides+2;i++)
+	      for ( i=1;i< (*pos)->sides+2;i++)
 		{
 		  
 		  //theta+=inc;
-		  //  glColor4f(pos->second->r2,pos->second->g2,pos->second->b2,pos->second->a2);
+		  //  glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);
 		  //  glTexCoord2f(radius*cos(theta)+.5 ,radius*sin(theta)+.5 );
-		  //glVertex3f(pos->second->radius*cos(theta)+xval,pos->second->radius*sin(theta)+yval,-1);	  
+		  //glVertex3f( (*pos)->radius*cos(theta)+xval, (*pos)->radius*sin(theta)+yval,-1);	  
 
-		  t = (i-1)/(float)pos->second->sides;
-		   glVertex3f(pos->second->radius*cosf(t*3.1415927f*2 + pos->second->ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)+xval, pos->second->radius*sinf(t*3.1415927f*2 + pos->second->ang + 3.1415927f*0.25f)+yval,-1);   	  
+		  t = (i-1)/(float) (*pos)->sides;
+		   glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,-1);   	  
 		       
 		}	
 	      glEnd();
@@ -770,15 +770,15 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	  }
 	    if (presetOutputs->bWaveThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
 	      glBegin(GL_LINE_LOOP);
-	      glColor4f(pos->second->border_r,pos->second->border_g,pos->second->border_b,pos->second->border_a);
-	      for ( i=1;i<pos->second->sides+1;i++)
+	      glColor4f( (*pos)->border_r, (*pos)->border_g, (*pos)->border_b, (*pos)->border_a);
+	      for ( i=1;i< (*pos)->sides+1;i++)
 		{
 
-		  t = (i-1)/(float)pos->second->sides;
-		   glVertex3f(pos->second->radius*cosf(t*3.1415927f*2 + pos->second->ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)+xval, pos->second->radius*sinf(t*3.1415927f*2 + pos->second->ang + 3.1415927f*0.25f)+yval,-1); 	  
+		  t = (i-1)/(float) (*pos)->sides;
+		   glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,-1); 	  
 		 
 		  //theta+=inc;
-		  //glVertex3f(pos->second->radius*cos(theta)+xval,pos->second->radius*sin(theta)+yval,-1);
+		  //glVertex3f( (*pos)->radius*cos(theta)+xval, (*pos)->radius*sin(theta)+yval,-1);
 		}
 	      glEnd();
 	  if (presetOutputs->bWaveThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
