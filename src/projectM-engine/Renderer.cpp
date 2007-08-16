@@ -1030,13 +1030,14 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 	  //glScalef(1.0+wave_x_temp,1.0,1.0);
 	  // glTranslatef(-.5,-.5, -1);
       
+	  double y_adj = presetOutputs->wave_y*presetOutputs->wave_y*.5;
 
 	  wave_y_temp=-1*(presetOutputs->wave_x-1);
      	 
 	  for ( x=0;x<  presetOutputs->wave_samples ;x++)
 	    {
 	      presetOutputs->wavearray_x[x]=x/((float)  presetOutputs->wave_samples);
-	      presetOutputs->wavearray_y[x]= beatDetect->pcm->pcmdataL[x]*.04*presetOutputs->fWaveScale+(wave_y_temp+(presetOutputs->wave_y*presetOutputs->wave_y*.5));
+	      presetOutputs->wavearray_y[x]= beatDetect->pcm->pcmdataL[x]*.04*presetOutputs->fWaveScale+(wave_y_temp+y_adj);
 	      // glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataL[x]*.04*presetOutputs->fWaveScale+(wave_y_temp+(presetOutputs->wave_y*presetOutputs->wave_y*.5)));
 	    }       	 
 	 
@@ -1044,7 +1045,7 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 	    {
 	      
 	      presetOutputs->wavearray2_x[x]=x/((float)  presetOutputs->wave_samples);
-	      presetOutputs->wavearray2_y[x]=beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+(wave_y_temp-(presetOutputs->wave_y*presetOutputs->wave_y*.5));
+	      presetOutputs->wavearray2_y[x]=beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+(wave_y_temp-y_adj);
 	      // glVertex2f(x/(float)beatDetect->pcm->numsamples, beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+(wave_y_temp-(presetOutputs->wave_y*presetOutputs->wave_y*.5)));
 	    }
 	
@@ -1120,6 +1121,17 @@ void Renderer::draw_waveform(PresetOutputs * presetOutputs)
     }
   
   glEnd();
+
+  if (presetOutputs->two_waves)
+    {
+      glBegin(GL_LINE_STRIP);
+      for (int x = 0;x<presetOutputs->wave_samples;x++)
+	{
+	  glVertex2f(presetOutputs->wavearray2_x[x],presetOutputs->wavearray2_y[x]);
+	}
+      
+      glEnd();
+    }
   
   if(presetOutputs->bWaveDots==1) glDisable(GL_LINE_STIPPLE);
   
