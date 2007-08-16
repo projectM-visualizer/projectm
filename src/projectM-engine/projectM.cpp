@@ -73,8 +73,7 @@ projectM *projectM::currentEngine = NULL;
 RenderTarget * projectM::renderTarget = NULL;
 Renderer * projectM::renderer = NULL;
 
-double presetDuration = 15;
-double smoothDuration = 5;
+float smoothTime = 5;
 //int smoothFrame = 0;
 int oldFrame = 0;
 
@@ -145,9 +144,10 @@ DLLEXPORT void projectM::renderFrame()
 	      m_activePreset2 = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
 		(presetInputs, &m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
 	      assert(m_activePreset2.get());
-
+	       renderer->setPresetName(m_activePreset2->absoluteFilePath());
+		
              nohard=(int)(presetInputs.fps*3.5);
-             smoothFrame = (int)(presetInputs.fps * smoothDuration);
+             smoothFrame = (int)(presetInputs.fps * smoothTime);
 	    
               printf("SOFT CUT - Smooth started\n");
 	    }	  	  
@@ -179,14 +179,12 @@ DLLEXPORT void projectM::renderFrame()
 	    presetInputs.frame = frame;
 	    presetInputs.progress= frame /(float) avgtime;
 	    assert(m_activePreset2.get());
-	    m_activePreset2->evaluateFrame();
+	    m_activePreset2->evaluateFrame();	    
 	    renderer->PerPixelMath(&m_activePreset2->presetOutputs(), &presetInputs);
 	    renderer->WaveformMath(&m_activePreset2->presetOutputs(), &presetInputs, true);
  
-            //double pos = -((smoothFrame / (presetInputs.fps * smoothDuration))-1);
-	    //double ratio = 1/(1 + exp((pos-0.5)*4*M_PI));
-	    double ratio = smoothFrame / (presetInputs.fps * smoothDuration);
-	    // printf("f(%f)=%f\n",pos, ratio);
+	    double ratio = smoothFrame / (presetInputs.fps * smoothTime); 
+
 	    PresetMerger::MergePresets(m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),ratio,presetInputs.gx, presetInputs.gy);
 
             //printf("Smooth:%d\n",smoothFrame);
@@ -198,7 +196,7 @@ DLLEXPORT void projectM::renderFrame()
 	  {
 	    if (smoothFrame == 1)
 	      {
-		m_activePreset = m_activePreset2;
+		m_activePreset = m_activePreset2;		
 		smoothFrame=0;
 		printf("Smooth Finished\n");
 	      } 
@@ -451,7 +449,7 @@ DLLEXPORT void projectM::projectM_init ( int gx, int gy, int fps, int texsize, i
 	DWRITE ( "post PCM init\n" );
 #endif
 
-	this->avgtime=this->presetInputs.fps*presetDuration;
+	this->avgtime=this->presetInputs.fps*10;
 
 	this->hasInit = 1;
 
