@@ -136,8 +136,7 @@ public:
 
   
   int smoothFrame;
- 
-    GLubyte *fbuffer;
+
 
 #ifndef WIN32
     /* The first ticks value of the application */
@@ -189,25 +188,8 @@ public:
 
     DLLEXPORT void projectM_initengine();
     DLLEXPORT void projectM_resetengine();
-    void draw_help();
-    void draw_fps(float fps);
-    void draw_preset();
-    void draw_title();
-    void draw_stats();
-
-    void do_per_pixel_math();
-    void do_per_frame();
-
-    void render_interpolation();
-    void render_texture_to_screen();
-    void render_texture_to_studio();
-
+   
     void get_title();
-
-    void reset_per_pixel_matrices();
-    void init_per_pixel_matrices();
-    void rescale_per_pixel_matrices();
-    void free_per_pixel_matrices();
 
     void key_handler( projectMEvent event,
                       projectMKeycode keycode, projectMModifier modifier );

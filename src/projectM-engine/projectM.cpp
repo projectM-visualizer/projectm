@@ -310,7 +310,7 @@ DLLEXPORT void projectM::projectM_init ( int gx, int gy, int fps, int texsize, i
 #endif /** !WIN32 */
 
 	/** Nullify frame stash */
-	fbuffer = NULL;
+      
 
 	/** Initialise per-pixel matrix calculations */
 
