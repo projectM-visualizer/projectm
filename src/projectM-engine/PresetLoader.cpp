@@ -114,7 +114,7 @@ void PresetLoader::handleDirectoryError()
   switch (errno)
   {
   case ENOENT:
-    std::cerr << "[PresetLoader] ENOENT error. \"man fopen\" for more info." << std::endl;
+    std::cerr << "[PresetLoader] ENOENT error. The path \"" << this->m_dirname << "\" probably does not exist. \"man open\" for more info." << std::endl;
     break;
   case ENOMEM:
     std::cerr << "[PresetLoader] out of memory! Are you running Windows?" << std::endl;
