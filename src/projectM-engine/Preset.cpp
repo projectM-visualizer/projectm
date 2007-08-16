@@ -42,6 +42,8 @@ Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, 
     m_presetOutputs(presetOutputs)
 {
 
+  m_presetOutputs.customWaves.clear();
+  m_presetOutputs.customShapes.clear();
   clearMeshChecks();
 
   initialize(filename);
