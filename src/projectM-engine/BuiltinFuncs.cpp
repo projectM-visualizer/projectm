@@ -151,6 +151,7 @@ return PROJECTM_SUCCESS;
 /* Insert a function into the database */
 int BuiltinFuncs::insert_func( Func *func ) {
 
+  assert(func);
   std::pair<std::map<std::string, Func*>::iterator, bool> inserteePair =
   	builtin_func_tree->insert(std::make_pair(std::string(func->name), func));
   

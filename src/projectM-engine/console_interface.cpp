@@ -184,6 +184,8 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 
 		m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
 			(this->presetInputs, this->presetOutputs);
+		assert(m_activePreset.get());
+			
 		renderer->setPresetName(m_activePreset->absoluteFilePath());
 		presetInputs.frame = 0;
 		smoothFrame = 0;

@@ -52,17 +52,17 @@ public:
     int load_all_builtin_param(const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
     int destroy_builtin_param_db();
 
-    int insert_param_alt_name( Param *param, char *alt_name );
+    int insert_param_alt_name( Param *param, const std::string& salt_name );
     Param *find_builtin_param( const std::string & name );
-    int load_builtin_param_float( char *name, void *engine_val, void *matrix,
+    int load_builtin_param_float( const std::string & name, void *engine_val, void *matrix,
                                   short int flags,
                                   float init_val, float upper_bound,
-                                  float lower_bound, char *alt_name );
-    int load_builtin_param_int( char *name, void *engine_val, short int flags,
+                                  float lower_bound, const std::string & alt_name );
+    int load_builtin_param_int( const std::string & name, void *engine_val, short int flags,
                                 int init_val, int upper_bound,
-                                int lower_bound, char *alt_name );
-    int load_builtin_param_bool( char *name, void *engine_val, short int flags,
-                                int init_val, char *alt_name );
+                                int lower_bound, const std::string & alt_name );
+    int load_builtin_param_bool( const std::string & name, void *engine_val, short int flags,
+                                int init_val, const std::string & alt_name );
     int insert_builtin_param( Param *param );
 
     template <class Fun>
