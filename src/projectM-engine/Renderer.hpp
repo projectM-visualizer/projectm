@@ -52,7 +52,6 @@ FTGLPolygonFont *poly_font;
     int correction;
 
     char *fontURL;
-    std::string m_presetName;
 
     int noSwitch;
 
@@ -68,7 +67,7 @@ char *title;
   void PerPixelMath(PresetOutputs *presetOutputs,  PresetInputs *presetInputs);
   void WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetInputs, bool isSmoothing);
 
-	void setPresetName(const std::string& theValue)
+ 	void setPresetName(const std::string& theValue)
 	{
 	  m_presetName = theValue;
 	}
@@ -81,6 +80,9 @@ char *title;
 	
 
 private:
+
+  std::string m_presetName;
+
   void draw_waveform(PresetOutputs * presetOutputs);
   void PerFrame(PresetOutputs *presetOutputs);
   void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);

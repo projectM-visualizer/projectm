@@ -9,7 +9,7 @@
 
 class Preset;
 
-Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, BeatDetect *beatDetect, char* fontURL): m_presetName("None")
+Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, BeatDetect *beatDetect, char * _fontURL): fontURL(_fontURL), m_presetName("None")
 {
   int x; int y; 
  
@@ -73,7 +73,7 @@ this->origy2=(float **)wipemalloc(gx * sizeof(float *));
 
 this->renderTarget = renderTarget;
 this->beatDetect = beatDetect;
-this->fontURL = fontURL;
+
 
 #ifdef USE_FTGL
     /** Reset fonts */

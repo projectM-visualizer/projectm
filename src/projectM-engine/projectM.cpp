@@ -145,7 +145,7 @@ DLLEXPORT void projectM::renderFrame()
 	      m_activePreset2 = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
 		(presetInputs, &m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
 	      assert(m_activePreset2.get());
-		renderer->setPresetName(m_activePreset2->absoluteFilePath());
+	      renderer->setPresetName(m_activePreset2->absoluteFilePath());
 
              nohard=(int)(presetInputs.fps*3.5);
              smoothFrame = (int)(presetInputs.fps * smoothDuration);
@@ -294,8 +294,6 @@ DLLEXPORT void projectM::projectM_reset()
 
 DLLEXPORT void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, int height )
 {
-
-
 
 	/** Initialise engine variables */
 
@@ -461,6 +459,7 @@ DLLEXPORT void projectM::projectM_init ( int gx, int gy, int fps, int texsize, i
 	this->presetInputs.gy = gy;
 
 	this->renderer = new Renderer ( width, height, gx, gy, renderTarget, beatDetect, fontURL );
+
 	renderer->setPresetName(m_activePreset->absoluteFilePath());
 
 	printf ( "exiting projectM_init()\n" );
