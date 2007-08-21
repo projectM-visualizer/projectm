@@ -63,8 +63,8 @@ extern "C" int worker_func(void*);
 extern "C" VisPlugin *get_vplugin_info();
 void read_config();
 
-char preset_dir[512];
-char fonts_dir[512];
+char preset_dir[1024];
+char fonts_dir[1024];
 
 //extern preset_t * active_preset;
 
@@ -106,7 +106,7 @@ SDL_Surface *screen;
 //SDL_RenderTarget *RenderTarget = NULL;
 //GLuint RenderTargetTextureID;
 
-static projectM * globalPM = NULL;
+projectM * globalPM = NULL;
 
 int maxsamples=512;
 
@@ -115,7 +115,7 @@ int gx=32,gy=24;
 int wvw=400,wvh=400;
 int fvw=1024,fvh=768;
 int fps=35, fullscreen=0;
-char *disp;
+
 // char *title;
 
 gint disable_projectm(void *something) {
@@ -164,7 +164,7 @@ int worker_func(void*)
 { 
  char projectM_data[1024]; 
  SDL_TimerID title_timer = NULL;
-  read_config();
+ read_config();
   init_display(wvw,wvh,&fvw,&fvh,fullscreen);   
   SDL_WM_SetCaption("projectM v1.00", "projectM v1.00");
 
@@ -175,21 +175,16 @@ int worker_func(void*)
   globalPM->projectM_reset();
   
   globalPM->fullscreen = fullscreen;
-  //globalPM->renderTarget->texsize = texsize;
-  //globalPM->renderTarget->usePbuffers = 0;
-  // globalPM->gx=gx;
-  //globalPM->gy=gy;
-  // globalPM->fps=fps;
 
   
   	strcpy(projectM_data, PROJECTM_PREFIX);
 	strcpy(projectM_data+strlen(PROJECTM_PREFIX), FONTS_DIR);
 	projectM_data[strlen(PROJECTM_PREFIX)+strlen(FONTS_DIR)]='\0';
        
-	globalPM->fontURL = (char *)malloc( sizeof( char ) * 512 );
+	globalPM->fontURL = (char *)malloc( sizeof( char ) * 1024 );
 	strcpy( globalPM->fontURL, projectM_data );	
 	
-	globalPM->presetURL = (char *)malloc( sizeof( char ) * 512 );
+	globalPM->presetURL = (char *)malloc( sizeof( char ) * 1024 );
 	strcpy( globalPM->presetURL, preset_dir );	
  
       
@@ -453,27 +448,27 @@ void read_config()
 
 
 
-     fgets(num, 80, in);  fgets(num, 80, in);  fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &texsize);  
+     fgets(num, 512, in);  fgets(num, 512, in);  fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &texsize);  
 
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &gx);  
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &gx);  
 
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &gy);   
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &gy);   
 
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &wvw);  
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &wvw);  
 
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &wvh);  
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &wvh);  
    
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &fps);
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &fps);
 
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &fullscreen);
-     fgets(num, 80, in);
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &fullscreen);
+     fgets(num, 512, in);
 
      if(fgets(num, 512, in) != NULL)  strcpy(preset_dir, num);
      preset_dir[strlen(preset_dir)-1]='\0';
