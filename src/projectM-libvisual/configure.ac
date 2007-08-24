@@ -54,14 +54,6 @@ fi
 AC_SUBST(LIBVISUAL_LIBS)
 AC_SUBST(LIBVISUAL_CFLAGS)
 
-PKG_CHECK_MODULES(FTGL, ftgl >= 2.0.0, [libft="yes"], [libft="no"])
-if test x$libft = xno; then
-	AC_MSG_ERROR([*** ftgl not found.
-			libftgl is needed to build this package./])
-fi
-AC_SUBST(FTGL_LIBS)
-AC_SUBST(FTGL_CFLAGS)
-
 AC_PATH_X
 
 opengl=no

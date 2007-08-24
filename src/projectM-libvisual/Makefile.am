@@ -6,7 +6,7 @@ EXTRA_LTLIBRARIES = actor_projectM.la
 
 libdir = @LIBVISUAL_PLUGINS_BASE_DIR@/actor
 
-LIBS = -L. -L$(prefix)/lib  @LIBVISUAL_LIBS@ @FTGL_LIBS@ -lprojectM -lGL -lGLU
+LIBS = -L. -L$(prefix)/lib  @LIBVISUAL_LIBS@ -lprojectM -lGL -lGLU
 
 AM_CXXFLAGS = @LIBVISUAL_CFLAGS@ -DLINUX
 
