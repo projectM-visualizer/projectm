@@ -11,6 +11,7 @@ OPTION(USE_FTGL "Use FTGL for on-screen fonts" ON)
 ADD_DEFINITIONS(-DLINUX -DUSE_FBO)
 
 FIND_PACKAGE(OpenGL)
+#FIND_PACKAGE(LibXml2)
 
 INCLUDE(FindPkgConfig.cmake)
 
@@ -26,7 +27,7 @@ ENDIF(USE_FTGL)
 
 CONFIGURE_FILE("libprojectM.pc.in" "libprojectM.pc" @ONLY)
 CONFIGURE_FILE("config.1.00.in" "config.1.00" @ONLY)
-
+CONFIGURE_FILE("config.xml.in" "config.xml" @ONLY)
 
 FILE(GLOB presets "presets/*.milk")
 INSTALL(FILES ${presets} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/presets)
@@ -34,5 +35,6 @@ FILE(GLOB fonts "fonts/*.ttf")
 INSTALL(FILES ${fonts} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/fonts)
 INSTALL(FILES "${CMAKE_BINARY_DIR}/libprojectM.pc" DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
 INSTALL(FILES config.1.00 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM)
+INSTALL(FILES config.xml DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM)
 INSTALL(FILES projectM.hpp PBuffer.hpp PCM.hpp BeatDetect.hpp Preset.hpp event.h console_interface.h dlldefs.h fatal.h   PresetFrameIO.hpp PCM.hpp Renderer.hpp PresetChooser.hpp DESTINATION include/libprojectM)
 INSTALL(TARGETS projectM DESTINATION lib)
