@@ -29,6 +29,7 @@ www.gamedev.net/reference/programming/features/beatdetection/
 #include <stdio.h>
 #include <xmms/plugin.h>
 #include <string.h>
+#include <string>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -61,7 +62,7 @@ extern "C" void projectM_render_pcm(gint16 pcm_data[2][512]);
 extern "C" void projectM_render_freq(gint16 pcm_data[2][256]);
 extern "C" int worker_func(void*);
 extern "C" VisPlugin *get_vplugin_info();
-void read_config();
+std::string read_config();
 
 char preset_dir[1024];
 char fonts_dir[1024];
@@ -164,16 +165,22 @@ int worker_func(void*)
 { 
  char projectM_data[1024]; 
  SDL_TimerID title_timer = NULL;
- read_config();
+ std::string config_file;
+ config_file = read_config();
+
+ int wvw = 512;
+ int wvh = 512;
+ int fullscreen = 0;
+
   init_display(wvw,wvh,&fvw,&fvh,fullscreen);   
   SDL_WM_SetCaption("projectM v1.00", "projectM v1.00");
 
 
   /** Initialise projectM */
     
-  globalPM = new projectM();
-  globalPM->projectM_reset();
-  
+  globalPM = new projectM(config_file);
+
+  /*  
   globalPM->fullscreen = fullscreen;
 
   
@@ -186,11 +193,9 @@ int worker_func(void*)
 	
 	globalPM->presetURL = (char *)malloc( sizeof( char ) * 1024 );
 	strcpy( globalPM->presetURL, preset_dir );	
- 
+  */
       
-    globalPM->projectM_init(gx, gy, fps, texsize, fullscreen ? fvw:wvw, fullscreen? fvh:wvh);
-  
-    globalPM->projectM_resetGL( wvw, wvh );
+   
 
     title_timer = SDL_AddTimer(500, get_xmms_title, NULL);
     /** Initialise the thread */
@@ -375,7 +380,7 @@ extern "C" void projectM_render_freq(gint16 freq_data[2][256])
   printf("NO GOOD\n");
  }
 
-void read_config()
+std::string read_config()
 {
 
    int n;
@@ -394,17 +399,19 @@ void read_config()
    printf("dir:%s \n",projectM_config);
    home=getenv("HOME");
    strcpy(projectM_home, home);
-   strcpy(projectM_home+strlen(home), "/.projectM/config.1.00");
-   projectM_home[strlen(home)+strlen("/.projectM/config.1.00")]='\0';
+   strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
+   projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
 
   
  if ((in = fopen(projectM_home, "r")) != 0) 
    {
-     printf("reading ~/.projectM/config.1.00 \n");
+     printf("reading ~/.projectM/config.inp \n");
+     fclose(in);
+     return std::string(projectM_home);
    }
  else
    {
-     printf("trying to create ~/.projectM/config.1.00 \n");
+     printf("trying to create ~/.projectM/config.inp \n");
 
      strcpy(projectM_home, home);
      strcpy(projectM_home+strlen(home), "/.projectM");
@@ -412,8 +419,8 @@ void read_config()
      mkdir(projectM_home,0755);
 
      strcpy(projectM_home, home);
-     strcpy(projectM_home+strlen(home), "/.projectM/config.1.00");
-     projectM_home[strlen(home)+strlen("/.projectM/config.1.00")]='\0';
+     strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
+     projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
      
      if((out = fopen(projectM_home,"w"))!=0)
        {
@@ -430,24 +437,30 @@ void read_config()
 	    
 
 	     if ((in = fopen(projectM_home, "r")) != 0) 
-	       { printf("created ~/.projectM/config.1.00 successfully\n");  }
-	     else{printf("This shouldn't happen, using implementation defualts\n");return;}
+	       { 
+		 printf("created ~/.projectM/config.inp successfully\n");  
+		 fclose(in);
+		 return std::string(projectM_home);
+	       }
+	     else{printf("This shouldn't happen, using implementation defualts\n");abort();}
 	   }
-	 else{printf("Cannot find projectM default config, using implementation defaults\n");return;}
+	 else{printf("Cannot find projectM default config, using implementation defaults\n");abort();}
        }
      else
        {
-	 printf("Cannot create ~/.projectM/config.1.00, using default config file\n");
+	 printf("Cannot create ~/.projectM/config.inp, using default config file\n");
 	 if ((in = fopen(projectM_config, "r")) != 0) 
-	   { printf("Successfully opened default config file\n");}
-	 else{ printf("Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");	   return;}
+	   { printf("Successfully opened default config file\n");
+	     fclose(in);
+	     return std::string(projectM_config);}
+	 else{ printf("Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");  abort();}
 	   
        }
 
    }
 
 
-
+ /*
      fgets(num, 512, in);  fgets(num, 512, in);  fgets(num, 512, in);
      if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &texsize);  
 
@@ -472,7 +485,7 @@ void read_config()
 
      if(fgets(num, 512, in) != NULL)  strcpy(preset_dir, num);
      preset_dir[strlen(preset_dir)-1]='\0';
-    
+ */ 
      /*
      fgets(num, 80, in);
      fgets(num, 80, in);
@@ -491,8 +504,9 @@ void read_config()
       printf("%s %d\n", disp,strlen(disp));
       setenv("LD_PRELOAD", "/usr/lib/tls/libGL.so.1.0.4496", 1);
      */
-   fclose(in); 
+ // fclose(in); 
   
+ abort();
 } 
 
 
