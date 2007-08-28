@@ -51,7 +51,7 @@ FTGLPolygonFont *poly_font;
     int studio;
     int correction;
 
-    char *fontURL;
+  std::string fontURL;
 
     int noSwitch;
 
@@ -60,7 +60,7 @@ float realfps;
 char *title;
     int drawtitle;
 
-  Renderer( int width, int height, int gx, int gy, RenderTarget *renderTarget, BeatDetect *beatDetect, char *fontURL);
+  Renderer( int width, int height, int gx, int gy, RenderTarget *renderTarget, BeatDetect *beatDetect, std::string fontURL);
   ~Renderer();
   void RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
   void reset(int w, int h);

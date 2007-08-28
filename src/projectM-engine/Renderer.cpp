@@ -9,7 +9,7 @@
 
 class Preset;
 
-Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, BeatDetect *beatDetect, char * _fontURL): fontURL(_fontURL), m_presetName("None")
+Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, BeatDetect *beatDetect, std::string _fontURL): fontURL(_fontURL), m_presetName("None")
 {
   int x; int y; 
  
@@ -561,10 +561,10 @@ void Renderer::reset(int w, int h)
     if ( title_font == NULL && other_font == NULL ) {
        char path[1024];
 
-        sprintf( path, "%s%cVera.ttf", this->fontURL, PATH_SEPARATOR );
+       sprintf( path, "%s%cVera.ttf", this->fontURL.c_str(), PATH_SEPARATOR );
         title_font = new FTGLPixmapFont(path);
 	poly_font = new FTGLPolygonFont(path);
-	sprintf( path, "%s%cVeraMono.ttf", this->fontURL, PATH_SEPARATOR );
+	sprintf( path, "%s%cVeraMono.ttf", this->fontURL.c_str(), PATH_SEPARATOR );
         other_font = new FTGLPixmapFont(path);
    
       }

@@ -51,6 +51,7 @@
 
 #include "Renderer.hpp"
 #include "PresetChooser.hpp"
+#include "ConfigFile.h"
 
 #ifdef LINUX
 const std::string projectM::PROJECTM_PRESET_PATH ( "/usr/share/projectM/presets/" );
@@ -80,7 +81,38 @@ int oldFrame = 0;
 
 DLLEXPORT projectM::projectM() :smoothFrame(0), beatDetect ( 0 )
 {
+  projectM_reset();
+}
 
+DLLEXPORT  projectM::projectM(std::string config_file) :smoothFrame(0), beatDetect ( 0 )
+{
+ projectM_reset();
+ readConfig(config_file);
+
+ 
+}
+
+DLLEXPORT void projectM::readConfig(std::string config_file)
+{
+
+  ConfigFile config(config_file);
+  
+  int gx = config.read<int>( "Mesh X", 32 );
+  int gy = config.read<int>( "Mesh Y", 24 );
+  int texsize = config.read<int>( "Texsize", 512 ); 
+  int fps = config.read<int>( "FPS", 35 );
+  int wvw = config.read<int>( "Window Width", 512 );
+  int wvh = config.read<int>( "Window Width", 512 );
+
+  int fullscreen;
+  if (config.read("Fullscreen", true)) fullscreen = 1;
+      else fullscreen = 0;
+
+  presetURL = config.read<string>( "Preset Path", "/usr/share/projectM/presets" );
+  fontURL = config.read<string>( "Font Path", "/usr/share/projectM/fonts" );
+
+  projectM_init(gx, gy, fps, texsize, wvw, wvh);  
+  projectM_resetGL( wvw, wvh );
 }
 
 
@@ -258,8 +290,8 @@ DLLEXPORT void projectM::projectM_reset()
 	//  	m_activePreset = 0;
 	// }
 
-	this->presetURL = NULL;
-	this->fontURL = NULL;
+	this->presetURL = "";
+	this->fontURL = "";
 
 	/** Default variable settings */
 	this->hasInit = 0;
@@ -324,7 +356,7 @@ DLLEXPORT void projectM::projectM_init ( int gx, int gy, int fps, int texsize, i
 
 	/* Preset loading function */
 	initPresetTools();
-
+#if 0
 	/* Load default preset directory */
 #ifdef MACOS2
 	/** Probe the bundle for info */
@@ -434,7 +466,7 @@ DLLEXPORT void projectM::projectM_init ( int gx, int gy, int fps, int texsize, i
 	}
 
 #endif
-
+#endif
 
 	mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps );
 
@@ -776,7 +808,7 @@ int projectM::initPresetTools()
 	srand ( time ( NULL ) );
 #endif
 
-	if ( ( m_presetLoader = new PresetLoader (std::string(presetURL))) == 0 )
+	if ( ( m_presetLoader = new PresetLoader (presetURL)) == 0 )
 	{
 		m_presetLoader = 0;
 		std::cerr << "[projectM] error allocating preset loader" << std::endl;

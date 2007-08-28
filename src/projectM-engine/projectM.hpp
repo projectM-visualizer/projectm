@@ -39,6 +39,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <string>
 #include <stdlib.h>
 #ifndef WIN32
 #include <unistd.h>
@@ -125,9 +126,9 @@ public:
     static Renderer *renderer;
     static RenderTarget *renderTarget;
 
-    char *presetURL;
+  std::string presetURL;
 
-    char *fontURL;
+  std::string fontURL;
 
     int hasInit;
 
@@ -181,14 +182,18 @@ public:
     DLLEXPORT projectM();
 
     DLLEXPORT void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
-    DLLEXPORT void projectM_reset();
+    void projectM_reset();
     DLLEXPORT void projectM_resetGL( int width, int height );
     DLLEXPORT void projectM_setTitle( char *title );
     DLLEXPORT void renderFrame();
 
     DLLEXPORT void projectM_initengine();
     DLLEXPORT void projectM_resetengine();
-   
+
+  DLLEXPORT projectM(std::string config_file);
+  DLLEXPORT void readConfig(std::string config_file);
+
+
     void get_title();
 
     void key_handler( projectMEvent event,

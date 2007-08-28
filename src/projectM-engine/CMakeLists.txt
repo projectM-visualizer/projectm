@@ -4,14 +4,13 @@ ADD_LIBRARY(projectM SHARED projectM.cpp projectM.hpp PBuffer.cpp PBuffer.hpp In
 Param.cpp CustomWave.cpp CustomShape.hpp CustomShape.cpp Param.hpp CustomWave.hpp BeatDetect.hpp console_interface.h 
 Func.hpp Func.cpp Eval.cpp wipemalloc.h PerFrameEqn.cpp PerPointEqn.cpp fftsg.cpp console_interface.cpp
 CValue.hpp Expr.hpp timer.cpp  wipemalloc.cpp PerFrameEqn.hpp PerPixelEqn.hpp PerPointEqn.hpp BuiltinFuncs.hpp 
-BuiltinFuncs.cpp compare.h event.h fatal.h fftsg.h timer.h BuiltinParams.hpp BuiltinParams.cpp Preset.hpp Renderer.cpp Renderer.hpp ParamUtils.hpp PresetLoader.cpp PresetLoader.hpp PresetChooser.hpp PresetChooser.cpp PresetFrameIO.cpp PresetFrameIO.hpp PresetMerge.cpp PresetMerge.hpp)
+BuiltinFuncs.cpp compare.h event.h fatal.h fftsg.h timer.h BuiltinParams.hpp BuiltinParams.cpp Preset.hpp Renderer.cpp Renderer.hpp ParamUtils.hpp PresetLoader.cpp PresetLoader.hpp PresetChooser.hpp PresetChooser.cpp PresetFrameIO.cpp PresetFrameIO.hpp PresetMerge.cpp PresetMerge.hpp ConfigFile.h ConfigFile.cpp)
 
 OPTION(USE_FTGL "Use FTGL for on-screen fonts" ON)
 
 ADD_DEFINITIONS(-DLINUX -DUSE_FBO)
 
 FIND_PACKAGE(OpenGL)
-#FIND_PACKAGE(LibXml2)
 
 INCLUDE(FindPkgConfig.cmake)
 
@@ -26,15 +25,13 @@ IF(USE_FTGL)
 ENDIF(USE_FTGL)
 
 CONFIGURE_FILE("libprojectM.pc.in" "libprojectM.pc" @ONLY)
-CONFIGURE_FILE("config.1.00.in" "config.1.00" @ONLY)
-CONFIGURE_FILE("config.xml.in" "config.xml" @ONLY)
+CONFIGURE_FILE("config.inp.in" "config.inp" @ONLY)
 
 FILE(GLOB presets "presets/*.milk")
 INSTALL(FILES ${presets} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/presets)
 FILE(GLOB fonts "fonts/*.ttf")
 INSTALL(FILES ${fonts} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/fonts)
 INSTALL(FILES "${CMAKE_BINARY_DIR}/libprojectM.pc" DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
-INSTALL(FILES config.1.00 DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM)
-INSTALL(FILES config.xml DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM)
+INSTALL(FILES config.inp DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM)
 INSTALL(FILES projectM.hpp PBuffer.hpp PCM.hpp BeatDetect.hpp Preset.hpp event.h console_interface.h dlldefs.h fatal.h   PresetFrameIO.hpp PCM.hpp Renderer.hpp PresetChooser.hpp DESTINATION include/libprojectM)
 INSTALL(TARGETS projectM DESTINATION lib)
