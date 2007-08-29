@@ -102,7 +102,9 @@ DLLEXPORT void projectM::readConfig(std::string config_file)
   int texsize = config.read<int>( "Texsize", 512 ); 
   int fps = config.read<int>( "FPS", 35 );
   int wvw = config.read<int>( "Window Width", 512 );
-  int wvh = config.read<int>( "Window Width", 512 );
+  int wvh = config.read<int>( "Window Height", 512 );
+  smoothDuration = config.read<int>( "Smooth Transition Duration", 5 );
+  presetDuration = config.read<int>( "Preset Duration", 15 );
 
   int fullscreen;
   if (config.read("Fullscreen", true)) fullscreen = 1;
