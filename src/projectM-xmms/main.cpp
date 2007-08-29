@@ -48,7 +48,7 @@ www.gamedev.net/reference/programming/features/beatdetection/
 #include "sdltoprojectM.h"
 #include "video_init.h"
 
-#define CONFIG_FILE "/share/projectM/config.1.00"
+#define CONFIG_FILE "/share/projectM/config.inp"
 #define FONTS_DIR "/share/projectM/fonts"
 
 // Forward declarations 
@@ -273,9 +273,6 @@ int worker_func(void*)
 		
   printf("Worker thread: Exiting\n");
  if(title_timer) SDL_RemoveTimer(title_timer);
-  g_free(globalPM->renderer->title);
-  free(globalPM->presetURL);
-  free(globalPM->fontURL);
   free(globalPM);
   close_display();
 }
