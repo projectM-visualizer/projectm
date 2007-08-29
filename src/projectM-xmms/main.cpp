@@ -1,5 +1,5 @@
 /* 
-projectM v0.95 - xmms-projectm.sourceforge.net
+projectM v1.01 - xmms-projectm.sourceforge.net
 --------------------------------------------------
 
 Lead Developers:  Carmelo Piccione (cep@andrew.cmu.edu) &
@@ -40,6 +40,7 @@ www.gamedev.net/reference/programming/features/beatdetection/
 #include <GL/glu.h>
 #include <xmms/xmmsctrl.h>
 #include <math.h>
+#include "ConfigFile.h"
 
 #include <libprojectM/BeatDetect.hpp>
 #include <libprojectM/PCM.hpp>
@@ -104,8 +105,7 @@ SDL_mutex *mutex;
 SDL_Event event;
 
 SDL_Surface *screen;
-//SDL_RenderTarget *RenderTarget = NULL;
-//GLuint RenderTargetTextureID;
+
 
 projectM * globalPM = NULL;
 
@@ -168,9 +168,13 @@ int worker_func(void*)
  std::string config_file;
  config_file = read_config();
 
- int wvw = 512;
- int wvh = 512;
+ ConfigFile config(config_file);
+
+ int wvw = config.read<int>( "Window Width", 512 );
+ int wvh = config.read<int>( "Window Height", 512 );
  int fullscreen = 0;
+ if (config.read("Fullscreen", true)) fullscreen = 1;
+      else fullscreen = 0;
 
   init_display(wvw,wvh,&fvw,&fvh,fullscreen);   
   SDL_WM_SetCaption("projectM v1.00", "projectM v1.00");

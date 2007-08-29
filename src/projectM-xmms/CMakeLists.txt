@@ -1,5 +1,5 @@
 PROJECT(xmms_projectM)
-ADD_LIBRARY(xmms_projectM SHARED main.cpp sdltoprojectM.h video_init.cpp)
+ADD_LIBRARY(xmms_projectM SHARED main.cpp sdltoprojectM.h video_init.cpp ConfigFile.h ConfigFile.cpp)
 
 INCLUDE(FindPkgConfig.cmake)
 
