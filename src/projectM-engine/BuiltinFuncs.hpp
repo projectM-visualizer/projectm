@@ -220,13 +220,13 @@ public:
     static int init_builtin_func_db();
     static int destroy_builtin_func_db();
     static int load_all_builtin_func();
-    static int load_builtin_func( char * name, float (*func_ptr)(float*), int num_args );
+    static int load_builtin_func( const std::string & name, float (*func_ptr)(float*), int num_args );
 
     static int insert_func( Func *func );
     static int remove_func( Func *func );
-    static Func *find_func( char *name );
+    static Func *find_func( const std::string & name );
 private:
-     static std::map<std::string, Func*>  * builtin_func_tree;
+     static std::map<std::string, Func*> builtin_func_tree;
 };
 
 #endif

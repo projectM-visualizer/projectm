@@ -576,7 +576,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
     /* CASE 1 (Left Parentice): See if the previous string before this parentice is a function name */
     if ((func = BuiltinFuncs::find_func(string)) != NULL) {
         if (PARSE_DEBUG) {
-            DWRITE( "parse_gen_expr: found prefix function (name = %s) (LINE %d)\n", func->name, line_count);
+            DWRITE( "parse_gen_expr: found prefix function (name = %s) (LINE %d)\n", func->name.c_str(), line_count);
             
         }
       

@@ -30,24 +30,20 @@
 #define _FUNC_H
 
 #include "Common.hpp"
-
-class Func;
-//#include <map>
+#include <string>
 
 /* Function Type */
 class Func {
 public:
-    char name[MAX_TOKEN_SIZE];  
+    std::string name;
     float (*func_ptr)(float*);
     int num_args;
 
-    Func() {}
+    Func(const std::string & _name, float (*func_ptr)(float*), int num_args );
 
     /* Public Prototypes */
     DLLEXPORT ~Func();
-    static Func *create_func ( char *name, float (*func_ptr)(float*), int num_args );
-    static void * copy_func_key(char * string);
-    int compare_func(char * name, char * name2);
+
   };
 
 /** Splay traversal */

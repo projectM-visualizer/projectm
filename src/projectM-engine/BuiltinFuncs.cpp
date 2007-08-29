@@ -21,15 +21,15 @@
 
 using namespace Algorithms;
 
-std::map<std::string, Func*>  * BuiltinFuncs::builtin_func_tree  = 0;
+std::map<std::string, Func*> BuiltinFuncs::builtin_func_tree;
 
-int BuiltinFuncs::load_builtin_func(char * name,  float (*func_ptr)(float*), int num_args) {
+int BuiltinFuncs::load_builtin_func(const std::string & name, float (*func_ptr)(float*), int num_args) {
 
   Func * func; 
   int retval; 
 
   /* Create new function */
-  func = Func::create_func(name, func_ptr, num_args);
+  func = new Func(name, func_ptr, num_args);
 
   if (func == NULL)
     return PROJECTM_OUTOFMEM_ERROR;
@@ -40,14 +40,12 @@ int BuiltinFuncs::load_builtin_func(char * name,  float (*func_ptr)(float*), int
 
 }
 
+Func * BuiltinFuncs::find_func(const std::string & name) {
 
-
-Func * BuiltinFuncs::find_func(char * name) {
-
-  std::map<std::string, Func*>::iterator pos = builtin_func_tree->find(std::string(name));
+  std::map<std::string, Func*>::iterator pos = builtin_func_tree.find(name);
 
   // Case: function not found, return null
-  if (pos == builtin_func_tree->end())
+  if (pos == builtin_func_tree.end())
 	return 0;
 
   // Case: function found, return a pointer to it
@@ -128,14 +126,8 @@ int BuiltinFuncs::load_all_builtin_func() {
 int BuiltinFuncs::init_builtin_func_db() {
   int retval;
 
-  builtin_func_tree = 
-    new std::map<std::string, Func*>();
-
-  if (builtin_func_tree == NULL)
-    return PROJECTM_OUTOFMEM_ERROR;
-
   retval = load_all_builtin_func();
-  return PROJECTM_SUCCESS;
+  return retval;
 }
 
 
@@ -144,7 +136,7 @@ int BuiltinFuncs::init_builtin_func_db() {
    Generally, do this on projectm exit */
 int BuiltinFuncs::destroy_builtin_func_db() {
 
-traverse<TraverseFunctors::DeleteFunctor<Func> >(*builtin_func_tree);
+traverse<TraverseFunctors::DeleteFunctor<Func> >(builtin_func_tree);
 return PROJECTM_SUCCESS;
 }
 
@@ -153,7 +145,7 @@ int BuiltinFuncs::insert_func( Func *func ) {
 
   assert(func);
   std::pair<std::map<std::string, Func*>::iterator, bool> inserteePair =
-  	builtin_func_tree->insert(std::make_pair(std::string(func->name), func));
+  	builtin_func_tree.insert(std::make_pair(std::string(func->name), func));
   
   if (!inserteePair.second) {
 	std::cerr << "Failed to insert builtin function \"" << func->name << "\" into collection! Bailing..." << std::endl;
