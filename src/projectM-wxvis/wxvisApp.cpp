@@ -25,7 +25,7 @@
 
 #include <stdio.h>
 #include <wx/wx.h>
-#include <projectM-engine/projectM.h>
+#include <projectM-engine/projectM.hpp>
 
 #include "wxvisApp.h"
 #include "wxvisFrame.h"

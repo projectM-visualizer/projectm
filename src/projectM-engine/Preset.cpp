@@ -29,641 +29,404 @@
 #endif /** WIN32 */
 #include <time.h>
 
-#include "projectM.h"
-#include "wipemalloc.h"
-
-#include "common.h"
-#include "compare.h"
+#include "Preset.hpp"
+#include "Parser.hpp"
+#include "ParamUtils.hpp"
+#include "InitCondUtils.hpp"
 #include "fatal.h"
+#include <iostream>
 
-#include "CustomWave.h"
-#include "CustomShape.h"
-#include "Expr.h"
-#include "Eval.h"
-#include "Func.h"
-#include "InitCond.h"
-#include "Param.h"
-#include "Parser.h"
-#include "PerFrameEqn.h"
-#include "PerPixelEqn.h"
-#include "Preset.h"
-#include "SplayTree.h"
+Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
+    builtinParams(presetInputs, presetOutputs),
+    file_path(filename),
+    m_presetOutputs(presetOutputs)
+{
 
-Preset *preset_hack;
+  m_presetOutputs.customWaves.clear();
+  m_presetOutputs.customShapes.clear();
+  clearMeshChecks();
 
-Preset *Preset::active_preset = NULL;
-Preset *Preset::idle_preset = NULL;
-Preset *Preset::old_preset = NULL;
+  initialize(filename);
 
-FILE * write_stream = NULL;
-
-/** Initialise the idle preset */
-Preset *Preset::init_idle_preset() {
-
-  Preset *preset = NULL;
-
-    /* Initialize idle preset struct */
-  if ((preset = (Preset*)wipemalloc(sizeof(Preset))) == NULL)
-    return NULL;
-  
-  strncpy(preset->name, "idlepreset", strlen("idlepreset"));
-
-  /* Initialize equation trees */
-  preset->init_cond_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_string, (void*(*)(void*))copy_string, (void(*)(void*))free_string);
-  preset->user_param_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_string,(void*(*)(void*)) copy_string, (void(*)(void*))free_string);
-  preset->per_frame_eqn_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_int,(void*(*)(void*)) copy_int, (void(*)(void*))free_int);
-  preset->per_pixel_eqn_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_int, (void*(*)(void*))copy_int, (void(*)(void*))free_int);
-  preset->per_frame_init_eqn_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_string,(void*(*)(void*)) copy_string, (void(*)(void*))free_string);
-  preset->custom_wave_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_int, (void*(*)(void*))copy_int, (void(*)(void*))free_int);
-  preset->custom_shape_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_int,(void*(*)(void*)) copy_int, (void(*)(void*))free_int);
- 
-  /* Set file path to dummy name */  
-  strncpy(preset->file_path, "IDLE PRESET", MAX_PATH_SIZE-1);
-  
-  /* Set initial index values */
-  preset->per_pixel_eqn_string_index = 0;
-  preset->per_frame_eqn_string_index = 0;
-
-  preset->per_frame_init_eqn_string_index = 0;
-  memset(preset->per_pixel_flag, 0, sizeof(int)*NUM_OPS);
-  
-  /* Clear string buffers */
-  memset(preset->per_pixel_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
-  memset(preset->per_frame_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
-  memset(preset->per_frame_init_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
-
-    idle_preset = preset;
-
-  return preset;
 }
 
-int Preset::destroy_idle_preset() {
-    idle_preset->destroy();
-    idle_preset = NULL;
-    return PROJECTM_SUCCESS;
+Preset::~Preset()
+{
+
+  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(init_cond_tree);
+
+  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(per_frame_init_eqn_tree);
+
+  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<PerPixelEqn> >(per_pixel_eqn_tree);
+
+  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<PerFrameEqn> >(per_frame_eqn_tree);
+
+  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<Param> >(user_param_tree);
+
+  for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos)
+  {
+    	delete(*pos);
   }
 
-int Preset::destroy() {
-
-  return close_preset();
-  
-}
-
-void Preset::evalCustomShapeInitConditions() {
-    custom_shape_tree->splay_traverse( eval_custom_shape_init_conds_helper );
+  for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); pos != customShapes.end(); ++pos)
+  {
+    	delete(*pos);
   }
 
-void Preset::evalCustomWaveInitConditions() {
-    custom_wave_tree->splay_traverse( eval_custom_wave_init_conds_helper );
-  }
-
-void Preset::evalInitConditions() {
-  per_frame_init_eqn_tree->splay_traverse((void (*)(void*))eval_init_cond_helper);
 }
-
-void Preset::evalPerFrameEquations() {
-  init_cond_tree->splay_traverse((void (*)(void*))eval_init_cond_helper);
-  per_frame_eqn_tree->splay_traverse((void (*)(void*))eval_per_frame_eqn_helper);
-}
-
-/* Private function to close a preset file */
-int Preset::close_preset() {
-
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE( "close_preset(): in\n" );
-#endif
-
-  init_cond_tree->splay_traverse((void (*)(void*))free_init_cond_helper);
-  delete init_cond_tree;
-  
-  per_frame_init_eqn_tree->splay_traverse((void (*)(void*))free_init_cond_helper);
-  delete per_frame_init_eqn_tree;
-  
-  per_pixel_eqn_tree->splay_traverse((void (*)(void*))free_per_pixel_eqn_helper);
-  delete per_pixel_eqn_tree;
-  
-  per_frame_eqn_tree->splay_traverse((void (*)(void*))free_per_frame_eqn_helper);
-  delete per_frame_eqn_tree;
-  
-  user_param_tree->splay_traverse((void (*)(void*))free_param_helper);
-  delete user_param_tree;
-  
-  custom_wave_tree->splay_traverse((void (*)(void*))free_custom_wave_helper);
-  delete custom_wave_tree;
-
-  custom_shape_tree->splay_traverse((void (*)(void*))free_custom_shape_helper);
-  delete custom_shape_tree;
-
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE( "close_preset(): out\n" );
-#endif
-
-  return PROJECTM_SUCCESS;
-}
-
-void Preset::reloadPerPixel(char *s) {
-  
-  int slen;
-
-  if (s == NULL)
-    return;
-
-  /* Clear previous per pixel equations */
-  per_pixel_eqn_tree->splay_traverse((void (*)(void*))free_per_pixel_eqn_helper);
-  delete per_pixel_eqn_tree;
-  per_pixel_eqn_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_int, (void* (*)(void*))copy_int, (void (*)(void*))free_int);
-
-  /* Convert string to a stream */
-#if !defined(MACOS) && !defined(WIN32)
-	{
-		FILE* fs = fmemopen (s, strlen(s), "r");
-		char c;
-		
-		while ((c = fgetc(fs)) != EOF) {
-			ungetc(c, fs);
-			//FIXME Parser::parse_per_pixel_eqn(fs, preset, 0);
-		}
-
-		fclose(fs);
-	}
-#else
-printf( "reloadPerPixel()\n" );
-#endif
-
-  /* Clear string space */
-  memset(per_pixel_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
-
-  /* Compute length of string */
-  slen = strlen(s);
-
-  /* Copy new string into buffer */
-  strncpy(per_pixel_eqn_string_buffer, s, slen);
-
-  /* Yet again no bounds checking */
-  per_pixel_eqn_string_index = slen;
-
-  /* Finished */
- 
-  return;
-}
-
-/* Obviously unwritten */
-void Preset::reloadPerFrameInit(char *s) {
-
-}
-
-void Preset::reloadPerFrame(char * s) {
-
-  int slen;
-  int eqn_count = 1;
-
-  if (s == NULL)
-    return;
-
-  /* Clear previous per frame equations */
-  per_frame_eqn_tree->splay_traverse((void (*)(void*))free_per_frame_eqn_helper );
-  delete per_frame_eqn_tree;
-  per_frame_eqn_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_int,(void* (*)(void*)) copy_int, (void (*)(void*))free_int);
-
-  /* Convert string to a stream */
-  //FIXME
-#if !defined(MACOS) && !defined(WIN32) && !defined(LINUX)
-	{
-		FILE* fs = fmemopen (s, strlen(s), "r");
-		char c;
-		
-		while ((c = fgetc(fs)) != EOF) {
-			per_frame_eqn_t * per_frame;
-			ungetc(c, fs);
-			if ((per_frame = Parser::parse_per_frame_eqn(fs, eqn_count, preset)) != NULL) {
-				splay_insert(per_frame, &eqn_count, preset->per_frame_eqn_tree);
-				eqn_count++;
-			}
-		}
-		fclose(fs);
-	}
-#else
-printf( "reloadPerFrame()\n" );
-#endif
-
-  /* Clear string space */
-  memset(per_frame_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
-
-  /* Compute length of string */
-  slen = strlen(s);
-
-  /* Copy new string into buffer */
-  strncpy(per_frame_eqn_string_buffer, s, slen);
-
-  /* Yet again no bounds checking */
-  per_frame_eqn_string_index = slen;
-
-  /* Finished */
-  printf("reloadPerFrame: %d eqns parsed succesfully\n", eqn_count-1);
-  return;
-
-}
-
-Preset * Preset::load_preset(const char * pathname) {
-
-  Preset * preset;
-
-  printf( "loading preset from '%s'\n", pathname );
-
-  /* Initialize preset struct */
-  if ((preset = (Preset*)wipemalloc(sizeof(Preset))) == NULL)
-    return NULL;
-   
-  /* Initialize equation trees */
-  preset->init_cond_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_string, (void* (*)(void*))copy_string, (void (*)(void*))free_string);
-  preset->user_param_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_string,(void* (*)(void*)) copy_string,  (void (*)(void*))free_string);
-  preset->per_frame_eqn_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_int,(void* (*)(void*)) copy_int, (void (*)(void*)) free_int);
-  preset->per_pixel_eqn_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_int,(void* (*)(void*)) copy_int, (void (*)(void*)) free_int);
-  preset->per_frame_init_eqn_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_string,(void* (*)(void*)) copy_string, (void (*)(void*)) free_string);
-  preset->custom_wave_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_int, (void* (*)(void*))copy_int, (void (*)(void*)) free_int);
-  preset->custom_shape_tree = SplayTree::create_splaytree((int (*)(void*,void*))compare_int, (void* (*)(void*))copy_int, (void (*)(void*)) free_int);
-
-  memset(preset->per_pixel_flag, 0, sizeof(int)*NUM_OPS);
-
-  /* Copy file path */  
-  if ( pathname == NULL ) {
-    preset->close_preset();
-    return NULL;
-  }
-  strncpy(preset->file_path, pathname, MAX_PATH_SIZE-1);
-  
-  /* Set initial index values */
-  preset->per_pixel_eqn_string_index = 0;
-  preset->per_frame_eqn_string_index = 0;
-  preset->per_frame_init_eqn_string_index = 0;
-  
-  /* Clear string buffers */
-  memset(preset->per_pixel_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
-  memset(preset->per_frame_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
-  memset(preset->per_frame_init_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
-
-  if (projectM::currentEngine->load_preset_file(pathname, preset) < 0) {
-#ifdef PRESET_DEBUG
-	if (PRESET_DEBUG) printf("load_preset: failed to load file \"%s\"\n", pathname);
-#endif
-	preset->close_preset();
-	return NULL;
-  }
-
-  /* It's kind of ugly to reset these values here. Should definitely be placed in the parser somewhere */
-  preset->per_frame_eqn_count = 0;
-  preset->per_frame_init_eqn_count = 0;
-
-  /* Finished, return new preset */
-  return preset;
-}
-
-void Preset::savePreset(char * filename) {
-
-#ifdef PANTS
-  FILE * fs;
-
-  if (filename == NULL)
-    return;
-  
-  /* Open the file corresponding to pathname */
-  if ((fs = fopen(filename, "w+")) == 0) {
-#ifdef PRESET_DEBUG
-    if (PRESET_DEBUG) printf("savePreset: failed to create filename \"%s\"!\n", filename);
-#endif
-    return;	
-  }
-
-  write_stream = fs;
-
-  if (write_preset_name(fs) < 0) {
-    write_stream = NULL;
-    fclose(fs);
-    return;
-  }
-
-  if (write_init_conditions(fs) < 0) {
-    write_stream = NULL;
-    fclose(fs);
-    return;
-  }
-
-  if (write_per_frame_init_equations(fs) < 0) {
-    write_stream = NULL;
-    fclose(fs);
-    return;
-  }
-
-  if (write_per_frame_equations(fs) < 0) {
-    write_stream = NULL;
-    fclose(fs);
-    return;
-  }
-
-  if (write_per_pixel_equations(fs) < 0) {
-    write_stream = NULL;
-    fclose(fs);
-    return;
-  }
- 
-  write_stream = NULL;
-  fclose(fs);
-#endif
-}
-
-int Preset::write_preset_name(FILE * fs) {
-
-  char s[256];
-  int len;
-
-  memset(s, 0, 256);
-
-  if (fs == NULL)
-    return PROJECTM_FAILURE;
-
-  /* Format the preset name in a string */
-  sprintf(s, "[%s]\n", name);
-
-  len = strlen(s);
-
-  /* Write preset name to file stream */
-  if (fwrite(s, 1, len, fs) != len)
-    return PROJECTM_FAILURE;
-
-  return PROJECTM_SUCCESS;
-
-}
-
-#ifdef NEEDS_MOVED
-int Preset::write_init_conditions(FILE * fs) {
-
-  if (fs == NULL)
-    return PROJECTM_FAILURE;
-
-  init_cond_tree->splay_traverse( (void (*)(void*))write_init);
-  
-  return PROJECTM_SUCCESS;
-}
-
-void Preset::write_init( InitCond * init_cond ) {
-
-  char s[512];
-  int len;
-
-  if (write_stream == NULL)
-    return;
-
-  memset(s, 0, 512);
-
-  if (init_cond->param->type == P_TYPE_BOOL)
-    sprintf(s, "%s=%d\n", init_cond->param->name, init_cond->init_val.bool_val);
-
-  else if (init_cond->param->type == P_TYPE_INT)    
-    sprintf(s, "%s=%d\n", init_cond->param->name, init_cond->init_val.int_val);
-
-  else if (init_cond->param->type == P_TYPE_DOUBLE)
-    sprintf(s, "%s=%f\n", init_cond->param->name, init_cond->init_val.float_val);
-
-  else { printf("write_init: unknown parameter type!\n"); return; }
-  
-  len = strlen(s);
-
-  if ((fwrite(s, 1, len, write_stream)) != len)
-    printf("write_init: failed writing to file stream! Out of disk space?\n");
-  
-}
-
-
-int Preset::write_per_frame_init_equations(FILE * fs) {
-
-  int len;
-
-  if (fs == NULL)
-    return PROJECTM_FAILURE;
-  
-  len = strlen(per_frame_init_eqn_string_buffer);
-
-  if (fwrite(per_frame_init_eqn_string_buffer, 1, len, fs) != len)
-    return PROJECTM_FAILURE;
-
-  return PROJECTM_SUCCESS;
-}
-
-
-int Preset::write_per_frame_equations(FILE * fs) {
-
-  int len;
-
-  if (fs == NULL)
-    return PROJECTM_FAILURE;
-
-  len = strlen(per_frame_eqn_string_buffer);
-
-  if (fwrite(per_frame_eqn_string_buffer, 1, len, fs) != len)
-    return PROJECTM_FAILURE;
-
-  return PROJECTM_SUCCESS;
-}
-
-
-int Preset::write_per_pixel_equations(FILE * fs) {
-
-  int len;
-
-  if (fs == NULL)
-    return PROJECTM_FAILURE;
-
-  len = strlen(per_pixel_eqn_string_buffer);
-
-  if (fwrite(per_pixel_eqn_string_buffer, 1, len, fs) != len)
-    return PROJECTM_FAILURE;
-
-  return PROJECTM_SUCCESS;
-}
-#endif /** NEEDS_MOVED */
-
-void Preset::load_custom_wave_init_conditions() {
-  custom_wave_tree->splay_traverse((void (*)(void*))load_custom_wave_init_helper);
-}
-
-void Preset::load_custom_shape_init_conditions() {
-  custom_shape_tree->splay_traverse((void (*)(void*))load_custom_shape_init_helper);
-}
-
-/** Returns the next custom waveform in the wave database */
-CustomWave *Preset::nextCustomWave() {
-
-    CustomWave *interface_wave = NULL;
-
-    if ( (interface_wave = (CustomWave *)custom_wave_tree->splay_find(&interface_id) ) == NULL ) {
-        interface_id = 0;
-        return interface_wave;
-      }
-
-    interface_id++;
-
-    /** Evaluate all per frame equations associated with this wave */
-    interface_wave->init_cond_tree->splay_traverse((void (*)(void*))eval_init_cond_helper);
-    interface_wave->per_frame_eqn_tree->splay_traverse((void (*)(void*))eval_per_frame_eqn_helper);
-
-    return interface_wave;
-  }
-
-/** Returns the next custom shape in the shape database */
-CustomShape *Preset::nextCustomShape() {
-
-    CustomShape *interface_shape = NULL;
-
-    if ( (interface_shape = (CustomShape *)custom_shape_tree->splay_find(&cwave_interface_id) ) == NULL ) {
-        cwave_interface_id = 0;
-        return interface_shape;
-      }
-
-    cwave_interface_id++;
-
-    /** Evaluate all per frame equations associated with this wave */
-    interface_shape->init_cond_tree->splay_traverse((void (*)(void*))eval_init_cond_helper);
-    interface_shape->per_frame_eqn_tree->splay_traverse((void (*)(void*))eval_per_frame_eqn_helper);
-
-    return interface_shape;
-  }
-
-/** Evaluates all per-pixel equations */
-void Preset::evalPerPixelEqns() {
-    /* Evaluate all per pixel equations using splay traversal */
-    per_pixel_eqn_tree->splay_traverse((void (*)(void*))eval_per_pixel_eqn_helper);
-
-    /* Set mesh i / j values to -1 so engine vars are used by default again */
-    projectM::currentEngine->mesh_i = -1;
-    projectM::currentEngine->mesh_j = -1;
-  }
-
-/** Is the opcode a per-pixel equation? */
-int Preset::isPerPixelEqn( int op ) {
-    return per_pixel_flag[op];
-  }
-
-/** Reset all per-pixel equation flags */
-int Preset::resetPerPixelEqnFlags() {
-
-    int i;
-
-    for (i = 0; i < NUM_OPS;i++) {
-        per_pixel_flag[i] = FALSE;
-      }
-
-    return PROJECTM_SUCCESS;
-  }
 
 /* Adds a per pixel equation according to its string name. This
    will be used only by the parser */
-int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr) {
+
+int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
+{
 
   PerPixelEqn * per_pixel_eqn = NULL;
   int index;
   Param * param = NULL;
 
-  /* Argument checks */
-  if (gen_expr == NULL)
-	  return PROJECTM_FAILURE;
-  if (name == NULL)
-	  return PROJECTM_FAILURE;
-  
- if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: per pixel equation (name = \"%s\")\n", name);
- 
- if (!strncmp(name, "dx", strlen("dx"))) 
-   per_pixel_flag[DX_OP] = TRUE;
- else if (!strncmp(name, "dy", strlen("dy"))) 
-   per_pixel_flag[DY_OP] = TRUE;
- else if (!strncmp(name, "cx", strlen("cx"))) 
-   per_pixel_flag[CX_OP] = TRUE;
- else if (!strncmp(name, "cy", strlen("cy"))) 
-   per_pixel_flag[CX_OP] = TRUE;
- else if (!strncmp(name, "zoom", strlen("zoom"))) 
-   per_pixel_flag[ZOOM_OP] = TRUE;
- else if (!strncmp(name, "zoomexp", strlen("zoomexp"))) 
-   per_pixel_flag[ZOOMEXP_OP] = TRUE;
- else if (!strncmp(name, "rot", strlen("rot")))
-   per_pixel_flag[ROT_OP] = TRUE;
- else if (!strncmp(name, "sx", strlen("sx")))
-   per_pixel_flag[SX_OP] = TRUE;
- else if (!strncmp(name, "sy", strlen("sy")))
-   per_pixel_flag[SY_OP] = TRUE;
- 
- /* Search for the parameter so we know what matrix the per pixel equation is referencing */
+  assert(gen_expr);
+  assert(name);
 
- param = Param::find_param(name, this, TRUE);
- if ( !param ) {
-   if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: failed to allocate a new parameter!\n");
-   return PROJECTM_FAILURE;
- } 	 
+  if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: per pixel equation (name = \"%s\")\n", name);
 
-/**
- if ( !param->matrix ) {
-    if (PER_PIXEL_EQN_DEBUG) printf( "add_per_pixel_eqn: failed to locate param matrix\n" );
+  if (!strncmp(name, "dx", strlen("dx")))
+    this->m_presetOutputs.dx_is_mesh = true;
+  else if (!strncmp(name, "dy", strlen("dy")))
+    this->m_presetOutputs.dy_is_mesh = true;
+  else if (!strncmp(name, "cx", strlen("cx")))
+    this->m_presetOutputs.cx_is_mesh = true;
+  else if (!strncmp(name, "cy", strlen("cy")))
+    this->m_presetOutputs.cy_is_mesh = true;
+  else if (!strncmp(name, "zoom", strlen("zoom")))
+    this->m_presetOutputs.zoom_is_mesh = true;
+  else if (!strncmp(name, "zoomexp", strlen("zoomexp")))
+    this->m_presetOutputs.zoomexp_is_mesh = true;
+  else if (!strncmp(name, "rot", strlen("rot")))
+    this->m_presetOutputs.rot_is_mesh= true;
+  else if (!strncmp(name, "sx", strlen("sx")))
+    this->m_presetOutputs.sx_is_mesh = true;
+  else if (!strncmp(name, "sy", strlen("sy")))
+    this->m_presetOutputs.sy_is_mesh = true;
+
+  /* Search for the parameter so we know what matrix the per pixel equation is referencing */
+
+  param = ParamUtils::find(name, &this->builtinParams, &this->user_param_tree);
+  if ( !param )
+  {
+    if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: failed to allocate a new parameter!\n");
     return PROJECTM_FAILURE;
   }
-*/
 
- /* Find most largest index in the splaytree */
- if ((per_pixel_eqn = (PerPixelEqn *)per_pixel_eqn_tree->splay_find_max()) == NULL)
-  index = 0;
-  else
- index = per_pixel_eqn_tree->splay_size();
-   
- /* Create the per pixel equation given the index, parameter, and general expression */
- if ((per_pixel_eqn = PerPixelEqn::new_per_pixel_eqn(index, param, gen_expr)) == NULL) {
-   if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: failed to create new per pixel equation!\n");
-   return PROJECTM_FAILURE;
+  index = per_pixel_eqn_tree.size();
 
- }
+  /* Create the per pixel equation given the index, parameter, and general expression */
+  if ((per_pixel_eqn = new PerPixelEqn(index, param, gen_expr)) == NULL)
+  {
+    if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: failed to create new per pixel equation!\n");
+    return PROJECTM_FAILURE;
 
- if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: new equation (index = %d,matrix=%X) (param = \"%s\")\n", 
-				 per_pixel_eqn->index, per_pixel_eqn->param->matrix, per_pixel_eqn->param->name);
- /* Insert the per pixel equation into the preset per pixel database */
- if (per_pixel_eqn_tree->splay_insert(per_pixel_eqn, &per_pixel_eqn->index) < 0) {
-   per_pixel_eqn->free_per_pixel_eqn();
-   printf("failed to add per pixel eqn!\n");
-   return PROJECTM_FAILURE;	 
- }
-
- /* Done */ 
- return PROJECTM_SUCCESS;
-}
-
-/* Finds / Creates (if necessary) initial condition associated with passed parameter */
-InitCond *Preset::get_init_cond( Param *param ) {
-
-  InitCond * init_cond;
-  CValue init_val;
-
-    if ( param == NULL ) {
-        return NULL;
-      }
-
-  if ((init_cond = (InitCond*)(init_cond_tree->splay_find(param->name))) == NULL) {
-
-    if (param->type == P_TYPE_BOOL)
-      init_val.bool_val = 0;
-    
-    else if (param->type == P_TYPE_INT)
-      init_val.int_val = *(int*)param->engine_val;
-
-    else if (param->type == P_TYPE_DOUBLE)
-      init_val.float_val = *(float*)param->engine_val;
-
-    /* Create new initial condition */
-    if ((init_cond = new InitCond(param, init_val)) == NULL)
-      return NULL;
-    
-    /* Insert the initial condition into this presets tree */
-    if (init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
-      delete init_cond;
-      return NULL;
-    }
-    
   }
 
-  return init_cond;
+
+  /* Insert the per pixel equation into the preset per pixel database */
+  std::pair<std::map<int, PerPixelEqn*>::iterator, bool> inserteeOption = per_pixel_eqn_tree.insert
+      (std::make_pair(per_pixel_eqn->index, per_pixel_eqn));
+
+  if (!inserteeOption.second)
+  {
+    printf("failed to add per pixel eqn!\n");
+    delete(per_pixel_eqn);
+    return PROJECTM_FAILURE;
+  }
+
+  /* Done */
+  return PROJECTM_SUCCESS;
+}
+
+void Preset::evalCustomShapeInitConditions()
+{
+
+  for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); pos != customShapes.end(); ++pos) {
+    assert(*pos);
+    (*pos)->evalInitConds();
+  }
+}
+
+
+void Preset::evalCustomWaveInitConditions()
+{
+
+  for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos) {
+    assert(*pos);
+   (*pos)->evalInitConds();
+}
+}
+
+
+void Preset::evalCustomWavePerFrameEquations()
+{
+
+  for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos)
+  {
+
+    std::map<std::string, InitCond*> & init_cond_tree = (*pos)->init_cond_tree;
+    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos)
+    {
+      assert(_pos->second);
+      _pos->second->evaluate();
+    }
+
+    std::map<int, PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
+    for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
+    {
+      assert(_pos->second);
+      _pos->second->evaluate();
+    }
+  }
 
 }
+
+void Preset::evalCustomShapePerFrameEquations()
+{
+
+  for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); pos != customShapes.end(); ++pos)
+  {
+
+    std::map<std::string, InitCond*> & init_cond_tree = (*pos)->init_cond_tree;
+    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos)
+    {
+      assert(_pos->second);
+      _pos->second->evaluate();
+    }
+    std::map<int, PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
+    for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
+    {
+      assert(_pos->second);
+      _pos->second->evaluate();
+    }
+  }
+
+}
+
+void Preset::evalPerFrameInitEquations()
+{
+
+  for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos)
+  {
+    assert(pos->second);
+    pos->second->evaluate();
+  }
+
+}
+
+void Preset::evalPerFrameEquations()
+{
+
+  for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos)
+  {
+    assert(pos->second);
+    pos->second->evaluate();
+  }
+
+  for (std::map<int, PerFrameEqn*>::iterator pos = per_frame_eqn_tree.begin(); pos != per_frame_eqn_tree.end(); ++pos)
+  {
+    assert(pos->second);
+    pos->second->evaluate();
+  }
+
+}
+
+
+void Preset::initialize(const std::string & pathname)
+{
+
+  // Clear equation trees
+  /// @slow unnecessary if we ensure this method is private
+  init_cond_tree.clear();
+  user_param_tree.clear();
+  per_frame_eqn_tree.clear();
+  per_pixel_eqn_tree.clear();
+  per_frame_init_eqn_tree.clear();
+
+  /* Set initial index values */
+  this->per_pixel_eqn_string_index = 0;
+  this->per_frame_eqn_string_index = 0;
+  this->per_frame_init_eqn_string_index = 0;
+
+  /* Clear string buffers */
+  /// @bug replace with ostringstream?
+  memset(this->per_pixel_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
+  memset(this->per_frame_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
+  memset(this->per_frame_init_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
+  int retval;
+
+  std::cerr << "[Preset] loading file \"" << pathname << "\"..." << std::endl;
+
+  if ((retval = loadPresetFile(pathname)) < 0)
+  {
+
+
+     std::cerr << "[Preset] failed to load file \"" <<
+      pathname << "\"!" << std::endl;
+   
+    /// @bug how should we handle this problem? a well define exception?
+    throw retval;
+  }
+
+  /* It's kind of ugly to reset these values here. Should definitely be placed in the parser somewhere */
+  this->per_frame_eqn_count = 0;
+  this->per_frame_init_eqn_count = 0;
+
+  this->loadBuiltinParamsUnspecInitConds();
+  this->loadCustomWaveUnspecInitConds();
+  this->loadCustomShapeUnspecInitConds();
+}
+
+
+void Preset::loadBuiltinParamsUnspecInitConds() {
+
+  InitCondUtils::LoadUnspecInitCond loadUnspecInitCond(this->init_cond_tree, this->per_frame_init_eqn_tree);
+
+  this->builtinParams.traverse(loadUnspecInitCond);
+
+}
+
+void Preset::loadCustomWaveUnspecInitConds()
+{
+
+
+  for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos)
+  {
+    assert(*pos);
+    (*pos)->loadUnspecInitConds();
+  }
+
+}
+
+void Preset::loadCustomShapeUnspecInitConds()
+{
+
+  for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); pos != customShapes.end(); ++pos)
+  {
+    assert(*pos);
+    (*pos)->loadUnspecInitConds();
+  }
+}
+
+
+void Preset::evaluateFrame()
+{
+
+  /* Evaluate all equation objects in same order as the renderer */
+
+  evalPerFrameInitEquations();
+  evalPerFrameEquations();
+  evalPerPixelEqns();
+  evalCustomWaveInitConditions();
+  evalCustomShapeInitConditions();
+  evalCustomWavePerFrameEquations();
+  evalCustomShapePerFrameEquations();
+
+  // Setup pointers of the custom waves and shapes to the preset outputs instance
+  /// @slow an extra O(N) per frame, could do this during eval
+  m_presetOutputs.customWaves = PresetOutputs::cwave_container(customWaves); 
+  m_presetOutputs.customShapes = PresetOutputs::cshape_container(customShapes);
+
+}
+
+
+// Evaluates all per-pixel equations 
+void Preset::evalPerPixelEqns()
+{
+
+  /* Evaluate all per pixel equations in the tree datastructure */
+  for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin();
+       pos != per_pixel_eqn_tree.end(); ++pos)
+    pos->second->evaluate();
+
+}
+
+/* loadPresetFile: private function that loads a specific preset denoted
+   by the given pathname */
+int Preset::loadPresetFile(std::string pathname)
+{
+
+  FILE * fs;
+  int retval;
+  int lineno;
+  line_mode_t line_mode;
+
+  /* Open the file corresponding to pathname */
+  if ((fs = fopen(pathname.c_str(), "rb")) == 0)
+  {
+#if defined(PRESET_DEBUG) && defined(DEBUG)
+    DWRITE( "loadPresetFile: loading of file %s failed!\n", pathname);
+#endif
+    return PROJECTM_ERROR;
+  }
+
+#if defined(PRESET_DEBUG) && defined(DEBUG)
+  DWRITE( "loadPresetFile: file stream \"%s\" opened successfully\n", pathname);
+#endif
+
+  /* Parse any comments */
+  if (Parser::parse_top_comment(fs) < 0)
+  {
+#if defined(PRESET_DEBUG) && defined(DEBUG)
+    DWRITE( "loadPresetFile: no left bracket found...\n");
+#endif
+    fclose(fs);
+    return PROJECTM_FAILURE;
+  }
+
+  /* Parse the preset name and a left bracket */
+  char tmp_name[MAX_TOKEN_SIZE];
+
+  if (Parser::parse_preset_name(fs, tmp_name) < 0)
+  {
+#if defined(PRESET_DEBUG) && defined(DEBUG)
+    DWRITE( "loadPresetFile: loading of preset name in file \"%s\" failed\n", pathname);
+#endif
+    fclose(fs);
+    return PROJECTM_ERROR;
+  }
+  name = std::string(tmp_name);
+
+#if defined(PRESET_DEBUG) && defined(DEBUG)
+  DWRITE( "loadPresetFile: preset \"%s\" parsed\n", this->name);
+#endif
+
+  /* Parse each line until end of file */
+  lineno = 0;
+#if defined(PRESET_DEBUG) && defined(DEBUG)
+  DWRITE( "loadPresetFile: beginning line parsing...\n");
+#endif
+  while ((retval = Parser::parse_line(fs, this)) != EOF)
+  {
+    if (retval == PROJECTM_PARSE_ERROR)
+    {
+      line_mode = NORMAL_LINE_MODE;
+#if defined(PRESET_DEBUG) && defined(DEBUG)
+      DWRITE( "loadPresetFile: parse error in file \"%s\": line %d\n", pathname,lineno);
+#endif
+
+    }
+    lineno++;
+  }
+
+#if defined(PRESET_DEBUG) && defined(DEBUG)
+  DWRITE("loadPresetFile: finished line parsing successfully\n");
+#endif
+
+  /* Now the preset has been loaded.
+     Evaluation calls can be made at appropiate
+     times in the frame loop */
+
+  fclose(fs);
+#if defined(PRESET_DEBUG) && defined(DEBUG)
+  DWRITE("loadPresetFile: file \"%s\" closed, preset ready\n", pathname);
+#endif
+  return PROJECTM_SUCCESS;
+}
+

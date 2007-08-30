@@ -1,12 +1,3 @@
-libvisual-projectM
------------------------------------
-You will need to have libvisual-0.4, libprojectM and cmake installed to compile libvisual-projectM.
+If from CVS, run autogen.sh first.
 
-After installing the above, ru nthe following in the libvisual-projectM directory.
-
-cmake 
-make
-make install (as root)
-
------------------------------------
-Peter Sperl - psperl@sourceforge.net
+ ./configure, make, make install.

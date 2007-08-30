@@ -33,7 +33,7 @@
 #include "tsaver.h"
 #ifdef WIN32
 extern "C" {
-#include <projectM/projectM.h>
+#include <projectM/projectM.hpp>
   }
 #endif /** WIN32 */
 

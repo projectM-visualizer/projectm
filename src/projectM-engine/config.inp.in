@@ -1,0 +1,16 @@
+# projectM.config
+# Configuration File for projectM
+
+Texsize = 512			# Size of rendering
+Mesh X  = 32            	# blah
+Mesh Y  = 24          		# 
+FPS  = 35          		# 
+Fullscreen  = false		# comment after sale
+Window Width  = 512  	       	# comment after title
+Window Height = 512            	# comment after weight
+
+Smooth Transition Duration = 5  # in seconds
+Preset Duration = 15 	     	# in seconds
+
+Preset Path = @CMAKE_INSTALL_PREFIX@/share/projectM/presets #preset location
+Font Path = @CMAKE_INSTALL_PREFIX@/share/projectM/fonts #font location

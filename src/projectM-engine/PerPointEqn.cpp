@@ -23,63 +23,61 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "projectM.h"
+#include "projectM.hpp"
 
 #include "fatal.h"
-#include "common.h"
+#include "Common.hpp"
 
-#include "CustomWave.h"
-#include "Eval.h"
-#include "Expr.h"
-#include "Param.h"
-#include "PerPixelEqn.h"
-#include "PerPointEqn.h"
-#include "SplayTree.h"
+#include "CustomWave.hpp"
+#include "Eval.hpp"
+#include "Expr.hpp"
+#include "Param.hpp"
+#include "PerPixelEqn.hpp"
+#include "PerPointEqn.hpp"
+#include <map>
 
 #include "wipemalloc.h"
 
 /* Evaluates a per point equation for the current custom wave given by interface_wave ptr */
-void PerPointEqn::evalPerPointEqn() {
+void PerPointEqn::evaluate() {
   
-  int samples, size;
+  int size;
   float * param_matrix;
   GenExpr * eqn_ptr;
 
-  samples = CustomWave::interface_wave->samples;
+//  samples = CustomWave::interface_wave->samples;
+
   eqn_ptr = gen_expr;
  
   if (param->matrix == NULL) {
+
     if ((param_matrix = (float*) (param->matrix = wipemalloc(size = samples*sizeof(float)))) == NULL)
       return;
+
     memset(param_matrix, 0, size);
   }
   else 
     param_matrix = (float*)param->matrix;
-  
-  for (projectM::currentEngine->mesh_i = 0; projectM::currentEngine->mesh_i < samples; projectM::currentEngine->mesh_i++) {    
-      param_matrix[projectM::currentEngine->mesh_i] = eqn_ptr->eval_gen_expr();
+
+  for (int i = 0; i < samples; i++) {
+      // -1 is because per points only use one dimension
+      param_matrix[i] = eqn_ptr->eval_gen_expr(i, -1);
   }
-  
+
   /* Now that this parameter has been referenced with a per
      point equation, we let the evaluator know by setting
      this flag */
-  param->matrix_flag = 1; 
+if (!param->matrix_flag)
+  param->matrix_flag = true;
 }
 
-PerPointEqn * PerPointEqn::new_per_point_eqn(int index, Param * param, GenExpr * gen_expr) {
-    PerPointEqn * per_point_eqn = NULL;
-    if (param == NULL)
-        return NULL;
-    if (gen_expr == NULL)
-        return NULL;
-    if ((per_point_eqn = (PerPointEqn*)wipemalloc(sizeof(PerPointEqn))) == NULL)
-        return NULL;
+PerPointEqn::PerPointEqn(int _index, Param * _param, GenExpr * _gen_expr, int _samples):
+	index(_index),
+	samples(_samples),
+	param(_param),
+	gen_expr(_gen_expr)
 
-     per_point_eqn->index = index;
-     per_point_eqn->gen_expr = gen_expr;
-     per_point_eqn->param = param;
-     return per_point_eqn;
-}
+{}
 
 
 PerPointEqn::~PerPointEqn() {

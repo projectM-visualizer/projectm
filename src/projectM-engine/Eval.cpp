@@ -23,15 +23,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "projectM.h"
-#include "common.h"
+#include "projectM.hpp"
+#include "Common.hpp"
 #include "fatal.h"
 
-#include "Eval.h"
-#include "Expr.h"
-#include "Param.h"
-#include "Func.h"
-#include "builtin_funcs.h"
+#include "Eval.hpp"
+#include "Expr.hpp"
+#include "Param.hpp"
+#include "Func.hpp"
+#include "BuiltinFuncs.hpp"
 #include "wipemalloc.h"
 
 InfixOp *Eval::infix_add = NULL;
@@ -67,15 +67,15 @@ int Eval::init_infix_ops() {
 int Eval::destroy_infix_ops()
 {
 
-  free(Eval::infix_add);
-  free(Eval::infix_minus);
-  free(Eval::infix_div);
-  free(Eval::infix_or);
-  free(Eval::infix_and);
-  free(Eval::infix_mod);
-  free(Eval::infix_mult);
-  free(Eval::infix_positive);
-  free(Eval::infix_negative);
+  delete(Eval::infix_add);
+  delete(Eval::infix_minus);
+  delete(Eval::infix_div);
+  delete(Eval::infix_or);
+  delete(Eval::infix_and);
+  delete(Eval::infix_mod);
+  delete(Eval::infix_mult);
+  delete(Eval::infix_positive);
+  delete(Eval::infix_negative);
 
   Eval::infix_add = NULL;
   Eval::infix_minus = NULL;

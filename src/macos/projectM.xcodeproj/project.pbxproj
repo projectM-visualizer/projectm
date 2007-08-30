@@ -799,8 +799,6 @@
 		0CBFA8D50C1AB4FE007E9382 /* iprojectM.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0CBFA8D40C1AB4FE007E9382 /* iprojectM.cpp */; };
 		0CBFA8D90C1AB50E007E9382 /* iTunesAPI.c in Sources */ = {isa = PBXBuildFile; fileRef = 0CBFA8D60C1AB50E007E9382 /* iTunesAPI.c */; };
 		0CCF40050C0A2F870030828E /* projectM.icns in Resources */ = {isa = PBXBuildFile; fileRef = 0CCF40040C0A2F870030828E /* projectM.icns */; };
-		0CD3F0440C25D3FF00D72AD2 /* glf.c in Sources */ = {isa = PBXBuildFile; fileRef = 0CD3F0430C25D3FF00D72AD2 /* glf.c */; };
-		0CD3F04C0C25D44D00D72AD2 /* glf.h in Headers */ = {isa = PBXBuildFile; fileRef = 0CD3F04B0C25D44D00D72AD2 /* glf.h */; };
 		0CDBB8220C1F4540007A1868 /* libglew.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0CDBB8210C1F4540007A1868 /* libglew.a */; };
 /* End PBXBuildFile section */
 
@@ -2242,8 +2240,6 @@
 		0CBFA8D70C1AB50E007E9382 /* iTunesAPI.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = iTunesAPI.h; path = "../projectM-iTunes/macos/iTunesAPI.h"; sourceTree = SOURCE_ROOT; };
 		0CBFA8D80C1AB50E007E9382 /* iTunesVisualAPI.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = iTunesVisualAPI.h; path = "../projectM-iTunes/macos/iTunesVisualAPI.h"; sourceTree = SOURCE_ROOT; };
 		0CCF40040C0A2F870030828E /* projectM.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = projectM.icns; sourceTree = "<group>"; };
-		0CD3F0430C25D3FF00D72AD2 /* glf.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = glf.c; path = "../projectM-engine/glf.c"; sourceTree = SOURCE_ROOT; };
-		0CD3F04B0C25D44D00D72AD2 /* glf.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = glf.h; path = "../projectM-engine/glf.h"; sourceTree = SOURCE_ROOT; };
 		0CDBB8210C1F4540007A1868 /* libglew.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglew.a; path = ../../../glew/build/macos/glew/build/Release/libglew.a; sourceTree = SOURCE_ROOT; };
 		D2AAC046055464E500DB518D /* libprojectM.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libprojectM.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -3073,7 +3069,6 @@
 				0CBFA85C0C1AB102007E9382 /* fftsg.h */,
 				0CBFA85E0C1AB102007E9382 /* Func.h */,
 				0CBFA8600C1AB102007E9382 /* glConsole.h */,
-				0CD3F04B0C25D44D00D72AD2 /* glf.h */,
 				0CBFA8630C1AB102007E9382 /* InitCond.h */,
 				0CBFA8760C1AB116007E9382 /* lvtoprojectM.h */,
 				0CBFA8780C1AB116007E9382 /* menu.h */,
@@ -3109,7 +3104,6 @@
 				0CBFA85B0C1AB102007E9382 /* fftsg.cpp */,
 				0CBFA85D0C1AB102007E9382 /* Func.cpp */,
 				0CBFA85F0C1AB102007E9382 /* glConsole.cpp */,
-				0CD3F0430C25D3FF00D72AD2 /* glf.c */,
 				0CBFA8620C1AB102007E9382 /* InitCond.cpp */,
 				0CBFA8770C1AB116007E9382 /* menu.cpp */,
 				0CBFA87C0C1AB12E007E9382 /* Param.cpp */,
@@ -3190,7 +3184,6 @@
 				0CBFA8AD0C1AB12E007E9382 /* SplayTree.h in Headers */,
 				0CBFA8AF0C1AB12E007E9382 /* timer.h in Headers */,
 				0CBFA8B10C1AB12E007E9382 /* wipemalloc.h in Headers */,
-				0CD3F04C0C25D44D00D72AD2 /* glf.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3366,7 +3359,6 @@
 				0CBFA8AC0C1AB12E007E9382 /* SplayTree.cpp in Sources */,
 				0CBFA8AE0C1AB12E007E9382 /* timer.cpp in Sources */,
 				0CBFA8B00C1AB12E007E9382 /* wipemalloc.cpp in Sources */,
-				0CD3F0440C25D3FF00D72AD2 /* glf.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3570,7 +3562,6 @@
 					MACOS,
 					DEBUG,
 					USE_FBO,
-					USE_GLF,
 				);
 				HEADER_SEARCH_PATHS = (
 					/System/Library/Frameworks/AGL.framework/Headers,
@@ -3619,7 +3610,6 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					MACOS,
 					USE_FBO,
-					USE_GLF,
 				);
 				HEADER_SEARCH_PATHS = (
 					/System/Library/Frameworks/AGL.framework/Headers,
@@ -3690,7 +3680,6 @@
 					MACOS,
 					DEBUG,
 					USE_FBO,
-					USE_GLF,
 				);
 				GCC_USE_GCC3_PFE_SUPPORT = NO;
 				HEADER_SEARCH_PATHS = (
@@ -3721,7 +3710,6 @@
 					MACOS,
 					"$(GCC_PREPROCESSOR_DEFINITIONS)",
 					USE_FBO,
-					USE_GLF,
 				);
 				HEADER_SEARCH_PATHS = (
 					/System/Library/Frameworks/AGL.framework/Headers,

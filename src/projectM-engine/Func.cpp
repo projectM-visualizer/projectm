@@ -24,64 +24,14 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "builtin_funcs.h"
-#include "common.h"
+#include "Common.hpp"
 #include "fatal.h"
 
-#include "Func.h"
-#include "SplayTree.h"
+#include "Func.hpp"
+#include <map>
 
-#include "wipemalloc.h"
-
-SplayTree *Func::builtin_func_tree = NULL;
-
-/* Private function prototypes */
-void *copy_func_key(char * string) {
-	
-	char * clone_string;
-	
-	if ((clone_string = (char*)wipemalloc(MAX_TOKEN_SIZE)) == NULL)
-		return NULL;
-	
-	strncpy(clone_string, string, MAX_TOKEN_SIZE-1);
-	
-	return (void*)clone_string;
-}	
-
-/* Compare string name with function name */
-int compare_func(char * name, char * name2) {
-
-  int cmpval;
-
-  /* Uses string comparison function */
-  cmpval = strncmp(name, name2, MAX_TOKEN_SIZE-1);
-  
-  return cmpval;
-}
-
-Func * Func::create_func (char * name, float (*func_ptr)(float*), int num_args) {
-
-  Func * func;
-  func = (Func*)wipemalloc(sizeof(Func));
- 
-  if (func == NULL)
-    return NULL;
-
-  
-  /* Clear name space */
-  memset(func->name, 0, MAX_TOKEN_SIZE);
-
-  /* Copy given name into function structure */
-  strncpy(func->name, name, MAX_TOKEN_SIZE); 
-
-  /* Assign value pointer */
-  func->func_ptr = func_ptr;
-  func->num_args = num_args;
-  /* Return instantiated function */
-  return func;
-
-}
+Func::Func (const std::string & _name, float (*_func_ptr)(float*), int _num_args):
+	name(_name), func_ptr(_func_ptr), num_args(_num_args) {}
 
 /* Frees a function type, real complicated... */
-Func::~Func() {
-  }
+Func::~Func() {}

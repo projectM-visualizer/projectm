@@ -22,92 +22,69 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-#include "projectM.h"
+#include <iostream>
+#include "projectM.hpp"
 
 #include "fatal.h"
-#include "common.h"
+#include "Common.hpp"
 
-#include "Expr.h"
-#include "Eval.h"
-#include "Param.h"
-#include "PerPixelEqn.h"
-#include "SplayTree.h"
+#include "Expr.hpp"
+#include "Eval.hpp"
+#include "Param.hpp"
+#include "PerPixelEqn.hpp"
+#include <map>
 
 #include "wipemalloc.h"
-
+#include <cassert>
 /* Evaluates a per pixel equation */
-void PerPixelEqn::evalPerPixelEqn() {
+void PerPixelEqn::evaluate() {
 
-  float ** param_matrix = NULL;
-  GenExpr * eqn_ptr = NULL;
+  GenExpr * eqn_ptr = 0;
   int x,y;
 
-  eqn_ptr = gen_expr; 
- if (param->matrix == NULL) {
-    if (PER_PIXEL_EQN_DEBUG) printf("evalPerPixelEqn: [begin initializing matrix] (index = %d) (name = %s)\n", 
-  			  index, param->name);
-    
-    param_matrix = (float**)wipemalloc(param->gx*sizeof(float*));
-    param->matrix = param_matrix;
+ eqn_ptr = this->gen_expr;
 
+ float ** param_matrix = (float**)this->param->matrix;
+
+ if (param_matrix == 0) {
+    if (PER_PIXEL_EQN_DEBUG) printf("evalPerPixelEqn: [begin initializing matrix] (index = %d) (name = %s)\n", 
+  			  index, param->name.c_str());
+
+    param_matrix = (float**)wipemalloc(param->gx*sizeof(float*));
     for(x = 0; x < param->gx; x++)
       param_matrix[x] = (float *)wipemalloc(param->gy * sizeof(float));
 
     for (x = 0; x < param->gx; x++)
-      for (y = 0; y < param->gy; y++)
+      for (y = 0; y < param->gy; y++) {
+	    /// @slow is this necessary?
 	    param_matrix[x][y] = 0.0;
-
-    if (param->name == NULL)
-      printf("null parameter?\n");
-
-    //    printf("PARAM MATRIX: \"%s\" initialized.\n", per_pixel_eqn->param->name);
+    }
+    this->param->matrix = param_matrix;
   }
-  else 
-    param_matrix = (float**)param->matrix;
- 
-  if (eqn_ptr == NULL || param_matrix == NULL )
-    printf("something is seriously wrong...\n");
+
+  assert(!(eqn_ptr == NULL || param_matrix == NULL));
 
 //    param->matrix_flag = 0;         /** Force matrix ignore to update time */
-  for (projectM::currentEngine->mesh_i = 0; projectM::currentEngine->mesh_i < param->gx; projectM::currentEngine->mesh_i++) {    
-    for (projectM::currentEngine->mesh_j = 0; projectM::currentEngine->mesh_j < param->gy; projectM::currentEngine->mesh_j++) {     
-      param_matrix[projectM::currentEngine->mesh_i][projectM::currentEngine->mesh_j] = eqn_ptr->eval_gen_expr();
+  for (int mesh_i = 0; mesh_i < param->gx; mesh_i++) { 
+    for (int mesh_j = 0; mesh_j < param->gy; mesh_j++) {
+//	std::cout << "gx,gy is " << param->gx << "," << param->gy << std::endl;
+      param_matrix[mesh_i][mesh_j] = eqn_ptr->eval_gen_expr(mesh_i, mesh_j);
     }
   }
   
   /* Now that this parameter has been referenced with a per
      pixel equation, we let the evaluator know by setting
      this flag */
-  param->matrix_flag = 1; 
-   param->flags |= P_FLAG_PER_PIXEL;
+  /// @bug review and verify this behavior
+  param->matrix_flag = true;
+  param->flags |= P_FLAG_PER_PIXEL;
 }
 
-PerPixelEqn *PerPixelEqn::new_per_pixel_eqn( int index, Param * param, 
-                                             GenExpr * gen_expr) {
+PerPixelEqn::PerPixelEqn(int _index, Param * _param, GenExpr * _gen_expr):index(_index), param(_param), gen_expr(_gen_expr) {
 
-	PerPixelEqn * per_pixel_eqn;
+	assert(index >= 0);
+	assert(param != 0);
+	assert(gen_expr != 0);
 	
-	if (index < 0)
-	  return NULL;
-	if (param == NULL)
-	  return NULL;
-	if (gen_expr == NULL)
-	  return NULL;
-	
-	if ((per_pixel_eqn = (PerPixelEqn*)wipemalloc(sizeof(PerPixelEqn))) == NULL)
-	  return NULL;
-	
-	per_pixel_eqn->index = index;
-	per_pixel_eqn->param = param;
-	per_pixel_eqn->gen_expr = gen_expr;
-	
-	return per_pixel_eqn;	
 }
 
-void PerPixelEqn::free_per_pixel_eqn() {
-
-	delete gen_expr;
-	
-	return;
-}

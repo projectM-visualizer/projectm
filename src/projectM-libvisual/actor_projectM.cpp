@@ -10,30 +10,27 @@ using namespace std;
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <config.h>
 #include <libvisual/libvisual.h>
-#include <libprojectM/BeatDetect.h>
-#include <libprojectM/PCM.h>
-#include <libprojectM/projectM.h>
+#include <libprojectM/BeatDetect.hpp>
+#include <libprojectM/PCM.hpp>
+#include <libprojectM/projectM.hpp>
 #include <libprojectM/console_interface.h>
 #include "lvtoprojectM.h"
 
-#if HAVE_CONFIG_H
-#include <config.h>
-#endif
 #define CONFIG_FILE "/share/projectM/config.1.00"
 #define FONTS_DIR "/share/projectM/fonts"
 
-//#define PROJECTM_PREFIX /usr
-//#define PROJECTM_DATADIR "/usr/share/projectM"
+
 
 void read_config();
-
+char preset_dir[1024];
+char fonts_dir[1024];
 int texsize=512;
 int gx=32,gy=24;
 int wvw=512,wvh=512;
+int fvw=1024,fvh=768;
 int fps=30, fullscreen=0;
-char preset_dir[512];
-char fonts_dir[512];
 
 /* Private context sensitive data goes here, */
 typedef struct {
@@ -112,33 +109,27 @@ extern "C" int lv_projectm_init (VisPluginData *plugin)
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	//FIXME
-	priv->PM = visual_mem_new0 (projectM, 1);
+	priv->PM = new projectM();
 	//globalPM = (projectM *)wipemalloc( sizeof( projectM ) );
 	priv->PM->projectM_reset();
     
     
-	//projectM_reset( globalPM );
-
-	priv->PM->fullscreen = 0; //fullscreen;
-	priv->PM->renderTarget->texsize = texsize;
-	priv->PM->renderTarget->usePbuffers = 1;
-	priv->PM->gx=gx;
-	priv->PM->gy=gy;
-	priv->PM->fps=fps;
-
-	
-
-	strcpy(projectM_data, PROJECTM_PREFIX);
-	strcpy(projectM_data+strlen(PROJECTM_PREFIX), FONTS_DIR);
-	projectM_data[strlen(PROJECTM_PREFIX)+strlen(FONTS_DIR)]='\0';
+	strcpy(projectM_data, PROJECTM_DATADIR);
+	strcpy(projectM_data+strlen(PROJECTM_DATADIR), FONTS_DIR);
+	projectM_data[strlen(PROJECTM_DATADIR)+strlen(FONTS_DIR)]='\0';
        
-	priv->PM->fontURL = (char *)malloc( sizeof( char ) * 512 );
+	priv->PM->fontURL = (char *)malloc( sizeof( char ) * 1024 );
 	strcpy( priv->PM->fontURL, projectM_data );	
 	
-	priv->PM->presetURL = (char *)malloc( sizeof( char ) * 512 );
+	priv->PM->presetURL = (char *)malloc( sizeof( char ) * 1024 );
 	strcpy( priv->PM->presetURL, preset_dir );	
+ 
 
-	priv->PM->projectM_init();
+	//projectM_reset( globalPM );
+ priv->PM->projectM_init(gx, gy, fps, texsize, fullscreen ? fvw:wvw, fullscreen? fvh:wvh);
+
+
+
        
 	priv->PM->projectM_resetGL( wvw, wvh ); 
 
@@ -268,7 +259,6 @@ extern "C" int lv_projectm_render (VisPluginData *plugin, VisVideo *video, VisAu
 }
 
 
-
 void read_config()
 {
 
@@ -282,9 +272,9 @@ void read_config()
    char projectM_home[1024];
    char projectM_config[1024];
 
-   strcpy(projectM_config, PROJECTM_PREFIX);
-   strcpy(projectM_config+strlen(PROJECTM_PREFIX), CONFIG_FILE);
-   projectM_config[strlen(PROJECTM_PREFIX)+strlen(CONFIG_FILE)]='\0';
+   strcpy(projectM_config, PROJECTM_DATADIR);
+   strcpy(projectM_config+strlen(PROJECTM_DATADIR), CONFIG_FILE);
+   projectM_config[strlen(PROJECTM_DATADIR)+strlen(CONFIG_FILE)]='\0';
    printf("dir:%s \n",projectM_config);
    home=getenv("HOME");
    strcpy(projectM_home, home);
@@ -342,30 +332,30 @@ void read_config()
 
 
 
-     fgets(num, 80, in);  fgets(num, 80, in);  fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &texsize);  
+     fgets(num, 512, in);  fgets(num, 512, in);  fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &texsize);  
 
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &gx);  
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &gx);  
 
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &gy);   
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &gy);   
 
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &wvw);  
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &wvw);  
 
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &wvh);  
-  
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &fps);
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &wvh);  
+   
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &fps);
 
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &fullscreen);
-     fgets(num, 80, in);
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &fullscreen);
+     fgets(num, 512, in);
+
      if(fgets(num, 512, in) != NULL)  strcpy(preset_dir, num);
      preset_dir[strlen(preset_dir)-1]='\0';
-     fgets(num, 80, in);
     
      /*
      fgets(num, 80, in);
@@ -388,3 +378,5 @@ void read_config()
    fclose(in); 
   
 } 
+
+

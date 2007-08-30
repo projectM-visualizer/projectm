@@ -19,11 +19,11 @@
  *
  */
 /**
- * $Id: sdltoprojectM.h,v 1.1 2004/10/08 00:35:28 cvs Exp $
+ * $Id: sdltoprojectM.hpp,v 1.1 2004/10/08 00:35:28 cvs Exp $
  *
  * Translates SDL -> projectM variables
  *
- * $Log: sdltoprojectM.h,v $
+ * $Log: sdltoprojectM.hpp,v $
  * Revision 1.1  2004/10/08 00:35:28  cvs
  * Moved and imported
  *
@@ -35,15 +35,16 @@
 #ifndef _SDLTOPROJECTM_H
 #define _SDLTOPROJECTM_H
 
-#include "libprojectM/event.h"
+#include "event.h"
 
+ //#include "projectM/projectM.hpp"
 #ifdef WIN32
 #include <SDL.h>
 #else
 #include <SDL/SDL.h>
 #endif
 
-projectMEvent sdl2pmEvent( SDL_Event event ) { \
+inline projectMEvent sdl2pmEvent( SDL_Event event ) { \
 							
     switch ( event.type ) { \
         case SDL_VIDEORESIZE:
@@ -57,7 +58,7 @@ projectMEvent sdl2pmEvent( SDL_Event event ) { \
       } \
   } \
 
-projectMKeycode sdl2pmKeycode( SDLKey keysym ) { \
+inline projectMKeycode sdl2pmKeycode( SDLKey keysym ) { \
     switch ( keysym ) { \
         case SDLK_F1: \
             return PROJECTM_K_F1; \
@@ -157,7 +158,7 @@ projectMKeycode sdl2pmKeycode( SDLKey keysym ) { \
       } \
   } \
 
-projectMModifier sdl2pmModifier( SDLMod mod ) { \
+inline projectMModifier sdl2pmModifier( SDLMod mod ) { \
     return PROJECTM_KMOD_LSHIFT; \
   } \
 

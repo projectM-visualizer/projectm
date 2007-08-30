@@ -29,14 +29,15 @@
 #include <windows.h>
 #endif
 
-#include <projectM-engine/carbontoprojectM.h>
-#include <projectM-engine/common.h>
-#include <projectM-engine/BeatDetect.h>
-#include <projectM-engine/PCM.h>
-#include <projectM-engine/projectM.h>
-#include <projectM-engine/menu.h>
+#include <projectM-engine/carbontoprojectM.hpp>
+#include <projectM-engine/Common.hpp>
+#include <projectM-engine/BeatDetect.hpp>
+#include <projectM-engine/PCM.hpp>
+#include <projectM-engine/projectM.hpp>
+//#include <projectM-engine/menu.h>
 
 #ifdef WIN32
+
 #include "win32/iTunesVisualAPI.h"
 #else
 #ifdef MACOS
@@ -805,7 +806,7 @@ IMPEXP OSStatus MAIN (OSType message, PluginMessageInfo *messageInfo, void *refC
         case kPluginInitMessage: {
 #ifdef DEBUG
 #ifdef MACOS
-            debugFile = fopen( "/tmp/iprojectM.txt", "wb" );
+            debugFile = fopen( "/Users/descarte/iprojectM.txt", "wb" );
             fprintf( debugFile, "registerPlugin: %d\n", status );
             fflush( debugFile );
 #endif /** MACOS */
@@ -840,6 +841,8 @@ IMPEXP OSStatus MAIN (OSType message, PluginMessageInfo *messageInfo, void *refC
 #endif
 
                 /** Initialise projectM */
+		if (globalPM != 0)
+			delete(globalPM);
                 globalPM = new projectM();
                 globalPM->projectM_reset();
     

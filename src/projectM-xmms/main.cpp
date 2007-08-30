@@ -1,5 +1,5 @@
 /* 
-projectM v0.95 - xmms-projectm.sourceforge.net
+projectM v1.01 - xmms-projectm.sourceforge.net
 --------------------------------------------------
 
 Lead Developers:  Carmelo Piccione (cep@andrew.cmu.edu) &
@@ -29,6 +29,7 @@ www.gamedev.net/reference/programming/features/beatdetection/
 #include <stdio.h>
 #include <xmms/plugin.h>
 #include <string.h>
+#include <string>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -39,15 +40,16 @@ www.gamedev.net/reference/programming/features/beatdetection/
 #include <GL/glu.h>
 #include <xmms/xmmsctrl.h>
 #include <math.h>
+#include "ConfigFile.h"
 
-#include <libprojectM/BeatDetect.h>
-#include <libprojectM/PCM.h>
-#include <libprojectM/projectM.h>
+#include <libprojectM/BeatDetect.hpp>
+#include <libprojectM/PCM.hpp>
+#include <libprojectM/projectM.hpp>
 #include <libprojectM/console_interface.h>
 #include "sdltoprojectM.h"
 #include "video_init.h"
 
-#define CONFIG_FILE "/share/projectM/config.1.00"
+#define CONFIG_FILE "/share/projectM/config.inp"
 #define FONTS_DIR "/share/projectM/fonts"
 
 // Forward declarations 
@@ -61,12 +63,14 @@ extern "C" void projectM_render_pcm(gint16 pcm_data[2][512]);
 extern "C" void projectM_render_freq(gint16 pcm_data[2][256]);
 extern "C" int worker_func(void*);
 extern "C" VisPlugin *get_vplugin_info();
-void read_config();
+std::string read_config();
 
-char preset_dir[512];
-char fonts_dir[512];
+char preset_dir[1024];
+char fonts_dir[1024];
 
 //extern preset_t * active_preset;
+
+FILE * debugFile = fopen("./dwrite-dump", "wb");
 
 // Callback functions
 VisPlugin projectM_vtable = {
@@ -101,10 +105,9 @@ SDL_mutex *mutex;
 SDL_Event event;
 
 SDL_Surface *screen;
-//SDL_RenderTarget *RenderTarget = NULL;
-//GLuint RenderTargetTextureID;
 
-projectM *globalPM = NULL;
+
+projectM * globalPM = NULL;
 
 int maxsamples=512;
 
@@ -113,7 +116,7 @@ int gx=32,gy=24;
 int wvw=400,wvh=400;
 int fvw=1024,fvh=768;
 int fps=35, fullscreen=0;
-char *disp;
+
 // char *title;
 
 gint disable_projectm(void *something) {
@@ -142,8 +145,8 @@ Uint32 get_xmms_title(Uint32 something, void *somethingelse) {
 		title = xmms_remote_get_playlist_title(
 				projectM_vtable.xmms_session, pos);
 		if(title && (!last_title || strcmp(last_title,title))) {
-			globalPM->title = title;
-			globalPM->drawtitle = 1;
+			globalPM->renderer->title = title;
+			globalPM->renderer->drawtitle = 1;
 			g_free(last_title);
 			last_title = title;
 		} else if(title && last_title != title) {
@@ -162,38 +165,41 @@ int worker_func(void*)
 { 
  char projectM_data[1024]; 
  SDL_TimerID title_timer = NULL;
-  read_config();
+ std::string config_file;
+ config_file = read_config();
+
+ ConfigFile config(config_file);
+
+ int wvw = config.read<int>( "Window Width", 512 );
+ int wvh = config.read<int>( "Window Height", 512 );
+ int fullscreen = 0;
+ if (config.read("Fullscreen", true)) fullscreen = 1;
+      else fullscreen = 0;
+
   init_display(wvw,wvh,&fvw,&fvh,fullscreen);   
   SDL_WM_SetCaption("projectM v1.00", "projectM v1.00");
 
 
   /** Initialise projectM */
     
-  globalPM = (projectM *)malloc( sizeof( projectM ) );
-  globalPM->projectM_reset();
-  
+  globalPM = new projectM(config_file);
+
+  /*  
   globalPM->fullscreen = fullscreen;
-  globalPM->renderTarget->texsize = texsize;
-  globalPM->renderTarget->usePbuffers = 1;
-  globalPM->gx=gx;
-  globalPM->gy=gy;
-  globalPM->fps=fps;
 
   
   	strcpy(projectM_data, PROJECTM_PREFIX);
 	strcpy(projectM_data+strlen(PROJECTM_PREFIX), FONTS_DIR);
 	projectM_data[strlen(PROJECTM_PREFIX)+strlen(FONTS_DIR)]='\0';
        
-	globalPM->fontURL = (char *)malloc( sizeof( char ) * 512 );
+	globalPM->fontURL = (char *)malloc( sizeof( char ) * 1024 );
 	strcpy( globalPM->fontURL, projectM_data );	
 	
-	globalPM->presetURL = (char *)malloc( sizeof( char ) * 512 );
+	globalPM->presetURL = (char *)malloc( sizeof( char ) * 1024 );
 	strcpy( globalPM->presetURL, preset_dir );	
- 
-
-    globalPM->projectM_init();
-  
-    globalPM->projectM_resetGL( wvw, wvh );
+  */
+      
+   
 
     title_timer = SDL_AddTimer(500, get_xmms_title, NULL);
     /** Initialise the thread */
@@ -207,13 +213,13 @@ int worker_func(void*)
         SDL_Event event;
         while ( SDL_PollEvent( &event ) ) {
             /** Translate into projectM codes and process */
-            evt = sdl2pmEvent( event );
+            evt = sdl2pmEvent( event );	  
+
             key = sdl2pmKeycode( event.key.keysym.sym );
             mod = sdl2pmModifier( event.key.keysym.mod );
 
             if ( evt == PROJECTM_KEYDOWN ) {                 
-     
-
+	   
 	      if(key == PROJECTM_K_f)
 		{
 		 
@@ -235,6 +241,9 @@ int worker_func(void*)
               }
 	    else if ( evt == PROJECTM_VIDEORESIZE )
 	      {
+
+	       
+
 		wvw=event.resize.w;
 		wvh=event.resize.h;
 	       
@@ -268,9 +277,6 @@ int worker_func(void*)
 		
   printf("Worker thread: Exiting\n");
  if(title_timer) SDL_RemoveTimer(title_timer);
-  g_free(globalPM->title);
-  free(globalPM->presetURL);
-  free(globalPM->fontURL);
   free(globalPM);
   close_display();
 }
@@ -362,7 +368,8 @@ extern "C" void projectM_playback_stop(void)
 extern "C" void projectM_render_pcm(gint16 pcm_data[2][512])
 {
   	SDL_mutexP(mutex);
-       
+      
+       	/// @bug sperl: might want to look at this. crashes here sometimes 
         globalPM->beatDetect->pcm->addPCM16(pcm_data);
 	 
 	SDL_mutexV(mutex);
@@ -374,7 +381,7 @@ extern "C" void projectM_render_freq(gint16 freq_data[2][256])
   printf("NO GOOD\n");
  }
 
-void read_config()
+std::string read_config()
 {
 
    int n;
@@ -393,17 +400,19 @@ void read_config()
    printf("dir:%s \n",projectM_config);
    home=getenv("HOME");
    strcpy(projectM_home, home);
-   strcpy(projectM_home+strlen(home), "/.projectM/config.1.00");
-   projectM_home[strlen(home)+strlen("/.projectM/config.1.00")]='\0';
+   strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
+   projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
 
   
  if ((in = fopen(projectM_home, "r")) != 0) 
    {
-     printf("reading ~/.projectM/config.1.00 \n");
+     printf("reading ~/.projectM/config.inp \n");
+     fclose(in);
+     return std::string(projectM_home);
    }
  else
    {
-     printf("trying to create ~/.projectM/config.1.00 \n");
+     printf("trying to create ~/.projectM/config.inp \n");
 
      strcpy(projectM_home, home);
      strcpy(projectM_home+strlen(home), "/.projectM");
@@ -411,8 +420,8 @@ void read_config()
      mkdir(projectM_home,0755);
 
      strcpy(projectM_home, home);
-     strcpy(projectM_home+strlen(home), "/.projectM/config.1.00");
-     projectM_home[strlen(home)+strlen("/.projectM/config.1.00")]='\0';
+     strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
+     projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
      
      if((out = fopen(projectM_home,"w"))!=0)
        {
@@ -429,49 +438,55 @@ void read_config()
 	    
 
 	     if ((in = fopen(projectM_home, "r")) != 0) 
-	       { printf("created ~/.projectM/config.1.00 successfully\n");  }
-	     else{printf("This shouldn't happen, using implementation defualts\n");return;}
+	       { 
+		 printf("created ~/.projectM/config.inp successfully\n");  
+		 fclose(in);
+		 return std::string(projectM_home);
+	       }
+	     else{printf("This shouldn't happen, using implementation defualts\n");abort();}
 	   }
-	 else{printf("Cannot find projectM default config, using implementation defaults\n");return;}
+	 else{printf("Cannot find projectM default config, using implementation defaults\n");abort();}
        }
      else
        {
-	 printf("Cannot create ~/.projectM/config.1.00, using default config file\n");
+	 printf("Cannot create ~/.projectM/config.inp, using default config file\n");
 	 if ((in = fopen(projectM_config, "r")) != 0) 
-	   { printf("Successfully opened default config file\n");}
-	 else{ printf("Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");	   return;}
+	   { printf("Successfully opened default config file\n");
+	     fclose(in);
+	     return std::string(projectM_config);}
+	 else{ printf("Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");  abort();}
 	   
        }
 
    }
 
 
+ /*
+     fgets(num, 512, in);  fgets(num, 512, in);  fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &texsize);  
 
-     fgets(num, 80, in);  fgets(num, 80, in);  fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &texsize);  
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &gx);  
 
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &gx);  
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &gy);   
 
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &gy);   
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &wvw);  
 
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &wvw);  
-
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &wvh);  
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &wvh);  
    
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &fps);
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &fps);
 
-     fgets(num, 80, in);
-     if(fgets(num, 80, in) != NULL) sscanf (num, "%d", &fullscreen);
-     fgets(num, 80, in);
+     fgets(num, 512, in);
+     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &fullscreen);
+     fgets(num, 512, in);
 
      if(fgets(num, 512, in) != NULL)  strcpy(preset_dir, num);
      preset_dir[strlen(preset_dir)-1]='\0';
-    
+ */ 
      /*
      fgets(num, 80, in);
      fgets(num, 80, in);
@@ -490,8 +505,9 @@ void read_config()
       printf("%s %d\n", disp,strlen(disp));
       setenv("LD_PRELOAD", "/usr/lib/tls/libGL.so.1.0.4496", 1);
      */
-   fclose(in); 
+ // fclose(in); 
   
+ abort();
 } 
 
 

@@ -31,8 +31,8 @@
 #include <math.h>
 #include <projectM-engine/wipemalloc.h>
 
-#include <projectM-engine/BeatDetect.h>
-#include <projectM-engine/PCM.h>
+#include <projectM-engine/BeatDetect.hpp>
+#include <projectM-engine/PCM.hpp>
 #include <projectM-engine/Preset.h>
 
 #include "wxvisApp.h"

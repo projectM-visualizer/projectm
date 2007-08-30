@@ -1,0 +1,85 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<!DOCTYPE KDevPrjSession>
+<KDevPrjSession>
+ <DocsAndViews NumberOfDocuments="15" >
+  <Doc0 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Preset.cpp" >
+   <View0 line="382" Type="Source" />
+  </Doc0>
+  <Doc1 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Preset.hpp" >
+   <View0 line="137" Type="Source" />
+  </Doc1>
+  <Doc2 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/ParamUtils.hpp" >
+   <View0 line="64" Type="Source" />
+  </Doc2>
+  <Doc3 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/projectM.cpp" >
+   <View0 line="133" Type="Source" />
+  </Doc3>
+  <Doc4 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/CustomWave.cpp" >
+   <View0 line="542" Type="Source" />
+  </Doc4>
+  <Doc5 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/CustomWave.hpp" >
+   <View0 line="131" Type="Source" />
+  </Doc5>
+  <Doc6 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/InitCondUtils.hpp" >
+   <View0 line="69" Type="Source" />
+  </Doc6>
+  <Doc7 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Renderer.cpp" >
+   <View0 line="1521" Type="Source" />
+  </Doc7>
+  <Doc8 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-xmms/main.cpp" >
+   <View0 line="272" Type="Source" />
+  </Doc8>
+  <Doc9 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Parser.cpp" >
+   <View0 line="1401" Type="Source" />
+  </Doc9>
+  <Doc10 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Param.cpp" >
+   <View0 line="122" Type="Source" />
+  </Doc10>
+  <Doc11 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/Param.hpp" >
+   <View0 line="84" Type="Source" />
+  </Doc11>
+  <Doc12 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/CustomShape.cpp" >
+   <View0 line="218" Type="Source" />
+  </Doc12>
+  <Doc13 NumberOfViews="1" URL="file:///home/carm/projects/dev-1.0/src/projectM-engine/InitCond.cpp" >
+   <View0 line="76" Type="Source" />
+  </Doc13>
+  <Doc14 NumberOfViews="1" URL="file:///usr/lib/gcc/i686-pc-linux-gnu/4.1.2/include/g%2B%2B-v4/bits/stl_tree.h" >
+   <View0 line="591" Type="Source" />
+  </Doc14>
+ </DocsAndViews>
+ <pluginList>
+  <kdevdebugger>
+   <breakpointList/>
+  </kdevdebugger>
+  <kdevbookmarks>
+   <bookmarks>
+    <bookmark url="/home/carm/projects/dev-1.0/src/projectM-engine/PresetChooser.cpp" >
+     <mark line="3" />
+    </bookmark>
+    <bookmark url="/home/carm/projects/dev-1.0/src/projectM-engine/CustomShape.cpp" >
+     <mark line="214" />
+    </bookmark>
+    <bookmark url="/home/carm/projects/projectM/dev-1.0/src/projectM-engine/console_interface.cpp" >
+     <mark line="166" />
+    </bookmark>
+    <bookmark url="/home/carm/projects/dev-1.0/src/projectM-engine/PerPointEqn.cpp" >
+     <mark line="60" />
+    </bookmark>
+    <bookmark url="/home/carm/projects/dev-1.0/src/projectM-engine/Expr.cpp" >
+     <mark line="136" />
+     <mark line="88" />
+    </bookmark>
+   </bookmarks>
+  </kdevbookmarks>
+  <kdevsubversion>
+   <subversion recurseresolve="1" recurserelocate="1" recursemerge="1" recursecommit="1" base="" recursepropget="1" recurseswitch="1" recurseupdate="1" recursepropset="1" recursediff="1" recurserevert="1" forcemove="1" recursecheckout="1" forceremove="1" recurseadd="1" recurseproplist="1" forcemerge="1" />
+  </kdevsubversion>
+  <kdevvalgrind>
+   <executable path="" params="" />
+   <valgrind path="valgrind" params="--tool=memcheck --tool=memcheck --tool=memcheck --tool=memcheck --leak-check=yes" />
+   <calltree path="" params="" />
+   <kcachegrind path="" />
+  </kdevvalgrind>
+ </pluginList>
+</KDevPrjSession>

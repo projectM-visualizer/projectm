@@ -21,25 +21,29 @@
 /* parser.c */
 
 #include <stdio.h>
-#include <string.h>
+#include <string>
+#include <cstring>
+#include <iostream>
 #include <stdlib.h>
 
-#include "common.h"
+#include "Common.hpp"
 #include "fatal.h"
 
-#include "builtin_funcs.h"
-#include "CustomWave.h"
-#include "CustomShape.h"
-#include "Expr.h"
-#include "Eval.h"
-#include "Func.h"
-#include "InitCond.h"
-#include "Param.h"
-#include "Preset.h"
-#include "Parser.h"
-#include "PerFrameEqn.h"
-#include "PerPixelEqn.h"
-#include "SplayTree.h"
+#include "BuiltinFuncs.hpp"
+#include "CustomWave.hpp"
+#include "CustomShape.hpp"
+#include "Expr.hpp"
+#include "Eval.hpp"
+#include "Func.hpp"
+#include "InitCond.hpp"
+#include "Param.hpp"
+#include "Preset.hpp"
+#include "Parser.hpp"
+#include "PerFrameEqn.hpp"
+#include "PerPixelEqn.hpp"
+#include <map>
+#include "ParamUtils.hpp"
+
 #include "wipemalloc.h"
 
 /* Grabs the next token from the file. The second argument points
@@ -203,8 +207,8 @@ int Parser::parse_top_comment(FILE * fs) {
   }
 
  /* Done, return success */
- return PROJECTM_SUCCESS; 
-}	
+ return PROJECTM_SUCCESS;
+}
 
 /* Right Bracket is parsed by this function.
    puts a new string into name */
@@ -333,13 +337,8 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
       }	
       
       /* Insert the equation in the per frame equation tree */
-      if (preset->per_frame_init_eqn_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
-	//if (PARSE_DEBUG) printf("parse_line: failed to add a perframe equation (ERROR)\n");
-	delete init_cond; /* will free the gen expr too */		
-	return PROJECTM_PARSE_ERROR;
-      }
-      
-     
+      preset->per_frame_init_eqn_tree.insert(std::make_pair(init_cond->param->name, init_cond));
+	
       if (update_string_buffer(preset->per_frame_init_eqn_string_buffer, 
 			       &preset->per_frame_init_eqn_string_index) < 0)
 	{	return PROJECTM_FAILURE;}
@@ -363,35 +362,21 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
       }	
       
       /* Insert the equation in the per frame equation tree */
-      if (preset->per_frame_eqn_tree->splay_insert(per_frame_eqn, &per_frame_eqn_count) < 0) {
-	if (PARSE_DEBUG) printf("parse_line: failed to add a perframe equation (ERROR)\n");
-	delete per_frame_eqn; /* will free the gen expr too */		
-	return PROJECTM_PARSE_ERROR;
-      }
+      preset->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn_count, per_frame_eqn));
     
       if (update_string_buffer(preset->per_frame_eqn_string_buffer, 
 			       &preset->per_frame_eqn_string_index) < 0)
 	return PROJECTM_FAILURE;
-      
-      
-      
+
       return PROJECTM_SUCCESS;
-      
+
     }
-    
+
     /* Wavecode initial condition case */
     if (!strncmp(eqn_string, WAVECODE_STRING, WAVECODE_STRING_LENGTH)) {
       
           line_mode = CUSTOM_WAVE_WAVECODE_LINE_MODE;
 
-      //if (PARSE_DEBUG) 
-      //      printf("parse_line: wavecode prefix found: \"%s\"\n", eqn_string);
-
-	  //      printf("string:%d\n", 5);
-
-	  //SUPER MYSTERIO-BUG - Don't Remove
-	  printf("");
-	
       return parse_wavecode(eqn_string, fs, preset);
     }
     
@@ -431,8 +416,8 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
       
       if (parse_per_pixel_eqn(fs, preset, 0) < 0)
 	return PROJECTM_PARSE_ERROR;
-      
-      
+
+
       if (update_string_buffer(preset->per_pixel_eqn_string_buffer, 
 			       &preset->per_pixel_eqn_string_index) < 0)
 	return PROJECTM_FAILURE;
@@ -456,21 +441,17 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
     variable called "line_mode" specifies the last type of equation found,
     and bases any implicitly typed input on this fact
     
-    Note added by Carmelo Piccione (cep@andrew.cmu.edu) 10/19/03
+    Note added by Carmelo Piccione (carmelo@piccione@gmail.com) 10/19/03
     */
-    
+
     /* Per frame line mode previously, try to parse the equation implicitly */
     if (line_mode == PER_FRAME_LINE_MODE) {
       if ((per_frame_eqn = parse_implicit_per_frame_eqn(fs, eqn_string, ++per_frame_eqn_count, preset)) == NULL)
 	return PROJECTM_PARSE_ERROR;
-      
-      /* Insert the equation in the per frame equation tree */
-      if (preset->per_frame_eqn_tree->splay_insert(per_frame_eqn, &per_frame_eqn_count) < 0) {
-	if (PARSE_DEBUG) printf("parse_line: failed to add a perframe equation (ERROR)\n");
-	delete per_frame_eqn;       /* will free the gen expr too */		
-	return PROJECTM_PARSE_ERROR;
-      }
 
+      /* Insert the equation in the per frame equation tree */
+      preset->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn_count, per_frame_eqn));
+	
       if (update_string_buffer(preset->per_frame_eqn_string_buffer, 
 			       &preset->per_frame_eqn_string_index) < 0)
 	return PROJECTM_FAILURE;
@@ -481,15 +462,12 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
    if (PARSE_DEBUG) printf("parse_line: parsing impliict per frame init eqn)\n");
       if ((init_cond = parse_per_frame_init_eqn(fs, preset, NULL)) == NULL)
 	return PROJECTM_PARSE_ERROR;
-   
+
     ++per_frame_init_eqn_count;
 
       /* Insert the equation in the per frame equation tree */
-      if (preset->per_frame_init_eqn_tree->splay_insert(init_cond, &per_frame_init_eqn_count) < 0) {
-	if (PARSE_DEBUG) printf("parse_line: failed to add a per frame init equation (ERROR)\n");
-	delete init_cond; /* will free the gen expr too */		
-	return PROJECTM_PARSE_ERROR;
-      }
+      preset->per_frame_init_eqn_tree.insert(std::make_pair(init_cond->param->name, init_cond));
+	
 
       if (update_string_buffer(preset->per_frame_init_eqn_string_buffer, 
 			       &preset->per_frame_init_eqn_string_index) < 0)
@@ -498,7 +476,7 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
      return PROJECTM_SUCCESS;
     } else if (line_mode == PER_PIXEL_LINE_MODE) { 
 
-	if (PARSE_DEBUG) printf("parse_line: implicit per pixel eqn\n", line_count);
+	if (PARSE_DEBUG) printf("parse_line: implicit per pixel eqn (LINE %d)\n", line_count);
 	return parse_per_pixel_eqn(fs, preset, eqn_string);
 	
 
@@ -506,23 +484,22 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
 	
 	if (PARSE_DEBUG) printf("parse_line: implicit cwave ppoint eqn found (LINE %d)\n", line_count);
 	//int len = strlen(eqn_string);
-	
-	
+		
 	if (parse_wave_helper(fs, preset, last_custom_wave_id, last_eqn_type, eqn_string) < 0) {
 		if (PARSE_DEBUG) printf("parse_line: failed to parse an implicit custom wave per point eqn\n");
 		return PROJECTM_FAILURE;
 	}	
 	return PROJECTM_SUCCESS;
     } else if (line_mode == CUSTOM_WAVE_PER_FRAME_LINE_MODE) {
+
       //Added by PJS. I hope I did it right
       CustomWave * custom_wave;
-      
+
       /* Retrieve custom shape associated with this id */
-      if ((custom_wave = CustomWave::find_custom_wave(last_custom_wave_id, preset, TRUE)) == NULL)
+      if ((custom_wave = Preset::find_custom_object(last_custom_wave_id, preset->customWaves)) == NULL)
 	return PROJECTM_FAILURE;
       return parse_wave_per_frame_eqn(fs, custom_wave, preset);
-          
-     
+
     } else if (line_mode == CUSTOM_WAVE_WAVECODE_LINE_MODE) {
 	if (PARSE_DEBUG) printf("unsupported line mode: CUSTOM_WAVE_WAVECODE_LINE_MODE\n");
 	return PROJECTM_FAILURE;
@@ -534,50 +511,45 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
 	CustomShape * custom_shape;
 
 	  /* Retrieve custom shape associated with this id */
-  	if ((custom_shape = CustomShape::find_custom_shape(last_custom_shape_id, preset, TRUE)) == NULL)
+  	if ((custom_shape = Preset::find_custom_object(last_custom_shape_id, preset->customShapes)) == NULL)
     		return PROJECTM_FAILURE;
+
 	return parse_shape_per_frame_eqn(fs, custom_shape, preset);
+
      } else if (line_mode == CUSTOM_SHAPE_PER_FRAME_INIT_LINE_MODE) {
 
 	CustomShape * custom_shape;
 
 	  /* Retrieve custom shape associated with this id */
-  	if ((custom_shape = CustomShape::find_custom_shape(last_custom_shape_id, preset, TRUE)) == NULL)
+  	if ((custom_shape = preset->find_custom_object(last_custom_shape_id, preset->customShapes)) == NULL)
     		return PROJECTM_FAILURE;
 
 	return parse_shape_per_frame_init_eqn(fs, custom_shape, preset);
 
      }
-    
-    //if (PARSE_DEBUG) printf("parse_line: found initial condition: name = \"%s\" (LINE %d)\n", eqn_string, line_count);
-    
+
+    if (PARSE_DEBUG) printf("parse_line: found initial condition: name = \"%s\" (LINE %d)\n", eqn_string, line_count);
     /* Evaluate the initial condition */
     if ((init_cond = parse_init_cond(fs, eqn_string, preset)) == NULL) {
        if (PARSE_DEBUG) printf("parse_line: failed to parse initial condition (LINE %d)\n", line_count);
       return PROJECTM_PARSE_ERROR; 
-    }	
-    
-    /* Add equation to initial condition tree */
-    if (preset->init_cond_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
-      if (PARSE_DEBUG) printf("parse_line: failed to add initial condition \"%s\" to equation tree (LINE %d)\n", 
-      		      init_cond->param->name, line_count);
-      delete init_cond;
-      return PROJECTM_FAILURE;
     }
-    
+
+    /* Add equation to initial condition tree */
+    preset->init_cond_tree.insert(std::make_pair(init_cond->param->name, init_cond));
+
     /* Finished with initial condition line */
     //    if (PARSE_DEBUG) printf("parse_line: initial condition parsed successfully\n");
-    
+
     return PROJECTM_SUCCESS;
-    
+
     /* END INITIAL CONDITIONING PARSING */
-    
-    
+
   default: /* an uncaught type or an error has occurred */
     if (PARSE_DEBUG) printf("parse_line: uncaught case, token val = %d\n", token); 
     return PROJECTM_PARSE_ERROR;
   }
-  
+
   /* Because of the default in the case statement, 
      control flow should never actually reach here */ 
   return PROJECTM_PARSE_ERROR;
@@ -602,9 +574,9 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
   case tLPr:
     
     /* CASE 1 (Left Parentice): See if the previous string before this parentice is a function name */
-    if ((func = projectM::currentEngine->find_func(string)) != NULL) {
+    if ((func = BuiltinFuncs::find_func(string)) != NULL) {
         if (PARSE_DEBUG) {
-            DWRITE( "parse_gen_expr: found prefix function (name = %s) (LINE %d)\n", func->name, line_count);
+            DWRITE( "parse_gen_expr: found prefix function (name = %s) (LINE %d)\n", func->name.c_str(), line_count);
             
         }
       
@@ -624,6 +596,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
       if ((gen_expr = GenExpr::prefun_to_expr((float (*)(void *))func->func_ptr, expr_list, func->num_args)) == NULL)  { 	
 	  if (PARSE_DEBUG) printf("parse_prefix_args: failed to convert prefix function to general expression (LINE %d) \n", 
 	  				line_count);
+	if (tree_expr)
 	delete tree_expr;
 	for (i = 0; i < func->num_args;i++)
 	  delete expr_list[i];
@@ -649,6 +622,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
        multiplication operator. For now treat it as an error */
     if (*string != 0) {
       if (PARSE_DEBUG) printf("parse_gen_expr: implicit multiplication case unimplemented!\n");
+      if (tree_expr)
       delete tree_expr;
       return NULL;
     }
@@ -657,7 +631,8 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
        of operations. So we create a new expression tree */
     
     if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL) {
-      //if (PARSE_DEBUG) printf("parse_gen_expr:  found left parentice, but failed to create new expression tree \n");
+      if (PARSE_DEBUG) printf("parse_gen_expr:  found left parentice, but failed to create new expression tree \n");
+      if (tree_expr);
       delete tree_expr;
       return NULL;
     }
@@ -670,7 +645,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
   case tPlus:
     if (*string == 0) {
       
-      //if (PARSE_DEBUG) printf("parse_gen_expr: plus used as prefix (LINE %d)\n", line_count);
+      if (PARSE_DEBUG) printf("parse_gen_expr: plus used as prefix (LINE %d)\n", line_count);
 
 	  /* Treat prefix plus as implict 0 preceding operator */
       gen_expr = GenExpr::const_to_expr(0);
@@ -698,7 +673,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
     /* CASE 1 (terminal): string is empty, but not null. Not sure if this will actually happen
        any more. */
     if (*string == 0) {
-      //if (PARSE_DEBUG) printf("parse_gen_expr: empty string coupled with terminal (LINE %d) \n", line_count);
+      if (PARSE_DEBUG) printf("parse_gen_expr: empty string coupled with terminal (LINE %d) \n", line_count);
       return parse_infix_op(fs, token, tree_expr, preset);
       
     }
@@ -711,6 +686,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
         DWRITE( "parse_gen_expr: empty string coupled with infix op (ERROR!) (LINE %d) \n", line_count);
         
         }
+	if (tree_expr)
       delete tree_expr;
       return NULL;
     }
@@ -718,29 +694,31 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
     /* CASE 1: Check if string is a just a floating point number */
     if (string_to_float(string, &val) != PROJECTM_PARSE_ERROR) {
       if ((gen_expr = GenExpr::const_to_expr(val)) == NULL) {
+	if (tree_expr)
 	delete tree_expr;
 	return NULL;
       }
-      
+
       /* Parse the rest of the line */
-      return parse_infix_op(fs, token, insert_gen_expr(gen_expr, &tree_expr), preset);          
-    
+      return parse_infix_op(fs, token, insert_gen_expr(gen_expr, &tree_expr), preset);
+
     }
 
-      
+
     /* CASE 4: custom shape variable */
     if (current_shape != NULL) {
-      if ((param = current_shape->param_tree->find_param_db(string, FALSE)) == NULL) {
-	if ((param = projectM::currentEngine->find_builtin_param(string)) == NULL)
-	  if ((param = current_shape->param_tree->find_param_db(string, TRUE)) == NULL) {
+      if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(std::string(string), &current_shape->param_tree)) == NULL) {
+	if ((param = preset->builtinParams.find_builtin_param(std::string(string))) == NULL)
+		if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(std::string(string), &current_shape->param_tree)) == NULL) {
+	    if (tree_expr)
 	    delete tree_expr;
 	    return NULL;
 	  }
       }
       
       if (PARSE_DEBUG) {
-	    DWRITE( "parse_gen_expr: custom shape parameter (name = %s)... \n", param->name);
-	    
+	    std::cerr <<  "parse_gen_expr: custom shape parameter (name = "
+		 << param->name << ")" << std::endl;
       }  
       
       /* Convert parameter to an expression */
@@ -749,7 +727,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
 	return NULL;
       }
       
-      //if (PARSE_DEBUG) printf("converted to expression (LINE %d)\n", line_count);
+      if (PARSE_DEBUG) printf("converted to expression (LINE %d)\n", line_count);
       
       /* Parse the rest of the line */
       return parse_infix_op(fs, token, insert_gen_expr(gen_expr, &tree_expr), preset);
@@ -757,18 +735,19 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
     
     /* CASE 5: custom wave variable */
     if (current_wave != NULL) {
-      if ((param = current_wave->param_tree->find_param_db(string, FALSE)) == NULL) {
-	if ((param = projectM::currentEngine->find_builtin_param(string)) == NULL) 
-	  if ((param = current_wave->param_tree->find_param_db(string, TRUE)) == NULL) {
+      if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(std::string(string), &current_wave->param_tree)) == NULL) {
+	if ((param = preset->builtinParams.find_builtin_param(std::string(string))) == NULL) 
+	  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(std::string(string), &current_wave->param_tree)) == NULL) {
+		if (tree_expr)
 	    delete tree_expr;
 	    return NULL;
 	  }
-        
       }
+      assert(param);
 
       if (PARSE_DEBUG) {
-	    DWRITE("parse_gen_expr: custom wave parameter (name = %s)... \n", param->name);
-	    
+	    std::cerr << "parse_gen_expr: custom wave parameter (name = " <<  param->name << ")" << std::endl;
+
       }
 	
 	/* Convert parameter to an expression */
@@ -781,18 +760,18 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
 	
 	/* Parse the rest of the line */
 	return parse_infix_op(fs, token, insert_gen_expr(gen_expr, &tree_expr), preset);
-      
+
     }
 
     /* CASE 6: regular parameter. Will be created if necessary and the string has no invalid characters */
-    if ((param = Param::find_param(string, preset, P_CREATE)) != NULL) {
-      
+    if ((param = ParamUtils::find(string, &preset->builtinParams, &preset->user_param_tree)) != NULL) {
+
       if (PARSE_DEBUG) {
-	    DWRITE("parse_gen_expr: parameter (name = %s)...\n", param->name);
+	    DWRITE("parse_gen_expr: parameter (name = %s)...\n", param->name.c_str());
 	    
       }  
     
-		/* Convert parameter to an expression */
+      /* Convert parameter to an expression */
       if ((gen_expr = GenExpr::param_to_expr(param)) == NULL) {
 	delete tree_expr;
 	return NULL;
@@ -810,6 +789,7 @@ GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * pre
         DWRITE( "parse_gen_expr: syntax error [string = \"%s\"] (LINE %d)\n", string, line_count);
         
     }
+    if (tree_expr)
     delete tree_expr;
     return NULL;
   }
@@ -832,7 +812,7 @@ TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root) {
      the new root */
   
   if (*root == NULL) {
-    new_root = TreeExpr::new_tree_expr(infix_op, NULL, NULL, NULL);
+    new_root = new TreeExpr(infix_op, NULL, NULL, NULL);
     *root = new_root;
     return new_root;		
   }
@@ -841,7 +821,7 @@ TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root) {
      so we make this infix operator the new root  */ 
   
   if ((*root)->infix_op == NULL) {
-    new_root = TreeExpr::new_tree_expr(infix_op, NULL, *root, NULL);
+    new_root = new TreeExpr(infix_op, NULL, *root, NULL);
     (*root) = new_root;
     return new_root;
   }
@@ -851,7 +831,7 @@ TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root) {
      precedence, then make gen_expr the root */
   
   if (infix_op->precedence > (*root)->infix_op->precedence) {
-    new_root = TreeExpr::new_tree_expr(infix_op, NULL, *root, NULL);
+    new_root = new TreeExpr(infix_op, NULL, *root, NULL);
     (*root) = new_root;
       return new_root;
   }
@@ -881,7 +861,7 @@ TreeExpr * Parser::insert_gen_expr(GenExpr * gen_expr, TreeExpr ** root) {
      using the passed expression as the root element */
   
   if (*root == NULL) {
-    new_root = TreeExpr::new_tree_expr(NULL, gen_expr, NULL, NULL);
+    new_root = new TreeExpr(NULL, gen_expr, NULL, NULL);
     *root = new_root;
     return new_root;
   }
@@ -900,7 +880,7 @@ int Parser::insert_gen_rec(GenExpr * gen_expr, TreeExpr * root) {
   /* Trivial Case: root is null */
   
   if (root == NULL) {
-    ////if (PARSE_DEBUG) printf("insert_gen_rec: root is null, returning failure\n");
+    //if (PARSE_DEBUG) printf("insert_gen_rec: root is null, returning failure\n");
     return PROJECTM_FAILURE;
   }
   
@@ -910,7 +890,7 @@ int Parser::insert_gen_rec(GenExpr * gen_expr, TreeExpr * root) {
      general expression at the left pointer */
   
   if ((root->left == NULL) && (root->infix_op != NULL)) {
-    root->left = TreeExpr::new_tree_expr(NULL, gen_expr, NULL, NULL);
+    root->left = new TreeExpr(NULL, gen_expr, NULL, NULL);
     return PROJECTM_SUCCESS;
   }
   
@@ -919,7 +899,7 @@ int Parser::insert_gen_rec(GenExpr * gen_expr, TreeExpr * root) {
      general expression at the right pointer */
   
   if ((root->right == NULL) && (root->infix_op != NULL)) {
-    root->right = TreeExpr::new_tree_expr(NULL, gen_expr, NULL, NULL);
+    root->right = new TreeExpr(NULL, gen_expr, NULL, NULL);
     return PROJECTM_SUCCESS;
   }
   
@@ -932,7 +912,7 @@ int Parser::insert_gen_rec(GenExpr * gen_expr, TreeExpr * root) {
 
   /* Impossible for control flow to reach here, but in
      the world of C programming, who knows... */
-  //if (PARSE_DEBUG) printf("insert_gen_rec: should never reach here!\n");  
+  if (PARSE_DEBUG) printf("insert_gen_rec: should never reach here!\n");  
   return PROJECTM_FAILURE;	
 }	
 
@@ -953,13 +933,13 @@ int Parser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root) {
   /* Left tree is empty, attach this operator to it. 
      I don't think this will ever happen */
   if (root->left == NULL) {
-    root->left = TreeExpr::new_tree_expr(infix_op, NULL, root->left, NULL);
+    root->left = new TreeExpr(infix_op, NULL, root->left, NULL);
     return PROJECTM_SUCCESS;
   }
  
   /* Right tree is empty, attach this operator to it */
   if (root->right == NULL) {
-    root->right = TreeExpr::new_tree_expr(infix_op, NULL, root->right, NULL);
+    root->right = new TreeExpr(infix_op, NULL, root->right, NULL);
     return PROJECTM_SUCCESS;
   }
 
@@ -971,7 +951,7 @@ int Parser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root) {
      to the left of the new expression */
 
   if (root->right->infix_op == NULL) {
-    root->right = TreeExpr::new_tree_expr(infix_op, NULL, root->right, NULL);
+    root->right = new TreeExpr(infix_op, NULL, root->right, NULL);
     return PROJECTM_SUCCESS;
   }
   
@@ -982,7 +962,7 @@ int Parser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root) {
 
   /* Otherwise, insert the operator here */
   
-  root->right = TreeExpr::new_tree_expr(infix_op, NULL, root->right, NULL);
+  root->right = new TreeExpr(infix_op, NULL, root->right, NULL);
   return PROJECTM_SUCCESS;
 
 }
@@ -995,31 +975,31 @@ GenExpr * Parser::parse_infix_op(FILE * fs, token_t token, TreeExpr * tree_expr,
   switch (token) {
  	/* All the infix operators */
   case tPlus:
-    //if (PARSE_DEBUG) printf("parse_infix_op: found addition operator (LINE %d)\n", line_count);
+    if (PARSE_DEBUG) printf("parse_infix_op: found addition operator (LINE %d)\n", line_count);
     return parse_gen_expr(fs, insert_infix_op(Eval::infix_add, &tree_expr), preset);
   case tMinus:
-    //if (PARSE_DEBUG) printf("parse_infix_op: found subtraction operator (LINE %d)\n", line_count);
+    if (PARSE_DEBUG) printf("parse_infix_op: found subtraction operator (LINE %d)\n", line_count);
     return parse_gen_expr(fs, insert_infix_op(Eval::infix_minus, &tree_expr), preset);
   case tMult:
-    //if (PARSE_DEBUG) printf("parse_infix_op: found multiplication operator (LINE %d)\n", line_count);
+    if (PARSE_DEBUG) printf("parse_infix_op: found multiplication operator (LINE %d)\n", line_count);
     return parse_gen_expr(fs, insert_infix_op(Eval::infix_mult, &tree_expr), preset);
   case tDiv:
-    //if (PARSE_DEBUG) printf("parse_infix_op: found division operator (LINE %d)\n", line_count);  
+    if (PARSE_DEBUG) printf("parse_infix_op: found division operator (LINE %d)\n", line_count);  
     return parse_gen_expr(fs, insert_infix_op(Eval::infix_div, &tree_expr), preset);
   case tMod:
-    //if (PARSE_DEBUG) printf("parse_infix_op: found modulo operator (LINE %d)\n", line_count);  
+    if (PARSE_DEBUG) printf("parse_infix_op: found modulo operator (LINE %d)\n", line_count);  
     return parse_gen_expr(fs, insert_infix_op(Eval::infix_mod, &tree_expr), preset);
   case tOr:  
-    //if (PARSE_DEBUG) printf("parse_infix_op: found bitwise or operator (LINE %d)\n", line_count);  	  
+    if (PARSE_DEBUG) printf("parse_infix_op: found bitwise or operator (LINE %d)\n", line_count);  	  
     return parse_gen_expr(fs, insert_infix_op(Eval::infix_or, &tree_expr), preset);
   case tAnd: 	  
-    //if (PARSE_DEBUG) printf("parse_infix_op: found bitwise and operator (LINE %d)\n", line_count);  	  
+    if (PARSE_DEBUG) printf("parse_infix_op: found bitwise and operator (LINE %d)\n", line_count);  	  
     return parse_gen_expr(fs, insert_infix_op(Eval::infix_and, &tree_expr), preset);
   case tPositive:
-    //if (PARSE_DEBUG) printf("parse_infix_op: found positive operator (LINE %d)\n", line_count);  	  
+    if (PARSE_DEBUG) printf("parse_infix_op: found positive operator (LINE %d)\n", line_count);  	  
     return parse_gen_expr(fs, insert_infix_op(Eval::infix_positive, &tree_expr), preset);
   case tNegative:
-    //if (PARSE_DEBUG) printf("parse_infix_op: found negative operator (LINE %d)\n", line_count);  	  
+    if (PARSE_DEBUG) printf("parse_infix_op: found negative operator (LINE %d)\n", line_count);  	  
     return parse_gen_expr(fs, insert_infix_op(Eval::infix_negative, &tree_expr), preset);
 
   case tEOL:
@@ -1027,11 +1007,12 @@ GenExpr * Parser::parse_infix_op(FILE * fs, token_t token, TreeExpr * tree_expr,
   case tSemiColon:
   case tRPr:
   case tComma:	  
-	//if (PARSE_DEBUG) printf("parse_infix_op: terminal found (LINE %d)\n", line_count);
-  	gen_expr = GenExpr::new_gen_expr(TREE_T, (void*)tree_expr);
+	if (PARSE_DEBUG) printf("parse_infix_op: terminal found (LINE %d)\n", line_count);
+  	gen_expr = new GenExpr(TREE_T, (void*)tree_expr);
+	assert(gen_expr);
   	return gen_expr;
   default:
-    //if (PARSE_DEBUG) printf("parse_infix_op: operator or terminal expected, but not found (LINE %d)\n", line_count);
+    if (PARSE_DEBUG) printf("parse_infix_op: operator or terminal expected, but not found (LINE %d)\n", line_count);
     delete tree_expr;
     return NULL;
   }  
@@ -1102,7 +1083,7 @@ int Parser::string_to_float(char * string, float * float_ptr) {
     error_ptr = NULL;
     return PROJECTM_SUCCESS;
   }
-    
+
   (*float_ptr) = 0;
   free(error_ptr);
   error_ptr = NULL;
@@ -1149,68 +1130,66 @@ int Parser::parse_float(FILE * fs, float * float_ptr) {
     return PROJECTM_SUCCESS;
   }
     
-  //if (PARSE_DEBUG) printf("parse_float: float conversion failed for string \"%s\"\n", string);
+  if (PARSE_DEBUG) printf("parse_float: float conversion failed for string \"%s\"\n", string);
 
   (*float_ptr) = 0;
   free(error_ptr);
     error_ptr = NULL;
   return PROJECTM_PARSE_ERROR;
-  
 
-  
 }
 
 /* Parses a per frame equation. That is, interprets a stream of data as a per frame equation */
 PerFrameEqn * Parser::parse_per_frame_eqn(FILE * fs, int index, Preset * preset) {
-  
+
   char string[MAX_TOKEN_SIZE];
   Param * param;
   PerFrameEqn * per_frame_eqn;
   GenExpr * gen_expr;
   
   if (parseToken(fs, string) != tEq) {
-    //if (PARSE_DEBUG) printf("parse_per_frame_eqn: no equal sign after string \"%s\" (LINE %d)\n", string, line_count);
+    if (PARSE_DEBUG) printf("parse_per_frame_eqn: no equal sign after string \"%s\" (LINE %d)\n", string, line_count);
     return NULL;			
   }
   
   /* Find the parameter associated with the string, create one if necessary */
-  if ((param = Param::find_param(string, preset, P_CREATE)) == NULL) {
+  if ((param = ParamUtils::find(string, &preset->builtinParams, &preset->user_param_tree)) == NULL) {
     return NULL;	
   }
   
   /* Make sure parameter is writable */
   if (param->flags & P_FLAG_READONLY) {
-      //if (PARSE_DEBUG) printf("parse_per_frame_eqn: parameter %s is marked as read only (LINE %d)\n", param->name, line_count);  
+      if (PARSE_DEBUG) std::cerr << "parse_per_frame_eqn: parameter \"" << param->name << "\" %s is marked as read only (LINE " << line_count << ")" << std::endl; 
       return NULL;
   }
-  
+
   /* Parse right side of equation as an expression */
   if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL) {
-    //if (PARSE_DEBUG) printf("parse_per_frame_eqn: equation evaluated to null (LINE %d)\n", line_count);
+    if (PARSE_DEBUG) printf("parse_per_frame_eqn: equation evaluated to null (LINE %d)\n", line_count);
     return NULL;
   }
-  
-  //if (PARSE_DEBUG) printf("parse_per_frame_eqn: finished per frame equation evaluation (LINE %d)\n", line_count);
-  
+
+  if (PARSE_DEBUG) printf("parse_per_frame_eqn: finished per frame equation evaluation (LINE %d)\n", line_count);
+
   /* Create a new per frame equation */
-  if ((per_frame_eqn = PerFrameEqn::new_per_frame_eqn(index, param, gen_expr)) == NULL) {
-    //if (PARSE_DEBUG) printf("parse_per_frame_eqn: failed to create a new per frame eqn, out of memory?\n");
+  if ((per_frame_eqn = new PerFrameEqn(index, param, gen_expr)) == NULL) {
+    if (PARSE_DEBUG) printf("parse_per_frame_eqn: failed to create a new per frame eqn, out of memory?\n");
     delete gen_expr;
     return NULL;
   }
-  
-  //if (PARSE_DEBUG) printf("parse_per_frame_eqn: per_frame eqn parsed succesfully\n");
-  
+
+  if (PARSE_DEBUG) printf("parse_per_frame_eqn: per_frame eqn parsed succesfully\n");
+
   return per_frame_eqn;
 }
 
 /* Parses an 'implicit' per frame equation. That is, interprets a stream of data as a per frame equation without a prefix */
 PerFrameEqn * Parser::parse_implicit_per_frame_eqn(FILE * fs, char * param_string, int index, Preset * preset) {
-  
+
   Param * param;
   PerFrameEqn * per_frame_eqn;
   GenExpr * gen_expr;
-  
+
   if (fs == NULL)
     return NULL;
   if (param_string == NULL)
@@ -1220,34 +1199,34 @@ PerFrameEqn * Parser::parse_implicit_per_frame_eqn(FILE * fs, char * param_strin
 
   //rintf("param string: %s\n", param_string);
   /* Find the parameter associated with the string, create one if necessary */
-  if ((param = Param::find_param(param_string, preset, P_CREATE)) == NULL) { 
+  if ((param = ParamUtils::find(param_string, &preset->builtinParams, &preset->user_param_tree)) == NULL) { 
     return NULL;	
   }
-  
+
   //printf("parse_implicit_per_frame_eqn: param is %s\n", param->name);
 
   /* Make sure parameter is writable */
   if (param->flags & P_FLAG_READONLY) {
-    //if (PARSE_DEBUG) printf("parse_implicit_per_frame_eqn: parameter %s is marked as read only (LINE %d)\n", param->name, line_count);  
+    if (PARSE_DEBUG) printf("parse_implicit_per_frame_eqn: parameter %s is marked as read only (LINE %d)\n", param->name.c_str(), line_count);  
     return NULL;
   }
-  
+
   /* Parse right side of equation as an expression */
   if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL) {
-    //if (PARSE_DEBUG) printf("parse_implicit_per_frame_eqn: equation evaluated to null (LINE %d)\n", line_count);
+    if (PARSE_DEBUG) printf("parse_implicit_per_frame_eqn: equation evaluated to null (LINE %d)\n", line_count);
     return NULL;
   }
-  
-  //if (PARSE_DEBUG) printf("parse_implicit_per_frame_eqn: finished per frame equation evaluation (LINE %d)\n", line_count);
-  
+
+  if (PARSE_DEBUG) printf("parse_implicit_per_frame_eqn: finished per frame equation evaluation (LINE %d)\n", line_count);
+
   /* Create a new per frame equation */
-  if ((per_frame_eqn = PerFrameEqn::new_per_frame_eqn(index, param, gen_expr)) == NULL) {
-    //if (PARSE_DEBUG) printf("parse_implicit_per_frame_eqn: failed to create a new per frame eqn, out of memory?\n");
+  if ((per_frame_eqn = new PerFrameEqn(index, param, gen_expr)) == NULL) {
+    if (PARSE_DEBUG) printf("parse_implicit_per_frame_eqn: failed to create a new per frame eqn, out of memory?\n");
     delete gen_expr;
     return NULL;
   }
   
-  //if (PARSE_DEBUG) printf("parse_implicit_per_frame_eqn: per_frame eqn parsed succesfully\n");
+  if (PARSE_DEBUG) printf("parse_implicit_per_frame_eqn: per_frame eqn parsed succesfully\n");
   
   return per_frame_eqn;
 }
@@ -1265,26 +1244,26 @@ InitCond * Parser::parse_init_cond(FILE * fs, char * name, Preset * preset) {
     return NULL;
   
   /* Search for the paramater in the database, creating it if necessary */
-  if ((param = Param::find_param(name, preset, P_CREATE)) == NULL) {
+  if ((param = ParamUtils::find(name, &preset->builtinParams, &preset->user_param_tree)) == NULL) {
     return NULL;
   }
   
-  //if (PARSE_DEBUG) printf("parse_init_cond: parameter = \"%s\" (LINE %d)\n", param->name, line_count);
+  if (PARSE_DEBUG) printf("parse_init_cond: parameter = \"%s\" (LINE %d)\n", param->name.c_str(), line_count);
   
   if (param->flags & P_FLAG_READONLY) {
-    //if (PARSE_DEBUG) printf("parse_init_cond: builtin parameter \"%s\" marked as read only!\n", param->name);
+    if (PARSE_DEBUG) printf("parse_init_cond: builtin parameter \"%s\" marked as read only!\n", param->name.c_str());
     return NULL;
   }		
   
   /* At this point, a parameter has been created or was found
      in the database. */
   
-  //if (PARSE_DEBUG) printf("parse_init_cond: parsing initial condition value... (LINE %d)\n", line_count);
+  if (PARSE_DEBUG) printf("parse_init_cond: parsing initial condition value... (LINE %d)\n", line_count);
   
   /* integer value (boolean is an integer in C) */
   if ((param->type == P_TYPE_INT) || (param->type == P_TYPE_BOOL)) {
     if ((parse_int(fs, (int*)&init_val.int_val)) == PROJECTM_PARSE_ERROR) {	
-      //if (PARSE_DEBUG) printf("parse_init_cond: error parsing integer!\n");
+      if (PARSE_DEBUG) printf("parse_init_cond: error parsing integer!\n");
       return NULL;
     }
   }
@@ -1292,20 +1271,20 @@ InitCond * Parser::parse_init_cond(FILE * fs, char * name, Preset * preset) {
   /* float value */
   else if (param->type == P_TYPE_DOUBLE) {
     if ((parse_float(fs, (float*)&init_val.float_val)) == PROJECTM_PARSE_ERROR) {
-      //if (PARSE_DEBUG) printf("parse_init_cond: error parsing float!\n");
+      if (PARSE_DEBUG) printf("parse_init_cond: error parsing float!\n");
       return NULL;
     }
   }
   
   /* Unknown value */
   else {
-    //if (PARSE_DEBUG) printf("parse_init_cond: unknown parameter type!\n");
+    if (PARSE_DEBUG) printf("parse_init_cond: unknown parameter type!\n");
     return NULL;
   }
   
   /* Create new initial condition */
   if ((init_cond = new InitCond(param, init_val)) == NULL) {
-      //if (PARSE_DEBUG) printf("parse_init_cond: new_init_cond failed!\n");
+      if (PARSE_DEBUG) printf("parse_init_cond: new_init_cond failed!\n");
       return NULL;
   }
   
@@ -1314,7 +1293,7 @@ InitCond * Parser::parse_init_cond(FILE * fs, char * name, Preset * preset) {
 }
 
 /* Parses a per frame init equation, not sure if this works right now */
-InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, SplayTree * database) {
+InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, std::map<std::string,Param*> * database) {
 
   char name[MAX_TOKEN_SIZE];
   Param * param = NULL;
@@ -1334,20 +1313,20 @@ InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, SplayTre
     return NULL;
   
 
-  /* If a database was specified,then use Param::find_param_db instead */
-  if ((database != NULL) && ((param = database->find_param_db(name, TRUE)) == NULL)) {
+  /* If a database was specified,then use ParamUtils::find_db instead */
+  if ((database != NULL) && ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(name, database)) == NULL)) {
     return NULL;
   }
 
   /* Otherwise use the builtin parameter and user databases. This is confusing. Sorry. */
-  if ((param == NULL) && ((param = Param::find_param(name, preset, P_CREATE)) == NULL)) {
+  if ((param == NULL) && ((param = ParamUtils::find(name, &preset->builtinParams, &preset->user_param_tree)) == NULL)) {
     return NULL;
   }
   
-  if (PARSE_DEBUG) printf("parse_per_frame_init_eqn: parameter = \"%s\" (LINE %d)\n", param->name, line_count);
+  if (PARSE_DEBUG) printf("parse_per_frame_init_eqn: parameter = \"%s\" (LINE %d)\n", param->name.c_str(), line_count);
   
   if (param->flags & P_FLAG_READONLY) {
-    //if (PARSE_DEBUG) printf("pars_per_frame_init_eqn: builtin parameter \"%s\" marked as read only!\n", param->name);
+    if (PARSE_DEBUG) printf("pars_per_frame_init_eqn: builtin parameter \"%s\" marked as read only!\n", param->name.c_str());
     return NULL;
   }		
   
@@ -1362,7 +1341,7 @@ InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, SplayTre
   }
  
   /* Compute initial condition value */
-  val = gen_expr->eval_gen_expr();
+  val = gen_expr->eval_gen_expr(-1,-1);
   
   /* Free the general expression now that we are done with it */
   delete gen_expr;
@@ -1404,72 +1383,72 @@ int Parser::parse_wavecode(char * token, FILE * fs, Preset * preset) {
   CValue init_val;
   Param * param;
 
-  /* Null argument checks */
-  if (preset == NULL)
-    return PROJECTM_FAILURE;
-  if (fs == NULL)
-    return PROJECTM_FAILURE;
-  if (token == NULL)
-    return PROJECTM_FAILURE;
+  assert(preset);
+  assert(fs); 
+  assert(token);
 
   /* token should be in the form wavecode_N_var, such as wavecode_1_samples */
   
   /* Get id and variable name from token string */
-  if (parse_wavecode_prefix(token, &id, &var_string) < 0)   
+  if (parse_wavecode_prefix(token, &id, &var_string) < 0)
     return PROJECTM_PARSE_ERROR;
-  
-  //if (PARSE_DEBUG) printf("parse_wavecode: wavecode id = %d, parameter = \"%s\"\n", id, var_string);
 
-  /* Retrieve custom wave information from preset. The 3rd argument
-     if true creates a custom wave if one does not exist */
-  if ((custom_wave = CustomWave::find_custom_wave(id, preset, TRUE)) == NULL) {
-    //if (PARSE_DEBUG) printf("parse_wavecode: failed to load (or create) custom wave (id = %d)!\n", id);
+   last_custom_wave_id = id;
+
+  if (PARSE_DEBUG) printf("parse_wavecode: wavecode id = %d, parameter = \"%s\"\n", id, var_string);
+
+  /* Retrieve custom wave information from preset, allocating new one if necessary */
+  if ((custom_wave = Preset::find_custom_object(id, preset->customWaves)) == NULL) {
+    std::cerr << "parse_wavecode: failed to load (or create) custom wave (id = " 
+	<< id << ")!\n" << std::endl;
+
     return PROJECTM_FAILURE;
   }
-  //if (PARSE_DEBUG) printf("parse_wavecode: custom wave found (id = %d)\n", custom_wave->id);
+
+  if (PARSE_DEBUG) printf("parse_wavecode: custom wave found (id = %d)\n", custom_wave->id);
 
   /* Retrieve parameter from this custom waves parameter db */
-  if ((param = custom_wave->param_tree->find_param_db(var_string, TRUE)) == NULL)
+  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(var_string,&custom_wave->param_tree)) == NULL)
     return PROJECTM_FAILURE;
 
-  //if (PARSE_DEBUG) printf("parse_wavecode: custom wave parameter found (name = %s)\n", param->name);
+  if (PARSE_DEBUG) printf("parse_wavecode: custom wave parameter found (name = %s)\n", param->name.c_str());
 
   /* integer value (boolean is an integer in C) */
   if ((param->type == P_TYPE_INT) || (param->type == P_TYPE_BOOL)) {
     if ((parse_int(fs, (int*)&init_val.int_val)) == PROJECTM_PARSE_ERROR) {	
-      //if (PARSE_DEBUG) printf("parse_wavecode: error parsing integer!\n");
+      if (PARSE_DEBUG) printf("parse_wavecode: error parsing integer!\n");
       return PROJECTM_PARSE_ERROR;
     }
   }
-  
+
   /* float value */
   else if (param->type == P_TYPE_DOUBLE) {
     if ((parse_float(fs, (float*)&init_val.float_val)) == PROJECTM_PARSE_ERROR) {
-      //if (PARSE_DEBUG) printf("parse_wavecode: error parsing float!\n");
+      if (PARSE_DEBUG) printf("parse_wavecode: error parsing float!\n");
       return PROJECTM_PARSE_ERROR;
     }
   }
-  
+
   /* Unknown value */
   else {
-    //if (PARSE_DEBUG) printf("parse_wavecode: unknown parameter type!\n");
+    if (PARSE_DEBUG) printf("parse_wavecode: unknown parameter type!\n");
     return PROJECTM_PARSE_ERROR;
   }
-  
+
   /* Create new initial condition */
   if ((init_cond = new InitCond(param, init_val)) == NULL) {
-      //if (PARSE_DEBUG) printf("parse_wavecode: new_init_cond failed!\n");
+      if (PARSE_DEBUG) printf("parse_wavecode: new_init_cond failed!\n");
       return PROJECTM_FAILURE;
   }
-  
-  if (custom_wave->init_cond_tree->splay_insert(init_cond, param->name) < 0) {
-    delete init_cond;
-    return PROJECTM_PARSE_ERROR;
-  }
+
+  std::pair<std::map<std::string, InitCond*>::iterator, bool> inserteePair =
+	custom_wave->init_cond_tree.insert(std::make_pair(init_cond->param->name, init_cond));
+
+  assert(inserteePair.second);
 
   line_mode = CUSTOM_WAVE_WAVECODE_LINE_MODE;
 
-  //if (PARSE_DEBUG) printf("parse_wavecode: [success]\n");
+  if (PARSE_DEBUG) printf("parse_wavecode: [success]\n");
   return PROJECTM_SUCCESS;
 }
 
@@ -1491,34 +1470,37 @@ int Parser::parse_shapecode(char * token, FILE * fs, Preset * preset) {
     return PROJECTM_FAILURE;
 
   /* token should be in the form shapecode_N_var, such as shapecode_1_samples */
-  
+
   /* Get id and variable name from token string */
   if (parse_shapecode_prefix(token, &id, &var_string) < 0)
     return PROJECTM_PARSE_ERROR;
-  
+
    last_custom_shape_id = id;
-    
-  //if (PARSE_DEBUG) printf("parse_shapecode: shapecode id = %d, parameter = \"%s\"\n", id, var_string);
+
+  if (PARSE_DEBUG) printf("parse_shapecode: shapecode id = %d, parameter = \"%s\"\n", id, var_string);
 
   /* Retrieve custom shape information from preset. The 3rd argument
      if true creates a custom shape if one does not exist */
-  if ((custom_shape = CustomShape::find_custom_shape(id, preset, TRUE)) == NULL) {
-    //if (PARSE_DEBUG) printf("parse_shapecode: failed to load (or create) custom shape (id = %d)!\n", id);
+
+  if ((custom_shape = Preset::find_custom_object(id,  preset->customShapes)) == NULL) {
+    if (PARSE_DEBUG) printf("parse_shapecode: failed to load (or create) custom shape (id = %d)!\n", id);
     return PROJECTM_FAILURE;
   }
-  //if (PARSE_DEBUG) printf("parse_shapecode: custom shape found (id = %d)\n", custom_shape->id);
+  if (PARSE_DEBUG) printf("parse_shapecode: custom shape found (id = %d)\n", custom_shape->id);
 
   /* Retrieve parameter from this custom shapes parameter db */
-  if ((param = custom_shape->param_tree->find_param_db(var_string, TRUE)) == NULL) {
-    //if (PARSE_DEBUG) printf("parse_shapecode: failed to create parameter.\n");
+
+
+  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(var_string, &custom_shape->param_tree)) == NULL) {
+    if (PARSE_DEBUG) printf("parse_shapecode: failed to create parameter.\n");
     return PROJECTM_FAILURE;
   }
-  //if (PARSE_DEBUG) printf("parse_shapecode: custom shape parameter found (name = %s)\n", param->name);
+  if (PARSE_DEBUG) printf("parse_shapecode: custom shape parameter found (name = %s)\n", param->name.c_str());
 
   /* integer value (boolean is an integer in C) */
   if ((param->type == P_TYPE_INT) || (param->type == P_TYPE_BOOL)) {
     if ((parse_int(fs, (int*)&init_val.int_val)) == PROJECTM_PARSE_ERROR) {	
-      //if (PARSE_DEBUG) printf("parse_shapecode: error parsing integer!\n");
+      if (PARSE_DEBUG) printf("parse_shapecode: error parsing integer!\n");
       return PROJECTM_PARSE_ERROR;
     }
   }
@@ -1526,31 +1508,27 @@ int Parser::parse_shapecode(char * token, FILE * fs, Preset * preset) {
   /* float value */
   else if (param->type == P_TYPE_DOUBLE) {
     if ((parse_float(fs, (float*)&init_val.float_val)) == PROJECTM_PARSE_ERROR) {
-      //if (PARSE_DEBUG) printf("parse_shapecode: error parsing float!\n");
+      if (PARSE_DEBUG) printf("parse_shapecode: error parsing float!\n");
       return PROJECTM_PARSE_ERROR;
     }
   }
-  
+
   /* Unknown value */
   else {
-    //if (PARSE_DEBUG) printf("parse_shapecode: unknown parameter type!\n");
+    if (PARSE_DEBUG) printf("parse_shapecode: unknown parameter type!\n");
     return PROJECTM_PARSE_ERROR;
   }
   
   /* Create new initial condition */
   if ((init_cond = new InitCond(param, init_val)) == NULL) {
-      //if (PARSE_DEBUG) printf("parse_shapecode: new_init_cond failed!\n");
+      if (PARSE_DEBUG) printf("parse_shapecode: new_init_cond failed!\n");
       return PROJECTM_FAILURE;
   }
  
-  if (custom_shape->init_cond_tree->splay_insert(init_cond, param->name) < 0) {
-    delete init_cond;
-    //if (PARSE_DEBUG) printf("parse_shapecode: initial condition already set, not reinserting it (param = \"%s\")\n", param->name);
-    return PROJECTM_PARSE_ERROR;
-  }
+  custom_shape->init_cond_tree.insert(std::make_pair(param->name,init_cond));
   line_mode = CUSTOM_SHAPE_SHAPECODE_LINE_MODE;
 
-  //if (PARSE_DEBUG) printf("parse_shapecode: [success]\n");
+  if (PARSE_DEBUG) printf("parse_shapecode: [success]\n");
   return PROJECTM_SUCCESS;
 }
 
@@ -1742,7 +1720,6 @@ int Parser::parse_wave(char * token, FILE * fs, Preset * preset) {
     return PROJECTM_FAILURE;
   }
 
-  int last_custom_wave_id = id;
   strncpy(last_eqn_type, eqn_type, MAX_TOKEN_SIZE);
 
   return parse_wave_helper(fs, preset, id, eqn_type, 0);
@@ -1759,7 +1736,7 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
    InitCond * init_cond;
 
   /* Retrieve custom wave associated with this id */
-  if ((custom_wave = CustomWave::find_custom_wave(id, preset, TRUE)) == NULL) {
+  if ((custom_wave = Preset::find_custom_object(id,  preset->customWaves)) == NULL) {
     if (PARSE_DEBUG) printf("parse_wave_helper: custom wave id %d not found!\n", id);
     return PROJECTM_FAILURE;
   }
@@ -1770,18 +1747,14 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
    if (PARSE_DEBUG) printf("parse_wave_helper (per frame init): [begin] (LINE %d)\n", line_count);
 
     /* Parse the per frame init equation */
-    if ((init_cond = parse_per_frame_init_eqn(fs, preset, custom_wave->param_tree)) == NULL) {
+    if ((init_cond = parse_per_frame_init_eqn(fs, preset, &custom_wave->param_tree)) == NULL) {
       if (PARSE_DEBUG) printf("parse_wave_helper (per frame init): equation parsing failed (LINE %d)\n", line_count);
       return PROJECTM_PARSE_ERROR;
     }	
 
     /* Insert the equation in the per frame equation tree */
-    if (custom_wave->per_frame_init_eqn_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
-      if (PARSE_DEBUG) printf("parse_wave_helper (per frame init): failed to add equation (ERROR)\n");
-       delete init_cond; /* will free the gen expr too */		
-      return PROJECTM_FAILURE;
-    }
-   
+    custom_wave->per_frame_init_eqn_tree.insert(std::make_pair(init_cond->param->name,init_cond));
+
     if (update_string_buffer(custom_wave->per_frame_init_eqn_string_buffer, 
 			     &custom_wave->per_frame_init_eqn_string_index) < 0) {
 	if (PARSE_DEBUG) printf("parse_wave_helper: failed to update string buffer (LINE %d)\n", line_count);
@@ -1799,20 +1772,20 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
     if (PARSE_DEBUG) printf("parse_wave_helper (per_frame): [start] (custom wave id = %d)\n", custom_wave->id);
     
     if (parseToken(fs, string) != tEq) {
-      //if (PARSE_DEBUG) printf("parse_wave (per_frame): no equal sign after string \"%s\" (LINE %d)\n", string, line_count);
+      if (PARSE_DEBUG) printf("parse_wave (per_frame): no equal sign after string \"%s\" (LINE %d)\n", string, line_count);
       return PROJECTM_PARSE_ERROR;			
     }
   
     /* Find the parameter associated with the string in the custom wave database */
-    if ((param = custom_wave->param_tree->find_param_db(string, TRUE)) == NULL) { 
-      //if (PARSE_DEBUG) printf("parse_wave (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string);
+    if ((param =  ParamUtils::find<ParamUtils::AUTO_CREATE>(string, &custom_wave->param_tree)) == NULL) { 
+      if (PARSE_DEBUG) printf("parse_wave (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string);
       return PROJECTM_FAILURE;	
     }
   
     
     /* Make sure parameter is writable */
     if (param->flags & P_FLAG_READONLY) {
-      //if (PARSE_DEBUG) printf("parse_wave (per_frame): parameter %s is marked as read only (LINE %d)\n", param->name, line_count);  
+      if (PARSE_DEBUG) printf("parse_wave (per_frame): parameter %s is marked as read only (LINE %d)\n", param->name.c_str(), line_count);  
       return PROJECTM_FAILURE;
     }
   
@@ -1820,7 +1793,7 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
 
     current_wave = custom_wave;
     if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL) {
-      //if (PARSE_DEBUG) printf("parse_wave (per_frame): equation evaluated to null (LINE %d)\n", line_count);
+      if (PARSE_DEBUG) printf("parse_wave (per_frame): equation evaluated to null (LINE %d)\n", line_count);
       current_wave = NULL;
       return PROJECTM_PARSE_ERROR;
 
@@ -1828,22 +1801,18 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
 
     current_wave = NULL;
 
-    //if (PARSE_DEBUG) printf("parse_wave (per_frame): [finished parsing equation] (LINE %d)\n", line_count);
+    if (PARSE_DEBUG) printf("parse_wave (per_frame): [finished parsing equation] (LINE %d)\n", line_count);
   
     /* Create a new per frame equation */
-    if ((per_frame_eqn = PerFrameEqn::new_per_frame_eqn(custom_wave->per_frame_count++, param, gen_expr)) == NULL) {
-      //if (PARSE_DEBUG) printf("parse_wave (per_frame): failed to create a new per frame eqn, out of memory?\n");
+    if ((per_frame_eqn = new PerFrameEqn(custom_wave->per_frame_count++, param, gen_expr)) == NULL) {
+      if (PARSE_DEBUG) printf("parse_wave (per_frame): failed to create a new per frame eqn, out of memory?\n");
       delete gen_expr;
       return PROJECTM_FAILURE;
     }
  
-    if (custom_wave->per_frame_eqn_tree->splay_insert(per_frame_eqn, &per_frame_eqn->index) < 0) {
-      delete per_frame_eqn;
-      return PROJECTM_FAILURE;
-    }
-       
-    //if (PARSE_DEBUG) printf("parse_wave (per_frame): equation %d associated with custom wave %d [success]\n", 
-    //			    per_frame_eqn->index, custom_wave->id);
+    custom_wave->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn->index, per_frame_eqn)); 
+    if (PARSE_DEBUG) printf("parse_wave (per_frame): equation %d associated with custom wave %d [success]\n", 
+    			    per_frame_eqn->index, custom_wave->id);
 
     
     /* Need to add stuff to string buffer so the editor can read the equations. 
@@ -1874,14 +1843,14 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
                 }
          } 
     
-    /* Parse right side of equation as an expression */
+    /* Parse right side of equation as an expression, First tell parser we are parsing a custom wave */
     current_wave = custom_wave;
     if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL) {
       if (PARSE_DEBUG) printf("parse_wave_helper (per_point): equation evaluated to null? (LINE %d)\n", line_count);
       
       return PROJECTM_PARSE_ERROR;
     }
-    current_wave = NULL;
+    
 
     /* Add the per point equation */
     if (custom_wave->add_per_point_eqn(string, gen_expr) < 0) {
@@ -1889,7 +1858,8 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
      
       return PROJECTM_PARSE_ERROR;
     }
-
+    // This tells the parser we are no longer parsing a custom wave
+    current_wave = NULL;
    
     if (update_string_buffer(custom_wave->per_point_eqn_string_buffer, &custom_wave->per_point_eqn_string_index) < 0)
       return PROJECTM_FAILURE;
@@ -1904,12 +1874,11 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
 
 /* Parses custom shape equations */
 int Parser::parse_shape(char * token, FILE * fs, Preset * preset) {
-  
+
   int id;
   char * eqn_type;
-  char string[MAX_TOKEN_SIZE];
   CustomShape * custom_shape;
-  InitCond * init_cond;
+  
 
   if (token == NULL)
 
@@ -1921,12 +1890,12 @@ int Parser::parse_shape(char * token, FILE * fs, Preset * preset) {
   
   /* Grab custom shape id and equation type (per frame or per point) from string token */
   if (parse_shape_prefix(token, &id, &eqn_type) < 0) {
-    //if (PARSE_DEBUG) printf("parse_shape: syntax error in custom shape prefix!\n");
+    if (PARSE_DEBUG) printf("parse_shape: syntax error in custom shape prefix!\n");
     return PROJECTM_PARSE_ERROR;
   }
 
   /* Retrieve custom shape associated with this id */
-  if ((custom_shape = CustomShape::find_custom_shape(id, preset, TRUE)) == NULL)
+  if ((custom_shape = Preset::find_custom_object(id,preset->customShapes)) == NULL)
     return PROJECTM_FAILURE;
 
 
@@ -1981,7 +1950,7 @@ int Parser::update_string_buffer(char * buffer, int * index) {
   
   /* Buffer full, quit */
   if ((*index) > (STRING_BUFFER_SIZE - 1)) {
-    //if (PARSE_DEBUG) printf("update_string_buffer: string buffer full!\n");
+    if (PARSE_DEBUG) printf("update_string_buffer: string buffer full!\n");
     return PROJECTM_FAILURE;
   }	
   
@@ -2000,14 +1969,13 @@ int Parser::update_string_buffer(char * buffer, int * index) {
 */
 
 int Parser::get_string_prefix_len(char * string) {
-  
+
   int i = 0;
 
   /* Null argument check */
   if (string == NULL)
     return PROJECTM_FAILURE;
 
-  
   /* First find the equal sign */
   while (string[i] != '=') {
     if (string[i] == 0)
@@ -2038,21 +2006,16 @@ int Parser::get_string_prefix_len(char * string) {
 int Parser::parse_shape_per_frame_init_eqn(FILE * fs, CustomShape * custom_shape, Preset * preset) {
      InitCond * init_cond;
 
-    //if (PARSE_DEBUG) printf("parse_shape (per frame init): [begin] (LINE %d)\n", line_count);
+    if (PARSE_DEBUG) printf("parse_shape (per frame init): [begin] (LINE %d)\n", line_count);
 
     /* Parse the per frame equation */
-    if ((init_cond = parse_per_frame_init_eqn(fs, preset, custom_shape->param_tree)) == NULL) {
-      //if (PARSE_DEBUG) printf("parse_shape (per frame init): equation parsing failed (LINE %d)\n", line_count);
-      return PROJECTM_PARSE_ERROR;
-    }	
-    
-    /* Insert the equation in the per frame equation tree */
-    if (custom_shape->per_frame_init_eqn_tree->splay_insert(init_cond, init_cond->param->name) < 0) {
-      //if (PARSE_DEBUG) printf("parse_shape (per frame init): failed to add equation (ERROR)\n");
-      delete init_cond; /* will free the gen expr too */		
+    if ((init_cond = parse_per_frame_init_eqn(fs, preset, &custom_shape->param_tree)) == NULL) {
+      if (PARSE_DEBUG) printf("parse_shape (per frame init): equation parsing failed (LINE %d)\n", line_count);
       return PROJECTM_PARSE_ERROR;
     }
 
+    /* Insert the equation in the per frame equation tree */
+    custom_shape->per_frame_init_eqn_tree.insert(std::make_pair(init_cond->param->name,init_cond));
     if (update_string_buffer(custom_shape->per_frame_init_eqn_string_buffer, 
 			     &custom_shape->per_frame_init_eqn_string_index) < 0)
       return PROJECTM_FAILURE;
@@ -2069,23 +2032,23 @@ PerFrameEqn * per_frame_eqn;
 
 char string[MAX_TOKEN_SIZE];
 
-//if (PARSE_DEBUG) printf("parse_shape (per_frame): [start] (custom shape id = %d)\n", custom_shape->id);
+if (PARSE_DEBUG) printf("parse_shape (per_frame): [start] (custom shape id = %d)\n", custom_shape->id);
     
     if (parseToken(fs, string) != tEq) {
-      //if (PARSE_DEBUG) printf("parse_shape (per_frame): no equal sign after string \"%s\" (LINE %d)\n", string, line_count);
+      if (PARSE_DEBUG) printf("parse_shape (per_frame): no equal sign after string \"%s\" (LINE %d)\n", string, line_count);
       return PROJECTM_PARSE_ERROR;			
     }
   
     /* Find the parameter associated with the string in the custom shape database */
-    if ((param = custom_shape->param_tree->find_param_db(string, TRUE)) == NULL) { 
-      //if (PARSE_DEBUG) printf("parse_shape (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string);
+    if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string, &custom_shape->param_tree)) == NULL) { 
+      if (PARSE_DEBUG) printf("parse_shape (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string);
       return PROJECTM_FAILURE;	
     }
   
     
     /* Make sure parameter is writable */
     if (param->flags & P_FLAG_READONLY) {
-      //if (PARSE_DEBUG) printf("parse_shape (per_frame): parameter %s is marked as read only (LINE %d)\n", param->name, line_count);  
+      if (PARSE_DEBUG) printf("parse_shape (per_frame): parameter %s is marked as read only (LINE %d)\n", param->name.c_str(), line_count);  
       return PROJECTM_FAILURE;
     }
   
@@ -2093,34 +2056,27 @@ char string[MAX_TOKEN_SIZE];
 
     current_shape = custom_shape;
     if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL) {
-      //if (PARSE_DEBUG) printf("parse_shape (per_frame): equation evaluated to null (LINE %d)\n", line_count);
+      if (PARSE_DEBUG) printf("parse_shape (per_frame): equation evaluated to null (LINE %d)\n", line_count);
       current_shape = NULL;
       return PROJECTM_PARSE_ERROR;
     }
 
     current_shape = NULL;
 
-    //if (PARSE_DEBUG) printf("parse_shape (per_frame): [finished parsing equation] (LINE %d)\n", line_count);
-  
+    if (PARSE_DEBUG) printf("parse_shape (per_frame): [finished parsing equation] (LINE %d)\n", line_count);
+
     /* Create a new per frame equation */
-    if ((per_frame_eqn = PerFrameEqn::new_per_frame_eqn(custom_shape->per_frame_count++, param, gen_expr)) == NULL) {
-      //if (PARSE_DEBUG) printf("parse_shape (per_frame): failed to create a new per frame eqn, out of memory?\n");
+    if ((per_frame_eqn = new PerFrameEqn(custom_shape->per_frame_count++, param, gen_expr)) == NULL) {
+      if (PARSE_DEBUG) printf("parse_shape (per_frame): failed to create a new per frame eqn, out of memory?\n");
       delete gen_expr;
       return PROJECTM_FAILURE;
     }
  
-    if (custom_shape->per_frame_eqn_tree->splay_insert(per_frame_eqn, &per_frame_eqn->index) < 0) {
-      delete per_frame_eqn;
-      return PROJECTM_FAILURE;
-    }
-       
-    //if (PARSE_DEBUG) printf("parse_shape (per_frame): equation %d associated with custom shape %d [success]\n", 
-    //			    per_frame_eqn->index, custom_shape->id);
+    custom_shape->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn->index, per_frame_eqn));
 
-    
     /* Need to add stuff to string buffer so the editor can read the equations.
        Why not make a nice little helper function for this? - here it is: */
-    
+
     if (update_string_buffer(custom_shape->per_frame_eqn_string_buffer, &custom_shape->per_frame_eqn_string_index) < 0)
       return PROJECTM_FAILURE;
 
@@ -2136,23 +2092,23 @@ PerFrameEqn * per_frame_eqn;
 
 char string[MAX_TOKEN_SIZE];
 
-//if (PARSE_DEBUG) printf("parse_shape (per_frame): [start] (custom shape id = %d)\n", custom_shape->id);
+if (PARSE_DEBUG) printf("parse_wave (per_frame): [start] (custom shape id = %d)\n", custom_wave->id);
     
     if (parseToken(fs, string) != tEq) {
-      //if (PARSE_DEBUG) printf("parse_shape (per_frame): no equal sign after string \"%s\" (LINE %d)\n", string, line_count);
+      if (PARSE_DEBUG) printf("parse_wave (per_frame): no equal sign after string \"%s\" (LINE %d)\n", string, line_count);
       return PROJECTM_PARSE_ERROR;			
     }
   
     /* Find the parameter associated with the string in the custom shape database */
-    if ((param = custom_wave->param_tree->find_param_db(string, TRUE)) == NULL) { 
-      //if (PARSE_DEBUG) printf("parse_shape (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string);
+    if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string, &custom_wave->param_tree)) == NULL) { 
+      if (PARSE_DEBUG) printf("parse_wave (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string);
       return PROJECTM_FAILURE;	
     }
   
     
     /* Make sure parameter is writable */
     if (param->flags & P_FLAG_READONLY) {
-      //if (PARSE_DEBUG) printf("parse_shape (per_frame): parameter %s is marked as read only (LINE %d)\n", param->name, line_count);  
+      if (PARSE_DEBUG) printf("parse_wave (per_frame): parameter %s is marked as read only (LINE %d)\n", param->name.c_str(), line_count);  
       return PROJECTM_FAILURE;
     }
   
@@ -2160,29 +2116,25 @@ char string[MAX_TOKEN_SIZE];
 
     current_wave = custom_wave;
     if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL) {
-      //if (PARSE_DEBUG) printf("parse_shape (per_frame): equation evaluated to null (LINE %d)\n", line_count);
+      if (PARSE_DEBUG) printf("parse_wave (per_frame): equation evaluated to null (LINE %d)\n", line_count);
       current_wave = NULL;
       return PROJECTM_PARSE_ERROR;
     }
 
     current_wave = NULL;
 
-    //if (PARSE_DEBUG) printf("parse_shape (per_frame): [finished parsing equation] (LINE %d)\n", line_count);
+    if (PARSE_DEBUG) printf("parse_wave (per_frame): [finished parsing equation] (LINE %d)\n", line_count);
   
     /* Create a new per frame equation */
-    if ((per_frame_eqn = PerFrameEqn::new_per_frame_eqn(custom_wave->per_frame_count++, param, gen_expr)) == NULL) {
-      //if (PARSE_DEBUG) printf("parse_shape (per_frame): failed to create a new per frame eqn, out of memory?\n");
+    if ((per_frame_eqn = new PerFrameEqn(custom_wave->per_frame_count++, param, gen_expr)) == NULL) {
+      if (PARSE_DEBUG) printf("parse_wave (per_frame): failed to create a new per frame eqn, out of memory?\n");
       delete gen_expr;
       return PROJECTM_FAILURE;
     }
  
-    if (custom_wave->per_frame_eqn_tree->splay_insert(per_frame_eqn, &per_frame_eqn->index) < 0) {
-      delete per_frame_eqn;
-      return PROJECTM_FAILURE;
-    }
-       
-    //if (PARSE_DEBUG) printf("parse_shape (per_frame): equation %d associated with custom shape %d [success]\n", 
-    //			    per_frame_eqn->index, custom_shape->id);
+    custom_wave->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn->index, per_frame_eqn));
+    if (PARSE_DEBUG) printf("parse_wave (per_frame): equation %d associated with custom wave %d [success]\n", 
+    			     per_frame_eqn->index, custom_wave->id);
 
     
     /* Need to add stuff to string buffer so the editor can read the equations.
