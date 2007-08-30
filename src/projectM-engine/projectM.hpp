@@ -179,19 +179,19 @@ public:
   
     
     /** Functions */
-    DLLEXPORT projectM();
+    DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height);
 
-    DLLEXPORT void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
+    void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
     void projectM_reset();
     DLLEXPORT void projectM_resetGL( int width, int height );
     DLLEXPORT void projectM_setTitle( char *title );
     DLLEXPORT void renderFrame();
 
-    DLLEXPORT void projectM_initengine();
-    DLLEXPORT void projectM_resetengine();
+    void projectM_initengine();
+    void projectM_resetengine();
 
   DLLEXPORT projectM(std::string config_file);
-  DLLEXPORT void readConfig(std::string config_file);
+    void readConfig(std::string config_file);
 
 
     void get_title();

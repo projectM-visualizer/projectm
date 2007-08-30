@@ -79,9 +79,11 @@ double smoothDuration = 5;
 //int smoothFrame = 0;
 int oldFrame = 0;
 
-DLLEXPORT projectM::projectM() :smoothFrame(0), beatDetect ( 0 )
+DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height) :smoothFrame(0), beatDetect ( 0 )
 {
   projectM_reset();
+  projectM_init(gx, gy, fps, texsize, wvw, wvh);  
+  projectM_resetGL( wvw, wvh );
 }
 
 DLLEXPORT  projectM::projectM(std::string config_file) :smoothFrame(0), beatDetect ( 0 )
@@ -92,7 +94,7 @@ DLLEXPORT  projectM::projectM(std::string config_file) :smoothFrame(0), beatDete
  
 }
 
-DLLEXPORT void projectM::readConfig(std::string config_file)
+void projectM::readConfig(std::string config_file)
 {
 
   ConfigFile config(config_file);
@@ -113,7 +115,7 @@ DLLEXPORT void projectM::readConfig(std::string config_file)
   presetURL = config.read<string>( "Preset Path", "/usr/share/projectM/presets" );
   fontURL = config.read<string>( "Font Path", "/usr/share/projectM/fonts" );
 
-  projectM_init(gx, gy, fps, texsize, wvw, wvh);  
+  projectM_init(gx, gy, fps, texsize, wvw, wvh); 
   projectM_resetGL( wvw, wvh );
 }
 
@@ -326,7 +328,7 @@ DLLEXPORT void projectM::projectM_reset()
 	projectM_resetengine();
 }
 
-DLLEXPORT void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, int height )
+ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, int height )
 {
 
 	/** Initialise engine variables */
@@ -507,7 +509,7 @@ DLLEXPORT void projectM::projectM_init ( int gx, int gy, int fps, int texsize, i
 
 
 
-DLLEXPORT void projectM::projectM_initengine()
+void projectM::projectM_initengine()
 {
 
 	/* PER FRAME CONSTANTS BEGIN */
@@ -644,7 +646,7 @@ DLLEXPORT void projectM::projectM_initengine()
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
-DLLEXPORT void projectM::projectM_resetengine()
+void projectM::projectM_resetengine()
 {
 
 	this->presetOutputs.zoom=1.0;
