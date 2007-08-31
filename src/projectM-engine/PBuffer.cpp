@@ -43,58 +43,61 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(fal
 
     this->texsize=texsize;
 
-#ifdef USE_FBO
+
    if(this->usePbuffers)
     { 
-	    glewInit();
-	
-	    GLuint   fb,  depth_rb, rgba_tex,  other_tex;
-	    glGenFramebuffersEXT(1, &fb);
-	    glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fb );
-	
-	    glGenRenderbuffersEXT(1, &depth_rb);
-	    glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depth_rb );
-	    glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, this->texsize,this->texsize  );
-	    glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depth_rb );         
-	    this->fbuffer[0] = depth_rb;
-    	
-	    glGenTextures(1, &other_tex);
-	    glBindTexture(GL_TEXTURE_2D,other_tex);
- 	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-	    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	    //glGenerateMipmapEXT(GL_TEXTURE_2D);
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    
-    
-    	
-	    glGenTextures(1, &rgba_tex);
-	    glBindTexture(GL_TEXTURE_2D, rgba_tex); 
-	    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	    //glGenerateMipmapEXT(GL_TEXTURE_2D);
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-    
-    
-    	
-	    glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, rgba_tex, 0 );         
-	    this->textureID[0] = rgba_tex;
-	    this->textureID[1] = other_tex; 
-    
-	    GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-	    if (status == GL_FRAMEBUFFER_COMPLETE_EXT) {
-	        return;
-	    }	      
+      glewInit();
+      
+      if(glewIsSupported("GL_EXT_framebuffer_object"))
+	{
+	  GLuint   fb,  depth_rb, rgba_tex,  other_tex;
+	  glGenFramebuffersEXT(1, &fb);
+	  glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fb );
+	  
+	  glGenRenderbuffersEXT(1, &depth_rb);
+	  glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depth_rb );
+	  glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, this->texsize,this->texsize  );
+	  glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depth_rb );         
+	  this->fbuffer[0] = depth_rb;
+	  
+	  glGenTextures(1, &other_tex);
+	  glBindTexture(GL_TEXTURE_2D,other_tex);
+	  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	  //glGenerateMipmapEXT(GL_TEXTURE_2D);
+	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	  
+	  
+	  
+	  glGenTextures(1, &rgba_tex);
+	  glBindTexture(GL_TEXTURE_2D, rgba_tex); 
+	  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	  //glGenerateMipmapEXT(GL_TEXTURE_2D);
+	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	  
+	  
+	  
+	  glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, rgba_tex, 0 );         
+	  this->textureID[0] = rgba_tex;
+	  this->textureID[1] = other_tex; 
+	  
+	  GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+	  if (status == GL_FRAMEBUFFER_COMPLETE_EXT) {
+	    return;
+	  }	
+	}
+      else this->usePbuffers=0;      
     }
-#endif
 
 
     DWRITE( "using teximage hack fallback\n" );
 
-    /** Fallback pbuffer creation via teximage hack */
+    /** Fallback pbuf;fer creation via teximage hack */
     /** Check the texture size against the viewport size */
     /** If the viewport is smaller, then we'll need to scale the texture size down */
     /** If the viewport is larger, scale it up */
@@ -142,19 +145,18 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(fal
 /** Locks the pbuffer */
 void RenderTarget::lock() {
 
-#ifdef USE_FBO
+
   if(this->usePbuffers)
     { 
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->fbuffer[0]);     
     }
   
-#endif
-  }
+    }
 
 /** Unlocks the pbuffer */
 void RenderTarget::unlock() {
 
-#ifdef USE_FBO
+
   if(this->usePbuffers)
     {
       glBindTexture( GL_TEXTURE_2D, this->textureID[1] );
@@ -164,8 +166,6 @@ void RenderTarget::unlock() {
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
       return;
     }
-
-#endif
 
     /** Fallback texture path */
     DWRITE( "copying framebuffer to texture\n" );
