@@ -1,11 +1,11 @@
 #include <iostream>
-using namespace std;
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include <string>
 #include <math.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -17,15 +17,15 @@ using namespace std;
 #include <libprojectM/projectM.hpp>
 #include <libprojectM/console_interface.h>
 #include "lvtoprojectM.h"
+#include "ConfigFile.h"
 
-#define CONFIG_FILE "/share/projectM/config.1.00"
-#define FONTS_DIR "/share/projectM/fonts"
+#define CONFIG_FILE "/share/projectM/config.inp"
 
 
 
-void read_config();
-char preset_dir[1024];
-char fonts_dir[1024];
+
+std::string read_config();
+
 int texsize=512;
 int gx=32,gy=24;
 int wvw=512,wvh=512;
@@ -97,8 +97,13 @@ extern "C" int lv_projectm_init (VisPluginData *plugin)
 {
         char projectM_data[1024];
 	ProjectmPrivate *priv;
-	
-        read_config();
+	 std::string config_file;
+ config_file = read_config();
+
+ ConfigFile config(config_file);
+        wvw = config.read<int>( "Window Width", 512 );
+  wvh = config.read<int>( "Window Height", 512 );
+ fullscreen = 0;
 	/* Allocate the projectm private data structure, and register it as a private */
 
 	priv = new ProjectmPrivate;
@@ -109,29 +114,10 @@ extern "C" int lv_projectm_init (VisPluginData *plugin)
 	visual_object_set_private (VISUAL_OBJECT (plugin), priv);
 
 	//FIXME
-	priv->PM = new projectM();
+	priv->PM = new projectM(config_file);
 	//globalPM = (projectM *)wipemalloc( sizeof( projectM ) );
-	priv->PM->projectM_reset();
-    
-    
-	strcpy(projectM_data, PROJECTM_DATADIR);
-	strcpy(projectM_data+strlen(PROJECTM_DATADIR), FONTS_DIR);
-	projectM_data[strlen(PROJECTM_DATADIR)+strlen(FONTS_DIR)]='\0';
        
-	priv->PM->fontURL = (char *)malloc( sizeof( char ) * 1024 );
-	strcpy( priv->PM->fontURL, projectM_data );	
-	
-	priv->PM->presetURL = (char *)malloc( sizeof( char ) * 1024 );
-	strcpy( priv->PM->presetURL, preset_dir );	
- 
-
-	//projectM_reset( globalPM );
- priv->PM->projectM_init(gx, gy, fps, texsize, fullscreen ? fvw:wvw, fullscreen? fvh:wvh);
-
-
-
-       
-	priv->PM->projectM_resetGL( wvw, wvh ); 
+    
 
 	return 0;
 }
@@ -259,7 +245,8 @@ extern "C" int lv_projectm_render (VisPluginData *plugin, VisVideo *video, VisAu
 }
 
 
-void read_config()
+
+std::string read_config()
 {
 
    int n;
@@ -278,17 +265,19 @@ void read_config()
    printf("dir:%s \n",projectM_config);
    home=getenv("HOME");
    strcpy(projectM_home, home);
-   strcpy(projectM_home+strlen(home), "/.projectM/config.1.00");
-   projectM_home[strlen(home)+strlen("/.projectM/config.1.00")]='\0';
+   strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
+   projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
 
   
  if ((in = fopen(projectM_home, "r")) != 0) 
    {
-     printf("reading ~/.projectM/config.1.00 \n");
+     printf("reading ~/.projectM/config.inp \n");
+     fclose(in);
+     return std::string(projectM_home);
    }
  else
    {
-     printf("trying to create ~/.projectM/config.1.00 \n");
+     printf("trying to create ~/.projectM/config.inp \n");
 
      strcpy(projectM_home, home);
      strcpy(projectM_home+strlen(home), "/.projectM");
@@ -296,8 +285,8 @@ void read_config()
      mkdir(projectM_home,0755);
 
      strcpy(projectM_home, home);
-     strcpy(projectM_home+strlen(home), "/.projectM/config.1.00");
-     projectM_home[strlen(home)+strlen("/.projectM/config.1.00")]='\0';
+     strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
+     projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
      
      if((out = fopen(projectM_home,"w"))!=0)
        {
@@ -314,24 +303,30 @@ void read_config()
 	    
 
 	     if ((in = fopen(projectM_home, "r")) != 0) 
-	       { printf("created ~/.projectM/config.1.00 successfully\n");  }
-	     else{printf("This shouldn't happen, using implementation defualts\n");return;}
+	       { 
+		 printf("created ~/.projectM/config.inp successfully\n");  
+		 fclose(in);
+		 return std::string(projectM_home);
+	       }
+	     else{printf("This shouldn't happen, using implementation defualts\n");abort();}
 	   }
-	 else{printf("Cannot find projectM default config, using implementation defaults\n");return;}
+	 else{printf("Cannot find projectM default config, using implementation defaults\n");abort();}
        }
      else
        {
-	 printf("Cannot create ~/.projectM/config.1.00, using default config file\n");
+	 printf("Cannot create ~/.projectM/config.inp, using default config file\n");
 	 if ((in = fopen(projectM_config, "r")) != 0) 
-	   { printf("Successfully opened default config file\n");}
-	 else{ printf("Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");	   return;}
+	   { printf("Successfully opened default config file\n");
+	     fclose(in);
+	     return std::string(projectM_config);}
+	 else{ printf("Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");  abort();}
 	   
        }
 
    }
 
 
-
+ /*
      fgets(num, 512, in);  fgets(num, 512, in);  fgets(num, 512, in);
      if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &texsize);  
 
@@ -356,7 +351,7 @@ void read_config()
 
      if(fgets(num, 512, in) != NULL)  strcpy(preset_dir, num);
      preset_dir[strlen(preset_dir)-1]='\0';
-    
+ */ 
      /*
      fgets(num, 80, in);
      fgets(num, 80, in);
@@ -375,8 +370,9 @@ void read_config()
       printf("%s %d\n", disp,strlen(disp));
       setenv("LD_PRELOAD", "/usr/lib/tls/libGL.so.1.0.4496", 1);
      */
-   fclose(in); 
+ // fclose(in); 
   
+ abort();
 } 
 
 
