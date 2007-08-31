@@ -50,7 +50,6 @@ www.gamedev.net/reference/programming/features/beatdetection/
 #include "video_init.h"
 
 #define CONFIG_FILE "/share/projectM/config.inp"
-#define FONTS_DIR "/share/projectM/fonts"
 
 // Forward declarations 
 extern "C" void projectM_xmms_init(void); 
@@ -64,9 +63,6 @@ extern "C" void projectM_render_freq(gint16 pcm_data[2][256]);
 extern "C" int worker_func(void*);
 extern "C" VisPlugin *get_vplugin_info();
 std::string read_config();
-
-char preset_dir[1024];
-char fonts_dir[1024];
 
 //extern preset_t * active_preset;
 
@@ -184,20 +180,6 @@ int worker_func(void*)
     
   globalPM = new projectM(config_file);
 
-  /*  
-  globalPM->fullscreen = fullscreen;
-
-  
-  	strcpy(projectM_data, PROJECTM_PREFIX);
-	strcpy(projectM_data+strlen(PROJECTM_PREFIX), FONTS_DIR);
-	projectM_data[strlen(PROJECTM_PREFIX)+strlen(FONTS_DIR)]='\0';
-       
-	globalPM->fontURL = (char *)malloc( sizeof( char ) * 1024 );
-	strcpy( globalPM->fontURL, projectM_data );	
-	
-	globalPM->presetURL = (char *)malloc( sizeof( char ) * 1024 );
-	strcpy( globalPM->presetURL, preset_dir );	
-  */
       
    
 
