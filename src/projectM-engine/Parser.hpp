@@ -29,7 +29,7 @@
 #ifndef _PARSER_H
 #define _PARSER_H
 
-#define PARSE_DEBUG 0
+#define PARSE_DEBUG 2
 //#define PARSE_DEBUG 0
 
 #include <stdio.h>
@@ -135,45 +135,45 @@ public:
     static char last_eqn_type[MAX_TOKEN_SIZE];
     static int last_token_size;
 
-    static PerFrameEqn *parse_per_frame_eqn( FILE * fs, int index, 
+    static PerFrameEqn *parse_per_frame_eqn( std::istream & fs, int index, 
                                              Preset * preset);
-    static int parse_per_pixel_eqn( FILE * fs, Preset * preset,
+    static int parse_per_pixel_eqn( std::istream & fs, Preset * preset,
                                     char * init_string);
-    static InitCond *parse_init_cond( FILE * fs, char * name, Preset * preset );
-    static int parse_preset_name( FILE * fs, char * name );
-    static int parse_top_comment( FILE * fs );
-    static int parse_line( FILE * fs, Preset * preset );
+    static InitCond *parse_init_cond( std::istream & fs, char * name, Preset * preset );
+    static int parse_preset_name( std::istream & fs, char * name );
+    static int parse_top_comment( std::istream & fs );
+    static int parse_line( std::istream & fs, Preset * preset );
 
     static int get_string_prefix_len(char * string);
     static TreeExpr * insert_gen_expr(GenExpr * gen_expr, TreeExpr ** root);
     static TreeExpr * insert_infix_op(InfixOp * infix_op, TreeExpr ** root);
-    static token_t parseToken(FILE * fs, char * string);
-    static GenExpr ** parse_prefix_args(FILE * fs, int num_args, Preset * preset);
-    static GenExpr * parse_infix_op(FILE * fs, token_t token, TreeExpr * tree_expr, Preset * preset);
-    static GenExpr * parse_sign_arg(FILE * fs);
-    static int parse_float(FILE * fs, float * float_ptr);
-    static int parse_int(FILE * fs, int * int_ptr);
+    static token_t parseToken(std::istream & fs, char * string);
+    static GenExpr ** parse_prefix_args(std::istream & fs, int num_args, Preset * preset);
+    static GenExpr * parse_infix_op(std::istream & fs, token_t token, TreeExpr * tree_expr, Preset * preset);
+    static GenExpr * parse_sign_arg(std::istream & fs);
+    static int parse_float(std::istream & fs, float * float_ptr);
+    static int parse_int(std::istream & fs, int * int_ptr);
     static int insert_gen_rec(GenExpr * gen_expr, TreeExpr * root);
     static int insert_infix_rec(InfixOp * infix_op, TreeExpr * root);
-    static GenExpr * parse_gen_expr(FILE * fs, TreeExpr * tree_expr, Preset * preset);
-    static PerFrameEqn * parse_implicit_per_frame_eqn(FILE * fs, char * param_string, int index, Preset * preset);
-    static InitCond * parse_per_frame_init_eqn(FILE * fs, Preset * preset, std::map<std::string,Param*> * database);
+    static GenExpr * parse_gen_expr(std::istream & fs, TreeExpr * tree_expr, Preset * preset);
+    static PerFrameEqn * parse_implicit_per_frame_eqn(std::istream & fs, char * param_string, int index, Preset * preset);
+    static InitCond * parse_per_frame_init_eqn(std::istream & fs, Preset * preset, std::map<std::string,Param*> * database);
     static int parse_wavecode_prefix(char * token, int * id, char ** var_string);
-    static int parse_wavecode(char * token, FILE * fs, Preset * preset);
+    static int parse_wavecode(char * token, std::istream & fs, Preset * preset);
     static int parse_wave_prefix(char * token, int * id, char ** eqn_string);
-    static int parse_wave_helper(FILE * fs, Preset * preset, int id, char * eqn_type, char * init_string);
-    static int parse_shapecode(char * eqn_string, FILE * fs, Preset * preset);
+    static int parse_wave_helper(std::istream & fs, Preset * preset, int id, char * eqn_type, char * init_string);
+    static int parse_shapecode(char * eqn_string, std::istream & fs, Preset * preset);
     static int parse_shapecode_prefix(char * token, int * id, char ** var_string);
     
-    static int parse_wave(char * eqn_string, FILE * fs, Preset * preset);
-    static int parse_shape(char * eqn_string, FILE * fs, Preset * preset);
+    static int parse_wave(char * eqn_string, std::istream & fs, Preset * preset);
+    static int parse_shape(char * eqn_string, std::istream & fs, Preset * preset);
     static int parse_shape_prefix(char * token, int * id, char ** eqn_string);
 
     static int update_string_buffer(char * buffer, int * index);
     static int string_to_float(char * string, float * float_ptr);
-    static int parse_shape_per_frame_init_eqn(FILE * fs, CustomShape * custom_shape, Preset * preset);
-    static int parse_shape_per_frame_eqn(FILE * fs, CustomShape * custom_shape, Preset * preset);
-    static int parse_wave_per_frame_eqn(FILE * fs, CustomWave * custom_wave, Preset * preset);
+    static int parse_shape_per_frame_init_eqn(std::istream & fs, CustomShape * custom_shape, Preset * preset);
+    static int parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_shape, Preset * preset);
+    static int parse_wave_per_frame_eqn(std::istream & fs, CustomWave * custom_wave, Preset * preset);
   };
 
 #endif /** !_PARSER_H */

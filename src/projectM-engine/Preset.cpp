@@ -35,6 +35,23 @@
 #include "InitCondUtils.hpp"
 #include "fatal.h"
 #include <iostream>
+#include <fstream>
+
+
+Preset::Preset(std::istream & in, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
+    builtinParams(presetInputs, presetOutputs),
+    file_path("[Input Stream]"),
+    m_presetOutputs(presetOutputs)
+{
+
+  m_presetOutputs.customWaves.clear();
+  m_presetOutputs.customShapes.clear();
+  clearMeshChecks();
+
+  initialize(in);
+
+}
+
 
 Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
     builtinParams(presetInputs, presetOutputs),
@@ -237,17 +254,15 @@ void Preset::evalPerFrameEquations()
 
 }
 
-
-void Preset::initialize(const std::string & pathname)
-{
-
+void Preset::preloadInitialize() {
+ 
+  /// @note commented this out because it should be unnecessary
   // Clear equation trees
-  /// @slow unnecessary if we ensure this method is private
-  init_cond_tree.clear();
-  user_param_tree.clear();
-  per_frame_eqn_tree.clear();
-  per_pixel_eqn_tree.clear();
-  per_frame_init_eqn_tree.clear();
+  //init_cond_tree.clear();
+  //user_param_tree.clear();
+  //per_frame_eqn_tree.clear();
+  //per_pixel_eqn_tree.clear();
+  //per_frame_init_eqn_tree.clear();
 
   /* Set initial index values */
   this->per_pixel_eqn_string_index = 0;
@@ -259,20 +274,9 @@ void Preset::initialize(const std::string & pathname)
   memset(this->per_pixel_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
   memset(this->per_frame_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
   memset(this->per_frame_init_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
-  int retval;
+}
 
-  std::cerr << "[Preset] loading file \"" << pathname << "\"..." << std::endl;
-
-  if ((retval = loadPresetFile(pathname)) < 0)
-  {
-
-
-     std::cerr << "[Preset] failed to load file \"" <<
-      pathname << "\"!" << std::endl;
-   
-    /// @bug how should we handle this problem? a well define exception?
-    throw retval;
-  }
+void Preset::postloadInitialize() {
 
   /* It's kind of ugly to reset these values here. Should definitely be placed in the parser somewhere */
   this->per_frame_eqn_count = 0;
@@ -281,8 +285,46 @@ void Preset::initialize(const std::string & pathname)
   this->loadBuiltinParamsUnspecInitConds();
   this->loadCustomWaveUnspecInitConds();
   this->loadCustomShapeUnspecInitConds();
+
 }
 
+void Preset::initialize(const std::string & pathname)
+{
+  int retval;
+
+  preloadInitialize();
+  std::cerr << "[Preset] loading file \"" << pathname << "\"..." << std::endl;
+
+  if ((retval = loadPresetFile(pathname)) < 0)
+  {
+
+     std::cerr << "[Preset] failed to load file \"" <<
+      pathname << "\"!" << std::endl;
+
+    /// @bug how should we handle this problem? a well define exception?
+    throw retval;
+  }
+
+  postloadInitialize();
+}
+
+void Preset::initialize(std::istream & in)
+{
+  int retval;
+
+  preloadInitialize();
+
+  if ((retval = readIn(in)) < 0)
+  {
+
+     std::cerr << "[Preset] failed to load from stream " << std::endl; 
+
+    /// @bug how should we handle this problem? a well define exception?
+    throw retval;
+  }
+
+  postloadInitialize();
+}
 
 void Preset::loadBuiltinParamsUnspecInitConds() {
 
@@ -347,36 +389,16 @@ void Preset::evalPerPixelEqns()
 
 }
 
-/* loadPresetFile: private function that loads a specific preset denoted
-   by the given pathname */
-int Preset::loadPresetFile(std::string pathname)
-{
+int Preset::readIn(std::istream & fs) {
 
-  FILE * fs;
-  int retval;
-  int lineno;
+
+
   line_mode_t line_mode;
-
-  /* Open the file corresponding to pathname */
-  if ((fs = fopen(pathname.c_str(), "rb")) == 0)
-  {
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE( "loadPresetFile: loading of file %s failed!\n", pathname);
-#endif
-    return PROJECTM_ERROR;
-  }
-
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-  DWRITE( "loadPresetFile: file stream \"%s\" opened successfully\n", pathname);
-#endif
 
   /* Parse any comments */
   if (Parser::parse_top_comment(fs) < 0)
   {
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE( "loadPresetFile: no left bracket found...\n");
-#endif
-    fclose(fs);
+    std::cerr << "[Preset::readIn] no left bracket found..." << std::endl;
     return PROJECTM_FAILURE;
   }
 
@@ -385,48 +407,54 @@ int Preset::loadPresetFile(std::string pathname)
 
   if (Parser::parse_preset_name(fs, tmp_name) < 0)
   {
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-    DWRITE( "loadPresetFile: loading of preset name in file \"%s\" failed\n", pathname);
-#endif
-    fclose(fs);
+    std::cerr <<  "[Preset::readIn] loading of preset name failed" << std::endl;
     return PROJECTM_ERROR;
   }
-  name = std::string(tmp_name);
 
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-  DWRITE( "loadPresetFile: preset \"%s\" parsed\n", this->name);
-#endif
+  this->name = std::string(tmp_name);
 
-  /* Parse each line until end of file */
-  lineno = 0;
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-  DWRITE( "loadPresetFile: beginning line parsing...\n");
-#endif
+  std::cerr << "[Preset::readIn] preset \"" << this->name << "\" parsed." << std::endl;;
+
+  // Start line counter at zero
+  int lineno = 0;
+
+  // Loop through each line in file, trying to succesfully parse the file. 
+  // If a line does not parse correctly, keep trucking along to next line.
+  int retval;
   while ((retval = Parser::parse_line(fs, this)) != EOF)
   {
     if (retval == PROJECTM_PARSE_ERROR)
     {
       line_mode = NORMAL_LINE_MODE;
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-      DWRITE( "loadPresetFile: parse error in file \"%s\": line %d\n", pathname,lineno);
-#endif
-
+      std::cerr << "[Preset::readIn()] parse error in file \"" << this->absoluteFilePath() << "\": line " << lineno << std::endl;
     }
     lineno++;
   }
 
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-  DWRITE("loadPresetFile: finished line parsing successfully\n");
-#endif
+  std::cerr << "loadPresetFile: finished line parsing successfully" << std::endl;
 
   /* Now the preset has been loaded.
      Evaluation calls can be made at appropiate
      times in the frame loop */
 
-  fclose(fs);
-#if defined(PRESET_DEBUG) && defined(DEBUG)
-  DWRITE("loadPresetFile: file \"%s\" closed, preset ready\n", pathname);
-#endif
-  return PROJECTM_SUCCESS;
+return PROJECTM_SUCCESS;
+}
+
+/* loadPresetFile: private function that loads a specific preset denoted
+   by the given pathname */
+int Preset::loadPresetFile(const std::string & pathname)
+{
+
+
+  /* Open the file corresponding to pathname */
+  std::ifstream fs(pathname.c_str());
+  if (!fs || fs.eof()) {
+    if (PRESET_DEBUG)
+    	std::cerr << "loadPresetFile: loading of file \"" << pathname << "\" failed!\n";
+    return PROJECTM_ERROR;
+  }
+
+ return readIn(fs);
+
 }
 

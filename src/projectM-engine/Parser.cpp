@@ -45,6 +45,7 @@
 #include "ParamUtils.hpp"
 
 #include "wipemalloc.h"
+#include <iostream>
 
 /* Grabs the next token from the file. The second argument points
    to the raw string */
@@ -62,7 +63,7 @@ int Parser::last_custom_shape_id;
 char Parser::last_eqn_type[MAX_TOKEN_SIZE];
 int Parser::last_token_size;
 
-token_t Parser::parseToken(FILE * fs, char * string) {
+token_t Parser::parseToken(std::istream &  fs, char * string) {
   
   char c;
   int i;
@@ -70,14 +71,21 @@ token_t Parser::parseToken(FILE * fs, char * string) {
   if (string != NULL)
     memset(string, 0, MAX_TOKEN_SIZE);
 
+
   /* Loop until a delimiter is found, or the maximum string size is found */
   for (i = 0; i < MAX_TOKEN_SIZE;i++) {
-    c = fgetc(fs);
+    //c = fgetc(fs);
+    if (!fs || fs.eof())
+	c = EOF;
+    else
+        c = fs.get();
+
+    std::cerr << c;
     last_token_size++;
     /* If the string line buffer is full, quit */
     if (string_line_buffer_index == (STRING_LINE_SIZE - 1))
       return tStringBufferFilled;
-    
+
     /* Otherwise add this character to the string line buffer */
     string_line_buffer[string_line_buffer_index++] = c;
     /* Now interpret the character */
@@ -92,9 +100,16 @@ token_t Parser::parseToken(FILE * fs, char * string) {
     case '/':
       
       /* check for line comment here */
-      if ((c = fgetc(fs)) == '/') {
-	while(1) {
-	  c = fgetc(fs);
+      if (!fs || fs.eof())
+	c = EOF;
+      else
+        c = fs.get();
+      if (c == '/') {
+	while (true) {
+	  if (!fs || fs.eof())
+		c=  EOF;
+	  else
+	  	c = fs.get();
 	  if (c == EOF) {
 	    line_mode = NORMAL_LINE_MODE;
 	    return tEOF;				
@@ -108,7 +123,7 @@ token_t Parser::parseToken(FILE * fs, char * string) {
       }
       
       /* Otherwise, just a regular division operator */
-      ungetc(c, fs);
+      fs.unget();
       return tDiv;
       
     case '*':
@@ -158,7 +173,7 @@ token_t Parser::parseToken(FILE * fs, char * string) {
 /* Parse input in the form of "exp, exp, exp, ...)" 
    Returns a general expression list */
 
-GenExpr **Parser::parse_prefix_args(FILE * fs, int num_args, Preset * preset) {
+GenExpr **Parser::parse_prefix_args(std::istream &  fs, int num_args, Preset * preset) {
 
   int i, j;
   GenExpr ** expr_list; /* List of arguments to function */
@@ -195,7 +210,7 @@ GenExpr **Parser::parse_prefix_args(FILE * fs, int num_args, Preset * preset) {
 }
 
 /* Parses a comment at the top of the file. Stops when left bracket is found */
-int Parser::parse_top_comment(FILE * fs) {
+int Parser::parse_top_comment(std::istream &  fs) {
 
   char string[MAX_TOKEN_SIZE];
   token_t token;
@@ -212,7 +227,7 @@ int Parser::parse_top_comment(FILE * fs) {
 
 /* Right Bracket is parsed by this function.
    puts a new string into name */
-int Parser::parse_preset_name(FILE * fs, char * name) {
+int Parser::parse_preset_name(std::istream &  fs, char * name) {
 
   token_t token;
 
@@ -231,7 +246,7 @@ int Parser::parse_preset_name(FILE * fs, char * name) {
 
 
 /* Parses per pixel equations */
-int Parser::parse_per_pixel_eqn(FILE * fs, Preset * preset, char * init_string) {
+int Parser::parse_per_pixel_eqn(std::istream &  fs, Preset * preset, char * init_string) {
 
 
   char string[MAX_TOKEN_SIZE];
@@ -276,7 +291,7 @@ if (init_string != 0) {
 }
 
 /* Parses an equation line, this function is way too big, should add some helper functions */
-int Parser::parse_line(FILE * fs, Preset * preset) {
+int Parser::parse_line(std::istream &  fs, Preset * preset) {
 
   char eqn_string[MAX_TOKEN_SIZE];
   token_t token;
@@ -558,7 +573,7 @@ int Parser::parse_line(FILE * fs, Preset * preset) {
 
 
 /* Parses a general expression, this function is the meat of the parser */
-GenExpr * Parser::parse_gen_expr ( FILE * fs, TreeExpr * tree_expr, Preset * preset) {
+GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Preset * preset) {
   
   int i;
   char string[MAX_TOKEN_SIZE];
@@ -968,7 +983,7 @@ int Parser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root) {
 }
 
 /* Parses an infix operator */
-GenExpr * Parser::parse_infix_op(FILE * fs, token_t token, TreeExpr * tree_expr, Preset * preset) {
+GenExpr * Parser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * tree_expr, Preset * preset) {
 	
   GenExpr * gen_expr;
 
@@ -1023,7 +1038,7 @@ GenExpr * Parser::parse_infix_op(FILE * fs, token_t token, TreeExpr * tree_expr,
 }
 
 /* Parses an integer, checks for +/- prefix */
-int Parser::parse_int(FILE * fs, int * int_ptr) {
+int Parser::parse_int(std::istream &  fs, int * int_ptr) {
 
 char string[MAX_TOKEN_SIZE];
   token_t token;
@@ -1091,7 +1106,7 @@ int Parser::string_to_float(char * string, float * float_ptr) {
 }
 
 /* Parses a floating point number */
-int Parser::parse_float(FILE * fs, float * float_ptr) {
+int Parser::parse_float(std::istream &  fs, float * float_ptr) {
 
   char string[MAX_TOKEN_SIZE];
   char ** error_ptr;
@@ -1140,7 +1155,7 @@ int Parser::parse_float(FILE * fs, float * float_ptr) {
 }
 
 /* Parses a per frame equation. That is, interprets a stream of data as a per frame equation */
-PerFrameEqn * Parser::parse_per_frame_eqn(FILE * fs, int index, Preset * preset) {
+PerFrameEqn * Parser::parse_per_frame_eqn(std::istream &  fs, int index, Preset * preset) {
 
   char string[MAX_TOKEN_SIZE];
   Param * param;
@@ -1184,7 +1199,7 @@ PerFrameEqn * Parser::parse_per_frame_eqn(FILE * fs, int index, Preset * preset)
 }
 
 /* Parses an 'implicit' per frame equation. That is, interprets a stream of data as a per frame equation without a prefix */
-PerFrameEqn * Parser::parse_implicit_per_frame_eqn(FILE * fs, char * param_string, int index, Preset * preset) {
+PerFrameEqn * Parser::parse_implicit_per_frame_eqn(std::istream &  fs, char * param_string, int index, Preset * preset) {
 
   Param * param;
   PerFrameEqn * per_frame_eqn;
@@ -1232,7 +1247,7 @@ PerFrameEqn * Parser::parse_implicit_per_frame_eqn(FILE * fs, char * param_strin
 }
 
 /* Parses an initial condition */
-InitCond * Parser::parse_init_cond(FILE * fs, char * name, Preset * preset) {
+InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, Preset * preset) {
 
   Param * param;
   CValue init_val;
@@ -1293,7 +1308,7 @@ InitCond * Parser::parse_init_cond(FILE * fs, char * name, Preset * preset) {
 }
 
 /* Parses a per frame init equation, not sure if this works right now */
-InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, std::map<std::string,Param*> * database) {
+InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, Preset * preset, std::map<std::string,Param*> * database) {
 
   char name[MAX_TOKEN_SIZE];
   Param * param = NULL;
@@ -1374,7 +1389,7 @@ InitCond * Parser::parse_per_frame_init_eqn(FILE * fs, Preset * preset, std::map
   return init_cond;
 }
 
-int Parser::parse_wavecode(char * token, FILE * fs, Preset * preset) {
+int Parser::parse_wavecode(char * token, std::istream &  fs, Preset * preset) {
 
   char * var_string;
   InitCond * init_cond;
@@ -1452,7 +1467,7 @@ int Parser::parse_wavecode(char * token, FILE * fs, Preset * preset) {
   return PROJECTM_SUCCESS;
 }
 
-int Parser::parse_shapecode(char * token, FILE * fs, Preset * preset) {
+int Parser::parse_shapecode(char * token, std::istream &  fs, Preset * preset) {
 
   char * var_string;
   InitCond * init_cond;
@@ -1700,7 +1715,7 @@ int Parser::parse_shape_prefix(char * token, int * id, char ** eqn_string) {
 }
 
 /* Parses custom wave equations */
-int Parser::parse_wave(char * token, FILE * fs, Preset * preset) {
+int Parser::parse_wave(char * token, std::istream &  fs, Preset * preset) {
   
   int id;
   char * eqn_type;
@@ -1726,7 +1741,7 @@ int Parser::parse_wave(char * token, FILE * fs, Preset * preset) {
 
 }
 
-int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_type, char * init_string) {
+int Parser::parse_wave_helper(std::istream &  fs, Preset  * preset, int id, char * eqn_type, char * init_string) {
 
    Param * param;
    GenExpr * gen_expr;
@@ -1873,7 +1888,7 @@ int Parser::parse_wave_helper(FILE * fs, Preset  * preset, int id, char * eqn_ty
 }
 
 /* Parses custom shape equations */
-int Parser::parse_shape(char * token, FILE * fs, Preset * preset) {
+int Parser::parse_shape(char * token, std::istream &  fs, Preset * preset) {
 
   int id;
   char * eqn_type;
@@ -2003,7 +2018,7 @@ int Parser::get_string_prefix_len(char * string) {
   return i;
 }
 
-int Parser::parse_shape_per_frame_init_eqn(FILE * fs, CustomShape * custom_shape, Preset * preset) {
+int Parser::parse_shape_per_frame_init_eqn(std::istream &  fs, CustomShape * custom_shape, Preset * preset) {
      InitCond * init_cond;
 
     if (PARSE_DEBUG) printf("parse_shape (per frame init): [begin] (LINE %d)\n", line_count);
@@ -2024,7 +2039,7 @@ int Parser::parse_shape_per_frame_init_eqn(FILE * fs, CustomShape * custom_shape
     return PROJECTM_SUCCESS;
   }
 
-int Parser::parse_shape_per_frame_eqn(FILE * fs, CustomShape * custom_shape, Preset * preset) {
+int Parser::parse_shape_per_frame_eqn(std::istream &  fs, CustomShape * custom_shape, Preset * preset) {
 
 Param * param;
 GenExpr * gen_expr;
@@ -2084,7 +2099,7 @@ if (PARSE_DEBUG) printf("parse_shape (per_frame): [start] (custom shape id = %d)
     return PROJECTM_SUCCESS;
 }
 
-int Parser::parse_wave_per_frame_eqn(FILE * fs, CustomWave * custom_wave, Preset * preset) {
+int Parser::parse_wave_per_frame_eqn(std::istream &  fs, CustomWave * custom_wave, Preset * preset) {
 
 Param * param;
 GenExpr * gen_expr;

@@ -47,6 +47,8 @@
 #include "PCM.hpp"                    //Sound data handler (buffering, FFT, etc.)
 #include "CustomWave.hpp"
 #include "CustomShape.hpp"
+#include "IdlePreset.hpp"
+
 #include <map>
 
 #include "Renderer.hpp"
@@ -832,23 +834,23 @@ int projectM::initPresetTools()
 
 	// Start the iterator
 	m_presetPos = new PresetIterator();
-	*m_presetPos = m_presetChooser->begin();
+	
+	// Start at end ptr- this allows next/previous to easily be done from this position.
+	*m_presetPos = m_presetChooser->end();
+	
+	// Load idle preset
+	std::cerr << "[projectM] Allocating idle preset..." << std::endl;
+	m_activePreset = IdlePreset::allocate(presetInputs, presetOutputs);
 
 	// Case where no valid presets exist in directory
-	if ( *m_presetPos == m_presetChooser->end() )
+	if (m_presetChooser->empty())
 	{
-		std::cerr << "[projectM] error: no valid files found in preset directory \"" 
-			<< PROJECTM_PRESET_PATH << "\"" << std::endl;
-
-		/// @bug handle this better, load builtin preset perhaps
-		abort();
+		std::cerr << "[projectM] warning: no valid files found in preset directory \"" 
+			<< PROJECTM_PRESET_PATH << "\"" << std::endl;	
 	}
 
-	// First preset
-	std::cerr << "[projectM] Allocating first preset..." << std::endl;
-	m_activePreset =  m_presetPos->allocate ( presetInputs, presetOutputs );
-//	m_activePreset2 = m_p
-	std::cerr << "[projectM] First preset allocated. File path is \"" << m_activePreset->absoluteFilePath() << "\"" << std::endl;
+	std::cerr << "[projectM] Idle preset allocated." << std::endl;
+
 	projectM_resetengine();
 
 	return PROJECTM_SUCCESS;

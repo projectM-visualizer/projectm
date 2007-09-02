@@ -55,7 +55,6 @@ class Preset
 {
 protected:
 
-
 public:
 
 
@@ -65,6 +64,13 @@ public:
   /// \param presetInputs a const reference to read only projectM engine variables
   /// \param presetOutputs initialized and filled with data parsed from a preset
   Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
+
+  ///  Load a preset from a stream with input and output buffers specified.
+  ///  This is the only proper way to allocate a new preset.
+  /// \param in an already initialized input stream to read the preset file from
+  /// \param presetInputs a const reference to read only projectM engine variables
+  /// \param presetOutputs initialized and filled with data parsed from a preset
+  Preset(std::istream & in, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
   ~Preset();
 
@@ -84,7 +90,7 @@ public:
   template <class CustomObject>
   static CustomObject * find_custom_object(int id, std::vector<CustomObject*> & customObjects);
 
-
+  
   int per_pixel_eqn_string_index;
   int per_frame_eqn_string_index;
   int per_frame_init_eqn_string_index;
@@ -132,7 +138,9 @@ private:
   std::string file_path;
 
   void initialize(const std::string & pathname);
-  int loadPresetFile(std::string pathname);
+  void initialize(std::istream & in);
+
+  int loadPresetFile(const std::string & pathname);
 
   void loadBuiltinParamsUnspecInitConds();
   void loadCustomWaveUnspecInitConds();
@@ -145,9 +153,11 @@ private:
   void evalCustomShapeInitConditions();
   void evalPerPixelEqns();
   void evalPerFrameEquations();
-
+  int readIn(std::istream & fs);
 
   inline void clearMeshChecks();
+  void preloadInitialize();
+  void postloadInitialize();
 
   PresetOutputs & m_presetOutputs;
 
