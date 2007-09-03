@@ -109,9 +109,6 @@ float ValExpr::eval_val_expr ( int mesh_i, int mesh_j )
 	/* Value is variable, dereference it */
 	if ( type == PARAM_TERM_T )
 	{
-	if (term.param->name == "inc")
-		std::cerr << "inc: " << *(float*)term.param->engine_val << std::endl;
-
 		switch ( term.param->type )
 		{
 

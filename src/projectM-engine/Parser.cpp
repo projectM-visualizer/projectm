@@ -63,6 +63,8 @@ int Parser::last_custom_shape_id;
 char Parser::last_eqn_type[MAX_TOKEN_SIZE];
 int Parser::last_token_size;
 
+bool Parser::tokenWrapAroundEnabled(false);
+
 token_t Parser::parseToken(std::istream &  fs, char * string) {
   
   char c;
@@ -141,11 +143,41 @@ token_t Parser::parseToken(std::istream &  fs, char * string) {
       return tEq;
     case '\n':
       line_count++;
+      /// @note important hack implemented here to handle "wrap around tokens"
+      // In particular: "per_frame_1=x=t+1.\nper_frame_2=37 + 5;" implies
+      // "per_frame_1=x=t+1.37 + 5;". Thus, we have a global flag to determine
+      // if "token wrap mode" is enabled. If so, we consider a token *continuing*
+      // to the next line, but only attaching to the token buffer anything following
+      // the first equals sign on that line. 
+      //
+      // We can safely assume the next line must be part of the token if we allow the
+      // semi colon to be a guaranteed delimiter in the grammar for all equation-based lines
+      // This IS assumed here. 
+
+      if (tokenWrapAroundEnabled) {
+	std::cerr << "token wrap! line " << line_count << std::endl;
+	while (c != '=') {
+
+	  if (!fs || fs.eof()) {
+      		line_count = 1;
+      		line_mode= NORMAL_LINE_MODE;
+      		return tEOF;
+	  }
+
+	  else
+	  	c = fs.get();
+
+	}
+	--i;
+	break;
+      }
+	
       line_mode = NORMAL_LINE_MODE;
       return tEOL;
     case ',':
       return tComma;
     case ';':
+      tokenWrapAroundEnabled = false;
       return tSemiColon;
     case ' ': /* space, skip the character */
       i--;
@@ -156,8 +188,10 @@ token_t Parser::parseToken(std::istream &  fs, char * string) {
       return tEOF;
       
     default: 
+      
       if (string != NULL)
 	string[i] = tolower(c);
+
     } 
 
   }
@@ -338,12 +372,13 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
     
     /* CASE: PER FRAME INIT EQUATION */	    
     if (!strncmp(eqn_string, PER_FRAME_INIT_STRING, PER_FRAME_INIT_STRING_LENGTH)) {
-     
+       tokenWrapAroundEnabled = true;
       //if (PARSE_DEBUG) printf("parse_line: per frame init equation found...(LINE %d)\n", line_count);
 
       /* Parse the per frame equation */
       if ((init_cond = parse_per_frame_init_eqn(fs, preset, NULL)) == NULL) {
 	//if (PARSE_DEBUG) printf("parse_line: per frame init equation parsing failed (LINE %d)\n", line_count);
+	tokenWrapAroundEnabled = false;
 	return PROJECTM_PARSE_ERROR;
       }	
       
@@ -352,14 +387,16 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
 	
       if (update_string_buffer(preset->per_frame_init_eqn_string_buffer, 
 			       &preset->per_frame_init_eqn_string_index) < 0)
-	{	return PROJECTM_FAILURE;}
+	{	
+	
+	return PROJECTM_FAILURE;}
       line_mode = PER_FRAME_INIT_LINE_MODE;
       return PROJECTM_SUCCESS;
     }
 
-    /* Per frame equation case */	    
+    /* Per frame equation case */
     if (!strncmp(eqn_string, PER_FRAME_STRING, PER_FRAME_STRING_LENGTH)) {
-      
+      tokenWrapAroundEnabled = true;
       /* Sometimes per frame equations are implicitly defined without the
 	 per_frame_ prefix. This informs the parser that one could follow */
       line_mode = PER_FRAME_LINE_MODE;
@@ -369,6 +406,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
       /* Parse the per frame equation */
       if ((per_frame_eqn = parse_per_frame_eqn(fs, ++per_frame_eqn_count, preset)) == NULL) {
 	if (PARSE_DEBUG) printf("parse_line: per frame equation parsing failed (LINE %d)\n", line_count);
+	tokenWrapAroundEnabled = false;
 	return PROJECTM_PARSE_ERROR;
       }
 
@@ -423,10 +461,13 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
     
     /* Per pixel equation case */
     if (!strncmp(eqn_string, PER_PIXEL_STRING, PER_PIXEL_STRING_LENGTH)) {
+      tokenWrapAroundEnabled = true;
       line_mode = PER_PIXEL_LINE_MODE;
       
-      if (parse_per_pixel_eqn(fs, preset, 0) < 0)
+      if (parse_per_pixel_eqn(fs, preset, 0) < 0) {
+        tokenWrapAroundEnabled = false;
 	return PROJECTM_PARSE_ERROR;
+      }
 
 
       if (update_string_buffer(preset->per_pixel_eqn_string_buffer, 
@@ -457,8 +498,11 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
 
     /* Per frame line mode previously, try to parse the equation implicitly */
     if (line_mode == PER_FRAME_LINE_MODE) {
-      if ((per_frame_eqn = parse_implicit_per_frame_eqn(fs, eqn_string, ++per_frame_eqn_count, preset)) == NULL)
+      tokenWrapAroundEnabled = true;
+      if ((per_frame_eqn = parse_implicit_per_frame_eqn(fs, eqn_string, ++per_frame_eqn_count, preset)) == NULL) {
+     tokenWrapAroundEnabled = false;
 	return PROJECTM_PARSE_ERROR;
+}
 
       /* Insert the equation in the per frame equation tree */
       preset->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn_count, per_frame_eqn));
@@ -470,9 +514,12 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
       return PROJECTM_SUCCESS;
 
     } else if (line_mode == PER_FRAME_INIT_LINE_MODE) {
+	tokenWrapAroundEnabled = true;
    if (PARSE_DEBUG) printf("parse_line: parsing implicit per frame init eqn)\n");
-      if ((init_cond = parse_per_frame_init_eqn(fs, preset, NULL)) == NULL)
+      if ((init_cond = parse_per_frame_init_eqn(fs, preset, NULL)) == NULL) {
+	tokenWrapAroundEnabled = false;
 	return PROJECTM_PARSE_ERROR;
+}
 
     ++per_frame_init_eqn_count;
 
@@ -486,13 +533,13 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
 
      return PROJECTM_SUCCESS;
     } else if (line_mode == PER_PIXEL_LINE_MODE) { 
-
+	tokenWrapAroundEnabled = true;
 	if (PARSE_DEBUG) printf("parse_line: implicit per pixel eqn (LINE %d)\n", line_count);
 	return parse_per_pixel_eqn(fs, preset, eqn_string);
 	
 
     } else if (line_mode == CUSTOM_WAVE_PER_POINT_LINE_MODE) {
-	
+	tokenWrapAroundEnabled = true;
 	if (PARSE_DEBUG) printf("parse_line: implicit cwave ppoint eqn found (LINE %d)\n", line_count);
 	//int len = strlen(eqn_string);
 		
@@ -502,7 +549,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
 	}	
 	return PROJECTM_SUCCESS;
     } else if (line_mode == CUSTOM_WAVE_PER_FRAME_LINE_MODE) {
-
+      tokenWrapAroundEnabled = true;
       //Added by PJS. I hope I did it right
       CustomWave * custom_wave;
 
@@ -528,7 +575,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
 	return parse_shape_per_frame_eqn(fs, custom_shape, preset);
 
      } else if (line_mode == CUSTOM_SHAPE_PER_FRAME_INIT_LINE_MODE) {
-
+	tokenWrapAroundEnabled = true;
 	CustomShape * custom_shape;
 
 	  /* Retrieve custom shape associated with this id */

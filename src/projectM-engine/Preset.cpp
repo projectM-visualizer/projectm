@@ -231,6 +231,7 @@ void Preset::evalCustomShapePerFrameEquations()
 void Preset::evalPerFrameInitEquations()
 {
 
+  /// @bug not sure if necessary
   for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos)
   {
     assert(pos->second);

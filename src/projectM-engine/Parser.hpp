@@ -134,6 +134,7 @@ public:
     static int last_custom_shape_id;
     static char last_eqn_type[MAX_TOKEN_SIZE];
     static int last_token_size;
+    static bool tokenWrapAroundEnabled;
 
     static PerFrameEqn *parse_per_frame_eqn( std::istream & fs, int index, 
                                              Preset * preset);
