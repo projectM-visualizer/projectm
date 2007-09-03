@@ -168,6 +168,7 @@ token_t Parser::parseToken(std::istream &  fs, char * string) {
 	  	c = fs.get();
 
 	}
+	std::cerr << "parsed away =" << std::endl;
 	--i;
 	break;
       }
@@ -186,12 +187,25 @@ token_t Parser::parseToken(std::istream &  fs, char * string) {
       line_count = 1;
       line_mode = NORMAL_LINE_MODE;
       return tEOF;
-      
+ 
+    case '\r':
+	i--;
+	break;     
     default: 
       
-      if (string != NULL)
+      if (string != NULL) {
+	if (c == '\r') {
+		std::cerr << "R" << std::endl;
+		abort();
+}
+	if (c == '\b') {
+		std::cerr << "B" << std::endl;
+		abort();
+}
 	string[i] = tolower(c);
-
+	//string[i+1] = 0;
+	//std::cerr << "string is \n\"" << string << "\"" << std::endl;
+}
     } 
 
   }
@@ -679,6 +693,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
     /* Case 2: (Left Parentice), a string coupled with a left parentice. Either an error or implicit 
        multiplication operator. For now treat it as an error */
     if (*string != 0) {
+      std::cerr << "toke n prefix is " << *string << std::endl; 
       if (PARSE_DEBUG) printf("parse_gen_expr: implicit multiplication case unimplemented!\n");
       if (tree_expr)
       delete tree_expr;
