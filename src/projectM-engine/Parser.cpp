@@ -86,7 +86,7 @@ token_t Parser::parseToken(std::istream &  fs, char * string) {
       return tStringBufferFilled;
 
     /* Otherwise add this character to the string line buffer */
-    string_line_buffer[string_line_buffer_index++] = c;
+    string_line_buffer[string_line_buffer_index++] = tolower(c);
     /* Now interpret the character */
     switch (c) {
       
@@ -590,15 +590,15 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
     /* CASE 1 (Left Parentice): See if the previous string before this parentice is a function name */
     if ((func = BuiltinFuncs::find_func(string)) != NULL) {
         if (PARSE_DEBUG) {
-            DWRITE( "parse_gen_expr: found prefix function (name = %s) (LINE %d)\n", func->name.c_str(), line_count);
-            
+            std::cerr << "parse_gen_expr: found prefix function (name = \"" 
+		<< func->name << "\") (LINE " << line_count << ")" << std::endl;
         }
-      
+
       /* Parse the functions arguments */
       if ((expr_list = parse_prefix_args(fs, func->num_args, preset)) == NULL) {
 	if (PARSE_DEBUG) {
-        DWRITE( "parse_prefix_args: failed to generate an expresion list! (LINE %d) \n", line_count);
-        
+        std::cerr << "parse_prefix_args: failed to generate an expresion list! (LINE " 
+		<< line_count << ")" << std::endl;
       }
         if ( tree_expr != NULL ) {
 	        delete tree_expr;
@@ -731,9 +731,10 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
       }
       
       if (PARSE_DEBUG) {
-	    std::cerr <<  "parse_gen_expr: custom shape parameter (name = "
+	    std::cerr << "parse_gen_expr: custom shape parameter (name = "
 		 << param->name << ")" << std::endl;
-      }  
+	}
+       
       
       /* Convert parameter to an expression */
       if ((gen_expr = GenExpr::param_to_expr(param)) == NULL) {
@@ -741,7 +742,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
 	return NULL;
       }
       
-      if (PARSE_DEBUG) printf("converted to expression (LINE %d)\n", line_count);
+      //if (PARSE_DEBUG) printf("converted to expression (LINE %d)\n", line_count);
       
       /* Parse the rest of the line */
       return parse_infix_op(fs, token, insert_gen_expr(gen_expr, &tree_expr), preset);
@@ -770,7 +771,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
 	  return NULL;
 	}
 	
-	if (PARSE_DEBUG) printf("converted to expression (LINE %d)\n", line_count);
+	//if (PARSE_DEBUG) printf("converted to expression (LINE %d)\n", line_count);
 	
 	/* Parse the rest of the line */
 	return parse_infix_op(fs, token, insert_gen_expr(gen_expr, &tree_expr), preset);
@@ -781,17 +782,16 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
     if ((param = ParamUtils::find(string, &preset->builtinParams, &preset->user_param_tree)) != NULL) {
 
       if (PARSE_DEBUG) {
-	    DWRITE("parse_gen_expr: parameter (name = %s)...\n", param->name.c_str());
-	    
-      }  
-    
+	    std::cerr << "parse_gen_expr: parameter (name = \"" << param->name << "\")..." << std::endl;
+      }
+
       /* Convert parameter to an expression */
       if ((gen_expr = GenExpr::param_to_expr(param)) == NULL) {
 	delete tree_expr;
 	return NULL;
       }
       
-      if (PARSE_DEBUG) printf("converted to expression (LINE %d)\n", line_count);
+      //if (PARSE_DEBUG) printf("converted to expression (LINE %d)\n", line_count);
       
       /* Parse the rest of the line */
       return parse_infix_op(fs, token, insert_gen_expr(gen_expr, &tree_expr), preset);
@@ -800,7 +800,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
    
     /* CASE 7: Bad string, give up */
     if (PARSE_DEBUG) {
-        DWRITE( "parse_gen_expr: syntax error [string = \"%s\"] (LINE %d)\n", string, line_count);
+        printf( "parse_gen_expr: syntax error [string = \"%s\"] (LINE %d)\n", string, line_count);
         
     }
     if (tree_expr)

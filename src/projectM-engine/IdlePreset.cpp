@@ -137,6 +137,3 @@ std::auto_ptr<Preset> IdlePreset::allocate(const PresetInputs & presetInputs, Pr
   return std::auto_ptr<Preset>(new Preset(in, presetInputs, presetOutputs));
 }
 
-
-
-
