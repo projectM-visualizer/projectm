@@ -282,9 +282,15 @@ void Preset::postloadInitialize() {
   this->per_frame_eqn_count = 0;
   this->per_frame_init_eqn_count = 0;
 
+
   this->loadBuiltinParamsUnspecInitConds();
   this->loadCustomWaveUnspecInitConds();
   this->loadCustomShapeUnspecInitConds();
+
+  /// @note Recently moved from evaluateFrame() - is this more correct? not sure
+  evalPerFrameInitEquations();
+  evalCustomWaveInitConditions();
+  evalCustomShapeInitConditions();
 
 }
 
@@ -362,11 +368,8 @@ void Preset::evaluateFrame()
 
   /* Evaluate all equation objects in same order as the renderer */
 
-  evalPerFrameInitEquations();
   evalPerFrameEquations();
   evalPerPixelEqns();
-  evalCustomWaveInitConditions();
-  evalCustomShapeInitConditions();
   evalCustomWavePerFrameEquations();
   evalCustomShapePerFrameEquations();
 

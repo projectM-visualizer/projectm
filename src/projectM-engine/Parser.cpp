@@ -89,7 +89,6 @@ token_t Parser::parseToken(std::istream &  fs, char * string) {
     string_line_buffer[string_line_buffer_index++] = tolower(c);
     /* Now interpret the character */
     switch (c) {
-      
     case '+':
       return tPlus; 
     case '-':
@@ -120,11 +119,10 @@ token_t Parser::parseToken(std::istream &  fs, char * string) {
 	}
 	
       }
-      
+
       /* Otherwise, just a regular division operator */
       fs.unget();
       return tDiv;
-      
     case '*':
       return tMult;
     case '|':
@@ -280,7 +278,6 @@ if (init_string != 0) {
   if (preset->add_per_pixel_eqn(string, gen_expr) < 0) {
 	if (PARSE_DEBUG) {
         DWRITE( "parse_per_pixel: no param associated with \"%s\" (LINE %d)", string, line_count);
-        
     }
     delete gen_expr;
     return PROJECTM_PARSE_ERROR;
@@ -318,24 +315,24 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
   case tOr:
   case tAnd:
   case tDiv:
-    
+
     //    if (PARSE_DEBUG) printf("parse_line: invalid token found at start of line (LINE %d)\n", line_count);
     /* Invalid token found, return a parse error */
     return PROJECTM_PARSE_ERROR;
-    
-    
+
+
   case tEOL:  /* Empty line */
     line_mode = NORMAL_LINE_MODE;
     return PROJECTM_SUCCESS;
-    
+
   case tEOF: /* End of File */
     line_mode = NORMAL_LINE_MODE;
     line_count = 1;
     return EOF;
-    
+
   case tSemiColon: /* Indicates end of expression */
     return PROJECTM_SUCCESS;
-    
+
     /* Valid Case, either an initial condition or equation should follow */
   case tEq:
     
@@ -373,8 +370,8 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
       if ((per_frame_eqn = parse_per_frame_eqn(fs, ++per_frame_eqn_count, preset)) == NULL) {
 	if (PARSE_DEBUG) printf("parse_line: per frame equation parsing failed (LINE %d)\n", line_count);
 	return PROJECTM_PARSE_ERROR;
-      }	
-      
+      }
+
       /* Insert the equation in the per frame equation tree */
       preset->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn_count, per_frame_eqn));
     
@@ -439,23 +436,23 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
       if (PARSE_DEBUG) printf("parse_line: finished parsing per pixel equation (LINE %d)\n", line_count);
       return PROJECTM_SUCCESS;
     } 
-    
+
     /* Sometimes equations are written implicitly in milkdrop files, in the form
-       
+
     per_frame_1 = p1 = eqn1; p2 = eqn2; p3 = eqn3;..; 
-    
+
     which is analagous to:
-    
+
     per_frame_1 = p1 = eqn1; per_frame_2 = p2 = eqn2; per_frame_3 = p3 = eqn3; ...;
-    
+
     The following line mode hack allows such implicit declaration of the 
     prefix that specifies the equation type. An alternative method
     may be to associate each equation line as list of equations separated
     by semicolons (and a new line ends the list). Instead, however, a global
     variable called "line_mode" specifies the last type of equation found,
     and bases any implicitly typed input on this fact
-    
-    Note added by Carmelo Piccione (carmelo@piccione@gmail.com) 10/19/03
+
+    Note added by Carmelo Piccione (carmelo.piccione@gmail.com) 10/19/03
     */
 
     /* Per frame line mode previously, try to parse the equation implicitly */
@@ -473,7 +470,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
       return PROJECTM_SUCCESS;
 
     } else if (line_mode == PER_FRAME_INIT_LINE_MODE) {
-   if (PARSE_DEBUG) printf("parse_line: parsing impliict per frame init eqn)\n");
+   if (PARSE_DEBUG) printf("parse_line: parsing implicit per frame init eqn)\n");
       if ((init_cond = parse_per_frame_init_eqn(fs, preset, NULL)) == NULL)
 	return PROJECTM_PARSE_ERROR;
 
