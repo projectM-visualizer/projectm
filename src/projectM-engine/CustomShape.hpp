@@ -86,16 +86,29 @@ public:
     float t6;
     float t7;
     float t8;
-    
+
+
+    // projectM exclusive parameter to load textures over a shape
+    std::string imageUrl;
+
+    /// Returns any image url (usually used for texture maps) associated with the custom shape
+    /// Will return empty string if none is set
+    inline const std::string & getImageUrl() {
+		return imageUrl;
+    }
+
     /* Data structure to hold per frame  / per frame init equations */
+    
     std::map<std::string,InitCond*>  init_cond_tree;
     std::map<int, PerFrameEqn*>  per_frame_eqn_tree;
     std::map<std::string,InitCond*>  per_frame_init_eqn_tree;
-    
+    std::map<std::string, Param*> text_properties_tree;
+
     /* Denotes the index of the last character for each stdring buffer */
     int per_frame_eqn_string_index;
     int per_frame_init_eqn_string_index;
-    
+
+
 
     /* String buffers for per frame / per frame init equations */
     char per_frame_eqn_string_buffer[STRING_BUFFER_SIZE];

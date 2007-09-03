@@ -1552,6 +1552,7 @@ int Parser::parse_shapecode(char * token, std::istream &  fs, Preset * preset) {
 
   if (PARSE_DEBUG) printf("parse_shapecode: shapecode id = %d, parameter = \"%s\"\n", id, var_string);
 
+
   /* Retrieve custom shape information from preset. The 3rd argument
      if true creates a custom shape if one does not exist */
 
@@ -1560,6 +1561,20 @@ int Parser::parse_shapecode(char * token, std::istream &  fs, Preset * preset) {
     return PROJECTM_FAILURE;
   }
   if (PARSE_DEBUG) printf("parse_shapecode: custom shape found (id = %d)\n", custom_shape->id);
+
+  if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(var_string, &custom_shape->text_properties_tree)) != NULL)
+  {
+
+	char text[MAX_TOKEN_SIZE];
+	token_t token = parseToken(fs, text);
+	
+	*((std::string*)param->engine_val) = std::string(text);
+        if (PARSE_DEBUG) 
+		std::cerr << "parse_shapecode: found image url, text is \"" 
+			<< std::string(text) << "\"" << std::endl;
+
+	return PROJECTM_SUCCESS;
+  }
 
   /* Retrieve parameter from this custom shapes parameter db */
 

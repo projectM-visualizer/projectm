@@ -202,4 +202,23 @@ Param * Param::new_param_bool(char * name, short int flags, void * engine_val,
     return param;
 }
 
+/* Creates a new parameter of type bool */
+Param * Param::new_param_string(char * name, short int flags, void * engine_val) {
+
+    Param * param;
+    CValue iv, ub, lb;
+    assert(engine_val);
+
+//    iv.bool_val = init_val;
+  //  ub.bool_val = upper_bound;
+  //  lb.bool_val = lower_bound;
+
+    if ((param = new Param(name, P_TYPE_STRING, flags, engine_val, NULL, iv, ub, lb)) == NULL)
+        return NULL;
+
+
+    /* Finished, return success */
+    return param;
+}
+
 

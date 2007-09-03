@@ -149,7 +149,7 @@ float ValExpr::eval_val_expr ( int mesh_i, int mesh_j )
 					//assert(mesh_i >=0);
 				}
 				//std::cout << term.param->name << ": " << (*((float*)term.param->engine_val)) << std::endl;
-				return * ( ( float* ) ( term.param->engine_val ) );
+				return * ( ( float* ) ( term.param->engine_val ) );			
 			default:
 				return EVAL_ERROR;
 		}

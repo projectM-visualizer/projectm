@@ -38,6 +38,7 @@
 #define P_TYPE_BOOL 0
 #define P_TYPE_INT 1
 #define P_TYPE_DOUBLE 2
+#define P_TYPE_STRING 3
 
 #define P_FLAG_NONE 0
 #define P_FLAG_READONLY 1
@@ -48,6 +49,7 @@
 #define P_FLAG_DONT_FREE_MATRIX (1 << 5)
 #define P_FLAG_PER_PIXEL (1 << 6)
 #define P_FLAG_PER_POINT (1 << 7)
+
 
 #include "Expr.hpp"
 #include "Common.hpp"
@@ -99,6 +101,7 @@ public:
                            int upper_bound, int lower_bound, int init_val );
     static Param * new_param_bool( char * name, short int flags, void * engine_val,
                             int upper_bound, int lower_bound, int init_val );
+    static Param * new_param_string(char * name, short int flags, void * engine_val);
 
 };
 

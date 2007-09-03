@@ -43,7 +43,7 @@
 using namespace Algorithms;
 
 
-CustomShape::CustomShape ( int id )
+CustomShape::CustomShape ( int id ) : imageUrl("")
 {
 
 	Param * param;
@@ -209,6 +209,13 @@ CustomShape::CustomShape ( int id )
 	{
 		DWRITE ( "%s\n", "failed to insert param!" );
 	}
+
+	param = Param::new_param_string ( "imageurl", P_FLAG_NONE, &this->imageUrl);
+	if ( ParamUtils::insert ( param, &this->text_properties_tree ) < 0 )
+	{
+		DWRITE ( "%s\n", "failed to insert param!" );
+	}
+
 }
 
 /* Frees a custom shape form object */
