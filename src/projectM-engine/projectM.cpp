@@ -54,6 +54,7 @@
 #include "Renderer.hpp"
 #include "PresetChooser.hpp"
 #include "ConfigFile.h"
+#include "TextureManager.hpp"
 
 #ifdef LINUX
 const std::string projectM::PROJECTM_PRESET_PATH ( "/usr/share/projectM/presets/" );

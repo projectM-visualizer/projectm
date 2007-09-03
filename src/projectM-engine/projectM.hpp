@@ -70,7 +70,7 @@
 #include "fatal.h"
 #include "PresetFrameIO.hpp"
 #include "Renderer.hpp"
-#include "TextureManager.hpp"
+
 
 
 #include <memory>
@@ -82,6 +82,7 @@ class Preset;
 class PresetIterator;
 class PresetChooser;
 class PresetLoader;
+class TextureManager;
 
 #include <memory>
 #ifdef WIN32

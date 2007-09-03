@@ -4,7 +4,6 @@
 #include "PBuffer.hpp"
 #include "PresetFrameIO.hpp"
 #include "BeatDetect.hpp"
-#include "TextureManager.hpp"
 #include <string>
 
 #ifdef USE_FTGL
@@ -14,6 +13,7 @@
 #endif /** USE_FTGL */
 
 class BeatDetect;
+class TextureManager;
 
 class Renderer
 {

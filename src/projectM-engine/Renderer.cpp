@@ -723,7 +723,11 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	  if ( (*pos)->textured)
 	    {
 
-
+	      if ((*pos)->getImageUrl() !="")
+		{
+		  GLuint tex = textureManager->getTexture((*pos)->getImageUrl());
+		  if (tex != 0) glBindTexture(GL_TEXTURE_2D, tex);
+		}
 	      //glBindTexture(GL_TEXTURE_2D, texture);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
 
