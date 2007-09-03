@@ -80,7 +80,6 @@ token_t Parser::parseToken(std::istream &  fs, char * string) {
     else
         c = fs.get();
 
-    std::cerr << c;
     last_token_size++;
     /* If the string line buffer is full, quit */
     if (string_line_buffer_index == (STRING_LINE_SIZE - 1))
@@ -160,14 +159,14 @@ token_t Parser::parseToken(std::istream &  fs, char * string) {
       
     default: 
       if (string != NULL)
-	string[i] = c;
+	string[i] = tolower(c);
     } 
-    
+
   }
-  
+
  /* String reached maximum length, return special token error */ 
   return tStringTooLong;
-  
+
 }
 
 /* Parse input in the form of "exp, exp, exp, ...)" 

@@ -13,6 +13,8 @@
 #include "Preset.hpp"
 #include <iostream>
 #include <sstream>
+#include <set>
+
 extern "C"
 {
 #include <errno.h>
@@ -68,6 +70,7 @@ void PresetLoader::rescan()
   }
 
   struct dirent * dir_entry;
+  std::set<std::string> alphaSortedFileSet;
   
   while ((dir_entry = readdir(m_dir)) != NULL)
   {
@@ -87,13 +90,15 @@ void PresetLoader::rescan()
     // Create full path name
     out << m_dirname << PATH_SEPARATOR << filename;
 
-   // std::cerr << "[PresetLoader]" << filename << std::endl;
     // Add to our directory entry collection
-    m_entries.push_back(out.str());
+    alphaSortedFileSet.insert(out.str());
 
     // the directory entry struct is freed elsewhere
   }
 
+  // Push all entries in order from the file set to the file entries member (which is an indexed vector)
+  for (std::set<std::string>::iterator pos = alphaSortedFileSet.begin(); pos != alphaSortedFileSet.end();++pos) 
+	m_entries.push_back(*pos);
 }
 
 std::auto_ptr<Preset> PresetLoader::loadPreset(unsigned int index, const PresetInputs & presetInputs, PresetOutputs & presetOutputs) const

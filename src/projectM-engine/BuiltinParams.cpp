@@ -46,7 +46,10 @@ int BuiltinParams::load_builtin_param_float(const std::string & name, void * eng
     fflush(stdout);
   }
 
-  if ((param = new Param(name, P_TYPE_DOUBLE, flags, engine_val, matrix, iv, ub, lb)) == NULL)
+std::string lowerName(name);
+std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
+
+  if ((param = new Param(lowerName, P_TYPE_DOUBLE, flags, engine_val, matrix, iv, ub, lb)) == NULL)
   {
     return PROJECTM_OUTOFMEM_ERROR;
   }
@@ -119,6 +122,7 @@ Param * BuiltinParams::find_builtin_param(const std::string & name)
 {
 
 
+  
   AliasMap::iterator pos = aliasMap.find(name);
   Param * param = 0;
   //std::cerr << "[BuiltinParams] find_builtin_param: name is " << name << std::endl;
@@ -158,7 +162,9 @@ int BuiltinParams::load_builtin_param_int(const std::string & name, void * engin
   ub.int_val = upper_bound;
   lb.int_val = lower_bound;
 
-  param = new Param(name, P_TYPE_INT, flags, engine_val, NULL, iv, ub, lb);
+std::string lowerName(name);
+std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
+  param = new Param(lowerName, P_TYPE_INT, flags, engine_val, NULL, iv, ub, lb);
 
   if (param == NULL)
   {
@@ -192,7 +198,10 @@ int BuiltinParams::load_builtin_param_bool(const std:: string & name, void * eng
   ub.int_val = TRUE;
   lb.int_val = false;
 
-  param = new Param(name, P_TYPE_BOOL, flags, engine_val, NULL, iv, ub, lb);
+std::string lowerName(name);
+std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
+
+  param = new Param(lowerName, P_TYPE_BOOL, flags, engine_val, NULL, iv, ub, lb);
 
   if (param == NULL)
   {
