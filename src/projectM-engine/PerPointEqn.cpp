@@ -35,11 +35,11 @@
 #include "PerPixelEqn.hpp"
 #include "PerPointEqn.hpp"
 #include <map>
-
+#include <iostream>
 #include "wipemalloc.h"
 
 /* Evaluates a per point equation for the current custom wave given by interface_wave ptr */
-void PerPointEqn::evaluate()
+void PerPointEqn::evaluate(int i)
 {
 
   int size;
@@ -53,18 +53,20 @@ void PerPointEqn::evaluate()
   if (param->matrix == NULL)
   {
     assert(param->matrix_flag == false);
-    (*(float*)param->engine_val) = eqn_ptr->eval_gen_expr(-1,-1);
+    (*(float*)param->engine_val) = eqn_ptr->eval_gen_expr(i,-1);
+
+    if (param->name == "n")
+	std::cerr << "n=" << (*(float*)param->engine_val) << std::endl;
     return;
   }
 
   else
   {
     param_matrix = (float*)param->matrix;
-    for (int i = 0; i < samples; i++)
-    {
+  
       // -1 is because per points only use one dimension
       param_matrix[i] = eqn_ptr->eval_gen_expr(i, -1);
-    }
+    
 
     /* Now that this parameter has been referenced with a per
        point equation, we let the evaluator know by setting

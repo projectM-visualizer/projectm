@@ -128,6 +128,7 @@ float ValExpr::eval_val_expr ( int mesh_i, int mesh_j )
 				return ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) );
 			case P_TYPE_DOUBLE:
 
+				
 				if ( term.param->matrix_flag | ( term.param->flags & P_FLAG_ALWAYS_MATRIX ) )
 				{
 

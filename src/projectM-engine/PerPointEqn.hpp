@@ -41,7 +41,7 @@ public:
     Param *param;
     GenExpr * gen_expr;
     ~PerPointEqn();
-    void evaluate();
+    void evaluate(int i);
     PerPointEqn( int index, Param *param, GenExpr *gen_expr, int samples);
  };
 
