@@ -652,7 +652,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
   switch (token = parseToken(fs,string)) {
   /* Left Parentice Case */
   case tLPr:
-    
+     std::cerr << "token before tLPr:" << string << std::endl;
     /* CASE 1 (Left Parentice): See if the previous string before this parentice is a function name */
     if ((func = BuiltinFuncs::find_func(string)) != NULL) {
         if (PARSE_DEBUG) {
@@ -1228,6 +1228,7 @@ PerFrameEqn * Parser::parse_per_frame_eqn(std::istream &  fs, int index, Preset 
   PerFrameEqn * per_frame_eqn;
   GenExpr * gen_expr;
   
+  
   if (parseToken(fs, string) != tEq) {
     if (PARSE_DEBUG) printf("parse_per_frame_eqn: no equal sign after string \"%s\" (LINE %d)\n", string, line_count);
     return NULL;			
@@ -1237,7 +1238,7 @@ PerFrameEqn * Parser::parse_per_frame_eqn(std::istream &  fs, int index, Preset 
   if ((param = ParamUtils::find(string, &preset->builtinParams, &preset->user_param_tree)) == NULL) {
     return NULL;	
   }
-  
+  if (PARSE_DEBUG) std::cerr << "parse_per_frame_eqn: parameter \"" << param->name << "\" retrieved (LINE" << line_count << ")" << std::endl;
   /* Make sure parameter is writable */
   if (param->flags & P_FLAG_READONLY) {
       if (PARSE_DEBUG) std::cerr << "parse_per_frame_eqn: parameter \"" << param->name << "\" %s is marked as read only (LINE " << line_count << ")" << std::endl; 

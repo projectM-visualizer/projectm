@@ -40,7 +40,6 @@ public:
     int samples; // the number of samples to iterate over
     Param *param;
     GenExpr * gen_expr;
-    
     ~PerPointEqn();
     void evaluate();
     PerPointEqn( int index, Param *param, GenExpr *gen_expr, int samples);
