@@ -121,6 +121,7 @@ public:
     float **dy_mesh;
     float **cx_mesh;
     float **cy_mesh;
+    float **warp_mesh;
 
     bool zoom_is_mesh;
     bool zoomexp_is_mesh;
@@ -132,6 +133,7 @@ public:
     bool dy_is_mesh;
     bool cx_is_mesh;
     bool cy_is_mesh;
+    bool warp_is_mesh;
 
     float **x_mesh;
     float **y_mesh;

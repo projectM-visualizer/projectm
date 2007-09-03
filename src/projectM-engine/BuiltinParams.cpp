@@ -280,6 +280,7 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("fModWaveAlphaStart", (void*)&presetOutputs.fModWaveAlphaStart, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("fModWaveAlphaEnd", (void*)&presetOutputs.fModWaveAlphaEnd, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("fWarpAnimSpeed",  (void*)&presetOutputs.fWarpAnimSpeed, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
+  load_builtin_param_float("fWarpScale",  (void*)&presetOutputs.fWarpScale, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   //  load_builtin_param_float("warp", (void*)&presetOutputs.warp, warp_mesh, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "");
 
   load_builtin_param_float("fShader", (void*)&presetOutputs.fShader, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
@@ -301,7 +302,7 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_bool("bMotionVectorsOn", (void*)&presetOutputs.bMotionVectorsOn, P_FLAG_NONE, false, "");
   load_builtin_param_bool("wave_dots", (void*)&presetOutputs.bWaveDots, P_FLAG_NONE, false, "bWaveDots");
   load_builtin_param_bool("wave_thick", (void*)&presetOutputs.bWaveThick, P_FLAG_NONE, false, "bWaveThick");
-
+  load_builtin_param_float("warp", (void*)&presetOutputs.warp, presetOutputs.warp_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, "");
   load_builtin_param_float("zoom", (void*)&presetOutputs.zoom, presetOutputs.zoom_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, "");
   load_builtin_param_float("rot", (void*)&presetOutputs.rot, presetOutputs.rot_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
   /// @note added huge bug fix here potentially by prevening zoomexp_mesh from being freed when presets dealloc

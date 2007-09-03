@@ -107,6 +107,7 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
 
   if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: per pixel equation (name = \"%s\")\n", name);
 
+
   if (!strncmp(name, "dx", strlen("dx")))
     this->m_presetOutputs.dx_is_mesh = true;
   else if (!strncmp(name, "dy", strlen("dy")))
@@ -125,6 +126,8 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
     this->m_presetOutputs.sx_is_mesh = true;
   else if (!strncmp(name, "sy", strlen("sy")))
     this->m_presetOutputs.sy_is_mesh = true;
+  else if (!strncmp(name, "warp", strlen("warp")))
+    this->m_presetOutputs.warp_is_mesh = true;
 
   /* Search for the parameter so we know what matrix the per pixel equation is referencing */
 

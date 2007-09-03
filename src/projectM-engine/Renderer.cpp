@@ -353,6 +353,7 @@ void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * preset
   int x,y;
   float fZoom2,fZoom2Inv;
 
+ 
 
 
   if(!presetOutputs->cx_is_mesh)
@@ -431,6 +432,16 @@ void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * preset
       }
     }
 
+ if(!presetOutputs->warp_is_mesh)
+    {
+      for (x=0;x<this->gx;x++){
+	for(y=0;y<this->gy;y++){
+	  presetOutputs->warp_mesh[x][y]=presetOutputs->warp;
+	}
+      }
+    }
+
+
   /*
   for (x=0;x<this->gx;x++){
     for(y=0;y<this->gy;y++){	  	  
@@ -465,8 +476,23 @@ void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * preset
       presetOutputs->y_mesh[x][y] = ( presetOutputs->y_mesh[x][y] - presetOutputs->cy_mesh[x][y])/presetOutputs->sy_mesh[x][y] + presetOutputs->cy_mesh[x][y];
     }
   }	   
-	 
 
+ float fWarpTime = presetInputs->time * presetOutputs->fWarpAnimSpeed;
+  float fWarpScaleInv = 1.0f / presetOutputs->fWarpScale;
+  float f[4];
+  f[0] = 11.68f + 4.0f*cosf(fWarpTime*1.413f + 10);
+  f[1] =  8.77f + 3.0f*cosf(fWarpTime*1.113f + 7);
+  f[2] = 10.54f + 3.0f*cosf(fWarpTime*1.233f + 3);
+  f[3] = 11.49f + 4.0f*cosf(fWarpTime*0.933f + 5);
+
+  for (x=0;x<this->gx;x++){
+    for(y=0;y<this->gy;y++){
+	 presetOutputs->x_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*sinf(fWarpTime*0.333f + fWarpScaleInv*(this->origx2[x][y]*f[0] - this->origy2[x][y]*f[3]));
+	 presetOutputs->y_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*cosf(fWarpTime*0.375f - fWarpScaleInv*(this->origx2[x][y]*f[2] + this->origy2[x][y]*f[1]));
+	 presetOutputs->x_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*cosf(fWarpTime*0.753f - fWarpScaleInv*(this->origx2[x][y]*f[1] - this->origy2[x][y]*f[2]));
+	 presetOutputs->y_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*sinf(fWarpTime*0.825f + fWarpScaleInv*(this->origx2[x][y]*f[0] + this->origy2[x][y]*f[3]));
+  }
+  }
  for (x=0;x<this->gx;x++){
    for(y=0;y<this->gy;y++){
      float u2 = presetOutputs->x_mesh[x][y] - presetOutputs->cx_mesh[x][y];
