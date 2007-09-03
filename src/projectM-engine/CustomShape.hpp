@@ -93,7 +93,7 @@ public:
 
     /// Returns any image url (usually used for texture maps) associated with the custom shape
     /// Will return empty string if none is set
-    inline const std::string & getImageUrl() {
+    inline const std::string & getImageUrl() const {
 		return imageUrl;
     }
 

@@ -5,12 +5,12 @@ TextureManager::TextureManager(std::string _presetURL): presetURL(_presetURL)
   ;
 }
 
-void TextureManager::loadTextures(PresetOutputs::cshape_container &shapes)
+void TextureManager::loadTextures(const PresetOutputs::cshape_container &shapes)
 {
   ;
 }
 
-void TextureManager::unloadTextures(PresetOutputs::cshape_container &shapes)
+void TextureManager::unloadTextures(const PresetOutputs::cshape_container &shapes)
 {
   ;
 }
