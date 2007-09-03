@@ -87,6 +87,12 @@ void PresetLoader::rescan()
         && (filename.rfind(MILKDROP_FILE_EXTENSION) != (filename.length() - MILKDROP_FILE_EXTENSION.length())))
       continue;
 
+    if (filename.length() <= MILKDROP_FILE_EXTENSION.length())
+	continue;
+
+    if (filename.length() > 0 && filename[0] == '.')
+	continue;
+
     // Create full path name
     out << m_dirname << PATH_SEPARATOR << filename;
 
