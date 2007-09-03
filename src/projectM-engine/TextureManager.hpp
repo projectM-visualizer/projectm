@@ -15,6 +15,7 @@ public:
 
   TextureManager(std::string _presetURL);
   void loadTextures(PresetOutputs::cshape_container &shapes);
+  void unloadTextures(PresetOutputs::cshape_container &shapes);
   GLuint getTexture(std::string imageUrl);
 
 };

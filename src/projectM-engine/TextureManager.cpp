@@ -10,6 +10,11 @@ void TextureManager::loadTextures(PresetOutputs::cshape_container &shapes)
   ;
 }
 
+void TextureManager::unloadTextures(PresetOutputs::cshape_container &shapes)
+{
+  ;
+}
+
 GLuint TextureManager::getTexture(std::string imageUrl)
 {
   ;
