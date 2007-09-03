@@ -1565,13 +1565,15 @@ int Parser::parse_shapecode(char * token, std::istream &  fs, Preset * preset) {
   if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(var_string, &custom_shape->text_properties_tree)) != NULL)
   {
 
-	char text[MAX_TOKEN_SIZE];
-	token_t token = parseToken(fs, text);
+	std::string text;//[MAX_TOKEN_SIZE];
+	//token_t token = parseToken(fs, text);
 	
-	*((std::string*)param->engine_val) = std::string(text);
+	fs >> text;
+	
+	*((std::string*)param->engine_val) = text;
         if (PARSE_DEBUG) 
 		std::cerr << "parse_shapecode: found image url, text is \"" 
-			<< std::string(text) << "\"" << std::endl;
+			<< text << "\"" << std::endl;
 
 	return PROJECTM_SUCCESS;
   }
