@@ -201,7 +201,7 @@ CustomWave::CustomWave(int _id):
 
   }
 
-  if ((param = Param::new_param_bool("bSpectrum", P_FLAG_NONE, &this->bSpectrum, 1, 0, 0)) == NULL)
+  if ((param = Param::new_param_bool("bspectrum", P_FLAG_NONE, &this->bSpectrum, 1, 0, 0)) == NULL)
   {
     delete(this);
     /// @bug make exception
@@ -218,7 +218,7 @@ CustomWave::CustomWave(int _id):
 
   }
 
-  if ((param = Param::new_param_bool("bDrawThick", P_FLAG_NONE, &this->bDrawThick, 1, 0, 0)) == NULL)
+  if ((param = Param::new_param_bool("bdrawthick", P_FLAG_NONE, &this->bDrawThick, 1, 0, 0)) == NULL)
   {
     delete(this);
     /// @bug make exception
