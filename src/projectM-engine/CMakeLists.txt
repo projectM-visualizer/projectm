@@ -4,7 +4,7 @@ ADD_LIBRARY(projectM SHARED projectM.cpp projectM.hpp PBuffer.cpp PBuffer.hpp In
 Param.cpp CustomWave.cpp CustomShape.hpp CustomShape.cpp Param.hpp CustomWave.hpp BeatDetect.hpp console_interface.h 
 Func.hpp Func.cpp Eval.cpp wipemalloc.h PerFrameEqn.cpp PerPointEqn.cpp fftsg.cpp console_interface.cpp
 CValue.hpp Expr.hpp timer.cpp  wipemalloc.cpp PerFrameEqn.hpp PerPixelEqn.hpp PerPointEqn.hpp BuiltinFuncs.hpp 
-BuiltinFuncs.cpp compare.h event.h fatal.h fftsg.h timer.h BuiltinParams.hpp BuiltinParams.cpp Preset.hpp Renderer.cpp Renderer.hpp ParamUtils.hpp PresetLoader.cpp PresetLoader.hpp PresetChooser.hpp PresetChooser.cpp PresetFrameIO.cpp PresetFrameIO.hpp PresetMerge.cpp PresetMerge.hpp ConfigFile.h ConfigFile.cpp IdlePreset.hpp IdlePreset.cpp)
+BuiltinFuncs.cpp compare.h event.h fatal.h fftsg.h timer.h BuiltinParams.hpp BuiltinParams.cpp Preset.hpp Renderer.cpp Renderer.hpp ParamUtils.hpp PresetLoader.cpp PresetLoader.hpp PresetChooser.hpp PresetChooser.cpp PresetFrameIO.cpp PresetFrameIO.hpp PresetMerge.cpp PresetMerge.hpp ConfigFile.h ConfigFile.cpp IdlePreset.hpp IdlePreset.cpp bmpLoader.h bmpLoader.c pcxLoader.c pcxLoader.h texture.cpp texture.h tgaLoader.c tgaLoader.h)
 
 OPTION(USE_FTGL "Use FTGL for on-screen fonts" ON)
 
@@ -20,7 +20,7 @@ IF(USE_FTGL)
 	pkg_search_module (FTGL ftgl)
 	ADD_DEFINITIONS(-DUSE_FTGL)
 	INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS})
-	LINK_DIRECTORIES(${FTGL_LIBRARY_DIRS})
+	LINK_DIRECTORIES(${FTGL_LIBRARY_DIRS} "./")
         TARGET_LINK_LIBRARIES(projectM GLEW m ftgl)
 ENDIF(USE_FTGL)
 

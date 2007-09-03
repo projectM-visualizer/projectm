@@ -5,9 +5,12 @@
 #include "console_interface.h"
 #include "CustomShape.hpp"
 #include "CustomWave.hpp"
+#include "texture.h"
 #include <iostream>
 
 class Preset;
+
+GLuint texture;
 
 Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, BeatDetect *beatDetect, std::string _fontURL): fontURL(_fontURL), m_presetName("None")
 {
@@ -81,6 +84,9 @@ this->beatDetect = beatDetect;
     other_font = NULL;
     poly_font = NULL;
 #endif /** USE_FTGL */
+    //	pngInfo info;
+    //texture = LoadTexture("/home/pete/Tux.tga");
+  // pngBind("/home/pete/Tux.png", PNG_NOMIPMAP, PNG_ALPHA, &info, GL_CLAMP, GL_LINEAR, GL_LINEAR);
 
 }
 
@@ -690,6 +696,10 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	  
 	  if ( (*pos)->textured)
 	    {
+
+	      //glBindTexture(GL_TEXTURE_2D, texture);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
+
 	      glMatrixMode(GL_TEXTURE);
 	       glPushMatrix();
 	      glLoadIdentity();
@@ -710,13 +720,17 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	      	     
 
 	      glBegin(GL_TRIANGLE_FAN);
-	      glColor4f(0.0,0.0,0.0, (*pos)->a);
+	      //glColor4f(0.0,0.0,0.0, (*pos)->a);
 	      //glColor4f( (*pos)->r, (*pos)->g, (*pos)->b, (*pos)->a);
-	   
+	    glColor4f( (*pos)->r, (*pos)->g, (*pos)->b, (*pos)->a);
 	      glTexCoord2f(.5,.5);
 	      glVertex3f(xval,yval,-1);	 
 	      //glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);  
-	      glColor4f(0.0,0.0,0.0, (*pos)->a2);
+	      //glColor4f(0.0,0.0,0.0, (*pos)->a2);
+
+    	    	        
+	     glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);
+
 
 	      for ( i=1;i< (*pos)->sides+2;i++)
 		{
@@ -738,6 +752,16 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	      glDisable(GL_TEXTURE_2D);
 	       glPopMatrix();
 	      glMatrixMode(GL_MODELVIEW);          
+ if(this->renderTarget->usePbuffers)
+	{	
+	  glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
+	}
+      else
+	{
+	  glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
+	}
+glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
+
 	    }
 	  else{//Untextured (use color values)
 	    //printf("untextured %f %f %f @:%f,%f %f %f\n", (*pos)->a2, (*pos)->a, (*pos)->border_a,  (*pos)->x, (*pos)->y, (*pos)->radius, (*pos)->ang);
