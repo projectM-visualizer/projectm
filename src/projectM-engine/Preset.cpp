@@ -194,6 +194,10 @@ void Preset::evalCustomWavePerFrameEquations()
     {
       assert(_pos->second);
       _pos->second->evaluate();
+
+//	if (_pos->second->param->name =="busedots")
+//		std::cerr << "busedots: " << (*(bool*)_pos->second->param->engine_val)  << std::endl;
+//	else std::cerr  << "name: " << _pos->second->param->name <<std::endl;
     }
 
     std::map<int, PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;

@@ -235,7 +235,7 @@ CustomWave::CustomWave(int _id):
 
   }
 
-  if ((param = Param::new_param_bool("bUseDots", P_FLAG_NONE, &this->bUseDots, 1, 0, 0)) == NULL)
+  if ((param = Param::new_param_bool("busedots", P_FLAG_NONE, &this->bUseDots, 1, 0, 0)) == NULL)
   {
     delete(this);
     /// @bug make exception
@@ -248,7 +248,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if ((param = Param::new_param_bool("bAdditive", P_FLAG_NONE, &this->bAdditive, 1, 0, 0)) == NULL)
+  if ((param = Param::new_param_bool("badditive", P_FLAG_NONE, &this->bAdditive, 1, 0, 0)) == NULL)
   {
     delete(this);
     abort();

@@ -169,10 +169,18 @@ token_t Parser::parseToken(std::istream &  fs, char * string) {
 
 	}
 	std::cerr << "parsed away =" << std::endl;
-	--i;
-	break;
+	--i;	
+
+   //   if (fs && fs.get() == '\n') {
+   //     line_mode = NORMAL_LINE_MODE;
+//	return tEOL;
+  //    } else if (fs)
+	//fs.unget();
+
+	break;	
       }
-	
+
+
       line_mode = NORMAL_LINE_MODE;
       return tEOL;
     case ',':
