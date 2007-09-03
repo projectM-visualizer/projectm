@@ -4,6 +4,7 @@
 #include "PBuffer.hpp"
 #include "PresetFrameIO.hpp"
 #include "BeatDetect.hpp"
+#include "TextureManager.hpp"
 #include <string>
 
 #ifdef USE_FTGL
@@ -18,6 +19,8 @@ class Renderer
 {
   RenderTarget *renderTarget;
   BeatDetect *beatDetect;
+  TextureManager *textureManager;
+
   //per pixel equation variables
   float **gridx;  //grid containing interpolated mesh 
   float **gridy;
@@ -52,7 +55,7 @@ FTGLPolygonFont *poly_font;
     int correction;
 
   std::string fontURL;
-
+ 
     int noSwitch;
 
     int totalframes;
@@ -60,7 +63,7 @@ float realfps;
 char *title;
     int drawtitle;
 
-  Renderer( int width, int height, int gx, int gy, RenderTarget *renderTarget, BeatDetect *beatDetect, std::string fontURL);
+  Renderer( int width, int height, int gx, int gy, RenderTarget *renderTarget, TextureManager *textureManager, BeatDetect *beatDetect, std::string fontURL);
   ~Renderer();
   void RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
   void reset(int w, int h);

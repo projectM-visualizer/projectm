@@ -70,7 +70,8 @@
 #include "fatal.h"
 #include "PresetFrameIO.hpp"
 #include "Renderer.hpp"
-//#include "PresetChooser.hpp"
+#include "TextureManager.hpp"
+
 
 #include <memory>
 
@@ -125,6 +126,7 @@ public:
     static projectM *currentEngine;
     static Renderer *renderer;
     static RenderTarget *renderTarget;
+  TextureManager *textureManager;
 
   std::string presetURL;
 

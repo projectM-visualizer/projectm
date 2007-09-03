@@ -5,14 +5,14 @@
 #include "console_interface.h"
 #include "CustomShape.hpp"
 #include "CustomWave.hpp"
-#include "texture.h"
+#include "TextureManager.hpp"
 #include <iostream>
 
 class Preset;
 
 GLuint texture;
 
-Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, BeatDetect *beatDetect, std::string _fontURL): fontURL(_fontURL), m_presetName("None")
+Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, TextureManager *textureManager, BeatDetect *beatDetect, std::string _fontURL): fontURL(_fontURL), m_presetName("None")
 {
   int x; int y; 
  
@@ -76,7 +76,7 @@ this->origy2=(float **)wipemalloc(gx * sizeof(float *));
 
 this->renderTarget = renderTarget;
 this->beatDetect = beatDetect;
-
+ this->textureManager = textureManager;
 
 #ifdef USE_FTGL
     /** Reset fonts */
@@ -722,6 +722,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	  
 	  if ( (*pos)->textured)
 	    {
+
 
 	      //glBindTexture(GL_TEXTURE_2D, texture);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);

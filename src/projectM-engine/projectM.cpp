@@ -493,10 +493,14 @@ DLLEXPORT void projectM::projectM_reset()
 	this->hasInit = 1;
 
 	this->renderTarget = new RenderTarget ( texsize, width, height );
+        this->textureManager = new TextureManager(presetURL);
 	this->presetInputs.gx = gx;
 	this->presetInputs.gy = gy;
 
-	this->renderer = new Renderer ( width, height, gx, gy, renderTarget, beatDetect, fontURL );
+	this->renderer = new Renderer ( width, height, gx, gy, renderTarget, textureManager, beatDetect, fontURL);
+
+
+         
 
 	renderer->setPresetName(m_activePreset->absoluteFilePath());
 
