@@ -625,8 +625,11 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
 	
 	  if ( (*pos)->bAdditive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 	  else    glBlendFunc(GL_SRC_ALPHA, GL_ONE); 
-	  if ( (*pos)->bDrawThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
-	  
+	  if ( (*pos)->bDrawThick==1) 
+{ glLineWidth(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
+  glPointSize(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
+	
+  }  
 	   beatDetect->pcm->getPCM( (*pos)->value1, (*pos)->samples,0, (*pos)->bSpectrum, (*pos)->smoothing,0);
 	   beatDetect->pcm->getPCM( (*pos)->value2, (*pos)->samples,1, (*pos)->bSpectrum, (*pos)->smoothing,0);
 	  // printf("%f\n",pcmL[0]);
@@ -647,7 +650,7 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
 	   (*pos)->evalPerPointEqns();
 	
 	  //put drawing code here
-	  if ( (*pos)->bUseDots==1)   glBegin(GL_POINTS);
+	   if ( (*pos)->bUseDots==1){ glBegin(GL_POINTS);}
 	  else   glBegin(GL_LINE_STRIP);
 	  
 	  for(x=0;x< (*pos)->samples;x++)
