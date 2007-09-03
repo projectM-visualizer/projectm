@@ -199,6 +199,7 @@ inline void Preset::clearMeshChecks()
   m_presetOutputs.zoom_is_mesh = false;
   m_presetOutputs.zoomexp_is_mesh = false;
   m_presetOutputs.rot_is_mesh = false;
+  m_presetOutputs.warp_is_mesh = false;
   m_presetOutputs.sx_is_mesh = false;
   m_presetOutputs.sy_is_mesh = false;
   m_presetOutputs.dx_is_mesh = false;
