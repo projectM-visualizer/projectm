@@ -1572,7 +1572,10 @@ sprintf( buffer, " (%f)", this->aspect);
   sprintf( buffer, "    mesh: %d x %d", presetInputs->gx,presetInputs->gy);
   other_font->Render(buffer);
 
-
+  glRasterPos2f(0, -.25+offset); 
+  sprintf( buffer, "textures: %.1fkB", textureManager->getTextureMemorySize() /1000.0f);
+  other_font->Render(buffer);
+  
   glPopMatrix();
   // glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
     

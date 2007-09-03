@@ -36,3 +36,8 @@ GLuint TextureManager::getTexture(const std::string imageUrl)
    std::string fullUrl = presetURL + "/" + imageUrl;
    return LoadTexture(fullUrl.c_str());
 }
+
+unsigned int TextureManager::getTextureMemorySize()
+{
+  return GetTotalTextureSize();
+}
