@@ -78,8 +78,10 @@ std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
 
   if (alt_name != "")
   {
-    insert_param_alt_name(param, alt_name);
-
+    std::string alt_lower_name(alt_name);
+    std::transform(alt_lower_name.begin(), alt_lower_name.end(), alt_lower_name.begin(), tolower);
+    insert_param_alt_name(param,alt_lower_name);
+ 
     if (BUILTIN_PARAMS_DEBUG == 2)
     {
       printf("alt_name inserted...");
@@ -179,7 +181,10 @@ std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
 
   if (alt_name != "")
   {
-    insert_param_alt_name(param,alt_name);
+    std::string alt_lower_name(alt_name);
+    std::transform(alt_lower_name.begin(), alt_lower_name.end(), alt_lower_name.begin(), tolower);
+    insert_param_alt_name(param,alt_lower_name);
+ 
   }
 
   return PROJECTM_SUCCESS;
@@ -216,7 +221,9 @@ std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
 
   if (alt_name != "")
   {
-    insert_param_alt_name(param,alt_name);
+    std::string alt_lower_name(alt_name);
+    std::transform(alt_lower_name.begin(), alt_lower_name.end(), alt_lower_name.begin(), tolower);
+    insert_param_alt_name(param,alt_lower_name);
   }
 
   return PROJECTM_SUCCESS;

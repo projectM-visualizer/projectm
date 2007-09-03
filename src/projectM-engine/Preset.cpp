@@ -142,7 +142,6 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
   {
     if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: failed to create new per pixel equation!\n");
     return PROJECTM_FAILURE;
-
   }
 
 
@@ -228,6 +227,12 @@ void Preset::evalCustomShapePerFrameEquations()
 
 void Preset::evalPerFrameInitEquations()
 {
+
+  for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos)
+  {
+    assert(pos->second);
+    pos->second->evaluate();
+  }
 
   for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos)
   {
