@@ -875,8 +875,6 @@ LIBPROJECTM_CFLAGS
 LIBPROJECTM_LIBS
 LIBVISUAL_CFLAGS
 LIBVISUAL_LIBS
-FTGL_CFLAGS
-FTGL_LIBS
 XMKMF
 HAVE_LIB_GL_TRUE
 HAVE_LIB_GL_FALSE
@@ -914,8 +912,6 @@ LIBPROJECTM_CFLAGS
 LIBPROJECTM_LIBS
 LIBVISUAL_CFLAGS
 LIBVISUAL_LIBS
-FTGL_CFLAGS
-FTGL_LIBS
 XMKMF'
 
 
@@ -1549,8 +1545,6 @@ Some influential environment variables:
               C compiler flags for LIBVISUAL, overriding pkg-config
   LIBVISUAL_LIBS 
               linker flags for LIBVISUAL, overriding pkg-config
-  FTGL_CFLAGS C compiler flags for FTGL, overriding pkg-config
-  FTGL_LIBS   linker flags for FTGL, overriding pkg-config
   XMKMF       Path to xmkmf, Makefile generator for X Window System
 
 Use these variables to override the choices made by `configure' or to help
@@ -19893,87 +19887,6 @@ fi
 
 
 
-
-pkg_failed=no
-{ echo "$as_me:$LINENO: checking for FTGL" >&5
-echo $ECHO_N "checking for FTGL... $ECHO_C" >&6; }
-
-if test -n "$PKG_CONFIG"; then
-    if test -n "$FTGL_CFLAGS"; then
-        pkg_cv_FTGL_CFLAGS="$FTGL_CFLAGS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"ftgl >= 2.0.0\"") >&5
-  ($PKG_CONFIG --exists --print-errors "ftgl >= 2.0.0") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_FTGL_CFLAGS=`$PKG_CONFIG --cflags "ftgl >= 2.0.0" 2>/dev/null`
-else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
-fi
-if test -n "$PKG_CONFIG"; then
-    if test -n "$FTGL_LIBS"; then
-        pkg_cv_FTGL_LIBS="$FTGL_LIBS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"ftgl >= 2.0.0\"") >&5
-  ($PKG_CONFIG --exists --print-errors "ftgl >= 2.0.0") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_FTGL_LIBS=`$PKG_CONFIG --libs "ftgl >= 2.0.0" 2>/dev/null`
-else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
-fi
-
-
-
-if test $pkg_failed = yes; then
-        
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        FTGL_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "ftgl >= 2.0.0"`
-        else 
-	        FTGL_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "ftgl >= 2.0.0"`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$FTGL_PKG_ERRORS" >&5
-
-	{ echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6; }
-                libft="no"
-elif test $pkg_failed = untried; then
-	libft="no"
-else
-	FTGL_CFLAGS=$pkg_cv_FTGL_CFLAGS
-	FTGL_LIBS=$pkg_cv_FTGL_LIBS
-        { echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6; }
-	libft="yes"
-fi
-if test x$libft = xno; then
-	{ { echo "$as_me:$LINENO: error: *** ftgl not found.
-			libftgl is needed to build this package./" >&5
-echo "$as_me: error: *** ftgl not found.
-			libftgl is needed to build this package./" >&2;}
-   { (exit 1); exit 1; }; }
-fi
-
-
-
 { echo "$as_me:$LINENO: checking for X" >&5
 echo $ECHO_N "checking for X... $ECHO_C" >&6; }
 
@@ -22980,8 +22893,6 @@ LIBPROJECTM_CFLAGS!$LIBPROJECTM_CFLAGS$ac_delim
 LIBPROJECTM_LIBS!$LIBPROJECTM_LIBS$ac_delim
 LIBVISUAL_CFLAGS!$LIBVISUAL_CFLAGS$ac_delim
 LIBVISUAL_LIBS!$LIBVISUAL_LIBS$ac_delim
-FTGL_CFLAGS!$FTGL_CFLAGS$ac_delim
-FTGL_LIBS!$FTGL_LIBS$ac_delim
 XMKMF!$XMKMF$ac_delim
 HAVE_LIB_GL_TRUE!$HAVE_LIB_GL_TRUE$ac_delim
 HAVE_LIB_GL_FALSE!$HAVE_LIB_GL_FALSE$ac_delim
@@ -23000,7 +22911,7 @@ DATADIR!$DATADIR$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 27; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 25; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

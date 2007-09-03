@@ -27,6 +27,8 @@ Carmelo Piccione
 Peter Sperl
     Beat Detection
     Rendering
+    XMMS Support (projectM-xmms)
+    libvisual Support (projectM-libvisual)   
 
 Alligator Descartes
     Architecture

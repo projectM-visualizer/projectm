@@ -44,7 +44,7 @@ available_tags=" CXX F77"
 
 # ### BEGIN LIBTOOL CONFIG
 
-# Libtool was configured on host structured:
+# Libtool was configured on host localhost:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/sh"
@@ -328,7 +328,7 @@ link_all_deplibs=unknown
 sys_lib_search_path_spec="/usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib64 /lib64 /usr/x86_64-pc-linux-gnu/lib"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib /usr/lib32/opengl/ati/lib /usr/lib64/opengl/xorg-x11/lib /lib /usr/lib /usr/local/lib /lib64 /usr/lib64 /usr/local/lib64 /lib32 /usr/lib32 /usr/local/lib32 /usr/x86_64-pc-linux-gnu/lib /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.1/32 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.1 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/32 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6/32 /usr/lib64/nspr /usr/lib64/nss /usr/lib /usr/lib/openmotif-2.2 /usr/lib32/openmotif-2.2 /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/native_threads/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/classic/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/server/ /usr/lib/qt4 /usr/lib64/qt4 /usr/lib32/qt4 /emul/linux/x86/usr/qt/2/lib /emul/linux/x86/usr/qt/3/lib /usr/kde/3.5/lib /usr/kde/3.5/lib64 /usr/kde/3.5/lib32 /usr/qt/3/lib /usr/qt/3/lib64 /usr/qt/3/lib32 /opt/firefox /usr/games/lib /usr/games/lib32 /usr/lib64/fltk-1.1 /usr/lib64/libstdc++-v3/ "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib //usr/lib32/opengl/nvidia/lib //usr/lib64/opengl/nvidia/lib /lib /usr/lib /lib64 /usr/lib64 /usr/local/lib64 /lib32 /usr/lib32 /usr/local/lib32 /usr/x86_64-pc-linux-gnu/lib /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/32 /usr/lib/gcc/x86_64-pc-linux-gnu/4.2.0 /usr/lib/gcc/x86_64-pc-linux-gnu/4.2.0/32 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6/32 /usr/lib64/nspr /usr/lib64/nss /usr/lib64/openmotif-2.2 /usr/lib32/openmotif-2.2 /usr/lib/qt4 /usr/lib64/qt4 /usr/lib32/qt4 /usr/kde/3.5/lib /usr/kde/3.5/lib64 /usr/kde/3.5/lib32 /usr/qt/3/lib /usr/qt/3/lib64 /usr/qt/3/lib32 /opt/firefox /usr/games/lib /usr/games/lib32 /usr/lib/octave-2.1.73 "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7346,7 +7346,7 @@ disable_libs=static
 # End:
 # ### BEGIN LIBTOOL TAG CONFIG: CXX
 
-# Libtool was configured on host structured:
+# Libtool was configured on host localhost:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/sh"
@@ -7627,7 +7627,7 @@ link_all_deplibs=unknown
 sys_lib_search_path_spec="/usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib64 /lib64 /usr/x86_64-pc-linux-gnu/lib"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib /usr/lib32/opengl/ati/lib /usr/lib64/opengl/xorg-x11/lib /lib /usr/lib /usr/local/lib /lib64 /usr/lib64 /usr/local/lib64 /lib32 /usr/lib32 /usr/local/lib32 /usr/x86_64-pc-linux-gnu/lib /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.1/32 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.1 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/32 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6/32 /usr/lib64/nspr /usr/lib64/nss /usr/lib /usr/lib/openmotif-2.2 /usr/lib32/openmotif-2.2 /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/native_threads/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/classic/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/server/ /usr/lib/qt4 /usr/lib64/qt4 /usr/lib32/qt4 /emul/linux/x86/usr/qt/2/lib /emul/linux/x86/usr/qt/3/lib /usr/kde/3.5/lib /usr/kde/3.5/lib64 /usr/kde/3.5/lib32 /usr/qt/3/lib /usr/qt/3/lib64 /usr/qt/3/lib32 /opt/firefox /usr/games/lib /usr/games/lib32 /usr/lib64/fltk-1.1 /usr/lib64/libstdc++-v3/ "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib //usr/lib32/opengl/nvidia/lib //usr/lib64/opengl/nvidia/lib /lib /usr/lib /lib64 /usr/lib64 /usr/local/lib64 /lib32 /usr/lib32 /usr/local/lib32 /usr/x86_64-pc-linux-gnu/lib /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/32 /usr/lib/gcc/x86_64-pc-linux-gnu/4.2.0 /usr/lib/gcc/x86_64-pc-linux-gnu/4.2.0/32 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6/32 /usr/lib64/nspr /usr/lib64/nss /usr/lib64/openmotif-2.2 /usr/lib32/openmotif-2.2 /usr/lib/qt4 /usr/lib64/qt4 /usr/lib32/qt4 /usr/kde/3.5/lib /usr/kde/3.5/lib64 /usr/kde/3.5/lib32 /usr/qt/3/lib /usr/qt/3/lib64 /usr/qt/3/lib32 /opt/firefox /usr/games/lib /usr/games/lib32 /usr/lib/octave-2.1.73 "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7651,7 +7651,7 @@ include_expsyms=""
 
 # ### BEGIN LIBTOOL TAG CONFIG: F77
 
-# Libtool was configured on host structured:
+# Libtool was configured on host localhost:
 
 # Shell to use when invoking shell scripts.
 SHELL="/bin/sh"
@@ -7935,7 +7935,7 @@ link_all_deplibs=unknown
 sys_lib_search_path_spec="/usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib64 /lib64 /usr/x86_64-pc-linux-gnu/lib"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib /usr/lib32/opengl/ati/lib /usr/lib64/opengl/xorg-x11/lib /lib /usr/lib /usr/local/lib /lib64 /usr/lib64 /usr/local/lib64 /lib32 /usr/lib32 /usr/local/lib32 /usr/x86_64-pc-linux-gnu/lib /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.1/32 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.1 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/32 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6/32 /usr/lib64/nspr /usr/lib64/nss /usr/lib /usr/lib/openmotif-2.2 /usr/lib32/openmotif-2.2 /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/native_threads/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/classic/ /opt/blackdown-jdk-1.4.2.03/jre/lib/amd64/server/ /usr/lib/qt4 /usr/lib64/qt4 /usr/lib32/qt4 /emul/linux/x86/usr/qt/2/lib /emul/linux/x86/usr/qt/3/lib /usr/kde/3.5/lib /usr/kde/3.5/lib64 /usr/kde/3.5/lib32 /usr/qt/3/lib /usr/qt/3/lib64 /usr/qt/3/lib32 /opt/firefox /usr/games/lib /usr/games/lib32 /usr/lib64/fltk-1.1 /usr/lib64/libstdc++-v3/ "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib //usr/lib32/opengl/nvidia/lib //usr/lib64/opengl/nvidia/lib /lib /usr/lib /lib64 /usr/lib64 /usr/local/lib64 /lib32 /usr/lib32 /usr/local/lib32 /usr/x86_64-pc-linux-gnu/lib /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/32 /usr/lib/gcc/x86_64-pc-linux-gnu/4.2.0 /usr/lib/gcc/x86_64-pc-linux-gnu/4.2.0/32 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6/32 /usr/lib64/nspr /usr/lib64/nss /usr/lib64/openmotif-2.2 /usr/lib32/openmotif-2.2 /usr/lib/qt4 /usr/lib64/qt4 /usr/lib32/qt4 /usr/kde/3.5/lib /usr/kde/3.5/lib64 /usr/kde/3.5/lib32 /usr/qt/3/lib /usr/qt/3/lib64 /usr/qt/3/lib32 /opt/firefox /usr/games/lib /usr/games/lib32 /usr/lib/octave-2.1.73 "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
