@@ -124,7 +124,7 @@ CustomShape::CustomShape ( int id ) : imageUrl("")
 	{
 		DWRITE ( "%s\n", "failed to insert param!" );
 	}
-	param = Param::new_param_bool ( "thickOutline", P_FLAG_NONE, &this->thickOutline, 1, 0, 0 );
+	param = Param::new_param_bool ( "thickoutline", P_FLAG_NONE, &this->thickOutline, 1, 0, 0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
 		DWRITE ( "%s\n", "failed to insert param!" );
