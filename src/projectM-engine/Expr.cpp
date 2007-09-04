@@ -114,11 +114,11 @@ float ValExpr::eval_val_expr ( int mesh_i, int mesh_j )
 
 			case P_TYPE_BOOL:
 #ifdef EVAL_DEBUG
-				DWRITE ( "(%s:%.4f)", term.param->name.c_str(), ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) ) );
+				DWRITE ( "(%s:%.4f)", term.param->name.c_str(), ( float ) ( * ( ( bool* ) ( term.param->engine_val ) ) ) );
 #endif
 
 
-				return ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) );
+				return ( float ) ( * ( ( bool* ) ( term.param->engine_val ) ) );
 			case P_TYPE_INT:
 #ifdef EVAL_DEBUG
 				DWRITE ( "(%s:%.4f)", term.param->name.c_str(), ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) ) );

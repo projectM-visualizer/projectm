@@ -100,7 +100,7 @@ public:
     static Param * new_param_int( char * name, short int flags, void * engine_val,
                            int upper_bound, int lower_bound, int init_val );
     static Param * new_param_bool( char * name, short int flags, void * engine_val,
-                            int upper_bound, int lower_bound, int init_val );
+                            int upper_bound, int lower_bound, bool init_val );
     static Param * new_param_string(char * name, short int flags, void * engine_val);
 
 };
@@ -114,11 +114,11 @@ inline void Param::set_param( float val) {
 
     case P_TYPE_BOOL:
         if (val < 0)
-            *((int*)engine_val) = 0;
+            *((bool*)engine_val) = false;
         else if (val > 0)
-            *((int*)engine_val) = 1;
+            *((bool*)engine_val) = true;
         else
-            *((int*)engine_val) = 0;
+            *((bool*)engine_val) = false;
         break;
     case P_TYPE_INT:
         /* Make sure value is an integer */

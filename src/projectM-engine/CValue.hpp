@@ -30,7 +30,7 @@
 #define _CVALUE_H
 
 typedef union CValue_t {
-    int bool_val;
+    bool bool_val;
     int int_val;
     float float_val;
   } CValue;

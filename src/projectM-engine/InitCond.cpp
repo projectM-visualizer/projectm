@@ -64,8 +64,8 @@ void InitCond::evaluate() {
   /* Set matrix flag to zero. This ensures
      its constant value will be used rather than a matrix value 
   */
-   
-  param->matrix_flag = 0;
+
+  param->matrix_flag = false;
   if (param->type == P_TYPE_BOOL) {
 
     //        printf( "init_cond: %s = %d (TYPE BOOL)\n", param->name.c_str(), init_val.bool_val); 
@@ -74,7 +74,7 @@ void InitCond::evaluate() {
 
 	assert(param->engine_val);
 
-	 *((int*)param->engine_val) = init_val.bool_val;
+	 *((bool*)param->engine_val) = init_val.bool_val;
 
      return;
   }

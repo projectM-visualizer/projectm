@@ -148,6 +148,8 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
   }
 
 
+
+
   /* Insert the per pixel equation into the preset per pixel database */
   std::pair<std::map<int, PerPixelEqn*>::iterator, bool> inserteeOption = per_pixel_eqn_tree.insert
       (std::make_pair(per_pixel_eqn->index, per_pixel_eqn));
@@ -295,7 +297,6 @@ void Preset::postloadInitialize() {
   this->per_frame_eqn_count = 0;
   this->per_frame_init_eqn_count = 0;
 
-
   this->loadBuiltinParamsUnspecInitConds();
   this->loadCustomWaveUnspecInitConds();
   this->loadCustomShapeUnspecInitConds();
@@ -442,7 +443,7 @@ int Preset::readIn(std::istream & fs) {
     if (retval == PROJECTM_PARSE_ERROR)
     {
       line_mode = NORMAL_LINE_MODE;
-      std::cerr << "[Preset::readIn()] parse error in file \"" << this->absoluteFilePath() << "\": line " << lineno << std::endl;
+      std::cerr << "[Preset::readIn()] parse error in file \"" << this->absoluteFilePath() << "\"" << std::endl;
     }
     lineno++;
   }

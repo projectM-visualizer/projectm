@@ -270,43 +270,43 @@ int BuiltinParams::init_builtin_param_db(const PresetInputs & presetInputs, Pres
 int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, PresetOutputs & presetOutputs)
 {
 
-  load_builtin_param_float("fRating", (void*)&presetOutputs.fRating, NULL, P_FLAG_NONE, 0.0 , 5.0, 0.0, "");
-  load_builtin_param_float("fWaveScale", (void*)&presetOutputs.fWaveScale, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("frating", (void*)&presetOutputs.fRating, NULL, P_FLAG_NONE, 0.0 , 5.0, 0.0, "");
+  load_builtin_param_float("fwavescale", (void*)&presetOutputs.fWaveScale, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
   load_builtin_param_float("gamma", (void*)&presetOutputs.fGammaAdj, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fGammaAdj");
   load_builtin_param_float("echo_zoom", (void*)&presetOutputs.fVideoEchoZoom, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fVideoEchoZoom");
-  load_builtin_param_float("echo_alpha", (void*)&presetOutputs.fVideoEchoAlpha, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fVideoEchoAlpha");
-  load_builtin_param_float("wave_a", (void*)&presetOutputs.fWaveAlpha, NULL, P_FLAG_NONE, 0.0, 1.0, 0, "fWaveAlpha");
-  load_builtin_param_float("fWaveSmoothing", (void*)&presetOutputs.fWaveSmoothing, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
-  load_builtin_param_float("fModWaveAlphaStart", (void*)&presetOutputs.fModWaveAlphaStart, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
-  load_builtin_param_float("fModWaveAlphaEnd", (void*)&presetOutputs.fModWaveAlphaEnd, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
+  load_builtin_param_float("echo_alpha", (void*)&presetOutputs.fVideoEchoAlpha, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fvideoechoalpha");
+  load_builtin_param_float("wave_a", (void*)&presetOutputs.fWaveAlpha, NULL, P_FLAG_NONE, 0.0, 1.0, 0, "fwavealpha");
+  load_builtin_param_float("fwavesmoothing", (void*)&presetOutputs.fWaveSmoothing, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
+  load_builtin_param_float("fmodwavealphastart", (void*)&presetOutputs.fModWaveAlphaStart, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
+  load_builtin_param_float("fmodwavealphaend", (void*)&presetOutputs.fModWaveAlphaEnd, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("fWarpAnimSpeed",  (void*)&presetOutputs.fWarpAnimSpeed, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("fWarpScale",  (void*)&presetOutputs.fWarpScale, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   //  load_builtin_param_float("warp", (void*)&presetOutputs.warp, warp_mesh, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "");
 
-  load_builtin_param_float("fShader", (void*)&presetOutputs.fShader, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
-  load_builtin_param_float("decay", (void*)&presetOutputs.decay, NULL, P_FLAG_NONE, 0.0, 1.0, 0, "fDecay");
+  load_builtin_param_float("fshader", (void*)&presetOutputs.fShader, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
+  load_builtin_param_float("decay", (void*)&presetOutputs.decay, NULL, P_FLAG_NONE, 0.0, 1.0, 0, "fdecay");
 
   load_builtin_param_int("echo_orient", (void*)&presetOutputs.nVideoEchoOrientation, P_FLAG_NONE, 0, 3, 0, "nVideoEchoOrientation");
-  load_builtin_param_int("wave_mode", (void*)&presetOutputs.nWaveMode, P_FLAG_NONE, 0, 7, 0, "nWaveMode");
+  load_builtin_param_int("wave_mode", (void*)&presetOutputs.nWaveMode, P_FLAG_NONE, 0, 7, 0, "nwavemode");
 
   load_builtin_param_bool("wave_additive", (void*)&presetOutputs.bAdditiveWaves, P_FLAG_NONE, false, "bAdditiveWaves");
-  load_builtin_param_bool("bModWaveAlphaByVolume", (void*)&presetOutputs.bModWaveAlphaByVolume, P_FLAG_NONE, false, "");
+  load_builtin_param_bool("bmodwavealphabyvolume", (void*)&presetOutputs.bModWaveAlphaByVolume, P_FLAG_NONE, false, "");
   load_builtin_param_bool("wave_brighten", (void*)&presetOutputs.bMaximizeWaveColor, P_FLAG_NONE, false, "bMaximizeWaveColor");
-  load_builtin_param_bool("wrap", (void*)&presetOutputs.bTexWrap, P_FLAG_NONE, false, "bTexWrap");
-  load_builtin_param_bool("darken_center", (void*)&presetOutputs.bDarkenCenter, P_FLAG_NONE, false, "bDarkenCenter");
-  load_builtin_param_bool("bRedBlueStereo", (void*)&presetOutputs.bRedBlueStereo, P_FLAG_NONE, false, "");
-  load_builtin_param_bool("brighten", (void*)&presetOutputs.bBrighten, P_FLAG_NONE, false, "bBrighten");
-  load_builtin_param_bool("darken", (void*)&presetOutputs.bDarken, P_FLAG_NONE, false, "bDarken");
-  load_builtin_param_bool("solarize", (void*)&presetOutputs.bSolarize, P_FLAG_NONE, false, "bSolarize");
-  load_builtin_param_bool("invert", (void*)&presetOutputs.bInvert, P_FLAG_NONE, false, "bInvert");
-  load_builtin_param_bool("bMotionVectorsOn", (void*)&presetOutputs.bMotionVectorsOn, P_FLAG_NONE, false, "");
-  load_builtin_param_bool("wave_dots", (void*)&presetOutputs.bWaveDots, P_FLAG_NONE, false, "bWaveDots");
-  load_builtin_param_bool("wave_thick", (void*)&presetOutputs.bWaveThick, P_FLAG_NONE, false, "bWaveThick");
+  load_builtin_param_bool("wrap", (void*)&presetOutputs.bTexWrap, P_FLAG_NONE, false, "btexwrap");
+  load_builtin_param_bool("darken_center", (void*)&presetOutputs.bDarkenCenter, P_FLAG_NONE, false, "bdarkencenter");
+  load_builtin_param_bool("bredbluestereo", (void*)&presetOutputs.bRedBlueStereo, P_FLAG_NONE, false, "");
+  load_builtin_param_bool("brighten", (void*)&presetOutputs.bBrighten, P_FLAG_NONE, false, "bbrighten");
+  load_builtin_param_bool("darken", (void*)&presetOutputs.bDarken, P_FLAG_NONE, false, "bdarken");
+  load_builtin_param_bool("solarize", (void*)&presetOutputs.bSolarize, P_FLAG_NONE, false, "bsolarize");
+  load_builtin_param_bool("invert", (void*)&presetOutputs.bInvert, P_FLAG_NONE, false, "binvert");
+  load_builtin_param_bool("bmotionvectorson", (void*)&presetOutputs.bMotionVectorsOn, P_FLAG_NONE, false, "");
+  load_builtin_param_bool("wave_dots", (void*)&presetOutputs.bWaveDots, P_FLAG_NONE, false, "bwavedots");
+  load_builtin_param_bool("wave_thick", (void*)&presetOutputs.bWaveThick, P_FLAG_NONE, false, "bwavethick");
   load_builtin_param_float("warp", (void*)&presetOutputs.warp, presetOutputs.warp_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, "");
   load_builtin_param_float("zoom", (void*)&presetOutputs.zoom, presetOutputs.zoom_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, 0, "");
   load_builtin_param_float("rot", (void*)&presetOutputs.rot, presetOutputs.rot_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
   /// @note added huge bug fix here potentially by prevening zoomexp_mesh from being freed when presets dealloc
-  load_builtin_param_float("zoomexp", (void*)&presetOutputs.zoomexp, presetOutputs.zoomexp_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX , 0.0, MAX_DOUBLE_SIZE, 0, "fZoomExponent");
+  load_builtin_param_float("zoomexp", (void*)&presetOutputs.zoomexp, presetOutputs.zoomexp_mesh,  P_FLAG_PER_PIXEL |P_FLAG_DONT_FREE_MATRIX , 0.0, MAX_DOUBLE_SIZE, 0, "fzoomexponent");
 
   load_builtin_param_float("cx", (void*)&presetOutputs.cx, presetOutputs.cx_mesh, P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, 1.0, 0, "");
   load_builtin_param_float("cy", (void*)&presetOutputs.cy, presetOutputs.cy_mesh, P_FLAG_PER_PIXEL | P_FLAG_DONT_FREE_MATRIX, 0.0, 1.0, 0, "");
@@ -337,8 +337,8 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("mv_r", (void*)&presetOutputs.mv_r,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, "");
   load_builtin_param_float("mv_g", (void*)&presetOutputs.mv_g,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, "");
   load_builtin_param_float("mv_b", (void*)&presetOutputs.mv_b,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, "");
-  load_builtin_param_float("mv_x", (void*)&presetOutputs.mv_x,  NULL,P_FLAG_NONE, 0.0, 64.0, 0.0, "nMotionVectorsX");
-  load_builtin_param_float("mv_y", (void*)&presetOutputs.mv_y,  NULL,P_FLAG_NONE, 0.0, 48.0, 0.0, "nMotionVectorsY");
+  load_builtin_param_float("mv_x", (void*)&presetOutputs.mv_x,  NULL,P_FLAG_NONE, 0.0, 64.0, 0.0, "nmotionvectorsx");
+  load_builtin_param_float("mv_y", (void*)&presetOutputs.mv_y,  NULL,P_FLAG_NONE, 0.0, 48.0, 0.0, "nmotionvectorsy");
   load_builtin_param_float("mv_l", (void*)&presetOutputs.mv_l,  NULL,P_FLAG_NONE, 0.0, 5.0, 0.0, "");
   load_builtin_param_float("mv_dy", (void*)&presetOutputs.mv_dy, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("mv_dx", (void*)&presetOutputs.mv_dx,  NULL,P_FLAG_NONE, 0.0, 1.0, -1.0, "");

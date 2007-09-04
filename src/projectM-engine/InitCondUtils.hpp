@@ -48,7 +48,7 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
 
 	// Set an initial vialue via correct union member
         if (param->type == P_TYPE_BOOL)
-            init_val.bool_val = 0;
+            init_val.bool_val = false;
 
         else if (param->type == P_TYPE_INT)
             init_val.int_val = *(int*)param->engine_val;
