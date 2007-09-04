@@ -556,8 +556,9 @@ void CustomWave::evalPerPointEqns()
     y_mesh[k] = y;
 
   /* Evaluate per pixel equations */
+for (k = 0; k < samples;k++)
   for (std::map<int, PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos) {
-  for (k = 0; k < samples;k++)
+  
     pos->second->evaluate(k);
   }
 
