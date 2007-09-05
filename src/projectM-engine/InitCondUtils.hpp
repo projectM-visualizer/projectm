@@ -26,7 +26,7 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
 
     assert(param);
     assert(param->engine_val);
-    bool use_engine_val = false;
+    
 
     /* Don't count these parameters as initial conditions */
     if (param->flags & P_FLAG_READONLY)
