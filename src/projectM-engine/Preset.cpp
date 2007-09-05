@@ -199,10 +199,6 @@ void Preset::evalCustomWavePerFrameEquations()
     {
       assert(_pos->second);
       _pos->second->evaluate();
-
-//	if (_pos->second->param->name =="busedots")
-//		std::cerr << "busedots: " << (*(bool*)_pos->second->param->engine_val)  << std::endl;
-//	else std::cerr  << "name: " << _pos->second->param->name <<std::endl;
     }
 
     std::map<int, PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
@@ -239,13 +235,6 @@ void Preset::evalCustomShapePerFrameEquations()
 
 void Preset::evalPerFrameInitEquations()
 {
-
-  /// @bug not sure if necessary
-  for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos)
-  {
-    assert(pos->second);
-    pos->second->evaluate();
-  }
 
   for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos)
   {
@@ -304,10 +293,6 @@ void Preset::postloadInitialize() {
   this->loadCustomWaveUnspecInitConds();
   this->loadCustomShapeUnspecInitConds();
 
-  /// @note Recently moved from evaluateFrame() - is this more correct? not sure
-  evalPerFrameInitEquations();
-  evalCustomWaveInitConditions();
-  evalCustomShapeInitConditions();
 
 }
 
@@ -385,9 +370,15 @@ void Preset::evaluateFrame()
 
   /* Evaluate all equation objects according to milkdrop flow diagram */
 
+  evalPerFrameInitEquations();
+  
   evalPerFrameEquations();
   evalPerPixelEqns();
+
+  evalCustomWaveInitConditions();
   evalCustomWavePerFrameEquations();
+
+  evalCustomShapeInitConditions();
   evalCustomShapePerFrameEquations();
 
   // Setup pointers of the custom waves and shapes to the preset outputs instance
