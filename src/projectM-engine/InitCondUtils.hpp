@@ -48,13 +48,13 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
 
 	// Set an initial vialue via correct union member
         if (param->type == P_TYPE_BOOL)
-            init_val.bool_val = false;
+            init_val.bool_val = param->default_init_val.bool_val;
 
         else if (param->type == P_TYPE_INT)
-            init_val.int_val = *(int*)param->engine_val;
+            init_val.int_val = param->default_init_val.int_val;
 
         else if (param->type == P_TYPE_DOUBLE)
-            init_val.float_val = *(float*)param->engine_val;
+            init_val.float_val = param->default_init_val.float_val;
 
         //printf("%s\n", param->name);
         /* Create new initial condition */

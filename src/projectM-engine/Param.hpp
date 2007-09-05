@@ -85,7 +85,6 @@ public:
     /// Create a user defined floating point parameter
     Param( std::string name );
 
-    int compare_param( char *name, char *name2 );
     static bool is_valid_param_string( const char *string );
     void set_param( float val );
 
