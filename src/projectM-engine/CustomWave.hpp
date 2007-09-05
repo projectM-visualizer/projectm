@@ -107,6 +107,18 @@ public:
     float t6;
     float t7;
     float t8;
+
+
+    /* stupider q variables */
+    float q1;
+    float q2;
+    float q3;
+    float q4;
+    float q5;
+    float q6;
+    float q7;
+    float q8;
+
     float v1,v2;
 
     /* Data structures to hold per frame and per point equations */

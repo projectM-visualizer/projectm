@@ -87,6 +87,15 @@ public:
     float t7;
     float t8;
 
+  /* stupider q variables */
+    float q1;
+    float q2;
+    float q3;
+    float q4;
+    float q5;
+    float q6;
+    float q7;
+    float q8;
 
     // projectM exclusive parameter to load textures over a shape
     std::string imageUrl;

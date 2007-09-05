@@ -2162,7 +2162,7 @@ int Parser::parse_shape_per_frame_init_eqn(std::istream &  fs, CustomShape * cus
     return PROJECTM_SUCCESS;
   }
 
-int Parser::parse_shape_per_frame_eqn(std::istream &  fs, CustomShape * custom_shape, Preset * preset) {
+int Parser::parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_shape, Preset * preset) {
 
 Param * param;
 GenExpr * gen_expr;
@@ -2187,7 +2187,7 @@ if (PARSE_DEBUG) printf("parse_shape (per_frame): [start] (custom shape id = %d)
     /* Make sure parameter is writable */
     if (param->flags & P_FLAG_READONLY) {
       if (PARSE_DEBUG) printf("parse_shape (per_frame): parameter %s is marked as read only (LINE %d)\n", param->name.c_str(), line_count);  
-      return PROJECTM_FAILURE;
+      return PROJECTM_PARSE_ERROR;
     }
   
     /* Parse right side of equation as an expression */

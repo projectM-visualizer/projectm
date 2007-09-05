@@ -223,6 +223,7 @@ void Preset::evalCustomShapePerFrameEquations()
       assert(_pos->second);
       _pos->second->evaluate();
     }
+
     std::map<int, PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
     for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
     {
@@ -339,6 +340,7 @@ void Preset::loadBuiltinParamsUnspecInitConds() {
   InitCondUtils::LoadUnspecInitCond loadUnspecInitCond(this->init_cond_tree, this->per_frame_init_eqn_tree);
 
   this->builtinParams.traverse(loadUnspecInitCond);
+  Algorithms::traverse(user_param_tree, loadUnspecInitCond);
 
 }
 

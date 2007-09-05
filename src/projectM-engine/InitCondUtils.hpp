@@ -30,12 +30,12 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
     /* Don't count these parameters as initial conditions */
     if (param->flags & P_FLAG_READONLY)
         return;
-    if (param->flags & P_FLAG_QVAR)
-        return;
-    if (param->flags & P_FLAG_TVAR)
-        return;
-    if (param->flags & P_FLAG_USERDEF)
-        return;
+//    if (param->flags & P_FLAG_QVAR)
+//        return;
+//    if (param->flags & P_FLAG_TVAR)
+ //       return;
+ //   if (param->flags & P_FLAG_USERDEF)
+ //       return;
 
     /* If initial condition was not defined by the preset file, force a default one
        with the following code */
