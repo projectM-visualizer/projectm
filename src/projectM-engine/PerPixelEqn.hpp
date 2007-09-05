@@ -56,7 +56,7 @@ public:
     GenExpr *gen_expr;	
 
     void evalPerPixelEqns( Preset *preset );
-    void evaluate();
+    void evaluate(int mesh_i, int mesh_j);
 
     PerPixelEqn(int index, Param * param, GenExpr * gen_expr);
 

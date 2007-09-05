@@ -60,12 +60,13 @@ void InitCond::evaluate() {
    assert(this);
    assert(param);
 
-  /* Parameter is of boolean type, either a 1 or 0 value integer */
-  /* Set matrix flag to zero. This ensures
+   /* Set matrix flag to zero. This ensures
      its constant value will be used rather than a matrix value 
   */
-
-  param->matrix_flag = false;
+param->matrix_flag = false;
+  
+  /* Parameter is of boolean type, either true/false */
+  
   if (param->type == P_TYPE_BOOL) {
 
     //        printf( "init_cond: %s = %d (TYPE BOOL)\n", param->name.c_str(), init_val.bool_val); 

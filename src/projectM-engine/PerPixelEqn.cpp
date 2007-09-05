@@ -37,7 +37,7 @@
 #include "wipemalloc.h"
 #include <cassert>
 /* Evaluates a per pixel equation */
-void PerPixelEqn::evaluate() {
+void PerPixelEqn::evaluate(int mesh_i, int mesh_j) {
 
   GenExpr * eqn_ptr = 0;
   int x,y;
@@ -47,30 +47,19 @@ void PerPixelEqn::evaluate() {
  float ** param_matrix = (float**)this->param->matrix;
 
  if (param_matrix == 0) {
-    if (PER_PIXEL_EQN_DEBUG) printf("evalPerPixelEqn: [begin initializing matrix] (index = %d) (name = %s)\n", 
-  			  index, param->name.c_str());
+	 (*(float*)param->engine_val) = eqn_ptr->eval_gen_expr(mesh_i, mesh_j);
 
-    param_matrix = (float**)wipemalloc(param->gx*sizeof(float*));
-    for(x = 0; x < param->gx; x++)
-      param_matrix[x] = (float *)wipemalloc(param->gy * sizeof(float));
-
-    for (x = 0; x < param->gx; x++)
-      for (y = 0; y < param->gy; y++) {
-	    /// @slow is this necessary?
-	    param_matrix[x][y] = 0.0;
-    }
-    this->param->matrix = param_matrix;
-  }
+  } else {
 
   assert(!(eqn_ptr == NULL || param_matrix == NULL));
 
 //    param->matrix_flag = 0;         /** Force matrix ignore to update time */
-  for (int mesh_i = 0; mesh_i < param->gx; mesh_i++) { 
-    for (int mesh_j = 0; mesh_j < param->gy; mesh_j++) {
+ // for (int mesh_i = 0; mesh_i < param->gx; mesh_i++) { 
+  //  for (int mesh_j = 0; mesh_j < param->gy; mesh_j++) {
 //	std::cout << "gx,gy is " << param->gx << "," << param->gy << std::endl;
       param_matrix[mesh_i][mesh_j] = eqn_ptr->eval_gen_expr(mesh_i, mesh_j);
-    }
-  }
+   // }
+  
   
   /* Now that this parameter has been referenced with a per
      pixel equation, we let the evaluator know by setting
@@ -78,6 +67,7 @@ void PerPixelEqn::evaluate() {
   /// @bug review and verify this behavior
   param->matrix_flag = true;
   param->flags |= P_FLAG_PER_PIXEL;
+  }
 }
 
 PerPixelEqn::PerPixelEqn(int _index, Param * _param, GenExpr * _gen_expr):index(_index), param(_param), gen_expr(_gen_expr) {

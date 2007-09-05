@@ -10,17 +10,28 @@
     <projectname>projectmDev10</projectname>
     <projectdirectory>../../</projectdirectory>
     <absoluteprojectpath>false</absoluteprojectpath>
+<<<<<<< .mine
+    <description></description>
+    <defaultencoding/>
+=======
     <description></description>
     <defaultencoding></defaultencoding>
+>>>>>>> .r389
     <versioncontrol>kdevsubversion</versioncontrol>
   </general>
   <kdevcustomproject>
     <run>
       <directoryradio>custom</directoryradio>
       <mainprogram>/usr/local/bin/xmms</mainprogram>
+<<<<<<< .mine
+      <programargs></programargs>
+      <globaldebugarguments/>
+      <globalcwd/>
+=======
       <programargs></programargs>
       <globaldebugarguments></globaldebugarguments>
       <globalcwd>/home/pete/trunk/src</globalcwd>
+>>>>>>> .r389
       <useglobalprogram>false</useglobalprogram>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
@@ -48,7 +59,11 @@
     <blacklist/>
     <build>
       <buildtool>make</buildtool>
+<<<<<<< .mine
+      <builddir>/home/carm/projects/trunk/src/projectM-engine</builddir>
+=======
       <builddir>/home/pete/trunk/src/projectM-engine</builddir>
+>>>>>>> .r389
     </build>
     <other>
       <prio>0</prio>
@@ -84,7 +99,7 @@
       <breakonloadinglibs>true</breakonloadinglibs>
       <separatetty>false</separatetty>
       <floatingtoolbar>false</floatingtoolbar>
-      <programargs/>
+      <programargs></programargs>
     </general>
     <display>
       <staticmembers>true</staticmembers>
@@ -218,9 +233,9 @@
   </kdevfileview>
   <kdevdocumentation>
     <projectdoc>
-      <docsystem/>
-      <docurl/>
-      <usermanualurl/>
+      <docsystem></docsystem>
+      <docurl></docurl>
+      <usermanualurl></usermanualurl>
     </projectdoc>
   </kdevdocumentation>
   <ctagspart>

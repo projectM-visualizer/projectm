@@ -160,6 +160,7 @@ private:
   void postloadInitialize();
 
   PresetOutputs & m_presetOutputs;
+  const PresetInputs & m_presetInputs; // added for gx, gy reference.
 
 };
 

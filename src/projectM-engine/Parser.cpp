@@ -107,7 +107,7 @@ token_t Parser::parseToken(std::istream &  fs, char * string) {
       if (c == '/') {
 	while (true) {
 	  if (!fs || fs.eof())
-		c=  EOF;
+		c = EOF;
 	  else
 	  	c = fs.get();
 	  if (c == EOF) {
@@ -161,6 +161,7 @@ token_t Parser::parseToken(std::istream &  fs, char * string) {
 	  if (!fs || fs.eof()) {
       		line_count = 1;
       		line_mode= NORMAL_LINE_MODE;
+		std::cerr << "token wrap: end of file" << std::endl;
       		return tEOF;
 	  }
 
@@ -349,7 +350,6 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
   token_t token;
   InitCond * init_cond;
   PerFrameEqn * per_frame_eqn;
-  //PerFrameEqn * per_frame_init_eqn;
 
   /* Clear the string line buffer */
   memset(string_line_buffer, 0, STRING_LINE_SIZE);
@@ -372,7 +372,9 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
   case tAnd:
   case tDiv:
 
-    //    if (PARSE_DEBUG) printf("parse_line: invalid token found at start of line (LINE %d)\n", line_count);
+    if (PARSE_DEBUG) std::cerr << "parse_line: invalid token found at start of line (LINE " 
+	<< line_count << ")" << std::endl;
+
     /* Invalid token found, return a parse error */
     return PROJECTM_PARSE_ERROR;
 
@@ -384,9 +386,11 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
   case tEOF: /* End of File */
     line_mode = NORMAL_LINE_MODE;
     line_count = 1;
+    tokenWrapAroundEnabled = false;
     return EOF;
 
   case tSemiColon: /* Indicates end of expression */
+    tokenWrapAroundEnabled = false;
     return PROJECTM_SUCCESS;
 
     /* Valid Case, either an initial condition or equation should follow */
@@ -587,6 +591,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
 	if (PARSE_DEBUG) printf("unsupported line mode: CUSTOM_SHAPE_SHAPECODE_LINE_MODE\n");
 	return PROJECTM_FAILURE;
      } else if (line_mode == CUSTOM_SHAPE_PER_FRAME_LINE_MODE) {
+	tokenWrapAroundEnabled = true;
 
 	CustomShape * custom_shape;
 
@@ -652,7 +657,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
   switch (token = parseToken(fs,string)) {
   /* Left Parentice Case */
   case tLPr:
-     std::cerr << "token before tLPr:" << string << std::endl;
+    //std::cerr << "token before tLPr:" << string << std::endl;
     /* CASE 1 (Left Parentice): See if the previous string before this parentice is a function name */
     if ((func = BuiltinFuncs::find_func(string)) != NULL) {
         if (PARSE_DEBUG) {
@@ -701,7 +706,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
     /* Case 2: (Left Parentice), a string coupled with a left parentice. Either an error or implicit 
        multiplication operator. For now treat it as an error */
     if (*string != 0) {
-      std::cerr << "toke n prefix is " << *string << std::endl; 
+      std::cerr << "token prefix is " << *string << std::endl; 
       if (PARSE_DEBUG) printf("parse_gen_expr: implicit multiplication case unimplemented!\n");
       if (tree_expr)
       delete tree_expr;

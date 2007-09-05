@@ -41,7 +41,9 @@
 Preset::Preset(std::istream & in, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
     builtinParams(presetInputs, presetOutputs),
     file_path("[Input Stream]"),
-    m_presetOutputs(presetOutputs)
+    m_presetOutputs(presetOutputs),
+    m_presetInputs(presetInputs)
+ 
 {
 
   m_presetOutputs.customWaves.clear();
@@ -56,7 +58,8 @@ Preset::Preset(std::istream & in, const PresetInputs & presetInputs, PresetOutpu
 Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
     builtinParams(presetInputs, presetOutputs),
     file_path(filename),
-    m_presetOutputs(presetOutputs)
+    m_presetOutputs(presetOutputs),
+    m_presetInputs(presetInputs)
 {
 
   m_presetOutputs.customWaves.clear();
@@ -380,7 +383,7 @@ void Preset::loadCustomShapeUnspecInitConds()
 void Preset::evaluateFrame()
 {
 
-  /* Evaluate all equation objects in same order as the renderer */
+  /* Evaluate all equation objects according to milkdrop flow diagram */
 
   evalPerFrameEquations();
   evalPerPixelEqns();
@@ -400,15 +403,15 @@ void Preset::evalPerPixelEqns()
 {
 
   /* Evaluate all per pixel equations in the tree datastructure */
+  for (int mesh_x = 0; mesh_x < m_presetInputs.gx; mesh_x++)
+	  for (int mesh_y = 0; mesh_y < m_presetInputs.gy; mesh_y++)
   for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin();
        pos != per_pixel_eqn_tree.end(); ++pos)
-    pos->second->evaluate();
+    pos->second->evaluate(mesh_x, mesh_y);
 
 }
 
 int Preset::readIn(std::istream & fs) {
-
-
 
   line_mode_t line_mode;
 
@@ -432,9 +435,6 @@ int Preset::readIn(std::istream & fs) {
 
   std::cerr << "[Preset::readIn] preset \"" << this->name << "\" parsed." << std::endl;;
 
-  // Start line counter at zero
-  int lineno = 0;
-
   // Loop through each line in file, trying to succesfully parse the file. 
   // If a line does not parse correctly, keep trucking along to next line.
   int retval;
@@ -445,7 +445,6 @@ int Preset::readIn(std::istream & fs) {
       line_mode = NORMAL_LINE_MODE;
       std::cerr << "[Preset::readIn()] parse error in file \"" << this->absoluteFilePath() << "\"" << std::endl;
     }
-    lineno++;
   }
 
   std::cerr << "loadPresetFile: finished line parsing successfully" << std::endl;
