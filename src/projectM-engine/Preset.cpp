@@ -294,6 +294,14 @@ void Preset::postloadInitialize() {
   this->loadCustomWaveUnspecInitConds();
   this->loadCustomShapeUnspecInitConds();
 
+//m_presetOutputs.q1 = 0;
+//m_presetOutputs.q2 = 0;
+//m_presetOutputs.q3 = 0;
+//m_presetOutputs.q4 = 0;
+//m_presetOutputs.q5 = 0;
+//m_presetOutputs.q6 = 0;
+//m_presetOutputs.q7 = 0;
+//m_presetOutputs.q8 = 0;
 
 }
 

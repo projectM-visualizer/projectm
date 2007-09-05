@@ -26,16 +26,17 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
 
     assert(param);
     assert(param->engine_val);
+    bool use_engine_val = false;
 
     /* Don't count these parameters as initial conditions */
     if (param->flags & P_FLAG_READONLY)
         return;
-//    if (param->flags & P_FLAG_QVAR)
-//        return;
+    if (param->flags & P_FLAG_QVAR)
+        return;
 //    if (param->flags & P_FLAG_TVAR)
  //       return;
- //   if (param->flags & P_FLAG_USERDEF)
- //       return;
+    if (param->flags & P_FLAG_USERDEF)
+        return;
 
     /* If initial condition was not defined by the preset file, force a default one
        with the following code */
@@ -47,14 +48,14 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
 		return;
 
 	// Set an initial vialue via correct union member
-        if (param->type == P_TYPE_BOOL)
+        if (param->type == P_TYPE_BOOL) 
             init_val.bool_val = param->default_init_val.bool_val;
-
         else if (param->type == P_TYPE_INT)
             init_val.int_val = param->default_init_val.int_val;
-
-        else if (param->type == P_TYPE_DOUBLE)
-            init_val.float_val = param->default_init_val.float_val;
+ 
+        else if (param->type == P_TYPE_DOUBLE) {
+           		init_val.float_val = param->default_init_val.float_val;
+	}
 
         //printf("%s\n", param->name);
         /* Create new initial condition */

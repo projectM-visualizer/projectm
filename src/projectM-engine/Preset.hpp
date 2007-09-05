@@ -170,7 +170,7 @@ CustomObject * transfer_q_variables(std::vector<CustomObject*> & customObjects);
 template <class CustomObject>
 CustomObject * Preset::transfer_q_variables(std::vector<CustomObject*> & customObjects)
 {
- CustomObject * custom_object;
+ 	CustomObject * custom_object;
 
 	for (typename std::vector<CustomObject*>::iterator pos = customObjects.begin(); pos != customObjects.end();++pos) {
 	
