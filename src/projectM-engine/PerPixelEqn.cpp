@@ -40,13 +40,14 @@
 void PerPixelEqn::evaluate(int mesh_i, int mesh_j) {
 
   GenExpr * eqn_ptr = 0;
-  int x,y;
+ 
 
  eqn_ptr = this->gen_expr;
 
  float ** param_matrix = (float**)this->param->matrix;
 
  if (param_matrix == 0) {
+	 assert(engine_val);
 	 (*(float*)param->engine_val) = eqn_ptr->eval_gen_expr(mesh_i, mesh_j);
 
   } else {
