@@ -55,8 +55,7 @@ void PerPointEqn::evaluate(int i)
     assert(param->matrix_flag == false);
     (*(float*)param->engine_val) = eqn_ptr->eval_gen_expr(i,-1);
 
-    if (param->name == "n")
-	std::cerr << "n=" << (*(float*)param->engine_val) << std::endl;
+  
     return;
   }
 

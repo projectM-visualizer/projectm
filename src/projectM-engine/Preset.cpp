@@ -48,7 +48,6 @@ Preset::Preset(std::istream & in, const PresetInputs & presetInputs, PresetOutpu
 
   m_presetOutputs.customWaves.clear();
   m_presetOutputs.customShapes.clear();
-  clearMeshChecks();
 
   initialize(in);
 
@@ -109,28 +108,7 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
   assert(name);
 
   if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: per pixel equation (name = \"%s\")\n", name);
-
-
-  if (!strncmp(name, "dx", strlen("dx")))
-    this->m_presetOutputs.dx_is_mesh = true;
-  else if (!strncmp(name, "dy", strlen("dy")))
-    this->m_presetOutputs.dy_is_mesh = true;
-  else if (!strncmp(name, "cx", strlen("cx")))
-    this->m_presetOutputs.cx_is_mesh = true;
-  else if (!strncmp(name, "cy", strlen("cy")))
-    this->m_presetOutputs.cy_is_mesh = true;
-  else if (!strncmp(name, "zoom", strlen("zoom")))
-    this->m_presetOutputs.zoom_is_mesh = true;
-  else if (!strncmp(name, "zoomexp", strlen("zoomexp")))
-    this->m_presetOutputs.zoomexp_is_mesh = true;
-  else if (!strncmp(name, "rot", strlen("rot")))
-    this->m_presetOutputs.rot_is_mesh= true;
-  else if (!strncmp(name, "sx", strlen("sx")))
-    this->m_presetOutputs.sx_is_mesh = true;
-  else if (!strncmp(name, "sy", strlen("sy")))
-    this->m_presetOutputs.sy_is_mesh = true;
-  else if (!strncmp(name, "warp", strlen("warp")))
-    this->m_presetOutputs.warp_is_mesh = true;
+ 
 
   /* Search for the parameter so we know what matrix the per pixel equation is referencing */
 
@@ -387,6 +365,8 @@ void Preset::evaluateFrame()
   transfer_q_variables(customWaves);
   transfer_q_variables(customShapes);
 
+  initialize_PerPixelMeshes();
+
   evalPerPixelEqns();
 
   evalCustomWaveInitConditions();
@@ -402,7 +382,83 @@ void Preset::evaluateFrame()
 
 }
 
+void Preset::initialize_PerPixelMeshes()
+{
 
+  int x,y;
+      for (x=0;x<m_presetInputs.gx;x++){       
+	for(y=0;y<m_presetInputs.gy;y++){
+	  m_presetOutputs.cx_mesh[x][y]=m_presetOutputs.cx;
+	}}
+	
+     
+   
+
+      for (x=0;x<m_presetInputs.gx;x++){
+	for(y=0;y<m_presetInputs.gy;y++){
+	  m_presetOutputs.cy_mesh[x][y]=m_presetOutputs.cy;
+	}}
+    
+  
+ 
+      for (x=0;x<m_presetInputs.gx;x++){
+	for(y=0;y<m_presetInputs.gy;y++){
+	  m_presetOutputs.sx_mesh[x][y]=m_presetOutputs.sx;
+	}}
+    
+  
+
+    
+      for (x=0;x<m_presetInputs.gx;x++){
+	for(y=0;y<m_presetInputs.gy;y++){
+	  m_presetOutputs.sy_mesh[x][y]=m_presetOutputs.sy;
+	}}
+    
+
+     
+      for (x=0;x<m_presetInputs.gx;x++){
+	for(y=0;y<m_presetInputs.gy;y++){
+	  m_presetOutputs.dx_mesh[x][y]=m_presetOutputs.dx;
+	}}
+    
+  
+     
+      for (x=0;x<m_presetInputs.gx;x++){
+	for(y=0;y<m_presetInputs.gy;y++){
+	  m_presetOutputs.dy_mesh[x][y]=m_presetOutputs.dy;
+	}}
+    
+
+    
+      for (x=0;x<m_presetInputs.gx;x++){
+	for(y=0;y<m_presetInputs.gy;y++){
+	  m_presetOutputs.zoom_mesh[x][y]=m_presetOutputs.zoom;
+	}}
+    
+ 
+
+    
+      for (x=0;x<m_presetInputs.gx;x++){
+	for(y=0;y<m_presetInputs.gy;y++){
+	  m_presetOutputs.zoomexp_mesh[x][y]=m_presetOutputs.zoomexp; 
+	}}
+    
+
+  
+      for (x=0;x<m_presetInputs.gx;x++){
+	for(y=0;y<m_presetInputs.gy;y++){
+	  m_presetOutputs.rot_mesh[x][y]=m_presetOutputs.rot;
+	}}
+    
+
+      for (x=0;x<m_presetInputs.gx;x++){
+	for(y=0;y<m_presetInputs.gy;y++){
+	  m_presetOutputs.warp_mesh[x][y]=m_presetOutputs.warp;
+	}}
+    
+
+
+}
 // Evaluates all per-pixel equations 
 void Preset::evalPerPixelEqns()
 {

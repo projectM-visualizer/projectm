@@ -139,17 +139,7 @@ void PresetOutputs::Initialize ( int gx, int gy )
 	{
 		this->warp_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
 	}
-	warp_is_mesh = false;
-	zoom_is_mesh = false;
-	zoomexp_is_mesh =false;
-	rot_is_mesh =false;
 
-	sx_is_mesh =false;
-	sy_is_mesh = false;
-	dx_is_mesh = false;
-	dy_is_mesh =false;
-	cx_is_mesh = false;
-	cy_is_mesh = false;
 
 }
 

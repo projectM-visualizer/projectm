@@ -354,7 +354,7 @@ void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * preset
   float fZoom2,fZoom2Inv;
 
  
-
+  /*
 
   if(!presetOutputs->cx_is_mesh)
        { 
@@ -440,7 +440,7 @@ void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * preset
 	}
       }
     }
-
+  */
 
   /*
   for (x=0;x<this->gx;x++){
@@ -615,14 +615,14 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
     glTranslatef( 0, 0, -1 );
 
   glPointSize(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512); 
-
+  
   for (PresetOutputs::cwave_container::const_iterator pos = presetOutputs->customWaves.begin();
 	pos != presetOutputs->customWaves.end(); ++pos) 
     {
-     
+  
       if( (*pos)->enabled==1)
 	{
-	
+	    
 	  if ( (*pos)->bAdditive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 	  else    glBlendFunc(GL_SRC_ALPHA, GL_ONE); 
 	  if ( (*pos)->bDrawThick==1) 
@@ -651,14 +651,15 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
 	
 	  //put drawing code here
 	   if ( (*pos)->bUseDots==1){ glBegin(GL_POINTS);}
-	  else   glBegin(GL_LINE_STRIP);
+	   else  glBegin(GL_LINE_STRIP);
 	  
 	  for(x=0;x< (*pos)->samples;x++)
 	    {
-	     
+	    
 	      glColor4f( (*pos)->r_mesh[x], (*pos)->g_mesh[x], (*pos)->b_mesh[x], (*pos)->a_mesh[x]);
 	      glVertex3f( (*pos)->x_mesh[x],-( (*pos)->y_mesh[x]-1),-1);
 	    }
+	  
 	  glEnd();
 	  glPointSize(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512); 
 	  glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512); 

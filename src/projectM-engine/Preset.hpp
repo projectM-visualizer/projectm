@@ -153,6 +153,7 @@ private:
   void evalCustomShapeInitConditions();
   void evalPerPixelEqns();
   void evalPerFrameEquations();
+  void initialize_PerPixelMeshes();
   int readIn(std::istream & fs);
 
   inline void clearMeshChecks();
@@ -219,19 +220,5 @@ CustomObject * Preset::find_custom_object(int id, std::vector<CustomObject*> & c
 }
 
 
-inline void Preset::clearMeshChecks()
-{
-  m_presetOutputs.zoom_is_mesh = false;
-  m_presetOutputs.zoomexp_is_mesh = false;
-  m_presetOutputs.rot_is_mesh = false;
-  m_presetOutputs.warp_is_mesh = false;
-  m_presetOutputs.sx_is_mesh = false;
-  m_presetOutputs.sy_is_mesh = false;
-  m_presetOutputs.dx_is_mesh = false;
-  m_presetOutputs.dy_is_mesh = false;
-  m_presetOutputs.cx_is_mesh = false;
-  m_presetOutputs.cy_is_mesh = false;
-
-}
 
 #endif /** !_PRESET_HPP */
