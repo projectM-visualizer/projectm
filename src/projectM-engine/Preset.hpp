@@ -162,7 +162,31 @@ private:
   PresetOutputs & m_presetOutputs;
   const PresetInputs & m_presetInputs; // added for gx, gy reference.
 
+template <class CustomObject>
+CustomObject * transfer_q_variables(std::vector<CustomObject*> & customObjects);
 };
+
+
+template <class CustomObject>
+CustomObject * Preset::transfer_q_variables(std::vector<CustomObject*> & customObjects)
+{
+ CustomObject * custom_object;
+
+	for (typename std::vector<CustomObject*>::iterator pos = customObjects.begin(); pos != customObjects.end();++pos) {
+	
+		custom_object = *pos;
+		custom_object->q1 = m_presetOutputs.q1;
+		custom_object->q2 = m_presetOutputs.q2;
+		custom_object->q3 = m_presetOutputs.q3;
+		custom_object->q4 = m_presetOutputs.q4;
+		custom_object->q5 = m_presetOutputs.q5;
+		custom_object->q6 = m_presetOutputs.q6;
+		custom_object->q7 = m_presetOutputs.q7;
+		custom_object->q8 = m_presetOutputs.q8;
+	}
+ 
+
+}
 
 template <class CustomObject>
 CustomObject * Preset::find_custom_object(int id, std::vector<CustomObject*> & customObjects)

@@ -375,6 +375,10 @@ void Preset::evaluateFrame()
   evalPerFrameInitEquations();
   
   evalPerFrameEquations();
+
+  transfer_q_variables(customWaves);
+  transfer_q_variables(customShapes);
+
   evalPerPixelEqns();
 
   evalCustomWaveInitConditions();
