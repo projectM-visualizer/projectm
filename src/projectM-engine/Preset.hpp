@@ -156,7 +156,6 @@ private:
   void initialize_PerPixelMeshes();
   int readIn(std::istream & fs);
 
-  inline void clearMeshChecks();
   void preloadInitialize();
   void postloadInitialize();
 

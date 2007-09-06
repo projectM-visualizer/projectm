@@ -60,6 +60,9 @@ void InitCond::evaluate() {
    assert(this);
    assert(param);
 
+if (param->flags & P_FLAG_USERDEF)
+	return;
+
    /* Set matrix flag to zero. This ensures
      its constant value will be used rather than a matrix value 
   */
