@@ -86,13 +86,13 @@ public:
     float * value2;
     float * sample_mesh;
     
-    int enabled; /* if nonzero then wave is visible, hidden otherwise */
+    bool enabled; /* if nonzero then wave is visible, hidden otherwise */
     int samples; /* number of samples associated with this wave form. Usually powers of 2 */
     float sample;
-    int bSpectrum; /* spectrum data or pcm data */
-    int bUseDots; /* draw wave as dots or lines */
-    int bDrawThick; /* draw thicker lines */
-    int bAdditive; /* add color values together */
+    bool bSpectrum; /* spectrum data or pcm data */
+    bool bUseDots; /* draw wave as dots or lines */
+    bool bDrawThick; /* draw thicker lines */
+    bool bAdditive; /* add color values together */
     
     float scaling; /* scale factor of waveform */
     float smoothing; /* smooth factor of waveform */

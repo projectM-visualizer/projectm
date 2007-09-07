@@ -72,19 +72,20 @@ public:
 
     int nVideoEchoOrientation;
     int nWaveMode;
-    int bAdditiveWaves;
-    int bWaveDots;
-    int bWaveThick;
-    int bModWaveAlphaByVolume;
-    int bMaximizeWaveColor;
-    int bTexWrap;
-    int bDarkenCenter;
-    int bRedBlueStereo;
-    int bBrighten;
-    int bDarken;
-    int bSolarize;
-    int bInvert;
-    int bMotionVectorsOn;
+
+    bool bAdditiveWaves;
+    bool bWaveDots;
+    bool bWaveThick;
+    bool bModWaveAlphaByVolume;
+    bool bMaximizeWaveColor;
+    bool bTexWrap;
+    bool bDarkenCenter;
+    bool bRedBlueStereo;
+    bool bBrighten;
+    bool bDarken;
+    bool bSolarize;
+    bool bInvert;
+    bool bMotionVectorsOn;
 
 
     float fWaveAlpha ;

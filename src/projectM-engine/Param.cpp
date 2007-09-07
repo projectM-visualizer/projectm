@@ -74,7 +74,11 @@ Param::Param(std::string _name) :
 	default_init_val.float_val = DEFAULT_DOUBLE_IV;
         upper_bound.float_val = DEFAULT_DOUBLE_UB;
         lower_bound.float_val = DEFAULT_DOUBLE_LB;
-   
+
+    /// @note may have fixed a recent bug. testing
+    *((float*)engine_val) = default_init_val.float_val;
+
+       
     /** @@FIX THIS */
     /// @bug listen to above's advice! 
     /// @NOTE this is a hack, but will probably work fine

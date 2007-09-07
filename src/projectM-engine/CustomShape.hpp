@@ -49,10 +49,10 @@ public:
 
     /* Engine variables */
     int sides;
-    int thickOutline;
-    int enabled;
-    int additive;
-    int textured;
+    bool thickOutline;
+    bool enabled;
+    bool additive;
+    bool textured;
     
     float tex_zoom;
     float tex_ang;
