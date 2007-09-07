@@ -552,13 +552,6 @@ int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr)
 
 void CustomWave::evalInitConds()
 {
-  
-  
-  for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos)
-  {
-    assert(pos->second);
-    pos->second->evaluate();
-  }
 
   for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos)
   {
