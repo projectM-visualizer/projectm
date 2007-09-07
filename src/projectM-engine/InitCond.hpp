@@ -49,7 +49,8 @@ public:
 
     InitCond( Param * param, CValue init_val);
     ~InitCond();
-    void evaluate();
+    void evaluate();  //Wrapper around following declaration
+    void evaluate(bool evalUser);
 
     void init_cond_to_string();
     void write_init();

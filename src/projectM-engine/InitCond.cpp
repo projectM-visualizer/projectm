@@ -52,15 +52,20 @@ InitCond::InitCond( Param * _param, CValue _init_val ):param(_param), init_val(_
 /* Frees initial condition structure */
 InitCond::~InitCond() {}
 
+void InitCond::evaluate() 
+{
+  evaluate(false);
+}
+
 /* Evaluate an initial conditon */
-void InitCond::evaluate() {
+void InitCond::evaluate(bool evalUser) {
 
 
 
    assert(this);
    assert(param);
 
-if (param->flags & P_FLAG_USERDEF)
+if (param->flags & P_FLAG_USERDEF && !evalUser)
 	return;
 
    /* Set matrix flag to zero. This ensures

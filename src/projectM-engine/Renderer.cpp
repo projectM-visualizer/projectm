@@ -209,7 +209,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     
      
     glMatrixMode(GL_MODELVIEW);
-    glTranslated(-0.5,-0.5,-1);  
+    glTranslated(-0.5,-0.5,0);  
     
     // When console refreshes, there is a chance the preset has been changed by the user
     refreshConsole();
@@ -219,7 +219,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     if(this->showfps%2) draw_fps(this->realfps);
     if(this->showpreset%2) draw_preset();
     if(this->showstats%2) draw_stats(presetInputs);
-    glTranslatef(0.5 ,0.5,1);
+    glTranslatef(0.5 ,0.5,0);
     
     DWRITE("End of Pass 2\n" );
 }
@@ -230,7 +230,7 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
    
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
-  glTranslated( 0, 0, -1 );
+  
   
   glColor4f(0.0, 0.0, 0.0,presetOutputs->decay);
   
@@ -257,7 +257,7 @@ void Renderer::PerFrame(PresetOutputs *presetOutputs)
 {
   // glMatrixMode(GL_MODELVIEW);
     //  glLoadIdentity();
-    glTranslated(0, 0, -9);
+   
   
   //Texture wrapping( clamp vs. wrap)
   if (presetOutputs->bTexWrap==0){
@@ -461,7 +461,7 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
   int x;
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
-  glTranslatef( 0, 0, -1 );
+  
   
   glPointSize(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512); 
   
@@ -532,7 +532,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
   
   glMatrixMode( GL_MODELVIEW );
   glPushMatrix();
-  glTranslatef( 0, 0, -1 );
+
  
   for (PresetOutputs::cshape_container::const_iterator pos = presetOutputs->customShapes.begin();
        pos != presetOutputs->customShapes.end(); ++pos) 
@@ -973,7 +973,7 @@ void Renderer::draw_waveform(PresetOutputs * presetOutputs)
   glTranslatef(.5,.5, 0);
   glRotated(presetOutputs->wave_rot,0,0,1);	 
   glScalef(presetOutputs->wave_scale,1.0,1.0);
-  glTranslatef(-.5,-.5, -1);   
+  glTranslatef(-.5,-.5, 0);   
 
   glBegin(GL_LINE_STRIP);
   for (int x = 0;x<presetOutputs->wave_samples;x++)
@@ -1118,7 +1118,7 @@ void Renderer::draw_motion_vectors(PresetOutputs *presetOutputs) {
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
-    glTranslatef( 0, 0, -1 );
+ 
 
     glBegin(GL_POINTS);
     for (x=0;x<presetOutputs->mv_x;x++){
@@ -1151,7 +1151,7 @@ void Renderer::draw_borders(PresetOutputs *presetOutputs) {
   
     glMatrixMode( GL_MODELVIEW );
     glPushMatrix();
-    glTranslatef( 0, 0, -1 );
+   
 
     glRectd(0,0,of,1);
     glRectd(of,0,texof,of);
@@ -1178,7 +1178,7 @@ void Renderer::draw_title_to_texture() {
       glColor4f(1.0,1.0,1.0,1.0);
       glPushMatrix();
      
-      glTranslatef(0,0.5, -1);
+      glTranslatef(0,0.5, 0);
     
       glScalef(0.0025,-0.0025,30*.0025);
       //glTranslatef(0,0, 1.0);
@@ -1213,7 +1213,7 @@ void Renderer::draw_title_to_screen() {
 
 
       //glTranslatef(this->vw*.5,this->vh*.5 , -1.0);
-      glTranslatef(0,0.5 , -1.0);
+      glTranslatef(0,0.5 , 0);
 
       glScalef(easein3,easein3,30*.0025);
 
@@ -1424,7 +1424,7 @@ void Renderer::render_texture_to_screen(PresetOutputs *presetOutputs) {
     glClear( GL_DEPTH_BUFFER_BIT );
     glMatrixMode(GL_MODELVIEW);
       glLoadIdentity();
-      glTranslatef(0, 0, -15);  
+     
      
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -1592,7 +1592,7 @@ void Renderer::render_texture_to_studio(PresetOutputs *presetOutputs, PresetInpu
     glClear( GL_DEPTH_BUFFER_BIT );
     glMatrixMode(GL_MODELVIEW);
       glLoadIdentity();
-      glTranslatef(0, 0, -15);  
+     
      
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

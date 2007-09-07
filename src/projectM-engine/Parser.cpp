@@ -1469,6 +1469,7 @@ InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, Preset * preset,
       return NULL;
   }
 
+  init_cond->evaluate(true);
 
   /* Finished */
   return init_cond;
@@ -1899,7 +1900,7 @@ int Parser::parse_wave_helper(std::istream &  fs, Preset  * preset, int id, char
       return PROJECTM_FAILURE;
     }
     line_mode = CUSTOM_WAVE_PER_FRAME_INIT_LINE_MODE;
-
+    init_cond->evaluate(true);
     return PROJECTM_SUCCESS;
   
   }
@@ -2159,6 +2160,7 @@ int Parser::parse_shape_per_frame_init_eqn(std::istream &  fs, CustomShape * cus
       return PROJECTM_FAILURE;
 
     line_mode = CUSTOM_SHAPE_PER_FRAME_INIT_LINE_MODE;	
+    init_cond->evaluate(true);
     return PROJECTM_SUCCESS;
   }
 
