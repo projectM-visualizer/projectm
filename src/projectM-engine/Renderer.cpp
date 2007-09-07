@@ -27,45 +27,45 @@ Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTa
   this->showhelp = 0;
   this->showstats = 0;
   this->studio = 0; 
-this->realfps=0;
-
- this->drawtitle=0;
-
+  this->realfps=0;
+  
+  this->drawtitle=0;
+  
   this->title = NULL;
-   
-    /** Other stuff... */
-    this->correction = 1;
-    this->aspect=1.33333333;
-
+  
+  /** Other stuff... */
+  this->correction = 1;
+  this->aspect=1.33333333;
+  
   this->gridx=(float **)wipemalloc(gx * sizeof(float *));
-   for(x = 0; x < gx; x++)
+  for(x = 0; x < gx; x++)
     {
       this->gridx[x] = (float *)wipemalloc(gy * sizeof(float));
     }
   this->gridy=(float **)wipemalloc(gx * sizeof(float *));
- for(x = 0; x < gx; x++)
+  for(x = 0; x < gx; x++)
     {
       this->gridy[x] = (float *)wipemalloc(gy * sizeof(float)); 
     }
- 
+  
   this->origx2=(float **)wipemalloc(gx * sizeof(float *));
- for(x = 0; x < gx; x++)
+  for(x = 0; x < gx; x++)
     {
       this->origx2[x] = (float *)wipemalloc(gy * sizeof(float));
     }  
-this->origy2=(float **)wipemalloc(gx * sizeof(float *));
- for(x = 0; x < gx; x++)
+  this->origy2=(float **)wipemalloc(gx * sizeof(float *));
+  for(x = 0; x < gx; x++)
     {
       this->origy2[x] = (float *)wipemalloc(gy * sizeof(float));
     }
-
+  
   //initialize reference grid values
   for (x=0;x<gx;x++)
     {
       for(y=0;y<gy;y++)
 	{	
-
-           float origx=x/(float)(gx-1);
+	  
+	  float origx=x/(float)(gx-1);
 	   float origy=-((y/(float)(gy-1))-1);
 	   this->gridx[x][y]=origx;
 	   this->gridy[x][y]=origy;
@@ -73,21 +73,18 @@ this->origy2=(float **)wipemalloc(gx * sizeof(float *));
 	   this->origy2[x][y]=( origy-.5)*2;
 	   
 	}}
-
-this->renderTarget = renderTarget;
-this->beatDetect = beatDetect;
- this->textureManager = textureManager;
-
+  
+  this->renderTarget = renderTarget;
+  this->beatDetect = beatDetect;
+  this->textureManager = textureManager;
+  
 #ifdef USE_FTGL
-    /** Reset fonts */
-    title_font = NULL;
-    other_font = NULL;
-    poly_font = NULL;
+  /** Reset fonts */
+  title_font = NULL;
+  other_font = NULL;
+  poly_font = NULL;
 #endif /** USE_FTGL */
-    //	pngInfo info;
-    //texture = LoadTexture("/home/pete/Tux.tga");
-  // pngBind("/home/pete/Tux.png", PNG_NOMIPMAP, PNG_ALPHA, &info, GL_CLAMP, GL_LINEAR, GL_LINEAR);
-
+ 
 }
 
 void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
@@ -95,53 +92,51 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     totalframes++;  
    
     DWRITE( "start Pass 1 \n" );
-
-      //BEGIN PASS 1
-      //
-      //This pass is used to render our texture
-      //the texture is drawn to a subsection of the framebuffer
-      //and then we perform our manipulations on it
-      //in pass 2 we will copy the texture into texture memory
-
+    
+    //BEGIN PASS 1
+    //
+    //This pass is used to render our texture
+    //the texture is drawn to a FBO or a subsection of the framebuffer 
+    //and then we perform our manipulations on it in pass 2 we 
+    //will copy the image into texture memory and render the final image
+    
      
+    //Lock FBO
     renderTarget->lock();
-      
-      
-      //   glPushAttrib( GL_ALL_ATTRIB_BITS ); /* Overkill, but safe */
-      
-      glViewport( 0, 0, renderTarget->texsize, renderTarget->texsize );
+    
+    glViewport( 0, 0, renderTarget->texsize, renderTarget->texsize );
        
-      glEnable( GL_TEXTURE_2D );
-      if(this->renderTarget->usePbuffers)
-	{	
-	  glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
-	}
-      else
-	{
-	  glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
-	}
-      glMatrixMode(GL_TEXTURE);  
-      glLoadIdentity();
-      
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glEnable( GL_TEXTURE_2D );
+
+    //If using FBO, sitch to FBO texture
+    if(this->renderTarget->usePbuffers)
+      {	
+	glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
+      }
+    else
+      {
+	glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
+      }
+
+    glMatrixMode(GL_TEXTURE);  
+    glLoadIdentity();
     
-      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
-      glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-      
-      glMatrixMode( GL_PROJECTION );
-      glPushMatrix();
-      glLoadIdentity();
-      glOrtho(0.0, 1, 0.0, 1,10,40);
-      
-      glMatrixMode( GL_MODELVIEW );
-      glPushMatrix();
-      glLoadIdentity();
-      
-    DWRITE( "renderFrame: renderTarget->texsize: %d x %d\n", this->renderTarget->texsize, this->renderTarget->texsize );
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
-  
-    //PerPixelMath(presetOutputs, presetInputs);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+    
+    glMatrixMode( GL_PROJECTION );
+    glPushMatrix();
+    glLoadIdentity();
+    glOrtho(0.0, 1, 0.0, 1,-40,40);
+    
+    glMatrixMode( GL_MODELVIEW );
+    glPushMatrix();
+    glLoadIdentity();
+    
+    DWRITE( "renderFrame: renderTarget->texsize: %d x %d\n", this->renderTarget->texsize, this->renderTarget->texsize );        
 
     if(this->renderTarget->usePbuffers)
       {
@@ -149,21 +144,23 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     	//unlockPBuffer( this->renderTarget);
     	//lockPBuffer( this->renderTarget, PBUFFER_PASS1 );
       }
-     PerFrame(presetOutputs);               //apply per-frame effects
-     Interpolation(presetOutputs,presetInputs);       //apply per-pixel effects
-   
-        draw_title_to_texture();      //draw title to texture
 
-//    if(!this->renderTarget->usePbuffers)
-      {
-	draw_motion_vectors(presetOutputs);        //draw motion vectors
-      }
-          draw_shapes(presetOutputs);
-      draw_custom_waves(presetOutputs);
+    PerFrame(presetOutputs);             
+    Interpolation(presetOutputs,presetInputs);     
+     
+    draw_title_to_texture();    
+
+    //    if(!this->renderTarget->usePbuffers)
+    {
+      draw_motion_vectors(presetOutputs);     
+    }
+    
+    draw_shapes(presetOutputs);
+    draw_custom_waves(presetOutputs);
     draw_waveform(presetOutputs);
     if(presetOutputs->bDarkenCenter)darken_center();
-     draw_borders(presetOutputs);               //draw borders
-
+    draw_borders(presetOutputs);              
+    
     /** Restore original view state */
     glMatrixMode( GL_MODELVIEW );
     glPopMatrix();
@@ -174,79 +171,71 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     /** Restore all original attributes */
     //  glPopAttrib();
     glFlush();
+    
+    renderTarget->unlock();
 
-        renderTarget->unlock();
-
-
+    
 #ifdef DEBUG
-    GLint msd = 0,
-        psd = 0;
+    GLint msd = 0, psd = 0;
     glGetIntegerv( GL_MODELVIEW_STACK_DEPTH, &msd );
     glGetIntegerv( GL_PROJECTION_STACK_DEPTH, &psd );
-    DWRITE( "end pass1: modelview matrix depth: %d\tprojection matrix depth: %d\n",
-            msd, psd );
+    DWRITE( "end pass1: modelview matrix depth: %d\tprojection matrix depth: %d\n", msd, psd );
     DWRITE( "begin pass2\n" );
 #endif
 
-      //BEGIN PASS 2
-      //
-      //end of texture rendering
-      //now we copy the texture from the framebuffer to
-      //video texture memory and render fullscreen on a quad surface.
-
+    //BEGIN PASS 2
+    //
+    //end of texture rendering
+    //now we copy the texture from the FBO or framebuffer to
+    //video texture memory and render fullscreen.
+    
     /** Reset the viewport size */
     DWRITE( "viewport: %d x %d\n", this->vw, this->vh );
     glViewport( 0, 0, this->vw, this->vh );
     glClear( GL_COLOR_BUFFER_BIT );
-
-    
-        glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID[0] );
+        
+    glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID[0] );
       
 
-      glMatrixMode(GL_PROJECTION);
-      glLoadIdentity();  
-      glOrtho(-0.5, 0.5, -0.5,0.5,10,40);
-     	
-      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
-
-      glLineWidth( this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512.0);
-      if(this->studio%2)render_texture_to_studio(presetOutputs, presetInputs);
-      else render_texture_to_screen(presetOutputs);
-
-      // glClear(GL_COLOR_BUFFER_BIT);     
-      //render_Studio();
-
-      //preset editing menu
-      glMatrixMode(GL_MODELVIEW);
-      glTranslated(-0.5,-0.5,-1);  
-
-      // When console refreshes, there is a chance the preset has been changed by the user
-      refreshConsole();
-      draw_title_to_screen();
-      if(this->showhelp%2)draw_help();
-      if(this->showtitle%2)draw_title();
-      if(this->showfps%2)draw_fps(this->realfps);
-      if(this->showpreset%2)draw_preset();
-      if(this->showstats%2)draw_stats(presetInputs);
-      glTranslatef(0.5 ,0.5,1);
-
-    DWRITE( "end pass2\n" );
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();  
+    glOrtho(-0.5, 0.5, -0.5,0.5,-40,40);
+    
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+    
+    glLineWidth( this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512.0);
+    if(this->studio%2)render_texture_to_studio(presetOutputs, presetInputs);
+    else render_texture_to_screen(presetOutputs);
+    
+     
+    glMatrixMode(GL_MODELVIEW);
+    glTranslated(-0.5,-0.5,-1);  
+    
+    // When console refreshes, there is a chance the preset has been changed by the user
+    refreshConsole();
+    draw_title_to_screen();
+    if(this->showhelp%2) draw_help();
+    if(this->showtitle%2) draw_title();
+    if(this->showfps%2) draw_fps(this->realfps);
+    if(this->showpreset%2) draw_preset();
+    if(this->showstats%2) draw_stats(presetInputs);
+    glTranslatef(0.5 ,0.5,1);
+    
+    DWRITE("End of Pass 2\n" );
 }
 
 
 void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
-{
-  //int x,y;  
+{ 
    
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
-    glTranslated( 0, 0, -1 );
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glTranslated( 0, 0, -1 );
   
-    glColor4f(0.0, 0.0, 0.0,presetOutputs->decay);
+  glColor4f(0.0, 0.0, 0.0,presetOutputs->decay);
   
-    glEnable(GL_TEXTURE_2D);
-    
-
+  glEnable(GL_TEXTURE_2D);
+  
     
   for (int x=0;x<presetInputs->gx - 1;x++){
     glBegin(GL_TRIANGLE_STRIP);
@@ -258,88 +247,52 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
     }
     glEnd();	
   }
-
-
-    /** Re-bind the pbuffer */
-  
-      
-
-    glDisable(GL_TEXTURE_2D);
-
-    glPopMatrix();
+           
+  glDisable(GL_TEXTURE_2D);  
+  glPopMatrix();
 }
 
 
 void Renderer::PerFrame(PresetOutputs *presetOutputs)
 {
-         glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glTranslated(0, 0, -9);
-
+  // glMatrixMode(GL_MODELVIEW);
+    //  glLoadIdentity();
+    glTranslated(0, 0, -9);
+  
   //Texture wrapping( clamp vs. wrap)
   if (presetOutputs->bTexWrap==0){
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);}
   else{ glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);}
-      
-
-  //      glRasterPos2i(0,0);
-      //      glClear(GL_COLOR_BUFFER_BIT);
-      //      glColor4d(0.0, 0.0, 0.0,1.0);     
-       
-  //      glMatrixMode(GL_TEXTURE);
-    //  glLoadIdentity();
-
-      glRasterPos2i(0,0);
-      glClear(GL_COLOR_BUFFER_BIT);
-      glColor4d(0.0, 0.0, 0.0,1.0);
-
- glMatrixMode(GL_TEXTURE);
-      glLoadIdentity();
-
-      /*
-      glTranslatef(presetOutputs->cx,presetOutputs->cy, 0);
-     if(this->correction)  glScalef(1,this->vw/(float)this->vh,1);
-
-      if(!isPerPixelEqn(ROT_OP)) {
-	//	printf("ROTATING: rot = %f\n", rot);
-	glRotatef(presetOutputs->rot*90, 0, 0, 1);
-      }
-      if(!isPerPixelEqn(SX_OP)) glScalef(1/presetOutputs->sx,1,1);     
-      if(!isPerPixelEqn(SY_OP)) glScalef(1,1/presetOutputs->sy,1); 
-
-      if(this->correction)glScalef(1,this->vh/(float)this->vw,1);
-            glTranslatef((-presetOutputs->cx) ,(-presetOutputs->cy),0);  
-      */
-
-      //if(!presetOutputs->dx_is_mesh) glTranslatef(-presetOutputs->dx,0,0);   
-      //if(!presetOutputs->dy_is_mesh) glTranslatef(0 ,-presetOutputs->dy,0);  
-    }
+  
+  glRasterPos2i(0,0);
+  glClear(GL_COLOR_BUFFER_BIT);
+  glColor4d(0.0, 0.0, 0.0,1.0);
+  
+  glMatrixMode(GL_TEXTURE);
+  glLoadIdentity();  
+     
+}
 
 
 Renderer::~Renderer() {
 
   int x;
 
- for(x = 0; x < this->gx; x++)
-    {
-      
+  for(x = 0; x < this->gx; x++)
+    {      
       free(this->gridx[x]);
       free(this->gridy[x]);    
       free(this->origx2[x]);
-      free(this->origy2[x]);
-     
-      
+      free(this->origy2[x]);            
     }
 
   free(this->origx2);
   free(this->origy2);
   free(this->gridx);
   free(this->gridy);
- 
-
-  
+   
   this->origx2 = NULL;
   this->origy2 = NULL;
   this->gridx = NULL;
@@ -353,109 +306,7 @@ void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * preset
   int x,y;
   float fZoom2,fZoom2Inv;
 
- 
-  /*
-
-  if(!presetOutputs->cx_is_mesh)
-       { 
-      for (x=0;x<this->gx;x++){
-       
-	for(y=0;y<this->gy;y++){
-	  presetOutputs->cx_mesh[x][y]=presetOutputs->cx;
-	}
-	
-      }
-    }
-
-  if(!presetOutputs->cy_is_mesh)
-        { 
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  presetOutputs->cy_mesh[x][y]=presetOutputs->cy;
-	}}
-    }
   
-  if(!presetOutputs->sx_is_mesh)
-    { 
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  presetOutputs->sx_mesh[x][y]=presetOutputs->sx;
-	}}
-    }
-  
-  if(!presetOutputs->sy_is_mesh)
-    { 
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  presetOutputs->sy_mesh[x][y]=presetOutputs->sy;
-	}}
-    }
- if(!presetOutputs->dx_is_mesh)
-    { 
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  presetOutputs->dx_mesh[x][y]=presetOutputs->dx;
-	}}
-    }
-  
-  if(!presetOutputs->dy_is_mesh)
-    { 
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  presetOutputs->dy_mesh[x][y]=presetOutputs->dy;
-	}}
-    }
-
-  if(!presetOutputs->zoom_is_mesh)
-    {
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  presetOutputs->zoom_mesh[x][y]=presetOutputs->zoom;
-	}}
-    }
- 
-  if(!presetOutputs->zoomexp_is_mesh)
-    {
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  presetOutputs->zoomexp_mesh[x][y]=presetOutputs->zoomexp; 
-	}
-	}
-    }
-
-  if(!presetOutputs->rot_is_mesh)
-    {
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  presetOutputs->rot_mesh[x][y]=presetOutputs->rot;
-	}
-      }
-    }
-
- if(!presetOutputs->warp_is_mesh)
-    {
-      for (x=0;x<this->gx;x++){
-	for(y=0;y<this->gy;y++){
-	  presetOutputs->warp_mesh[x][y]=presetOutputs->warp;
-	}
-      }
-    }
-  */
-
-  /*
-  for (x=0;x<this->gx;x++){
-    for(y=0;y<this->gy;y++){	  	  
-      x_mesh[x][y]=(x_mesh[x][y]-.5)*2; 
-    }
-  }
- 
-  for (x=0;x<this->gx;x++){
-    for(y=0;y<this->gy;y++){	  	  
-      y_mesh[x][y]=(y_mesh[x][y]-.5)*2; 
-    }
-  }
-  */
-
   for (x=0;x<this->gx;x++){
     for(y=0;y<this->gy;y++){
       fZoom2 = powf( presetOutputs->zoom_mesh[x][y], powf( presetOutputs->zoomexp_mesh[x][y], presetInputs->rad_mesh[x][y]*2.0f - 1.0f));
@@ -477,7 +328,7 @@ void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * preset
     }
   }	   
 
- float fWarpTime = presetInputs->time * presetOutputs->fWarpAnimSpeed;
+  float fWarpTime = presetInputs->time * presetOutputs->fWarpAnimSpeed;
   float fWarpScaleInv = 1.0f / presetOutputs->fWarpScale;
   float f[4];
   f[0] = 11.68f + 4.0f*cosf(fWarpTime*1.413f + 10);
@@ -487,43 +338,41 @@ void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * preset
 
   for (x=0;x<this->gx;x++){
     for(y=0;y<this->gy;y++){
-	 presetOutputs->x_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*sinf(fWarpTime*0.333f + fWarpScaleInv*(this->origx2[x][y]*f[0] - this->origy2[x][y]*f[3]));
-	 presetOutputs->y_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*cosf(fWarpTime*0.375f - fWarpScaleInv*(this->origx2[x][y]*f[2] + this->origy2[x][y]*f[1]));
-	 presetOutputs->x_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*cosf(fWarpTime*0.753f - fWarpScaleInv*(this->origx2[x][y]*f[1] - this->origy2[x][y]*f[2]));
-	 presetOutputs->y_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*sinf(fWarpTime*0.825f + fWarpScaleInv*(this->origx2[x][y]*f[0] + this->origy2[x][y]*f[3]));
+      presetOutputs->x_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*sinf(fWarpTime*0.333f + fWarpScaleInv*(this->origx2[x][y]*f[0] - this->origy2[x][y]*f[3]));
+      presetOutputs->y_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*cosf(fWarpTime*0.375f - fWarpScaleInv*(this->origx2[x][y]*f[2] + this->origy2[x][y]*f[1]));
+      presetOutputs->x_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*cosf(fWarpTime*0.753f - fWarpScaleInv*(this->origx2[x][y]*f[1] - this->origy2[x][y]*f[2]));
+      presetOutputs->y_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*sinf(fWarpTime*0.825f + fWarpScaleInv*(this->origx2[x][y]*f[0] + this->origy2[x][y]*f[3]));
+    }
   }
+  for (x=0;x<this->gx;x++){
+    for(y=0;y<this->gy;y++){
+      float u2 = presetOutputs->x_mesh[x][y] - presetOutputs->cx_mesh[x][y];
+      float v2 = presetOutputs->y_mesh[x][y] - presetOutputs->cy_mesh[x][y];
+      
+      float cos_rot = cosf(presetOutputs->rot_mesh[x][y]);
+      float sin_rot = sinf(presetOutputs->rot_mesh[x][y]);
+      
+      presetOutputs->x_mesh[x][y] = u2*cos_rot - v2*sin_rot + presetOutputs->cx_mesh[x][y];
+      presetOutputs->y_mesh[x][y] = u2*sin_rot + v2*cos_rot + presetOutputs->cy_mesh[x][y];
+      
+    }
+  }	  
+  
+  
+  for (x=0;x<this->gx;x++){
+    for(y=0;y<this->gy;y++){	      
+      presetOutputs->x_mesh[x][y] -= presetOutputs->dx_mesh[x][y];
+    }
   }
- for (x=0;x<this->gx;x++){
-   for(y=0;y<this->gy;y++){
-     float u2 = presetOutputs->x_mesh[x][y] - presetOutputs->cx_mesh[x][y];
-     float v2 = presetOutputs->y_mesh[x][y] - presetOutputs->cy_mesh[x][y];
-     
-     float cos_rot = cosf(presetOutputs->rot_mesh[x][y]);
-     float sin_rot = sinf(presetOutputs->rot_mesh[x][y]);
-     
-     presetOutputs->x_mesh[x][y] = u2*cos_rot - v2*sin_rot + presetOutputs->cx_mesh[x][y];
-     presetOutputs->y_mesh[x][y] = u2*sin_rot + v2*cos_rot + presetOutputs->cy_mesh[x][y];
-
+  
+  
+  
+  for (x=0;x<this->gx;x++){
+    for(y=0;y<this->gy;y++){	      
+      presetOutputs->y_mesh[x][y] -= presetOutputs->dy_mesh[x][y];
+    }
   }
- }	  
-
- 
-     for (x=0;x<this->gx;x++){
-       for(y=0;y<this->gy;y++){	      
-	 presetOutputs->x_mesh[x][y] -= presetOutputs->dx_mesh[x][y];
-       }
-     }
-   
- 
- 
-     for (x=0;x<this->gx;x++){
-       for(y=0;y<this->gy;y++){	      
-	 presetOutputs->y_mesh[x][y] -= presetOutputs->dy_mesh[x][y];
-       }
-     }
-		  	
-   
-
+    
 }
 
 
@@ -610,52 +459,52 @@ void Renderer::reset(int w, int h)
 void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
 
   int x;
-    glMatrixMode( GL_MODELVIEW );
-    glPushMatrix();
-    glTranslatef( 0, 0, -1 );
-
+  glMatrixMode( GL_MODELVIEW );
+  glPushMatrix();
+  glTranslatef( 0, 0, -1 );
+  
   glPointSize(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512); 
   
   for (PresetOutputs::cwave_container::const_iterator pos = presetOutputs->customWaves.begin();
-	pos != presetOutputs->customWaves.end(); ++pos) 
+       pos != presetOutputs->customWaves.end(); ++pos) 
     {
-  
+      
       if( (*pos)->enabled==1)
 	{
-	    
+	  
 	  if ( (*pos)->bAdditive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 	  else    glBlendFunc(GL_SRC_ALPHA, GL_ONE); 
 	  if ( (*pos)->bDrawThick==1) 
-{ glLineWidth(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
-  glPointSize(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
-	
-  }  
-	   beatDetect->pcm->getPCM( (*pos)->value1, (*pos)->samples,0, (*pos)->bSpectrum, (*pos)->smoothing,0);
-	   beatDetect->pcm->getPCM( (*pos)->value2, (*pos)->samples,1, (*pos)->bSpectrum, (*pos)->smoothing,0);
+	    { glLineWidth(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
+	    glPointSize(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
+	    
+	    }  
+	  beatDetect->pcm->getPCM( (*pos)->value1, (*pos)->samples,0, (*pos)->bSpectrum, (*pos)->smoothing,0);
+	  beatDetect->pcm->getPCM( (*pos)->value2, (*pos)->samples,1, (*pos)->bSpectrum, (*pos)->smoothing,0);
 	  // printf("%f\n",pcmL[0]);
-
-
+	  
+	  
 	  float mult= (*pos)->scaling*presetOutputs->fWaveScale*( (*pos)->bSpectrum ? 0.015f :1.0f);
-
+	  
 	  for(x=0;x< (*pos)->samples;x++)
 	    { (*pos)->value1[x]*=mult;}
 	  
 	  for(x=0;x< (*pos)->samples;x++)
 	    { (*pos)->value2[x]*=mult;}
-
-	   for(x=0;x< (*pos)->samples;x++)
-	     { (*pos)->sample_mesh[x]=((float)x)/((float)( (*pos)->samples-1));}
+	  
+	  for(x=0;x< (*pos)->samples;x++)
+	    { (*pos)->sample_mesh[x]=((float)x)/((float)( (*pos)->samples-1));}
 	  
 	  // printf("mid inner loop\n");  
-	   (*pos)->evalPerPointEqns();
-	
+	  (*pos)->evalPerPointEqns();
+	  
 	  //put drawing code here
-	   if ( (*pos)->bUseDots==1){ glBegin(GL_POINTS);}
-	   else  glBegin(GL_LINE_STRIP);
+	  if ( (*pos)->bUseDots==1){ glBegin(GL_POINTS);}
+	  else  glBegin(GL_LINE_STRIP);
 	  
 	  for(x=0;x< (*pos)->samples;x++)
 	    {
-	    
+	      
 	      glColor4f( (*pos)->r_mesh[x], (*pos)->g_mesh[x], (*pos)->b_mesh[x], (*pos)->a_mesh[x]);
 	      glVertex3f( (*pos)->x_mesh[x],-( (*pos)->y_mesh[x]-1),-1);
 	    }
@@ -667,8 +516,7 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
 	  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 	  //  glPopMatrix();
 	  
-	}
-      
+	}      
     }
 
     glPopMatrix();
@@ -676,171 +524,129 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
 
 
 void Renderer::draw_shapes(PresetOutputs *presetOutputs) { 
-
-  int i;
-
-  float radius;
-
- 
-//  float pi = 3.14159265;
-//  float start,inc
-  float xval,yval;
   
+  int i;  
+  float radius;  
+  float xval,yval;  
   float t;
-
-  //  more=isMoreCustomWave();
-  // printf("not inner loop\n");
-
-    glMatrixMode( GL_MODELVIEW );
-    glPushMatrix();
-    glTranslatef( 0, 0, -1 );
   
-/// @bug SPERL: this is a starting point at least  
+  glMatrixMode( GL_MODELVIEW );
+  glPushMatrix();
+  glTranslatef( 0, 0, -1 );
+ 
   for (PresetOutputs::cshape_container::const_iterator pos = presetOutputs->customShapes.begin();
-	pos != presetOutputs->customShapes.end(); ++pos) 
+       pos != presetOutputs->customShapes.end(); ++pos) 
     {
-
+      
       if( (*pos)->enabled==1)
 	{
 	  // printf("drawing shape %f\n", (*pos)->ang);
-	   (*pos)->y=-(( (*pos)->y)-1);
+	  (*pos)->y=-(( (*pos)->y)-1);
 	  radius=.5;
-	   (*pos)->radius= (*pos)->radius*(.707*.707*.707*1.04);
+	  (*pos)->radius= (*pos)->radius*(.707*.707*.707*1.04);
 	  //Additive Drawing or Overwrite
 	  if ( (*pos)->additive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 	  else    glBlendFunc(GL_SRC_ALPHA, GL_ONE); 
 	  
 	  glMatrixMode(GL_MODELVIEW);
-	  	   glPushMatrix(); 
-		   /* DEPRECATED
-		   if(this->correction)
-		     {		     
-		       glTranslatef(0.5,0.5, 0);
-		       glScalef(1.0,this->vw/(float)this->vh,1.0);  
-		       glTranslatef(-0.5 ,-0.5,0);   
-		     }
-		   */
-	
-	   xval= (*pos)->x;
-	   yval= (*pos)->y;
+	  glPushMatrix(); 
 	  
-	  if ( (*pos)->textured)
-	    {
-
-	      if ((*pos)->getImageUrl() !="")
-		{
-		  GLuint tex = textureManager->getTexture((*pos)->getImageUrl());
-		  if (tex != 0) glBindTexture(GL_TEXTURE_2D, tex);
-		}
-	      //glBindTexture(GL_TEXTURE_2D, texture);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
-
-	      glMatrixMode(GL_TEXTURE);
+	  
+	  xval= (*pos)->x;
+	   yval= (*pos)->y;
+	   
+	   if ( (*pos)->textured)
+	     {
+	       
+	       if ((*pos)->getImageUrl() !="")
+		 {
+		   GLuint tex = textureManager->getTexture((*pos)->getImageUrl());
+		   if (tex != 0) glBindTexture(GL_TEXTURE_2D, tex);
+		 }
+	      
+	       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
+	       
+	       glMatrixMode(GL_TEXTURE);
 	       glPushMatrix();
-	      glLoadIdentity();
-	      //glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	      //glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	      //glTranslatef(.5,.5, 0);
-	      //if (this->correction) glScalef(1,this->vw/(float)this->vh,1);
-   
-	      //glRotatef(( (*pos)->tex_ang*360/6.280), 0, 0, 1);
-	      
-	      //glScalef(1/( (*pos)->tex_zoom),1/( (*pos)->tex_zoom),1); 
-	      
-	      // glScalef(1,vh/(float)vw,1);
-	      //glTranslatef((-.5) ,(-.5),0);  
-	      // glScalef(1,this->vw/(float)this->vh,1);
-	      glEnable(GL_TEXTURE_2D);
-	      	     
-
-	      glBegin(GL_TRIANGLE_FAN);
-	      //glColor4f(0.0,0.0,0.0, (*pos)->a);
-	      //glColor4f( (*pos)->r, (*pos)->g, (*pos)->b, (*pos)->a);
-	    glColor4f( (*pos)->r, (*pos)->g, (*pos)->b, (*pos)->a);
-	      glTexCoord2f(.5,.5);
-	      glVertex3f(xval,yval,-1);	 
-	      //glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);  
-	      //glColor4f(0.0,0.0,0.0, (*pos)->a2);
-
-    	    	        
-	     glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);
-
-
-	      for ( i=1;i< (*pos)->sides+2;i++)
-		{
+	       glLoadIdentity();
+	       
+	       glEnable(GL_TEXTURE_2D);
+	       
+	       
+	       glBegin(GL_TRIANGLE_FAN);
+	       
+	       //Define the center point of the shape
+	       glColor4f( (*pos)->r, (*pos)->g, (*pos)->b, (*pos)->a);
+	       glTexCoord2f(.5,.5);
+	       glVertex3f(xval,yval,-1);	 
+	       	       
+	       glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);
+	       
+	       for ( i=1;i< (*pos)->sides+2;i++)
+		 {
 		 
-		  //		  theta+=inc;
-		  //  glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);
-		  //glTexCoord2f(radius*cos(theta)+.5 ,radius*sin(theta)+.5 );
-		  //glVertex3f( (*pos)->radius*cos(theta)+xval, (*pos)->radius*sin(theta)+yval,-1);  
+		
 		  t = (i-1)/(float) (*pos)->sides;
 		  
 		  glTexCoord2f(  0.5f + 0.5f*cosf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)/ (*pos)->tex_zoom, 0.5f + 0.5f*sinf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)/ (*pos)->tex_zoom);
 		   glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,-1);   
 		}	
 	      glEnd();
-
-	    
 	      
-	    
+	      
 	      glDisable(GL_TEXTURE_2D);
-	       glPopMatrix();
+	      glPopMatrix();
 	      glMatrixMode(GL_MODELVIEW);          
- if(this->renderTarget->usePbuffers)
-	{	
-	  glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
-	}
-      else
-	{
-	  glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
-	}
-glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
+
+	      //Reset Texture state since we might have changed it
+	      if(this->renderTarget->usePbuffers)
+		{	
+		  glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
+		}
+	      else
+		{
+		  glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
+		}
+	      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
 
 	    }
 	  else{//Untextured (use color values)
-	    //printf("untextured %f %f %f @:%f,%f %f %f\n", (*pos)->a2, (*pos)->a, (*pos)->border_a,  (*pos)->x, (*pos)->y, (*pos)->radius, (*pos)->ang);
+	   
 	    //draw first n-1 triangular pieces
 	      glBegin(GL_TRIANGLE_FAN);
 	      
 	      glColor4f( (*pos)->r, (*pos)->g, (*pos)->b, (*pos)->a);
-	    
+	      
 	      // glTexCoord2f(.5,.5);
 	      glVertex3f(xval,yval,-1);	 
-	     glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);
-
+	      glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);
+	      
 	      for ( i=1;i< (*pos)->sides+2;i++)
-		{
+		{		  		 
 		  
-		  //theta+=inc;
-		  //  glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);
-		  //  glTexCoord2f(radius*cos(theta)+.5 ,radius*sin(theta)+.5 );
-		  //glVertex3f( (*pos)->radius*cos(theta)+xval, (*pos)->radius*sin(theta)+yval,-1);	  
-
 		  t = (i-1)/(float) (*pos)->sides;
-		   glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,-1);   	  
-		       
+		  glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,-1);   	  
+		  
 		}	
 	      glEnd();
-
-	   	 
+	      
+	      
 	  }
-	    if (presetOutputs->bWaveThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
-	      glBegin(GL_LINE_LOOP);
-	      glColor4f( (*pos)->border_r, (*pos)->border_g, (*pos)->border_b, (*pos)->border_a);
-	      for ( i=1;i< (*pos)->sides+1;i++)
-		{
+	   if (presetOutputs->bWaveThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
+	   glBegin(GL_LINE_LOOP);
+	   glColor4f( (*pos)->border_r, (*pos)->border_g, (*pos)->border_b, (*pos)->border_a);
 
-		  t = (i-1)/(float) (*pos)->sides;
-		   glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,-1); 	  
-		 
-		  //theta+=inc;
-		  //glVertex3f( (*pos)->radius*cos(theta)+xval, (*pos)->radius*sin(theta)+yval,-1);
-		}
-	      glEnd();
-	  if (presetOutputs->bWaveThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
-	  
-	  glPopMatrix();
+	   for ( i=1;i< (*pos)->sides+1;i++)
+	     {	       
+	       t = (i-1)/(float) (*pos)->sides;
+	       glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,-1); 	  
+	       	      
+	     }
+	   glEnd();
+
+	   if (presetOutputs->bWaveThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
+	   
+	   glPopMatrix();
 	}
     }
 
@@ -880,14 +686,12 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 	
 	  presetOutputs->wave_rot =   0;
 	  presetOutputs->wave_scale =1.0;
-	  presetOutputs->wave_y=-1*(presetOutputs->wave_y-1.0);
- 
-	 
+	  presetOutputs->wave_y=-1*(presetOutputs->wave_y-1.0);	  	 
 
-    DWRITE( "nsamples: %d\n", beatDetect->pcm->numsamples );
-
-    presetOutputs->wave_samples = isSmoothing ? 512-32 : beatDetect->pcm->numsamples;
-    // presetOutputs->wave_samples= 512-32;
+	  DWRITE( "nsamples: %d\n", beatDetect->pcm->numsamples );
+	  
+	  presetOutputs->wave_samples = isSmoothing ? 512-32 : beatDetect->pcm->numsamples;
+	  // presetOutputs->wave_samples= 512-32;
 	  for ( x=0;x<presetOutputs->wave_samples-1;x++)
 	    { float inv_nverts_minus_one = 1.0f/(float)(	  presetOutputs->wave_samples);
 	   
