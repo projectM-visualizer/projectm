@@ -227,10 +227,8 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 
 void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 { 
-   
-  glMatrixMode(GL_MODELVIEW);
-  
-  
+     
+    
   glColor4f(0.0, 0.0, 0.0,presetOutputs->decay);
   
   glEnable(GL_TEXTURE_2D);
@@ -253,10 +251,7 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
 
 
 void Renderer::PerFrame(PresetOutputs *presetOutputs)
-{
-  // glMatrixMode(GL_MODELVIEW);
-    //  glLoadIdentity();
-   
+{    
   
   //Texture wrapping( clamp vs. wrap)
   if (presetOutputs->bTexWrap==0){
@@ -457,8 +452,7 @@ void Renderer::reset(int w, int h)
 
 void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
 
-  int x;
-  glMatrixMode( GL_MODELVIEW );  
+  int x;  
   
   
   glPointSize(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512); 
@@ -526,9 +520,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
   int i;  
   float radius;  
   float xval,yval;  
-  float t;
-  
-  glMatrixMode( GL_MODELVIEW );
+  float t;  
 
  
   for (PresetOutputs::cshape_container::const_iterator pos = presetOutputs->customShapes.begin();
@@ -1061,20 +1053,20 @@ void Renderer::darken_center() {
 
   float unit=0.05f;
 
-  glMatrixMode(GL_MODELVIEW);
+  
   
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
-  glTranslatef(0.5,0.5, 0);
+  
 
   glBegin(GL_TRIANGLE_FAN);
   glColor4f(0,0,0,3.0f/32.0f);
-  glVertex3f(0,0,-1);
+  glVertex3f(0.5,0.5,-1);
   glColor4f(0,0,0,-1);
-  glVertex3f(-unit,0,-1);
-  glVertex3f(0,-unit,-1);
-  glVertex3f(unit,0,-1);
-  glVertex3f(0,unit,-1);
-  glVertex3f(-unit,0,-1);
+  glVertex3f(0.5-unit,0.5,-1);
+  glVertex3f(0.5,0.5-unit,-1);
+  glVertex3f(0.5+unit,0.5,-1);
+  glVertex3f(0.5,0.5+unit,-1);
+  glVertex3f(0.5-unit,0.5,-1);
   glEnd();
 
 }
@@ -1108,10 +1100,7 @@ void Renderer::draw_motion_vectors(PresetOutputs *presetOutputs) {
 
     glPointSize(presetOutputs->mv_l);
     glColor4f(presetOutputs->mv_r, presetOutputs->mv_g, presetOutputs->mv_b, presetOutputs->mv_a);
-
-    glMatrixMode(GL_MODELVIEW); 
- 
-
+  
     glBegin(GL_POINTS);
     for (x=0;x<presetOutputs->mv_x;x++){
         for(y=0;y<presetOutputs->mv_y;y++){
@@ -1141,8 +1130,7 @@ void Renderer::draw_borders(PresetOutputs *presetOutputs) {
   
     glColor4d(presetOutputs->ob_r,presetOutputs->ob_g,presetOutputs->ob_b,presetOutputs->ob_a);
   
-    glMatrixMode( GL_MODELVIEW );
-  
+   
    
 
     glRectd(0,0,of,1);
