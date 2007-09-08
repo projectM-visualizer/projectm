@@ -478,7 +478,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
     /* Per frame equation case */
     if (!strncmp(eqn_string, PER_FRAME_STRING, PER_FRAME_STRING_LENGTH))
     {
-
+	tokenWrapAroundEnabled = true;
       /* Sometimes per frame equations are implicitly defined without the
       per_frame_ prefix. This informs the parser that one could follow */
       line_mode = PER_FRAME_LINE_MODE;
@@ -507,7 +507,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
     /* Wavecode initial condition case */
     if (!strncmp(eqn_string, WAVECODE_STRING, WAVECODE_STRING_LENGTH))
     {
-
+      
       line_mode = CUSTOM_WAVE_WAVECODE_LINE_MODE;
 
       return parse_wavecode(eqn_string, fs, preset);
@@ -517,7 +517,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
     if ((!strncmp(eqn_string, WAVE_STRING, WAVE_STRING_LENGTH)) &&
         ((eqn_string[5] >= 48) && (eqn_string[5] <= 57)))
     {
-
+	tokenWrapAroundEnabled = true;
       //    if (PARSE_DEBUG) printf("parse_line wave prefix found: \"%s\"\n", eqn_string);
 
       return parse_wave(eqn_string, fs, preset);
