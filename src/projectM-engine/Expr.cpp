@@ -181,6 +181,7 @@ float TreeExpr::eval_tree_expr ( int mesh_i, int mesh_j )
 	DWRITE ( "(" );
 #endif
 
+	assert(left);
 	left_arg = left->eval_tree_expr ( mesh_i, mesh_j );
 
 #ifdef EVAL_DEBUG
@@ -214,6 +215,7 @@ float TreeExpr::eval_tree_expr ( int mesh_i, int mesh_j )
 
 #endif
 
+	assert(right);
 	right_arg = right->eval_tree_expr ( mesh_i, mesh_j );
 
 #ifdef EVAL_DEBUG

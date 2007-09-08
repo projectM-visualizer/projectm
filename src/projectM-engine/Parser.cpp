@@ -187,7 +187,8 @@ token_t Parser::parseToken(std::istream &  fs, char * string) {
     case ',':
       return tComma;
     case ';':
-      tokenWrapAroundEnabled = false;
+     tokenWrapAroundEnabled = false;
+      std::cerr << "token wrap around = false (LINE " << line_count << ")" << std::endl;
       return tSemiColon;
     case ' ': /* space, skip the character */
       i--;
@@ -479,15 +480,15 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
     /* Custom Shape Prefix */
     if ((!strncmp(eqn_string, SHAPE_STRING, SHAPE_STRING_LENGTH)) && 
 	((eqn_string[6] >= 48) && (eqn_string[6] <= 57))) {
-      
+      tokenWrapAroundEnabled = true;
       if (PARSE_DEBUG) printf("parse_line shape prefix found: \"%s\"\n", eqn_string);
       return parse_shape(eqn_string, fs, preset);
      
     }
+      tokenWrapAroundEnabled = true;
     
     /* Per pixel equation case */
     if (!strncmp(eqn_string, PER_PIXEL_STRING, PER_PIXEL_STRING_LENGTH)) {
-      tokenWrapAroundEnabled = true;
       line_mode = PER_PIXEL_LINE_MODE;
       
       if (parse_per_pixel_eqn(fs, preset, 0) < 0) {
@@ -1062,6 +1063,8 @@ GenExpr * Parser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * t
  	/* All the infix operators */
   case tPlus:
     if (PARSE_DEBUG) printf("parse_infix_op: found addition operator (LINE %d)\n", line_count);
+	std::cerr << "WRAP AROUND IS " <<  tokenWrapAroundEnabled << std::endl;
+
     return parse_gen_expr(fs, insert_infix_op(Eval::infix_add, &tree_expr), preset);
   case tMinus:
     if (PARSE_DEBUG) printf("parse_infix_op: found subtraction operator (LINE %d)\n", line_count);

@@ -47,6 +47,7 @@ void PerFrameEqn::evaluate() {
 	assert(gen_expr);
 	assert(param);
 	param->set_param(gen_expr->eval_gen_expr(-1,-1));
+
      if (PER_FRAME_EQN_DEBUG) printf(" = %.4f\n", *((float*)param->engine_val)); 
 		 
 }
