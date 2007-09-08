@@ -485,10 +485,11 @@ int Parser::parse_line(std::istream &  fs, Preset * preset) {
       return parse_shape(eqn_string, fs, preset);
      
     }
-      tokenWrapAroundEnabled = true;
-    
+     
     /* Per pixel equation case */
     if (!strncmp(eqn_string, PER_PIXEL_STRING, PER_PIXEL_STRING_LENGTH)) {
+ tokenWrapAroundEnabled = true;
+    
       line_mode = PER_PIXEL_LINE_MODE;
       
       if (parse_per_pixel_eqn(fs, preset, 0) < 0) {
