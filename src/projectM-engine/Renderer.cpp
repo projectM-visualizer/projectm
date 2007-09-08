@@ -229,7 +229,6 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
 { 
    
   glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
   
   
   glColor4f(0.0, 0.0, 0.0,presetOutputs->decay);
@@ -249,7 +248,7 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
   }
            
   glDisable(GL_TEXTURE_2D);  
-  glPopMatrix();
+  
 }
 
 
@@ -459,8 +458,7 @@ void Renderer::reset(int w, int h)
 void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
 
   int x;
-  glMatrixMode( GL_MODELVIEW );
-  glPushMatrix();
+  glMatrixMode( GL_MODELVIEW );  
   
   
   glPointSize(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512); 
@@ -519,7 +517,7 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
 	}      
     }
 
-    glPopMatrix();
+  
 }
 
 
@@ -531,7 +529,6 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
   float t;
   
   glMatrixMode( GL_MODELVIEW );
-  glPushMatrix();
 
  
   for (PresetOutputs::cshape_container::const_iterator pos = presetOutputs->customShapes.begin();
@@ -546,10 +543,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	  (*pos)->radius= (*pos)->radius*(.707*.707*.707*1.04);
 	  //Additive Drawing or Overwrite
 	  if ( (*pos)->additive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
-	  else    glBlendFunc(GL_SRC_ALPHA, GL_ONE); 
-	  
-	  glMatrixMode(GL_MODELVIEW);
-	  glPushMatrix(); 
+	  else    glBlendFunc(GL_SRC_ALPHA, GL_ONE); 	  	  
 	  
 	  
 	  xval= (*pos)->x;
@@ -646,11 +640,11 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 
 	   if (presetOutputs->bWaveThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
 	   
-	   glPopMatrix();
+      
 	}
     }
 
-    glPopMatrix();
+   
 }
 
 
@@ -954,7 +948,7 @@ void Renderer::draw_waveform(PresetOutputs * presetOutputs)
 {
 
   glMatrixMode( GL_MODELVIEW );
-  glPushMatrix();
+  
   
   modulate_opacity_by_volume(presetOutputs); 
   maximize_colors(presetOutputs);
@@ -996,7 +990,7 @@ void Renderer::draw_waveform(PresetOutputs * presetOutputs)
   
   if(presetOutputs->bWaveDots==1) glDisable(GL_LINE_STIPPLE);
   
-  glPopMatrix();
+  
 }
 
 void Renderer::maximize_colors(PresetOutputs *presetOutputs) {
@@ -1068,7 +1062,7 @@ void Renderer::darken_center() {
   float unit=0.05f;
 
   glMatrixMode(GL_MODELVIEW);
-  glPushMatrix(); 
+  
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
   glTranslatef(0.5,0.5, 0);
 
@@ -1083,7 +1077,6 @@ void Renderer::darken_center() {
   glVertex3f(-unit,0,-1);
   glEnd();
 
-  glPopMatrix();
 }
 
 
@@ -1116,8 +1109,7 @@ void Renderer::draw_motion_vectors(PresetOutputs *presetOutputs) {
     glPointSize(presetOutputs->mv_l);
     glColor4f(presetOutputs->mv_r, presetOutputs->mv_g, presetOutputs->mv_b, presetOutputs->mv_a);
 
-    glMatrixMode(GL_MODELVIEW);
-    glPushMatrix();
+    glMatrixMode(GL_MODELVIEW); 
  
 
     glBegin(GL_POINTS);
@@ -1133,7 +1125,7 @@ void Renderer::draw_motion_vectors(PresetOutputs *presetOutputs) {
   
     glEnd();
 
-    glPopMatrix();    
+  
 }
 
 
@@ -1150,7 +1142,7 @@ void Renderer::draw_borders(PresetOutputs *presetOutputs) {
     glColor4d(presetOutputs->ob_r,presetOutputs->ob_g,presetOutputs->ob_b,presetOutputs->ob_a);
   
     glMatrixMode( GL_MODELVIEW );
-    glPushMatrix();
+  
    
 
     glRectd(0,0,of,1);
@@ -1163,7 +1155,7 @@ void Renderer::draw_borders(PresetOutputs *presetOutputs) {
     glRectd(texof-iff,of,texof,texof);
     glRectd(of+iff,texof,texof-iff,texof-iff);
 
-    glPopMatrix();
+   
 }
 
 
