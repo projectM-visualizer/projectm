@@ -46,6 +46,7 @@
 
 #include "wipemalloc.h"
 #include <iostream>
+#include <sstream>
 
 /* Grabs the next token from the file. The second argument points
    to the raw string */
@@ -62,6 +63,8 @@ int Parser::last_custom_wave_id;
 int Parser::last_custom_shape_id;
 char Parser::last_eqn_type[MAX_TOKEN_SIZE];
 int Parser::last_token_size;
+
+std::string Parser::lastLinePrefix("");
 
 bool Parser::tokenWrapAroundEnabled(false);
 
@@ -117,12 +120,12 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
             c = fs.get();
           if (c == EOF)
           {
-            line_mode = NORMAL_LINE_MODE;
+            line_mode = UNSET_LINE_MODE;
             return tEOF;
           }
           if (c == '\n')
           {
-            line_mode = NORMAL_LINE_MODE;
+            line_mode = UNSET_LINE_MODE;
             return tEOL;
           }
         }
@@ -163,28 +166,46 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
 
       if (tokenWrapAroundEnabled)
       {
+	std::ostringstream buffer;
 
-        std::cerr << "token wrap! line " << line_count << std::endl;
+        if (PARSE_DEBUG) std::cerr << "token wrap! line " << line_count << std::endl;
         while (c != '=')
         {
 
           if (!fs || fs.eof())
           {
             line_count = 1;
-            line_mode= NORMAL_LINE_MODE;
-            std::cerr << "token wrap: end of file" << std::endl;
+            line_mode = UNSET_LINE_MODE;
+        if (PARSE_DEBUG)     std::cerr << "token wrap: end of file" << std::endl;
             return tEOF;
           }
 
-          else
-            c = fs.get();
+          else {
+	    c = fs.get();
+	    if ( c != '=')
+            	buffer << c;
+	}
 
         }
-        std::cerr << "parsed away =" << std::endl;
+        if (PARSE_DEBUG) std::cerr << "parseToken: parsed away equal sign, line prefix is \""  << buffer.str() 
+		<< "\"" << std::endl;
         --i;
 
+	if (!wrapsToNextLine(buffer.str())) {
+		tokenWrapAroundEnabled = false;
+		// <= to also remove equal sign parsing from stream
+		for (int k = 0; k <= buffer.str().length(); k++) {
+			if (fs)					
+				fs.unget();
+			else
+				abort();
+		}
+		return tEOL;
+	}
+		
+	
         //   if (fs && fs.get() == '\n') {
-        //     line_mode = NORMAL_LINE_MODE;
+        //     line_mode = UNSET_LINE_MODE;
         //	return tEOL;
         //    } else if (fs)
         //fs.unget();
@@ -193,20 +214,20 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
       }
 
 
-      line_mode = NORMAL_LINE_MODE;
+      line_mode = UNSET_LINE_MODE;
       return tEOL;
     case ',':
       return tComma;
     case ';':
       tokenWrapAroundEnabled = false;
-      std::cerr << "token wrap around = false (LINE " << line_count << ")" << std::endl;
+      if (PARSE_DEBUG) std::cerr << "token wrap around = false (LINE " << line_count << ")" << std::endl;
       return tSemiColon;
     case ' ': /* space, skip the character */
       i--;
       break;
     case EOF:
       line_count = 1;
-      line_mode = NORMAL_LINE_MODE;
+      line_mode = UNSET_LINE_MODE;
       return tEOF;
 
     case '\r':
@@ -216,6 +237,7 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
 
       if (string != NULL)
       {
+	/// @bug remove this nonsense
         if (c == '\r')
         {
           std::cerr << "R" << std::endl;
@@ -384,6 +406,8 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
   /* Clear the string line buffer */
   memset(string_line_buffer, 0, STRING_LINE_SIZE);
   string_line_buffer_index = 0;
+ 
+  tokenWrapAroundEnabled = false;
 
   token = parseToken( fs, eqn_string );
   switch (token )
@@ -411,11 +435,11 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
 
 
   case tEOL:  /* Empty line */
-    line_mode = NORMAL_LINE_MODE;
+    line_mode = UNSET_LINE_MODE;
     return PROJECTM_SUCCESS;
 
   case tEOF: /* End of File */
-    line_mode = NORMAL_LINE_MODE;
+    line_mode = UNSET_LINE_MODE;
     line_count = 1;
     tokenWrapAroundEnabled = false;
     return EOF;
@@ -426,6 +450,8 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
 
     /* Valid Case, either an initial condition or equation should follow */
   case tEq:
+    lastLinePrefix = std::string(eqn_string);
+    if (PARSE_DEBUG) std::cout << "last line prefix = \"" << eqn_string << "\"" << std::endl;
     // std::cerr << "parse_line: tEQ case, fs.peek()=\'" << fs.peek() << "\'" << std::endl;
     if (!fs)
       return PROJECTM_PARSE_ERROR;
@@ -1196,7 +1222,7 @@ GenExpr * Parser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * t
     /* All the infix operators */
   case tPlus:
     if (PARSE_DEBUG) printf("parse_infix_op: found addition operator (LINE %d)\n", line_count);
-    std::cerr << "WRAP AROUND IS " <<  tokenWrapAroundEnabled << std::endl;
+    if (PARSE_DEBUG) std::cerr << "WRAP AROUND IS " <<  tokenWrapAroundEnabled << std::endl;
 
     return parse_gen_expr(fs, insert_infix_op(Eval::infix_add, &tree_expr), preset);
   case tMinus:
@@ -2531,4 +2557,21 @@ int Parser::parse_wave_per_frame_eqn(std::istream &  fs, CustomWave * custom_wav
 
   line_mode = CUSTOM_WAVE_PER_FRAME_LINE_MODE;
   return PROJECTM_SUCCESS;
+}
+
+
+bool Parser::wrapsToNextLine(const std::string & str) {
+
+std::size_t lastLineEndIndex = 
+	lastLinePrefix.find_last_not_of("0123456789");
+
+std::size_t thisLineEndIndex = 
+	str.find_last_not_of("0123456789");
+
+std::size_t startIndex = 0;
+if ((str.compare(startIndex, lastLineEndIndex, lastLinePrefix.c_str(), thisLineEndIndex)) == 0)
+	return true;
+else
+	return false;
+
 }

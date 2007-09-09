@@ -502,7 +502,7 @@ int Preset::readIn(std::istream & fs) {
   {
     if (retval == PROJECTM_PARSE_ERROR)
     {
-      line_mode = NORMAL_LINE_MODE;
+      line_mode = UNSET_LINE_MODE;
       std::cerr << "[Preset::readIn()] parse error in file \"" << this->absoluteFilePath() << "\"" << std::endl;
     }
   }

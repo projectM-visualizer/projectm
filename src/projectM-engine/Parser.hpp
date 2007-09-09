@@ -74,7 +74,7 @@
 #define WAVE_INIT_STRING_LENGTH 4
 
 typedef enum {
-  NORMAL_LINE_MODE,
+  UNSET_LINE_MODE,
   PER_FRAME_LINE_MODE,
   PER_PIXEL_LINE_MODE,
   PER_FRAME_INIT_LINE_MODE,
@@ -122,6 +122,7 @@ class TreeExpr;
 
 class Parser {
 public:
+    static std::string lastLinePrefix;
     static line_mode_t line_mode;
     static CustomWave *current_wave;
     static CustomShape *current_shape;
@@ -175,6 +176,7 @@ public:
     static int parse_shape_per_frame_init_eqn(std::istream & fs, CustomShape * custom_shape, Preset * preset);
     static int parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_shape, Preset * preset);
     static int parse_wave_per_frame_eqn(std::istream & fs, CustomWave * custom_wave, Preset * preset);
+    static bool wrapsToNextLine(const std::string & str);
   };
 
 #endif /** !_PARSER_H */
