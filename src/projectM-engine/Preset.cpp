@@ -493,8 +493,6 @@ int Preset::readIn(std::istream & fs) {
 
   this->name = std::string(tmp_name);
 
-  std::cerr << "[Preset::readIn] preset \"" << this->name << "\" parsed." << std::endl;;
-
   // Loop through each line in file, trying to succesfully parse the file. 
   // If a line does not parse correctly, keep trucking along to next line.
   int retval;

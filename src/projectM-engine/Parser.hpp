@@ -28,8 +28,7 @@
 
 #ifndef _PARSER_H
 #define _PARSER_H
-
-#define PARSE_DEBUG 2
+#define PARSE_DEBUG 0
 //#define PARSE_DEBUG 0
 
 #include <stdio.h>
