@@ -161,8 +161,9 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
       // the first equals sign on that line.
       //
       // We can safely assume the next line must be part of the token if we allow the
-      // semi colon to be a guaranteed delimiter in the grammar for all equation-based lines
-      // This IS assumed here.
+      // semi colon to be a guaranteed delimiter in the grammar for all equation-based lines.
+      // This IS NO LONGER assumed here. Instead, we check if the next line prefix
+      // matches with the previous line prefix. If it passes a simple comparison, we wrap around.
 
       if (tokenWrapAroundEnabled)
       {
