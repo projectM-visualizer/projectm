@@ -35,7 +35,12 @@ class PresetLoader {
 					
 		/** Sets the directory where the loader will search for files */	
 		void setScanDirectory(std::string pathname);
-		
+
+		/// Returns the directory path associated with this preset chooser
+		inline const std::string & directoryName() const {
+			return m_dirname;
+		}
+
 		/** Rescans the active preset directory */
 		void rescan();
 

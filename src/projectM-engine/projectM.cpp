@@ -56,19 +56,6 @@
 #include "ConfigFile.h"
 #include "TextureManager.hpp"
 
-#ifdef LINUX
-const std::string projectM::PROJECTM_PRESET_PATH ( "/usr/share/projectM/presets/" );
-#endif
-
-#ifdef MACOS
-const std::string projectM::PROJECTM_PRESET_PATH ( "/usr/share/projectM/presets/" );
-#endif
-
-
-#ifdef WIN32
-const std::string projectM::PROJECTM_PRESET_PATH ( "C:\\Program Files\\ProjectM\\presets" );
-#endif
-
 /** Stash current engine */
 projectM *projectM::currentEngine = NULL;
 
@@ -850,8 +837,8 @@ int projectM::initPresetTools()
 	// Case where no valid presets exist in directory
 	if (m_presetChooser->empty())
 	{
-		std::cerr << "[projectM] warning: no valid files found in preset directory \"" 
-			<< PROJECTM_PRESET_PATH << "\"" << std::endl;	
+		std::cerr << "[projectM] warning: no valid files found in preset directory \""
+			<< m_presetLoader->directoryName() << "\"" << std::endl;	
 	}
 
 	std::cerr << "[projectM] Idle preset allocated." << std::endl;
