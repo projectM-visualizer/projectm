@@ -174,7 +174,7 @@ DLLEXPORT void projectM::renderFrame()
 
 	m_activePreset->evaluateFrame();
 
-	if ( renderer->noSwitch==0 )
+	if ( renderer->noSwitch==0 && !m_presetChooser->empty())
 	{
 	  if ( presetInputs.progress>1.0 )
 	    {

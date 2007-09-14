@@ -38,9 +38,9 @@
 #include <fstream>
 
 
-Preset::Preset(std::istream & in, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
+Preset::Preset(std::istream & in, const PresetInputs & presetInputs, PresetOutputs & presetOutputs, const std::string & _presetName):
     builtinParams(presetInputs, presetOutputs),
-    file_path("[Input Stream]"),
+    file_path(_presetName),
     m_presetOutputs(presetOutputs),
     m_presetInputs(presetInputs)
  

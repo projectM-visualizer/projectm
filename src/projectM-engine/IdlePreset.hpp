@@ -7,9 +7,10 @@
 class IdlePreset {
 
   public:
-	/// Allocate a new idle prest instance
+	/// Allocate a new idle preset instance
 	static std::auto_ptr<Preset> allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
   private:
 	static std::string presetText();
+	static const std::string IDLE_PRESET_NAME;
 };
 #endif

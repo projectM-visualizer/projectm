@@ -70,7 +70,7 @@ public:
   /// \param in an already initialized input stream to read the preset file from
   /// \param presetInputs a const reference to read only projectM engine variables
   /// \param presetOutputs initialized and filled with data parsed from a preset
-  Preset(std::istream & in, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
+  Preset(std::istream & in, const PresetInputs & presetInputs, PresetOutputs & presetOutputs, const std::string & _presetName);
 
   ~Preset();
 
@@ -117,6 +117,7 @@ public:
   /// \returns A preset output instance with values computed from most recent evaluateFrame()
   PresetOutputs & presetOutputs() const
   {
+
     return m_presetOutputs;
   }
 

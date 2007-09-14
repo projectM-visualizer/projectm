@@ -53,9 +53,6 @@ Func * BuiltinFuncs::find_func(const std::string & name) {
 
 }
 
-
-
-
 int BuiltinFuncs::load_all_builtin_func() {
 
   if (load_builtin_func("int", FuncWrappers::int_wrapper, 1) < 0)
