@@ -206,7 +206,7 @@ DLLEXPORT void projectM::renderFrame()
 
 
       
-        if (smoothFrame > 1 && !m_presetChooser.empty())
+        if (smoothFrame > 1 && !m_presetChooser->empty())
 	  {
 	    int frame = presetInputs.frame++;
 	    presetInputs.frame = oldFrame;
