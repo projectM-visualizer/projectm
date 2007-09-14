@@ -127,13 +127,11 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
     
-    glMatrixMode( GL_PROJECTION );
-    glPushMatrix();
+    glMatrixMode( GL_PROJECTION );   
     glLoadIdentity();
     glOrtho(0.0, 1, 0.0, 1,-40,40);
     
-    glMatrixMode( GL_MODELVIEW );
-    glPushMatrix();
+    glMatrixMode( GL_MODELVIEW );   
     glLoadIdentity();
     
     DWRITE( "renderFrame: renderTarget->texsize: %d x %d\n", this->renderTarget->texsize, this->renderTarget->texsize );        
@@ -522,6 +520,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
   float xval,yval;  
   float t;  
 
+  float aspect=this->aspect;
  
   for (PresetOutputs::cshape_container::const_iterator pos = presetOutputs->customShapes.begin();
        pos != presetOutputs->customShapes.end(); ++pos) 
@@ -541,13 +540,19 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	  xval= (*pos)->x;
 	   yval= (*pos)->y;
 	   
+
+
 	   if ( (*pos)->textured)
 	     {
 	       
 	       if ((*pos)->getImageUrl() !="")
 		 {
 		   GLuint tex = textureManager->getTexture((*pos)->getImageUrl());
-		   if (tex != 0) glBindTexture(GL_TEXTURE_2D, tex);
+		   if (tex != 0)
+		     {
+		       glBindTexture(GL_TEXTURE_2D, tex);
+		       aspect=1.0;
+		     }
 		 }
 	      
 	       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
@@ -564,7 +569,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	       //Define the center point of the shape
 	       glColor4f( (*pos)->r, (*pos)->g, (*pos)->b, (*pos)->a);
 	       glTexCoord2f(.5,.5);
-	       glVertex3f(xval,yval,-1);	 
+	       glVertex3f(xval,yval,0);	 
 	       	       
 	       glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);
 	       
@@ -574,8 +579,8 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 		
 		  t = (i-1)/(float) (*pos)->sides;
 		  
-		  glTexCoord2f(  0.5f + 0.5f*cosf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)/ (*pos)->tex_zoom, 0.5f + 0.5f*sinf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)/ (*pos)->tex_zoom);
-		   glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,-1);   
+		  glTexCoord2f(  0.5f + 0.5f*cosf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)/ (*pos)->tex_zoom, 0.5f + 0.5f*sinf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)/ (*pos)->tex_zoom);
+		   glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,0);   
 		}	
 	      glEnd();
 	      
@@ -611,7 +616,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 		{		  		 
 		  
 		  t = (i-1)/(float) (*pos)->sides;
-		  glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,-1);   	  
+		  glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,-1);   	  
 		  
 		}	
 	      glEnd();
@@ -625,7 +630,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	   for ( i=1;i< (*pos)->sides+1;i++)
 	     {	       
 	       t = (i-1)/(float) (*pos)->sides;
-	       glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? this->aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,-1); 	  
+	       glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,-1); 	  
 	       	      
 	     }
 	   glEnd();
@@ -940,7 +945,8 @@ void Renderer::draw_waveform(PresetOutputs * presetOutputs)
 {
 
   glMatrixMode( GL_MODELVIEW );
-  
+  glPushMatrix();
+  glLoadIdentity();
   
   modulate_opacity_by_volume(presetOutputs); 
   maximize_colors(presetOutputs);
@@ -982,7 +988,7 @@ void Renderer::draw_waveform(PresetOutputs * presetOutputs)
   
   if(presetOutputs->bWaveDots==1) glDisable(GL_LINE_STIPPLE);
   
-  
+   glPopMatrix();
 }
 
 void Renderer::maximize_colors(PresetOutputs *presetOutputs) {
