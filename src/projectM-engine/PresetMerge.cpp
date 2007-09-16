@@ -76,7 +76,7 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
 	pos != A.customWaves.end(); ++pos) 
     {
        (*pos)->a *= invratio;
-      for (int x; x <   (*pos)->samples; x++)
+      for (int x=0; x <   (*pos)->samples; x++)
 	{
 	   (*pos)->a_mesh[x]= (*pos)->a_mesh[x]*invratio;
 	}
@@ -86,7 +86,7 @@ void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double rat
 	pos != B.customWaves.end(); ++pos) 
     {
        (*pos)->a *= ratio;        
-      for (int x; x < (*pos)->samples; x++)
+      for (int x=0; x < (*pos)->samples; x++)
 	{
 	   (*pos)->a_mesh[x]= (*pos)->a_mesh[x]*ratio;
 	}
