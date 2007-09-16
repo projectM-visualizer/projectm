@@ -1,13 +1,13 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <GL/glut.h>
 #include "bmpLoader.h"
 #include "pcxLoader.h"
 #include "tgaLoader.h"
 #include <iostream>
 #include <string>
 #include <map>
+#include <GL/gl.h>
 
 
 // openGL extensions if not present, define them

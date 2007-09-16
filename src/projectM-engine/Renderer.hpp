@@ -5,7 +5,8 @@
 #include "PresetFrameIO.hpp"
 #include "BeatDetect.hpp"
 #include <string>
-
+#include <GL/gl.h>
+#include <GL/glu.h>
 #ifdef USE_FTGL
 #include <FTGL/FTGL.h>
 #include <FTGL/FTGLPixmapFont.h>

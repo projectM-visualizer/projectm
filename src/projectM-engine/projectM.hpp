@@ -54,8 +54,7 @@
 #ifdef WIN32
 #include <windows.h>
 #endif /** WIN32 */
-#include <GL/gl.h>
-#include <GL/glu.h>
+
 #endif /** MACOS */
 #ifdef WIN322
 #define inline
