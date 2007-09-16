@@ -67,7 +67,7 @@ Renderer * projectM::renderer = NULL;
 double presetDuration = 15;
 double smoothDuration = 5;
 //int smoothFrame = 0;
-int oldFrame = 0;
+int oldFrame = 1;
 
 DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height) :smoothFrame(0), beatDetect ( 0 )
 {
@@ -164,9 +164,10 @@ DLLEXPORT void projectM::renderFrame()
 	if ( renderer->noSwitch==0 && !m_presetChooser->empty())
 	{
 	  if ( presetInputs.progress>1.0 )
-	    {
+	    {  
+	      oldFrame = presetInputs.frame;
 	      presetInputs.progress=0.0;
-	      presetInputs.frame = 0;
+	      presetInputs.frame = 1;
 
 	      m_activePreset2 = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
 		(presetInputs, &m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
@@ -175,7 +176,7 @@ DLLEXPORT void projectM::renderFrame()
 
              nohard=(int)(presetInputs.fps*3.5);
              smoothFrame = (int)(presetInputs.fps * smoothDuration);
-	    
+	     
               printf("SOFT CUT - Smooth started\n");
 	    }	  	  
 	  else if ( ( beatDetect->bass-beatDetect->bass_old>beatDetect->beat_sensitivity ) && nohard<0 && false )//@REMOVE
@@ -187,6 +188,8 @@ DLLEXPORT void projectM::renderFrame()
 	      assert(m_activePreset.get());
 	      nohard=presetInputs.fps*5;
 	      smoothFrame=0;
+	      presetInputs.progress=0.0;
+	      presetInputs.frame = 1;
 	    }
 	  else nohard--;
 	}
@@ -195,8 +198,8 @@ DLLEXPORT void projectM::renderFrame()
       
         if (smoothFrame > 1 && !m_presetChooser->empty())
 	  {
-	    int frame = presetInputs.frame++;
-	    presetInputs.frame = oldFrame;
+	    int frame = ++presetInputs.frame;
+	    presetInputs.frame = ++oldFrame;
 	    presetInputs.progress= 1.0;
 	    assert(m_activePreset.get());
 	    m_activePreset->evaluateFrame();
@@ -555,7 +558,7 @@ void projectM::projectM_initengine()
 
 
 	this->presetInputs.progress = 0;
-	this->presetInputs.frame = 0;
+	this->presetInputs.frame = 1;
 
 	this->avgtime = 600;
 //bass_thresh = 0;
@@ -692,7 +695,7 @@ void projectM::projectM_resetengine()
 		beatDetect->reset();
 	}
 	this->presetInputs.progress = 0;
-	this->presetInputs.frame = 0;
+	this->presetInputs.frame = 1;
 
 // bass_thresh = 0;
 
