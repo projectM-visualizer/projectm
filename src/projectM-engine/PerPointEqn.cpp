@@ -42,7 +42,6 @@
 void PerPointEqn::evaluate(int i)
 {
 
-  int size;
   float * param_matrix;
   GenExpr * eqn_ptr;
 

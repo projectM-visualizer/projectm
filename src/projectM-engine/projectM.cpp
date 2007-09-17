@@ -76,6 +76,12 @@ DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, in
   projectM_resetGL( wvw, wvh );
 }
 
+DLLEXPORT projectM::~projectM() {
+  std::cerr << "[projectM] DESTROY PRESET TOOLS BEGIN" << std::endl;
+  destroyPresetTools();
+  std::cerr << "[projectM] DESTROY PRESET TOOLS BEGIN" << std::endl;
+}
+
 DLLEXPORT  projectM::projectM(std::string config_file) :smoothFrame(0), beatDetect ( 0 )
 {
  projectM_reset();

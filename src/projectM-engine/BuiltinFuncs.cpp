@@ -134,6 +134,9 @@ int BuiltinFuncs::init_builtin_func_db() {
 int BuiltinFuncs::destroy_builtin_func_db() {
 
 traverse<TraverseFunctors::DeleteFunctor<Func> >(builtin_func_tree);
+
+builtin_func_tree.clear();
+
 return PROJECTM_SUCCESS;
 }
 

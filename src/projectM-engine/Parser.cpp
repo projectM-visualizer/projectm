@@ -194,8 +194,9 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
 
 	if (!wrapsToNextLine(buffer.str())) {
 		tokenWrapAroundEnabled = false;
+		int buf_size = (int)buffer.str().length();
 		// <= to also remove equal sign parsing from stream
-		for (int k = 0; k <= buffer.str().length(); k++) {
+		for (int k = 0; k <= buf_size; k++) {
 			if (fs)					
 				fs.unget();
 			else

@@ -164,12 +164,12 @@ private:
   const PresetInputs & m_presetInputs; // added for gx, gy reference.
 
 template <class CustomObject>
-CustomObject * transfer_q_variables(std::vector<CustomObject*> & customObjects);
+void transfer_q_variables(std::vector<CustomObject*> & customObjects);
 };
 
 
 template <class CustomObject>
-CustomObject * Preset::transfer_q_variables(std::vector<CustomObject*> & customObjects)
+void Preset::transfer_q_variables(std::vector<CustomObject*> & customObjects)
 {
  	CustomObject * custom_object;
 

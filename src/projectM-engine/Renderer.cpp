@@ -651,13 +651,10 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
   
   float r,theta;
  
-  float offset,scale,dy2_adj;
+  float offset,scale;
 
-  float co;  
-  
   float wave_x_temp=0;
   float wave_y_temp=0;
-  float dy_adj;
 
   float cos_rot;
   float sin_rot;
