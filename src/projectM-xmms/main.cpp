@@ -160,7 +160,7 @@ int capture = 0;
 
 int worker_func(void*)
 { 
- char projectM_data[1024]; 
+// char projectM_data[1024]; 
  SDL_TimerID title_timer = NULL;
  std::string config_file;
  config_file = read_config();
@@ -269,9 +269,12 @@ int worker_func(void*)
  
 		
   printf("Worker thread: Exiting\n");
- if(title_timer) SDL_RemoveTimer(title_timer);
+ if(title_timer) 
+	SDL_RemoveTimer(title_timer);
  delete globalPM;
-  close_display();
+ close_display();
+
+ return 0;
 }
 
 extern "C" void projectM_xmms_init(void) 
@@ -341,7 +344,7 @@ extern "C" void projectM_render_freq(gint16 freq_data[2][256])
 std::string read_config()
 {
 
-   int n;
+//   int n;
    
    char num[512];
    FILE *in; 
