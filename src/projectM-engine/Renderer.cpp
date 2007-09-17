@@ -289,7 +289,7 @@ Renderer::~Renderer() {
   this->origy2 = NULL;
   this->gridx = NULL;
   this->gridy = NULL;
- 
+
   #ifdef USE_FTGL
 	if (title_font)
 		delete title_font;
@@ -298,6 +298,7 @@ Renderer::~Renderer() {
 	if (other_font)
 		delete other_font;
   #endif
+
 }
 
 

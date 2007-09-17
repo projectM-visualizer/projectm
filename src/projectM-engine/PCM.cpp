@@ -253,16 +253,13 @@ void PCM::getPCM(float *PCMdata, int samples, int channel, int freq, float smoot
    if (freq) 
 
      {
-       double temppcm[1024];     
-      
+       double temppcm[1024];
        for (int i=0;i<samples;i++)
 	 {temppcm[i]=(double)PCMdata[i];}
        rdft(samples, 1, temppcm, ip, w);
        for (int j=0;j<samples;j++)
 	 {PCMdata[j]=(float)temppcm[j];}
      }
-
-   
 }
 
 //getPCMnew

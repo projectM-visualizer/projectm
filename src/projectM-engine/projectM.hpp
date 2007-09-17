@@ -225,7 +225,7 @@ public:
 	std::auto_ptr<Preset> m_activePreset;
 	std::auto_ptr<Preset> m_activePreset2;
 
-  /** All readonly variables 
+    /** All readonly variables 
      *  which are passed as inputs 
      * to presets. See struct definitition above */
     PresetInputs presetInputs;

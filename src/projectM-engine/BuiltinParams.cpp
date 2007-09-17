@@ -350,6 +350,11 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
 
   load_builtin_param_float("treb", (void*)&presetInputs.treb,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, "");
 
+
+  load_builtin_param_float("mood_r", (void*)&presetInputs.mood_r,  NULL,P_FLAG_READONLY, 0.0, 1.0, 0.0, "");
+  load_builtin_param_float("mood_g", (void*)&presetInputs.mood_g,  NULL,P_FLAG_READONLY, 0.0, 1.0, 0, "");
+  load_builtin_param_float("mood_b", (void*)&presetInputs.mood_b,  NULL,P_FLAG_READONLY, 0.0, 1.0, 0, "");
+
   load_builtin_param_float("bass_att", (void*)&presetInputs.bass_att,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, "");
   load_builtin_param_float("mid_att", (void*)&presetInputs.mid_att,  NULL, P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, "");
   load_builtin_param_float("treb_att", (void*)&presetInputs.treb_att,  NULL, P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, "");
