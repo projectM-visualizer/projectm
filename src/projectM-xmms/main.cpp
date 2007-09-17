@@ -63,10 +63,10 @@ extern "C" void projectM_render_freq(gint16 pcm_data[2][256]);
 extern "C" int worker_func(void*);
 extern "C" VisPlugin *get_vplugin_info();
 std::string read_config();
-
+void saveSnapshotToFile();
 //extern preset_t * active_preset;
 
-FILE * debugFile = fopen("./dwrite-dump", "wb");
+//FILE * debugFile = fopen("./dwrite-dump", "wb");
 
 // Callback functions
 VisPlugin projectM_vtable = {
@@ -156,6 +156,7 @@ Uint32 get_xmms_title(Uint32 something, void *somethingelse) {
 	return 500;
 }
 
+int capture = 0;
 
 int worker_func(void*)
 { 
@@ -179,14 +180,11 @@ int worker_func(void*)
   /** Initialise projectM */
     
   globalPM = new projectM(config_file);
-
-      
-   
-
-    title_timer = SDL_AddTimer(500, get_xmms_title, NULL);
+         
+  title_timer = SDL_AddTimer(500, get_xmms_title, NULL);
     /** Initialise the thread */
-  SDL_SemTryWait(sem);
-  while ( SDL_SemTryWait(sem) ) {
+  // SDL_SemTryWait(sem);
+  while ( SDL_SemValue(sem)==1 ) {
         projectMEvent evt;
         projectMKeycode key;
         projectMModifier mod;
@@ -202,6 +200,15 @@ int worker_func(void*)
 
             if ( evt == PROJECTM_KEYDOWN ) {                 
 	   
+	      if(key == PROJECTM_K_c)
+		{
+		  //SDL_SaveBMP(screen, "/home/pete/1.bmp");
+		  saveSnapshotToFile();
+		}
+	      if(key == PROJECTM_K_v)
+		{
+		  // capture++;
+		}
 	      if(key == PROJECTM_K_f)
 		{
 		 
@@ -248,65 +255,34 @@ int worker_func(void*)
 
 	 //printf("%s\n",title);
 	// strcpy(globalPM->title,title);
+	//SDL_mutexP(mutex);
 	  globalPM->renderFrame();
-
+	  //SDL_mutexV(mutex);
       
 
         SDL_GL_SwapBuffers();
+
+	if (capture % 2 == 1) saveSnapshotToFile();
+	//	SDL_SemPost(sem);
       }
 
  
 		
   printf("Worker thread: Exiting\n");
  if(title_timer) SDL_RemoveTimer(title_timer);
-  free(globalPM);
+ delete globalPM;
   close_display();
 }
 
 extern "C" void projectM_xmms_init(void) 
 {
   
-
-  // read_cfg();
   printf("projectM plugin: Initializing\n");
-  /* 
- if (SDL_Init (SDL_INIT_VIDEO) < 0) {
-    printf ("Failed to initialize SDL\n"); 
-    //    projectM_vtable.disable_plugin (&projectM_vtable);
-    exit(-1);  
-    return;
-  }
-  */
+ 
   SDL_EnableUNICODE(1);
-  //title=malloc(sizeof(char)*512);
-  /*
-  pcmdataL=(double *)malloc(maxsamples*sizeof(double));
- pcmdataR=(double *)malloc(maxsamples*sizeof(double));
-  */
-  /* Preset loading function */
- // initPresetLoader();
-  
-  /* Load default preset directory */
-  //  loadPresetDir("/etc/projectM/presets/"); 
-  //loadPresetDir("/home/pete/103");
-  //loadPresetDir("/home/carm/carm_presets");
-  // loadPresetDir("/home/pete/good");
-  //loadPresetDir("/home/carm/presets");
-  //loadPresetDir("/mnt/huge/winxpsave/Program Files/winamp/Plugins/Milkdrop/2001");
- 
-
-  //glfInit();   
-  //initMenu();  
-
-
-  //  printf("%d %d\n", gx,gy(;
-
-  //initPCM(maxsamples);
-  //initBeatDetect();
- 
   
   mutex = SDL_CreateMutex();
-
+  sem = SDL_CreateSemaphore(1);
   worker_thread = SDL_CreateThread ( *worker_func, NULL);
  
 }
@@ -315,17 +291,16 @@ extern "C" void projectM_xmms_init(void)
 
 extern "C"void projectM_cleanup(void)
 {
-  
-  //free(pcmdataL); 
-  //free(pcmdataR);
-  //  free(title);
-  
- 
-  //SDL_WaitThread(worker_thread, NULL);
-  SDL_KillThread(worker_thread);
+
+  SDL_SemWait(sem);
+  SDL_WaitThread(worker_thread, NULL);
+  // SDL_KillThread(worker_thread);
   printf("killed thread\n");
 
+ 
+
   SDL_DestroyMutex(mutex);
+  SDL_DestroySemaphore(sem);
     printf("Destroy Mutex\n");
   SDL_Quit();
   
@@ -349,12 +324,12 @@ extern "C" void projectM_playback_stop(void)
 }
 extern "C" void projectM_render_pcm(gint16 pcm_data[2][512])
 {
-  	SDL_mutexP(mutex);
+  //SDL_mutexP(mutex);
       
        	/// @bug sperl: might want to look at this. crashes here sometimes 
         globalPM->beatDetect->pcm->addPCM16(pcm_data);
 	 
-	SDL_mutexV(mutex);
+       	//SDL_mutexV(mutex);
 	
 }
 
@@ -443,55 +418,55 @@ std::string read_config()
    }
 
 
- /*
-     fgets(num, 512, in);  fgets(num, 512, in);  fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &texsize);  
 
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &gx);  
-
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &gy);   
-
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &wvw);  
-
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &wvh);  
-   
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &fps);
-
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &fullscreen);
-     fgets(num, 512, in);
-
-     if(fgets(num, 512, in) != NULL)  strcpy(preset_dir, num);
-     preset_dir[strlen(preset_dir)-1]='\0';
- */ 
-     /*
-     fgets(num, 80, in);
-     fgets(num, 80, in);
-     
-     n=0;
-     while (num[n]!=' ' && num[n]!='\n' && n < 80 && num[n]!=EOF)
-       {
-	 	 disp[n]=num[n];
-		 n++;
-       }
-     disp[n]=0;
-
-    
-     // sprintf(disp,"%s",num );
-      setenv("DISPLAY",disp,1);
-      printf("%s %d\n", disp,strlen(disp));
-      setenv("LD_PRELOAD", "/usr/lib/tls/libGL.so.1.0.4496", 1);
-     */
- // fclose(in); 
-  
  abort();
 } 
 
+int frame = 1;
+char dumpPath[128];
 
 
+void saveSnapshotToFile()
+{
+
+  SDL_Surface *	bitmap;
+       
+        GLint		viewport[4];
+        long		bytewidth;
+        GLint		width, height;
+        long		bytes;
+    
+        glReadBuffer(GL_FRONT);
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        
+        width = viewport[2];
+        height = viewport[3];
+            
+        bytewidth = width * 4;
+        bytewidth = (bytewidth + 3) & ~3;
+        bytes = bytewidth * height;
+
+	/*
+        glFinish();
+        glPixelStorei(GL_PACK_ALIGNMENT, 4);
+        glPixelStorei(GL_PACK_ROW_LENGTH, 0);
+        glPixelStorei(GL_PACK_SKIP_ROWS, 0);
+        glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
+	*/
+	
+
+	bitmap = SDL_CreateRGBSurface(SDL_SWSURFACE, width,  height, 32,0,0,0,0);
+        glReadPixels(0, 0, width, height,
+                    GL_BGRA,
+                    GL_UNSIGNED_INT_8_8_8_8_REV,
+		     bitmap->pixels);
+
+	sprintf(dumpPath, "/home/pete/.projectM/%.8d.bmp", frame++);
+                
+	SDL_SaveBMP(bitmap, dumpPath);
+
+        SDL_FreeSurface(bitmap);
+        
+       
+}
 
