@@ -73,6 +73,14 @@ DLLEXPORT BeatDetect::BeatDetect() {
     this->pcm = new PCM();
   }
 
+DLLEXPORT BeatDetect::~BeatDetect() {
+
+ // Free the pcm buffer
+ if (pcm)
+	delete(pcm);
+
+}
+
 void BeatDetect::reset() {
   this->treb = 0;
   this->mid = 0;

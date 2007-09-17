@@ -79,7 +79,9 @@ DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, in
 DLLEXPORT projectM::~projectM() {
   std::cerr << "[projectM] DESTROY PRESET TOOLS BEGIN" << std::endl;
   destroyPresetTools();
-  std::cerr << "[projectM] DESTROY PRESET TOOLS BEGIN" << std::endl;
+  if (beatDetect)
+  	delete(beatDetect);
+  std::cerr << "[projectM] DESTROY PRESET TOOLS END" << std::endl;
 }
 
 DLLEXPORT  projectM::projectM(std::string config_file) :smoothFrame(0), beatDetect ( 0 )
@@ -854,11 +856,18 @@ int projectM::initPresetTools()
 
 	projectM_resetengine();
 
+	std::cerr << "[projectM] engine has been reset." << std::endl;
 	return PROJECTM_SUCCESS;
 }
 
 void projectM::destroyPresetTools()
 {
+
+	if (m_presetPos)
+		delete(m_presetPos);
+	
+	/// @slow might not be necessary
+	m_presetPos = 0;
 
 	if ( m_presetChooser )
 		delete ( m_presetChooser );
@@ -868,7 +877,7 @@ void projectM::destroyPresetTools()
 
 	if ( m_presetLoader )
 		delete ( m_presetLoader );
-
+	
 	/// @slow might not be necessary
 	m_presetLoader = 0;
 
