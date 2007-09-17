@@ -59,17 +59,14 @@
 /** Stash current engine */
 projectM *projectM::currentEngine = NULL;
 
-/** Static variable initialization involving the render. */
-/// @bug These probably shouldn't be static!
-RenderTarget * projectM::renderTarget = NULL;
-Renderer * projectM::renderer = NULL;
 
 double presetDuration = 15;
 double smoothDuration = 5;
 //int smoothFrame = 0;
 int oldFrame = 1;
 
-DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height) :smoothFrame(0), beatDetect ( 0 )
+DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height) :renderer(0), renderTarget(0), smoothFrame(0), beatDetect ( 0 )
+
 {
   projectM_reset();
   projectM_init(gx, gy, fps, texsize, wvw, wvh);  
@@ -79,9 +76,15 @@ DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, in
 DLLEXPORT projectM::~projectM() {
   std::cerr << "[projectM] DESTROY PRESET TOOLS BEGIN" << std::endl;
   destroyPresetTools();
+  std::cerr << "[projectM] DESTROY PRESET TOOLS END" << std::endl;
+
   if (beatDetect)
   	delete(beatDetect);
-  std::cerr << "[projectM] DESTROY PRESET TOOLS END" << std::endl;
+  if (renderer)
+	delete(renderer);
+  if (renderTarget)
+	delete(renderTarget);
+
 }
 
 DLLEXPORT  projectM::projectM(std::string config_file) :smoothFrame(0), beatDetect ( 0 )
@@ -498,8 +501,6 @@ DLLEXPORT void projectM::projectM_reset()
 
 	this->renderer = new Renderer ( width, height, gx, gy, renderTarget, textureManager, beatDetect, fontURL);
 
-
-         
 
 	renderer->setPresetName(m_activePreset->absoluteFilePath());
 

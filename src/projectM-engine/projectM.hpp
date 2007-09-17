@@ -124,9 +124,9 @@ public:
     static const std::string PROJECTM_PRESET_PATH;
 
     static projectM *currentEngine;
-    static Renderer *renderer;
-    static RenderTarget *renderTarget;
-  TextureManager *textureManager;
+    Renderer *renderer;
+    RenderTarget *renderTarget;
+    TextureManager *textureManager;
 
   std::string presetURL;
 

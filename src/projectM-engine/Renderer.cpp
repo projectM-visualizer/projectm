@@ -290,6 +290,14 @@ Renderer::~Renderer() {
   this->gridx = NULL;
   this->gridy = NULL;
  
+  #ifdef USE_FTGL
+	if (title_font)
+		delete title_font;
+	if (poly_font)
+		delete poly_font;
+	if (other_font)
+		delete other_font;
+  #endif
 }
 
 
