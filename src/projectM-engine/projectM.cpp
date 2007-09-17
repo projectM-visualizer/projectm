@@ -78,13 +78,20 @@ DLLEXPORT projectM::~projectM() {
   destroyPresetTools();
   std::cerr << "[projectM] DESTROY PRESET TOOLS END" << std::endl;
 
+
+  std::cerr << "[projectM] 1" << std::endl;
   if (beatDetect)
   	delete(beatDetect);
+std::cerr << "[projectM] 2" << std::endl;
   if (renderer)
 	delete(renderer);
+std::cerr << "[projectM] 3" << std::endl;
   if (renderTarget)
 	delete(renderTarget);
-
+std::cerr << "[projectM] 4" << std::endl;
+  if (textureManager)
+	delete(textureManager);
+std::cerr << "[projectM] 5" << std::endl;
 }
 
 DLLEXPORT  projectM::projectM(std::string config_file) :smoothFrame(0), beatDetect ( 0 )

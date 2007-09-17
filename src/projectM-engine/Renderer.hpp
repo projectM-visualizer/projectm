@@ -38,7 +38,7 @@ class Renderer
 
   
  public:
- /// @bug hack to get glConsol
+ 
 
 #ifdef USE_FTGL
 FTGLPixmapFont *title_font;
