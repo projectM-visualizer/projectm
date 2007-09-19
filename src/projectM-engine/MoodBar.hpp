@@ -21,9 +21,11 @@
 #ifndef _MOODBAR_HPP
 #define _MOODBAR_HPP
 
+class PCM;
+
 class MoodBar {
 public:
-  MoodBar(unsigned int numFreqs, int size, int rate) : m_numFreqs(numFreqs), m_size(size), m_rate(rate) {
+  MoodBar(unsigned int numFreqs, int size, int rate, PCM * pcm) : m_numFreqs(numFreqs), m_size(size), m_rate(rate), m_pcm(pcm) {
 	calcBarkbandTable();	
   }
 
@@ -31,7 +33,7 @@ public:
 
   /// Calculate rgb mood values. Out should be an array containing
   /// numFreqs pairs of real/complex values.  
-  void calculateMood(const float * out, float * rgb);
+  void calculateMood(float * rgb);
 
 private:
   unsigned int m_numFreqs;
@@ -40,6 +42,7 @@ private:
   /* This calculates a table that caches which bark band slot each
    * incoming band is supposed to go in. */
   void calcBarkbandTable ();
+  PCM * m_pcm;
 
   float m_amplitudes[24];
   static const unsigned int s_bark_bands[24];

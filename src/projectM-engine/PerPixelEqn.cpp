@@ -54,14 +54,8 @@ void PerPixelEqn::evaluate(int mesh_i, int mesh_j) {
 
   assert(!(eqn_ptr == NULL || param_matrix == NULL));
 
-//    param->matrix_flag = 0;         /** Force matrix ignore to update time */
- // for (int mesh_i = 0; mesh_i < param->gx; mesh_i++) { 
-  //  for (int mesh_j = 0; mesh_j < param->gy; mesh_j++) {
-//	std::cout << "gx,gy is " << param->gx << "," << param->gy << std::endl;
-      param_matrix[mesh_i][mesh_j] = eqn_ptr->eval_gen_expr(mesh_i, mesh_j);
-   // }
-  
-  
+  param_matrix[mesh_i][mesh_j] = eqn_ptr->eval_gen_expr(mesh_i, mesh_j);
+
   /* Now that this parameter has been referenced with a per
      pixel equation, we let the evaluator know by setting
      this flag */

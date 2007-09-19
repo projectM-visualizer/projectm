@@ -96,7 +96,8 @@ void PresetLoader::rescan()
   }
 
   // Push all entries in order from the file set to the file entries member (which is an indexed vector)
-  for (std::set<std::string>::iterator pos = alphaSortedFileSet.begin(); pos != alphaSortedFileSet.end();++pos) 
+  for (std::set<std::string>::iterator pos = alphaSortedFileSet.begin(); 
+	pos != alphaSortedFileSet.end();++pos) 
 	m_entries.push_back(*pos);
 }
 
@@ -107,7 +108,7 @@ std::auto_ptr<Preset> PresetLoader::loadPreset(unsigned int index, const PresetI
   assert(index >= 0);
   assert(index < m_entries.size());
 
-  // Return a new pointer to a present
+  // Return a new autopointer to a present
   return std::auto_ptr<Preset>(new Preset(m_entries[index], presetInputs, presetOutputs));
 }
 

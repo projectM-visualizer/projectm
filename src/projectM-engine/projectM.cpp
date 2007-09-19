@@ -48,6 +48,7 @@
 #include "CustomWave.hpp"
 #include "CustomShape.hpp"
 #include "IdlePreset.hpp"
+#include "MoodBar.hpp"
 
 #include <map>
 
@@ -56,8 +57,6 @@
 #include "ConfigFile.h"
 #include "TextureManager.hpp"
 
-/** Stash current engine */
-projectM *projectM::currentEngine = NULL;
 
 
 double presetDuration = 15;
@@ -77,29 +76,30 @@ DLLEXPORT projectM::~projectM() {
   std::cerr << "[projectM] DESTROY PRESET TOOLS BEGIN" << std::endl;
   destroyPresetTools();
   std::cerr << "[projectM] DESTROY PRESET TOOLS END" << std::endl;
-
+ 
 
   std::cerr << "[projectM] 1" << std::endl;
-  if (beatDetect)
-  	delete(beatDetect);
-std::cerr << "[projectM] 2" << std::endl;
   if (renderer)
 	delete(renderer);
+std::cerr << "[projectM] 2" << std::endl;
+  if (textureManager)
+	delete(textureManager);  
 std::cerr << "[projectM] 3" << std::endl;
+  if (beatDetect)
+  	delete(beatDetect);
+std::cerr << "[projectM] 4" << std::endl;
   if (renderTarget)
 	delete(renderTarget);
-std::cerr << "[projectM] 4" << std::endl;
-  if (textureManager)
-	delete(textureManager);
 std::cerr << "[projectM] 5" << std::endl;
+
 }
 
-DLLEXPORT  projectM::projectM(std::string config_file) :smoothFrame(0), beatDetect ( 0 )
+DLLEXPORT  projectM::projectM(std::string config_file) :
+	renderer(0), renderTarget(0), smoothFrame(0), beatDetect ( 0 )
 {
  projectM_reset();
  readConfig(config_file);
 
- 
 }
 
 void projectM::readConfig(std::string config_file)
@@ -163,6 +163,14 @@ DLLEXPORT void projectM::renderFrame()
 
 
   beatDetect->detectFromSamples();
+#ifdef USE_MOODBAR
+  float rgb[3];  
+  moodBar->calculateMood(rgb);
+  presetInputs.mood_r = rgb[0];
+  presetInputs.mood_g = rgb[1];
+  presetInputs.mood_b = rgb[2];
+#endif
+
   DWRITE ( "=== vol: %f\tbass: %f\tmid: %f\ttreb: %f ===\n",
 	   beatDetect->vol,beatDetect->bass,beatDetect->mid,beatDetect->treb );
   DWRITE ( "=== bass_att: %f ===\n",
@@ -174,7 +182,7 @@ DLLEXPORT void projectM::renderFrame()
 	presetInputs.bass_att = beatDetect->bass_att; 
 	presetInputs.mid_att = beatDetect->mid_att; 
 	presetInputs.treb_att = beatDetect->treb_att; 
-
+	
 	assert(m_activePreset.get());
 
 	m_activePreset->evaluateFrame();
@@ -367,6 +375,7 @@ DLLEXPORT void projectM::projectM_reset()
 	presetInputs.fps = fps;
 
 	/** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
+	assert(!beatDetect);
 	beatDetect = new BeatDetect();
 
 	/* Preset loading function */
@@ -771,8 +780,6 @@ void projectM::projectM_resetengine()
 
 	/* Q VARIABLES END */
 
-	/** Stash the current engine */
-	currentEngine = this;
 }
 
 /** Resets OpenGL state */
@@ -894,7 +901,3 @@ void projectM::destroyPresetTools()
 
 }
 
-void projectM::getCurrentMeshSize(int & x, int & y) {
-	x = this->presetInputs.gx;
-	y = this->presetInputs.gy;
-}

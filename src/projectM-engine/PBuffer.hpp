@@ -69,7 +69,9 @@ public:
 
   
 int usePbuffers;
-  
+
+  ~RenderTarget();
+
   RenderTarget( int texsize, int width, int height );
   void lock();
   void unlock();
@@ -85,8 +87,8 @@ int usePbuffers;
 */
     /** Render target texture ID for non-pbuffer systems */
     GLuint textureID[2];
-    GLuint fbuffer[1]; 
-    GLuint depthb[1];
+    GLuint fbuffer; 
+    GLuint depthb;
   };
 
 

@@ -37,6 +37,7 @@
 #include "Param.hpp"
 #include "Preset.hpp"
 #include <map>
+#include <iostream>
 
 /** Constructor */
 Param::Param( std::string _name, short int _type, short int _flags, void * _engine_val, void * _matrix,
@@ -52,11 +53,6 @@ Param::Param( std::string _name, short int _type, short int _flags, void * _engi
         lower_bound (_lower_bound)
     {
 
-    /** @@FIX THIS */
-    /// @bug listen to above's advice! 
-    /// @NOTE this is a hack, but will probably work fine
-    projectM::currentEngine->getCurrentMeshSize(this->gx, this->gy);
-    
 }
 
 
@@ -78,40 +74,15 @@ Param::Param(std::string _name) :
     /// @note may have fixed a recent bug. testing
     *((float*)engine_val) = default_init_val.float_val;
 
-       
-    /** @@FIX THIS */
-    /// @bug listen to above's advice! 
-    /// @NOTE this is a hack, but will probably work fine
-
-    projectM::currentEngine->getCurrentMeshSize(this->gx, this->gy);
-    assert(this->gx > 0);
-    assert(this->gy > 0); 
    
 }
 
 /* Free's a parameter type */
 Param::~Param() {
 
-    int x;
-
     // I hate this, but will let it be for now
     if (flags & P_FLAG_USERDEF) {
         delete((double*)engine_val);
-    }
-
-    //if (!(param->flags & P_FLAG_DONT_FREE_MATRIX)) {
-    if (matrix && !(flags & P_FLAG_DONT_FREE_MATRIX)) {
-
-        if (flags & P_FLAG_PER_POINT) {
-            free(matrix);
-	    matrix = 0;
-        } //FIX THIS NOW XMAS05
-        else if (flags & P_FLAG_PER_PIXEL) {
-            for (x = 0; x < gx; x++)
-                free(((float**)matrix)[x]);
-            free(matrix);
-            matrix = 0;
-        }
     }
 
     if (PARAM_DEBUG) printf("~Param: freeing \"%s\".\n", name.c_str());

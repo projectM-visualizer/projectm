@@ -34,14 +34,28 @@
 #include <agl.h>
 #endif /** MACOS */
 
+RenderTarget::~RenderTarget() {
+
+
+	glDeleteTextures( 1, &this->textureID[0]);
+
+	if (usePbuffers) 
+{
+		glDeleteTextures( 1, &this->textureID[1] );
+		glDeleteRenderbuffersEXT(1,  &this->depthb);
+		glDeleteFramebuffersEXT(1, &this->fbuffer);
+}
+
+}
+
 /** Creates new pbuffers */
 RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(false) {
 
     int mindim = 0;
     int origtexsize = 0;
-    this->usePbuffers = 1;
+    this->usePbuffers = true;
 
-    this->texsize=texsize;
+    this->texsize = texsize;
 
 
    if(this->usePbuffers)
@@ -57,8 +71,9 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(fal
 	  glGenRenderbuffersEXT(1, &depth_rb);
 	  glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depth_rb );
 	  glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, this->texsize,this->texsize  );
-	  glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depth_rb );         
-	  this->fbuffer[0] = depth_rb;
+	  glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depth_rb );
+	  this->fbuffer = fb;
+	  this->depthb = depth_rb;
 	  
 	  glGenTextures(1, &other_tex);
 	  glBindTexture(GL_TEXTURE_2D,other_tex);
@@ -148,7 +163,7 @@ void RenderTarget::lock() {
 
   if(this->usePbuffers)
     { 
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->fbuffer[0]);     
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->fbuffer);     
     }
   
     }

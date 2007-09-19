@@ -7,6 +7,7 @@
 #include "CustomWave.hpp"
 #include "TextureManager.hpp"
 #include <iostream>
+#include <cassert>
 
 class Preset;
 
@@ -72,8 +73,10 @@ Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTa
 	   this->origx2[x][y]=( origx-.5)*2;
 	   this->origy2[x][y]=( origy-.5)*2;
 	   
-	}}
+	}
+  }
   
+  /// @bug put these on member init list
   this->renderTarget = renderTarget;
   this->beatDetect = beatDetect;
   this->textureManager = textureManager;
@@ -272,33 +275,45 @@ Renderer::~Renderer() {
 
   int x;
 
+#if 1
+  std::cerr << "freeing grid elements" << std::endl;
+  assert(gx > 0);
   for(x = 0; x < this->gx; x++)
     {      
       free(this->gridx[x]);
-      free(this->gridy[x]);    
+      free(this->gridy[x]); 
       free(this->origx2[x]);
-      free(this->origy2[x]);            
+      free(this->origy2[x]);
     }
 
+
+  std::cerr << "freeing grids" << std::endl;
   free(this->origx2);
   free(this->origy2);
   free(this->gridx);
   free(this->gridy);
-   
+#endif
+#if 1
+std::cerr << "grid assign begin " << std::endl;
   this->origx2 = NULL;
   this->origy2 = NULL;
   this->gridx = NULL;
   this->gridy = NULL;
+  
+std::cerr << "grid assign end" << std::endl;
+#endif
 
   #ifdef USE_FTGL
+	std::cerr << "freeing title fonts" << std::endl;
 	if (title_font)
 		delete title_font;
 	if (poly_font)
 		delete poly_font;
 	if (other_font)
 		delete other_font;
+	std::cerr << "freeing title fonts finished" << std::endl;
   #endif
-
+	std::cerr << "exiting destructor" << std::endl;
 }
 
 

@@ -79,7 +79,7 @@ CustomWave::CustomWave(int _id):
 
   /* Start: Load custom wave parameters */
  
-  if ((param = Param::new_param_float("r", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->r, this->r_mesh, 1.0, 0.0, .5)) == NULL)
+  if ((param = Param::new_param_float("r", P_FLAG_NONE | P_FLAG_PER_POINT, &this->r, this->r_mesh, 1.0, 0.0, .5)) == NULL)
   {
     delete(this);
     /// @bug make exception
@@ -92,7 +92,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if ((param = Param::new_param_float("g", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->g,  this->g_mesh, 1.0, 0.0, .5)) == NULL)
+  if ((param = Param::new_param_float("g", P_FLAG_NONE | P_FLAG_PER_POINT, &this->g,  this->g_mesh, 1.0, 0.0, .5)) == NULL)
   {
     delete(this);
     /// @bug make exception
@@ -106,7 +106,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if ((param = Param::new_param_float("b", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->b,  this->b_mesh, 1.0, 0.0, .5)) == NULL)
+  if ((param = Param::new_param_float("b", P_FLAG_NONE | P_FLAG_PER_POINT, &this->b,  this->b_mesh, 1.0, 0.0, .5)) == NULL)
   {
     delete(this);
     /// @bug make exception
@@ -121,7 +121,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if ((param = Param::new_param_float("a", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->a,  this->a_mesh, 1.0, 0.0, .5)) == NULL)
+  if ((param = Param::new_param_float("a", P_FLAG_NONE | P_FLAG_PER_POINT, &this->a,  this->a_mesh, 1.0, 0.0, .5)) == NULL)
   {
     delete(this);
     /// @bug make exception
@@ -135,7 +135,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if ((param = Param::new_param_float("x", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->x,  this->x_mesh, 1.0, 0.0, .5)) == NULL)
+  if ((param = Param::new_param_float("x", P_FLAG_NONE | P_FLAG_PER_POINT, &this->x,  this->x_mesh, 1.0, 0.0, .5)) == NULL)
   {
     delete(this);
     /// @bug make exception
@@ -149,7 +149,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if ((param = Param::new_param_float("y", P_FLAG_DONT_FREE_MATRIX | P_FLAG_PER_POINT, &this->y,  this->y_mesh, 1.0, 0.0, .5)) == NULL)
+  if ((param = Param::new_param_float("y", P_FLAG_NONE | P_FLAG_PER_POINT, &this->y,  this->y_mesh, 1.0, 0.0, .5)) == NULL)
   {
     delete(this);
     /// @bug make exception
@@ -272,7 +272,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if ((param = Param::new_param_float("sample", P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT,
+  if ((param = Param::new_param_float("sample", P_FLAG_READONLY | P_FLAG_NONE | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT,
                                       &this->sample, this->sample_mesh, 1.0, 0.0, 0.0)) == NULL)
   {
     delete(this);
@@ -286,7 +286,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if ((param = Param::new_param_float("value1", P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v1, this->value1, 1.0, -1.0, 0.0)) == NULL)
+  if ((param = Param::new_param_float("value1", P_FLAG_READONLY | P_FLAG_NONE | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v1, this->value1, 1.0, -1.0, 0.0)) == NULL)
   {
     delete(this);
     abort();
@@ -298,7 +298,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if ((param = Param::new_param_float("value2", P_FLAG_READONLY | P_FLAG_DONT_FREE_MATRIX | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v2, this->value2, 1.0, -1.0, 0.0)) == NULL)
+  if ((param = Param::new_param_float("value2", P_FLAG_READONLY | P_FLAG_NONE | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v2, this->value2, 1.0, -1.0, 0.0)) == NULL)
   {
     delete(this);
     abort();

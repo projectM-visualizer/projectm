@@ -82,6 +82,7 @@ class PresetIterator;
 class PresetChooser;
 class PresetLoader;
 class TextureManager;
+class MoodBar;
 
 #include <memory>
 #ifdef WIN32
@@ -207,7 +208,7 @@ public:
 
     /// Deinitialize all preset related tools. Usually done before projectM cleanup
     void destroyPresetTools();
-    void getCurrentMeshSize(int & x, int & y);
+
     ~projectM();
 
    private:
@@ -224,6 +225,8 @@ public:
 	// Currently loaded preset- will be fancier when smooth preset switching
 	std::auto_ptr<Preset> m_activePreset;
 	std::auto_ptr<Preset> m_activePreset2;
+
+	MoodBar * moodBar;
 
     /** All readonly variables 
      *  which are passed as inputs 

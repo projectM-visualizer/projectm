@@ -46,7 +46,6 @@
 #define P_FLAG_QVAR (1 << 2)
 #define P_FLAG_TVAR (1 << 3)
 #define P_FLAG_ALWAYS_MATRIX (1 << 4)
-#define P_FLAG_DONT_FREE_MATRIX (1 << 5)
 #define P_FLAG_PER_PIXEL (1 << 6)
 #define P_FLAG_PER_POINT (1 << 7)
 
@@ -72,7 +71,6 @@ public:
     CValue default_init_val; /* a default initial condition value */
     CValue upper_bound; /* this parameter's upper bound */
     CValue lower_bound; /* this parameter's lower bound */
-    int gx, gy;
 
     /// Create a new parameter
     Param(std::string name, short int type, short int flags, 

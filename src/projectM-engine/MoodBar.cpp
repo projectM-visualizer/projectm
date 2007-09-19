@@ -17,6 +17,7 @@ extern "C" {
 }
 #include <iostream>
 #include <cassert>
+#include "PCM.hpp"
 
 const unsigned int MoodBar::s_bark_bands[]  = 
 { 100,  200,  300,  400,  510,  630,  770,   920, 
@@ -24,17 +25,18 @@ const unsigned int MoodBar::s_bark_bands[]  =
   5300, 6400, 7700, 9500, 12000, 15500 };
 
 void MoodBar::calculateMood
-	(const float * out, float * rgb) {
+	(float * rgb) {
 
-  int i;
+  unsigned int i;
   float real, imag;
   
   for (i = 0; i < 24; ++i)
     m_amplitudes[i] = 0.f;
-
+   
   for (i = 0; i < m_numFreqs; ++i)
     {
-      real = out[2*i];  imag = out[2*i + 1];
+      /// @bug handle both left and right channels
+      real = m_pcm->vdataL[2*i];  imag = m_pcm->vdataL[2*i + 1];
       m_amplitudes[m_barkband_table[i]] += sqrtf (real*real + imag*imag);
     }
 
