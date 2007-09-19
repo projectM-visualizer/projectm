@@ -122,9 +122,7 @@ typedef enum {
 
 class projectM {
 public:
-    static const std::string PROJECTM_PRESET_PATH;
-
-    static projectM *currentEngine;
+   
     Renderer *renderer;
     RenderTarget *renderTarget;
     TextureManager *textureManager;
