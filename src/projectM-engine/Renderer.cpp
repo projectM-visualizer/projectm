@@ -279,7 +279,7 @@ Renderer::~Renderer() {
   std::cerr << "freeing grid elements" << std::endl;
   assert(gx > 0);
   for(x = 0; x < this->gx; x++)
-    {      
+    {
       free(this->gridx[x]);
       free(this->gridy[x]); 
       free(this->origx2[x]);
@@ -299,7 +299,7 @@ std::cerr << "grid assign begin " << std::endl;
   this->origy2 = NULL;
   this->gridx = NULL;
   this->gridy = NULL;
-  
+
 std::cerr << "grid assign end" << std::endl;
 #endif
 
@@ -398,11 +398,6 @@ void Renderer::reset(int w, int h)
     this->aspect=(float)h / (float)w;
     this -> vw = w;
     this -> vh = h;
-
-//FIXME maybe needs called elsewhere
-  //if (!this->renderTarget->usePbuffers) {
-   //   renderTarge->createPBuffers(w,h,this->renderTarget);
-   //   }
 
     /* Our shading model--Gouraud (smooth). */
     glShadeModel( GL_SMOOTH);

@@ -12,7 +12,7 @@ void PresetInputs::Initialize ( int gx, int gy )
 	int x, y;
 
 	this->gx =gx;
-	this->gy=gy;
+	this->gy= gy;
 
 	this->x_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
 	for ( x = 0; x < gx; x++ )
@@ -74,9 +74,47 @@ void PresetInputs::Initialize ( int gx, int gy )
 PresetOutputs::PresetOutputs()
 {}
 
+PresetOutputs::~PresetOutputs()
+{
+	for ( int x = 0; x < this->gx; x++ )
+	{
+
+
+		free(this->x_mesh[x]);
+		free(this->y_mesh[x]);
+		free(this->sx_mesh[x]);
+		free(this->sy_mesh[x]);
+		free(this->dy_mesh[x]);
+		free(this->dx_mesh[x]);
+		free(this->cy_mesh[x]);
+		free(this->cx_mesh[x]);
+		
+		free(this->warp_mesh[x]);
+		free(this->zoom_mesh[x]);
+		free(this->zoomexp_mesh[x]);
+		free(this->rot_mesh[x]);
+		
+	}
+
+		free(this->x_mesh);
+		free(this->y_mesh);
+		free(this->sx_mesh);
+		free(this->sy_mesh);
+		free(this->dy_mesh);
+		free(this->dx_mesh);
+		free(this->cy_mesh);
+		free(this->cx_mesh);
+		free(this->warp_mesh);
+		free(this->zoom_mesh);
+		free(this->zoomexp_mesh);
+		free(this->rot_mesh);
+}
+
 void PresetOutputs::Initialize ( int gx, int gy )
 {
 
+	this->gx = gx;
+	
 	int x;
 	this->x_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
 	for ( x = 0; x < gx; x++ )

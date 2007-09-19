@@ -18,6 +18,7 @@ public:
 
     void Initialize(int gx, int gy);
     PresetOutputs();
+    ~PresetOutputs();
     /* PER FRAME VARIABLES BEGIN */
     float zoom;
     float zoomexp;
@@ -136,7 +137,8 @@ public:
   bool two_waves;
   double wave_rot;
   double wave_scale;
-
+  private:
+	int gy,gx;
 };
 
 /// Container for all *read only* engine variables a preset requires to 
