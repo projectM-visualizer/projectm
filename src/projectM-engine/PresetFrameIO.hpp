@@ -64,6 +64,7 @@ public:
     float mv_dy;
     float mv_dx;
 
+    int gy,gx;
     /* PER_FRAME VARIABLES END */
 
     float fRating;
@@ -137,8 +138,8 @@ public:
   bool two_waves;
   double wave_rot;
   double wave_scale;
-  private:
-	int gy,gx;
+  
+
 };
 
 /// Container for all *read only* engine variables a preset requires to 

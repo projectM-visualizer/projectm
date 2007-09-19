@@ -85,6 +85,18 @@ void PCM::initPCM(int samples) {
  
 }
 
+PCM::~PCM() {
+
+	free(pcmdataL);
+	free(pcmdataR);
+	free(w);
+	free(ip);
+	
+	free(PCMd[0]);
+	free(PCMd[1]);
+	free(PCMd);
+
+}
 
 void PCM::addPCMfloat(float *PCMdata, int samples)
 {

@@ -222,20 +222,22 @@ public:
 	// Provides accessor functions to choose presets
 	PresetChooser * m_presetChooser;
 
-	// Currently loaded preset- will be fancier when smooth preset switching
+	// Currently loaded preset
 	std::auto_ptr<Preset> m_activePreset;
+
+        // Destination preset when smooth preset switching
 	std::auto_ptr<Preset> m_activePreset2;
 
-	MoodBar * moodBar;
+    /// Experimental mood bar instance. May or may not make it into 1.0 release 
+    MoodBar * moodBar;
 
-    /** All readonly variables 
-     *  which are passed as inputs 
-     * to presets. See struct definitition above */
+    /// All readonly variables which are passed as inputs to presets
     PresetInputs presetInputs;
 
-    /** The presets modify these values. For now this is declared on stack
-     * but might be better on heap for sake of smooth preset switching */
+    /// A preset outputs container used and modified by the "current" preset
     PresetOutputs presetOutputs;
+ 
+    /// A preset outputs container used for smooth preset switching
     PresetOutputs presetOutputs2;
 };
 #endif

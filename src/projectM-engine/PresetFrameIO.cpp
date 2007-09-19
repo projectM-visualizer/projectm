@@ -76,6 +76,8 @@ PresetOutputs::PresetOutputs()
 
 PresetOutputs::~PresetOutputs()
 {
+	assert(this->gx > 0);
+
 	for ( int x = 0; x < this->gx; x++ )
 	{
 
@@ -113,8 +115,10 @@ PresetOutputs::~PresetOutputs()
 void PresetOutputs::Initialize ( int gx, int gy )
 {
 
+	assert(gx > 0);
 	this->gx = gx;
-	
+	this->gy= gy;
+	assert(this->gx > 0);
 	int x;
 	this->x_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
 	for ( x = 0; x < gx; x++ )

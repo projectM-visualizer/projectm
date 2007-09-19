@@ -52,6 +52,7 @@ public:
     float vdataR[512];
 
     PCM();
+    ~PCM();
     void initPCM(int maxsamples);
     void addPCMfloat(float *PCMdata, int samples);
     void addPCM16(short [2][512]);
