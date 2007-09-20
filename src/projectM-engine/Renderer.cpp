@@ -191,9 +191,18 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     //video texture memory and render fullscreen.
     
     /** Reset the viewport size */
+    if(renderTarget->renderToTexture)      
+      {
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->renderTarget->fbuffer[1]);	  
+	glViewport( 0, 0, this->renderTarget->texsize, this->renderTarget->texsize );
+      }
+    else  glViewport( 0, 0, this->vw, this->vh );
+    
     DWRITE( "viewport: %d x %d\n", this->vw, this->vh );
-    glViewport( 0, 0, this->vw, this->vh );
-    glClear( GL_COLOR_BUFFER_BIT );
+
+  
+ 
+   glClear( GL_COLOR_BUFFER_BIT );
         
     glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID[0] );
       
@@ -222,6 +231,9 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     if(this->showstats%2) draw_stats(presetInputs);
     glTranslatef(0.5 ,0.5,0);
     
+if(renderTarget->renderToTexture)      
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);	
+
     DWRITE("End of Pass 2\n" );
 }
 

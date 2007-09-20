@@ -68,11 +68,12 @@ public:
     ContextType origContextType;
 
   
-int usePbuffers;
+  int usePbuffers;
+  int renderToTexture;
 
   ~RenderTarget();
 
-  RenderTarget( int texsize, int width, int height );
+  RenderTarget( int texsize, int width, int height, int renderToTexture );
   void lock();
   void unlock();
   int nearestPower2( int value, TextureScale scaleRule );
@@ -86,9 +87,9 @@ int usePbuffers;
 #endif
 */
     /** Render target texture ID for non-pbuffer systems */
-    GLuint textureID[2];
-    GLuint fbuffer; 
-    GLuint depthb;
+    GLuint textureID[3];
+    GLuint fbuffer[2]; 
+    GLuint depthb[2];
   };
 
 

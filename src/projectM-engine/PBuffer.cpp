@@ -40,20 +40,27 @@ RenderTarget::~RenderTarget() {
 	glDeleteTextures( 1, &this->textureID[0]);
 
 	if (usePbuffers) 
-{
+         {
 		glDeleteTextures( 1, &this->textureID[1] );
-		glDeleteRenderbuffersEXT(1,  &this->depthb);
-		glDeleteFramebuffersEXT(1, &this->fbuffer);
-}
+		glDeleteRenderbuffersEXT(1,  &this->depthb[0]);
+		glDeleteFramebuffersEXT(1, &this->fbuffer[0]);
+		if(renderToTexture)
+		  {
+		    glDeleteTextures( 1, &this->textureID[2] );
+		    glDeleteRenderbuffersEXT(1,  &this->depthb[1]);
+		    glDeleteFramebuffersEXT(1, &this->fbuffer[1]);
+		  }
+         }
 
 }
 
 /** Creates new pbuffers */
-RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(false) {
+RenderTarget::RenderTarget(int texsize, int width, int height, int renderToTexture) : usePbuffers(false) {
 
     int mindim = 0;
     int origtexsize = 0;
     this->usePbuffers = true;
+    this->renderToTexture = 0;
 
     this->texsize = texsize;
 
@@ -64,6 +71,33 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(fal
       
       if(glewIsSupported("GL_EXT_framebuffer_object"))
 	{
+
+	  if(this->renderToTexture)
+	    {
+	  GLuint   fb2, depth_rb2;
+	  glGenFramebuffersEXT(1, &fb2);
+	  glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fb2 );
+	  glGenRenderbuffersEXT(1, &depth_rb2);
+	  glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depth_rb2 );
+
+	  glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, this->texsize,this->texsize  );
+	  glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depth_rb2 );         
+	  this->fbuffer[1] = fb2;
+	  this->depthb[1]=  depth_rb2;
+	  glGenTextures(1, &this->textureID[2]);
+	  glBindTexture(GL_TEXTURE_2D, this->textureID[2]); 
+	  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	  glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, this->textureID[2], 0 );
+
+	    }
+
+
+
+
 	  GLuint   fb,  depth_rb, rgba_tex,  other_tex;
 	  glGenFramebuffersEXT(1, &fb);
 	  glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fb );
@@ -72,8 +106,8 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(fal
 	  glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depth_rb );
 	  glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, this->texsize,this->texsize  );
 	  glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depth_rb );
-	  this->fbuffer = fb;
-	  this->depthb = depth_rb;
+	  this->fbuffer[0] = fb;
+	  this->depthb[0]=  depth_rb;
 	  
 	  glGenTextures(1, &other_tex);
 	  glBindTexture(GL_TEXTURE_2D,other_tex);
@@ -163,7 +197,7 @@ void RenderTarget::lock() {
 
   if(this->usePbuffers)
     { 
-      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->fbuffer);     
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->fbuffer[0]);     
     }
   
     }

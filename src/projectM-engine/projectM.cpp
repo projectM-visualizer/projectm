@@ -510,7 +510,7 @@ DLLEXPORT void projectM::projectM_reset()
 
 	this->hasInit = 1;
 
-	this->renderTarget = new RenderTarget ( texsize, width, height );
+	this->renderTarget = new RenderTarget ( texsize, width, height, 0 );
         this->textureManager = new TextureManager(presetURL);
 	this->presetInputs.gx = gx;
 	this->presetInputs.gy = gy;
