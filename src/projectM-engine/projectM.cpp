@@ -492,8 +492,9 @@ DLLEXPORT void projectM::projectM_reset()
 #endif
 #endif
 
+	if (presetInputs.fps > 0)
 	mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps );
-
+	else mspf = 0;
 
 //    initMenu();
 //DWRITE( "post initMenu()\n" );
