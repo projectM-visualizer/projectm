@@ -202,7 +202,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 
   
  
-   glClear( GL_COLOR_BUFFER_BIT );
+    //glClear( GL_COLOR_BUFFER_BIT );
         
     glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID[0] );
       
@@ -274,7 +274,7 @@ void Renderer::PerFrame(PresetOutputs *presetOutputs)
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);}
   
   glRasterPos2i(0,0);
-  glClear(GL_COLOR_BUFFER_BIT);
+  //  glClear(GL_COLOR_BUFFER_BIT);
   glColor4d(0.0, 0.0, 0.0,1.0);
   
   glMatrixMode(GL_TEXTURE);
@@ -1439,7 +1439,7 @@ void Renderer::render_texture_to_screen(PresetOutputs *presetOutputs) {
      glMatrixMode(GL_TEXTURE);  
      glLoadIdentity();
 
-    glClear( GL_DEPTH_BUFFER_BIT );
+     // glClear(GL_DEPTH_BUFFER_BIT );
     glMatrixMode(GL_MODELVIEW);
       glLoadIdentity();
      
@@ -1607,7 +1607,7 @@ void Renderer::render_texture_to_studio(PresetOutputs *presetOutputs, PresetInpu
      glMatrixMode(GL_TEXTURE);  
      glLoadIdentity();
 
-    glClear( GL_DEPTH_BUFFER_BIT );
+     //glClear( GL_DEPTH_BUFFER_BIT );
     glMatrixMode(GL_MODELVIEW);
       glLoadIdentity();
      
