@@ -73,9 +73,10 @@ public:
 
   ~RenderTarget();
 
-  RenderTarget( int texsize, int width, int height, int renderToTexture );
+  RenderTarget( int texsize, int width, int height );
   void lock();
   void unlock();
+  GLuint initRenderToTexture();
   int nearestPower2( int value, TextureScale scaleRule );
 
     /** Opaque pbuffer context and pbuffer */

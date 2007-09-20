@@ -1151,6 +1151,10 @@ void Renderer::draw_motion_vectors(PresetOutputs *presetOutputs) {
   
 }
 
+GLuint Renderer::initRenderToTexture()
+{
+  return renderTarget->initRenderToTexture();
+}
 
 void Renderer::draw_borders(PresetOutputs *presetOutputs) {
 

@@ -70,8 +70,6 @@
 #include "PresetFrameIO.hpp"
 #include "Renderer.hpp"
 
-
-
 #include <memory>
 
 class BeatDetect;
@@ -187,6 +185,7 @@ public:
     DLLEXPORT void projectM_resetGL( int width, int height );
     DLLEXPORT void projectM_setTitle( char *title );
     DLLEXPORT void renderFrame();
+   
 
     void projectM_initengine();
     void projectM_resetengine();

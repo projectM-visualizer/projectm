@@ -68,6 +68,7 @@ char *title;
   ~Renderer();
   void RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
   void reset(int w, int h);
+  GLuint initRenderToTexture();
   void PerPixelMath(PresetOutputs *presetOutputs,  PresetInputs *presetInputs);
   void WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetInputs, bool isSmoothing);
 
