@@ -25,15 +25,16 @@ class PCM;
 
 class MoodBar {
 public:
+
   MoodBar(unsigned int numFreqs, int size, int rate, PCM * pcm) : m_numFreqs(numFreqs), m_size(size), m_rate(rate), m_pcm(pcm) {
 	calcBarkbandTable();	
   }
 
   ~MoodBar() { delete(m_barkband_table); }
 
-  /// Calculate rgb mood values. Out should be an array containing
-  /// numFreqs pairs of real/complex values.  
-  void calculateMood(float * rgb);
+  /// Calculate rgb mood values for both left and right channels. 
+  /// Out should be an array containing  numFreqs pairs of real/complex values.  
+  void calculateMood(float * rgb_left, float * rgb_right, float * rgb_avg);
 
 private:
   unsigned int m_numFreqs;
@@ -44,8 +45,11 @@ private:
   void calcBarkbandTable ();
   PCM * m_pcm;
 
-  float m_amplitudes[24];
+  float m_amplitudes_left[24];
+  float m_amplitudes_right[24];
+
   static const unsigned int s_bark_bands[24];
+
   unsigned int * m_barkband_table;
 
 };

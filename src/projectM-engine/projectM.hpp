@@ -175,8 +175,6 @@ public:
     /** Beat detection engine */
     BeatDetect * beatDetect;
 
-  
-    
     /** Functions */
     DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height);
 

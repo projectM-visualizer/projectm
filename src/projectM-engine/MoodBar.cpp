@@ -25,35 +25,47 @@ const unsigned int MoodBar::s_bark_bands[]  =
   5300, 6400, 7700, 9500, 12000, 15500 };
 
 void MoodBar::calculateMood
-	(float * rgb) {
+	(float * rgb_left, float * rgb_right, float * rgb_avg) {
 
   unsigned int i;
-  float real, imag;
-  
-  for (i = 0; i < 24; ++i)
-    m_amplitudes[i] = 0.f;
-   
+  float real_left, real_right;
+  float imag_left, imag_right;
+
+
+  for (i = 0; i < 24; ++i) {
+    m_amplitudes_left[i] = 0.f;
+    m_amplitudes_right[i] = 0.f;
+
+  }
   for (i = 0; i < m_numFreqs; ++i)
     {
-      /// @bug handle both left and right channels
-      real = m_pcm->vdataL[2*i];  imag = m_pcm->vdataL[2*i + 1];
-      m_amplitudes[m_barkband_table[i]] += sqrtf (real*real + imag*imag);
+      real_left = m_pcm->vdataL[2*i];  imag_left = m_pcm->vdataL[2*i + 1];
+      real_right = m_pcm->vdataR[2*i];  imag_right = m_pcm->vdataR[2*i + 1];
+
+      m_amplitudes_left[m_barkband_table[i]] += sqrtf (real_left*real_left + imag_left*imag_left);
+      m_amplitudes_right[m_barkband_table[i]] += sqrtf (real_right*real_right + imag_right*imag_right);
     }
 
+  for (i = 0; i < 24; ++i) {
+    rgb_left[i/8] += m_amplitudes_left[i] * m_amplitudes_left[i];
+    rgb_right[i/8] += m_amplitudes_right[i] * m_amplitudes_right[i];
+  }
 
-  for (i = 0; i < 24; ++i)
-    rgb[i/8] += m_amplitudes[i] * m_amplitudes[i];
-
-  rgb[0] = sqrtf (rgb[0]);
-  rgb[1] = sqrtf (rgb[1]);
-  rgb[2] = sqrtf (rgb[2]);
+   for (i = 0; i < 3; i++) {
+	rgb_left[i] = sqrtf (rgb_left[i]);
+	rgb_right[i] = sqrtf (rgb_right[i]);
+	
+	rgb_avg[i] = (rgb_left[i] + rgb_right[i]) / 2;
+	rgb_avg[i] = sqrtf (rgb_avg[i]); 
+   }
 
   /// @bug verify normalized values
-  std::cerr << "rgb: " << rgb[0] << "," << "," << rgb[1] << "," << rgb[2] << std::endl;
-  for (i = 0; i < 3;i++) {
-  	assert(rgb[i] <= 1.0); 
-  	assert(rgb[i] >= 0.0); 
+  std::cerr << "rgb_avg: " << rgb_avg[0] << "," << "," << rgb_avg[1] << "," << rgb_avg[2] << std::endl;
+  for (i = 0; i < 3; i++) {
+  	assert(rgb_avg[i] <= 1.0); 
+  	assert(rgb_avg[i] >= 0.0); 
   }
+
 }
 
 
