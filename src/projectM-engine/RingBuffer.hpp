@@ -5,7 +5,7 @@
 template<typename kind> 
 class RingBuffer { 
 public:
-	static const unsigned long RING_BUFFER_SIZE = 300;
+	static const unsigned long RING_BUFFER_SIZE = 100;
 private:
 
     kind buffer[RING_BUFFER_SIZE]; 
@@ -27,15 +27,25 @@ public:
     ~RingBuffer() { } 
  
     void append(kind value) { 
-        if(current_element >= RING_BUFFER_SIZE) { 
+        if (current_element >= RING_BUFFER_SIZE) { 
             current_element = 0; 
-        } 
+        }
  
         buffer[current_element] = value; 
  
         ++current_element; 
-    } 
+    }
  
+
+    kind back() {
+	
+	if (current_element <= 0) {
+            current_element = RING_BUFFER_SIZE;
+        }
+	--current_element;
+ 	return buffer[current_element];
+    }
+
     kind get() { 
         if(current_element >= RING_BUFFER_SIZE) { 
             current_element = 0; 

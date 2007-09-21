@@ -36,9 +36,8 @@ public:
   MoodBar(int rate, PCM * pcm) : m_numFreqs(pcm->numsamples/2 + 1), m_size(pcm->numsamples), m_rate(rate), m_pcm(pcm) {
 	calcBarkbandTable();	
 	resetBuffer();
-
   }
-  
+
   ~MoodBar() { delete(m_barkband_table); }
 
   /// Calculate rgb mood values for both left and right channels. 
