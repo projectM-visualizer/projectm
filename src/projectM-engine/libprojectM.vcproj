@@ -127,6 +127,7 @@
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
+				WarnAsError="false"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
 				ShowIncludes="true"
