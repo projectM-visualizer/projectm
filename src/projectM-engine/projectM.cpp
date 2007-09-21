@@ -33,6 +33,10 @@
 #include "time.h"
 #endif
 
+#ifdef WIN32
+#include <time.h>
+#endif
+
 //#include <xmms/plugin.h>
 #include <iostream>
 #include "projectM.hpp"
@@ -72,7 +76,7 @@ DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, in
   projectM_resetGL( wvw, wvh );
 }
 
-DLLEXPORT projectM::~projectM() {
+projectM::~projectM() {
   std::cerr << "[projectM] DESTROY PRESET TOOLS BEGIN" << std::endl;
   destroyPresetTools();
   std::cerr << "[projectM] DESTROY PRESET TOOLS END" << std::endl;
@@ -308,7 +312,7 @@ DLLEXPORT void projectM::renderFrame()
 	DWRITE ( "exiting renderFrame()\n" );
 }
 
-DLLEXPORT void projectM::projectM_reset()
+void projectM::projectM_reset()
 {
 
 //    DWRITE( "projectM_reset(): in\n" );

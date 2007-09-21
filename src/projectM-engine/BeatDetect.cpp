@@ -35,6 +35,7 @@
 #include "projectM.hpp"
 #include "BeatDetect.hpp"
 #include "PCM.hpp"
+#include <cmath>
 
 DLLEXPORT BeatDetect::BeatDetect() {
   int x,y; 
@@ -156,13 +157,14 @@ void BeatDetect::getBeatVals( float *vdataL,float *vdataR ) {
 
 	  bass=(beat_instant[0])/(1.5*beat_history[0]);
 
-	  if ( isnan( treb ) ) {
+	  
+	  if ( projectM_isnan( treb ) ) {
 	    treb = 0.0;
 	  }
-	  if ( isnan( mid ) ) {
+	  if ( projectM_isnan( mid ) ) {
 	    mid = 0.0;
 	  }
-	  if ( isnan( bass ) ) {
+	  if ( projectM_isnan( bass ) ) {
 	    bass = 0.0;
 	  }
 	  treb_att=.6 * treb_att + .4 * treb;

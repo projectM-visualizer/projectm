@@ -59,7 +59,7 @@ float PrefunExpr::eval_prefun_expr ( int mesh_i, int mesh_j )
 	/* This is slightly less than safe, since
 	   who knows if the passed argument is valid. For
 	   speed purposes we'll go with this */
-	float arg_list[this->num_args];
+	float * arg_list = new float[this->num_args];
 
 #ifdef EVAL_DEBUG_DOUBLE
 	DWRITE ( "fn[" );
@@ -79,6 +79,7 @@ float PrefunExpr::eval_prefun_expr ( int mesh_i, int mesh_j )
 
 
 	}
+	delete(arg_list);
 
 #ifdef EVAL_DEBUG_DOUBLE
 	DWRITE ( "]" );

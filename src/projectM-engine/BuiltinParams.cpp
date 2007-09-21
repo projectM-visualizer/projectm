@@ -6,6 +6,8 @@
 #include "Algorithms.hpp"
 #include "InitCondUtils.hpp"
 #include <iostream>
+#include <algorithm>
+
 
 using namespace Algorithms;
 

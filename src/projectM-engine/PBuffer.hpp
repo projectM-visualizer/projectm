@@ -38,7 +38,7 @@
 
 #ifdef WIN32
 #include <windows.h>
-#include <GL/gl.h>
+#include <glew.h>
 #endif /** WIN32 */
 
 #ifdef LINUX

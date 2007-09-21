@@ -15,11 +15,14 @@
 #include <sstream>
 #include <set>
 
+#ifdef LINUX
 extern "C"
 {
 #include <errno.h>
-#include <dirent.h>
 }
+#endif
+
+
 #include <cassert>
 #include "projectM.hpp"
 
@@ -114,6 +117,10 @@ std::auto_ptr<Preset> PresetLoader::loadPreset(unsigned int index, const PresetI
 
 void PresetLoader::handleDirectoryError()
 {
+#ifdef WIN32
+	std::cerr << "[PresetLoader] warning: errno unsupported on win32 platforms. fix me" << std::endl;
+#else
+
   switch (errno)
   {
   case ENOENT:
@@ -137,4 +144,5 @@ void PresetLoader::handleDirectoryError()
   default:
     break;
   }
+#endif
 }

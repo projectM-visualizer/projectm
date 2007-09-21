@@ -15,6 +15,8 @@
 //
 
 #include "MoodBar.hpp"
+#include "Common.hpp"
+
 #include <cmath>
 extern "C" {
 #include <malloc.h>
@@ -272,8 +274,8 @@ void MoodBar::stretchNormalize (float * rgb)
   avgbb /= (float) tb;
 
   // lost from here- what is theory behind this?
-  mini = fmaxf (avg + (avgb - avg) * 2.f, avgbb);
-  maxi = fminf (avg + (avgu - avg) * 2.f, avguu);
+  mini = projectM_fmax (avg + (avgb - avg) * 2.f, avgbb);
+  maxi = projectM_fmin (avg + (avgu - avg) * 2.f, avguu);
   delta = maxi - mini;
 
   if (delta == 0.f)
@@ -282,7 +284,10 @@ void MoodBar::stretchNormalize (float * rgb)
   // Assign colos to normalized m_ringBufferue of last item in buffer
 //  i = numvals-1;
 //  m_ringBuffers[c].
-   rgb[c] = finite (rgb[c]) ? fminf(1.f, fmaxf(0.f, (rgb[c] - mini) / delta))
+#ifdef LINUX
+   rgb[c] = finite (rgb[c]) ? projectM_fmin(1.f, projectM_fmax(0.f, (rgb[c] - mini) / delta))
                                : 0.f;
+#endif
+	
   }
 }
