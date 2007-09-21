@@ -284,10 +284,9 @@ void MoodBar::stretchNormalize (float * rgb)
   // Assign colos to normalized m_ringBufferue of last item in buffer
 //  i = numvals-1;
 //  m_ringBuffers[c].
-#ifdef LINUX
-   rgb[c] = finite (rgb[c]) ? projectM_fmin(1.f, projectM_fmax(0.f, (rgb[c] - mini) / delta))
+
+   rgb[c] = (!projectM_isnan(rgb[c])) ? projectM_fmin(1.f, projectM_fmax(0.f, (rgb[c] - mini) / delta))
                                : 0.f;
-#endif
 	
   }
 }
