@@ -20,23 +20,38 @@
 
 #ifndef _MOODBAR_HPP
 #define _MOODBAR_HPP
-
-class PCM;
+#include "PCM.hpp"
+#include "RingBuffer.hpp"
 
 class MoodBar {
 public:
 
-  MoodBar(unsigned int numFreqs, int size, int rate, PCM * pcm) : m_numFreqs(numFreqs), m_size(size), m_rate(rate), m_pcm(pcm) {
+
+  MoodBar(PCM * pcm) : m_numFreqs(pcm->numsamples/2 + 1), m_size(pcm->numsamples), m_rate(FIXED_SAMPLE_RATE), m_pcm(pcm) {
 	calcBarkbandTable();	
+	resetBuffer();
+
   }
 
+  MoodBar(int rate, PCM * pcm) : m_numFreqs(pcm->numsamples/2 + 1), m_size(pcm->numsamples), m_rate(rate), m_pcm(pcm) {
+	calcBarkbandTable();	
+	resetBuffer();
+
+  }
+  
   ~MoodBar() { delete(m_barkband_table); }
 
   /// Calculate rgb mood values for both left and right channels. 
-  /// Out should be an array containing  numFreqs pairs of real/complex values.  
+  /// Uses the pcm instance's latest assignment into its
+  /// pcmL/R data buffers as inputs 
   void calculateMood(float * rgb_left, float * rgb_right, float * rgb_avg);
 
 private:
+  void resetBuffer() ;
+
+  /// @bug need to find this elsewhere
+  static const int FIXED_SAMPLE_RATE = 44100;
+
   unsigned int m_numFreqs;
   int m_size;
   int m_rate;
@@ -44,11 +59,14 @@ private:
    * incoming band is supposed to go in. */
   void calcBarkbandTable ();
   PCM * m_pcm;
-
+  void standardNormalize(float * rgb);
   float m_amplitudes_left[24];
   float m_amplitudes_right[24];
-
+  
+  void stretchNormalize (float * colors);
   static const unsigned int s_bark_bands[24];
+
+  RingBuffer<float> m_ringBuffers[3];
 
   unsigned int * m_barkband_table;
 
