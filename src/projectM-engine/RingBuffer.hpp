@@ -5,7 +5,7 @@
 template<typename kind> 
 class RingBuffer { 
 public:
-	static const unsigned long RING_BUFFER_SIZE = 100;
+	static const unsigned long RING_BUFFER_SIZE = 5000;
 private:
 
     kind buffer[RING_BUFFER_SIZE]; 
