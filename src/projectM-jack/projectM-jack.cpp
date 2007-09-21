@@ -32,7 +32,6 @@
 #include "ConfigFile.h"
 #include <string>
 #include <iostream>
-#include <config.h>
 #include <stdio.h>
 #include <unistd.h>
 
@@ -86,9 +85,9 @@ std::string read_config()
    char projectM_home[1024];
    char projectM_config[1024];
 
-   strcpy(projectM_config, PROJECTM_DATADIR);
-   strcpy(projectM_config+strlen(PROJECTM_DATADIR), CONFIG_FILE);
-   projectM_config[strlen(PROJECTM_DATADIR)+strlen(CONFIG_FILE)]='\0';
+   strcpy(projectM_config, PROJECTM_PREFIX);
+   strcpy(projectM_config+strlen(PROJECTM_PREFIX), CONFIG_FILE);
+   projectM_config[strlen(PROJECTM_PREFIX)+strlen(CONFIG_FILE)]='\0';
    printf("dir:%s \n",projectM_config);
    home=getenv("HOME");
    strcpy(projectM_home, home);
@@ -153,52 +152,6 @@ std::string read_config()
    }
 
 
- /*
-     fgets(num, 512, in);  fgets(num, 512, in);  fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &texsize);  
-
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &gx);  
-
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &gy);   
-
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &wvw);  
-
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &wvh);  
-   
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &fps);
-
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &fullscreen);
-     fgets(num, 512, in);
-
-     if(fgets(num, 512, in) != NULL)  strcpy(preset_dir, num);
-     preset_dir[strlen(preset_dir)-1]='\0';
- */ 
-     /*
-     fgets(num, 80, in);
-     fgets(num, 80, in);
-     
-     n=0;
-     while (num[n]!=' ' && num[n]!='\n' && n < 80 && num[n]!=EOF)
-       {
-	 	 disp[n]=num[n];
-		 n++;
-       }
-     disp[n]=0;
-
-    
-     // sprintf(disp,"%s",num );
-      setenv("DISPLAY",disp,1);
-      printf("%s %d\n", disp,strlen(disp));
-      setenv("LD_PRELOAD", "/usr/lib/tls/libGL.so.1.0.4496", 1);
-     */
- // fclose(in); 
-  
  abort();
 } 
 
@@ -225,14 +178,14 @@ void renderLoop() {
 	    if ( evt == PROJECTM_KEYDOWN ) {                 
      
 
-                if(key == SDLK_f)
+                if(key == PROJECTM_K_f)
                 {
                  
                     globalPM->fullscreen = fullscreen ^= 1;
                     resize_display(fvw, fvh, fullscreen);
                     globalPM->projectM_resetGL( fvw, fvh ); 
                 }
-		else if(key == SDLK_q) { exit (1);}
+		else if(key == PROJECTM_K_q || key == PROJECTM_K_ESCAPE) {delete(globalPM); exit (1);}
                 else  {globalPM->key_handler(evt,key,mod);}
 
             }
