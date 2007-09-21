@@ -65,13 +65,14 @@ void MoodBar::calculateMood
 	(float * rgb_left, float * rgb_right, float * rgb_avg) {
 
   unsigned int i;
-  float real_left, real_right;
-  float imag_left, imag_right;
+  float real_left, real_right, real_avg;
+  float imag_left, imag_right, imag_avg;
 
 
   for (i = 0; i < 24; ++i) {
     m_amplitudes_left[i] = 0.f;
     m_amplitudes_right[i] = 0.f;
+    m_amplitudes_avg[i] = 0.f;
   }
 
   for (i = 0; i < m_numFreqs; ++i)
@@ -81,28 +82,33 @@ void MoodBar::calculateMood
  
       real_left = m_pcm->pcmdataL[2*i];  imag_left = m_pcm->pcmdataL[2*i + 1];
       real_right = m_pcm->pcmdataR[2*i];  imag_right = m_pcm->pcmdataR[2*i + 1];
-
+      real_avg = (real_left + real_right) / 2.0;
+      imag_avg = (imag_left + imag_right) / 2.0;
+     
       m_amplitudes_left[m_barkband_table[i]] += sqrtf (real_left*real_left + imag_left*imag_left);
       m_amplitudes_right[m_barkband_table[i]] += sqrtf (real_right*real_right + imag_right*imag_right);
+      m_amplitudes_avg[m_barkband_table[i]] += sqrtf (real_avg*real_avg + imag_avg*imag_avg);
+
     }
 
   for (i= 0; i < 3; i++) {
 	rgb_left[i] = 0.0;
   	rgb_right[i] = 0.0; 
+	rgb_avg[i] = 0.0;
   }
 
   for (i = 0; i < 24; ++i) {
     rgb_left[i/8] += m_amplitudes_left[i] * m_amplitudes_left[i];
     rgb_right[i/8] += m_amplitudes_right[i] * m_amplitudes_right[i];
+    rgb_avg[i/8] += m_amplitudes_avg[i] * m_amplitudes_avg[i];
   }
 
    for (i = 0; i < 3; i++) {
-	rgb_avg[i] = (rgb_left[i] + rgb_right[i]) / 2.0;
-	rgb_avg[i] = sqrtf (rgb_avg[i]); 
-
+	
 	rgb_left[i] = sqrtf (rgb_left[i]);
 	rgb_right[i] = sqrtf (rgb_right[i]);
-	
+	rgb_avg[i] = sqrtf (rgb_avg[i]);
+
    }
 
 
@@ -189,6 +195,7 @@ void MoodBar::stretchNormalize (float * rgb)
   // Compute max and min m_ringBuffer of the array
   for (i = 1; i < numvals; i++)
     {
+
       float _tmpval = m_ringBuffers[c].back();
       if (_tmpval > maxi) 
 	maxi = _tmpval;

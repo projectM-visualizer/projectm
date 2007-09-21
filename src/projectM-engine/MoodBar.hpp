@@ -61,6 +61,7 @@ private:
   void standardNormalize(float * rgb);
   float m_amplitudes_left[24];
   float m_amplitudes_right[24];
+  float m_amplitudes_avg[24];
   
   void stretchNormalize (float * colors);
   static const unsigned int s_bark_bands[24];
