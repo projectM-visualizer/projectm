@@ -56,7 +56,7 @@ void MoodBar::resetBuffer()  {
 
 	for (int c = 0; c < 3; c++)
 		for (unsigned int i = 0; i < RingBuffer<float>::RING_BUFFER_SIZE; i++)
-			m_ringBuffers[c].append(.5f);
+			m_ringBuffers[c].append(0.f);
 		
 }
 
@@ -114,7 +114,7 @@ void MoodBar::calculateMood
   //standardNormalize(rgb_left);
   //standardNormalize(rgb_right);
 
-  std::cerr << "rgb_avg: " << rgb_avg[0] << "," << rgb_avg[1] << "," << rgb_avg[2] << std::endl;
+  //std::cerr << "rgb_avg: " << rgb_avg[0] << "," << rgb_avg[1] << "," << rgb_avg[2] << std::endl;
 
 #ifdef ASSERT_MOODBAR
   for (i = 0; i < 3; i++) {
@@ -171,7 +171,7 @@ void MoodBar::stretchNormalize (float * rgb)
   float avguu = 0.f, avgbb = 0.f;
   unsigned int i;
   int t = 0;
-  
+
   // iterate over r,g,b
   for (int c = 0; c < 3; c++) {
 
@@ -183,12 +183,12 @@ void MoodBar::stretchNormalize (float * rgb)
   if (numvals == 0)
 	return;
 
-  mini = maxi = m_ringBuffers[c].get();
+  mini = maxi = m_ringBuffers[c].back();
 
   // Compute max and min m_ringBuffer of the array
   for (i = 1; i < numvals; i++)
     {
-      float _tmpval = m_ringBuffers[c].get();
+      float _tmpval = m_ringBuffers[c].back();
       if (_tmpval > maxi) 
 	maxi = _tmpval;
       else if (_tmpval < mini) 
@@ -198,7 +198,7 @@ void MoodBar::stretchNormalize (float * rgb)
   // Compute array average excluding the maximum and minimum ranges
   for (i = 0; i < numvals; i++)
     {
-  	float _tmpval = m_ringBuffers[c].get();
+  	float _tmpval = m_ringBuffers[c].back();
  
       if(_tmpval != mini && _tmpval != maxi)
 	{
@@ -212,7 +212,7 @@ void MoodBar::stretchNormalize (float * rgb)
   // Again we exclude the max and min elements.
   for (i = 0; i < numvals; i++)
     {
-	float _tmpval = m_ringBuffers[c].get();
+	float _tmpval = m_ringBuffers[c].back();
  
       if (_tmpval != mini && _tmpval != maxi)
 	{
@@ -241,9 +241,9 @@ void MoodBar::stretchNormalize (float * rgb)
   // one of m_ringBuffer greater than the previously computed upper bound.
   // As usual, min and max elements are excluded.
   for (i = 0; i < numvals; i++) {
-	float _tmpval = m_ringBuffers[c].get();
+
+	float _tmpval = m_ringBuffers[c].back();
 	
-    
       if (_tmpval != mini && _tmpval != maxi)
 	{
 	  if (_tmpval > avgu) 
@@ -274,8 +274,7 @@ void MoodBar::stretchNormalize (float * rgb)
   // Assign colos to normalized m_ringBufferue of last item in buffer
 //  i = numvals-1;
 //  m_ringBuffers[c].
-   rgb[c] = finite (rgb[c]) ? fmin(1.f, fmax(0.f, (rgb[c] - mini) / delta))
+   rgb[c] = finite (rgb[c]) ? fminf(1.f, fmaxf(0.f, (rgb[c] - mini) / delta))
                                : 0.f;
-
   }
 }
