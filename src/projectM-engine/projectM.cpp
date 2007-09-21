@@ -170,7 +170,7 @@ DLLEXPORT void projectM::renderFrame()
 #endif
 
 #ifdef USE_MOODBAR
-  float rgb_left[3], rgb_right[3], rgb_avg[3];  
+  float rgb_left[3], rgb_right[3], rgb_avg[3];
   moodBar->calculateMood(rgb_left, rgb_right, rgb_avg);
 
   presetInputs.mood_r = rgb_avg[0];

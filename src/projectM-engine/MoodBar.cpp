@@ -35,6 +35,7 @@ const unsigned int MoodBar::s_bark_bands[]  =
   5300, 6400, 7700, 9500, 12000, 15500 };
 
 
+/// NOTE: currently unused
 void MoodBar::standardNormalize(float * rgb) {
 	
 	float sum = 0;
@@ -264,8 +265,8 @@ void MoodBar::stretchNormalize (float * rgb)
   avgbb /= (float) tb;
 
   // lost from here- what is theory behind this?
-  mini = fmax (avg + (avgb - avg) * 2.f, avgbb);
-  maxi = fmin (avg + (avgu - avg) * 2.f, avguu);
+  mini = fmaxf (avg + (avgb - avg) * 2.f, avgbb);
+  maxi = fminf (avg + (avgu - avg) * 2.f, avguu);
   delta = maxi - mini;
 
   if (delta == 0.f)
