@@ -2,8 +2,12 @@
 // C++ Implementation: MoodBar
 //
 // Description: 
-//
-//
+//  Calculates moodbar values from spectrum frequency data. This code is shamelessly stolen
+//  from the GPL'ed moodbar project / research by Gavin Wood. The biggest difference between
+//  his implementation and mine is the adaptations for "real time" normalization. A ring buffer
+//  is used to remember a fixed window of most recently observed rgb values. All such unnormalized
+//  values are used to calculate a "stretched" normalized set of color intensities.
+
 // Author: Carmelo Piccione <carmelo.piccione@gmail.com>, (C) 2007
 //
 // Copyright: See COPYING file that comes with this distribution
@@ -19,10 +23,42 @@ extern "C" {
 #include <cassert>
 #include "PCM.hpp"
 
+
+#define SPECTRUM_BAND_FREQ(band, size, rate) \
+  (((float)(band))*((float)(rate))/((float)(size)))
+
+
+/// Bark band hard coded values stolen directly from moodbar implementation
 const unsigned int MoodBar::s_bark_bands[]  = 
 { 100,  200,  300,  400,  510,  630,  770,   920, 
   1080, 1270, 1480, 1720, 2000, 2320, 2700,  3150, 3700, 4400, 
   5300, 6400, 7700, 9500, 12000, 15500 };
+
+
+void MoodBar::standardNormalize(float * rgb) {
+	
+	float sum = 0;
+
+	for (int i = 0; i < 3; i++) {
+		sum += rgb[i];
+	}
+	
+	if (sum == 0)
+		return;
+		
+	for (int i = 0; i < 3; i++) {
+		rgb[i] /= sum;
+	}
+	
+}
+
+void MoodBar::resetBuffer()  {
+
+	for (int c = 0; c < 3; c++)
+		for (unsigned int i = 0; i < RingBuffer<float>::RING_BUFFER_SIZE; i++)
+			m_ringBuffers[c].append(.5f);
+		
+}
 
 void MoodBar::calculateMood
 	(float * rgb_left, float * rgb_right, float * rgb_avg) {
@@ -35,16 +71,24 @@ void MoodBar::calculateMood
   for (i = 0; i < 24; ++i) {
     m_amplitudes_left[i] = 0.f;
     m_amplitudes_right[i] = 0.f;
-
   }
+
   for (i = 0; i < m_numFreqs; ++i)
     {
-      real_left = m_pcm->vdataL[2*i];  imag_left = m_pcm->vdataL[2*i + 1];
-      real_right = m_pcm->vdataR[2*i];  imag_right = m_pcm->vdataR[2*i + 1];
+      //std::cerr << "vdataL[2*" << i << "] = " << m_pcm->vdataL[2*i] << std::endl;
+      //std::cerr << "vdataL[2*" << i << "+1] = " << m_pcm->vdataL[2*i+1] << std::endl;
+ 
+      real_left = m_pcm->pcmdataL[2*i];  imag_left = m_pcm->pcmdataL[2*i + 1];
+      real_right = m_pcm->pcmdataR[2*i];  imag_right = m_pcm->pcmdataR[2*i + 1];
 
       m_amplitudes_left[m_barkband_table[i]] += sqrtf (real_left*real_left + imag_left*imag_left);
       m_amplitudes_right[m_barkband_table[i]] += sqrtf (real_right*real_right + imag_right*imag_right);
     }
+
+  for (i= 0; i < 3; i++) {
+	rgb_left[i] = 0.0;
+  	rgb_right[i] = 0.0; 
+  }
 
   for (i = 0; i < 24; ++i) {
     rgb_left[i/8] += m_amplitudes_left[i] * m_amplitudes_left[i];
@@ -52,20 +96,36 @@ void MoodBar::calculateMood
   }
 
    for (i = 0; i < 3; i++) {
+	rgb_avg[i] = (rgb_left[i] + rgb_right[i]) / 2.0;
+	rgb_avg[i] = sqrtf (rgb_avg[i]); 
+
 	rgb_left[i] = sqrtf (rgb_left[i]);
 	rgb_right[i] = sqrtf (rgb_right[i]);
 	
-	rgb_avg[i] = (rgb_left[i] + rgb_right[i]) / 2;
-	rgb_avg[i] = sqrtf (rgb_avg[i]); 
    }
 
-  /// @bug verify normalized values
-  std::cerr << "rgb_avg: " << rgb_avg[0] << "," << "," << rgb_avg[1] << "," << rgb_avg[2] << std::endl;
+
+   stretchNormalize(rgb_left);
+   stretchNormalize(rgb_right);
+   stretchNormalize(rgb_avg);
+
+  /// @bug verify normalized m_ringBuffer
+  //standardNormalize(rgb_avg);
+  //standardNormalize(rgb_left);
+  //standardNormalize(rgb_right);
+
+  std::cerr << "rgb_avg: " << rgb_avg[0] << "," << rgb_avg[1] << "," << rgb_avg[2] << std::endl;
+
+#ifdef ASSERT_MOODBAR
   for (i = 0; i < 3; i++) {
   	assert(rgb_avg[i] <= 1.0); 
   	assert(rgb_avg[i] >= 0.0); 
   }
+#endif
 
+
+
+  
 }
 
 
@@ -88,12 +148,134 @@ MoodBar::calcBarkbandTable ()
   
   for (i = 0; i < m_numFreqs; ++i)
     {
-      if (barkband < 23 && 1)
-	  //(unsigned int) GST_SPECTRUM_BAND_FREQ (i, m_size, m_rate) 
-	  //  >= s_bark_bands[barkband])
+      if (barkband < 23 && 
+	  (unsigned int) SPECTRUM_BAND_FREQ (i, m_size, m_rate) 
+ 	   >= s_bark_bands[barkband])
 	barkband++;
 
       m_barkband_table[i] = barkband;
 
     }
+}
+
+
+
+/* Copied and mod'ed from moodbar source code which also says the following:
+   The normalization code was copied from Gav Wood's Exscalibar
+ * library, normalise.cpp
+ */
+void MoodBar::stretchNormalize (float * rgb)
+{
+  float mini, maxi, tu = 0.f, tb = 0.f;
+  float avgu = 0.f, avgb = 0.f, delta, avg = 0.f;
+  float avguu = 0.f, avgbb = 0.f;
+  unsigned int i;
+  int t = 0;
+  
+  // iterate over r,g,b
+  for (int c = 0; c < 3; c++) {
+
+  // Append latest un-normalized value on ring buffer
+  m_ringBuffers[c].append(rgb[c]);
+
+  unsigned int numvals = RingBuffer<float>::RING_BUFFER_SIZE;
+
+  if (numvals == 0)
+	return;
+
+  mini = maxi = m_ringBuffers[c].get();
+
+  // Compute max and min m_ringBuffer of the array
+  for (i = 1; i < numvals; i++)
+    {
+      float _tmpval = m_ringBuffers[c].get();
+      if (_tmpval > maxi) 
+	maxi = _tmpval;
+      else if (_tmpval < mini) 
+	mini = _tmpval;
+    }
+
+  // Compute array average excluding the maximum and minimum ranges
+  for (i = 0; i < numvals; i++)
+    {
+  	float _tmpval = m_ringBuffers[c].get();
+ 
+      if(_tmpval != mini && _tmpval != maxi)
+	{
+	  avg += _tmpval / ((float) numvals); 
+	  t++; 
+	}
+    }
+
+  // Now compute average values if we partition the elements into
+  // two sets segmented by the previously computed average
+  // Again we exclude the max and min elements.
+  for (i = 0; i < numvals; i++)
+    {
+	float _tmpval = m_ringBuffers[c].get();
+ 
+      if (_tmpval != mini && _tmpval != maxi)
+	{
+	  if (_tmpval > avg) 
+	    { 
+	      avgu += _tmpval; 
+	      tu++; 
+	    }
+	  else 
+	    { 
+	      avgb += _tmpval;
+	      tb++; 
+	    }
+	}
+    }
+
+  // This normalizes the computations in the previous for loop
+  // so they represent proper averages of their respective sets
+  avgu /= (float) tu;
+  avgb /= (float) tb;
+
+  tu = 0.f; 
+  tb = 0.f;
+
+  // Computes two averages. One of m_ringBuffer that are less than previously computer lower bound and 
+  // one of m_ringBuffer greater than the previously computed upper bound.
+  // As usual, min and max elements are excluded.
+  for (i = 0; i < numvals; i++) {
+	float _tmpval = m_ringBuffers[c].get();
+	
+    
+      if (_tmpval != mini && _tmpval != maxi)
+	{
+	  if (_tmpval > avgu) 
+	    { 
+	      avguu += _tmpval;
+	      tu++; 
+	    }
+
+	  else if (_tmpval < avgb) 
+	    { 
+	      avgbb += _tmpval;
+	      tb++; 
+	    }
+	}
+    }
+
+  avguu /= (float) tu;
+  avgbb /= (float) tb;
+
+  // lost from here- what is theory behind this?
+  mini = fmax (avg + (avgb - avg) * 2.f, avgbb);
+  maxi = fmin (avg + (avgu - avg) * 2.f, avguu);
+  delta = maxi - mini;
+
+  if (delta == 0.f)
+    delta = 1.f;
+
+  // Assign colos to normalized m_ringBufferue of last item in buffer
+//  i = numvals-1;
+//  m_ringBuffers[c].
+   rgb[c] = finite (rgb[c]) ? fmin(1.f, fmax(0.f, (rgb[c] - mini) / delta))
+                               : 0.f;
+
+  }
 }

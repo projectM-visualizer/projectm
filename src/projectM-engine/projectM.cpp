@@ -64,7 +64,7 @@ double smoothDuration = 5;
 //int smoothFrame = 0;
 int oldFrame = 1;
 
-DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height) :renderer(0), renderTarget(0), smoothFrame(0), beatDetect ( 0 )
+DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height) :renderer(0), renderTarget(0), smoothFrame(0), beatDetect ( 0 ), moodBar(0)
 
 {
   projectM_reset();
@@ -87,6 +87,9 @@ std::cerr << "[projectM] 2" << std::endl;
 std::cerr << "[projectM] 3" << std::endl;
   if (beatDetect)
   	delete(beatDetect);
+  if (moodBar)
+	delete(moodBar);
+
 std::cerr << "[projectM] 4" << std::endl;
   if (renderTarget)
 	delete(renderTarget);
@@ -95,7 +98,7 @@ std::cerr << "[projectM] 5" << std::endl;
 }
 
 DLLEXPORT  projectM::projectM(std::string config_file) :
-	renderer(0), renderTarget(0), smoothFrame(0), beatDetect ( 0 )
+	renderer(0), renderTarget(0), smoothFrame(0), beatDetect ( 0 ), moodBar(0)
 {
  projectM_reset();
  readConfig(config_file);
@@ -156,19 +159,24 @@ DLLEXPORT void projectM::renderFrame()
 
 //       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
   presetInputs.ResetMesh();
- 
-
 
 //     printf("%f %d\n",Time,frame);
 
 
   beatDetect->detectFromSamples();
+  
+#ifndef USE_MOODBAR
+#define USE_MOODBAR
+#endif
+
 #ifdef USE_MOODBAR
-  float rgb[3];  
-  moodBar->calculateMood(rgb);
-  presetInputs.mood_r = rgb[0];
-  presetInputs.mood_g = rgb[1];
-  presetInputs.mood_b = rgb[2];
+  float rgb_left[3], rgb_right[3], rgb_avg[3];  
+  moodBar->calculateMood(rgb_left, rgb_right, rgb_avg);
+
+  presetInputs.mood_r = rgb_avg[0];
+  presetInputs.mood_g = rgb_avg[1];
+  presetInputs.mood_b = rgb_avg[2];
+
 #endif
 
   DWRITE ( "=== vol: %f\tbass: %f\tmid: %f\ttreb: %f ===\n",
@@ -377,6 +385,8 @@ DLLEXPORT void projectM::projectM_reset()
 	/** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
 	assert(!beatDetect);
 	beatDetect = new BeatDetect();
+
+	moodBar = new MoodBar(beatDetect->pcm);
 
 	/* Preset loading function */
 	initPresetTools();

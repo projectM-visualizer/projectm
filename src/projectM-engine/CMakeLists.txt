@@ -1,7 +1,7 @@
 PROJECT(projectM)
 ADD_LIBRARY(projectM SHARED projectM.cpp projectM.hpp PBuffer.cpp PBuffer.hpp InitCond.cpp InitCond.hpp
  Expr.cpp PCM.cpp Parser.cpp Preset.cpp Common.hpp BeatDetect.cpp PCM.hpp PerPixelEqn.cpp Eval.hpp 
-Param.cpp CustomWave.cpp CustomShape.hpp CustomShape.cpp Param.hpp CustomWave.hpp BeatDetect.hpp console_interface.h 
+RingBuffer.hpp Param.cpp CustomWave.cpp CustomShape.hpp CustomShape.cpp Param.hpp CustomWave.hpp BeatDetect.hpp console_interface.h 
 Func.hpp Func.cpp Eval.cpp wipemalloc.h PerFrameEqn.cpp PerPointEqn.cpp fftsg.cpp console_interface.cpp
 CValue.hpp Expr.hpp timer.cpp  wipemalloc.cpp PerFrameEqn.hpp PerPixelEqn.hpp PerPointEqn.hpp BuiltinFuncs.hpp 
 BuiltinFuncs.cpp compare.h event.h fatal.h fftsg.h timer.h BuiltinParams.hpp BuiltinParams.cpp Preset.hpp Renderer.cpp Renderer.hpp ParamUtils.hpp 
