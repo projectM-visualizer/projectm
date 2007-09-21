@@ -5,8 +5,16 @@
 #include "PresetFrameIO.hpp"
 #include "BeatDetect.hpp"
 #include <string>
+
+#ifdef LINUX
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
+
+#ifdef WIN32
+#include <glew.h>
+#endif
+
 #ifdef USE_FTGL
 #include <FTGL/FTGL.h>
 #include <FTGL/FTGLPixmapFont.h>

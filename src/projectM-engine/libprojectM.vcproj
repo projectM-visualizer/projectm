@@ -117,7 +117,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft Visual Studio 8\VC\include\GL&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;GLEW_BUILD;USE_FBO"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -127,6 +128,8 @@
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
+				Detect64BitPortabilityProblems="true"
+				ShowIncludes="true"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -224,6 +227,10 @@
 			</File>
 			<File
 				RelativePath=".\InitCond.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\libprojectM.rc"
 				>
 			</File>
 			<File
@@ -477,6 +484,10 @@
 			</File>
 			<File
 				RelativePath=".\Renderer.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\resource.h"
 				>
 			</File>
 			<File

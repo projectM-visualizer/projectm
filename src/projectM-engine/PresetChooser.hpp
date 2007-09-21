@@ -14,7 +14,6 @@
 #include <cassert>
 #include <memory>
 #include <iostream>
-
 class PresetChooser;
 
 ///  A simple iterator class to traverse back and forth a preset directory
@@ -218,8 +217,16 @@ inline std::auto_ptr<Preset> PresetChooser::directoryIndex(std::size_t index, co
 template <class WeightFunctor>
 inline std::auto_ptr<Preset> PresetChooser::doWeightedSample(WeightFunctor & weightFunctor, const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
 
+	
+#ifdef WIN32	
+    // Choose a random bounded mass between 0 and 1
+    float cutoff = ((float)(rand())) / RAND_MAX;
+#endif 
+
+#ifdef LINUX
     // Choose a random bounded mass between 0 and 1
     float cutoff = ((float)(random())) / RAND_MAX;
+#endif
 
     // Sum up mass, stopping when cutoff is reached. This is the typical
     // weighted sampling algorithm.

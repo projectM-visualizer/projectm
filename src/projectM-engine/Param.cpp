@@ -159,7 +159,7 @@ Param * Param::new_param_int(char * name, short int flags, void * engine_val,
 
 /* Creates a new parameter of type bool */
 Param * Param::new_param_bool(char * name, short int flags, void * engine_val,
-                              int upper_bound, int lower_bound, bool init_val) {
+                              bool upper_bound, bool lower_bound, bool init_val) {
 
     Param * param;
     CValue iv, ub, lb;

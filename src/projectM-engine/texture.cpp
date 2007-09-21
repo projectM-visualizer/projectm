@@ -7,8 +7,14 @@
 #include <iostream>
 #include <string>
 #include <map>
-#include <GL/gl.h>
 
+#ifdef LINUX
+#include <GL/gl.h>
+#endif
+
+#ifdef WIN32
+#include <glew.h>
+#endif
 
 // openGL extensions if not present, define them
 #ifndef GL_COMPRESSED_RGB_S3TC_DXT1_EXT

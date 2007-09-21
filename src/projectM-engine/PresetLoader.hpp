@@ -5,7 +5,18 @@
 
 #include <memory> // for auto pointers
 #include <sys/types.h>
+#ifdef WIN32
+#include "win32-dirent.h"
+#endif
+
+#ifdef LINUX
 #include <dirent.h>
+#endif
+
+#ifdef MACOS
+#include <dirent.h>
+#endif
+
 #include <vector>
 
 class Preset;
