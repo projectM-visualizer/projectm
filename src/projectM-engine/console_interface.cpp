@@ -186,8 +186,10 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		if (m_presetChooser->empty())
 			break;
 
-		m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
-			(this->presetInputs, this->presetOutputs);
+		*m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>();
+
+		m_activePreset = m_presetPos->allocate(this->presetInputs, this->presetOutputs);
+			
 		assert(m_activePreset.get());
 			
 		renderer->setPresetName(m_activePreset->presetName());

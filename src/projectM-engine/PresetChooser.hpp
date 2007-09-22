@@ -109,7 +109,7 @@ public:
     /// \param WeightFuncstor a functor that returns a probability for each index (see UniformRandomFunctor)
     /// \returns an auto pointer of the newly allocated preset
     template <class WeightFunctor>
-    std::auto_ptr<Preset> weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs, WeightFunctor & weightFunctor);
+    iterator weightedRandom(WeightFunctor & weightFunctor);
 
 
     /// Do a weighted sample given a weight functor and default construction (ie. element size) of the weight functor
@@ -118,7 +118,7 @@ public:
     /// \param WeightFunctor a functor that returns a probability for each index (see UniformRandomFunctor)
     /// \returns an auto pointer of the newly allocated preset
     template <class WeightFunctor>
-    std::auto_ptr<Preset> weightedRandom(const PresetInputs & presetInputs, PresetOutputs & preseOutputs);
+    iterator weightedRandom();
 
 
 
@@ -127,7 +127,7 @@ public:
 
 private:
     template <class WeightFunctor>
-    std::auto_ptr<Preset> doWeightedSample(WeightFunctor & weightFunctor, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
+    iterator doWeightedSample(WeightFunctor & weightFunctor);
 
     const PresetLoader * m_presetLoader;
 };
@@ -191,20 +191,19 @@ inline PresetIterator PresetChooser::end() const {
 }
 
 template <class WeightFunctor>
-std::auto_ptr<Preset> PresetChooser::weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs, WeightFunctor & weightFunctor) {
+typename PresetChooser::iterator PresetChooser::weightedRandom(WeightFunctor & weightFunctor) {
     return doWeightedSample(weightFunctor);
 }
 
 inline bool PresetChooser::empty() const {
 	return m_presetLoader->getNumPresets() == 0;
-
 }
 
 template <class WeightFunctor>
-inline  std::auto_ptr<Preset> PresetChooser::weightedRandom(const PresetInputs & presetInputs, PresetOutputs & presetOutputs){
+inline PresetChooser::iterator PresetChooser::weightedRandom() {
 
     WeightFunctor weightFunctor(m_presetLoader->getNumPresets());
-    return doWeightedSample(weightFunctor, presetInputs, presetOutputs);
+    return doWeightedSample(weightFunctor);
 
 }
 
@@ -215,9 +214,9 @@ inline std::auto_ptr<Preset> PresetChooser::directoryIndex(std::size_t index, co
 }
 
 template <class WeightFunctor>
-inline std::auto_ptr<Preset> PresetChooser::doWeightedSample(WeightFunctor & weightFunctor, const PresetInputs & presetInputs, PresetOutputs & presetOutputs) {
+inline PresetChooser::iterator PresetChooser::doWeightedSample(WeightFunctor & weightFunctor) {
 
-	
+
 #ifdef WIN32	
     // Choose a random bounded mass between 0 and 1
     float cutoff = ((float)(rand())) / RAND_MAX;
@@ -228,20 +227,25 @@ inline std::auto_ptr<Preset> PresetChooser::doWeightedSample(WeightFunctor & wei
     float cutoff = ((float)(random())) / RAND_MAX;
 #endif
 
+#ifdef MACOS
+    // Choose a random bounded mass between 0 and 1
+    float cutoff = ((float)(rand())) / RAND_MAX;
+#endif
+
     // Sum up mass, stopping when cutoff is reached. This is the typical
     // weighted sampling algorithm.
     float mass = 0;
     for (PresetIterator pos = this->begin();pos != this->end() ; ++pos) {
         mass += weightFunctor(*pos);
      if (mass >= cutoff)
-        return pos.allocate(presetInputs, presetOutputs);
+        return pos;
     }
 
     // Just in case something slips through the cracks
     PresetIterator pos = this->end();
     --pos;
 
-    return pos.allocate(presetInputs, presetOutputs);
+    return pos;
 }
 
 #endif
