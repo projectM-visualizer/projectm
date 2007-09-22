@@ -169,14 +169,14 @@ DLLEXPORT void projectM::renderFrame()
 
   beatDetect->detectFromSamples();
   
-//#ifndef USE_MOODBAR
-//#define USE_MOODBAR
-//#endif
+#ifndef USE_MOODBAR
+#define USE_MOODBAR
+#endif
 
 
 #ifdef USE_MOODBAR
   float rgb_left[3], rgb_right[3], rgb_avg[3];
-  //moodBar->calculateMood(rgb_left, rgb_right, rgb_avg);
+  moodBar->calculateMood(rgb_left, rgb_right, rgb_avg);
 
   //rgb_avg[0] = presetInputs.bass_att;
   //rgb_avg[1] = presetInputs.mid_att;
