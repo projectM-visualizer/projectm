@@ -118,23 +118,15 @@ void MoodBar::calculateMood
    stretchNormalize(rgb_right);
    stretchNormalize(rgb_avg);
 
-  /// @bug verify normalized m_ringBuffer
-  //standardNormalize(rgb_avg);
-  //standardNormalize(rgb_left);
-  //standardNormalize(rgb_right);
 
-  //std::cerr << "rgb_avg: " << rgb_avg[0] << "," << rgb_avg[1] << "," << rgb_avg[2] << std::endl;
-
-#ifdef ASSERT_MOODBAR
+#if 0
+  std::cerr << "rgb_avg: " << rgb_avg[0] << "," << rgb_avg[1] << "," << rgb_avg[2] << std::endl;
   for (i = 0; i < 3; i++) {
   	assert(rgb_avg[i] <= 1.0); 
   	assert(rgb_avg[i] >= 0.0); 
   }
 #endif
 
-
-
-  
 }
 
 
@@ -186,14 +178,18 @@ void MoodBar::stretchNormalize (float * rgb)
 
   // Append latest un-normalized value on ring buffer
   m_ringBuffers[c].append(rgb[c]);
-
-  unsigned int numvals = RingBuffer<float>::RING_BUFFER_SIZE;
+  std::cerr << "current = " << m_ringBuffers[c].current() << std::endl;
+ 
+  const unsigned int numvals = RingBuffer<float>::RING_BUFFER_SIZE;
 
   if (numvals == 0)
 	return;
 
-  mini = maxi = m_ringBuffers[c].back();
+  int oldcurrent = m_ringBuffers[c].current();
 
+  std::cerr << "!" << std::endl;
+  mini = maxi = m_ringBuffers[c].back();
+  
   // Compute max and min m_ringBuffer of the array
   for (i = 1; i < numvals; i++)
     {
@@ -204,6 +200,8 @@ void MoodBar::stretchNormalize (float * rgb)
       else if (_tmpval < mini) 
 	mini = _tmpval;
     }
+
+   assert((oldcurrent % RingBuffer<float>::RING_BUFFER_SIZE) == (m_ringBuffers[c].current() % RingBuffer<float>::RING_BUFFER_SIZE));
 
   // Compute array average excluding the maximum and minimum ranges
   for (i = 0; i < numvals; i++)
@@ -216,6 +214,7 @@ void MoodBar::stretchNormalize (float * rgb)
 	  t++; 
 	}
     }
+   assert((oldcurrent % RingBuffer<float>::RING_BUFFER_SIZE) == (m_ringBuffers[c].current() % RingBuffer<float>::RING_BUFFER_SIZE));
 
   // Now compute average values if we partition the elements into
   // two sets segmented by the previously computed average
@@ -238,6 +237,7 @@ void MoodBar::stretchNormalize (float * rgb)
 	    }
 	}
     }
+   assert((oldcurrent % RingBuffer<float>::RING_BUFFER_SIZE) == (m_ringBuffers[c].current() % RingBuffer<float>::RING_BUFFER_SIZE));
 
   // This normalizes the computations in the previous for loop
   // so they represent proper averages of their respective sets
@@ -269,6 +269,7 @@ void MoodBar::stretchNormalize (float * rgb)
 	    }
 	}
     }
+   assert((oldcurrent % RingBuffer<float>::RING_BUFFER_SIZE) == (m_ringBuffers[c].current() % RingBuffer<float>::RING_BUFFER_SIZE));
 
   avguu /= (float) tu;
   avgbb /= (float) tb;

@@ -62,6 +62,8 @@ class PresetLoader {
 
 		// vector chosen for speed, but not great for reverse index lookups
 		std::vector<std::string> m_entries;
+		std::vector<std::string> m_presetNames;
+
 };
 
 #endif

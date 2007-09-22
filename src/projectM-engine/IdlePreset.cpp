@@ -311,6 +311,6 @@ std::auto_ptr<Preset> IdlePreset::allocate(const PresetInputs & presetInputs, Pr
 {
 
   std::istringstream in(presetText());
-  return std::auto_ptr<Preset>(new Preset(in, presetInputs, presetOutputs, IDLE_PRESET_NAME));
+  return std::auto_ptr<Preset>(new Preset(in,  IDLE_PRESET_NAME, presetInputs, presetOutputs));
 }
 

@@ -169,17 +169,29 @@ DLLEXPORT void projectM::renderFrame()
 
   beatDetect->detectFromSamples();
   
-#ifndef USE_MOODBAR
-#define USE_MOODBAR
-#endif
+//#ifndef USE_MOODBAR
+//#define USE_MOODBAR
+//#endif
+
 
 #ifdef USE_MOODBAR
   float rgb_left[3], rgb_right[3], rgb_avg[3];
-  moodBar->calculateMood(rgb_left, rgb_right, rgb_avg);
+  //moodBar->calculateMood(rgb_left, rgb_right, rgb_avg);
+
+  //rgb_avg[0] = presetInputs.bass_att;
+  //rgb_avg[1] = presetInputs.mid_att;
+  //rgb_avg[2] = presetInputs.treb_att;
+
+  //moodBar->stretchNormalize(rgb_avg);
+
+  //presetInputs.bass_att = rgb_avg[0];
+  //presetInputs.mid_att = rgb_avg[1];
+  //presetInputs.treb_att = rgb_avg[2];
 
   presetInputs.mood_r = rgb_avg[0];
   presetInputs.mood_g = rgb_avg[1];
   presetInputs.mood_b = rgb_avg[2];
+
 
 #endif
 
@@ -210,7 +222,7 @@ DLLEXPORT void projectM::renderFrame()
 	      m_activePreset2 = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
 		(presetInputs, &m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
 	      assert(m_activePreset2.get());
-	      renderer->setPresetName(m_activePreset2->absoluteFilePath());
+	      renderer->setPresetName(m_activePreset2->presetName());
 
              nohard=(int)(presetInputs.fps*3.5);
              smoothFrame = (int)(presetInputs.fps * smoothDuration);
@@ -533,7 +545,7 @@ void projectM::projectM_reset()
 	this->renderer = new Renderer ( width, height, gx, gy, renderTarget, textureManager, beatDetect, fontURL);
 
 
-	renderer->setPresetName(m_activePreset->absoluteFilePath());
+	renderer->setPresetName(m_activePreset->presetName());
 
 	printf ( "exiting projectM_init()\n" );
 }
@@ -843,9 +855,7 @@ int projectM::initPresetTools()
 	Eval::init_infix_ops();
 
 	/* Set the seed to the current time in seconds */
-#ifdef WIN32
 	srand ( time ( NULL ) );
-#endif
 
 	if ( ( m_presetLoader = new PresetLoader (presetURL)) == 0 )
 	{

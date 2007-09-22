@@ -53,6 +53,7 @@ void PresetLoader::rescan()
 
   // Clear the directory entry collection
   m_entries.clear();
+  m_presetNames.clear();
 
   // If directory already opened, close it first
   if (m_dir)
@@ -70,6 +71,7 @@ void PresetLoader::rescan()
 
   struct dirent * dir_entry;
   std::set<std::string> alphaSortedFileSet;
+  std::set<std::string> alphaSortedPresetNameSet;
   
   while ((dir_entry = readdir(m_dir)) != NULL)
   { 
@@ -94,6 +96,7 @@ void PresetLoader::rescan()
 
     // Add to our directory entry collection
     alphaSortedFileSet.insert(out.str());
+    alphaSortedPresetNameSet.insert(filename);
 
     // the directory entry struct is freed elsewhere
   }
@@ -102,6 +105,12 @@ void PresetLoader::rescan()
   for (std::set<std::string>::iterator pos = alphaSortedFileSet.begin(); 
 	pos != alphaSortedFileSet.end();++pos) 
 	m_entries.push_back(*pos);
+
+  // Push all preset names in similar fashion
+  for (std::set<std::string>::iterator pos = alphaSortedPresetNameSet.begin(); 
+	pos != alphaSortedPresetNameSet.end();++pos) 
+	m_presetNames.push_back(*pos);
+
 }
 
 std::auto_ptr<Preset> PresetLoader::loadPreset(unsigned int index, const PresetInputs & presetInputs, PresetOutputs & presetOutputs) const
@@ -112,11 +121,12 @@ std::auto_ptr<Preset> PresetLoader::loadPreset(unsigned int index, const PresetI
   assert(index < m_entries.size());
 
   // Return a new autopointer to a present
-  return std::auto_ptr<Preset>(new Preset(m_entries[index], presetInputs, presetOutputs));
+  return std::auto_ptr<Preset>(new Preset(m_entries[index], m_presetNames[index], presetInputs, presetOutputs));
 }
 
 void PresetLoader::handleDirectoryError()
 {
+
 #ifdef WIN32
 	std::cerr << "[PresetLoader] warning: errno unsupported on win32 platforms. fix me" << std::endl;
 #else

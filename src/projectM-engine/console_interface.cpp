@@ -175,7 +175,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		}
 
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
-		renderer->setPresetName(m_activePreset->absoluteFilePath());
+		renderer->setPresetName(m_activePreset->presetName());
 	
                 presetInputs.frame = 0;
 		smoothFrame = 0;
@@ -190,7 +190,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			(this->presetInputs, this->presetOutputs);
 		assert(m_activePreset.get());
 			
-		renderer->setPresetName(m_activePreset->absoluteFilePath());
+		renderer->setPresetName(m_activePreset->presetName());
 		presetInputs.frame = 0;
 		smoothFrame = 0;
 		break;
@@ -214,7 +214,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		}
 
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
-		renderer->setPresetName(m_activePreset->absoluteFilePath());
+		renderer->setPresetName(m_activePreset->presetName());
                 presetInputs.frame = 0;
 		smoothFrame = 0;
 	      break;

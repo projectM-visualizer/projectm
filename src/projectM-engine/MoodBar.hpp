@@ -45,6 +45,8 @@ public:
   /// pcmL/R data buffers as inputs 
   void calculateMood(float * rgb_left, float * rgb_right, float * rgb_avg);
 
+  void stretchNormalize (float * colors);
+
 private:
   void resetBuffer() ;
 
@@ -63,7 +65,6 @@ private:
   float m_amplitudes_right[24];
   float m_amplitudes_avg[24];
   
-  void stretchNormalize (float * colors);
   static const unsigned int s_bark_bands[24];
 
   RingBuffer<float> m_ringBuffers[3];
