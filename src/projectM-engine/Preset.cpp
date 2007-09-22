@@ -38,12 +38,11 @@
 #include <fstream>
 
 
-Preset::Preset(std::istream & in, const PresetInputs & presetInputs, PresetOutputs & presetOutputs, const std::string & _presetName):
+Preset::Preset(std::istream & in, const std::string & presetName, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
     builtinParams(presetInputs, presetOutputs),
-    file_path(_presetName),
+    m_presetName(presetName),
     m_presetOutputs(presetOutputs),
     m_presetInputs(presetInputs)
- 
 {
 
   m_presetOutputs.customWaves.clear();
@@ -54,9 +53,10 @@ Preset::Preset(std::istream & in, const PresetInputs & presetInputs, PresetOutpu
 }
 
 
-Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
+Preset::Preset(const std::string & absoluteFilePath, const std::string & presetName, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
     builtinParams(presetInputs, presetOutputs),
-    file_path(filename),
+    m_absoluteFilePath(absoluteFilePath),
+    m_presetName(presetName),
     m_presetOutputs(presetOutputs),
     m_presetInputs(presetInputs)
 {
@@ -64,7 +64,7 @@ Preset::Preset(const std::string & filename, const PresetInputs & presetInputs, 
   m_presetOutputs.customWaves.clear();
   m_presetOutputs.customShapes.clear();
   
-  initialize(filename);
+  initialize(absoluteFilePath);
 
 }
 
@@ -491,7 +491,7 @@ int Preset::readIn(std::istream & fs) {
     return PROJECTM_ERROR;
   }
 
-  this->name = std::string(tmp_name);
+  /// @note  We ignore the preset name because [preset00] is just not so useful
 
   // Loop through each line in file, trying to succesfully parse the file. 
   // If a line does not parse correctly, keep trucking along to next line.

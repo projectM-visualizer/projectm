@@ -60,17 +60,19 @@ public:
 
   ///  Load a preset by filename with input and output buffers specified.
   ///  This is the only proper way to allocate a new preset.
-  /// \param filename the absolute file path of a preset to load from the file system
+  /// \param absoluteFilePath the absolute file path of a preset to load from the file system
+  /// \param presetName a descriptive name for the preset. Usually just the file name
   /// \param presetInputs a const reference to read only projectM engine variables
   /// \param presetOutputs initialized and filled with data parsed from a preset
-  Preset(const std::string & filename, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
+  Preset(const std::string & absoluteFilePath, const std::string & presetName, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
   ///  Load a preset from a stream with input and output buffers specified.
   ///  This is the only proper way to allocate a new preset.
   /// \param in an already initialized input stream to read the preset file from
+  /// \param presetName a descriptive name for the preset. Usually just the file name
   /// \param presetInputs a const reference to read only projectM engine variables
   /// \param presetOutputs initialized and filled with data parsed from a preset
-  Preset(std::istream & in, const PresetInputs & presetInputs, PresetOutputs & presetOutputs, const std::string & _presetName);
+  Preset(std::istream & in, const std::string & presetName, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
   ~Preset();
 
@@ -83,9 +85,7 @@ public:
   /// @bug encapsulate
   BuiltinParams builtinParams;
 
-  /// Preset name, very boring, like [preset00]
-  std::string name;
-
+  
   /// Used by parser to find/create custom waves and shapes. May be refactored
   template <class CustomObject>
   static CustomObject * find_custom_object(int id, std::vector<CustomObject*> & customObjects);
@@ -110,7 +110,7 @@ public:
   /// \returns a file path string 
   std::string absoluteFilePath() const
   {
-    return file_path;
+    return m_absoluteFilePath;
   }
 
   /// Accessor method for the preset outputs instance associated with this preset
@@ -120,8 +120,22 @@ public:
 
     return m_presetOutputs;
   }
+	/// Sets the descriptive name for this preset (typically the file name)
+	void setPresetName ( const std::string& theValue )
+	{
+		m_presetName = theValue;
+	}
+	
+
+	/// Gets the descriptive name for this preset (typically the file name)
+	std::string presetName() const
+	{
+		return m_presetName;
+	}
+
 
   /// @bug encapsulate
+	
   PresetOutputs::cwave_container customWaves;
   PresetOutputs::cshape_container customShapes;
 
@@ -136,7 +150,10 @@ public:
 private:
 
   // The absolute file path of the preset
-  std::string file_path;
+  std::string m_absoluteFilePath;
+
+  // The name for the preset. Usually the file name, but in theory anything goes
+  std::string m_presetName;
 
   void initialize(const std::string & pathname);
   void initialize(std::istream & in);

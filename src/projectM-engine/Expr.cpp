@@ -79,8 +79,6 @@ float PrefunExpr::eval_prefun_expr ( int mesh_i, int mesh_j )
 
 
 	}
-	delete(arg_list);
-
 #ifdef EVAL_DEBUG_DOUBLE
 	DWRITE ( "]" );
 #endif
@@ -88,8 +86,10 @@ float PrefunExpr::eval_prefun_expr ( int mesh_i, int mesh_j )
 	/* Now we call the function, passing a list of
 	   floats as its argument */
 
-	return ( func_ptr ) ( arg_list );
+	const float value = ( func_ptr ) ( arg_list );
 
+	delete(arg_list);
+	return value;
 }
 
 

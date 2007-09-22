@@ -66,12 +66,12 @@ fast_install=yes
 
 # The host system.
 host_alias=
-host=i686-pc-linux-gnu
+host=x86_64-unknown-linux-gnu
 host_os=linux-gnu
 
 # The build system.
 build_alias=
-build=i686-pc-linux-gnu
+build=x86_64-unknown-linux-gnu
 build_os=linux-gnu
 
 # An echo program that does not interpret backslashes.
@@ -97,7 +97,7 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/usr/i686-pc-linux-gnu/bin/ld"
+LD="/usr/x86_64-pc-linux-gnu/bin/ld -m elf_x86_64"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
@@ -325,10 +325,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=unknown
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec="/usr/lib/gcc/i686-pc-linux-gnu/4.1.2 /usr/i686-pc-linux-gnu/lib /usr/lib /lib"
+sys_lib_search_path_spec="/usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib64 /lib64 /usr/x86_64-pc-linux-gnu/lib"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib //usr//lib/opengl/xorg-x11/lib /usr/i686-pc-linux-gnu/lib /usr/lib/gcc/i686-pc-linux-gnu/4.1.2 /usr/lib/gcc/i686-pc-linux-gnu/4.2.0 /usr/lib/nspr /usr/lib/nss /usr/lib/openmotif-2.2 /usr/lib/qt4 /usr/kde/3.5/lib /usr/qt/3/lib /usr/games/lib /usr/lib/fltk-1.1 /usr/lib/libstdc++-v3/ "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib //usr/lib32/opengl/nvidia/lib //usr/lib64/opengl/nvidia/lib /lib /usr/lib /lib64 /usr/lib64 /usr/local/lib64 /lib32 /usr/lib32 /usr/local/lib32 /usr/x86_64-pc-linux-gnu/lib /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/32 /usr/lib/gcc/x86_64-pc-linux-gnu/4.2.0 /usr/lib/gcc/x86_64-pc-linux-gnu/4.2.0/32 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6/32 /usr/lib64/nspr /usr/lib64/nss /usr/lib64/openmotif-2.2 /usr/lib32/openmotif-2.2 /usr/lib/qt4 /usr/lib64/qt4 /usr/lib32/qt4 /usr/kde/3.5/lib /usr/kde/3.5/lib64 /usr/kde/3.5/lib32 /usr/qt/3/lib /usr/qt/3/lib64 /usr/qt/3/lib32 /opt/firefox /usr/games/lib /usr/games/lib32 /usr/lib/octave-2.1.73 "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7368,12 +7368,12 @@ fast_install=yes
 
 # The host system.
 host_alias=
-host=i686-pc-linux-gnu
+host=x86_64-unknown-linux-gnu
 host_os=linux-gnu
 
 # The build system.
 build_alias=
-build=i686-pc-linux-gnu
+build=x86_64-unknown-linux-gnu
 build_os=linux-gnu
 
 # An echo program that does not interpret backslashes.
@@ -7399,7 +7399,7 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/usr/i686-pc-linux-gnu/bin/ld"
+LD="/usr/x86_64-pc-linux-gnu/bin/ld -m elf_x86_64"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
@@ -7528,11 +7528,11 @@ striplib="strip --strip-unneeded"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
-predep_objects="/usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../../crti.o /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/crtbeginS.o"
+predep_objects="/usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/../../../../lib64/crti.o /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/crtbeginS.o"
 
 # Dependencies to place after the objects being linked to create a
 # shared library.
-postdep_objects="/usr/lib/gcc/i686-pc-linux-gnu/4.1.2/crtendS.o /usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../../crtn.o"
+postdep_objects="/usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/crtendS.o /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/../../../../lib64/crtn.o"
 
 # Dependencies to place before the objects being linked to create a
 # shared library.
@@ -7544,7 +7544,7 @@ postdeps="-lstdc++ -lm -lgcc_s -lc -lgcc_s"
 
 # The library search path used internally by the compiler when linking
 # a shared library.
-compiler_lib_search_path="-L/usr/lib/gcc/i686-pc-linux-gnu/4.1.2 -L/usr/lib/gcc/i686-pc-linux-gnu/4.1.2 -L/usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../../../i686-pc-linux-gnu/lib -L/usr/lib/gcc/i686-pc-linux-gnu/4.1.2/../../.."
+compiler_lib_search_path="-L/usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 -L/usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 -L/usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/../../../../lib64 -L/lib/../lib64 -L/usr/lib/../lib64 -L/usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/../../../../x86_64-pc-linux-gnu/lib -L/usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/../../.."
 
 # Method to check whether dependent libraries are shared objects.
 deplibs_check_method="pass_all"
@@ -7624,10 +7624,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=unknown
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec="/usr/lib/gcc/i686-pc-linux-gnu/4.1.2 /usr/i686-pc-linux-gnu/lib /usr/lib /lib"
+sys_lib_search_path_spec="/usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib64 /lib64 /usr/x86_64-pc-linux-gnu/lib"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib //usr//lib/opengl/xorg-x11/lib /usr/i686-pc-linux-gnu/lib /usr/lib/gcc/i686-pc-linux-gnu/4.1.2 /usr/lib/gcc/i686-pc-linux-gnu/4.2.0 /usr/lib/nspr /usr/lib/nss /usr/lib/openmotif-2.2 /usr/lib/qt4 /usr/kde/3.5/lib /usr/qt/3/lib /usr/games/lib /usr/lib/fltk-1.1 /usr/lib/libstdc++-v3/ "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib //usr/lib32/opengl/nvidia/lib //usr/lib64/opengl/nvidia/lib /lib /usr/lib /lib64 /usr/lib64 /usr/local/lib64 /lib32 /usr/lib32 /usr/local/lib32 /usr/x86_64-pc-linux-gnu/lib /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/32 /usr/lib/gcc/x86_64-pc-linux-gnu/4.2.0 /usr/lib/gcc/x86_64-pc-linux-gnu/4.2.0/32 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6/32 /usr/lib64/nspr /usr/lib64/nss /usr/lib64/openmotif-2.2 /usr/lib32/openmotif-2.2 /usr/lib/qt4 /usr/lib64/qt4 /usr/lib32/qt4 /usr/kde/3.5/lib /usr/kde/3.5/lib64 /usr/kde/3.5/lib32 /usr/qt/3/lib /usr/qt/3/lib64 /usr/qt/3/lib32 /opt/firefox /usr/games/lib /usr/games/lib32 /usr/lib/octave-2.1.73 "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""
@@ -7673,12 +7673,12 @@ fast_install=yes
 
 # The host system.
 host_alias=
-host=i686-pc-linux-gnu
+host=x86_64-unknown-linux-gnu
 host_os=linux-gnu
 
 # The build system.
 build_alias=
-build=i686-pc-linux-gnu
+build=x86_64-unknown-linux-gnu
 build_os=linux-gnu
 
 # An echo program that does not interpret backslashes.
@@ -7704,7 +7704,7 @@ with_gcc=yes
 EGREP="/bin/grep -E"
 
 # The linker used to build libraries.
-LD="/usr/i686-pc-linux-gnu/bin/ld"
+LD="/usr/x86_64-pc-linux-gnu/bin/ld -m elf_x86_64"
 
 # Whether we need hard or soft links.
 LN_S="ln -s"
@@ -7932,10 +7932,10 @@ variables_saved_for_relink="PATH LD_LIBRARY_PATH LD_RUN_PATH GCC_EXEC_PREFIX COM
 link_all_deplibs=unknown
 
 # Compile-time system search path for libraries
-sys_lib_search_path_spec="/usr/lib/gcc/i686-pc-linux-gnu/4.1.2 /usr/i686-pc-linux-gnu/lib /usr/lib /lib"
+sys_lib_search_path_spec="/usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib64 /lib64 /usr/x86_64-pc-linux-gnu/lib"
 
 # Run-time system search path for libraries
-sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib //usr//lib/opengl/xorg-x11/lib /usr/i686-pc-linux-gnu/lib /usr/lib/gcc/i686-pc-linux-gnu/4.1.2 /usr/lib/gcc/i686-pc-linux-gnu/4.2.0 /usr/lib/nspr /usr/lib/nss /usr/lib/openmotif-2.2 /usr/lib/qt4 /usr/kde/3.5/lib /usr/qt/3/lib /usr/games/lib /usr/lib/fltk-1.1 /usr/lib/libstdc++-v3/ "
+sys_lib_dlsearch_path_spec="/lib /usr/lib /usr/local/lib //usr/lib32/opengl/nvidia/lib //usr/lib64/opengl/nvidia/lib /lib /usr/lib /lib64 /usr/lib64 /usr/local/lib64 /lib32 /usr/lib32 /usr/local/lib32 /usr/x86_64-pc-linux-gnu/lib /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2 /usr/lib/gcc/x86_64-pc-linux-gnu/4.1.2/32 /usr/lib/gcc/x86_64-pc-linux-gnu/4.2.0 /usr/lib/gcc/x86_64-pc-linux-gnu/4.2.0/32 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6 /usr/lib/gcc/x86_64-pc-linux-gnu/3.4.6/32 /usr/lib64/nspr /usr/lib64/nss /usr/lib64/openmotif-2.2 /usr/lib32/openmotif-2.2 /usr/lib/qt4 /usr/lib64/qt4 /usr/lib32/qt4 /usr/kde/3.5/lib /usr/kde/3.5/lib64 /usr/kde/3.5/lib32 /usr/qt/3/lib /usr/qt/3/lib64 /usr/qt/3/lib32 /opt/firefox /usr/games/lib /usr/games/lib32 /usr/lib/octave-2.1.73 "
 
 # Fix the shell variable $srcfile for the compiler.
 fix_srcfile_path=""

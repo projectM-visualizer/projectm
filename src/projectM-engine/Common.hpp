@@ -51,9 +51,29 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define STRING_BUFFER_SIZE 1024*150
 #define STRING_LINE_SIZE 1024
 
+#ifdef LINUX
+#define projectM_isnan isnan
+#endif
+
+#ifdef WIN32
 #define projectM_isnan(x) ((x) != (x))
+#endif
+
+#ifdef LINUX
+#define projectM_fmax fmax
+#endif
+
+#ifdef WIN32
 #define projectM_fmax(x,y) ((x) >= (y) ? (x): (y))
+#endif
+
+#ifdef LINUX
+#define projectM_fmin fmin
+#endif
+
+#ifdef WIN32
 #define projectM_fmin(x,y) ((x) <= (y) ? (x): (y))
+#endif
 
 #ifndef TRUE
 #define TRUE 1
