@@ -219,11 +219,14 @@ DLLEXPORT void projectM::renderFrame()
 	      presetInputs.progress=0.0;
 	      presetInputs.frame = 1;
 
-	      m_activePreset2 = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
-		(presetInputs, &m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
+	      *m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>();
+
+	      m_activePreset2 = m_presetPos->allocate
+			(presetInputs, &m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
+
 	      assert(m_activePreset2.get());
 	      renderer->setPresetName(m_activePreset2->presetName());
-
+		
              nohard=(int)(presetInputs.fps*3.5);
              smoothFrame = (int)(presetInputs.fps * smoothDuration);
 	     
@@ -233,8 +236,10 @@ DLLEXPORT void projectM::renderFrame()
 	    {
 	      //            printf("%f %d %d\n", beatDetect->bass-beatDetect->bass_old,this->frame,this->avgtime);
 	      printf("HARD CUT");
-	      m_activePreset = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>
-		(presetInputs, presetOutputs);
+	     *m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor> ();
+		
+	     m_activePreset = m_presetPos->allocate(presetInputs, presetOutputs);
+
 	      assert(m_activePreset.get());
 	      nohard=presetInputs.fps*5;
 	      smoothFrame=0;
@@ -278,7 +283,7 @@ DLLEXPORT void projectM::renderFrame()
 	  {
 	    if (smoothFrame == 1)
 	      {
-		m_activePreset = m_activePreset2;
+		m_activePreset = m_activePreset2;		
 		smoothFrame=0;
 		printf("Smooth Finished\n");
 	      } 

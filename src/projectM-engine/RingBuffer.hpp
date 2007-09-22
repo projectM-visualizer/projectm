@@ -59,7 +59,7 @@ public:
     } 
  
     int current() { 
-        return (current_element); 
+        return (current_element % RING_BUFFER_SIZE); 
     }
 }; 
 #endif
