@@ -71,6 +71,7 @@ public:
     /// \param index An index lying in the interval [0, this->getNumPresets()]
     /// \param presetInputs the preset inputs to associate with the preset upon construction
     /// \param presetOutputs the preset outputs to associate with the preset upon construction
+    /// \returns an auto pointer of the newly allocated preset
     std::auto_ptr<Preset> directoryIndex(std::size_t index, const PresetInputs & presetInputs,
                                          PresetOutputs & presetOutputs) const;
 
@@ -107,7 +108,7 @@ public:
     /// \param presetInputs the preset inputs to associate with the preset upon construction
     /// \param presetOutputs the preset outputs to associate with the preset upon construction
     /// \param WeightFuncstor a functor that returns a probability for each index (see UniformRandomFunctor)
-    /// \returns an auto pointer of the newly allocated preset
+    /// \returns an iterator to the randomly selected preset
     template <class WeightFunctor>
     iterator weightedRandom(WeightFunctor & weightFunctor);
 
@@ -116,11 +117,9 @@ public:
     /// \param presetInputs the preset inputs to associate with the preset upon construction
     /// \param presetOutputs the preset outputs to associate with the preset upon construction
     /// \param WeightFunctor a functor that returns a probability for each index (see UniformRandomFunctor)
-    /// \returns an auto pointer of the newly allocated preset
+    /// \returns an iteraator to the randomly selected preset
     template <class WeightFunctor>
     iterator weightedRandom();
-
-
 
     /// True if no presets in directory 
     bool empty() const;
