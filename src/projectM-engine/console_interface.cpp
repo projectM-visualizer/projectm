@@ -237,7 +237,6 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 //			 50, 1, 100, 5, 0, .92);
 	    case PROJECTM_K_i:
             DWRITE( "PROJECTM_K_i\n" );
-	        
 	        break;
 	    case PROJECTM_K_z:
 	      break;
