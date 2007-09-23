@@ -178,7 +178,7 @@ void MoodBar::stretchNormalize (float * rgb)
 
   // Append latest un-normalized value on ring buffer
   m_ringBuffers[c].append(rgb[c]);
-  std::cerr << "current = " << m_ringBuffers[c].current() << std::endl;
+//  std::cerr << "current = " << m_ringBuffers[c].current() << std::endl;
  
   const unsigned int numvals = RingBuffer<float>::RING_BUFFER_SIZE;
 
