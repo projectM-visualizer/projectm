@@ -187,7 +187,6 @@ void MoodBar::stretchNormalize (float * rgb)
 
   int oldcurrent = m_ringBuffers[c].current();
 
-  std::cerr << "!" << std::endl;
   mini = maxi = m_ringBuffers[c].back();
   
   // Compute max and min m_ringBuffer of the array
