@@ -27,7 +27,7 @@ class MoodBar {
 public:
 
 
-  MoodBar(PCM * pcm) : m_numFreqs(pcm->numsamples/2 + 1), m_size(pcm->numsamples), m_rate(FIXED_SAMPLE_RATE), m_pcm(pcm) {
+  MoodBar(PCM * pcm) : m_numFreqs(pcm->numsamples/2 + 1), m_size(pcm->numsamples), m_rate(FIXED_SAMPLE_RATE), m_pcm(pcm), m_barkband_table(0) {
 	calcBarkbandTable();	
 	resetBuffer();
 
