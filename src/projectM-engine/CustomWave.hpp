@@ -31,14 +31,6 @@
 
 #define CUSTOM_WAVE_DEBUG 0
 
-#define X_POINT_OP 0
-#define Y_POINT_OP 1
-#define R_POINT_OP 2
-#define G_POINT_OP 3
-#define B_POINT_OP 4
-#define A_POINT_OP 5
-#define NUM_POINT_OPS 6
-
 class CustomWave;
 class GenExpr;
 class PerPointEqn;
