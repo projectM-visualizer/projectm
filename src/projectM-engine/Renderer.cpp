@@ -2,9 +2,9 @@
 #include "wipemalloc.h"
 #include "math.h"
 #include "Common.hpp"
-#include "console_interface.h"
 #include "CustomShape.hpp"
 #include "CustomWave.hpp"
+#include "KeyHandler.hpp"
 #include "TextureManager.hpp"
 #include <iostream>
 #include <cassert>

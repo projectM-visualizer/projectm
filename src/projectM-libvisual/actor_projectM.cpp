@@ -15,7 +15,7 @@
 #include <libprojectM/BeatDetect.hpp>
 #include <libprojectM/PCM.hpp>
 #include <libprojectM/projectM.hpp>
-#include <libprojectM/console_interface.h>
+#include <libprojectM/KeyHandler.hpp>
 #include "lvtoprojectM.h"
 #include "ConfigFile.h"
 
