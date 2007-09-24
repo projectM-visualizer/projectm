@@ -77,7 +77,7 @@ void MoodBar::calculateMood
     m_amplitudes_avg[i] = 0.f;
   }
 
-  for (i = 0; i < m_numFreqs; ++i)
+  for (i = 0; i < m_numFreqs-2; ++i)
     {
       //std::cerr << "vdataL[2*" << i << "] = " << m_pcm->vdataL[2*i] << std::endl;
       //std::cerr << "vdataL[2*" << i << "+1] = " << m_pcm->vdataL[2*i+1] << std::endl;
