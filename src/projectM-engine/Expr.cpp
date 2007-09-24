@@ -88,7 +88,7 @@ float PrefunExpr::eval_prefun_expr ( int mesh_i, int mesh_j )
 
 	const float value = ( func_ptr ) ( arg_list );
 
-	delete(arg_list);
+	delete[](arg_list);
 	return value;
 }
 

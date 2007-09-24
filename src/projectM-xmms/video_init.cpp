@@ -15,6 +15,7 @@ extern int texsize;
 void setup_opengl( int w, int h );
 
 void close_display() {
+  printf("quitting\n");
   SDL_Quit();
 }
 
@@ -67,9 +68,9 @@ void init_display(int w, int h, int *fvw, int *fvh, int f)
   printf("Screen Resolution: %d x %d\n", info->current_w, info->current_h);
   *fvw = info->current_w;
   *fvh = info->current_h;
-
+  printf("set fvw and fvw\n");
   bpp = info->vfmt->BitsPerPixel;
-  
+  printf("set bpp\n");
   //SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 8 );
   //SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 8 );
   //SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 8 );
@@ -80,13 +81,13 @@ void init_display(int w, int h, int *fvw, int *fvh, int f)
   SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 8 );
   SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
   SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-
+  printf("set gl attributes\n");
   if (f==0)
      flags = SDL_OPENGL|SDL_HWSURFACE|SDL_RESIZABLE;
   else flags = SDL_OPENGL|SDL_HWSURFACE|SDL_FULLSCREEN;
-
+ printf("set gl attributes2\n");
   screen= SDL_SetVideoMode( w, h, bpp, flags ) ;
-
+ printf("set screen\n");
   if(screen == 0 ) {
     /* 
      * This could happen for a variety of reasons,
@@ -101,7 +102,7 @@ void init_display(int w, int h, int *fvw, int *fvh, int f)
     
   }
   
-  
+  printf("video init done\n");
   // setup_opengl(w,h);
   //gluOrtho2D(0, w, 0, h);
 }

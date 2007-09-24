@@ -38,7 +38,7 @@ public:
 	resetBuffer();
   }
 
-  ~MoodBar() { delete(m_barkband_table); }
+  ~MoodBar() { delete[](m_barkband_table); }
 
   /// Calculate rgb mood values for both left and right channels. 
   /// Uses the pcm instance's latest assignment into its

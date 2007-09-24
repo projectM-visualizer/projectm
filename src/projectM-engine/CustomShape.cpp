@@ -268,6 +268,7 @@ CustomShape::~CustomShape()
 	traverse<TraverseFunctors::DeleteFunctor<InitCond> > ( init_cond_tree );
 	traverse<TraverseFunctors::DeleteFunctor<Param> > ( param_tree );
 	traverse<TraverseFunctors::DeleteFunctor<InitCond> > ( per_frame_init_eqn_tree );
+	traverse<TraverseFunctors::DeleteFunctor<Param> > ( text_properties_tree );
 
 }
 
