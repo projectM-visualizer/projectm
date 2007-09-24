@@ -24,8 +24,8 @@
  * $Log$
  */
 
-#ifndef _CONSOLE_INTERFACE_H
-#define _CONSOLE_INTERFACE_H
+#ifndef _KEY_HANDLER_HPP
+#define _KEY_HANDLER_HPP
 
 #include "event.h"
 
@@ -36,4 +36,4 @@ xtern "C" void key_handler(projectM *PM, projectMEvent event, projectMKeycode ke
 #else
 extern void key_handler(projectM *PM, projectMEvent event, projectMKeycode keycode, projectMModifier modifier );
 #endif
-#endif /** !_CONSOLE_INTERFACE_H */
+#endif /** !_KEY_HANDLER_HPP */

@@ -195,10 +195,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\console_interface.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\CustomShape.cpp"
 				>
 			</File>

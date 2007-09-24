@@ -10,7 +10,7 @@ class CustomShape;
 /// Every preset object needs a reference to one of these.
 class PresetOutputs {
 public:
-    typedef std::vector<CustomWave*> c wave_container;
+    typedef std::vector<CustomWave*> cwave_container;
     typedef std::vector<CustomShape*> cshape_container;
 
     cwave_container customWaves;
