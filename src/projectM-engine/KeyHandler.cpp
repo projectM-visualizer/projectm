@@ -24,7 +24,7 @@
 #include "projectM.hpp"
 #include "Common.hpp"
 #include "fatal.h"
-#include "console_interface.h"
+#include "KeyHandler.hpp"
 #include "event.h"
 #include "BeatDetect.hpp"
 #include "PresetChooser.hpp"
