@@ -33,7 +33,7 @@
 
 #include <projectM-engine/BeatDetect.hpp>
 #include <projectM-engine/PCM.hpp>
-#include <projectM-engine/Preset.h>
+#include <projectM-engine/Preset.hpp>
 
 #include "wxvisApp.h"
 #include "wxvisFrame.h"
