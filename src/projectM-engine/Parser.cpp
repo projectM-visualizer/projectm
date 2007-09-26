@@ -842,7 +842,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
     if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL)
     {
       if (PARSE_DEBUG) printf("parse_gen_expr:  found left parentice, but failed to create new expression tree \n");
-      if (tree_expr);
+      if (tree_expr)
       delete tree_expr;
       return NULL;
     }
