@@ -1,0 +1,40 @@
+// iprojectM-wmp.idl : IDL source for projectM-wmp.dll
+// Copyright (c) Microsoft Corporation. All rights reserved.
+
+// This file will be processed by the MIDL tool to
+// produce the type library (iprojectM-wmp.tlb) and marshalling code.
+
+import "oaidl.idl";
+import "ocidl.idl";
+	[
+		object,
+		uuid(8E230690-504E-471D-B3B7-C8EE5C874B96),
+		dual,
+		helpstring("IProjectMwmp Interface"),
+		pointer_default(unique)
+	]
+	interface IProjectMwmp : IDispatch
+	{
+		[propget, id(1), helpstring("property foregroundColor")] HRESULT foregroundColor([out, retval] BSTR *pVal);
+		[propput, id(1), helpstring("property foregroundColor")] HRESULT foregroundColor([in] BSTR newVal);
+	};
+
+[
+	uuid(0EEBF2FE-5198-43EE-980A-57C120606942),
+	version(1.0),
+	helpstring("ProjectMwmp 1.0 Type Library")
+]
+library PROJECTMWMPLib
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+	[
+		uuid(0F04F51D-A1EA-4F41-908B-28BC5BC00FA8),
+		helpstring("ProjectMwmp Class")
+	]
+	coclass ProjectMwmp
+	{
+		[default] interface IProjectMwmp;
+	};
+};
