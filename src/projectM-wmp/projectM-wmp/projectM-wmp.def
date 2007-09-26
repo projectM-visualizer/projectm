@@ -1,0 +1,9 @@
+; projectM-wmp.def : Declares the module parameters.
+
+LIBRARY      "PROJECTM-WMP.DLL"
+
+EXPORTS
+	DllCanUnloadNow     PRIVATE
+	DllGetClassObject   PRIVATE
+	DllRegisterServer   PRIVATE
+	DllUnregisterServer	PRIVATE
