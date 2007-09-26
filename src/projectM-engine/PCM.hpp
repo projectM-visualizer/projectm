@@ -57,7 +57,7 @@ public:
     void addPCMfloat(float *PCMdata, int samples);
     void addPCM16(short [2][512]);
     void addPCM16Data(const short* pcm_data, short samples);
-    void addPCM8( unsigned char [2][512]);
+    void addPCM8( unsigned char [2][1024]);
     void getPCM(float *data, int samples, int channel, int freq, float smoothing, int derive);
     void freePCM();
     int getPCMnew(float *PCMdata, int channel, int freq, float smoothing, int derive,int reset);

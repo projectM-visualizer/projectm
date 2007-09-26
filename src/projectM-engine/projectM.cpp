@@ -68,12 +68,12 @@ double smoothDuration = 5;
 //int smoothFrame = 0;
 int oldFrame = 1;
 
-DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height) :renderer(0), renderTarget(0), smoothFrame(0), beatDetect ( 0 ), moodBar(0)
-
+DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url) :renderer(0), renderTarget(0), smoothFrame(0), beatDetect ( 0 ), moodBar(0),presetURL(preset_url)
 {
+  presetURL = preset_url;
   projectM_reset();
-  projectM_init(gx, gy, fps, texsize, wvw, wvh);  
-  projectM_resetGL( wvw, wvh );
+  projectM_init(gx, gy, fps, texsize, width, height);  
+  projectM_resetGL( width, height );
 }
 
 projectM::~projectM() {
@@ -170,7 +170,7 @@ DLLEXPORT void projectM::renderFrame()
   beatDetect->detectFromSamples();
   
 #ifndef USE_MOODBAR
-#define USE_MOODBAR
+//#define USE_MOODBAR
 #endif
 
 
@@ -407,7 +407,7 @@ void projectM::projectM_reset()
 	assert(!beatDetect);
 	beatDetect = new BeatDetect();
 
-	moodBar = new MoodBar(beatDetect->pcm);
+	//moodBar = new MoodBar(beatDetect->pcm);
 
 	/* Preset loading function */
 	initPresetTools();

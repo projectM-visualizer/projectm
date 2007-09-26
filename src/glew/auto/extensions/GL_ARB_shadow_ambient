@@ -1,0 +1,3 @@
+GL_ARB_shadow_ambient
+http://oss.sgi.com/projects/ogl-sample/registry/ARB/shadow_ambient.txt
+	GL_TEXTURE_COMPARE_FAIL_VALUE_ARB 0x80BF

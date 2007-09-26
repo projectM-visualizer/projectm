@@ -1,5 +1,6 @@
 #include "TextureManager.hpp"
 #include "CustomShape.hpp"
+#include "Common.hpp"
 #include <map>
 
 TextureManager::TextureManager(const std::string _presetURL): presetURL(_presetURL)
@@ -33,7 +34,7 @@ void TextureManager::unloadTextures(const PresetOutputs::cshape_container &shape
 
 GLuint TextureManager::getTexture(const std::string imageUrl)
 {
-   std::string fullUrl = presetURL + "/" + imageUrl;
+   std::string fullUrl = presetURL + PATH_SEPARATOR + imageUrl;
    return LoadTexture(fullUrl.c_str());
 }
 

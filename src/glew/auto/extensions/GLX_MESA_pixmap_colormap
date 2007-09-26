@@ -1,0 +1,3 @@
+GLX_MESA_pixmap_colormap
+http://oss.sgi.com/projects/ogl-sample/registry/MESA/pixmap_colormap.txt
+	GLXPixmap glXCreateGLXPixmapMESA (Display* dpy, XVisualInfo *visual, Pixmap pixmap, Colormap cmap)

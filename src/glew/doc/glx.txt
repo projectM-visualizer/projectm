@@ -1,0 +1,206 @@
+GLX PUBLIC LICENSE (Version 1.0 (2/11/99)) ("License")
+
+Subject to any third party claims, Silicon Graphics, Inc. ("SGI") hereby
+grants permission to Recipient (defined below), under Recipient's
+copyrights in the Original Software (defined below), to use, copy,
+modify, merge, publish, distribute, sublicense and/or sell copies of
+Subject Software (defined below), and to permit persons to whom the
+Subject Software is furnished in accordance with this License to do the
+same, subject to all of the following terms and conditions, which
+Recipient accepts by engaging in any such use, copying, modifying,
+merging, publishing, distributing, sublicensing or selling:
+
+1. Definitions.
+
+    (a) "Original Software" means source code of computer software code
+    which is described in Exhibit A as Original Software.
+
+    (b) "Modifications" means any addition to or deletion from the
+    substance or structure of either the Original Software or any
+    previous Modifications. When Subject Software is released as a
+    series of files, a Modification means (i) any addition to or
+    deletion from the contents of a file containing Original Software or
+    previous Modifications and (ii) any new file that contains any part
+    of the Original Code or previous Modifications.
+
+    (c) "Subject Software" means the Original Software or Modifications
+    or the combination of the Original Software and Modifications, or
+    portions of any of the foregoing.
+
+    (d) "Recipient" means an individual or a legal entity exercising
+    rights under, and complying with all of the terms of, this License.
+    For legal entities, "Recipient" includes any entity which controls,
+    is controlled by, or is under common control with Recipient. For
+    purposes of this definition, "control" of an entity means (a) the
+    power, direct or indirect, to direct or manage such entity, or (b)
+    ownership of fifty percent (50%) or more of the outstanding shares
+    or beneficial ownership of such entity.
+
+2. Redistribution of Source Code Subject to These Terms. Redistributions
+of Subject Software in source code form must retain the notice set forth
+in Exhibit A, below, in every file. A copy of this License must be
+included in any documentation for such Subject Software where the
+recipients' rights relating to Subject Software are described. Recipient
+may distribute the source code version of Subject Software under a
+license of Recipient's choice, which may contain terms different from
+this License, provided that (i) Recipient is in compliance with the
+terms of this License, and (ii) the license terms include this Section 2
+and Sections 3, 4, 7, 8, 10, 12 and 13 of this License, which terms may
+not be modified or superseded by any other terms of such license. If
+Recipient distributes the source code version under a different license
+Recipient must make it absolutely clear that any terms which differ from
+this License are offered by Recipient alone, not by SGI. Recipient
+hereby agrees to indemnify SGI for any liability incurred by SGI as a
+result of any such terms Recipient offers.
+
+3. Redistribution in Executable Form. The notice set forth in Exhibit A
+must be conspicuously included in any notice in an executable version of
+Subject Software, related documentation or collateral in which Recipient
+describes the user's rights relating to the Subject Software. Recipient
+may distribute the executable version of Subject Software under a
+license of Recipient's choice, which may contain terms different from
+this License, provided that (i) Recipient is in compliance with the
+terms of this License, and (ii) the license terms include this Section 3
+and Sections 4, 7, 8, 10, 12 and 13 of this License, which terms may not
+be modified or superseded by any other terms of such license. If
+Recipient distributes the executable version under a different license
+Recipient must make it absolutely clear that any terms which differ from
+this License are offered by Recipient alone, not by SGI. Recipient
+hereby agrees to indemnify SGI for any liability incurred by SGI as a
+result of any such terms Recipient offers.
+
+4. Termination. This License and the rights granted hereunder will
+terminate automatically if Recipient fails to comply with terms herein
+and fails to cure such breach within 30 days of the breach. Any
+sublicense to the Subject Software which is properly granted shall
+survive any termination of this License absent termination by the terms
+of such sublicense. Provisions which, by their nature, must remain in
+effect beyond the termination of this License shall survive.
+
+5. No Trademark Rights. This License does not grant any rights to use
+any trade name, trademark or service mark whatsoever. No trade name,
+trademark or service mark of SGI may be used to endorse or promote
+products derived from the Subject Software without prior written
+permission of SGI.
+
+6. No Other Rights. This License does not grant any rights with respect
+to the OpenGL API or to any software or hardware implementation thereof
+or to any other software whatsoever, nor shall any other rights or
+licenses not expressly granted hereunder arise by implication, estoppel
+or otherwise with respect to the Subject Software. Title to and
+ownership of the Original Software at all times remains with SGI. All
+rights in the Original Software not expressly granted under this License
+are reserved.
+
+7. Compliance with Laws; Non-Infringement. Recipient shall comply with
+all applicable laws and regulations in connection with use and
+distribution of the Subject Software, including but not limited to, all
+export and import control laws and regulations of the U.S. government
+and other countries. Recipient may not distribute Subject Software that
+(i) in any way infringes (directly or contributorily) the rights
+(including patent, copyright, trade secret, trademark or other
+intellectual property rights of any kind) of any other person or entity
+or (ii) breaches any representation or warranty, express, implied or
+statutory, which under any applicable law it might be deemed to have
+been distributed.
+
+8. Claims of Infringement. If Recipient at any time has knowledge of any
+one or more third party claims that reproduction, modification, use,
+distribution, import or sale of Subject Software (including particular
+functionality or code incorporated in Subject Software) infringes the
+third party's intellectual property rights, Recipient must place in a
+well-identified web page bearing the title "LEGAL" a description of each
+such claim and a description of the party making each such claim in
+sufficient detail that a user of the Subject Software will know whom to
+contact regarding the claim. Also, upon gaining such knowledge of any
+such claim, Recipient must conspicuously include the URL for such web
+page in the Exhibit A notice required under Sections 2 and 3, above, and
+in the text of any related documentation, license agreement or
+collateral in which Recipient describes end user's rights relating to
+the Subject Software. If Recipient obtains such knowledge after it makes
+Subject Software available to any other person or entity, Recipient
+shall take other steps (such as notifying appropriate mailing lists or
+newsgroups) reasonably calculated to inform those who received the
+Subject Software that new knowledge has been obtained.
+
+9. DISCLAIMER OF WARRANTY. SUBJECT SOFTWARE IS PROVIDED ON AN "AS IS"
+BASIS, WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED,
+INCLUDING, WITHOUT LIMITATION, WARRANTIES THAT THE SUBJECT SOFTWARE IS
+FREE OF DEFECTS, MERCHANTABLE, FIT FOR A PARTICULAR PURPOSE OR NON-
+INFRINGING. SGI ASSUMES NO RISK AS TO THE QUALITY AND PERFORMANCE OF THE
+SOFTWARE. SHOULD ANY SOFTWARE PROVE DEFECTIVE IN ANY RESPECT, SGI
+ASSUMES NO COST OR LIABILITY FOR ANY SERVICING, REPAIR OR CORRECTION.
+THIS DISCLAIMER OF WARRANTY CONSTITUTES AN ESSENTIAL PART OF THIS
+LICENSE. NO USE OF ANY SUBJECT SOFTWARE IS AUTHORIZED HEREUNDER EXCEPT
+UNDER THIS DISCLAIMER.
+
+10. LIMITATION OF LIABILITY. UNDER NO CIRCUMSTANCES AND UNDER NO LEGAL
+THEORY, WHETHER TORT (INCLUDING, WITHOUT LIMITATION, NEGLIGENCE OR
+STRICT LIABILITY), CONTRACT, OR OTHERWISE, SHALL SGI OR ANY SGI LICENSOR
+BE LIABLE FOR ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR
+CONSEQUENTIAL DAMAGES OF ANY CHARACTER INCLUDING, WITHOUT LIMITATION,
+DAMAGES FOR LOSS OF GOODWILL, WORK STOPPAGE, LOSS OF DATA, COMPUTER
+FAILURE OR MALFUNCTION, OR ANY AND ALL OTHER COMMERCIAL DAMAGES OR
+LOSSES, EVEN IF SUCH PARTY SHALL HAVE BEEN INFORMED OF THE POSSIBILITY
+OF SUCH DAMAGES. THIS LIMITATION OF LIABILITY SHALL NOT APPLY TO
+LIABILITY FOR DEATH OR PERSONAL INJURY RESULTING FROM SGI's NEGLIGENCE
+TO THE EXTENT APPLICABLE LAW PROHIBITS SUCH LIMITATION. SOME
+JURISDICTIONS DO NOT ALLOW THE EXCLUSION OR LIMITATION OF INCIDENTAL OR
+CONSEQUENTIAL DAMAGES, SO THAT EXCLUSION AND LIMITATION MAY NOT APPLY TO
+RECIPIENT.
+
+11. Indemnity. Recipient shall be solely responsible for damages
+arising, directly or indirectly, out of its utilization of rights under
+this License. Recipient will defend, indemnify and hold harmless Silicon
+Graphics, Inc. from and against any loss, liability, damages, costs or
+expenses (including the payment of reasonable attorneys fees) arising
+out of Recipient's use, modification, reproduction and distribution of
+the Subject Software or out of any representation or warranty made by
+Recipient.
+
+12. U.S. Government End Users. The Subject Software is a "commercial
+item" consisting of "commercial computer software" as such terms are
+defined in title 48 of the Code of Federal Regulations and all U.S.
+Government End Users acquire only the rights set forth in this License
+and are subject to the terms of this License.
+
+13. Miscellaneous. This License represents the complete agreement
+concerning subject matter hereof. If any provision of this License is
+held to be unenforceable, such provision shall be reformed so as to
+achieve as nearly as possible the same economic effect as the original
+provision and the remainder of this License will remain in effect. This
+License shall be governed by and construed in accordance with the laws
+of the United States and the State of California as applied to
+agreements entered into and to be performed entirely within California
+between California residents. Any litigation relating to this License
+shall be subject to the exclusive jurisdiction of the Federal Courts of
+the Northern District of California (or, absent subject matter
+jurisdiction in such courts, the courts of the State of California),
+with venue lying exclusively in Santa Clara County, California, with the
+losing party responsible for costs, including without limitation, court
+costs and reasonable attorneys fees and expenses. The application of the
+United Nations Convention on Contracts for the International Sale of
+Goods is expressly excluded. Any law or regulation which provides that
+the language of a contract shall be construed against the drafter shall
+not apply to this License.
+
+Exhibit A
+
+The contents of this file are subject to Sections 2, 3, 4, 7, 8, 10, 12
+and 13 of the GLX Public License Version 1.0 (the "License"). You may
+not use this file except in compliance with those sections of the
+License. You may obtain a copy of the License at Silicon Graphics, Inc.,
+attn: Legal Services, 2011 N. Shoreline Blvd., Mountain View, CA 94043
+or at http://www.sgi.com/software/opensource/glx/license.html.
+
+Software distributed under the License is distributed on an "AS IS"
+basis. ALL WARRANTIES ARE DISCLAIMED, INCLUDING, WITHOUT LIMITATION, ANY
+IMPLIED WARRANTIES OF MERCHANTABILITY, OF FITNESS FOR A PARTICULAR
+PURPOSE OR OF NON- INFRINGEMENT. See the License for the specific
+language governing rights and limitations under the License.
+
+The Original Software is GLX version 1.2 source code, released February,
+1999. The developer of the Original Software is Silicon Graphics, Inc.
+Those portions of the Subject Software created by Silicon Graphics, Inc.
+are Copyright (c) 1991-9 Silicon Graphics, Inc. All Rights Reserved.
+

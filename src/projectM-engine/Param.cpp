@@ -184,9 +184,9 @@ Param * Param::new_param_string(char * name, short int flags, void * engine_val)
     CValue iv, ub, lb;
     assert(engine_val);
 
-//    iv.bool_val = init_val;
-  //  ub.bool_val = upper_bound;
-  //  lb.bool_val = lower_bound;
+    iv.bool_val = 0;
+    ub.bool_val = 0;
+    lb.bool_val = 0;
 
     if ((param = new Param(name, P_TYPE_STRING, flags, engine_val, NULL, iv, ub, lb)) == NULL)
         return NULL;
