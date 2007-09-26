@@ -228,9 +228,8 @@ void RenderTarget::unlock() {
     /** Fallback texture path */
     DWRITE( "copying framebuffer to texture\n" );
     glBindTexture( GL_TEXTURE_2D, this->textureID[0] );
-    glCopyTexSubImage2D( GL_TEXTURE_2D,
-                         0, 0, 0, 0, 0, 
-                         this->texsize, this->texsize );
+    
+	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, this->texsize, this->texsize );
   }
 
 /** 

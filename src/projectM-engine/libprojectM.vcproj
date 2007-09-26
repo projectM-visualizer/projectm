@@ -42,7 +42,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;DEBUG"
+				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\DEV2\My Documents\svn\src\glew\include\GL&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;DEBUG;GLEW_STATIC;USE_FBO"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -67,6 +68,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="opengl32.lib"
 				OutputFile=".\Debug\libprojectM.lib"
 				SuppressStartupBanner="true"
 			/>
@@ -117,8 +119,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\Microsoft Visual Studio 8\VC\include\GL&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;GLEW_BUILD;USE_FBO"
+				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\DEV2\My Documents\svn\src\glew\include\GL&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;GLEW_STATIC;USE_FBO"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -145,8 +147,10 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="opengl32.lib glu32.lib"
 				OutputFile=".\Release\libprojectM.lib"
 				SuppressStartupBanner="true"
+				IgnoreDefaultLibraryNames=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -224,6 +228,10 @@
 			</File>
 			<File
 				RelativePath=".\InitCond.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\KeyHandler.cpp"
 				>
 			</File>
 			<File
@@ -356,10 +364,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\console_interface.h"
-				>
-			</File>
-			<File
 				RelativePath=".\CustomShape.hpp"
 				>
 			</File>
@@ -409,6 +413,10 @@
 			</File>
 			<File
 				RelativePath=".\InitCondUtils.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\KeyHandler.hpp"
 				>
 			</File>
 			<File

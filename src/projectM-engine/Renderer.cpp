@@ -421,6 +421,7 @@ void Renderer::reset(int w, int h)
     glClearColor( 0, 0, 0, 0 );
     /* Setup our viewport. */
     glViewport( 0, 0, w, h );
+	
     /*
     * Change to the projection matrix and set
     * our viewing volume.
@@ -446,7 +447,7 @@ void Renderer::reset(int w, int h)
       glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);		
     
     glEnable(GL_POINT_SMOOTH);
-  
+  glClear(GL_COLOR_BUFFER_BIT);
     // glCopyTexImage2D(GL_TEXTURE_2D,0,GL_RGB,0,0,renderTarget->texsize,renderTarget->texsize,0);
     //glCopyTexSubImage2D(GL_TEXTURE_2D,0,0,0,0,0,renderTarget->texsize,renderTarget->texsize);
     glLineStipple(2, 0xAAAA);
@@ -578,7 +579,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	       
 	       if ((*pos)->getImageUrl() !="")
 		 {
-		   GLuint tex = textureManager->getTexture((*pos)->getImageUrl());
+			 GLuint tex = textureManager->getTexture((*pos)->getImageUrl());
 		   if (tex != 0)
 		     {
 		       glBindTexture(GL_TEXTURE_2D, tex);
@@ -631,7 +632,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 		}
 	      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
 
-	    }
+	   }
 	  else{//Untextured (use color values)
 	   
 	    //draw first n-1 triangular pieces

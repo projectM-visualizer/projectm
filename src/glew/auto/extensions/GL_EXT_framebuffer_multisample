@@ -1,0 +1,6 @@
+GL_EXT_framebuffer_multisample
+http://oss.sgi.com/projects/ogl-sample/registry/EXT/framebuffer_multisample.txt
+	GL_RENDERBUFFER_SAMPLES_EXT 0x8CAB
+	void glRenderbufferStorageMultisampleEXT (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height)
+	GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT 0x8D56
+	GL_MAX_SAMPLES_EXT 0x8D57

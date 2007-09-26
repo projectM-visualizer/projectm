@@ -190,10 +190,10 @@ void PCM::addPCM16(short PCMdata[2][512])
 }
 
 
-void PCM::addPCM8( unsigned char PCMdata[2][512])
+void PCM::addPCM8( unsigned char PCMdata[2][1024])
 {
   int i,j;
-  int samples=512;
+  int samples=1024;
 
  
 	 for(i=0;i<samples;i++)

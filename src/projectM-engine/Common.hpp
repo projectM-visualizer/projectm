@@ -34,7 +34,7 @@
 #endif
 
 #ifdef DEBUG
-extern FILE *debugFile;
+//extern FILE *debugFile;
 #endif
 
 #ifdef MACOS
@@ -101,6 +101,15 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #ifdef WIN32
 #include <float.h>
 #define isnan _isnan#endif /** WIN32 */
+#endif /** WIN32 */
+
+/** Per-platform path separators */
+#define WIN32_PATH_SEPARATOR '\\'
+#define UNIX_PATH_SEPARATOR '/'
+#ifdef WIN32
+#define PATH_SEPARATOR WIN32_PATH_SEPARATOR
+#else
+#define PATH_SEPARATOR UNIX_PATH_SEPARATOR
 #endif /** WIN32 */
 
 inline void DWRITE( char *fmt, ... ) {

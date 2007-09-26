@@ -517,10 +517,30 @@ int LoadTgaImage(const char filename[],unsigned char** ppData,unsigned int* w,un
 				 */
 				else
 				{
+					/*
+					int count;
+					int x;
+				    byte -= 0x7F;
+
+					for(x=0;x<*bpp; x++)
+					{
+					   count = (int)fread( &colour[x], 1, 1, fp );
+					}
+				
+
+					for(j=0;j<byte; ++j)
+					{
+						for( k = 0; k != *bpp; k++, ++pData )
+						{
+						   *pData = colour[ k ];
+						}
+					}
+					*/
+					
+					
 					byte -= 0x7F;
 
 					fread( colour, 1, *bpp, fp );
-
 					for(j=0;j<byte; ++j)
 					{
 						for( k = 0; k != *bpp; ++k, ++pData )
@@ -528,7 +548,7 @@ int LoadTgaImage(const char filename[],unsigned char** ppData,unsigned int* w,un
 							*pData = colour[ k ];
 						}
 					}
-
+					
 				}
 			}
 

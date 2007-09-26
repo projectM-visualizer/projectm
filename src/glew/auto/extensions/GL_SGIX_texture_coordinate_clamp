@@ -1,0 +1,5 @@
+GL_SGIX_texture_coordinate_clamp
+http://oss.sgi.com/projects/ogl-sample/registry/SGIX/texture_coordinate_clamp.txt
+	GL_TEXTURE_MAX_CLAMP_S_SGIX 0x8369
+	GL_TEXTURE_MAX_CLAMP_T_SGIX 0x836A
+	GL_TEXTURE_MAX_CLAMP_R_SGIX 0x836B

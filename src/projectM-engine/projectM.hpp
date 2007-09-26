@@ -96,14 +96,7 @@ class MoodBar;
 #define PROJECTM_VERSION "1.02.00"
 #define PROJECTM_TITLE "projectM 1.02.00"
 
-/** Per-platform path separators */
-#define WIN32_PATH_SEPARATOR '\\'
-#define UNIX_PATH_SEPARATOR '/'
-#ifdef WIN32
-#define PATH_SEPARATOR WIN32_PATH_SEPARATOR
-#else
-#define PATH_SEPARATOR UNIX_PATH_SEPARATOR
-#endif /** WIN32 */
+
 
 /** Thread state */
 typedef enum { GO, STOP } PMThreadState;
@@ -176,7 +169,7 @@ public:
     BeatDetect * beatDetect;
 
     /** Functions */
-    DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height);
+	DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url);
 
     void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
     void projectM_reset();
