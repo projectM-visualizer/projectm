@@ -1,0 +1,41 @@
+HKCR
+{
+    NoRemove CLSID
+    {
+        ForceRemove {0F04F51D-A1EA-4F41-908B-28BC5BC00FA8} = s 'ProjectMwmp Class'
+        {
+            InprocServer32 = s '%MODULE%'
+            {
+                val ThreadingModel = s 'Apartment'
+            }
+            'TypeLib' = s '{0EEBF2FE-5198-43EE-980A-57C120606942}'
+        }
+    }
+}
+HKEY_LOCAL_MACHINE
+{
+    NoRemove SOFTWARE
+    {
+        NoRemove Microsoft
+        {
+            NoRemove MediaPlayer
+            {
+                NoRemove Objects
+                {
+                    NoRemove Effects
+                    {
+                        ForceRemove ProjectMwmp
+                        {
+                            Properties
+                            {
+                                val classid = s '{0F04F51D-A1EA-4F41-908B-28BC5BC00FA8}'
+                                val name = s 'res://projectM-wmp.dll/RT_STRING/#101'
+                                val description = s 'res://projectM-wmp.dll/RT_STRING/#105'
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
