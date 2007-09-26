@@ -13,12 +13,7 @@
 #include "effects.h"
 #include "projectM-wmp_h.h"
 
-// preset values
-enum {
-    PRESET_BARS = 0,
-    PRESET_SCOPE,
-    PRESET_COUNT
-};
+
 
 /////////////////////////////////////////////////////////////////////////////
 // CProjectMwmp
@@ -67,8 +62,8 @@ public:
     STDMETHOD(Render)(TimedLevel *pLevels, HDC hdc, RECT *rc);
     STDMETHOD(MediaInfo)(LONG lChannelCount, LONG lSampleRate, BSTR bstrTitle);
     STDMETHOD(GetCapabilities)(DWORD * pdwCapabilities);
-    STDMETHOD(GoFullscreen)(BOOL fFullScreen) { return E_NOTIMPL; };
-    STDMETHOD(RenderFullScreen)(TimedLevel *pLevels) { return E_NOTIMPL; };
+    STDMETHOD(GoFullscreen)(BOOL fFullScreen);// { return E_NOTIMPL; };
+    STDMETHOD(RenderFullScreen)(TimedLevel *pLevels);// { return E_NOTIMPL; };
     STDMETHOD(DisplayPropertyPage)(HWND hwndOwner) { return E_NOTIMPL; };
     STDMETHOD(GetTitle)(BSTR *bstrTitle);
     STDMETHOD(GetPresetTitle)(LONG nPreset, BSTR *bstrPresetTitle);

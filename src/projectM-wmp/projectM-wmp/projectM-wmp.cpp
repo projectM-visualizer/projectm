@@ -181,6 +181,42 @@ STDMETHODIMP CProjectMwmp::GetTitle(BSTR* bstrTitle)
     return S_OK;
 }
 
+
+STDMETHODIMP CProjectMwmp::RenderFullScreen(TimedLevel *pLevels)
+{
+
+  // NULL parent window should not happen 
+    if (NULL == m_hwndParent)
+    {
+        return E_UNEXPECTED;
+    }
+
+    // At this point the visualization should draw directly into the parent
+    // window. This sample just calls windowless render for simplicity.
+
+    HDC hdc = ::GetDC(m_hwndParent);
+
+    if (NULL == hdc)
+    {
+        return E_FAIL;
+    }
+
+    RECT rParent = { 0 };
+    ::GetClientRect(m_hwndParent, &rParent);
+
+    Render(pLevels, hdc, &rParent);
+    
+    ::ReleaseDC(m_hwndParent, hdc);
+
+	return S_OK;
+}
+
+STDMETHODIMP CProjectMwmp::GoFullscreen(BOOL fFullScreen)
+{
+
+	return S_OK;
+}
+											
 //////////////////////////////////////////////////////////////////////////////
 // CProjectMwmp::GetPresetTitle
 // Invoked when a host wants to obtain the title of the given preset
@@ -192,12 +228,7 @@ STDMETHODIMP CProjectMwmp::GetPresetTitle(LONG nPreset, BSTR *bstrPresetTitle)
     if (NULL == bstrPresetTitle)
     {
         return E_POINTER;
-    }
-
-    if ((nPreset < 0) || (nPreset >= PRESET_COUNT))
-    {
-        return E_INVALIDARG;
-    }
+    }    
 
     CComBSTR bstrTemp;
         
@@ -234,12 +265,7 @@ STDMETHODIMP CProjectMwmp::GetPresetCount(LONG *pnPresetCount)
 // Invoked when a host wants to change the index of the current preset
 //////////////////////////////////////////////////////////////////////////////
 STDMETHODIMP CProjectMwmp::SetCurrentPreset(LONG nPreset)
-{
-    if ((nPreset < 0) || (nPreset >= PRESET_COUNT))
-    {
-        return E_INVALIDARG;
-    }
-
+{   
     m_nPreset = 0;
 
     return S_OK;
