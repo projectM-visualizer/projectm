@@ -36,7 +36,7 @@ public:
     int start;
 
     /** Use wave smoothing */
-    int waveSmoothing;
+    float waveSmoothing;
 
     int *ip;
     double *w;
