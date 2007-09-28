@@ -1,6 +1,3 @@
-/** PresetChooser.hpp:
- * Provides functions and iterators to select presets. Requires a preset loader upon construction.
- */
 
 /// @idea Weighted random based on user stats
 
@@ -57,6 +54,7 @@ private:
 
 };
 
+/// Provides functions and iterators to select presets. Requires a preset loader upon construction
 class PresetChooser {
 
 public:

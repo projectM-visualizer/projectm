@@ -140,10 +140,10 @@ void PresetLoader::handleDirectoryError()
     std::cerr << "[PresetLoader] out of memory! Are you running Windows?" << std::endl;
     abort();
  case ENOTDIR:
-    std::cerr << "[PresetLoader] directory specified is not a preset directory! Cannot continue." << std::endl;
+    std::cerr << "[PresetLoader] directory specified is not a preset directory! Trying to continue..." << std::endl;
     break;
   case ENFILE:
-    std::cerr << "[PresetLoader] Your system has reached its open file limit. Giving up..." << std::endl;
+    std::cerr << "[PresetLoader] Your system has reached its open file limit. Trying to continue..." << std::endl;
     break;
   case EMFILE:
     std::cerr << "[PresetLoader] too many files in use by projectM! Bailing!" << std::endl;
