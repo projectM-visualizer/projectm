@@ -11,7 +11,7 @@ class IdlePreset {
   public:
 	/// Allocate a new idle preset instance 
 	/// \param presetInputs the preset inputs instance to associate with the preset
-	/// \param presetOutputs the preset output instance to associate with the prest
+	/// \param presetOutputs the preset output instance to associate with the preset
 	/// \returns a newly allocated auto pointer of an idle preset instance
 	static std::auto_ptr<Preset> allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
   private:
