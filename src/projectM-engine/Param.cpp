@@ -177,7 +177,7 @@ Param * Param::new_param_bool(char * name, short int flags, void * engine_val,
     return param;
 }
 
-/* Creates a new parameter of type bool */
+/* Creates a new parameter of type string */
 Param * Param::new_param_string(char * name, short int flags, void * engine_val) {
 
     Param * param;

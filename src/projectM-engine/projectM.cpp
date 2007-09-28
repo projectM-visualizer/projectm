@@ -68,7 +68,7 @@ double smoothDuration = 5;
 //int smoothFrame = 0;
 int oldFrame = 1;
 
-DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url) :renderer(0), renderTarget(0), smoothFrame(0), beatDetect ( 0 ), moodBar(0),presetURL(preset_url)
+DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url) :renderer(0), renderTarget(0), smoothFrame(0), beatDetect ( 0 ), presetURL(preset_url), moodBar(0)
 {
   presetURL = preset_url;
   projectM_reset();

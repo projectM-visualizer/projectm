@@ -78,7 +78,7 @@ public:
     float * value2;
     float * sample_mesh;
     
-    bool enabled; /* if nonzero then wave is visible, hidden otherwise */
+    bool enabled; /* if true then wave is visible, hidden otherwise */
     int samples; /* number of samples associated with this wave form. Usually powers of 2 */
     float sample;
     bool bSpectrum; /* spectrum data or pcm data */
