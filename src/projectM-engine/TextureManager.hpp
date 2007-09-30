@@ -8,16 +8,17 @@
 #ifdef WIN32
 #include <glew.h>
 #endif
-#include "texture.h"
+#include "SOIL.h"
 #include <iostream>
 #include <string>
+#include <map>
 
 class TextureManager
 {
   std::string presetURL;
-  
+  std::map<std::string,GLuint> textures;
 public:
-
+  ~TextureManager();
   TextureManager(std::string _presetURL);
   void unloadTextures(const PresetOutputs::cshape_container &shapes);
   GLuint getTexture(std::string imageUrl);

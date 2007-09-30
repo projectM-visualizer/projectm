@@ -1,14 +1,11 @@
 PROJECT(projectM)
-ADD_LIBRARY(projectM SHARED projectM.cpp projectM.hpp PBuffer.cpp PBuffer.hpp InitCond.cpp InitCond.hpp
- Expr.cpp PCM.cpp Parser.cpp Preset.cpp Common.hpp BeatDetect.cpp PCM.hpp PerPixelEqn.cpp Eval.hpp 
-RingBuffer.hpp Param.cpp CustomWave.cpp CustomShape.hpp CustomShape.cpp Param.hpp CustomWave.hpp BeatDetect.hpp
-KeyHandler.hpp
-Func.hpp Func.cpp Eval.cpp wipemalloc.h PerFrameEqn.cpp PerPointEqn.cpp fftsg.cpp KeyHandler.cpp
-CValue.hpp Expr.hpp timer.cpp  wipemalloc.cpp PerFrameEqn.hpp PerPixelEqn.hpp PerPointEqn.hpp BuiltinFuncs.hpp 
-BuiltinFuncs.cpp compare.h event.h fatal.h fftsg.h timer.h BuiltinParams.hpp BuiltinParams.cpp Preset.hpp Renderer.cpp Renderer.hpp ParamUtils.hpp 
-PresetLoader.cpp PresetLoader.hpp PresetChooser.hpp PresetChooser.cpp PresetFrameIO.cpp PresetFrameIO.hpp PresetMerge.cpp PresetMerge.hpp 
-ConfigFile.h ConfigFile.cpp IdlePreset.hpp IdlePreset.cpp bmpLoader.h bmpLoader.c pcxLoader.c pcxLoader.h texture.cpp texture.h tgaLoader.c 
-tgaLoader.h TextureManager.cpp TextureManager.hpp MoodBar.hpp MoodBar.cpp)
+ADD_LIBRARY(projectM SHARED projectM.cpp PBuffer.cpp InitCond.cpp 
+ Expr.cpp PCM.cpp Parser.cpp Preset.cpp BeatDetect.cpp PerPixelEqn.cpp Param.cpp CustomWave.cpp CustomShape.cpp 
+Func.cpp Eval.cpp  PerFrameEqn.cpp PerPointEqn.cpp fftsg.cpp KeyHandler.cpp
+ timer.cpp  wipemalloc.cpp 
+BuiltinFuncs.cpp BuiltinParams.cpp Renderer.cpp 
+PresetLoader.cpp  PresetChooser.cpp PresetFrameIO.cpp PresetMerge.cpp
+ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp MoodBar.cpp image_DXT.c image_helper.c SOIL.c stb_image.c  )
 
 OPTION(USE_FTGL "Use FTGL for on-screen fonts" ON)
 
