@@ -1,16 +1,30 @@
 #include "TextureManager.hpp"
 #include "CustomShape.hpp"
 #include "Common.hpp"
-#include <map>
+
+
+
 
 TextureManager::TextureManager(const std::string _presetURL): presetURL(_presetURL)
 {
   ;
 }
 
+TextureManager::~TextureManager()
+{
+  // DeleteAllTextures();
+
+  std::map<std::string, GLuint>::const_iterator iter;
+
+  for(iter = textures.begin(); iter != textures.end(); iter++)
+    {
+      glDeleteTextures(1,&iter->second);
+    }
+}
 
 void TextureManager::unloadTextures(const PresetOutputs::cshape_container &shapes)
 {
+  /*
    for (PresetOutputs::cshape_container::const_iterator pos = shapes.begin();
 	pos != shapes.end(); ++pos) 
     {
@@ -29,16 +43,39 @@ void TextureManager::unloadTextures(const PresetOutputs::cshape_container &shape
 	    }
 	}
     }
+  */
 }
 
 
-GLuint TextureManager::getTexture(const std::string imageUrl)
+GLuint TextureManager::getTexture(const std::string imageURL)
 {
-   std::string fullUrl = presetURL + PATH_SEPARATOR + imageUrl;
-   return LoadTexture(fullUrl.c_str());
+ 
+   if (textures.find(imageURL)!= textures.end())
+     {
+       return textures[imageURL];
+     }
+   else
+     {
+       std::string fullURL = presetURL + PATH_SEPARATOR + imageURL;
+       GLuint tex = SOIL_load_OGL_texture(
+					  fullURL.c_str(),
+					  SOIL_LOAD_AUTO,
+					  SOIL_CREATE_NEW_ID,
+					  SOIL_FLAG_POWER_OF_TWO
+					  //| SOIL_FLAG_MIPMAPS
+					  | SOIL_FLAG_MULTIPLY_ALPHA
+					  | SOIL_FLAG_COMPRESS_TO_DXT
+					  //| SOIL_FLAG_DDS_LOAD_DIRECT
+					  );
+       textures[imageURL]=tex;
+       return tex;
+       
+
+     }
+   // return LoadTexture(fullUrl.c_str(),false);
 }
 
 unsigned int TextureManager::getTextureMemorySize()
 {
-  return GetTotalTextureSize();
+  return 0;//GetTotalTextureSize();
 }
