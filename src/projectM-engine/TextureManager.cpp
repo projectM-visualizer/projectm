@@ -20,6 +20,7 @@ TextureManager::~TextureManager()
     {
       glDeleteTextures(1,&iter->second);
     }
+  textures.clear();
 }
 
 void TextureManager::unloadTextures(const PresetOutputs::cshape_container &shapes)
