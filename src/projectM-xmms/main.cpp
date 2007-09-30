@@ -96,8 +96,6 @@ extern "C" VisPlugin *get_vplugin_info(void)
 // Our worker thread
 SDL_Thread *worker_thread;
 SDL_sem *sem;
-SDL_mutex *mutex;
-
 SDL_Event event;
 
 SDL_Surface *screen;
@@ -161,7 +159,7 @@ int capture = 0;
 int worker_func(void*)
 { 
 // char projectM_data[1024]; 
- SDL_TimerID title_timer = NULL;
+// SDL_TimerID title_timer = NULL;
  std::string config_file;
  config_file = read_config();
 
@@ -181,7 +179,7 @@ int worker_func(void*)
     
   globalPM = new projectM(config_file);
          
-  title_timer = SDL_AddTimer(500, get_xmms_title, NULL);
+  //  title_timer = SDL_AddTimer(500, get_xmms_title, NULL);
     /** Initialise the thread */
   // SDL_SemTryWait(sem);
   while ( SDL_SemValue(sem)==1 ) {
@@ -255,9 +253,9 @@ int worker_func(void*)
 
 	 //printf("%s\n",title);
 	// strcpy(globalPM->title,title);
-	//SDL_mutexP(mutex);
+	
 	  globalPM->renderFrame();
-	  //SDL_mutexV(mutex);
+	
       
 
         SDL_GL_SwapBuffers();
@@ -269,10 +267,10 @@ int worker_func(void*)
  
 		
   printf("Worker thread: Exiting\n");
- if(title_timer) 
-	SDL_RemoveTimer(title_timer);
+  // if(title_timer) 
+  //	SDL_RemoveTimer(title_timer);
  delete globalPM;
- close_display();
+
 
  return 0;
 }
@@ -284,7 +282,6 @@ extern "C" void projectM_xmms_init(void)
  
   SDL_EnableUNICODE(1);
   
-  mutex = SDL_CreateMutex();
   sem = SDL_CreateSemaphore(1);
   worker_thread = SDL_CreateThread ( *worker_func, NULL);
  
@@ -292,7 +289,7 @@ extern "C" void projectM_xmms_init(void)
 
 
 
-extern "C"void projectM_cleanup(void)
+extern "C" void projectM_cleanup(void)
 {
 
   SDL_SemWait(sem);
@@ -300,9 +297,6 @@ extern "C"void projectM_cleanup(void)
   // SDL_KillThread(worker_thread);
   printf("killed thread\n");
 
- 
-
-  SDL_DestroyMutex(mutex);
   SDL_DestroySemaphore(sem);
     printf("Destroy Mutex\n");
   SDL_Quit();
