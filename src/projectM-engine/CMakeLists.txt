@@ -28,7 +28,7 @@ ENDIF(USE_FTGL)
 CONFIGURE_FILE("libprojectM.pc.in" "libprojectM.pc" @ONLY)
 CONFIGURE_FILE("config.inp.in" "config.inp" @ONLY)
 
-FILE(GLOB presets "presets/*.milk")
+FILE(GLOB presets "presets/*.milk" "presets/*.prjm" "presets/*.tga")
 INSTALL(FILES ${presets} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/presets)
 FILE(GLOB fonts "fonts/*.ttf")
 INSTALL(FILES ${fonts} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/fonts)
