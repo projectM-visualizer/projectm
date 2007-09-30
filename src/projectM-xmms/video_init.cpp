@@ -9,15 +9,10 @@
 #include <SDL/SDL.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
+#include "video_init.h"
 
 extern SDL_Surface *screen;
 extern int texsize;
-void setup_opengl( int w, int h );
-
-void close_display() {
-  printf("quitting\n");
-  SDL_Quit();
-}
 
 void resize_display(int w, int h, int f) {
   int flags;
@@ -29,7 +24,7 @@ void resize_display(int w, int h, int f) {
       fprintf( stderr, "Video mode set failed: %s\n", SDL_GetError( ) );
       return;
   }
-  setup_opengl(w,h);
+  
   SDL_ShowCursor(f ? SDL_DISABLE : SDL_ENABLE);
 }
 
@@ -107,50 +102,4 @@ void init_display(int w, int h, int *fvw, int *fvh, int f)
   //gluOrtho2D(0, w, 0, h);
 }
 
-
- void setup_opengl( int w, int h )
-{
-   
-    /* Our shading model--Gouraud (smooth). */
-     glShadeModel( GL_SMOOTH);
-    /* Culling. */
-    //    glCullFace( GL_BACK );
-    //    glFrontFace( GL_CCW );
-    //    glEnable( GL_CULL_FACE );
-    /* Set the clear color. */
-    glClearColor( 0, 0, 0, 0 );
-    /* Setup our viewport. */
-     glViewport( 0, 0, w, h );
-    /*
-     * Change to the projection matrix and set
-     * our viewing volume.
-     */
-    glMatrixMode(GL_TEXTURE);
-    glLoadIdentity();
-    
-    //    gluOrtho2D(0.0, (GLfloat) width, 0.0, (GLfloat) height);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();  
-   
-    //    glFrustum(0.0, height, 0.0,width,10,40);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-glDrawBuffer(GL_BACK); 
-  glReadBuffer(GL_BACK); 
-  glEnable(GL_BLEND); 
-
-     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
-     // glBlendFunc(GL_SRC_ALPHA, GL_ONE); 
-  glEnable(GL_LINE_SMOOTH);
-  glEnable(GL_POINT_SMOOTH);
-  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-  glClear(GL_COLOR_BUFFER_BIT);
- 
-  // glCopyTexImage2D(GL_TEXTURE_2D,0,GL_RGB,0,0,texsize,texsize,0);
-  //glCopyTexSubImage2D(GL_TEXTURE_2D,0,0,0,0,0,texsize,texsize);
-   glLineStipple(2, 0xAAAA);
-  
-    
-}
 
