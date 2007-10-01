@@ -1,0 +1,3 @@
+GL_EXT_index_material
+http://oss.sgi.com/projects/ogl-sample/registry/EXT/index_material.txt
+	void glIndexMaterialEXT (GLenum face, GLenum mode)
