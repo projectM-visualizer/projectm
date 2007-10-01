@@ -1,3 +1,0 @@
-GL_SGIS_texture_edge_clamp
-http://oss.sgi.com/projects/ogl-sample/registry/SGIS/texture_edge_clamp.txt
-	GL_CLAMP_TO_EDGE_SGIS 0x812F
