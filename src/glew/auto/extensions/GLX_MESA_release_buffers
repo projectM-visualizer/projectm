@@ -1,3 +1,0 @@
-GLX_MESA_release_buffers
-http://oss.sgi.com/projects/ogl-sample/registry/MESA/release_buffers.txt
-	Bool glXReleaseBuffersMESA (Display* dpy, GLXDrawable d)
