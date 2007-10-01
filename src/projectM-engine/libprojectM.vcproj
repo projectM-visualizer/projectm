@@ -42,11 +42,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\DEV2\My Documents\svn\src\glew\include\GL&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;DEBUG;GLEW_STATIC;USE_FBO"
+				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\DEV2\My Documents\svn\freetype-2.3.5\include&quot;;&quot;C:\Documents and Settings\DEV2\My Documents\svn\FTGL\include&quot;;&quot;C:\Documents and Settings\DEV2\My Documents\svn\src\glew\include\GL&quot;"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;DEBUG;GLEW_STATIC;USE_FBO;USE_FTGL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				PrecompiledHeaderFile=".\Debug/libprojectM.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
@@ -119,10 +119,10 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\DEV2\My Documents\svn\src\glew\include\GL&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;GLEW_STATIC;USE_FBO"
+				AdditionalIncludeDirectories="&quot;..\WinLibs\freetype-2.3.5\include&quot;;&quot;..\WinLibs\FTGL\include&quot;;&quot;..\WinLibs\glew\include\GL&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;GLEW_STATIC;USE_FBO; USE_FTGL"
 				StringPooling="true"
-				RuntimeLibrary="0"
+				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				PrecompiledHeaderFile=".\Release/libprojectM.pch"
 				AssemblerListingLocation=".\Release/"
@@ -172,6 +172,14 @@
 		</Configuration>
 	</Configurations>
 	<References>
+		<ProjectReference
+			ReferencedProjectIdentifier="{94AC71AA-7528-4E56-A5A9-EDDFE6D20A39}"
+			RelativePathToProject="..\WinLibs\glew\build\vc6\glew_static.vcproj"
+		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{4A80DC08-8D4E-4136-B818-AF0024000A21}"
+			RelativePathToProject="..\WinLibs\FTGL\win32_vcpp\ftgl_static_lib\ftgl_static_lib.vcproj"
+		/>
 	</References>
 	<Files>
 		<Filter
@@ -180,10 +188,6 @@
 			>
 			<File
 				RelativePath=".\BeatDetect.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\bmpLoader.c"
 				>
 			</File>
 			<File
@@ -227,6 +231,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\image_DXT.c"
+				>
+			</File>
+			<File
+				RelativePath=".\image_helper.c"
+				>
+			</File>
+			<File
 				RelativePath=".\InitCond.cpp"
 				>
 			</File>
@@ -256,10 +268,6 @@
 			</File>
 			<File
 				RelativePath=".\PCM.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\pcxLoader.c"
 				>
 			</File>
 			<File
@@ -303,15 +311,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\texture.cpp"
+				RelativePath=".\SOIL.c"
+				>
+			</File>
+			<File
+				RelativePath=".\stb_image.c"
 				>
 			</File>
 			<File
 				RelativePath=".\TextureManager.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\tgaLoader.c"
 				>
 			</File>
 			<File
@@ -337,10 +345,6 @@
 			</File>
 			<File
 				RelativePath=".\BeatDetect.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\bmpLoader.h"
 				>
 			</File>
 			<File
@@ -408,6 +412,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\image_DXT.h"
+				>
+			</File>
+			<File
+				RelativePath=".\image_helper.h"
+				>
+			</File>
+			<File
 				RelativePath=".\InitCond.hpp"
 				>
 			</File>
@@ -445,10 +457,6 @@
 			</File>
 			<File
 				RelativePath=".\PCM.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\pcxLoader.h"
 				>
 			</File>
 			<File
@@ -496,15 +504,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\texture.h"
+				RelativePath=".\SOIL.h"
+				>
+			</File>
+			<File
+				RelativePath=".\stb_image.h"
 				>
 			</File>
 			<File
 				RelativePath=".\TextureManager.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\tgaLoader.h"
 				>
 			</File>
 			<File
