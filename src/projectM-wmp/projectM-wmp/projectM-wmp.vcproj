@@ -19,7 +19,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfATL="1"
+			UseOfATL="0"
 			CharacterSet="2"
 			>
 			<Tool
@@ -44,7 +44,7 @@
 				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;_WINNT_WIN32=0x5000;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
-				RuntimeLibrary="1"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -65,6 +65,7 @@
 				RegisterOutput="true"
 				UseLibraryDependencyInputs="false"
 				AdditionalDependencies="opengl32.lib glu32.lib"
+				ShowProgress="2"
 				LinkIncremental="2"
 				LinkDLL="true"
 				IgnoreAllDefaultLibraries="false"
@@ -126,9 +127,9 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\DEV2\My Documents\svn\src\glew\include\GL&quot;;&quot;C:\Documents and Settings\DEV2\My Documents\svn\src\projectM-engine&quot;"
+				AdditionalIncludeDirectories="&quot;..\..\projectM-engine&quot;;&quot;..\..\WinLibs\glew\include\GL&quot;;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;_WINNT_WIN32=0x5000"
-				RuntimeLibrary="0"
+				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -188,10 +189,6 @@
 		<ProjectReference
 			ReferencedProjectIdentifier="{31B91091-431A-4842-8682-2A04B51C980A}"
 			RelativePathToProject="..\projectM-engine\libprojectM.vcproj"
-		/>
-		<ProjectReference
-			ReferencedProjectIdentifier="{94AC71AA-7528-4E56-A5A9-EDDFE6D20A39}"
-			RelativePathToProject="..\glew\build\vc6\glew_static.vcproj"
 		/>
 	</References>
 	<Files>

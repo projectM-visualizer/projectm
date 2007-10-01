@@ -9,6 +9,7 @@
 #include "stdafx.h"
 #include "projectM-wmp.h"
 #include "projectM.hpp"
+#include "KeyHandler.hpp"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -56,7 +57,6 @@ void CProjectMwmp::FinalRelease()
 {
     ReleaseCore();
 }
-
 
 
 

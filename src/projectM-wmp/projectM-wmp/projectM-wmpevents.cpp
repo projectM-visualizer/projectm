@@ -316,6 +316,10 @@ void CProjectMwmp::PlayerReconnect()
 
 void CProjectMwmp::Click( short nButton, short nShiftState, long fX, long fY )
 {
+	if (fX>0)
+	{
+		fX=2;
+	}
 }
 
 void CProjectMwmp::DoubleClick( short nButton, short nShiftState, long fX, long fY )
@@ -323,9 +327,10 @@ void CProjectMwmp::DoubleClick( short nButton, short nShiftState, long fX, long 
 }
 
 void CProjectMwmp::KeyDown( short nKeyCode, short nShiftState )
-{
+{	
+	if(nKeyCode)nKeyCode = 4;
+	//globalPM->key_handler(PROJECTM_KEYDOWN,PROJECTM_K_n,PROJECTM_KMOD_LSHIFT);
 }
-
 void CProjectMwmp::KeyPress( short nKeyAscii )
 {
 }
