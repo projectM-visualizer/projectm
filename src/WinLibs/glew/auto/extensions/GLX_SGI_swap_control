@@ -1,0 +1,3 @@
+GLX_SGI_swap_control
+http://oss.sgi.com/projects/ogl-sample/registry/SGI/swap_control.txt
+	int glXSwapIntervalSGI (int interval)
