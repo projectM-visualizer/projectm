@@ -1,0 +1,4 @@
+GL_EXT_cull_vertex
+http://oss.sgi.com/projects/ogl-sample/registry/EXT/cull_vertex.txt
+	void glCullParameterdvEXT (GLenum pname, GLdouble* params)
+	void glCullParameterfvEXT (GLenum pname, GLfloat* params)

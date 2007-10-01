@@ -1,0 +1,4 @@
+WGL_EXT_make_current_read
+http://oss.sgi.com/projects/ogl-sample/registry/EXT/wgl_make_current_read.txt
+	HDC wglGetCurrentReadDCEXT (VOID)
+	BOOL wglMakeContextCurrentEXT (HDC hDrawDC, HDC hReadDC, HGLRC hglrc)

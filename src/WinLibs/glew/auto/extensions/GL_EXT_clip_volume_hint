@@ -1,0 +1,3 @@
+GL_EXT_clip_volume_hint
+http://oss.sgi.com/projects/ogl-sample/registry/EXT/clip_volume_hint.txt
+	GL_CLIP_VOLUME_CLIPPING_HINT_EXT 0x80F0

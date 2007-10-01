@@ -1,0 +1,3 @@
+GL_OES_byte_coordinates
+http://oss.sgi.com/projects/ogl-sample/registry/OES/byte_coordinates.txt
+	GL_BYTE 0x1400

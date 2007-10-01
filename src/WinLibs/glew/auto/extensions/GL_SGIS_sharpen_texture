@@ -1,0 +1,4 @@
+GL_SGIS_sharpen_texture
+http://oss.sgi.com/projects/ogl-sample/registry/SGIS/sharpen_texture.txt
+	void glGetSharpenTexFuncSGIS (GLenum target, GLfloat* points)
+	void glSharpenTexFuncSGIS (GLenum target, GLsizei n, const GLfloat* points)

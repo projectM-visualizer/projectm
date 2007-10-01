@@ -1,0 +1,8 @@
+GL_HP_image_transform
+http://oss.sgi.com/projects/ogl-sample/registry/HP/image_transform.txt
+	void glGetImageTransformParameterfvHP (GLenum target, GLenum pname, const GLfloat* params)
+	void glGetImageTransformParameterivHP (GLenum target, GLenum pname, const GLint* params)
+	void glImageTransformParameterfHP (GLenum target, GLenum pname, const GLfloat param)
+	void glImageTransformParameterfvHP (GLenum target, GLenum pname, const GLfloat* params)
+	void glImageTransformParameteriHP (GLenum target, GLenum pname, const GLint param)
+	void glImageTransformParameterivHP (GLenum target, GLenum pname, const GLint* params)
