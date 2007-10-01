@@ -16,9 +16,15 @@
 #endif
 
 #ifdef USE_FTGL
+#ifdef WIN32
+#include <FTGL.h>
+#include <FTGLPixmapFont.h>
+#include <FTGLPolygonFont.h>
+#else
 #include <FTGL/FTGL.h>
 #include <FTGL/FTGLPixmapFont.h>
 #include <FTGL/FTGLPolygonFont.h>
+#endif
 #endif /** USE_FTGL */
 
 class BeatDetect;
