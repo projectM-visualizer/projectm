@@ -287,11 +287,13 @@ void Preset::initialize(const std::string & pathname)
   int retval;
 
   preloadInitialize();
+
+if (PRESET_DEBUG)
   std::cerr << "[Preset] loading file \"" << pathname << "\"..." << std::endl;
 
   if ((retval = loadPresetFile(pathname)) < 0)
   {
-
+if (PRESET_DEBUG)
      std::cerr << "[Preset] failed to load file \"" <<
       pathname << "\"!" << std::endl;
 
@@ -311,6 +313,7 @@ void Preset::initialize(std::istream & in)
   if ((retval = readIn(in)) < 0)
   {
 
+	if (PRESET_DEBUG)
      std::cerr << "[Preset] failed to load from stream " << std::endl; 
 
     /// @bug how should we handle this problem? a well define exception?
@@ -478,7 +481,8 @@ int Preset::readIn(std::istream & fs) {
   /* Parse any comments */
   if (Parser::parse_top_comment(fs) < 0)
   {
-    std::cerr << "[Preset::readIn] no left bracket found..." << std::endl;
+	if (PRESET_DEBUG)
+    		std::cerr << "[Preset::readIn] no left bracket found..." << std::endl;
     return PROJECTM_FAILURE;
   }
 
@@ -501,11 +505,11 @@ int Preset::readIn(std::istream & fs) {
     if (retval == PROJECTM_PARSE_ERROR)
     {
       line_mode = UNSET_LINE_MODE;
-      std::cerr << "[Preset::readIn()] parse error in file \"" << this->absoluteFilePath() << "\"" << std::endl;
+      // std::cerr << "[Preset::readIn()] parse error in file \"" << this->absoluteFilePath() << "\"" << std::endl;
     }
   }
 
-  std::cerr << "loadPresetFile: finished line parsing successfully" << std::endl;
+//  std::cerr << "loadPresetFile: finished line parsing successfully" << std::endl;
 
   /* Now the preset has been loaded.
      Evaluation calls can be made at appropiate

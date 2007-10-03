@@ -77,27 +77,20 @@ DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, in
 }
 
 projectM::~projectM() {
-  std::cerr << "[projectM] DESTROY PRESET TOOLS BEGIN" << std::endl;
-  destroyPresetTools();
-  std::cerr << "[projectM] DESTROY PRESET TOOLS END" << std::endl;
- 
 
-  std::cerr << "[projectM] 1" << std::endl;
+  destroyPresetTools();
+  
   if (renderer)
 	delete(renderer);
-std::cerr << "[projectM] 2" << std::endl;
   if (textureManager)
-	delete(textureManager);  
-std::cerr << "[projectM] 3" << std::endl;
+	delete(textureManager);
   if (beatDetect)
   	delete(beatDetect);
   if (moodBar)
 	delete(moodBar);
-
-std::cerr << "[projectM] 4" << std::endl;
   if (renderTarget)
 	delete(renderTarget);
-std::cerr << "[projectM] 5" << std::endl;
+
 
 }
 
@@ -230,12 +223,12 @@ DLLEXPORT void projectM::renderFrame()
              nohard=(int)(presetInputs.fps*3.5);
              smoothFrame = (int)(presetInputs.fps * smoothDuration);
 	     
-              printf("SOFT CUT - Smooth started\n");
+//              printf("SOFT CUT - Smooth started\n");
 	    }	  	  
 	  else if ( ( beatDetect->bass-beatDetect->bass_old>beatDetect->beat_sensitivity ) && nohard<0 && false )//@REMOVE
 	    {
 	      //            printf("%f %d %d\n", beatDetect->bass-beatDetect->bass_old,this->frame,this->avgtime);
-	      printf("HARD CUT");
+//	      printf("HARD CUT");
 	     *m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor> ();
 		
 	     m_activePreset = m_presetPos->allocate(presetInputs, presetOutputs);
@@ -285,7 +278,7 @@ DLLEXPORT void projectM::renderFrame()
 	      {
 		m_activePreset = m_activePreset2;		
 		smoothFrame=0;
-		printf("Smooth Finished\n");
+//		printf("Smooth Finished\n");
 	      } 
 	
 	    presetInputs.frame++;  //number of frames for current preset
@@ -318,7 +311,7 @@ DLLEXPORT void projectM::renderFrame()
 	{
 		// printf("%s:",this->mspf-timediff);
 		int sleepTime = ( unsigned int ) ( this->mspf-timediff ) * 1000;
-		DWRITE ( "usleep: %d\n", sleepTime );
+//		DWRITE ( "usleep: %d\n", sleepTime );
 		if ( sleepTime > 0 && sleepTime < 100000 )
 		{
 			if ( usleep ( sleepTime ) != 0 ) {}}
@@ -530,7 +523,7 @@ void projectM::projectM_reset()
 //    initMenu();
 //DWRITE( "post initMenu()\n" );
 
-	printf ( "mesh: %d %d\n", gx,gy );
+//	printf ( "mesh: %d %d\n", gx,gy );
 
 #ifdef PANTS
 	printf ( "maxsamples: %d\n", this->maxsamples );
@@ -552,7 +545,7 @@ void projectM::projectM_reset()
 
 	renderer->setPresetName(m_activePreset->presetName());
 
-	printf ( "exiting projectM_init()\n" );
+//	printf ( "exiting projectM_init()\n" );
 }
 
 
@@ -818,13 +811,7 @@ void projectM::projectM_resetengine()
 DLLEXPORT void projectM::projectM_resetGL ( int w, int h )
 {
 
-
-	
-	DWRITE ( "projectM_resetGL(): in: %d x %d\n", w, h );
-
 	/** Stash the new dimensions */
-
-
 
 	renderer->reset ( w,h );
 }
@@ -887,7 +874,7 @@ int projectM::initPresetTools()
 	*m_presetPos = m_presetChooser->end();
 	
 	// Load idle preset
-	std::cerr << "[projectM] Allocating idle preset..." << std::endl;
+	//std::cerr << "[projectM] Allocating idle preset..." << std::endl;
 	m_activePreset = IdlePreset::allocate(presetInputs, presetOutputs);
 
 	// Case where no valid presets exist in directory
@@ -897,11 +884,11 @@ int projectM::initPresetTools()
 			<< m_presetLoader->directoryName() << "\"" << std::endl;	
 	}
 
-	std::cerr << "[projectM] Idle preset allocated." << std::endl;
+	//std::cerr << "[projectM] Idle preset allocated." << std::endl;
 
 	projectM_resetengine();
 
-	std::cerr << "[projectM] engine has been reset." << std::endl;
+	//std::cerr << "[projectM] engine has been reset." << std::endl;
 	return PROJECTM_SUCCESS;
 }
 
