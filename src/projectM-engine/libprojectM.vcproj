@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\DEV2\My Documents\svn\freetype-2.3.5\include&quot;;&quot;C:\Documents and Settings\DEV2\My Documents\svn\FTGL\include&quot;;&quot;C:\Documents and Settings\DEV2\My Documents\svn\src\glew\include\GL&quot;"
+				AdditionalIncludeDirectories="&quot;..\WinLibs\freetype-2.3.5\include&quot;;&quot;..\WinLibs\FTGL\include&quot;;&quot;..\WinLibs\glew\include\GL&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;DEBUG;GLEW_STATIC;USE_FBO;USE_FTGL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

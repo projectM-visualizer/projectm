@@ -71,36 +71,14 @@ STDMETHODIMP CProjectMwmp::Render(TimedLevel *pLevels, HDC hdc, RECT *prc)
 		static PIXELFORMATDESCRIPTOR pfd = {
 			sizeof(PIXELFORMATDESCRIPTOR), 1,							
 			PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,				
-			PFD_TYPE_RGBA, 16,	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16,
-			0, 0, PFD_MAIN_PLANE, 0, 0, 0, 0
+			PFD_TYPE_RGBA, 24,	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+			0, 0, 0, 0, 0, 0, 0
 		};
 		SetPixelFormat(hdc, ChoosePixelFormat(hdc,&pfd), &pfd);
 		hrc = wglCreateContext(hdc);
 		wglMakeCurrent(hdc, hrc);		
 		starting = false;
 
-
-		glShadeModel( GL_SMOOTH);
-		   
-		glViewport( 0, 0, width, height );
-  
-		glMatrixMode(GL_TEXTURE);
-		glLoadIdentity();       
-		glMatrixMode(GL_PROJECTION);
-		glLoadIdentity();  
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-
-		glDrawBuffer(GL_BACK); 
-		glReadBuffer(GL_BACK); 
-		glEnable(GL_BLEND); 
-
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
- 
-		glEnable(GL_LINE_SMOOTH);
-		glEnable(GL_POINT_SMOOTH);
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
 		width = (int)(prc->right - prc->left);
 		height = (int)(prc->bottom - prc->top);
 	    
