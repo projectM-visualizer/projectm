@@ -1,7 +1,7 @@
 #ifndef Renderer_HPP
 #define Renderer_HPP
 
-#include "PBuffer.hpp"
+#include "FBO.hpp"
 #include "PresetFrameIO.hpp"
 #include "BeatDetect.hpp"
 #include <string>

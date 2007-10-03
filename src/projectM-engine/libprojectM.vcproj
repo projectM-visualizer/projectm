@@ -219,6 +219,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FBO.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\fftsg.cpp"
 				>
 			</File>
@@ -260,10 +264,6 @@
 			</File>
 			<File
 				RelativePath=".\Parser.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PBuffer.cpp"
 				>
 			</File>
 			<File
@@ -400,6 +400,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FBO.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\fftsg.h"
 				>
 			</File>
@@ -449,10 +453,6 @@
 			</File>
 			<File
 				RelativePath=".\Parser.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\PBuffer.hpp"
 				>
 			</File>
 			<File
