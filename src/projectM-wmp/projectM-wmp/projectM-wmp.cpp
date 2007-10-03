@@ -340,10 +340,13 @@ STDMETHODIMP CProjectMwmp::Create(HWND hwndParent)
 //////////////////////////////////////////////////////////////////////////////
 STDMETHODIMP CProjectMwmp::Destroy()
 {
-    m_hwndParent = NULL;
-	starting = true;
-	delete(globalPM);
-    return S_OK;
+	if (!starting)
+	{
+	    m_hwndParent = NULL;
+		starting = true;
+		delete(globalPM);
+		return S_OK;
+	}
 }
 
 
@@ -379,7 +382,7 @@ char* ConvertBSTRToLPSTR (BSTR bstrIn)
 //////////////////////////////////////////////////////////////////////////////
 STDMETHODIMP CProjectMwmp::NotifyNewMedia(IWMPMedia *pMedia)
 {
-	if (starting == false)
+	if (starting == false && pMedia != NULL)
 	{
 	CComBSTR name;
 	pMedia->get_name(&name);	
