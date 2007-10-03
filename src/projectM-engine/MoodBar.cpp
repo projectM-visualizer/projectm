@@ -114,7 +114,7 @@ void MoodBar::calculateMood
    }
 
 
-  std::cerr << "rgb_avg (pre norm): " << rgb_avg[0] << "," << rgb_avg[1] << "," << rgb_avg[2] << std::endl;
+  //std::cerr << "rgb_avg (pre norm): " << rgb_avg[0] << "," << rgb_avg[1] << "," << rgb_avg[2] << std::endl;
 
    //stretchNormalize(rgb_left);
    //stretchNormalize(rgb_right);
@@ -125,7 +125,7 @@ void MoodBar::calculateMood
    standardNormalize(rgb_avg);
 
 
-#if 1
+#if 0
   std::cerr << "rgb_avg (post norm): " << rgb_avg[0] << "," << rgb_avg[1] << "," << rgb_avg[2] << std::endl;
   for (i = 0; i < 3; i++) {
   	assert(rgb_avg[i] <= 1.0); 
@@ -276,7 +276,7 @@ void MoodBar::stretchNormalize (float * rgb)
   avguu /= (float) tu;
   avgbb /= (float) tb;
 
-  std::cerr << "avguu: " << avguu << ", avgbb: " << avgbb << std::endl;
+  //std::cerr << "avguu: " << avguu << ", avgbb: " << avgbb << std::endl;
 
   // lost from here- what is theory behind this?
   mini = projectM_fmax (avg + (avgb - avg) * 2.f, avgbb);
