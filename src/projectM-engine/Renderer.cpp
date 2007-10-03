@@ -299,33 +299,33 @@ Renderer::~Renderer() {
     }
 
 
-  std::cerr << "freeing grids" << std::endl;
+  //std::cerr << "freeing grids" << std::endl;
   free(this->origx2);
   free(this->origy2);
   free(this->gridx);
   free(this->gridy);
 #endif
 #if 1
-std::cerr << "grid assign begin " << std::endl;
+//std::cerr << "grid assign begin " << std::endl;
   this->origx2 = NULL;
   this->origy2 = NULL;
   this->gridx = NULL;
   this->gridy = NULL;
 
-std::cerr << "grid assign end" << std::endl;
+//std::cerr << "grid assign end" << std::endl;
 #endif
 
   #ifdef USE_FTGL
-	std::cerr << "freeing title fonts" << std::endl;
+//	std::cerr << "freeing title fonts" << std::endl;
 	if (title_font)
 		delete title_font;
 	if (poly_font)
 		delete poly_font;
 	if (other_font)
 		delete other_font;
-	std::cerr << "freeing title fonts finished" << std::endl;
+//	std::cerr << "freeing title fonts finished" << std::endl;
   #endif
-	std::cerr << "exiting destructor" << std::endl;
+//	std::cerr << "exiting destructor" << std::endl;
 }
 
 
