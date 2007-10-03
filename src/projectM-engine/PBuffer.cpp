@@ -39,7 +39,7 @@ RenderTarget::~RenderTarget() {
 
 	glDeleteTextures( 1, &this->textureID[0]);
 
-	if (usePbuffers) 
+	if (useFBO) 
          {
 		glDeleteTextures( 1, &this->textureID[1] );
 		glDeleteRenderbuffersEXT(1,  &this->depthb[0]);
@@ -56,7 +56,7 @@ RenderTarget::~RenderTarget() {
 
 GLuint RenderTarget::initRenderToTexture()
 {
-  if (this->usePbuffers==1)
+  if (this->useFBO==1)
     {
       this->renderToTexture=1;
       
@@ -85,17 +85,17 @@ GLuint RenderTarget::initRenderToTexture()
 }
 
 /** Creates new pbuffers */
-RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(false) {
+RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 
     int mindim = 0;
     int origtexsize = 0;
-    this->usePbuffers = true;
+    this->useFBO = true;
     this->renderToTexture = 0;
 
     this->texsize = texsize;
 
 
-   if(this->usePbuffers)
+   if(this->useFBO)
     { 
       glewInit();
       
@@ -149,7 +149,7 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(fal
 	    return;
 	  }	
 	}
-      else this->usePbuffers=0;      
+      else this->useFBO=0;      
     }
 
 
@@ -194,8 +194,47 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(fal
 		    NULL);
       }
 
-    this->usePbuffers=0;
+    this->useFBO=0;
     return;
+  }
+
+  void RenderTarget::fallbackRescale(int width, int height)
+  {
+	int mindim = width < height ? width : height;
+    int origtexsize = this->texsize;
+    this->texsize = nearestPower2( mindim, SCALE_MINIFY );      
+
+    /* Create the texture that will be bound to the render this */
+    if ( glIsTexture( this->textureID[0] ) ) {
+        DWRITE( "texture already exists\n" );
+        if ( this->texsize != origtexsize ) {
+            DWRITE( "deleting existing texture due to resize\n" );
+            glDeleteTextures( 1, &this->textureID[0] );
+          }
+      }
+
+    if ( !glIsTexture( this->textureID[0] ) ) {
+        glGenTextures(1, &this->textureID[0] );
+
+        DWRITE( "allocate texture: %d\ttexsize: %d x %d\n", 
+                this->textureID[0], this->texsize, this->texsize );
+        glBindTexture(GL_TEXTURE_2D, this->textureID[0] );
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        glTexImage2D(GL_TEXTURE_2D,
+		    0,
+		    3,
+		    this->texsize, this->texsize,
+		    0,
+		    GL_RGB,
+		    GL_UNSIGNED_BYTE,
+		    NULL);
+      }
+
   }
 
 /** Destroys the pbuffer */
@@ -204,7 +243,7 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : usePbuffers(fal
 void RenderTarget::lock() {
 
 
-  if(this->usePbuffers)
+  if(this->useFBO)
     { 
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->fbuffer[0]);     
     }
@@ -215,7 +254,7 @@ void RenderTarget::lock() {
 void RenderTarget::unlock() {
 
 
-  if(this->usePbuffers)
+  if(this->useFBO)
     {
       glBindTexture( GL_TEXTURE_2D, this->textureID[1] );
       glCopyTexSubImage2D( GL_TEXTURE_2D,
