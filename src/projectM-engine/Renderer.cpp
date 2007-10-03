@@ -112,7 +112,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     glEnable( GL_TEXTURE_2D );
 
     //If using FBO, sitch to FBO texture
-    if(this->renderTarget->usePbuffers)
+    if(this->renderTarget->useFBO)
       {	
 	glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
       }
@@ -139,7 +139,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     
     DWRITE( "renderFrame: renderTarget->texsize: %d x %d\n", this->renderTarget->texsize, this->renderTarget->texsize );        
 
-    if(this->renderTarget->usePbuffers)
+    if(this->renderTarget->useFBO)
       {
     	//draw_motion_vectors();        //draw motion vectors
     	//unlockPBuffer( this->renderTarget);
@@ -151,7 +151,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
      
     draw_title_to_texture();    
 
-    //    if(!this->renderTarget->usePbuffers)
+    //    if(!this->renderTarget->useFBO)
     {
       draw_motion_vectors(presetOutputs);     
     }
@@ -474,6 +474,11 @@ void Renderer::reset(int w, int h)
    
       }
 #endif /** USE_FTGL */
+
+	if (!this->renderTarget->useFBO)
+	{
+		this->renderTarget->fallbackRescale(w,h);
+	}
 }
 
 
@@ -622,7 +627,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 	      glMatrixMode(GL_MODELVIEW);          
 
 	      //Reset Texture state since we might have changed it
-	      if(this->renderTarget->usePbuffers)
+	      if(this->renderTarget->useFBO)
 		{	
 		  glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
 		}
@@ -1393,7 +1398,7 @@ sprintf( buffer, " (%f)", this->aspect);
 
   other_font->Render(buffer);
   glRasterPos2f(0, -.17+offset);  
-  other_font->Render((this->renderTarget->usePbuffers ? "     FBO: on" : "     FBO: off"));
+  other_font->Render((this->renderTarget->useFBO ? "     FBO: on" : "     FBO: off"));
   
   glRasterPos2f(0, -.21+offset); 
   sprintf( buffer, "    mesh: %d x %d", presetInputs->gx,presetInputs->gy);

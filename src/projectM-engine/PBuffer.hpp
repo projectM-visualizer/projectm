@@ -47,15 +47,6 @@
 #endif
 
 typedef enum { SCALE_NEAREST, SCALE_MAGNIFY, SCALE_MINIFY } TextureScale;
-typedef enum { 
-    AGL_CONTEXT, 
-    CGL_CONTEXT, 
-    NSGL_CONTEXT, 
-    GLX_CONTEXT, 
-    WGL_CONTEXT,
-  } ContextType;
-
-typedef enum { PBUFFER_PASS1, PBUFFER_PASS2 } PBufferPass;
 
 class RenderTarget {
 
@@ -63,12 +54,8 @@ class RenderTarget {
 public:
     /** Texture size */
     int texsize;
-
-    /** Application context */
-    ContextType origContextType;
-
   
-  int usePbuffers;
+  int useFBO;
   int renderToTexture;
 
   ~RenderTarget();
@@ -78,6 +65,7 @@ public:
   void unlock();
   GLuint initRenderToTexture();
   int nearestPower2( int value, TextureScale scaleRule );
+  void fallbackRescale(int width, int height);
 
     /** Opaque pbuffer context and pbuffer */
 /*
