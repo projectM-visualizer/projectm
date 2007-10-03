@@ -192,7 +192,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\DEV2\My Documents\svn\freetype-2.3.5\include&quot;;..\..\include"
+				AdditionalIncludeDirectories="&quot;..\..\..\freetype-2.3.5\include&quot;;..\..\include"
 				PreprocessorDefinitions="_DEBUG;WIN32;_LIB;FTGL_LIBRARY_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
