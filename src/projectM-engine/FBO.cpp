@@ -19,7 +19,7 @@
  *
  */
 /**
- * $Id: pbuffer.c,v 1.1.1.1 2005/12/23 18:05:00 psperl Exp $
+ * $Id: FBO.c,v 1.1.1.1 2005/12/23 18:05:00 psperl Exp $
  *
  * Render this methods
  */
@@ -28,7 +28,7 @@
 //#include <GL/gl.h>
 
 #include "Common.hpp"
-#include "PBuffer.hpp"
+#include "FBO.hpp"
 
 #ifdef MACOS
 #include <agl.h>

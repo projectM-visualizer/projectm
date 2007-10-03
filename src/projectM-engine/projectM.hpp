@@ -29,7 +29,7 @@
 #ifndef _PROJECTM_H
 #define _PROJECTM_H
 
-#include "PBuffer.hpp"
+#include "FBO.hpp"
 
 #ifdef WIN32
 #include "win32-dirent.h"

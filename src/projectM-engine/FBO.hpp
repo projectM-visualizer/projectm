@@ -19,7 +19,7 @@
  *
  */
 /**
- * $Id: PBuffer.hpp,v 1.1.1.1 2005/12/23 18:05:00 psperl Exp $
+ * $Id: FBO.hpp,v 1.1.1.1 2005/12/23 18:05:00 psperl Exp $
  *
  * Opaque render target
  *
@@ -28,11 +28,11 @@
 #ifndef _RENDERTARGET_H
 #define _RENDERTARGET_H
 
-#ifdef USE_FBO
-#include <GL/glew.h>
-#endif
 
-#if defined(MACOS) && !defined(USE_FBO)
+#include <GL/glew.h>
+
+
+#if defined(MACOS)
 #include <gl.h>
 #endif /** MACOS */
 
