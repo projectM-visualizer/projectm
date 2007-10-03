@@ -19,10 +19,7 @@
 #include "lvtoprojectM.h"
 #include "ConfigFile.h"
 
-#define CONFIG_FILE "/share/projectM/config.inp"
-
-
-
+#define CONFIG_FILE "/config.inp"
 
 std::string read_config();
 
