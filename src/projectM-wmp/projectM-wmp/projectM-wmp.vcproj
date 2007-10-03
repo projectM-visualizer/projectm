@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\DEV2\My Documents\svn\src\projectM-engine&quot;;&quot;C:\Documents and Settings\DEV2\My Documents\svn\src\glew\include\GL&quot;"
+				AdditionalIncludeDirectories="&quot;..\..\projectM-engine&quot;;&quot;..\..\WinLibs\glew\include\GL&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;_WINNT_WIN32=0x5000;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
