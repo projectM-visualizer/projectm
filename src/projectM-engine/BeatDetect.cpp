@@ -65,7 +65,7 @@ DLLEXPORT BeatDetect::BeatDetect() {
     this->mid = 0;
     this->bass = 0;
     this->bass_old = 0;
-    this->beat_sensitivity = 8.00;
+    this->beat_sensitivity = 10.00;
     this->treb_att = 0;
     this->mid_att = 0;
     this->bass_att = 0;
