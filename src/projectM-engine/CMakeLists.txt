@@ -1,5 +1,5 @@
 PROJECT(projectM)
-ADD_LIBRARY(projectM SHARED projectM.cpp PBuffer.cpp InitCond.cpp 
+ADD_LIBRARY(projectM SHARED projectM.cpp FBO.cpp InitCond.cpp 
  Expr.cpp PCM.cpp Parser.cpp Preset.cpp BeatDetect.cpp PerPixelEqn.cpp Param.cpp CustomWave.cpp CustomShape.cpp 
 Func.cpp Eval.cpp  PerFrameEqn.cpp PerPointEqn.cpp fftsg.cpp KeyHandler.cpp
  timer.cpp  wipemalloc.cpp 
@@ -34,5 +34,5 @@ FILE(GLOB fonts "fonts/*.ttf")
 INSTALL(FILES ${fonts} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/fonts)
 INSTALL(FILES "${CMAKE_BINARY_DIR}/libprojectM.pc" DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
 INSTALL(FILES config.inp DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM)
-INSTALL(FILES projectM.hpp PBuffer.hpp PCM.hpp BeatDetect.hpp Preset.hpp event.h KeyHandler.hpp dlldefs.h fatal.h   PresetFrameIO.hpp PCM.hpp Renderer.hpp PresetChooser.hpp DESTINATION include/libprojectM)
+INSTALL(FILES projectM.hpp FBO.hpp PCM.hpp BeatDetect.hpp Preset.hpp event.h KeyHandler.hpp dlldefs.h fatal.h   PresetFrameIO.hpp PCM.hpp Renderer.hpp PresetChooser.hpp DESTINATION include/libprojectM)
 INSTALL(TARGETS projectM DESTINATION lib)
