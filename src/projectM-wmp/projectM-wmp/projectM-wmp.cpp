@@ -9,8 +9,6 @@
 #include "stdafx.h"
 #include "projectM-wmp.h"
 
-
-
 /////////////////////////////////////////////////////////////////////////////
 // CProjectMwmp::CProjectMwmp
 // Constructor
@@ -348,6 +346,30 @@ STDMETHODIMP CProjectMwmp::Destroy()
     return S_OK;
 }
 
+
+char* ConvertBSTRToLPSTR (BSTR bstrIn)
+   {
+   	LPSTR pszOut = NULL;
+   
+   	if (bstrIn != NULL)
+   	{
+   		int nInputStrLen = SysStringLen (bstrIn);
+   
+   		// Double NULL Termination
+   		int nOutputStrLen = WideCharToMultiByte(CP_ACP, 0, bstrIn, nInputStrLen, NULL, 0, 0, 0) + 2;	
+   
+   		pszOut = new char [nOutputStrLen];
+   
+   		if (pszOut)
+   		{
+   		    memset (pszOut, 0x00, sizeof (char)*nOutputStrLen);
+   
+ 		 WideCharToMultiByte (CP_ACP, 0, bstrIn, nInputStrLen, pszOut, nOutputStrLen, 0, 0);
+   		}
+   	 }
+   
+   	return pszOut;
+   }
 //////////////////////////////////////////////////////////////////////////////
 // CProjectMwmp::NotifyNewMedia
 // Invoked when a new media stream begins playing.
@@ -357,8 +379,22 @@ STDMETHODIMP CProjectMwmp::Destroy()
 //////////////////////////////////////////////////////////////////////////////
 STDMETHODIMP CProjectMwmp::NotifyNewMedia(IWMPMedia *pMedia)
 {
+	if (starting == false)
+	{
+	CComBSTR name;
+	pMedia->get_name(&name);	
+
+	LPTSTR pszConvertedCharStr = ConvertBSTRToLPSTR (name);
+    std::string strConverted (pszConvertedCharStr);
+  
+    delete [] pszConvertedCharStr;
+
+	globalPM->projectM_setTitle(strConverted);
     return S_OK;
+	}
 }
+
+
 
 //////////////////////////////////////////////////////////////////////////////
 // CProjectMwmp::OnWindowMessage

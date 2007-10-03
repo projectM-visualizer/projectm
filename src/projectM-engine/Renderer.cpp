@@ -32,7 +32,7 @@ Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTa
   
   this->drawtitle=0;
   
-  this->title = NULL;
+  this->title = "Unknown";
   
   /** Other stuff... */
   this->correction = 1;
@@ -1200,21 +1200,19 @@ void Renderer::draw_title_to_texture() {
       {
       glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
       glColor4f(1.0,1.0,1.0,1.0);
+	  glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
-     
+      glLoadIdentity();
       glTranslatef(0,0.5, 0);
     
       glScalef(0.0025,-0.0025,30*.0025);
-      //glTranslatef(0,0, 1.0);
+      
       poly_font->FaceSize( 22);
     
       glRasterPos2f(0.0, 0.0);
-
-   if ( this->title != NULL ) {
-      poly_font->Render(this->title );
-      } else {
-	poly_font->Render("Unknown" );
-      }
+   
+      poly_font->Render(this->title.c_str() );
+    
       glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
       glPopMatrix();
       this->drawtitle=0;
@@ -1233,28 +1231,24 @@ void Renderer::draw_title_to_screen() {
 
       glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
       glColor4f(1.0,1.0,1.0,1.0);
+	  
+	  glMatrixMode(GL_MODELVIEW);
       glPushMatrix();
-
-
-      //glTranslatef(this->vw*.5,this->vh*.5 , -1.0);
-      glTranslatef(0,0.5 , 0);
+      glLoadIdentity();
+      
+      glTranslatef(-0.5, 0 , 0);
 
       glScalef(easein3,easein3,30*.0025);
 
       glRotatef(easein2*360,1,0,0);
-
-
-      //glTranslatef(-.5*this->vw,0, 0.0);
       
       //poly_font->Depth(1.0);  
       poly_font->FaceSize(22);
 
       glRasterPos2f(0.0, 0.0);
-      if ( this->title != NULL ) {
-	poly_font->Render(this->title );
-      } else {
-	poly_font->Render("Unknown" );
-      }
+     
+	poly_font->Render(this->title.c_str() );
+     
       // poly_font->Depth(0.0);
       glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
       glPopMatrix();	
@@ -1277,11 +1271,8 @@ void Renderer::draw_title() {
       glRasterPos2f(0.01, 0.05);
       title_font->FaceSize( (unsigned)(20*(this->vh/512.0)));
        
-      if ( this->title != NULL ) {
-       	 title_font->Render(this->title );
-      } else {
-       	 title_font->Render("Unknown" );
-      }
+     
+       	 title_font->Render(this->title.c_str() );
       //  glPopMatrix();
       //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
      

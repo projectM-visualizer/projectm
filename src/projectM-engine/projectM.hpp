@@ -174,7 +174,7 @@ public:
     void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
     void projectM_reset();
     DLLEXPORT void projectM_resetGL( int width, int height );
-    DLLEXPORT void projectM_setTitle( char *title );
+	DLLEXPORT void projectM_setTitle( std::string title );
     DLLEXPORT void renderFrame();
    
 
