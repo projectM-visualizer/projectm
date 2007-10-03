@@ -75,7 +75,7 @@ FTGLPolygonFont *poly_font;
 
     int totalframes;
 float realfps;
-char *title;
+std::string title;
     int drawtitle;
 
   Renderer( int width, int height, int gx, int gy, RenderTarget *renderTarget, TextureManager *textureManager, BeatDetect *beatDetect, std::string fontURL);
