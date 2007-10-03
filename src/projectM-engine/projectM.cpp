@@ -817,23 +817,13 @@ DLLEXPORT void projectM::projectM_resetGL ( int w, int h )
 }
 
 /** Sets the title to display */
-DLLEXPORT void projectM::projectM_setTitle ( char *title )
-{
-	/*
-	if (strcmp(this->title, title)!=0)
-	 {printf("new title\n");
-	    this->drawtitle=1; 
-	  
-	    if ( this->title != NULL ) {
-	free( this->title );
-	this->title = NULL;
-	    }
-	  
-	    this->title = (char *)wipemalloc( sizeof( char ) * ( strlen( title ) + 1 ) );
-	    strcpy( this->title, title );
-	  
-	  }
-	*/
+DLLEXPORT void projectM::projectM_setTitle ( std::string title )
+{	
+	if (title != renderer->title)
+	{
+			renderer->title=title;
+		renderer->drawtitle=1;	  	    	  
+	}	
 }
 
 
