@@ -68,8 +68,7 @@ double smoothDuration = 5;
 //int smoothFrame = 0;
 int oldFrame = 1;
 
-DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url) :renderer(0), renderTarget(0), smoothFrame(0), beatDetect ( 0 ), presetURL(preset_url), moodBar(0)
-{
+DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url) :renderer(0), renderTarget(0),  presetURL(preset_url), smoothFrame(0), beatDetect ( 0 ) {
   presetURL = preset_url;
   projectM_reset();
   projectM_init(gx, gy, fps, texsize, width, height);  
@@ -86,8 +85,6 @@ projectM::~projectM() {
 	delete(textureManager);
   if (beatDetect)
   	delete(beatDetect);
-  if (moodBar)
-	delete(moodBar);
   if (renderTarget)
 	delete(renderTarget);
 
@@ -95,8 +92,8 @@ projectM::~projectM() {
 }
 
 DLLEXPORT  projectM::projectM(std::string config_file) :
-	renderer(0), renderTarget(0), smoothFrame(0), beatDetect ( 0 ), moodBar(0)
-{
+	renderer(0), renderTarget(0), smoothFrame(0), beatDetect ( 0 ) {
+
  projectM_reset();
  readConfig(config_file);
 
@@ -137,10 +134,9 @@ DLLEXPORT void projectM::renderFrame()
   int index = 0;
   int x, y;
 #endif
-  
+
   //     printf("Start of loop at %d\n",timestart);
   mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps ); //milliseconds per frame
-  
 
 #ifndef WIN32
   presetInputs.time = getTicks ( &startTime ) * 0.001;
@@ -162,32 +158,6 @@ DLLEXPORT void projectM::renderFrame()
 
   beatDetect->detectFromSamples();
   
-#ifndef USE_MOODBAR
-//#define USE_MOODBAR
-#endif
-
-
-#ifdef USE_MOODBAR
-  float rgb_left[3], rgb_right[3], rgb_avg[3];
-  // moodBar->calculateMood(rgb_left, rgb_right, rgb_avg);
-
-  //rgb_avg[0] = presetInputs.bass_att;
-  //rgb_avg[1] = presetInputs.mid_att;
-  //rgb_avg[2] = presetInputs.treb_att;
-
-  //moodBar->stretchNormalize(rgb_avg);
-
-  //presetInputs.bass_att = rgb_avg[0];
-  //presetInputs.mid_att = rgb_avg[1];
-  //presetInputs.treb_att = rgb_avg[2];
-
-  presetInputs.mood_r = rgb_avg[0];
-  presetInputs.mood_g = rgb_avg[1];
-  presetInputs.mood_b = rgb_avg[2];
-
-
-#endif
-
   DWRITE ( "=== vol: %f\tbass: %f\tmid: %f\ttreb: %f ===\n",
 	   beatDetect->vol,beatDetect->bass,beatDetect->mid,beatDetect->treb );
   DWRITE ( "=== bass_att: %f ===\n",
@@ -400,9 +370,6 @@ void projectM::projectM_reset()
 	assert(!beatDetect);
 	beatDetect = new BeatDetect();
 
-	//moodBar = new MoodBar(beatDetect->pcm);
-
-	/* Preset loading function */
 	initPresetTools();
 #if 0
 	/* Load default preset directory */
