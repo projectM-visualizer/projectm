@@ -29,8 +29,6 @@
 #ifndef _PROJECTM_H
 #define _PROJECTM_H
 
-#include "FBO.hpp"
-
 #ifdef WIN32
 #include "win32-dirent.h"
 #else
@@ -68,19 +66,21 @@
 #include "event.h"
 #include "fatal.h"
 #include "PresetFrameIO.hpp"
-#include "Renderer.hpp"
 
 #include <memory>
 
 class BeatDetect;
 class Func;
 class Renderer;
+class RenderTarget;
 class Preset;
 class PresetIterator;
 class PresetChooser;
 class PresetLoader;
 class TextureManager;
 class MoodBar;
+//class PresetInputs;
+//class PresetOutputs;
 
 #include <memory>
 #ifdef WIN32
@@ -126,7 +126,7 @@ public:
   DLLEXPORT void projectM_resetGL( int width, int height );
   DLLEXPORT void projectM_setTitle( std::string title );
   DLLEXPORT void renderFrame();
-      
+  DLLEXPORT unsigned initRenderToTexture(); 
   DLLEXPORT void key_handler( projectMEvent event,
 		    projectMKeycode keycode, projectMModifier modifier );
         

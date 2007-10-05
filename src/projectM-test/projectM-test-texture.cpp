@@ -35,6 +35,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+#include <GL/gl.h>
+
 #define CONFIG_FILE "/share/projectM/config.inp"
 
 std::string read_config();
@@ -291,7 +293,7 @@ std::string config_file;
     /** Setup some window stuff */
     SDL_WM_SetCaption( PROJECTM_TITLE, NULL );
   globalPM = new projectM(config_file);
-  texture = globalPM->renderer->initRenderToTexture();
+  texture = globalPM->initRenderToTexture();
     /** Initialise projectM */
  
 

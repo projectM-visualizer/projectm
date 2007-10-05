@@ -48,6 +48,7 @@ www.gamedev.net/reference/programming/features/beatdetection/
 #include "sdltoprojectM.h"
 #include "video_init.h"
 
+#include <GL/gl.h>
 #define CONFIG_FILE "/share/projectM/config.inp"
 
 // Forward declarations 
@@ -138,8 +139,8 @@ Uint32 get_xmms_title(Uint32 something, void *somethingelse) {
 		title = xmms_remote_get_playlist_title(
 				projectM_vtable.xmms_session, pos);
 		if(title && (!last_title || strcmp(last_title,title))) {
-			globalPM->renderer->title = title;
-			globalPM->renderer->drawtitle = 1;
+		  //globalPM->renderer->title = title;
+			//globalPM->renderer->drawtitle = 1;
 			g_free(last_title);
 			last_title = title;
 		} else if(title && last_title != title) {
