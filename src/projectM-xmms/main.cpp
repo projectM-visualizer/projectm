@@ -274,10 +274,6 @@ int worker_func(void*)
 extern "C" void projectM_xmms_init(void) 
 {
   
- // printf("projectM plugin: Initializing\n");
- 
-  SDL_EnableUNICODE(1);
-  
   /* First, initialize SDL's video subsystem. */
  // std::cerr << "sdl init begin" << std::endl;  
   if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) < 0 ) {
@@ -288,6 +284,11 @@ extern "C" void projectM_xmms_init(void)
     return;
     
   }
+
+ // printf("projectM plugin: Initializing\n");
+ 
+  SDL_EnableUNICODE(1);
+  
 //std::cerr << "sdl init end" << std::endl;  
   sem = SDL_CreateSemaphore(1);
   worker_thread = SDL_CreateThread ( *worker_func, NULL);
