@@ -58,7 +58,7 @@ void refreshConsole() {
  
 }
 
-void projectM::key_handler( projectMEvent event,
+DLLEXPORT void projectM::key_handler( projectMEvent event,
                             projectMKeycode keycode, projectMModifier modifier ) {
 
 	switch( event ) {

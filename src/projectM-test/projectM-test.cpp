@@ -182,8 +182,7 @@ void renderLoop() {
 
                 if(key == SDLK_f)
                 {
-                 
-                    globalPM->fullscreen = fullscreen ^= 1;
+                                    
                     resize_display(fvw, fvh, fullscreen);
                     globalPM->projectM_resetGL( fvw, fvh ); 
                 }
