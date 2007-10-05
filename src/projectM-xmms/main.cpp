@@ -177,7 +177,7 @@ int worker_func(void*)
   /** Initialise projectM */
     
   globalPM = new projectM(config_file);
-         
+  SDL_SemPost(sem);
   //  title_timer = SDL_AddTimer(500, get_xmms_title, NULL);
     /** Initialise the thread */
   // SDL_SemTryWait(sem);
@@ -284,13 +284,11 @@ extern "C" void projectM_xmms_init(void)
     return;
     
   }
-
+  sem = SDL_CreateSemaphore(0);
  // printf("projectM plugin: Initializing\n");
  
   SDL_EnableUNICODE(1);
   
-//std::cerr << "sdl init end" << std::endl;  
-  sem = SDL_CreateSemaphore(1);
   worker_thread = SDL_CreateThread ( *worker_func, NULL);
  
 }
@@ -329,8 +327,8 @@ extern "C" void projectM_playback_stop(void)
 }
 extern "C" void projectM_render_pcm(gint16 pcm_data[2][512])
 {
-  //SDL_mutexP(mutex);
-
+  //SDL_mutexP(mutex); while ( SDL_SemValue(sem)==1 )
+  if ( SDL_SemValue(sem)==1 )
         globalPM->beatDetect->pcm->addPCM16(pcm_data);
 	 
        	//SDL_mutexV(mutex);
