@@ -81,9 +81,11 @@ projectM::~projectM() {
   destroyPresetTools();
   
   if (renderer)
-	delete(renderer);
+    delete(renderer);
   if (beatDetect)
-  	delete(beatDetect);
+    delete(beatDetect);
+  if (pcm)
+    delete(pcm);
 }
 
 DLLEXPORT unsigned projectM::initRenderToTexture()
@@ -350,7 +352,9 @@ void projectM::projectM_reset()
 	this->nohard=fps*5;
 	/** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
 	assert(!beatDetect);
-	beatDetect = new BeatDetect();
+
+	pcm = new PCM();
+	beatDetect = new BeatDetect(pcm);
 
 	initPresetTools();
 #if 0

@@ -12,10 +12,7 @@
 
 #include <config.h>
 #include <libvisual/libvisual.h>
-#include <libprojectM/BeatDetect.hpp>
-#include <libprojectM/PCM.hpp>
 #include <libprojectM/projectM.hpp>
-#include <libprojectM/KeyHandler.hpp>
 #include "lvtoprojectM.h"
 #include "ConfigFile.h"
 
@@ -234,7 +231,7 @@ extern "C" int lv_projectm_render (VisPluginData *plugin, VisVideo *video, VisAu
 	addPCM16Data(pcms,512);
 	*/
 
-	priv->PM->beatDetect->pcm->addPCMfloat(*pcm,512);
+	priv->PM->pcm->addPCMfloat(*pcm,512);
 	
 	priv->PM->renderFrame();
 
