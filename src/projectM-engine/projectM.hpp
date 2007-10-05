@@ -72,12 +72,10 @@
 class BeatDetect;
 class Func;
 class Renderer;
-class RenderTarget;
 class Preset;
 class PresetIterator;
 class PresetChooser;
 class PresetLoader;
-class TextureManager;
 class MoodBar;
 //class PresetInputs;
 //class PresetOutputs;
@@ -133,9 +131,6 @@ public:
   ~projectM();
   
 private:
-
-  TextureManager *textureManager;
-  RenderTarget *renderTarget;
 
   std::string presetURL;
   
