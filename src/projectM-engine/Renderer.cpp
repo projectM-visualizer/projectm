@@ -13,7 +13,7 @@ class Preset;
 
 GLuint texture;
 
-Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, TextureManager *textureManager, BeatDetect *beatDetect, std::string _titlefontURL, std::string _menufontURL): title_fontURL(_titlefontURL), menu_fontURL(_menufontURL),  m_presetName("None")
+Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetect *beatDetect, std::string presetURL, std::string _titlefontURL, std::string _menufontURL): title_fontURL(_titlefontURL), menu_fontURL(_menufontURL),  m_presetName("None")
 {
   int x; int y; 
  
@@ -77,10 +77,9 @@ Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTa
   }
   
   /// @bug put these on member init list
-  this->renderTarget = renderTarget;
-  this->beatDetect = beatDetect;
-  this->textureManager = textureManager;
-  
+  this->renderTarget = new RenderTarget ( texsize, width, height );
+  this->textureManager = new TextureManager(presetURL);
+  this->beatDetect = beatDetect;   
 
 
 #ifdef USE_FTGL
@@ -293,7 +292,12 @@ Renderer::~Renderer() {
 
   int x;
 
-#if 1
+
+  if (renderTarget)
+	delete(renderTarget);
+  if (textureManager)
+	delete(textureManager);
+
   assert(gx > 0);
   for(x = 0; x < this->gx; x++)
     {
@@ -309,16 +313,14 @@ Renderer::~Renderer() {
   free(this->origy2);
   free(this->gridx);
   free(this->gridy);
-#endif
-#if 1
-//std::cerr << "grid assign begin " << std::endl;
+
+//std:cerr << "grid assign begin " << std::endl;
   this->origx2 = NULL;
   this->origy2 = NULL;
   this->gridx = NULL;
   this->gridy = NULL;
 
 //std::cerr << "grid assign end" << std::endl;
-#endif
 
   #ifdef USE_FTGL
 //	std::cerr << "freeing title fonts" << std::endl;
