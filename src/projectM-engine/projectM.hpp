@@ -136,13 +136,6 @@ public:
     long startTime;
 #endif /** !WIN32 */
 
-    /** Render target texture ID */
-
-    char disp[80];
-
-    float wave_o;
-
-    //int texsize=1024;   //size of texture to do actual graphics
     int fvw;     //fullscreen dimensions
     int fvh;
     int wvw;      //windowed dimensions
