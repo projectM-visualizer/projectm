@@ -202,14 +202,14 @@ DLLEXPORT void projectM::renderFrame()
 	     
 //              printf("SOFT CUT - Smooth started\n");
 	    }	  	  
-	  else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && nohard<0)//@REMOVE
+	  else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && nohard<0)
 	    {
 	      //            printf("%f %d %d\n", beatDetect->bass-beatDetect->bass_old,this->frame,this->avgtime);
-//	      printf("HARD CUT");
 	     *m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor> ();
 		
 	     m_activePreset = m_presetPos->allocate(presetInputs, presetOutputs);
-
+	     renderer->setPresetName(m_activePreset->presetName());
+		
 	      assert(m_activePreset.get());
 	      //nohard=presetInputs.fps*1;
 	      smoothFrame=0;
