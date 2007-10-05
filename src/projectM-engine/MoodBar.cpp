@@ -64,7 +64,7 @@ void MoodBar::resetBuffer()  {
 }
 
 void MoodBar::calculateMood
-	(float * rgb_left, float * rgb_right, float * rgb_avg) {
+	(float * rgb_avg) {
 
   unsigned int i;
   float real_left, real_right, real_avg;
@@ -72,8 +72,6 @@ void MoodBar::calculateMood
 
 
   for (i = 0; i < 24; ++i) {
-    m_amplitudes_left[i] = 0.f;
-    m_amplitudes_right[i] = 0.f;
     m_amplitudes_avg[i] = 0.f;
   }
 
@@ -84,33 +82,24 @@ void MoodBar::calculateMood
  
       real_left = m_pcm->pcmdataL[2*i];  imag_left = m_pcm->pcmdataL[2*i + 1];
       real_right = m_pcm->pcmdataR[2*i];  imag_right = m_pcm->pcmdataR[2*i + 1];
+
       real_avg = (real_left + real_right) / 2.0;
       imag_avg = (imag_left + imag_right) / 2.0;
      
-      m_amplitudes_left[m_barkband_table[i]] += sqrtf (real_left*real_left + imag_left*imag_left);
-      m_amplitudes_right[m_barkband_table[i]] += sqrtf (real_right*real_right + imag_right*imag_right);
       m_amplitudes_avg[m_barkband_table[i]] += sqrtf (real_avg*real_avg + imag_avg*imag_avg);
 
     }
 
-  for (i= 0; i < 3; i++) {
-	rgb_left[i] = 0.0;
-  	rgb_right[i] = 0.0; 
+  for (i= 0; i < 3; i++) { 
 	rgb_avg[i] = 0.0;
   }
 
   for (i = 0; i < 24; ++i) {
-    rgb_left[i/8] += m_amplitudes_left[i] * m_amplitudes_left[i];
-    rgb_right[i/8] += m_amplitudes_right[i] * m_amplitudes_right[i];
     rgb_avg[i/8] += m_amplitudes_avg[i] * m_amplitudes_avg[i];
   }
 
    for (i = 0; i < 3; i++) {
-	
-	rgb_left[i] = sqrtf (rgb_left[i]);
-	rgb_right[i] = sqrtf (rgb_right[i]);
 	rgb_avg[i] = sqrtf (rgb_avg[i]);
-
    }
 
 
@@ -120,9 +109,9 @@ void MoodBar::calculateMood
    //stretchNormalize(rgb_right);
    //stretchNormalize(rgb_avg);
 
-   standardNormalize(rgb_left);
-   standardNormalize(rgb_right);
-   standardNormalize(rgb_avg);
+   //standardNormalize(rgb_left);
+   //standardNormalize(rgb_right);
+   stretchNormalize(rgb_avg);
 
 
 #if 0
@@ -191,20 +180,22 @@ void MoodBar::stretchNormalize (float * rgb)
   if (numvals == 0)
 	return;
 
-  //int oldcurrent = m_ringBuffers[c].current();
 
+  //int oldcurrent = m_ringBuffers[c].current();
+  
   mini = maxi = m_ringBuffers[c].back();
   
   // Compute max and min values of the array
   for (i = 1; i < numvals; i++)
     {
-
       float _tmpval = m_ringBuffers[c].back();
       if (_tmpval > maxi) 
 	maxi = _tmpval;
       else if (_tmpval < mini) 
 	mini = _tmpval;
     }
+
+if (c==2)   std::cerr << "max / min : " << maxi << " / " << mini << std::endl;
 
    //assert((oldcurrent % RingBuffer<float>::RING_BUFFER_SIZE) == (m_ringBuffers[c].current() % RingBuffer<float>::RING_BUFFER_SIZE));
 
@@ -215,11 +206,13 @@ void MoodBar::stretchNormalize (float * rgb)
  
       if(_tmpval != mini && _tmpval != maxi)
 	{
-	  avg += _tmpval / ((float) numvals); 
+	  avg += _tmpval / numvals;
 	  t++; 
 	}
     }
-   
+ 
+ if (c==2)  std::cerr << "avg (-max -min): " << avg << std::endl;
+
   // Now compute average values if we partition the elements into
   // two sets segmented by the previously computed average
   // Again we exclude the max and min elements.
@@ -244,8 +237,16 @@ void MoodBar::stretchNormalize (float * rgb)
    
   // This normalizes the computations in the previous for loop
   // so they represent proper averages of their respective sets
+
+ if (c==2) {
+  std::cerr << "tu / tb : " << tu << "/" << tb << std::endl;
+  std::cerr << "avgu / avgb (unnorm): " << avgu << "/" << avgb << std::endl;
+}
   avgu /= (float) tu;
   avgb /= (float) tb;
+
+ if (c==2)
+  std::cerr << "avgu / avgb: " << avgu << "/" << avgb << std::endl;
 
   tu = 0.f; 
   tb = 0.f;
@@ -272,20 +273,41 @@ void MoodBar::stretchNormalize (float * rgb)
 	    }
 	}
     }
-   
+
+
   avguu /= (float) tu;
   avgbb /= (float) tb;
 
-  //std::cerr << "avguu: " << avguu << ", avgbb: " << avgbb << std::endl;
+  if (c== 2)
+  std::cerr << "avguu: " << avguu << ", avgbb: " << avgbb << std::endl;
 
   // lost from here- what is theory behind this?
   mini = projectM_fmax (avg + (avgb - avg) * 2.f, avgbb);
   maxi = projectM_fmin (avg + (avgu - avg) * 2.f, avguu);
+  
+  if (c == 2) {
+	std::cerr << "mini: " << mini << std::endl;
+	std::cerr << "maxi: " << maxi << std::endl;
+  }
+
   delta = maxi - mini;
 
   if (delta == 0.f)
     delta = 1.f;
 
-   rgb[c] = projectM_fmin(1.f, projectM_fmax(0.f, (rgb[c] - mini) / delta));	
+
+   if (c==2) {
+   	std::cerr << "delta = " << delta << std::endl;
+   }
+   if (c==2) {
+   	std::cerr << "rgb_orig[2] " << rgb[c] << std::endl;
+   }
+
+   rgb[c] = projectM_fmin(1.f, projectM_fmax(0.f, (rgb[c] - mini) / delta));
+
+   if (c==2) {
+   	std::cerr << "rgb_norm[2] " << rgb[c] << std::endl;
+   }
+
   }
 }

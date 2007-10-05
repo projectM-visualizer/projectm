@@ -43,7 +43,7 @@ public:
   /// Calculate rgb mood values for both left and right channels. 
   /// Uses the pcm instance's latest assignment into its
   /// pcmL/R data buffers as inputs 
-  void calculateMood(float * rgb_left, float * rgb_right, float * rgb_avg);
+  void calculateMood(float * rgb_avg);
 
   void stretchNormalize (float * colors);
 
