@@ -94,9 +94,6 @@ class MoodBar;
 #define PROJECTM_VERSION "1.00.00"
 #define PROJECTM_TITLE "projectM 1.00.00"
 
-/** Thread state */
-typedef enum { GO, STOP } PMThreadState;
-
 /** Interface types */
 typedef enum {
     MENU_INTERFACE,
@@ -110,13 +107,9 @@ typedef enum {
 class projectM 
 {
 public:
-  
- 
+   
   BeatDetect * beatDetect;
-       
-  /* PER_FRAME CONSTANTS END */
-
-  /** Functions */
+      
     
   DLLEXPORT projectM(std::string config_file);
   DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url,std::string title_fonturl, std::string title_menuurl);
@@ -131,7 +124,7 @@ public:
   ~projectM();
   
 private:
- Renderer *renderer;
+  Renderer *renderer;
   std::string presetURL;
   
   std::string title_fontURL;
