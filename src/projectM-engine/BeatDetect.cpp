@@ -37,8 +37,10 @@
 #include "PCM.hpp"
 #include <cmath>
 
-DLLEXPORT BeatDetect::BeatDetect() {
+DLLEXPORT BeatDetect::BeatDetect(PCM *pcm) {
   int x,y; 
+
+  this->pcm=pcm;
 
   this->vol_instant=0;
   this->vol_history=0;
@@ -71,14 +73,11 @@ DLLEXPORT BeatDetect::BeatDetect() {
     this->bass_att = 0;
     this->vol = 0;
 
-    this->pcm = new PCM();
+  
   }
 
-DLLEXPORT BeatDetect::~BeatDetect() {
-
- // Free the pcm buffer
- if (pcm)
-	delete(pcm);
+DLLEXPORT BeatDetect::~BeatDetect() 
+{
 
 }
 

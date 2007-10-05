@@ -66,10 +66,12 @@
 #include "event.h"
 #include "fatal.h"
 #include "PresetFrameIO.hpp"
+#include "PCM.hpp"
 
 #include <memory>
 
 class BeatDetect;
+class PCM;
 class Func;
 class Renderer;
 class Preset;
@@ -107,9 +109,8 @@ typedef enum {
 class projectM 
 {
 public:
-   
-  BeatDetect * beatDetect;
-      
+
+  PCM *pcm;
     
   DLLEXPORT projectM(std::string config_file);
   DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url,std::string title_fonturl, std::string title_menuurl);
@@ -124,6 +125,8 @@ public:
   ~projectM();
   
 private:
+   
+  BeatDetect * beatDetect;
   Renderer *renderer;
   std::string presetURL;
   

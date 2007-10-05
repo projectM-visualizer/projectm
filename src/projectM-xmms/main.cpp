@@ -41,10 +41,8 @@ www.gamedev.net/reference/programming/features/beatdetection/
 #include <math.h>
 #include "ConfigFile.h"
 
-#include <libprojectM/BeatDetect.hpp>
-#include <libprojectM/PCM.hpp>
 #include <libprojectM/projectM.hpp>
-#include <libprojectM/KeyHandler.hpp>
+
 #include "sdltoprojectM.h"
 #include "video_init.h"
 
@@ -329,7 +327,7 @@ extern "C" void projectM_render_pcm(gint16 pcm_data[2][512])
 {
   //SDL_mutexP(mutex); while ( SDL_SemValue(sem)==1 )
   if ( SDL_SemValue(sem)==1 )
-        globalPM->beatDetect->pcm->addPCM16(pcm_data);
+        globalPM->pcm->addPCM16(pcm_data);
 	 
        	//SDL_mutexV(mutex);
 	
