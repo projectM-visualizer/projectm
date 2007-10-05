@@ -118,8 +118,8 @@ public:
 
   std::string presetURL;
 
-  std::string fontURL;
-
+  std::string title_fontURL;
+  std::string menu_fontURL;
     int hasInit;
 
     int pcmframes;

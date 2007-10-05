@@ -36,8 +36,7 @@ www.gamedev.net/reference/programming/features/beatdetection/
 #include <xmms/util.h>
 #include <SDL/SDL.h>
 #include <SDL/SDL_thread.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
+
 #include <xmms/xmmsctrl.h>
 #include <math.h>
 #include "ConfigFile.h"
