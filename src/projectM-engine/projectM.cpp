@@ -118,9 +118,16 @@ void projectM::readConfig(std::string config_file)
       else fullscreen = 0;
 
   presetURL = config.read<string>( "Preset Path", "/usr/share/projectM/presets" );
-  fontURL = config.read<string>( "Font Path", "/usr/share/projectM/fonts" );
+
+  title_fontURL = config.read<string>( "Title Font", "/usr/share/projectM/fonts/Vera.ttf" );
+  menu_fontURL = config.read<string>( "Menu Font", "/usr/share/projectM/fonts/VeraMono.ttf" );
 
   projectM_init(gx, gy, fps, texsize, wvw, wvh); 
+
+  beatDetect->beat_sensitivity = config.read<float>( "Hard Cut Sensitivity", 10.0 );
+ if (config.read("Aspect Correction", true)) renderer->correction = 1;
+      else renderer->correction = 0;
+
   projectM_resetGL( wvw, wvh );
 }
 
@@ -190,12 +197,12 @@ DLLEXPORT void projectM::renderFrame()
 	      assert(m_activePreset2.get());
 	      renderer->setPresetName(m_activePreset2->presetName());
 		
-             nohard=(int)(presetInputs.fps*3.5);
+	      //nohard=(int)(presetInputs.fps*3.5);
              smoothFrame = (int)(presetInputs.fps * smoothDuration);
 	     
 //              printf("SOFT CUT - Smooth started\n");
 	    }	  	  
-	  else if ( ( beatDetect->bass-beatDetect->bass_old>beatDetect->beat_sensitivity ) && nohard<0)//@REMOVE
+	  else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && nohard<0)//@REMOVE
 	    {
 	      //            printf("%f %d %d\n", beatDetect->bass-beatDetect->bass_old,this->frame,this->avgtime);
 //	      printf("HARD CUT");
@@ -204,7 +211,7 @@ DLLEXPORT void projectM::renderFrame()
 	     m_activePreset = m_presetPos->allocate(presetInputs, presetOutputs);
 
 	      assert(m_activePreset.get());
-	      nohard=presetInputs.fps*5;
+	      //nohard=presetInputs.fps*1;
 	      smoothFrame=0;
 	      presetInputs.progress=0.0;
 	      presetInputs.frame = 1;
@@ -305,8 +312,9 @@ void projectM::projectM_reset()
 	//  	m_activePreset = 0;
 	// }
 
-	this->presetURL = "";
-	this->fontURL = "";
+	//this->presetURL = "";
+	//this->title_fontURL = "";
+	
 
 	/** Default variable settings */
 	this->hasInit = 0;
@@ -365,7 +373,7 @@ void projectM::projectM_reset()
 
 
 	presetInputs.fps = fps;
-
+	this->nohard=fps*5;
 	/** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
 	assert(!beatDetect);
 	beatDetect = new BeatDetect();
@@ -507,7 +515,7 @@ void projectM::projectM_reset()
 	this->presetInputs.gx = gx;
 	this->presetInputs.gy = gy;
 
-	this->renderer = new Renderer ( width, height, gx, gy, renderTarget, textureManager, beatDetect, fontURL);
+	this->renderer = new Renderer ( width, height, gx, gy, renderTarget, textureManager, beatDetect, title_fontURL, menu_fontURL);
 
 
 	renderer->setPresetName(m_activePreset->presetName());
