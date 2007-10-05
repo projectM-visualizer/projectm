@@ -23,10 +23,9 @@
 #include <stdlib.h>
 #include <math.h>
 #include <SDL/SDL.h>
-#include <libprojectM/BeatDetect.hpp>
-#include <libprojectM/PCM.hpp>
+
 #include <libprojectM/projectM.hpp>
-#include <libprojectM/KeyHandler.hpp>
+
 #include "sdltoprojectM.h"
 
 #include "ConfigFile.h"
