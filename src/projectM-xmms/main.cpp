@@ -420,50 +420,55 @@ std::string read_config()
 }
 
 int frame = 1;
-char dumpPath[128];
 
 
 void saveSnapshotToFile()
 {
-
+  char dumpPath[512];
+  char Home[512];
+  //char *home;
+  
   SDL_Surface *	bitmap;
-       
-        GLint		viewport[4];
-        long		bytewidth;
-        GLint		width, height;
-        long		bytes;
-    
-        glReadBuffer(GL_FRONT);
-        glGetIntegerv(GL_VIEWPORT, viewport);
-        
-        width = viewport[2];
-        height = viewport[3];
+  
+  GLint		viewport[4];
+  long		bytewidth;
+  GLint		width, height;
+  long		bytes;
+  
+  glReadBuffer(GL_FRONT);
+  glGetIntegerv(GL_VIEWPORT, viewport);
+  
+  width = viewport[2];
+  height = viewport[3];
             
-        bytewidth = width * 4;
-        bytewidth = (bytewidth + 3) & ~3;
-        bytes = bytewidth * height;
-
-	/*
-        glFinish();
-        glPixelStorei(GL_PACK_ALIGNMENT, 4);
-        glPixelStorei(GL_PACK_ROW_LENGTH, 0);
-        glPixelStorei(GL_PACK_SKIP_ROWS, 0);
-        glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
-	*/
-	
-
-	bitmap = SDL_CreateRGBSurface(SDL_SWSURFACE, width,  height, 32,0,0,0,0);
-        glReadPixels(0, 0, width, height,
-                    GL_BGRA,
-                    GL_UNSIGNED_INT_8_8_8_8_REV,
-		     bitmap->pixels);
-
-	sprintf(dumpPath, "/home/pete/.projectM/%.8d.bmp", frame++);
-                
-	SDL_SaveBMP(bitmap, dumpPath);
-
-        SDL_FreeSurface(bitmap);
-        
+  bytewidth = width * 4;
+  bytewidth = (bytewidth + 3) & ~3;
+  bytes = bytewidth * height;
+  
+  /*
+    glFinish();
+    glPixelStorei(GL_PACK_ALIGNMENT, 4);
+    glPixelStorei(GL_PACK_ROW_LENGTH, 0);
+    glPixelStorei(GL_PACK_SKIP_ROWS, 0);
+    glPixelStorei(GL_PACK_SKIP_PIXELS, 0);
+  */
+  
+  
+  bitmap = SDL_CreateRGBSurface(SDL_SWSURFACE, width,  height, 32,0,0,0,0);
+  glReadPixels(0, 0, width, height,
+	       GL_BGRA,
+	       GL_UNSIGNED_INT_8_8_8_8_REV,
+	       bitmap->pixels);
+  
+  sprintf(dumpPath, "/.projectM/%.8d.bmp", frame++);
+  // home=getenv("HOME");
+  strcpy(Home, getenv("HOME"));
+  strcpy(Home+strlen(Home), dumpPath);
+  Home[strlen(Home)]='\0';
+  SDL_SaveBMP(bitmap, Home);
+     
+  SDL_FreeSurface(bitmap);
+ 
        
 }
 
