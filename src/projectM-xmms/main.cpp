@@ -162,18 +162,17 @@ int worker_func(void*)
 // SDL_TimerID title_timer = NULL;
  std::string config_file;
  config_file = read_config();
-
  ConfigFile config(config_file);
 
  int wvw = config.read<int>( "Window Width", 512 );
  int wvh = config.read<int>( "Window Height", 512 );
+
  int fullscreen = 0;
  if (config.read("Fullscreen", true)) fullscreen = 1;
       else fullscreen = 0;
 
-  init_display(wvw,wvh,&fvw,&fvh,fullscreen);   
+  init_display(wvw,wvh,&fvw,&fvh,fullscreen); 
   SDL_WM_SetCaption("projectM v1.00", "projectM v1.00");
-
 
   /** Initialise projectM */
     
@@ -264,10 +263,7 @@ int worker_func(void*)
 	//	SDL_SemPost(sem);
       }
 
- 
-		
-  printf("Worker thread: Exiting\n");
-  // if(title_timer) 
+   // if(title_timer) 
   //	SDL_RemoveTimer(title_timer);
  delete globalPM;
 
@@ -278,10 +274,21 @@ int worker_func(void*)
 extern "C" void projectM_xmms_init(void) 
 {
   
-  printf("projectM plugin: Initializing\n");
+ // printf("projectM plugin: Initializing\n");
  
-  //SDL_EnableUNICODE(1);
+  SDL_EnableUNICODE(1);
   
+  /* First, initialize SDL's video subsystem. */
+ // std::cerr << "sdl init begin" << std::endl;  
+  if( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_TIMER ) < 0 ) {
+    /* Failed, exit. */
+    fprintf( stderr, "Video initialization failed: %s\n",
+             SDL_GetError( ) );
+    //projectM_vtable.disable_plugin (&projectM_vtable);
+    return;
+    
+  }
+//std::cerr << "sdl init end" << std::endl;  
   sem = SDL_CreateSemaphore(1);
   worker_thread = SDL_CreateThread ( *worker_func, NULL);
  
@@ -295,13 +302,13 @@ extern "C" void projectM_cleanup(void)
   SDL_SemWait(sem);
   SDL_WaitThread(worker_thread, NULL);
   // SDL_KillThread(worker_thread);
-  printf("killed thread\n");
+  //printf("killed thread\n");
 
   SDL_DestroySemaphore(sem);
-    printf("Destroy Mutex\n");
+    //printf("Destroy Mutex\n");
   SDL_Quit();
   
-  printf("projectM plugin: Cleanup completed\n");
+ // printf("projectM plugin: Cleanup completed\n");
 }
 extern "C" void projectM_about(void)
 {
@@ -350,7 +357,7 @@ std::string read_config()
    strcpy(projectM_config, PROJECTM_PREFIX);
    strcpy(projectM_config+strlen(PROJECTM_PREFIX), CONFIG_FILE);
    projectM_config[strlen(PROJECTM_PREFIX)+strlen(CONFIG_FILE)]='\0';
-   printf("dir:%s \n",projectM_config);
+   //printf("dir:%s \n",projectM_config);
    home=getenv("HOME");
    strcpy(projectM_home, home);
    strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
@@ -359,7 +366,7 @@ std::string read_config()
   
  if ((in = fopen(projectM_home, "r")) != 0) 
    {
-     printf("reading ~/.projectM/config.inp \n");
+     //printf("reading ~/.projectM/config.inp \n");
      fclose(in);
      return std::string(projectM_home);
    }
@@ -408,15 +415,12 @@ std::string read_config()
 	     fclose(in);
 	     return std::string(projectM_config);}
 	 else{ printf("Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");  abort();}
-	   
        }
 
    }
 
-
-
  abort();
-} 
+}
 
 int frame = 1;
 char dumpPath[128];
