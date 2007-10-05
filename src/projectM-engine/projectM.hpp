@@ -111,7 +111,7 @@ class projectM
 {
 public:
   
-  Renderer *renderer;
+ 
   BeatDetect * beatDetect;
        
   /* PER_FRAME CONSTANTS END */
@@ -131,7 +131,7 @@ public:
   ~projectM();
   
 private:
-
+ Renderer *renderer;
   std::string presetURL;
   
   std::string title_fontURL;
