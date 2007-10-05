@@ -109,114 +109,98 @@ typedef enum {
   } interface_t;
 
 
-class projectM {
+class projectM 
+{
 public:
-   
-    Renderer *renderer;
-    RenderTarget *renderTarget;
-    TextureManager *textureManager;
+  
+  Renderer *renderer;
+  BeatDetect * beatDetect;
+       
+  /* PER_FRAME CONSTANTS END */
+
+  /** Functions */
+    
+  DLLEXPORT projectM(std::string config_file);
+  DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url,std::string title_fonturl, std::string title_menuurl);
+  
+  DLLEXPORT void projectM_resetGL( int width, int height );
+  DLLEXPORT void projectM_setTitle( std::string title );
+  DLLEXPORT void renderFrame();
+      
+  DLLEXPORT void key_handler( projectMEvent event,
+		    projectMKeycode keycode, projectMModifier modifier );
+        
+  ~projectM();
+  
+private:
+
+  TextureManager *textureManager;
+  RenderTarget *renderTarget;
 
   std::string presetURL;
-
+  
   std::string title_fontURL;
   std::string menu_fontURL;
-    int hasInit;
-
-    int pcmframes;
-    int freqframes;
-
   
   int smoothFrame;
-
-
+    
 #ifndef WIN32
-    /* The first ticks value of the application */
-    struct timeval startTime;
+  /* The first ticks value of the application */
+  struct timeval startTime;
 #else
-    long startTime;
+  long startTime;
 #endif /** !WIN32 */
 
-    int fvw;     //fullscreen dimensions
-    int fvh;
-    int wvw;      //windowed dimensions
-    int wvh;
+  int wvw;      //windowed dimensions
+  int wvh;
+  
+  int avgtime;  //# frames per preset
+  
+  /** Timing information */
+  int mspf;
+  int timed;
+  int timestart;
+  int nohard;
+  int count;
+  float fpsstart;
 
-    int fullscreen;
+  void readConfig(std::string config_file);
+  void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
+  void projectM_reset();
 
-    int avgtime;  //# frames per preset
-
-    /** Timing information */
-    int mspf;
-    int timed;
-    int timestart;
-    int nohard;
-    int count;
-    float fpsstart;
-
-    /** Various toggles */
-        /* PER_FRAME CONSTANTS END */
-
-    /** Beat detection engine */
-    BeatDetect * beatDetect;
-
-    /** Functions */
-	DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url);
-
-    void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
-    void projectM_reset();
-    DLLEXPORT void projectM_resetGL( int width, int height );
-	DLLEXPORT void projectM_setTitle( std::string title );
-    DLLEXPORT void renderFrame();
-   
-
-    void projectM_initengine();
-    void projectM_resetengine();
-
-  DLLEXPORT projectM(std::string config_file);
-    void readConfig(std::string config_file);
-
-
-    void get_title();
-
-    void key_handler( projectMEvent event,
-                      projectMKeycode keycode, projectMModifier modifier );
-    void default_key_handler( projectMEvent event, projectMKeycode keycode );
-
-    /// Initializes preset loading / management libraries
-    int initPresetTools();
-
-    /// Deinitialize all preset related tools. Usually done before projectM cleanup
-    void destroyPresetTools();
-
-    ~projectM();
-
-   private:
-
-	// The current position of the directory iterator
-        PresetIterator * m_presetPos;
-
-	// Required by the preset chooser. Manages a loaded preset directory
-	PresetLoader * m_presetLoader;
-
-	// Provides accessor functions to choose presets
-	PresetChooser * m_presetChooser;
-
-	// Currently loaded preset
-	std::auto_ptr<Preset> m_activePreset;
-
-        // Destination preset when smooth preset switching
-	std::auto_ptr<Preset> m_activePreset2;
-
-    /// Experimental mood bar instance. May or may not make it into 1.0 release 
-    MoodBar * moodBar;
-
-    /// All readonly variables which are passed as inputs to presets
-    PresetInputs presetInputs;
-
-    /// A preset outputs container used and modified by the "current" preset
-    PresetOutputs presetOutputs;
- 
-    /// A preset outputs container used for smooth preset switching
-    PresetOutputs presetOutputs2;
+  void projectM_initengine();
+  void projectM_resetengine();
+  /// Initializes preset loading / management libraries
+  int initPresetTools();
+  
+  /// Deinitialize all preset related tools. Usually done before projectM cleanup
+  void destroyPresetTools();
+  void default_key_handler( projectMEvent event, projectMKeycode keycode );
+  // The current position of the directory iterator
+  PresetIterator * m_presetPos;
+  
+  // Required by the preset chooser. Manages a loaded preset directory
+  PresetLoader * m_presetLoader;
+  
+  // Provides accessor functions to choose presets
+  PresetChooser * m_presetChooser;
+  
+  // Currently loaded preset
+  std::auto_ptr<Preset> m_activePreset;
+  
+  // Destination preset when smooth preset switching
+  std::auto_ptr<Preset> m_activePreset2;
+  
+  /// Experimental mood bar instance. May or may not make it into 1.0 release 
+  MoodBar * moodBar;
+  
+  /// All readonly variables which are passed as inputs to presets
+  PresetInputs presetInputs;
+  
+  /// A preset outputs container used and modified by the "current" preset
+  PresetOutputs presetOutputs;
+  
+  /// A preset outputs container used for smooth preset switching
+  PresetOutputs presetOutputs2;
 };
 #endif

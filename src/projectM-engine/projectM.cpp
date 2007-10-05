@@ -68,7 +68,7 @@ double smoothDuration = 5;
 //int smoothFrame = 0;
 int oldFrame = 1;
 
-DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url) :renderer(0), renderTarget(0),  presetURL(preset_url), smoothFrame(0), beatDetect ( 0 ) {
+DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url,std::string title_fonturl, std::string title_menuurl) :renderer(0), renderTarget(0),  presetURL(preset_url), title_fontURL(title_fonturl), menu_fontURL(menu_fontURL), smoothFrame(0), beatDetect ( 0 ) {
   presetURL = preset_url;
   projectM_reset();
   projectM_init(gx, gy, fps, texsize, width, height);  
@@ -113,9 +113,6 @@ void projectM::readConfig(std::string config_file)
   smoothDuration = config.read<int>( "Smooth Transition Duration", 5 );
   presetDuration = config.read<int>( "Preset Duration", 15 );
 
-  int fullscreen;
-  if (config.read("Fullscreen", true)) fullscreen = 1;
-      else fullscreen = 0;
 
   presetURL = config.read<string>( "Preset Path", "/usr/share/projectM/presets" );
 
@@ -300,39 +297,16 @@ DLLEXPORT void projectM::renderFrame()
 }
 
 void projectM::projectM_reset()
-{
-
-//    DWRITE( "projectM_reset(): in\n" );
-
-	/// @bug uncertain if preset should be played with here - carm
-//    m_activePreset = 0;
-
-//    if (m_activePreset) {
-//	delete(m_activePreset);
-	//  	m_activePreset = 0;
-	// }
-
-	//this->presetURL = "";
-	//this->title_fontURL = "";
-	
+{       
 
 	/** Default variable settings */
-	this->hasInit = 0;
-
-	this->pcmframes = 1;
-	this->freqframes = 0;
-
-
-
-	this->fvw = 800;
-	this->fvh = 600;
+       
 	this->wvw = 512;
 	this->wvh = 512;
-	this->fullscreen = 0;
+     
 
 	/** Frames per preset */
 	this->avgtime = 500;
-
 
 
 	/** More other stuff */
@@ -495,20 +469,10 @@ void projectM::projectM_reset()
 	mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps );
 	else mspf = 0;
 
-//    initMenu();
-//DWRITE( "post initMenu()\n" );
-
-//	printf ( "mesh: %d %d\n", gx,gy );
-
-#ifdef PANTS
-	printf ( "maxsamples: %d\n", this->maxsamples );
-	initPCM ( this->maxsamples );
-	DWRITE ( "post PCM init\n" );
-#endif
 
 	this->avgtime=(int)(this->presetInputs.fps*presetDuration);
 
-	this->hasInit = 1;
+     
 
 	this->renderTarget = new RenderTarget ( texsize, width, height );
         this->textureManager = new TextureManager(presetURL);
@@ -522,13 +486,6 @@ void projectM::projectM_reset()
 
 //	printf ( "exiting projectM_init()\n" );
 }
-
-
-
-
-//calculate matrices for per_pixel
-
-
 
 
 void projectM::projectM_initengine()
@@ -644,27 +601,6 @@ void projectM::projectM_initengine()
 
 	/* Q AND T VARIABLES END */
 
-//per pixel meshes
-	/*
-	   // this->presetOutputs.zoom_mesh = NULL;
-	   // this->presetOutputs.zoomexp_mesh = NULL;
-	    //this->presetOutputs.rot_mesh = NULL;
-
-
-	   // this->presetOutputs.sx_mesh = NULL;
-	   // this->presetOutputs.sy_mesh = NULL;
-	   // this->presetOutputs.dx_mesh = NULL;
-	   // this->presetOutputs.dy_mesh = NULL;
-	   // this->presetOutputs.cx_mesh = NULL;
-	   // this->presetOutputs.cy_mesh = NULL;
-
-	   // this->presetInputs.x_mesh = NULL;
-	   / this->presetInputs.y_mesh = NULL;
-	   // this->presetInputs.rad_mesh = NULL;
-	   // this->presetInputs.theta_mesh = NULL;
-	*/
-
-//custom wave per point meshes
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
@@ -794,11 +730,11 @@ DLLEXPORT void projectM::projectM_resetGL ( int w, int h )
 /** Sets the title to display */
 DLLEXPORT void projectM::projectM_setTitle ( std::string title )
 {	
-	if (title != renderer->title)
-	{
-			renderer->title=title;
-		renderer->drawtitle=1;	  	    	  
-	}	
+  if (title != renderer->title)
+    {
+      renderer->title=title;
+      renderer->drawtitle=1;	  	    	  
+    }	
 }
 
 

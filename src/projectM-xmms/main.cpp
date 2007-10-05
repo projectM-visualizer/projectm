@@ -217,7 +217,7 @@ int worker_func(void*)
                         w = wvw;
                         h = wvh;
                     }
-                    globalPM->fullscreen = fullscreen ^= 1;
+                  
                     resize_display(w, h, fullscreen);
                     globalPM->projectM_resetGL( w, h ); 
                 }
