@@ -57,6 +57,7 @@
 #include <map>
 
 #include "Renderer.hpp"
+#include "PresetFrameIO.hpp"
 #include "PresetChooser.hpp"
 #include "ConfigFile.h"
 #include "TextureManager.hpp"
@@ -89,6 +90,11 @@ projectM::~projectM() {
 	delete(renderTarget);
 
 
+}
+
+DLLEXPORT unsigned projectM::initRenderToTexture()
+{
+  return renderer->initRenderToTexture();
 }
 
 DLLEXPORT  projectM::projectM(std::string config_file) :

@@ -28,6 +28,7 @@
 #include "event.h"
 #include "BeatDetect.hpp"
 #include "PresetChooser.hpp"
+#include "Renderer.hpp"
 #include <iostream>
 
 class Preset;
