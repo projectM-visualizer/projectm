@@ -47,12 +47,18 @@ int
 			float sampley = y0;
 			int intx, inty;
 			int base_index;
-			if( samplex < 0.0f ) { samplex = 0.0f; }
-			if( samplex > width-2.000001f ) { samplex = width-2.000001f; }
-			if( sampley < 0.0f ) { sampley = 0.0f; }
-			if( sampley > height-2.000001f ) { sampley = height-2.000001f; }
 			intx = (int)samplex;
 			inty = (int)sampley;
+			if( intx < 0 )			  
+			    intx = 0;			   
+			else if( intx > width - 2 )			  
+			    intx = width - 2;			 
+			if( inty < 0 )			  
+			    inty = 0;			  
+			else if( inty > height - 2 )			  
+			    inty = height - 2;
+			  
+			
 			samplex -= intx;
 			sampley -= inty;
 			base_index = inty * width * channels + intx * channels;
