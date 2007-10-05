@@ -1,4 +1,4 @@
-# projectM.config
+# config.inp
 # Configuration File for projectM
 
 Texsize = 512			# Size of internal rendering texture
