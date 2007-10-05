@@ -280,7 +280,7 @@ extern "C" void projectM_xmms_init(void)
   
   printf("projectM plugin: Initializing\n");
  
-  SDL_EnableUNICODE(1);
+  //SDL_EnableUNICODE(1);
   
   sem = SDL_CreateSemaphore(1);
   worker_thread = SDL_CreateThread ( *worker_func, NULL);
@@ -375,13 +375,13 @@ std::string read_config()
      strcpy(projectM_home, home);
      strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
      projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
-     
+
      if((out = fopen(projectM_home,"w"))!=0)
        {
 	
 	 if ((in = fopen(projectM_config, "r")) != 0) 
 	   {
-	     
+
 	     while(fgets(num,80,in)!=NULL)
 	       {
 		 fputs(num,out);

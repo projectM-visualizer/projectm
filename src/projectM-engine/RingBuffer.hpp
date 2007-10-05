@@ -7,7 +7,7 @@ class RingBuffer {
 public:
 
 	//static const unsigned long RING_BUFFER_SIZE = 1024;
-	static const unsigned long RING_BUFFER_SIZE = 1024;
+	static const unsigned long RING_BUFFER_SIZE = 32768;
 private:
 
     kind buffer[RING_BUFFER_SIZE]; 

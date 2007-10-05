@@ -288,7 +288,6 @@ Renderer::~Renderer() {
   int x;
 
 #if 1
-  std::cerr << "freeing grid elements" << std::endl;
   assert(gx > 0);
   for(x = 0; x < this->gx; x++)
     {

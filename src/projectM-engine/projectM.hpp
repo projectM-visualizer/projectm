@@ -93,10 +93,8 @@ class MoodBar;
 #endif
 
 /** KEEP THIS UP TO DATE! */
-#define PROJECTM_VERSION "1.02.00"
-#define PROJECTM_TITLE "projectM 1.02.00"
-
-
+#define PROJECTM_VERSION "1.00.00"
+#define PROJECTM_TITLE "projectM 1.00.00"
 
 /** Thread state */
 typedef enum { GO, STOP } PMThreadState;
