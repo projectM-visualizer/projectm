@@ -52,7 +52,7 @@ class BeatDetect
 		float treb ;
 		float mid ;
 		float bass ;
-		float bass_old ;
+		float vol_old ;
 		float beat_sensitivity;
 		float treb_att ;
 		float mid_att ;

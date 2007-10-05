@@ -13,7 +13,7 @@ class Preset;
 
 GLuint texture;
 
-Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, TextureManager *textureManager, BeatDetect *beatDetect, std::string _fontURL): fontURL(_fontURL), m_presetName("None")
+Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTarget, TextureManager *textureManager, BeatDetect *beatDetect, std::string _titlefontURL, std::string _menufontURL): title_fontURL(_titlefontURL), menu_fontURL(_menufontURL),  m_presetName("None")
 {
   int x; int y; 
  
@@ -81,12 +81,18 @@ Renderer::Renderer(int width, int height, int gx, int gy, RenderTarget *renderTa
   this->beatDetect = beatDetect;
   this->textureManager = textureManager;
   
+
+
 #ifdef USE_FTGL
-  /** Reset fonts */
-  title_font = NULL;
-  other_font = NULL;
-  poly_font = NULL;
+    /**f Load the standard fonts */
+    
+        title_font = new FTGLPixmapFont(title_fontURL.c_str());
+	poly_font = new FTGLPolygonFont(title_fontURL.c_str());	
+        other_font = new FTGLPixmapFont(menu_fontURL.c_str());
+   
+      
 #endif /** USE_FTGL */
+
  
 }
 
@@ -460,19 +466,6 @@ void Renderer::reset(int w, int h)
    
 
 
-#ifdef USE_FTGL
-    /**f Load the standard fonts */
-    if ( title_font == NULL && other_font == NULL ) {
-       char path[1024];
-
-       sprintf( path, "%s%cVera.ttf", this->fontURL.c_str(), PATH_SEPARATOR );
-        title_font = new FTGLPixmapFont(path);
-	poly_font = new FTGLPolygonFont(path);
-	sprintf( path, "%s%cVeraMono.ttf", this->fontURL.c_str(), PATH_SEPARATOR );
-        other_font = new FTGLPixmapFont(path);
-   
-      }
-#endif /** USE_FTGL */
 
 	if (!this->renderTarget->useFBO)
 	{

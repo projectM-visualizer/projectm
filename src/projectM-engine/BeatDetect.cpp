@@ -64,7 +64,7 @@ DLLEXPORT BeatDetect::BeatDetect() {
     this->treb = 0;
     this->mid = 0;
     this->bass = 0;
-    this->bass_old = 0;
+    this->vol_old = 0;
     this->beat_sensitivity = 10.00;
     this->treb_att = 0;
     this->mid_att = 0;
@@ -92,7 +92,7 @@ void BeatDetect::reset() {
   }
 
 void BeatDetect::detectFromSamples() {
-    bass_old = bass;
+    vol_old = vol;
     bass=0;mid=0;treb=0;
 
     getBeatVals(pcm->pcmdataL,pcm->pcmdataR);
