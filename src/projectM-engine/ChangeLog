@@ -1,5 +1,7 @@
 New for version 1.00
 ------------------------------------------------------
+This release includes months of refactoring. The code changes are immense. The list below does not even begin to explain the amount of upheaval that has occured.
+	
 *Smooth Preset Switching
 
 *OpenGL Framebuffer Objects (sharper rendering)
