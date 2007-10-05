@@ -10,13 +10,15 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#include <config.h>
 #include <libvisual/libvisual.h>
 #include <libprojectM/projectM.hpp>
 #include "lvtoprojectM.h"
 #include "ConfigFile.h"
 
-#define CONFIG_FILE "/config.inp"
+#define CONFIG_FILE "/share/projectM/config.inp"
+
+
+
 
 std::string read_config();
 
@@ -253,9 +255,9 @@ std::string read_config()
    char projectM_home[1024];
    char projectM_config[1024];
 
-   strcpy(projectM_config, PROJECTM_DATADIR);
-   strcpy(projectM_config+strlen(PROJECTM_DATADIR), CONFIG_FILE);
-   projectM_config[strlen(PROJECTM_DATADIR)+strlen(CONFIG_FILE)]='\0';
+   strcpy(projectM_config, PROJECTM_PREFIX);
+   strcpy(projectM_config+strlen(PROJECTM_PREFIX), CONFIG_FILE);
+   projectM_config[strlen(PROJECTM_PREFIX)+strlen(CONFIG_FILE)]='\0';
    printf("dir:%s \n",projectM_config);
    home=getenv("HOME");
    strcpy(projectM_home, home);
