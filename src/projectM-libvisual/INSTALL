@@ -1,3 +1,5 @@
-If from CVS, run autogen.sh first.
+First install libvisual-0.4 and projectM 1.0
 
- ./configure, make, make install.
+cmake .
+make
+make install
