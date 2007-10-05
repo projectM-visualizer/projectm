@@ -48,9 +48,9 @@ int
 			int intx, inty;
 			int base_index;
 			if( samplex < 0.0f ) { samplex = 0.0f; }
-			if( samplex > width-1.000001f ) { samplex = width-1.000001f; }
+			if( samplex > width-2.000001f ) { samplex = width-2.000001f; }
 			if( sampley < 0.0f ) { sampley = 0.0f; }
-			if( sampley > height-1.000001f ) { sampley = height-1.000001f; }
+			if( sampley > height-2.000001f ) { sampley = height-2.000001f; }
 			intx = (int)samplex;
 			inty = (int)sampley;
 			samplex -= intx;
