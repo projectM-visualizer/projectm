@@ -1254,9 +1254,9 @@ void Renderer::draw_title_to_screen(bool flip) {
 
       glEnable( GL_CULL_FACE);
        glFrontFace( GL_CCW);
-       //       glEnable( GL_DEPTH_TEST);     
+            glEnable( GL_DEPTH_TEST);     
   
-       //glClear( GL_DEPTH_BUFFER_BIT);
+       glClear( GL_DEPTH_BUFFER_BIT);
       
 
       int draw;
@@ -1316,7 +1316,7 @@ void Renderer::draw_title_to_screen(bool flip) {
        glMatrixMode(GL_MODELVIEW);
 
       glDisable( GL_CULL_FACE);		
-      //glDisable( GL_DEPTH_TEST);
+      glDisable( GL_DEPTH_TEST);
       
       glDisable(GL_COLOR_MATERIAL);
       
