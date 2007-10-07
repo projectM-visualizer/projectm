@@ -353,7 +353,7 @@ void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * preset
 	
   for (x=0;x<this->gx;x++){
     for(y=0;y<this->gy;y++){
-      presetOutputs->x_mesh[x][y]  = ( presetOutputs->x_mesh[x][y] - presetOutputs->cx_mesh[x][y])/presetOutputs->sx_mesh[x][y] + presetOutputs->cx_mesh[x][y];
+      presetOutputs->x_mesh[x][y]  = ( presetOutputs->x_mesh[x][y] - presetOutpus->cx_mesh[x][y])/presetOutputs->sx_mesh[x][y] + presetOutputs->cx_mesh[x][y];
     }
   }
   
@@ -1193,25 +1193,7 @@ void Renderer::draw_title_to_texture() {
     if (this->drawtitle>100) 
       //    if(1)
       {
-	/*
-      glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-      glColor4f(1.0,1.0,1.0,1.0);
-	  glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-      glLoadIdentity();
-      glTranslatef(0,0.5, 0);
-    
-      glScalef(0.0025,-0.0025,30*.0025);
-      
-      poly_font->FaceSize( 22);
-    
-      glRasterPos2f(0.0, 0.0);
-   
-      poly_font->Render(this->title.c_str() );
-    
-      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-      glPopMatrix();
-	*/
+
 	draw_title_to_screen(true);       
         this->drawtitle=0;
     }
@@ -1272,9 +1254,9 @@ void Renderer::draw_title_to_screen(bool flip) {
 
       glEnable( GL_CULL_FACE);
        glFrontFace( GL_CCW);
-       glEnable( GL_DEPTH_TEST);     
+       //       glEnable( GL_DEPTH_TEST);     
   
-      glClear( GL_DEPTH_BUFFER_BIT);
+       //glClear( GL_DEPTH_BUFFER_BIT);
       
 
       int draw;
@@ -1334,7 +1316,7 @@ void Renderer::draw_title_to_screen(bool flip) {
        glMatrixMode(GL_MODELVIEW);
 
       glDisable( GL_CULL_FACE);		
-      glDisable( GL_DEPTH_TEST);
+      //glDisable( GL_DEPTH_TEST);
       
       glDisable(GL_COLOR_MATERIAL);
       
