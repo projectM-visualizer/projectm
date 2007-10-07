@@ -139,6 +139,9 @@ Uint32 get_xmms_title(Uint32 something, void *somethingelse) {
 		if(title && (!last_title || strcmp(last_title,title))) {
 		  //globalPM->renderer->title = title;
 			//globalPM->renderer->drawtitle = 1;
+
+		  std::string titlepp(title);
+		  globalPM->projectM_setTitle(titlepp);
 			g_free(last_title);
 			last_title = title;
 		} else if(title && last_title != title) {
@@ -157,7 +160,7 @@ int capture = 0;
 int worker_func(void*)
 { 
 // char projectM_data[1024]; 
-// SDL_TimerID title_timer = NULL;
+ SDL_TimerID title_timer = NULL;
  std::string config_file;
  config_file = read_config();
  ConfigFile config(config_file);
@@ -176,7 +179,7 @@ int worker_func(void*)
     
   globalPM = new projectM(config_file);
   SDL_SemPost(sem);
-  //  title_timer = SDL_AddTimer(500, get_xmms_title, NULL);
+  title_timer = SDL_AddTimer(500, get_xmms_title, NULL);
     /** Initialise the thread */
   // SDL_SemTryWait(sem);
   while ( SDL_SemValue(sem)==1 ) {
@@ -261,8 +264,8 @@ int worker_func(void*)
 	//	SDL_SemPost(sem);
       }
 
-   // if(title_timer) 
-  //	SDL_RemoveTimer(title_timer);
+ if(title_timer) 
+  	SDL_RemoveTimer(title_timer);
  delete globalPM;
 
 
