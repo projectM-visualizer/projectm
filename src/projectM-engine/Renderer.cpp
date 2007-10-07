@@ -353,7 +353,7 @@ void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * preset
 	
   for (x=0;x<this->gx;x++){
     for(y=0;y<this->gy;y++){
-      presetOutputs->x_mesh[x][y]  = ( presetOutputs->x_mesh[x][y] - presetOutpus->cx_mesh[x][y])/presetOutputs->sx_mesh[x][y] + presetOutputs->cx_mesh[x][y];
+      presetOutputs->x_mesh[x][y]  = ( presetOutputs->x_mesh[x][y] - presetOutputs->cx_mesh[x][y])/presetOutputs->sx_mesh[x][y] + presetOutputs->cx_mesh[x][y];
     }
   }
   
