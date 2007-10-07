@@ -181,7 +181,7 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 
         glTexImage2D(GL_TEXTURE_2D,
 		    0,
-		    GL_RGBA,
+		    GL_RGB,
 		    this->texsize, this->texsize,
 		    0,
 		    GL_RGBA,
@@ -222,7 +222,7 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 
         glTexImage2D(GL_TEXTURE_2D,
 		    0,
-		    GL_RGBA,
+		    GL_RGB,
 		    this->texsize, this->texsize,
 		    0,
 		    GL_RGBA,
