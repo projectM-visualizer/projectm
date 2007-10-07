@@ -215,9 +215,11 @@ int worker_func(void*)
                     if (fullscreen == 0) {
                         w = fvw;
                         h = fvh;
+			fullscreen = 1;
                     } else {
                         w = wvw;
                         h = wvh;
+			fullscreen = 0;
                     }
                   
                     resize_display(w, h, fullscreen);
