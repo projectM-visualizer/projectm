@@ -23,7 +23,7 @@
 #else
 #include <FTGL/FTGL.h>
 #include <FTGL/FTGLPixmapFont.h>
-#include <FTGL/FTGLPolygonFont.h>
+#include <FTGL/FTGLExtrdFont.h>
 #endif
 #endif /** USE_FTGL */
 
@@ -57,7 +57,7 @@ class Renderer
 #ifdef USE_FTGL
 FTGLPixmapFont *title_font;
 FTGLPixmapFont *other_font;
-FTGLPolygonFont *poly_font;
+FTGLExtrdFont *poly_font;
 #endif /** USE_FTGL */
  
  int showfps;
@@ -116,7 +116,7 @@ private:
   void draw_help( );
   void draw_preset();
   void draw_title();
-  void draw_title_to_screen();
+  void draw_title_to_screen(bool flip);
   void maximize_colors();
   void draw_title_to_texture();
   void draw_motion_vectors(PresetOutputs *presetOutputs);
