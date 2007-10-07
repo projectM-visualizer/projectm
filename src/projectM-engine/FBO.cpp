@@ -100,12 +100,7 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
       glewInit();
       
       if(glewIsSupported("GL_EXT_framebuffer_object"))
-	{
-
-	 
-
-
-
+	{	 
 
 	  GLuint   fb,  depth_rb, rgba_tex,  other_tex;
 	  glGenFramebuffersEXT(1, &fb);
@@ -113,14 +108,14 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 	  
 	  glGenRenderbuffersEXT(1, &depth_rb);
 	  glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, depth_rb );
-	  glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, this->texsize,this->texsize  );
+	  glRenderbufferStorageEXT( GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, this->texsize,this->texsize  );
 	  glFramebufferRenderbufferEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, depth_rb );
 	  this->fbuffer[0] = fb;
 	  this->depthb[0]=  depth_rb;
 	  
 	  glGenTextures(1, &other_tex);
 	  glBindTexture(GL_TEXTURE_2D,other_tex);
-	  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
 	  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	  //glGenerateMipmapEXT(GL_TEXTURE_2D);
@@ -132,7 +127,7 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 	  glGenTextures(1, &rgba_tex);
 	  glBindTexture(GL_TEXTURE_2D, rgba_tex); 
 	  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
 	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	  //glGenerateMipmapEXT(GL_TEXTURE_2D);
 	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
@@ -186,10 +181,10 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 
         glTexImage2D(GL_TEXTURE_2D,
 		    0,
-		    3,
+		    GL_RGBA,
 		    this->texsize, this->texsize,
 		    0,
-		    GL_RGB,
+		    GL_RGBA,
 		    GL_UNSIGNED_BYTE,
 		    NULL);
       }
@@ -227,10 +222,10 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 
         glTexImage2D(GL_TEXTURE_2D,
 		    0,
-		    3,
+		    GL_RGBA,
 		    this->texsize, this->texsize,
 		    0,
-		    GL_RGB,
+		    GL_RGBA,
 		    GL_UNSIGNED_BYTE,
 		    NULL);
       }
