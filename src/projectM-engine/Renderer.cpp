@@ -244,10 +244,11 @@ if(renderTarget->renderToTexture)
 
 
 void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
-{ 
-     
+{    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+    glBlendFunc(GL_SRC_ALPHA, GL_ZERO); 
+  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
     
-  glColor4f(0.0, 0.0, 0.0,presetOutputs->decay);
+  glColor4f(1.0,1.0,1.0,presetOutputs->decay);
   
   glEnable(GL_TEXTURE_2D);
   
@@ -264,7 +265,9 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
   }
            
   glDisable(GL_TEXTURE_2D);  
-  
+
+glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+ 
 }
 
 
@@ -1508,34 +1511,14 @@ void Renderer::render_texture_to_screen(PresetOutputs *presetOutputs) {
     glMatrixMode(GL_MODELVIEW);
       glLoadIdentity();
      
-     
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
-      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
-      glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+   
+
       
-      //       glClear(GL_ACCUM_BUFFER_BIT);
-      glColor4d(0.0, 0.0, 0.0,1.0f);
-
-    DWRITE( "rendering texture to screen\n" );
-
-   glBegin(GL_QUADS);
-    glVertex3d( 0, 0, -1 );
-     glVertex4d(-0.5,-0.5,-1,1);
-     glVertex4d(-0.5,  0.5,-1,1);
-     glVertex4d(0.5,  0.5,-1,1);
-     glVertex4d(0.5, -0.5,-1,1);
-      glEnd();
-     
+      glBlendFunc(GL_ONE,GL_ZERO);
+      glColor4d(1.0, 1.0, 1.0,1.0f);
       
       glEnable(GL_TEXTURE_2D); 
-      //glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID[0] );
-//      glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID );
-
-      // glAccum(GL_LOAD,0);
-      // if (bDarken==1)  glBlendFunc(GL_SRC_COLOR,GL_ZERO); 
-	
+     
       //Draw giant rectangle and texture it with our texture!
       glBegin(GL_QUADS);
       glTexCoord4d(0, 1,0,1); glVertex4d(-0.5,-0.5,-1,1);
@@ -1546,14 +1529,11 @@ void Renderer::render_texture_to_screen(PresetOutputs *presetOutputs) {
        
   glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-  //  if (bDarken==1)  glBlendFunc(GL_SRC_COLOR,GL_ONE_MINUS_SRC_ALPHA); 
-
-  // if (bDarken==1) { glAccum(GL_ACCUM,1-fVideoEchoAlpha); glBlendFunc(GL_SRC_COLOR,GL_ZERO); }
-
+ 
        glMatrixMode(GL_TEXTURE);
 
       //draw video echo
-      glColor4f(0.0, 0.0, 0.0,presetOutputs->fVideoEchoAlpha);
+      glColor4f(1.0, 1.0, 1.0,presetOutputs->fVideoEchoAlpha);
       glTranslatef(.5,.5,0);
       glScalef(1.0/presetOutputs->fVideoEchoZoom,1.0/presetOutputs->fVideoEchoZoom,1);
        glTranslatef(-.5,-.5,0);    
@@ -1680,7 +1660,7 @@ void Renderer::render_texture_to_studio(PresetOutputs *presetOutputs, PresetInpu
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
       glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
-      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
+      //      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
       glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
       
       //       glClear(GL_ACCUM_BUFFER_BIT);
