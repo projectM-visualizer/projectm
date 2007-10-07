@@ -13,12 +13,12 @@ class Preset;
 
 GLuint texture;
 
-Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetect *beatDetect, std::string presetURL, std::string _titlefontURL, std::string _menufontURL): title_fontURL(_titlefontURL), menu_fontURL(_menufontURL),  m_presetName("None")
+Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetect *beatDetect, std::string presetURL, std::string _titlefontURL, std::string _menufontURL): title_fontURL(_titlefontURL), menu_fontURL(_menufontURL),  m_presetName("None"), vw(width), vh(height), gx(gx), gy(gy)
 {
   int x; int y; 
  
-  this->gx=gx;
-  this->gy=gy;
+  //  this->gx=gx;
+  //  this->gy=gy;
 
   this->totalframes = 1;
   this->noSwitch = 0;
@@ -86,7 +86,7 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
     /**f Load the standard fonts */
     
         title_font = new FTGLPixmapFont(title_fontURL.c_str());
-	poly_font = new FTGLPolygonFont(title_fontURL.c_str());	
+	poly_font = new FTGLExtrdFont(title_fontURL.c_str());	
         other_font = new FTGLPixmapFont(menu_fontURL.c_str());
    
       
@@ -154,7 +154,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     PerFrame(presetOutputs);             
     Interpolation(presetOutputs,presetInputs);     
      
-    draw_title_to_texture();    
+  
 
     //    if(!this->renderTarget->useFBO)
     {
@@ -166,7 +166,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     draw_waveform(presetOutputs);
     if(presetOutputs->bDarkenCenter)darken_center();
     draw_borders(presetOutputs);              
-    
+    draw_title_to_texture();    
     /** Restore original view state */
     glMatrixMode( GL_MODELVIEW );
     glPopMatrix();
@@ -176,7 +176,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 
     /** Restore all original attributes */
     //  glPopAttrib();
-    glFlush();
+    //glFlush();
     
     renderTarget->unlock();
 
@@ -228,7 +228,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     
     // When console refreshes, there is a chance the preset has been changed by the user
     refreshConsole();
-    draw_title_to_screen();
+    draw_title_to_screen(false);
     if(this->showhelp%2) draw_help();
     if(this->showtitle%2) draw_title();
     if(this->showfps%2) draw_fps(this->realfps);
@@ -1189,9 +1189,11 @@ void Renderer::draw_borders(PresetOutputs *presetOutputs) {
 void Renderer::draw_title_to_texture() {
   
 #ifdef USE_FTGL 
-    if (this->drawtitle>80) 
+
+    if (this->drawtitle>100) 
       //    if(1)
       {
+	/*
       glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
       glColor4f(1.0,1.0,1.0,1.0);
 	  glMatrixMode(GL_MODELVIEW);
@@ -1209,49 +1211,139 @@ void Renderer::draw_title_to_texture() {
     
       glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
       glPopMatrix();
-      this->drawtitle=0;
+	*/
+	draw_title_to_screen(true);       
+        this->drawtitle=0;
     }
 #endif /** USE_FTGL */
 }
 
-void Renderer::draw_title_to_screen() {
+
+void setUpLighting()
+{
+   // Set up lighting.
+   float light1_ambient[4]  = { 1.0, 1.0, 1.0, 1.0 };
+   float light1_diffuse[4]  = { 1.0, 0.9, 0.9, 1.0 };
+   float light1_specular[4] = { 1.0, 0.7, 0.7, 1.0 };
+   float light1_position[4] = { -1.0, 1.0, 1.0, 0.0 };
+   glLightfv(GL_LIGHT1, GL_AMBIENT,  light1_ambient);
+   glLightfv(GL_LIGHT1, GL_DIFFUSE,  light1_diffuse);
+   glLightfv(GL_LIGHT1, GL_SPECULAR, light1_specular);
+   glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+   //glEnable(GL_LIGHT1);
+
+   float light2_ambient[4]  = { 0.2, 0.2, 0.2, 1.0 };
+   float light2_diffuse[4]  = { 0.9, 0.9, 0.9, 1.0 };
+   float light2_specular[4] = { 0.7, 0.7, 0.7, 1.0 };
+   float light2_position[4] = { 0.0, -1.0, 1.0, 0.0 };
+   glLightfv(GL_LIGHT2, GL_AMBIENT,  light2_ambient);
+   glLightfv(GL_LIGHT2, GL_DIFFUSE,  light2_diffuse);
+   glLightfv(GL_LIGHT2, GL_SPECULAR, light2_specular);
+   glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
+   glEnable(GL_LIGHT2);
+
+   float front_emission[4] = { 0.3, 0.2, 0.1, 0.0 };
+   float front_ambient[4]  = { 0.2, 0.2, 0.2, 0.0 };
+   float front_diffuse[4]  = { 0.95, 0.95, 0.8, 0.0 };
+   float front_specular[4] = { 0.6, 0.6, 0.6, 0.0 };
+   glMaterialfv(GL_FRONT, GL_EMISSION, front_emission);
+   glMaterialfv(GL_FRONT, GL_AMBIENT, front_ambient);
+   glMaterialfv(GL_FRONT, GL_DIFFUSE, front_diffuse);
+   glMaterialfv(GL_FRONT, GL_SPECULAR, front_specular);
+   glMaterialf(GL_FRONT, GL_SHININESS, 16.0);
+   glColor4fv(front_diffuse);
+
+   glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
+   glColorMaterial(GL_FRONT, GL_DIFFUSE);
+   glEnable(GL_COLOR_MATERIAL);
+
+   glEnable(GL_LIGHTING);
+}
+
+float title_y;
+
+void Renderer::draw_title_to_screen(bool flip) {
 
 #ifdef USE_FTGL
   if(this->drawtitle>0)
     { 
-      float easein = ((80-this->drawtitle)*.0125);
+	
+      setUpLighting();
+
+      glEnable( GL_CULL_FACE);
+       glFrontFace( GL_CCW);
+       glEnable( GL_DEPTH_TEST);     
+  
+      glClear( GL_DEPTH_BUFFER_BIT);
+      
+
+      int draw;
+      if (drawtitle>=80) draw = 80;
+      else draw = drawtitle;
+
+      float easein = ((80-draw)*.0125);
       float easein2 = easein * easein;
       float easein3 = .0025/((-easein2)+1.0);
-
-      glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-      glColor4f(1.0,1.0,1.0,1.0);
-	  
-	  glMatrixMode(GL_MODELVIEW);
-      glPushMatrix();
-      glLoadIdentity();
       
-      glTranslatef(-0.5, 0 , 0);
+      if(drawtitle==1)
+	{
+	  title_y = (float)rand()/RAND_MAX;
+	  title_y *= 2;
+	  title_y -= 1;
+	  title_y *= .6;	 
+	}
+      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+      // glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
+      glColor4f(1.0,1.0,1.0,1.0);
+      
+       glMatrixMode (GL_PROJECTION);
+       glPushMatrix();
+       glLoadIdentity ();
+      //gluPerspective( 90, (float)vw / (float)vh, 1, 1000);
+      glFrustum(-1,1,-1 * (float)vh/(float)vw,1 *(float)vh/(float)vw,1,1000);             if (flip) glScalef(1,-1,1);
+       glMatrixMode(GL_MODELVIEW);
+       glPushMatrix();
+       glLoadIdentity();
+       //gluLookAt( 0.0, 0.0, 1, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+      
+     
+      glTranslatef(-850, title_y * 850 *vh/vw  ,easein2*900-900);
 
-      glScalef(easein3,easein3,30*.0025);
+      // if (flip) glScalef(1,-1,1);
 
       glRotatef(easein2*360,1,0,0);
       
-      //poly_font->Depth(1.0);  
-      poly_font->FaceSize(22);
-
-      glRasterPos2f(0.0, 0.0);
+      poly_font->Depth(20);  
+      poly_font->FaceSize(72);
      
-	poly_font->Render(this->title.c_str() );
+      //      glRasterPos2f(0.2, 0.8);
      
-      // poly_font->Depth(0.0);
-      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-      glPopMatrix();	
+      poly_font->Render(this->title.c_str() );
+      
+   
+      //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
       
       this->drawtitle++;
+      
+    
 
+       glPopMatrix(); 
+      glMatrixMode (GL_PROJECTION);         
+      glPopMatrix();
+                
+       glMatrixMode(GL_MODELVIEW);
+
+      glDisable( GL_CULL_FACE);		
+      glDisable( GL_DEPTH_TEST);
+      
+      glDisable(GL_COLOR_MATERIAL);
+      
+      glDisable(GL_LIGHTING);
     }
 #endif /** USE_FTGL */
 }
+
+
 
 void Renderer::draw_title() {
 #ifdef USE_FTGL
