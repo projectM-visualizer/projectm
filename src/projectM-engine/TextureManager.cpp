@@ -1,13 +1,47 @@
 #include "TextureManager.hpp"
 #include "CustomShape.hpp"
 #include "Common.hpp"
-
+#include "IdleTextures.hpp"
 
 
 
 TextureManager::TextureManager(const std::string _presetURL): presetURL(_presetURL)
 {
-  ;
+  GLuint tex = SOIL_load_OGL_texture_from_memory(
+					  M_data,
+					  M_bytes,
+					  SOIL_LOAD_AUTO,
+					  SOIL_CREATE_NEW_ID,
+				  
+					    SOIL_FLAG_POWER_OF_TWO	       
+					  |  SOIL_FLAG_MULTIPLY_ALPHA
+					  |  SOIL_FLAG_COMPRESS_TO_DXT	  
+					  );
+  textures["M.tga"]=tex;
+  
+  tex = SOIL_load_OGL_texture_from_memory(
+					  project_data,
+					  project_bytes,
+					  SOIL_LOAD_AUTO,
+					  SOIL_CREATE_NEW_ID,
+					  
+					  SOIL_FLAG_POWER_OF_TWO	       
+					  |  SOIL_FLAG_MULTIPLY_ALPHA
+					  |  SOIL_FLAG_COMPRESS_TO_DXT	  
+					  );
+  textures["project.tga"]=tex;
+  
+  tex = SOIL_load_OGL_texture_from_memory(
+					  headphones_data,
+					  headphones_bytes,
+					  SOIL_LOAD_AUTO,
+					  SOIL_CREATE_NEW_ID,
+					  
+					  SOIL_FLAG_POWER_OF_TWO	       
+					  |  SOIL_FLAG_MULTIPLY_ALPHA
+					  |  SOIL_FLAG_COMPRESS_TO_DXT	  
+					  );
+  textures["headphones.tga"]=tex;    
 }
 
 TextureManager::~TextureManager()
