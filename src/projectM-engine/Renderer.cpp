@@ -11,8 +11,6 @@
 
 class Preset;
 
-GLuint texture;
-
 Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetect *beatDetect, std::string presetURL, std::string _titlefontURL, std::string _menufontURL): title_fontURL(_titlefontURL), menu_fontURL(_menufontURL),  m_presetName("None"), vw(width), vh(height), gx(gx), gy(gy)
 {
   int x; int y; 
