@@ -31,53 +31,25 @@ class BeatDetect;
 class TextureManager;
 
 class Renderer
-{
-  RenderTarget *renderTarget;
-  BeatDetect *beatDetect;
-  TextureManager *textureManager;
+{ 
 
-  //per pixel equation variables
-  float **gridx;  //grid containing interpolated mesh 
-  float **gridy;
-  float **origx2;  //original mesh 
-  float **origy2;
-  int gx;
-  int gy;
-
-  int vw; 
-  int vh;
-   
-    float aspect;
+public:
  
-
+  int showfps;
+  int showtitle;
+  int showpreset;
+  int showhelp;
+  int showstats;
   
- public:
- 
-
-#ifdef USE_FTGL
-FTGLPixmapFont *title_font;
-FTGLPixmapFont *other_font;
-FTGLExtrdFont *poly_font;
-#endif /** USE_FTGL */
- 
- int showfps;
-    int showtitle;
-    int showpreset;
-    int showhelp;
-    int showstats;
-
-    int studio;
-    int correction;
-
-  std::string title_fontURL;
-  std::string menu_fontURL;
+  int studio;
+  int correction;
   
-    int noSwitch;
-
-    int totalframes;
-float realfps;
-std::string title;
-    int drawtitle;
+  int noSwitch;
+  
+  int totalframes;
+  float realfps;
+  std::string title;
+  int drawtitle;
 
   Renderer( int width, int height, int gx, int gy, int texsize,  BeatDetect *beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
   ~Renderer();
@@ -87,20 +59,45 @@ std::string title;
   void PerPixelMath(PresetOutputs *presetOutputs,  PresetInputs *presetInputs);
   void WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetInputs, bool isSmoothing);
 
- 	void setPresetName(const std::string& theValue)
-	{
-	  m_presetName = theValue;
-	}
-	
-
-	std::string presetName() const
-	{
-	  return m_presetName;
-	}
-	
+  void setPresetName(const std::string& theValue)
+  {
+    m_presetName = theValue;
+  }	
+  
+  std::string presetName() const
+  {
+    return m_presetName;
+  }
+  
 
 private:
 
+  RenderTarget *renderTarget;
+  BeatDetect *beatDetect;
+  TextureManager *textureManager;
+  
+  //per pixel equation variables
+  float **gridx;  //grid containing interpolated mesh 
+  float **gridy;
+  float **origx2;  //original mesh 
+  float **origy2;
+  int gx;
+  int gy;
+  
+  int vw; 
+  int vh;
+  
+  float aspect;
+  
+
+#ifdef USE_FTGL
+  FTGLPixmapFont *title_font;
+  FTGLPixmapFont *other_font;
+  FTGLExtrdFont *poly_font;
+#endif /** USE_FTGL */
+  
+  std::string title_fontURL;
+  std::string menu_fontURL;    
   std::string m_presetName;
 
   void draw_waveform(PresetOutputs * presetOutputs);
