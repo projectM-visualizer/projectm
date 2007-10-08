@@ -416,6 +416,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\IdleTextures.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\image_DXT.h"
 				>
 			</File>

@@ -19,7 +19,7 @@
 #ifdef WIN32
 #include <FTGL.h>
 #include <FTGLPixmapFont.h>
-#include <FTGLPolygonFont.h>
+#include <FTGLExtrdFont.h>
 #else
 #include <FTGL/FTGL.h>
 #include <FTGL/FTGLPixmapFont.h>
