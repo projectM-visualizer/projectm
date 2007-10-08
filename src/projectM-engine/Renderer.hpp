@@ -104,7 +104,6 @@ private:
   std::string m_presetName;
 
   void draw_waveform(PresetOutputs * presetOutputs);
-  void PerFrame(PresetOutputs *presetOutputs);
   void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
 
   void rescale_per_pixel_matrices();
