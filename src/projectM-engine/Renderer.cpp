@@ -85,10 +85,12 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 #ifdef USE_FTGL
     /**f Load the standard fonts */
     
-        title_font = new FTGLPixmapFont(title_fontURL.c_str());
-	poly_font = new FTGLExtrdFont(title_fontURL.c_str());	
+        title_font = new FTGLPixmapFont(title_fontURL.c_str());	
         other_font = new FTGLPixmapFont(menu_fontURL.c_str());
-   
+
+	poly_font = new FTGLExtrdFont(title_fontURL.c_str());
+	poly_font->Depth(20);  
+	poly_font->FaceSize(72);
       
 #endif /** USE_FTGL */
 
@@ -129,12 +131,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     glMatrixMode(GL_TEXTURE);  
     glLoadIdentity();
     
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
-    
+  
     glMatrixMode( GL_PROJECTION );   
     glLoadIdentity();
     glOrtho(0.0, 1, 0.0, 1,-40,40);
@@ -246,7 +243,7 @@ if(renderTarget->renderToTexture)
 void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 {    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
     glBlendFunc(GL_SRC_ALPHA, GL_ZERO); 
-  glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
+
     
   glColor4f(1.0,1.0,1.0,presetOutputs->decay);
   
@@ -420,30 +417,22 @@ void Renderer::reset(int w, int h)
     this->aspect=(float)h / (float)w;
     this -> vw = w;
     this -> vh = h;
-
-    /* Our shading model--Gouraud (smooth). */
+  
     glShadeModel( GL_SMOOTH);
-    /* Culling. */
-    //    glCullFace( GL_BACK );
-    //    glFrontFace( GL_CCW );
-    //    glEnable( GL_CULL_FACE );
-    /* Set the clear color. */
+
+    glCullFace( GL_BACK );
+    glFrontFace( GL_CCW );
+   
     glClearColor( 0, 0, 0, 0 );
-    /* Setup our viewport. */
+   
     glViewport( 0, 0, w, h );
-	
-    /*
-    * Change to the projection matrix and set
-    * our viewing volume.
-    */
+      
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
-
-    //    gluOrtho2D(0.0, (GLfloat) width, 0.0, (GLfloat) height);
+    
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();  
-
-    //    glFrustum(0.0, height, 0.0,width,10,40);
+ 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
@@ -454,28 +443,23 @@ void Renderer::reset(int w, int h)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 
     glEnable( GL_LINE_SMOOTH );
-      glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);		
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);		
     
     glEnable(GL_POINT_SMOOTH);
-  glClear(GL_COLOR_BUFFER_BIT);
-    // glCopyTexImage2D(GL_TEXTURE_2D,0,GL_RGB,0,0,renderTarget->texsize,renderTarget->texsize,0);
-    //glCopyTexSubImage2D(GL_TEXTURE_2D,0,0,0,0,0,renderTarget->texsize,renderTarget->texsize);
+    glClear(GL_COLOR_BUFFER_BIT);
+  
     glLineStipple(2, 0xAAAA);
-
-    /** (Re)create the offscreen for pass 1 */
-   
-    //REME: necesary? 
-    //rescale_per_pixel_matrices();
-
-    /** Load TTF font **/
-   
-
-
-
-	if (!this->renderTarget->useFBO)
-	{
-		this->renderTarget->fallbackRescale(w,h);
-	}
+  
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+    
+    if (!this->renderTarget->useFBO)
+      {
+	this->renderTarget->fallbackRescale(w,h);
+      }
 }
 
 
@@ -589,7 +573,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 		     }
 		 }
 	      
-	       glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
+	     
 	       
 	       glMatrixMode(GL_TEXTURE);
 	       glPushMatrix();
@@ -632,7 +616,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 		{
 		  glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
 		}
-	      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
+	     
 
 	   }
 	  else{//Untextured (use color values)
@@ -1256,10 +1240,8 @@ void Renderer::draw_title_to_screen(bool flip) {
       setUpLighting();
 
       glEnable( GL_CULL_FACE);
-       glFrontFace( GL_CCW);
-            glEnable( GL_DEPTH_TEST);     
-  
-       glClear( GL_DEPTH_BUFFER_BIT);
+      glEnable( GL_DEPTH_TEST);       
+      glClear( GL_DEPTH_BUFFER_BIT);
       
 
       int draw;
@@ -1281,42 +1263,31 @@ void Renderer::draw_title_to_screen(bool flip) {
       // glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
       glColor4f(1.0,1.0,1.0,1.0);
       
-       glMatrixMode (GL_PROJECTION);
-       glPushMatrix();
-       glLoadIdentity ();
-      //gluPerspective( 90, (float)vw / (float)vh, 1, 1000);
-      glFrustum(-1,1,-1 * (float)vh/(float)vw,1 *(float)vh/(float)vw,1,1000);             if (flip) glScalef(1,-1,1);
-       glMatrixMode(GL_MODELVIEW);
-       glPushMatrix();
-       glLoadIdentity();
-       //gluLookAt( 0.0, 0.0, 1, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+      glMatrixMode (GL_PROJECTION);
+      glPushMatrix();
+      glLoadIdentity ();
       
-     
-      glTranslatef(-850, title_y * 850 *vh/vw  ,easein2*900-900);
+      glFrustum(-1,1,-1 * (float)vh/(float)vw,1 *(float)vh/(float)vw,1,1000); 
+      if (flip) glScalef(1,-1,1);
+      glMatrixMode(GL_MODELVIEW);
+      glPushMatrix();
+      glLoadIdentity();           
+      
+      glTranslatef(-850, title_y * 850 *vh/vw  ,easein2*900-900);     
 
-      // if (flip) glScalef(1,-1,1);
-
-      glRotatef(easein2*360,1,0,0);
-      
-      poly_font->Depth(20);  
-      poly_font->FaceSize(72);
-     
-      //      glRasterPos2f(0.2, 0.8);
-     
-      poly_font->Render(this->title.c_str() );
-      
+      glRotatef(easein2*360,1,0,0);         
+             
+      poly_font->Render(this->title.c_str() );      
    
       //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
       
       this->drawtitle++;
-      
-    
-
-       glPopMatrix(); 
+          
+      glPopMatrix(); 
       glMatrixMode (GL_PROJECTION);         
       glPopMatrix();
                 
-       glMatrixMode(GL_MODELVIEW);
+      glMatrixMode(GL_MODELVIEW);
 
       glDisable( GL_CULL_FACE);		
       glDisable( GL_DEPTH_TEST);
@@ -1488,7 +1459,7 @@ void Renderer::draw_fps( float realfps ) {
   glTranslatef(0.01,1, 0);
   glRasterPos2f(0, -0.05);
   title_font->FaceSize((unsigned)(20*(this->vh/512.0)));
-   title_font->Render(bufferfps);
+  title_font->Render(bufferfps);
   
   glPopMatrix();
   // glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
@@ -1500,92 +1471,90 @@ void Renderer::draw_fps( float realfps ) {
 //Actually draws the texture to the screen
 //
 //The Video Echo effect is also applied here
-void Renderer::render_texture_to_screen(PresetOutputs *presetOutputs) { 
+void Renderer::render_texture_to_screen(PresetOutputs *presetOutputs) 
+{ 
 
-      int flipx=1,flipy=1;
-      //glBindTexture( GL_TEXTURE_2D,this->renderTarget->textureID[0] );
-     glMatrixMode(GL_TEXTURE);  
-     glLoadIdentity();
-
-     // glClear(GL_DEPTH_BUFFER_BIT );
-    glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
-     
-   
-
-      
-      glBlendFunc(GL_ONE,GL_ZERO);
-      glColor4d(1.0, 1.0, 1.0,1.0f);
-      
-      glEnable(GL_TEXTURE_2D); 
-     
-      //Draw giant rectangle and texture it with our texture!
-      glBegin(GL_QUADS);
-      glTexCoord4d(0, 1,0,1); glVertex4d(-0.5,-0.5,-1,1);
-      glTexCoord4d(0, 0,0,1); glVertex4d(-0.5,  0.5,-1,1);
-      glTexCoord4d(1, 0,0,1); glVertex4d(0.5,  0.5,-1,1);
-      glTexCoord4d(1, 1,0,1); glVertex4d(0.5, -0.5,-1,1);
-      glEnd();
-       
-  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
- 
-       glMatrixMode(GL_TEXTURE);
-
-      //draw video echo
-      glColor4f(1.0, 1.0, 1.0,presetOutputs->fVideoEchoAlpha);
-      glTranslatef(.5,.5,0);
-      glScalef(1.0/presetOutputs->fVideoEchoZoom,1.0/presetOutputs->fVideoEchoZoom,1);
-       glTranslatef(-.5,-.5,0);    
-
-      switch (((int)presetOutputs->nVideoEchoOrientation))
-	{
-	case 0: flipx=1;flipy=1;break;
-	case 1: flipx=-1;flipy=1;break;
-  	case 2: flipx=1;flipy=-1;break;
-	case 3: flipx=-1;flipy=-1;break;
-	default: flipx=1;flipy=1; break;
-	}
-      glBegin(GL_QUADS);
-      glTexCoord4d(0, 1,0,1); glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
-      glTexCoord4d(0, 0,0,1); glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
-      glTexCoord4d(1, 0,0,1); glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
-      glTexCoord4d(1, 1,0,1); glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
-      glEnd();
-
+  int flipx=1,flipy=1;
     
-      glDisable(GL_TEXTURE_2D);
+  glMatrixMode(GL_TEXTURE);  
+  glLoadIdentity();
+  
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();        
+  
+  //Overwrite anything on the screen
+  glBlendFunc(GL_ONE,GL_ZERO);
+  glColor4d(1.0, 1.0, 1.0,1.0f);
+  
+  glEnable(GL_TEXTURE_2D); 
+  
+  //Draw giant rectangle and texture it with our texture!
+  glBegin(GL_QUADS);
+  glTexCoord4d(0, 1,0,1); glVertex4d(-0.5,-0.5,-1,1);
+  glTexCoord4d(0, 0,0,1); glVertex4d(-0.5,  0.5,-1,1);
+  glTexCoord4d(1, 0,0,1); glVertex4d(0.5,  0.5,-1,1);
+  glTexCoord4d(1, 1,0,1); glVertex4d(0.5, -0.5,-1,1);
+  glEnd();
+  
+  //Noe Blend the Video Echo
+  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+  
+  glMatrixMode(GL_TEXTURE);
+  
+      //draw video echo
+  glColor4f(1.0, 1.0, 1.0,presetOutputs->fVideoEchoAlpha);
+  glTranslatef(.5,.5,0);
+  glScalef(1.0/presetOutputs->fVideoEchoZoom,1.0/presetOutputs->fVideoEchoZoom,1);
+  glTranslatef(-.5,-.5,0);    
+  
+  switch (((int)presetOutputs->nVideoEchoOrientation))
+    {
+    case 0: flipx=1;flipy=1;break;
+    case 1: flipx=-1;flipy=1;break;
+    case 2: flipx=1;flipy=-1;break;
+    case 3: flipx=-1;flipy=-1;break;
+    default: flipx=1;flipy=1; break;
+    }
+  glBegin(GL_QUADS);
+  glTexCoord4d(0, 1,0,1); glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
+  glTexCoord4d(0, 0,0,1); glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
+  glTexCoord4d(1, 0,0,1); glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
+  glTexCoord4d(1, 1,0,1); glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
+  glEnd();
+  
+  
+  glDisable(GL_TEXTURE_2D);
+  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+  
+  
+  if (presetOutputs->bBrighten==1)
+    { 
+      glColor4f(1.0, 1.0, 1.0,1.0);
+      glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
+      glBegin(GL_QUADS);
+      glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
+      glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
+      glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
+      glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
+      glEnd();
+      glBlendFunc(GL_ZERO, GL_DST_COLOR);
+      glBegin(GL_QUADS);
+      glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
+      glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
+      glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
+      glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
+      glEnd();
+      glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
+      glBegin(GL_QUADS);
+      glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
+      glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
+      glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
+      glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
+      glEnd();
+      
       glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-
-      if (presetOutputs->bBrighten==1)
-	{ 
-	  glColor4f(1.0, 1.0, 1.0,1.0);
-	  glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-	  glBegin(GL_QUADS);
-	  glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
-	  glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
-	  glEnd();
-	  glBlendFunc(GL_ZERO, GL_DST_COLOR);
-	  glBegin(GL_QUADS);
-	  glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
-	  glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
-	  glEnd();
-	  glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-	  glBegin(GL_QUADS);
-	  glVertex4f(-0.5*flipx,-0.5*flipy,-1,1);
-	  glVertex4f(-0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx,  0.5*flipy,-1,1);
-	  glVertex4f(0.5*flipx, -0.5*flipy,-1,1);
-	  glEnd();
-
-	  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-	} 
+      
+    } 
 
       if (presetOutputs->bDarken==1)
 	{ 
@@ -1654,14 +1623,7 @@ void Renderer::render_texture_to_studio(PresetOutputs *presetOutputs, PresetInpu
 
      //glClear( GL_DEPTH_BUFFER_BIT );
     glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
-     
-     
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
-      //      glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_DECAL);
-      glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+      glLoadIdentity();          
       
       //       glClear(GL_ACCUM_BUFFER_BIT);
       glColor4f(0.0, 0.0, 0.0,0.04);
