@@ -13,9 +13,6 @@
 #include "effects.h"
 #include "projectM-wmp_h.h"
 #include "projectM.hpp"
-#include "KeyHandler.hpp"
-
-
 
 
 /////////////////////////////////////////////////////////////////////////////

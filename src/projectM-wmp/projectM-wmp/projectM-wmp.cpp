@@ -93,7 +93,7 @@ STDMETHODIMP CProjectMwmp::Render(TimedLevel *pLevels, HDC hdc, RECT *prc)
 	 	globalPM->projectM_resetGL(width,height);
 	}
 
-	globalPM->beatDetect->pcm->addPCM8(pLevels->waveform);
+	globalPM->pcm->addPCM8(pLevels->waveform);
     globalPM->renderFrame();
 
     SwapBuffers(hdc);
