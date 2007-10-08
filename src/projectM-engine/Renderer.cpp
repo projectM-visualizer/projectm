@@ -148,10 +148,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     	//lockPBuffer( this->renderTarget, PBUFFER_PASS1 );
       }
 
-    PerFrame(presetOutputs);             
-    Interpolation(presetOutputs,presetInputs);     
-     
-  
+    Interpolation(presetOutputs,presetInputs);            
 
     //    if(!this->renderTarget->useFBO)
     {
@@ -170,10 +167,6 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 
     glMatrixMode( GL_PROJECTION );
     glPopMatrix();
-
-    /** Restore all original attributes */
-    //  glPopAttrib();
-    //glFlush();
     
     renderTarget->unlock();
 
@@ -201,14 +194,9 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     else  glViewport( 0, 0, this->vw, this->vh );
     
     DWRITE( "viewport: %d x %d\n", this->vw, this->vh );
-
-  
- 
-    //glClear( GL_COLOR_BUFFER_BIT );
-        
+              
     glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID[0] );
       
-
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();  
     glOrtho(-0.5, 0.5, -0.5,0.5,-40,40);
@@ -233,22 +221,30 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
     if(this->showstats%2) draw_stats(presetInputs);
     glTranslatef(0.5 ,0.5,0);
     
-if(renderTarget->renderToTexture)      
-    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);	
+    if(renderTarget->renderToTexture) 
+      glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);	
 
     DWRITE("End of Pass 2\n" );
 }
 
 
 void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
-{    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
-    glBlendFunc(GL_SRC_ALPHA, GL_ZERO); 
+{  
+  //Texture wrapping( clamp vs. wrap)
+  if (presetOutputs->bTexWrap==0){
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);}
+  else{ glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);}
+  
+  glMatrixMode(GL_TEXTURE);
+  glLoadIdentity();  
 
-    
+  glBlendFunc(GL_SRC_ALPHA, GL_ZERO); 
+  
   glColor4f(1.0,1.0,1.0,presetOutputs->decay);
   
   glEnable(GL_TEXTURE_2D);
-  
     
   for (int x=0;x<presetInputs->gx - 1;x++){
     glBegin(GL_TRIANGLE_STRIP);
@@ -263,28 +259,8 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
            
   glDisable(GL_TEXTURE_2D);  
 
-glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
  
-}
-
-
-void Renderer::PerFrame(PresetOutputs *presetOutputs)
-{    
-  
-  //Texture wrapping( clamp vs. wrap)
-  if (presetOutputs->bTexWrap==0){
-    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);}
-  else{ glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);}
-  
-  glRasterPos2i(0,0);
-  //  glClear(GL_COLOR_BUFFER_BIT);
-  glColor4d(0.0, 0.0, 0.0,1.0);
-  
-  glMatrixMode(GL_TEXTURE);
-  glLoadIdentity();  
-     
 }
 
 
@@ -461,9 +437,6 @@ void Renderer::reset(int w, int h)
 	this->renderTarget->fallbackRescale(w,h);
       }
 }
-
-
-
 
 
 void Renderer::draw_custom_waves(PresetOutputs *presetOutputs) {
@@ -1010,9 +983,9 @@ void Renderer::maximize_colors(PresetOutputs *presetOutputs) {
 
  float wave_r_switch=0,wave_g_switch=0,wave_b_switch=0;
  //wave color brightening
-      //
-      //forces max color value to 1.0 and scales
-      // the rest accordingly
+ //
+ //forces max color value to 1.0 and scales
+ // the rest accordingly
  if(presetOutputs->nWaveMode==2 || presetOutputs->nWaveMode==5)
    {
 	switch(this->renderTarget->texsize)
@@ -1037,7 +1010,7 @@ void Renderer::maximize_colors(PresetOutputs *presetOutputs) {
 	presetOutputs->wave_o*=powf(beatDetect->treb ,2.0f);
    }
 
-      if (presetOutputs->bMaximizeWaveColor==1)  
+ if (presetOutputs->bMaximizeWaveColor==1)  
 	{
 	  if(presetOutputs->wave_r>=presetOutputs->wave_g && presetOutputs->wave_r>=presetOutputs->wave_b)   //red brightest
 	    {
@@ -1073,11 +1046,8 @@ void Renderer::maximize_colors(PresetOutputs *presetOutputs) {
 void Renderer::darken_center() {
 
   float unit=0.05f;
-
-  
-  
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
-  
+    
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);   
 
   glBegin(GL_TRIANGLE_FAN);
   glColor4f(0,0,0,3.0f/32.0f);
@@ -1153,36 +1123,29 @@ void Renderer::draw_borders(PresetOutputs *presetOutputs) {
     //no additive drawing for borders
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
   
-    glColor4d(presetOutputs->ob_r,presetOutputs->ob_g,presetOutputs->ob_b,presetOutputs->ob_a);
-  
-   
-   
-
+    glColor4d(presetOutputs->ob_r,presetOutputs->ob_g,presetOutputs->ob_b,presetOutputs->ob_a);        
     glRectd(0,0,of,1);
     glRectd(of,0,texof,of);
     glRectd(texof,0,1,1);
     glRectd(of,1,texof,texof);
+
     glColor4d(presetOutputs->ib_r,presetOutputs->ib_g,presetOutputs->ib_b,presetOutputs->ib_a);
     glRectd(of,of,of+iff,texof);
     glRectd(of+iff,of,texof-iff,of+iff);
     glRectd(texof-iff,of,texof,texof);
     glRectd(of+iff,texof,texof-iff,texof-iff);
-
    
 }
 
 
 
-void Renderer::draw_title_to_texture() {
-  
+void Renderer::draw_title_to_texture() 
+{  
 #ifdef USE_FTGL 
-
-    if (this->drawtitle>100) 
-      //    if(1)
-      {
-
-	draw_title_to_screen(true);       
-        this->drawtitle=0;
+  if (this->drawtitle>100)      
+    {
+      draw_title_to_screen(true);       
+      this->drawtitle=0;
     }
 #endif /** USE_FTGL */
 }
@@ -1621,20 +1584,19 @@ void Renderer::render_texture_to_studio(PresetOutputs *presetOutputs, PresetInpu
      glMatrixMode(GL_TEXTURE);  
      glLoadIdentity();
 
-     //glClear( GL_DEPTH_BUFFER_BIT );
-    glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();          
-      
-      //       glClear(GL_ACCUM_BUFFER_BIT);
-      glColor4f(0.0, 0.0, 0.0,0.04);
-      
-
-   glBegin(GL_QUADS);
+     
+     glMatrixMode(GL_MODELVIEW);
+     glLoadIdentity();          
+     
+     glColor4f(0.0, 0.0, 0.0,0.04);
+     
+     
+     glBegin(GL_QUADS);
      glVertex4d(-0.5,-0.5,-1,1);
      glVertex4d(-0.5,  0.5,-1,1);
      glVertex4d(0.5,  0.5,-1,1);
      glVertex4d(0.5, -0.5,-1,1);
-      glEnd();
+     glEnd();
 
 
       glColor4f(0.0, 0.0, 0.0,1.0);
@@ -1658,8 +1620,9 @@ void Renderer::render_texture_to_studio(PresetOutputs *presetOutputs, PresetInpu
      glScalef(.5,.5,1);
      
      glEnable(GL_TEXTURE_2D);
-    
 
+     glBlendFunc(GL_ONE,GL_ZERO);
+     glColor4f(1.0, 1.0, 1.0,1.0);
       //Draw giant rectangle and texture it with our texture!
       glBegin(GL_QUADS);
       glTexCoord4d(0, 1,0,1); glVertex4d(-0.5,-0.5,-1,1);
@@ -1674,7 +1637,7 @@ void Renderer::render_texture_to_studio(PresetOutputs *presetOutputs, PresetInpu
       glMatrixMode(GL_TEXTURE);
 
       //draw video echo
-      glColor4f(0.0, 0.0, 0.0,presetOutputs->fVideoEchoAlpha);
+      glColor4f(1.0, 1.0, 1.0,presetOutputs->fVideoEchoAlpha);
       glTranslated(.5,.5,0);
       glScaled(1/presetOutputs->fVideoEchoZoom,1/presetOutputs->fVideoEchoZoom,1);
       glTranslated(-.5,-.5,0);    
@@ -1695,10 +1658,9 @@ void Renderer::render_texture_to_studio(PresetOutputs *presetOutputs, PresetInpu
       glEnd();
 
     
-      //glDisable(GL_TEXTURE_2D);
+      glDisable(GL_TEXTURE_2D);
       glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
- // if (bDarken==1) { glAccum(GL_ACCUM,fVideoEchoAlpha); glAccum(GL_RETURN,1);}
+ 
 
 
       if (presetOutputs->bInvert)
