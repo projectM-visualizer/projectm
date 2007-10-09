@@ -77,7 +77,7 @@ Preset::~Preset()
 
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<PerPixelEqn> >(per_pixel_eqn_tree);
 
-  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<PerFrameEqn> >(per_frame_eqn_tree);
+  Algorithms::traverseVector<Algorithms::TraverseFunctors::DeleteFunctor<PerFrameEqn> >(per_frame_eqn_tree);
 
   Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<Param> >(user_param_tree);
 
@@ -178,11 +178,10 @@ void Preset::evalCustomWavePerFrameEquations()
       _pos->second->evaluate();
     }
 
-    std::map<int, PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
-    for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
+    std::vector<PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
+    for (std::vector<PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
     {
-      assert(_pos->second);
-      _pos->second->evaluate();
+      (*_pos)->evaluate();
     }
   }
 
@@ -201,11 +200,10 @@ void Preset::evalCustomShapePerFrameEquations()
       _pos->second->evaluate();
     }
 
-    std::map<int, PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
-    for (std::map<int, PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
+    std::vector<PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
+    for (std::vector<PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
     {
-      assert(_pos->second);
-      _pos->second->evaluate();
+      (*_pos)->evaluate();
     }
   }
 
@@ -231,10 +229,9 @@ void Preset::evalPerFrameEquations()
     pos->second->evaluate();
   }
 
-  for (std::map<int, PerFrameEqn*>::iterator pos = per_frame_eqn_tree.begin(); pos != per_frame_eqn_tree.end(); ++pos)
+  for (std::vector<PerFrameEqn*>::iterator pos = per_frame_eqn_tree.begin(); pos != per_frame_eqn_tree.end(); ++pos)
   {
-    assert(pos->second);
-    pos->second->evaluate();
+    (*pos)->evaluate();
   }
 
 }
