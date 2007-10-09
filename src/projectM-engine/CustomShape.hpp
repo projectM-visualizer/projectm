@@ -34,6 +34,7 @@
 #include "Param.hpp"
 #include "PerFrameEqn.hpp"
 #include "InitCond.hpp"
+#include <vector>
 
 class Preset;
 
@@ -109,7 +110,7 @@ public:
     /* Data structure to hold per frame  / per frame init equations */
     
     std::map<std::string,InitCond*>  init_cond_tree;
-    std::map<int, PerFrameEqn*>  per_frame_eqn_tree;
+    std::vector<PerFrameEqn*>  per_frame_eqn_tree;
     std::map<std::string,InitCond*>  per_frame_init_eqn_tree;
     std::map<std::string, Param*> text_properties_tree;
 

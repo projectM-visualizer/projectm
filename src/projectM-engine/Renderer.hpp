@@ -83,6 +83,8 @@ private:
   float **origy2;
   int gx;
   int gy;
+
+  std::string m_presetName;
   
   int vw; 
   int vh;
@@ -98,7 +100,6 @@ private:
   
   std::string title_fontURL;
   std::string menu_fontURL;    
-  std::string m_presetName;
 
   void draw_waveform(PresetOutputs * presetOutputs);
   void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);

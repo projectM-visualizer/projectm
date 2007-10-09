@@ -264,7 +264,7 @@ CustomShape::CustomShape ( int id ) : imageUrl("")
 CustomShape::~CustomShape()
 {
 
-	traverse<TraverseFunctors::DeleteFunctor<PerFrameEqn> > ( per_frame_eqn_tree );
+	traverseVector<TraverseFunctors::DeleteFunctor<PerFrameEqn> > ( per_frame_eqn_tree );
 	traverse<TraverseFunctors::DeleteFunctor<InitCond> > ( init_cond_tree );
 	traverse<TraverseFunctors::DeleteFunctor<Param> > ( param_tree );
 	traverse<TraverseFunctors::DeleteFunctor<InitCond> > ( per_frame_init_eqn_tree );

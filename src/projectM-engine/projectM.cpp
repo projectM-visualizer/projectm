@@ -69,7 +69,7 @@ double smoothDuration = 5;
 //int smoothFrame = 0;
 int oldFrame = 1;
 
-DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url,std::string title_fonturl, std::string title_menuurl) :renderer(0),  presetURL(preset_url), title_fontURL(title_fonturl), menu_fontURL(menu_fontURL), smoothFrame(0), beatDetect ( 0 ) {
+DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url,std::string title_fonturl, std::string title_menuurl) :beatDetect ( 0 ),  renderer(0), presetURL(preset_url),   title_fontURL(title_fonturl), menu_fontURL(menu_fontURL), smoothFrame(0) {
   presetURL = preset_url;
   projectM_reset();
   projectM_init(gx, gy, fps, texsize, width, height);  
@@ -94,7 +94,7 @@ DLLEXPORT unsigned projectM::initRenderToTexture()
 }
 
 DLLEXPORT  projectM::projectM(std::string config_file) :
-	renderer(0), smoothFrame(0), beatDetect ( 0 ) {
+	beatDetect ( 0 ), renderer(0), smoothFrame(0)  {
 
  projectM_reset();
  readConfig(config_file);
