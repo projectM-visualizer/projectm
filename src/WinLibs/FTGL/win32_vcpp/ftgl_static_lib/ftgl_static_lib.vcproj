@@ -196,7 +196,7 @@
 				PreprocessorDefinitions="_DEBUG;WIN32;_LIB;FTGL_LIBRARY_STATIC"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				PrecompiledHeaderFile=".\Debug_ST/ftgl_static_lib.pch"
 				AssemblerListingLocation=".\Debug_ST/"
 				ObjectFile=".\Debug_ST/"
@@ -271,7 +271,7 @@
 				AdditionalIncludeDirectories="&quot;..\..\..\freetype-2.3.5\include&quot;;..\..\include"
 				PreprocessorDefinitions="NDEBUG;WIN32;_LIB;FTGL_LIBRARY_STATIC"
 				StringPooling="true"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				PrecompiledHeaderFile=".\Release_ST/ftgl_static_lib.pch"
 				AssemblerListingLocation=".\Release_ST/"
@@ -318,7 +318,7 @@
 	<References>
 		<ProjectReference
 			ReferencedProjectIdentifier="{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}"
-			RelativePathToProject="..\WinLibs\freetype-2.3.5\builds\win32\visualc\freetype.vcproj"
+			RelativePathToProject="..\..\..\WinLibs\freetype-2.3.5\builds\win32\visualc\freetype.vcproj"
 		/>
 	</References>
 	<Files>

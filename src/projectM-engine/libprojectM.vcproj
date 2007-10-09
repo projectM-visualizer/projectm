@@ -46,7 +46,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;DEBUG;GLEW_STATIC;USE_FBO;USE_FTGL"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				PrecompiledHeaderFile=".\Debug/libprojectM.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
@@ -122,7 +122,7 @@
 				AdditionalIncludeDirectories="&quot;..\WinLibs\freetype-2.3.5\include&quot;;&quot;..\WinLibs\FTGL\include&quot;;&quot;..\WinLibs\glew\include\GL&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;GLEW_STATIC;USE_FBO; USE_FTGL"
 				StringPooling="true"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				PrecompiledHeaderFile=".\Release/libprojectM.pch"
 				AssemblerListingLocation=".\Release/"
@@ -174,11 +174,11 @@
 	<References>
 		<ProjectReference
 			ReferencedProjectIdentifier="{94AC71AA-7528-4E56-A5A9-EDDFE6D20A39}"
-			RelativePathToProject="..\WinLibs\glew\build\vc6\glew_static.vcproj"
+			RelativePathToProject="..\..\..\WinLibs\glew\build\vc6\glew_static.vcproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{4A80DC08-8D4E-4136-B818-AF0024000A21}"
-			RelativePathToProject="..\WinLibs\FTGL\win32_vcpp\ftgl_static_lib\ftgl_static_lib.vcproj"
+			RelativePathToProject="..\..\..\WinLibs\FTGL\win32_vcpp\ftgl_static_lib\ftgl_static_lib.vcproj"
 		/>
 	</References>
 	<Files>

@@ -4,6 +4,7 @@
 	Version="8.00"
 	Name="freetype"
 	ProjectGUID="{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}"
+	RootNamespace="freetype"
 	>
 	<Platforms>
 		<Platform
@@ -45,7 +46,7 @@
 				AdditionalIncludeDirectories="..\..\..\include"
 				PreprocessorDefinitions="NDEBUG;WIN32;_LIB;FT2_BUILD_LIBRARY"
 				StringPooling="true"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				DisableLanguageExtensions="true"
 				PrecompiledHeaderFile=".\..\..\..\objs\release/freetype.pch"
@@ -268,7 +269,7 @@
 				AdditionalIncludeDirectories="..\..\..\include"
 				PreprocessorDefinitions="_DEBUG;WIN32;_LIB;FT_DEBUG_LEVEL_ERROR;FT_DEBUG_LEVEL_TRACE;FT2_BUILD_LIBRARY"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				DisableLanguageExtensions="true"
 				PrecompiledHeaderFile=".\..\..\..\objs\debug/freetype.pch"
 				AssemblerListingLocation=".\..\..\..\objs\debug/"
@@ -675,10 +676,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\base\ftgasp.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\cache\ftcache.c"
 				>
 				<FileConfiguration
@@ -817,6 +814,10 @@
 						DisableLanguageExtensions="false"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\src\base\ftgasp.c"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\src\base\ftglyph.c"

@@ -222,6 +222,38 @@ void PCM::addPCM8( unsigned char PCMdata[2][1024])
     getPCM(vdataR,512,1,1,0,0);
 }
 
+void PCM::addPCM8_512( const unsigned char PCMdata[2][512])
+{
+  int i,j;
+  int samples=512;
+
+ 
+	 for(i=0;i<samples;i++)
+	   {
+	     j=i+start;
+         if ( PCMdata[0][i] != 0 && PCMdata[1][i] != 0 ) {
+	         PCMd[0][j%maxsamples]=( (float)( PCMdata[0][i] - 128.0 ) / 64 );
+	         PCMd[1][j%maxsamples]=( (float)( PCMdata[1][i] - 128.0 ) / 64 );  
+          } else {
+             PCMd[0][j % maxsamples] = 0;
+             PCMd[1][j % maxsamples] = 0;
+          }
+	   }
+       
+ 
+	 // printf("Added %d samples %d %d %f\n",samples,start,(start+samples)%maxsamples,PCM[0][start+10]); 
+
+ start+=samples;
+ start=start%maxsamples;
+
+ newsamples+=samples;
+ if (newsamples>maxsamples) newsamples=maxsamples;
+    numsamples = getPCMnew(pcmdataR,1,0,waveSmoothing,0,0);
+    getPCMnew(pcmdataL,0,0,waveSmoothing,0,1);
+    getPCM(vdataL,512,0,1,0,0);
+    getPCM(vdataR,512,1,1,0,0);
+}
+
 
 //puts sound data requested at provided pointer
 //
