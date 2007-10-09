@@ -64,7 +64,6 @@ void CProjectMwmp::FinalRelease()
 //////////////////////////////////////////////////////////////////////////////
 STDMETHODIMP CProjectMwmp::Render(TimedLevel *pLevels, HDC hdc, RECT *prc)
 {   
-
 	if (starting) {
 		static PIXELFORMATDESCRIPTOR pfd = {
 			sizeof(PIXELFORMATDESCRIPTOR), 1,							
@@ -80,7 +79,7 @@ STDMETHODIMP CProjectMwmp::Render(TimedLevel *pLevels, HDC hdc, RECT *prc)
 		width = (int)(prc->right - prc->left);
 		height = (int)(prc->bottom - prc->top);
 	    
-		globalPM = new projectM("C:\\projectM\\config.inp");//24,18,0,128,width,height,"C:\\Documents and Settings\\DEV2\\My Documents\\svn\\presets_projectM\\");
+		globalPM = new projectM("C:\\Program\ Files\\projectM\\config.inp");//24,18,0,128,width,height,"C:\\Documents and Settings\\DEV2\\My Documents\\svn\\presets_projectM\\");
 		
 	}
 
@@ -94,6 +93,8 @@ STDMETHODIMP CProjectMwmp::Render(TimedLevel *pLevels, HDC hdc, RECT *prc)
 	}
 
 	globalPM->pcm->addPCM8(pLevels->waveform);
+	wglMakeCurrent(hdc, hrc);	
+	globalPM->projectM_resetGL(width,height);
     globalPM->renderFrame();
 
     SwapBuffers(hdc);
@@ -188,7 +189,6 @@ STDMETHODIMP CProjectMwmp::RenderFullScreen(TimedLevel *pLevels)
 
 STDMETHODIMP CProjectMwmp::GoFullscreen(BOOL fFullScreen)
 {
-
 	return S_OK;
 }
 											
@@ -336,7 +336,7 @@ STDMETHODIMP CProjectMwmp::Create(HWND hwndParent)
 // CProjectMwmp::Destroy
 // Invoked when the visualization should be released.
 //
-// Any resources allocated for rendering should be released.
+// Any resources allocated for ing should be released.
 //////////////////////////////////////////////////////////////////////////////
 STDMETHODIMP CProjectMwmp::Destroy()
 {
@@ -411,7 +411,7 @@ STDMETHODIMP CProjectMwmp::OnWindowMessage(UINT msg, WPARAM WParam, LPARAM LPara
 }
 
 //////////////////////////////////////////////////////////////////////////////
-// CProjectMwmp::RenderWindowed
+// CProjectMwmp::Windowed
 // Called when an effect should render itself to the screen.
 //
 // The fRequiredRender flag specifies if an update is required, otherwise the
