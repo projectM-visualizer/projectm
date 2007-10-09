@@ -126,11 +126,6 @@ public:
     int per_frame_eqn_string_index;
     int per_frame_init_eqn_string_index;
 
-    /* String buffers for per point and per frame equations */
-    char per_point_eqn_string_buffer[STRING_BUFFER_SIZE];
-    char per_frame_eqn_string_buffer[STRING_BUFFER_SIZE];
-    char per_frame_init_eqn_string_buffer[STRING_BUFFER_SIZE];
-
     int add_per_point_eqn(char * name, GenExpr * gen_expr);
     void evalCustomWaveInitConditions(Preset *preset);
     void evalPerPointEqns();

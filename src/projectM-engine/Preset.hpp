@@ -119,7 +119,9 @@ public:
 
     return m_presetOutputs;
   }
-	/// Sets the descriptive name for this preset (typically the file name)
+
+    /// Sets the descriptive name for this preset (typically the file name)
+    /// \param theValue the new preset name to assign to the preset
 	void setPresetName ( const std::string& theValue )
 	{
 		m_presetName = theValue;
@@ -127,6 +129,7 @@ public:
 	
 
 	/// Gets the descriptive name for this preset (typically the file name)
+	/// \returns the name of the preset
 	std::string presetName() const
 	{
 		return m_presetName;

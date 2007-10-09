@@ -56,11 +56,9 @@ CustomWave::CustomWave(int _id):
     bAdditive(0),
 
     scaling(1.0),
-    smoothing(0.0),
+    smoothing(0.0)
 
-    per_point_eqn_string_index(0),
-    per_frame_eqn_string_index(0),
-    per_frame_init_eqn_string_index(0)
+
 
 {
 
@@ -81,7 +79,7 @@ CustomWave::CustomWave(int _id):
  
   if ((param = Param::new_param_float("r", P_FLAG_NONE | P_FLAG_PER_POINT, &this->r, this->r_mesh, 1.0, 0.0, .5)) == NULL)
   {
-    delete(this);
+    ;
     /// @bug make exception
     abort();
   }
@@ -94,21 +92,21 @@ CustomWave::CustomWave(int _id):
 
   if ((param = Param::new_param_float("g", P_FLAG_NONE | P_FLAG_PER_POINT, &this->g,  this->g_mesh, 1.0, 0.0, .5)) == NULL)
   {
-    delete(this);
+    ;
     /// @bug make exception
     abort();
   }
 
   if (ParamUtils::insert(param, &param_tree) < 0)
   {
-    delete(this);
+    ;
     /// @bug make exception
     abort();
   }
 
   if ((param = Param::new_param_float("b", P_FLAG_NONE | P_FLAG_PER_POINT, &this->b,  this->b_mesh, 1.0, 0.0, .5)) == NULL)
   {
-    delete(this);
+    ;
     /// @bug make exception
     abort();
 
@@ -116,49 +114,49 @@ CustomWave::CustomWave(int _id):
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
     /// @bug make exception
     abort();
   }
 
   if ((param = Param::new_param_float("a", P_FLAG_NONE | P_FLAG_PER_POINT, &this->a,  this->a_mesh, 1.0, 0.0, .5)) == NULL)
   {
-    delete(this);
+    ;
     /// @bug make exception
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
     /// @bug make exception
     abort();
   }
 
   if ((param = Param::new_param_float("x", P_FLAG_NONE | P_FLAG_PER_POINT, &this->x,  this->x_mesh, 1.0, 0.0, .5)) == NULL)
   {
-    delete(this);
+    ;
     /// @bug make exception
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
     /// @bug make exception
     abort();
   }
 
   if ((param = Param::new_param_float("y", P_FLAG_NONE | P_FLAG_PER_POINT, &this->y,  this->y_mesh, 1.0, 0.0, .5)) == NULL)
   {
-    delete(this);
+    ;
     /// @bug make exception
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
 
     /// @bug make exception
     abort();
@@ -167,7 +165,7 @@ CustomWave::CustomWave(int _id):
 
   if ((param = Param::new_param_bool("enabled", P_FLAG_NONE, &this->enabled, 1, 0, 0)) == NULL)
   {
-    delete(this);
+    ;
     /// @bug make exception
     abort();
 
@@ -176,7 +174,7 @@ CustomWave::CustomWave(int _id):
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
 
     /// @bug make exception
     abort();
@@ -185,7 +183,7 @@ CustomWave::CustomWave(int _id):
 
   if ((param = Param::new_param_int("sep", P_FLAG_NONE, &this->sep, 100, -100, 0)) == NULL)
   {
-    delete(this);
+    ;
     /// @bug make exception
     abort();
 
@@ -194,7 +192,7 @@ CustomWave::CustomWave(int _id):
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
     /// @bug make exception
     abort();
 
@@ -203,7 +201,6 @@ CustomWave::CustomWave(int _id):
 
   if ((param = Param::new_param_bool("bspectrum", P_FLAG_NONE, &this->bSpectrum, 1, 0, 0)) == NULL)
   {
-    delete(this);
     /// @bug make exception
     abort();
 
@@ -212,7 +209,6 @@ CustomWave::CustomWave(int _id):
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
     /// @bug make exception
     abort();
 
@@ -220,16 +216,12 @@ CustomWave::CustomWave(int _id):
 
   if ((param = Param::new_param_bool("bdrawthick", P_FLAG_NONE, &this->bDrawThick, 1, 0, 0)) == NULL)
   {
-    delete(this);
     /// @bug make exception
     abort();
-
-
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
     /// @bug make exception
     abort();
 
@@ -237,192 +229,181 @@ CustomWave::CustomWave(int _id):
 
   if ((param = Param::new_param_bool("busedots", P_FLAG_NONE, &this->bUseDots, 1, 0, 0)) == NULL)
   {
-    delete(this);
+ 
     /// @bug make exception
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if ((param = Param::new_param_bool("badditive", P_FLAG_NONE, &this->bAdditive, 1, 0, 0)) == NULL)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if ((param = Param::new_param_int("samples", P_FLAG_NONE, &this->samples, 2048, 1, 512)) == NULL)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if ((param = Param::new_param_float("sample", P_FLAG_READONLY | P_FLAG_NONE | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT,
                                       &this->sample, this->sample_mesh, 1.0, 0.0, 0.0)) == NULL)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    printf("failed to insert sample\n");
-    delete(this);
     abort();
   }
 
   if ((param = Param::new_param_float("value1", P_FLAG_READONLY | P_FLAG_NONE | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v1, this->value1, 1.0, -1.0, 0.0)) == NULL)
   {
-    delete(this);
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
     abort();
   }
 
   if ((param = Param::new_param_float("value2", P_FLAG_READONLY | P_FLAG_NONE | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v2, this->value2, 1.0, -1.0, 0.0)) == NULL)
   {
-    delete(this);
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if ((param = Param::new_param_float("smoothing", P_FLAG_NONE, &this->smoothing, NULL, 1.0, 0.0, 0.0)) == NULL)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if ((param = Param::new_param_float("scaling", P_FLAG_NONE, &this->scaling, NULL, MAX_DOUBLE_SIZE, 0.0, 1.0)) == NULL)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if ((param = Param::new_param_float("t1", P_FLAG_PER_POINT | P_FLAG_TVAR, &this->t1, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if ((param = Param::new_param_float("t2",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t2, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
     abort();
   }
 
   if ((param = Param::new_param_float("t3",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t3, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
-    delete(this);
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+
     abort();
   }
   if ((param = Param::new_param_float("t4",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t4, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
-    delete(this);
+
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
     abort();
   }
   if ((param = Param::new_param_float("t5", P_FLAG_TVAR, &this->t5, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
-    delete(this);
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
     abort();
   }
   if ((param = Param::new_param_float("t6", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
-    delete(this);
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+
     abort();
   }
   if ((param = Param::new_param_float("t7", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
-    delete(this);
+    
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if ((param = Param::new_param_float("t8", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t8, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
-    delete(this);
+    ;
     abort();
   }
 
   if (ParamUtils::insert(param, &this->param_tree) < 0)
   {
-    delete(this);
+    ;
     abort();
   }
 

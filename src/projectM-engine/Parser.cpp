@@ -2133,8 +2133,6 @@ int Parser::parse_wave_helper(std::istream &  fs, Preset  * preset, int id, char
     /* Insert the equation in the per frame equation tree */
     custom_wave->per_frame_init_eqn_tree.insert(std::make_pair(init_cond->param->name,init_cond));
 
-    if (update_string_buffer(custom_wave->per_frame_init_eqn_string_buffer,
-                             &custom_wave->per_frame_init_eqn_string_index) < 0)
     {
       if (PARSE_DEBUG) printf("parse_wave_helper: failed to update string buffer (LINE %d)\n", line_count);
       return PROJECTM_FAILURE;
@@ -2203,9 +2201,6 @@ int Parser::parse_wave_helper(std::istream &  fs, Preset  * preset, int id, char
     /* Need to add stuff to string buffer so the editor can read the equations.
        Why not make a nice little helper function for this? - here it is: */
 
-    if (update_string_buffer(custom_wave->per_frame_eqn_string_buffer, &custom_wave->per_frame_eqn_string_index) < 0)
-      return PROJECTM_FAILURE;
-
     line_mode = CUSTOM_WAVE_PER_FRAME_LINE_MODE;
     return PROJECTM_SUCCESS;
   }
@@ -2251,8 +2246,7 @@ int Parser::parse_wave_helper(std::istream &  fs, Preset  * preset, int id, char
     // This tells the parser we are no longer parsing a custom wave
     current_wave = NULL;
 
-    if (update_string_buffer(custom_wave->per_point_eqn_string_buffer, &custom_wave->per_point_eqn_string_index) < 0)
-      return PROJECTM_FAILURE;
+   
 
     line_mode = CUSTOM_WAVE_PER_POINT_LINE_MODE;
     if (PARSE_DEBUG) printf("parse_wave_helper (per_point): [finished] (custom wave id = %d)\n", custom_wave->id);
@@ -2553,9 +2547,6 @@ int Parser::parse_wave_per_frame_eqn(std::istream &  fs, CustomWave * custom_wav
 
   /* Need to add stuff to string buffer so the editor can read the equations.
      Why not make a nice little helper function for this? - here it is: */
-
-  if (update_string_buffer(custom_wave->per_frame_eqn_string_buffer, &custom_wave->per_frame_eqn_string_index) < 0)
-    return PROJECTM_FAILURE;
 
   line_mode = CUSTOM_WAVE_PER_FRAME_LINE_MODE;
   return PROJECTM_SUCCESS;
