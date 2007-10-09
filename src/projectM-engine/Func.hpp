@@ -35,20 +35,33 @@
 /* Function Type */
 class Func {
 public:
-    std::string name;
-    float (*func_ptr)(float*);
-    int num_args;
 
-    Func(const std::string & _name, float (*func_ptr)(float*), int num_args );
+	/// Create a new function wrapper object
+    /// \param name a name to uniquely identify the function. 
+	/// \param func_ptr a pointer to a function of floating point arguments
+	/// \param num_args the number of floating point arguments this function requires
+    Func(const std::string & name, float (*func_ptr)(float*), int num_args );
 
     /* Public Prototypes */
     DLLEXPORT ~Func();
 
-  };
+	inline const std::string & getName() const {
+		return name;
+	}
 
-/** Splay traversal */
-inline void free_func_helper( void *func ) {
-    delete (Func *)func;
-}
+	inline void * getFuncPtr() {
+		return func_ptr;
+	}
+
+	inline int getNumArgs() const {
+		return num_args;
+	}
+
+private:	
+    std::string name;
+    float (*func_ptr)(float*);
+    int num_args;
+
+};
 
 #endif /** !_FUNC_H */

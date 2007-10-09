@@ -779,11 +779,11 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
       if (PARSE_DEBUG)
       {
         std::cerr << "parse_gen_expr: found prefix function (name = \""
-        << func->name << "\") (LINE " << line_count << ")" << std::endl;
+        << func->getName() << "\") (LINE " << line_count << ")" << std::endl;
       }
 
       /* Parse the functions arguments */
-      if ((expr_list = parse_prefix_args(fs, func->num_args, preset)) == NULL)
+      if ((expr_list = parse_prefix_args(fs, func->getNumArgs(), preset)) == NULL)
       {
         if (PARSE_DEBUG)
         {
@@ -798,20 +798,18 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
       }
 
       /* Convert function to expression */
-      if ((gen_expr = GenExpr::prefun_to_expr((float (*)(void *))func->func_ptr, expr_list, func->num_args)) == NULL)
+      if ((gen_expr = GenExpr::prefun_to_expr((float (*)(void *))func->getFuncPtr(), expr_list, func->getNumArgs())) == NULL)
       {
         if (PARSE_DEBUG) printf("parse_prefix_args: failed to convert prefix function to general expression (LINE %d) \n",
                                   line_count);
         if (tree_expr)
           delete tree_expr;
-        for (i = 0; i < func->num_args;i++)
+        for (i = 0; i < func->getNumArgs();i++)
           delete expr_list[i];
         free(expr_list);
         expr_list = NULL;
         return NULL;
       }
-
-
 
       token = parseToken(fs, string);
 
