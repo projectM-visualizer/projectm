@@ -65,7 +65,6 @@ DLLEXPORT void projectM::key_handler( projectMEvent event,
 	switch( event ) {
 
 
-
 	case PROJECTM_KEYDOWN:
 
 	  //default_key_handler();

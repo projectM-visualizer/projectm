@@ -334,8 +334,6 @@ GenExpr * GenExpr::prefun_to_expr ( float ( *func_ptr ) ( void * ), GenExpr ** e
 	GenExpr * gen_expr;
 	PrefunExpr * prefun_expr;
 
-
-	/* Malloc a new prefix function expression */
 	prefun_expr = new PrefunExpr();
 
 	if ( prefun_expr == NULL )
