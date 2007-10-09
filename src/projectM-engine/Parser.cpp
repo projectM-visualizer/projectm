@@ -1029,7 +1029,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
 
 
 /* Inserts expressions into tree according to operator precedence.
-   If root is null, a new tree is created, with gen_expr as only element */
+   If root is null, a new tree is created, with infix_op as only element */
 
 TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root)
 {

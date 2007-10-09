@@ -113,13 +113,6 @@ public:
     return m_absoluteFilePath;
   }
 
-  
-  /// Accessor method to retrieve the absolute file path of the loaded preset
-  /// \returns a file path string 
-  std::string absolutePath() const
-  {
-    return m_absolutePath;
-  }
 
   /// Accessor method for the preset outputs instance associated with this preset
   /// \returns A preset output instance with values computed from most recent evaluateFrame()
