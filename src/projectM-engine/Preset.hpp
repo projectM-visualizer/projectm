@@ -59,15 +59,13 @@ public:
 
 
   ///  Load a preset by filename with input and output buffers specified.
-  ///  This is the only proper way to allocate a new preset.
   /// \param absoluteFilePath the absolute file path of a preset to load from the file system
   /// \param presetName a descriptive name for the preset. Usually just the file name
   /// \param presetInputs a const reference to read only projectM engine variables
   /// \param presetOutputs initialized and filled with data parsed from a preset
   Preset(const std::string & absoluteFilePath, const std::string & presetName, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
-  ///  Load a preset from a stream with input and output buffers specified.
-  ///  This is the only proper way to allocate a new preset.
+  ///  Load a preset from an input stream with input and output buffers specified.
   /// \param in an already initialized input stream to read the preset file from
   /// \param presetName a descriptive name for the preset. Usually just the file name
   /// \param presetInputs a const reference to read only projectM engine variables

@@ -36,6 +36,8 @@ class GenExpr;
 class PerPointEqn;
 class Preset;
 
+#include <vector>
+
 #include "Common.hpp"
 #include "Param.hpp"
 #include "PerFrameEqn.hpp"
@@ -116,7 +118,7 @@ public:
     /* Data structures to hold per frame and per point equations */
     std::map<std::string,InitCond*>  init_cond_tree;
     std::map<int, PerFrameEqn*>  per_frame_eqn_tree;
-    std::map<int, PerPointEqn*>  per_point_eqn_tree;
+    std::vector<PerPointEqn*>  per_point_eqn_tree;
     std::map<std::string,InitCond*>  per_frame_init_eqn_tree;
 
     /* Denotes the index of the last character for each string buffer */

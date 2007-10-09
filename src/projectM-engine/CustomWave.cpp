@@ -477,8 +477,8 @@ CustomWave::~CustomWave()
 {
 
 
-  for (std::map<int, PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end(); ++pos)
-    delete(pos->second);
+  for (std::vector<PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end(); ++pos)
+    delete(*pos);
 
   for (std::map<int, PerFrameEqn*>::iterator pos = per_frame_eqn_tree.begin(); pos != per_frame_eqn_tree.end(); ++pos)
     delete(pos->second);
@@ -543,7 +543,7 @@ int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr)
 
   /* Insert the per pixel equation into the preset per pixel database */
 
-  per_point_eqn_tree.insert(std::make_pair(per_point_eqn->index, per_point_eqn));
+  per_point_eqn_tree.push_back(per_point_eqn);
 
   /* Done */
   return PROJECTM_SUCCESS;
@@ -591,8 +591,8 @@ void CustomWave::evalPerPointEqns()
 
   /* Evaluate per pixel equations */
 for (k = 0; k < samples;k++)
-  for (std::map<int, PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos) {
-    pos->second->evaluate(k);
+  for (std::vector<PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos) {
+    (*pos)->evaluate(k);
   }
 
 }

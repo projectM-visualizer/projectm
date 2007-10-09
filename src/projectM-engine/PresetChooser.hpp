@@ -42,7 +42,7 @@ public:
     ///  Allocate a new preset given this iterator's associated preset name
     /// \param presetInputs the preset inputs to associate with the preset upon construction
     /// \param presetOutputs the preset outputs to associate with the preset upon construction
-    /// \returns a pointer of the newly allocated preset
+    /// \returns an autopointer of the newly allocated preset
     std::auto_ptr<Preset> allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
     ///  Set the chooser asocciated with this iterator
