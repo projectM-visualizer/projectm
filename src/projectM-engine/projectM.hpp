@@ -166,25 +166,24 @@ private:
   
   /// Deinitialize all preset related tools. Usually done before projectM cleanup
   void destroyPresetTools();
+
   void default_key_handler( projectMEvent event, projectMKeycode keycode );
-  // The current position of the directory iterator
+
+  /// The current position of the directory iterator
   PresetIterator * m_presetPos;
   
-  // Required by the preset chooser. Manages a loaded preset directory
+  /// Required by the preset chooser. Manages a loaded preset directory
   PresetLoader * m_presetLoader;
   
-  // Provides accessor functions to choose presets
+  /// Provides accessor functions to choose presets
   PresetChooser * m_presetChooser;
   
-  // Currently loaded preset
+  /// Currently loaded preset
   std::auto_ptr<Preset> m_activePreset;
   
-  // Destination preset when smooth preset switching
+  /// Destination preset when smooth preset switching
   std::auto_ptr<Preset> m_activePreset2;
-  
-  /// Experimental mood bar instance. May or may not make it into 1.0 release 
-  MoodBar * moodBar;
-  
+    
   /// All readonly variables which are passed as inputs to presets
   PresetInputs presetInputs;
   
