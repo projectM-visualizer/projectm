@@ -140,7 +140,7 @@ public:
 
   /// @bug encapsulate
   /* Data structures that contain equation and initial condition information */
-  std::map<int, PerFrameEqn*>  per_frame_eqn_tree;   /* per frame equations */
+  std::vector<PerFrameEqn*>  per_frame_eqn_tree;   /* per frame equations */
   std::map<int, PerPixelEqn*>  per_pixel_eqn_tree; /* per pixel equation tree */
   std::map<std::string,InitCond*>  per_frame_init_eqn_tree; /* per frame initial equations */
   std::map<std::string,InitCond*>  init_cond_tree; /* initial conditions */

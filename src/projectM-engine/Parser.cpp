@@ -522,7 +522,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
       }
 
       /* Insert the equation in the per frame equation tree */
-      preset->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn_count, per_frame_eqn));
+      preset->per_frame_eqn_tree.push_back(per_frame_eqn);
 
       if (update_string_buffer(preset->per_frame_eqn_string_buffer,
                                &preset->per_frame_eqn_string_index) < 0)
@@ -625,7 +625,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
       }
 
       /* Insert the equation in the per frame equation tree */
-      preset->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn_count, per_frame_eqn));
+      preset->per_frame_eqn_tree.push_back(per_frame_eqn);
 
       if (update_string_buffer(preset->per_frame_eqn_string_buffer,
                                &preset->per_frame_eqn_string_index) < 0)
@@ -2195,7 +2195,7 @@ int Parser::parse_wave_helper(std::istream &  fs, Preset  * preset, int id, char
       return PROJECTM_FAILURE;
     }
 
-    custom_wave->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn->index, per_frame_eqn));
+    custom_wave->per_frame_eqn_tree.push_back(per_frame_eqn);
     if (PARSE_DEBUG) printf("parse_wave (per_frame): equation %d associated with custom wave %d [success]\n",
                               per_frame_eqn->index, custom_wave->id);
 
@@ -2480,7 +2480,7 @@ int Parser::parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_sh
     return PROJECTM_FAILURE;
   }
 
-  custom_shape->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn->index, per_frame_eqn));
+  custom_shape->per_frame_eqn_tree.push_back(per_frame_eqn);
 
   /* Need to add stuff to string buffer so the editor can read the equations.
      Why not make a nice little helper function for this? - here it is: */
@@ -2546,7 +2546,7 @@ int Parser::parse_wave_per_frame_eqn(std::istream &  fs, CustomWave * custom_wav
     return PROJECTM_FAILURE;
   }
 
-  custom_wave->per_frame_eqn_tree.insert(std::make_pair(per_frame_eqn->index, per_frame_eqn));
+  custom_wave->per_frame_eqn_tree.push_back(per_frame_eqn);
   if (PARSE_DEBUG) printf("parse_wave (per_frame): equation %d associated with custom wave %d [success]\n",
                             per_frame_eqn->index, custom_wave->id);
 
