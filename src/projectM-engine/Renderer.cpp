@@ -85,10 +85,17 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
     
         title_font = new FTGLPixmapFont(title_fontURL.c_str());	
         other_font = new FTGLPixmapFont(menu_fontURL.c_str());
+	other_font->UseDisplayList(true);
+	title_font->UseDisplayList(true);
+
 
 	poly_font = new FTGLExtrdFont(title_fontURL.c_str());
+
+	poly_font->UseDisplayList(true);
 	poly_font->Depth(20);  
 	poly_font->FaceSize(72);
+
+	poly_font->UseDisplayList(true);
       
 #endif /** USE_FTGL */
 
@@ -395,7 +402,7 @@ void Renderer::reset(int w, int h)
     glShadeModel( GL_SMOOTH);
 
     glCullFace( GL_BACK );
-    glFrontFace( GL_CCW );
+    //glFrontFace( GL_CCW );
    
     glClearColor( 0, 0, 0, 0 );
    
@@ -417,7 +424,7 @@ void Renderer::reset(int w, int h)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
 
     glEnable( GL_LINE_SMOOTH );
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);		
+ 	
     
     glEnable(GL_POINT_SMOOTH);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -428,7 +435,10 @@ void Renderer::reset(int w, int h)
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
+
+    //glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);	
+    //glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);	
+    //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     
     if (!this->renderTarget->useFBO)
       {
@@ -1200,11 +1210,11 @@ void Renderer::draw_title_to_screen(bool flip) {
 	
       setUpLighting();
 
-      glEnable( GL_CULL_FACE);
-      glEnable( GL_DEPTH_TEST);       
-      glClear( GL_DEPTH_BUFFER_BIT);
+      //glEnable(GL_POLYGON_SMOOTH);
+      //glEnable( GL_CULL_FACE);
+      glEnable(GL_DEPTH_TEST);       
+      glClear(GL_DEPTH_BUFFER_BIT);
       
-
       int draw;
       if (drawtitle>=80) draw = 80;
       else draw = drawtitle;
@@ -1220,7 +1230,7 @@ void Renderer::draw_title_to_screen(bool flip) {
 	  title_y *= .6;	 
 	}
       glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-      // glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
+      //glBlendFunc(GL_SRC_ALPHA_SATURATE,GL_ONE);
       glColor4f(1.0,1.0,1.0,1.0);
       
       glMatrixMode (GL_PROJECTION);
@@ -1239,7 +1249,7 @@ void Renderer::draw_title_to_screen(bool flip) {
              
       poly_font->Render(this->title.c_str() );      
    
-      //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+      glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
       
       this->drawtitle++;
           
@@ -1255,6 +1265,7 @@ void Renderer::draw_title_to_screen(bool flip) {
       glDisable(GL_COLOR_MATERIAL);
       
       glDisable(GL_LIGHTING);
+      glDisable(GL_POLYGON_SMOOTH);
     }
 #endif /** USE_FTGL */
 }
