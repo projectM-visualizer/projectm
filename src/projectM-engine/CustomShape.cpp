@@ -50,8 +50,6 @@ CustomShape::CustomShape ( int id ) : imageUrl("")
 
 	this->id = id;
 	this->per_frame_count = 0;
-	this->per_frame_eqn_string_index = 0;
-	this->per_frame_init_eqn_string_index = 0;
 
 	/* Start: Load custom shape parameters */
 	param = Param::new_param_float ( "r", P_FLAG_NONE, &this->r, NULL, 1.0, 0.0, 0.5 );

@@ -493,12 +493,6 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
       /* Insert the equation in the per frame equation tree */
       preset->per_frame_init_eqn_tree.insert(std::make_pair(init_cond->param->name, init_cond));
 
-      if (update_string_buffer(preset->per_frame_init_eqn_string_buffer,
-                               &preset->per_frame_init_eqn_string_index) < 0)
-      {
-
-        return PROJECTM_FAILURE;
-      }
       line_mode = PER_FRAME_INIT_LINE_MODE;
       return PROJECTM_SUCCESS;
     }
@@ -523,10 +517,6 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
 
       /* Insert the equation in the per frame equation tree */
       preset->per_frame_eqn_tree.push_back(per_frame_eqn);
-
-      if (update_string_buffer(preset->per_frame_eqn_string_buffer,
-                               &preset->per_frame_eqn_string_index) < 0)
-        return PROJECTM_FAILURE;
 
       return PROJECTM_SUCCESS;
 
@@ -588,10 +578,6 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
       }
 
 
-      if (update_string_buffer(preset->per_pixel_eqn_string_buffer,
-                               &preset->per_pixel_eqn_string_index) < 0)
-        return PROJECTM_FAILURE;
-
       if (PARSE_DEBUG) printf("parse_line: finished parsing per pixel equation (LINE %d)\n", line_count);
       return PROJECTM_SUCCESS;
     }
@@ -627,9 +613,6 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
       /* Insert the equation in the per frame equation tree */
       preset->per_frame_eqn_tree.push_back(per_frame_eqn);
 
-      if (update_string_buffer(preset->per_frame_eqn_string_buffer,
-                               &preset->per_frame_eqn_string_index) < 0)
-        return PROJECTM_FAILURE;
 
       return PROJECTM_SUCCESS;
 
@@ -648,11 +631,6 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
 
       /* Insert the equation in the per frame equation tree */
       preset->per_frame_init_eqn_tree.insert(std::make_pair(init_cond->param->name, init_cond));
-
-
-      if (update_string_buffer(preset->per_frame_init_eqn_string_buffer,
-                               &preset->per_frame_init_eqn_string_index) < 0)
-        return PROJECTM_FAILURE;
 
       return PROJECTM_SUCCESS;
     }
@@ -798,7 +776,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
       }
 
       /* Convert function to expression */
-      if ((gen_expr = GenExpr::prefun_to_expr((float (*)(void *))func->getFuncPtr(), expr_list, func->getNumArgs())) == NULL)
+      if ((gen_expr = GenExpr::prefun_to_expr((float (*)(void *))func->func_ptr, expr_list, func->getNumArgs())) == NULL)
       {
         if (PARSE_DEBUG) printf("parse_prefix_args: failed to convert prefix function to general expression (LINE %d) \n",
                                   line_count);
@@ -2407,11 +2385,7 @@ int Parser::parse_shape_per_frame_init_eqn(std::istream &  fs, CustomShape * cus
     return PROJECTM_PARSE_ERROR;
   }
 
-  /* Insert the equation in the per frame equation tree */
-  custom_shape->per_frame_init_eqn_tree.insert(std::make_pair(init_cond->param->name,init_cond));
-  if (update_string_buffer(custom_shape->per_frame_init_eqn_string_buffer,
-                           &custom_shape->per_frame_init_eqn_string_index) < 0)
-    return PROJECTM_FAILURE;
+  /// \idea possibly a good place to update a string buffer;
 
   line_mode = CUSTOM_SHAPE_PER_FRAME_INIT_LINE_MODE;
   init_cond->evaluate(true);
@@ -2474,11 +2448,7 @@ int Parser::parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_sh
 
   custom_shape->per_frame_eqn_tree.push_back(per_frame_eqn);
 
-  /* Need to add stuff to string buffer so the editor can read the equations.
-     Why not make a nice little helper function for this? - here it is: */
-
-  if (update_string_buffer(custom_shape->per_frame_eqn_string_buffer, &custom_shape->per_frame_eqn_string_index) < 0)
-    return PROJECTM_FAILURE;
+  /// \idea add string buffer update for easy >> and <<
 
   line_mode = CUSTOM_SHAPE_PER_FRAME_LINE_MODE;
   return PROJECTM_SUCCESS;

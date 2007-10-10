@@ -1211,7 +1211,6 @@ void Renderer::draw_title_to_screen(bool flip) {
 
       float easein = ((80-draw)*.0125);
       float easein2 = easein * easein;
-      float easein3 = .0025/((-easein2)+1.0);
       
       if(drawtitle==1)
 	{
