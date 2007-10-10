@@ -246,16 +246,7 @@ void Preset::preloadInitialize() {
   //per_pixel_eqn_tree.clear();
   //per_frame_init_eqn_tree.clear();
 
-  /* Set initial index values */
-  this->per_pixel_eqn_string_index = 0;
-  this->per_frame_eqn_string_index = 0;
-  this->per_frame_init_eqn_string_index = 0;
 
-  /* Clear string buffers */
-  /// @bug replace with ostringstream?
-  memset(this->per_pixel_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
-  memset(this->per_frame_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
-  memset(this->per_frame_init_eqn_string_buffer, 0, STRING_BUFFER_SIZE);
 }
 
 void Preset::postloadInitialize() {
@@ -268,6 +259,8 @@ void Preset::postloadInitialize() {
   this->loadCustomWaveUnspecInitConds();
   this->loadCustomShapeUnspecInitConds();
 
+
+/// @bug are you handling all the q variables conditions? in particular, the un-init case?
 //m_presetOutputs.q1 = 0;
 //m_presetOutputs.q2 = 0;
 //m_presetOutputs.q3 = 0;
@@ -355,12 +348,15 @@ void Preset::loadCustomShapeUnspecInitConds()
 void Preset::evaluateFrame()
 {
 
-  /* Evaluate all equation objects according to milkdrop flow diagram */
+  // Evaluate all equation objects according to milkdrop flow diagram 
 
   evalPerFrameInitEquations();
   
   evalPerFrameEquations();
 
+
+  // Important step to ensure custom shapes and waves don't stamp on the q variable values 
+  // calculated by the per frame (init) and per pixel equations.
   transfer_q_variables(customWaves);
   transfer_q_variables(customShapes);
 

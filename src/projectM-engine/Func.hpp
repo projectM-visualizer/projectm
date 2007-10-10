@@ -49,17 +49,13 @@ public:
 		return name;
 	}
 
-	inline void * getFuncPtr() {
-		return func_ptr;
-	}
-
 	inline int getNumArgs() const {
 		return num_args;
 	}
 
+    float (*func_ptr)(float*);
 private:	
     std::string name;
-    float (*func_ptr)(float*);
     int num_args;
 
 };
