@@ -107,29 +107,19 @@ public:
 		return imageUrl;
     }
 
-    /* Data structure to hold per frame  / per frame init equations */
-    
+    // Data structure to hold per frame  / per frame init equations
     std::map<std::string,InitCond*>  init_cond_tree;
     std::vector<PerFrameEqn*>  per_frame_eqn_tree;
     std::map<std::string,InitCond*>  per_frame_init_eqn_tree;
+
     std::map<std::string, Param*> text_properties_tree;
 
-    /* Denotes the index of the last character for each stdring buffer */
-    int per_frame_eqn_string_index;
-    int per_frame_init_eqn_string_index;
 
-
-
-    /* String buffers for per frame / per frame init equations */
-    char per_frame_eqn_string_buffer[STRING_BUFFER_SIZE];
-    char per_frame_init_eqn_string_buffer[STRING_BUFFER_SIZE];
-
-    /* Per point equation array */
+    /// Allocate a new custom shape, including param associations, per point equations, and initial values.
+    /// \param id an integer id to associate with this custom wave. Future line parsing uses this as a reference key.
     CustomShape( int id );
-    ~CustomShape();
 
-    /** Checks all internal trees are built correctly */
-    int checkTrees();
+    ~CustomShape();
 
     void loadUnspecInitConds();
     void evalInitConds();

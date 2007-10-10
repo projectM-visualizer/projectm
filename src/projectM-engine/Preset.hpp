@@ -96,10 +96,7 @@ public:
   int per_frame_eqn_count,
   per_frame_init_eqn_count;
 
-  char per_pixel_eqn_string_buffer[STRING_BUFFER_SIZE];
-  char per_frame_eqn_string_buffer[STRING_BUFFER_SIZE];
-  char per_frame_init_eqn_string_buffer[STRING_BUFFER_SIZE];
-
+  
   /// Used by parser
   /// @bug refactor
   int add_per_pixel_eqn( char *name, GenExpr *gen_expr );
