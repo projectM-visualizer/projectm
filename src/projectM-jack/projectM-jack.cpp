@@ -23,10 +23,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <SDL/SDL.h>
-#include <libprojectM/BeatDetect.hpp>
-#include <libprojectM/PCM.hpp>
 #include <libprojectM/projectM.hpp>
-#include <libprojectM/KeyHandler.hpp>
 #include "sdltoprojectM.h"
 
 #include "ConfigFile.h"
@@ -225,7 +222,7 @@ process (jack_nframes_t nframes, void *arg)
 	       
 		//memcpy (out, in,sizeof (jack_default_audio_sample_t) * nframes);	
 
-		globalPM->beatDetect->pcm->addPCMfloat(in,nframes);
+		globalPM->pcm->addPCMfloat(in,nframes);
 		//printf("%x %f\n",nframes,in[128]);
 
 
