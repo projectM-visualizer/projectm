@@ -113,7 +113,7 @@ wavecode_3_r=1.000000
 wavecode_3_g=1.000000
 wavecode_3_b=1.000000
 wavecode_3_a=1.000000
-shapecode_0_enabled=1
+shapecode_0_enabled=0
 shapecode_0_sides=100
 shapecode_0_additive=0
 shapecode_0_thickOutline=0
@@ -145,7 +145,7 @@ shape_0_per_frame6=b = 0.25+0.25*sin(time*0.7339);
 shape_0_per_frame7=r2 = 0.25+0.25*sin(time*0.6979);
 shape_0_per_frame8=g2 = 0.25+0.25*sin(time*0.849);
 shape_0_per_frame9=b2 = 0.25+0.25*sin(time*0.8079);
-shapecode_1_enabled=1
+shapecode_1_enabled=0
 shapecode_1_sides=100
 shapecode_1_additive=0
 shapecode_1_thickOutline=0
@@ -177,7 +177,7 @@ shape_1_per_frame6=b = 0.25+0.25*sin(time*0.9339);
 shape_1_per_frame7=r2 = 0.25+0.25*sin(time*0.779);
 shape_1_per_frame8=g2 = 0.25+0.25*sin(time*0.707);
 shape_1_per_frame9=b2 = 0.25+0.25*sin(time*0.747);
-shapecode_2_enabled=1
+shapecode_2_enabled=0
 shapecode_2_sides=100
 shapecode_2_additive=0
 shapecode_2_thickOutline=0
@@ -217,7 +217,7 @@ shapecode_3_textured=1
 shapecode_3_imageURL=Tux.tga
 shapecode_3_x=0.500000
 shapecode_3_y=0.500000
-shapecode_3_rad=0.20068
+shapecode_3_rad=0.150068
 shapecode_3_ang=0.000000
 shapecode_3_tex_ang=0.000000
 shapecode_3_tex_zoom=0.7100000
