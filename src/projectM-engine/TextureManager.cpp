@@ -7,7 +7,17 @@
 
 TextureManager::TextureManager(const std::string _presetURL): presetURL(_presetURL)
 {
-  GLuint tex = SOIL_load_OGL_texture_from_memory(
+ Preload();
+}
+
+TextureManager::~TextureManager()
+{  
+ Clear();
+}
+
+void TextureManager::Preload()
+{
+	 GLuint tex = SOIL_load_OGL_texture_from_memory(
 					  M_data,
 					  M_bytes,
 					  SOIL_LOAD_AUTO,
@@ -44,9 +54,9 @@ TextureManager::TextureManager(const std::string _presetURL): presetURL(_presetU
   textures["headphones.tga"]=tex;    
 }
 
-TextureManager::~TextureManager()
-{  
-  std::map<std::string, GLuint>::const_iterator iter;
+void TextureManager::Clear()
+{
+	std::map<std::string, GLuint>::const_iterator iter;
 
   for(iter = textures.begin(); iter != textures.end(); iter++)
     {
@@ -54,6 +64,7 @@ TextureManager::~TextureManager()
     }
   textures.clear();
 }
+
 
 void TextureManager::unloadTextures(const PresetOutputs::cshape_container &shapes)
 {

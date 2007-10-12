@@ -116,6 +116,7 @@ public:
   DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url,std::string title_fonturl, std::string title_menuurl);
   
   DLLEXPORT void projectM_resetGL( int width, int height );
+  DLLEXPORT void projectM_resetTextures();
   DLLEXPORT void projectM_setTitle( std::string title );
   DLLEXPORT void renderFrame();
   DLLEXPORT unsigned initRenderToTexture(); 
