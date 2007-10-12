@@ -1,0 +1,177 @@
+<?xml version="1.0" standalone="yes"?>
+<object class="NSIBObjectData">
+  <string name="targetFramework">IBCarbonFramework</string>
+  <object name="rootObject" class="NSCustomObject" id="1">
+    <string name="customClass">NSApplication</string>
+  </object>
+  <array count="15" name="allObjects">
+    <object class="IBCarbonWindow" id="166">
+      <string name="windowRect">382 517 550 780 </string>
+      <string name="title">Visualizer Options</string>
+      <object name="rootControl" class="IBCarbonRootControl" id="167">
+        <string name="bounds">0 0 168 263 </string>
+        <string name="viewFrame">0 0 263 168 </string>
+        <array count="1" name="subviews">
+          <object class="IBCarbonTab" id="194">
+            <string name="bounds">5 20 148 243 </string>
+            <string name="viewFrame">20 5 223 143 </string>
+            <array count="2" name="subviews">
+              <object class="IBCarbonUserPane" id="195">
+                <string name="bounds">42 20 148 243 </string>
+                <string name="viewFrame">0 37 223 106 </string>
+                <array count="4" name="subviews">
+                  <object class="IBCarbonStaticText" id="207">
+                    <string name="bounds">79 29 92 232 </string>
+                    <string name="viewFrame">9 37 203 13 </string>
+                    <boolean name="small">TRUE</boolean>
+                    <int name="controlSize">1</int>
+                    <string name="title">Version 1.9</string>
+                    <int name="justification">1</int>
+                  </object>
+                  <object class="IBCarbonStaticText" id="208">
+                    <string name="bounds">48 29 71 232 </string>
+                    <string name="viewFrame">9 6 203 23 </string>
+                    <string name="title">VizKit</string>
+                    <int name="justification">1</int>
+                  </object>
+                  <object class="IBCarbonStaticText" id="209">
+                    <string name="bounds">100 29 113 232 </string>
+                    <string name="viewFrame">9 58 203 13 </string>
+                    <boolean name="small">TRUE</boolean>
+                    <int name="controlSize">1</int>
+                    <string name="title">http://www.imagomat.de/vizkit</string>
+                    <int name="justification">1</int>
+                  </object>
+                  <object class="IBCarbonStaticText" id="210">
+                    <string name="bounds">121 29 134 232 </string>
+                    <string name="viewFrame">9 79 203 13 </string>
+                    <boolean name="small">TRUE</boolean>
+                    <int name="controlSize">1</int>
+                    <string name="title">© 2004-2007 Heiko Wichmann</string>
+                    <int name="justification">1</int>
+                  </object>
+                </array>
+                <ostype name="controlSignature">vizK</ostype>
+                <int name="controlID">129</int>
+                <string name="title">About</string>
+                <int name="featureBits">2</int>
+              </object>
+              <object class="IBCarbonUserPane" id="196">
+                <string name="bounds">42 20 148 243 </string>
+                <string name="viewFrame">0 37 223 106 </string>
+                <array count="2" name="subviews">
+                  <object class="IBCarbonStaticText" id="201">
+                    <string name="bounds">64 55 77 219 </string>
+                    <string name="viewFrame">35 22 164 13 </string>
+                    <boolean name="small">TRUE</boolean>
+                    <int name="controlSize">1</int>
+                    <string name="title">Full-Screen Resolution:</string>
+                    <int name="justification">-2</int>
+                  </object>
+                  <object class="IBCarbonPopupButton" id="206">
+                    <string name="bounds">85 55 105 205 </string>
+                    <string name="viewFrame">35 43 150 20 </string>
+                    <ostype name="controlSignature">vizK</ostype>
+                    <int name="controlID">6</int>
+                    <object name="menu" class="IBCarbonMenu" id="205">
+                      <string name="title">Popup:</string>
+                      <array count="3" name="items">
+                        <object class="IBCarbonMenuItem" id="202">
+                          <boolean name="checked">TRUE</boolean>
+                          <boolean name="updateSingleItem">TRUE</boolean>
+                          <string name="title">Item 1</string>
+                        </object>
+                        <object class="IBCarbonMenuItem" id="204">
+                          <boolean name="updateSingleItem">TRUE</boolean>
+                          <string name="title">Item 2</string>
+                        </object>
+                        <object class="IBCarbonMenuItem" id="203">
+                          <boolean name="updateSingleItem">TRUE</boolean>
+                          <string name="title">Item 3</string>
+                        </object>
+                      </array>
+                    </object>
+                  </object>
+                </array>
+                <ostype name="controlSignature">vizK</ostype>
+                <int name="controlID">130</int>
+                <int name="featureBits">2</int>
+              </object>
+            </array>
+            <ostype name="controlSignature">vizK</ostype>
+            <int name="controlID">128</int>
+            <boolean name="autoLayoutPanes">TRUE</boolean>
+            <array count="2" name="tabItems">
+              <dictionary count="4">
+                <string>contentResID</string>
+                <string>0</string>
+                <string>tabEnabled</string>
+                <string>1</string>
+                <string>tabName</string>
+                <string>About</string>
+                <string>userPane</string>
+                <reference idRef="195"/>
+              </dictionary>
+              <dictionary count="4">
+                <string>contentResID</string>
+                <string>0</string>
+                <string>tabEnabled</string>
+                <string>1</string>
+                <string>tabName</string>
+                <string>Display</string>
+                <string>userPane</string>
+                <reference idRef="196"/>
+              </dictionary>
+            </array>
+          </object>
+        </array>
+      </object>
+      <boolean name="receiveActivates">FALSE</boolean>
+      <boolean name="receiveUpdates">FALSE</boolean>
+      <boolean name="hasHorizontalZoom">FALSE</boolean>
+      <boolean name="isResizable">FALSE</boolean>
+      <boolean name="hasVerticalZoom">FALSE</boolean>
+      <boolean name="compositing">TRUE</boolean>
+      <int name="themeBrush">7</int>
+      <int name="windowPosition">1</int>
+    </object>
+    <reference idRef="167"/>
+    <reference idRef="194"/>
+    <reference idRef="195"/>
+    <reference idRef="196"/>
+    <reference idRef="201"/>
+    <reference idRef="202"/>
+    <reference idRef="203"/>
+    <reference idRef="204"/>
+    <reference idRef="205"/>
+    <reference idRef="206"/>
+    <reference idRef="207"/>
+    <reference idRef="208"/>
+    <reference idRef="209"/>
+    <reference idRef="210"/>
+  </array>
+  <array count="15" name="allParents">
+    <reference idRef="1"/>
+    <reference idRef="166"/>
+    <reference idRef="167"/>
+    <reference idRef="194"/>
+    <reference idRef="194"/>
+    <reference idRef="196"/>
+    <reference idRef="205"/>
+    <reference idRef="205"/>
+    <reference idRef="205"/>
+    <reference idRef="206"/>
+    <reference idRef="196"/>
+    <reference idRef="195"/>
+    <reference idRef="195"/>
+    <reference idRef="195"/>
+    <reference idRef="195"/>
+  </array>
+  <dictionary count="2" name="nameTable">
+    <string>File&apos;s Owner</string>
+    <reference idRef="1"/>
+    <string>OptionsDialog</string>
+    <reference idRef="166"/>
+  </dictionary>
+  <unsigned_int name="nextObjectID">212</unsigned_int>
+</object>
