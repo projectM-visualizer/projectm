@@ -114,6 +114,10 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
             beatDetect->beat_sensitivity -= 0.25;
 			if (beatDetect->beat_sensitivity < 0) beatDetect->beat_sensitivity = 0;
 	      break;
+		case PROJECTM_K_h:
+		  renderer->showhelp++;
+	      renderer->showstats=0;
+	      renderer->showfps=0; 
 	    case PROJECTM_K_F1:
 	      renderer->showhelp++;
 	      renderer->showstats=0;

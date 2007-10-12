@@ -21,6 +21,8 @@ public:
   ~TextureManager();
   TextureManager(std::string _presetURL);
   void unloadTextures(const PresetOutputs::cshape_container &shapes);
+  void Clear();
+  void Preload();
   GLuint getTexture(std::string imageUrl);
   unsigned int getTextureMemorySize();
 };

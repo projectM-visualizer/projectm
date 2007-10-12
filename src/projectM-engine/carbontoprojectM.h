@@ -29,7 +29,8 @@
 #ifndef _CARBONTOPROJECTM_H
 #define _CARBONTOPROJECTM_H
 
-#include "projectM.hpp"
+#include "event.h"
+
 #ifdef WIN32
 #else
 #endif

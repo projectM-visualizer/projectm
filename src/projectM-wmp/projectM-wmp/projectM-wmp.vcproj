@@ -106,7 +106,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfATL="1"
+			UseOfATL="0"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
@@ -127,13 +127,14 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="2"
 				AdditionalIncludeDirectories="&quot;..\..\projectM-engine&quot;;&quot;..\..\WinLibs\glew\include\GL&quot;;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;_WINNT_WIN32=0x5000"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="3"
+				DebugInformationFormat="0"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"

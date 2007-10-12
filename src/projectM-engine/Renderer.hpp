@@ -50,10 +50,12 @@ public:
   float realfps;
   std::string title;
   int drawtitle;
+  int texsize;
 
   Renderer( int width, int height, int gx, int gy, int texsize,  BeatDetect *beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
   ~Renderer();
   void RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
+  void ResetTextures();
   void reset(int w, int h);
   GLuint initRenderToTexture();
   void PerPixelMath(PresetOutputs *presetOutputs,  PresetInputs *presetInputs);
@@ -100,6 +102,7 @@ private:
   
   std::string title_fontURL;
   std::string menu_fontURL;    
+  std::string presetURL; 
 
   void draw_waveform(PresetOutputs * presetOutputs);
   void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
