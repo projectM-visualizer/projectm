@@ -11,7 +11,7 @@
 
 class Preset;
 
-Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetect *beatDetect, std::string presetURL, std::string _titlefontURL, std::string _menufontURL): title_fontURL(_titlefontURL), menu_fontURL(_menufontURL),  m_presetName("None"), vw(width), vh(height), gx(gx), gy(gy)
+Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetect *beatDetect, std::string _presetURL, std::string _titlefontURL, std::string _menufontURL): title_fontURL(_titlefontURL), menu_fontURL(_menufontURL), presetURL(_presetURL), m_presetName("None"), vw(width), vh(height), gx(gx), gy(gy), texsize(texsize)
 {
   int x; int y; 
  
@@ -101,6 +101,17 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
  
 }
+
+void Renderer::ResetTextures()
+  {
+	  textureManager->Clear();
+
+	  delete(renderTarget);
+	  renderTarget = new RenderTarget(texsize,vw,vh);
+	  reset(vw,vh);
+
+	  textureManager->Preload();	  
+  }
 
 void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 {

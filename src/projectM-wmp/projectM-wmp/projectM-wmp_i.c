@@ -6,7 +6,7 @@
 
 
  /* File created by MIDL compiler version 7.00.0499 */
-/* at Wed Oct 03 15:17:19 2007
+/* at Tue Oct 09 16:15:59 2007
  */
 /* Compiler settings for .\projectM-wmp.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)

@@ -93,6 +93,11 @@ DLLEXPORT unsigned projectM::initRenderToTexture()
   return renderer->initRenderToTexture();
 }
 
+DLLEXPORT void projectM::projectM_resetTextures() 
+{
+	renderer->ResetTextures();
+}
+
 DLLEXPORT  projectM::projectM(std::string config_file) :
 	beatDetect ( 0 ), renderer(0), smoothFrame(0)  {
 
