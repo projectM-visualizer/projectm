@@ -827,3 +827,24 @@ void projectM::destroyPresetTools()
 
 }
 
+int projectM::addPresetURL(const std::string & presetURL) {
+	return m_presetLoader->addPresetURL(presetURL);	
+}
+
+void projectM::selectPreset(unsigned int index) {
+
+	if (m_presetChooser->empty())
+		return;
+	
+	assert (index < m_presetLoader->getNumPresets());
+	assert (index >= 0);
+
+	*m_presetPos = m_presetChooser->begin(index);
+
+	m_activePreset = m_presetPos->allocate(presetInputs, presetOutputs);
+
+	renderer->setPresetName(m_activePreset->presetName());
+
+        presetInputs.frame = 0;
+	smoothFrame = 0;	
+}

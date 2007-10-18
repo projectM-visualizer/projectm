@@ -156,3 +156,13 @@ void PresetLoader::handleDirectoryError()
   }
 #endif
 }
+
+
+unsigned int PresetLoader::addPresetURL(const std::string & url)  {
+	m_entries.push_back(url);
+
+	/// @bug strip url out of preset name
+	m_presetNames.push_back(url);
+	return m_entries.size()-1;
+}
+
