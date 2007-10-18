@@ -66,7 +66,7 @@ public:
     PresetChooser(const PresetLoader & presetLoader);
 
     /// Choose a preset via the passed in index. Must be between 0 and num valid presets in directory
-    /// \param index An index lying in the interval [0, this->getNumPresets()]
+    /// \param index An index lying in the interval [0, this->getNumPresets())
     /// \param presetInputs the preset inputs to associate with the preset upon construction
     /// \param presetOutputs the preset outputs to associate with the preset upon construction
     /// \returns an auto pointer of the newly allocated preset
@@ -95,6 +95,11 @@ public:
 
 
     /// An STL-esque iterator to begin traversing presets from a directory
+    /// \param index the index to begin iterating at. Assumed valid between [0, num presets)
+    /// \returns the position of the first preset in the collection
+    PresetIterator begin(unsigned int index);
+
+    /// An STL-esque iterator to begin traversing presets from a directory
     /// \returns the position of the first preset in the collection
     PresetIterator begin();
 
@@ -109,7 +114,6 @@ public:
     /// \returns an iterator to the randomly selected preset
     template <class WeightFunctor>
     iterator weightedRandom(WeightFunctor & weightFunctor);
-
 
     /// Do a weighted sample given a weight functor and default construction (ie. element size) of the weight functor
     /// \param presetInputs the preset inputs to associate with the preset upon construction
@@ -181,6 +185,12 @@ inline PresetIterator PresetChooser::begin() {
     return pos;
 }
 
+inline PresetIterator PresetChooser::begin(unsigned int index) {
+    PresetIterator pos(index);
+    pos.setChooser(*this);
+    return pos;
+}
+
 inline PresetIterator PresetChooser::end() const {
     PresetIterator pos(m_presetLoader->getNumPresets());
     pos.setChooser(*this);
@@ -191,6 +201,7 @@ template <class WeightFunctor>
 typename PresetChooser::iterator PresetChooser::weightedRandom(WeightFunctor & weightFunctor) {
     return doWeightedSample(weightFunctor);
 }
+
 
 inline bool PresetChooser::empty() const {
 	return m_presetLoader->getNumPresets() == 0;
