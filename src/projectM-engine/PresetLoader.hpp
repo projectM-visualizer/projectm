@@ -39,6 +39,13 @@ class PresetLoader {
 		std::auto_ptr<Preset> loadPreset(unsigned int index, const PresetInputs & presetInputs, 
 			PresetOutputs & presetOutputs) const;
 		
+		
+		/// Add a preset to the loader's collection.
+		/// \param presetInputs read only projectM variables to associate with the preset
+		/// \param presetOutputs the projectM variables the preset will write its final values to
+		/// \returns The unique index assigned to the preset in the collection. Used with loadPreset
+		unsigned int addPresetURL ( const std::string & url);
+		
 		/** Returns the number of presets in the active directory */
 		inline std::size_t getNumPresets() const {
 			return m_entries.size();

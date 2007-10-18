@@ -78,7 +78,7 @@ class Preset;
 class PresetIterator;
 class PresetChooser;
 class PresetLoader;
-class MoodBar;
+
 //class PresetInputs;
 //class PresetOutputs;
 
@@ -125,6 +125,10 @@ public:
         
   ~projectM();
   
+
+  int addPresetURL(const std::string & presetURL);
+  void selectPreset(unsigned int index);
+
 private:
    
   BeatDetect * beatDetect;
