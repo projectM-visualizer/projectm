@@ -176,9 +176,17 @@ void renderLoop() {
      
 
                 if(key == PROJECTM_K_f)
-                {                                   
-                    resize_display(fvw, fvh, fullscreen);
-                    globalPM->projectM_resetGL( fvw, fvh ); 
+                {                       
+		  if (++fullscreen%2)
+		    {
+		      resize_display(fvw, fvh, fullscreen%2);
+		      globalPM->projectM_resetGL( fvw, fvh ); 
+		    }
+		  else
+		    {
+		      resize_display(wvw, wvh, fullscreen%2);
+		      globalPM->projectM_resetGL( wvw, wvh ); 
+		    }
                 }
 		else if(key == PROJECTM_K_q || key == PROJECTM_K_ESCAPE) {delete(globalPM); exit (1);}
                 else  {globalPM->key_handler(evt,key,mod);}
@@ -188,7 +196,7 @@ void renderLoop() {
             {
                 wvw=event.resize.w;
                 wvh=event.resize.h;
-                resize_display(wvw, wvh, 0);
+                resize_display(wvw, wvh, fullscreen%2);
                 globalPM->projectM_resetGL(  wvw, wvh ); 
 
             } 
@@ -255,8 +263,8 @@ std::string config_file;
 
  ConfigFile config(config_file);
 
- int wvw = config.read<int>( "Window Width", 512 );
- int wvh = config.read<int>( "Window Height", 512 );
+ wvw = config.read<int>( "Window Width", 512 );
+ wvh = config.read<int>( "Window Height", 512 );
  int fullscreen = 0;
  if (config.read("Fullscreen", true)) fullscreen = 1;
       else fullscreen = 0;
