@@ -19,12 +19,12 @@ int
 		int resampled_width, int resampled_height
 	)
 {
-	float y0, dx, dy;
+	float dx, dy;
 	int x, y, c;
 
     /* error(s) check	*/
-    if ( (width < 1) || (height < 1) ||
-            (resampled_width < 1) || (resampled_height < 1) ||
+    if ( 	(width < 1) || (height < 1) ||
+            (resampled_width < 2) || (resampled_height < 2) ||
             (channels < 1) ||
             (NULL == orig) || (NULL == resampled) )
     {
@@ -35,37 +35,31 @@ int
 		for each given pixel in the new map, find the exact location
 		from the original map which would contribute to this guy
 	*/
-    dx = (float)width / resampled_width;
-    dy = (float)height / resampled_height;
+    dx = (width - 1.0f) / (resampled_width - 1.0f);
+    dy = (height - 1.0f) / (resampled_height - 1.0f);
     for ( y = 0; y < resampled_height; ++y )
     {
-    	y0 = (0.5f + y) * dy;
+    	/* find the base y index and fractional offset from that	*/
+    	float sampley = y * dy;
+    	int inty = (int)sampley;
+    	/*	if( inty < 0 ) { inty = 0; } else	*/
+		if( inty > height - 2 ) { inty = height - 2; }
+		sampley -= inty;
         for ( x = 0; x < resampled_width; ++x )
         {
-        	float value;
-			float samplex = (0.5f + x) * dx;
-			float sampley = y0;
-			int intx, inty;
+			float samplex = x * dx;
+			int intx = (int)samplex;
 			int base_index;
-			intx = (int)samplex;
-			inty = (int)sampley;
-			if( intx < 0 )			  
-			    intx = 0;			   
-			else if( intx > width - 2 )			  
-			    intx = width - 2;			 
-			if( inty < 0 )			  
-			    inty = 0;			  
-			else if( inty > height - 2 )			  
-			    inty = height - 2;
-			  
-			
+			/* find the base x index and fractional offset from that	*/
+			/*	if( intx < 0 ) { intx = 0; } else	*/
+			if( intx > width - 2 ) { intx = width - 2; }
 			samplex -= intx;
-			sampley -= inty;
-			base_index = inty * width * channels + intx * channels;
+			/*	base index into the original image	*/
+			base_index = (inty * width + intx) * channels;
             for ( c = 0; c < channels; ++c )
             {
             	/*	do the sampling	*/
-				value = 0.5f;
+				float value = 0.5f;
 				value += orig[base_index]
 							*(1.0f-samplex)*(1.0f-sampley);
 				value += orig[base_index+channels]
@@ -154,4 +148,162 @@ int
 		}
 	}
 	return 1;
+}
+
+int
+	scale_image_RGB_to_NTSC_safe
+	(
+		unsigned char* orig,
+		int width, int height, int channels
+	)
+{
+	const float scale_lo = 16.0f - 0.499f;
+	const float scale_hi = 235.0f + 0.499f;
+	int i, j;
+	int nc = channels;
+	unsigned char scale_LUT[256];
+	/*	error check	*/
+	if( (width < 1) || (height < 1) ||
+		(channels < 1) || (orig == NULL) )
+	{
+		/*	nothing to do	*/
+		return 0;
+	}
+	/*	set up the scaling Look Up Table	*/
+	for( i = 0; i < 256; ++i )
+	{
+		scale_LUT[i] = (unsigned char)((scale_hi - scale_lo) * i / 255.0f + scale_lo);
+	}
+	/*	for channels = 2 or 4, ignore the alpha component	*/
+	nc -= 1 - (channels & 1);
+	/*	OK, go through the image and scale any non-alpha components	*/
+	for( i = 0; i < width*height*channels; i += channels )
+	{
+		for( j = 0; j < nc; ++j )
+		{
+			orig[i+j] = scale_LUT[orig[i+j]];
+		}
+	}
+	return 1;
+}
+
+unsigned char clamp_byte( int x ) { return ( (x) < 0 ? (0) : ( (x) > 255 ? 255 : (x) ) ); }
+
+/*
+	This function takes the RGB components of the image
+	and converts them into YCoCg.  3 components will be
+	re-ordered to CoYCg (for optimum DXT1 compression),
+	while 4 components will be ordered CoCgAY (for DXT5
+	compression).
+*/
+int
+	convert_RGB_to_YCoCg
+	(
+		unsigned char* orig,
+		int width, int height, int channels
+	)
+{
+	int i;
+	/*	error check	*/
+	if( (width < 1) || (height < 1) ||
+		(channels < 3) || (channels > 4) ||
+		(orig == NULL) )
+	{
+		/*	nothing to do	*/
+		return -1;
+	}
+	/*	do the conversion	*/
+	if( channels == 3 )
+	{
+		for( i = 0; i < width*height*3; i += 3 )
+		{
+			int r = orig[i+0];
+			int g = (orig[i+1] + 1) >> 1;
+			int b = orig[i+2];
+			int tmp = (2 + r + b) >> 2;
+			/*	Co	*/
+			orig[i+0] = clamp_byte( 128 + ((r - b + 1) >> 1) );
+			/*	Y	*/
+			orig[i+1] = clamp_byte( g + tmp );
+			/*	Cg	*/
+			orig[i+2] = clamp_byte( 128 + g - tmp );
+		}
+	} else
+	{
+		for( i = 0; i < width*height*4; i += 4 )
+		{
+			int r = orig[i+0];
+			int g = (orig[i+1] + 1) >> 1;
+			int b = orig[i+2];
+			unsigned char a = orig[i+3];
+			int tmp = (2 + r + b) >> 2;
+			/*	Co	*/
+			orig[i+0] = clamp_byte( 128 + ((r - b + 1) >> 1) );
+			/*	Cg	*/
+			orig[i+1] = clamp_byte( 128 + g - tmp );
+			/*	Alpha	*/
+			orig[i+2] = a;
+			/*	Y	*/
+			orig[i+3] = clamp_byte( g + tmp );
+		}
+	}
+	/*	done	*/
+	return 0;
+}
+
+/*
+	This function takes the YCoCg components of the image
+	and converts them into RGB.  See above.
+*/
+int
+	convert_YCoCg_to_RGB
+	(
+		unsigned char* orig,
+		int width, int height, int channels
+	)
+{
+	int i;
+	/*	error check	*/
+	if( (width < 1) || (height < 1) ||
+		(channels < 3) || (channels > 4) ||
+		(orig == NULL) )
+	{
+		/*	nothing to do	*/
+		return -1;
+	}
+	/*	do the conversion	*/
+	if( channels == 3 )
+	{
+		for( i = 0; i < width*height*3; i += 3 )
+		{
+			int co = orig[i+0] - 128;
+			int y  = orig[i+1];
+			int cg = orig[i+2] - 128;
+			/*	R	*/
+			orig[i+0] = clamp_byte( y + co - cg );
+			/*	G	*/
+			orig[i+1] = clamp_byte( y + cg );
+			/*	B	*/
+			orig[i+2] = clamp_byte( y - co - cg );
+		}
+	} else
+	{
+		for( i = 0; i < width*height*4; i += 4 )
+		{
+			int co = orig[i+0] - 128;
+			int cg = orig[i+1] - 128;
+			unsigned char a  = orig[i+2];
+			int y  = orig[i+3];
+			/*	R	*/
+			orig[i+0] = clamp_byte( y + co - cg );
+			/*	G	*/
+			orig[i+1] = clamp_byte( y + cg );
+			/*	B	*/
+			orig[i+2] = clamp_byte( y - co - cg );
+			/*	A	*/
+			orig[i+3] = a;
+		}
+	}
+	/*	done	*/
+	return 0;
 }
