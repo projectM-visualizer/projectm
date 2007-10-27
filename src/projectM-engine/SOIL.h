@@ -75,11 +75,21 @@ enum
 
 /**
 	flags you can pass into SOIL_load_OGL_texture()
-	and SOIL_create_OGL_texture()
+	and SOIL_create_OGL_texture().
 	(note that if SOIL_FLAG_DDS_LOAD_DIRECT is used
 	the rest of the flags with the exception of
 	SOIL_FLAG_TEXTURE_REPEATS will be ignored while
-	loading already-compressed DDS files)
+	loading already-compressed DDS files.)
+
+	SOIL_FLAG_POWER_OF_TWO: force the image to be POT
+	SOIL_FLAG_MIPMAPS: generate mipmaps for the texture
+	SOIL_FLAG_TEXTURE_REPEATS: otherwise will clamp
+	SOIL_FLAG_MULTIPLY_ALPHA: for using (GL_ONE,GL_ONE_MINUS_SRC_ALPHA) blending
+	SOIL_FLAG_INVERT_Y: flip the image vertically
+	SOIL_FLAG_COMPRESS_TO_DXT: if the card can display them, will convert RGB to DXT1, RGBA to DXT5
+	SOIL_FLAG_DDS_LOAD_DIRECT: will load DDS files directly without _ANY_ additional processing
+	SOIL_FLAG_NTSC_SAFE_RGB: clamps RGB components to the range [16,235]
+	SOIL_FLAG_CoCg_Y: Google YCoCg; RGB=>CoYCg, RGBA=>CoCgAY
 **/
 enum
 {
@@ -89,19 +99,22 @@ enum
 	SOIL_FLAG_MULTIPLY_ALPHA = 8,
 	SOIL_FLAG_INVERT_Y = 16,
 	SOIL_FLAG_COMPRESS_TO_DXT = 32,
-	SOIL_FLAG_DDS_LOAD_DIRECT = 64
+	SOIL_FLAG_DDS_LOAD_DIRECT = 64,
+	SOIL_FLAG_NTSC_SAFE_RGB = 128,
+	SOIL_FLAG_CoCg_Y = 256
 };
 
 /**
 	The types of images that may be saved.
 	(TGA supports uncompressed RGB / RGBA)
 	(BMP supports uncompressed RGB)
+	(DDS supports DXT1 and DXT5)
 **/
 enum
 {
 	SOIL_SAVE_TYPE_TGA = 0,
-	SOIL_SAVE_TYPE_BMP,
-	SOIL_SAVE_TYPE_DDS
+	SOIL_SAVE_TYPE_BMP = 1,
+	SOIL_SAVE_TYPE_DDS = 2
 };
 
 /**
@@ -110,8 +123,7 @@ enum
 	image cubemap files, so they will be interchangeable
 	with DDS cubemaps when using SOIL.
 **/
-const char SOIL_DDS_CUBEMAP_FACE_ORDER[] =
-	{ 'E', 'W', 'U', 'D', 'N', 'S' };
+#define SOIL_DDS_CUBEMAP_FACE_ORDER "EWUDNS"
 
 /**
 	Loads an image from disk into an OpenGL texture.

@@ -28,7 +28,7 @@
 #endif
 
 #include "SOIL.h"
-#include "stb_image.h"
+#include "stb_image_aug.h"
 #include "image_helper.h"
 #include "image_DXT.h"
 
@@ -827,7 +827,7 @@ unsigned int
 #if SOIL_CHECK_FOR_GL_ERRORS
 void check_for_GL_errors( const char *calling_location )
 {
-	//	check for errors
+	/*	check for errors	*/
 	GLenum err_code = glGetError();
 	while( GL_NO_ERROR != err_code )
 	{
@@ -875,6 +875,11 @@ unsigned int
 				++index2;
 			}
 		}
+	}
+	/*	does the user want me to scale the colors into the NTSC safe RGB range?	*/
+	if( flags & SOIL_FLAG_NTSC_SAFE_RGB )
+	{
+		scale_image_RGB_to_NTSC_safe( img, width, height, channels );
 	}
 	/*	does the user want me to convert from straight to pre-multiplied alpha?
 		(and do we even _have_ alpha?)	*/
@@ -930,6 +935,12 @@ unsigned int
 			up_scale_image(
 					img, width, height, channels,
 					resampled, new_width, new_height );
+			/*	OJO	this is for debug only!	*/
+			/*
+			SOIL_save_image( "\\showme.bmp", SOIL_SAVE_TYPE_BMP,
+							new_width, new_height, channels,
+							resampled );
+			*/
 			/*	nuke the old guy, then point it at the new guy	*/
 			SOIL_free_image_data( img );
 			img = resampled;
@@ -965,6 +976,15 @@ unsigned int
 		width = new_width;
 		height = new_height;
 	}
+	/*	does the user want us to use YCoCg color space?	*/
+	if( flags & SOIL_FLAG_CoCg_Y )
+	{
+		/*	this will only work with RGB and RGBA images */
+		convert_RGB_to_YCoCg( img, width, height, channels );
+		/*
+		save_image_as_DDS( "CoCg_Y.dds", width, height, channels, img );
+		//*/
+	}
 	/*	create the OpenGL texture ID handle
     	(note: allowing a forced texture ID lets me reload a texture)	*/
     tex_id = reuse_texture_ID;
@@ -975,75 +995,90 @@ unsigned int
     #if SOIL_CHECK_FOR_GL_ERRORS
 	check_for_GL_errors( "glGenTextures" );
 	#endif
-	/*	and what type am I using as the internal texture format?	*/
-	switch( channels )
+	/* Note: sometimes glGenTextures fails (usually no OpenGL context)	*/
+	if( tex_id )
 	{
-	case 1:
-		original_texture_format = GL_LUMINANCE;
-		break;
-	case 2:
-		original_texture_format = GL_LUMINANCE_ALPHA;
-		break;
-	case 3:
-		original_texture_format = GL_RGB;
-		break;
-	case 4:
-		original_texture_format = GL_RGBA;
-		break;
-	}
-	internal_texture_format = original_texture_format;
-	/*	does the user want me to, and can I, save as DXT?	*/
-	if( flags & SOIL_FLAG_COMPRESS_TO_DXT )
-	{
-		DXT_mode = query_DXT_capability();
-		if( DXT_mode != SOIL_DXT_NONE )
+		/*	and what type am I using as the internal texture format?	*/
+		switch( channels )
 		{
-			/*	I can use DXT, whether I compress it or OpenGL does	*/
-			if( (channels & 1) == 1 )
+		case 1:
+			original_texture_format = GL_LUMINANCE;
+			break;
+		case 2:
+			original_texture_format = GL_LUMINANCE_ALPHA;
+			break;
+		case 3:
+			original_texture_format = GL_RGB;
+			break;
+		case 4:
+			original_texture_format = GL_RGBA;
+			break;
+		}
+		internal_texture_format = original_texture_format;
+		/*	does the user want me to, and can I, save as DXT?	*/
+		if( flags & SOIL_FLAG_COMPRESS_TO_DXT )
+		{
+			DXT_mode = query_DXT_capability();
+			if( DXT_mode != SOIL_DXT_NONE )
 			{
-				/*	1 or 3 channels = DXT1	*/
-				internal_texture_format = SOIL_RGB_S3TC_DXT1;
-			} else
-			{
-				/*	2 or 4 channels = DXT5	*/
-				internal_texture_format = SOIL_RGBA_S3TC_DXT5;
+				/*	I can use DXT, whether I compress it or OpenGL does	*/
+				if( (channels & 1) == 1 )
+				{
+					/*	1 or 3 channels = DXT1	*/
+					internal_texture_format = SOIL_RGB_S3TC_DXT1;
+				} else
+				{
+					/*	2 or 4 channels = DXT5	*/
+					internal_texture_format = SOIL_RGBA_S3TC_DXT5;
+				}
 			}
 		}
-	}
-    /*  bind an OpenGL texture ID	*/
-    glBindTexture( opengl_texture_type, tex_id );
-    #if SOIL_CHECK_FOR_GL_ERRORS
-	check_for_GL_errors( "glBindTexture" );
-	#endif
-    /*  upload the main image	*/
-    if( DXT_mode == SOIL_DXT_DIRECT_UPLOAD )
-    {
-    	/*	user wants me to do the DXT conversion!	*/
-    	int DDS_size;
-    	unsigned char *DDS_data = NULL;
-    	if( (channels & 1) == 1 )
-    	{
-    		/*	RGB, use DXT1	*/
-    		DDS_data = convert_image_to_DXT1( img, width, height, channels, &DDS_size );
-    	} else
-    	{
-    		/*	RGBA, use DXT5	*/
-    		DDS_data = convert_image_to_DXT5( img, width, height, channels, &DDS_size );
-    	}
-		if( DDS_data )
+		/*  bind an OpenGL texture ID	*/
+		glBindTexture( opengl_texture_type, tex_id );
+		#if SOIL_CHECK_FOR_GL_ERRORS
+		check_for_GL_errors( "glBindTexture" );
+		#endif
+		/*  upload the main image	*/
+		if( DXT_mode == SOIL_DXT_DIRECT_UPLOAD )
 		{
-			soilGlCompressedTexImage2D(
-				opengl_texture_target, 0,
-				internal_texture_format, width, height, 0,
-				DDS_size, DDS_data );
-			#if SOIL_CHECK_FOR_GL_ERRORS
-			check_for_GL_errors( "glCompressedTexImage2D" );
-			#endif
-			SOIL_free_image_data( DDS_data );
-			/*	printf( "Internal DXT compressor\n" );	*/
+			/*	user wants me to do the DXT conversion!	*/
+			int DDS_size;
+			unsigned char *DDS_data = NULL;
+			if( (channels & 1) == 1 )
+			{
+				/*	RGB, use DXT1	*/
+				DDS_data = convert_image_to_DXT1( img, width, height, channels, &DDS_size );
+			} else
+			{
+				/*	RGBA, use DXT5	*/
+				DDS_data = convert_image_to_DXT5( img, width, height, channels, &DDS_size );
+			}
+			if( DDS_data )
+			{
+				soilGlCompressedTexImage2D(
+					opengl_texture_target, 0,
+					internal_texture_format, width, height, 0,
+					DDS_size, DDS_data );
+				#if SOIL_CHECK_FOR_GL_ERRORS
+				check_for_GL_errors( "glCompressedTexImage2D" );
+				#endif
+				SOIL_free_image_data( DDS_data );
+				/*	printf( "Internal DXT compressor\n" );	*/
+			} else
+			{
+				/*	my compression failed, try the OpenGL driver's version	*/
+				glTexImage2D(
+					opengl_texture_target, 0,
+					internal_texture_format, width, height, 0,
+					original_texture_format, GL_UNSIGNED_BYTE, img );
+				#if SOIL_CHECK_FOR_GL_ERRORS
+				check_for_GL_errors( "glTexImage2D" );
+				#endif
+				/*	printf( "OpenGL DXT compressor\n" );	*/
+			}
 		} else
 		{
-			/*	my compression failed, try the OpenGL driver's version	*/
+			/*	user want OpenGL to do all the work!	*/
 			glTexImage2D(
 				opengl_texture_target, 0,
 				internal_texture_format, width, height, 0,
@@ -1051,64 +1086,63 @@ unsigned int
 			#if SOIL_CHECK_FOR_GL_ERRORS
 			check_for_GL_errors( "glTexImage2D" );
 			#endif
-			/*	printf( "OpenGL DXT compressor\n" );	*/
+			/*printf( "OpenGL DXT compressor\n" );	*/
 		}
-    } else
-    {
-    	/*	user want OpenGL to do all the work!	*/
-		glTexImage2D(
-			opengl_texture_target, 0,
-			internal_texture_format, width, height, 0,
-			original_texture_format, GL_UNSIGNED_BYTE, img );
-		#if SOIL_CHECK_FOR_GL_ERRORS
-		check_for_GL_errors( "glTexImage2D" );
-		#endif
-		/*printf( "OpenGL DXT compressor\n" );	*/
-    }
-	/*	are any MIPmaps desired?	*/
-	if( flags & SOIL_FLAG_MIPMAPS )
-	{
-		int MIPlevel = 1;
-		int MIPwidth = (width+1) / 2;
-		int MIPheight = (height+1) / 2;
-		unsigned char *resampled = (unsigned char*)malloc( channels*MIPwidth*MIPheight );
-		while( ((1<<MIPlevel) <= width) || ((1<<MIPlevel) <= height) )
+		/*	are any MIPmaps desired?	*/
+		if( flags & SOIL_FLAG_MIPMAPS )
 		{
-			/*	do this MIPmap level	*/
-			mipmap_image(
-					img, width, height, channels,
-					resampled,
-					(1 << MIPlevel), (1 << MIPlevel) );
-			/*  upload the MIPmaps	*/
-			if( DXT_mode == SOIL_DXT_DIRECT_UPLOAD )
+			int MIPlevel = 1;
+			int MIPwidth = (width+1) / 2;
+			int MIPheight = (height+1) / 2;
+			unsigned char *resampled = (unsigned char*)malloc( channels*MIPwidth*MIPheight );
+			while( ((1<<MIPlevel) <= width) || ((1<<MIPlevel) <= height) )
 			{
-				/*	user wants me to do the DXT conversion!	*/
-				int DDS_size;
-				unsigned char *DDS_data = NULL;
-				if( (channels & 1) == 1 )
+				/*	do this MIPmap level	*/
+				mipmap_image(
+						img, width, height, channels,
+						resampled,
+						(1 << MIPlevel), (1 << MIPlevel) );
+				/*  upload the MIPmaps	*/
+				if( DXT_mode == SOIL_DXT_DIRECT_UPLOAD )
 				{
-					/*	RGB, use DXT1	*/
-					DDS_data = convert_image_to_DXT1(
-							resampled, MIPwidth, MIPheight, channels, &DDS_size );
+					/*	user wants me to do the DXT conversion!	*/
+					int DDS_size;
+					unsigned char *DDS_data = NULL;
+					if( (channels & 1) == 1 )
+					{
+						/*	RGB, use DXT1	*/
+						DDS_data = convert_image_to_DXT1(
+								resampled, MIPwidth, MIPheight, channels, &DDS_size );
+					} else
+					{
+						/*	RGBA, use DXT5	*/
+						DDS_data = convert_image_to_DXT5(
+								resampled, MIPwidth, MIPheight, channels, &DDS_size );
+					}
+					if( DDS_data )
+					{
+						soilGlCompressedTexImage2D(
+							opengl_texture_target, MIPlevel,
+							internal_texture_format, MIPwidth, MIPheight, 0,
+							DDS_size, DDS_data );
+						#if SOIL_CHECK_FOR_GL_ERRORS
+						check_for_GL_errors( "glCompressedTexImage2D" );
+						#endif
+						SOIL_free_image_data( DDS_data );
+					} else
+					{
+						/*	my compression failed, try the OpenGL driver's version	*/
+						glTexImage2D(
+							opengl_texture_target, MIPlevel,
+							internal_texture_format, MIPwidth, MIPheight, 0,
+							original_texture_format, GL_UNSIGNED_BYTE, resampled );
+						#if SOIL_CHECK_FOR_GL_ERRORS
+						check_for_GL_errors( "glTexImage2D" );
+						#endif
+					}
 				} else
 				{
-					/*	RGBA, use DXT5	*/
-					DDS_data = convert_image_to_DXT5(
-							resampled, MIPwidth, MIPheight, channels, &DDS_size );
-				}
-				if( DDS_data )
-				{
-					soilGlCompressedTexImage2D(
-						opengl_texture_target, MIPlevel,
-						internal_texture_format, MIPwidth, MIPheight, 0,
-						DDS_size, DDS_data );
-					#if SOIL_CHECK_FOR_GL_ERRORS
-					check_for_GL_errors( "glCompressedTexImage2D" );
-					#endif
-					SOIL_free_image_data( DDS_data );
-				} else
-				{
-					/*	my compression failed, try the OpenGL driver's version	*/
+					/*	user want OpenGL to do all the work!	*/
 					glTexImage2D(
 						opengl_texture_target, MIPlevel,
 						internal_texture_format, MIPwidth, MIPheight, 0,
@@ -1117,68 +1151,62 @@ unsigned int
 					check_for_GL_errors( "glTexImage2D" );
 					#endif
 				}
-			} else
-			{
-				/*	user want OpenGL to do all the work!	*/
-				glTexImage2D(
-					opengl_texture_target, MIPlevel,
-					internal_texture_format, MIPwidth, MIPheight, 0,
-					original_texture_format, GL_UNSIGNED_BYTE, resampled );
-				#if SOIL_CHECK_FOR_GL_ERRORS
-				check_for_GL_errors( "glTexImage2D" );
-				#endif
+				/*	prep for the next level	*/
+				++MIPlevel;
+				MIPwidth = (MIPwidth + 1) / 2;
+				MIPheight = (MIPheight + 1) / 2;
 			}
-			/*	prep for the next level	*/
-			++MIPlevel;
-			MIPwidth = (MIPwidth + 1) / 2;
-			MIPheight = (MIPheight + 1) / 2;
+			SOIL_free_image_data( resampled );
+			/*	instruct OpenGL to use the MIPmaps	*/
+			glTexParameteri( opengl_texture_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+			glTexParameteri( opengl_texture_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
+			#if SOIL_CHECK_FOR_GL_ERRORS
+			check_for_GL_errors( "GL_TEXTURE_MIN/MAG_FILTER" );
+			#endif
+		} else
+		{
+			/*	instruct OpenGL _NOT_ to use the MIPmaps	*/
+			glTexParameteri( opengl_texture_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+			glTexParameteri( opengl_texture_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+			#if SOIL_CHECK_FOR_GL_ERRORS
+			check_for_GL_errors( "GL_TEXTURE_MIN/MAG_FILTER" );
+			#endif
 		}
-		SOIL_free_image_data( resampled );
-		/*	instruct OpenGL to use the MIPmaps	*/
-		glTexParameteri( opengl_texture_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		glTexParameteri( opengl_texture_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-		#if SOIL_CHECK_FOR_GL_ERRORS
-		check_for_GL_errors( "GL_TEXTURE_MIN/MAG_FILTER" );
-		#endif
+		/*	does the user want clamping, or wrapping?	*/
+		if( flags & SOIL_FLAG_TEXTURE_REPEATS )
+		{
+			glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_S, GL_REPEAT );
+			glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_T, GL_REPEAT );
+			if( opengl_texture_type == SOIL_TEXTURE_CUBE_MAP )
+			{
+				/*	SOIL_TEXTURE_WRAP_R is invalid if cubemaps aren't supported	*/
+				glTexParameteri( opengl_texture_type, SOIL_TEXTURE_WRAP_R, GL_REPEAT );
+			}
+			#if SOIL_CHECK_FOR_GL_ERRORS
+			check_for_GL_errors( "GL_TEXTURE_WRAP_*" );
+			#endif
+		} else
+		{
+			/*	unsigned int clamp_mode = SOIL_CLAMP_TO_EDGE;	*/
+			unsigned int clamp_mode = GL_CLAMP;
+			glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_S, clamp_mode );
+			glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_T, clamp_mode );
+			if( opengl_texture_type == SOIL_TEXTURE_CUBE_MAP )
+			{
+				/*	SOIL_TEXTURE_WRAP_R is invalid if cubemaps aren't supported	*/
+				glTexParameteri( opengl_texture_type, SOIL_TEXTURE_WRAP_R, clamp_mode );
+			}
+			#if SOIL_CHECK_FOR_GL_ERRORS
+			check_for_GL_errors( "GL_TEXTURE_WRAP_*" );
+			#endif
+		}
+		/*	done	*/
+		result_string_pointer = "Image loaded as an OpenGL texture";
 	} else
 	{
-		/*	instruct OpenGL _NOT_ to use the MIPmaps	*/
-		glTexParameteri( opengl_texture_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		glTexParameteri( opengl_texture_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		#if SOIL_CHECK_FOR_GL_ERRORS
-		check_for_GL_errors( "GL_TEXTURE_MIN/MAG_FILTER" );
-		#endif
+		/*	failed	*/
+		result_string_pointer = "Failed to generate an OpenGL texture name; missing OpenGL context?";
 	}
-	/*	does the user want clamping, or wrapping?	*/
-	if( flags & SOIL_FLAG_TEXTURE_REPEATS )
-	{
-		glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_S, GL_REPEAT );
-		glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_T, GL_REPEAT );
-		if( opengl_texture_type == SOIL_TEXTURE_CUBE_MAP )
-		{
-			/*	SOIL_TEXTURE_WRAP_R is invalid if cubemaps aren't supported	*/
-			glTexParameteri( opengl_texture_type, SOIL_TEXTURE_WRAP_R, GL_REPEAT );
-		}
-		#if SOIL_CHECK_FOR_GL_ERRORS
-		check_for_GL_errors( "GL_TEXTURE_WRAP_*" );
-		#endif
-	} else
-	{
-		/*	unsigned int clamp_mode = SOIL_CLAMP_TO_EDGE;	*/
-		unsigned int clamp_mode = GL_CLAMP;
-		glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_S, clamp_mode );
-		glTexParameteri( opengl_texture_type, GL_TEXTURE_WRAP_T, clamp_mode );
-		if( opengl_texture_type == SOIL_TEXTURE_CUBE_MAP )
-		{
-			/*	SOIL_TEXTURE_WRAP_R is invalid if cubemaps aren't supported	*/
-			glTexParameteri( opengl_texture_type, SOIL_TEXTURE_WRAP_R, clamp_mode );
-		}
-		#if SOIL_CHECK_FOR_GL_ERRORS
-		check_for_GL_errors( "GL_TEXTURE_WRAP_*" );
-		#endif
-	}
-	/*	done	*/
-	result_string_pointer = "Image loaded as an OpenGL texture";
 	SOIL_free_image_data( img );
 	return tex_id;
 }
