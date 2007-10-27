@@ -83,8 +83,8 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 #ifdef USE_FTGL
     /**f Load the standard fonts */
     
-        title_font = new FTGLTextureFont(title_fontURL.c_str());	
-        other_font = new FTGLTextureFont(menu_fontURL.c_str());
+        title_font = new FTGLPixmapFont(title_fontURL.c_str());	
+        other_font = new FTGLPixmapFont(menu_fontURL.c_str());
 	other_font->UseDisplayList(true);
 	title_font->UseDisplayList(true);
 
@@ -531,8 +531,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
   float t;  
 
   float aspect=this->aspect;
-  float texaspect = this->aspect;
-
+ 
   for (PresetOutputs::cshape_container::const_iterator pos = presetOutputs->customShapes.begin();
        pos != presetOutputs->customShapes.end(); ++pos) 
     {
@@ -562,7 +561,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 		   if (tex != 0)
 		     {
 		       glBindTexture(GL_TEXTURE_2D, tex);
-		       texaspect=1.0;
+		       aspect=1.0;
 		     }
 		 }
 	      
@@ -590,7 +589,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs) {
 		
 		  t = (i-1)/(float) (*pos)->sides;
 		  
-		  glTexCoord2f(  0.5f + 0.5f*cosf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)*(this->correction ? texaspect : 1.0)/ (*pos)->tex_zoom, 0.5f + 0.5f*sinf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)/ (*pos)->tex_zoom);
+		  glTexCoord2f(  0.5f + 0.5f*cosf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)/ (*pos)->tex_zoom, 0.5f + 0.5f*sinf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)/ (*pos)->tex_zoom);
 		   glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval,0);   
 		}	
 	      glEnd();
@@ -1334,18 +1333,15 @@ void Renderer::draw_help( ) {
 #ifdef USE_FTGL
 //glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
   DWRITE("pre-help");
-  glEnable(GL_TEXTURE_2D);
       glColor4f(1.0,1.0,1.0,1.0);
-      glMatrixMode(GL_MODELVIEW);
-      glLoadIdentity();
       glPushMatrix();
-      //       glTranslatef(0,1, 0);
+       glTranslatef(0,1, 0);
       //glScalef(this->vw*.02,this->vh*.02 ,0);
 
      
        title_font->FaceSize((unsigned)( 18*(this->vh/512.0)));
 
-       // glRasterPos2f(0.01, -0.05);
+      glRasterPos2f(0.01, -0.05);
        title_font->Render("Help");  
       
       glRasterPos2f(0.01, -0.09);     
@@ -1384,7 +1380,6 @@ void Renderer::draw_help( ) {
        title_font->Render("P: Previous preset");
 
        glPopMatrix();
-  glDisable(GL_TEXTURE_2D);
       //         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
        DWRITE("post-help");
 #endif /** USE_FTGL */
