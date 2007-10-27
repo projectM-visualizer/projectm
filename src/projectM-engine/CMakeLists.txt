@@ -5,11 +5,17 @@ Func.cpp Eval.cpp  PerFrameEqn.cpp PerPointEqn.cpp fftsg.cpp KeyHandler.cpp
  timer.cpp  wipemalloc.cpp 
 BuiltinFuncs.cpp BuiltinParams.cpp Renderer.cpp 
 PresetLoader.cpp  PresetChooser.cpp PresetFrameIO.cpp PresetMerge.cpp
-ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp MoodBar.cpp image_DXT.c image_helper.c SOIL.c stb_image.c  )
+ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp MoodBar.cpp image_DXT.c image_helper.c SOIL.c stb_image_aug.c)
+
+
+
+SET_TARGET_PROPERTIES(projectM PROPERTIES VERSION 1.02 SOVERSION 1)
+
+
 
 OPTION(USE_FTGL "Use FTGL for on-screen fonts" ON)
 
-ADD_DEFINITIONS(-DLINUX -DUSE_FBO)
+ADD_DEFINITIONS(-DLINUX -DUSE_FBO -DSTBI_NO_DDS)
 
 FIND_PACKAGE(OpenGL)
 
