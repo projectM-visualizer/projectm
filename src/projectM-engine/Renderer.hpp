@@ -18,11 +18,11 @@
 #ifdef USE_FTGL
 #ifdef WIN32
 #include <FTGL.h>
-#include <FTGLTextureFont.h>
+#include <FTGLPixmapFont.h>
 #include <FTGLExtrdFont.h>
 #else
 #include <FTGL/FTGL.h>
-#include <FTGL/FTGLTextureFont.h>
+#include <FTGL/FTGLPixmapFont.h>
 #include <FTGL/FTGLExtrdFont.h>
 #endif
 #endif /** USE_FTGL */
@@ -95,8 +95,8 @@ private:
   
 
 #ifdef USE_FTGL
-  FTGLTextureFont *title_font;
-  FTGLTextureFont *other_font;
+  FTGLPixmapFont *title_font;
+  FTGLPixmapFont *other_font;
   FTGLExtrdFont *poly_font;
 #endif /** USE_FTGL */
   
