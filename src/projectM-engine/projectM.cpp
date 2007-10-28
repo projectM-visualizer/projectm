@@ -69,208 +69,212 @@ double smoothDuration = 5;
 //int smoothFrame = 0;
 int oldFrame = 1;
 
-DLLEXPORT projectM::projectM(int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url,std::string title_fonturl, std::string title_menuurl) :beatDetect ( 0 ),  renderer(0), presetURL(preset_url),   title_fontURL(title_fonturl), menu_fontURL(menu_fontURL), smoothFrame(0) {
-  presetURL = preset_url;
-  projectM_reset();
-  projectM_init(gx, gy, fps, texsize, width, height);  
-  projectM_resetGL( width, height );
+DLLEXPORT projectM::projectM ( int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url,std::string title_fonturl, std::string title_menuurl ) :beatDetect ( 0 ),  renderer ( 0 ), presetURL ( preset_url ),   title_fontURL ( title_fonturl ), menu_fontURL ( menu_fontURL ), smoothFrame ( 0 )
+{
+	presetURL = preset_url;
+	projectM_reset();
+	projectM_init ( gx, gy, fps, texsize, width, height );
+	projectM_resetGL ( width, height );
 }
 
-projectM::~projectM() {
+projectM::~projectM()
+{
 
-  destroyPresetTools();
-  
-  if (renderer)
-    delete(renderer);
-  if (beatDetect)
-    delete(beatDetect);
-  if (pcm)
-    delete(pcm);
+	destroyPresetTools();
+
+	if ( renderer )
+		delete ( renderer );
+	if ( beatDetect )
+		delete ( beatDetect );
+	if ( pcm )
+		delete ( pcm );
 }
 
 DLLEXPORT unsigned projectM::initRenderToTexture()
 {
-  return renderer->initRenderToTexture();
+	return renderer->initRenderToTexture();
 }
 
-DLLEXPORT void projectM::projectM_resetTextures() 
+DLLEXPORT void projectM::projectM_resetTextures()
 {
 	renderer->ResetTextures();
 }
 
-DLLEXPORT  projectM::projectM(std::string config_file) :
-	beatDetect ( 0 ), renderer(0), smoothFrame(0)  {
+DLLEXPORT  projectM::projectM ( std::string config_file ) :
+		beatDetect ( 0 ), renderer ( 0 ), smoothFrame ( 0 )
+{
 
- projectM_reset();
- readConfig(config_file);
+	projectM_reset();
+	readConfig ( config_file );
 
 }
 
-void projectM::readConfig(std::string config_file)
+void projectM::readConfig ( std::string config_file )
 {
 
-  ConfigFile config(config_file);
-  
-  int gx = config.read<int>( "Mesh X", 32 );
-  int gy = config.read<int>( "Mesh Y", 24 );
-  int texsize = config.read<int>( "Texsize", 512 ); 
-  int fps = config.read<int>( "FPS", 35 );
-  int wvw = config.read<int>( "Window Width", 512 );
-  int wvh = config.read<int>( "Window Height", 512 );
-  smoothDuration = config.read<int>( "Smooth Transition Duration", 5 );
-  presetDuration = config.read<int>( "Preset Duration", 15 );
+	ConfigFile config ( config_file );
+
+	int gx = config.read<int> ( "Mesh X", 32 );
+	int gy = config.read<int> ( "Mesh Y", 24 );
+	int texsize = config.read<int> ( "Texsize", 512 );
+	int fps = config.read<int> ( "FPS", 35 );
+	int wvw = config.read<int> ( "Window Width", 512 );
+	int wvh = config.read<int> ( "Window Height", 512 );
+	smoothDuration = config.read<int> ( "Smooth Transition Duration", 5 );
+	presetDuration = config.read<int> ( "Preset Duration", 15 );
 
 
-  presetURL = config.read<string>( "Preset Path", "/usr/share/projectM/presets" );
+	presetURL = config.read<string> ( "Preset Path", "/usr/share/projectM/presets" );
 
-  title_fontURL = config.read<string>( "Title Font", "/usr/share/projectM/fonts/Vera.ttf" );
-  menu_fontURL = config.read<string>( "Menu Font", "/usr/share/projectM/fonts/VeraMono.ttf" );
+	title_fontURL = config.read<string> ( "Title Font", "/usr/share/projectM/fonts/Vera.ttf" );
+	menu_fontURL = config.read<string> ( "Menu Font", "/usr/share/projectM/fonts/VeraMono.ttf" );
 
-  projectM_init(gx, gy, fps, texsize, wvw, wvh); 
+	projectM_init ( gx, gy, fps, texsize, wvw, wvh );
 
-  beatDetect->beat_sensitivity = config.read<float>( "Hard Cut Sensitivity", 10.0 );
- if (config.read("Aspect Correction", true)) renderer->correction = 1;
-      else renderer->correction = 0;
+	beatDetect->beat_sensitivity = config.read<float> ( "Hard Cut Sensitivity", 10.0 );
+	if ( config.read ( "Aspect Correction", true ) ) renderer->correction = 1;
+	else renderer->correction = 0;
 
-  projectM_resetGL( wvw, wvh );
+	projectM_resetGL ( wvw, wvh );
 }
 
 
 DLLEXPORT void projectM::renderFrame()
 {
 
-#ifdef DEBUG 
-  char fname[1024];
-  FILE *f = NULL;
-  int index = 0;
-  int x, y;
+#ifdef DEBUG
+	char fname[1024];
+	FILE *f = NULL;
+	int index = 0;
+	int x, y;
 #endif
 
-  //     printf("Start of loop at %d\n",timestart);
-  mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps ); //milliseconds per frame
+	//     printf("Start of loop at %d\n",timestart);
+	mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps ); //milliseconds per frame
 
 #ifndef WIN32
-  presetInputs.time = getTicks ( &startTime ) * 0.001;
+	presetInputs.time = getTicks ( &startTime ) * 0.001;
 #else
-  presetInputs.time = getTicks ( startTime ) * 0.001;
+	presetInputs.time = getTicks ( startTime ) * 0.001;
 #endif /** !WIN32 */
-  
-  
-  //DWRITE ( "frame: %d\ttime: %f\tprogress: %f\tavgtime: %d\tang: %f\trot: %f\n",
-  // this->presetInputs.frame, presetInputs.time, this->presetInputs.progress, this->avgtime, this->presetInputs.ang_per_pixel,
-  //this->presetOutputs.rot );
+
+
+	//DWRITE ( "frame: %d\ttime: %f\tprogress: %f\tavgtime: %d\tang: %f\trot: %f\n",
+	// this->presetInputs.frame, presetInputs.time, this->presetInputs.progress, this->avgtime, this->presetInputs.ang_per_pixel,
+	//this->presetOutputs.rot );
 
 
 //       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
-  presetInputs.ResetMesh();
+	presetInputs.ResetMesh();
 
 //     printf("%f %d\n",Time,frame);
 
 
-  beatDetect->detectFromSamples();
-  
-  DWRITE ( "=== vol: %f\tbass: %f\tmid: %f\ttreb: %f ===\n",
-	   beatDetect->vol,beatDetect->bass,beatDetect->mid,beatDetect->treb );
-  DWRITE ( "=== bass_att: %f ===\n",
+	beatDetect->detectFromSamples();
+
+	DWRITE ( "=== vol: %f\tbass: %f\tmid: %f\ttreb: %f ===\n",
+	         beatDetect->vol,beatDetect->bass,beatDetect->mid,beatDetect->treb );
+	DWRITE ( "=== bass_att: %f ===\n",
 	         beatDetect->bass_att );
-  
-        presetInputs.bass = beatDetect->bass; 
-	presetInputs.mid = beatDetect->mid; 
-	presetInputs.treb = beatDetect->treb; 
-	presetInputs.bass_att = beatDetect->bass_att; 
-	presetInputs.mid_att = beatDetect->mid_att; 
-	presetInputs.treb_att = beatDetect->treb_att; 
-	
-	assert(m_activePreset.get());
+
+	presetInputs.bass = beatDetect->bass;
+	presetInputs.mid = beatDetect->mid;
+	presetInputs.treb = beatDetect->treb;
+	presetInputs.bass_att = beatDetect->bass_att;
+	presetInputs.mid_att = beatDetect->mid_att;
+	presetInputs.treb_att = beatDetect->treb_att;
+
+	assert ( m_activePreset.get() );
 
 	m_activePreset->evaluateFrame();
 
-	if ( renderer->noSwitch==0 && !m_presetChooser->empty())
+	if ( renderer->noSwitch==false && !m_presetChooser->empty() )
 	{
-	  if ( presetInputs.progress>1.0 )
-	    {  
-	      oldFrame = presetInputs.frame;
-	      presetInputs.progress=0.0;
-	      presetInputs.frame = 1;
+		if ( presetInputs.progress>1.0 )
+		{
+			oldFrame = presetInputs.frame;
+			presetInputs.progress=0.0;
+			presetInputs.frame = 1;
 
-	      *m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>();
+			*m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>();
 
-	      m_activePreset2 = m_presetPos->allocate
-			(presetInputs, &m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
+			m_activePreset2 = m_presetPos->allocate
+			                  ( presetInputs, &m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs );
 
-	      assert(m_activePreset2.get());
-	      renderer->setPresetName(m_activePreset2->presetName());
-		
-	      //nohard=(int)(presetInputs.fps*3.5);
-             smoothFrame = (int)(presetInputs.fps * smoothDuration);
-	     
+			assert ( m_activePreset2.get() );
+			renderer->setPresetName ( m_activePreset2->presetName() );
+
+			//nohard=(int)(presetInputs.fps*3.5);
+			smoothFrame = ( int ) ( presetInputs.fps * smoothDuration );
+			presetSwitchedEvent(false, **m_presetPos);
 //              printf("SOFT CUT - Smooth started\n");
-	    }	  	  
-	  else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && nohard<0)
-	    {
-	      //            printf("%f %d %d\n", beatDetect->bass-beatDetect->bass_old,this->frame,this->avgtime);
-	     *m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor> ();
-		
-	     m_activePreset = m_presetPos->allocate(presetInputs, presetOutputs);
-	     renderer->setPresetName(m_activePreset->presetName());
-		
-	      assert(m_activePreset.get());
-	      //nohard=presetInputs.fps*1;
-	      smoothFrame=0;
-	      presetInputs.progress=0.0;
-	      presetInputs.frame = 1;
-	    }
-	  else nohard--;
+		}
+		else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && nohard<0 )
+		{
+			//            printf("%f %d %d\n", beatDetect->bass-beatDetect->bass_old,this->frame,this->avgtime);
+			*m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor> ();
+
+			m_activePreset = m_presetPos->allocate ( presetInputs, presetOutputs );
+			renderer->setPresetName ( m_activePreset->presetName() );
+
+			assert ( m_activePreset.get() );
+			//nohard=presetInputs.fps*1;
+			smoothFrame=0;
+			presetInputs.progress=0.0;
+			presetInputs.frame = 1;
+			presetSwitchedEvent(true, **m_presetPos);
+		}
+		else nohard--;
 	}
 
 
-      
-        if (smoothFrame > 1 && !m_presetChooser->empty())
-	  {
-	    int frame = ++presetInputs.frame;
-	    presetInputs.frame = ++oldFrame;
-	    presetInputs.progress= 1.0;
-	    assert(m_activePreset.get());
-	    m_activePreset->evaluateFrame();
-	    renderer->PerPixelMath(&m_activePreset->presetOutputs(), &presetInputs);
-	    renderer->WaveformMath(&m_activePreset->presetOutputs(), &presetInputs, true);
 
-	    presetInputs.frame = frame;
-	    presetInputs.progress= frame /(float) avgtime;
-	    assert(m_activePreset2.get());
-	    m_activePreset2->evaluateFrame();
-	    renderer->PerPixelMath(&m_activePreset2->presetOutputs(), &presetInputs);
-	    renderer->WaveformMath(&m_activePreset2->presetOutputs(), &presetInputs, true);
- 
-            //double pos = -((smoothFrame / (presetInputs.fps * smoothDuration))-1);
-	    //double ratio = 1/(1 + exp((pos-0.5)*4*M_PI));
-	    double ratio = smoothFrame / (presetInputs.fps * smoothDuration);
-	    // printf("f(%f)=%f\n",pos, ratio);
-	    PresetMerger::MergePresets(m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),ratio,presetInputs.gx, presetInputs.gy);
+	if ( smoothFrame > 1 && !m_presetChooser->empty() )
+	{
+		int frame = ++presetInputs.frame;
+		presetInputs.frame = ++oldFrame;
+		presetInputs.progress= 1.0;
+		assert ( m_activePreset.get() );
+		m_activePreset->evaluateFrame();
+		renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
+		renderer->WaveformMath ( &m_activePreset->presetOutputs(), &presetInputs, true );
 
-            //printf("Smooth:%d\n",smoothFrame);
+		presetInputs.frame = frame;
+		presetInputs.progress= frame / ( float ) avgtime;
+		assert ( m_activePreset2.get() );
+		m_activePreset2->evaluateFrame();
+		renderer->PerPixelMath ( &m_activePreset2->presetOutputs(), &presetInputs );
+		renderer->WaveformMath ( &m_activePreset2->presetOutputs(), &presetInputs, true );
 
-	    smoothFrame--;
-	   
-	  }
+		//double pos = -((smoothFrame / (presetInputs.fps * smoothDuration))-1);
+		//double ratio = 1/(1 + exp((pos-0.5)*4*M_PI));
+		double ratio = smoothFrame / ( presetInputs.fps * smoothDuration );
+		// printf("f(%f)=%f\n",pos, ratio);
+		PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),ratio,presetInputs.gx, presetInputs.gy );
+
+		//printf("Smooth:%d\n",smoothFrame);
+
+		smoothFrame--;
+
+	}
 	else
-	  {
-	    if (smoothFrame == 1)
-	      {
-		m_activePreset = m_activePreset2;		
-		smoothFrame=0;
+	{
+		if ( smoothFrame == 1 )
+		{
+			m_activePreset = m_activePreset2;
+			smoothFrame=0;
 //		printf("Smooth Finished\n");
-	      } 
-	
-	    presetInputs.frame++;  //number of frames for current preset
-	    presetInputs.progress= presetInputs.frame/ ( float ) avgtime;
-	    m_activePreset->evaluateFrame();
+		}
 
-	    renderer->PerPixelMath(&m_activePreset->presetOutputs(), &presetInputs);
-	    renderer->WaveformMath(&m_activePreset->presetOutputs(), &presetInputs, false);
+		presetInputs.frame++;  //number of frames for current preset
+		presetInputs.progress= presetInputs.frame/ ( float ) avgtime;
+		m_activePreset->evaluateFrame();
 
-	  }
-	
+		renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
+		renderer->WaveformMath ( &m_activePreset->presetOutputs(), &presetInputs, false );
+
+	}
+
 	//	std::cout<< m_activePreset->absoluteFilePath()<<std::endl;
 	//	renderer->presetName = m_activePreset->absoluteFilePath();
 
@@ -304,13 +308,13 @@ DLLEXPORT void projectM::renderFrame()
 }
 
 void projectM::projectM_reset()
-{       
+{
 
 	/** Default variable settings */
-       
+
 	this->wvw = 512;
 	this->wvh = 512;
-     
+
 
 	/** Frames per preset */
 	this->avgtime = 500;
@@ -328,7 +332,7 @@ void projectM::projectM_reset()
 	projectM_resetengine();
 }
 
- void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, int height )
+void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, int height )
 {
 
 	/** Initialise engine variables */
@@ -348,7 +352,7 @@ void projectM::projectM_reset()
 #endif /** !WIN32 */
 
 	/** Nullify frame stash */
-      
+
 
 	/** Initialise per-pixel matrix calculations */
 
@@ -356,10 +360,10 @@ void projectM::projectM_reset()
 	presetInputs.fps = fps;
 	this->nohard=fps*5;
 	/** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
-	assert(!beatDetect);
+	assert ( !beatDetect );
 
 	pcm = new PCM();
-	beatDetect = new BeatDetect(pcm);
+	beatDetect = new BeatDetect ( pcm );
 
 	initPresetTools();
 #if 0
@@ -474,23 +478,23 @@ void projectM::projectM_reset()
 #endif
 #endif
 
-	if (presetInputs.fps > 0)
-	mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps );
+	if ( presetInputs.fps > 0 )
+		mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps );
 	else mspf = 0;
 
 
-	this->avgtime=(int)(this->presetInputs.fps*presetDuration);
+	this->avgtime= ( int ) ( this->presetInputs.fps*presetDuration );
 
-     
+
 
 
 	this->presetInputs.gx = gx;
 	this->presetInputs.gy = gy;
 
-	this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, presetURL, title_fontURL, menu_fontURL);
+	this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, presetURL, title_fontURL, menu_fontURL );
 
 
-	renderer->setPresetName(m_activePreset->presetName());
+	renderer->setPresetName ( m_activePreset->presetName() );
 
 //	printf ( "exiting projectM_init()\n" );
 }
@@ -737,12 +741,12 @@ DLLEXPORT void projectM::projectM_resetGL ( int w, int h )
 
 /** Sets the title to display */
 DLLEXPORT void projectM::projectM_setTitle ( std::string title )
-{	
-  if (title != renderer->title)
-    {
-      renderer->title=title;
-      renderer->drawtitle=1;	  	    	  
-    }	
+{
+	if ( title != renderer->title )
+	{
+		renderer->title=title;
+		renderer->drawtitle=1;
+	}
 }
 
 
@@ -758,7 +762,7 @@ int projectM::initPresetTools()
 	/* Set the seed to the current time in seconds */
 	srand ( time ( NULL ) );
 
-	if ( ( m_presetLoader = new PresetLoader (presetURL)) == 0 )
+	if ( ( m_presetLoader = new PresetLoader ( presetURL ) ) == 0 )
 	{
 		m_presetLoader = 0;
 		std::cerr << "[projectM] error allocating preset loader" << std::endl;
@@ -778,19 +782,19 @@ int projectM::initPresetTools()
 
 	// Start the iterator
 	m_presetPos = new PresetIterator();
-	
+
 	// Start at end ptr- this allows next/previous to easily be done from this position.
 	*m_presetPos = m_presetChooser->end();
-	
+
 	// Load idle preset
 	//std::cerr << "[projectM] Allocating idle preset..." << std::endl;
-	m_activePreset = IdlePreset::allocate(presetInputs, presetOutputs);
+	m_activePreset = IdlePreset::allocate ( presetInputs, presetOutputs );
 
 	// Case where no valid presets exist in directory
-	if (m_presetChooser->empty())
+	if ( m_presetChooser->empty() )
 	{
 		std::cerr << "[projectM] warning: no valid files found in preset directory \""
-			<< m_presetLoader->directoryName() << "\"" << std::endl;	
+		<< m_presetLoader->directoryName() << "\"" << std::endl;
 	}
 
 	//std::cerr << "[projectM] Idle preset allocated." << std::endl;
@@ -804,9 +808,9 @@ int projectM::initPresetTools()
 void projectM::destroyPresetTools()
 {
 
-	if (m_presetPos)
-		delete(m_presetPos);
-	
+	if ( m_presetPos )
+		delete ( m_presetPos );
+
 	/// @slow might not be necessary
 	m_presetPos = 0;
 
@@ -818,7 +822,7 @@ void projectM::destroyPresetTools()
 
 	if ( m_presetLoader )
 		delete ( m_presetLoader );
-	
+
 	/// @slow might not be necessary
 	m_presetLoader = 0;
 
@@ -827,24 +831,60 @@ void projectM::destroyPresetTools()
 
 }
 
-int projectM::addPresetURL(const std::string & presetURL) {
-	return m_presetLoader->addPresetURL(presetURL);	
+void projectM::queuePreset(unsigned int index) {
+//	m_presetQueueIndex = index;
 }
 
-void projectM::selectPreset(unsigned int index) {
+void projectM::removePreset(unsigned int index) {
+	m_presetLoader->removePreset(index);
+}
 
-	if (m_presetChooser->empty())
+unsigned int projectM::addPresetURL ( const std::string & presetURL, const std::string & presetName )
+{	
+	return m_presetLoader->addPresetURL ( presetURL, presetName );
+}
+
+void projectM::selectPreset ( unsigned int index )
+{
+
+	if ( m_presetChooser->empty() )
 		return;
-	
-	assert (index < m_presetLoader->getNumPresets());
-	assert (index >= 0);
 
-	*m_presetPos = m_presetChooser->begin(index);
+	assert ( index < m_presetLoader->getNumPresets() );
+	assert ( index >= 0 );
 
-	m_activePreset = m_presetPos->allocate(presetInputs, presetOutputs);
+	*m_presetPos = m_presetChooser->begin ( index );
 
-	renderer->setPresetName(m_activePreset->presetName());
+	m_activePreset = m_presetPos->allocate ( presetInputs, presetOutputs );
 
-        presetInputs.frame = 0;
-	smoothFrame = 0;	
+	renderer->setPresetName ( m_activePreset->presetName() );
+
+	presetInputs.frame = 0;
+	smoothFrame = 0;
+}
+
+void projectM::setPresetLock ( bool isLocked )
+{
+	renderer->noSwitch = isLocked;
+}
+
+bool projectM::isPresetLocked() const
+{
+	return renderer->noSwitch;
+}
+
+std::string projectM::getPresetURL ( unsigned int index ) const
+{
+	return m_presetLoader->getPresetURL(index);
+}
+
+
+std::string projectM::getPresetName ( unsigned int index ) const
+{
+	return m_presetLoader->getPresetName(index);
+}
+
+unsigned int projectM::getPlayListSize() const
+{
+	return m_presetLoader->getNumPresets();
 }

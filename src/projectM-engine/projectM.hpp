@@ -123,11 +123,38 @@ public:
   DLLEXPORT void key_handler( projectMEvent event,
 		    projectMKeycode keycode, projectMModifier modifier );
         
-  ~projectM();
-  
+  virtual ~projectM();
 
-  int addPresetURL(const std::string & presetURL);
+  /// Plays a preset immediately  
   void selectPreset(unsigned int index);
+
+  /// Removes a preset from the play list. If it is playing then it will continue as normal until next switch
+  void removePreset(unsigned int index);
+ 
+  /// Tell projectM to play a particular preset when it chooses to switch
+  /// If the preset is locked the queued item will be not switched to until the lock is released
+  void queuePreset(unsigned int index);
+
+  /// Turn on or off a lock that prevents projectM from switching to another preset
+  void setPresetLock(bool isLocked);
+
+  /// Returns true if the active preset is locked
+  bool isPresetLocked() const;
+
+  /// Add a preset url to the play list. Appended to bottom
+  unsigned int addPresetURL(const std::string & presetURL, const std::string & presetName);
+
+  /// Returns the url associated with a preset index
+  std::string getPresetURL(unsigned int index) const;
+
+  /// Returns the preset name associated with a preset index
+  std::string getPresetName ( unsigned int index ) const;
+
+  /// Returns the size of the play list
+  unsigned int getPlayListSize() const;
+
+  /// Occurs when active preset has switched. Switched to index is returned
+  virtual void presetSwitchedEvent(bool isHardCut, unsigned int index) const {};
 
 private:
    
