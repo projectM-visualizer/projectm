@@ -44,7 +44,7 @@ public:
   int studio;
   int correction;
   
-  int noSwitch;
+  bool noSwitch;
   
   int totalframes;
   float realfps;

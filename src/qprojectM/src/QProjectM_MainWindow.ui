@@ -1,0 +1,407 @@
+<ui version="4.0" >
+ <class>qProjectM_MainWindow</class>
+ <widget class="QMainWindow" name="qProjectM_MainWindow" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>787</width>
+    <height>568</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>qprojectM</string>
+  </property>
+  <property name="whatsThis" >
+   <string/>
+  </property>
+  <widget class="QWidget" name="centralwidget" />
+  <widget class="QMenuBar" name="menuBar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>787</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile" >
+    <property name="title" >
+     <string>&amp;Playlist</string>
+    </property>
+    <addaction name="actionOpen_Play_List" />
+    <addaction name="actionAddPresets" />
+    <addaction name="separator" />
+    <addaction name="actionSave_play_list" />
+    <addaction name="actionSave_play_list_as" />
+    <addaction name="separator" />
+    <addaction name="actionExit" />
+   </widget>
+   <widget class="QMenu" name="menuAbout" >
+    <property name="title" >
+     <string>&amp;Help</string>
+    </property>
+    <addaction name="actionAbout_qprojectM" />
+    <addaction name="actionAbout_Qt" />
+   </widget>
+   <widget class="QMenu" name="menuSettings" >
+    <property name="title" >
+     <string>&amp;Settings</string>
+    </property>
+    <addaction name="actionConfigure_projectM" />
+   </widget>
+   <addaction name="menuFile" />
+   <addaction name="menuSettings" />
+   <addaction name="menuAbout" />
+  </widget>
+  <widget class="QStatusBar" name="statusbar" />
+  <widget class="QDockWidget" name="presetPlayListDockWidget" >
+   <property name="sizePolicy" >
+    <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize" >
+    <size>
+     <width>315</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="baseSize" >
+    <size>
+     <width>300</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="whatsThis" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This dock panel provides a convenient interface to manage a list of presets for projectM to render. The behavior is very similar to a music player playlist.&lt;/p>&lt;/body>&lt;/html></string>
+   </property>
+   <property name="windowTitle" >
+    <string>Preset Playlist</string>
+   </property>
+   <attribute name="dockWidgetArea" >
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents" >
+    <widget class="QWidget" name="verticalLayout" >
+     <property name="geometry" >
+      <rect>
+       <x>0</x>
+       <y>0</y>
+       <width>311</width>
+       <height>481</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" >
+      <property name="bottomMargin" >
+       <number>0</number>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" >
+        <property name="spacing" >
+         <number>-1</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="presetOpenPushButton" >
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip" >
+           <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Click here to add presets to the current playlist.&lt;/p>&lt;/body>&lt;/html></string>
+          </property>
+          <property name="text" >
+           <string/>
+          </property>
+          <property name="icon" >
+           <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_add_playlist.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="presetSavePushButton" >
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip" >
+           <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Click here to the current play list&lt;/p>&lt;/body>&lt;/html></string>
+          </property>
+          <property name="styleSheet" >
+           <string/>
+          </property>
+          <property name="text" >
+           <string/>
+          </property>
+          <property name="icon" >
+           <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_save.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="clearPresetList_PushButton" >
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="toolTip" >
+           <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Clears &lt;span style=" font-style:italic;">all&lt;/span> items if &lt;span style=" font-style:italic;">none are selected&lt;/span> and the currently selected items otherwise.&lt;/p>&lt;/body>&lt;/html></string>
+          </property>
+          <property name="text" >
+           <string/>
+          </property>
+          <property name="icon" >
+           <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_playlist_clear.png</iconset>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="presetSearchBarLineEdit" >
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="statusTip" >
+           <string>Start typing in a filter to crop the play list.</string>
+          </property>
+          <property name="whatsThis" >
+           <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Use this search bar to crop your preset play list. Only the presets that match your search criteria will be queued.&lt;/p>&lt;/body>&lt;/html></string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QTableView" name="tableView" >
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="baseSize" >
+         <size>
+          <width>500</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="acceptDrops" >
+         <bool>true</bool>
+        </property>
+        <property name="statusTip" >
+         <string>Double click on a preset to render it, or drag presets to change the preset order.</string>
+        </property>
+        <property name="autoFillBackground" >
+         <bool>false</bool>
+        </property>
+        <property name="dragEnabled" >
+         <bool>true</bool>
+        </property>
+        <property name="alternatingRowColors" >
+         <bool>false</bool>
+        </property>
+        <property name="selectionMode" >
+         <enum>QAbstractItemView::SingleSelection</enum>
+        </property>
+        <property name="selectionBehavior" >
+         <enum>QAbstractItemView::SelectRows</enum>
+        </property>
+        <property name="showGrid" >
+         <bool>false</bool>
+        </property>
+        <property name="gridStyle" >
+         <enum>Qt::DashDotDotLine</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" >
+        <property name="spacing" >
+         <number>-1</number>
+        </property>
+        <item>
+         <widget class="QCheckBox" name="randomCheckBox" >
+          <property name="enabled" >
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Minimum" hsizetype="Fixed" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="cursor" >
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="statusTip" >
+           <string>Change the preset play list's selection mode</string>
+          </property>
+          <property name="whatsThis" >
+           <string/>
+          </property>
+          <property name="styleSheet" >
+           <string>QCheckBox::indicator:checked {
+image: url(:/images/icons/hi16-action-projectm_random.png);
+}
+
+QCheckBox::indicator:unchecked{
+image: url(:/images/icons/hi16-action-projectm_random_no.png);
+}</string>
+          </property>
+          <property name="text" >
+           <string/>
+          </property>
+          <property name="checked" >
+           <bool>true</bool>
+          </property>
+          <property name="autoRepeat" >
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="lockPresetCheckBox" >
+          <property name="enabled" >
+           <bool>true</bool>
+          </property>
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Minimum" hsizetype="MinimumExpanding" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="cursor" >
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="statusTip" >
+           <string>Change the preset play list's selection mode</string>
+          </property>
+          <property name="whatsThis" >
+           <string/>
+          </property>
+          <property name="styleSheet" >
+           <string>QCheckBox::indicator:checked {image: url(:/images/icons/hi16-action-projectm_lock.png);
+}
+
+QCheckBox::indicator:unchecked{
+image: url(:/images/icons/hi16-action-projectm_unlock.png);
+}</string>
+          </property>
+          <property name="text" >
+           <string/>
+          </property>
+          <property name="checked" >
+           <bool>false</bool>
+          </property>
+          <property name="autoRepeat" >
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+  </widget>
+  <action name="actionAddPresets" >
+   <property name="icon" >
+    <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_add_playlist.png</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Add Presets...</string>
+   </property>
+  </action>
+  <action name="actionAbout_qprojectM" >
+   <property name="text" >
+    <string>About qprojectM</string>
+   </property>
+  </action>
+  <action name="actionAbout_Qt" >
+   <property name="text" >
+    <string>About Qt</string>
+   </property>
+  </action>
+  <action name="actionExit" >
+   <property name="text" >
+    <string>&amp;Quit</string>
+   </property>
+  </action>
+  <action name="actionSave_play_list" >
+   <property name="icon" >
+    <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_save.png</iconset>
+   </property>
+   <property name="text" >
+    <string>&amp;Save Playlist</string>
+   </property>
+  </action>
+  <action name="actionSave_play_list_as" >
+   <property name="text" >
+    <string>Save Playlist &amp;As...</string>
+   </property>
+  </action>
+  <action name="actionConfigure_projectM" >
+   <property name="text" >
+    <string>Configure projectM...</string>
+   </property>
+  </action>
+  <action name="actionOpen_Play_List" >
+   <property name="text" >
+    <string>&amp;Open Playlist...</string>
+   </property>
+  </action>
+  <action name="actionLockPreset" >
+   <property name="icon" >
+    <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_lock.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Lock Active Preset</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="application.qrc" />
+ </resources>
+ <connections>
+  <connection>
+   <sender>presetOpenPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionAddPresets</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>221</x>
+     <y>66</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

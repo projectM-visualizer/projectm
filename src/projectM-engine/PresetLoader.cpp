@@ -158,11 +158,23 @@ void PresetLoader::handleDirectoryError()
 }
 
 
-unsigned int PresetLoader::addPresetURL(const std::string & url)  {
+unsigned int PresetLoader::addPresetURL(const std::string & url, const std::string & presetName)  {
 	m_entries.push_back(url);
-
-	/// @bug strip url out of preset name
-	m_presetNames.push_back(url);
+	m_presetNames.push_back(presetName);
 	return m_entries.size()-1;
 }
 
+void PresetLoader::removePreset(unsigned int index)  {
+	std::vector<std::string>::iterator pos = m_entries.begin();
+	pos += index;
+	m_entries.erase(pos);
+	m_presetNames.erase(pos);
+}
+
+const std::string & PresetLoader::getPresetURL ( unsigned int index) const {
+	return m_entries[index];
+}
+		
+const std::string & PresetLoader::getPresetName ( unsigned int index) const {
+	return m_presetNames[index];
+}
