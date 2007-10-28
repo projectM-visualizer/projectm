@@ -1417,12 +1417,11 @@ int query_DXT_capability( void )
 		} else
 		{
 			/*	and find the address of the extension function	*/
-			void *ext_addr = NULL;
+		        P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC ext_addr = NULL;
 			#ifdef WIN32
-				ext_addr = (void*)wglGetProcAddress
-						(
-							"glCompressedTexImage2DARB"
-						);
+			 ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
+                                               wglGetProcAddress("glCompressedTexImage2DARB");
+
 			#elif defined(__APPLE__) || defined(__APPLE_CC__)
 				/*	I can't test this Apple stuff!	*/
 				CFBundleRef bundle;
@@ -1439,16 +1438,17 @@ int query_DXT_capability( void )
 						kCFStringEncodingASCII );
 				bundle = CFBundleCreate( kCFAllocatorDefault, bundleURL );
 				assert( bundle != NULL );
-				ext_addr = CFBundleGetFunctionPointerForName(
-								bundle, extensionName );
+				ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
+				    CFBundleGetFunctionPointerForName( bundle, extensionName );
+
+			
 				CFRelease( bundleURL );
 				CFRelease( functionName );
 				CFRelease( bundle );
 			#else
-				ext_addr = (void*)glXGetProcAddressARB
-						(
-							(const GLubyte *)"glCompressedTexImage2DARB"
-						);
+				 ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
+                                      glXGetProcAddress((const GLubyte *)"glCompressedTexImage2DARB");
+
 			#endif
 			/*	Flag it so no checks needed later	*/
 			if( NULL == ext_addr )
@@ -1463,7 +1463,7 @@ int query_DXT_capability( void )
 			} else
 			{
 				/*	all's well!	*/
-				soilGlCompressedTexImage2D = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)ext_addr;
+				soilGlCompressedTexImage2D = ext_addr;
 				has_DXT_capability = SOIL_DXT_DIRECT_UPLOAD;
 			}
 		}
