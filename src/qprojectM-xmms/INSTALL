@@ -1,0 +1,7 @@
+Install libprojectM 1.0 and XMMS, then:
+
+cmake . -DCMAKE_BUILD_TYPE=RELEASE
+make
+make install
+
+You may need to type ccmake . and change the PREFIX if your system prefers /usr instead of /usr/local.
