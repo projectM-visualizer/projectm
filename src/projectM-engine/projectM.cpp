@@ -881,15 +881,17 @@ void projectM::selectPreset ( unsigned int index )
 void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset, const PresetInputs & inputs, PresetOutputs & outputs) {
 
 
+	// If queue not specified, roll with usual random behavior
 	if (*m_presetQueuePos == m_presetChooser->end()) {
 		*m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>();
 		targetPreset = m_presetPos->allocate( inputs, outputs );
 	}
-	else {
+	else { // queue item specified- use it and reset the queue
 		targetPreset = m_presetQueuePos->allocate ( inputs, outputs );
 		*m_presetQueuePos = m_presetChooser->end();
 	}
 
+	// Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
 	renderer->setPresetName ( targetPreset->presetName() );
 
 }
