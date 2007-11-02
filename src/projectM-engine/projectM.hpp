@@ -133,8 +133,13 @@ public:
  
   /// Tell projectM to play a particular preset when it chooses to switch
   /// If the preset is locked the queued item will be not switched to until the lock is released
+  /// Subsequent calls to this function effectively nullifies previous calls.
   void queuePreset(unsigned int index);
 
+  /// Tell projectM to play a particular preset when it chooses to switch
+  /// If the preset is locked the queued item will be not switched to until the lock is released
+  /// Subsequent calls to this function effectively nullifies previous calls.
+  bool isPresetQueued() const;
 
   /// Removes entire playlist, The currently loaded preset will end up sticking until new presets are added
   void clearPlaylist();
@@ -208,6 +213,9 @@ private:
   /// The current position of the directory iterator
   PresetIterator * m_presetPos;
   
+  /// The current position of the preset queue position (end() implies no queue item)
+  PresetIterator * m_presetQueuePos;
+
   /// Required by the preset chooser. Manages a loaded preset directory
   PresetLoader * m_presetLoader;
   

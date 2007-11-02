@@ -783,8 +783,11 @@ int projectM::initPresetTools()
 	// Start the iterator
 	m_presetPos = new PresetIterator();
 
+	// Initialize a preset queue position as well
+	m_presetQueuePos = new PresetIterator();
+
 	// Start at end ptr- this allows next/previous to easily be done from this position.
-	*m_presetPos = m_presetChooser->end();
+	*m_presetPos = *m_presetQueuePos = m_presetChooser->end();
 
 	// Load idle preset
 	//std::cerr << "[projectM] Allocating idle preset..." << std::endl;
@@ -814,6 +817,14 @@ void projectM::destroyPresetTools()
 	/// @slow might not be necessary
 	m_presetPos = 0;
 
+
+	if ( m_presetQueuePos )
+		delete ( m_presetQueuePos );
+
+	/// @slow might not be necessary
+	m_presetQueuePos = 0;
+
+
 	if ( m_presetChooser )
 		delete ( m_presetChooser );
 
@@ -831,9 +842,6 @@ void projectM::destroyPresetTools()
 
 }
 
-void projectM::queuePreset(unsigned int index) {
-//	m_presetQueueIndex = index;
-}
 
 void projectM::removePreset(unsigned int index) {
 	m_presetLoader->removePreset(index);
@@ -888,6 +896,16 @@ void projectM::clearPlaylist ( )
 {
 	m_presetLoader->clear();
 }
+
+
+void projectM::queuePreset(unsigned int index) {
+	*m_presetQueuePos = m_presetChooser->begin(index);
+}
+
+bool projectM::isPresetQueued() const {
+	return (*m_presetQueuePos != m_presetChooser->end());
+}
+
 
 unsigned int projectM::getPlaylistSize() const
 {
