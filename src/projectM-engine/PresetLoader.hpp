@@ -43,6 +43,9 @@ class PresetLoader {
 		/// \param url an url referencing the preset
 		/// \returns The unique index assigned to the preset in the collection. Used with loadPreset
 		unsigned int addPresetURL ( const std::string & url, const std::string & presetName);
+	
+		/// Clears all presets from the collection
+		void clear() { m_entries.clear(); m_presetNames.clear(); }
 		
 		void removePreset(unsigned int index);
 
