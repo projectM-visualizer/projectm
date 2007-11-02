@@ -884,7 +884,12 @@ std::string projectM::getPresetName ( unsigned int index ) const
 	return m_presetLoader->getPresetName(index);
 }
 
-unsigned int projectM::getPlayListSize() const
+void projectM::clearPlaylist ( ) 
+{
+	m_presetLoader->clear();
+}
+
+unsigned int projectM::getPlaylistSize() const
 {
 	return m_presetLoader->getNumPresets();
 }

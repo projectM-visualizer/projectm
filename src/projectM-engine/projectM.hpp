@@ -135,6 +135,10 @@ public:
   /// If the preset is locked the queued item will be not switched to until the lock is released
   void queuePreset(unsigned int index);
 
+
+  /// Removes entire playlist, The currently loaded preset will end up sticking until new presets are added
+  void clearPlaylist();
+
   /// Turn on or off a lock that prevents projectM from switching to another preset
   void setPresetLock(bool isLocked);
 
@@ -151,7 +155,7 @@ public:
   std::string getPresetName ( unsigned int index ) const;
 
   /// Returns the size of the play list
-  unsigned int getPlayListSize() const;
+  unsigned int getPlaylistSize() const;
 
   /// Occurs when active preset has switched. Switched to index is returned
   virtual void presetSwitchedEvent(bool isHardCut, unsigned int index) const {};

@@ -68,6 +68,7 @@ class QProjectMWidget : public QGLWidget
      QProjectM * getQProjectM() { return m_projectM; }
 
  public slots:
+     
      void setPresetLock(int state) {
 		m_projectM->setPresetLock((bool)state);
      }
@@ -77,7 +78,10 @@ class QProjectMWidget : public QGLWidget
  private:
 	std::string config_file;
 	QProjectM * m_projectM;
+
  protected:
+
+
 
 void keyReleaseEvent ( QKeyEvent * e )  {
 	
@@ -212,6 +216,7 @@ protected:
       void closeEvent(QCloseEvent *event);
 
 private slots:
+      void clearPlaylist();
       void open();
       void about();
       void postProjectM_Initialize();
