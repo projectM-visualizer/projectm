@@ -195,7 +195,8 @@ private:
   int nohard;
   int count;
   float fpsstart;
-
+  
+  void switchPreset(std::auto_ptr<Preset> & targetPreset, const PresetInputs & inputs, PresetOutputs & outputs);
   void readConfig(std::string config_file);
   void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
   void projectM_reset();
