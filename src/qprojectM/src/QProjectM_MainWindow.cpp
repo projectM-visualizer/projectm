@@ -41,6 +41,9 @@ QProjectM_MainWindow::QProjectM_MainWindow(const std::string & config_file)
       connect(ui.lockPresetCheckBox, SIGNAL(stateChanged(int)),
 	m_QProjectMWidget, SLOT(setPresetLock(int)));
 
+      connect(ui.clearPresetList_PushButton, SIGNAL(pressed()),
+	this, SLOT(clearPlaylist()));
+
       connect(m_QProjectMWidget, SIGNAL(projectM_Initialized()), this, SLOT(postProjectM_Initialize()));
 
         
@@ -63,6 +66,12 @@ QProjectM_MainWindow::QProjectM_MainWindow(const std::string & config_file)
       ui.presetPlayListDockWidget->hide();
        
 
+}
+
+void QProjectM_MainWindow::clearPlaylist() {
+
+	getQProjectM()->clearPlaylist();
+	playlistModel.clear();
 }
 
 QProjectM * QProjectM_MainWindow::getQProjectM() {
@@ -170,7 +179,8 @@ void QProjectM_MainWindow::open()
 				loadFile(*pos);
 		}
 	    }
-
+	
+	playlistModel.setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 }
 
 
@@ -178,7 +188,7 @@ void QProjectM_MainWindow::refreshPlaylist() {
 
 	playlistModel.clear();
 
-	for (unsigned int i = 0; i < getQProjectM()->getPlayListSize(); i++) {
+	for (unsigned int i = 0; i < getQProjectM()->getPlaylistSize(); i++) {
 		
 		const std::string & presetURL = getQProjectM()->getPresetURL(i);
 		const std::string & presetName = getQProjectM()->getPresetName(i);
