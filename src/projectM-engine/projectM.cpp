@@ -196,13 +196,16 @@ DLLEXPORT void projectM::renderFrame()
 			presetInputs.progress=0.0;
 			presetInputs.frame = 1;
 
-			*m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>();
+			//*m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>();
 
-			m_activePreset2 = m_presetPos->allocate
-			                  ( presetInputs, &m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs );
+			//m_activePreset2 = m_presetPos->allocate
+			//                  ( presetInputs, &m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs );
 
-			assert ( m_activePreset2.get() );
-			renderer->setPresetName ( m_activePreset2->presetName() );
+			switchPreset(m_activePreset2, presetInputs, 
+				&m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
+
+			//assert ( m_activePreset2.get() );
+			//renderer->setPresetName ( m_activePreset2->presetName() );
 
 			//nohard=(int)(presetInputs.fps*3.5);
 			smoothFrame = ( int ) ( presetInputs.fps * smoothDuration );
@@ -212,12 +215,16 @@ DLLEXPORT void projectM::renderFrame()
 		else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && nohard<0 )
 		{
 			//            printf("%f %d %d\n", beatDetect->bass-beatDetect->bass_old,this->frame,this->avgtime);
-			*m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor> ();
+			
+//			*m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor> ();
 
-			m_activePreset = m_presetPos->allocate ( presetInputs, presetOutputs );
-			renderer->setPresetName ( m_activePreset->presetName() );
+//			m_activePreset = m_presetPos->allocate ( presetInputs, presetOutputs );
+//			renderer->setPresetName ( m_activePreset->presetName() );
 
-			assert ( m_activePreset.get() );
+//			assert ( m_activePreset.get() );
+
+			switchPreset(m_activePreset, presetInputs, presetOutputs);
+
 			//nohard=presetInputs.fps*1;
 			smoothFrame=0;
 			presetInputs.progress=0.0;
@@ -871,6 +878,22 @@ void projectM::selectPreset ( unsigned int index )
 	smoothFrame = 0;
 }
 
+void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset, const PresetInputs & inputs, PresetOutputs & outputs) {
+
+
+	if (*m_presetQueuePos == m_presetChooser->end()) {
+		*m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>();
+		targetPreset = m_presetPos->allocate( inputs, outputs );
+	}
+	else {
+		targetPreset = m_presetQueuePos->allocate ( inputs, outputs );
+		*m_presetQueuePos = m_presetChooser->end();
+	}
+
+	renderer->setPresetName ( targetPreset->presetName() );
+
+}
+
 void projectM::setPresetLock ( bool isLocked )
 {
 	renderer->noSwitch = isLocked;
@@ -895,11 +918,13 @@ std::string projectM::getPresetName ( unsigned int index ) const
 void projectM::clearPlaylist ( ) 
 {
 	m_presetLoader->clear();
+	*m_presetQueuePos = m_presetChooser->end();
 }
 
 
 void projectM::queuePreset(unsigned int index) {
-	*m_presetQueuePos = m_presetChooser->begin(index);
+	if ((index >= 0) && (index <= m_presetChooser->getNumPresets()))
+		*m_presetQueuePos = m_presetChooser->begin(index);
 }
 
 bool projectM::isPresetQueued() const {
