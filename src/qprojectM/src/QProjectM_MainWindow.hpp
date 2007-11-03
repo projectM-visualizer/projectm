@@ -32,7 +32,7 @@
 
 #include <QGLWidget>
 #include <QStandardItemModel>
-#include <QHash>
+//#include <QHash>
 
 class QAction;
 class QMenu;
