@@ -32,6 +32,7 @@
 
 #include <QGLWidget>
 #include <QStandardItemModel>
+#include <QHash>
 
 class QAction;
 class QMenu;
@@ -143,7 +144,6 @@ void keyReleaseEvent ( QKeyEvent * e )  {
 
      void paintGL()
      {
-	assert(m_projectM);
    	m_projectM->renderFrame();
      }
 
@@ -227,6 +227,9 @@ private:
 	
       QStandardItemModel playlistModel;
       Ui::qProjectM_MainWindow ui;
+
+      QHash<unsigned int, unsigned int> playlistHash;
+
       QTimer * m_timer;
       void createActions();
       void createMenus();
@@ -234,7 +237,6 @@ private:
       void createStatusBar();
       void readSettings();
       void writeSettings();
-      bool maybeSave();
       void loadFile(const QString &fileName);
       QString strippedName(const QString &fullFileName);
 
