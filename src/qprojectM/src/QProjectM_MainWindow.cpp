@@ -46,7 +46,6 @@ QProjectM_MainWindow::QProjectM_MainWindow(const std::string & config_file)
 
       connect(m_QProjectMWidget, SIGNAL(projectM_Initialized()), this, SLOT(postProjectM_Initialize()));
 
-        
       ui.tableView->setVerticalHeader(0);
 
       ui.tableView->setModel(&playlistModel);
@@ -282,11 +281,17 @@ void QProjectM_MainWindow::loadFile(const QString &fileName)
 	QProjectM * projectM = this->getQProjectM();
 	unsigned int index = projectM->addPresetURL(fileName.toStdString(), strippedName(fileName).toStdString());
 
+	
 	QList<QStandardItem*> items;
-	items.append(new QStandardItem(QString(projectM->getPresetName(index).c_str())));
+	/// @bug these are probably not being deallocated
+	QStandardItem * presetNameItem  = new QStandardItem(QString(projectM->getPresetName(index).c_str()));
+
+	items.append(presetNameItem);
 	items[0]->setEditable(false);
 
 	playlistModel.appendRow(items);
+	
+	this->playlistHash.insert(playlistModel.rowCount()-1, index);
 
 }
 
