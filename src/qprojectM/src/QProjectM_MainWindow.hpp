@@ -213,8 +213,18 @@ public:
     
 protected:
 
-      typedef QPair<QString, QString> StringPair;
-      typedef QVector<StringPair> StringPairVector;	
+      typedef struct PlaylistItemMetaData {
+		PlaylistItemMetaData() {}
+		PlaylistItemMetaData(const QString & _url, const QString & _name, int _rating)
+			{url = _url; name = _name; rating = _rating;
+		}
+
+		QString url;
+		QString name;
+		int rating;
+      } PlaylistItemMetaData;
+
+      typedef QVector<PlaylistItemMetaData> PlaylistItemVector;
       void closeEvent(QCloseEvent *event);
 
 private slots:
@@ -235,7 +245,7 @@ private:
 
       /// example: hashes string "erl" to "Geiss & Sperl, ...", and string "erla" to "Berlap, ..."
 //      QHash<QString, StringPairVector*> exclusionHash;
-      QHash<QString, StringPairVector*> historyHash;
+      QHash<QString, PlaylistItemVector*> historyHash;
 
       QTimer * m_timer;
       void createActions();
@@ -244,7 +254,7 @@ private:
       void createStatusBar();
       void readSettings();
       void writeSettings();
-      void loadFile(const QString &fileName);
+      void loadFile(const QString &fileName, int rating = 3);
       QString strippedName(const QString &fullFileName);
 
       QProjectMWidget * m_QProjectMWidget;
