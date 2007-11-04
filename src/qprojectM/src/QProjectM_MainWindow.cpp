@@ -98,6 +98,9 @@ void QProjectM_MainWindow::updatePlaylistSelection(bool hardCut, int index) {
 }
 
 void QProjectM_MainWindow::selectPlaylistItem(const QModelIndex & index) {
+	if (index.column() > 0)
+		return;
+
 	getQProjectM()->selectPreset(index.row());
 }
 
@@ -255,8 +258,8 @@ void QProjectM_MainWindow::refreshPlaylist() {
 	ui.tableView->setHorizontalHeader(hHeader);
 
 	hHeader->setResizeMode(QHeaderView::Interactive);
-	hHeader->resizeSection(0, 500);
-	hHeader->resizeSection(1, 50);
+	//hHeader->resizeSection(0, 500);
+	//hHeader->resizeSection(1, 50);
 
 	/*
 	hHeader->resizeSection(0, 200);
