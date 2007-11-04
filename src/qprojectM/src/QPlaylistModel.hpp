@@ -37,12 +37,13 @@
 
 void appendRow (const QString & presetURL, const QString & presetName);
 void removeRow (int index);
+QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
 void clear();
 
 QVariant data ( const QModelIndex & index, int role) const;
 int rowCount ( const QModelIndex & parent) const ;
-int colCount ( const QModelIndex & parent) const ;
+int columnCount ( const QModelIndex & parent) const ;
 
 
  private:

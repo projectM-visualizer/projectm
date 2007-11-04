@@ -27,6 +27,8 @@
 #include <QCloseEvent>
 #include <QFileDialog>
 
+#include "QPlaylistModel.hpp"
+
 QProjectM_MainWindow::QProjectM_MainWindow(const std::string & config_file)
 :m_QProjectMFileDialog(new QProjectMFileDialog(this))
 {
@@ -47,8 +49,8 @@ QProjectM_MainWindow::QProjectM_MainWindow(const std::string & config_file)
       connect(m_QProjectMWidget, SIGNAL(projectM_Initialized()), this, SLOT(postProjectM_Initialize()));
 
       ui.tableView->setVerticalHeader(0);
-
-      ui.tableView->setModel(&playlistModel);
+	
+//      ui.tableView->setModel(playlistModel);
 
       m_QProjectMWidget->makeCurrent();
       m_QProjectMWidget->setFocus();
@@ -69,8 +71,7 @@ QProjectM_MainWindow::QProjectM_MainWindow(const std::string & config_file)
 
 void QProjectM_MainWindow::clearPlaylist() {
 
-	getQProjectM()->clearPlaylist();
-	playlistModel.clear();
+	playlistModel->clear();
 }
 
 QProjectM * QProjectM_MainWindow::getQProjectM() {
@@ -84,7 +85,7 @@ void QProjectM_MainWindow::updatePlaylistSelection(bool hardCut, unsigned int in
 	else
 		statusBar()->showMessage(tr("*** Soft cut ***") , 2000);
 
-	ui.tableView->selectRow(index);
+	//ui.tableView->selectRow(index);
 
 
 }
@@ -95,8 +96,11 @@ void QProjectM_MainWindow::selectPlaylistItem(const QModelIndex & index) {
 
 
 void QProjectM_MainWindow::postProjectM_Initialize() {
+
+	playlistModel = new QPlaylistModel(*m_QProjectMWidget->getQProjectM(),this);
 	refreshPlaylist();
-  
+  	
+	ui.tableView->setModel(playlistModel);
         connect(m_QProjectMWidget->getQProjectM(), SIGNAL(presetSwitchedSignal(bool,unsigned int)), this, SLOT(updatePlaylistSelection(bool,unsigned int)));
 
 	
@@ -179,45 +183,32 @@ void QProjectM_MainWindow::open()
 		}
 	    }
 	
-	playlistModel.setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
+	//playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 }
 
 
 void QProjectM_MainWindow::refreshPlaylist() {
 
-	playlistModel.clear();
-
-	for (unsigned int i = 0; i < getQProjectM()->getPlaylistSize(); i++) {
-		
-		const std::string & presetURL = getQProjectM()->getPresetURL(i);
-		const std::string & presetName = getQProjectM()->getPresetName(i);
-
-		QList<QStandardItem*> items;
-		items.append(new QStandardItem(QString(presetName.c_str())));
-		items[0]->setEditable(false);
-
-		playlistModel.appendRow(items);
-	}
-
 
     QHeaderView * hHeader = new QHeaderView(Qt::Horizontal, this);
     QHeaderView * vHeader = new QHeaderView(Qt::Vertical, this);
 
-    hHeader->setClickable(true);
-    hHeader->setSortIndicatorShown(true);
-    hHeader->setSortIndicator(1, Qt::AscendingOrder);
+    //hHeader->
+    hHeader->setClickable(false);
+    hHeader->setSortIndicatorShown(false);
+    //hHeader->setSortIndicator(1, Qt::AscendingOrder);
     hHeader->setStretchLastSection(true);
 
 	ui.tableView->setVerticalHeader(vHeader);	
 	ui.tableView->setHorizontalHeader(hHeader);
 
-	playlistModel.setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
+//	playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 
 	vHeader->hide();
 
-	//playlistModel.setHeaderData(0, Qt::Vertical, 1000, Qt::SizeHintRole);
-	//playlistModel.setHeaderData(1, Qt::Horizontal, tr("Rating"));//, Qt::DisplayRole);
-	//playlistModel.setHeaderData(2, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
+	//playlistModel->setHeaderData(0, Qt::Vertical, 1000, Qt::SizeHintRole);
+	//playlistModel->setHeaderData(1, Qt::Horizontal, tr("Rating"));//, Qt::DisplayRole);
+	//playlistModel->setHeaderData(2, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 	
 	
 }
@@ -278,21 +269,9 @@ void QProjectM_MainWindow::writeSettings()
 
 void QProjectM_MainWindow::loadFile(const QString &fileName)
 {
-	QProjectM * projectM = this->getQProjectM();
-	unsigned int index = projectM->addPresetURL(fileName.toStdString(), strippedName(fileName).toStdString());
-
 	
-	QList<QStandardItem*> items;
-	/// @bug these are probably not being deallocated
-	QStandardItem * presetNameItem  = new QStandardItem(QString(projectM->getPresetName(index).c_str()));
-
-	items.append(presetNameItem);
-	items[0]->setEditable(false);
-
-	playlistModel.appendRow(items);
+	playlistModel->appendRow(fileName, strippedName(fileName));
 	
-	this->playlistHash.insert(playlistModel.rowCount()-1, index);
-
 }
 
 

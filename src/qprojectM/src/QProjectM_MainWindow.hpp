@@ -37,6 +37,7 @@
 class QAction;
 class QMenu;
 class QProjectMFileDialog;
+class QPlaylistModel;
 
 #include <iostream>
 
@@ -225,7 +226,7 @@ private slots:
 
 private:
 	
-      QStandardItemModel playlistModel;
+      QPlaylistModel * playlistModel;
       Ui::qProjectM_MainWindow ui;
 
       QHash<unsigned int, unsigned int> playlistHash;
