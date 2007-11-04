@@ -127,6 +127,8 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )  {
 		//m_QProjectMWidget->keyReleaseEvent(e);
 		return;
 
+	case Qt::Key_F1:
+		 //emit(keyPressed m_QProjectMWidget, 
 	case Qt::Key_F:			
 		if (ui.presetSearchBarLineEdit->hasFocus())
 			return;
