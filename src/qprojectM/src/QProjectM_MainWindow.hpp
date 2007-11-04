@@ -232,8 +232,9 @@ private:
       Ui::qProjectM_MainWindow ui;
 
       /// example: hashes string "erl" to "Geiss & Sperl, ...", and string "erla" to "Berlap, ..."
-      QHash<QString, StringPairVector*> exclusionHash;
-	
+//      QHash<QString, StringPairVector*> exclusionHash;
+      QHash<QString, StringPairVector*> historyHash;
+
       QTimer * m_timer;
       void createActions();
       void createMenus();
