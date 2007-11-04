@@ -120,7 +120,7 @@ std::auto_ptr<Preset> PresetLoader::loadPreset(unsigned int index, const PresetI
   assert(index >= 0);
   assert(index < m_entries.size());
 
-  // Return a new autopointer to a present
+  // Return a new autopointer to a preset
   return std::auto_ptr<Preset>(new Preset(m_entries[index], m_presetNames[index], presetInputs, presetOutputs));
 }
 
