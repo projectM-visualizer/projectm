@@ -47,7 +47,11 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 				return QVariant(QString(m_projectM.getPresetName(index.row()).c_str()));
 			else
 				return ratingToIcon(m_ratings[index.row()]);
-
+		case Qt::ToolTip:
+			if (index.column() == 0)
+				return QVariant(QString(m_projectM.getPresetName(index.row()).c_str()));
+			else
+				return QString("Current rating is %1 / 5").arg(m_ratings[index.row()]);
 		case Qt::DecorationRole:						
 			if (index.column() == 1)
 				return ratingToIcon(m_ratings[index.row()]);
