@@ -8,7 +8,10 @@ QPlaylistModel::QPlaylistModel(projectM & _projectM, QObject * parent):
 
 QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::DisplayRole ) const {
 	
-	return QVariant(QString(m_projectM.getPresetName(index.row()).c_str()));
+	if (role == Qt::DisplayRole)
+		return QVariant(QString(m_projectM.getPresetName(index.row()).c_str()));
+	else
+		return QVariant();
 }
 
 QVariant QPlaylistModel::headerData ( int section, Qt::Orientation orientation, int role) const {
