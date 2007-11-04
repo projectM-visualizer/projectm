@@ -26,6 +26,7 @@
 #include "libprojectM/projectM.hpp"
 
 #include <QAbstractTableModel>
+#include <QVector>
 
  class QPlaylistModel : public QAbstractTableModel
  {
@@ -33,10 +34,12 @@
 
  public:
 static const int URLInfoRole = 1000;
+static const int RatingRole = 1001;
      QPlaylistModel(projectM & _projectM, QObject * parent = 0);
      ~QPlaylistModel() { }
+bool setData(const QModelIndex & index, const QVariant & value, int role=Qt::EditRole);
 
-void appendRow (const QString & presetURL, const QString & presetName);
+void appendRow (const QString & presetURL, const QString & presetName, int rating = 3);
 void removeRow (int index);
 QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
@@ -48,7 +51,8 @@ int columnCount ( const QModelIndex & parent) const ;
 
 
  private:
+	QVariant ratingToIcon(int rating) const;
 	projectM & m_projectM;
-	
+	QVector<int> m_ratings;	
 };
 #endif
