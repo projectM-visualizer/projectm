@@ -7,6 +7,14 @@ QPlaylistModel::QPlaylistModel(projectM & _projectM, QObject * parent):
 }
 
 
+void QPlaylistModel::updateItemHighlights() {
+	if (rowCount() == 0)
+		return;
+
+	emit(dataChanged(this->index(0,0), this->index(rowCount()-1,columnCount()-1)))
+;
+}
+
 bool QPlaylistModel::setData(const QModelIndex & index, const QVariant & value, int role) {
 	if (role == QPlaylistModel::RatingRole)  {
 		//QAbstractTableModel::setData(index, ratingToIcon(value.toInt()), Qt::DecorationRole);
@@ -98,7 +106,7 @@ int QPlaylistModel::rowCount ( const QModelIndex & parent) const {
 }
 
 
-int QPlaylistModel::columnCount ( const QModelIndex & parent = QModelIndex() ) const {
+int QPlaylistModel::columnCount ( const QModelIndex & parent) const {
 
 	// eventually add ratings here so size should be 2
 	if (rowCount() > 0)
