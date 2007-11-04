@@ -232,7 +232,7 @@ private slots:
       void open();
       void about();
       void postProjectM_Initialize();
-      void updatePlaylistSelection(bool hardCut, unsigned int index);
+      void updatePlaylistSelection(bool hardCut, int index);
       void selectPlaylistItem(const QModelIndex & index);
       void changeRating(const QModelIndex & index);
 
@@ -247,6 +247,7 @@ private:
 //      QHash<QString, StringPairVector*> exclusionHash;
       QHash<QString, PlaylistItemVector*> historyHash;
 
+      int oldPresetIndex;
       QTimer * m_timer;
       void createActions();
       void createMenus();
