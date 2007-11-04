@@ -60,6 +60,15 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 		case QPlaylistModel::RatingRole:
 			return QVariant(m_ratings[index.row()]);
 
+		case Qt::BackgroundRole:
+
+			if (m_projectM.isPresetLocked() && (index.row() == m_projectM.selectedPresetIndex()))
+				return Qt::red;
+			if (!m_projectM.isPresetLocked() && (index.row() == m_projectM.selectedPresetIndex()))
+				return Qt::green;
+	 
+			return Qt::white;
+
 		case QPlaylistModel::URLInfoRole:
 			return QVariant(QString(m_projectM.getPresetURL(index.row()).c_str()));
 		default:
