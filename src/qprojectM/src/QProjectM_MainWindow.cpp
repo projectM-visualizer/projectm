@@ -201,6 +201,15 @@ void QProjectM_MainWindow::open()
 
 void QProjectM_MainWindow::refreshPlaylist() {
 
+    StringPairVector * stringPairs = new StringPairVector();
+    for (int i = 0; i < playlistModel->rowCount();i++) {
+	QModelIndex index = playlistModel->index(i, 0);
+	const QString & name = playlistModel->data(index, Qt::DisplayRole).toString();
+	const QString & url = playlistModel->data(index, QPlaylistModel::URLInfoRole).toString();
+			
+	stringPairs->push_back(StringPair(url, name));
+    }
+    historyHash.insert(QString(), stringPairs);
 
     QHeaderView * hHeader = new QHeaderView(Qt::Horizontal, this);
     QHeaderView * vHeader = new QHeaderView(Qt::Vertical, this);
@@ -281,8 +290,13 @@ void QProjectM_MainWindow::writeSettings()
 
 void QProjectM_MainWindow::loadFile(const QString &fileName)
 {
-	
-	playlistModel->appendRow(fileName, strippedName(fileName));
+
+	const QString & name = strippedName(fileName);
+		
+	//if (name.contains(previousFilter, Qt::CaseInsensitive))
+		playlistModel->appendRow(fileName, name);
+	//else
+	//	exclusionHash.value(
 	
 }
 
@@ -293,10 +307,31 @@ QString QProjectM_MainWindow::strippedName(const QString &fullFileName)
 }
 
 
-void QProjectM_MainWindow::updateFilteredPlaylist(const QString & filter) {
+void QProjectM_MainWindow::updateFilteredPlaylist(const QString & text) {
 	
+	const QString filter = text.toLower();
 
-	if (filter.length() < previousFilter.length()) {
+	playlistModel->clear();
+	
+	if (historyHash.contains(filter)) {
+		const StringPairVector & stringPairs = *historyHash.value(filter);
+		for (StringPairVector::const_iterator pos = stringPairs.begin(); pos != stringPairs.end();++pos) {
+			playlistModel->appendRow(pos->first, pos->second);
+		}
+	} else {
+		const StringPairVector & stringPairs = *historyHash.value(QString());
+
+		StringPairVector * stringPairs2 = new StringPairVector();
+		for (StringPairVector::const_iterator pos = stringPairs.begin(); pos != stringPairs.end();++pos) {
+			if ((pos->first).contains(filter, Qt::CaseInsensitive)) {
+				playlistModel->appendRow(pos->first, pos->second);
+				stringPairs2->push_back(StringPair(pos->first,pos->second));
+			}			
+		}
+		historyHash.insert(filter, stringPairs2);
+	}
+	#if 0
+	if (!(filter.substring(0, filter.length()-1) == previousFilter)) {
 
 		StringPairVector & stringPairs = *exclusionHash.value(previousFilter);
 		while (!stringPairs.empty()) {
@@ -323,7 +358,6 @@ void QProjectM_MainWindow::updateFilteredPlaylist(const QString & filter) {
 				stringPairs->push_back(StringPair(url, name));
 				assert (i < playlistModel->rowCount());
 				assert (i >= 0);
-				std::cerr << "deleting " << i << std::endl;
 				playlistModel->removeRow(i);
 				i--;
 			}
@@ -331,6 +365,6 @@ void QProjectM_MainWindow::updateFilteredPlaylist(const QString & filter) {
 		}
 		
 	}
-	previousFilter = filter;
+#endif
 }
 
