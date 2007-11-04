@@ -17,12 +17,15 @@ set(qprojectM_SRCS
     QProjectM_MainWindow.hpp
     ConfigFile.h ConfigFile.cpp
     QProjectMFileDialog.hpp
+    QPlaylistModel.cpp
+    QPlaylistModel.hpp
 )
 
 
 set(qprojectM_MOC_HDRS
     QProjectM_MainWindow.hpp
     QProjectMFileDialog.hpp
+    QPlaylistModel.hpp
 )
 
 set(qprojectM_UIS
