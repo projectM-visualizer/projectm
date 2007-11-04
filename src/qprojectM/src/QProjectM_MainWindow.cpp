@@ -254,7 +254,7 @@ void QProjectM_MainWindow::refreshPlaylist() {
 	ui.tableView->setVerticalHeader(vHeader);	
 	ui.tableView->setHorizontalHeader(hHeader);
 
-	hHeader->setResizeMode(QHeaderView::Fixed);
+	hHeader->setResizeMode(QHeaderView::Interactive);
 	hHeader->resizeSection(0, 500);
 	hHeader->resizeSection(1, 50);
 
