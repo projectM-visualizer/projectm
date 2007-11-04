@@ -114,6 +114,9 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )  {
 	QModelIndex modelIndex;
 	switch (e->key()) {
 	case Qt::Key_L:
+		if (ui.presetSearchBarLineEdit->hasFocus())
+			return;
+
 		if (ui.lockPresetCheckBox->checkState() == Qt::Checked)
 			ui.lockPresetCheckBox->setCheckState(Qt::Unchecked);
 		else
@@ -156,6 +159,9 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )  {
 		return;	
 
 	case Qt::Key_R:
+		if (ui.presetSearchBarLineEdit->hasFocus())
+			return;
+
 		//modelIndex.selectRandom()
 		//modelIndex = QModelIndex(0,0,0);
 		//selectPlaylistItem(modelIndex);
