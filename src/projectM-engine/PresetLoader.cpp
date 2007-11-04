@@ -165,12 +165,13 @@ unsigned int PresetLoader::addPresetURL(const std::string & url, const std::stri
 }
 
 void PresetLoader::removePreset(unsigned int index)  {
-	std::vector<std::string>::iterator pos = m_entries.begin();
-	asser(pos != m_entries.end());
+//	std::vector<std::string>::iterator pos = m_entries.begin();
+	//assert(pos != m_entries.end());
+	
+//	pos += index;
 
-	pos += index;
-	m_entries.erase(pos);
-	m_presetNames.erase(pos);
+	m_entries.erase(m_entries.begin()+index);
+	m_presetNames.erase(m_presetNames.begin()+index);
 }
 
 const std::string & PresetLoader::getPresetURL ( unsigned int index) const {

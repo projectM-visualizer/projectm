@@ -125,13 +125,15 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )  {
 		return;
 
 	case Qt::Key_F:			
-		//if (ui.presetSearchBarLineEdit->hasFocus())
-		//	return;
+		if (ui.presetSearchBarLineEdit->hasFocus())
+			return;
 		this->setWindowState(this->windowState() ^ Qt::WindowFullScreen);
 		return;
 
 	case Qt::Key_M:
-
+		if (ui.presetSearchBarLineEdit->hasFocus())
+			return;
+		
 		if (ui.presetPlayListDockWidget->isVisible()) {
 			ui.presetPlayListDockWidget->hide();
 		} else
@@ -283,10 +285,8 @@ QString QProjectM_MainWindow::strippedName(const QString &fullFileName)
 }
 
 
-void QProjectM_MainWindow::updateFilteredPlaylist(const QString & text) {
+void QProjectM_MainWindow::updateFilteredPlaylist(const QString & filter) {
 	
-
-	const QString & filter = text;
 
 	if (filter.length() < previousFilter.length()) {
 
