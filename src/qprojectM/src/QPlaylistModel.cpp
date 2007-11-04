@@ -15,7 +15,7 @@ bool QPlaylistModel::setData(const QModelIndex & index, const QVariant & value, 
 		emit(dataChanged(index, index));
 		return true;
 	}
-	else		
+	else	
 		return QAbstractTableModel::setData(index, value, role);
 	
 }
