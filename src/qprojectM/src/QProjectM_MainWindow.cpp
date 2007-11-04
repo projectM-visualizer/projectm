@@ -92,8 +92,8 @@ void QProjectM_MainWindow::updatePlaylistSelection(bool hardCut, int index) {
 	if (oldPresetIndex > 0)
 		playlistModel->setData(playlistModel->index(oldPresetIndex, 0), Qt::white, Qt::BackgroundRole);
 
-	playlistModel->setData(playlistModel->index(index, 0), Qt::green, Qt::BackgroundRole);
-	oldPresetIndex = index;
+	//playlistModel->setData(playlistModel->index(index, 0), Qt::green, Qt::BackgroundRole);
+	//oldPresetIndex = index;
 
 }
 
@@ -138,11 +138,14 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )  {
 		if (ui.presetSearchBarLineEdit->hasFocus())
 			return;
 
-		if (ui.lockPresetCheckBox->checkState() == Qt::Checked)
+		if (ui.lockPresetCheckBox->checkState() == Qt::Checked) {
 			ui.lockPresetCheckBox->setCheckState(Qt::Unchecked);
-		else
-			ui.lockPresetCheckBox->setCheckState(Qt::Checked);
 	
+		}
+		else {
+			ui.lockPresetCheckBox->setCheckState(Qt::Checked);
+		}
+
 		// the projectM widget handles the actual lock
 		//e->ignore();			
 		//m_QProjectMWidget->keyReleaseEvent(e);

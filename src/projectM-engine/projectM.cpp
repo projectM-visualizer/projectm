@@ -824,13 +824,11 @@ void projectM::destroyPresetTools()
 	/// @slow might not be necessary
 	m_presetPos = 0;
 
-
 	if ( m_presetQueuePos )
 		delete ( m_presetQueuePos );
 
 	/// @slow might not be necessary
 	m_presetQueuePos = 0;
-
 
 	if ( m_presetChooser )
 		delete ( m_presetChooser );
@@ -944,8 +942,12 @@ bool projectM::isPresetQueued() const {
 	return (*m_presetQueuePos != m_presetChooser->end());
 }
 
+unsigned int projectM::selectedPresetIndex() const {
+	return **m_presetPos;
+}
 
 unsigned int projectM::getPlaylistSize() const
 {
 	return m_presetLoader->getNumPresets();
 }
+
