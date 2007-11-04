@@ -150,7 +150,10 @@ public:
   /// Returns true if the active preset is locked
   bool isPresetLocked() const;
 
-  /// Add a preset url to the play list. Appended to bottom
+  /// Returns index of currently active preset
+  unsigned int selectedPresetIndex() const;
+
+/// Add a preset url to the play list. Appended to bottom
   unsigned int addPresetURL(const std::string & presetURL, const std::string & presetName);
 
   /// Returns the url associated with a preset index
