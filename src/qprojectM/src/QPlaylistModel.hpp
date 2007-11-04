@@ -32,6 +32,7 @@
      Q_OBJECT        // must include this if you use Qt signals/slots
 
  public:
+static const int URLInfoRole = 1000;
      QPlaylistModel(projectM & _projectM, QObject * parent = 0);
      ~QPlaylistModel() { }
 
@@ -42,7 +43,7 @@ QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::D
 void clear();
 
 QVariant data ( const QModelIndex & index, int role) const;
-int rowCount ( const QModelIndex & parent) const ;
+int rowCount ( const QModelIndex & parent = QModelIndex()) const ;
 int columnCount ( const QModelIndex & parent) const ;
 
 

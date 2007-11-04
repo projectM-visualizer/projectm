@@ -31,8 +31,6 @@
 #include "libprojectM/projectM.hpp"
 
 #include <QGLWidget>
-#include <QStandardItemModel>
-//#include <QHash>
 
 class QAction;
 class QMenu;
@@ -204,7 +202,7 @@ class QProjectM_MainWindow:public QMainWindow
       Q_OBJECT
 
 public:
-
+      
       QProjectM_MainWindow(const std::string & config_file);
       ~QProjectM_MainWindow() {};
      void keyReleaseEvent ( QKeyEvent * e );
@@ -214,6 +212,9 @@ public:
 
     
 protected:
+
+      typedef QPair<QString, QString> StringPair;
+      typedef QVector<StringPair> StringPairVector;	
       void closeEvent(QCloseEvent *event);
 
 private slots:
@@ -223,14 +224,16 @@ private slots:
       void postProjectM_Initialize();
       void updatePlaylistSelection(bool hardCut, unsigned int index);
       void selectPlaylistItem(const QModelIndex & index);
-
+      void updateFilteredPlaylist(const QString & text);
+    
 private:
 	
       QPlaylistModel * playlistModel;
       Ui::qProjectM_MainWindow ui;
 
-      QHash<unsigned int, unsigned int> playlistHash;
-
+      /// example: hashes string "erl" to "Geiss & Sperl, ...", and string "erla" to "Berlap, ..."
+      QHash<QString, StringPairVector*> exclusionHash;
+	
       QTimer * m_timer;
       void createActions();
       void createMenus();
@@ -252,6 +255,7 @@ private:
       QAction *aboutAct;
       QAction *aboutQtAct;
 
+      QString previousFilter;
 
       QProjectMFileDialog * m_QProjectMFileDialog;
 };

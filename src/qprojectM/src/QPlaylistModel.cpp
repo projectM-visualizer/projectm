@@ -10,7 +10,8 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 	
 	if (role == Qt::DisplayRole)
 		return QVariant(QString(m_projectM.getPresetName(index.row()).c_str()));
-	else
+	else if (role == QPlaylistModel::URLInfoRole)
+		return QVariant(QString(m_projectM.getPresetURL(index.row()).c_str()));
 		return QVariant();
 }
 
@@ -22,7 +23,7 @@ QVariant QPlaylistModel::headerData ( int section, Qt::Orientation orientation, 
 		return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-int QPlaylistModel::rowCount ( const QModelIndex & parent = QModelIndex() ) const {
+int QPlaylistModel::rowCount ( const QModelIndex & parent) const {
 	return m_projectM.getPlaylistSize();
 }
 
