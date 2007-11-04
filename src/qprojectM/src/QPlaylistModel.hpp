@@ -33,14 +33,18 @@
 
  public:
      QPlaylistModel(projectM & _projectM, QObject * parent = 0);
-
-void appendRow (const QString & presetURL, const QString & presetName);
      ~QPlaylistModel() { }
 
+void appendRow (const QString & presetURL, const QString & presetName);
+void removeRow (int index);
+
+void clear();
 
 QVariant data ( const QModelIndex & index, int role) const;
 int rowCount ( const QModelIndex & parent) const ;
 int colCount ( const QModelIndex & parent) const ;
+
+
  private:
 	projectM & m_projectM;
 	

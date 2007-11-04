@@ -27,5 +27,18 @@ int QPlaylistModel::colCount ( const QModelIndex & parent = QModelIndex() ) cons
 }
 
 void QPlaylistModel::appendRow (const QString & presetURL, const QString & presetName) {
+	beginInsertRows(QModelIndex(), colCount(), colCount());
 	m_projectM.addPresetURL(presetURL.toStdString(), presetName.toStdString());
+	endInsertRows();
+}
+
+
+void QPlaylistModel::removeRow (int index) {
+	beginRemoveRows(QModelIndex(), index, index);
+	m_projectM.removePreset(index);
+	endRemoveRows();
+}
+
+void QPlaylistModel::clear() {
+	m_projectM.clearPlaylist();
 }
