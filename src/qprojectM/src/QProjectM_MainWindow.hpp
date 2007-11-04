@@ -224,6 +224,8 @@ private slots:
       void postProjectM_Initialize();
       void updatePlaylistSelection(bool hardCut, unsigned int index);
       void selectPlaylistItem(const QModelIndex & index);
+      void changeRating(const QModelIndex & index);
+
       void updateFilteredPlaylist(const QString & text);
     
 private:

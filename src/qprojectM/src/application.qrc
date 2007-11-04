@@ -1,5 +1,11 @@
 <RCC>
     <qresource prefix="/" >
+        <file>images/icons/face0.png</file>
+        <file>images/icons/face1.png</file>
+        <file>images/icons/face2.png</file>
+        <file>images/icons/face3.png</file>
+        <file>images/icons/face4.png</file>
+        <file>images/icons/face5.png</file>
         <file>images/icons/hi16-action-projectm_add_playlist.png</file>
         <file>images/icons/hi16-action-projectm_lock.png</file>
         <file>images/icons/hi16-action-projectm_playlist_clear.png</file>

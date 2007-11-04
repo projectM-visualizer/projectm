@@ -48,10 +48,7 @@ QProjectM_MainWindow::QProjectM_MainWindow(const std::string & config_file)
 
       connect(m_QProjectMWidget, SIGNAL(projectM_Initialized()), this, SLOT(postProjectM_Initialize()));
       
-      ui.tableView->setVerticalHeader(0);
 	
-//      ui.tableView->setModel(playlistModel);
-
       m_QProjectMWidget->makeCurrent();
       m_QProjectMWidget->setFocus();
 
@@ -107,6 +104,17 @@ void QProjectM_MainWindow::postProjectM_Initialize() {
         connect(ui.tableView, SIGNAL(activated(const QModelIndex &)), 
 		this, SLOT(selectPlaylistItem(const QModelIndex &)));
 
+	connect(ui.tableView, SIGNAL(clicked(const QModelIndex &)), 
+		this, SLOT(changeRating(const QModelIndex &)));
+
+}
+
+void QProjectM_MainWindow::changeRating(const QModelIndex & index) {
+	if (index.column() == 0)
+		return;
+	
+	playlistModel->setData
+		(index, (playlistModel->data(index, QPlaylistModel::RatingRole).toInt()+1) % 6, QPlaylistModel::RatingRole);
 }
 
 void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )  {
@@ -198,7 +206,7 @@ void QProjectM_MainWindow::open()
 	//playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 }
 
-
+//void QAbstractItemView::clicked ( const QModelIndex & index )   [signal]
 void QProjectM_MainWindow::refreshPlaylist() {
 
     StringPairVector * stringPairs = new StringPairVector();
@@ -211,23 +219,28 @@ void QProjectM_MainWindow::refreshPlaylist() {
     }
     historyHash.insert(QString(), stringPairs);
 
+    
     QHeaderView * hHeader = new QHeaderView(Qt::Horizontal, this);
     QHeaderView * vHeader = new QHeaderView(Qt::Vertical, this);
 
-    //hHeader->
     hHeader->setClickable(false);
     hHeader->setSortIndicatorShown(false);
     //hHeader->setSortIndicator(1, Qt::AscendingOrder);
-    hHeader->setStretchLastSection(true);
-
+    hHeader->setStretchLastSection(false);
+	
 	ui.tableView->setVerticalHeader(vHeader);	
 	ui.tableView->setHorizontalHeader(hHeader);
+	
+	hHeader->resizeSection(0, 200);
+	hHeader->setResizeMode(0, QHeaderView::Stretch);
+	hHeader->setResizeMode(1, QHeaderView::Fixed);
+	hHeader->resizeSection(1, 25);
+
 
 //	playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 
 	vHeader->hide();
-
-	//playlistModel->setHeaderData(0, Qt::Vertical, 1000, Qt::SizeHintRole);
+//	playlistModel->setHeaderData(0, Qt::Horizontal, 200, Qt::SizeHintRole);
 	//playlistModel->setHeaderData(1, Qt::Horizontal, tr("Rating"));//, Qt::DisplayRole);
 	//playlistModel->setHeaderData(2, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 	
