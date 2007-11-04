@@ -89,8 +89,6 @@ void QProjectM_MainWindow::updatePlaylistSelection(bool hardCut, int index) {
 	else
 		statusBar()->showMessage(tr("*** Soft cut ***") , 2000);
 
-	if (oldPresetIndex > 0)
-		playlistModel->setData(playlistModel->index(oldPresetIndex, 0), Qt::white, Qt::BackgroundRole);
 
 	//playlistModel->setData(playlistModel->index(index, 0), Qt::green, Qt::BackgroundRole);
 	//oldPresetIndex = index;
@@ -102,6 +100,8 @@ void QProjectM_MainWindow::selectPlaylistItem(const QModelIndex & index) {
 		return;
 
 	getQProjectM()->selectPreset(index.row());
+	playlistModel->updateItemHighlights();
+
 }
 
 
@@ -119,6 +119,10 @@ void QProjectM_MainWindow::postProjectM_Initialize() {
 
 	connect(ui.tableView, SIGNAL(clicked(const QModelIndex &)), 
 		this, SLOT(changeRating(const QModelIndex &)));
+	connect(m_QProjectMWidget, SIGNAL(presetLockChanged(bool)),  playlistModel, SLOT(updateItemHighlights()));
+	connect(m_QProjectMWidget->getQProjectM(), SIGNAL(presetSwitchedSignal(bool,unsigned int)), playlistModel, SLOT(updateItemHighlights()));
+
+	connect(ui.presetSearchBarLineEdit, SIGNAL(textChanged(const QString&)), playlistModel, SLOT(updateItemHighlights()));
 
 }
 
@@ -140,7 +144,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )  {
 
 		if (ui.lockPresetCheckBox->checkState() == Qt::Checked) {
 			ui.lockPresetCheckBox->setCheckState(Qt::Unchecked);
-	
+			
 		}
 		else {
 			ui.lockPresetCheckBox->setCheckState(Qt::Checked);

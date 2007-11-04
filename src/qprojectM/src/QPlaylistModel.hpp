@@ -48,8 +48,10 @@ void clear();
 
 QVariant data ( const QModelIndex & index, int role) const;
 int rowCount ( const QModelIndex & parent = QModelIndex()) const ;
-int columnCount ( const QModelIndex & parent) const ;
+int columnCount ( const QModelIndex & parent= QModelIndex()) const ;
 
+public slots:
+void updateItemHighlights();
 
  private:
 	QVariant ratingToIcon(int rating) const;

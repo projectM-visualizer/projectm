@@ -71,10 +71,11 @@ class QProjectMWidget : public QGLWidget
      
      void setPresetLock(int state) {
 		m_projectM->setPresetLock((bool)state);
+		presetLockChanged((bool)state);
      }
   signals:
 	void projectM_Initialized();
-
+	void presetLockChanged(bool isLocked);
  private:
 	std::string config_file;
 	QProjectM * m_projectM;
