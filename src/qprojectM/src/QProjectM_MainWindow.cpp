@@ -30,7 +30,7 @@
 #include "QPlaylistModel.hpp"
 
 QProjectM_MainWindow::QProjectM_MainWindow(const std::string & config_file)
-:m_QProjectMFileDialog(new QProjectMFileDialog(this))
+:m_QProjectMFileDialog(new QProjectMFileDialog(this)), oldPresetIndex(-1)
 {
 
       ui.setupUi(this);
@@ -82,15 +82,18 @@ QProjectM * QProjectM_MainWindow::getQProjectM() {
 	return m_QProjectMWidget->getQProjectM();
 }
 
-void QProjectM_MainWindow::updatePlaylistSelection(bool hardCut, unsigned int index) {
+void QProjectM_MainWindow::updatePlaylistSelection(bool hardCut, int index) {
 	
 	if (hardCut)
 		statusBar()->showMessage(tr("*** Hard cut ***") , 2000);
 	else
 		statusBar()->showMessage(tr("*** Soft cut ***") , 2000);
 
-	//ui.tableView->selectRow(index);
+	if (oldPresetIndex > 0)
+		playlistModel->setData(playlistModel->index(oldPresetIndex, 0), Qt::white, Qt::BackgroundRole);
 
+	playlistModel->setData(playlistModel->index(index, 0), Qt::green, Qt::BackgroundRole);
+	oldPresetIndex = index;
 
 }
 
@@ -216,14 +219,10 @@ void QProjectM_MainWindow::open()
 				delete(pos.value());
 		}
 
-
 		historyHash.clear();
 		historyHash.insert(QString(), playlistItems);
 
 		updateFilteredPlaylist(previousFilter);
-		//for (PlaylistItemVector::iterator pos = playlistItems->begin(); pos != playlistItems->end(); ++pos) {
-		//	playlistModel->appendRow(pos->url, pos->name, pos->rating);
-		//}
 
 	    }
 	
