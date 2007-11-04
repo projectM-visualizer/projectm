@@ -47,7 +47,7 @@ QProjectM_MainWindow::QProjectM_MainWindow(const std::string & config_file)
 	this, SLOT(clearPlaylist()));
 
       connect(m_QProjectMWidget, SIGNAL(projectM_Initialized()), this, SLOT(postProjectM_Initialize()));
-
+      
       ui.tableView->setVerticalHeader(0);
 	
 //      ui.tableView->setModel(playlistModel);
@@ -102,7 +102,7 @@ void QProjectM_MainWindow::postProjectM_Initialize() {
   	
 	ui.tableView->setModel(playlistModel);
         connect(m_QProjectMWidget->getQProjectM(), SIGNAL(presetSwitchedSignal(bool,unsigned int)), this, SLOT(updatePlaylistSelection(bool,unsigned int)));
-
+	connect(ui.presetSearchBarLineEdit, SIGNAL(textChanged(const QString&)), this, SLOT(updateFilteredPlaylist(const QString&)));
 	
         connect(ui.tableView, SIGNAL(activated(const QModelIndex &)), 
 		this, SLOT(selectPlaylistItem(const QModelIndex &)));
@@ -125,6 +125,8 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )  {
 		return;
 
 	case Qt::Key_F:			
+		//if (ui.presetSearchBarLineEdit->hasFocus())
+		//	return;
 		this->setWindowState(this->windowState() ^ Qt::WindowFullScreen);
 		return;
 
@@ -280,4 +282,47 @@ QString QProjectM_MainWindow::strippedName(const QString &fullFileName)
       return QFileInfo(fullFileName).fileName();
 }
 
+
+void QProjectM_MainWindow::updateFilteredPlaylist(const QString & text) {
+	
+
+	const QString & filter = text;
+
+	if (filter.length() < previousFilter.length()) {
+
+		StringPairVector & stringPairs = *exclusionHash.value(previousFilter);
+		while (!stringPairs.empty()) {
+			const StringPair & pair = stringPairs.last();
+			/// @bug need to do **ordered** insert, or something faster (index reference book keeping?)
+			playlistModel->appendRow(pair.first, pair.second);
+			stringPairs.pop_back();
+			
+		}
+		exclusionHash.remove(previousFilter);
+		delete(&stringPairs);
+		
+	} else {
+		assert(filter.length() != previousFilter.length());
+		StringPairVector * stringPairs = new StringPairVector();
+		exclusionHash.insert(filter, stringPairs);
+		
+		for (int i = 0; i < playlistModel->rowCount(); i++) {
+			QModelIndex index = playlistModel->index(i, 0);
+			const QString & name = playlistModel->data(index, Qt::DisplayRole).toString();
+			const QString & url = playlistModel->data(index, QPlaylistModel::URLInfoRole).toString();
+			if (!name.contains(filter, Qt::CaseInsensitive)) {
+					
+				stringPairs->push_back(StringPair(url, name));
+				assert (i < playlistModel->rowCount());
+				assert (i >= 0);
+				std::cerr << "deleting " << i << std::endl;
+				playlistModel->removeRow(i);
+				i--;
+			}
+			
+		}
+		
+	}
+	previousFilter = filter;
+}
 
