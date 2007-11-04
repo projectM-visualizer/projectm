@@ -73,6 +73,7 @@ void QProjectM_MainWindow::clearPlaylist() {
 		delete(pos.value());
 	}
 	historyHash.clear();
+	historyHash.insert(QString(), new PlaylistItemVector);
 	previousFilter = QString();
 	ui.presetSearchBarLineEdit->clear();
 }
@@ -329,7 +330,9 @@ void QProjectM_MainWindow::loadFile(const QString &fileName, int rating)
 
 	const QString & name = strippedName(fileName);
 		
-		PlaylistItemVector * playlistItems = historyHash.value(QString());
+		PlaylistItemVector * playlistItems = historyHash.value(QString(), 0);
+		assert (playlistItems != 0);
+
 		playlistItems->push_back(PlaylistItemMetaData(fileName, name, rating));
 		
 }
