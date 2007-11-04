@@ -69,7 +69,7 @@ double smoothDuration = 5;
 //int smoothFrame = 0;
 int oldFrame = 1;
 
-DLLEXPORT projectM::projectM ( int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url,std::string title_fonturl, std::string title_menuurl ) :beatDetect ( 0 ),  renderer ( 0 ), presetURL ( preset_url ),   title_fontURL ( title_fonturl ), menu_fontURL ( menu_fontURL ), smoothFrame ( 0 )
+DLLEXPORT projectM::projectM ( int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url,std::string title_fonturl, std::string title_menuurl ) :beatDetect ( 0 ),  renderer ( 0 ), presetURL ( preset_url ),   title_fontURL ( title_fonturl ), menu_fontURL ( menu_fontURL ), smoothFrame ( 0 ), m_presetQueuePos(0)
 {
 	presetURL = preset_url;
 	projectM_reset();
@@ -101,7 +101,7 @@ DLLEXPORT void projectM::projectM_resetTextures()
 }
 
 DLLEXPORT  projectM::projectM ( std::string config_file ) :
-		beatDetect ( 0 ), renderer ( 0 ), smoothFrame ( 0 )
+		beatDetect ( 0 ), renderer ( 0 ), smoothFrame ( 0 ),m_presetQueuePos(0)
 {
 
 	projectM_reset();
@@ -791,10 +791,10 @@ int projectM::initPresetTools()
 	m_presetPos = new PresetIterator();
 
 	// Initialize a preset queue position as well
-	m_presetQueuePos = new PresetIterator();
+//	m_presetQueuePos = new PresetIterator();
 
 	// Start at end ptr- this allows next/previous to easily be done from this position.
-	*m_presetPos = *m_presetQueuePos = m_presetChooser->end();
+	*m_presetPos = m_presetChooser->end();
 
 	// Load idle preset
 	//std::cerr << "[projectM] Allocating idle preset..." << std::endl;
@@ -851,7 +851,11 @@ void projectM::destroyPresetTools()
 
 
 void projectM::removePreset(unsigned int index) {
+
+	
+		
 	m_presetLoader->removePreset(index);
+
 }
 
 unsigned int projectM::addPresetURL ( const std::string & presetURL, const std::string & presetName )
@@ -882,13 +886,15 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset, const PresetIn
 
 
 	// If queue not specified, roll with usual random behavior
-	if (*m_presetQueuePos == m_presetChooser->end()) {
+	if (m_presetQueuePos == 0) {
 		*m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>();
 		targetPreset = m_presetPos->allocate( inputs, outputs );
 	}
 	else { // queue item specified- use it and reset the queue
+		abort();
 		targetPreset = m_presetQueuePos->allocate ( inputs, outputs );
-		*m_presetQueuePos = m_presetChooser->end();
+		delete(m_presetQueuePos);
+		m_presetQueuePos = 0;
 	}
 
 	// Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
@@ -920,11 +926,16 @@ std::string projectM::getPresetName ( unsigned int index ) const
 void projectM::clearPlaylist ( ) 
 {
 	m_presetLoader->clear();
-	*m_presetQueuePos = m_presetChooser->end();
+	delete(m_presetQueuePos);
+	m_presetQueuePos = 0;
 }
 
 
 void projectM::queuePreset(unsigned int index) {
+
+	if (m_presetQueuePos == 0)
+		m_presetQueuePos = new PresetIterator();
+
 	if ((index >= 0) && (index <= m_presetChooser->getNumPresets()))
 		*m_presetQueuePos = m_presetChooser->begin(index);
 }
