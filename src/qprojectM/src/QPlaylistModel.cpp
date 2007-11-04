@@ -70,15 +70,14 @@ QVariant QPlaylistModel::headerData ( int section, Qt::Orientation orientation, 
 
 	if ((section == 0) && (role == Qt::SizeHintRole))
 		return QVariant(500);
-//	 else 	if ((section == 1) && (role == Qt::SizeHintRole))
+//	 if ((section == 1) && (role == Qt::SizeHintRole))
 //		return QVariant(60);
-	else 
 	if ((section == 0) && (role == Qt::DisplayRole))	
 		return QString(tr("Preset"));
-	else if ((section == 1) && (role == Qt::DisplayRole))
+	if ((section == 1) && (role == Qt::DisplayRole))
 		return QString(tr("Rating"));
-	else
-		return QAbstractTableModel::headerData(section, orientation, role);
+	
+	return QAbstractTableModel::headerData(section, orientation, role);
 }
 
 int QPlaylistModel::rowCount ( const QModelIndex & parent) const {
