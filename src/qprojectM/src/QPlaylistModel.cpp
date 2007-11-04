@@ -65,11 +65,11 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 
 QVariant QPlaylistModel::headerData ( int section, Qt::Orientation orientation, int role) const {
 
-//	if ((section == 0) && (role == Qt::SizeHintRole)) {
-//		return QVariant(200);
-//	} else 	if ((section == 1) && (role == Qt::SizeHintRole)) {
-//		return QVariant(50);
-	if ((section == 0) && (role == Qt::DisplayRole))	
+	if ((section == 0) && (role == Qt::SizeHintRole)) {
+		return QVariant(200);
+	} else 	if ((section == 1) && (role == Qt::SizeHintRole))
+		return QVariant(50);
+	else if ((section == 0) && (role == Qt::DisplayRole))	
 		return QString(tr("Preset"));
 	else if ((section == 1) && (role == Qt::DisplayRole))
 		return QString(tr("Rating"));
