@@ -2,10 +2,7 @@
 
 QPlaylistModel::QPlaylistModel(projectM & _projectM, QObject * parent): 
 		QAbstractTableModel(parent), m_projectM(_projectM) {
-	for (int i = 0; i < _projectM.getPlaylistSize(); i++) {
-		this->appendRow(QString(m_projectM.getPresetURL(i).c_str()), 
-			QString(m_projectM.getPresetName(i).c_str()));
-	}
+
 
 }
 
@@ -14,20 +11,30 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 	return QVariant(QString(m_projectM.getPresetName(index.row()).c_str()));
 }
 
+QVariant QPlaylistModel::headerData ( int section, Qt::Orientation orientation, int role) const {
+
+	if ((section == 0) && (role == Qt::DisplayRole))
+		return QString(tr("Preset"));
+	else
+		return QAbstractTableModel::headerData(section, orientation, role);
+}
 
 int QPlaylistModel::rowCount ( const QModelIndex & parent = QModelIndex() ) const {
 	return m_projectM.getPlaylistSize();
 }
 
 
-int QPlaylistModel::colCount ( const QModelIndex & parent = QModelIndex() ) const {
+int QPlaylistModel::columnCount ( const QModelIndex & parent = QModelIndex() ) const {
 
 	// eventually add ratings here so size should be 2
-	return 1;
+	if (rowCount() > 0)
+		return 1;
+	else
+		return 0;
 }
 
 void QPlaylistModel::appendRow (const QString & presetURL, const QString & presetName) {
-	beginInsertRows(QModelIndex(), colCount(), colCount());
+	beginInsertRows(QModelIndex(), rowCount(), rowCount());
 	m_projectM.addPresetURL(presetURL.toStdString(), presetName.toStdString());
 	endInsertRows();
 }
@@ -40,5 +47,7 @@ void QPlaylistModel::removeRow (int index) {
 }
 
 void QPlaylistModel::clear() {
+	beginRemoveRows(QModelIndex(), 0, rowCount()-1);
 	m_projectM.clearPlaylist();
+	endRemoveRows();
 }
