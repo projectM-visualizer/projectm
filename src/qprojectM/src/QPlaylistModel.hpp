@@ -33,8 +33,8 @@
      Q_OBJECT        // must include this if you use Qt signals/slots
 
  public:
-static const int URLInfoRole = 1000;
-static const int RatingRole = 1001;
+static const int URLInfoRole = Qt::UserRole;
+static const int RatingRole = Qt::UserRole+1;
      QPlaylistModel(projectM & _projectM, QObject * parent = 0);
      ~QPlaylistModel() { }
 bool setData(const QModelIndex & index, const QVariant & value, int role=Qt::EditRole);
