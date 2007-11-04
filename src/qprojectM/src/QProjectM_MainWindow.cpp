@@ -69,6 +69,12 @@ QProjectM_MainWindow::QProjectM_MainWindow(const std::string & config_file)
 void QProjectM_MainWindow::clearPlaylist() {
 
 	playlistModel->clear();
+	for (QHash<QString, PlaylistItemVector*>::iterator pos = historyHash.begin(); pos != historyHash.end(); ++pos) {
+		delete(pos.value());
+	}
+	historyHash.clear();
+	previousFilter = QString();
+	ui.presetSearchBarLineEdit->clear();
 }
 
 QProjectM * QProjectM_MainWindow::getQProjectM() {
@@ -201,6 +207,23 @@ void QProjectM_MainWindow::open()
 			if (*pos != "")
 				loadFile(*pos);
 		}
+
+		PlaylistItemVector * playlistItems = historyHash.value(QString());
+
+		for (QHash<QString, PlaylistItemVector*>::iterator pos = historyHash.begin(); pos != historyHash.end(); ++pos) {
+			if (pos.key() != QString())
+				delete(pos.value());
+		}
+
+
+		historyHash.clear();
+		historyHash.insert(QString(), playlistItems);
+
+		updateFilteredPlaylist(previousFilter);
+		//for (PlaylistItemVector::iterator pos = playlistItems->begin(); pos != playlistItems->end(); ++pos) {
+		//	playlistModel->appendRow(pos->url, pos->name, pos->rating);
+		//}
+
 	    }
 	
 	//playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
@@ -209,15 +232,15 @@ void QProjectM_MainWindow::open()
 //void QAbstractItemView::clicked ( const QModelIndex & index )   [signal]
 void QProjectM_MainWindow::refreshPlaylist() {
 
-    StringPairVector * stringPairs = new StringPairVector();
+    PlaylistItemVector * playlistItems = new PlaylistItemVector();
     for (int i = 0; i < playlistModel->rowCount();i++) {
 	QModelIndex index = playlistModel->index(i, 0);
 	const QString & name = playlistModel->data(index, Qt::DisplayRole).toString();
 	const QString & url = playlistModel->data(index, QPlaylistModel::URLInfoRole).toString();
 			
-	stringPairs->push_back(StringPair(url, name));
+	playlistItems->push_back(PlaylistItemMetaData(url, name, 3));
     }
-    historyHash.insert(QString(), stringPairs);
+    historyHash.insert(QString(), playlistItems);
 
     
     QHeaderView * hHeader = new QHeaderView(Qt::Horizontal, this);
@@ -249,8 +272,8 @@ void QProjectM_MainWindow::refreshPlaylist() {
 
 void QProjectM_MainWindow::about()
 {
-      QMessageBox::about(this, tr("About QProjectM"),
-            tr("<b>QProjectM</b> provides useful gui extensions to the projectM core library."));
+      QMessageBox::about(this, tr("About QProjectM and ProjectM"),
+            tr("<b>QProjectM</b> provides useful gui extensions to the projectM core library. For problems please email Carmelo Piccione (carmelo.piccione@gmail.com). \n<b>projectM</b> is an advanced music visualizer based on Geiss's Milkdrop. For more info visit us at <a href=\"http://projectm.sf.net\">projectm.sf.net</a>."));
 }
 
 
@@ -301,16 +324,14 @@ void QProjectM_MainWindow::writeSettings()
 
 
 
-void QProjectM_MainWindow::loadFile(const QString &fileName)
+void QProjectM_MainWindow::loadFile(const QString &fileName, int rating)
 {
 
 	const QString & name = strippedName(fileName);
 		
-	//if (name.contains(previousFilter, Qt::CaseInsensitive))
-		playlistModel->appendRow(fileName, name);
-	//else
-	//	exclusionHash.value(
-	
+		PlaylistItemVector * playlistItems = historyHash.value(QString());
+		playlistItems->push_back(PlaylistItemMetaData(fileName, name, rating));
+		
 }
 
 
@@ -327,40 +348,42 @@ void QProjectM_MainWindow::updateFilteredPlaylist(const QString & text) {
 	playlistModel->clear();
 	
 	if (historyHash.contains(filter)) {
-		const StringPairVector & stringPairs = *historyHash.value(filter);
-		for (StringPairVector::const_iterator pos = stringPairs.begin(); pos != stringPairs.end();++pos) {
-			playlistModel->appendRow(pos->first, pos->second);
+		const PlaylistItemVector & playlistItems = *historyHash.value(filter);
+		for (PlaylistItemVector::const_iterator pos = playlistItems.begin(); pos != playlistItems.end();++pos) {
+			playlistModel->appendRow(pos->url, pos->name, pos->rating);
 		}
 	} else {
-		const StringPairVector & stringPairs = *historyHash.value(QString());
+		const PlaylistItemVector & playlistItems = *historyHash.value(QString());
 
-		StringPairVector * stringPairs2 = new StringPairVector();
-		for (StringPairVector::const_iterator pos = stringPairs.begin(); pos != stringPairs.end();++pos) {
-			if ((pos->first).contains(filter, Qt::CaseInsensitive)) {
-				playlistModel->appendRow(pos->first, pos->second);
-				stringPairs2->push_back(StringPair(pos->first,pos->second));
-			}			
+		PlaylistItemVector * playlistItems2 = new PlaylistItemVector();
+		for (PlaylistItemVector::const_iterator pos = playlistItems.begin(); pos != playlistItems.end();++pos) {
+			if ((pos->name).contains(filter, Qt::CaseInsensitive)) {
+				playlistModel->appendRow(pos->url, pos->name, pos->rating);
+				playlistItems2->push_back(*pos);
+			}
 		}
-		historyHash.insert(filter, stringPairs2);
+		historyHash.insert(filter, playlistItems2);
 	}
+	previousFilter = filter;
+
 	#if 0
 	if (!(filter.substring(0, filter.length()-1) == previousFilter)) {
 
-		StringPairVector & stringPairs = *exclusionHash.value(previousFilter);
-		while (!stringPairs.empty()) {
-			const StringPair & pair = stringPairs.last();
+		PlaylistItemVector & playlistItems = *exclusionHash.value(previousFilter);
+		while (!playlistItems.empty()) {
+			const StringPair & pair = playlistItems.last();
 			/// @bug need to do **ordered** insert, or something faster (index reference book keeping?)
 			playlistModel->appendRow(pair.first, pair.second);
-			stringPairs.pop_back();
+			playlistItems.pop_back();
 			
 		}
 		exclusionHash.remove(previousFilter);
-		delete(&stringPairs);
+		delete(&playlistItems);
 		
 	} else {
 		assert(filter.length() != previousFilter.length());
-		StringPairVector * stringPairs = new StringPairVector();
-		exclusionHash.insert(filter, stringPairs);
+		PlaylistItemVector * playlistItems = new PlaylistItemVector();
+		exclusionHash.insert(filter, playlistItems);
 		
 		for (int i = 0; i < playlistModel->rowCount(); i++) {
 			QModelIndex index = playlistModel->index(i, 0);
@@ -368,7 +391,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist(const QString & text) {
 			const QString & url = playlistModel->data(index, QPlaylistModel::URLInfoRole).toString();
 			if (!name.contains(filter, Qt::CaseInsensitive)) {
 					
-				stringPairs->push_back(StringPair(url, name));
+				playlistItems->push_back(StringPair(url, name));
 				assert (i < playlistModel->rowCount());
 				assert (i >= 0);
 				playlistModel->removeRow(i);
