@@ -35,6 +35,7 @@
 class QAction;
 class QMenu;
 class QProjectMFileDialog;
+class QPlaylistFileDialog;
 class QPlaylistModel;
 
 #include <iostream>
@@ -230,7 +231,8 @@ protected:
 
 private slots:
       void clearPlaylist();
-      void open();
+      void addPresets();
+      void openPlaylist();
       void about();
       void postProjectM_Initialize();
       void updatePlaylistSelection(bool hardCut, int index);
@@ -273,6 +275,7 @@ private:
       QString previousFilter;
 
       QProjectMFileDialog * m_QProjectMFileDialog;
+      QPlaylistFileDialog * m_QPlaylistFileDialog;
 };
 
 #endif

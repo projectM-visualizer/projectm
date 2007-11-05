@@ -22,7 +22,7 @@
 #include <QtGui>
 #include "QProjectM_MainWindow.hpp"
 #include "QProjectMFileDialog.hpp"
-
+#include "QPlaylistFileDialog.hpp"
 #include <QTextStream>
 #include <QCloseEvent>
 #include <QFileDialog>
@@ -30,7 +30,7 @@
 #include "QPlaylistModel.hpp"
 
 QProjectM_MainWindow::QProjectM_MainWindow(const std::string & config_file)
-:m_QProjectMFileDialog(new QProjectMFileDialog(this)), oldPresetIndex(-1)
+:m_QProjectMFileDialog(new QProjectMFileDialog(this)), m_QPlaylistFileDialog(new QPlaylistFileDialog(this)), oldPresetIndex(-1)
 {
 
       ui.setupUi(this);
@@ -45,6 +45,7 @@ QProjectM_MainWindow::QProjectM_MainWindow(const std::string & config_file)
 
       connect(ui.clearPresetList_PushButton, SIGNAL(pressed()),
 	this, SLOT(clearPlaylist()));
+
 
       connect(m_QProjectMWidget, SIGNAL(projectM_Initialized()), this, SLOT(postProjectM_Initialize()));
       
@@ -210,7 +211,7 @@ void QProjectM_MainWindow::closeEvent(QCloseEvent *event)
 }
 
 
-void QProjectM_MainWindow::open()
+void QProjectM_MainWindow::addPresets()
 {
 
 
@@ -237,6 +238,28 @@ void QProjectM_MainWindow::open()
 
 	    }
 	
+	//playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
+}
+
+void QProjectM_MainWindow::openPlaylist()
+{
+
+	    clearPlaylist();
+
+            if ( m_QPlaylistFileDialog->exec()) {
+		const QStringList & files = m_QPlaylistFileDialog->selectedFiles();
+
+		for (QStringList::const_iterator pos = files.begin(); 
+			pos != files.end(); ++pos) {
+			if (*pos != "") {
+				//QVector items;
+				playlistModel->readPlaylist(*pos);
+				
+				//for (QV
+				//historyHash.insert(PlaylistItemMetaData(
+			}
+		}
+	}
 	//playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 }
 
@@ -298,8 +321,8 @@ void QProjectM_MainWindow::createActions()
 
       connect(ui.actionExit, SIGNAL(triggered()), this, SLOT(close()));
 
-      connect(ui.actionAddPresets, SIGNAL(triggered()), this, SLOT(open()));
-
+      connect(ui.actionAddPresets, SIGNAL(triggered()), this, SLOT(addPresets()));
+connect(ui.actionOpen_Play_List, SIGNAL(triggered()), this, SLOT(openPlaylist()));
       connect(ui.actionAbout_qprojectM, SIGNAL(triggered()), this, SLOT(about()));
 
       //connect(ui.actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
