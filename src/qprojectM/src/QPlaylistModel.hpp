@@ -27,7 +27,7 @@
 
 #include <QAbstractTableModel>
 #include <QVector>
-
+class QXmlStreamReader;
  class QPlaylistModel : public QAbstractTableModel
  {
      Q_OBJECT        // must include this if you use Qt signals/slots
@@ -50,10 +50,14 @@ QVariant data ( const QModelIndex & index, int role) const;
 int rowCount ( const QModelIndex & parent = QModelIndex()) const ;
 int columnCount ( const QModelIndex & parent= QModelIndex()) const ;
 
+void readPlaylist(const QString & file);
+
 public slots:
 void updateItemHighlights();
 
  private:
+	void readPlaylistItem(QXmlStreamReader & reader);
+
 	QVariant ratingToIcon(int rating) const;
 	projectM & m_projectM;
 	QVector<int> m_ratings;	
