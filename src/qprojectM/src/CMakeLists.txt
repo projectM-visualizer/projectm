@@ -17,6 +17,7 @@ set(qprojectM_SRCS
     QProjectM_MainWindow.hpp
     ConfigFile.h ConfigFile.cpp
     QProjectMFileDialog.hpp
+    QPlaylistFileDialog.hpp
     QPlaylistModel.cpp
     QPlaylistModel.hpp
 )
@@ -25,6 +26,7 @@ set(qprojectM_SRCS
 set(qprojectM_MOC_HDRS
     QProjectM_MainWindow.hpp
     QProjectMFileDialog.hpp
+    QPlaylistFileDialog.hpp
     QPlaylistModel.hpp
 )
 
@@ -48,10 +50,10 @@ qt4_wrap_cpp(qprojectM_MOC_SRCS ${qprojectM_MOC_HDRS})
 ADD_LIBRARY(qprojectM SHARED ${qprojectM_SRCS} ${qprojectM_RC_SRCS} ${qprojectM_MOC_SRCS} ${qprojectM_UIS_H})
 LINK_DIRECTORIES(${PROJECTM_LDFLAGS})
 
-include_directories(${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${CMAKE_CURRENT_LIBRARY_DIR})
+include_directories(${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${CMAKE_CURRENT_LIBRARY_DIR})
 
 # link the "qprojectM" target against the Qt libraries. which libraries exactly, is defined by the "include(${QT_USE_FILE})" line above, which sets up this variable.
-target_link_libraries(qprojectM projectM ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_LIBRARIES})
+target_link_libraries(qprojectM projectM ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTXML_LIBRARIES} ${QT_LIBRARIES})
 
 install(FILES QProjectM_MainWindow.hpp ui_QProjectM_MainWindow.h DESTINATION include/libprojectM)
 install(TARGETS qprojectM DESTINATION lib)
