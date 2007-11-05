@@ -122,6 +122,7 @@ void QProjectM_MainWindow::postProjectM_Initialize() {
 	connect(m_QProjectMWidget, SIGNAL(presetLockChanged(bool)),  playlistModel, SLOT(updateItemHighlights()));
 	connect(m_QProjectMWidget->getQProjectM(), SIGNAL(presetSwitchedSignal(bool,unsigned int)), playlistModel, SLOT(updateItemHighlights()));
 
+	/// @bug not right
 	connect(ui.presetSearchBarLineEdit, SIGNAL(textChanged(const QString&)), playlistModel, SLOT(updateItemHighlights()));
 
 }

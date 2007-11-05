@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<PresetPlaylist name="Sample"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:noNamespaceSchemaLocation="presetplaylist.xsd">
+ <description>A sample preset playlist.</description>
+
+ <item>
+  <url>/usr/share/projectM/presets/Aderrasi - Flowing Form.milk</url>
+  <rating>2</rating>
+ </item>
+
+ <item>
+  <url>/usr/share/projectM/presets/Aderrasi - Paintsphere.milk</url>
+  <rating>4</rating>
+ </item>
+
+ <item>
+  <url>/usr/share/projectM/presets/Aderrasi - What Cannot Be Undone.milk</url>
+  <rating>5</rating>
+ </item>
+
+ <item>
+  <url>/usr/share/projectM/presets/Aderrasi - Songflower (Moss Posy).milk</url>
+  <rating>0</rating>
+ </item>
+
+</PresetPlaylist>
+
+
+/usr/share/projectM/presets/Aderrasi - Making Time (Swamp Mix).milk
+/usr/share/projectM/presets/Aderrasi - Potion of Spirits.milk
+
+/usr/share/projectM/presets/Aderrasi - Spillswirl.milk
+/usr/share/projectM/presets/Aderrasi - What cannot be.milk
+/usr/share/projectM/presets/Aderrasi - What Cannot Be Undone.milk
