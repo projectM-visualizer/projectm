@@ -52,6 +52,14 @@ int columnCount ( const QModelIndex & parent= QModelIndex()) const ;
 
 void readPlaylist(const QString & file);
 
+inline const QString & playlistName() {
+	return m_playlistName;
+}
+
+inline const QString & playlistDescription() {
+	return m_playlistDesc;
+}
+
 public slots:
 void updateItemHighlights();
 
@@ -61,5 +69,7 @@ void updateItemHighlights();
 	QVariant ratingToIcon(int rating) const;
 	projectM & m_projectM;
 	QVector<int> m_ratings;	
+	QString m_playlistName;
+	QString m_playlistDesc;
 };
 #endif

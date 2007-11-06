@@ -247,23 +247,28 @@ void QProjectM_MainWindow::openPlaylist()
 	    clearPlaylist();
 
             if ( m_QPlaylistFileDialog->exec()) {
-		const QStringList & files = m_QPlaylistFileDialog->selectedFiles();
+		const QString file = m_QPlaylistFileDialog->selectedFiles()[0];
 
-		for (QStringList::const_iterator pos = files.begin(); 
-			pos != files.end(); ++pos) {
-			if (*pos != "") {
-				//QVector items;
-				playlistModel->readPlaylist(*pos);
-				
-				//for (QV
-				//historyHash.insert(PlaylistItemMetaData(
-			}
+
+				playlistModel->readPlaylist(file);
+				PlaylistItemVector * items = new PlaylistItemVector();
+	
+				for (int i = 0; i < playlistModel->rowCount(); i++) {
+
+					QModelIndex index = playlistModel->index(i, 0);
+
+					const QString & url = playlistModel->data(index,
+						 QPlaylistModel::URLInfoRole).toString();
+					const QString & name = playlistModel->data(index, Qt::DisplayRole).toString();
+					int rating = playlistModel->data(index, QPlaylistModel::RatingRole).toInt();
+			
+					items->push_back(PlaylistItemMetaData(url, name, rating));
+					
+				}
+				historyHash.insert(QString(), items);
 		}
-	}
-	//playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 }
 
-//void QAbstractItemView::clicked ( const QModelIndex & index )   [signal]
 void QProjectM_MainWindow::refreshPlaylist() {
 
     PlaylistItemVector * playlistItems = new PlaylistItemVector();

@@ -3,7 +3,7 @@
 #include <QXmlStreamReader>
 #include <QtDebug>
 #include <QFileInfo>
-
+#include <QMessageBox>
 QPlaylistModel::QPlaylistModel ( projectM & _projectM, QObject * parent ) :
 		QAbstractTableModel ( parent ), m_projectM ( _projectM )
 {
@@ -152,56 +152,54 @@ void QPlaylistModel::clear()
 	m_projectM.clearPlaylist();
 	m_ratings.clear();
 	endRemoveRows();
+	m_playlistName = "";
+	m_playlistDesc = "";
 }
 
 void QPlaylistModel::readPlaylist ( const QString & file )
 {
-
-	qDebug() << "file:" << file;
+	
         QFile qfile(file);
  	if (!qfile.open(QIODevice::ReadOnly)) {
-		qDebug() << "failed to open file. permissions error? non existant? ";
+		QMessageBox::warning (0, "Playlist File Error", QString("There was a problem trying to open the playlist \"%1\".  You may not have permission to read the file.").arg(file));				
 		return;
 	}
 
 	QXmlStreamReader reader ( &qfile );
 
-	if (reader.hasError()) {
-		qDebug() << "error occurred2: " << reader.error() << ", " << reader.errorString();
-
-	}
-
 	QXmlStreamReader::TokenType token;
+	bool parseError = false;
 
+	try {
 	while ( !reader.atEnd() ) {
 		token = reader.readNext();
 	switch ( token )
 	{
-		case QXmlStreamReader::StartElement:
-			qDebug() << "start elem:" << reader.name().toString();
-			if (reader.name() == "item") {
+		case QXmlStreamReader::StartElement:			
+
+			if (reader.name() == "presetplaylist") {
+				m_playlistName = reader.attributes().value("playlistname").toString();
+			}
+			else if (reader.name() == "description") {
+				reader.readNext();
+				m_playlistDesc = reader.text().toString();
+				reader.readNext();
+			}
+			else if (reader.name() == "item") {
 				readPlaylistItem(reader);
 				break;
-			}
+			} 
 			break;
 		case QXmlStreamReader::NoToken:
-		qDebug() << "no token" ;
 			break;
 		case QXmlStreamReader::Invalid:
-		qDebug() << "invalid" ;
-		break;
+			break;
 		case QXmlStreamReader::StartDocument:
-		qDebug() << "start doc" ;
 			break;
-
 		case QXmlStreamReader::EndDocument:
-		qDebug() << "end doc" ;
 			break;
-
-		case QXmlStreamReader::EndElement:
-		qDebug() << "end element" ;
-		break;
-
+		case QXmlStreamReader::EndElement:	
+			break;
 		case QXmlStreamReader::Characters:
 		case QXmlStreamReader::Comment:
 		case QXmlStreamReader::DTD:
@@ -211,15 +209,18 @@ void QPlaylistModel::readPlaylist ( const QString & file )
 			break;
 	}
 	}
-	if (reader.hasError()) {
+	} catch (...) {
+		parseError = true;
+	}
+	
+	if (parseError || reader.hasError()) {
 		qDebug() << "error occurred: " << reader.error() << ", " << reader.errorString();
-		exit(0);
+		QMessageBox::warning ( 0, "Playlist Parse Error", QString("There was a problem trying to parse the playlist \"%1\". Some of your playlist items may have loaded correctly, but don't expect miracles.").arg(file));		
 	}
 }
 
 void QPlaylistModel::readPlaylistItem(QXmlStreamReader & reader) {
 
-	
 	QString url;
 	int rating;
 
@@ -227,23 +228,20 @@ void QPlaylistModel::readPlaylistItem(QXmlStreamReader & reader) {
 		if (reader.name() == "url") {
 			reader.readNext();			
 			url = reader.text().toString();
-			qDebug()  << "url: " << url; 
 			reader.readNext();
 		} else if (reader.name() == "rating") {
 			reader.readNext();
-			rating = reader.text().toString().toInt();
-			qDebug() << "rating " << rating;
+			rating = reader.text().toString().toInt();		
 			reader.readNext();
 		}
-		else {
-			if (reader.hasError())
-				throw reader.error();
-
+		else {			
 			if (reader.name() == "")
 				continue;
-
-			qDebug() << (reader.name().toString());
-			throw 0;
+			else if (reader.hasError())
+				throw reader.error();
+			else
+				return;
 		}
+
 	this->appendRow(url, QFileInfo(url).fileName(), rating);
 }	
