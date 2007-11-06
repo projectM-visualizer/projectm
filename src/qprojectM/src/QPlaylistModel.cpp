@@ -156,13 +156,13 @@ void QPlaylistModel::clear()
 	m_playlistDesc = "";
 }
 
-void QPlaylistModel::readPlaylist ( const QString & file )
+bool QPlaylistModel::readPlaylist ( const QString & file )
 {
 	
         QFile qfile(file);
  	if (!qfile.open(QIODevice::ReadOnly)) {
 		QMessageBox::warning (0, "Playlist File Error", QString("There was a problem trying to open the playlist \"%1\".  You may not have permission to read the file.").arg(file));				
-		return;
+		return false;
 	}
 
 	QXmlStreamReader reader ( &qfile );
@@ -217,6 +217,7 @@ void QPlaylistModel::readPlaylist ( const QString & file )
 		qDebug() << "error occurred: " << reader.error() << ", " << reader.errorString();
 		QMessageBox::warning ( 0, "Playlist Parse Error", QString("There was a problem trying to parse the playlist \"%1\". Some of your playlist items may have loaded correctly, but don't expect miracles.").arg(file));		
 	}
+	return true;
 }
 
 void QPlaylistModel::readPlaylistItem(QXmlStreamReader & reader) {

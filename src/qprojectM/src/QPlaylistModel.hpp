@@ -50,7 +50,7 @@ QVariant data ( const QModelIndex & index, int role) const;
 int rowCount ( const QModelIndex & parent = QModelIndex()) const ;
 int columnCount ( const QModelIndex & parent= QModelIndex()) const ;
 
-void readPlaylist(const QString & file);
+bool readPlaylist(const QString & file);
 
 inline const QString & playlistName() {
 	return m_playlistName;
