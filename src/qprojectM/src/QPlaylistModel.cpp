@@ -157,7 +157,19 @@ void QPlaylistModel::clear()
 void QPlaylistModel::readPlaylist ( const QString & file )
 {
 
-	QXmlStreamReader reader ( file );
+	qDebug() << "file:" << file;
+        QFile qfile(file);
+ 	if (!qfile.open(QIODevice::ReadOnly)) {
+		qDebug() << "failed to open file. permissions error? non existant? ";
+		return;
+	}
+
+	QXmlStreamReader reader ( &qfile );
+
+	if (reader.hasError()) {
+		qDebug() << "error occurred2: " << reader.error() << ", " << reader.errorString();
+
+	}
 
 	QXmlStreamReader::TokenType token;
 
@@ -171,12 +183,25 @@ void QPlaylistModel::readPlaylist ( const QString & file )
 				readPlaylistItem(reader);
 				break;
 			}
-
+			break;
 		case QXmlStreamReader::NoToken:
+		qDebug() << "no token" ;
+			break;
 		case QXmlStreamReader::Invalid:
+		qDebug() << "invalid" ;
+		break;
 		case QXmlStreamReader::StartDocument:
+		qDebug() << "start doc" ;
+			break;
+
 		case QXmlStreamReader::EndDocument:
+		qDebug() << "end doc" ;
+			break;
+
 		case QXmlStreamReader::EndElement:
+		qDebug() << "end element" ;
+		break;
+
 		case QXmlStreamReader::Characters:
 		case QXmlStreamReader::Comment:
 		case QXmlStreamReader::DTD:
@@ -187,7 +212,7 @@ void QPlaylistModel::readPlaylist ( const QString & file )
 	}
 	}
 	if (reader.hasError()) {
-		qDebug() << "error occurred: " << reader.error();
+		qDebug() << "error occurred: " << reader.error() << ", " << reader.errorString();
 		exit(0);
 	}
 }
@@ -200,15 +225,23 @@ void QPlaylistModel::readPlaylistItem(QXmlStreamReader & reader) {
 
 	while (reader.readNext() != QXmlStreamReader::EndElement)
 		if (reader.name() == "url") {
-			reader.readNext();
+			reader.readNext();			
 			url = reader.text().toString();
+			qDebug()  << "url: " << url; 
 			reader.readNext();
 		} else if (reader.name() == "rating") {
 			reader.readNext();
 			rating = reader.text().toString().toInt();
+			qDebug() << "rating " << rating;
+			reader.readNext();
 		}
 		else {
-			/// throw a stream exception
+			if (reader.hasError())
+				throw reader.error();
+
+			if (reader.name() == "")
+				continue;
+
 			qDebug() << (reader.name().toString());
 			throw 0;
 		}
