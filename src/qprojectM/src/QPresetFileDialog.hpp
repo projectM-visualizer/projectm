@@ -19,8 +19,8 @@
  ***************************************************************************/
 
 
-#ifndef QPROJECTM_FILEDIALOG_H
-#define QPROJECTM_FILEDIALOG_H
+#ifndef QPRESET_FILEDIALOG_H
+#define QPRESET_FILEDIALOG_H
 
 
 #define CONFIG_FILE "/share/projectM/config.inp"
@@ -33,18 +33,18 @@
 #include <iostream>
 #include <QFileDialog>
 
- class QProjectMFileDialog : public QFileDialog
+ class QPresetFileDialog : public QFileDialog
  {
      Q_OBJECT        // must include this if you use Qt signals/slots
 
  public:
-     QProjectMFileDialog(QWidget * parent = 0): 
+     QPresetFileDialog(QWidget * parent = 0): 
 		QFileDialog(parent, "Add preset files", QString(), "Presets (*.prjm *.milk)" ) {
 
 		this->setFileMode(QFileDialog::ExistingFiles);
 	}
 	
-     ~QProjectMFileDialog() { }
+     ~QPresetFileDialog() { }
  private:
 	
 	

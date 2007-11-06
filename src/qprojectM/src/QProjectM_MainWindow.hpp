@@ -34,7 +34,7 @@
 
 class QAction;
 class QMenu;
-class QProjectMFileDialog;
+class QPresetFileDialog;
 class QPlaylistFileDialog;
 class QPlaylistModel;
 
@@ -247,8 +247,6 @@ private:
       QPlaylistModel * playlistModel;
       Ui::qProjectM_MainWindow ui;
 
-      /// example: hashes string "erl" to "Geiss & Sperl, ...", and string "erla" to "Berlap, ..."
-//      QHash<QString, StringPairVector*> exclusionHash;
       QHash<QString, PlaylistItemVector*> historyHash;
 
       int oldPresetIndex;
@@ -275,7 +273,7 @@ private:
 
       QString previousFilter;
 
-      QProjectMFileDialog * m_QProjectMFileDialog;
+      QPresetFileDialog * m_QPresetFileDialog;
       QPlaylistFileDialog * m_QPlaylistFileDialog;
 };
 
