@@ -81,7 +81,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This dock panel provides a convenient interface to manage a list of presets for projectM to render. The behavior is very similar to a music player playlist.&lt;/p>&lt;/body>&lt;/html></string>
    </property>
    <property name="windowTitle" >
-    <string>Preset Playlist</string>
+    <string comment="This is the preset playlist dock widget." >Preset Playlist</string>
    </property>
    <attribute name="dockWidgetArea" >
     <number>1</number>
