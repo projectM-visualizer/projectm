@@ -21,7 +21,7 @@
 
 #include <QtGui>
 #include "QProjectM_MainWindow.hpp"
-#include "QProjectMFileDialog.hpp"
+#include "QPresetFileDialog.hpp"
 #include "QPlaylistFileDialog.hpp"
 #include <QTextStream>
 #include <QCloseEvent>
@@ -30,7 +30,7 @@
 #include "QPlaylistModel.hpp"
 
 QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
-		:m_QProjectMFileDialog ( new QProjectMFileDialog ( this ) ), m_QPlaylistFileDialog ( new QPlaylistFileDialog ( this ) ), oldPresetIndex ( -1 )
+		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), m_QPlaylistFileDialog ( new QPlaylistFileDialog ( this ) ), oldPresetIndex ( -1 )
 {
 
 	ui.setupUi ( this );
@@ -179,6 +179,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 			return;
 
 		case Qt::Key_F1:
+			return;
 			//emit(keyPressed m_QProjectMWidget,
 		case Qt::Key_F:
 			if ( ui.presetSearchBarLineEdit->hasFocus() )
@@ -190,7 +191,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 			if ( ui.presetSearchBarLineEdit->hasFocus() )
 				return;
 
-			if ( ui.presetPlayListDockWidget->isVisible() )
+			if ( ui.presetPlayListDockWidget->isVisible())
 			{
 				ui.presetPlayListDockWidget->hide();
 			}
@@ -235,6 +236,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 
 void QProjectM_MainWindow::closeEvent ( QCloseEvent *event )
 {
+	writeSettings();
 }
 
 
@@ -242,9 +244,9 @@ void QProjectM_MainWindow::addPresets()
 {
 
 
-	if ( m_QProjectMFileDialog->exec() )
+	if ( m_QPresetFileDialog->exec() )
 	{
-		const QStringList & files = m_QProjectMFileDialog->selectedFiles();
+		const QStringList & files = m_QPresetFileDialog->selectedFiles();
 
 		for ( QStringList::const_iterator pos = files.begin();
 		        pos != files.end(); ++pos )
@@ -388,6 +390,12 @@ void QProjectM_MainWindow::readSettings()
 	QSettings settings ( "Trolltech", "QProjectM" );
 	QPoint pos = settings.value ( "pos", QPoint ( 200, 200 ) ).toPoint();
 	QSize size = settings.value ( "size", QSize ( 1000, 600 ) ).toSize();
+	m_QPlaylistFileDialog->setDirectory
+		(settings.value ("playlistPath", m_QPlaylistFileDialog->directory().absolutePath()).toString());
+
+	m_QPlaylistFileDialog->setDirectory
+		(settings.value ("presetPath", m_QPresetFileDialog->directory().absolutePath()).toString());
+
 	resize ( size );
 	move ( pos );
 }
@@ -397,6 +405,8 @@ void QProjectM_MainWindow::writeSettings()
 	QSettings settings ( "Trolltech", "QProjectM" );
 	settings.setValue ( "pos", pos() );
 	settings.setValue ( "size", size() );
+	settings.setValue ("playlistPath", m_QPlaylistFileDialog->directory().absolutePath());
+	settings.setValue ("presetPath", m_QPresetFileDialog->directory().absolutePath());
 }
 
 
