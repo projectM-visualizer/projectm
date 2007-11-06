@@ -255,7 +255,7 @@ void QProjectM_MainWindow::addPresets()
 		historyHash.insert ( QString(), playlistItems );
 
 		updateFilteredPlaylist ( previousFilter );
-
+		ui.presetPlayListDockWidget->setWindowModified(true);
 	}
 
 	//playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
@@ -270,8 +270,13 @@ void QProjectM_MainWindow::openPlaylist()
 	{
 		const QString file = m_QPlaylistFileDialog->selectedFiles() [0];
 
-		playlistModel->readPlaylist ( file );
-		copyPlaylist();
+		if (playlistModel->readPlaylist ( file )) {		
+			ui.presetPlayListDockWidget->setWindowTitle			
+				(QString("Preset Playlist - %1 [modified]").arg(playlistModel->playlistName()));
+		} else {
+			ui.dockWidgetContents->setWindowTitle("Preset Playlist");
+			ui.presetPlayListDockWidget->setWindowModified(false);
+		}
 	}
 }
 
@@ -436,48 +441,5 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 		historyHash.insert ( filter, playlistItems2 );
 	}
 	previousFilter = filter;
-
-#if 0
-	if ( ! ( filter.substring ( 0, filter.length()-1 ) == previousFilter ) )
-	{
-
-		PlaylistItemVector & playlistItems = *exclusionHash.value ( previousFilter );
-		while ( !playlistItems.empty() )
-		{
-			const StringPair & pair = playlistItems.last();
-			/// @bug need to do **ordered** insert, or something faster (index reference book keeping?)
-			playlistModel->appendRow ( pair.first, pair.second );
-			playlistItems.pop_back();
-
-		}
-		exclusionHash.remove ( previousFilter );
-		delete ( &playlistItems );
-
-	}
-	else
-	{
-		assert ( filter.length() != previousFilter.length() );
-		PlaylistItemVector * playlistItems = new PlaylistItemVector();
-		exclusionHash.insert ( filter, playlistItems );
-
-		for ( int i = 0; i < playlistModel->rowCount(); i++ )
-		{
-			QModelIndex index = playlistModel->index ( i, 0 );
-			const QString & name = playlistModel->data ( index, Qt::DisplayRole ).toString();
-			const QString & url = playlistModel->data ( index, QPlaylistModel::URLInfoRole ).toString();
-			if ( !name.contains ( filter, Qt::CaseInsensitive ) )
-			{
-
-				playlistItems->push_back ( StringPair ( url, name ) );
-				assert ( i < playlistModel->rowCount() );
-				assert ( i >= 0 );
-				playlistModel->removeRow ( i );
-				i--;
-			}
-
-		}
-
-	}
-#endif
 }
 
