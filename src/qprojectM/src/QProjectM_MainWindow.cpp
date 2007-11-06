@@ -67,6 +67,16 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 
 }
 
+QProjectM_MainWindow::~QProjectM_MainWindow() {
+
+	for ( QHash<QString, PlaylistItemVector*>::iterator pos = historyHash.begin(); pos != historyHash.end(); ++pos )
+	{
+		if (pos.value())
+			delete ( pos.value() );
+	}
+	
+}
+
 void QProjectM_MainWindow::clearPlaylist()
 {
 

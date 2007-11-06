@@ -206,8 +206,9 @@ class QProjectM_MainWindow:public QMainWindow
 public:
       
       QProjectM_MainWindow(const std::string & config_file);
-      ~QProjectM_MainWindow() {};
-     void keyReleaseEvent ( QKeyEvent * e );
+      ~QProjectM_MainWindow();
+
+      void keyReleaseEvent ( QKeyEvent * e );
       QProjectM * getQProjectM();
 
     void refreshPlaylist();
@@ -217,9 +218,8 @@ protected:
 
       typedef struct PlaylistItemMetaData {
 		PlaylistItemMetaData() {}
-		PlaylistItemMetaData(const QString & _url, const QString & _name, int _rating)
-			{url = _url; name = _name; rating = _rating;
-		}
+		PlaylistItemMetaData(const QString & _url, const QString & _name, int _rating):
+			url(_url), name(_name), rating(_rating) {}
 
 		QString url;
 		QString name;
