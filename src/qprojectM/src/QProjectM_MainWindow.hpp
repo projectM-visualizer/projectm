@@ -242,7 +242,8 @@ private slots:
       void updateFilteredPlaylist(const QString & text);
     
 private:
-	
+	void copyPlaylist();
+
       QPlaylistModel * playlistModel;
       Ui::qProjectM_MainWindow ui;
 
