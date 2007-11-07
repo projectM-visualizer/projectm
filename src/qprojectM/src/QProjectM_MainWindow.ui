@@ -139,7 +139,7 @@ p, li { white-space: pre-wrap; }
            <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Click here to the current play list&lt;/p>&lt;/body>&lt;/html></string>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Saves the currently loaded play list&lt;/p>&lt;/body>&lt;/html></string>
           </property>
           <property name="styleSheet" >
            <string/>
@@ -257,8 +257,14 @@ p, li { white-space: pre-wrap; }
           <property name="cursor" >
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
+          <property name="toolTip" >
+           <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">When the dice is activated, projectM will randomly select presets weighted by your rating preferences.&lt;/p>&lt;/body>&lt;/html></string>
+          </property>
           <property name="statusTip" >
-           <string>Change the preset play list's selection mode</string>
+           <string>Enable / Disable Shuffle Mode</string>
           </property>
           <property name="whatsThis" >
            <string/>
@@ -297,8 +303,14 @@ image: url(:/images/icons/hi16-action-projectm_random_no.png);
           <property name="cursor" >
            <cursorShape>PointingHandCursor</cursorShape>
           </property>
+          <property name="toolTip" >
+           <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">When the locked icon is shown, projectM will not automatically switch to another preset.&lt;/p>&lt;/body>&lt;/html></string>
+          </property>
           <property name="statusTip" >
-           <string>Change the preset play list's selection mode</string>
+           <string>Lock / Unlock the selected preset</string>
           </property>
           <property name="whatsThis" >
            <string/>
