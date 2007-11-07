@@ -139,7 +139,7 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 	connect ( m_QProjectMWidget, SIGNAL ( presetLockChanged ( bool ) ),  playlistModel, SLOT ( updateItemHighlights() ) );
 	connect ( m_QProjectMWidget->getQProjectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), playlistModel, SLOT ( updateItemHighlights() ) );
 
-	/// @bug not right
+	/// @bug not right - selected preset problems when searching
 	connect ( ui.presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ), playlistModel, SLOT ( updateItemHighlights() ) );
 
 }
@@ -285,7 +285,7 @@ void QProjectM_MainWindow::savePlaylist()
 	if (playlistModel->writePlaylist(m_currentPlaylistFile)) {
 		this->ui.statusbar->showMessage(QString("Saved preset playlist \"%1\" successfully.").arg(m_currentPlaylistFile), 3000);
 		this->ui.presetPlayListDockWidget->setWindowModified(false);
-		this->ui.presetPlayListDockWidget->update();
+
 	}
 }
 
@@ -301,7 +301,7 @@ void QProjectM_MainWindow::openPlaylist()
 
 		if (playlistModel->readPlaylist ( file )) {		
 			ui.presetPlayListDockWidget->setWindowTitle			
-				(QString("Preset Playlist - %1 [modified]").arg(playlistModel->playlistName()));
+				(QString("Preset Playlist - %1 [*]").arg(playlistModel->playlistName()));
 			m_currentPlaylistFile = file;			
 		} else {
 			ui.dockWidgetContents->setWindowTitle("Preset Playlist");			
