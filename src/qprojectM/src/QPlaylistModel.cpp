@@ -156,6 +156,57 @@ void QPlaylistModel::clear()
 	m_playlistDesc = "";
 }
 
+
+bool QPlaylistModel::writePlaylist ( const QString & file ) {
+
+	QFile qfile(file);
+
+ 	if (!qfile.open(QIODevice::WriteOnly)) {
+		QMessageBox::warning (0, "Playlist Save Error", QString("There was a problem trying to save the playlist \"%1\".  You may not have permission to modify this file.").arg(file));				
+		return false;
+	}
+
+	QXmlStreamWriter writer(&qfile);
+
+	writer.writeStartDocument();
+
+	writer.writeStartElement("presetplaylist");
+	writer.writeAttribute("playlistname", m_playlistName);
+
+ 
+	if (m_playlistDesc != "") {
+		writer.writeStartElement("description");
+		 writer.writeCharacters(m_playlistDesc);
+		writer.writeEndElement();
+	}
+
+	for ( int i = 0; i < this->rowCount(); i++ )
+	{
+
+		QModelIndex index = this->index ( i, 0 );
+
+		const QString & url = this->data ( index,
+		                      QPlaylistModel::URLInfoRole ).toString();
+		const QString & name = this->data ( index, Qt::DisplayRole ).toString();
+		int rating = this->data ( index, QPlaylistModel::RatingRole ).toInt();
+
+
+		writer.writeStartElement("url");
+		writer.writeCharacters(url);
+		writer.writeEndElement();
+
+		writer.writeStartElement("rating");
+		writer.writeCharacters(QString(rating));
+		writer.writeEndElement();
+
+	}
+
+	writer.writeEndElement();
+
+	writer.writeEndDocument();
+
+}
+
 bool QPlaylistModel::readPlaylist ( const QString & file )
 {
 	
@@ -209,13 +260,13 @@ bool QPlaylistModel::readPlaylist ( const QString & file )
 			break;
 	}
 	}
-	} catch (...) {
+	} catch (const int & id) {
 		parseError = true;
 	}
 	
 	if (parseError || reader.hasError()) {
 		qDebug() << "error occurred: " << reader.error() << ", " << reader.errorString();
-		QMessageBox::warning ( 0, "Playlist Parse Error", QString("There was a problem trying to parse the playlist \"%1\". Some of your playlist items may have loaded correctly, but don't expect miracles.").arg(file));		
+		QMessageBox::warning ( 0, "Playlist Parse Error", QString(tr("There was a problem trying to parse the playlist \"%1\". Some of your playlist items may have loaded correctly, but don't expect miracles.")).arg(file));		
 	}
 	return true;
 }
