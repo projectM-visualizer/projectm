@@ -377,9 +377,6 @@ void QProjectM_MainWindow::refreshPlaylist()
 
 	hHeader->setResizeMode ( 0, QHeaderView::Stretch );
         hHeader->setResizeMode ( 1, QHeaderView::Fixed );
-	
-	
-	
 
 	//hHeader->resizeSection(0, 500);
 	hHeader->resizeSection(1, 50);
@@ -440,7 +437,7 @@ void QProjectM_MainWindow::createStatusBar()
 
 void QProjectM_MainWindow::readSettings()
 {
-	QSettings settings ( "Trolltech", "QProjectM" );
+	QSettings settings ( "projectM", "QProjectM" );
 	QPoint pos = settings.value ( "pos", QPoint ( 200, 200 ) ).toPoint();
 	QSize size = settings.value ( "size", QSize ( 1000, 600 ) ).toSize();
 	m_QPlaylistFileDialog->setDirectory
@@ -455,7 +452,7 @@ void QProjectM_MainWindow::readSettings()
 
 void QProjectM_MainWindow::writeSettings()
 {
-	QSettings settings ( "Trolltech", "QProjectM" );
+	QSettings settings ( "projectM", "QProjectM" );
 	settings.setValue ( "pos", pos() );
 	settings.setValue ( "size", size() );
 	settings.setValue ( "playlistPath", m_QPlaylistFileDialog->directory().absolutePath() );
