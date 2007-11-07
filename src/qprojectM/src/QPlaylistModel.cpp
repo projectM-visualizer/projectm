@@ -188,7 +188,6 @@ bool QPlaylistModel::writePlaylist ( const QString & file ) {
 
 		const QString & url = this->data ( index,
 		                      QPlaylistModel::URLInfoRole ).toString();
-		const QString & name = this->data ( index, Qt::DisplayRole ).toString();
 		int rating = this->data ( index, QPlaylistModel::RatingRole ).toInt();
 
 
@@ -206,7 +205,7 @@ bool QPlaylistModel::writePlaylist ( const QString & file ) {
 	writer.writeEndElement();
 
 	writer.writeEndDocument();
-
+	return true;
 }
 
 bool QPlaylistModel::readPlaylist ( const QString & file )
