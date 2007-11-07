@@ -414,7 +414,7 @@ void QProjectM_MainWindow::readSettings()
 	m_QPlaylistFileDialog->setDirectory
 		(settings.value ("playlistPath", m_QPlaylistFileDialog->directory().absolutePath()).toString());
 
-	m_QPlaylistFileDialog->setDirectory
+	m_QPresetFileDialog->setDirectory
 		(settings.value ("presetPath", m_QPresetFileDialog->directory().absolutePath()).toString());
 
 	resize ( size );
