@@ -233,6 +233,7 @@ private slots:
       void clearPlaylist();
       void addPresets();
       void openPlaylist();
+      void savePlaylist(const QString & file = QString());
       void about();
       void postProjectM_Initialize();
       void updatePlaylistSelection(bool hardCut, int index);
@@ -240,9 +241,11 @@ private slots:
       void changeRating(const QModelIndex & index);
 
       void updateFilteredPlaylist(const QString & text);
-    
+     
 private:
 	void copyPlaylist();
+	
+      QString m_currentPlaylistFile;
 
       QPlaylistModel * playlistModel;
       Ui::qProjectM_MainWindow ui;
