@@ -180,8 +180,9 @@ bool QPlaylistModel::writePlaylist ( const QString & file ) {
 		writer.writeEndElement();
 	}
 
-	for ( int i = 0; i < this->rowCount(); i++ )
+	for ( int i = 0; i < this->rowCount(); i++ )	
 	{
+		writer.writeStartElement("item");
 
 		QModelIndex index = this->index ( i, 0 );
 
@@ -199,6 +200,7 @@ bool QPlaylistModel::writePlaylist ( const QString & file ) {
 		writer.writeCharacters(QString(rating));
 		writer.writeEndElement();
 
+		writer.writeEndElement();
 	}
 
 	writer.writeEndElement();
