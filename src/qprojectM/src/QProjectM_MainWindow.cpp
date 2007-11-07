@@ -285,7 +285,8 @@ void QProjectM_MainWindow::savePlaylist()
 	if (playlistModel->writePlaylist(m_currentPlaylistFile)) {
 		this->ui.statusbar->showMessage(QString("Saved preset playlist \"%1\" successfully.").arg(m_currentPlaylistFile), 3000);
 		this->ui.presetPlayListDockWidget->setWindowModified(false);
-	} 
+		this->ui.presetPlayListDockWidget->update();
+	}
 }
 
 void QProjectM_MainWindow::openPlaylist()
@@ -371,7 +372,7 @@ void QProjectM_MainWindow::refreshPlaylist()
 void QProjectM_MainWindow::about()
 {
 	QMessageBox::about ( this, tr ( "About QProjectM and ProjectM" ),
-	                     tr ( "<b>QProjectM</b> provides useful gui extensions to the projectM core library. For problems please email Carmelo Piccione (<a href=\"mailto:carmelo.piccione@gmail.com\"> carmelo.piccione@gmail.com</a>). \n<b>projectM</b> is an advanced music visualizer based on Geiss's Milkdrop. For more info visit us at <a href=\"http://projectm.sf.net\">projectm.sf.net</a>." ) );
+	                     tr ( "<p><b>QProjectM</b> provides useful gui extensions to the projectM core library. For problems please email Carmelo Piccione: \n<a href=\"mailto:carmelo.piccione@gmail.com\"> carmelo.piccione@gmail.com</a>.</p><p><b>projectM</b> is an advanced opensource music visualizer based on Geiss's Milkdrop. For more info visit us at <a href=\"http://projectm.sf.net\">projectm.sf.net</a>.</p>" ) );
 }
 
 
