@@ -29,6 +29,7 @@
 
 #include "QPlaylistModel.hpp"
 #include "ui_QProjectM_MainWindow.h"
+#include "ConfigFile.h"
 
 QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), m_QPlaylistFileDialog ( new QPlaylistFileDialog ( this ) ), oldPresetIndex ( -1 )
@@ -58,7 +59,21 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 
 	m_timer->start ( 0 );
 
+	ConfigFile config ( config_file );
+
+	if ( config.read ( "Fullscreen", false ) )
+		this->setWindowState ( this->windowState() | Qt::WindowFullScreen );
+	else
+		this->setWindowState ( this->windowState() & ~Qt::WindowFullScreen );
+
 	setCentralWidget ( m_QProjectMWidget );
+
+
+	int wvw = config.read<int> ( "Window Width", 512 );
+	int wvh = config.read<int> ( "Window Height", 512 );
+
+	// Suggest to the widget the projectM window size configuration settings
+	m_QProjectMWidget->setBaseSize ( wvw, wvh );
 
 	createActions();
 	createMenus();
@@ -70,15 +85,16 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 
 }
 
-QProjectM_MainWindow::~QProjectM_MainWindow() {
+QProjectM_MainWindow::~QProjectM_MainWindow()
+{
 
 	for ( QHash<QString, PlaylistItemVector*>::iterator pos = historyHash.begin(); pos != historyHash.end(); ++pos )
 	{
-		if (pos.value())
+		if ( pos.value() )
 			delete ( pos.value() );
 	}
 
-	delete (ui);
+	delete ( ui );
 
 }
 
@@ -196,7 +212,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 			if ( ui->presetSearchBarLineEdit->hasFocus() )
 				return;
 
-			if ( ui->presetPlayListDockWidget->isVisible())
+			if ( ui->presetPlayListDockWidget->isVisible() )
 			{
 				ui->presetPlayListDockWidget->hide();
 			}
@@ -272,24 +288,26 @@ void QProjectM_MainWindow::addPresets()
 		historyHash.insert ( QString(), playlistItems );
 
 		updateFilteredPlaylist ( previousFilter );
-		ui->presetPlayListDockWidget->setWindowModified(true);
+		ui->presetPlayListDockWidget->setWindowModified ( true );
 	}
 
 	//playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 }
 void QProjectM_MainWindow::savePlaylist()
 {
-	
+
 	//m_currentPlaylistFile = file;
-	
-	if (m_currentPlaylistFile == "") {
+
+	if ( m_currentPlaylistFile == "" )
+	{
 		qDebug() << "current playlist file null!" ;
 		return;
-}
+	}
 
-	if (playlistModel->writePlaylist(m_currentPlaylistFile)) {
-		this->ui->statusbar->showMessage(QString("Saved preset playlist \"%1\" successfully.").arg(m_currentPlaylistFile), 3000);
-		this->ui->presetPlayListDockWidget->setWindowModified(false);
+	if ( playlistModel->writePlaylist ( m_currentPlaylistFile ) )
+	{
+		this->ui->statusbar->showMessage ( QString ( "Saved preset playlist \"%1\" successfully." ).arg ( m_currentPlaylistFile ), 3000 );
+		this->ui->presetPlayListDockWidget->setWindowModified ( false );
 
 	}
 }
@@ -304,16 +322,19 @@ void QProjectM_MainWindow::openPlaylist()
 		clearPlaylist();
 		const QString file = m_QPlaylistFileDialog->selectedFiles() [0];
 
-		if (playlistModel->readPlaylist ( file )) {		
-			ui->presetPlayListDockWidget->setWindowTitle			
-				(QString("Preset Playlist - %1 [*]").arg(playlistModel->playlistName()));
-			m_currentPlaylistFile = file;			
-		} else {
-			ui->dockWidgetContents->setWindowTitle("Preset Playlist");			
+		if ( playlistModel->readPlaylist ( file ) )
+		{
+			ui->presetPlayListDockWidget->setWindowTitle
+			( QString ( "Preset Playlist - %1 [*]" ).arg ( playlistModel->playlistName() ) );
+			m_currentPlaylistFile = file;
 		}
-		ui->presetPlayListDockWidget->setWindowModified(false);
+		else
+		{
+			ui->dockWidgetContents->setWindowTitle ( "Preset Playlist" );
+		}
+		ui->presetPlayListDockWidget->setWindowModified ( false );
 		copyPlaylist();
-		updateFilteredPlaylist(ui->presetSearchBarLineEdit->text());
+		updateFilteredPlaylist ( ui->presetSearchBarLineEdit->text() );
 	}
 }
 
@@ -353,7 +374,7 @@ void QProjectM_MainWindow::refreshPlaylist()
 	ui->tableView->setVerticalHeader ( vHeader );
 	ui->tableView->setHorizontalHeader ( hHeader );
 
-	hHeader->setResizeMode ( QHeaderView::Stretch);
+	hHeader->setResizeMode ( QHeaderView::Stretch );
 	//hHeader->resizeSection(0, 500);
 	//hHeader->resizeSection(1, 50);
 
@@ -417,10 +438,10 @@ void QProjectM_MainWindow::readSettings()
 	QPoint pos = settings.value ( "pos", QPoint ( 200, 200 ) ).toPoint();
 	QSize size = settings.value ( "size", QSize ( 1000, 600 ) ).toSize();
 	m_QPlaylistFileDialog->setDirectory
-		(settings.value ("playlistPath", m_QPlaylistFileDialog->directory().absolutePath()).toString());
+	( settings.value ( "playlistPath", m_QPlaylistFileDialog->directory().absolutePath() ).toString() );
 
 	m_QPresetFileDialog->setDirectory
-		(settings.value ("presetPath", m_QPresetFileDialog->directory().absolutePath()).toString());
+	( settings.value ( "presetPath", m_QPresetFileDialog->directory().absolutePath() ).toString() );
 
 	resize ( size );
 	move ( pos );
@@ -431,8 +452,8 @@ void QProjectM_MainWindow::writeSettings()
 	QSettings settings ( "Trolltech", "QProjectM" );
 	settings.setValue ( "pos", pos() );
 	settings.setValue ( "size", size() );
-	settings.setValue ("playlistPath", m_QPlaylistFileDialog->directory().absolutePath());
-	settings.setValue ("presetPath", m_QPresetFileDialog->directory().absolutePath());
+	settings.setValue ( "playlistPath", m_QPlaylistFileDialog->directory().absolutePath() );
+	settings.setValue ( "presetPath", m_QPresetFileDialog->directory().absolutePath() );
 }
 
 
