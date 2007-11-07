@@ -33,6 +33,7 @@
 
 #include "libprojectM/projectM.hpp"
 
+class QHeaderView;
 class QAction;
 class QMenu;
 class QPresetFileDialog;
@@ -250,6 +251,8 @@ private slots:
 private:
 	void copyPlaylist();
 	
+	QHeaderView * hHeader;
+	QHeaderView * vHeader;
       QString m_currentPlaylistFile;
 
       QPlaylistModel * playlistModel;

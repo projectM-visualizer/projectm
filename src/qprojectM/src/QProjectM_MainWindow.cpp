@@ -146,9 +146,10 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 {
 
 	playlistModel = new QPlaylistModel ( *m_QProjectMWidget->getQProjectM(),this );
+	ui->tableView->setModel ( playlistModel );
 	refreshPlaylist();
 
-	ui->tableView->setModel ( playlistModel );
+
 	connect ( m_QProjectMWidget->getQProjectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), this, SLOT ( updatePlaylistSelection ( bool,unsigned int ) ) );
 	connect ( ui->presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( updateFilteredPlaylist ( const QString& ) ) );
 
@@ -363,8 +364,8 @@ void QProjectM_MainWindow::refreshPlaylist()
 {
 	copyPlaylist();
 
-	QHeaderView * hHeader = new QHeaderView ( Qt::Horizontal, this );
-	QHeaderView * vHeader = new QHeaderView ( Qt::Vertical, this );
+	hHeader = new QHeaderView ( Qt::Horizontal, this );
+	vHeader = new QHeaderView ( Qt::Vertical, this );
 
 	hHeader->setClickable ( false );
 	hHeader->setSortIndicatorShown ( false );
@@ -374,9 +375,14 @@ void QProjectM_MainWindow::refreshPlaylist()
 	ui->tableView->setVerticalHeader ( vHeader );
 	ui->tableView->setHorizontalHeader ( hHeader );
 
-	hHeader->setResizeMode ( QHeaderView::Stretch );
+	hHeader->setResizeMode ( 0, QHeaderView::Stretch );
+        hHeader->setResizeMode ( 1, QHeaderView::Fixed );
+	
+	
+	
+
 	//hHeader->resizeSection(0, 500);
-	//hHeader->resizeSection(1, 50);
+	hHeader->resizeSection(1, 50);
 
 	/*
 	hHeader->resizeSection(0, 200);
