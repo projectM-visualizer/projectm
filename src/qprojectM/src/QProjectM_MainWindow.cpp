@@ -272,23 +272,41 @@ void QProjectM_MainWindow::addPresets()
 
 	//playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 }
+void QProjectM_MainWindow::savePlaylist(const QString & file)
+{
+	
+	if (file != "");
+		m_currentPlaylistFile = file;
+	
+	if (m_currentPlaylistFile == "")
+		return;
+
+	if (playlistModel->writePlaylist(m_currentPlaylistFile)) {
+		this->ui.statusbar->showMessage(QString("Saved preset playlist \"%1\" successfully.").arg(m_currentPlaylistFile), 300);
+		this->ui.presetPlayListDockWidget->setWindowModified(false);
+	} 
+}
 
 void QProjectM_MainWindow::openPlaylist()
 {
 
-	clearPlaylist();
 
 	if ( m_QPlaylistFileDialog->exec() )
 	{
+
+		clearPlaylist();
 		const QString file = m_QPlaylistFileDialog->selectedFiles() [0];
 
 		if (playlistModel->readPlaylist ( file )) {		
 			ui.presetPlayListDockWidget->setWindowTitle			
 				(QString("Preset Playlist - %1 [modified]").arg(playlistModel->playlistName()));
+			m_currentPlaylistFile = file;
 		} else {
 			ui.dockWidgetContents->setWindowTitle("Preset Playlist");
-			ui.presetPlayListDockWidget->setWindowModified(false);
+			ui.presetPlayListDockWidget->setWindowModified(false);			
 		}
+		copyPlaylist();
+		updateFilteredPlaylist(ui.presetSearchBarLineEdit->text());
 	}
 }
 
@@ -363,6 +381,7 @@ void QProjectM_MainWindow::createActions()
 
 	connect ( ui.actionAddPresets, SIGNAL ( triggered() ), this, SLOT ( addPresets() ) );
 	connect ( ui.actionOpen_Play_List, SIGNAL ( triggered() ), this, SLOT ( openPlaylist() ) );
+	connect ( ui.actionSave_play_list, SIGNAL ( triggered() ), this, SLOT ( savePlaylist() ) );
 	connect ( ui.actionAbout_qprojectM, SIGNAL ( triggered() ), this, SLOT ( about() ) );
 
 	//connect(ui.actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
