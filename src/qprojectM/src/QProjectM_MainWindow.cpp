@@ -272,17 +272,18 @@ void QProjectM_MainWindow::addPresets()
 
 	//playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 }
-void QProjectM_MainWindow::savePlaylist(const QString & file)
+void QProjectM_MainWindow::savePlaylist()
 {
 	
-	if (file != "");
-		m_currentPlaylistFile = file;
+	//m_currentPlaylistFile = file;
 	
-	if (m_currentPlaylistFile == "")
+	if (m_currentPlaylistFile == "") {
+		qDebug() << "current playlist file null!" ;
 		return;
+}
 
 	if (playlistModel->writePlaylist(m_currentPlaylistFile)) {
-		this->ui.statusbar->showMessage(QString("Saved preset playlist \"%1\" successfully.").arg(m_currentPlaylistFile), 300);
+		this->ui.statusbar->showMessage(QString("Saved preset playlist \"%1\" successfully.").arg(m_currentPlaylistFile), 3000);
 		this->ui.presetPlayListDockWidget->setWindowModified(false);
 	} 
 }
@@ -300,11 +301,11 @@ void QProjectM_MainWindow::openPlaylist()
 		if (playlistModel->readPlaylist ( file )) {		
 			ui.presetPlayListDockWidget->setWindowTitle			
 				(QString("Preset Playlist - %1 [modified]").arg(playlistModel->playlistName()));
-			m_currentPlaylistFile = file;
+			m_currentPlaylistFile = file;			
 		} else {
-			ui.dockWidgetContents->setWindowTitle("Preset Playlist");
-			ui.presetPlayListDockWidget->setWindowModified(false);			
+			ui.dockWidgetContents->setWindowTitle("Preset Playlist");			
 		}
+		ui.presetPlayListDockWidget->setWindowModified(false);
 		copyPlaylist();
 		updateFilteredPlaylist(ui.presetSearchBarLineEdit->text());
 	}
@@ -346,7 +347,7 @@ void QProjectM_MainWindow::refreshPlaylist()
 	ui.tableView->setVerticalHeader ( vHeader );
 	ui.tableView->setHorizontalHeader ( hHeader );
 
-	hHeader->setResizeMode ( QHeaderView::Interactive );
+	hHeader->setResizeMode ( QHeaderView::Stretch);
 	//hHeader->resizeSection(0, 500);
 	//hHeader->resizeSection(1, 50);
 
@@ -370,7 +371,7 @@ void QProjectM_MainWindow::refreshPlaylist()
 void QProjectM_MainWindow::about()
 {
 	QMessageBox::about ( this, tr ( "About QProjectM and ProjectM" ),
-	                     tr ( "<b>QProjectM</b> provides useful gui extensions to the projectM core library. For problems please email Carmelo Piccione (carmelo.piccione@gmail.com). \n<b>projectM</b> is an advanced music visualizer based on Geiss's Milkdrop. For more info visit us at <a href=\"http://projectm.sf.net\">projectm.sf.net</a>." ) );
+	                     tr ( "<b>QProjectM</b> provides useful gui extensions to the projectM core library. For problems please email Carmelo Piccione (<a href=\"mailto:carmelo.piccione@gmail.com\"> carmelo.piccione@gmail.com</a>). \n<b>projectM</b> is an advanced music visualizer based on Geiss's Milkdrop. For more info visit us at <a href=\"http://projectm.sf.net\">projectm.sf.net</a>." ) );
 }
 
 
