@@ -233,7 +233,7 @@ private slots:
       void clearPlaylist();
       void addPresets();
       void openPlaylist();
-      void savePlaylist(const QString & file = QString());
+      void savePlaylist();
       void about();
       void postProjectM_Initialize();
       void updatePlaylistSelection(bool hardCut, int index);
