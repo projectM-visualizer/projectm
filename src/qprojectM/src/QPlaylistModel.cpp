@@ -196,7 +196,7 @@ bool QPlaylistModel::writePlaylist ( const QString & file ) {
 		writer.writeEndElement();
 
 		writer.writeStartElement("rating");
-		writer.writeCharacters(QString(rating));
+		writer.writeCharacters(QString("%1").arg(rating));
 		writer.writeEndElement();
 
 		writer.writeEndElement();
@@ -221,6 +221,7 @@ bool QPlaylistModel::readPlaylist ( const QString & file )
 
 	QXmlStreamReader::TokenType token;
 	bool parseError = false;
+	bool nameSet = false;
 
 	try {
 	while ( !reader.atEnd() ) {
@@ -231,6 +232,7 @@ bool QPlaylistModel::readPlaylist ( const QString & file )
 
 			if (reader.name() == "presetplaylist") {
 				m_playlistName = reader.attributes().value("playlistname").toString();
+				nameSet = true;
 			}
 			else if (reader.name() == "description") {
 				reader.readNext();
@@ -264,7 +266,10 @@ bool QPlaylistModel::readPlaylist ( const QString & file )
 	} catch (const int & id) {
 		parseError = true;
 	}
-	
+
+	if (!nameSet)	
+		m_playlistName = "Unknown";
+
 	if (parseError || reader.hasError()) {
 		qDebug() << "error occurred: " << reader.error() << ", " << reader.errorString();
 		QMessageBox::warning ( 0, "Playlist Parse Error", QString(tr("There was a problem trying to parse the playlist \"%1\". Some of your playlist items may have loaded correctly, but don't expect miracles.")).arg(file));		
