@@ -51,6 +51,7 @@ int rowCount ( const QModelIndex & parent = QModelIndex()) const ;
 int columnCount ( const QModelIndex & parent= QModelIndex()) const ;
 
 bool readPlaylist(const QString & file);
+bool writePlaylist ( const QString & file );
 
 inline const QString & playlistName() {
 	return m_playlistName;
