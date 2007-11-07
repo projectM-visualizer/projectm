@@ -23,21 +23,26 @@
 #define QPROJECTM_MAINWINDOW_H
 #define CONFIG_FILE "/share/projectM/config.inp"
 
-#include "ui_QProjectM_MainWindow.h"
+//#include "ui_QProjectM_MainWindow.h"
 
 #include <QMainWindow>
 #include <QCloseEvent>
 #include <cassert>
-#include "libprojectM/projectM.hpp"
-
 #include <QGLWidget>
+#include <QHash>
+
+#include "libprojectM/projectM.hpp"
 
 class QAction;
 class QMenu;
 class QPresetFileDialog;
 class QPlaylistFileDialog;
 class QPlaylistModel;
+class QModelIndex;
 
+namespace Ui { 
+class qProjectM_MainWindow;
+}
 #include <iostream>
 
 
@@ -248,7 +253,7 @@ private:
       QString m_currentPlaylistFile;
 
       QPlaylistModel * playlistModel;
-      Ui::qProjectM_MainWindow ui;
+      Ui::qProjectM_MainWindow * ui;
 
       QHash<QString, PlaylistItemVector*> historyHash;
 

@@ -28,22 +28,25 @@
 #include <QFileDialog>
 
 #include "QPlaylistModel.hpp"
+#include "ui_QProjectM_MainWindow.h"
 
 QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), m_QPlaylistFileDialog ( new QPlaylistFileDialog ( this ) ), oldPresetIndex ( -1 )
 {
 
-	ui.setupUi ( this );
+	ui = new Ui::qProjectM_MainWindow();
+
+	ui->setupUi ( this );
 
 	m_QProjectMWidget = new QProjectMWidget ( config_file, this );
 
 	m_timer = new QTimer ( this );
 	connect ( m_timer, SIGNAL ( timeout() ), m_QProjectMWidget, SLOT ( updateGL() ) );
 
-	connect ( ui.lockPresetCheckBox, SIGNAL ( stateChanged ( int ) ),
+	connect ( ui->lockPresetCheckBox, SIGNAL ( stateChanged ( int ) ),
 	          m_QProjectMWidget, SLOT ( setPresetLock ( int ) ) );
 
-	connect ( ui.clearPresetList_PushButton, SIGNAL ( pressed() ),
+	connect ( ui->clearPresetList_PushButton, SIGNAL ( pressed() ),
 	          this, SLOT ( clearPlaylist() ) );
 
 
@@ -62,7 +65,7 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 	createToolBars();
 	createStatusBar();
 	readSettings();
-	ui.presetPlayListDockWidget->hide();
+	ui->presetPlayListDockWidget->hide();
 
 
 }
@@ -74,7 +77,9 @@ QProjectM_MainWindow::~QProjectM_MainWindow() {
 		if (pos.value())
 			delete ( pos.value() );
 	}
-	
+
+	delete (ui);
+
 }
 
 void QProjectM_MainWindow::clearPlaylist()
@@ -88,7 +93,7 @@ void QProjectM_MainWindow::clearPlaylist()
 	historyHash.clear();
 	historyHash.insert ( QString(), new PlaylistItemVector );
 	previousFilter = QString();
-	ui.presetSearchBarLineEdit->clear();
+	ui->presetSearchBarLineEdit->clear();
 }
 
 QProjectM * QProjectM_MainWindow::getQProjectM()
@@ -127,20 +132,20 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 	playlistModel = new QPlaylistModel ( *m_QProjectMWidget->getQProjectM(),this );
 	refreshPlaylist();
 
-	ui.tableView->setModel ( playlistModel );
+	ui->tableView->setModel ( playlistModel );
 	connect ( m_QProjectMWidget->getQProjectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), this, SLOT ( updatePlaylistSelection ( bool,unsigned int ) ) );
-	connect ( ui.presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( updateFilteredPlaylist ( const QString& ) ) );
+	connect ( ui->presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( updateFilteredPlaylist ( const QString& ) ) );
 
-	connect ( ui.tableView, SIGNAL ( activated ( const QModelIndex & ) ),
+	connect ( ui->tableView, SIGNAL ( activated ( const QModelIndex & ) ),
 	          this, SLOT ( selectPlaylistItem ( const QModelIndex & ) ) );
 
-	connect ( ui.tableView, SIGNAL ( clicked ( const QModelIndex & ) ),
+	connect ( ui->tableView, SIGNAL ( clicked ( const QModelIndex & ) ),
 	          this, SLOT ( changeRating ( const QModelIndex & ) ) );
 	connect ( m_QProjectMWidget, SIGNAL ( presetLockChanged ( bool ) ),  playlistModel, SLOT ( updateItemHighlights() ) );
 	connect ( m_QProjectMWidget->getQProjectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), playlistModel, SLOT ( updateItemHighlights() ) );
 
 	/// @bug not right - selected preset problems when searching
-	connect ( ui.presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ), playlistModel, SLOT ( updateItemHighlights() ) );
+	connect ( ui->presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ), playlistModel, SLOT ( updateItemHighlights() ) );
 
 }
 
@@ -160,17 +165,17 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 	switch ( e->key() )
 	{
 		case Qt::Key_L:
-			if ( ui.presetSearchBarLineEdit->hasFocus() )
+			if ( ui->presetSearchBarLineEdit->hasFocus() )
 				return;
 
-			if ( ui.lockPresetCheckBox->checkState() == Qt::Checked )
+			if ( ui->lockPresetCheckBox->checkState() == Qt::Checked )
 			{
-				ui.lockPresetCheckBox->setCheckState ( Qt::Unchecked );
+				ui->lockPresetCheckBox->setCheckState ( Qt::Unchecked );
 
 			}
 			else
 			{
-				ui.lockPresetCheckBox->setCheckState ( Qt::Checked );
+				ui->lockPresetCheckBox->setCheckState ( Qt::Checked );
 			}
 
 			// the projectM widget handles the actual lock
@@ -182,21 +187,21 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 			return;
 			//emit(keyPressed m_QProjectMWidget,
 		case Qt::Key_F:
-			if ( ui.presetSearchBarLineEdit->hasFocus() )
+			if ( ui->presetSearchBarLineEdit->hasFocus() )
 				return;
 			this->setWindowState ( this->windowState() ^ Qt::WindowFullScreen );
 			return;
 
 		case Qt::Key_M:
-			if ( ui.presetSearchBarLineEdit->hasFocus() )
+			if ( ui->presetSearchBarLineEdit->hasFocus() )
 				return;
 
-			if ( ui.presetPlayListDockWidget->isVisible())
+			if ( ui->presetPlayListDockWidget->isVisible())
 			{
-				ui.presetPlayListDockWidget->hide();
+				ui->presetPlayListDockWidget->hide();
 			}
 			else
-				ui.presetPlayListDockWidget->show();
+				ui->presetPlayListDockWidget->show();
 
 			if ( menuBar()->isVisible() )
 			{
@@ -219,7 +224,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 			return;
 
 		case Qt::Key_R:
-			if ( ui.presetSearchBarLineEdit->hasFocus() )
+			if ( ui->presetSearchBarLineEdit->hasFocus() )
 				return;
 
 			//modelIndex.selectRandom()
@@ -267,7 +272,7 @@ void QProjectM_MainWindow::addPresets()
 		historyHash.insert ( QString(), playlistItems );
 
 		updateFilteredPlaylist ( previousFilter );
-		ui.presetPlayListDockWidget->setWindowModified(true);
+		ui->presetPlayListDockWidget->setWindowModified(true);
 	}
 
 	//playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
@@ -283,8 +288,8 @@ void QProjectM_MainWindow::savePlaylist()
 }
 
 	if (playlistModel->writePlaylist(m_currentPlaylistFile)) {
-		this->ui.statusbar->showMessage(QString("Saved preset playlist \"%1\" successfully.").arg(m_currentPlaylistFile), 3000);
-		this->ui.presetPlayListDockWidget->setWindowModified(false);
+		this->ui->statusbar->showMessage(QString("Saved preset playlist \"%1\" successfully.").arg(m_currentPlaylistFile), 3000);
+		this->ui->presetPlayListDockWidget->setWindowModified(false);
 
 	}
 }
@@ -300,15 +305,15 @@ void QProjectM_MainWindow::openPlaylist()
 		const QString file = m_QPlaylistFileDialog->selectedFiles() [0];
 
 		if (playlistModel->readPlaylist ( file )) {		
-			ui.presetPlayListDockWidget->setWindowTitle			
+			ui->presetPlayListDockWidget->setWindowTitle			
 				(QString("Preset Playlist - %1 [*]").arg(playlistModel->playlistName()));
 			m_currentPlaylistFile = file;			
 		} else {
-			ui.dockWidgetContents->setWindowTitle("Preset Playlist");			
+			ui->dockWidgetContents->setWindowTitle("Preset Playlist");			
 		}
-		ui.presetPlayListDockWidget->setWindowModified(false);
+		ui->presetPlayListDockWidget->setWindowModified(false);
 		copyPlaylist();
-		updateFilteredPlaylist(ui.presetSearchBarLineEdit->text());
+		updateFilteredPlaylist(ui->presetSearchBarLineEdit->text());
 	}
 }
 
@@ -345,8 +350,8 @@ void QProjectM_MainWindow::refreshPlaylist()
 	//hHeader->setSortIndicator(1, Qt::AscendingOrder);
 	hHeader->setStretchLastSection ( false );
 
-	ui.tableView->setVerticalHeader ( vHeader );
-	ui.tableView->setHorizontalHeader ( hHeader );
+	ui->tableView->setVerticalHeader ( vHeader );
+	ui->tableView->setHorizontalHeader ( hHeader );
 
 	hHeader->setResizeMode ( QHeaderView::Stretch);
 	//hHeader->resizeSection(0, 500);
@@ -379,20 +384,20 @@ void QProjectM_MainWindow::about()
 void QProjectM_MainWindow::createActions()
 {
 
-	connect ( ui.actionExit, SIGNAL ( triggered() ), this, SLOT ( close() ) );
+	connect ( ui->actionExit, SIGNAL ( triggered() ), this, SLOT ( close() ) );
 
-	connect ( ui.actionAddPresets, SIGNAL ( triggered() ), this, SLOT ( addPresets() ) );
-	connect ( ui.actionOpen_Play_List, SIGNAL ( triggered() ), this, SLOT ( openPlaylist() ) );
-	connect ( ui.actionSave_play_list, SIGNAL ( triggered() ), this, SLOT ( savePlaylist() ) );
-	connect ( ui.actionAbout_qprojectM, SIGNAL ( triggered() ), this, SLOT ( about() ) );
+	connect ( ui->actionAddPresets, SIGNAL ( triggered() ), this, SLOT ( addPresets() ) );
+	connect ( ui->actionOpen_Play_List, SIGNAL ( triggered() ), this, SLOT ( openPlaylist() ) );
+	connect ( ui->actionSave_play_list, SIGNAL ( triggered() ), this, SLOT ( savePlaylist() ) );
+	connect ( ui->actionAbout_qprojectM, SIGNAL ( triggered() ), this, SLOT ( about() ) );
 
-	//connect(ui.actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
+	//connect(ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
 
 }
 
 void QProjectM_MainWindow::createMenus()
 {
-	ui.menuBar->hide();
+	ui->menuBar->hide();
 
 }
 
