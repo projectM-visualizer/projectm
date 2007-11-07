@@ -202,16 +202,6 @@ config_file = read_config();
 
    globalPM = mainWindow->getQProjectM();
 
-/// @bug should put this in qprojectM!
-#if 0
- ConfigFile config(config_file);
-
- int wvw = config.read<int>( "Window Width", 512 );
- int wvh = config.read<int>( "Window Height", 512 );
- int fullscreen = 0;
- if (config.read("Fullscreen", true)) fullscreen = 1;
-      else fullscreen = 0;
-#endif
 
 
   //JACK INIT
