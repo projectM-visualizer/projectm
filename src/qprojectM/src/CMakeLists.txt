@@ -55,5 +55,5 @@ include_directories(${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTXML_INCLUDE
 # link the "qprojectM" target against the Qt libraries. which libraries exactly, is defined by the "include(${QT_USE_FILE})" line above, which sets up this variable.
 target_link_libraries(qprojectM projectM ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTXML_LIBRARIES} ${QT_LIBRARIES})
 
-install(FILES QProjectM_MainWindow.hpp ui_QProjectM_MainWindow.h DESTINATION include/libprojectM)
+install(FILES QProjectM_MainWindow.hpp DESTINATION include/libprojectM)
 install(TARGETS qprojectM DESTINATION lib)
