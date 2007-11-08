@@ -30,6 +30,43 @@
 #include "QPlaylistModel.hpp"
 #include "ui_QProjectM_MainWindow.h"
 #include "ConfigFile.h"
+#include "QXmlPlaylistHandler.hpp"
+
+class PlaylistWriteFunctor {
+	public:
+		PlaylistWriteFunctor(const QProjectM_MainWindow::PlaylistItemVector::iterator & begin,
+			const QProjectM_MainWindow::PlaylistItemVector::iterator & end,
+			const QString & name, const QString & desc) : 
+		 m_pos(begin), m_end(end), m_name(name), m_desc(desc) {}
+
+		inline const QString & playlistName() const {
+			return m_name;
+		}
+
+		inline const QString & playlistDesc() const {
+			return m_desc;
+		}
+
+		inline bool nextItem(QString & url, int & rating) {
+
+			if (m_pos == m_end)
+				return false;
+
+			QProjectM_MainWindow::PlaylistItemMetaData data = *m_pos;
+			
+			url = data.url;
+			rating = data.rating;
+			m_pos++;
+			return true;
+		}
+	private:
+		QProjectM_MainWindow::PlaylistItemVector::const_iterator m_pos;
+		const QProjectM_MainWindow::PlaylistItemVector::const_iterator m_end;
+		const QString & m_name;
+		const QString & m_desc;
+		
+
+};
 
 QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), m_QPlaylistFileDialog ( new QPlaylistFileDialog ( this ) ), oldPresetIndex ( -1 )
@@ -305,12 +342,33 @@ void QProjectM_MainWindow::savePlaylist()
 		return;
 	}
 
-	if ( playlistModel->writePlaylist ( m_currentPlaylistFile ) )
-	{
-		this->ui->statusbar->showMessage ( QString ( "Saved preset playlist \"%1\" successfully." ).arg ( m_currentPlaylistFile ), 3000 );
+	/// @idea add ability to save filtered list
+	#if 0
+		if ( playlistModel->writePlaylist ( m_currentPlaylistFile ) ) {
+		this->ui->statusbar->showMessage ( QString ( "Saved cropped preset playlist \"%1\" successfully." ).arg ( m_currentPlaylistFile ), 3000 );
 		this->ui->presetPlayListDockWidget->setWindowModified ( false );
+		} 
+	#endif
 
+	QFile qfile(m_currentPlaylistFile);
+
+ 	if (!qfile.open(QIODevice::WriteOnly)) {
+		QMessageBox::warning (0, "Playlist Save Error", QString("There was a problem trying to save the playlist \"%1\".  You may not have permission to modify this file.").arg(m_currentPlaylistFile));				
+		return ;
 	}
+
+	// Use the hash that maps "" to playlist items since this list contains the entire playlist item set
+	PlaylistItemVector * playlistItems = historyHash.value(QString(), 0);
+	assert(playlistItems);
+
+	PlaylistWriteFunctor writeFunctor(playlistItems->begin(), playlistItems->end(), playlistModel->playlistName(), playlistModel->playlistDesc());
+
+
+	QXmlPlaylistHandler::writePlaylist(&qfile, writeFunctor);
+	this->ui->statusbar->showMessage ( QString ( "Saved preset playlist \"%1\" successfully." ).arg ( m_currentPlaylistFile ), 3000 );
+	this->ui->presetPlayListDockWidget->setWindowModified ( false ); 
+	
+	
 }
 
 void QProjectM_MainWindow::openPlaylist()
