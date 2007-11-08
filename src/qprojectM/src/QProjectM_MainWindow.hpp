@@ -210,7 +210,17 @@ class QProjectM_MainWindow:public QMainWindow
       Q_OBJECT
 
 public:
-      
+      typedef struct PlaylistItemMetaData {
+		PlaylistItemMetaData() {}
+		PlaylistItemMetaData(const QString & _url, const QString & _name, int _rating):
+			url(_url), name(_name), rating(_rating) {}
+
+		QString url;
+		QString name;
+		int rating;
+      } PlaylistItemMetaData;
+      typedef QVector<PlaylistItemMetaData> PlaylistItemVector;
+
       QProjectM_MainWindow(const std::string & config_file);
       ~QProjectM_MainWindow();
 
@@ -222,18 +232,8 @@ public:
     
 protected:
 
-      typedef struct PlaylistItemMetaData {
-		PlaylistItemMetaData() {}
-		PlaylistItemMetaData(const QString & _url, const QString & _name, int _rating):
-			url(_url), name(_name), rating(_rating) {}
 
-		QString url;
-		QString name;
-		int rating;
-      } PlaylistItemMetaData;
-
-      typedef QVector<PlaylistItemMetaData> PlaylistItemVector;
-      void closeEvent(QCloseEvent *event);
+            void closeEvent(QCloseEvent *event);
 
 private slots:
       void clearPlaylist();
