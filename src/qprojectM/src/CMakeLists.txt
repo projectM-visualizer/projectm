@@ -20,6 +20,7 @@ set(qprojectM_SRCS
     QPlaylistFileDialog.hpp
     QPlaylistModel.cpp
     QPlaylistModel.hpp
+    QXmlPlaylistHandler.hpp
 )
 
 
