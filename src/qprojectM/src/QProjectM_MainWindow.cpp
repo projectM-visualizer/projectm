@@ -316,7 +316,6 @@ void QProjectM_MainWindow::savePlaylist()
 void QProjectM_MainWindow::openPlaylist()
 {
 
-
 	if ( m_QPlaylistFileDialog->exec() )
 	{
 
@@ -409,7 +408,6 @@ void QProjectM_MainWindow::createActions()
 {
 
 	connect ( ui->actionExit, SIGNAL ( triggered() ), this, SLOT ( close() ) );
-
 	connect ( ui->actionAddPresets, SIGNAL ( triggered() ), this, SLOT ( addPresets() ) );
 	connect ( ui->actionOpen_Play_List, SIGNAL ( triggered() ), this, SLOT ( openPlaylist() ) );
 	connect ( ui->actionSave_play_list, SIGNAL ( triggered() ), this, SLOT ( savePlaylist() ) );
