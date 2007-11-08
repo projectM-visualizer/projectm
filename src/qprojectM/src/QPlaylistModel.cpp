@@ -202,14 +202,18 @@ void QPlaylistModel::removeRow ( int index )
 
 void QPlaylistModel::clear()
 {
-	beginRemoveRows ( QModelIndex(), 0, rowCount()-1 );
-	m_projectM.clearPlaylist();
-	m_ratings.clear();
-	endRemoveRows();
+	clearItems();
 	m_playlistName = "";
 	m_playlistDesc = "";
 }
 
+void QPlaylistModel::clearItems()
+{
+	beginRemoveRows ( QModelIndex(), 0, rowCount()-1 );
+	m_projectM.clearPlaylist();
+	m_ratings.clear();
+	endRemoveRows();
+}
 
 bool QPlaylistModel::writePlaylist ( const QString & file ) {
 
