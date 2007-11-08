@@ -139,6 +139,10 @@ void QProjectM_MainWindow::clearPlaylist()
 {
 
 	playlistModel->clear();
+	ui->dockWidgetContents->setWindowTitle ( "Preset Playlist" );
+	ui->dockWidgetContents->setWindowModified(false);
+	m_currentPlaylistFile = "";
+
 	for ( QHash<QString, PlaylistItemVector*>::iterator pos = historyHash.begin(); pos != historyHash.end(); ++pos )
 	{
 		delete ( pos.value() );
@@ -362,6 +366,7 @@ void QProjectM_MainWindow::savePlaylist()
 	PlaylistItemVector * playlistItems = historyHash.value(QString(), 0);
 	assert(playlistItems);
 
+	assert(playlistModel->playlistName() != "");
 	PlaylistWriteFunctor writeFunctor(playlistItems->begin(), playlistItems->end(), playlistModel->playlistName(), playlistModel->playlistDesc());
 
 
@@ -380,6 +385,7 @@ void QProjectM_MainWindow::openPlaylist()
 
 		QString searchText = ui->presetSearchBarLineEdit->text();		
 		clearPlaylist();
+
 		const QString file = m_QPlaylistFileDialog->selectedFiles() [0];
 
 		if ( playlistModel->readPlaylist ( file ) )
@@ -544,8 +550,8 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 
 	const QString filter = text.toLower();
 
-	playlistModel->clear();
-
+	playlistModel->clearItems();
+	
 	if ( historyHash.contains ( filter ) )
 	{
 		const PlaylistItemVector & playlistItems = *historyHash.value ( filter );

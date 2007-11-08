@@ -57,6 +57,7 @@ inline const QString & playlistName() {
 	return m_playlistName;
 }
 
+
 inline const QString & playlistDesc() {
 	return m_playlistDesc;
 }
@@ -69,6 +70,7 @@ inline void setPlaylistDesc(const QString & desc) {
 	m_playlistDesc = desc;
 }
 
+void clearItems();
 public slots:
 void updateItemHighlights();
 
