@@ -4,6 +4,60 @@
 #include <QtDebug>
 #include <QFileInfo>
 #include <QMessageBox>
+#include "QXmlPlaylistHandler.hpp"
+
+//#include "libprojectM/projectM.hpp"
+
+class XmlReadFunctor {
+	public:
+		XmlReadFunctor(QPlaylistModel & model) : m_model(model) {}
+
+		inline void setPlaylistName(const QString & name) {
+			m_model.setPlaylistName(name);
+		}
+
+		inline void setPlaylistDesc(const QString & desc) {
+			m_model.setPlaylistDesc(desc);
+		}
+
+		inline void appendItem(const QString & url, const QString & name, int rating) {
+			m_model.appendRow(url, name, rating);
+		}
+	private:
+		QPlaylistModel & m_model;
+
+};
+
+
+class XmlWriteFunctor {
+	public:
+		XmlWriteFunctor(QPlaylistModel & model) : m_model(model), m_index(0) {}
+
+		inline const QString & playlistName() const {
+			return m_model.playlistName();
+		}
+
+		inline const QString & playlistDesc() const {
+			return m_model.playlistDesc();
+		}
+
+		inline bool nextItem(QString & url, int & rating) {
+
+			if (m_index >= m_model.rowCount())
+				return false;
+
+			QModelIndex modelIndex = m_model.index(m_index, 0);
+			url = m_model.data(modelIndex, QPlaylistModel::URLInfoRole).toString();
+			rating = m_model.data(modelIndex, QPlaylistModel::RatingRole).toInt();
+			m_index++;
+			return true;
+		}
+	private:
+		QPlaylistModel & m_model;
+		int m_index;
+
+};
+
 QPlaylistModel::QPlaylistModel ( projectM & _projectM, QObject * parent ) :
 		QAbstractTableModel ( parent ), m_projectM ( _projectM )
 {
@@ -166,45 +220,10 @@ bool QPlaylistModel::writePlaylist ( const QString & file ) {
 		return false;
 	}
 
-	QXmlStreamWriter writer(&qfile);
 
-	writer.writeStartDocument();
+	XmlWriteFunctor writeFunctor(*this);
 
-	writer.writeStartElement("presetplaylist");
-	writer.writeAttribute("playlistname", m_playlistName);
-
- 
-	if (m_playlistDesc != "") {
-		writer.writeStartElement("description");
-		 writer.writeCharacters(m_playlistDesc);
-		writer.writeEndElement();
-	}
-
-	for ( int i = 0; i < this->rowCount(); i++ )	
-	{
-		writer.writeStartElement("item");
-
-		QModelIndex index = this->index ( i, 0 );
-
-		const QString & url = this->data ( index,
-		                      QPlaylistModel::URLInfoRole ).toString();
-		int rating = this->data ( index, QPlaylistModel::RatingRole ).toInt();
-
-
-		writer.writeStartElement("url");
-		writer.writeCharacters(url);
-		writer.writeEndElement();
-
-		writer.writeStartElement("rating");
-		writer.writeCharacters(QString("%1").arg(rating));
-		writer.writeEndElement();
-
-		writer.writeEndElement();
-	}
-
-	writer.writeEndElement();
-
-	writer.writeEndDocument();
+	QXmlPlaylistHandler::writePlaylist(&qfile, writeFunctor);
 	return true;
 }
 
@@ -217,89 +236,13 @@ bool QPlaylistModel::readPlaylist ( const QString & file )
 		return false;
 	}
 
-	QXmlStreamReader reader ( &qfile );
+	XmlReadFunctor readFunctor(*this);
 
-	QXmlStreamReader::TokenType token;
-	bool parseError = false;
-	bool nameSet = false;
 
-	try {
-	while ( !reader.atEnd() ) {
-		token = reader.readNext();
-	switch ( token )
-	{
-		case QXmlStreamReader::StartElement:			
-
-			if (reader.name() == "presetplaylist") {
-				m_playlistName = reader.attributes().value("playlistname").toString();
-				nameSet = true;
-			}
-			else if (reader.name() == "description") {
-				reader.readNext();
-				m_playlistDesc = reader.text().toString();
-				reader.readNext();
-			}
-			else if (reader.name() == "item") {
-				readPlaylistItem(reader);
-				break;
-			} 
-			break;
-		case QXmlStreamReader::NoToken:
-			break;
-		case QXmlStreamReader::Invalid:
-			break;
-		case QXmlStreamReader::StartDocument:
-			break;
-		case QXmlStreamReader::EndDocument:
-			break;
-		case QXmlStreamReader::EndElement:	
-			break;
-		case QXmlStreamReader::Characters:
-		case QXmlStreamReader::Comment:
-		case QXmlStreamReader::DTD:
-		case QXmlStreamReader::EntityReference:
-		case QXmlStreamReader::ProcessingInstruction:
-		default:
-			break;
-	}
-	}
-	} catch (const int & id) {
-		parseError = true;
-	}
-
-	if (!nameSet)	
-		m_playlistName = "Unknown";
-
-	if (parseError || reader.hasError()) {
-		qDebug() << "error occurred: " << reader.error() << ", " << reader.errorString();
+	if (QXmlPlaylistHandler::readPlaylist(&qfile, readFunctor) != QXmlStreamReader::NoError) {
 		QMessageBox::warning ( 0, "Playlist Parse Error", QString(tr("There was a problem trying to parse the playlist \"%1\". Some of your playlist items may have loaded correctly, but don't expect miracles.")).arg(file));		
 	}
+
 	return true;
 }
 
-void QPlaylistModel::readPlaylistItem(QXmlStreamReader & reader) {
-
-	QString url;
-	int rating;
-
-	while (reader.readNext() != QXmlStreamReader::EndElement)
-		if (reader.name() == "url") {
-			reader.readNext();			
-			url = reader.text().toString();
-			reader.readNext();
-		} else if (reader.name() == "rating") {
-			reader.readNext();
-			rating = reader.text().toString().toInt();		
-			reader.readNext();
-		}
-		else {			
-			if (reader.name() == "")
-				continue;
-			else if (reader.hasError())
-				throw reader.error();
-			else
-				return;
-		}
-
-	this->appendRow(url, QFileInfo(url).fileName(), rating);
-}	
