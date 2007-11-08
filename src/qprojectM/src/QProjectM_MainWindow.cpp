@@ -146,6 +146,7 @@ void QProjectM_MainWindow::clearPlaylist()
 	historyHash.clear();
 	historyHash.insert ( QString(), new PlaylistItemVector );
 	previousFilter = QString();
+	
 	ui->presetSearchBarLineEdit->clear();
 }
 
@@ -377,6 +378,7 @@ void QProjectM_MainWindow::openPlaylist()
 	if ( m_QPlaylistFileDialog->exec() )
 	{
 
+		QString searchText = ui->presetSearchBarLineEdit->text();		
 		clearPlaylist();
 		const QString file = m_QPlaylistFileDialog->selectedFiles() [0];
 
@@ -392,6 +394,7 @@ void QProjectM_MainWindow::openPlaylist()
 		}
 		ui->presetPlayListDockWidget->setWindowModified ( false );
 		copyPlaylist();
+		ui->presetSearchBarLineEdit->setText(searchText);
 		updateFilteredPlaylist ( ui->presetSearchBarLineEdit->text() );
 	}
 }
