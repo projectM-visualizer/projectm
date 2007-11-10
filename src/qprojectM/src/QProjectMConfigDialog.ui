@@ -10,7 +10,7 @@
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>Dialog</string>
+   <string>projectM Settings</string>
   </property>
   <widget class="QWidget" name="verticalLayout" >
    <property name="geometry" >
