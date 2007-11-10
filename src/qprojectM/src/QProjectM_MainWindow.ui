@@ -22,7 +22,7 @@
      <x>0</x>
      <y>0</y>
      <width>787</width>
-     <height>22</height>
+     <height>31</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile" >
@@ -199,9 +199,15 @@ p, li { white-space: pre-wrap; }
        <widget class="QTableView" name="tableView" >
         <property name="sizePolicy" >
          <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
-          <horstretch>1</horstretch>
+          <horstretch>2</horstretch>
           <verstretch>4</verstretch>
          </sizepolicy>
+        </property>
+        <property name="minimumSize" >
+         <size>
+          <width>5</width>
+          <height>5</height>
+         </size>
         </property>
         <property name="baseSize" >
          <size>
