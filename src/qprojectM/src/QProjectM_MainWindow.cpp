@@ -29,6 +29,8 @@
 
 #include "QPlaylistModel.hpp"
 #include "ui_QProjectM_MainWindow.h"
+#include "ui_QProjectMConfigDialog.h"
+
 #include "ConfigFile.h"
 #include "QXmlPlaylistHandler.hpp"
 
@@ -72,9 +74,12 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), m_QPlaylistFileDialog ( new QPlaylistFileDialog ( this ) ), oldPresetIndex ( -1 )
 {
 
-	ui = new Ui::qProjectM_MainWindow();
-
+	ui = new Ui::QProjectM_MainWindow();	
 	ui->setupUi ( this );
+
+	configUi = new Ui::QProjectMConfigDialog();
+	configDialog = new QDialog();
+	configUi->setupUi(configDialog);
 
 	m_QProjectMWidget = new QProjectMWidget ( config_file, this );
 
@@ -87,9 +92,7 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 	connect ( ui->clearPresetList_PushButton, SIGNAL ( pressed() ),
 	          this, SLOT ( clearPlaylist() ) );
 
-
 	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized() ), this, SLOT ( postProjectM_Initialize() ) );
-
 
 	m_QProjectMWidget->makeCurrent();
 	m_QProjectMWidget->setFocus();
@@ -106,8 +109,13 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 	setCentralWidget ( m_QProjectMWidget );
 
 
-	((QLayout*)ui->verticalLayout)->setSizeConstraint(QLayout::SetNoConstraint);
-//	((QLayout*)((QLayout*)ui->verticalLayout)->itemAt(0))->setSizeConstraint(QLayout::SetNoConstraint);
+//	((QVBoxLayout*)ui->verticalLayout)->setAlignment(Qt::AlignCenter);
+
+	//((QLayout*)ui->verticalLayout)->setSizeConstraint(QLayout::SetNoConstraint);
+//	((QLayout*)ui->verticalLayout)->itemAt(0)->setAlignment(Qt::AlignCenter);
+//	((QLayout*)ui->verticalLayout)->itemAt(1)->setAlignment(Qt::AlignCenter);
+//	((QLayout*)ui->verticalLayout)->itemAt(2)->setAlignment(Qt::AlignCenter);
+
 //	((QLayout*)((QLayout*)ui->verticalLayout)->itemAt(1))->setSizeConstraint(QLayout::SetNoConstraint);
 //	((QLayout*)((QLayout*)ui->verticalLayout)->itemAt(2))->setSizeConstraint(QLayout::SetNoConstraint);
 
@@ -482,6 +490,14 @@ void QProjectM_MainWindow::about()
 	                     tr ( "<p><b>QProjectM</b> provides useful gui extensions to the projectM core library. For problems please email Carmelo Piccione: \n<a href=\"mailto:carmelo.piccione@gmail.com\"> carmelo.piccione@gmail.com</a>.</p><p><b>projectM</b> is an advanced opensource music visualizer based on Geiss's Milkdrop. For more info visit us at <a href=\"http://projectm.sf.net\">projectm.sf.net</a>.</p>" ) );
 }
 
+void QProjectM_MainWindow::openSettingsDialog() {
+
+	qDebug() << "HERE!!!";
+	if (configDialog->exec()) {
+		
+	}
+
+}
 
 void QProjectM_MainWindow::createActions()
 {
@@ -491,7 +507,7 @@ void QProjectM_MainWindow::createActions()
 	connect ( ui->actionOpen_Play_List, SIGNAL ( triggered() ), this, SLOT ( openPlaylist() ) );
 	connect ( ui->actionSave_play_list, SIGNAL ( triggered() ), this, SLOT ( savePlaylist() ) );
 	connect ( ui->actionAbout_qprojectM, SIGNAL ( triggered() ), this, SLOT ( about() ) );
-
+	connect ( ui->actionConfigure_projectM, SIGNAL ( triggered() ), this, SLOT (openSettingsDialog()) );
 	//connect(ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
 
 }

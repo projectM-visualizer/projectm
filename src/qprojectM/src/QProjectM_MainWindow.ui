@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>qProjectM_MainWindow</class>
- <widget class="QMainWindow" name="qProjectM_MainWindow" >
+ <class>QProjectM_MainWindow</class>
+ <widget class="QMainWindow" name="QProjectM_MainWindow" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -59,7 +59,7 @@
    <property name="sizePolicy" >
     <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
      <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
+     <verstretch>1</verstretch>
     </sizepolicy>
    </property>
    <property name="minimumSize" >
@@ -80,6 +80,9 @@ p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This dock panel provides a convenient interface to manage a list of presets for projectM to render. The behavior is very similar to a music player playlist.&lt;/p>&lt;/body>&lt;/html></string>
    </property>
+   <property name="features" >
+    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable|QDockWidget::NoDockWidgetFeatures</set>
+   </property>
    <property name="windowTitle" >
     <string comment="This is the preset playlist dock widget." >Preset Playlist</string>
    </property>
@@ -87,6 +90,12 @@ p, li { white-space: pre-wrap; }
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents" >
+    <property name="sizePolicy" >
+     <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+      <horstretch>1</horstretch>
+      <verstretch>1</verstretch>
+     </sizepolicy>
+    </property>
     <widget class="QWidget" name="verticalLayout" >
      <property name="geometry" >
       <rect>
@@ -97,8 +106,11 @@ p, li { white-space: pre-wrap; }
       </rect>
      </property>
      <layout class="QVBoxLayout" >
+      <property name="spacing" >
+       <number>-1</number>
+      </property>
       <property name="bottomMargin" >
-       <number>0</number>
+       <number>9</number>
       </property>
       <item>
        <layout class="QHBoxLayout" >
@@ -211,7 +223,7 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="baseSize" >
          <size>
-          <width>500</width>
+          <width>200</width>
           <height>0</height>
          </size>
         </property>
