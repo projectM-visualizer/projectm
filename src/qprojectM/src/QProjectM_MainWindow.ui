@@ -22,7 +22,7 @@
      <x>0</x>
      <y>0</y>
      <width>787</width>
-     <height>31</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile" >
@@ -90,9 +90,9 @@ p, li { white-space: pre-wrap; }
     <widget class="QWidget" name="verticalLayout" >
      <property name="geometry" >
       <rect>
-       <x>0</x>
+       <x>10</x>
        <y>0</y>
-       <width>311</width>
+       <width>301</width>
        <height>481</height>
       </rect>
      </property>
@@ -103,7 +103,7 @@ p, li { white-space: pre-wrap; }
       <item>
        <layout class="QHBoxLayout" >
         <property name="spacing" >
-         <number>-1</number>
+         <number>6</number>
         </property>
         <item>
          <widget class="QPushButton" name="presetOpenPushButton" >
@@ -177,8 +177,8 @@ p, li { white-space: pre-wrap; }
         <item>
          <widget class="QLineEdit" name="presetSearchBarLineEdit" >
           <property name="sizePolicy" >
-           <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
-            <horstretch>0</horstretch>
+           <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+            <horstretch>1</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
@@ -199,8 +199,8 @@ p, li { white-space: pre-wrap; }
        <widget class="QTableView" name="tableView" >
         <property name="sizePolicy" >
          <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
+          <horstretch>1</horstretch>
+          <verstretch>4</verstretch>
          </sizepolicy>
         </property>
         <property name="baseSize" >
@@ -241,7 +241,7 @@ p, li { white-space: pre-wrap; }
       <item>
        <layout class="QHBoxLayout" >
         <property name="spacing" >
-         <number>-1</number>
+         <number>6</number>
         </property>
         <item>
          <widget class="QCheckBox" name="randomCheckBox" >
@@ -295,8 +295,8 @@ image: url(:/images/icons/hi16-action-projectm_random_no.png);
            <bool>true</bool>
           </property>
           <property name="sizePolicy" >
-           <sizepolicy vsizetype="Minimum" hsizetype="MinimumExpanding" >
-            <horstretch>0</horstretch>
+           <sizepolicy vsizetype="Minimum" hsizetype="Expanding" >
+            <horstretch>1</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
