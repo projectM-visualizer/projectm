@@ -42,7 +42,9 @@ class QPlaylistModel;
 class QModelIndex;
 
 namespace Ui { 
-class qProjectM_MainWindow;
+class QProjectM_MainWindow;
+class QProjectMConfigDialog;
+
 }
 #include <iostream>
 
@@ -245,7 +247,7 @@ private slots:
       void updatePlaylistSelection(bool hardCut, int index);
       void selectPlaylistItem(const QModelIndex & index);
       void changeRating(const QModelIndex & index);
-
+      void openSettingsDialog();
       void updateFilteredPlaylist(const QString & text);
      
 private:
@@ -256,12 +258,15 @@ private:
       QString m_currentPlaylistFile;
 
       QPlaylistModel * playlistModel;
-      Ui::qProjectM_MainWindow * ui;
+      Ui::QProjectM_MainWindow * ui;
+      Ui::QProjectMConfigDialog * configUi;
+      QDialog * configDialog;
 
       QHash<QString, PlaylistItemVector*> historyHash;
 
       int oldPresetIndex;
       QTimer * m_timer;
+	
       void createActions();
       void createMenus();
       void createToolBars();

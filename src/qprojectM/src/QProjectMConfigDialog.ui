@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog" >
+ <class>QProjectMConfigDialog</class>
+ <widget class="QDialog" name="QProjectMConfigDialog" >
   <property name="geometry" >
    <rect>
     <x>0</x>
