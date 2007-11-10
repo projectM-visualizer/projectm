@@ -94,6 +94,8 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 
 	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized() ), this, SLOT ( postProjectM_Initialize() ) );
 
+	//connect (ui->presetPlaylistDockWidget, SIGNAL(
+	
 	m_QProjectMWidget->makeCurrent();
 	m_QProjectMWidget->setFocus();
 
@@ -111,11 +113,11 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 
 //	((QVBoxLayout*)ui->verticalLayout)->setAlignment(Qt::AlignCenter);
 
-	//((QLayout*)ui->verticalLayout)->setSizeConstraint(QLayout::SetNoConstraint);
-//	((QLayout*)ui->verticalLayout)->itemAt(0)->setAlignment(Qt::AlignCenter);
-//	((QLayout*)ui->verticalLayout)->itemAt(1)->setAlignment(Qt::AlignCenter);
-//	((QLayout*)ui->verticalLayout)->itemAt(2)->setAlignment(Qt::AlignCenter);
+//ui->verticalLayout->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+//ui->verticalLayout->sizePolicy().setVerticalStretch(2);
+//ui->presetPlayListDockWidget->widget()->layout()->setAlignment(Qt::AlignCenter);
 
+ 
 //	((QLayout*)((QLayout*)ui->verticalLayout)->itemAt(1))->setSizeConstraint(QLayout::SetNoConstraint);
 //	((QLayout*)((QLayout*)ui->verticalLayout)->itemAt(2))->setSizeConstraint(QLayout::SetNoConstraint);
 
@@ -145,6 +147,8 @@ QProjectM_MainWindow::~QProjectM_MainWindow()
 	}
 
 	delete ( ui );
+	delete( configUi);
+
 
 }
 
@@ -492,7 +496,6 @@ void QProjectM_MainWindow::about()
 
 void QProjectM_MainWindow::openSettingsDialog() {
 
-	qDebug() << "HERE!!!";
 	if (configDialog->exec()) {
 		
 	}

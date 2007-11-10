@@ -96,266 +96,236 @@ p, li { white-space: pre-wrap; }
       <verstretch>1</verstretch>
      </sizepolicy>
     </property>
-    <widget class="QWidget" name="verticalLayout" >
-     <property name="geometry" >
-      <rect>
-       <x>10</x>
-       <y>0</y>
-       <width>301</width>
-       <height>481</height>
-      </rect>
-     </property>
-     <layout class="QVBoxLayout" >
-      <property name="spacing" >
-       <number>-1</number>
-      </property>
-      <property name="bottomMargin" >
-       <number>9</number>
-      </property>
-      <item>
-       <layout class="QHBoxLayout" >
-        <property name="spacing" >
-         <number>6</number>
-        </property>
-        <item>
-         <widget class="QPushButton" name="presetOpenPushButton" >
-          <property name="sizePolicy" >
-           <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTip" >
-           <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+    <layout class="QGridLayout" >
+     <item row="0" column="0" colspan="2" >
+      <widget class="QPushButton" name="presetOpenPushButton" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip" >
+        <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Click here to add presets to the current playlist.&lt;/p>&lt;/body>&lt;/html></string>
-          </property>
-          <property name="text" >
-           <string/>
-          </property>
-          <property name="icon" >
-           <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_add_playlist.png</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="presetSavePushButton" >
-          <property name="sizePolicy" >
-           <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTip" >
-           <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+       </property>
+       <property name="text" >
+        <string/>
+       </property>
+       <property name="icon" >
+        <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_add_playlist.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2" >
+      <widget class="QPushButton" name="presetSavePushButton" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip" >
+        <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Saves the currently loaded play list&lt;/p>&lt;/body>&lt;/html></string>
-          </property>
-          <property name="styleSheet" >
-           <string/>
-          </property>
-          <property name="text" >
-           <string/>
-          </property>
-          <property name="icon" >
-           <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_save.png</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="clearPresetList_PushButton" >
-          <property name="sizePolicy" >
-           <sizepolicy vsizetype="Fixed" hsizetype="Fixed" >
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTip" >
-           <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+       </property>
+       <property name="styleSheet" >
+        <string/>
+       </property>
+       <property name="text" >
+        <string/>
+       </property>
+       <property name="icon" >
+        <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_save.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3" >
+      <widget class="QPushButton" name="clearPresetList_PushButton" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip" >
+        <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Clears&lt;span style=" font-style:italic;"> all &lt;/span>presets&lt;span style=" font-style:italic;"> &lt;/span>in the playlist.&lt;/p>&lt;/body>&lt;/html></string>
-          </property>
-          <property name="text" >
-           <string/>
-          </property>
-          <property name="icon" >
-           <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_playlist_clear.png</iconset>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="presetSearchBarLineEdit" >
-          <property name="sizePolicy" >
-           <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
-            <horstretch>1</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="statusTip" >
-           <string>Start typing in a filter to crop the play list.</string>
-          </property>
-          <property name="whatsThis" >
-           <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+       </property>
+       <property name="text" >
+        <string/>
+       </property>
+       <property name="icon" >
+        <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_playlist_clear.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="4" >
+      <widget class="QLineEdit" name="presetSearchBarLineEdit" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+         <horstretch>20</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="statusTip" >
+        <string>Start typing in a filter to crop the play list.</string>
+       </property>
+       <property name="whatsThis" >
+        <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Use this search bar to crop your preset play list. Only the presets that match your search criteria will be queued.&lt;/p>&lt;/body>&lt;/html></string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <widget class="QTableView" name="tableView" >
-        <property name="sizePolicy" >
-         <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
-          <horstretch>2</horstretch>
-          <verstretch>4</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="minimumSize" >
-         <size>
-          <width>5</width>
-          <height>5</height>
-         </size>
-        </property>
-        <property name="baseSize" >
-         <size>
-          <width>200</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="acceptDrops" >
-         <bool>true</bool>
-        </property>
-        <property name="statusTip" >
-         <string>Double click on a preset to render it, or drag presets to change the preset order.</string>
-        </property>
-        <property name="autoFillBackground" >
-         <bool>false</bool>
-        </property>
-        <property name="dragEnabled" >
-         <bool>true</bool>
-        </property>
-        <property name="alternatingRowColors" >
-         <bool>false</bool>
-        </property>
-        <property name="selectionMode" >
-         <enum>QAbstractItemView::SingleSelection</enum>
-        </property>
-        <property name="selectionBehavior" >
-         <enum>QAbstractItemView::SelectRows</enum>
-        </property>
-        <property name="showGrid" >
-         <bool>false</bool>
-        </property>
-        <property name="gridStyle" >
-         <enum>Qt::DashDotDotLine</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" >
-        <property name="spacing" >
-         <number>6</number>
-        </property>
-        <item>
-         <widget class="QCheckBox" name="randomCheckBox" >
-          <property name="enabled" >
-           <bool>true</bool>
-          </property>
-          <property name="sizePolicy" >
-           <sizepolicy vsizetype="Minimum" hsizetype="Fixed" >
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="cursor" >
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="toolTip" >
-           <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0" colspan="5" >
+      <widget class="QTableView" name="tableView" >
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+         <horstretch>2</horstretch>
+         <verstretch>4</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize" >
+        <size>
+         <width>5</width>
+         <height>5</height>
+        </size>
+       </property>
+       <property name="baseSize" >
+        <size>
+         <width>200</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="acceptDrops" >
+        <bool>true</bool>
+       </property>
+       <property name="statusTip" >
+        <string>Double click on a preset to render it, or drag presets to change the preset order.</string>
+       </property>
+       <property name="autoFillBackground" >
+        <bool>false</bool>
+       </property>
+       <property name="dragEnabled" >
+        <bool>true</bool>
+       </property>
+       <property name="alternatingRowColors" >
+        <bool>false</bool>
+       </property>
+       <property name="selectionMode" >
+        <enum>QAbstractItemView::SingleSelection</enum>
+       </property>
+       <property name="selectionBehavior" >
+        <enum>QAbstractItemView::SelectRows</enum>
+       </property>
+       <property name="showGrid" >
+        <bool>false</bool>
+       </property>
+       <property name="gridStyle" >
+        <enum>Qt::DashDotDotLine</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0" >
+      <widget class="QCheckBox" name="randomCheckBox" >
+       <property name="enabled" >
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Minimum" hsizetype="Fixed" >
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="cursor" >
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="toolTip" >
+        <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">When the dice is activated, projectM will randomly select presets weighted by your rating preferences.&lt;/p>&lt;/body>&lt;/html></string>
-          </property>
-          <property name="statusTip" >
-           <string>Enable / Disable Shuffle Mode</string>
-          </property>
-          <property name="whatsThis" >
-           <string/>
-          </property>
-          <property name="styleSheet" >
-           <string>QCheckBox::indicator:checked {
+       </property>
+       <property name="statusTip" >
+        <string>Enable / Disable Shuffle Mode</string>
+       </property>
+       <property name="whatsThis" >
+        <string/>
+       </property>
+       <property name="styleSheet" >
+        <string>QCheckBox::indicator:checked {
 image: url(:/images/icons/hi16-action-projectm_random.png);
 }
 
 QCheckBox::indicator:unchecked{
 image: url(:/images/icons/hi16-action-projectm_random_no.png);
 }</string>
-          </property>
-          <property name="text" >
-           <string/>
-          </property>
-          <property name="checked" >
-           <bool>true</bool>
-          </property>
-          <property name="autoRepeat" >
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QCheckBox" name="lockPresetCheckBox" >
-          <property name="enabled" >
-           <bool>true</bool>
-          </property>
-          <property name="sizePolicy" >
-           <sizepolicy vsizetype="Minimum" hsizetype="Expanding" >
-            <horstretch>1</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="cursor" >
-           <cursorShape>PointingHandCursor</cursorShape>
-          </property>
-          <property name="toolTip" >
-           <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+       </property>
+       <property name="text" >
+        <string/>
+       </property>
+       <property name="checked" >
+        <bool>true</bool>
+       </property>
+       <property name="autoRepeat" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" colspan="4" >
+      <widget class="QCheckBox" name="lockPresetCheckBox" >
+       <property name="enabled" >
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy" >
+        <sizepolicy vsizetype="Minimum" hsizetype="Expanding" >
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="cursor" >
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="toolTip" >
+        <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">When the locked icon is shown, projectM will not automatically switch to another preset.&lt;/p>&lt;/body>&lt;/html></string>
-          </property>
-          <property name="statusTip" >
-           <string>Lock / Unlock the selected preset</string>
-          </property>
-          <property name="whatsThis" >
-           <string/>
-          </property>
-          <property name="styleSheet" >
-           <string>QCheckBox::indicator:checked {image: url(:/images/icons/hi16-action-projectm_lock.png);
+       </property>
+       <property name="statusTip" >
+        <string>Lock / Unlock the selected preset</string>
+       </property>
+       <property name="whatsThis" >
+        <string/>
+       </property>
+       <property name="styleSheet" >
+        <string>QCheckBox::indicator:checked {image: url(:/images/icons/hi16-action-projectm_lock.png);
 }
 
 QCheckBox::indicator:unchecked{
 image: url(:/images/icons/hi16-action-projectm_unlock.png);
 }</string>
-          </property>
-          <property name="text" >
-           <string/>
-          </property>
-          <property name="checked" >
-           <bool>false</bool>
-          </property>
-          <property name="autoRepeat" >
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
+       </property>
+       <property name="text" >
+        <string/>
+       </property>
+       <property name="checked" >
+        <bool>false</bool>
+       </property>
+       <property name="autoRepeat" >
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </widget>
   </widget>
   <action name="actionAddPresets" >
