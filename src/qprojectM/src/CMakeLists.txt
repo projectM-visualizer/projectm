@@ -33,6 +33,7 @@ set(qprojectM_MOC_HDRS
 
 set(qprojectM_UIS
     QProjectM_MainWindow.ui
+    QProjectMConfigDialog.ui
 )
 
 # Qt resource file
