@@ -215,6 +215,7 @@ void QPlaylistModel::clearItems()
 	endRemoveRows();
 }
 
+
 bool QPlaylistModel::writePlaylist ( const QString & file ) {
 
 	QFile qfile(file);

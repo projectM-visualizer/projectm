@@ -71,9 +71,10 @@ inline void setPlaylistDesc(const QString & desc) {
 }
 
 void clearItems();
-public slots:
-void updateItemHighlights();
 
+public slots:
+	void updateItemHighlights();
+	
  private:
 	void readPlaylistItem(QXmlStreamReader & reader);
 
