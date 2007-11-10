@@ -106,6 +106,11 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 	setCentralWidget ( m_QProjectMWidget );
 
 
+	((QLayout*)ui->verticalLayout)->setSizeConstraint(QLayout::SetNoConstraint);
+//	((QLayout*)((QLayout*)ui->verticalLayout)->itemAt(0))->setSizeConstraint(QLayout::SetNoConstraint);
+//	((QLayout*)((QLayout*)ui->verticalLayout)->itemAt(1))->setSizeConstraint(QLayout::SetNoConstraint);
+//	((QLayout*)((QLayout*)ui->verticalLayout)->itemAt(2))->setSizeConstraint(QLayout::SetNoConstraint);
+
 	int wvw = config.read<int> ( "Window Width", 512 );
 	int wvh = config.read<int> ( "Window Height", 512 );
 
