@@ -251,6 +251,13 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 			this->setWindowState ( this->windowState() ^ Qt::WindowFullScreen );
 			return;
 
+		case Qt::Key_Delete:
+//			const QModelIndexList & list = ui->tableView->selectedIndexes();
+//			for (QModelIndexList::iterator pos = list.begin(); pos != list.end(); ++pos) {
+//				QModelIndex index = *pos;
+//				playlistModel->removeRow(index.row());
+//			}
+			return;
 		case Qt::Key_M:
 			if ( ui->presetSearchBarLineEdit->hasFocus() )
 				return;
