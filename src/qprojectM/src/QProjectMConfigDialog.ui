@@ -296,7 +296,7 @@ p, li { white-space: pre-wrap; }
          </sizepolicy>
         </property>
         <property name="text" >
-         <string>&lt;B>WARNING&lt;/B>: All settings changes require a restart to take effect!</string>
+         <string>&lt;B>WARNING&lt;/B>: All setting changes require a restart to take effect!</string>
         </property>
         <property name="textFormat" >
          <enum>Qt::AutoText</enum>
