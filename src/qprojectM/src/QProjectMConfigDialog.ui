@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>440</width>
-    <height>284</height>
+    <width>449</width>
+    <height>306</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -17,8 +17,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>426</width>
-     <height>271</height>
+     <width>431</width>
+     <height>281</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" >
@@ -225,6 +225,9 @@ p, li { white-space: pre-wrap; }
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="sizeAdjustPolicy" >
+         <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+        </property>
        </widget>
       </item>
       <item>
@@ -283,51 +286,41 @@ p, li { white-space: pre-wrap; }
      </layout>
     </item>
     <item>
-     <widget class="QDialogButtonBox" name="buttonBox" >
-      <property name="orientation" >
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="standardButtons" >
-       <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
-      </property>
-     </widget>
+     <layout class="QHBoxLayout" >
+      <item>
+       <widget class="QLabel" name="label_9" >
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text" >
+         <string>&lt;B>WARNING&lt;/B>: All settings changes require a restart to take effect!</string>
+        </property>
+        <property name="textFormat" >
+         <enum>Qt::AutoText</enum>
+        </property>
+        <property name="wordWrap" >
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDialogButtonBox" name="buttonBox" >
+        <property name="orientation" >
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="standardButtons" >
+         <set>QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
