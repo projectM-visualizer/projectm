@@ -100,7 +100,7 @@ p, li { white-space: pre-wrap; }
      <item row="0" column="0" colspan="2" >
       <widget class="QPushButton" name="presetOpenPushButton" >
        <property name="sizePolicy" >
-        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+        <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
