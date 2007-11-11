@@ -46,6 +46,7 @@
 #include <libprojectM/projectM.hpp>
 #include <libprojectM/QProjectM_MainWindow.hpp>
 #include <QApplication>
+#include <QtDebug>
 
 #include "ConfigFile.h"
 #include <string>
@@ -86,26 +87,84 @@ int fvw=1024,fvh=768;
 int fps=30, fullscreen=0;
 
 /* A simple routine calling UNIX write() in a loop */
-static ssize_t loop_write ( int fd, const void*data, size_t size )
+static ssize_t loop_write ( const float * data, size_t size )
 {
-	ssize_t ret = 0;
+	ssize_t ret = 1;
 
-	while ( size > 0 )
-	{
-		ssize_t r;
-
-		if ( ( r = write ( fd, data, size ) ) < 0 )
-			return r;
-
-		if ( r == 0 )
-			break;
-
-		ret += r;
-		data = ( const uint8_t* ) data + r;
-		size -= r;
+	while ( size > 0 ) {
+		size--;
+		qDebug() << "data[" << size << "]=" << data[size];		
 	}
 
-	return ret;
+}
+
+
+
+class PulseAudioThread: public QThread
+{
+
+	public:
+		PulseAudioThread(int _argc, char **_argv, QProjectM_MainWindow * window) : QThread(window), argc(_argc), argv(_argv), m_window(window) ,notStopped(true){}
+		void run();;
+	private:
+		int argc;
+		char ** argv;
+		QProjectM_MainWindow * m_window;
+		bool notStopped;
+};
+
+
+void PulseAudioThread::run()
+{
+	/* The sample type to use */
+	static pa_sample_spec ss ;
+	//ss.format = PA_SAMPLE_FLOAT32;
+	ss.format = PA_SAMPLE_FLOAT32LE;
+	ss.rate = 44100;
+	ss.channels = 2;
+	pa_simple *s = NULL;
+	int ret = 1;
+	int error;
+
+	qDebug() << "here!";
+	/* Create the recording stream */
+	if ( ! ( s = pa_simple_new ( NULL, argv[0], PA_STREAM_RECORD, NULL, "record", &ss, NULL, NULL, &error ) ) )
+	{
+		fprintf ( stderr, __FILE__": pa_simple_new() failed: %s\n", pa_strerror ( error ) );
+		goto finish;
+	}
+
+	while (notStopped)
+	{
+		//qDebug() << "pulse audio loop";
+		float buf[BUFSIZE];
+		ssize_t r;
+
+		/* Record some data ... */
+		if ( pa_simple_read ( s, buf, sizeof(buf), &error ) < 0 )
+		{
+			
+			fprintf ( stderr, __FILE__": pa_simple_read() failed: %s\n", pa_strerror ( error ) );
+			goto finish;
+		}
+
+		
+		globalPM->pcm->addPCMfloat(buf, BUFSIZE);
+		
+	}
+
+	ret = 0;
+
+finish:
+
+	if ( s )
+		pa_simple_free ( s );
+
+	qDebug() << "pulse audio quit";
+	return ;
+
+
+
 }
 
 int main ( int argc, char*argv[] )
@@ -119,79 +178,19 @@ int main ( int argc, char*argv[] )
 	std::string config_file;
 	config_file = read_config();
 
-
 	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow ( config_file );
+
+	globalPM = mainWindow->getQProjectM();
+
 	mainWindow->show();
 
 	globalPM = mainWindow->getQProjectM();
+	PulseAudioThread * pulseThread = new PulseAudioThread(argc, argv, mainWindow);
+	pulseThread->start();
 
 	return app.exec();
 }
 
-
-
-class PulseAudioThread: public QThread
-{
-
-	public:
-		PulseAudioThread(int _argc, char **_argv, QObject * parent = 0) : QThread(parent), argc(_argc), argv(_argv) {}
-		void run();
-	private:
-		int argc;
-		char ** argv;
-
-};
-
-void PulseAudioThread::run()
-{
-	/* The sample type to use */
-	static pa_sample_spec ss ;
-	ss.format = PA_SAMPLE_S16LE;
-	ss.rate = 44100;
-	ss.channels = 2;
-	pa_simple *s = NULL;
-	int ret = 1;
-	int error;
-
-	/* Create the recording stream */
-	if ( ! ( s = pa_simple_new ( NULL, argv[0], PA_STREAM_RECORD, NULL, "record", &ss, NULL, NULL, &error ) ) )
-	{
-		fprintf ( stderr, __FILE__": pa_simple_new() failed: %s\n", pa_strerror ( error ) );
-		goto finish;
-	}
-
-	for ( ;; )
-	{
-		uint8_t buf[BUFSIZE];
-		ssize_t r;
-
-		/* Record some data ... */
-		if ( pa_simple_read ( s, buf, sizeof ( buf ), &error ) < 0 )
-		{
-			fprintf ( stderr, __FILE__": pa_simple_read() failed: %s\n", pa_strerror ( error ) );
-			goto finish;
-		}
-
-		/* And write it to STDOUT */
-		if ( ( r = loop_write ( STDOUT_FILENO, buf, sizeof ( buf ) ) ) <= 0 )
-		{
-			fprintf ( stderr, __FILE__": write() failed: %s\n", strerror ( errno ) );
-			goto finish;
-		}
-	}
-
-	ret = 0;
-
-finish:
-
-	if ( s )
-		pa_simple_free ( s );
-
-	return ;
-
-
-
-}
 
 std::string read_config()
 {
