@@ -1,3 +1,4 @@
+
 /**
  * projectM -- Milkdrop-esque visualisation SDK
  * Copyright (C)2003-2004 projectM Team
@@ -55,7 +56,7 @@
 #include <unistd.h>
 
 #include <QThread>
-
+#include <QTimer>
 #define CONFIG_FILE "/share/projectM/config.inp"
 
 std::string read_config();
@@ -68,14 +69,9 @@ std::string read_config();
 #include <string.h>
 #include <errno.h>
 
-#include <pulse/simple.h>
-#include <pulse/error.h>
 //#include <pulsecore/gccmacro.h>
 
-#define BUFSIZE 1024
-
-
-projectM *globalPM = NULL;
+#include "QPulseAudioThread.hpp"
 
 int dumpFrame = 0;
 int frameNumber = 0;
@@ -100,72 +96,7 @@ static ssize_t loop_write ( const float * data, size_t size )
 
 
 
-class PulseAudioThread: public QThread
-{
 
-	public:
-		PulseAudioThread(int _argc, char **_argv, QProjectM_MainWindow * window) : QThread(window), argc(_argc), argv(_argv), m_window(window) ,notStopped(true){}
-		void run();;
-	private:
-		int argc;
-		char ** argv;
-		QProjectM_MainWindow * m_window;
-		bool notStopped;
-};
-
-
-void PulseAudioThread::run()
-{
-	/* The sample type to use */
-	static pa_sample_spec ss ;
-	//ss.format = PA_SAMPLE_FLOAT32;
-	ss.format = PA_SAMPLE_FLOAT32LE;
-	ss.rate = 44100;
-	ss.channels = 2;
-	pa_simple *s = NULL;
-	int ret = 1;
-	int error;
-
-	qDebug() << "here!";
-	/* Create the recording stream */
-	if ( ! ( s = pa_simple_new ( NULL, argv[0], PA_STREAM_RECORD, NULL, "record", &ss, NULL, NULL, &error ) ) )
-	{
-		fprintf ( stderr, __FILE__": pa_simple_new() failed: %s\n", pa_strerror ( error ) );
-		goto finish;
-	}
-
-	while (notStopped)
-	{
-		//qDebug() << "pulse audio loop";
-		float buf[BUFSIZE];
-		ssize_t r;
-
-		/* Record some data ... */
-		if ( pa_simple_read ( s, buf, sizeof(buf), &error ) < 0 )
-		{
-			
-			fprintf ( stderr, __FILE__": pa_simple_read() failed: %s\n", pa_strerror ( error ) );
-			goto finish;
-		}
-
-		
-		globalPM->pcm->addPCMfloat(buf, BUFSIZE);
-		
-	}
-
-	ret = 0;
-
-finish:
-
-	if ( s )
-		pa_simple_free ( s );
-
-	qDebug() << "pulse audio quit";
-	return ;
-
-
-
-}
 
 int main ( int argc, char*argv[] )
 {
@@ -180,15 +111,13 @@ int main ( int argc, char*argv[] )
 
 	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow ( config_file );
 
-	globalPM = mainWindow->getQProjectM();
-
 	mainWindow->show();
 
-	globalPM = mainWindow->getQProjectM();
-	PulseAudioThread * pulseThread = new PulseAudioThread(argc, argv, mainWindow);
+	PulseAudioThread * pulseThread = new PulseAudioThread(argc, argv, mainWindow->getQProjectM(), mainWindow);
+	
 	pulseThread->start();
-
-	return app.exec();
+	qDebug() << "app exec";
+ 	return app.exec();
 }
 
 
@@ -277,12 +206,4 @@ std::string read_config()
 	abort();
 }
 
-int
-process ( void *arg )
-{
-
-	//	globalPM->pcm->addPCMfloat(in,nframes);
-//		printf("%x %f\n",nframes,in[128]);
-	return 0;
-}
 
