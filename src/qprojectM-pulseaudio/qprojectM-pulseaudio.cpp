@@ -82,22 +82,6 @@ int wvw=512,wvh=512;
 int fvw=1024,fvh=768;
 int fps=30, fullscreen=0;
 
-/* A simple routine calling UNIX write() in a loop */
-static ssize_t loop_write ( const float * data, size_t size )
-{
-	ssize_t ret = 1;
-
-	while ( size > 0 ) {
-		size--;
-		qDebug() << "data[" << size << "]=" << data[size];		
-	}
-
-}
-
-
-
-
-
 int main ( int argc, char*argv[] )
 {
 	int i;
@@ -116,8 +100,12 @@ int main ( int argc, char*argv[] )
 	PulseAudioThread * pulseThread = new PulseAudioThread(argc, argv, mainWindow->getQProjectM(), mainWindow);
 	
 	pulseThread->start();
-	qDebug() << "app exec";
- 	return app.exec();
+	//qDebug() << "app exec";
+ 	int ret = app.exec();
+	pulseThread->exit();
+
+	delete(mainWindow);
+	return ret;
 }
 
 
@@ -157,7 +145,7 @@ std::string read_config()
 		strcpy ( projectM_home, home );
 		strcpy ( projectM_home+strlen ( home ), "/.projectM" );
 		projectM_home[strlen ( home ) +strlen ( "/.projectM" ) ]='\0';
-		mkdir ( projectM_home,0755 );
+		mkdir ( projectM_home, 0755 );
 
 		strcpy ( projectM_home, home );
 		strcpy ( projectM_home+strlen ( home ), "/.projectM/config.inp" );
