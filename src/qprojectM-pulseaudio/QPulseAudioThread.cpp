@@ -3,7 +3,7 @@
 #include "libprojectM/projectM.hpp"
 
 #define BUFSIZE 1024
-PulseAudioThread::PulseAudioThread(int _argc, char **_argv, projectM * _projectM, QObject * parent) : QThread(parent), argc(_argc), argv(_argv), s(0) , m_projectM(_projectM) {
+PulseAudioThread::PulseAudioThread(int _argc, char **_argv, projectM * _projectM, QObject * parent) : QThread(parent), argc(_argc), argv(_argv), s(0) , m_projectM(_projectM), m_timer(0) {
 
 
 	m_timer = new QTimer(this);
@@ -15,7 +15,7 @@ void PulseAudioThread::cleanup() {
 		pa_simple_free ( s );
 	s = 0;
 	
-	qDebug() << "pulse audio quit";
+	//qDebug() << "pulse audio quit";
 	return ;
 }
 
@@ -42,7 +42,7 @@ void PulseAudioThread::updatePCM() {
 		float buf[BUFSIZE];
 		ssize_t r;
 		int error;
-		qDebug() << "HERE";
+	//	qDebug() << "HERE";
 		/* Record some data ... */
 		if ( pa_simple_read ( s, buf, sizeof(buf), &error ) < 0 )
 		{
@@ -51,7 +51,7 @@ void PulseAudioThread::updatePCM() {
 			return; //this->exit(error);
 			
 		}
-		qDebug() << "HERE";
+	//	qDebug() << "HERE";
 		m_projectM->pcm->addPCMfloat(buf, BUFSIZE);	
 }
 
@@ -67,8 +67,7 @@ void PulseAudioThread::run()
 	init();	
 	connect(m_timer, SIGNAL(timeout()), this, SLOT(updatePCM()));
 
-
 	m_timer->start(0);
 
-	//exec();
+	exec();
 }
