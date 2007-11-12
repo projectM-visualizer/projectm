@@ -86,21 +86,14 @@ QPulseAudioThread::QPulseAudioThread(int _argc, char **_argv, projectM * _projec
 
 void QPulseAudioThread::init() {
 
-	ss.format = PA_SAMPLE_FLOAT32LE;
-	ss.rate = 44100;
-	ss.channels = 2;
-	int ret = 1;
-	int error;
-	
-
-
 }
 
 
 
 QPulseAudioThread::~QPulseAudioThread() 
-{
+{	
 	cleanup();
+	
 }
 
 
@@ -126,6 +119,9 @@ void QPulseAudioThread::cleanup() {
          mainloop_api->time_free(time_event);
      }
  
+if (mainloop_api)
+  mainloop_api->quit(mainloop_api, 0);	
+	
      if (mainloop) {
          pa_signal_done();
          pa_mainloop_free(mainloop);
@@ -138,21 +134,10 @@ void QPulseAudioThread::cleanup() {
      pa_xfree(client_name);
      pa_xfree(stream_name);
  
-	
 	return ;
 }
 
 
-void QPulseAudioThread::updatePCM() {
-		//qDebug() << "pulse audio loop";
-		float buf[BUFSIZE];
-		ssize_t r;
-		int error;
-		qDebug() << "HERE";
-		/* Record some data ... */
-		qDebug() << "HERE";
-		m_projectM->pcm->addPCMfloat(buf, BUFSIZE);	
-}
 
 
 
@@ -394,13 +379,12 @@ static void stream_state_callback(pa_stream *s, void *userdata) {
      ssize_t r;
      assert(a == mainloop_api && e && stdio_event == e);
  
-	
      if (!buffer) {
          mainloop_api->io_enable(stdio_event, PA_IO_EVENT_NULL);
          return;
       } else {
 		projectM * prjm = static_cast<projectM *>(userdata);
-		prjm->pcm->addPCMfloat(buffer,sizeof(buffer));
+		prjm->pcm->addPCMfloat(buffer+buffer_index, sizeof(buffer));
 	}
  
      assert(buffer_length);
