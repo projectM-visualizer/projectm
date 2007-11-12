@@ -94,6 +94,7 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 
 	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized() ), this, SLOT ( postProjectM_Initialize() ) );
 
+
 	//connect (ui->presetPlaylistDockWidget, SIGNAL(
 	
 	m_QProjectMWidget->makeCurrent();
@@ -176,7 +177,7 @@ QProjectM * QProjectM_MainWindow::getQProjectM()
 	return m_QProjectMWidget->getQProjectM();
 }
 
-void QProjectM_MainWindow::updatePlaylistSelection ( bool hardCut, int index )
+void QProjectM_MainWindow::updatePlaylistSelection ( bool hardCut, unsigned int index )
 {
 
 	if ( hardCut )

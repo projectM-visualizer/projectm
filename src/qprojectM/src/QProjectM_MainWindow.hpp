@@ -41,6 +41,7 @@ class QPlaylistFileDialog;
 class QPlaylistModel;
 class QModelIndex;
 
+
 namespace Ui { 
 class QProjectM_MainWindow;
 class QProjectMConfigDialog;
@@ -60,7 +61,7 @@ class QProjectM : public QObject, public projectM {
 			presetSwitchedSignal(hardCut, index);
 		 }
 	signals:
-		void presetSwitchedSignal(bool hardCut, unsigned int index) const;
+		void presetSwitchedSignal(bool hardCut, unsigned int index) const;		
 	public slots:
 			
 };
@@ -77,7 +78,6 @@ class QProjectMWidget : public QGLWidget
      QProjectM * getQProjectM() { return m_projectM; }
 
  public slots:
-     
      void setPresetLock(int state) {
 		m_projectM->setPresetLock((bool)state);
 		presetLockChanged((bool)state);
@@ -231,7 +231,7 @@ public:
 
     void refreshPlaylist();
 
-    
+	QProjectMWidget * getQProjectMWidget() { return m_QProjectMWidget; }
 protected:
 
 
@@ -244,7 +244,7 @@ private slots:
       void savePlaylist();
       void about();
       void postProjectM_Initialize();
-      void updatePlaylistSelection(bool hardCut, int index);
+      void updatePlaylistSelection(bool hardCut, unsigned int index);
       void selectPlaylistItem(const QModelIndex & index);
       void changeRating(const QModelIndex & index);
       void openSettingsDialog();
@@ -291,6 +291,7 @@ private:
 
       QPresetFileDialog * m_QPresetFileDialog;
       QPlaylistFileDialog * m_QPlaylistFileDialog;
+
 };
 
 #endif
