@@ -7,13 +7,13 @@ class projectM;
 #include <pulse/simple.h>
 #include <pulse/error.h>
 
-class PulseAudioThread : public QThread
+class QPulseAudioThread : public QThread
 {	
 	Q_OBJECT
 	public:
-		PulseAudioThread () {}
-		PulseAudioThread(int _argc, char **_argv, projectM * projectM, QObject *parent);
-		~PulseAudioThread() ;
+		QPulseAudioThread () {}
+		QPulseAudioThread(int _argc, char **_argv, projectM * projectM, QObject *parent);
+		~QPulseAudioThread() ;
 		void run();
 		void cleanup();
 
