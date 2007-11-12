@@ -4,8 +4,6 @@
 #include <QThread>
 class projectM;
 
-#include <pulse/simple.h>
-#include <pulse/error.h>
 
 class QPulseAudioThread : public QThread
 {	
@@ -18,12 +16,9 @@ class QPulseAudioThread : public QThread
 		void cleanup();
 
 	private:
-		void init();
 		int argc;
 		char ** argv;
 		QTimer * m_timer;
-		pa_sample_spec ss ;
-		pa_simple * s ;
 		projectM * m_projectM;
 
 };
