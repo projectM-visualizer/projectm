@@ -1,8 +1,3 @@
-#include <QtDebug>
-#include "libprojectM/projectM.hpp"
-#include "QPulseAudioThread.hpp"
-#include <QtDebug>
-#include "libprojectM/projectM.hpp"
 
  /* $Id: pacat.c 1426 2007-02-13 15:35:19Z ossman $ */
  
@@ -52,20 +47,17 @@ extern "C" {
  #error Invalid PulseAudio API version
  #endif
  
-#define BUFSIZE 1024
-
-#define BUFSIZE 1024
-static enum { RECORD } mode = RECORD;
+ static enum { RECORD, PLAYBACK } mode = PLAYBACK;
  
  static pa_context *context = NULL;
  static pa_stream *stream = NULL;
  static pa_mainloop_api *mainloop_api = NULL;
- static pa_time_event *time_event = NULL;
+ 
  static float *buffer = NULL;
  static size_t buffer_length = 0, buffer_index = 0;
-  static pa_mainloop* mainloop = NULL; 
+ 
  static pa_io_event* stdio_event = NULL;
- static char *server = NULL;
+ 
  static char *stream_name = NULL, *client_name = NULL, *device = NULL;
  
  static int verbose = 0;
@@ -75,87 +67,6 @@ static enum { RECORD } mode = RECORD;
  static pa_channel_map channel_map;
  static int channel_map_set = 0;
  static pa_sample_spec sample_spec ;
- 
-
-QPulseAudioThread::QPulseAudioThread(int _argc, char **_argv, projectM * _projectM, QObject * parent) : QThread(parent), argc(_argc), argv(_argv),  m_projectM(_projectM), m_timer(0) {
-
-
-	m_timer = new QTimer(this);
-}
-
-
-void QPulseAudioThread::init() {
-
-	ss.format = PA_SAMPLE_FLOAT32LE;
-	ss.rate = 44100;
-	ss.channels = 2;
-	int ret = 1;
-	int error;
-	
-
-
-}
-
-
-
-QPulseAudioThread::~QPulseAudioThread() 
-{
-	cleanup();
-}
-
-
-
-void QPulseAudioThread::cleanup() {
-
-	
-	qDebug() << "pulse audio quit";
-
-     if (stream)
-         pa_stream_unref(stream);
- 
-     if (context)
-         pa_context_unref(context);
- 
-     if (stdio_event) {
-         assert(mainloop_api);
-         mainloop_api->io_free(stdio_event);
-     }
- 
-     if (time_event) {
-         assert(mainloop_api);
-         mainloop_api->time_free(time_event);
-     }
- 
-     if (mainloop) {
-         pa_signal_done();
-         pa_mainloop_free(mainloop);
-     }
- 
-     pa_xfree(buffer);
- 
-     pa_xfree(server);
-     pa_xfree(device);
-     pa_xfree(client_name);
-     pa_xfree(stream_name);
- 
-	
-	return ;
-}
-
-
-void QPulseAudioThread::updatePCM() {
-		//qDebug() << "pulse audio loop";
-		float buf[BUFSIZE];
-		ssize_t r;
-		int error;
-		qDebug() << "HERE";
-		/* Record some data ... */
-		qDebug() << "HERE";
-		m_projectM->pcm->addPCMfloat(buf, BUFSIZE);	
-}
-
-
-
  /* A shortcut for terminating the application */
  static void quit(int ret) {
      assert(mainloop_api);
@@ -190,6 +101,18 @@ void QPulseAudioThread::updatePCM() {
      }
  }
  
+ /* This is called whenever new data may be written to the stream */
+ static void stream_write_callback(pa_stream *s, size_t length, void *userdata) {
+     assert(s && length);
+ 
+     if (stdio_event)
+         mainloop_api->io_enable(stdio_event, PA_IO_EVENT_INPUT);
+ 
+     if (!buffer)
+         return;
+ 
+     do_stream_write(length);
+ }
  
  /* This is called whenever new data may is available */
  static void stream_read_callback(pa_stream *s, size_t length, void *userdata) {
@@ -223,7 +146,7 @@ void QPulseAudioThread::updatePCM() {
  }
  
  /* This routine is called whenever the stream state changes */
-static void stream_state_callback(pa_stream *s, void *userdata) {
+ static void stream_state_callback(pa_stream *s, void *userdata) {
      assert(s);
  
      switch (pa_stream_get_state(s)) {
@@ -239,12 +162,19 @@ static void stream_state_callback(pa_stream *s, void *userdata) {
  
                  if (!(a = pa_stream_get_buffer_attr(s)))
                      fprintf(stderr, "pa_stream_get_buffer_attr() failed: %s\n", pa_strerror(pa_context_errno(pa_stream_get_context(s))));
-                 else { 
+                 else {
+ 
+                     if (mode == PLAYBACK)
+                         fprintf(stderr, "Buffer metrics: maxlength=%u, tlength=%u, prebuf=%u, minreq=%u\n", a->maxlength, a->tlength, a->prebuf, a->minreq);
+                     else {
                          assert(mode == RECORD);
                          fprintf(stderr, "Buffer metrics: maxlength=%u, fragsize=%u\n", a->maxlength, a->fragsize);
                      }
+ 
                  }
-
+ 
+             }
+ 
              break;
  
          case PA_STREAM_FAILED:
@@ -394,21 +324,30 @@ static void stream_state_callback(pa_stream *s, void *userdata) {
      ssize_t r;
      assert(a == mainloop_api && e && stdio_event == e);
  
-	
      if (!buffer) {
          mainloop_api->io_enable(stdio_event, PA_IO_EVENT_NULL);
          return;
-      } else {
-		projectM * prjm = static_cast<projectM *>(userdata);
-		prjm->pcm->addPCMfloat(buffer,sizeof(buffer));
-	}
+     }
  
      assert(buffer_length);
  
+     if ((r = write(fd, (uint8_t*) buffer+buffer_index, buffer_length)) <= 0) {
+         fprintf(stderr, "write() failed: %s\n", strerror(errno));
+         quit(1);
+ 
+         mainloop_api->io_free(stdio_event);
+         stdio_event = NULL;
+         return;
+     }
+ 
+     buffer_length -= r;
+     buffer_index += r;
+ 
+     if (!buffer_length) {
          pa_xfree(buffer);
          buffer = NULL;
          buffer_length = buffer_index = 0;
-
+     }
  }
  
  /* UNIX signal to quit recieved */
@@ -464,11 +403,11 @@ static void stream_state_callback(pa_stream *s, void *userdata) {
      m->time_restart(e, &next);
  }
  
-void QPulseAudioThread::run() {
-     
+ int main(int argc, char *argv[]) {
+     pa_mainloop* m = NULL;
      int ret = 1, r, c;
-     char *bn = "pulse";
-     
+     char *bn = argv[0], *server = NULL;
+     pa_time_event *time_event = NULL;
      sample_spec.format = PA_SAMPLE_FLOAT32LE;
      sample_spec.rate = 44100;
      sample_spec.channels = 2;
@@ -503,12 +442,12 @@ void QPulseAudioThread::run() {
          stream_name = pa_xstrdup(client_name);
  
      /* Set up a new main loop */
-     if (!(mainloop = pa_mainloop_new())) {
+     if (!(m = pa_mainloop_new())) {
          fprintf(stderr, "pa_mainloop_new() failed.\n");
          goto quit;
      }
  
-     mainloop_api = pa_mainloop_get_api(mainloop);
+     mainloop_api = pa_mainloop_get_api(m);
  
      r = pa_signal_init(mainloop_api);
      assert(r == 0);
@@ -524,7 +463,7 @@ void QPulseAudioThread::run() {
      if (!(stdio_event = mainloop_api->io_new(mainloop_api,
                                                STDOUT_FILENO,
                                               PA_IO_EVENT_OUTPUT,
-                                              stdout_callback, m_projectM))) {
+                                              stdout_callback, NULL))) {
          fprintf(stderr, "io_new() failed.\n");
          goto quit;
      }
@@ -538,6 +477,7 @@ void QPulseAudioThread::run() {
      pa_context_set_state_callback(context, context_state_callback, NULL);
  
 
+    //device = "alsa_output.pci_8086_284b_alsa_playback_0.monitor";
      /* Connect the context */
 
      pa_context_connect(context, server, flags, NULL);
@@ -555,12 +495,39 @@ void QPulseAudioThread::run() {
      }
  
      /* Run the main loop */
-     if (pa_mainloop_run(mainloop, &ret) < 0) {
+     if (pa_mainloop_run(m, &ret) < 0) {
          fprintf(stderr, "pa_mainloop_run() failed.\n");
          goto quit;
      }
  
  quit:
-	
-     return ;
+     if (stream)
+         pa_stream_unref(stream);
+ 
+     if (context)
+         pa_context_unref(context);
+ 
+     if (stdio_event) {
+         assert(mainloop_api);
+         mainloop_api->io_free(stdio_event);
+     }
+ 
+     if (time_event) {
+         assert(mainloop_api);
+         mainloop_api->time_free(time_event);
+     }
+ 
+     if (m) {
+         pa_signal_done();
+         pa_mainloop_free(m);
+     }
+ 
+     pa_xfree(buffer);
+ 
+     pa_xfree(server);
+     pa_xfree(device);
+     pa_xfree(client_name);
+     pa_xfree(stream_name);
+ 
+     return ret;
  }
