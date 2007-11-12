@@ -26,8 +26,5 @@ class QPulseAudioThread : public QThread
 		pa_simple * s ;
 		projectM * m_projectM;
 
-	public slots:
-		void updatePCM();
-
 };
 #endif

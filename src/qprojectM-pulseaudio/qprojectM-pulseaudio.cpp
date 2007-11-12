@@ -103,6 +103,7 @@ int main ( int argc, char*argv[] )
 	
 	//qDebug() << "app exec";
  	int ret = app.exec();
+
 	pulseThread->exit();
 
 	delete(mainWindow);
