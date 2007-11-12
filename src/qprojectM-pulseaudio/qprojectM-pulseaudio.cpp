@@ -105,6 +105,7 @@ int main ( int argc, char*argv[] )
  	int ret = app.exec();
 
 	pulseThread->exit();
+	pulseThread->cleanup();
 
 	delete(mainWindow);
 	return ret;
