@@ -17,8 +17,7 @@ class QPulseAudioThread : public QThread
 
 	private:
 		int argc;
-		char ** argv;
-		QTimer * m_timer;
+	char ** argv;
 		projectM * m_projectM;
 
 };
