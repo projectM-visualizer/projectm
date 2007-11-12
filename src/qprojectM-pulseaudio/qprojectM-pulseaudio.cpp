@@ -100,6 +100,7 @@ int main ( int argc, char*argv[] )
 	PulseAudioThread * pulseThread = new PulseAudioThread(argc, argv, mainWindow->getQProjectM(), mainWindow);
 	
 	pulseThread->start();
+	
 	//qDebug() << "app exec";
  	int ret = app.exec();
 	pulseThread->exit();

@@ -15,7 +15,6 @@ void PulseAudioThread::cleanup() {
 		pa_simple_free ( s );
 	s = 0;
 	
-	//qDebug() << "pulse audio quit";
 	return ;
 }
 
@@ -66,7 +65,7 @@ void PulseAudioThread::run()
 
 	init();	
 	connect(m_timer, SIGNAL(timeout()), this, SLOT(updatePCM()));
-
+	
 	m_timer->start(0);
 
 	exec();
