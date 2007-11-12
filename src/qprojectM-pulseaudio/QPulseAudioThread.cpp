@@ -85,7 +85,7 @@ QPulseAudioThread::QPulseAudioThread(int _argc, char **_argv, projectM * _projec
 
 QPulseAudioThread::~QPulseAudioThread() 
 {	
-	cleanup();
+	
 	
 }
 
@@ -107,6 +107,7 @@ void QPulseAudioThread::cleanup() {
          mainloop_api->io_free(stdio_event);
      }
  
+
      if (time_event) {
          assert(mainloop_api);
          mainloop_api->time_free(time_event);
@@ -120,11 +121,19 @@ if (mainloop_api)
          pa_mainloop_free(mainloop);
      }
  
+	if (buffer)
      pa_xfree(buffer);
  
+if (server)
      pa_xfree(server);
+
+if (device)
      pa_xfree(device);
+
+if (client_name)
      pa_xfree(client_name);
+
+if (stream_name)
      pa_xfree(stream_name);
  
 	return ;
@@ -297,6 +306,7 @@ static void stream_state_callback(pa_stream *s, void *userdata) {
          mainloop_api->io_enable(stdio_event, PA_IO_EVENT_NULL);
          return;
       } else {
+
 		projectM * prjm = static_cast<projectM *>(userdata);
 		prjm->pcm->addPCMfloat(buffer+buffer_index, buffer_length/(sizeof(float)));
 		    assert(buffer_length);
