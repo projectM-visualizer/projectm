@@ -1,9 +1,9 @@
 # the next line sets up include and link directories and defines some variables that we will use.
 # you can modify the behavior by setting some variables, e.g.
 set(QT_USE_OPENGL TRUE)
+
 # -> this will cause cmake to include and link against the OpenGL module
 include(${QT_USE_FILE} FindPkgConfig.cmake)
-
 
 ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='"${PROJECTM_PREFIX}"')
 ADD_DEFINITIONS(${QT_DEFINITIONS})
