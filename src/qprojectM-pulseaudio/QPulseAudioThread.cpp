@@ -54,8 +54,6 @@ extern "C" {
  
 #define BUFSIZE 1024
 
-#define BUFSIZE 1024
-static enum { RECORD } mode = RECORD;
  
  static pa_context *context = NULL;
  static pa_stream *stream = NULL;
@@ -93,8 +91,6 @@ QPulseAudioThread::~QPulseAudioThread()
 
 void QPulseAudioThread::cleanup() {
 
-	
-	qDebug() << "pulse audio quit";
 
      pa_threaded_mainloop_stop(mainloop);
      if (stream)
@@ -202,7 +198,7 @@ static void stream_state_callback(pa_stream *s, void *userdata) {
                  if (!(a = pa_stream_get_buffer_attr(s)))
                      fprintf(stderr, "pa_stream_get_buffer_attr() failed: %s\n", pa_strerror(pa_context_errno(pa_stream_get_context(s))));
                  else { 
-                         assert(mode == RECORD);
+                         
                          fprintf(stderr, "Buffer metrics: maxlength=%u, fragsize=%u\n", a->maxlength, a->fragsize);
                      }
                  }
@@ -384,7 +380,7 @@ void QPulseAudioThread::run() {
 
  	verbose = 1;
 	
-         mode = RECORD;
+         
  
     if (!pa_sample_spec_valid(&sample_spec)) {
          fprintf(stderr, "Invalid sample specification\n");
@@ -399,7 +395,7 @@ void QPulseAudioThread::run() {
      if (verbose) {
          char t[PA_SAMPLE_SPEC_SNPRINT_MAX];
          pa_sample_spec_snprint(t, sizeof(t), &sample_spec);
-         fprintf(stderr, "Opening a %s stream with sample specification '%s'.\n", mode == RECORD ? "recording" : "playback", t);
+         fprintf(stderr, "Opening a %s stream with sample specification '%s'.\n", "recording" , t);
      }
  
  
