@@ -63,7 +63,7 @@ static enum { RECORD } mode = RECORD;
  static pa_time_event *time_event = NULL;
  static float *buffer = NULL;
  static size_t buffer_length = 0, buffer_index = 0;
-  static pa_mainloop* mainloop = NULL; 
+  static pa_threaded_mainloop* mainloop = NULL; 
  static pa_io_event* stdio_event = NULL;
  static char *server = NULL;
  static char *stream_name = NULL, *client_name = NULL, *device = NULL;
@@ -96,11 +96,13 @@ void QPulseAudioThread::cleanup() {
 	
 	qDebug() << "pulse audio quit";
 
+     pa_threaded_mainloop_stop(mainloop);
      if (stream)
          pa_stream_unref(stream);
  
      if (context)
          pa_context_unref(context);
+ 
  
      if (stdio_event) {
          assert(mainloop_api);
@@ -118,9 +120,10 @@ if (mainloop_api)
 	
      if (mainloop) {
          pa_signal_done();
-         pa_mainloop_free(mainloop);
+         pa_threaded_mainloop_free(mainloop);
      }
  
+	
 	if (buffer)
      pa_xfree(buffer);
  
@@ -246,7 +249,6 @@ static void stream_state_callback(pa_stream *s, void *userdata) {
                      fprintf(stderr, "pa_stream_connect_record() failed: %s\n", pa_strerror(pa_context_errno(c)));
                      goto fail;
                  }
-             
  
              break;
          }
@@ -409,12 +411,12 @@ void QPulseAudioThread::run() {
          stream_name = pa_xstrdup(client_name);
  
      /* Set up a new main loop */
-     if (!(mainloop = pa_mainloop_new())) {
+     if (!(mainloop = pa_threaded_mainloop_new())) {
          fprintf(stderr, "pa_mainloop_new() failed.\n");
          goto quit;
      }
  
-     mainloop_api = pa_mainloop_get_api(mainloop);
+     mainloop_api = pa_threaded_mainloop_get_api(mainloop);
  
      r = pa_signal_init(mainloop_api);
      assert(r == 0);
@@ -461,7 +463,7 @@ void QPulseAudioThread::run() {
      }
  
      /* Run the main loop */
-     if (pa_mainloop_run(mainloop, &ret) < 0) {
+     if (pa_threaded_mainloop_start(mainloop) < 0) {
          fprintf(stderr, "pa_mainloop_run() failed.\n");
          goto quit;
      }
