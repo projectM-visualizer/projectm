@@ -28,8 +28,10 @@ www.gamedev.net/reference/programming/features/beatdetection/
 
 #include <stdio.h>
 #include <xmms/plugin.h>
+#include <sys/types.h>
 #include <string.h>
 #include <string>
+#include <iostream>
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -56,7 +58,8 @@ extern "C" void projectM_playback_stop(void);
 extern "C" void projectM_render_pcm(gint16 pcm_data[2][512]);
 extern "C" void projectM_render_freq(gint16 pcm_data[2][256]);
 extern "C" VisPlugin *get_vplugin_info();
-void *worker(void *);
+//void *worker(void *);
+int worker();
 std::string read_config();
 void saveSnapshotToFile();
 //extern preset_t * active_preset;
@@ -153,22 +156,48 @@ QProjectM_MainWindow *mainWindow;
 int retval;
 pthread_t thread;
 
+pid_t pID;
+
 extern "C" void projectM_xmms_init(void) 
 {    
-  retval = pthread_create( &thread, NULL, worker, NULL);
+  //  retval = pthread_create( &thread, NULL, worker, NULL);
+
+  pID = clone();
+   if (pID == 0)                // child
+   {
+      // Code only executed by child process
+
+     worker();
+     exit(1);
+    }
+    else if (pID < 0)            // failed to fork
+    {
+      std::cerr << "Failed to fork" << std::endl;
+        exit(1);
+        // Throw exception
+    }
+    else                                   // parent
+    {
+      // Code only executed by parent process
+
+  
+    }
+
+
 }
 
 bool initialized = false;
 
-void *worker(void *)
+int worker()
+//void *worker(void *)
 {
   int argc; char **argv;
   argc = 0;
   
   
   // Start a new qapplication 
-  //QApplication app(argc,argv);
-  app = new QApplication(argc,argv);
+  QApplication app(argc,argv);
+  //app = new QApplication(argc,argv);
   std::string config_file;
   config_file = read_config();
   
@@ -177,7 +206,7 @@ void *worker(void *)
 
   globalPM = mainWindow->getQProjectM(); 
   initialized = true;
-  app->exec();
+  return app.exec();
 
 }
 
@@ -186,12 +215,12 @@ extern "C" void projectM_cleanup(void)
 {
   initialized = false;
   mainWindow->close(); ;
-  pthread_join(thread, NULL);
+  //pthread_join(thread, NULL);
 
-  delete(mainWindow);
-  mainWindow = NULL;
-  delete(app);
-  app = NULL;
+  //  delete(mainWindow);
+  //  mainWindow = NULL;
+  //  delete(app);
+  //  app = NULL;
   
  // printf("projectM plugin: Cleanup completed\n");
 }
