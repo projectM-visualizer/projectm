@@ -22,4 +22,4 @@ ADD_LIBRARY(qprojectM-xmms SHARED main.cpp ConfigFile.h ConfigFile.cpp)
 
 TARGET_LINK_LIBRARIES(qprojectM-xmms qprojectM projectM  ${GTK_LIBRARIES} ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_LIBRARIES})
 
-INSTALL(TARGETS qprojectM-xmms DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/xmms/Visualization )
+INSTALL(TARGETS qprojectM-xmms DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/xmms/Visualization )

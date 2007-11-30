@@ -21,4 +21,4 @@ TARGET_LINK_LIBRARIES(projectM-test projectM  ${SDL_LIBRARY} ${GTK_LIBRARIES})
 TARGET_LINK_LIBRARIES(projectM-test-memleak projectM  ${SDL_LIBRARY} ${GTK_LIBRARIES})
 TARGET_LINK_LIBRARIES(projectM-test-texture projectM  ${SDL_LIBRARY} ${GTK_LIBRARIES})
 
-#INSTALL(TARGETS projectM-test DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/xmms/Visualization )
+#INSTALL(TARGETS projectM-test DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/xmms/Visualization )
