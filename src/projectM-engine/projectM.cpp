@@ -124,10 +124,10 @@ void projectM::readConfig ( std::string config_file )
 	presetDuration = config.read<int> ( "Preset Duration", 15 );
 
 
-	presetURL = config.read<string> ( "Preset Path", "/usr/share/projectM/presets" );
+	presetURL = config.read<string> ( "Preset Path", CMAKE_INSTALL_PREFIX "/share/projectM/presets" );
 
-	title_fontURL = config.read<string> ( "Title Font", "/usr/share/projectM/fonts/Vera.ttf" );
-	menu_fontURL = config.read<string> ( "Menu Font", "/usr/share/projectM/fonts/VeraMono.ttf" );
+	title_fontURL = config.read<string> ( "Title Font", CMAKE_INSTALL_PREFIX "/share/projectM/fonts/Vera.ttf" );
+	menu_fontURL = config.read<string> ( "Menu Font", CMAKE_INSTALL_PREFIX "/share/projectM/fonts/VeraMono.ttf" );
 
 	projectM_init ( gx, gy, fps, texsize, wvw, wvh );
 
