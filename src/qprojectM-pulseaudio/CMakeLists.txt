@@ -35,6 +35,6 @@ LINK_DIRECTORIES(${PROJECTM_LDFLAGS} ${PULSEAUDIO_LDFLAGS})
 
 ADD_EXECUTABLE(qprojectM-pulseaudio ${qprojectM_pulseaudio_SRCS} ${qprojectM_pulseaudio_MOC_SRCS})
 
-TARGET_LINK_LIBRARIES(qprojectM-pulseaudio qprojectM projectM pulse ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTCORE_LIBRARIES} ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(qprojectM-pulseaudio qprojectM projectM pulse pulse-browse ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTCORE_LIBRARIES} ${QT_LIBRARIES})
 
 INSTALL(TARGETS qprojectM-pulseaudio DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )

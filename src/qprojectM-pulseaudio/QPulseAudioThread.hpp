@@ -2,6 +2,9 @@
 #include <QObject>
 #include <QTimer>
 #include <QThread>
+#include <QString>
+#include <QVector>
+
 class projectM;
 
 
@@ -14,10 +17,16 @@ class QPulseAudioThread : public QThread
 		~QPulseAudioThread() ;
 		void run();
 		void cleanup();
-
+		inline QVector<QString> & getSourceList() {
+			return sourceList;
+		}
+	public slots:
+		void connectSource(int index);
 	private:
+		QVector<QString> sourceList;
+		int sourceIndex;
 		int argc;
-	char ** argv;
+		char ** argv;
 		projectM * m_projectM;
 
 };
