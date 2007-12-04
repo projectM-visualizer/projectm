@@ -106,7 +106,6 @@ int main ( int argc, char*argv[] )
 
 	pulseThread->exit();
 	pulseThread->cleanup();
-
 	delete(mainWindow);
 	return ret;
 }
