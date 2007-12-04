@@ -14,7 +14,7 @@ class QPulseAudioThread : public QThread
 	public:
 		QPulseAudioThread () {}
 		QPulseAudioThread(int _argc, char **_argv, projectM * projectM, QObject *parent);
-		~QPulseAudioThread() ;
+		virtual ~QPulseAudioThread() ;
 		void run();
 		void cleanup();
 		inline QVector<QString> & getSourceList() {
