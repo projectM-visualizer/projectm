@@ -1,9 +1,8 @@
-#include <QtDebug>
 #include "libprojectM/projectM.hpp"
 #include "QPulseAudioThread.hpp"
 #include <QtDebug>
-#include "libprojectM/projectM.hpp"
-
+#include <QString>
+#include <QVector>
  /* $Id: pacat.c 1426 2007-02-13 15:35:19Z ossman $ */
  
  /***
@@ -41,9 +40,11 @@
  #include <stdlib.h>
  #include <getopt.h>
  #include <fcntl.h>
- 
+  
 extern "C" {
+#include <pulse/introspect.h>
 #include <pulse/pulseaudio.h>
+#include <pulse/browser.h>
 }
 
  #define TIME_EVENT_USEC 50000
@@ -64,8 +65,9 @@ extern "C" {
   static pa_threaded_mainloop* mainloop = NULL; 
  static pa_io_event* stdio_event = NULL;
  static char *server = NULL;
- static char *stream_name = NULL, *client_name = NULL, *device = NULL;
+ static char *stream_name = NULL, *client_name = NULL, *device =0;
  
+
  static int verbose = 0;
  static pa_volume_t volume = PA_VOLUME_NORM;
  
@@ -75,16 +77,13 @@ extern "C" {
  static pa_sample_spec sample_spec ;
  
 
-QPulseAudioThread::QPulseAudioThread(int _argc, char **_argv, projectM * _projectM, QObject * parent) : QThread(parent), argc(_argc), argv(_argv),  m_projectM(_projectM) {
-
-
-}
+QPulseAudioThread::QPulseAudioThread(int _argc, char **_argv, projectM * _projectM, QObject * parent) : QThread(parent), argc(_argc), argv(_argv),  m_projectM(_projectM), sourceIndex(-1) {}
 
 
 QPulseAudioThread::~QPulseAudioThread() 
 {	
-	
-	
+	for (QVector<QString>::iterator pos = sourceList.begin(); pos != sourceList.end(); ++pos)
+		qDebug() << *pos;
 }
 
 
@@ -138,9 +137,33 @@ if (stream_name)
 	return ;
 }
 
+void QPulseAudioThread::connectSource(int index) {
 
+	if (stream)
+		 pa_stream_disconnect(stream);
+	
+	pa_stream_flags_t flags = (pa_stream_flags_t )0;
 
+	if (index < 0) {
+		if (sourceList.empty()) {
+			qDebug() << "failed to discover source devices";
+			return;
+		}
 
+		index = 0;
+		for (QVector<QString>::iterator pos = sourceList.begin(); pos != sourceList.end(); ++pos) {
+			if ((*pos).contains("monitor"))
+				break;
+			index++;
+		}
+	}
+
+	int r;
+        if (((r = pa_stream_connect_record(stream, sourceList[index].toStdString().c_str(), NULL, flags))) < 0) {
+                     fprintf(stderr, "pa_stream_connect_record() failed: %s\n", pa_strerror(pa_context_errno(context)));
+        }
+ 
+}
 
  /* A shortcut for terminating the application */
  static void quit(int ret) {
@@ -199,7 +222,7 @@ static void stream_state_callback(pa_stream *s, void *userdata) {
                      fprintf(stderr, "pa_stream_get_buffer_attr() failed: %s\n", pa_strerror(pa_context_errno(pa_stream_get_context(s))));
                  else { 
                          
-                         fprintf(stderr, "Buffer metrics: maxlength=%u, fragsize=%u\n", a->maxlength, a->fragsize);
+                         //fprintf(stderr, "Buffer metrics: maxlength=%u, fragsize=%u\n", a->maxlength, a->fragsize);
                      }
                  }
 
@@ -211,7 +234,9 @@ static void stream_state_callback(pa_stream *s, void *userdata) {
              quit(1);
      }
  }
- 
+
+static void initialize_callbacks(QPulseAudioThread * pulseThread);
+  
  /* This is called whenever the context status changes */
  static void context_state_callback(pa_context *c, void *userdata) {
      assert(c);
@@ -225,6 +250,8 @@ static void stream_state_callback(pa_stream *s, void *userdata) {
          case PA_CONTEXT_READY: {
              int r;
  
+		initialize_callbacks((QPulseAudioThread * )userdata);
+        
              assert(c && !stream);
  
              if (verbose)
@@ -239,12 +266,12 @@ static void stream_state_callback(pa_stream *s, void *userdata) {
              //pa_stream_set_write_callback(stream, stream_write_callback, NULL);
              pa_stream_set_read_callback(stream, stream_read_callback, NULL);
  
-		pa_stream_flags_t flags = (pa_stream_flags_t )0;
+		//pa_stream_flags_t flags = (pa_stream_flags_t )0;
 
-                 if (((r = pa_stream_connect_record(stream, device, NULL, flags))) < 0) {
-                     fprintf(stderr, "pa_stream_connect_record() failed: %s\n", pa_strerror(pa_context_errno(c)));
-                     goto fail;
-                 }
+                // if (((r = pa_stream_connect_record(stream, device, NULL, flags))) < 0) {
+                 //    fprintf(stderr, "pa_stream_connect_record() failed: %s\n", pa_strerror(pa_context_errno(c)));
+                 //    goto fail;
+                // }
  
              break;
          }
@@ -351,6 +378,67 @@ static void stream_state_callback(pa_stream *s, void *userdata) {
      pa_operation_unref(pa_stream_update_timing_info(stream, stream_update_timing_callback, NULL));
  }
  
+
+
+static void pa_source_info_callback(pa_context *c, const pa_source_info *i, int eol, void *userdata) {
+
+	
+	qDebug() << "pa_source_info_callback: start";	
+	assert(userdata);
+	QPulseAudioThread * pulseThread = (QPulseAudioThread*)userdata;
+
+	QVector<QString> * vec = &pulseThread->getSourceList();
+	if (!eol && i) {
+		vec->push_back(QString(i->name));
+	} else {
+		qDebug() << "source info eol";
+		pulseThread->connectSource(-1);
+	}
+	qDebug() << "pa_source_info_callback: end";
+}
+
+static void subscribe_callback(struct pa_context *c, enum pa_subscription_event_type t, uint32_t index, void *userdata) {
+
+	qDebug() << "subscribe callback";
+
+	switch (t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) {
+	  case PA_SUBSCRIPTION_EVENT_SINK:
+            break;
+        case PA_SUBSCRIPTION_EVENT_SOURCE:
+	    if ((t & PA_SUBSCRIPTION_EVENT_TYPE_MASK) == PA_SUBSCRIPTION_EVENT_REMOVE)
+                ;//si->removeSourceOutputInfo(index);
+            else {
+		qDebug() << "foo source info";
+                pa_operation_unref(pa_context_get_source_info_by_index(context, index, pa_source_info_callback, userdata));
+	    }
+            break;
+        case PA_SUBSCRIPTION_EVENT_MODULE:
+            break;
+        case PA_SUBSCRIPTION_EVENT_CLIENT:
+            break;
+        case PA_SUBSCRIPTION_EVENT_SINK_INPUT:
+            break;
+        case PA_SUBSCRIPTION_EVENT_SOURCE_OUTPUT:
+	    if ((t & PA_SUBSCRIPTION_EVENT_TYPE_MASK) == PA_SUBSCRIPTION_EVENT_REMOVE)
+                ;//si->removeSourceOutputInfo(index);
+            else {
+		break;
+		qDebug() << "foo";
+                //pa_operation_unref(pa_context_get_source_output_info(context, index, pa_source_output_info_callback, userdata));
+	    }
+            break;
+	case PA_SUBSCRIPTION_EVENT_SAMPLE_CACHE:
+	    break;
+        case PA_SUBSCRIPTION_EVENT_SERVER:
+            break;
+        default:
+            fprintf(stderr, "OTHER EVENT\n");
+            break;
+
+	}
+}
+
+
  static void time_event_callback(pa_mainloop_api*m, pa_time_event *e, const struct timeval *tv, void *userdata) {
      struct timeval next;
  
@@ -370,18 +458,17 @@ static void stream_state_callback(pa_stream *s, void *userdata) {
  
 void QPulseAudioThread::run() {
      
+	const char * error = "FOO";
      int ret = 1, r, c;
-     char *bn = "QPulseAudioThread";
-     
+     char *bn = "projectM";
+ 	pa_operation * operation ;     
      sample_spec.format = PA_SAMPLE_FLOAT32LE;
      sample_spec.rate = 44100;
      sample_spec.channels = 2;
      pa_context_flags_t flags = (pa_context_flags_t)0;
 
- 	verbose = 1;
-	
-         
- 
+     verbose = 1;
+
     if (!pa_sample_spec_valid(&sample_spec)) {
          fprintf(stderr, "Invalid sample specification\n");
          goto quit;
@@ -413,7 +500,8 @@ void QPulseAudioThread::run() {
      }
  
      mainloop_api = pa_threaded_mainloop_get_api(mainloop);
- 
+
+
      r = pa_signal_init(mainloop_api);
      assert(r == 0);
      pa_signal_new(SIGINT, exit_signal_callback, NULL);
@@ -424,7 +512,8 @@ void QPulseAudioThread::run() {
  #ifdef SIGPIPE
      signal(SIGPIPE, SIG_IGN);
  #endif
- 
+
+
      if (!(stdio_event = mainloop_api->io_new(mainloop_api,
                                                STDOUT_FILENO,
                                               PA_IO_EVENT_OUTPUT,
@@ -432,20 +521,19 @@ void QPulseAudioThread::run() {
          fprintf(stderr, "io_new() failed.\n");
          goto quit;
      }
- 
+
+		
+	 
+		
      /* Create a new connection context */
      if (!(context = pa_context_new(mainloop_api, client_name))) {
          fprintf(stderr, "pa_context_new() failed.\n");
          goto quit;
      }
- 
-     pa_context_set_state_callback(context, context_state_callback, NULL);
- 
 
-     /* Connect the context */
+   pa_context_set_state_callback(context, context_state_callback, &sourceList);
+   pa_context_connect(context, server, flags, NULL);
 
-     pa_context_connect(context, server, flags, NULL);
- 
      if (verbose) {
          struct timeval tv;
  
@@ -457,14 +545,49 @@ void QPulseAudioThread::run() {
              goto quit;
          }
      }
- 
+
+
      /* Run the main loop */
      if (pa_threaded_mainloop_start(mainloop) < 0) {
          fprintf(stderr, "pa_mainloop_run() failed.\n");
          goto quit;
      }
- 
  quit:
-	
+
      return ;
  }
+
+static void initialize_callbacks(QPulseAudioThread * pulseThread) {
+  pa_operation * op;
+
+  //qDebug() << "connect: source output info list";
+  //if (op = pa_context_get_source_output_info_list (context, pa_source_output_info_callback, sourceList)) {
+//	pa_operation_unref(op);
+  //} else {
+	//qDebug() << "null operation returned?";
+  //}
+  
+  //qDebug() << "[end] source output info list ";
+
+  pa_operation_unref
+	(pa_context_get_source_info_list (context, pa_source_info_callback, pulseThread));
+  
+   //pa_operation_unref(pa_context_get_server_info(&c, server_info_callback, this));
+    //pa_operation_unref(pa_context_get_sink_info_list(&c, sink_info_callback, this));
+    //pa_operation_unref(pa_context_get_source_info_list(&c, source_info_callback, this));
+    //pa_operation_unref(pa_context_get_module_info_list(&c, module_info_callback, this));
+    //pa_operation_unref(pa_context_get_client_info_list(&c, client_info_callback, this));
+    //pa_operation_unref(pa_context_get_sink_input_info_list(&c, sink_input_info_callback, this));
+    //pa_operation_unref(pa_context_get_source_output_info_list(&c, source_output_info_callback, this));
+    //pa_operation_unref(pa_context_get_sample_info_list(&c, sample_info_callback, this));
+    
+    pa_context_set_subscribe_callback(context, subscribe_callback, pulseThread);
+
+    if (op = pa_context_subscribe(context, (enum pa_subscription_mask)
+                                             PA_SUBSCRIPTION_MASK_SOURCE_OUTPUT, NULL, NULL)) {
+	pa_operation_unref(op);
+    } else {
+	qDebug() << "null op returned on subscribe";
+    }
+  
+}
