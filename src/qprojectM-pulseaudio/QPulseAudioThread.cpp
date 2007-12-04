@@ -62,16 +62,14 @@ extern "C" {
  static pa_time_event *time_event = NULL;
  static float *buffer = NULL;
  static size_t buffer_length = 0, buffer_index = 0;
-  static pa_threaded_mainloop* mainloop = NULL; 
+ static pa_threaded_mainloop* mainloop = NULL; 
  static pa_io_event* stdio_event = NULL;
  static char *server = NULL;
  static char *stream_name = NULL, *client_name = NULL, *device =0;
- 
 
  static int verbose = 0;
  static pa_volume_t volume = PA_VOLUME_NORM;
- 
- 
+
  static pa_channel_map channel_map;
  static int channel_map_set = 0;
  static pa_sample_spec sample_spec ;
@@ -82,14 +80,12 @@ QPulseAudioThread::QPulseAudioThread(int _argc, char **_argv, projectM * _projec
 
 QPulseAudioThread::~QPulseAudioThread() 
 {	
-	for (QVector<QString>::iterator pos = sourceList.begin(); pos != sourceList.end(); ++pos)
-		qDebug() << *pos;
+	
 }
 
 
 
 void QPulseAudioThread::cleanup() {
-
 
      pa_threaded_mainloop_stop(mainloop);
      if (stream)
@@ -151,11 +147,14 @@ void QPulseAudioThread::connectSource(int index) {
 		}
 
 		index = 0;
-		for (QVector<QString>::iterator pos = sourceList.begin(); pos != sourceList.end(); ++pos) {
-			if ((*pos).contains("monitor"))
+		for (QVector<QString>::const_iterator pos = sourceList.begin(); pos != sourceList.end(); ++pos) {
+			if ((*pos).contains("monitor")) {
+				qDebug() << "connecting to monitor device" << *pos;
 				break;
+			}
 			index++;
 		}
+		assert(!sourceList.empty());
 	}
 
 	int r;
@@ -263,16 +262,8 @@ static void initialize_callbacks(QPulseAudioThread * pulseThread);
              }
  
              pa_stream_set_state_callback(stream, stream_state_callback, NULL);
-             //pa_stream_set_write_callback(stream, stream_write_callback, NULL);
              pa_stream_set_read_callback(stream, stream_read_callback, NULL);
- 
-		//pa_stream_flags_t flags = (pa_stream_flags_t )0;
 
-                // if (((r = pa_stream_connect_record(stream, device, NULL, flags))) < 0) {
-                 //    fprintf(stderr, "pa_stream_connect_record() failed: %s\n", pa_strerror(pa_context_errno(c)));
-                 //    goto fail;
-                // }
- 
              break;
          }
  
@@ -369,37 +360,33 @@ static void initialize_callbacks(QPulseAudioThread * pulseThread);
              (float) latency * (negative?-1:1));
  }
  
- /* Someone requested that the latency is shown */
- static void sigusr1_signal_callback(pa_mainloop_api*m, pa_signal_event *e, int sig, void *userdata) {
+/* Someone requested that the latency is shown */
+static void sigusr1_signal_callback(pa_mainloop_api*m, pa_signal_event *e, int sig, void *userdata) {
  
      if (!stream)
          return;
  
      pa_operation_unref(pa_stream_update_timing_info(stream, stream_update_timing_callback, NULL));
- }
+}
  
-
-
 static void pa_source_info_callback(pa_context *c, const pa_source_info *i, int eol, void *userdata) {
 
-	
-	qDebug() << "pa_source_info_callback: start";	
 	assert(userdata);
 	QPulseAudioThread * pulseThread = (QPulseAudioThread*)userdata;
 
 	QVector<QString> * vec = &pulseThread->getSourceList();
-	if (!eol && i) {
+	if (i) {
 		vec->push_back(QString(i->name));
 	} else {
-		qDebug() << "source info eol";
+		assert(eol);
 		pulseThread->connectSource(-1);
 	}
-	qDebug() << "pa_source_info_callback: end";
+	
 }
 
 static void subscribe_callback(struct pa_context *c, enum pa_subscription_event_type t, uint32_t index, void *userdata) {
 
-	qDebug() << "subscribe callback";
+	
 
 	switch (t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK) {
 	  case PA_SUBSCRIPTION_EVENT_SINK:
@@ -408,8 +395,7 @@ static void subscribe_callback(struct pa_context *c, enum pa_subscription_event_
 	    if ((t & PA_SUBSCRIPTION_EVENT_TYPE_MASK) == PA_SUBSCRIPTION_EVENT_REMOVE)
                 ;//si->removeSourceOutputInfo(index);
             else {
-		qDebug() << "foo source info";
-                pa_operation_unref(pa_context_get_source_info_by_index(context, index, pa_source_info_callback, userdata));
+	        pa_operation_unref(pa_context_get_source_info_by_index(context, index, pa_source_info_callback, userdata));
 	    }
             break;
         case PA_SUBSCRIPTION_EVENT_MODULE:
@@ -423,8 +409,7 @@ static void subscribe_callback(struct pa_context *c, enum pa_subscription_event_
                 ;//si->removeSourceOutputInfo(index);
             else {
 		break;
-		qDebug() << "foo";
-                //pa_operation_unref(pa_context_get_source_output_info(context, index, pa_source_output_info_callback, userdata));
+	        //pa_operation_unref(pa_context_get_source_output_info(context, index, pa_source_output_info_callback, userdata));
 	    }
             break;
 	case PA_SUBSCRIPTION_EVENT_SAMPLE_CACHE:
