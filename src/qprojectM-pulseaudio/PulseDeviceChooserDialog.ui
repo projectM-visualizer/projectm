@@ -1,0 +1,122 @@
+<ui version="4.0" >
+ <class>pulseDeviceChooserDialog</class>
+ <widget class="QDialog" name="pulseDeviceChooserDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>378</width>
+    <height>280</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Dialog</string>
+  </property>
+  <widget class="QDialogButtonBox" name="buttonBox" >
+   <property name="geometry" >
+    <rect>
+     <x>290</x>
+     <y>20</y>
+     <width>81</width>
+     <height>241</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Vertical</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Apply|QDialogButtonBox::Close|QDialogButtonBox::NoButton|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="tryFirstPlayBackMonitorCheckBox" >
+   <property name="geometry" >
+    <rect>
+     <x>20</x>
+     <y>250</y>
+     <width>251</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="toolTip" >
+    <string>This will try to find any available playback monitor on startup as the pulseaudio source device. This is a quick and dirty way to generally get projectM sound data without specifying a device explicitly.</string>
+   </property>
+   <property name="text" >
+    <string>Try first available playback monitor</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label" >
+   <property name="geometry" >
+    <rect>
+     <x>20</x>
+     <y>10</y>
+     <width>251</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>Select a source device below.</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="saveAsDefaultPushButton" >
+   <property name="geometry" >
+    <rect>
+     <x>20</x>
+     <y>210</y>
+     <width>111</width>
+     <height>29</height>
+    </rect>
+   </property>
+   <property name="toolTip" >
+    <string>Clicking on this means when projectM starts up, it will try to select the active source device to get its sound data.</string>
+   </property>
+   <property name="text" >
+    <string>Set as default</string>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="deviceListWidget" >
+   <property name="geometry" >
+    <rect>
+     <x>20</x>
+     <y>40</y>
+     <width>251</width>
+     <height>161</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>pulseDeviceChooserDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>pulseDeviceChooserDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

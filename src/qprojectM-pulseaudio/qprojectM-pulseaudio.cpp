@@ -187,7 +187,7 @@ std::string read_config()
 				return std::string ( projectM_config );
 			}
 			else{ printf ( "Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n" );  abort();}
-
+			
 		}
 
 	}
