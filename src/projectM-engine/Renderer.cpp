@@ -115,6 +115,15 @@ void Renderer::ResetTextures()
 
 void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 {
+	/** Save original view state */
+	// TODO: check there is sufficient room on the stack
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	
+	
+	
 	totalframes++;
 	
 	DWRITE( "start Pass 1 \n" );
