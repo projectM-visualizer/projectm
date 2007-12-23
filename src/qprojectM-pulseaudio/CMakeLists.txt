@@ -14,11 +14,11 @@ pkg_search_module(PROJECTM REQUIRED projectM qprojectM)
 
 # the variable "qprojectM_SRCS" contains all .cpp files of this project
 set(qprojectM_pulseaudio_SRCS
-  qprojectM-pulseaudio.cpp ConfigFile.h ConfigFile.cpp QPulseAudioThread.cpp
+  qprojectM-pulseaudio.cpp ConfigFile.h ConfigFile.cpp QPulseAudioThread.cpp QPulseAudioDevChooser.cpp
 )
 
 set(qprojectM_pulseaudio_MOC_HDRS
-	QPulseAudioThread.hpp
+	QPulseAudioThread.hpp QPulseAudioDevChooser.hpp 
 )
 
 set(qprojectM_pulseaudio_UIS
@@ -26,9 +26,7 @@ set(qprojectM_pulseaudio_UIS
 )
 
 
-
 qt4_wrap_ui(qprojectM_pulseaudio_UIS_H ${qprojectM_pulseaudio_UIS})
-
 
 # After this call, foo_MOC_SRCS = moc_Class1.cxx moc_Class2.cxx moc_Class3.cxx.
 qt4_wrap_cpp(qprojectM_pulseaudio_MOC_SRCS ${qprojectM_pulseaudio_MOC_HDRS})
@@ -41,7 +39,7 @@ INCLUDE_DIRECTORIES(${PROJECTM_INCLUDEDIR}  ${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE
 
 LINK_DIRECTORIES(${PROJECTM_LDFLAGS} ${PULSEAUDIO_LDFLAGS})
 
-ADD_EXECUTABLE(qprojectM-pulseaudio ${qprojectM_pulseaudio_SRCS} ${qprojectM_pulseaudio_MOC_SRCS})
+ADD_EXECUTABLE(qprojectM-pulseaudio ${qprojectM_pulseaudio_SRCS} ${qprojectM_pulseaudio_MOC_SRCS} ${qprojectM_pulseaudio_UIS_H})
 
 TARGET_LINK_LIBRARIES(qprojectM-pulseaudio qprojectM projectM pulse pulse-browse ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTCORE_LIBRARIES} ${QT_LIBRARIES})
 
