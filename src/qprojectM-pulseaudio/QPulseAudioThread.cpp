@@ -41,12 +41,6 @@
 #include <getopt.h>
 #include <fcntl.h>
 
-extern "C"
-{
-#include <pulse/introspect.h>
-#include <pulse/pulseaudio.h>
-#include <pulse/browser.h>
-}
 
 #define TIME_EVENT_USEC 50000
 
@@ -155,9 +149,10 @@ void QPulseAudioThread::connectSource ( int index )
 		}
 
 		index = 0;
-		for ( QVector<QString>::const_iterator pos = sourceList.begin(); pos != sourceList.end(); ++pos )
+		for ( SourceContainer::const_iterator pos = sourceList.begin(); pos != sourceList.end(); ++pos )
 		{
-			if ( ( *pos ).contains ( "monitor" ) )
+			qDebug() << "Scanning " << *pos;
+			if ( ( *pos).contains ( "monitor" ) )
 			{
 				qDebug() << "connecting to monitor device" << *pos;
 				break;
@@ -176,7 +171,7 @@ void QPulseAudioThread::connectSource ( int index )
 }
 
 /* A shortcut for terminating the application */
-static void quit ( int ret )
+void QPulseAudioThread::pulseQuit ( int ret )
 {
 	assert ( mainloop_api );
 	mainloop_api->quit ( mainloop_api, ret );
@@ -184,7 +179,7 @@ static void quit ( int ret )
 
 
 /* This is called whenever new data may is available */
-static void stream_read_callback ( pa_stream *s, size_t length, void *userdata )
+void QPulseAudioThread::stream_read_callback ( pa_stream *s, size_t length, void *userdata )
 {
 	const void *data;
 	assert ( s && length );
@@ -195,7 +190,7 @@ static void stream_read_callback ( pa_stream *s, size_t length, void *userdata )
 	if ( pa_stream_peek ( s, &data, &length ) < 0 )
 	{
 		fprintf ( stderr, "pa_stream_peek() failed: %s\n", pa_strerror ( pa_context_errno ( context ) ) );
-		quit ( 1 );
+		pulseQuit ( 1 );
 		return;
 	}
 
@@ -207,7 +202,7 @@ static void stream_read_callback ( pa_stream *s, size_t length, void *userdata )
 		if ( pa_stream_drop ( s ) < 0 )
 		{
 			fprintf ( stderr, "pa_stream_drop() failed: %s\n", pa_strerror ( pa_context_errno ( context ) ) );
-			quit ( 1 );
+			pulseQuit ( 1 );
 		}
 		return;
 	}
@@ -219,7 +214,7 @@ static void stream_read_callback ( pa_stream *s, size_t length, void *userdata )
 }
 
 /* This routine is called whenever the stream state changes */
-static void stream_state_callback ( pa_stream *s, void *userdata )
+void QPulseAudioThread::stream_state_callback ( pa_stream *s, void *userdata )
 {
 	assert ( s );
 
@@ -250,14 +245,12 @@ static void stream_state_callback ( pa_stream *s, void *userdata )
 		case PA_STREAM_FAILED:
 		default:
 			fprintf ( stderr, "Stream error: %s\n", pa_strerror ( pa_context_errno ( pa_stream_get_context ( s ) ) ) );
-			quit ( 1 );
+			pulseQuit ( 1 );
 	}
 }
 
-static void initialize_callbacks ( QPulseAudioThread * pulseThread );
-
 /* This is called whenever the context status changes */
-static void context_state_callback ( pa_context *c, void *userdata )
+void QPulseAudioThread::context_state_callback ( pa_context *c, void *userdata )
 {
 	assert ( c );
 
@@ -292,7 +285,7 @@ static void context_state_callback ( pa_context *c, void *userdata )
 		}
 
 		case PA_CONTEXT_TERMINATED:
-			quit ( 0 );
+			pulseQuit ( 0 );
 			break;
 
 		case PA_CONTEXT_FAILED:
@@ -304,25 +297,25 @@ static void context_state_callback ( pa_context *c, void *userdata )
 	return;
 
 fail:
-	quit ( 1 );
+	pulseQuit ( 1 );
 
 }
 
 /* Connection draining complete */
-static void context_drain_complete ( pa_context*c, void *userdata )
+void QPulseAudioThread::context_drain_complete ( pa_context*c, void *userdata )
 {
 	pa_context_disconnect ( c );
 }
 
 /* Stream draining complete */
-static void stream_drain_complete ( pa_stream*s, int success, void *userdata )
+void QPulseAudioThread::stream_drain_complete ( pa_stream*s, int success, void *userdata )
 {
 	pa_operation *o;
 
 	if ( !success )
 	{
 		fprintf ( stderr, "Failed to drain stream: %s\n", pa_strerror ( pa_context_errno ( context ) ) );
-		quit ( 1 );
+		pulseQuit ( 1 );
 	}
 
 	if ( verbose )
@@ -342,7 +335,7 @@ static void stream_drain_complete ( pa_stream*s, int success, void *userdata )
 }
 
 /* Some data may be written to STDOUT */
-static void stdout_callback ( pa_mainloop_api*a, pa_io_event *e, int fd, pa_io_event_flags_t f, void *userdata )
+void QPulseAudioThread::stdout_callback ( pa_mainloop_api*a, pa_io_event *e, int fd, pa_io_event_flags_t f, void *userdata )
 {
 	ssize_t r;
 	assert ( a == mainloop_api && e && stdio_event == e );
@@ -366,15 +359,15 @@ static void stdout_callback ( pa_mainloop_api*a, pa_io_event *e, int fd, pa_io_e
 }
 
 /* UNIX signal to quit recieved */
-static void exit_signal_callback ( pa_mainloop_api*m, pa_signal_event *e, int sig, void *userdata )
+void QPulseAudioThread::exit_signal_callback ( pa_mainloop_api*m, pa_signal_event *e, int sig, void *userdata )
 {
 	if ( verbose )
 		fprintf ( stderr, "Got signal, exiting.\n" );
-	quit ( 0 );
+	pulseQuit ( 0 );
 }
 
 /* Show the current latency */
-static void stream_update_timing_callback ( pa_stream *s, int success, void *userdata )
+void QPulseAudioThread::stream_update_timing_callback ( pa_stream *s, int success, void *userdata )
 {
 	pa_usec_t latency, usec;
 	int negative = 0;
@@ -386,7 +379,7 @@ static void stream_update_timing_callback ( pa_stream *s, int success, void *use
 	        pa_stream_get_latency ( s, &latency, &negative ) < 0 )
 	{
 		fprintf ( stderr, "Failed to get latency: %s\n", pa_strerror ( pa_context_errno ( context ) ) );
-		quit ( 1 );
+		pulseQuit ( 1 );
 		return;
 	}
 
@@ -396,7 +389,7 @@ static void stream_update_timing_callback ( pa_stream *s, int success, void *use
 }
 
 /* Someone requested that the latency is shown */
-static void sigusr1_signal_callback ( pa_mainloop_api*m, pa_signal_event *e, int sig, void *userdata )
+void QPulseAudioThread::sigusr1_signal_callback ( pa_mainloop_api*m, pa_signal_event *e, int sig, void *userdata )
 {
 
 	if ( !stream )
@@ -405,26 +398,34 @@ static void sigusr1_signal_callback ( pa_mainloop_api*m, pa_signal_event *e, int
 	pa_operation_unref ( pa_stream_update_timing_info ( stream, stream_update_timing_callback, NULL ) );
 }
 
-static void pa_source_info_callback ( pa_context *c, const pa_source_info *i, int eol, void *userdata )
+void QPulseAudioThread::pa_source_info_callback ( pa_context *c, const pa_source_info *i, int eol, void *userdata )
 {
 
 	assert ( userdata );
 	QPulseAudioThread * pulseThread = ( QPulseAudioThread* ) userdata;
 
-	QVector<QString> * vec = &pulseThread->getSourceList();
 	if ( i )
 	{
-		vec->push_back ( QString ( i->name ) );
+		qDebug() << "Adding " << i->index << " with name\"" << i->name << "\"";
+
+		int index = i->index;
+		QString name = i->name;
+
+		qDebug() << "insert";
+		pulseThread->insertSource(index,name);
+
+		qDebug() << "Added" ;
 	}
-	else
-	{
+
+	else {
+		qDebug() << "End of device list";
 		assert ( eol );
 		pulseThread->connectSource ( -1 );
 	}
 
 }
 
-static void subscribe_callback ( struct pa_context *c, enum pa_subscription_event_type t, uint32_t index, void *userdata )
+void QPulseAudioThread::subscribe_callback ( struct pa_context *c, enum pa_subscription_event_type t, uint32_t index, void *userdata )
 {
 
 	switch ( t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK )
@@ -459,7 +460,7 @@ static void subscribe_callback ( struct pa_context *c, enum pa_subscription_even
 }
 
 
-static void time_event_callback ( pa_mainloop_api*m, pa_time_event *e, const struct timeval *tv, void *userdata )
+void QPulseAudioThread::time_event_callback ( pa_mainloop_api*m, pa_time_event *e, const struct timeval *tv, void *userdata )
 {
 	struct timeval next;
 
@@ -586,7 +587,7 @@ quit:
 	return ;
 }
 
-static void initialize_callbacks ( QPulseAudioThread * pulseThread )
+void QPulseAudioThread::initialize_callbacks ( QPulseAudioThread * pulseThread )
 {
 	pa_operation * op;
 	pa_operation_unref
