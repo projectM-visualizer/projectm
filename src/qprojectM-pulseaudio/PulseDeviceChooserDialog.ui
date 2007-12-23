@@ -25,7 +25,7 @@
     <enum>Qt::Vertical</enum>
    </property>
    <property name="standardButtons" >
-    <set>QDialogButtonBox::Apply|QDialogButtonBox::Close|QDialogButtonBox::NoButton|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
+    <set>QDialogButtonBox::Apply|QDialogButtonBox::Close|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
    </property>
   </widget>
   <widget class="QCheckBox" name="tryFirstPlayBackMonitorCheckBox" >
