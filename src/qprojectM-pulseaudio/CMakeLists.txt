@@ -21,6 +21,14 @@ set(qprojectM_pulseaudio_MOC_HDRS
 	QPulseAudioThread.hpp
 )
 
+set(qprojectM_pulseaudio_UIS
+    PulseDeviceChooserDialog.ui
+)
+
+
+
+qt4_wrap_ui(qprojectM_pulseaudio_UIS_H ${qprojectM_pulseaudio_UIS})
+
 
 # After this call, foo_MOC_SRCS = moc_Class1.cxx moc_Class2.cxx moc_Class3.cxx.
 qt4_wrap_cpp(qprojectM_pulseaudio_MOC_SRCS ${qprojectM_pulseaudio_MOC_HDRS})
