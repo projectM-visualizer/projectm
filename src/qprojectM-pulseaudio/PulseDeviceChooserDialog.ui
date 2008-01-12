@@ -10,7 +10,7 @@
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>Dialog</string>
+   <string>Pulse Audio Settings</string>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox" >
    <property name="geometry" >

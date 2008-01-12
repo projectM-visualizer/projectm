@@ -9,7 +9,7 @@ class QPulseAudioDevChooser : public QDialog, public Ui::pulseDeviceChooserDialo
 	Q_OBJECT
 
 	public:
-	typedef QMap<int, QString> SourceContainer;
+	typedef QHash<int, QString> SourceContainer;
 //		QPulseAudioDevChooser(QWidget * parent = 0, Qt::WindowFlags f = 0 ) ;
 //QPulseAudioDevChooser::QPulseAudioDevChooser(QWidget * parent = 0, Qt::WindowFlags f = 0 ) : QDialog(parent, f) {}
 
