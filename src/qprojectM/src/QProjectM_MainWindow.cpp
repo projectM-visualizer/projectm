@@ -512,8 +512,19 @@ void QProjectM_MainWindow::createActions()
 	connect ( ui->actionSave_play_list, SIGNAL ( triggered() ), this, SLOT ( savePlaylist() ) );
 	connect ( ui->actionAbout_qprojectM, SIGNAL ( triggered() ), this, SLOT ( about() ) );
 	connect ( ui->actionConfigure_projectM, SIGNAL ( triggered() ), this, SLOT (openSettingsDialog()) );
+
+	/// @bug pull the aboutQt() code from repo to put it back. 
 	//connect(ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
 
+}
+
+void QProjectM_MainWindow::registerSettingsAction(QAction * action) {
+	ui->menuSettings->addAction(action);
+}
+
+
+void QProjectM_MainWindow::unregisterSettingsAction(QAction * action) {
+	ui->menuSettings->removeAction(action);
 }
 
 void QProjectM_MainWindow::createMenus()

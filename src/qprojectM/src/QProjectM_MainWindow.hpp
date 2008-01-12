@@ -45,8 +45,8 @@ class QModelIndex;
 namespace Ui { 
 class QProjectM_MainWindow;
 class QProjectMConfigDialog;
-
 }
+
 #include <iostream>
 
 
@@ -55,13 +55,12 @@ class QProjectM : public QObject, public projectM {
 
 	public:
 		 QProjectM(const std::string & config_file):projectM(config_file) {} 
-        
-		 
+        		 
 		 void presetSwitchedEvent(bool hardCut, unsigned int index) const {
 			presetSwitchedSignal(hardCut, index);
 		 }
 	signals:
-		void presetSwitchedSignal(bool hardCut, unsigned int index) const;		
+		void presetSwitchedSignal(bool hardCut, unsigned int index) const;
 	public slots:
 			
 };
@@ -221,17 +220,24 @@ public:
 		QString name;
 		int rating;
       } PlaylistItemMetaData;
+
       typedef QVector<PlaylistItemMetaData> PlaylistItemVector;
 
       QProjectM_MainWindow(const std::string & config_file);
-      ~QProjectM_MainWindow();
+      virtual ~QProjectM_MainWindow();
+      void registerSettingsAction(QAction * action);
+      void unregisterSettingsAction(QAction * action);
 
       void keyReleaseEvent ( QKeyEvent * e );
       QProjectM * getQProjectM();
 
-    void refreshPlaylist();
+      void refreshPlaylist();
 
-	QProjectMWidget * getQProjectMWidget() { return m_QProjectMWidget; }
+      QProjectMWidget * getQProjectMWidget() { return m_QProjectMWidget; }
+
+
+      void registerAction(const QAction &);
+
 protected:
 
 
