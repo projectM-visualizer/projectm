@@ -54,7 +54,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <unistd.h>
-
+#include <QAction>
 #include <QThread>
 #include <QTimer>
 #define CONFIG_FILE "/share/projectM/config.inp"
@@ -95,6 +95,10 @@ int main ( int argc, char*argv[] )
 
 	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow ( config_file );
 
+	QAction pulseAction("Pulse audio settings...", mainWindow);
+	
+	//connect(pulseAction, SIGNAL(triggered()), 
+      	mainWindow->registerSettingsAction(&pulseAction);
 	mainWindow->show();
 
 	QPulseAudioThread * pulseThread = new QPulseAudioThread(argc, argv, mainWindow->getQProjectM(), mainWindow);
@@ -106,6 +110,9 @@ int main ( int argc, char*argv[] )
 
 	pulseThread->exit();
 	pulseThread->cleanup();
+
+        mainWindow->unregisterSettingsAction(&pulseAction);
+
 	delete(mainWindow);
 	return ret;
 }
