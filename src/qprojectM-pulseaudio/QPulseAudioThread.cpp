@@ -3,6 +3,9 @@
 #include <QtDebug>
 #include <QString>
 #include <QVector>
+
+QPulseAudioThread::SourceContainer QPulseAudioThread::sourceList;
+
 /* $Id: pacat.c 1426 2007-02-13 15:35:19Z ossman $ */
 
 /***
@@ -70,15 +73,15 @@ static int channel_map_set = 0;
 static pa_sample_spec sample_spec ;
 
 
-QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, projectM * _projectM, QObject * parent ) : QThread ( parent ), argc ( _argc ), argv ( _argv ),  m_projectM ( _projectM ), sourceIndex ( -1 ) {}
+QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, projectM * _projectM, QObject * parent ) : QThread ( parent ), argc ( _argc ), argv ( _argv ),  m_projectM ( _projectM ), sourceIndex ( -1 ) {
+
+}
 
 
 QPulseAudioThread::~QPulseAudioThread()
 {
 
 }
-
-
 
 void QPulseAudioThread::cleanup()
 {
@@ -412,6 +415,8 @@ void QPulseAudioThread::pa_source_info_callback ( pa_context *c, const pa_source
 		QString name = i->name;
 
 		qDebug() << "insert";
+		
+		
 		pulseThread->insertSource(index,name);
 
 		qDebug() << "Added" ;
