@@ -32,9 +32,6 @@ class QPulseAudioThread : public QThread
 			return sourceList;
 		}
 
-	signals:
-		void sourceInsertEvent(int index, const QString & name);
-
 	public slots:
 		inline void insertSource(int index, const QString & name) {
 			sourceList[index]= name;
