@@ -102,7 +102,7 @@ int main ( int argc, char*argv[] )
 	
 	devChooser.setupUi(&devChooser);
 
-	QApplication::connect(&pulseAction, SIGNAL(triggered()), &devChooser, SLOT(show())); 
+	QApplication::connect(&pulseAction, SIGNAL(triggered()), &devChooser, SLOT(open())); 
       	mainWindow->registerSettingsAction(&pulseAction);
 	mainWindow->show();
 
