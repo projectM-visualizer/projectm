@@ -26,7 +26,9 @@ void QPulseAudioDevChooser::updateDevice(int index, const QString & name) {
 
 void QPulseAudioDevChooser::removeDevice(int index) {
 		
+this->deviceListWidget->clear();
 }
+
 
 void QPulseAudioDevChooser::refreshDevices
 	(SourceContainer::const_iterator beginPos, SourceContainer::const_iterator endPos) {

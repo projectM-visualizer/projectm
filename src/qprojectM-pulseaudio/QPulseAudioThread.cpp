@@ -418,7 +418,7 @@ void QPulseAudioThread::pa_source_info_callback ( pa_context *c, const pa_source
 		
 		
 		pulseThread->insertSource(index,name);
-
+		
 		qDebug() << "Added" ;
 	}
 
