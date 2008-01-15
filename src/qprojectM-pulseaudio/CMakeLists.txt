@@ -14,11 +14,11 @@ pkg_search_module(PROJECTM REQUIRED projectM qprojectM)
 
 # the variable "qprojectM_SRCS" contains all .cpp files of this project
 set(qprojectM_pulseaudio_SRCS
-  qprojectM-pulseaudio.cpp ConfigFile.h ConfigFile.cpp QPulseAudioThread.cpp QPulseAudioDevChooser.cpp
+  qprojectM-pulseaudio.cpp ConfigFile.h ConfigFile.cpp QPulseAudioThread.cpp QPulseAudioDeviceChooser.cpp QPulseAudioDeviceModel.cpp
 )
 
 set(qprojectM_pulseaudio_MOC_HDRS
-	QPulseAudioThread.hpp QPulseAudioDevChooser.hpp 
+	QPulseAudioThread.hpp QPulseAudioDeviceChooser.hpp QPulseAudioDeviceModel.hpp
 )
 
 set(qprojectM_pulseaudio_UIS

@@ -72,7 +72,7 @@ std::string read_config();
 //#include <pulsecore/gccmacro.h>
 
 #include "QPulseAudioThread.hpp"
-#include "QPulseAudioDevChooser.hpp"
+#include "QPulseAudioDeviceChooser.hpp"
 
 int dumpFrame = 0;
 int frameNumber = 0;
@@ -96,7 +96,7 @@ int main ( int argc, char*argv[] )
 
 	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow ( config_file );
 	
-	QPulseAudioDevChooser devChooser;
+	QPulseAudioDeviceChooser devChooser;
 
 	QAction pulseAction("Pulse audio settings...", mainWindow);
 	
