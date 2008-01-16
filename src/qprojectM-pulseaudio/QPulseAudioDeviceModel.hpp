@@ -27,7 +27,7 @@
 #include <QAbstractTableModel>
 #include <QVector>
 
- class QPulseAudioDeviceModel : public QAbstractTableModel
+ class QPulseAudioDeviceModel : public QAbstractItemModel
  {
      Q_OBJECT        // must include this if you use Qt signals/slots
 
@@ -36,12 +36,12 @@ static const int URLInfoRole = Qt::UserRole;
 static const int RatingRole = Qt::UserRole+1;
      QPulseAudioDeviceModel(const QHash<int, QString> & devices, QObject * parent);
      ~QPulseAudioDeviceModel() { }
-bool setData(const QModelIndex & index, const QVariant & value, int role=Qt::EditRole);
 
+QModelIndex index(int row, int col, const QModelIndex & parent) const;
 void appendRow (const QString & text, int key);
 void removeRow (int index);
 QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
-
+QModelIndex parent(const QModelIndex & parent) const;
 void clear();
 
 QVariant data ( const QModelIndex & index, int role) const;

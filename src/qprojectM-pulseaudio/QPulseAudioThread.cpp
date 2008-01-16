@@ -409,17 +409,10 @@ void QPulseAudioThread::pa_source_info_callback ( pa_context *c, const pa_source
 
 	if ( i )
 	{
-		qDebug() << "Adding " << i->index << " with name\"" << i->name << "\"";
-
 		int index = i->index;
 		QString name = i->name;
 
-		qDebug() << "insert";
-		
-		
 		pulseThread->insertSource(index,name);
-		
-		qDebug() << "Added" ;
 	}
 
 	else {
