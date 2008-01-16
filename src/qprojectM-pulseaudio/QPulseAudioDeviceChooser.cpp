@@ -16,12 +16,13 @@ QSettings settings ( "projectM", "qprojectM-pulseaudio");
 
 this->tryFirstPlayBackMonitorCheckBox->setCheckState
 	(settings.value("tryFirstAvailablePlaybackMonitor", true).toBool() ? Qt::Checked : Qt::Unchecked);
-
-
 }
 
-QPulseAudioDeviceChooser::QPulseAudioDeviceChooser(const QHash<int, QString> & devices, QWidget * parent = 0, Qt::WindowFlags f = 0) : QDialog(parent, f), m_qpulseAudioDeviceModel(devices, this) {
+QPulseAudioDeviceChooser::QPulseAudioDeviceChooser(const QHash<int, QString> & devices, QWidget * parent = 0, Qt::WindowFlags f) : QDialog(parent, f), m_qpulseAudioDeviceModel(devices, this) {
 
+	readSettings();
+	setupUi(this);
+	this->devicesListView->setModel(&m_qpulseAudioDeviceModel);
 }
 
 void QPulseAudioDeviceChooser::open() {
