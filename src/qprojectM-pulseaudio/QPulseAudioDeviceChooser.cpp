@@ -1,7 +1,7 @@
-#include "QPulseAudioDevChooser.hpp"
+#include "QPulseAudioDeviceChooser.hpp"
 #include <QSettings>
 
-void QPulseAudioDevChooser::writeSettings() {
+void QPulseAudioDeviceChooser::writeSettings() {
 	
 	QSettings settings ( "projectM", "qprojectM-pulseaudio");
 	settings.setValue ( "tryFirstAvailablePlaybackMonitor", 
@@ -10,7 +10,7 @@ void QPulseAudioDevChooser::writeSettings() {
 }
 
 
-void QPulseAudioDevChooser::readSettings() {
+void QPulseAudioDeviceChooser::readSettings() {
 	
 QSettings settings ( "projectM", "qprojectM-pulseaudio");
 
@@ -20,25 +20,12 @@ this->tryFirstPlayBackMonitorCheckBox->setCheckState
 
 }
 
-void QPulseAudioDevChooser::updateDevice(int index, const QString & name) {
-	this->deviceListWidget->item(index)->setText(name);
+QPulseAudioDeviceChooser::QPulseAudioDeviceChooser(const QHash<int, QString> & devices, QWidget * parent = 0, Qt::WindowFlags f = 0) : QDialog(parent, f), m_qpulseAudioDeviceModel(devices, this) {
+
 }
 
-void QPulseAudioDevChooser::removeDevice(int index) {
-		
-this->deviceListWidget->clear();
+void QPulseAudioDeviceChooser::open() {
+	this->show();
+	
 }
 
-
-void QPulseAudioDevChooser::refreshDevices
-	(SourceContainer::const_iterator beginPos, SourceContainer::const_iterator endPos) {
-
-	SourceContainer::const_iterator pos = beginPos;
-
-	this->deviceListWidget->clear();
-
-	while (pos != endPos) {
-		this->deviceListWidget->addItem(*pos);
-		++pos;
-	}
-}

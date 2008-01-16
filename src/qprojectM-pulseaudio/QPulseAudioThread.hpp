@@ -28,7 +28,7 @@ class QPulseAudioThread : public QThread
 		void run();
 		void cleanup();
 
-		inline const SourceContainer & SourceList() {
+		inline const SourceContainer & devices() {
 			return sourceList;
 		}
 
