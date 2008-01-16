@@ -13,6 +13,8 @@ QModelIndex QPulseAudioDeviceModel::index(int row, int col, const QModelIndex & 
 }
 
 QModelIndex QPulseAudioDeviceModel::parent(const QModelIndex & parent) const {
+
+	qDebug() << parent.row();
 	return parent.parent();
 }
 
@@ -29,11 +31,16 @@ void QPulseAudioDeviceModel::updateItemHighlights()
 QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt::DisplayRole ) const
 {
 		
+	if (index.column() > 0)
+		return QVariant();
+	
 	QHash<int, QString>::const_iterator pos;
+	qDebug() << "role: " << role;
 	switch ( role )
 	{
 		case Qt::DisplayRole:
-			
+			qDebug() << "role2: " << role;
+			abort();		
 			pos = devices.begin() + index.row();						
 			return *pos;
 		
@@ -41,22 +48,16 @@ QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt
 			return QString("These never show up.");
 		case Qt::DecorationRole:
 				return QVariant();
-		case Qt::BackgroundRole:
+//		case Qt::BackgroundRole:
 //				return Qt::red;
 //				return Qt::green;
 
-			return Qt::white;
+//			return Qt::white;
 		default:
 			return QVariant();
 	}
 }
-/*
-QVariant QPulseAudioDeviceModel::headerData ( int section, Qt::Orientation orientation, int role ) const
-{
 
-	return QAbstractItemModel::headerData ( section, orientation, role );
-}
-*/
 int QPulseAudioDeviceModel::rowCount ( const QModelIndex & parent ) const
 {
 
@@ -66,29 +67,10 @@ int QPulseAudioDeviceModel::rowCount ( const QModelIndex & parent ) const
 
 int QPulseAudioDeviceModel::columnCount ( const QModelIndex & parent ) const
 {
-
-	// eventually add ratings here so size should be 2
 	if ( rowCount() > 0 )
-		return 2;
+		return 1;
 	else
 		return 0;
-}
-
-void QPulseAudioDeviceModel::appendRow ( const QString & name, int id)
-{
-	beginInsertRows ( QModelIndex(), rowCount(), rowCount() );
-//	devices.insert(id, name);
-	endInsertRows();
-}
-
-
-void QPulseAudioDeviceModel::removeRow ( int index )
-{
-	beginRemoveRows ( QModelIndex(), index, index );
-//	QPulseAudioThread::SourceContainer::iterator pos
-//7		= devices.begin() + index;
-//	devices.remove(pos.key());
-	endRemoveRows();
 }
 
 
