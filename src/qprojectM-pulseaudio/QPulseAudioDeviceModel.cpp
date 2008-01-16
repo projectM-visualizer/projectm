@@ -3,11 +3,18 @@
 #include <QtDebug>
 #include <QMessageBox>
 
-QPulseAudioDeviceModel::QPulseAudioDeviceModel(const QHash<int, QString> & _devices, QObject * parent = 0):QAbstractTableModel(parent), devices(_devices) {
+QPulseAudioDeviceModel::QPulseAudioDeviceModel(const QHash<int, QString> & _devices, QObject * parent = 0):QAbstractItemModel(parent), devices(_devices) {
 
 
 }
 
+QModelIndex QPulseAudioDeviceModel::index(int row, int col, const QModelIndex & parent = QModelIndex()) const {
+	return parent.child(row,col);
+}
+
+QModelIndex QPulseAudioDeviceModel::parent(const QModelIndex & parent) const {
+	return QModelIndex();
+}
 
 void QPulseAudioDeviceModel::updateItemHighlights()
 {
@@ -18,29 +25,16 @@ void QPulseAudioDeviceModel::updateItemHighlights()
 	;
 }
 
-bool QPulseAudioDeviceModel::setData ( const QModelIndex & index, const QVariant & value, int role )
-{
-	if ( role == Qt::DisplayRole )
-	{
-
-		//QHash<int, QString>::iterator pos 
-		//	= devices.begin() + index.row();
-
-		//*pos = value.toString();
-		return true;
-	}
-	else
-		return QAbstractTableModel::setData ( index, value, role );
-
-}
 
 QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt::DisplayRole ) const
 {
+	
 	QHash<int, QString>::const_iterator pos;
 	switch ( role )
 	{
 		case Qt::DisplayRole:
-			pos = devices.begin() + index.row();							
+			
+			pos = devices.begin() + index.row();						
 			return *pos;
 		
 		case Qt::ToolTip:
@@ -60,7 +54,7 @@ QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt
 QVariant QPulseAudioDeviceModel::headerData ( int section, Qt::Orientation orientation, int role ) const
 {
 
-	return QAbstractTableModel::headerData ( section, orientation, role );
+	return QAbstractItemModel::headerData ( section, orientation, role );
 }
 
 int QPulseAudioDeviceModel::rowCount ( const QModelIndex & parent ) const

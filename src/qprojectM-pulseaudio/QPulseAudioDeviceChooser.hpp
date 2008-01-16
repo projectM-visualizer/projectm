@@ -10,7 +10,7 @@ class QPulseAudioDeviceChooser : public QDialog, public Ui::pulseDeviceChooserDi
 	Q_OBJECT
 
 	public:
-		QPulseAudioDeviceChooser(const QHash<int, QString> & devices, QWidget * parent, Qt::WindowFlags f);
+		QPulseAudioDeviceChooser(const QHash<int, QString> & devices, QWidget * parent, Qt::WindowFlags f=0);
 
 	typedef QHash<int, QString> SourceContainer;
 //		QPulseAudioDeviceChooser(QWidget * parent = 0, Qt::WindowFlags f = 0 ) ;
