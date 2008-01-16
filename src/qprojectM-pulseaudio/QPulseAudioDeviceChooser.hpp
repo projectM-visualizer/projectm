@@ -1,25 +1,26 @@
 #ifndef QPULSEAUDIO_DEV_CHOOSER_HPP
 #define QPULSEAUDIO_DEV_CHOOSER_HPP
 #include "ui_PulseDeviceChooserDialog.h"
+#include "QPulseAudioDeviceModel.hpp"
 class QDialog;
 
 
-class QPulseAudioDevChooser : public QDialog, public Ui::pulseDeviceChooserDialog {
+class QPulseAudioDeviceChooser : public QDialog, public Ui::pulseDeviceChooserDialog {
 
 	Q_OBJECT
 
 	public:
+		QPulseAudioDeviceChooser(const QHash<int, QString> & devices, QWidget * parent, Qt::WindowFlags f);
+
 	typedef QHash<int, QString> SourceContainer;
-//		QPulseAudioDevChooser(QWidget * parent = 0, Qt::WindowFlags f = 0 ) ;
-//QPulseAudioDevChooser::QPulseAudioDevChooser(QWidget * parent = 0, Qt::WindowFlags f = 0 ) : QDialog(parent, f) {}
+//		QPulseAudioDeviceChooser(QWidget * parent = 0, Qt::WindowFlags f = 0 ) ;
 
 	public slots:
-		void updateDevice(int index, const QString & name);
-		void removeDevice(int index);
-		void refreshDevices(SourceContainer::const_iterator beginPos,SourceContainer::const_iterator endPos);
-
+		void open();		
 	private slots:
 		void readSettings();
 		void writeSettings();
+	private:
+		QPulseAudioDeviceModel m_qpulseAudioDeviceModel;
 };
 #endif
