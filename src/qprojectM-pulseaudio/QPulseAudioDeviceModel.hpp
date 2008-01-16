@@ -32,15 +32,13 @@
      Q_OBJECT        // must include this if you use Qt signals/slots
 
  public:
-static const int URLInfoRole = Qt::UserRole;
-static const int RatingRole = Qt::UserRole+1;
      QPulseAudioDeviceModel(const QHash<int, QString> & devices, QObject * parent);
      ~QPulseAudioDeviceModel() { }
 
 QModelIndex index(int row, int col, const QModelIndex & parent) const;
 void appendRow (const QString & text, int key);
 void removeRow (int index);
-QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
+//QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 QModelIndex parent(const QModelIndex & parent) const;
 void clear();
 

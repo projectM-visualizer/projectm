@@ -9,11 +9,11 @@ QPulseAudioDeviceModel::QPulseAudioDeviceModel(const QHash<int, QString> & _devi
 }
 
 QModelIndex QPulseAudioDeviceModel::index(int row, int col, const QModelIndex & parent = QModelIndex()) const {
-	return parent.child(row,col);
+	return this->createIndex(row,col);
 }
 
 QModelIndex QPulseAudioDeviceModel::parent(const QModelIndex & parent) const {
-	return QModelIndex();
+	return parent.parent();
 }
 
 void QPulseAudioDeviceModel::updateItemHighlights()
@@ -28,7 +28,7 @@ void QPulseAudioDeviceModel::updateItemHighlights()
 
 QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt::DisplayRole ) const
 {
-	
+		
 	QHash<int, QString>::const_iterator pos;
 	switch ( role )
 	{
@@ -50,15 +50,16 @@ QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt
 			return QVariant();
 	}
 }
-
+/*
 QVariant QPulseAudioDeviceModel::headerData ( int section, Qt::Orientation orientation, int role ) const
 {
 
 	return QAbstractItemModel::headerData ( section, orientation, role );
 }
-
+*/
 int QPulseAudioDeviceModel::rowCount ( const QModelIndex & parent ) const
 {
+
 	return devices.size();
 }
 
