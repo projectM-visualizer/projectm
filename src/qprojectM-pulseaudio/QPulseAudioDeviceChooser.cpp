@@ -20,8 +20,8 @@ this->tryFirstPlayBackMonitorCheckBox->setCheckState
 
 QPulseAudioDeviceChooser::QPulseAudioDeviceChooser(const QHash<int, QString> & devices, QWidget * parent = 0, Qt::WindowFlags f) : QDialog(parent, f), m_qpulseAudioDeviceModel(devices, this) {
 
-	readSettings();
 	setupUi(this);
+	readSettings();
 	this->devicesListView->setModel(&m_qpulseAudioDeviceModel);
 }
 
