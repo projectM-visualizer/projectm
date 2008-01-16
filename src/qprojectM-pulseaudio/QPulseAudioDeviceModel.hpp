@@ -24,10 +24,9 @@
 
 #include <cassert>
 #include "libprojectM/projectM.hpp"
-
 #include <QAbstractTableModel>
 #include <QVector>
-class QXmlStreamReader;
+
  class QPulseAudioDeviceModel : public QAbstractTableModel
  {
      Q_OBJECT        // must include this if you use Qt signals/slots
@@ -35,16 +34,15 @@ class QXmlStreamReader;
  public:
 static const int URLInfoRole = Qt::UserRole;
 static const int RatingRole = Qt::UserRole+1;
-     QPulseAudioDeviceModel(projectM & _projectM, QObject * parent = 0);
+     QPulseAudioDeviceModel(const QHash<int, QString> & devices, QObject * parent);
      ~QPulseAudioDeviceModel() { }
 bool setData(const QModelIndex & index, const QVariant & value, int role=Qt::EditRole);
 
-void appendRow (const QString & text, );
+void appendRow (const QString & text, int key);
 void removeRow (int index);
 QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
 void clear();
-
 
 QVariant data ( const QModelIndex & index, int role) const;
 int rowCount ( const QModelIndex & parent = QModelIndex()) const ;
@@ -54,8 +52,7 @@ void clearItems();
 
 public slots:
 	void updateItemHighlights();
-	
  private:
-	PulseAudioDevChooser::SourceContainer & devices;
+	const QHash<int, QString> & devices;
 };
 #endif

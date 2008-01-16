@@ -96,18 +96,20 @@ int main ( int argc, char*argv[] )
 
 	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow ( config_file );
 	
-	QPulseAudioDeviceChooser devChooser;
+	
 
 	QAction pulseAction("Pulse audio settings...", mainWindow);
 	
-	devChooser.setupUi(&devChooser);
-
-	QApplication::connect(&pulseAction, SIGNAL(triggered()), &devChooser, SLOT(open())); 
+	
       	mainWindow->registerSettingsAction(&pulseAction);
 	mainWindow->show();
 
 	QPulseAudioThread * pulseThread = new QPulseAudioThread(argc, argv, mainWindow->getQProjectM(), mainWindow);
 	
+	QPulseAudioDeviceChooser devChooser(pulseThread->devices(), mainWindow, 0);
+	devChooser.setupUi(&devChooser);
+	QApplication::connect(&pulseAction, SIGNAL(triggered()), &devChooser, SLOT(open())); 
+
 	pulseThread->start();
 	
 	//qDebug() << "app exec";

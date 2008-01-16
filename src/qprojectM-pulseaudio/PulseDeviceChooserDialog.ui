@@ -73,13 +73,13 @@
     <string>Set as default</string>
    </property>
   </widget>
-  <widget class="QListWidget" name="deviceListWidget" >
+  <widget class="QListView" name="devicesListView" >
    <property name="geometry" >
     <rect>
      <x>20</x>
-     <y>40</y>
+     <y>30</y>
      <width>251</width>
-     <height>161</height>
+     <height>171</height>
     </rect>
    </property>
   </widget>
