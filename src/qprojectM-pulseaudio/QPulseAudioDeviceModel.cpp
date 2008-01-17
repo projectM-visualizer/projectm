@@ -3,74 +3,51 @@
 #include <QtDebug>
 #include <QMessageBox>
 
-QPulseAudioDeviceModel::QPulseAudioDeviceModel(const QHash<int, QString> & _devices, QObject * parent = 0):QAbstractItemModel(parent), devices(_devices) {
-
-
-}
-
-QModelIndex QPulseAudioDeviceModel::index(int row, int col, const QModelIndex & parent = QModelIndex()) const {
-	return this->createIndex(row,col);
-}
-
-QModelIndex QPulseAudioDeviceModel::parent(const QModelIndex & parent) const {
-
-	qDebug() << parent.row();
-	return parent.parent();
-}
+QPulseAudioDeviceModel::QPulseAudioDeviceModel(const QHash<int, QString> & _devices, QObject * parent = 0):
+ devices(_devices) {}
 
 void QPulseAudioDeviceModel::updateItemHighlights()
 {
 	if ( rowCount() == 0 )
 		return;
 
-	emit ( dataChanged ( this->index ( 0,0 ), this->index ( rowCount()-1,columnCount()-1 ) ) )
+	emit ( dataChanged ( this->index ( 0,0 ), this->index ( rowCount()-1) ) )
 	;
 }
 
 
 QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt::DisplayRole ) const
 {
+     if (!index.isValid())
+         return QVariant();
 		
-	if (index.column() > 0)
+	if (index.row() >= rowCount())
 		return QVariant();
-	
+
 	QHash<int, QString>::const_iterator pos;
 	qDebug() << "role: " << role;
 	switch ( role )
 	{
 		case Qt::DisplayRole:
-			qDebug() << "role2: " << role;
-			abort();		
-			pos = devices.begin() + index.row();						
+			pos = devices.begin() + index.row();			
 			return *pos;
 		
 		case Qt::ToolTip:
 			return QString("These never show up.");
-		case Qt::DecorationRole:
+		case Qt::DecorationRole:				
 				return QVariant();
-//		case Qt::BackgroundRole:
+		case Qt::BackgroundRole:
 //				return Qt::red;
 //				return Qt::green;
-
-//			return Qt::white;
-		default:
+			return Qt::white;
+		default:			
 			return QVariant();
 	}
 }
 
-int QPulseAudioDeviceModel::rowCount ( const QModelIndex & parent ) const
-{
-
-	return devices.size();
-}
-
-
-int QPulseAudioDeviceModel::columnCount ( const QModelIndex & parent ) const
-{
-	if ( rowCount() > 0 )
-		return 1;
-	else
-		return 0;
+int QPulseAudioDeviceModel::rowCount ( const QModelIndex & parent) const
+{	
+		return devices.count();
 }
 
 

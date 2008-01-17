@@ -82,6 +82,12 @@
      <height>171</height>
     </rect>
    </property>
+   <property name="toolTip" >
+    <string>Double click a sourdevice ce to activate it.</string>
+   </property>
+   <property name="autoFillBackground" >
+    <bool>true</bool>
+   </property>
   </widget>
   <action name="actionTest" >
    <property name="text" >
