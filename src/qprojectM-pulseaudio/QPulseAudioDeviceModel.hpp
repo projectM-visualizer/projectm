@@ -24,10 +24,10 @@
 
 #include <cassert>
 #include "libprojectM/projectM.hpp"
-#include <QAbstractTableModel>
+#include <QAbstractListModel>
 #include <QVector>
 
- class QPulseAudioDeviceModel : public QAbstractItemModel
+ class QPulseAudioDeviceModel : public QAbstractListModel
  {
      Q_OBJECT        // must include this if you use Qt signals/slots
 
@@ -35,18 +35,8 @@
      QPulseAudioDeviceModel(const QHash<int, QString> & devices, QObject * parent);
      ~QPulseAudioDeviceModel() { }
 
-QModelIndex index(int row, int col, const QModelIndex & parent) const;
-void appendRow (const QString & text, int key);
-void removeRow (int index);
-//QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
-QModelIndex parent(const QModelIndex & parent) const;
-void clear();
-
 QVariant data ( const QModelIndex & index, int role) const;
 int rowCount ( const QModelIndex & parent = QModelIndex()) const ;
-int columnCount ( const QModelIndex & parent= QModelIndex()) const ;
-
-void clearItems();
 
 public slots:
 	void updateItemHighlights();
