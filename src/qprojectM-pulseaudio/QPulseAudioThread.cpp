@@ -4,7 +4,7 @@
 #include <QString>
 #include <QVector>
 
-QPulseAudioThread::SourceContainer QPulseAudioThread::sourceList;
+
 
 /* $Id: pacat.c 1426 2007-02-13 15:35:19Z ossman $ */
 
@@ -72,6 +72,7 @@ static pa_channel_map channel_map;
 static int channel_map_set = 0;
 static pa_sample_spec sample_spec ;
 
+QPulseAudioThread::SourceContainer QPulseAudioThread::sourceList;
 
 QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, projectM * _projectM, QObject * parent ) : QThread ( parent ), argc ( _argc ), argv ( _argv ),  m_projectM ( _projectM ), sourceIndex ( -1 ) {
 
@@ -151,20 +152,21 @@ void QPulseAudioThread::connectSource ( int index )
 			return;
 		}
 
-		index = 0;
+		index = -1;
 		for ( SourceContainer::const_iterator pos = sourceList.begin(); pos != sourceList.end(); ++pos )
 		{
+			index++;
 			qDebug() << "Scanning " << *pos;
 			if ( ( *pos).contains ( "monitor" ) )
 			{
 				qDebug() << "connecting to monitor device" << *pos;
 				break;
 			}
-			index++;
-		}
+		}		
 		assert ( !sourceList.empty() );
 	}
 
+	assert (index < sourceList.count());
 	int r;
 	if ( ( ( r = pa_stream_connect_record ( stream, sourceList[index].toStdString().c_str(), NULL, flags ) ) ) < 0 )
 	{

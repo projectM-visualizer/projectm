@@ -96,7 +96,6 @@ int main ( int argc, char*argv[] )
 
 	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow ( config_file );
 	
-	
 
 	QAction pulseAction("Pulse audio settings...", mainWindow);
 	
@@ -119,7 +118,8 @@ int main ( int argc, char*argv[] )
 
         mainWindow->unregisterSettingsAction(&pulseAction);
 
-	delete(mainWindow);
+	/// @bug this blows up the program!
+	//delete(mainWindow);
 	return ret;
 }
 
