@@ -1,5 +1,6 @@
 #include "QPulseAudioDeviceChooser.hpp"
 #include <QSettings>
+#include <QtDebug>
 
 void QPulseAudioDeviceChooser::writeSettings() {
 	
@@ -21,14 +22,15 @@ this->tryFirstPlayBackMonitorCheckBox->setCheckState
 QPulseAudioDeviceChooser::QPulseAudioDeviceChooser(const QHash<int, QString> & devices, QWidget * parent = 0, Qt::WindowFlags f) : QDialog(parent, f), m_qpulseAudioDeviceModel(devices, this) {
 
 	setupUi(this);
-	readSettings();       
+	readSettings();
+	qDebug() << "setting model";
 	this->devicesListView->setModel(&m_qpulseAudioDeviceModel);
 }
 
 void QPulseAudioDeviceChooser::open() {
 	
 	this->show();
-	this->devicesListView->show();
+	//this->devicesListView->show()	
 	
 }
 

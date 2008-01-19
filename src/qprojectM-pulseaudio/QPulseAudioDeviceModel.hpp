@@ -38,8 +38,6 @@
 QVariant data ( const QModelIndex & index, int role) const;
 int rowCount ( const QModelIndex & parent = QModelIndex()) const ;
 
-public slots:
-	void updateItemHighlights();
  private:
 	const QHash<int, QString> & devices;
 };
