@@ -6,7 +6,7 @@
     <x>0</x>
     <y>0</y>
     <width>378</width>
-    <height>280</height>
+    <height>243</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -32,7 +32,7 @@
    <property name="geometry" >
     <rect>
      <x>20</x>
-     <y>250</y>
+     <y>210</y>
      <width>251</width>
      <height>24</height>
     </rect>
@@ -57,22 +57,6 @@
     <string>Select a source device below.</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="saveAsDefaultPushButton" >
-   <property name="geometry" >
-    <rect>
-     <x>20</x>
-     <y>210</y>
-     <width>111</width>
-     <height>29</height>
-    </rect>
-   </property>
-   <property name="toolTip" >
-    <string>Clicking on this means when projectM starts up, it will try to select the active source device to get its sound data.</string>
-   </property>
-   <property name="text" >
-    <string>Set as default</string>
-   </property>
-  </widget>
   <widget class="QListView" name="devicesListView" >
    <property name="geometry" >
     <rect>
@@ -89,30 +73,9 @@
     <bool>true</bool>
    </property>
   </widget>
-  <action name="actionTest" >
-   <property name="text" >
-    <string>test</string>
-   </property>
-  </action>
  </widget>
  <resources/>
  <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>pulseDeviceChooserDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
@@ -125,6 +88,22 @@
     </hint>
     <hint type="destinationlabel" >
      <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>pulseDeviceChooserDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>157</x>
      <y>274</y>
     </hint>
    </hints>
