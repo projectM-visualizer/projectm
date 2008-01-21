@@ -8,7 +8,7 @@ void QPulseAudioDeviceChooser::writeSettings()
 	QSettings settings ( "projectM", "qprojectM-pulseaudio" );
 	settings.setValue ( "tryFirstAvailablePlaybackMonitor",
 	                    this->tryFirstPlayBackMonitorCheckBox->checkState() == Qt::Checked );
-
+	//settings.setValue ("pulseAudioSourceDevice", this->listView.data(
 }
 
 
@@ -52,6 +52,7 @@ QPulseAudioDeviceChooser::QPulseAudioDeviceChooser ( QPulseAudioThread * qpulseA
 
 	connect ( tryFirstPlayBackMonitorCheckBox, SIGNAL(stateChanged(int)), this, SLOT(updateDevicesListViewLock(int)));
 
+	/// @bug wrong! should be based on HASH index, not display index
 	connect ( devicesListView, SIGNAL ( doubleClicked ( const QModelIndex& ) ), _qpulseAudioThread, SLOT ( connectDevice ( const QModelIndex& ) ) );
 	//connect(buttonBox, SIGNAL(accepted()), _qpulseAudioThread, SLOT(connectDevice(device));
 }
