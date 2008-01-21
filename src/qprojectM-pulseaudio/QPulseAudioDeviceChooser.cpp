@@ -2,35 +2,54 @@
 #include <QSettings>
 #include <QtDebug>
 
-void QPulseAudioDeviceChooser::writeSettings() {
-	
-	QSettings settings ( "projectM", "qprojectM-pulseaudio");
-	settings.setValue ( "tryFirstAvailablePlaybackMonitor", 
-		this->tryFirstPlayBackMonitorCheckBox->checkState() == Qt::Checked);	
-	
+void QPulseAudioDeviceChooser::writeSettings()
+{
+
+	QSettings settings ( "projectM", "qprojectM-pulseaudio" );
+	settings.setValue ( "tryFirstAvailablePlaybackMonitor",
+	                    this->tryFirstPlayBackMonitorCheckBox->checkState() == Qt::Checked );
+
 }
 
 
-void QPulseAudioDeviceChooser::readSettings() {
-	
-QSettings settings ( "projectM", "qprojectM-pulseaudio");
+void QPulseAudioDeviceChooser::readSettings()
+{
 
-this->tryFirstPlayBackMonitorCheckBox->setCheckState
-	(settings.value("tryFirstAvailablePlaybackMonitor", true).toBool() ? Qt::Checked : Qt::Unchecked);
+	QSettings settings ( "projectM", "qprojectM-pulseaudio" );
+
+	bool tryFirst = settings.value
+	                ( "tryFirstAvailablePlaybackMonitor", true ).toBool() ;
+
+	this->tryFirstPlayBackMonitorCheckBox->setCheckState
+	( tryFirst ? Qt::Checked : Qt::Unchecked );
+
+	if ( !tryFirst )
+	{
+
+
+	}
+
 }
 
-QPulseAudioDeviceChooser::QPulseAudioDeviceChooser(const QHash<int, QString> & devices, QWidget * parent = 0, Qt::WindowFlags f) : QDialog(parent, f), m_qpulseAudioDeviceModel(devices, this) {
 
-	setupUi(this);
+QPulseAudioDeviceChooser::QPulseAudioDeviceChooser ( QPulseAudioThread * qpulseAudioThread, QWidget * parent = 0, Qt::WindowFlags f ) : QDialog ( parent, f ), _qpulseAudioDeviceModel ( qpulseAudioThread->devices(), this ), _qpulseAudioThread ( qpulseAudioThread )
+{
+
+	setupUi ( this );
 	readSettings();
 	qDebug() << "setting model";
-	this->devicesListView->setModel(&m_qpulseAudioDeviceModel);
+	this->devicesListView->setModel ( &_qpulseAudioDeviceModel );
+
+// void QAbstractItemView::selectionChanged ( const QItemSelection & selected, const QItemSelection & deselected )   [virtual protected slot]
+
+	connect ( devicesListView, SIGNAL ( doubleClicked ( const QModelIndex& ) ), _qpulseAudioThread, SLOT ( connectDevice ( const QModelIndex& ) ) );
+	//connect(buttonBox, SIGNAL(accepted()), _qpulseAudioThread, SLOT(connectDevice(device));
 }
 
-void QPulseAudioDeviceChooser::open() {
-	
+void QPulseAudioDeviceChooser::open()
+{
+
 	this->show();
-	//this->devicesListView->show()	
-	
+
 }
 
