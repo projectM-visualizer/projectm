@@ -105,7 +105,7 @@ int main ( int argc, char*argv[] )
 
 	QPulseAudioThread * pulseThread = new QPulseAudioThread(argc, argv, mainWindow->getQProjectM(), mainWindow);
 	
-	QPulseAudioDeviceChooser devChooser(pulseThread->devices(), mainWindow);
+	QPulseAudioDeviceChooser devChooser(pulseThread, mainWindow);
 	QApplication::connect(&pulseAction, SIGNAL(triggered()), &devChooser, SLOT(open())); 
 	
 	pulseThread->start();

@@ -1,9 +1,10 @@
-#ifndef PULSE_AUDIO_THREAD
+#ifndef QPULSE_AUDIO_THREAD
+#define QPULSE_AUDIO_THREAD
 #include <QObject>
 #include <QTimer>
 #include <QThread>
 #include <QString>
-
+#include <QModelIndex>
 #include <QHash>
 
 extern "C"
@@ -24,7 +25,7 @@ class QPulseAudioThread : public QThread
 		typedef QHash<int, QString> SourceContainer;
 		QPulseAudioThread () {}
 		QPulseAudioThread(int _argc, char **_argv, projectM * projectM, QObject *parent);
-		virtual ~QPulseAudioThread() ;
+		virtual ~QPulseAudioThread();
 		void run();
 		void cleanup();
 
@@ -32,13 +33,20 @@ class QPulseAudioThread : public QThread
 			return sourceList;
 		}
 
+		inline int deviceIndex() {
+			return _deviceIndex;
+		}
+
 	public slots:
 		inline void insertSource(int index, const QString & name) {
 			sourceList[index]= name;
 		}
 
-		void connectSource(int index);
+		void connectDevice(const QModelIndex & index = QModelIndex());		
+
 	private:
+		static int  scanForPlaybackMonitor();
+		static void connectHelper(int index);
 		static void pulseQuit ( int ret );
 		static void stream_read_callback ( pa_stream *s, size_t length, void *userdata );
 		static void stream_state_callback ( pa_stream *s, void *userdata );
@@ -56,7 +64,7 @@ class QPulseAudioThread : public QThread
 		
 
 		static SourceContainer sourceList;
-		int sourceIndex;
+		int _deviceIndex;
 		int argc;
 		char ** argv;
 		projectM * m_projectM;

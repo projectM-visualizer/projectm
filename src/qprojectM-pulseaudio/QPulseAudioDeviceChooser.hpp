@@ -2,6 +2,8 @@
 #define QPULSEAUDIO_DEV_CHOOSER_HPP
 #include "ui_PulseDeviceChooserDialog.h"
 #include "QPulseAudioDeviceModel.hpp"
+#include "QPulseAudioThread.hpp"
+
 class QDialog;
 
 
@@ -10,7 +12,7 @@ class QPulseAudioDeviceChooser : public QDialog, public Ui::pulseDeviceChooserDi
 	Q_OBJECT
 
 	public:
-		QPulseAudioDeviceChooser(const QHash<int, QString> & devices, QWidget * parent, Qt::WindowFlags f=0);
+		QPulseAudioDeviceChooser(QPulseAudioThread * pulseAudioThread, QWidget * parent, Qt::WindowFlags f=0);
 
 	typedef QHash<int, QString> SourceContainer;
 	public slots:
@@ -19,6 +21,7 @@ class QPulseAudioDeviceChooser : public QDialog, public Ui::pulseDeviceChooserDi
 		void readSettings();
 		void writeSettings();
 	private:
-		QPulseAudioDeviceModel m_qpulseAudioDeviceModel;
+		QPulseAudioDeviceModel _qpulseAudioDeviceModel;
+		QPulseAudioThread * _qpulseAudioThread;
 };
 #endif
