@@ -45,9 +45,11 @@ class QPulseAudioThread : public QThread
 		void connectDevice(const QModelIndex & index = QModelIndex());		
 
 	private:
+		static void reconnect(const QModelIndex & index);
 		static int  scanForPlaybackMonitor();
 		static void connectHelper(int index);
 		static void pulseQuit ( int ret );
+		static void stream_moved_callback(pa_stream *s, void *userdata);
 		static void stream_read_callback ( pa_stream *s, size_t length, void *userdata );
 		static void stream_state_callback ( pa_stream *s, void *userdata );
 		static void context_state_callback ( pa_context *c, void *userdata );
