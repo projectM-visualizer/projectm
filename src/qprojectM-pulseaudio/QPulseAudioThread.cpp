@@ -146,7 +146,7 @@ void QPulseAudioThread::connectHelper ( int index )
 	pa_stream_flags_t flags = ( pa_stream_flags_t ) 0;
 
 	int r;
-
+	qDebug() << "connectHelper(" << index << ")";
 	if ( ( ( r = pa_stream_connect_record ( stream, sourceList[index].toStdString().c_str(), NULL, flags ) ) ) < 0 )
 	{
 		fprintf ( stderr, "pa_stream_connect_record() failed: %s\n", pa_strerror ( pa_context_errno ( context ) ) );
@@ -156,16 +156,16 @@ void QPulseAudioThread::connectHelper ( int index )
 
 int QPulseAudioThread::scanForPlaybackMonitor() {
 
-		int count = -1;
-		for ( SourceContainer::const_iterator pos = sourceList.begin(); pos != sourceList.end(); ++pos )
+	int count = -1;
+	for ( SourceContainer::const_iterator pos = sourceList.begin(); pos != sourceList.end(); ++pos )
+	{
+		count++;
+		qDebug() << "Scanning " << *pos;
+		if ( ( *pos ).contains ( "monitor" ) )
 		{
-			count++;
-			qDebug() << "Scanning " << *pos;
-			if ( ( *pos ).contains ( "monitor" ) )
-			{
-				return  count;
-			}
+			return  count;
 		}
+	}
 
 	/// @bug return value sucks. think
 	return 0;
@@ -174,13 +174,17 @@ int QPulseAudioThread::scanForPlaybackMonitor() {
 
 void QPulseAudioThread::connectDevice ( const QModelIndex & index )
 {
+	reconnect(index);
+}
+
+void QPulseAudioThread::reconnect(const QModelIndex & index = QModelIndex()) {
+
+	int _deviceIndex;
 
 	if (index.isValid())
 		_deviceIndex = index.row();
 	else 
 		_deviceIndex = scanForPlaybackMonitor();
-
-	qDebug() << "connect device: " << _deviceIndex;
 
 	if (stream && (pa_stream_get_state(stream) == PA_STREAM_READY))
 	{
@@ -191,7 +195,16 @@ void QPulseAudioThread::connectDevice ( const QModelIndex & index )
 		
 	}
 
-	assert(context);	
+	if ( ! ( stream = pa_stream_new ( context, stream_name, &sample_spec, channel_map_set ? &channel_map : NULL ) ) )
+			{
+				fprintf ( stderr, "pa_stream_new() failed: %s\n", pa_strerror ( pa_context_errno ( context ) ) );
+				return;
+	}
+
+	pa_stream_set_state_callback 
+		( stream, stream_state_callback, &sourceList );
+	pa_stream_set_read_callback ( stream, stream_read_callback, &sourceList );
+ 	pa_stream_set_moved_callback(stream, stream_moved_callback, &sourceList );
 
 switch (pa_stream_get_state(stream)) {
 	case PA_STREAM_UNCONNECTED:// 	The stream is not yet connected to any sink or source.
@@ -201,8 +214,6 @@ switch (pa_stream_get_state(stream)) {
 case PA_STREAM_CREATING 	://The stream is being created.
 	break;
 case PA_STREAM_READY ://	The stream is established, you may pass audio data to it now.
-	connectHelper(_deviceIndex);
-
 	qDebug() << "stream is still ready, waiting for callback...";
 	break;
 case PA_STREAM_FAILED ://	An error occured that made the stream invalid.
@@ -211,13 +222,9 @@ case PA_STREAM_FAILED ://	An error occured that made the stream invalid.
 case PA_STREAM_TERMINATED:// 	The stream has been terminated cleanly.
 	qDebug() << "terminated...";
 	break;
-}
-	
-
-
 
 }
-
+}
 
 /* A shortcut for terminating the application */
 void QPulseAudioThread::pulseQuit ( int ret )
@@ -303,7 +310,7 @@ void QPulseAudioThread::stream_state_callback ( pa_stream *s, void *userdata )
 }
 
 
-static void stream_moved_callback(pa_stream *s, void *userdata) {
+void QPulseAudioThread::stream_moved_callback(pa_stream *s, void *userdata) {
     assert(s);
 
     if (verbose)
@@ -325,25 +332,24 @@ void QPulseAudioThread::context_state_callback ( pa_context *c, void *userdata )
 		case PA_CONTEXT_READY:
 		{
 			int r;
-
 		
 			assert ( c && !stream );
 
 			if ( verbose )
 				fprintf ( stderr, "Connection established.\n" );
-			
-
+			/*
 			if ( ! ( stream = pa_stream_new ( c, stream_name, &sample_spec, channel_map_set ? &channel_map : NULL ) ) )
 			{
 				fprintf ( stderr, "pa_stream_new() failed: %s\n", pa_strerror ( pa_context_errno ( c ) ) );
 				goto fail;
 			}
-
+*/
 			initialize_callbacks ( ( QPulseAudioThread * ) userdata );
 
-			pa_stream_set_state_callback ( stream, stream_state_callback, userdata );
-			pa_stream_set_read_callback ( stream, stream_read_callback, userdata );
- 			pa_stream_set_moved_callback(stream, stream_moved_callback, userdata);
+//			pa_stream_set_state_callback 
+//				( stream, stream_state_callback, userdata );
+//			pa_stream_set_read_callback ( stream, stream_read_callback, userdata );
+ //			pa_stream_set_moved_callback(stream, stream_moved_callback, userdata );
 			break;
 		}
 
@@ -456,7 +462,10 @@ void QPulseAudioThread::pa_source_info_callback ( pa_context *c, const pa_source
 	{
 		qDebug() << "End of device list";
 		assert ( eol );
-		pulseThread->connectDevice ();
+
+ 		reconnect();
+
+		//pulseThread->connectDevice ();
 	}
 
 }
