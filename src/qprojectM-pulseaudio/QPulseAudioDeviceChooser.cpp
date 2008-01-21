@@ -23,12 +23,20 @@ void QPulseAudioDeviceChooser::readSettings()
 	this->tryFirstPlayBackMonitorCheckBox->setCheckState
 	( tryFirst ? Qt::Checked : Qt::Unchecked );
 
-	if ( !tryFirst )
-	{
-
-
+	if ( tryFirst )
+	{	
+		this->devicesListView->setEnabled(false);
+	} else {
+		this->devicesListView->setEnabled(true);
 	}
+	
 
+}
+
+
+void QPulseAudioDeviceChooser::updateDevicesListViewLock(int state) {	
+		devicesListView->setEnabled(state != Qt::Checked);
+	
 }
 
 
@@ -41,6 +49,8 @@ QPulseAudioDeviceChooser::QPulseAudioDeviceChooser ( QPulseAudioThread * qpulseA
 	this->devicesListView->setModel ( &_qpulseAudioDeviceModel );
 
 // void QAbstractItemView::selectionChanged ( const QItemSelection & selected, const QItemSelection & deselected )   [virtual protected slot]
+
+	connect ( tryFirstPlayBackMonitorCheckBox, SIGNAL(stateChanged(int)), this, SLOT(updateDevicesListViewLock(int)));
 
 	connect ( devicesListView, SIGNAL ( doubleClicked ( const QModelIndex& ) ), _qpulseAudioThread, SLOT ( connectDevice ( const QModelIndex& ) ) );
 	//connect(buttonBox, SIGNAL(accepted()), _qpulseAudioThread, SLOT(connectDevice(device));
