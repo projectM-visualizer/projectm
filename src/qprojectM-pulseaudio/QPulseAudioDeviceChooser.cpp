@@ -45,16 +45,14 @@ QPulseAudioDeviceChooser::QPulseAudioDeviceChooser ( QPulseAudioThread * qpulseA
 
 	setupUi ( this );
 	readSettings();
-	qDebug() << "setting model";
 	this->devicesListView->setModel ( &_qpulseAudioDeviceModel );
-
-// void QAbstractItemView::selectionChanged ( const QItemSelection & selected, const QItemSelection & deselected )   [virtual protected slot]
 
 	connect ( tryFirstPlayBackMonitorCheckBox, SIGNAL(stateChanged(int)), this, SLOT(updateDevicesListViewLock(int)));
 
 	/// @bug wrong! should be based on HASH index, not display index
+	/// @bug wait! it's ok because we are piping the text, not the device index to the connect method!
 	connect ( devicesListView, SIGNAL ( doubleClicked ( const QModelIndex& ) ), _qpulseAudioThread, SLOT ( connectDevice ( const QModelIndex& ) ) );
-	//connect(buttonBox, SIGNAL(accepted()), _qpulseAudioThread, SLOT(connectDevice(device));
+	
 }
 
 void QPulseAudioDeviceChooser::open()
