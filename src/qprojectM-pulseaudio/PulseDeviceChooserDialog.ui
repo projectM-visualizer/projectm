@@ -75,9 +75,14 @@ p, li { white-space: pre-wrap; }
    <property name="autoFillBackground" >
     <bool>true</bool>
    </property>
+   <property name="viewMode" >
+    <enum>QListView::ListMode</enum>
+   </property>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="DeviceChooser.qrc" />
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

@@ -11,12 +11,24 @@ QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt
 	if (!index.isValid())
          return QVariant();
 
+	if (index.row() >= rowCount())
+		return QVariant();
+
 	QHash<int, QString>::const_iterator pos;
 	switch ( role )
 	{
 		case Qt::DisplayRole:
 			pos = devices.begin() + index.row();			
 			return *pos;
+		case Qt::DecorationRole:
+		{
+			QIcon icon(":/check.png");
+			return icon;		
+			break;
+		
+		}
+		case Qt::BackgroundRole:
+									
 		default:			
 			
 			return QVariant();

@@ -40,5 +40,6 @@ int rowCount ( const QModelIndex & parent = QModelIndex()) const ;
 
  private:
 	const QHash<int, QString> & devices;
+	int activeDeviceIndex;
 };
 #endif
