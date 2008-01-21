@@ -16,6 +16,7 @@ class QPulseAudioDeviceChooser : public QDialog, public Ui::pulseDeviceChooserDi
 
 	typedef QHash<int, QString> SourceContainer;
 	public slots:
+		void updateDevicesListViewLock(int state);
 		void open();		
 	private slots:
 		void readSettings();
