@@ -30,24 +30,31 @@ class QPulseAudioThread : public QThread
 		void cleanup();
 
 		inline const SourceContainer & devices() {
-			return sourceList;
+			return s_sourceList;
 		}
+		void writeSettings();
 
-		inline int deviceIndex() {
-			return _deviceIndex;
+		inline const SourceContainer::const_iterator & sourcePosition() {
+			return s_sourcePosition;
 		}
 
 	public slots:
 		inline void insertSource(int index, const QString & name) {
-			sourceList[index]= name;
+			s_sourceList[index] = name;
 		}
 
 		void connectDevice(const QModelIndex & index = QModelIndex());		
 
+	signals:
+		void deviceChanged();
 	private:
-		static void reconnect(const QModelIndex & index);
-		static int  scanForPlaybackMonitor();
-		static void connectHelper(int index);
+		
+		static SourceContainer::const_iterator readSettings();
+
+		static void reconnect(SourceContainer::const_iterator pos);
+		
+		static SourceContainer::const_iterator scanForPlaybackMonitor();
+		static void connectHelper (SourceContainer::const_iterator pos);
 		static void pulseQuit ( int ret );
 		static void stream_moved_callback(pa_stream *s, void *userdata);
 		static void stream_read_callback ( pa_stream *s, size_t length, void *userdata );
@@ -65,8 +72,8 @@ class QPulseAudioThread : public QThread
 		static void time_event_callback ( pa_mainloop_api*m, pa_time_event *e, const struct timeval *tv, void *userdata );
 		
 
-		static SourceContainer sourceList;
-		int _deviceIndex;
+		static SourceContainer s_sourceList;
+		static SourceContainer::const_iterator s_sourcePosition;
 		int argc;
 		char ** argv;
 		projectM * m_projectM;
