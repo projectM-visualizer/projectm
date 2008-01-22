@@ -25,21 +25,26 @@
 #include <cassert>
 #include "libprojectM/projectM.hpp"
 #include <QAbstractListModel>
-#include <QVector>
+#include <QHash>
 
  class QPulseAudioDeviceModel : public QAbstractListModel
  {
      Q_OBJECT        // must include this if you use Qt signals/slots
 
+	 public slots:
+		 void updateItemHighlights();
+
  public:
-     QPulseAudioDeviceModel(const QHash<int, QString> & devices, QObject * parent);
+     QPulseAudioDeviceModel(const QHash<int, QString> & devices, const QHash<int,QString>::const_iterator & devicePosition , QObject * parent);
      ~QPulseAudioDeviceModel() { }
+     
+     
 
 QVariant data ( const QModelIndex & index, int role) const;
 int rowCount ( const QModelIndex & parent = QModelIndex()) const ;
 
  private:
-	const QHash<int, QString> & devices;
-	int activeDeviceIndex;
+	const QHash<int, QString> & _devices;
+ 	const QHash<int, QString>::const_iterator & _devicePosition;
 };
 #endif

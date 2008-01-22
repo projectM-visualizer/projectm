@@ -2,9 +2,19 @@
 #include <QIcon>
 #include <QtDebug>
 #include <QMessageBox>
+#include <QHash>
 
-QPulseAudioDeviceModel::QPulseAudioDeviceModel(const QHash<int, QString> & _devices, QObject * parent = 0):
- devices(_devices) {}
+     QPulseAudioDeviceModel::QPulseAudioDeviceModel(const QHash<int, QString> & devices, const QHash<int,QString>::const_iterator & devicePosition, QObject * parent): _devices(devices), _devicePosition(devicePosition) {
+	
+     }
+     
+     void QPulseAudioDeviceModel::updateItemHighlights()
+     {
+	     if ( rowCount() == 0 )
+		     return;
+
+	     emit ( dataChanged ( this->index (0), this->index ( rowCount()-1 ) ));			     
+     }
 
 QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt::DisplayRole ) const
 {
@@ -18,7 +28,7 @@ QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt
 	switch ( role )
 	{
 		case Qt::DisplayRole:
-			pos = devices.begin() + index.row();			
+			pos = _devices.begin() + index.row();			
 			return *pos;
 		case Qt::DecorationRole:
 		{
@@ -28,7 +38,11 @@ QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt
 		
 		}
 		case Qt::BackgroundRole:
-									
+			if (_devicePosition == _devices.begin() + index.row()) {
+				return Qt::green;										
+			} else {
+				return Qt::white;
+			}						
 		default:			
 			
 			return QVariant();
@@ -38,7 +52,7 @@ QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt
 int QPulseAudioDeviceModel::rowCount ( const QModelIndex & parent) const
 {
 		
-		return devices.count();
+		return _devices.count();
 }
 
 
