@@ -112,7 +112,7 @@ int main ( int argc, char*argv[] )
 	
 	//qDebug() << "app exec";
  	int ret = app.exec();
-
+	devChooser.writeSettings();
 	pulseThread->exit();
 	pulseThread->cleanup();
 

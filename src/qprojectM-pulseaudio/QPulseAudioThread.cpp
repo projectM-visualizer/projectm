@@ -72,11 +72,14 @@ static pa_channel_map channel_map;
 static int channel_map_set = 0;
 static pa_sample_spec sample_spec ;
 
-QPulseAudioThread::SourceContainer QPulseAudioThread::sourceList;
+QPulseAudioThread::SourceContainer QPulseAudioThread::s_sourceList;
+QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::s_sourcePosition;
 
-QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, projectM * _projectM, QObject * parent ) : QThread ( parent ), argc ( _argc ), argv ( _argv ),  m_projectM ( _projectM ), _deviceIndex ( -1 )
+#include <QSettings>
+			 
+QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, projectM * _projectM, QObject * parent ) : QThread ( parent ), argc ( _argc ), argv ( _argv ),  m_projectM ( _projectM )
 {
-
+			
 }
 
 
@@ -85,10 +88,36 @@ QPulseAudioThread::~QPulseAudioThread()
 
 }
 
-void QPulseAudioThread::cleanup()
+QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::readSettings()
 {
 
-	_deviceIndex = -1;
+	QSettings settings ( "projectM", "qprojectM-pulseaudio" );
+
+	bool tryFirst = settings.value
+			( "tryFirstAvailablePlaybackMonitor", true ).toBool() ;
+
+	if ( tryFirst )
+	{
+		qDebug() << "try first is true";
+		return s_sourceList.end();
+	} else {
+		qDebug() << "try first is false";
+		QString deviceName = settings.value("pulseAudioDeviceName", QString()).toString();
+		
+		qDebug() << "device name is " << deviceName;
+		for (SourceContainer::const_iterator pos = s_sourceList.begin(); 
+				   pos != s_sourceList.end(); ++pos) {
+			if (*pos == deviceName) {
+				return pos;
+			}
+		}	
+	}
+	return s_sourceList.end();
+}
+
+void QPulseAudioThread::cleanup()
+{
+	
 	pa_threaded_mainloop_stop ( mainloop );
 
 	if ( stream )
@@ -139,53 +168,66 @@ void QPulseAudioThread::cleanup()
 	return ;
 }
 
-void QPulseAudioThread::connectHelper ( int index )
-{
-
+void QPulseAudioThread::connectHelper (SourceContainer::const_iterator pos)
+{	
 	assert(stream);
 	pa_stream_flags_t flags = ( pa_stream_flags_t ) 0;
-
+//	qDebug() << "start2 ";
+	assert (pos != s_sourceList.end());
+	qDebug() << "connectHelper: " << *pos;
 	int r;
-	qDebug() << "connectHelper(" << index << ")";
-	if ( ( ( r = pa_stream_connect_record ( stream, sourceList[index].toStdString().c_str(), NULL, flags ) ) ) < 0 )
+	if ( ( ( r = pa_stream_connect_record (stream, (*pos).toStdString().c_str(), NULL, flags ) ) ) < 0 )
 	{
 		fprintf ( stderr, "pa_stream_connect_record() failed: %s\n", pa_strerror ( pa_context_errno ( context ) ) );
 	}
 
+
 }
 
-int QPulseAudioThread::scanForPlaybackMonitor() {
+QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::scanForPlaybackMonitor() {
 
-	int count = -1;
-	for ( SourceContainer::const_iterator pos = sourceList.begin(); pos != sourceList.end(); ++pos )
+	for ( SourceContainer::const_iterator pos = s_sourceList.begin(); pos != s_sourceList.end(); ++pos )
 	{
-		count++;
-		qDebug() << "Scanning " << *pos;
 		if ( ( *pos ).contains ( "monitor" ) )
 		{
-			return  count;
+			return pos;
 		}
 	}
-
-	/// @bug return value sucks. think
-	return 0;
+	
+	return s_sourceList.end();
 	
 }
 
 void QPulseAudioThread::connectDevice ( const QModelIndex & index )
-{
-	reconnect(index);
+{	
+	
+	if (index.isValid())
+		reconnect(s_sourceList.begin() + index.row());
+	else
+		reconnect(s_sourceList.end());
+	
+	deviceChanged();
 }
 
-void QPulseAudioThread::reconnect(const QModelIndex & index = QModelIndex()) {
+void QPulseAudioThread::reconnect(SourceContainer::const_iterator pos = s_sourceList.end()) {
 
-	int _deviceIndex;
-
-	if (index.isValid())
-		_deviceIndex = index.row();
+	qDebug() << "reconnect";
+	
+	if (s_sourceList.empty())
+			return;
+	
+	if (pos != s_sourceList.end()) {
+		qDebug() << "MATCH";
+		s_sourcePosition = pos;
+		qDebug() << "reconnecting with" << *pos;
+	}
 	else 
-		_deviceIndex = scanForPlaybackMonitor();
+		s_sourcePosition = scanForPlaybackMonitor();
 
+	if (s_sourcePosition == s_sourceList.end()) {
+		s_sourcePosition = s_sourceList.begin();
+	}
+				
 	if (stream && (pa_stream_get_state(stream) == PA_STREAM_READY))
 	{
 		//qDebug() << "disconnect";			
@@ -202,14 +244,14 @@ void QPulseAudioThread::reconnect(const QModelIndex & index = QModelIndex()) {
 	}
 
 	pa_stream_set_state_callback 
-		( stream, stream_state_callback, &sourceList );
-	pa_stream_set_read_callback ( stream, stream_read_callback, &sourceList );
- 	pa_stream_set_moved_callback(stream, stream_moved_callback, &sourceList );
+		( stream, stream_state_callback, &s_sourceList );
+	pa_stream_set_read_callback ( stream, stream_read_callback, &s_sourceList );
+ 	pa_stream_set_moved_callback(stream, stream_moved_callback, &s_sourceList );
 
 switch (pa_stream_get_state(stream)) {
 	case PA_STREAM_UNCONNECTED:// 	The stream is not yet connected to any sink or source.
-	qDebug() << "unconnected: connecting...";	
-	connectHelper(_deviceIndex);
+	qDebug() << "unconnected: connecting...";		
+	connectHelper(s_sourcePosition);
 	break;
 case PA_STREAM_CREATING 	://The stream is being created.
 	break;
@@ -278,16 +320,16 @@ void QPulseAudioThread::stream_state_callback ( pa_stream *s, void *userdata )
 	switch ( pa_stream_get_state ( s ) )
 	{
 		case PA_STREAM_UNCONNECTED:
-			qDebug() << "UNCONNECTED";
+//			qDebug() << "UNCONNECTED";
 			break;
 		case PA_STREAM_CREATING:
-			qDebug() << "CREATED";
+//			qDebug() << "CREATED";
 			break;
 		case PA_STREAM_TERMINATED:
-			qDebug() << "TERMINATED";
+//			qDebug() << "TERMINATED";
 			break;
 		case PA_STREAM_READY:
-			qDebug() << "READY";
+//			qDebug() << "READY";
 			if ( verbose )
 			{
 				const pa_buffer_attr *a;
@@ -459,12 +501,11 @@ void QPulseAudioThread::pa_source_info_callback ( pa_context *c, const pa_source
 	}
 
 	else
-	{
-		qDebug() << "End of device list";
+	{		
 		assert ( eol );
 
- 		reconnect();
-
+		SourceContainer::const_iterator pos = readSettings();
+ 		reconnect(pos);
 		//pulseThread->connectDevice ();
 	}
 
@@ -536,7 +577,7 @@ void QPulseAudioThread::run()
 	sample_spec.channels = 2;
 	pa_context_flags_t flags = ( pa_context_flags_t ) 0;
 
-	verbose = 1;
+	verbose = 0;
 
 	if ( !pa_sample_spec_valid ( &sample_spec ) )
 	{
@@ -602,7 +643,7 @@ void QPulseAudioThread::run()
 		goto quit;
 	}
 
-	pa_context_set_state_callback ( context, context_state_callback, &sourceList );
+	pa_context_set_state_callback ( context, context_state_callback, &s_sourceList );
 	pa_context_connect ( context, server, flags, NULL );
 
 	if ( verbose )

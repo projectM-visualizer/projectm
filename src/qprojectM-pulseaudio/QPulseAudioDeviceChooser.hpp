@@ -18,9 +18,10 @@ class QPulseAudioDeviceChooser : public QDialog, public Ui::pulseDeviceChooserDi
 	public slots:
 		void updateDevicesListViewLock(int state);
 		void open();		
+		void writeSettings();
 	private slots:
 		void readSettings();
-		void writeSettings();
+
 	private:
 		QPulseAudioDeviceModel _qpulseAudioDeviceModel;
 		QPulseAudioThread * _qpulseAudioThread;
