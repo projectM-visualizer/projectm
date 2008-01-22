@@ -506,7 +506,6 @@ void QPulseAudioThread::pa_source_info_callback ( pa_context *c, const pa_source
 
 		SourceContainer::const_iterator pos = readSettings();
  		reconnect(pos);
-		//pulseThread->connectDevice ();
 	}
 
 }
@@ -514,18 +513,31 @@ void QPulseAudioThread::pa_source_info_callback ( pa_context *c, const pa_source
 void QPulseAudioThread::subscribe_callback ( struct pa_context *c, enum pa_subscription_event_type t, uint32_t index, void *userdata )
 {
 
+	QPulseAudioThread * thread = static_cast<QPulseAudioThread *>(userdata);
 	switch ( t & PA_SUBSCRIPTION_EVENT_FACILITY_MASK )
 	{
 		case PA_SUBSCRIPTION_EVENT_SINK:
 			break;
-		case PA_SUBSCRIPTION_EVENT_SOURCE:
-			if ( ( t & PA_SUBSCRIPTION_EVENT_TYPE_MASK ) == PA_SUBSCRIPTION_EVENT_REMOVE )
-				;//si->removeSourceOutputInfo(index);
+		case PA_SUBSCRIPTION_EVENT_SOURCE: 
+		{
+			if ( ( t & PA_SUBSCRIPTION_EVENT_TYPE_MASK ) == PA_SUBSCRIPTION_EVENT_REMOVE ) {
+				qDebug() << "Warning! untested code. email carmelo.piccione@gmail.com if it explodes";
+				SourceContainer::const_iterator pos = s_sourceList.find(index);
+				if (pos == s_sourcePosition) {
+					s_sourceList.remove(index);
+					reconnect();
+					thread->deviceChanged();
+				} else {
+					s_sourceList.remove(index);				
+					thread->deviceChanged();
+				}
+			}
 			else
 			{
 				pa_operation_unref ( pa_context_get_source_info_by_index ( context, index, pa_source_info_callback, userdata ) );
 			}
 			break;
+		}
 		case PA_SUBSCRIPTION_EVENT_MODULE:
 			break;
 		case PA_SUBSCRIPTION_EVENT_CLIENT:
