@@ -64,18 +64,15 @@
 
 
 
-double presetDuration = 15;
-double smoothDuration = 5;
-//int smoothFrame = 0;
-int oldFrame = 1;
-
-DLLEXPORT projectM::projectM ( int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url,std::string title_fonturl, std::string title_menuurl ) :beatDetect ( 0 ),  renderer ( 0 ), presetURL ( preset_url ),   title_fontURL ( title_fonturl ), menu_fontURL ( menu_fontURL ), smoothFrame ( 0 ), m_presetQueuePos(0)
+/*
+DLLEXPORT projectM::projectM ( int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url,std::string title_fonturl, std::string title_menuurl ) :beatDetect ( 0 ),  renderer ( 0 ), settings.presetURL ( preset_url ), title_fontURL ( title_fonturl ), menu_fontURL ( menu_fontURL ), smoothFrame ( 0 ), m_presetQueuePos(0)
 {
 	presetURL = preset_url;
 	projectM_reset();
 	projectM_init ( gx, gy, fps, texsize, width, height );
 	projectM_resetGL ( width, height );
 }
+*/
 
 projectM::~projectM()
 {
@@ -101,7 +98,7 @@ DLLEXPORT void projectM::projectM_resetTextures()
 }
 
 DLLEXPORT  projectM::projectM ( std::string config_file ) :
-		beatDetect ( 0 ), renderer ( 0 ), smoothFrame ( 0 ),m_presetQueuePos(0)
+		beatDetect ( 0 ), renderer ( 0 ), smoothFrame ( 0 ), m_presetQueuePos(0), oldFrame(1)
 {
 
 	projectM_reset();
@@ -114,28 +111,33 @@ void projectM::readConfig ( std::string config_file )
 
 	ConfigFile config ( config_file );
 
-	int gx = config.read<int> ( "Mesh X", 32 );
-	int gy = config.read<int> ( "Mesh Y", 24 );
-	int texsize = config.read<int> ( "Texsize", 512 );
-	int fps = config.read<int> ( "FPS", 35 );
-	int wvw = config.read<int> ( "Window Width", 512 );
-	int wvh = config.read<int> ( "Window Height", 512 );
-	smoothDuration = config.read<int> ( "Smooth Transition Duration", 5 );
-	presetDuration = config.read<int> ( "Preset Duration", 15 );
+	_settings.meshX = config.read<int> ( "Mesh X", 32 );
+	_settings.meshY = config.read<int> ( "Mesh Y", 24 );
+	_settings.textureSize = config.read<int> ( "Texsize", 512 );
+	_settings.fps = config.read<int> ( "FPS", 35 );
+	_settings.windowWidth  = config.read<int> ( "Window Width", 512 );
+	_settings.windowHeight = config.read<int> ( "Window Height", 512 );
+	_settings.smoothPresetDuration =  config.read<int> 
+			( "Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 10));
+	_settings.presetDuration = config.read<int> ( "Preset Duration", 15 );
+	_settings.presetURL = config.read<string> ( "Preset Path", CMAKE_INSTALL_PREFIX "/share/projectM/presets" );
+	_settings.titleFontURL = config.read<string> 
+			( "Title Font", CMAKE_INSTALL_PREFIX "/share/projectM/fonts/Vera.ttf" );
+	_settings.menuFontURL = config.read<string> 
+			( "Menu Font", CMAKE_INSTALL_PREFIX "/share/projectM/fonts/VeraMono.ttf" );
+	
+	 projectM_init ( _settings.meshX, _settings.meshY, _settings.fps,
+			 _settings.textureSize, _settings.windowWidth,_settings.windowHeight);
 
+	
+	 _settings.beatSensitivity = beatDetect->beat_sensitivity = config.read<float> ( "Hard Cut Sensitivity", 10.0 );
+	
+	if ( config.read ( "Aspect Correction", true ) )
+		_settings.aspectCorrection = renderer->correction = 1;	
+	else 
+		_settings.aspectCorrection = renderer->correction = 0;
 
-	presetURL = config.read<string> ( "Preset Path", CMAKE_INSTALL_PREFIX "/share/projectM/presets" );
-
-	title_fontURL = config.read<string> ( "Title Font", CMAKE_INSTALL_PREFIX "/share/projectM/fonts/Vera.ttf" );
-	menu_fontURL = config.read<string> ( "Menu Font", CMAKE_INSTALL_PREFIX "/share/projectM/fonts/VeraMono.ttf" );
-
-	projectM_init ( gx, gy, fps, texsize, wvw, wvh );
-
-	beatDetect->beat_sensitivity = config.read<float> ( "Hard Cut Sensitivity", 10.0 );
-	if ( config.read ( "Aspect Correction", true ) ) renderer->correction = 1;
-	else renderer->correction = 0;
-
-	projectM_resetGL ( wvw, wvh );
+	projectM_resetGL ( _settings.windowWidth, _settings.windowHeight);
 }
 
 
@@ -184,6 +186,9 @@ DLLEXPORT void projectM::renderFrame()
 	presetInputs.mid_att = beatDetect->mid_att;
 	presetInputs.treb_att = beatDetect->treb_att;
 
+
+	m_activePreset->evaluateFrame();
+
 	assert ( m_activePreset.get() );
 
 	m_activePreset->evaluateFrame();
@@ -208,7 +213,7 @@ DLLEXPORT void projectM::renderFrame()
 			//renderer->setPresetName ( m_activePreset2->presetName() );
 
 			//nohard=(int)(presetInputs.fps*3.5);
-			smoothFrame = ( int ) ( presetInputs.fps * smoothDuration );
+			smoothFrame = ( int ) ( presetInputs.fps * _settings.smoothPresetDuration);
 			presetSwitchedEvent(false, **m_presetPos);
 //              printf("SOFT CUT - Smooth started\n");
 		}
@@ -255,7 +260,7 @@ DLLEXPORT void projectM::renderFrame()
 
 		//double pos = -((smoothFrame / (presetInputs.fps * smoothDuration))-1);
 		//double ratio = 1/(1 + exp((pos-0.5)*4*M_PI));
-		double ratio = smoothFrame / ( presetInputs.fps * smoothDuration );
+		double ratio = smoothFrame / ( presetInputs.fps * settings().smoothPresetDuration);
 		// printf("f(%f)=%f\n",pos, ratio);
 		PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),ratio,presetInputs.gx, presetInputs.gy );
 
@@ -490,7 +495,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	else mspf = 0;
 
 
-	this->avgtime= ( int ) ( this->presetInputs.fps*presetDuration );
+	this->avgtime= ( int ) ( this->presetInputs.fps*settings().presetDuration);
 
 
 
@@ -498,7 +503,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	this->presetInputs.gx = gx;
 	this->presetInputs.gy = gy;
 
-	this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, presetURL, title_fontURL, menu_fontURL );
+	this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
 
 
 	renderer->setPresetName ( m_activePreset->presetName() );
@@ -769,7 +774,7 @@ int projectM::initPresetTools()
 	/* Set the seed to the current time in seconds */
 	srand ( time ( NULL ) );
 
-	if ( ( m_presetLoader = new PresetLoader ( presetURL ) ) == 0 )
+	if ( ( m_presetLoader = new PresetLoader ( settings().presetURL ) ) == 0 )
 	{
 		m_presetLoader = 0;
 		std::cerr << "[projectM] error allocating preset loader" << std::endl;
@@ -847,12 +852,39 @@ void projectM::destroyPresetTools()
 
 }
 
-
+/// @bug queuePreset case isn't handled
 void projectM::removePreset(unsigned int index) {
+//	bool iteratorToEnd = false;
+
+//	if (index == selectedPresetIndex());
+//		iteratorToEnd = true;		
+//	else if (index < selectedPresetIndex())
+//		m_presetPos = sele
+
+	int chooserIndex = **m_presetPos;
+
+	m_presetLoader->removePreset(index);
+
+
+	// Case: no more presets, set iterator to end
+	if (m_presetChooser->empty())
+		*m_presetPos = m_presetChooser->end();
+	
+	// Case: chooser index has become one less due to removal of an index below it
+	else if (chooserIndex > index) {
+		chooserIndex--;
+		*m_presetPos = m_presetChooser->begin(chooserIndex);
+	} 
+
+	// Case: we have deleted the active preset position
+	// Put the iterator in the position before the preset following
+	// the one to be removed. This ensures in order playback after
+	// a removal
+	else if (chooserIndex == index) { 
+		*m_presetPos = m_presetChooser->begin(chooserIndex);
+	}
 
 	
-		
-	m_presetLoader->removePreset(index);
 
 }
 
@@ -951,3 +983,9 @@ unsigned int projectM::getPlaylistSize() const
 	return m_presetLoader->getNumPresets();
 }
 
+RandomizerFunctor::RandomizerFunctor(PresetChooser & chooser) : m_chooser(chooser) {}
+RandomizerFunctor::~RandomizerFunctor() {}
+
+double RandomizerFunctor::operator() (int index) {
+	return 1.0 / m_chooser.getNumPresets();
+}
