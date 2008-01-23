@@ -210,11 +210,6 @@ DLLEXPORT void projectM::renderFrame()
 	presetInputs.mid_att = beatDetect->mid_att;
 	presetInputs.treb_att = beatDetect->treb_att;
 
-
-	m_activePreset->evaluateFrame();
-
-	assert ( m_activePreset.get() );
-
 	m_activePreset->evaluateFrame();
 
 	if ( renderer->noSwitch==false && !m_presetChooser->empty() )
