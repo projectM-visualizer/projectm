@@ -74,6 +74,10 @@ class QProjectMWidget : public QGLWidget
          : QGLWidget(parent), config_file(_config_file), m_projectM(0) {}
      ~QProjectMWidget() { if (m_projectM) delete(m_projectM); }
 
+     inline const std::string & configFile() {
+	     return config_file;
+     }
+     
      QProjectM * getQProjectM() { return m_projectM; }
 
  public slots:
@@ -230,7 +234,8 @@ public:
 
       void keyReleaseEvent ( QKeyEvent * e );
       QProjectM * getQProjectM();
-
+      
+      
       void refreshPlaylist();
 
       QProjectMWidget * getQProjectMWidget() { return m_QProjectMWidget; }
@@ -255,8 +260,10 @@ private slots:
       void changeRating(const QModelIndex & index);
       void openSettingsDialog();
       void updateFilteredPlaylist(const QString & text);
-     
-private:
+
+	private:
+	void readConfig(const std::string & configFile);
+	void writeConfig();
 	void copyPlaylist();
 	
 	QHeaderView * hHeader;

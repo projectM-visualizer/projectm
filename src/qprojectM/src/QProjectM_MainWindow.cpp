@@ -102,32 +102,8 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 
 	m_timer->start ( 0 );
 
-	ConfigFile config ( config_file );
-
-	if ( config.read ( "Fullscreen", false ) )
-		this->setWindowState ( this->windowState() | Qt::WindowFullScreen );
-	else
-		this->setWindowState ( this->windowState() & ~Qt::WindowFullScreen );
-
+	readConfig(config_file);
 	setCentralWidget ( m_QProjectMWidget );
-
-
-//	((QVBoxLayout*)ui->verticalLayout)->setAlignment(Qt::AlignCenter);
-
-//ui->verticalLayout->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-//ui->verticalLayout->sizePolicy().setVerticalStretch(2);
-//ui->presetPlayListDockWidget->widget()->layout()->setAlignment(Qt::AlignCenter);
-
- 
-//	((QLayout*)((QLayout*)ui->verticalLayout)->itemAt(1))->setSizeConstraint(QLayout::SetNoConstraint);
-//	((QLayout*)((QLayout*)ui->verticalLayout)->itemAt(2))->setSizeConstraint(QLayout::SetNoConstraint);
-
-	int wvw = config.read<int> ( "Window Width", 512 );
-	int wvh = config.read<int> ( "Window Height", 512 );
-
-	// Suggest to the widget the projectM window size configuration settings
-	m_QProjectMWidget->setBaseSize ( wvw, wvh );
-
 	createActions();
 	createMenus();
 	createToolBars();
@@ -137,6 +113,31 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 
 
 }
+
+
+/// @bug diffferent params necessary
+void QProjectM_MainWindow::writeConfig() {
+
+}
+
+void QProjectM_MainWindow::readConfig(const std::string & configFile ) {
+	
+	
+	ConfigFile config ( configFile );
+
+	if ( config.read ( "Fullscreen", false ) )
+		this->setWindowState ( this->windowState() | Qt::WindowFullScreen );
+	else	
+		this->setWindowState ( this->windowState() & ~Qt::WindowFullScreen );
+
+	int wvw = config.read<int> ( "Window Width", 512 );
+	int wvh = config.read<int> ( "Window Height", 512 );
+
+	// Suggest to the widget the projectM window size configuration settings
+	m_QProjectMWidget->setBaseSize ( wvw, wvh );
+}
+
+
 
 QProjectM_MainWindow::~QProjectM_MainWindow()
 {
@@ -551,9 +552,6 @@ void QProjectM_MainWindow::readSettings()
 	m_QPlaylistFileDialog->setDirectory
 	( settings.value ( "playlistPath", m_QPlaylistFileDialog->directory().absolutePath() ).toString() );
 
-	m_QPresetFileDialog->setDirectory
-	( settings.value ( "presetPath", m_QPresetFileDialog->directory().absolutePath() ).toString() );
-
 	resize ( size );
 	move ( pos );
 }
@@ -564,7 +562,6 @@ void QProjectM_MainWindow::writeSettings()
 	settings.setValue ( "pos", pos() );
 	settings.setValue ( "size", size() );
 	settings.setValue ( "playlistPath", m_QPlaylistFileDialog->directory().absolutePath() );
-	settings.setValue ( "presetPath", m_QPresetFileDialog->directory().absolutePath() );
 }
 
 
