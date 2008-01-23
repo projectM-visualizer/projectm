@@ -165,6 +165,9 @@ public:
 	 
   }
 
+  /// Writes the current configuration to the specified file
+  void writeConfig(const std::string & configFile);
+
   /// Plays a preset immediately  
   void selectPreset(unsigned int index);
 
@@ -240,7 +243,7 @@ private:
   float fpsstart;
   
   void switchPreset(std::auto_ptr<Preset> & targetPreset, const PresetInputs & inputs, PresetOutputs & outputs);
-  void readConfig(std::string config_file);
+  void readConfig(const std::string & configFile);
   void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
   void projectM_reset();
 

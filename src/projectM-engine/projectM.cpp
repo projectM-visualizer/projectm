@@ -106,10 +106,34 @@ DLLEXPORT  projectM::projectM ( std::string config_file ) :
 
 }
 
-void projectM::readConfig ( std::string config_file )
+
+void projectM::writeConfig(const std::string & configFile) {
+	
+	ConfigFile config ( configFile );
+	
+	config.add("Mesh X", settings().meshX);
+	config.add("Mesh Y", settings().meshY);
+	config.add("Texture Size", settings().textureSize);
+	config.add("FPS", settings().fps);
+	config.add("Window Width", settings().windowWidth);
+	config.add("Window Height", settings().windowHeight);
+	config.add("Smooth Preset Duration", settings().smoothPresetDuration);
+	config.add("Preset Duration", settings().smoothPresetDuration);
+	config.add("Preset Path", settings().presetURL);
+	config.add("Title Font", settings().titleFontURL);
+	config.add("Menu Font", settings().menuFontURL);
+	config.add("Hard Cut Sensitivity", settings().beatSensitivity);
+	config.add("Aspect Correction", settings().aspectCorrection);
+	
+	
+	std::fstream file(configFile.c_str());	
+	file << config;	
+}
+
+void projectM::readConfig (const std::string & configFile )
 {
 
-	ConfigFile config ( config_file );
+	ConfigFile config ( configFile );
 
 	_settings.meshX = config.read<int> ( "Mesh X", 32 );
 	_settings.meshY = config.read<int> ( "Mesh Y", 24 );
