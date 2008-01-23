@@ -105,6 +105,18 @@ typedef enum {
     BROWSER_INTERFACE
   } interface_t;
 
+/// A functor class that allows users of this library to specify random preset behavior
+class RandomizerFunctor {
+
+   public:
+	//RandomizerFunctor(); 
+	RandomizerFunctor(PresetChooser & chooser) ;
+	virtual ~RandomizerFunctor();
+   	virtual double operator() (int index);
+   private:
+	const PresetChooser & m_chooser;
+};
+
 
 class projectM 
 {
@@ -122,8 +134,36 @@ public:
   DLLEXPORT unsigned initRenderToTexture(); 
   DLLEXPORT void key_handler( projectMEvent event,
 		    projectMKeycode keycode, projectMModifier modifier );
-        
-  virtual ~projectM();
+
+  DLLEXPORT virtual ~projectM();
+
+  
+  struct Settings {
+	int meshX;
+	int meshY;
+	int fps;
+	int textureSize;
+	int windowWidth;
+	int windowHeight;
+	std::string presetURL;
+	std::string titleFontURL;
+	std::string menuFontURL;
+	//bool fullScreenOnStartup;
+	//bool menuOnStartup;
+	int smoothPresetDuration;
+	int presetDuration;
+	float beatSensitivity;
+	bool aspectCorrection;
+  };
+
+
+  DLLEXPORT const Settings & settings() const {
+		return _settings;
+  }
+
+  DLLEXPORT void saveSettings(const Settings & settings) {
+	 
+  }
 
   /// Plays a preset immediately  
   void selectPreset(unsigned int index);
@@ -131,14 +171,15 @@ public:
   /// Removes a preset from the play list. If it is playing then it will continue as normal until next switch
   void removePreset(unsigned int index);
  
+  /// Sets the randomization functor. If set to null, the traversal will move in order according to the playlist
+  void setRandomizer(RandomizerFunctor * functor);
+ 
   /// Tell projectM to play a particular preset when it chooses to switch
   /// If the preset is locked the queued item will be not switched to until the lock is released
   /// Subsequent calls to this function effectively nullifies previous calls.
   void queuePreset(unsigned int index);
 
-  /// Tell projectM to play a particular preset when it chooses to switch
-  /// If the preset is locked the queued item will be not switched to until the lock is released
-  /// Subsequent calls to this function effectively nullifies previous calls.
+  /// Returns true if a preset is queued up to play next
   bool isPresetQueued() const;
 
   /// Removes entire playlist, The currently loaded preset will end up sticking until new presets are added
@@ -150,10 +191,13 @@ public:
   /// Returns true if the active preset is locked
   bool isPresetLocked() const;
 
-  /// Returns index of currently active preset
+  /// Returns index of currently active preset. In the case where the active
+  /// preset was removed from the playlist, this function will return the element
+  /// before active preset (thus the next in order preset is invariant with respect
+  /// to the removal)
   unsigned int selectedPresetIndex() const;
 
-/// Add a preset url to the play list. Appended to bottom
+  /// Add a preset url to the play list. Appended to bottom
   unsigned int addPresetURL(const std::string & presetURL, const std::string & presetName);
 
   /// Returns the url associated with a preset index
@@ -172,11 +216,7 @@ private:
    
   BeatDetect * beatDetect;
   Renderer *renderer;
-  std::string presetURL;
-  
-  std::string title_fontURL;
-  std::string menu_fontURL;
-  
+  Settings _settings;
   int smoothFrame;
     
 #ifndef WIN32
@@ -240,5 +280,8 @@ private:
   
   /// A preset outputs container used for smooth preset switching
   PresetOutputs presetOutputs2;
+  
+  int oldFrame;// = 1;
+
 };
 #endif
