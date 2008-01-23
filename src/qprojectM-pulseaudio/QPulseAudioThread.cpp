@@ -177,8 +177,8 @@ void QPulseAudioThread::connectHelper (SourceContainer::const_iterator pos)
 	qDebug() << "connectHelper: " << *pos;
 	int r;
 	if ( ( ( r = pa_stream_connect_record (stream, (*pos).toStdString().c_str(), NULL, flags ) ) ) < 0 )
-	{
-		fprintf ( stderr, "pa_stream_connect_record() failed: %s\n", pa_strerror ( pa_context_errno ( context ) ) );
+	{				
+		fprintf ( stderr, "pa_stream_connect_record() failed: %s\n", pa_strerror ( pa_context_errno ( context ) ) );		
 	}
 
 
