@@ -161,12 +161,14 @@ public:
 		return _settings;
   }
 
-  DLLEXPORT void saveSettings(const Settings & settings) {
-	 
+  DLLEXPORT void applySettings(const Settings & settings) {
+	/// @bug If only it were this simple
+	abort();	
+	_settings = settings;
   }
 
   /// Writes the current configuration to the specified file
-  void writeConfig(const std::string & configFile);
+  void writeConfig(const std::string & configFile, const Settings & settings);
 
   /// Plays a preset immediately  
   void selectPreset(unsigned int index);
