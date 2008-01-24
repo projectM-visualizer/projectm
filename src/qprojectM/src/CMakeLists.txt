@@ -21,6 +21,8 @@ set(qprojectM_SRCS
     QPlaylistModel.cpp
     QPlaylistModel.hpp
     QXmlPlaylistHandler.hpp
+    QProjectMConfigDialog.cpp
+    QProjectMConfigDialog.hpp
 )
 
 
@@ -29,6 +31,7 @@ set(qprojectM_MOC_HDRS
     QPresetFileDialog.hpp
     QPlaylistFileDialog.hpp
     QPlaylistModel.hpp
+    QProjectMConfigDialog.hpp
 )
 
 set(qprojectM_UIS
