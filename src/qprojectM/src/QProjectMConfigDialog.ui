@@ -431,7 +431,7 @@ p, li { white-space: pre-wrap; }
     <enum>Qt::Horizontal</enum>
    </property>
    <property name="standardButtons" >
-    <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok</set>
+    <set>QDialogButtonBox::Apply|QDialogButtonBox::Close|QDialogButtonBox::NoButton</set>
    </property>
   </widget>
   <widget class="QSpinBox" name="windowWidthSpinBox" >
