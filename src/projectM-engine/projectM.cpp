@@ -107,7 +107,7 @@ DLLEXPORT  projectM::projectM ( std::string config_file ) :
 }
 
 
-void projectM::writeConfig(const std::string & configFile, const Settings & settings) {
+bool projectM::writeConfig(const std::string & configFile, const Settings & settings) {
 	
 	ConfigFile config ( configFile );
 	
@@ -125,9 +125,13 @@ void projectM::writeConfig(const std::string & configFile, const Settings & sett
 	config.add("Hard Cut Sensitivity", settings.beatSensitivity);
 	config.add("Aspect Correction", settings.aspectCorrection);
 	
-	
+// 	
 	std::fstream file(configFile.c_str());	
-	file << config;	
+	if (file) {
+		file << config;		
+		return true;
+	} else
+		return false;
 }
 
 void projectM::readConfig (const std::string & configFile )

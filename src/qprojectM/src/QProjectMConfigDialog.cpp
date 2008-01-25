@@ -14,9 +14,9 @@ void QProjectMConfigDialog::saveConfig() {
 	settings.meshX = _ui.meshSizeXComboBox->itemData(_ui.meshSizeXComboBox->currentIndex()).toInt();
 	settings.meshY = _ui.meshSizeYComboBox->itemData(_ui.meshSizeYComboBox->currentIndex()).toInt();
 	settings.windowHeight = _ui.windowHeightSpinBox->value();
-	settings.windowWidth = _ui.windowWidthSpinBox->value();	
-	/// @bug menu font, title font, path vs file? 
-	settings.titleFontURL = settings.menuFontURL = _ui.fontPathLineEdit->text().toStdString();
+	settings.windowWidth = _ui.windowWidthSpinBox->value();		
+	settings.titleFontURL = _ui.titleFontPathLineEdit->text().toStdString();
+	settings.menuFontURL = _ui.menuFontPathLineEdit->text().toStdString();
 	settings.presetURL = _ui.startupPlaylistLineEdit->text().toStdString();
 	settings.textureSize = _ui.textureSizeComboBox->itemData(_ui.textureSizeComboBox->currentIndex()).toInt();
 	settings.smoothPresetDuration = _ui.smoothPresetDurationSpinBox->value();
