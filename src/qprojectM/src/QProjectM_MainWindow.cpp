@@ -29,7 +29,7 @@
 
 #include "QPlaylistModel.hpp"
 #include "ui_QProjectM_MainWindow.h"
-#include "ui_QProjectMConfigDialog.h"
+#include "QProjectMConfigDialog.hpp"
 
 #include "ConfigFile.h"
 #include "QXmlPlaylistHandler.hpp"
@@ -77,10 +77,9 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 	ui = new Ui::QProjectM_MainWindow();	
 	ui->setupUi ( this );
 
-	configUi = new Ui::QProjectMConfigDialog();
-	configDialog = new QDialog();
-	configUi->setupUi(configDialog);
-
+	
+	
+	
 	m_QProjectMWidget = new QProjectMWidget ( config_file, this );
 
 	m_timer = new QTimer ( this );
@@ -149,7 +148,6 @@ QProjectM_MainWindow::~QProjectM_MainWindow()
 	}
 
 	delete ( ui );
-	delete( configUi);
 
 
 }
@@ -210,7 +208,9 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 	ui->tableView->setModel ( playlistModel );
 	refreshPlaylist();
 
-
+	configDialog = new QProjectMConfigDialog(m_QProjectMWidget->configFile(), 
+			m_QProjectMWidget->getQProjectM(), this);
+	
 	connect ( m_QProjectMWidget->getQProjectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), this, SLOT ( updatePlaylistSelection ( bool,unsigned int ) ) );
 	connect ( ui->presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( updateFilteredPlaylist ( const QString& ) ) );
 
