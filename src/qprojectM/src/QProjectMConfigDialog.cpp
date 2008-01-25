@@ -2,23 +2,38 @@
 #include <QtDebug>
 
 
-QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, projectM * projectM, QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f), _configFile(configFile), _projectM(*projectM) {
+QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, QProjectMWidget * qprojectMWidget, QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f), _configFile(configFile), _qprojectMWidget(qprojectMWidget) {
 	
 	qDebug() << "!!!";
 	_ui.setupUi(this);
-	connect(_ui.buttonBox, SIGNAL(accepted()), this, SLOT(saveConfig()));
-	
+	connect(_ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonBoxHandler(QAbstractButton*)));
+	connect(this, SIGNAL(projectM_Reset()), _qprojectMWidget, SLOT(resetProjectM()));
 	populateMeshSizeComboBoxes();
 	populateTextureSizeComboBox();
 
 	loadConfig();
 }
 
+void QProjectMConfigDialog::buttonBoxHandler(QAbstractButton * button) {
+	
+	switch (_ui.buttonBox->standardButton(button)) {
+		case QDialogButtonBox::Close:
+			this->hide();
+			break;
+		case QDialogButtonBox::Apply:
+			saveConfig();
+			qDebug() << "emitting!";
+			emit(projectM_Reset());
+			break;
+		default:
+			break;
+	}
+}
 
 void QProjectMConfigDialog::saveConfig() {
 	qDebug() << "SAVE config";
 	
-	projectM::Settings settings = _projectM.settings();
+	projectM::Settings settings = _qprojectMWidget->getQProjectM()->settings();
 	
 	settings.meshX = _ui.meshSizeXComboBox->itemData(_ui.meshSizeXComboBox->currentIndex()).toInt();
 	settings.meshY = _ui.meshSizeYComboBox->itemData(_ui.meshSizeYComboBox->currentIndex()).toInt();
@@ -60,7 +75,7 @@ void QProjectMConfigDialog::populateTextureSizeComboBox() {
 void QProjectMConfigDialog::loadConfig() {
 	
 	qDebug() << "load config";
-	const projectM::Settings & settings = _projectM.settings();
+	const projectM::Settings & settings =(* _qprojectMWidget->getQProjectM()).settings();
 	
 	_ui.meshSizeXComboBox->insertItem(0, QString("%1 (current)").arg(settings.meshX), settings.meshX);
 	_ui.meshSizeYComboBox->insertItem(0, QString("%1 (current)" ).arg(settings.meshY), settings.meshY);

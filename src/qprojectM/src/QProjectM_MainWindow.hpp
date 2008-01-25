@@ -30,6 +30,7 @@
 #include <cassert>
 #include <QGLWidget>
 #include <QHash>
+#include <QtDebug>
 
 #include "libprojectM/projectM.hpp"
 
@@ -81,6 +82,16 @@ class QProjectMWidget : public QGLWidget
      QProjectM * getQProjectM() { return m_projectM; }
 
  public slots:
+	 
+     void resetProjectM() {
+	if (m_projectM) {
+		delete(m_projectM);
+		m_projectM = 0;
+	}
+	initializeGL();
+	qDebug() << "reinit'ed";
+     }
+     
      void setPresetLock(int state) {
 		m_projectM->setPresetLock((bool)state);
 		presetLockChanged((bool)state);

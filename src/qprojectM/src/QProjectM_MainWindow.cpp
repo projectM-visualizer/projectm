@@ -204,12 +204,16 @@ void QProjectM_MainWindow::selectPlaylistItem ( const QModelIndex & index )
 void QProjectM_MainWindow::postProjectM_Initialize()
 {
 
+	if (playlistModel)
+		delete(playlistModel);
 	playlistModel = new QPlaylistModel ( *m_QProjectMWidget->getQProjectM(),this );
+	
 	ui->tableView->setModel ( playlistModel );
 	refreshPlaylist();
 
-	configDialog = new QProjectMConfigDialog(m_QProjectMWidget->configFile(), 
-			m_QProjectMWidget->getQProjectM(), this);
+	if (!configDialog)
+		configDialog = new QProjectMConfigDialog(m_QProjectMWidget->configFile(), m_QProjectMWidget, this);
+	
 	
 	connect ( m_QProjectMWidget->getQProjectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), this, SLOT ( updatePlaylistSelection ( bool,unsigned int ) ) );
 	connect ( ui->presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( updateFilteredPlaylist ( const QString& ) ) );
