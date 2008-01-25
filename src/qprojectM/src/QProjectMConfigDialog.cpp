@@ -1,11 +1,16 @@
 #include "QProjectMConfigDialog.hpp"
 #include <QtDebug>
 
+
 QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, projectM * projectM, QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f), _configFile(configFile), _projectM(*projectM) {
 	
 	qDebug() << "!!!";
 	_ui.setupUi(this);
 	connect(_ui.buttonBox, SIGNAL(accepted()), this, SLOT(saveConfig()));
+	
+	populateMeshSizeComboBoxes();
+	populateTextureSizeComboBox();
+
 	loadConfig();
 }
 
@@ -35,13 +40,33 @@ void QProjectMConfigDialog::saveConfig() {
 }
 
 
+void QProjectMConfigDialog::populateMeshSizeComboBoxes() {
+
+	
+	for (int meshSize = 1<<1; meshSize < 1<<8; meshSize<<=1) {	
+		_ui.meshSizeXComboBox->addItem(QString("%1").arg(meshSize), meshSize);
+		_ui.meshSizeYComboBox->addItem(QString("%1").arg(meshSize), meshSize);		
+	}
+}
+
+
+void QProjectMConfigDialog::populateTextureSizeComboBox() {
+
+	
+	for (int textureSize = 1<<1; textureSize < 1<<10; textureSize<<=1) {		
+		_ui.textureSizeComboBox->addItem(QString("%1").arg(textureSize), textureSize);		
+	}
+}
 void QProjectMConfigDialog::loadConfig() {
 	
 	qDebug() << "load config";
 	const projectM::Settings & settings = _projectM.settings();
 	
-	//settings.meshX = _ui.meshSizeXComboBox->itemData(_ui.meshSizeXComboBox->currentIndex()).toInt();
-	//settings.meshY = _ui.meshSizeYComboBox->itemData(_ui.meshSizeYComboBox->currentIndex()).toInt();
+	_ui.meshSizeXComboBox->insertItem(0, QString("%1 (current)").arg(settings.meshX), settings.meshX);
+	_ui.meshSizeYComboBox->insertItem(0, QString("%1 (current)" ).arg(settings.meshY), settings.meshY);
+	
+	_ui.meshSizeXComboBox->setCurrentIndex(0);
+	_ui.meshSizeYComboBox->setCurrentIndex(0);
 	
 	_ui.titleFontPathLineEdit->setText(settings.titleFontURL.c_str());
 	_ui.menuFontPathLineEdit->setText(settings.menuFontURL.c_str());
@@ -53,7 +78,9 @@ void QProjectMConfigDialog::loadConfig() {
 	_ui.windowHeightSpinBox->setValue(settings.windowHeight);
 	_ui.windowWidthSpinBox->setValue(settings.windowWidth);
 	
-	//settings.textureSize = _ui.textureSizeComboBox->itemData(_ui.textureSizeComboBox->currentIndex()).toInt();
+	_ui.textureSizeComboBox->insertItem(0, QString("%1 (current)" ).arg(settings.textureSize), settings.textureSize);
+	_ui.textureSizeComboBox->setCurrentIndex(0);
+	
 	_ui.smoothPresetDurationSpinBox->setValue(settings.smoothPresetDuration);
 	_ui.presetDurationSpinBox->setValue(settings.presetDuration);
 	

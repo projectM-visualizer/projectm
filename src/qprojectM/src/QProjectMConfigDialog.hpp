@@ -17,6 +17,8 @@ class QProjectMConfigDialog : public QDialog {
 		 const std::string _configFile;
 		 projectM & _projectM;
 		 Ui::QProjectMConfigDialog _ui;
+		 void populateMeshSizeComboBoxes();
+		 void populateTextureSizeComboBox();
 
 };
 #endif
