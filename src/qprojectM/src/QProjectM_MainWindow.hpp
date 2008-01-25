@@ -40,11 +40,11 @@ class QPresetFileDialog;
 class QPlaylistFileDialog;
 class QPlaylistModel;
 class QModelIndex;
+class QProjectMConfigDialog;
 
 
 namespace Ui { 
 class QProjectM_MainWindow;
-class QProjectMConfigDialog;
 }
 
 #include <iostream>
@@ -271,9 +271,8 @@ private slots:
       QString m_currentPlaylistFile;
 
       QPlaylistModel * playlistModel;
-      Ui::QProjectM_MainWindow * ui;
-      Ui::QProjectMConfigDialog * configUi;
-      QDialog * configDialog;
+      Ui::QProjectM_MainWindow * ui;      
+      QProjectMConfigDialog * configDialog;
 
       QHash<QString, PlaylistItemVector*> historyHash;
 

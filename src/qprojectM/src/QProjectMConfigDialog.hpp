@@ -7,7 +7,7 @@ class QProjectMConfigDialog : public QDialog {
 	Q_OBJECT
 
 	public:
-		QProjectMConfigDialog(const std::string & configFile, projectM & projectM, QWidget * parent, Qt::WindowFlags f );
+		QProjectMConfigDialog(const std::string & configFile, projectM * projectM, QWidget * parent = 0, Qt::WindowFlags f = 0);
 	private:
 		void loadConfig();
 
