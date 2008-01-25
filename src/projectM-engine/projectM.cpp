@@ -118,7 +118,7 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
 	config.add("Window Width", settings.windowWidth);
 	config.add("Window Height", settings.windowHeight);
 	config.add("Smooth Preset Duration", settings.smoothPresetDuration);
-	config.add("Preset Duration", settings.smoothPresetDuration);
+	config.add("Preset Duration", settings.presetDuration);
 	config.add("Preset Path", settings.presetURL);
 	config.add("Title Font", settings.titleFontURL);
 	config.add("Menu Font", settings.menuFontURL);
