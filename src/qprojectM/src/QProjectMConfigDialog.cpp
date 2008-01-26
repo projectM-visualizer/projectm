@@ -24,6 +24,9 @@ void QProjectMConfigDialog::buttonBoxHandler(QAbstractButton * button) {
 			qDebug() << "emitting!";
 			emit(projectM_Reset());
 			break;
+		case QDialogButtonBox::Reset:
+			loadConfig();
+			break;
 		default:
 			break;
 	}
@@ -80,7 +83,7 @@ void QProjectMConfigDialog::loadConfig() {
 	_ui.windowHeightSpinBox->setValue(settings.windowHeight);
 	_ui.windowWidthSpinBox->setValue(settings.windowWidth);
 	
-	_ui.textureSizeComboBox->insertItem(0, QString("%1 (current)" ).arg(settings.textureSize), settings.textureSize);
+	_ui.textureSizeComboBox->insertItem(0, QString("%1").arg(settings.textureSize), settings.textureSize);
 	_ui.textureSizeComboBox->setCurrentIndex(0);
 	
 	_ui.smoothPresetDurationSpinBox->setValue(settings.smoothPresetDuration);
