@@ -69,7 +69,7 @@
     <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Changes the path projectM will use to search for opengl fonts&lt;/p>&lt;/body>&lt;/html></string>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This changes the font projectM will use for its opengl rendered menus&lt;/p>&lt;/body>&lt;/html></string>
    </property>
   </widget>
   <widget class="QLabel" name="label_2" >
@@ -325,6 +325,12 @@ p, li { white-space: pre-wrap; }
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
+   <property name="toolTip" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Sets the size of the texture. Higher is better, but slower.&lt;/p>&lt;/body>&lt;/html></string>
+   </property>
    <property name="sizeAdjustPolicy" >
     <enum>QComboBox::AdjustToMinimumContentsLength</enum>
    </property>
@@ -455,6 +461,12 @@ p, li { white-space: pre-wrap; }
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
+   <property name="toolTip" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This makes a square look like a square, and a circle look like a circle in cases where they may not otherwise.&lt;/p>&lt;/body>&lt;/html></string>
+   </property>
    <property name="text" >
     <string>Use Aspect Correction</string>
    </property>
@@ -535,7 +547,7 @@ p, li { white-space: pre-wrap; }
     <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Changes the path projectM will use to search for opengl fonts&lt;/p>&lt;/body>&lt;/html></string>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Changes the font projectM will use for rendering the song title&lt;/p>&lt;/body>&lt;/html></string>
    </property>
   </widget>
   <widget class="QDoubleSpinBox" name="beatSensitivitySpinBox" >
@@ -546,6 +558,12 @@ p, li { white-space: pre-wrap; }
      <width>61</width>
      <height>24</height>
     </rect>
+   </property>
+   <property name="toolTip" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Sets the intensity threshold for the preset hard cuts&lt;/p>&lt;/body>&lt;/html></string>
    </property>
   </widget>
   <widget class="QSpinBox" name="meshSizeHeightSpinBox" >
@@ -561,23 +579,7 @@ p, li { white-space: pre-wrap; }
     <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;">This modifies the vertical component of the startup window size&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-  </widget>
-  <widget class="QSpinBox" name="meshSizeWidthSpinBox" >
-   <property name="geometry" >
-    <rect>
-     <x>284</x>
-     <y>192</y>
-     <width>54</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;">This modifies the vertical component of the startup window size&lt;/p>&lt;/body>&lt;/html></string>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;">This modifies the vertical component of the mesh. Higher is better but slower&lt;/p>&lt;/body>&lt;/html></string>
    </property>
   </widget>
   <widget class="QLabel" name="label_13" >
@@ -607,6 +609,28 @@ p, li { white-space: pre-wrap; }
      <width>73</width>
      <height>24</height>
     </rect>
+   </property>
+   <property name="toolTip" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">A mystery parameter!&lt;/p>&lt;/body>&lt;/html></string>
+   </property>
+  </widget>
+  <widget class="QSpinBox" name="meshSizeWidthSpinBox" >
+   <property name="geometry" >
+    <rect>
+     <x>284</x>
+     <y>192</y>
+     <width>54</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="toolTip" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;">This modifies the horizontal component of the mesh. Higher is better but slower&lt;/p>&lt;/body>&lt;/html></string>
    </property>
   </widget>
  </widget>

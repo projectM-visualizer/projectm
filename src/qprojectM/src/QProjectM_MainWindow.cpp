@@ -89,7 +89,7 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 	connect ( ui->clearPresetList_PushButton, SIGNAL ( pressed() ),
 	          this, SLOT ( clearPlaylist() ) );
 
-	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized() ), this, SLOT ( postProjectM_Initialize() ) );
+	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized(projectM*) ), this, SLOT ( postProjectM_Initialize() ) );
 	
 	m_QProjectMWidget->makeCurrent();
 	m_QProjectMWidget->setFocus();

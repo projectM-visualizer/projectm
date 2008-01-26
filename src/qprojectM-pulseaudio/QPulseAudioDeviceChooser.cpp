@@ -58,7 +58,8 @@ QPulseAudioDeviceChooser::QPulseAudioDeviceChooser ( QPulseAudioThread * qpulseA
 
 	/// @bug wrong! should be based on HASH index, not display index
 	/// @bug wait! it's ok because we are piping the text, not the device index to the connect method!
-	connect ( devicesListView, SIGNAL ( doubleClicked ( const QModelIndex& ) ), _qpulseAudioThread, SLOT ( connectDevice ( const QModelIndex& ) ) );
+	connect ( devicesListView, SIGNAL ( doubleClicked ( const QModelIndex& ) ),
+		  _qpulseAudioThread, SLOT ( connectDevice ( const QModelIndex& ) ) );
 	
 	connect ( _qpulseAudioThread, SIGNAL ( deviceChanged()),
 		  &_qpulseAudioDeviceModel, SLOT (updateItemHighlights()));
@@ -67,8 +68,6 @@ QPulseAudioDeviceChooser::QPulseAudioDeviceChooser ( QPulseAudioThread * qpulseA
 
 void QPulseAudioDeviceChooser::open()
 {
-
 	this->show();
-
 }
 
