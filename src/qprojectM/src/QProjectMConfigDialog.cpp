@@ -35,8 +35,8 @@ void QProjectMConfigDialog::saveConfig() {
 	
 	projectM::Settings settings = _qprojectMWidget->getQProjectM()->settings();
 	
-	settings.meshX = _ui.meshSizeXComboBox->itemData(_ui.meshSizeXComboBox->currentIndex()).toInt();
-	settings.meshY = _ui.meshSizeYComboBox->itemData(_ui.meshSizeYComboBox->currentIndex()).toInt();
+	settings.meshX = _ui.meshSizeWidthSpinBox->value();
+	settings.meshY = _ui.meshSizeHeightSpinBox->value();
 	settings.windowHeight = _ui.windowHeightSpinBox->value();
 	settings.windowWidth = _ui.windowWidthSpinBox->value();		
 	settings.titleFontURL = _ui.titleFontPathLineEdit->text().toStdString();
@@ -55,15 +55,6 @@ void QProjectMConfigDialog::saveConfig() {
 }
 
 
-void QProjectMConfigDialog::populateMeshSizeComboBoxes() {
-
-	
-	for (int meshSize = 1<<1; meshSize < 1<<8; meshSize<<=1) {	
-		_ui.meshSizeXComboBox->addItem(QString("%1").arg(meshSize), meshSize);
-		_ui.meshSizeYComboBox->addItem(QString("%1").arg(meshSize), meshSize);		
-	}
-}
-
 
 void QProjectMConfigDialog::populateTextureSizeComboBox() {
 
@@ -77,11 +68,8 @@ void QProjectMConfigDialog::loadConfig() {
 	qDebug() << "load config";
 	const projectM::Settings & settings =(* _qprojectMWidget->getQProjectM()).settings();
 	
-	_ui.meshSizeXComboBox->insertItem(0, QString("%1 (current)").arg(settings.meshX), settings.meshX);
-	_ui.meshSizeYComboBox->insertItem(0, QString("%1 (current)" ).arg(settings.meshY), settings.meshY);
-	
-	_ui.meshSizeXComboBox->setCurrentIndex(0);
-	_ui.meshSizeYComboBox->setCurrentIndex(0);
+	_ui.meshSizeWidthSpinBox->setValue(settings.meshX);
+	_ui.meshSizeHeightSpinBox->setValue(settings.meshY);
 	
 	_ui.titleFontPathLineEdit->setText(settings.titleFontURL.c_str());
 	_ui.menuFontPathLineEdit->setText(settings.menuFontURL.c_str());
