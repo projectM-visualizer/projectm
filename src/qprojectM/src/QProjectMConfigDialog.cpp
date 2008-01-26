@@ -8,7 +8,6 @@ QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, QPr
 	_ui.setupUi(this);
 	connect(_ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonBoxHandler(QAbstractButton*)));
 	connect(this, SIGNAL(projectM_Reset()), _qprojectMWidget, SLOT(resetProjectM()));
-	populateMeshSizeComboBoxes();
 	populateTextureSizeComboBox();
 
 	loadConfig();
