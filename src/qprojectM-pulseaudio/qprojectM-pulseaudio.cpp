@@ -88,15 +88,13 @@ int main ( int argc, char*argv[] )
 	int i;
 	char projectM_data[1024];
 
-// Start a new qapplication
 	QApplication app ( argc, argv );
 
 	std::string config_file;
 	config_file = read_config();
 
-	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow ( config_file );
+	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow ( config_file);
 	
-
 	QAction pulseAction("Pulse audio settings...", mainWindow);
 	
 	
@@ -105,16 +103,21 @@ int main ( int argc, char*argv[] )
 
 	QPulseAudioThread * pulseThread = new QPulseAudioThread(argc, argv, mainWindow->getQProjectM(), mainWindow);
 	
+	// First projectM_Initialized() has already happened, so manually start
+	pulseThread->start();
+	
+	QApplication::connect
+			(mainWindow->getQProjectMWidget(), SIGNAL(projectM_Initialized()), pulseThread, SLOT(start()));
+
+	QApplication::connect
+		(mainWindow->getQProjectMWidget(), SIGNAL(projectM_BeforeDestroy()), pulseThread, SLOT(stop()));
+
 	QPulseAudioDeviceChooser devChooser(pulseThread, mainWindow);
 	QApplication::connect(&pulseAction, SIGNAL(triggered()), &devChooser, SLOT(open())); 
 	
-	pulseThread->start();
 	
-	//qDebug() << "app exec";
  	int ret = app.exec();
 	devChooser.writeSettings();
-	pulseThread->exit();
-	pulseThread->cleanup();
 
         mainWindow->unregisterSettingsAction(&pulseAction);
 

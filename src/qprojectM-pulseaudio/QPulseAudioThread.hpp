@@ -20,8 +20,7 @@ class projectM;
 class QPulseAudioThread : public QThread
 {	
 	Q_OBJECT
-	public:
-		//typedef QMap<int, QString> SourceContainer;
+	public:		
 		typedef QHash<int, QString> SourceContainer;
 		QPulseAudioThread () {}
 		QPulseAudioThread(int _argc, char **_argv, projectM * projectM, QObject *parent);
@@ -39,6 +38,10 @@ class QPulseAudioThread : public QThread
 		}
 
 	public slots:
+		void stop() {
+			quit();
+			cleanup();			
+		}
 		inline void insertSource(int index, const QString & name) {
 			s_sourceList[index] = name;
 		}

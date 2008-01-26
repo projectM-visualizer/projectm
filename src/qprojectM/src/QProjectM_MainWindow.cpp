@@ -105,6 +105,13 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 	readSettings();
 	ui->presetPlayListDockWidget->hide();
 
+	connect ( ui->tableView, SIGNAL ( activated ( const QModelIndex & ) ),
+		  this, SLOT ( selectPlaylistItem ( const QModelIndex & ) ) );
+	connect ( ui->tableView, SIGNAL ( clicked ( const QModelIndex & ) ),
+		  this, SLOT ( changeRating ( const QModelIndex & ) ) );
+	connect ( ui->presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ),
+		  this, SLOT ( updateFilteredPlaylist ( const QString& ) ) );
+
 }
 
 
@@ -197,31 +204,38 @@ void QProjectM_MainWindow::selectPlaylistItem ( const QModelIndex & index )
 
 void QProjectM_MainWindow::postProjectM_Initialize()
 {
-
-	if (playlistModel)
-		delete(playlistModel);
-	playlistModel = new QPlaylistModel ( *m_QProjectMWidget->getQProjectM(),this );
+	ui->tableView->setModel(0);
 	
+	if (playlistModel) 
+		delete(playlistModel);
+	
+	playlistModel = new QPlaylistModel ( *m_QProjectMWidget->getQProjectM(),this );
+		
 	ui->tableView->setModel ( playlistModel );
+	static int FOOBAR = 0;
+	
+	if (FOOBAR == 0)
 	refreshPlaylist();
 
+	FOOBAR++;
+	
 	if (!configDialog)
 		configDialog = new QProjectMConfigDialog(m_QProjectMWidget->configFile(), m_QProjectMWidget, this);
 	
-	
-	connect ( m_QProjectMWidget->getQProjectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), this, SLOT ( updatePlaylistSelection ( bool,unsigned int ) ) );
-	connect ( ui->presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ), this, SLOT ( updateFilteredPlaylist ( const QString& ) ) );
+	connect ( m_QProjectMWidget->getQProjectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), 
+		  this, SLOT ( updatePlaylistSelection ( bool,unsigned int ) ) );
+		
+	connect ( m_QProjectMWidget->getQProjectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), 
+		  playlistModel, SLOT ( updateItemHighlights() ) );
 
-	connect ( ui->tableView, SIGNAL ( activated ( const QModelIndex & ) ),
-	          this, SLOT ( selectPlaylistItem ( const QModelIndex & ) ) );
-
-	connect ( ui->tableView, SIGNAL ( clicked ( const QModelIndex & ) ),
-	          this, SLOT ( changeRating ( const QModelIndex & ) ) );
-	connect ( m_QProjectMWidget, SIGNAL ( presetLockChanged ( bool ) ),  playlistModel, SLOT ( updateItemHighlights() ) );
-	connect ( m_QProjectMWidget->getQProjectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), playlistModel, SLOT ( updateItemHighlights() ) );
+	disconnect (m_QProjectMWidget);
+	connect ( m_QProjectMWidget, SIGNAL ( presetLockChanged ( bool ) ),
+		  playlistModel, SLOT ( updateItemHighlights() ) );
 
 	/// @bug not right - selected preset problems when searching
-	connect ( ui->presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ), playlistModel, SLOT ( updateItemHighlights() ) );
+	disconnect(ui->presetSearchBarLineEdit);
+	connect ( ui->presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ), 
+		  playlistModel, SLOT ( updateItemHighlights() ) );
 
 }
 
@@ -365,7 +379,7 @@ void QProjectM_MainWindow::savePlaylist()
 
 	//m_currentPlaylistFile = file;
 
-	if ( m_currentPlaylistFile == "" )
+	if ( m_currentPlaylistFile == QString() )
 	{
 		qDebug() << "current playlist file null!" ;
 		return;
@@ -502,6 +516,10 @@ void QProjectM_MainWindow::openSettingsDialog() {
 
 }
 
+void QProjectM_MainWindow::aboutQt() {
+	return QApplication::aboutQt();
+}
+
 void QProjectM_MainWindow::createActions()
 {
 
@@ -511,9 +529,7 @@ void QProjectM_MainWindow::createActions()
 	connect ( ui->actionSave_play_list, SIGNAL ( triggered() ), this, SLOT ( savePlaylist() ) );
 	connect ( ui->actionAbout_qprojectM, SIGNAL ( triggered() ), this, SLOT ( about() ) );
 	connect ( ui->actionConfigure_projectM, SIGNAL ( triggered() ), this, SLOT (openSettingsDialog()) );
-
-	/// @bug pull the aboutQt() code from repo to put it back. 
-	//connect(ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
+	connect(ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
 
 }
 
