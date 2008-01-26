@@ -4,7 +4,6 @@
 
 QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, QProjectMWidget * qprojectMWidget, QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f), _configFile(configFile), _qprojectMWidget(qprojectMWidget) {
 	
-	qDebug() << "!!!";
 	_ui.setupUi(this);
 	connect(_ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonBoxHandler(QAbstractButton*)));
 	connect(this, SIGNAL(projectM_Reset()), _qprojectMWidget, SLOT(resetProjectM()));
@@ -61,10 +60,11 @@ void QProjectMConfigDialog::saveConfig() {
 void QProjectMConfigDialog::populateTextureSizeComboBox() {
 
 	
-	for (int textureSize = 1<<1; textureSize < 1<<10; textureSize<<=1) {		
+	for (int textureSize = 1<<1; textureSize < 1<<12; textureSize<<=1) {		
 		_ui.textureSizeComboBox->addItem(QString("%1").arg(textureSize), textureSize);		
 	}
 }
+
 void QProjectMConfigDialog::loadConfig() {
 	
 	qDebug() << "load config";
