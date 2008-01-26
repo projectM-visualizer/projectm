@@ -188,7 +188,7 @@ QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::scanForPla
 
 	for ( SourceContainer::const_iterator pos = s_sourceList.begin(); pos != s_sourceList.end(); ++pos )
 	{
-		if ( ( *pos ).contains ( "monitor" ) )
+		if ( ( *pos ).contains ( "monitor" ) && (*pos).contains("playback"))
 		{
 			return pos;
 		}
@@ -206,18 +206,16 @@ void QPulseAudioThread::connectDevice ( const QModelIndex & index )
 	else
 		reconnect(s_sourceList.end());
 	
-	deviceChanged();
+	emit(deviceChanged());
 }
+
 
 void QPulseAudioThread::reconnect(SourceContainer::const_iterator pos = s_sourceList.end()) {
 
-	qDebug() << "reconnect";
-	
 	if (s_sourceList.empty())
 			return;
 	
 	if (pos != s_sourceList.end()) {
-		qDebug() << "MATCH";
 		s_sourcePosition = pos;
 		qDebug() << "reconnecting with" << *pos;
 	}
@@ -250,7 +248,7 @@ void QPulseAudioThread::reconnect(SourceContainer::const_iterator pos = s_source
 
 switch (pa_stream_get_state(stream)) {
 	case PA_STREAM_UNCONNECTED:// 	The stream is not yet connected to any sink or source.
-	qDebug() << "unconnected: connecting...";		
+	qDebug() << "unconnected: connecting...";
 	connectHelper(s_sourcePosition);
 	break;
 case PA_STREAM_CREATING 	://The stream is being created.
@@ -268,6 +266,35 @@ case PA_STREAM_TERMINATED:// 	The stream has been terminated cleanly.
 }
 }
 
+
+void QPulseAudioThread::pa_stream_success_callback(pa_stream *s, int success, void *userdata) {
+	
+	static bool pausedFlag = true;
+	
+	if (pausedFlag)
+		qDebug() << "pause";
+	else
+		qDebug() << "play";
+	
+	pausedFlag = !pausedFlag;
+	
+}
+
+
+void QPulseAudioThread::cork() 
+{
+	int b = 0;
+			
+	pa_operation* op = 
+			pa_stream_cork(stream, b, pa_stream_success_callback, this);
+			
+	if (op)
+		pa_operation_unref(op);	
+	else
+		qDebug() << "operation null";	
+}
+		
+		
 /* A shortcut for terminating the application */
 void QPulseAudioThread::pulseQuit ( int ret )
 {

@@ -38,15 +38,18 @@ class QPulseAudioThread : public QThread
 		}
 
 	public slots:
-		void stop() {
-			quit();
-			cleanup();			
+		inline void projectM_New(projectM * projectM) {			
+			m_projectM = projectM;
+			cork();			
 		}
+		
+		void cork();
+		
 		inline void insertSource(int index, const QString & name) {
 			s_sourceList[index] = name;
 		}
 
-		void connectDevice(const QModelIndex & index = QModelIndex());		
+		void connectDevice(const QModelIndex & index = QModelIndex());
 
 	signals:
 		void deviceChanged();
@@ -74,6 +77,8 @@ class QPulseAudioThread : public QThread
 		 static void subscribe_callback ( struct pa_context *c, enum pa_subscription_event_type t, uint32_t index, void *userdata );
 		static void time_event_callback ( pa_mainloop_api*m, pa_time_event *e, const struct timeval *tv, void *userdata );
 		
+		static void pa_stream_success_callback(pa_stream *s, int success, void *userdata);
+	
 
 		static SourceContainer s_sourceList;
 		static SourceContainer::const_iterator s_sourcePosition;
