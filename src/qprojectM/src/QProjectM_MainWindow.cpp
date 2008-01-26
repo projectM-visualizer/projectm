@@ -71,14 +71,12 @@ class PlaylistWriteFunctor {
 };
 
 QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
-		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), m_QPlaylistFileDialog ( new QPlaylistFileDialog ( this ) ), oldPresetIndex ( -1 )
+		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), m_QPlaylistFileDialog ( new QPlaylistFileDialog ( this ) ), oldPresetIndex ( -1 ), playlistModel(0)
 {
 
+	
 	ui = new Ui::QProjectM_MainWindow();	
 	ui->setupUi ( this );
-
-	
-	
 	
 	m_QProjectMWidget = new QProjectMWidget ( config_file, this );
 
@@ -92,9 +90,6 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 	          this, SLOT ( clearPlaylist() ) );
 
 	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized() ), this, SLOT ( postProjectM_Initialize() ) );
-
-
-	//connect (ui->presetPlaylistDockWidget, SIGNAL(
 	
 	m_QProjectMWidget->makeCurrent();
 	m_QProjectMWidget->setFocus();
@@ -109,7 +104,6 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 	createStatusBar();
 	readSettings();
 	ui->presetPlayListDockWidget->hide();
-
 
 }
 
