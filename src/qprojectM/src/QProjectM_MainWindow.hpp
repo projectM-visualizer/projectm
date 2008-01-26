@@ -105,7 +105,7 @@ class QProjectMWidget : public QGLWidget
      }
   signals:
 	void projectM_BeforeDestroy();
-	void projectM_Initialized();
+	void projectM_Initialized(projectM *);
 	void presetLockChanged(bool isLocked);
  private:
 	std::string config_file;
@@ -162,7 +162,7 @@ void keyReleaseEvent ( QKeyEvent * e )  {
      void initializeGL()
      {
 	this->m_projectM = new QProjectM(config_file);
-	projectM_Initialized();
+	projectM_Initialized(m_projectM);
      }
 
      void resizeGL(int w, int h)
