@@ -56,7 +56,7 @@ class QProjectM : public QObject, public projectM {
 
 	public:
 		 QProjectM(const std::string & config_file):projectM(config_file) {} 
-        		 
+
 		 void presetSwitchedEvent(bool hardCut, unsigned int index) const {
 			presetSwitchedSignal(hardCut, index);
 		 }
@@ -73,7 +73,7 @@ class QProjectMWidget : public QGLWidget
  public:
      QProjectMWidget(const std::string & _config_file, QWidget *parent)
          : QGLWidget(parent), config_file(_config_file), m_projectM(0) {}
-     ~QProjectMWidget() { if (m_projectM) delete(m_projectM); }
+     ~QProjectMWidget() { destroyProjectM(); }
 
      inline const std::string & configFile() {
 	     return config_file;
@@ -81,13 +81,20 @@ class QProjectMWidget : public QGLWidget
      
      QProjectM * getQProjectM() { return m_projectM; }
 
+	 private:
+     void destroyProjectM() {
+
+	     emit(projectM_BeforeDestroy());
+	
+	     if (m_projectM) {	
+		     delete(m_projectM);
+		     m_projectM = 0;
+	     }
+     }
  public slots:
 	 
      void resetProjectM() {
-	if (m_projectM) {
-		delete(m_projectM);
-		m_projectM = 0;
-	}
+	destroyProjectM();
 	initializeGL();
 	qDebug() << "reinit'ed";
      }
@@ -97,6 +104,7 @@ class QProjectMWidget : public QGLWidget
 		presetLockChanged((bool)state);
      }
   signals:
+	void projectM_BeforeDestroy();
 	void projectM_Initialized();
 	void presetLockChanged(bool isLocked);
  private:
@@ -245,8 +253,6 @@ public:
 
       void keyReleaseEvent ( QKeyEvent * e );
       QProjectM * getQProjectM();
-      
-      
       void refreshPlaylist();
 
       QProjectMWidget * getQProjectMWidget() { return m_QProjectMWidget; }
@@ -260,6 +266,7 @@ protected:
             void closeEvent(QCloseEvent *event);
 
 private slots:
+      void aboutQt();
       void clearPlaylist();
       void addPresets();
       void openPlaylist();
