@@ -7,8 +7,8 @@ include(${QT_USE_FILE} FindPkgConfig.cmake)
 FIND_PACKAGE(OpenGL)
 FIND_PACKAGE(Qt4 REQUIRED)
 
-# could be wrong
-pkg_search_module(PROJECTM REQUIRED projectM qprojectM)
+# WRONG! How do I do this? using FIND_PACKAGE?
+##pkg_search_module(PROJECTM REQUIRED projectM qprojectM)
 
 pkg_search_module(JACK REQUIRED jack)
 
@@ -37,6 +37,6 @@ LINK_DIRECTORIES(${PROJECTM_LDFLAGS} ${JACK_LDFLAGS})
 
 ADD_EXECUTABLE(qprojectM-jack ${qprojectM_jack_SRCS} ${qprojectM_jack_MOC_SRCS})
 
-TARGET_LINK_LIBRARIES(qprojectM-jack qprojectM projectM jack ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${${QT_QTCORE_LIBRARIES} ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(qprojectM-jack qprojectM projectM jack ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTCORE_LIBRARIES} ${QT_LIBRARIES})
 
 INSTALL(TARGETS qprojectM-jack DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
