@@ -8,7 +8,7 @@ FIND_PACKAGE(OpenGL)
 FIND_PACKAGE(Qt4 REQUIRED)
 
 # could be wrong
-pkg_search_module(PROJECTM REQUIRED projectM qprojectM)
+#pkg_search_module(PROJECTM REQUIRED projectM qprojectM)
 
 #pkg_search_module(PULSE_AUDIO REQUIRED pulseaudio)
 
