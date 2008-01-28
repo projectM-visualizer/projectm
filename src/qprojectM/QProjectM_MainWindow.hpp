@@ -23,8 +23,6 @@
 #define QPROJECTM_MAINWINDOW_H
 #define CONFIG_FILE "/share/projectM/config.inp"
 
-//#include "ui_QProjectM_MainWindow.h"
-
 #include <QMainWindow>
 #include <QCloseEvent>
 #include <cassert>
@@ -32,7 +30,7 @@
 #include <QHash>
 #include <QtDebug>
 
-#include "libprojectM/projectM.hpp"
+#include "projectM.hpp"
 
 class QHeaderView;
 class QAction;

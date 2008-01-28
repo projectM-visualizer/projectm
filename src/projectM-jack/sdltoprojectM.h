@@ -21,7 +21,7 @@
 #ifndef _SDLTOPROJECTM_H
 #define _SDLTOPROJECTM_H
 
-#include <libprojectM/event.h>
+#include <event.h>
 #ifdef WIN32
 #include <SDL.h>
 #else
