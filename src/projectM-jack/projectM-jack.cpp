@@ -23,7 +23,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <SDL/SDL.h>
-#include <libprojectM/projectM.hpp>
+#include <projectM.hpp>
 #include "sdltoprojectM.h"
 
 #include "ConfigFile.h"

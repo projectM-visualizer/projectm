@@ -23,7 +23,7 @@
 #define QPULSEAUDIODEVICEMODEL_HPP
 
 #include <cassert>
-#include "libprojectM/projectM.hpp"
+#include "projectM.hpp"
 #include <QAbstractListModel>
 #include <QHash>
 

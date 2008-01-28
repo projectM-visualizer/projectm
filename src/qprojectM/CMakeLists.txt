@@ -12,10 +12,16 @@ set(QT_USE_OPENGL TRUE)
 # -> this will cause cmake to include and link against the OpenGL module
 include(${QT_USE_FILE} FindPkgConfig.cmake)
 
+#pkg_search_module(PROJECTM REQUIRED libprojectM)
+
 ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='"${PROJECTM_PREFIX}"')
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 ADD_DEFINITIONS(-DQT_PLUGIN)
 ADD_DEFINITIONS(-DQT_NO_DEBUG)
+
+
+
+
 ADD_DEFINITIONS(-DQT_SHARED)
 
 # the variable "qprojectM_SRCS" contains all .cpp files of this project
@@ -60,9 +66,12 @@ qt4_wrap_ui(qprojectM_UIS_H ${qprojectM_UIS})
 qt4_wrap_cpp(qprojectM_MOC_SRCS ${qprojectM_MOC_HDRS})
 
 ADD_LIBRARY(qprojectM SHARED ${qprojectM_SRCS} ${qprojectM_RC_SRCS} ${qprojectM_MOC_SRCS} ${qprojectM_UIS_H})
-LINK_DIRECTORIES(${PROJECTM_LDFLAGS})
 
-include_directories(${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${CMAKE_CURRENT_LIBRARY_DIR})
+SET_TARGET_PROPERTIES(qprojectM PROPERTIES VERSION 1.10 SOVERSION 1)
+
+LINK_DIRECTORIES(${PROJECTM_ROOT_BINARY_DIR} ${PROJECTM_LDFLAGS})
+
+include_directories(${PROJECTM_ROOT_SOURCE_DIR}/projectM-engine ${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${CMAKE_CURRENT_LIBRARY_DIR})
 
 # link the "qprojectM" target against the Qt libraries. which libraries exactly, is defined by the "include(${QT_USE_FILE})" line above, which sets up this variable.
 target_link_libraries(qprojectM projectM ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTXML_LIBRARIES} ${QT_LIBRARIES})

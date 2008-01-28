@@ -9,7 +9,7 @@ ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp MoodBar.cpp image_DXT.c image_
 
 
 
-SET_TARGET_PROPERTIES(projectM PROPERTIES VERSION 1.02 SOVERSION 1)
+SET_TARGET_PROPERTIES(projectM PROPERTIES VERSION 1.10 SOVERSION 1)
 
 
 

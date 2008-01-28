@@ -44,8 +44,8 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <math.h>
-#include <libprojectM/projectM.hpp>
-#include <libprojectM/QProjectM_MainWindow.hpp>
+#include <projectM.hpp>
+#include <QProjectM_MainWindow.hpp>
 #include <QApplication>
 #include <QtDebug>
 
