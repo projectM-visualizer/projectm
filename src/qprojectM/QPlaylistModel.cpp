@@ -8,8 +8,6 @@
 #include "QXmlPlaylistHandler.hpp"
 #include "QPlaylistModel.hpp"
 
-//#include "libprojectM/projectM.hpp"
-
 class XmlReadFunctor {
 	public:
 		XmlReadFunctor(QPlaylistModel & model) : m_model(model) {}
