@@ -20,7 +20,7 @@
       <mainprogram>/home/carm/projects/projectM/trunk/src/qprojectM-pulseaudio/qprojectM-pulseaudio</mainprogram>
       <programargs></programargs>
       <globaldebugarguments></globaldebugarguments>
-      <globalcwd>/home/carm/projects/projectM/trunk</globalcwd>
+      <globalcwd>/home/carm/projects/projectM/trunk/src/qprojectM-pulseaudio/</globalcwd>
       <useglobalprogram>false</useglobalprogram>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
@@ -61,7 +61,7 @@
     </other>
     <make>
       <abortonerror>false</abortonerror>
-      <numberofjobs>3</numberofjobs>
+      <numberofjobs>1</numberofjobs>
       <prio>0</prio>
       <dontact>false</dontact>
       <makebin></makebin>
