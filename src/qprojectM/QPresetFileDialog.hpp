@@ -28,7 +28,7 @@
 #include <QMainWindow>
 #include <QCloseEvent>
 #include <cassert>
-#include "libprojectM/projectM.hpp"
+#include <projectM.hpp>
 
 #include <iostream>
 #include <QFileDialog>
