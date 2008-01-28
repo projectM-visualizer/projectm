@@ -1,10 +1,12 @@
-#include "QPlaylistModel.hpp"
+
 #include <QIcon>
 #include <QXmlStreamReader>
 #include <QtDebug>
 #include <QFileInfo>
 #include <QMessageBox>
+
 #include "QXmlPlaylistHandler.hpp"
+#include "QPlaylistModel.hpp"
 
 //#include "libprojectM/projectM.hpp"
 
