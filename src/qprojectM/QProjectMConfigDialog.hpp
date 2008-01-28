@@ -1,4 +1,5 @@
 #ifndef QPROJECTM_CONFIG_DIALOG_HPP
+#define QPROJECTM_CONFIG_DIALOG_HPP
 #include "ui_QProjectMConfigDialog.h"
 #include "QProjectM_MainWindow.hpp"
 
