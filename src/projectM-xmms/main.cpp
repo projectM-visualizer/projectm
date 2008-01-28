@@ -41,7 +41,7 @@ www.gamedev.net/reference/programming/features/beatdetection/
 #include <math.h>
 #include "ConfigFile.h"
 
-#include <libprojectM/projectM.hpp>
+#include <projectM.hpp>
 
 #include "sdltoprojectM.h"
 #include "video_init.h"

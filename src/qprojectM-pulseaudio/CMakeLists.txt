@@ -7,10 +7,8 @@ include(${QT_USE_FILE} FindPkgConfig.cmake)
 FIND_PACKAGE(OpenGL)
 FIND_PACKAGE(Qt4 REQUIRED)
 
-# could be wrong
-#pkg_search_module(PROJECTM REQUIRED projectM qprojectM)
-
-#pkg_search_module(PULSE_AUDIO REQUIRED pulseaudio)
+pkg_search_module(PROJECTM REQUIRED libprojectM)
+pkg_search_module(PROJECTM REQUIRED libqprojectM)
 
 # the variable "qprojectM_SRCS" contains all .cpp files of this project
 set(qprojectM_pulseaudio_SRCS
@@ -35,9 +33,9 @@ ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='"${PROJECTM_PREFIX}"')
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 ADD_DEFINITIONS(-DQT_NO_DEBUG)
 
-INCLUDE_DIRECTORIES(${PROJECTM_INCLUDEDIR}  ${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${PROJECTM_ROOT_SOURCE_DIR}/projectM-engine ${PROJECTM_ROOT_SOURCE_DIR}/qprojectM ${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR})
 
-LINK_DIRECTORIES(${PROJECTM_LDFLAGS} ${PULSEAUDIO_LDFLAGS})
+LINK_DIRECTORIES(${PROJECTM_ROOT_BIN_DIR}/projectM-engine ${PROJECTM_ROOT_BIN_DIR}/qprojectM ${PROJECTM_LDFLAGS} ${PULSEAUDIO_LDFLAGS})
 
 ADD_EXECUTABLE(qprojectM-pulseaudio ${qprojectM_pulseaudio_SRCS} ${qprojectM_pulseaudio_MOC_SRCS} ${qprojectM_pulseaudio_UIS_H})
 
