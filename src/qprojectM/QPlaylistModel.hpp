@@ -23,10 +23,11 @@
 #define QPROJECTM_PLAYLISTMODEL_H
 
 #include <cassert>
-#include "libprojectM/projectM.hpp"
-
 #include <QAbstractTableModel>
 #include <QVector>
+
+#include <projectM.hpp>
+
 class QXmlStreamReader;
  class QPlaylistModel : public QAbstractTableModel
  {
