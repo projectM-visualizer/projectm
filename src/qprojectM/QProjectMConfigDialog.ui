@@ -37,7 +37,7 @@
     <string>Menu Font Path</string>
    </property>
   </widget>
-  <widget class="QToolButton" name="fontPathToolButton" >
+  <widget class="QToolButton" name="menuFontPathToolButton" >
    <property name="geometry" >
     <rect>
      <x>423</x>

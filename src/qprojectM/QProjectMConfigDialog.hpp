@@ -11,8 +11,9 @@ class QProjectMConfigDialog : public QDialog {
 		QProjectMConfigDialog(const std::string & configFile, QProjectMWidget * widget, QWidget * parent = 0, Qt::WindowFlags f = 0);
 	private:
 		void loadConfig();
-
 	private slots:
+		void openPlaylistFileDialog();
+		void openFontFileDialog();
 		void saveConfig();
 		void buttonBoxHandler(QAbstractButton * button);
 

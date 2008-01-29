@@ -1,5 +1,7 @@
 #include "QProjectMConfigDialog.hpp"
 #include <QtDebug>
+#include <QAction>
+#include "QPlaylistFileDialog.hpp"
 
 
 QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, QProjectMWidget * qprojectMWidget, QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f), _configFile(configFile), _qprojectMWidget(qprojectMWidget) {
@@ -7,6 +9,9 @@ QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, QPr
 	_ui.setupUi(this);
 	connect(_ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonBoxHandler(QAbstractButton*)));
 	connect(this, SIGNAL(projectM_Reset()), _qprojectMWidget, SLOT(resetProjectM()));
+	connect (_ui.startupPlaylistToolButton, SIGNAL(clicked()), this, SLOT(openPlaylistFileDialog()));
+	connect (_ui.titleFontPathToolButton, SIGNAL(clicked()), this, SLOT(openFontFileDialog()));
+	connect (_ui.menuFontPathToolButton, SIGNAL(clicked()), this, SLOT(openFontFileDialog()));
 	loadConfig();
 }
 
@@ -27,6 +32,23 @@ void QProjectMConfigDialog::buttonBoxHandler(QAbstractButton * button) {
 		default:
 			break;
 	}
+}
+
+void QProjectMConfigDialog::openPlaylistFileDialog() {
+	
+	QPlaylistFileDialog dialog(this);
+		
+	if (dialog.exec())
+	{
+		assert(!dialog.selectedFiles().empty());
+		_ui.startupPlaylistLineEdit->setText(dialog.selectedFiles()[0]);
+		
+	}
+}
+
+
+void QProjectMConfigDialog::openFontFileDialog() {
+	
 }
 
 void QProjectMConfigDialog::saveConfig() {
