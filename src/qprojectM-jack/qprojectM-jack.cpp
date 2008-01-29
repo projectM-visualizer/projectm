@@ -170,7 +170,7 @@ process (jack_nframes_t nframes, void *arg)
 
 		jack_transport_start(client);
 		if (client_state == Run)
-			client_state = Init;
+			client_state = Exit;
 	}
 
 	return 0;
