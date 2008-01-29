@@ -103,6 +103,7 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 	createToolBars();
 	createStatusBar();
 	readSettings();
+	
 	ui->presetPlayListDockWidget->hide();
 
 	connect ( ui->tableView, SIGNAL ( activated ( const QModelIndex & ) ),
@@ -124,6 +125,7 @@ void QProjectM_MainWindow::readConfig(const std::string & configFile ) {
 	
 	
 	ConfigFile config ( configFile );
+
 
 	if ( config.read ( "Fullscreen", false ) )
 		this->setWindowState ( this->windowState() | Qt::WindowFullScreen );
@@ -529,7 +531,7 @@ void QProjectM_MainWindow::createActions()
 	connect ( ui->actionSave_play_list, SIGNAL ( triggered() ), this, SLOT ( savePlaylist() ) );
 	connect ( ui->actionAbout_qprojectM, SIGNAL ( triggered() ), this, SLOT ( about() ) );
 	connect ( ui->actionConfigure_projectM, SIGNAL ( triggered() ), this, SLOT (openSettingsDialog()) );
-	connect(ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
+	connect ( ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
 
 }
 

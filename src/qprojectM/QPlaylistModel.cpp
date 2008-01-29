@@ -70,8 +70,7 @@ void QPlaylistModel::updateItemHighlights()
 	if ( rowCount() == 0 )
 		return;
 
-	emit ( dataChanged ( this->index ( 0,0 ), this->index ( rowCount()-1,columnCount()-1 ) ) )
-	;
+	emit ( dataChanged ( this->index ( 0,0 ), this->index ( rowCount()-1,columnCount()-1 ) ) );
 }
 
 bool QPlaylistModel::setData ( const QModelIndex & index, const QVariant & value, int role )
@@ -106,12 +105,18 @@ QVariant QPlaylistModel::ratingToIcon ( int rating )  const
 		case 5:
 			return QVariant ( QIcon ( ":/images/icons/face5.png" ) );
 		default:
-			return QVariant ( QIcon ( ":/images/icons/face0.png" ) );
+			if (rating < 0)
+				return QVariant ( QIcon ( ":/images/icons/face0.png" ) );
+			else 
+				return QVariant ( QIcon ( ":/images/icons/face5.png" ) );
 	}
 }
 
 QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::DisplayRole ) const
 {
+
+	if (!index.isValid())
+		return QVariant();
 
 	switch ( role )
 	{
