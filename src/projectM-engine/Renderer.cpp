@@ -19,12 +19,12 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 	//  this->gy=gy;
 	
 	this->totalframes = 1;
-	this->noSwitch = 0;
-	this->showfps = 0;
-	this->showtitle = 0;
-	this->showpreset = 0;
-	this->showhelp = 0;
-	this->showstats = 0;
+	this->noSwitch = false;
+	this->showfps = false;
+	this->showtitle = false;
+	this->showpreset = false;
+	this->showhelp = false;
+	this->showstats = false;
 	this->studio = 0;
 	this->realfps=0;
 	

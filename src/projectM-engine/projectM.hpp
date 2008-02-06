@@ -147,13 +147,12 @@ public:
 	int windowHeight;
 	std::string presetURL;
 	std::string titleFontURL;
-	std::string menuFontURL;
-	//bool fullScreenOnStartup;
-	//bool menuOnStartup;
+	std::string menuFontURL;		
 	int smoothPresetDuration;
 	int presetDuration;
 	float beatSensitivity;
 	bool aspectCorrection;
+	float easterEgg;
   };
 
 
@@ -212,7 +211,7 @@ public:
   virtual void presetSwitchedEvent(bool isHardCut, unsigned int index) const {};
 
 private:
-   
+  int sampledPresetDuration();
   BeatDetect * beatDetect;
   Renderer *renderer;
   Settings _settings;

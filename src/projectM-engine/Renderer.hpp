@@ -35,11 +35,11 @@ class Renderer
 
 public:
  
-  int showfps;
-  int showtitle;
-  int showpreset;
-  int showhelp;
-  int showstats;
+  bool showfps;
+  bool showtitle;
+  bool showpreset;
+  bool showhelp;
+  bool showstats;
   
   int studio;
   int correction;
@@ -101,7 +101,7 @@ private:
 #endif /** USE_FTGL */
   
   std::string title_fontURL;
-  std::string menu_fontURL;    
+  std::string menu_fontURL;
   std::string presetURL; 
 
   void draw_waveform(PresetOutputs * presetOutputs);
