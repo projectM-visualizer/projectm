@@ -38,7 +38,7 @@
 #endif
 
 #ifdef MACOS
-#include <stdio.h>
+#include <cstdio>
 extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #endif /** MACOS */
 
@@ -53,7 +53,7 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 
 			 
 #ifdef LINUX
-#include <stdlib.h>
+#include <cstdlib>
 #endif
 			 
 #ifdef LINUX
@@ -116,6 +116,8 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #else
 #define PATH_SEPARATOR UNIX_PATH_SEPARATOR
 #endif /** WIN32 */
+
+			 
 
 inline void DWRITE( char *fmt, ... ) {
 	return;
