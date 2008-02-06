@@ -1,4 +1,4 @@
-/**
+r/**
  * projectM -- Milkdrop-esque visualisation SDK
  * Copyright (C)2003-2007 projectM Team
  *

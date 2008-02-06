@@ -61,7 +61,7 @@
 #include "PresetChooser.hpp"
 #include "ConfigFile.h"
 #include "TextureManager.hpp"
-
+#include "RandomNumberGenerators.hpp"
 
 
 /*
@@ -124,14 +124,19 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
 	config.add("Menu Font", settings.menuFontURL);
 	config.add("Hard Cut Sensitivity", settings.beatSensitivity);
 	config.add("Aspect Correction", settings.aspectCorrection);
-	
-// 	
+	config.add("Easter Egg Parameter", settings.easterEgg);
+ 	
 	std::fstream file(configFile.c_str());	
 	if (file) {
 		file << config;		
 		return true;
 	} else
 		return false;
+}
+
+int projectM::sampledPresetDuration() {
+	return ( int ) (_settings.fps * fmax(1, fmin(60, RandomNumberGenerators::gaussian
+			(settings().presetDuration, settings().easterEgg))));
 }
 
 void projectM::readConfig (const std::string & configFile )
@@ -153,6 +158,8 @@ void projectM::readConfig (const std::string & configFile )
 			( "Title Font", CMAKE_INSTALL_PREFIX "/share/projectM/fonts/Vera.ttf" );
 	_settings.menuFontURL = config.read<string> 
 			( "Menu Font", CMAKE_INSTALL_PREFIX "/share/projectM/fonts/VeraMono.ttf" );
+	_settings.easterEgg = config.read<float> ( "Easter Egg Parameter", 0.0);
+	
 	
 	 projectM_init ( _settings.meshX, _settings.meshY, _settings.fps,
 			 _settings.textureSize, _settings.windowWidth,_settings.windowHeight);
@@ -298,6 +305,7 @@ DLLEXPORT void projectM::renderFrame()
 		{
 			m_activePreset = m_activePreset2;
 			smoothFrame=0;
+			avgtime = sampledPresetDuration();
 //		printf("Smooth Finished\n");
 		}
 
@@ -352,7 +360,7 @@ void projectM::projectM_reset()
 
 
 	/** Frames per preset */
-	this->avgtime = 500;
+	this->avgtime = sampledPresetDuration();
 
 
 	/** More other stuff */
@@ -518,11 +526,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	else mspf = 0;
 
 
-	this->avgtime= ( int ) ( this->presetInputs.fps*settings().presetDuration);
-
-
-
-
+	this->avgtime= sampledPresetDuration();
 	this->presetInputs.gx = gx;
 	this->presetInputs.gy = gy;
 
@@ -589,7 +593,7 @@ void projectM::projectM_initengine()
 	this->presetInputs.progress = 0;
 	this->presetInputs.frame = 1;
 
-	this->avgtime = 600;
+	this->avgtime = sampledPresetDuration();
 //bass_thresh = 0;
 
 	/* PER_FRAME CONSTANTS END */

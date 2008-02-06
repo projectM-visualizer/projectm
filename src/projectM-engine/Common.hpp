@@ -51,6 +51,11 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define STRING_BUFFER_SIZE 1024*150
 #define STRING_LINE_SIZE 1024
 
+			 
+#ifdef LINUX
+#include <stdlib.h>
+#endif
+			 
 #ifdef LINUX
 #define projectM_isnan isnan
 #endif

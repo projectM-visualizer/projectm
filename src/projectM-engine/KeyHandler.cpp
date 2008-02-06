@@ -224,22 +224,12 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		smoothFrame = 0;
 	      break;
 	    case PROJECTM_K_l:
-	      if (renderer->noSwitch==0)renderer->noSwitch=1; else  renderer->noSwitch=0;
-	      //	      current_interface = BROWSER_INTERFACE;
-	      //	      loadBrowser();
-	      break;
-	    case PROJECTM_K_e:
-	      current_interface = EDITOR_INTERFACE;
-//	      loadEditor(active_preset->per_frame_eqn_string_buffer,(void (*)()) reloadPerFrame, 
-//			 80, 24, 140, 60, 0, 0);
+	      if (renderer->noSwitch==0)
+		renderer->noSwitch=!renderer->noSwitch;
 	      break;
 	    case PROJECTM_K_s:
-            renderer->studio++;
-//	      current_interface = EDITOR_INTERFACE;
-//	      loadEditor("[FILE NAME HERE]", (void (*)())savePreset, 
-//			 50, 1, 100, 5, 0, .92);
+            	renderer->studio++;
 	    case PROJECTM_K_i:
-            DWRITE( "PROJECTM_K_i\n" );
 	        break;
 	    case PROJECTM_K_z:
 	      break;
@@ -256,8 +246,6 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      renderer->showhelp=0;
 	      renderer->showstats=0;
 	      renderer->showfps=0;
-//	      current_interface = MENU_INTERFACE;	      
-//	      showMenu();
 	      break;	     
 	    case PROJECTM_K_t:
 	      break;
