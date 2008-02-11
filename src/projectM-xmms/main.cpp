@@ -71,7 +71,7 @@ VisPlugin projectM_vtable = {
   NULL, // Handle, filled in by xmms
   NULL, // Filename, filled in by xmms
   0,                     // Session ID
-  "projectM v1.00",       // description
+  (char*)"projectM v1.00",       // description
   2, // # of PCM channels for render_pcm()
   0, // # of freq channels wanted for render_freq()
   projectM_xmms_init,     // Called when plugin is enabled
@@ -332,7 +332,7 @@ extern "C" void projectM_render_pcm(gint16 pcm_data[2][512])
 {
   //SDL_mutexP(mutex); while ( SDL_SemValue(sem)==1 )
   if ( SDL_SemValue(sem)==1 )
-        globalPM->pcm->addPCM16(pcm_data);
+        globalPM->pcm()->addPCM16(pcm_data);
 	 
        	//SDL_mutexV(mutex);
 	

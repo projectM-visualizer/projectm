@@ -42,7 +42,7 @@ std::string read_config();
 FILE *debugFile = NULL;
 #endif
 
-volatile enum {
+volatile enum client_state_t {
 	Init,
 	Run,
 	Exit
@@ -178,12 +178,12 @@ void renderLoop() {
 		}
                  
 
-                if(key == SDLK_f)
+                if((SDLKey)key == SDLK_f)
                 {                                    
                     resize_display(fvw, fvh, fullscreen);
                     globalPM->projectM_resetGL( fvw, fvh ); 
                 }
-		else if(key == SDLK_q) { exit (1);}
+		else if((SDLKey)key == SDLK_q) { exit (1);}
                 else  {globalPM->key_handler(evt,key,mod);}
 
             }
