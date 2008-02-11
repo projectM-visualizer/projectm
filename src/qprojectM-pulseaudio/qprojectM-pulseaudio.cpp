@@ -93,7 +93,7 @@ int main ( int argc, char*argv[] )
 	std::string config_file;
 	config_file = read_config();
 
-	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow ( config_file);
+	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow ( config_file, 0);
 	
 	QAction pulseAction("Pulse audio settings...", mainWindow);
 	
@@ -102,6 +102,8 @@ int main ( int argc, char*argv[] )
 	mainWindow->show();
 
 	QPulseAudioThread * pulseThread = new QPulseAudioThread(argc, argv, mainWindow->getQProjectM(), mainWindow);
+	
+	mainWindow->getQProjectMWidget()->setAudioMutex(pulseThread->mutex());
 	
 	// First projectM_Initialized() has already happened, so manually start		
 	pulseThread->start();

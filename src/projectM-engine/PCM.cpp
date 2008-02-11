@@ -107,14 +107,6 @@ void PCM::addPCMfloat(const float *PCMdata, int samples) const
 {
   int i,j;
 
-  std::cerr << "start:" << this->start << std::endl;
-  static bool firstTime = true;
-  
-  if (firstTime) {
-	  start = 0;
-	  firstTime = false;
-  }
-  
   for(i=0;i<samples;i++)
     {
       j=i+start;
