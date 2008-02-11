@@ -37,7 +37,6 @@ void QPulseAudioDeviceChooser::readSettings()
 
 void QPulseAudioDeviceChooser::updateDevicesListViewLock(int state) {	
 	
-		
 	
 	devicesListView->setEnabled(state != Qt::Checked);
 		
@@ -51,7 +50,7 @@ QPulseAudioDeviceChooser::QPulseAudioDeviceChooser ( QPulseAudioThread * qpulseA
 {
 
 	setupUi ( this );
-	readSettings();
+	readSettings();	
 	this->devicesListView->setModel ( &_qpulseAudioDeviceModel );
 
 	connect ( tryFirstPlayBackMonitorCheckBox, SIGNAL(stateChanged(int)), this, SLOT(updateDevicesListViewLock(int)));

@@ -3,7 +3,7 @@
 #include <cmath>
 
 namespace RandomNumberGenerators {
-7	
+		
 	
 }
 

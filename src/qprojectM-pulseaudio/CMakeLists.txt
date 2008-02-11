@@ -7,8 +7,10 @@ include(${QT_USE_FILE} FindPkgConfig.cmake)
 FIND_PACKAGE(OpenGL)
 FIND_PACKAGE(Qt4 REQUIRED)
 
+
 pkg_search_module(PROJECTM REQUIRED libprojectM)
 pkg_search_module(PROJECTM REQUIRED libqprojectM)
+pkg_search_module(PROJECTM REQUIRED pulse)
 
 # the variable "qprojectM_SRCS" contains all .cpp files of this project
 set(qprojectM_pulseaudio_SRCS

@@ -196,7 +196,7 @@ int worker_func(void*)
             key = sdl2pmKeycode( event.key.keysym.sym );
             mod = sdl2pmModifier( event.key.keysym.mod );
 
-            if ( evt == PROJECTM_KEYDOWN ) {                 
+            if ( evt == PROJECTM_KEYDOWN ) {
 	   
 	      if(key == PROJECTM_K_c)
 		{

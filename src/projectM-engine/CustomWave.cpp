@@ -411,42 +411,42 @@ CustomWave::CustomWave(int _id):
 	param = Param::new_param_float ( "q1", P_FLAG_QVAR, &this->q1, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		DWRITE ( "%s\n", "failed to insert param!" );
+		
 	}
 	param = Param::new_param_float ( "q2", P_FLAG_QVAR, &this->q2, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		DWRITE ( "%s\n", "failed to insert param!" );
+		
 	}
 	param = Param::new_param_float ( "q3", P_FLAG_QVAR, &this->q3, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		DWRITE ( "%s\n", "failed to insert param!" );
+		
 	}
 	param = Param::new_param_float ( "q4", P_FLAG_QVAR, &this->q4, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		DWRITE ( "%s\n", "failed to insert param!" );
+		
 	}
 	param = Param::new_param_float ( "q5", P_FLAG_QVAR, &this->q5, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		DWRITE ( "%s\n", "failed to insert param!" );
+		
 	}
 	param = Param::new_param_float ( "q6", P_FLAG_QVAR, &this->q6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		DWRITE ( "%s\n", "failed to insert param!" );
+		
 	}
 	param = Param::new_param_float ( "q7", P_FLAG_QVAR, &this->q7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		DWRITE ( "%s\n", "failed to insert param!" );
+		
 	}
 	param = Param::new_param_float ( "q8", P_FLAG_QVAR, &this->q8, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		DWRITE ( "%s\n", "failed to insert param!" );
+		
 	}
   /* End of parameter loading. Note that the read only parameters associated
      with custom waves (ie, sample) are variables stored in PresetFrameIO.hpp,

@@ -124,9 +124,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 	
 	
 	
-	totalframes++;
-	
-	DWRITE( "start Pass 1 \n" );
+	totalframes++;		
 	
 	//BEGIN PASS 1
 	//
@@ -163,8 +161,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 	
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
-	
-	DWRITE( "renderFrame: renderTarget->texsize: %d x %d\n", this->renderTarget->texsize, this->renderTarget->texsize );
+		
 	
 	if(this->renderTarget->useFBO)
 	{
@@ -218,7 +215,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 	}
 	else  glViewport( 0, 0, this->vw, this->vh );
 	
-	DWRITE( "viewport: %d x %d\n", this->vw, this->vh );
+	
 	
 	glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID[0] );
 	
@@ -249,7 +246,6 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 	if(renderTarget->renderToTexture)
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 	
-	DWRITE("End of Pass 2\n" );
 }
 
 
@@ -708,8 +704,6 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 	
 	presetOutputs->two_waves = false;
 	
-	DWRITE( "WaveformMath: %d\n", presetOutputs->nWaveMode );
-	
 	switch(presetOutputs->nWaveMode)
 	{
 		
@@ -720,7 +714,6 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 			presetOutputs->wave_scale =1.0;
 			presetOutputs->wave_y=-1*(presetOutputs->wave_y-1.0);
 			
-			DWRITE( "nsamples: %d\n", beatDetect->pcm->numsamples );
 			
 			presetOutputs->wave_samples = isSmoothing ? 512-32 : beatDetect->pcm->numsamples;
 			// presetOutputs->wave_samples= 512-32;
@@ -1377,7 +1370,7 @@ void Renderer::draw_help( )
 	
 #ifdef USE_FTGL
 //glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-	DWRITE("pre-help");
+
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glPushMatrix();
 	glTranslatef(0, 1, 0);
@@ -1426,7 +1419,7 @@ void Renderer::draw_help( )
 	
 	glPopMatrix();
 	//         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-	DWRITE("post-help");
+
 #endif /** USE_FTGL */
 }
 

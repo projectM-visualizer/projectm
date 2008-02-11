@@ -2,16 +2,16 @@
 #include <QtDebug>
 #include <QAction>
 #include "QPlaylistFileDialog.hpp"
+#include <QSettings>
 
-
-QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, QProjectMWidget * qprojectMWidget, QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f), _configFile(configFile), _qprojectMWidget(qprojectMWidget) {
+QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, QProjectMWidget * qprojectMWidget, QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f), _configFile(configFile), _qprojectMWidget(qprojectMWidget), _settings("projectM", "qprojectM") {
 	
 	_ui.setupUi(this);
 	connect(_ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonBoxHandler(QAbstractButton*)));
 	connect(this, SIGNAL(projectM_Reset()), _qprojectMWidget, SLOT(resetProjectM()));
 	connect (_ui.startupPlaylistToolButton, SIGNAL(clicked()), this, SLOT(openPlaylistFileDialog()));
-	connect (_ui.titleFontPathToolButton, SIGNAL(clicked()), this, SLOT(openFontFileDialog()));
-	connect (_ui.menuFontPathToolButton, SIGNAL(clicked()), this, SLOT(openFontFileDialog()));
+	connect (_ui.titleFontPathToolButton, SIGNAL(clicked()), this, SLOT(openTitleFontFileDialog()));
+	connect (_ui.menuFontPathToolButton, SIGNAL(clicked()), this, SLOT(openMenuFontFileDialog()));
 	loadConfig();
 }
 
@@ -47,7 +47,32 @@ void QProjectMConfigDialog::openPlaylistFileDialog() {
 }
 
 
-void QProjectMConfigDialog::openFontFileDialog() {
+void QProjectMConfigDialog::openMenuFontFileDialog() {
+	
+	
+	QFileDialog dialog(this, "Select a menu font", _settings.value("Menu Font Directory", QString()).toString(), "True Type Fonts (*.ttf)" );
+	dialog.setFileMode(QFileDialog::ExistingFile);
+	
+	
+	if (dialog.exec()) {
+		assert(!dialog.selectedFiles().empty());
+		_ui.menuFontPathLineEdit->setText(dialog.selectedFiles()[0]);
+	
+		_settings.setValue("Menu Font Directory", dialog.directory().absolutePath());
+	}
+	
+	
+}
+
+void QProjectMConfigDialog::openTitleFontFileDialog() {
+	QFileDialog dialog(this, "Select a title font", _settings.value("Title Font Directory", QString()).toString(), "True Type Fonts (*.ttf)" );
+	dialog.setFileMode(QFileDialog::ExistingFile);
+
+	if (dialog.exec()) {
+		assert(!dialog.selectedFiles().empty());
+		_ui.titleFontPathLineEdit->setText(dialog.selectedFiles()[0]);
+		_settings.setValue("Title Font Directory", dialog.directory().absolutePath());
+	}
 	
 }
 
@@ -69,9 +94,13 @@ void QProjectMConfigDialog::saveConfig() {
 	settings.fps = _ui.maxFPSSpinBox->value();
 	settings.aspectCorrection = _ui.useAspectCorrectionCheckBox->checkState() == Qt::Checked;
 	settings.beatSensitivity = _ui.beatSensitivitySpinBox->value();
-		
+	settings.easterEgg = _ui.easterEggParameterSpinBox->value();
 	projectM::writeConfig(_configFile, settings);
 	
+	QSettings qSettings("projectM", "qprojectM");
+	
+	qSettings.setValue("FullscreenOnStartup", _ui.fullscreenOnStartupCheckBox->checkState() == Qt::Checked);
+	qSettings.setValue("MenuOnStartup", _ui.menuOnStartupCheckBox->checkState() == Qt::Checked);
 	qDebug() << "save end";
 }
 
@@ -87,8 +116,8 @@ void QProjectMConfigDialog::populateTextureSizeComboBox() {
 
 void QProjectMConfigDialog::loadConfig() {
 	
-	qDebug() << "load config";
-	const projectM::Settings & settings =(* _qprojectMWidget->getQProjectM()).settings();
+	qDebug() << "load config BEGIN";
+	const projectM::Settings & settings = (* _qprojectMWidget->getQProjectM()).settings();
 	
 	_ui.meshSizeWidthSpinBox->setValue(settings.meshX);
 	_ui.meshSizeHeightSpinBox->setValue(settings.meshY);
@@ -109,7 +138,7 @@ void QProjectMConfigDialog::loadConfig() {
 	
 	_ui.smoothPresetDurationSpinBox->setValue(settings.smoothPresetDuration);
 	_ui.presetDurationSpinBox->setValue(settings.presetDuration);
-	
+	_ui.easterEggParameterSpinBox->setValue(settings.easterEgg);
 	qDebug() << "load config END";
 		
 }

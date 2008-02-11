@@ -122,7 +122,7 @@ class projectM
 {
 public:
 
-  PCM *pcm;
+  
     
   DLLEXPORT projectM(std::string config_file);
   DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url,std::string title_fonturl, std::string title_menuurl);
@@ -210,7 +210,11 @@ public:
   /// Occurs when active preset has switched. Switched to index is returned
   virtual void presetSwitchedEvent(bool isHardCut, unsigned int index) const {};
 
+  inline const PCM * pcm() {
+	  return _pcm;
+  }
 private:
+	
   int sampledPresetDuration();
   BeatDetect * beatDetect;
   Renderer *renderer;
@@ -278,6 +282,8 @@ private:
   
   /// A preset outputs container used for smooth preset switching
   PresetOutputs presetOutputs2;
+  
+  PCM * _pcm;
   
   int oldFrame;// = 1;
 
