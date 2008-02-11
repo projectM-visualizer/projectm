@@ -4,30 +4,10 @@
 #include <QString>
 #include <QVector>
 
-
-
-/* $Id: pacat.c 1426 2007-02-13 15:35:19Z ossman $ */
-
-/***
-  This file is part of PulseAudio.
+/* Adopted from PulseAudio.
 
   Copyright 2004-2006 Lennart Poettering
   Copyright 2006 Pierre Ossman <ossman@cendio.se> for Cendio AB
-
-  PulseAudio is free software; you can redistribute it and/or modify
-  it under the terms of the GNU Lesser General Public License as published
-  by the Free Software Foundation; either version 2 of the License,
-  or (at your option) any later version.
-
-  PulseAudio is distributed in the hope that it will be useful, but
-  WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-  General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public License
-  along with PulseAudio; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
-  USA.
 ***/
 
 #ifdef HAVE_CONFIG_H
@@ -44,6 +24,8 @@
 #include <getopt.h>
 #include <fcntl.h>
 
+#include <QSettings>
+#include "QProjectM_MainWindow.hpp"			
 
 #define TIME_EVENT_USEC 50000
 
@@ -54,30 +36,30 @@
 #define BUFSIZE 1024
 
 
-static pa_context *context = NULL;
-static pa_stream *stream = NULL;
-static pa_mainloop_api *mainloop_api = NULL;
-static pa_time_event *time_event = NULL;
-static float *buffer = NULL;
-static size_t buffer_length = 0, buffer_index = 0;
-static pa_threaded_mainloop* mainloop = NULL;
-static pa_io_event* stdio_event = NULL;
-static char *server = NULL;
-static char *stream_name = NULL, *client_name = NULL, *device =0;
+ pa_context *QPulseAudioThread::context = NULL;
+ pa_stream *QPulseAudioThread::stream = NULL;
+ pa_mainloop_api *QPulseAudioThread::mainloop_api = NULL;
+ pa_time_event *QPulseAudioThread::time_event = NULL;
+ float *QPulseAudioThread::buffer = NULL;
+ size_t QPulseAudioThread::buffer_length = 0, QPulseAudioThread::buffer_index = 0;
+ pa_threaded_mainloop * QPulseAudioThread::mainloop = NULL;
+ pa_io_event * QPulseAudioThread::stdio_event = NULL;
+ char * QPulseAudioThread::server = NULL;
+ char * QPulseAudioThread::stream_name = NULL, *QPulseAudioThread::client_name = NULL, *QPulseAudioThread::device =0;
 
-static int verbose = 0;
-static pa_volume_t volume = PA_VOLUME_NORM;
+ int QPulseAudioThread::verbose = 0;
 
-static pa_channel_map channel_map;
-static int channel_map_set = 0;
-static pa_sample_spec sample_spec ;
+ pa_volume_t QPulseAudioThread::volume = PA_VOLUME_NORM;
+
+ pa_channel_map QPulseAudioThread::channel_map;
+ int QPulseAudioThread::channel_map_set = 0;
+ pa_sample_spec QPulseAudioThread::sample_spec ;
 
 QPulseAudioThread::SourceContainer QPulseAudioThread::s_sourceList;
 QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::s_sourcePosition;
-
-#include <QSettings>
-			 
-QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, projectM * _projectM, QObject * parent ) : QThread ( parent ), argc ( _argc ), argv ( _argv ),  m_projectM ( _projectM )
+ 
+ 
+QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, QProjectM * _projectM, QObject * parent ) : QThread ( parent ), argc ( _argc ), argv ( _argv ),  m_projectM ( _projectM )
 {
 			
 }
@@ -98,10 +80,10 @@ QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::readSettin
 
 	if ( tryFirst )
 	{
-		qDebug() << "try first is true";
+
 		return s_sourceList.end();
 	} else {
-		qDebug() << "try first is false";
+
 		QString deviceName = settings.value("pulseAudioDeviceName", QString()).toString();
 		
 		qDebug() << "device name is " << deviceName;
@@ -110,7 +92,7 @@ QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::readSettin
 			if (*pos == deviceName) {
 				return pos;
 			}
-		}	
+		}
 	}
 	return s_sourceList.end();
 }
@@ -148,7 +130,6 @@ void QPulseAudioThread::cleanup()
 		pa_signal_done();
 		pa_threaded_mainloop_free ( mainloop );
 	}
-
 
 	if ( buffer )
 		pa_xfree ( buffer );
@@ -276,8 +257,11 @@ void QPulseAudioThread::pa_stream_success_callback(pa_stream *s, int success, vo
 	else
 		qDebug() << "play";
 	
-	pausedFlag = !pausedFlag;
 	
+	pausedFlag = !pausedFlag;
+	//m_projectM._audioMutex.unlock();
+	// necessarily static
+	// can do pulse stuff here...
 }
 
 
@@ -448,7 +432,7 @@ void QPulseAudioThread::context_drain_complete ( pa_context*c, void *userdata )
 /* Some data may be written to STDOUT */
 void QPulseAudioThread::stdout_callback ( pa_mainloop_api*a, pa_io_event *e, int fd, pa_io_event_flags_t f, void *userdata )
 {
-	ssize_t r;
+	
 	assert ( a == mainloop_api && e && stdio_event == e );
 
 	if ( !buffer )
@@ -458,15 +442,19 @@ void QPulseAudioThread::stdout_callback ( pa_mainloop_api*a, pa_io_event *e, int
 	}
 	else
 	{
-		projectM * prjm = static_cast<projectM *> ( userdata );
+		QProjectM * prjm = static_cast<QProjectM *> ( userdata ); 
 		//int * int_buf = (int *) buffer;
 		//qDebug() << int_buf[buffer_index];
 		//qDebug() << buffer[buffer_index];
-
-		prjm->pcm->addPCMfloat 
-			( buffer+buffer_index, buffer_length / ( sizeof ( float ) ) );
+		assert(prjm);
+		assert(prjm->pcm());
+		assert(buffer);
+		qDebug() << "buffer index: " << buffer_index << ", buffer length:" << buffer_length;
+		prjm->pcm()->addPCMfloat 
+				( buffer+buffer_index, buffer_length / ( sizeof ( float ) ) );
+		
 		assert ( buffer_length );
-
+		
 		pa_xfree ( buffer );
 		buffer = NULL;
 		buffer_length = buffer_index = 0;
@@ -609,7 +597,7 @@ void QPulseAudioThread::run()
 
 	const char * error = "FOO";
 	int ret = 1, r, c;
-	char *bn = "projectM";
+	const char *bn = "projectM";
 	pa_operation * operation ;
 	sample_spec.format = PA_SAMPLE_FLOAT32LE;
 	sample_spec.rate = 44100;
@@ -666,6 +654,7 @@ void QPulseAudioThread::run()
 	signal ( SIGPIPE, SIG_IGN );
 #endif
 
+	assert(m_projectM);
 	if ( ! ( stdio_event = mainloop_api->io_new ( mainloop_api,
 	                       STDOUT_FILENO,
 	                       PA_IO_EVENT_OUTPUT,

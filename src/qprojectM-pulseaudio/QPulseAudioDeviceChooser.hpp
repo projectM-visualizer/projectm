@@ -8,7 +8,7 @@ class QDialog;
 
 
 class QPulseAudioDeviceChooser : public QDialog, public Ui::pulseDeviceChooserDialog {
-
+	
 	Q_OBJECT
 
 	public:

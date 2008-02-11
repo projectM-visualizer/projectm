@@ -29,6 +29,7 @@
 #include <QGLWidget>
 #include <QHash>
 #include <QtDebug>
+#include <QMutex>
 
 #include "projectM.hpp"
 
@@ -80,8 +81,7 @@ class QProjectMWidget : public QGLWidget
      QProjectM * getQProjectM() { return m_projectM; }
 
 	 private:
-     void destroyProjectM() {
-
+     	     void destroyProjectM() {
 	     emit(projectM_BeforeDestroy());
 	
 	     if (m_projectM) {	
@@ -89,26 +89,40 @@ class QProjectMWidget : public QGLWidget
 		     m_projectM = 0;
 	     }
      }
+
  public slots:
 	 
      void resetProjectM() {
+	
+	qDebug() << "reset start";
+	// First wait for audio thread to stop by
+	// waiting on it's mutex
+//	s_audioMutex.tryLock(20000);
+	
+	// Now destroy the projectM instance
 	destroyProjectM();
+	
+	// Make a new projectM instance and reset the opengl state
 	initializeGL();
+	
+	// Allow audio thread to continue its business
+//	_audioMutex.unlock();
+	
 	qDebug() << "reinit'ed";
      }
-     
+
      void setPresetLock(int state) {
 		m_projectM->setPresetLock((bool)state);
-		presetLockChanged((bool)state);
+		emit(presetLockChanged((bool)state));
      }
   signals:
 	void projectM_BeforeDestroy();
-	void projectM_Initialized(projectM *);
+	void projectM_Initialized(QProjectM *);
 	void presetLockChanged(bool isLocked);
  private:
 	std::string config_file;
 	QProjectM * m_projectM;
-
+	QMutex _audioMutex;
  protected:
 
 
@@ -159,14 +173,15 @@ void keyReleaseEvent ( QKeyEvent * e )  {
 
      void initializeGL()
      {
+	
+	
 	this->m_projectM = new QProjectM(config_file);
 	projectM_Initialized(m_projectM);
      }
 
      void resizeGL(int w, int h)
      {
-         // setup viewport, projection etc.:
-	/// @bug is setup necessary on resize or should just be in initializeGL() ?
+        // Setup viewport, projection etc	
 	setup_opengl(w,h);
 	m_projectM->projectM_resetGL(  w, h ); 
      }
@@ -180,7 +195,7 @@ void keyReleaseEvent ( QKeyEvent * e )  {
 
  void setup_opengl( int w, int h )
 {
-   
+
     /* Our shading model--Gouraud (smooth). */
      glShadeModel( GL_SMOOTH);
     /* Culling. */
@@ -201,12 +216,12 @@ void keyReleaseEvent ( QKeyEvent * e )  {
     //    gluOrtho2D(0.0, (GLfloat) width, 0.0, (GLfloat) height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();  
-   
-    //    glFrustum(0.0, height, 0.0,width,10,40);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+ 
+  //    glFrustum(0.0, height, 0.0,width,10,40);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
 
-glDrawBuffer(GL_BACK); 
+  glDrawBuffer(GL_BACK); 
   glReadBuffer(GL_BACK); 
   glEnable(GL_BLEND); 
 
@@ -248,6 +263,7 @@ public:
       virtual ~QProjectM_MainWindow();
       void registerSettingsAction(QAction * action);
       void unregisterSettingsAction(QAction * action);
+      void setMenuVisible(bool visible);
 
       void keyReleaseEvent ( QKeyEvent * e );
       QProjectM * getQProjectM();
@@ -287,11 +303,12 @@ private slots:
       QString m_currentPlaylistFile;
 
       QPlaylistModel * playlistModel;
-      Ui::QProjectM_MainWindow * ui;      
+      Ui::QProjectM_MainWindow * ui;
       QProjectMConfigDialog * configDialog;
 
       QHash<QString, PlaylistItemVector*> historyHash;
 
+      bool _menuVisible;
       int oldPresetIndex;
       QTimer * m_timer;
 	
