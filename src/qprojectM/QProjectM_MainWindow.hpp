@@ -70,8 +70,8 @@ class QProjectMWidget : public QGLWidget
      Q_OBJECT        // must include this if you use Qt signals/slots
 
  public:
-     QProjectMWidget(const std::string & _config_file, QWidget *parent)
-         : QGLWidget(parent), config_file(_config_file), m_projectM(0) {}
+     QProjectMWidget(const std::string & _config_file, QWidget *parent, QMutex * audioMutex)
+         : QGLWidget(parent), config_file(_config_file), m_projectM(0), m_audioMutex(audioMutex) {}
      ~QProjectMWidget() { destroyProjectM(); }
 
      inline const std::string & configFile() {
@@ -98,6 +98,7 @@ class QProjectMWidget : public QGLWidget
 	// First wait for audio thread to stop by
 	// waiting on it's mutex
 //	s_audioMutex.tryLock(20000);
+	m_audioMutex->tryLock();
 	
 	// Now destroy the projectM instance
 	destroyProjectM();
@@ -106,11 +107,18 @@ class QProjectMWidget : public QGLWidget
 	initializeGL();
 	
 	// Allow audio thread to continue its business
-//	_audioMutex.unlock();
-	
+	if (m_audioMutex) {
+		qDebug() << "UNLOCKED";
+		m_audioMutex->unlock();
+	}
 	qDebug() << "reinit'ed";
      }
 
+     
+     void setAudioMutex(QMutex * mutex) {
+	     m_audioMutex = mutex;	
+     }
+     
      void setPresetLock(int state) {
 		m_projectM->setPresetLock((bool)state);
 		emit(presetLockChanged((bool)state));
@@ -122,7 +130,8 @@ class QProjectMWidget : public QGLWidget
  private:
 	std::string config_file;
 	QProjectM * m_projectM;
-	QMutex _audioMutex;
+	
+	QMutex * m_audioMutex;
  protected:
 
 
@@ -259,12 +268,13 @@ public:
 
       typedef QVector<PlaylistItemMetaData> PlaylistItemVector;
 
-      QProjectM_MainWindow(const std::string & config_file);
+      QProjectM_MainWindow(const std::string & config_file, QMutex * audioMutex);
       virtual ~QProjectM_MainWindow();
       void registerSettingsAction(QAction * action);
       void unregisterSettingsAction(QAction * action);
       void setMenuVisible(bool visible);
 
+      
       void keyReleaseEvent ( QKeyEvent * e );
       QProjectM * getQProjectM();
       void refreshPlaylist();

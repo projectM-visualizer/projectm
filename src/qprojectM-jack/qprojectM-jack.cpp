@@ -197,7 +197,7 @@ std::string config_file;
 config_file = read_config();
 
 
-   QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow(config_file);
+   QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow(config_file, 0);
    mainWindow->show();
 
    globalPM = mainWindow->getQProjectM();

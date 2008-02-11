@@ -70,7 +70,7 @@ class PlaylistWriteFunctor {
 
 };
 
-QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
+QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QMutex * audioMutex)
 		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), m_QPlaylistFileDialog ( new QPlaylistFileDialog ( this ) ), 
 		oldPresetIndex ( -1 ), playlistModel(0), configDialog(0), _menuVisible(true)
 {
@@ -79,7 +79,7 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 	ui = new Ui::QProjectM_MainWindow();	
 	ui->setupUi ( this );
 	
-	m_QProjectMWidget = new QProjectMWidget ( config_file, this );
+	m_QProjectMWidget = new QProjectMWidget ( config_file, this, audioMutex);
 
 	m_timer = new QTimer ( this );
 	connect ( m_timer, SIGNAL ( timeout() ), m_QProjectMWidget, SLOT ( updateGL() ) );
@@ -220,9 +220,13 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 	ui->tableView->setModel ( playlistModel );
 	
 	/// @bug only do this at startup?
-	refreshPlaylist();
-
+	static bool firstOfRefreshPlaylist = true;
 	
+	if (firstOfRefreshPlaylist) {
+		refreshPlaylist();
+		firstOfRefreshPlaylist = false;
+	}
+
 	if (!configDialog) {
 		configDialog = new QProjectMConfigDialog(m_QProjectMWidget->configFile(), m_QProjectMWidget, this);
 		
