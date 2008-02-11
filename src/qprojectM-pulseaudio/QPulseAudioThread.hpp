@@ -6,7 +6,8 @@
 #include <QString>
 #include <QModelIndex>
 #include <QHash>
-
+#include <QtDebug>
+// 
 extern "C"
 {
 #include <pulse/introspect.h>
@@ -14,7 +15,7 @@ extern "C"
 #include <pulse/browser.h>
 }
 
-class projectM;
+class QProjectM;
 
 
 class QPulseAudioThread : public QThread
@@ -23,7 +24,7 @@ class QPulseAudioThread : public QThread
 	public:		
 		typedef QHash<int, QString> SourceContainer;
 		QPulseAudioThread () {}
-		QPulseAudioThread(int _argc, char **_argv, projectM * projectM, QObject *parent);
+		QPulseAudioThread(int _argc, char **_argv, QProjectM * projectM, QObject *parent);
 		virtual ~QPulseAudioThread();
 		void run();
 		void cleanup();
@@ -38,9 +39,10 @@ class QPulseAudioThread : public QThread
 		}
 
 	public slots:
-		inline void projectM_New(projectM * projectM) {			
+		inline void projectM_New(QProjectM * projectM) {			
 			m_projectM = projectM;
-			cork();			
+			qDebug() << "CORKING";
+			cork();
 		}
 		
 		void cork();
@@ -55,6 +57,8 @@ class QPulseAudioThread : public QThread
 		void deviceChanged();
 	private:
 		
+		QProjectM * m_projectM;
+// 				
 		static SourceContainer::const_iterator readSettings();
 
 		static void reconnect(SourceContainer::const_iterator pos);
@@ -83,8 +87,26 @@ class QPulseAudioThread : public QThread
 		static SourceContainer s_sourceList;
 		static SourceContainer::const_iterator s_sourcePosition;
 		int argc;
-		char ** argv;
-		projectM * m_projectM;
+		char ** argv;	
+		static pa_context *context;
+		static pa_stream *stream;
+		static pa_mainloop_api *mainloop_api;
+		static pa_time_event *time_event;
+		static float * buffer;
+		static size_t buffer_length, buffer_index;
+		static pa_threaded_mainloop * mainloop;
+		static pa_io_event * stdio_event;
+		static char * server;
+		static char * stream_name, *client_name, *device;
 
+		static int verbose;
+
+		static pa_volume_t volume;
+
+		static pa_channel_map channel_map;
+		static int channel_map_set;;
+		static pa_sample_spec sample_spec ;
+				
+				
 };
 #endif

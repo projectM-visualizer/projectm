@@ -91,10 +91,7 @@ param->matrix_flag = false;
   /* Parameter is an integer type, just like C */
   
   if ( param->type == P_TYPE_INT) {
-	 if (INIT_COND_DEBUG) {
-        DWRITE( "init_cond: %s = %d (TYPE INT)\n", param->name.c_str(), init_val.int_val);
-     }
-	assert(param->engine_val);
+ 	assert(param->engine_val);
 	 *((int*)param->engine_val) = init_val.int_val;
      return;
   }
@@ -102,11 +99,6 @@ param->matrix_flag = false;
   /* Parameter is of a float type, just like C */
 
   if (param->type == P_TYPE_DOUBLE) {
-	if (INIT_COND_DEBUG) {
-	    DWRITE( "init_cond: %s = %f (TYPE DOUBLE) -> %f -> %X -> %X\n", param->name.c_str(), 
-	            init_val.float_val, *((float *)param->engine_val),
-	            param, param->engine_val );
-	  }
 	assert(param->engine_val);
 	*((float*)param->engine_val) = init_val.float_val;
     return;

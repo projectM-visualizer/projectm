@@ -71,7 +71,8 @@ class PlaylistWriteFunctor {
 };
 
 QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
-		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), m_QPlaylistFileDialog ( new QPlaylistFileDialog ( this ) ), oldPresetIndex ( -1 ), playlistModel(0), configDialog(0)
+		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), m_QPlaylistFileDialog ( new QPlaylistFileDialog ( this ) ), 
+		oldPresetIndex ( -1 ), playlistModel(0), configDialog(0), _menuVisible(true)
 {
 
 	
@@ -89,14 +90,14 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file )
 	connect ( ui->clearPresetList_PushButton, SIGNAL ( pressed() ),
 	          this, SLOT ( clearPlaylist() ) );
 
-	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized(projectM*) ), this, SLOT ( postProjectM_Initialize() ) );
+	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized(QProjectM*) ), this, SLOT ( postProjectM_Initialize() ) );
 	
 	m_QProjectMWidget->makeCurrent();
 	m_QProjectMWidget->setFocus();
 
 	m_timer->start ( 0 );
 
-	readConfig(config_file);
+	//readConfig(config_file);
 	setCentralWidget ( m_QProjectMWidget );
 	createActions();
 	createMenus();
@@ -123,17 +124,19 @@ void QProjectM_MainWindow::writeConfig() {
 
 void QProjectM_MainWindow::readConfig(const std::string & configFile ) {
 	
+	QSettings settings ( "projectM", "qprojectM" );
 	
-	ConfigFile config ( configFile );
-
-
-	if ( config.read ( "Fullscreen", false ) )
+	if ( settings.value("FullscreenOnStartup", false).toBool() )
 		this->setWindowState ( this->windowState() | Qt::WindowFullScreen );
 	else	
 		this->setWindowState ( this->windowState() & ~Qt::WindowFullScreen );
 
-	int wvw = config.read<int> ( "Window Width", 512 );
-	int wvh = config.read<int> ( "Window Height", 512 );
+	setMenuVisible(settings.value("MenuOnStartup", false).toBool());
+
+	ConfigFile config ( configFile );
+	
+	int wvw = config.read<int> ( "Window Width", 1024 );
+	int wvh = config.read<int> ( "Window Height", 768 );
 
 	// Suggest to the widget the projectM window size configuration settings
 	m_QProjectMWidget->setBaseSize ( wvw, wvh );
@@ -206,6 +209,7 @@ void QProjectM_MainWindow::selectPlaylistItem ( const QModelIndex & index )
 
 void QProjectM_MainWindow::postProjectM_Initialize()
 {
+	qDebug() << "QProjectM_MainWindow::postProjectM_Initialize()";
 	ui->tableView->setModel(0);
 	
 	if (playlistModel) 
@@ -214,15 +218,17 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 	playlistModel = new QPlaylistModel ( *m_QProjectMWidget->getQProjectM(),this );
 		
 	ui->tableView->setModel ( playlistModel );
-	static int FOOBAR = 0;
 	
-	if (FOOBAR == 0)
+	/// @bug only do this at startup?
 	refreshPlaylist();
 
-	FOOBAR++;
 	
-	if (!configDialog)
+	if (!configDialog) {
 		configDialog = new QProjectMConfigDialog(m_QProjectMWidget->configFile(), m_QProjectMWidget, this);
+		
+	}
+
+	readConfig(m_QProjectMWidget->configFile());
 	
 	connect ( m_QProjectMWidget->getQProjectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), 
 		  this, SLOT ( updatePlaylistSelection ( bool,unsigned int ) ) );
@@ -241,8 +247,27 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 
 }
 
-void QProjectM_MainWindow::changeRating ( const QModelIndex & index )
-{
+void QProjectM_MainWindow::setMenuVisible(bool visible) {
+	
+	
+	
+	if (visible) {
+		ui->presetPlayListDockWidget->show();
+		menuBar()->show();
+		statusBar()->show();
+		//m_QProjectMWidget->setFocus();
+		_menuVisible = true;		
+	} else {
+		ui->presetPlayListDockWidget->hide();
+		menuBar()->hide();
+		statusBar()->hide();
+		_menuVisible = false;
+	}
+	
+}
+
+void QProjectM_MainWindow::changeRating ( const QModelIndex & index ) {
+	
 	if ( index.column() == 0 )
 		return;
 
@@ -294,32 +319,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 		case Qt::Key_M:
 			if ( ui->presetSearchBarLineEdit->hasFocus() )
 				return;
-
-			if ( ui->presetPlayListDockWidget->isVisible() )
-			{
-				ui->presetPlayListDockWidget->hide();
-			}
-			else
-				ui->presetPlayListDockWidget->show();
-
-			if ( menuBar()->isVisible() )
-			{
-				menuBar()->hide();
-				m_QProjectMWidget->setFocus();
-			}
-			else
-			{
-				menuBar()->show();
-			}
-
-			if ( statusBar()->isVisible() )
-			{
-				statusBar()->hide();
-			}
-			else
-			{
-				statusBar()->show();
-			}
+			setMenuVisible(!_menuVisible);
 			return;
 
 		case Qt::Key_R:
@@ -562,9 +562,13 @@ void QProjectM_MainWindow::createStatusBar()
 
 void QProjectM_MainWindow::readSettings()
 {
-	QSettings settings ( "projectM", "QProjectM" );
+	
+	// The settings exclusively due to qprojectM
+	QSettings settings ( "projectM", "qprojectM" );
 	QPoint pos = settings.value ( "pos", QPoint ( 200, 200 ) ).toPoint();
-	QSize size = settings.value ( "size", QSize ( 1000, 600 ) ).toSize();
+	QSize size = settings.value ( "size", QSize ( 1024, 768 ) ).toSize();
+	
+	// Load up where the playlist file dialog last was visited last time
 	m_QPlaylistFileDialog->setDirectory
 	( settings.value ( "playlistPath", m_QPlaylistFileDialog->directory().absolutePath() ).toString() );
 
@@ -574,13 +578,11 @@ void QProjectM_MainWindow::readSettings()
 
 void QProjectM_MainWindow::writeSettings()
 {
-	QSettings settings ( "projectM", "QProjectM" );
+	QSettings settings ( "projectM", "qprojectM" );
 	settings.setValue ( "pos", pos() );
 	settings.setValue ( "size", size() );
 	settings.setValue ( "playlistPath", m_QPlaylistFileDialog->directory().absolutePath() );
 }
-
-
 
 void QProjectM_MainWindow::loadFile ( const QString &fileName, int rating )
 {

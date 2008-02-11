@@ -30,9 +30,9 @@
 
  public:
      QPlaylistFileDialog(QWidget * parent = 0): 
-		QFileDialog(parent, "Open a new preset playlist", QString(), "Preset Playlists (*.ppl)" ) {
+		QFileDialog(parent, "Open a playlist file or directory", QString(), "Preset Playlists (*.ppl)" ) {
 
-		this->setFileMode(QFileDialog::ExistingFile);
+		this->setFileMode(QFileDialog::ExistingFiles);
 	}
 
      ~QPlaylistFileDialog() { }

@@ -83,8 +83,10 @@ projectM::~projectM()
 		delete ( renderer );
 	if ( beatDetect )
 		delete ( beatDetect );
-	if ( pcm )
-		delete ( pcm );
+	if ( _pcm ) {
+		delete ( _pcm );
+		_pcm = 0;
+	}
 }
 
 DLLEXPORT unsigned projectM::initRenderToTexture()
@@ -98,11 +100,11 @@ DLLEXPORT void projectM::projectM_resetTextures()
 }
 
 DLLEXPORT  projectM::projectM ( std::string config_file ) :
-		beatDetect ( 0 ), renderer ( 0 ), smoothFrame ( 0 ), m_presetQueuePos(0), oldFrame(1)
+		beatDetect ( 0 ), renderer ( 0 ), smoothFrame ( 0 ), m_presetQueuePos(0), oldFrame(1), _pcm(0)
 {
-
+	readConfig ( config_file );	
 	projectM_reset();
-	readConfig ( config_file );
+	projectM_resetGL ( _settings.windowWidth, _settings.windowHeight);
 
 }
 
@@ -135,6 +137,9 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
 }
 
 int projectM::sampledPresetDuration() {
+	
+	
+	
 	return ( int ) (_settings.fps * fmax(1, fmin(60, RandomNumberGenerators::gaussian
 			(settings().presetDuration, settings().easterEgg))));
 }
@@ -172,7 +177,7 @@ void projectM::readConfig (const std::string & configFile )
 	else 
 		_settings.aspectCorrection = renderer->correction = 0;
 
-	projectM_resetGL ( _settings.windowWidth, _settings.windowHeight);
+	
 }
 
 
@@ -204,15 +209,7 @@ DLLEXPORT void projectM::renderFrame()
 //       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
 	presetInputs.ResetMesh();
 
-//     printf("%f %d\n",Time,frame);
-
-
 	beatDetect->detectFromSamples();
-
-	DWRITE ( "=== vol: %f\tbass: %f\tmid: %f\ttreb: %f ===\n",
-	         beatDetect->vol,beatDetect->bass,beatDetect->mid,beatDetect->treb );
-	DWRITE ( "=== bass_att: %f ===\n",
-	         beatDetect->bass_att );
 
 	presetInputs.bass = beatDetect->bass;
 	presetInputs.mid = beatDetect->mid;
@@ -347,7 +344,7 @@ DLLEXPORT void projectM::renderFrame()
 	this->timestart=getTicks ( &this->startTime );
 #endif /** !WIN32 */
 
-	DWRITE ( "exiting renderFrame()\n" );
+
 }
 
 void projectM::projectM_reset()
@@ -385,8 +382,6 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	presetOutputs.Initialize ( gx, gy );
 	presetOutputs2.Initialize ( gx, gy );
 
-	DWRITE ( "projectM plugin: Initializing\n" );
-
 	/** Initialise start time */
 #ifndef WIN32
 	gettimeofday ( &this->startTime, NULL );
@@ -405,8 +400,11 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	/** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
 	assert ( !beatDetect );
 
-	pcm = new PCM();
-	beatDetect = new BeatDetect ( pcm );
+	std::cerr << "pcm new" << std::endl;
+	if (!_pcm)
+		_pcm = new PCM();
+	assert(pcm());
+	beatDetect = new BeatDetect ( _pcm );
 
 	initPresetTools();
 #if 0
@@ -535,6 +533,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 
 	renderer->setPresetName ( m_activePreset->presetName() );
 
+	assert(pcm());
 //	printf ( "exiting projectM_init()\n" );
 }
 

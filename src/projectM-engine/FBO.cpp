@@ -147,9 +147,6 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
       else this->useFBO=0;      
     }
 
-
-    DWRITE( "using teximage hack fallback\n" );
-
     /** Fallback pbuf;fer creation via teximage hack */
     /** Check the texture size against the viewport size */
     /** If the viewport is smaller, then we'll need to scale the texture size down */
@@ -160,18 +157,13 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 
     /* Create the texture that will be bound to the render this */
     if ( glIsTexture( this->textureID[0] ) ) {
-        DWRITE( "texture already exists\n" );
-        if ( this->texsize != origtexsize ) {
-            DWRITE( "deleting existing texture due to resize\n" );
+        if ( this->texsize != origtexsize ) 
             glDeleteTextures( 1, &this->textureID[0] );
-          }
       }
 
     if ( !glIsTexture( this->textureID[0] ) ) {
         glGenTextures(1, &this->textureID[0] );
 
-        DWRITE( "allocate texture: %d\ttexsize: %d x %d\n", 
-                this->textureID[0], this->texsize, this->texsize );
         glBindTexture(GL_TEXTURE_2D, this->textureID[0] );
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -201,9 +193,9 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 
     /* Create the texture that will be bound to the render this */
     if ( glIsTexture( this->textureID[0] ) ) {
-        DWRITE( "texture already exists\n" );
+
         if ( this->texsize != origtexsize ) {
-            DWRITE( "deleting existing texture due to resize\n" );
+
             glDeleteTextures( 1, &this->textureID[0] );
           }
       }
@@ -211,8 +203,6 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
     if ( !glIsTexture( this->textureID[0] ) ) {
         glGenTextures(1, &this->textureID[0] );
 
-        DWRITE( "allocate texture: %d\ttexsize: %d x %d\n", 
-                this->textureID[0], this->texsize, this->texsize );
         glBindTexture(GL_TEXTURE_2D, this->textureID[0] );
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -260,7 +250,7 @@ void RenderTarget::unlock() {
     }
 
     /** Fallback texture path */
-    DWRITE( "copying framebuffer to texture\n" );
+    
     glBindTexture( GL_TEXTURE_2D, this->textureID[0] );
     
 	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0, this->texsize, this->texsize );
@@ -274,8 +264,6 @@ int RenderTarget::nearestPower2( int value, TextureScale scaleRule ) {
 
     int x = value;
     int power = 0;
-
-    DWRITE( "nearestPower2(): %d\n", value );
 
     while ( ( x & 0x01 ) != 1 ) {
         x >>= 1;

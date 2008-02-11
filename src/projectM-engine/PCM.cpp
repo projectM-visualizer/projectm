@@ -32,29 +32,32 @@
 #include "wipemalloc.h"
 #include "fftsg.h"
 #include "PCM.hpp"
+#include <cassert>
+
+int PCM::maxsamples = 2048;
 
 //initPCM(int samples)
 //
 //Initializes the PCM buffer to
 // number of samples specified.
-
+#include <iostream>
 PCM::PCM() {
     initPCM( 2048 );
+    std::cerr << "MAX SAMPLES:" << maxsamples << std::endl;
   }
 
 void PCM::initPCM(int samples) {
   int i; 
 
-    DWRITE( "initPCM()\n" );
-
     waveSmoothing = 0;
 
   //Allocate memory for PCM data buffer
+    assert(samples == 2048);
   PCMd = (float **)wipemalloc(2 * sizeof(float *));
   PCMd[0] = (float *)wipemalloc(samples * sizeof(float));
   PCMd[1] = (float *)wipemalloc(samples * sizeof(float));
   
-  maxsamples=samples;
+  //maxsamples=samples;
   newsamples=0;
     numsamples = maxsamples;
 
@@ -98,32 +101,36 @@ PCM::~PCM() {
 
 }
 
-void PCM::addPCMfloat(float *PCMdata, int samples)
+#include <iostream>
+
+void PCM::addPCMfloat(const float *PCMdata, int samples) const
 {
   int i,j;
 
-
+  std::cerr << "start:" << this->start << std::endl;
+  static bool firstTime = true;
+  
+  if (firstTime) {
+	  start = 0;
+	  firstTime = false;
+  }
+  
   for(i=0;i<samples;i++)
     {
       j=i+start;
-      
-      
-      
-      if ( PCMdata[i] != 0 && PCMdata[i] != 0 ) {
+
+      if (PCMdata[i] != 0 ) {
 	
-	PCMd[0][j%maxsamples]=(float)PCMdata[i];
-	PCMd[1][j%maxsamples]=(float)PCMdata[i];  
+	PCMd[0][j%maxsamples]=PCMdata[i];
+	PCMd[1][j%maxsamples]=PCMdata[i];
 	
-      } 
+      }
       else 
 	{
-	  PCMd[0][j % maxsamples] =(float) 0;
-	  PCMd[1][j % maxsamples] =(float) 0;
+	  PCMd[0][j % maxsamples] = 0;
+	  PCMd[1][j % maxsamples] = 0;
 	}
     }
-  
-  
-  DWRITE("Added %d samples %d %d %f\n",samples,start,(start+samples)%maxsamples,PCMd[0][start+10]); 
   
   start+=samples;
   start=start%maxsamples;
@@ -160,8 +167,6 @@ void PCM::addPCM16(short PCMdata[2][512])
 {
   int i,j;
   int samples=512;
-
-    DWRITE( "start: %d\n", start );
  
 	 for(i=0;i<samples;i++)
 	   {
@@ -264,7 +269,7 @@ void PCM::addPCM8_512( const unsigned char PCMdata[2][512])
 
 //returned values are normalized from -1 to 1
 
-void PCM::getPCM(float *PCMdata, int samples, int channel, int freq, float smoothing, int derive)
+void PCM::getPCM(float *PCMdata, int samples, int channel, int freq, float smoothing, int derive) const
 {
    int i,index;
    
@@ -312,7 +317,7 @@ void PCM::getPCM(float *PCMdata, int samples, int channel, int freq, float smoot
 //the actual return value is the number of samples, up to maxsamples.
 //the passed pointer, PCMData, must bee able to hold up to maxsamples
 
-int PCM::getPCMnew(float *PCMdata, int channel, int freq, float smoothing, int derive, int reset)
+int PCM::getPCMnew(float *PCMdata, int channel, int freq, float smoothing, int derive, int reset) const
 {
    int i,index;
    

@@ -618,7 +618,7 @@ p, li { white-space: pre-wrap; }
     <string>Easter Egg Parameter</string>
    </property>
   </widget>
-  <widget class="QDoubleSpinBox" name="beatSensitivitySpinBox_2" >
+  <widget class="QDoubleSpinBox" name="easterEggParameterSpinBox" >
    <property name="geometry" >
     <rect>
      <x>374</x>
@@ -634,7 +634,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">A mystery parameter!&lt;/p>&lt;/body>&lt;/html></string>
    </property>
    <property name="maximum" >
-    <double>1.000000000000000</double>
+    <double>20.000000000000000</double>
    </property>
    <property name="singleStep" >
     <double>0.010000000000000</double>

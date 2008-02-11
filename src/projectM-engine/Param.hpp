@@ -86,19 +86,19 @@ public:
     static bool is_valid_param_string( const char *string );
     void set_param( float val );
 
-    static Param *new_param_float( char *name, short int flags, void *engine_val,
+    static Param *new_param_float( const char *name, short int flags, void *engine_val,
                              void *matrix, float upper_bound, 
                              float lower_bound,
                              float init_val );
-    static Param *new_param_double( char *name, short int flags, void *engine_val,
+    static Param *new_param_double(const char *name, short int flags, void *engine_val,
                              void *matrix, double upper_bound, 
                              double lower_bound,
                              double init_val );
-    static Param * new_param_int( char * name, short int flags, void * engine_val,
+    static Param * new_param_int(const char * name, short int flags, void * engine_val,
                            int upper_bound, int lower_bound, int init_val );
-    static Param * new_param_bool( char * name, short int flags, void * engine_val,
+    static Param * new_param_bool(const char * name, short int flags, void * engine_val,
                             bool upper_bound, bool lower_bound, bool init_val );
-    static Param * new_param_string(char * name, short int flags, void * engine_val);
+    static Param * new_param_string(const char * name, short int flags, void * engine_val);
 
 };
 

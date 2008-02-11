@@ -118,7 +118,7 @@ bool Param::is_valid_param_string( const char * string ) {
 
 
 /* Loads a float parameter into the builtin database */
-Param * Param::new_param_float(char * name, short int flags, void * engine_val, void * matrix,
+Param * Param::new_param_float(const char * name, short int flags, void * engine_val, void * matrix,
                                float upper_bound, float lower_bound, float init_val) {
 
     Param * param;
@@ -138,7 +138,7 @@ Param * Param::new_param_float(char * name, short int flags, void * engine_val, 
 }
 
 /* Creates a new parameter of type int */
-Param * Param::new_param_int(char * name, short int flags, void * engine_val,	
+Param * Param::new_param_int(const char * name, short int flags, void * engine_val,	
                              int upper_bound, int lower_bound, int init_val) {
 
     Param * param;
@@ -158,7 +158,7 @@ Param * Param::new_param_int(char * name, short int flags, void * engine_val,
 }
 
 /* Creates a new parameter of type bool */
-Param * Param::new_param_bool(char * name, short int flags, void * engine_val,
+Param * Param::new_param_bool(const char * name, short int flags, void * engine_val,
                               bool upper_bound, bool lower_bound, bool init_val) {
 
     Param * param;
@@ -178,7 +178,7 @@ Param * Param::new_param_bool(char * name, short int flags, void * engine_val,
 }
 
 /* Creates a new parameter of type string */
-Param * Param::new_param_string(char * name, short int flags, void * engine_val) {
+Param * Param::new_param_string(const char * name, short int flags, void * engine_val) {
 
     Param * param;
     CValue iv, ub, lb;

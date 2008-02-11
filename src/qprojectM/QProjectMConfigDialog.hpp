@@ -2,7 +2,7 @@
 #define QPROJECTM_CONFIG_DIALOG_HPP
 #include "ui_QProjectMConfigDialog.h"
 #include "QProjectM_MainWindow.hpp"
-
+#include <QSettings>
 class QProjectMConfigDialog : public QDialog {
 
 	Q_OBJECT
@@ -13,11 +13,13 @@ class QProjectMConfigDialog : public QDialog {
 		void loadConfig();
 	private slots:
 		void openPlaylistFileDialog();
-		void openFontFileDialog();
+		void openMenuFontFileDialog();
+		void openTitleFontFileDialog();
 		void saveConfig();
 		void buttonBoxHandler(QAbstractButton * button);
 
 	private:
+		 QSettings _settings;
 		 const std::string _configFile;
 		 QProjectMWidget * _qprojectMWidget;
 		 Ui::QProjectMConfigDialog _ui;

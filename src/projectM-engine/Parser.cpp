@@ -336,10 +336,6 @@ int Parser::parse_preset_name(std::istream &  fs, char * name)
   if ((token = parseToken(fs, name)) != tRBr)
     return PROJECTM_PARSE_ERROR;
 
-#ifdef DEBUG
-  if (PARSE_DEBUG) DWRITE("parse_preset_name: parsed preset (name = \"%s\")\n", name);
-#endif
-
   return PROJECTM_SUCCESS;
 }
 
@@ -352,9 +348,6 @@ int Parser::parse_per_pixel_eqn(std::istream &  fs, Preset * preset, char * init
   char string[MAX_TOKEN_SIZE];
   GenExpr * gen_expr;
 
-#ifdef DEBUG
-  if (PARSE_DEBUG) DWRITE("parse_per_pixel: per_pixel equation parsing start...(LINE %d)\n", line_count);
-#endif
 
   if (init_string != 0)
   {
@@ -365,10 +358,6 @@ int Parser::parse_per_pixel_eqn(std::istream &  fs, Preset * preset, char * init
 
     if (parseToken(fs, string) != tEq)
     { /* parse per pixel operator name */
-#ifdef DEBUG
-      if (PARSE_DEBUG) DWRITE("parse_per_pixel: equal operator expected after per pixel operator \"%s\", but not found (LINE %d)\n",
-                                string, line_count);
-#endif
       return PROJECTM_PARSE_ERROR;
     }
   }
@@ -376,9 +365,6 @@ int Parser::parse_per_pixel_eqn(std::istream &  fs, Preset * preset, char * init
   /* Parse right side of equation as an expression */
   if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL)
   {
-#ifdef DEBUG
-    if (PARSE_DEBUG) DWRITE("parse_per_pixel: equation evaluated to null? (LINE %d)\n", line_count);
-#endif
     return PROJECTM_PARSE_ERROR;
   }
 
@@ -387,7 +373,7 @@ int Parser::parse_per_pixel_eqn(std::istream &  fs, Preset * preset, char * init
   {
     if (PARSE_DEBUG)
     {
-      DWRITE( "parse_per_pixel: no param associated with \"%s\" (LINE %d)", string, line_count);
+
     }
     delete gen_expr;
     return PROJECTM_PARSE_ERROR;
@@ -872,11 +858,6 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Pre
     /* CASE 0: Empty string, parse error */
     if (*string == 0)
     {
-      if (PARSE_DEBUG)
-      {
-        DWRITE( "parse_gen_expr: empty string coupled with infix op (ERROR!) (LINE %d) \n", line_count);
-
-      }
       if (tree_expr)
         delete tree_expr;
       return NULL;
@@ -1255,7 +1236,7 @@ int Parser::parse_int(std::istream &  fs, int * int_ptr)
   char string[MAX_TOKEN_SIZE];
   token_t token;
   int sign;
-  char * end_ptr = " ";
+  char * end_ptr = (char*)" ";
 
   token = parseToken(fs, string);
 
