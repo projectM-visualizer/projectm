@@ -7,7 +7,8 @@
 #include <QModelIndex>
 #include <QHash>
 #include <QtDebug>
-// 
+#include <QMutex>
+ 
 extern "C"
 {
 #include <pulse/introspect.h>
@@ -28,6 +29,9 @@ class QPulseAudioThread : public QThread
 		virtual ~QPulseAudioThread();
 		void run();
 		void cleanup();
+
+		
+		QMutex * mutex();
 
 		inline const SourceContainer & devices() {
 			return s_sourceList;
@@ -82,8 +86,8 @@ class QPulseAudioThread : public QThread
 		static void time_event_callback ( pa_mainloop_api*m, pa_time_event *e, const struct timeval *tv, void *userdata );
 		
 		static void pa_stream_success_callback(pa_stream *s, int success, void *userdata);
-	
-
+			
+		static QMutex s_audioMutex;
 		static SourceContainer s_sourceList;
 		static SourceContainer::const_iterator s_sourcePosition;
 		int argc;
