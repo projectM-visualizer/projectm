@@ -46,7 +46,7 @@ jack_default_audio_sample_t out[1024*1000];
 FILE *debugFile = NULL;
 #endif
 
-volatile enum {
+volatile enum client_state_t {
 	Init,
 	Run,
 	Exit
@@ -230,7 +230,7 @@ process (jack_nframes_t nframes, void *arg)
 	       
 		//memcpy (out, in,sizeof (jack_default_audio_sample_t) * nframes);	
 
-		globalPM->pcm->addPCMfloat(in,nframes);
+		globalPM->pcm()->addPCMfloat(in,nframes);
 		//printf("%x %f\n",nframes,in[128]);
 
 
