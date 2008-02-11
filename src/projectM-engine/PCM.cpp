@@ -143,7 +143,7 @@ void PCM::addPCMfloat(const float *PCMdata, int samples) const
     getPCM(vdataR,512,1,1,0,0);
 }
 
-void PCM::addPCM16Data(const short* pcm_data, short samples) {
+void PCM::addPCM16Data(const short* pcm_data, short samples) const {
    int i, j;
 
    for (i = 0; i < samples; ++i) {
@@ -163,7 +163,7 @@ void PCM::addPCM16Data(const short* pcm_data, short samples) {
 }
 
 
-void PCM::addPCM16(short PCMdata[2][512])
+void PCM::addPCM16(short PCMdata[2][512]) const
 {
   int i,j;
   int samples=512;
@@ -195,7 +195,7 @@ void PCM::addPCM16(short PCMdata[2][512])
 }
 
 
-void PCM::addPCM8( unsigned char PCMdata[2][1024])
+void PCM::addPCM8( unsigned char PCMdata[2][1024]) const
 {
   int i,j;
   int samples=1024;
@@ -227,7 +227,7 @@ void PCM::addPCM8( unsigned char PCMdata[2][1024])
     getPCM(vdataR,512,1,1,0,0);
 }
 
-void PCM::addPCM8_512( const unsigned char PCMdata[2][512])
+void PCM::addPCM8_512( const unsigned char PCMdata[2][512]) const
 {
   int i,j;
   int samples=512;

@@ -61,14 +61,14 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
     actor[0].vidoptions.depth = VISUAL_VIDEO_DEPTH_GL; /* We want GL clearly */
     
     
-    info[0].type = VISUAL_PLUGIN_TYPE_ACTOR;
+    info[0].type = (char*)VISUAL_PLUGIN_TYPE_ACTOR;
     
-    info[0].plugname = "projectM";
-    info[0].name = "libvisual projectM";
-    info[0].author = "Peter Sperl";
-    info[0].version = "1.00";
-    info[0].about = "projectM";
-    info[0].help =  "";
+    info[0].plugname = (char*)"projectM";
+    info[0].name = (char*)"libvisual projectM";
+    info[0].author = (char*)"Peter Sperl";
+    info[0].version = (char*)"1.00";
+    info[0].about = (char*)"projectM";
+    info[0].help =  (char*)"";
 
     info[0].init = lv_projectm_init;
     info[0].cleanup = lv_projectm_cleanup;
@@ -219,10 +219,10 @@ extern "C" int lv_projectm_render (VisPluginData *plugin, VisVideo *video, VisAu
 	int i;
 
 	visual_buffer_set_data_pair (&pcmb, pcm[0], sizeof (pcm[0]));
-	visual_audio_get_sample (audio, &pcmb, VISUAL_AUDIO_CHANNEL_LEFT);
+	visual_audio_get_sample (audio, &pcmb, (char*)VISUAL_AUDIO_CHANNEL_LEFT);
 
 	visual_buffer_set_data_pair (&pcmb, pcm[1], sizeof (pcm[1]));
-	visual_audio_get_sample (audio, &pcmb, VISUAL_AUDIO_CHANNEL_RIGHT);
+	visual_audio_get_sample (audio, &pcmb, (char*)VISUAL_AUDIO_CHANNEL_RIGHT);
 
 	/*
 	for (i = 0; i < 512; i++) {
@@ -233,7 +233,7 @@ extern "C" int lv_projectm_render (VisPluginData *plugin, VisVideo *video, VisAu
 	addPCM16Data(pcms,512);
 	*/
 
-	priv->PM->pcm->addPCMfloat(*pcm,512);
+	priv->PM->pcm()->addPCMfloat(*pcm,512);
 	
 	priv->PM->renderFrame();
 
