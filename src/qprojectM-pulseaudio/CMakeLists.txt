@@ -10,7 +10,8 @@ FIND_PACKAGE(Qt4 REQUIRED)
 
 pkg_search_module(PROJECTM REQUIRED libprojectM)
 pkg_search_module(PROJECTM REQUIRED libqprojectM)
-pkg_search_module(PROJECTM REQUIRED pulse)
+pkg_search_module(PROJECTM REQUIRED libpulse)
+pkg_search_module(PROJECTM REQUIRED libpulse-browse)
 
 # the variable "qprojectM_SRCS" contains all .cpp files of this project
 set(qprojectM_pulseaudio_SRCS
