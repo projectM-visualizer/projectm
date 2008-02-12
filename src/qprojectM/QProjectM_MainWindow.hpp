@@ -70,8 +70,9 @@ class QProjectMWidget : public QGLWidget
      Q_OBJECT        // must include this if you use Qt signals/slots
 
  public:
-     QProjectMWidget(const std::string & _config_file, QWidget *parent, QMutex * audioMutex)
+     QProjectMWidget(const std::string & _config_file, QWidget *parent, QMutex * audioMutex = 0)
          : QGLWidget(parent), config_file(_config_file), m_projectM(0), m_audioMutex(audioMutex) {}
+     
      ~QProjectMWidget() { destroyProjectM(); }
 
      inline const std::string & configFile() {
@@ -98,8 +99,11 @@ class QProjectMWidget : public QGLWidget
 	// First wait for audio thread to stop by
 	// waiting on it's mutex
 //	s_audioMutex.tryLock(20000);
-	m_audioMutex->tryLock();
-	
+	if (m_audioMutex) {
+		qDebug() << "lock set start!";
+		m_audioMutex->lock();
+		qDebug() << "lock set end!";
+	}
 	// Now destroy the projectM instance
 	destroyProjectM();
 	
@@ -108,8 +112,8 @@ class QProjectMWidget : public QGLWidget
 	
 	// Allow audio thread to continue its business
 	if (m_audioMutex) {
-		qDebug() << "UNLOCKED";
-		m_audioMutex->unlock();
+	//	m_audioMutex->unlock();
+	//	qDebug() << "UNLOCKED";
 	}
 	qDebug() << "reinit'ed";
      }

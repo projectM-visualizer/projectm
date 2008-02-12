@@ -58,16 +58,20 @@
 QPulseAudioThread::SourceContainer QPulseAudioThread::s_sourceList;
 QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::s_sourcePosition;
  
+QProjectM ** QPulseAudioThread::s_projectMPtr = 0;
  
 QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, QProjectM * _projectM, QObject * parent ) : QThread ( parent ), argc ( _argc ), argv ( _argv ),  m_projectM ( _projectM )
 {
-			
+	s_projectMPtr = new QProjectM*;
+	
+	*s_projectMPtr = m_projectM;
 }
 
 
 QPulseAudioThread::~QPulseAudioThread()
 {
-
+	if (s_projectMPtr)
+		delete(s_projectMPtr);
 }
 
 QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::readSettings()
@@ -273,14 +277,14 @@ void QPulseAudioThread::cork()
 {
 	int b = 0;
 			
-	s_audioMutex.tryLock();
+	//s_audioMutex.lock();
 	pa_operation* op = 
 			pa_stream_cork(stream, b, pa_stream_success_callback, this);
 			
 	if (op)
 		pa_operation_unref(op);	
 	else
-		qDebug() << "operation null";	
+		qDebug() << "cork operation null";	
 }
 		
 		
@@ -449,15 +453,14 @@ void QPulseAudioThread::stdout_callback ( pa_mainloop_api*a, pa_io_event *e, int
 	{
 		
 		//int * int_buf = (int *) buffer;
-		//qDebug() << int_buf[buffer_index];
-		//qDebug() << buffer[buffer_index];
-		s_audioMutex.tryLock();
-		QProjectM * prjm = static_cast<QProjectM *> ( userdata ); 
+		s_audioMutex.lock();
+		QProjectM ** prjmPtr = static_cast<QProjectM **> ( userdata ); 
+		QProjectM * prjm = *prjmPtr;
+		
 		assert(prjm);
 		assert(prjm->pcm());
 		assert(buffer);
-		qDebug() << "buffer index: " << buffer_index << ", buffer length:" << buffer_length;
-		
+
 		prjm->pcm()->addPCMfloat 
 				( buffer+buffer_index, buffer_length / ( sizeof ( float ) ) );
 		s_audioMutex.unlock();
@@ -667,7 +670,7 @@ void QPulseAudioThread::run()
 	if ( ! ( stdio_event = mainloop_api->io_new ( mainloop_api,
 	                       STDOUT_FILENO,
 	                       PA_IO_EVENT_OUTPUT,
-	                       stdout_callback, m_projectM ) ) )
+	                       stdout_callback, s_projectMPtr ) ) )
 	{
 		fprintf ( stderr, "io_new() failed.\n" );
 		goto quit;
