@@ -122,8 +122,6 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	
-	
-	
 	totalframes++;		
 	
 	//BEGIN PASS 1

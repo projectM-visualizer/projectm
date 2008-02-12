@@ -43,10 +43,13 @@ class QPulseAudioThread : public QThread
 		}
 
 	public slots:
-		inline void projectM_New(QProjectM * projectM) {			
+		inline void projectM_New(QProjectM * projectM) {
 			m_projectM = projectM;
+			*s_projectMPtr = m_projectM;
 			qDebug() << "CORKING";
+			s_audioMutex.unlock();
 			cork();
+			
 		}
 		
 		void cork();
@@ -102,6 +105,7 @@ class QPulseAudioThread : public QThread
 		static pa_io_event * stdio_event;
 		static char * server;
 		static char * stream_name, *client_name, *device;
+		static QProjectM ** s_projectMPtr;
 
 		static int verbose;
 
