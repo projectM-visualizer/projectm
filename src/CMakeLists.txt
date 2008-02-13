@@ -1,12 +1,12 @@
 project (PROJECTM_ROOT)
 
 OPTION(INCLUDE-QPROJECTM "Build the projectM qt4 user interface extension library (recommended)" ON)
-OPTION(INCLUDE-QPROJECTM-PULSEAUDIO "Build the projectM qt4 / pulse audio client (recommended for fedora users)" ON)
+OPTION(INCLUDE-QPROJECTM-PULSEAUDIO "Build the projectM Qt4 / pulse audio client (recommended for fedora users)" ON)
 OPTION(INCLUDE-PROJECTM-LIBVISUAL "Build the projectM libvisual client" ON)
-OPTION(INCLUDE-QPROJECTM-JACK "Build the projectM qt4 / JACK client" OFF)
-OPTION(INCLUDE-PROJECTM-JACK "Build the projectM sdl / JACK client" OFF)
+OPTION(INCLUDE-QPROJECTM-JACK "Build the projectM Qt4 / JACK client" OFF)
+OPTION(INCLUDE-PROJECTM-JACK "Build the projectM SDL / JACK client" OFF)
 OPTION(INCLUDE-PROJECTM-TEST "Build the projectM test suite" ON)
-OPTION(INCLUDE-PROJECTM-XMMS "Build the projectM xmms module (deprecrated)" OFF)
+OPTION(INCLUDE-PROJECTM-XMMS "Build the projectM xmms module (deprecated)" OFF)
 
 add_subdirectory (projectM-engine)
 
