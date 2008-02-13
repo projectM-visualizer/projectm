@@ -7,13 +7,7 @@ BuiltinFuncs.cpp BuiltinParams.cpp Renderer.cpp
 PresetLoader.cpp  PresetChooser.cpp PresetFrameIO.cpp PresetMerge.cpp
 ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp MoodBar.cpp image_DXT.c image_helper.c SOIL.c stb_image_aug.c)
 
-
-
 SET_TARGET_PROPERTIES(projectM PROPERTIES VERSION 1.10 SOVERSION 1)
-
-
-
-OPTION(USE_FTGL "Use FTGL for on-screen fonts" ON)
 
 ADD_DEFINITIONS(-DLINUX -DUSE_FBO -DSTBI_NO_DDS)
 ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"") 
@@ -22,10 +16,23 @@ FIND_PACKAGE(OpenGL)
 
 INCLUDE(FindPkgConfig.cmake)
 
+pkg_search_module (FTGL ftgl)
+
+if (FTGL_FOUND)
+	OPTION(USE_FTGL "Use FTGL for on-screen fonts (found on your system)" ON)
+else (FTGL_FOUND)	
+	OPTION(USE_FTGL "Use FTGL for on-screen fonts (Warning: NOT found on your system! Turning this on will probably bust the compilation.)" OFF)
+endif(FTGL_FOUND)
+
 TARGET_LINK_LIBRARIES(projectM GLEW m)
 
 IF(USE_FTGL)
-	pkg_search_module (FTGL ftgl)
+	if (FTGL_FOUND)
+		MESSAGE(STATUS "FTGL found.")
+	else (FTGL_FOUND)
+		MESSAGE(
+	"Warning! FTGL has been enabled but not detected. Your compilation will probably break. Turn off FTGL support by setting USE_FTGL to false, or visit http://ftgl.wiki.sourceforge.net/ for help on installing FTGL.")
+	endif (FTGL_FOUND)
 	ADD_DEFINITIONS(-DUSE_FTGL)
 	INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS})
 	LINK_DIRECTORIES(${FTGL_LIBRARY_DIRS} "./")
