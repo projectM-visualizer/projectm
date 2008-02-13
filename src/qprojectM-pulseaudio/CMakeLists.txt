@@ -4,33 +4,33 @@ set(QT_USE_OPENGL TRUE)
 
 include(${QT_USE_FILE} FindPkgConfig.cmake)
 
+# only search for these modules when not building monolithically
+
+if (${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
+	pkg_search_module(LIBPROJECTM REQUIRED libprojectM)
+	pkg_search_module(LIBQPROJECTM REQUIRED libqprojectM)
+else(${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
+	set(LIBPROJECTM_FOUND true)
+	set(LIBQPROJECTM_FOUND true)
+endif(${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
+
 FIND_PACKAGE(OpenGL)
 FIND_PACKAGE(Qt4 REQUIRED)
 
-# only search for these modules when not building monolithically
-
-#if (${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
-#	set(LIBPROJECTM_FOUND true)
-#	pkg_search_module(LIBPROJECTM REQUIRED libprojectM)
-#	pkg_search_module(LIBQPROJECTM REQUIRED libqprojectM)
-#else(${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
-#	set(LIBPROJECTM_FOUND true)
-#	set(LIBQPROJECTM_FOUND true)
-#endif(${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
 
 pkg_search_module(LIBPULSE REQUIRED libpulse)
 
-#if (LIBPROJECTM_FOUND)
-#MESSAGE (STATUS "projectM detected.")
-#else(LIBPROJECTM_FOUND)
-#MESSAGE (FATAL_ERROR "projectM NOT detected. Please install the projectM module or build from the top level projectM #source directory.")
-#endif(LIBPROJECTM_FOUND)
-#
-#if (LIBQPROJECTM_FOUND)
-#MESSAGE (STATUS "qprojectM detected.")
-#else(LIBQPROJECTM_FOUND)
-#MESSAGE (FATAL_ERROR "qprojectM NOT detected. Please install the qprojectM module or build from the top level #projectM source directory.")
-#endif(LIBQPROJECTM_FOUND)
+if (LIBPROJECTM_FOUND)
+MESSAGE (STATUS "projectM detected.")
+else(LIBPROJECTM_FOUND)
+MESSAGE (FATAL_ERROR "projectM NOT detected. Please install the projectM module or build from the top level projectM source directory.")
+endif(LIBPROJECTM_FOUND)
+
+if (LIBQPROJECTM_FOUND)
+MESSAGE (STATUS "qprojectM detected.")
+else(LIBQPROJECTM_FOUND)
+MESSAGE (FATAL_ERROR "qprojectM NOT detected. Please install the qprojectM module or build from the top level projectM source directory.")
+endif(LIBQPROJECTM_FOUND)
 
 if (LIBPULSE_FOUND)
 MESSAGE(STATUS "Pulse audio detected")
@@ -67,15 +67,15 @@ if (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
    set(PROJECTM_INCLUDE ${PROJECTM_ROOT_SOURCE_DIR}/projectM-engine ${PROJECTM_ROOT_SOURCE_DIR}/qprojectM)
    set(PROJECTM_LINK ${PROJECTM_ROOT_BINARY_DIR}/projectM-engine ${PROJECTM_ROOT_BINARY_DIR}/qprojectM)
 elseif (${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
-   set(PROJECTM_INCLUDE ${PROJECTM_INCLUDEDIR}/libprojectM)
-   set(PROJECTM_LINK ${PROJECTM_LDFLAGS})
+   set(PROJECTM_INCLUDE ${LIBPROJECTM_INCLUDEDIR}/libprojectM ${LIBQPROJECTM_INCLUDEDIR}/libqprojectM)
+   set(PROJECTM_LINK ${LIBPROJECTM_LDFLAGS} ${LIBQPROJECTM_LDFLAGS})
 # qprojectM places itself in same location as (lib)projectM 
 # whether it should is a whole other issue
 endif (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 
 INCLUDE_DIRECTORIES(${PROJECTM_INCLUDE} ${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR})
 
-LINK_DIRECTORIES(${PROJECTM_LINK}  ${PULSEAUDIO_LDFLAGS})
+LINK_DIRECTORIES(${PROJECTM_LINK} ${PULSEAUDIO_LDFLAGS})
 
 ADD_EXECUTABLE(qprojectM-pulseaudio ${qprojectM_pulseaudio_SRCS} ${qprojectM_pulseaudio_MOC_SRCS} ${qprojectM_pulseaudio_UIS_H})
 

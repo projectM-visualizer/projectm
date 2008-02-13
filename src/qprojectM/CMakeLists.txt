@@ -1,11 +1,20 @@
 # the next line sets up include and link directories and defines some variables that we will use.
 # you can modify the behavior by setting some variables, e.g.
-
 project(qprojectM) # the name of your project
 
 cmake_minimum_required(VERSION 2.4.0)
 
+include(FindPkgConfig.cmake)
+
+if (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
+	set(LIBPROJECTM_FOUND true)
+else(${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
+	pkg_search_module(LIBPROJECTM REQUIRED libprojectM)
+endif(${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
+
+
 find_package(Qt4 REQUIRED) # find and setup Qt4 for this project
+include(${QT_USE_FILE})
 
 if (QT4_FOUND)
 MESSAGE(STATUS "Qt4 Detected fine.")
@@ -14,9 +23,14 @@ MESSAGE(FATAL_ERROR "Qt4 not detected. Please install Qt4 before continuing (vis
 endif(QT4_FOUND)
 set(QT_USE_OPENGL TRUE)
 
-# -> this will cause cmake to include and link against the OpenGL module
-include(${QT_USE_FILE} FindPkgConfig.cmake)
+if (LIBPROJECTM_FOUND)
+	MESSAGE(STATUS "projectM detected.")
+else (LIBPROJECTM_FOUND)
+	MESSAGE(FATAL_ERROR "projectM not detected! Please install the projectM module or build from top level projectM source directory.")
+endif(LIBPROJECTM_FOUND)
 
+
+CONFIGURE_FILE("libqprojectM.pc.in" "libqprojectM.pc" @ONLY)
 
 ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='"${PROJECTM_PREFIX}"')
 ADD_DEFINITIONS(${QT_DEFINITIONS})
@@ -69,12 +83,11 @@ ADD_LIBRARY(qprojectM SHARED ${qprojectM_SRCS} ${qprojectM_RC_SRCS} ${qprojectM_
 
 SET_TARGET_PROPERTIES(qprojectM PROPERTIES VERSION 1.10 SOVERSION 1)
 
-
 if (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
    set(PROJECTM_INCLUDE ${PROJECTM_ROOT_SOURCE_DIR}/projectM-engine)
    set(PROJECTM_LINK ${PROJECTM_ROOT_BINARY_DIR}/projectM-engine)
 elseif (${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
-   set(PROJECTM_INCLUDE ${PROJECTM_INCLUDEDIR}/libprojectM)
+   set(PROJECTM_INCLUDE ${LIBPROJECTM_INCLUDEDIR}/libprojectM)
    set(PROJECTM_LINK ${PROJECTM_LDFLAGS})
 endif (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 
@@ -85,5 +98,6 @@ include_directories(${PROJECTM_INCLUDE} ${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR
 # link the "qprojectM" target against the Qt libraries. which libraries exactly, is defined by the "include(${QT_USE_FILE})" line above, which sets up this variable.
 target_link_libraries(qprojectM projectM ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTXML_LIBRARIES} ${QT_LIBRARIES})
 
-install(FILES QProjectM_MainWindow.hpp DESTINATION include/libprojectM)
+install(FILES QProjectM_MainWindow.hpp DESTINATION include/libqprojectM)
 install(TARGETS qprojectM DESTINATION lib)
+install(FILES "${CMAKE_BINARY_DIR}/libqprojectM.pc" DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig)
