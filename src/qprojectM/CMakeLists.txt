@@ -7,6 +7,11 @@ cmake_minimum_required(VERSION 2.4.0)
 
 find_package(Qt4 REQUIRED) # find and setup Qt4 for this project
 
+if (QT4_FOUND)
+MESSAGE(STATUS "Qt4 Detected fine.")
+else (QT4_FOUND)
+MESSAGE(FATAL_ERROR "Qt4 not detected. Please install Qt4 before continuing (visit www.trolltech.org for more info)")
+endif(QT4_FOUND)
 set(QT_USE_OPENGL TRUE)
 
 # -> this will cause cmake to include and link against the OpenGL module
