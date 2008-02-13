@@ -17,16 +17,11 @@ set(QT_USE_OPENGL TRUE)
 # -> this will cause cmake to include and link against the OpenGL module
 include(${QT_USE_FILE} FindPkgConfig.cmake)
 
-#pkg_search_module(PROJECTM REQUIRED libprojectM)
 
 ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='"${PROJECTM_PREFIX}"')
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 ADD_DEFINITIONS(-DQT_PLUGIN)
 ADD_DEFINITIONS(-DQT_NO_DEBUG)
-
-
-
-
 ADD_DEFINITIONS(-DQT_SHARED)
 
 # the variable "qprojectM_SRCS" contains all .cpp files of this project

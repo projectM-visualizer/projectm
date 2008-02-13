@@ -28,7 +28,7 @@ TARGET_LINK_LIBRARIES(projectM GLEW m)
 
 IF(USE_FTGL)
 	if (FTGL_FOUND)
-		MESSAGE("FTGL font support was detected are enabled.")
+		MESSAGE(STATUS "FTGL font support was detected and enabled.")
 	else (FTGL_FOUND)
 		MESSAGE(
 	"Warning! FTGL has been enabled but not detected. Your compilation will probably break. Turn off FTGL support by setting USE_FTGL to false, or visit http://ftgl.wiki.sourceforge.net/ for help on installing FTGL.")
