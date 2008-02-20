@@ -46,7 +46,6 @@ QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::D
 
 void clear();
 
-
 QVariant data ( const QModelIndex & index, int role) const;
 int rowCount ( const QModelIndex & parent = QModelIndex()) const ;
 int columnCount ( const QModelIndex & parent= QModelIndex()) const ;

@@ -28,8 +28,9 @@
  {
      Q_OBJECT        // must include this if you use Qt signals/slots
 
+		     
  public:
-     QPlaylistFileDialog(QWidget * parent = 0): 
+     inline QPlaylistFileDialog(QWidget * parent = 0): 
 		QFileDialog(parent, "Open a playlist file or directory", QString(), "Preset Playlists (*.ppl)" ) {
 
 		this->setFileMode(QFileDialog::ExistingFiles);
@@ -38,6 +39,8 @@
      ~QPlaylistFileDialog() { }
  private:
 	
-	
 };
+
+
+
 #endif
