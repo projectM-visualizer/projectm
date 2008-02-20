@@ -77,8 +77,6 @@ bool QPlaylistModel::setData ( const QModelIndex & index, const QVariant & value
 {
 	if ( role == QPlaylistModel::RatingRole )
 	{
-		//QAbstractTableModel::setData(index, ratingToIcon(value.toInt()), Qt::DecorationRole);
-		//std::cerr << "here" << std::endl;
 		m_ratings[index.row() ] = value.toInt();
 		emit ( dataChanged ( index, index ) );
 		return true;
@@ -125,7 +123,8 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 				return QVariant ( QString ( m_projectM.getPresetName ( index.row() ).c_str() ) );
 			else
 				return ratingToIcon ( m_ratings[index.row() ] );
-		case Qt::ToolTip:
+		
+		case Qt::ToolTipRole:
 			if ( index.column() == 0 )
 				return QVariant ( QString ( m_projectM.getPresetName ( index.row() ).c_str() ) );
 			else
@@ -137,16 +136,13 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 				return QVariant();
 		case QPlaylistModel::RatingRole:
 			return QVariant ( m_ratings[index.row() ] );
-
 		case Qt::BackgroundRole:
-
 			if ( m_projectM.isPresetLocked() && ( index.row() == m_projectM.selectedPresetIndex() ) )
 				return Qt::red;
 			if ( !m_projectM.isPresetLocked() && ( index.row() == m_projectM.selectedPresetIndex() ) )
 				return Qt::green;
 
 			return Qt::white;
-
 		case QPlaylistModel::URLInfoRole:
 			return QVariant ( QString ( m_projectM.getPresetURL ( index.row() ).c_str() ) );
 		default:
@@ -159,11 +155,6 @@ QVariant QPlaylistModel::headerData ( int section, Qt::Orientation orientation, 
 
 	if ( orientation == Qt::Vertical )
 		return QAbstractTableModel::headerData ( section, orientation, role );
-
-	if ( ( section == 0 ) && ( role == Qt::SizeHintRole ) )
-		return QVariant ( 500 );
-//	 if ((section == 1) && (role == Qt::SizeHintRole))
-//		return QVariant(60);
 	if ( ( section == 0 ) && ( role == Qt::DisplayRole ) )
 		return QString ( tr ( "Preset" ) );
 	if ( ( section == 1 ) && ( role == Qt::DisplayRole ) )
@@ -181,7 +172,6 @@ int QPlaylistModel::rowCount ( const QModelIndex & parent ) const
 int QPlaylistModel::columnCount ( const QModelIndex & parent ) const
 {
 
-	// eventually add ratings here so size should be 2
 	if ( rowCount() > 0 )
 		return 2;
 	else
