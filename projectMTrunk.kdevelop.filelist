@@ -57,6 +57,7 @@ src/projectM-engine/PresetLoader.cpp
 src/projectM-engine/PresetLoader.hpp
 src/projectM-engine/PresetMerge.cpp
 src/projectM-engine/PresetMerge.hpp
+src/projectM-engine/RandomNumberGenerators.hpp
 src/projectM-engine/Renderer.cpp
 src/projectM-engine/Renderer.hpp
 src/projectM-engine/RingBuffer.hpp
@@ -157,19 +158,3 @@ src/qprojectM-pulseaudio/QPulseAudioDeviceModel.hpp
 src/qprojectM-pulseaudio/QPulseAudioThread.cpp
 src/qprojectM-pulseaudio/QPulseAudioThread.hpp
 src/qprojectM-pulseaudio/qprojectM-pulseaudio.cpp
-src/qprojectM/src
-src/qprojectM/src/CMakeLists.txt
-src/qprojectM/src/ConfigFile.cpp
-src/qprojectM/src/ConfigFile.h
-src/qprojectM/src/Makefile
-src/qprojectM/src/QPlaylistFileDialog.hpp
-src/qprojectM/src/QPlaylistModel.cpp
-src/qprojectM/src/QPlaylistModel.hpp
-src/qprojectM/src/QProjectMConfigDialog.cpp
-src/qprojectM/src/QProjectMConfigDialog.hpp
-src/qprojectM/src/QProjectM_MainWindow.cpp
-src/qprojectM/src/QProjectM_MainWindow.hpp
-src/qprojectM/src/QXmlPlaylistHandler.hpp
-src/qprojectM/src/moc_QProjectMFileDialog.cxx
-src/qprojectM/src/moc_QProjectM_MainWindow.cxx
-src/qprojectM/src/qrc_application.cxx

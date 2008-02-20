@@ -294,6 +294,7 @@ protected:
             void closeEvent(QCloseEvent *event);
 
 private slots:
+
       void aboutQt();
       void clearPlaylist();
       void addPresets();
@@ -308,6 +309,7 @@ private slots:
       void updateFilteredPlaylist(const QString & text);
 
 	private:
+		void refreshHeaders();
 	void readConfig(const std::string & configFile);
 	void writeConfig();
 	void copyPlaylist();
