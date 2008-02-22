@@ -37,6 +37,15 @@ QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt
 			break;
 		
 		}
+		
+		case Qt::ToolTipRole:
+			pos = _devices.begin() + index.row();
+			if (_devicePosition == _devices.begin() + index.row())
+ 				return *pos + " (active)";			
+			else
+				return *pos + " (inactive)";
+						
+			
 		case Qt::BackgroundRole:
 			if (_devicePosition == _devices.begin() + index.row()) {
 				return Qt::green;										

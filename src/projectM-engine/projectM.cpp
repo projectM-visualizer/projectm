@@ -130,15 +130,13 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
  	
 	std::fstream file(configFile.c_str());	
 	if (file) {
-		file << config;		
+		file << config;
 		return true;
 	} else
 		return false;
 }
 
 int projectM::sampledPresetDuration() {
-	
-	
 	
 	return ( int ) (_settings.fps * fmax(1, fmin(60, RandomNumberGenerators::gaussian
 			(settings().presetDuration, settings().easterEgg))));
@@ -191,7 +189,6 @@ DLLEXPORT void projectM::renderFrame()
 	int x, y;
 #endif
 
-	//     printf("Start of loop at %d\n",timestart);
 	mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps ); //milliseconds per frame
 
 #ifndef WIN32
@@ -200,13 +197,6 @@ DLLEXPORT void projectM::renderFrame()
 	presetInputs.time = getTicks ( startTime ) * 0.001;
 #endif /** !WIN32 */
 
-
-	//DWRITE ( "frame: %d\ttime: %f\tprogress: %f\tavgtime: %d\tang: %f\trot: %f\n",
-	// this->presetInputs.frame, presetInputs.time, this->presetInputs.progress, this->avgtime, this->presetInputs.ang_per_pixel,
-	//this->presetOutputs.rot );
-
-
-//       printf("start:%d at:%d min:%d stop:%d on:%d %d\n",startframe, frame frame-startframe,avgtime,  noSwitch,progress);
 	presetInputs.ResetMesh();
 
 	beatDetect->detectFromSamples();
@@ -228,36 +218,18 @@ DLLEXPORT void projectM::renderFrame()
 			presetInputs.progress=0.0;
 			presetInputs.frame = 1;
 
-			//*m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>();
-
-			//m_activePreset2 = m_presetPos->allocate
-			//                  ( presetInputs, &m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs );
-
 			switchPreset(m_activePreset2, presetInputs, 
 				&m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
 
-			//assert ( m_activePreset2.get() );
-			//renderer->setPresetName ( m_activePreset2->presetName() );
-
-			//nohard=(int)(presetInputs.fps*3.5);
 			smoothFrame = ( int ) ( presetInputs.fps * _settings.smoothPresetDuration);
 			presetSwitchedEvent(false, **m_presetPos);
-//              printf("SOFT CUT - Smooth started\n");
 		}
+		
 		else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && nohard<0 )
 		{
-			//            printf("%f %d %d\n", beatDetect->bass-beatDetect->bass_old,this->frame,this->avgtime);
-			
-//			*m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor> ();
-
-//			m_activePreset = m_presetPos->allocate ( presetInputs, presetOutputs );
-//			renderer->setPresetName ( m_activePreset->presetName() );
-
-//			assert ( m_activePreset.get() );
 
 			switchPreset(m_activePreset, presetInputs, presetOutputs);
 
-			//nohard=presetInputs.fps*1;
 			smoothFrame=0;
 			presetInputs.progress=0.0;
 			presetInputs.frame = 1;
@@ -287,11 +259,9 @@ DLLEXPORT void projectM::renderFrame()
 
 		//double pos = -((smoothFrame / (presetInputs.fps * smoothDuration))-1);
 		//double ratio = 1/(1 + exp((pos-0.5)*4*M_PI));
-		double ratio = smoothFrame / ( presetInputs.fps * settings().smoothPresetDuration);
-		// printf("f(%f)=%f\n",pos, ratio);
+		double ratio = smoothFrame / ( presetInputs.fps * (double)settings().smoothPresetDuration);
+		
 		PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),ratio,presetInputs.gx, presetInputs.gy );
-
-		//printf("Smooth:%d\n",smoothFrame);
 
 		smoothFrame--;
 
@@ -302,8 +272,7 @@ DLLEXPORT void projectM::renderFrame()
 		{
 			m_activePreset = m_activePreset2;
 			smoothFrame=0;
-			avgtime = sampledPresetDuration();
-//		printf("Smooth Finished\n");
+			avgtime = sampledPresetDuration();//	
 		}
 
 		presetInputs.frame++;  //number of frames for current preset
@@ -407,117 +376,6 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	beatDetect = new BeatDetect ( _pcm );
 
 	initPresetTools();
-#if 0
-	/* Load default preset directory */
-#ifdef MACOS2
-	/** Probe the bundle for info */
-	CFBundleRef bundle = CFBundleGetMainBundle();
-	char msg[1024];
-	sprintf ( msg, "bundle: %X\n", bundle );
-	DWRITE ( msg );
-	if ( bundle != NULL )
-	{
-		CFPlugInRef pluginRef = CFBundleGetPlugIn ( bundle );
-		if ( pluginRef != NULL )
-		{
-			DWRITE ( "located plugin ref\n" );
-		}
-		else
-		{
-			DWRITE ( "failed to find plugin ref\n" );
-		}
-
-		CFURLRef bundleURL = CFBundleCopyBundleURL ( bundle );
-		if ( bundleURL == NULL )
-		{
-			DWRITE ( "bundleURL failed\n" );
-		}
-		else
-		{
-			DWRITE ( "bundleURL OK\n" );
-		}
-		char *bundleName =
-		    ( char * ) CFStringGetCStringPtr ( CFURLGetString ( bundleURL ), kCFStringEncodingMacRoman );
-		DWRITE ( "bundleURL: %s\n", bundleName );
-
-		presetURL = CFBundleCopyResourceURL ( bundle, purl, NULL, NULL );
-		if ( presetURL != NULL )
-		{
-			this->presetURL = ( char * ) CFStringGetCStringPtr ( CFURLCopyPath ( presetURL ), kCFStringEncodingMacRoman );
-			sprintf ( msg, "Preset: %s\n", presetURL );
-			DWRITE ( msg );
-			printf ( msg );
-
-			/** Stash the short preset name */
-
-		}
-		else
-		{
-			DWRITE ( "Failed to probe 'presets' bundle ref\n" );
-			this->presetURL = NULL;
-		}
-
-		fontURL = CFBundleCopyResourceURL ( bundle, furl, NULL, NULL );
-		if ( fontURL != NULL )
-		{
-			fontURL = ( char * ) CFStringGetCStringPtr ( CFURLCopyPath ( fontURL ), kCFStringEncodingMacRoman );
-			sprintf ( msg, "Font: %s\n", fontURL );
-			DWRITE ( msg );
-			printf ( msg );
-		}
-		else
-		{
-			DWRITE ( "Failed to probe 'fonts' bundle ref\n" );
-			fontURL = NULL;
-		}
-	}
-
-	/** Sanity check */
-	if ( bundle == NULL || presetURL == NULL || fontURL == NULL )
-	{
-		sprintf ( msg, "defaulting presets\n" );
-		DWRITE ( msg );
-		this->fontURL = ( char * ) wipemalloc ( sizeof ( char ) * 512 );
-//        strcpy( this->fontURL, "../../fonts/" );
-		strcpy ( fontURL, "/Users/descarte/tmp/projectM/fonts" );
-		this->fontURL[34] = '\0';
-//        loadPresetDir( "../../presets/" );
-//        loadPresetDir( "/Users/descarte/tmp/projectM-1.00/presets_projectM" );
-	}
-	else
-	{
-		printf ( "PresetDir: %s\n", this->presetURL );
-		loadPresetDir ( presetURL );
-	}
-#else
-	if ( presetURL == NULL || fontURL == NULL )
-	{
-		char msg[1024];
-		sprintf ( msg, "defaulting presets\n" );
-		DWRITE ( msg );
-		fontURL = ( char * ) wipemalloc ( sizeof ( char ) * 512 );
-#ifdef WIN32
-		strcpy ( this->fontURL, "c:\\tmp\\projectM\\fonts" );
-		fontURL[24] = '\0';
-#else
-	strcpy ( this->fontURL, "/Users/descarte/tmp/projectM/fonts" );
-	fontURL[34] = '\0';
-#endif
-		DWRITE ( "loading font URL directly: %s\n", this->fontURL );
-#ifdef WIN32
-		//      loadPresetDir( "c:\\tmp\\projectM\\presets_projectM" );
-#else
-	//    loadPresetDir( "/Users/descarte/tmp/projectM-1.00/presets_projectM" );
-#endif
-	}
-	else
-	{
-		printf ( "PresetDir: %s\n", this->presetURL );
-		//loadPresetDir( presetURL );
-	}
-
-#endif
-#endif
 
 	if ( presetInputs.fps > 0 )
 		mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps );
@@ -629,10 +487,6 @@ void projectM::projectM_initengine()
 
 
 	/* PER_PIXEL CONSTANTS BEGIN */
-	this->presetInputs.x_per_pixel = 0;
-	this->presetInputs.y_per_pixel = 0;
-	this->presetInputs.rad_per_pixel = 0;
-	this->presetInputs.ang_per_pixel = 0;
 
 	/* PER_PIXEL CONSTANT END */
 
@@ -750,7 +604,6 @@ void projectM::projectM_resetengine()
 	this->presetInputs.ang_per_pixel = 0;
 
 	/* PER_PIXEL CONSTANT END */
-
 
 	/* Q VARIABLES START */
 
