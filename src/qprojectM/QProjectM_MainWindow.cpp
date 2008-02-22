@@ -316,7 +316,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 				return;
 			setMenuVisible(!_menuVisible);
 			
-			refreshHeaders();
+	//		refreshHeaders();
 			
 			return;
 
@@ -336,7 +336,7 @@ void QProjectM_MainWindow::refreshHeaders() {
 	
 	
 	hHeader->setResizeMode ( 0, QHeaderView::Stretch);
-	hHeader->setResizeMode ( 1, QHeaderView::Fixed);
+	hHeader->setResizeMode ( 1, QHeaderView::Stretch);
 	hHeader->resizeSection(1, 50);
 	
 }

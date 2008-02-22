@@ -1,10 +1,12 @@
 #include "PresetMerge.hpp"
 
+#include <iostream>
+
 void PresetMerger::MergePresets(PresetOutputs & A, PresetOutputs & B, double ratio, int gx, int gy)
 {
   double invratio =  ratio;
   ratio = 1.0 - invratio;
- 
+
   //Merge Simple Waveforms
   //
   // All the mess is because of Waveform 7, which is two lines. 

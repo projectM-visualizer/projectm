@@ -216,10 +216,9 @@ bool QPlaylistModel::writePlaylist ( const QString & file ) {
 	QFile qfile(file);
 
  	if (!qfile.open(QIODevice::WriteOnly)) {
-		QMessageBox::warning (0, "Playlist Save Error", QString("There was a problem trying to save the playlist \"%1\".  You may not have permission to modify this file.").arg(file));				
+		QMessageBox::warning (0, "Playlist Save Error", QString("There was a problem trying to save the playlist \"%1\".  You may not have permission to modify this file.").arg(file));
 		return false;
 	}
-
 
 	XmlWriteFunctor writeFunctor(*this);
 

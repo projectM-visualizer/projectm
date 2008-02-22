@@ -22,7 +22,7 @@
      <x>0</x>
      <y>0</y>
      <width>787</width>
-     <height>31</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile" >
@@ -213,6 +213,15 @@ p, li { white-space: pre-wrap; }
        </property>
        <property name="autoFillBackground" >
         <bool>false</bool>
+       </property>
+       <property name="frameShape" >
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow" >
+        <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="horizontalScrollBarPolicy" >
+        <enum>Qt::ScrollBarAlwaysOff</enum>
        </property>
        <property name="dragEnabled" >
         <bool>true</bool>
