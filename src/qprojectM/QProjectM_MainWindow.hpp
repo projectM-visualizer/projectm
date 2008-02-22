@@ -142,7 +142,7 @@ class QProjectMWidget : public QGLWidget
 
 void keyReleaseEvent ( QKeyEvent * e )  {
 	
-	projectMKeycode pkey;
+    projectMKeycode pkey;
     bool ignore = false;
     switch (e->key()) {
 	case Qt::Key_F4:
@@ -176,7 +176,6 @@ void keyReleaseEvent ( QKeyEvent * e )  {
     }
        projectMModifier modifier;
 
-	//std::cerr << "HERE with key " << e->key() << std::endl;
 	m_projectM->key_handler(PROJECTM_KEYDOWN, pkey, modifier);
 	if (ignore)
 		e->ignore();
