@@ -186,7 +186,7 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item row="1" column="0" colspan="5" >
-      <widget class="QTableView" name="tableView" >
+      <widget class="QPlaylistTableView" name="tableView" >
        <property name="sizePolicy" >
         <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
          <horstretch>2</horstretch>
@@ -392,6 +392,13 @@ image: url(:/images/icons/hi16-action-projectm_unlock.png);
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QPlaylistTableView</class>
+   <extends>QTableView</extends>
+   <header>QPlaylistTableView.hpp</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="application.qrc" />
  </resources>
