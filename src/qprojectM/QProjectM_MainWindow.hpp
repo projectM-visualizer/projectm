@@ -306,9 +306,11 @@ private slots:
       void changeRating(const QModelIndex & index);
       void openSettingsDialog();
       void updateFilteredPlaylist(const QString & text);
-
+      void refreshHeaders(QResizeEvent * event = 0);
+      
 	private:
-		void refreshHeaders();
+		QSize _oldPlaylistSize;
+ 		
 	void readConfig(const std::string & configFile);
 	void writeConfig();
 	void copyPlaylist();

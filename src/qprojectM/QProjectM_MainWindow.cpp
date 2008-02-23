@@ -91,6 +91,8 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QM
 	connect ( ui->clearPresetList_PushButton, SIGNAL ( pressed() ),
 	          this, SLOT ( clearPlaylist() ) );
 
+	connect(ui->tableView, SIGNAL(resized(QResizeEvent *)), this, SLOT(refreshHeaders(QResizeEvent*)));
+	
 	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized(QProjectM*) ), this, SLOT ( postProjectM_Initialize() ) );
 	
 	m_QProjectMWidget->makeCurrent();
@@ -197,7 +199,6 @@ void QProjectM_MainWindow::selectPlaylistItem ( const QModelIndex & index )
 
 }
 
-
 void QProjectM_MainWindow::postProjectM_Initialize()
 {
 	qDebug() << "QProjectM_MainWindow::postProjectM_Initialize()";
@@ -219,8 +220,7 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 	}
 
 	if (!configDialog) {
-		configDialog = new QProjectMConfigDialog(m_QProjectMWidget->configFile(), m_QProjectMWidget, this);
-		
+		configDialog = new QProjectMConfigDialog(m_QProjectMWidget->configFile(), m_QProjectMWidget, this);	
 	}
 
 	readConfig(m_QProjectMWidget->configFile());
@@ -246,13 +246,13 @@ void QProjectM_MainWindow::setMenuVisible(bool visible) {
 	
 	
 	
-	if (visible) {
-		ui->presetPlayListDockWidget->show();
+	if (visible) {		
+		ui->presetPlayListDockWidget->show();		
 		menuBar()->show();
 		statusBar()->show();
 		//m_QProjectMWidget->setFocus();
-		_menuVisible = true;		
-	} else {
+		_menuVisible = true;				
+	} else {		
 		ui->presetPlayListDockWidget->hide();
 		menuBar()->hide();
 		statusBar()->hide();
@@ -316,7 +316,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 				return;
 			setMenuVisible(!_menuVisible);
 			
-	//		refreshHeaders();
+			refreshHeaders();
 			
 			return;
 
@@ -332,13 +332,15 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 }
 
 
-void QProjectM_MainWindow::refreshHeaders() {
+void QProjectM_MainWindow::refreshHeaders(QResizeEvent * event) {
 	
 	
-	hHeader->setResizeMode ( 0, QHeaderView::Stretch);
-	hHeader->setResizeMode ( 1, QHeaderView::Stretch);
-	hHeader->resizeSection(1, 50);
+	hHeader->setResizeMode ( 0, QHeaderView::Fixed);
+	hHeader->setResizeMode ( 1, QHeaderView::Fixed);	
+	hHeader->resizeSection(0, ui->tableView->size().width()-80-15);
+	hHeader->resizeSection(1, 80);
 	
+
 }
 
 
@@ -478,18 +480,19 @@ void QProjectM_MainWindow::refreshPlaylist()
 	if (hHeader)
 		disconnect(hHeader);
 	
+	
 	hHeader = new QHeaderView ( Qt::Horizontal, this );
 	vHeader = new QHeaderView ( Qt::Vertical, this );
 
+	
 	hHeader->setClickable ( false );
 	hHeader->setSortIndicatorShown ( false );
 
-	hHeader->setStretchLastSection ( false );
-	
 	ui->tableView->setVerticalHeader ( vHeader );
 	ui->tableView->setHorizontalHeader ( hHeader );
 
 	refreshHeaders();
+	
 	/*
 	hHeader->resizeSection(0, 200);
 	hHeader->setResizeMode(0, QHeaderView::Stretch);
@@ -497,6 +500,7 @@ void QProjectM_MainWindow::refreshPlaylist()
 	hHeader->resizeSection(1, 25);
 	*/
 
+//	connect(ui->tableView, SIGNAL(resizeEvent(QResizeEvent *)), this, SLOT(refreshHeaders(QResizeEVent*)));
 //	playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 
 	vHeader->hide();
@@ -552,6 +556,7 @@ void QProjectM_MainWindow::createMenus()
 
 void QProjectM_MainWindow::createToolBars()
 {
+	
 }
 
 void QProjectM_MainWindow::createStatusBar()
