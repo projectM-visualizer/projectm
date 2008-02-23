@@ -50,6 +50,7 @@ set(qprojectM_SRCS
     QXmlPlaylistHandler.hpp
     QProjectMConfigDialog.cpp
     QProjectMConfigDialog.hpp
+    QPlaylistTableView.hpp
 )
 
 
@@ -59,6 +60,7 @@ set(qprojectM_MOC_HDRS
     QPlaylistFileDialog.hpp
     QPlaylistModel.hpp
     QProjectMConfigDialog.hpp
+    QPlaylistTableView.hpp
 )
 
 set(qprojectM_UIS

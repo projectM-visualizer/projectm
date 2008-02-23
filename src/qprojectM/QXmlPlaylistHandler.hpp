@@ -20,8 +20,6 @@ class QXmlPlaylistHandler {
 
 };
 
-
-
 template <class ReadFunctor>
 QXmlStreamReader::Error QXmlPlaylistHandler::readPlaylist (QIODevice * device, ReadFunctor & readFunc)
 {
