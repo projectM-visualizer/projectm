@@ -337,8 +337,8 @@ void QProjectM_MainWindow::refreshHeaders(QResizeEvent * event) {
 	
 	hHeader->setResizeMode ( 0, QHeaderView::Fixed);
 	hHeader->setResizeMode ( 1, QHeaderView::Fixed);	
-	hHeader->resizeSection(0, ui->tableView->size().width()-80-15);
-	hHeader->resizeSection(1, 80);
+	hHeader->resizeSection(0, ui->tableView->size().width()-90-10);
+	hHeader->resizeSection(1, 90);
 	
 
 }
