@@ -127,6 +127,10 @@ class QProjectMWidget : public QGLWidget
 		m_projectM->setPresetLock((bool)state);
 		emit(presetLockChanged((bool)state));
      }
+     
+     void mousePressEvent ( QMouseEvent * event )   {
+	     this->setFocus();
+     }
   signals:
 	void projectM_BeforeDestroy();
 	void projectM_Initialized(QProjectM *);
