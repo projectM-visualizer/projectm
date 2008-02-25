@@ -25,15 +25,15 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 	this->showpreset = false;
 	this->showhelp = false;
 	this->showstats = false;
-	this->studio = 0;
+	this->studio = false;
 	this->realfps=0;
 	
-	this->drawtitle=0;
+	this->drawtitle=false;
 	
 	this->title = "Unknown";
 	
 	/** Other stuff... */
-	this->correction = 1;
+	this->correction = true;
 	this->aspect=1.33333333;
 	
 	this->gridx=(float **)wipemalloc(gx * sizeof(float *));

@@ -115,34 +115,36 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			if (beatDetect->beat_sensitivity < 0) beatDetect->beat_sensitivity = 0;
 	      break;
 		case PROJECTM_K_h:
-		  renderer->showhelp++;
-	      renderer->showstats=0;
-	      renderer->showfps=0; 
+ 		  renderer->showhelp = !renderer->showhelp;
+	      renderer->showstats= false;
+	      renderer->showfps=false;
 	    case PROJECTM_K_F1:
-	      renderer->showhelp++;
-	      renderer->showstats=0;
-	      renderer->showfps=0; 
+	      renderer->showhelp = !renderer->showhelp;
+	      renderer->showstats=false;
+	      renderer->showfps=false; 
 	      break;
 	    case PROJECTM_K_F5:
-	      if(renderer->showhelp%2==0) renderer->showfps++;
+	      if (!renderer->showhelp)
+		      renderer->showfps = !renderer->showfps;
 	      break;
 	    case PROJECTM_K_F4:
-	       if(renderer->showhelp%2==0) renderer->showstats++;
+		if (!renderer->showhelp)
+	       		renderer->showstats = !renderer->showstats;
 	      break;
 	    case PROJECTM_K_F3: {
-	      renderer->showpreset++;
-	      printf( "F3 pressed: %d\n", renderer->showpreset );
+	      renderer->showpreset = !renderer->showpreset;
 	      break;
 	     }
 	    case PROJECTM_K_F2:
-	      renderer->showtitle++;
+	      renderer->showtitle = !renderer->showtitle;
 	      break;
 #ifndef MACOS
 	    case PROJECTM_K_F9:
 #else
         case PROJECTM_K_F8:
 #endif
-	      renderer->studio++;
+		
+	      renderer->studio = !renderer->studio;
 	      break;
 
 	    case PROJECTM_K_ESCAPE: {
@@ -153,11 +155,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	   
 	      break; 
 	    case PROJECTM_K_a:
-	        if (renderer->correction) {
-	            renderer->correction = 0;
-	          } else {
-	            renderer->correction = 1;
-	          }
+		    renderer->correction = !renderer->correction;
 	        break;
 	    case PROJECTM_K_b:
 	      break;
@@ -224,11 +222,10 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		smoothFrame = 0;
 	      break;
 	    case PROJECTM_K_l:
-	      if (renderer->noSwitch==0)
 		renderer->noSwitch=!renderer->noSwitch;
 	      break;
 	    case PROJECTM_K_s:
-            	renderer->studio++;
+            	renderer->studio = !renderer->studio;
 	    case PROJECTM_K_i:
 	        break;
 	    case PROJECTM_K_z:
@@ -243,9 +240,6 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 //	      nWaveMode=7;
 	      break;
 	    case PROJECTM_K_m:
-	      renderer->showhelp=0;
-	      renderer->showstats=0;
-	      renderer->showfps=0;
 	      break;	     
 	    case PROJECTM_K_t:
 	      break;

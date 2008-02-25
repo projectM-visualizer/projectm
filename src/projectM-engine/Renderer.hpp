@@ -41,15 +41,15 @@ public:
   bool showhelp;
   bool showstats;
   
-  int studio;
-  int correction;
+  bool studio;
+  bool correction;
   
   bool noSwitch;
   
   int totalframes;
   float realfps;
   std::string title;
-  int drawtitle;
+  bool drawtitle;
   int texsize;
 
   Renderer( int width, int height, int gx, int gy, int texsize,  BeatDetect *beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
