@@ -171,9 +171,9 @@ void projectM::readConfig (const std::string & configFile )
 	 _settings.beatSensitivity = beatDetect->beat_sensitivity = config.read<float> ( "Hard Cut Sensitivity", 10.0 );
 	
 	if ( config.read ( "Aspect Correction", true ) )
-		_settings.aspectCorrection = renderer->correction = 1;	
+		_settings.aspectCorrection = renderer->correction = true;
 	else 
-		_settings.aspectCorrection = renderer->correction = 0;
+		_settings.aspectCorrection = renderer->correction = false;
 
 	
 }
@@ -636,7 +636,7 @@ DLLEXPORT void projectM::projectM_setTitle ( std::string title )
 	if ( title != renderer->title )
 	{
 		renderer->title=title;
-		renderer->drawtitle=1;
+		renderer->drawtitle=true;
 	}
 }
 
