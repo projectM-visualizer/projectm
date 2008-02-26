@@ -15,7 +15,11 @@
   <property name="whatsThis" >
    <string/>
   </property>
-  <widget class="QWidget" name="centralwidget" />
+  <widget class="QWidget" name="centralwidget" >
+   <property name="focusPolicy" >
+    <enum>Qt::ClickFocus</enum>
+   </property>
+  </widget>
   <widget class="QMenuBar" name="menuBar" >
    <property name="geometry" >
     <rect>
@@ -219,6 +223,9 @@ p, li { white-space: pre-wrap; }
        </property>
        <property name="frameShadow" >
         <enum>QFrame::Sunken</enum>
+       </property>
+       <property name="verticalScrollBarPolicy" >
+        <enum>Qt::ScrollBarAlwaysOn</enum>
        </property>
        <property name="horizontalScrollBarPolicy" >
         <enum>Qt::ScrollBarAlwaysOff</enum>

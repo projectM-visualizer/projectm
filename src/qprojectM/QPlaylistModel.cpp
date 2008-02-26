@@ -62,6 +62,7 @@ QPlaylistModel::QPlaylistModel ( projectM & _projectM, QObject * parent ) :
 		QAbstractTableModel ( parent ), m_projectM ( _projectM )
 {
 	m_ratings = QVector<int> ( rowCount(), 3 );
+	m_ids = QVector<long> (rowCount());
 }
 
 
@@ -115,7 +116,9 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 
 	if (!index.isValid())
 		return QVariant();
-
+	
+	unsigned int pos;
+	
 	switch ( role )
 	{
 		case Qt::DisplayRole:
@@ -123,7 +126,6 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 				return QVariant ( QString ( m_projectM.getPresetName ( index.row() ).c_str() ) );
 			else
 				return ratingToIcon ( m_ratings[index.row() ] );
-		
 		case Qt::ToolTipRole:
 			if ( index.column() == 0 )
 				return QVariant ( QString ( m_projectM.getPresetName ( index.row() ).c_str() ) );
@@ -137,11 +139,12 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 		case QPlaylistModel::RatingRole:
 			return QVariant ( m_ratings[index.row() ] );
 		case Qt::BackgroundRole:
-			if ( m_projectM.isPresetLocked() && ( index.row() == m_projectM.selectedPresetIndex() ) )
+			if (!m_projectM.selectedPresetIndex(pos))
+				return QVariant();						
+			if ( m_projectM.isPresetLocked() && ( index.row() ==pos ) )
 				return Qt::red;
-			if ( !m_projectM.isPresetLocked() && ( index.row() == m_projectM.selectedPresetIndex() ) )
+			if ( !m_projectM.isPresetLocked() && ( index.row() == pos ) )
 				return Qt::green;
-
 			return Qt::white;
 		case QPlaylistModel::URLInfoRole:
 			return QVariant ( QString ( m_projectM.getPresetURL ( index.row() ).c_str() ) );
@@ -178,11 +181,12 @@ int QPlaylistModel::columnCount ( const QModelIndex & parent ) const
 		return 0;
 }
 
-void QPlaylistModel::appendRow ( const QString & presetURL, const QString & presetName, int rating )
+void QPlaylistModel::appendRow ( const QString & presetURL, const QString & presetName, long id, int rating )
 {
 	beginInsertRows ( QModelIndex(), rowCount(), rowCount() );
 	m_projectM.addPresetURL ( presetURL.toStdString(), presetName.toStdString() );
 	m_ratings.push_back ( rating );
+	m_ids.push_back(id);
 	endInsertRows();
 }
 
@@ -206,7 +210,7 @@ void QPlaylistModel::clearItems()
 {
 	beginRemoveRows ( QModelIndex(), 0, rowCount()-1 );
 	m_projectM.clearPlaylist();
-	m_ratings.clear();	
+	m_ratings.clear();
 	endRemoveRows();
 }
 

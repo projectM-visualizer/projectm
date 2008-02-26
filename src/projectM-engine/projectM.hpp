@@ -193,7 +193,7 @@ public:
   /// preset was removed from the playlist, this function will return the element
   /// before active preset (thus the next in order preset is invariant with respect
   /// to the removal)
-  unsigned int selectedPresetIndex() const;
+  bool selectedPresetIndex(unsigned int & index) const;
 
   /// Add a preset url to the play list. Appended to bottom
   unsigned int addPresetURL(const std::string & presetURL, const std::string & presetName);

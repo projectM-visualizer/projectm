@@ -131,6 +131,7 @@ class QProjectMWidget : public QGLWidget
      void mousePressEvent ( QMouseEvent * event )   {
 	     this->setFocus();
      }
+     
   signals:
 	void projectM_BeforeDestroy();
 	void projectM_Initialized(QProjectM *);
@@ -189,8 +190,6 @@ void keyReleaseEvent ( QKeyEvent * e )  {
 
      void initializeGL()
      {
-	
-	
 	this->m_projectM = new QProjectM(config_file);
 	projectM_Initialized(m_projectM);
      }
@@ -202,7 +201,7 @@ void keyReleaseEvent ( QKeyEvent * e )  {
 	m_projectM->projectM_resetGL(  w, h ); 
      }
 
-     void paintGL()
+     inline void paintGL()
      {
    	m_projectM->renderFrame();
      }
@@ -265,12 +264,13 @@ class QProjectM_MainWindow:public QMainWindow
 public:
       typedef struct PlaylistItemMetaData {
 		PlaylistItemMetaData() {}
-		PlaylistItemMetaData(const QString & _url, const QString & _name, int _rating):
-			url(_url), name(_name), rating(_rating) {}
+		PlaylistItemMetaData(const QString & _url, const QString & _name, int _rating, long _id):
+			url(_url), name(_name), rating(_rating), id(_id) {}
 
 		QString url;
 		QString name;
 		int rating;
+		long id;
       } PlaylistItemMetaData;
 
       typedef QVector<PlaylistItemMetaData> PlaylistItemVector;
@@ -328,6 +328,7 @@ private slots:
       QProjectMConfigDialog * configDialog;
 
       QHash<QString, PlaylistItemVector*> historyHash;
+      //QHash<QString, QVector<Long> *> idMappingHash;
 
       bool _menuVisible;
       int oldPresetIndex;
