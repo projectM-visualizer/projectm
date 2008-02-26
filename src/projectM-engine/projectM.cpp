@@ -733,13 +733,7 @@ void projectM::destroyPresetTools()
 
 /// @bug queuePreset case isn't handled
 void projectM::removePreset(unsigned int index) {
-//	bool iteratorToEnd = false;
-
-//	if (index == selectedPresetIndex());
-//		iteratorToEnd = true;		
-//	else if (index < selectedPresetIndex())
-//		m_presetPos = sele
-
+	
 	int chooserIndex = **m_presetPos;
 
 	m_presetLoader->removePreset(index);
@@ -753,14 +747,13 @@ void projectM::removePreset(unsigned int index) {
 	else if (chooserIndex > index) {
 		chooserIndex--;
 		*m_presetPos = m_presetChooser->begin(chooserIndex);
-	} 
+	}
 
 	// Case: we have deleted the active preset position
-	// Put the iterator in the position before the preset following
-	// the one to be removed. This ensures in order playback after
-	// a removal
+	// Set iterator to end of chooser
 	else if (chooserIndex == index) { 
-		*m_presetPos = m_presetChooser->begin(chooserIndex);
+		//*m_presetPos = m_presetChooser->begin(chooserIndex);
+		*m_presetPos = m_presetChooser->end();
 	}
 
 	
@@ -834,9 +827,12 @@ std::string projectM::getPresetName ( unsigned int index ) const
 
 void projectM::clearPlaylist ( ) 
 {
+	
 	m_presetLoader->clear();
-	delete(m_presetQueuePos);
+	*m_presetPos = m_presetChooser->end();
+	delete(m_presetQueuePos);	
 	m_presetQueuePos = 0;
+	
 }
 
 
@@ -853,8 +849,13 @@ bool projectM::isPresetQueued() const {
 	return (*m_presetQueuePos != m_presetChooser->end());
 }
 
-unsigned int projectM::selectedPresetIndex() const {
-	return **m_presetPos;
+bool projectM::selectedPresetIndex(unsigned int & index) const {
+	
+	if (*m_presetPos == m_presetChooser->end())
+		return false;
+	
+	index = **m_presetPos;
+	return true;
 }
 
 unsigned int projectM::getPlaylistSize() const

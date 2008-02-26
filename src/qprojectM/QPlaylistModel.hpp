@@ -29,7 +29,8 @@
 #include <projectM.hpp>
 
 class QXmlStreamReader;
- class QPlaylistModel : public QAbstractTableModel
+
+class QPlaylistModel : public QAbstractTableModel
  {
      Q_OBJECT        // must include this if you use Qt signals/slots
 
@@ -40,7 +41,7 @@ static const int RatingRole = Qt::UserRole+1;
      ~QPlaylistModel() { }
 bool setData(const QModelIndex & index, const QVariant & value, int role=Qt::EditRole);
 
-void appendRow (const QString & presetURL, const QString & presetName, int rating = 3);
+void appendRow (const QString & presetURL, const QString & presetName, long id, int rating = 3);
 void removeRow (int index);
 QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
@@ -80,7 +81,8 @@ public slots:
 
 	QVariant ratingToIcon(int rating) const;
 	projectM & m_projectM;
-	QVector<int> m_ratings;	
+	QVector<int> m_ratings;
+	QVector<long> m_ids;
 	QString m_playlistName;
 	QString m_playlistDesc;
 };
