@@ -33,7 +33,7 @@
 
 #include "ConfigFile.h"
 #include "QXmlPlaylistHandler.hpp"
-
+#include "Nullable.hpp"
 class PlaylistWriteFunctor {
 	public:
 		PlaylistWriteFunctor(const QProjectM_MainWindow::PlaylistItemVector::iterator & begin,
@@ -179,9 +179,9 @@ void QProjectM_MainWindow::updatePlaylistSelection ( bool hardCut, unsigned int 
 {
 
 	if ( hardCut )
-		statusBar()->showMessage ( tr ( "*** Hard cut ***" ) , 2000 );
+		statusBar()->showMessage ( tr(QString( "*** Hard cut to \"%1\" ***" ).arg(this->getQProjectM()->getPresetName(index).c_str()).toStdString().c_str()) , 2000 );
 	else
-		statusBar()->showMessage ( tr ( "*** Soft cut ***" ) , 2000 );
+		statusBar()->showMessage ( tr ( "*** Soft cut to \"%1\" ***" ).arg(this->getQProjectM()->getPresetName(index).c_str()).toStdString().c_str(), 2000);
 
 
 	//playlistModel->setData(playlistModel->index(index, 0), Qt::green, Qt::BackgroundRole);
@@ -247,12 +247,14 @@ void QProjectM_MainWindow::setMenuVisible(bool visible) {
 	
 	
 	if (visible) {		
+		ui->dockWidgetContents->resize(_oldPlaylistSize);
 		ui->presetPlayListDockWidget->show();		
 		menuBar()->show();
 		statusBar()->show();
 		//m_QProjectMWidget->setFocus();
 		_menuVisible = true;				
 	} else {		
+		_oldPlaylistSize = ui->dockWidgetContents->size();
 		ui->presetPlayListDockWidget->hide();
 		menuBar()->hide();
 		statusBar()->hide();
@@ -466,7 +468,7 @@ void QProjectM_MainWindow::copyPlaylist()
 		const QString & name = playlistModel->data ( index, Qt::DisplayRole ).toString();
 		int rating = playlistModel->data ( index, QPlaylistModel::RatingRole ).toInt();
 
-		items->push_back ( PlaylistItemMetaData ( url, name, rating ) );
+		items->push_back ( PlaylistItemMetaData ( url, name, rating, i ) );
 
 	}
 	historyHash.insert ( QString(), items );
@@ -512,7 +514,7 @@ void QProjectM_MainWindow::refreshPlaylist()
 void QProjectM_MainWindow::about()
 {
 	QMessageBox::about ( this, tr ( "About QProjectM and ProjectM" ),
-	                     tr ( "<p><b>QProjectM</b> provides useful gui extensions to the projectM core library. For problems please email Carmelo Piccione: \n<a href=\"mailto:carmelo.piccione@gmail.com\"> carmelo.piccione@gmail.com</a>.</p><p><b>projectM</b> is an advanced opensource music visualizer based on Geiss's Milkdrop. For more info visit us at <a href=\"http://projectm.sf.net\">projectm.sf.net</a>.</p>" ) );
+	                     tr ( "<p><b>QProjectM</b> provides useful gui extensions to the projectM core library. For problems please email Carmelo Piccione: \n<a href=\"mailto:carmelo.piccione+qprojectM@gmail.com\"> carmelo.piccione@gmail.com</a>.</p><p><b>projectM</b> is an advanced opensource music visualizer based on Geiss's Milkdrop. For more info visit us at <a href=\"http://projectm.sf.net\">projectm.sf.net</a>.</p>" ) );
 }
 
 void QProjectM_MainWindow::openSettingsDialog() {
@@ -598,7 +600,7 @@ void QProjectM_MainWindow::loadFile ( const QString &fileName, int rating )
 	PlaylistItemVector * playlistItems = historyHash.value ( QString(), 0 );
 	assert ( playlistItems != 0 );
 
-	playlistItems->push_back ( PlaylistItemMetaData ( fileName, name, rating ) );
+	playlistItems->push_back ( PlaylistItemMetaData ( fileName, name, rating, playlistItems->size() ) );
 
 }
 
@@ -613,7 +615,23 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 {
 
 	const QString filter = text.toLower();
-
+	unsigned int presetIndexBackup ;
+	bool preservePresetSelection = getQProjectM()->selectedPresetIndex(presetIndexBackup);
+	
+	const PlaylistItemVector & oldPlaylistItems = *historyHash.value(previousFilter);
+	
+	int i = 0;
+	Nullable<uint> activePresetId;
+	
+	for ( PlaylistItemVector::const_iterator pos = oldPlaylistItems.begin(); pos != oldPlaylistItems.end();++pos )
+	{
+		if (presetIndexBackup == i)
+			activePresetId = pos->id;
+		i++;
+	}
+		
+	
+	/// NEED A MUTEX TO STOP PROJECTM FROM SWITCHING PRESETS
 	playlistModel->clearItems();
 	
 	if ( historyHash.contains ( filter ) )
@@ -621,7 +639,11 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 		const PlaylistItemVector & playlistItems = *historyHash.value ( filter );
 		for ( PlaylistItemVector::const_iterator pos = playlistItems.begin(); pos != playlistItems.end();++pos )
 		{
-			playlistModel->appendRow ( pos->url, pos->name, pos->rating );
+			playlistModel->appendRow ( pos->url, pos->name,  pos->id, pos->rating);
+			
+			if (activePresetId.hasValue() && pos->id == activePresetId.value())
+				getQProjectM()->selectPreset(playlistModel->rowCount()-1);
+				
 		}
 	}
 	else
@@ -633,12 +655,17 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 		{
 			if ( ( pos->name ).contains ( filter, Qt::CaseInsensitive ) )
 			{
-				playlistModel->appendRow ( pos->url, pos->name, pos->rating );
+				playlistModel->appendRow ( pos->url, pos->name, pos->id, pos->rating);
+				
+				if (activePresetId.hasValue() && pos->id == activePresetId.value())
+					getQProjectM()->selectPreset(playlistModel->rowCount()-1);								
+					
 				playlistItems2->push_back ( *pos );
 			}
 		}
 		historyHash.insert ( filter, playlistItems2 );
 	}
 	previousFilter = filter;
+	
 }
 
