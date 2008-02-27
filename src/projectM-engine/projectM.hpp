@@ -216,7 +216,7 @@ public:
   }
 private:
 	
-  int sampledPresetDuration();
+  double sampledPresetDuration();
   BeatDetect * beatDetect;
   Renderer *renderer;
   Settings _settings;
