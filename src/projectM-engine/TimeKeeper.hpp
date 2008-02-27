@@ -31,6 +31,8 @@ public:
 
   double PresetProgressA();
   double PresetProgressB();
+  int PresetFrameA();
+  int PresetFrameB();
 
 
 #ifndef WIN32
@@ -48,6 +50,8 @@ private:
   double _currentTime;
   double _presetTimeA;
   double _presetTimeB;
+  int _presetFrameA;
+  int _presetFrameB;
 
   bool _isSmoothing;
 

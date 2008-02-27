@@ -277,7 +277,7 @@ private:
 
   PCM * _pcm;
   
-  int oldFrame;// = 1;
+  
 
 };
 #endif

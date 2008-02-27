@@ -178,8 +178,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		}
 
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
-		renderer->setPresetName(m_activePreset->presetName());		
-                presetInputs.frame = 0;
+		renderer->setPresetName(m_activePreset->presetName());		               
 		timeKeeper->StartPreset();
 	      break;
 
@@ -195,7 +194,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		assert(m_activePreset.get());
 			
 		renderer->setPresetName(m_activePreset->presetName());
-		presetInputs.frame = 0;
+	       
 		timeKeeper->StartPreset();
 		break;
 	    case PROJECTM_K_p:
@@ -219,7 +218,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
 		renderer->setPresetName(m_activePreset->presetName());
-                presetInputs.frame = 0;
+               
 	       	timeKeeper->StartPreset();
 	      break;
 	    case PROJECTM_K_l:
