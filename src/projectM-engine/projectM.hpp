@@ -57,10 +57,6 @@
 #ifdef WIN322
 #define inline
 #endif /** WIN32 */
-#ifndef WIN32
-#include <sys/time.h>
-#else
-#endif /** !WIN32 */
 
 #include "dlldefs.h"
 #include "event.h"
@@ -78,6 +74,7 @@ class Preset;
 class PresetIterator;
 class PresetChooser;
 class PresetLoader;
+class TimeKeeper;
 
 //class PresetInputs;
 //class PresetOutputs;
@@ -223,25 +220,14 @@ private:
   BeatDetect * beatDetect;
   Renderer *renderer;
   Settings _settings;
-  int smoothFrame;
     
-#ifndef WIN32
-  /* The first ticks value of the application */
-  struct timeval startTime;
-#else
-  long startTime;
-#endif /** !WIN32 */
-
   int wvw;      //windowed dimensions
   int wvh;
-  
-  int avgtime;  //# frames per preset
-  
+     
   /** Timing information */
   int mspf;
   int timed;
-  int timestart;
-  int nohard;
+  int timestart;  
   int count;
   float fpsstart;
   
@@ -287,6 +273,8 @@ private:
   /// A preset outputs container used for smooth preset switching
   PresetOutputs presetOutputs2;
   
+  TimeKeeper *timeKeeper;
+
   PCM * _pcm;
   
   int oldFrame;// = 1;

@@ -41,9 +41,11 @@
 #ifndef WIN32
 #include <sys/time.h>
 unsigned int getTicks( struct timeval *start );
+struct timeval GetCurrentTime();
 #else
 #include <windows.h>
 unsigned int getTicks( long start );
+long GetCurrentTime();
 #endif /** !WIN32 */
 
 #endif /** _TIMER_H */
