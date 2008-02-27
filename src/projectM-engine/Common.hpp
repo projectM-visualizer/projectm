@@ -30,7 +30,7 @@
 #include <stdarg.h>
 
 #ifdef _MSC_VER
-#   define strcasecmp(s, t) _strcmpi(s, t)
+#define strcasecmp(s, t) _strcmpi(s, t)
 #endif
 
 #ifdef DEBUG
@@ -66,7 +66,7 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 
 #ifdef WIN32
 #define projectM_isnan(x) ((x) != (x))
-f#endif
+#endif
 
 #ifdef MACOS
 #define projectM_isnan(x) ((x) != (x))
@@ -99,9 +99,10 @@ f#endif
 #ifndef TRUE
 #define TRUE true
 #endif
+
 #ifndef FALSE
 #define FALSE false
-#endif 
+#endif
 
 
 #define MAX_DOUBLE_SIZE  10000000.0
@@ -133,8 +134,6 @@ f#endif
 #define PATH_SEPARATOR UNIX_PATH_SEPARATOR
 #endif /** WIN32 */
 
-			 
-
 inline void DWRITE( char *fmt, ... ) {
 	return;
     va_list args;
@@ -143,3 +142,5 @@ inline void DWRITE( char *fmt, ... ) {
   }
 
 #endif
+
+
