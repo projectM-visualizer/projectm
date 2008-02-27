@@ -60,7 +60,15 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define projectM_isnan isnan
 #endif
 
+#ifdef LINUX
+#define projectM_isnan isnan
+#endif
+
 #ifdef WIN32
+#define projectM_isnan(x) ((x) != (x))
+f#endif
+
+#ifdef MACOS
 #define projectM_isnan(x) ((x) != (x))
 #endif
 
@@ -72,6 +80,10 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define projectM_fmax(x,y) ((x) >= (y) ? (x): (y))
 #endif
 
+#ifdef MACOS
+#define projectM_fmax(x,y) ((x) >= (y) ? (x): (y))
+#endif
+
 #ifdef LINUX
 #define projectM_fmin fmin
 #endif
@@ -80,11 +92,15 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define projectM_fmin(x,y) ((x) <= (y) ? (x): (y))
 #endif
 
+#ifdef MACOS
+#define projectM_fmin(x,y) ((x) <= (y) ? (x): (y))
+#endif
+
 #ifndef TRUE
-#define TRUE 1
+#define TRUE true
 #endif
 #ifndef FALSE
-#define FALSE 0
+#define FALSE false
 #endif 
 
 
