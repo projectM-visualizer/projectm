@@ -30,6 +30,7 @@
 #include "PresetChooser.hpp"
 #include "Renderer.hpp"
 #include <iostream>
+#include "TimeKeeper.hpp"
 
 class Preset;
 
@@ -179,7 +180,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
 		renderer->setPresetName(m_activePreset->presetName());		
                 presetInputs.frame = 0;
-		smoothFrame = 0;
+		timeKeeper->StartPreset();
 	      break;
 
 	    case PROJECTM_K_r:
@@ -195,7 +196,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			
 		renderer->setPresetName(m_activePreset->presetName());
 		presetInputs.frame = 0;
-		smoothFrame = 0;
+		timeKeeper->StartPreset();
 		break;
 	    case PROJECTM_K_p:
 
@@ -219,7 +220,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
 		renderer->setPresetName(m_activePreset->presetName());
                 presetInputs.frame = 0;
-		smoothFrame = 0;
+	       	timeKeeper->StartPreset();
 	      break;
 	    case PROJECTM_K_l:
 		renderer->noSwitch=!renderer->noSwitch;
