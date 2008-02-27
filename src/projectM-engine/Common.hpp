@@ -121,7 +121,7 @@ f#endif
 
 #ifdef WIN32
 #include <float.h>
-#define isnan _isnan#endif /** WIN32 */
+#define isnan _isnan
 #endif /** WIN32 */
 
 /** Per-platform path separators */
