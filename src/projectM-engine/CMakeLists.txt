@@ -5,9 +5,9 @@ Func.cpp Eval.cpp  PerFrameEqn.cpp PerPointEqn.cpp fftsg.cpp KeyHandler.cpp
  timer.cpp  wipemalloc.cpp 
 BuiltinFuncs.cpp BuiltinParams.cpp Renderer.cpp 
 PresetLoader.cpp  PresetChooser.cpp PresetFrameIO.cpp PresetMerge.cpp
-ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp MoodBar.cpp image_DXT.c image_helper.c SOIL.c stb_image_aug.c)
+ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp MoodBar.cpp image_DXT.c image_helper.c SOIL.c stb_image_aug.c TimeKeeper.cpp)
 
-SET_TARGET_PROPERTIES(projectM PROPERTIES VERSION 1.10 SOVERSION 1)
+SET_TARGET_PROPERTIES(projectM PROPERTIES VERSION 1.10 SOVERSION 2)
 
 ADD_DEFINITIONS(-DLINUX -DUSE_FBO -DSTBI_NO_DDS)
 ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"") 

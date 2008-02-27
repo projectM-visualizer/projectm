@@ -62,7 +62,7 @@
 #include "ConfigFile.h"
 #include "TextureManager.hpp"
 #include "RandomNumberGenerators.hpp"
-
+#include "TimeKeeper.hpp"
 
 /*
 DLLEXPORT projectM::projectM ( int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url,std::string title_fonturl, std::string title_menuurl ) :beatDetect ( 0 ),  renderer ( 0 ), settings.presetURL ( preset_url ), title_fontURL ( title_fonturl ), menu_fontURL ( menu_fontURL ), smoothFrame ( 0 ), m_presetQueuePos(0)
@@ -100,7 +100,7 @@ DLLEXPORT void projectM::projectM_resetTextures()
 }
 
 DLLEXPORT  projectM::projectM ( std::string config_file ) :
-		beatDetect ( 0 ), renderer ( 0 ), smoothFrame ( 0 ), m_presetQueuePos(0), oldFrame(1), _pcm(0)
+		beatDetect ( 0 ), renderer ( 0 ),  m_presetQueuePos(0), oldFrame(1), _pcm(0)
 {
 	readConfig ( config_file );	
 	projectM_reset();
@@ -189,18 +189,16 @@ DLLEXPORT void projectM::renderFrame()
 	int x, y;
 #endif
 
-	mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps ); //milliseconds per frame
+	timeKeeper->UpdateTimers();
 
-#ifndef WIN32
-	presetInputs.time = getTicks ( &startTime ) * 0.001;
-#else
-	presetInputs.time = getTicks ( startTime ) * 0.001;
-#endif /** !WIN32 */
+	//printf("A:%f, B:%f, S:%f\n", timeKeeper->PresetProgressA(), timeKeeper->PresetProgressB(), timeKeeper->SmoothRatio());
+	mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps ); //milliseconds per frame
 
 	presetInputs.ResetMesh();
 
 	beatDetect->detectFromSamples();
 
+	presetInputs.time = timeKeeper->GetRunningTime();
 	presetInputs.bass = beatDetect->bass;
 	presetInputs.mid = beatDetect->mid;
 	presetInputs.treb = beatDetect->treb;
@@ -212,46 +210,46 @@ DLLEXPORT void projectM::renderFrame()
 
 	if ( renderer->noSwitch==false && !m_presetChooser->empty() )
 	{
-		if ( presetInputs.progress>1.0 )
+		if ( presetInputs.progress>=1.0 )
 		{
+ 
 			oldFrame = presetInputs.frame;
-			presetInputs.progress=0.0;
-			presetInputs.frame = 1;
-
+			timeKeeper->StartSmoothing();		      
+			///printf("Start Smooth\n");
+			// if(timeKeeper->IsSmoothing())printf("Confirmed\n");
 			switchPreset(m_activePreset2, presetInputs, 
 				&m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
-
-			smoothFrame = ( int ) ( presetInputs.fps * _settings.smoothPresetDuration);
+		       
 			presetSwitchedEvent(false, **m_presetPos);
 		}
 		
-		else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && nohard<0 )
+		else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && timeKeeper->CanHardCut() )
 		{
-
+		  // printf("Hard Cut\n");
 			switchPreset(m_activePreset, presetInputs, presetOutputs);
 
-			smoothFrame=0;
-			presetInputs.progress=0.0;
+			timeKeeper->StartPreset();
+		       	presetInputs.progress=timeKeeper->PresetProgressA();
 			presetInputs.frame = 1;
 			presetSwitchedEvent(true, **m_presetPos);
-		}
-		else nohard--;
+		}		
 	}
 
 
 
-	if ( smoothFrame > 1 && !m_presetChooser->empty() )
+	if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
 	{
+	  //	  printf("Smooth: \n", timeKeeper->SmoothRatio());
 		int frame = ++presetInputs.frame;
 		presetInputs.frame = ++oldFrame;
-		presetInputs.progress= 1.0;
+		presetInputs.progress= timeKeeper->PresetProgressA();
 		assert ( m_activePreset.get() );
 		m_activePreset->evaluateFrame();
 		renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
 		renderer->WaveformMath ( &m_activePreset->presetOutputs(), &presetInputs, true );
 
 		presetInputs.frame = frame;
-		presetInputs.progress= frame / ( float ) avgtime;
+		presetInputs.progress= timeKeeper->PresetProgressB();
 		assert ( m_activePreset2.get() );
 		m_activePreset2->evaluateFrame();
 		renderer->PerPixelMath ( &m_activePreset2->presetOutputs(), &presetInputs );
@@ -259,24 +257,22 @@ DLLEXPORT void projectM::renderFrame()
 
 		//double pos = -((smoothFrame / (presetInputs.fps * smoothDuration))-1);
 		//double ratio = 1/(1 + exp((pos-0.5)*4*M_PI));
-		double ratio = smoothFrame / ( presetInputs.fps * (double)settings().smoothPresetDuration);
 		
-		PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),ratio,presetInputs.gx, presetInputs.gy );
-
-		smoothFrame--;
+		
+		PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),timeKeeper->SmoothRatio(),presetInputs.gx, presetInputs.gy );	       
 
 	}
 	else
 	{
-		if ( smoothFrame == 1 )
+		if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() > 1.0 )
 		{
-			m_activePreset = m_activePreset2;
-			smoothFrame=0;
-			avgtime = sampledPresetDuration();//	
+		  //printf("End Smooth\n");
+			m_activePreset = m_activePreset2;			
+			timeKeeper->EndSmoothing();
 		}
-
+		//printf("Normal\n");
 		presetInputs.frame++;  //number of frames for current preset
-		presetInputs.progress= presetInputs.frame/ ( float ) avgtime;
+		presetInputs.progress= timeKeeper->PresetProgressA();
 		m_activePreset->evaluateFrame();
 
 		renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
@@ -295,11 +291,11 @@ DLLEXPORT void projectM::renderFrame()
 	/** Compute once per preset */
 	if ( this->count%100==0 )
 	{
-		this->renderer->realfps=100.0/ ( ( getTicks ( &this->startTime )-this->fpsstart ) /1000 );
-		this->fpsstart=getTicks ( &this->startTime );
+		this->renderer->realfps=100.0/ ( ( getTicks ( &timeKeeper->startTime )-this->fpsstart ) /1000 );
+		this->fpsstart=getTicks ( &timeKeeper->startTime );
 	}
 
-	int timediff = getTicks ( &this->startTime )-this->timestart;
+	int timediff = getTicks ( &timeKeeper->startTime )-this->timestart;
 
 	if ( timediff < this->mspf )
 	{
@@ -310,7 +306,7 @@ DLLEXPORT void projectM::renderFrame()
 		{
 			if ( usleep ( sleepTime ) != 0 ) {}}
 	}
-	this->timestart=getTicks ( &this->startTime );
+	this->timestart=getTicks ( &timeKeeper->startTime );
 #endif /** !WIN32 */
 
 
@@ -322,18 +318,12 @@ void projectM::projectM_reset()
 	/** Default variable settings */
 
 	this->wvw = 512;
-	this->wvh = 512;
-
-
-	/** Frames per preset */
-	this->avgtime = sampledPresetDuration();
-
+	this->wvh = 512;      
 
 	/** More other stuff */
 	this->mspf = 0;
 	this->timed = 0;
-	this->timestart = 0;
-	this->nohard = 0;
+	this->timestart = 0;       
 	this->count = 0;
 
 	this->fpsstart = 0;
@@ -352,11 +342,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	presetOutputs2.Initialize ( gx, gy );
 
 	/** Initialise start time */
-#ifndef WIN32
-	gettimeofday ( &this->startTime, NULL );
-#else
-	startTime = GetTickCount();
-#endif /** !WIN32 */
+        timeKeeper = new TimeKeeper(_settings.presetDuration,_settings.smoothPresetDuration);
 
 	/** Nullify frame stash */
 
@@ -365,7 +351,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 
 
 	presetInputs.fps = fps;
-	this->nohard=fps*5;
+     
 	/** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
 	assert ( !beatDetect );
 
@@ -376,13 +362,10 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	beatDetect = new BeatDetect ( _pcm );
 
 	initPresetTools();
-
 	if ( presetInputs.fps > 0 )
 		mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps );
 	else mspf = 0;
-
-
-	this->avgtime= sampledPresetDuration();
+	
 	this->presetInputs.gx = gx;
 	this->presetInputs.gy = gy;
 
@@ -390,7 +373,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 
 
 	renderer->setPresetName ( m_activePreset->presetName() );
-
+	timeKeeper->StartPreset();
 	assert(pcm());
 //	printf ( "exiting projectM_init()\n" );
 }
@@ -448,9 +431,7 @@ void projectM::projectM_initengine()
 
 
 	this->presetInputs.progress = 0;
-	this->presetInputs.frame = 1;
-
-	this->avgtime = sampledPresetDuration();
+	this->presetInputs.frame = 1;       
 //bass_thresh = 0;
 
 	/* PER_FRAME CONSTANTS END */
@@ -781,7 +762,7 @@ void projectM::selectPreset ( unsigned int index )
 	renderer->setPresetName ( m_activePreset->presetName() );
 
 	presetInputs.frame = 0;
-	smoothFrame = 0;
+        timeKeeper->StartPreset();
 }
 
 void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset, const PresetInputs & inputs, PresetOutputs & outputs) {
@@ -801,6 +782,7 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset, const PresetIn
 
 	// Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
 	renderer->setPresetName ( targetPreset->presetName() );
+       
 
 }
 
