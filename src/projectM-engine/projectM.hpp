@@ -163,6 +163,10 @@ public:
   /// Writes a settings configuration to the specified file
   static bool writeConfig(const std::string & configFile, const Settings & settings);
 
+  
+  /// Sets preset iterator position to the passed in index
+  void selectPresetPosition(unsigned int index);
+
   /// Plays a preset immediately  
   void selectPreset(unsigned int index);
 

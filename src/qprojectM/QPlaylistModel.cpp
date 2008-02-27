@@ -61,8 +61,7 @@ class XmlWriteFunctor {
 QPlaylistModel::QPlaylistModel ( projectM & _projectM, QObject * parent ) :
 		QAbstractTableModel ( parent ), m_projectM ( _projectM )
 {
-	m_ratings = QVector<int> ( rowCount(), 3 );
-	m_ids = QVector<long> (rowCount());
+	m_ratings = QVector<int> ( rowCount(), 3 );	
 }
 
 
@@ -181,12 +180,11 @@ int QPlaylistModel::columnCount ( const QModelIndex & parent ) const
 		return 0;
 }
 
-void QPlaylistModel::appendRow ( const QString & presetURL, const QString & presetName, long id, int rating )
+void QPlaylistModel::appendRow ( const QString & presetURL, const QString & presetName, int rating )
 {
 	beginInsertRows ( QModelIndex(), rowCount(), rowCount() );
 	m_projectM.addPresetURL ( presetURL.toStdString(), presetName.toStdString() );
-	m_ratings.push_back ( rating );
-	m_ids.push_back(id);
+	m_ratings.push_back ( rating );	
 	endInsertRows();
 }
 
