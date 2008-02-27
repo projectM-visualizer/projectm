@@ -79,7 +79,7 @@ class QProjectMWidget : public QGLWidget
 	     return config_file;
      }
      
-     QProjectM * getQProjectM() { return m_projectM; }
+     inline QProjectM * qprojectM() { return m_projectM; }
 
 	 private:
      	     void destroyProjectM() {
@@ -283,7 +283,7 @@ public:
 
       
       void keyReleaseEvent ( QKeyEvent * e );
-      QProjectM * getQProjectM();
+      QProjectM * qprojectM();
       void refreshPlaylist();
 
       QProjectMWidget * getQProjectMWidget() { return m_QProjectMWidget; }

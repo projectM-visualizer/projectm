@@ -170,22 +170,22 @@ void QProjectM_MainWindow::clearPlaylist()
 	ui->presetSearchBarLineEdit->clear();
 }
 
-QProjectM * QProjectM_MainWindow::getQProjectM()
+QProjectM * QProjectM_MainWindow::qprojectM()
 {
-	return m_QProjectMWidget->getQProjectM();
+	return m_QProjectMWidget->qprojectM();
 }
 
 void QProjectM_MainWindow::updatePlaylistSelection ( bool hardCut, unsigned int index )
 {
 
 	if ( hardCut )
-		statusBar()->showMessage ( tr(QString( "*** Hard cut to \"%1\" ***" ).arg(this->getQProjectM()->getPresetName(index).c_str()).toStdString().c_str()) , 2000 );
+		statusBar()->showMessage ( tr(QString( "*** Hard cut to \"%1\" ***" ).arg(this->qprojectM()->getPresetName(index).c_str()).toStdString().c_str()) , 2000 );
 	else
-		statusBar()->showMessage ( tr ( "*** Soft cut to \"%1\" ***" ).arg(this->getQProjectM()->getPresetName(index).c_str()).toStdString().c_str(), 2000);
+		statusBar()->showMessage ( tr ( "*** Soft cut to \"%1\" ***" ).arg(this->qprojectM()->getPresetName(index).c_str()).toStdString().c_str(), 2000);
 
 
 	//playlistModel->setData(playlistModel->index(index, 0), Qt::green, Qt::BackgroundRole);
-	//oldPresetIndex = index;
+	//oldPresetIndex = index;to %1 ***" ).arg(this->getQProjectM()->getPresetNto %1 ***" ).arg(this->getQProjectM()->getPresetName(index).c_str()).toStdString().c_str()) ,to %1 ***" ).arg(this->getQProjectM()->getPresetName(index).c_str()).toStdString().c_str()) ,ame(index).c_str()).toStdString().c_str()) ,
 
 }
 
@@ -194,7 +194,7 @@ void QProjectM_MainWindow::selectPlaylistItem ( const QModelIndex & index )
 	if ( index.column() > 0 )
 		return;
 
-	getQProjectM()->selectPreset ( index.row() );
+	qprojectM()->selectPreset ( index.row() );
 	playlistModel->updateItemHighlights();
 
 }
@@ -207,7 +207,7 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 	if (playlistModel) 
 		delete(playlistModel);
 	
-	playlistModel = new QPlaylistModel ( *m_QProjectMWidget->getQProjectM(),this );
+	playlistModel = new QPlaylistModel ( *m_QProjectMWidget->qprojectM(),this );
 		
 	ui->tableView->setModel ( playlistModel );
 	
@@ -225,10 +225,10 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 
 	readConfig(m_QProjectMWidget->configFile());
 	
-	connect ( m_QProjectMWidget->getQProjectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), 
+	connect ( m_QProjectMWidget->qprojectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), 
 		  this, SLOT ( updatePlaylistSelection ( bool,unsigned int ) ) );
 		
-	connect ( m_QProjectMWidget->getQProjectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), 
+	connect ( m_QProjectMWidget->qprojectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), 
 		  playlistModel, SLOT ( updateItemHighlights() ) );
 
 	disconnect (m_QProjectMWidget);
@@ -458,7 +458,7 @@ void QProjectM_MainWindow::copyPlaylist()
 {
 	PlaylistItemVector * items = new PlaylistItemVector();
 
-	for ( int i = 0; i < playlistModel->rowCount(); i++ )
+	for ( long i = 0; i < playlistModel->rowCount(); i++ )
 	{
 
 		QModelIndex index = playlistModel->index ( i, 0 );
@@ -486,7 +486,6 @@ void QProjectM_MainWindow::refreshPlaylist()
 	
 	hHeader = new QHeaderView ( Qt::Horizontal, this );
 	vHeader = new QHeaderView ( Qt::Vertical, this );
-
 	
 	hHeader->setClickable ( false );
 	hHeader->setSortIndicatorShown ( false );
@@ -616,20 +615,21 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 
 	const QString filter = text.toLower();
 	unsigned int presetIndexBackup ;
-	bool preservePresetSelection = getQProjectM()->selectedPresetIndex(presetIndexBackup);
+	bool preservePresetSelection = qprojectM()->selectedPresetIndex(presetIndexBackup);
 	
 	const PlaylistItemVector & oldPlaylistItems = *historyHash.value(previousFilter);
-	
-	int i = 0;
-	Nullable<uint> activePresetId;
-	
-	for ( PlaylistItemVector::const_iterator pos = oldPlaylistItems.begin(); pos != oldPlaylistItems.end();++pos )
-	{
-		if (presetIndexBackup == i)
-			activePresetId = pos->id;
-		i++;
-	}
 		
+	Nullable<uint> activePresetId;	
+	
+	if (preservePresetSelection) {
+		int i = 0;
+		for ( PlaylistItemVector::const_iterator pos = oldPlaylistItems.begin(); pos != oldPlaylistItems.end();++pos )
+		{
+			if (presetIndexBackup == i)
+				activePresetId = pos->id;
+			i++;
+		}
+	}
 	
 	/// NEED A MUTEX TO STOP PROJECTM FROM SWITCHING PRESETS
 	playlistModel->clearItems();
@@ -639,10 +639,10 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 		const PlaylistItemVector & playlistItems = *historyHash.value ( filter );
 		for ( PlaylistItemVector::const_iterator pos = playlistItems.begin(); pos != playlistItems.end();++pos )
 		{
-			playlistModel->appendRow ( pos->url, pos->name,  pos->id, pos->rating);
+			playlistModel->appendRow ( pos->url, pos->name,  pos->rating);
 			
 			if (activePresetId.hasValue() && pos->id == activePresetId.value())
-				getQProjectM()->selectPreset(playlistModel->rowCount()-1);
+				qprojectM()->selectPresetPosition(playlistModel->rowCount()-1);
 				
 		}
 	}
@@ -655,11 +655,11 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 		{
 			if ( ( pos->name ).contains ( filter, Qt::CaseInsensitive ) )
 			{
-				playlistModel->appendRow ( pos->url, pos->name, pos->id, pos->rating);
+				playlistModel->appendRow ( pos->url, pos->name, pos->rating);
 				
 				if (activePresetId.hasValue() && pos->id == activePresetId.value())
-					getQProjectM()->selectPreset(playlistModel->rowCount()-1);								
-					
+					qprojectM()->selectPresetPosition(playlistModel->rowCount()-1);
+
 				playlistItems2->push_back ( *pos );
 			}
 		}

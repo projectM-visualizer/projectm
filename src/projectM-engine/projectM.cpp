@@ -849,6 +849,12 @@ bool projectM::isPresetQueued() const {
 	return (*m_presetQueuePos != m_presetChooser->end());
 }
 
+
+/// Sets preset iterator position to the passed in index
+void projectM::selectPresetPosition(unsigned int index) {
+	*m_presetPos = m_presetChooser->begin(index);
+}
+
 bool projectM::selectedPresetIndex(unsigned int & index) const {
 	
 	if (*m_presetPos == m_presetChooser->end())

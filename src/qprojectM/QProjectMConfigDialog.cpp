@@ -79,7 +79,7 @@ void QProjectMConfigDialog::openTitleFontFileDialog() {
 void QProjectMConfigDialog::saveConfig() {
 	qDebug() << "SAVE config";
 	
-	projectM::Settings settings = _qprojectMWidget->getQProjectM()->settings();
+	projectM::Settings settings = _qprojectMWidget->qprojectM()->settings();
 	
 	settings.meshX = _ui.meshSizeWidthSpinBox->value();
 	settings.meshY = _ui.meshSizeHeightSpinBox->value();
@@ -117,7 +117,7 @@ void QProjectMConfigDialog::populateTextureSizeComboBox() {
 void QProjectMConfigDialog::loadConfig() {
 	
 	qDebug() << "load config BEGIN";
-	const projectM::Settings & settings = (* _qprojectMWidget->getQProjectM()).settings();
+	const projectM::Settings & settings = (* _qprojectMWidget->qprojectM()).settings();
 	
 	_ui.meshSizeWidthSpinBox->setValue(settings.meshX);
 	_ui.meshSizeHeightSpinBox->setValue(settings.meshY);
