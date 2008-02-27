@@ -29,22 +29,28 @@ TimeKeeper::TimeKeeper(double presetDuration, double smoothDuration)
 	_currentTime = getTicks ( startTime ) * 0.001;
 #endif /** !WIN32 */
 
+	_presetFrameA++;
+	_presetFrameB++;
+
   }
 
   void TimeKeeper::StartPreset()
   {
     _isSmoothing = false;
     _presetTimeA = _currentTime;
+    _presetFrameA = 1;
   }
   void TimeKeeper::StartSmoothing()
   {
     _isSmoothing = true;
     _presetTimeB = _currentTime;
+    _presetFrameB = 1;
   }
   void TimeKeeper::EndSmoothing()
   {
     _isSmoothing = false;
     _presetTimeA = _presetTimeB;
+    _presetFrameA = _presetFrameB;
   }
  
   bool TimeKeeper::CanHardCut()
@@ -76,4 +82,12 @@ TimeKeeper::TimeKeeper(double presetDuration, double smoothDuration)
     return (_currentTime - _presetTimeB) / _presetDuration;
   }
 
+int TimeKeeper::PresetFrameB()
+  {
+    return _presetFrameB;
+  }
 
+int TimeKeeper::PresetFrameA()
+  {
+    return _presetFrameA;
+  }
