@@ -136,11 +136,7 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
 		return false;
 }
 
-int projectM::sampledPresetDuration() {
-	
-	return ( int ) (_settings.fps * fmax(1, fmin(60, RandomNumberGenerators::gaussian
-			(settings().presetDuration, settings().easterEgg))));
-}
+
 
 void projectM::readConfig (const std::string & configFile )
 {
@@ -340,7 +336,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	presetOutputs2.Initialize ( gx, gy );
 
 	/** Initialise start time */
-        timeKeeper = new TimeKeeper(_settings.presetDuration,_settings.smoothPresetDuration);
+        timeKeeper = new TimeKeeper(_settings.presetDuration,_settings.smoothPresetDuration, _settings.easterEgg);
 
 	/** Nullify frame stash */
 

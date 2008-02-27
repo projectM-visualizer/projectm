@@ -14,7 +14,7 @@ class TimeKeeper
 
 public:
 
-  TimeKeeper(double presetDuration, double smoothDuration);
+  TimeKeeper(double presetDuration, double smoothDuration, double easterEgg);
 
   void UpdateTimers();
 
@@ -31,9 +31,11 @@ public:
 
   double PresetProgressA();
   double PresetProgressB();
+
   int PresetFrameA();
   int PresetFrameB();
 
+  double sampledPresetDuration();
 
 #ifndef WIN32
   /* The first ticks value of the application */
@@ -44,7 +46,10 @@ public:
 
 private:
 
+  double _easterEgg;
   double _presetDuration;
+  double _presetDurationA;
+  double _presetDurationB;
   double _smoothDuration;
 
   double _currentTime;
@@ -54,7 +59,7 @@ private:
   int _presetFrameB;
 
   bool _isSmoothing;
-
+  
 
 };
 #endif
