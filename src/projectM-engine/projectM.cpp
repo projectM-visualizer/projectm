@@ -100,7 +100,7 @@ DLLEXPORT void projectM::projectM_resetTextures()
 }
 
 DLLEXPORT  projectM::projectM ( std::string config_file ) :
-		beatDetect ( 0 ), renderer ( 0 ),  m_presetQueuePos(0), oldFrame(1), _pcm(0)
+		beatDetect ( 0 ), renderer ( 0 ),  m_presetQueuePos(0), _pcm(0)
 {
 	readConfig ( config_file );	
 	projectM_reset();
@@ -212,8 +212,7 @@ DLLEXPORT void projectM::renderFrame()
 	{
 		if ( presetInputs.progress>=1.0 )
 		{
- 
-			oldFrame = presetInputs.frame;
+ 			
 			timeKeeper->StartSmoothing();		      
 			///printf("Start Smooth\n");
 			// if(timeKeeper->IsSmoothing())printf("Confirmed\n");
@@ -230,7 +229,7 @@ DLLEXPORT void projectM::renderFrame()
 
 			timeKeeper->StartPreset();
 		       	presetInputs.progress=timeKeeper->PresetProgressA();
-			presetInputs.frame = 1;
+			presetInputs.frame = timeKeeper->PresetFrameA();
 			presetSwitchedEvent(true, **m_presetPos);
 		}		
 	}
@@ -239,16 +238,15 @@ DLLEXPORT void projectM::renderFrame()
 
 	if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
 	{
-	  //	  printf("Smooth: \n", timeKeeper->SmoothRatio());
-		int frame = ++presetInputs.frame;
-		presetInputs.frame = ++oldFrame;
+	  //	  printf("Smooth: \n", timeKeeper->SmoothRatio());	      
+		presetInputs.frame = timeKeeper->PresetFrameA();
 		presetInputs.progress= timeKeeper->PresetProgressA();
 		assert ( m_activePreset.get() );
 		m_activePreset->evaluateFrame();
 		renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
 		renderer->WaveformMath ( &m_activePreset->presetOutputs(), &presetInputs, true );
 
-		presetInputs.frame = frame;
+		presetInputs.frame = timeKeeper->PresetFrameB();
 		presetInputs.progress= timeKeeper->PresetProgressB();
 		assert ( m_activePreset2.get() );
 		m_activePreset2->evaluateFrame();
@@ -271,7 +269,7 @@ DLLEXPORT void projectM::renderFrame()
 			timeKeeper->EndSmoothing();
 		}
 		//printf("Normal\n");
-		presetInputs.frame++;  //number of frames for current preset
+		presetInputs.frame = timeKeeper->PresetFrameA();  //number of frames for current preset
 		presetInputs.progress= timeKeeper->PresetProgressA();
 		m_activePreset->evaluateFrame();
 
@@ -761,8 +759,7 @@ void projectM::selectPreset ( unsigned int index )
 
 	renderer->setPresetName ( m_activePreset->presetName() );
 
-	presetInputs.frame = 0;
-        timeKeeper->StartPreset();
+	timeKeeper->StartPreset();
 }
 
 void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset, const PresetInputs & inputs, PresetOutputs & outputs) {
