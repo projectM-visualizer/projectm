@@ -237,7 +237,7 @@ p, li { white-space: pre-wrap; }
         <bool>false</bool>
        </property>
        <property name="selectionMode" >
-        <enum>QAbstractItemView::SingleSelection</enum>
+        <enum>QAbstractItemView::ExtendedSelection</enum>
        </property>
        <property name="selectionBehavior" >
         <enum>QAbstractItemView::SelectRows</enum>
