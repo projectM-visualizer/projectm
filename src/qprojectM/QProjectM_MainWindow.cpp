@@ -280,19 +280,25 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 	switch ( e->key() )
 	{
 		case Qt::Key_L:
-			if ( ui->presetSearchBarLineEdit->hasFocus() )
-				return;
+			
+			if (!(e->modifiers() & Qt::ControlModifier)) {
+				if ( ui->presetSearchBarLineEdit->hasFocus() )
+					return;
 
+				if (ui->tableView->hasFocus())
+					return;
+			}
+			
 			if ( ui->lockPresetCheckBox->checkState() == Qt::Checked )
 			{
 				ui->lockPresetCheckBox->setCheckState ( Qt::Unchecked );
-
 			}
 			else
 			{
 				ui->lockPresetCheckBox->setCheckState ( Qt::Checked );
 			}
 
+			
 			// the projectM widget handles the actual lock
 			//e->ignore();
 			//m_QProjectMWidget->keyReleaseEvent(e);
@@ -339,8 +345,7 @@ void QProjectM_MainWindow::refreshHeaders(QResizeEvent * event) {
 	
 	
 	hHeader->setResizeMode ( 0, QHeaderView::Fixed);
-	hHeader->setResizeMode ( 1, QHeaderView::ResizeToContents);	
-	
+	hHeader->setResizeMode ( 1, QHeaderView::ResizeToContents);		
 	hHeader->resizeSection(0, ui->tableView->size().width()-20-hHeader->sectionSize(1));
 	
 	
