@@ -214,8 +214,10 @@ public:
   inline const PCM * pcm() {
 	  return _pcm;
   }
+  void *thread_func(void *vptr_args);
+
 private:
-	
+
   double sampledPresetDuration();
   BeatDetect * beatDetect;
   Renderer *renderer;
@@ -231,7 +233,7 @@ private:
   int count;
   float fpsstart;
   
-  void switchPreset(std::auto_ptr<Preset> & targetPreset, const PresetInputs & inputs, PresetOutputs & outputs);
+  void switchPreset(std::auto_ptr<Preset> & targetPreset, PresetInputs & inputs, PresetOutputs & outputs);
   void readConfig(const std::string & configFile);
   void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
   void projectM_reset();
@@ -245,7 +247,7 @@ private:
   void destroyPresetTools();
 
   void default_key_handler( projectMEvent event, projectMKeycode keycode );
-
+  void setupPresetInputs(PresetInputs *inputs);
   /// The current position of the directory iterator
   PresetIterator * m_presetPos;
   
@@ -266,7 +268,7 @@ private:
     
   /// All readonly variables which are passed as inputs to presets
   PresetInputs presetInputs;
-  
+  PresetInputs presetInputs2;
   /// A preset outputs container used and modified by the "current" preset
   PresetOutputs presetOutputs;
   

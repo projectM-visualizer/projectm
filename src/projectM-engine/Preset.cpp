@@ -38,7 +38,7 @@
 #include <fstream>
 
 
-Preset::Preset(std::istream & in, const std::string & presetName, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
+Preset::Preset(std::istream & in, const std::string & presetName, PresetInputs & presetInputs, PresetOutputs & presetOutputs):
     builtinParams(presetInputs, presetOutputs),
     m_presetName(presetName),
     m_presetOutputs(presetOutputs),
@@ -53,7 +53,7 @@ Preset::Preset(std::istream & in, const std::string & presetName, const PresetIn
 }
 
 
-Preset::Preset(const std::string & absoluteFilePath, const std::string & presetName, const PresetInputs & presetInputs, PresetOutputs & presetOutputs):
+Preset::Preset(const std::string & absoluteFilePath, const std::string & presetName,  PresetInputs & presetInputs, PresetOutputs & presetOutputs):
     builtinParams(presetInputs, presetOutputs),
     m_absoluteFilePath(absoluteFilePath),
     m_presetName(presetName),
