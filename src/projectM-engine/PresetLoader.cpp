@@ -113,7 +113,7 @@ void PresetLoader::rescan()
 
 }
 
-std::auto_ptr<Preset> PresetLoader::loadPreset(unsigned int index, const PresetInputs & presetInputs, PresetOutputs & presetOutputs) const
+std::auto_ptr<Preset> PresetLoader::loadPreset(unsigned int index,  PresetInputs & presetInputs, PresetOutputs & presetOutputs) const
 {
 
   // Check that index isn't insane
