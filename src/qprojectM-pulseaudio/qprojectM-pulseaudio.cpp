@@ -103,15 +103,15 @@ int main ( int argc, char*argv[] )
 
 	QPulseAudioThread * pulseThread = new QPulseAudioThread(argc, argv, mainWindow->qprojectM(), mainWindow);
 	
-	mainWindow->getQProjectMWidget()->setAudioMutex(pulseThread->mutex());
+	mainWindow->qprojectMWidget()->setAudioMutex(pulseThread->mutex());
 	
 	// First projectM_Initialized() has already happened, so manually start		
 	pulseThread->start();
 	
 	QApplication::connect
-			(mainWindow->getQProjectMWidget(), SIGNAL(projectM_Initialized(QProjectM *)), pulseThread, SLOT(projectM_New(QProjectM*)));
+			(mainWindow->qprojectMWidget(), SIGNAL(projectM_Initialized(QProjectM *)), pulseThread, SLOT(projectM_New(QProjectM*)));
 	QApplication::connect
-			(mainWindow->getQProjectMWidget(), SIGNAL(projectM_BeforeDestroy()), pulseThread, SLOT(cork()));
+			(mainWindow->qprojectMWidget(), SIGNAL(projectM_BeforeDestroy()), pulseThread, SLOT(cork()));
 
 	QPulseAudioDeviceChooser devChooser(pulseThread, mainWindow);	
 	QApplication::connect(&pulseAction, SIGNAL(triggered()), &devChooser, SLOT(open())); 
