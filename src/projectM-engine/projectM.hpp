@@ -76,9 +76,6 @@ class PresetChooser;
 class PresetLoader;
 class TimeKeeper;
 
-//class PresetInputs;
-//class PresetOutputs;
-
 #include <memory>
 #ifdef WIN32
 #pragma warning (disable:4244)
@@ -199,6 +196,10 @@ public:
   /// Add a preset url to the play list. Appended to bottom
   unsigned int addPresetURL(const std::string & presetURL, const std::string & presetName);
 
+  /// Returns true if the selected preset position points to an actual preset in the
+  /// currently loaded playlist
+  bool presetPositionValid() const;
+  
   /// Returns the url associated with a preset index
   std::string getPresetURL(unsigned int index) const;
 
