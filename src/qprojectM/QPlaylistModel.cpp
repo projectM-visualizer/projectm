@@ -7,6 +7,9 @@
 
 #include "QXmlPlaylistHandler.hpp"
 #include "QPlaylistModel.hpp"
+#include <QMimeData>
+
+QString QPlaylistModel::PRESET_MIME_TYPE("text/x-projectM-preset");
 
 class XmlReadFunctor {
 	public:
@@ -86,6 +89,34 @@ bool QPlaylistModel::setData ( const QModelIndex & index, const QVariant & value
 
 }
 
+Qt::ItemFlags QPlaylistModel::flags(const QModelIndex &index) const
+{
+	Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
+
+	if (index.isValid())
+		return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
+	else
+		return Qt::ItemIsDropEnabled | defaultFlags;
+}
+
+
+ bool QPlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
+				int row, int column, const QModelIndex &parent)
+{
+	if (!data->hasFormat(PRESET_MIME_TYPE))
+		return false;
+
+	if (action == Qt::IgnoreAction)
+		return true;
+
+	if (column > 0)
+		return false;
+
+	int endRow;
+
+
+	return true;
+}
 QVariant QPlaylistModel::ratingToIcon ( int rating )  const
 {
 	switch ( rating )
@@ -140,11 +171,11 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 		case Qt::BackgroundRole:
 			if (!m_projectM.selectedPresetIndex(pos))
 				return QVariant();						
-			if ( m_projectM.isPresetLocked() && ( index.row() ==pos ) )
+			if (m_projectM.isPresetLocked() && ( index.row() == pos ) )
 				return Qt::red;
-			if ( !m_projectM.isPresetLocked() && ( index.row() == pos ) )
+			if (!m_projectM.isPresetLocked() && ( index.row() == pos ) )
 				return Qt::green;
-			return Qt::white;
+			return QVariant();
 		case QPlaylistModel::URLInfoRole:
 			return QVariant ( QString ( m_projectM.getPresetURL ( index.row() ).c_str() ) );
 		default:

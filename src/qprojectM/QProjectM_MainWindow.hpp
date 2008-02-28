@@ -42,6 +42,8 @@ class QPlaylistModel;
 class QModelIndex;
 class QProjectMConfigDialog;
 
+template <class T>
+class Nullable;
 
 namespace Ui { 
 class QProjectM_MainWindow;
@@ -328,10 +330,9 @@ private slots:
       QProjectMConfigDialog * configDialog;
 
       QHash<QString, PlaylistItemVector*> historyHash;
-      //QHash<QString, QVector<Long> *> idMappingHash;
+      Nullable<long> * activePresetIndex;
 
       bool _menuVisible;
-      int oldPresetIndex;
       QTimer * m_timer;
 	
       void createActions();

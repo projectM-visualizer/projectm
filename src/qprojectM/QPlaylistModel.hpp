@@ -27,7 +27,7 @@
 #include <QVector>
 
 #include <projectM.hpp>
-
+#include <QStringList>
 class QXmlStreamReader;
 
 class QPlaylistModel : public QAbstractTableModel
@@ -54,6 +54,8 @@ int columnCount ( const QModelIndex & parent= QModelIndex()) const ;
 bool readPlaylist(const QString & file);
 bool writePlaylist ( const QString & file );
 
+Qt::ItemFlags flags(const QModelIndex &index) const;
+
 inline const QString & playlistName() {
 	return m_playlistName;
 }
@@ -71,6 +73,21 @@ inline void setPlaylistDesc(const QString & desc) {
 	m_playlistDesc = desc;
 }
 
+
+inline Qt::DropActions supportedDropActions() const
+{
+	return Qt::MoveAction;
+}
+
+inline QStringList mimeTypes () const  {
+	QStringList mimeTypes;
+	mimeTypes << PRESET_MIME_TYPE;
+	return mimeTypes;
+}
+	
+	
+ bool dropMimeData(const QMimeData *data, Qt::DropAction action,
+				 int row, int column, const QModelIndex &parent);
 void clearItems();
 
 public slots:
@@ -78,7 +95,7 @@ public slots:
 	
  private:
 	void readPlaylistItem(QXmlStreamReader & reader);
-
+	static QString PRESET_MIME_TYPE;
 	QVariant ratingToIcon(int rating) const;
 	projectM & m_projectM;
 	QVector<int> m_ratings;
