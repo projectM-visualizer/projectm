@@ -80,25 +80,31 @@ class QProjectMWidget : public QGLWidget
      inline const std::string & configFile() {
 	     return config_file;
      }
+ 
+     inline void seizePresetLock() {
+
+	     m_presetSeizeMutex.lock();
+	     m_presetWasLocked = qprojectM()->isPresetLocked();
+	     qprojectM()->setPresetLock(true);
+
+     }
+	
+     inline void unseizePresetLock() {
+
+		qprojectM()->setPresetLock(m_presetWasLocked);
+		m_presetSeizeMutex.unlock();
+     }
      
      inline QProjectM * qprojectM() { return m_projectM; }
 
-	 private:
-     	     void destroyProjectM() {
-	     emit(projectM_BeforeDestroy());
 	
-	     if (m_projectM) {	
-		     delete(m_projectM);
-		     m_projectM = 0;
-	     }
-     }
-
- public slots:
+public slots:
 	 
+     
      void resetProjectM() {
 	
 	qDebug() << "reset start";
-	// First wait for audio thread to stop by
+	// First wait for audio thread to stop by{{{
 	// waiting on it's mutex
 //	s_audioMutex.tryLock(20000);
 	if (m_audioMutex) {
@@ -140,11 +146,20 @@ class QProjectMWidget : public QGLWidget
 	void presetLockChanged(bool isLocked);
  private:
 	std::string config_file;
-	QProjectM * m_projectM;
+	QProjectM * m_projectM;	 
+		 void destroyProjectM() {
+			 emit(projectM_BeforeDestroy());
+	
+			 if (m_projectM) {	
+				 delete(m_projectM);
+				 m_projectM = 0;
+			 }
+		 }
 	
 	QMutex * m_audioMutex;
+	QMutex m_presetSeizeMutex;
+	bool m_presetWasLocked;
  protected:
-
 
 
 void keyReleaseEvent ( QKeyEvent * e )  {
@@ -229,7 +244,7 @@ void keyReleaseEvent ( QKeyEvent * e )  {
      */
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
-    
+
     //    gluOrtho2D(0.0, (GLfloat) width, 0.0, (GLfloat) height);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();  
@@ -252,8 +267,6 @@ void keyReleaseEvent ( QKeyEvent * e )  {
   // glCopyTexImage2D(GL_TEXTURE_2D,0,GL_RGB,0,0,texsize,texsize,0);
   //glCopyTexSubImage2D(GL_TEXTURE_2D,0,0,0,0,0,texsize,texsize);
    glLineStipple(2, 0xAAAA);
-  
-    
 }
 
 
@@ -313,10 +326,10 @@ private slots:
       void openSettingsDialog();
       void updateFilteredPlaylist(const QString & text);
       void refreshHeaders(QResizeEvent * event = 0);
-      
-	private:
-		QSize _oldPlaylistSize;
- 		
+
+      private:
+	
+	QSize _oldPlaylistSize;	
 	void readConfig(const std::string & configFile);
 	void writeConfig();
 	void copyPlaylist();

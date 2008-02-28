@@ -52,8 +52,7 @@ void QProjectMConfigDialog::openMenuFontFileDialog() {
 	
 	QFileDialog dialog(this, "Select a menu font", _settings.value("Menu Font Directory", QString()).toString(), "True Type Fonts (*.ttf)" );
 	dialog.setFileMode(QFileDialog::ExistingFile);
-	
-	
+		
 	if (dialog.exec()) {
 		assert(!dialog.selectedFiles().empty());
 		_ui.menuFontPathLineEdit->setText(dialog.selectedFiles()[0]);
