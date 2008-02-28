@@ -26,6 +26,8 @@ class XmlReadFunctor {
 		inline void appendItem(const QString & url, const QString & name, int rating) {
 			m_model.appendRow(url, name, rating);
 		}
+		
+
 	private:
 		QPlaylistModel & m_model;
 
@@ -219,8 +221,18 @@ void QPlaylistModel::appendRow ( const QString & presetURL, const QString & pres
 	endInsertRows();
 }
 
+bool QPlaylistModel::removeRows ( int row, int count, const QModelIndex & parent)   {
+	
+	beginRemoveRows ( QModelIndex(), row, count);
 
-void QPlaylistModel::removeRow ( int index )
+	for (int i = 0; i < count; i++) {
+		m_projectM.removePreset (row );
+		m_ratings.remove (row);
+	}
+	endRemoveRows();
+}
+
+void QPlaylistModel::removeRow ( int index, const QModelIndex & parent)
 {
 	beginRemoveRows ( QModelIndex(), index, index );
 	m_projectM.removePreset ( index );
