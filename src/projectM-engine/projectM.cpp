@@ -61,8 +61,8 @@
 #include "PresetChooser.hpp"
 #include "ConfigFile.h"
 #include "TextureManager.hpp"
-#include "RandomNumberGenerators.hpp"
 #include "TimeKeeper.hpp"
+#include "pthread.h"
 
 /*
 DLLEXPORT projectM::projectM ( int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url,std::string title_fonturl, std::string title_menuurl ) :beatDetect ( 0 ),  renderer ( 0 ), settings.presetURL ( preset_url ), title_fontURL ( title_fonturl ), menu_fontURL ( menu_fontURL ), smoothFrame ( 0 ), m_presetQueuePos(0)
@@ -174,6 +174,38 @@ void projectM::readConfig (const std::string & configFile )
 	
 }
 
+static void *thread_callback(void *prjm) {
+ projectM *p = (projectM *)prjm;
+
+ p->thread_func(prjm); } 
+
+void *projectM::thread_func(void *vptr_args)
+{
+  //  printf("in thread: %f\n", timeKeeper->PresetProgressB());
+     
+  setupPresetInputs(&m_activePreset2->presetInputs());
+  m_activePreset2->presetInputs().frame = timeKeeper->PresetFrameB();
+  m_activePreset2->presetInputs().progress= timeKeeper->PresetProgressB();
+   
+  assert ( m_activePreset2.get() );
+  m_activePreset2->evaluateFrame();
+  renderer->PerPixelMath ( &m_activePreset2->presetOutputs(), &presetInputs2 );
+  renderer->WaveformMath ( &m_activePreset2->presetOutputs(), &presetInputs2, true );
+  return NULL;
+}
+
+void projectM::setupPresetInputs(PresetInputs *inputs)
+{
+  inputs->ResetMesh();
+
+  inputs->time = timeKeeper->GetRunningTime();
+  inputs->bass = beatDetect->bass;
+  inputs->mid = beatDetect->mid;
+  inputs->treb = beatDetect->treb;
+  inputs->bass_att = beatDetect->bass_att;
+  inputs->mid_att = beatDetect->mid_att;
+  inputs->treb_att = beatDetect->treb_att;
+}
 
 DLLEXPORT void projectM::renderFrame()
 {
@@ -190,29 +222,24 @@ DLLEXPORT void projectM::renderFrame()
 	//printf("A:%f, B:%f, S:%f\n", timeKeeper->PresetProgressA(), timeKeeper->PresetProgressB(), timeKeeper->SmoothRatio());
 	mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps ); //milliseconds per frame
 
-	presetInputs.ResetMesh();
+	setupPresetInputs(&m_activePreset->presetInputs());
+	m_activePreset->presetInputs().frame = timeKeeper->PresetFrameA();
+	m_activePreset->presetInputs().progress= timeKeeper->PresetProgressA();
 
-	beatDetect->detectFromSamples();
+	beatDetect->detectFromSamples();       
 
-	presetInputs.time = timeKeeper->GetRunningTime();
-	presetInputs.bass = beatDetect->bass;
-	presetInputs.mid = beatDetect->mid;
-	presetInputs.treb = beatDetect->treb;
-	presetInputs.bass_att = beatDetect->bass_att;
-	presetInputs.mid_att = beatDetect->mid_att;
-	presetInputs.treb_att = beatDetect->treb_att;
-
-	m_activePreset->evaluateFrame();
+	//m_activePreset->evaluateFrame();
 
 	if ( renderer->noSwitch==false && !m_presetChooser->empty() )
 	{
-		if ( presetInputs.progress>=1.0 )
+		if ( timeKeeper->PresetProgressA()>=1.0 && !timeKeeper->IsSmoothing())
 		{
  			
 			timeKeeper->StartSmoothing();		      
-			///printf("Start Smooth\n");
+			//	printf("Start Smooth\n");
 			// if(timeKeeper->IsSmoothing())printf("Confirmed\n");
-			switchPreset(m_activePreset2, presetInputs, 
+			switchPreset(m_activePreset2, 
+				     &m_activePreset->presetInputs() == &presetInputs ? presetInputs2 : presetInputs, 
 				&m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
 		       
 			presetSwitchedEvent(false, **m_presetPos);
@@ -223,9 +250,7 @@ DLLEXPORT void projectM::renderFrame()
 		  // printf("Hard Cut\n");
 			switchPreset(m_activePreset, presetInputs, presetOutputs);
 
-			timeKeeper->StartPreset();
-		       	presetInputs.progress=timeKeeper->PresetProgressA();
-			presetInputs.frame = timeKeeper->PresetFrameA();
+			timeKeeper->StartPreset();		       
 			presetSwitchedEvent(true, **m_presetPos);
 		}		
 	}
@@ -234,21 +259,36 @@ DLLEXPORT void projectM::renderFrame()
 
 	if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
 	{
-	  //	  printf("Smooth: \n", timeKeeper->SmoothRatio());	      
-		presetInputs.frame = timeKeeper->PresetFrameA();
-		presetInputs.progress= timeKeeper->PresetProgressA();
+
+	  pthread_t thread;
+
+
+	  
+	  if (pthread_create(&thread, NULL, thread_callback, this) != 0)
+	    { 
+	      return;
+	    }//printf("start thread\n");
+
+		      
+	
 		assert ( m_activePreset.get() );
 		m_activePreset->evaluateFrame();
 		renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
 		renderer->WaveformMath ( &m_activePreset->presetOutputs(), &presetInputs, true );
-
+	
+		if (pthread_join(thread, NULL) != 0)
+		  {
+		    return;
+		  }
+		//printf("thread done\n");
+		/*
 		presetInputs.frame = timeKeeper->PresetFrameB();
 		presetInputs.progress= timeKeeper->PresetProgressB();
 		assert ( m_activePreset2.get() );
 		m_activePreset2->evaluateFrame();
 		renderer->PerPixelMath ( &m_activePreset2->presetOutputs(), &presetInputs );
 		renderer->WaveformMath ( &m_activePreset2->presetOutputs(), &presetInputs, true );
-
+		*/
 		//double pos = -((smoothFrame / (presetInputs.fps * smoothDuration))-1);
 		//double ratio = 1/(1 + exp((pos-0.5)*4*M_PI));
 		
@@ -265,8 +305,7 @@ DLLEXPORT void projectM::renderFrame()
 			timeKeeper->EndSmoothing();
 		}
 		//printf("Normal\n");
-		presetInputs.frame = timeKeeper->PresetFrameA();  //number of frames for current preset
-		presetInputs.progress= timeKeeper->PresetProgressA();
+	
 		m_activePreset->evaluateFrame();
 
 		renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
@@ -332,6 +371,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 
 	projectM_initengine();
 	presetInputs.Initialize ( gx, gy );
+	presetInputs2.Initialize ( gx, gy );
 	presetOutputs.Initialize ( gx, gy );
 	presetOutputs2.Initialize ( gx, gy );
 
@@ -345,7 +385,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 
 
 	presetInputs.fps = fps;
-     
+	presetInputs2.fps = fps;
 	/** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
 	assert ( !beatDetect );
 
@@ -362,6 +402,8 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	
 	this->presetInputs.gx = gx;
 	this->presetInputs.gy = gy;
+	this->presetInputs2.gx = gx;
+	this->presetInputs2.gy = gy;
 
 	this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
 
@@ -425,7 +467,9 @@ void projectM::projectM_initengine()
 
 
 	this->presetInputs.progress = 0;
-	this->presetInputs.frame = 1;       
+	this->presetInputs.frame = 1; 
+      	this->presetInputs2.progress = 0;
+	this->presetInputs2.frame = 1;
 //bass_thresh = 0;
 
 	/* PER_FRAME CONSTANTS END */
@@ -536,7 +580,8 @@ void projectM::projectM_resetengine()
 	}
 	this->presetInputs.progress = 0;
 	this->presetInputs.frame = 1;
-
+	this->presetInputs2.progress = 0;
+	this->presetInputs2.frame = 1;
 // bass_thresh = 0;
 
 	/* PER_FRAME CONSTANTS END */
@@ -573,6 +618,10 @@ void projectM::projectM_resetengine()
 
 
 	/* PER_PIXEL CONSTANTS BEGIN */
+	this->presetInputs2.x_per_pixel = 0;
+	this->presetInputs2.y_per_pixel = 0;
+	this->presetInputs2.rad_per_pixel = 0;
+	this->presetInputs2.ang_per_pixel = 0;
 	this->presetInputs.x_per_pixel = 0;
 	this->presetInputs.y_per_pixel = 0;
 	this->presetInputs.rad_per_pixel = 0;
@@ -758,7 +807,7 @@ void projectM::selectPreset ( unsigned int index )
 	timeKeeper->StartPreset();
 }
 
-void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset, const PresetInputs & inputs, PresetOutputs & outputs) {
+void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset,  PresetInputs & inputs, PresetOutputs & outputs) {
 
 
 	// If queue not specified, roll with usual random behavior
@@ -850,3 +899,6 @@ RandomizerFunctor::~RandomizerFunctor() {}
 double RandomizerFunctor::operator() (int index) {
 	return 1.0 / m_chooser.getNumPresets();
 }
+
+ 
+

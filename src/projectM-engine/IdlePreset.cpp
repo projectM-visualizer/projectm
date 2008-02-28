@@ -307,7 +307,7 @@ return out.str();
 
 }
 
-std::auto_ptr<Preset> IdlePreset::allocate(const PresetInputs & presetInputs, PresetOutputs & presetOutputs)
+std::auto_ptr<Preset> IdlePreset::allocate( PresetInputs & presetInputs, PresetOutputs & presetOutputs)
 {
 
   std::istringstream in(presetText());

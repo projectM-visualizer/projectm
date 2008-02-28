@@ -63,14 +63,14 @@ public:
   /// \param presetName a descriptive name for the preset. Usually just the file name
   /// \param presetInputs a const reference to read only projectM engine variables
   /// \param presetOutputs initialized and filled with data parsed from a preset
-  Preset(const std::string & absoluteFilePath, const std::string & presetName, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
+  Preset(const std::string & absoluteFilePath, const std::string & presetName,  PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
   ///  Load a preset from an input stream with input and output buffers specified.
   /// \param in an already initialized input stream to read the preset file from
   /// \param presetName a descriptive name for the preset. Usually just the file name
   /// \param presetInputs a const reference to read only projectM engine variables
   /// \param presetOutputs initialized and filled with data parsed from a preset
-  Preset(std::istream & in, const std::string & presetName, const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
+  Preset(std::istream & in, const std::string & presetName,  PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
   ~Preset();
 
@@ -117,6 +117,11 @@ public:
     return m_presetOutputs;
   }
 
+  PresetInputs & presetInputs() const
+  {
+
+    return m_presetInputs;
+  }
     /// Sets the descriptive name for this preset (typically the file name)
     /// \param theValue the new preset name to assign to the preset
 	void setPresetName ( const std::string& theValue )
@@ -180,7 +185,7 @@ private:
   void postloadInitialize();
 
   PresetOutputs & m_presetOutputs;
-  const PresetInputs & m_presetInputs; // added for gx, gy reference.
+  PresetInputs & m_presetInputs; // added for gx, gy reference.
 
 template <class CustomObject>
 void transfer_q_variables(std::vector<CustomObject*> & customObjects);
