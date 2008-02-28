@@ -94,13 +94,10 @@ class QProjectMWidget : public QGLWidget
 		qprojectM()->setPresetLock(m_presetWasLocked);
 		m_presetSeizeMutex.unlock();
      }
-     
      inline QProjectM * qprojectM() { return m_projectM; }
 
 	
 public slots:
-	 
-     
      void resetProjectM() {
 	
 	qDebug() << "reset start";
@@ -301,7 +298,7 @@ public:
       QProjectM * qprojectM();
       void refreshPlaylist();
 
-      QProjectMWidget * getQProjectMWidget() { return m_QProjectMWidget; }
+      QProjectMWidget * qprojectMWidget() { return m_QProjectMWidget; }
 
 
       void registerAction(const QAction &);

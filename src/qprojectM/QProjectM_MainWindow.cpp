@@ -93,7 +93,8 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QM
 
 	connect(ui->tableView, SIGNAL(resized(QResizeEvent *)), this, SLOT(refreshHeaders(QResizeEvent*)));
 	
-	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized(QProjectM*) ), this, SLOT ( postProjectM_Initialize() ) );
+	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized(QProjectM*) ), 
+		  this, SLOT ( postProjectM_Initialize() ) );
 	
 	m_QProjectMWidget->makeCurrent();
 	m_QProjectMWidget->setFocus();
@@ -356,7 +357,7 @@ void QProjectM_MainWindow::closeEvent ( QCloseEvent *event )
 void QProjectM_MainWindow::addPresets()
 {
 
-
+	/// @bug this probably isn't thread safe
 	if ( m_QPresetFileDialog->exec() )
 	{
 		const QStringList & files = m_QPresetFileDialog->selectedFiles();
@@ -382,7 +383,7 @@ void QProjectM_MainWindow::addPresets()
 		updateFilteredPlaylist ( previousFilter );
 		ui->presetPlayListDockWidget->setWindowModified ( true );
 	}
-
+	
 	//playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 }
 void QProjectM_MainWindow::savePlaylist()
@@ -456,6 +457,7 @@ void QProjectM_MainWindow::openPlaylist()
 
 void QProjectM_MainWindow::copyPlaylist()
 {
+	qprojectMWidget()->seizePresetLock();
 	PlaylistItemVector * items = new PlaylistItemVector();
 
 	for ( long i = 0; i < playlistModel->rowCount(); i++ )
@@ -480,7 +482,7 @@ void QProjectM_MainWindow::copyPlaylist()
 		activePresetIndex->nullify();
 		qDebug() << "NULLIFIED";
 	}
-				
+	qprojectMWidget()->unseizePresetLock();
 }
 
 
@@ -621,6 +623,9 @@ QString QProjectM_MainWindow::strippedName ( const QString &fullFileName )
 void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 {
 
+	
+	qprojectMWidget()->seizePresetLock();
+	
 	const QString filter = text.toLower();
 	unsigned int presetIndexBackup ;
 	bool presetSelected = qprojectM()->selectedPresetIndex(presetIndexBackup);
@@ -694,6 +699,6 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 	assert(presetExistsWithinFilter == qprojectM()->presetPositionValid());
 	
 	previousFilter = filter;
-	
+	qprojectMWidget()->unseizePresetLock();
 }
 
