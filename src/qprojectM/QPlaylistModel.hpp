@@ -42,7 +42,8 @@ static const int RatingRole = Qt::UserRole+1;
 bool setData(const QModelIndex & index, const QVariant & value, int role=Qt::EditRole);
 
 void appendRow (const QString & presetURL, const QString & presetName, int rating = 3);
-void removeRow (int index);
+void removeRow (int index, const QModelIndex & parent = QModelIndex());
+bool removeRows ( int row, int count, const QModelIndex & parent = QModelIndex());
 QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
 void clear();
@@ -86,7 +87,7 @@ inline QStringList mimeTypes () const  {
 }
 	
 	
- bool dropMimeData(const QMimeData *data, Qt::DropAction action,
+bool dropMimeData(const QMimeData *data, Qt::DropAction action,
 				 int row, int column, const QModelIndex &parent);
 void clearItems();
 
