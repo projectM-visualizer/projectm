@@ -235,8 +235,7 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 	disconnect (m_QProjectMWidget);
 	connect ( m_QProjectMWidget, SIGNAL ( presetLockChanged ( bool ) ),
 		  playlistModel, SLOT ( updateItemHighlights() ) );
-
-	/// @bug not right - selected preset problems when searching
+	
 	disconnect(ui->presetSearchBarLineEdit);
 	connect ( ui->presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ), 
 		  playlistModel, SLOT ( updateItemHighlights() ) );
