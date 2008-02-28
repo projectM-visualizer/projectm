@@ -100,7 +100,7 @@ DLLEXPORT void projectM::projectM_resetTextures()
 }
 
 DLLEXPORT  projectM::projectM ( std::string config_file ) :
-		beatDetect ( 0 ), renderer ( 0 ),  m_presetQueuePos(0), _pcm(0)
+		beatDetect ( 0 ), renderer ( 0 ),  m_presetQueuePos(0), _pcm(0), m_presetPos(0)
 {
 	readConfig ( config_file );	
 	projectM_reset();
@@ -696,7 +696,8 @@ int projectM::initPresetTools()
 	}
 
 	// Start the iterator
-	m_presetPos = new PresetIterator();
+	if (!m_presetPos)
+		m_presetPos = new PresetIterator();
 
 	// Initialize a preset queue position as well
 //	m_presetQueuePos = new PresetIterator();
@@ -758,13 +759,13 @@ void projectM::destroyPresetTools()
 /// @bug queuePreset case isn't handled
 void projectM::removePreset(unsigned int index) {
 	
-	int chooserIndex = **m_presetPos;
+	uint chooserIndex = **m_presetPos;
 
 	m_presetLoader->removePreset(index);
 
 
 	// Case: no more presets, set iterator to end
-	if (m_presetChooser->empty())
+	if (m_presetChooser->empty()) 
 		*m_presetPos = m_presetChooser->end();
 	
 	// Case: chooser index has become one less due to removal of an index below it
@@ -777,6 +778,7 @@ void projectM::removePreset(unsigned int index) {
 	// Set iterator to end of chooser
 	else if (chooserIndex == index) { 
 		//*m_presetPos = m_presetChooser->begin(chooserIndex);
+		std::cerr << "deleted active preset!";
 		*m_presetPos = m_presetChooser->end();
 	}
 
@@ -786,7 +788,17 @@ void projectM::removePreset(unsigned int index) {
 
 unsigned int projectM::addPresetURL ( const std::string & presetURL, const std::string & presetName )
 {	
-	return m_presetLoader->addPresetURL ( presetURL, presetName );
+	bool restorePosition = false;
+	
+	if (*m_presetPos == m_presetChooser->end()) 
+		restorePosition = true;			
+	
+	int index = m_presetLoader->addPresetURL ( presetURL, presetName );
+	
+	if (restorePosition)
+		*m_presetPos = m_presetChooser->end();
+	
+	return index;
 }
 
 void projectM::selectPreset ( unsigned int index )
@@ -854,7 +866,7 @@ void projectM::clearPlaylist ( )
 	
 	m_presetLoader->clear();
 	*m_presetPos = m_presetChooser->end();
-	delete(m_presetQueuePos);	
+	delete(m_presetQueuePos);
 	m_presetQueuePos = 0;
 	
 }
@@ -888,6 +900,12 @@ bool projectM::selectedPresetIndex(unsigned int & index) const {
 	return true;
 }
 
+
+bool projectM::presetPositionValid() const {
+	
+	return (*m_presetPos != m_presetChooser->end());
+}		
+	
 unsigned int projectM::getPlaylistSize() const
 {
 	return m_presetLoader->getNumPresets();
