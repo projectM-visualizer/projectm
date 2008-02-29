@@ -1,7 +1,8 @@
 #ifndef RANDOM_NUMBER_GENERATORS_HPP
 #define RANDOM_NUMBER_GENERATORS_HPP
 #include <cmath>
-
+#include <vector>
+#include <cassert>
 namespace RandomNumberGenerators {
 
 inline float uniform()
@@ -47,9 +48,34 @@ inline float gaussian(float mean, float sigma)
 
 	return ret;
 }
+
+inline std::size_t uniformInteger(std::size_t upperBound=1) {
+
 	
-	
+	/// @bug there was a man entry about how this leads to a lousy uniform
+	/// @bug distribution in practice. should probably review
+	assert(upperBound > 0);
+	return ((rand()) % ((int)upperBound));
 }
 
+	
+inline std::size_t weightedRandom(const std::vector<int> & weights, int weightTotalHint = 0) {
+	
+	if (weightTotalHint == 0)		
+		for (std::size_t i = 0; i < weights.size();i++) {
+			weightTotalHint += weights[i];
+		}
+		
+	int sampledSum = uniformInteger(weightTotalHint);
+	int sum = 0;
+	
+	for (std::size_t i = 0; i < weights.size();i++) {
+		sum += weights[i];
+		if (sampledSum <= sum)
+			return i;
+	}
+	return weights.size()-1;
+}
 
+}
 #endif

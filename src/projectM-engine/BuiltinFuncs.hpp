@@ -19,6 +19,9 @@
 #include <cstdlib>
 #include <cassert>
 #include "projectM.hpp"
+
+#include "RandomNumberGenerators.hpp"
+
 /* Wrappers for all the builtin functions
    The arg_list pointer is a list of floats. Its
    size is equal to the number of arguments the parameter
@@ -97,8 +100,8 @@ float l=1;
 
 //  printf("RAND ARG:(%d)\n", (int)arg_list[0]);
 if ((int)arg_list[0] > 0)
-l = (float)((rand()) % ((int)arg_list[0]));
-//printf("VAL: %f\n", l);
+	l  = (float) RandomNumberGenerators::uniformInteger((int)arg_list[0]);
+
 return l;
 }
 
