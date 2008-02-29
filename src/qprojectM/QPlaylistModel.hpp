@@ -65,7 +65,7 @@ inline const QString & playlistName() {
 }
 
 inline const QString & playlistDesc() {
-  	return m_playlistDesc;
+ 	return m_playlistDesc;
 }
 
 inline void setPlaylistName(const QString & name) {

@@ -226,6 +226,7 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 
 	readConfig(m_QProjectMWidget->configFile());
 	
+	
 	connect ( m_QProjectMWidget->qprojectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), 
 		  this, SLOT ( updatePlaylistSelection ( bool,unsigned int ) ) );
 		
@@ -240,6 +241,9 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 	connect ( ui->presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ), 
 		  playlistModel, SLOT ( updateItemHighlights() ) );
 
+	disconnect(ui->tableView);
+	connect(ui->tableView, SIGNAL(deletesRequested(const QModelIndexList&)), 
+		this, SLOT(removePlaylistItems(const QModelIndexList&)));
 }
 
 void QProjectM_MainWindow::setMenuVisible(bool visible) {
@@ -486,10 +490,56 @@ void QProjectM_MainWindow::copyPlaylist()
 		activePresetIndex->nullify();
 		qDebug() << "NULLIFIED";
 	}
-	qprojectMWidget()->unseizePresetLock();
+	qprojectMWidget()->releasePresetLock();
 }
 
-
+void QProjectM_MainWindow::removePlaylistItems(const QModelIndexList & items) {
+				
+		qprojectMWidget()->seizePresetLock();
+		
+		QMap<int, QModelIndex> sortedItems;
+		QList<int> reverseOrderKeys;
+					
+		foreach (QModelIndex index, items) {
+			sortedItems[index.row()] = index;
+		}
+				
+		foreach (int key, sortedItems.keys()) {
+			reverseOrderKeys.insert(0, key);
+		}
+				
+		PlaylistItemVector & lastCachedItems = *historyHash[previousFilter];
+		
+		QVector<long> zombieItems;
+		
+		int i = 0;
+		foreach (PlaylistItemMetaData data, lastCachedItems) {
+			if (sortedItems.contains(i)) {
+				zombieItems.push_back(data.id);
+				if (activePresetIndex->hasValue() && data.id == activePresetIndex->value())
+					activePresetIndex->nullify();
+			}
+			i++;
+		}
+		
+		foreach (QString filter, historyHash.keys()) {
+			
+			PlaylistItemVector & cachedItems = *historyHash.value(filter);
+			
+			foreach(long id, zombieItems) {
+				
+				int index = cachedItems.indexOf(id);
+				if (index >= 0)
+					cachedItems.remove(index);
+			}			
+		}
+		
+		foreach (int key, reverseOrderKeys) {	
+			playlistModel->removeRow(key);
+		}
+		
+		qprojectMWidget()->releasePresetLock();
+}
 void QProjectM_MainWindow::refreshPlaylist()
 {
 	copyPlaylist();
@@ -703,6 +753,6 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 	assert(presetExistsWithinFilter == qprojectM()->presetPositionValid());
 	
 	previousFilter = filter;
-	qprojectMWidget()->unseizePresetLock();
+	qprojectMWidget()->releasePresetLock();
 }
 

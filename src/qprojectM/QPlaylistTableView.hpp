@@ -36,6 +36,7 @@ class QPlaylistTableView : public QTableView
 		QTableView(parent) {}
  signals:
 	 void resized(QResizeEvent * event);
+	 void deletesRequested(const QModelIndexList & items); 
 	 
  public slots:
     
@@ -46,25 +47,10 @@ class QPlaylistTableView : public QTableView
 	 
 	 
 	 inline void keyReleaseEvent(QKeyEvent * event) {
+		 
 		switch (event->key()) {
-			case Qt::Key_Delete: {
-				const QModelIndexList & items = selectedIndexes();
-				
-				QMap<int, QModelIndex> sortedItems;
-				QList<int> reverseOrderKeys;
-					
-				foreach (QModelIndex index, items) {
-					sortedItems[index.row()] = index;
-				}
-				
-				foreach (int key, sortedItems.keys()) {
-					reverseOrderKeys.insert(0, key);
-				}
-				
-				foreach (int key, reverseOrderKeys) {
-					model()->removeRow(key);
-				}
-			}
+			case Qt::Key_Delete: 
+				emit(deletesRequested(selectedIndexes()));
 				break;
 			default:
 				break;

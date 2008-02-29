@@ -33,6 +33,7 @@
 
 #include "projectM.hpp"
 
+#include <QModelIndexList>
 class QHeaderView;
 class QAction;
 class QMenu;
@@ -89,7 +90,7 @@ class QProjectMWidget : public QGLWidget
 
      }
 	
-     inline void unseizePresetLock() {
+     inline void releasePresetLock() {
 
 		qprojectM()->setPresetLock(m_presetWasLocked);
 		m_presetSeizeMutex.unlock();
@@ -276,6 +277,7 @@ class QProjectM_MainWindow:public QMainWindow
 public:
       typedef struct PlaylistItemMetaData {
 		PlaylistItemMetaData() {}
+		PlaylistItemMetaData(long _id) :id(_id)  {}
 		PlaylistItemMetaData(const QString & _url, const QString & _name, int _rating, long _id):
 			url(_url), name(_name), rating(_rating), id(_id) {}
 
@@ -283,6 +285,14 @@ public:
 		QString name;
 		int rating;
 		long id;
+		inline bool operator==(const PlaylistItemMetaData & data) {
+			return data.id == id;
+		}
+		
+		
+		inline bool operator==(long rhs_id) {
+			return rhs_id == id;
+		}
       } PlaylistItemMetaData;
 
       typedef QVector<PlaylistItemMetaData> PlaylistItemVector;
@@ -323,7 +333,7 @@ private slots:
       void openSettingsDialog();
       void updateFilteredPlaylist(const QString & text);
       void refreshHeaders(QResizeEvent * event = 0);
-
+      void removePlaylistItems(const QModelIndexList & items);
       private:
 	
 	QSize _oldPlaylistSize;	
