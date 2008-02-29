@@ -161,7 +161,9 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_b:
 	      break;
             case PROJECTM_K_n:
-
+		    
+		    m_presetChooser->nextPreset(*m_presetPos);
+/*
 		if (m_presetChooser->empty())
 			break;
 
@@ -175,10 +177,10 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		// Case: already at last preset, loop to beginning
 		if (((*m_presetPos) == m_presetChooser->end())) {
 			*m_presetPos = m_presetChooser->begin();
-		}
+		}*/
 
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
-		renderer->setPresetName(m_activePreset->presetName());		               
+		renderer->setPresetName(m_activePreset->presetName());
 		timeKeeper->StartPreset();
 	      break;
 

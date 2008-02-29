@@ -214,9 +214,25 @@ public:
   /// Returns the size of the play list
   unsigned int getPlaylistSize() const;
 
+  
+  inline void setShuffleEnabled(bool value)
+  {
+	  m_shuffleEnabled = value;
+			
+	/// idea@ call a virtualfunction shuffleChanged()
+  }
+
+  
+  inline bool isShuffleEnabled() const
+  {
+	  return m_shuffleEnabled;				
+  }
+  
   /// Occurs when active preset has switched. Switched to index is returned
   virtual void presetSwitchedEvent(bool isHardCut, unsigned int index) const {};
+  virtual void shuffleEnabledValueChanged(bool isEnabled) const {};
 
+  
   inline const PCM * pcm() {
 	  return _pcm;
   }
@@ -284,7 +300,7 @@ private:
   TimeKeeper *timeKeeper;
 
   PCM * _pcm;
-  
+  bool m_shuffleEnabled;
   
 
 };

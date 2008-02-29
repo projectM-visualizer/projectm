@@ -99,6 +99,7 @@ class QProjectMWidget : public QGLWidget
 
 	
 public slots:
+	
      void resetProjectM() {
 	
 	qDebug() << "reset start";
@@ -134,6 +135,11 @@ public slots:
 		emit(presetLockChanged((bool)state));
      }
      
+     void setShuffleEnabled(int state) {
+	     m_projectM->setShuffleEnabled((bool)state);
+	     emit(shuffleEnabledChanged((bool)state));
+     }
+     
      void mousePressEvent ( QMouseEvent * event )   {
 	     this->setFocus();
      }
@@ -142,6 +148,7 @@ public slots:
 	void projectM_BeforeDestroy();
 	void projectM_Initialized(QProjectM *);
 	void presetLockChanged(bool isLocked);
+	void shuffleEnabledChanged(bool isShuffleEnabled);
  private:
 	std::string config_file;
 	QProjectM * m_projectM;	 
