@@ -509,6 +509,7 @@ void QProjectM_MainWindow::removePlaylistItems(const QModelIndexList & items) {
 		}
 				
 		PlaylistItemVector & lastCachedItems = *historyHash[previousFilter];
+		assert (lastCachedItems.size() == playlistModel->rowCount());
 		
 		QVector<long> zombieItems;
 		
@@ -531,7 +532,7 @@ void QProjectM_MainWindow::removePlaylistItems(const QModelIndexList & items) {
 				int index = cachedItems.indexOf(id);
 				if (index >= 0)
 					cachedItems.remove(index);
-			}			
+			}
 		}
 		
 		foreach (int key, reverseOrderKeys) {	
