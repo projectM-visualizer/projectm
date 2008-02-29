@@ -45,7 +45,10 @@ class PresetLoader {
 		unsigned int addPresetURL ( const std::string & url, const std::string & presetName, int rating);
 	
 		/// Clears all presets from the collection
-		void clear() { m_entries.clear(); m_presetNames.clear(); }
+		inline void clear() { m_entries.clear(); m_presetNames.clear(); m_ratings.clear(); m_ratingsSum = 0; }
+		
+		const std::vector<int> & getPresetRatings() const;
+		int getPresetRatingsSum() const;
 		
 		void removePreset(unsigned int index);
 
@@ -81,6 +84,8 @@ class PresetLoader {
 		std::string m_dirname;
 		DIR * m_dir;
 
+		int m_ratingsSum;
+		
 		// vector chosen for speed, but not great for reverse index lookups
 		std::vector<std::string> m_entries;
 		std::vector<std::string> m_presetNames;

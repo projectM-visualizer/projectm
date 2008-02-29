@@ -824,7 +824,7 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset,  PresetInputs 
 
 	// If queue not specified, roll with usual random behavior
 	if (m_presetQueuePos == 0) {
-		*m_presetPos = m_presetChooser->weightedRandom<PresetChooser::UniformRandomFunctor>();
+		*m_presetPos = m_presetChooser->weightedRandom();
 		targetPreset = m_presetPos->allocate( inputs, outputs );
 	}
 	else { // queue item specified- use it and reset the queue

@@ -29,7 +29,7 @@ extern "C"
 const std::string PresetLoader::PROJECTM_FILE_EXTENSION(".prjm");
 const std::string PresetLoader::MILKDROP_FILE_EXTENSION(".milk");
 
-PresetLoader::PresetLoader(std::string dirname) :m_dirname(dirname), m_dir(0)
+PresetLoader::PresetLoader(std::string dirname) :m_dirname(dirname), m_dir(0), m_ratingsSum(0)
 {
   // Do one scan
   rescan();
@@ -55,7 +55,7 @@ void PresetLoader::rescan()
   m_entries.clear();
   m_presetNames.clear();
   m_ratings.clear();
-  
+  m_ratingsSum = 0;
   // If directory already opened, close it first
   if (m_dir)
   {
@@ -114,6 +114,12 @@ void PresetLoader::rescan()
 
   // Give all presets equal rating of 3 - why 3? I don't know
   m_ratings = std::vector<int>(m_presetNames.size(), 3);
+  m_ratingsSum = 3 * m_ratings.size();
+  
+  assert(m_entries.size() == m_presetNames.size());
+  assert(m_ratings.size() == m_entries.size());
+	
+  
 }
 
 
@@ -165,13 +171,27 @@ void PresetLoader::setRating(unsigned int index, int rating) {
 	assert(index >=0);
 	assert(index < m_ratings.size());
 	
+	m_ratingsSum -= m_ratings[index];
 	m_ratings[index] = rating;
+	m_ratingsSum += rating;
+	
+	assert(m_entries.size() == m_presetNames.size());
+	assert(m_ratings.size() == m_entries.size());
+	
 }
 
 unsigned int PresetLoader::addPresetURL(const std::string & url, const std::string & presetName, int rating)  {
 	m_entries.push_back(url);
 	m_presetNames.push_back(presetName);
 	m_ratings.push_back(rating);
+	m_ratingsSum += rating;
+	
+	static int COUNT = 0;
+	std::cerr << "Count: " << COUNT;
+	COUNT++;
+	assert(m_entries.size() == m_presetNames.size());
+	assert(m_ratings.size() == m_entries.size());
+	
 	return m_entries.size()-1;
 }
 
@@ -179,7 +199,12 @@ void PresetLoader::removePreset(unsigned int index)  {
 	
 	m_entries.erase(m_entries.begin()+index);
 	m_presetNames.erase(m_presetNames.begin()+index);
+	m_ratingsSum -= m_ratings[index];
 	m_ratings.erase(m_ratings.begin()+index);
+	
+	assert(m_entries.size() == m_presetNames.size());
+	assert(m_ratings.size() == m_entries.size());
+	
 }
 
 const std::string & PresetLoader::getPresetURL ( unsigned int index) const {
@@ -192,4 +217,14 @@ const std::string & PresetLoader::getPresetName ( unsigned int index) const {
 
 int PresetLoader::getPresetRating ( unsigned int index) const {
 	return m_ratings[index];
+}
+
+
+const std::vector<int> & PresetLoader::getPresetRatings () const {
+	return m_ratings;
+}
+
+
+int PresetLoader::getPresetRatingsSum () const {
+	return m_ratingsSum;
 }
