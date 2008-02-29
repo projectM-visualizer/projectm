@@ -7,7 +7,7 @@
 #include "Preset.hpp"
 
 #include "PresetLoader.hpp"
-
+#include "RandomNumberGenerators.hpp"
 #include <cassert>
 #include <memory>
 #include <iostream>
@@ -77,27 +77,11 @@ public:
     /// \returns the number of presets in the collection
     std::size_t getNumPresets() const;
 
-    /// A functor, for all preset indices, returns probability 1 / (number of presets in directory)
-    class UniformRandomFunctor {
-
-    public:
-        /// Initialize a new functor with a particular collection size
-        /// \param collectionSize the number of presets one is sampling over
-        UniformRandomFunctor(std::size_t collectionSize);
-
-        /// Returns uniform (fixed) probability for any index
-	/// \param index the index position of the preset to load
-        float operator() (std::size_t index) const;
-
-    private:
-        std::size_t m_collectionSize;
-    };
-
-
+   
     /// An STL-esque iterator to begin traversing presets from a directory
     /// \param index the index to begin iterating at. Assumed valid between [0, num presets)
     /// \returns the position of the first preset in the collection
-    PresetIterator begin(unsigned int index);
+    PresetIterator begin(unsigned int index) const;
 
     /// An STL-esque iterator to begin traversing presets from a directory
     /// \returns the position of the first preset in the collection
@@ -107,28 +91,14 @@ public:
     /// \returns the end position of the collection
     PresetIterator end() const;
 
-    /// Perform a weighted sample to select a preset given a weight functor.
-    /// \param presetInputs the preset inputs to associate with the preset upon construction
-    /// \param presetOutputs the preset outputs to associate with the preset upon construction
-    /// \param WeightFuncstor a functor that returns a probability for each index (see UniformRandomFunctor)
+    /// Perform a weighted sample to select a preset (uses preset rating values)
     /// \returns an iterator to the randomly selected preset
-    template <class WeightFunctor>
-    iterator weightedRandom(WeightFunctor & weightFunctor);
-
-    /// Do a weighted sample given a weight functor and default construction (ie. element size) of the weight functor
-    /// \param presetInputs the preset inputs to associate with the preset upon construction
-    /// \param presetOutputs the preset outputs to associate with the preset upon construction
-    /// \param WeightFunctor a functor that returns a probability for each index (see UniformRandomFunctor)
-    /// \returns an iteraator to the randomly selected preset
-    template <class WeightFunctor>
-    iterator weightedRandom();
+    iterator weightedRandom() const;
 
     /// True if no presets in directory 
     bool empty() const;
 
 private:
-    template <class WeightFunctor>
-    iterator doWeightedSample(WeightFunctor & weightFunctor);
 
     const PresetLoader * m_presetLoader;
 };
@@ -173,11 +143,6 @@ inline std::auto_ptr<Preset> PresetIterator::allocate( PresetInputs & presetInpu
     return m_presetChooser->directoryIndex(m_currentIndex, presetInputs, presetOutputs);
 }
 
-inline float PresetChooser::UniformRandomFunctor::operator() (std::size_t index) const {
-    return (1.0 / m_collectionSize);
-}
-
-inline PresetChooser::UniformRandomFunctor::UniformRandomFunctor(std::size_t collectionSize):m_collectionSize(collectionSize) {}
 
 inline PresetIterator PresetChooser::begin() {
     PresetIterator pos(0);
@@ -185,7 +150,7 @@ inline PresetIterator PresetChooser::begin() {
     return pos;
 }
 
-inline PresetIterator PresetChooser::begin(unsigned int index) {
+inline PresetIterator PresetChooser::begin(unsigned int index) const{
     PresetIterator pos(index);
     pos.setChooser(*this);
     return pos;
@@ -197,22 +162,9 @@ inline PresetIterator PresetChooser::end() const {
     return pos;
 }
 
-template <class WeightFunctor>
-typename PresetChooser::iterator PresetChooser::weightedRandom(WeightFunctor & weightFunctor) {
-    return doWeightedSample(weightFunctor);
-}
-
 
 inline bool PresetChooser::empty() const {
 	return m_presetLoader->getNumPresets() == 0;
-}
-
-template <class WeightFunctor>
-inline PresetChooser::iterator PresetChooser::weightedRandom() {
-
-    WeightFunctor weightFunctor(m_presetLoader->getNumPresets());
-    return doWeightedSample(weightFunctor);
-
 }
 
 inline std::auto_ptr<Preset> PresetChooser::directoryIndex(std::size_t index, PresetInputs & presetInputs,
@@ -221,39 +173,11 @@ inline std::auto_ptr<Preset> PresetChooser::directoryIndex(std::size_t index, Pr
 	return m_presetLoader->loadPreset(index, presetInputs, presetOutputs);
 }
 
-template <class WeightFunctor>
-inline PresetChooser::iterator PresetChooser::doWeightedSample(WeightFunctor & weightFunctor) {
 
-
-#ifdef WIN32	
-    // Choose a random bounded mass between 0 and 1
-    float cutoff = ((float)(rand())) / RAND_MAX;
-#endif 
-
-#ifdef LINUX
-    // Choose a random bounded mass between 0 and 1
-    float cutoff = ((float)(random())) / RAND_MAX;
-#endif
-
-#ifdef MACOS
-    // Choose a random bounded mass between 0 and 1
-    float cutoff = ((float)(rand())) / RAND_MAX;
-#endif
-
-    // Sum up mass, stopping when cutoff is reached. This is the typical
-    // weighted sampling algorithm.
-    float mass = 0;
-    for (PresetIterator pos = this->begin();pos != this->end() ; ++pos) {
-        mass += weightFunctor(*pos);
-     if (mass >= cutoff)
-        return pos;
-    }
-
-    // Just in case something slips through the cracks
-    PresetIterator pos = this->end();
-    --pos;
-
-    return pos;
+inline PresetChooser::iterator PresetChooser::weightedRandom() const {
+	std::size_t index = RandomNumberGenerators::weightedRandom
+		(m_presetLoader->getPresetRatings(), m_presetLoader->getPresetRatingsSum());
+	return begin(index);
 }
 
 #endif
