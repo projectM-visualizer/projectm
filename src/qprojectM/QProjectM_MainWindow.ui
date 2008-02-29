@@ -233,8 +233,11 @@ p, li { white-space: pre-wrap; }
        <property name="dragEnabled" >
         <bool>true</bool>
        </property>
+       <property name="dragDropOverwriteMode" >
+        <bool>false</bool>
+       </property>
        <property name="dragDropMode" >
-        <enum>QAbstractItemView::InternalMove</enum>
+        <enum>QAbstractItemView::DragDrop</enum>
        </property>
        <property name="alternatingRowColors" >
         <bool>false</bool>

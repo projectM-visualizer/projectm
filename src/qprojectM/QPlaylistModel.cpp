@@ -105,6 +105,8 @@ Qt::ItemFlags QPlaylistModel::flags(const QModelIndex &index) const
  bool QPlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
 				int row, int column, const QModelIndex &parent)
 {
+	qDebug() << "DROP";
+	
 	if (!data->hasFormat(PRESET_MIME_TYPE))
 		return false;
 
@@ -113,12 +115,10 @@ Qt::ItemFlags QPlaylistModel::flags(const QModelIndex &index) const
 
 	if (column > 0)
 		return false;
-
-	int endRow;
-
-
+	
 	return true;
 }
+
 QVariant QPlaylistModel::ratingToIcon ( int rating )  const
 {
 	switch ( rating )
@@ -230,14 +230,16 @@ bool QPlaylistModel::removeRows ( int row, int count, const QModelIndex & parent
 		m_ratings.remove (row);
 	}
 	endRemoveRows();
+	return true;
 }
 
-void QPlaylistModel::removeRow ( int index, const QModelIndex & parent)
+bool QPlaylistModel::removeRow ( int index, const QModelIndex & parent)
 {
 	beginRemoveRows ( QModelIndex(), index, index );
 	m_projectM.removePreset ( index );
 	m_ratings.remove ( index );
 	endRemoveRows();
+	return true;
 }
 
 void QPlaylistModel::clear()
