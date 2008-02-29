@@ -257,7 +257,7 @@ p, li { white-space: pre-wrap; }
       </widget>
      </item>
      <item row="2" column="0" >
-      <widget class="QCheckBox" name="randomCheckBox" >
+      <widget class="QCheckBox" name="shuffleEnabledCheckBox" >
        <property name="enabled" >
         <bool>true</bool>
        </property>
