@@ -3,6 +3,8 @@
 #include <cmath>
 #include <vector>
 #include <cassert>
+#include <iostream>
+
 namespace RandomNumberGenerators {
 
 inline float uniform()
@@ -59,7 +61,43 @@ inline std::size_t uniformInteger(std::size_t upperBound=1) {
 }
 
 	
+	
+
+/// Randomizes from probabilistically weighted distribution. Thus,
+/// sum of passed in weights should be 1.0
+inline std::size_t weightedRandomNormalized(std::vector<float> weights) {
+
+#ifdef WIN32	
+    // Choose a random bounded mass between 0 and 1
+	float cutoff = ((float)(rand())) / RAND_MAX;
+#endif 
+
+#ifdef LINUX
+    // Choose a random bounded mass between 0 and 1
+	float cutoff = ((float)(random())) / RAND_MAX;
+#endif
+
+#ifdef MACOS
+    // Choose a random bounded mass between 0 and 1
+	float cutoff = ((float)(rand())) / RAND_MAX;
+#endif
+
+    // Sum up mass, stopping when cutoff is reached. This is the typical
+    // weighted sampling algorithm.
+	float mass = 0;
+	for (std::size_t i = 0; i< weights.size() ; i) {
+		mass += weights[i];
+		if (mass >= cutoff)
+			return i;
+	}
+
+    // Just in case something slips through the cracks
+	return weights.size()-1;
+}
+
 inline std::size_t weightedRandom(const std::vector<int> & weights, int weightTotalHint = 0) {
+	
+	std::cerr << "weight size:" << weights.size() << std::endl;
 	
 	if (weightTotalHint <= 0)		
 		for (std::size_t i = 0; i < weights.size();i++) 
