@@ -336,6 +336,7 @@ private slots:
       void removePlaylistItems(const QModelIndexList & items);
       private:
 	
+	unsigned long playlistItemCounter;
 	QSize _oldPlaylistSize;	
 	void readConfig(const std::string & configFile);
 	void writeConfig();

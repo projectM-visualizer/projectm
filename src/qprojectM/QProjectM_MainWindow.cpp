@@ -73,7 +73,7 @@ class PlaylistWriteFunctor {
 QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QMutex * audioMutex)
 		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), m_QPlaylistFileDialog 
 		( new QPlaylistFileDialog ( this )), playlistModel(0), 
-		configDialog(0), hHeader(0), vHeader(0), _menuVisible(true), activePresetIndex(new Nullable<long>)
+		configDialog(0), hHeader(0), vHeader(0), _menuVisible(true), activePresetIndex(new Nullable<long>), playlistItemCounter(0)
 {
 
 	
@@ -478,7 +478,7 @@ void QProjectM_MainWindow::copyPlaylist()
 		const QString & name = playlistModel->data ( index, Qt::DisplayRole ).toString();
 		int rating = playlistModel->data ( index, QPlaylistModel::RatingRole ).toInt();
 		
-		items->push_back ( PlaylistItemMetaData ( url, name, rating, i ) );
+		items->push_back ( PlaylistItemMetaData ( url, name, rating, playlistItemCounter++ ) );
 
 	}
 	historyHash.insert ( QString(), items );
@@ -663,7 +663,7 @@ void QProjectM_MainWindow::loadFile ( const QString &fileName, int rating )
 	PlaylistItemVector * playlistItems = historyHash.value ( QString(), 0 );
 	assert ( playlistItems != 0 );
 
-	playlistItems->push_back ( PlaylistItemMetaData ( fileName, name, rating, playlistItems->size() ) );
+	playlistItems->push_back ( PlaylistItemMetaData ( fileName, name, rating, playlistItemCounter++ ) );
 
 }
 
