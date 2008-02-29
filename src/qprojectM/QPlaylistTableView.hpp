@@ -53,6 +53,7 @@ class QPlaylistTableView : public QTableView
 				emit(deletesRequested(selectedIndexes()));
 				break;
 			default:
+				event->ignore();
 				break;
 		}
 	 }
