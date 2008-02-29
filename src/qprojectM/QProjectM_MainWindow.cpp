@@ -272,8 +272,23 @@ void QProjectM_MainWindow::changeRating ( const QModelIndex & index ) {
 	if ( index.column() == 0 )
 		return;
 
-	playlistModel->setData
-	( index, ( playlistModel->data ( index, QPlaylistModel::RatingRole ).toInt() +1 ) % 6, QPlaylistModel::RatingRole );
+	/// @bug get rid of hard coded rating boundaries
+	int newRating = (( playlistModel->data ( index, QPlaylistModel::RatingRole ).toInt()  ) % 6)+1  ;
+	
+	
+	PlaylistItemVector & lastCache =  *historyHash[previousFilter];
+	
+	long id = lastCache[index.row()].id;
+	
+	foreach (PlaylistItemVector * items, historyHash.values()) {
+		foreach (PlaylistItemMetaData metaData, *items) {
+			if (metaData.id == id)
+				metaData.rating = newRating;
+		}
+	}
+	qDebug() << "new rating: "  << newRating ;
+	playlistModel->setData( index, newRating, QPlaylistModel::RatingRole);
+	
 }
 
 void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
