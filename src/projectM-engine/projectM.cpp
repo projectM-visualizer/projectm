@@ -100,7 +100,7 @@ DLLEXPORT void projectM::projectM_resetTextures()
 }
 
 DLLEXPORT  projectM::projectM ( std::string config_file ) :
-		beatDetect ( 0 ), renderer ( 0 ),  m_presetQueuePos(0), _pcm(0), m_presetPos(0)
+		beatDetect ( 0 ), renderer ( 0 ),  m_presetQueuePos(0), _pcm(0), m_presetPos(0), m_shuffleEnabled(true)
 {
 	readConfig ( config_file );	
 	projectM_reset();
@@ -250,7 +250,7 @@ DLLEXPORT void projectM::renderFrame()
 		  // printf("Hard Cut\n");
 			switchPreset(m_activePreset, presetInputs, presetOutputs);
 
-			timeKeeper->StartPreset();		       
+			timeKeeper->StartPreset();
 			presetSwitchedEvent(true, **m_presetPos);
 		}		
 	}
@@ -824,7 +824,11 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset,  PresetInputs 
 
 	// If queue not specified, roll with usual random behavior
 	if (m_presetQueuePos == 0) {
-		*m_presetPos = m_presetChooser->weightedRandom();
+		if (m_shuffleEnabled)
+			*m_presetPos = m_presetChooser->weightedRandom();
+		else
+			m_presetChooser->nextPreset(*m_presetPos);
+					
 		targetPreset = m_presetPos->allocate( inputs, outputs );
 	}
 	else { // queue item specified- use it and reset the queue
@@ -874,6 +878,7 @@ void projectM::clearPlaylist ( )
 	m_presetQueuePos = 0;
 	
 }
+
 
 
 void projectM::queuePreset(unsigned int index) {

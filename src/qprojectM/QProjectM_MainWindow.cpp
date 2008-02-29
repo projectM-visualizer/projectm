@@ -87,6 +87,9 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QM
 
 	connect ( ui->lockPresetCheckBox, SIGNAL ( stateChanged ( int ) ),
 	          m_QProjectMWidget, SLOT ( setPresetLock ( int ) ) );
+	
+	connect ( ui->shuffleEnabledCheckBox, SIGNAL ( stateChanged ( int ) ),
+		  m_QProjectMWidget, SLOT ( setShuffleEnabled ( int ) ) );
 
 	connect ( ui->clearPresetList_PushButton, SIGNAL ( pressed() ),
 	          this, SLOT ( clearPlaylist() ) );

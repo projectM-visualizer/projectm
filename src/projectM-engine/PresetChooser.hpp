@@ -98,6 +98,9 @@ public:
     /// True if no presets in directory 
     bool empty() const;
 
+    
+    inline void nextPreset(PresetIterator & presetPos);
+
 private:
 
     const PresetLoader * m_presetLoader;
@@ -143,6 +146,24 @@ inline std::auto_ptr<Preset> PresetIterator::allocate( PresetInputs & presetInpu
     return m_presetChooser->directoryIndex(m_currentIndex, presetInputs, presetOutputs);
 }
 
+inline void PresetChooser::nextPreset(PresetIterator & presetPos) {
+
+		if (this->empty()) {
+			return;
+		}
+		
+		// Case: idle preset currently running, selected first preset of chooser
+		else if (presetPos == this->end()) 
+			presetPos = this->begin();		 
+		else
+			++(presetPos);
+
+		// Case: already at last preset, loop to beginning
+		if (((presetPos) == this->end())) {
+			presetPos = this->begin();
+		}
+		
+}
 
 inline PresetIterator PresetChooser::begin() {
     PresetIterator pos(0);
