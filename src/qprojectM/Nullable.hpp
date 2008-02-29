@@ -36,8 +36,8 @@ class Nullable {
 			m_hasValue = false;
 		}
 	
-		const Value & value() { return m_value;}		
-		bool hasValue() { return m_hasValue;}
+		const Value & value() const { return m_value;}		
+		bool hasValue() const { return m_hasValue;}
 	private:
 		Value m_value;
 		bool m_hasValue;

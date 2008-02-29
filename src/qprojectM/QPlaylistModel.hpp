@@ -28,13 +28,16 @@
 
 #include <projectM.hpp>
 #include <QStringList>
+#include <QtDebug>
+
 class QXmlStreamReader;
+class QDragMoveEvent;
 
 class QPlaylistModel : public QAbstractTableModel
  {
      Q_OBJECT        // must include this if you use Qt signals/slots
 
- public:
+public:
 static const int URLInfoRole = Qt::UserRole;
 static const int RatingRole = Qt::UserRole+1;
      QPlaylistModel(projectM & _projectM, QObject * parent = 0);
@@ -42,7 +45,7 @@ static const int RatingRole = Qt::UserRole+1;
 bool setData(const QModelIndex & index, const QVariant & value, int role=Qt::EditRole);
 
 void appendRow (const QString & presetURL, const QString & presetName, int rating = 3);
-void removeRow (int index, const QModelIndex & parent = QModelIndex());
+bool removeRow (int index, const QModelIndex & parent = QModelIndex());
 bool removeRows ( int row, int count, const QModelIndex & parent = QModelIndex());
 QVariant headerData ( int section, Qt::Orientation orientation, int role = Qt::DisplayRole ) const;
 
@@ -61,9 +64,8 @@ inline const QString & playlistName() {
 	return m_playlistName;
 }
 
-
 inline const QString & playlistDesc() {
-	return m_playlistDesc;
+  	return m_playlistDesc;
 }
 
 inline void setPlaylistName(const QString & name) {
@@ -74,6 +76,10 @@ inline void setPlaylistDesc(const QString & desc) {
 	m_playlistDesc = desc;
 }
 
+
+inline void dragMoveEvent ( QDragMoveEvent * event ) {
+	qDebug() << "DRAG MOVE!";	
+}
 
 inline Qt::DropActions supportedDropActions() const
 {

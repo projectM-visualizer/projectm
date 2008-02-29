@@ -23,7 +23,10 @@
 #define QPLAYLIST_TABLEVIEW_HPP
 
 #include <QTableView>
-
+#include <QtDebug>
+#include <QKeyEvent>
+#include <QMap>
+#include <QList>
 class QPlaylistTableView : public QTableView
  {
      Q_OBJECT        // must include this if you use Qt signals/slots
@@ -36,10 +39,37 @@ class QPlaylistTableView : public QTableView
 	 
  public slots:
     
-	 void resizeEvent(QResizeEvent * event) {
+	 inline void resizeEvent(QResizeEvent * event) {
 
 		emit(resized(event));
 	 }	
+	 
+	 
+	 inline void keyReleaseEvent(QKeyEvent * event) {
+		switch (event->key()) {
+			case Qt::Key_Delete: {
+				const QModelIndexList & items = selectedIndexes();
+				
+				QMap<int, QModelIndex> sortedItems;
+				QList<int> reverseOrderKeys;
+					
+				foreach (QModelIndex index, items) {
+					sortedItems[index.row()] = index;
+				}
+				
+				foreach (int key, sortedItems.keys()) {
+					reverseOrderKeys.insert(0, key);
+				}
+				
+				foreach (int key, reverseOrderKeys) {
+					model()->removeRow(key);
+				}
+			}
+				break;
+			default:
+				break;
+		}
+	 }
 };
 
 
