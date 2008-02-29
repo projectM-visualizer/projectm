@@ -54,7 +54,8 @@ void PresetLoader::rescan()
   // Clear the directory entry collection
   m_entries.clear();
   m_presetNames.clear();
-
+  m_ratings.clear();
+  
   // If directory already opened, close it first
   if (m_dir)
   {
@@ -111,7 +112,10 @@ void PresetLoader::rescan()
 	pos != alphaSortedPresetNameSet.end();++pos) 
 	m_presetNames.push_back(*pos);
 
+  // Give all presets equal rating of 3 - why 3? I don't know
+  m_ratings = std::vector<int>(m_presetNames.size(), 3);
 }
+
 
 std::auto_ptr<Preset> PresetLoader::loadPreset(unsigned int index,  PresetInputs & presetInputs, PresetOutputs & presetOutputs) const
 {
@@ -157,21 +161,25 @@ void PresetLoader::handleDirectoryError()
 #endif
 }
 
+void PresetLoader::setRating(unsigned int index, int rating) {
+	assert(index >=0);
+	assert(index < m_ratings.size());
+	
+	m_ratings[index] = rating;
+}
 
-unsigned int PresetLoader::addPresetURL(const std::string & url, const std::string & presetName)  {
+unsigned int PresetLoader::addPresetURL(const std::string & url, const std::string & presetName, int rating)  {
 	m_entries.push_back(url);
 	m_presetNames.push_back(presetName);
+	m_ratings.push_back(rating);
 	return m_entries.size()-1;
 }
 
 void PresetLoader::removePreset(unsigned int index)  {
-//	std::vector<std::string>::iterator pos = m_entries.begin();
-	//assert(pos != m_entries.end());
 	
-//	pos += index;
-
 	m_entries.erase(m_entries.begin()+index);
 	m_presetNames.erase(m_presetNames.begin()+index);
+	m_ratings.erase(m_ratings.begin()+index);
 }
 
 const std::string & PresetLoader::getPresetURL ( unsigned int index) const {
@@ -180,4 +188,8 @@ const std::string & PresetLoader::getPresetURL ( unsigned int index) const {
 		
 const std::string & PresetLoader::getPresetName ( unsigned int index) const {
 	return m_presetNames[index];
+}
+
+int PresetLoader::getPresetRating ( unsigned int index) const {
+	return m_ratings[index];
 }
