@@ -66,7 +66,7 @@ class XmlWriteFunctor {
 QPlaylistModel::QPlaylistModel ( projectM & _projectM, QObject * parent ) :
 		QAbstractTableModel ( parent ), m_projectM ( _projectM )
 {
-	m_ratings = QVector<int> ( rowCount(), 3 );	
+
 }
 
 
@@ -82,7 +82,7 @@ bool QPlaylistModel::setData ( const QModelIndex & index, const QVariant & value
 {
 	if ( role == QPlaylistModel::RatingRole )
 	{
-		m_ratings[index.row() ] = value.toInt();
+		m_projectM.changePresetRating(index.row(), value.toInt());
 		emit ( dataChanged ( index, index ) );
 		return true;
 	}
@@ -123,17 +123,17 @@ QVariant QPlaylistModel::ratingToIcon ( int rating )  const
 {
 	switch ( rating )
 	{
-		case 0:
-			return QVariant ( QIcon ( ":/images/icons/face0.png" ) );
 		case 1:
-			return QVariant ( QIcon ( ":/images/icons/face1.png" ) );
+			return QVariant ( QIcon ( ":/images/icons/face0.png" ) );
 		case 2:
-			return QVariant ( QIcon ( ":/images/icons/face2.png" ) );
+			return QVariant ( QIcon ( ":/images/icons/face1.png" ) );
 		case 3:
-			return QVariant ( QIcon ( ":/images/icons/face3.png" ) );
+			return QVariant ( QIcon ( ":/images/icons/face2.png" ) );
 		case 4:
-			return QVariant ( QIcon ( ":/images/icons/face4.png" ) );
+			return QVariant ( QIcon ( ":/images/icons/face3.png" ) );
 		case 5:
+			return QVariant ( QIcon ( ":/images/icons/face4.png" ) );
+		case 6:
 			return QVariant ( QIcon ( ":/images/icons/face5.png" ) );
 		default:
 			if (rating < 0)
@@ -141,6 +141,30 @@ QVariant QPlaylistModel::ratingToIcon ( int rating )  const
 			else 
 				return QVariant ( QIcon ( ":/images/icons/face5.png" ) );
 	}
+}
+
+
+QString QPlaylistModel::getSillyRatingToolTip(int rating) {
+	
+switch (rating) {
+	case 1:
+		return QString("Rather watch grass grow than watch this");
+	case 2:
+		return QString("A very poor preset");
+	case 3:
+		return QString("Tolerable");
+	case 4:
+		return QString("Pretty good");
+	case 5:
+		return QString("Trippy eye candy");
+	case 6:		
+		return QString("Crafted by a psychotic deity");
+	default:
+		if (rating <= 0 )
+			return QString("So bad it literally makes other presets bad!");
+		else
+			return QString("Better than projectM itself!");
+}
 }
 
 QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::DisplayRole ) const
@@ -157,19 +181,19 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 			if ( index.column() == 0 )
 				return QVariant ( QString ( m_projectM.getPresetName ( index.row() ).c_str() ) );
 			else
-				return ratingToIcon ( m_ratings[index.row() ] );
+				return ratingToIcon ( m_projectM.getPresetRating(index.row()) );
 		case Qt::ToolTipRole:
 			if ( index.column() == 0 )
 				return QVariant ( QString ( m_projectM.getPresetName ( index.row() ).c_str() ) );
 			else
-				return QString ( "Current rating is %1 / 5" ).arg ( m_ratings[index.row() ] );
+				return QString ( getSillyRatingToolTip(m_projectM.getPresetRating(index.row())));
 		case Qt::DecorationRole:
 			if ( index.column() == 1 )
-				return ratingToIcon ( m_ratings[index.row() ] );
+				return ratingToIcon ( m_projectM.getPresetRating(index.row()) );
 			else
 				return QVariant();
 		case QPlaylistModel::RatingRole:
-			return QVariant ( m_ratings[index.row() ] );
+			return QVariant (  m_projectM.getPresetRating(index.row())  );
 		case Qt::BackgroundRole:
 			if (!m_projectM.selectedPresetIndex(pos))
 				return QVariant();						
@@ -216,8 +240,7 @@ int QPlaylistModel::columnCount ( const QModelIndex & parent ) const
 void QPlaylistModel::appendRow ( const QString & presetURL, const QString & presetName, int rating )
 {
 	beginInsertRows ( QModelIndex(), rowCount(), rowCount() );
-	m_projectM.addPresetURL ( presetURL.toStdString(), presetName.toStdString() );
-	m_ratings.push_back ( rating );	
+	m_projectM.addPresetURL ( presetURL.toStdString(), presetName.toStdString(), rating );
 	endInsertRows();
 }
 
@@ -227,7 +250,6 @@ bool QPlaylistModel::removeRows ( int row, int count, const QModelIndex & parent
 
 	for (int i = 0; i < count; i++) {
 		m_projectM.removePreset (row );
-		m_ratings.remove (row);
 	}
 	endRemoveRows();
 	return true;
@@ -236,8 +258,7 @@ bool QPlaylistModel::removeRows ( int row, int count, const QModelIndex & parent
 bool QPlaylistModel::removeRow ( int index, const QModelIndex & parent)
 {
 	beginRemoveRows ( QModelIndex(), index, index );
-	m_projectM.removePreset ( index );
-	m_ratings.remove ( index );
+	m_projectM.removePreset ( index );	
 	endRemoveRows();
 	return true;
 }
@@ -253,7 +274,6 @@ void QPlaylistModel::clearItems()
 {
 	beginRemoveRows ( QModelIndex(), 0, rowCount()-1 );
 	m_projectM.clearPlaylist();
-	m_ratings.clear();
 	endRemoveRows();
 }
 

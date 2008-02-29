@@ -100,12 +100,12 @@ void clearItems();
 public slots:
 	void updateItemHighlights();
 	
- private:
+	 private:
+	static QString getSillyRatingToolTip(int rating);
 	void readPlaylistItem(QXmlStreamReader & reader);
 	static QString PRESET_MIME_TYPE;
 	QVariant ratingToIcon(int rating) const;
 	projectM & m_projectM;
-	QVector<int> m_ratings;
 	QString m_playlistName;
 	QString m_playlistDesc;
 };

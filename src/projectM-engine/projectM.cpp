@@ -786,14 +786,14 @@ void projectM::removePreset(unsigned int index) {
 
 }
 
-unsigned int projectM::addPresetURL ( const std::string & presetURL, const std::string & presetName )
+unsigned int projectM::addPresetURL ( const std::string & presetURL, const std::string & presetName, int rating )
 {	
 	bool restorePosition = false;
 	
 	if (*m_presetPos == m_presetChooser->end()) 
-		restorePosition = true;			
+		restorePosition = true;
 	
-	int index = m_presetLoader->addPresetURL ( presetURL, presetName );
+	int index = m_presetLoader->addPresetURL ( presetURL, presetName, rating);
 	
 	if (restorePosition)
 		*m_presetPos = m_presetChooser->end();
@@ -855,6 +855,10 @@ std::string projectM::getPresetURL ( unsigned int index ) const
 	return m_presetLoader->getPresetURL(index);
 }
 
+int projectM::getPresetRating ( unsigned int index ) const
+{
+	return m_presetLoader->getPresetRating(index);
+}
 
 std::string projectM::getPresetName ( unsigned int index ) const
 {
@@ -911,12 +915,10 @@ unsigned int projectM::getPlaylistSize() const
 	return m_presetLoader->getNumPresets();
 }
 
-RandomizerFunctor::RandomizerFunctor(PresetChooser & chooser) : m_chooser(chooser) {}
-RandomizerFunctor::~RandomizerFunctor() {}
-
-double RandomizerFunctor::operator() (int index) {
-	return 1.0 / m_chooser.getNumPresets();
+void projectM:: changePresetRating (unsigned int index, int rating) {
+	m_presetLoader->setRating(index, rating);
 }
+
 
  
 

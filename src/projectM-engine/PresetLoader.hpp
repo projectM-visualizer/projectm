@@ -42,13 +42,18 @@ class PresetLoader {
 		/// Add a preset to the loader's collection.
 		/// \param url an url referencing the preset
 		/// \returns The unique index assigned to the preset in the collection. Used with loadPreset
-		unsigned int addPresetURL ( const std::string & url, const std::string & presetName);
+		unsigned int addPresetURL ( const std::string & url, const std::string & presetName, int rating);
 	
 		/// Clears all presets from the collection
 		void clear() { m_entries.clear(); m_presetNames.clear(); }
 		
 		void removePreset(unsigned int index);
 
+		void setRating(unsigned int index, int rating);
+		
+		/// Get a preset rating given an index
+		 int getPresetRating ( unsigned int index) const;
+		
 		/// Get a preset url given an index
 		const std::string & getPresetURL ( unsigned int index) const;
 		
@@ -79,6 +84,7 @@ class PresetLoader {
 		// vector chosen for speed, but not great for reverse index lookups
 		std::vector<std::string> m_entries;
 		std::vector<std::string> m_presetNames;
+		std::vector<int> m_ratings;
 
 };
 
