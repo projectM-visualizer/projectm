@@ -97,8 +97,6 @@ inline std::size_t weightedRandomNormalized(std::vector<float> weights) {
 
 inline std::size_t weightedRandom(const std::vector<int> & weights, int weightTotalHint = 0) {
 	
-	std::cerr << "weight size:" << weights.size() << std::endl;
-	
 	if (weightTotalHint <= 0)		
 		for (std::size_t i = 0; i < weights.size();i++) 
 			weightTotalHint += weights[i];

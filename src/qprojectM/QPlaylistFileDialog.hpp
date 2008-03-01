@@ -23,22 +23,94 @@
 #define QPLAYLIST_FILEDIALOG_H
 
 #include <QFileDialog>
+#include <QStringList>
+#include <QtDebug>
 
  class QPlaylistFileDialog : public QFileDialog
  {
      Q_OBJECT        // must include this if you use Qt signals/slots
 
-		     
  public:
      inline QPlaylistFileDialog(QWidget * parent = 0): 
-		QFileDialog(parent, "Open a playlist file or directory", QString(), "Preset Playlists (*.ppl)" ) {
+		QFileDialog(parent, "Open a playlist file or directory", QString()) {
 
-		this->setFileMode(QFileDialog::ExistingFiles);
+	     updateFileMode(selectedFiles());
+	     
+	     //connect(this, SIGNAL(filesSelected(const QStringList&)),
+		//     this, SLOT(updateFileMode(const QStringList&)));
+	     
+	     connect(this, SIGNAL(currentChanged(const QString&)),
+		     this, SLOT(updateFileMode(const QString&)));
 	}
-
-     ~QPlaylistFileDialog() { }
- private:
 	
+	void setAllowDirectorySelect(bool isAllowed) {
+		m_directorySelectAllowed = isAllowed;
+		updateFileMode(selectedFiles());
+				
+	}
+	
+	
+	void setAllowFileSelect(bool isAllowed) {
+		m_fileSelectAllowed = isAllowed;	
+		updateFileMode(selectedFiles());
+	}
+	
+	
+	bool isFileSelectAllowed() const {
+		return m_fileSelectAllowed;	
+	}
+	
+	
+	bool isDirectorySelectAllowed() const {
+		return m_directorySelectAllowed;		
+	}
+	
+       ~QPlaylistFileDialog() { }
+
+	 private:
+		 bool m_directorySelectAllowed;
+		 bool m_fileSelectAllowed;
+		 
+ private slots:
+	 
+	 void updateFileMode(const QString & fileName) {
+		 
+		 QString filter;
+		 
+		 if (isDirectorySelectAllowed()) {
+			 
+			 filter += "Directories";
+		 }
+		 
+		 if (isFileSelectAllowed()) {			 
+			 if (filter != QString())
+				 filter += " and ";
+		
+			 filter += "Preset Playlists (*.ppl)";
+			 //this->setFileMode(QFileDialog::ExistingFiles);
+		 } 
+		 
+		
+		 if (QFileInfo(fileName).isDir())
+			 if (isDirectorySelectAllowed())  
+			 	this->setFileMode(QFileDialog::Directory);
+		 	 else
+				 ;
+         	else
+			 if (isFileSelectAllowed())
+				this->setFileMode(QFileDialog::ExistingFiles);
+			 else
+				;
+			
+		 this->setFilter(filter);		 
+	 }
+	 
+	 void updateFileMode(const QStringList & selectedFiles) {
+		 qDebug() << "in update";
+		 if (selectedFiles.empty())
+			 return;
+		 updateFileMode(selectedFiles[0]);
+	}
 };
 
 
