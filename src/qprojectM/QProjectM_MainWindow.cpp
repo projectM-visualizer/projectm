@@ -133,11 +133,16 @@ void QProjectM_MainWindow::readConfig(const std::string & configFile ) {
 
 	setMenuVisible(settings.value("MenuOnStartup", false).toBool());
 
+	
+	
 	ConfigFile config ( configFile );
 	
 	int wvw = config.read<int> ( "Window Width", 1024 );
 	int wvh = config.read<int> ( "Window Height", 768 );
 
+	ui->shuffleEnabledCheckBox->setCheckState(qprojectM()->settings().shuffleEnabled ? Qt::Checked : Qt::Unchecked);
+			
+	
 	// Suggest to the widget the projectM window size configuration settings
 	m_QProjectMWidget->setBaseSize ( wvw, wvh );
 }
@@ -460,7 +465,7 @@ void QProjectM_MainWindow::savePlaylist()
 	
 }
 
-void QProjectM_MainWindow::openPlaylist()
+void QProjectM_MainWindow::openPlaylistDialog()
 {
 	m_QPlaylistFileDialog->setAllowDirectorySelect(true);	
 	m_QPlaylistFileDialog->setAllowFileSelect(true);
@@ -480,7 +485,7 @@ void QProjectM_MainWindow::openPlaylist()
 
 		qDebug() << "url: " << url;
 		if ( playlistModel->readPlaylist ( url ) )
-		{
+		{			
 			ui->presetPlayListDockWidget->setWindowTitle
 			( QString ( "Preset Playlist - %1 [*]" ).arg ( playlistModel->playlistName() ) );
 			m_currentPlaylistUrl = url;

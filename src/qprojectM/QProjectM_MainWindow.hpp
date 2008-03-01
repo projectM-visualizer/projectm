@@ -330,7 +330,7 @@ private slots:
       void aboutQt();
       void clearPlaylist();
       void addPresets();
-      void openPlaylist();
+      void openPlaylistDialog();
       void savePlaylist();
       void about();
       void postProjectM_Initialize();
