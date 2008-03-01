@@ -3,6 +3,7 @@
 #include <QXmlStreamReader>
 #include <QtDebug>
 #include <QFileInfo>
+#include <QDir>
 #include <QMessageBox>
 
 #include "QXmlPlaylistHandler.hpp"
@@ -296,6 +297,20 @@ bool QPlaylistModel::writePlaylist ( const QString & file ) {
 bool QPlaylistModel::readPlaylist ( const QString & file )
 {
 	
+	if (QFileInfo(file).isDir()) {
+		
+		if (!QDir(file).isReadable()) {
+			QMessageBox::warning (0, "Playlist Directory Error", QString(tr("There was a problem trying to open the playlist directory \"%1\".  You may not have permission to open the directory.")).arg(file));
+			return false;			
+		}
+			
+		foreach (QFileInfo info, QDir(file).entryInfoList()) {			
+			if (info.fileName().toLower().contains(".prjm") || info.fileName().toLower().contains(".milk"))
+				appendRow(info.absoluteFilePath(), info.fileName(), 3);
+		}
+		return true;
+	}
+	
         QFile qfile(file);
  	if (!qfile.open(QIODevice::ReadOnly)) {
 		QMessageBox::warning (0, "Playlist File Error", QString(tr("There was a problem trying to open the playlist \"%1\".  The file may no longer exist or you may not have permission to read the file.")).arg(file));
@@ -303,7 +318,6 @@ bool QPlaylistModel::readPlaylist ( const QString & file )
 	}
 
 	XmlReadFunctor readFunctor(*this);
-
 
 	if (QXmlPlaylistHandler::readPlaylist(&qfile, readFunctor) != QXmlStreamReader::NoError) {
 		QMessageBox::warning ( 0, "Playlist Parse Error", QString(tr("There was a problem trying to parse the playlist \"%1\". Some of your playlist items may have loaded correctly, but don't expect miracles.")).arg(file));
