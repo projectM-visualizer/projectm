@@ -99,8 +99,9 @@ DLLEXPORT void projectM::projectM_resetTextures()
 	renderer->ResetTextures();
 }
 
-DLLEXPORT  projectM::projectM ( std::string config_file ) :
-		beatDetect ( 0 ), renderer ( 0 ),  m_presetQueuePos(0), _pcm(0), m_presetPos(0), m_shuffleEnabled(true)
+
+DLLEXPORT  projectM::projectM ( std::string config_file, int flags) :
+		beatDetect ( 0 ), renderer ( 0 ),  m_presetQueuePos(0), _pcm(0), m_presetPos(0), m_flags(flags)
 {
 	readConfig ( config_file );	
 	projectM_reset();
@@ -677,7 +678,9 @@ int projectM::initPresetTools()
 	/* Set the seed to the current time in seconds */
 	srand ( time ( NULL ) );
 
-	if ( ( m_presetLoader = new PresetLoader ( settings().presetURL ) ) == 0 )
+	std::string url = (m_flags & FLAG_DISABLE_PLAYLIST_LOAD) ? std::string() : settings().presetURL;
+	
+	if ( ( m_presetLoader = new PresetLoader ( url) ) == 0 )
 	{
 		m_presetLoader = 0;
 		std::cerr << "[projectM] error allocating preset loader" << std::endl;
@@ -709,12 +712,13 @@ int projectM::initPresetTools()
 	//std::cerr << "[projectM] Allocating idle preset..." << std::endl;
 	m_activePreset = IdlePreset::allocate ( presetInputs, presetOutputs );
 
-	// Case where no valid presets exist in directory
-	if ( m_presetChooser->empty() )
-	{
-		std::cerr << "[projectM] warning: no valid files found in preset directory \""
-		<< m_presetLoader->directoryName() << "\"" << std::endl;
-	}
+	// Case where no valid presets exist in directory. Could also mean 
+	// playlist initialization was deferred
+	//if ( m_presetChooser->empty() )
+	//{
+		//std::cerr << "[projectM] warning: no valid files found in preset directory \""
+		//<< m_presetLoader->directoryName() << "\"" << std::endl;
+	//}
 
 	//std::cerr << "[projectM] Idle preset allocated." << std::endl;
 
@@ -819,12 +823,12 @@ void projectM::selectPreset ( unsigned int index )
 	timeKeeper->StartPreset();
 }
 
-void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset,  PresetInputs & inputs, PresetOutputs & outputs) {
+void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset, PresetInputs & inputs, PresetOutputs & outputs) {
 
 
-	// If queue not specified, roll with usual random behavior
+// 	// If queue not specified, roll with usual random behavior
 	if (m_presetQueuePos == 0) {
-		if (m_shuffleEnabled)
+		if (_settings.shuffleEnabled)
 			*m_presetPos = m_presetChooser->weightedRandom();
 		else
 			m_presetChooser->nextPreset(*m_presetPos);

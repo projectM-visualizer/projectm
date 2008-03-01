@@ -57,7 +57,7 @@ class QProjectM : public QObject, public projectM {
 	Q_OBJECT
 
 	public:
-		 QProjectM(const std::string & config_file):projectM(config_file) {} 
+		QProjectM(const std::string & config_file):projectM(config_file, projectM::FLAG_DISABLE_PLAYLIST_LOAD) {} 
 
 		 void presetSwitchedEvent(bool hardCut, unsigned int index) const {
 			presetSwitchedSignal(hardCut, index);
@@ -107,9 +107,9 @@ public slots:
 	// waiting on it's mutex
 //	s_audioMutex.tryLock(20000);
 	if (m_audioMutex) {
-		qDebug() << "lock set start!";
+		qDebug() << "LOCK: projectM Reset";
 		m_audioMutex->lock();
-		qDebug() << "lock set end!";
+		
 	}
 	// Now destroy the projectM instance
 	destroyProjectM();
@@ -351,7 +351,7 @@ private slots:
 	
 	QHeaderView * hHeader;
 	QHeaderView * vHeader;
-      QString m_currentPlaylistFile;
+      QString m_currentPlaylistUrl;
 
       QPlaylistModel * playlistModel;
       Ui::QProjectM_MainWindow * ui;

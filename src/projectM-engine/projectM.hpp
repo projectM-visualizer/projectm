@@ -115,10 +115,11 @@ class RandomizerFunctor {
 class projectM 
 {
 public:
-
+	static const int FLAG_DISABLE_PLAYLIST_LOAD = 1 << 0;
+	static const int FLAG_NONE = 1 << 1;
+	
+  DLLEXPORT projectM(std::string config_file, int flags = FLAG_NONE);
   
-    
-  DLLEXPORT projectM(std::string config_file);
   DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url,std::string title_fonturl, std::string title_menuurl);
   
   DLLEXPORT void projectM_resetGL( int width, int height );
@@ -147,6 +148,7 @@ public:
 	float beatSensitivity;
 	bool aspectCorrection;
 	float easterEgg;
+	bool shuffleEnabled;
   };
 
 
@@ -217,7 +219,7 @@ public:
   
   inline void setShuffleEnabled(bool value)
   {
-	  m_shuffleEnabled = value;
+	  _settings.shuffleEnabled = value;
 			
 	/// idea@ call a virtualfunction shuffleChanged()
   }
@@ -225,7 +227,7 @@ public:
   
   inline bool isShuffleEnabled() const
   {
-	  return m_shuffleEnabled;				
+	return _settings.shuffleEnabled;
   }
   
   /// Occurs when active preset has switched. Switched to index is returned
@@ -300,7 +302,8 @@ private:
   TimeKeeper *timeKeeper;
 
   PCM * _pcm;
-  bool m_shuffleEnabled;
+  int m_flags;
+  
   
 
 };

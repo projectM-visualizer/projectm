@@ -12,7 +12,9 @@ class QProjectMConfigDialog : public QDialog {
 	private:
 		void loadConfig();
 	private slots:
-		void openPlaylistFileDialog();
+		void openPlaylistFileDialog();		
+		void openPlaylistDirectoryDialog();
+	
 		void openMenuFontFileDialog();
 		void openTitleFontFileDialog();
 		void saveConfig();

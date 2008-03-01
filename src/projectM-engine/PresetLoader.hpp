@@ -30,7 +30,7 @@ class PresetLoader {
 		
 		/** Initializes the preset loader with the target directory specified */
 		PresetLoader(std::string dirname);
-
+		
 		/** Destructor will remove all alllocated presets */
 		~PresetLoader();
 	

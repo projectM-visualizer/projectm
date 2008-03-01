@@ -252,15 +252,18 @@ case PA_STREAM_TERMINATED:// 	The stream has been terminated cleanly.
 }
 
 
-void QPulseAudioThread::pa_stream_success_callback(pa_stream *s, int success, void *userdata) {
+void QPulseAudioThread::pa_stream_success_callback(pa_stream *s, int success, void * data) {
 	
 	static bool pausedFlag = true;
 	
 	if (pausedFlag)
 		qDebug() << "pause";
-	else
+	else {
 		qDebug() << "play";
-	
+		s_audioMutex.unlock();
+		qDebug() << "UNLOCK: success callback";
+	}
+			
 	
 	pausedFlag = !pausedFlag;
 	
@@ -270,14 +273,13 @@ void QPulseAudioThread::pa_stream_success_callback(pa_stream *s, int success, vo
 
 
 QMutex * QPulseAudioThread::mutex() {
-	return &s_audioMutex;
+return &s_audioMutex;
 }
 
 void QPulseAudioThread::cork() 
 {
 	int b = 0;
 			
-	//s_audioMutex.lock();
 	pa_operation* op = 
 			pa_stream_cork(stream, b, pa_stream_success_callback, this);
 			
@@ -453,6 +455,7 @@ void QPulseAudioThread::stdout_callback ( pa_mainloop_api*a, pa_io_event *e, int
 	{
 		
 		//int * int_buf = (int *) buffer;
+		//qDebug() << "LOCK: add pcm";
 		s_audioMutex.lock();
 		QProjectM ** prjmPtr = static_cast<QProjectM **> ( userdata ); 
 		QProjectM * prjm = *prjmPtr;
@@ -464,7 +467,7 @@ void QPulseAudioThread::stdout_callback ( pa_mainloop_api*a, pa_io_event *e, int
 		prjm->pcm()->addPCMfloat 
 				( buffer+buffer_index, buffer_length / ( sizeof ( float ) ) );
 		s_audioMutex.unlock();
-		
+		//qDebug() << "UNLOCK: add pcm";
 		assert ( buffer_length );
 		
 		pa_xfree ( buffer );

@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>455</width>
-    <height>310</height>
+    <width>483</width>
+    <height>334</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -15,9 +15,9 @@
   <widget class="QLabel" name="label" >
    <property name="geometry" >
     <rect>
-     <x>5</x>
-     <y>35</y>
-     <width>119</width>
+     <x>7</x>
+     <y>67</y>
+     <width>105</width>
      <height>24</height>
     </rect>
    </property>
@@ -40,8 +40,8 @@
   <widget class="QToolButton" name="menuFontPathToolButton" >
    <property name="geometry" >
     <rect>
-     <x>423</x>
-     <y>35</y>
+     <x>447</x>
+     <y>67</y>
      <width>24</width>
      <height>24</height>
     </rect>
@@ -53,9 +53,9 @@
   <widget class="QLineEdit" name="menuFontPathLineEdit" >
    <property name="geometry" >
     <rect>
-     <x>130</x>
-     <y>35</y>
-     <width>287</width>
+     <x>118</x>
+     <y>67</y>
+     <width>323</width>
      <height>24</height>
     </rect>
    </property>
@@ -75,9 +75,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label_2" >
    <property name="geometry" >
     <rect>
-     <x>5</x>
-     <y>5</y>
-     <width>119</width>
+     <x>7</x>
+     <y>7</y>
+     <width>105</width>
      <height>24</height>
     </rect>
    </property>
@@ -94,14 +94,14 @@ p, li { white-space: pre-wrap; }
     </size>
    </property>
    <property name="text" >
-    <string>Startup Playlist</string>
+    <string>Playlist Directory</string>
    </property>
   </widget>
-  <widget class="QToolButton" name="startupPlaylistToolButton" >
+  <widget class="QToolButton" name="startupPlaylistDirectoryToolButton" >
    <property name="geometry" >
     <rect>
-     <x>423</x>
-     <y>5</y>
+     <x>447</x>
+     <y>7</y>
      <width>24</width>
      <height>24</height>
     </rect>
@@ -110,12 +110,12 @@ p, li { white-space: pre-wrap; }
     <string>...</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="startupPlaylistLineEdit" >
+  <widget class="QLineEdit" name="startupPlaylistDirectoryLineEdit" >
    <property name="geometry" >
     <rect>
-     <x>130</x>
-     <y>5</y>
-     <width>287</width>
+     <x>118</x>
+     <y>7</y>
+     <width>323</width>
      <height>24</height>
     </rect>
    </property>
@@ -128,15 +128,15 @@ p, li { white-space: pre-wrap; }
    <property name="toolTip" >
     <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This sets the default preset playlist when qprojectM starts up. This can be either a directory path or preset playlist file. If unspecified then projectM uses a default preset directory&lt;/p>&lt;/body>&lt;/html></string>
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;">This sets the default preset playlist directory when projectM starts up. Every valid preset file in the specified directory will be loaded into the playlist upon initialization. &lt;span style=" font-weight:600;">NOTE:&lt;/span> This option is overriden by a non empty value of the &lt;span style=" font-style:italic;">Playlist File &lt;/span>option.&lt;/p>&lt;/body>&lt;/html></string>
    </property>
   </widget>
   <widget class="QLabel" name="label_3" >
    <property name="geometry" >
     <rect>
-     <x>5</x>
-     <y>95</y>
+     <x>7</x>
+     <y>129</y>
      <width>119</width>
      <height>24</height>
     </rect>
@@ -148,9 +148,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QSpinBox" name="presetDurationSpinBox" >
    <property name="geometry" >
     <rect>
-     <x>130</x>
-     <y>95</y>
-     <width>61</width>
+     <x>132</x>
+     <y>129</y>
+     <width>74</width>
      <height>24</height>
     </rect>
    </property>
@@ -170,8 +170,8 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label_4" >
    <property name="geometry" >
     <rect>
-     <x>197</x>
-     <y>95</y>
+     <x>212</x>
+     <y>129</y>
      <width>171</width>
      <height>24</height>
     </rect>
@@ -183,9 +183,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QSpinBox" name="smoothPresetDurationSpinBox" >
    <property name="geometry" >
     <rect>
-     <x>374</x>
-     <y>95</y>
-     <width>73</width>
+     <x>389</x>
+     <y>129</y>
+     <width>82</width>
      <height>24</height>
     </rect>
    </property>
@@ -205,10 +205,10 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label_5" >
    <property name="geometry" >
     <rect>
-     <x>197</x>
-     <y>229</y>
+     <x>226</x>
+     <y>259</y>
      <width>81</width>
-     <height>37</height>
+     <height>24</height>
     </rect>
    </property>
    <property name="sizePolicy" >
@@ -224,8 +224,8 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label_6" >
    <property name="geometry" >
     <rect>
-     <x>197</x>
-     <y>125</y>
+     <x>212</x>
+     <y>159</y>
      <width>171</width>
      <height>24</height>
     </rect>
@@ -243,9 +243,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QSpinBox" name="maxFPSSpinBox" >
    <property name="geometry" >
     <rect>
-     <x>374</x>
-     <y>125</y>
-     <width>73</width>
+     <x>389</x>
+     <y>159</y>
+     <width>82</width>
      <height>24</height>
     </rect>
    </property>
@@ -268,9 +268,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QSpinBox" name="windowWidthSpinBox" >
    <property name="geometry" >
     <rect>
-     <x>284</x>
-     <y>235</y>
-     <width>54</width>
+     <x>313</x>
+     <y>259</y>
+     <width>66</width>
      <height>24</height>
     </rect>
    </property>
@@ -296,10 +296,10 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label_10" >
    <property name="geometry" >
     <rect>
-     <x>344</x>
-     <y>185</y>
-     <width>43</width>
-     <height>38</height>
+     <x>385</x>
+     <y>225</y>
+     <width>16</width>
+     <height>24</height>
     </rect>
    </property>
    <property name="sizePolicy" >
@@ -315,8 +315,8 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label_7" >
    <property name="geometry" >
     <rect>
-     <x>5</x>
-     <y>155</y>
+     <x>7</x>
+     <y>189</y>
      <width>119</width>
      <height>24</height>
     </rect>
@@ -334,9 +334,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QComboBox" name="textureSizeComboBox" >
    <property name="geometry" >
     <rect>
-     <x>130</x>
-     <y>155</y>
-     <width>61</width>
+     <x>132</x>
+     <y>189</y>
+     <width>74</width>
      <height>24</height>
     </rect>
    </property>
@@ -359,10 +359,10 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label_8" >
    <property name="geometry" >
     <rect>
-     <x>197</x>
-     <y>185</y>
+     <x>226</x>
+     <y>225</y>
      <width>81</width>
-     <height>38</height>
+     <height>24</height>
     </rect>
    </property>
    <property name="sizePolicy" >
@@ -378,9 +378,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QCheckBox" name="fullscreenOnStartupCheckBox" >
    <property name="geometry" >
     <rect>
-     <x>5</x>
-     <y>243</y>
-     <width>186</width>
+     <x>7</x>
+     <y>279</y>
+     <width>211</width>
      <height>23</height>
     </rect>
    </property>
@@ -391,15 +391,15 @@ p, li { white-space: pre-wrap; }
     </sizepolicy>
    </property>
    <property name="text" >
-    <string>Fullscreen on Startup</string>
+    <string>Fullscreen on startup</string>
    </property>
   </widget>
   <widget class="QCheckBox" name="menuOnStartupCheckBox" >
    <property name="geometry" >
     <rect>
-     <x>5</x>
-     <y>214</y>
-     <width>186</width>
+     <x>7</x>
+     <y>250</y>
+     <width>211</width>
      <height>23</height>
     </rect>
    </property>
@@ -410,15 +410,15 @@ p, li { white-space: pre-wrap; }
     </sizepolicy>
    </property>
    <property name="text" >
-    <string>Show Menu on Startup</string>
+    <string>Show Menu on startup</string>
    </property>
   </widget>
   <widget class="QDialogButtonBox" name="buttonBox" >
    <property name="geometry" >
     <rect>
-     <x>197</x>
-     <y>272</y>
-     <width>250</width>
+     <x>225</x>
+     <y>298</y>
+     <width>247</width>
      <height>30</height>
     </rect>
    </property>
@@ -435,9 +435,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QSpinBox" name="windowHeightSpinBox" >
    <property name="geometry" >
     <rect>
-     <x>393</x>
-     <y>235</y>
-     <width>54</width>
+     <x>405</x>
+     <y>259</y>
+     <width>66</width>
      <height>24</height>
     </rect>
    </property>
@@ -457,10 +457,10 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label_11" >
    <property name="geometry" >
     <rect>
-     <x>344</x>
-     <y>229</y>
-     <width>43</width>
-     <height>37</height>
+     <x>385</x>
+     <y>259</y>
+     <width>16</width>
+     <height>24</height>
     </rect>
    </property>
    <property name="sizePolicy" >
@@ -476,9 +476,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QCheckBox" name="useAspectCorrectionCheckBox" >
    <property name="geometry" >
     <rect>
-     <x>5</x>
-     <y>185</y>
-     <width>186</width>
+     <x>7</x>
+     <y>221</y>
+     <width>211</width>
      <height>23</height>
     </rect>
    </property>
@@ -501,8 +501,8 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label_12" >
    <property name="geometry" >
     <rect>
-     <x>5</x>
-     <y>125</y>
+     <x>7</x>
+     <y>159</y>
      <width>119</width>
      <height>24</height>
     </rect>
@@ -520,8 +520,8 @@ p, li { white-space: pre-wrap; }
   <widget class="QToolButton" name="titleFontPathToolButton" >
    <property name="geometry" >
     <rect>
-     <x>423</x>
-     <y>65</y>
+     <x>447</x>
+     <y>97</y>
      <width>24</width>
      <height>24</height>
     </rect>
@@ -533,9 +533,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label_9" >
    <property name="geometry" >
     <rect>
-     <x>5</x>
-     <y>65</y>
-     <width>119</width>
+     <x>7</x>
+     <y>97</y>
+     <width>105</width>
      <height>24</height>
     </rect>
    </property>
@@ -558,9 +558,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QLineEdit" name="titleFontPathLineEdit" >
    <property name="geometry" >
     <rect>
-     <x>130</x>
-     <y>65</y>
-     <width>287</width>
+     <x>118</x>
+     <y>97</y>
+     <width>323</width>
      <height>24</height>
     </rect>
    </property>
@@ -580,9 +580,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QDoubleSpinBox" name="beatSensitivitySpinBox" >
    <property name="geometry" >
     <rect>
-     <x>130</x>
-     <y>125</y>
-     <width>61</width>
+     <x>132</x>
+     <y>159</y>
+     <width>74</width>
      <height>24</height>
     </rect>
    </property>
@@ -602,8 +602,8 @@ p, li { white-space: pre-wrap; }
   <widget class="QLabel" name="label_13" >
    <property name="geometry" >
     <rect>
-     <x>197</x>
-     <y>155</y>
+     <x>212</x>
+     <y>189</y>
      <width>171</width>
      <height>24</height>
     </rect>
@@ -621,9 +621,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QDoubleSpinBox" name="easterEggParameterSpinBox" >
    <property name="geometry" >
     <rect>
-     <x>374</x>
-     <y>155</y>
-     <width>73</width>
+     <x>389</x>
+     <y>189</y>
+     <width>82</width>
      <height>24</height>
     </rect>
    </property>
@@ -643,9 +643,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QSpinBox" name="meshSizeWidthSpinBox" >
    <property name="geometry" >
     <rect>
-     <x>284</x>
-     <y>192</y>
-     <width>54</width>
+     <x>313</x>
+     <y>225</y>
+     <width>66</width>
      <height>24</height>
     </rect>
    </property>
@@ -668,9 +668,9 @@ p, li { white-space: pre-wrap; }
   <widget class="QSpinBox" name="meshSizeHeightSpinBox" >
    <property name="geometry" >
     <rect>
-     <x>393</x>
-     <y>192</y>
-     <width>54</width>
+     <x>405</x>
+     <y>225</y>
+     <width>66</width>
      <height>24</height>
     </rect>
    </property>
@@ -685,6 +685,85 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="maximum" >
     <number>1000</number>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="shuffleOnStartupCheckBox" >
+   <property name="geometry" >
+    <rect>
+     <x>7</x>
+     <y>308</y>
+     <width>211</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="sizePolicy" >
+    <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="text" >
+    <string>Shuffle on startup</string>
+   </property>
+  </widget>
+  <widget class="QToolButton" name="startupPlaylistFileToolButton" >
+   <property name="geometry" >
+    <rect>
+     <x>447</x>
+     <y>37</y>
+     <width>24</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="text" >
+    <string>...</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_14" >
+   <property name="geometry" >
+    <rect>
+     <x>7</x>
+     <y>37</y>
+     <width>105</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="sizePolicy" >
+    <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize" >
+    <size>
+     <width>50</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="text" >
+    <string>Playlist File</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="startupPlaylistFileLineEdit" >
+   <property name="geometry" >
+    <rect>
+     <x>118</x>
+     <y>37</y>
+     <width>323</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <property name="sizePolicy" >
+    <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+     <horstretch>2</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="toolTip" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;">This sets the default preset playlist file when qprojectM starts up. The file must be a valid preset playlist (of type *.ppl). If specified, this overrides the &lt;span style=" font-style:italic;">Playlist Directory&lt;/span> value on startup. &lt;/p>&lt;/body>&lt;/html></string>
    </property>
   </widget>
  </widget>

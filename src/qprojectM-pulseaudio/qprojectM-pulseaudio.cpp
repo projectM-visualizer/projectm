@@ -111,7 +111,7 @@ int main ( int argc, char*argv[] )
 	QApplication::connect
 			(mainWindow->qprojectMWidget(), SIGNAL(projectM_Initialized(QProjectM *)), pulseThread, SLOT(projectM_New(QProjectM*)));
 	QApplication::connect
-			(mainWindow->qprojectMWidget(), SIGNAL(projectM_BeforeDestroy()), pulseThread, SLOT(cork()));
+			(mainWindow->qprojectMWidget(), SIGNAL(projectM_BeforeDestroy()), pulseThread, SLOT(cork()), Qt::DirectConnection);
 
 	QPulseAudioDeviceChooser devChooser(pulseThread, mainWindow);	
 	QApplication::connect(&pulseAction, SIGNAL(triggered()), &devChooser, SLOT(open())); 
