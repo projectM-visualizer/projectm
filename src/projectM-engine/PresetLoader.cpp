@@ -187,9 +187,6 @@ unsigned int PresetLoader::addPresetURL(const std::string & url, const std::stri
 	m_ratings.push_back(rating);
 	m_ratingsSum += rating;
 	
-	static int COUNT = 0;
-	std::cerr << "Count: " << COUNT;
-	COUNT++;
 	assert(m_entries.size() == m_presetNames.size());
 	assert(m_ratings.size() == m_entries.size());
 	
