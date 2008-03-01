@@ -70,11 +70,6 @@ inline void setPlaylistDesc(const QString & desc) {
 	m_playlistDesc = desc;
 }
 
-
-inline void dragMoveEvent ( QDragMoveEvent * event ) {
-	qDebug() << "DRAG MOVE!";	
-}
-
 inline Qt::DropActions supportedDropActions() const
 {
 	return Qt::MoveAction;
@@ -85,8 +80,7 @@ inline QStringList mimeTypes () const  {
 	mimeTypes << PRESET_MIME_TYPE;
 	return mimeTypes;
 }
-	
-	
+		
 bool dropMimeData(const QMimeData *data, Qt::DropAction action,
 				 int row, int column, const QModelIndex &parent);
 void clearItems();

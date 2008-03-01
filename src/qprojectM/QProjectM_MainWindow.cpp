@@ -259,6 +259,28 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 	disconnect(ui->tableView);
 	connect(ui->tableView, SIGNAL(deletesRequested(const QModelIndexList&)), 
 		this, SLOT(removePlaylistItems(const QModelIndexList&)));
+	
+	
+	connect(ui->tableView, SIGNAL(internalDragAndDropRequested(const QModelIndexList &, const QModelIndex &)),
+		this, SLOT(dragAndDropPlaylistItems(const QModelIndexList &, const QModelIndex &)));
+	
+	
+}
+void QProjectM_MainWindow::dragAndDropPlaylistItems(const QModelIndexList & indices, const QModelIndex & targetIndex) {
+	
+	/// @bug only first index of the indices passed in is supported!
+	QModelIndex firstIndex = indices.value(0);
+	
+	PlaylistItemMetaData metaData = historyHash[previousFilter]->value(firstIndex.row());;
+	
+	QModelIndexList singularList;
+	singularList.append(firstIndex);
+	
+	removePlaylistItems(singularList);	
+	//insertPlaylistItem(sin);
+
+	qDebug() << "INDICES:" << indices;
+	qDebug() << "target" << targetIndex;
 }
 
 void QProjectM_MainWindow::setMenuVisible(bool visible) {
@@ -339,26 +361,51 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 			//e->ignore();
 			//m_QProjectMWidget->keyReleaseEvent(e);
 			return;
+		case Qt::Key_Y:
+			if (!(e->modifiers() & Qt::ControlModifier)) {
+				if ( ui->presetSearchBarLineEdit->hasFocus() )
+					return;
+
+				if (ui->tableView->hasFocus())
+					return;
+			}
+			
+			if ( ui->shuffleEnabledCheckBox->checkState() == Qt::Checked )
+			{
+				ui->shuffleEnabledCheckBox->setCheckState ( Qt::Unchecked );
+			}
+			else
+			{
+				ui->shuffleEnabledCheckBox->setCheckState ( Qt::Checked );
+			}
+
+			// the projectM widget handles the actual shuffle event
+			return;
 
 		case Qt::Key_F1:
 			return;
 			//emit(keyPressed m_QProjectMWidget,
 		case Qt::Key_F:
-			if ( ui->presetSearchBarLineEdit->hasFocus() )
-				return;
+			if (!(e->modifiers() & Qt::ControlModifier)) {
+				if ( ui->presetSearchBarLineEdit->hasFocus() )
+					return;
+
+				if (ui->tableView->hasFocus())
+					return;
+			}
+			
 			this->setWindowState ( this->windowState() ^ Qt::WindowFullScreen );
 			return;
-
-		case Qt::Key_Delete:
-//			const QModelIndexList & list = ui->tableView->selectedIndexes();
-//			for (QModelIndexList::iterator pos = list.begin(); pos != list.end(); ++pos) {
-//				QModelIndex index = *pos;
-//				playlistModel->removeRow(index.row());
-//			}
-			return;
+		
 		case Qt::Key_M:
-			if ( ui->presetSearchBarLineEdit->hasFocus() )
-				return;
+			if (!(e->modifiers() & Qt::ControlModifier)) {
+				if ( ui->presetSearchBarLineEdit->hasFocus() )
+					return;
+
+				if (ui->tableView->hasFocus())
+					return;
+			}
+			
 			setMenuVisible(!_menuVisible);
 			
 			refreshHeaders();
@@ -366,9 +413,14 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 			return;
 
 		case Qt::Key_R:
-			if ( ui->presetSearchBarLineEdit->hasFocus() )
-				return;
+			if (!(e->modifiers() & Qt::ControlModifier)) {
+				if ( ui->presetSearchBarLineEdit->hasFocus() )
+					return;
 
+				if (ui->tableView->hasFocus())
+					return;
+			}
+						
 			return;
 		default:
 			break;
@@ -470,14 +522,20 @@ void QProjectM_MainWindow::updatePlaylistUrl(const QString & url = QString()) {
 	
 	m_currentPlaylistUrl = url;
 	
-	if (url == QString())
-		ui->presetPlayListDockWidget->setWindowTitle ( "Preset Playlist - New [*]" );	
-	else if (QFileInfo(url).isDir()) 
+	if (url == QString()) {
+		ui->presetPlayListDockWidget->setWindowTitle ( "Preset Playlist - Untitled [*]" );	
+		ui->presetSavePushButton->setEnabled(false);
+	}
+	else if (QFileInfo(url).isDir())  {
 		ui->presetPlayListDockWidget->setWindowTitle
 				( QString ( "Preset Directory - %1 [*]" ).arg ( url ) );		
-	else
+		ui->presetSavePushButton->setEnabled(true);
+	}
+	else {
 		ui->presetPlayListDockWidget->setWindowTitle
 				( QString ( "Preset Playlist - %1 [*]" ).arg ( QFileInfo(url).fileName() ) );	
+		ui->presetSavePushButton->setEnabled(true);
+	}
 	
 	ui->presetPlayListDockWidget->setWindowModified ( false );
 }
@@ -628,6 +686,16 @@ void QProjectM_MainWindow::removePlaylistItems(const QModelIndexList & items) {
 		
 		qprojectMWidget()->releasePresetLock();
 }
+
+void QProjectM_MainWindow::insertPlaylistItem(const PlaylistItemMetaData & data, const QModelIndex & targetIndex) {
+				
+	qprojectMWidget()->seizePresetLock();
+						
+	PlaylistItemVector & lastCachedItems = *historyHash[previousFilter];
+	assert (lastCachedItems.size() == playlistModel->rowCount());
+	qprojectMWidget()->releasePresetLock();
+}
+
 void QProjectM_MainWindow::refreshPlaylist()
 {
 	copyPlaylist();
@@ -750,8 +818,12 @@ void QProjectM_MainWindow::loadFile ( const QString &fileName, int rating )
 	PlaylistItemVector * playlistItems = historyHash.value ( QString(), 0 );
 	assert ( playlistItems != 0 );
 
+	if (playlistItems->empty())
+		ui->presetSavePushButton->setEnabled(true);
+	
 	playlistItems->push_back ( PlaylistItemMetaData ( fileName, name, rating, playlistItemCounter++ ) );
 
+	
 }
 
 

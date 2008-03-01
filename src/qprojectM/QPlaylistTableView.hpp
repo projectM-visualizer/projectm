@@ -34,16 +34,68 @@ class QPlaylistTableView : public QTableView
  public:
      inline QPlaylistTableView(QWidget * parent = 0): 
 		QTableView(parent) {}
+     
+	
  signals:
 	 void resized(QResizeEvent * event);
-	 void deletesRequested(const QModelIndexList & items); 
+	 void deletesRequested(const QModelIndexList & items);
+	 void internalDragAndDropRequested(const QModelIndexList & items, const QModelIndex & target = QModelIndex());
 	 
  public slots:
+	 void dropEvent ( QDropEvent * event )  {
+		 
+		 QModelIndex dropIndex = this->indexAt(event->pos());
+		 
+		 if (!dropIndex.isValid()) {
+			event->ignore();
+			return;
+		 }
+		 
+		 const QModelIndexList & items = selectedIndexes();
+		 
+		 if (items.empty()) {
+			 event->ignore();
+			 return;			 
+		 }
+		 
+		 int i = items[0].row();
+		 
+		 m_firstContiguousBlock.clear();
+		 foreach (QModelIndex index, items) {
+			if (index.row() == i)
+				m_firstContiguousBlock.append(index);
+			else
+				break;
+			i++;
+		 }
+		 		 
+		 emit(internalDragAndDropRequested(m_firstContiguousBlock, dropIndex));
+		 event->accept();
+	 }
     
+	 
+	 void dragLeaveEvent ( QDragLeaveEvent * event )  {
+		 qDebug() << "drag leave";
+	 }
+	 
+	 void dragEnterEvent ( QDragEnterEvent * event )  {
+		 qDebug() << "drag enter event";		 
+		 event->accept();
+		 
+	 }
+	 
+	 
+	 void dragMoveEvent ( QDragMoveEvent * event )  {
+		 qDebug() << "drag move event";
+		 event->accept();
+	 }
+	 
 	 inline void resizeEvent(QResizeEvent * event) {
 
 		emit(resized(event));
 	 }	
+	 
+	 
 	 
 	 
 	 inline void keyReleaseEvent(QKeyEvent * event) {
@@ -57,6 +109,9 @@ class QPlaylistTableView : public QTableView
 				break;
 		}
 	 }
+	 
+	 private:
+		QModelIndexList m_firstContiguousBlock;
 };
 
 
