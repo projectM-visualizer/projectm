@@ -128,7 +128,8 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
 	config.add("Hard Cut Sensitivity", settings.beatSensitivity);
 	config.add("Aspect Correction", settings.aspectCorrection);
 	config.add("Easter Egg Parameter", settings.easterEgg);
- 	
+	config.add("Shuffle Enabled", settings.shuffleEnabled);
+	
 	std::fstream file(configFile.c_str());	
 	if (file) {
 		file << config;
@@ -158,6 +159,8 @@ void projectM::readConfig (const std::string & configFile )
 			( "Title Font", CMAKE_INSTALL_PREFIX "/share/projectM/fonts/Vera.ttf" );
 	_settings.menuFontURL = config.read<string> 
 			( "Menu Font", CMAKE_INSTALL_PREFIX "/share/projectM/fonts/VeraMono.ttf" );
+	_settings.shuffleEnabled = config.read<bool> ( "Shuffle Enabled", true);
+			
 	_settings.easterEgg = config.read<float> ( "Easter Egg Parameter", 0.0);
 	
 	

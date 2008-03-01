@@ -298,16 +298,14 @@ bool QPlaylistModel::readPlaylist ( const QString & file )
 {
 	
 	if (QFileInfo(file).isDir()) {
-		
-		if (!QDir(file).isReadable()) {
+		if (!QDir(file).isReadable()) {			
 			QMessageBox::warning (0, "Playlist Directory Error", QString(tr("There was a problem trying to open the playlist directory \"%1\".  You may not have permission to open the directory.")).arg(file));
-			return false;			
-		}
-			
+			return false;	
+		}	
 		foreach (QFileInfo info, QDir(file).entryInfoList()) {			
 			if (info.fileName().toLower().contains(".prjm") || info.fileName().toLower().contains(".milk"))
 				appendRow(info.absoluteFilePath(), info.fileName(), 3);
-		}
+		}		
 		return true;
 	}
 	
