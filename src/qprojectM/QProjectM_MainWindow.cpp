@@ -300,8 +300,7 @@ void QProjectM_MainWindow::changeRating ( const QModelIndex & index ) {
 		int i = 0;
 		foreach (PlaylistItemMetaData metaData, *items) {
 			if (metaData.id == id)  {
-				metaData.rating = newRating;
-				(*items)[i] = metaData;
+				(*items)[i].rating = newRating;
 			}
 			i++;
 		}
