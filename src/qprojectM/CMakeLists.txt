@@ -44,6 +44,7 @@ set(qprojectM_SRCS
     QProjectM_MainWindow.hpp
     ConfigFile.h ConfigFile.cpp
     QPresetFileDialog.hpp
+    QPlaylistFileDialog.cpp
     QPlaylistFileDialog.hpp
     QPlaylistModel.cpp
     QPlaylistModel.hpp

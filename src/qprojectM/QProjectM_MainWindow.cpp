@@ -37,13 +37,8 @@
 class PlaylistWriteFunctor {
 	public:
 		PlaylistWriteFunctor(const QProjectM_MainWindow::PlaylistItemVector::iterator & begin,
-			const QProjectM_MainWindow::PlaylistItemVector::iterator & end,
-			const QString & name, const QString & desc) : 
-		 m_pos(begin), m_end(end), m_name(name), m_desc(desc) {}
-
-		inline const QString & playlistName() const {
-			return m_name;
-		}
+			const QProjectM_MainWindow::PlaylistItemVector::iterator & end, const QString & desc) : 
+		 m_pos(begin), m_end(end), m_desc(desc) {}
 
 		inline const QString & playlistDesc() const {
 			return m_desc;
@@ -64,7 +59,6 @@ class PlaylistWriteFunctor {
 	private:
 		QProjectM_MainWindow::PlaylistItemVector::const_iterator m_pos;
 		const QProjectM_MainWindow::PlaylistItemVector::const_iterator m_end;
-		const QString & m_name;
 		const QString & m_desc;
 		
 
@@ -164,10 +158,8 @@ void QProjectM_MainWindow::clearPlaylist()
 {
 
 	playlistModel->clear();
-	ui->dockWidgetContents->setWindowTitle ( "Preset Playlist" );
-	ui->dockWidgetContents->setWindowModified(false);
-	m_currentPlaylistUrl = "";
-
+	updatePlaylistUrl(QString());
+	
 	for ( QHash<QString, PlaylistItemVector*>::iterator pos = historyHash.begin(); pos != historyHash.end(); ++pos )
 	{
 		delete ( pos.value() );
@@ -224,13 +216,20 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 	
 	/// @bug only do this at startup? fix me
 	//static bool firstOfRefreshPlaylist = true;
+
+	QString url;
 	
 	//if (firstOfRefreshPlaylist) {
 		QString playlistFile;
 		if ((playlistFile = qSettings.value("PlaylistFile", QString()).toString()) == QString())
-			playlistModel->readPlaylist(QString(qprojectM()->settings().presetURL.c_str()));
+			url = QString(qprojectM()->settings().presetURL.c_str());
 		else
-			playlistModel->readPlaylist(playlistFile);
+			url = playlistFile;
+		
+		if (!playlistModel->readPlaylist(url))
+			url = QString();
+		
+		updatePlaylistUrl(url);
 		
 		refreshPlaylist();
 //		firstOfRefreshPlaylist = false;
@@ -392,7 +391,7 @@ void QProjectM_MainWindow::closeEvent ( QCloseEvent *event )
 }
 
 
-void QProjectM_MainWindow::addPresets()
+void QProjectM_MainWindow::addPresetsDialog()
 {
 
 	/// @bug this probably isn't thread safe
@@ -424,6 +423,7 @@ void QProjectM_MainWindow::addPresets()
 	
 	//playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 }
+
 void QProjectM_MainWindow::savePlaylist()
 {
 
@@ -454,8 +454,7 @@ void QProjectM_MainWindow::savePlaylist()
 	PlaylistItemVector * playlistItems = historyHash.value(QString(), 0);
 	assert(playlistItems);
 
-	assert(playlistModel->playlistName() != "");
-	PlaylistWriteFunctor writeFunctor(playlistItems->begin(), playlistItems->end(), playlistModel->playlistName(), playlistModel->playlistDesc());
+	PlaylistWriteFunctor writeFunctor(playlistItems->begin(), playlistItems->end(), playlistModel->playlistDesc());
 
 
 	QXmlPlaylistHandler::writePlaylist(&qfile, writeFunctor);
@@ -464,15 +463,66 @@ void QProjectM_MainWindow::savePlaylist()
 	
 	
 }
+void QProjectM_MainWindow::updatePlaylistUrl(const QString & url = QString()) {
+	
+	m_currentPlaylistUrl = url;
+	
+	if (url == QString())
+		ui->presetPlayListDockWidget->setWindowTitle ( "Preset Playlist - New [*]" );	
+	else if (QFileInfo(url).isDir()) 
+		ui->presetPlayListDockWidget->setWindowTitle
+				( QString ( "Preset Directory - %1 [*]" ).arg ( url ) );		
+	else
+		ui->presetPlayListDockWidget->setWindowTitle
+				( QString ( "Preset Playlist - %1 [*]" ).arg ( QFileInfo(url).fileName() ) );	
+	
+	ui->presetPlayListDockWidget->setWindowModified ( false );
+}
+
+
+
+void QProjectM_MainWindow::savePlaylistAsDialog()
+{
+	
+	m_QPlaylistFileDialog->setAllowDirectorySelect(false);	
+	m_QPlaylistFileDialog->setAllowFileSelect(true);
+	m_QPlaylistFileDialog->setPlaylistSaveMode(true);
+	
+	if ( m_QPlaylistFileDialog->exec() ) {
+				
+		const QStringList & files = m_QPresetFileDialog->selectedFiles();
+		
+		if (files.empty())
+			return;
+		
+		QString url = files[0];
+			
+		if (url != QString()) {
+			updatePlaylistUrl(url);
+			savePlaylist();					
+		}
+
+	}
+}
+
+
+void QProjectM_MainWindow::savePlaylistButtonClick()
+{
+	
+	if (m_currentPlaylistUrl == QString() || QFileInfo(m_currentPlaylistUrl).isDir())
+		return savePlaylistAsDialog();
+	else {
+		savePlaylist();
+	}
+}
 
 void QProjectM_MainWindow::openPlaylistDialog()
 {
 	m_QPlaylistFileDialog->setAllowDirectorySelect(true);	
-	m_QPlaylistFileDialog->setAllowFileSelect(true);
-	
+	m_QPlaylistFileDialog->setAllowFileSelect(true);	
+	m_QPlaylistFileDialog->setPlaylistSaveMode(false);
 	if ( m_QPlaylistFileDialog->exec() )
 	{
-		qDebug() << "open playlist exec";
 		
 		if (m_QPlaylistFileDialog->selectedFiles().empty())
 			return;
@@ -481,20 +531,13 @@ void QProjectM_MainWindow::openPlaylistDialog()
 		clearPlaylist();
 
 		
-		const QString url = m_QPlaylistFileDialog->selectedFiles() [0];
+		QString url = m_QPlaylistFileDialog->selectedFiles() [0];
 
 		qDebug() << "url: " << url;
-		if ( playlistModel->readPlaylist ( url ) )
-		{			
-			ui->presetPlayListDockWidget->setWindowTitle
-			( QString ( "Preset Playlist - %1 [*]" ).arg ( playlistModel->playlistName() ) );
-			m_currentPlaylistUrl = url;
-		}
-		else
-		{
-			ui->dockWidgetContents->setWindowTitle ( "Preset Playlist" );
-		}
-		ui->presetPlayListDockWidget->setWindowModified ( false );
+		if ( !playlistModel->readPlaylist ( url ) )
+			url = QString();
+		updatePlaylistUrl(url);
+		
 		copyPlaylist();
 		ui->presetSearchBarLineEdit->setText(searchText);
 		updateFilteredPlaylist ( ui->presetSearchBarLineEdit->text() );
@@ -635,9 +678,10 @@ void QProjectM_MainWindow::createActions()
 {
 
 	connect ( ui->actionExit, SIGNAL ( triggered() ), this, SLOT ( close() ) );
-	connect ( ui->actionAddPresets, SIGNAL ( triggered() ), this, SLOT ( addPresets() ) );
-	connect ( ui->actionOpen_Play_List, SIGNAL ( triggered() ), this, SLOT ( openPlaylist() ) );
-	connect ( ui->actionSave_play_list, SIGNAL ( triggered() ), this, SLOT ( savePlaylist() ) );
+	connect ( ui->actionAddPresets, SIGNAL ( triggered() ), this, SLOT ( addPresetsDialog() ) );
+	connect ( ui->actionOpen_Play_List, SIGNAL ( triggered() ), this, SLOT ( openPlaylistDialog() ) );
+	connect ( ui->actionSave_play_list, SIGNAL ( triggered() ), this, SLOT ( savePlaylistButtonClick() ) );
+	connect ( ui->actionSave_play_list_as, SIGNAL ( triggered() ), this, SLOT ( savePlaylistAsDialog() ) );
 	connect ( ui->actionAbout_qprojectM, SIGNAL ( triggered() ), this, SLOT ( about() ) );
 	connect ( ui->actionConfigure_projectM, SIGNAL ( triggered() ), this, SLOT (openSettingsDialog()) );
 	connect ( ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));

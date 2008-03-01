@@ -60,17 +60,11 @@ bool writePlaylist ( const QString & file );
 
 Qt::ItemFlags flags(const QModelIndex &index) const;
 
-inline const QString & playlistName() {
-	return m_playlistName;
-}
 
 inline const QString & playlistDesc() {
  	return m_playlistDesc;
 }
 
-inline void setPlaylistName(const QString & name) {
-	m_playlistName = name;
-}
 
 inline void setPlaylistDesc(const QString & desc) {
 	m_playlistDesc = desc;

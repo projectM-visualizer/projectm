@@ -35,7 +35,7 @@ QXmlStreamReader::Error QXmlPlaylistHandler::readPlaylist (QIODevice * device, R
 		case QXmlStreamReader::StartElement:			
 
 			if (reader.name() == "presetplaylist") {
-				readFunc.setPlaylistName(reader.attributes().value("playlistname").toString());
+			
 			}
 			else if (reader.name() == "description") {
 				reader.readNext();
@@ -125,7 +125,6 @@ void QXmlPlaylistHandler::writePlaylist (QIODevice * device, WriteFunctor & writ
 
 	writer.writeStartElement("presetplaylist");
 
-	writer.writeAttribute("playlistname", writeFunctor.playlistName());
 
  	writer.writeStartElement("description");
 	writer.writeCharacters(writeFunctor.playlistDesc());

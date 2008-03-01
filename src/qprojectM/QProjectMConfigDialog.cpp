@@ -56,7 +56,7 @@ void QProjectMConfigDialog::openPlaylistDirectoryDialog() {
 		
 	dialog.setAllowFileSelect(false);
 	dialog.setAllowDirectorySelect(true);
-	
+
 	if (dialog.exec())
 	{
 		assert(!dialog.selectedFiles().empty());
