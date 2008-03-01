@@ -329,9 +329,10 @@ private slots:
 
       void aboutQt();
       void clearPlaylist();
-      void addPresets();
+      void addPresetsDialog();
       void openPlaylistDialog();
-      void savePlaylist();
+      void savePlaylistButtonClick();
+      void savePlaylistAsDialog();
       void about();
       void postProjectM_Initialize();
       void updatePlaylistSelection(bool hardCut, unsigned int index);
@@ -342,7 +343,8 @@ private slots:
       void refreshHeaders(QResizeEvent * event = 0);
       void removePlaylistItems(const QModelIndexList & items);
       private:
-	
+	void savePlaylist();
+	void updatePlaylistUrl(const QString & url);
 	unsigned long playlistItemCounter;
 	QSize _oldPlaylistSize;	
 	void readConfig(const std::string & configFile);
