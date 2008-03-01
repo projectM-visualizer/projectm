@@ -115,8 +115,8 @@ class RandomizerFunctor {
 class projectM 
 {
 public:
+	static const int FLAG_NONE = 0;
 	static const int FLAG_DISABLE_PLAYLIST_LOAD = 1 << 0;
-	static const int FLAG_NONE = 1 << 1;
 	
   DLLEXPORT projectM(std::string config_file, int flags = FLAG_NONE);
   
