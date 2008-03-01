@@ -296,9 +296,14 @@ void QProjectM_MainWindow::changeRating ( const QModelIndex & index ) {
 	long id = lastCache[index.row()].id;
 	
 	foreach (PlaylistItemVector * items, historyHash.values()) {
+		
+		int i = 0;
 		foreach (PlaylistItemMetaData metaData, *items) {
-			if (metaData.id == id)
+			if (metaData.id == id)  {
 				metaData.rating = newRating;
+				(*items)[i] = metaData;
+			}
+			i++;
 		}
 	}
 	qDebug() << "new rating: "  << newRating ;
@@ -461,7 +466,6 @@ void QProjectM_MainWindow::savePlaylist()
 	this->ui->statusbar->showMessage ( QString ( "Saved preset playlist \"%1\" successfully." ).arg ( m_currentPlaylistUrl ), 3000 );
 	this->ui->presetPlayListDockWidget->setWindowModified ( false ); 
 	
-	
 }
 void QProjectM_MainWindow::updatePlaylistUrl(const QString & url = QString()) {
 	
@@ -490,7 +494,7 @@ void QProjectM_MainWindow::savePlaylistAsDialog()
 	
 	if ( m_QPlaylistFileDialog->exec() ) {
 				
-		const QStringList & files = m_QPresetFileDialog->selectedFiles();
+		const QStringList & files = m_QPlaylistFileDialog->selectedFiles();
 		
 		if (files.empty())
 			return;
@@ -498,6 +502,7 @@ void QProjectM_MainWindow::savePlaylistAsDialog()
 		QString url = files[0];
 			
 		if (url != QString()) {
+			qDebug() << "passing " << url  << "to update playlist";
 			updatePlaylistUrl(url);
 			savePlaylist();					
 		}
@@ -521,6 +526,7 @@ void QProjectM_MainWindow::openPlaylistDialog()
 	m_QPlaylistFileDialog->setAllowDirectorySelect(true);	
 	m_QPlaylistFileDialog->setAllowFileSelect(true);	
 	m_QPlaylistFileDialog->setPlaylistSaveMode(false);
+
 	if ( m_QPlaylistFileDialog->exec() )
 	{
 		
@@ -533,9 +539,10 @@ void QProjectM_MainWindow::openPlaylistDialog()
 		
 		QString url = m_QPlaylistFileDialog->selectedFiles() [0];
 
-		qDebug() << "url: " << url;
+		
 		if ( !playlistModel->readPlaylist ( url ) )
 			url = QString();
+		qDebug() << "url: " << url;
 		updatePlaylistUrl(url);
 		
 		copyPlaylist();
