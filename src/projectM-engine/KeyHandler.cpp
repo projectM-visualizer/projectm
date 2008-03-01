@@ -124,6 +124,10 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      renderer->showstats=false;
 	      renderer->showfps=false; 
 	      break;
+	    case PROJECTM_K_y:
+		this->setShuffleEnabled(!this->isShuffleEnabled());
+		 break;
+
 	    case PROJECTM_K_F5:
 	      if (!renderer->showhelp)
 		      renderer->showfps = !renderer->showfps;
