@@ -197,6 +197,9 @@ void keyReleaseEvent ( QKeyEvent * e )  {
 	case Qt::Key_P:	
 		pkey =  PROJECTM_K_p;
 		break;		
+	case Qt::Key_F5:
+		    pkey =  PROJECTM_K_F5;
+		    break;
 	default:
 		e->ignore();
 		return;
@@ -342,7 +345,10 @@ private slots:
       void updateFilteredPlaylist(const QString & text);
       void refreshHeaders(QResizeEvent * event = 0);
       void removePlaylistItems(const QModelIndexList & items);
+      void dragAndDropPlaylistItems(const QModelIndexList &, const QModelIndex &);
       private:
+	void insertPlaylistItem(const PlaylistItemMetaData & data, const QModelIndex & targetIndex);
+
 	void savePlaylist();
 	void updatePlaylistUrl(const QString & url);
 	unsigned long playlistItemCounter;
