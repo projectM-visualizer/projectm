@@ -161,7 +161,7 @@ void QProjectM_MainWindow::clearPlaylist()
 	playlistModel->clear();
 	ui->dockWidgetContents->setWindowTitle ( "Preset Playlist" );
 	ui->dockWidgetContents->setWindowModified(false);
-	m_currentPlaylistFile = "";
+	m_currentPlaylistUrl = "";
 
 	for ( QHash<QString, PlaylistItemVector*>::iterator pos = historyHash.begin(); pos != historyHash.end(); ++pos )
 	{
@@ -205,8 +205,10 @@ void QProjectM_MainWindow::selectPlaylistItem ( const QModelIndex & index )
 
 void QProjectM_MainWindow::postProjectM_Initialize()
 {
+	QSettings qSettings("projectM", "qprojectM");
+	
 	qDebug() << "QProjectM_MainWindow::postProjectM_Initialize()";
-	ui->tableView->setModel(0);
+	//ui->tableView->setModel(0);
 	
 	if (playlistModel) 
 		delete(playlistModel);
@@ -215,13 +217,19 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 		
 	ui->tableView->setModel ( playlistModel );
 	
-	/// @bug only do this at startup?
-	static bool firstOfRefreshPlaylist = true;
+	/// @bug only do this at startup? fix me
+	//static bool firstOfRefreshPlaylist = true;
 	
-	if (firstOfRefreshPlaylist) {
+	//if (firstOfRefreshPlaylist) {
+		QString playlistFile;
+		if ((playlistFile = qSettings.value("PlaylistFile", QString()).toString()) == QString())
+			playlistModel->readPlaylist(QString(qprojectM()->settings().presetURL.c_str()));
+		else
+			playlistModel->readPlaylist(playlistFile);
+		
 		refreshPlaylist();
-		firstOfRefreshPlaylist = false;
-	}
+//		firstOfRefreshPlaylist = false;
+	//}
 
 	if (!configDialog) {
 		configDialog = new QProjectMConfigDialog(m_QProjectMWidget->configFile(), m_QProjectMWidget, this);	
@@ -319,7 +327,6 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 				ui->lockPresetCheckBox->setCheckState ( Qt::Checked );
 			}
 
-			
 			// the projectM widget handles the actual lock
 			//e->ignore();
 			//m_QProjectMWidget->keyReleaseEvent(e);
@@ -415,9 +422,9 @@ void QProjectM_MainWindow::addPresets()
 void QProjectM_MainWindow::savePlaylist()
 {
 
-	//m_currentPlaylistFile = file;
+	//m_currentPlaylistUrl = file;
 
-	if ( m_currentPlaylistFile == QString() )
+	if ( m_currentPlaylistUrl == QString() )
 	{
 		qDebug() << "current playlist file null!" ;
 		return;
@@ -425,16 +432,16 @@ void QProjectM_MainWindow::savePlaylist()
 
 	/// @idea add ability to save filtered list
 	#if 0
-		if ( playlistModel->writePlaylist ( m_currentPlaylistFile ) ) {
-		this->ui->statusbar->showMessage ( QString ( "Saved cropped preset playlist \"%1\" successfully." ).arg ( m_currentPlaylistFile ), 3000 );
+		if ( playlistModel->writePlaylist ( m_currentPlaylistUrl ) ) {
+		this->ui->statusbar->showMessage ( QString ( "Saved cropped preset playlist \"%1\" successfully." ).arg ( m_currentPlaylistUrl ), 3000 );
 		this->ui->presetPlayListDockWidget->setWindowModified ( false );
 		} 
 	#endif
 
-	QFile qfile(m_currentPlaylistFile);
+	QFile qfile(m_currentPlaylistUrl);
 
  	if (!qfile.open(QIODevice::WriteOnly)) {
-		QMessageBox::warning (0, "Playlist Save Error", QString("There was a problem trying to save the playlist \"%1\".  You may not have permission to modify this file.").arg(m_currentPlaylistFile));				
+		QMessageBox::warning (0, "Playlist Save Error", QString("There was a problem trying to save the playlist \"%1\".  You may not have permission to modify this file.").arg(m_currentPlaylistUrl));				
 		return ;
 	}
 
@@ -447,7 +454,7 @@ void QProjectM_MainWindow::savePlaylist()
 
 
 	QXmlPlaylistHandler::writePlaylist(&qfile, writeFunctor);
-	this->ui->statusbar->showMessage ( QString ( "Saved preset playlist \"%1\" successfully." ).arg ( m_currentPlaylistFile ), 3000 );
+	this->ui->statusbar->showMessage ( QString ( "Saved preset playlist \"%1\" successfully." ).arg ( m_currentPlaylistUrl ), 3000 );
 	this->ui->presetPlayListDockWidget->setWindowModified ( false ); 
 	
 	
@@ -455,20 +462,28 @@ void QProjectM_MainWindow::savePlaylist()
 
 void QProjectM_MainWindow::openPlaylist()
 {
-
+	m_QPlaylistFileDialog->setAllowDirectorySelect(true);	
+	m_QPlaylistFileDialog->setAllowFileSelect(true);
+	
 	if ( m_QPlaylistFileDialog->exec() )
 	{
-
+		qDebug() << "open playlist exec";
+		
+		if (m_QPlaylistFileDialog->selectedFiles().empty())
+			return;
+		
 		QString searchText = ui->presetSearchBarLineEdit->text();		
 		clearPlaylist();
 
-		const QString file = m_QPlaylistFileDialog->selectedFiles() [0];
+		
+		const QString url = m_QPlaylistFileDialog->selectedFiles() [0];
 
-		if ( playlistModel->readPlaylist ( file ) )
+		qDebug() << "url: " << url;
+		if ( playlistModel->readPlaylist ( url ) )
 		{
 			ui->presetPlayListDockWidget->setWindowTitle
 			( QString ( "Preset Playlist - %1 [*]" ).arg ( playlistModel->playlistName() ) );
-			m_currentPlaylistFile = file;
+			m_currentPlaylistUrl = url;
 		}
 		else
 		{
@@ -600,7 +615,7 @@ void QProjectM_MainWindow::about()
 }
 
 void QProjectM_MainWindow::openSettingsDialog() {
-
+	
 	if (configDialog->exec()) {
 		
 	}
@@ -628,7 +643,6 @@ void QProjectM_MainWindow::registerSettingsAction(QAction * action) {
 	ui->menuSettings->addAction(action);
 }
 
-
 void QProjectM_MainWindow::unregisterSettingsAction(QAction * action) {
 	ui->menuSettings->removeAction(action);
 }
@@ -636,7 +650,6 @@ void QProjectM_MainWindow::unregisterSettingsAction(QAction * action) {
 void QProjectM_MainWindow::createMenus()
 {
 	ui->menuBar->hide();
-
 }
 
 void QProjectM_MainWindow::createToolBars()

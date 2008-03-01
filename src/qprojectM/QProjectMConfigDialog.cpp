@@ -9,7 +9,8 @@ QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, QPr
 	_ui.setupUi(this);
 	connect(_ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonBoxHandler(QAbstractButton*)));
 	connect(this, SIGNAL(projectM_Reset()), _qprojectMWidget, SLOT(resetProjectM()));
-	connect (_ui.startupPlaylistToolButton, SIGNAL(clicked()), this, SLOT(openPlaylistFileDialog()));
+	connect (_ui.startupPlaylistFileToolButton, SIGNAL(clicked()), this, SLOT(openPlaylistFileDialog()));
+	connect (_ui.startupPlaylistDirectoryToolButton, SIGNAL(clicked()), this, SLOT(openPlaylistDirectoryDialog()));
 	connect (_ui.titleFontPathToolButton, SIGNAL(clicked()), this, SLOT(openTitleFontFileDialog()));
 	connect (_ui.menuFontPathToolButton, SIGNAL(clicked()), this, SLOT(openMenuFontFileDialog()));
 	loadConfig();
@@ -23,7 +24,6 @@ void QProjectMConfigDialog::buttonBoxHandler(QAbstractButton * button) {
 			break;
 		case QDialogButtonBox::Apply:
 			saveConfig();
-			qDebug() << "emitting!";
 			emit(projectM_Reset());
 			break;
 		case QDialogButtonBox::Reset:
@@ -38,15 +38,32 @@ void QProjectMConfigDialog::openPlaylistFileDialog() {
 	
 	QPlaylistFileDialog dialog(this);
 		
+	dialog.setAllowFileSelect(true);
+	dialog.setAllowDirectorySelect(false);
+	
 	if (dialog.exec())
 	{
 		assert(!dialog.selectedFiles().empty());
-		_ui.startupPlaylistLineEdit->setText(dialog.selectedFiles()[0]);
+		_ui.startupPlaylistFileLineEdit->setText(dialog.selectedFiles()[0]);
 		
 	}
 }
 
 
+void QProjectMConfigDialog::openPlaylistDirectoryDialog() {
+	
+	QPlaylistFileDialog dialog(this);
+		
+	dialog.setAllowFileSelect(false);
+	dialog.setAllowDirectorySelect(true);
+	
+	if (dialog.exec())
+	{
+		assert(!dialog.selectedFiles().empty());
+		_ui.startupPlaylistDirectoryLineEdit->setText(dialog.selectedFiles()[0]);
+		
+	}
+}
 void QProjectMConfigDialog::openMenuFontFileDialog() {
 	
 	
@@ -86,7 +103,7 @@ void QProjectMConfigDialog::saveConfig() {
 	settings.windowWidth = _ui.windowWidthSpinBox->value();		
 	settings.titleFontURL = _ui.titleFontPathLineEdit->text().toStdString();
 	settings.menuFontURL = _ui.menuFontPathLineEdit->text().toStdString();
-	settings.presetURL = _ui.startupPlaylistLineEdit->text().toStdString();
+	settings.presetURL = _ui.startupPlaylistDirectoryLineEdit->text().toStdString();
 	settings.textureSize = _ui.textureSizeComboBox->itemData(_ui.textureSizeComboBox->currentIndex()).toInt();
 	settings.smoothPresetDuration = _ui.smoothPresetDurationSpinBox->value();
 	settings.presetDuration = _ui.presetDurationSpinBox->value();
@@ -94,12 +111,15 @@ void QProjectMConfigDialog::saveConfig() {
 	settings.aspectCorrection = _ui.useAspectCorrectionCheckBox->checkState() == Qt::Checked;
 	settings.beatSensitivity = _ui.beatSensitivitySpinBox->value();
 	settings.easterEgg = _ui.easterEggParameterSpinBox->value();
+	settings.shuffleEnabled = _ui.shuffleOnStartupCheckBox->checkState() == Qt::Checked;
 	projectM::writeConfig(_configFile, settings);
 	
 	QSettings qSettings("projectM", "qprojectM");
 	
 	qSettings.setValue("FullscreenOnStartup", _ui.fullscreenOnStartupCheckBox->checkState() == Qt::Checked);
 	qSettings.setValue("MenuOnStartup", _ui.menuOnStartupCheckBox->checkState() == Qt::Checked);
+	
+	qSettings.setValue("PlaylistFile", _ui.startupPlaylistFileLineEdit->text());
 	qDebug() << "save end";
 }
 
@@ -124,13 +144,13 @@ void QProjectMConfigDialog::loadConfig() {
 	_ui.titleFontPathLineEdit->setText(settings.titleFontURL.c_str());
 	_ui.menuFontPathLineEdit->setText(settings.menuFontURL.c_str());
 	
-	_ui.startupPlaylistLineEdit->setText(settings.presetURL.c_str());
+	_ui.startupPlaylistDirectoryLineEdit->setText(settings.presetURL.c_str());
 	_ui.useAspectCorrectionCheckBox->setCheckState(settings.aspectCorrection ? Qt::Checked : Qt::Unchecked);
 	_ui.maxFPSSpinBox->setValue(settings.fps);
 	_ui.beatSensitivitySpinBox->setValue(settings.beatSensitivity);
 	_ui.windowHeightSpinBox->setValue(settings.windowHeight);
 	_ui.windowWidthSpinBox->setValue(settings.windowWidth);
-	
+	_ui.shuffleOnStartupCheckBox->setCheckState(settings.shuffleEnabled ? Qt::Checked : Qt::Unchecked);
 	 populateTextureSizeComboBox();
 	_ui.textureSizeComboBox->insertItem(0, QString("%1").arg(settings.textureSize), settings.textureSize);
 	_ui.textureSizeComboBox->setCurrentIndex(0);
@@ -138,6 +158,13 @@ void QProjectMConfigDialog::loadConfig() {
 	_ui.smoothPresetDurationSpinBox->setValue(settings.smoothPresetDuration);
 	_ui.presetDurationSpinBox->setValue(settings.presetDuration);
 	_ui.easterEggParameterSpinBox->setValue(settings.easterEgg);
+	
+	
+	QSettings qSettings("projectM", "qprojectM");
+	_ui.fullscreenOnStartupCheckBox->setCheckState(qSettings.value("FullscreenOnStartup", false).toBool() ? Qt::Checked : Qt::Unchecked);
+	_ui.menuOnStartupCheckBox->setCheckState(qSettings.value("MenuOnStartup", false).toBool() ? Qt::Checked : Qt::Unchecked);
+	_ui.startupPlaylistFileLineEdit->setText(qSettings.value("PlaylistFile", QString()).toString()	);
+	 
 	qDebug() << "load config END";
 		
 }

@@ -47,7 +47,6 @@ class QPulseAudioThread : public QThread
 			m_projectM = projectM;
 			*s_projectMPtr = m_projectM;
 			qDebug() << "CORKING";
-			s_audioMutex.unlock();
 			cork();
 			
 		}
