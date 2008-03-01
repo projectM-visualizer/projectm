@@ -16,10 +16,6 @@ class XmlReadFunctor {
 	public:
 		XmlReadFunctor(QPlaylistModel & model) : m_model(model) {}
 
-		inline void setPlaylistName(const QString & name) {
-			m_model.setPlaylistName(name);
-		}
-
 		inline void setPlaylistDesc(const QString & desc) {
 			m_model.setPlaylistDesc(desc);
 		}
@@ -39,9 +35,6 @@ class XmlWriteFunctor {
 	public:
 		XmlWriteFunctor(QPlaylistModel & model) : m_model(model), m_index(0) {}
 
-		inline const QString & playlistName() const {
-			return m_model.playlistName();
-		}
 
 		inline const QString & playlistDesc() const {
 			return m_model.playlistDesc();
