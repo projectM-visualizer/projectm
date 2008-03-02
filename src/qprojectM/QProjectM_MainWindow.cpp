@@ -203,22 +203,16 @@ void QProjectM_MainWindow::selectPlaylistItem ( const QModelIndex & index )
 void QProjectM_MainWindow::postProjectM_Initialize()
 {
 	QSettings qSettings("projectM", "qprojectM");
-	
-	qDebug() << "QProjectM_MainWindow::postProjectM_Initialize()";
-	//ui->tableView->setModel(0);
-	
-	if (playlistModel) 
-		delete(playlistModel);
-	
-	playlistModel = new QPlaylistModel ( *m_QProjectMWidget->qprojectM(),this );
 		
+	playlistModel = new QPlaylistModel ( *qprojectM(), this );
 	ui->tableView->setModel ( playlistModel );
-	
+
 	/// @bug only do this at startup? fix me
 	//static bool firstOfRefreshPlaylist = true;
 
 	QString url;
 	
+	//if (firstOfRefreshPlaylist) {
 	//if (firstOfRefreshPlaylist) {
 		QString playlistFile;
 		if ((playlistFile = qSettings.value("PlaylistFile", QString()).toString()) == QString())
@@ -232,8 +226,10 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 		updatePlaylistUrl(url);
 		
 		refreshPlaylist();
-//		firstOfRefreshPlaylist = false;
-	//}
+	//} else
+	//	refreshHeaders();
+	//firstOfRefreshPlaylist = false;
+	
 
 	if (!configDialog) {
 		configDialog = new QProjectMConfigDialog(m_QProjectMWidget->configFile(), m_QProjectMWidget, this);	
@@ -257,15 +253,26 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 		  playlistModel, SLOT ( updateItemHighlights() ) );
 
 	disconnect(ui->tableView);
+	
 	connect(ui->tableView, SIGNAL(deletesRequested(const QModelIndexList&)), 
 		this, SLOT(removePlaylistItems(const QModelIndexList&)));
 	
-	
 	connect(ui->tableView, SIGNAL(internalDragAndDropRequested(const QModelIndexList &, const QModelIndex &)),
 		this, SLOT(dragAndDropPlaylistItems(const QModelIndexList &, const QModelIndex &)));
-	
+	connect(qprojectMWidget(), SIGNAL(projectM_BeforeDestroy()), 
+		this, SLOT(clearPlaylistModel()), Qt::DirectConnection);
 	
 }
+
+void QProjectM_MainWindow::clearPlaylistModel() {
+	/// put in a dummy model until projectM is reinitialized
+	ui->tableView->setModel(new QStandardItemModel(this));	
+	if (playlistModel)
+		delete(playlistModel);
+				
+	playlistModel = 0;
+}
+
 void QProjectM_MainWindow::dragAndDropPlaylistItems(const QModelIndexList & indices, const QModelIndex & targetIndex) {
 	
 	/// @bug only first index of the indices passed in is supported!
