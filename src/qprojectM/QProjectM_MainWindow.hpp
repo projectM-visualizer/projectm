@@ -347,7 +347,7 @@ private slots:
       void removePlaylistItems(const QModelIndexList & items);
       void dragAndDropPlaylistItems(const QModelIndexList &, const QModelIndex &);
       private:
-	void insertPlaylistItem(const PlaylistItemMetaData & data, const QModelIndex & targetIndex);
+	void insertPlaylistItem(const PlaylistItemMetaData & data, int targetIndex);
 
 	void savePlaylist();
 	void updatePlaylistUrl(const QString & url);

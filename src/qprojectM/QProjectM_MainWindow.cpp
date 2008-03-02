@@ -273,14 +273,25 @@ void QProjectM_MainWindow::dragAndDropPlaylistItems(const QModelIndexList & indi
 	
 	PlaylistItemMetaData metaData = historyHash[previousFilter]->value(firstIndex.row());;
 	
+	int newIndex;
+	if (targetIndex.row() < firstIndex.row()) {
+		newIndex = targetIndex.row();
+	} 
+	else if (targetIndex.row() > firstIndex.row()) 
+	{
+		newIndex = targetIndex.row()-1;
+	} 
+	else 
+	{
+		abort();
+		return;
+	}
+	
 	QModelIndexList singularList;
 	singularList.append(firstIndex);
 	
 	removePlaylistItems(singularList);	
-	//insertPlaylistItem(sin);
-
-	qDebug() << "INDICES:" << indices;
-	qDebug() << "target" << targetIndex;
+	insertPlaylistItem(metaData, newIndex);
 }
 
 void QProjectM_MainWindow::setMenuVisible(bool visible) {
@@ -687,12 +698,20 @@ void QProjectM_MainWindow::removePlaylistItems(const QModelIndexList & items) {
 		qprojectMWidget()->releasePresetLock();
 }
 
-void QProjectM_MainWindow::insertPlaylistItem(const PlaylistItemMetaData & data, const QModelIndex & targetIndex) {
+void QProjectM_MainWindow::insertPlaylistItem
+		(const PlaylistItemMetaData & data, int targetIndex) {
 				
 	qprojectMWidget()->seizePresetLock();
-						
-	PlaylistItemVector & lastCachedItems = *historyHash[previousFilter];
-	assert (lastCachedItems.size() == playlistModel->rowCount());
+	
+	long targetId = historyHash[previousFilter]->value(targetIndex).id;
+		
+	foreach(PlaylistItemVector * items, historyHash.values()) {
+		int insertIndex = items->indexOf(targetId);
+		items->insert(insertIndex, data);
+	}
+		
+	playlistModel->insertRow(targetIndex, data.url, data.name, data.rating);
+	
 	qprojectMWidget()->releasePresetLock();
 }
 

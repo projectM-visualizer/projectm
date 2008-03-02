@@ -195,9 +195,13 @@ public:
   /// to the removal)
   bool selectedPresetIndex(unsigned int & index) const;
 
-  /// Add a preset url to the play list. Appended to bottom
+  /// Add a preset url to the play list. Appended to bottom. Returns index of preset
   unsigned int addPresetURL(const std::string & presetURL, const std::string & presetName, int rating);
 
+  /// Insert a preset url to the play list at the suggested index.
+  void insertPresetURL(unsigned int index, 
+			       const std::string & presetURL, const std::string & presetName, int rating);
+ 
   /// Returns true if the selected preset position points to an actual preset in the
   /// currently loaded playlist
   bool presetPositionValid() const;
@@ -275,9 +279,6 @@ private:
   /// The current position of the directory iterator
   PresetIterator * m_presetPos;
   
-  /// The current position of the preset queue position (end() implies no queue item)
-  PresetIterator * m_presetQueuePos;
-
   /// Required by the preset chooser. Manages a loaded preset directory
   PresetLoader * m_presetLoader;
   

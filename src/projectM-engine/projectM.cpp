@@ -101,7 +101,7 @@ DLLEXPORT void projectM::projectM_resetTextures()
 
 
 DLLEXPORT  projectM::projectM ( std::string config_file, int flags) :
-		beatDetect ( 0 ), renderer ( 0 ),  m_presetQueuePos(0), _pcm(0), m_presetPos(0), m_flags(flags)
+		beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags)
 {
 	readConfig ( config_file );	
 	projectM_reset();
@@ -740,12 +740,6 @@ void projectM::destroyPresetTools()
 	/// @slow might not be necessary
 	m_presetPos = 0;
 
-	if ( m_presetQueuePos )
-		delete ( m_presetQueuePos );
-
-	/// @slow might not be necessary
-	m_presetQueuePos = 0;
-
 	if ( m_presetChooser )
 		delete ( m_presetChooser );
 
@@ -828,26 +822,16 @@ void projectM::selectPreset ( unsigned int index )
 
 void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset, PresetInputs & inputs, PresetOutputs & outputs) {
 
-
-// 	// If queue not specified, roll with usual random behavior
-	if (m_presetQueuePos == 0) {
-		if (_settings.shuffleEnabled)
-			*m_presetPos = m_presetChooser->weightedRandom();
-		else
-			m_presetChooser->nextPreset(*m_presetPos);
+	if (_settings.shuffleEnabled)
+		*m_presetPos = m_presetChooser->weightedRandom();
+	else
+		m_presetChooser->nextPreset(*m_presetPos);
 					
-		targetPreset = m_presetPos->allocate( inputs, outputs );
-	}
-	else { // queue item specified- use it and reset the queue
-		abort();
-		targetPreset = m_presetQueuePos->allocate ( inputs, outputs );
-		delete(m_presetQueuePos);
-		m_presetQueuePos = 0;
-	}
+	targetPreset = m_presetPos->allocate( inputs, outputs );
 
 	// Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
 	renderer->setPresetName ( targetPreset->presetName() );
-       
+
 
 }
 
@@ -881,26 +865,8 @@ void projectM::clearPlaylist ( )
 	
 	m_presetLoader->clear();
 	*m_presetPos = m_presetChooser->end();
-	delete(m_presetQueuePos);
-	m_presetQueuePos = 0;
 	
 }
-
-
-
-void projectM::queuePreset(unsigned int index) {
-
-	if (m_presetQueuePos == 0)
-		m_presetQueuePos = new PresetIterator();
-
-	if ((index >= 0) && (index <= m_presetChooser->getNumPresets()))
-		*m_presetQueuePos = m_presetChooser->begin(index);
-}
-
-bool projectM::isPresetQueued() const {
-	return (*m_presetQueuePos != m_presetChooser->end());
-}
-
 
 /// Sets preset iterator position to the passed in index
 void projectM::selectPresetPosition(unsigned int index) {
@@ -929,6 +895,43 @@ unsigned int projectM::getPlaylistSize() const
 
 void projectM:: changePresetRating (unsigned int index, int rating) {
 	m_presetLoader->setRating(index, rating);
+}
+
+void projectM::insertPresetURL(unsigned int index, const std::string & presetURL, const std::string & presetName, int rating)
+{
+	bool atEndPosition = false;
+	
+	int newSelectedIndex;
+	
+	
+	if (*m_presetPos == m_presetChooser->end()) // Case: preset not selected
+	{
+		atEndPosition = true;	
+	}
+	
+	else if (**m_presetPos < index) // Case: inserting before selected preset
+	{
+		newSelectedIndex = **m_presetPos;			
+	} 
+	
+	else if (**m_presetPos > index) // Case: inserting after selected preset	
+	{
+		newSelectedIndex++;
+	} 
+	
+	else  // Case: inserting at selected preset
+	{
+		newSelectedIndex++;
+	}
+	
+	m_presetLoader->insertPresetURL (index, presetURL, presetName, rating);
+	
+	if (atEndPosition)
+		*m_presetPos = m_presetChooser->end();
+	else
+		*m_presetPos = m_presetChooser->begin(newSelectedIndex);
+	
+	
 }
 
 
