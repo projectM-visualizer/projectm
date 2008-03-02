@@ -226,3 +226,15 @@ const std::vector<int> & PresetLoader::getPresetRatings () const {
 int PresetLoader::getPresetRatingsSum () const {
 	return m_ratingsSum;
 }
+
+void PresetLoader::insertPresetURL(unsigned int index, const std::string & url, const std::string & presetName, int rating)
+{
+	m_entries.insert(m_entries.begin()+index, url);
+	m_presetNames.insert(m_presetNames.begin() + index, presetName);
+	m_ratings.insert(m_ratings.begin()+index, rating);
+	m_ratingsSum += rating;
+	
+	assert(m_entries.size() == m_presetNames.size());
+	assert(m_ratings.size() == m_entries.size());
+	
+}
