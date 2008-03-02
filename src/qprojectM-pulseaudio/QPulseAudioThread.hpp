@@ -25,7 +25,7 @@ class QPulseAudioThread : public QThread
 	public:		
 		typedef QHash<int, QString> SourceContainer;
 		QPulseAudioThread () {}
-		QPulseAudioThread(int _argc, char **_argv, QProjectM * projectM, QObject *parent);
+		QPulseAudioThread(int _argc, char **_argv, QProjectM * projectM, QObject *parent, QMutex * audioMutex);
 		virtual ~QPulseAudioThread();
 		void run();
 		void cleanup();
@@ -45,10 +45,7 @@ class QPulseAudioThread : public QThread
 	public slots:
 		inline void projectM_New(QProjectM * projectM) {
 			m_projectM = projectM;
-			*s_projectMPtr = m_projectM;
-			qDebug() << "CORKING";
-			cork();
-			
+			*s_projectMPtr = m_projectM;			
 		}
 		
 		void cork();
@@ -89,7 +86,7 @@ class QPulseAudioThread : public QThread
 		
 		static void pa_stream_success_callback(pa_stream *s, int success, void *userdata);
 			
-		static QMutex s_audioMutex;
+		static QMutex * s_audioMutex;
 		static SourceContainer s_sourceList;
 		static SourceContainer::const_iterator s_sourcePosition;
 		int argc;

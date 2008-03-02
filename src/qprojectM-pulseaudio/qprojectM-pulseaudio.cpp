@@ -93,7 +93,10 @@ int main ( int argc, char*argv[] )
 	std::string config_file;
 	config_file = read_config();
 
-	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow ( config_file, 0);
+	
+	QMutex audioMutex;
+	
+	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow ( config_file, &audioMutex);
 	
 	QAction pulseAction("Pulse audio settings...", mainWindow);
 	
@@ -101,18 +104,14 @@ int main ( int argc, char*argv[] )
       	mainWindow->registerSettingsAction(&pulseAction);
 	mainWindow->show();
 
-	QPulseAudioThread * pulseThread = new QPulseAudioThread(argc, argv, mainWindow->qprojectM(), mainWindow);
 	
-	mainWindow->qprojectMWidget()->setAudioMutex(pulseThread->mutex());
-	
-	// First projectM_Initialized() has already happened, so manually start		
+	QPulseAudioThread * pulseThread = new QPulseAudioThread(argc, argv, mainWindow->qprojectM(), mainWindow, &audioMutex);
+
 	pulseThread->start();
 	
 	QApplication::connect
 			(mainWindow->qprojectMWidget(), SIGNAL(projectM_Initialized(QProjectM *)), pulseThread, SLOT(projectM_New(QProjectM*)));
-	QApplication::connect
-			(mainWindow->qprojectMWidget(), SIGNAL(projectM_BeforeDestroy()), pulseThread, SLOT(cork()), Qt::DirectConnection);
-
+	
 	QPulseAudioDeviceChooser devChooser(pulseThread, mainWindow);	
 	QApplication::connect(&pulseAction, SIGNAL(triggered()), &devChooser, SLOT(open())); 
 	
