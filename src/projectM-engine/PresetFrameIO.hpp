@@ -136,6 +136,7 @@ public:
   double wavearray2_y[2048];
   int wave_samples;
   bool two_waves;
+  bool draw_wave_as_loop;
   double wave_rot;
   double wave_scale;
   
