@@ -409,7 +409,7 @@ image: url(:/images/icons/hi16-action-projectm_unlock.png);
   <customwidget>
    <class>QPlaylistTableView</class>
    <extends>QTableView</extends>
-   <header>QPlaylistTableView.hpp</header>
+   <header>qplaylisttableview.hpp</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -54,6 +54,8 @@ set(qprojectM_SRCS
     qplaylisttableview.hpp
     qpresettextedit.cpp
     qpresettextedit.hpp
+    qpreseteditordialog.cpp
+    qpreseteditordialog.hpp
 )
 
 
@@ -65,6 +67,7 @@ set(qprojectM_MOC_HDRS
     qprojectmconfigdialog.hpp
     qplaylisttableview.hpp
     qpresettextedit.hpp
+    qpreseteditordialog.hpp
 )
 
 set(qprojectM_UIS
