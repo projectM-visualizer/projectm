@@ -1,7 +1,7 @@
-#include "QProjectMConfigDialog.hpp"
+#include "qprojectmconfigdialog.hpp"
 #include <QtDebug>
 #include <QAction>
-#include "QPlaylistFileDialog.hpp"
+#include "qplaylistfiledialog.hpp"
 #include <QSettings>
 
 QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, QProjectMWidget * qprojectMWidget, QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f), _configFile(configFile), _qprojectMWidget(qprojectMWidget), _settings("projectM", "qprojectM") {
