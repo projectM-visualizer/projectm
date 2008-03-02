@@ -46,7 +46,7 @@
  pa_io_event * QPulseAudioThread::stdio_event = NULL;
  char * QPulseAudioThread::server = NULL;
  char * QPulseAudioThread::stream_name = NULL, *QPulseAudioThread::client_name = NULL, *QPulseAudioThread::device =0;
- QMutex QPulseAudioThread::s_audioMutex;
+ QMutex * QPulseAudioThread::s_audioMutex;
  int QPulseAudioThread::verbose = 0;
 
  pa_volume_t QPulseAudioThread::volume = PA_VOLUME_NORM;
@@ -60,10 +60,10 @@ QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::s_sourcePo
  
 QProjectM ** QPulseAudioThread::s_projectMPtr = 0;
  
-QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, QProjectM * _projectM, QObject * parent ) : QThread ( parent ), argc ( _argc ), argv ( _argv ),  m_projectM ( _projectM )
+QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, QProjectM * _projectM, QObject * parent, QMutex * audioMutex ) : QThread ( parent ), argc ( _argc ), argv ( _argv ),  m_projectM ( _projectM )
 {
 	s_projectMPtr = new QProjectM*;
-	
+	s_audioMutex = audioMutex;
 	*s_projectMPtr = m_projectM;
 }
 
@@ -259,9 +259,7 @@ void QPulseAudioThread::pa_stream_success_callback(pa_stream *s, int success, vo
 	if (pausedFlag)
 		qDebug() << "pause";
 	else {
-		qDebug() << "play";
-		s_audioMutex.unlock();
-		qDebug() << "UNLOCK: success callback";
+		qDebug() << "play";		
 	}
 			
 	
@@ -273,7 +271,7 @@ void QPulseAudioThread::pa_stream_success_callback(pa_stream *s, int success, vo
 
 
 QMutex * QPulseAudioThread::mutex() {
-return &s_audioMutex;
+return s_audioMutex;
 }
 
 void QPulseAudioThread::cork() 
@@ -456,7 +454,7 @@ void QPulseAudioThread::stdout_callback ( pa_mainloop_api*a, pa_io_event *e, int
 		
 		//int * int_buf = (int *) buffer;
 		//qDebug() << "LOCK: add pcm";
-		s_audioMutex.lock();
+		s_audioMutex->lock();
 		QProjectM ** prjmPtr = static_cast<QProjectM **> ( userdata ); 
 		QProjectM * prjm = *prjmPtr;
 		
@@ -466,7 +464,7 @@ void QPulseAudioThread::stdout_callback ( pa_mainloop_api*a, pa_io_event *e, int
 
 		prjm->pcm()->addPCMfloat 
 				( buffer+buffer_index, buffer_length / ( sizeof ( float ) ) );
-		s_audioMutex.unlock();
+		s_audioMutex->unlock();
 		//qDebug() << "UNLOCK: add pcm";
 		assert ( buffer_length );
 		
