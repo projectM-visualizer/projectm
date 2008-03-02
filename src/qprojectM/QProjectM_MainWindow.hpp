@@ -104,6 +104,8 @@ public slots:
 	
 	qDebug() << "reset start";
 	
+	emit(projectM_BeforeDestroy());
+	
 	if (m_audioMutex)
 		m_audioMutex->lock();
 	
@@ -140,6 +142,7 @@ public slots:
      
   signals:
 	void projectM_Initialized(QProjectM *);
+	void projectM_BeforeDestroy();
 	void presetLockChanged(bool isLocked);
 	void shuffleEnabledChanged(bool isShuffleEnabled);
  private:
@@ -322,6 +325,7 @@ protected:
             void closeEvent(QCloseEvent *event);
 
 private slots:
+      void clearPlaylistModel();
 
       void aboutQt();
       void clearPlaylist();
