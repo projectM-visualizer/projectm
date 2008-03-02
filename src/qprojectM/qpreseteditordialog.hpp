@@ -17,11 +17,15 @@ class QPresetEditorDialog : public QDialog {
 		}
 	signals:
 		void presetModified(const QModelIndex &);
+	protected:	
+		//void keyReleaseEvent(QKeyEvent * e);
+	public slots:
 		
+
 	private slots:
 		void buttonBoxHandler(QAbstractButton * button);
 		void saveFile();
-		
+		void saveAndNotify();
 		void updateWindowTitle();
 
 	private:

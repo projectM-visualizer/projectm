@@ -1,11 +1,13 @@
 #include "qpreseteditordialog.hpp"
 #include <QFile>
 #include <QMessageBox>
+#include <QKeyEvent>
+
 QPresetEditorDialog::QPresetEditorDialog(QProjectMWidget * widget, QWidget * parent, Qt::WindowFlags f): QDialog(parent,f), _qprojectMWidget(widget) {
 	_ui.setupUi(this);
 	
 	connect(_ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonBoxHandler(QAbstractButton*)));
-		
+
 }
 
 void QPresetEditorDialog::setPreset(QString url, const QModelIndex & index) {
@@ -18,14 +20,15 @@ void QPresetEditorDialog::setPreset(QString url, const QModelIndex & index) {
 	_ui.presetTextEdit->loadPresetText(url);
 	
 	this->setWindowTitle(QString("Preset Editor - %1 [*]").arg(url));
-	_ui.presetTextEdit->setWindowModified(false);
+	this->setWindowModified(false);
 
 	connect(_ui.presetTextEdit, SIGNAL(textChanged()), this, SLOT(updateWindowTitle()));
+	connect(_ui.presetTextEdit, SIGNAL(applyRequested()), this, SLOT(saveAndNotify()), Qt::DirectConnection);
 }
 
 
 void QPresetEditorDialog::updateWindowTitle()  {
-	_ui.presetTextEdit->setWindowModified(true);
+	this->setWindowModified(true);
 }
 
 const QString & QPresetEditorDialog::presetUrl() const {
@@ -49,6 +52,15 @@ void QPresetEditorDialog::saveFile() {
 	textStream << _ui.presetTextEdit->toPlainText();
 	
 	textStream.flush();
+	this->setWindowModified(false);
+}
+
+void QPresetEditorDialog::saveAndNotify() {
+
+	qDebug() << "save and notify";
+	saveFile();
+	
+	emit(presetModified(m_index));
 }
 
 void QPresetEditorDialog::buttonBoxHandler(QAbstractButton * button) {
@@ -57,10 +69,7 @@ void QPresetEditorDialog::buttonBoxHandler(QAbstractButton * button) {
 			this->hide();
 			break;
 		case QDialogButtonBox::Apply:
-			qDebug() << "pre file save";
-			saveFile();
-			qDebug() << "emitting preset mod";
-			emit(presetModified(m_index));
+			saveAndNotify();
 			break;
 		case QDialogButtonBox::Reset:
 			revertBuffer();

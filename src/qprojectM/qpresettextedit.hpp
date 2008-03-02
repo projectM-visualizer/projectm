@@ -33,7 +33,11 @@ class QPresetTextEdit: public QTextEdit
 		
      bool loadPresetText(QString url);
  	
-
+    void keyReleaseEvent(QKeyEvent * e);
+    
+	 signals:
+		 void applyRequested();
+		  
  public slots:
 	 
 	private:
