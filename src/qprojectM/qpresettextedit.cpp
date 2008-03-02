@@ -19,27 +19,5 @@
  ***************************************************************************/
 
 
-#ifndef QPRESET_EDITOR_HPP
-#define QPRESET_EDITOR_HPP
-#include <QTextEdit>
-#include <QtDebug>
+#include "qpresettextedit.hpp"
 
-class QPresetTextEdit: QTextEdit
- {
-     Q_OBJECT        // must include this if you use Qt signals/slots
-
- public:
-     inline QPresetTextEdit(QWidget * parent = 0): QTextEdit(parent) {}
-		
-     
-	
- signals:
- public slots:
-	 
-	private:
-	
-};
-
-
-
-#endif

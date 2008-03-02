@@ -52,6 +52,8 @@ set(qprojectM_SRCS
     qprojectmconfigdialog.cpp
     qprojectmconfigdialog.hpp
     qplaylisttableview.hpp
+    qpresettextedit.cpp
+    qpresettextedit.hpp
 )
 
 
@@ -67,6 +69,7 @@ set(qprojectM_MOC_HDRS
 set(qprojectM_UIS
     qprojectm_mainwindow.ui
     qprojectmconfigdialog.ui
+    qpreseteditordialog.ui
 )
 
 # Qt resource file
