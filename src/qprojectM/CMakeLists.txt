@@ -64,6 +64,7 @@ set(qprojectM_MOC_HDRS
     qplaylistmodel.hpp
     qprojectmconfigdialog.hpp
     qplaylisttableview.hpp
+    qpresettextedit.hpp
 )
 
 set(qprojectM_UIS

@@ -45,7 +45,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <projectM.hpp>
-#include <QProjectM_MainWindow.hpp>
+#include <qprojectm_mainwindow.hpp>
 #include <QApplication>
 #include <QtDebug>
 

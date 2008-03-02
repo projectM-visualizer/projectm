@@ -193,6 +193,7 @@
       <orientation>Vertical</orientation>
     </splitheadersource>
     <references>
+      <pcs>Qt4</pcs>
       <pcs>automatic_%2Fhome%2Fcarm%2Fprojects%2FprojectM%2Ftrunk</pcs>
     </references>
   </kdevcppsupport>
