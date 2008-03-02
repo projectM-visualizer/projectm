@@ -25,7 +25,7 @@
 #include <fcntl.h>
 
 #include <QSettings>
-#include "QProjectM_MainWindow.hpp"			
+#include "qprojectm_mainwindow.hpp"			
 
 #define TIME_EVENT_USEC 50000
 
@@ -453,7 +453,7 @@ void QPulseAudioThread::stdout_callback ( pa_mainloop_api*a, pa_io_event *e, int
 	{
 		
 		//int * int_buf = (int *) buffer;
-		//qDebug() << "LOCK: add pcm";
+		//qDebug() << "LOCK: add pcm";		
 		s_audioMutex->lock();
 		QProjectM ** prjmPtr = static_cast<QProjectM **> ( userdata ); 
 		QProjectM * prjm = *prjmPtr;
