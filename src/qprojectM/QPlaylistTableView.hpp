@@ -104,6 +104,14 @@ class QPlaylistTableView : public QTableView
 			case Qt::Key_Delete: 
 				emit(deletesRequested(selectedIndexes()));
 				break;
+				
+			case Qt::Key_E:
+				if (!(event->modifiers() & Qt::ControlModifier)) {					
+					// TODO: load an editor for selected preset
+				}
+				
+				break;
+		
 			default:
 				event->ignore();
 				break;

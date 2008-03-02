@@ -103,15 +103,10 @@ public slots:
      void resetProjectM() {
 	
 	qDebug() << "reset start";
-	// First wait for audio thread to stop by{{{
-	// waiting on it's mutex
-//	s_audioMutex.tryLock(20000);
-	if (m_audioMutex) {
-		qDebug() << "LOCK: projectM Reset";
+	
+	if (m_audioMutex)
 		m_audioMutex->lock();
-		
-	}
-	// Now destroy the projectM instance
+	
 	destroyProjectM();
 	
 	// Make a new projectM instance and reset the opengl state
@@ -119,8 +114,7 @@ public slots:
 	
 	// Allow audio thread to continue its business
 	if (m_audioMutex) {
-	//	m_audioMutex->unlock();
-	//	qDebug() << "UNLOCKED";
+		m_audioMutex->unlock();
 	}
 	qDebug() << "reinit'ed";
      }
@@ -145,7 +139,6 @@ public slots:
      }
      
   signals:
-	void projectM_BeforeDestroy();
 	void projectM_Initialized(QProjectM *);
 	void presetLockChanged(bool isLocked);
 	void shuffleEnabledChanged(bool isShuffleEnabled);
@@ -153,8 +146,7 @@ public slots:
 	std::string config_file;
 	QProjectM * m_projectM;	 
 		 void destroyProjectM() {
-			 emit(projectM_BeforeDestroy());
-	
+			 
 			 if (m_projectM) {	
 				 delete(m_projectM);
 				 m_projectM = 0;
@@ -214,8 +206,9 @@ void keyReleaseEvent ( QKeyEvent * e )  {
      }
 
      void initializeGL()
-     {
-	this->m_projectM = new QProjectM(config_file);
+     {	
+
+	this->m_projectM = new QProjectM(config_file);	
 	projectM_Initialized(m_projectM);
      }
 
