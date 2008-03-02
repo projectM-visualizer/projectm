@@ -23,6 +23,23 @@
 #include <QFile>
 #include <QMessageBox>
 
+#include <QKeyEvent>
+
+void QPresetTextEdit::keyReleaseEvent(QKeyEvent * e) {
+	qDebug() << "KEY RELEASE";
+	switch (e->key()) {
+		case Qt::Key_S:
+			if (e->modifiers() & Qt::ControlModifier) {				
+				qDebug() << "control s";
+				emit(applyRequested());
+			}
+			e->accept();
+			break;
+		default:
+			e->ignore();
+	}
+	
+}
 
 bool QPresetTextEdit::loadPresetText(QString url) {
 	QFile qfile(url);
@@ -43,5 +60,5 @@ bool QPresetTextEdit::loadPresetText(QString url) {
 
 	this->setPlainText(out.readAll());
 
-
+	return true;
 }
