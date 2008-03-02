@@ -238,6 +238,12 @@ void QPlaylistModel::appendRow ( const QString & presetURL, const QString & pres
 	endInsertRows();
 }
 
+void QPlaylistModel::insertRow (int index, const QString & presetURL, const QString & presetName, int rating)  {
+	beginInsertRows ( QModelIndex(), index, index);
+	m_projectM.insertPresetURL (index, presetURL.toStdString(), presetName.toStdString(), rating );
+	endInsertRows();
+}
+
 bool QPlaylistModel::removeRows ( int row, int count, const QModelIndex & parent)   {
 	
 	beginRemoveRows ( QModelIndex(), row, count);
