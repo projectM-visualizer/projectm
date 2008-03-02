@@ -31,9 +31,11 @@ class QPresetTextEdit: QTextEdit
  public:
      inline QPresetTextEdit(QWidget * parent = 0): QTextEdit(parent) {}
 		
+     bool loadPresetText(QString url);
+ 	
      
-	
  signals:
+	void presetModified(QString url);
  public slots:
 	 
 	private:
