@@ -13,6 +13,8 @@ double invratio = 1.0 - ratio;
   A.wave_rot = A.wave_rot* invratio + B.wave_rot*ratio;
   A.wave_scale = A.wave_scale* invratio + B.wave_scale*ratio;
   
+  if (!B.draw_wave_as_loop) A.draw_wave_as_loop = false; 
+
   if (A.two_waves && B.two_waves)
     {
       for (int x = 0; x<A.wave_samples;x++)
