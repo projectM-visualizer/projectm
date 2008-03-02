@@ -24,7 +24,7 @@
 #include <QTextEdit>
 #include <QtDebug>
 
-class QPresetTextEdit: QTextEdit
+class QPresetTextEdit: public QTextEdit
  {
      Q_OBJECT        // must include this if you use Qt signals/slots
 
@@ -33,9 +33,7 @@ class QPresetTextEdit: QTextEdit
 		
      bool loadPresetText(QString url);
  	
-     
- signals:
-	void presetModified(QString url);
+
  public slots:
 	 
 	private:
