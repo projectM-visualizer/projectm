@@ -40,33 +40,33 @@ ADD_DEFINITIONS(-DQT_SHARED)
 
 # the variable "qprojectM_SRCS" contains all .cpp files of this project
 set(qprojectM_SRCS
-    QProjectM_MainWindow.cpp
-    QProjectM_MainWindow.hpp
-    ConfigFile.h ConfigFile.cpp
-    QPresetFileDialog.hpp
-    QPlaylistFileDialog.cpp
-    QPlaylistFileDialog.hpp
-    QPlaylistModel.cpp
-    QPlaylistModel.hpp
-    QXmlPlaylistHandler.hpp
-    QProjectMConfigDialog.cpp
-    QProjectMConfigDialog.hpp
-    QPlaylistTableView.hpp
+    qprojectm_mainwindow.cpp
+    qprojectm_mainwindow.hpp
+    configfile.hpp configfile.cpp
+    qpresetfiledialog.hpp
+    qplaylistfiledialog.cpp
+    qplaylistfiledialog.hpp
+    qplaylistmodel.cpp
+    qplaylistmodel.hpp
+    qxmlplaylisthandler.hpp
+    qprojectmconfigdialog.cpp
+    qprojectmconfigdialog.hpp
+    qplaylisttableview.hpp
 )
 
 
 set(qprojectM_MOC_HDRS
-    QProjectM_MainWindow.hpp
-    QPresetFileDialog.hpp
-    QPlaylistFileDialog.hpp
-    QPlaylistModel.hpp
-    QProjectMConfigDialog.hpp
-    QPlaylistTableView.hpp
+    qprojectm_mainwindow.hpp
+    qpresetfiledialog.hpp
+    qplaylistfiledialog.hpp
+    qplaylistmodel.hpp
+    qprojectmconfigdialog.hpp
+    qplaylisttableview.hpp
 )
 
 set(qprojectM_UIS
-    QProjectM_MainWindow.ui
-    QProjectMConfigDialog.ui
+    qprojectm_mainwindow.ui
+    qprojectmconfigdialog.ui
 )
 
 # Qt resource file
@@ -101,6 +101,6 @@ include_directories(${PROJECTM_INCLUDE} ${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR
 # link the "qprojectM" target against the Qt libraries. which libraries exactly, is defined by the "include(${QT_USE_FILE})" line above, which sets up this variable.
 target_link_libraries(qprojectM projectM ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTXML_LIBRARIES} ${QT_LIBRARIES})
 
-install(FILES QProjectM_MainWindow.hpp DESTINATION include/libqprojectM)
+install(FILES qprojectm_mainwindow.hpp DESTINATION include/libqprojectM)
 install(TARGETS qprojectM DESTINATION lib)
 install(FILES "${CMAKE_BINARY_DIR}/libqprojectM.pc" DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig)

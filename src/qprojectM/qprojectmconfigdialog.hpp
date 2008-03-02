@@ -1,7 +1,7 @@
 #ifndef QPROJECTM_CONFIG_DIALOG_HPP
 #define QPROJECTM_CONFIG_DIALOG_HPP
-#include "ui_QProjectMConfigDialog.h"
-#include "QProjectM_MainWindow.hpp"
+#include "ui_qprojectmconfigdialog.h"
+#include "qprojectm_mainwindow.hpp"
 #include <QSettings>
 class QProjectMConfigDialog : public QDialog {
 

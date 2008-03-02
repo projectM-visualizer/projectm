@@ -6,8 +6,8 @@
 #include <QDir>
 #include <QMessageBox>
 
-#include "QXmlPlaylistHandler.hpp"
-#include "QPlaylistModel.hpp"
+#include "qxmlplaylisthandler.hpp"
+#include "qplaylistmodel.hpp"
 #include <QMimeData>
 
 QString QPlaylistModel::PRESET_MIME_TYPE("text/x-projectM-preset");

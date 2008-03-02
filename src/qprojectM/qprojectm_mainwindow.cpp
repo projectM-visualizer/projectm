@@ -20,20 +20,20 @@
 
 
 #include <QtGui>
-#include "QProjectM_MainWindow.hpp"
-#include "QPresetFileDialog.hpp"
-#include "QPlaylistFileDialog.hpp"
+#include "qprojectm_mainwindow.hpp"
+#include "qpresetfiledialog.hpp"
+#include "qplaylistfiledialog.hpp"
 #include <QTextStream>
 #include <QCloseEvent>
 #include <QFileDialog>
 
-#include "QPlaylistModel.hpp"
-#include "ui_QProjectM_MainWindow.h"
-#include "QProjectMConfigDialog.hpp"
+#include "qplaylistmodel.hpp"
+#include "ui_qprojectm_mainwindow.h"
+#include "qprojectmconfigdialog.hpp"
 
 #include "ConfigFile.h"
-#include "QXmlPlaylistHandler.hpp"
-#include "Nullable.hpp"
+#include "qxmlplaylisthandler.hpp"
+#include "nullable.hpp"
 class PlaylistWriteFunctor {
 	public:
 		PlaylistWriteFunctor(const QProjectM_MainWindow::PlaylistItemVector::iterator & begin,
