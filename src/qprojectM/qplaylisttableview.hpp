@@ -40,6 +40,7 @@ class QPlaylistTableView : public QTableView
 	 void resized(QResizeEvent * event);
 	 void deletesRequested(const QModelIndexList & items);
 	 void internalDragAndDropRequested(const QModelIndexList & items, const QModelIndex & target = QModelIndex());
+	 void presetEditorRequested(const QModelIndexList &);
 	 
  public slots:
 	 void dropEvent ( QDropEvent * event )  {
@@ -106,8 +107,8 @@ class QPlaylistTableView : public QTableView
 				break;
 				
 			case Qt::Key_E:
-				if (!(event->modifiers() & Qt::ControlModifier)) {					
-					// TODO: load an editor for selected preset
+				if (event->modifiers() & Qt::ControlModifier) {					
+					emit(presetEditorRequested(selectedIndexes()));
 				}
 				
 				break;

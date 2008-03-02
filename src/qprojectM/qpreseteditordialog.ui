@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog" >
+ <class>QPresetEditorDialog</class>
+ <widget class="QDialog" name="QPresetEditorDialog" >
   <property name="geometry" >
    <rect>
     <x>0</x>
@@ -12,37 +12,53 @@
   <property name="windowTitle" >
    <string>Dialog</string>
   </property>
-  <widget class="QWidget" name="" >
+  <property name="autoFillBackground" >
+   <bool>true</bool>
+  </property>
+  <property name="sizeGripEnabled" >
+   <bool>true</bool>
+  </property>
+  <widget class="QPresetTextEdit" name="presetTextEdit" >
    <property name="geometry" >
     <rect>
-     <x>0</x>
-     <y>10</y>
-     <width>451</width>
-     <height>291</height>
+     <x>1</x>
+     <y>11</y>
+     <width>366</width>
+     <height>289</height>
     </rect>
    </property>
-   <layout class="QHBoxLayout" >
-    <item>
-     <widget class="QPresetTextEdit" name="presetTextEdit" />
-    </item>
-    <item>
-     <widget class="QDialogButtonBox" name="buttonBox" >
-      <property name="orientation" >
-       <enum>Qt::Vertical</enum>
-      </property>
-      <property name="standardButtons" >
-       <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
-      </property>
-     </widget>
-    </item>
-   </layout>
+   <property name="sizePolicy" >
+    <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+     <horstretch>1</horstretch>
+     <verstretch>2</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="acceptRichText" >
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QDialogButtonBox" name="buttonBox" >
+   <property name="geometry" >
+    <rect>
+     <x>373</x>
+     <y>11</y>
+     <width>77</width>
+     <height>289</height>
+    </rect>
+   </property>
+   <property name="orientation" >
+    <enum>Qt::Vertical</enum>
+   </property>
+   <property name="standardButtons" >
+    <set>QDialogButtonBox::Apply|QDialogButtonBox::Cancel|QDialogButtonBox::NoButton|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
+   </property>
   </widget>
  </widget>
  <customwidgets>
   <customwidget>
    <class>QPresetTextEdit</class>
    <extends>QTextEdit</extends>
-   <header location="global" >qpresettextedit.h</header>
+   <header>qpresettextedit.hpp</header>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -50,7 +66,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>QPresetEditorDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -66,7 +82,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>QPresetEditorDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >

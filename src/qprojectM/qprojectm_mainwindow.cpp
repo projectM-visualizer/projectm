@@ -28,9 +28,11 @@
 #include <QFileDialog>
 
 #include "qplaylistmodel.hpp"
+#include "qpresettextedit.hpp"
 #include "ui_qprojectm_mainwindow.h"
 #include "qprojectmconfigdialog.hpp"
-
+#include "qpreseteditordialog.hpp"
+#include "ui_qpreseteditordialog.h"
 #include "ConfigFile.h"
 #include "qxmlplaylisthandler.hpp"
 #include "nullable.hpp"
@@ -67,7 +69,7 @@ class PlaylistWriteFunctor {
 QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QMutex * audioMutex)
 		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), m_QPlaylistFileDialog 
 		( new QPlaylistFileDialog ( this )), playlistModel(0), 
-		configDialog(0), hHeader(0), vHeader(0), _menuVisible(true), activePresetIndex(new Nullable<long>), playlistItemCounter(0)
+		configDialog(0), hHeader(0), vHeader(0), _menuVisible(true), activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDialog(0)
 {
 
 	
@@ -93,6 +95,7 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QM
 	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized(QProjectM*) ), 
 		  this, SLOT ( postProjectM_Initialize() ) );
 	
+
 	m_QProjectMWidget->makeCurrent();
 	m_QProjectMWidget->setFocus();
 
@@ -254,15 +257,50 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 
 	disconnect(ui->tableView);
 	
+	connect ( ui->tableView, SIGNAL (presetEditorRequested(const QModelIndexList &)),
+		  this, SLOT(openPresetEditorDialog(const QModelIndexList &)), Qt::DirectConnection);
+
 	connect(ui->tableView, SIGNAL(deletesRequested(const QModelIndexList&)), 
 		this, SLOT(removePlaylistItems(const QModelIndexList&)));
-	
+
 	connect(ui->tableView, SIGNAL(internalDragAndDropRequested(const QModelIndexList &, const QModelIndex &)),
 		this, SLOT(dragAndDropPlaylistItems(const QModelIndexList &, const QModelIndex &)));
 	connect(qprojectMWidget(), SIGNAL(projectM_BeforeDestroy()), 
 		this, SLOT(clearPlaylistModel()), Qt::DirectConnection);
 	
 }
+
+void QProjectM_MainWindow::openPresetEditorDialog(const QModelIndexList indices) {
+
+	
+	
+	if (indices.empty())
+		return;
+	QModelIndex firstIndex = indices[0];
+	selectPlaylistItem(firstIndex);
+	
+	qprojectMWidget()->seizePresetLock();	
+	Qt::CheckState stateBackup = ui->lockPresetCheckBox->checkState();
+	
+	ui->lockPresetCheckBox->setCheckState(Qt::Checked);
+		
+	if (!m_QPresetEditorDialog) {
+		m_QPresetEditorDialog = new QPresetEditorDialog(qprojectMWidget());
+		connect(m_QPresetEditorDialog, SIGNAL(presetModified(const QModelIndex &)), 
+			this, SLOT(selectPlaylistItem(const QModelIndex&)));
+	}
+	QString url = playlistModel->data( firstIndex, QPlaylistModel::URLInfoRole).toString() ;
+	
+	m_QPresetEditorDialog->setPreset(url, firstIndex);
+		
+	if (m_QPresetEditorDialog->exec()) {
+
+	}
+					
+	ui->lockPresetCheckBox->setCheckState(stateBackup);
+	qprojectMWidget()->releasePresetLock();
+}
+
 
 void QProjectM_MainWindow::clearPlaylistModel() {
 	/// put in a dummy model until projectM is reinitialized

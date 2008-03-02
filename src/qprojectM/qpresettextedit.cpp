@@ -27,18 +27,21 @@
 bool QPresetTextEdit::loadPresetText(QString url) {
 	QFile qfile(url);
 	if (!qfile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-		QMessageBox::warning (0, "Playlist File Error", QString(tr("There was a problem trying to open the preset \"%1\".  The file may no longer exist or you may not have permission to read the file.")).arg(url));
+		QMessageBox::warning (0, "Preset File Error", QString(tr("There was a problem trying to open the preset \"%1\".  The file may no longer exist or you may not have permission to read the file.")).arg(url));
 			return false;
 	}
 
 
 	QTextStream in(&qfile);
+	
+	QString buffer;
+	QTextStream out(&buffer);
 	while (!in.atEnd()) {
 		QString line = in.readLine();
-		this->insertPlainText(line);
+		out << line << "\n";
 	}	
-	
+
+	this->setPlainText(out.readAll());
+
+
 }
-
-
- 	

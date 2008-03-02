@@ -42,6 +42,7 @@ class QPlaylistFileDialog;
 class QPlaylistModel;
 class QModelIndex;
 class QProjectMConfigDialog;
+class QPresetEditorDialog;
 
 template <class T>
 class Nullable;
@@ -326,7 +327,7 @@ protected:
 
 private slots:
       void clearPlaylistModel();
-
+      void openPresetEditorDialog(const QModelIndexList indices);
       void aboutQt();
       void clearPlaylist();
       void addPresetsDialog();
@@ -354,6 +355,7 @@ private slots:
 	void writeConfig();
 	void copyPlaylist();
 	
+	QPresetEditorDialog * m_QPresetEditorDialog;
 	QHeaderView * hHeader;
 	QHeaderView * vHeader;
       QString m_currentPlaylistUrl;
