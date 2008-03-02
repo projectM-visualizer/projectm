@@ -707,29 +707,37 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 	{
 		
 		case 0:
-			
-		  presetOutputs->draw_wave_as_loop = true;
+		  {
+ 		        presetOutputs->draw_wave_as_loop = true;
 			presetOutputs->wave_rot =   0;
 			presetOutputs->wave_scale =1.0;
 			presetOutputs->wave_y=-1*(presetOutputs->wave_y-1.0);
 			
 			
 			presetOutputs->wave_samples = isSmoothing ? 512-32 : beatDetect->pcm->numsamples;
-		      
-			for ( x=0;x<presetOutputs->wave_samples-1;x++)
+
+			float inv_nverts_minus_one = 1.0f/(float)(presetOutputs->wave_samples);
+
+	float last_value = beatDetect->pcm->pcmdataR[presetOutputs->wave_samples-1]+beatDetect->pcm->pcmdataL[presetOutputs->wave_samples-1];
+			float first_value = beatDetect->pcm->pcmdataR[0]+beatDetect->pcm->pcmdataL[0];
+			float offset = first_value-last_value;
+		
+			for ( x=0;x<presetOutputs->wave_samples;x++)
 			{ 
-			  float inv_nverts_minus_one = 1.0f/(float)(presetOutputs->wave_samples);
-			  
-			  r=(0.5 + 0.4f*.12*beatDetect->pcm->pcmdataR[x]*presetOutputs->fWaveScale + presetOutputs->wave_mystery)*.5;
+			
+
+			  float value = beatDetect->pcm->pcmdataR[x]+beatDetect->pcm->pcmdataL[x];
+			  value += offset * (x/(float)presetOutputs->wave_samples);
+
+			  r=(0.5 + 0.4f*.12*value*presetOutputs->fWaveScale + presetOutputs->wave_mystery)*.5;
 			  theta=(x)*inv_nverts_minus_one*6.28f + presetInputs->time*0.2f;
 			  
 			  presetOutputs->wavearray_x[x]=(r*cos(theta)*(this->correction ? this->aspect : 1.0)+presetOutputs->wave_x);
 			  presetOutputs->wavearray_y[x]=(r*sin(theta)+presetOutputs->wave_y);		       
 			  
 			}
-			presetOutputs->wavearray_x[presetOutputs->wave_samples-1]= presetOutputs->wavearray_x[0];
-			presetOutputs->wavearray_y[presetOutputs->wave_samples-1] =presetOutputs->wavearray_y[0];
-			
+		
+		  }
 			
 			break;
 			
