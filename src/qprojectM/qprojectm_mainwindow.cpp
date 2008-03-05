@@ -167,8 +167,9 @@ void QProjectM_MainWindow::clearPlaylist()
 	{
 		delete ( pos.value() );
 	}
-	historyHash.clear();
+	historyHash.clear();	
 	historyHash.insert ( QString(), new PlaylistItemVector );
+	playlistItemMetaDataHash.clear();
 	previousFilter = QString();
 	activePresetIndex->nullify();
 	
@@ -188,7 +189,7 @@ void QProjectM_MainWindow::updatePlaylistSelection ( bool hardCut, unsigned int 
 	else
 		statusBar()->showMessage ( tr ( "*** Soft cut to \"%1\" ***" ).arg(this->qprojectM()->getPresetName(index).c_str()).toStdString().c_str(), 2000);
 	
-	*activePresetIndex = (*historyHash[previousFilter])[index].id;
+	*activePresetIndex = (*historyHash[previousFilter])[index];
 }
 
 void QProjectM_MainWindow::selectPlaylistItem ( const QModelIndex & index )
@@ -371,19 +372,10 @@ void QProjectM_MainWindow::changeRating ( const QModelIndex & index ) {
 	
 	PlaylistItemVector & lastCache =  *historyHash[previousFilter];
 	
-	long id = lastCache[index.row()].id;
+	long id = lastCache[index.row()];
 	
-	foreach (PlaylistItemVector * items, historyHash.values()) {
-		
-		int i = 0;
-		foreach (PlaylistItemMetaData metaData, *items) {
-			if (metaData.id == id)  {
-				(*items)[i].rating = newRating;
-			}
-			i++;
-		}
-	}
-	qDebug() << "new rating: "  << newRating ;
+	playlistItemMetaDataHash[id].rating = newRating;
+	
 	playlistModel->setData( index, newRating, QPlaylistModel::RatingRole);
 	
 }
@@ -667,6 +659,7 @@ void QProjectM_MainWindow::openPlaylistDialog()
 void QProjectM_MainWindow::copyPlaylist()
 {
 	qprojectMWidget()->seizePresetLock();
+	playlistItemMetaDataHash.clear();
 	PlaylistItemVector * items = new PlaylistItemVector();
 
 	for ( long i = 0; i < playlistModel->rowCount(); i++ )
@@ -679,9 +672,14 @@ void QProjectM_MainWindow::copyPlaylist()
 		const QString & name = playlistModel->data ( index, Qt::DisplayRole ).toString();
 		int rating = playlistModel->data ( index, QPlaylistModel::RatingRole ).toInt();
 		
-		items->push_back ( PlaylistItemMetaData ( url, name, rating, playlistItemCounter++ ) );
+		items->push_back (playlistItemCounter );
+		playlistItemMetaDataHash[playlistItemCounter] =
+				PlaylistItemMetaData ( url, name, rating, playlistItemCounter );
+		
+		playlistItemCounter++;
 
 	}
+	
 	historyHash.insert ( QString(), items );
 	
 	uint index;
@@ -748,11 +746,14 @@ void QProjectM_MainWindow::insertPlaylistItem
 				
 	qprojectMWidget()->seizePresetLock();
 	
-	long targetId = historyHash[previousFilter]->value(targetIndex).id;
+	long targetId = historyHash[previousFilter]->value(targetIndex);
 		
+	playlistItemMetaDataHash[data.id] = data;
+	
 	foreach(PlaylistItemVector * items, historyHash.values()) {
 		int insertIndex = items->indexOf(targetId);
-		items->insert(insertIndex, data);
+		
+		items->insert(insertIndex, data.id);
 	}
 		
 	playlistModel->insertRow(targetIndex, data.url, data.name, data.rating);
@@ -885,8 +886,11 @@ void QProjectM_MainWindow::loadFile ( const QString &fileName, int rating )
 	if (playlistItems->empty())
 		ui->presetSavePushButton->setEnabled(true);
 	
-	playlistItems->push_back ( PlaylistItemMetaData ( fileName, name, rating, playlistItemCounter++ ) );
-
+	playlistItemMetaDataHash[playlistItemCounter] = 
+			PlaylistItemMetaData ( fileName, name, rating, playlistItemCounter) ;
+	
+	playlistItems->push_back (playlistItemCounter);
+	playlistItemCounter++;
 	
 }
 
@@ -914,6 +918,12 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 	} else if (presetSelected) {
 		qDebug() << "preset still selected (current = " << presetIndexBackup << ")";
 		const PlaylistItemVector & oldPlaylistItems = *historyHash.value(previousFilter);
+		
+		if ((presetIndexBackup >=0) && (presetIndexBackup < oldPlaylistItems.size())) {
+			activePresetId = oldPlaylistItems[presetIndexBackup];
+		}
+		
+		/*
 		int i = 0;
 		for ( PlaylistItemVector::const_iterator pos = oldPlaylistItems.begin(); pos != oldPlaylistItems.end();++pos )
 		{
@@ -923,7 +933,8 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 				break;
 			}
 			i++;
-		}	
+		}
+		*/	
 	} else {
 		qDebug() << "active preset index does NOT have value.";
 	}
@@ -940,9 +951,11 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 		const PlaylistItemVector & playlistItems = *historyHash.value ( filter );
 		for ( PlaylistItemVector::const_iterator pos = playlistItems.begin(); pos != playlistItems.end();++pos )
 		{
-			playlistModel->appendRow ( pos->url, pos->name,  pos->rating);
+			const PlaylistItemMetaData & data = playlistItemMetaDataHash[*pos];
 			
-			if (activePresetId.hasValue() && pos->id == activePresetId.value()) {
+			playlistModel->appendRow ( data.url, data.name,  data.rating);
+			
+			if (activePresetId.hasValue() && data.id == activePresetId.value()) {
 				qDebug() << "new position is " << (playlistModel->rowCount()-1);	
 				qprojectM()->selectPresetPosition(playlistModel->rowCount()-1);
 				presetExistsWithinFilter = true;
@@ -956,11 +969,14 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 		PlaylistItemVector * playlistItems2 = new PlaylistItemVector();
 		for ( PlaylistItemVector::const_iterator pos = playlistItems.begin(); pos != playlistItems.end();++pos )
 		{
-			if ( ( pos->name ).contains ( filter, Qt::CaseInsensitive ) )
+			
+			const PlaylistItemMetaData & data = playlistItemMetaDataHash[*pos];
+			
+			if ( ( data.name ).contains ( filter, Qt::CaseInsensitive ) )
 			{
-				playlistModel->appendRow ( pos->url, pos->name, pos->rating);
+				playlistModel->appendRow ( data.url, data.name, data.rating);
 				qDebug() << "preset position valid (inner loop):" << qprojectM()->presetPositionValid();
-				if (activePresetId.hasValue() && pos->id == activePresetId.value()) {
+				if (activePresetId.hasValue() && data.id == activePresetId.value()) {
 					qDebug() << "new position is " << (playlistModel->rowCount()-1);
 					qprojectM()->selectPresetPosition(playlistModel->rowCount()-1);
 					presetExistsWithinFilter = true;

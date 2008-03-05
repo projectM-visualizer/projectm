@@ -281,7 +281,8 @@ class QProjectM_MainWindow:public QMainWindow
 {
       Q_OBJECT
 
-public:
+	public:
+
       typedef struct PlaylistItemMetaData {
 		PlaylistItemMetaData() {}
 		PlaylistItemMetaData(long _id) :id(_id)  {}
@@ -302,7 +303,7 @@ public:
 		}
       } PlaylistItemMetaData;
 
-      typedef QVector<PlaylistItemMetaData> PlaylistItemVector;
+      typedef QVector<long> PlaylistItemVector;
 
       QProjectM_MainWindow(const std::string & config_file, QMutex * audioMutex);
       virtual ~QProjectM_MainWindow();
@@ -363,6 +364,8 @@ private slots:
       QPlaylistModel * playlistModel;
       Ui::QProjectM_MainWindow * ui;
       QProjectMConfigDialog * configDialog;
+
+      QHash<long, PlaylistItemMetaData> playlistItemMetaDataHash;
 
       QHash<QString, PlaylistItemVector*> historyHash;
       Nullable<long> * activePresetIndex;

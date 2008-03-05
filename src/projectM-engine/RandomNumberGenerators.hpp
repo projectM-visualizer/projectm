@@ -95,12 +95,14 @@ inline std::size_t weightedRandomNormalized(std::vector<float> weights) {
 	return weights.size()-1;
 }
 
-inline std::size_t weightedRandom(const std::vector<int> & weights, int weightTotalHint = 0) {
+inline std::size_t weightedRandom(const std::vector<int> & weights, uint weightTotalHint = 0) {
 	
-	if (weightTotalHint <= 0)		
+
+	if (weightTotalHint == 0)	{		
 		for (std::size_t i = 0; i < weights.size();i++) 
 			weightTotalHint += weights[i];
-				
+	}
+	
 	int sampledSum = uniformInteger(weightTotalHint);
 	int sum = 0;
 	
