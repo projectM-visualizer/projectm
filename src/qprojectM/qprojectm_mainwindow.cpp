@@ -713,10 +713,11 @@ void QProjectM_MainWindow::removePlaylistItems(const QModelIndexList & items) {
 		QVector<long> zombieItems;
 		
 		int i = 0;
-		foreach (PlaylistItemMetaData data, lastCachedItems) {
+		foreach (long id, lastCachedItems) {
 			if (sortedItems.contains(i)) {
-				zombieItems.push_back(data.id);
-				if (activePresetIndex->hasValue() && data.id == activePresetIndex->value())
+				zombieItems.push_back(id);
+				playlistItemMetaDataHash.remove(id);
+				if (activePresetIndex->hasValue() && id == activePresetIndex->value())
 					activePresetIndex->nullify();
 			}
 			i++;
@@ -737,6 +738,7 @@ void QProjectM_MainWindow::removePlaylistItems(const QModelIndexList & items) {
 		foreach (int key, reverseOrderKeys) {	
 			playlistModel->removeRow(key);
 		}
+		
 		
 		qprojectMWidget()->releasePresetLock();
 }
