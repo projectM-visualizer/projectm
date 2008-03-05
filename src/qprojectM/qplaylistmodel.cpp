@@ -302,9 +302,9 @@ bool QPlaylistModel::readPlaylist ( const QString & file )
 			return false;	
 		}	
 		foreach (QFileInfo info, QDir(file).entryInfoList()) {			
-			if (info.fileName().toLower().contains(".prjm") || info.fileName().toLower().contains(".milk"))
+			if (info.fileName().toLower().endsWith(".prjm") || info.fileName().toLower().endsWith(".milk"))
 				appendRow(info.absoluteFilePath(), info.fileName(), 3);
-		}		
+		}
 		return true;
 	}
 	
