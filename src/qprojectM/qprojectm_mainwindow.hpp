@@ -285,7 +285,6 @@ class QProjectM_MainWindow:public QMainWindow
 
       typedef struct PlaylistItemMetaData {
 		PlaylistItemMetaData() {}
-		PlaylistItemMetaData(long _id) :id(_id)  {}
 		PlaylistItemMetaData(const QString & _url, const QString & _name, int _rating, long _id):
 			url(_url), name(_name), rating(_rating), id(_id) {}
 

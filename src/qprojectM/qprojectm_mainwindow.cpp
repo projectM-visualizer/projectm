@@ -38,8 +38,8 @@
 #include "nullable.hpp"
 class PlaylistWriteFunctor {
 	public:
-		PlaylistWriteFunctor(const QProjectM_MainWindow::PlaylistItemVector::iterator & begin,
-			const QProjectM_MainWindow::PlaylistItemVector::iterator & end, const QString & desc) : 
+		PlaylistWriteFunctor(const QVector<QProjectM_MainWindow::PlaylistItemMetaData*>::iterator & begin,
+			const QVector<QProjectM_MainWindow::PlaylistItemMetaData*>::iterator & end, const QString & desc) : 
 		 m_pos(begin), m_end(end), m_desc(desc) {}
 
 		inline const QString & playlistDesc() const {
@@ -51,7 +51,7 @@ class PlaylistWriteFunctor {
 			if (m_pos == m_end)
 				return false;
 
-			QProjectM_MainWindow::PlaylistItemMetaData data = *m_pos;
+			const QProjectM_MainWindow::PlaylistItemMetaData & data = **m_pos;
 			
 			url = data.url;
 			rating = data.rating;
@@ -59,8 +59,9 @@ class PlaylistWriteFunctor {
 			return true;
 		}
 	private:
-		QProjectM_MainWindow::PlaylistItemVector::const_iterator m_pos;
-		const QProjectM_MainWindow::PlaylistItemVector::const_iterator m_end;
+		QVector<QProjectM_MainWindow::PlaylistItemMetaData*>::const_iterator m_pos;
+		QVector<QProjectM_MainWindow::PlaylistItemMetaData*>::const_iterator m_end;
+		
 		const QString & m_desc;
 		
 
@@ -317,7 +318,7 @@ void QProjectM_MainWindow::dragAndDropPlaylistItems(const QModelIndexList & indi
 	/// @bug only first index of the indices passed in is supported!
 	QModelIndex firstIndex = indices.value(0);
 	
-	PlaylistItemMetaData metaData = historyHash[previousFilter]->value(firstIndex.row());;
+	PlaylistItemMetaData metaData = playlistItemMetaDataHash[historyHash[previousFilter]->value(firstIndex.row())];
 	
 	int newIndex;
 	if (targetIndex.row() < firstIndex.row()) {
@@ -555,10 +556,15 @@ void QProjectM_MainWindow::savePlaylist()
 	}
 
 	// Use the hash that maps "" to playlist items since this list contains the entire playlist item set
-	PlaylistItemVector * playlistItems = historyHash.value(QString(), 0);
-	assert(playlistItems);
+	PlaylistItemVector * playlistItemKeys = historyHash.value(QString(), 0);
+	
 
-	PlaylistWriteFunctor writeFunctor(playlistItems->begin(), playlistItems->end(), playlistModel->playlistDesc());
+	QVector<PlaylistItemMetaData*> itemMetaDataVector;
+	foreach (long key, *playlistItemKeys) {
+		itemMetaDataVector.push_back(&playlistItemMetaDataHash[key]);		
+	}
+	
+	PlaylistWriteFunctor writeFunctor(itemMetaDataVector.begin(), itemMetaDataVector.end(), playlistModel->playlistDesc());
 
 
 	QXmlPlaylistHandler::writePlaylist(&qfile, writeFunctor);
