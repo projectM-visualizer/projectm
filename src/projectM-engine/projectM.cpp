@@ -291,7 +291,7 @@ DLLEXPORT void projectM::renderFrame()
 	if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
 	{
 	  	  
-	 printf("start thread\n");
+	  //	 printf("start thread\n");
 		      	
 		assert ( m_activePreset.get() );
 		
@@ -310,7 +310,7 @@ DLLEXPORT void projectM::renderFrame()
 		    return;
 		  }
 		*/
-		printf("thread done\n");
+		//printf("thread done\n");
 		/*
 		presetInputs.frame = timeKeeper->PresetFrameB();
 		presetInputs.progress= timeKeeper->PresetProgressB();
