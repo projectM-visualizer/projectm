@@ -170,6 +170,14 @@ void BeatDetect::getBeatVals( float *vdataL,float *vdataR ) {
 	  mid_att=.6 * mid_att + .4 * mid;
 	  bass_att=.6 * bass_att + .4 * bass;
 
+	  if(bass_att>100)bass_att=100;
+	  if(bass >100)bass=100;
+	  if(mid_att>100)mid_att=100;
+	  if(mid >100)mid=100;
+	  if(treb_att>100)treb_att=100;
+	  if(treb >100)treb=100;
+	  if(vol>100)vol=100;
+	  
 	   // *vol=(beat_instant[3])/(beat_history[3]);
 	  beat_buffer_pos++;
 	  if( beat_buffer_pos>79)beat_buffer_pos=0;

@@ -74,10 +74,27 @@ DLLEXPORT projectM::projectM ( int gx, int gy, int fps, int texsize, int width, 
 }
 */
 
+
 projectM::~projectM()
 {
 
+ 
+  	printf("c");
+	running = false;
+	printf("l");
+	pthread_cond_signal(&condition);
+	printf("e");
+	pthread_mutex_unlock( &mutex );
+	printf("a");
+	pthread_detach(thread);
+	printf("n");
+	pthread_cond_destroy(&condition);
+	printf("u");
+	pthread_mutex_destroy( &mutex );
+	printf("p");
+
 	destroyPresetTools();
+
 
 	if ( renderer )
 		delete ( renderer );
@@ -87,6 +104,8 @@ projectM::~projectM()
 		delete ( _pcm );
 		_pcm = 0;
 	}
+
+	  
 }
 
 DLLEXPORT unsigned projectM::initRenderToTexture()
@@ -185,17 +204,25 @@ static void *thread_callback(void *prjm) {
 
 void *projectM::thread_func(void *vptr_args)
 {
+   pthread_mutex_lock( &mutex );
   //  printf("in thread: %f\n", timeKeeper->PresetProgressB());
-     
-  setupPresetInputs(&m_activePreset2->presetInputs());
-  m_activePreset2->presetInputs().frame = timeKeeper->PresetFrameB();
-  m_activePreset2->presetInputs().progress= timeKeeper->PresetProgressB();
-   
-  assert ( m_activePreset2.get() );
-  m_activePreset2->evaluateFrame();
-  renderer->PerPixelMath ( &m_activePreset2->presetOutputs(), &presetInputs2 );
-  renderer->WaveformMath ( &m_activePreset2->presetOutputs(), &presetInputs2, true );
-  return NULL;
+  while (1)
+    {   
+      pthread_cond_wait( &condition, &mutex );
+      if(!running)
+	{
+	  pthread_mutex_unlock( &mutex );
+	  return NULL;
+	}
+      setupPresetInputs(&m_activePreset2->presetInputs());
+      m_activePreset2->presetInputs().frame = timeKeeper->PresetFrameB();
+      m_activePreset2->presetInputs().progress= timeKeeper->PresetProgressB();
+      
+      assert ( m_activePreset2.get() );
+      m_activePreset2->evaluateFrame();
+      renderer->PerPixelMath ( &m_activePreset2->presetOutputs(), &presetInputs2 );
+      renderer->WaveformMath ( &m_activePreset2->presetOutputs(), &presetInputs2, true );    
+    }  
 }
 
 void projectM::setupPresetInputs(PresetInputs *inputs)
@@ -263,28 +290,27 @@ DLLEXPORT void projectM::renderFrame()
 
 	if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
 	{
-
-	  pthread_t thread;
-
-
-	  
-	  if (pthread_create(&thread, NULL, thread_callback, this) != 0)
-	    { 
-	      return;
-	    }//printf("start thread\n");
-
-		      
-	
+	  	  
+	 printf("start thread\n");
+		      	
 		assert ( m_activePreset.get() );
+		
+	
+		pthread_cond_signal(&condition);
+		pthread_mutex_unlock( &mutex );
+
 		m_activePreset->evaluateFrame();
 		renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
 		renderer->WaveformMath ( &m_activePreset->presetOutputs(), &presetInputs, true );
-	
+
+		pthread_mutex_lock( &mutex );
+		/*
 		if (pthread_join(thread, NULL) != 0)
 		  {
 		    return;
 		  }
-		//printf("thread done\n");
+		*/
+		printf("thread done\n");
 		/*
 		presetInputs.frame = timeKeeper->PresetFrameB();
 		presetInputs.progress= timeKeeper->PresetProgressB();
@@ -411,7 +437,16 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 
 	this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
 
-
+	running = true;
+	pthread_mutex_init(&mutex, NULL);
+	pthread_cond_init(&condition, NULL);
+	if (pthread_create(&thread, NULL, thread_callback, this) != 0)
+	    { 	      
+	      printf("oops\n");
+	      exit(1);
+	    }
+	pthread_mutex_lock( &mutex );
+	printf("got lock\n");
 	renderer->setPresetName ( m_activePreset->presetName() );
 	timeKeeper->StartPreset();
 	assert(pcm());
