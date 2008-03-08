@@ -305,7 +305,11 @@ private:
   PCM * _pcm;
   int m_flags;
   
-  
+
+pthread_mutex_t mutex;
+pthread_cond_t  condition;
+pthread_t thread;
+  bool running;
 
 };
 #endif
