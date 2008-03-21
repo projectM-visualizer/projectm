@@ -118,22 +118,22 @@ QVariant QPlaylistModel::ratingToIcon ( int rating )  const
 	switch ( rating )
 	{
 		case 1:
-			return QVariant ( QIcon ( ":/images/icons/face0.png" ) );
+			return QVariant ();
 		case 2:
-			return QVariant ( QIcon ( ":/images/icons/face1.png" ) );
+			return QVariant ( QIcon ( ":/images/icons/rating-1.png" ) );
 		case 3:
-			return QVariant ( QIcon ( ":/images/icons/face2.png" ) );
+			return QVariant ( QIcon ( ":/images/icons/rating-2.png" ) );
 		case 4:
-			return QVariant ( QIcon ( ":/images/icons/face3.png" ) );
+			return QVariant ( QIcon ( ":/images/icons/rating-3.png" ) );
 		case 5:
-			return QVariant ( QIcon ( ":/images/icons/face4.png" ) );
+			return QVariant ( QIcon ( ":/images/icons/rating-4.png" ) );
 		case 6:
-			return QVariant ( QIcon ( ":/images/icons/face5.png" ) );
+			return QVariant ( QIcon ( ":/images/icons/rating-5.png" ) );
 		default:
 			if (rating < 0)
-				return QVariant ( QIcon ( ":/images/icons/face0.png" ) );
+				return QVariant ();
 			else 
-				return QVariant ( QIcon ( ":/images/icons/face5.png" ) );
+				return QVariant ( QIcon ( ":/images/icons/rating-5.png" ) );
 	}
 }
 
