@@ -18,40 +18,40 @@
   <property name="sizeGripEnabled" >
    <bool>true</bool>
   </property>
-  <widget class="QPresetTextEdit" name="presetTextEdit" >
+  <widget class="QWidget" name="" >
    <property name="geometry" >
     <rect>
      <x>1</x>
      <y>11</y>
-     <width>366</width>
-     <height>289</height>
+     <width>451</width>
+     <height>291</height>
     </rect>
    </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
-     <horstretch>1</horstretch>
-     <verstretch>2</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="acceptRichText" >
-    <bool>false</bool>
-   </property>
-  </widget>
-  <widget class="QDialogButtonBox" name="buttonBox" >
-   <property name="geometry" >
-    <rect>
-     <x>373</x>
-     <y>11</y>
-     <width>77</width>
-     <height>289</height>
-    </rect>
-   </property>
-   <property name="orientation" >
-    <enum>Qt::Vertical</enum>
-   </property>
-   <property name="standardButtons" >
-    <set>QDialogButtonBox::Apply|QDialogButtonBox::NoButton|QDialogButtonBox::Reset</set>
-   </property>
+   <layout class="QHBoxLayout" >
+    <item>
+     <widget class="QPresetTextEdit" name="presetTextEdit" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Expanding" hsizetype="Expanding" >
+        <horstretch>1</horstretch>
+        <verstretch>2</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="acceptRichText" >
+       <bool>false</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QDialogButtonBox" name="buttonBox" >
+      <property name="orientation" >
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="standardButtons" >
+       <set>QDialogButtonBox::Apply|QDialogButtonBox::NoButton|QDialogButtonBox::Reset</set>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <customwidgets>
