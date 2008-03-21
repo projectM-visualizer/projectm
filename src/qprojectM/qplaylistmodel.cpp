@@ -297,11 +297,12 @@ bool QPlaylistModel::readPlaylist ( const QString & file )
 {
 	
 	if (QFileInfo(file).isDir()) {
-		if (!QDir(file).isReadable()) {			
-			QMessageBox::warning (0, "Playlist Directory Error", QString(tr("There was a problem trying to open the playlist directory \"%1\".  You may not have permission to open the directory.")).arg(file));
-			return false;	
-		}	
-		foreach (QFileInfo info, QDir(file).entryInfoList()) {			
+		if (!QDir(file).isReadable()) {
+			QMessageBox::warning (0, "Playlist Directory Error", QString(tr("There was a problem trying to open the playlist directory \"%1\".  The directory doesn't exist or you may not have permission to open it. ")).arg(file));
+			return false;
+		}
+		
+		foreach (QFileInfo info, QDir(file).entryInfoList()) {
 			if (info.fileName().toLower().endsWith(".prjm") || info.fileName().toLower().endsWith(".milk"))
 				appendRow(info.absoluteFilePath(), info.fileName(), 3);
 		}

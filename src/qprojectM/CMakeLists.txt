@@ -12,7 +12,6 @@ else(${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 	pkg_search_module(LIBPROJECTM REQUIRED libprojectM)
 endif(${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 
-
 find_package(Qt4 REQUIRED) # find and setup Qt4 for this project
 include(${QT_USE_FILE})
 

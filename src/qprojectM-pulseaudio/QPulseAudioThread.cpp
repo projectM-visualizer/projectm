@@ -25,7 +25,7 @@
 #include <fcntl.h>
 
 #include <QSettings>
-#include "qprojectm_mainwindow.hpp"			
+#include "qprojectm_mainwindow.hpp"
 
 #define TIME_EVENT_USEC 50000
 
@@ -155,7 +155,7 @@ void QPulseAudioThread::cleanup()
 
 void QPulseAudioThread::connectHelper (SourceContainer::const_iterator pos)
 {	
-	assert(stream);
+	Q_ASSERT(stream);
 	pa_stream_flags_t flags = ( pa_stream_flags_t ) 0;
 //	qDebug() << "start2 ";
 	assert (pos != s_sourceList.end());
@@ -373,7 +373,7 @@ void QPulseAudioThread::stream_state_callback ( pa_stream *s, void *userdata )
 
 
 void QPulseAudioThread::stream_moved_callback(pa_stream *s, void *userdata) {
-    assert(s);
+    Q_ASSERT(s);
 
     if (verbose)
         fprintf(stderr, "Stream moved to device %s (%u, %ssuspended).\n", pa_stream_get_device_name(s), pa_stream_get_device_index(s), pa_stream_is_suspended(s) ? "" : "not ");
@@ -458,9 +458,9 @@ void QPulseAudioThread::stdout_callback ( pa_mainloop_api*a, pa_io_event *e, int
 		QProjectM ** prjmPtr = static_cast<QProjectM **> ( userdata ); 
 		QProjectM * prjm = *prjmPtr;
 		
-		assert(prjm);
-		assert(prjm->pcm());
-		assert(buffer);
+		Q_ASSERT(prjm);
+		Q_ASSERT(prjm->pcm());
+		Q_ASSERT(buffer);
 
 		prjm->pcm()->addPCMfloat 
 				( buffer+buffer_index, buffer_length / ( sizeof ( float ) ) );
@@ -667,7 +667,7 @@ void QPulseAudioThread::run()
 	signal ( SIGPIPE, SIG_IGN );
 #endif
 
-	assert(m_projectM);
+	Q_ASSERT(m_projectM);
 	if ( ! ( stdio_event = mainloop_api->io_new ( mainloop_api,
 	                       STDOUT_FILENO,
 	                       PA_IO_EVENT_OUTPUT,

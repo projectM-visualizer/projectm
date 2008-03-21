@@ -5,766 +5,559 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>483</width>
-    <height>334</height>
+    <width>503</width>
+    <height>360</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>projectM Settings</string>
   </property>
-  <widget class="QLabel" name="label" >
-   <property name="geometry" >
-    <rect>
-     <x>7</x>
-     <y>67</y>
-     <width>105</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize" >
-    <size>
-     <width>50</width>
-     <height>0</height>
-    </size>
-   </property>
-   <property name="text" >
-    <string>Menu Font Path</string>
-   </property>
-  </widget>
-  <widget class="QToolButton" name="menuFontPathToolButton" >
-   <property name="geometry" >
-    <rect>
-     <x>447</x>
-     <y>67</y>
-     <width>24</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="text" >
-    <string>...</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="menuFontPathLineEdit" >
-   <property name="geometry" >
-    <rect>
-     <x>118</x>
-     <y>67</y>
-     <width>323</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
-     <horstretch>2</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This changes the font projectM will use for its opengl rendered menus&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_2" >
+  <widget class="QWidget" name="" >
    <property name="geometry" >
     <rect>
      <x>7</x>
      <y>7</y>
-     <width>105</width>
-     <height>24</height>
+     <width>492</width>
+     <height>348</height>
     </rect>
    </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize" >
-    <size>
-     <width>50</width>
-     <height>0</height>
-    </size>
-   </property>
-   <property name="text" >
-    <string>Playlist Directory</string>
-   </property>
-  </widget>
-  <widget class="QToolButton" name="startupPlaylistDirectoryToolButton" >
-   <property name="geometry" >
-    <rect>
-     <x>447</x>
-     <y>7</y>
-     <width>24</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="text" >
-    <string>...</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="startupPlaylistDirectoryLineEdit" >
-   <property name="geometry" >
-    <rect>
-     <x>118</x>
-     <y>7</y>
-     <width>323</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
-     <horstretch>2</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+   <layout class="QGridLayout" >
+    <item row="0" column="0" >
+     <widget class="QLabel" name="label_2" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize" >
+       <size>
+        <width>50</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text" >
+       <string>Playlist Directory</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1" colspan="7" >
+     <widget class="QLineEdit" name="startupPlaylistDirectoryLineEdit" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+        <horstretch>2</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;">This sets the default preset playlist directory when projectM starts up. Every valid preset file in the specified directory will be loaded into the playlist upon initialization. &lt;span style=" font-weight:600;">NOTE:&lt;/span> This option is overriden by a non empty value of the &lt;span style=" font-style:italic;">Playlist File &lt;/span>option.&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_3" >
-   <property name="geometry" >
-    <rect>
-     <x>7</x>
-     <y>129</y>
-     <width>119</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="text" >
-    <string>Preset Duration (s)</string>
-   </property>
-  </widget>
-  <widget class="QSpinBox" name="presetDurationSpinBox" >
-   <property name="geometry" >
-    <rect>
-     <x>132</x>
-     <y>129</y>
-     <width>74</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Sets how long a preset should be played in seconds before projectM automatically switches to another in the playlist&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-   <property name="minimum" >
-    <number>1</number>
-   </property>
-   <property name="maximum" >
-    <number>100000</number>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_4" >
-   <property name="geometry" >
-    <rect>
-     <x>212</x>
-     <y>129</y>
-     <width>171</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="text" >
-    <string>Smooth Preset Duration (s)</string>
-   </property>
-  </widget>
-  <widget class="QSpinBox" name="smoothPresetDurationSpinBox" >
-   <property name="geometry" >
-    <rect>
-     <x>389</x>
-     <y>129</y>
-     <width>82</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Sets how long a transition occurs in seconds when smooth preset switching&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-   <property name="minimum" >
-    <number>1</number>
-   </property>
-   <property name="maximum" >
-    <number>1000000</number>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_5" >
-   <property name="geometry" >
-    <rect>
-     <x>226</x>
-     <y>259</y>
-     <width>81</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="text" >
-    <string>Window Size</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_6" >
-   <property name="geometry" >
-    <rect>
-     <x>212</x>
-     <y>159</y>
-     <width>171</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="text" >
-    <string>Maximum FPS</string>
-   </property>
-  </widget>
-  <widget class="QSpinBox" name="maxFPSSpinBox" >
-   <property name="geometry" >
-    <rect>
-     <x>389</x>
-     <y>159</y>
-     <width>82</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
-     <horstretch>2</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This parameter, if nonzero, limits the number of frames per second projectM will attempt to render to screen. 35 is a reasonable limit.&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-   <property name="minimum" >
-    <number>0</number>
-   </property>
-  </widget>
-  <widget class="QSpinBox" name="windowWidthSpinBox" >
-   <property name="geometry" >
-    <rect>
-     <x>313</x>
-     <y>259</y>
-     <width>66</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This modifies the horizontal component of the startup window size &lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-   <property name="whatsThis" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This modifies the horizontal component of the startup window size &lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-   <property name="minimum" >
-    <number>1</number>
-   </property>
-   <property name="maximum" >
-    <number>10000</number>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_10" >
-   <property name="geometry" >
-    <rect>
-     <x>385</x>
-     <y>225</y>
-     <width>16</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="text" >
-    <string>by</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_7" >
-   <property name="geometry" >
-    <rect>
-     <x>7</x>
-     <y>189</y>
-     <width>119</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="text" >
-    <string>Texture Size</string>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="textureSizeComboBox" >
-   <property name="geometry" >
-    <rect>
-     <x>132</x>
-     <y>189</y>
-     <width>74</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
-     <horstretch>1</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Sets the size of the texture. Higher is better, but slower.&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-   <property name="sizeAdjustPolicy" >
-    <enum>QComboBox::AdjustToMinimumContentsLength</enum>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_8" >
-   <property name="geometry" >
-    <rect>
-     <x>226</x>
-     <y>225</y>
-     <width>81</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="text" >
-    <string>Mesh Size</string>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="fullscreenOnStartupCheckBox" >
-   <property name="geometry" >
-    <rect>
-     <x>7</x>
-     <y>279</y>
-     <width>211</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="text" >
-    <string>Fullscreen on startup</string>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="menuOnStartupCheckBox" >
-   <property name="geometry" >
-    <rect>
-     <x>7</x>
-     <y>250</y>
-     <width>211</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="text" >
-    <string>Show Menu on startup</string>
-   </property>
-  </widget>
-  <widget class="QDialogButtonBox" name="buttonBox" >
-   <property name="geometry" >
-    <rect>
-     <x>225</x>
-     <y>298</y>
-     <width>247</width>
-     <height>30</height>
-    </rect>
-   </property>
-   <property name="layoutDirection" >
-    <enum>Qt::RightToLeft</enum>
-   </property>
-   <property name="orientation" >
-    <enum>Qt::Horizontal</enum>
-   </property>
-   <property name="standardButtons" >
-    <set>QDialogButtonBox::Apply|QDialogButtonBox::Close|QDialogButtonBox::NoButton|QDialogButtonBox::Reset</set>
-   </property>
-  </widget>
-  <widget class="QSpinBox" name="windowHeightSpinBox" >
-   <property name="geometry" >
-    <rect>
-     <x>405</x>
-     <y>259</y>
-     <width>66</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;">This modifies the vertical component of the startup window size&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-   <property name="minimum" >
-    <number>1</number>
-   </property>
-   <property name="maximum" >
-    <number>10000</number>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_11" >
-   <property name="geometry" >
-    <rect>
-     <x>385</x>
-     <y>259</y>
-     <width>16</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="text" >
-    <string>by</string>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="useAspectCorrectionCheckBox" >
-   <property name="geometry" >
-    <rect>
-     <x>7</x>
-     <y>221</y>
-     <width>211</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This makes a square look like a square, and a circle look like a circle in cases where they may not otherwise.&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-   <property name="text" >
-    <string>Use Aspect Correction</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_12" >
-   <property name="geometry" >
-    <rect>
-     <x>7</x>
-     <y>159</y>
-     <width>119</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="text" >
-    <string>Beat Sensitivity</string>
-   </property>
-  </widget>
-  <widget class="QToolButton" name="titleFontPathToolButton" >
-   <property name="geometry" >
-    <rect>
-     <x>447</x>
-     <y>97</y>
-     <width>24</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="text" >
-    <string>...</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_9" >
-   <property name="geometry" >
-    <rect>
-     <x>7</x>
-     <y>97</y>
-     <width>105</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize" >
-    <size>
-     <width>50</width>
-     <height>0</height>
-    </size>
-   </property>
-   <property name="text" >
-    <string>Title Font Path</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="titleFontPathLineEdit" >
-   <property name="geometry" >
-    <rect>
-     <x>118</x>
-     <y>97</y>
-     <width>323</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
-     <horstretch>2</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Changes the font projectM will use for rendering the song title&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-  </widget>
-  <widget class="QDoubleSpinBox" name="beatSensitivitySpinBox" >
-   <property name="geometry" >
-    <rect>
-     <x>132</x>
-     <y>159</y>
-     <width>74</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Sets the intensity threshold for the preset hard cuts&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-   <property name="minimum" >
-    <double>0.000000000000000</double>
-   </property>
-   <property name="maximum" >
-    <double>100.000000000000000</double>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_13" >
-   <property name="geometry" >
-    <rect>
-     <x>212</x>
-     <y>189</y>
-     <width>171</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="text" >
-    <string>Easter Egg Parameter</string>
-   </property>
-  </widget>
-  <widget class="QDoubleSpinBox" name="easterEggParameterSpinBox" >
-   <property name="geometry" >
-    <rect>
-     <x>389</x>
-     <y>189</y>
-     <width>82</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">A mystery parameter!&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-   <property name="maximum" >
-    <double>20.000000000000000</double>
-   </property>
-   <property name="singleStep" >
-    <double>0.010000000000000</double>
-   </property>
-  </widget>
-  <widget class="QSpinBox" name="meshSizeWidthSpinBox" >
-   <property name="geometry" >
-    <rect>
-     <x>313</x>
-     <y>225</y>
-     <width>66</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;">This modifies the horizontal component of the mesh. Higher is better but slower&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-   <property name="minimum" >
-    <number>1</number>
-   </property>
-   <property name="maximum" >
-    <number>1000</number>
-   </property>
-   <property name="value" >
-    <number>1</number>
-   </property>
-  </widget>
-  <widget class="QSpinBox" name="meshSizeHeightSpinBox" >
-   <property name="geometry" >
-    <rect>
-     <x>405</x>
-     <y>225</y>
-     <width>66</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;">This modifies the vertical component of the mesh. Higher is better but slower&lt;/p>&lt;/body>&lt;/html></string>
-   </property>
-   <property name="minimum" >
-    <number>1</number>
-   </property>
-   <property name="maximum" >
-    <number>1000</number>
-   </property>
-  </widget>
-  <widget class="QCheckBox" name="shuffleOnStartupCheckBox" >
-   <property name="geometry" >
-    <rect>
-     <x>7</x>
-     <y>308</y>
-     <width>211</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="text" >
-    <string>Shuffle on startup</string>
-   </property>
-  </widget>
-  <widget class="QToolButton" name="startupPlaylistFileToolButton" >
-   <property name="geometry" >
-    <rect>
-     <x>447</x>
-     <y>37</y>
-     <width>24</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="text" >
-    <string>...</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="label_14" >
-   <property name="geometry" >
-    <rect>
-     <x>7</x>
-     <y>37</y>
-     <width>105</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="minimumSize" >
-    <size>
-     <width>50</width>
-     <height>0</height>
-    </size>
-   </property>
-   <property name="text" >
-    <string>Playlist File</string>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="startupPlaylistFileLineEdit" >
-   <property name="geometry" >
-    <rect>
-     <x>118</x>
-     <y>37</y>
-     <width>323</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <property name="sizePolicy" >
-    <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
-     <horstretch>2</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="toolTip" >
-    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="8" >
+     <widget class="QToolButton" name="startupPlaylistDirectoryToolButton" >
+      <property name="text" >
+       <string>...</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" >
+     <widget class="QLabel" name="label_14" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize" >
+       <size>
+        <width>50</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text" >
+       <string>Playlist File</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1" colspan="7" >
+     <widget class="QLineEdit" name="startupPlaylistFileLineEdit" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+        <horstretch>2</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;">This sets the default preset playlist file when qprojectM starts up. The file must be a valid preset playlist (of type *.ppl). If specified, this overrides the &lt;span style=" font-style:italic;">Playlist Directory&lt;/span> value on startup. &lt;/p>&lt;/body>&lt;/html></string>
-   </property>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="8" >
+     <widget class="QToolButton" name="startupPlaylistFileToolButton" >
+      <property name="text" >
+       <string>...</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" >
+     <widget class="QLabel" name="label" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize" >
+       <size>
+        <width>50</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text" >
+       <string>Menu Font Path</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1" colspan="7" >
+     <widget class="QLineEdit" name="menuFontPathLineEdit" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+        <horstretch>2</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This changes the font projectM will use for its opengl rendered menus&lt;/p>&lt;/body>&lt;/html></string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="8" >
+     <widget class="QToolButton" name="menuFontPathToolButton" >
+      <property name="text" >
+       <string>...</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" >
+     <widget class="QLabel" name="label_9" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize" >
+       <size>
+        <width>50</width>
+        <height>0</height>
+       </size>
+      </property>
+      <property name="text" >
+       <string>Title Font Path</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1" colspan="7" >
+     <widget class="QLineEdit" name="titleFontPathLineEdit" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+        <horstretch>2</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Changes the font projectM will use for rendering the song title&lt;/p>&lt;/body>&lt;/html></string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="8" >
+     <widget class="QToolButton" name="titleFontPathToolButton" >
+      <property name="text" >
+       <string>...</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="2" >
+     <widget class="QLabel" name="label_3" >
+      <property name="text" >
+       <string>Preset Duration (s)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="2" >
+     <widget class="QSpinBox" name="presetDurationSpinBox" >
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Sets how long a preset should be played in seconds before projectM automatically switches to another in the playlist&lt;/p>&lt;/body>&lt;/html></string>
+      </property>
+      <property name="minimum" >
+       <number>1</number>
+      </property>
+      <property name="maximum" >
+       <number>100000</number>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="3" colspan="3" >
+     <widget class="QLabel" name="label_4" >
+      <property name="text" >
+       <string>Smooth Preset Duration (s)</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="6" colspan="3" >
+     <widget class="QSpinBox" name="smoothPresetDurationSpinBox" >
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Sets how long a transition occurs in seconds when smooth preset switching&lt;/p>&lt;/body>&lt;/html></string>
+      </property>
+      <property name="minimum" >
+       <number>1</number>
+      </property>
+      <property name="maximum" >
+       <number>1000000</number>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0" colspan="2" >
+     <widget class="QLabel" name="label_12" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text" >
+       <string>Beat Sensitivity</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="2" >
+     <widget class="QDoubleSpinBox" name="beatSensitivitySpinBox" >
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Sets the intensity threshold for the preset hard cuts&lt;/p>&lt;/body>&lt;/html></string>
+      </property>
+      <property name="minimum" >
+       <double>0.000000000000000</double>
+      </property>
+      <property name="maximum" >
+       <double>100.000000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="3" colspan="3" >
+     <widget class="QLabel" name="label_6" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text" >
+       <string>Maximum FPS</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="6" colspan="3" >
+     <widget class="QSpinBox" name="maxFPSSpinBox" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+        <horstretch>2</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This parameter, if nonzero, limits the number of frames per second projectM will attempt to render to screen. 35 is a reasonable limit.&lt;/p>&lt;/body>&lt;/html></string>
+      </property>
+      <property name="minimum" >
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="0" colspan="2" >
+     <widget class="QLabel" name="label_7" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text" >
+       <string>Texture Size</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="2" >
+     <widget class="QComboBox" name="textureSizeComboBox" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+        <horstretch>1</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Sets the size of the texture. Higher is better, but slower.&lt;/p>&lt;/body>&lt;/html></string>
+      </property>
+      <property name="sizeAdjustPolicy" >
+       <enum>QComboBox::AdjustToMinimumContentsLength</enum>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="3" colspan="3" >
+     <widget class="QLabel" name="label_13" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text" >
+       <string>Easter Egg Parameter</string>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="6" colspan="3" >
+     <widget class="QDoubleSpinBox" name="easterEggParameterSpinBox" >
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">A mystery parameter!&lt;/p>&lt;/body>&lt;/html></string>
+      </property>
+      <property name="maximum" >
+       <double>20.000000000000000</double>
+      </property>
+      <property name="singleStep" >
+       <double>0.010000000000000</double>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0" colspan="4" >
+     <widget class="QCheckBox" name="useAspectCorrectionCheckBox" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This makes a square look like a square, and a circle look like a circle in cases where they may not otherwise.&lt;/p>&lt;/body>&lt;/html></string>
+      </property>
+      <property name="text" >
+       <string>Use Aspect Correction</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="4" >
+     <widget class="QLabel" name="label_8" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text" >
+       <string>Mesh Size</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="5" >
+     <widget class="QSpinBox" name="meshSizeWidthSpinBox" >
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;">This modifies the horizontal component of the mesh. Higher is better but slower&lt;/p>&lt;/body>&lt;/html></string>
+      </property>
+      <property name="minimum" >
+       <number>1</number>
+      </property>
+      <property name="maximum" >
+       <number>1000</number>
+      </property>
+      <property name="value" >
+       <number>1</number>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="6" >
+     <widget class="QLabel" name="label_10" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text" >
+       <string>by</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="7" colspan="2" >
+     <widget class="QSpinBox" name="meshSizeHeightSpinBox" >
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;">This modifies the vertical component of the mesh. Higher is better but slower&lt;/p>&lt;/body>&lt;/html></string>
+      </property>
+      <property name="minimum" >
+       <number>1</number>
+      </property>
+      <property name="maximum" >
+       <number>1000</number>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="0" colspan="4" >
+     <widget class="QCheckBox" name="menuOnStartupCheckBox" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text" >
+       <string>Show Menu on startup</string>
+      </property>
+     </widget>
+    </item>
+    <item rowspan="2" row="8" column="4" >
+     <widget class="QLabel" name="label_5" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text" >
+       <string>Window Size</string>
+      </property>
+     </widget>
+    </item>
+    <item rowspan="2" row="8" column="5" >
+     <widget class="QSpinBox" name="windowWidthSpinBox" >
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This modifies the horizontal component of the startup window size &lt;/p>&lt;/body>&lt;/html></string>
+      </property>
+      <property name="whatsThis" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This modifies the horizontal component of the startup window size &lt;/p>&lt;/body>&lt;/html></string>
+      </property>
+      <property name="minimum" >
+       <number>1</number>
+      </property>
+      <property name="maximum" >
+       <number>10000</number>
+      </property>
+     </widget>
+    </item>
+    <item rowspan="2" row="8" column="6" >
+     <widget class="QLabel" name="label_11" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text" >
+       <string>by</string>
+      </property>
+     </widget>
+    </item>
+    <item rowspan="2" row="8" column="7" colspan="2" >
+     <widget class="QSpinBox" name="windowHeightSpinBox" >
+      <property name="toolTip" >
+       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;">This modifies the vertical component of the startup window size&lt;/p>&lt;/body>&lt;/html></string>
+      </property>
+      <property name="minimum" >
+       <number>1</number>
+      </property>
+      <property name="maximum" >
+       <number>10000</number>
+      </property>
+     </widget>
+    </item>
+    <item rowspan="2" row="9" column="0" colspan="4" >
+     <widget class="QCheckBox" name="fullscreenOnStartupCheckBox" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text" >
+       <string>Fullscreen on startup</string>
+      </property>
+     </widget>
+    </item>
+    <item rowspan="2" row="10" column="4" colspan="5" >
+     <widget class="QDialogButtonBox" name="buttonBox" >
+      <property name="toolTip" >
+       <string>Click save to write the settings to your projectM config file. The reset button will bring your settings back to whatever was stored on disk. </string>
+      </property>
+      <property name="layoutDirection" >
+       <enum>Qt::RightToLeft</enum>
+      </property>
+      <property name="orientation" >
+       <enum>Qt::Horizontal</enum>
+      </property>
+      <property name="standardButtons" >
+       <set>QDialogButtonBox::Close|QDialogButtonBox::NoButton|QDialogButtonBox::Reset|QDialogButtonBox::Save</set>
+      </property>
+     </widget>
+    </item>
+    <item row="11" column="0" colspan="4" >
+     <widget class="QCheckBox" name="shuffleOnStartupCheckBox" >
+      <property name="sizePolicy" >
+       <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="text" >
+       <string>Shuffle on startup</string>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

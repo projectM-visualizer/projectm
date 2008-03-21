@@ -29,15 +29,15 @@ class QPresetTextEdit: public QTextEdit
      Q_OBJECT        // must include this if you use Qt signals/slots
 
  public:
-     inline QPresetTextEdit(QWidget * parent = 0): QTextEdit(parent) {}
-		
-     bool loadPresetText(QString url);
- 	
+    inline QPresetTextEdit(QWidget * parent = 0): QTextEdit(parent) {}
+
+    bool loadPresetText(QString url);
+
     void keyReleaseEvent(QKeyEvent * e);
-    
+
 	 signals:
 		 void applyRequested();
-		  
+
  public slots:
 	 
 	private:

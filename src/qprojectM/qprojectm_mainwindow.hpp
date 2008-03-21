@@ -91,10 +91,9 @@ class QProjectMWidget : public QGLWidget
 
      }
 	
-     inline void releasePresetLock() {
-
-		qprojectM()->setPresetLock(m_presetWasLocked);
-		m_presetSeizeMutex.unlock();
+     inline void releasePresetLock() {	
+	     	qprojectM()->setPresetLock(m_presetWasLocked);
+		m_presetSeizeMutex.unlock();		
      }
      inline QProjectM * qprojectM() { return m_projectM; }
 
@@ -326,8 +325,10 @@ protected:
             void closeEvent(QCloseEvent *event);
 
 private slots:
+	
+      void selectPlaylistItem ( int rowIndex);
       void clearPlaylistModel();
-      void openPresetEditorDialog(const QModelIndexList indices);
+      void openPresetEditorDialog(int rowIndex);
       void aboutQt();
       void clearPlaylist();
       void addPresetsDialog();
