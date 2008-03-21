@@ -13,5 +13,7 @@
         <file>images/icons/hi16-action-projectm_random_no.png</file>
         <file>images/icons/hi16-action-projectm_save.png</file>
         <file>images/icons/hi16-action-projectm_unlock.png</file>
+        <file>images/icons/prjm-16transparent.png</file>
+        <file>images/icons/prjm16-transparent.svg</file>
     </qresource>
 </RCC>
