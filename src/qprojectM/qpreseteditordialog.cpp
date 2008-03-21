@@ -7,14 +7,14 @@ QPresetEditorDialog::QPresetEditorDialog(QProjectMWidget * widget, QWidget * par
 	_ui.setupUi(this);
 	
 	connect(_ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonBoxHandler(QAbstractButton*)));
-
+	
 }
 
-void QPresetEditorDialog::setPreset(QString url, const QModelIndex & index) {
-	
-	m_index = index;
+void QPresetEditorDialog::setPreset(QString url, int rowIndex) {
 	
 	disconnect(_ui.presetTextEdit, 0, this, 0);
+
+	m_index = rowIndex;
 	
 	m_presetUrl = url;	
 	_ui.presetTextEdit->loadPresetText(url);

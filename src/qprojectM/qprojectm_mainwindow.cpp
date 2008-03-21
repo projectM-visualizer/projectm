@@ -198,8 +198,15 @@ void QProjectM_MainWindow::selectPlaylistItem ( const QModelIndex & index )
 	if ( index.column() > 0 )
 		return;
 
-	qprojectM()->selectPreset ( index.row() );
-	*activePresetIndex = index.row();
+	selectPlaylistItem(index.row());
+
+}
+
+void QProjectM_MainWindow::selectPlaylistItem ( int rowIndex)
+{
+	
+	qprojectM()->selectPreset (rowIndex);
+	*activePresetIndex = rowIndex;
 	
 	playlistModel->updateItemHighlights();
 
@@ -259,8 +266,6 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 
 	disconnect(ui->tableView);
 	
-	connect ( ui->tableView, SIGNAL (presetEditorRequested(const QModelIndexList &)),
-		  this, SLOT(openPresetEditorDialog(const QModelIndexList &)), Qt::DirectConnection);
 
 	connect(ui->tableView, SIGNAL(deletesRequested(const QModelIndexList&)), 
 		this, SLOT(removePlaylistItems(const QModelIndexList&)));
@@ -272,35 +277,29 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 	
 }
 
-void QProjectM_MainWindow::openPresetEditorDialog(const QModelIndexList indices) {
+void QProjectM_MainWindow::openPresetEditorDialog(int rowIndex) {
 
-	
-	
-	if (indices.empty())
-		return;
-	QModelIndex firstIndex = indices[0];
-	selectPlaylistItem(firstIndex);
 	
 	qprojectMWidget()->seizePresetLock();	
-	Qt::CheckState stateBackup = ui->lockPresetCheckBox->checkState();
-	
-	ui->lockPresetCheckBox->setCheckState(Qt::Checked);
-		
+					
 	if (!m_QPresetEditorDialog) {
 		m_QPresetEditorDialog = new QPresetEditorDialog(qprojectMWidget());
-		connect(m_QPresetEditorDialog, SIGNAL(presetModified(const QModelIndex &)), 
-			this, SLOT(selectPlaylistItem(const QModelIndex&)));
+		connect(m_QPresetEditorDialog, SIGNAL(presetModified(int)),
+			this, SLOT(selectPlaylistItem(int)));
 	}
-	QString url = playlistModel->data( firstIndex, QPlaylistModel::URLInfoRole).toString() ;
 	
-	m_QPresetEditorDialog->setPreset(url, firstIndex);
-		
+	Q_ASSERT(historyHash.contains(previousFilter));
+	Q_ASSERT(playlistItemMetaDataHash.contains((*historyHash[previousFilter])[rowIndex]));
+	QString url = playlistItemMetaDataHash[(*historyHash[previousFilter])[rowIndex]].url;
+	
+	m_QPresetEditorDialog->setPreset(url, rowIndex);
+			
 	if (m_QPresetEditorDialog->exec()) {
-
+			
 	}
-					
-	ui->lockPresetCheckBox->setCheckState(stateBackup);
+	
 	qprojectMWidget()->releasePresetLock();
+	
 }
 
 
@@ -330,7 +329,8 @@ void QProjectM_MainWindow::dragAndDropPlaylistItems(const QModelIndexList & indi
 	} 
 	else 
 	{
-		abort();
+		// Self drag event ignored
+		// abort();
 		return;
 	}
 	
@@ -387,6 +387,13 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 	QModelIndex modelIndex;
 	switch ( e->key() )
 	{
+		
+		case Qt::Key_E:
+			if (e->modifiers() & Qt::ControlModifier) {					
+				if (activePresetIndex->hasValue())
+					openPresetEditorDialog(historyHash[previousFilter]->indexOf(activePresetIndex->value()));
+			} else
+				e->ignore();					
 		case Qt::Key_L:
 			
 			if (!(e->modifiers() & Qt::ControlModifier)) {
@@ -651,8 +658,11 @@ void QProjectM_MainWindow::openPlaylistDialog()
 		QString url = m_QPlaylistFileDialog->selectedFiles() [0];
 
 		
-		if ( !playlistModel->readPlaylist ( url ) )
+		if ( !playlistModel->readPlaylist ( url ) ) { 
+			qDebug() << "could not open playlist";
 			url = QString();
+			
+		}
 		qDebug() << "url: " << url;
 		updatePlaylistUrl(url);
 		
@@ -660,7 +670,7 @@ void QProjectM_MainWindow::openPlaylistDialog()
 		ui->presetSearchBarLineEdit->setText(searchText);
 		updateFilteredPlaylist ( ui->presetSearchBarLineEdit->text() );
 	}
-}
+}	
 
 void QProjectM_MainWindow::copyPlaylist()
 {
@@ -695,6 +705,7 @@ void QProjectM_MainWindow::copyPlaylist()
 		activePresetIndex->nullify();
 		qDebug() << "NULLIFIED";
 	}
+	
 	qprojectMWidget()->releasePresetLock();
 }
 
@@ -950,7 +961,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 	/// NEED A MUTEX TO STOP PROJECTM FROM SWITCHING PRESETS
 	playlistModel->clearItems();
 	
-	assert(!qprojectM()->presetPositionValid());
+	Q_ASSERT(!qprojectM()->presetPositionValid());
 	
 	bool presetExistsWithinFilter = false;
 	qDebug() << "preset position valid (preloop):" << qprojectM()->presetPositionValid();
@@ -997,7 +1008,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 	}
 	qDebug() << "preset exists within filter: " << presetExistsWithinFilter;
 	qDebug() << "preset position valid:" << qprojectM()->presetPositionValid();
-	assert(presetExistsWithinFilter == qprojectM()->presetPositionValid());
+	Q_ASSERT(presetExistsWithinFilter == qprojectM()->presetPositionValid());
 	
 	previousFilter = filter;
 	qprojectMWidget()->releasePresetLock();

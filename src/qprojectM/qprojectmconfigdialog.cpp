@@ -4,6 +4,7 @@
 #include "qplaylistfiledialog.hpp"
 #include <QSettings>
 
+
 QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, QProjectMWidget * qprojectMWidget, QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f), _configFile(configFile), _qprojectMWidget(qprojectMWidget), _settings("projectM", "qprojectM") {
 	
 	_ui.setupUi(this);
@@ -22,9 +23,11 @@ void QProjectMConfigDialog::buttonBoxHandler(QAbstractButton * button) {
 		case QDialogButtonBox::Close:
 			this->hide();
 			break;
-		case QDialogButtonBox::Apply:
+		case QDialogButtonBox::Save:
 			saveConfig();
+#ifdef PROJECTM_RESET_IS_THREAD_SAFE
 			emit(projectM_Reset());
+#endif
 			break;
 		case QDialogButtonBox::Reset:
 			loadConfig();
@@ -43,7 +46,7 @@ void QProjectMConfigDialog::openPlaylistFileDialog() {
 	
 	if (dialog.exec())
 	{
-		assert(!dialog.selectedFiles().empty());
+		Q_ASSERT(!dialog.selectedFiles().empty());
 		_ui.startupPlaylistFileLineEdit->setText(dialog.selectedFiles()[0]);
 		
 	}
@@ -59,7 +62,7 @@ void QProjectMConfigDialog::openPlaylistDirectoryDialog() {
 
 	if (dialog.exec())
 	{
-		assert(!dialog.selectedFiles().empty());
+		Q_ASSERT(!dialog.selectedFiles().empty());
 		_ui.startupPlaylistDirectoryLineEdit->setText(dialog.selectedFiles()[0]);
 		
 	}
@@ -71,7 +74,7 @@ void QProjectMConfigDialog::openMenuFontFileDialog() {
 	dialog.setFileMode(QFileDialog::ExistingFile);
 		
 	if (dialog.exec()) {
-		assert(!dialog.selectedFiles().empty());
+		Q_ASSERT(!dialog.selectedFiles().empty());
 		_ui.menuFontPathLineEdit->setText(dialog.selectedFiles()[0]);
 	
 		_settings.setValue("Menu Font Directory", dialog.directory().absolutePath());
@@ -85,7 +88,7 @@ void QProjectMConfigDialog::openTitleFontFileDialog() {
 	dialog.setFileMode(QFileDialog::ExistingFile);
 
 	if (dialog.exec()) {
-		assert(!dialog.selectedFiles().empty());
+		Q_ASSERT(!dialog.selectedFiles().empty());
 		_ui.titleFontPathLineEdit->setText(dialog.selectedFiles()[0]);
 		_settings.setValue("Title Font Directory", dialog.directory().absolutePath());
 	}
