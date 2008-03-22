@@ -148,6 +148,10 @@ void QProjectM_MainWindow::readConfig(const std::string & configFile ) {
 QProjectM_MainWindow::~QProjectM_MainWindow()
 {
 
+	
+	//this->qprojectMWidget()->mutex()->lock();
+		
+	
 	for ( QHash<QString, PlaylistItemVector*>::iterator pos = historyHash.begin(); pos != historyHash.end(); ++pos )
 	{
 		if ( pos.value() )
@@ -156,6 +160,7 @@ QProjectM_MainWindow::~QProjectM_MainWindow()
 
 	delete ( ui );
 	delete (activePresetIndex);
+	
 }
 
 void QProjectM_MainWindow::clearPlaylist()
@@ -497,9 +502,14 @@ void QProjectM_MainWindow::refreshHeaders(QResizeEvent * event) {
 }
 
 
+
 void QProjectM_MainWindow::closeEvent ( QCloseEvent *event )
 {
+	
+	emit(shuttingDown());
+	
 	writeSettings();
+	
 }
 
 

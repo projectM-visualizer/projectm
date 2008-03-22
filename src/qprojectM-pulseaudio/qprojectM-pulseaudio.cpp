@@ -103,26 +103,29 @@ int main ( int argc, char*argv[] )
 	
       	mainWindow->registerSettingsAction(&pulseAction);
 	mainWindow->show();
-
 	
-	QPulseAudioThread * pulseThread = new QPulseAudioThread(argc, argv, mainWindow->qprojectM(), mainWindow, &audioMutex);
+	QPulseAudioThread * pulseThread = new QPulseAudioThread(argc, argv, mainWindow->qprojectMWidget(), mainWindow, &audioMutex);
 
 	pulseThread->start();
 	
-	QApplication::connect
-			(mainWindow->qprojectMWidget(), SIGNAL(projectM_Initialized(QProjectM *)), pulseThread, SLOT(projectM_New(QProjectM*)));
+	
+	//QApplication::connect
+	//		(mainWindow->qprojectMWidget(), SIGNAL(projectM_Initialized(QProjectM *)), pulseThread, SLOT(setQrojectMWidget(QProjectMWidget*)));
 	
 	QPulseAudioDeviceChooser devChooser(pulseThread, mainWindow);	
 	QApplication::connect(&pulseAction, SIGNAL(triggered()), &devChooser, SLOT(open())); 
+	//QApplication::connect(pulseThread, SIGNAL(threadCleanedUp()), mainWindow, SLOT(close()));
 	
+	QApplication::connect(mainWindow, SIGNAL(shuttingDown()), pulseThread, SLOT(cleanup()), Qt::DirectConnection);
  	int ret = app.exec();
 	devChooser.writeSettings();
-
+	
 	if (mainWindow)
         	mainWindow->unregisterSettingsAction(&pulseAction);
 
 	/// @bug this blows up the program!
-	//delete(mainWindow);
+	//if (mainWindow)
+	//	delete(mainWindow);
 	return ret;
 }
 

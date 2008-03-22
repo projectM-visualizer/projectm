@@ -52,7 +52,6 @@
 #include "CustomWave.hpp"
 #include "CustomShape.hpp"
 #include "IdlePreset.hpp"
-#include "MoodBar.hpp"
 
 #include <map>
 

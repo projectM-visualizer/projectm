@@ -6,6 +6,11 @@
 QPresetEditorDialog::QPresetEditorDialog(QProjectMWidget * widget, QWidget * parent, Qt::WindowFlags f): QDialog(parent,f), _qprojectMWidget(widget) {
 	_ui.setupUi(this);
 	
+	QHBoxLayout * hboxLayout = new QHBoxLayout();
+	
+	hboxLayout->addWidget(_ui.layoutWidget);
+	this->setLayout(hboxLayout);
+	
 	connect(_ui.buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonBoxHandler(QAbstractButton*)));
 	
 }

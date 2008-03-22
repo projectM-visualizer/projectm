@@ -58,20 +58,21 @@
 QPulseAudioThread::SourceContainer QPulseAudioThread::s_sourceList;
 QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::s_sourcePosition;
  
-QProjectM ** QPulseAudioThread::s_projectMPtr = 0;
+QProjectMWidget ** QPulseAudioThread::s_qprojectMWidgetPtr = 0;
  
-QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, QProjectM * _projectM, QObject * parent, QMutex * audioMutex ) : QThread ( parent ), argc ( _argc ), argv ( _argv ),  m_projectM ( _projectM )
+QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, QProjectMWidget * qprojectMWidget, QObject * parent, QMutex * audioMutex ) : QThread ( parent ), argc ( _argc ), argv ( _argv ),  m_qprojectMWidget (qprojectMWidget )
 {
-	s_projectMPtr = new QProjectM*;
+	s_qprojectMWidgetPtr = new QProjectMWidget*;
 	s_audioMutex = audioMutex;
-	*s_projectMPtr = m_projectM;
+	*s_qprojectMWidgetPtr = m_qprojectMWidget;
 }
 
 
 QPulseAudioThread::~QPulseAudioThread()
 {
-	if (s_projectMPtr)
-		delete(s_projectMPtr);
+	if (s_qprojectMWidgetPtr)
+		delete(s_qprojectMWidgetPtr);
+	s_qprojectMWidgetPtr = 0;
 }
 
 QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::readSettings()
@@ -293,6 +294,7 @@ void QPulseAudioThread::pulseQuit ( int ret )
 {
 	assert ( mainloop_api );
 	mainloop_api->quit ( mainloop_api, ret );
+	
 }
 
 
@@ -455,8 +457,14 @@ void QPulseAudioThread::stdout_callback ( pa_mainloop_api*a, pa_io_event *e, int
 		//int * int_buf = (int *) buffer;
 		//qDebug() << "LOCK: add pcm";		
 		s_audioMutex->lock();
-		QProjectM ** prjmPtr = static_cast<QProjectM **> ( userdata ); 
-		QProjectM * prjm = *prjmPtr;
+		QProjectMWidget ** qprojectMWidgetPtr = static_cast<QProjectMWidget **> ( userdata ); 
+		
+		QProjectM * prjm = (*qprojectMWidgetPtr)->qprojectM();
+		
+		if (prjm == 0) {			
+			s_audioMutex->unlock();
+			return;
+		}
 		
 		Q_ASSERT(prjm);
 		Q_ASSERT(prjm->pcm());
@@ -479,6 +487,7 @@ void QPulseAudioThread::exit_signal_callback ( pa_mainloop_api*m, pa_signal_even
 {
 	if ( verbose )
 		fprintf ( stderr, "Got signal, exiting.\n" );
+		
 	pulseQuit ( 0 );
 }
 
@@ -667,11 +676,10 @@ void QPulseAudioThread::run()
 	signal ( SIGPIPE, SIG_IGN );
 #endif
 
-	Q_ASSERT(m_projectM);
 	if ( ! ( stdio_event = mainloop_api->io_new ( mainloop_api,
 	                       STDOUT_FILENO,
 	                       PA_IO_EVENT_OUTPUT,
-	                       stdout_callback, s_projectMPtr ) ) )
+	                       stdout_callback, s_qprojectMWidgetPtr ) ) )
 	{
 		fprintf ( stderr, "io_new() failed.\n" );
 		goto quit;
@@ -709,7 +717,7 @@ void QPulseAudioThread::run()
 		goto quit;
 	}
 quit:
-
+	emit(threadCleanedUp());
 	return ;
 }
 

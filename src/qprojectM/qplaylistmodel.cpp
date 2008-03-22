@@ -130,7 +130,7 @@ QVariant QPlaylistModel::ratingToIcon ( int rating )  const
 		case 6:
 			return QVariant ( QIcon ( ":/images/icons/rating-5.png" ) );
 		default:
-			if (rating < 0)
+			if (rating <= 0)
 				return QVariant ();
 			else 
 				return QVariant ( QIcon ( ":/images/icons/rating-5.png" ) );

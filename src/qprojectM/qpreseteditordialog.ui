@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>459</width>
-    <height>305</height>
+    <width>464</width>
+    <height>383</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -18,13 +18,13 @@
   <property name="sizeGripEnabled" >
    <bool>true</bool>
   </property>
-  <widget class="QWidget" name="" >
+  <widget class="QWidget" name="layoutWidget" >
    <property name="geometry" >
     <rect>
      <x>1</x>
-     <y>11</y>
-     <width>451</width>
-     <height>291</height>
+     <y>1</y>
+     <width>461</width>
+     <height>381</height>
     </rect>
    </property>
    <layout class="QHBoxLayout" >

@@ -12,7 +12,7 @@
   <property name="windowTitle" >
    <string>projectM Settings</string>
   </property>
-  <widget class="QWidget" name="" >
+  <widget class="QWidget" name="layoutWidget" >
    <property name="geometry" >
     <rect>
      <x>7</x>

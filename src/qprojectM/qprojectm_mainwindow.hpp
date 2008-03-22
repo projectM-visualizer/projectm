@@ -93,8 +93,9 @@ class QProjectMWidget : public QGLWidget
 	
      inline void releasePresetLock() {	
 	     	qprojectM()->setPresetLock(m_presetWasLocked);
-		m_presetSeizeMutex.unlock();		
+		m_presetSeizeMutex.unlock();
      }
+     
      inline QProjectM * qprojectM() { return m_projectM; }
 
 	
@@ -149,7 +150,7 @@ public slots:
 	std::string config_file;
 	QProjectM * m_projectM;	 
 		 void destroyProjectM() {
-			 
+			 			 			 
 			 if (m_projectM) {	
 				 delete(m_projectM);
 				 m_projectM = 0;
@@ -280,6 +281,8 @@ class QProjectM_MainWindow:public QMainWindow
 {
       Q_OBJECT
 
+	signals:
+		void shuttingDown();
 	public:
 
       typedef struct PlaylistItemMetaData {
@@ -319,6 +322,7 @@ class QProjectM_MainWindow:public QMainWindow
 
       void registerAction(const QAction &);
 
+	public slots:
 protected:
 
 
