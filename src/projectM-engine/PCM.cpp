@@ -113,8 +113,8 @@ void PCM::addPCMfloat(const float *PCMdata, int samples) const
 
       if (PCMdata[i] != 0 ) {
 	
-	PCMd[0][j%maxsamples]=PCMdata[i];
-	PCMd[1][j%maxsamples]=PCMdata[i];
+	PCMd[0][j%maxsamples] = PCMdata[i];
+	PCMd[1][j%maxsamples] = PCMdata[i];
 	
       }
       else 
