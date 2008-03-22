@@ -8,7 +8,8 @@
 #include <QHash>
 #include <QtDebug>
 #include <QMutex>
- 
+class QProjectMWidget;
+
 extern "C"
 {
 #include <pulse/introspect.h>
@@ -25,11 +26,9 @@ class QPulseAudioThread : public QThread
 	public:		
 		typedef QHash<int, QString> SourceContainer;
 		QPulseAudioThread () {}
-		QPulseAudioThread(int _argc, char **_argv, QProjectM * projectM, QObject *parent, QMutex * audioMutex);
+		QPulseAudioThread(int _argc, char **_argv, QProjectMWidget * qprojectMWidget, QObject *parent, QMutex * audioMutex);
 		virtual ~QPulseAudioThread();
 		void run();
-		void cleanup();
-
 		
 		QMutex * mutex();
 
@@ -43,9 +42,9 @@ class QPulseAudioThread : public QThread
 		}
 
 	public slots:
-		inline void projectM_New(QProjectM * projectM) {
-			m_projectM = projectM;
-			*s_projectMPtr = m_projectM;			
+		inline void setQProjectMWidget(QProjectMWidget * qprojectMWidget) {
+			m_qprojectMWidget = qprojectMWidget;
+			*s_qprojectMWidgetPtr = qprojectMWidget;
 		}
 		
 		void cork();
@@ -54,14 +53,16 @@ class QPulseAudioThread : public QThread
 			s_sourceList[index] = name;
 		}
 
+		void cleanup();
+
 		void connectDevice(const QModelIndex & index = QModelIndex());
 
 	signals:
 		void deviceChanged();
+		void threadCleanedUp();
 	private:
 		
-		QProjectM * m_projectM;
-// 				
+		QProjectMWidget * m_qprojectMWidget;
 		static SourceContainer::const_iterator readSettings();
 
 		static void reconnect(SourceContainer::const_iterator pos);
@@ -101,7 +102,7 @@ class QPulseAudioThread : public QThread
 		static pa_io_event * stdio_event;
 		static char * server;
 		static char * stream_name, *client_name, *device;
-		static QProjectM ** s_projectMPtr;
+		static QProjectMWidget ** s_qprojectMWidgetPtr;
 
 		static int verbose;
 
