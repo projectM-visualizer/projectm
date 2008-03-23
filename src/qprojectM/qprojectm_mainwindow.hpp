@@ -113,7 +113,8 @@ protected:
             void closeEvent(QCloseEvent *event);
 
 private slots:
-	
+
+      void hotkeyReference();
       void selectPlaylistItem ( int rowIndex);
       void clearPlaylistModel();
       void openPresetEditorDialog(int rowIndex);
