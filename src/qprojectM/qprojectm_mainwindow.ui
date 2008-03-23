@@ -50,6 +50,7 @@
     </property>
     <addaction name="actionAbout_qprojectM" />
     <addaction name="actionAbout_Qt" />
+    <addaction name="actionHotkey_Reference" />
    </widget>
    <widget class="QMenu" name="menuSettings" >
     <property name="title" >
@@ -405,6 +406,11 @@ image: url(:/images/icons/hi16-action-projectm_unlock.png);
    </property>
    <property name="text" >
     <string>Lock Active Preset</string>
+   </property>
+  </action>
+  <action name="actionHotkey_Reference" >
+   <property name="text" >
+    <string>Hotkey reference</string>
    </property>
   </action>
  </widget>

@@ -928,6 +928,7 @@ src/qprojectM-pulseaudio/QPulseAudioThread.hpp
 src/qprojectM-pulseaudio/qprojectM-pulseaudio.cpp
 src/qprojectM/CMakeLists.txt
 src/qprojectM/Makefile
+src/qprojectM/QProjectMWidget.hpp
 src/qprojectM/configfile.cpp
 src/qprojectM/configfile.hpp
 src/qprojectM/images
@@ -944,6 +945,8 @@ src/qprojectM/qpreseteditordialog.hpp
 src/qprojectM/qpresetfiledialog.hpp
 src/qprojectM/qpresettextedit.cpp
 src/qprojectM/qpresettextedit.hpp
+src/qprojectM/qprojectm.hpp
+src/qprojectM/qprojectm.hpp.h
 src/qprojectM/qprojectm_mainwindow.cpp
 src/qprojectM/qprojectm_mainwindow.hpp
 src/qprojectM/qprojectmconfigdialog.cpp
