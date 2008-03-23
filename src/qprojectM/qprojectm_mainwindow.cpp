@@ -835,8 +835,16 @@ void QProjectM_MainWindow::refreshPlaylist()
 
 void QProjectM_MainWindow::about()
 {
-	QMessageBox::about ( this, tr ( "About QProjectM and ProjectM" ),
-	                     tr ( "<p><b>QProjectM</b> provides useful gui extensions to the projectM core library. For problems please email Carmelo Piccione: \n<a href=\"mailto:carmelo.piccione+qprojectM@gmail.com\"> carmelo.piccione@gmail.com</a>.</p><p><b>projectM</b> is an advanced opensource music visualizer based on Geiss's Milkdrop. For more info visit us at <a href=\"http://projectm.sf.net\">projectm.sf.net</a>.</p>" ) );
+	QMessageBox::about ( this, tr ( "About qprojectM and projectM" ),
+	                     tr ( "<p><b>qprojectM</b> provides useful gui extensions to the projectM core library. For problems please email Carmelo Piccione: \n<a href=\"mailto:carmelo.piccione+qprojectM@gmail.com\"> carmelo.piccione+qprojectM@gmail.com</a>.</p><p><b>projectM</b> is an advanced opensource music visualizer based on Geiss's Milkdrop. For more info visit us at <a href=\"http://projectm.sf.net\">projectm.sf.net</a>.</p>" ) );
+}
+
+
+
+void QProjectM_MainWindow::hotkeyReference()
+{
+	QMessageBox::information ( this, tr( "Hotkey Reference"),
+				   tr ( "<dl><dt><b>CTRL-L</b></dt> <dd>Locks / unlocks the active preset</dd><dt><b>CTRL-R</b></dt> <dd>Randomly selects a preset from the playlist </dd><dt><b>CTRL-M</b></dt><dd>Show / hide the menu display</dd><dt><b>CTRL-E</b></dt> <dd> Opens the preset editor with the active preset</dd><dt><b>CTRL-F</b></dt> <dd> Enables / disables full screen mode</dd><dt><b>CTRL-Y</b></dt><dd>Enables / disables shuffle mode </dd><dt><b>CTRL-S</b></dt> <dd>Saves and applies changes to the active preset (only when editing) </dd></dl>" ));
 }
 
 void QProjectM_MainWindow::openSettingsDialog() {
@@ -862,7 +870,7 @@ void QProjectM_MainWindow::createActions()
 	connect ( ui->actionAbout_qprojectM, SIGNAL ( triggered() ), this, SLOT ( about() ) );
 	connect ( ui->actionConfigure_projectM, SIGNAL ( triggered() ), this, SLOT (openSettingsDialog()) );
 	connect ( ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
-
+	connect ( ui->actionHotkey_Reference, SIGNAL(triggered()), this, SLOT(hotkeyReference()));
 }
 
 void QProjectM_MainWindow::registerSettingsAction(QAction * action) {
