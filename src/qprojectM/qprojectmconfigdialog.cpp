@@ -9,6 +9,11 @@ QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, QPr
 	
 	
 	_ui.setupUi(this);
+		
+	QHBoxLayout * hboxLayout = new QHBoxLayout();
+	
+	hboxLayout->addWidget(_ui.layoutWidget);
+	this->setLayout(hboxLayout);
 	
 //	assert(!layout());
 	

@@ -15,10 +15,10 @@
   <widget class="QWidget" name="layoutWidget" >
    <property name="geometry" >
     <rect>
-     <x>7</x>
-     <y>7</y>
+     <x>8</x>
+     <y>8</y>
      <width>492</width>
-     <height>348</height>
+     <height>344</height>
     </rect>
    </property>
    <layout class="QGridLayout" >
@@ -41,7 +41,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1" colspan="7" >
+    <item row="0" column="1" colspan="6" >
      <widget class="QLineEdit" name="startupPlaylistDirectoryLineEdit" >
       <property name="sizePolicy" >
        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
@@ -57,7 +57,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="0" column="8" >
+    <item row="0" column="7" >
      <widget class="QToolButton" name="startupPlaylistDirectoryToolButton" >
       <property name="text" >
        <string>...</string>
@@ -83,7 +83,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="1" column="1" colspan="7" >
+    <item row="1" column="1" colspan="6" >
      <widget class="QLineEdit" name="startupPlaylistFileLineEdit" >
       <property name="sizePolicy" >
        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
@@ -99,7 +99,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="1" column="8" >
+    <item row="1" column="7" >
      <widget class="QToolButton" name="startupPlaylistFileToolButton" >
       <property name="text" >
        <string>...</string>
@@ -125,7 +125,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="2" column="1" colspan="7" >
+    <item row="2" column="1" colspan="6" >
      <widget class="QLineEdit" name="menuFontPathLineEdit" >
       <property name="sizePolicy" >
        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
@@ -141,7 +141,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="2" column="8" >
+    <item row="2" column="7" >
      <widget class="QToolButton" name="menuFontPathToolButton" >
       <property name="text" >
        <string>...</string>
@@ -167,7 +167,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="3" column="1" colspan="7" >
+    <item row="3" column="1" colspan="6" >
      <widget class="QLineEdit" name="titleFontPathLineEdit" >
       <property name="sizePolicy" >
        <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
@@ -183,7 +183,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="3" column="8" >
+    <item row="3" column="7" >
      <widget class="QToolButton" name="titleFontPathToolButton" >
       <property name="text" >
        <string>...</string>
@@ -213,14 +213,14 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="4" column="3" colspan="3" >
+    <item row="4" column="3" colspan="2" >
      <widget class="QLabel" name="label_4" >
       <property name="text" >
        <string>Smooth Preset Duration (s)</string>
       </property>
      </widget>
     </item>
-    <item row="4" column="6" colspan="3" >
+    <item row="4" column="5" colspan="3" >
      <widget class="QSpinBox" name="smoothPresetDurationSpinBox" >
       <property name="toolTip" >
        <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
@@ -265,7 +265,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="5" column="3" colspan="3" >
+    <item row="5" column="3" colspan="2" >
      <widget class="QLabel" name="label_6" >
       <property name="sizePolicy" >
        <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
@@ -278,7 +278,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="5" column="6" colspan="3" >
+    <item row="5" column="5" colspan="3" >
      <widget class="QSpinBox" name="maxFPSSpinBox" >
       <property name="sizePolicy" >
        <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
@@ -329,7 +329,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="6" column="3" colspan="3" >
+    <item row="6" column="3" colspan="2" >
      <widget class="QLabel" name="label_13" >
       <property name="sizePolicy" >
        <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
@@ -342,7 +342,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="6" column="6" colspan="3" >
+    <item row="6" column="5" colspan="3" >
      <widget class="QDoubleSpinBox" name="easterEggParameterSpinBox" >
       <property name="toolTip" >
        <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
@@ -358,26 +358,69 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="7" column="0" colspan="4" >
-     <widget class="QCheckBox" name="useAspectCorrectionCheckBox" >
-      <property name="sizePolicy" >
-       <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="toolTip" >
-       <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+    <item rowspan="3" row="7" column="0" colspan="3" >
+     <layout class="QVBoxLayout" >
+      <item>
+       <widget class="QCheckBox" name="useAspectCorrectionCheckBox" >
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip" >
+         <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;">
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">This makes a square look like a square, and a circle look like a circle in cases where they may not otherwise.&lt;/p>&lt;/body>&lt;/html></string>
-      </property>
-      <property name="text" >
-       <string>Use Aspect Correction</string>
-      </property>
-     </widget>
+        </property>
+        <property name="text" >
+         <string>Use Aspect Correction</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="menuOnStartupCheckBox" >
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text" >
+         <string>Show Menu on startup</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="fullscreenOnStartupCheckBox" >
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text" >
+         <string>Fullscreen on startup</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="shuffleOnStartupCheckBox" >
+        <property name="sizePolicy" >
+         <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text" >
+         <string>Shuffle on startup</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
-    <item row="7" column="4" >
+    <item row="7" column="3" >
      <widget class="QLabel" name="label_8" >
       <property name="sizePolicy" >
        <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
@@ -390,7 +433,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="7" column="5" >
+    <item row="7" column="4" >
      <widget class="QSpinBox" name="meshSizeWidthSpinBox" >
       <property name="toolTip" >
        <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
@@ -409,7 +452,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="7" column="6" >
+    <item row="7" column="5" >
      <widget class="QLabel" name="label_10" >
       <property name="sizePolicy" >
        <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
@@ -422,7 +465,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="7" column="7" colspan="2" >
+    <item row="7" column="6" colspan="2" >
      <widget class="QSpinBox" name="meshSizeHeightSpinBox" >
       <property name="toolTip" >
        <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
@@ -438,20 +481,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="8" column="0" colspan="4" >
-     <widget class="QCheckBox" name="menuOnStartupCheckBox" >
-      <property name="sizePolicy" >
-       <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text" >
-       <string>Show Menu on startup</string>
-      </property>
-     </widget>
-    </item>
-    <item rowspan="2" row="8" column="4" >
+    <item row="8" column="3" >
      <widget class="QLabel" name="label_5" >
       <property name="sizePolicy" >
        <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
@@ -464,7 +494,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item rowspan="2" row="8" column="5" >
+    <item row="8" column="4" >
      <widget class="QSpinBox" name="windowWidthSpinBox" >
       <property name="toolTip" >
        <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
@@ -486,7 +516,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item rowspan="2" row="8" column="6" >
+    <item row="8" column="5" >
      <widget class="QLabel" name="label_11" >
       <property name="sizePolicy" >
        <sizepolicy vsizetype="Preferred" hsizetype="MinimumExpanding" >
@@ -499,7 +529,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item rowspan="2" row="8" column="7" colspan="2" >
+    <item row="8" column="6" colspan="2" >
      <widget class="QSpinBox" name="windowHeightSpinBox" >
       <property name="toolTip" >
        <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
@@ -515,20 +545,7 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item rowspan="2" row="9" column="0" colspan="4" >
-     <widget class="QCheckBox" name="fullscreenOnStartupCheckBox" >
-      <property name="sizePolicy" >
-       <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text" >
-       <string>Fullscreen on startup</string>
-      </property>
-     </widget>
-    </item>
-    <item rowspan="2" row="10" column="4" colspan="5" >
+    <item row="9" column="3" colspan="5" >
      <widget class="QDialogButtonBox" name="buttonBox" >
       <property name="toolTip" >
        <string>Click save to write the settings to your projectM config file. The reset button will bring your settings back to whatever was stored on disk. </string>
@@ -541,19 +558,6 @@ p, li { white-space: pre-wrap; }
       </property>
       <property name="standardButtons" >
        <set>QDialogButtonBox::Close|QDialogButtonBox::NoButton|QDialogButtonBox::Reset|QDialogButtonBox::Save</set>
-      </property>
-     </widget>
-    </item>
-    <item row="11" column="0" colspan="4" >
-     <widget class="QCheckBox" name="shuffleOnStartupCheckBox" >
-      <property name="sizePolicy" >
-       <sizepolicy vsizetype="Fixed" hsizetype="MinimumExpanding" >
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="text" >
-       <string>Shuffle on startup</string>
       </property>
      </widget>
     </item>
