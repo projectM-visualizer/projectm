@@ -192,6 +192,10 @@ extern "C" int lv_projectm_events (VisPluginData *plugin, VisEventQueue *events)
 		lv_projectm_dimension (plugin, ev.event.resize.video,
 				       ev.event.resize.width, ev.event.resize.height);
 		break;
+	      case VISUAL_EVENT_NEWSONG:
+		priv->PM->projectM_setTitle(ev.event.newsong.songinfo->songname);
+		
+		break;
 		
 	      default: /* to avoid warnings */
 		break;
@@ -214,8 +218,7 @@ extern "C" int lv_projectm_render (VisPluginData *plugin, VisVideo *video, VisAu
 {
 	ProjectmPrivate *priv = (ProjectmPrivate*)visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisBuffer pcmb;
-	float pcm[2][512];
-	//short pcms[2][512];
+	float pcm[2][512];	
 	int i;
 
 	visual_buffer_set_data_pair (&pcmb, pcm[0], sizeof (pcm[0]));
@@ -223,15 +226,6 @@ extern "C" int lv_projectm_render (VisPluginData *plugin, VisVideo *video, VisAu
 
 	visual_buffer_set_data_pair (&pcmb, pcm[1], sizeof (pcm[1]));
 	visual_audio_get_sample (audio, &pcmb, (char*)VISUAL_AUDIO_CHANNEL_RIGHT);
-
-	/*
-	for (i = 0; i < 512; i++) {
-		pcms[0][i] = pcm[0][i] * 32768.0;
-		pcms[1][i] = pcm[1][i] * 32768.0;
-	}
-
-	addPCM16Data(pcms,512);
-	*/
 
 	priv->PM->pcm()->addPCMfloat(*pcm,512);
 	
@@ -321,54 +315,6 @@ std::string read_config()
 
    }
 
-
- /*
-     fgets(num, 512, in);  fgets(num, 512, in);  fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &texsize);  
-
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &gx);  
-
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &gy);   
-
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &wvw);  
-
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &wvh);  
-   
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &fps);
-
-     fgets(num, 512, in);
-     if(fgets(num, 512, in) != NULL) sscanf (num, "%d", &fullscreen);
-     fgets(num, 512, in);
-
-     if(fgets(num, 512, in) != NULL)  strcpy(preset_dir, num);
-     preset_dir[strlen(preset_dir)-1]='\0';
- */ 
-     /*
-     fgets(num, 80, in);
-     fgets(num, 80, in);
-     
-     n=0;
-     while (num[n]!=' ' && num[n]!='\n' && n < 80 && num[n]!=EOF)
-       {
-	 	 disp[n]=num[n];
-		 n++;
-       }
-     disp[n]=0;
-
-    
-     // sprintf(disp,"%s",num );
-      setenv("DISPLAY",disp,1);
-      printf("%s %d\n", disp,strlen(disp));
-      setenv("LD_PRELOAD", "/usr/lib/tls/libGL.so.1.0.4496", 1);
-     */
- // fclose(in); 
-  
- abort();
 } 
 
 
