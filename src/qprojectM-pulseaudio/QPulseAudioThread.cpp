@@ -62,7 +62,7 @@ QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::s_sourcePo
  
 QProjectM_MainWindow ** QPulseAudioThread::s_qprojectM_MainWindowPtr = 0;
  
-QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, QProjectM_MainWindow * mainWindow ) : QThread ( mainWindow ), argc ( _argc ), argv ( _argv ),  m_qprojectM_MainWindow (mainWindow)
+QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, QProjectM_MainWindow * mainWindow ) : QThread ( 0 ), argc ( _argc ), argv ( _argv ),  m_qprojectM_MainWindow (mainWindow)
 {
 	s_qprojectM_MainWindowPtr = new QProjectM_MainWindow*;
 	*s_qprojectM_MainWindowPtr = m_qprojectM_MainWindow;
@@ -295,7 +295,9 @@ void QPulseAudioThread::pulseQuit ( int ret )
 {
 	assert ( mainloop_api );
 	mainloop_api->quit ( mainloop_api, ret );
-	
+	if (*s_qprojectM_MainWindowPtr)
+	delete(*s_qprojectM_MainWindowPtr);
+	*s_qprojectM_MainWindowPtr = 0;
 }
 
 
