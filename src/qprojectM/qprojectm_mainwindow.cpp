@@ -518,12 +518,8 @@ void QProjectM_MainWindow::refreshHeaders(QResizeEvent * event) {
 
 
 void QProjectM_MainWindow::closeEvent ( QCloseEvent *event )
-{
-	
-	emit(shuttingDown());
-	
-	writeSettings();
-	
+{	
+	writeSettings();	
 }
 
 

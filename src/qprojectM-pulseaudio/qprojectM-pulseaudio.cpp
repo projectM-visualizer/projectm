@@ -116,16 +116,17 @@ int main ( int argc, char*argv[] )
 	QApplication::connect(&pulseAction, SIGNAL(triggered()), &devChooser, SLOT(open())); 
 	//QApplication::connect(pulseThread, SIGNAL(threadCleanedUp()), mainWindow, SLOT(close()));
 	
-	QApplication::connect(mainWindow, SIGNAL(shuttingDown()), pulseThread, SLOT(cleanup()), Qt::DirectConnection);
+	//QApplication::connect(mainWindow, SIGNAL(shuttingDown()), pulseThread, SLOT(cleanup()), Qt::DirectConnection);
  	int ret = app.exec();
 	devChooser.writeSettings();
 	
 	if (mainWindow)
         	mainWindow->unregisterSettingsAction(&pulseAction);
 
-	/// @bug this blows up the program!
-	//if (mainWindow)
-	//	delete(mainWindow);
+	pulseThread->cleanup();
+	
+	
+	delete(pulseThread);
 	return ret;
 }
 
