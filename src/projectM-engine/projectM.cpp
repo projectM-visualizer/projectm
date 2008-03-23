@@ -698,7 +698,7 @@ DLLEXPORT void projectM::projectM_setTitle ( std::string title )
 	if ( title != renderer->title )
 	{
 		renderer->title=title;
-		renderer->drawtitle=true;
+		renderer->drawtitle=1;
 	}
 }
 
