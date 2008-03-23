@@ -8,7 +8,6 @@
 #include <QHash>
 #include <QtDebug>
 #include <QMutex>
-class QProjectMWidget;
 
 extern "C"
 {
@@ -17,8 +16,8 @@ extern "C"
 #include <pulse/browser.h>
 }
 
-class QProjectM;
-
+#include "qprojectm_mainwindow.hpp"
+			 
 
 class QPulseAudioThread : public QThread
 {	
@@ -26,7 +25,8 @@ class QPulseAudioThread : public QThread
 	public:		
 		typedef QHash<int, QString> SourceContainer;
 		QPulseAudioThread () {}
-		QPulseAudioThread(int _argc, char **_argv, QProjectMWidget * qprojectMWidget, QObject *parent, QMutex * audioMutex);
+		QPulseAudioThread
+				(int _argc, char **_argv, QProjectM_MainWindow * qprojectM_MainWindow);
 		virtual ~QPulseAudioThread();
 		void run();
 		
@@ -42,10 +42,6 @@ class QPulseAudioThread : public QThread
 		}
 
 	public slots:
-		inline void setQProjectMWidget(QProjectMWidget * qprojectMWidget) {
-			m_qprojectMWidget = qprojectMWidget;
-			*s_qprojectMWidgetPtr = qprojectMWidget;
-		}
 		
 		void cork();
 		
@@ -61,8 +57,8 @@ class QPulseAudioThread : public QThread
 		void deviceChanged();
 		void threadCleanedUp();
 	private:
-		
-		QProjectMWidget * m_qprojectMWidget;
+	
+		QProjectM_MainWindow * m_qprojectM_MainWindow;
 		static SourceContainer::const_iterator readSettings();
 
 		static void reconnect(SourceContainer::const_iterator pos);
@@ -102,7 +98,7 @@ class QPulseAudioThread : public QThread
 		static pa_io_event * stdio_event;
 		static char * server;
 		static char * stream_name, *client_name, *device;
-		static QProjectMWidget ** s_qprojectMWidgetPtr;
+		static QProjectM_MainWindow ** s_qprojectM_MainWindowPtr; 
 
 		static int verbose;
 

@@ -3,7 +3,7 @@
 #include <QAction>
 #include "qplaylistfiledialog.hpp"
 #include <QSettings>
-
+#include "qprojectmwidget.hpp"
 
 QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, QProjectMWidget * qprojectMWidget, QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f), _configFile(configFile), _qprojectMWidget(qprojectMWidget), _settings("projectM", "qprojectM") {
 	
