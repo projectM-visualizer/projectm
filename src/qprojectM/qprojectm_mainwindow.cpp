@@ -836,7 +836,7 @@ void QProjectM_MainWindow::refreshPlaylist()
 void QProjectM_MainWindow::about()
 {
 	QMessageBox::about ( this, tr ( "About qprojectM and projectM" ),
-	                     tr ( "<p><b>qprojectM</b> provides useful gui extensions to the projectM core library. For problems please email Carmelo Piccione: \n<a href=\"mailto:carmelo.piccione+qprojectM@gmail.com\"> carmelo.piccione+qprojectM@gmail.com</a>.</p><p><b>projectM</b> is an advanced opensource music visualizer based on Geiss's Milkdrop. For more info visit us at <a href=\"http://projectm.sf.net\">projectm.sf.net</a>.</p>" ) );
+	                     tr ( "<p><b>qprojectM</b> provides useful gui extensions to the projectM core library. For problems please email Carmelo Piccione: \n<a href=\"mailto:carmelo.piccione+qprojectM@gmail.com\"> carmelo.piccione+qprojectM@gmail.com</a>.</p><p><b>projectM</b> is an advanced opensource music visualizer originally based on Milkdrop but over time has gone above and beyond it. For more info visit us at <a href=\"http://projectm.sf.net\">projectm.sf.net</a> or join #projectM on the freenode IRC network." ) );
 }
 
 
