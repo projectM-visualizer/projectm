@@ -49,7 +49,7 @@ public:
   int totalframes;
   float realfps;
   std::string title;
-  bool drawtitle;
+  int drawtitle;
   int texsize;
 
   Renderer( int width, int height, int gx, int gy, int texsize,  BeatDetect *beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);

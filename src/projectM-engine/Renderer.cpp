@@ -28,7 +28,7 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 	this->studio = false;
 	this->realfps=0;
 	
-	this->drawtitle=false;
+	this->drawtitle=0;
 	
 	this->title = "Unknown";
 	
