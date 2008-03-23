@@ -4,6 +4,7 @@
 #include <QString>
 #include <QVector>
 
+
 /* Adopted from PulseAudio.
 
   Copyright 2004-2006 Lennart Poettering
@@ -25,6 +26,7 @@
 #include <fcntl.h>
 
 #include <QSettings>
+
 #include "qprojectm_mainwindow.hpp"
 
 #define TIME_EVENT_USEC 50000
@@ -58,21 +60,20 @@
 QPulseAudioThread::SourceContainer QPulseAudioThread::s_sourceList;
 QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::s_sourcePosition;
  
-QProjectMWidget ** QPulseAudioThread::s_qprojectMWidgetPtr = 0;
+QProjectM_MainWindow ** QPulseAudioThread::s_qprojectM_MainWindowPtr = 0;
  
-QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, QProjectMWidget * qprojectMWidget, QObject * parent, QMutex * audioMutex ) : QThread ( parent ), argc ( _argc ), argv ( _argv ),  m_qprojectMWidget (qprojectMWidget )
+QPulseAudioThread::QPulseAudioThread ( int _argc, char **_argv, QProjectM_MainWindow * mainWindow ) : QThread ( mainWindow ), argc ( _argc ), argv ( _argv ),  m_qprojectM_MainWindow (mainWindow)
 {
-	s_qprojectMWidgetPtr = new QProjectMWidget*;
-	s_audioMutex = audioMutex;
-	*s_qprojectMWidgetPtr = m_qprojectMWidget;
+	s_qprojectM_MainWindowPtr = new QProjectM_MainWindow*;
+	*s_qprojectM_MainWindowPtr = m_qprojectM_MainWindow;
 }
 
 
 QPulseAudioThread::~QPulseAudioThread()
 {
-	if (s_qprojectMWidgetPtr)
-		delete(s_qprojectMWidgetPtr);
-	s_qprojectMWidgetPtr = 0;
+	if (s_qprojectM_MainWindowPtr)
+		delete(s_qprojectM_MainWindowPtr);
+	s_qprojectM_MainWindowPtr = 0;
 }
 
 QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::readSettings()
@@ -454,27 +455,27 @@ void QPulseAudioThread::stdout_callback ( pa_mainloop_api*a, pa_io_event *e, int
 	else
 	{
 		
-		//int * int_buf = (int *) buffer;
-		//qDebug() << "LOCK: add pcm";		
-		s_audioMutex->lock();
-		QProjectMWidget ** qprojectMWidgetPtr = static_cast<QProjectMWidget **> ( userdata ); 
 		
-		QProjectM * prjm = (*qprojectMWidgetPtr)->qprojectM();
+		//s_audioMutex->lock();
+		QProjectM_MainWindow ** qprojectM_MainWindowPtr = static_cast<QProjectM_MainWindow**> ( userdata ); 
+		QProjectM_MainWindow * qprojectM_MainWindow = * qprojectM_MainWindowPtr;
 		
-		if (prjm == 0) {			
-			s_audioMutex->unlock();
-			return;
-		}
+		//QProjectM * prjm = (*qprojectMWidgetPtr)->qprojectM();
 		
-		Q_ASSERT(prjm);
-		Q_ASSERT(prjm->pcm());
+		//if (prjm == 0) {			
+		//	s_audioMutex->unlock();
+		//	return;
+		//}
+		
+		//Q_ASSERT(prjm);
+		//Q_ASSERT(prjm->pcm());
 		Q_ASSERT(buffer);
 
-		prjm->pcm()->addPCMfloat 
+		qprojectM_MainWindow->addPCM
 				( buffer+buffer_index, buffer_length / ( sizeof ( float ) ) );
-		s_audioMutex->unlock();
+		//s_audioMutex->unlock();
 		//qDebug() << "UNLOCK: add pcm";
-		assert ( buffer_length );
+		//assert ( buffer_length );
 		
 		pa_xfree ( buffer );
 		buffer = NULL;
@@ -679,7 +680,7 @@ void QPulseAudioThread::run()
 	if ( ! ( stdio_event = mainloop_api->io_new ( mainloop_api,
 	                       STDOUT_FILENO,
 	                       PA_IO_EVENT_OUTPUT,
-	                       stdout_callback, s_qprojectMWidgetPtr ) ) )
+	                       stdout_callback, s_qprojectM_MainWindowPtr ) ) )
 	{
 		fprintf ( stderr, "io_new() failed.\n" );
 		goto quit;
@@ -725,7 +726,7 @@ void QPulseAudioThread::initialize_callbacks ( QPulseAudioThread * pulseThread )
 {
 	pa_operation * op;
 	pa_operation_unref
-	( pa_context_get_source_info_list ( context, pa_source_info_callback, pulseThread ) );
+		( pa_context_get_source_info_list ( context, pa_source_info_callback, pulseThread ) );
 
 	//pa_operation_unref(pa_context_get_server_info(&c, server_info_callback, this));
 	//pa_operation_unref(pa_context_get_sink_info_list(&c, sink_info_callback, this));

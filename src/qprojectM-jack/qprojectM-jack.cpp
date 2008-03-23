@@ -200,7 +200,7 @@ config_file = read_config();
    QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow(config_file, 0);
    mainWindow->show();
 
-   globalPM = mainWindow->qprojectM();
+   globalPM = mainWindow->GetProjectM();
 
 
 

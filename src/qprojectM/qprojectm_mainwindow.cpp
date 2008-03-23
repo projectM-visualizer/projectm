@@ -36,6 +36,8 @@
 #include "ConfigFile.h"
 #include "qxmlplaylisthandler.hpp"
 #include "nullable.hpp"
+#include "qprojectmwidget.hpp"
+
 class PlaylistWriteFunctor {
 	public:
 		PlaylistWriteFunctor(const QVector<QProjectM_MainWindow::PlaylistItemMetaData*>::iterator & begin,
@@ -187,6 +189,17 @@ QProjectM * QProjectM_MainWindow::qprojectM()
 	return m_QProjectMWidget->qprojectM();
 }
 
+
+projectM * QProjectM_MainWindow::GetProjectM()
+{
+	return m_QProjectMWidget->qprojectM();
+}
+
+void QProjectM_MainWindow::addPCM(float * buffer, unsigned int bufferSize) {
+	
+	qprojectM()->pcm()->addPCMfloat(buffer, bufferSize);
+}
+
 void QProjectM_MainWindow::updatePlaylistSelection ( bool hardCut, unsigned int index )
 {
 
@@ -218,6 +231,7 @@ void QProjectM_MainWindow::selectPlaylistItem ( int rowIndex)
 }
 
 void QProjectM_MainWindow::postProjectM_Initialize()
+		
 {
 	QSettings qSettings("projectM", "qprojectM");
 		
@@ -765,8 +779,7 @@ void QProjectM_MainWindow::removePlaylistItems(const QModelIndexList & items) {
 		foreach (int key, reverseOrderKeys) {	
 			playlistModel->removeRow(key);
 		}
-		
-		
+				
 		qprojectMWidget()->releasePresetLock();
 }
 
