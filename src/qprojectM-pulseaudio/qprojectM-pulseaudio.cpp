@@ -104,7 +104,7 @@ int main ( int argc, char*argv[] )
       	mainWindow->registerSettingsAction(&pulseAction);
 	mainWindow->show();
 	
-	QPulseAudioThread * pulseThread = new QPulseAudioThread(argc, argv, mainWindow->qprojectMWidget(), mainWindow, &audioMutex);
+	QPulseAudioThread * pulseThread = new QPulseAudioThread(argc, argv, mainWindow);
 
 	pulseThread->start();
 	
