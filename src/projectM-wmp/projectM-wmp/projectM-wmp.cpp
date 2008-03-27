@@ -79,7 +79,7 @@ STDMETHODIMP CProjectMwmp::Render(TimedLevel *pLevels, HDC hdc, RECT *prc)
 		width = (int)(prc->right - prc->left);
 		height = (int)(prc->bottom - prc->top);
 	    
-		globalPM = new projectM("C:\\Program\ Files\\projectM\\config.inp");//24,18,0,128,width,height,"C:\\Documents and Settings\\DEV2\\My Documents\\svn\\presets_projectM\\");
+		globalPM = new projectM("C:\\Program Files\\projectM\\config.inp");//24,18,0,128,width,height,"C:\\Documents and Settings\\DEV2\\My Documents\\svn\\presets_projectM\\");
 		
 	}
 
@@ -92,7 +92,9 @@ STDMETHODIMP CProjectMwmp::Render(TimedLevel *pLevels, HDC hdc, RECT *prc)
 	 	globalPM->projectM_resetGL(width,height);
 	}
 
-	globalPM->pcm->addPCM8(pLevels->waveform);
+	//PCM* pcm = globalPM->pcm;
+
+	//pcm->addPCM8(pLevels->waveform);
 	wglMakeCurrent(hdc, hrc);	
 	globalPM->projectM_resetGL(width,height);
     globalPM->renderFrame();
@@ -526,8 +528,8 @@ HRESULT CProjectMwmp::WzToColor(const WCHAR *pwszColor, COLORREF *pcrColor)
         dwRet <<= 4;
         // and add in the value of this string
 
-        if ((pwszColor[i] >= L'0') && (pwszColor[i] <= L'9'))
-        {
+		if ((pwszColor[i] >= L'0') && (pwszColor[i] <= L'9'))
+		{
             dwRet += pwszColor[i] - '0';
         }
         else if ((pwszColor[i] >= L'A') && (pwszColor[i] <= L'F'))

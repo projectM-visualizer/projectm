@@ -63,6 +63,7 @@
 #include "fatal.h"
 #include "PresetFrameIO.hpp"
 #include "PCM.hpp"
+#include "pthread.h"
 
 #include <memory>
 
@@ -87,8 +88,8 @@ class TimeKeeper;
 #endif
 
 /** KEEP THIS UP TO DATE! */
-#define PROJECTM_VERSION "1.00.00"
-#define PROJECTM_TITLE "projectM 1.00.00"
+#define PROJECTM_VERSION "1.10.00"
+#define PROJECTM_TITLE "projectM 1.10.00"
 
 /** Interface types */
 typedef enum {
@@ -220,7 +221,8 @@ public:
   /// Returns the size of the play list
   unsigned int getPlaylistSize() const;
 
-  
+  void evaluateSecondPreset();
+
   inline void setShuffleEnabled(bool value)
   {
 	  _settings.shuffleEnabled = value;

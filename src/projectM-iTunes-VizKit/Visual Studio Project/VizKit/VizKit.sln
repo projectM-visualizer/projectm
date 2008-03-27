@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VizKit", "VizKit.vcproj", "{C996A961-AAE7-42DF-859F-E3434EC13885}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "freetype", "..\..\..\WinLibs\freetype-2.3.5\builds\win32\visualc\freetype.vcproj", "{78B079BD-9FC7-4B9E-B4A6-96DA0F00248B}"

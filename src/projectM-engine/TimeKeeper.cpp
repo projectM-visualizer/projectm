@@ -96,7 +96,10 @@ int TimeKeeper::PresetFrameA()
   }
 
 double TimeKeeper::sampledPresetDuration() {
-	
-	return  fmax(1, fmin(60, RandomNumberGenerators::gaussian
+#ifdef WIN32
+	return  _presetDuration;
+#else
+		return fmax(1, fmin(60, RandomNumberGenerators::gaussian
 			(_presetDuration, _easterEgg)));
+#endif
 }

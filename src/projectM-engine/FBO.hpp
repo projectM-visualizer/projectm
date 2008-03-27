@@ -38,7 +38,6 @@
 
 #ifdef WIN32
 #include <windows.h>
-#include <glew.h>
 #endif /** WIN32 */
 
 #ifdef LINUX

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="projectM-wmp"
 	ProjectGUID="{E182C41E-2EF4-4BE6-8D85-F9A0982CD38C}"
 	RootNamespace="projectMwmp"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -74,6 +75,8 @@
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				BaseAddress="254803968"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -93,9 +96,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -128,7 +128,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="&quot;..\..\projectM-engine&quot;;&quot;..\..\WinLibs\glew\include\GL&quot;;"
+				AdditionalIncludeDirectories="&quot;..\..\projectM-engine&quot;;..\..\WinLibs\glew\include\GL;C:\Users\pete\Desktop\trunk\src\WinLibs\pthreads\include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;_WINNT_WIN32=0x5000"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="2"
@@ -149,7 +149,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				RegisterOutput="true"
-				AdditionalDependencies="opengl32.lib glu32.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib pthreadVC2.lib"
+				AdditionalLibraryDirectories="C:\Users\pete\Desktop\trunk\src\WinLibs\pthreads\lib"
 				LinkDLL="true"
 				IgnoreDefaultLibraryNames=""
 				ModuleDefinitionFile="projectM-wmp.def"
@@ -158,6 +159,8 @@
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				BaseAddress="254803968"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -177,9 +180,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"

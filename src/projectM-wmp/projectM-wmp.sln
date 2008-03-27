@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "projectM-wmp", "projectM-wmp\projectM-wmp.vcproj", "{E182C41E-2EF4-4BE6-8D85-F9A0982CD38C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libprojectM", "..\projectM-engine\libprojectM.vcproj", "{31B91091-431A-4842-8682-2A04B51C980A}"

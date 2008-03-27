@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="glew_static"
 	ProjectGUID="{94AC71AA-7528-4E56-A5A9-EDDFE6D20A39}"
 	RootNamespace="glew_static"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

@@ -5,8 +5,8 @@
 /* link this file in with the server and any clients */
 
 
- /* File created by MIDL compiler version 7.00.0499 */
-/* at Tue Oct 09 16:15:59 2007
+ /* File created by MIDL compiler version 7.00.0500 */
+/* at Mon Mar 24 00:15:24 2008
  */
 /* Compiler settings for .\projectM-wmp.idl:
     Oicf, W1, Zp8, env=Win32 (32b run)

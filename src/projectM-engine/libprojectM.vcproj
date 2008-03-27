@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="libprojectM"
 	ProjectGUID="{31B91091-431A-4842-8682-2A04B51C980A}"
 	RootNamespace="libprojectM"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -119,7 +120,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="&quot;..\WinLibs\freetype-2.3.5\include&quot;;&quot;..\WinLibs\FTGL\include&quot;;&quot;..\WinLibs\glew\include\GL&quot;"
+				AdditionalIncludeDirectories="C:\Users\pete\Desktop\trunk\src\WinLibs\pthreads\include;&quot;..\WinLibs\freetype-2.3.5\include&quot;;..\WinLibs\FTGL\include;..\WinLibs\glew\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;GLEW_STATIC;USE_FBO; USE_FTGL"
 				StringPooling="true"
 				RuntimeLibrary="0"
@@ -174,11 +175,11 @@
 	<References>
 		<ProjectReference
 			ReferencedProjectIdentifier="{94AC71AA-7528-4E56-A5A9-EDDFE6D20A39}"
-			RelativePathToProject="..\..\..\WinLibs\glew\build\vc6\glew_static.vcproj"
+			RelativePathToProject="..\WinLibs\glew\build\vc6\glew_static.vcproj"
 		/>
 		<ProjectReference
 			ReferencedProjectIdentifier="{4A80DC08-8D4E-4136-B818-AF0024000A21}"
-			RelativePathToProject="..\..\..\WinLibs\FTGL\win32_vcpp\ftgl_static_lib\ftgl_static_lib.vcproj"
+			RelativePathToProject="..\WinLibs\FTGL\win32_vcpp\ftgl_static_lib\ftgl_static_lib.vcproj"
 		/>
 	</References>
 	<Files>
@@ -255,10 +256,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\MoodBar.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Param.cpp"
 				>
 			</File>
@@ -315,11 +312,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\stb_image.c"
+				RelativePath=".\stb_image_aug.c"
 				>
 			</File>
 			<File
 				RelativePath=".\TextureManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TimeKeeper.cpp"
 				>
 			</File>
 			<File
@@ -512,11 +513,15 @@
 				>
 			</File>
 			<File
-				RelativePath=".\stb_image.h"
+				RelativePath=".\stb_image_aug.h"
 				>
 			</File>
 			<File
 				RelativePath=".\TextureManager.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\TimeKeeper.hpp"
 				>
 			</File>
 			<File

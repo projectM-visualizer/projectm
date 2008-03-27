@@ -45,7 +45,7 @@ struct timeval GetCurrentTime();
 #else
 #include <windows.h>
 unsigned int getTicks( long start );
-long GetCurrentTime();
+
 #endif /** !WIN32 */
 
 #endif /** _TIMER_H */

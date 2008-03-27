@@ -37,21 +37,12 @@ unsigned int getTicks( struct timeval *start ) {
     ticks=(now.tv_sec-start->tv_sec)*1000+(now.tv_usec-start->tv_usec)/1000;
     return(ticks);
   }
-struct timeval GetCurrentTime()
-  {
-        struct timeval now;
-	gettimeofday (&now, NULL );
-	return now;
-  }
+
 #else
 unsigned int getTicks( long start ) {
     return GetTickCount() - start;
   }
 
-long GetCurrentTime()
-{
-	return GetTickCount();
-}
 #endif /** !WIN32 */
 
 
