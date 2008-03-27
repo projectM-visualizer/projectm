@@ -6,7 +6,7 @@
 #include <GL/gl.h>
 #endif
 #ifdef WIN32
-#include <glew.h>
+#include <GL/glew.h>
 #endif
 #include "SOIL.h"
 #include <iostream>
