@@ -56,9 +56,9 @@ void TextureManager::Preload()
 
 void TextureManager::Clear()
 {
-	std::map<std::string, GLuint>::const_iterator iter;
+	
 
-  for(iter = textures.begin(); iter != textures.end(); iter++)
+  for(std::map<std::string, GLuint>::const_iterator iter = textures.begin(); iter != textures.end(); iter++)
     {
       glDeleteTextures(1,&iter->second);
     }

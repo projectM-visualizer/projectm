@@ -61,8 +61,9 @@
 #include "ConfigFile.h"
 #include "TextureManager.hpp"
 #include "TimeKeeper.hpp"
+#ifdef USE_THREADS
 #include "pthread.h"
-
+#endif
 /*
 DLLEXPORT projectM::projectM ( int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url,std::string title_fonturl, std::string title_menuurl ) :beatDetect ( 0 ),  renderer ( 0 ), settings.presetURL ( preset_url ), title_fontURL ( title_fonturl ), menu_fontURL ( menu_fontURL ), smoothFrame ( 0 ), m_presetQueuePos(0)
 {
@@ -77,7 +78,7 @@ DLLEXPORT projectM::projectM ( int gx, int gy, int fps, int texsize, int width, 
 projectM::~projectM()
 {
 
- 
+ #ifdef USE_THREADS
   	printf("c");
 	running = false;
 	printf("l");
@@ -91,7 +92,7 @@ projectM::~projectM()
 	printf("u");
 	pthread_mutex_destroy( &mutex );
 	printf("p");
-
+#endif
 	destroyPresetTools();
 
 
@@ -172,11 +173,11 @@ void projectM::readConfig (const std::string & configFile )
 	_settings.smoothPresetDuration =  config.read<int> 
 			( "Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 10));
 	_settings.presetDuration = config.read<int> ( "Preset Duration", 15 );
-	_settings.presetURL = config.read<string> ( "Preset Path", CMAKE_INSTALL_PREFIX "/share/projectM/presets" );
+	_settings.presetURL = config.read<string> ( "Preset Path",  "/share/projectM/presets" );
 	_settings.titleFontURL = config.read<string> 
-			( "Title Font", CMAKE_INSTALL_PREFIX "/share/projectM/fonts/Vera.ttf" );
+			( "Title Font",  "/share/projectM/fonts/Vera.ttf" );
 	_settings.menuFontURL = config.read<string> 
-			( "Menu Font", CMAKE_INSTALL_PREFIX "/share/projectM/fonts/VeraMono.ttf" );
+			( "Menu Font",  "/share/projectM/fonts/VeraMono.ttf" );
 	_settings.shuffleEnabled = config.read<bool> ( "Shuffle Enabled", true);
 			
 	_settings.easterEgg = config.read<float> ( "Easter Egg Parameter", 0.0);
@@ -196,10 +197,13 @@ void projectM::readConfig (const std::string & configFile )
 	
 }
 
+#ifdef USE_THREADS
 static void *thread_callback(void *prjm) {
  projectM *p = (projectM *)prjm;
 
- p->thread_func(prjm); } 
+ p->thread_func(prjm); 
+return NULL;} 
+
 
 void *projectM::thread_func(void *vptr_args)
 {
@@ -213,6 +217,13 @@ void *projectM::thread_func(void *vptr_args)
 	  pthread_mutex_unlock( &mutex );
 	  return NULL;
 	}
+     evaluateSecondPreset();
+    }  
+}
+#endif
+
+void projectM::evaluateSecondPreset()
+{	
       setupPresetInputs(&m_activePreset2->presetInputs());
       m_activePreset2->presetInputs().frame = timeKeeper->PresetFrameB();
       m_activePreset2->presetInputs().progress= timeKeeper->PresetProgressB();
@@ -220,8 +231,7 @@ void *projectM::thread_func(void *vptr_args)
       assert ( m_activePreset2.get() );
       m_activePreset2->evaluateFrame();
       renderer->PerPixelMath ( &m_activePreset2->presetOutputs(), &presetInputs2 );
-      renderer->WaveformMath ( &m_activePreset2->presetOutputs(), &presetInputs2, true );    
-    }  
+      renderer->WaveformMath ( &m_activePreset2->presetOutputs(), &presetInputs2, true );  
 }
 
 void projectM::setupPresetInputs(PresetInputs *inputs)
@@ -294,32 +304,19 @@ DLLEXPORT void projectM::renderFrame()
 		      	
 		assert ( m_activePreset.get() );
 		
-	
+#ifdef USE_THREADS
 		pthread_cond_signal(&condition);
 		pthread_mutex_unlock( &mutex );
-
+#endif
 		m_activePreset->evaluateFrame();
 		renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
 		renderer->WaveformMath ( &m_activePreset->presetOutputs(), &presetInputs, true );
 
+#ifdef USE_THREADS
 		pthread_mutex_lock( &mutex );
-		/*
-		if (pthread_join(thread, NULL) != 0)
-		  {
-		    return;
-		  }
-		*/
-		//printf("thread done\n");
-		/*
-		presetInputs.frame = timeKeeper->PresetFrameB();
-		presetInputs.progress= timeKeeper->PresetProgressB();
-		assert ( m_activePreset2.get() );
-		m_activePreset2->evaluateFrame();
-		renderer->PerPixelMath ( &m_activePreset2->presetOutputs(), &presetInputs );
-		renderer->WaveformMath ( &m_activePreset2->presetOutputs(), &presetInputs, true );
-		*/
-		//double pos = -((smoothFrame / (presetInputs.fps * smoothDuration))-1);
-		//double ratio = 1/(1 + exp((pos-0.5)*4*M_PI));
+#else		
+		evaluateSecondPreset();
+#endif
 		
 		
 		PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),timeKeeper->SmoothRatio(),presetInputs.gx, presetInputs.gy );	       
@@ -437,6 +434,8 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
 
 	running = true;
+
+#ifdef USE_THREADS
 	pthread_mutex_init(&mutex, NULL);
 	pthread_cond_init(&condition, NULL);
 	if (pthread_create(&thread, NULL, thread_callback, this) != 0)
@@ -446,6 +445,8 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	    }
 	pthread_mutex_lock( &mutex );
 	printf("got lock\n");
+#endif
+
 	renderer->setPresetName ( m_activePreset->presetName() );
 	timeKeeper->StartPreset();
 	assert(pcm());
@@ -794,7 +795,7 @@ void projectM::destroyPresetTools()
 /// @bug queuePreset case isn't handled
 void projectM::removePreset(unsigned int index) {
 	
-	uint chooserIndex = **m_presetPos;
+	unsigned int chooserIndex = **m_presetPos;
 
 	m_presetLoader->removePreset(index);
 
