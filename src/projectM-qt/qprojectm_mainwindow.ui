@@ -10,7 +10,7 @@
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>qprojectM</string>
+   <string>projectM</string>
   </property>
   <property name="windowIcon" >
    <iconset resource="application.qrc" >:/images/icons/prjm16-transparent.svg</iconset>
@@ -48,7 +48,7 @@
     <property name="title" >
      <string>&amp;Help</string>
     </property>
-    <addaction name="actionAbout_qprojectM" />
+    <addaction name="actionAbout_projectM" />
     <addaction name="actionAbout_Qt" />
     <addaction name="actionHotkey_Reference" />
    </widget>
@@ -362,9 +362,9 @@ image: url(:/images/icons/hi16-action-projectm_unlock.png);
     <string>&amp;Add Presets...</string>
    </property>
   </action>
-  <action name="actionAbout_qprojectM" >
+  <action name="actionAbout_projectM" >
    <property name="text" >
-    <string>About qprojectM</string>
+    <string>About projectM</string>
    </property>
   </action>
   <action name="actionAbout_Qt" >

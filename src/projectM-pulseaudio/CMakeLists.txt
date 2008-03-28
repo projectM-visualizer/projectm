@@ -29,7 +29,7 @@ endif(LIBPROJECTM_FOUND)
 if (LIBPROJECTM_QT_FOUND)
 MESSAGE (STATUS "projectM-qt detected.")
 else(LIBPROJECTM_QT_FOUND)
-MESSAGE (FATAL_ERROR "projectM-qt NOT detected. Please install the qprojectM module or build from the top level projectM source directory.")
+MESSAGE (FATAL_ERROR "projectM-qt NOT detected. Please install the projectM-qt module or build from the top level projectM source directory.")
 endif(LIBPROJECTM_QT_FOUND)
 
 if (LIBPULSE_FOUND)
