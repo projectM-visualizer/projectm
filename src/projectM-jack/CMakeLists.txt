@@ -1,6 +1,8 @@
 PROJECT(projectM-jack)
 
-if (USE_PROJECTM_QT)
+OPTION(QT_JACK_SUPPORT "Enable Qt4 GUI Support for the projectM jack port" ON)
+
+if (QT_JACK_SUPPORT)
 
 set(QT_USE_OPENGL TRUE)
 
@@ -28,7 +30,7 @@ endif(LIBPROJECTM_FOUND)
 if (LIBPROJECTM-QT_FOUND)
 MESSAGE (STATUS "projectM-qt detected.")
 else(LIBPROJECTM-QT_FOUND)
-MESSAGE (FATAL_ERROR "qprojectM NOT detected. Please install the qprojectM module or build from the top level projectM source directory.")
+MESSAGE (FATAL_ERROR "projectM-qt NOT detected. Please install the projectM-qt module or build from the top level projectM source directory.")
 endif(LIBPROJECTM-QT_FOUND)
 
 if (JACK_FOUND)
@@ -37,7 +39,7 @@ else (JACK_FOUND)
 MESSAGE(FATAL_ERROR "JACK is NOT found. Please install jack from http://www.jackaudio.org.")
 endif(JACK_FOUND)
 
-# the variable "qprojectM_SRCS" contains all .cpp files of this project
+
 set(projectM_jack_SRCS
   qprojectM-jack.cpp ConfigFile.h ConfigFile.cpp
 )
@@ -62,7 +64,7 @@ if (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 elseif (${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
    set(PROJECTM_INCLUDE ${LIBPROJECTM_INCLUDEDIR}/libprojectM-qt ${LIBPROJECTM-QT_INCLUDEDIR}/libprojectM)
    set(PROJECTM_LINK ${LIBPROJECTM_LDFLAGS} ${LIBPROJECTM-QT_LDFLAGS})
-# qprojectM places itself in same location as (lib)projectM 
+# projectM-qt places itself in same location as (lib)projectM 
 # whether it should is a whole other issue
 endif (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 
@@ -71,13 +73,13 @@ INCLUDE_DIRECTORIES(${PROJECTM_INCLUDE} ${JACK_INCLUDEDIR}  ${SDL_INCLUDE_DIR} $
 
 LINK_DIRECTORIES(${PROJECTM_LINK} ${JACK_LDFLAGS})
 
-ADD_EXECUTABLE(projectM-jack ${qprojectM_jack_SRCS} ${qprojectM_jack_MOC_SRCS})
+ADD_EXECUTABLE(projectM-jack ${projectM_jack_SRCS} ${projectM_jack_MOC_SRCS})
 
-TARGET_LINK_LIBRARIES(projectM-jack qprojectM projectM jack ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTCORE_LIBRARIES} ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(projectM-jack projectM-qt projectM jack ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTCORE_LIBRARIES} ${QT_LIBRARIES})
 
 INSTALL(TARGETS projectM-jack DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 
-else(USE_PROJECTM_QT)
+else (QT_JACK_SUPPORT)
 ADD_EXECUTABLE(projectM-jack projectM-jack.cpp sdltoprojectM.h video_init.cpp ConfigFile.h ConfigFile.cpp)
 
 INCLUDE(FindPkgConfig.cmake)
@@ -121,5 +123,5 @@ LINK_DIRECTORIES(${PROJECTM_LINK} ${JACK_LDFLAGS})
 TARGET_LINK_LIBRARIES(projectM-jack projectM jack  ${SDL_LIBRARY} ${GTK_LIBRARIES})
 
 INSTALL(TARGETS projectM-jack DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
-endif(USE_PROJECTM_QT)
+endif(QT_JACK_SUPPORT)
 
