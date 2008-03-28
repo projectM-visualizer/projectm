@@ -18,7 +18,7 @@ FIND_PACKAGE(OpenGL)
 FIND_PACKAGE(Qt4 REQUIRED)
 
 
-pkg_search_module(LIBPULSE REQUIRED libpulse)
+pkg_search_module(LIBPULSE REQUIRED libpulse>=0.9.8)
 
 if (LIBPROJECTM_FOUND)
 MESSAGE (STATUS "projectM detected.")
