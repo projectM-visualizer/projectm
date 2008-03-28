@@ -835,8 +835,8 @@ void QProjectM_MainWindow::refreshPlaylist()
 
 void QProjectM_MainWindow::about()
 {
-	QMessageBox::about ( this, tr ( "About qprojectM and projectM" ),
-	                     tr ( "<p><b>qprojectM</b> provides useful gui extensions to the projectM core library. For problems please email Carmelo Piccione: \n<a href=\"mailto:carmelo.piccione+qprojectM@gmail.com\"> carmelo.piccione+qprojectM@gmail.com</a>.</p><p><b>projectM</b> is an advanced opensource music visualizer originally based on Milkdrop but over time has gone above and beyond it. For more info visit us at <a href=\"http://projectm.sf.net\">projectm.sf.net</a> or join #projectM on the freenode IRC network." ) );
+	QMessageBox::about ( this, tr ( "About projectM-qt and projectM" ),
+	                     tr ( "<p><b>projectM-qt</b> provides useful gui extensions to the projectM core library. For problems please email Carmelo Piccione: \n<a href=\"mailto:carmelo.piccione+projectM@gmail.com\"> carmelo.piccione+projectM@gmail.com</a>.</p><p><b>projectM</b> is an advanced opensource music visualizer originally based on Milkdrop but over time has gone above and beyond it. For more info visit us at <a href=\"http://projectm.sf.net\">projectm.sf.net</a> or join #projectM on the freenode IRC network." ) );
 }
 
 
@@ -867,7 +867,7 @@ void QProjectM_MainWindow::createActions()
 	connect ( ui->actionOpen_Play_List, SIGNAL ( triggered() ), this, SLOT ( openPlaylistDialog() ) );
 	connect ( ui->actionSave_play_list, SIGNAL ( triggered() ), this, SLOT ( savePlaylistButtonClick() ) );
 	connect ( ui->actionSave_play_list_as, SIGNAL ( triggered() ), this, SLOT ( savePlaylistAsDialog() ) );
-	connect ( ui->actionAbout_qprojectM, SIGNAL ( triggered() ), this, SLOT ( about() ) );
+	connect ( ui->actionAbout_projectM, SIGNAL ( triggered() ), this, SLOT ( about() ) );
 	connect ( ui->actionConfigure_projectM, SIGNAL ( triggered() ), this, SLOT (openSettingsDialog()) );
 	connect ( ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
 	connect ( ui->actionHotkey_Reference, SIGNAL(triggered()), this, SLOT(hotkeyReference()));
