@@ -1,12 +1,11 @@
 project (PROJECTM_ROOT)
 
-OPTION(INCLUDE-QPROJECTM "Build the projectM qt4 user interface extension library (recommended)" ON)
-OPTION(INCLUDE-QPROJECTM-PULSEAUDIO "Build the projectM Qt4 / pulse audio client (recommended for fedora users)" ON)
+OPTION(INCLUDE-PROJECTM-QT "Build the projectM Qt4 user interface extension library (recommended)" ON)
+OPTION(INCLUDE-PROJECTM-PULSEAUDIO "Build the projectM pulse audio client (recommended for fedora users)" ON)
 OPTION(INCLUDE-PROJECTM-LIBVISUAL "Build the projectM libvisual client" ON)
-OPTION(INCLUDE-QPROJECTM-JACK "Build the projectM Qt4 / JACK client" OFF)
-OPTION(INCLUDE-PROJECTM-JACK "Build the projectM SDL / JACK client" OFF)
+OPTION(INCLUDE-PROJECTM-JACK "Build the projectM JACK client" OFF)
 OPTION(INCLUDE-PROJECTM-TEST "Build the projectM test suite" ON)
-OPTION(INCLUDE-PROJECTM-XMMS "Build the projectM xmms module (deprecated)" OFF)
+OPTION(INCLUDE-PROJECTM-XMMS "Build the projectM xmms module (deprecated, use audacious instead)" OFF)
 
 add_subdirectory (projectM-engine)
 
@@ -14,21 +13,17 @@ if(INCLUDE-PROJECTM-TEST)
 	add_subdirectory (projectM-test)
 endif(INCLUDE-PROJECTM-TEST)
 
-if (INCLUDE-QPROJECTM)
-	add_subdirectory (qprojectM)
-endif(INCLUDE-QPROJECTM)
-
-if (INCLUDE-QPROJECTM-JACK)
-	add_subdirectory (qprojectM-jack)
-endif (INCLUDE-QPROJECTM-JACK)
+if (INCLUDE-PROJECTM-QT)
+	add_subdirectory (projectM-qt)
+endif(INCLUDE-PROJECTM-QT)
 
 if (INCLUDE-PROJECTM-JACK)
 	add_subdirectory (projectM-jack)
 endif (INCLUDE-PROJECTM-JACK)
 
-if (INCLUDE-QPROJECTM-PULSEAUDIO)
-	add_subdirectory (qprojectM-pulseaudio)
-endif (INCLUDE-QPROJECTM-PULSEAUDIO)
+if (INCLUDE-PROJECTM-PULSEAUDIO)
+	add_subdirectory (projectM-pulseaudio)
+endif (INCLUDE-PROJECTM-PULSEAUDIO)
 
 if (INCLUDE-PROJECTM-XMMS)
 	add_subdirectory (projectM-xmms)
