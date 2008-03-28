@@ -30,7 +30,7 @@ endif(LIBPROJECTM_FOUND)
 if (LIBPROJECTM-QT_FOUND)
 MESSAGE (STATUS "projectM-qt detected.")
 else(LIBPROJECTM-QT_FOUND)
-MESSAGE (FATAL_ERROR "projectM-qt NOT detected. Please install the projectM-qt module or build from the top level projectM source directory.")
+MESSAGE (FATAL_ERROR "projectM-qt NOT detected. Please install the projectM-qt module or build from the top level projectM source directory. You can also disable QT_PROJECTM_JACK support and use the SDL port instead")
 endif(LIBPROJECTM-QT_FOUND)
 
 if (JACK_FOUND)
