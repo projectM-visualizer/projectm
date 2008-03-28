@@ -330,8 +330,12 @@ void QPulseAudioThread::stream_read_callback ( pa_stream *s, size_t length, void
 		return;
 	}
 
-	buffer = ( float* ) pa_xmalloc ( buffer_length = length );
-	memcpy ( buffer, data, length );
+	
+	(*s_qprojectM_MainWindowPtr)->addPCM( (float*)data, length / ( sizeof ( float ) ) );
+	
+	
+	//buffer = ( float* ) pa_xmalloc ( buffer_length = length );
+	//memcpy ( buffer, data, length );
 	buffer_index = 0;
 	pa_stream_drop ( s );
 }
@@ -678,7 +682,7 @@ void QPulseAudioThread::run()
 #ifdef SIGPIPE
 	signal ( SIGPIPE, SIG_IGN );
 #endif
-
+/*
 	if ( ! ( stdio_event = mainloop_api->io_new ( mainloop_api,
 	                       STDOUT_FILENO,
 	                       PA_IO_EVENT_OUTPUT,
@@ -687,7 +691,7 @@ void QPulseAudioThread::run()
 		fprintf ( stderr, "io_new() failed.\n" );
 		goto quit;
 	}
-
+/*
 	/* Create a new connection context */
 	if ( ! ( context = pa_context_new ( mainloop_api, client_name ) ) )
 	{
