@@ -88,8 +88,8 @@ class TimeKeeper;
 #endif
 
 /** KEEP THIS UP TO DATE! */
-#define PROJECTM_VERSION "1.10.00"
-#define PROJECTM_TITLE "projectM 1.10.00"
+#define PROJECTM_VERSION "1.1.00"
+#define PROJECTM_TITLE "projectM 1.1.00"
 
 /** Interface types */
 typedef enum {
