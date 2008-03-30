@@ -137,6 +137,8 @@ private slots:
 
 
       private:
+	bool warnIfPlaylistModified();
+	
 	void insertPlaylistItem(const PlaylistItemMetaData & data, int targetIndex);
 
 	void savePlaylist();

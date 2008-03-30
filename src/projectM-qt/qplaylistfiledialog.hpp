@@ -128,8 +128,18 @@
 		 
 		 QString filter = getFilter();
 		 		
-		 if (QFileInfo(fileName).isDir()) {
-			 if (isDirectorySelectAllowed())  
+		 	
+		if (fileName == QString()) {
+			 if (isPlaylistSaveMode())
+				 this->setFileMode(QFileDialog::AnyFile);
+			 else
+				 this->setFileMode(QFileDialog::ExistingFile);
+		}	
+		 
+		else if (QFileInfo(fileName).isDir()) {
+			if (isPlaylistSaveMode())
+				this->setFileMode(QFileDialog::AnyFile);			
+			 else if (isDirectorySelectAllowed())  
 			 	this->setFileMode(QFileDialog::Directory);
 			 else 
 				 this->setFileMode(QFileDialog::ExistingFile);
@@ -143,20 +153,13 @@
 			 else
 				 this->setFileMode(QFileDialog::Directory);
 		}
-		
-		else {
-			if (isPlaylistSaveMode())
-				this->setFileMode(QFileDialog::AnyFile);
-			else
-				this->setFileMode(QFileDialog::ExistingFile);
-		}
 				
 		this->setFilter(filter);
 	 }
 	 
 	 void updateFileMode(const QStringList & selectedFiles) {
 		 if (selectedFiles.empty())
-			 return;
+			 updateFileMode(QString());
 		 updateFileMode(selectedFiles[0]);
 	}
 };

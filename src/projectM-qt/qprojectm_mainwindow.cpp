@@ -361,6 +361,7 @@ void QProjectM_MainWindow::dragAndDropPlaylistItems(const QModelIndexList & indi
 	
 	removePlaylistItems(singularList);	
 	insertPlaylistItem(metaData, newIndex);
+	ui->presetPlayListDockWidget->setWindowModified ( true );
 }
 
 void QProjectM_MainWindow::setMenuVisible(bool visible) {
@@ -400,6 +401,8 @@ void QProjectM_MainWindow::changeRating ( const QModelIndex & index ) {
 	playlistItemMetaDataHash[id].rating = newRating;
 	
 	playlistModel->setData( index, newRating, QPlaylistModel::RatingRole);
+	ui->presetPlayListDockWidget->setWindowModified ( true );
+	
 	
 }
 
@@ -519,10 +522,37 @@ void QProjectM_MainWindow::refreshHeaders(QResizeEvent * event) {
 }
 
 
+bool QProjectM_MainWindow::warnIfPlaylistModified() {
+	
+	if (ui->presetPlayListDockWidget->isWindowModified()) {
+		int ret = QMessageBox::warning(this, tr("Warning: unsaved playlist!"),
+					       tr("The open playlist has been modified.\n"
+							       "Do you want to save your changes?"),
+	      QMessageBox::Save | QMessageBox::Discard
+			      | QMessageBox::Cancel,
+	 QMessageBox::Save);
+		
+		switch (ret) {
+			case QMessageBox::Save:
+				savePlaylistButtonClick();
+				return true;
+			case QMessageBox::Discard:
+				return true;
+			case QMessageBox::Cancel:
+				return false;
+			default:
+				return true;
+		}
+	}	
+	return true;
+}
 
 void QProjectM_MainWindow::closeEvent ( QCloseEvent *event )
 {	
-	writeSettings();	
+	
+	if (!warnIfPlaylistModified())
+		event->ignore();
+	writeSettings();
 }
 
 
@@ -777,9 +807,9 @@ void QProjectM_MainWindow::removePlaylistItems(const QModelIndexList & items) {
 		
 		foreach (int key, reverseOrderKeys) {	
 			playlistModel->removeRow(key);
-		}
-				
+		}		
 		qprojectMWidget()->releasePresetLock();
+		ui->presetPlayListDockWidget->setWindowModified ( true );
 }
 
 void QProjectM_MainWindow::insertPlaylistItem
@@ -922,6 +952,10 @@ void QProjectM_MainWindow::writeSettings()
 	settings.setValue ( "pos", pos() );
 	settings.setValue ( "size", size() );
 	settings.setValue ( "playlistPath", m_QPlaylistFileDialog->directory().absolutePath() );
+	
+	if (m_currentPlaylistUrl != QString())
+		settings.setValue("PlaylistFile", m_currentPlaylistUrl);
+	
 }
 
 void QProjectM_MainWindow::loadFile ( const QString &fileName, int rating )
