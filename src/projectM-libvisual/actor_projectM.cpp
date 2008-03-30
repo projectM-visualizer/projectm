@@ -66,7 +66,7 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
     info[0].plugname = (char*)"projectM";
     info[0].name = (char*)"libvisual projectM";
     info[0].author = (char*)"Peter Sperl";
-    info[0].version = (char*)"1.00";
+    info[0].version = (char*)"1.1";
     info[0].about = (char*)"projectM";
     info[0].help =  (char*)"";
 
@@ -220,6 +220,9 @@ extern "C" int lv_projectm_render (VisPluginData *plugin, VisVideo *video, VisAu
 	VisBuffer pcmb;
 	float pcm[2][512];	
 	int i;
+
+	if (video->parent != NULL) lv_projectm_dimension (plugin, video->parent, video->parent->width, video->parent->height);
+	  else lv_projectm_dimension (plugin, video, video->width, video->height);
 
 	visual_buffer_set_data_pair (&pcmb, pcm[0], sizeof (pcm[0]));
 	visual_audio_get_sample (audio, &pcmb, (char*)VISUAL_AUDIO_CHANNEL_LEFT);
