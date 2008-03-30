@@ -1,30 +1,30 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="23" >
+ <DocsAndViews NumberOfDocuments="24" >
   <Doc0 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/qpreseteditordialog.cpp" >
    <View0 Encoding="" Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/qprojectm_mainwindow.cpp" >
-   <View0 Encoding="" line="846" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/qprojectm_mainwindow.hpp" >
-   <View0 Encoding="" line="116" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc2>
   <Doc3 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/qprojectmconfigdialog.cpp" >
-   <View0 Encoding="" line="6" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc3>
   <Doc4 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/qpresettextedit.cpp" >
-   <View0 Encoding="" line="11" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc4>
   <Doc5 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/qplaylisttableview.hpp" >
-   <View0 Encoding="" Type="Source" />
+   <View0 Encoding="" line="0" Type="Source" />
   </Doc5>
   <Doc6 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/qpreseteditordialog.hpp" >
    <View0 Encoding="ISO 8859-1" Type="Source" />
   </Doc6>
   <Doc7 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/qpresettextedit.hpp" >
-   <View0 Encoding="" line="31" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc7>
   <Doc8 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-engine/RandomNumberGenerators.hpp" >
    <View0 Encoding="" Type="Source" />
@@ -33,44 +33,47 @@
    <View0 Encoding="" Type="Source" />
   </Doc9>
   <Doc10 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/qplaylistmodel.cpp" >
-   <View0 Encoding="" Type="Source" />
+   <View0 Encoding="" line="69" Type="Source" />
   </Doc10>
   <Doc11 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM-pulseaudio/qprojectM-pulseaudio.cpp" >
-   <View0 Encoding="" line="124" Type="Source" />
+   <View0 Encoding="" line="120" Type="Source" />
   </Doc11>
   <Doc12 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM-pulseaudio/QPulseAudioThread.cpp" >
-   <View0 Encoding="" line="297" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc12>
   <Doc13 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/CMakeLists.txt" >
-   <View0 Encoding="" line="74" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc13>
   <Doc14 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/CMakeLists.txt" >
-   <View0 Encoding="" line="28" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc14>
   <Doc15 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/qplaylistmodel.hpp" >
-   <View0 Encoding="" Type="Source" />
+   <View0 Encoding="" line="95" Type="Source" />
   </Doc15>
   <Doc16 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-engine/projectM.cpp" >
    <View0 Encoding="" Type="Source" />
   </Doc16>
   <Doc17 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-engine/PCM.cpp" >
-   <View0 Encoding="" line="0" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc17>
   <Doc18 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/qprojectmconfigdialog.hpp" >
-   <View0 Encoding="" line="1" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc18>
   <Doc19 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM-pulseaudio/QPulseAudioThread.hpp" >
-   <View0 Encoding="" line="100" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc19>
   <Doc20 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/qprojectm.hpp" >
-   <View0 Encoding="" line="17" Type="Source" />
+   <View0 Encoding="" line="33" Type="Source" />
   </Doc20>
   <Doc21 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM-jack/qprojectM-jack.cpp" >
-   <View0 Encoding="" line="202" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc21>
   <Doc22 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/qprojectmwidget.hpp" >
-   <View0 Encoding="" line="18" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc22>
+  <Doc23 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/qprojectM/qplaylistfiledialog.hpp" >
+   <View0 Encoding="" line="162" Type="Source" />
+  </Doc23>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>

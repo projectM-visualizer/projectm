@@ -39,7 +39,7 @@ QXmlStreamReader::Error QXmlPlaylistHandler::readPlaylist (QIODevice * device, R
 			}
 			else if (reader.name() == "description") {
 				reader.readNext();
-				readFunc.setPlaylistDesc(reader.text().toString());
+				readFunc.setPlaylistDesc(reader.text().toString().replace("&amp;", "&"));
 				reader.readNext();
 			}
 			else if (reader.name() == "item") {
@@ -86,9 +86,19 @@ QXmlStreamReader::Error QXmlPlaylistHandler::readPlaylistItem(QXmlStreamReader &
 
 	while (reader.readNext() != QXmlStreamReader::EndElement)
 		if (reader.name() == "url") {
-			reader.readNext();			
-			url = reader.text().toString();
-			reader.readNext();
+			bool repeat;
+			int result;
+
+			while (repeat = (result = reader.readNext()) == QXmlStreamReader::Characters) {
+						
+			url += reader.text().toString();
+			 			
+			
+			//qDebug() << "result:" << result;
+			}
+			
+			
+			//qDebug() << "read url is " << url;				
 		} else if (reader.name() == "rating") {
 			reader.readNext();
 			rating = reader.text().toString().toInt();		
@@ -138,11 +148,12 @@ void QXmlPlaylistHandler::writePlaylist (QIODevice * device, WriteFunctor & writ
 		writer.writeStartElement("item");
 
 		writer.writeStartElement("url");
-		writer.writeCharacters(url);
+		
+		writer.writeCharacters(url.replace("&amp;", "&"));
 		writer.writeEndElement();
 
 		writer.writeStartElement("rating");
-		writer.writeCharacters(QString("%1").arg(rating));
+		writer.writeCharacters(QString("%1").arg(rating)+"\n");
 		writer.writeEndElement();
 
 		writer.writeEndElement();
