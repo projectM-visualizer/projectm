@@ -1,3 +1,14 @@
+New for version 1.1
+------------------------------------------------------
+* general performance improvements and improved video card compatability
+* multi-threading during smooth preset switching
+* pulse audio support
+* Qt4 GUI implemented for playlist management and preset editing (jack / pulseaudio only)
+
+New for versoin 1.01
+------------------------------------------------------
+* Bugfixes
+
 New for version 1.00
 ------------------------------------------------------
 This release includes months of refactoring. The code changes are immense. The list below does not even begin to explain the amount of upheaval that has occured.
