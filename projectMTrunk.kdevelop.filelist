@@ -969,8 +969,3 @@ src/projectM-xmms/main.cpp
 src/projectM-xmms/sdltoprojectM.h
 src/projectM-xmms/video_init.cpp
 src/projectM-xmms/video_init.h
-src/qprojectM-jack
-src/qprojectM-jack/CMakeLists.txt
-src/qprojectM-jack/ConfigFile.cpp
-src/qprojectM-jack/ConfigFile.h
-src/qprojectM-jack/Makefile
