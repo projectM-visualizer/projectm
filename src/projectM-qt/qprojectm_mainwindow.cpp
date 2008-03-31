@@ -877,7 +877,7 @@ void QProjectM_MainWindow::about()
 void QProjectM_MainWindow::hotkeyReference()
 {
 	QMessageBox::information ( this, tr( "Hotkey Reference"),
-				   tr ( "<dl><dt><b>CTRL-L</b></dt> <dd>Locks / unlocks the active preset</dd><dt><b>CTRL-R</b></dt> <dd>Randomly selects a preset from the playlist </dd><dt><b>CTRL-M</b></dt><dd>Show / hide the menu display</dd><dt><b>CTRL-E</b></dt> <dd> Opens the preset editor with the active preset</dd><dt><b>CTRL-F</b></dt> <dd> Enables / disables full screen mode</dd><dt><b>CTRL-Y</b></dt><dd>Enables / disables shuffle mode </dd><dt><b>CTRL-S</b></dt> <dd>Saves and applies changes to the active preset (only when editing) </dd></dl>" ));
+				   tr ( "<dl><dt><b>CTRL-L</b></dt> <dd>Locks / unlocks the active preset</dd><dt><b>CTRL-N</b></dt> <dd>Moves to next preset in the playlist </dd><dt><dt><b>CTRL-P</b></dt> <dd>Moves to previous preset in the playlist </dd><dt><b>CTRL-R</b></dt> <dd>Randomly selects a preset from the playlist </dd><dt><b>CTRL-M</b></dt><dd>Show / hide the menu display</dd><dt><b>CTRL-E</b></dt> <dd> Opens the preset editor with the active preset</dd><dt><b>CTRL-F</b></dt> <dd> Enables / disables full screen mode</dd><dt><b>CTRL-Y</b></dt><dd>Enables / disables shuffle mode </dd><dt><b>CTRL-S</b></dt> <dd>Saves and applies changes to the active preset (only when editing) </dd></dl>" ));
 }
 
 void QProjectM_MainWindow::openSettingsDialog() {
