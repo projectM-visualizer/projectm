@@ -166,7 +166,7 @@ void projectM::readConfig (const std::string & configFile )
 
 	_settings.meshX = config.read<int> ( "Mesh X", 32 );
 	_settings.meshY = config.read<int> ( "Mesh Y", 24 );
-	_settings.textureSize = config.read<int> ( "Texsize", 512 );
+	_settings.textureSize = config.read<int> ( "Texture Size", 512 );
 	_settings.fps = config.read<int> ( "FPS", 35 );
 	_settings.windowWidth  = config.read<int> ( "Window Width", 512 );
 	_settings.windowHeight = config.read<int> ( "Window Height", 512 );
