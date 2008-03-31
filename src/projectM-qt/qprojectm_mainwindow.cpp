@@ -33,7 +33,7 @@
 #include "qprojectmconfigdialog.hpp"
 #include "qpreseteditordialog.hpp"
 #include "ui_qpreseteditordialog.h"
-#include "ConfigFile.h"
+#include "configfile.hpp"
 #include "qxmlplaylisthandler.hpp"
 #include "nullable.hpp"
 #include "qprojectmwidget.hpp"
