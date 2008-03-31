@@ -1,6 +1,6 @@
 // ConfigFile.cpp
 
-#include "ConfigFile.h"
+#include "configfile.hpp"
 
 using std::string;
 
