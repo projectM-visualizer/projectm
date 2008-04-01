@@ -143,8 +143,7 @@ void QProjectM_MainWindow::readConfig(const std::string & configFile ) {
 	ui->shuffleEnabledCheckBox->setCheckState(qprojectM()->settings().shuffleEnabled ? Qt::Checked : Qt::Unchecked);
 			
 	
-	// Suggest to the widget the projectM window size configuration settings
-	m_QProjectMWidget->setBaseSize ( wvw, wvh );
+	this->resize(wvw,wvh);
 }
 
 QProjectM_MainWindow::~QProjectM_MainWindow()
@@ -936,13 +935,13 @@ void QProjectM_MainWindow::readSettings()
 	// The settings exclusively due to qprojectM
 	QSettings settings ( "projectM", "qprojectM" );
 	QPoint pos = settings.value ( "pos", QPoint ( 200, 200 ) ).toPoint();
-	QSize size = settings.value ( "size", QSize ( 1024, 768 ) ).toSize();
+	//QSize size = settings.value ( "size", QSize ( 1024, 768 ) ).toSize();
 	
 	// Load up where the playlist file dialog last was visited last time
 	m_QPlaylistFileDialog->setDirectory
 	( settings.value ( "playlistPath", m_QPlaylistFileDialog->directory().absolutePath() ).toString() );
 
-	resize ( size );
+	resize ( size().width(), size().height() );
 	move ( pos );
 }
 
@@ -950,7 +949,7 @@ void QProjectM_MainWindow::writeSettings()
 {
 	QSettings settings ( "projectM", "qprojectM" );
 	settings.setValue ( "pos", pos() );
-	settings.setValue ( "size", size() );
+	//settings.setValue ( "size", size() );
 	settings.setValue ( "playlistPath", m_QPlaylistFileDialog->directory().absolutePath() );
 	
 	if (m_currentPlaylistUrl != QString())
