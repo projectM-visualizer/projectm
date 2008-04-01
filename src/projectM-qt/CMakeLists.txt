@@ -113,5 +113,5 @@ include_directories(${PROJECTM_INCLUDE} ${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR
 target_link_libraries(projectM-qt projectM ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTXML_LIBRARIES} ${QT_LIBRARIES})
 
 install(FILES qprojectm_mainwindow.hpp DESTINATION include/libprojectM-qt)
-install(TARGETS projectM-qt DESTINATION lib)
+install(TARGETS projectM-qt DESTINATION lib${LIB_SUFFIX}))
 install(FILES "${CMAKE_BINARY_DIR}/libprojectM-qt.pc" DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig)
