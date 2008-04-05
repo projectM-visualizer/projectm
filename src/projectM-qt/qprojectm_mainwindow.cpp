@@ -992,7 +992,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 	const QString filter = text.toLower();
 	unsigned int presetIndexBackup ;
 	bool presetSelected = qprojectM()->selectedPresetIndex(presetIndexBackup);
-	Nullable<uint> activePresetId;
+	Nullable<unsigned int> activePresetId;
 	
 	if (!presetSelected && activePresetIndex->hasValue()) {
 		qDebug() << "active preset index has value: " << activePresetIndex->value();
