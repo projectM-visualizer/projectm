@@ -109,14 +109,13 @@ void QProjectMConfigDialog::openTitleFontFileDialog() {
 }
 
 void QProjectMConfigDialog::saveConfig() {
-	qDebug() << "SAVE config";
 	
 	projectM::Settings settings = _qprojectMWidget->qprojectM()->settings();
 	
 	settings.meshX = _ui.meshSizeWidthSpinBox->value();
 	settings.meshY = _ui.meshSizeHeightSpinBox->value();
 	settings.windowHeight = _ui.windowHeightSpinBox->value();
-	settings.windowWidth = _ui.windowWidthSpinBox->value();		
+	settings.windowWidth = _ui.windowWidthSpinBox->value();
 	settings.titleFontURL = _ui.titleFontPathLineEdit->text().toStdString();
 	settings.menuFontURL = _ui.menuFontPathLineEdit->text().toStdString();
 	settings.presetURL = _ui.startupPlaylistDirectoryLineEdit->text().toStdString();
@@ -136,7 +135,7 @@ void QProjectMConfigDialog::saveConfig() {
 	qSettings.setValue("MenuOnStartup", _ui.menuOnStartupCheckBox->checkState() == Qt::Checked);
 	
 	qSettings.setValue("PlaylistFile", _ui.startupPlaylistFileLineEdit->text());
-	qDebug() << "save end";
+
 }
 
 
@@ -151,7 +150,6 @@ void QProjectMConfigDialog::populateTextureSizeComboBox() {
 
 void QProjectMConfigDialog::loadConfig() {
 	
-	qDebug() << "load config BEGIN";
 	const projectM::Settings & settings = (* _qprojectMWidget->qprojectM()).settings();
 	
 	_ui.meshSizeWidthSpinBox->setValue(settings.meshX);
