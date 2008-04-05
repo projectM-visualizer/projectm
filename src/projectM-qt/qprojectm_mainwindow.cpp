@@ -627,7 +627,7 @@ void QProjectM_MainWindow::savePlaylist()
 
 
 	QXmlPlaylistHandler::writePlaylist(&qfile, writeFunctor);
-	this->ui->statusbar->showMessage ( QString ( "Saved preset playlist \"%1\" successfully." ).arg ( m_currentPlaylistUrl ), 3000 );
+	this->ui->statusbar->showMessage ( QString ( "Saved preset playlist \"%1\" successfully." ).arg ( m_currentPlaylistUrl ), 4000 );
 	this->ui->presetPlayListDockWidget->setWindowModified ( false ); 
 	
 }
@@ -671,8 +671,7 @@ void QProjectM_MainWindow::savePlaylistAsDialog()
 		
 		QString url = files[0];
 			
-		if (url != QString()) {
-			qDebug() << "passing " << url  << "to update playlist";
+		if (url != QString()) {			
 			updatePlaylistUrl(url);
 			savePlaylist();					
 		}
@@ -753,10 +752,8 @@ void QProjectM_MainWindow::copyPlaylist()
 	uint index;
 	if (qprojectM()->selectedPresetIndex(index))
 		*activePresetIndex =  index;
-	else {
+	else 
 		activePresetIndex->nullify();
-		qDebug() << "NULLIFIED";
-	}
 	
 	qprojectMWidget()->releasePresetLock();
 }
@@ -849,20 +846,8 @@ void QProjectM_MainWindow::refreshPlaylist()
 	ui->tableView->setHorizontalHeader ( hHeader );
 
 	refreshHeaders();
-	
-	/*
-	hHeader->resizeSection(0, 200);
-	hHeader->setResizeMode(0, QHeaderView::Stretch);
-	hHeader->setResizeMode(1, QHeaderView::Fixed);
-	hHeader->resizeSection(1, 25);
-	*/
-
-//	connect(ui->tableView, SIGNAL(resizeEvent(QResizeEvent *)), this, SLOT(refreshHeaders(QResizeEVent*)));
-//	playlistModel->setHeaderData(0, Qt::Horizontal, tr("Preset"));//, Qt::DisplayRole);
 
 	vHeader->hide();
-
-
 }
 
 void QProjectM_MainWindow::about()
@@ -963,7 +948,7 @@ void QProjectM_MainWindow::loadFile ( const QString &fileName, int rating )
 	const QString & name = strippedName ( fileName );
 
 	PlaylistItemVector * playlistItems = historyHash.value ( QString(), 0 );
-	assert ( playlistItems != 0 );
+	Q_ASSERT ( playlistItems != 0 );
 
 	if (playlistItems->empty())
 		ui->presetSavePushButton->setEnabled(true);
@@ -1007,7 +992,6 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 	} else {
 	}
 	
-	/// NEED A MUTEX TO STOP PROJECTM FROM SWITCHING PRESETS
 	playlistModel->clearItems();
 	
 	Q_ASSERT(!qprojectM()->presetPositionValid());
