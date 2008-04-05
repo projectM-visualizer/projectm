@@ -995,30 +995,16 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 	Nullable<unsigned int> activePresetId;
 	
 	if (!presetSelected && activePresetIndex->hasValue()) {
-		qDebug() << "active preset index has value: " << activePresetIndex->value();
 		activePresetId =  activePresetIndex->value();
 	} else if (presetSelected) {
-		qDebug() << "preset still selected (current = " << presetIndexBackup << ")";
 		const PlaylistItemVector & oldPlaylistItems = *historyHash.value(previousFilter);
 		
 		if ((presetIndexBackup >=0) && (presetIndexBackup < oldPlaylistItems.size())) {
 			activePresetId = oldPlaylistItems[presetIndexBackup];
 		}
 		
-		/*
-		int i = 0;
-		for ( PlaylistItemVector::const_iterator pos = oldPlaylistItems.begin(); pos != oldPlaylistItems.end();++pos )
-		{
-			if (presetIndexBackup == i) {
-				activePresetId = pos->id;
-				qDebug() << "preset still selected true id:" << activePresetId.value();		
-				break;
-			}
-			i++;
-		}
-		*/	
+		
 	} else {
-		qDebug() << "active preset index does NOT have value.";
 	}
 	
 	/// NEED A MUTEX TO STOP PROJECTM FROM SWITCHING PRESETS
@@ -1027,7 +1013,6 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 	Q_ASSERT(!qprojectM()->presetPositionValid());
 	
 	bool presetExistsWithinFilter = false;
-	qDebug() << "preset position valid (preloop):" << qprojectM()->presetPositionValid();
 	if ( historyHash.contains ( filter ) )
 	{
 		const PlaylistItemVector & playlistItems = *historyHash.value ( filter );
@@ -1038,7 +1023,6 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 			playlistModel->appendRow ( data.url, data.name,  data.rating);
 			
 			if (activePresetId.hasValue() && data.id == activePresetId.value()) {
-				qDebug() << "new position is " << (playlistModel->rowCount()-1);	
 				qprojectM()->selectPresetPosition(playlistModel->rowCount()-1);
 				presetExistsWithinFilter = true;
 			}
@@ -1057,9 +1041,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 			if ( ( data.name ).contains ( filter, Qt::CaseInsensitive ) )
 			{
 				playlistModel->appendRow ( data.url, data.name, data.rating);
-				qDebug() << "preset position valid (inner loop):" << qprojectM()->presetPositionValid();
 				if (activePresetId.hasValue() && data.id == activePresetId.value()) {
-					qDebug() << "new position is " << (playlistModel->rowCount()-1);
 					qprojectM()->selectPresetPosition(playlistModel->rowCount()-1);
 					presetExistsWithinFilter = true;
 				}
@@ -1069,8 +1051,6 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 		}
 		historyHash.insert ( filter, playlistItems2 );
 	}
-	qDebug() << "preset exists within filter: " << presetExistsWithinFilter;
-	qDebug() << "preset position valid:" << qprojectM()->presetPositionValid();
 	Q_ASSERT(presetExistsWithinFilter == qprojectM()->presetPositionValid());
 	
 	previousFilter = filter;
