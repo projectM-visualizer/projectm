@@ -926,7 +926,7 @@ void QProjectM_MainWindow::createToolBars()
 void QProjectM_MainWindow::createStatusBar()
 {
 	statusBar()->hide();
-	statusBar()->showMessage ( tr ( "Welcome to qprojectM!" ) );
+	statusBar()->showMessage ( tr ( "Welcome to projectM!" ) );
 }
 
 void QProjectM_MainWindow::readSettings()
