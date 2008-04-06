@@ -81,3 +81,4 @@ ADD_EXECUTABLE(projectM-pulseaudio ${projectM_pulseaudio_SRCS} ${projectM_pulsea
 TARGET_LINK_LIBRARIES(projectM-pulseaudio projectM-qt projectM pulse ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTCORE_LIBRARIES} ${QT_LIBRARIES})
 
 INSTALL(TARGETS projectM-pulseaudio DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
+install(FILES "projectM-pulseaudio.desktop" DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)
