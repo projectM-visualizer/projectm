@@ -1,7 +1,7 @@
 PROJECTM-QT README
 ------------------
 
-projectM-qt is a GUI designed to enhancement the projectM user and preset writer experience. I could say it's the best direction for projectM and that's why I wrote it, but it was really a curious digression in Qt4.
+projectM-qt is a GUI designed to enhance the projectM user and preset writer experience. I could say it's the best direction for projectM and that's why I wrote it, but it was really a curious digression in Qt4.
 
 Please visit the wiki at http://projectm.wiki.sf.net for build instructions. If you're lazy, just make sure you have cmake installed and type
 
