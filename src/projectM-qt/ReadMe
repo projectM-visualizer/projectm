@@ -1,11 +1,30 @@
-READ THIS IN ORDER TO COMPILE THE Qt4 TEMPLATE
-----------------------------------------------
-
-Before compiling, check the Qt Options, go to 
-Project->Project Options->C++ Support and open the Qt Options tab.
-
-Check that the Qt installation directory is correct for the Qt version you've chosen.
-
+PROJECTM-QT README
 ------------------
-Andreas Pakulat
-July 2006
+
+projectM-qt is a GUI designed to enhancement the projectM user and preset writer experience. I could say it's the best direction for projectM and that's why I wrote it, but it was really a curious digression in Qt4.
+
+Please visit the wiki at http://projectm.wiki.sf.net for build instructions. If you're lazy, just make sure you have cmake installed and type
+
+-
+cmake .
+-
+
+then
+
+-
+make
+make install
+-
+
+If this fails, go online and get help!
+
+
+WARNING: This is my first Qt4 (or Qt*) experience. As such, there will be bugs. Please notify me if something goes wrong so I can polish up the 1.1 release. There will be incremental releases henceforth fixing bugs and adding minor features. 
+
+As an ode to Qt, the Qt4 platform has been generally a fun experience and is much recommended to the developer. As for cross platform support, it will be severely tested as projectM-qt for mac and win rolls out in the near future.
+
+
+Thanks for using projectM-Qt and good luck!
+
+- struktured of the projectM team (Carmelo.Piccione+projectM@gmail.com)
+
