@@ -23,7 +23,9 @@ code file comprising projectM, the projectM team are:
 Carmelo Piccione
     Parser
     Evaluator
-
+    Pulse Audio support (projectM-pulseaudio)
+    Qt GUI (projectM-qt)
+	
 Peter Sperl
     Beat Detection
     Rendering
@@ -31,7 +33,6 @@ Peter Sperl
     libvisual Support (projectM-libvisual)   
 
 Alligator Descartes
-    Architecture
     Media Player Support (iTunes, Winamp, Windows Media Player)
     Test application frameworks (projectM-wxvis, projectM-sdlvis)
     DVD application (projectM-movie)
