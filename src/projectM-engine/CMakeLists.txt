@@ -45,8 +45,8 @@ ELSE (USE_FTGL)
 	ENDIF(FTGL_FOUND)
 ENDIF(USE_FTGL)
 
-CONFIGURE_FILE("${CMAKE_BINARY_DIR}/libprojectM.pc.in" "libprojectM.pc" @ONLY)
-CONFIGURE_FILE("${CMAKE_BINARY_DIR}/config.inp.in" "config.inp" @ONLY)
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libprojectM.pc.in" "${CMAKE_CURRENT_SOURCE_DIR}/libprojectM.pc" @ONLY)
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/config.inp.in" "${CMAKE_CURRENT_SOURCE_DIR}/config.inp" @ONLY)
 
 FILE(GLOB presets "presets/*.milk" "presets/*.prjm" "presets/*.tga")
 INSTALL(FILES ${presets} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/presets)
