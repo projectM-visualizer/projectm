@@ -1,8 +1,9 @@
 [Desktop Entry]
-Name=ProjectM-pulseaudio
-Comment=ProjectM Pulse Audio gui
-Exec=/usr/bin/projectM-pulseaudio
-Icon=prjm16-transparent.svg
+Encoding=UTF-8
+Name=projectM-pulseaudio
+Comment=projectM for Pulse Audio
+Exec=projectM-pulseaudio
+Icon=prjm16-transparent
+Terminal=false
 Type=Application
 Categories=Application;AudioVideo;Audio;
-

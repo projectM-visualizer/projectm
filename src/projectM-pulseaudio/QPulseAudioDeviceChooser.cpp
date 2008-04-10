@@ -1,6 +1,7 @@
 #include "QPulseAudioDeviceChooser.hpp"
 #include <QSettings>
 #include <QtDebug>
+#include <QHBoxLayout>
 
 void QPulseAudioDeviceChooser::writeSettings()
 {
@@ -52,6 +53,13 @@ QPulseAudioDeviceChooser::QPulseAudioDeviceChooser ( QPulseAudioThread * qpulseA
 	setupUi ( this );
 	readSettings();	
 	this->devicesListView->setModel ( &_qpulseAudioDeviceModel );
+
+		
+	QHBoxLayout * hboxLayout = new QHBoxLayout();
+	
+	hboxLayout->addWidget(this->layoutWidget);
+	this->setLayout(hboxLayout);
+	
 
 	connect ( tryFirstPlayBackMonitorCheckBox, SIGNAL(stateChanged(int)), this, SLOT(updateDevicesListViewLock(int)));
 
