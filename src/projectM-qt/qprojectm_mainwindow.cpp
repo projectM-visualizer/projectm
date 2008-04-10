@@ -311,9 +311,9 @@ void QProjectM_MainWindow::openPresetEditorDialog(int rowIndex) {
 	
 	Q_ASSERT(historyHash.contains(previousFilter));
 	Q_ASSERT(playlistItemMetaDataHash.contains((*historyHash[previousFilter])[rowIndex]));
-	QString url = playlistItemMetaDataHash[(*historyHash[previousFilter])[rowIndex]].url;
+	const QString presetUrl = playlistItemMetaDataHash[(*historyHash[previousFilter])[rowIndex]].url;
 	
-	m_QPresetEditorDialog->setPreset(url, rowIndex);
+	m_QPresetEditorDialog->setPreset(presetUrl, rowIndex);
 			
 	if (m_QPresetEditorDialog->exec()) {
 			
@@ -1035,9 +1035,10 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 		}
 		historyHash.insert ( filter, playlistItems2 );
 	}
+
 	Q_ASSERT(presetExistsWithinFilter == qprojectM()->presetPositionValid());
 	
-	previousFilter = filter;
+	previousFilter = filter;	
 	qprojectMWidget()->releasePresetLock();
 }
 
