@@ -96,7 +96,7 @@ class QProjectM_MainWindow:public QMainWindow
       void registerSettingsAction(QAction * action);
       void unregisterSettingsAction(QAction * action);
       void setMenuVisible(bool visible);
-
+      void setMenuAndStatusBarsVisible(bool visible);
       void keyReleaseEvent ( QKeyEvent * e );
       QProjectM * qprojectM();
       void refreshPlaylist();
@@ -164,6 +164,7 @@ private slots:
       Nullable<long> * activePresetIndex;
 
       bool _menuVisible;
+      bool _menuAndStatusBarsVisible;
       QTimer * m_timer;
 	
       void createActions();
