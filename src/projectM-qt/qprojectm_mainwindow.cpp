@@ -72,7 +72,8 @@ class PlaylistWriteFunctor {
 QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QMutex * audioMutex)
 		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), ui(0), m_QPlaylistFileDialog 
 		( new QPlaylistFileDialog ( this )), playlistModel(0), 
-		configDialog(0), hHeader(0), vHeader(0), _menuVisible(true), activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDialog(0)
+		configDialog(0), hHeader(0), vHeader(0), _menuVisible(true), _menuAndStatusBarsVisible(true),
+activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDialog(0)
 {
 
 	
@@ -363,16 +364,47 @@ void QProjectM_MainWindow::dragAndDropPlaylistItems(const QModelIndexList & indi
 	ui->presetPlayListDockWidget->setWindowModified ( true );
 }
 
+void QProjectM_MainWindow::setMenuAndStatusBarsVisible(bool visible) {
+
+        if (visible) {
+                if (_menuVisible) {
+                        menuBar()->show();
+			statusBar()->show();
+		}
+                else {
+                        menuBar()->hide();
+			statusBar()->hide();
+		}
+                _menuAndStatusBarsVisible = true;
+        } else {
+                if (_menuVisible) {
+                        menuBar()->hide();
+			statusBar()->hide();
+		}
+                else {
+                        menuBar()->hide();
+			statusBar()->hide();
+		}
+                _menuAndStatusBarsVisible = false;
+        }
+}
+
 void QProjectM_MainWindow::setMenuVisible(bool visible) {
 	
 	
 	
 	if (visible) {		
 		ui->dockWidgetContents->resize(_oldPlaylistSize);
-		ui->presetPlayListDockWidget->show();		
-		menuBar()->show();
+		ui->presetPlayListDockWidget->show();	
+		if (_menuAndStatusBarsVisible) {	
+			menuBar()->show();
+			statusBar()->show();
+		}
+		else {
+			menuBar()->hide();
+			statusBar()->hide();
+		}
 		statusBar()->show();
-		//m_QProjectMWidget->setFocus();
 		_menuVisible = true;				
 	} else {		
 		_oldPlaylistSize = ui->dockWidgetContents->size();
@@ -477,6 +509,19 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 			this->setWindowState ( this->windowState() ^ Qt::WindowFullScreen );
 			return;
 		
+		
+             case Qt::Key_B:
+                        if (!(e->modifiers() & Qt::ControlModifier)) {
+                                if ( ui->presetSearchBarLineEdit->hasFocus() )
+                                        return;
+
+                                if (ui->tableView->hasFocus())
+                                        return;             
+                        }
+
+                        setMenuAndStatusBarsVisible(!_menuAndStatusBarsVisible);
+			return;
+
 		case Qt::Key_M:
 			if (!(e->modifiers() & Qt::ControlModifier)) {
 				if ( ui->presetSearchBarLineEdit->hasFocus() )
