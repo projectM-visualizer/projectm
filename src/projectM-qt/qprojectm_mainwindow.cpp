@@ -404,7 +404,6 @@ void QProjectM_MainWindow::setMenuVisible(bool visible) {
 			menuBar()->hide();
 			statusBar()->hide();
 		}
-		statusBar()->show();
 		_menuVisible = true;				
 	} else {		
 		_oldPlaylistSize = ui->dockWidgetContents->size();
