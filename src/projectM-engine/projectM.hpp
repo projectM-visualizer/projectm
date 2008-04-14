@@ -45,9 +45,9 @@
 #include <sys/types.h>
 
 #ifdef MACOS
-#include <MacWindows.h>
-#include <gl.h>
-#include <glu.h>
+//#include <MacWindows.h>
+//#include <gl.h>
+//#include <glu.h>
 #else
 #ifdef WIN32
 #include <windows.h>
