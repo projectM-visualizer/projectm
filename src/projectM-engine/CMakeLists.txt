@@ -9,7 +9,14 @@ ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp image_DXT.c image_helper.c SOI
 
 SET_TARGET_PROPERTIES(projectM PROPERTIES VERSION 2.00 SOVERSION 2)
 
+if (APPLE)
+ADD_DEFINITIONS(-DMACOS -DUSE_FBO -DSTBI_NO_DDS)
+endif(APPLE)
+
+if (LINUX)
 ADD_DEFINITIONS(-DLINUX -DUSE_FBO -DSTBI_NO_DDS -DUSE_THREADS)
+endif(LINUX)
+
 ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"") 
 
 FIND_PACKAGE(OpenGL)
@@ -24,25 +31,32 @@ else (FTGL_FOUND)
 	OPTION(USE_FTGL "Use FTGL for on-screen fonts (Warning: NOT found on your system! Turning this on will probably bust the compilation.)" OFF)
 endif(FTGL_FOUND)
 
+
+#set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH};/opt/local/include;/Developer/SDKs/MACOSX10.5.sdk/usr/X11/include)
+#set(CMAKE_LIBRARY_PATH /opt/local/lib;/Developer/SDKs/MACOSX10.5.sdk;/Developer/SDKs/MacOSX10.5.sdk/usr/X11/lib/)
+
+
 TARGET_LINK_LIBRARIES(projectM GLEW m)
 
 IF(USE_FTGL)
 	if (FTGL_FOUND)
 		MESSAGE(STATUS "FTGL font support was detected and enabled.")
 	else (FTGL_FOUND)
-		MESSAGE(
+		MESSAGE(STATUS 
 	"Warning! FTGL has been enabled but not detected. Your compilation will probably break. Turn off FTGL support by setting USE_FTGL to false, or visit http://ftgl.wiki.sourceforge.net/ for help on installing FTGL.")
 	endif (FTGL_FOUND)
 	ADD_DEFINITIONS(-DUSE_FTGL)
-	INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS})
+	INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS} ${CMAKE_INCLUDE_PATH})
 	LINK_DIRECTORIES(${FTGL_LIBRARY_DIRS} "./")
         TARGET_LINK_LIBRARIES(projectM GLEW m ftgl freetype)
 ELSE (USE_FTGL)
 	IF (FTGL_FOUND)
-		MESSAGE("Warning: FTGL font support was detected but NOT enabled. You can enable it by setting USE_FTGL=true")
+		MESSAGE(STATUS "Warning: FTGL font support was detected but NOT enabled. You can enable it by setting USE_FTGL=true")
 	ELSE (FTGL_FOUND)
-		MESSAGE("Warning: FTGL font support was not detected. Visit http://ftgl.wiki.sourceforge.net/ for help on installing FTGL.")
+		MESSAGE(STATUS "Warning: FTGL font support was not detected. Visit http://ftgl.wiki.sourceforge.net/ for help on installing FTGL.")
 	ENDIF(FTGL_FOUND)
+	LINK_DIRECTORIES(${CMAKE_LIBRARY_PATH} "./")
+	INCLUDE_DIRECTORIES(${CMAKE_INCLUDE_PATH})
 ENDIF(USE_FTGL)
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libprojectM.pc.in" "${CMAKE_CURRENT_SOURCE_DIR}/libprojectM.pc" @ONLY)
