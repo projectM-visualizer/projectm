@@ -114,5 +114,5 @@ target_link_libraries(projectM-qt projectM ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_L
 
 install(FILES qprojectm_mainwindow.hpp DESTINATION include/libprojectM-qt)
 install(TARGETS projectM-qt DESTINATION lib${LIB_SUFFIX})
-install(FILES "${CMAKE_BINARY_DIR}/libprojectM-qt.pc" DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig)
+install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/libprojectM-qt.pc" DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig)
 install(FILES "images/icons/prjm16-transparent.svg" DESTINATION	${CMAKE_INSTALL_PREFIX}/share/pixmaps)
