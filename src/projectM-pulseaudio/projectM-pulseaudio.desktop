@@ -6,4 +6,4 @@ Exec=projectM-pulseaudio
 Icon=prjm16-transparent
 Terminal=false
 Type=Application
-Categories=Application;AudioVideo;Audio;
+Categories=Application;AudioVideo;Audio;;
