@@ -34,7 +34,7 @@ MESSAGE (FATAL_ERROR "projectM-qt NOT detected. Please install the projectM-qt m
 endif(LIBPROJECTM-QT_FOUND)
 
 if (JACK_FOUND)
-MESSAGE(STATUS "[projectM-jack] jack detected")
+MESSAGE(STATUS "[projectM-jack] jack detected.")
 else (JACK_FOUND)
 MESSAGE(FATAL_ERROR "JACK is NOT found. Please install jack from http://www.jackaudio.org.")
 endif(JACK_FOUND)
@@ -97,7 +97,7 @@ endif(${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
 pkg_search_module(JACK REQUIRED jack)
 
 if (JACK_FOUND)
-MESSAGE(STATUS "[projectM-jack] Jack detected")
+MESSAGE(STATUS "[projectM-jack] jack detected.")
 else (JACK_FOUND)
 MESSAGE(FATAL_ERROR "JACK is NOT found. Please install jack from http://www.jackaudio.org.")
 endif(JACK_FOUND)

@@ -17,14 +17,14 @@ find_package(Qt4 REQUIRED) # find and setup Qt4 for this project
 include(${QT_USE_FILE})
 
 if (QT4_FOUND)
-MESSAGE(STATUS "Qt4 Detected fine.")
+MESSAGE(STATUS "[projectM-qt] Qt4 detected.")
 else (QT4_FOUND)
 MESSAGE(FATAL_ERROR "Qt4 not detected. Please install Qt4 before continuing (visit www.trolltech.org for more info)")
 endif(QT4_FOUND)
 set(QT_USE_OPENGL TRUE)
 
 if (LIBPROJECTM_FOUND)
-	MESSAGE(STATUS "projectM detected.")
+	MESSAGE(STATUS "[projectM-qt] projectM detected.")
 else (LIBPROJECTM_FOUND)
 	MESSAGE(FATAL_ERROR "projectM not detected! Please install the projectM module or build from top level projectM source directory.")
 endif(LIBPROJECTM_FOUND)
