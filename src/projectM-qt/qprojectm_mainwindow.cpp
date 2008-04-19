@@ -189,6 +189,7 @@ void QProjectM_MainWindow::clearPlaylist()
 
 QProjectM * QProjectM_MainWindow::qprojectM()
 {
+	
 	return m_QProjectMWidget->qprojectM();
 }
 

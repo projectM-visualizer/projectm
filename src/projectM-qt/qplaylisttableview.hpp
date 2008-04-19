@@ -75,18 +75,18 @@ class QPlaylistTableView : public QTableView
     
 	 
 	 void dragLeaveEvent ( QDragLeaveEvent * event )  {
-		 qDebug() << "drag leave";
+		 //qDebug() << "drag leave";
 	 }
 	 
 	 void dragEnterEvent ( QDragEnterEvent * event )  {
-		 qDebug() << "drag enter event";		 
+		 //qDebug() << "drag enter event";		 
 		 event->accept();
 		 
 	 }
 	 
 	 
 	 void dragMoveEvent ( QDragMoveEvent * event )  {
-		 qDebug() << "drag move event";
+		 //qDebug() << "drag move event";
 		 event->accept();
 	 }
 	 
