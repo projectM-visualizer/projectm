@@ -193,11 +193,7 @@
       <orientation>Vertical</orientation>
     </splitheadersource>
     <references>
-      <pcs>Qt4</pcs>
       <pcs>automatic_%2Fhome%2Fcarm%2Fprojects%2FprojectM%2Ftrunk</pcs>
-      <pcs>projectMTrunk</pcs>
-      <pcs>pulseaudio</pcs>
-      <pcs>stl</pcs>
     </references>
   </kdevcppsupport>
   <cppsupportpart>
