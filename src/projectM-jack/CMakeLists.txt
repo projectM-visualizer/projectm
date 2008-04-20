@@ -36,7 +36,7 @@ endif(LIBPROJECTM-QT_FOUND)
 if (JACK_FOUND)
 MESSAGE(STATUS "[projectM-jack] jack detected.")
 else (JACK_FOUND)
-MESSAGE(FATAL_ERROR "JACK is NOT found. Please install jack from http://www.jackaudio.org.")
+MESSAGE( "JACK is NOT found. Please install jack from http://www.jackaudio.org.")
 endif(JACK_FOUND)
 
 
