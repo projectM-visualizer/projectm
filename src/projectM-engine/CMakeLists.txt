@@ -49,7 +49,7 @@ endif(FTGL_FOUND)
 
 
 
-TARGET_LINK_LIBRARIES(projectM GLEW m ${IMAGE_LOADING_LIBS})
+TARGET_LINK_LIBRARIES(projectM GLEW ${OPENGL_LIBRARIES} m ${IMAGE_LOADING_LIBS})
 
 IF(USE_FTGL)
 	if (FTGL_FOUND)
@@ -69,7 +69,7 @@ ELSE (USE_FTGL)
 		MESSAGE(STATUS "[projectM] Warning: FTGL font support was not detected. Visit http://ftgl.wiki.sourceforge.net/ for help on installing FTGL.")
 	ENDIF(FTGL_FOUND)
 	LINK_DIRECTORIES(${CMAKE_LIBRARY_PATH} "./")
-	INCLUDE_DIRECTORIES(${CMAKE_INCLUDE_PATH})
+	INCLUDE_DIRECTORIES("/opt/local/include/")
 ENDIF(USE_FTGL)
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libprojectM.pc.in" "${CMAKE_CURRENT_SOURCE_DIR}/libprojectM.pc" @ONLY)
