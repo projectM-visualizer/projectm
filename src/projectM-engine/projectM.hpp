@@ -121,7 +121,7 @@ public:
 	
   DLLEXPORT projectM(std::string config_file, int flags = FLAG_NONE);
   
-  DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url,std::string title_fonturl, std::string title_menuurl);
+  //DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url,std::string title_fonturl, std::string title_menuurl);
   
   DLLEXPORT void projectM_resetGL( int width, int height );
   DLLEXPORT void projectM_resetTextures();
