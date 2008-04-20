@@ -7,6 +7,13 @@
 
 TextureManager::TextureManager(const std::string _presetURL): presetURL(_presetURL)
 {
+#ifdef USE_DEVIL
+ilInit();
+iluInit();
+ilutInit();
+ilutRenderer(ILUT_OPENGL);	
+#endif
+
  Preload();
 }
 
@@ -17,6 +24,14 @@ TextureManager::~TextureManager()
 
 void TextureManager::Preload()
 {
+	
+#ifdef USE_DEVIL
+	ILuint image;
+	ilGenImages(1, &image);
+	ilBindImage(image);
+	ilLoadL(IL_TYPE_UNKNOWN,(ILvoid*) M_data, M_bytes);
+	GLuint tex = ilutGLBindTexImage();
+#else
 	 GLuint tex = SOIL_load_OGL_texture_from_memory(
 					  M_data,
 					  M_bytes,
@@ -27,8 +42,14 @@ void TextureManager::Preload()
 					  |  SOIL_FLAG_MULTIPLY_ALPHA
 					  |  SOIL_FLAG_COMPRESS_TO_DXT	  
 					  );
+#endif
+	 
   textures["M.tga"]=tex;
   
+#ifdef USE_DEVIL
+  ilLoadL(IL_TYPE_UNKNOWN,(ILvoid*) project_data,project_bytes);
+  tex = ilutGLBindTexImage();
+#else
   tex = SOIL_load_OGL_texture_from_memory(
 					  project_data,
 					  project_bytes,
@@ -39,8 +60,14 @@ void TextureManager::Preload()
 					  |  SOIL_FLAG_MULTIPLY_ALPHA
 					  |  SOIL_FLAG_COMPRESS_TO_DXT	  
 					  );
+#endif
+  
   textures["project.tga"]=tex;
   
+#ifdef USE_DEVIL
+  ilLoadL(IL_TYPE_UNKNOWN,(ILvoid*) headphones_data, headphones_bytes);
+  tex = ilutGLBindTexImage();
+#else
   tex = SOIL_load_OGL_texture_from_memory(
 					  headphones_data,
 					  headphones_bytes,
@@ -51,7 +78,9 @@ void TextureManager::Preload()
 					  |  SOIL_FLAG_MULTIPLY_ALPHA
 					  |  SOIL_FLAG_COMPRESS_TO_DXT	  
 					  );
-  textures["headphones.tga"]=tex;    
+#endif
+  
+  textures["headphones.tga"]=tex;
 }
 
 void TextureManager::Clear()
@@ -101,6 +130,9 @@ GLuint TextureManager::getTexture(const std::string imageURL)
    else
      {
        std::string fullURL = presetURL + PATH_SEPARATOR + imageURL;
+#ifdef USE_DEVIL
+       GLuint tex = ilutGLLoadImage((char *)fullURL.c_str());
+#else
        GLuint tex = SOIL_load_OGL_texture(
 					  fullURL.c_str(),
 					  SOIL_LOAD_AUTO,
@@ -112,6 +144,7 @@ GLuint TextureManager::getTexture(const std::string imageURL)
 					  |  SOIL_FLAG_COMPRESS_TO_DXT
 					  //| SOIL_FLAG_DDS_LOAD_DIRECT
 					  );
+#endif
        textures[imageURL]=tex;
        return tex;
        
