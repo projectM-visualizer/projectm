@@ -8,7 +8,13 @@
 #ifdef WIN32
 #include <GL/glew.h>
 #endif
+
+#ifdef USE_DEVIL
+#include <IL/ilut.h>
+#else
 #include "SOIL.h"
+#endif
+
 #include <iostream>
 #include <string>
 #include <map>

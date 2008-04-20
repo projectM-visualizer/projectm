@@ -558,6 +558,8 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs)
 	
 	float aspect=this->aspect;
 	
+
+	
 	for (PresetOutputs::cshape_container::const_iterator pos = presetOutputs->customShapes.begin();
 	pos != presetOutputs->customShapes.end(); ++pos)
 	{
@@ -591,7 +593,8 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs)
 					}
 				}
 				
-				
+				glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+				glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 				
 				glMatrixMode(GL_TEXTURE);
 				glPushMatrix();
