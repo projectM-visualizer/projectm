@@ -22,6 +22,12 @@ extern "C"
 }
 #endif
 
+#ifdef MACOS
+extern "C"
+{
+#include <errno.h>
+}
+#endif
 
 #include <cassert>
 #include "projectM.hpp"
