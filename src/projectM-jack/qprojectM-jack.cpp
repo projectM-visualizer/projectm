@@ -30,7 +30,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <unistd.h>
-
+#include <sys/stat.h> // for mkdir
 #include <jack/jack.h>
 
 #define CONFIG_FILE "/share/projectM/config.inp"
