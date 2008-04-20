@@ -1,12 +1,27 @@
 PROJECT(projectM)
-ADD_LIBRARY(projectM SHARED projectM.cpp FBO.cpp InitCond.cpp 
+
+OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL library" OFF)
+
+SET(SOIL_SOURCES image_DXT.c image_helper.c SOIL.c stb_image_aug.c)
+
+SET(projectM_SOURCES projectM.cpp FBO.cpp InitCond.cpp 
  Expr.cpp PCM.cpp Parser.cpp Preset.cpp BeatDetect.cpp PerPixelEqn.cpp Param.cpp CustomWave.cpp CustomShape.cpp 
 Func.cpp Eval.cpp  PerFrameEqn.cpp PerPointEqn.cpp fftsg.cpp KeyHandler.cpp
- timer.cpp  wipemalloc.cpp 
-BuiltinFuncs.cpp BuiltinParams.cpp Renderer.cpp 
+ timer.cpp  wipemalloc.cpp BuiltinFuncs.cpp BuiltinParams.cpp Renderer.cpp 
 PresetLoader.cpp  PresetChooser.cpp PresetFrameIO.cpp PresetMerge.cpp
-ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp image_DXT.c image_helper.c SOIL.c stb_image_aug.c TimeKeeper.cpp)
+ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp TimeKeeper.cpp)
 
+if (USE_DEVIL)
+SET (projectM_SOURCES ${projectM_SOURCES})
+ADD_DEFINITIONS(-DUSE_DEVIL)
+SET (IMAGE_LOADING_LIBS IL ILU ILUT)
+else (USE_DEVIL)
+SET (projectM_SOURCES ${projectM_SOURCES} ${SOIL_SOURCES})
+SET (IMAGE_LOADING_LIBS )
+endif (USE_DEVIL)
+
+
+ADD_LIBRARY(projectM SHARED ${projectM_SOURCES})
 SET_TARGET_PROPERTIES(projectM PROPERTIES VERSION 2.00 SOVERSION 2)
 
 if (APPLE)
@@ -29,12 +44,12 @@ else (FTGL_FOUND)
 	OPTION(USE_FTGL "Use FTGL for on-screen fonts (Warning: NOT found on your system! Turning this on will probably bust the compilation.)" OFF)
 endif(FTGL_FOUND)
 
-
 #set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH};/opt/local/include;/Developer/SDKs/MACOSX10.5.sdk/usr/X11/include)
 #set(CMAKE_LIBRARY_PATH /opt/local/lib;/Developer/SDKs/MACOSX10.5.sdk;/Developer/SDKs/MacOSX10.5.sdk/usr/X11/lib/)
 
 
-TARGET_LINK_LIBRARIES(projectM GLEW m)
+
+TARGET_LINK_LIBRARIES(projectM GLEW m ${IMAGE_LOADING_LIBS})
 
 IF(USE_FTGL)
 	if (FTGL_FOUND)

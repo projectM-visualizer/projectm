@@ -1,12 +1,12 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="14" >
+ <DocsAndViews NumberOfDocuments="12" >
   <Doc0 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-engine/RandomNumberGenerators.hpp" >
    <View0 Encoding="" Type="Source" />
   </Doc0>
   <Doc1 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/CMakeLists.txt" >
-   <View0 Encoding="" Type="Source" />
+   <View0 Encoding="" line="9" Type="Source" />
   </Doc1>
   <Doc2 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-engine/projectM.cpp" >
    <View0 Encoding="" Type="Source" />
@@ -24,26 +24,20 @@
    <View0 Encoding="" Type="Source" />
   </Doc6>
   <Doc7 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-engine/projectM.hpp" >
-   <View0 Encoding="" Type="Source" />
+   <View0 Encoding="" line="23" Type="Source" />
   </Doc7>
   <Doc8 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-qt/qprojectm_mainwindow.cpp" >
-   <View0 Encoding="" line="316" Type="Source" />
+   <View0 Encoding="" line="84" Type="Source" />
   </Doc8>
   <Doc9 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-qt/qprojectmconfigdialog.cpp" >
    <View0 Encoding="" Type="Source" />
   </Doc9>
   <Doc10 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-qt/qprojectm_mainwindow.hpp" >
-   <View0 Encoding="" line="159" Type="Source" />
+   <View0 Encoding="" line="169" Type="Source" />
   </Doc10>
-  <Doc11 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-qt/CMakeLists.txt" >
-   <View0 Encoding="" line="105" Type="Source" />
+  <Doc11 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-engine/CMakeLists.txt" >
+   <View0 Encoding="" line="34" Type="Source" />
   </Doc11>
-  <Doc12 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-pulseaudio/CMakeLists.txt" >
-   <View0 Encoding="" Type="Source" />
-  </Doc12>
-  <Doc13 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-pulseaudio/projectM-pulseaudio.desktop" >
-   <View0 Encoding="" line="3" Type="Source" />
-  </Doc13>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>
