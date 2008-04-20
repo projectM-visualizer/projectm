@@ -260,6 +260,7 @@ void renderLoop() {
            
 
 int main( int argc, char **argv ) {
+        atexit(SDL_Quit);
 
 	int i;
  char projectM_data[1024];
