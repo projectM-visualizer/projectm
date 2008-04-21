@@ -2,6 +2,8 @@ PROJECT(projectM)
 
 OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL library" OFF)
 
+OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disable this for OpenGL ES 1.x or if you are experiencing problems on older or note well supported hardware." ON)
+
 SET(SOIL_SOURCES image_DXT.c image_helper.c SOIL.c stb_image_aug.c)
 
 SET(projectM_SOURCES projectM.cpp FBO.cpp InitCond.cpp 
@@ -20,14 +22,17 @@ SET (projectM_SOURCES ${projectM_SOURCES} ${SOIL_SOURCES})
 SET (IMAGE_LOADING_LIBS )
 endif (USE_DEVIL)
 
+if(USE_FBO)
+ADD_DEFINITIONS(-DUSE_FBO)
+endif(USE_FBO)
 
 ADD_LIBRARY(projectM SHARED ${projectM_SOURCES})
 SET_TARGET_PROPERTIES(projectM PROPERTIES VERSION 2.00 SOVERSION 2)
 
 if (APPLE)
-ADD_DEFINITIONS(-DMACOS -DUSE_FBO -DSTBI_NO_DDS)
+ADD_DEFINITIONS(-DMACOS -DSTBI_NO_DDS)
 else (APPLE)
-ADD_DEFINITIONS(-DLINUX -DUSE_FBO -DSTBI_NO_DDS -DUSE_THREADS)
+ADD_DEFINITIONS(-DLINUX -DSTBI_NO_DDS -DUSE_THREADS)
 endif(APPLE)
 
 ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"") 
