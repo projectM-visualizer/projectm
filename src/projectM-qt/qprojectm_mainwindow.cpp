@@ -102,10 +102,10 @@ activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDi
 
 	m_QProjectMWidget->makeCurrent();
 	m_QProjectMWidget->setFocus();
-
+	setCentralWidget ( m_QProjectMWidget );
+	
 	m_timer->start ( 0 );
 
-	setCentralWidget ( m_QProjectMWidget );
 	createActions();
 	createMenus();
 	createToolBars();
@@ -297,6 +297,12 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 		this, SLOT(dragAndDropPlaylistItems(const QModelIndexList &, const QModelIndex &)));
 	connect(qprojectMWidget(), SIGNAL(projectM_BeforeDestroy()), 
 		this, SLOT(clearPlaylistModel()), Qt::DirectConnection);
+		
+	/// @bug hack: shouldn't have to change width for this to work correctly
+	m_QProjectMWidget->resize(m_QProjectMWidget->size().width()-1, m_QProjectMWidget->size().height());	
+	
+
+	
 	
 }
 
@@ -975,7 +981,7 @@ void QProjectM_MainWindow::readSettings()
 	m_QPlaylistFileDialog->setDirectory
 	( settings.value ( "playlistPath", m_QPlaylistFileDialog->directory().absolutePath() ).toString() );
 
-	resize ( size().width(), size().height() );
+	//resize ( size().width(), size().height() );
 	move ( pos );
 }
 
