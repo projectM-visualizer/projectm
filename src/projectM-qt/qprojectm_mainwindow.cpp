@@ -507,6 +507,10 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 			}
 			
 			this->setWindowState ( this->windowState() ^ Qt::WindowFullScreen );
+			
+			if (!_menuVisible)
+				qprojectMWidget()->setFocus();
+				
 			return;
 		
 		
