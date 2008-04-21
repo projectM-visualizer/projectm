@@ -28,9 +28,9 @@
 #ifndef _RENDERTARGET_H
 #define _RENDERTARGET_H
 
-
+#ifdef USE_FBO
 #include <GL/glew.h>
-
+#endif
 
 #if defined(MACOS)
 #include <gl.h>
@@ -76,8 +76,10 @@ public:
 */
     /** Render target texture ID for non-pbuffer systems */
     GLuint textureID[3];
+#ifdef USE_FBO
     GLuint fbuffer[2]; 
     GLuint depthb[2];
+#endif
   };
 
 

@@ -39,6 +39,7 @@ RenderTarget::~RenderTarget() {
 
 	glDeleteTextures( 1, &this->textureID[0]);
 
+#ifdef USE_FBO
 	if (useFBO) 
          {
 		glDeleteTextures( 1, &this->textureID[1] );
@@ -51,11 +52,14 @@ RenderTarget::~RenderTarget() {
 		    glDeleteFramebuffersEXT(1, &this->fbuffer[1]);
 		  }
          }
+#endif
 
 }
 
 GLuint RenderTarget::initRenderToTexture()
 {
+#ifdef USE_FBO
+
   if (this->useFBO==1)
     {
       this->renderToTexture=1;
@@ -80,7 +84,8 @@ GLuint RenderTarget::initRenderToTexture()
       glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, this->textureID[2], 0 );
       return this->textureID[2];
     }
-  else return -1;
+#endif 
+return -1;
       
 }
 
@@ -89,12 +94,13 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 
     int mindim = 0;
     int origtexsize = 0;
-    this->useFBO = true;
+  
     this->renderToTexture = 0;
 
     this->texsize = texsize;
 
-
+#ifdef USE_FBO
+    this->useFBO = true;
    if(this->useFBO)
     { 
       glewInit();
@@ -144,9 +150,12 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 	    return;
 	  }	
 	}
-      else this->useFBO=0;      
+      
     }
 
+#else
+   this->useFBO=false;
+#endif
     /** Fallback pbuf;fer creation via teximage hack */
     /** Check the texture size against the viewport size */
     /** If the viewport is smaller, then we'll need to scale the texture size down */
@@ -181,7 +190,7 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 		    NULL);
       }
 
-    this->useFBO=0;
+   
     return;
   }
 
@@ -227,18 +236,18 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 /** Locks the pbuffer */
 void RenderTarget::lock() {
 
-
+#ifdef USE_FBO
   if(this->useFBO)
     { 
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->fbuffer[0]);     
     }
-  
+#endif
     }
 
 /** Unlocks the pbuffer */
 void RenderTarget::unlock() {
 
-
+#ifdef USE_FBO
   if(this->useFBO)
     {
       glBindTexture( GL_TEXTURE_2D, this->textureID[1] );
@@ -248,7 +257,7 @@ void RenderTarget::unlock() {
       glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
       return;
     }
-
+#endif
     /** Fallback texture path */
     
     glBindTexture( GL_TEXTURE_2D, this->textureID[0] );
