@@ -206,12 +206,15 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 	//video texture memory and render fullscreen.
 	
 	/** Reset the viewport size */
+#ifdef USE_FBO
 	if(renderTarget->renderToTexture)
 	{
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->renderTarget->fbuffer[1]);
 		glViewport( 0, 0, this->renderTarget->texsize, this->renderTarget->texsize );
 	}
-	else  glViewport( 0, 0, this->vw, this->vh );
+	else 
+#endif
+	glViewport( 0, 0, this->vw, this->vh );
 	
 	
 	
@@ -241,9 +244,10 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 	if(this->showstats%2) draw_stats(presetInputs);
 	glTranslatef(0.5 , 0.5, 0);
 	
+#ifdef USE_FBO
 	if(renderTarget->renderToTexture)
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-	
+#endif
 }
 
 
