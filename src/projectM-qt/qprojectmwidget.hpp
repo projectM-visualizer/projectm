@@ -17,6 +17,14 @@ class QProjectMWidget : public QGLWidget {
 
 		~QProjectMWidget() { destroyProjectM(); }
 
+
+		void resizeGL(int w, int h)
+		{
+        // Setup viewport, projection etc	
+			setup_opengl(w,h);
+			m_projectM->projectM_resetGL(  w, h ); 
+		}
+
 		inline const std::string & configFile() {
 			return config_file;
 		}
@@ -151,13 +159,6 @@ class QProjectMWidget : public QGLWidget {
 
 			this->m_projectM = new QProjectM(config_file);	
 			projectM_Initialized(m_projectM);
-		}
-
-		void resizeGL(int w, int h)
-		{
-        // Setup viewport, projection etc	
-			setup_opengl(w,h);
-			m_projectM->projectM_resetGL(  w, h ); 
 		}
 
 		inline void paintGL()
