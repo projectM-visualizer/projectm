@@ -32,8 +32,9 @@
 #include <GL/glew.h>
 #endif
 
-#if defined(MACOS)
+#ifdef MACOS
 #include <gl.h>
+#include <agl.h>
 #endif /** MACOS */
 
 #ifdef WIN32
@@ -41,8 +42,12 @@
 #endif /** WIN32 */
 
 #ifdef LINUX
+#ifdef USE_GLES1
+#include <GLES/gl.h>
+#else
 #include <GL/gl.h>
 #include <GL/glx.h>
+#endif
 #endif
 
 typedef enum { SCALE_NEAREST, SCALE_MAGNIFY, SCALE_MINIFY } TextureScale;

@@ -232,7 +232,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 	
 	
 	glMatrixMode(GL_MODELVIEW);
-	glTranslated(-0.5, -0.5, 0);
+	glTranslatef(-0.5, -0.5, 0);
 	
 	// When console refreshes, there is a chance the preset has been changed by the user
 	refreshConsole();
@@ -256,8 +256,14 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
 	//Texture wrapping( clamp vs. wrap)
 	if (presetOutputs->bTexWrap==0)
 	{
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);}
+#ifdef USE_GLES1
+	  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#else
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+#endif
+	}
 	else
 	{ glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);}
@@ -271,19 +277,39 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
 	
 	glEnable(GL_TEXTURE_2D);
 	
+	int size = presetInputs->gy;
+
+	float p[size*2][2];      
+	float t[size*2][2];
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glVertexPointer(2,GL_FLOAT,0,p);
+	glTexCoordPointer(2,GL_FLOAT,0,t);
+    	
 	for (int x=0;x<presetInputs->gx - 1;x++)
-	{
-		glBegin(GL_TRIANGLE_STRIP);
+	{	       
 		for(int y=0;y<presetInputs->gy;y++)
-		{
-			glTexCoord2f(presetOutputs->x_mesh[x][y], presetOutputs->y_mesh[x][y]);
-			glVertex2f(this->gridx[x][y], this->gridy[x][y]);
-			glTexCoord2f(presetOutputs->x_mesh[x+1][y], presetOutputs->y_mesh[x+1][y]);
-			glVertex2f(this->gridx[x+1][y], this->gridy[x+1][y]);
+		{		
+		  t[y*2][0] = presetOutputs->x_mesh[x][y];
+		  t[y*2][1] = presetOutputs->y_mesh[x][y];
+
+		  p[y*2][0] = this->gridx[x][y];
+		  p[y*2][1] = this->gridy[x][y];			    
+
+		  t[(y*2)+1][0] = presetOutputs->x_mesh[x+1][y];
+		  t[(y*2)+1][1] = presetOutputs->y_mesh[x+1][y];
+
+		  p[(y*2)+1][0] = this->gridx[x+1][y];
+		  p[(y*2)+1][1] = this->gridy[x+1][y];			    
+
 		}
-		glEnd();
+	       	glDrawArrays(GL_TRIANGLE_STRIP,0,size*2);
 	}
-	
+
+
+
 	glDisable(GL_TEXTURE_2D);
 	
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -455,8 +481,10 @@ void Renderer::reset(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	
+#ifndef USE_GLES1
 	glDrawBuffer(GL_BACK);
 	glReadBuffer(GL_BACK);
+#endif
 	glEnable(GL_BLEND);
 	
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -467,8 +495,10 @@ void Renderer::reset(int w, int h)
 	glEnable(GL_POINT_SMOOTH);
 	glClear(GL_COLOR_BUFFER_BIT);
 	
-	glLineStipple(2, 0xAAAA);
-	
+#ifndef USE_GLES1
+	glLineStipple(2, 0xAAAA);       
+#endif
+
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	
@@ -526,22 +556,39 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs)
 			// printf("mid inner loop\n");
 			(*pos)->evalPerPointEqns();
 			
-			//put drawing code here
-			if ( (*pos)->bUseDots==1)
-			{ glBegin(GL_POINTS);}
-			else  glBegin(GL_LINE_STRIP);
-			
+		
+			float colors[(*pos)->samples][4];
+			float points[(*pos)->samples][2];
+
 			for(x=0;x< (*pos)->samples;x++)
 			{
-				
-				glColor4f( (*pos)->r_mesh[x], (*pos)->g_mesh[x], (*pos)->b_mesh[x], (*pos)->a_mesh[x]);
-				glVertex3f( (*pos)->x_mesh[x], -( (*pos)->y_mesh[x]-1), -1);
+			  colors[x][0] = (*pos)->r_mesh[x];
+			  colors[x][1] = (*pos)->g_mesh[x];
+			  colors[x][2] = (*pos)->b_mesh[x];			  
+			  colors[x][3] = (*pos)->a_mesh[x];			     
+
+			  points[x][0] = (*pos)->x_mesh[x];
+			  points[x][1] =  -( (*pos)->y_mesh[x]-1);
+		       
 			}
 			
-			glEnd();
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glEnableClientState(GL_COLOR_ARRAY);	 
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+			glVertexPointer(2,GL_FLOAT,0,points);
+			glColorPointer(4,GL_FLOAT,0,colors);
+		     		       
+	
+			if ( (*pos)->bUseDots==1)
+		       	glDrawArrays(GL_POINTS,0,(*pos)->samples);
+			else  	glDrawArrays(GL_LINE_STRIP,0,(*pos)->samples);
+			
 			glPointSize(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
 			glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
+#ifndef USE_GLES1
 			glDisable(GL_LINE_STIPPLE);
+#endif
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			//  glPopMatrix();
 			
@@ -551,18 +598,15 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs)
 	
 }
 
-
 void Renderer::draw_shapes(PresetOutputs *presetOutputs)
 {
 	
-	int i;
+	
 	float radius;
 	float xval, yval;
 	float t;
 	
-	float aspect=this->aspect;
-	
-
+	float aspect=this->aspect;	
 	
 	for (PresetOutputs::cshape_container::const_iterator pos = presetOutputs->customShapes.begin();
 	pos != presetOutputs->customShapes.end(); ++pos)
@@ -570,20 +614,18 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs)
 		
 		if( (*pos)->enabled==1)
 		{
+			
 			// printf("drawing shape %f\n", (*pos)->ang);
 			(*pos)->y=-(( (*pos)->y)-1);
 			radius=.5;
 			(*pos)->radius= (*pos)->radius*(.707*.707*.707*1.04);
 			//Additive Drawing or Overwrite
 			if ( (*pos)->additive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			else    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-			
+			else    glBlendFunc(GL_SRC_ALPHA, GL_ONE);			
 			
 			xval= (*pos)->x;
 			yval= (*pos)->y;
-			
-			
-			
+									
 			if ( (*pos)->textured)
 			{
 				
@@ -596,37 +638,55 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs)
 						aspect=1.0;
 					}
 				}
-				
-				glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-				glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+
 				
 				glMatrixMode(GL_TEXTURE);
 				glPushMatrix();
 				glLoadIdentity();
 				
 				glEnable(GL_TEXTURE_2D);
-				
-				
-				glBegin(GL_TRIANGLE_FAN);
-				
+					
+				glEnableClientState(GL_VERTEX_ARRAY);
+				glEnableClientState(GL_COLOR_ARRAY);	 
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+											
+				float colors[(*pos)->sides+2][4];
+				float tex[(*pos)->sides+2][2];
+				float points[(*pos)->sides+2][2];			
+										
 				//Define the center point of the shape
-				glColor4f( (*pos)->r, (*pos)->g, (*pos)->b, (*pos)->a);
-				glTexCoord2f(.5, .5);
-				glVertex3f(xval, yval, 0);
+				colors[0][0] = (*pos)->r;
+				colors[0][1] = (*pos)->g;
+				colors[0][2] = (*pos)->b;
+				colors[0][3] = (*pos)->a;
+			  	   tex[0][0] = 0.5;
+				   tex[0][1] = 0.5;
+				points[0][0] = xval;
+				points[0][1] = yval;     							     
 				
-				glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);
-				
-				for ( i=1;i< (*pos)->sides+2;i++)
+				for ( int i=1;i< (*pos)->sides+2;i++)
 				{
-					
-					
-					t = (i-1)/(float) (*pos)->sides;
-					
-					glTexCoord2f(  0.5f + 0.5f*cosf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)/ (*pos)->tex_zoom, 0.5f + 0.5f*sinf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)/ (*pos)->tex_zoom);
-					glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval, 0);
-				}
-				glEnd();
+				  colors[i][0]= (*pos)->r2;
+				  colors[i][1]=(*pos)->g2;
+				  colors[i][2]=(*pos)->b2;
+				  colors[i][3]=(*pos)->a2;
+
+				  t = (i-1)/(float) (*pos)->sides;
+				  tex[i][0] =0.5f + 0.5f*cosf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)/ (*pos)->tex_zoom;
+				  tex[i][1] =  0.5f + 0.5f*sinf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)/ (*pos)->tex_zoom;
+				  points[i][0]=(*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)+xval;
+				  points[i][1]=(*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval;
+				  
+										
 				
+				}
+					
+				glVertexPointer(2,GL_FLOAT,0,points);
+				glColorPointer(4,GL_FLOAT,0,colors);
+				glTexCoordPointer(2,GL_FLOAT,0,tex);
+
+				glDrawArrays(GL_TRIANGLE_FAN,0,(*pos)->sides+2);
 				
 				glDisable(GL_TEXTURE_2D);
 				glPopMatrix();
@@ -647,38 +707,64 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs)
 			else
 			{//Untextured (use color values)
 				
-				//draw first n-1 triangular pieces
-				glBegin(GL_TRIANGLE_FAN);
-				
-				glColor4f( (*pos)->r, (*pos)->g, (*pos)->b, (*pos)->a);
-				
-				// glTexCoord2f(.5,.5);
-				glVertex3f(xval, yval, -1);
-				glColor4f( (*pos)->r2, (*pos)->g2, (*pos)->b2, (*pos)->a2);
-				
-				for ( i=1;i< (*pos)->sides+2;i++)
-				{
+
+			  glEnableClientState(GL_VERTEX_ARRAY);
+			  glEnableClientState(GL_COLOR_ARRAY);	 
+			  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+			  
+			  float colors[(*pos)->sides+2][4];				
+			  float points[(*pos)->sides+2][2];			
+			  
+			  //Define the center point of the shape
+			  colors[0][0]=(*pos)->r;
+			  colors[0][1]=(*pos)->g;
+			  colors[0][2]=(*pos)->b;
+			  colors[0][3]=(*pos)->a;			       
+			  points[0][0]=xval;
+			  points[0][1]=yval;
+			  
+			  
+			  
+			  for ( int i=1;i< (*pos)->sides+2;i++)
+			    {
+			      colors[i][0]=(*pos)->r2;
+			      colors[i][1]=(*pos)->g2;
+			      colors[i][2]=(*pos)->b2;
+			      colors[i][3]=(*pos)->a2;
+			      t = (i-1)/(float) (*pos)->sides;
+			      points[i][0]=(*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)+xval;
+			      points[i][1]=(*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval;
+			     			      			      
+			    }
 					
-					t = (i-1)/(float) (*pos)->sides;
-					glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval, -1);
-					
-				}
-				glEnd();
-				
-				
+			  glVertexPointer(2,GL_FLOAT,0,points);
+			  glColorPointer(4,GL_FLOAT,0,colors);
+			  
+			  
+			  glDrawArrays(GL_TRIANGLE_FAN,0,(*pos)->sides+2);
+			  //draw first n-1 triangular pieces
+			  			  				
 			}
 			if (presetOutputs->bWaveThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
-			glBegin(GL_LINE_LOOP);
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glDisableClientState(GL_COLOR_ARRAY);	 
+			
+			float points[(*pos)->sides+1][2];
+
 			glColor4f( (*pos)->border_r, (*pos)->border_g, (*pos)->border_b, (*pos)->border_a);
 			
-			for ( i=1;i< (*pos)->sides+1;i++)
+			for ( int i=0;i< (*pos)->sides;i++)
 			{
 				t = (i-1)/(float) (*pos)->sides;
-				glVertex3f( (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)+xval,  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval, -1);
-				
+				points[i][0]= (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)+xval;
+				points[i][1]=  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval;
+								
 			}
-			glEnd();
-			
+
+			glVertexPointer(2,GL_FLOAT,0,points);			 			  			  
+			glDrawArrays(GL_LINE_LOOP,0,(*pos)->sides);
+		      
 			if (presetOutputs->bWaveThick==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
 			
 			
@@ -687,7 +773,6 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs)
 	
 	
 }
-
 
 void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetInputs, bool isSmoothing)
 {
@@ -739,8 +824,8 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 			  r=(0.5 + 0.4f*.12*value*presetOutputs->fWaveScale + presetOutputs->wave_mystery)*.5;
 			  theta=(x)*inv_nverts_minus_one*6.28f + presetInputs->time*0.2f;
 			  
-			  presetOutputs->wavearray_x[x]=(r*cos(theta)*(this->correction ? this->aspect : 1.0)+presetOutputs->wave_x);
-			  presetOutputs->wavearray_y[x]=(r*sin(theta)+presetOutputs->wave_y);		       
+			  presetOutputs->wavearray[x][0]=(r*cos(theta)*(this->correction ? this->aspect : 1.0)+presetOutputs->wave_x);
+			  presetOutputs->wavearray[x][1]=(r*sin(theta)+presetOutputs->wave_y);		       
 			  
 			}
 		
@@ -764,8 +849,8 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 				theta=beatDetect->pcm->pcmdataL[x+32]*0.06*presetOutputs->fWaveScale * 1.57 + presetInputs->time*2.3;
 				r=(0.53 + 0.43*beatDetect->pcm->pcmdataR[x]*0.12*presetOutputs->fWaveScale+ presetOutputs->wave_mystery)*.5;
 				
-				presetOutputs->wavearray_x[x]=(r*cos(theta)*(this->correction ? this->aspect : 1.0)+presetOutputs->wave_x);
-				presetOutputs->wavearray_y[x]=(r*sin(theta)+presetOutputs->wave_y);
+				presetOutputs->wavearray[x][0]=(r*cos(theta)*(this->correction ? this->aspect : 1.0)+presetOutputs->wave_x);
+				presetOutputs->wavearray[x][1]=(r*sin(theta)+presetOutputs->wave_y);
 			
 			}
 			
@@ -784,9 +869,9 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 			
 			for (x=0; x<512-32; x++)
 			{
-				presetOutputs->wavearray_x[x]=(beatDetect->pcm->pcmdataR[x]*presetOutputs->fWaveScale*0.5*(this->correction ? this->aspect : 1.0) + presetOutputs->wave_x);
+				presetOutputs->wavearray[x][0]=(beatDetect->pcm->pcmdataR[x]*presetOutputs->fWaveScale*0.5*(this->correction ? this->aspect : 1.0) + presetOutputs->wave_x);
 				
-				presetOutputs->wavearray_y[x]=(beatDetect->pcm->pcmdataL[x+32]*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y);
+				presetOutputs->wavearray[x][1]=(beatDetect->pcm->pcmdataL[x+32]*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y);
 			
 			}
 		       
@@ -806,8 +891,8 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 			
 			for (x=0; x<512-32; x++)
 			{
-				presetOutputs->wavearray_x[x]=(beatDetect->pcm->pcmdataR[x] * presetOutputs->fWaveScale*0.5 + presetOutputs->wave_x);
-				presetOutputs->wavearray_y[x]=( (beatDetect->pcm->pcmdataL[x+32]*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y));
+				presetOutputs->wavearray[x][0]=(beatDetect->pcm->pcmdataR[x] * presetOutputs->fWaveScale*0.5 + presetOutputs->wave_x);
+				presetOutputs->wavearray[x][1]=( (beatDetect->pcm->pcmdataL[x+32]*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y));
 			
 			}
 			
@@ -839,8 +924,8 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 					xx[i] = xx[i]*w2 + w1*(xx[i-1]*2.0f - xx[i-2]);
 					yy[i] = yy[i]*w2 + w1*(yy[i-1]*2.0f - yy[i-2]);
 				}
-				presetOutputs->wavearray_x[i]=xx[i];
-				presetOutputs->wavearray_y[i]=yy[i];			    
+				presetOutputs->wavearray[i][0]=xx[i];
+				presetOutputs->wavearray[i][1]=yy[i];			    
 			}											   		}
 		break;
 		
@@ -859,8 +944,8 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 			{
 				float x0 = (beatDetect->pcm->pcmdataR[x]*beatDetect->pcm->pcmdataL[x+32] + beatDetect->pcm->pcmdataL[x+32]*beatDetect->pcm->pcmdataR[x]);
 				float y0 = (beatDetect->pcm->pcmdataR[x]*beatDetect->pcm->pcmdataR[x] - beatDetect->pcm->pcmdataL[x+32]*beatDetect->pcm->pcmdataL[x+32]);
-				presetOutputs->wavearray_x[x]=((x0*cos_rot - y0*sin_rot)*presetOutputs->fWaveScale*0.5*(this->correction ? this->aspect : 1.0) + presetOutputs->wave_x);
-				presetOutputs->wavearray_y[x]=( (x0*sin_rot + y0*cos_rot)*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y);
+				presetOutputs->wavearray[x][0]=((x0*cos_rot - y0*sin_rot)*presetOutputs->fWaveScale*0.5*(this->correction ? this->aspect : 1.0) + presetOutputs->wave_x);
+				presetOutputs->wavearray[x][1]=( (x0*sin_rot + y0*cos_rot)*presetOutputs->fWaveScale*0.5 + presetOutputs->wave_y);
 			
 			}
 			
@@ -882,8 +967,8 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 			for ( x=0;x<  presetOutputs->wave_samples;x++)
 			{
 				
-				presetOutputs->wavearray_x[x]=x/(float)  presetOutputs->wave_samples;
-				presetOutputs->wavearray_y[x]=beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+wave_x_temp;
+				presetOutputs->wavearray[x][0]=x/(float)  presetOutputs->wave_samples;
+				presetOutputs->wavearray[x][1]=beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+wave_x_temp;
 				
 			}
 			//	  printf("%f %f\n",renderTarget->texsize*wave_y_temp,wave_y_temp);
@@ -908,16 +993,16 @@ void Renderer::WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetIn
 			
 			for ( x=0;x<  presetOutputs->wave_samples ;x++)
 			{
-				presetOutputs->wavearray_x[x]=x/((float)  presetOutputs->wave_samples);
-				presetOutputs->wavearray_y[x]= beatDetect->pcm->pcmdataL[x]*.04*presetOutputs->fWaveScale+(wave_y_temp+y_adj);
+				presetOutputs->wavearray[x][0]=x/((float)  presetOutputs->wave_samples);
+				presetOutputs->wavearray[x][1]= beatDetect->pcm->pcmdataL[x]*.04*presetOutputs->fWaveScale+(wave_y_temp+y_adj);
 			
 			}
 			
 			for ( x=0;x<  presetOutputs->wave_samples;x++)
 			{
 				
-				presetOutputs->wavearray2_x[x]=x/((float)  presetOutputs->wave_samples);
-				presetOutputs->wavearray2_y[x]=beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+(wave_y_temp-y_adj);
+				presetOutputs->wavearray2[x][0]=x/((float)  presetOutputs->wave_samples);
+				presetOutputs->wavearray2[x][1]=beatDetect->pcm->pcmdataR[x]*.04*presetOutputs->fWaveScale+(wave_y_temp-y_adj);
 			
 			}
 			
@@ -939,8 +1024,9 @@ void Renderer::draw_waveform(PresetOutputs * presetOutputs)
 	modulate_opacity_by_volume(presetOutputs);
 	maximize_colors(presetOutputs);
 	
+#ifndef USE_GLES1
 	if(presetOutputs->bWaveDots==1) glEnable(GL_LINE_STIPPLE);
-	
+#endif
 	
 	//Thick wave drawing
 	if (presetOutputs->bWaveThick==1)  glLineWidth( (this->renderTarget->texsize < 512 ) ? 2 : 2*this->renderTarget->texsize/512);
@@ -951,33 +1037,36 @@ void Renderer::draw_waveform(PresetOutputs * presetOutputs)
 	else    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	
 	glTranslatef(.5, .5, 0);
-	glRotated(presetOutputs->wave_rot, 0, 0, 1);
+	glRotatef(presetOutputs->wave_rot, 0, 0, 1);
 	glScalef(presetOutputs->wave_scale, 1.0, 1.0);
 	glTranslatef(-.5, -.5, 0);
 	
 
-	if (presetOutputs->draw_wave_as_loop)	glBegin(GL_LINE_LOOP);
-	else glBegin(GL_LINE_STRIP);
-	for (int x = 0;x<presetOutputs->wave_samples;x++)
-	{
-		glVertex2f(presetOutputs->wavearray_x[x], presetOutputs->wavearray_y[x]);
-	}
-	
-	glEnd();
-	
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glVertexPointer(2,GL_FLOAT,0,presetOutputs->wavearray);	
+
+	if (presetOutputs->draw_wave_as_loop) 
+	  glDrawArrays(GL_LINE_LOOP,0,presetOutputs->wave_samples);
+	else
+	  glDrawArrays(GL_LINE_STRIP,0,presetOutputs->wave_samples);
+
+
 	if (presetOutputs->two_waves)
-	{
-		glBegin(GL_LINE_STRIP);
-		for (int x = 0;x<presetOutputs->wave_samples;x++)
-		{
-			glVertex2f(presetOutputs->wavearray2_x[x], presetOutputs->wavearray2_y[x]);
-		}
-		
-		glEnd();
-	}
+	  {
+	    glVertexPointer(2,GL_FLOAT,0,presetOutputs->wavearray2);
+	    if (presetOutputs->draw_wave_as_loop) 
+	      glDrawArrays(GL_LINE_LOOP,0,presetOutputs->wave_samples);
+	    else
+	      glDrawArrays(GL_LINE_STRIP,0,presetOutputs->wave_samples);
+	  }
 	
+	
+#ifndef USE_GLES1
 	if(presetOutputs->bWaveDots==1) glDisable(GL_LINE_STIPPLE);
-	
+#endif	
+
 	glPopMatrix();
 }
 
@@ -1052,18 +1141,30 @@ void Renderer::darken_center()
 	float unit=0.05f;
 	
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	float colors[6][4] = {{0, 0, 0, 3.0f/32.0f},
+			      {0, 0, 0, 0},
+			      {0, 0, 0, 0},
+			      {0, 0, 0, 0},
+			      {0, 0, 0, 0},
+			      {0, 0, 0, 0}};
+
+	float points[6][2] = {{ 0.5,  0.5},
+			      { 0.45, 0.5},
+			      { 0.5,  0.45},
+			      { 0.55, 0.5},
+			      { 0.5,  0.55},
+			      { 0.45, 0.5}};
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);	 
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	
-	glBegin(GL_TRIANGLE_FAN);
-	glColor4f(0, 0, 0, 3.0f/32.0f);
-	glVertex3f(0.5, 0.5, -1);
-	glColor4f(0, 0, 0, -1);
-	glVertex3f(0.5-unit, 0.5, -1);
-	glVertex3f(0.5, 0.5-unit, -1);
-	glVertex3f(0.5+unit, 0.5, -1);
-	glVertex3f(0.5, 0.5+unit, -1);
-	glVertex3f(0.5-unit, 0.5, -1);
-	glEnd();
-	
+	glVertexPointer(2,GL_FLOAT,0,points);
+	glColorPointer(4,GL_FLOAT,0,colors);
+		       
+	glDrawArrays(GL_TRIANGLE_FAN,0,6);
+
 }
 
 
@@ -1085,9 +1186,11 @@ void Renderer::modulate_opacity_by_volume(PresetOutputs *presetOutputs)
 }
 
 void Renderer::draw_motion_vectors(PresetOutputs *presetOutputs)
-{
-	
-	int x, y;
+{  	
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);
 	
 	float offsetx=presetOutputs->mv_dx, intervalx=1.0/(float)presetOutputs->mv_x;
 	float offsety=presetOutputs->mv_dy, intervaly=1.0/(float)presetOutputs->mv_y;
@@ -1098,21 +1201,33 @@ void Renderer::draw_motion_vectors(PresetOutputs *presetOutputs)
 	glPointSize(presetOutputs->mv_l);
 	glColor4f(presetOutputs->mv_r, presetOutputs->mv_g, presetOutputs->mv_b, presetOutputs->mv_a);
 	
-	glBegin(GL_POINTS);
-	for (x=0;x<presetOutputs->mv_x;x++)
+	int numx = presetOutputs->mv_x;
+	int numy = presetOutputs->mv_y;
+
+	if (numx + numy < 600)
+	  {
+	int size = numx * numy;
+
+	float points[size][2];
+	
+
+       
+	for (int x=0;x<numx;x++)
 	{
-		for(y=0;y<presetOutputs->mv_y;y++)
+		for(int y=0;y<numy;y++)
 		{
 			float lx, ly, lz;
 			lx = offsetx+x*intervalx;
 			ly = offsety+y*intervaly;
-			lz = -1;
-			glVertex2f(lx, ly);
+ 			
+			points[(x * numy) + y][0] = lx;
+			points[(x * numy) + y][1] = ly;
 		}
 	}
-	
-	glEnd();
-	
+
+	glVertexPointer(2,GL_FLOAT,0,points);
+	glDrawArrays(GL_POINTS,0,size);
+	  }
 	
 }
 
@@ -1123,7 +1238,9 @@ GLuint Renderer::initRenderToTexture()
 
 void Renderer::draw_borders(PresetOutputs *presetOutputs)
 {
-	
+  	glEnableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);	 
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	//Draw Borders
 	float of=presetOutputs->ob_size*.5;
 	float iff=presetOutputs->ib_size*.5;
@@ -1132,18 +1249,51 @@ void Renderer::draw_borders(PresetOutputs *presetOutputs)
 	//no additive drawing for borders
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	glColor4d(presetOutputs->ob_r, presetOutputs->ob_g, presetOutputs->ob_b, presetOutputs->ob_a);
-	glRectd(0, 0, of, 1);
-	glRectd(of, 0, texof, of);
-	glRectd(texof, 0, 1, 1);
-	glRectd(of, 1, texof, texof);
-	
-	glColor4d(presetOutputs->ib_r, presetOutputs->ib_g, presetOutputs->ib_b, presetOutputs->ib_a);
+	glColor4f(presetOutputs->ob_r, presetOutputs->ob_g, presetOutputs->ob_b, presetOutputs->ob_a);
+
+
+  
+	float pointsA[4][2] = {{0,0},{0,1},{of,0},{of,1}};	
+	glVertexPointer(2,GL_FLOAT,0,pointsA);    
+	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+
+	float pointsB[4][2] = {{of,0},{of,of},{texof,0},{texof,of}};
+	glVertexPointer(2,GL_FLOAT,0,pointsB);    
+	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+
+	float pointsC[4][2] = {{texof,0},{texof,1},{1,0},{1,1}};
+	glVertexPointer(2,GL_FLOAT,0,pointsC);    
+	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+
+	float pointsD[4][2] = {{of,1},{of,texof},{texof,1},{texof,texof}};
+	glVertexPointer(2,GL_FLOAT,0,pointsD);    
+	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+
+	glColor4f(presetOutputs->ib_r, presetOutputs->ib_g, presetOutputs->ib_b, presetOutputs->ib_a);
+
 	glRectd(of, of, of+iff, texof);
 	glRectd(of+iff, of, texof-iff, of+iff);
 	glRectd(texof-iff, of, texof, texof);
 	glRectd(of+iff, texof, texof-iff, texof-iff);
+  
+	float pointsE[4][2] = {{of,of},{of,texof},{of+iff,of},{of+iff,texof}};	
+	glVertexPointer(2,GL_FLOAT,0,pointsE);    
+	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+
+	float pointsF[4][2] = {{of+iff,of},{of+iff,of+iff},{texof-iff,of},{texof-iff,of+iff}};
+	glVertexPointer(2,GL_FLOAT,0,pointsF);    
+	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+
+	float pointsG[4][2] = {{texof-iff,of},{texof-iff,texof},{texof,of},{texof,texof}};
+	glVertexPointer(2,GL_FLOAT,0,pointsG);    
+	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+
+	float pointsH[4][2] = {{of+iff,texof},{of+iff,texof-iff},{texof-iff,texof},{texof-iff,texof-iff}};
+	glVertexPointer(2,GL_FLOAT,0,pointsH);    
+	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+
 	
+
 }
 
 
@@ -1159,7 +1309,7 @@ void Renderer::draw_title_to_texture()
 #endif /** USE_FTGL */
 }
 
-
+/*
 void setUpLighting()
 {
 	// Set up lighting.
@@ -1200,6 +1350,7 @@ void setUpLighting()
 	
 	glEnable(GL_LIGHTING);
 }
+*/
 
 float title_y;
 
@@ -1210,7 +1361,7 @@ void Renderer::draw_title_to_screen(bool flip)
 	if(this->drawtitle>0)
 	{
 		
-		setUpLighting();
+	  //setUpLighting();
 		
 		//glEnable(GL_POLYGON_SMOOTH);
 		//glEnable( GL_CULL_FACE);
@@ -1462,18 +1613,31 @@ void Renderer::render_texture_to_screen(PresetOutputs *presetOutputs)
 	
 	//Overwrite anything on the screen
 	glBlendFunc(GL_ONE, GL_ZERO);
-	glColor4d(1.0, 1.0, 1.0, 1.0f);
+	glColor4f(1.0, 1.0, 1.0, 1.0f);
 	
 	glEnable(GL_TEXTURE_2D);
 	
-	//Draw giant rectangle and texture it with our texture!
-	glBegin(GL_QUADS);
-	glTexCoord4d(0, 1, 0, 1); glVertex4d(-0.5, -0.5, -1, 1);
-	glTexCoord4d(0, 0, 0, 1); glVertex4d(-0.5,  0.5, -1, 1);
-	glTexCoord4d(1, 0, 0, 1); glVertex4d(0.5,  0.5, -1, 1);
-	glTexCoord4d(1, 1, 0, 1); glVertex4d(0.5, -0.5, -1, 1);
-	glEnd();
+
+
+	float tex[4][2] = {{0, 1},
+			   {0, 0},
+			   {1, 0},
+			   {1, 1}};
+
+	float points[4][2] = {{-0.5, -0.5},
+			      {-0.5,  0.5},
+			      { 0.5,  0.5},
+			      { 0.5,  -0.5}};
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_COLOR_ARRAY);	 
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	
+	glVertexPointer(2,GL_FLOAT,0,points);
+	glTexCoordPointer(2,GL_FLOAT,0,tex);
+		       
+	glDrawArrays(GL_TRIANGLE_FAN,0,4);
+
 	//Noe Blend the Video Echo
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
@@ -1493,107 +1657,65 @@ void Renderer::render_texture_to_screen(PresetOutputs *presetOutputs)
 		case 3: flipx=-1;flipy=-1;break;
 		default: flipx=1;flipy=1; break;
 	}
-	glBegin(GL_QUADS);
-	glTexCoord4d(0, 1, 0, 1); glVertex4f(-0.5*flipx, -0.5*flipy, -1, 1);
-	glTexCoord4d(0, 0, 0, 1); glVertex4f(-0.5*flipx,  0.5*flipy, -1, 1);
-	glTexCoord4d(1, 0, 0, 1); glVertex4f(0.5*flipx,  0.5*flipy, -1, 1);
-	glTexCoord4d(1, 1, 0, 1); glVertex4f(0.5*flipx, -0.5*flipy, -1, 1);
-	glEnd();
+
+	float pointsFlip[4][2] = {{-0.5*flipx, -0.5*flipy},
+				  {-0.5*flipx,  0.5*flipy},
+				  { 0.5*flipx,  0.5*flipy},
+				  { 0.5*flipx, -0.5*flipy}};
 	
+	glVertexPointer(2,GL_FLOAT,0,pointsFlip);
+	glDrawArrays(GL_TRIANGLE_FAN,0,4);	
 	
 	glDisable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
 	if (presetOutputs->bBrighten==1)
 	{
 		glColor4f(1.0, 1.0, 1.0, 1.0);
 		glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
-		glBegin(GL_QUADS);
-		glVertex4f(-0.5*flipx, -0.5*flipy, -1, 1);
-		glVertex4f(-0.5*flipx,  0.5*flipy, -1, 1);
-		glVertex4f(0.5*flipx,  0.5*flipy, -1, 1);
-		glVertex4f(0.5*flipx, -0.5*flipy, -1, 1);
-		glEnd();
+		glDrawArrays(GL_TRIANGLE_FAN,0,4);		
 		glBlendFunc(GL_ZERO, GL_DST_COLOR);
-		glBegin(GL_QUADS);
-		glVertex4f(-0.5*flipx, -0.5*flipy, -1, 1);
-		glVertex4f(-0.5*flipx,  0.5*flipy, -1, 1);
-		glVertex4f(0.5*flipx,  0.5*flipy, -1, 1);
-		glVertex4f(0.5*flipx, -0.5*flipy, -1, 1);
-		glEnd();
+		glDrawArrays(GL_TRIANGLE_FAN,0,4);	
 		glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
-		glBegin(GL_QUADS);
-		glVertex4f(-0.5*flipx, -0.5*flipy, -1, 1);
-		glVertex4f(-0.5*flipx,  0.5*flipy, -1, 1);
-		glVertex4f(0.5*flipx,  0.5*flipy, -1, 1);
-		glVertex4f(0.5*flipx, -0.5*flipy, -1, 1);
-		glEnd();
-		
+		glDrawArrays(GL_TRIANGLE_FAN,0,4);	
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		
 	}
 	
 	if (presetOutputs->bDarken==1)
-	{
-		
+	{		
 		glColor4f(1.0, 1.0, 1.0, 1.0);
 		glBlendFunc(GL_ZERO, GL_DST_COLOR);
-		glBegin(GL_QUADS);
-		glVertex4f(-0.5*flipx, -0.5*flipy, -1, 1);
-		glVertex4f(-0.5*flipx,  0.5*flipy, -1, 1);
-		glVertex4f(0.5*flipx,  0.5*flipy, -1, 1);
-		glVertex4f(0.5*flipx, -0.5*flipy, -1, 1);
-		glEnd();
-		
-		
-		
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		
+		glDrawArrays(GL_TRIANGLE_FAN,0,4);	
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);		
 	}
 	
 	
 	if (presetOutputs->bSolarize)
-	{
-		
+	{		
 		glColor4f(1.0, 1.0, 1.0, 1.0);
 		glBlendFunc(GL_ZERO, GL_ONE_MINUS_DST_COLOR);
-		glBegin(GL_QUADS);
-		glVertex4f(-0.5*flipx, -0.5*flipy, -1, 1);
-		glVertex4f(-0.5*flipx,  0.5*flipy, -1, 1);
-		glVertex4f(0.5*flipx,  0.5*flipy, -1, 1);
-		glVertex4f(0.5*flipx, -0.5*flipy, -1, 1);
-		glEnd();
+		glDrawArrays(GL_TRIANGLE_FAN,0,4);		
 		glBlendFunc(GL_DST_COLOR, GL_ONE);
-		glBegin(GL_QUADS);
-		glVertex4f(-0.5*flipx, -0.5*flipy, -1, 1);
-		glVertex4f(-0.5*flipx,  0.5*flipy, -1, 1);
-		glVertex4f(0.5*flipx,  0.5*flipy, -1, 1);
-		glVertex4f(0.5*flipx, -0.5*flipy, -1, 1);
-		glEnd();
-		
-		
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		
+		glDrawArrays(GL_TRIANGLE_FAN,0,4);			
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);		
 	}
 	
 	if (presetOutputs->bInvert)
 	{
 		glColor4f(1.0, 1.0, 1.0, 1.0);
 		glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
-		glBegin(GL_QUADS);
-		glVertex4f(-0.5*flipx, -0.5*flipy, -1, 1);
-		glVertex4f(-0.5*flipx,  0.5*flipy, -1, 1);
-		glVertex4f(0.5*flipx,  0.5*flipy, -1, 1);
-		glVertex4f(0.5*flipx, -0.5*flipy, -1, 1);
-		glEnd();
+		glDrawArrays(GL_TRIANGLE_FAN,0,4);	
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
+	
 }
 
 void Renderer::render_texture_to_studio(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 {
-	
+  /*
 	int x, y;
 	int flipx=1, flipy=1;
 	
@@ -1654,9 +1776,9 @@ void Renderer::render_texture_to_studio(PresetOutputs *presetOutputs, PresetInpu
 	
 	//draw video echo
 	glColor4f(1.0, 1.0, 1.0, presetOutputs->fVideoEchoAlpha);
-	glTranslated(.5, .5, 0);
-	glScaled(1/presetOutputs->fVideoEchoZoom, 1/presetOutputs->fVideoEchoZoom, 1);
-	glTranslated(-.5, -.5, 0);
+	glTranslatef(.5, .5, 0);
+	glScalef(1/presetOutputs->fVideoEchoZoom, 1/presetOutputs->fVideoEchoZoom, 1);
+	glTranslatef(-.5, -.5, 0);
 	
 	switch (((int)presetOutputs->nVideoEchoOrientation))
 	{
@@ -1784,6 +1906,7 @@ void Renderer::render_texture_to_studio(PresetOutputs *presetOutputs, PresetInpu
 	glPopMatrix();
 	
 	glDisable(GL_TEXTURE_2D);
+  */
 }
 
 

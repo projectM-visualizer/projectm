@@ -6,8 +6,12 @@
 #include "BeatDetect.hpp"
 #include <string>
 
+#ifdef USE_GLES1
+#include <GLES/gl.h>
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
+#endif
 
 #ifdef USE_FTGL
 #ifdef WIN32
