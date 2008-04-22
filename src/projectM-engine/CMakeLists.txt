@@ -2,7 +2,7 @@ PROJECT(projectM)
 
 OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL library" OFF)
 
-OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disable this for OpenGL ES 1.x or if you are experiencing problems on older or note well supported hardware." ON)
+OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disable this for OpenGL ES 1.x or if you are experiencing problems on older or poorly supported hardware." ON)
 
 OPTION (USE_GLES1 "Use OpenGL ES 1.x" OFF)
 
