@@ -4,6 +4,8 @@ OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL libr
 
 OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disable this for OpenGL ES 1.x or if you are experiencing problems on older or note well supported hardware." ON)
 
+OPTION (USE_GLES1 "Use OpenGL ES 1.x" OFF)
+
 SET(SOIL_SOURCES image_DXT.c image_helper.c SOIL.c stb_image_aug.c)
 
 SET(projectM_SOURCES projectM.cpp FBO.cpp InitCond.cpp 
@@ -21,6 +23,10 @@ else (USE_DEVIL)
 SET (projectM_SOURCES ${projectM_SOURCES} ${SOIL_SOURCES})
 SET (IMAGE_LOADING_LIBS )
 endif (USE_DEVIL)
+
+if(USE_GLES1)
+ADD_DEFINITIONS(-DUSE_GLES1)
+endif(USE_GLES1)
 
 if(USE_FBO)
 ADD_DEFINITIONS(-DUSE_FBO)

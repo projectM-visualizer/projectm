@@ -19,20 +19,20 @@ double invratio = 1.0 - ratio;
     {
       for (int x = 0; x<A.wave_samples;x++)
 	{
-	  A.wavearray_x[x] = A.wavearray_x[x]* invratio + B.wavearray_x[x]*ratio;
-	  A.wavearray_y[x] = A.wavearray_y[x]* invratio + B.wavearray_y[x]*ratio;
-	  A.wavearray2_x[x] = A.wavearray2_x[x]* invratio + B.wavearray2_x[x]*ratio;
-	  A.wavearray2_y[x] = A.wavearray2_y[x]* invratio + B.wavearray2_y[x]*ratio;
+	  A.wavearray[x][0] = A.wavearray[x][0]* invratio + B.wavearray[x][0]*ratio;
+	  A.wavearray[x][1] = A.wavearray[x][1]* invratio + B.wavearray[x][1]*ratio;
+	  A.wavearray2[x][0] = A.wavearray2[x][0]* invratio + B.wavearray2[x][0]*ratio;
+	  A.wavearray2[x][1] = A.wavearray2[x][1]* invratio + B.wavearray2[x][1]*ratio;
 	}
     }
   else if (A.two_waves)
     {
       for (int x = 0; x<A.wave_samples;x++)
 	{
-	  A.wavearray_x[x] = A.wavearray_x[x]* invratio + B.wavearray_x[x]*ratio;
-	  A.wavearray_y[x] = A.wavearray_y[x]* invratio + B.wavearray_y[x]*ratio;
-	  A.wavearray2_x[x] = A.wavearray2_x[x]* invratio + B.wavearray_x[x]*ratio;
-	  A.wavearray2_y[x] = A.wavearray2_y[x]* invratio + B.wavearray_y[x]*ratio;
+	  A.wavearray[x][0] = A.wavearray[x][0]* invratio + B.wavearray[x][0]*ratio;
+	  A.wavearray[x][1] = A.wavearray[x][1]* invratio + B.wavearray[x][1]*ratio;
+	  A.wavearray2[x][0] = A.wavearray2[x][0]* invratio + B.wavearray[x][0]*ratio;
+	  A.wavearray2[x][1] = A.wavearray2[x][1]* invratio + B.wavearray[x][1]*ratio;
 	}
     }
   else if (B.two_waves)
@@ -40,18 +40,18 @@ double invratio = 1.0 - ratio;
       A.two_waves=true;
       for (int x = 0; x<A.wave_samples;x++)
 	{
-	  A.wavearray_x[x] = A.wavearray_x[x]* invratio + B.wavearray_x[x]*ratio;
-	  A.wavearray_y[x] = A.wavearray_y[x]* invratio + B.wavearray_y[x]*ratio;
-	  A.wavearray2_x[x] = A.wavearray_x[x]* invratio + B.wavearray_x[x]*ratio;
-	  A.wavearray2_y[x] = A.wavearray_y[x]* invratio + B.wavearray_y[x]*ratio;
+	  A.wavearray[x][0] = A.wavearray[x][0]* invratio + B.wavearray[x][0]*ratio;
+	  A.wavearray[x][1] = A.wavearray[x][1]* invratio + B.wavearray[x][1]*ratio;
+	  A.wavearray2[x][0] = A.wavearray[x][0]* invratio + B.wavearray[x][0]*ratio;
+	  A.wavearray2[x][1] = A.wavearray[x][1]* invratio + B.wavearray[x][1]*ratio;
 	}
     }
   else
     {
       for (int x = 0; x<A.wave_samples;x++)
 	{
-	  A.wavearray_x[x] = A.wavearray_x[x]* invratio + B.wavearray_x[x]*ratio;
-	  A.wavearray_y[x] = A.wavearray_y[x]* invratio + B.wavearray_y[x]*ratio;
+	  A.wavearray[x][0] = A.wavearray[x][0]* invratio + B.wavearray[x][0]*ratio;
+	  A.wavearray[x][1] = A.wavearray[x][1]* invratio + B.wavearray[x][1]*ratio;
 	}
     }
  

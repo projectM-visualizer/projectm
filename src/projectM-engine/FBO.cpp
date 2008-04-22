@@ -30,9 +30,7 @@
 #include "Common.hpp"
 #include "FBO.hpp"
 
-#ifdef MACOS
-#include <agl.h>
-#endif /** MACOS */
+
 
 RenderTarget::~RenderTarget() {
 
@@ -164,21 +162,17 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
     origtexsize = this->texsize;
     this->texsize = nearestPower2( mindim, SCALE_MINIFY );      
 
-    /* Create the texture that will be bound to the render this */
-    if ( glIsTexture( this->textureID[0] ) ) {
-        if ( this->texsize != origtexsize ) 
-            glDeleteTextures( 1, &this->textureID[0] );
-      }
+  
 
-    if ( !glIsTexture( this->textureID[0] ) ) {
+ 
         glGenTextures(1, &this->textureID[0] );
 
         glBindTexture(GL_TEXTURE_2D, this->textureID[0] );
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         glTexImage2D(GL_TEXTURE_2D,
 		    0,
@@ -188,7 +182,7 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 		    GL_RGBA,
 		    GL_UNSIGNED_BYTE,
 		    NULL);
-      }
+      
 
    
     return;
@@ -201,23 +195,23 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
     this->texsize = nearestPower2( mindim, SCALE_MINIFY );      
 
     /* Create the texture that will be bound to the render this */
-    if ( glIsTexture( this->textureID[0] ) ) {
+    /*
 
         if ( this->texsize != origtexsize ) {
 
             glDeleteTextures( 1, &this->textureID[0] );
           }
-      }
+    */
 
-    if ( !glIsTexture( this->textureID[0] ) ) {
+   
         glGenTextures(1, &this->textureID[0] );
 
         glBindTexture(GL_TEXTURE_2D, this->textureID[0] );
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         glTexImage2D(GL_TEXTURE_2D,
 		    0,
@@ -227,7 +221,7 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 		    GL_RGBA,
 		    GL_UNSIGNED_BYTE,
 		    NULL);
-      }
+      
 
   }
 

@@ -130,10 +130,9 @@ public:
     float **x_mesh;
     float **y_mesh;
 
-  double wavearray_x[2048];
-  double wavearray_y[2048];
-  double wavearray2_x[2048];
-  double wavearray2_y[2048];
+  float wavearray[2048][2];
+  float wavearray2[2048][2];
+ 
   int wave_samples;
   bool two_waves;
   bool draw_wave_as_loop;
