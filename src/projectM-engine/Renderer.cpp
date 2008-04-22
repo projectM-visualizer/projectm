@@ -155,8 +155,11 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 	
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
+#ifdef USE_GLES1
+	glOrthof(0.0, 1, 0.0, 1, -40, 40);
+#else
 	glOrtho(0.0, 1, 0.0, 1, -40, 40);
-	
+#endif
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 		
@@ -222,8 +225,11 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 	
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(-0.5, 0.5, -0.5, 0.5, -40, 40);
-	
+#ifdef USE_GLES1
+	glOrthof(-0.5, 0.5, -0.5, 0.5, -40, 40);	
+#else
+	glOrtho(-0.5, 0.5, -0.5, 0.5, -40, 40);	
+#endif
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
 	glLineWidth( this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512.0);
