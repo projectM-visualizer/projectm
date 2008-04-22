@@ -9,9 +9,11 @@ include(${QT_USE_FILE} FindPkgConfig.cmake)
 if (${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
 	pkg_search_module(LIBPROJECTM REQUIRED libprojectM)
 	pkg_search_module(LIBPROJECTM-QT REQUIRED libprojectM-qt)
+	ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='"${LIBPROJECTM_PREFIX}"')
 else(${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
 	set(LIBPROJECTM_FOUND true)
 	set(LIBPROJECTM-QT_FOUND true)
+	ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='"${CMAKE_INSTALL_PREFIX}"')
 endif(${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
 
 FIND_PACKAGE(OpenGL)
@@ -57,7 +59,7 @@ qt4_wrap_ui(projectM_pulseaudio_UIS_H ${projectM_pulseaudio_UIS})
 # After this call, foo_MOC_SRCS = moc_Class1.cxx moc_Class2.cxx moc_Class3.cxx.
 qt4_wrap_cpp(projectM_pulseaudio_MOC_SRCS ${projectM_pulseaudio_MOC_HDRS})
 
-ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='"${PROJECTM_PREFIX}"')
+ADD_DEFINITIONS(-DLINUX)
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 ADD_DEFINITIONS(-DQT_NO_DEBUG)
 
