@@ -20,8 +20,10 @@
 	#include <GL/gl.h>
 #elif defined(__APPLE__) || defined(__APPLE_CC__)
 	/*	I can't test this Apple stuff!	*/
-	#include <GL/gl.h>
+	#include <OpenGL/gl.h>
 	#include <Carbon/Carbon.h>
+	#define APIENTRY
+
 #else
 	#include <GL/gl.h>
 	#include <GL/glx.h>
@@ -1443,7 +1445,9 @@ int query_DXT_capability( void )
 
 			
 				CFRelease( bundleURL );
-				CFRelease( functionName );
+				CFRelease( extensionName );
+
+			//	CFRelease( functionName );
 				CFRelease( bundle );
 			#else
 				 ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
