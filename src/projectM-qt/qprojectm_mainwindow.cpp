@@ -504,6 +504,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 			return;
 			//emit(keyPressed m_QProjectMWidget,
 		case Qt::Key_F:
+		{
 			if (!(e->modifiers() & Qt::ControlModifier)) {
 				if ( ui->presetSearchBarLineEdit->hasFocus() )
 					return;
@@ -519,7 +520,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 				qprojectMWidget()->setFocus();
 				
 			return;
-		
+		}
 		
              case Qt::Key_B:
                         if (!(e->modifiers() & Qt::ControlModifier)) {
