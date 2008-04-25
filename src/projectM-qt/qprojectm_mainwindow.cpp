@@ -1,6 +1,6 @@
 /***************************************************************************
- *   Copyright (C) 2007 by carm   *
- *   carm@localhost   *
+ *   Copyright (C) 2007 by Carmelo Piccione and projectM team  *
+ *   carmelo.piccione+projectM@gmail.com  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -512,9 +512,10 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 					return;
 			}
 			
+			bool projectM_HadFocus = qprojectMWidget()->hasFocus();
 			this->setWindowState ( this->windowState() ^ Qt::WindowFullScreen );
 			
-			if (!_menuVisible)
+			if (projectM_HadFocus || !_menuVisible)
 				qprojectMWidget()->setFocus();
 				
 			return;
