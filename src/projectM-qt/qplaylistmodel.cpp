@@ -88,7 +88,7 @@ bool QPlaylistModel::setData ( const QModelIndex & index, const QVariant & value
 Qt::ItemFlags QPlaylistModel::flags(const QModelIndex &index) const
 {
 	Qt::ItemFlags defaultFlags = QAbstractTableModel::flags(index);
-
+	
 	if (index.isValid())
 		return Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | defaultFlags;
 	else
@@ -189,6 +189,7 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 		case QPlaylistModel::RatingRole:
 			return QVariant (  m_projectM.getPresetRating(index.row())  );
 		case Qt::BackgroundRole:
+	
 			if (!m_projectM.selectedPresetIndex(pos))
 				return QVariant();						
 			if (m_projectM.isPresetLocked() && ( index.row() == pos ) )
@@ -199,6 +200,7 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 		case QPlaylistModel::URLInfoRole:
 			return QVariant ( QString ( m_projectM.getPresetURL ( index.row() ).c_str() ) );
 		default:
+			
 			return QVariant();
 	}
 }
