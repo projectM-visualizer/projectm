@@ -165,24 +165,8 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_b:
 	      break;
             case PROJECTM_K_n:
-		    
-		    m_presetChooser->nextPreset(*m_presetPos);
-/*
-		if (m_presetChooser->empty())
-			break;
-
-		// Case: idle preset currently running, selected first preset of chooser
-		else if (*m_presetPos == m_presetChooser->end()) {
-			(*m_presetPos = m_presetChooser->begin()); 
-		} 
-		else
-			++(*m_presetPos);
-
-		// Case: already at last preset, loop to beginning
-		if (((*m_presetPos) == m_presetChooser->end())) {
-			*m_presetPos = m_presetChooser->begin();
-		}*/
-
+		m_presetChooser->nextPreset(*m_presetPos);
+		presetSwitchedEvent(true, **m_presetPos);
 		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
 		renderer->setPresetName(m_activePreset->presetName());
 		timeKeeper->StartPreset();
@@ -194,7 +178,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			break;
 
 		*m_presetPos = m_presetChooser->weightedRandom();
-
+		presetSwitchedEvent(true, **m_presetPos);
 		m_activePreset = m_presetPos->allocate(this->presetInputs, this->presetOutputs);
 			
 		assert(m_activePreset.get());

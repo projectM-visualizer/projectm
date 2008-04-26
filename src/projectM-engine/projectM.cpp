@@ -415,7 +415,6 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	/** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
 	assert ( !beatDetect );
 
-	std::cerr << "pcm new" << std::endl;
 	if (!_pcm)
 		_pcm = new PCM();
 	assert(pcm());
@@ -432,7 +431,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	this->presetInputs2.gy = gy;
 
 	this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
-
+	
 	running = true;
 
 #ifdef USE_THREADS
@@ -440,11 +439,11 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	pthread_cond_init(&condition, NULL);
 	if (pthread_create(&thread, NULL, thread_callback, this) != 0)
 	    { 	      
-	      printf("oops\n");
+		    
+	      std::cerr << "failed to allocate a thread! try building with option USE_THREADS turned off" << std::endl;;
 	      exit(1);
 	    }
 	pthread_mutex_lock( &mutex );
-	printf("got lock\n");
 #endif
 
 	renderer->setPresetName ( m_activePreset->presetName() );
