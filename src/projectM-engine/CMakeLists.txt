@@ -23,10 +23,10 @@ ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp TimeKeeper.cpp)
 if (USE_DEVIL)
 SET (projectM_SOURCES ${projectM_SOURCES})
 ADD_DEFINITIONS(-DUSE_DEVIL)
-SET (IMAGE_LOADING_LIBS IL ILU ILUT)
+SET (IMAGE_LINK_TARGETS IL ILU ILUT)
 else (USE_DEVIL)
 SET (projectM_SOURCES ${projectM_SOURCES} ${SOIL_SOURCES})
-SET (IMAGE_LOADING_LIBS )
+SET (IMAGE_LINK_TARGETS )
 endif (USE_DEVIL)
 
 if(USE_GLES1)
@@ -75,32 +75,36 @@ IF(USE_FTGL)
 		MESSAGE(STATUS 
 	"[projectM] Warning! FTGL has been enabled but not detected. Your compilation will probably break. Turn off FTGL support by setting USE_FTGL to false, or visit http://ftgl.wiki.sourceforge.net/ for help on installing FTGL.")
 	endif (FTGL_FOUND)
-	ADD_DEFINITIONS(-DUSE_FTGL)
-	INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS} ${CMAKE_INCLUDE_PATH} ${OPENGL_INCLUDE_DIR})
-	LINK_DIRECTORIES(${FTGL_LIBRARY_DIRS} "./")
-	TARGET_LINK_LIBRARIES(projectM GLEW m ftgl freetype ${OPENGL_LIBRARIES} m ${IMAGE_LOADING_LIBS})
 	
-	if(BUILD_PROJECTM_STATIC)
-		TARGET_LINK_LIBRARIES(projectM /opt/local/lib/libGLEW.a m ftgl freetype ${OPENGL_LIBRARIES} m ${IMAGE_LOADING_LIBS})
-	else(BUILD_PROJECTM_STATIC)
-		TARGET_LINK_LIBRARIES(projectM GLEW ${OPENGL_LIBRARIES} m ftgl freetype ${IMAGE_LOADING_LIBS})
-	endif(BUILD_PROJECTM_STATIC)
-
+	ADD_DEFINITIONS(-DUSE_FTGL)
+	
+	set (FTGL_INCUDE_DIRS ${FTGL_INCLUDE_DIRS} ${CMAKE_INCLUDE_PATH} ${OPENGL_INCLUDE_DIR})
+	set (FTGL_LINK_DIRS ${FTGL_LIBRARY_DIRS} )
+	set (FTGL_LINK_TARGETS ftgl freetype)
+	
 ELSE (USE_FTGL)
 	IF (FTGL_FOUND)
 		MESSAGE(STATUS "[projectM] Warning: FTGL font support was detected but NOT enabled. You can enable it by setting USE_FTGL=true")
 	ELSE (FTGL_FOUND)
 		MESSAGE(STATUS "[projectM] Warning: FTGL font support was not detected. Visit http://ftgl.wiki.sourceforge.net/ for help on installing FTGL.")
 	ENDIF(FTGL_FOUND)
-	# what should link directories be?
-	if(BUILD_PROJECTM_STATIC)
-		TARGET_LINK_LIBRARIES(projectM  /opt/local/lib/libGLEW.a ${OPENGL_LIBRARIES} m ${IMAGE_LOADING_LIBS})
-	else(BUILD_PROJECTM_STATIC)
-		TARGET_LINK_LIBRARIES(projectM GLEW ${OPENGL_LIBRARIES} m ${IMAGE_LOADING_LIBS})
-	endif(BUILD_PROJECTM_STATIC)
-	INCLUDE_DIRECTORIES("/opt/local/include/")
+	
+	# todo: change this because its obscure and probably not being used
+	set (FTGL_INCLUDE_DIRS "/opt/local/include")
+	set (FTGL_LINK_DIRS )
+	set (FTGL_LINK_TARGETS )
 ENDIF(USE_FTGL)
 
+
+
+INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS})
+LINK_DIRECTORIES(${FTGL_LINK_DIRS} "./")
+
+if(BUILD_PROJECTM_STATIC)
+		TARGET_LINK_LIBRARIES(projectM GLEW m ${FTGL_LINK_TARGETS} ${OPENGL_LIBRARIES} ${IMAGE_LINK_TARGETS})
+else(BUILD_PROJECTM_STATIC)
+		TARGET_LINK_LIBRARIES(projectM GLEW m ${FTGL_LINK_TARGETS} ${OPENGL_LIBRARIES}  ${IMAGE_LINK_TARGETS})
+endif(BUILD_PROJECTM_STATIC)
 
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libprojectM.pc.in" "${CMAKE_CURRENT_SOURCE_DIR}/libprojectM.pc" @ONLY)
