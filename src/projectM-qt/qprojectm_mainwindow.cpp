@@ -634,8 +634,20 @@ void QProjectM_MainWindow::closeEvent ( QCloseEvent *event )
 	writeSettings();
 }
 
+void QProjectM_MainWindow::insertPresetsDialog() {
+	
+	if (selectedPlaylistIndexes.empty())
+		return;
+	
+	return addPresetsDialog(selectedPlaylistIndexes[0]);
+	
+}
 
-void QProjectM_MainWindow::addPresetsDialog()
+void QProjectM_MainWindow::addPresetsDialog() {
+	return addPresetsDialog(QModelIndex());
+}
+
+void QProjectM_MainWindow::addPresetsDialog(const QModelIndex & index)
 {
 
 	/// @bug this probably isn't thread safe
@@ -643,12 +655,25 @@ void QProjectM_MainWindow::addPresetsDialog()
 	{
 		const QStringList & files = m_QPresetFileDialog->selectedFiles();
 
+		int i = 0;
 		for ( QStringList::const_iterator pos = files.begin();
 		        pos != files.end(); ++pos )
 		{
-			if ( *pos != "" )
-				loadFile ( *pos );
+			if ( *pos != "" ) {
+				
+				Nullable<int> row;
+				if (index != QModelIndex() && index.isValid()) {
+					
+					if (index.row() == 0)
+						row = 0;
+					else
+						row = index.row()-1;				
+				}
+				loadFile ( *pos, 3, row);
+				i++;
+			}
 		}
+		
 
 		PlaylistItemVector * playlistItems = historyHash.value ( QString() );
 
@@ -977,6 +1002,7 @@ void QProjectM_MainWindow::createActions()
 	connect ( ui->actionHotkey_Reference, SIGNAL(triggered()), this, SLOT(hotkeyReference()));
 	
 	connect (ui->actionRemove_selection, SIGNAL(triggered()), this, SLOT(removeSelectedPlaylistItems()));
+	connect (ui->actionInsert_presets, SIGNAL(triggered()), this, SLOT(insertPresetsDialog()));
 	connect (ui->actionEdit_this_preset, SIGNAL(triggered()), this, SLOT(openPresetEditorDialogForSelectedPreset()));
 }
 
@@ -1001,7 +1027,10 @@ void QProjectM_MainWindow::createMenus()
 
 	playlistContextMenu = new QMenu("Playlist Actions", this);	
 	playlistContextMenu->addAction(ui->actionEdit_this_preset);
+	
+	playlistContextMenu->addAction(ui->actionInsert_presets);
 	playlistContextMenu->addAction(ui->actionRemove_selection);
+	
 	ui->menuBar->hide();
 
 	
@@ -1048,7 +1077,7 @@ void QProjectM_MainWindow::writeSettings()
 	
 }
 
-void QProjectM_MainWindow::loadFile ( const QString &fileName, int rating )
+void QProjectM_MainWindow::loadFile ( const QString &fileName, int rating, const Nullable<int> & row)
 {
 
 	const QString & name = strippedName ( fileName );
@@ -1062,7 +1091,11 @@ void QProjectM_MainWindow::loadFile ( const QString &fileName, int rating )
 	playlistItemMetaDataHash[playlistItemCounter] = 
 			PlaylistItemMetaData ( fileName, name, rating, playlistItemCounter) ;
 	
-	playlistItems->push_back (playlistItemCounter);
+	
+	if (row.hasValue())
+		playlistItems->insert(row.value(), playlistItemCounter);
+	else
+		playlistItems->push_back (playlistItemCounter);
 	playlistItemCounter++;
 	
 }

@@ -114,6 +114,7 @@ protected:
 
 private slots:
 
+	void insertPresetsDialog() ;
 	void removeSelectedPlaylistItems();
 
 	void openPresetEditorDialogForSelectedPreset();
@@ -126,6 +127,7 @@ private slots:
 
       void clearPlaylist();
       void addPresetsDialog();
+      void addPresetsDialog(const QModelIndex & index);
       void openPlaylistDialog();
       void savePlaylistButtonClick();
       void savePlaylistAsDialog();
@@ -179,7 +181,7 @@ private slots:
       void createStatusBar();
       void readSettings();
       void writeSettings();
-      void loadFile(const QString &fileName, int rating = 3);
+      void loadFile(const QString &fileName, int rating ,const Nullable<int> & row);
       QString strippedName(const QString &fullFileName);
 
       QProjectMWidget * m_QProjectMWidget;
