@@ -27,6 +27,7 @@
 #include <QKeyEvent>
 #include <QMap>
 #include <QList>
+#include <QMenu>
 class QPlaylistTableView : public QTableView
  {
      Q_OBJECT        // must include this if you use Qt signals/slots
@@ -37,6 +38,7 @@ class QPlaylistTableView : public QTableView
      
 	
  signals:
+	 void mousePressed(QMouseEvent*);
 	 void resized(QResizeEvent * event);
 	 void deletesRequested(const QModelIndexList & items);
 	 void internalDragAndDropRequested(const QModelIndexList & items, const QModelIndex & target = QModelIndex());
@@ -95,10 +97,17 @@ class QPlaylistTableView : public QTableView
 		emit(resized(event));
 	 }	
 	 
+	 inline void mousePressEvent(QMouseEvent * event) {
+		QAbstractItemView::mousePressEvent(event);
+		if (event->button() == Qt::RightButton) {
+			emit(mousePressed(event));
+			
+		}
+		else
+				;
+	 }
 	 
-	 
-	 
-	 inline void keyReleaseEvent(QKeyEvent * event) {
+	inline void keyReleaseEvent(QKeyEvent * event) {
 		 
 		switch (event->key()) {
 			case Qt::Key_Delete: 
