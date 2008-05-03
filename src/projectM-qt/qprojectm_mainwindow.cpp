@@ -948,6 +948,9 @@ void QProjectM_MainWindow::hotkeyReference()
 				   tr ( "<dl><dt><b>CTRL-L</b></dt> <dd>Locks / unlocks the active preset</dd><dt><b>CTRL-N</b></dt> <dd>Moves to next preset in the playlist </dd><dt><dt><b>CTRL-P</b></dt> <dd>Moves to previous preset in the playlist </dd><dt><b>CTRL-R</b></dt> <dd>Randomly selects a preset from the playlist </dd><dt><b>CTRL-M</b></dt><dd>Show / hide the menu display</dd><dt><b>CTRL-E</b></dt> <dd> Opens the preset editor with the active preset</dd><dt><b>CTRL-F</b></dt> <dd> Enables / disables full screen mode</dd><dt><b>CTRL-Y</b></dt><dd>Enables / disables shuffle mode </dd><dt><b>CTRL-S</b></dt> <dd>Saves and applies changes to the active preset (only when editing) </dd><dt><b>CTRL-B</b></dt><dd>Shows / hides menu and status bar</dd></dl>" ));
 }
 
+
+
+
 void QProjectM_MainWindow::openSettingsDialog() {
 	
 	if (configDialog->exec()) {
@@ -996,9 +999,9 @@ void QProjectM_MainWindow::unregisterSettingsAction(QAction * action) {
 void QProjectM_MainWindow::createMenus()
 {
 
-	playlistContextMenu = new QMenu("Playlist Actions", this);
-	playlistContextMenu->addAction(ui->actionRemove_selection);
+	playlistContextMenu = new QMenu("Playlist Actions", this);	
 	playlistContextMenu->addAction(ui->actionEdit_this_preset);
+	playlistContextMenu->addAction(ui->actionRemove_selection);
 	ui->menuBar->hide();
 
 	

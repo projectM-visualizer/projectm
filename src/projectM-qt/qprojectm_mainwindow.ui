@@ -29,7 +29,7 @@
      <x>0</x>
      <y>0</y>
      <width>787</width>
-     <height>22</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile" >
@@ -421,7 +421,7 @@ image: url(:/images/icons/hi16-action-projectm_unlock.png);
     <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_edit.png</iconset>
    </property>
    <property name="text" >
-    <string>Edit this preset</string>
+    <string>Edit preset</string>
    </property>
   </action>
   <action name="actionRemove_selection" >
