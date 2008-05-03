@@ -92,8 +92,7 @@ ELSE (USE_FTGL)
 	ELSE (FTGL_FOUND)
 		MESSAGE(STATUS "[projectM] Warning: FTGL font support was not detected. Visit http://ftgl.wiki.sourceforge.net/ for help on installing FTGL.")
 	ENDIF(FTGL_FOUND)
-	LINK_DIRECTORIES(${CMAKE_LIBRARY_PATH} /Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks/Carbon.framework/)
-	
+	# what should link directories be?
 	if(BUILD_PROJECTM_STATIC)
 		TARGET_LINK_LIBRARIES(projectM  /opt/local/lib/libGLEW.a ${OPENGL_LIBRARIES} m ${IMAGE_LOADING_LIBS})
 	else(BUILD_PROJECTM_STATIC)
