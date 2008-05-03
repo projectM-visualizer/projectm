@@ -21,23 +21,63 @@
 
 #include "video_init.h"
 #include <projectM.hpp>
-#include "sdltoprojectM.h"
+//#include "sdltoprojectM.h"
 #include "ConfigFile.h"
 #include "getConfigFilename.h"
 
 //FIXME: these don't have to be global
-projectM *globalPM = NULL;
+//projectM *globalPM = NULL;
 int wvw, wvh, fvw, fvh;
 bool fullscreen;
+
+#ifdef LINUX
+#include <SDL.h>
+#endif
+#ifdef __APPLE__
+#include <SDL.h>
+#endif
+
+void renderLoop();
+
+int main(int argc, char **argv)
+{
+/*
+	// fix `fullscreen quit kills mouse` issue.
+	atexit(SDL_Quit);
+	
+	std::string config_filename = getConfigFilename();
+	ConfigFile config(config_filename);
+	
+	// window dimensions from configfile
+	wvw = config.read<int>("Window Width", 512);
+	wvh = config.read<int>("Window Height", 512);
+	fullscreen = config.read("Fullscreen", true);
+	
+	init_display(wvw, wvh, &fvw, &fvh, fullscreen);
+	
+	SDL_WM_SetCaption(PROJECTM_TITLE, NULL);
+	
+	globalPM = new projectM(config_filename);
+	
+	// if started fullscreen, give PM new viewport dimensions
+	if (fullscreen)
+		globalPM->projectM_resetGL(fvw, fvh);
+	
+	renderLoop();
+	
+	// not reached
+	*/
+	return 1;
+}
 
 void renderLoop()
 {
 	while (1)
 	{
-		projectMEvent evt;
-		projectMKeycode key;
-		projectMModifier mod;
-		
+//		projectMEvent evt;
+//		projectMKeycode key;
+//		projectMModifier mod;
+	#if 0
 		/** Process SDL events */
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
@@ -90,38 +130,11 @@ void renderLoop()
 					globalPM->key_handler(evt, key, mod);
 					break;
 			}
-		}
-		globalPM->renderFrame();
-		SDL_GL_SwapBuffers();
+		} 
+		#endif
+		//globalPM->renderFrame();
+	//	SDL_GL_SwapBuffers();
 	}
+	
 }
 
-
-int main(int argc, char **argv)
-{
-	// fix `fullscreen quit kills mouse` issue.
-	atexit(SDL_Quit);
-	
-	std::string config_filename = getConfigFilename();
-	ConfigFile config(config_filename);
-	
-	// window dimensions from configfile
-	wvw = config.read<int>("Window Width", 512);
-	wvh = config.read<int>("Window Height", 512);
-	fullscreen = config.read("Fullscreen", true);
-	
-	init_display(wvw, wvh, &fvw, &fvh, fullscreen);
-	
-	SDL_WM_SetCaption(PROJECTM_TITLE, NULL);
-	
-	globalPM = new projectM(config_filename);
-	
-	// if started fullscreen, give PM new viewport dimensions
-	if (fullscreen)
-		globalPM->projectM_resetGL(fvw, fvh);
-	
-	renderLoop();
-	
-	// not reached
-	return 1;
-}
