@@ -29,7 +29,7 @@
      <x>0</x>
      <y>0</y>
      <width>787</width>
-     <height>26</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile" >
@@ -212,6 +212,9 @@ p, li { white-space: pre-wrap; }
          <width>200</width>
          <height>0</height>
         </size>
+       </property>
+       <property name="contextMenuPolicy" >
+        <enum>Qt::ActionsContextMenu</enum>
        </property>
        <property name="acceptDrops" >
         <bool>true</bool>
@@ -411,6 +414,22 @@ image: url(:/images/icons/hi16-action-projectm_unlock.png);
   <action name="actionHotkey_Reference" >
    <property name="text" >
     <string>Hotkey reference</string>
+   </property>
+  </action>
+  <action name="actionEdit_this_preset" >
+   <property name="icon" >
+    <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_edit.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Edit this preset</string>
+   </property>
+  </action>
+  <action name="actionRemove_selection" >
+   <property name="icon" >
+    <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_remove.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Remove selection</string>
    </property>
   </action>
  </widget>
