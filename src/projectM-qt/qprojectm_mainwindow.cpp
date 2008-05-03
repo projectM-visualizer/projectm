@@ -73,7 +73,7 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QM
 		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), ui(0), m_QPlaylistFileDialog 
 		( new QPlaylistFileDialog ( this )), playlistModel(0), 
 		configDialog(0), hHeader(0), vHeader(0), _menuVisible(true), _menuAndStatusBarsVisible(true),
-activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDialog(0), selectedPlaylistIndex(QModelIndex())
+activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDialog(0)
 {
 
 	
@@ -96,7 +96,7 @@ activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDi
 
 	connect(ui->tableView, SIGNAL(resized(QResizeEvent *)), this, SLOT(refreshHeaders(QResizeEvent*)));
 	
-	connect(ui->tableView, SIGNAL(mousePressed(QMouseEvent*)), this, SLOT(popupPlaylistContextMenu(QMouseEvent*)));
+	connect(ui->tableView, SIGNAL(mousePressed(QMouseEvent*, const QModelIndexList &)), this, SLOT(popupPlaylistContextMenu(QMouseEvent*, const QModelIndexList &)));
 	
 	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized(QProjectM*) ), 
 		  this, SLOT ( postProjectM_Initialize() ) );
@@ -126,16 +126,16 @@ activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDi
 }
 
 #include <QMouseEvent>
-void QProjectM_MainWindow::popupPlaylistContextMenu(QMouseEvent * mouseEvent) { 
+void QProjectM_MainWindow::popupPlaylistContextMenu(QMouseEvent * mouseEvent,const QModelIndexList & items) { 
 	
 		 
-		selectedPlaylistIndex = ui->tableView->indexAt(mouseEvent->pos());
+		selectedPlaylistIndexes = items;
 	
-		if (selectedPlaylistIndex == QModelIndex() || !selectedPlaylistIndex.isValid()) {
+		if (items.empty()) {
 			mouseEvent->accept();
 			return;
 		}
-		
+			
 		if (mouseEvent->button() == Qt::RightButton) {
 		
 			QPoint point = mouseEvent->globalPos();
@@ -838,11 +838,8 @@ void QProjectM_MainWindow::copyPlaylist()
 	qprojectMWidget()->releasePresetLock();
 }
 
-void QProjectM_MainWindow::removeSelectedPlaylistItem() {
-
-	QModelIndexList items;
-	items.append(this->selectedPlaylistIndex);
-	removePlaylistItems(items);
+void QProjectM_MainWindow::removeSelectedPlaylistItems() {	
+	removePlaylistItems(selectedPlaylistIndexes);
 }
 
 void QProjectM_MainWindow::removePlaylistItems(const QModelIndexList & items) {
@@ -976,14 +973,16 @@ void QProjectM_MainWindow::createActions()
 	connect ( ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(aboutQt()));
 	connect ( ui->actionHotkey_Reference, SIGNAL(triggered()), this, SLOT(hotkeyReference()));
 	
-//	connect (ui->actionRemove_selection, SIGNAL(triggered()), this, SLOT(removeSelectedPlaylistItem()));
+	connect (ui->actionRemove_selection, SIGNAL(triggered()), this, SLOT(removeSelectedPlaylistItems()));
 	connect (ui->actionEdit_this_preset, SIGNAL(triggered()), this, SLOT(openPresetEditorDialogForSelectedPreset()));
 }
 
 void QProjectM_MainWindow::openPresetEditorDialogForSelectedPreset() {
 	
-	if ((selectedPlaylistIndex != QModelIndex()) && selectedPlaylistIndex.isValid())
-		openPresetEditorDialog(selectedPlaylistIndex.row());
+	if (selectedPlaylistIndexes.empty())
+		return;
+	
+	openPresetEditorDialog(selectedPlaylistIndexes[0].row());
 }
 
 void QProjectM_MainWindow::registerSettingsAction(QAction * action) {
