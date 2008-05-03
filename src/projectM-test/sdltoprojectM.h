@@ -28,47 +28,47 @@
 #include <SDL/SDL.h>
 #endif
 
-projectMEvent sdl2pmEvent( SDL_Event event ) { \
+inline projectMEvent sdl2pmEvent( SDL_Event event ) { 
 							
-    switch ( event.type ) { \
+    switch ( event.type ) { 
         case SDL_VIDEORESIZE:
-            return PROJECTM_VIDEORESIZE; \
-        case SDL_KEYUP: \
-            return PROJECTM_KEYUP; \
-        case SDL_KEYDOWN: \
-            return PROJECTM_KEYDOWN; \
+            return PROJECTM_VIDEORESIZE; 
+        case SDL_KEYUP: 
+            return PROJECTM_KEYUP; 
+        case SDL_KEYDOWN: 
+            return PROJECTM_KEYDOWN; 
         default:
-            return PROJECTM_KEYUP; \
-      } \
-  } \
+            return PROJECTM_KEYUP; 
+      } 
+  } 
 
-projectMKeycode sdl2pmKeycode( SDLKey keysym ) { \
-    switch ( keysym ) { \
-        case SDLK_F1: \
-            return PROJECTM_K_F1; \
-        case SDLK_F2: \
-            return PROJECTM_K_F2; \
-        case SDLK_F3: \
-            return PROJECTM_K_F3; \
-        case SDLK_F4: \
-            return PROJECTM_K_F4; \
-        case SDLK_F5: \
-            return PROJECTM_K_F5; \
-        case SDLK_F6: \
-            return PROJECTM_K_F6; \
-        case SDLK_F7: \
-            return PROJECTM_K_F7; \
-        case SDLK_F8: \
-            return PROJECTM_K_F8; \
-        case SDLK_F9: \
-            return PROJECTM_K_F9; \
-        case SDLK_F10: \
-            return PROJECTM_K_F10; \
-        case SDLK_F11: \
-            return PROJECTM_K_F11; \
-        case SDLK_F12: \
-            return PROJECTM_K_F12; \
-	  case SDLK_ESCAPE: \
+projectMKeycode sdl2pmKeycode( SDLKey keysym ) { 
+    switch ( keysym ) { 
+        case SDLK_F1: 
+            return PROJECTM_K_F1; 
+        case SDLK_F2: 
+            return PROJECTM_K_F2; 
+        case SDLK_F3: 
+            return PROJECTM_K_F3; 
+        case SDLK_F4: 
+            return PROJECTM_K_F4; 
+        case SDLK_F5: 
+            return PROJECTM_K_F5; 
+        case SDLK_F6: 
+            return PROJECTM_K_F6; 
+        case SDLK_F7: 
+            return PROJECTM_K_F7; 
+        case SDLK_F8: 
+            return PROJECTM_K_F8; 
+        case SDLK_F9: 
+            return PROJECTM_K_F9; 
+        case SDLK_F10: 
+            return PROJECTM_K_F10; 
+        case SDLK_F11: 
+            return PROJECTM_K_F11; 
+        case SDLK_F12: 
+            return PROJECTM_K_F12; 
+	  case SDLK_ESCAPE: 
 	    return PROJECTM_K_ESCAPE; 
     case SDLK_a:
       return PROJECTM_K_a;
@@ -137,13 +137,13 @@ projectMKeycode sdl2pmKeycode( SDLKey keysym ) { \
     case SDLK_PAGEDOWN:
       return PROJECTM_K_PAGEDOWN;
    
-        default: \
-            return PROJECTM_K_NONE; \
-      } \
-  } \
+        default: 
+            return PROJECTM_K_NONE; 
+      } 
+  } 
 
-projectMModifier sdl2pmModifier( SDLMod mod ) { \
-    return PROJECTM_KMOD_LSHIFT; \
-  } \
+inline projectMModifier sdl2pmModifier( SDLMod mod ) { 
+    return PROJECTM_KMOD_LSHIFT; 
+  } 
 
 #endif /** _SDLTOPROJECTM_H */

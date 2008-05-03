@@ -1,6 +1,7 @@
 PROJECT(projectM-jack)
 
 OPTION(QT_JACK_SUPPORT "Enable Qt4 GUI Support for the projectM jack port" ON)
+OPTION(BUILD_PROJECTM_JACK_STATIC "Build a binary that only depends on jack and stnadard MACOSX libraries" OFF)
 
 if (QT_JACK_SUPPORT)
 
@@ -77,7 +78,13 @@ LINK_DIRECTORIES(${PROJECTM_LINK} ${JACK_LDFLAGS})
 
 ADD_EXECUTABLE(projectM-jack ${projectM_jack_SRCS} ${projectM_jack_MOC_SRCS})
 
-TARGET_LINK_LIBRARIES(projectM-jack projectM-qt projectM jack ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTCORE_LIBRARIES} ${QT_LIBRARIES})
+if (BUILD_PROJECTM_JACK_STATIC)
+SET(PACKAGED_LIBRARIES ${PROJECTM_ROOT_BINARY_DIR}/projectM-engine/libprojectM.a ${PROJECTM_ROOT_BINARY_DIR}/projectM-qt/libprojectM-qt.a)
+else (BUILD_PROJECTM_JACK_STATIC)
+SET(PACKAGED_LIBRARIES projectM-qt projectM)
+endif (BUILD_PROJECTM_JACK_STATIC)
+
+TARGET_LINK_LIBRARIES(projectM-jack ${PACKAGED_LIBRARIES} jack ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTCORE_LIBRARIES} ${QT_LIBRARIES})
 
 INSTALL(TARGETS projectM-jack DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 install(FILES "projectM-jack.desktop" DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)

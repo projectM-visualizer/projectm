@@ -12,6 +12,7 @@
 #include <string>
 #include "getConfigFilename.h"
 #include <fcntl.h>	
+#include <sys/stat.h>
 
 // get the full pathname of a configfile
 std::string getConfigFilename()
