@@ -38,7 +38,7 @@ class QPlaylistTableView : public QTableView
      
 	
  signals:
-	 void mousePressed(QMouseEvent*);
+	 void mousePressed(QMouseEvent*, const QModelIndexList & items);
 	 void resized(QResizeEvent * event);
 	 void deletesRequested(const QModelIndexList & items);
 	 void internalDragAndDropRequested(const QModelIndexList & items, const QModelIndex & target = QModelIndex());
@@ -100,8 +100,7 @@ class QPlaylistTableView : public QTableView
 	 inline void mousePressEvent(QMouseEvent * event) {
 		QAbstractItemView::mousePressEvent(event);
 		if (event->button() == Qt::RightButton) {
-			emit(mousePressed(event));
-			
+			emit(mousePressed(event, selectedIndexes()));			
 		}
 		else
 				;
