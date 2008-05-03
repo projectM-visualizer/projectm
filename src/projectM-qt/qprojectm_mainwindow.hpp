@@ -114,11 +114,16 @@ protected:
 
 private slots:
 
+	void removeSelectedPlaylistItem();
+
+	void openPresetEditorDialogForSelectedPreset();
+	  void popupPlaylistContextMenu(QMouseEvent *);
       void hotkeyReference();
       void selectPlaylistItem ( int rowIndex);
       void clearPlaylistModel();
       void openPresetEditorDialog(int rowIndex);
       void aboutQt();
+
       void clearPlaylist();
       void addPresetsDialog();
       void openPlaylistDialog();
@@ -135,7 +140,7 @@ private slots:
       void removePlaylistItems(const QModelIndexList & items);
       void dragAndDropPlaylistItems(const QModelIndexList &, const QModelIndex &);
 
-
+	
       private:
 	bool warnIfPlaylistModified();
 	
@@ -153,7 +158,8 @@ private slots:
 	QHeaderView * hHeader;
 	QHeaderView * vHeader;
       QString m_currentPlaylistUrl;
-
+	  QModelIndex selectedPlaylistIndex;
+	
       QPlaylistModel * playlistModel;
       Ui::QProjectM_MainWindow * ui;
       QProjectMConfigDialog * configDialog;
@@ -180,6 +186,7 @@ private slots:
 
       QMenu *fileMenu;
       QMenu *helpMenu;
+	  QMenu *playlistContextMenu;
       QToolBar *fileToolBar;
 
       QAction *openAct;;
