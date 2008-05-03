@@ -9,6 +9,10 @@
 #include <GL/glew.h>
 #endif
 
+#ifdef __APPLE__
+#include <GL/gl.h>
+#endif
+
 #ifdef USE_DEVIL
 #include <IL/ilut.h>
 #else
