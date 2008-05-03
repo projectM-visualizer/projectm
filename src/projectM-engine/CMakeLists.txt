@@ -70,7 +70,15 @@ endif(FTGL_FOUND)
 
 
 
-TARGET_LINK_LIBRARIES(projectM GLEW ${OPENGL_LIBRARIES} m ${IMAGE_LOADING_LIBS})
+if(BUILD_PROJECTM_STATIC)
+if (APPLE)
+TARGET_LINK_LIBRARIES(projectM /Glew ${OPENGL_LIBRARIES} m ${IMAGE_LOADING_LIBS})
+else(APPLE)
+TARGET_LINK_LIBRARIES(projectM /usr/lib/libGLEW.a ${OPENGL_LIBRARIES} m ${IMAGE_LOADING_LIBS})
+endif(APPLE)
+else(BUILD_PROJECTM_STATIC)
+TARGET_LINK_LIBRARIES(projectM Glew ${OPENGL_LIBRARIES} ${IMAGE_LOADING_LIBS})
+endif(BUILD_PROJECTM_STATIC)
 
 IF(USE_FTGL)
 	if (FTGL_FOUND)
@@ -89,7 +97,7 @@ ELSE (USE_FTGL)
 	ELSE (FTGL_FOUND)
 		MESSAGE(STATUS "[projectM] Warning: FTGL font support was not detected. Visit http://ftgl.wiki.sourceforge.net/ for help on installing FTGL.")
 	ENDIF(FTGL_FOUND)
-	LINK_DIRECTORIES(${CMAKE_LIBRARY_PATH} ${OPENGL_INCLUDE_DIR} /Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks/Carbon.framework/)
+	LINK_DIRECTORIES(${CMAKE_LIBRARY_PATH} /Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks/Carbon.framework/)
 	INCLUDE_DIRECTORIES("/opt/local/include/")
 ENDIF(USE_FTGL)
 
