@@ -130,6 +130,11 @@ void QProjectM_MainWindow::popupPlaylistContextMenu(QMouseEvent * mouseEvent) {
 	
 		selectedPlaylistIndex = ui->tableView->indexAt(mouseEvent->globalPos());
 	
+		if (selectedPlaylistIndex == QModelIndex() || !selectedPlaylistIndex.isValid()) {
+			mouseEvent->accept();
+			return;
+		}
+		
 		if (mouseEvent->button() == Qt::RightButton) {
 		
 			QPoint point = mouseEvent->globalPos();
@@ -975,7 +980,9 @@ void QProjectM_MainWindow::createActions()
 }
 
 void QProjectM_MainWindow::openPresetEditorDialogForSelectedPreset() {
-	openPresetEditorDialog(selectedPlaylistIndex.row());
+	
+	if ((selectedPlaylistIndex != QModelIndex()) && selectedPlaylistIndex.isValid())
+		openPresetEditorDialog(selectedPlaylistIndex.row());
 }
 
 void QProjectM_MainWindow::registerSettingsAction(QAction * action) {
