@@ -437,7 +437,7 @@ image: url(:/images/icons/hi16-action-projectm_unlock.png);
     <iconset resource="application.qrc" >:/images/icons/hi16-action-projectm_add_playlist.png</iconset>
    </property>
    <property name="text" >
-    <string>Insert presets</string>
+    <string>Insert presets...</string>
    </property>
   </action>
  </widget>
