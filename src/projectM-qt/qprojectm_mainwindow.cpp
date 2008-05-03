@@ -128,7 +128,8 @@ activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDi
 #include <QMouseEvent>
 void QProjectM_MainWindow::popupPlaylistContextMenu(QMouseEvent * mouseEvent) { 
 	
-		selectedPlaylistIndex = ui->tableView->indexAt(mouseEvent->globalPos());
+		 
+		selectedPlaylistIndex = ui->tableView->indexAt(mouseEvent->pos());
 	
 		if (selectedPlaylistIndex == QModelIndex() || !selectedPlaylistIndex.isValid()) {
 			mouseEvent->accept();
