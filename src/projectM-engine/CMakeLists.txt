@@ -6,6 +6,11 @@ OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disab
 
 OPTION (USE_GLES1 "Use OpenGL ES 1.x" OFF)
 
+
+#OPTION (FTGL_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
+
+OPTION (BUILD_PROJECTM_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
+
 SET(SOIL_SOURCES image_DXT.c image_helper.c SOIL.c stb_image_aug.c)
 
 SET(projectM_SOURCES projectM.cpp FBO.cpp InitCond.cpp 
@@ -32,7 +37,12 @@ if(USE_FBO)
 ADD_DEFINITIONS(-DUSE_FBO)
 endif(USE_FBO)
 
+if (BUILD_PROJECTM_STATIC)
+ADD_LIBRARY(projectM STATIC ${projectM_SOURCES})
+else(BUILD_PROJECTM_STATIC)
 ADD_LIBRARY(projectM SHARED ${projectM_SOURCES})
+endif(BUILD_PROJECTM_STATIC)
+
 SET_TARGET_PROPERTIES(projectM PROPERTIES VERSION 2.00 SOVERSION 2)
 
 if (APPLE)
@@ -61,7 +71,6 @@ endif(FTGL_FOUND)
 
 
 TARGET_LINK_LIBRARIES(projectM GLEW ${OPENGL_LIBRARIES} m ${IMAGE_LOADING_LIBS})
-
 
 IF(USE_FTGL)
 	if (FTGL_FOUND)

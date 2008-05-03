@@ -12,6 +12,7 @@ else(${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 	pkg_search_module(LIBPROJECTM REQUIRED libprojectM)
 endif(${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 
+OPTION(BUILD_PROJECTM_QT_STATIC "Build a static library of projectM-qt rather than the usual shared library format" OFF)
 
 find_package(Qt4 REQUIRED) # find and setup Qt4 for this project
 include(${QT_USE_FILE})
@@ -36,7 +37,7 @@ ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='"${PROJECTM_PREFIX}"')
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 ADD_DEFINITIONS(-DQT_PLUGIN)
 ADD_DEFINITIONS(-DQT_NO_DEBUG)
-ADD_DEFINITIONS(-DQT_SHARED)
+ADD_DEFINITIONS(-DQT_STATIC)
 
 # the variable "projectM-qt_SRCS" contains all .cpp files of this project
 set(projectM-qt_SRCS
@@ -93,7 +94,11 @@ qt4_wrap_ui(projectM-qt_UIS_H ${projectM-qt_UIS})
 # After this call, foo_MOC_SRCS = moc_Class1.cxx moc_Class2.cxx moc_Class3.cxx.
 qt4_wrap_cpp(projectM-qt_MOC_SRCS ${projectM-qt_MOC_HDRS})
 
+if (BUILD_PROJECTM_QT_STATIC)
+ADD_LIBRARY(projectM-qt STATIC ${projectM-qt_SRCS} ${projectM-qt_RC_SRCS} ${projectM-qt_MOC_SRCS} ${projectM-qt_UIS_H})
+else(BUILD_PROJECTM_QT_STATIC)
 ADD_LIBRARY(projectM-qt SHARED ${projectM-qt_SRCS} ${projectM-qt_RC_SRCS} ${projectM-qt_MOC_SRCS} ${projectM-qt_UIS_H})
+endif(BUILD_PROJECTM_QT_STATIC)
 
 SET_TARGET_PROPERTIES(projectM-qt PROPERTIES VERSION 1.10 SOVERSION 1)
 
