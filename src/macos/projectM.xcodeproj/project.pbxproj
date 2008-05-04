@@ -863,6 +863,8 @@
 		516FA5440DCBFFD400465570 /* wipemalloc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 516FA4CC0DCBFFD400465570 /* wipemalloc.cpp */; };
 		516FA5450DCBFFD400465570 /* wipemalloc.h in Headers */ = {isa = PBXBuildFile; fileRef = 516FA4CD0DCBFFD400465570 /* wipemalloc.h */; };
 		51713B840DB9CCB80050BE40 /* Algorithms.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 51713B830DB9CCB80050BE40 /* Algorithms.hpp */; };
+		517236120DCD5DFC0057707C /* glew.c in Sources */ = {isa = PBXBuildFile; fileRef = 517236100DCD5DFC0057707C /* glew.c */; };
+		517236130DCD5DFC0057707C /* glew.h in Headers */ = {isa = PBXBuildFile; fileRef = 517236110DCD5DFC0057707C /* glew.h */; };
 		517524BC0DBC47FE00D47C49 /* configfile.o in Frameworks */ = {isa = PBXBuildFile; fileRef = 517524410DBC47FE00D47C49 /* configfile.o */; };
 		517524BD0DBC47FE00D47C49 /* moc_qplaylistfiledialog.o in Frameworks */ = {isa = PBXBuildFile; fileRef = 517524490DBC47FE00D47C49 /* moc_qplaylistfiledialog.o */; };
 		517524BE0DBC47FE00D47C49 /* moc_qplaylistmodel.o in Frameworks */ = {isa = PBXBuildFile; fileRef = 5175244A0DBC47FE00D47C49 /* moc_qplaylistmodel.o */; };
@@ -2776,6 +2778,8 @@
 		516FA4CD0DCBFFD400465570 /* wipemalloc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wipemalloc.h; path = "../projectM-engine/wipemalloc.h"; sourceTree = SOURCE_ROOT; };
 		516FA5490DCC051600465570 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = CMakeLists.txt; path = "../projectM-jack/CMakeLists.txt"; sourceTree = SOURCE_ROOT; };
 		51713B830DB9CCB80050BE40 /* Algorithms.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Algorithms.hpp; path = "../projectM-engine/Algorithms.hpp"; sourceTree = SOURCE_ROOT; };
+		517236100DCD5DFC0057707C /* glew.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = glew.c; path = "../projectM-engine/glew.c"; sourceTree = SOURCE_ROOT; };
+		517236110DCD5DFC0057707C /* glew.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = glew.h; path = "../projectM-engine/glew.h"; sourceTree = SOURCE_ROOT; };
 		517524390DBC47FD00D47C49 /* cmake_install.cmake */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cmake_install.cmake; sourceTree = "<group>"; };
 		5175243B0DBC47FE00D47C49 /* CMakeDirectoryInformation.cmake */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeDirectoryInformation.cmake; sourceTree = "<group>"; };
 		5175243C0DBC47FE00D47C49 /* progress.make */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = progress.make; sourceTree = "<group>"; };
@@ -3163,6 +3167,8 @@
 		0C4C736B09DDBB7100126FB8 /* projectM-engine */ = {
 			isa = PBXGroup;
 			children = (
+				517236100DCD5DFC0057707C /* glew.c */,
+				517236110DCD5DFC0057707C /* glew.h */,
 				516FA2F10DCBFFCF00465570 /* BeatDetect.cpp */,
 				516FA2F20DCBFFCF00465570 /* BeatDetect.hpp */,
 				516FA2F30DCBFFCF00465570 /* BuiltinFuncs.cpp */,
@@ -4843,6 +4849,7 @@
 				516FA5410DCBFFD400465570 /* timer.h in Headers */,
 				516FA5430DCBFFD400465570 /* win32-dirent.h in Headers */,
 				516FA5450DCBFFD400465570 /* wipemalloc.h in Headers */,
+				517236130DCD5DFC0057707C /* glew.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5049,6 +5056,7 @@
 				516FA5400DCBFFD400465570 /* timer.cpp in Sources */,
 				516FA5420DCBFFD400465570 /* win32-dirent.cpp in Sources */,
 				516FA5440DCBFFD400465570 /* wipemalloc.cpp in Sources */,
+				517236120DCD5DFC0057707C /* glew.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
