@@ -20,10 +20,9 @@
  */
 /* Evaluation Code */
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 
-#include "projectM.hpp"
 #include "Common.hpp"
 #include "fatal.h"
 
@@ -31,8 +30,9 @@
 #include "Expr.hpp"
 #include "Param.hpp"
 #include "Func.hpp"
-#include "BuiltinFuncs.hpp"
 #include "wipemalloc.h"
+
+#include "BuiltinFuncs.hpp"
 
 InfixOp *Eval::infix_add = NULL;
 InfixOp *Eval::infix_minus = NULL;

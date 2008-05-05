@@ -21,7 +21,6 @@
 
 #include <stdio.h>
 
-#include "projectM.hpp"
 #include "Common.hpp"
 #include "fatal.h"
 #include "KeyHandler.hpp"
@@ -29,11 +28,13 @@
 #include "BeatDetect.hpp"
 #include "PresetChooser.hpp"
 #include "Renderer.hpp"
+#include "projectM.hpp"
+
 #include <iostream>
 #include "TimeKeeper.hpp"
 
-class Preset;
 
+class Preset;
 interface_t current_interface = DEFAULT_INTERFACE;
 
 void refreshConsole() {

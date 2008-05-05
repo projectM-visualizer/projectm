@@ -18,13 +18,13 @@
 #include <string>
 #include "Algorithms.hpp"
 #include <iostream>
-
+#include "fatal.h"
 using namespace Algorithms;
 
 std::map<std::string, Func*> BuiltinFuncs::builtin_func_tree;
 
 int BuiltinFuncs::load_builtin_func(const std::string & name, float (*func_ptr)(float*), int num_args) {
-
+	
   Func * func; 
   int retval; 
 

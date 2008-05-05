@@ -28,10 +28,11 @@
 
 /* Eval.hpp: evaluation functions of expressions */
 
-#ifndef _EVAL_H
-#define _EVAL_H
+#ifndef __EVAL_H
+#define __EVAL_H
 
-#include "projectM.hpp"
+#include "fatal.h"
+//#include "projectM.hpp"
 #include "Func.hpp"
 #include "Param.hpp"
 

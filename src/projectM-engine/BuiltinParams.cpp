@@ -4,9 +4,9 @@
 #include "projectM.hpp"
 #include <cassert>
 #include "Algorithms.hpp"
-#include "InitCondUtils.hpp"
 #include <iostream>
 #include <algorithm>
+#include "InitCondUtils.hpp"
 
 
 using namespace Algorithms;

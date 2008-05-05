@@ -29,7 +29,6 @@
 #include "Common.hpp"
 #include "fatal.h"
 
-#include "BuiltinFuncs.hpp"
 #include "CustomWave.hpp"
 #include "CustomShape.hpp"
 #include "Expr.hpp"
@@ -47,6 +46,7 @@
 #include "wipemalloc.h"
 #include <iostream>
 #include <sstream>
+#include "BuiltinFuncs.hpp"
 
 /* Grabs the next token from the file. The second argument points
    to the raw string */
