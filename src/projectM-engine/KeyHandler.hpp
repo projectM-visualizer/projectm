@@ -28,7 +28,7 @@
 #define _KEY_HANDLER_HPP
 
 #include "event.h"
-
+class projectM;
 void default_key_handler(projectM *PM, projectMEvent event, projectMKeycode keycode);
 void refreshConsole();
 #if defined(__CPLUSPLUS) && !defined(MACOS)

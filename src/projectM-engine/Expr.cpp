@@ -22,9 +22,10 @@
 #include "wipemalloc.h"
 
 #include "Expr.hpp"
-#include "Eval.hpp"
 #include <cassert>
+
 #include <iostream>
+#include "Eval.hpp"
 
 float GenExpr::eval_gen_expr ( int mesh_i, int mesh_j )
 {
