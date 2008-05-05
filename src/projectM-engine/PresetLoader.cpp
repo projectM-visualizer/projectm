@@ -30,7 +30,7 @@ extern "C"
 #endif
 
 #include <cassert>
-#include "projectM.hpp"
+#include "fatal.h"
 
 const std::string PresetLoader::PROJECTM_FILE_EXTENSION(".prjm");
 const std::string PresetLoader::MILKDROP_FILE_EXTENSION(".milk");

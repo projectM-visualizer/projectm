@@ -18,7 +18,6 @@
 #include <cmath>
 #include <cstdlib>
 #include <cassert>
-#include "projectM.hpp"
 
 #include "RandomNumberGenerators.hpp"
 

@@ -19,7 +19,7 @@
  *
  */
 #include "wipemalloc.h"
-#include "BuiltinFuncs.hpp"
+
 #include "fatal.h"
 #include "Common.hpp"
 #include "compare.h"
@@ -40,6 +40,7 @@
 //#include <xmms/plugin.h>
 #include <iostream>
 #include "projectM.hpp"
+#include "BuiltinFuncs.hpp"
 #include "BeatDetect.hpp"
 #include "Eval.hpp"
 #include "Param.hpp"

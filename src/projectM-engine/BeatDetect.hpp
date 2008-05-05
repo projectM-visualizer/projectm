@@ -31,7 +31,6 @@
 #ifndef _BEAT_DETECT_H
 #define _BEAT_DETECT_H
 
-#include "projectM.hpp"
 #include "PCM.hpp"
 
 class BeatDetect

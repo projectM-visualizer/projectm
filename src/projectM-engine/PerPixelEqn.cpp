@@ -23,7 +23,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <iostream>
-#include "projectM.hpp"
 
 #include "fatal.h"
 #include "Common.hpp"

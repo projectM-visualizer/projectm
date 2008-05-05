@@ -25,7 +25,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
-#include "projectM.hpp"
 
 #include "fatal.h"
 #include "Common.hpp"
