@@ -61,8 +61,8 @@ class BeatDetect
 		PCM *pcm;
 
 		/** Methods */
-		DLLEXPORT BeatDetect(PCM *pcm);
-		DLLEXPORT ~BeatDetect();
+		BeatDetect(PCM *pcm);
+		~BeatDetect();
 		void initBeatDetect();
 		void reset();
 		void detectFromSamples();
