@@ -29,7 +29,11 @@
 #define _RENDERTARGET_H
 
 #ifdef USE_FBO
+#ifdef USE_NATIVE_GLEW
+#include "glew.h"
+#else
 #include <GL/glew.h>
+#endif
 #endif
 
 #ifdef MACOS
