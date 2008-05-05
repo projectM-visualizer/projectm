@@ -6,7 +6,7 @@
 #include <GL/gl.h>
 #endif
 #ifdef WIN32
-#include <GL/glew.h>
+#include "glew.h"
 #endif
 
 #ifdef __APPLE__
