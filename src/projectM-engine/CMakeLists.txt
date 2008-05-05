@@ -16,6 +16,7 @@ OPTION (BUILD_PROJECTM_STATIC "Build the projectM target library in the platform
 SET(SOIL_SOURCES image_DXT.c image_helper.c SOIL.c stb_image_aug.c)
 
 if (USE_NATIVE_GLEW)
+ADD_DEFINITIONS(-DUSE_NATIVE_GLEW)
 SET(GLEW_SOURCES glew.h glew.c)
 SET(GLEW_LINK_TARGETS )
 else(USE_NATIVE_GLEW)
