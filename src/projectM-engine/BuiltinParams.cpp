@@ -1,7 +1,6 @@
 
-
+#include "fatal.h"
 #include "BuiltinParams.hpp"
-#include "projectM.hpp"
 #include <cassert>
 #include "Algorithms.hpp"
 #include <iostream>
