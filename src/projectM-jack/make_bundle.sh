@@ -63,3 +63,8 @@ install_name_tool -change QtCore.framework/Versions/${QT_VERSION}/QtCore @execut
 
 install_name_tool -change QtCore.framework/Versions/${QT_VERSION}/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/${QT_VERSION}/QtCore ${APP}/Contents/Frameworks/QtOpenGL.framework/Versions/${QT_VERSION}/QtOpenGL		 
 install_name_tool -change QtGui.framework/Versions/${QT_VERSION}/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/${QT_VERSION}/QtGui ${APP}/Contents/Frameworks/QtOpenGL.framework/Versions/${QT_VERSION}/QtOpenGL
+
+install_name_tool -change QtCore.framework/Versions/${QT_VERSION}/QtCore @executable_path/../Frameworks/QtCore.framework/Versions/${QT_VERSION}/QtCore ${APP}/Contents/Plugins/projectM-qt
+install_name_tool -change QtGui.framework/Versions/${QT_VERSION}/QtGui @executable_path/../Frameworks/QtGui.framework/Versions/${QT_VERSION}/QtGui ${APP}/Contents/Plugins/projectM-qt
+install_name_tool -change QtXml.framework/Versions/${QT_VERSION}/QtXml @executable_path/../Frameworks/QtXml.framework/Versions/${QT_VERSION}/QtXml ${APP}/Contents/Plugins/projectM-qt
+install_name_tool -change QtOpenGL.framework/Versions/${QT_VERSION}/QtOpenGL @executable_path/../Frameworks/QtOpenGL.framework/Versions/${QT_VERSION}/QtOpenGL ${APP}/Contents/Plugins/projectM-qt
