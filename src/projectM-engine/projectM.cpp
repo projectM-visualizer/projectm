@@ -174,11 +174,25 @@ void projectM::readConfig (const std::string & configFile )
 	_settings.smoothPresetDuration =  config.read<int> 
 			( "Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 10));
 	_settings.presetDuration = config.read<int> ( "Preset Duration", 15 );
+	#ifdef __APPLE__
+	/// @bug awful hardcoded hack- need to add intelligence to cmake wrt bundling - carm
+	_settings.presetURL = config.read<string> ( "Preset Path", "../Resources/presets" );
+	#else
 	_settings.presetURL = config.read<string> ( "Preset Path", CMAKE_INSTALL_PREFIX "/share/projectM/presets" );
+	#endif
+	
+	#ifdef __APPLE__
+	_settings.titleFontURL = config.read<string> 
+			( "Title Font",  "../Resources/fonts/Vera.tff");
+	_settings.menuFontURL = config.read<string> 
+			( "Menu Font", "../Resources/fonts/VeraMono.ttf");
+	#else
 	_settings.titleFontURL = config.read<string> 
 			( "Title Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/Vera.ttf" );
 	_settings.menuFontURL = config.read<string> 
 			( "Menu Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/VeraMono.ttf" );
+			
+	#endif
 	_settings.shuffleEnabled = config.read<bool> ( "Shuffle Enabled", true);
 			
 	_settings.easterEgg = config.read<float> ( "Easter Egg Parameter", 0.0);
