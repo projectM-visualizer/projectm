@@ -6,16 +6,31 @@
 #include <QMutex>
 #include <QtDebug>
 #include <QKeyEvent>
+#include <QTimer>
+#include <QApplication>
 
 class QProjectMWidget : public QGLWidget {
 	
 	Q_OBJECT        // must include this if you use Qt signals/slots
 
 	public:
-		QProjectMWidget(const std::string & _config_file, QWidget * parent, QMutex * audioMutex = 0)
-	: QGLWidget(parent), config_file(_config_file), m_projectM(0), m_audioMutex(audioMutex) {}
+		static const int MOUSE_VISIBLE_TIMEOUT_MS = 5000;
+		QProjectMWidget(const std::string & config_file, QWidget * parent, QMutex * audioMutex = 0)
+	: QGLWidget(parent), m_config_file(config_file), m_projectM(0), m_audioMutex(audioMutex), m_mouseTimer(0) {
+		
+		m_mouseTimer = new QTimer(this);
+		
+		
+		m_mouseTimer->start(MOUSE_VISIBLE_TIMEOUT_MS);
+		
+		
+		connect(m_mouseTimer, SIGNAL(timeout()), this, SLOT(hideMouse()));
+		this->setMouseTracking(true);
+		
+	}
 
 		~QProjectMWidget() { destroyProjectM(); }
+
 
 
 		void resizeGL(int w, int h)
@@ -26,7 +41,7 @@ class QProjectMWidget : public QGLWidget {
 		}
 
 		inline const std::string & configFile() {
-			return config_file;
+			return m_config_file;
 		}
  
 		inline void seizePresetLock() {
@@ -42,11 +57,21 @@ class QProjectMWidget : public QGLWidget {
 			m_presetSeizeMutex.unlock();
 		}
 
+		
+				
 		inline QProjectM * qprojectM() { return m_projectM; }
 
+	protected slots:
+		inline void mouseMoveEvent ( QMouseEvent * event )  {
+		
+			m_mouseTimer->stop();
+			QApplication::restoreOverrideCursor();
+			m_mouseTimer->start(MOUSE_VISIBLE_TIMEOUT_MS);			
+		
+		}
 	
 	public slots:
-	
+
 		void resetProjectM() {
 	
 			qDebug() << "reset start";
@@ -82,7 +107,7 @@ class QProjectMWidget : public QGLWidget {
 			emit(shuffleEnabledChanged((bool)state));
 		}
 
-		void mousePressEvent ( QMouseEvent * event )   {
+		void mousePressEvent ( QMouseEvent * event )   {			
 			this->setFocus();
 		}
 
@@ -91,8 +116,14 @@ class QProjectMWidget : public QGLWidget {
 		void projectM_BeforeDestroy();
 		void presetLockChanged(bool isLocked);
 		void shuffleEnabledChanged(bool isShuffleEnabled);
+		
+	private slots:
+		void hideMouse() {
+			if (this->underMouse() && this->hasFocus())
+				QApplication::setOverrideCursor(Qt::BlankCursor);
+		}
 	private:
-		std::string config_file;
+		std::string m_config_file;
 		QProjectM * m_projectM;	 
 		void destroyProjectM() {
 			  
@@ -101,7 +132,8 @@ class QProjectMWidget : public QGLWidget {
 				m_projectM = 0;
 			}
 		}
-	
+		
+		QTimer * m_mouseTimer;
 		QMutex * m_audioMutex;
 		QMutex m_presetSeizeMutex;
 		bool m_presetWasLocked;
@@ -157,7 +189,7 @@ class QProjectMWidget : public QGLWidget {
 		void initializeGL()
 		{	
 
-			this->m_projectM = new QProjectM(config_file);	
+			this->m_projectM = new QProjectM(m_config_file);	
 			projectM_Initialized(m_projectM);
 		}
 

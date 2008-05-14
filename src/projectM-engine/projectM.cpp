@@ -162,9 +162,8 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
 
 void projectM::readConfig (const std::string & configFile )
 {
-
+	std::cout << "configFile: " << configFile << std::endl;
 	ConfigFile config ( configFile );
-
 	_settings.meshX = config.read<int> ( "Mesh X", 32 );
 	_settings.meshY = config.read<int> ( "Mesh Y", 24 );
 	_settings.textureSize = config.read<int> ( "Texture Size", 512 );
@@ -174,10 +173,17 @@ void projectM::readConfig (const std::string & configFile )
 	_settings.smoothPresetDuration =  config.read<int> 
 			( "Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 10));
 	_settings.presetDuration = config.read<int> ( "Preset Duration", 15 );
+	
+	#ifdef LINUX
+	_settings.presetURL = config.read<string> ( "Preset Path", CMAKE_INSTALL_PREFIX "/share/projectM/presets" );
+	#endif
+	
 	#ifdef __APPLE__
 	/// @bug awful hardcoded hack- need to add intelligence to cmake wrt bundling - carm
 	_settings.presetURL = config.read<string> ( "Preset Path", "../Resources/presets" );
-	#else
+	#endif
+		
+	#ifdef WIN32
 	_settings.presetURL = config.read<string> ( "Preset Path", CMAKE_INSTALL_PREFIX "/share/projectM/presets" );
 	#endif
 	
@@ -186,13 +192,23 @@ void projectM::readConfig (const std::string & configFile )
 			( "Title Font",  "../Resources/fonts/Vera.tff");
 	_settings.menuFontURL = config.read<string> 
 			( "Menu Font", "../Resources/fonts/VeraMono.ttf");
-	#else
+	#endif
+	
+	#ifdef LINUX
 	_settings.titleFontURL = config.read<string> 
 			( "Title Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/Vera.ttf" );
 	_settings.menuFontURL = config.read<string> 
-			( "Menu Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/VeraMono.ttf" );
-			
+			( "Menu Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/VeraMono.ttf" );			
 	#endif
+	
+	#ifdef WIN32
+	_settings.titleFontURL = config.read<string> 
+			( "Title Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/Vera.ttf" );
+	_settings.menuFontURL = config.read<string> 
+			( "Menu Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/VeraMono.ttf" );			
+	#endif
+	
+	
 	_settings.shuffleEnabled = config.read<bool> ( "Shuffle Enabled", true);
 			
 	_settings.easterEgg = config.read<float> ( "Easter Egg Parameter", 0.0);
@@ -224,8 +240,8 @@ void *projectM::thread_func(void *vptr_args)
 {
    pthread_mutex_lock( &mutex );
   //  printf("in thread: %f\n", timeKeeper->PresetProgressB());
-  while (1)
-    {   
+  while (true)
+    {
       pthread_cond_wait( &condition, &mutex );
       if(!running)
 	{
@@ -233,7 +249,7 @@ void *projectM::thread_func(void *vptr_args)
 	  return NULL;
 	}
      evaluateSecondPreset();
-    }  
+    } 
 }
 #endif
 
