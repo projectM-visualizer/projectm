@@ -18,6 +18,7 @@ BuiltinParams::BuiltinParams(const PresetInputs & presetInputs, PresetOutputs & 
  int ret;
   if ((ret = init_builtin_param_db(presetInputs, presetOutputs)) != PROJECTM_SUCCESS)
   {
+	std::cout << "failed to allocate builtin parameter database with error " << ret << std::endl;;
     throw ret;
   }
 
