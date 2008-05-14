@@ -7,7 +7,7 @@ OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disab
 OPTION (USE_GLES1 "Use OpenGL ES 1.x" OFF)
 
 
-OPTION (USE_NATIVE_GLEW "Use projectM's native implemention of GLEW." ON)
+OPTION (USE_NATIVE_GLEW "Use projectM's native implemention of GLEW." OFF)
 
 #OPTION (FTGL_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
 
