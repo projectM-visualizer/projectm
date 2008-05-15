@@ -48,7 +48,7 @@ void QPresetEditorDialog::saveFile() {
 	QFile qfile(presetUrl());
 	
 	if (!qfile.open(QIODevice::ReadWrite | QIODevice::Text)) {
-		QMessageBox::warning (0, "Preset File Error", QString(tr("There was a problem trying to save the preset \"%1\".  The file may no longer exist or you may not have permission to read the file.")).arg(presetUrl()));
+		QMessageBox::warning (0, "Preset File Error", QString(tr("There was a problem trying to save the preset \"%1\".  You may not have permission to write to the file.")).arg(presetUrl()));
 		return ;
 	}
 	
