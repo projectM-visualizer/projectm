@@ -16,7 +16,7 @@ Easter Egg Parameter = 1
 Hard Cut Sensitivity = 10       # Lower to make hard cuts more frequent
 Aspect Correction = true	# Custom Shape Aspect Correction
 
-Preset Path = @CMAKE_INSTALL_PREFIX@/share/projectM/presets #preset location
-Title Font = @CMAKE_INSTALL_PREFIX@/share/projectM/fonts/Vera.ttf
-Menu Font = @CMAKE_INSTALL_PREFIX@/share/projectM/fonts/VeraMono.ttf
+Preset Path = @CMAKE_INSTALL_PREFIX@/@RESOURCE_PREFIX@/presets # preset location
+Title Font = @CMAKE_INSTALL_PREFIX@/@RESOURCE_PREFIX@/fonts/Vera.ttf
+Menu Font = @CMAKE_INSTALL_PREFIX@/@RESOURCE_PREFIX@/fonts/VeraMono.ttf
  
