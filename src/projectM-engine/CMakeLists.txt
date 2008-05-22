@@ -12,7 +12,6 @@ OPTION (USE_NATIVE_GLEW "Use projectM's native implemention of GLEW." OFF)
 #OPTION (FTGL_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
 
 OPTION (BUILD_PROJECTM_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
-
 SET(SOIL_SOURCES image_DXT.c image_helper.c SOIL.c stb_image_aug.c)
 
 if (USE_NATIVE_GLEW)
@@ -58,10 +57,13 @@ SET_TARGET_PROPERTIES(projectM PROPERTIES VERSION 2.00 SOVERSION 2)
 
 if (APPLE)
 ADD_DEFINITIONS(-DMACOS -DSTBI_NO_DDS -DUSE_THREADS)
+set(RESOURCE_PREFIX "Resources")
 else (APPLE)
 if (WIN32)
+set (RESOURCE_PREFIX "Resources")
 ADD_DEFINITIONS(-DWIN32 -DSTBI_NO_DDS -DUSE_THREADS)
 else(WIN32)
+set (RESOURCE_PREFIX "share/projectM")
 ADD_DEFINITIONS(-DLINUX -DSTBI_NO_DDS -DUSE_THREADS)
 endif(WIN32)
 endif(APPLE)
