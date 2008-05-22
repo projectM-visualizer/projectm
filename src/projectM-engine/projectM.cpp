@@ -163,6 +163,7 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
 void projectM::readConfig (const std::string & configFile )
 {
 	std::cout << "configFile: " << configFile << std::endl;
+	
 	ConfigFile config ( configFile );
 	_settings.meshX = config.read<int> ( "Mesh X", 32 );
 	_settings.meshY = config.read<int> ( "Mesh Y", 24 );

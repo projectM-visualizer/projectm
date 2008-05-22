@@ -33,7 +33,7 @@
 #include <sys/stat.h> // for mkdir
 #include <jack/jack.h>
 
-#define CONFIG_FILE "/share/projectM/config.inp"
+#define QPROJECTM_JACK_CONFIG_FILE "/config.inp"
 
 std::string read_config();
 
@@ -67,7 +67,7 @@ std::string read_config()
 {
 
    int n;
-
+   
    char num[512];
    FILE *in; 
    FILE *out;
@@ -76,9 +76,14 @@ std::string read_config()
    char projectM_home[1024];
    char projectM_config[1024];
 
+   int len;
    strcpy(projectM_config, PROJECTM_PREFIX);
-   strcpy(projectM_config+strlen(PROJECTM_PREFIX), CONFIG_FILE);
-   projectM_config[strlen(PROJECTM_PREFIX)+strlen(CONFIG_FILE)]='\0';
+   strcpy(projectM_config + (len = strlen(PROJECTM_PREFIX)), "/");
+   
+   strcpy(projectM_config+(len += strlen("/")), RESOURCE_PREFIX);
+   strcpy(projectM_config+(len += strlen(RESOURCE_PREFIX)), QPROJECTM_JACK_CONFIG_FILE);
+   projectM_config[len += strlen(QPROJECTM_JACK_CONFIG_FILE)]='\0';
+   
    printf("dir:%s \n",projectM_config);
    home=getenv("HOME");
    strcpy(projectM_home, home);
