@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=projectM-jack
+Comment=A milkdrop based music visualizer using alsa input and libvisual
+Exec=/usr/bin/projectM-libvisual-alsa
+Icon=prjm16-transparent.svg
+Type=Application
+Categories=Application;AudioVideo;Audio;
+
