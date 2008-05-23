@@ -33,7 +33,7 @@
 #if defined(_WIN32)
 #  include <GL/wglew.h>
 #elif !defined(__APPLE__) || defined(GLEW_APPLE_GLX)
-#  include <GL/glxew.h>
+#  include "glxew.h"
 #endif
 
 /*
