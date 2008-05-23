@@ -1,0 +1,13 @@
+#!/bin/sh
+
+gcc -Wall -o lv-standalone client.c display.c glxdriver.c x11driver.c sdldriver.c lv_x11_key.c \
+  -L/usr/X11R6/lib -lGL -lGLU -lXxf86vm \
+  `pkg-config --cflags --libs libvisual-0.4` \
+  `sdl-config --libs --cflags` \
+  `caca-config --libs --cflags` \
+  -ggdb
+
+gcc -Wall -o lv-morph morphclient.c display.c sdldriver.c \
+  `pkg-config --cflags --libs libvisual-0.4` \
+  `sdl-config --libs --cflags` \
+  -ggdb
