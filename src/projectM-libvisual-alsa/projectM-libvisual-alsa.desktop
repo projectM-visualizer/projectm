@@ -1,5 +1,5 @@
 [Desktop Entry]
-Name=projectM-jack
+Name=projectM-libvisual-alsa
 Comment=A milkdrop based music visualizer using alsa input and libvisual
 Exec=/usr/bin/projectM-libvisual-alsa
 Icon=prjm16-transparent.svg
