@@ -1,0 +1,44 @@
+DONE	A display abstraction thingy.
+DONE	Register SDL as the driver.
+DONE		handle gl
+DONE		handle framebuffer
+DONE		handle resize
+DONE		handle fullscreen
+
+DONE	support resize.
+3	support a fps limiter.
+
+DONE	add support for libvisual it's gl param system (also make in lv).
+
+DONE	Add SDL events to a libvisual event queue.
+DONE	events to plugin.
+
+	Support switching between plugins. << in a different standalone example ?!
+
+	good object cleanup.
+
+DONE	support resolution selection
+DONE	support auto scaling on fullscreen, and return to old scale/position.
+	support keep position with gl switches.
+
+	When all is done, check where the API fails, and update in lv.
+	When all is done, let the playground make use of the display system (finally clean it up).
+
+DONE	make use of visibility events.
+DONE	make use of quit events.
+
+	add glx backend.
+		add support for a on texture renderer.
+
+	fix the x11 renderer
+
+	add fullscreen support to the x11 and glx renderer.
+
+Make a few end clients:
+	simple.
+	bin and morphable.
+	complex (morphable and visui interface)
+
+	make sure all is abstract in a way that it's easy to include it in projects.
+
+
