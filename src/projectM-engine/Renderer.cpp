@@ -1207,8 +1207,8 @@ void Renderer::draw_motion_vectors(PresetOutputs *presetOutputs)
 	glPointSize(presetOutputs->mv_l);
 	glColor4f(presetOutputs->mv_r, presetOutputs->mv_g, presetOutputs->mv_b, presetOutputs->mv_a);
 	
-	int numx = presetOutputs->mv_x;
-	int numy = presetOutputs->mv_y;
+	int numx = static_cast<int>(presetOutputs->mv_x);
+	int numy = static_cast<int>(presetOutputs->mv_y);
 
 	if (numx + numy < 600)
 	  {
