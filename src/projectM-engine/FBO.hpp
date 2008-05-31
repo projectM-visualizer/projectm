@@ -37,8 +37,8 @@
 #endif
 
 #ifdef MACOS
-#include <gl.h>
-#include <agl.h>
+#include <OpenGL/gl.h>
+#include <AGL/agl.h>
 #endif /** MACOS */
 
 #ifdef WIN32
