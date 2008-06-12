@@ -22,8 +22,7 @@ class QProjectMWidget : public QGLWidget {
 		
 		
 		m_mouseTimer->start(MOUSE_VISIBLE_TIMEOUT_MS);
-		
-		
+				
 		connect(m_mouseTimer, SIGNAL(timeout()), this, SLOT(hideMouse()));
 		this->setMouseTracking(true);
 		
@@ -57,7 +56,6 @@ class QProjectMWidget : public QGLWidget {
 			m_presetSeizeMutex.unlock();
 		}
 
-		
 				
 		inline QProjectM * qprojectM() { return m_projectM; }
 
@@ -70,6 +68,11 @@ class QProjectMWidget : public QGLWidget {
 		
 		}
 	
+		inline void leaveEvent ( QEvent * event ) {
+			/// @bug testing if this resolves a bug for ubuntu users
+			QApplication::restoreOverrideCursor();	
+		}
+		
 	public slots:
 
 		void resetProjectM() {
