@@ -74,9 +74,9 @@ void renderLoop()
 {
 	while (1)
 	{
-//		projectMEvent evt;
-//		projectMKeycode key;
-//		projectMModifier mod;
+		projectMEvent evt;
+		projectMKeycode key;
+		projectMModifier mod;
 	#if 0
 		/** Process SDL events */
 		SDL_Event event;
@@ -132,8 +132,8 @@ void renderLoop()
 			}
 		} 
 		#endif
-		//globalPM->renderFrame();
-	//	SDL_GL_SwapBuffers();
+		globalPM->renderFrame();
+		SDL_GL_SwapBuffers();
 	}
 	
 }
