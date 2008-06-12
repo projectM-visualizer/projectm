@@ -66,7 +66,6 @@ class PlaylistWriteFunctor {
 		
 		const QString & m_desc;
 		
-
 };
 
 QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QMutex * audioMutex)
