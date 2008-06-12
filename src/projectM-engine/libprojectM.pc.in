@@ -6,7 +6,7 @@ pkgdatadir=@CMAKE_INSTALL_PREFIX@/@RESOURCE_PREFIX@
 sysconfdir=@CMAKE_INSTALL_PREFIX@/@RESOURCE_PREFIX@
 
 Name: libprojectM
-Version: 1.10
+Version: 1.2.0
 Description: projectM - OpenGL Milkdrop
 Requires:
 Libs: -L${libdir} -lprojectM 

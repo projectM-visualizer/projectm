@@ -6,7 +6,7 @@ pkgdatadir=@CMAKE_INSTALL_PREFIX@/share/projectM-qt
 sysconfdir=@CMAKE_INSTALL_PREFIX@/share/projectM-qt
 
 Name: libprojectM-qt
-Version: 1.10
+Version: 1.2.0
 Description: projectM-qt provides a full featured Qt4 graphical user interface to projectM
 Requires: libprojectM QtCore QtGui QtXml QtOpenGL
 +Libs: -L${libdir} -lprojectM-qt
