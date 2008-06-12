@@ -26,7 +26,7 @@
 #include "getConfigFilename.h"
 
 //FIXME: these don't have to be global
-//projectM *globalPM = NULL;
+projectM *globalPM = NULL;
 int wvw, wvh, fvw, fvh;
 bool fullscreen;
 
@@ -41,7 +41,7 @@ void renderLoop();
 
 int main(int argc, char **argv)
 {
-/*
+
 	// fix `fullscreen quit kills mouse` issue.
 	atexit(SDL_Quit);
 	
@@ -66,7 +66,7 @@ int main(int argc, char **argv)
 	renderLoop();
 	
 	// not reached
-	*/
+	
 	return 1;
 }
 
