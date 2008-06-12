@@ -21,7 +21,7 @@
 
 #include "video_init.h"
 #include <projectM.hpp>
-//#include "sdltoprojectM.h"
+#include "sdltoprojectM.h"
 #include "ConfigFile.h"
 #include "getConfigFilename.h"
 
@@ -77,7 +77,7 @@ void renderLoop()
 		projectMEvent evt;
 		projectMKeycode key;
 		projectMModifier mod;
-	#if 0
+	#if 1
 		/** Process SDL events */
 		SDL_Event event;
 		while (SDL_PollEvent(&event))
