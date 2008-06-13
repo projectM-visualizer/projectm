@@ -10,6 +10,8 @@
 
 // I hacked include<string> on to silence my compiler, is it valid?
 #include <string>
+#include <cstring>
+#include <cstdlib>
 #include "getConfigFilename.h"
 #include <fcntl.h>	
 #include <sys/stat.h>
