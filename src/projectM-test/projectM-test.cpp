@@ -25,10 +25,10 @@
 #include "ConfigFile.h"
 #include "getConfigFilename.h"
 
-// FIXME: portable GL includes
+// FIXME: portable includes?
 // i just added what works for me -fatray
 #include <GL/gl.h>
-
+#include <assert.h>
 
 projectM *globalPM= NULL;
 
@@ -38,9 +38,13 @@ bool fullscreen;
 
 void renderLoop();
 
-// texture stuff
+// texture test
 bool doTextureTest = false;
 void textureTest();
+
+// memleak test
+bool doMemleakTest = false;
+int memLeakIterations = 100;
 
 int main(int argc, char **argv) {
 
@@ -58,6 +62,17 @@ int main(int argc, char **argv) {
 	init_display(wvw, wvh, &fvw, &fvh, fullscreen);
 
 	SDL_WM_SetCaption(PROJECTM_TITLE, NULL);
+
+	// memleak test
+	while (doMemleakTest) {
+		static int k = 0;
+		std::cerr << "[iter " << k++ << "]" << std::endl;
+		globalPM = new projectM(config_filename);
+		assert(globalPM);
+		delete (globalPM);
+		if (k >= memLeakIterations)
+			break;
+	}
 
 	globalPM = new projectM(config_filename);
 
@@ -138,7 +153,7 @@ void textureTest() {
 	static int textureHandle = globalPM->initRenderToTexture();
 	static int frame = 0;
 	frame++;
-	
+
 	glClear(GL_COLOR_BUFFER_BIT);
 	glClear(GL_DEPTH_BUFFER_BIT);
 
