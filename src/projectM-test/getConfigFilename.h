@@ -5,8 +5,6 @@
 //
 // Created on 05 December 2007, 23:39
 //
-// FIXME: move into getConfigFilename.cpp
-// FIXME: portable? 
 
 #ifndef _GETCONFIGFILENAME_H
 #define	_GETCONFIGFILENAME_H
