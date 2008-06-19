@@ -1,0 +1,104 @@
+#include "PerPixelMesh.hpp"
+#include <vector>
+using namespace std;
+class PerPixelTransform 
+{
+public:
+	int width;
+	int height;
+
+        PerPixelTransform(int width, int height) : width(width), height(height) {}
+	virtual void Calculate(PerPixelMesh* mesh) = 0;
+};
+
+class Warp : PerPixelTransform
+{
+	float warp;
+	float speed;
+	float scale;
+	float time;
+
+ 	void Calculate(PerPixelMesh* mesh);
+};
+
+class PerPixelWarp : PerPixelTransform
+{
+
+	vector< vector<float> > warp;
+	float speed;
+	float scale;
+	float time;
+
+	PerPixelWarp(int width, int height, float warp, float speed, float scale) : PerPixelTransform(width, height), speed(speed),scale(scale), warp(width,vector<float>(height,warp)){}
+ 	void Calculate(PerPixelMesh* mesh);
+};
+
+class Scale : PerPixelTransform
+{
+	float cx;
+	float cy;
+	float sx;
+	float sy;
+
+ 	void Calculate(PerPixelMesh* mesh);
+};
+
+class PerPixelScale : PerPixelTransform
+{
+	float** cx;
+	float** cy;
+	float** sx;
+	float** sy;
+
+ 	void Calculate(PerPixelMesh* mesh);
+};
+
+class Rotation : PerPixelTransform
+{
+	float cx;
+	float cy;
+	float angle;
+
+ 	void Calculate(PerPixelMesh* mesh);
+};
+
+class PerPixelRotation : PerPixelTransform
+{
+	float** cx;
+	float** cy;
+	float** angle;
+
+ 	void Calculate(PerPixelMesh* mesh);
+};
+
+class Delta : PerPixelTransform
+{
+	float dx;
+	float dy;
+
+	void Calculate (PerPixelMesh* mesh);
+};
+
+class PerPixelDelta : PerPixelTransform
+{
+	float** dx;
+	float** dy;
+
+	void Calculate (PerPixelMesh* mesh);
+};
+
+class Zoom : PerPixelTransform
+{
+	float zoom;
+	float zoomExponent;
+
+	void Calculate (PerPixelMesh* mesh);
+};
+
+class PerPixelZoom : PerPixelTransform
+{
+	float** zoom;
+	float** zoomExponent;
+
+	void Calculate (PerPixelMesh* mesh);
+};
