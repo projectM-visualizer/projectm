@@ -1,12 +1,11 @@
 #ifndef PRESET_FRAME_IO_HPP
 #define PRESET_FRAME_IO_HPP
 #include <vector>
-#include "PerPixelMesh.hpp"
 class CustomWave;
 class CustomShape;
 
 
-/// Container class for all preset writeable engine variables. This is the important glue
+/// Container class for all preset writeable engine variables. This is the important glue 
 /// between the presets and renderer to facilitate smooth preset switching
 /// Every preset object needs a reference to one of these.
 class PresetOutputs {
@@ -133,17 +132,17 @@ public:
 
   float wavearray[2048][2];
   float wavearray2[2048][2];
-
+ 
   int wave_samples;
   bool two_waves;
   bool draw_wave_as_loop;
   double wave_rot;
   double wave_scale;
+  
 
-  PerPixelMesh* mesh;
 };
 
-/// Container for all *read only* engine variables a preset requires to
+/// Container for all *read only* engine variables a preset requires to 
 /// evaluate milkdrop equations. Every preset object needs a reference to one of these.
 class PresetInputs {
 
@@ -185,7 +184,6 @@ public:
     float **origy;
 
     float mood_r, mood_g, mood_b;
-
 
     void ResetMesh();
     ~PresetInputs();
