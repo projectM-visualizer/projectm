@@ -65,6 +65,11 @@
 #ifdef USE_THREADS
 #include "pthread.h"
 #endif
+
+#include "Pipeline.hpp"
+#include "RovastarFractopiaFrantic.hpp"
+#include "RovastarDriftingChaos.hpp"
+
 /*
 DLLEXPORT projectM::projectM ( int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url,std::string title_fonturl, std::string title_menuurl ) :beatDetect ( 0 ),  renderer ( 0 ), settings.presetURL ( preset_url ), title_fontURL ( title_fonturl ), menu_fontURL ( menu_fontURL ), smoothFrame ( 0 ), m_presetQueuePos(0)
 {
@@ -106,7 +111,7 @@ projectM::~projectM()
 		_pcm = 0;
 	}
 
-	  
+
 }
 
 DLLEXPORT unsigned projectM::initRenderToTexture()
@@ -123,17 +128,21 @@ DLLEXPORT void projectM::projectM_resetTextures()
 DLLEXPORT  projectM::projectM ( std::string config_file, int flags) :
 		beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags)
 {
-	readConfig ( config_file );	
+	readConfig ( config_file );
 	projectM_reset();
 	projectM_resetGL ( _settings.windowWidth, _settings.windowHeight);
 
+	//Pipeline* preset = new RovastarFranticFractopia(_settings.meshX,_settings.meshY);
+	Pipeline* preset = new RovastarDriftingChaos(_settings.meshX,_settings.meshY);
+	pipelines.push_back(preset);
+	currentPipe = preset;
 }
 
 
 bool projectM::writeConfig(const std::string & configFile, const Settings & settings) {
-	
+
 	ConfigFile config ( configFile );
-	
+
 	config.add("Mesh X", settings.meshX);
 	config.add("Mesh Y", settings.meshY);
 	config.add("Texture Size", settings.textureSize);
@@ -149,8 +158,8 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
 	config.add("Aspect Correction", settings.aspectCorrection);
 	config.add("Easter Egg Parameter", settings.easterEgg);
 	config.add("Shuffle Enabled", settings.shuffleEnabled);
-	
-	std::fstream file(configFile.c_str());	
+
+	std::fstream file(configFile.c_str());
 	if (file) {
 		file << config;
 		return true;
@@ -163,7 +172,7 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
 void projectM::readConfig (const std::string & configFile )
 {
 	std::cout << "configFile: " << configFile << std::endl;
-	
+
 	ConfigFile config ( configFile );
 	_settings.meshX = config.read<int> ( "Mesh X", 32 );
 	_settings.meshY = config.read<int> ( "Mesh Y", 24 );
@@ -171,70 +180,70 @@ void projectM::readConfig (const std::string & configFile )
 	_settings.fps = config.read<int> ( "FPS", 35 );
 	_settings.windowWidth  = config.read<int> ( "Window Width", 512 );
 	_settings.windowHeight = config.read<int> ( "Window Height", 512 );
-	_settings.smoothPresetDuration =  config.read<int> 
+	_settings.smoothPresetDuration =  config.read<int>
 			( "Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 10));
 	_settings.presetDuration = config.read<int> ( "Preset Duration", 15 );
-	
+
 	#ifdef LINUX
 	_settings.presetURL = config.read<string> ( "Preset Path", CMAKE_INSTALL_PREFIX "/share/projectM/presets" );
 	#endif
-	
+
 	#ifdef __APPLE__
 	/// @bug awful hardcoded hack- need to add intelligence to cmake wrt bundling - carm
 	_settings.presetURL = config.read<string> ( "Preset Path", "../Resources/presets" );
 	#endif
-		
+
 	#ifdef WIN32
 	_settings.presetURL = config.read<string> ( "Preset Path", CMAKE_INSTALL_PREFIX "/share/projectM/presets" );
 	#endif
-	
+
 	#ifdef __APPLE__
-	_settings.titleFontURL = config.read<string> 
+	_settings.titleFontURL = config.read<string>
 			( "Title Font",  "../Resources/fonts/Vera.tff");
-	_settings.menuFontURL = config.read<string> 
+	_settings.menuFontURL = config.read<string>
 			( "Menu Font", "../Resources/fonts/VeraMono.ttf");
 	#endif
-	
+
 	#ifdef LINUX
-	_settings.titleFontURL = config.read<string> 
+	_settings.titleFontURL = config.read<string>
 			( "Title Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/Vera.ttf" );
-	_settings.menuFontURL = config.read<string> 
-			( "Menu Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/VeraMono.ttf" );			
+	_settings.menuFontURL = config.read<string>
+			( "Menu Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/VeraMono.ttf" );
 	#endif
-	
+
 	#ifdef WIN32
-	_settings.titleFontURL = config.read<string> 
+	_settings.titleFontURL = config.read<string>
 			( "Title Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/Vera.ttf" );
-	_settings.menuFontURL = config.read<string> 
-			( "Menu Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/VeraMono.ttf" );			
+	_settings.menuFontURL = config.read<string>
+			( "Menu Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/VeraMono.ttf" );
 	#endif
-	
-	
+
+
 	_settings.shuffleEnabled = config.read<bool> ( "Shuffle Enabled", true);
-			
+
 	_settings.easterEgg = config.read<float> ( "Easter Egg Parameter", 0.0);
-	
-	
+
+
 	 projectM_init ( _settings.meshX, _settings.meshY, _settings.fps,
 			 _settings.textureSize, _settings.windowWidth,_settings.windowHeight);
 
-	
+
 	 _settings.beatSensitivity = beatDetect->beat_sensitivity = config.read<float> ( "Hard Cut Sensitivity", 10.0 );
-	
+
 	if ( config.read ( "Aspect Correction", true ) )
 		_settings.aspectCorrection = renderer->correction = true;
-	else 
+	else
 		_settings.aspectCorrection = renderer->correction = false;
 
-	
+
 }
 
 #ifdef USE_THREADS
 static void *thread_callback(void *prjm) {
  projectM *p = (projectM *)prjm;
 
- p->thread_func(prjm); 
-return NULL;} 
+ p->thread_func(prjm);
+return NULL;}
 
 
 void *projectM::thread_func(void *vptr_args)
@@ -250,20 +259,20 @@ void *projectM::thread_func(void *vptr_args)
 	  return NULL;
 	}
      evaluateSecondPreset();
-    } 
+    }
 }
 #endif
 
 void projectM::evaluateSecondPreset()
-{	
+{
       setupPresetInputs(&m_activePreset2->presetInputs());
       m_activePreset2->presetInputs().frame = timeKeeper->PresetFrameB();
       m_activePreset2->presetInputs().progress= timeKeeper->PresetProgressB();
-      
+
       assert ( m_activePreset2.get() );
       m_activePreset2->evaluateFrame();
       renderer->PerPixelMath ( &m_activePreset2->presetOutputs(), &presetInputs2 );
-      renderer->WaveformMath ( &m_activePreset2->presetOutputs(), &presetInputs2, true );  
+      renderer->WaveformMath ( &m_activePreset2->presetOutputs(), &presetInputs2, true );
 }
 
 void projectM::setupPresetInputs(PresetInputs *inputs)
@@ -298,7 +307,7 @@ DLLEXPORT void projectM::renderFrame()
 	m_activePreset->presetInputs().frame = timeKeeper->PresetFrameA();
 	m_activePreset->presetInputs().progress= timeKeeper->PresetProgressA();
 
-	beatDetect->detectFromSamples();       
+	beatDetect->detectFromSamples();
 
 	//m_activePreset->evaluateFrame();
 
@@ -306,17 +315,17 @@ DLLEXPORT void projectM::renderFrame()
 	{
 		if ( timeKeeper->PresetProgressA()>=1.0 && !timeKeeper->IsSmoothing())
 		{
- 			
-			timeKeeper->StartSmoothing();		      
+
+			timeKeeper->StartSmoothing();
 			//	printf("Start Smooth\n");
 			// if(timeKeeper->IsSmoothing())printf("Confirmed\n");
-			switchPreset(m_activePreset2, 
-				     &m_activePreset->presetInputs() == &presetInputs ? presetInputs2 : presetInputs, 
+			switchPreset(m_activePreset2,
+				     &m_activePreset->presetInputs() == &presetInputs ? presetInputs2 : presetInputs,
 				&m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
-		       
+
 			presetSwitchedEvent(false, **m_presetPos);
 		}
-		
+
 		else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && timeKeeper->CanHardCut() )
 		{
 		  // printf("Hard Cut\n");
@@ -324,34 +333,34 @@ DLLEXPORT void projectM::renderFrame()
 
 			timeKeeper->StartPreset();
 			presetSwitchedEvent(true, **m_presetPos);
-		}		
+		}
 	}
 
 
 
 	if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
 	{
-	  	  
+
 	  //	 printf("start thread\n");
-		      	
+
 		assert ( m_activePreset.get() );
-		
+
 #ifdef USE_THREADS
 		pthread_cond_signal(&condition);
 		pthread_mutex_unlock( &mutex );
 #endif
-		m_activePreset->evaluateFrame();
-		renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
-		renderer->WaveformMath ( &m_activePreset->presetOutputs(), &presetInputs, true );
+		//m_activePreset->evaluateFrame();
+		//renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
+		//renderer->WaveformMath ( &m_activePreset->presetOutputs(), &presetInputs, true );
 
 #ifdef USE_THREADS
 		pthread_mutex_lock( &mutex );
-#else		
-		evaluateSecondPreset();
+#else
+		//evaluateSecondPreset();
 #endif
-		
-		
-		PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),timeKeeper->SmoothRatio(),presetInputs.gx, presetInputs.gy );	       
+
+
+		//PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),timeKeeper->SmoothRatio(),presetInputs.gx, presetInputs.gy );
 
 	}
 	else
@@ -359,22 +368,37 @@ DLLEXPORT void projectM::renderFrame()
 		if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() > 1.0 )
 		{
 		  //printf("End Smooth\n");
-			m_activePreset = m_activePreset2;			
+			m_activePreset = m_activePreset2;
 			timeKeeper->EndSmoothing();
 		}
 		//printf("Normal\n");
-	
-		m_activePreset->evaluateFrame();
 
-		renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
-		renderer->WaveformMath ( &m_activePreset->presetOutputs(), &presetInputs, false );
+		//m_activePreset->evaluateFrame();
+
+		//renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
+		//renderer->WaveformMath ( &m_activePreset->presetOutputs(), &presetInputs, false );
 
 	}
 
 	//	std::cout<< m_activePreset->absoluteFilePath()<<std::endl;
 	//	renderer->presetName = m_activePreset->absoluteFilePath();
 
-	renderer->RenderFrame ( &m_activePreset->presetOutputs(), &presetInputs );
+	//renderer->RenderFrame ( &m_activePreset->presetOutputs(), &presetInputs );
+	currentPipe->fps = _settings.fps;
+	currentPipe->bass = beatDetect->bass;
+	currentPipe->bass_att = beatDetect->bass_att;
+	currentPipe->mid = beatDetect->mid;
+	currentPipe->mid_att = beatDetect->mid_att;
+	currentPipe->treb = beatDetect->treb;
+	currentPipe->treb_att = beatDetect->treb_att;
+	currentPipe->time = (float) timeKeeper->GetRunningTime();
+	currentPipe->frame = timeKeeper->PresetFrameA();
+	currentPipe->progress= (float) timeKeeper->PresetProgressA();
+	currentPipe->bass = beatDetect->bass;
+
+	currentPipe->Render();
+
+	renderer->RenderFrame(currentPipe);
 
 	count++;
 #ifndef WIN32
@@ -409,12 +433,12 @@ void projectM::projectM_reset()
 	/** Default variable settings */
 
   //	this->wvw = 512;
-  //	this->wvh = 512;      
+  //	this->wvh = 512;
 
 	/** More other stuff */
 	this->mspf = 0;
 	this->timed = 0;
-	this->timestart = 0;       
+	this->timestart = 0;
 	this->count = 0;
 
 	this->fpsstart = 0;
@@ -456,22 +480,22 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	if ( presetInputs.fps > 0 )
 		mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps );
 	else mspf = 0;
-	
+
 	this->presetInputs.gx = gx;
 	this->presetInputs.gy = gy;
 	this->presetInputs2.gx = gx;
 	this->presetInputs2.gy = gy;
 
 	this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
-	
+
 	running = true;
 
 #ifdef USE_THREADS
 	pthread_mutex_init(&mutex, NULL);
 	pthread_cond_init(&condition, NULL);
 	if (pthread_create(&thread, NULL, thread_callback, this) != 0)
-	    { 	      
-		    
+	    {
+
 	      std::cerr << "failed to allocate a thread! try building with option USE_THREADS turned off" << std::endl;;
 	      exit(1);
 	    }
@@ -537,7 +561,7 @@ void projectM::projectM_initengine()
 
 
 	this->presetInputs.progress = 0;
-	this->presetInputs.frame = 1; 
+	this->presetInputs.frame = 1;
       	this->presetInputs2.progress = 0;
 	this->presetInputs2.frame = 1;
 //bass_thresh = 0;
@@ -748,7 +772,7 @@ int projectM::initPresetTools()
 	srand ( time ( NULL ) );
 
 	std::string url = (m_flags & FLAG_DISABLE_PLAYLIST_LOAD) ? std::string() : settings().presetURL;
-	
+
 	if ( ( m_presetLoader = new PresetLoader ( url) ) == 0 )
 	{
 		m_presetLoader = 0;
@@ -781,7 +805,7 @@ int projectM::initPresetTools()
 	//std::cerr << "[projectM] Allocating idle preset..." << std::endl;
 	m_activePreset = IdlePreset::allocate ( presetInputs, presetOutputs );
 
-	// Case where no valid presets exist in directory. Could also mean 
+	// Case where no valid presets exist in directory. Could also mean
 	// playlist initialization was deferred
 	//if ( m_presetChooser->empty() )
 	//{
@@ -825,16 +849,15 @@ void projectM::destroyPresetTools()
 
 /// @bug queuePreset case isn't handled
 void projectM::removePreset(unsigned int index) {
-	
+
 	unsigned int chooserIndex = **m_presetPos;
 
 	m_presetLoader->removePreset(index);
 
-
 	// Case: no more presets, set iterator to end
-	if (m_presetChooser->empty()) 
+	if (m_presetChooser->empty())
 		*m_presetPos = m_presetChooser->end();
-	
+
 	// Case: chooser index has become one less due to removal of an index below it
 	else if (chooserIndex > index) {
 		chooserIndex--;
@@ -843,28 +866,28 @@ void projectM::removePreset(unsigned int index) {
 
 	// Case: we have deleted the active preset position
 	// Set iterator to end of chooser
-	else if (chooserIndex == index) { 
+	else if (chooserIndex == index) {
 		//*m_presetPos = m_presetChooser->begin(chooserIndex);
 		std::cerr << "deleted active preset!";
 		*m_presetPos = m_presetChooser->end();
 	}
 
-	
+
 
 }
 
 unsigned int projectM::addPresetURL ( const std::string & presetURL, const std::string & presetName, int rating )
-{	
+{
 	bool restorePosition = false;
-	
-	if (*m_presetPos == m_presetChooser->end()) 
+
+	if (*m_presetPos == m_presetChooser->end())
 		restorePosition = true;
-	
+
 	int index = m_presetLoader->addPresetURL ( presetURL, presetName, rating);
-	
+
 	if (restorePosition)
 		*m_presetPos = m_presetChooser->end();
-	
+
 	return index;
 }
 
@@ -892,7 +915,7 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset, PresetInputs &
 		*m_presetPos = m_presetChooser->weightedRandom();
 	else
 		m_presetChooser->nextPreset(*m_presetPos);
-					
+
 	targetPreset = m_presetPos->allocate( inputs, outputs );
 
 	// Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
@@ -926,12 +949,12 @@ std::string projectM::getPresetName ( unsigned int index ) const
 	return m_presetLoader->getPresetName(index);
 }
 
-void projectM::clearPlaylist ( ) 
+void projectM::clearPlaylist ( )
 {
-	
+
 	m_presetLoader->clear();
 	*m_presetPos = m_presetChooser->end();
-	
+
 }
 
 /// Sets preset iterator position to the passed in index
@@ -940,20 +963,20 @@ void projectM::selectPresetPosition(unsigned int index) {
 }
 
 bool projectM::selectedPresetIndex(unsigned int & index) const {
-	
+
 	if (*m_presetPos == m_presetChooser->end())
 		return false;
-	
+
 	index = **m_presetPos;
 	return true;
 }
 
 
 bool projectM::presetPositionValid() const {
-	
+
 	return (*m_presetPos != m_presetChooser->end());
-}		
-	
+}
+
 unsigned int projectM::getPlaylistSize() const
 {
 	return m_presetLoader->getNumPresets();
@@ -966,40 +989,40 @@ void projectM:: changePresetRating (unsigned int index, int rating) {
 void projectM::insertPresetURL(unsigned int index, const std::string & presetURL, const std::string & presetName, int rating)
 {
 	bool atEndPosition = false;
-	
+
 	int newSelectedIndex;
-	
-	
+
+
 	if (*m_presetPos == m_presetChooser->end()) // Case: preset not selected
 	{
-		atEndPosition = true;	
+		atEndPosition = true;
 	}
-	
+
 	else if (**m_presetPos < index) // Case: inserting before selected preset
 	{
-		newSelectedIndex = **m_presetPos;			
-	} 
-	
-	else if (**m_presetPos > index) // Case: inserting after selected preset	
+		newSelectedIndex = **m_presetPos;
+	}
+
+	else if (**m_presetPos > index) // Case: inserting after selected preset
 	{
 		newSelectedIndex++;
-	} 
-	
+	}
+
 	else  // Case: inserting at selected preset
 	{
 		newSelectedIndex++;
 	}
-	
+
 	m_presetLoader->insertPresetURL (index, presetURL, presetName, rating);
-	
+
 	if (atEndPosition)
 		*m_presetPos = m_presetChooser->end();
 	else
 		*m_presetPos = m_presetChooser->begin(newSelectedIndex);
-	
-	
+
+
 }
 
 
- 
+
 
