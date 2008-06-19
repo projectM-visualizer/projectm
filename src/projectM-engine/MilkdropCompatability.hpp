@@ -29,4 +29,9 @@ inline float min(float a, float b)
 {
 	return a < b ? a : b;
 }
+
+inline float if_milk(float a, float b, float c)
+{
+	return (a==1) ? b : c;
+}
 #endif /* MILKDROPCOMPATABILITY_HPP_ */

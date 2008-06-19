@@ -52,20 +52,19 @@ Shape::Shape()
 
 void Shape::Draw()
 {
-	float radius;
+
 	float xval, yval;
 	float t;
 
 			// printf("drawing shape %f\n", ang);
-			y=-(y-1);
-			radius=.5;
-			radius= radius*(.707*.707*.707*1.04);
+
+			float temp_radius= radius*(.707*.707*.707*1.04);
 			//Additive Drawing or Overwrite
 			if ( additive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			else    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
 			xval= x;
-			yval= y;
+			yval= -(y-1);
 
 			if ( textured)
 			{
@@ -113,8 +112,8 @@ void Shape::Draw()
 				  t = (i-1)/(float) sides;
 				  tex[i][0] =0.5f + 0.5f*cosf(t*3.1415927f*2 +  tex_ang + 3.1415927f*0.25f)*(aspectCorrect ? aspectRatio : 1.0)/ tex_zoom;
 				  tex[i][1] =  0.5f + 0.5f*sinf(t*3.1415927f*2 +  tex_ang + 3.1415927f*0.25f)/ tex_zoom;
-				  points[i][0]=radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(aspectCorrect ? aspectRatio : 1.0)+xval;
-				  points[i][1]=radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
+				  points[i][0]=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(aspectCorrect ? aspectRatio : 1.0)+xval;
+				  points[i][1]=temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
 
 
 				}
@@ -170,8 +169,8 @@ void Shape::Draw()
 			      colors[i][2]=b2;
 			      colors[i][3]=a2;
 			      t = (i-1)/(float) sides;
-			      points[i][0]=radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(aspectCorrect ? aspectRatio : 1.0)+xval;
-			      points[i][1]=radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
+			      points[i][0]=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(aspectCorrect ? aspectRatio : 1.0)+xval;
+			      points[i][1]=temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
 
 			    }
 
@@ -195,8 +194,8 @@ void Shape::Draw()
 			for ( int i=0;i< sides;i++)
 			{
 				t = (i-1)/(float) sides;
-				points[i][0]= radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(aspectCorrect ? aspectRatio : 1.0)+xval;
-				points[i][1]=  radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
+				points[i][0]= temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(aspectCorrect ? aspectRatio : 1.0)+xval;
+				points[i][1]=  temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
 
 			}
 
