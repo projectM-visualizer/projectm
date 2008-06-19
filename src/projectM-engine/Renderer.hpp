@@ -30,34 +30,41 @@
 #endif
 #endif /** USE_FTGL */
 
+#include "Pipeline.hpp"
+#include "PerPixelMesh.hpp"
+#include "Transformation.hpp"
+
 class BeatDetect;
 class TextureManager;
 
 class Renderer
-{ 
+{
 
 public:
- 
+
   bool showfps;
   bool showtitle;
   bool showpreset;
   bool showhelp;
   bool showstats;
-  
+
   bool studio;
   bool correction;
-  
+
   bool noSwitch;
-  
+
   int totalframes;
   float realfps;
   std::string title;
   int drawtitle;
   int texsize;
 
+  PerPixelMesh mesh;
+
   Renderer( int width, int height, int gx, int gy, int texsize,  BeatDetect *beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
   ~Renderer();
   void RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
+  void RenderFrame(Pipeline *pipeline);
   void ResetTextures();
   void reset(int w, int h);
   GLuint initRenderToTexture();
@@ -67,49 +74,54 @@ public:
   void setPresetName(const std::string& theValue)
   {
     m_presetName = theValue;
-  }	
-  
+  }
+
   std::string presetName() const
   {
     return m_presetName;
   }
-  
+
 
 private:
 
   RenderTarget *renderTarget;
   BeatDetect *beatDetect;
   TextureManager *textureManager;
-  
+
   //per pixel equation variables
-  float **gridx;  //grid containing interpolated mesh 
-  float **gridy;
-  float **origx2;  //original mesh 
-  float **origy2;
-  int gx;
-  int gy;
 
   std::string m_presetName;
-  
-  int vw; 
+
+
+  float **gridx;  //grid containing interpolated mesh
+    float **gridy;
+    float **origx2;  //original mesh
+    float **origy2;
+
+
+
+  int vw;
   int vh;
-  
+
   float aspect;
-  
+
 
 #ifdef USE_FTGL
   FTGLPixmapFont *title_font;
   FTGLPixmapFont *other_font;
   FTGLExtrdFont *poly_font;
 #endif /** USE_FTGL */
-  
+
   std::string title_fontURL;
   std::string menu_fontURL;
-  std::string presetURL; 
+  std::string presetURL;
 
-  void draw_waveform(PresetOutputs * presetOutputs);
+  void CompositeOutput(Pipeline* pipeline);
+  void Interpolation(Pipeline* pipeline);
+
   void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
 
+  void draw_waveform(PresetOutputs * presetOutputs);
   void rescale_per_pixel_matrices();
   void maximize_colors(PresetOutputs *presetOutputs);
   void render_texture_to_screen(PresetOutputs *presetOutputs);

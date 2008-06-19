@@ -6,12 +6,11 @@ OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disab
 
 OPTION (USE_GLES1 "Use OpenGL ES 1.x" OFF)
 
-
 OPTION (USE_NATIVE_GLEW "Use projectM's native implemention of GLEW." OFF)
 
 #OPTION (FTGL_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
 
-OPTION (BUILD_PROJECTM_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
+OPTION (BUILD_PROJECTM_STATmaIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
 SET(SOIL_SOURCES image_DXT.c image_helper.c SOIL.c stb_image_aug.c)
 
 if (USE_NATIVE_GLEW)
@@ -28,7 +27,7 @@ SET(projectM_SOURCES projectM.cpp FBO.cpp InitCond.cpp
 Func.cpp Eval.cpp  PerFrameEqn.cpp PerPointEqn.cpp fftsg.cpp KeyHandler.cpp
  timer.cpp  wipemalloc.cpp BuiltinFuncs.cpp BuiltinParams.cpp Renderer.cpp 
 PresetLoader.cpp  PresetChooser.cpp PresetFrameIO.cpp PresetMerge.cpp
-ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp TimeKeeper.cpp ${GLEW_SOURCES})
+ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp TimeKeeper.cpp Transformation.cpp Filters.cpp Renderable.cpp Pipeline.cpp PerPixelMesh.cpp ${GLEW_SOURCES})
 
 if (USE_DEVIL)
 SET (projectM_SOURCES ${projectM_SOURCES})
