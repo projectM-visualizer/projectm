@@ -14,7 +14,6 @@ void PresetInputs::Initialize ( int gx, int gy )
 	this->gx =gx;
 	this->gy= gy;
 
-
 	this->x_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
 	for ( x = 0; x < gx; x++ )
 	{
@@ -67,20 +66,22 @@ void PresetInputs::Initialize ( int gx, int gy )
 			this->origtheta[x][y]=atan2 ( ( ( this->origy[x][y]-.5 ) *2 ), ( ( this->origx[x][y]-.5 ) *2 ) );
 		}
 	}
+
+
+
 }
 
 PresetOutputs::PresetOutputs()
-{
-}
+{}
 
 PresetOutputs::~PresetOutputs()
 {
 	assert(this->gx > 0);
 
-
-
 	for ( int x = 0; x < this->gx; x++ )
 	{
+
+
 		free(this->x_mesh[x]);
 		free(this->y_mesh[x]);
 		free(this->sx_mesh[x]);
@@ -89,12 +90,12 @@ PresetOutputs::~PresetOutputs()
 		free(this->dx_mesh[x]);
 		free(this->cy_mesh[x]);
 		free(this->cx_mesh[x]);
-
+		
 		free(this->warp_mesh[x]);
 		free(this->zoom_mesh[x]);
 		free(this->zoomexp_mesh[x]);
 		free(this->rot_mesh[x]);
-
+		
 	}
 
 		free(this->x_mesh);
@@ -181,7 +182,7 @@ void PresetOutputs::Initialize ( int gx, int gy )
 		this->warp_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
 	}
 
-	mesh = new PerPixelMesh(gx, gy);
+
 }
 
 PresetInputs::~PresetInputs()
