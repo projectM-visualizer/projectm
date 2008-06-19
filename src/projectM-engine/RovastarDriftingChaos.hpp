@@ -37,11 +37,11 @@ public:
 		drawables.push_back(&shape3);
 
 		perPixelTransforms.push_back(&zoom);
-		//perPixelTransforms.push_back(&delta);
-		//perPixelTransforms.push_back(&rotate);
+		perPixelTransforms.push_back(&delta);
+		perPixelTransforms.push_back(&rotate);
 
 
-		shape1.sides = 4;
+		shape1.sides = 3;
 		shape1.radius=0.550000;
 		shape1.a = 0.1;
 		shape1.a2 = 0.9;
@@ -60,7 +60,7 @@ public:
 		shape2.border_a = 0.2;
 
 		shape3.sides = 4;
-		shape3.radius=0.40000;;
+		shape3.radius=0.40000;
 		shape3.a = 0.6;
 		shape3.a2 = 0.4;
 		shape3.border_r = 1.0;
@@ -77,24 +77,18 @@ public:
 
 		float volume = 0.15*(bass+bass_att+treb+treb_att+mid+mid_att);
 
-		xamptarg = (frame%15==0 ? 0.5 : xamptarg);
+		xamptarg = if_milk(equal(frame%15,0),min(0.5*volume*bass_att,0.5),xamptarg);
 		xamp = xamp + 0.5*(xamptarg-xamp);
 
-		float xdir;
-		if(abs(xpos) > xamp)
-			xdir = xpos > 0 ?1 : -1;
-		else if(abs(xspeed) < 0.1)
-			xdir = 2*(xpos>0?1:0)-1;
-
-		float xaccel = xdir*xamp - xpos - xspeed*0.055*(abs(xpos)<xamp ? 1 : 0);
+		xdir = if_milk(above(abs(xpos),xamp),-sign(xpos),if_milk(below(abs(xspeed),0.1),2*above(xpos,0)-1,xdir));
+		float xaccel =  xdir*xamp - xpos - xspeed*0.055*below(abs(xpos),xamp);
 		xspeed += xdir*xamp - xpos - xspeed*0.055*below(abs(xpos),xamp);
 		xpos = xpos + 0.001*xspeed;
 		delta.dx = xpos*0.005;
-		yamptarg = (frame%15==0)?min(0.3*volume*treb_att,0.5):yamptarg;
+		yamptarg = if_milk(equal(frame%15,0),min(0.3*volume*treb_att,0.5),yamptarg);
 		yamp +=  0.5*(yamptarg-yamp);
+		ydir = if_milk(above(abs(ypos),yamp),-sign(ypos),if_milk(below(abs(yspeed),0.1),2*above(ypos,0)-1,ydir));
 
-		float temp2 = (abs(yspeed)<0.1)?2*above(ypos,0)-1:ydir;
-		ydir = (abs(ypos)>yamp)?-sign(ypos):temp2;
 		float yaccel = ydir*yamp - ypos - yspeed*0.055*below(abs(ypos),yamp);
 		yspeed += ydir*yamp - ypos - yspeed*0.055*below(abs(ypos),yamp);
 		ypos = ypos + 0.001*yspeed;
