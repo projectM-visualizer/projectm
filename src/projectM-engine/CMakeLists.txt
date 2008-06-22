@@ -6,6 +6,8 @@ OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disab
 
 OPTION (USE_GLES1 "Use OpenGL ES 1.x" OFF)
 
+OPTION (USE_OPENMP "Use OpenMP and OMPTL for multi-core paralellization" ON)
+
 OPTION (USE_NATIVE_GLEW "Use projectM's native implemention of GLEW." OFF)
 
 #OPTION (FTGL_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
@@ -112,6 +114,10 @@ ELSE (USE_FTGL)
 ENDIF(USE_FTGL)
 
 
+IF(USE_OPENMP)
+	SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp ")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp ")
+ENDIF(USE_OPENMP)
 
 INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS})
 LINK_DIRECTORIES(${FTGL_LINK_DIRS} "./")
