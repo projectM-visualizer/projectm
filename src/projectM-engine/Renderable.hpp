@@ -4,14 +4,20 @@
 #include <string.h>
 #include "TextureManager.hpp"
 
-class RenderItem
+class RenderContext
 {
 public:
 	int texsize;
 	float aspectRatio;
 	bool aspectCorrect;
 
-	virtual void Draw() = 0;
+	RenderContext();
+};
+
+class RenderItem
+{
+public:
+	virtual void Draw(RenderContext &context) = 0;
 };
 
 class TexturedItem
@@ -54,7 +60,7 @@ public:
     float border_a; /* alpha color value */
 
     Shape();
-    void Draw();
+    void Draw(RenderContext &context);
 };
 
 class Text : RenderItem
@@ -74,7 +80,7 @@ public:
     float x_offset;
     float y_offset;
 
-    void Draw();
+    void Draw(RenderContext &context);
     MotionVectors(){}
 };
 
@@ -93,7 +99,7 @@ public:
     float inner_b;
     float inner_a;
 
-    void Draw();
+    void Draw(RenderContext &context);
     Border(){}
 };
 #endif

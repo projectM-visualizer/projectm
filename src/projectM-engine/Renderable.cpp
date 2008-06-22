@@ -15,6 +15,9 @@
 #include "Renderable.hpp"
 #include <math.h>
 
+RenderContext::RenderContext()
+	:texsize(512), aspectRatio(1), aspectCorrect(false){};
+
 Shape::Shape()
 {
 	 std::string imageUrl = "";
@@ -50,7 +53,7 @@ Shape::Shape()
 
 }
 
-void Shape::Draw()
+void Shape::Draw(RenderContext &context)
 {
 
 	float xval, yval;
@@ -74,7 +77,7 @@ void Shape::Draw()
 					if (tex != 0)
 					{
 						glBindTexture(GL_TEXTURE_2D, tex);
-						aspectRatio=1.0;
+						context.aspectRatio=1.0;
 					}
 				}
 
@@ -110,9 +113,9 @@ void Shape::Draw()
 				  colors[i][3]=a2;
 
 				  t = (i-1)/(float) sides;
-				  tex[i][0] =0.5f + 0.5f*cosf(t*3.1415927f*2 +  tex_ang + 3.1415927f*0.25f)*(aspectCorrect ? aspectRatio : 1.0)/ tex_zoom;
+				  tex[i][0] =0.5f + 0.5f*cosf(t*3.1415927f*2 +  tex_ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)/ tex_zoom;
 				  tex[i][1] =  0.5f + 0.5f*sinf(t*3.1415927f*2 +  tex_ang + 3.1415927f*0.25f)/ tex_zoom;
-				  points[i][0]=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(aspectCorrect ? aspectRatio : 1.0)+xval;
+				  points[i][0]=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
 				  points[i][1]=temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
 
 
@@ -169,7 +172,7 @@ void Shape::Draw()
 			      colors[i][2]=b2;
 			      colors[i][3]=a2;
 			      t = (i-1)/(float) sides;
-			      points[i][0]=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(aspectCorrect ? aspectRatio : 1.0)+xval;
+			      points[i][0]=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
 			      points[i][1]=temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
 
 			    }
@@ -182,7 +185,7 @@ void Shape::Draw()
 			  //draw first n-1 triangular pieces
 
 			}
-			if (thickOutline==1)  glLineWidth(texsize < 512 ? 1 : 2*texsize/512);
+			if (thickOutline==1)  glLineWidth(context.texsize < 512 ? 1 : 2*context.texsize/512);
 
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glDisableClientState(GL_COLOR_ARRAY);
@@ -194,7 +197,7 @@ void Shape::Draw()
 			for ( int i=0;i< sides;i++)
 			{
 				t = (i-1)/(float) sides;
-				points[i][0]= temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(aspectCorrect ? aspectRatio : 1.0)+xval;
+				points[i][0]= temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
 				points[i][1]=  temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
 
 			}
@@ -202,14 +205,14 @@ void Shape::Draw()
 			glVertexPointer(2,GL_FLOAT,0,points);
 			glDrawArrays(GL_LINE_LOOP,0,sides);
 
-			if (thickOutline==1)  glLineWidth(texsize < 512 ? 1 : texsize/512);
+			if (thickOutline==1)  glLineWidth(context.texsize < 512 ? 1 : context.texsize/512);
 
 
 
 
 }
 
-void MotionVectors::Draw()
+void MotionVectors::Draw(RenderContext &context)
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -247,7 +250,7 @@ void MotionVectors::Draw()
 	  }
 }
 
-void Border::Draw()
+void Border::Draw(RenderContext &context)
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
