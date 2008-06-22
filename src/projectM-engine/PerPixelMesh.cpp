@@ -1,7 +1,8 @@
 #include <math.h>
 #include <algorithm>
 #include "PerPixelMesh.hpp"
-
+#include "omptl/omptl"
+#include "omptl/omptl_algorithm"
 
 PerPixelMesh::PerPixelMesh(int width, int height) : width(width), height(height), size (width * height),
 		p(width * height, Point(0,0)),
@@ -38,7 +39,7 @@ PerPixelMesh::PerPixelMesh(int width, int height) : width(width), height(height)
 
 void PerPixelMesh::Reset()
 {
-	std::copy(p_original.begin(), p_original.end(), p.begin());
+	omptl::copy(p_original.begin(), p_original.end(), p.begin());
 }
 
 Point::Point(float x, float y)
