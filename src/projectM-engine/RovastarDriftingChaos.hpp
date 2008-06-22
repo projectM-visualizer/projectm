@@ -63,12 +63,12 @@ public:
 	float xamptarg, q8, oldq8, q7, xpos, ypos,xdir, xspeed, xamp, yamp, yamptarg,yspeed,ydir;
 	float dx, dy, angle;
 
-	virtual void Render(BeatDetect &music)
+	virtual void Render(BeatDetect &music, PipelineContext &context)
 	{
 
 		float volume = 0.15*(music.bass+music.bass_att+music.treb+music.treb_att+music.mid+music.mid_att);
 
-		xamptarg = if_milk(equal(frame%15,0),min(0.5*volume*music.bass_att,0.5),xamptarg);
+		xamptarg = if_milk(equal(context.frame%15,0),min(0.5*volume*music.bass_att,0.5),xamptarg);
 		xamp = xamp + 0.5*(xamptarg-xamp);
 
 		xdir = if_milk(above(abs(xpos),xamp),-sign(xpos),if_milk(below(abs(xspeed),0.1),2*above(xpos,0)-1,xdir));
@@ -76,7 +76,7 @@ public:
 		xspeed += xdir*xamp - xpos - xspeed*0.055*below(abs(xpos),xamp);
 		xpos = xpos + 0.001*xspeed;
 		dx = xpos*0.005;
-		yamptarg = if_milk(equal(frame%15,0),min(0.3*volume*music.treb_att,0.5),yamptarg);
+		yamptarg = if_milk(equal(context.frame%15,0),min(0.3*volume*music.treb_att,0.5),yamptarg);
 		yamp +=  0.5*(yamptarg-yamp);
 		ydir = if_milk(above(abs(ypos),yamp),-sign(ypos),if_milk(below(abs(yspeed),0.1),2*above(ypos,0)-1,ydir));
 
@@ -87,13 +87,13 @@ public:
 		dy = ypos*0.005;
 		angle = 10*(dx-dy);
 
-		q8 =oldq8+ 0.0003*(powf(1+1.2*music.bass+0.4*music.bass_att+0.1*music.treb+0.1*music.treb_att+0.1*music.mid+0.1*music.mid_att,6)/fps);
+		q8 =oldq8+ 0.0003*(powf(1+1.2*music.bass+0.4*music.bass_att+0.1*music.treb+0.1*music.treb_att+0.1*music.mid+0.1*music.mid_att,6)/context.fps);
 		oldq8 = q8;
-		q7 = 0.003*(powf(1+1.2*music.bass+0.4*music.bass_att+0.1*music.treb+0.1*music.treb_att+0.1*music.mid+0.1*music.mid_att,6)/fps);
+		q7 = 0.003*(powf(1+1.2*music.bass+0.4*music.bass_att+0.1*music.treb+0.1*music.treb_att+0.1*music.mid+0.1*music.mid_att,6)/context.fps);
 
-		shape1.ang = time*1.4;
-				shape1.x = 0.5 + 0.08*cos(time*1.3) + 0.03*cos(time*0.7);
-				shape1.y = 0.5 + 0.08*sin(time*1.4) + 0.03*sin(time*0.7);
+		shape1.ang = context.time*1.4;
+				shape1.x = 0.5 + 0.08*cos(context.time*1.3) + 0.03*cos(context.time*0.7);
+				shape1.y = 0.5 + 0.08*sin(context.time*1.4) + 0.03*sin(context.time*0.7);
 				shape1.r = 0.5 + 0.5*sin(q8*0.613 + 1);
 				shape1.g = 0.5 + 0.5*sin(q8*0.763 + 2);
 				shape1.b = 0.5 + 0.5*sin(q8*0.771 + 5);
@@ -101,9 +101,9 @@ public:
 				shape1.g2 = 0.5 + 0.5*sin(q8*0.616+ 1);
 				shape1.b2 = 0.5 + 0.5*sin(q8*0.538 + 3);
 
-				shape2.ang = time*1.7;
-				shape2.x = 0.5 + 0.08*cos(time*1.1) + 0.03*cos(time*0.7);
-				shape2.y = 0.5 + 0.08*sin(time*1.1) + 0.03*sin(time*0.7);
+				shape2.ang = context.time*1.7;
+				shape2.x = 0.5 + 0.08*cos(context.time*1.1) + 0.03*cos(context.time*0.7);
+				shape2.y = 0.5 + 0.08*sin(context.time*1.1) + 0.03*sin(context.time*0.7);
 				shape2.r = 0.5 + 0.5*sin(q8*0.713 + 1);
 				shape2.g = 0.5 + 0.5*sin(q8*0.563 + 2);
 				shape2.b = 0.5 + 0.5*sin(q8*0.654 + 5);
@@ -111,9 +111,9 @@ public:
 				shape2.g2 = 0.5 + 0.5*sin(q8*0.556+ 1);
 				shape2.b2 = 0.5 + 0.5*sin(q8*0.638 + 3);
 
-				shape3.ang = time*1.24;
-				shape3.x = 0.5 - 0.08*cos(time*1.07) + 0.03*cos(time*0.7);
-				shape3.y = 0.5 - 0.08*sin(time*1.33) + 0.03*sin(time*0.7);
+				shape3.ang = context.time*1.24;
+				shape3.x = 0.5 - 0.08*cos(context.time*1.07) + 0.03*cos(context.time*0.7);
+				shape3.y = 0.5 - 0.08*sin(context.time*1.33) + 0.03*sin(context.time*0.7);
 				shape3.g = 0.5 + 0.5*sin(q8*0.713 + 1);
 				shape3.b = 0.5 + 0.5*cos(q8*0.563 + 2);
 				shape3.r = 0.5 + 0.5*sin(q8*0.654 + 5);
