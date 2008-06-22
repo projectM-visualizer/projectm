@@ -90,6 +90,7 @@ private:
   BeatDetect *beatDetect;
   TextureManager *textureManager;
   static Pipeline* currentPipe;
+  RenderContext renderContext;
   //per pixel equation variables
 
   std::string m_presetName;

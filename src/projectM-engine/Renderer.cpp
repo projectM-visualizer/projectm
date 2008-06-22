@@ -149,9 +149,12 @@ void Renderer::RenderFrame(Pipeline* pipeline)
 
 		Interpolation(pipeline);
 
+		renderContext.texsize = texsize;
+		renderContext.aspectCorrect = correction;
+		renderContext.aspectRatio = aspect;
 
 		for (vector<RenderItem*>::iterator pos = pipeline->drawables.begin(); pos != pipeline->drawables.end(); ++pos)
-			(*pos)->Draw();
+			(*pos)->Draw(renderContext);
 
 					/** Restore original view state */
 			glMatrixMode( GL_MODELVIEW );
@@ -1842,7 +1845,7 @@ void Renderer::CompositeOutput(Pipeline* pipeline)
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	for (vector<RenderItem*>::iterator pos = pipeline->compositeDrawables.begin(); pos != pipeline->compositeDrawables.end(); ++pos)
-			(*pos)->Draw();
+			(*pos)->Draw(renderContext);
 
 }
 
