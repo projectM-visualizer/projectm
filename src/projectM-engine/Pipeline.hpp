@@ -6,16 +6,11 @@
 #include "Renderable.hpp"
 #include "Filters.hpp"
 #include "BeatDetect.hpp"
+#include "PipelineContext.hpp"
 
 class Pipeline
 {
 public:
-
-	 int fps;
-
-	 float time;
-	 int   frame;
-	 float progress;
 
 	 bool textureWrap;
 	 float screenDecay;
@@ -28,7 +23,7 @@ public:
 	 std::vector<RenderItem*> compositeDrawables;
 
 	 Pipeline();
-	 virtual void Render(BeatDetect &music);
+	 virtual void Render(BeatDetect &music, PipelineContext &context);
 	 virtual Point PerPixel(Point p, PerPixelContext context);
 };
 
