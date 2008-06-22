@@ -7,6 +7,7 @@
 #include "KeyHandler.hpp"
 #include "TextureManager.hpp"
 #include <iostream>
+#include <algorithm>
 #include <cassert>
 
 using namespace std;
@@ -30,7 +31,7 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
 	this->drawtitle=0;
 
-	this->title = "Unknown";
+	//this->title = "Unknown";
 
 	/** Other stuff... */
 	this->correction = true;
@@ -113,7 +114,7 @@ void Renderer::ResetTextures()
 
 void Renderer::RenderFrame(Pipeline* pipeline)
 {
-
+	currentPipe = pipeline;
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
@@ -439,45 +440,53 @@ void Renderer::Interpolation(Pipeline *pipeline)
 
 	glEnable(GL_TEXTURE_2D);
 
-	int size = mesh.height;
-
-	float p[size*2][2];
-	float t[size*2][2];
+	int size = mesh.width * 2;
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
+
+	float p[size][2];
+	float t[size][2];
+
 	glVertexPointer(2,GL_FLOAT,0,p);
 	glTexCoordPointer(2,GL_FLOAT,0,t);
 
 	mesh.Reset();
+	std::transform(mesh.p.begin(), mesh.p.end(), mesh.identity.begin(), mesh.p.begin(), &Renderer::PerPixel);
+	/*
 	for (vector<PerPixelTransform*>::iterator pos = pipeline->perPixelTransforms.begin(); pos != pipeline->perPixelTransforms.end(); ++pos)
 		(*pos)->Calculate(&mesh);
-
-	for (int x=0;x<mesh.width - 1;x++)
+	 */
+	for (int j=0;j<mesh.height - 1;j++)
 	{
-		for(int y=0;y<mesh.height;y++)
-		{
-		  t[y*2][0] = mesh.x[x][y];
-		  t[y*2][1] = mesh.y[x][y];
+				for(int i=0;i<mesh.width;i++)
+				{
+					int index = j * mesh.width + i;
+					int index2 = (j+1) * mesh.width + i;
 
-		  p[y*2][0] = mesh.x_tex[x][y];
-		  p[y*2][1] = mesh.y_tex[x][y];
+					t[i*2][0] = mesh.p[index].x;
+					t[i*2][1] = mesh.p[index].y;
+					p[i*2][0] = mesh.identity[index].x;
+					p[i*2][1] = mesh.identity[index].y;
 
-		  t[(y*2)+1][0] = mesh.x[x+1][y];
-		  t[(y*2)+1][1] = mesh.y[x+1][y];
-
-		  p[(y*2)+1][0] = mesh.x_tex[x+1][y];
-		  p[(y*2)+1][1] = mesh.y_tex[x+1][y];
-
-		}
-	    glDrawArrays(GL_TRIANGLE_STRIP,0,size*2);
+					t[(i*2)+1][0] = mesh.p[index2].x;
+					t[(i*2)+1][1] = mesh.p[index2].y;
+					p[(i*2)+1][0] = mesh.identity[index2].x;
+					p[(i*2)+1][1] = mesh.identity[index2].y;
+  			  		}
+		       	glDrawArrays(GL_TRIANGLE_STRIP,0,size);
 	}
 
 	glDisable(GL_TEXTURE_2D);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+}
+Pipeline* Renderer::currentPipe;
+Point Renderer::PerPixel(Point p, PerPixelContext context)
+{
+return currentPipe->PerPixel(p,context);
 }
 
 Renderer::~Renderer()
@@ -765,7 +774,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs)
 {
 
 
-	float radius;
+
 	float xval, yval;
 	float t;
 
@@ -780,7 +789,7 @@ void Renderer::draw_shapes(PresetOutputs *presetOutputs)
 
 			// printf("drawing shape %f\n", (*pos)->ang);
 			(*pos)->y=-(( (*pos)->y)-1);
-			radius=.5;
+
 			(*pos)->radius= (*pos)->radius*(.707*.707*.707*1.04);
 			//Additive Drawing or Overwrite
 			if ( (*pos)->additive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

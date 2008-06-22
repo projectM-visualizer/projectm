@@ -2,7 +2,7 @@
 #define Pipeline_HPP
 
 #include <vector>
-#include "Transformation.hpp"
+#include "PerPixelMesh.hpp"
 #include "Renderable.hpp"
 #include "Filters.hpp"
 
@@ -11,9 +11,6 @@ class Pipeline
 public:
 
 	 int fps;
-
-	 int mesh_x;
-	 int mesh_y;
 
 	 float time;
 	 float bass;
@@ -32,12 +29,12 @@ public:
 	 float videoEchoZoom;
 	 float videoEchoOrientation;
 
-	 std::vector<PerPixelTransform*> perPixelTransforms;
 	 std::vector<RenderItem*> drawables;
 	 std::vector<RenderItem*> compositeDrawables;
 
-	 Pipeline(int mesh_x, int mesh_y);
+	 Pipeline();
 	 virtual void Render();
+	 virtual Point PerPixel(Point p, PerPixelContext context);
 };
 
 #endif
