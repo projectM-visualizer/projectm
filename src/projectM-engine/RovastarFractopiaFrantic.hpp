@@ -60,9 +60,9 @@ public:
 		movement = 0.0;
 	}
 
-	virtual void Render(BeatDetect &music)
+	virtual void Render(BeatDetect &music, PipelineContext &context)
 	{
-		movement += 0.5*(((music.bass+music.bass_att + 0.075*pow((music.bass+0.6*music.bass_att+0.2*music.treb_att),3)))/(float)fps);
+		movement += 0.5*(((music.bass+music.bass_att + 0.075*pow((music.bass+0.6*music.bass_att+0.2*music.treb_att),3)))/(float)context.fps);
 	    if (movement > 10000.0)
 	    	movement = 0.0;
 
