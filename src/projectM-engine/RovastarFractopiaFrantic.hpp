@@ -60,9 +60,9 @@ public:
 		movement = 0.0;
 	}
 
-	virtual void Render()
+	virtual void Render(BeatDetect &music)
 	{
-		movement += 0.5*(((bass+bass_att + 0.075*pow((bass+0.6*bass_att+0.2*treb_att),3)))/(float)fps);
+		movement += 0.5*(((music.bass+music.bass_att + 0.075*pow((music.bass+0.6*music.bass_att+0.2*music.treb_att),3)))/(float)fps);
 	    if (movement > 10000.0)
 	    	movement = 0.0;
 
@@ -70,14 +70,14 @@ public:
 	    border.outer_g = q4+0.25*sin(movement*0.744);
 	    border.outer_b = q4+0.25*sin(movement*0.707);
 
-		if(bass+bass_att > 3.0) textureWrap = 1;
+		if(music.bass+music.bass_att > 3.0) textureWrap = 1;
 		else textureWrap = 0;
 
 		vectors.y_offset = 0.03*sin(movement*0.34);
 		vectors.x_offset = 0.035*(sin(movement*0.217)+cos(movement*0.413)+sin(movement*0.311));
 
 		dx =0.01*sin(movement*5);
-		dy =0.0005*(bass+bass_att);
+		dy =0.0005*(music.bass+music.bass_att);
 
 	}
 
