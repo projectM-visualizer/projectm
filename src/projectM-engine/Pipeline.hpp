@@ -5,6 +5,7 @@
 #include "PerPixelMesh.hpp"
 #include "Renderable.hpp"
 #include "Filters.hpp"
+#include "BeatDetect.hpp"
 
 class Pipeline
 {
@@ -13,12 +14,6 @@ public:
 	 int fps;
 
 	 float time;
-	 float bass;
-	 float mid;
-	 float treb;
-	 float bass_att;
-	 float mid_att;
-	 float treb_att;
 	 int   frame;
 	 float progress;
 
@@ -33,7 +28,7 @@ public:
 	 std::vector<RenderItem*> compositeDrawables;
 
 	 Pipeline();
-	 virtual void Render();
+	 virtual void Render(BeatDetect &music);
 	 virtual Point PerPixel(Point p, PerPixelContext context);
 };
 

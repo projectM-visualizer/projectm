@@ -36,17 +36,7 @@
 class BeatDetect
 {
 	public:
-		/** Vars */
-		float beat_buffer[32][80],
-		beat_instant[32],
-		beat_history[32];
-		float beat_val[32],
-		beat_att[32],
-		beat_variance[32];
-		int beat_buffer_pos;
-		float vol_buffer[80],
-		vol_instant,
-		vol_history;
+
 
 		float treb ;
 		float mid ;
@@ -67,7 +57,18 @@ class BeatDetect
 		void reset();
 		void detectFromSamples();
 		void getBeatVals ( float *vdataL, float *vdataR );
-
+	private:
+		/** Vars */
+		float beat_buffer[32][80],
+		beat_instant[32],
+		beat_history[32];
+		float beat_val[32],
+		beat_att[32],
+		beat_variance[32];
+		int beat_buffer_pos;
+		float vol_buffer[80],
+		vol_instant,
+		vol_history;
 };
 
 #endif /** !_BEAT_DETECT_H */

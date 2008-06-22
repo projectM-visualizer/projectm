@@ -63,12 +63,12 @@ public:
 	float xamptarg, q8, oldq8, q7, xpos, ypos,xdir, xspeed, xamp, yamp, yamptarg,yspeed,ydir;
 	float dx, dy, angle;
 
-	virtual void Render()
+	virtual void Render(BeatDetect &music)
 	{
 
-		float volume = 0.15*(bass+bass_att+treb+treb_att+mid+mid_att);
+		float volume = 0.15*(music.bass+music.bass_att+music.treb+music.treb_att+music.mid+music.mid_att);
 
-		xamptarg = if_milk(equal(frame%15,0),min(0.5*volume*bass_att,0.5),xamptarg);
+		xamptarg = if_milk(equal(frame%15,0),min(0.5*volume*music.bass_att,0.5),xamptarg);
 		xamp = xamp + 0.5*(xamptarg-xamp);
 
 		xdir = if_milk(above(abs(xpos),xamp),-sign(xpos),if_milk(below(abs(xspeed),0.1),2*above(xpos,0)-1,xdir));
@@ -76,7 +76,7 @@ public:
 		xspeed += xdir*xamp - xpos - xspeed*0.055*below(abs(xpos),xamp);
 		xpos = xpos + 0.001*xspeed;
 		dx = xpos*0.005;
-		yamptarg = if_milk(equal(frame%15,0),min(0.3*volume*treb_att,0.5),yamptarg);
+		yamptarg = if_milk(equal(frame%15,0),min(0.3*volume*music.treb_att,0.5),yamptarg);
 		yamp +=  0.5*(yamptarg-yamp);
 		ydir = if_milk(above(abs(ypos),yamp),-sign(ypos),if_milk(below(abs(yspeed),0.1),2*above(ypos,0)-1,ydir));
 
@@ -87,9 +87,9 @@ public:
 		dy = ypos*0.005;
 		angle = 10*(dx-dy);
 
-		q8 =oldq8+ 0.0003*(powf(1+1.2*bass+0.4*bass_att+0.1*treb+0.1*treb_att+0.1*mid+0.1*mid_att,6)/fps);
+		q8 =oldq8+ 0.0003*(powf(1+1.2*music.bass+0.4*music.bass_att+0.1*music.treb+0.1*music.treb_att+0.1*music.mid+0.1*music.mid_att,6)/fps);
 		oldq8 = q8;
-		q7 = 0.003*(powf(1+1.2*bass+0.4*bass_att+0.1*treb+0.1*treb_att+0.1*mid+0.1*mid_att,6)/fps);
+		q7 = 0.003*(powf(1+1.2*music.bass+0.4*music.bass_att+0.1*music.treb+0.1*music.treb_att+0.1*music.mid+0.1*music.mid_att,6)/fps);
 
 		shape1.ang = time*1.4;
 				shape1.x = 0.5 + 0.08*cos(time*1.3) + 0.03*cos(time*0.7);
