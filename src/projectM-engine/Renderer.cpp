@@ -9,6 +9,8 @@
 #include <iostream>
 #include <algorithm>
 #include <cassert>
+#include "omptl/omptl"
+#include "omptl/omptl_algorithm"
 
 using namespace std;
 
@@ -456,7 +458,7 @@ void Renderer::Interpolation(Pipeline *pipeline)
 	glTexCoordPointer(2,GL_FLOAT,0,t);
 
 	mesh.Reset();
-	std::transform(mesh.p.begin(), mesh.p.end(), mesh.identity.begin(), mesh.p.begin(), &Renderer::PerPixel);
+	omptl::transform(mesh.p.begin(), mesh.p.end(), mesh.identity.begin(), mesh.p.begin(), &Renderer::PerPixel);
 	/*
 	for (vector<PerPixelTransform*>::iterator pos = pipeline->perPixelTransforms.begin(); pos != pipeline->perPixelTransforms.end(); ++pos)
 		(*pos)->Calculate(&mesh);
