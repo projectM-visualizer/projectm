@@ -7,6 +7,6 @@
 #include "Pipeline.hpp"
 
 Pipeline::Pipeline() {}
-void Pipeline::Render(BeatDetect &music, PipelineContext &context){}
-Point Pipeline::PerPixel(Point p, PerPixelContext context)
+void Pipeline::Render(const BeatDetect &music, const PipelineContext &context){}
+Point Pipeline::PerPixel(Point p, const PerPixelContext context)
 {return p;}
