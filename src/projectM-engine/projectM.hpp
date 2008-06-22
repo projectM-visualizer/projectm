@@ -64,7 +64,7 @@
 #include "PresetFrameIO.hpp"
 #include "PCM.hpp"
 #include "pthread.h"
-
+#include "PipelineContext.hpp"
 #include <memory>
 
 class BeatDetect;
@@ -76,6 +76,7 @@ class PresetIterator;
 class PresetChooser;
 class PresetLoader;
 class TimeKeeper;
+class Pipeline;
 
 #include <memory>
 #ifdef WIN32
@@ -104,7 +105,7 @@ typedef enum {
 class RandomizerFunctor {
 
    public:
-	//RandomizerFunctor(); 
+	//RandomizerFunctor();
 	RandomizerFunctor(PresetChooser & chooser) ;
 	virtual ~RandomizerFunctor();
    	virtual double operator() (int index);
@@ -113,27 +114,27 @@ class RandomizerFunctor {
 };
 
 
-class projectM 
+class projectM
 {
 public:
 	static const int FLAG_NONE = 0;
 	static const int FLAG_DISABLE_PLAYLIST_LOAD = 1 << 0;
-	
+
   DLLEXPORT projectM(std::string config_file, int flags = FLAG_NONE);
-  
+
   //DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url,std::string title_fonturl, std::string title_menuurl);
-  
+
   DLLEXPORT void projectM_resetGL( int width, int height );
   DLLEXPORT void projectM_resetTextures();
   DLLEXPORT void projectM_setTitle( std::string title );
   DLLEXPORT void renderFrame();
-  DLLEXPORT unsigned initRenderToTexture(); 
+  DLLEXPORT unsigned initRenderToTexture();
   DLLEXPORT void key_handler( projectMEvent event,
 		    projectMKeycode keycode, projectMModifier modifier );
 
   DLLEXPORT virtual ~projectM();
 
-  
+
   struct Settings {
 	int meshX;
 	int meshY;
@@ -143,7 +144,7 @@ public:
 	int windowHeight;
 	std::string presetURL;
 	std::string titleFontURL;
-	std::string menuFontURL;		
+	std::string menuFontURL;
 	int smoothPresetDuration;
 	int presetDuration;
 	float beatSensitivity;
@@ -160,19 +161,19 @@ public:
   /// Writes a settings configuration to the specified file
   static bool writeConfig(const std::string & configFile, const Settings & settings);
 
-  
+
   /// Sets preset iterator position to the passed in index
   void selectPresetPosition(unsigned int index);
 
-  /// Plays a preset immediately  
+  /// Plays a preset immediately
   void selectPreset(unsigned int index);
 
   /// Removes a preset from the play list. If it is playing then it will continue as normal until next switch
   void removePreset(unsigned int index);
- 
+
   /// Sets the randomization functor. If set to null, the traversal will move in order according to the playlist
   void setRandomizer(RandomizerFunctor * functor);
- 
+
   /// Tell projectM to play a particular preset when it chooses to switch
   /// If the preset is locked the queued item will be not switched to until the lock is released
   /// Subsequent calls to this function effectively nullifies previous calls.
@@ -200,13 +201,13 @@ public:
   unsigned int addPresetURL(const std::string & presetURL, const std::string & presetName, int rating);
 
   /// Insert a preset url to the play list at the suggested index.
-  void insertPresetURL(unsigned int index, 
+  void insertPresetURL(unsigned int index,
 			       const std::string & presetURL, const std::string & presetName, int rating);
- 
+
   /// Returns true if the selected preset position points to an actual preset in the
   /// currently loaded playlist
   bool presetPositionValid() const;
-  
+
   /// Returns the url associated with a preset index
   std::string getPresetURL(unsigned int index) const;
 
@@ -215,7 +216,7 @@ public:
 
   /// Returns the rating associated with a preset index
   int getPresetRating (unsigned int index) const;
-  
+
   void changePresetRating (unsigned int index, int rating);
 
   /// Returns the size of the play list
@@ -226,43 +227,45 @@ public:
   inline void setShuffleEnabled(bool value)
   {
 	  _settings.shuffleEnabled = value;
-			
+
 	/// idea@ call a virtualfunction shuffleChanged()
   }
 
-  
+
   inline bool isShuffleEnabled() const
   {
 	return _settings.shuffleEnabled;
   }
-  
+
   /// Occurs when active preset has switched. Switched to index is returned
   virtual void presetSwitchedEvent(bool isHardCut, unsigned int index) const {};
   virtual void shuffleEnabledValueChanged(bool isEnabled) const {};
 
-  
-  inline const PCM * pcm() {
+
+  inline PCM * pcm() {
 	  return _pcm;
   }
   void *thread_func(void *vptr_args);
 
 private:
-
+	 PCM * _pcm;
   double sampledPresetDuration();
   BeatDetect * beatDetect;
   Renderer *renderer;
+  PipelineContext pipelineContext;
   Settings _settings;
-    
+
+
   int wvw;      //windowed dimensions
   int wvh;
-     
+
   /** Timing information */
   int mspf;
   int timed;
-  int timestart;  
+  int timestart;
   int count;
   float fpsstart;
-  
+
   void switchPreset(std::auto_ptr<Preset> & targetPreset, PresetInputs & inputs, PresetOutputs & outputs);
   void readConfig(const std::string & configFile);
   void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
@@ -272,7 +275,7 @@ private:
   void projectM_resetengine();
   /// Initializes preset loading / management libraries
   int initPresetTools();
-  
+
   /// Deinitialize all preset related tools. Usually done before projectM cleanup
   void destroyPresetTools();
 
@@ -280,38 +283,42 @@ private:
   void setupPresetInputs(PresetInputs *inputs);
   /// The current position of the directory iterator
   PresetIterator * m_presetPos;
-  
+
   /// Required by the preset chooser. Manages a loaded preset directory
   PresetLoader * m_presetLoader;
-  
+
   /// Provides accessor functions to choose presets
   PresetChooser * m_presetChooser;
-  
+
   /// Currently loaded preset
   std::auto_ptr<Preset> m_activePreset;
-  
+
   /// Destination preset when smooth preset switching
   std::auto_ptr<Preset> m_activePreset2;
-    
+
   /// All readonly variables which are passed as inputs to presets
   PresetInputs presetInputs;
   PresetInputs presetInputs2;
   /// A preset outputs container used and modified by the "current" preset
   PresetOutputs presetOutputs;
-  
+
   /// A preset outputs container used for smooth preset switching
   PresetOutputs presetOutputs2;
-  
+
   TimeKeeper *timeKeeper;
 
-  PCM * _pcm;
+
   int m_flags;
-  
+
 
 pthread_mutex_t mutex;
 pthread_cond_t  condition;
 pthread_t thread;
   bool running;
+
+  Pipeline* currentPipe;
+
+
 
 };
 #endif
