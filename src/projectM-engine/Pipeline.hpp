@@ -23,7 +23,7 @@ public:
 	 std::vector<RenderItem*> compositeDrawables;
 
 	 Pipeline();
-	 virtual void Render(BeatDetect &music, PipelineContext &context);
+	 virtual void Render(const BeatDetect &music, const PipelineContext &context);
 	 virtual Point PerPixel(Point p, PerPixelContext context);
 };
 

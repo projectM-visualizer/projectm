@@ -6,10 +6,8 @@
  */
 
 #include "Pipeline.hpp"
-#include "math.h"
 #include "MilkdropCompatability.hpp"
 #include "Transformation.hpp"
-#include <stdlib.h>
 
 
 class RovastarDriftingChaos : public Pipeline
@@ -63,7 +61,7 @@ public:
 	float xamptarg, q8, oldq8, q7, xpos, ypos,xdir, xspeed, xamp, yamp, yamptarg,yspeed,ydir;
 	float dx, dy, angle;
 
-	virtual void Render(BeatDetect &music, PipelineContext &context)
+	virtual void Render(const BeatDetect &music, const PipelineContext &context)
 	{
 
 		float volume = 0.15*(music.bass+music.bass_att+music.treb+music.treb_att+music.mid+music.mid_att);
@@ -123,7 +121,7 @@ public:
 
 	}
 
-	virtual Point PerPixel(Point p, PerPixelContext context)
+	virtual Point PerPixel(Point p, const PerPixelContext context)
 	{
 		Transforms::Zoom(p,context,1+0.05*context.rad,1);
 		Transforms::Transform(p,context,dx,dy);
