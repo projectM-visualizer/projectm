@@ -2,126 +2,65 @@
 #define Transformation_HPP
 
 #include "PerPixelMesh.hpp"
-#include <vector>
+#include <math.h>
 
-class PerPixelTransform
+
+class Transforms
 {
 public:
-	int width;
-	int height;
 
-	PerPixelTransform(int width, int height);
-	virtual void Calculate(PerPixelMesh* mesh) = 0;
-};
+	inline static void Zoom(Point &p, PerPixelContext &context, float zoom, float zoomExponent)
+	{
+		float fZoom2 = powf( zoom, powf( zoomExponent, context.rad*2.0f - 1.0f));
+		float fZoom2Inv = 1.0f/fZoom2;
+		p.x -= 0.5;
+		p.y -= 0.5;
+		p.x *= fZoom2Inv;
+		p.y *= fZoom2Inv;
+		p.x += 0.5;
+		p.y += 0.5;
+	}
 
-class Warp : public PerPixelTransform
-{
-public:
-	float warp;
-	float speed;
-	float scale;
-	float time;
+	inline static void Transform(Point &p, PerPixelContext &context, float dx, float dy)
+	{
+		p.x -= dx;
+		p.y -= dy;
+	}
 
-	Warp(int width, int height, float warp, float speed, float scale);
- 	void Calculate(PerPixelMesh* mesh);
-};
+	inline static void Scale(Point &p, PerPixelContext &context, float sy, float sx, float cx, float cy)
+	{
+		p.x = (p.x - cx)/sx + cx;
+		p.y = (p.y - cy)/sy + cy;
+	}
 
-class PerPixelWarp : public PerPixelTransform
-{
-public:
-	std::vector< std::vector<float> > warp;
-	float speed;
-	float scale;
-	float time;
+	inline static void Rotate(Point &p, PerPixelContext &context, float angle, float cx, float cy)
+	{
+		float u2 = p.x - cx;
+		float v2 = p.y - cy;
 
-	PerPixelWarp(int width, int height, float warp, float speed, float scale);
- 	void Calculate(PerPixelMesh* mesh);
-};
+		float cos_rot = cosf(angle);
+		float sin_rot = sinf(angle);
 
-class Scale : public PerPixelTransform
-{
-public:
-	float cx;
-	float cy;
-	float sx;
-	float sy;
+		p.x = u2*cos_rot - v2*sin_rot + cx;
+		p.y = u2*sin_rot + v2*cos_rot + cy;
+	}
 
-	Scale(int width, int height, float cx, float cy, float sx, float sy);
-	void Calculate(PerPixelMesh* mesh);
-};
+	inline static void Warp(Point &p, PerPixelContext &context, float time, float speed, float scale, float warp)
+	{
+		float fWarpTime = time * speed;
+		float fWarpScaleInv = 1.0f / scale;
+		float f[4];
+		f[0] = 11.68f + 4.0f*cosf(fWarpTime*1.413f + 10);
+		f[1] =  8.77f + 3.0f*cosf(fWarpTime*1.113f + 7);
+		f[2] = 10.54f + 3.0f*cosf(fWarpTime*1.233f + 3);
+		f[3] = 11.49f + 4.0f*cosf(fWarpTime*0.933f + 5);
 
-class PerPixelScale : public PerPixelTransform
-{
-public:
-	std::vector< std::vector<float> > cx;
-	std::vector< std::vector<float> > cy;
-	std::vector< std::vector<float> > sx;
-	std::vector< std::vector<float> > sy;
+		p.x += warp*0.0035f*sinf(fWarpTime*0.333f + fWarpScaleInv*(context.x*f[0] - context.y*f[3]));
+		p.y += warp*0.0035f*cosf(fWarpTime*0.375f - fWarpScaleInv*(context.x*f[2] + context.y*f[1]));
+		p.x += warp*0.0035f*cosf(fWarpTime*0.753f - fWarpScaleInv*(context.x*f[1] - context.y*f[2]));
+		p.y += warp*0.0035f*sinf(fWarpTime*0.825f + fWarpScaleInv*(context.x*f[0] + context.y*f[3]));
+	}
 
-	PerPixelScale(int width, int height, float cx, float cy, float sx, float sy);
- 	void Calculate(PerPixelMesh* mesh);
-};
-
-class Rotation : public PerPixelTransform
-{
-public:
-	float cx;
-	float cy;
-	float angle;
-
-	Rotation(int width, int height, float cx, float cy, float angle);
- 	void Calculate(PerPixelMesh* mesh);
-};
-
-class PerPixelRotation : public PerPixelTransform
-{
-public:
-	std::vector< std::vector<float> > cx;
-	std::vector< std::vector<float> > cy;
-	std::vector< std::vector<float> > angle;
-
-	PerPixelRotation(int width, int height, float cx, float cy, float angle);
- 	void Calculate(PerPixelMesh* mesh);
-};
-
-class Delta : public PerPixelTransform
-{
-public:
-	float dx;
-	float dy;
-
-	Delta(int width, int height, float dx, float dy);
-	void Calculate (PerPixelMesh* mesh);
-};
-
-class PerPixelDelta : public PerPixelTransform
-{
-public:
-	std::vector< std::vector<float> > dx;
-	std::vector< std::vector<float> > dy;
-
-	PerPixelDelta(int width, int height, float dx, float dy);
-	virtual void Calculate (PerPixelMesh* mesh);
-};
-
-class Zoom : public PerPixelTransform
-{
-public:
-	float zoom;
-	float zoomExponent;
-
-	Zoom(int width, int height, float zoom, float zoomExponent);
-	void Calculate (PerPixelMesh* mesh);
-};
-
-class PerPixelZoom : public PerPixelTransform
-{
-public:
-	std::vector< std::vector<float> > zoom;
-	std::vector< std::vector<float> > zoomExponent;
-
-	PerPixelZoom(int width, int height, float zoom, float zoomExponent);
-	void Calculate (PerPixelMesh* mesh);
 };
 
 #endif

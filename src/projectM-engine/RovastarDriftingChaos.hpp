@@ -8,6 +8,7 @@
 #include "Pipeline.hpp"
 #include "math.h"
 #include "MilkdropCompatability.hpp"
+#include "Transformation.hpp"
 #include <stdlib.h>
 
 
@@ -15,15 +16,9 @@ class RovastarDriftingChaos : public Pipeline
 {
 public:
 
-	Delta delta;
-	PerPixelZoom zoom;
-	Rotation rotate;
 	Shape shape1, shape2, shape3;
 
-	RovastarDriftingChaos(int mesh_x, int mesh_y) : Pipeline(mesh_x, mesh_y),
-		delta(mesh_x,mesh_y,0,0),
-		rotate(mesh_x,mesh_y,0.5,0.5,0),
-		zoom(mesh_x, mesh_y, 1, 1)
+	RovastarDriftingChaos() : Pipeline()
 	{
 		screenDecay = 1.0;
 		textureWrap = 0;
@@ -35,11 +30,6 @@ public:
 		drawables.push_back(&shape1);
 		drawables.push_back(&shape2);
 		drawables.push_back(&shape3);
-
-		perPixelTransforms.push_back(&zoom);
-		perPixelTransforms.push_back(&delta);
-		perPixelTransforms.push_back(&rotate);
-
 
 		shape1.sides = 3;
 		shape1.radius=0.550000;
@@ -71,6 +61,7 @@ public:
 	}
 
 	float xamptarg, q8, oldq8, q7, xpos, ypos,xdir, xspeed, xamp, yamp, yamptarg,yspeed,ydir;
+	float dx, dy, angle;
 
 	virtual void Render()
 	{
@@ -84,7 +75,7 @@ public:
 		float xaccel =  xdir*xamp - xpos - xspeed*0.055*below(abs(xpos),xamp);
 		xspeed += xdir*xamp - xpos - xspeed*0.055*below(abs(xpos),xamp);
 		xpos = xpos + 0.001*xspeed;
-		delta.dx = xpos*0.005;
+		dx = xpos*0.005;
 		yamptarg = if_milk(equal(frame%15,0),min(0.3*volume*treb_att,0.5),yamptarg);
 		yamp +=  0.5*(yamptarg-yamp);
 		ydir = if_milk(above(abs(ypos),yamp),-sign(ypos),if_milk(below(abs(yspeed),0.1),2*above(ypos,0)-1,ydir));
@@ -93,8 +84,8 @@ public:
 		yspeed += ydir*yamp - ypos - yspeed*0.055*below(abs(ypos),yamp);
 		ypos = ypos + 0.001*yspeed;
 
-		delta.dy = ypos*0.005;
-		rotate.angle = 10*(delta.dx-delta.dy);
+		dy = ypos*0.005;
+		angle = 10*(dx-dy);
 
 		q8 =oldq8+ 0.0003*(powf(1+1.2*bass+0.4*bass_att+0.1*treb+0.1*treb_att+0.1*mid+0.1*mid_att,6)/fps);
 		oldq8 = q8;
@@ -130,16 +121,14 @@ public:
 				shape3.g2 = 0.5 + 0.5*cos(q8*0.556+ 1);
 				shape3.b2 = 0.5 + 0.5*sin(q8*0.638 + 3);
 
-
-		for (int x = 0; x < mesh_x; x++)
-			for (int y = 0; y < mesh_y; y++)
-			{
-				float xval=x/(float)(mesh_x-1);
-				float yval=-((y/(float)(mesh_y-1))-1);
-
-				float rad=hypot ( ( xval-.5 ) *2, ( yval-.5 ) *2 ) * .7071067;
-				zoom.zoom[x][y] = 1+0.05*rad;
-			}
 	}
 
+	virtual Point PerPixel(Point p, PerPixelContext context)
+	{
+		Transforms::Zoom(p,context,1+0.05*context.rad,1);
+		Transforms::Transform(p,context,dx,dy);
+		Transforms::Rotate(p,context,angle,0.5,0.5);
+		return p;
+
+	}
 };

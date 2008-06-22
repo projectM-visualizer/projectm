@@ -7,6 +7,7 @@
 
 #include "Pipeline.hpp"
 #include "math.h"
+#include "Transformation.hpp"
 #include <stdlib.h>
 
 
@@ -14,25 +15,19 @@ class RovastarFranticFractopia : public Pipeline
 {
 public:
 
-	PerPixelDelta delta;
-	Zoom zoom;
-
 	Border border;
 	MotionVectors vectors;
 
+	float dx, dy;
 	float q4, q5, q6;
 
 	float movement;
 
-	RovastarFranticFractopia(int mesh_x, int mesh_y) : Pipeline(mesh_x, mesh_y),
-		delta(mesh_x,mesh_y,0,0),
-		zoom(mesh_x, mesh_y, 0.98, 1.503744)
+	RovastarFranticFractopia() : Pipeline()
 	{
 		drawables.push_back(&vectors);
 		drawables.push_back(&border);
 
-		perPixelTransforms.push_back(&zoom);
-		perPixelTransforms.push_back(&delta);
 
 		screenDecay = 1.0;
 
@@ -67,7 +62,6 @@ public:
 
 	virtual void Render()
 	{
-
 		movement += 0.5*(((bass+bass_att + 0.075*pow((bass+0.6*bass_att+0.2*treb_att),3)))/(float)fps);
 	    if (movement > 10000.0)
 	    	movement = 0.0;
@@ -82,20 +76,21 @@ public:
 		vectors.y_offset = 0.03*sin(movement*0.34);
 		vectors.x_offset = 0.035*(sin(movement*0.217)+cos(movement*0.413)+sin(movement*0.311));
 
-		float dx =0.01*sin(movement*5);
-		float dy =0.0005*(bass+bass_att);
+		dx =0.01*sin(movement*5);
+		dy =0.0005*(bass+bass_att);
 
-		for (int x = 0; x < mesh_x; x++)
-			for (int y = 0; y < mesh_y; y++)
-			{
-				float xval=x/(float)(mesh_x-1);
-				float yval=-((y/(float)(mesh_y-1))-1);
+	}
 
-				float myy = yval-(0.250025);
-				float myx = xval-0.5;
-				delta.dx[x][y] = dx + 2*(2*myx*myy);
-				delta.dy[x][y] = dy + 2*((myy*myy) - (myx*myx));
-			}
+	virtual Point PerPixel(Point p, PerPixelContext context)
+	{
+		float myy = context.y-(0.250025);
+		float myx = context.x-0.5;
+
+		Transforms::Zoom(p,context,0.98,1.503744);
+
+		p.x = p.x - (dx + 2*(2*myx*myy));
+		p.y = p.y - (dy + 2*((myy*myy) - (myx*myx)));
+		return p;
 	}
 
 };

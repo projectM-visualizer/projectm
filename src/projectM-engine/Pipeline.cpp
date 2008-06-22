@@ -6,5 +6,7 @@
  */
 #include "Pipeline.hpp"
 
-Pipeline::Pipeline(int mesh_x, int mesh_y): mesh_x(mesh_x), mesh_y(mesh_y) {}
+Pipeline::Pipeline() {}
 void Pipeline::Render(){}
+Point Pipeline::PerPixel(Point p, PerPixelContext context)
+{return p;}

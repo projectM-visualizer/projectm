@@ -55,11 +55,13 @@ public:
 
   int totalframes;
   float realfps;
+
   std::string title;
   int drawtitle;
   int texsize;
 
   PerPixelMesh mesh;
+
 
   Renderer( int width, int height, int gx, int gy, int texsize,  BeatDetect *beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
   ~Renderer();
@@ -87,7 +89,7 @@ private:
   RenderTarget *renderTarget;
   BeatDetect *beatDetect;
   TextureManager *textureManager;
-
+  static Pipeline* currentPipe;
   //per pixel equation variables
 
   std::string m_presetName;
@@ -118,6 +120,7 @@ private:
 
   void CompositeOutput(Pipeline* pipeline);
   void Interpolation(Pipeline* pipeline);
+  static Point PerPixel(Point p, PerPixelContext context);
 
   void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
 
