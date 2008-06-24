@@ -12,7 +12,6 @@
 #include "omptl/omptl"
 #include "omptl/omptl_algorithm"
 
-using namespace std;
 
 class Preset;
 
@@ -101,7 +100,75 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
 			}
 		}
+
+#ifdef USE_CG
+SetupCg();
+#endif
 }
+
+#ifdef USE_CG
+void Renderer::checkForCgError(const char *situation)
+{
+  CGerror error;
+  const char *string = cgGetLastErrorString(&error);
+
+  if (error != CG_NO_ERROR) {
+    printf("%%s: %s\n",
+      situation, string);
+    if (error == CG_COMPILER_ERROR) {
+      //printf("%s\n", cgGetLastListing( myCgContext ));
+    }
+    exit(1);
+  }
+}
+
+void Renderer::SetupCg()
+{
+
+compositeProgram = "C2E2f_composite";
+warpProgram = "C2E2f_passthru";
+shaderFile="/home/pete/test.cg";
+
+myCgContext = cgCreateContext();
+  checkForCgError("creating context");
+  cgGLSetDebugMode( CG_FALSE );
+  cgSetParameterSettingMode(myCgContext, CG_DEFERRED_PARAMETER_SETTING);
+
+ 
+  myCgProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
+  cgGLSetOptimalOptions(myCgProfile);
+  checkForCgError("selecting fragment profile");
+
+  myCgWarpProgram =
+    cgCreateProgramFromFile(
+      myCgContext,                /* Cg runtime context */
+      CG_SOURCE,                  /* Program in human-readable form */
+      shaderFile.c_str(),  /* Name of file containing program */
+      myCgProfile,        /* Profile: OpenGL ARB vertex program */
+      warpProgram.c_str(),      /* Entry function name */
+      NULL);                      /* No extra compiler options */
+  checkForCgError("creating fragment program from file");
+  cgGLLoadProgram(myCgWarpProgram);
+  checkForCgError("loading fragment program");
+
+ 
+
+  myCgCompositeProgram =
+    cgCreateProgramFromFile(
+      myCgContext,                /* Cg runtime context */
+      CG_SOURCE,                  /* Program in human-readable form */
+      shaderFile.c_str(),  /* Name of file containing program */
+      myCgProfile,        /* Profile: OpenGL ARB vertex program */
+      compositeProgram.c_str(),      /* Entry function name */
+      NULL);                      /* No extra compiler options */
+  checkForCgError("creating fragment program from file");
+  cgGLLoadProgram(myCgCompositeProgram);
+  checkForCgError("loading fragment program");
+
+}
+
+
+#endif
 
 void Renderer::ResetTextures()
 {
@@ -126,6 +193,8 @@ void Renderer::RenderFrame(const Pipeline* pipeline)
 	renderTarget->lock();
 	glViewport( 0, 0, renderTarget->texsize, renderTarget->texsize );
 
+
+
 	glEnable( GL_TEXTURE_2D );
 
 	//If using FBO, switch to FBO texture
@@ -149,13 +218,22 @@ void Renderer::RenderFrame(const Pipeline* pipeline)
 		glMatrixMode( GL_MODELVIEW );
 		glLoadIdentity();
 
+#ifdef USE_CG
+  cgGLBindProgram(myCgWarpProgram);
+  checkForCgError("binding warp program");
+
+  cgGLEnableProfile(myCgProfile);
+  checkForCgError("enabling warp profile");
+#endif
+
+
 		Interpolation(pipeline);
 
 		renderContext.texsize = texsize;
 		renderContext.aspectCorrect = correction;
 		renderContext.aspectRatio = aspect;
 
-		for (vector<RenderItem*>::const_iterator pos = pipeline->drawables.begin(); pos != pipeline->drawables.end(); ++pos)
+		for (std::vector<RenderItem*>::const_iterator pos = pipeline->drawables.begin(); pos != pipeline->drawables.end(); ++pos)
 			(*pos)->Draw(renderContext);
 
 					/** Restore original view state */
@@ -164,6 +242,14 @@ void Renderer::RenderFrame(const Pipeline* pipeline)
 
 			glMatrixMode( GL_PROJECTION );
 			glPopMatrix();
+
+#ifdef USE_CG
+  cgGLUnbindProgram(myCgProfile);
+  checkForCgError("disabling fragment profile");
+  cgGLDisableProfile(myCgProfile);
+  checkForCgError("disabling fragment profile");
+
+#endif
 
 			renderTarget->unlock();
 
@@ -198,9 +284,21 @@ void Renderer::RenderFrame(const Pipeline* pipeline)
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			glLineWidth( this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512.0);
+/*
+#ifdef USE_CG
+  cgGLBindProgram(myCgCompositeProgram);
+  checkForCgError("binding warp program");
 
+  cgGLEnableProfile(myCgCompositeProfile);
+  checkForCgError("enabling warp profile");
+#endif
 			CompositeOutput(pipeline);
+#ifdef USE_CG
+  cgGLDisableProfile(myCgCompositeProfile);
+  checkForCgError("disabling fragment profile");
 
+#endif
+*/	CompositeOutput(pipeline);
 		#ifdef USE_FBO
 			if(renderTarget->renderToTexture)
 				glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
@@ -1789,7 +1887,15 @@ void Renderer::CompositeOutput(const Pipeline* pipeline)
 	glColor4f(1.0, 1.0, 1.0, 1.0f);
 
 	glEnable(GL_TEXTURE_2D);
+#if 0	
+#ifdef USE_CG
+  cgGLBindProgram(myCgCompositeProgram);
+  checkForCgError("binding warp program");
 
+  cgGLEnableProfile(myCgProfile);
+  checkForCgError("enabling warp profile");
+#endif
+#endif
 
 
 	float tex[4][2] = {{0, 1},
@@ -1844,8 +1950,17 @@ void Renderer::CompositeOutput(const Pipeline* pipeline)
 
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	for (vector<RenderItem*>::const_iterator pos = pipeline->compositeDrawables.begin(); pos != pipeline->compositeDrawables.end(); ++pos)
+	for (std::vector<RenderItem*>::const_iterator pos = pipeline->compositeDrawables.begin(); pos != pipeline->compositeDrawables.end(); ++pos)
 			(*pos)->Draw(renderContext);
+
+#if 0	
+#ifdef USE_CG
+  cgGLUnbindProgram(myCgProfile);
+  checkForCgError("disabling fragment profile");
+  cgGLDisableProfile(myCgProfile);
+  checkForCgError("disabling fragment profile");
+#endif
+#endif
 
 }
 
