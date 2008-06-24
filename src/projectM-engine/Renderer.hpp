@@ -66,7 +66,7 @@ public:
   Renderer( int width, int height, int gx, int gy, int texsize,  BeatDetect *beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
   ~Renderer();
   void RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
-  void RenderFrame(Pipeline *pipeline);
+  void RenderFrame(const Pipeline *pipeline);
   void ResetTextures();
   void reset(int w, int h);
   GLuint initRenderToTexture();
@@ -119,8 +119,8 @@ private:
   std::string menu_fontURL;
   std::string presetURL;
 
-  void CompositeOutput(Pipeline* pipeline);
-  void Interpolation(Pipeline* pipeline);
+  void CompositeOutput(const Pipeline* pipeline);
+  void Interpolation(const Pipeline* pipeline);
   static Point PerPixel(Point p, PerPixelContext context);
 
   void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
