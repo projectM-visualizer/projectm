@@ -30,6 +30,11 @@
 #endif
 #endif /** USE_FTGL */
 
+#ifdef USE_CG
+#include <Cg/cg.h>    /* Can't include this?  Is Cg Toolkit installed! */
+#include <Cg/cgGL.h>
+#endif
+
 #include "Pipeline.hpp"
 #include "PerPixelMesh.hpp"
 #include "Transformation.hpp"
@@ -108,6 +113,23 @@ private:
 
   float aspect;
 
+#ifdef USE_CG
+
+  CGcontext   myCgContext;
+ CGprofile   myCgProfile;
+                   
+ CGprogram   myCgWarpProgram,
+                   myCgCompositeProgram;
+
+
+ std::string warpProgram;
+ std::string compositeProgram;
+ std::string shaderFile;
+
+
+ void checkForCgError(const char *situation);
+void SetupCg();
+#endif
 
 #ifdef USE_FTGL
   FTGLPixmapFont *title_font;
@@ -119,9 +141,12 @@ private:
   std::string menu_fontURL;
   std::string presetURL;
 
+
+
   void CompositeOutput(const Pipeline* pipeline);
   void Interpolation(const Pipeline* pipeline);
   static Point PerPixel(Point p, PerPixelContext context);
+
 
   void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
 
