@@ -114,9 +114,9 @@ void Renderer::ResetTextures()
 	textureManager->Preload();
 }
 
-void Renderer::RenderFrame(Pipeline* pipeline)
+void Renderer::RenderFrame(const Pipeline* pipeline)
 {
-	currentPipe = pipeline;
+
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
@@ -155,7 +155,7 @@ void Renderer::RenderFrame(Pipeline* pipeline)
 		renderContext.aspectCorrect = correction;
 		renderContext.aspectRatio = aspect;
 
-		for (vector<RenderItem*>::iterator pos = pipeline->drawables.begin(); pos != pipeline->drawables.end(); ++pos)
+		for (vector<RenderItem*>::const_iterator pos = pipeline->drawables.begin(); pos != pipeline->drawables.end(); ++pos)
 			(*pos)->Draw(renderContext);
 
 					/** Restore original view state */
@@ -419,7 +419,7 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
 }
 
 
-void Renderer::Interpolation(Pipeline *pipeline)
+void Renderer::Interpolation(const Pipeline *pipeline)
 {
 	//Texture wrapping( clamp vs. wrap)
 	if (pipeline->textureWrap==0)
@@ -458,11 +458,9 @@ void Renderer::Interpolation(Pipeline *pipeline)
 	glTexCoordPointer(2,GL_FLOAT,0,t);
 
 	mesh.Reset();
+	currentPipe = const_cast<Pipeline*>(pipeline);
 	omptl::transform(mesh.p.begin(), mesh.p.end(), mesh.identity.begin(), mesh.p.begin(), &Renderer::PerPixel);
-	/*
-	for (vector<PerPixelTransform*>::iterator pos = pipeline->perPixelTransforms.begin(); pos != pipeline->perPixelTransforms.end(); ++pos)
-		(*pos)->Calculate(&mesh);
-	 */
+
 	for (int j=0;j<mesh.height - 1;j++)
 	{
 				for(int i=0;i<mesh.width;i++)
@@ -1775,7 +1773,7 @@ void Renderer::draw_fps( float realfps )
 
 
 
-void Renderer::CompositeOutput(Pipeline* pipeline)
+void Renderer::CompositeOutput(const Pipeline* pipeline)
 {
 
 	int flipx=1, flipy=1;
@@ -1846,7 +1844,7 @@ void Renderer::CompositeOutput(Pipeline* pipeline)
 
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	for (vector<RenderItem*>::iterator pos = pipeline->compositeDrawables.begin(); pos != pipeline->compositeDrawables.end(); ++pos)
+	for (vector<RenderItem*>::const_iterator pos = pipeline->compositeDrawables.begin(); pos != pipeline->compositeDrawables.end(); ++pos)
 			(*pos)->Draw(renderContext);
 
 }

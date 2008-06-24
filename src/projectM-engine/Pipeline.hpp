@@ -24,7 +24,7 @@ public:
 
 	 Pipeline();
 	 virtual void Render(const BeatDetect &music, const PipelineContext &context);
-	 virtual Point PerPixel(Point p, PerPixelContext context);
+	 virtual Point PerPixel(Point p, const PerPixelContext context);
 };
 
 #endif
