@@ -28,7 +28,7 @@ SET(projectM_SOURCES projectM.cpp FBO.cpp InitCond.cpp
  Expr.cpp PCM.cpp Parser.cpp Preset.cpp BeatDetect.cpp PerPixelEqn.cpp Param.cpp CustomWave.cpp CustomShape.cpp 
 Func.cpp Eval.cpp  PerFrameEqn.cpp PerPointEqn.cpp fftsg.cpp KeyHandler.cpp
  timer.cpp  wipemalloc.cpp BuiltinFuncs.cpp BuiltinParams.cpp Renderer.cpp 
-PresetLoader.cpp  PresetChooser.cpp PresetFrameIO.cpp PresetMerge.cpp
+PresetLoader.cpp  PresetChooser.cpp PresetFrameIO.cpp PresetMerge.cpp PipelineContext.cpp 
 ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp TimeKeeper.cpp Filters.cpp Renderable.cpp Pipeline.cpp PerPixelMesh.cpp ${GLEW_SOURCES})
 
 if (USE_DEVIL)
