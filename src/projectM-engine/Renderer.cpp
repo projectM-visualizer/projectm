@@ -125,8 +125,8 @@ void Renderer::checkForCgError(const char *situation)
 void Renderer::SetupCg()
 {
 
-compositeProgram = "C2E2f_composite";
-warpProgram = "C2E2f_passthru";
+compositeProgram = "composite";
+warpProgram = "warp";
 shaderFile="/home/pete/test.cg";
 
 myCgContext = cgCreateContext();
@@ -225,9 +225,13 @@ void Renderer::RenderFrame(const Pipeline* pipeline)
   cgGLEnableProfile(myCgProfile);
   checkForCgError("enabling warp profile");
 #endif
-
-
 		Interpolation(pipeline);
+#ifdef USE_CG
+  cgGLUnbindProgram(myCgProfile);
+  checkForCgError("disabling fragment profile");
+  cgGLDisableProfile(myCgProfile);
+  checkForCgError("disabling fragment profile");
+#endif
 
 		renderContext.texsize = texsize;
 		renderContext.aspectCorrect = correction;
@@ -243,13 +247,7 @@ void Renderer::RenderFrame(const Pipeline* pipeline)
 			glMatrixMode( GL_PROJECTION );
 			glPopMatrix();
 
-#ifdef USE_CG
-  cgGLUnbindProgram(myCgProfile);
-  checkForCgError("disabling fragment profile");
-  cgGLDisableProfile(myCgProfile);
-  checkForCgError("disabling fragment profile");
 
-#endif
 
 			renderTarget->unlock();
 
@@ -1887,14 +1885,13 @@ void Renderer::CompositeOutput(const Pipeline* pipeline)
 	glColor4f(1.0, 1.0, 1.0, 1.0f);
 
 	glEnable(GL_TEXTURE_2D);
-#if 0	
+
 #ifdef USE_CG
   cgGLBindProgram(myCgCompositeProgram);
   checkForCgError("binding warp program");
 
   cgGLEnableProfile(myCgProfile);
   checkForCgError("enabling warp profile");
-#endif
 #endif
 
 
@@ -1950,17 +1947,19 @@ void Renderer::CompositeOutput(const Pipeline* pipeline)
 
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	for (std::vector<RenderItem*>::const_iterator pos = pipeline->compositeDrawables.begin(); pos != pipeline->compositeDrawables.end(); ++pos)
-			(*pos)->Draw(renderContext);
-
-#if 0	
 #ifdef USE_CG
   cgGLUnbindProgram(myCgProfile);
   checkForCgError("disabling fragment profile");
   cgGLDisableProfile(myCgProfile);
   checkForCgError("disabling fragment profile");
 #endif
-#endif
+
+	for (std::vector<RenderItem*>::const_iterator pos = pipeline->compositeDrawables.begin(); pos != pipeline->compositeDrawables.end(); ++pos)
+			(*pos)->Draw(renderContext);
+
+
+
+
 
 }
 
