@@ -16,7 +16,8 @@
 #include <math.h>
 
 RenderContext::RenderContext()
-	:texsize(512), aspectRatio(1), aspectCorrect(false){};
+	: time(0),texsize(512), aspectRatio(1), aspectCorrect(false){};
+
 
 Shape::Shape()
 {
@@ -73,7 +74,7 @@ void Shape::Draw(RenderContext &context)
 			{
 				if (imageUrl !="")
 				{
-					GLuint tex = textureManager->getTexture(imageUrl);
+					GLuint tex = context.textureManager->getTexture(imageUrl);
 					if (tex != 0)
 					{
 						glBindTexture(GL_TEXTURE_2D, tex);
