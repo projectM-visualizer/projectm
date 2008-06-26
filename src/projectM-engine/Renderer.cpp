@@ -134,7 +134,7 @@ myCgContext = cgCreateContext();
   cgGLSetDebugMode( CG_FALSE );
   cgSetParameterSettingMode(myCgContext, CG_DEFERRED_PARAMETER_SETTING);
 
- 
+
   myCgProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
   cgGLSetOptimalOptions(myCgProfile);
   checkForCgError("selecting fragment profile");
@@ -151,7 +151,7 @@ myCgContext = cgCreateContext();
   cgGLLoadProgram(myCgWarpProgram);
   checkForCgError("loading fragment program");
 
- 
+
 
   myCgCompositeProgram =
     cgCreateProgramFromFile(
@@ -181,7 +181,7 @@ void Renderer::ResetTextures()
 	textureManager->Preload();
 }
 
-void Renderer::RenderFrame(const Pipeline* pipeline)
+void Renderer::RenderFrame(const Pipeline* pipeline, const PipelineContext &pipelineContext)
 {
 
 	glMatrixMode(GL_PROJECTION);
@@ -233,9 +233,12 @@ void Renderer::RenderFrame(const Pipeline* pipeline)
   checkForCgError("disabling fragment profile");
 #endif
 
+	    renderContext.time = pipelineContext.time;
 		renderContext.texsize = texsize;
 		renderContext.aspectCorrect = correction;
 		renderContext.aspectRatio = aspect;
+		renderContext.textureManager = textureManager;
+		renderContext.beatDetect = beatDetect;
 
 		for (std::vector<RenderItem*>::const_iterator pos = pipeline->drawables.begin(); pos != pipeline->drawables.end(); ++pos)
 			(*pos)->Draw(renderContext);
@@ -583,10 +586,7 @@ void Renderer::Interpolation(const Pipeline *pipeline)
 
 }
 Pipeline* Renderer::currentPipe;
-Point Renderer::PerPixel(Point p, PerPixelContext context)
-{
-return currentPipe->PerPixel(p,context);
-}
+
 
 Renderer::~Renderer()
 {
