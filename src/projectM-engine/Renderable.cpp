@@ -18,6 +18,38 @@
 RenderContext::RenderContext()
 	: time(0),texsize(512), aspectRatio(1), aspectCorrect(false){};
 
+DarkenCenter::DarkenCenter(){}
+
+void DarkenCenter::Draw(RenderContext &context)
+	{
+		//float unit=0.05f;
+
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		float colors[6][4] = {{0, 0, 0, 3.0f/32.0f},
+				      {0, 0, 0, 0},
+				      {0, 0, 0, 0},
+				      {0, 0, 0, 0},
+				      {0, 0, 0, 0},
+				      {0, 0, 0, 0}};
+
+		float points[6][2] = {{ 0.5,  0.5},
+				      { 0.45, 0.5},
+				      { 0.5,  0.45},
+				      { 0.55, 0.5},
+				      { 0.5,  0.55},
+				      { 0.45, 0.5}};
+
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_COLOR_ARRAY);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+		glVertexPointer(2,GL_FLOAT,0,points);
+		glColorPointer(4,GL_FLOAT,0,colors);
+
+		glDrawArrays(GL_TRIANGLE_FAN,0,6);
+
+	}
 
 Shape::Shape()
 {

@@ -24,6 +24,12 @@ public:
 	virtual void Draw(RenderContext &context) = 0;
 };
 
+class DarkenCenter : public RenderItem
+{
+	DarkenCenter();
+	void Draw(RenderContext &context);
+};
+
 class Shape : public RenderItem
 {
 public:
