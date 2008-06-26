@@ -71,7 +71,7 @@ public:
   Renderer( int width, int height, int gx, int gy, int texsize,  BeatDetect *beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
   ~Renderer();
   void RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
-  void RenderFrame(const Pipeline *pipeline);
+  void RenderFrame(const Pipeline *pipeline, const PipelineContext &pipelineContext);
   void ResetTextures();
   void reset(int w, int h);
   GLuint initRenderToTexture();
@@ -117,7 +117,7 @@ private:
 
   CGcontext   myCgContext;
  CGprofile   myCgProfile;
-                   
+
  CGprogram   myCgWarpProgram,
                    myCgCompositeProgram;
 
@@ -145,8 +145,10 @@ void SetupCg();
 
   void CompositeOutput(const Pipeline* pipeline);
   void Interpolation(const Pipeline* pipeline);
-  static Point PerPixel(Point p, PerPixelContext context);
-
+  inline static Point PerPixel(Point p, PerPixelContext &context)
+  {
+  return currentPipe->PerPixel(p,context);
+  }
 
   void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
 

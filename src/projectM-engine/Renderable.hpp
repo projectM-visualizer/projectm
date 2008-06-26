@@ -3,13 +3,17 @@
 
 #include <string.h>
 #include "TextureManager.hpp"
+#include "BeatDetect.hpp"
 
 class RenderContext
 {
 public:
+	float time;
 	int texsize;
 	float aspectRatio;
 	bool aspectCorrect;
+	BeatDetect *beatDetect;
+	TextureManager *textureManager;
 
 	RenderContext();
 };
@@ -20,13 +24,7 @@ public:
 	virtual void Draw(RenderContext &context) = 0;
 };
 
-class TexturedItem
-{
-public:
-	TextureManager *textureManager;
-};
-
-class Shape : public TexturedItem, public RenderItem
+class Shape : public RenderItem
 {
 public:
     std::string imageUrl;
