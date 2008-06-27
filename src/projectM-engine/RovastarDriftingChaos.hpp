@@ -8,6 +8,7 @@
 #include "Pipeline.hpp"
 #include "MilkdropCompatability.hpp"
 #include "Transformation.hpp"
+#include "MilkdropWaveform.hpp"
 
 
 class RovastarDriftingChaos : public Pipeline
@@ -15,6 +16,7 @@ class RovastarDriftingChaos : public Pipeline
 public:
 
 	Shape shape1, shape2, shape3;
+	MilkdropWaveform wave;
 
 	RovastarDriftingChaos() : Pipeline()
 	{
@@ -28,6 +30,7 @@ public:
 		drawables.push_back(&shape1);
 		drawables.push_back(&shape2);
 		drawables.push_back(&shape3);
+		drawables.push_back(&wave);
 
 		shape1.sides = 3;
 		shape1.radius=0.550000;
