@@ -12,26 +12,30 @@
 
 class Brighten : public RenderItem
 {
+public:
 	Brighten(){}
-	void Draw();
+	void Draw(RenderContext &context);
 };
 
 class Darken : public RenderItem
 {
+public:
 	Darken(){}
-	void Draw();
+	void Draw(RenderContext &context);
 };
 
 class Invert : public RenderItem
 {
+public:
 	Invert(){}
-	void Draw();
+	void Draw(RenderContext &context);
 };
 
 class Solarize : public RenderItem
 {
+public:
 	Solarize(){}
-	void Draw();
+	void Draw(RenderContext &context);
 };
 
 #endif /* FILTERS_HPP_ */
