@@ -19,7 +19,7 @@
 
 #include "Filters.hpp"
 
-void Brighten::Draw()
+void Brighten::Draw(RenderContext &context)
 {
 	float points[4][2] = {{-0.5, -0.5},
 				      {-0.5,  0.5},
@@ -41,7 +41,7 @@ void Brighten::Draw()
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-void Darken::Draw()
+void Darken::Draw(RenderContext &context)
 {
 	float points[4][2] = {{-0.5, -0.5},
 				      {-0.5,  0.5},
@@ -57,7 +57,7 @@ void Darken::Draw()
 		glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-void Invert::Draw()
+void Invert::Draw(RenderContext &context)
 {
 	float points[4][2] = {{-0.5, -0.5},
 				      {-0.5,  0.5},
@@ -74,7 +74,7 @@ void Invert::Draw()
 		glDisableClientState(GL_VERTEX_ARRAY);
 }
 
-void Solarize::Draw()
+void Solarize::Draw(RenderContext &context)
 {
 	float points[4][2] = {{-0.5, -0.5},
 					      {-0.5,  0.5},
