@@ -261,7 +261,7 @@ void Renderer::RenderFrame(const Pipeline* pipeline, const PipelineContext &pipe
 
 	SetupPass1(pipeline, pipelineContext);
 
-	#ifdef USE_CG
+#ifdef USE_CG
   cgGLBindProgram(myCgWarpProgram);
   checkForCgError("binding warp program");
 
@@ -276,46 +276,10 @@ void Renderer::RenderFrame(const Pipeline* pipeline, const PipelineContext &pipe
   checkForCgError("disabling fragment profile");
 #endif
 
+
 	    RenderItems(pipeline,pipelineContext);
-
-	    FinishPass1();			//BEGIN PASS 2
-			//
-			//end of texture rendering
-			//now we copy the texture from the FBO or framebuffer to
-			//video texture memory and render fullscreen.
-
-			/** Reset the viewport size */
-		#ifdef USE_FBO
-			if(renderTarget->renderToTexture)
-			{
-				glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->renderTarget->fbuffer[1]);
-				glViewport( 0, 0, this->renderTarget->texsize, this->renderTarget->texsize );
-			}
-			else
-		#endif
-			glViewport( 0, 0, this->vw, this->vh );
-
-			glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID[0] );
-
-			glMatrixMode(GL_PROJECTION);
-			glLoadIdentity();
-
-#ifdef USE_GLES1
-		glOrthof(-0.5, 0.5, -0.5, 0.5, -40, 40);
-#else
-		glOrtho(-0.5, 0.5, -0.5, 0.5, -40, 40);
-#endif
-
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			glLineWidth( this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512.0);
-
-			CompositeOutput(pipeline);
-		#ifdef USE_FBO
-			if(renderTarget->renderToTexture)
-				glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-		#endif
-
+	    FinishPass1();
+	    Pass2(pipeline);
 }
 
 void Renderer::FinishPass1()
@@ -331,31 +295,8 @@ void Renderer::FinishPass1()
 		renderTarget->unlock();
 }
 
-void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
+void Renderer::Pass2(const Pipeline *pipeline)
 {
-	SetupPass1(presetOutputs, *presetInputs);
-
-	Interpolation(presetOutputs, presetInputs);
-
-	RenderItems(presetOutputs, *presetInputs);
-
-
-
-	draw_custom_waves(presetOutputs);
-
-
-	FinishPass1();
-
-
-
-#ifdef DEBUG
-	GLint msd = 0, psd = 0;
-	glGetIntegerv( GL_MODELVIEW_STACK_DEPTH, &msd );
-	glGetIntegerv( GL_PROJECTION_STACK_DEPTH, &psd );
-	DWRITE( "end pass1: modelview matrix depth: %d\tprojection matrix depth: %d\n", msd, psd );
-	DWRITE( "begin pass2\n" );
-#endif
-
 	//BEGIN PASS 2
 	//
 	//end of texture rendering
@@ -388,7 +329,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 
 	glLineWidth( this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512.0);
 
-	CompositeOutput(presetOutputs);
+	CompositeOutput(pipeline);
 
 
 	glMatrixMode(GL_MODELVIEW);
@@ -401,13 +342,38 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 	if(this->showtitle%2) draw_title();
 	if(this->showfps%2) draw_fps(this->realfps);
 	if(this->showpreset%2) draw_preset();
-	if(this->showstats%2) draw_stats(presetInputs);
+	if(this->showstats%2) draw_stats();
 	glTranslatef(0.5 , 0.5, 0);
 
 #ifdef USE_FBO
 	if(renderTarget->renderToTexture)
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 #endif
+}
+
+void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
+{
+	SetupPass1(presetOutputs, *presetInputs);
+
+#ifdef USE_CG
+  cgGLBindProgram(myCgWarpProgram);
+  checkForCgError("binding warp program");
+
+  cgGLEnableProfile(myCgProfile);
+  checkForCgError("enabling warp profile");
+#endif
+  Interpolation(presetOutputs, presetInputs);
+#ifdef USE_CG
+  cgGLUnbindProgram(myCgProfile);
+  checkForCgError("disabling fragment profile");
+  cgGLDisableProfile(myCgProfile);
+  checkForCgError("disabling fragment profile");
+#endif
+
+	RenderItems(presetOutputs, *presetInputs);
+	draw_custom_waves(presetOutputs);
+	FinishPass1();
+    Pass2(presetOutputs);
 }
 
 
@@ -828,42 +794,6 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs)
 
 }
 
-
-void Renderer::darken_center()
-{
-
-	float unit=0.05f;
-
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	float colors[6][4] = {{0, 0, 0, 3.0f/32.0f},
-			      {0, 0, 0, 0},
-			      {0, 0, 0, 0},
-			      {0, 0, 0, 0},
-			      {0, 0, 0, 0},
-			      {0, 0, 0, 0}};
-
-	float points[6][2] = {{ 0.5,  0.5},
-			      { 0.45, 0.5},
-			      { 0.5,  0.45},
-			      { 0.55, 0.5},
-			      { 0.5,  0.55},
-			      { 0.45, 0.5}};
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glVertexPointer(2,GL_FLOAT,0,points);
-	glColorPointer(4,GL_FLOAT,0,colors);
-
-	glDrawArrays(GL_TRIANGLE_FAN,0,6);
-
-}
-
-
-
-
 GLuint Renderer::initRenderToTexture()
 {
 	return renderTarget->initRenderToTexture();
@@ -881,48 +811,7 @@ void Renderer::draw_title_to_texture()
 #endif /** USE_FTGL */
 }
 
-/*
-void setUpLighting()
-{
-	// Set up lighting.
-	float light1_ambient[4]  = { 1.0, 1.0, 1.0, 1.0 };
-	float light1_diffuse[4]  = { 1.0, 0.9, 0.9, 1.0 };
-	float light1_specular[4] = { 1.0, 0.7, 0.7, 1.0 };
-	float light1_position[4] = { -1.0, 1.0, 1.0, 0.0 };
-	glLightfv(GL_LIGHT1, GL_AMBIENT,  light1_ambient);
-	glLightfv(GL_LIGHT1, GL_DIFFUSE,  light1_diffuse);
-	glLightfv(GL_LIGHT1, GL_SPECULAR, light1_specular);
-	glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
-	//glEnable(GL_LIGHT1);
 
-	float light2_ambient[4]  = { 0.2, 0.2, 0.2, 1.0 };
-	float light2_diffuse[4]  = { 0.9, 0.9, 0.9, 1.0 };
-	float light2_specular[4] = { 0.7, 0.7, 0.7, 1.0 };
-	float light2_position[4] = { 0.0, -1.0, 1.0, 0.0 };
-	glLightfv(GL_LIGHT2, GL_AMBIENT,  light2_ambient);
-	glLightfv(GL_LIGHT2, GL_DIFFUSE,  light2_diffuse);
-	glLightfv(GL_LIGHT2, GL_SPECULAR, light2_specular);
-	glLightfv(GL_LIGHT2, GL_POSITION, light2_position);
-	glEnable(GL_LIGHT2);
-
-	float front_emission[4] = { 0.3, 0.2, 0.1, 0.0 };
-	float front_ambient[4]  = { 0.2, 0.2, 0.2, 0.0 };
-	float front_diffuse[4]  = { 0.95, 0.95, 0.8, 0.0 };
-	float front_specular[4] = { 0.6, 0.6, 0.6, 0.0 };
-	glMaterialfv(GL_FRONT, GL_EMISSION, front_emission);
-	glMaterialfv(GL_FRONT, GL_AMBIENT, front_ambient);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, front_diffuse);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, front_specular);
-	glMaterialf(GL_FRONT, GL_SHININESS, 16.0);
-	glColor4fv(front_diffuse);
-
-	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
-	glColorMaterial(GL_FRONT, GL_DIFFUSE);
-	glEnable(GL_COLOR_MATERIAL);
-
-	glEnable(GL_LIGHTING);
-}
-*/
 
 float title_y;
 
@@ -1102,7 +991,7 @@ void Renderer::draw_help( )
 #endif /** USE_FTGL */
 }
 
-void Renderer::draw_stats(PresetInputs *presetInputs)
+void Renderer::draw_stats()
 {
 
 #ifdef USE_FTGL

@@ -147,8 +147,8 @@ private:
   void Interpolation(const Pipeline* pipeline);
   void RenderItems(const Pipeline* pipeline, const PipelineContext &pipelineContext);
   void CompositeOutput(const Pipeline* pipeline);
-  void FinishPass1 ();
-  void SetupPass2 (const Pipeline* pipeline, const PipelineContext &pipelineContext);
+  void FinishPass1();
+  void Pass2 (const Pipeline* pipeline);
 
   inline static Point PerPixel(Point p, PerPixelContext &context)
   {
@@ -160,8 +160,8 @@ private:
   void rescale_per_pixel_matrices();
 
   void draw_fps( float realfps );
-  void draw_stats(PresetInputs *presetInputs);
-  void draw_help( );
+  void draw_stats();
+  void draw_help();
   void draw_preset();
   void draw_title();
   void draw_title_to_screen(bool flip);
@@ -169,7 +169,6 @@ private:
 
   void draw_custom_waves(PresetOutputs *presetOutputs);
 
-  void darken_center();
 };
 
 #endif

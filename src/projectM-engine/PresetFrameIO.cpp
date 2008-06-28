@@ -125,7 +125,7 @@ void PresetOutputs::PrepareToRender()
 			}
 
     drawables.push_back(&wave);
-	if(bDarkenCenter)drawables.push_back(&darkenCenter);
+	if(bDarkenCenter==1) drawables.push_back(&darkenCenter);
 	drawables.push_back(&border);
 
 	compositeDrawables.clear();
@@ -136,10 +136,10 @@ void PresetOutputs::PrepareToRender()
 	if (bDarken==1)
 		compositeDrawables.push_back(&darken);
 
-	if (bSolarize)
+	if (bSolarize==1)
 		compositeDrawables.push_back(&solarize);
 
-	if (bInvert)
+	if (bInvert==1)
 		compositeDrawables.push_back(&invert);
 }
 
