@@ -15,7 +15,7 @@ public:
   //void unloadTextures(const PresetOutputs::cshape_container &shapes);
   void Clear();
   void Preload();
-  unsigned int getTexture(std::string imageUrl);
+  unsigned int getTexture(const std::string imageUrl);
   unsigned int getTextureMemorySize();
 };
 

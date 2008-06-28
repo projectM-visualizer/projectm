@@ -112,6 +112,10 @@ private:
 
   float aspect;
 
+  std::string title_fontURL;
+  std::string menu_fontURL;
+  std::string presetURL;
+
 #ifdef USE_CG
 
   CGcontext   myCgContext;
@@ -137,14 +141,15 @@ private:
   FTGLExtrdFont *poly_font;
 #endif /** USE_FTGL */
 
-  std::string title_fontURL;
-  std::string menu_fontURL;
-  std::string presetURL;
 
 
-
-  void CompositeOutput(const Pipeline* pipeline);
+  void SetupPass1(const Pipeline* pipeline, const PipelineContext &pipelineContext);
   void Interpolation(const Pipeline* pipeline);
+  void RenderItems(const Pipeline* pipeline, const PipelineContext &pipelineContext);
+  void CompositeOutput(const Pipeline* pipeline);
+  void FinishPass1 ();
+  void SetupPass2 (const Pipeline* pipeline, const PipelineContext &pipelineContext);
+
   inline static Point PerPixel(Point p, PerPixelContext &context)
   {
   return currentPipe->PerPixel(p,context);
@@ -152,7 +157,6 @@ private:
 
   void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
 
-  void draw_waveform(PresetOutputs * presetOutputs);
   void rescale_per_pixel_matrices();
 
   void draw_fps( float realfps );

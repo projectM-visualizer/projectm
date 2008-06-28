@@ -3,7 +3,7 @@
 #include <math.h>
 #include <cassert>
 #include <iostream>
-PresetInputs::PresetInputs()
+PresetInputs::PresetInputs() : PipelineContext()
 {
 }
 
@@ -114,6 +114,20 @@ PresetOutputs::~PresetOutputs()
 
 void PresetOutputs::PrepareToRender()
 {
+	drawables.clear();
+
+	drawables.push_back(&mv);
+
+	for (PresetOutputs::cshape_container::iterator pos = customShapes.begin();
+			pos != customShapes.end(); ++pos)
+			{
+				if( (*pos)->enabled==1)	drawables.push_back((*pos));
+			}
+
+    drawables.push_back(&wave);
+	if(bDarkenCenter)drawables.push_back(&darkenCenter);
+	drawables.push_back(&border);
+
 	compositeDrawables.clear();
 
 	if (bBrighten==1)
