@@ -465,7 +465,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 {
 	//Texture wrapping( clamp vs. wrap)
-	if (presetOutputs->bTexWrap==0)
+	if (presetOutputs->textureWrap==0)
 	{
 #ifdef USE_GLES1
 	  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -484,7 +484,7 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
 
-	glColor4f(1.0, 1.0, 1.0, presetOutputs->decay);
+	glColor4f(1.0, 1.0, 1.0, presetOutputs->screenDecay);
 
 	glEnable(GL_TEXTURE_2D);
 
@@ -1539,12 +1539,12 @@ void Renderer::render_texture_to_screen(PresetOutputs *presetOutputs)
 	glMatrixMode(GL_TEXTURE);
 
 	//draw video echo
-	glColor4f(1.0, 1.0, 1.0, presetOutputs->fVideoEchoAlpha);
+	glColor4f(1.0, 1.0, 1.0, presetOutputs->videoEchoAlpha);
 	glTranslatef(.5, .5, 0);
-	glScalef(1.0/presetOutputs->fVideoEchoZoom, 1.0/presetOutputs->fVideoEchoZoom, 1);
+	glScalef(1.0/presetOutputs->videoEchoZoom, 1.0/presetOutputs->videoEchoZoom, 1);
 	glTranslatef(-.5, -.5, 0);
 
-	switch (((int)presetOutputs->nVideoEchoOrientation))
+	switch (((int)presetOutputs->videoEchoOrientation))
 	{
 		case 0: flipx=1;flipy=1;break;
 		case 1: flipx=-1;flipy=1;break;

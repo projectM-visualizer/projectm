@@ -12,7 +12,7 @@ class Pipeline
 {
 public:
 
-	 bool textureWrap;
+	 bool  textureWrap;
 	 float screenDecay;
 
 	 float videoEchoAlpha;

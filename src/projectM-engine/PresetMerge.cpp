@@ -75,7 +75,7 @@ double invratio = 1.0 - ratio;
 
  //Interpolate PerFrame floats
 
-  A.decay = A.decay * invratio + B.decay * ratio;
+  A.screenDecay = A.screenDecay * invratio + B.screenDecay * ratio;
 
   A.wave.r = A.wave.r* invratio + B.wave.r*ratio;
   A.wave.g = A.wave.g* invratio + B.wave.g*ratio;
@@ -110,8 +110,8 @@ double invratio = 1.0 - ratio;
 
   A.fRating = A.fRating* invratio + B.fRating*ratio;
   A.fGammaAdj = A.fGammaAdj* invratio + B.fGammaAdj*ratio;
-  A.fVideoEchoZoom = A.fVideoEchoZoom* invratio + B.fVideoEchoZoom*ratio;
-  A.fVideoEchoAlpha = A.fVideoEchoAlpha* invratio + B.fVideoEchoAlpha*ratio;
+  A.videoEchoZoom = A.videoEchoZoom* invratio + B.videoEchoZoom*ratio;
+  A.videoEchoAlpha = A.videoEchoAlpha* invratio + B.videoEchoAlpha*ratio;
 
 
   A.fWarpAnimSpeed = A.fWarpAnimSpeed* invratio + B.fWarpAnimSpeed*ratio;
@@ -122,8 +122,8 @@ double invratio = 1.0 - ratio;
 
   if (ratio > 0.5)
     {
-      A.nVideoEchoOrientation = B.nVideoEchoOrientation;
-      A.bTexWrap = B.bTexWrap;
+      A.videoEchoOrientation = B.videoEchoOrientation;
+      A.textureWrap = B.textureWrap;
       A.bDarkenCenter = B.bDarkenCenter;
       A.bRedBlueStereo = B.bRedBlueStereo;
       A.bBrighten = B.bBrighten;
