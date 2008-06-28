@@ -166,7 +166,6 @@ private:
   void maximize_colors();
   void draw_title_to_texture();
 
-  void draw_shapes(PresetOutputs *presetOutputs);
   void draw_custom_waves(PresetOutputs *presetOutputs);
 
   void modulate_opacity_by_volume(PresetOutputs *presetOutputs) ;
