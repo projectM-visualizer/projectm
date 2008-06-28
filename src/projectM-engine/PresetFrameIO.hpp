@@ -1,11 +1,14 @@
 #ifndef PRESET_FRAME_IO_HPP
 #define PRESET_FRAME_IO_HPP
 #include <vector>
+#include "MilkdropWaveform.hpp"
+#include "Renderable.hpp"
+
 class CustomWave;
 class CustomShape;
 
 
-/// Container class for all preset writeable engine variables. This is the important glue 
+/// Container class for all preset writeable engine variables. This is the important glue
 /// between the presets and renderer to facilitate smooth preset switching
 /// Every preset object needs a reference to one of these.
 class PresetOutputs {
@@ -34,35 +37,9 @@ public:
 
     float decay;
 
-    float wave_r;
-    float wave_g;
-    float wave_b;
-    float wave_o;
-    float wave_x;
-    float wave_y;
-    float wave_mystery;
-
-    float ob_size;
-    float ob_r;
-    float ob_g;
-    float ob_b;
-    float ob_a;
-
-    float ib_size;
-    float ib_r;
-    float ib_g;
-    float ib_b;
-    float ib_a;
-
-    float mv_a ;
-    float mv_r ;
-    float mv_g ;
-    float mv_b ;
-    float mv_l;
-    float mv_x;
-    float mv_y;
-    float mv_dy;
-    float mv_dx;
+    MilkdropWaveform wave;
+    Border border;
+    MotionVectors mv;
 
     int gy,gx;
     /* PER_FRAME VARIABLES END */
@@ -73,13 +50,7 @@ public:
     float fVideoEchoAlpha;
 
     int nVideoEchoOrientation;
-    int nWaveMode;
 
-    bool bAdditiveWaves;
-    bool bWaveDots;
-    bool bWaveThick;
-    bool bModWaveAlphaByVolume;
-    bool bMaximizeWaveColor;
     bool bTexWrap;
     bool bDarkenCenter;
     bool bRedBlueStereo;
@@ -89,13 +60,6 @@ public:
     bool bInvert;
     bool bMotionVectorsOn;
 
-
-    float fWaveAlpha ;
-    float fWaveScale;
-    float fWaveSmoothing;
-    float fWaveParam;
-    float fModWaveAlphaStart;
-    float fModWaveAlphaEnd;
     float fWarpAnimSpeed;
     float fWarpScale;
     float fShader;
@@ -130,19 +94,9 @@ public:
     float **x_mesh;
     float **y_mesh;
 
-  float wavearray[2048][2];
-  float wavearray2[2048][2];
- 
-  int wave_samples;
-  bool two_waves;
-  bool draw_wave_as_loop;
-  double wave_rot;
-  double wave_scale;
-  
-
 };
 
-/// Container for all *read only* engine variables a preset requires to 
+/// Container for all *read only* engine variables a preset requires to
 /// evaluate milkdrop equations. Every preset object needs a reference to one of these.
 class PresetInputs {
 

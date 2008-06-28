@@ -1,3 +1,20 @@
+#ifdef LINUX
+#include <GL/gl.h>
+#endif
+#ifdef WIN32
+#include "glew.h"
+#endif
+#ifdef __APPLE__
+#include <GL/gl.h>
+#endif
+
+#ifdef USE_DEVIL
+#include <IL/ilut.h>
+#else
+#include "SOIL.h"
+#endif
+
+
 #include "TextureManager.hpp"
 #include "CustomShape.hpp"
 #include "Common.hpp"
@@ -11,20 +28,20 @@ TextureManager::TextureManager(const std::string _presetURL): presetURL(_presetU
 ilInit();
 iluInit();
 ilutInit();
-ilutRenderer(ILUT_OPENGL);	
+ilutRenderer(ILUT_OPENGL);
 #endif
 
  Preload();
 }
 
 TextureManager::~TextureManager()
-{  
+{
  Clear();
 }
 
 void TextureManager::Preload()
 {
-	
+
 #ifdef USE_DEVIL
 	ILuint image;
 	ilGenImages(1, &image);
@@ -32,20 +49,20 @@ void TextureManager::Preload()
 	ilLoadL(IL_TYPE_UNKNOWN,(ILvoid*) M_data, M_bytes);
 	GLuint tex = ilutGLBindTexImage();
 #else
-	 GLuint tex = SOIL_load_OGL_texture_from_memory(
+	 uint tex = SOIL_load_OGL_texture_from_memory(
 					  M_data,
 					  M_bytes,
 					  SOIL_LOAD_AUTO,
 					  SOIL_CREATE_NEW_ID,
-				  
-					    SOIL_FLAG_POWER_OF_TWO	       
+
+					    SOIL_FLAG_POWER_OF_TWO
 					  |  SOIL_FLAG_MULTIPLY_ALPHA
-					  |  SOIL_FLAG_COMPRESS_TO_DXT	  
+					  |  SOIL_FLAG_COMPRESS_TO_DXT
 					  );
 #endif
-	 
+
   textures["M.tga"]=tex;
-  
+
 #ifdef USE_DEVIL
   ilLoadL(IL_TYPE_UNKNOWN,(ILvoid*) project_data,project_bytes);
   tex = ilutGLBindTexImage();
@@ -55,15 +72,15 @@ void TextureManager::Preload()
 					  project_bytes,
 					  SOIL_LOAD_AUTO,
 					  SOIL_CREATE_NEW_ID,
-					  
-					  SOIL_FLAG_POWER_OF_TWO	       
+
+					  SOIL_FLAG_POWER_OF_TWO
 					  |  SOIL_FLAG_MULTIPLY_ALPHA
-					  |  SOIL_FLAG_COMPRESS_TO_DXT	  
+					  |  SOIL_FLAG_COMPRESS_TO_DXT
 					  );
 #endif
-  
+
   textures["project.tga"]=tex;
-  
+
 #ifdef USE_DEVIL
   ilLoadL(IL_TYPE_UNKNOWN,(ILvoid*) headphones_data, headphones_bytes);
   tex = ilutGLBindTexImage();
@@ -73,19 +90,19 @@ void TextureManager::Preload()
 					  headphones_bytes,
 					  SOIL_LOAD_AUTO,
 					  SOIL_CREATE_NEW_ID,
-					  
-					  SOIL_FLAG_POWER_OF_TWO	       
+
+					  SOIL_FLAG_POWER_OF_TWO
 					  |  SOIL_FLAG_MULTIPLY_ALPHA
-					  |  SOIL_FLAG_COMPRESS_TO_DXT	  
+					  |  SOIL_FLAG_COMPRESS_TO_DXT
 					  );
 #endif
-  
+
   textures["headphones.tga"]=tex;
 }
 
 void TextureManager::Clear()
 {
-	
+
 
   for(std::map<std::string, GLuint>::const_iterator iter = textures.begin(); iter != textures.end(); iter++)
     {
@@ -95,34 +112,34 @@ void TextureManager::Clear()
 }
 
 
-void TextureManager::unloadTextures(const PresetOutputs::cshape_container &shapes)
-{
+//void TextureManager::unloadTextures(const PresetOutputs::cshape_container &shapes)
+//{
   /*
    for (PresetOutputs::cshape_container::const_iterator pos = shapes.begin();
-	pos != shapes.end(); ++pos) 
+	pos != shapes.end(); ++pos)
     {
 
       if( (*pos)->enabled==1)
 	{
-	 
+
 	  if ( (*pos)->textured)
 	    {
 	      std::string imageUrl = (*pos)->getImageUrl();
 	      if (imageUrl != "")
 		{
 		  std::string fullUrl = presetURL + "/" + imageUrl;
-		  ReleaseTexture(LoadTexture(fullUrl.c_str()));		 
+		  ReleaseTexture(LoadTexture(fullUrl.c_str()));
 		}
 	    }
 	}
     }
   */
-}
+//}
 
 
 GLuint TextureManager::getTexture(const std::string imageURL)
 {
- 
+
    if (textures.find(imageURL)!= textures.end())
      {
        return textures[imageURL];
@@ -133,11 +150,11 @@ GLuint TextureManager::getTexture(const std::string imageURL)
 #ifdef USE_DEVIL
        GLuint tex = ilutGLLoadImage((char *)fullURL.c_str());
 #else
-       GLuint tex = SOIL_load_OGL_texture(
+       uint tex = SOIL_load_OGL_texture(
 					  fullURL.c_str(),
 					  SOIL_LOAD_AUTO,
 					  SOIL_CREATE_NEW_ID,
-					  
+
 					    SOIL_FLAG_POWER_OF_TWO
 					  //  SOIL_FLAG_MIPMAPS
 					  |  SOIL_FLAG_MULTIPLY_ALPHA
@@ -147,9 +164,9 @@ GLuint TextureManager::getTexture(const std::string imageURL)
 #endif
        textures[imageURL]=tex;
        return tex;
-       
 
-     }   
+
+     }
 }
 
 unsigned int TextureManager::getTextureMemorySize()

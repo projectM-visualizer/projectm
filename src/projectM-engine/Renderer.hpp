@@ -76,7 +76,7 @@ public:
   void reset(int w, int h);
   GLuint initRenderToTexture();
   void PerPixelMath(PresetOutputs *presetOutputs,  PresetInputs *presetInputs);
-  void WaveformMath(PresetOutputs *presetOutputs, PresetInputs *presetInputs, bool isSmoothing);
+
 
   void setPresetName(const std::string& theValue)
   {
@@ -87,7 +87,6 @@ public:
   {
     return m_presetName;
   }
-
 
 private:
 
@@ -128,7 +127,8 @@ private:
 
 
  void checkForCgError(const char *situation);
-void SetupCg();
+ void SetupCg();
+ void SetupCgVariables(CGprogram program, const PipelineContext &context);
 #endif
 
 #ifdef USE_FTGL
@@ -165,8 +165,7 @@ void SetupCg();
   void draw_title_to_screen(bool flip);
   void maximize_colors();
   void draw_title_to_texture();
-  void draw_motion_vectors(PresetOutputs *presetOutputs);
-  void draw_borders(PresetOutputs *presetOutputs);
+
   void draw_shapes(PresetOutputs *presetOutputs);
   void draw_custom_waves(PresetOutputs *presetOutputs);
 
