@@ -71,7 +71,7 @@ void PresetInputs::Initialize ( int gx, int gy )
 
 }
 
-PresetOutputs::PresetOutputs()
+PresetOutputs::PresetOutputs() : Pipeline()
 {}
 
 PresetOutputs::~PresetOutputs()
@@ -90,12 +90,12 @@ PresetOutputs::~PresetOutputs()
 		free(this->dx_mesh[x]);
 		free(this->cy_mesh[x]);
 		free(this->cx_mesh[x]);
-		
+
 		free(this->warp_mesh[x]);
 		free(this->zoom_mesh[x]);
 		free(this->zoomexp_mesh[x]);
 		free(this->rot_mesh[x]);
-		
+
 	}
 
 		free(this->x_mesh);
@@ -110,6 +110,23 @@ PresetOutputs::~PresetOutputs()
 		free(this->zoom_mesh);
 		free(this->zoomexp_mesh);
 		free(this->rot_mesh);
+}
+
+void PresetOutputs::PrepareToRender()
+{
+	compositeDrawables.clear();
+
+	if (bBrighten==1)
+		compositeDrawables.push_back(&brighten);
+
+	if (bDarken==1)
+		compositeDrawables.push_back(&darken);
+
+	if (bSolarize)
+		compositeDrawables.push_back(&solarize);
+
+	if (bInvert)
+		compositeDrawables.push_back(&invert);
 }
 
 void PresetOutputs::Initialize ( int gx, int gy )

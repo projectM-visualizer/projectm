@@ -2,7 +2,8 @@
 #define PRESET_FRAME_IO_HPP
 #include <vector>
 #include "MilkdropWaveform.hpp"
-#include "Renderable.hpp"
+#include "Pipeline.hpp"
+#include "Filters.hpp"
 
 class CustomWave;
 class CustomShape;
@@ -11,7 +12,7 @@ class CustomShape;
 /// Container class for all preset writeable engine variables. This is the important glue
 /// between the presets and renderer to facilitate smooth preset switching
 /// Every preset object needs a reference to one of these.
-class PresetOutputs {
+class PresetOutputs : public Pipeline{
 public:
     typedef std::vector<CustomWave*> cwave_container;
     typedef std::vector<CustomShape*> cshape_container;
@@ -22,14 +23,8 @@ public:
     void Initialize(int gx, int gy);
     PresetOutputs();
     ~PresetOutputs();
+    void PrepareToRender();
     /* PER FRAME VARIABLES BEGIN */
-
-    bool  textureWrap;
-   	float screenDecay;
-
-   	float videoEchoAlpha;
-   	float videoEchoZoom;
-   	float videoEchoOrientation;
 
     float zoom;
     float zoomexp;
@@ -46,6 +41,12 @@ public:
     MilkdropWaveform wave;
     Border border;
     MotionVectors mv;
+
+    Brighten brighten;
+    Darken darken;
+    Invert invert;
+    Solarize solarize;
+
 
     int gy,gx;
     /* PER_FRAME VARIABLES END */

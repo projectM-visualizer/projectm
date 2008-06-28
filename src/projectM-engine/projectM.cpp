@@ -371,7 +371,7 @@ DLLEXPORT void projectM::renderFrame()
 
 	//	std::cout<< m_activePreset->absoluteFilePath()<<std::endl;
 	//	renderer->presetName = m_activePreset->absoluteFilePath();
-
+	m_activePreset->presetOutputs().PrepareToRender();
 	renderer->RenderFrame ( &m_activePreset->presetOutputs(), &presetInputs );
 
 	count++;
