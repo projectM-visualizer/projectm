@@ -4,9 +4,9 @@
 #include "MilkdropWaveform.hpp"
 #include "Pipeline.hpp"
 #include "Filters.hpp"
+#include "CustomShape.hpp"
 
 class CustomWave;
-class CustomShape;
 
 
 /// Container class for all preset writeable engine variables. This is the important glue
@@ -41,6 +41,7 @@ public:
     MilkdropWaveform wave;
     Border border;
     MotionVectors mv;
+    DarkenCenter darkenCenter;
 
     Brighten brighten;
     Darken darken;
@@ -100,7 +101,7 @@ public:
 
 /// Container for all *read only* engine variables a preset requires to
 /// evaluate milkdrop equations. Every preset object needs a reference to one of these.
-class PresetInputs {
+class PresetInputs : public PipelineContext{
 
 public:
     /* PER_PIXEL VARIBLES BEGIN */
@@ -112,18 +113,13 @@ public:
 
     /* PER_PIXEL VARIBLES END */
 
-    int fps;
 
-
-    float time;
     float bass;
     float mid;
     float treb;
     float bass_att;
     float mid_att;
     float treb_att;
-    int frame;
-    float progress;
 
 
     /* variables were added in milkdrop 1.04 */

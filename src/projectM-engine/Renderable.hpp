@@ -26,6 +26,7 @@ public:
 
 class DarkenCenter : public RenderItem
 {
+public:
 	DarkenCenter();
 	void Draw(RenderContext &context);
 };
@@ -62,6 +63,7 @@ public:
     float border_g; /* green color value */
     float border_b; /* blue color value */
     float border_a; /* alpha color value */
+
 
     Shape();
     virtual void Draw(RenderContext &context);
