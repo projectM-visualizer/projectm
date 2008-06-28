@@ -39,11 +39,15 @@
 #include "wipemalloc.h"
 #include "Algorithms.hpp"
 
-
 using namespace Algorithms;
 
 
-CustomShape::CustomShape ( int id ) : imageUrl("")
+CustomShape::CustomShape() : Shape()
+{
+	CustomShape(0);
+};
+
+CustomShape::CustomShape ( int id ) : Shape()
 {
 
 	Param * param;
@@ -150,7 +154,7 @@ CustomShape::CustomShape ( int id ) : imageUrl("")
 	param = Param::new_param_float ( "rad", P_FLAG_NONE, &this->radius, NULL, MAX_DOUBLE_SIZE, 0, 0.0 );
 	if ( !ParamUtils::insert( param, &this->param_tree ) )
 	{
-		abort(); 
+		abort();
 	}
 	param = Param::new_param_float ( "ang", P_FLAG_NONE, &this->ang, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( !ParamUtils::insert( param, &this->param_tree ) )
@@ -196,7 +200,7 @@ CustomShape::CustomShape ( int id ) : imageUrl("")
 	param = Param::new_param_float ( "t6", P_FLAG_TVAR, &this->t6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( !ParamUtils::insert( param, &this->param_tree ) )
 	{
-		abort();		
+		abort();
 	}
 	param = Param::new_param_float ( "t7", P_FLAG_TVAR, &this->t7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( !ParamUtils::insert( param, &this->param_tree ) )

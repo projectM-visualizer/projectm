@@ -64,7 +64,7 @@ public:
     float border_a; /* alpha color value */
 
     Shape();
-    void Draw(RenderContext &context);
+    virtual void Draw(RenderContext &context);
 };
 
 class Text : RenderItem
