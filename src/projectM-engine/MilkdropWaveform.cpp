@@ -43,8 +43,9 @@ void MilkdropWaveform::Draw(RenderContext &context)
 		else glLineWidth( (context.texsize < 512 ) ? 1 : context.texsize/512);
 
 		//Additive wave drawing (vice overwrite)
-		if (additive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		else    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		if (additive==1)glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+		else glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 
 		glTranslatef(.5, .5, 0);
 		glRotatef(rot, 0, 0, 1);
