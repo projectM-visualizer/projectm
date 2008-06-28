@@ -167,8 +167,6 @@ private:
   void draw_title_to_screen(bool flip);
   void draw_title_to_texture();
 
-  void draw_custom_waves(PresetOutputs *presetOutputs);
-
 };
 
 #endif
