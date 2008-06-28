@@ -382,8 +382,13 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 	presetOutputs->mv.Draw(renderContext);
 
 
+	for (PresetOutputs::cshape_container::iterator pos = presetOutputs->customShapes.begin();
+		pos != presetOutputs->customShapes.end(); ++pos)
+		{
+			if( (*pos)->enabled==1)	(*pos)->Draw(renderContext);
+		}
 
-	draw_shapes(presetOutputs);
+
 	draw_custom_waves(presetOutputs);
 	presetOutputs->wave.Draw(renderContext);
 	if(presetOutputs->bDarkenCenter)darken_center();
@@ -872,182 +877,6 @@ void Renderer::draw_custom_waves(PresetOutputs *presetOutputs)
 #endif
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			//  glPopMatrix();
-
-		}
-	}
-
-
-}
-
-void Renderer::draw_shapes(PresetOutputs *presetOutputs)
-{
-
-
-
-	float xval, yval;
-	float t;
-
-	float aspect=this->aspect;
-
-	for (PresetOutputs::cshape_container::const_iterator pos = presetOutputs->customShapes.begin();
-	pos != presetOutputs->customShapes.end(); ++pos)
-	{
-
-		if( (*pos)->enabled==1)
-		{
-
-			// printf("drawing shape %f\n", (*pos)->ang);
-			(*pos)->y=-(( (*pos)->y)-1);
-
-			(*pos)->radius= (*pos)->radius*(.707*.707*.707*1.04);
-			//Additive Drawing or Overwrite
-			if ( (*pos)->additive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			else    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
-			xval= (*pos)->x;
-			yval= (*pos)->y;
-
-			if ( (*pos)->textured)
-			{
-
-				if ((*pos)->getImageUrl() !="")
-				{
-					GLuint tex = textureManager->getTexture((*pos)->getImageUrl());
-					if (tex != 0)
-					{
-						glBindTexture(GL_TEXTURE_2D, tex);
-						aspect=1.0;
-					}
-				}
-
-
-
-				glMatrixMode(GL_TEXTURE);
-				glPushMatrix();
-				glLoadIdentity();
-
-				glEnable(GL_TEXTURE_2D);
-
-				glEnableClientState(GL_VERTEX_ARRAY);
-				glEnableClientState(GL_COLOR_ARRAY);
-				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-				float colors[(*pos)->sides+2][4];
-				float tex[(*pos)->sides+2][2];
-				float points[(*pos)->sides+2][2];
-
-				//Define the center point of the shape
-				colors[0][0] = (*pos)->r;
-				colors[0][1] = (*pos)->g;
-				colors[0][2] = (*pos)->b;
-				colors[0][3] = (*pos)->a;
-			  	   tex[0][0] = 0.5;
-				   tex[0][1] = 0.5;
-				points[0][0] = xval;
-				points[0][1] = yval;
-
-				for ( int i=1;i< (*pos)->sides+2;i++)
-				{
-				  colors[i][0]= (*pos)->r2;
-				  colors[i][1]=(*pos)->g2;
-				  colors[i][2]=(*pos)->b2;
-				  colors[i][3]=(*pos)->a2;
-
-				  t = (i-1)/(float) (*pos)->sides;
-				  tex[i][0] =0.5f + 0.5f*cosf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)/ (*pos)->tex_zoom;
-				  tex[i][1] =  0.5f + 0.5f*sinf(t*3.1415927f*2 +  (*pos)->tex_ang + 3.1415927f*0.25f)/ (*pos)->tex_zoom;
-				  points[i][0]=(*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)+xval;
-				  points[i][1]=(*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval;
-
-
-
-				}
-
-				glVertexPointer(2,GL_FLOAT,0,points);
-				glColorPointer(4,GL_FLOAT,0,colors);
-				glTexCoordPointer(2,GL_FLOAT,0,tex);
-
-				glDrawArrays(GL_TRIANGLE_FAN,0,(*pos)->sides+2);
-
-				glDisable(GL_TEXTURE_2D);
-				glPopMatrix();
-				glMatrixMode(GL_MODELVIEW);
-
-				//Reset Texture state since we might have changed it
-				if(this->renderTarget->useFBO)
-				{
-					glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
-				}
-				else
-				{
-					glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
-				}
-
-
-			}
-			else
-			{//Untextured (use color values)
-
-
-			  glEnableClientState(GL_VERTEX_ARRAY);
-			  glEnableClientState(GL_COLOR_ARRAY);
-			  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-			  float colors[(*pos)->sides+2][4];
-			  float points[(*pos)->sides+2][2];
-
-			  //Define the center point of the shape
-			  colors[0][0]=(*pos)->r;
-			  colors[0][1]=(*pos)->g;
-			  colors[0][2]=(*pos)->b;
-			  colors[0][3]=(*pos)->a;
-			  points[0][0]=xval;
-			  points[0][1]=yval;
-
-
-
-			  for ( int i=1;i< (*pos)->sides+2;i++)
-			    {
-			      colors[i][0]=(*pos)->r2;
-			      colors[i][1]=(*pos)->g2;
-			      colors[i][2]=(*pos)->b2;
-			      colors[i][3]=(*pos)->a2;
-			      t = (i-1)/(float) (*pos)->sides;
-			      points[i][0]=(*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)+xval;
-			      points[i][1]=(*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval;
-
-			    }
-
-			  glVertexPointer(2,GL_FLOAT,0,points);
-			  glColorPointer(4,GL_FLOAT,0,colors);
-
-
-			  glDrawArrays(GL_TRIANGLE_FAN,0,(*pos)->sides+2);
-			  //draw first n-1 triangular pieces
-
-			}
-			if ((*pos)->thickOutline==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
-
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glDisableClientState(GL_COLOR_ARRAY);
-
-			float points[(*pos)->sides+1][2];
-
-			glColor4f( (*pos)->border_r, (*pos)->border_g, (*pos)->border_b, (*pos)->border_a);
-
-			for ( int i=0;i< (*pos)->sides;i++)
-			{
-				t = (i-1)/(float) (*pos)->sides;
-				points[i][0]= (*pos)->radius*cosf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)*(this->correction ? aspect : 1.0)+xval;
-				points[i][1]=  (*pos)->radius*sinf(t*3.1415927f*2 +  (*pos)->ang + 3.1415927f*0.25f)+yval;
-
-			}
-
-			glVertexPointer(2,GL_FLOAT,0,points);
-			glDrawArrays(GL_LINE_LOOP,0,(*pos)->sides);
-
-			if ((*pos)->thickOutline==1)  glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
-
 
 		}
 	}

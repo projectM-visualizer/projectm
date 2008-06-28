@@ -34,12 +34,13 @@
 #include "Param.hpp"
 #include "PerFrameEqn.hpp"
 #include "InitCond.hpp"
+#include "Renderable.hpp"
 #include <vector>
 
 class Preset;
 
 
-class CustomShape {
+class CustomShape : public Shape {
 public:
     /* Numerical id */
     int id;
@@ -49,35 +50,9 @@ public:
     std::map<std::string,Param*> param_tree;
 
     /* Engine variables */
-    int sides;
-    bool thickOutline;
+
     bool enabled;
-    bool additive;
-    bool textured;
-    
-    float tex_zoom;
-    float tex_ang;
-      
-    float x; /* x position for per point equations */
-    float y; /* y position for per point equations */
-    float radius;
-    float ang;
-    
-    float r; /* red color value */
-    float g; /* green color value */
-    float b; /* blue color value */
-    float a; /* alpha color value */
-     
-    float r2; /* red color value */
-    float g2; /* green color value */
-    float b2; /* blue color value */
-    float a2; /* alpha color value */
-    
-    float border_r; /* red color value */
-    float border_g; /* green color value */
-    float border_b; /* blue color value */
-    float border_a; /* alpha color value */
-    
+
     /* stupid t variables */
     float t1;
     float t2;
@@ -98,15 +73,6 @@ public:
     float q7;
     float q8;
 
-    // projectM exclusive parameter to load textures over a shape
-    std::string imageUrl;
-
-    /// Returns any image url (usually used for texture maps) associated with the custom shape
-    /// Will return empty string if none is set
-    inline const std::string & getImageUrl() const {
-		return imageUrl;
-    }
-
     // Data structure to hold per frame  / per frame init equations
     std::map<std::string,InitCond*>  init_cond_tree;
     std::vector<PerFrameEqn*>  per_frame_eqn_tree;
@@ -118,11 +84,12 @@ public:
     /// Allocate a new custom shape, including param associations, per point equations, and initial values.
     /// \param id an integer id to associate with this custom wave. Future line parsing uses this as a reference key.
     CustomShape( int id );
-
+    CustomShape();
     ~CustomShape();
 
     void loadUnspecInitConds();
     void evalInitConds();
+
   };
 
 
