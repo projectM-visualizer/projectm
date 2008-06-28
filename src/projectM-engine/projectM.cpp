@@ -499,7 +499,7 @@ void projectM::projectM_initengine()
 	this->presetOutputs.cx= 0.5;
 	this->presetOutputs.cy= 0.5;
 
-	this->presetOutputs.decay=.98;
+	this->presetOutputs.screenDecay=.98;
 
 
 //this->presetInputs.meshx = 0;
@@ -515,11 +515,11 @@ void projectM::projectM_initengine()
 	/* PER_FRAME CONSTANTS END */
 	this->presetOutputs.fRating = 0;
 	this->presetOutputs.fGammaAdj = 1.0;
-	this->presetOutputs.fVideoEchoZoom = 1.0;
-	this->presetOutputs.fVideoEchoAlpha = 0;
-	this->presetOutputs.nVideoEchoOrientation = 0;
+	this->presetOutputs.videoEchoZoom = 1.0;
+	this->presetOutputs.videoEchoAlpha = 0;
+	this->presetOutputs.videoEchoOrientation = 0;
 
-	this->presetOutputs.bTexWrap = 0;
+	this->presetOutputs.textureWrap = 0;
 	this->presetOutputs.bDarkenCenter = 0;
 	this->presetOutputs.bRedBlueStereo = 0;
 	this->presetOutputs.bBrighten = 0;
@@ -568,7 +568,7 @@ void projectM::projectM_resetengine()
 	this->presetOutputs.cx= 0.5;
 	this->presetOutputs.cy= 0.5;
 
-	this->presetOutputs.decay=.98;
+	this->presetOutputs.screenDecay=.98;
 
 	this->presetOutputs.wave.r= 1.0;
 	this->presetOutputs.wave.g= 0.2;
@@ -613,16 +613,16 @@ void projectM::projectM_resetengine()
 	/* PER_FRAME CONSTANTS END */
 	this->presetOutputs.fRating = 0;
 	this->presetOutputs.fGammaAdj = 1.0;
-	this->presetOutputs.fVideoEchoZoom = 1.0;
-	this->presetOutputs.fVideoEchoAlpha = 0;
-	this->presetOutputs.nVideoEchoOrientation = 0;
+	this->presetOutputs.videoEchoZoom = 1.0;
+	this->presetOutputs.videoEchoAlpha = 0;
+	this->presetOutputs.videoEchoOrientation = 0;
 
 	this->presetOutputs.wave.additive = false;
 	this->presetOutputs.wave.dots = false;
 	this->presetOutputs.wave.thick = false;
 	this->presetOutputs.wave.modulateAlphaByVolume = 0;
 	this->presetOutputs.wave.maximizeColors = 0;
-	this->presetOutputs.bTexWrap = 0;
+	this->presetOutputs.textureWrap = 0;
 	this->presetOutputs.bDarkenCenter = 0;
 	this->presetOutputs.bRedBlueStereo = 0;
 	this->presetOutputs.bBrighten = 0;

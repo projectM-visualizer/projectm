@@ -23,6 +23,14 @@ public:
     PresetOutputs();
     ~PresetOutputs();
     /* PER FRAME VARIABLES BEGIN */
+
+    bool  textureWrap;
+   	float screenDecay;
+
+   	float videoEchoAlpha;
+   	float videoEchoZoom;
+   	float videoEchoOrientation;
+
     float zoom;
     float zoomexp;
     float rot;
@@ -35,8 +43,6 @@ public:
     float cx;
     float cy;
 
-    float decay;
-
     MilkdropWaveform wave;
     Border border;
     MotionVectors mv;
@@ -46,12 +52,7 @@ public:
 
     float fRating;
     float fGammaAdj;
-    float fVideoEchoZoom;
-    float fVideoEchoAlpha;
 
-    int nVideoEchoOrientation;
-
-    bool bTexWrap;
     bool bDarkenCenter;
     bool bRedBlueStereo;
     bool bBrighten;
