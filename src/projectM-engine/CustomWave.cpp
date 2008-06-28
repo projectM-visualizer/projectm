@@ -42,23 +42,13 @@
 #define MAX_SAMPLE_SIZE 4096
 
 
-CustomWave::CustomWave(int _id):
+CustomWave::CustomWave(int _id) : Waveform(512),
     id(_id),
     per_frame_count(0),
     r(0),
     g(0),
     b(0),
-    a(0),
-    samples(512),
-    bSpectrum(0),
-    bUseDots(0),
-    bAdditive(0),
-
-    scaling(1.0),
-    smoothing(0.0)
-
-
-
+    a(0)
 {
 
   Param * param;
@@ -75,7 +65,7 @@ CustomWave::CustomWave(int _id):
   this->sample_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
 
   /* Start: Load custom wave parameters */
- 
+
   if ((param = Param::new_param_float("r", P_FLAG_NONE | P_FLAG_PER_POINT, &this->r, this->r_mesh, 1.0, 0.0, .5)) == NULL)
   {
     ;
@@ -198,7 +188,7 @@ CustomWave::CustomWave(int _id):
 
   }
 
-  if ((param = Param::new_param_bool("bspectrum", P_FLAG_NONE, &this->bSpectrum, 1, 0, 0)) == NULL)
+  if ((param = Param::new_param_bool("bspectrum", P_FLAG_NONE, &this->spectrum, 1, 0, 0)) == NULL)
   {
     /// @bug make exception
     abort();
@@ -213,7 +203,7 @@ CustomWave::CustomWave(int _id):
 
   }
 
-  if ((param = Param::new_param_bool("bdrawthick", P_FLAG_NONE, &this->bDrawThick, 1, 0, 0)) == NULL)
+  if ((param = Param::new_param_bool("bdrawthick", P_FLAG_NONE, &this->thick, 1, 0, 0)) == NULL)
   {
     /// @bug make exception
     abort();
@@ -226,9 +216,9 @@ CustomWave::CustomWave(int _id):
 
   }
 
-  if ((param = Param::new_param_bool("busedots", P_FLAG_NONE, &this->bUseDots, 1, 0, 0)) == NULL)
+  if ((param = Param::new_param_bool("busedots", P_FLAG_NONE, &this->dots, 1, 0, 0)) == NULL)
   {
- 
+
     /// @bug make exception
     abort();
   }
@@ -239,7 +229,7 @@ CustomWave::CustomWave(int _id):
     abort();
   }
 
-  if ((param = Param::new_param_bool("badditive", P_FLAG_NONE, &this->bAdditive, 1, 0, 0)) == NULL)
+  if ((param = Param::new_param_bool("badditive", P_FLAG_NONE, &this->additive, 1, 0, 0)) == NULL)
   {
     ;
     abort();
@@ -384,7 +374,7 @@ CustomWave::CustomWave(int _id):
   }
   if ((param = Param::new_param_float("t7", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
-    
+
     abort();
   }
 
@@ -410,42 +400,42 @@ CustomWave::CustomWave(int _id):
 	param = Param::new_param_float ( "q1", P_FLAG_QVAR, &this->q1, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		
+
 	}
 	param = Param::new_param_float ( "q2", P_FLAG_QVAR, &this->q2, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		
+
 	}
 	param = Param::new_param_float ( "q3", P_FLAG_QVAR, &this->q3, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		
+
 	}
 	param = Param::new_param_float ( "q4", P_FLAG_QVAR, &this->q4, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		
+
 	}
 	param = Param::new_param_float ( "q5", P_FLAG_QVAR, &this->q5, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		
+
 	}
 	param = Param::new_param_float ( "q6", P_FLAG_QVAR, &this->q6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		
+
 	}
 	param = Param::new_param_float ( "q7", P_FLAG_QVAR, &this->q7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		
+
 	}
 	param = Param::new_param_float ( "q8", P_FLAG_QVAR, &this->q8, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
 	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
-		
+
 	}
   /* End of parameter loading. Note that the read only parameters associated
      with custom waves (ie, sample) are variables stored in PresetFrameIO.hpp,
@@ -541,41 +531,33 @@ void CustomWave::evalInitConds()
 
 }
 
-/** Evaluate per-point equations */
-void CustomWave::evalPerPointEqns()
+ColoredPoint CustomWave::PerPoint(ColoredPoint p, const WaveformContext context)
 {
 
-  
+		r_mesh[context.sample_int] = r;
+	    g_mesh[context.sample_int] = g;
+	    b_mesh[context.sample_int] = b;
+	    a_mesh[context.sample_int] = a;
+	    x_mesh[context.sample_int] = x;
+	    y_mesh[context.sample_int] = y;
+	    sample = context.sample;
+	    sample_mesh[context.sample_int] = context.sample;
+	    v1 = context.left;
+	    v2 = context.right;
 
-  assert(samples > 0);
-  assert(r_mesh);
-  assert(g_mesh);
-  assert(b_mesh);
-  assert(a_mesh);
-  assert(x_mesh);
-  assert(y_mesh);
+	for (std::vector<PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos)
+	    (*pos)->evaluate(context.sample_int);
 
-  int k;
-  for (k = 0; k < samples; k++)
-    r_mesh[k] = r;
-  for (k = 0; k < samples; k++)
-    g_mesh[k] = g;
-  for (k = 0; k < samples; k++)
-    b_mesh[k] = b;
-  for (k = 0; k < samples; k++)
-    a_mesh[k] = a;
-  for (k = 0; k < samples; k++)
-    x_mesh[k] = x;
-  for (k = 0; k < samples; k++)
-    y_mesh[k] = y;
+	    p.a = a_mesh[context.sample_int];
+	    p.r = r_mesh[context.sample_int];
+	    p.g = g_mesh[context.sample_int];
+	    p.b = b_mesh[context.sample_int];
+	    p.x = x_mesh[context.sample_int];
+	    p.y = y_mesh[context.sample_int];
 
-  /* Evaluate per pixel equations */
-for (k = 0; k < samples;k++)
-  for (std::vector<PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos) {
-    (*pos)->evaluate(k);
-  }
-
+	    return p;
 }
+
 
 void CustomWave::loadUnspecInitConds()
 {

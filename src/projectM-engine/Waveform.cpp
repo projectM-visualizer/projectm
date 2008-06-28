@@ -38,10 +38,12 @@ void Waveform::Draw(RenderContext &context)
 		//if (samples > 2048) samples = 2048;
 
 
-			if (additive)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			else    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			if (additive)  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			else glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 			if (thick)
-			{ glLineWidth(context.texsize <= 512 ? 2 : 2*context.texsize/512);
+			{
+				glLineWidth(context.texsize <= 512 ? 2 : 2*context.texsize/512);
 			  glPointSize(context.texsize <= 512 ? 2 : 2*context.texsize/512);
 
 			}
@@ -57,17 +59,9 @@ void Waveform::Draw(RenderContext &context)
 
 			float mult= scaling*( spectrum ? 0.015f :1.0f);
 
-			//for(x=0;x< samples;x++)
+
 				std::transform(&value1[0],&value1[samples],&value1[0],std::bind2nd(std::multiplies<float>(),mult));
-			 //value1[x]*=mult;
-
-			//for(x=0;x< samples;x++)
 				std::transform(&value2[0],&value2[samples],&value2[0],std::bind2nd(std::multiplies<float>(),mult));
-			 //value2[x]*=mult;
-				//std::iota(&pointContext[0],&pointContext[samples],0);
-
-
-			//std::transform(points.begin(),points.end(),pointContext.begin(),points.begin(),std::mem_fun(&Waveform::PerPoint));
 
 			WaveformContext waveContext(samples, context.beatDetect);
 
