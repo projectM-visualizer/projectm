@@ -444,7 +444,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 
 	glLineWidth( this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512.0);
 
-	render_texture_to_screen(presetOutputs);
+	CompositeOutput(presetOutputs);
 
 
 	glMatrixMode(GL_MODELVIEW);
@@ -1314,125 +1314,7 @@ void Renderer::CompositeOutput(const Pipeline* pipeline)
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline->compositeDrawables.begin(); pos != pipeline->compositeDrawables.end(); ++pos)
 			(*pos)->Draw(renderContext);
 
-
-
-
-
 }
 
 
-//Actually draws the texture to the screen
-//
-//The Video Echo effect is also applied here
-void Renderer::render_texture_to_screen(PresetOutputs *presetOutputs)
-{
 
-	int flipx=1, flipy=1;
-
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	//Overwrite anything on the screen
-	glBlendFunc(GL_ONE, GL_ZERO);
-	glColor4f(1.0, 1.0, 1.0, 1.0f);
-
-	glEnable(GL_TEXTURE_2D);
-
-
-
-	float tex[4][2] = {{0, 1},
-			   {0, 0},
-			   {1, 0},
-			   {1, 1}};
-
-	float points[4][2] = {{-0.5, -0.5},
-			      {-0.5,  0.5},
-			      { 0.5,  0.5},
-			      { 0.5,  -0.5}};
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glVertexPointer(2,GL_FLOAT,0,points);
-	glTexCoordPointer(2,GL_FLOAT,0,tex);
-
-	glDrawArrays(GL_TRIANGLE_FAN,0,4);
-
-	//Noe Blend the Video Echo
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glMatrixMode(GL_TEXTURE);
-
-	//draw video echo
-	glColor4f(1.0, 1.0, 1.0, presetOutputs->videoEchoAlpha);
-	glTranslatef(.5, .5, 0);
-	glScalef(1.0/presetOutputs->videoEchoZoom, 1.0/presetOutputs->videoEchoZoom, 1);
-	glTranslatef(-.5, -.5, 0);
-
-	switch (((int)presetOutputs->videoEchoOrientation))
-	{
-		case 0: flipx=1;flipy=1;break;
-		case 1: flipx=-1;flipy=1;break;
-		case 2: flipx=1;flipy=-1;break;
-		case 3: flipx=-1;flipy=-1;break;
-		default: flipx=1;flipy=1; break;
-	}
-
-	float pointsFlip[4][2] = {{-0.5*flipx, -0.5*flipy},
-				  {-0.5*flipx,  0.5*flipy},
-				  { 0.5*flipx,  0.5*flipy},
-				  { 0.5*flipx, -0.5*flipy}};
-
-	glVertexPointer(2,GL_FLOAT,0,pointsFlip);
-	glDrawArrays(GL_TRIANGLE_FAN,0,4);
-
-	glDisable(GL_TEXTURE_2D);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	if (presetOutputs->bBrighten==1)
-	{
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
-		glDrawArrays(GL_TRIANGLE_FAN,0,4);
-		glBlendFunc(GL_ZERO, GL_DST_COLOR);
-		glDrawArrays(GL_TRIANGLE_FAN,0,4);
-		glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
-		glDrawArrays(GL_TRIANGLE_FAN,0,4);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	}
-
-	if (presetOutputs->bDarken==1)
-	{
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glBlendFunc(GL_ZERO, GL_DST_COLOR);
-		glDrawArrays(GL_TRIANGLE_FAN,0,4);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-
-
-	if (presetOutputs->bSolarize)
-	{
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glBlendFunc(GL_ZERO, GL_ONE_MINUS_DST_COLOR);
-		glDrawArrays(GL_TRIANGLE_FAN,0,4);
-		glBlendFunc(GL_DST_COLOR, GL_ONE);
-		glDrawArrays(GL_TRIANGLE_FAN,0,4);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-
-	if (presetOutputs->bInvert)
-	{
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
-		glDrawArrays(GL_TRIANGLE_FAN,0,4);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-
-}
