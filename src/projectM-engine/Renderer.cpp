@@ -205,9 +205,8 @@ void Renderer::ResetTextures()
 	textureManager->Preload();
 }
 
-void Renderer::RenderFrame(const Pipeline* pipeline, const PipelineContext &pipelineContext)
+void Renderer::SetupPass1(const Pipeline* pipeline, const PipelineContext &pipelineContext)
 {
-
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
@@ -242,7 +241,27 @@ void Renderer::RenderFrame(const Pipeline* pipeline, const PipelineContext &pipe
 		glMatrixMode( GL_MODELVIEW );
 		glLoadIdentity();
 
-#ifdef USE_CG
+}
+
+void Renderer::RenderItems(const Pipeline* pipeline, const PipelineContext &pipelineContext)
+{
+	renderContext.time = pipelineContext.time;
+	renderContext.texsize = texsize;
+	renderContext.aspectCorrect = correction;
+	renderContext.aspectRatio = aspect;
+	renderContext.textureManager = textureManager;
+	renderContext.beatDetect = beatDetect;
+
+	for (std::vector<RenderItem*>::const_iterator pos = pipeline->drawables.begin(); pos != pipeline->drawables.end(); ++pos)
+		(*pos)->Draw(renderContext);
+}
+
+void Renderer::RenderFrame(const Pipeline* pipeline, const PipelineContext &pipelineContext)
+{
+
+	SetupPass1(pipeline, pipelineContext);
+
+	#ifdef USE_CG
   cgGLBindProgram(myCgWarpProgram);
   checkForCgError("binding warp program");
 
@@ -257,28 +276,9 @@ void Renderer::RenderFrame(const Pipeline* pipeline, const PipelineContext &pipe
   checkForCgError("disabling fragment profile");
 #endif
 
-	    renderContext.time = pipelineContext.time;
-		renderContext.texsize = texsize;
-		renderContext.aspectCorrect = correction;
-		renderContext.aspectRatio = aspect;
-		renderContext.textureManager = textureManager;
-		renderContext.beatDetect = beatDetect;
+	    RenderItems(pipeline,pipelineContext);
 
-		for (std::vector<RenderItem*>::const_iterator pos = pipeline->drawables.begin(); pos != pipeline->drawables.end(); ++pos)
-			(*pos)->Draw(renderContext);
-
-					/** Restore original view state */
-			glMatrixMode( GL_MODELVIEW );
-			glPopMatrix();
-
-			glMatrixMode( GL_PROJECTION );
-			glPopMatrix();
-
-
-
-			renderTarget->unlock();
-
-			//BEGIN PASS 2
+	    FinishPass1();			//BEGIN PASS 2
 			//
 			//end of texture rendering
 			//now we copy the texture from the FBO or framebuffer to
@@ -318,90 +318,34 @@ void Renderer::RenderFrame(const Pipeline* pipeline, const PipelineContext &pipe
 
 }
 
+void Renderer::FinishPass1()
+{
+	draw_title_to_texture();
+		/** Restore original view state */
+		glMatrixMode( GL_MODELVIEW );
+		glPopMatrix();
+
+		glMatrixMode( GL_PROJECTION );
+		glPopMatrix();
+
+		renderTarget->unlock();
+}
 
 void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 {
-	/** Save original view state */
-	// TODO: check there is sufficient room on the stack
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-
-	totalframes++;
-
-	//BEGIN PASS 1
-	//
-	//This pass is used to render our texture
-	//the texture is drawn to a FBO or a subsection of the framebuffer
-	//and then we perform our manipulations on it in pass 2 we
-	//will copy the image into texture memory and render the final image
-
-
-	//Lock FBO
-	renderTarget->lock();
-
-	glViewport( 0, 0, renderTarget->texsize, renderTarget->texsize );
-
-	glEnable( GL_TEXTURE_2D );
-
-	//If using FBO, sitch to FBO texture
-	if(this->renderTarget->useFBO)
-	{
-		glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
-	}
-	else
-	{
-		glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
-	}
-
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
-
-
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-#ifdef USE_GLES1
-	glOrthof(0.0, 1, 0.0, 1, -40, 40);
-#else
-	glOrtho(0.0, 1, 0.0, 1, -40, 40);
-#endif
-	glMatrixMode( GL_MODELVIEW );
-	glLoadIdentity();
-
-	renderContext.time = presetInputs->time;
-	renderContext.texsize = texsize;
-	renderContext.aspectCorrect = correction;
-	renderContext.aspectRatio = aspect;
-	renderContext.textureManager = textureManager;
-	renderContext.beatDetect = beatDetect;
+	SetupPass1(presetOutputs, *presetInputs);
 
 	Interpolation(presetOutputs, presetInputs);
 
+	RenderItems(presetOutputs, *presetInputs);
 
-	presetOutputs->mv.Draw(renderContext);
-
-
-	for (PresetOutputs::cshape_container::iterator pos = presetOutputs->customShapes.begin();
-		pos != presetOutputs->customShapes.end(); ++pos)
-		{
-			if( (*pos)->enabled==1)	(*pos)->Draw(renderContext);
-		}
 
 
 	draw_custom_waves(presetOutputs);
-	presetOutputs->wave.Draw(renderContext);
-	if(presetOutputs->bDarkenCenter)darken_center();
-	presetOutputs->border.Draw(renderContext);
-	draw_title_to_texture();
-	/** Restore original view state */
-	glMatrixMode( GL_MODELVIEW );
-	glPopMatrix();
 
-	glMatrixMode( GL_PROJECTION );
-	glPopMatrix();
 
-	renderTarget->unlock();
+	FinishPass1();
+
 
 
 #ifdef DEBUG
