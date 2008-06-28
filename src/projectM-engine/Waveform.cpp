@@ -5,6 +5,16 @@
  *      Author: pete
  */
 
+#ifdef LINUX
+#include <GL/gl.h>
+#endif
+#ifdef WIN32
+#include "glew.h"
+#endif
+#ifdef __APPLE__
+#include <GL/gl.h>
+#endif
+
 #include "Waveform.hpp"
 #include <algorithm>
 
@@ -56,16 +66,20 @@ void Waveform::Draw(RenderContext &context)
 			 //value2[x]*=mult;
 				//std::iota(&pointContext[0],&pointContext[samples],0);
 
-			for(int x=0;x< samples;x++)
-			 pointContext[x]=((float)x);
-
-			std::transform(&pointContext[0],&pointContext[samples],&pointContext[0],std::bind2nd(std::divides<float>(),samples-1));
-			// printf("mid inner loop\n");
 
 			//std::transform(points.begin(),points.end(),pointContext.begin(),points.begin(),std::mem_fun(&Waveform::PerPoint));
 
+			WaveformContext waveContext(samples, context.beatDetect);
+
 			for(int x=0;x< samples;x++)
-				points[x] = PerPoint(points[x],pointContext[x],*context.beatDetect);
+			{
+				waveContext.sample = x/(float)(samples - 1);
+				waveContext.sample_int = x;
+				waveContext.left = value1[x];
+				waveContext.right = value2[x];
+
+				points[x] = PerPoint(points[x],waveContext);
+			}
 
 			float colors[samples][4];
 			float p[samples][2];

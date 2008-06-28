@@ -24,6 +24,20 @@ public:
 	ColoredPoint():x(0.5),y(0.5),r(1),g(1),b(1),a(1){};
 };
 
+class WaveformContext
+{
+public:
+	float sample;
+	int samples;
+	int sample_int;
+	float left;
+	float right;
+	BeatDetect *music;
+
+	WaveformContext(int samples, BeatDetect *music):samples(samples),music(music){};
+};
+
+
 class Waveform : public RenderItem
 {
 public:
@@ -42,7 +56,7 @@ public:
     void Draw(RenderContext &context);
 
 private:
-	virtual ColoredPoint PerPoint(ColoredPoint p, const float sample, const BeatDetect &music)=0;
+	virtual ColoredPoint PerPoint(ColoredPoint p, const WaveformContext context)=0;
 	std::vector<ColoredPoint> points;
 	std::vector<float> pointContext;
 

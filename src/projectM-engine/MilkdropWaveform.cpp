@@ -5,6 +5,15 @@
  *      Author: pete
  */
 
+#ifdef LINUX
+#include <GL/gl.h>
+#endif
+#ifdef WIN32
+#include "glew.h"
+#endif
+#ifdef __APPLE__
+#include <GL/gl.h>
+#endif
 
 #include "MilkdropWaveform.hpp"
 #include "math.h"
@@ -22,6 +31,7 @@ void MilkdropWaveform::Draw(RenderContext &context)
 		glLoadIdentity();
 
 		if(modulateAlphaByVolume) ModulateOpacityByVolume(context);
+		else temp_a = a;
 		MaximizeColors(context);
 
 	#ifndef USE_GLES1
@@ -79,9 +89,9 @@ void MilkdropWaveform::ModulateOpacityByVolume(RenderContext &context)
 	//calculate the opacity from 0=lower to 1=upper
 	//based on current volume
 
-	if (context.beatDetect->vol<= modOpacityStart)  a=0.0;
-	 else if (context.beatDetect->vol>=modOpacityEnd) a=a;
-	 else a*=((context.beatDetect->vol-modOpacityStart)/(modOpacityEnd-modOpacityStart));
+	if (context.beatDetect->vol<= modOpacityStart)  temp_a=0.0;
+	 else if (context.beatDetect->vol>=modOpacityEnd) temp_a=a;
+	 else temp_a=a*((context.beatDetect->vol-modOpacityStart)/(modOpacityEnd-modOpacityStart));
 
 }
 
@@ -96,22 +106,22 @@ void MilkdropWaveform::MaximizeColors(RenderContext &context)
 	if(mode==Blob2 || mode==Blob5)
 		switch(context.texsize)
 		{
-			case 256:  a *= 0.07f; break;
-			case 512:  a *= 0.09f; break;
-			case 1024: a *= 0.11f; break;
-			case 2048: a *= 0.13f; break;
+			case 256:  temp_a *= 0.07f; break;
+			case 512:  temp_a *= 0.09f; break;
+			case 1024: temp_a *= 0.11f; break;
+			case 2048: temp_a *= 0.13f; break;
 		}
 	else if(mode==Blob3)
 	{
 		switch(context.texsize)
 		{
-			case 256:  a *= 0.075f; break;
-			case 512:  a *= 0.15f; break;
-			case 1024: a *= 0.22f; break;
-			case 2048: a *= 0.33f; break;
+			case 256:  temp_a *= 0.075f; break;
+			case 512:  temp_a *= 0.15f; break;
+			case 1024: temp_a *= 0.22f; break;
+			case 2048: temp_a *= 0.33f; break;
 		}
-		a*=1.3f;
-		a*=powf(context.beatDetect->treb , 2.0f);
+		temp_a*=1.3f;
+		temp_a*=powf(context.beatDetect->treb , 2.0f);
 	}
 
 	if (maximizeColors==true)
@@ -138,11 +148,11 @@ void MilkdropWaveform::MaximizeColors(RenderContext &context)
 		}
 
 
-		glColor4f(wave_r_switch, wave_g_switch, wave_b_switch, a);
+		glColor4f(wave_r_switch, wave_g_switch, wave_b_switch, temp_a);
 	}
 	else
 	{
-		glColor4f(r, g, b, a);
+		glColor4f(r, g, b, temp_a);
 	}
 
 }
@@ -192,10 +202,10 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			{
 
 			  float value = context.beatDetect->pcm->pcmdataR[i]+context.beatDetect->pcm->pcmdataL[i];
-			  value += offset * (x/(float)samples);
+			  value += offset * (i/(float)samples);
 
 			  r=(0.5 + 0.4f*.12*value*scale + mystery)*.5;
-			  theta=(x)*inv_nverts_minus_one*6.28f + context.time*0.2f;
+			  theta=i*inv_nverts_minus_one*6.28f + context.time*0.2f;
 
 			  wavearray[i][0]=(r*cos(theta)*(context.aspectCorrect? context.aspectRatio : 1.0)+x);
 			  wavearray[i][1]=(r*sin(theta)+temp_y);
@@ -342,13 +352,13 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 
 			for ( int i=0;i<samples;i++)
 			{
-				wavearray[i][0]=x/((float)  samples);
+				wavearray[i][0]=i/((float)  samples);
 				wavearray[i][1]= context.beatDetect->pcm->pcmdataL[i]*.04*scale+(wave_y_temp+y_adj);
 			}
 
 			for ( int i=0;i<samples;i++)
 			{
-				wavearray2[i][0]=x/((float)  samples);
+				wavearray2[i][0]=i/((float)  samples);
 				wavearray2[i][1]=context.beatDetect->pcm->pcmdataR[i]*.04*scale+(wave_y_temp-y_adj);
 			}
 
