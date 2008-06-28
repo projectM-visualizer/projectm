@@ -5,8 +5,7 @@
 #include "Pipeline.hpp"
 #include "Filters.hpp"
 #include "CustomShape.hpp"
-
-class CustomWave;
+#include "CustomWave.hpp"
 
 
 /// Container class for all preset writeable engine variables. This is the important glue

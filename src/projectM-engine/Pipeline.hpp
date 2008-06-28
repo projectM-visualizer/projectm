@@ -17,7 +17,7 @@ public:
 
 	 float videoEchoAlpha;
 	 float videoEchoZoom;
-	 float videoEchoOrientation;
+	 int videoEchoOrientation;
 
 	 std::vector<RenderItem*> drawables;
 	 std::vector<RenderItem*> compositeDrawables;

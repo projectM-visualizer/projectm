@@ -124,6 +124,12 @@ void PresetOutputs::PrepareToRender()
 				if( (*pos)->enabled==1)	drawables.push_back((*pos));
 			}
 
+	for (PresetOutputs::cwave_container::iterator pos = customWaves.begin();
+			pos != customWaves.end(); ++pos)
+			{
+				if( (*pos)->enabled==1)	drawables.push_back((*pos));
+			}
+
     drawables.push_back(&wave);
 	if(bDarkenCenter==1) drawables.push_back(&darkenCenter);
 	drawables.push_back(&border);

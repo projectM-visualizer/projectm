@@ -41,20 +41,24 @@ class Preset;
 #include "Common.hpp"
 #include "Param.hpp"
 #include "PerFrameEqn.hpp"
+#include "Waveform.hpp"
 
 #include <map>
 
-class CustomWave {
+class CustomWave : public Waveform
+{
 public:
 
      /** Empty constructor leaves wave in undefined state **/
-     CustomWave() {}
+     //CustomWave() {}
 
      /** Initializes a custom wave id given the integer id */
      CustomWave(int id);
 
     /** Destructor is necessary so we can free the per point matrices **/
     ~CustomWave();
+
+    ColoredPoint PerPoint(ColoredPoint p, const WaveformContext context);
 
     /* Numerical id */
     int id;
@@ -79,19 +83,11 @@ public:
     float * value1;
     float * value2;
     float * sample_mesh;
-    
+
     bool enabled; /* if true then wave is visible, hidden otherwise */
-    int samples; /* number of samples associated with this wave form. Usually powers of 2 */
+
     float sample;
-    bool bSpectrum; /* spectrum data or pcm data */
-    bool bUseDots; /* draw wave as dots or lines */
-    bool bDrawThick; /* draw thicker lines */
-    bool bAdditive; /* add color values together */
-    
-    float scaling; /* scale factor of waveform */
-    float smoothing; /* smooth factor of waveform */
-    int sep;  /* no idea what this is yet... */
-    
+
     /* stupid t variables */
     float t1;
     float t2;
@@ -131,7 +127,7 @@ public:
     void evalPerPointEqns();
 
     void loadUnspecInitConds();
-    
+
     void evalInitConds();
 
 };

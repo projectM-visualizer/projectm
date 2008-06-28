@@ -256,31 +256,7 @@ void Renderer::RenderItems(const Pipeline* pipeline, const PipelineContext &pipe
 		(*pos)->Draw(renderContext);
 }
 
-void Renderer::RenderFrame(const Pipeline* pipeline, const PipelineContext &pipelineContext)
-{
 
-	SetupPass1(pipeline, pipelineContext);
-
-#ifdef USE_CG
-  cgGLBindProgram(myCgWarpProgram);
-  checkForCgError("binding warp program");
-
-  cgGLEnableProfile(myCgProfile);
-  checkForCgError("enabling warp profile");
-#endif
-		Interpolation(pipeline);
-#ifdef USE_CG
-  cgGLUnbindProgram(myCgProfile);
-  checkForCgError("disabling fragment profile");
-  cgGLDisableProfile(myCgProfile);
-  checkForCgError("disabling fragment profile");
-#endif
-
-
-	    RenderItems(pipeline,pipelineContext);
-	    FinishPass1();
-	    Pass2(pipeline);
-}
 
 void Renderer::FinishPass1()
 {
@@ -351,6 +327,31 @@ void Renderer::Pass2(const Pipeline *pipeline)
 #endif
 }
 
+void Renderer::RenderFrame(const Pipeline* pipeline, const PipelineContext &pipelineContext)
+{
+
+	SetupPass1(pipeline, pipelineContext);
+
+#ifdef USE_CG
+  cgGLBindProgram(myCgWarpProgram);
+  checkForCgError("binding warp program");
+
+  cgGLEnableProfile(myCgProfile);
+  checkForCgError("enabling warp profile");
+#endif
+		Interpolation(pipeline);
+#ifdef USE_CG
+  cgGLUnbindProgram(myCgProfile);
+  checkForCgError("disabling fragment profile");
+  cgGLDisableProfile(myCgProfile);
+  checkForCgError("disabling fragment profile");
+#endif
+
+
+	    RenderItems(pipeline,pipelineContext);
+	    FinishPass1();
+	    Pass2(pipeline);
+}
 void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 {
 	SetupPass1(presetOutputs, *presetInputs);
@@ -371,7 +372,6 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 #endif
 
 	RenderItems(presetOutputs, *presetInputs);
-	draw_custom_waves(presetOutputs);
 	FinishPass1();
     Pass2(presetOutputs);
 }
@@ -711,88 +711,7 @@ void Renderer::reset(int w, int h)
 }
 
 
-void Renderer::draw_custom_waves(PresetOutputs *presetOutputs)
-{
 
-	int x;
-
-
-	glPointSize(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
-
-	for (PresetOutputs::cwave_container::const_iterator pos = presetOutputs->customWaves.begin();
-	pos != presetOutputs->customWaves.end(); ++pos)
-	{
-
-		if( (*pos)->enabled==1)
-		{
-
-			if ( (*pos)->bAdditive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			else    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-			if ( (*pos)->bDrawThick==1)
-			{ glLineWidth(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
-			  glPointSize(this->renderTarget->texsize < 512 ? 1 : 2*this->renderTarget->texsize/512);
-
-			}
-			beatDetect->pcm->getPCM( (*pos)->value1, (*pos)->samples, 0, (*pos)->bSpectrum, (*pos)->smoothing, 0);
-			beatDetect->pcm->getPCM( (*pos)->value2, (*pos)->samples, 1, (*pos)->bSpectrum, (*pos)->smoothing, 0);
-			// printf("%f\n",pcmL[0]);
-
-
-			float mult= (*pos)->scaling*presetOutputs->wave.scale*( (*pos)->bSpectrum ? 0.015f :1.0f);
-
-			for(x=0;x< (*pos)->samples;x++)
-			{ (*pos)->value1[x]*=mult;}
-
-			for(x=0;x< (*pos)->samples;x++)
-			{ (*pos)->value2[x]*=mult;}
-
-			for(x=0;x< (*pos)->samples;x++)
-			{ (*pos)->sample_mesh[x]=((float)x)/((float)( (*pos)->samples-1));}
-
-			// printf("mid inner loop\n");
-			(*pos)->evalPerPointEqns();
-
-
-			float colors[(*pos)->samples][4];
-			float points[(*pos)->samples][2];
-
-			for(x=0;x< (*pos)->samples;x++)
-			{
-			  colors[x][0] = (*pos)->r_mesh[x];
-			  colors[x][1] = (*pos)->g_mesh[x];
-			  colors[x][2] = (*pos)->b_mesh[x];
-			  colors[x][3] = (*pos)->a_mesh[x];
-
-			  points[x][0] = (*pos)->x_mesh[x];
-			  points[x][1] =  -( (*pos)->y_mesh[x]-1);
-
-			}
-
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glEnableClientState(GL_COLOR_ARRAY);
-			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-			glVertexPointer(2,GL_FLOAT,0,points);
-			glColorPointer(4,GL_FLOAT,0,colors);
-
-
-			if ( (*pos)->bUseDots==1)
-		       	glDrawArrays(GL_POINTS,0,(*pos)->samples);
-			else  	glDrawArrays(GL_LINE_STRIP,0,(*pos)->samples);
-
-			glPointSize(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
-			glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512);
-#ifndef USE_GLES1
-			glDisable(GL_LINE_STIPPLE);
-#endif
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			//  glPopMatrix();
-
-		}
-	}
-
-
-}
 
 GLuint Renderer::initRenderToTexture()
 {
@@ -810,7 +729,6 @@ void Renderer::draw_title_to_texture()
 	}
 #endif /** USE_FTGL */
 }
-
 
 
 float title_y;
