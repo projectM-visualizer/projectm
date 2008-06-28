@@ -155,8 +155,8 @@ private:
   void draw_waveform(PresetOutputs * presetOutputs);
   void rescale_per_pixel_matrices();
   void maximize_colors(PresetOutputs *presetOutputs);
-  void render_texture_to_screen(PresetOutputs *presetOutputs);
-  void render_texture_to_studio(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
+
+
   void draw_fps( float realfps );
   void draw_stats(PresetInputs *presetInputs);
   void draw_help( );
