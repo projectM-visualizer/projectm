@@ -58,16 +58,16 @@ public:
 
 	}
 
-	ColoredPoint PerPoint(ColoredPoint p, const float sample, const BeatDetect &music)
+	ColoredPoint PerPoint(ColoredPoint p, const WaveformContext context)
 	{
 
 
-		meanbass = 0.01*(meanbass*99+music.bass);
-		meantreb = 0.01*(meantreb*99+music.treb);
-		meanmid = 0.01*(meanmid*99+music.mid);
-		float bassdiff = (music.bass - meanbass)*15;
-		float trebdiff = (music.treb - meantreb)*15;
-		float middiff = (music.mid - meanmid)*15;
+		meanbass = 0.01*(meanbass*99+context.music->bass);
+		meantreb = 0.01*(meantreb*99+context.music->treb);
+		meanmid = 0.01*(meanmid*99+context.music->mid);
+		float bassdiff = (context.music->bass - meanbass)*15;
+		float trebdiff = (context.music->treb - meantreb)*15;
+		float middiff = (context.music->mid - meanmid)*15;
 		float ba = min(above(bassdiff,0)*bassdiff*.005,.11);
 		float tr = min(above(trebdiff,0)*trebdiff*.005,.11);
 		float mi = min(above(middiff,0)*middiff*.005,.11);
@@ -76,7 +76,7 @@ public:
 		gam = abs(gam-above(mi2_prg,5));
 		mi2_prg= if_milk(above(mi2_prg,5),0,mi2_prg);
 
-		float s = sample * 15;
+		float s = context.sample_int;
 		//Gambe
 		p.x= if_milk(equal(int(s),1),.4,.4);
 		p.y= if_milk(equal(int(s),1),.2+((ba+tr)*.5)*gam,.2+((ba+tr)*.5)*gam);
@@ -138,9 +138,9 @@ public:
 		p.x=p.x*temp_dim+temp_xpos;
 		p.y=p.y*temp_dim+temp_ypos;
 
-		float hm=sample+mi2_prg;
-		float ht=sample+tr_prg;
-		float hb=sample+ba_prg;
+		float hm=context.sample+mi2_prg;
+		float ht=context.sample+tr_prg;
+		float hb=context.sample+ba_prg;
 
 		p.r=hm;
 		p.g=ht;
