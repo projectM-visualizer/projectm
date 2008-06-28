@@ -154,8 +154,6 @@ private:
 
   void draw_waveform(PresetOutputs * presetOutputs);
   void rescale_per_pixel_matrices();
-  void maximize_colors(PresetOutputs *presetOutputs);
-
 
   void draw_fps( float realfps );
   void draw_stats(PresetInputs *presetInputs);
@@ -163,12 +161,10 @@ private:
   void draw_preset();
   void draw_title();
   void draw_title_to_screen(bool flip);
-  void maximize_colors();
   void draw_title_to_texture();
 
   void draw_custom_waves(PresetOutputs *presetOutputs);
 
-  void modulate_opacity_by_volume(PresetOutputs *presetOutputs) ;
   void darken_center();
 };
 
