@@ -63,6 +63,9 @@ public:
                                 int lower_bound, const std::string & alt_name );
     int load_builtin_param_bool( const std::string & name, void *engine_val, short int flags,
                                 int init_val, const std::string & alt_name );
+
+    int load_builtin_param_string( const std::string & name, std::string * engine_val, short int flags);
+
     int insert_builtin_param( Param *param );
 
     template <class Fun>
