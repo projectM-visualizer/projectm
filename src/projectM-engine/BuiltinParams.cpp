@@ -15,11 +15,11 @@ BuiltinParams::BuiltinParams() {}
 BuiltinParams::BuiltinParams(const PresetInputs & presetInputs, PresetOutputs & presetOutputs)
 {
 
- int ret;
+  int ret;
   if ((ret = init_builtin_param_db(presetInputs, presetOutputs)) != PROJECTM_SUCCESS)
   {
 	std::cout << "failed to allocate builtin parameter database with error " << ret << std::endl;;
-    throw ret;
+        throw ret;
   }
 
 }
@@ -191,6 +191,20 @@ std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
 
   return PROJECTM_SUCCESS;
 
+}
+
+
+int BuiltinParams::load_builtin_param_string( const std::string & name, std::string * engine_val, short int flags) {
+
+	/* Creates a new parameter of type string */
+	Param * param = Param::new_param_string(name.c_str(), flags, engine_val);
+	
+	if (insert_builtin_param( param ) < 0)
+	{
+		delete param;
+		return PROJECTM_ERROR;
+	}
+	return PROJECTM_SUCCESS;
 }
 
 /* Loads a boolean parameter */
@@ -391,6 +405,8 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("q7", (void*)&presetOutputs.q7,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
   load_builtin_param_float("q8", (void*)&presetOutputs.q8,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
 
+  //param = Param::new_param_string ( "imageurl", P_FLAG_NONE, &this->imageUrl);
+  
   /* variables added in 1.04 */
   load_builtin_param_int("meshx", (void*)&presetInputs.gx, P_FLAG_READONLY, 32, 96, 8, "");
   load_builtin_param_int("meshy", (void*)&presetInputs.gy, P_FLAG_READONLY, 24, 72, 6, "");

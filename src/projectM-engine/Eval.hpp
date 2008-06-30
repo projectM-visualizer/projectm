@@ -36,7 +36,7 @@
 #include "Func.hpp"
 #include "Param.hpp"
 
-//#define EVAL_DEBUG 2
+#define EVAL_DEBUG 0
 //#define EVAL_DEBUG_DOUBLE 2
 
 #define VAL_T 1

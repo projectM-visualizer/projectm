@@ -206,12 +206,6 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
 	}
 		
 	
-        //   if (fs && fs.get() == '\n') {
-        //     line_mode = UNSET_LINE_MODE;
-        //	return tEOL;
-        //    } else if (fs)
-        //fs.unget();
-
         break;
       }
 
@@ -237,24 +231,11 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
       break;
     default:
 
-      if (string != NULL)
-      {
-	/// @bug remove this nonsense
-        if (c == '\r')
-        {
-          std::cerr << "R" << std::endl;
-          abort();
-        }
-        if (c == '\b')
-        {
-          std::cerr << "B" << std::endl;
-          abort();
-        }
         string[i] = tolower(c);
         //string[i+1] = 0;
         //std::cerr << "string is \n\"" << string << "\"" << std::endl;
       }
-    }
+    
 
   }
 
@@ -455,13 +436,25 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
 	} else
 		fs.unget();
 
- //   if (z == 2)
-//	;
-     // return PROJECTM_PARSE_ERROR;
-    //else
-     // fs.unget();
 
 
+	/* CASE: WARP CODE */
+	if (!strncmp(eqn_string, WARP_STRING, WARP_STRING_LENGTH))
+	{		
+		std::cout << "parsing warp string block\n" << std::endl;
+		parse_string_block(fs, &preset->presetOutputs().shader.warp);
+		return PROJECTM_SUCCESS;
+	}
+	
+	
+	/* CASE: COMPOSITE CODE */
+	if (!strncmp(eqn_string, COMPOSITE_STRING, COMPOSITE_STRING_LENGTH))
+	{		
+		std::cout << "parsing composite string block\n" << std::endl;
+		parse_string_block(fs, &preset->presetOutputs().shader.composite);
+		return PROJECTM_SUCCESS;
+	}
+	
     /* CASE: PER FRAME INIT EQUATION */
     if (!strncmp(eqn_string, PER_FRAME_INIT_STRING, PER_FRAME_INIT_STRING_LENGTH))
     {
@@ -1488,7 +1481,7 @@ InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, Preset * pre
   /* At this point, a parameter has been created or was found
      in the database. */
 
-  if (PARSE_DEBUG) printf("parse_init_cond: parsing initial condition value... (LINE %d)\n", line_count);
+  if (PARSE_DEBUG) printf("parsed_init_cond: parsing initial condition value... (LINE %d)\n", line_count);
 
   /* integer value (boolean is an integer in C) */
   if ( (param->type == P_TYPE_BOOL))
@@ -1539,7 +1532,18 @@ InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, Preset * pre
   return init_cond;
 }
 
-/* Parses a per frame init equation, not sure if this works right now */
+
+void Parser::parse_string_block(std::istream &  fs, std::string * out_string) {
+	
+	char name[MAX_TOKEN_SIZE];
+	token_t token;
+			
+	readStringUntil(fs, out_string);
+	
+	std::cout << "out_string:\n " << *out_string << "\n" << std::endl;
+	
+}
+
 InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, Preset * preset, std::map<std::string,Param*> * database)
 {
 
@@ -1636,6 +1640,83 @@ InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, Preset * preset,
   return init_cond;
 }
 
+
+void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool wrapAround) {
+	
+	int string_line_buffer_index = 0;
+	char c;
+	
+	
+	/* Loop until a delimiter is found, or the maximum string size is found */
+	while (true)
+	{
+    
+		if (!fs || fs.eof())
+			c = EOF;
+		else
+			c = fs.get();
+
+		/* Now interpret the character */
+		switch (c)
+		{
+			case '\n':
+				line_count++;
+				if (wrapAround)
+				{
+					std::ostringstream buffer;
+
+		//			if (PARSE_DEBUG) std::cerr << "token wrap! line " << line_count << std::endl;
+					while (c != '=')
+					{
+
+						if (!fs || fs.eof())
+						{
+							line_count = 1;
+							line_mode = UNSET_LINE_MODE;
+		//					if (PARSE_DEBUG)     std::cerr << "token wrap: end of file" << std::endl;
+							return;
+						}
+
+						else {
+							c = fs.get();
+							if ( c != '=')
+								buffer << c;
+						}
+
+					}
+					
+
+					if (!wrapsToNextLine(buffer.str())) {
+						wrapAround = false;
+						int buf_size = (int)buffer.str().length();
+						// <= to also remove equal sign parsing from stream
+						for (int k = 0; k <= buf_size; k++) {
+							if (fs)					
+								fs.unget();
+							else
+								abort();
+						}
+						return;
+					}	
+
+					break;
+				}				
+				return;
+			case EOF:
+				line_count = 1;				
+				return;
+			default:
+
+				if (out_buffer != NULL)
+				{					
+					out_buffer->push_back(c);
+				}
+		}
+
+	}
+
+
+}
 int Parser::parse_wavecode(char * token, std::istream &  fs, Preset * preset)
 {
 
@@ -2090,10 +2171,6 @@ int Parser::parse_wave_helper(std::istream &  fs, Preset  * preset, int id, char
     /* Insert the equation in the per frame equation tree */
     custom_wave->per_frame_init_eqn_tree.insert(std::make_pair(init_cond->param->name,init_cond));
 
-    {
-      if (PARSE_DEBUG) printf("parse_wave_helper: failed to update string buffer (LINE %d)\n", line_count);
-      return PROJECTM_FAILURE;
-    }
     line_mode = CUSTOM_WAVE_PER_FRAME_INIT_LINE_MODE;
     init_cond->evaluate(true);
     return PROJECTM_SUCCESS;

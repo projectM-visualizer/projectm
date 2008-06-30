@@ -28,8 +28,8 @@
 
 #ifndef _PARSER_H
 #define _PARSER_H
+//#define PARSE_DEBUG 2
 #define PARSE_DEBUG 0
-//#define PARSE_DEBUG 0
 
 #include <stdio.h>
 
@@ -62,6 +62,13 @@
 
 #define SHAPECODE_STRING "shapecode_"
 #define SHAPECODE_STRING_LENGTH 10
+
+
+#define WARP_STRING "warp_"
+#define WARP_STRING_LENGTH 5
+
+#define COMPOSITE_STRING "comp_"
+#define COMPOSITE_STRING_LENGTH 5
 
 #define SHAPE_STRING "shape_"
 #define SHAPE_STRING_LENGTH 6
@@ -166,10 +173,12 @@ public:
     static int parse_shapecode(char * eqn_string, std::istream & fs, Preset * preset);
     static int parse_shapecode_prefix(char * token, int * id, char ** var_string);
     
+    static void parse_string_block(std::istream &  fs, std::string * out_string);
+	
     static int parse_wave(char * eqn_string, std::istream & fs, Preset * preset);
     static int parse_shape(char * eqn_string, std::istream & fs, Preset * preset);
     static int parse_shape_prefix(char * token, int * id, char ** eqn_string);
-
+    static void readStringUntil(std::istream & fs, std::string * out_buffer, bool wrapAround = true) ;
     static int update_string_buffer(char * buffer, int * index);
     static int string_to_float(char * string, float * float_ptr);
     static int parse_shape_per_frame_init_eqn(std::istream & fs, CustomShape * custom_shape, Preset * preset);
