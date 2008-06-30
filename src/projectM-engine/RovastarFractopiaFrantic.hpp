@@ -26,12 +26,7 @@ public:
 		drawables.push_back(&vectors);
 		drawables.push_back(&border);
 
-
 		screenDecay = 1.0;
-
-		videoEchoOrientation = 0;
-		videoEchoZoom = 1.0;
-		videoEchoAlpha = 1.0;
 
 		vectors.x_num = 64;
 		vectors.y_num = 48;

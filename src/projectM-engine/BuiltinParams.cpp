@@ -275,8 +275,8 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("frating", (void*)&presetOutputs.fRating, NULL, P_FLAG_NONE, 0.0 , 5.0, 0.0, "");
   load_builtin_param_float("fwavescale", (void*)&presetOutputs.wave.scale, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
   load_builtin_param_float("gamma", (void*)&presetOutputs.fGammaAdj, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fGammaAdj");
-  load_builtin_param_float("echo_zoom", (void*)&presetOutputs.videoEchoZoom, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fVideoEchoZoom");
-  load_builtin_param_float("echo_alpha", (void*)&presetOutputs.videoEchoAlpha, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fvideoechoalpha");
+  load_builtin_param_float("echo_zoom", (void*)&presetOutputs.videoEcho.zoom, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fVideoEchoZoom");
+  load_builtin_param_float("echo_alpha", (void*)&presetOutputs.videoEcho.a, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fvideoechoalpha");
   load_builtin_param_float("wave_a", (void*)&presetOutputs.wave.a, NULL, P_FLAG_NONE, 0.0, 1.0, 0, "fwavealpha");
   load_builtin_param_float("fwavesmoothing", (void*)&presetOutputs.wave.smoothing, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("fmodwavealphastart", (void*)&presetOutputs.wave.modOpacityStart, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
@@ -288,7 +288,7 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("fshader", (void*)&presetOutputs.fShader, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("decay", (void*)&presetOutputs.screenDecay, NULL, P_FLAG_NONE, 0.0, 1.0, 0, "fdecay");
 
-  load_builtin_param_int("echo_orient", (void*)&presetOutputs.videoEchoOrientation, P_FLAG_NONE, 0, 3, 0, "nVideoEchoOrientation");
+  load_builtin_param_int("echo_orient", (void*)&presetOutputs.videoEcho.orientation, P_FLAG_NONE, 0, 3, 0, "nVideoEchoOrientation");
   load_builtin_param_int("wave_mode", (void*)&presetOutputs.wave.mode, P_FLAG_NONE, 0, 7, 0, "nwavemode");
 
   load_builtin_param_bool("wave_additive", (void*)&presetOutputs.wave.additive, P_FLAG_NONE, false, "bAdditiveWaves");

@@ -980,7 +980,6 @@ void Renderer::draw_fps( float realfps )
 void Renderer::CompositeOutput(const Pipeline* pipeline)
 {
 
-	int flipx=1, flipy=1;
 
 	glMatrixMode(GL_TEXTURE);
 	glLoadIdentity();
@@ -1020,34 +1019,6 @@ void Renderer::CompositeOutput(const Pipeline* pipeline)
 	glVertexPointer(2,GL_FLOAT,0,points);
 	glTexCoordPointer(2,GL_FLOAT,0,tex);
 
-	glDrawArrays(GL_TRIANGLE_FAN,0,4);
-
-	//Noe Blend the Video Echo
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glMatrixMode(GL_TEXTURE);
-
-	//draw video echo
-	glColor4f(1.0, 1.0, 1.0, pipeline->videoEchoAlpha);
-	glTranslatef(.5, .5, 0);
-	glScalef(1.0/pipeline->videoEchoZoom, 1.0/pipeline->videoEchoZoom, 1);
-	glTranslatef(-.5, -.5, 0);
-
-	switch ((int)pipeline->videoEchoOrientation)
-	{
-		case 0: flipx=1;flipy=1;break;
-		case 1: flipx=-1;flipy=1;break;
-		case 2: flipx=1;flipy=-1;break;
-		case 3: flipx=-1;flipy=-1;break;
-		default: flipx=1;flipy=1; break;
-	}
-
-	float pointsFlip[4][2] = {{-0.5*flipx, -0.5*flipy},
-				  {-0.5*flipx,  0.5*flipy},
-				  { 0.5*flipx,  0.5*flipy},
-				  { 0.5*flipx, -0.5*flipy}};
-
-	glVertexPointer(2,GL_FLOAT,0,pointsFlip);
 	glDrawArrays(GL_TRIANGLE_FAN,0,4);
 
 	glDisable(GL_TEXTURE_2D);

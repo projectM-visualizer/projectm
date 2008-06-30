@@ -110,8 +110,8 @@ double invratio = 1.0 - ratio;
 
   A.fRating = A.fRating* invratio + B.fRating*ratio;
   A.fGammaAdj = A.fGammaAdj* invratio + B.fGammaAdj*ratio;
-  A.videoEchoZoom = A.videoEchoZoom* invratio + B.videoEchoZoom*ratio;
-  A.videoEchoAlpha = A.videoEchoAlpha* invratio + B.videoEchoAlpha*ratio;
+  A.videoEcho.zoom = A.videoEcho.zoom* invratio + B.videoEcho.zoom*ratio;
+  A.videoEcho.a = A.videoEcho.a* invratio + B.videoEcho.a*ratio;
 
 
   A.fWarpAnimSpeed = A.fWarpAnimSpeed* invratio + B.fWarpAnimSpeed*ratio;
@@ -122,7 +122,7 @@ double invratio = 1.0 - ratio;
 
   if (ratio > 0.5)
     {
-      A.videoEchoOrientation = B.videoEchoOrientation;
+      A.videoEcho.orientation = B.videoEcho.orientation;
       A.textureWrap = B.textureWrap;
       A.bDarkenCenter = B.bDarkenCenter;
       A.bRedBlueStereo = B.bRedBlueStereo;
