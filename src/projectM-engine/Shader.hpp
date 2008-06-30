@@ -12,10 +12,7 @@
 
 class Shader
 {
-	int version;
-	int warp_version;
-	int composite_version;
-
+public:
 	int blur1n;
 	int blur2n;
 	int blur3n;
