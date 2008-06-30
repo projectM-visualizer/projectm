@@ -6,6 +6,7 @@
 #include "Filters.hpp"
 #include "CustomShape.hpp"
 #include "CustomWave.hpp"
+#include "VideoEcho.hpp"
 
 
 /// Container class for all preset writeable engine variables. This is the important glue
@@ -36,6 +37,8 @@ public:
     float dy;
     float cx;
     float cy;
+
+    VideoEcho videoEcho;
 
     MilkdropWaveform wave;
     Border border;

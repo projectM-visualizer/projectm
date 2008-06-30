@@ -9,6 +9,7 @@
 #include "PipelineContext.hpp"
 #include "Shader.hpp"
 
+
 class Pipeline
 {
 public:
@@ -16,9 +17,6 @@ public:
 	 bool  textureWrap;
 	 float screenDecay;
 
-	 float videoEchoAlpha;
-	 float videoEchoZoom;
-	 int videoEchoOrientation;
 
 	 Shader shader;
 

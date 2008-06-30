@@ -515,9 +515,9 @@ void projectM::projectM_initengine()
 	/* PER_FRAME CONSTANTS END */
 	this->presetOutputs.fRating = 0;
 	this->presetOutputs.fGammaAdj = 1.0;
-	this->presetOutputs.videoEchoZoom = 1.0;
-	this->presetOutputs.videoEchoAlpha = 0;
-	this->presetOutputs.videoEchoOrientation = 0;
+	this->presetOutputs.videoEcho.zoom = 1.0;
+	this->presetOutputs.videoEcho.a = 0;
+	this->presetOutputs.videoEcho.orientation = Normal;
 
 	this->presetOutputs.textureWrap = 0;
 	this->presetOutputs.bDarkenCenter = 0;
@@ -613,9 +613,9 @@ void projectM::projectM_resetengine()
 	/* PER_FRAME CONSTANTS END */
 	this->presetOutputs.fRating = 0;
 	this->presetOutputs.fGammaAdj = 1.0;
-	this->presetOutputs.videoEchoZoom = 1.0;
-	this->presetOutputs.videoEchoAlpha = 0;
-	this->presetOutputs.videoEchoOrientation = 0;
+	this->presetOutputs.videoEcho.zoom = 1.0;
+	this->presetOutputs.videoEcho.a = 0;
+	this->presetOutputs.videoEcho.orientation = Normal;
 
 	this->presetOutputs.wave.additive = false;
 	this->presetOutputs.wave.dots = false;

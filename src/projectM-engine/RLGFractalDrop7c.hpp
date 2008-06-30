@@ -9,6 +9,7 @@
 #include "Pipeline.hpp"
 #include "Transformation.hpp"
 #include "MilkdropCompatability.hpp"
+#include "VideoEcho.hpp"
 
 class RLGFractalDrop7c : public Pipeline
 {
@@ -16,6 +17,7 @@ public:
 
 	Shape shape1,shape2,shape3,shape4;
 	MilkdropWaveform wave;
+	VideoEcho videoEcho;
 
 	float movement, t1, t2, t3, t4;
 
@@ -27,12 +29,14 @@ public:
 		drawables.push_back(&shape4);
 		drawables.push_back(&wave);
 
+		compositeDrawables.push_back(&videoEcho);
+
 		textureWrap = true;
 		screenDecay = 1.0;
 
-		videoEchoOrientation = 1;
-		videoEchoZoom = 1.006752;
-		videoEchoAlpha = 0.5;
+		videoEcho.orientation = FlipX;
+		videoEcho.zoom = 1.006752;
+		videoEcho.a = 0.5;
 
 		wave.mode = DoubleLine;
 		wave.additive = true;

@@ -135,6 +135,7 @@ void PresetOutputs::PrepareToRender()
 	drawables.push_back(&border);
 
 	compositeDrawables.clear();
+	compositeDrawables.push_back(&videoEcho);
 
 	if (bBrighten==1)
 		compositeDrawables.push_back(&brighten);
