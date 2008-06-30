@@ -317,6 +317,15 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("sx", (void*)&presetOutputs.sx, presetOutputs.sx_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
   load_builtin_param_float("sy", (void*)&presetOutputs.sy, presetOutputs.sy_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
 
+
+  load_builtin_param_float("b1n", (void*)&presetOutputs.shader.blur1n, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_float("b2n", (void*)&presetOutputs.shader.blur2n, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_float("b3n", (void*)&presetOutputs.shader.blur3n, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_float("b1x", (void*)&presetOutputs.shader.blur1x, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_float("b2x", (void*)&presetOutputs.shader.blur2x, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_float("b3x", (void*)&presetOutputs.shader.blur3x, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_float("b1ed", (void*)&presetOutputs.shader.blur1ed, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+
   load_builtin_param_float("wave_r", (void*)&presetOutputs.wave.r, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
   load_builtin_param_float("wave_g", (void*)&presetOutputs.wave.g, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
   load_builtin_param_float("wave_b", (void*)&presetOutputs.wave.b, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
