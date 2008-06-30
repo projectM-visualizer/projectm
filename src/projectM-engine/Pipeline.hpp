@@ -7,6 +7,7 @@
 #include "Filters.hpp"
 #include "BeatDetect.hpp"
 #include "PipelineContext.hpp"
+#include "Shader.hpp"
 
 class Pipeline
 {
@@ -18,6 +19,8 @@ public:
 	 float videoEchoAlpha;
 	 float videoEchoZoom;
 	 int videoEchoOrientation;
+
+	 Shader shader;
 
 	 std::vector<RenderItem*> drawables;
 	 std::vector<RenderItem*> compositeDrawables;
