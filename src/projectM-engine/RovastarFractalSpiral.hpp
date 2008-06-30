@@ -27,9 +27,6 @@ public:
 		textureWrap = true;
 		screenDecay = 1.0;
 
-		videoEchoOrientation = 0;
-		videoEchoZoom = 1.0;
-		videoEchoAlpha = 1.0;
 
 		border.outer_size = 0.01;
 		border.outer_a = 1.0;

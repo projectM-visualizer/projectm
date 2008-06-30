@@ -168,9 +168,6 @@ public:
 		textureWrap = false;
 		screenDecay = 0.3;
 
-		videoEchoOrientation = 0;
-		videoEchoZoom = 1.0;
-		videoEchoAlpha = 1.0;
 
 	q1 = 0;
 	meanmid = 0;

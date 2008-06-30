@@ -24,10 +24,6 @@ public:
 		screenDecay = 0.9;
 		textureWrap = true;
 
-		videoEchoOrientation = 0;
-		videoEchoZoom = 1.0;
-		videoEchoAlpha = 1.0;
-
 		drawables.push_back(&border);
 		drawables.push_back(&shape1);
 		drawables.push_back(&shape2);
