@@ -43,7 +43,7 @@ void Waveform::Draw(RenderContext &context)
 
 			if (thick)
 			{
-				glLineWidth(context.texsize <= 512 ? 2 : 2*context.texsize/512);
+			  glLineWidth(context.texsize <= 512 ? 2 : 2*context.texsize/512);
 			  glPointSize(context.texsize <= 512 ? 2 : 2*context.texsize/512);
 
 			}
