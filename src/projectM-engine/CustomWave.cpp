@@ -12,7 +12,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
  *
- * You should have received a copy of the GNU Lesser General Public
+ * You  have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  * See 'LICENSE.txt' included within this release
@@ -362,6 +362,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
   {
     abort();
   }
+  
   if ((param = Param::new_param_float("t6", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
     abort();
@@ -437,7 +438,8 @@ CustomWave::CustomWave(int _id) : Waveform(512),
 	{
 
 	}
-  /* End of parameter loading. Note that the read only parameters associated
+	
+     /* End of parameter loading. Note that the read only parameters associated
      with custom waves (ie, sample) are variables stored in PresetFrameIO.hpp,
      and not specific to the custom wave datastructure. */
 
@@ -533,7 +535,6 @@ void CustomWave::evalInitConds()
 
 ColoredPoint CustomWave::PerPoint(ColoredPoint p, const WaveformContext context)
 {
-
 	    r_mesh[context.sample_int] = r;
 	    g_mesh[context.sample_int] = g;
 	    b_mesh[context.sample_int] = b;
