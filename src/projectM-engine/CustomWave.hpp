@@ -124,7 +124,7 @@ public:
 
     int add_per_point_eqn(char * name, GenExpr * gen_expr);
     void evalCustomWaveInitConditions(Preset *preset);
-    void evalPerPointEqns();
+    
 
     void loadUnspecInitConds();
 
