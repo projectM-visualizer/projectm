@@ -129,7 +129,6 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
 
 
 
-
   /* Insert the per pixel equation into the preset per pixel database */
   std::pair<std::map<int, PerPixelEqn*>::iterator, bool> inserteeOption = per_pixel_eqn_tree.insert
       (std::make_pair(per_pixel_eqn->index, per_pixel_eqn));
@@ -351,9 +350,7 @@ void Preset::evaluateFrame()
   // Evaluate all equation objects according to milkdrop flow diagram 
 
   evalPerFrameInitEquations();
-  
   evalPerFrameEquations();
-
 
   // Important step to ensure custom shapes and waves don't stamp on the q variable values 
   // calculated by the per frame (init) and per pixel equations.
@@ -381,13 +378,13 @@ void Preset::initialize_PerPixelMeshes()
 {
 
   int x,y;
-      for (x=0;x<m_presetInputs.gx;x++){       
+      for (x=0;x<m_presetInputs.gx;x++){
 	for(y=0;y<m_presetInputs.gy;y++){
 	  m_presetOutputs.cx_mesh[x][y]=m_presetOutputs.cx;
 	}}
 	
-     
-   
+
+
 
       for (x=0;x<m_presetInputs.gx;x++){
 	for(y=0;y<m_presetInputs.gy;y++){

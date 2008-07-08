@@ -107,8 +107,7 @@ int main ( int argc, char*argv[] )
 	QPulseAudioThread * pulseThread = new QPulseAudioThread(argc, argv, mainWindow);
 
 	pulseThread->start();
-	
-	
+		
 	//QApplication::connect
 	//		(mainWindow->qprojectMWidget(), SIGNAL(projectM_Initialized(QProjectM *)), pulseThread, SLOT(setQrojectMWidget(QProjectMWidget*)));
 	
@@ -124,7 +123,6 @@ int main ( int argc, char*argv[] )
         	mainWindow->unregisterSettingsAction(&pulseAction);
 
 	pulseThread->cleanup();
-	
 	
 	delete(pulseThread);
 	return ret;

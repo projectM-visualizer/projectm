@@ -442,7 +442,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
 	if (!strncmp(eqn_string, WARP_STRING, WARP_STRING_LENGTH))
 	{		
 		std::cout << "parsing warp string block\n" << std::endl;
-		parse_string_block(fs, &preset->presetOutputs().shader.warp);
+		parse_string_block(fs, &preset->presetOutputs().shader.warp);		
 		return PROJECTM_SUCCESS;
 	}
 	
@@ -1538,7 +1538,9 @@ void Parser::parse_string_block(std::istream &  fs, std::string * out_string) {
 	char name[MAX_TOKEN_SIZE];
 	token_t token;
 			
-	readStringUntil(fs, out_string);
+	std::set<char> skipList;
+	skipList.insert('`');
+	readStringUntil(fs, out_string, false, skipList);
 	
 	std::cout << "out_string:\n " << *out_string << "\n" << std::endl;
 	
@@ -1641,12 +1643,11 @@ InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, Preset * preset,
 }
 
 
-void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool wrapAround) {
+void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool wrapAround, const std::set<char> & skipList) {
 	
 	int string_line_buffer_index = 0;
 	char c;
-	
-	
+		
 	/* Loop until a delimiter is found, or the maximum string size is found */
 	while (true)
 	{
@@ -1660,6 +1661,7 @@ void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool w
 		switch (c)
 		{
 			case '\n':
+				
 				line_count++;
 				if (wrapAround)
 				{
@@ -1700,7 +1702,8 @@ void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool w
 					}	
 
 					break;
-				}				
+				} else
+					out_buffer->push_back(c);
 				return;
 			case EOF:
 				line_count = 1;				
@@ -1708,8 +1711,10 @@ void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool w
 			default:
 
 				if (out_buffer != NULL)
-				{					
-					out_buffer->push_back(c);
+				{		
+					if (skipList.find(c) == skipList.end())
+						out_buffer->push_back(c);
+					
 				}
 		}
 

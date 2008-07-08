@@ -5,10 +5,12 @@
 #include <QVector>
 
 
-/* Adopted from PulseAudio.
+/* Adopted from PulseAudio by carmelo.piccione+projectm@gmail.com
 
   Copyright 2004-2006 Lennart Poettering
   Copyright 2006 Pierre Ossman <ossman@cendio.se> for Cendio AB
+  
+
 ***/
 
 #ifdef HAVE_CONFIG_H
@@ -90,8 +92,7 @@ QPulseAudioThread::SourceContainer::const_iterator QPulseAudioThread::readSettin
 		return s_sourceList.end();
 	} else {
 
-		QString deviceName = settings.value("pulseAudioDeviceName", QString()).toString();
-		
+		QString deviceName = settings.value("pulseAudioDeviceName", QString()).toString();		
 		qDebug() << "device name is " << deviceName;
 		for (SourceContainer::const_iterator pos = s_sourceList.begin(); 
 				   pos != s_sourceList.end(); ++pos) {
@@ -296,7 +297,7 @@ void QPulseAudioThread::pulseQuit ( int ret )
 	assert ( mainloop_api );
 	mainloop_api->quit ( mainloop_api, ret );
 	if (*s_qprojectM_MainWindowPtr)
-	delete(*s_qprojectM_MainWindowPtr);
+		delete(*s_qprojectM_MainWindowPtr);
 	*s_qprojectM_MainWindowPtr = 0;
 }
 
@@ -317,6 +318,9 @@ void QPulseAudioThread::stream_read_callback ( pa_stream *s, size_t length, void
 		return;
 	}
 
+	if ((!s_qprojectM_MainWindowPtr) || (!*s_qprojectM_MainWindowPtr))
+		return;
+			
 	assert ( data && length );
 
 	if ( buffer )
@@ -330,7 +334,6 @@ void QPulseAudioThread::stream_read_callback ( pa_stream *s, size_t length, void
 		return;
 	}
 
-	
 	(*s_qprojectM_MainWindowPtr)->addPCM( (float*)data, length / ( sizeof ( float ) ) );
 	
 	
