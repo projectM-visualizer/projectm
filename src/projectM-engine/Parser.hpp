@@ -79,6 +79,8 @@
 #define WAVE_INIT_STRING "init"
 #define WAVE_INIT_STRING_LENGTH 4
 
+#include <set>
+
 typedef enum {
   UNSET_LINE_MODE,
   PER_FRAME_LINE_MODE,
@@ -178,7 +180,7 @@ public:
     static int parse_wave(char * eqn_string, std::istream & fs, Preset * preset);
     static int parse_shape(char * eqn_string, std::istream & fs, Preset * preset);
     static int parse_shape_prefix(char * token, int * id, char ** eqn_string);
-    static void readStringUntil(std::istream & fs, std::string * out_buffer, bool wrapAround = true) ;
+    static void readStringUntil(std::istream & fs, std::string * out_buffer, bool wrapAround = true, const std::set<char> & skipList = std::set<char>()) ;
     static int update_string_buffer(char * buffer, int * index);
     static int string_to_float(char * string, float * float_ptr);
     static int parse_shape_per_frame_init_eqn(std::istream & fs, CustomShape * custom_shape, Preset * preset);
