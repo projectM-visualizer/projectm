@@ -188,7 +188,7 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
 	}
 
         }
-        if (PARSE_DEBUG) std::cerr << "parseToken: parsed away equal sign, line prefix is \""  << buffer.str() 
+        if (PARSE_DEBUG) std::cerr << "parseToken: parsed away equal sign, line prefix is \""  << buffer.str()
 		<< "\"" << std::endl;
         --i;
 
@@ -197,15 +197,15 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
 		int buf_size = (int)buffer.str().length();
 		// <= to also remove equal sign parsing from stream
 		for (int k = 0; k <= buf_size; k++) {
-			if (fs)					
+			if (fs)
 				fs.unget();
 			else
 				abort();
 		}
 		return tEOL;
 	}
-		
-	
+
+
         break;
       }
 
@@ -235,7 +235,7 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
         //string[i+1] = 0;
         //std::cerr << "string is \n\"" << string << "\"" << std::endl;
       }
-    
+
 
   }
 
@@ -375,7 +375,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
   /* Clear the string line buffer */
   memset(string_line_buffer, 0, STRING_LINE_SIZE);
   string_line_buffer_index = 0;
- 
+
   tokenWrapAroundEnabled = false;
 
   token = parseToken( fs, eqn_string );
@@ -424,12 +424,12 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
     // std::cerr << "parse_line: tEQ case, fs.peek()=\'" << fs.peek() << "\'" << std::endl;
     if (!fs)
       return PROJECTM_PARSE_ERROR;
-    
+
 //	char z = fs.get();
 	char tmpChar;
 	if ((tmpChar = fs.get()) == '\n') {
 		tokenWrapAroundEnabled = false;
-		return PROJECTM_PARSE_ERROR;	
+		return PROJECTM_PARSE_ERROR;
 	} else if (tmpChar == '\r') {
 		tokenWrapAroundEnabled = false;
 		return PROJECTM_PARSE_ERROR;
@@ -440,21 +440,21 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
 
 	/* CASE: WARP CODE */
 	if (!strncmp(eqn_string, WARP_STRING, WARP_STRING_LENGTH))
-	{		
-		std::cout << "parsing warp string block\n" << std::endl;
-		parse_string_block(fs, &preset->presetOutputs().shader.warp);		
+	{
+		//std::cout << "parsing warp string block\n" << std::endl;
+		parse_string_block(fs, &preset->presetOutputs().shader.warp);
 		return PROJECTM_SUCCESS;
 	}
-	
-	
+
+
 	/* CASE: COMPOSITE CODE */
 	if (!strncmp(eqn_string, COMPOSITE_STRING, COMPOSITE_STRING_LENGTH))
-	{		
-		std::cout << "parsing composite string block\n" << std::endl;
+	{
+		//std::cout << "parsing composite string block\n" << std::endl;
 		parse_string_block(fs, &preset->presetOutputs().shader.composite);
 		return PROJECTM_SUCCESS;
 	}
-	
+
     /* CASE: PER FRAME INIT EQUATION */
     if (!strncmp(eqn_string, PER_FRAME_INIT_STRING, PER_FRAME_INIT_STRING_LENGTH))
     {
@@ -504,7 +504,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
     /* Wavecode initial condition case */
     if (!strncmp(eqn_string, WAVECODE_STRING, WAVECODE_STRING_LENGTH))
     {
-      
+
       line_mode = CUSTOM_WAVE_WAVECODE_LINE_MODE;
 
       return parse_wavecode(eqn_string, fs, preset);
@@ -563,13 +563,13 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
 
     /* Sometimes equations are written implicitly in milkdrop files, in the form
 
-    per_frame_1 = p1 = eqn1; p2 = eqn2; p3 = eqn3;..; 
+    per_frame_1 = p1 = eqn1; p2 = eqn2; p3 = eqn3;..;
 
     which is analagous to:
 
     per_frame_1 = p1 = eqn1; per_frame_2 = p2 = eqn2; per_frame_3 = p3 = eqn3; ...;
 
-    The following line mode hack allows such implicit declaration of the 
+    The following line mode hack allows such implicit declaration of the
     prefix that specifies the equation type. An alternative method
     may be to associate each equation line as list of equations separated
     by semicolons (and a new line ends the list). Instead, however, a global
@@ -1254,7 +1254,7 @@ int Parser::parse_int(std::istream &  fs, int * int_ptr)
     return PROJECTM_PARSE_ERROR;
 
   /* Convert the string to an integer. *end_ptr
-     should end up pointing to null terminator of 'string' 
+     should end up pointing to null terminator of 'string'
      if the conversion was successful. */
   //  printf("STRING: \"%s\"\n", string);
 
@@ -1534,16 +1534,16 @@ InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, Preset * pre
 
 
 void Parser::parse_string_block(std::istream &  fs, std::string * out_string) {
-	
+
 	char name[MAX_TOKEN_SIZE];
 	token_t token;
-			
+
 	std::set<char> skipList;
 	skipList.insert('`');
 	readStringUntil(fs, out_string, false, skipList);
-	
-	std::cout << "out_string:\n " << *out_string << "\n" << std::endl;
-	
+
+	//std::cout << "out_string:\n " << *out_string << "\n" << std::endl;
+
 }
 
 InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, Preset * preset, std::map<std::string,Param*> * database)
@@ -1644,14 +1644,14 @@ InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, Preset * preset,
 
 
 void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool wrapAround, const std::set<char> & skipList) {
-	
+
 	int string_line_buffer_index = 0;
 	char c;
-		
+
 	/* Loop until a delimiter is found, or the maximum string size is found */
 	while (true)
 	{
-    
+
 		if (!fs || fs.eof())
 			c = EOF;
 		else
@@ -1661,7 +1661,7 @@ void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool w
 		switch (c)
 		{
 			case '\n':
-				
+
 				line_count++;
 				if (wrapAround)
 				{
@@ -1686,35 +1686,35 @@ void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool w
 						}
 
 					}
-					
+
 
 					if (!wrapsToNextLine(buffer.str())) {
 						wrapAround = false;
 						int buf_size = (int)buffer.str().length();
 						// <= to also remove equal sign parsing from stream
 						for (int k = 0; k <= buf_size; k++) {
-							if (fs)					
+							if (fs)
 								fs.unget();
 							else
 								abort();
 						}
 						return;
-					}	
+					}
 
 					break;
 				} else
 					out_buffer->push_back(c);
 				return;
 			case EOF:
-				line_count = 1;				
+				line_count = 1;
 				return;
 			default:
 
 				if (out_buffer != NULL)
-				{		
+				{
 					if (skipList.find(c) == skipList.end())
 						out_buffer->push_back(c);
-					
+
 				}
 		}
 
@@ -2285,7 +2285,7 @@ int Parser::parse_wave_helper(std::istream &  fs, Preset  * preset, int id, char
     // This tells the parser we are no longer parsing a custom wave
     current_wave = NULL;
 
-   
+
 
     line_mode = CUSTOM_WAVE_PER_POINT_LINE_MODE;
     if (PARSE_DEBUG) printf("parse_wave_helper (per_point): [finished] (custom wave id = %d)\n", custom_wave->id);
@@ -2586,10 +2586,10 @@ int Parser::parse_wave_per_frame_eqn(std::istream &  fs, CustomWave * custom_wav
 
 bool Parser::wrapsToNextLine(const std::string & str) {
 
-std::size_t lastLineEndIndex = 
+std::size_t lastLineEndIndex =
 	lastLinePrefix.find_last_not_of("0123456789");
 
-std::size_t thisLineEndIndex = 
+std::size_t thisLineEndIndex =
 	str.find_last_not_of("0123456789");
 
 std::size_t startIndex = 0;
