@@ -77,6 +77,7 @@ public:
   GLuint initRenderToTexture();
   void PerPixelMath(PresetOutputs *presetOutputs,  PresetInputs *presetInputs);
 
+  void SetPipeline(Pipeline &pipeline);
 
   void setPresetName(const std::string& theValue)
   {
@@ -118,21 +119,21 @@ private:
 
 #ifdef USE_CG
 
-  CGcontext   myCgContext;
- CGprofile   myCgProfile;
+  std::string cgTemplate;
 
- CGprogram   myCgWarpProgram,
+  bool warpShadersEnabled;
+  bool compositeShadersEnabled;
+
+  CGcontext   myCgContext;
+  CGprofile   myCgProfile;
+  CGprogram   myCgWarpProgram,
                    myCgCompositeProgram;
 
-
- std::string warpProgram;
- std::string compositeProgram;
- std::string shaderFile;
-
-
+ bool LoadCgProgram(std::string program, CGprogram &p);
+ bool checkForCgCompileError(const char *situation);
  void checkForCgError(const char *situation);
  void SetupCg();
- void SetupCgVariables(CGprogram program, const PipelineContext &context);
+ void SetupCgVariables(CGprogram program, const PipelineContext &pipelineContext);
 #endif
 
 #ifdef USE_FTGL
@@ -144,11 +145,12 @@ private:
 
 
   void SetupPass1(const Pipeline* pipeline, const PipelineContext &pipelineContext);
+  void SetupShaders(const Pipeline* pipeline, const PipelineContext &pipelineContext);
   void Interpolation(const Pipeline* pipeline);
   void RenderItems(const Pipeline* pipeline, const PipelineContext &pipelineContext);
-  void CompositeOutput(const Pipeline* pipeline);
+  void CompositeOutput(const Pipeline* pipeline, const PipelineContext &pipelineContext);
   void FinishPass1();
-  void Pass2 (const Pipeline* pipeline);
+  void Pass2 (const Pipeline* pipeline, const PipelineContext &pipelineContext);
 
   inline static Point PerPixel(Point p, PerPixelContext &context)
   {
