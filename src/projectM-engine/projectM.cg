@@ -20,6 +20,32 @@ sampler2D sampler_main;
 
 #define uv_orig uv
 
+uniform sampler2D sampler_arg : TEX0;
+             uniform sampler2D sampler_noise_lq;
+             uniform sampler2D sampler_noise_lq_lite;
+             uniform sampler2D sampler_noise_mq;
+             uniform sampler2D sampler_noise_hq;
+             uniform sampler3D sampler_noisevol_lq;
+             uniform sampler3D sampler_noisevol_hq;
+             uniform float4 texsize_noise_lq;
+             uniform float4 texsize_noise_lq_lite;
+             float time;
+             float4 rand_preset;
+             float4 rand_frame;
+             float  progress;
+             float  frame;
+             float  fps;
+             float  bass;
+             float  mid;
+             float  treb;
+             float  vol;
+             float  bass_att;
+             float  mid_att;
+             float  treb_att;
+             float  vol_att;
+             float4 texsize;
+             float4 aspect;
+
 #define sampler_pw_main sampler_main
 #define sampler_pc_main sampler_main
 #define sampler_fw_main sampler_main
@@ -47,39 +73,11 @@ ret += tex2D(sampler_main, float2(uv.x, uv.y - .001)).xyz;
 return ret * 0.2;
 }
 
-outtype projectm (float2 uv : TEXCOORD0,
-             uniform sampler2D sampler_arg : TEX0,
-             uniform sampler2D sampler_noise_lq,
-             uniform sampler2D sampler_noise_lq_lite,
-             uniform sampler2D sampler_noise_mq,
-             uniform sampler2D sampler_noise_hq,
-             uniform sampler3D sampler_noisevol_lq,
-             uniform sampler3D sampler_noisevol_hq,
-             uniform float4 texsize_noise_lq,
-             uniform float4 texsize_noise_lq_lite,
-             uniform float time,
-             uniform float4 rand_preset,
-             uniform float4 rand_frame,
-             uniform float  progress,
-             uniform float  frame,
-             uniform float  fps,
-             uniform float  bass,
-             uniform float  mid,
-             uniform float  treb,
-             uniform float  vol,
-             uniform float  bass_att,
-             uniform float  mid_att,
-             uniform float  treb_att,
-             uniform float  vol_att,
-             uniform float4 texsize,
-             uniform float4 aspect
-             )
+outtype projectm (float2 uv : TEXCOORD0)
 {
   outtype OUT;
   OUT.color.w=1;
   float3 ret;
-
-  sampler_main = sampler_arg;
 
   float rad = getrad;
   float ang = getang;
