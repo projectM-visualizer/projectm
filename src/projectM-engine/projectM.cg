@@ -25,12 +25,11 @@ sampler2D sampler_main;
 #define sampler_fw_main sampler_main
 #define sampler_fc_main sampler_main
 
-#define sampler_noise_lq sampler_main
-#define sampler_noise_lq_lite sampler_main
-#define sampler_noise_mq sampler_main
-#define sampler_noise_hq sampler_main
-#define sampler_noisevol_lq sampler_main
-#define sampler_noisevol_hq sampler_main
+
+
+#define sampler_noise_mq sampler_noise_hq
+#define sampler_noisevol_lq sampler_noise_lq
+#define sampler_noisevol_hq sampler_noise_lq
 #define texsize_noise_lq texsize
 #define texsize_noise_lq_lite texsize
 #define texsize_noise_mq texsize
@@ -57,6 +56,9 @@ return ret * 0.2;
 
 outtype projectm (float2 uv : TEXCOORD0,
              uniform sampler2D sampler_arg : TEX0,
+             uniform sampler2D sampler_noise_lq,
+             uniform sampler2D sampler_noise_lq_lite,
+             uniform sampler2D sampler_noise_hq,
              uniform float time,
              uniform float4 rand_preset,
              uniform float4 rand_frame,
