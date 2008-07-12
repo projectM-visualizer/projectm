@@ -25,15 +25,10 @@ sampler2D sampler_main;
 #define sampler_fw_main sampler_main
 #define sampler_fc_main sampler_main
 
-
-#define sampler_noisevol_lq sampler_noise_lq
-#define sampler_noisevol_hq sampler_noise_lq
-#define texsize_noise_lq texsize
-#define texsize_noise_lq_lite texsize
-#define texsize_noise_mq texsize
-#define texsize_noise_hq texsize
-#define texsize_noisevol_lq texsize
-#define texsize_noisevol_hq texsize
+#define texsize_noise_mq texsize_noise_lq
+#define texsize_noise_hq texsize_noise_lq
+#define texsize_noisevol_lq texsize_noise_lq_lite
+#define texsize_noisevol_hq texsize_noise_lq_lite
 
 
 struct outtype {float4 color : COLOR;};
@@ -58,6 +53,10 @@ outtype projectm (float2 uv : TEXCOORD0,
              uniform sampler2D sampler_noise_lq_lite,
              uniform sampler2D sampler_noise_mq,
              uniform sampler2D sampler_noise_hq,
+             uniform sampler3D sampler_noisevol_lq,
+             uniform sampler3D sampler_noisevol_hq,
+             uniform float4 texsize_noise_lq,
+             uniform float4 texsize_noise_lq_lite,
              uniform float time,
              uniform float4 rand_preset,
              uniform float4 rand_frame,

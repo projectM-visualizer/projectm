@@ -118,6 +118,10 @@ glGenTextures( 1, &noise_texture_lq_lite );
 glBindTexture( GL_TEXTURE_2D, noise_texture_lq_lite );
 glTexImage2D(GL_TEXTURE_2D,0,4,32,32,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq_lite);
 
+glGenTextures( 1, &noise_texture_lq );
+glBindTexture( GL_TEXTURE_2D, noise_texture_lq );
+glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq);
+
 glGenTextures( 1, &noise_texture_mq );
 glBindTexture( GL_TEXTURE_2D, noise_texture_mq );
 glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_mq);
@@ -126,9 +130,15 @@ glGenTextures( 1, &noise_texture_hq );
 glBindTexture( GL_TEXTURE_2D, noise_texture_hq );
 glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_hq);
 
-glGenTextures( 1, &noise_texture_lq );
-glBindTexture( GL_TEXTURE_2D, noise_texture_lq );
-glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq);
+
+
+glGenTextures( 1, &noise_texture_lq_vol );
+glBindTexture( GL_TEXTURE_3D, noise_texture_lq_vol );
+glTexImage3D(GL_TEXTURE_3D,0,4,32,32,32,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq_vol);
+
+glGenTextures( 1, &noise_texture_hq_vol );
+glBindTexture( GL_TEXTURE_3D, noise_texture_hq_vol );
+glTexImage3D(GL_TEXTURE_3D,0,4,32,32,32,0,GL_LUMINANCE,GL_FLOAT,noise.noise_hq_vol);
 #endif
 }
 
@@ -136,7 +146,10 @@ void Renderer::SetPipeline(Pipeline &pipeline)
 {
 #ifdef USE_CG
 
-
+	rand_preset[0] = (rand()%100) * .01;
+	rand_preset[1] = (rand()%100) * .01;
+	rand_preset[2] = (rand()%100) * .01;
+	rand_preset[3] = (rand()%100) * .01;
 
 	if(warpShadersEnabled) cgDestroyProgram(myCgWarpProgram);
 	if(compositeShadersEnabled) cgDestroyProgram(myCgCompositeProgram);
@@ -265,7 +278,7 @@ std::cout<<"Cg: Initialized profile: "<<cgGetProfileString(myCgProfile)<<std::en
 void Renderer::SetupCgVariables(CGprogram program, const PipelineContext &context)
 {
 	cgGLSetParameter1f(cgGetNamedParameter(program, "time"), context.time);
-	  cgGLSetParameter4f(cgGetNamedParameter(program, "rand_preset"), 0.6, 0.43, 0.87, 0.3);
+	cgGLSetParameter4f(cgGetNamedParameter(program, "rand_preset"), rand_preset[0], rand_preset[1],rand_preset[2],rand_preset[3]);
 	cgGLSetParameter4f(cgGetNamedParameter(program, "rand_frame"), (rand()%100) * .01,(rand()%100) * .01,(rand()%100) * .01,(rand()%100) * .01);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "fps"), context.fps);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "frame"), context.frame);
@@ -296,6 +309,14 @@ void Renderer::SetupCgVariables(CGprogram program, const PipelineContext &contex
 	cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq"),noise_texture_lq);
   	cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq"));
 
+ 	cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noisevol_hq"),noise_texture_hq_vol);
+  	cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noisevol_hq"));
+
+	cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noisevol_lq"),noise_texture_lq_vol);
+  	cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noisevol_lq"));
+
+  	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_lq"), 256, 256,1.0/(float)256,1.0/(float)256);
+  	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_lq_lite"), 32, 32,1.0/(float)32,1.0/(float)32);
 }
 
 #endif
