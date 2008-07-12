@@ -27,7 +27,15 @@ public:
 
 private:
 
-	static inline int Noise(int x, int y)
+
+	static inline float Noise(int x)
+	{
+		 int n = (x<<13) ^ x;
+		 return ( 1.0 - ( (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
+
+	}
+
+	static inline float Noise(int x, int y)
 	{
 		 int n = x + y * 57;
 		 n = (n<<13) ^ n;
@@ -63,10 +71,10 @@ private:
 
 	static inline float InterpolatedNoise(float x, float y)
 	{
-		int integer_X    = int(x);
+		int integer_X = int(x);
 		float fractional_X = x - integer_X;
 
-		int integer_Y    = int(y);
+		int integer_Y = int(y);
 		float fractional_Y = y - integer_Y;
 
 		float v1 = SmoothedNoise(integer_X,     integer_Y);
@@ -85,16 +93,49 @@ private:
 	{
 		float total = 0;
 
-		for (int i = 0; i <= n; i++)
+		for (int i = 0; i < n; i++)
 		{
 			float frequency = pow(2,i);
 			float amplitude = pow(p,i);
 
-			total = total + InterpolatedNoise(x * frequency, y * frequency) * amplitude;
+			total += InterpolatedNoise(x * frequency, y * frequency) * amplitude;
 		}
 
 		return total;
 	}
+
+
+	static inline float InterPolation(float a, float b, float c)
+	{
+	    return a+(b-a)*c*c*(3-2*c);
+
+	}
+
+	static inline float perlin_noise(float x,float y, int width, int octaves, int seed, float periode){
+
+	           float a,b,value,freq,tam_pas,zone_x,zone_y;
+	           int s,box,num,step_x,step_y;
+	           int amplitude=1;
+	           int noisedata;
+
+	       freq=1/(float)(periode);
+
+	           for ( s=0;s<octaves;s++)
+				  {
+					num=(int)(width*freq);
+	                step_x=(int)(x*freq);
+	                step_y=(int)(y*freq);
+	                zone_x=x*freq-step_x;
+	                zone_y=y*freq-step_y;
+	                box=step_x+step_y*num;
+	                noisedata=(box+seed);
+	                a=InterPolation(Noise(noisedata),Noise(noisedata+1),zone_x);
+	                b=InterPolation(Noise(noisedata+num),Noise(noisedata+1+num),zone_x);
+	                value=InterPolation(a,b,zone_y)*amplitude;
+
+	              }
+	          return value;
+	              }
 
 
 
