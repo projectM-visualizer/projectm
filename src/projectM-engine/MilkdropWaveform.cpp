@@ -183,7 +183,7 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 	switch(mode)
 	{
 
-		case RadialBlob:
+		case Circle:
 		  {
  		    loop = true;
 			rot =   0;
@@ -215,7 +215,7 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 
 			break;
 
-		case 1://circularly moving waveform
+		case RadialBlob://circularly moving waveform
 
 			rot =   0;
 			aspectScale = context.aspectRatio;
@@ -228,7 +228,7 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 				theta=context.beatDetect->pcm->pcmdataL[i+32]*0.06*scale * 1.57 + context.time*2.3;
 				r=(0.53 + 0.43*context.beatDetect->pcm->pcmdataR[i]*0.12*scale+ mystery)*.5;
 
-				wavearray[i][0]=(r*cos(theta)*(context.aspectCorrect ? context.aspectRatio : 1.0)+i);
+				wavearray[i][0]=(r*cos(theta)*(context.aspectCorrect ? context.aspectRatio : 1.0)+x);
 				wavearray[i][1]=(r*sin(theta)+temp_y);
 			}
 

@@ -121,6 +121,8 @@ private:
 
   std::string cgTemplate;
 
+  unsigned int noise_texture;
+
   bool warpShadersEnabled;
   bool compositeShadersEnabled;
 
