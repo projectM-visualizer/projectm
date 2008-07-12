@@ -12,7 +12,7 @@
 #include <fstream>
 #include "omptl/omptl"
 #include "omptl/omptl_algorithm"
-
+#include "PerlinNoise.hpp"
 
 class Preset;
 
@@ -108,6 +108,16 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
 #ifdef USE_CG
 SetupCg();
+
+std::cout<<"Generating Noise Textures"<<std::endl;
+PerlinNoise noise;
+
+noise.GenerateTextures();
+
+glGenTextures( 1, &noise_texture );
+glBindTexture( GL_TEXTURE_2D, noise_texture );
+glTexImage2D(GL_TEXTURE_2D,0,1,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq);
+
 #endif
 }
 
@@ -262,6 +272,8 @@ void Renderer::SetupCgVariables(CGprogram program, const PipelineContext &contex
 	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize"), renderTarget->texsize, renderTarget->texsize, 1/(float)renderTarget->texsize,1/(float)renderTarget->texsize);
   	  cgGLSetParameter4f(cgGetNamedParameter(program, "aspect"), aspect,1,1/aspect,1);
 
+  	cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq"),noise_texture);
+  	cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq"));
 }
 
 #endif

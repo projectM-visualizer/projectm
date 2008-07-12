@@ -12,7 +12,7 @@
 
 enum MilkdropWaveformMode
 	{
-		RadialBlob=0, Circle, Blob2, Blob3, DerivativeLine, Blob5, Line, DoubleLine
+	  Circle=0, RadialBlob, Blob2, Blob3, DerivativeLine, Blob5, Line, DoubleLine
 	};
 
 
