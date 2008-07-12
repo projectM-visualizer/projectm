@@ -39,7 +39,7 @@ PerlinNoise::PerlinNoise()
 	for (int x = 0; x < 32;x++)
 		for (int y = 0; y < 32;y++)
 			for (int z = 0; z < 32;z++)
-				noise_hq_vol[x][y][z] = perlin_noise_3d(x,y,z,6121,7,seed3,0.5,64);
+				noise_hq_vol[x][y][z] = noise(x,y,z);//perlin_noise_3d(x,y,z,6121,7,seed3,0.5,64);
 
 
 }
