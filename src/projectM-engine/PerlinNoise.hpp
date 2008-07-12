@@ -127,9 +127,9 @@ private:
 	           zone_y=y*freq-step_y;
 	           box=step_x+step_y*num;
 	           noisedata=(box+seed);
-	           a=InterPolation(Noise(noisedata),Noise(noisedata+1),zone_x);
-	           b=InterPolation(Noise(noisedata+num),Noise(noisedata+1+num),zone_x);
-	           value=InterPolation(a,b,zone_y);
+	           a=cos_interp(Noise(noisedata),Noise(noisedata+1),zone_x);
+	           b=cos_interp(Noise(noisedata+num),Noise(noisedata+1+num),zone_x);
+	           value=cos_interp(a,b,zone_y);
 
 	          return value;
 	}
