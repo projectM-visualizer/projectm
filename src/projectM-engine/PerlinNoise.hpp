@@ -96,14 +96,7 @@ private:
 		return total;
 	}
 
-public:
-	void GenerateTextures()
-		{
-			for (int x = 0; x < 256;x++)
-				for (int y = 0; y < 256;y++)
-					noise_lq[x][y] = perlin_noise_2D(x,y,8,1.414);
 
-		}
 
 };
 
