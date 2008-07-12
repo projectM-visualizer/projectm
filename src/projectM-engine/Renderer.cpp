@@ -112,18 +112,23 @@ SetupCg();
 std::cout<<"Generating Noise Textures"<<std::endl;
 PerlinNoise noise;
 
-glGenTextures( 1, &noise_texture_lq );
-glBindTexture( GL_TEXTURE_2D, noise_texture_lq );
-glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq);
+
 
 glGenTextures( 1, &noise_texture_lq_lite );
 glBindTexture( GL_TEXTURE_2D, noise_texture_lq_lite );
 glTexImage2D(GL_TEXTURE_2D,0,4,32,32,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq_lite);
 
+glGenTextures( 1, &noise_texture_mq );
+glBindTexture( GL_TEXTURE_2D, noise_texture_mq );
+glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_mq);
+
 glGenTextures( 1, &noise_texture_hq );
 glBindTexture( GL_TEXTURE_2D, noise_texture_hq );
 glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_hq);
 
+glGenTextures( 1, &noise_texture_lq );
+glBindTexture( GL_TEXTURE_2D, noise_texture_lq );
+glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq);
 #endif
 }
 
@@ -278,14 +283,19 @@ void Renderer::SetupCgVariables(CGprogram program, const PipelineContext &contex
 	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize"), renderTarget->texsize, renderTarget->texsize, 1/(float)renderTarget->texsize,1/(float)renderTarget->texsize);
   	cgGLSetParameter4f(cgGetNamedParameter(program, "aspect"), aspect,1,1/aspect,1);
 
-  	cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq"),noise_texture_lq);
-  	cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq"));
 
   	cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq_lite"),noise_texture_lq_lite);
   	cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq_lite"));
 
+  	cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_mq"),noise_texture_mq);
+  	cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_mq"));
+
   	cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_hq"),noise_texture_hq);
   	cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_hq"));
+
+	cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq"),noise_texture_lq);
+  	cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq"));
+
 }
 
 #endif

@@ -13,7 +13,7 @@ PerlinNoise::PerlinNoise()
 {
 	for (int x = 0; x < 256;x++)
 		for (int y = 0; y < 256;y++)
-			noise_lq[x][y] = Noise(x,y);
+			noise_lq[x][y] = Noise(x + 3240*y);
 
 	for (int x = 0; x < 32;x++)
 		for (int y = 0; y < 32;y++)
@@ -25,7 +25,7 @@ PerlinNoise::PerlinNoise()
 
 	for (int x = 0; x < 256;x++)
 		for (int y = 0; y < 256;y++)
-			noise_mq[x][y] = perlin_noise_loop(x,y,1813,7,seed,0.5,32);
+			noise_mq[x][y] = perlin_noise_loop(x,y,1813,5,seed,0.5,64);
 
 	for (int x = 0; x < 256;x++)
 		for (int y = 0; y < 256;y++)
