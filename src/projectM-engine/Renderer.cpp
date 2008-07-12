@@ -234,7 +234,7 @@ void Renderer::checkForCgError(const char *situation)
 void Renderer::SetupCg()
 {
 	 std::string line;
-	  std::ifstream myfile ("/usr/local/share/projectM/shaders/projectM.cg");
+	  std::ifstream myfile (CMAKE_INSTALL_PREFIX  "/share/projectM/shaders/projectM.cg");
 	  if (myfile.is_open())
 	  {
 	    while (! myfile.eof() )
