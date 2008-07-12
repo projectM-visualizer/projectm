@@ -128,6 +128,8 @@ private:
   unsigned int noise_texture_lq_vol;
   unsigned int noise_texture_hq_vol;
 
+  float rand_preset[4];
+
   bool warpShadersEnabled;
   bool compositeShadersEnabled;
 
