@@ -28,12 +28,11 @@ public:
 private:
 
 
-	static inline float Noise(int x)
+	static inline float Noise( int x)
 	{
-		 int n = (x<<13) ^ x;
-		 return ( 1.0 - ( (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff) / 1073741824.0);
-
-	}
+	    x = (x<<13)^x;
+	    return (((x * (x * x * 15731 + 789221) + 1376312589) & 0x7fffffff) / 2147483648.0);
+	   }
 
 	static inline float Noise(int x, int y)
 	{
@@ -45,8 +44,8 @@ private:
 
 	static inline float cos_interp(float a, float b, float x)
 	{
-		int ft = x * 3.1415927;
-		int f = (1 - cos(ft)) * .5;
+		float ft = x * 3.1415927;
+		float f = (1 - cos(ft)) * .5;
 
 		return  a*(1-f) + b*f;
 	}
@@ -111,32 +110,44 @@ private:
 
 	}
 
-	static inline float perlin_noise(float x,float y, int width, int octaves, int seed, float periode){
+	static inline float perlin_noise(float x,float y, int width, int seed, float periode){
 
 	           float a,b,value,freq,tam_pas,zone_x,zone_y;
-	           int s,box,num,step_x,step_y;
-	           int amplitude=1;
+	           int box,num,step_x,step_y;
+
 	           int noisedata;
 
-	       freq=1/(float)(periode);
+	           freq=1/(float)(periode);
 
-	           for ( s=0;s<octaves;s++)
-				  {
-					num=(int)(width*freq);
-	                step_x=(int)(x*freq);
-	                step_y=(int)(y*freq);
-	                zone_x=x*freq-step_x;
-	                zone_y=y*freq-step_y;
-	                box=step_x+step_y*num;
-	                noisedata=(box+seed);
-	                a=InterPolation(Noise(noisedata),Noise(noisedata+1),zone_x);
-	                b=InterPolation(Noise(noisedata+num),Noise(noisedata+1+num),zone_x);
-	                value=InterPolation(a,b,zone_y)*amplitude;
 
-	              }
+	           num=(int)(width*freq);
+	           step_x=(int)(x*freq);
+	           step_y=(int)(y*freq);
+	           zone_x=x*freq-step_x;
+	           zone_y=y*freq-step_y;
+	           box=step_x+step_y*num;
+	           noisedata=(box+seed);
+	           a=InterPolation(Noise(noisedata),Noise(noisedata+1),zone_x);
+	           b=InterPolation(Noise(noisedata+num),Noise(noisedata+1+num),zone_x);
+	           value=InterPolation(a,b,zone_y);
+
 	          return value;
-	              }
+	}
 
+	static inline float perlin_noise_loop(int x, int y,  int width, int octaves, int seed, float persistance, float basePeriod)
+	{
+		float p = persistance;
+		float val = 0.0;
+
+		for (int i = 0; i<octaves;i++)
+		{
+			val += perlin_noise(x,y,width,seed,basePeriod) * p;
+
+			basePeriod *= 0.5;
+			p *= persistance;
+		}
+		return val;
+	}
 
 
 };
