@@ -210,6 +210,23 @@ bool Renderer::LoadCgProgram(std::string program, CGprogram &p)
 		     }
 		     else return false;
 
+		     found = 0;
+		     found = program.find("sampler_", found);
+		     while (found != std::string::npos)
+		     {
+		    	 found+=8;
+		    	 size_t end = program.find_first_of(" ;,\n)", found);
+
+		    	 if(end != std::string::npos)
+		    	 {
+		    		 std::string sampler = program.substr((int)found,(int)end-found);
+		    		 std::cout<<sampler<<std::endl;
+		    	 }
+
+		    	 found = program.find("sampler_", found);
+		     }
+
+
 	std::string temp;
 
 	temp.append(cgTemplate);
@@ -331,7 +348,6 @@ void Renderer::SetupCgVariables(CGprogram program, const Pipeline &pipeline, con
 	cgGLSetParameter1f(cgGetNamedParameter(program, "blur3_min"), pipeline.shader.blur3n);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "blur3_max"), pipeline.shader.blur3x);
 
-
 	cgGLSetParameter1f(cgGetNamedParameter(program, "bass"), beatDetect->bass);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "mid"), beatDetect->mid);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "treb"), beatDetect->treb);
@@ -339,11 +355,10 @@ void Renderer::SetupCgVariables(CGprogram program, const Pipeline &pipeline, con
 	cgGLSetParameter1f(cgGetNamedParameter(program, "mid_att"), beatDetect->mid_att);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "treb_att"), beatDetect->treb_att);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "vol"), beatDetect->vol);
-	  cgGLSetParameter1f(cgGetNamedParameter(program, "vol_att"), beatDetect->vol);
+	cgGLSetParameter1f(cgGetNamedParameter(program, "vol_att"), beatDetect->vol);
 
 	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize"), renderTarget->texsize, renderTarget->texsize, 1/(float)renderTarget->texsize,1/(float)renderTarget->texsize);
   	cgGLSetParameter4f(cgGetNamedParameter(program, "aspect"), 1/aspect,1,aspect,1);
-
 
   	cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq_lite"),noise_texture_lq_lite);
   	cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq_lite"));
