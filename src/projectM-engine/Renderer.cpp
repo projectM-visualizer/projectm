@@ -41,7 +41,7 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
 	/** Other stuff... */
 	this->correction = true;
-	this->aspect=1.33333333;
+	this->aspect=(float)height/(float)width;;
 
 	/// @bug put these on member init list
 	this->renderTarget = new RenderTarget( texsize, width, height );
@@ -192,7 +192,7 @@ bool Renderer::LoadCgProgram(std::string program, CGprogram &p)
 		     if (found!=std::string::npos)
 		     {
 		       //std::cout << "last '}' found at: " << int(found) << std::endl;
-		       program.replace(int(found),1,"OUT.color.xyz=ret;\nOUT.color.w=1;\nreturn OUT;\n}");
+		       program.replace(int(found),1,"OUT.color.xyz=ret.xyz;\nOUT.color.w=1;\nreturn OUT;\n}");
 		     }
 		     else return false;
 		     found = program.rfind('{');
@@ -304,7 +304,7 @@ std::cout<<"Cg: Initialized profile: "<<cgGetProfileString(myCgProfile)<<std::en
 
 }
 
-void Renderer::SetupCgVariables(CGprogram program, const PipelineContext &context)
+void Renderer::SetupCgVariables(CGprogram program, const Pipeline &pipeline, const PipelineContext &context)
 {
 	cgGLSetParameter1f(cgGetNamedParameter(program, "time"), context.time);
 	cgGLSetParameter4f(cgGetNamedParameter(program, "rand_preset"), rand_preset[0], rand_preset[1],rand_preset[2],rand_preset[3]);
@@ -312,6 +312,14 @@ void Renderer::SetupCgVariables(CGprogram program, const PipelineContext &contex
 	cgGLSetParameter1f(cgGetNamedParameter(program, "fps"), context.fps);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "frame"), context.frame);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "progress"), context.progress);
+
+	cgGLSetParameter1f(cgGetNamedParameter(program, "blur1_min"), pipeline.shader.blur1n);
+	cgGLSetParameter1f(cgGetNamedParameter(program, "blur1_max"), pipeline.shader.blur1x);
+	cgGLSetParameter1f(cgGetNamedParameter(program, "blur2_min"), pipeline.shader.blur2n);
+	cgGLSetParameter1f(cgGetNamedParameter(program, "blur2_max"), pipeline.shader.blur2x);
+	cgGLSetParameter1f(cgGetNamedParameter(program, "blur3_min"), pipeline.shader.blur3n);
+	cgGLSetParameter1f(cgGetNamedParameter(program, "blur3_max"), pipeline.shader.blur3x);
+
 
 	cgGLSetParameter1f(cgGetNamedParameter(program, "bass"), beatDetect->bass);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "mid"), beatDetect->mid);
@@ -323,7 +331,7 @@ void Renderer::SetupCgVariables(CGprogram program, const PipelineContext &contex
 	  cgGLSetParameter1f(cgGetNamedParameter(program, "vol_att"), beatDetect->vol);
 
 	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize"), renderTarget->texsize, renderTarget->texsize, 1/(float)renderTarget->texsize,1/(float)renderTarget->texsize);
-  	cgGLSetParameter4f(cgGetNamedParameter(program, "aspect"), aspect,1,1/aspect,1);
+  	cgGLSetParameter4f(cgGetNamedParameter(program, "aspect"), 1/aspect,1,aspect,1);
 
 
   	cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq_lite"),noise_texture_lq_lite);
@@ -348,6 +356,17 @@ void Renderer::SetupCgVariables(CGprogram program, const PipelineContext &contex
   	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_lq_lite"), 32, 32,1.0/(float)32,1.0/(float)32);
 }
 
+void Renderer::SetupCgQVariables(CGprogram program, const PresetOutputs &q)
+{
+	cgGLSetParameter4f(cgGetNamedParameter(program, "_qa"), q.q1, q.q2, q.q3, q.q4);
+	cgGLSetParameter4f(cgGetNamedParameter(program, "_qb"), q.q5, q.q6, q.q7, q.q8);
+	cgGLSetParameter4f(cgGetNamedParameter(program, "_qc"), q.q9, q.q10, q.q11, q.q12);
+	cgGLSetParameter4f(cgGetNamedParameter(program, "_qd"), q.q13, q.q14, q.q15, q.q16);
+	cgGLSetParameter4f(cgGetNamedParameter(program, "_qe"), q.q17, q.q18, q.q19, q.q20);
+	cgGLSetParameter4f(cgGetNamedParameter(program, "_qf"), q.q21, q.q22, q.q23, q.q24);
+	cgGLSetParameter4f(cgGetNamedParameter(program, "_qg"), q.q25, q.q26, q.q27, q.q28);
+	cgGLSetParameter4f(cgGetNamedParameter(program, "_qh"), q.q29, q.q30, q.q31, q.q32);
+}
 #endif
 
 void Renderer::ResetTextures()
@@ -462,6 +481,7 @@ void Renderer::Pass2(const Pipeline *pipeline, const PipelineContext &pipelineCo
 
 	glLineWidth( this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512.0);
 
+
 	CompositeOutput(pipeline, pipelineContext);
 
 
@@ -498,7 +518,7 @@ void Renderer::RenderFrame(const Pipeline* pipeline, const PipelineContext &pipe
   cgGLBindProgram(myCgWarpProgram);
   checkForCgError("binding warp program");
 
-  SetupCgVariables(myCgWarpProgram, pipelineContext);
+  SetupCgVariables(myCgWarpProgram, *pipeline, pipelineContext);
 			}
 
 
@@ -531,7 +551,8 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
   cgGLBindProgram(myCgWarpProgram);
   checkForCgError("binding warp program");
 
-  SetupCgVariables(myCgWarpProgram, *presetInputs);
+  SetupCgVariables(myCgWarpProgram, *presetOutputs, *presetInputs);
+  SetupCgQVariables(myCgWarpProgram, *presetOutputs);
 			}
 #endif
   Interpolation(presetOutputs, presetInputs);
@@ -547,6 +568,11 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 
 	RenderItems(presetOutputs, *presetInputs);
 	FinishPass1();
+
+#ifdef USE_CG
+	if (compositeShadersEnabled)
+		SetupCgQVariables(myCgCompositeProgram, *presetOutputs);
+#endif
     Pass2(presetOutputs, *presetInputs);
 }
 
@@ -1189,7 +1215,7 @@ void Renderer::CompositeOutput(const Pipeline* pipeline, const PipelineContext &
   cgGLBindProgram(myCgCompositeProgram);
   checkForCgError("binding warp program");
 
-  SetupCgVariables(myCgCompositeProgram, pipelineContext);
+  SetupCgVariables(myCgCompositeProgram, *pipeline, pipelineContext);
 	}
 #endif
 
