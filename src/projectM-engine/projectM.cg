@@ -76,7 +76,7 @@ float blur3_max;
 
 #define GetBlur1(uv) blur(uv)*blur1_max+blur1_min
 #define GetBlur2(uv) blur2(uv)*blur2_max+blur2_min
-#define GetBlur3(uv) blur(uv)*blur2_max+blur3_min
+#define GetBlur3(uv) blur2(uv)*blur2_max+blur3_min
 
 //#define GetBlur1(uv) (tex2D(sampler_blur1,uv).xyz*blur1_max+blur1_min)
 //#define GetBlur2(uv) (tex2D(sampler_blur2,uv).xyz*blur2_max+blur2_min)
