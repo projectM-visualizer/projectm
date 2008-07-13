@@ -10,8 +10,6 @@
 #define getrad sqrt((uv.x-0.5)*2*(uv.x-0.5)*2+(uv.y-0.5)*2*(uv.y-0.5)*2)*.7071067
 #define getang atan2(((uv.y-0.5)*2),((uv.x-0.5)*2))
 
-sampler2D sampler_main;
-
 #define GetBlur2 GetBlur1
 #define GetBlur3 GetBlur1
 
@@ -20,8 +18,8 @@ sampler2D sampler_main;
 
 #define uv_orig uv
 
-uniform sampler2D sampler_arg : TEX0;
-             uniform sampler2D sampler_noise_lq;
+uniform sampler2D sampler_main;
+uniform sampler2D sampler_noise_lq;
              uniform sampler2D sampler_noise_lq_lite;
              uniform sampler2D sampler_noise_mq;
              uniform sampler2D sampler_noise_hq;
@@ -73,11 +71,5 @@ ret += tex2D(sampler_main, float2(uv.x, uv.y - .001)).xyz;
 return ret * 0.2;
 }
 
-outtype projectm (float2 uv : TEXCOORD0)
-{
-  outtype OUT;
-  OUT.color.w=1;
-  float3 ret;
-
-  float rad = getrad;
-  float ang = getang;
+outtype OUT;
+float3 ret;

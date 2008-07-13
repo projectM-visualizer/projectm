@@ -188,11 +188,32 @@ bool Renderer::LoadCgProgram(std::string program, CGprogram &p)
 	if (program.length() > 0)
 	{
 
+		 size_t found = program.rfind('}');
+		     if (found!=std::string::npos)
+		     {
+		       //std::cout << "last '}' found at: " << int(found) << std::endl;
+		       program.replace(int(found),1,"OUT.color.xyz=ret;\nOUT.color.w=1;\nreturn OUT;\n}");
+		     }
+		     else return false;
+		     found = program.rfind('{');
+		     if (found!=std::string::npos)
+		     {
+		        //std::cout << "first '{' found at: " << int(found) << std::endl;
+		        program.replace(int(found),1,"{\nfloat rad=getrad;\nfloat ang=getang;\n");
+		     }
+		     else return false;
+		     found = program.find("shader_body");
+		     if (found!=std::string::npos)
+		     {
+		        //std::cout << "first 'shader_body' found at: " << int(found) << std::endl;
+		        program.replace(int(found),11,"outtype projectm(float2 uv : TEXCOORD0)\n");
+		     }
+		     else return false;
+
 	std::string temp;
 
 	temp.append(cgTemplate);
-	temp.append(program.substr(11));
-    temp.append("OUT.color.xyz = ret;return OUT;}");
+	temp.append(program);
 
 	std::cout<<"Cg: Compilation Results:"<<std::endl<<std::endl;
 	std::cout<<program<<std::endl;
@@ -204,12 +225,7 @@ bool Renderer::LoadCgProgram(std::string program, CGprogram &p)
 								"projectm",
 								NULL);
 
-    if (checkForCgCompileError("creating shader program"))
-    {
-    	//p = NULL;
-    	//return false;
-    }
-
+    checkForCgCompileError("creating shader program");
     if (p==NULL) return false;
 
     cgGLLoadProgram(p);
@@ -219,7 +235,6 @@ bool Renderer::LoadCgProgram(std::string program, CGprogram &p)
         	p = NULL;
         	return false;
         }
-
 
 	return true;
 	}
