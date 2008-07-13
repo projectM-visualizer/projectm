@@ -142,7 +142,8 @@ private:
  bool checkForCgCompileError(const char *situation);
  void checkForCgError(const char *situation);
  void SetupCg();
- void SetupCgVariables(CGprogram program, const PipelineContext &pipelineContext);
+ void SetupCgVariables(CGprogram program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
+ void SetupCgQVariables(CGprogram program, const PresetOutputs &presetOutputs);
 #endif
 
 #ifdef USE_FTGL

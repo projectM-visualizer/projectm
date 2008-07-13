@@ -79,6 +79,31 @@ public:
     float q6;
     float q7;
     float q8;
+    float q9;
+    float q10;
+    float q11;
+    float q12;
+    float q13;
+    float q14;
+    float q15;
+    float q16;
+    float q17;
+    float q18;
+    float q19;
+    float q20;
+    float q21;
+    float q22;
+    float q23;
+    float q24;
+    float q25;
+    float q26;
+    float q27;
+    float q28;
+    float q29;
+    float q30;
+    float q31;
+    float q32;
+
 
 
     /* Q VARIABLES END */
