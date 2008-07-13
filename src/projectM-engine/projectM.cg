@@ -77,6 +77,11 @@ float blur2_max;
 float blur3_min;
 float blur3_max;
 
+float4 slow_roam_cos;
+float4 roam_cos;
+float4 slow_roam_sin;
+float4 roam_sin;
+
 float time;
 float4 rand_preset;
 float4 rand_frame;
