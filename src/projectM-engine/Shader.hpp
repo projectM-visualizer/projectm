@@ -13,13 +13,13 @@
 class Shader
 {
 public:
-	int blur1n;
-	int blur2n;
-	int blur3n;
-	int blur1x;
-	int blur2x;
-	int blur3x;
-	int blur1ed;
+	float blur1n;
+	float blur2n;
+	float blur3n;
+	float blur1x;
+	float blur2x;
+	float blur3x;
+	float blur1ed;
 
 	std::string warp;
 	std::string composite;
