@@ -18,6 +18,7 @@ public:
 	float noise_lq_lite[32][32];
 	float noise_mq[256][256];
 	float noise_hq[256][256];
+	float noise_perlin[512][512];
 	float noise_lq_vol[32][32][32];
 	float noise_hq_vol[32][32][32];
 
@@ -26,7 +27,6 @@ public:
 	virtual ~PerlinNoise();
 
 private:
-
 
 	static inline float noise( int x)
 	{
@@ -63,15 +63,6 @@ private:
 		return P*pow(x,3) + Q * pow(x,2) + R*x + v1;
 	}
 
-	static inline float SmoothedNoise(int x, int y)
-	{
-		float corners = ( noise(x-1, y-1)+noise(x+1, y-1)+noise(x-1, y+1)+noise(x+1, y+1) ) / 16;
-		float sides   = ( noise(x-1, y)  +noise(x+1, y)  +noise(x, y-1)  +noise(x, y+1) ) /  8;
-		float center  =  noise(x, y) / 4;
-
-		return corners + sides + center;
-	}
-
 	static inline float InterpolatedNoise(float x, float y)
 	{
 		int integer_X = int(x);
@@ -80,15 +71,32 @@ private:
 		int integer_Y = int(y);
 		float fractional_Y = y - integer_Y;
 
-		float v1 = SmoothedNoise(integer_X,     integer_Y);
-		float v2 = SmoothedNoise(integer_X + 1, integer_Y);
-		float v3 = SmoothedNoise(integer_X,     integer_Y + 1);
-		float v4 = SmoothedNoise(integer_X + 1, integer_Y + 1);
+		float a0 = noise(integer_X - 1,      integer_Y - 1);
+		float a1 = noise(integer_X,          integer_Y - 1);
+		float a2 = noise(integer_X + 1,      integer_Y - 1);
+		float a3 = noise(integer_X + 2,      integer_Y - 1);
 
-		float i1 = cos_interp(v1 , v2 , fractional_X);
-		float i2 = cos_interp(v3 , v4 , fractional_X);
+		float x0 = noise(integer_X - 1,      integer_Y);
+		float x1 = noise(integer_X,          integer_Y);
+		float x2 = noise(integer_X + 1,      integer_Y);
+		float x3 = noise(integer_X + 2,      integer_Y);
 
-		return cos_interp(i1 , i2 , fractional_Y);
+		float y0 = noise(integer_X + 0,   	 integer_Y + 1);
+		float y1 = noise(integer_X,     	 integer_Y + 1);
+		float y2 = noise(integer_X + 1, 	 integer_Y + 1);
+		float y3 = noise(integer_X + 2, 	 integer_Y + 1);
+
+		float b0 = noise(integer_X - 1,      integer_Y + 2);
+		float b1 = noise(integer_X,          integer_Y + 2);
+		float b2 = noise(integer_X + 1,      integer_Y + 2);
+		float b3 = noise(integer_X + 2,      integer_Y + 2);
+
+		float i0 = cubic_interp(a0 , a1, a2, a3, fractional_X);
+		float i1 = cubic_interp(x0 , x1, x2, x3, fractional_X);
+		float i2 = cubic_interp(y0 , y1, y2, y3, fractional_X);
+		float i3 = cubic_interp(b0 , b1, b2, b3, fractional_X);
+
+		return cubic_interp(i0, i1 , i2 , i3, fractional_Y);
 
 	}
 
