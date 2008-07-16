@@ -53,6 +53,7 @@ uniform sampler2D sampler_noise_lq;
 uniform sampler2D sampler_noise_lq_lite;
 uniform sampler2D sampler_noise_mq;
 uniform sampler2D sampler_noise_hq;
+uniform sampler2D sampler_noise_perlin;
 uniform sampler3D sampler_noisevol_lq;
 uniform sampler3D sampler_noisevol_hq;
 
@@ -63,6 +64,7 @@ uniform sampler2D sampler_blur3;
 float4 texsize_noise_lq;
 float4 texsize_noise_mq;
 float4 texsize_noise_hq;
+float4 texsize_noise_perlin;
 float4 texsize_noise_lq_lite;
 
 float4 _qa;

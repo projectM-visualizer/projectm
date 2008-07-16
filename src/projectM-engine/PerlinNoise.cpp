@@ -33,7 +33,7 @@ PerlinNoise::PerlinNoise()
 
 	for (int x = 0; x < 512;x++)
 		for (int y = 0; y < 512;y++)
-			noise_perlin[x][y] = perlin_noise_2d(x,y,6321,7,seed2,0.5,64);
+			noise_perlin[x][y] = perlin_noise_2d(x,y,6321,7,seed2,0.5,128);
 
 	for (int x = 0; x < 32;x++)
 		for (int y = 0; y < 32;y++)

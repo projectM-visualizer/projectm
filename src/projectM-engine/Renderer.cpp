@@ -160,12 +160,18 @@ glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_mq);
 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-
 glGenTextures( 1, &noise_texture_hq );
 glBindTexture( GL_TEXTURE_2D, noise_texture_hq );
 glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_hq);
 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+glGenTextures( 1, &noise_texture_perlin );
+glBindTexture( GL_TEXTURE_2D, noise_texture_perlin );
+glTexImage2D(GL_TEXTURE_2D,0,4,512,512,0,GL_LUMINANCE,GL_FLOAT,noise.noise_perlin);
+glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
 
 glGenTextures( 1, &noise_texture_lq_vol );
 glBindTexture( GL_TEXTURE_3D, noise_texture_lq_vol );
@@ -459,6 +465,9 @@ void Renderer::SetupCgVariables(CGprogram program, const Pipeline &pipeline, con
 	cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq"),noise_texture_lq);
   	cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq"));
 
+  	cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_perlin"),noise_texture_perlin);
+  	cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_perlin"));
+
  	cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noisevol_hq"),noise_texture_hq_vol);
   	cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noisevol_hq"));
 
@@ -484,6 +493,7 @@ void Renderer::SetupCgVariables(CGprogram program, const Pipeline &pipeline, con
   	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_lq"), 256, 256,1.0/(float)256,1.0/(float)256);
   	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_mq"), 64, 64,1.0/(float)64,1.0/(float)64);
   	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_hq"), 32, 32,1.0/(float)32,1.0/(float)32);
+  	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_perlin"), 512, 512,1.0/(float)512,1.0/(float)512);
   	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_lq_lite"), 32, 32,1.0/(float)32,1.0/(float)32);
 }
 
