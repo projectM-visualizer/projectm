@@ -126,6 +126,7 @@ private:
   GLuint noise_texture_lq;
   GLuint noise_texture_mq;
   GLuint noise_texture_hq;
+  GLuint noise_texture_perlin;
   GLuint noise_texture_lq_vol;
   GLuint noise_texture_hq_vol;
 
