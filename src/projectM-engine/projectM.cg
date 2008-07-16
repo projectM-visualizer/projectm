@@ -39,7 +39,6 @@
 #define tex2d tex2D
 #define tex3d tex3D
 
-
 #define getrad sqrt((uv.x-0.5)*2*(uv.x-0.5)*2+(uv.y-0.5)*2*(uv.y-0.5)*2)*.7071067
 #define getang atan2(((uv.y-0.5)*2),((uv.x-0.5)*2))
 
@@ -49,14 +48,22 @@
 #define uv_orig uv
 
 uniform sampler2D sampler_main;
+
 uniform sampler2D sampler_noise_lq;
 uniform sampler2D sampler_noise_lq_lite;
 uniform sampler2D sampler_noise_mq;
 uniform sampler2D sampler_noise_hq;
 uniform sampler3D sampler_noisevol_lq;
 uniform sampler3D sampler_noisevol_hq;
-uniform float4 texsize_noise_lq;
-uniform float4 texsize_noise_lq_lite;
+
+uniform sampler2D sampler_blur1;
+uniform sampler2D sampler_blur2;
+uniform sampler2D sampler_blur3;
+
+float4 texsize_noise_lq;
+float4 texsize_noise_mq;
+float4 texsize_noise_hq;
+float4 texsize_noise_lq_lite;
 
 float4 _qa;
 float4 _qb;
@@ -74,14 +81,9 @@ float blur2_max;
 float blur3_min;
 float blur3_max;
 
-#define GetBlur1(uv) blur(uv)*blur1_max+blur1_min
-#define GetBlur2(uv) blur2(uv)*blur2_max+blur2_min
-#define GetBlur3(uv) blur2(uv)*blur2_max+blur3_min
-
-//#define GetBlur1(uv) (tex2D(sampler_blur1,uv).xyz*blur1_max+blur1_min)
-//#define GetBlur2(uv) (tex2D(sampler_blur2,uv).xyz*blur2_max+blur2_min)
-//#define GetBlur3(uv) (tex2D(sampler_blur3,uv).xyz*blur3_max+blur3_min)
-
+#define GetBlur1(uv) (tex2D(sampler_blur1,uv).xyz*blur1_max+blur1_min)
+#define GetBlur2(uv) (tex2D(sampler_blur2,uv).xyz*blur2_max+blur2_min)
+#define GetBlur3(uv) (tex2D(sampler_blur3,uv).xyz*blur3_max+blur3_min)
 
 float4 slow_roam_cos;
 float4 roam_cos;
@@ -109,32 +111,6 @@ float4 aspect;
 #define sampler_pc_main sampler_main
 #define sampler_fw_main sampler_main
 #define sampler_fc_main sampler_main
-
-#define texsize_noise_mq texsize_noise_lq
-#define texsize_noise_hq texsize_noise_lq
-#define texsize_noisevol_lq texsize_noise_lq_lite
-#define texsize_noisevol_hq texsize_noise_lq_lite
-
-float3 blur(float2 uv)
-{
-float3 val = tex2D(sampler_main, uv).xyz;
-val += tex2D(sampler_main, float2(uv.x-.0015, uv.y)).xyz;
-val += tex2D(sampler_main, float2(uv.x+.0015, uv.y)).xyz;
-val += tex2D(sampler_main, float2(uv.x, uv.y + .0015)).xyz;
-val += tex2D(sampler_main, float2(uv.x, uv.y - .0015)).xyz;
-
-return val * 0.2;
-}
-float3 blur2(float2 uv)
-{
-float3 val = blur(uv);
-val += blur( float2(uv.x-.0015, uv.y));
-val += blur( float2(uv.x+.0015, uv.y));
-val += blur( float2(uv.x, uv.y + .0015));
-val += blur( float2(uv.x, uv.y - .0015));
-
-return val * 0.2;
-}
 
 struct outtype {float4 color : COLOR;};
 outtype OUT;
