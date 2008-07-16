@@ -6,10 +6,12 @@ outtype blur1(float2 uv : TEXCOORD0, uniform sampler2D sampler_blur : TEX0)
 {
 float2 uv2 = uv.xy + srctexsize.zw*float2(1,1);
 
-float3 val =  tex2D(sampler_blur, float2(uv.x-.0015, uv.y)).xyz;
-val += tex2D(sampler_blur, float2(uv.x+.0015, uv.y)).xyz;
-val += tex2D(sampler_blur, float2(uv.x, uv.y + .0015)).xyz;
-val += tex2D(sampler_blur, float2(uv.x, uv.y - .0015)).xyz;
+float d = srctexsize.z;
+d=.0015;
+float3 val =  tex2D(sampler_blur, float2(uv.x-d, uv.y)).xyz;
+val += tex2D(sampler_blur, float2(uv.x+d, uv.y)).xyz;
+val += tex2D(sampler_blur, float2(uv.x, uv.y + d)).xyz;
+val += tex2D(sampler_blur, float2(uv.x, uv.y - d)).xyz;
 
 outtype OUT;
 OUT.color.xyz = val* 0.25;
@@ -21,10 +23,13 @@ outtype blur2(float2 uv : TEXCOORD0, uniform sampler2D sampler_blur : TEX0)
 {
 float2 uv2 = uv.xy + srctexsize.zw*float2(1,0);
 
-float3 val =  tex2D(sampler_blur, float2(uv.x-.0015, uv.y)).xyz;
-val += tex2D(sampler_blur, float2(uv.x+.0015, uv.y)).xyz;
-val += tex2D(sampler_blur, float2(uv.x, uv.y + .0015)).xyz;
-val += tex2D(sampler_blur, float2(uv.x, uv.y - .0015)).xyz;
+float d = srctexsize.z;
+d=.0015;
+
+float3 val =  tex2D(sampler_blur, float2(uv.x-d, uv.y)).xyz;
+val += tex2D(sampler_blur, float2(uv.x+d, uv.y)).xyz;
+val += tex2D(sampler_blur, float2(uv.x, uv.y + d)).xyz;
+val += tex2D(sampler_blur, float2(uv.x, uv.y - d)).xyz;
 
 val *= 0.25;
 
