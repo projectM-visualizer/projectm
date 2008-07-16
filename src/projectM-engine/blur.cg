@@ -1,0 +1,46 @@
+struct outtype {float4 color : COLOR;};
+
+uniform float4 srctexsize;
+
+outtype blur1(float2 uv : TEXCOORD0, uniform sampler2D sampler_blur : TEX0)
+{
+float2 uv2 = uv.xy + srctexsize.zw*float2(1,1);
+
+float3 val =  tex2D(sampler_blur, float2(uv.x-.0015, uv.y)).xyz;
+val += tex2D(sampler_blur, float2(uv.x+.0015, uv.y)).xyz;
+val += tex2D(sampler_blur, float2(uv.x, uv.y + .0015)).xyz;
+val += tex2D(sampler_blur, float2(uv.x, uv.y - .0015)).xyz;
+
+outtype OUT;
+OUT.color.xyz = val* 0.25;
+OUT.color.w = 1;
+return OUT;
+}
+
+outtype blur2(float2 uv : TEXCOORD0, uniform sampler2D sampler_blur : TEX0)
+{
+float2 uv2 = uv.xy + srctexsize.zw*float2(1,0);
+
+float3 val =  tex2D(sampler_blur, float2(uv.x-.0015, uv.y)).xyz;
+val += tex2D(sampler_blur, float2(uv.x+.0015, uv.y)).xyz;
+val += tex2D(sampler_blur, float2(uv.x, uv.y + .0015)).xyz;
+val += tex2D(sampler_blur, float2(uv.x, uv.y - .0015)).xyz;
+
+val *= 0.25;
+
+float t = min( min(uv.x, uv.y), 1-max(uv.x,uv.y) );
+t = sqrt(t);
+
+float minimum = 0.5;
+float variance = 0.5;
+float size = 50;
+
+t = minimum + variance*saturate(t*size);
+t = 1;
+val.xyz *= t;
+
+outtype OUT;
+OUT.color.xyz = val;
+OUT.color.w = 1;
+return OUT;
+}

@@ -120,13 +120,22 @@ private:
 #ifdef USE_CG
 
   std::string cgTemplate;
+  std::string blurProgram;
 
-  unsigned int noise_texture_lq_lite;
-  unsigned int noise_texture_lq;
-  unsigned int noise_texture_mq;
-  unsigned int noise_texture_hq;
-  unsigned int noise_texture_lq_vol;
-  unsigned int noise_texture_hq_vol;
+  GLuint noise_texture_lq_lite;
+  GLuint noise_texture_lq;
+  GLuint noise_texture_mq;
+  GLuint noise_texture_hq;
+  GLuint noise_texture_lq_vol;
+  GLuint noise_texture_hq_vol;
+
+
+  bool blur1_enabled;
+  bool blur2_enabled;
+  bool blur3_enabled;
+  GLuint blur1_tex;
+  GLuint blur2_tex;
+  GLuint blur3_tex;
 
   float rand_preset[4];
 
@@ -135,8 +144,10 @@ private:
 
   CGcontext   myCgContext;
   CGprofile   myCgProfile;
-  CGprogram   myCgWarpProgram,
-                   myCgCompositeProgram;
+  CGprogram   myCgWarpProgram;
+  CGprogram   myCgCompositeProgram;
+  CGprogram   blur1Program;
+  CGprogram   blur2Program;
 
  bool LoadCgProgram(std::string program, CGprogram &p);
  bool checkForCgCompileError(const char *situation);
@@ -144,6 +155,7 @@ private:
  void SetupCg();
  void SetupCgVariables(CGprogram program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
  void SetupCgQVariables(CGprogram program, const PresetOutputs &presetOutputs);
+ void RenderBlurTextures(const Pipeline* pipeline, const PipelineContext &pipelineContext);
 #endif
 
 #ifdef USE_FTGL
