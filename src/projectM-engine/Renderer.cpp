@@ -529,10 +529,10 @@ if(blur1_enabled || blur2_enabled || blur3_enabled)
 	  cgGLBindProgram(blur1Program);
 	  checkForCgError("binding blur1 program");
 
-	  	float points[4][2] = {{0, 0},
-	  			      {0,  1},
-	  			      { 1,  1},
-	  			      { 1,  0}};
+	  	float points[4][2]  = {{0, 1},
+	  			   {0, 0},
+	  			   {1, 0},
+	  			   {1, 1}};
 
 
 	  	glVertexPointer(2,GL_FLOAT,0,points);
@@ -555,10 +555,10 @@ if(blur1_enabled || blur2_enabled || blur3_enabled)
 	  cgGLBindProgram(blur2Program);
 	  checkForCgError("binding blur2 program");
 
-	  	float points[4][2] = {{0, 0},
-	  			      {0,  0.5},
-	  			      { 0.5,  0.5},
-	  			      { 0.5,  0}};
+	  	float points[4][2]  = {{0, 0.5},
+	  			   {0, 0},
+	  			   {0.5, 0},
+	  			   {0.5, 0.5}};
 
 
 	  	glVertexPointer(2,GL_FLOAT,0,points);
@@ -576,11 +576,10 @@ if(blur1_enabled || blur2_enabled || blur3_enabled)
 	if (blur3_enabled)
 	{
 	  cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), renderTarget->texsize/2, renderTarget->texsize/2, 2/(float)renderTarget->texsize,2/(float)renderTarget->texsize);
-
-	  	float points[4][2] = {{0, 0},
-	  			      {0,  0.25},
-	  			      { 0.25,  0.25},
-	  			      { 0.25,  0}};
+		float points[4][2]  = {{0, 0.25},
+		  			   {0, 0},
+		  			   {0.25, 0},
+		  			   {0.25, 0.25}};
 
 
 	  	glVertexPointer(2,GL_FLOAT,0,points);
@@ -1498,7 +1497,7 @@ void Renderer::CompositeOutput(const Pipeline* pipeline, const PipelineContext &
 #endif
 
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline->compositeDrawables.begin(); pos != pipeline->compositeDrawables.end(); ++pos)
-			(*pos)->Draw(renderContext);
+			;//(*pos)->Draw(renderContext);
 
 }
 
