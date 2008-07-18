@@ -176,12 +176,12 @@ public:
     static int parse_shapecode_prefix(char * token, int * id, char ** var_string);
     
     static void parse_string_block(std::istream &  fs, std::string * out_string);
-	
+    static bool scanForComment(std::istream & fs);
     static int parse_wave(char * eqn_string, std::istream & fs, Preset * preset);
     static int parse_shape(char * eqn_string, std::istream & fs, Preset * preset);
     static int parse_shape_prefix(char * token, int * id, char ** eqn_string);
     static void readStringUntil(std::istream & fs, std::string * out_buffer, bool wrapAround = true, const std::set<char> & skipList = std::set<char>()) ;
-    static int update_string_buffer(char * buffer, int * index);
+
     static int string_to_float(char * string, float * float_ptr);
     static int parse_shape_per_frame_init_eqn(std::istream & fs, CustomShape * custom_shape, Preset * preset);
     static int parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_shape, Preset * preset);

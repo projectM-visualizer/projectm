@@ -26,11 +26,10 @@
 #include <QKeyEvent>
 
 void QPresetTextEdit::keyReleaseEvent(QKeyEvent * e) {
-	qDebug() << "KEY RELEASE";
+
 	switch (e->key()) {
 		case Qt::Key_S:
-			if (e->modifiers() & Qt::ControlModifier) {				
-				qDebug() << "control s";
+			if (e->modifiers() & Qt::ControlModifier) {
 				emit(applyRequested());
 			}
 			e->accept();
