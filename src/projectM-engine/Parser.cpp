@@ -1535,6 +1535,7 @@ InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, Preset * pre
 
 void Parser::parse_string_block(std::istream &  fs, std::string * out_string) {
 
+	out_string->clear();
 	char name[MAX_TOKEN_SIZE];
 	token_t token;
 
@@ -1642,12 +1643,37 @@ InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, Preset * preset,
   return init_cond;
 }
 
+bool Parser::scanForComment(std::istream & fs) {
+
+  char c;
+  c = fs.get();
+
+  if (c == '/') {
+	while (true)
+	{
+		if (!fs || fs.eof())
+			return true;
+		else
+			c = fs.get();
+		if (c == EOF)			
+			return true;
+		
+		if (c == '\n')
+		{
+			return true;
+		}
+	}
+  } else { 
+	fs.unget();
+	return false;
+  }
+}
 
 void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool wrapAround, const std::set<char> & skipList) {
 
 	int string_line_buffer_index = 0;
 	char c;
-
+	char p;
 	/* Loop until a delimiter is found, or the maximum string size is found */
 	while (true)
 	{
@@ -1660,8 +1686,21 @@ void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool w
 		/* Now interpret the character */
 		switch (c)
 		{
+			case '/': 
+			{
+				bool commentExisted = scanForComment(fs);
+				if (!commentExisted) {					
+					out_buffer->push_back(c);
+					break;
+				} else {
+					line_count++;
+					return;
+				}
+			}
 			case '\n':
-
+				if (!out_buffer->empty() && ((*out_buffer)[out_buffer->length() -1] == '\n'))
+					return;
+				
 				line_count++;
 				if (wrapAround)
 				{
@@ -2342,53 +2381,7 @@ int Parser::parse_shape(char * token, std::istream &  fs, Preset * preset)
 }
 
 /* Helper function to update the string buffers used by the editor */
-int Parser::update_string_buffer(char * buffer, int * index)
-{
 
-  int string_length;
-  int skip_size;
-
-  if (!buffer)
-    return PROJECTM_FAILURE;
-  if (!index)
-    return PROJECTM_FAILURE;
-
-
-  /* If the string line buffer used by the parser is already full then quit */
-  if (string_line_buffer_index == (STRING_LINE_SIZE-1))
-    return PROJECTM_FAILURE;
-
-  if ((skip_size = get_string_prefix_len(string_line_buffer)) == PROJECTM_FAILURE)
-    return PROJECTM_FAILURE;
-
-  string_line_buffer[string_line_buffer_index++] = '\n';
-
-  //  string_length = strlen(string_line_buffer + strlen(eqn_string)+1);
-  if (skip_size >= STRING_LINE_SIZE)
-    return PROJECTM_FAILURE;
-
-  string_length = strlen(string_line_buffer + skip_size);
-
-  if (skip_size > (STRING_LINE_SIZE-1))
-    return PROJECTM_FAILURE;
-
-  /* Add line to string buffer */
-  strncpy(buffer + (*index),
-          string_line_buffer + skip_size, string_length);
-
-  /* Buffer full, quit */
-  if ((*index) > (STRING_BUFFER_SIZE - 1))
-  {
-    if (PARSE_DEBUG) printf("update_string_buffer: string buffer full!\n");
-    return PROJECTM_FAILURE;
-  }
-
-  /* Otherwise, increment string index by the added string length */
-  (*index)+=string_length;
-
-  return PROJECTM_SUCCESS;
-
-}
 
 
 /* Helper function: returns the length of the prefix portion in the line
