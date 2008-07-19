@@ -111,6 +111,12 @@ void TextureManager::Clear()
   textures.clear();
 }
 
+void TextureManager::setTexture(const std::string name, const unsigned int texId, const int width, const int height)
+{
+		textures[name] = texId;
+		widths[name] = width;
+		heights[name] = height;
+}
 
 //void TextureManager::unloadTextures(const PresetOutputs::cshape_container &shapes)
 //{
@@ -150,7 +156,9 @@ GLuint TextureManager::getTexture(const std::string imageURL)
 #ifdef USE_DEVIL
        GLuint tex = ilutGLLoadImage((char *)fullURL.c_str());
 #else
-       uint tex = SOIL_load_OGL_texture(
+       int width, height;
+
+       uint tex = SOIL_load_OGL_texture_size(
 					  fullURL.c_str(),
 					  SOIL_LOAD_AUTO,
 					  SOIL_CREATE_NEW_ID,
@@ -160,13 +168,24 @@ GLuint TextureManager::getTexture(const std::string imageURL)
 					    SOIL_FLAG_MULTIPLY_ALPHA
 					  |  SOIL_FLAG_COMPRESS_TO_DXT
 					  //| SOIL_FLAG_DDS_LOAD_DIRECT
-					  );
+					  ,&width,&height);
+
 #endif
        textures[imageURL]=tex;
        return tex;
 
 
      }
+}
+
+int TextureManager::getTextureWidth(const std::string imageURL)
+{
+	return widths[imageURL];
+}
+
+int TextureManager::getTextureHeight(const std::string imageURL)
+{
+	return heights[imageURL];
 }
 
 unsigned int TextureManager::getTextureMemorySize()

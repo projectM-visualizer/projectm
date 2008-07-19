@@ -13,67 +13,6 @@ ShaderEngine::ShaderEngine()
 #ifdef USE_CG
 SetupCg();
 
-std::cout<<"Generating Noise Textures"<<std::endl;
-
-
-PerlinNoise noise;
-
-glGenTextures( 1, &noise_texture_lq_lite );
-glBindTexture( GL_TEXTURE_2D, noise_texture_lq_lite );
-glTexImage2D(GL_TEXTURE_2D,0,4,32,32,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq_lite);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-glGenTextures( 1, &noise_texture_lq );
-glBindTexture( GL_TEXTURE_2D, noise_texture_lq );
-glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-glGenTextures( 1, &noise_texture_mq );
-glBindTexture( GL_TEXTURE_2D, noise_texture_mq );
-glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_mq);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-glGenTextures( 1, &noise_texture_hq );
-glBindTexture( GL_TEXTURE_2D, noise_texture_hq );
-glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_hq);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-glGenTextures( 1, &noise_texture_perlin );
-glBindTexture( GL_TEXTURE_2D, noise_texture_perlin );
-glTexImage2D(GL_TEXTURE_2D,0,4,512,512,0,GL_LUMINANCE,GL_FLOAT,noise.noise_perlin);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-/*
-glGenTextures( 1, &noise_texture_lq_vol );
-glBindTexture( GL_TEXTURE_3D, noise_texture_lq_vol );
-glTexImage3D(GL_TEXTURE_3D,0,4,32,32,32,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq_vol);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-glGenTextures( 1, &noise_texture_hq_vol );
-glBindTexture( GL_TEXTURE_3D, noise_texture_hq_vol );
-glTexImage3D(GL_TEXTURE_3D,0,4,32,32,32,0,GL_LUMINANCE,GL_FLOAT,noise.noise_hq_vol);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-*/
 #endif
 
 }
@@ -92,6 +31,8 @@ void ShaderEngine::SetParams(const int texsize, const unsigned int texId, const 
 	this->textureManager = textureManager;
 	this->aspect = aspect;
 	this->texsize = texsize;
+
+	textureManager->setTexture("main",texId,texsize,texsize);
 
 	glGenTextures( 1, &blur1_tex );
 	glBindTexture(GL_TEXTURE_2D, blur1_tex);
@@ -122,6 +63,74 @@ void ShaderEngine::SetParams(const int texsize, const unsigned int texId, const 
 	blur2_enabled = false;
 	blur3_enabled = false;
 
+	std::cout<<"Generating Noise Textures"<<std::endl;
+
+	PerlinNoise noise;
+
+	glGenTextures( 1, &noise_texture_lq_lite );
+	glBindTexture( GL_TEXTURE_2D, noise_texture_lq_lite );
+	glTexImage2D(GL_TEXTURE_2D,0,4,32,32,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq_lite);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	textureManager->setTexture("noise_lq_lite", noise_texture_lq_lite, 32, 32);
+
+	glGenTextures( 1, &noise_texture_lq );
+	glBindTexture( GL_TEXTURE_2D, noise_texture_lq );
+	glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	textureManager->setTexture("noise_lq", noise_texture_lq, 256, 256);
+
+	glGenTextures( 1, &noise_texture_mq );
+	glBindTexture( GL_TEXTURE_2D, noise_texture_mq );
+	glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_mq);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	textureManager->setTexture("noise_mq", noise_texture_mq, 256, 256);
+
+	glGenTextures( 1, &noise_texture_hq );
+	glBindTexture( GL_TEXTURE_2D, noise_texture_hq );
+	glTexImage2D(GL_TEXTURE_2D,0,4,256,256,0,GL_LUMINANCE,GL_FLOAT,noise.noise_hq);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	textureManager->setTexture("noise_hq", noise_texture_hq, 256, 256);
+
+	glGenTextures( 1, &noise_texture_perlin );
+	glBindTexture( GL_TEXTURE_2D, noise_texture_perlin );
+	glTexImage2D(GL_TEXTURE_2D,0,4,512,512,0,GL_LUMINANCE,GL_FLOAT,noise.noise_perlin);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	textureManager->setTexture("noise_perlin", noise_texture_perlin, 512, 512);
+
+	/*
+	glGenTextures( 1, &noise_texture_lq_vol );
+	glBindTexture( GL_TEXTURE_3D, noise_texture_lq_vol );
+	glTexImage3D(GL_TEXTURE_3D,0,4,32,32,32,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq_vol);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	textureManager->setTexture("noisevol_lq", noise_texture_lq_vol, 256, 256);
+
+	glGenTextures( 1, &noise_texture_hq_vol );
+	glBindTexture( GL_TEXTURE_3D, noise_texture_hq_vol );
+	glTexImage3D(GL_TEXTURE_3D,0,4,32,32,32,0,GL_LUMINANCE,GL_FLOAT,noise.noise_hq_vol);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	textureManager->setTexture("noisevol_hq", noise_texture_hq_vol, 8, 8);
+	*/
 
 }
 
@@ -167,28 +176,50 @@ std::string program = shader.programSource;
 
 		    	 if(end != std::string::npos)
 		    	 {
+
 		    		 std::string sampler = program.substr((int)found,(int)end-found);
 		    		 UserTexture* texture = new UserTexture(sampler);
+		    		 std::cout<<"Strung: "<<texture->qname<<std::endl;
 
-		    		 if (texture->name == "main") texture->texID = mainTextureId;
-		    		 else if (texture->name == "noise_lq") texture->texID = noise_texture_lq;
-		    		 else if (texture->name == "noise_mq") texture->texID = noise_texture_mq;
-		    		 else if (texture->name == "noise_hq") texture->texID = noise_texture_hq;
-		    		 else if (texture->name == "noise_lq_lite") texture->texID = noise_texture_lq_lite;
-		    		 else if (texture->name == "noisevol_lq") texture->texID = noise_texture_lq_vol;
-		    		 else if (texture->name == "noisevol_hq") texture->texID = noise_texture_hq_vol;
-		    		 else if (texture->name == "noise_perlin") texture->texID = noise_texture_perlin;
+		    		 texture->texID = textureManager->getTexture(texture->name);
+		    		 if (texture->texID != 0)
+		    		 {
+		    			 std::cout<<"Internal: "<<texture->name<<std::endl;
+		    			 texture->width = textureManager->getTextureWidth(texture->name);
+		    			 texture->height = textureManager->getTextureHeight(texture->name);
+		    		 }
 		    		 else
 		    		 {
-		    			 texture->texID = textureManager->getTexture( texture->name + ".jpg");
-		    			 if (texture->texID == 0) texture->texID = textureManager->getTexture(   texture->name + ".dds");
-		    			 if (texture->texID == 0) texture->texID = textureManager->getTexture(   texture->name + ".png");
-		    			 if (texture->texID == 0) texture->texID = textureManager->getTexture(   texture->name + ".tga");
-		    			 if (texture->texID == 0) texture->texID = textureManager->getTexture(   texture->name + ".bmp");
+
+		    			 std::string extensions[6];
+		    			 extensions[0] = ".jpg";
+		    			 extensions[1] = ".dds";
+		    			 extensions[2] = ".png";
+		    			 extensions[3] = ".tga";
+		    			 extensions[4] = ".bmp";
+		    			 extensions[5] = ".dib";
+
+		    			 for (int x = 0; x<6;x++)
+		    			 {
+
+		    				 std::string filename = texture->name + extensions[x];
+		    				 std::cout<<"Load: "<<filename<<std::endl;
+		    			     texture->texID = textureManager->getTexture(filename);
+		    			     if (texture->texID != 0)
+		    			     {
+		    			    	 std::cout<<"Loaded: "<<filename<<std::endl;
+		    			    	 texture->width = textureManager->getTextureWidth(filename);
+								 texture->height = textureManager->getTextureHeight(filename);
+								 break;
+		    			  	 }
+		    			 }
 
 		    		 }
 		    		 if (texture->texID != 0 && shader.textures.find(texture->qname)==shader.textures.end())
+		    		 {
+std::cout<<"Found: "<<texture->qname<<std::endl;
 		    			 shader.textures[texture->qname] = texture;
+		    		 }
 
 		    		 else delete(texture);
 
