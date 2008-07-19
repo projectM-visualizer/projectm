@@ -467,7 +467,9 @@ void Preset::evalPerPixelEqns()
 int Preset::readIn(std::istream & fs) {
 
   line_mode_t line_mode;
-
+  presetOutputs().shader.composite.clear();
+  presetOutputs().shader.warp.clear();
+  
   /* Parse any comments */
   if (Parser::parse_top_comment(fs) < 0)
   {
