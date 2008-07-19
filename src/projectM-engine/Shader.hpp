@@ -9,17 +9,14 @@
 #define SHADER_HPP_
 
 #include <string>
-#include <set>
-#include <vector>
+#include <map>
 #include "UserTexture.hpp"
 
 class Shader
 {
 public:
 
-
-	std::vector<UserTexture*> textures;
-    std::set<std::string> textureNames;
+    std::map<std::string, UserTexture*> textures;
 
 
     bool enabled;

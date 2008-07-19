@@ -157,7 +157,6 @@ std::string program = shader.programSource;
 		     else return false;
 
 		     shader.textures.clear();
-		     shader.textureNames.clear();
 
 		     found = 0;
 		     found = program.find("sampler_", found);
@@ -188,11 +187,9 @@ std::string program = shader.programSource;
 		    			 if (texture->texID == 0) texture->texID = textureManager->getTexture(   texture->name + ".bmp");
 
 		    		 }
-		    		 if (texture->texID != 0 && shader.textureNames.find(texture->qname)==shader.textureNames.end())
-		    			 {
-		    			 shader.textures.push_back(texture);
-		    			 shader.textureNames.insert(texture->name);
-		    			 }
+		    		 if (texture->texID != 0 && shader.textures.find(texture->qname)==shader.textures.end())
+		    			 shader.textures[texture->qname] = texture;
+
 		    		 else delete(texture);
 
 		    	 }
@@ -203,20 +200,22 @@ std::string program = shader.programSource;
 		     found = 0;
 		     found = program.find("texsize_", found);
 		     while (found != std::string::npos)
-		    		     {
-		    		    	 found+=8;
-		    		    	 size_t end = program.find_first_of(" ;,\n\r)", found);
+  		     {
+   		    	 found+=8;
+   		    	 size_t end = program.find_first_of(" ;,\n\r)", found);
 
-		    		    	 if(end != std::string::npos)
-		    		    	 {
-		    		    		 std::string tex = program.substr((int)found,(int)end-found);
-		    		    		 UserTexture* texture;
-
-		    		    		 std::cout<<"texsize_"<<tex<<" found"<<std::endl;
-		    		    	 }
-
-		    		    	 found = program.find("texsize_", found);
-		    		     }
+	    		 if(end != std::string::npos)
+	    		 {
+	    			 std::string tex = program.substr((int)found,(int)end-found);
+	    			 if (shader.textures.find(tex)!=shader.textures.end())
+	    			 {
+		    	   	   UserTexture* texture = shader.textures[tex];
+		    	   	   texture->texsizeDefined = true;
+   		    		   std::cout<<"texsize_"<<tex<<" found"<<std::endl;
+	    			 }
+   		    	 }
+   		    	 found = program.find("texsize_", found);
+		     }
 
 
 		     found = program.find("GetBlur3");
@@ -660,8 +659,8 @@ void ShaderEngine::enableShader(Shader &shader, const Pipeline *pipeline, const 
 
 	  SetupCgVariables(program, *pipeline, *pipelineContext);
 
-	  for (std::vector<UserTexture*>::const_iterator pos = shader.textures.begin(); pos != shader.textures.end(); ++pos)
-				SetupUserTexture(program, *pos);
+	  for (std::map<std::string,UserTexture*>::const_iterator pos = shader.textures.begin(); pos != shader.textures.end(); ++pos)
+				SetupUserTexture(program, pos->second);
 
 	    enabled = true;
 		}

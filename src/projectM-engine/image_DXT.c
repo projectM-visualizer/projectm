@@ -533,7 +533,7 @@ void
 	vec_len2 = 0.0f;
 	for( i = 0; i < 3; ++i )
 	{
-		color_line[i] = c1[i] - c0[i];
+		color_line[i] = (float)(c1[i] - c0[i]);
 		vec_len2 += color_line[i] * color_line[i];
 	}
 	if( vec_len2 > 0.0f )
