@@ -1,13 +1,13 @@
 /*
     Jonathan Dummer
 
-    GLFW helper functions
+    Image helper functions
 
     MIT license
 */
 
 #ifndef HEADER_IMAGE_HELPER
-#define HEADER_GLFW_HELPER
+#define HEADER_IMAGE_HELPER
 
 #ifdef __cplusplus
 extern "C" {
@@ -82,8 +82,34 @@ int
 		int width, int height, int channels
 	);
 
+/**
+	Converts an HDR image from an array
+	of unsigned chars (RGBE) to RGBdivA
+	\return 0 if failed, otherwise returns 1
+**/
+int
+	RGBE_to_RGBdivA
+	(
+		unsigned char *image,
+		int width, int height,
+		int rescale_to_max
+	);
+
+/**
+	Converts an HDR image from an array
+	of unsigned chars (RGBE) to RGBdivA2
+	\return 0 if failed, otherwise returns 1
+**/
+int
+	RGBE_to_RGBdivA2
+	(
+		unsigned char *image,
+		int width, int height,
+		int rescale_to_max
+	);
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* HEADER_GLFW_HELPER	*/
+#endif /* HEADER_IMAGE_HELPER	*/

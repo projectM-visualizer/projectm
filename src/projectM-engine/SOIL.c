@@ -13,6 +13,8 @@
 	* everybody at gamedev.net
 */
 
+#define SOIL_CHECK_FOR_GL_ERRORS 0
+
 #ifdef WIN32
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
@@ -23,7 +25,6 @@
 	#include <OpenGL/gl.h>
 	#include <Carbon/Carbon.h>
 	#define APIENTRY
-
 #else
 	#include <GL/gl.h>
 	#include <GL/glx.h>
@@ -37,18 +38,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SOIL_CHECK_FOR_GL_ERRORS 0
-
 /*	error reporting	*/
 char *result_string_pointer = "SOIL initialized";
 
 /*	for loading cube maps	*/
 enum{
-	SOIL_CUBEMAP_UNKNOWN = -1,
-	SOIL_CUBEMAP_NONE = 0,
-	SOIL_CUBEMAP_PRESENT = 1
+	SOIL_CAPABILITY_UNKNOWN = -1,
+	SOIL_CAPABILITY_NONE = 0,
+	SOIL_CAPABILITY_PRESENT = 1
 };
-static int has_cubemap_capability = SOIL_CUBEMAP_UNKNOWN;
+static int has_cubemap_capability = SOIL_CAPABILITY_UNKNOWN;
 int query_cubemap_capability( void );
 #define SOIL_TEXTURE_WRAP_R					0x8072
 #define SOIL_CLAMP_TO_EDGE					0x812F
@@ -64,14 +63,16 @@ int query_cubemap_capability( void );
 #define SOIL_TEXTURE_CUBE_MAP_NEGATIVE_Z	0x851A
 #define SOIL_PROXY_TEXTURE_CUBE_MAP			0x851B
 #define SOIL_MAX_CUBE_MAP_TEXTURE_SIZE		0x851C
+/*	for non-power-of-two texture	*/
+static int has_NPOT_capability = SOIL_CAPABILITY_UNKNOWN;
+int query_NPOT_capability( void );
+/*	for texture rectangles	*/
+static int has_tex_rectangle_capability = SOIL_CAPABILITY_UNKNOWN;
+int query_tex_rectangle_capability( void );
+#define SOIL_TEXTURE_RECTANGLE_ARB				0x84F5
+#define SOIL_MAX_RECTANGLE_TEXTURE_SIZE_ARB		0x84F8
 /*	for using DXT compression	*/
-enum{
-	SOIL_DXT_UNKNOWN = -1,
-	SOIL_DXT_NONE = 0,
-	SOIL_DXT_COMPRESS = 1,
-	SOIL_DXT_DIRECT_UPLOAD = 2
-};
-static int has_DXT_capability = SOIL_DXT_UNKNOWN;
+static int has_DXT_capability = SOIL_CAPABILITY_UNKNOWN;
 int query_DXT_capability( void );
 #define SOIL_RGB_S3TC_DXT1		0x83F0
 #define SOIL_RGBA_S3TC_DXT1		0x83F1
@@ -133,11 +134,68 @@ unsigned int
 	}
 	/*	try to load the image	*/
 	img = SOIL_load_image( filename, &width, &height, &channels, force_channels );
+	/*	channels holds the original number of channels, which may have been forced	*/
+	if( (force_channels >= 1) && (force_channels <= 4) )
+	{
+		channels = force_channels;
+	}
 	if( NULL == img )
 	{
 		/*	image loading failed	*/
 		result_string_pointer = stbi_failure_reason();
 		return 0;
+	}
+	/*	OK, make it a texture!	*/
+	tex_id = SOIL_internal_create_OGL_texture(
+			img, width, height, channels,
+			reuse_texture_ID, flags,
+			GL_TEXTURE_2D, GL_TEXTURE_2D,
+			GL_MAX_TEXTURE_SIZE );
+	/*	and nuke the image data	*/
+	SOIL_free_image_data( img );
+	/*	and return the handle, such as it is	*/
+	return tex_id;
+}
+
+unsigned int
+	SOIL_load_OGL_HDR_texture
+	(
+		const char *filename,
+		int fake_HDR_format,
+		int rescale_to_max,
+		unsigned int reuse_texture_ID,
+		unsigned int flags
+	)
+{
+	/*	variables	*/
+	unsigned char* img;
+	int width, height, channels;
+	unsigned int tex_id;
+	/*	no direct uploading of the image as a DDS file	*/
+	/* error check */
+	if( (fake_HDR_format != SOIL_HDR_RGBE) &&
+		(fake_HDR_format != SOIL_HDR_RGBdivA) &&
+		(fake_HDR_format != SOIL_HDR_RGBdivA2) )
+	{
+		result_string_pointer = "Invalid fake HDR format specified";
+		return 0;
+	}
+	/*	try to load the image (only the HDR type) */
+	img = stbi_hdr_load_rgbe( filename, &width, &height, &channels, 4 );
+	/*	channels holds the original number of channels, which may have been forced	*/
+	if( NULL == img )
+	{
+		/*	image loading failed	*/
+		result_string_pointer = stbi_failure_reason();
+		return 0;
+	}
+	/* the load worked, do I need to convert it? */
+	if( fake_HDR_format == SOIL_HDR_RGBdivA )
+	{
+		RGBE_to_RGBdivA( img, width, height, rescale_to_max );
+	} else if( fake_HDR_format == SOIL_HDR_RGBdivA2 )
+	{
+		RGBE_to_RGBdivA2( img, width, height, rescale_to_max );
 	}
 	/*	OK, make it a texture!	*/
 	tex_id = SOIL_internal_create_OGL_texture(
@@ -186,6 +244,11 @@ unsigned int
 					buffer, buffer_length,
 					&width, &height, &channels,
 					force_channels );
+	/*	channels holds the original number of channels, which may have been forced	*/
+	if( (force_channels >= 1) && (force_channels <= 4) )
+	{
+		channels = force_channels;
+	}
 	if( NULL == img )
 	{
 		/*	image loading failed	*/
@@ -234,13 +297,18 @@ unsigned int
 		return 0;
 	}
 	/*	capability checking	*/
-	if( query_cubemap_capability() != SOIL_CUBEMAP_PRESENT )
+	if( query_cubemap_capability() != SOIL_CAPABILITY_PRESENT )
 	{
 		result_string_pointer = "No cube map capability present";
 		return 0;
 	}
 	/*	1st face: try to load the image	*/
 	img = SOIL_load_image( x_pos_file, &width, &height, &channels, force_channels );
+	/*	channels holds the original number of channels, which may have been forced	*/
+	if( (force_channels >= 1) && (force_channels <= 4) )
+	{
+		channels = force_channels;
+	}
 	if( NULL == img )
 	{
 		/*	image loading failed	*/
@@ -260,6 +328,11 @@ unsigned int
 	{
 		/*	1st face: try to load the image	*/
 		img = SOIL_load_image( x_neg_file, &width, &height, &channels, force_channels );
+		/*	channels holds the original number of channels, which may have been forced	*/
+		if( (force_channels >= 1) && (force_channels <= 4) )
+		{
+			channels = force_channels;
+		}
 		if( NULL == img )
 		{
 			/*	image loading failed	*/
@@ -280,6 +353,11 @@ unsigned int
 	{
 		/*	1st face: try to load the image	*/
 		img = SOIL_load_image( y_pos_file, &width, &height, &channels, force_channels );
+		/*	channels holds the original number of channels, which may have been forced	*/
+		if( (force_channels >= 1) && (force_channels <= 4) )
+		{
+			channels = force_channels;
+		}
 		if( NULL == img )
 		{
 			/*	image loading failed	*/
@@ -300,6 +378,11 @@ unsigned int
 	{
 		/*	1st face: try to load the image	*/
 		img = SOIL_load_image( y_neg_file, &width, &height, &channels, force_channels );
+		/*	channels holds the original number of channels, which may have been forced	*/
+		if( (force_channels >= 1) && (force_channels <= 4) )
+		{
+			channels = force_channels;
+		}
 		if( NULL == img )
 		{
 			/*	image loading failed	*/
@@ -320,6 +403,11 @@ unsigned int
 	{
 		/*	1st face: try to load the image	*/
 		img = SOIL_load_image( z_pos_file, &width, &height, &channels, force_channels );
+		/*	channels holds the original number of channels, which may have been forced	*/
+		if( (force_channels >= 1) && (force_channels <= 4) )
+		{
+			channels = force_channels;
+		}
 		if( NULL == img )
 		{
 			/*	image loading failed	*/
@@ -340,6 +428,11 @@ unsigned int
 	{
 		/*	1st face: try to load the image	*/
 		img = SOIL_load_image( z_neg_file, &width, &height, &channels, force_channels );
+		/*	channels holds the original number of channels, which may have been forced	*/
+		if( (force_channels >= 1) && (force_channels <= 4) )
+		{
+			channels = force_channels;
+		}
 		if( NULL == img )
 		{
 			/*	image loading failed	*/
@@ -395,7 +488,7 @@ unsigned int
 		return 0;
 	}
 	/*	capability checking	*/
-	if( query_cubemap_capability() != SOIL_CUBEMAP_PRESENT )
+	if( query_cubemap_capability() != SOIL_CAPABILITY_PRESENT )
 	{
 		result_string_pointer = "No cube map capability present";
 		return 0;
@@ -404,6 +497,11 @@ unsigned int
 	img = SOIL_load_image_from_memory(
 			x_pos_buffer, x_pos_buffer_length,
 			&width, &height, &channels, force_channels );
+	/*	channels holds the original number of channels, which may have been forced	*/
+	if( (force_channels >= 1) && (force_channels <= 4) )
+	{
+		channels = force_channels;
+	}
 	if( NULL == img )
 	{
 		/*	image loading failed	*/
@@ -425,6 +523,11 @@ unsigned int
 		img = SOIL_load_image_from_memory(
 				x_neg_buffer, x_neg_buffer_length,
 				&width, &height, &channels, force_channels );
+		/*	channels holds the original number of channels, which may have been forced	*/
+		if( (force_channels >= 1) && (force_channels <= 4) )
+		{
+			channels = force_channels;
+		}
 		if( NULL == img )
 		{
 			/*	image loading failed	*/
@@ -447,6 +550,11 @@ unsigned int
 		img = SOIL_load_image_from_memory(
 				y_pos_buffer, y_pos_buffer_length,
 				&width, &height, &channels, force_channels );
+		/*	channels holds the original number of channels, which may have been forced	*/
+		if( (force_channels >= 1) && (force_channels <= 4) )
+		{
+			channels = force_channels;
+		}
 		if( NULL == img )
 		{
 			/*	image loading failed	*/
@@ -469,6 +577,11 @@ unsigned int
 		img = SOIL_load_image_from_memory(
 				y_neg_buffer, y_neg_buffer_length,
 				&width, &height, &channels, force_channels );
+		/*	channels holds the original number of channels, which may have been forced	*/
+		if( (force_channels >= 1) && (force_channels <= 4) )
+		{
+			channels = force_channels;
+		}
 		if( NULL == img )
 		{
 			/*	image loading failed	*/
@@ -491,6 +604,11 @@ unsigned int
 		img = SOIL_load_image_from_memory(
 				z_pos_buffer, z_pos_buffer_length,
 				&width, &height, &channels, force_channels );
+		/*	channels holds the original number of channels, which may have been forced	*/
+		if( (force_channels >= 1) && (force_channels <= 4) )
+		{
+			channels = force_channels;
+		}
 		if( NULL == img )
 		{
 			/*	image loading failed	*/
@@ -513,6 +631,11 @@ unsigned int
 		img = SOIL_load_image_from_memory(
 				z_neg_buffer, z_neg_buffer_length,
 				&width, &height, &channels, force_channels );
+		/*	channels holds the original number of channels, which may have been forced	*/
+		if( (force_channels >= 1) && (force_channels <= 4) )
+		{
+			channels = force_channels;
+		}
 		if( NULL == img )
 		{
 			/*	image loading failed	*/
@@ -581,13 +704,18 @@ unsigned int
 		};
 	}
 	/*	capability checking	*/
-	if( query_cubemap_capability() != SOIL_CUBEMAP_PRESENT )
+	if( query_cubemap_capability() != SOIL_CAPABILITY_PRESENT )
 	{
 		result_string_pointer = "No cube map capability present";
 		return 0;
 	}
 	/*	1st off, try to load the full image	*/
 	img = SOIL_load_image( filename, &width, &height, &channels, force_channels );
+	/*	channels holds the original number of channels, which may have been forced	*/
+	if( (force_channels >= 1) && (force_channels <= 4) )
+	{
+		channels = force_channels;
+	}
 	if( NULL == img )
 	{
 		/*	image loading failed	*/
@@ -664,7 +792,7 @@ unsigned int
 		};
 	}
 	/*	capability checking	*/
-	if( query_cubemap_capability() != SOIL_CUBEMAP_PRESENT )
+	if( query_cubemap_capability() != SOIL_CAPABILITY_PRESENT )
 	{
 		result_string_pointer = "No cube map capability present";
 		return 0;
@@ -674,6 +802,11 @@ unsigned int
 			buffer, buffer_length,
 			&width, &height, &channels,
 			force_channels );
+	/*	channels holds the original number of channels, which may have been forced	*/
+	if( (force_channels >= 1) && (force_channels <= 4) )
+	{
+		channels = force_channels;
+	}
 	if( NULL == img )
 	{
 		/*	image loading failed	*/
@@ -733,7 +866,7 @@ unsigned int
 		};
 	}
 	/*	capability checking	*/
-	if( query_cubemap_capability() != SOIL_CUBEMAP_PRESENT )
+	if( query_cubemap_capability() != SOIL_CAPABILITY_PRESENT )
 	{
 		result_string_pointer = "No cube map capability present";
 		return 0;
@@ -837,6 +970,11 @@ void check_for_GL_errors( const char *calling_location )
 		err_code = glGetError();
 	}
 }
+#else
+void check_for_GL_errors( const char *calling_location )
+{
+	/*	no check for errors	*/
+}
 #endif
 
 unsigned int
@@ -855,8 +993,38 @@ unsigned int
 	unsigned char* img;
 	unsigned int tex_id;
 	unsigned int internal_texture_format = 0, original_texture_format = 0;
-	int DXT_mode = SOIL_DXT_NONE;
+	int DXT_mode = SOIL_CAPABILITY_UNKNOWN;
 	int max_supported_size;
+	/*	If the user wants to use the texture rectangle I kill a few flags	*/
+	if( flags & SOIL_FLAG_TEXTURE_RECTANGLE )
+	{
+		/*	well, the user asked for it, can we do that?	*/
+		if( query_tex_rectangle_capability() == SOIL_CAPABILITY_PRESENT )
+		{
+			/*	only allow this if the user in _NOT_ trying to do a cubemap!	*/
+			if( opengl_texture_type == GL_TEXTURE_2D )
+			{
+				/*	clean out the flags that cannot be used with texture rectangles	*/
+				flags &= ~(
+						SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MIPMAPS |
+						SOIL_FLAG_TEXTURE_REPEATS
+					);
+				/*	and change my target	*/
+				opengl_texture_target = SOIL_TEXTURE_RECTANGLE_ARB;
+				opengl_texture_type = SOIL_TEXTURE_RECTANGLE_ARB;
+			} else
+			{
+				/*	not allowed for any other uses (yes, I'm looking at you, cubemaps!)	*/
+				flags &= ~SOIL_FLAG_TEXTURE_RECTANGLE;
+			}
+
+		} else
+		{
+			/*	can't do it, and that is a breakable offense (uv coords use pixels instead of [0,1]!)	*/
+			result_string_pointer = "Texture Rectangle extension unsupported";
+			return 0;
+		}
+	}
 	/*	create a copy the image data	*/
 	img = (unsigned char*)malloc( width*height*channels );
 	memcpy( img, data, width*height*channels );
@@ -908,6 +1076,13 @@ unsigned int
 			/*	no other number of channels contains alpha data	*/
 			break;
 		}
+	}
+	/*	if the user can't support NPOT textures, make sure we force the POT option	*/
+	if( (query_NPOT_capability() == SOIL_CAPABILITY_NONE) &&
+		!(flags & SOIL_FLAG_TEXTURE_RECTANGLE) )
+	{
+		/*	add in the POT flag */
+		flags |= SOIL_FLAG_POWER_OF_TWO;
 	}
 	/*	how large of a texture can this OpenGL implementation handle?	*/
 	/*	texture_check_size_enum will be GL_MAX_TEXTURE_SIZE or SOIL_MAX_CUBE_MAP_TEXTURE_SIZE	*/
@@ -985,7 +1160,7 @@ unsigned int
 		convert_RGB_to_YCoCg( img, width, height, channels );
 		/*
 		save_image_as_DDS( "CoCg_Y.dds", width, height, channels, img );
-		//*/
+		*/
 	}
 	/*	create the OpenGL texture ID handle
     	(note: allowing a forced texture ID lets me reload a texture)	*/
@@ -994,9 +1169,7 @@ unsigned int
     {
 		glGenTextures( 1, &tex_id );
     }
-    #if SOIL_CHECK_FOR_GL_ERRORS
 	check_for_GL_errors( "glGenTextures" );
-	#endif
 	/* Note: sometimes glGenTextures fails (usually no OpenGL context)	*/
 	if( tex_id )
 	{
@@ -1021,7 +1194,7 @@ unsigned int
 		if( flags & SOIL_FLAG_COMPRESS_TO_DXT )
 		{
 			DXT_mode = query_DXT_capability();
-			if( DXT_mode != SOIL_DXT_NONE )
+			if( DXT_mode == SOIL_CAPABILITY_PRESENT )
 			{
 				/*	I can use DXT, whether I compress it or OpenGL does	*/
 				if( (channels & 1) == 1 )
@@ -1037,11 +1210,9 @@ unsigned int
 		}
 		/*  bind an OpenGL texture ID	*/
 		glBindTexture( opengl_texture_type, tex_id );
-		#if SOIL_CHECK_FOR_GL_ERRORS
 		check_for_GL_errors( "glBindTexture" );
-		#endif
 		/*  upload the main image	*/
-		if( DXT_mode == SOIL_DXT_DIRECT_UPLOAD )
+		if( DXT_mode == SOIL_CAPABILITY_PRESENT )
 		{
 			/*	user wants me to do the DXT conversion!	*/
 			int DDS_size;
@@ -1061,9 +1232,7 @@ unsigned int
 					opengl_texture_target, 0,
 					internal_texture_format, width, height, 0,
 					DDS_size, DDS_data );
-				#if SOIL_CHECK_FOR_GL_ERRORS
 				check_for_GL_errors( "glCompressedTexImage2D" );
-				#endif
 				SOIL_free_image_data( DDS_data );
 				/*	printf( "Internal DXT compressor\n" );	*/
 			} else
@@ -1073,9 +1242,7 @@ unsigned int
 					opengl_texture_target, 0,
 					internal_texture_format, width, height, 0,
 					original_texture_format, GL_UNSIGNED_BYTE, img );
-				#if SOIL_CHECK_FOR_GL_ERRORS
 				check_for_GL_errors( "glTexImage2D" );
-				#endif
 				/*	printf( "OpenGL DXT compressor\n" );	*/
 			}
 		} else
@@ -1085,9 +1252,7 @@ unsigned int
 				opengl_texture_target, 0,
 				internal_texture_format, width, height, 0,
 				original_texture_format, GL_UNSIGNED_BYTE, img );
-			#if SOIL_CHECK_FOR_GL_ERRORS
 			check_for_GL_errors( "glTexImage2D" );
-			#endif
 			/*printf( "OpenGL DXT compressor\n" );	*/
 		}
 		/*	are any MIPmaps desired?	*/
@@ -1105,7 +1270,7 @@ unsigned int
 						resampled,
 						(1 << MIPlevel), (1 << MIPlevel) );
 				/*  upload the MIPmaps	*/
-				if( DXT_mode == SOIL_DXT_DIRECT_UPLOAD )
+				if( DXT_mode == SOIL_CAPABILITY_PRESENT )
 				{
 					/*	user wants me to do the DXT conversion!	*/
 					int DDS_size;
@@ -1127,9 +1292,7 @@ unsigned int
 							opengl_texture_target, MIPlevel,
 							internal_texture_format, MIPwidth, MIPheight, 0,
 							DDS_size, DDS_data );
-						#if SOIL_CHECK_FOR_GL_ERRORS
 						check_for_GL_errors( "glCompressedTexImage2D" );
-						#endif
 						SOIL_free_image_data( DDS_data );
 					} else
 					{
@@ -1138,9 +1301,7 @@ unsigned int
 							opengl_texture_target, MIPlevel,
 							internal_texture_format, MIPwidth, MIPheight, 0,
 							original_texture_format, GL_UNSIGNED_BYTE, resampled );
-						#if SOIL_CHECK_FOR_GL_ERRORS
 						check_for_GL_errors( "glTexImage2D" );
-						#endif
 					}
 				} else
 				{
@@ -1149,9 +1310,7 @@ unsigned int
 						opengl_texture_target, MIPlevel,
 						internal_texture_format, MIPwidth, MIPheight, 0,
 						original_texture_format, GL_UNSIGNED_BYTE, resampled );
-					#if SOIL_CHECK_FOR_GL_ERRORS
 					check_for_GL_errors( "glTexImage2D" );
-					#endif
 				}
 				/*	prep for the next level	*/
 				++MIPlevel;
@@ -1162,17 +1321,13 @@ unsigned int
 			/*	instruct OpenGL to use the MIPmaps	*/
 			glTexParameteri( opengl_texture_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 			glTexParameteri( opengl_texture_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-			#if SOIL_CHECK_FOR_GL_ERRORS
 			check_for_GL_errors( "GL_TEXTURE_MIN/MAG_FILTER" );
-			#endif
 		} else
 		{
 			/*	instruct OpenGL _NOT_ to use the MIPmaps	*/
 			glTexParameteri( opengl_texture_type, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 			glTexParameteri( opengl_texture_type, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-			#if SOIL_CHECK_FOR_GL_ERRORS
 			check_for_GL_errors( "GL_TEXTURE_MIN/MAG_FILTER" );
-			#endif
 		}
 		/*	does the user want clamping, or wrapping?	*/
 		if( flags & SOIL_FLAG_TEXTURE_REPEATS )
@@ -1184,9 +1339,7 @@ unsigned int
 				/*	SOIL_TEXTURE_WRAP_R is invalid if cubemaps aren't supported	*/
 				glTexParameteri( opengl_texture_type, SOIL_TEXTURE_WRAP_R, GL_REPEAT );
 			}
-			#if SOIL_CHECK_FOR_GL_ERRORS
 			check_for_GL_errors( "GL_TEXTURE_WRAP_*" );
-			#endif
 		} else
 		{
 			/*	unsigned int clamp_mode = SOIL_CLAMP_TO_EDGE;	*/
@@ -1198,9 +1351,7 @@ unsigned int
 				/*	SOIL_TEXTURE_WRAP_R is invalid if cubemaps aren't supported	*/
 				glTexParameteri( opengl_texture_type, SOIL_TEXTURE_WRAP_R, clamp_mode );
 			}
-			#if SOIL_CHECK_FOR_GL_ERRORS
 			check_for_GL_errors( "GL_TEXTURE_WRAP_*" );
-			#endif
 		}
 		/*	done	*/
 		result_string_pointer = "Image loaded as an OpenGL texture";
@@ -1278,7 +1429,7 @@ unsigned char*
 		int force_channels
 	)
 {
-	unsigned char *result = stbi_load( (char*)filename,
+	unsigned char *result = stbi_load( filename,
 			width, height, channels, force_channels );
 	if( result == NULL )
 	{
@@ -1300,7 +1451,7 @@ unsigned char*
 	)
 {
 	unsigned char *result = stbi_load_from_memory(
-				(stbi_uc *)buffer, buffer_length,
+				buffer, buffer_length,
 				width, height, channels,
 				force_channels );
 	if( result == NULL )
@@ -1334,17 +1485,17 @@ int
 	}
 	if( image_type == SOIL_SAVE_TYPE_BMP )
 	{
-		save_result = stbi_write_bmp( (char*)filename,
+		save_result = stbi_write_bmp( filename,
 				width, height, channels, (void*)data );
 	} else
 	if( image_type == SOIL_SAVE_TYPE_TGA )
 	{
-		save_result = stbi_write_tga( (char*)filename,
+		save_result = stbi_write_tga( filename,
 				width, height, channels, (void*)data );
 	} else
 	if( image_type == SOIL_SAVE_TYPE_DDS )
 	{
-		save_result = save_image_as_DDS( (const char*)filename,
+		save_result = save_image_as_DDS( filename,
 				width, height, channels, (const unsigned char *const)data );
 	} else
 	{
@@ -1376,104 +1527,6 @@ const char*
 	)
 {
 	return result_string_pointer;
-}
-
-int query_cubemap_capability( void )
-{
-	/*	check for the capability	*/
-	if( has_cubemap_capability == SOIL_CUBEMAP_UNKNOWN )
-	{
-		/*	we haven't yet checked for the capability, do so	*/
-		if(
-			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
-				"GL_ARB_texture_cube_map" ) )
-		&&
-			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
-				"GL_EXT_texture_cube_map" ) )
-			)
-		{
-			/*	not there, flag the failure	*/
-			has_cubemap_capability = SOIL_CUBEMAP_NONE;
-		} else
-		{
-			/*	it's there!	*/
-			has_cubemap_capability = SOIL_CUBEMAP_PRESENT;
-		}
-	}
-	/*	let the user know if we can do cubemaps or not	*/
-	return has_cubemap_capability;
-}
-
-int query_DXT_capability( void )
-{
-	/*	check for the capability	*/
-	if( has_DXT_capability == SOIL_DXT_UNKNOWN )
-	{
-		/*	we haven't yet checked for the capability, do so	*/
-		if( NULL == strstr(
-				(char const*)glGetString( GL_EXTENSIONS ),
-				"GL_EXT_texture_compression_s3tc" ) )
-		{
-			/*	not there, flag the failure	*/
-			has_DXT_capability = SOIL_DXT_NONE;
-		} else
-		{
-			/*	and find the address of the extension function	*/
-		        P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC ext_addr = NULL;
-			#ifdef WIN32
-			 ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
-                                               wglGetProcAddress("glCompressedTexImage2DARB");
-
-			#elif defined(__APPLE__) || defined(__APPLE_CC__)
-				/*	I can't test this Apple stuff!	*/
-				CFBundleRef bundle;
-				CFURLRef bundleURL =
-					CFURLCreateWithFileSystemPath(
-						kCFAllocatorDefault,
-						CFSTR("/System/Library/Frameworks/OpenGL.framework"),
-						kCFURLPOSIXPathStyle,
-						true );
-				CFStringRef extensionName =
-					CFStringCreateWithCString(
-						kCFAllocatorDefault,
-						"glCompressedTexImage2DARB",
-						kCFStringEncodingASCII );
-				bundle = CFBundleCreate( kCFAllocatorDefault, bundleURL );
-				assert( bundle != NULL );
-				ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
-				    CFBundleGetFunctionPointerForName( bundle, extensionName );
-
-			
-				CFRelease( bundleURL );
-				CFRelease( extensionName );
-
-			//	CFRelease( functionName );
-				CFRelease( bundle );
-			#else
-				 ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
-                                      glXGetProcAddress((const GLubyte *)"glCompressedTexImage2DARB");
-
-			#endif
-			/*	Flag it so no checks needed later	*/
-			if( NULL == ext_addr )
-			{
-				/*	hmm, not good!!  This should not happen, but does on my
-					laptop's VIA chipset.  The GL_EXT_texture_compression_s3tc
-					spec requires that ARB_texture_compression be present too.
-					this means I can upload and have the OpenGL drive do the
-					conversion, but I can't use my own routines or load DDS files
-					from disk and upload them directly [8^(	*/
-				has_DXT_capability = SOIL_DXT_COMPRESS;
-			} else
-			{
-				/*	all's well!	*/
-				soilGlCompressedTexImage2D = ext_addr;
-				has_DXT_capability = SOIL_DXT_DIRECT_UPLOAD;
-			}
-		}
-	}
-	/*	let the user know if we can do DXT or not	*/
-	return has_DXT_capability;
 }
 
 unsigned int SOIL_direct_load_DDS_from_memory(
@@ -1561,7 +1614,7 @@ unsigned int SOIL_direct_load_DDS_from_memory(
 	} else
 	{
 		/*	can we even handle direct uploading to OpenGL DXT compressed images?	*/
-		if( query_DXT_capability() != SOIL_DXT_DIRECT_UPLOAD )
+		if( query_DXT_capability() != SOIL_CAPABILITY_PRESENT )
 		{
 			/*	we can't do it!	*/
 			result_string_pointer = "Direct upload of S3TC images not supported by the OpenGL driver";
@@ -1595,7 +1648,7 @@ unsigned int SOIL_direct_load_DDS_from_memory(
 			return 0;
 		}
 		/*	can we even handle cubemaps with the OpenGL driver?	*/
-		if( query_cubemap_capability() != SOIL_CUBEMAP_PRESENT )
+		if( query_cubemap_capability() != SOIL_CAPABILITY_PRESENT )
 		{
 			/*	we can't do it!	*/
 			result_string_pointer = "Direct upload of cubemap images not supported by the OpenGL driver";
@@ -1815,4 +1868,157 @@ unsigned int SOIL_direct_load_DDS(
 		reuse_texture_ID, flags, loading_as_cubemap );
 	SOIL_free_image_data( buffer );
 	return tex_ID;
+}
+
+int query_NPOT_capability( void )
+{
+	/*	check for the capability	*/
+	if( has_NPOT_capability == SOIL_CAPABILITY_UNKNOWN )
+	{
+		/*	we haven't yet checked for the capability, do so	*/
+		if(
+			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
+				"GL_ARB_texture_non_power_of_two" ) )
+			)
+		{
+			/*	not there, flag the failure	*/
+			has_NPOT_capability = SOIL_CAPABILITY_NONE;
+		} else
+		{
+			/*	it's there!	*/
+			has_NPOT_capability = SOIL_CAPABILITY_PRESENT;
+		}
+	}
+	/*	let the user know if we can do non-power-of-two textures or not	*/
+	return has_NPOT_capability;
+}
+
+int query_tex_rectangle_capability( void )
+{
+	/*	check for the capability	*/
+	if( has_tex_rectangle_capability == SOIL_CAPABILITY_UNKNOWN )
+	{
+		/*	we haven't yet checked for the capability, do so	*/
+		if(
+			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
+				"GL_ARB_texture_rectangle" ) )
+		&&
+			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
+				"GL_EXT_texture_rectangle" ) )
+		&&
+			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
+				"GL_NV_texture_rectangle" ) )
+			)
+		{
+			/*	not there, flag the failure	*/
+			has_tex_rectangle_capability = SOIL_CAPABILITY_NONE;
+		} else
+		{
+			/*	it's there!	*/
+			has_tex_rectangle_capability = SOIL_CAPABILITY_PRESENT;
+		}
+	}
+	/*	let the user know if we can do texture rectangles or not	*/
+	return has_tex_rectangle_capability;
+}
+
+int query_cubemap_capability( void )
+{
+	/*	check for the capability	*/
+	if( has_cubemap_capability == SOIL_CAPABILITY_UNKNOWN )
+	{
+		/*	we haven't yet checked for the capability, do so	*/
+		if(
+			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
+				"GL_ARB_texture_cube_map" ) )
+		&&
+			(NULL == strstr( (char const*)glGetString( GL_EXTENSIONS ),
+				"GL_EXT_texture_cube_map" ) )
+			)
+		{
+			/*	not there, flag the failure	*/
+			has_cubemap_capability = SOIL_CAPABILITY_NONE;
+		} else
+		{
+			/*	it's there!	*/
+			has_cubemap_capability = SOIL_CAPABILITY_PRESENT;
+		}
+	}
+	/*	let the user know if we can do cubemaps or not	*/
+	return has_cubemap_capability;
+}
+
+int query_DXT_capability( void )
+{
+	/*	check for the capability	*/
+	if( has_DXT_capability == SOIL_CAPABILITY_UNKNOWN )
+	{
+		/*	we haven't yet checked for the capability, do so	*/
+		if( NULL == strstr(
+				(char const*)glGetString( GL_EXTENSIONS ),
+				"GL_EXT_texture_compression_s3tc" ) )
+		{
+			/*	not there, flag the failure	*/
+			has_DXT_capability = SOIL_CAPABILITY_NONE;
+		} else
+		{
+			/*	and find the address of the extension function	*/
+			P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC ext_addr = NULL;
+			#ifdef WIN32
+				ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
+						wglGetProcAddress
+						(
+							"glCompressedTexImage2DARB"
+						);
+			#elif defined(__APPLE__) || defined(__APPLE_CC__)
+				/*	I can't test this Apple stuff!	*/
+				CFBundleRef bundle;
+				CFURLRef bundleURL =
+					CFURLCreateWithFileSystemPath(
+						kCFAllocatorDefault,
+						CFSTR("/System/Library/Frameworks/OpenGL.framework"),
+						kCFURLPOSIXPathStyle,
+						true );
+				CFStringRef extensionName =
+					CFStringCreateWithCString(
+						kCFAllocatorDefault,
+						"glCompressedTexImage2DARB",
+						kCFStringEncodingASCII );
+				bundle = CFBundleCreate( kCFAllocatorDefault, bundleURL );
+				assert( bundle != NULL );
+				ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
+						CFBundleGetFunctionPointerForName
+						(
+							bundle, extensionName
+						);
+				CFRelease( bundleURL );
+				CFRelease( extensionName );
+				CFRelease( bundle );
+			#else
+				ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
+						glXGetProcAddressARB
+						(
+							(const GLubyte *)"glCompressedTexImage2DARB"
+						);
+			#endif
+			/*	Flag it so no checks needed later	*/
+			if( NULL == ext_addr )
+			{
+				/*	hmm, not good!!  This should not happen, but does on my
+					laptop's VIA chipset.  The GL_EXT_texture_compression_s3tc
+					spec requires that ARB_texture_compression be present too.
+					this means I can upload and have the OpenGL drive do the
+					conversion, but I can't use my own routines or load DDS files
+					from disk and upload them directly [8^(	*/
+				has_DXT_capability = SOIL_CAPABILITY_NONE;
+			} else
+			{
+				/*	all's well!	*/
+				soilGlCompressedTexImage2D = ext_addr;
+				has_DXT_capability = SOIL_CAPABILITY_PRESENT;
+			}
+		}
+	}
+	/*	let the user know if we can do DXT or not	*/
+	return has_DXT_capability;
 }

@@ -90,6 +90,7 @@ enum
 	SOIL_FLAG_DDS_LOAD_DIRECT: will load DDS files directly without _ANY_ additional processing
 	SOIL_FLAG_NTSC_SAFE_RGB: clamps RGB components to the range [16,235]
 	SOIL_FLAG_CoCg_Y: Google YCoCg; RGB=>CoYCg, RGBA=>CoCgAY
+	SOIL_FLAG_TEXTURE_RECTANGE: uses ARB_texture_rectangle ; pixel indexed & no repeat or MIPmaps or cubemaps
 **/
 enum
 {
@@ -101,7 +102,8 @@ enum
 	SOIL_FLAG_COMPRESS_TO_DXT = 32,
 	SOIL_FLAG_DDS_LOAD_DIRECT = 64,
 	SOIL_FLAG_NTSC_SAFE_RGB = 128,
-	SOIL_FLAG_CoCg_Y = 256
+	SOIL_FLAG_CoCg_Y = 256,
+	SOIL_FLAG_TEXTURE_RECTANGLE = 512
 };
 
 /**
@@ -124,6 +126,20 @@ enum
 	with DDS cubemaps when using SOIL.
 **/
 #define SOIL_DDS_CUBEMAP_FACE_ORDER "EWUDNS"
+
+/**
+	The types of internal fake HDR representations
+
+	SOIL_HDR_RGBE:		RGB * pow( 2.0, A - 128.0 )
+	SOIL_HDR_RGBdivA:	RGB / A
+	SOIL_HDR_RGBdivA2:	RGB / (A*A)
+**/
+enum
+{
+	SOIL_HDR_RGBE = 0,
+	SOIL_HDR_RGBdivA = 1,
+	SOIL_HDR_RGBdivA2 = 2
+};
 
 /**
 	Loads an image from disk into an OpenGL texture.
@@ -184,6 +200,24 @@ unsigned int
 		const char *filename,
 		const char face_order[6],
 		int force_channels,
+		unsigned int reuse_texture_ID,
+		unsigned int flags
+	);
+
+/**
+	Loads an HDR image from disk into an OpenGL texture.
+	\param filename the name of the file to upload as a texture
+	\param fake_HDR_format SOIL_HDR_RGBE, SOIL_HDR_RGBdivA, SOIL_HDR_RGBdivA2
+	\param reuse_texture_ID 0-generate a new texture ID, otherwise reuse the texture ID (overwriting the old texture)
+	\param flags can be any of SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MIPMAPS | SOIL_FLAG_TEXTURE_REPEATS | SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_INVERT_Y | SOIL_FLAG_COMPRESS_TO_DXT
+	\return 0-failed, otherwise returns the OpenGL texture handle
+**/
+unsigned int
+	SOIL_load_OGL_HDR_texture
+	(
+		const char *filename,
+		int fake_HDR_format,
+		int rescale_to_max,
 		unsigned int reuse_texture_ID,
 		unsigned int flags
 	);
@@ -323,6 +357,11 @@ int
 
 /**
 	Loads an image from disk into an array of unsigned chars.
+	Note that *channels return the original channel count of the
+	image.  If force_channels was other than SOIL_LOAD_AUTO,
+	the resulting image has force_channels, but *channels may be
+	different (if the original image had a different channel
+	count).
 	\return 0 if failed, otherwise returns 1
 **/
 unsigned char*
@@ -335,6 +374,11 @@ unsigned char*
 
 /**
 	Loads an image from memory into an array of unsigned chars.
+	Note that *channels return the original channel count of the
+	image.  If force_channels was other than SOIL_LOAD_AUTO,
+	the resulting image has force_channels, but *channels may be
+	different (if the original image had a different channel
+	count).
 	\return 0 if failed, otherwise returns 1
 **/
 unsigned char*
