@@ -5,6 +5,7 @@
 #include "PresetFrameIO.hpp"
 #include "BeatDetect.hpp"
 #include <string>
+#include <set>
 
 #ifdef USE_GLES1
 #include <GLES/gl.h>
@@ -30,15 +31,13 @@
 #endif
 #endif /** USE_FTGL */
 
-#ifdef USE_CG
-#include <Cg/cg.h>    /* Can't include this?  Is Cg Toolkit installed! */
-#include <Cg/cgGL.h>
-#endif
 
 #include "Pipeline.hpp"
 #include "PerPixelMesh.hpp"
 #include "Transformation.hpp"
+#include "ShaderEngine.hpp"
 
+class UserTexture;
 class BeatDetect;
 class TextureManager;
 
@@ -65,7 +64,12 @@ public:
   int drawtitle;
   int texsize;
 
+#ifdef USE_CG
+  ShaderEngine shaderEngine;
+#endif
+
   PerPixelMesh mesh;
+
 
 
   Renderer( int width, int height, int gx, int gy, int texsize,  BeatDetect *beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
@@ -117,47 +121,7 @@ private:
   std::string menu_fontURL;
   std::string presetURL;
 
-#ifdef USE_CG
 
-  std::string cgTemplate;
-  std::string blurProgram;
-
-  GLuint noise_texture_lq_lite;
-  GLuint noise_texture_lq;
-  GLuint noise_texture_mq;
-  GLuint noise_texture_hq;
-  GLuint noise_texture_perlin;
-  GLuint noise_texture_lq_vol;
-  GLuint noise_texture_hq_vol;
-
-
-  bool blur1_enabled;
-  bool blur2_enabled;
-  bool blur3_enabled;
-  GLuint blur1_tex;
-  GLuint blur2_tex;
-  GLuint blur3_tex;
-
-  float rand_preset[4];
-
-  bool warpShadersEnabled;
-  bool compositeShadersEnabled;
-
-  CGcontext   myCgContext;
-  CGprofile   myCgProfile;
-  CGprogram   myCgWarpProgram;
-  CGprogram   myCgCompositeProgram;
-  CGprogram   blur1Program;
-  CGprogram   blur2Program;
-
- bool LoadCgProgram(std::string program, CGprogram &p);
- bool checkForCgCompileError(const char *situation);
- void checkForCgError(const char *situation);
- void SetupCg();
- void SetupCgVariables(CGprogram program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
- void SetupCgQVariables(CGprogram program, const PresetOutputs &presetOutputs);
- void RenderBlurTextures(const Pipeline* pipeline, const PipelineContext &pipelineContext);
-#endif
 
 #ifdef USE_FTGL
   FTGLPixmapFont *title_font;

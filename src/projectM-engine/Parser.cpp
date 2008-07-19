@@ -442,7 +442,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
 	if (!strncmp(eqn_string, WARP_STRING, WARP_STRING_LENGTH))
 	{
 		//std::cout << "parsing warp string block\n" << std::endl;
-		parse_string_block(fs, &preset->presetOutputs().shader.warp);
+		parse_string_block(fs, &preset->presetOutputs().warpShader.programSource);
 		return PROJECTM_SUCCESS;
 	}
 
@@ -451,7 +451,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
 	if (!strncmp(eqn_string, COMPOSITE_STRING, COMPOSITE_STRING_LENGTH))
 	{
 		//std::cout << "parsing composite string block\n" << std::endl;
-		parse_string_block(fs, &preset->presetOutputs().shader.composite);
+		parse_string_block(fs, &preset->presetOutputs().compositeShader.programSource);
 		return PROJECTM_SUCCESS;
 	}
 
@@ -1543,7 +1543,7 @@ void Parser::parse_string_block(std::istream &  fs, std::string * out_string) {
 	skipList.insert('`');
 	readStringUntil(fs, out_string, false, skipList);
 
-	std::cout << "out_string:\n " << *out_string << "\n" << std::endl;
+	//std::cout << "out_string:\n " << *out_string << "\n" << std::endl;
 
 }
 
@@ -1655,15 +1655,15 @@ bool Parser::scanForComment(std::istream & fs) {
 			return true;
 		else
 			c = fs.get();
-		if (c == EOF)			
+		if (c == EOF)
 			return true;
-		
+
 		if (c == '\n')
 		{
 			return true;
 		}
 	}
-  } else { 
+  } else {
 	fs.unget();
 	return false;
   }
@@ -1686,10 +1686,10 @@ void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool w
 		/* Now interpret the character */
 		switch (c)
 		{
-			case '/': 
+			case '/':
 			{
 				bool commentExisted = scanForComment(fs);
-				if (!commentExisted) {					
+				if (!commentExisted) {
 					out_buffer->push_back(c);
 					break;
 				} else {
@@ -1700,7 +1700,7 @@ void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool w
 			case '\n':
 				if (!out_buffer->empty() && ((*out_buffer)[out_buffer->length() -1] == '\n'))
 					return;
-				
+
 				line_count++;
 				if (wrapAround)
 				{

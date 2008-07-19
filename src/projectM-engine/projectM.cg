@@ -48,6 +48,10 @@
 #define uv_orig uv
 
 uniform sampler2D sampler_main;
+uniform sampler2D sampler_fw_main;
+uniform sampler2D sampler_pw_main;
+uniform sampler2D sampler_fc_main;
+uniform sampler2D sampler_pc_main;
 
 uniform sampler2D sampler_noise_lq;
 uniform sampler2D sampler_noise_lq_lite;
@@ -109,10 +113,6 @@ float  vol_att;
 float4 texsize;
 float4 aspect;
 
-#define sampler_pw_main sampler_main
-#define sampler_pc_main sampler_main
-#define sampler_fw_main sampler_main
-#define sampler_fc_main sampler_main
 
 struct outtype {float4 color : COLOR;};
 outtype OUT;

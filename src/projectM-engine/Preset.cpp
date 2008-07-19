@@ -63,7 +63,7 @@ Preset::Preset(const std::string & absoluteFilePath, const std::string & presetN
 
   m_presetOutputs.customWaves.clear();
   m_presetOutputs.customShapes.clear();
-  
+
   initialize(absoluteFilePath);
 
 }
@@ -107,7 +107,7 @@ int Preset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
   assert(name);
 
   if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: per pixel equation (name = \"%s\")\n", name);
- 
+
 
   /* Search for the parameter so we know what matrix the per pixel equation is referencing */
 
@@ -236,7 +236,7 @@ void Preset::evalPerFrameEquations()
 }
 
 void Preset::preloadInitialize() {
- 
+
   /// @note commented this out because it should be unnecessary
   // Clear equation trees
   //init_cond_tree.clear();
@@ -303,7 +303,7 @@ void Preset::initialize(std::istream & in)
   {
 
 	if (PRESET_DEBUG)
-     std::cerr << "[Preset] failed to load from stream " << std::endl; 
+     std::cerr << "[Preset] failed to load from stream " << std::endl;
 
     /// @bug how should we handle this problem? a well define exception?
     throw retval;
@@ -347,12 +347,12 @@ void Preset::loadCustomShapeUnspecInitConds()
 void Preset::evaluateFrame()
 {
 
-  // Evaluate all equation objects according to milkdrop flow diagram 
+  // Evaluate all equation objects according to milkdrop flow diagram
 
   evalPerFrameInitEquations();
   evalPerFrameEquations();
 
-  // Important step to ensure custom shapes and waves don't stamp on the q variable values 
+  // Important step to ensure custom shapes and waves don't stamp on the q variable values
   // calculated by the per frame (init) and per pixel equations.
   transfer_q_variables(customWaves);
   transfer_q_variables(customShapes);
@@ -369,7 +369,7 @@ void Preset::evaluateFrame()
 
   // Setup pointers of the custom waves and shapes to the preset outputs instance
   /// @slow an extra O(N) per frame, could do this during eval
-  m_presetOutputs.customWaves = PresetOutputs::cwave_container(customWaves); 
+  m_presetOutputs.customWaves = PresetOutputs::cwave_container(customWaves);
   m_presetOutputs.customShapes = PresetOutputs::cshape_container(customShapes);
 
 }
@@ -382,7 +382,7 @@ void Preset::initialize_PerPixelMeshes()
 	for(y=0;y<m_presetInputs.gy;y++){
 	  m_presetOutputs.cx_mesh[x][y]=m_presetOutputs.cx;
 	}}
-	
+
 
 
 
@@ -390,68 +390,68 @@ void Preset::initialize_PerPixelMeshes()
 	for(y=0;y<m_presetInputs.gy;y++){
 	  m_presetOutputs.cy_mesh[x][y]=m_presetOutputs.cy;
 	}}
-    
-  
- 
+
+
+
       for (x=0;x<m_presetInputs.gx;x++){
 	for(y=0;y<m_presetInputs.gy;y++){
 	  m_presetOutputs.sx_mesh[x][y]=m_presetOutputs.sx;
 	}}
-    
-  
 
-    
+
+
+
       for (x=0;x<m_presetInputs.gx;x++){
 	for(y=0;y<m_presetInputs.gy;y++){
 	  m_presetOutputs.sy_mesh[x][y]=m_presetOutputs.sy;
 	}}
-    
 
-     
+
+
       for (x=0;x<m_presetInputs.gx;x++){
 	for(y=0;y<m_presetInputs.gy;y++){
 	  m_presetOutputs.dx_mesh[x][y]=m_presetOutputs.dx;
 	}}
-    
-  
-     
+
+
+
       for (x=0;x<m_presetInputs.gx;x++){
 	for(y=0;y<m_presetInputs.gy;y++){
 	  m_presetOutputs.dy_mesh[x][y]=m_presetOutputs.dy;
 	}}
-    
 
-    
+
+
       for (x=0;x<m_presetInputs.gx;x++){
 	for(y=0;y<m_presetInputs.gy;y++){
 	  m_presetOutputs.zoom_mesh[x][y]=m_presetOutputs.zoom;
 	}}
-    
- 
 
-    
+
+
+
       for (x=0;x<m_presetInputs.gx;x++){
 	for(y=0;y<m_presetInputs.gy;y++){
-	  m_presetOutputs.zoomexp_mesh[x][y]=m_presetOutputs.zoomexp; 
+	  m_presetOutputs.zoomexp_mesh[x][y]=m_presetOutputs.zoomexp;
 	}}
-    
 
-  
+
+
       for (x=0;x<m_presetInputs.gx;x++){
 	for(y=0;y<m_presetInputs.gy;y++){
 	  m_presetOutputs.rot_mesh[x][y]=m_presetOutputs.rot;
 	}}
-    
+
 
       for (x=0;x<m_presetInputs.gx;x++){
 	for(y=0;y<m_presetInputs.gy;y++){
 	  m_presetOutputs.warp_mesh[x][y]=m_presetOutputs.warp;
 	}}
-    
+
 
 
 }
-// Evaluates all per-pixel equations 
+// Evaluates all per-pixel equations
 void Preset::evalPerPixelEqns()
 {
 
@@ -467,9 +467,9 @@ void Preset::evalPerPixelEqns()
 int Preset::readIn(std::istream & fs) {
 
   line_mode_t line_mode;
-  presetOutputs().shader.composite.clear();
-  presetOutputs().shader.warp.clear();
-  
+  presetOutputs().compositeShader.programSource.clear();
+  presetOutputs().warpShader.programSource.clear();
+
   /* Parse any comments */
   if (Parser::parse_top_comment(fs) < 0)
   {
@@ -489,7 +489,7 @@ int Preset::readIn(std::istream & fs) {
 
   /// @note  We ignore the preset name because [preset00] is just not so useful
 
-  // Loop through each line in file, trying to succesfully parse the file. 
+  // Loop through each line in file, trying to succesfully parse the file.
   // If a line does not parse correctly, keep trucking along to next line.
   int retval;
   while ((retval = Parser::parse_line(fs, this)) != EOF)
