@@ -144,10 +144,6 @@ void Renderer::SetupPass1(const Pipeline* pipeline, const PipelineContext &pipel
 	glEnable( GL_TEXTURE_2D );
 
 	//If using FBO, switch to FBO texture
-	if(this->renderTarget->useFBO)
-		glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
-	else
-		glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
 
 		glMatrixMode(GL_TEXTURE);
 		glLoadIdentity();
@@ -299,6 +295,14 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 
 void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 {
+if (!presetOutputs->warpShader.enabled)
+{
+	if(this->renderTarget->useFBO)
+			glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
+		else
+			glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
+
+
 	//Texture wrapping( clamp vs. wrap)
 	if (presetOutputs->textureWrap==0)
 	{
@@ -313,6 +317,7 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
 	else
 	{ glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);}
+}
 
 	glMatrixMode(GL_TEXTURE);
 	glLoadIdentity();
@@ -365,6 +370,12 @@ void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetI
 
 void Renderer::Interpolation(const Pipeline *pipeline)
 {
+	if(this->renderTarget->useFBO)
+			glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
+		else
+			glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
+
+
 	//Texture wrapping( clamp vs. wrap)
 	if (pipeline->textureWrap==0)
 	{
