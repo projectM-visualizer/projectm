@@ -461,7 +461,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	this->presetInputs2.gy = gy;
 
 	this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
-
+	renderer->SetPipeline(presetOutputs);
 	running = true;
 
 #ifdef USE_THREADS

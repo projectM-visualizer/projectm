@@ -9,10 +9,21 @@
 #define SHADER_HPP_
 
 #include <string>
+#include <set>
+#include <vector>
+#include "UserTexture.hpp"
 
 class Shader
 {
 public:
+
+
+	std::vector<UserTexture*> textures;
+    std::set<std::string> textureNames;
+
+
+    bool enabled;
+
 	float blur1n;
 	float blur2n;
 	float blur3n;
@@ -21,8 +32,7 @@ public:
 	float blur3x;
 	float blur1ed;
 
-	std::string warp;
-	std::string composite;
+	std::string programSource;
 
 	Shader();
 };
