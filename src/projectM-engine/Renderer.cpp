@@ -15,11 +15,14 @@
 
 class Preset;
 
-Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetect *beatDetect, std::string _presetURL, std::string _titlefontURL, std::string _menufontURL): title_fontURL(_titlefontURL), menu_fontURL(_menufontURL), presetURL(_presetURL), m_presetName("None"), vw(width), vh(height), texsize(texsize), mesh(gx,gy)
+Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetect *beatDetect, std::string _presetURL,
+		std::string _titlefontURL, std::string _menufontURL) :
+	title_fontURL(_titlefontURL), menu_fontURL(_menufontURL), presetURL(_presetURL), m_presetName("None"), vw(width),
+			vh(height), texsize(texsize), mesh(gx, gy)
 
 {
-	int x; int y;
-
+	int x;
+	int y;
 
 	this->totalframes = 1;
 	this->noSwitch = false;
@@ -29,21 +32,20 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 	this->showhelp = false;
 	this->showstats = false;
 	this->studio = false;
-	this->realfps=0;
+	this->realfps = 0;
 
-	this->drawtitle=0;
+	this->drawtitle = 0;
 
 	//this->title = "Unknown";
 
 	/** Other stuff... */
 	this->correction = true;
-	this->aspect=(float)height/(float)width;;
+	this->aspect = (float) height / (float) width;;
 
 	/// @bug put these on member init list
-	this->renderTarget = new RenderTarget( texsize, width, height );
+	this->renderTarget = new RenderTarget(texsize, width, height);
 	this->textureManager = new TextureManager(presetURL);
 	this->beatDetect = beatDetect;
-
 
 #ifdef USE_FTGL
 	/**f Load the standard fonts */
@@ -52,7 +54,6 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 	other_font = new FTGLPixmapFont(menu_fontURL.c_str());
 	other_font->UseDisplayList(true);
 	title_font->UseDisplayList(true);
-
 
 	poly_font = new FTGLExtrdFont(title_fontURL.c_str());
 
@@ -64,45 +65,45 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
 #endif /** USE_FTGL */
 
-	this->gridx=(float **)wipemalloc(gx * sizeof(float *));
-		for(x = 0; x < gx; x++)
-		{
-			this->gridx[x] = (float *)wipemalloc(gy * sizeof(float));
-		}
-		this->gridy=(float **)wipemalloc(gx * sizeof(float *));
-		for(x = 0; x < gx; x++)
-		{
-			this->gridy[x] = (float *)wipemalloc(gy * sizeof(float));
-		}
+	this->gridx = (float **) wipemalloc(gx * sizeof(float *));
+	for (x = 0; x < gx; x++)
+	{
+		this->gridx[x] = (float *) wipemalloc(gy * sizeof(float));
+	}
+	this->gridy = (float **) wipemalloc(gx * sizeof(float *));
+	for (x = 0; x < gx; x++)
+	{
+		this->gridy[x] = (float *) wipemalloc(gy * sizeof(float));
+	}
 
-		this->origx2=(float **)wipemalloc(gx * sizeof(float *));
-		for(x = 0; x < gx; x++)
-		{
-			this->origx2[x] = (float *)wipemalloc(gy * sizeof(float));
-		}
-		this->origy2=(float **)wipemalloc(gx * sizeof(float *));
-		for(x = 0; x < gx; x++)
-		{
-			this->origy2[x] = (float *)wipemalloc(gy * sizeof(float));
-		}
+	this->origx2 = (float **) wipemalloc(gx * sizeof(float *));
+	for (x = 0; x < gx; x++)
+	{
+		this->origx2[x] = (float *) wipemalloc(gy * sizeof(float));
+	}
+	this->origy2 = (float **) wipemalloc(gx * sizeof(float *));
+	for (x = 0; x < gx; x++)
+	{
+		this->origy2[x] = (float *) wipemalloc(gy * sizeof(float));
+	}
 
-		//initialize reference grid values
-		for (x=0;x<gx;x++)
+	//initialize reference grid values
+	for (x = 0; x < gx; x++)
+	{
+		for (y = 0; y < gy; y++)
 		{
-			for(y=0;y<gy;y++)
-			{
 
-				float origx=x/(float)(gx-1);
-				float origy=-((y/(float)(gy-1))-1);
-				this->gridx[x][y]=origx;
-				this->gridy[x][y]=origy;
-				this->origx2[x][y]=( origx-.5)*2;
-				this->origy2[x][y]=( origy-.5)*2;
+			float origx = x / (float) (gx - 1);
+			float origy = -((y / (float) (gy - 1)) - 1);
+			this->gridx[x][y] = origx;
+			this->gridy[x][y] = origy;
+			this->origx2[x][y] = (origx - .5) * 2;
+			this->origy2[x][y] = (origy - .5) * 2;
 
-			}
 		}
+	}
 #ifdef USE_CG
-shaderEngine.SetParams(renderTarget->texsize,renderTarget->textureID[1],aspect,beatDetect,textureManager);
+	shaderEngine.SetParams(renderTarget->texsize, renderTarget->textureID[1], aspect, beatDetect, textureManager);
 #endif
 
 }
@@ -118,12 +119,11 @@ void Renderer::SetPipeline(Pipeline &pipeline)
 #endif
 }
 
-
 void Renderer::ResetTextures()
 {
 	textureManager->Clear();
 
-	delete(renderTarget);
+	delete (renderTarget);
 	renderTarget = new RenderTarget(texsize, vw, vh);
 	reset(vw, vh);
 
@@ -139,29 +139,29 @@ void Renderer::SetupPass1(const Pipeline* pipeline, const PipelineContext &pipel
 
 	totalframes++;
 	renderTarget->lock();
-	glViewport( 0, 0, renderTarget->texsize, renderTarget->texsize );
+	glViewport(0, 0, renderTarget->texsize, renderTarget->texsize);
 
-	glEnable( GL_TEXTURE_2D );
+	glEnable(GL_TEXTURE_2D);
 
 	//If using FBO, switch to FBO texture
 
-		glMatrixMode(GL_TEXTURE);
-		glLoadIdentity();
+	glMatrixMode(GL_TEXTURE);
+	glLoadIdentity();
 
-		glMatrixMode( GL_PROJECTION );
-		glLoadIdentity();
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
 
-	#ifdef USE_GLES1
-		glOrthof(0.0, 1, 0.0, 1, -40, 40);
-	#else
-		glOrtho(0.0, 1, 0.0, 1, -40, 40);
-	#endif
+#ifdef USE_GLES1
+	glOrthof(0.0, 1, 0.0, 1, -40, 40);
+#else
+	glOrtho(0.0, 1, 0.0, 1, -40, 40);
+#endif
 
-		glMatrixMode( GL_MODELVIEW );
-		glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 
 #ifdef USE_CG
-		shaderEngine.RenderBlurTextures(pipeline,pipelineContext,renderTarget->texsize);
+	shaderEngine.RenderBlurTextures(pipeline, pipelineContext, renderTarget->texsize);
 #endif
 }
 
@@ -178,19 +178,17 @@ void Renderer::RenderItems(const Pipeline* pipeline, const PipelineContext &pipe
 		(*pos)->Draw(renderContext);
 }
 
-
-
 void Renderer::FinishPass1()
 {
 	draw_title_to_texture();
-		/** Restore original view state */
-		glMatrixMode( GL_MODELVIEW );
-		glPopMatrix();
+	/** Restore original view state */
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
 
-		glMatrixMode( GL_PROJECTION );
-		glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
 
-		renderTarget->unlock();
+	renderTarget->unlock();
 
 }
 
@@ -204,18 +202,16 @@ void Renderer::Pass2(const Pipeline *pipeline, const PipelineContext &pipelineCo
 
 	/** Reset the viewport size */
 #ifdef USE_FBO
-	if(renderTarget->renderToTexture)
+	if (renderTarget->renderToTexture)
 	{
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->renderTarget->fbuffer[1]);
-		glViewport( 0, 0, this->renderTarget->texsize, this->renderTarget->texsize );
+		glViewport(0, 0, this->renderTarget->texsize, this->renderTarget->texsize);
 	}
 	else
 #endif
-	glViewport( 0, 0, this->vw, this->vh );
+		glViewport(0, 0, this->vw, this->vh);
 
-
-
-	glBindTexture( GL_TEXTURE_2D, this->renderTarget->textureID[0] );
+	glBindTexture(GL_TEXTURE_2D, this->renderTarget->textureID[0]);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -226,11 +222,9 @@ void Renderer::Pass2(const Pipeline *pipeline, const PipelineContext &pipelineCo
 #endif
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glLineWidth( this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize/512.0);
-
+	glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize / 512.0);
 
 	CompositeOutput(pipeline, pipelineContext);
-
 
 	glMatrixMode(GL_MODELVIEW);
 	glTranslatef(-0.5, -0.5, 0);
@@ -238,15 +232,20 @@ void Renderer::Pass2(const Pipeline *pipeline, const PipelineContext &pipelineCo
 	// When console refreshes, there is a chance the preset has been changed by the user
 	refreshConsole();
 	draw_title_to_screen(false);
-	if(this->showhelp%2) draw_help();
-	if(this->showtitle%2) draw_title();
-	if(this->showfps%2) draw_fps(this->realfps);
-	if(this->showpreset%2) draw_preset();
-	if(this->showstats%2) draw_stats();
-	glTranslatef(0.5 , 0.5, 0);
+	if (this->showhelp % 2)
+		draw_help();
+	if (this->showtitle % 2)
+		draw_title();
+	if (this->showfps % 2)
+		draw_fps(this->realfps);
+	if (this->showpreset % 2)
+		draw_preset();
+	if (this->showstats % 2)
+		draw_stats();
+	glTranslatef(0.5, 0.5, 0);
 
 #ifdef USE_FBO
-	if(renderTarget->renderToTexture)
+	if (renderTarget->renderToTexture)
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 #endif
 }
@@ -257,27 +256,26 @@ void Renderer::RenderFrame(const Pipeline* pipeline, const PipelineContext &pipe
 	SetupPass1(pipeline, pipelineContext);
 
 #ifdef USE_CG
-	shaderEngine.enableShader(currentPipe->warpShader,pipeline,&pipelineContext);
+	shaderEngine.enableShader(currentPipe->warpShader, pipeline, &pipelineContext);
 #endif
-		Interpolation(pipeline);
+	Interpolation(pipeline);
 #ifdef USE_CG
-		shaderEngine.disableShader();
+	shaderEngine.disableShader();
 #endif
 
-
-	    RenderItems(pipeline,pipelineContext);
-	    FinishPass1();
-	    Pass2(pipeline, pipelineContext);
+	RenderItems(pipeline, pipelineContext);
+	FinishPass1();
+	Pass2(pipeline, pipelineContext);
 }
 void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 {
 	SetupPass1(presetOutputs, *presetInputs);
 
 #ifdef USE_CG
-	shaderEngine.enableShader(presetOutputs->warpShader,presetOutputs,presetInputs);
+	shaderEngine.enableShader(presetOutputs->warpShader, presetOutputs, presetInputs);
 #endif
 
-  Interpolation(presetOutputs, presetInputs);
+	Interpolation(presetOutputs, presetInputs);
 
 #ifdef USE_CG
 	shaderEngine.disableShader();
@@ -287,37 +285,37 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 	FinishPass1();
 
 #ifdef USE_CG
-		shaderEngine.SetupCgQVariables(presetOutputs->compositeShader, *presetOutputs);
+	shaderEngine.SetupCgQVariables(presetOutputs->compositeShader, *presetOutputs);
 #endif
-    Pass2(presetOutputs, *presetInputs);
+	Pass2(presetOutputs, *presetInputs);
 }
-
 
 void Renderer::Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs)
 {
-if (!presetOutputs->warpShader.enabled)
-{
-	if(this->renderTarget->useFBO)
-			glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
-		else
-			glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
-
-
-	//Texture wrapping( clamp vs. wrap)
-	if (presetOutputs->textureWrap==0)
+	if (!presetOutputs->warpShader.enabled)
 	{
+		if (this->renderTarget->useFBO)
+			glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[1]);
+		else
+			glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[0]);
+
+		//Texture wrapping( clamp vs. wrap)
+		if (presetOutputs->textureWrap == 0)
+		{
 #ifdef USE_GLES1
-	  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 #else
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 #endif
+		}
+		else
+		{
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
 	}
-	else
-	{ glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);}
-}
 
 	glMatrixMode(GL_TEXTURE);
 	glLoadIdentity();
@@ -330,36 +328,34 @@ if (!presetOutputs->warpShader.enabled)
 
 	int size = presetInputs->gy;
 
-	float p[size*2][2];
-	float t[size*2][2];
+	float p[size * 2][2];
+	float t[size * 2][2];
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
-	glVertexPointer(2,GL_FLOAT,0,p);
-	glTexCoordPointer(2,GL_FLOAT,0,t);
+	glVertexPointer(2, GL_FLOAT, 0, p);
+	glTexCoordPointer(2, GL_FLOAT, 0, t);
 
-	for (int x=0;x<presetInputs->gx - 1;x++)
+	for (int x = 0; x < presetInputs->gx - 1; x++)
 	{
-		for(int y=0;y<presetInputs->gy;y++)
+		for (int y = 0; y < presetInputs->gy; y++)
 		{
-		  t[y*2][0] = presetOutputs->x_mesh[x][y];
-		  t[y*2][1] = presetOutputs->y_mesh[x][y];
+			t[y * 2][0] = presetOutputs->x_mesh[x][y];
+			t[y * 2][1] = presetOutputs->y_mesh[x][y];
 
-		  p[y*2][0] = this->gridx[x][y];
-		  p[y*2][1] = this->gridy[x][y];
+			p[y * 2][0] = this->gridx[x][y];
+			p[y * 2][1] = this->gridy[x][y];
 
-		  t[(y*2)+1][0] = presetOutputs->x_mesh[x+1][y];
-		  t[(y*2)+1][1] = presetOutputs->y_mesh[x+1][y];
+			t[(y * 2) + 1][0] = presetOutputs->x_mesh[x + 1][y];
+			t[(y * 2) + 1][1] = presetOutputs->y_mesh[x + 1][y];
 
-		  p[(y*2)+1][0] = this->gridx[x+1][y];
-		  p[(y*2)+1][1] = this->gridy[x+1][y];
+			p[(y * 2) + 1][0] = this->gridx[x + 1][y];
+			p[(y * 2) + 1][1] = this->gridy[x + 1][y];
 
 		}
-	       	glDrawArrays(GL_TRIANGLE_STRIP,0,size*2);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, size * 2);
 	}
-
-
 
 	glDisable(GL_TEXTURE_2D);
 
@@ -367,29 +363,29 @@ if (!presetOutputs->warpShader.enabled)
 
 }
 
-
 void Renderer::Interpolation(const Pipeline *pipeline)
 {
-	if(this->renderTarget->useFBO)
-			glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
-		else
-			glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
-
+	if (this->renderTarget->useFBO)
+		glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[1]);
+	else
+		glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[0]);
 
 	//Texture wrapping( clamp vs. wrap)
-	if (pipeline->textureWrap==0)
+	if (pipeline->textureWrap == 0)
 	{
 #ifdef USE_GLES1
-	  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 #else
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 #endif
 	}
 	else
-	{ glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);}
+	{
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	}
 
 	glMatrixMode(GL_TEXTURE);
 	glLoadIdentity();
@@ -409,31 +405,31 @@ void Renderer::Interpolation(const Pipeline *pipeline)
 	float p[size][2];
 	float t[size][2];
 
-	glVertexPointer(2,GL_FLOAT,0,p);
-	glTexCoordPointer(2,GL_FLOAT,0,t);
+	glVertexPointer(2, GL_FLOAT, 0, p);
+	glTexCoordPointer(2, GL_FLOAT, 0, t);
 
 	mesh.Reset();
 
 	omptl::transform(mesh.p.begin(), mesh.p.end(), mesh.identity.begin(), mesh.p.begin(), &Renderer::PerPixel);
 
-	for (int j=0;j<mesh.height - 1;j++)
+	for (int j = 0; j < mesh.height - 1; j++)
 	{
-				for(int i=0;i<mesh.width;i++)
-				{
-					int index = j * mesh.width + i;
-					int index2 = (j+1) * mesh.width + i;
+		for (int i = 0; i < mesh.width; i++)
+		{
+			int index = j * mesh.width + i;
+			int index2 = (j + 1) * mesh.width + i;
 
-					t[i*2][0] = mesh.p[index].x;
-					t[i*2][1] = mesh.p[index].y;
-					p[i*2][0] = mesh.identity[index].x;
-					p[i*2][1] = mesh.identity[index].y;
+			t[i * 2][0] = mesh.p[index].x;
+			t[i * 2][1] = mesh.p[index].y;
+			p[i * 2][0] = mesh.identity[index].x;
+			p[i * 2][1] = mesh.identity[index].y;
 
-					t[(i*2)+1][0] = mesh.p[index2].x;
-					t[(i*2)+1][1] = mesh.p[index2].y;
-					p[(i*2)+1][0] = mesh.identity[index2].x;
-					p[(i*2)+1][1] = mesh.identity[index2].y;
-  			  		}
-		       	glDrawArrays(GL_TRIANGLE_STRIP,0,size);
+			t[(i * 2) + 1][0] = mesh.p[index2].x;
+			t[(i * 2) + 1][1] = mesh.p[index2].y;
+			p[(i * 2) + 1][0] = mesh.identity[index2].x;
+			p[(i * 2) + 1][1] = mesh.identity[index2].y;
+		}
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, size);
 	}
 
 	glDisable(GL_TEXTURE_2D);
@@ -443,54 +439,50 @@ void Renderer::Interpolation(const Pipeline *pipeline)
 }
 Pipeline* Renderer::currentPipe;
 
-
 Renderer::~Renderer()
 {
 
 	int x;
 
-
 	if (renderTarget)
-		delete(renderTarget);
+		delete (renderTarget);
 	if (textureManager)
-		delete(textureManager);
+		delete (textureManager);
 
-//std::cerr << "grid assign end" << std::endl;
+	//std::cerr << "grid assign end" << std::endl;
 
-	for(x = 0; x < mesh.width; x++)
-		{
-			free(this->gridx[x]);
-			free(this->gridy[x]);
-			free(this->origx2[x]);
-			free(this->origy2[x]);
-		}
+	for (x = 0; x < mesh.width; x++)
+	{
+		free(this->gridx[x]);
+		free(this->gridy[x]);
+		free(this->origx2[x]);
+		free(this->origy2[x]);
+	}
 
-
-		//std::cerr << "freeing grids" << std::endl;
-		free(this->origx2);
-		free(this->origy2);
-		free(this->gridx);
-		free(this->gridy);
+	//std::cerr << "freeing grids" << std::endl;
+	free(this->origx2);
+	free(this->origy2);
+	free(this->gridx);
+	free(this->gridy);
 
 	//std:cerr << "grid assign begin " << std::endl;
-		this->origx2 = NULL;
-		this->origy2 = NULL;
-		this->gridx = NULL;
-		this->gridy = NULL;
+	this->origx2 = NULL;
+	this->origy2 = NULL;
+	this->gridx = NULL;
+	this->gridy = NULL;
 
 #ifdef USE_FTGL
-//	std::cerr << "freeing title fonts" << std::endl;
+	//	std::cerr << "freeing title fonts" << std::endl;
 	if (title_font)
 		delete title_font;
 	if (poly_font)
 		delete poly_font;
 	if (other_font)
 		delete other_font;
-//	std::cerr << "freeing title fonts finished" << std::endl;
+	//	std::cerr << "freeing title fonts finished" << std::endl;
 #endif
-//	std::cerr << "exiting destructor" << std::endl;
+	//	std::cerr << "exiting destructor" << std::endl;
 }
-
 
 void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * presetInputs)
 {
@@ -498,55 +490,61 @@ void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * preset
 	int x, y;
 	float fZoom2, fZoom2Inv;
 
-
-	for (x=0;x<mesh.width;x++)
+	for (x = 0; x < mesh.width; x++)
 	{
-		for(y=0;y<mesh.height;y++)
+		for (y = 0; y < mesh.height; y++)
 		{
-			fZoom2 = powf( presetOutputs->zoom_mesh[x][y], powf( presetOutputs->zoomexp_mesh[x][y], presetInputs->rad_mesh[x][y]*2.0f - 1.0f));
-			fZoom2Inv = 1.0f/fZoom2;
-			presetOutputs->x_mesh[x][y]= this->origx2[x][y]*0.5f*fZoom2Inv + 0.5f;
-			presetOutputs->y_mesh[x][y]= this->origy2[x][y]*0.5f*fZoom2Inv + 0.5f;
+			fZoom2 = powf(presetOutputs->zoom_mesh[x][y], powf(presetOutputs->zoomexp_mesh[x][y],
+					presetInputs->rad_mesh[x][y] * 2.0f - 1.0f));
+			fZoom2Inv = 1.0f / fZoom2;
+			presetOutputs->x_mesh[x][y] = this->origx2[x][y] * 0.5f * fZoom2Inv + 0.5f;
+			presetOutputs->y_mesh[x][y] = this->origy2[x][y] * 0.5f * fZoom2Inv + 0.5f;
 		}
 	}
 
-	for (x=0;x<mesh.width;x++)
+	for (x = 0; x < mesh.width; x++)
 	{
-		for(y=0;y<mesh.height;y++)
+		for (y = 0; y < mesh.height; y++)
 		{
-			presetOutputs->x_mesh[x][y]  = ( presetOutputs->x_mesh[x][y] - presetOutputs->cx_mesh[x][y])/presetOutputs->sx_mesh[x][y] + presetOutputs->cx_mesh[x][y];
+			presetOutputs->x_mesh[x][y] = (presetOutputs->x_mesh[x][y] - presetOutputs->cx_mesh[x][y])
+					/ presetOutputs->sx_mesh[x][y] + presetOutputs->cx_mesh[x][y];
 		}
 	}
 
-	for (x=0;x<mesh.width;x++)
+	for (x = 0; x < mesh.width; x++)
 	{
-		for(y=0;y<mesh.height;y++)
+		for (y = 0; y < mesh.height; y++)
 		{
-			presetOutputs->y_mesh[x][y] = ( presetOutputs->y_mesh[x][y] - presetOutputs->cy_mesh[x][y])/presetOutputs->sy_mesh[x][y] + presetOutputs->cy_mesh[x][y];
+			presetOutputs->y_mesh[x][y] = (presetOutputs->y_mesh[x][y] - presetOutputs->cy_mesh[x][y])
+					/ presetOutputs->sy_mesh[x][y] + presetOutputs->cy_mesh[x][y];
 		}
 	}
 
 	float fWarpTime = presetInputs->time * presetOutputs->fWarpAnimSpeed;
 	float fWarpScaleInv = 1.0f / presetOutputs->fWarpScale;
 	float f[4];
-	f[0] = 11.68f + 4.0f*cosf(fWarpTime*1.413f + 10);
-	f[1] =  8.77f + 3.0f*cosf(fWarpTime*1.113f + 7);
-	f[2] = 10.54f + 3.0f*cosf(fWarpTime*1.233f + 3);
-	f[3] = 11.49f + 4.0f*cosf(fWarpTime*0.933f + 5);
+	f[0] = 11.68f + 4.0f * cosf(fWarpTime * 1.413f + 10);
+	f[1] = 8.77f + 3.0f * cosf(fWarpTime * 1.113f + 7);
+	f[2] = 10.54f + 3.0f * cosf(fWarpTime * 1.233f + 3);
+	f[3] = 11.49f + 4.0f * cosf(fWarpTime * 0.933f + 5);
 
-	for (x=0;x<mesh.width;x++)
+	for (x = 0; x < mesh.width; x++)
 	{
-		for(y=0;y<mesh.height;y++)
+		for (y = 0; y < mesh.height; y++)
 		{
-			presetOutputs->x_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*sinf(fWarpTime*0.333f + fWarpScaleInv*(this->origx2[x][y]*f[0] - this->origy2[x][y]*f[3]));
-			presetOutputs->y_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*cosf(fWarpTime*0.375f - fWarpScaleInv*(this->origx2[x][y]*f[2] + this->origy2[x][y]*f[1]));
-			presetOutputs->x_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*cosf(fWarpTime*0.753f - fWarpScaleInv*(this->origx2[x][y]*f[1] - this->origy2[x][y]*f[2]));
-			presetOutputs->y_mesh[x][y] += presetOutputs->warp_mesh[x][y]*0.0035f*sinf(fWarpTime*0.825f + fWarpScaleInv*(this->origx2[x][y]*f[0] + this->origy2[x][y]*f[3]));
+			presetOutputs->x_mesh[x][y] += presetOutputs->warp_mesh[x][y] * 0.0035f * sinf(fWarpTime * 0.333f
+					+ fWarpScaleInv * (this->origx2[x][y] * f[0] - this->origy2[x][y] * f[3]));
+			presetOutputs->y_mesh[x][y] += presetOutputs->warp_mesh[x][y] * 0.0035f * cosf(fWarpTime * 0.375f
+					- fWarpScaleInv * (this->origx2[x][y] * f[2] + this->origy2[x][y] * f[1]));
+			presetOutputs->x_mesh[x][y] += presetOutputs->warp_mesh[x][y] * 0.0035f * cosf(fWarpTime * 0.753f
+					- fWarpScaleInv * (this->origx2[x][y] * f[1] - this->origy2[x][y] * f[2]));
+			presetOutputs->y_mesh[x][y] += presetOutputs->warp_mesh[x][y] * 0.0035f * sinf(fWarpTime * 0.825f
+					+ fWarpScaleInv * (this->origx2[x][y] * f[0] + this->origy2[x][y] * f[3]));
 		}
 	}
-	for (x=0;x<mesh.width;x++)
+	for (x = 0; x < mesh.width; x++)
 	{
-		for(y=0;y<mesh.height;y++)
+		for (y = 0; y < mesh.height; y++)
 		{
 			float u2 = presetOutputs->x_mesh[x][y] - presetOutputs->cx_mesh[x][y];
 			float v2 = presetOutputs->y_mesh[x][y] - presetOutputs->cy_mesh[x][y];
@@ -554,26 +552,23 @@ void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * preset
 			float cos_rot = cosf(presetOutputs->rot_mesh[x][y]);
 			float sin_rot = sinf(presetOutputs->rot_mesh[x][y]);
 
-			presetOutputs->x_mesh[x][y] = u2*cos_rot - v2*sin_rot + presetOutputs->cx_mesh[x][y];
-			presetOutputs->y_mesh[x][y] = u2*sin_rot + v2*cos_rot + presetOutputs->cy_mesh[x][y];
+			presetOutputs->x_mesh[x][y] = u2 * cos_rot - v2 * sin_rot + presetOutputs->cx_mesh[x][y];
+			presetOutputs->y_mesh[x][y] = u2 * sin_rot + v2 * cos_rot + presetOutputs->cy_mesh[x][y];
 
 		}
 	}
 
-
-	for (x=0;x<mesh.width;x++)
+	for (x = 0; x < mesh.width; x++)
 	{
-		for(y=0;y<mesh.height;y++)
+		for (y = 0; y < mesh.height; y++)
 		{
 			presetOutputs->x_mesh[x][y] -= presetOutputs->dx_mesh[x][y];
 		}
 	}
 
-
-
-	for (x=0;x<mesh.width;x++)
+	for (x = 0; x < mesh.width; x++)
 	{
-		for(y=0;y<mesh.height;y++)
+		for (y = 0; y < mesh.height; y++)
 		{
 			presetOutputs->y_mesh[x][y] -= presetOutputs->dy_mesh[x][y];
 		}
@@ -581,23 +576,20 @@ void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * preset
 
 }
 
-
-
-
 void Renderer::reset(int w, int h)
 {
-	this->aspect=(float)h / (float)w;
+	this->aspect = (float) h / (float) w;
 	this -> vw = w;
 	this -> vh = h;
 
-	glShadeModel( GL_SMOOTH);
+	glShadeModel(GL_SMOOTH);
 
-	glCullFace( GL_BACK );
+	glCullFace(GL_BACK);
 	//glFrontFace( GL_CCW );
 
-	glClearColor( 0, 0, 0, 0 );
+	glClearColor(0, 0, 0, 0);
 
-	glViewport( 0, 0, w, h );
+	glViewport(0, 0, w, h);
 
 	glMatrixMode(GL_TEXTURE);
 	glLoadIdentity();
@@ -616,8 +608,7 @@ void Renderer::reset(int w, int h)
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glEnable( GL_LINE_SMOOTH );
-
+	glEnable(GL_LINE_SMOOTH);
 
 	glEnable(GL_POINT_SMOOTH);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -629,7 +620,7 @@ void Renderer::reset(int w, int h)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE,  GL_MODULATE);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 	//glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
 	//glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
@@ -641,26 +632,21 @@ void Renderer::reset(int w, int h)
 	}
 }
 
-
-
-
 GLuint Renderer::initRenderToTexture()
 {
 	return renderTarget->initRenderToTexture();
 }
 
-
 void Renderer::draw_title_to_texture()
 {
 #ifdef USE_FTGL
-	if (this->drawtitle>100)
+	if (this->drawtitle > 100)
 	{
 		draw_title_to_screen(true);
-		this->drawtitle=0;
+		this->drawtitle = 0;
 	}
 #endif /** USE_FTGL */
 }
-
 
 float title_y;
 
@@ -668,10 +654,10 @@ void Renderer::draw_title_to_screen(bool flip)
 {
 
 #ifdef USE_FTGL
-	if(this->drawtitle>0)
+	if (this->drawtitle > 0)
 	{
 
-	  //setUpLighting();
+		//setUpLighting();
 
 		//glEnable(GL_POLYGON_SMOOTH);
 		//glEnable( GL_CULL_FACE);
@@ -679,15 +665,17 @@ void Renderer::draw_title_to_screen(bool flip)
 		glClear(GL_DEPTH_BUFFER_BIT);
 
 		int draw;
-		if (drawtitle>=80) draw = 80;
-		else draw = drawtitle;
+		if (drawtitle >= 80)
+			draw = 80;
+		else
+			draw = drawtitle;
 
-		float easein = ((80-draw)*.0125);
+		float easein = ((80 - draw) * .0125);
 		float easein2 = easein * easein;
 
-		if(drawtitle==1)
+		if (drawtitle == 1)
 		{
-			title_y = (float)rand()/RAND_MAX;
+			title_y = (float) rand() / RAND_MAX;
 			title_y *= 2;
 			title_y -= 1;
 			title_y *= .6;
@@ -700,17 +688,18 @@ void Renderer::draw_title_to_screen(bool flip)
 		glPushMatrix();
 		glLoadIdentity();
 
-		glFrustum(-1, 1, -1 * (float)vh/(float)vw, 1 *(float)vh/(float)vw, 1, 1000);
-		if (flip) glScalef(1, -1, 1);
+		glFrustum(-1, 1, -1 * (float) vh / (float) vw, 1 * (float) vh / (float) vw, 1, 1000);
+		if (flip)
+			glScalef(1, -1, 1);
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 		glLoadIdentity();
 
-		glTranslatef(-850, title_y * 850 *vh/vw  , easein2*900-900);
+		glTranslatef(-850, title_y * 850 * vh / vw, easein2 * 900 - 900);
 
-		glRotatef(easein2*360, 1, 0, 0);
+		glRotatef(easein2 * 360, 1, 0, 0);
 
-		poly_font->Render(this->title.c_str() );
+		poly_font->Render(this->title.c_str());
 
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -722,8 +711,8 @@ void Renderer::draw_title_to_screen(bool flip)
 
 		glMatrixMode(GL_MODELVIEW);
 
-		glDisable( GL_CULL_FACE);
-		glDisable( GL_DEPTH_TEST);
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_DEPTH_TEST);
 
 		glDisable(GL_COLOR_MATERIAL);
 
@@ -732,8 +721,6 @@ void Renderer::draw_title_to_screen(bool flip)
 	}
 #endif /** USE_FTGL */
 }
-
-
 
 void Renderer::draw_title()
 {
@@ -746,10 +733,9 @@ void Renderer::draw_title()
 	//  glScalef(this->vw*.015,this->vh*.025,0);
 
 	glRasterPos2f(0.01, 0.05);
-	title_font->FaceSize( (unsigned)(20*(this->vh/512.0)));
+	title_font->FaceSize((unsigned) (20 * (this->vh / 512.0)));
 
-
-	title_font->Render(this->title.c_str() );
+	title_font->Render(this->title.c_str());
 	//  glPopMatrix();
 	//glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
@@ -769,24 +755,23 @@ void Renderer::draw_preset()
 
 	glRasterPos2f(0.01, 0.01);
 
-	title_font->FaceSize((unsigned)(12*(this->vh/512.0)));
-	if(this->noSwitch) title_font->Render("[LOCKED]  " );
-	title_font->FaceSize((unsigned)(20*(this->vh/512.0)));
+	title_font->FaceSize((unsigned) (12 * (this->vh / 512.0)));
+	if (this->noSwitch)
+		title_font->Render("[LOCKED]  ");
+	title_font->FaceSize((unsigned) (20 * (this->vh / 512.0)));
 
-	title_font->Render(this->presetName().c_str() );
-
-
+	title_font->Render(this->presetName().c_str());
 
 	//glPopMatrix();
 	// glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 #endif /** USE_FTGL */
 }
 
-void Renderer::draw_help( )
+void Renderer::draw_help()
 {
 
 #ifdef USE_FTGL
-//glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
+	//glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glPushMatrix();
@@ -794,7 +779,7 @@ void Renderer::draw_help( )
 	//glScalef(this->vw*.02,this->vh*.02 ,0);
 
 
-	title_font->FaceSize((unsigned)( 18*(this->vh/512.0)));
+	title_font->FaceSize((unsigned) (18 * (this->vh / 512.0)));
 
 	glRasterPos2f(0.01, -0.05);
 	title_font->Render("Help");
@@ -845,71 +830,68 @@ void Renderer::draw_stats()
 
 #ifdef USE_FTGL
 	char buffer[128];
-	float offset= (this->showfps%2 ? -0.05 : 0.0);
+	float offset = (this->showfps % 2 ? -0.05 : 0.0);
 	// glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glPushMatrix();
 	glTranslatef(0.01, 1, 0);
-	glRasterPos2f(0, -.05+offset);
+	glRasterPos2f(0, -.05 + offset);
 	other_font->Render(this->correction ? "  aspect: corrected" : "  aspect: stretched");
-	sprintf( buffer, " (%f)", this->aspect);
+	sprintf(buffer, " (%f)", this->aspect);
 	other_font->Render(buffer);
 
+	glRasterPos2f(0, -.09 + offset);
+	other_font->FaceSize((unsigned) (18 * (vh / 512.0)));
 
-
-	glRasterPos2f(0, -.09+offset);
-	other_font->FaceSize((unsigned)(18*(vh/512.0)));
-
-	sprintf( buffer, "       texsize: %d", renderTarget->texsize);
+	sprintf(buffer, "       texsize: %d", renderTarget->texsize);
 	other_font->Render(buffer);
 
-	glRasterPos2f(0, -.13+offset);
-	sprintf( buffer, "      viewport: %d x %d", vw, vh);
+	glRasterPos2f(0, -.13 + offset);
+	sprintf(buffer, "      viewport: %d x %d", vw, vh);
 
 	other_font->Render(buffer);
-	glRasterPos2f(0, -.17+offset);
+	glRasterPos2f(0, -.17 + offset);
 	other_font->Render((renderTarget->useFBO ? "           FBO: on" : "           FBO: off"));
 
-	glRasterPos2f(0, -.21+offset);
-	sprintf( buffer, "          mesh: %d x %d", mesh.width, mesh.height);
+	glRasterPos2f(0, -.21 + offset);
+	sprintf(buffer, "          mesh: %d x %d", mesh.width, mesh.height);
 	other_font->Render(buffer);
 
-	glRasterPos2f(0, -.25+offset);
-	sprintf( buffer, "      textures: %.1fkB", textureManager->getTextureMemorySize() /1000.0f);
+	glRasterPos2f(0, -.25 + offset);
+	sprintf(buffer, "      textures: %.1fkB", textureManager->getTextureMemorySize() / 1000.0f);
 	other_font->Render(buffer);
 #ifdef USE_CG
-	glRasterPos2f(0, -.29+offset);
-	sprintf( buffer, "shader profile: %s", shaderEngine.profileName.c_str());
+	glRasterPos2f(0, -.29 + offset);
+	sprintf(buffer, "shader profile: %s", shaderEngine.profileName.c_str());
 	other_font->Render(buffer);
 
-	glRasterPos2f(0, -.33+offset);
-	sprintf( buffer, "   warp shader: %s", currentPipe->warpShader.enabled ? "on" : "off");
+	glRasterPos2f(0, -.33 + offset);
+	sprintf(buffer, "   warp shader: %s", currentPipe->warpShader.enabled ? "on" : "off");
 	other_font->Render(buffer);
 
-	glRasterPos2f(0, -.37+offset);
-	sprintf( buffer, "   comp shader: %s", currentPipe->compositeShader.enabled ? "on" : "off");
+	glRasterPos2f(0, -.37 + offset);
+	sprintf(buffer, "   comp shader: %s", currentPipe->compositeShader.enabled ? "on" : "off");
 	other_font->Render(buffer);
 #endif
 	glPopMatrix();
 	// glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 
-
 #endif /** USE_FTGL */
 }
-void Renderer::draw_fps( float realfps )
+void Renderer::draw_fps(float realfps)
 {
 #ifdef USE_FTGL
 	char bufferfps[20];
-	sprintf( bufferfps, "%.1f fps", realfps);
+	sprintf(bufferfps, "%.1f fps", realfps);
 	// glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
 
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glPushMatrix();
 	glTranslatef(0.01, 1, 0);
 	glRasterPos2f(0, -0.05);
-	title_font->FaceSize((unsigned)(20*(this->vh/512.0)));
+	title_font->FaceSize((unsigned) (20 * (this->vh / 512.0)));
 	title_font->Render(bufferfps);
 
 	glPopMatrix();
@@ -918,11 +900,8 @@ void Renderer::draw_fps( float realfps )
 #endif /** USE_FTGL */
 }
 
-
-
 void Renderer::CompositeOutput(const Pipeline* pipeline, const PipelineContext &pipelineContext)
 {
-
 
 	glMatrixMode(GL_TEXTURE);
 	glLoadIdentity();
@@ -937,28 +916,31 @@ void Renderer::CompositeOutput(const Pipeline* pipeline, const PipelineContext &
 	glEnable(GL_TEXTURE_2D);
 
 #ifdef USE_CG
-shaderEngine.enableShader(currentPipe->compositeShader,pipeline,&pipelineContext);
+	shaderEngine.enableShader(currentPipe->compositeShader, pipeline, &pipelineContext);
 #endif
 
+	float tex[4][2] =
+	{
+	{ 0, 1 },
+	{ 0, 0 },
+	{ 1, 0 },
+	{ 1, 1 } };
 
-	float tex[4][2] = {{0, 1},
-			   {0, 0},
-			   {1, 0},
-			   {1, 1}};
-
-	float points[4][2] = {{-0.5, -0.5},
-			      {-0.5,  0.5},
-			      { 0.5,  0.5},
-			      { 0.5,  -0.5}};
+	float points[4][2] =
+	{
+	{ -0.5, -0.5 },
+	{ -0.5, 0.5 },
+	{ 0.5, 0.5 },
+	{ 0.5, -0.5 } };
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	glVertexPointer(2,GL_FLOAT,0,points);
-	glTexCoordPointer(2,GL_FLOAT,0,tex);
+	glVertexPointer(2, GL_FLOAT, 0, points);
+	glTexCoordPointer(2, GL_FLOAT, 0, tex);
 
-	glDrawArrays(GL_TRIANGLE_FAN,0,4);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 	glDisable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -969,10 +951,9 @@ shaderEngine.enableShader(currentPipe->compositeShader,pipeline,&pipelineContext
 	shaderEngine.disableShader();
 #endif
 
-	for (std::vector<RenderItem*>::const_iterator pos = pipeline->compositeDrawables.begin(); pos != pipeline->compositeDrawables.end(); ++pos)
-			;//(*pos)->Draw(renderContext);
+	for (std::vector<RenderItem*>::const_iterator pos = pipeline->compositeDrawables.begin(); pos
+			!= pipeline->compositeDrawables.end(); ++pos)
+		;//(*pos)->Draw(renderContext);
 
 }
-
-
 
