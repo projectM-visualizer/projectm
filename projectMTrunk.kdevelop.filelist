@@ -668,6 +668,7 @@ src/projectM-engine/Renderer.hpp
 src/projectM-engine/RingBuffer.hpp
 src/projectM-engine/SOIL.c
 src/projectM-engine/SOIL.h
+src/projectM-engine/Shader.cpp
 src/projectM-engine/TextureManager.cpp
 src/projectM-engine/TextureManager.hpp
 src/projectM-engine/TimeKeeper.cpp
