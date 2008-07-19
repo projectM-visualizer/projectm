@@ -155,9 +155,9 @@ GLuint TextureManager::getTexture(const std::string imageURL)
 					  SOIL_LOAD_AUTO,
 					  SOIL_CREATE_NEW_ID,
 
-					    SOIL_FLAG_POWER_OF_TWO
+					    //SOIL_FLAG_POWER_OF_TWO
 					  //  SOIL_FLAG_MIPMAPS
-					  |  SOIL_FLAG_MULTIPLY_ALPHA
+					    SOIL_FLAG_MULTIPLY_ALPHA
 					  |  SOIL_FLAG_COMPRESS_TO_DXT
 					  //| SOIL_FLAG_DDS_LOAD_DIRECT
 					  );

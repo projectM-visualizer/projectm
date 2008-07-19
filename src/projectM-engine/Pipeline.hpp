@@ -18,7 +18,8 @@ public:
 	 float screenDecay;
 
 
-	 Shader shader;
+	 Shader warpShader;
+	 Shader compositeShader;
 
 	 std::vector<RenderItem*> drawables;
 	 std::vector<RenderItem*> compositeDrawables;

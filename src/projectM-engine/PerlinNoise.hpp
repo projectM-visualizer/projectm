@@ -1,12 +1,12 @@
 /*
- * ShaderEngine.hpp
+ * PerlinNoise.hpp
  *
  *  Created on: Jul 11, 2008
  *      Author: pete
  */
 
-#ifndef SHADERENGINE_HPP_
-#define SHADERENGINE_HPP_
+#ifndef PERLINNOISE_HPP_
+#define PERLINNOISE_HPP_
 
 #include <math.h>
 
@@ -100,11 +100,6 @@ private:
 
 	}
 
-	static inline float tri_interp(float a, float b, float c)
-	{
-	    return a+(b-a)*c*c*(3-2*c);
-	}
-
 	static inline float perlin_octave_2d(float x,float y, int width, int seed, float period)
 	{
 
@@ -128,20 +123,29 @@ private:
 	          return value;
 	}
 
-	static inline float perlin_noise_2d(int x, int y,  int width, int octaves, int seed, float persistance, float basePeriod)
-	{
-		float p = persistance;
-		float val = 0.0;
 
-		for (int i = 0; i<octaves;i++)
+	static inline float perlin_octave_2d_cos(float x,float y, int width, int seed, float period)
 		{
-			val += perlin_octave_2d(x,y,width,seed,basePeriod) * p;
 
-			basePeriod *= 0.5;
-			p *= persistance;
+		           float freq=1/(float)(period);
+
+		           int num=(int)(width*freq);
+		           int step_x=(int)(x*freq);
+		           int step_y=(int)(y*freq);
+		           float zone_x=x*freq-step_x;
+		           float zone_y=y*freq-step_y;
+		           int box=step_x+step_y*num;
+		           int noisedata=(box+seed);
+
+		           float a=cos_interp(noise(noisedata),noise(noisedata+1),zone_x);
+		           float b=cos_interp(noise(noisedata+num),noise(noisedata+1+num),zone_x);
+
+		           float value=cos_interp(a,b,zone_y);
+
+		          return value;
 		}
-		return val;
-	}
+
+
 
 	static inline float perlin_octave_3d(float x,float y, float z,int width, int seed, float period)
 		{
@@ -200,6 +204,21 @@ private:
 		}
 
 
+	static inline float perlin_noise_2d(int x, int y,  int width, int octaves, int seed, float persistance, float basePeriod)
+		{
+			float p = persistance;
+			float val = 0.0;
+
+			for (int i = 0; i<octaves;i++)
+			{
+				val += perlin_octave_2d_cos(x,y,width,seed,basePeriod) * p;
+
+				basePeriod *= 0.5;
+				p *= persistance;
+			}
+			return val;
+		}
+
 	static inline float perlin_noise_3d(int x, int y, int z, int width, int octaves, int seed, float persistance, float basePeriod)
 		{
 			float p = persistance;
@@ -219,4 +238,4 @@ private:
 
 };
 
-#endif /* SHADERENGINE_HPP_ */
+#endif /* PERLINNOISE_HPP_ */
