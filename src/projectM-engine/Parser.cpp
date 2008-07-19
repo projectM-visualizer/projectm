@@ -1535,7 +1535,7 @@ InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, Preset * pre
 
 void Parser::parse_string_block(std::istream &  fs, std::string * out_string) {
 
-	out_string->clear();
+
 	char name[MAX_TOKEN_SIZE];
 	token_t token;
 
@@ -1543,7 +1543,7 @@ void Parser::parse_string_block(std::istream &  fs, std::string * out_string) {
 	skipList.insert('`');
 	readStringUntil(fs, out_string, false, skipList);
 
-	//std::cout << "out_string:\n " << *out_string << "\n" << std::endl;
+	std::cout << "out_string:\n " << *out_string << "\n" << std::endl;
 
 }
 
