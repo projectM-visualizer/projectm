@@ -132,10 +132,10 @@ void Renderer::ResetTextures()
 
 void Renderer::SetupPass1(const Pipeline* pipeline, const PipelineContext &pipelineContext)
 {
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
+	//glMatrixMode(GL_PROJECTION);
+	//glPushMatrix();
+	//glMatrixMode(GL_MODELVIEW);
+	//glPushMatrix();
 
 	totalframes++;
 	renderTarget->lock();
@@ -182,11 +182,11 @@ void Renderer::FinishPass1()
 {
 	draw_title_to_texture();
 	/** Restore original view state */
-	glMatrixMode(GL_MODELVIEW);
-	glPopMatrix();
+	//glMatrixMode(GL_MODELVIEW);
+	//glPopMatrix();
 
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
+	//glMatrixMode(GL_PROJECTION);
+	//glPopMatrix();
 
 	renderTarget->unlock();
 
@@ -227,6 +227,7 @@ void Renderer::Pass2(const Pipeline *pipeline, const PipelineContext &pipelineCo
 	CompositeOutput(pipeline, pipelineContext);
 
 	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 	glTranslatef(-0.5, -0.5, 0);
 
 	// When console refreshes, there is a chance the preset has been changed by the user
