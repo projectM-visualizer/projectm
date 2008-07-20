@@ -392,18 +392,10 @@ void ShaderEngine::SetupCg()
 void ShaderEngine::SetupCgVariables(CGprogram program, const Pipeline &pipeline, const PipelineContext &context)
 {
 
-	float slow_roam_cos[4] =
-	{ 0.5 + 0.5 * cos(context.time * 0.005), 0.5 + 0.5 * cos(context.time * 0.008), 0.5 + 0.5 * cos(context.time
-			* 0.013), 0.5 + 0.5 * cos(context.time * 0.022) };
-	float roam_cos[4] =
-	{ 0.5 + 0.5 * cos(context.time * 0.3), 0.5 + 0.5 * cos(context.time * 1.3), 0.5 + 0.5 * cos(context.time * 5), 0.5
-			+ 0.5 * cos(context.time * 20) };
-	float slow_roam_sin[4] =
-	{ 0.5 + 0.5 * sin(context.time * 0.005), 0.5 + 0.5 * sin(context.time * 0.008), 0.5 + 0.5 * sin(context.time
-			* 0.013), 0.5 + 0.5 * sin(context.time * 0.022) };
-	float roam_sin[4] =
-	{ 0.5 + 0.5 * sin(context.time * 0.3), 0.5 + 0.5 * sin(context.time * 1.3), 0.5 + 0.5 * sin(context.time * 5), 0.5
-			+ 0.5 * sin(context.time * 20) };
+	float slow_roam_cos[4] =	{ 0.5 + 0.5 * cos(context.time * 0.005), 0.5 + 0.5 * cos(context.time * 0.008), 0.5 + 0.5 * cos(context.time * 0.013), 0.5 + 0.5 * cos(context.time * 0.022) };
+	float roam_cos[4] =	{ 0.5 + 0.5 * cos(context.time * 0.3), 0.5 + 0.5 * cos(context.time * 1.3), 0.5 + 0.5 * cos(context.time * 5), 0.5	+ 0.5 * cos(context.time * 20) };
+	float slow_roam_sin[4] =	{ 0.5 + 0.5 * sin(context.time * 0.005), 0.5 + 0.5 * sin(context.time * 0.008), 0.5 + 0.5 * sin(context.time * 0.013), 0.5 + 0.5 * sin(context.time * 0.022) };
+	float roam_sin[4] =	{ 0.5 + 0.5 * sin(context.time * 0.3), 0.5 + 0.5 * sin(context.time * 1.3), 0.5 + 0.5 * sin(context.time * 5), 0.5	+ 0.5 * sin(context.time * 20) };
 
 	cgGLSetParameter4fv(cgGetNamedParameter(program, "slow_roam_cos"), slow_roam_cos);
 	cgGLSetParameter4fv(cgGetNamedParameter(program, "roam_cos"), roam_cos);
@@ -411,10 +403,8 @@ void ShaderEngine::SetupCgVariables(CGprogram program, const Pipeline &pipeline,
 	cgGLSetParameter4fv(cgGetNamedParameter(program, "roam_sin"), roam_sin);
 
 	cgGLSetParameter1f(cgGetNamedParameter(program, "time"), context.time);
-	cgGLSetParameter4f(cgGetNamedParameter(program, "rand_preset"), rand_preset[0], rand_preset[1], rand_preset[2],
-			rand_preset[3]);
-	cgGLSetParameter4f(cgGetNamedParameter(program, "rand_frame"), (rand() % 100) * .01, (rand() % 100) * .01, (rand()
-			% 100) * .01, (rand() % 100) * .01);
+	cgGLSetParameter4f(cgGetNamedParameter(program, "rand_preset"), rand_preset[0], rand_preset[1], rand_preset[2],	rand_preset[3]);
+	cgGLSetParameter4f(cgGetNamedParameter(program, "rand_frame"), (rand() % 100) * .01, (rand() % 100) * .01, (rand()% 100) * .01, (rand() % 100) * .01);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "fps"), context.fps);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "frame"), context.frame);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "progress"), context.progress);
@@ -483,25 +473,18 @@ void ShaderEngine::SetupCgVariables(CGprogram program, const Pipeline &pipeline,
 		cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_blur3"));
 	}
 
-	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_lq"), 256, 256, 1.0 / (float) 256, 1.0 / (float) 256);
-	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_mq"), 64, 64, 1.0 / (float) 64, 1.0 / (float) 64);
-	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_hq"), 32, 32, 1.0 / (float) 32, 1.0 / (float) 32);
-	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_perlin"), 512, 512, 1.0 / (float) 512, 1.0
-			/ (float) 512);
-	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_lq_lite"), 32, 32, 1.0 / (float) 32, 1.0
-			/ (float) 32);
+	//cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_lq"), 256, 256, 1.0 / (float) 256, 1.0 / (float) 256);
+	//cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_mq"), 64, 64, 1.0 / (float) 64, 1.0 / (float) 64);
+	//cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_hq"), 32, 32, 1.0 / (float) 32, 1.0 / (float) 32);
+	//cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_perlin"), 512, 512, 1.0 / (float) 512, 1.0
+//			/ (float) 512);
+	//cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_lq_lite"), 32, 32, 1.0 / (float) 32, 1.0
+	//		/ (float) 32);
 }
 
 void ShaderEngine::SetupUserTexture(CGprogram program, const UserTexture* texture)
 {
-	//glBindTexture(GL_TEXTURE_2D, texture->texID);
-	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
-	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
-	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture->wrap ? GL_REPEAT : GL_CLAMP);
-	//glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->wrap ? GL_REPEAT : GL_CLAMP);
-
 	std::string samplerName = "sampler_" + texture->qname;
-	//std::cout<<"Setting up "<<samplerName<<std::endl;
 
 	CGparameter param = cgGetNamedParameter(program, samplerName.c_str());
 	checkForCgError("getting parameter");
@@ -509,14 +492,26 @@ void ShaderEngine::SetupUserTexture(CGprogram program, const UserTexture* textur
 	checkForCgError("setting parameter");
 	cgGLEnableTextureParameter(param);
 	checkForCgError("enabling parameter");
-	//std::cout<<texture->texID<<" "<<texture->qname<<std::endl;
+	//std::cout<<texture->texID<<" "<<samplerName<<std::endl;
 
 	if (texture->texsizeDefined)
 	{
 		std::string texsizeName = "texsize_" + texture->name;
 		cgGLSetParameter4f(cgGetNamedParameter(program, texsizeName.c_str()), texture->width, texture->height, 1
 				/ (float) texture->width, 1 / (float) texture->height);
+		checkForCgError("setting parameter texsize");
 	}
+
+
+}
+
+void ShaderEngine::SetupUserTextureState( const UserTexture* texture)
+{
+	    glBindTexture(GL_TEXTURE_2D, texture->texID);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture->wrap ? GL_REPEAT : GL_CLAMP);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->wrap ? GL_REPEAT : GL_CLAMP);
 }
 
 void ShaderEngine::SetupCgQVariables(Shader &shader, const PresetOutputs &q)
@@ -673,7 +668,16 @@ void ShaderEngine::enableShader(Shader &shader, const Pipeline *pipeline, const 
 	if (shader.enabled)
 	{
 
+
+
+		for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos	!= shader.textures.end(); ++pos)
+							SetupUserTextureState( pos->second);
+
+
 		CGprogram program = programs[&shader];
+		for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos
+						!= shader.textures.end(); ++pos)
+					SetupUserTexture(program, pos->second);
 
 		cgGLEnableProfile(myCgProfile);
 		checkForCgError("enabling warp profile");
@@ -682,10 +686,6 @@ void ShaderEngine::enableShader(Shader &shader, const Pipeline *pipeline, const 
 		checkForCgError("binding warp program");
 
 		SetupCgVariables(program, *pipeline, *pipelineContext);
-
-		for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos
-				!= shader.textures.end(); ++pos)
-			SetupUserTexture(program, pos->second);
 
 		enabled = true;
 	}
