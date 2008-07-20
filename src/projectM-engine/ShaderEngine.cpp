@@ -12,9 +12,7 @@ ShaderEngine::ShaderEngine()
 {
 #ifdef USE_CG
 	SetupCg();
-
 #endif
-
 }
 
 ShaderEngine::~ShaderEngine()
@@ -550,6 +548,7 @@ void ShaderEngine::RenderBlurTextures(const Pipeline *pipeline, const PipelineCo
 		glBlendFunc(GL_ONE, GL_ZERO);
 		glColor4f(1.0, 1.0, 1.0, 1.0f);
 
+		glBindTexture(GL_TEXTURE_2D, mainTextureId);
 		glEnable(GL_TEXTURE_2D);
 
 		glEnableClientState(GL_VERTEX_ARRAY);
