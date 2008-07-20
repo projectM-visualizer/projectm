@@ -104,7 +104,9 @@ public:
 	void enableShader(Shader &shader, const Pipeline *pipeline, const PipelineContext *pipelineContext);
 	void disableShader();
 	void reset();
+	void setAspect(float aspect);
     std::string profileName;
 };
 
 #endif /* SHADERENGINE_HPP_ */
+
