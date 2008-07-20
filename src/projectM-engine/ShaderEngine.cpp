@@ -228,7 +228,7 @@ bool ShaderEngine::LoadCgProgram(Shader &shader)
 		while (found != std::string::npos)
 		{
 			found += 8;
-			size_t end = program.find_first_of(" ;,\n\r)", found);
+			size_t end = program.find_first_of(" ;.,\n\r)", found);
 
 			if (end != std::string::npos)
 			{
@@ -531,6 +531,10 @@ void ShaderEngine::SetupCgQVariables(Shader &shader, const PresetOutputs &q)
 	}
 }
 
+void ShaderEngine::setAspect(float aspect)
+{
+	this->aspect = aspect;
+}
 void ShaderEngine::RenderBlurTextures(const Pipeline *pipeline, const PipelineContext &pipelineContext,
 		const int texsize)
 {

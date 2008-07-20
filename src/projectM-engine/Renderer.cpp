@@ -273,6 +273,7 @@ void Renderer::RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInp
 	SetupPass1(presetOutputs, *presetInputs);
 
 #ifdef USE_CG
+	shaderEngine.SetupCgQVariables(presetOutputs->warpShader, *presetOutputs);
 	shaderEngine.enableShader(presetOutputs->warpShader, presetOutputs, presetInputs);
 #endif
 
@@ -579,9 +580,11 @@ void Renderer::PerPixelMath(PresetOutputs * presetOutputs, PresetInputs * preset
 
 void Renderer::reset(int w, int h)
 {
-	this->aspect = (float) h / (float) w;
+	aspect = (float) h / (float) w;
 	this -> vw = w;
 	this -> vh = h;
+
+	shaderEngine.setAspect(aspect);
 
 	glShadeModel(GL_SMOOTH);
 
