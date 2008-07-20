@@ -87,7 +87,7 @@ class ShaderEngine
  void SetupCgVariables(CGprogram program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
 
  void SetupUserTexture(CGprogram program, const UserTexture* texture);
-
+ void SetupUserTextureState(const UserTexture* texture);
 
 #endif
 
