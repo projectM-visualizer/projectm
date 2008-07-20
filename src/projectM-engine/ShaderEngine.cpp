@@ -647,16 +647,12 @@ void ShaderEngine::RenderBlurTextures(const Pipeline *pipeline, const PipelineCo
 
 void ShaderEngine::loadShader(Shader &shader)
 {
-
 	if (shader.enabled)
 	{
 		cgDestroyProgram(programs[&shader]);
 		programs.erase(&shader);
 	}
 	shader.enabled = LoadCgProgram(shader);
-	//shader.programSource.clear();
-
-
 }
 
 void ShaderEngine::disableShader()
