@@ -14,7 +14,17 @@
 #include "SOIL.h"
 #endif
 
+#ifdef WIN32
+#include "win32-dirent.h"
+#endif
 
+#ifdef LINUX
+#include <dirent.h>
+#endif
+
+#ifdef MACOS
+#include <dirent.h>
+#endif
 #include "TextureManager.hpp"
 #include "CustomShape.hpp"
 #include "Common.hpp"
@@ -32,6 +42,7 @@ ilutRenderer(ILUT_OPENGL);
 #endif
 
  Preload();
+ loadTextureDir();
 }
 
 TextureManager::~TextureManager()
@@ -142,24 +153,29 @@ void TextureManager::setTexture(const std::string name, const unsigned int texId
   */
 //}
 
+GLuint TextureManager::getTexture(const std::string filename)
+{
+	std::string fullURL = presetURL + PATH_SEPARATOR + filename;
+	return getTextureFullpath(filename,fullURL);
+}
 
-GLuint TextureManager::getTexture(const std::string imageURL)
+GLuint TextureManager::getTextureFullpath(const std::string filename, const std::string imageURL)
 {
 
-   if (textures.find(imageURL)!= textures.end())
+   if (textures.find(filename)!= textures.end())
      {
-       return textures[imageURL];
+       return textures[filename];
      }
    else
      {
-       std::string fullURL = presetURL + PATH_SEPARATOR + imageURL;
+
 #ifdef USE_DEVIL
-       GLuint tex = ilutGLLoadImage((char *)fullURL.c_str());
+       GLuint tex = ilutGLLoadImage((char *)imageURL.c_str());
 #else
        int width, height;
 
        uint tex = SOIL_load_OGL_texture_size(
-					  fullURL.c_str(),
+    		   imageURL.c_str(),
 					  SOIL_LOAD_AUTO,
 					  SOIL_CREATE_NEW_ID,
 
@@ -171,7 +187,9 @@ GLuint TextureManager::getTexture(const std::string imageURL)
 					  ,&width,&height);
 
 #endif
-       textures[imageURL]=tex;
+       textures[filename]=tex;
+       widths[filename]=width;
+       heights[filename]=height;
        return tex;
 
 
@@ -191,4 +209,72 @@ int TextureManager::getTextureHeight(const std::string imageURL)
 unsigned int TextureManager::getTextureMemorySize()
 {
   return 0;
+}
+
+void TextureManager::loadTextureDir()
+{
+	std::string dirname = CMAKE_INSTALL_PREFIX "/share/projectM/textures";
+
+	  DIR * m_dir;
+
+	 // Allocate a new a stream given the current directory name
+	  if ((m_dir = opendir(dirname.c_str())) == NULL)
+	  {
+	    std::cout<<"No Textures Loaded from "<<dirname<<std::endl;
+	    return; // no files loaded. m_entries is empty
+	  }
+
+	  struct dirent * dir_entry;
+
+	  while ((dir_entry = readdir(m_dir)) != NULL)
+	  {
+
+	    // Convert char * to friendly string
+	    std::string filename(dir_entry->d_name);
+
+	    if (filename.length() > 0 && filename[0] == '.')
+		continue;
+
+	    // Create full path name
+	    std::string fullname = dirname + PATH_SEPARATOR + filename;
+
+	    unsigned int texId = getTextureFullpath(filename, fullname);
+	    if(texId != 0)
+	    {
+	    	user_textures.push_back(texId);
+	    	textures[filename]=texId;
+	    	user_texture_names.push_back(filename);
+	    }
+	  }
+
+	  if (m_dir)
+	    {
+	      closedir(m_dir);
+	      m_dir = 0;
+	    }
+
+}
+
+std::string TextureManager::getRandomTextureName(std::string random_id)
+{
+	if (user_texture_names.size() > 0)
+	{
+		std::string random_name = user_texture_names[rand() % user_texture_names.size()];
+		random_textures.push_back(random_id);
+		textures[random_id] = textures[random_name];
+		return random_name;
+	}
+	else return "";
+}
+
+void TextureManager::clearRandomTextures()
+{
+	for (std::vector<std::string>::iterator pos = random_textures.begin(); pos	!= random_textures.end(); ++pos)
+				{
+					textures.erase(*pos);
+					widths.erase(*pos);
+					heights.erase(*pos);
+				}
+	random_textures.clear();
+
 }

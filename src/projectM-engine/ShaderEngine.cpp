@@ -188,38 +188,52 @@ bool ShaderEngine::LoadCgProgram(Shader &shader)
 				}
 				else
 				{
-
-					std::string extensions[6];
-					extensions[0] = ".jpg";
-					extensions[1] = ".dds";
-					extensions[2] = ".png";
-					extensions[3] = ".tga";
-					extensions[4] = ".bmp";
-					extensions[5] = ".dib";
-
-					for (int x = 0; x < 6; x++)
+					if (sampler.substr(0, 4) == "rand")
 					{
-
-						std::string filename = texture->name + extensions[x];
-						texture->texID = textureManager->getTexture(filename);
-						if (texture->texID != 0)
+						std::string random_name = textureManager->getRandomTextureName(texture->name);
+						if (random_name.size() > 0)
 						{
-							texture->width = textureManager->getTextureWidth(filename);
-							texture->height = textureManager->getTextureHeight(filename);
-							break;
+							texture->texID = textureManager->getTexture(random_name);
+							texture->width = textureManager->getTextureWidth(random_name);
+							texture->height = textureManager->getTextureHeight(random_name);
 						}
 					}
+					else
+					{
+						std::string extensions[6];
+						extensions[0] = ".jpg";
+						extensions[1] = ".dds";
+						extensions[2] = ".png";
+						extensions[3] = ".tga";
+						extensions[4] = ".bmp";
+						extensions[5] = ".dib";
 
+						for (int x = 0; x < 6; x++)
+						{
+
+							std::string filename = texture->name + extensions[x];
+							texture->texID = textureManager->getTexture(filename);
+							if (texture->texID != 0)
+							{
+								texture->width = textureManager->getTextureWidth(filename);
+								texture->height = textureManager->getTextureHeight(filename);
+								break;
+							}
+						}
+
+					}
 				}
 				if (texture->texID != 0 && shader.textures.find(texture->qname) == shader.textures.end())
 					shader.textures[texture->qname] = texture;
 
 				else
 					delete (texture);
+
 			}
 
 			found = program.find("sampler_", found);
 		}
+		textureManager->clearRandomTextures();
 
 		found = 0;
 		found = program.find("texsize_", found);
@@ -367,7 +381,7 @@ void ShaderEngine::SetupCg()
 	profileName = cgGetProfileString(myCgProfile);
 	std::cout << "Cg: Initialized profile: " << profileName << std::endl;
 
-	blur1Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blur1", NULL);
+	blur1Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blurHoriz", NULL);
 
 	checkForCgCompileError("creating blur1 program");
 	if (blur1Program == NULL)
@@ -376,7 +390,7 @@ void ShaderEngine::SetupCg()
 
 	checkForCgError("loading blur1 program");
 
-	blur2Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blur2", NULL);
+	blur2Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blurVert", NULL);
 
 	checkForCgCompileError("creating blur2 program");
 	if (blur2Program == NULL)
@@ -427,34 +441,6 @@ void ShaderEngine::SetupCgVariables(CGprogram program, const Pipeline &pipeline,
 			/ (float) texsize);
 	cgGLSetParameter4f(cgGetNamedParameter(program, "aspect"), 1 / aspect, 1, aspect, 1);
 
-	//glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[1]);
-
-	/*
-	 cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_main"),renderTarget->textureID[1]);
-	 cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_main"));
-
-	 cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq_lite"),noise_texture_lq_lite);
-	 cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq_lite"));
-
-	 cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_mq"),noise_texture_mq);
-	 cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_mq"));
-
-	 cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_hq"),noise_texture_hq);
-	 cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_hq"));
-
-	 cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq"),noise_texture_lq);
-	 cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_lq"));
-
-	 cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noise_perlin"),noise_texture_perlin);
-	 cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noise_perlin"));
-
-	 cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noisevol_hq"),noise_texture_hq_vol);
-	 cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noisevol_hq"));
-
-	 cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_noisevol_lq"),noise_texture_lq_vol);
-	 cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_noisevol_lq"));
-	 */
-
 	if (blur1_enabled)
 	{
 		cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_blur1"), blur1_tex);
@@ -471,13 +457,6 @@ void ShaderEngine::SetupCgVariables(CGprogram program, const Pipeline &pipeline,
 		cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_blur3"));
 	}
 
-	//cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_lq"), 256, 256, 1.0 / (float) 256, 1.0 / (float) 256);
-	//cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_mq"), 64, 64, 1.0 / (float) 64, 1.0 / (float) 64);
-	//cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_hq"), 32, 32, 1.0 / (float) 32, 1.0 / (float) 32);
-	//cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_perlin"), 512, 512, 1.0 / (float) 512, 1.0
-//			/ (float) 512);
-	//cgGLSetParameter4f(cgGetNamedParameter(program, "texsize_noise_lq_lite"), 32, 32, 1.0 / (float) 32, 1.0
-	//		/ (float) 32);
 }
 
 void ShaderEngine::SetupUserTexture(CGprogram program, const UserTexture* texture)
@@ -563,6 +542,8 @@ void ShaderEngine::RenderBlurTextures(const Pipeline *pipeline, const PipelineCo
 		{
 			cgGLSetParameter4f(cgGetNamedParameter(blur1Program, "srctexsize"), texsize, texsize, 1 / (float) texsize,
 					1 / (float) texsize);
+			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize, texsize, 1 / (float) texsize,
+								1 / (float) texsize);
 
 			cgGLBindProgram(blur1Program);
 			checkForCgError("binding blur1 program");
@@ -575,23 +556,36 @@ void ShaderEngine::RenderBlurTextures(const Pipeline *pipeline, const PipelineCo
 			{ 1, 1 } };
 
 			glVertexPointer(2, GL_FLOAT, 0, points);
-
+glBlendFunc(GL_ONE,GL_ZERO);
 			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-			glBindTexture(GL_TEXTURE_2D, blur1_tex);
-			glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize, texsize);
+
 
 			cgGLUnbindProgram(myCgProfile);
 			checkForCgError("unbinding blur1 program");
+			glBindTexture(GL_TEXTURE_2D, blur1_tex);
+						glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize, texsize);
+
+			cgGLBindProgram(blur2Program);
+			checkForCgError("binding blur2 program");
+			glBlendFunc(GL_ONE,GL_ZERO);
+			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+			glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize, texsize);
+
+			cgGLUnbindProgram(myCgProfile);
+			checkForCgError("unbinding blur2 program");
 		}
 
 		if (blur2_enabled)
 		{
+			cgGLSetParameter4f(cgGetNamedParameter(blur1Program, "srctexsize"), texsize, texsize, 1 / (float) texsize,
+								1 / (float) texsize);
 			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize, texsize, 1 / (float) texsize,
 					1 / (float) texsize);
 
-			cgGLBindProgram(blur2Program);
-			checkForCgError("binding blur2 program");
+			cgGLBindProgram(blur1Program);
+			checkForCgError("binding blur1 program");
 
 			float points[4][2] =
 			{
@@ -601,16 +595,29 @@ void ShaderEngine::RenderBlurTextures(const Pipeline *pipeline, const PipelineCo
 			{ 0.5, 0.5 } };
 
 			glVertexPointer(2, GL_FLOAT, 0, points);
-
+			glBlendFunc(GL_ONE,GL_ZERO);
 			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-			glBindTexture(GL_TEXTURE_2D, blur2_tex);
-			glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize / 2, texsize / 2);
 
+			cgGLUnbindProgram(myCgProfile);
+						checkForCgError("unbinding blur1 program");
+
+						cgGLBindProgram(blur2Program);
+						checkForCgError("binding blur2 program");
+						glBlendFunc(GL_ONE,GL_ONE);
+						glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+						glBindTexture(GL_TEXTURE_2D, blur2_tex);
+						glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize/2, texsize/2);
+
+						cgGLUnbindProgram(myCgProfile);
+						checkForCgError("unbinding blur2 program");
 		}
 
 		if (blur3_enabled)
 		{
+			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize/2, texsize/2, 2 / (float) texsize,
+								2 / (float) texsize);
 			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize / 2, texsize / 2, 2
 					/ (float) texsize, 2 / (float) texsize);
 			float points[4][2] =
@@ -619,16 +626,30 @@ void ShaderEngine::RenderBlurTextures(const Pipeline *pipeline, const PipelineCo
 			{ 0, 0 },
 			{ 0.25, 0 },
 			{ 0.25, 0.25 } };
-
+			cgGLBindProgram(blur1Program);
+								checkForCgError("binding blur2 program");
 			glVertexPointer(2, GL_FLOAT, 0, points);
-
+			glBlendFunc(GL_ONE,GL_ZERO);
 			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-			glBindTexture(GL_TEXTURE_2D, blur3_tex);
-			glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize / 4, texsize / 4);
+
+			//glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize / 4, texsize / 4);
+			cgGLUnbindProgram(myCgProfile);
+						checkForCgError("unbinding blur1 program");
+
+						cgGLBindProgram(blur2Program);
+						checkForCgError("binding blur2 program");
+						glBlendFunc(GL_ONE,GL_ONE);
+						glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+						glBindTexture(GL_TEXTURE_2D, blur3_tex);
+						glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize/4, texsize/4);
+
+						cgGLUnbindProgram(myCgProfile);
+						checkForCgError("unbinding blur2 program");
 		}
 
-		if (blur2_enabled || blur3_enabled)
+		if (false && blur2_enabled || blur3_enabled)
 		{
 			cgGLUnbindProgram(myCgProfile);
 			checkForCgError("unbinding blur2 program");
