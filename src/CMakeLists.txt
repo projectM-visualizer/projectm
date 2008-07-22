@@ -8,7 +8,7 @@ OPTION(INCLUDE-PROJECTM-JACK "Build the projectM JACK client" OFF)
 OPTION(INCLUDE-PROJECTM-TEST "Build the projectM test suite" ON)
 OPTION(INCLUDE-PROJECTM-XMMS "Build the projectM xmms module (deprecated, use audacious instead)" OFF)
 
-add_subdirectory (projectM-engine)
+add_subdirectory (libprojectM)
 
 if(INCLUDE-PROJECTM-TEST)
 	add_subdirectory (projectM-test)
