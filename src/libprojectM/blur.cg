@@ -6,15 +6,23 @@ outtype blur1(float2 uv : TEXCOORD0, uniform sampler2D sampler_blur : TEX0)
 {
 float2 uv2 = uv.xy + srctexsize.zw*float2(1,1);
 
-float d = srctexsize.z;
-d=.0015;
+float d=.00175;
+
 float3 val =  tex2D(sampler_blur, float2(uv.x-d, uv.y)).xyz;
 val += tex2D(sampler_blur, float2(uv.x+d, uv.y)).xyz;
 val += tex2D(sampler_blur, float2(uv.x, uv.y + d)).xyz;
 val += tex2D(sampler_blur, float2(uv.x, uv.y - d)).xyz;
 
+float3 val2 =  tex2D(sampler_blur, float2(uv.x-d, uv.y -d)).xyz;
+val += tex2D(sampler_blur, float2(uv.x-d, uv.y +d)).xyz;
+val += tex2D(sampler_blur, float2(uv.x+d, uv.y + d)).xyz;
+val += tex2D(sampler_blur, float2(uv.x +d, uv.y - d)).xyz;
+
 outtype OUT;
-OUT.color.xyz = val* 0.25;
+val *= 0.65;
+val2 *= 0.35;
+
+OUT.color.xyz = val* 0.25 + val2 * 0.25;
 OUT.color.w = 1;
 return OUT;
 }
