@@ -65,17 +65,9 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
 #endif /** USE_FTGL */
 
-	int size = mesh.width * 2;
-	p = ( float ** ) wipemalloc ( size * sizeof ( float * ) );
-	for ( int x = 0; x < size; x++ )
-	{
-		p[x] = ( float * ) wipemalloc ( 2 * sizeof ( float ) );
-	}
-	t = ( float ** ) wipemalloc ( size * sizeof ( float * ) );
-	for (int x = 0; x < size; x++ )
-	{
-		t[x] = ( float * ) wipemalloc ( 2 * sizeof ( float ) );
-	}
+	int size = mesh.width * 2 * 2;
+	p = ( float * ) wipemalloc ( size * sizeof ( float ) );
+	t = ( float * ) wipemalloc ( size * sizeof ( float  ) );
 
 
 
@@ -305,11 +297,9 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 
-	float p2[mesh.width * 2][2];
-	float t2[mesh.width * 2][2];
 
-	glVertexPointer(2, GL_FLOAT, 0, p2);
-	glTexCoordPointer(2, GL_FLOAT, 0, t2);
+	glVertexPointer(2, GL_FLOAT, 0, p);
+	glTexCoordPointer(2, GL_FLOAT, 0, t);
 
 
 
@@ -319,20 +309,20 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 				{
 				for (int i = 0; i < mesh.width; i++)
 				{
-					t2[i * 2][0] = pipeline.x_mesh[i][j];
-					t2[i * 2][1] = pipeline.y_mesh[i][j];
+					t[i * 4] = pipeline.x_mesh[i][j];
+					t[i * 4 + 1] = pipeline.y_mesh[i][j];
 
-					t2[(i * 2) + 1][0] = pipeline.x_mesh[i][j+1];
-					t2[(i * 2) + 1][1] = pipeline.y_mesh[i][j+1];
+					t[i * 4 + 2] = pipeline.x_mesh[i][j+1];
+					t[i * 4 + 3] = pipeline.y_mesh[i][j+1];
 
 					int index = j * mesh.width + i;
 					int index2 = (j + 1) * mesh.width + i;
 
-					p2[i * 2][0] = mesh.identity[index].x;
-					p2[i * 2][1] = mesh.identity[index].y;
+					p[i * 4] = mesh.identity[index].x;
+					p[i * 4 + 1] = mesh.identity[index].y;
 
-					p2[(i * 2) + 1][0] = mesh.identity[index2].x;
-					p2[(i * 2) + 1][1] = mesh.identity[index2].y;
+					p[i * 4 + 2] = mesh.identity[index2].x;
+					p[i * 4 + 3] = mesh.identity[index2].y;
 				}
 				glDrawArrays(GL_TRIANGLE_STRIP, 0, mesh.width * 2);
 			}
@@ -349,17 +339,17 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 			int index = j * mesh.width + i;
 			int index2 = (j + 1) * mesh.width + i;
 
-			t2[i * 2][0] = mesh.p[index].x;
-			t2[i * 2][1] = mesh.p[index].y;
+			t[i * 4] = mesh.p[index].x;
+			t[i * 4 + 1] = mesh.p[index].y;
 
-			t2[(i * 2) + 1][0] = mesh.p[index2].x;
-			t2[(i * 2) + 1][1] = mesh.p[index2].y;
+			t[i * 4 + 2] = mesh.p[index2].x;
+			t[i * 4 + 3] = mesh.p[index2].y;
 
-			p2[i * 2][0] = mesh.identity[index].x;
-			p2[i * 2][1] = mesh.identity[index].y;
+			p[i * 4] = mesh.identity[index].x;
+			p[i * 4 + 1] = mesh.identity[index].y;
 
-			p2[(i * 2) + 1][0] = mesh.identity[index2].x;
-			p2[(i * 2) + 1][1] = mesh.identity[index2].y;
+			p[i * 4 + 2] = mesh.identity[index2].x;
+			p[i * 4 + 3] = mesh.identity[index2].y;
 
 		}
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, mesh.width*2);
@@ -383,13 +373,6 @@ Renderer::~Renderer()
 		delete (textureManager);
 
 	//std::cerr << "grid assign end" << std::endl;
-
-
-	for (int x = 0;x<mesh.width*2;x++)
-	{
-		free(p[x]);
-		free(t[x]);
-	}
 
 	free(p);
 	free(t);

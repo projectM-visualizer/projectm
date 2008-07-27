@@ -100,8 +100,8 @@ private:
 #endif
   std::string m_presetName;
 
-  float** p;
-  float** t;
+  float* p;
+  float* t;
 
   int vw;
   int vh;
