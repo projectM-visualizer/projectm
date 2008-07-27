@@ -53,16 +53,16 @@ public:
 
 	virtual Point PerPixel(Point p, const PerPixelContext context)
 	{
-		float q1 = 8.05+(sinf(p.x+0.137*time)-cosf(p.y+0.213*time));
-		int val1 = abs(p.x*3-0.4*sinf(q1));
-		int val2 = abs(p.y*3+0.4*sinf(q1));
+		float q1 = 8.05+(sin(p.x+0.137*time)-cos(p.y+0.213*time));
+		int val1 = abs(p.x*3-0.4*sin(q1));
+		int val2 = abs(p.y*3+0.4*sin(q1));
 		val1 = val1%2;
 		val2 = val2%2;
 
 		float box=(1-context.rad)+ 0.5 * val1 + 0.5*val2;
 
 		float zoom = if_milk(above(box,1),q1*.1,0.998531);
-		float rot = if_milk(above(box,1),1*sinf(0.385*time),0.02);
+		float rot = if_milk(above(box,1),1*sin(0.385*time),0.02);
 
 		Transforms::Zoom(p,context,zoom,1.01);
 		Transforms::Rotate(p,context,rot,cx,cy);

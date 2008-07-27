@@ -262,7 +262,7 @@ void projectM::evaluateSecondPreset()
 
       assert ( m_activePreset2.get() );
       m_activePreset2->evaluateFrame();
-      renderer->PerPixelMath ( &m_activePreset2->presetOutputs(), &presetInputs2 );
+      m_activePreset2->presetOutputs().PerPixelMath ( presetInputs2 );
 }
 
 void projectM::setupPresetInputs(PresetInputs *inputs)
@@ -340,7 +340,7 @@ DLLEXPORT void projectM::renderFrame()
 		pthread_mutex_unlock( &mutex );
 #endif
 		m_activePreset->evaluateFrame();
-		renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
+		m_activePreset->presetOutputs().PerPixelMath ( presetInputs );
 
 #ifdef USE_THREADS
 		pthread_mutex_lock( &mutex );
@@ -364,7 +364,7 @@ DLLEXPORT void projectM::renderFrame()
 
 		m_activePreset->evaluateFrame();
 
-		renderer->PerPixelMath ( &m_activePreset->presetOutputs(), &presetInputs );
+		m_activePreset->presetOutputs().PerPixelMath (presetInputs );
 
 
 	}
@@ -372,7 +372,7 @@ DLLEXPORT void projectM::renderFrame()
 	//	std::cout<< m_activePreset->absoluteFilePath()<<std::endl;
 	//	renderer->presetName = m_activePreset->absoluteFilePath();
 	m_activePreset->presetOutputs().PrepareToRender();
-	renderer->RenderFrame ( &m_activePreset->presetOutputs(), &presetInputs );
+	renderer->RenderFrame ( m_activePreset->presetOutputs(), presetInputs );
 
 	count++;
 #ifndef WIN32
@@ -538,14 +538,9 @@ void projectM::projectM_initengine()
 
 	/* Q AND T VARIABLES START */
 
-	this->presetOutputs.q1 = 0;
-	this->presetOutputs.q2 = 0;
-	this->presetOutputs.q3 = 0;
-	this->presetOutputs.q4 = 0;
-	this->presetOutputs.q5 = 0;
-	this->presetOutputs.q6 = 0;
-	this->presetOutputs.q7 = 0;
-	this->presetOutputs.q8 = 0;
+	for (int i = 0;i<32;i++)
+		presetOutputs.q[i] = 0;
+
 
 
 	/* Q AND T VARIABLES END */
@@ -656,14 +651,8 @@ void projectM::projectM_resetengine()
 
 	/* Q VARIABLES START */
 
-	this->presetOutputs.q1 = 0;
-	this->presetOutputs.q2 = 0;
-	this->presetOutputs.q3 = 0;
-	this->presetOutputs.q4 = 0;
-	this->presetOutputs.q5 = 0;
-	this->presetOutputs.q6 = 0;
-	this->presetOutputs.q7 = 0;
-	this->presetOutputs.q8 = 0;
+	for (int i = 0;i<32;i++)
+		presetOutputs.q[i] = 0;
 
 
 	/* Q VARIABLES END */
