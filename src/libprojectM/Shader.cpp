@@ -8,6 +8,5 @@
 #include "Shader.hpp"
 
 Shader::Shader()
-	: enabled(false),blur1n(1), blur2n(1), blur3n(1),
-	  blur1x(1), blur2x(1), blur3x(1),
-	  blur1ed(1){}
+	: enabled(false)
+	{}

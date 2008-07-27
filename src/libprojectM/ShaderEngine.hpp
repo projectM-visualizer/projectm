@@ -85,27 +85,29 @@ class ShaderEngine
 
  void SetupCg();
  void SetupCgVariables(CGprogram program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
+ void SetupCgQVariables(CGprogram program, const Pipeline &pipeline);
 
  void SetupUserTexture(CGprogram program, const UserTexture* texture);
  void SetupUserTextureState(const UserTexture* texture);
 
+
+
 #endif
-
-
 public:
 	ShaderEngine();
 	virtual ~ShaderEngine();
+#ifdef USE_CG
+    void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext, const int texsize);
+	void loadShader(Shader &shader);
 
-	 void SetupCgQVariables(Shader &shader, const PresetOutputs &presetOutputs);
-	 void RenderBlurTextures(const Pipeline* pipeline, const PipelineContext &pipelineContext, const int texsize);
-	 void loadShader(Shader &shader);
-
-	void SetParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect, TextureManager *textureManager);
-	void enableShader(Shader &shader, const Pipeline *pipeline, const PipelineContext *pipelineContext);
+	void setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect, TextureManager *textureManager);
+	void enableShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
 	void disableShader();
 	void reset();
 	void setAspect(float aspect);
     std::string profileName;
+
+#endif
 };
 
 #endif /* SHADERENGINE_HPP_ */

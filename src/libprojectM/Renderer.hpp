@@ -64,22 +64,15 @@ public:
   int drawtitle;
   int texsize;
 
-#ifdef USE_CG
-  ShaderEngine shaderEngine;
-#endif
-
-  PerPixelMesh mesh;
-
-
 
   Renderer( int width, int height, int gx, int gy, int texsize,  BeatDetect *beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
   ~Renderer();
-  void RenderFrame(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
-  void RenderFrame(const Pipeline *pipeline, const PipelineContext &pipelineContext);
+  void RenderFrame(PresetOutputs &PresetOutputs, const PipelineContext &pipelineContext);
+  void RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void ResetTextures();
   void reset(int w, int h);
   GLuint initRenderToTexture();
-  void PerPixelMath(PresetOutputs *presetOutputs,  PresetInputs *presetInputs);
+
 
   void SetPipeline(Pipeline &pipeline);
 
@@ -95,22 +88,20 @@ public:
 
 private:
 
+	PerPixelMesh mesh;
   RenderTarget *renderTarget;
   BeatDetect *beatDetect;
   TextureManager *textureManager;
   static Pipeline* currentPipe;
   RenderContext renderContext;
   //per pixel equation variables
-
+#ifdef USE_CG
+  ShaderEngine shaderEngine;
+#endif
   std::string m_presetName;
 
-
-  float **gridx;  //grid containing interpolated mesh
-    float **gridy;
-    float **origx2;  //original mesh
-    float **origy2;
-
-
+  float** p;
+  float** t;
 
   int vw;
   int vh;
@@ -121,30 +112,23 @@ private:
   std::string menu_fontURL;
   std::string presetURL;
 
-
-
 #ifdef USE_FTGL
   FTGLPixmapFont *title_font;
   FTGLPixmapFont *other_font;
   FTGLExtrdFont *poly_font;
 #endif /** USE_FTGL */
 
-
-
-  void SetupPass1(const Pipeline* pipeline, const PipelineContext &pipelineContext);
-  void SetupShaders(const Pipeline* pipeline, const PipelineContext &pipelineContext);
-  void Interpolation(const Pipeline* pipeline);
-  void RenderItems(const Pipeline* pipeline, const PipelineContext &pipelineContext);
-  void CompositeOutput(const Pipeline* pipeline, const PipelineContext &pipelineContext);
+  void SetupPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
+  void Interpolation(const Pipeline &pipeline);
+  void RenderItems(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void FinishPass1();
-  void Pass2 (const Pipeline* pipeline, const PipelineContext &pipelineContext);
+  void Pass2 (const Pipeline &pipeline, const PipelineContext &pipelineContext);
+  void CompositeOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext);
 
   inline static Point PerPixel(Point p, PerPixelContext &context)
   {
-  return currentPipe->PerPixel(p,context);
+	  return currentPipe->PerPixel(p,context);
   }
-
-  void Interpolation(PresetOutputs *presetOutputs, PresetInputs *presetInputs);
 
   void rescale_per_pixel_matrices();
 

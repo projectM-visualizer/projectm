@@ -20,7 +20,7 @@ void PresetInputs::Initialize ( int gx, int gy )
 		this->x_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
 	}
 	this->y_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
+	for ( x = 0; x <gx; x++ )
 	{
 		this->y_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
 	}
@@ -80,10 +80,6 @@ PresetOutputs::~PresetOutputs()
 
 	for ( int x = 0; x < this->gx; x++ )
 	{
-
-
-		free(this->x_mesh[x]);
-		free(this->y_mesh[x]);
 		free(this->sx_mesh[x]);
 		free(this->sy_mesh[x]);
 		free(this->dy_mesh[x]);
@@ -95,11 +91,10 @@ PresetOutputs::~PresetOutputs()
 		free(this->zoom_mesh[x]);
 		free(this->zoomexp_mesh[x]);
 		free(this->rot_mesh[x]);
-
+		free(this->origx2[x]);
+		free(this->origy2[x]);
 	}
 
-		free(this->x_mesh);
-		free(this->y_mesh);
 		free(this->sx_mesh);
 		free(this->sy_mesh);
 		free(this->dy_mesh);
@@ -110,6 +105,9 @@ PresetOutputs::~PresetOutputs()
 		free(this->zoom_mesh);
 		free(this->zoomexp_mesh);
 		free(this->rot_mesh);
+		free(this->origx2);
+		free(this->origy2);
+
 }
 
 void PresetOutputs::PrepareToRender()
@@ -150,12 +148,109 @@ void PresetOutputs::PrepareToRender()
 		compositeDrawables.push_back(&invert);
 }
 
+
+void PresetOutputs::PerPixelMath(PresetInputs &presetInputs)
+{
+
+	int x, y;
+	float fZoom2, fZoom2Inv;
+
+	for (x = 0; x < presetInputs.gx; x++)
+	{
+		for (y = 0; y < presetInputs.gy; y++)
+		{
+			fZoom2 = powf(this->zoom_mesh[x][y], powf(this->zoomexp_mesh[x][y],
+					presetInputs.rad_mesh[x][y] * 2.0f - 1.0f));
+			fZoom2Inv = 1.0f / fZoom2;
+			this->x_mesh[x][y] = this->origx2[x][y] * 0.5f * fZoom2Inv + 0.5f;
+			this->y_mesh[x][y] = this->origy2[x][y] * 0.5f * fZoom2Inv + 0.5f;
+		}
+	}
+
+	for (x = 0; x < presetInputs.gx; x++)
+	{
+		for (y = 0; y < presetInputs.gy; y++)
+		{
+			this->x_mesh[x][y] = (this->x_mesh[x][y] - this->cx_mesh[x][y])
+					/ this->sx_mesh[x][y] + this->cx_mesh[x][y];
+		}
+	}
+
+	for (x = 0; x < presetInputs.gx; x++)
+	{
+		for (y = 0; y < presetInputs.gy; y++)
+		{
+			this->y_mesh[x][y] = (this->y_mesh[x][y] - this->cy_mesh[x][y])
+					/ this->sy_mesh[x][y] + this->cy_mesh[x][y];
+		}
+	}
+
+	float fWarpTime = presetInputs.time * this->fWarpAnimSpeed;
+	float fWarpScaleInv = 1.0f / this->fWarpScale;
+	float f[4];
+	f[0] = 11.68f + 4.0f * cosf(fWarpTime * 1.413f + 10);
+	f[1] = 8.77f + 3.0f * cosf(fWarpTime * 1.113f + 7);
+	f[2] = 10.54f + 3.0f * cosf(fWarpTime * 1.233f + 3);
+	f[3] = 11.49f + 4.0f * cosf(fWarpTime * 0.933f + 5);
+
+	for (x = 0; x < presetInputs.gx; x++)
+	{
+		for (y = 0; y < presetInputs.gy; y++)
+		{
+			this->x_mesh[x][y] += this->warp_mesh[x][y] * 0.0035f * sinf(fWarpTime * 0.333f
+					+ fWarpScaleInv * (this->origx2[x][y] * f[0] - this->origy2[x][y] * f[3]));
+			this->y_mesh[x][y] += this->warp_mesh[x][y] * 0.0035f * cosf(fWarpTime * 0.375f
+					- fWarpScaleInv * (this->origx2[x][y] * f[2] + this->origy2[x][y] * f[1]));
+			this->x_mesh[x][y] += this->warp_mesh[x][y] * 0.0035f * cosf(fWarpTime * 0.753f
+					- fWarpScaleInv * (this->origx2[x][y] * f[1] - this->origy2[x][y] * f[2]));
+			this->y_mesh[x][y] += this->warp_mesh[x][y] * 0.0035f * sinf(fWarpTime * 0.825f
+					+ fWarpScaleInv * (this->origx2[x][y] * f[0] + this->origy2[x][y] * f[3]));
+		}
+	}
+	for (x = 0; x < presetInputs.gx; x++)
+	{
+		for (y = 0; y < presetInputs.gy; y++)
+		{
+			float u2 = this->x_mesh[x][y] - this->cx_mesh[x][y];
+			float v2 = this->y_mesh[x][y] - this->cy_mesh[x][y];
+
+			float cos_rot = cosf(this->rot_mesh[x][y]);
+			float sin_rot = sinf(this->rot_mesh[x][y]);
+
+			this->x_mesh[x][y] = u2 * cos_rot - v2 * sin_rot + this->cx_mesh[x][y];
+			this->y_mesh[x][y] = u2 * sin_rot + v2 * cos_rot + this->cy_mesh[x][y];
+
+		}
+	}
+
+	for (x = 0; x < presetInputs.gx; x++)
+	{
+		for (y = 0; y < presetInputs.gy; y++)
+		{
+			this->x_mesh[x][y] -= this->dx_mesh[x][y];
+		}
+	}
+
+	for (x = 0; x < presetInputs.gx; x++)
+	{
+		for (y = 0; y < presetInputs.gy; y++)
+		{
+			this->y_mesh[x][y] -= this->dy_mesh[x][y];
+		}
+	}
+
+}
+
+
 void PresetOutputs::Initialize ( int gx, int gy )
 {
 
 	assert(gx > 0);
 	this->gx = gx;
 	this->gy= gy;
+
+	setStaticPerPixel(gx,gy);
+
 	assert(this->gx > 0);
 	int x;
 	this->x_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
@@ -219,8 +314,29 @@ void PresetOutputs::Initialize ( int gx, int gy )
 	{
 		this->warp_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
 	}
+	this->origx2 = (float **) wipemalloc(gx * sizeof(float *));
+	for (x = 0; x < gx; x++)
+	{
+		this->origx2[x] = (float *) wipemalloc(gy * sizeof(float));
+	}
+	this->origy2 = (float **) wipemalloc(gx * sizeof(float *));
+	for (x = 0; x < gx; x++)
+	{
+		this->origy2[x] = (float *) wipemalloc(gy * sizeof(float));
+	}
 
+		//initialize reference grid values
+		for (x = 0; x < gx; x++)
+		{
+			for (int y = 0; y < gy; y++)
+			{
+				float origx = x / (float) (gx - 1);
+				float origy = -((y / (float) (gy - 1)) - 1);
 
+				this->origx2[x][y] = (origx - .5) * 2;
+				this->origy2[x][y] = (origy - .5) * 2;
+			}
+		}
 }
 
 PresetInputs::~PresetInputs()

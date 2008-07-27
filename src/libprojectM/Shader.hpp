@@ -18,16 +18,7 @@ public:
 
     std::map<std::string, UserTexture*> textures;
 
-
     bool enabled;
-
-	float blur1n;
-	float blur2n;
-	float blur3n;
-	float blur1x;
-	float blur2x;
-	float blur3x;
-	float blur1ed;
 
 	std::string programSource;
 

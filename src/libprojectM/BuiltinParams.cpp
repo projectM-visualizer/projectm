@@ -332,13 +332,13 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("sy", (void*)&presetOutputs.sy, presetOutputs.sy_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
 
 
-  load_builtin_param_float("b1n", (void*)&presetOutputs.warpShader.blur1n, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
-  load_builtin_param_float("b2n", (void*)&presetOutputs.warpShader.blur2n, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
-  load_builtin_param_float("b3n", (void*)&presetOutputs.warpShader.blur3n, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
-  load_builtin_param_float("b1x", (void*)&presetOutputs.warpShader.blur1x, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
-  load_builtin_param_float("b2x", (void*)&presetOutputs.warpShader.blur2x, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
-  load_builtin_param_float("b3x", (void*)&presetOutputs.warpShader.blur3x, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
-  load_builtin_param_float("b1ed", (void*)&presetOutputs.warpShader.blur1ed, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_float("b1n", (void*)&presetOutputs.blur1n, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_float("b2n", (void*)&presetOutputs.blur2n, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_float("b3n", (void*)&presetOutputs.blur3n, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_float("b1x", (void*)&presetOutputs.blur1x, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_float("b2x", (void*)&presetOutputs.blur2x, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_float("b3x", (void*)&presetOutputs.blur3x, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_float("b1ed", (void*)&presetOutputs.blur1ed, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
 
   load_builtin_param_float("wave_r", (void*)&presetOutputs.wave.r, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
   load_builtin_param_float("wave_g", (void*)&presetOutputs.wave.g, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
@@ -396,38 +396,38 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("rad", (void*)&presetInputs.rad_per_pixel, presetInputs.rad_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_NONE,
                            0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
 
-  load_builtin_param_float("q1", (void*)&presetOutputs.q1,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q2", (void*)&presetOutputs.q2,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q3", (void*)&presetOutputs.q3,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q4", (void*)&presetOutputs.q4,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q5", (void*)&presetOutputs.q5,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q6", (void*)&presetOutputs.q6,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q7", (void*)&presetOutputs.q7,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q8", (void*)&presetOutputs.q8,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q9", (void*)&presetOutputs.q9,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q10", (void*)&presetOutputs.q10,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q11", (void*)&presetOutputs.q11,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q12", (void*)&presetOutputs.q12,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q13", (void*)&presetOutputs.q13,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q14", (void*)&presetOutputs.q14,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q15", (void*)&presetOutputs.q15,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q16", (void*)&presetOutputs.q16,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q17", (void*)&presetOutputs.q17,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q18", (void*)&presetOutputs.q18,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q19", (void*)&presetOutputs.q19,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q20", (void*)&presetOutputs.q20,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q21", (void*)&presetOutputs.q21,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q22", (void*)&presetOutputs.q22,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q23", (void*)&presetOutputs.q23,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q24", (void*)&presetOutputs.q24,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q25", (void*)&presetOutputs.q25,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q26", (void*)&presetOutputs.q26,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q27", (void*)&presetOutputs.q27,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q28", (void*)&presetOutputs.q28,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q29", (void*)&presetOutputs.q29,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q30", (void*)&presetOutputs.q30,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q31", (void*)&presetOutputs.q31,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("q32", (void*)&presetOutputs.q32,  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q1", (void*)&presetOutputs.q[0],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q2", (void*)&presetOutputs.q[1],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q3", (void*)&presetOutputs.q[2],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q4", (void*)&presetOutputs.q[3],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q5", (void*)&presetOutputs.q[4],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q6", (void*)&presetOutputs.q[5],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q7", (void*)&presetOutputs.q[6],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q8", (void*)&presetOutputs.q[7],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q9", (void*)&presetOutputs.q[8],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q10", (void*)&presetOutputs.q[6],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q11", (void*)&presetOutputs.q[10],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q12", (void*)&presetOutputs.q[11],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q13", (void*)&presetOutputs.q[12],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q14", (void*)&presetOutputs.q[13],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q15", (void*)&presetOutputs.q[14],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q16", (void*)&presetOutputs.q[15],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q17", (void*)&presetOutputs.q[16],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q18", (void*)&presetOutputs.q[17],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q19", (void*)&presetOutputs.q[18],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q20", (void*)&presetOutputs.q[19],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q21", (void*)&presetOutputs.q[20],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q22", (void*)&presetOutputs.q[21],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q23", (void*)&presetOutputs.q[22],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q24", (void*)&presetOutputs.q[23],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q25", (void*)&presetOutputs.q[24],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q26", (void*)&presetOutputs.q[25],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q27", (void*)&presetOutputs.q[26],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q28", (void*)&presetOutputs.q[27],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q29", (void*)&presetOutputs.q[28],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q30", (void*)&presetOutputs.q[29],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q31", (void*)&presetOutputs.q[30],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+  load_builtin_param_float("q32", (void*)&presetOutputs.q[31],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
 
 
   //param = Param::new_param_string ( "imageurl", P_FLAG_NONE, &this->imageUrl);

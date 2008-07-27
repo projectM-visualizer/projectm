@@ -83,12 +83,12 @@ public:
   /// @bug encapsulate
   BuiltinParams builtinParams;
 
-  
+
   /// Used by parser to find/create custom waves and shapes. May be refactored
   template <class CustomObject>
   static CustomObject * find_custom_object(int id, std::vector<CustomObject*> & customObjects);
 
-  
+
   int per_pixel_eqn_string_index;
   int per_frame_eqn_string_index;
   int per_frame_init_eqn_string_index;
@@ -96,13 +96,13 @@ public:
   int per_frame_eqn_count,
   per_frame_init_eqn_count;
 
-  
+
   /// Used by parser
   /// @bug refactor
   int add_per_pixel_eqn( char *name, GenExpr *gen_expr );
 
   /// Accessor method to retrieve the absolute file path of the loaded preset
-  /// \returns a file path string 
+  /// \returns a file path string
   std::string absoluteFilePath() const
   {
     return m_absoluteFilePath;
@@ -128,7 +128,7 @@ public:
 	{
 		m_presetName = theValue;
 	}
-	
+
 
 	/// Gets the descriptive name for this preset (typically the file name)
 	/// \returns the name of the preset
@@ -139,7 +139,7 @@ public:
 
 
   /// @bug encapsulate
-	
+
   PresetOutputs::cwave_container customWaves;
   PresetOutputs::cshape_container customShapes;
 
@@ -198,18 +198,18 @@ void Preset::transfer_q_variables(std::vector<CustomObject*> & customObjects)
  	CustomObject * custom_object;
 
 	for (typename std::vector<CustomObject*>::iterator pos = customObjects.begin(); pos != customObjects.end();++pos) {
-	
+
 		custom_object = *pos;
-		custom_object->q1 = m_presetOutputs.q1;
-		custom_object->q2 = m_presetOutputs.q2;
-		custom_object->q3 = m_presetOutputs.q3;
-		custom_object->q4 = m_presetOutputs.q4;
-		custom_object->q5 = m_presetOutputs.q5;
-		custom_object->q6 = m_presetOutputs.q6;
-		custom_object->q7 = m_presetOutputs.q7;
-		custom_object->q8 = m_presetOutputs.q8;
+		custom_object->q1 = m_presetOutputs.q[0];
+		custom_object->q2 = m_presetOutputs.q[1];
+		custom_object->q3 = m_presetOutputs.q[2];
+		custom_object->q4 = m_presetOutputs.q[3];
+		custom_object->q5 = m_presetOutputs.q[4];
+		custom_object->q6 = m_presetOutputs.q[5];
+		custom_object->q7 = m_presetOutputs.q[6];
+		custom_object->q8 = m_presetOutputs.q[7];
 	}
- 
+
 
 }
 

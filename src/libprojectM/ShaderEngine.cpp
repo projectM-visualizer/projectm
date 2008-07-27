@@ -22,7 +22,7 @@ ShaderEngine::~ShaderEngine()
 
 #ifdef USE_CG
 
-void ShaderEngine::SetParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect,
+void ShaderEngine::setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect,
 		TextureManager *textureManager)
 {
 	mainTextureId = texId;
@@ -35,7 +35,7 @@ void ShaderEngine::SetParams(const int texsize, const unsigned int texId, const 
 
 	glGenTextures(1, &blur1_tex);
 	glBindTexture(GL_TEXTURE_2D, blur1_tex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize/2, texsize/2, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -43,7 +43,7 @@ void ShaderEngine::SetParams(const int texsize, const unsigned int texId, const 
 
 	glGenTextures(1, &blur2_tex);
 	glBindTexture(GL_TEXTURE_2D, blur2_tex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize / 2, texsize / 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize / 4, texsize / 4, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -51,7 +51,7 @@ void ShaderEngine::SetParams(const int texsize, const unsigned int texId, const 
 
 	glGenTextures(1, &blur3_tex);
 	glBindTexture(GL_TEXTURE_2D, blur3_tex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize / 4, texsize / 4, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize / 8, texsize / 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -249,7 +249,7 @@ bool ShaderEngine::LoadCgProgram(Shader &shader)
 				{
 					UserTexture* texture = shader.textures[tex];
 					texture->texsizeDefined = true;
-					std::cout << "texsize_" << tex << " found" << std::endl;
+					//std::cout << "texsize_" << tex << " found" << std::endl;
 				}
 			}
 			found = program.find("texsize_", found);
@@ -381,7 +381,7 @@ void ShaderEngine::SetupCg()
 	profileName = cgGetProfileString(myCgProfile);
 	std::cout << "Cg: Initialized profile: " << profileName << std::endl;
 
-	blur1Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blurHoriz", NULL);
+	blur1Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blur1", NULL);
 
 	checkForCgCompileError("creating blur1 program");
 	if (blur1Program == NULL)
@@ -421,12 +421,12 @@ void ShaderEngine::SetupCgVariables(CGprogram program, const Pipeline &pipeline,
 	cgGLSetParameter1f(cgGetNamedParameter(program, "frame"), context.frame);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "progress"), context.progress);
 
-	cgGLSetParameter1f(cgGetNamedParameter(program, "blur1_min"), pipeline.warpShader.blur1n);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "blur1_max"), pipeline.warpShader.blur1x);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "blur2_min"), pipeline.warpShader.blur2n);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "blur2_max"), pipeline.warpShader.blur2x);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "blur3_min"), pipeline.warpShader.blur3n);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "blur3_max"), pipeline.warpShader.blur3x);
+	cgGLSetParameter1f(cgGetNamedParameter(program, "blur1_min"), pipeline.blur1n);
+	cgGLSetParameter1f(cgGetNamedParameter(program, "blur1_max"), pipeline.blur1x);
+	cgGLSetParameter1f(cgGetNamedParameter(program, "blur2_min"), pipeline.blur2n);
+	cgGLSetParameter1f(cgGetNamedParameter(program, "blur2_max"), pipeline.blur2x);
+	cgGLSetParameter1f(cgGetNamedParameter(program, "blur3_min"), pipeline.blur3n);
+	cgGLSetParameter1f(cgGetNamedParameter(program, "blur3_max"), pipeline.blur3x);
 
 	cgGLSetParameter1f(cgGetNamedParameter(program, "bass"), beatDetect->bass);
 	cgGLSetParameter1f(cgGetNamedParameter(program, "mid"), beatDetect->mid);
@@ -478,8 +478,6 @@ void ShaderEngine::SetupUserTexture(CGprogram program, const UserTexture* textur
 				/ (float) texture->width, 1 / (float) texture->height);
 		checkForCgError("setting parameter texsize");
 	}
-
-
 }
 
 void ShaderEngine::SetupUserTextureState( const UserTexture* texture)
@@ -491,28 +489,23 @@ void ShaderEngine::SetupUserTextureState( const UserTexture* texture)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->wrap ? GL_REPEAT : GL_CLAMP);
 }
 
-void ShaderEngine::SetupCgQVariables(Shader &shader, const PresetOutputs &q)
+void ShaderEngine::SetupCgQVariables(CGprogram program, const Pipeline &q)
 {
-	CGprogram program = programs[&shader];
-
-	if (shader.enabled)
-	{
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qa"), q.q1, q.q2, q.q3, q.q4);
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qb"), q.q5, q.q6, q.q7, q.q8);
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qc"), q.q9, q.q10, q.q11, q.q12);
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qd"), q.q13, q.q14, q.q15, q.q16);
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qe"), q.q17, q.q18, q.q19, q.q20);
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qf"), q.q21, q.q22, q.q23, q.q24);
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qg"), q.q25, q.q26, q.q27, q.q28);
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qh"), q.q29, q.q30, q.q31, q.q32);
-	}
+		cgGLSetParameter4f(cgGetNamedParameter(program, "_qa"), q.q[0], q.q[1], q.q[2], q.q[3]);
+		cgGLSetParameter4f(cgGetNamedParameter(program, "_qb"), q.q[4], q.q[5], q.q[6], q.q[7]);
+		cgGLSetParameter4f(cgGetNamedParameter(program, "_qc"), q.q[8], q.q[9], q.q[10], q.q[11]);
+		cgGLSetParameter4f(cgGetNamedParameter(program, "_qd"), q.q[12], q.q[13], q.q[14], q.q[15]);
+		cgGLSetParameter4f(cgGetNamedParameter(program, "_qe"), q.q[16], q.q[17], q.q[18], q.q[19]);
+		cgGLSetParameter4f(cgGetNamedParameter(program, "_qf"), q.q[20], q.q[21], q.q[22], q.q[23]);
+		cgGLSetParameter4f(cgGetNamedParameter(program, "_qg"), q.q[24], q.q[25], q.q[26], q.q[27]);
+		cgGLSetParameter4f(cgGetNamedParameter(program, "_qh"), q.q[28], q.q[29], q.q[30], q.q[31]);
 }
 
 void ShaderEngine::setAspect(float aspect)
 {
 	this->aspect = aspect;
 }
-void ShaderEngine::RenderBlurTextures(const Pipeline *pipeline, const PipelineContext &pipelineContext,
+void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineContext &pipelineContext,
 		const int texsize)
 {
 	if (blur1_enabled || blur2_enabled || blur3_enabled)
@@ -540,120 +533,97 @@ void ShaderEngine::RenderBlurTextures(const Pipeline *pipeline, const PipelineCo
 
 		if (blur1_enabled)
 		{
-			cgGLSetParameter4f(cgGetNamedParameter(blur1Program, "srctexsize"), texsize, texsize, 1 / (float) texsize,
-					1 / (float) texsize);
-			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize, texsize, 1 / (float) texsize,
-								1 / (float) texsize);
+			cgGLSetParameter4f(cgGetNamedParameter(blur1Program, "srctexsize"), texsize/2, texsize/2, 2 / (float) texsize,
+					2 / (float) texsize);
+			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize/2 , texsize/2, 2 / (float) texsize,
+								2 / (float) texsize);
 
-			cgGLBindProgram(blur1Program);
-			checkForCgError("binding blur1 program");
 
-			float points[4][2] =
+
+			float pointsold[4][2] =
 			{
 			{ 0, 1 },
 			{ 0, 0 },
 			{ 1, 0 },
 			{ 1, 1 } };
+			float points[4][2] =
+						{
+						{ 0, 0.5 },
+						{ 0, 0 },
+						{ 0.5, 0 },
+						{ 0.5, 0.5 } };
+
+			cgGLBindProgram(blur1Program);
+						checkForCgError("binding blur1 program");
 
 			glVertexPointer(2, GL_FLOAT, 0, points);
-glBlendFunc(GL_ONE,GL_ZERO);
-			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-
-
-			cgGLUnbindProgram(myCgProfile);
-			checkForCgError("unbinding blur1 program");
-			glBindTexture(GL_TEXTURE_2D, blur1_tex);
-						glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize, texsize);
-
-			cgGLBindProgram(blur2Program);
-			checkForCgError("binding blur2 program");
 			glBlendFunc(GL_ONE,GL_ZERO);
 			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-			glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize, texsize);
 
-			cgGLUnbindProgram(myCgProfile);
-			checkForCgError("unbinding blur2 program");
+			glBindTexture(GL_TEXTURE_2D, blur1_tex);
+			glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize/2, texsize/2);
+
+
 		}
 
 		if (blur2_enabled)
 		{
-			cgGLSetParameter4f(cgGetNamedParameter(blur1Program, "srctexsize"), texsize, texsize, 1 / (float) texsize,
-								1 / (float) texsize);
-			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize, texsize, 1 / (float) texsize,
-					1 / (float) texsize);
-
-			cgGLBindProgram(blur1Program);
-			checkForCgError("binding blur1 program");
-
-			float points[4][2] =
-			{
-			{ 0, 0.5 },
-			{ 0, 0 },
-			{ 0.5, 0 },
-			{ 0.5, 0.5 } };
-
-			glVertexPointer(2, GL_FLOAT, 0, points);
-			glBlendFunc(GL_ONE,GL_ZERO);
-			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-
-			cgGLUnbindProgram(myCgProfile);
-						checkForCgError("unbinding blur1 program");
-
-						cgGLBindProgram(blur2Program);
-						checkForCgError("binding blur2 program");
-						glBlendFunc(GL_ONE,GL_ONE);
-						glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-						glBindTexture(GL_TEXTURE_2D, blur2_tex);
-						glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize/2, texsize/2);
-
-						cgGLUnbindProgram(myCgProfile);
-						checkForCgError("unbinding blur2 program");
-		}
-
-		if (blur3_enabled)
-		{
-			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize/2, texsize/2, 2 / (float) texsize,
+			cgGLSetParameter4f(cgGetNamedParameter(blur1Program, "srctexsize"), texsize/2, texsize/2, 2 / (float) texsize,
 								2 / (float) texsize);
-			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize / 2, texsize / 2, 2
-					/ (float) texsize, 2 / (float) texsize);
+			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize/2, texsize/2, 2 / (float) texsize,
+					2 / (float) texsize);
+
+
+
 			float points[4][2] =
 			{
 			{ 0, 0.25 },
 			{ 0, 0 },
 			{ 0.25, 0 },
 			{ 0.25, 0.25 } };
-			cgGLBindProgram(blur1Program);
-								checkForCgError("binding blur2 program");
+
 			glVertexPointer(2, GL_FLOAT, 0, points);
 			glBlendFunc(GL_ONE,GL_ZERO);
 			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 
-			//glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize / 4, texsize / 4);
-			cgGLUnbindProgram(myCgProfile);
-						checkForCgError("unbinding blur1 program");
 
-						cgGLBindProgram(blur2Program);
-						checkForCgError("binding blur2 program");
-						glBlendFunc(GL_ONE,GL_ONE);
-						glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-						glBindTexture(GL_TEXTURE_2D, blur3_tex);
+						glBindTexture(GL_TEXTURE_2D, blur2_tex);
 						glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize/4, texsize/4);
 
-						cgGLUnbindProgram(myCgProfile);
-						checkForCgError("unbinding blur2 program");
+
 		}
 
-		if (false && blur2_enabled || blur3_enabled)
+		if (blur3_enabled)
 		{
+			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize/4, texsize/4, 4 / (float) texsize,
+								4/ (float) texsize);
+			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize / 4, texsize / 4, 4
+					/ (float) texsize, 4 / (float) texsize);
+			float points[4][2] =
+			{
+			{ 0, 0.125 },
+			{ 0, 0 },
+			{ 0.125, 0 },
+			{ 0.125, 0.125 } };
+
+			glVertexPointer(2, GL_FLOAT, 0, points);
+			glBlendFunc(GL_ONE,GL_ZERO);
+			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+
+
+						glBindTexture(GL_TEXTURE_2D, blur3_tex);
+						glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize/8, texsize/8);
+
+
+		}
+
+
 			cgGLUnbindProgram(myCgProfile);
 			checkForCgError("unbinding blur2 program");
-		}
+
 
 		cgGLDisableProfile(myCgProfile);
 		checkForCgError("disabling blur profile");
@@ -686,13 +656,11 @@ void ShaderEngine::disableShader()
 	enabled = false;
 }
 
-void ShaderEngine::enableShader(Shader &shader, const Pipeline *pipeline, const PipelineContext *pipelineContext)
+void ShaderEngine::enableShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
 	enabled = false;
 	if (shader.enabled)
 	{
-
-
 
 		for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos	!= shader.textures.end(); ++pos)
 							SetupUserTextureState( pos->second);
@@ -709,7 +677,8 @@ void ShaderEngine::enableShader(Shader &shader, const Pipeline *pipeline, const 
 		cgGLBindProgram(program);
 		checkForCgError("binding warp program");
 
-		SetupCgVariables(program, *pipeline, *pipelineContext);
+		SetupCgVariables(program, pipeline, pipelineContext);
+		SetupCgQVariables(program, pipeline);
 
 		enabled = true;
 	}
