@@ -65,7 +65,7 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
 #endif /** USE_FTGL */
 
-	int size = mesh.width * 2 * 2;
+	int size = mesh.width * 5 * 2;
 	p = ( float * ) wipemalloc ( size * sizeof ( float ) );
 	t = ( float * ) wipemalloc ( size * sizeof ( float  ) );
 
@@ -298,9 +298,9 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 	glDisableClientState(GL_COLOR_ARRAY);
 
 
-	glVertexPointer(2, GL_FLOAT, 0, p);
-	glTexCoordPointer(2, GL_FLOAT, 0, t);
-
+	//glVertexPointer(2, GL_FLOAT, 0, p);
+	//glTexCoordPointer(2, GL_FLOAT, 0, t);
+	glInterleavedArrays(GL_T2F_V3F,0,p);
 
 
 	if (pipeline.staticPerPixel)
@@ -309,20 +309,22 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 				{
 				for (int i = 0; i < mesh.width; i++)
 				{
-					t[i * 4] = pipeline.x_mesh[i][j];
-					t[i * 4 + 1] = pipeline.y_mesh[i][j];
-
-					t[i * 4 + 2] = pipeline.x_mesh[i][j+1];
-					t[i * 4 + 3] = pipeline.y_mesh[i][j+1];
-
 					int index = j * mesh.width + i;
 					int index2 = (j + 1) * mesh.width + i;
 
-					p[i * 4] = mesh.identity[index].x;
-					p[i * 4 + 1] = mesh.identity[index].y;
+					p[i * 10] = pipeline.x_mesh[i][j];
+					p[i * 10 + 1] = pipeline.y_mesh[i][j];
 
-					p[i * 4 + 2] = mesh.identity[index2].x;
-					p[i * 4 + 3] = mesh.identity[index2].y;
+					p[i * 10 + 2] = mesh.identity[index].x;
+					p[i * 10 + 3] = mesh.identity[index].y;
+					p[i * 10 + 4] = 0;
+
+					p[i * 10 + 5] = pipeline.x_mesh[i][j+1];
+					p[i * 10 + 6] = pipeline.y_mesh[i][j+1];
+
+					p[i * 10 + 7] = mesh.identity[index2].x;
+					p[i * 10 + 8] = mesh.identity[index2].y;
+					p[i * 10 + 9] = 0;
 				}
 				glDrawArrays(GL_TRIANGLE_STRIP, 0, mesh.width * 2);
 			}
