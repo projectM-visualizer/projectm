@@ -65,12 +65,31 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
 #endif /** USE_FTGL */
 
-	int size = mesh.width * 5 * 2;
+
+	int size = (mesh.height - 1) *mesh.width * 5 * 2;
 	p = ( float * ) wipemalloc ( size * sizeof ( float ) );
-	t = ( float * ) wipemalloc ( size * sizeof ( float  ) );
 
 
+	for (int j = 0; j < mesh.height - 1; j++)
+	{
+		int base = j * mesh.width * 2 * 5;
 
+
+		for (int i = 0; i < mesh.width; i++)
+		{
+			int index = j * mesh.width + i;
+			int index2 = (j + 1) * mesh.width + i;
+
+			int strip = base + i * 10;
+			p[strip + 2] = mesh.identity[index].x;
+			p[strip + 3] = mesh.identity[index].y;
+			p[strip + 4] = 0;
+
+			p[strip + 7] = mesh.identity[index2].x;
+			p[strip + 8] = mesh.identity[index2].y;
+			p[strip + 9] = 0;
+		}
+	}
 
 
 #ifdef USE_CG
@@ -306,28 +325,20 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 	if (pipeline.staticPerPixel)
 	{
 		for (int j = 0; j < mesh.height - 1; j++)
-				{
-				for (int i = 0; i < mesh.width; i++)
-				{
-					int index = j * mesh.width + i;
-					int index2 = (j + 1) * mesh.width + i;
+		{
+			int base = j * mesh.width * 2 * 5;
 
-					p[i * 10] = pipeline.x_mesh[i][j];
-					p[i * 10 + 1] = pipeline.y_mesh[i][j];
+			for (int i = 0; i < mesh.width; i++)
+			{
+				int strip = base + i * 10;
+				p[strip] = pipeline.x_mesh[i][j];
+				p[strip + 1] = pipeline.y_mesh[i][j];
 
-					p[i * 10 + 2] = mesh.identity[index].x;
-					p[i * 10 + 3] = mesh.identity[index].y;
-					p[i * 10 + 4] = 0;
-
-					p[i * 10 + 5] = pipeline.x_mesh[i][j+1];
-					p[i * 10 + 6] = pipeline.y_mesh[i][j+1];
-
-					p[i * 10 + 7] = mesh.identity[index2].x;
-					p[i * 10 + 8] = mesh.identity[index2].y;
-					p[i * 10 + 9] = 0;
-				}
-				glDrawArrays(GL_TRIANGLE_STRIP, 0, mesh.width * 2);
+				p[strip + 5] = pipeline.x_mesh[i][j+1];
+				p[strip + 6] = pipeline.y_mesh[i][j+1];
 			}
+		}
+
 	}
 	else
 	{
@@ -336,27 +347,30 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 
 	for (int j = 0; j < mesh.height - 1; j++)
 	{
+		int base = j * mesh.width * 2 * 5;
+
 		for (int i = 0; i < mesh.width; i++)
 		{
+			int strip = base + i * 10;
 			int index = j * mesh.width + i;
 			int index2 = (j + 1) * mesh.width + i;
 
-			t[i * 4] = mesh.p[index].x;
-			t[i * 4 + 1] = mesh.p[index].y;
+			p[strip] = mesh.p[index].x;
+			p[strip + 1] = mesh.p[index].y;
 
-			t[i * 4 + 2] = mesh.p[index2].x;
-			t[i * 4 + 3] = mesh.p[index2].y;
+			p[strip + 5] = mesh.p[index2].x;
+			p[strip + 6] = mesh.p[index2].y;
 
-			p[i * 4] = mesh.identity[index].x;
-			p[i * 4 + 1] = mesh.identity[index].y;
-
-			p[i * 4 + 2] = mesh.identity[index2].x;
-			p[i * 4 + 3] = mesh.identity[index2].y;
 
 		}
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, mesh.width*2);
 	}
+
 	}
+
+	for (int j = 0; j < mesh.height - 1; j++)
+		glDrawArrays(GL_TRIANGLE_STRIP,j* mesh.width* 2,mesh.width*2);
+
+
 	glDisable(GL_TEXTURE_2D);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -377,7 +391,6 @@ Renderer::~Renderer()
 	//std::cerr << "grid assign end" << std::endl;
 
 	free(p);
-	free(t);
 
 #ifdef USE_FTGL
 	//	std::cerr << "freeing title fonts" << std::endl;

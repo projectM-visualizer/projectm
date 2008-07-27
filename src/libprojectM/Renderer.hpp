@@ -101,7 +101,7 @@ private:
   std::string m_presetName;
 
   float* p;
-  float* t;
+  char** t;
 
   int vw;
   int vh;
