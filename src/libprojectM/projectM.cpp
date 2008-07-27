@@ -450,7 +450,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	assert(pcm());
 	beatDetect = new BeatDetect ( _pcm );
 
-	initPresetTools();
+
 	if ( presetInputs.fps > 0 )
 		mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps );
 	else mspf = 0;
@@ -463,6 +463,8 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
 	renderer->SetPipeline(presetOutputs);
 	running = true;
+
+	initPresetTools();
 
 #ifdef USE_THREADS
 	pthread_mutex_init(&mutex, NULL);
