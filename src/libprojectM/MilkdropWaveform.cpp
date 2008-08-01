@@ -18,8 +18,8 @@
 #include "MilkdropWaveform.hpp"
 #include "math.h"
 
-MilkdropWaveform::MilkdropWaveform()
-	: x(0.5), y(0.5), r(1), g(0), b(0), a(1), mystery(0), mode(Line), scale(10), smoothing(0), rot(0), samples(0),modOpacityStart(0),modOpacityEnd(1),
+MilkdropWaveform::MilkdropWaveform(): RenderItem(),
+	x(0.5), y(0.5), r(1), g(0), b(0), a(1), mystery(0), mode(Line), scale(10), smoothing(0), rot(0), samples(0),modOpacityStart(0),modOpacityEnd(1),
 	modulateAlphaByVolume(false), maximizeColors(false), additive(false), dots(false), thick(false), loop(false) {}
 
 void MilkdropWaveform::Draw(RenderContext &context)
@@ -149,11 +149,11 @@ void MilkdropWaveform::MaximizeColors(RenderContext &context)
 		}
 
 
-		glColor4f(wave_r_switch, wave_g_switch, wave_b_switch, temp_a);
+		glColor4f(wave_r_switch, wave_g_switch, wave_b_switch, temp_a * masterAlpha);
 	}
 	else
 	{
-		glColor4f(r, g, b, temp_a);
+		glColor4f(r, g, b, temp_a * masterAlpha);
 	}
 
 }

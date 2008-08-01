@@ -19,7 +19,7 @@
 #include <algorithm>
 
 Waveform::Waveform(int samples)
-: samples(samples), points(samples), pointContext(samples)
+: RenderItem(),samples(samples), points(samples), pointContext(samples)
 {
 
 	spectrum = false; /* spectrum data or pcm data */
@@ -83,7 +83,7 @@ void Waveform::Draw(RenderContext &context)
 			  colors[x][0] = points[x].r;
 			  colors[x][1] = points[x].g;
 			  colors[x][2] = points[x].b;
-			  colors[x][3] = points[x].a;
+			  colors[x][3] = points[x].a * masterAlpha;
 
 			  p[x][0] = points[x].x;
 			  p[x][1] = -(points[x].y-1);
