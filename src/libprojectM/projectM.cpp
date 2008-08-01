@@ -262,7 +262,7 @@ void projectM::evaluateSecondPreset()
 
       assert ( m_activePreset2.get() );
       m_activePreset2->evaluateFrame();
-      m_activePreset2->presetOutputs().PerPixelMath ( presetInputs2 );
+      m_activePreset2->presetOutputs().Render(*beatDetect,presetInputs2);
 }
 
 void projectM::setupPresetInputs(PresetInputs *inputs)
@@ -340,7 +340,7 @@ DLLEXPORT void projectM::renderFrame()
 		pthread_mutex_unlock( &mutex );
 #endif
 		m_activePreset->evaluateFrame();
-		m_activePreset->presetOutputs().PerPixelMath ( presetInputs );
+		m_activePreset->presetOutputs().Render(*beatDetect,presetInputs);
 
 #ifdef USE_THREADS
 		pthread_mutex_lock( &mutex );
@@ -349,8 +349,11 @@ DLLEXPORT void projectM::renderFrame()
 #endif
 
 
-		PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),timeKeeper->SmoothRatio(),presetInputs.gx, presetInputs.gy );
-
+		//PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),timeKeeper->SmoothRatio(),presetInputs.gx, presetInputs.gy );
+Pipeline pipeline;
+pipeline.setStaticPerPixel(presetInputs.gx,presetInputs.gy);
+PipelineMerger::MergePipelines( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(), pipeline,timeKeeper->SmoothRatio());
+renderer->RenderFrame ( pipeline, presetInputs );
 	}
 	else
 	{
@@ -364,15 +367,15 @@ DLLEXPORT void projectM::renderFrame()
 
 		m_activePreset->evaluateFrame();
 
-		m_activePreset->presetOutputs().PerPixelMath (presetInputs );
+		m_activePreset->presetOutputs().Render(*beatDetect,presetInputs);
 
-
+		renderer->RenderFrame ( m_activePreset->presetOutputs(), presetInputs );
 	}
 
 	//	std::cout<< m_activePreset->absoluteFilePath()<<std::endl;
 	//	renderer->presetName = m_activePreset->absoluteFilePath();
-	m_activePreset->presetOutputs().PrepareToRender();
-	renderer->RenderFrame ( m_activePreset->presetOutputs(), presetInputs );
+
+
 
 	count++;
 #ifndef WIN32

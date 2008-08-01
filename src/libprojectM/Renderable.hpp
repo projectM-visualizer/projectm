@@ -21,7 +21,9 @@ public:
 class RenderItem
 {
 public:
+	float masterAlpha;
 	virtual void Draw(RenderContext &context) = 0;
+	RenderItem();
 };
 
 class DarkenCenter : public RenderItem
@@ -87,7 +89,7 @@ public:
     float y_offset;
 
     void Draw(RenderContext &context);
-    MotionVectors(){}
+    MotionVectors();
 };
 
 class Border : public RenderItem
@@ -106,6 +108,6 @@ public:
     float inner_a;
 
     void Draw(RenderContext &context);
-    Border(){}
+    Border();
 };
 #endif

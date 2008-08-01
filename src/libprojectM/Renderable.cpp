@@ -18,7 +18,11 @@
 RenderContext::RenderContext()
 	: time(0),texsize(512), aspectRatio(1), aspectCorrect(false){};
 
-DarkenCenter::DarkenCenter(){}
+RenderItem::RenderItem():masterAlpha(1){}
+
+DarkenCenter::DarkenCenter():RenderItem(){}
+MotionVectors::MotionVectors():RenderItem(){}
+Border::Border():RenderItem(){}
 
 void DarkenCenter::Draw(RenderContext &context)
 	{
@@ -26,7 +30,7 @@ void DarkenCenter::Draw(RenderContext &context)
 
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		float colors[6][4] = {{0, 0, 0, 3.0f/32.0f},
+		float colors[6][4] = {{0, 0, 0, (3.0f/32.0f) * masterAlpha},
 				      {0, 0, 0, 0},
 				      {0, 0, 0, 0},
 				      {0, 0, 0, 0},
@@ -51,7 +55,7 @@ void DarkenCenter::Draw(RenderContext &context)
 
 	}
 
-Shape::Shape()
+Shape::Shape():RenderItem()
 {
 	 std::string imageUrl = "";
 	     sides = 4;
@@ -132,7 +136,7 @@ void Shape::Draw(RenderContext &context)
 				colors[0][0] = r;
 				colors[0][1] = g;
 				colors[0][2] = b;
-				colors[0][3] = a;
+				colors[0][3] = a * masterAlpha;
 			  	   tex[0][0] = 0.5;
 				   tex[0][1] = 0.5;
 				points[0][0] = xval;
@@ -143,7 +147,7 @@ void Shape::Draw(RenderContext &context)
 				  colors[i][0]= r2;
 				  colors[i][1]=g2;
 				  colors[i][2]=b2;
-				  colors[i][3]=a2;
+				  colors[i][3]=a2 * masterAlpha;
 
 				  t = (i-1)/(float) sides;
 				  tex[i][0] =0.5f + 0.5f*cosf(t*3.1415927f*2 +  tex_ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)/ tex_zoom;
@@ -192,7 +196,7 @@ void Shape::Draw(RenderContext &context)
 			  colors[0][0]=r;
 			  colors[0][1]=g;
 			  colors[0][2]=b;
-			  colors[0][3]=a;
+			  colors[0][3]=a * masterAlpha;
 			  points[0][0]=xval;
 			  points[0][1]=yval;
 
@@ -203,7 +207,7 @@ void Shape::Draw(RenderContext &context)
 			      colors[i][0]=r2;
 			      colors[i][1]=g2;
 			      colors[i][2]=b2;
-			      colors[i][3]=a2;
+			      colors[i][3]=a2 * masterAlpha;
 			      t = (i-1)/(float) sides;
 			      points[i][0]=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
 			      points[i][1]=temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
@@ -225,7 +229,7 @@ void Shape::Draw(RenderContext &context)
 
 			float points[sides+1][2];
 
-			glColor4f( border_r, border_g, border_b, border_a);
+			glColor4f( border_r, border_g, border_b, border_a * masterAlpha);
 
 			for ( int i=0;i< sides;i++)
 			{
@@ -257,7 +261,7 @@ void MotionVectors::Draw(RenderContext &context)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glPointSize(length);
-	glColor4f(r, g, b, a);
+	glColor4f(r, g, b, a * masterAlpha);
 
 	if (x_num + y_num < 600)
 	  {
@@ -295,7 +299,7 @@ void Border::Draw(RenderContext &context)
 
 	//no additive drawing for borders
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(outer_r, outer_g, outer_b, outer_a);
+	glColor4f(outer_r, outer_g, outer_b, outer_a * masterAlpha);
 
 	float pointsA[4][2] = {{0,0},{0,1},{of,0},{of,1}};
 	glVertexPointer(2,GL_FLOAT,0,pointsA);
@@ -313,7 +317,7 @@ void Border::Draw(RenderContext &context)
 	glVertexPointer(2,GL_FLOAT,0,pointsD);
 	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
 
-	glColor4f(inner_r, inner_g, inner_b, inner_a);
+	glColor4f(inner_r, inner_g, inner_b, inner_a * masterAlpha);
 
 	glRectd(of, of, of+iff, texof);
 	glRectd(of+iff, of, texof-iff, of+iff);
