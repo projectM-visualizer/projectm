@@ -68,8 +68,8 @@ public:
     void Initialize(int gx, int gy);
     PresetOutputs();
     ~PresetOutputs();
-    void PrepareToRender();
-    void PerPixelMath( PresetInputs &presetInputs);
+    virtual void Render(const BeatDetect &music, const PipelineContext &context);
+    void PerPixelMath( const PipelineContext &context);
     /* PER FRAME VARIABLES BEGIN */
 
     float zoom;
@@ -127,9 +127,9 @@ public:
     float **cy_mesh;
     float **warp_mesh;
 
-    float **origx2;  //original mesh
-    float **origy2;
-
+    float **orig_x;  //original mesh
+    float **orig_y;
+    float **rad_mesh;
 };
 
 
