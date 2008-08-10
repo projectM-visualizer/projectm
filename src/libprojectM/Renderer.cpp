@@ -411,7 +411,9 @@ void Renderer::reset(int w, int h)
 	this -> vw = w;
 	this -> vh = h;
 
+#ifdef USE_CG
 	shaderEngine.setAspect(aspect);
+#endif
 
 	glShadeModel(GL_SMOOTH);
 
