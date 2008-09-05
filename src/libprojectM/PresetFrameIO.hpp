@@ -57,7 +57,7 @@ public:
 /// Container class for all preset writeable engine variables. This is the important glue
 /// between the presets and renderer to facilitate smooth preset switching
 /// Every preset object needs a reference to one of these.
-class PresetOutputs : public Pipeline{
+class PresetOutputs : public Pipeline {
 public:
     typedef std::vector<CustomWave*> cwave_container;
     typedef std::vector<CustomShape*> cshape_container;

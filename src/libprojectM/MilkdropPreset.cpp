@@ -39,10 +39,11 @@
 
 
 MilkdropPreset::MilkdropPreset(std::istream & in, const std::string & presetName, PresetInputs & presetInputs, PresetOutputs & presetOutputs):
-    builtinParams(presetInputs, presetOutputs),
-    m_presetName(presetName),
-    m_presetOutputs(presetOutputs),
-    m_presetInputs(presetInputs)
+	Preset(presetName, ""),
+    	builtinParams(presetInputs, presetOutputs),
+    	m_presetName(presetName),
+    	m_presetOutputs(presetOutputs),
+    	presetInputs(presetInputs)
 {
 
   m_presetOutputs.customWaves.clear();
@@ -58,7 +59,7 @@ MilkdropPreset::MilkdropPreset(const std::string & absoluteFilePath, const std::
     m_absoluteFilePath(absoluteFilePath),
     m_presetName(presetName),
     m_presetOutputs(presetOutputs),
-    m_presetInputs(presetInputs)
+    presetInputs(presetInputs)
 {
 
   m_presetOutputs.customWaves.clear();
@@ -378,73 +379,73 @@ void MilkdropPreset::initialize_PerPixelMeshes()
 {
 
   int x,y;
-      for (x=0;x<m_presetInputs.gx;x++){
-	for(y=0;y<m_presetInputs.gy;y++){
+      for (x=0;x<presetInputs.gx;x++){
+	for(y=0;y<presetInputs.gy;y++){
 	  m_presetOutputs.cx_mesh[x][y]=m_presetOutputs.cx;
 	}}
 
 
 
 
-      for (x=0;x<m_presetInputs.gx;x++){
-	for(y=0;y<m_presetInputs.gy;y++){
+      for (x=0;x<presetInputs.gx;x++){
+	for(y=0;y<presetInputs.gy;y++){
 	  m_presetOutputs.cy_mesh[x][y]=m_presetOutputs.cy;
 	}}
 
 
 
-      for (x=0;x<m_presetInputs.gx;x++){
-	for(y=0;y<m_presetInputs.gy;y++){
+      for (x=0;x<presetInputs.gx;x++){
+	for(y=0;y<presetInputs.gy;y++){
 	  m_presetOutputs.sx_mesh[x][y]=m_presetOutputs.sx;
 	}}
 
 
 
 
-      for (x=0;x<m_presetInputs.gx;x++){
-	for(y=0;y<m_presetInputs.gy;y++){
+      for (x=0;x<presetInputs.gx;x++){
+	for(y=0;y<presetInputs.gy;y++){
 	  m_presetOutputs.sy_mesh[x][y]=m_presetOutputs.sy;
 	}}
 
 
 
-      for (x=0;x<m_presetInputs.gx;x++){
-	for(y=0;y<m_presetInputs.gy;y++){
+      for (x=0;x<presetInputs.gx;x++){
+	for(y=0;y<presetInputs.gy;y++){
 	  m_presetOutputs.dx_mesh[x][y]=m_presetOutputs.dx;
 	}}
 
 
 
-      for (x=0;x<m_presetInputs.gx;x++){
-	for(y=0;y<m_presetInputs.gy;y++){
+      for (x=0;x<presetInputs.gx;x++){
+	for(y=0;y<presetInputs.gy;y++){
 	  m_presetOutputs.dy_mesh[x][y]=m_presetOutputs.dy;
 	}}
 
 
 
-      for (x=0;x<m_presetInputs.gx;x++){
-	for(y=0;y<m_presetInputs.gy;y++){
+      for (x=0;x<presetInputs.gx;x++){
+	for(y=0;y<presetInputs.gy;y++){
 	  m_presetOutputs.zoom_mesh[x][y]=m_presetOutputs.zoom;
 	}}
 
 
 
 
-      for (x=0;x<m_presetInputs.gx;x++){
-	for(y=0;y<m_presetInputs.gy;y++){
+      for (x=0;x<presetInputs.gx;x++){
+	for(y=0;y<presetInputs.gy;y++){
 	  m_presetOutputs.zoomexp_mesh[x][y]=m_presetOutputs.zoomexp;
 	}}
 
 
 
-      for (x=0;x<m_presetInputs.gx;x++){
-	for(y=0;y<m_presetInputs.gy;y++){
+      for (x=0;x<presetInputs.gx;x++){
+	for(y=0;y<presetInputs.gy;y++){
 	  m_presetOutputs.rot_mesh[x][y]=m_presetOutputs.rot;
 	}}
 
 
-      for (x=0;x<m_presetInputs.gx;x++){
-	for(y=0;y<m_presetInputs.gy;y++){
+      for (x=0;x<presetInputs.gx;x++){
+	for(y=0;y<presetInputs.gy;y++){
 	  m_presetOutputs.warp_mesh[x][y]=m_presetOutputs.warp;
 	}}
 
@@ -456,8 +457,8 @@ void MilkdropPreset::evalPerPixelEqns()
 {
 
   /* Evaluate all per pixel equations in the tree datastructure */
-  for (int mesh_x = 0; mesh_x < m_presetInputs.gx; mesh_x++)
-	  for (int mesh_y = 0; mesh_y < m_presetInputs.gy; mesh_y++)
+  for (int mesh_x = 0; mesh_x < presetInputs.gx; mesh_x++)
+	  for (int mesh_y = 0; mesh_y < presetInputs.gy; mesh_y++)
   for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin();
        pos != per_pixel_eqn_tree.end(); ++pos)
     pos->second->evaluate(mesh_x, mesh_y);

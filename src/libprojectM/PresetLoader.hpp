@@ -28,17 +28,22 @@ class PresetLoader {
 		static const std::string PROJECTM_FILE_EXTENSION;
 		static const std::string MILKDROP_FILE_EXTENSION;
 		
-		/** Initializes the preset loader with the target directory specified */
+		/// Initializes the preset loader with the target directory specified 
 		PresetLoader(std::string dirname);
-		
-		/** Destructor will remove all alllocated presets */
+				
 		~PresetLoader();
 	
-		/** Load a preset by specifying a filename of the directory (that is, NOT full path) */
-		/** Autopointers: when you take it, I leave it */		
+		/// Load a preset by specifying a filename of the directory (that is, NOT full path) 	
 		std::auto_ptr<Preset> loadPreset(unsigned int index, PresetInputs & presetInputs, 
 			PresetOutputs & presetOutputs) const;
 		
+
+		/// Associates a preset loading handler a file extension.
+		/// Any subsequent call to an extension overrides the previously set handler.
+		/// \param extension the file extension to attach the handler to
+		/// \param handler a preset loading handler that will be associated with the extension
+		void registerHandler(const std::string & extension, PresetLoadingHandler * handler);
+
 		/// Add a preset to the loader's collection.
 		/// \param url an url referencing the preset
 		/// \param presetName a name for the preset
@@ -93,7 +98,7 @@ class PresetLoader {
 		void handleDirectoryError();
 		std::string m_dirname;
 		DIR * m_dir;
-
+		std::map<std::string, PresetLoadingHandler> _handlers;
 		int m_ratingsSum;
 		
 		// vector chosen for speed, but not great for reverse index lookups
