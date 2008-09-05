@@ -36,7 +36,6 @@
 #include "Func.hpp"
 #include "InitCond.hpp"
 #include "Param.hpp"
-#include "Preset.hpp"
 #include "Parser.hpp"
 #include "PerFrameEqn.hpp"
 #include "PerPixelEqn.hpp"
@@ -247,7 +246,7 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
 /* Parse input in the form of "exp, exp, exp, ...)"
    Returns a general expression list */
 
-GenExpr **Parser::parse_prefix_args(std::istream &  fs, int num_args, Preset * preset)
+GenExpr **Parser::parse_prefix_args(std::istream &  fs, int num_args, MilkdropPreset * preset)
 {
 
   int i, j;
@@ -322,7 +321,7 @@ int Parser::parse_preset_name(std::istream &  fs, char * name)
 
 
 /* Parses per pixel equations */
-int Parser::parse_per_pixel_eqn(std::istream &  fs, Preset * preset, char * init_string)
+int Parser::parse_per_pixel_eqn(std::istream &  fs, MilkdropPreset * preset, char * init_string)
 {
 
 
@@ -364,7 +363,7 @@ int Parser::parse_per_pixel_eqn(std::istream &  fs, Preset * preset, char * init
 }
 
 /* Parses an equation line, this function is way too big, should add some helper functions */
-int Parser::parse_line(std::istream &  fs, Preset * preset)
+int Parser::parse_line(std::istream &  fs, MilkdropPreset * preset)
 {
 
   char eqn_string[MAX_TOKEN_SIZE];
@@ -641,7 +640,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
       CustomWave * custom_wave;
 
       /* Retrieve custom shape associated with this id */
-      if ((custom_wave = Preset::find_custom_object(last_custom_wave_id, preset->customWaves)) == NULL)
+      if ((custom_wave = MilkdropPreset::find_custom_object(last_custom_wave_id, preset->customWaves)) == NULL)
         return PROJECTM_FAILURE;
       return parse_wave_per_frame_eqn(fs, custom_wave, preset);
 
@@ -663,7 +662,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
       CustomShape * custom_shape;
 
       /* Retrieve custom shape associated with this id */
-      if ((custom_shape = Preset::find_custom_object(last_custom_shape_id, preset->customShapes)) == NULL)
+      if ((custom_shape = MilkdropPreset::find_custom_object(last_custom_shape_id, preset->customShapes)) == NULL)
         return PROJECTM_FAILURE;
 
       return parse_shape_per_frame_eqn(fs, custom_shape, preset);
@@ -713,7 +712,7 @@ int Parser::parse_line(std::istream &  fs, Preset * preset)
 
 
 /* Parses a general expression, this function is the meat of the parser */
-GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Preset * preset)
+GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, MilkdropPreset * preset)
 {
 
   int i;
@@ -1164,7 +1163,7 @@ int Parser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root)
 }
 
 /* Parses an infix operator */
-GenExpr * Parser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * tree_expr, Preset * preset)
+GenExpr * Parser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * tree_expr, MilkdropPreset * preset)
 {
 
   GenExpr * gen_expr;
@@ -1348,7 +1347,7 @@ int Parser::parse_float(std::istream &  fs, float * float_ptr)
 }
 
 /* Parses a per frame equation. That is, interprets a stream of data as a per frame equation */
-PerFrameEqn * Parser::parse_per_frame_eqn(std::istream &  fs, int index, Preset * preset)
+PerFrameEqn * Parser::parse_per_frame_eqn(std::istream &  fs, int index, MilkdropPreset * preset)
 {
 
   char string[MAX_TOKEN_SIZE];
@@ -1399,7 +1398,7 @@ PerFrameEqn * Parser::parse_per_frame_eqn(std::istream &  fs, int index, Preset 
 }
 
 /* Parses an 'implicit' per frame equation. That is, interprets a stream of data as a per frame equation without a prefix */
-PerFrameEqn * Parser::parse_implicit_per_frame_eqn(std::istream &  fs, char * param_string, int index, Preset * preset)
+PerFrameEqn * Parser::parse_implicit_per_frame_eqn(std::istream &  fs, char * param_string, int index, MilkdropPreset * preset)
 {
 
   Param * param;
@@ -1452,7 +1451,7 @@ PerFrameEqn * Parser::parse_implicit_per_frame_eqn(std::istream &  fs, char * pa
 }
 
 /* Parses an initial condition */
-InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, Preset * preset)
+InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, MilkdropPreset * preset)
 {
 
   Param * param;
@@ -1547,7 +1546,7 @@ void Parser::parse_string_block(std::istream &  fs, std::string * out_string) {
 
 }
 
-InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, Preset * preset, std::map<std::string,Param*> * database)
+InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, MilkdropPreset * preset, std::map<std::string,Param*> * database)
 {
 
   char name[MAX_TOKEN_SIZE];
@@ -1761,7 +1760,7 @@ void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool w
 
 
 }
-int Parser::parse_wavecode(char * token, std::istream &  fs, Preset * preset)
+int Parser::parse_wavecode(char * token, std::istream &  fs, MilkdropPreset * preset)
 {
 
   char * var_string;
@@ -1786,7 +1785,7 @@ int Parser::parse_wavecode(char * token, std::istream &  fs, Preset * preset)
   if (PARSE_DEBUG) printf("parse_wavecode: wavecode id = %d, parameter = \"%s\"\n", id, var_string);
 
   /* Retrieve custom wave information from preset, allocating new one if necessary */
-  if ((custom_wave = Preset::find_custom_object(id, preset->customWaves)) == NULL)
+  if ((custom_wave = MilkdropPreset::find_custom_object(id, preset->customWaves)) == NULL)
   {
     std::cerr << "parse_wavecode: failed to load (or create) custom wave (id = "
     << id << ")!\n" << std::endl;
@@ -1860,7 +1859,7 @@ int Parser::parse_wavecode(char * token, std::istream &  fs, Preset * preset)
   return PROJECTM_SUCCESS;
 }
 
-int Parser::parse_shapecode(char * token, std::istream &  fs, Preset * preset)
+int Parser::parse_shapecode(char * token, std::istream &  fs, MilkdropPreset * preset)
 {
 
   char * var_string;
@@ -1892,7 +1891,7 @@ int Parser::parse_shapecode(char * token, std::istream &  fs, Preset * preset)
   /* Retrieve custom shape information from preset. The 3rd argument
      if true creates a custom shape if one does not exist */
 
-  if ((custom_shape = Preset::find_custom_object(id,  preset->customShapes)) == NULL)
+  if ((custom_shape = MilkdropPreset::find_custom_object(id,  preset->customShapes)) == NULL)
   {
     if (PARSE_DEBUG) printf("parse_shapecode: failed to load (or create) custom shape (id = %d)!\n", id);
     return PROJECTM_FAILURE;
@@ -2154,7 +2153,7 @@ int Parser::parse_shape_prefix(char * token, int * id, char ** eqn_string)
 }
 
 /* Parses custom wave equations */
-int Parser::parse_wave(char * token, std::istream &  fs, Preset * preset)
+int Parser::parse_wave(char * token, std::istream &  fs, MilkdropPreset * preset)
 {
 
   int id;
@@ -2182,7 +2181,7 @@ int Parser::parse_wave(char * token, std::istream &  fs, Preset * preset)
 
 }
 
-int Parser::parse_wave_helper(std::istream &  fs, Preset  * preset, int id, char * eqn_type, char * init_string)
+int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int id, char * eqn_type, char * init_string)
 {
 
   Param * param;
@@ -2193,7 +2192,7 @@ int Parser::parse_wave_helper(std::istream &  fs, Preset  * preset, int id, char
   InitCond * init_cond;
 
   /* Retrieve custom wave associated with this id */
-  if ((custom_wave = Preset::find_custom_object(id,  preset->customWaves)) == NULL)
+  if ((custom_wave = MilkdropPreset::find_custom_object(id,  preset->customWaves)) == NULL)
   {
     if (PARSE_DEBUG) printf("parse_wave_helper: custom wave id %d not found!\n", id);
     return PROJECTM_FAILURE;
@@ -2335,7 +2334,7 @@ int Parser::parse_wave_helper(std::istream &  fs, Preset  * preset, int id, char
 }
 
 /* Parses custom shape equations */
-int Parser::parse_shape(char * token, std::istream &  fs, Preset * preset)
+int Parser::parse_shape(char * token, std::istream &  fs, MilkdropPreset * preset)
 {
 
   int id;
@@ -2359,7 +2358,7 @@ int Parser::parse_shape(char * token, std::istream &  fs, Preset * preset)
   }
 
   /* Retrieve custom shape associated with this id */
-  if ((custom_shape = Preset::find_custom_object(id,preset->customShapes)) == NULL)
+  if ((custom_shape = MilkdropPreset::find_custom_object(id,preset->customShapes)) == NULL)
     return PROJECTM_FAILURE;
 
 
@@ -2428,7 +2427,7 @@ int Parser::get_string_prefix_len(char * string)
   return i;
 }
 
-int Parser::parse_shape_per_frame_init_eqn(std::istream &  fs, CustomShape * custom_shape, Preset * preset)
+int Parser::parse_shape_per_frame_init_eqn(std::istream &  fs, CustomShape * custom_shape, MilkdropPreset * preset)
 {
   InitCond * init_cond;
 
@@ -2448,7 +2447,7 @@ int Parser::parse_shape_per_frame_init_eqn(std::istream &  fs, CustomShape * cus
   return PROJECTM_SUCCESS;
 }
 
-int Parser::parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_shape, Preset * preset)
+int Parser::parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_shape, MilkdropPreset * preset)
 {
 
   Param * param;
@@ -2510,7 +2509,7 @@ int Parser::parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_sh
   return PROJECTM_SUCCESS;
 }
 
-int Parser::parse_wave_per_frame_eqn(std::istream &  fs, CustomWave * custom_wave, Preset * preset)
+int Parser::parse_wave_per_frame_eqn(std::istream &  fs, CustomWave * custom_wave, MilkdropPreset * preset)
 {
 
   Param * param;

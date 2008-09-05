@@ -8,9 +8,7 @@
 #include "Param.hpp"
 #include <map>
 #include <cassert>
-
-
-class BuiltinParams;
+#include "BuiltinParams.hpp"
 
 class ParamUtils
 {

@@ -45,6 +45,7 @@
 #include "BuiltinParams.hpp"
 #include "PresetFrameIO.hpp"
 #include "InitCond.hpp"
+#include "Preset.hpp"
 
 class CustomWave;
 class CustomShape;
@@ -53,7 +54,6 @@ class InitCond;
 
 class MilkdropPreset : public Preset
 {
-protected:
 
 public:
 
@@ -63,14 +63,15 @@ public:
   /// \param MilkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
   /// \param MilkdropPresetInputs a reference to read only projectM engine variables
   /// \param MilkdropPresetOutputs initialized and filled with data parsed from a MilkdropPreset
-  MilkdropPreset(const std::string & absoluteFilePath, const std::string & MilkdropPresetName, MilkdropPresetInputs & MilkdropPresetInputs, MilkdropPresetOutputs & MilkdropPresetOutputs);
+  MilkdropPreset(const std::string & absoluteFilePath, const std::string & milkdropPresetName, 
+	PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
   ///  Load a MilkdropPreset from an input stream with input and output buffers specified.
   /// \param in an already initialized input stream to read the MilkdropPreset file from
   /// \param MilkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
   /// \param MilkdropPresetInputs a reference to read only projectM engine variables
   /// \param MilkdropPresetOutputs initialized and filled with data parsed from a MilkdropPreset
-  MilkdropPreset(std::istream & in, const std::string & MilkdropPresetName, MilkdropPresetInputs & MilkdropPresetInputs, MilkdropPresetOutputs & MilkdropPresetOutputs);
+  MilkdropPreset(std::istream & in, const std::string & milkdropPresetName, PresetInputs & presetInputs, PresetOutputs & presetOutputs);
 
   ~MilkdropPreset();
 
@@ -105,36 +106,23 @@ public:
   /// \returns a file path string
   std::string absoluteFilePath() const
   {
-    return m_absoluteFilePath;
+    return _absoluteFilePath;
   }
 
 
   /// Accessor method for the MilkdropPreset outputs instance associated with this MilkdropPreset
   /// \returns A MilkdropPreset output instance with values computed from most recent evaluateFrame()
-  MilkdropPresetOutputs & MilkdropPresetOutputs() const
+  PresetOutputs & presetOutputs() const
   {
 
-    return m_MilkdropPresetOutputs;
+    return _presetOutputs;
   }
 
-  MilkdropPresetInputs & MilkdropPresetInputs() const
+  PresetInputs & presetInputs() const
   {
 
-    return m_PresetInputs;
+    return _presetInputs;
   }
-    /// Sets the descriptive name for this MilkdropPreset (typically the file name)
-    /// \param theValue the new MilkdropPreset name to assign to the MilkdropPreset
-	void setPresetName ( const std::string& theValue )
-	{
-		m_PresetName = theValue;
-	}
-
-	/// Gets the descriptive name for this MilkdropPreset (typically the file name)
-	/// \returns the name of the MilkdropPreset
-	std::string MilkPresetName() const
-	{
-		return m_PresetName;
-	}
 
   /// @bug encapsulate
 
@@ -152,13 +140,10 @@ public:
 private:
 
   // The absolute file path of the MilkdropPreset
-  std::string m_absoluteFilePath;
+  std::string _absoluteFilePath;
 
   // The absolute path of the MilkdropPreset
-  std::string m_absolutePath;
-
-  // The name for the MilkdropPreset. Usually the file name, but in theory anything goes
-  std::string m_MilkdropPresetName;
+  std::string _absolutePath;
 
   void initialize(const std::string & pathname);
   void initialize(std::istream & in);
@@ -182,8 +167,8 @@ private:
   void preloadInitialize();
   void postloadInitialize();
 
-  PresetOutputs & m_PresetOutputs;
-  PresetInputs & m_PresetInputs; // added for gx, gy reference.
+  PresetOutputs & _presetOutputs;
+  PresetInputs & _presetInputs; // added for gx, gy reference.
 
 template <class CustomObject>
 void transfer_q_variables(std::vector<CustomObject*> & customObjects);
@@ -198,14 +183,14 @@ void MilkdropPreset::transfer_q_variables(std::vector<CustomObject*> & customObj
 	for (typename std::vector<CustomObject*>::iterator pos = customObjects.begin(); pos != customObjects.end();++pos) {
 
 		custom_object = *pos;
-		custom_object->q1 = m_MilkdropPresetOutputs.q[0];
-		custom_object->q2 = m_MilkdropPresetOutputs.q[1];
-		custom_object->q3 = m_MilkdropPresetOutputs.q[2];
-		custom_object->q4 = m_MilkdropPresetOutputs.q[3];
-		custom_object->q5 = m_MilkdropPresetOutputs.q[4];
-		custom_object->q6 = m_MilkdropPresetOutputs.q[5];
-		custom_object->q7 = m_MilkdropPresetOutputs.q[6];
-		custom_object->q8 = m_MilkdropPresetOutputs.q[7];
+		custom_object->q1 = _presetOutputs.q[0];
+		custom_object->q2 = _presetOutputs.q[1];
+		custom_object->q3 = _presetOutputs.q[2];
+		custom_object->q4 = _presetOutputs.q[3];
+		custom_object->q5 = _presetOutputs.q[4];
+		custom_object->q6 = _presetOutputs.q[5];
+		custom_object->q7 = _presetOutputs.q[6];
+		custom_object->q8 = _presetOutputs.q[7];
 	}
 
 
