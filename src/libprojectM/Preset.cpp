@@ -2,7 +2,7 @@
  * Preset.cpp
  *
  *  Created on: Aug 5, 2008
- *      Author: carm
+ *      Author: struktured
  */
 
 #include "Preset.hpp"
@@ -18,8 +18,8 @@ void Preset::setName(const std::string & value) { _name = value; }
 
 const std::string & Preset::name() const { return _name; }
 
-void setAuthor(const std::string & value) { _author = value; }
+void Preset::setAuthor(const std::string & value) { _author = value; }
 
-const std::string & author() const { return _author; }
+const std::string & Preset::author() const { return _author; }
 
 

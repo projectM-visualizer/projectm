@@ -37,6 +37,7 @@
 #include "Preset.hpp"
 #include <map>
 #include <iostream>
+#include <cassert>
 
 /** Constructor */
 Param::Param( std::string _name, short int _type, short int _flags, void * _engine_val, void * _matrix,

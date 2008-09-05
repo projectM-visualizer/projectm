@@ -106,7 +106,6 @@ projectM::~projectM()
 		_pcm = 0;
 	}
 
-
 }
 
 DLLEXPORT unsigned projectM::initRenderToTexture()
@@ -256,13 +255,17 @@ void *projectM::thread_func(void *vptr_args)
 
 void projectM::evaluateSecondPreset()
 {
-      setupPresetInputs(&m_activePreset2->presetInputs());
+
+/*      setupPresetInputs(&m_activePreset2->presetInputs());
+	
       m_activePreset2->presetInputs().frame = timeKeeper->PresetFrameB();
       m_activePreset2->presetInputs().progress= timeKeeper->PresetProgressB();
 
       assert ( m_activePreset2.get() );
       m_activePreset2->evaluateFrame();
       m_activePreset2->presetOutputs().Render(*beatDetect,presetInputs2);
+*/
+
 }
 
 void projectM::setupPresetInputs(PresetInputs *inputs)
@@ -292,10 +295,11 @@ DLLEXPORT void projectM::renderFrame()
 
 	//printf("A:%f, B:%f, S:%f\n", timeKeeper->PresetProgressA(), timeKeeper->PresetProgressB(), timeKeeper->SmoothRatio());
 	mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps ); //milliseconds per frame
-
-	setupPresetInputs(&m_activePreset->presetInputs());
-	m_activePreset->presetInputs().frame = timeKeeper->PresetFrameA();
-	m_activePreset->presetInputs().progress= timeKeeper->PresetProgressA();
+	
+	//m_activePreset->Render(beatDetect, pipelineContext);
+	//setupPresetInputs(&m_activePreset->presetInputs());
+	//m_activePreset->presetInputs().frame = timeKeeper->PresetFrameA();
+	//m_activePreset->presetInputs().progress= timeKeeper->PresetProgressA();
 
 	beatDetect->detectFromSamples();
 
@@ -309,10 +313,11 @@ DLLEXPORT void projectM::renderFrame()
 			timeKeeper->StartSmoothing();
 			//	printf("Start Smooth\n");
 			// if(timeKeeper->IsSmoothing())printf("Confirmed\n");
-			switchPreset(m_activePreset2,
+assert(false);	
+/*		switchPreset(m_activePreset2,
 				     &m_activePreset->presetInputs() == &presetInputs ? presetInputs2 : presetInputs,
 				&m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
-
+*/
 			presetSwitchedEvent(false, **m_presetPos);
 		}
 
@@ -339,8 +344,10 @@ DLLEXPORT void projectM::renderFrame()
 		pthread_cond_signal(&condition);
 		pthread_mutex_unlock( &mutex );
 #endif
-		m_activePreset->evaluateFrame();
-		m_activePreset->presetOutputs().Render(*beatDetect,presetInputs);
+		//m_activePreset->evaluateFrame();
+		m_activePreset->Render(*beatDetect, pipelineContext);
+
+		//m_activePreset->presetOutputs().Render(*beatDetect,presetInputs);
 
 #ifdef USE_THREADS
 		pthread_mutex_lock( &mutex );
@@ -352,7 +359,7 @@ DLLEXPORT void projectM::renderFrame()
 		//PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),timeKeeper->SmoothRatio(),presetInputs.gx, presetInputs.gy );
 Pipeline pipeline;
 pipeline.setStaticPerPixel(presetInputs.gx,presetInputs.gy);
-PipelineMerger::MergePipelines( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(), pipeline,timeKeeper->SmoothRatio());
+PipelineMerger::MergePipelines( m_activePreset->pipeline(),m_activePreset2->pipeline(), pipeline,timeKeeper->SmoothRatio());
 renderer->RenderFrame ( pipeline, presetInputs );
 	}
 	else
@@ -365,11 +372,13 @@ renderer->RenderFrame ( pipeline, presetInputs );
 		}
 		//printf("Normal\n");
 
-		m_activePreset->evaluateFrame();
 
-		m_activePreset->presetOutputs().Render(*beatDetect,presetInputs);
+		m_activePreset->Render(*beatDetect, pipelineContext);
 
-		renderer->RenderFrame ( m_activePreset->presetOutputs(), presetInputs );
+//		m_activePreset->evaluateFrame();
+//		m_activePreset->presetOutputs().Render(*beatDetect,presetInputs);
+
+		renderer->RenderFrame (m_activePreset->pipeline(), pipelineContext);
 	}
 
 	//	std::cout<< m_activePreset->absoluteFilePath()<<std::endl;
@@ -481,7 +490,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	pthread_mutex_lock( &mutex );
 #endif
 
-	renderer->setPresetName ( m_activePreset->presetName() );
+	renderer->setPresetName ( m_activePreset->name() );
 	timeKeeper->StartPreset();
 	assert(pcm());
 //	printf ( "exiting projectM_init()\n" );
@@ -830,7 +839,7 @@ void projectM::selectPreset ( unsigned int index )
 
 	m_activePreset = m_presetPos->allocate ( presetInputs, presetOutputs );
 
-	renderer->setPresetName ( m_activePreset->presetName() );
+	renderer->setPresetName ( m_activePreset->name() );
 
 	timeKeeper->StartPreset();
 }
@@ -845,7 +854,7 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset, PresetInputs &
 	targetPreset = m_presetPos->allocate( inputs, outputs );
 
 	// Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
-	renderer->setPresetName ( targetPreset->presetName() );
+	renderer->setPresetName ( targetPreset->name() );
 	renderer->SetPipeline(outputs);
 
 }
