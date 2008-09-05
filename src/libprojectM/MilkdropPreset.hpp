@@ -75,10 +75,6 @@ public:
 
   ~MilkdropPreset();
 
-  /// Evaluates the MilkdropPreset for a frame given the current values of MilkdropPreset inputs / outputs
-  /// All calculated values are stored in the associated MilkdropPreset outputs instance
-  void evaluateFrame();
-
   /// All "builtin" parameters for this MilkdropPreset. Anything *but* user defined parameters and
   /// custom waves / shapes objects go here.
   /// @bug encapsulate
@@ -118,7 +114,7 @@ public:
     return _presetOutputs;
   }
 
-  PresetInputs & presetInputs() const
+  const PresetInputs & presetInputs() const
   {
 
     return _presetInputs;
@@ -137,7 +133,17 @@ public:
   std::map<std::string,InitCond*>  init_cond_tree; /* initial conditions */
   std::map<std::string,Param*> user_param_tree; /* user parameter splay tree */
 
+
+  const Pipeline & pipeline() { return _presetOutputs; }
+
+  void Render(const BeatDetect &music, const PipelineContext &context);
+
 private:
+
+  PresetInputs _presetInputs;
+  /// Evaluates the MilkdropPreset for a frame given the current values of MilkdropPreset inputs / outputs
+  /// All calculated values are stored in the associated MilkdropPreset outputs instance
+  void evaluateFrame();
 
   // The absolute file path of the MilkdropPreset
   std::string _absoluteFilePath;
@@ -168,7 +174,6 @@ private:
   void postloadInitialize();
 
   PresetOutputs & _presetOutputs;
-  PresetInputs & _presetInputs; // added for gx, gy reference.
 
 template <class CustomObject>
 void transfer_q_variables(std::vector<CustomObject*> & customObjects);

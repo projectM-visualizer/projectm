@@ -132,6 +132,15 @@ void PresetLoader::rescan()
 }
 
 
+/// Associates a preset loading handler a file extension.
+/// Any subsequent call to an extension overrides the previously set handler.
+/// \param extension the file extension to attach the handler to
+/// \param handler a preset loading handler that will be associated with the extension
+void PresetLoader::registerHandler(const std::string & extension, PresetLoadingHandler * handler) {
+
+_handlers[extension'] = handler;	
+// }
+
 std::auto_ptr<Preset> PresetLoader::loadPreset(unsigned int index,  PresetInputs & presetInputs, PresetOutputs & presetOutputs) const
 {
 
