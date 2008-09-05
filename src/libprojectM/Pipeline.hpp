@@ -51,7 +51,6 @@ public:
 	 Pipeline();
 	 void setStaticPerPixel(int gx, int gy);
 	 virtual ~Pipeline();
-	 virtual void Render(const BeatDetect &music, const PipelineContext &context);
 	 virtual Point PerPixel(Point p, const PerPixelContext context);
 };
 
