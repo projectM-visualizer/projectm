@@ -736,8 +736,9 @@ int projectM::initPresetTools()
 	*m_presetPos = m_presetChooser->end();
 
 	// Load idle preset
-	//std::cerr << "[projectM] Allocating idle preset..." << std::endl;
-	m_activePreset = IdlePreset::allocate ( presetInputs, presetOutputs );
+	std::cerr << "[projectM] Allocating idle preset..." << std::endl;
+	abort();
+	//m_activePreset = IdlePreset::allocate ( presetInputs, presetOutputs );
 
 	// Case where no valid presets exist in directory. Could also mean
 	// playlist initialization was deferred
@@ -832,12 +833,12 @@ void projectM::selectPreset ( unsigned int index )
 	if ( m_presetChooser->empty() )
 		return;
 
-	assert ( index < m_presetLoader->getNumPresets() );
+	assert ( index < m_presetLoader->size());
 	assert ( index >= 0 );
 
 	*m_presetPos = m_presetChooser->begin ( index );
 
-	m_activePreset = m_presetPos->allocate ( presetInputs, presetOutputs );
+	m_activePreset = m_presetPos->allocate ();
 
 	renderer->setPresetName ( m_activePreset->name() );
 
@@ -851,7 +852,7 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset, PresetInputs &
 	else
 		m_presetChooser->nextPreset(*m_presetPos);
 
-	targetPreset = m_presetPos->allocate( inputs, outputs );
+	targetPreset = m_presetPos->allocate();
 
 	// Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
 	renderer->setPresetName ( targetPreset->name() );
@@ -914,7 +915,7 @@ bool projectM::presetPositionValid() const {
 
 unsigned int projectM::getPlaylistSize() const
 {
-	return m_presetLoader->getNumPresets();
+	return m_presetLoader->size();
 }
 
 void projectM:: changePresetRating (unsigned int index, int rating) {

@@ -2,6 +2,7 @@
 #include <sstream>
 #include <string>
 
+#if 0
 const std::string IdlePreset::IDLE_PRESET_NAME
 	("Geiss & Sperl - Feedback (projectM idle HDR mix)");
 
@@ -201,6 +202,10 @@ std::auto_ptr<Preset> IdlePreset::allocate( PresetInputs & presetInputs, PresetO
 {
 
   std::istringstream in(presetText());
-  return std::auto_ptr<Preset>(new Preset(in, IDLE_PRESET_NAME, presetInputs, presetOutputs));
+  return std::auto_ptr<Preset>(new Preset(in, IDLE_PRESET_NAME, p);
+  
+  std::cerr << "fix me" << std::endl;
+  abort();
 }
 
+#endif

@@ -43,9 +43,6 @@ float GenExpr::eval_gen_expr ( int mesh_i, int mesh_j )
 		case TREE_T:
 			return ( ( TreeExpr* ) ( item ) )->eval_tree_expr ( mesh_i, mesh_j );
 		default:
-#ifdef EVAL_DEBUG
-			DWRITE ( "eval_gen_expr: general expression matched no cases!\n" );
-#endif
 			return EVAL_ERROR;
 	}
 
@@ -62,28 +59,16 @@ float PrefunExpr::eval_prefun_expr ( int mesh_i, int mesh_j )
 
 	assert(arg_list);
 
-#ifdef EVAL_DEBUG_DOUBLE
-	DWRITE ( "fn[" );
-#endif
-
 	//printf("numargs %d", num_args);
 
 	/* Evaluate each argument before calling the function itself */
 	for ( int i = 0; i < num_args; i++ )
 	{
 		arg_list[i] = expr_list[i]->eval_gen_expr ( mesh_i, mesh_j );
-#ifdef EVAL_DEBUG_DOUBLE
-		if ( i < ( num_args - 1 ) )
-			DWRITE ( ", " );
-#endif
 		//printf("numargs %x", arg_list[i]);
 
 
 	}
-#ifdef EVAL_DEBUG_DOUBLE
-	DWRITE ( "]" );
-#endif
-
 	/* Now we call the function, passing a list of
 	   floats as its argument */
 
@@ -102,9 +87,6 @@ float ValExpr::eval_val_expr ( int mesh_i, int mesh_j )
 	/* Value is a constant, return the float value */
 	if ( type == CONSTANT_TERM_T )
 	{
-#ifdef EVAL_DEBUG
-		DWRITE ( "%.4f", term.constant );
-#endif
 		return ( term.constant );
 	}
 
@@ -115,16 +97,10 @@ float ValExpr::eval_val_expr ( int mesh_i, int mesh_j )
 		{
 
 			case P_TYPE_BOOL:
-#ifdef EVAL_DEBUG
-				DWRITE ( "(%s:%.4f)", term.param->name.c_str(), ( float ) ( * ( ( bool* ) ( term.param->engine_val ) ) ) );
-#endif
 
 
 				return ( float ) ( * ( ( bool* ) ( term.param->engine_val ) ) );
 			case P_TYPE_INT:
-#ifdef EVAL_DEBUG
-				DWRITE ( "(%s:%.4f)", term.param->name.c_str(), ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) ) );
-#endif
 
 
 				return ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) );
@@ -179,54 +155,12 @@ float TreeExpr::eval_tree_expr ( int mesh_i, int mesh_j )
 	/* Otherwise, this node is an infix operator. Evaluate
 	   accordingly */
 
-#ifdef EVAL_DEBUG
-	DWRITE ( "(" );
-#endif
-
 	assert(left);
 	left_arg = left->eval_tree_expr ( mesh_i, mesh_j );
-
-#ifdef EVAL_DEBUG
-
-	switch ( infix_op->type )
-	{
-		case INFIX_ADD:
-			DWRITE ( "+" );
-			break;
-		case INFIX_MINUS:
-			DWRITE ( "-" );
-			break;
-		case INFIX_MULT:
-			DWRITE ( "*" );
-			break;
-		case INFIX_MOD:
-			DWRITE ( "%%" );
-			break;
-		case INFIX_OR:
-			DWRITE ( "|" );
-			break;
-		case INFIX_AND:
-			DWRITE ( "&" );
-			break;
-		case INFIX_DIV:
-			DWRITE ( "/" );
-			break;
-		default:
-			DWRITE ( "?" );
-	}
-
-#endif
 
 	assert(right);
 	right_arg = right->eval_tree_expr ( mesh_i, mesh_j );
 
-#ifdef EVAL_DEBUG
-	DWRITE ( ")" );
-#endif
-
-#ifdef EVAL_DEBUG
-	DWRITE ( "\n" );
-#endif
 
 	switch ( infix_op->type )
 	{
@@ -239,9 +173,6 @@ float TreeExpr::eval_tree_expr ( int mesh_i, int mesh_j )
 		case INFIX_MOD:
 			if ( ( int ) right_arg == 0 )
 			{
-#ifdef EVAL_DEBUG
-				DWRITE ( "eval_tree_expr: modulo zero!\n" );
-#endif
 				return PROJECTM_DIV_BY_ZERO;
 			}
 			return ( ( int ) left_arg % ( int ) right_arg );
@@ -252,16 +183,10 @@ float TreeExpr::eval_tree_expr ( int mesh_i, int mesh_j )
 		case INFIX_DIV:
 			if ( right_arg == 0 )
 			{
-#ifdef EVAL_DEBUG
-				DWRITE ( "eval_tree_expr: division by zero!\n" );
-#endif
 				return MAX_DOUBLE_SIZE;
 			}
 			return ( left_arg / right_arg );
 		default:
-#ifdef EVAL_DEBUG
-			DWRITE ( "eval_tree_expr: unknown infix operator!\n" );
-#endif
 			return EVAL_ERROR;
 	}
 
