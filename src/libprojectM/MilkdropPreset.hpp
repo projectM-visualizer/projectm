@@ -35,7 +35,7 @@
 #include <cassert>
 #include <map>
 
-#define MilkdropPreset_DEBUG 0 /* 0 for no debugging, 1 for normal, 2 for insane */
+#define MILKDROP_PRESET_DEBUG 0 /* 0 for no debugging, 1 for normal, 2 for insane */
 
 #include "CustomShape.hpp"
 #include "CustomWave.hpp"
@@ -120,7 +120,8 @@ public:
     return _presetInputs;
   }
 
-  /// @bug encapsulate
+
+// @bug encapsulate
 
   PresetOutputs::cwave_container customWaves;
   PresetOutputs::cshape_container customShapes;
@@ -134,7 +135,7 @@ public:
   std::map<std::string,Param*> user_param_tree; /* user parameter splay tree */
 
 
-  const Pipeline & pipeline() { return _presetOutputs; }
+  const Pipeline & pipeline() const { return _presetOutputs; } 
 
   void Render(const BeatDetect &music, const PipelineContext &context);
 

@@ -7,8 +7,6 @@
 
 #include "Preset.hpp"
 
-Preset::Preset() {}
-
 Preset::~Preset() {}
 
 Preset::Preset(const std::string & presetName, const std::string & presetAuthor):
