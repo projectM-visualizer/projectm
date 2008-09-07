@@ -133,6 +133,23 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #else
 #define PATH_SEPARATOR UNIX_PATH_SEPARATOR
 #endif /** WIN32 */
+#include <string>
+
+const std::string PROJECTM_FILE_EXTENSION("prjm");
+const std::string MILKDROP_FILE_EXTENSION("milk");
+const std::string PROJECTM_MODULE_EXTENSION("so");
+
+
+inline std::string parseExtension(const std::string & filename) {
+
+std::size_t start = filename.find_last_of('.');
+
+if (start == std::string::npos || start >= (filename.length()-1))
+	return "";
+else
+	return filename.substr(start+1, filename.length());
+
+}
 
 inline void DWRITE( char *fmt, ... ) {
 	return;

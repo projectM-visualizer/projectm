@@ -168,7 +168,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
             case PROJECTM_K_n:
 		m_presetChooser->nextPreset(*m_presetPos);
 		presetSwitchedEvent(true, **m_presetPos);
-		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
+		m_activePreset =  m_presetPos->allocate();
 		renderer->SetPipeline(presetOutputs);
 		renderer->setPresetName(m_activePreset->name());
 		timeKeeper->StartPreset();
@@ -181,7 +181,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 
 		*m_presetPos = m_presetChooser->weightedRandom();
 		presetSwitchedEvent(true, **m_presetPos);
-		m_activePreset = m_presetPos->allocate(this->presetInputs, this->presetOutputs);
+		m_activePreset = m_presetPos->allocate();
 		renderer->SetPipeline(presetOutputs);
 		assert(m_activePreset.get());
 
@@ -208,7 +208,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		   --(*m_presetPos);
 		}
 
-		m_activePreset =  m_presetPos->allocate(this->presetInputs, this->presetOutputs);
+		m_activePreset =  m_presetPos->allocate();
 		renderer->SetPipeline(presetOutputs);
 		renderer->setPresetName(m_activePreset->name());
 
