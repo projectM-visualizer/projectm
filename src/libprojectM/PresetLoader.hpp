@@ -18,31 +18,29 @@
 #endif
 
 #include <vector>
+#include <map>
 
 class Preset;
 class PresetInputs;
 class PresetOutputs;
+class PresetFactory;
 
 class PresetLoader {
 	public:
-		static const std::string PROJECTM_FILE_EXTENSION;
-		static const std::string MILKDROP_FILE_EXTENSION;
-		
+				
 		/// Initializes the preset loader with the target directory specified 
 		PresetLoader(std::string dirname);
 				
 		~PresetLoader();
 	
 		/// Load a preset by specifying a filename of the directory (that is, NOT full path) 	
-		std::auto_ptr<Preset> loadPreset(unsigned int index, PresetInputs & presetInputs, 
-			PresetOutputs & presetOutputs) const;
+		std::auto_ptr<Preset> loadPreset(unsigned int index) const;
 		
-
-		/// Associates a preset loading handler a file extension.
-		/// Any subsequent call to an extension overrides the previously set handler.
+		/// Associates a preset factory to a file extension.
+		/// Any subsequent registrations of an extension overrides the previously set one
 		/// \param extension the file extension to attach the handler to
 		/// \param handler a preset loading handler that will be associated with the extension
-		void registerHandler(const std::string & extension, PresetLoadingHandler * handler);
+		void registerFactory(const std::string & extension, PresetFactory * factory);
 
 		/// Add a preset to the loader's collection.
 		/// \param url an url referencing the preset
@@ -60,7 +58,7 @@ class PresetLoader {
 		void insertPresetURL (unsigned int index, const std::string & url, const std::string & presetName, int rating);
 	
 		/// Clears all presets from the collection
-		inline void clear() { m_entries.clear(); m_presetNames.clear(); m_ratings.clear(); m_ratingsSum = 0; }
+		inline void clear() { _entries.clear(); _presetNames.clear(); _ratings.clear(); _ratingsSum = 0; }
 		
 		const std::vector<int> & getPresetRatings() const;
 		int getPresetRatingsSum() const;
@@ -70,7 +68,7 @@ class PresetLoader {
 		void setRating(unsigned int index, int rating);
 		
 		/// Get a preset rating given an index
-		 int getPresetRating ( unsigned int index) const;
+		int getPresetRating ( unsigned int index) const;
 		
 		/// Get a preset url given an index
 		const std::string & getPresetURL ( unsigned int index) const;
@@ -79,8 +77,8 @@ class PresetLoader {
 		const std::string & getPresetName ( unsigned int index) const;
 		
 		/** Returns the number of presets in the active directory */
-		inline std::size_t getNumPresets() const {
-			return m_entries.size();
+		inline std::size_t size() const {
+			return _entries.size();
 		}
 					
 		/** Sets the directory where the loader will search for files */	
@@ -88,7 +86,7 @@ class PresetLoader {
 
 		/// Returns the directory path associated with this preset chooser
 		inline const std::string & directoryName() const {
-			return m_dirname;
+			return _dirname;
 		}
 
 		/** Rescans the active preset directory */
@@ -96,15 +94,15 @@ class PresetLoader {
 
 	private:
 		void handleDirectoryError();
-		std::string m_dirname;
-		DIR * m_dir;
-		std::map<std::string, PresetLoadingHandler> _handlers;
-		int m_ratingsSum;
+		std::string _dirname;
+		DIR * _dir;
+		mutable std::map<std::string, PresetFactory*> _factories;
+		int _ratingsSum;
 		
 		// vector chosen for speed, but not great for reverse index lookups
-		std::vector<std::string> m_entries;
-		std::vector<std::string> m_presetNames;
-		std::vector<int> m_ratings;
+		std::vector<std::string> _entries;
+		std::vector<std::string> _presetNames;
+		std::vector<int> _ratings;
 
 };
 

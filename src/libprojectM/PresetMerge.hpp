@@ -2,6 +2,7 @@
 #define PRESET_MERGE_HPP
 #include "Preset.hpp"
 #include "Pipeline.hpp"
+#include "PresetFrameIO.hpp"
 
 class PresetMerger
 {

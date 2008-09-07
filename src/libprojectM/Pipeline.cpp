@@ -44,6 +44,6 @@ if (staticPerPixel)
 }
 }
 
-void Pipeline::Render(const BeatDetect &music, const PipelineContext &context){}
+//void Pipeline::Render(const BeatDetect &music, const PipelineContext &context){}
 Point Pipeline::PerPixel(Point p, const PerPixelContext context)
 {return p;}
