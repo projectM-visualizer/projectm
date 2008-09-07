@@ -1,5 +1,5 @@
 //
-// C++ Interface: MilkdropPresetFactory
+// C++ Interface: CompiledPresetFactory
 //
 // Description: 
 //
@@ -10,27 +10,31 @@
 //
 //
 
-#ifndef __MILKDROP_PRESET_FACTORY_HPP
-#define __MILKDROP_PRESET_FACTORY_HPP
+#ifndef __COMPILED_PRESET_FACTORY_HPP
+#define __COMPILED_PRESET_FACTORY_HPP
 
-#include "MilkdropPreset.hpp"
 #include <memory>
 #include "PresetFactory.hpp"
 
-class MilkdropPresetFactory : public PresetFactory {
+class CompiledPresetFactory : public PresetFactory {
+
+struct PresetHandler {
+	
+};
 
 public:
 
 
- MilkdropPresetFactory();
+ CompiledPresetFactory();
 
- virtual ~MilkdropPresetFactory();
+ virtual ~CompiledPresetFactory();
 
  std::auto_ptr<Preset> allocate(const std::string & url, const std::string & name = std::string(), 	const std::string & author = std::string());
 
 private:
-	PresetOutputs _presetOutputs;
-	PresetInputs _presetInputs;
+	void loadLibrary(const std::string & url);
+	std::map<url, PresetHandler*> _handlers;
+
 };
 
 #endif

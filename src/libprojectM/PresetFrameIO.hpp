@@ -45,8 +45,6 @@ public:
     float **origx;  //original mesh
     float **origy;
 
-    float mood_r, mood_g, mood_b;
-
     void ResetMesh();
     ~PresetInputs();
     PresetInputs();
