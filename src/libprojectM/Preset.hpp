@@ -17,8 +17,8 @@
 class Preset {
 public:
 
-	Preset();
-	Preset(const std::string & name, const std::string & author);
+	
+	Preset(const std::string & name=std::string(), const std::string & author = std::string());
 	virtual ~Preset();
 
 	void setName(const std::string & value);

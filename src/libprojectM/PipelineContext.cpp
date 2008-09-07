@@ -8,3 +8,4 @@
 #include "PipelineContext.hpp"
 
 PipelineContext::PipelineContext() {}
+PipelineContext::~PipelineContext() {}
