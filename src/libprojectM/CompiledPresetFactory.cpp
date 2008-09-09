@@ -13,22 +13,49 @@
 #include <dlfcn.h>
 #include "CompiledPresetFactory.hpp"
 
+typedef void Handle;
+typedef Preset * CreateFunctor();
+typedef void DestroyFunctor(Preset*);
+
+class PresetLibrary {
+
+	public:
+		PresetLibrary(Handle * h, CreateFunctor * create, DestroyFunctor * destroy) :
+			_handle(h), _createFunctor(create), _destroyFunctor(destroy) {}
+
+		Handle * handle() { return _handle; }
+		CreateFunctor * createFunctor() { return _createFunctor; }
+		DestroyFunctor * destroyFunctor() { return _destroyFunctor; }
+
+		~PresetLibrary() {
+			dlclose(handle());
+		}
+
+	private:
+		Handle * _handle; 
+		CreateFunctor * _createFunctor;
+		DestroyFunctor * _destroyFunctor;
+	
+};
+
 CompiledPresetFactory::CompiledPresetFactory() {}
 
 CompiledPresetFactory::~CompiledPresetFactory() {
 
-for (PresetHandlerMap::iterator pos = _handlers.begin(); pos != _handlers.end(); ++pos)
+for (PresetLibraryMap::iterator pos = _libraries.begin(); pos != _libraries.end(); ++pos)
 	delete(pos->second);
 
 }
 
 
+PresetLibrary * CompiledPresetFactory::loadLibrary(const std::string & url) {
 
-CompiledPresetFactory::PresetHandler * CompiledPresetFactory::loadLibrary(const std::string & url) {
+    if (_libraries.count(url))
+	return _libraries[url];
 
     // load the preset library
-    void* preset = dlopen(url.c_str(), RTLD_LAZY);
-    if (!preset) {
+    void* handle = dlopen(url.c_str(), RTLD_LAZY);
+    if (!handle) {
         std::cerr << "[CompiledPresetFactory] Cannot load library: " << dlerror() << '\n';
         return 0;
     }
@@ -37,35 +64,27 @@ CompiledPresetFactory::PresetHandler * CompiledPresetFactory::loadLibrary(const 
     dlerror();
 
     // load the symbols
-    create_t* create_preset = (create_t*) dlsym(preset, "create");
+    CreateFunctor * create = (CreateFunctor*) dlsym(handle, "create");
     const char* dlsym_error = dlerror();
     if (dlsym_error) {
         std::cerr << "[CompiledPresetFactory] Cannot load symbol create: " << dlsym_error << '\n';
         return 0;
     }
     
-    destroy_t* destroy_preset = (destroy_t*) dlsym(preset, "destroy");
+    DestroyFunctor * destroy = (DestroyFunctor*) dlsym(handle, "destroy");
     dlsym_error = dlerror();
     if (dlsym_error) {
         std::cerr << "[CompiledPresetFactory] Cannot load symbol destroy: " << dlsym_error << '\n';
         return false;
     }
-	_handlers.add(std::make_pair(new PresetHandler(
-    return 
+
+    PresetLibrary * library = new PresetLibrary(handle, create, destroy);
+
+    _libraries.insert(std::make_pair(url, library));
+    return library;
 }
 
 
-PresetHandler * CompiledPresetFactory::getHandler(const std::string & url) {
-	if (_handlers.count(url))
-		return _handler[url];
-	else {
-		if (!loadLibrary(url))
-			return 0;
-		else
-			return _handler[url];
-	}
-		
-}
 std::auto_ptr<Preset> CompiledPresetFactory::allocate(const std::string & url, const std::string & name,
 	const std::string & author) {
 	

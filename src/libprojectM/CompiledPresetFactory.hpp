@@ -16,26 +16,12 @@
 #include <memory>
 #include "PresetFactory.hpp"
 
+class PresetLibrary;
+
 class CompiledPresetFactory : public PresetFactory {
 private:
-typedef void * Handle;
-typedef Preset * CreateFunctor();
-typedef void DestroyFunctor(Preset*);
-
-struct PresetLibrary {
-
-	Handle handle; 
-	CreateFunctor createFunctor;
-	DestroyFunctor destroyFunctor;
-
-	PresetHandler(preset_lib 
-	~PresetHandler() {
-		dlclose(preset_lib);
-	}
-};
 
 public:
-
 
  CompiledPresetFactory();
 
@@ -45,9 +31,9 @@ public:
 	const std::string & author = std::string());
 
 private:
-	PresetHandler * loadLibrary(const std::string & url);
-	typedef std::map<std::string, PresetHandler*> PresetHandlerMap;
-	PresetHandlerMap _handlers;
+	PresetLibrary * loadLibrary(const std::string & url);
+	typedef std::map<std::string, PresetLibrary*> PresetLibraryMap;
+	PresetLibraryMap _libraries;
 	
 };
 
