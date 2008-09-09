@@ -88,6 +88,10 @@ PresetLibrary * CompiledPresetFactory::loadLibrary(const std::string & url) {
 std::auto_ptr<Preset> CompiledPresetFactory::allocate(const std::string & url, const std::string & name,
 	const std::string & author) {
 	
+	PresetLibrary * library;
 	
-
+	if ((library = loadLibrary(url)) == 0)
+		return std::auto_ptr<Preset>(0);
+	
+	return std::auto_ptr<Preset>(library->createFunctor()());
 }
