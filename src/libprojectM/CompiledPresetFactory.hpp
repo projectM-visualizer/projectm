@@ -19,7 +19,6 @@
 class PresetLibrary;
 
 class CompiledPresetFactory : public PresetFactory {
-private:
 
 public:
 
@@ -27,7 +26,7 @@ public:
 
  virtual ~CompiledPresetFactory();
 
- std::auto_ptr<Preset> allocate(const std::string & url, const std::string & name = std::string(), 
+ virtual std::auto_ptr<Preset> allocate(const std::string & url, const std::string & name = std::string(), 
 	const std::string & author = std::string());
 
 private:
