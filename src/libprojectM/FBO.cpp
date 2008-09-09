@@ -203,7 +203,6 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
           }
     */
 
-   
         glGenTextures(1, &this->textureID[0] );
 
         glBindTexture(GL_TEXTURE_2D, this->textureID[0] );
