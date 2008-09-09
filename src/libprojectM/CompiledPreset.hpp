@@ -5,8 +5,8 @@
  *      Author: carm
  */
 
-#ifndef PRESET_HPP_
-#define PRESET_HPP_
+#ifndef __COMPILED_PRESET_HPP_
+#define __COMPILED_PRESET_HPP_
 
 #include <string>
 
@@ -26,7 +26,7 @@ public:
 
 	virtual ~CompiledPreset() {}
 
-	inline const Pipeline & pipeline() const { return _pipeline; }
+	inline const PipelineT & pipeline() const { return _pipeline; }
 	inline virtual void Render(const BeatDetect &music, const PipelineContext &context) {
 		_pipeline.Render(music, context);
 	}
