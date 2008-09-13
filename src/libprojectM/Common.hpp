@@ -135,6 +135,7 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #endif /** WIN32 */
 #include <string>
 
+const unsigned int NUM_Q_VARIABLES(32);
 const std::string PROJECTM_FILE_EXTENSION("prjm");
 const std::string MILKDROP_FILE_EXTENSION("milk");
 const std::string PROJECTM_MODULE_EXTENSION("so");
