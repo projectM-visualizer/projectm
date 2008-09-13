@@ -2,13 +2,11 @@
 #include "fatal.h"
 #include "BuiltinParams.hpp"
 #include <cassert>
-#include "Algorithms.hpp"
 #include <iostream>
 #include <algorithm>
 #include "InitCondUtils.hpp"
 #include <sstream>
-
-using namespace Algorithms;
+#include "Common.hpp"
 
 BuiltinParams::BuiltinParams() {}
 
@@ -106,7 +104,7 @@ std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
 int BuiltinParams::destroy_builtin_param_db()
 {
 
-  Algorithms::traverse<TraverseFunctors::DeleteFunctor<Param> >(builtin_param_tree);
+  traverse<TraverseFunctors::Delete<Param> >(builtin_param_tree);
   return PROJECTM_SUCCESS;
 }
 
