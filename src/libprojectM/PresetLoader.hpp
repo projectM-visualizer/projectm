@@ -28,7 +28,7 @@ class PresetLoader {
 	public:
 				
 		/// Initializes the preset loader with the target directory specified 
-		PresetLoader(std::string dirname);
+		PresetLoader(int gx, int gy, std::string dirname);
 				
 		~PresetLoader();
 	

@@ -23,13 +23,26 @@
 
 #include "MilkdropPresetFactory.hpp"
 
+#include "BuiltinFuncs.hpp"
+#include "Eval.hpp"
 
-MilkdropPresetFactory::MilkdropPresetFactory(int gx, int gy) 
-{	
+MilkdropPresetFactory::MilkdropPresetFactory(int gx, int gy) {
+	/* Initializes the builtin function database */
+	BuiltinFuncs::init_builtin_func_db();
+
+	/* Initializes all infix operators */
+	Eval::init_infix_ops();	
+
 	_presetOutputs.Initialize(gx,gy);
+
 }
 
-MilkdropPresetFactory::~MilkdropPresetFactory() {}
+MilkdropPresetFactory::~MilkdropPresetFactory() {
+
+	Eval::destroy_infix_ops();
+	BuiltinFuncs::destroy_builtin_func_db();
+
+}
 
 std::auto_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url, const std::string & name, const std::string & author) {
 	_presetOutputs.customWaves.clear();

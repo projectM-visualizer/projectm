@@ -40,24 +40,16 @@
 //#include <xmms/plugin.h>
 #include <iostream>
 #include "projectM.hpp"
-#include "BuiltinFuncs.hpp"
 #include "BeatDetect.hpp"
-#include "Eval.hpp"
-#include "Param.hpp"
-#include "Parser.hpp"
 #include "Preset.hpp"
-#include "PerPixelEqn.hpp"
 #include "PresetMerge.hpp"
 //#include "menu.h"
 #include "PCM.hpp"                    //Sound data handler (buffering, FFT, etc.)
-#include "CustomWave.hpp"
-#include "CustomShape.hpp"
 #include "IdlePreset.hpp"
 
 #include <map>
 
 #include "Renderer.hpp"
-#include "PresetFrameIO.hpp"
 #include "PresetChooser.hpp"
 #include "ConfigFile.h"
 #include "TextureManager.hpp"
@@ -65,16 +57,6 @@
 #ifdef USE_THREADS
 #include "pthread.h"
 #endif
-/*
-DLLEXPORT projectM::projectM ( int gx, int gy, int fps, int texsize, int width, int height, std::string preset_url,std::string title_fonturl, std::string title_menuurl ) :beatDetect ( 0 ),  renderer ( 0 ), settings.presetURL ( preset_url ), title_fontURL ( title_fonturl ), menu_fontURL ( menu_fontURL ), smoothFrame ( 0 ), m_presetQueuePos(0)
-{
-	presetURL = preset_url;
-	projectM_reset();
-	projectM_init ( gx, gy, fps, texsize, width, height );
-	projectM_resetGL ( width, height );
-}
-*/
-
 
 projectM::~projectM()
 {
@@ -463,7 +445,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	renderer->SetPipeline(presetOutputs);
 	running = true;
 
-	initPresetTools();
+	initPresetTools(gx, gy);
 
 #ifdef USE_THREADS
 	pthread_mutex_init(&mutex, NULL);
@@ -682,21 +664,15 @@ DLLEXPORT void projectM::projectM_setTitle ( std::string title )
 }
 
 
-int projectM::initPresetTools()
+int projectM::initPresetTools(int gx, int gy)
 {
-
-	/* Initializes the builtin function database */
-	BuiltinFuncs::init_builtin_func_db();
-
-	/* Initializes all infix operators */
-	Eval::init_infix_ops();
 
 	/* Set the seed to the current time in seconds */
 	srand ( time ( NULL ) );
 
 	std::string url = (m_flags & FLAG_DISABLE_PLAYLIST_LOAD) ? std::string() : settings().presetURL;
 
-	if ( ( m_presetLoader = new PresetLoader ( url) ) == 0 )
+	if ( ( m_presetLoader = new PresetLoader ( gx, gy, url) ) == 0 )
 	{
 		m_presetLoader = 0;
 		std::cerr << "[projectM] error allocating preset loader" << std::endl;
@@ -765,9 +741,6 @@ void projectM::destroyPresetTools()
 
 	/// @slow might not be necessary
 	m_presetLoader = 0;
-
-	Eval::destroy_infix_ops();
-	BuiltinFuncs::destroy_builtin_func_db();
 
 }
 
