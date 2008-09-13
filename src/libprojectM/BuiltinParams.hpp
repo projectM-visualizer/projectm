@@ -31,7 +31,6 @@
 #include "PresetFrameIO.hpp"
 #include "Param.hpp"
 #include <map>
-#include "Algorithms.hpp"
 
 class BuiltinParams {
 
@@ -69,8 +68,8 @@ public:
     int insert_builtin_param( Param *param );
 
     template <class Fun>
-    void traverse(Fun & fun) {
-	Algorithms::traverse(builtin_param_tree, fun);
+    void apply(Fun & fun) {
+	traverse(builtin_param_tree, fun);
     }
 
 
