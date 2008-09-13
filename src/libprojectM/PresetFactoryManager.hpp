@@ -38,6 +38,8 @@ class PresetFactoryManager {
 		/// \throws a PresetFactoryException if the extension is unhandled
 		PresetFactory & factory(const std::string & extension);
 
+
+		bool extensionHandled(const std::string & extension) const;
 	private:
 		int _gx, _gy;				
 		mutable std::map<std::string, PresetFactory *> _factoryMap;

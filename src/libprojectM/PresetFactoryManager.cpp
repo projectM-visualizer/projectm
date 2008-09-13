@@ -73,3 +73,6 @@ PresetFactory & PresetFactoryManager::factory(const std::string & extension) {
 	return *_factoryMap[extension];
 }
 
+bool PresetFactoryManager::extensionHandled(const std::string & extension) const {		
+	return _factoryMap.count(extension);
+}

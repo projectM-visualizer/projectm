@@ -26,7 +26,6 @@
 
 MilkdropPresetFactory::MilkdropPresetFactory(int gx, int gy) 
 {	
-	/// @bug fix with correct gx gy
 	_presetOutputs.Initialize(gx,gy);
 }
 

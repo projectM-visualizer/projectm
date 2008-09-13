@@ -480,6 +480,8 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	renderer->setPresetName ( m_activePreset->name() );
 	timeKeeper->StartPreset();
 	assert(pcm());
+
+	
 //	printf ( "exiting projectM_init()\n" );
 }
 
