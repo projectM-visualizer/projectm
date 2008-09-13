@@ -1,6 +1,3 @@
-
-/// @idea Weighted random based on user stats
-
 #ifndef PRESET_CHOOSER_HPP
 #define PRESET_CHOOSER_HPP
 
