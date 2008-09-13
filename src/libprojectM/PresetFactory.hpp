@@ -20,7 +20,6 @@ class PresetFactory {
 
 public:
 
-
  inline PresetFactory() {}
 
  inline virtual ~PresetFactory() {}
@@ -33,7 +32,9 @@ public:
  virtual std::auto_ptr<Preset> allocate(const std::string & url, const std::string & name=std::string(),
 	 const std::string & author=std::string()) = 0;
 
- virtual std::string extension() const = 0;
+ /// Returns a space separated list of supported extensions
+ virtual std::string supportedExtensions() const = 0;
+	
 };
 
 #endif

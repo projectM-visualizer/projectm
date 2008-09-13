@@ -40,7 +40,8 @@ class PresetFactoryManager {
 
 	private:
 		int _gx, _gy;				
-		mutable std::map<std::string, PresetFactory *> _factories;
+		mutable std::map<std::string, PresetFactory *> _factoryMap;
+		mutable std::vector<PresetFactory *> _factoryList;
 		void registerFactory(const std::string & extension, PresetFactory * factory);
 
 };
