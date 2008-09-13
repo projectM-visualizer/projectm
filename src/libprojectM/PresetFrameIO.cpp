@@ -7,6 +7,23 @@ PresetInputs::PresetInputs() : PipelineContext()
 {
 }
 
+void PresetInputs::update(const BeatDetect & music, const PipelineContext & context) {
+	
+    // Reflect new values form the beat detection unit
+    this->bass = music.bass;
+    this->mid = music.mid;
+    this->treb = music.treb;
+    this->bass_att = music.bass_att;
+    this->mid_att = music.mid_att;
+    this->treb_att = music.treb_att;
+
+    // Reflect new values from the pipeline context
+    this->fps = context.fps;
+    this->time = context.time;
+    this->frame = context.frame;
+    this->progress = context.progress;
+}
+
 void PresetInputs::Initialize ( int gx, int gy )
 {
 	int x, y;
@@ -392,7 +409,7 @@ PresetInputs::~PresetInputs()
 }
 
 
-void PresetInputs::ResetMesh()
+void PresetInputs::resetMesh()
 {
 	int x,y;
 

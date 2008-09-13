@@ -21,12 +21,15 @@ class MilkdropPresetFactory : public PresetFactory {
 
 public:
 
-
- MilkdropPresetFactory();
+ 
+ MilkdropPresetFactory(int gx, int gy);
 
  virtual ~MilkdropPresetFactory();
 
- std::auto_ptr<Preset> allocate(const std::string & url, const std::string & name = std::string(), 	const std::string & author = std::string());
+ std::auto_ptr<Preset> allocate(const std::string & url, const std::string & name = std::string(),
+	const std::string & author = std::string());
+
+ std::string extension() const { return "milk"; }
 
 private:
 	PresetOutputs _presetOutputs;

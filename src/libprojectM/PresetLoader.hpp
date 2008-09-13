@@ -2,9 +2,9 @@
 #define __PRESET_LOADER_HPP
 
 #include <string> // used for path / filename stuff
-
 #include <memory> // for auto pointers
 #include <sys/types.h>
+
 #ifdef WIN32
 #include "win32-dirent.h"
 #endif
@@ -19,10 +19,9 @@
 
 #include <vector>
 #include <map>
+#include "PresetFactoryManager.hpp"
 
 class Preset;
-class PresetInputs;
-class PresetOutputs;
 class PresetFactory;
 
 class PresetLoader {
@@ -33,15 +32,10 @@ class PresetLoader {
 				
 		~PresetLoader();
 	
-		/// Load a preset by specifying a filename of the directory (that is, NOT full path) 	
+		/// Load a preset by specifying it's unique identifier given when the preset url
+		/// was added to this loader	
 		std::auto_ptr<Preset> loadPreset(unsigned int index) const;
 		
-		/// Associates a preset factory to a file extension.
-		/// Any subsequent registrations of an extension overrides the previously set one
-		/// \param extension the file extension to attach the handler to
-		/// \param handler a preset loading handler that will be associated with the extension
-		void registerFactory(const std::string & extension, PresetFactory * factory);
-
 		/// Add a preset to the loader's collection.
 		/// \param url an url referencing the preset
 		/// \param presetName a name for the preset
@@ -63,8 +57,11 @@ class PresetLoader {
 		const std::vector<int> & getPresetRatings() const;
 		int getPresetRatingsSum() const;
 		
+		/// Removes a preset from the loader
+		/// \param index the unique identifier of the preset url to be removed
 		void removePreset(unsigned int index);
 
+		/// Sets the rating of a preset to a new value
 		void setRating(unsigned int index, int rating);
 		
 		/// Get a preset rating given an index
@@ -76,12 +73,12 @@ class PresetLoader {
 		/// Get a preset name given an index
 		const std::string & getPresetName ( unsigned int index) const;
 		
-		/** Returns the number of presets in the active directory */
+		/// Returns the number of presets in the active directory 
 		inline std::size_t size() const {
 			return _entries.size();
 		}
 					
-		/** Sets the directory where the loader will search for files */	
+		/// Sets the directory where the loader will search for files 
 		void setScanDirectory(std::string pathname);
 
 		/// Returns the directory path associated with this preset chooser
@@ -89,16 +86,16 @@ class PresetLoader {
 			return _dirname;
 		}
 
-		/** Rescans the active preset directory */
+		/// Rescans the active preset directory
 		void rescan();
 
 	private:
 		void handleDirectoryError();
 		std::string _dirname;
 		DIR * _dir;
-		mutable std::map<std::string, PresetFactory*> _factories;
 		int _ratingsSum;
-		
+		mutable PresetFactoryManager _presetFactoryManager;
+
 		// vector chosen for speed, but not great for reverse index lookups
 		std::vector<std::string> _entries;
 		std::vector<std::string> _presetNames;

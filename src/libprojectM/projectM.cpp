@@ -268,19 +268,6 @@ void projectM::evaluateSecondPreset()
 
 }
 
-void projectM::setupPresetInputs(PresetInputs *inputs)
-{
-  inputs->ResetMesh();
-
-  inputs->time = timeKeeper->GetRunningTime();
-  inputs->bass = beatDetect->bass;
-  inputs->mid = beatDetect->mid;
-  inputs->treb = beatDetect->treb;
-  inputs->bass_att = beatDetect->bass_att;
-  inputs->mid_att = beatDetect->mid_att;
-  inputs->treb_att = beatDetect->treb_att;
-}
-
 DLLEXPORT void projectM::renderFrame()
 {
 

@@ -37,12 +37,12 @@
 #include <iostream>
 #include <fstream>
 
+#include "PresetFrameIO.hpp"
 
-MilkdropPreset::MilkdropPreset(std::istream & in, const std::string & presetName, PresetInputs & presetInputs, PresetOutputs & presetOutputs):
+MilkdropPreset::MilkdropPreset(std::istream & in, const std::string & presetName,  PresetOutputs & presetOutputs):
 	Preset(presetName),
-    	builtinParams(presetInputs, presetOutputs),
-    	_presetOutputs(presetOutputs),
-    	_presetInputs(presetInputs)
+    	builtinParams(_presetInputs, presetOutputs),
+    	_presetOutputs(presetOutputs)
 {
 
   _presetOutputs.customWaves.clear();
@@ -60,20 +60,14 @@ MilkdropPreset::MilkdropPreset(std::istream & in, const std::string & presetName
  * @param presetInputs 
  * @param presetOutputs 
  */
-MilkdropPreset::MilkdropPreset(const std::string & absoluteFilePath, const std::string & presetName,  PresetInputs & presetInputs, PresetOutputs & presetOutputs):
-    builtinParams(presetInputs, presetOutputs),
+MilkdropPreset::MilkdropPreset(const std::string & absoluteFilePath, const std::string & presetName, PresetOutputs & presetOutputs):
+    builtinParams(_presetInputs, presetOutputs),
     _absoluteFilePath(absoluteFilePath),
-    _presetOutputs(presetOutputs),
-    _presetInputs(presetInputs)
+    _presetOutputs(presetOutputs)
 {
-
-  _presetOutputs.customWaves.clear();
-  _presetOutputs.customShapes.clear();
-
   initialize(absoluteFilePath);
 
 }
-
 MilkdropPreset::~MilkdropPreset()
 {
 
@@ -279,7 +273,9 @@ void MilkdropPreset::postloadInitialize() {
 
 void MilkdropPreset::Render(const BeatDetect &music, const PipelineContext &context) 
 {
-	// set stuff here
+	_presetInputs.update(music, context);
+
+	// set stuff here	
 	this->evaluateFrame();
 }
 
