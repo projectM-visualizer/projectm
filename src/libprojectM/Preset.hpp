@@ -27,7 +27,7 @@ public:
 	void setAuthor(const std::string & value);
 	const std::string & author() const;
 
-	virtual const Pipeline & pipeline() const = 0;
+	virtual Pipeline & pipeline() = 0;
 	virtual void Render(const BeatDetect &music, const PipelineContext &context) = 0;
 
 private:

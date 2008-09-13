@@ -134,7 +134,7 @@ public:
   std::map<std::string,Param*> user_param_tree; /* user parameter splay tree */
 
 
-  const Pipeline & pipeline() const { return _presetOutputs; } 
+  Pipeline & pipeline() { return _presetOutputs; } 
 
   void Render(const BeatDetect &music, const PipelineContext &context);
 
