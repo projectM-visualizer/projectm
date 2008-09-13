@@ -26,7 +26,7 @@ public:
 
 	virtual ~CompiledPreset() {}
 
-	inline const PipelineT & pipeline() const { return _pipeline; }
+	inline PipelineT & pipeline() { return _pipeline; }
 	inline virtual void Render(const BeatDetect &music, const PipelineContext &context) {
 		_pipeline.Render(music, context);
 	}

@@ -263,7 +263,11 @@ DLLEXPORT void projectM::renderFrame()
 	timeKeeper->UpdateTimers();
 
 	//printf("A:%f, B:%f, S:%f\n", timeKeeper->PresetProgressA(), timeKeeper->PresetProgressB(), timeKeeper->SmoothRatio());
-	mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps ); //milliseconds per frame
+
+std::cerr << "mspf: FIX ME!";
+	abort();
+	
+	//mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps ); //milliseconds per frame
 	
 	//m_activePreset->Render(beatDetect, pipelineContext);
 	//setupPresetInputs(&m_activePreset->presetInputs());
@@ -293,7 +297,9 @@ assert(false);
 		else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && timeKeeper->CanHardCut() )
 		{
 		  // printf("Hard Cut\n");
-			switchPreset(m_activePreset, presetInputs, presetOutputs);
+std::cerr << "HARD CUT. SWITCH PRESET BROKEN" << std::endl;
+			abort();
+			//switchPreset(m_activePreset, presetInputs, presetOutputs);
 
 			timeKeeper->StartPreset();
 			presetSwitchedEvent(true, **m_presetPos);
@@ -326,10 +332,19 @@ assert(false);
 
 
 		//PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),timeKeeper->SmoothRatio(),presetInputs.gx, presetInputs.gy );
+
+
 Pipeline pipeline;
-pipeline.setStaticPerPixel(presetInputs.gx,presetInputs.gy);
+
+std::cerr << "FIX ME STATIC PER PIXEL" << std::endl;
+abort();
+//pipeline.setStaticPerPixel(presetInputs.gx,presetInputs.gy);
 PipelineMerger::MergePipelines( m_activePreset->pipeline(),m_activePreset2->pipeline(), pipeline,timeKeeper->SmoothRatio());
-renderer->RenderFrame ( pipeline, presetInputs );
+
+
+std::cerr << "FIX ME RENDER FRAME" << std::endl;
+abort();
+//renderer->RenderFrame ( pipeline, presetInputs );
 	}
 	else
 	{
@@ -407,10 +422,6 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	/** Initialise engine variables */
 
 	projectM_initengine();
-	presetInputs.Initialize ( gx, gy );
-	presetInputs2.Initialize ( gx, gy );
-	presetOutputs.Initialize ( gx, gy );
-	presetOutputs2.Initialize ( gx, gy );
 
 	/** Initialise start time */
         timeKeeper = new TimeKeeper(_settings.presetDuration,_settings.smoothPresetDuration, _settings.easterEgg);
@@ -419,10 +430,6 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 
 
 	/** Initialise per-pixel matrix calculations */
-
-
-	presetInputs.fps = fps;
-	presetInputs2.fps = fps;
 	/** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
 	assert ( !beatDetect );
 
@@ -432,17 +439,17 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	beatDetect = new BeatDetect ( _pcm );
 
 
-	if ( presetInputs.fps > 0 )
-		mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps );
-	else mspf = 0;
-
-	this->presetInputs.gx = gx;
-	this->presetInputs.gy = gy;
-	this->presetInputs2.gx = gx;
-	this->presetInputs2.gy = gy;
+	std::cerr << "fps broken FIX ME" << std::endl;
+	abort();
+	//if ( presetInputs.fps > 0 )
+	//	mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps );
+	//else mspf = 0;
 
 	this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
-	renderer->SetPipeline(presetOutputs);
+	
+	std::cerr << "set pipeline broken FIX ME" << std::endl;
+	abort();
+	//renderer->SetPipeline(presetOutputs);
 	running = true;
 
 	initPresetTools(gx, gy);
@@ -467,179 +474,18 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 //	printf ( "exiting projectM_init()\n" );
 }
 
-
-void projectM::projectM_initengine()
-{
-
-	/* PER FRAME CONSTANTS BEGIN */
-	this->presetOutputs.zoom=1.0;
-	this->presetOutputs.zoomexp= 1.0;
-	this->presetOutputs.rot= 0.0;
-	this->presetOutputs.warp= 0.0;
-
-	this->presetOutputs.sx= 1.0;
-	this->presetOutputs.sy= 1.0;
-	this->presetOutputs.dx= 0.0;
-	this->presetOutputs.dy= 0.0;
-	this->presetOutputs.cx= 0.5;
-	this->presetOutputs.cy= 0.5;
-
-	this->presetOutputs.screenDecay=.98;
-
-
-//this->presetInputs.meshx = 0;
-//this->presetInputs.meshy = 0;
-
-
-	this->presetInputs.progress = 0;
-	this->presetInputs.frame = 1;
-      	this->presetInputs2.progress = 0;
-	this->presetInputs2.frame = 1;
-//bass_thresh = 0;
-
-	/* PER_FRAME CONSTANTS END */
-	this->presetOutputs.fRating = 0;
-	this->presetOutputs.fGammaAdj = 1.0;
-	this->presetOutputs.videoEcho.zoom = 1.0;
-	this->presetOutputs.videoEcho.a = 0;
-	this->presetOutputs.videoEcho.orientation = Normal;
-
-	this->presetOutputs.textureWrap = 0;
-	this->presetOutputs.bDarkenCenter = 0;
-	this->presetOutputs.bRedBlueStereo = 0;
-	this->presetOutputs.bBrighten = 0;
-	this->presetOutputs.bDarken = 0;
-	this->presetOutputs.bSolarize = 0;
-	this->presetOutputs.bInvert = 0;
-	this->presetOutputs.bMotionVectorsOn = 1;
-
-	this->presetOutputs.fWarpAnimSpeed = 0;
-	this->presetOutputs.fWarpScale = 0;
-	this->presetOutputs.fShader = 0;
-
-	/* PER_PIXEL CONSTANTS BEGIN */
-
-	/* PER_PIXEL CONSTANT END */
-
-	/* Q AND T VARIABLES START */
-
-	for (int i = 0;i<32;i++)
-		presetOutputs.q[i] = 0;
-
-
-
-	/* Q AND T VARIABLES END */
-
-}
-
 /* Reinitializes the engine variables to a default (conservative and sane) value */
 void projectM::projectM_resetengine()
 {
-
-	this->presetOutputs.zoom=1.0;
-	this->presetOutputs.zoomexp= 1.0;
-	this->presetOutputs.rot= 0.0;
-	this->presetOutputs.warp= 0.0;
-
-	this->presetOutputs.sx= 1.0;
-	this->presetOutputs.sy= 1.0;
-	this->presetOutputs.dx= 0.0;
-	this->presetOutputs.dy= 0.0;
-	this->presetOutputs.cx= 0.5;
-	this->presetOutputs.cy= 0.5;
-
-	this->presetOutputs.screenDecay=.98;
-
-	this->presetOutputs.wave.r= 1.0;
-	this->presetOutputs.wave.g= 0.2;
-	this->presetOutputs.wave.b= 0.0;
-	this->presetOutputs.wave.x= 0.5;
-	this->presetOutputs.wave.y= 0.5;
-	this->presetOutputs.wave.mystery= 0.0;
-
-	this->presetOutputs.border.outer_size= 0.0;
-	this->presetOutputs.border.outer_r= 0.0;
-	this->presetOutputs.border.outer_g= 0.0;
-	this->presetOutputs.border.outer_b= 0.0;
-	this->presetOutputs.border.outer_a= 0.0;
-
-	this->presetOutputs.border.inner_size = 0.0;
-	this->presetOutputs.border.inner_r = 0.0;
-	this->presetOutputs.border.inner_g = 0.0;
-	this->presetOutputs.border.inner_b = 0.0;
-	this->presetOutputs.border.inner_a = 0.0;
-
-	this->presetOutputs.mv.a = 0.0;
-	this->presetOutputs.mv.r = 0.0;
-	this->presetOutputs.mv.g = 0.0;
-	this->presetOutputs.mv.b = 0.0;
-	this->presetOutputs.mv.length = 1.0;
-	this->presetOutputs.mv.x_num = 16.0;
-	this->presetOutputs.mv.y_num = 12.0;
-	this->presetOutputs.mv.x_offset = 0.02;
-	this->presetOutputs.mv.y_offset = 0.02;
-
 
 	if ( beatDetect != NULL )
 	{
 		beatDetect->reset();
 	}
-	this->presetInputs.progress = 0;
-	this->presetInputs.frame = 1;
-	this->presetInputs2.progress = 0;
-	this->presetInputs2.frame = 1;
-// bass_thresh = 0;
 
-	/* PER_FRAME CONSTANTS END */
-	this->presetOutputs.fRating = 0;
-	this->presetOutputs.fGammaAdj = 1.0;
-	this->presetOutputs.videoEcho.zoom = 1.0;
-	this->presetOutputs.videoEcho.a = 0;
-	this->presetOutputs.videoEcho.orientation = Normal;
-
-	this->presetOutputs.wave.additive = false;
-	this->presetOutputs.wave.dots = false;
-	this->presetOutputs.wave.thick = false;
-	this->presetOutputs.wave.modulateAlphaByVolume = 0;
-	this->presetOutputs.wave.maximizeColors = 0;
-	this->presetOutputs.textureWrap = 0;
-	this->presetOutputs.bDarkenCenter = 0;
-	this->presetOutputs.bRedBlueStereo = 0;
-	this->presetOutputs.bBrighten = 0;
-	this->presetOutputs.bDarken = 0;
-	this->presetOutputs.bSolarize = 0;
-	this->presetOutputs.bInvert = 0;
-	this->presetOutputs.bMotionVectorsOn = 1;
-
-	this->presetOutputs.wave.a =1.0;
-	this->presetOutputs.wave.scale = 1.0;
-	this->presetOutputs.wave.smoothing = 0;
-	this->presetOutputs.wave.mystery = 0;
-	this->presetOutputs.wave.modOpacityEnd = 0;
-	this->presetOutputs.wave.modOpacityStart = 0;
-	this->presetOutputs.fWarpAnimSpeed = 0;
-	this->presetOutputs.fWarpScale = 0;
-	this->presetOutputs.fShader = 0;
-
-
-	/* PER_PIXEL CONSTANTS BEGIN */
-	this->presetInputs2.x_per_pixel = 0;
-	this->presetInputs2.y_per_pixel = 0;
-	this->presetInputs2.rad_per_pixel = 0;
-	this->presetInputs2.ang_per_pixel = 0;
-	this->presetInputs.x_per_pixel = 0;
-	this->presetInputs.y_per_pixel = 0;
-	this->presetInputs.rad_per_pixel = 0;
-	this->presetInputs.ang_per_pixel = 0;
-
-	/* PER_PIXEL CONSTANT END */
-
-	/* Q VARIABLES START */
-
-	for (int i = 0;i<32;i++)
-		presetOutputs.q[i] = 0;
-
-
+	/// @bug call factory clear here?
+	std::cerr << "call factory clear?" << std::endl;
+	abort();
 	/* Q VARIABLES END */
 
 }
@@ -807,7 +653,7 @@ void projectM::selectPreset ( unsigned int index )
 	timeKeeper->StartPreset();
 }
 
-void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset, PresetInputs & inputs, PresetOutputs & outputs) {
+void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
 
 	if (_settings.shuffleEnabled)
 		*m_presetPos = m_presetChooser->weightedRandom();
@@ -818,7 +664,7 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset, PresetInputs &
 
 	// Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
 	renderer->setPresetName ( targetPreset->name() );
-	renderer->SetPipeline(outputs);
+	renderer->SetPipeline(targetPreset->pipeline());
 
 }
 

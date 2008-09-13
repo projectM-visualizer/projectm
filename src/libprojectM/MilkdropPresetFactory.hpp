@@ -32,6 +32,8 @@ public:
  std::string supportedExtensions() const { return "milk prjm"; }
 
 private:
+	void initializePresetOutputs(int gx, int gy);
+	void Reset();
 	PresetOutputs _presetOutputs;
 	PresetInputs _presetInputs;
 };
