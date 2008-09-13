@@ -89,11 +89,7 @@ void PresetLoader::rescan()
 		std::string filename ( dir_entry->d_name );
 
 		// Verify extension is projectm or milkdrop
-		if ( ( filename.rfind ( PROJECTM_FILE_EXTENSION ) != ( filename.length() - PROJECTM_FILE_EXTENSION.length() ) )
-		        && ( filename.rfind ( MILKDROP_FILE_EXTENSION ) != ( filename.length() - MILKDROP_FILE_EXTENSION.length() ) ) )
-			continue;
-
-		if ( filename.length() <= MILKDROP_FILE_EXTENSION.length() )
+		if (!_presetFactoryManager.extensionHandled(parseExtension(filename)))
 			continue;
 
 		if ( filename.length() > 0 && filename[0] == '.' )
