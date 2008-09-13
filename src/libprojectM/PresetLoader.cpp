@@ -35,8 +35,9 @@ extern "C"
 
 #include "Common.hpp"
 
-PresetLoader::PresetLoader ( std::string dirname = std::string() ) :_dirname ( dirname ), _dir ( 0 ), _ratingsSum ( 0 )
+PresetLoader::PresetLoader (int gx, int gy, std::string dirname = std::string()) :_dirname ( dirname ), _dir ( 0 ), _ratingsSum ( 0 )
 {
+	_presetFactoryManager.initialize(gx,gy);
 	// Do one scan
 	if ( _dirname != std::string() )
 		rescan();

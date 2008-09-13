@@ -274,7 +274,7 @@ private:
   void projectM_initengine();
   void projectM_resetengine();
   /// Initializes preset loading / management libraries
-  int initPresetTools();
+  int initPresetTools(int gx, int gy);
 
   /// Deinitialize all preset related tools. Usually done before projectM cleanup
   void destroyPresetTools();
