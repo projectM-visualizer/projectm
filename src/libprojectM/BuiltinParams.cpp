@@ -165,9 +165,11 @@ int BuiltinParams::load_builtin_param_int(const std::string & name, void * engin
   iv.int_val = init_val;
   ub.int_val = upper_bound;
   lb.int_val = lower_bound;
+ 
+  // normalize to lower case as milkdrop scripts depend on this
+  std::string lowerName(name);
+  std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
 
-std::string lowerName(name);
-std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
   param = new Param(lowerName, P_TYPE_INT, flags, engine_val, NULL, iv, ub, lb);
 
   if (param == NULL)
@@ -192,7 +194,6 @@ std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
   return PROJECTM_SUCCESS;
 
 }
-
 
 int BuiltinParams::load_builtin_param_string( const std::string & name, std::string * engine_val, short int flags) {
 

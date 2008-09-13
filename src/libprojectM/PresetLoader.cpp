@@ -130,11 +130,6 @@ void PresetLoader::rescan()
 }
 
 
-void PresetLoader::registerFactory ( const std::string & extension, PresetFactory * factory ) {
-	_factories[extension] = factory;
-}
-
-
 std::auto_ptr<Preset> PresetLoader::loadPreset ( unsigned int index )  const
 {
 
@@ -145,10 +140,9 @@ std::auto_ptr<Preset> PresetLoader::loadPreset ( unsigned int index )  const
 	// Return a new autopointer to a preset
 	const std::string extension = parseExtension ( _entries[index] );
 
-	if ( !_factories.count ( extension ) )
-		return std::auto_ptr<Preset> ( 0 );
-	else
-		return _factories[extension]->allocate ( _entries[index], _presetNames[index] );
+	return _presetFactoryManager.factory(extension).allocate
+		( _entries[index], _presetNames[index] );
+	
 }
 
 void PresetLoader::handleDirectoryError()

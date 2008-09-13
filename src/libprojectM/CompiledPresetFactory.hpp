@@ -29,6 +29,8 @@ public:
  virtual std::auto_ptr<Preset> allocate(const std::string & url, const std::string & name = std::string(), 
 	const std::string & author = std::string());
 
+ std::string extension() const { return "so"; }
+
 private:
 	PresetLibrary * loadLibrary(const std::string & url);
 	typedef std::map<std::string, PresetLibrary*> PresetLibraryMap;

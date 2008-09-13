@@ -33,8 +33,7 @@ public:
  virtual std::auto_ptr<Preset> allocate(const std::string & url, const std::string & name=std::string(),
 	 const std::string & author=std::string()) = 0;
 
-
-
+ virtual std::string extension() const = 0;
 };
 
 #endif
