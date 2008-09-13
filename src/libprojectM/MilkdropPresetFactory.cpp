@@ -24,10 +24,17 @@
 #include "MilkdropPresetFactory.hpp"
 
 
-MilkdropPresetFactory::MilkdropPresetFactory() {}
+MilkdropPresetFactory::MilkdropPresetFactory(int gx, int gy) 
+{	
+	/// @bug fix with correct gx gy
+	_presetOutputs.Initialize(gx,gy);
+}
 
 MilkdropPresetFactory::~MilkdropPresetFactory() {}
 
 std::auto_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url, const std::string & name, const std::string & author) {
-	return std::auto_ptr<Preset>(new MilkdropPreset(url, name, _presetInputs, _presetOutputs));
+	_presetOutputs.customWaves.clear();
+	_presetOutputs.customShapes.clear();
+
+	return std::auto_ptr<Preset>(new MilkdropPreset(url, name, _presetOutputs));
 }

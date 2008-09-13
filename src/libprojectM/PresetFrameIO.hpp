@@ -11,7 +11,7 @@
 
 /// Container for all *read only* engine variables a preset requires to
 /// evaluate milkdrop equations. Every preset object needs a reference to one of these.
-class PresetInputs : public PipelineContext{
+class PresetInputs : public PipelineContext {
 
 public:
     /* PER_PIXEL VARIBLES BEGIN */
@@ -23,14 +23,12 @@ public:
 
     /* PER_PIXEL VARIBLES END */
 
-
     float bass;
     float mid;
     float treb;
     float bass_att;
     float mid_att;
     float treb_att;
-
 
     /* variables were added in milkdrop 1.04 */
     int gx,gy;
@@ -45,10 +43,22 @@ public:
     float **origx;  //original mesh
     float **origy;
 
-    void ResetMesh();
+    void resetMesh();
+
     ~PresetInputs();
     PresetInputs();
+
+    /// Initializes this preset inputs given a mesh size.
+    /// \param gx the width of the mesh 
+    /// \param gy the height of the mesh
+    /// \note This must be called before reading values from this class
     void Initialize(int gx, int gy);
+
+    /// Updates this preset inputs with the latest values from the
+    /// the pipeline context and beat detection unit
+    void update (const BeatDetect & music, const PipelineContext & context);
+
+    private:
 };
 
 

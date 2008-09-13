@@ -37,7 +37,6 @@ class BeatDetect
 {
 	public:
 
-
 		float treb ;
 		float mid ;
 		float bass ;
