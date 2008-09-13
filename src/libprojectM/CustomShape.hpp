@@ -63,15 +63,8 @@ public:
     float t7;
     float t8;
 
-  /* stupider q variables */
-    float q1;
-    float q2;
-    float q3;
-    float q4;
-    float q5;
-    float q6;
-    float q7;
-    float q8;
+    /* stupider q variables */
+    float q[NUM_Q_VARIABLES];
 
     // Data structure to hold per frame  / per frame init equations
     std::map<std::string,InitCond*>  init_cond_tree;

@@ -19,10 +19,7 @@
  *
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
+#include <sstream>
 #include "Common.hpp"
 #include "fatal.h"
 
@@ -213,46 +210,16 @@ CustomShape::CustomShape ( int id ) : Shape()
 		abort();
 	}
 
-	param = Param::new_param_float ( "q1", P_FLAG_QVAR, &this->q1, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
+   for (unsigned int i = 1; i <= NUM_Q_VARIABLES;i++) {
+	std::ostringstream os;
+	os << "q" << i;
+	param = Param::new_param_float ( os.str().c_str(), P_FLAG_QVAR, &this->q[i], NULL, MAX_DOUBLE_SIZE,
+		 -MAX_DOUBLE_SIZE, 0.0 );
+	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
 	{
 		abort();
 	}
-	param = Param::new_param_float ( "q2", P_FLAG_QVAR, &this->q2, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
-	{
-		abort();
-	}
-	param = Param::new_param_float ( "q3", P_FLAG_QVAR, &this->q3, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
-	{
-		abort();
-	}
-	param = Param::new_param_float ( "q4", P_FLAG_QVAR, &this->q4, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
-	{
-		abort();
-	}
-	param = Param::new_param_float ( "q5", P_FLAG_QVAR, &this->q5, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
-	{
-		abort();
-	}
-	param = Param::new_param_float ( "q6", P_FLAG_QVAR, &this->q6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
-	{
-		abort();
-	}
-	param = Param::new_param_float ( "q7", P_FLAG_QVAR, &this->q7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
-	{
-		abort();
-	}
-	param = Param::new_param_float ( "q8", P_FLAG_QVAR, &this->q8, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
-	{
-		abort();
-	}
+  }
 
 	param = Param::new_param_string ( "imageurl", P_FLAG_NONE, &this->imageUrl);
 	if ( !ParamUtils::insert( param, &this->text_properties_tree ) )

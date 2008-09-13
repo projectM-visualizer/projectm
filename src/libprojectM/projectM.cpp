@@ -419,10 +419,6 @@ void projectM::projectM_reset()
 void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, int height )
 {
 
-	/** Initialise engine variables */
-
-	projectM_initengine();
-
 	/** Initialise start time */
         timeKeeper = new TimeKeeper(_settings.presetDuration,_settings.smoothPresetDuration, _settings.easterEgg);
 
