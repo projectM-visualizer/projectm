@@ -40,7 +40,7 @@ class PresetFactoryManager {
 		
 		/// Requests a factory given a preset extension type
 		/// \param extension a string denoting the preset suffix type
-		/// \throws a PresetFactoryException if the extension is unhandled
+		/// \throws PresetFactoryException if the extension is unhandled
 		/// \returns a valid preset factory associated with the extension
 		PresetFactory & factory(const std::string & extension);
 
