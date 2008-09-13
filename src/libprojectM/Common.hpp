@@ -28,7 +28,7 @@
 #define COMMON_H
 
 #include <stdarg.h>
-
+#include <cassert>
 #ifdef _MSC_VER
 #define strcasecmp(s, t) _strcmpi(s, t)
 #endif
@@ -139,6 +139,64 @@ const unsigned int NUM_Q_VARIABLES(32);
 const std::string PROJECTM_FILE_EXTENSION("prjm");
 const std::string MILKDROP_FILE_EXTENSION("milk");
 const std::string PROJECTM_MODULE_EXTENSION("so");
+
+ template <class TraverseFunctor, class Container>
+  void traverse(Container & container)
+  {
+
+    TraverseFunctor functor;
+
+    for (typename Container::iterator pos = container.begin(); pos != container.end(); ++pos)
+    {
+      assert(pos->second);
+      functor(pos->second);
+    }
+
+  }
+
+
+  template <class TraverseFunctor, class Container>
+  void traverseVector(Container & container)
+  {
+
+    TraverseFunctor functor;
+
+    for (typename Container::iterator pos = container.begin(); pos != container.end(); ++pos)
+    {
+      assert(*pos);
+      functor(*pos);
+    }
+
+  }
+
+  template <class TraverseFunctor, class Container>
+  void traverse(Container & container, TraverseFunctor & functor)
+  {
+
+    for (typename Container::iterator pos = container.begin(); pos != container.end(); ++pos)
+    {
+      assert(pos->second);
+      functor(pos->second);
+    }
+
+  }
+
+  namespace TraverseFunctors
+  {
+    template <class Data>
+    class Delete
+    {
+
+    public:
+
+      void operator() (Data * data)
+      {
+        assert(data);
+        delete(data);
+      }
+
+    };
+  }
 
 
 inline std::string parseExtension(const std::string & filename) {

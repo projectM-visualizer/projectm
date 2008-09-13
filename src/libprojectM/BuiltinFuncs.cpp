@@ -16,10 +16,8 @@
 /* Loads a builtin function */
 #include "BuiltinFuncs.hpp"
 #include <string>
-#include "Algorithms.hpp"
 #include <iostream>
 #include "fatal.h"
-using namespace Algorithms;
 
 std::map<std::string, Func*> BuiltinFuncs::builtin_func_tree;
 
@@ -133,7 +131,7 @@ int BuiltinFuncs::init_builtin_func_db() {
    Generally, do this on projectm exit */
 int BuiltinFuncs::destroy_builtin_func_db() {
 
-traverse<TraverseFunctors::DeleteFunctor<Func> >(builtin_func_tree);
+traverse<TraverseFunctors::Delete<Func> >(builtin_func_tree);
 
 builtin_func_tree.clear();
 

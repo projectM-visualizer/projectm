@@ -71,15 +71,15 @@ MilkdropPreset::MilkdropPreset(const std::string & absoluteFilePath, const std::
 MilkdropPreset::~MilkdropPreset()
 {
 
-  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(init_cond_tree);
+  traverse<TraverseFunctors::Delete<InitCond> >(init_cond_tree);
 
-  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<InitCond> >(per_frame_init_eqn_tree);
+  traverse<TraverseFunctors::Delete<InitCond> >(per_frame_init_eqn_tree);
 
-  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<PerPixelEqn> >(per_pixel_eqn_tree);
+  traverse<TraverseFunctors::Delete<PerPixelEqn> >(per_pixel_eqn_tree);
 
-  Algorithms::traverseVector<Algorithms::TraverseFunctors::DeleteFunctor<PerFrameEqn> >(per_frame_eqn_tree);
+  traverseVector<TraverseFunctors::Delete<PerFrameEqn> >(per_frame_eqn_tree);
 
-  Algorithms::traverse<Algorithms::TraverseFunctors::DeleteFunctor<Param> >(user_param_tree);
+  traverse<TraverseFunctors::Delete<Param> >(user_param_tree);
 
   for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos)
   {
@@ -324,8 +324,8 @@ void MilkdropPreset::loadBuiltinParamsUnspecInitConds() {
 
   InitCondUtils::LoadUnspecInitCond loadUnspecInitCond(this->init_cond_tree, this->per_frame_init_eqn_tree);
 
-  this->builtinParams.traverse(loadUnspecInitCond);
-  Algorithms::traverse(user_param_tree, loadUnspecInitCond);
+  this->builtinParams.apply(loadUnspecInitCond);
+  traverse(user_param_tree, loadUnspecInitCond);
 
 }
 

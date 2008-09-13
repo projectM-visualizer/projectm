@@ -34,9 +34,7 @@
 #include "ParamUtils.hpp"
 #include "InitCondUtils.hpp"
 #include "wipemalloc.h"
-#include "Algorithms.hpp"
 
-using namespace Algorithms;
 
 
 CustomShape::CustomShape() : Shape()
@@ -233,11 +231,11 @@ CustomShape::CustomShape ( int id ) : Shape()
 CustomShape::~CustomShape()
 {
 
-	traverseVector<TraverseFunctors::DeleteFunctor<PerFrameEqn> > ( per_frame_eqn_tree );
-	traverse<TraverseFunctors::DeleteFunctor<InitCond> > ( init_cond_tree );
-	traverse<TraverseFunctors::DeleteFunctor<Param> > ( param_tree );
-	traverse<TraverseFunctors::DeleteFunctor<InitCond> > ( per_frame_init_eqn_tree );
-	traverse<TraverseFunctors::DeleteFunctor<Param> > ( text_properties_tree );
+	traverseVector<TraverseFunctors::Delete<PerFrameEqn> > ( per_frame_eqn_tree );
+	traverse<TraverseFunctors::Delete<InitCond> > ( init_cond_tree );
+	traverse<TraverseFunctors::Delete<Param> > ( param_tree );
+	traverse<TraverseFunctors::Delete<InitCond> > ( per_frame_init_eqn_tree );
+	traverse<TraverseFunctors::Delete<Param> > ( text_properties_tree );
 
 }
 

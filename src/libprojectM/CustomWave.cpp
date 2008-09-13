@@ -534,6 +534,6 @@ void CustomWave::loadUnspecInitConds()
 {
 
   InitCondUtils::LoadUnspecInitCond fun(this->init_cond_tree, this->per_frame_init_eqn_tree);
-  Algorithms::traverse(param_tree, fun);
+  traverse(param_tree, fun);
 }
 
