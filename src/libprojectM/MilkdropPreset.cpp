@@ -52,14 +52,6 @@ MilkdropPreset::MilkdropPreset(std::istream & in, const std::string & presetName
 
 }
 
-
-/**
- * 
- * @param absoluteFilePath 
- * @param presetName 
- * @param presetInputs 
- * @param presetOutputs 
- */
 MilkdropPreset::MilkdropPreset(const std::string & absoluteFilePath, const std::string & presetName, PresetOutputs & presetOutputs):
     builtinParams(_presetInputs, presetOutputs),
     _absoluteFilePath(absoluteFilePath),
@@ -275,8 +267,7 @@ void MilkdropPreset::Render(const BeatDetect &music, const PipelineContext &cont
 {
 	_presetInputs.update(music, context);
 
-	// set stuff here	
-	this->evaluateFrame();
+	evaluateFrame();
 }
 
 void MilkdropPreset::initialize(const std::string & pathname)
@@ -332,7 +323,6 @@ void MilkdropPreset::loadBuiltinParamsUnspecInitConds() {
 void MilkdropPreset::loadCustomWaveUnspecInitConds()
 {
 
-
   for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos)
   {
     assert(*pos);
@@ -344,7 +334,8 @@ void MilkdropPreset::loadCustomWaveUnspecInitConds()
 void MilkdropPreset::loadCustomShapeUnspecInitConds()
 {
 
-  for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); pos != customShapes.end(); ++pos)
+  for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); 
+	pos != customShapes.end(); ++pos)
   {
     assert(*pos);
     (*pos)->loadUnspecInitConds();
