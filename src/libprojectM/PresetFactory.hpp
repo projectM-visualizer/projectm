@@ -26,8 +26,8 @@ public:
 
  /// Constructs a new preset given an url
  /// \param url a locational identifier referencing the preset
-/// \param name the preset name
-/// \param author the preset author
+ /// \param name the preset name
+ /// \param author the preset author
  /// \returns a valid preset object
  virtual std::auto_ptr<Preset> allocate(const std::string & url, const std::string & name=std::string(),
 	 const std::string & author=std::string()) = 0;
