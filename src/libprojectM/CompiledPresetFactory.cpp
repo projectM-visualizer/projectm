@@ -75,7 +75,7 @@ PresetLibrary * CompiledPresetFactory::loadLibrary(const std::string & url) {
     dlsym_error = dlerror();
     if (dlsym_error) {
         std::cerr << "[CompiledPresetFactory] Cannot load symbol destroy: " << dlsym_error << '\n';
-        return false;
+        return 0;
     }
 
     PresetLibrary * library = new PresetLibrary(handle, create, destroy);
