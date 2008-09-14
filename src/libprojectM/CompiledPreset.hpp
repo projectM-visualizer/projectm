@@ -21,7 +21,7 @@ template <class PipelineT>
 class CompiledPreset : public Preset {
 public:
 
-	inline CompiledPreset(const std::string & name=std::string(), 
+	inline CompiledPreset(const std::string & name=std::string(),
 		const std::string & author = std::string()) : Preset(name, author) {}
 
 	virtual ~CompiledPreset() {}

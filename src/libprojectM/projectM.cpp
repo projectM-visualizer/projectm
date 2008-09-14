@@ -62,6 +62,7 @@ projectM::~projectM()
 {
 
  #ifdef USE_THREADS
+	std::cout << "[projectM] thread ";
   	printf("c");
 	running = false;
 	printf("l");
@@ -75,9 +76,9 @@ projectM::~projectM()
 	printf("u");
 	pthread_mutex_destroy( &mutex );
 	printf("p");
+	std::cout << std::endl;
 #endif
 	destroyPresetTools();
-
 
 	if ( renderer )
 		delete ( renderer );
@@ -143,7 +144,7 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
 
 void projectM::readConfig (const std::string & configFile )
 {
-	std::cout << "configFile: " << configFile << std::endl;
+	std::cout << "[projectM] config file: " << configFile << std::endl;
 
 	ConfigFile config ( configFile );
 	_settings.meshX = config.read<int> ( "Mesh X", 32 );
@@ -237,9 +238,7 @@ void *projectM::thread_func(void *vptr_args)
 
 void projectM::evaluateSecondPreset()
 {
-
-/*      setupPresetInputs(&m_activePreset2->presetInputs());
-	
+/*
       m_activePreset2->presetInputs().frame = timeKeeper->PresetFrameB();
       m_activePreset2->presetInputs().progress= timeKeeper->PresetProgressB();
 
@@ -264,13 +263,11 @@ DLLEXPORT void projectM::renderFrame()
 
 	//printf("A:%f, B:%f, S:%f\n", timeKeeper->PresetProgressA(), timeKeeper->PresetProgressB(), timeKeeper->SmoothRatio());
 
-std::cerr << "mspf: FIX ME!";
-	abort();
+	mspf= ( int ) ( 1000.0/ ( float ) settings().fps ); //milliseconds per frame
 	
-	//mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps ); //milliseconds per frame
-	
-	//m_activePreset->Render(beatDetect, pipelineContext);
-	//setupPresetInputs(&m_activePreset->presetInputs());
+	m_activePreset->Render(*beatDetect, pipelineContext);
+
+	/// @bug whois is responsible for updating this now?"
 	//m_activePreset->presetInputs().frame = timeKeeper->PresetFrameA();
 	//m_activePreset->presetInputs().progress= timeKeeper->PresetProgressA();
 
@@ -286,19 +283,16 @@ std::cerr << "mspf: FIX ME!";
 			timeKeeper->StartSmoothing();
 			//	printf("Start Smooth\n");
 			// if(timeKeeper->IsSmoothing())printf("Confirmed\n");
-assert(false);	
-/*		switchPreset(m_activePreset2,
-				     &m_activePreset->presetInputs() == &presetInputs ? presetInputs2 : presetInputs,
-				&m_activePreset->presetOutputs() == &presetOutputs ? presetOutputs2 : presetOutputs);
-*/
+			switchPreset(m_activePreset2);
 			presetSwitchedEvent(false, **m_presetPos);
 		}
 
 		else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && timeKeeper->CanHardCut() )
 		{
 		  // printf("Hard Cut\n");
-std::cerr << "HARD CUT. SWITCH PRESET BROKEN" << std::endl;
-			abort();
+			
+			switchPreset(m_activePreset);
+			
 			//switchPreset(m_activePreset, presetInputs, presetOutputs);
 
 			timeKeeper->StartPreset();
@@ -318,11 +312,8 @@ std::cerr << "HARD CUT. SWITCH PRESET BROKEN" << std::endl;
 #ifdef USE_THREADS
 		pthread_cond_signal(&condition);
 		pthread_mutex_unlock( &mutex );
-#endif
-		//m_activePreset->evaluateFrame();
+#endif		
 		m_activePreset->Render(*beatDetect, pipelineContext);
-
-		//m_activePreset->presetOutputs().Render(*beatDetect,presetInputs);
 
 #ifdef USE_THREADS
 		pthread_mutex_lock( &mutex );
@@ -336,14 +327,13 @@ std::cerr << "HARD CUT. SWITCH PRESET BROKEN" << std::endl;
 
 Pipeline pipeline;
 
-std::cerr << "FIX ME STATIC PER PIXEL" << std::endl;
-abort();
-//pipeline.setStaticPerPixel(presetInputs.gx,presetInputs.gy);
+pipeline.setStaticPerPixel(settings().meshX, settings().meshY);
+
 PipelineMerger::MergePipelines( m_activePreset->pipeline(),m_activePreset2->pipeline(), pipeline,timeKeeper->SmoothRatio());
 
+/// @bug not sure if this is correct
+renderer->RenderFrame(pipeline, pipelineContext);
 
-std::cerr << "FIX ME RENDER FRAME" << std::endl;
-abort();
 //renderer->RenderFrame ( pipeline, presetInputs );
 	}
 	else
@@ -434,17 +424,13 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	assert(pcm());
 	beatDetect = new BeatDetect ( _pcm );
 
-
-	std::cerr << "fps broken FIX ME" << std::endl;
-	abort();
-	//if ( presetInputs.fps > 0 )
-	//	mspf= ( int ) ( 1000.0/ ( float ) presetInputs.fps );
-	//else mspf = 0;
+	if ( _settings.fps > 0 )
+		mspf= ( int ) ( 1000.0/ ( float ) _settings.fps );
+	else mspf = 0;
 
 	this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
 	
-	std::cerr << "set pipeline broken FIX ME" << std::endl;
-	abort();
+	std::cerr << "set pipeline broken FIX ME" << std::endl;	
 	//renderer->SetPipeline(presetOutputs);
 	running = true;
 
@@ -456,8 +442,8 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	if (pthread_create(&thread, NULL, thread_callback, this) != 0)
 	    {
 
-	      std::cerr << "failed to allocate a thread! try building with option USE_THREADS turned off" << std::endl;;
-	      exit(1);
+	      std::cerr << "[projectM] failed to allocate a thread! try building with option USE_THREADS turned off" << std::endl;;
+	      exit(EXIT_FAILURE);
 	    }
 	pthread_mutex_lock( &mutex );
 #endif
@@ -466,8 +452,6 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	timeKeeper->StartPreset();
 	assert(pcm());
 
-	
-//	printf ( "exiting projectM_init()\n" );
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
@@ -480,9 +464,9 @@ void projectM::projectM_resetengine()
 	}
 
 	/// @bug call factory clear here?
-	std::cerr << "call factory clear?" << std::endl;
-	abort();
-	/* Q VARIABLES END */
+	std::cerr << "call factory clear here?" << std::endl;
+//	abort();
+
 
 }
 
@@ -496,8 +480,8 @@ DLLEXPORT void projectM::projectM_resetGL ( int w, int h )
 }
 
 /** Sets the title to display */
-DLLEXPORT void projectM::projectM_setTitle ( std::string title )
-{
+DLLEXPORT void projectM::projectM_setTitle ( std::string title ) {
+
 	if ( title != renderer->title )
 	{
 		renderer->title=title;
@@ -549,11 +533,11 @@ int projectM::initPresetTools(int gx, int gy)
 
 	// Case where no valid presets exist in directory. Could also mean
 	// playlist initialization was deferred
-	//if ( m_presetChooser->empty() )
-	//{
-		//std::cerr << "[projectM] warning: no valid files found in preset directory \""
-		//<< m_presetLoader->directoryName() << "\"" << std::endl;
-	//}
+	if ( m_presetChooser->empty() )
+	{
+		std::cerr << "[projectM] warning: no valid files found in preset directory \""
+		<< m_presetLoader->directoryName() << "\"" << std::endl;
+	}
 
 	//std::cerr << "[projectM] Idle preset allocated." << std::endl;
 
@@ -607,8 +591,6 @@ void projectM::removePreset(unsigned int index) {
 	// Case: we have deleted the active preset position
 	// Set iterator to end of chooser
 	else if (chooserIndex == index) {
-		//*m_presetPos = m_presetChooser->begin(chooserIndex);
-		std::cerr << "deleted active preset!";
 		*m_presetPos = m_presetChooser->end();
 	}
 
@@ -691,13 +673,10 @@ std::string projectM::getPresetName ( unsigned int index ) const
 
 void projectM::clearPlaylist ( )
 {
-
 	m_presetLoader->clear();
 	*m_presetPos = m_presetChooser->end();
-
 }
 
-/// Sets preset iterator position to the passed in index
 void projectM::selectPresetPosition(unsigned int index) {
 	*m_presetPos = m_presetChooser->begin(index);
 }

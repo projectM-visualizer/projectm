@@ -105,7 +105,6 @@ void Renderer::SetPipeline(Pipeline &pipeline)
 	shaderEngine.reset();
 	shaderEngine.loadShader(pipeline.warpShader);
 	shaderEngine.loadShader(pipeline.compositeShader);
-
 #endif
 }
 

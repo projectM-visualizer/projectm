@@ -26,19 +26,18 @@
  * $Log$
  */
 
-#ifndef _PROJECTM_H
-#define _PROJECTM_H
+#ifndef _PROJECTM_HPP
+#define _PROJECTM_HPP
 
 #ifdef WIN32
 #include "win32-dirent.h"
 #else
 #include <dirent.h>
 #endif /** WIN32 */
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
+#include <cmath>
+#include <cstdio>
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 #ifndef WIN32
 #include <unistd.h>
 #endif
@@ -103,8 +102,7 @@ typedef enum {
 /// A functor class that allows users of this library to specify random preset behavior
 class RandomizerFunctor {
 
-   public:
-	//RandomizerFunctor();
+   public:	
 	RandomizerFunctor(PresetChooser & chooser) ;
 	virtual ~RandomizerFunctor();
    	virtual double operator() (int index);
@@ -247,7 +245,7 @@ public:
   void *thread_func(void *vptr_args);
 
 private:
-	 PCM * _pcm;
+  PCM * _pcm;
   double sampledPresetDuration();
   BeatDetect * beatDetect;
   Renderer *renderer;
@@ -271,6 +269,7 @@ private:
 
   void projectM_initengine();
   void projectM_resetengine();
+
   /// Initializes preset loading / management libraries
   int initPresetTools(int gx, int gy);
 
@@ -293,16 +292,13 @@ private:
   /// Destination preset when smooth preset switching
   std::auto_ptr<Preset> m_activePreset2;
 
-
   TimeKeeper *timeKeeper;
-
 
   int m_flags;
 
-
-pthread_mutex_t mutex;
-pthread_cond_t  condition;
-pthread_t thread;
+  pthread_mutex_t mutex;
+  pthread_cond_t  condition;
+  pthread_t thread;
   bool running;
 
   Pipeline* currentPipe;

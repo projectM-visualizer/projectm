@@ -53,9 +53,9 @@ void PresetFactoryManager::registerFactory(const std::string & extensions, Prese
 	std::string extension;
 
 	while (ss >> extension) {
-	if (_factoryMap.count(extension)) {
-		std::cerr << "[PresetFactoryManager] Warning: extension \"" << extension << 
-		"\" already has a factory. New factory handler ignored." << std::endl;
+		if (_factoryMap.count(extension)) {
+			std::cerr << "[PresetFactoryManager] Warning: extension \"" << extension << 
+				"\" already has a factory. New factory handler ignored." << std::endl;			
 		} else {
 			_factoryMap.insert(std::make_pair(extension, factory));
 			_factoryList.push_back(factory);
@@ -65,7 +65,7 @@ void PresetFactoryManager::registerFactory(const std::string & extensions, Prese
 
 PresetFactory & PresetFactoryManager::factory(const std::string & extension) {
 
-	if (!_factoryMap.count(extension)) {
+	if (!_factoryMap.count(extension)) {		
 		std::ostringstream os;
 		os << "No factory associated with \"" << extension << "\"." << std::endl;
 		throw PresetFactoryException(os.str());
