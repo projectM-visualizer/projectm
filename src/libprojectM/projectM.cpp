@@ -389,13 +389,6 @@ renderer->RenderFrame(pipeline, pipelineContext);
 
 void projectM::projectM_reset()
 {
-
-	/** Default variable settings */
-
-  //	this->wvw = 512;
-  //	this->wvh = 512;
-
-	/** More other stuff */
 	this->mspf = 0;
 	this->timed = 0;
 	this->timestart = 0;
@@ -413,7 +406,6 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
         timeKeeper = new TimeKeeper(_settings.presetDuration,_settings.smoothPresetDuration, _settings.easterEgg);
 
 	/** Nullify frame stash */
-
 
 	/** Initialise per-pixel matrix calculations */
 	/** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */

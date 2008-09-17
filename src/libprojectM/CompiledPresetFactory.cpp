@@ -70,7 +70,7 @@ PresetLibrary * CompiledPresetFactory::loadLibrary(const std::string & url) {
         std::cerr << "[CompiledPresetFactory] Cannot load symbol create: " << dlsym_error << '\n';
         return 0;
     }
-    
+
     DestroyFunctor * destroy = (DestroyFunctor*) dlsym(handle, "destroy");
     dlsym_error = dlerror();
     if (dlsym_error) {
