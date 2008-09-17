@@ -353,7 +353,7 @@ void ShaderEngine::SetupCg()
 	}
 
 	else
-		std::cout << "Unable to load shader template" << std::endl;
+		std::cout << "Unable to load shader template \"" << CMAKE_INSTALL_PREFIX "/share/projectM/shaders/projectM.cg\"" << std::endl;
 
 	std::ifstream myfile2(CMAKE_INSTALL_PREFIX "/share/projectM/shaders/blur.cg");
 	if (myfile2.is_open())

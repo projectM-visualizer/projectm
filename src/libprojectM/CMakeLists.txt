@@ -1,5 +1,6 @@
 PROJECT(projectM)
-cmake_minimum_required(VERSION 2.6.0)
+  
+cmake_minimum_required(VERSION 2.4.0)
 
 OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL library" OFF)
 
