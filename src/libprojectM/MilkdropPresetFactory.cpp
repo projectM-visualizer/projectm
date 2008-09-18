@@ -22,9 +22,10 @@
 //
 
 #include "MilkdropPresetFactory.hpp"
-
+#include "MilkdropPreset.hpp"
 #include "BuiltinFuncs.hpp"
 #include "Eval.hpp"
+#include "IdlePreset.hpp"
 
 MilkdropPresetFactory::MilkdropPresetFactory(int gx, int gy) {
 	/* Initializes the builtin function database */
@@ -44,7 +45,7 @@ MilkdropPresetFactory::~MilkdropPresetFactory() {
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
-void MilkdropPresetFactory::Reset()
+void MilkdropPresetFactory::reset()
 {
 
 	_presetOutputs.zoom=1.0;
@@ -205,9 +206,14 @@ void MilkdropPresetFactory::initializePresetOutputs(int gx, int gy)
 
 }
 
+
 std::auto_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url, const std::string & name, const std::string & author) {
 	_presetOutputs.customWaves.clear();
 	_presetOutputs.customShapes.clear();
 
+	std::string path;
+	if (PresetFactory::protocol(url, path) == PresetFactory::IDLE_PRESET_PROTOCOL) {
+		return IdlePresets::allocate(path, _presetOutputs);	
+	}
 	return std::auto_ptr<Preset>(new MilkdropPreset(url, name, _presetOutputs));
 }

@@ -19,12 +19,14 @@
 class PresetFactory {
 
 public:
+ static const std::string IDLE_PRESET_PROTOCOL;
+ static std::string protocol(const std::string & url, std::string & path);
 
  inline PresetFactory() {}
 
  inline virtual ~PresetFactory() {}
 
- /// Constructs a new preset given an url
+ /// Constructs a new preset given an url and optional meta data
  /// \param url a locational identifier referencing the preset
  /// \param name the preset name
  /// \param author the preset author

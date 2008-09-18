@@ -5,13 +5,13 @@
 #include "Preset.hpp"
 
 /// A preset that does not depend on the file system to be loaded. This allows projectM to render
-/// something (ie. self indulgent project advertisting) even when no valid preset directory is found.
-class IdlePresetFactory {
+/// something (ie. self indulgent project advertising) even when no valid preset directory is found.
+class IdlePresets {
 
   public:
 	/// Allocate a new idle preset instance 
 	/// \returns a newly allocated auto pointer of an idle preset instance
-	std::auto_ptr<Preset> allocate();
+	static std::auto_ptr<Preset> allocate(const std::string & path, PresetOutputs & outputs);
   private:
 	static std::string presetText();
 	static const std::string IDLE_PRESET_NAME;
