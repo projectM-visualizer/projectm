@@ -142,6 +142,19 @@ std::auto_ptr<Preset> PresetLoader::loadPreset ( unsigned int index )  const
 	
 }
 
+
+std::auto_ptr<Preset> PresetLoader::loadPreset ( const std::string & url )  const
+{
+
+	// Return a new autopointer to a preset
+	const std::string extension = parseExtension ( url );
+
+	/// @bug probably should not use url for preset name
+	return _presetFactoryManager.factory(extension).allocate
+		(url, url);
+
+}
+
 void PresetLoader::handleDirectoryError()
 {
 

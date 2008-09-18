@@ -208,12 +208,13 @@ void MilkdropPresetFactory::initializePresetOutputs(int gx, int gy)
 
 
 std::auto_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url, const std::string & name, const std::string & author) {
+
 	_presetOutputs.customWaves.clear();
 	_presetOutputs.customShapes.clear();
 
 	std::string path;
 	if (PresetFactory::protocol(url, path) == PresetFactory::IDLE_PRESET_PROTOCOL) {
 		return IdlePresets::allocate(path, _presetOutputs);	
-	}
-	return std::auto_ptr<Preset>(new MilkdropPreset(url, name, _presetOutputs));
+	} else
+		return std::auto_ptr<Preset>(new MilkdropPreset(url, name, _presetOutputs));
 }

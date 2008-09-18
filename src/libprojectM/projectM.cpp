@@ -440,7 +440,8 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	pthread_mutex_lock( &mutex );
 #endif
 
-	renderer->setPresetName ( m_activePreset->name() );
+	/// @bug order of operatoins here is busted
+	//renderer->setPresetName ( m_activePreset->name() );
 	timeKeeper->StartPreset();
 	assert(pcm());
 
@@ -520,8 +521,8 @@ int projectM::initPresetTools(int gx, int gy)
 
 	// Load idle preset
 	std::cerr << "[projectM] Allocating idle preset..." << std::endl;
-	abort();
-	//m_activePreset = IdlePreset::allocate ( presetInputs, presetOutputs );
+	m_activePreset = m_presetLoader->loadPreset
+		("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
 
 	// Case where no valid presets exist in directory. Could also mean
 	// playlist initialization was deferred
