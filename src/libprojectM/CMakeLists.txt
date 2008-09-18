@@ -34,7 +34,7 @@ Func.cpp Eval.cpp  PerFrameEqn.cpp PerPointEqn.cpp fftsg.cpp KeyHandler.cpp
  timer.cpp  wipemalloc.cpp BuiltinFuncs.cpp BuiltinParams.cpp Renderer.cpp 
 PresetLoader.cpp  PresetChooser.cpp PresetFrameIO.cpp PresetMerge.cpp PipelineContext.cpp 
 ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp TimeKeeper.cpp Filters.cpp Renderable.cpp Pipeline.cpp PerPixelMesh.cpp 
-MilkdropWaveform.cpp Waveform.cpp VideoEcho.cpp Shader.cpp PerlinNoise.cpp UserTexture.cpp ShaderEngine.cpp MilkdropPreset.cpp MilkdropPresetFactory.cpp CompiledPresetFactory.cpp PresetFactoryManager.cpp ${GLEW_SOURCES})
+MilkdropWaveform.cpp Waveform.cpp VideoEcho.cpp Shader.cpp PerlinNoise.cpp UserTexture.cpp ShaderEngine.cpp MilkdropPreset.cpp MilkdropPresetFactory.cpp CompiledPresetFactory.cpp PresetFactory.cpp PresetFactoryManager.cpp ${GLEW_SOURCES})
 
 if (USE_DEVIL)
 SET (projectM_SOURCES ${projectM_SOURCES})

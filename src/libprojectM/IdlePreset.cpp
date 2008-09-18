@@ -1,12 +1,11 @@
 #include "IdlePreset.hpp"
 #include <sstream>
 #include <string>
+#include "MilkdropPreset.hpp"
+const std::string IdlePresets::IDLE_PRESET_NAME
+	("Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
 
-#if 0
-const std::string IdlePreset::IDLE_PRESET_NAME
-	("Geiss & Sperl - Feedback (projectM idle HDR mix)");
-
-std::string IdlePreset::presetText() {
+std::string IdlePresets::presetText() {
 
 std::ostringstream out;
 
@@ -198,14 +197,13 @@ return out.str();
 
 }
 
-std::auto_ptr<Preset> IdlePreset::allocate( PresetInputs & presetInputs, PresetOutputs & presetOutputs)
+std::auto_ptr<Preset> IdlePresets::allocate(const std::string & name, PresetOutputs & presetOutputs)
 {
 
-  std::istringstream in(presetText());
-  return std::auto_ptr<Preset>(new Preset(in, IDLE_PRESET_NAME, p);
-  
-  std::cerr << "fix me" << std::endl;
-  abort();
+  if (name == IDLE_PRESET_NAME) {
+  	std::istringstream in(presetText());
+  	return std::auto_ptr<Preset>(new MilkdropPreset(in, IDLE_PRESET_NAME, presetOutputs));
+  }
+  else
+	return std::auto_ptr<Preset>(0);
 }
-
-#endif
