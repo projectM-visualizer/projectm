@@ -44,10 +44,8 @@ MilkdropPreset::MilkdropPreset(std::istream & in, const std::string & presetName
     	builtinParams(_presetInputs, presetOutputs),
     	_presetOutputs(presetOutputs)
 {
-
-  _presetOutputs.customWaves.clear();
-  _presetOutputs.customShapes.clear();
-
+  _presetInputs.gx = _presetOutputs.gx;
+  _presetInputs.gy = _presetOutputs.gy;
   initialize(in);
 
 }
@@ -57,6 +55,8 @@ MilkdropPreset::MilkdropPreset(const std::string & absoluteFilePath, const std::
     _absoluteFilePath(absoluteFilePath),
     _presetOutputs(presetOutputs)
 {
+  _presetInputs.Initialize(_presetOutputs.gx ,_presetOutputs.gy);
+
   initialize(absoluteFilePath);
 
 }
@@ -266,7 +266,7 @@ void MilkdropPreset::postloadInitialize() {
 void MilkdropPreset::Render(const BeatDetect &music, const PipelineContext &context) 
 {
 	_presetInputs.update(music, context);
-
+	
 	evaluateFrame();
 }
 

@@ -34,7 +34,7 @@ private:
 	void initializePresetOutputs(int gx, int gy);
 	void reset();
 	PresetOutputs _presetOutputs;
-	PresetInputs _presetInputs;
+	//PresetInputs _presetInputs;
 };
 
 #endif
