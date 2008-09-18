@@ -35,7 +35,7 @@ class PresetFactoryManager {
 		/// Initializes the manager with mesh sizes specified
 		/// \param gx the width of the mesh
 		/// \param gy the height of the mesh
-		/// \note This must be called before useful behavior occurs
+		/// \note This must be called once before any other methods
 		void initialize(int gx, int gy);
 		
 		/// Requests a factory given a preset extension type
@@ -44,7 +44,7 @@ class PresetFactoryManager {
 		/// \returns a valid preset factory associated with the extension
 		PresetFactory & factory(const std::string & extension);
 
-		/// Tests when an extension has been registered with a factory
+		/// Tests if an extension has been registered with a factory
 		/// \param extension the file name extension to verify
 		/// \returns true if a factory exists, false otherwise
 		bool extensionHandled(const std::string & extension) const;
