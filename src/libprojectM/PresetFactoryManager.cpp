@@ -11,7 +11,6 @@
 //
 #include "PresetFactoryManager.hpp"
 
-/// Begin: Preset factories we will handle ///
 #ifndef DISABLE_MILKDROP_PRESETS
 #include "MilkdropPresetFactory.hpp"
 #endif
