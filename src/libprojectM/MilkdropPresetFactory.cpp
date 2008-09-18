@@ -91,8 +91,6 @@ void MilkdropPresetFactory::reset()
 	_presetOutputs.mv.x_offset = 0.02;
 	_presetOutputs.mv.y_offset = 0.02;
 
-	_presetInputs.progress = 0;
-	_presetInputs.frame = 1;
 	
 	/* PER_FRAME CONSTANTS END */
 	_presetOutputs.fRating = 0;
@@ -124,13 +122,6 @@ void MilkdropPresetFactory::reset()
 	_presetOutputs.fWarpAnimSpeed = 0;
 	_presetOutputs.fWarpScale = 0;
 	_presetOutputs.fShader = 0;
-
-
-	_presetInputs.x_per_pixel = 0;
-	_presetInputs.y_per_pixel = 0;
-	_presetInputs.rad_per_pixel = 0;
-	_presetInputs.ang_per_pixel = 0;
-
 	/* PER_PIXEL CONSTANT END */
 
 	/* Q VARIABLES START */
@@ -168,9 +159,6 @@ void MilkdropPresetFactory::initializePresetOutputs(int gx, int gy)
 //_presetInputs.meshy = 0;
 
 
-	_presetInputs.progress = 0;
-	_presetInputs.frame = 1;
-
 	/* PER_FRAME CONSTANTS END */
 	_presetOutputs.fRating = 0;
 	_presetOutputs.fGammaAdj = 1.0;
@@ -199,8 +187,6 @@ void MilkdropPresetFactory::initializePresetOutputs(int gx, int gy)
 
 	for (int i = 0;i<32;i++)
 		_presetOutputs.q[i] = 0;
-
-
 
 	/* Q AND T VARIABLES END */
 

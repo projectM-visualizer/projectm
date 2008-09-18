@@ -31,6 +31,18 @@ void PresetInputs::Initialize ( int gx, int gy )
 	this->gx =gx;
 	this->gy= gy;
 
+
+	/// @bug no clue if this block belongs here
+	// ***
+	progress = 0;
+	frame = 1;
+	
+	x_per_pixel = 0;
+	y_per_pixel = 0;
+	rad_per_pixel = 0;
+	ang_per_pixel = 0;
+	// ***
+
 	this->x_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
 	for ( x = 0; x < gx; x++ )
 	{
