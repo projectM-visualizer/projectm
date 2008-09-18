@@ -31,7 +31,7 @@ public:
     float treb_att;
 
     /* variables were added in milkdrop 1.04 */
-    int gx,gy;
+    int gx, gy;
 
     float **x_mesh;
     float **y_mesh;
