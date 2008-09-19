@@ -9,7 +9,7 @@
 #include "MilkdropCompatability.hpp"
 #include "Transformation.hpp"
 #include "MilkdropWaveform.hpp"
-
+#include "CompiledPreset.hpp"
 
 class RovastarDriftingChaos : public Pipeline
 {
@@ -129,3 +129,5 @@ public:
 
 	}
 };
+
+typedef CompiledPreset<RovastarDriftingChaos> RovastarDriftingChaosPreset;

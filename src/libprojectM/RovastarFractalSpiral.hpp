@@ -4,10 +4,6 @@
  *  Created on: Jun 22, 2008
  *      Author: pete
  */
-
-#ifndef ROVASTARFRACTALSPIRAL_HPP_
-#define ROVASTARFRACTALSPIRAL_HPP_
-
 #include "Pipeline.hpp"
 #include "Transformation.hpp"
 #include "MilkdropCompatability.hpp"
@@ -72,5 +68,3 @@ public:
 	}
 
 };
-
-#endif /* ROVASTARFRACTALSPIRAL_HPP_ */
