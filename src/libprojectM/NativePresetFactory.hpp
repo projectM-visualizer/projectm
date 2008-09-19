@@ -1,5 +1,5 @@
 //
-// C++ Interface: CompiledPresetFactory
+// C++ Interface: NativePresetFactory
 //
 // Description: 
 //
@@ -10,21 +10,21 @@
 //
 //
 
-#ifndef __COMPILED_PRESET_FACTORY_HPP
-#define __COMPILED_PRESET_FACTORY_HPP
+#ifndef __NATIVE_PRESET_FACTORY_HPP
+#define __NATIVE_PRESET_FACTORY_HPP
 
 #include <memory>
 #include "PresetFactory.hpp"
 
 class PresetLibrary;
 
-class CompiledPresetFactory : public PresetFactory {
+class NativePresetFactory : public PresetFactory {
 
 public:
 
- CompiledPresetFactory();
+ NativePresetFactory();
 
- virtual ~CompiledPresetFactory();
+ virtual ~NativePresetFactory();
 
  virtual std::auto_ptr<Preset> allocate(const std::string & url, const std::string & name = std::string(), 
 	const std::string & author = std::string());
