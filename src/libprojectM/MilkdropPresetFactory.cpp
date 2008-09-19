@@ -185,7 +185,7 @@ void MilkdropPresetFactory::initializePresetOutputs(int gx, int gy)
 
 	/* Q AND T VARIABLES START */
 
-	for (int i = 0;i<32;i++)
+	for (int i = 0;i<NUM_Q_VARIABLES;i++)
 		_presetOutputs.q[i] = 0;
 
 	/* Q AND T VARIABLES END */

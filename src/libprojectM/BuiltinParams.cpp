@@ -10,8 +10,10 @@
 
 BuiltinParams::BuiltinParams() {}
 
-BuiltinParams::BuiltinParams(const PresetInputs & presetInputs, PresetOutputs & presetOutputs)
+BuiltinParams::BuiltinParams(PresetInputs & presetInputs, PresetOutputs & presetOutputs)
 {
+
+  presetInputs.Initialize(presetOutputs.gx, presetOutputs.gy);
 
   int ret;
   if ((ret = init_builtin_param_db(presetInputs, presetOutputs)) != PROJECTM_SUCCESS)
