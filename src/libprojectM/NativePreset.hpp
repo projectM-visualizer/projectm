@@ -5,8 +5,8 @@
  *      Author: carm
  */
 
-#ifndef __COMPILED_PRESET_HPP_
-#define __COMPILED_PRESET_HPP_
+#ifndef __NATIVE_PRESET_HPP_
+#define __NATIVE_PRESET_HPP_
 
 #include <string>
 
@@ -17,13 +17,13 @@
 /// A templated preset class to build different various hard coded presets and 
 /// compile them into object files to be loaded into a playlist
 template <class PipelineT>
-class CompiledPreset : public Preset {
+class NativePreset : public Preset {
 public:
 
-	inline CompiledPreset(const std::string & name=std::string(),
+	inline NativePreset(const std::string & name=std::string(),
 		const std::string & author = std::string()) : Preset(name, author) {}
 
-	virtual ~CompiledPreset() {}
+	virtual ~NativePreset() {}
 
 	inline PipelineT & pipeline() { return _pipeline; }
 	inline virtual void Render(const BeatDetect &music, const PipelineContext &context) {
@@ -35,12 +35,12 @@ private:
 };
 
 template <class PipelineT>
-extern "C" CompiledPreset<PipelineT> * create(const char * url) {
-	return new CompiledPreset<PipelineT>(std::string(url));
+extern "C" NativePreset<PipelineT> * create(const char * url) {
+	return new NativePreset<PipelineT>(std::string(url));
 }
 
 template <class PipelineT>
-extern "C" void destroy(CompiledPreset<PipelineT> * preset) {
+extern "C" void destroy(NativePreset<PipelineT> * preset) {
     delete preset;
 }
 

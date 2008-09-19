@@ -16,7 +16,7 @@
 #endif
 
 #ifndef DISABLE_COMPILED_PRESETS
-#include "CompiledPresetFactory.hpp"
+#include "NativePresetFactory.hpp"
 #endif
 
 #include <sstream>
@@ -39,7 +39,7 @@ void PresetFactoryManager::initialize(int gx, int gy) {
 	#endif
 
 	#ifndef DISABLE_COMPILED_PRESETS
-	factory = new CompiledPresetFactory();
+	factory = new NativePresetFactory();
 	registerFactory(factory->supportedExtensions(), factory);
 	#endif
 }
