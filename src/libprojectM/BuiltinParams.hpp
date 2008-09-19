@@ -42,7 +42,7 @@ public:
 
     /** Construct a new builtin parameter database with variables references given by
      * the preset input and output structures */
-     BuiltinParams(const PresetInputs &  presetInputs, PresetOutputs & presetOutputs);
+     BuiltinParams(PresetInputs &  presetInputs, PresetOutputs & presetOutputs);
 
     ~BuiltinParams();
 
