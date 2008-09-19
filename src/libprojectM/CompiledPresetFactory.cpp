@@ -65,7 +65,7 @@ PresetLibrary * CompiledPresetFactory::loadLibrary(const std::string & url) {
 
     // load the symbols
     CreateFunctor * create = (CreateFunctor*) dlsym(handle, "create");
-    const char* dlsym_error = dlerror();
+    const char * dlsym_error = dlerror();
     if (dlsym_error) {
         std::cerr << "[CompiledPresetFactory] Cannot load symbol create: " << dlsym_error << '\n';
         return 0;
@@ -85,9 +85,9 @@ PresetLibrary * CompiledPresetFactory::loadLibrary(const std::string & url) {
 }
 
 
-std::auto_ptr<Preset> CompiledPresetFactory::allocate(const std::string & url, const std::string & name,
-	const std::string & author) {
-	
+std::auto_ptr<Preset> CompiledPresetFactory::allocate
+	(const std::string & url, const std::string & name, const std::string & author) {
+		
 	PresetLibrary * library;
 	
 	if ((library = loadLibrary(url)) == 0)

@@ -161,7 +161,7 @@ void PresetOutputs::Render(const BeatDetect &music, const PipelineContext &conte
 				if( (*pos)->enabled==1)	drawables.push_back((*pos));
 			}
 
-    drawables.push_back(&wave);
+    	drawables.push_back(&wave);
 	if(bDarkenCenter==1) drawables.push_back(&darkenCenter);
 	drawables.push_back(&border);
 
