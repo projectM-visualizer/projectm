@@ -99,8 +99,6 @@ Qt::ItemFlags QPlaylistModel::flags(const QModelIndex &index) const
  bool QPlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
 				int row, int column, const QModelIndex &parent)
 {
-	qDebug() << "DROP";
-	
 	if (!data->hasFormat(PRESET_MIME_TYPE))
 		return false;
 
@@ -305,7 +303,7 @@ bool QPlaylistModel::readPlaylist ( const QString & file )
 		}
 		
 		foreach (QFileInfo info, QDir(file).entryInfoList()) {
-			if (info.fileName().toLower().endsWith(".prjm") || info.fileName().toLower().endsWith(".milk"))
+			if (info.fileName().toLower().endsWith(".prjm") || info.fileName().toLower().endsWith(".milk") || info.fileName().toLower().endsWith(".so"))
 				appendRow(info.absoluteFilePath(), info.fileName(), 3);
 		}
 		return true;

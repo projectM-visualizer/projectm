@@ -524,6 +524,8 @@ int projectM::initPresetTools(int gx, int gy)
 	m_activePreset = m_presetLoader->loadPreset
 		("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
 
+	renderer->SetPipeline(m_activePreset->pipeline());
+
 	// Case where no valid presets exist in directory. Could also mean
 	// playlist initialization was deferred
 	if ( m_presetChooser->empty() )
