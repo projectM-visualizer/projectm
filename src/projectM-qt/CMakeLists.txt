@@ -1,7 +1,5 @@
-# the next line sets up include and link directories and defines some variables that we will use.
-# you can modify the behavior by setting some variables, e.g.
-project(projectM-qt) # the name of your project
 
+project(projectM-qt) # the name of your project
 cmake_minimum_required(VERSION 2.4.0)
 
 include(FindPkgConfig.cmake)
