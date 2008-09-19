@@ -14,7 +14,7 @@
 #include "CompiledPresetFactory.hpp"
 
 typedef void Handle;
-typedef Preset * CreateFunctor();
+typedef Preset * CreateFunctor(const char * url);
 typedef void DestroyFunctor(Preset*);
 
 class PresetLibrary {
@@ -93,5 +93,5 @@ std::auto_ptr<Preset> CompiledPresetFactory::allocate
 	if ((library = loadLibrary(url)) == 0)
 		return std::auto_ptr<Preset>(0);
 	
-	return std::auto_ptr<Preset>(library->createFunctor()());
+	return std::auto_ptr<Preset>(library->createFunctor()(url.c_str()));
 }

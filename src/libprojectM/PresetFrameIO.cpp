@@ -284,6 +284,7 @@ void PresetOutputs::Initialize ( int gx, int gy )
 	this->gx = gx;
 	this->gy= gy;
 
+	staticPerPixel = true;
 	setStaticPerPixel(gx,gy);
 
 	assert(this->gx > 0);

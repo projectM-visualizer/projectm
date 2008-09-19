@@ -14,7 +14,6 @@
 #include "Pipeline.hpp"
 #include "PipelineContext.hpp"
 
-
 /// A templated preset class to build different various hard coded presets and 
 /// compile them into object files to be loaded into a playlist
 template <class PipelineT>
@@ -35,4 +34,14 @@ private:
 	PipelineT _pipeline;
 };
 
-#endif /* PRESET_HPP_ */
+template <class PipelineT>
+extern "C" CompiledPreset<PipelineT> * create(const char * url) {
+	return new CompiledPreset<PipelineT>(std::string(url));
+}
+
+template <class PipelineT>
+extern "C" void destroy(CompiledPreset<PipelineT> * preset) {
+    delete preset;
+}
+
+#endif 
