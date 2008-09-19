@@ -122,13 +122,12 @@ void MilkdropPresetFactory::reset()
 	_presetOutputs.fWarpAnimSpeed = 0;
 	_presetOutputs.fWarpScale = 0;
 	_presetOutputs.fShader = 0;
-	/* PER_PIXEL CONSTANT END */
 
+	/* PER_PIXEL CONSTANT END */
 	/* Q VARIABLES START */
 
 	for (int i = 0;i<32;i++)
 		_presetOutputs.q[i] = 0;
-
 
 	/* Q VARIABLES END */
 

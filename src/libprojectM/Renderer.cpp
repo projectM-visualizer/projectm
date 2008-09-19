@@ -257,7 +257,9 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
 	FinishPass1();
 	Pass2(pipeline, pipelineContext);
 }
-void Renderer::RenderFrame(PresetOutputs &presetOutputs, const PipelineContext &pipelineContext)
+
+#ifdef USE_DEPRECATED_RENDER_FRAME
+void Renderer::RenderFrame(PresetOutputs &presetOutputs, const Pipelin&pipelineContext)
 {
 	SetupPass1(presetOutputs, pipelineContext);
 
@@ -276,6 +278,7 @@ void Renderer::RenderFrame(PresetOutputs &presetOutputs, const PipelineContext &
 
 	Pass2(presetOutputs, pipelineContext);
 }
+#endif
 
 void Renderer::Interpolation(const Pipeline &pipeline)
 {

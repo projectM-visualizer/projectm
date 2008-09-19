@@ -97,7 +97,6 @@ int MilkdropPreset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
 
   if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: per pixel equation (name = \"%s\")\n", name);
 
-
   /* Search for the parameter so we know what matrix the per pixel equation is referencing */
 
   param = ParamUtils::find(name, &this->builtinParams, &this->user_param_tree);
@@ -265,6 +264,8 @@ void MilkdropPreset::Render(const BeatDetect &music, const PipelineContext &cont
 	_presetInputs.update(music, context);
 	
 	evaluateFrame();
+	pipeline().Render(music, context);
+
 }
 
 void MilkdropPreset::initialize(const std::string & pathname)

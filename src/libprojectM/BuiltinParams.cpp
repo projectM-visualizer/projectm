@@ -399,10 +399,6 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
 	load_builtin_param_float(os.str().c_str(), (void*)&presetOutputs.q[i],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
 
   }
-	 
-
-
-  //param = Param::new_param_string ( "imageurl", P_FLAG_NONE, &this->imageUrl);
 
   /* variables added in 1.04 */
   load_builtin_param_int("meshx", (void*)&presetInputs.gx, P_FLAG_READONLY, 32, 96, 8, "");

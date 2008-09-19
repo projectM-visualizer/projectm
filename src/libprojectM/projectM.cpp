@@ -265,11 +265,11 @@ DLLEXPORT void projectM::renderFrame()
 
 	mspf= ( int ) ( 1000.0/ ( float ) settings().fps ); //milliseconds per frame
 	
-	m_activePreset->Render(*beatDetect, pipelineContext);
-
 	/// @bug whois is responsible for updating this now?"
-	//m_activePreset->presetInputs().frame = timeKeeper->PresetFrameA();
-	//m_activePreset->presetInputs().progress= timeKeeper->PresetProgressA();
+	pipelineContext.frame = timeKeeper->PresetFrameA();
+	pipelineContext.progress = timeKeeper->PresetProgressA();
+
+	m_activePreset->Render(*beatDetect, pipelineContext);
 
 	beatDetect->detectFromSamples();
 
@@ -289,7 +289,7 @@ DLLEXPORT void projectM::renderFrame()
 
 		else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && timeKeeper->CanHardCut() )
 		{
-		  // printf("Hard Cut\n");
+		  	// printf("Hard Cut\n");
 			
 			switchPreset(m_activePreset);
 			
@@ -299,7 +299,6 @@ DLLEXPORT void projectM::renderFrame()
 			presetSwitchedEvent(true, **m_presetPos);
 		}
 	}
-
 
 
 	if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
@@ -321,8 +320,9 @@ DLLEXPORT void projectM::renderFrame()
 		evaluateSecondPreset();
 #endif
 
+	//PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(), 
+	//	timeKeeper->SmoothRatio(),presetInputs.gx, presetInputs.gy );
 
-		//PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),timeKeeper->SmoothRatio(),presetInputs.gx, presetInputs.gy );
 
 
 Pipeline pipeline;
