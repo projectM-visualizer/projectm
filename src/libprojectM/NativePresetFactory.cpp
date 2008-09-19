@@ -1,5 +1,5 @@
 //
-// C++ Implementation: CompiledPresetFactory
+// C++ Implementation: NativePresetFactory
 //
 // Description: 
 //
@@ -11,7 +11,7 @@
 //
 
 #include <dlfcn.h>
-#include "CompiledPresetFactory.hpp"
+#include "NativePresetFactory.hpp"
 
 typedef void Handle;
 typedef Preset * CreateFunctor(const char * url);
@@ -38,9 +38,9 @@ class PresetLibrary {
 	
 };
 
-CompiledPresetFactory::CompiledPresetFactory() {}
+NativePresetFactory::NativePresetFactory() {}
 
-CompiledPresetFactory::~CompiledPresetFactory() {
+NativePresetFactory::~NativePresetFactory() {
 
 for (PresetLibraryMap::iterator pos = _libraries.begin(); pos != _libraries.end(); ++pos)
 	delete(pos->second);
@@ -48,7 +48,7 @@ for (PresetLibraryMap::iterator pos = _libraries.begin(); pos != _libraries.end(
 }
 
 
-PresetLibrary * CompiledPresetFactory::loadLibrary(const std::string & url) {
+PresetLibrary * NativePresetFactory::loadLibrary(const std::string & url) {
 
     if (_libraries.count(url))
 	return _libraries[url];
@@ -56,7 +56,7 @@ PresetLibrary * CompiledPresetFactory::loadLibrary(const std::string & url) {
     // load the preset library
     void* handle = dlopen(url.c_str(), RTLD_LAZY);
     if (!handle) {
-        std::cerr << "[CompiledPresetFactory] Cannot load library: " << dlerror() << '\n';
+        std::cerr << "[NativePresetFactory] Cannot load library: " << dlerror() << '\n';
         return 0;
     }
 
@@ -67,14 +67,14 @@ PresetLibrary * CompiledPresetFactory::loadLibrary(const std::string & url) {
     CreateFunctor * create = (CreateFunctor*) dlsym(handle, "create");
     const char * dlsym_error = dlerror();
     if (dlsym_error) {
-        std::cerr << "[CompiledPresetFactory] Cannot load symbol create: " << dlsym_error << '\n';
+        std::cerr << "[NativePresetFactory] Cannot load symbol create: " << dlsym_error << '\n';
         return 0;
     }
 
     DestroyFunctor * destroy = (DestroyFunctor*) dlsym(handle, "destroy");
     dlsym_error = dlerror();
     if (dlsym_error) {
-        std::cerr << "[CompiledPresetFactory] Cannot load symbol destroy: " << dlsym_error << '\n';
+        std::cerr << "[NativePresetFactory] Cannot load symbol destroy: " << dlsym_error << '\n';
         return 0;
     }
 
@@ -85,7 +85,7 @@ PresetLibrary * CompiledPresetFactory::loadLibrary(const std::string & url) {
 }
 
 
-std::auto_ptr<Preset> CompiledPresetFactory::allocate
+std::auto_ptr<Preset> NativePresetFactory::allocate
 	(const std::string & url, const std::string & name, const std::string & author) {
 		
 	PresetLibrary * library;
