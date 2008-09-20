@@ -1,7 +1,6 @@
 #ifndef Renderable_HPP
 #define Renderable_HPP
 
-#include <string.h>
 #include "TextureManager.hpp"
 class BeatDetect;
 
