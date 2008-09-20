@@ -2,7 +2,7 @@
 #define Renderer_HPP
 
 #include "FBO.hpp"
-#include "BeatDetect.hpp"
+class BeatDetect;
 #include <string>
 #include <set>
 

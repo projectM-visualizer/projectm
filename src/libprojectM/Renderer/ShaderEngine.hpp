@@ -30,7 +30,7 @@
 
 #include "Pipeline.hpp"
 #include "PipelineContext.hpp"
-#include "BeatDetect.hpp"
+class ShaderEngine;
 #include "TextureManager.hpp"
 
 #include <cstdlib>

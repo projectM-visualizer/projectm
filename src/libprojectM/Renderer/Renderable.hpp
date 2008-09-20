@@ -3,7 +3,7 @@
 
 #include <string.h>
 #include "TextureManager.hpp"
-#include "BeatDetect.hpp"
+class BeatDetect;
 
 class RenderContext
 {

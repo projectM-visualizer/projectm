@@ -22,7 +22,7 @@
 
 #include "fatal.h"
 #include "Common.hpp"
-#include "compare.h"
+
 #ifdef WIN32
 #include "win32-dirent.h"
 #endif
@@ -45,7 +45,6 @@
 #include "PresetMerge.hpp"
 //#include "menu.h"
 #include "PCM.hpp"                    //Sound data handler (buffering, FFT, etc.)
-#include "IdlePreset.hpp"
 
 #include <map>
 
