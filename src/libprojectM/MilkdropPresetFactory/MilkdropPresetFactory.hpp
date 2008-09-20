@@ -14,8 +14,9 @@
 #define __MILKDROP_PRESET_FACTORY_HPP
 
 #include <memory>
-#include "PresetFactory.hpp"
-#include "PresetFrameIO.hpp"
+#include "../PresetFactory.hpp"
+class PresetOutputs;
+class PresetInputs;
 
 class MilkdropPresetFactory : public PresetFactory {
 
@@ -33,7 +34,7 @@ public:
 private:
 	void initializePresetOutputs(int gx, int gy);
 	void reset();
-	PresetOutputs _presetOutputs;
+	PresetOutputs * _presetOutputs;
 	//PresetInputs _presetInputs;
 };
 
