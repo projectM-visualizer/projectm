@@ -11,7 +11,7 @@
 #ifdef USE_DEVIL
 #include <IL/ilut.h>
 #else
-#include "SOIL.h"
+#include "SOIL/SOIL.h"
 #endif
 
 #ifdef WIN32
@@ -26,7 +26,6 @@
 #include <dirent.h>
 #endif
 #include "TextureManager.hpp"
-#include "CustomShape.hpp"
 #include "Common.hpp"
 #include "IdleTextures.hpp"
 

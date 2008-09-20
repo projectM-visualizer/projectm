@@ -2,8 +2,6 @@
 #include "wipemalloc.h"
 #include "math.h"
 #include "Common.hpp"
-#include "CustomShape.hpp"
-#include "CustomWave.hpp"
 #include "KeyHandler.hpp"
 #include "TextureManager.hpp"
 #include <iostream>
@@ -257,28 +255,6 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
 	FinishPass1();
 	Pass2(pipeline, pipelineContext);
 }
-
-#ifdef USE_DEPRECATED_RENDER_FRAME
-void Renderer::RenderFrame(PresetOutputs &presetOutputs, const Pipelin&pipelineContext)
-{
-	SetupPass1(presetOutputs, pipelineContext);
-
-#ifdef USE_CG
-	shaderEngine.enableShader(presetOutputs.warpShader, presetOutputs, pipelineContext);
-#endif
-
-	Interpolation(presetOutputs);
-
-#ifdef USE_CG
-	shaderEngine.disableShader();
-#endif
-
-	RenderItems(presetOutputs, pipelineContext);
-	FinishPass1();
-
-	Pass2(presetOutputs, pipelineContext);
-}
-#endif
 
 void Renderer::Interpolation(const Pipeline &pipeline)
 {

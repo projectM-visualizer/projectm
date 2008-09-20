@@ -2,7 +2,6 @@
 #define Renderer_HPP
 
 #include "FBO.hpp"
-#include "PresetFrameIO.hpp"
 #include "BeatDetect.hpp"
 #include <string>
 #include <set>
@@ -67,7 +66,7 @@ public:
 
   Renderer( int width, int height, int gx, int gy, int texsize,  BeatDetect *beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
   ~Renderer();
-  void RenderFrame(PresetOutputs &PresetOutputs, const PipelineContext &pipelineContext);
+  
   void RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void ResetTextures();
   void reset(int w, int h);

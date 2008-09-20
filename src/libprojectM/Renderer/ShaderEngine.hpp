@@ -33,12 +33,10 @@
 #include "BeatDetect.hpp"
 #include "TextureManager.hpp"
 
-#include <stdlib.h>
+#include <cstdlib>
 #include <iostream>
 #include <map>
 #include "Shader.hpp"
-#include "PresetFrameIO.hpp"
-
 class ShaderEngine
 {
 #ifdef USE_CG
