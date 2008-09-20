@@ -28,8 +28,13 @@ SET(GLEW_SOURCES )
 SET (GLEW_LINK_TARGETS GLEW)
 endif(USE_NATIVE_GLEW)
 
-SET(projectM_SOURCES projectM.cpp FBO.cpp PCM.cpp Preset.cpp BeatDetect.cpp fftsg.cpp KeyHandler.cpp
-timer.cpp wipemalloc.cpp BuiltinFuncs.cpp BuiltinParams.cpp Renderer.cpp PresetLoader.cpp  PresetChooser.cpp PresetMerge.cpp PipelineContext.cpp ConfigFile.cpp  IdlePreset.cpp TimeKeeper.cpp PresetFactory.cpp PresetFactoryManager.cpp ${GLEW_SOURCES})
+SET(projectM_SOURCES projectM.cpp FBO.cpp InitCond.cpp 
+ Expr.cpp PCM.cpp Parser.cpp Preset.cpp BeatDetect.cpp PerPixelEqn.cpp Param.cpp CustomWave.cpp CustomShape.cpp 
+Func.cpp Eval.cpp  PerFrameEqn.cpp PerPointEqn.cpp fftsg.cpp KeyHandler.cpp
+ timer.cpp  wipemalloc.cpp BuiltinFuncs.cpp BuiltinParams.cpp Renderer.cpp 
+PresetLoader.cpp  PresetChooser.cpp PresetFrameIO.cpp PresetMerge.cpp PipelineContext.cpp 
+ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp TimeKeeper.cpp Filters.cpp Renderable.cpp Pipeline.cpp PerPixelMesh.cpp 
+MilkdropWaveform.cpp Waveform.cpp VideoEcho.cpp Shader.cpp PerlinNoise.cpp UserTexture.cpp ShaderEngine.cpp MilkdropPreset.cpp MilkdropPresetFactory.cpp NativePresetFactory.cpp PresetFactory.cpp PresetFactoryManager.cpp ${GLEW_SOURCES})
 
 if (USE_DEVIL)
 SET (projectM_SOURCES ${projectM_SOURCES})
