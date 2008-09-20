@@ -5,10 +5,9 @@
 #include "PerPixelMesh.hpp"
 #include "Renderable.hpp"
 #include "Filters.hpp"
-#include "BeatDetect.hpp"
 #include "PipelineContext.hpp"
 #include "Shader.hpp"
-#include "Common.hpp"
+#include "../Common.hpp"
 //This class is the input to projectM's renderer
 //
 //Most implemenatations should implement PerPixel in order to get multi-threaded
