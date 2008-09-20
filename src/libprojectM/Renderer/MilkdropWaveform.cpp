@@ -17,6 +17,7 @@
 
 #include "MilkdropWaveform.hpp"
 #include "math.h"
+#include "BeatDetect.hpp"
 
 MilkdropWaveform::MilkdropWaveform(): RenderItem(),
 	x(0.5), y(0.5), r(1), g(0), b(0), a(1), mystery(0), mode(Line), scale(10), smoothing(0), rot(0), samples(0),modOpacityStart(0),modOpacityEnd(1),
