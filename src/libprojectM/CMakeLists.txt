@@ -17,7 +17,7 @@ OPTION (USE_CG "Use Cg for Pixel Shader support" OFF)
 #OPTION (FTGL_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
 
 OPTION (BUILD_PROJECTM_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
-SET(SOIL_SOURCES image_DXT.c image_helper.c SOIL.c stb_image_aug.c)
+ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"")
 
 if (USE_NATIVE_GLEW)
 ADD_DEFINITIONS(-DUSE_NATIVE_GLEW)
@@ -28,17 +28,18 @@ SET(GLEW_SOURCES )
 SET (GLEW_LINK_TARGETS GLEW)
 endif(USE_NATIVE_GLEW)
 
-SET(projectM_SOURCES projectM.cpp FBO.cpp PCM.cpp Preset.cpp BeatDetect.cpp fftsg.cpp KeyHandler.cpp
-timer.cpp wipemalloc.cpp BuiltinFuncs.cpp BuiltinParams.cpp Renderer.cpp PresetLoader.cpp  PresetChooser.cpp PresetMerge.cpp PipelineContext.cpp ConfigFile.cpp  IdlePreset.cpp TimeKeeper.cpp PresetFactory.cpp PresetFactoryManager.cpp ${GLEW_SOURCES})
+SET(projectM_SOURCES projectM.cpp PCM.cpp Preset.cpp BeatDetect.cpp fftsg.cpp KeyHandler.cpp
+timer.cpp wipemalloc.cpp PresetLoader.cpp  PresetChooser.cpp PresetMerge.cpp ConfigFile.cpp  TimeKeeper.cpp PresetFactory.cpp PresetFactoryManager.cpp ${GLEW_SOURCES})
 
 if (USE_DEVIL)
 SET (projectM_SOURCES ${projectM_SOURCES})
 ADD_DEFINITIONS(-DUSE_DEVIL)
 SET (IMAGE_LINK_TARGETS IL ILU ILUT)
 else (USE_DEVIL)
-SET (projectM_SOURCES ${projectM_SOURCES} ${SOIL_SOURCES})
+SET (projectM_SOURCES ${projectM_SOURCES})
 SET (IMAGE_LINK_TARGETS )
 endif (USE_DEVIL)
+
 
 if (USE_CG)
 ADD_DEFINITIONS(-DUSE_CG)
@@ -77,7 +78,10 @@ ADD_DEFINITIONS(-DLINUX -DSTBI_NO_DDS -DUSE_THREADS)
 endif(WIN32)
 endif(APPLE)
 
-ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"") 
+
+add_subdirectory(Renderer)
+
+#ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"") 
 
 FIND_PACKAGE(OpenGL)
 
@@ -127,7 +131,7 @@ IF(USE_OPENMP)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp ")
 ENDIF(USE_OPENMP)
 
-INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS} "Renderer")
 LINK_DIRECTORIES(${FTGL_LINK_DIRS} "./")
 
 if(BUILD_PROJECTM_STATIC)
@@ -135,9 +139,8 @@ if(BUILD_PROJECTM_STATIC)
 ${CG_LINK_TARGETS})
 else(BUILD_PROJECTM_STATIC)
 
-		TARGET_LINK_LIBRARIES(projectM ${GLEW_LINK_TARGETS} m ${FTGL_LINK_TARGETS} ${OPENGL_LIBRARIES}  ${IMAGE_LINK_TARGETS} 
+TARGET_LINK_LIBRARIES(projectM Renderer/libRenderer.a MilkdropPresetFactory/libMilkdropPresetFactory.a ${GLEW_LINK_TARGETS} m ${FTGL_LINK_TARGETS} ${OPENGL_LIBRARIES}  ${IMAGE_LINK_TARGETS} 
 ${CG_LINK_TARGETS})
-
 
 endif(BUILD_PROJECTM_STATIC)
 

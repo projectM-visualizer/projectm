@@ -2,13 +2,6 @@
 #define PRESET_MERGE_HPP
 #include "Preset.hpp"
 #include "Pipeline.hpp"
-#include "PresetFrameIO.hpp"
-
-class PresetMerger
-{
-public:
-  static void MergePresets(PresetOutputs & A,  PresetOutputs & B, double ratio, int gx, int gy);
-};
 
 class PipelineMerger
 {
