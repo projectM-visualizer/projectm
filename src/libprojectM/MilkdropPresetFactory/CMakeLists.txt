@@ -7,6 +7,3 @@ INCLUDE_DIRECTORIES("../" "../Renderer")
 ADD_LIBRARY(MilkdropPresetFactory STATIC ${MilkdropPresetFactory_SOURCES})
 SET_TARGET_PROPERTIES(MilkdropPresetFactory PROPERTIES VERSION 2.00 SOVERSION 2)
 TARGET_LINK_LIBRARIES(MilkdropPresetFactory m)
-
-
-INSTALL(TARGETS MilkdropPresetFactory DESTINATION lib${LIB_SUFFIX})
