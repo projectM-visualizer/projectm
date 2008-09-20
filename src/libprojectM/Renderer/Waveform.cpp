@@ -17,6 +17,7 @@
 
 #include "Waveform.hpp"
 #include <algorithm>
+#include "BeatDetect.hpp"
 
 Waveform::Waveform(int samples)
 : RenderItem(),samples(samples), points(samples), pointContext(samples)

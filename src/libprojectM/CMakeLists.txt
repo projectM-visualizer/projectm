@@ -28,7 +28,7 @@ SET(GLEW_SOURCES )
 SET (GLEW_LINK_TARGETS GLEW)
 endif(USE_NATIVE_GLEW)
 
-SET(projectM_SOURCES projectM.cpp PCM.cpp Preset.cpp BeatDetect.cpp fftsg.cpp KeyHandler.cpp
+SET(projectM_SOURCES projectM.cpp PCM.cpp Preset.cpp fftsg.cpp KeyHandler.cpp
 timer.cpp wipemalloc.cpp PresetLoader.cpp  PresetChooser.cpp PresetMerge.cpp ConfigFile.cpp  TimeKeeper.cpp PresetFactory.cpp PresetFactoryManager.cpp ${GLEW_SOURCES})
 
 if (USE_DEVIL)
@@ -139,7 +139,7 @@ if(BUILD_PROJECTM_STATIC)
 ${CG_LINK_TARGETS})
 else(BUILD_PROJECTM_STATIC)
 
-TARGET_LINK_LIBRARIES(projectM Renderer/libRenderer.a MilkdropPresetFactory/libMilkdropPresetFactory.a ${GLEW_LINK_TARGETS} m ${FTGL_LINK_TARGETS} ${OPENGL_LIBRARIES}  ${IMAGE_LINK_TARGETS} 
+TARGET_LINK_LIBRARIES(projectM ${GLEW_LINK_TARGETS} m ${FTGL_LINK_TARGETS} ${OPENGL_LIBRARIES}  ${IMAGE_LINK_TARGETS} 
 ${CG_LINK_TARGETS})
 
 endif(BUILD_PROJECTM_STATIC)
