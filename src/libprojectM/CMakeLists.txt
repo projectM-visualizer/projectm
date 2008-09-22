@@ -1,5 +1,5 @@
 PROJECT(projectM)
-  
+
 cmake_minimum_required(VERSION 2.4.0)
 
 OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL library" OFF)
@@ -14,9 +14,11 @@ OPTION (USE_NATIVE_GLEW "Use projectM's native implemention of GLEW." OFF)
 
 OPTION (USE_CG "Use Cg for Pixel Shader support" OFF)
 
-#OPTION (FTGL_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
-
 OPTION (BUILD_PROJECTM_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
+
+OPTION (DISABLE_NATIVE_PRESETS "Turn off support for native (C++ style) presets" OFF)
+OPTION (DISABLE_MILKDROP_PRESETS "Turn off support for Milkdrop (.milk / .prjm) presets"  OFF)
+
 ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"")
 
 if (USE_NATIVE_GLEW)
@@ -30,6 +32,17 @@ endif(USE_NATIVE_GLEW)
 
 SET(projectM_SOURCES projectM.cpp PCM.cpp Preset.cpp fftsg.cpp KeyHandler.cpp
 timer.cpp wipemalloc.cpp PresetLoader.cpp  PresetChooser.cpp PresetMerge.cpp ConfigFile.cpp  TimeKeeper.cpp PresetFactory.cpp PresetFactoryManager.cpp ${GLEW_SOURCES})
+
+if (DISABLE_NATIVE_PRESETS)
+SET(PRESET_FACTORY_SOURCES ${PRESET_FACTORY_SOURCES} ${NativePresetFactory_SOURCE_DIR})
+SET(PRESET_FACTORY_BINARY_DIR ${PRESET_FACTORY_BINARY_DIR} ${NativePresetFactory_BINARY_DIR})
+endif(DISABLE_NATIVE_PRESETS)
+
+
+if (DISABLE_MILKDROP_PRESETS)
+SET(PRESET_FACTORY_SOURCES ${PRESET_FACTORY_SOURCES} ${MilkdropPresetFactory_SOURCE_DIR})
+SET(PRESET_FACTORY_BINARY_DIR ${PRESET_FACTORY_BINARY_DIR} ${MilkdropPresetFactory_BINARY_DIR})
+endif(DISABLE_MILKDROP_PRESETS)
 
 if (USE_DEVIL)
 SET (projectM_SOURCES ${projectM_SOURCES})
@@ -131,16 +144,14 @@ IF(USE_OPENMP)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp ")
 ENDIF(USE_OPENMP)
 
-INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS} "Renderer")
-LINK_DIRECTORIES(${FTGL_LINK_DIRS} "./")
+INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS} ${Renderer_SOURCE_DIR} ${PRESET_FACTORY_SOURCES})
+LINK_DIRECTORIES(${FTGL_LINK_DIRS} ${Renderer_BINARY_DIR} ${PRESET_FACTORY_BINARY_DIR})
 
 if(BUILD_PROJECTM_STATIC)
-		TARGET_LINK_LIBRARIES(projectM ${GLEW_LINK_TARGETS} m ${FTGL_LINK_TARGETS} ${OPENGL_LIBRARIES} ${IMAGE_LINK_TARGETS} 
-${CG_LINK_TARGETS})
+		TARGET_LINK_LIBRARIES(projectM ${GLEW_LINK_TARGETS} m ${FTGL_LINK_TARGETS} ${OPENGL_LIBRARIES} ${IMAGE_LINK_TARGETS} ${CG_LINK_TARGETS})
 else(BUILD_PROJECTM_STATIC)
 
-TARGET_LINK_LIBRARIES(projectM ${GLEW_LINK_TARGETS} m ${FTGL_LINK_TARGETS} ${OPENGL_LIBRARIES}  ${IMAGE_LINK_TARGETS} 
-${CG_LINK_TARGETS})
+TARGET_LINK_LIBRARIES(projectM ${GLEW_LINK_TARGETS} m ${FTGL_LINK_TARGETS} ${OPENGL_LIBRARIES}  ${IMAGE_LINK_TARGETS} ${CG_LINK_TARGETS})
 
 endif(BUILD_PROJECTM_STATIC)
 
