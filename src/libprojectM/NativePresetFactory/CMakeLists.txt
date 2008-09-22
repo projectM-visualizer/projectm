@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.4.0)
 
 SET(NativePresetFactory_SOURCES NativePresetFactory.cpp)
 
-INCLUDE_DIRECTORIES("../" "../Renderer")
+INCLUDE_DIRECTORIES(${LIBPROJECTM_ROOT_SOURCE_DIR} ${RENDERER_ROOT_SOURCE_DIR})
 ADD_LIBRARY(NativePresetFactory STATIC ${NativePresetFactory_SOURCES})
 SET_TARGET_PROPERTIES(NativePresetFactory PROPERTIES VERSION 2.00 SOVERSION 2)
 TARGET_LINK_LIBRARIES(NativePresetFactory m)
