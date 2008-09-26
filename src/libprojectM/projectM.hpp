@@ -62,7 +62,9 @@
 #include "fatal.h"
 #include "PCM.hpp"
 #include "pthread.h"
-#include "PipelineContext.hpp"
+class PipelineContext;
+
+//#include "PipelineContext.hpp"
 #include <memory>
 
 class BeatDetect;
@@ -243,13 +245,14 @@ public:
 	  return _pcm;
   }
   void *thread_func(void *vptr_args);
+  PipelineContext & pipelineContext() { return *_pipelineContext; }
 
 private:
   PCM * _pcm;
   double sampledPresetDuration();
   BeatDetect * beatDetect;
   Renderer *renderer;
-  PipelineContext pipelineContext;
+  PipelineContext * _pipelineContext;
   Settings _settings;
 
 
