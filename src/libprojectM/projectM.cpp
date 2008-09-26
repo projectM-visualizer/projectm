@@ -36,7 +36,7 @@
 #ifdef WIN32
 #include <time.h>
 #endif
-
+#include "PipelineContext.hpp"
 //#include <xmms/plugin.h>
 #include <iostream>
 #include "projectM.hpp"
@@ -88,6 +88,7 @@ projectM::~projectM()
 		_pcm = 0;
 	}
 
+delete(_pipelineContext);
 }
 
 DLLEXPORT unsigned projectM::initRenderToTexture()
@@ -102,7 +103,7 @@ DLLEXPORT void projectM::projectM_resetTextures()
 
 
 DLLEXPORT  projectM::projectM ( std::string config_file, int flags) :
-		beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags)
+		beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags), _pipelineContext(new PipelineContext())
 {
 	readConfig ( config_file );
 	projectM_reset();
@@ -265,10 +266,10 @@ DLLEXPORT void projectM::renderFrame()
 	mspf= ( int ) ( 1000.0/ ( float ) settings().fps ); //milliseconds per frame
 	
 	/// @bug whois is responsible for updating this now?"
-	pipelineContext.frame = timeKeeper->PresetFrameA();
-	pipelineContext.progress = timeKeeper->PresetProgressA();
+	pipelineContext().frame = timeKeeper->PresetFrameA();
+	pipelineContext().progress = timeKeeper->PresetProgressA();
 
-	m_activePreset->Render(*beatDetect, pipelineContext);
+	m_activePreset->Render(*beatDetect, pipelineContext());
 
 	beatDetect->detectFromSamples();
 
@@ -311,7 +312,7 @@ DLLEXPORT void projectM::renderFrame()
 		pthread_cond_signal(&condition);
 		pthread_mutex_unlock( &mutex );
 #endif		
-		m_activePreset->Render(*beatDetect, pipelineContext);
+		m_activePreset->Render(*beatDetect, pipelineContext());
 
 #ifdef USE_THREADS
 		pthread_mutex_lock( &mutex );
@@ -331,7 +332,7 @@ pipeline.setStaticPerPixel(settings().meshX, settings().meshY);
 PipelineMerger::MergePipelines( m_activePreset->pipeline(),m_activePreset2->pipeline(), pipeline,timeKeeper->SmoothRatio());
 
 /// @bug not sure if this is correct
-renderer->RenderFrame(pipeline, pipelineContext);
+renderer->RenderFrame(pipeline, pipelineContext());
 
 //renderer->RenderFrame ( pipeline, presetInputs );
 	}
@@ -346,12 +347,12 @@ renderer->RenderFrame(pipeline, pipelineContext);
 		//printf("Normal\n");
 
 
-		m_activePreset->Render(*beatDetect, pipelineContext);
+		m_activePreset->Render(*beatDetect, pipelineContext());
 
 //		m_activePreset->evaluateFrame();
 //		m_activePreset->presetOutputs().Render(*beatDetect,presetInputs);
 
-		renderer->RenderFrame (m_activePreset->pipeline(), pipelineContext);
+		renderer->RenderFrame (m_activePreset->pipeline(), pipelineContext());
 	}
 
 	//	std::cout<< m_activePreset->absoluteFilePath()<<std::endl;
