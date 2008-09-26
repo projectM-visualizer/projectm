@@ -943,7 +943,6 @@ void QProjectM_MainWindow::refreshPlaylist()
 	if (hHeader)
 		disconnect(hHeader);
 	
-	
 	hHeader = new QHeaderView ( Qt::Horizontal, this );
 	vHeader = new QHeaderView ( Qt::Vertical, this );
 	
