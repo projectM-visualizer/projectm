@@ -19,9 +19,9 @@ endif(LIBPROJECTM_FOUND)
 ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='"${PROJECTM_PREFIX}"')
 
 ADD_LIBRARY(RovastarDriftingChaos SHARED RovastarDriftingChaos.cpp)
-#ADD_LIBRARY(RovastarDarkSecret SHARED RovastarDarkSecret.cpp)
-#ADD_LIBRARY(RovastarFractalSpiral SHARED RovastarFractalSpiral.cpp)
-#ADD_LIBRARY(RovastarFractopiaFrantic SHARED RovastarFractopiaFranctic.cpp)
+ADD_LIBRARY(RovastarDarkSecret SHARED RovastarDarkSecret.cpp)
+ADD_LIBRARY(RovastarFractalSpiral SHARED RovastarFractalSpiral.cpp)
+ADD_LIBRARY(RovastarFractopiaFrantic SHARED RovastarFractopiaFrantic.cpp)
 
 if (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
    set(PROJECTM_INCLUDE ${PROJECTM_ROOT_SOURCE_DIR}/libprojectM)
@@ -31,9 +31,12 @@ elseif (${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
    set(PROJECTM_LINK ${PROJECTM_LDFLAGS})
 endif (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 
-LINK_DIRECTORIES(${PROJECTM_LINK})
+LINK_DIRECTORIES(${PROJECTM_LINK} ${Renderer_BINARY_DIR} ${NativePresetFactory_BINARY_DIR})
 
-include_directories(${PROJECTM_INCLUDE} ${CMAKE_CURRENT_LIBRARY_DIR})
+include_directories(${PROJECTM_INCLUDE} ${Renderer_SOURCE_DIR} ${NativePresetFactory_SOURCE_DIR} ${CMAKE_CURRENT_LIBRARY_DIR})
 
-target_link_libraries(RovastarDriftingChaos projectM)
+target_link_libraries(RovastarDarkSecret Renderer NativePresetFactory projectM)
+target_link_libraries(RovastarFractopiaFrantic Renderer NativePresetFactory projectM)
+target_link_libraries(RovastarFractalSpiral Renderer NativePresetFactory projectM)
+target_link_libraries(RovastarDriftingChaos Renderer NativePresetFactory projectM)
 

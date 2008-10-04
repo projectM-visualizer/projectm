@@ -10,6 +10,7 @@
 #include "Transformation.hpp"
 #include "MilkdropWaveform.hpp"
 #include "Filters.hpp"
+#include "NativePreset.hpp"
 
 class RovastarDarkSecret : public Pipeline
 {
@@ -148,3 +149,14 @@ public:
 	}
 };
 
+
+typedef NativePreset<RovastarDarkSecret> RovastarDarkSecretPreset;
+
+
+extern "C" RovastarDarkSecretPreset * create(const char * url) {
+	return new RovastarDarkSecretPreset(std::string(url));
+}
+
+extern "C" void destroy(RovastarDarkSecretPreset * preset) {
+    delete preset;
+}
