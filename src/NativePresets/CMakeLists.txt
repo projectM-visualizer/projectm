@@ -22,6 +22,10 @@ ADD_LIBRARY(RovastarDriftingChaos SHARED RovastarDriftingChaos.cpp)
 ADD_LIBRARY(RovastarDarkSecret SHARED RovastarDarkSecret.cpp)
 ADD_LIBRARY(RovastarFractalSpiral SHARED RovastarFractalSpiral.cpp)
 ADD_LIBRARY(RovastarFractopiaFrantic SHARED RovastarFractopiaFrantic.cpp)
+ADD_LIBRARY(MstressJuppyDancer SHARED MstressJuppyDancer.cpp)
+
+# Doesn't build yet
+#ADD_LIBRARY(RLGFractalDrop7c SHARED RLGFractalDrop7c.cpp)
 
 if (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
    set(PROJECTM_INCLUDE ${PROJECTM_ROOT_SOURCE_DIR}/libprojectM)
@@ -39,4 +43,6 @@ target_link_libraries(RovastarDarkSecret Renderer NativePresetFactory projectM)
 target_link_libraries(RovastarFractopiaFrantic Renderer NativePresetFactory projectM)
 target_link_libraries(RovastarFractalSpiral Renderer NativePresetFactory projectM)
 target_link_libraries(RovastarDriftingChaos Renderer NativePresetFactory projectM)
-
+target_link_libraries(MstressJuppyDancer Renderer NativePresetFactory projectM)
+# Doesn't build yet
+#target_link_libraries(RLGFractalDrop7c Renderer NativePresetFactory projectM)

@@ -139,3 +139,4 @@ extern "C" RovastarDriftingChaosPreset * create(const char * url) {
 extern "C" void destroy(RovastarDriftingChaosPreset * preset) {
     delete preset;
 }
+
