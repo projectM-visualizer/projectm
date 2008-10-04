@@ -10,6 +10,7 @@
 #include "Transformation.hpp"
 #include "MilkdropCompatability.hpp"
 #include "VideoEcho.hpp"
+#include "NativePreset.hpp"
 
 class RLGFractalDrop7c : public Pipeline
 {
@@ -148,3 +149,12 @@ public:
 };
 
 
+typedef NativePreset<RLGFractalDrop7> RLGFractalDrop7Preset;
+
+extern "C" RLGFractalDrop7Preset * create(const char * url) {
+	return new RLGFractalDrop7Preset(std::string(url));
+}
+
+extern "C" void destroy(RLGFractalDrop7Preset * preset) {
+    delete preset;
+}
