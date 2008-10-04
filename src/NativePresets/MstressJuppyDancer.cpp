@@ -4,6 +4,7 @@
 #include "Transformation.hpp"
 #include "MilkdropCompatability.hpp"
 #include "Waveform.hpp"
+#include "NativePreset.hpp"
 
 class Dancer : public Waveform
 {
@@ -208,3 +209,13 @@ public:
 };
 
 
+
+typedef NativePreset<MstressJuppyDancer> MstressJuppyDancerPreset;
+
+extern "C" MstressJuppyDancerPreset * create(const char * url) {
+	return new MstressJuppyDancerPreset(std::string(url));
+}
+
+extern "C" void destroy(MstressJuppyDancerPreset * preset) {
+    delete preset;
+}
