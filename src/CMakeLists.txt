@@ -7,6 +7,7 @@ OPTION(INCLUDE-PROJECTM-LIBVISUAL-ALSA "Build experimental libvisual / alsa inpu
 OPTION(INCLUDE-PROJECTM-JACK "Build the projectM JACK client" OFF)
 OPTION(INCLUDE-PROJECTM-TEST "Build the projectM test suite" ON)
 OPTION(INCLUDE-PROJECTM-XMMS "Build the projectM xmms module (deprecated, use audacious instead)" OFF)
+OPTION(INCLUDE-NATIVE-PRESETS "Build the projectM native preset sample collection " ON)
 
 add_subdirectory (libprojectM)
 
@@ -37,3 +38,7 @@ endif (INCLUDE-PROJECTM-LIBVISUAL)
 if (INCLUDE-PROJECTM-LIBVISUAL-ALSA)
 	add_subdirectory (projectM-libvisual-alsa)
 endif (INCLUDE-PROJECTM-LIBVISUAL-ALSA)
+
+if (INCLUDE-NATIVE-PRESETS)
+	add_subdirectory(NativePresets)
+endif (INCLUDE-NATIVE-PRESETS)

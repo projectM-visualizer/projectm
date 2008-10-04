@@ -13,6 +13,7 @@
 #include "BeatDetect.hpp"
 #include "Pipeline.hpp"
 #include "PipelineContext.hpp"
+#include "Preset.hpp"
 
 /// A templated preset class to build different various hard coded presets and 
 /// compile them into object files to be loaded into a playlist
@@ -34,14 +35,5 @@ private:
 	PipelineT _pipeline;
 };
 
-template <class PipelineT>
-extern "C" NativePreset<PipelineT> * create(const char * url) {
-	return new NativePreset<PipelineT>(std::string(url));
-}
-
-template <class PipelineT>
-extern "C" void destroy(NativePreset<PipelineT> * preset) {
-    delete preset;
-}
 
 #endif 
