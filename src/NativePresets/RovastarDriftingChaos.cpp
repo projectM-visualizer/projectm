@@ -9,7 +9,7 @@
 #include "MilkdropCompatability.hpp"
 #include "Transformation.hpp"
 #include "MilkdropWaveform.hpp"
-#include "CompiledPreset.hpp"
+#include "NativePreset.hpp"
 
 class RovastarDriftingChaos : public Pipeline
 {
@@ -130,4 +130,12 @@ public:
 	}
 };
 
-typedef CompiledPreset<RovastarDriftingChaos> RovastarDriftingChaosPreset;
+typedef NativePreset<RovastarDriftingChaos> RovastarDriftingChaosPreset;
+
+extern "C" RovastarDriftingChaosPreset * create(const char * url) {
+	return new RovastarDriftingChaosPreset(std::string(url));
+}
+
+extern "C" void destroy(RovastarDriftingChaosPreset * preset) {
+    delete preset;
+}

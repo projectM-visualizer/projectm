@@ -7,6 +7,7 @@
 #include "Pipeline.hpp"
 #include "Transformation.hpp"
 #include "MilkdropCompatability.hpp"
+#include "NativePreset.hpp"
 
 class RovastarFractalSpiral : public Pipeline
 {
@@ -68,3 +69,14 @@ public:
 	}
 
 };
+
+
+typedef NativePreset<RovastarFractalSpiral> RovastarFractalSpiralPreset;
+
+extern "C" RovastarFractalSpiralPreset * create(const char * url) {
+	return new RovastarFractalSpiralPreset(std::string(url));
+}
+
+extern "C" void destroy(RovastarFractalSpiralPreset * preset) {
+    delete preset;
+}

@@ -7,9 +7,9 @@
 
 #include "Pipeline.hpp"
 #include "Transformation.hpp"
+#include "NativePreset.hpp"
 
-
-class RovastarFranticFractopia : public Pipeline
+class RovastarFractopiaFrantic : public Pipeline
 {
 public:
 
@@ -21,7 +21,7 @@ public:
 
 	float movement;
 
-	RovastarFranticFractopia() : Pipeline()
+	RovastarFractopiaFrantic() : Pipeline()
 	{
 		drawables.push_back(&vectors);
 		drawables.push_back(&border);
@@ -87,3 +87,14 @@ public:
 	}
 
 };
+
+
+typedef NativePreset<RovastarFractopiaFrantic> RovastarFractopiaFranticPreset;
+
+extern "C" RovastarFractopiaFranticPreset * create(const char * url) {
+	return new RovastarFractopiaFranticPreset(std::string(url));
+}
+
+extern "C" void destroy(RovastarFractopiaFranticPreset * preset) {
+    delete preset;
+}
