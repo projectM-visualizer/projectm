@@ -35,5 +35,4 @@ private:
 	PipelineT _pipeline;
 };
 
-
 #endif 
