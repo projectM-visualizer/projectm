@@ -14,8 +14,21 @@
 #include "NativePresetFactory.hpp"
 
 typedef void Handle;
-typedef Preset * CreateFunctor(const char * url);
 typedef void DestroyFunctor(Preset*);
+typedef Preset * CreateFunctor(const char * url);
+
+class LibraryPreset : public Preset {
+public:
+	LibraryPreset(Preset * preset, DestroyFunctor * destroyFun) : Preset(preset->name(), preset->author()), _internalPreset(preset), _destroyFunctor(destroyFun) {}
+	inline Pipeline & pipeline() { return _internalPreset->pipeline(); }
+	inline virtual ~LibraryPreset() { _destroyFunctor(_internalPreset); }
+	inline void Render(const BeatDetect &music, const PipelineContext &context) {
+		return _internalPreset->Render(music, context);
+	}
+private:
+	Preset * _internalPreset;
+	DestroyFunctor * _destroyFunctor;
+};
 
 class PresetLibrary {
 
@@ -93,5 +106,7 @@ std::auto_ptr<Preset> NativePresetFactory::allocate
 	if ((library = loadLibrary(url)) == 0)
 		return std::auto_ptr<Preset>(0);
 	
-	return std::auto_ptr<Preset>(library->createFunctor()(url.c_str()));
+	return std::auto_ptr<Preset>(new LibraryPreset
+		(library->createFunctor()(url.c_str()), library->destroyFunctor()));
+		 
 }
