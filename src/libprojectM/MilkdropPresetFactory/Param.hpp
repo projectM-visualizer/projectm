@@ -63,8 +63,8 @@ class Preset;
 class Param {
 public:
     std::string name; /* name of the parameter, not necessary but useful neverthless */
-    short int type; /* parameter number type (int, bool, or float) */	
-    short int flags; /* read, write, user defined, etc */	
+    short int type; /* parameter number type (int, bool, or float) */
+    short int flags; /* read, write, user defined, etc */
     short int matrix_flag; /* for optimization purposes */
     void * engine_val; /* pointer to the engine variable */
     void * matrix; /* per pixel / per point matrix for this variable */
@@ -73,9 +73,9 @@ public:
     CValue lower_bound; /* this parameter's lower bound */
 
     /// Create a new parameter
-    Param(std::string name, short int type, short int flags, 
+    Param(std::string name, short int type, short int flags,
            void * eqn_val, void *matrix,
-           CValue default_init_val, CValue upper_bound, 
+           CValue default_init_val, CValue upper_bound,
            CValue lower_bound);
 
     ~Param();
@@ -87,11 +87,11 @@ public:
     void set_param( float val );
 
     static Param *new_param_float( const char *name, short int flags, void *engine_val,
-                             void *matrix, float upper_bound, 
+                             void *matrix, float upper_bound,
                              float lower_bound,
                              float init_val );
     static Param *new_param_double(const char *name, short int flags, void *engine_val,
-                             void *matrix, double upper_bound, 
+                             void *matrix, double upper_bound,
                              double lower_bound,
                              double init_val );
     static Param * new_param_int(const char * name, short int flags, void * engine_val,
@@ -139,7 +139,7 @@ inline void Param::set_param( float val) {
             *((float*)engine_val) = val;
         break;
     default:
-	abort();
+	//abort();
         break;
 
     }

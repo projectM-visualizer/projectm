@@ -165,7 +165,7 @@ int BuiltinParams::load_builtin_param_int(const std::string & name, void * engin
   iv.int_val = init_val;
   ub.int_val = upper_bound;
   lb.int_val = lower_bound;
- 
+
   // normalize to lower case as milkdrop scripts depend on this
   std::string lowerName(name);
   std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
@@ -384,13 +384,13 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("progress", (void*)&presetInputs.progress,  NULL,P_FLAG_READONLY, 0.0, 1, 0, "");
   load_builtin_param_int("fps", (void*)&presetInputs.fps, P_FLAG_READONLY, 15, MAX_INT_SIZE, 0, "");
 
-  load_builtin_param_float("x", (void*)&presetInputs.x_per_pixel, presetInputs.x_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_NONE,
+  load_builtin_param_float("x", (void*)&presetInputs.x_per_pixel, presetInputs.origx,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_NONE,
                            0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("y", (void*)&presetInputs.y_per_pixel, presetInputs.y_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX |P_FLAG_READONLY | P_FLAG_NONE,
+  load_builtin_param_float("y", (void*)&presetInputs.y_per_pixel, presetInputs.origy,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX |P_FLAG_READONLY | P_FLAG_NONE,
                            0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("ang", (void*)&presetInputs.ang_per_pixel, presetInputs.theta_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_NONE,
+  load_builtin_param_float("ang", (void*)&presetInputs.ang_per_pixel, presetInputs.origtheta,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_NONE,
                            0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
-  load_builtin_param_float("rad", (void*)&presetInputs.rad_per_pixel, presetInputs.rad_mesh,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_NONE,
+  load_builtin_param_float("rad", (void*)&presetInputs.rad_per_pixel, presetInputs.origrad,  P_FLAG_PER_PIXEL |P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_NONE,
                            0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
 
   for (unsigned int i = 0; i < NUM_Q_VARIABLES;i++) {

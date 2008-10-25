@@ -10,7 +10,7 @@ PresetInputs::PresetInputs() : PipelineContext()
 }
 
 void PresetInputs::update(const BeatDetect & music, const PipelineContext & context) {
-	
+
     // Reflect new values form the beat detection unit
     this->bass = music.bass;
     this->mid = music.mid;
@@ -22,6 +22,7 @@ void PresetInputs::update(const BeatDetect & music, const PipelineContext & cont
     // Reflect new values from the pipeline context
     this->fps = context.fps;
     this->time = context.time;
+
     this->frame = context.frame;
     this->progress = context.progress;
 }
@@ -38,7 +39,7 @@ void PresetInputs::Initialize ( int gx, int gy )
 	// ***
 	progress = 0;
 	frame = 1;
-	
+
 	x_per_pixel = 0;
 	y_per_pixel = 0;
 	rad_per_pixel = 0;
@@ -258,23 +259,13 @@ void PresetOutputs::PerPixelMath(const PipelineContext &context)
 		}
 	}
 
-
-
 	for (x = 0; x < gx; x++)
-	{
 		for (y = 0; y < gy; y++)
-		{
 			this->x_mesh[x][y] -= this->dx_mesh[x][y];
-		}
-	}
 
 	for (x = 0; x < gx; x++)
-	{
 		for (y = 0; y < gy; y++)
-		{
 			this->y_mesh[x][y] -= this->dy_mesh[x][y];
-		}
-	}
 
 }
 

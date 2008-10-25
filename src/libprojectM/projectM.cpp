@@ -264,8 +264,9 @@ DLLEXPORT void projectM::renderFrame()
 	//printf("A:%f, B:%f, S:%f\n", timeKeeper->PresetProgressA(), timeKeeper->PresetProgressB(), timeKeeper->SmoothRatio());
 
 	mspf= ( int ) ( 1000.0/ ( float ) settings().fps ); //milliseconds per frame
-	
+
 	/// @bug whois is responsible for updating this now?"
+	pipelineContext().time = timeKeeper->GetRunningTime();
 	pipelineContext().frame = timeKeeper->PresetFrameA();
 	pipelineContext().progress = timeKeeper->PresetProgressA();
 
@@ -290,9 +291,9 @@ DLLEXPORT void projectM::renderFrame()
 		else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && timeKeeper->CanHardCut() )
 		{
 		  	// printf("Hard Cut\n");
-			
+
 			switchPreset(m_activePreset);
-			
+
 			//switchPreset(m_activePreset, presetInputs, presetOutputs);
 
 			timeKeeper->StartPreset();
@@ -311,7 +312,7 @@ DLLEXPORT void projectM::renderFrame()
 #ifdef USE_THREADS
 		pthread_cond_signal(&condition);
 		pthread_mutex_unlock( &mutex );
-#endif		
+#endif
 		m_activePreset->Render(*beatDetect, pipelineContext());
 
 #ifdef USE_THREADS
@@ -320,7 +321,7 @@ DLLEXPORT void projectM::renderFrame()
 		evaluateSecondPreset();
 #endif
 
-	//PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(), 
+	//PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),
 	//	timeKeeper->SmoothRatio(),presetInputs.gx, presetInputs.gy );
 
 
@@ -421,8 +422,8 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	else mspf = 0;
 
 	this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
-	
-	std::cerr << "set pipeline broken FIX ME" << std::endl;	
+
+	std::cerr << "set pipeline broken FIX ME" << std::endl;
 	//renderer->SetPipeline(presetOutputs);
 	running = true;
 

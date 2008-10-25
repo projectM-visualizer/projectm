@@ -67,7 +67,7 @@ void TextureManager::Preload()
 
 					    SOIL_FLAG_POWER_OF_TWO
 					  |  SOIL_FLAG_MULTIPLY_ALPHA
-					  |  SOIL_FLAG_COMPRESS_TO_DXT
+					 // |  SOIL_FLAG_COMPRESS_TO_DXT
 					  );
 #endif
 
@@ -85,7 +85,7 @@ void TextureManager::Preload()
 
 					  SOIL_FLAG_POWER_OF_TWO
 					  |  SOIL_FLAG_MULTIPLY_ALPHA
-					  |  SOIL_FLAG_COMPRESS_TO_DXT
+					  //|  SOIL_FLAG_COMPRESS_TO_DXT
 					  );
 #endif
 
@@ -103,7 +103,7 @@ void TextureManager::Preload()
 
 					  SOIL_FLAG_POWER_OF_TWO
 					  |  SOIL_FLAG_MULTIPLY_ALPHA
-					  |  SOIL_FLAG_COMPRESS_TO_DXT
+					 // |  SOIL_FLAG_COMPRESS_TO_DXT
 					  );
 #endif
 
@@ -181,7 +181,7 @@ GLuint TextureManager::getTextureFullpath(const std::string filename, const std:
 					    //SOIL_FLAG_POWER_OF_TWO
 					  //  SOIL_FLAG_MIPMAPS
 					    SOIL_FLAG_MULTIPLY_ALPHA
-					  |  SOIL_FLAG_COMPRESS_TO_DXT
+					  //|  SOIL_FLAG_COMPRESS_TO_DXT
 					  //| SOIL_FLAG_DDS_LOAD_DIRECT
 					  ,&width,&height);
 

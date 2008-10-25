@@ -51,17 +51,11 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define STRING_BUFFER_SIZE 1024*150
 #define STRING_LINE_SIZE 1024
 
-			 
-#ifdef LINUX
-#include <cstdlib>
-#endif
-			 
-#ifdef LINUX
-#define projectM_isnan isnan
-#endif
 
 #ifdef LINUX
+#include <cstdlib>
 #define projectM_isnan isnan
+
 #endif
 
 #ifdef WIN32
@@ -112,13 +106,13 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define MIN_INT_SIZE -10000000
 
 /* default float initial value */
-#define DEFAULT_DOUBLE_IV 0.0 
+#define DEFAULT_DOUBLE_IV 0.0
 
 /* default float lower bound */
-#define DEFAULT_DOUBLE_LB MIN_DOUBLE_SIZE 
+#define DEFAULT_DOUBLE_LB MIN_DOUBLE_SIZE
 
 /* default float upper bound */
-#define DEFAULT_DOUBLE_UB MAX_DOUBLE_SIZE 
+#define DEFAULT_DOUBLE_UB MAX_DOUBLE_SIZE
 
 #ifdef WIN32
 #include <float.h>

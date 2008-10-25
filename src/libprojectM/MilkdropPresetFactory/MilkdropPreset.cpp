@@ -259,10 +259,10 @@ void MilkdropPreset::postloadInitialize() {
 
 }
 
-void MilkdropPreset::Render(const BeatDetect &music, const PipelineContext &context) 
+void MilkdropPreset::Render(const BeatDetect &music, const PipelineContext &context)
 {
 	_presetInputs.update(music, context);
-	
+
 	evaluateFrame();
 	pipeline().Render(music, context);
 
@@ -332,7 +332,7 @@ void MilkdropPreset::loadCustomWaveUnspecInitConds()
 void MilkdropPreset::loadCustomShapeUnspecInitConds()
 {
 
-  for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); 
+  for (PresetOutputs::cshape_container::iterator pos = customShapes.begin();
 	pos != customShapes.end(); ++pos)
   {
     assert(*pos);
@@ -410,7 +410,7 @@ void MilkdropPreset::initialize_PerPixelMeshes()
 	  _presetOutputs.dx_mesh[x][y]=presetOutputs().dx;
 	}}
 
-
+//std::cout<<presetOutputs().cx<<","<<presetOutputs().cy<<" "<<presetOutputs().dx<<","<<presetOutputs().dy<<std::endl;
 
       for (x=0;x<presetInputs().gx;x++){
 	for(y=0;y<presetInputs().gy;y++){
