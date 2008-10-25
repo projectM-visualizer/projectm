@@ -7,6 +7,7 @@
 #include <fstream>
 #include "PerlinNoise.hpp"
 #include "ShaderEngine.hpp"
+#include "BeatDetect.hpp"
 
 ShaderEngine::ShaderEngine()
 {
@@ -380,7 +381,7 @@ void ShaderEngine::SetupCg()
 
 	profileName = cgGetProfileString(myCgProfile);
 	std::cout << "Cg: Initialized profile: " << profileName << std::endl;
-
+std::cout<< blurProgram.c_str()<<std::endl;
 	blur1Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blur1", NULL);
 
 	checkForCgCompileError("creating blur1 program");

@@ -3,11 +3,12 @@
 #include <map>
 #include "InitCond.hpp"
 #include <iostream>
+#include <stdlib.h>
 
 namespace InitCondUtils {
 class LoadUnspecInitCond {
 	public:
-	
+
 	LoadUnspecInitCond(std::map<std::string,InitCond*> & initCondTree, std::map<std::string,InitCond*> & perFrameInitEqnTree):
 		 m_initCondTree(initCondTree), m_perFrameInitEqnTree(perFrameInitEqnTree) {}
 
@@ -26,7 +27,7 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
 
     assert(param);
     assert(param->engine_val);
-    
+
 
     /* Don't count these parameters as initial conditions */
     if (param->flags & P_FLAG_READONLY)
@@ -48,11 +49,11 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
 		return;
 
 	// Set an initial vialue via correct union member
-        if (param->type == P_TYPE_BOOL) 
+        if (param->type == P_TYPE_BOOL)
             init_val.bool_val = param->default_init_val.bool_val;
         else if (param->type == P_TYPE_INT)
             init_val.int_val = param->default_init_val.int_val;
- 
+
         else if (param->type == P_TYPE_DOUBLE) {
            		init_val.float_val = param->default_init_val.float_val;
 	}
@@ -72,7 +73,7 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
     } else
 	assert(m_initCondTree.find(param->name)->second);
 
-    
+
 }
 }
 #endif
