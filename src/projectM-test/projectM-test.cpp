@@ -24,6 +24,7 @@
 #include "sdltoprojectM.h"
 #include "ConfigFile.h"
 #include "getConfigFilename.h"
+#include <stdlib.h>
 
 // FIXME: portable includes?
 // i just added what works for me -fatray
@@ -86,6 +87,8 @@ int main(int argc, char **argv) {
 	return 1;
 }
 
+float fakePCM[512];
+
 void renderLoop() {
 	while (1) {
 		projectMEvent evt;
@@ -139,6 +142,18 @@ void renderLoop() {
 				break;
 			}
 		}
+ fakePCM[0]=0;      
+        for (int x = 1; x< 512;x++)
+        {                          
+                fakePCM[x] = fakePCM[x-1] + (rand()%200 - 100) *.002;
+        }                                                            
+                                                                    
+
+        globalPM->pcm()->addPCMfloat(fakePCM, 512);
+
+
+
+
 
 		globalPM->renderFrame();
 
