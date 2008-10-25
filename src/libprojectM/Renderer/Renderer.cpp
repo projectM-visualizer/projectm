@@ -764,7 +764,7 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
 
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.compositeDrawables.begin(); pos
 			!= pipeline.compositeDrawables.end(); ++pos)
-		;//(*pos)->Draw(renderContext);
+		(*pos)->Draw(renderContext);
 
 }
 

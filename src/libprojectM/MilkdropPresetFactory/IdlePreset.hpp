@@ -1,6 +1,7 @@
 #ifndef IDLE_PRESET_HPP
 #define IDLE_PRESET_HPP
 #include <memory>
+#include <string>
 
 class PresetOutputs;
 class Preset;
@@ -9,7 +10,7 @@ class Preset;
 class IdlePresets {
 
   public:
-	/// Allocate a new idle preset instance 
+	/// Allocate a new idle preset instance
 	/// \returns a newly allocated auto pointer of an idle preset instance
 	static std::auto_ptr<Preset> allocate(const std::string & path, PresetOutputs & outputs);
   private:
