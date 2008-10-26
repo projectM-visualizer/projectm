@@ -1,5 +1,6 @@
 project(NativePresets)
 cmake_minimum_required(VERSION 2.4.0)
+cmake_policy(SET CMP0005 OLD)
 
 include(FindPkgConfig.cmake)
 
@@ -18,6 +19,10 @@ endif(LIBPROJECTM_FOUND)
 
 ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='"${PROJECTM_PREFIX}"')
 
+
+if(COMMAND cmake_policy)
+       cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
 ADD_LIBRARY(RovastarDriftingChaos SHARED RovastarDriftingChaos.cpp)
 ADD_LIBRARY(RovastarDarkSecret SHARED RovastarDarkSecret.cpp)
 ADD_LIBRARY(RovastarFractalSpiral SHARED RovastarFractalSpiral.cpp)

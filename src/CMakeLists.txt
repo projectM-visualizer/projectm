@@ -1,5 +1,7 @@
 project (PROJECTM_ROOT)
 
+cmake_minimum_required(VERSION 2.4.0)
+
 OPTION(INCLUDE-PROJECTM-QT "Build the projectM Qt4 user interface extension library (recommended)" ON)
 OPTION(INCLUDE-PROJECTM-PULSEAUDIO "Build the projectM pulse audio client (recommended for fedora users)" ON)
 OPTION(INCLUDE-PROJECTM-LIBVISUAL "Build the projectM libvisual client" ON)
