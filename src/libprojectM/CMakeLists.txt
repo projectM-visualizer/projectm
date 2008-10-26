@@ -2,6 +2,8 @@ PROJECT(projectM)
 
 cmake_minimum_required(VERSION 2.4.0)
 
+cmake_policy(SET CMP0005 OLD)
+
 OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL library" OFF)
 
 OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disable this for OpenGL ES 1.x or if you are experiencing problems on older or poorly supported hardware." ON)
@@ -72,6 +74,10 @@ endif(USE_GLES1)
 if(USE_FBO)
 ADD_DEFINITIONS(-DUSE_FBO)
 endif(USE_FBO)
+
+if(COMMAND cmake_policy)
+       cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
 
 if (BUILD_PROJECTM_STATIC)
 ADD_LIBRARY(projectM STATIC ${projectM_SOURCES})

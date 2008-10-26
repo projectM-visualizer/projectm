@@ -1,6 +1,7 @@
 
 project(projectM-qt) # the name of your project
 cmake_minimum_required(VERSION 2.4.0)
+cmake_policy(SET CMP0005 OLD)
 
 include(FindPkgConfig.cmake)
 
@@ -91,6 +92,10 @@ qt4_wrap_ui(projectM-qt_UIS_H ${projectM-qt_UIS})
 
 # After this call, foo_MOC_SRCS = moc_Class1.cxx moc_Class2.cxx moc_Class3.cxx.
 qt4_wrap_cpp(projectM-qt_MOC_SRCS ${projectM-qt_MOC_HDRS})
+
+if(COMMAND cmake_policy)
+      cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)    
 
 if (BUILD_PROJECTM_QT_STATIC)
 ADD_LIBRARY(projectM-qt STATIC ${projectM-qt_SRCS} ${projectM-qt_RC_SRCS} ${projectM-qt_MOC_SRCS} ${projectM-qt_UIS_H})
