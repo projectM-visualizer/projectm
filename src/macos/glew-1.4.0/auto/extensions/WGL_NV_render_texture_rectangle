@@ -1,0 +1,5 @@
+WGL_NV_render_texture_rectangle
+http://oss.sgi.com/projects/ogl-sample/registry/NV/render_texture_rectangle.txt
+	WGL_BIND_TO_TEXTURE_RECTANGLE_RGB_NV 0x20A0
+	WGL_BIND_TO_TEXTURE_RECTANGLE_RGBA_NV 0x20A1
+	WGL_TEXTURE_RECTANGLE_NV 0x20A2

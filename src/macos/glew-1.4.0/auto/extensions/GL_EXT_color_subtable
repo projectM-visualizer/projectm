@@ -1,0 +1,4 @@
+GL_EXT_color_subtable
+http://oss.sgi.com/projects/ogl-sample/registry/EXT/color_subtable.txt
+	void glColorSubTableEXT (GLenum target, GLsizei start, GLsizei count, GLenum format, GLenum type, const void* data)
+	void glCopyColorSubTableEXT (GLenum target, GLsizei start, GLint x, GLint y, GLsizei width)
