@@ -1,0 +1,56 @@
+// !$*UTF8*$!
+{
+	052CD9020BF413DB0039B640 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+		scmType = "";
+	};
+	052CD9030BF413DB0039B640 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	052CD9040BF413DB0039B640 /* XCBreakpointsBucket */ = {
+		isa = XCBreakpointsBucket;
+		name = GLEW;
+		objects = (
+		);
+	};
+	052CD9060BF413E40039B640 /* glew.c */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {816, 162848}}";
+			sepNavSelRange = "{1732, 22}";
+			sepNavVisRect = "{{0, 0}, {816, 702}}";
+			sepNavWindowFrame = "{{147, 29}, {861, 760}}";
+		};
+	};
+	052CD9070BF413E40039B640 /* glewinfo.c */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {734, 94710}}";
+			sepNavSelRange = "{247957, 4}";
+			sepNavVisRect = "{{0, 90798}, {734, 195}}";
+			sepNavWindowFrame = "{{55, 113}, {861, 760}}";
+		};
+	};
+	0867D690FE84028FC02AAC07 /* Project object */ = {
+		activeBuildConfigurationName = Release;
+		activeTarget = 8DC2EF4F0486A6940098B216 /* GLEW */;
+		addToTargets = (
+			8DC2EF4F0486A6940098B216 /* GLEW */,
+		);
+		breakpointsGroup = 052CD9040BF413DB0039B640 /* XCBreakpointsBucket */;
+		codeSenseManager = 052CD9030BF413DB0039B640 /* Code sense */;
+		perUserDictionary = {
+			PBXPerProjectTemplateStateSaveDate = 200545236;
+			PBXWorkspaceStateSaveDate = 200545236;
+		};
+		sourceControlManager = 052CD9020BF413DB0039B640 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	8DC2EF4F0486A6940098B216 /* GLEW */ = {
+		activeExec = 0;
+	};
+}

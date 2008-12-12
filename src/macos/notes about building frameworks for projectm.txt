@@ -1,0 +1,5 @@
+Any extra framework included with projectM must be built with its Installation Directory build option set to:
+@loader_path/../Frameworks
+instead of:
+@executable_path/../Frameworks
+since projectM is built as a iTunes plug-in and not a standalone application.  If a framework uses executable_path its path won't be resolved and the plug-in won't load in iTunes.  The Xcode projects for FTGL and glew here have this build option set and should work when included in the Mac build.
