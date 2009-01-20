@@ -31,7 +31,7 @@ MilkdropPresetFactory::~MilkdropPresetFactory() {
 
 	Eval::destroy_infix_ops();
 	BuiltinFuncs::destroy_builtin_func_db();
-
+	delete(_presetOutputs);
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
