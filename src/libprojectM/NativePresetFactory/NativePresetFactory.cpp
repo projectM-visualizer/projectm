@@ -55,11 +55,13 @@ NativePresetFactory::NativePresetFactory() {}
 
 NativePresetFactory::~NativePresetFactory() {
 
-for (PresetLibraryMap::iterator pos = _libraries.begin(); pos != _libraries.end(); ++pos)
+for (PresetLibraryMap::iterator pos = _libraries.begin(); pos != _libraries.end(); ++pos) {
+	std::cerr << "deleting preset library" << std::endl;
 	delete(pos->second);
-
 }
 
+
+}
 
 PresetLibrary * NativePresetFactory::loadLibrary(const std::string & url) {
 
@@ -90,6 +92,8 @@ PresetLibrary * NativePresetFactory::loadLibrary(const std::string & url) {
         std::cerr << "[NativePresetFactory] Cannot load symbol destroy: " << dlsym_error << '\n';
         return 0;
     }
+
+    std::cerr << "[NativePresetFactory] creating preset library from url " << url << std::endl;
 
     PresetLibrary * library = new PresetLibrary(handle, create, destroy);
 

@@ -89,6 +89,13 @@ int main(int argc, char **argv) {
 
 float fakePCM[512];
 
+
+void cleanup() {
+  delete(globalPM);
+  exit(0);
+}
+
+
 void renderLoop() {
 	while (1) {
 		projectMEvent evt;
@@ -107,8 +114,7 @@ void renderLoop() {
 			case PROJECTM_KEYDOWN:
 				switch (key) {
 				case PROJECTM_K_ESCAPE:
-					delete(globalPM);
-					exit(0);
+					cleanup();
 					break;
 				case PROJECTM_K_f: {
 					fullscreen = !fullscreen;
@@ -122,7 +128,7 @@ void renderLoop() {
 					break;
 				}
 				case PROJECTM_K_q:
-					exit(1);
+					cleanup();
 					break;
 				default:
 					globalPM->key_handler(evt, key, mod);
