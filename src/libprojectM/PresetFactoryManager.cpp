@@ -25,7 +25,6 @@ PresetFactoryManager::PresetFactoryManager() : _gx(0), _gy(0) {}
 PresetFactoryManager::~PresetFactoryManager() {
 	for (std::vector<PresetFactory *>::iterator pos = _factoryList.begin(); 
 		pos != _factoryList.end(); ++pos) {
-		std::cerr << "fuck" << std::endl;
 		assert(*pos);
 		delete(*pos);
 	}
