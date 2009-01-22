@@ -29,9 +29,14 @@ MilkdropPresetFactory::MilkdropPresetFactory(int gx, int gy) {
 
 MilkdropPresetFactory::~MilkdropPresetFactory() {
 
+	std::cerr << "[~MilkdropPresetFactory] destroy infix ops" << std::endl;
 	Eval::destroy_infix_ops();
+	std::cerr << "[~MilkdropPresetFactory] destroy builtin func" << std::endl;	
 	BuiltinFuncs::destroy_builtin_func_db();
+	std::cerr << "[~MilkdropPresetFactory] delete preset out puts" << std::endl;
 	delete(_presetOutputs);
+	std::cerr << "[~MilkdropPresetFactory] done" << std::endl;
+	
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */

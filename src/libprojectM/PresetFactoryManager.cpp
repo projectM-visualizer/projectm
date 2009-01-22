@@ -24,8 +24,12 @@ PresetFactoryManager::PresetFactoryManager() : _gx(0), _gy(0) {}
 
 PresetFactoryManager::~PresetFactoryManager() {
 	for (std::vector<PresetFactory *>::iterator pos = _factoryList.begin(); 
-		pos != _factoryList.end(); ++pos) 
+		pos != _factoryList.end(); ++pos) {
+		std::cerr << "fuck" << std::endl;
+		assert(*pos);
 		delete(*pos);
+	}
+
 
 }
 void PresetFactoryManager::initialize(int gx, int gy) {
@@ -51,13 +55,14 @@ void PresetFactoryManager::registerFactory(const std::string & extensions, Prese
 	std::stringstream ss(extensions);	
 	std::string extension;
 
+	_factoryList.push_back(factory);
+
 	while (ss >> extension) {
 		if (_factoryMap.count(extension)) {
 			std::cerr << "[PresetFactoryManager] Warning: extension \"" << extension << 
 				"\" already has a factory. New factory handler ignored." << std::endl;			
 		} else {
-			_factoryMap.insert(std::make_pair(extension, factory));
-			_factoryList.push_back(factory);
+			_factoryMap.insert(std::make_pair(extension, factory));			
 		}
 	}
 }
