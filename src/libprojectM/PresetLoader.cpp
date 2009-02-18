@@ -139,7 +139,7 @@ std::auto_ptr<Preset> PresetLoader::loadPreset ( unsigned int index )  const
 
 	return _presetFactoryManager.factory(extension).allocate
 		( _entries[index], _presetNames[index] );
-	
+
 }
 
 

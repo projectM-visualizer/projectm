@@ -1,7 +1,7 @@
 //
 // C++ Interface: PresetFactory
 //
-// Description: 
+// Description:
 //
 //
 // Author: Carmelo Piccione <carmelo.piccione@gmail.com>, (C) 2008
@@ -36,7 +36,7 @@ public:
 
  /// Returns a space separated list of supported extensions
  virtual std::string supportedExtensions() const = 0;
-	
+
 };
 
 #endif
