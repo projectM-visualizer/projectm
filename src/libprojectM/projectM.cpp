@@ -18,8 +18,8 @@
  * See 'LICENSE.txt' included within this release
  *
  */
-#include "wipemalloc.h"
 
+#include "RenderItemMatcher.hpp"
 #include "fatal.h"
 #include "Common.hpp"
 
@@ -53,6 +53,7 @@
 #include "ConfigFile.h"
 #include "TextureManager.hpp"
 #include "TimeKeeper.hpp"
+
 #ifdef USE_THREADS
 #include "pthread.h"
 #endif
@@ -330,7 +331,9 @@ Pipeline pipeline;
 
 pipeline.setStaticPerPixel(settings().meshX, settings().meshY);
 
-PipelineMerger::MergePipelines( m_activePreset->pipeline(),m_activePreset2->pipeline(), pipeline,timeKeeper->SmoothRatio());
+
+assert(_matcher);
+PipelineMerger::MergePipelines( m_activePreset->pipeline(),m_activePreset2->pipeline(), pipeline, *_matcher, timeKeeper->SmoothRatio());
 
 /// @bug not sure if this is correct
 renderer->RenderFrame(pipeline, pipelineContext());
@@ -534,6 +537,9 @@ int projectM::initPresetTools(int gx, int gy)
 		std::cerr << "[projectM] warning: no valid files found in preset directory \""
 		<< m_presetLoader->directoryName() << "\"" << std::endl;
 	}
+
+	_matcher = new RenderItemMatcher();
+	_matcher->distanceFunction().addMetric(new ShapeXYDistance());
 
 	//std::cerr << "[projectM] Idle preset allocated." << std::endl;
 

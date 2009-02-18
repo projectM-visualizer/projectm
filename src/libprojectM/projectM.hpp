@@ -77,6 +77,7 @@ class PresetChooser;
 class PresetLoader;
 class TimeKeeper;
 class Pipeline;
+class RenderItemMatcher;
 
 #include <memory>
 #ifdef WIN32
@@ -104,7 +105,7 @@ typedef enum {
 /// A functor class that allows users of this library to specify random preset behavior
 class RandomizerFunctor {
 
-   public:	
+   public:
 	RandomizerFunctor(PresetChooser & chooser) ;
 	virtual ~RandomizerFunctor();
    	virtual double operator() (int index);
@@ -298,6 +299,8 @@ private:
   TimeKeeper *timeKeeper;
 
   int m_flags;
+
+  RenderItemMatcher * _matcher;
 
   pthread_mutex_t mutex;
   pthread_cond_t  condition;
