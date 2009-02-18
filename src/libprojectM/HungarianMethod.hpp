@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cstring>
-
+#include <limits>
 
 /// A function object which calculates the maximum-weighted bipartite matching between
 /// two sets via the hungarian method.
@@ -189,3 +189,4 @@ inline int inverseMatching(int j) const {
 };
 
 
+#endif

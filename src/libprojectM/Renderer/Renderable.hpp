@@ -1,8 +1,10 @@
 #ifndef Renderable_HPP
 #define Renderable_HPP
+#include <vector>
 
 #include "TextureManager.hpp"
 class BeatDetect;
+
 
 class RenderContext
 {
@@ -24,6 +26,8 @@ public:
 	virtual void Draw(RenderContext &context) = 0;
 	RenderItem();
 };
+
+typedef std::vector<RenderItem*> RenderItemList;
 
 class DarkenCenter : public RenderItem
 {

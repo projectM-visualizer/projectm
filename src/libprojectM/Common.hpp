@@ -24,12 +24,12 @@
  * $Log$
  */
 
-#ifndef COMMON_H
-#define COMMON_H
-
-#include <stdarg.h>
+#ifndef COMMON_HPP
+#define COMMON_HPP
+#include <typeinfo>
+#include <cstdarg>
 #include <cassert>
-#ifdef _MSC_VER
+#ifdef _MSC_sVER
 #define strcasecmp(s, t) _strcmpi(s, t)
 #endif
 
@@ -204,12 +204,10 @@ else
 
 }
 
-inline void DWRITE( char *fmt, ... ) {
-	return;
-    va_list args;
-    va_start( args, fmt );
-    va_end( args );
-  }
+
+inline double meanSquaredError(const double & x, const double & y) {
+		return (x-y)*(x-y);
+}
 
 #endif
 
