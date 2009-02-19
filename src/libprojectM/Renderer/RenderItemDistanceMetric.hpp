@@ -128,7 +128,7 @@ protected:
 		TypeIdPair pair(typeid(lhs), typeid(rhs));
 		if (_distanceMetricMap.count(pair)) {
 			metric = _distanceMetricMap[pair];
-		} else if (_distanceMetricMap.count(pair = TypeIdPair(typeid(lhs), typeid(rhs)))) {
+		} else if (_distanceMetricMap.count(pair = TypeIdPair(typeid(rhs), typeid(lhs)))) {
 			metric = _distanceMetricMap[pair];
 		} else {
 			metric  = 0;
