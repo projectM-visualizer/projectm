@@ -1,0 +1,4 @@
+GL_SGIX_async_histogram
+http://oss.sgi.com/projects/ogl-sample/registry/SGIX/async_histogram.txt
+	GL_ASYNC_HISTOGRAM_SGIX 0x832C
+	GL_MAX_ASYNC_HISTOGRAM_SGIX 0x832D

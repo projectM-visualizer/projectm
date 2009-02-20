@@ -2,12 +2,7 @@
 #define PRESET_MERGE_HPP
 #include "Preset.hpp"
 #include "Pipeline.hpp"
-
-class PresetMerger
-{
-public:
-  static void MergePresets(PresetOutputs & A,  PresetOutputs & B, double ratio, int gx, int gy);
-};
+#include "RenderItemMatcher.hpp"
 
 class PipelineMerger
 {
@@ -17,7 +12,8 @@ class PipelineMerger
 }
 
 public:
-  static void MergePipelines(const Pipeline &a,  const Pipeline &b, Pipeline &out, float ratio);
+  static void MergePipelines(const Pipeline &a,  const Pipeline &b, Pipeline &out, RenderItemMatcher & matcher, float ratio);
 };
+
 
 #endif

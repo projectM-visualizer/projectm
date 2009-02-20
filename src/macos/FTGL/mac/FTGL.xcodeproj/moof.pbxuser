@@ -1,0 +1,85 @@
+// !$*UTF8*$!
+{
+	3EC97CD709B55E8400B75DA5 /* FTGL */ = {
+		activeExec = 0;
+	};
+	3EC98AA609B579E200B75DA5 /* ftobjs.c */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {858, 54194}}";
+			sepNavSelRange = "{67089, 0}";
+			sepNavVisRange = "{66483, 1226}";
+			sepNavWindowFrame = "{{153, 116}, {905, 755}}";
+		};
+	};
+	77BBD0890EBFFB8E00ECA3DA /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+	};
+	77BBD08A0EBFFB8E00ECA3DA /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	BA63B0C006D1C62B00CD5F16 /* Project object */ = {
+		activeArchitecture = ppc;
+		activeBuildConfigurationName = Deployment;
+		activeTarget = 3EC97CD709B55E8400B75DA5 /* FTGL */;
+		codeSenseManager = 77BBD08A0EBFFB8E00ECA3DA /* Code sense */;
+		perUserDictionary = {
+			PBXPerProjectTemplateStateSaveDate = 249791061;
+			PBXWorkspaceStateSaveDate = 249791061;
+		};
+		sourceControlManager = 77BBD0890EBFFB8E00ECA3DA /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	BA63B0EC06D1C70900CD5F16 /* FTFace.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {451, 2142}}";
+			sepNavSelRange = "{47, 22}";
+			sepNavVisRange = "{0, 152}";
+		};
+	};
+	BA63B0FE06D1C70900CD5F16 /* FTSize.h */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {932, 1946}}";
+			sepNavSelRange = "{3100, 25}";
+			sepNavVisRange = "{2367, 1133}";
+			sepNavWindowFrame = "{{199, 74}, {905, 755}}";
+		};
+	};
+	BA63B12506D1C72100CD5F16 /* FTFace.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {858, 2058}}";
+			sepNavSelRange = "{1612, 0}";
+			sepNavVisRange = "{1163, 1008}";
+			sepNavWindowFrame = "{{60, 195}, {905, 755}}";
+		};
+	};
+	BA63B12606D1C72100CD5F16 /* FTFont.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {858, 4312}}";
+			sepNavSelRange = "{1205, 0}";
+			sepNavVisRange = "{763, 786}";
+			sepNavWindowFrame = "{{15, 242}, {905, 755}}";
+		};
+	};
+	BA63B13506D1C72100CD5F16 /* FTSize.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {858, 1540}}";
+			sepNavSelRange = "{422, 0}";
+			sepNavVisRange = "{0, 880}";
+			sepNavWindowFrame = "{{38, 221}, {905, 755}}";
+		};
+	};
+	BA63B13706D1C72100CD5F16 /* FTVectoriser.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {866, 3234}}";
+			sepNavSelRange = "{67, 0}";
+			sepNavVisRange = "{0, 1287}";
+			sepNavWindowFrame = "{{15, 242}, {905, 755}}";
+		};
+	};
+}

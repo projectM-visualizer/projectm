@@ -1,5 +1,9 @@
 PROJECT(projectM)
 
+cmake_minimum_required(VERSION 2.4.0)
+
+cmake_policy(SET CMP0005 OLD)
+
 OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL library" OFF)
 
 OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disable this for OpenGL ES 1.x or if you are experiencing problems on older or poorly supported hardware." ON)
@@ -12,10 +16,12 @@ OPTION (USE_NATIVE_GLEW "Use projectM's native implemention of GLEW." OFF)
 
 OPTION (USE_CG "Use Cg for Pixel Shader support" OFF)
 
-#OPTION (FTGL_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
-
 OPTION (BUILD_PROJECTM_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
-SET(SOIL_SOURCES image_DXT.c image_helper.c SOIL.c stb_image_aug.c)
+
+OPTION (DISABLE_NATIVE_PRESETS "Turn off support for native (C++ style) presets" OFF)
+OPTION (DISABLE_MILKDROP_PRESETS "Turn off support for Milkdrop (.milk / .prjm) presets"  OFF)
+
+ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"")
 
 if (USE_NATIVE_GLEW)
 ADD_DEFINITIONS(-DUSE_NATIVE_GLEW)
@@ -26,22 +32,32 @@ SET(GLEW_SOURCES )
 SET (GLEW_LINK_TARGETS GLEW)
 endif(USE_NATIVE_GLEW)
 
-SET(projectM_SOURCES projectM.cpp FBO.cpp InitCond.cpp 
- Expr.cpp PCM.cpp Parser.cpp Preset.cpp BeatDetect.cpp PerPixelEqn.cpp Param.cpp CustomWave.cpp CustomShape.cpp 
-Func.cpp Eval.cpp  PerFrameEqn.cpp PerPointEqn.cpp fftsg.cpp KeyHandler.cpp
- timer.cpp  wipemalloc.cpp BuiltinFuncs.cpp BuiltinParams.cpp Renderer.cpp 
-PresetLoader.cpp  PresetChooser.cpp PresetFrameIO.cpp PresetMerge.cpp PipelineContext.cpp 
-ConfigFile.cpp  IdlePreset.cpp TextureManager.cpp TimeKeeper.cpp Filters.cpp Renderable.cpp Pipeline.cpp PerPixelMesh.cpp 
-MilkdropWaveform.cpp Waveform.cpp VideoEcho.cpp Shader.cpp PerlinNoise.cpp UserTexture.cpp ShaderEngine.cpp ${GLEW_SOURCES})
+SET(projectM_SOURCES projectM.cpp PCM.cpp Preset.cpp fftsg.cpp KeyHandler.cpp
+timer.cpp wipemalloc.cpp PresetLoader.cpp  PresetChooser.cpp PresetMerge.cpp ConfigFile.cpp  TimeKeeper.cpp PresetFactory.cpp PresetFactoryManager.cpp ${GLEW_SOURCES})
+
+if (NOT DISABLE_NATIVE_PRESETS)
+add_subdirectory(NativePresetFactory)
+SET(PRESET_FACTORY_SOURCES ${PRESET_FACTORY_SOURCES} ${NativePresetFactory_SOURCE_DIR})
+SET(PRESET_FACTORY_BINARY_DIR ${PRESET_FACTORY_BINARY_DIR} ${NativePresetFactory_BINARY_DIR})
+SET(PRESET_FACTORY_LINK_TARGETS ${PRESET_FACTORY_LINK_TARGETS} NativePresetFactory)
+endif(NOT DISABLE_NATIVE_PRESETS)
+
+if (NOT DISABLE_MILKDROP_PRESETS)
+add_subdirectory(MilkdropPresetFactory)
+SET(PRESET_FACTORY_SOURCES ${PRESET_FACTORY_SOURCES} ${MilkdropPresetFactory_SOURCE_DIR})
+SET(PRESET_FACTORY_BINARY_DIR ${PRESET_FACTORY_BINARY_DIR} ${MilkdropPrmaesetFactory_BINARY_DIR})
+SET(PRESET_FACTORY_LINK_TARGETS ${PRESET_FACTORY_LINK_TARGETS} MilkdropPresetFactory)
+endif(NOT DISABLE_MILKDROP_PRESETS)
 
 if (USE_DEVIL)
 SET (projectM_SOURCES ${projectM_SOURCES})
 ADD_DEFINITIONS(-DUSE_DEVIL)
 SET (IMAGE_LINK_TARGETS IL ILU ILUT)
 else (USE_DEVIL)
-SET (projectM_SOURCES ${projectM_SOURCES} ${SOIL_SOURCES})
+SET (projectM_SOURCES ${projectM_SOURCES})
 SET (IMAGE_LINK_TARGETS )
 endif (USE_DEVIL)
+
 
 if (USE_CG)
 ADD_DEFINITIONS(-DUSE_CG)
@@ -58,6 +74,10 @@ endif(USE_GLES1)
 if(USE_FBO)
 ADD_DEFINITIONS(-DUSE_FBO)
 endif(USE_FBO)
+
+if(COMMAND cmake_policy)
+       cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
 
 if (BUILD_PROJECTM_STATIC)
 ADD_LIBRARY(projectM STATIC ${projectM_SOURCES})
@@ -80,7 +100,9 @@ ADD_DEFINITIONS(-DLINUX -DSTBI_NO_DDS -DUSE_THREADS)
 endif(WIN32)
 endif(APPLE)
 
-ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"") 
+add_subdirectory(Renderer)
+
+#ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"") 
 
 FIND_PACKAGE(OpenGL)
 
@@ -130,15 +152,15 @@ IF(USE_OPENMP)
 	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp ")
 ENDIF(USE_OPENMP)
 
-INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS})
-LINK_DIRECTORIES(${FTGL_LINK_DIRS} "./")
+INCLUDE_DIRECTORIES(${projectM_SOURCE_DIR} ${FTGL_INCLUDE_DIRS} ${Renderer_SOURCE_DIR} ${PRESET_FACTORY_SOURCES})
+LINK_DIRECTORIES(${FTGL_LINK_DIRS} ${Renderer_BINARY_DIR} ${PRESET_FACTORY_BINARY_DIR})
 
 if(BUILD_PROJECTM_STATIC)
-		TARGET_LINK_LIBRARIES(projectM ${GLEW_LINK_TARGETS} m ${FTGL_LINK_TARGETS} ${OPENGL_LIBRARIES} ${IMAGE_LINK_TARGETS} 
-${CG_LINK_TARGETS})
+		TARGET_LINK_LIBRARIES(projectM ${GLEW_LINK_TARGETS} m ${FTGL_LINK_TARGETS} ${OPENGL_LIBRARIES} ${IMAGE_LINK_TARGETS} ${CG_LINK_TARGETS} ${PRESET_FACTORY_LINK_TARGETS})
 else(BUILD_PROJECTM_STATIC)
-		TARGET_LINK_LIBRARIES(projectM ${GLEW_LINK_TARGETS} m ${FTGL_LINK_TARGETS} ${OPENGL_LIBRARIES}  ${IMAGE_LINK_TARGETS} 
-${CG_LINK_TARGETS})
+
+TARGET_LINK_LIBRARIES(projectM ${GLEW_LINK_TARGETS} m ${FTGL_LINK_TARGETS} ${OPENGL_LIBRARIES}  ${IMAGE_LINK_TARGETS} ${CG_LINK_TARGETS} ${PRESET_FACTORY_LINK_TARGETS})
+
 endif(BUILD_PROJECTM_STATIC)
 
 
@@ -149,8 +171,8 @@ FILE(GLOB presets "presets/*.milk" "presets/*.prjm" "presets/*.tga")
 INSTALL(FILES ${presets} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/presets)
 FILE(GLOB fonts "fonts/*.ttf")
 INSTALL(FILES ${fonts} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/fonts)
-INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/projectM.cg ${CMAKE_CURRENT_SOURCE_DIR}/blur.cg DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/shaders)
+INSTALL(FILES ${Renderer_SOURCE_DIR}/projectM.cg ${Renderer_SOURCE_DIR}/blur.cg DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/shaders)
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/libprojectM.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig)
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/config.inp DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM)
-INSTALL(FILES projectM.hpp event.h dlldefs.h fatal.h PresetFrameIO.hpp PCM.hpp  DESTINATION include/libprojectM)
+INSTALL(FILES projectM.hpp event.h dlldefs.h fatal.h PCM.hpp  DESTINATION include/libprojectM)
 INSTALL(TARGETS projectM DESTINATION lib${LIB_SUFFIX})

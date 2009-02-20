@@ -1,4 +1,7 @@
 PROJECT(projectM-jack)
+cmake_minimum_required(VERSION 2.4.0)
+
+cmake_policy(SET CMP0005 OLD)
 
 OPTION(QT_JACK_SUPPORT "Enable Qt4 GUI Support for the projectM jack port" ON)
 OPTION(BUILD_PROJECTM_JACK_STATIC "Build a binary that only depends on jack and stnadard MACOSX libraries" OFF)
@@ -81,6 +84,10 @@ endif (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 INCLUDE_DIRECTORIES(${PROJECTM_INCLUDE} ${JACK_INCLUDEDIR}  ${SDL_INCLUDE_DIR} ${GTK_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR})
 
 LINK_DIRECTORIES(${PROJECTM_LINK} ${JACK_LDFLAGS})
+
+if(COMMAND cmake_policy)
+      cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)    
 
 ADD_EXECUTABLE(projectM-jack ${projectM_jack_SRCS} ${projectM_jack_MOC_SRCS})
 
