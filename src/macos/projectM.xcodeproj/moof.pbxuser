@@ -1,0 +1,107 @@
+// !$*UTF8*$!
+{
+	08FB7793FE84155DC02AAC07 /* Project object */ = {
+		activeArchitecture = ppc;
+		activeBuildConfigurationName = Release;
+		activeExecutable = 772D4F4B0EB530D1003181D8 /* projectM-sdlvis */;
+		activeTarget = D2AAC045055464E500DB518D /* projectM-engine */;
+		codeSenseManager = 772D4F530EB530F0003181D8 /* Code sense */;
+		executables = (
+			772D4F4B0EB530D1003181D8 /* projectM-sdlvis */,
+			772D4F4C0EB530D1003181D8 /* projectM-wxvis */,
+		);
+		perUserDictionary = {
+			PBXPerProjectTemplateStateSaveDate = 249791017;
+			PBXWorkspaceStateSaveDate = 249791017;
+		};
+		sourceControlManager = 772D4F520EB530F0003181D8 /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	0C3EBFC50C06389F0041F14F /* projectM-wxvis */ = {
+		activeExec = 0;
+		executables = (
+			772D4F4C0EB530D1003181D8 /* projectM-wxvis */,
+		);
+	};
+	0C4C742D09DDC18200126FB8 /* projectM-sdlvis */ = {
+		activeExec = 0;
+		executables = (
+			772D4F4B0EB530D1003181D8 /* projectM-sdlvis */,
+		);
+	};
+	0C4C745B09DDC4B900126FB8 /* projectM-iTunes */ = {
+		activeExec = 0;
+	};
+	0C4C867D09DDCE2400126FB8 /* All Executables */ = {
+		activeExec = 0;
+	};
+	0CBFA8D40C1AB4FE007E9382 /* iprojectM.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1005, 12376}}";
+			sepNavSelRange = "{19859, 0}";
+			sepNavVisRange = "{14640, 1815}";
+			sepNavWindowFrame = "{{38, 93}, {1052, 883}}";
+		};
+	};
+	772D4F4B0EB530D1003181D8 /* projectM-sdlvis */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 1;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = "projectM-sdlvis";
+		sourceDirectories = (
+		);
+	};
+	772D4F4C0EB530D1003181D8 /* projectM-wxvis */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 1;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = "projectM-wxvis";
+		sourceDirectories = (
+		);
+	};
+	772D4F520EB530F0003181D8 /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+	};
+	772D4F530EB530F0003181D8 /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	D2AAC045055464E500DB518D /* projectM-engine */ = {
+		activeExec = 0;
+	};
+}

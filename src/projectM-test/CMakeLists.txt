@@ -1,5 +1,11 @@
 PROJECT(projectM-tests)
 
+cmake_policy(SET CMP0005 OLD)
+
+if(COMMAND cmake_policy)
+       cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy)
+
 ADD_EXECUTABLE(projectM-test         projectM-test.cpp         sdltoprojectM.h video_init.cpp ConfigFile.h ConfigFile.cpp getConfigFilename.cpp getConfigFilename.h)
 ADD_EXECUTABLE(projectM-test-memleak projectM-test-memleak.cpp sdltoprojectM.h video_init.cpp ConfigFile.h ConfigFile.cpp getConfigFilename.cpp getConfigFilename.h)
 ADD_EXECUTABLE(projectM-test-texture projectM-test-texture.cpp sdltoprojectM.h video_init.cpp ConfigFile.h ConfigFile.cpp getConfigFilename.h getConfigFilename.cpp)

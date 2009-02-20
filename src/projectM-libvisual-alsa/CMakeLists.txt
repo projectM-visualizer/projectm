@@ -2,6 +2,8 @@ PROJECT(projectM-libvisual-alsa)
 
 ADD_EXECUTABLE(projectM-libvisual-alsa projectM-libvisual-alsa.c display.c glxdriver.c x11driver.c sdldriver.c lv_x11_key.c)
 
+cmake_policy(SET CMP0005 OLD)
+
 INCLUDE(FindPkgConfig.cmake)
 
 FIND_PACKAGE(OpenGL)

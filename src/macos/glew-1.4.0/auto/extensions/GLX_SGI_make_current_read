@@ -1,0 +1,4 @@
+GLX_SGI_make_current_read
+http://oss.sgi.com/projects/ogl-sample/registry/SGI/make_current_read.txt
+	GLXDrawable glXGetCurrentReadDrawableSGI (void)
+	Bool glXMakeCurrentReadSGI (Display* dpy, GLXDrawable draw, GLXDrawable read, GLXContext ctx)

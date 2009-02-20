@@ -14,13 +14,6 @@
 #include <GL/gl.h>
 #endif
 
-#ifdef USE_DEVIL
-#include <IL/ilut.h>
-#else
-#include "SOIL.h"
-#endif
-
-
 #include "TimeKeeper.hpp"
 #include "RandomNumberGenerators.hpp"
 
