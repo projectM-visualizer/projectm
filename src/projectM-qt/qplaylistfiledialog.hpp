@@ -19,8 +19,8 @@
  ***************************************************************************/
 
 
-#ifndef QPLAYLIST_FILEDIALOG_H
-#define QPLAYLIST_FILEDIALOG_H
+#ifndef QPLAYLIST_FILEDIALOG_HPP
+#define QPLAYLIST_FILEDIALOG_HPP
 
 #include <QFileDialog>
 #include <QStringList>
@@ -105,7 +105,7 @@
 				 if (filter != QString())
 					 filter += " and ";
 		
-				 filter += "Preset Playlists (*.ppl)";			 
+				 filter += "Preset Playlists (*.ppl)"; 
 			 } 
 			 
 			 return filter;		 

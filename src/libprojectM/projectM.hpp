@@ -26,19 +26,18 @@
  * $Log$
  */
 
-#ifndef _PROJECTM_H
-#define _PROJECTM_H
+#ifndef _PROJECTM_HPP
+#define _PROJECTM_HPP
 
 #ifdef WIN32
 #include "win32-dirent.h"
 #else
 #include <dirent.h>
 #endif /** WIN32 */
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
+#include <cmath>
+#include <cstdio>
 #include <string>
-#include <stdlib.h>
+#include <cstdlib>
 #ifndef WIN32
 #include <unistd.h>
 #endif
@@ -61,10 +60,11 @@
 #include "dlldefs.h"
 #include "event.h"
 #include "fatal.h"
-#include "PresetFrameIO.hpp"
 #include "PCM.hpp"
 #include "pthread.h"
-#include "PipelineContext.hpp"
+class PipelineContext;
+
+//#include "PipelineContext.hpp"
 #include <memory>
 
 class BeatDetect;
@@ -77,6 +77,7 @@ class PresetChooser;
 class PresetLoader;
 class TimeKeeper;
 class Pipeline;
+class RenderItemMatcher;
 
 #include <memory>
 #ifdef WIN32
@@ -105,7 +106,6 @@ typedef enum {
 class RandomizerFunctor {
 
    public:
-	//RandomizerFunctor();
 	RandomizerFunctor(PresetChooser & chooser) ;
 	virtual ~RandomizerFunctor();
    	virtual double operator() (int index);
@@ -246,13 +246,14 @@ public:
 	  return _pcm;
   }
   void *thread_func(void *vptr_args);
+  PipelineContext & pipelineContext() { return *_pipelineContext; }
 
 private:
-	 PCM * _pcm;
+  PCM * _pcm;
   double sampledPresetDuration();
   BeatDetect * beatDetect;
   Renderer *renderer;
-  PipelineContext pipelineContext;
+  PipelineContext * _pipelineContext;
   Settings _settings;
 
 
@@ -266,21 +267,20 @@ private:
   int count;
   float fpsstart;
 
-  void switchPreset(std::auto_ptr<Preset> & targetPreset, PresetInputs & inputs, PresetOutputs & outputs);
   void readConfig(const std::string & configFile);
   void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
   void projectM_reset();
 
   void projectM_initengine();
   void projectM_resetengine();
+
   /// Initializes preset loading / management libraries
-  int initPresetTools();
+  int initPresetTools(int gx, int gy);
 
   /// Deinitialize all preset related tools. Usually done before projectM cleanup
   void destroyPresetTools();
 
   void default_key_handler( projectMEvent event, projectMKeycode keycode );
-  void setupPresetInputs(PresetInputs *inputs);
   /// The current position of the directory iterator
   PresetIterator * m_presetPos;
 
@@ -296,28 +296,20 @@ private:
   /// Destination preset when smooth preset switching
   std::auto_ptr<Preset> m_activePreset2;
 
-  /// All readonly variables which are passed as inputs to presets
-  PresetInputs presetInputs;
-  PresetInputs presetInputs2;
-  /// A preset outputs container used and modified by the "current" preset
-  PresetOutputs presetOutputs;
-
-  /// A preset outputs container used for smooth preset switching
-  PresetOutputs presetOutputs2;
-
   TimeKeeper *timeKeeper;
-
 
   int m_flags;
 
+  RenderItemMatcher * _matcher;
 
-pthread_mutex_t mutex;
-pthread_cond_t  condition;
-pthread_t thread;
+  pthread_mutex_t mutex;
+  pthread_cond_t  condition;
+  pthread_t thread;
   bool running;
 
   Pipeline* currentPipe;
 
+void switchPreset(std::auto_ptr<Preset> & targetPreset);
 
 
 };

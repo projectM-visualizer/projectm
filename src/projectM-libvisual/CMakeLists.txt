@@ -1,7 +1,14 @@
 PROJECT(projectM_libvisual)
+
+    if(COMMAND cmake_policy)
+      cmake_policy(SET CMP0003 NEW)
+    endif(COMMAND cmake_policy)    
+
+
 ADD_LIBRARY(projectM_libvisual SHARED actor_projectM.cpp lvtoprojectM.h ConfigFile.h ConfigFile.cpp)
 
 INCLUDE(FindPkgConfig.cmake)
+cmake_policy(SET CMP0005 OLD)
 
 FIND_PACKAGE(OpenGL)
 FIND_PACKAGE(SDL)

@@ -1,0 +1,4 @@
+WGL_ARB_make_current_read
+http://oss.sgi.com/projects/ogl-sample/registry/ARB/wgl_make_current_read.txt
+	HDC wglGetCurrentReadDCARB (VOID)
+	BOOL wglMakeContextCurrentARB (HDC hDrawDC, HDC hReadDC, HGLRC hglrc)

@@ -39,7 +39,7 @@
 
  public:
      QPresetFileDialog(QWidget * parent = 0): 
-		QFileDialog(parent, "Add preset files", QString(), "Presets (*.prjm *.milk)" ) {
+		QFileDialog(parent, "Add preset files", QString(), "Presets (*.prjm *.milk *.so)" ) {
 
 		this->setFileMode(QFileDialog::ExistingFiles);
 	}

@@ -1,6 +1,10 @@
 PROJECT(projectM-pulseaudio)
 
+cmake_minimum_required(VERSION 2.4.0)
+
 set(QT_USE_OPENGL TRUE)
+
+cmake_policy(SET CMP0005 OLD)
 
 include(${QT_USE_FILE} FindPkgConfig.cmake)
 
@@ -77,6 +81,10 @@ endif (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 INCLUDE_DIRECTORIES(${PROJECTM_INCLUDE} ${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${LIBPULSE_INCLUDEDIR})
 
 LINK_DIRECTORIES(${PROJECTM_LINK} ${PULSEAUDIO_LDFLAGS})
+
+if(COMMAND cmake_policy)
+      cmake_policy(SET CMP0003 NEW)
+endif(COMMAND cmake_policy) 
 
 ADD_EXECUTABLE(projectM-pulseaudio ${projectM_pulseaudio_SRCS} ${projectM_pulseaudio_MOC_SRCS} ${projectM_pulseaudio_UIS_H})
 

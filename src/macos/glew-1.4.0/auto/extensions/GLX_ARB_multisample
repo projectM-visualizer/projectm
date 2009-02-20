@@ -1,0 +1,4 @@
+GLX_ARB_multisample
+http://oss.sgi.com/projects/ogl-sample/registry/ARB/multisample.txt
+	GLX_SAMPLE_BUFFERS_ARB 100000
+	GLX_SAMPLES_ARB 100001

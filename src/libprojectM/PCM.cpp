@@ -43,7 +43,10 @@ int PCM::maxsamples = 2048;
 #include <iostream>
 PCM::PCM() {
     initPCM( 2048 );
-    std::cerr << "MAX SAMPLES:" << maxsamples << std::endl;
+
+    #ifdef DEBUG
+    std::cerr << "[PCM] MAX SAMPLES:" << maxsamples << std::endl;
+    #endif
   }
 
 void PCM::initPCM(int samples) {
