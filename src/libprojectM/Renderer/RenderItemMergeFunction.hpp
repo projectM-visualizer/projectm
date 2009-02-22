@@ -76,12 +76,12 @@ protected:
 
 
 class MasterRenderItemMerge : public RenderItemMerge<RenderItem> {
-s
+
 typedef std::map<TypeIdPair, RenderItemMergeFunction*> MergeFunctionMap;
 public:
 
-	MasterRenderItemDistance() {}
-	virtual ~MasterRenderItemDistance() {}
+	MasterRenderItemMerge() {}
+	virtual ~MasterRenderItemMerge() {}
 
 	inline void add(RenderItemMergeFunction * fun) {
 		_mergeFunctionMap[fun->typeIdPair()] = fun;
