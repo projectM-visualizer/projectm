@@ -39,7 +39,7 @@ inline virtual double  operator()(const RenderItem * r1, const RenderItem * r2) 
 	if (supported(r1, r2))
 		return computeDistance(dynamic_cast<const R1*>(r1), dynamic_cast<const R2*>(r2));
 	else if (supported(r2,r1))
-		return computeDistance(dynamic_cast<const R2*>(r2), dynamic_cast<const R1*>(r1));
+		return computeDistance(dynamic_cast<const R1*>(r2), dynamic_cast<const R2*>(r1));
 	else
 		return NOT_COMPARABLE_VALUE;
 }
