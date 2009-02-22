@@ -36,11 +36,11 @@ public:
 inline virtual RenderItem * operator()(const RenderItem * r1, const RenderItem * r2) const {
 	if (supported(r1, r2))
 		return computeMerge(dynamic_cast<const R1*>(r1), dynamic_cast<const R2*>(r2));
-s	else if (supported(r2,r1))
-		return computeMerge(dynamic_cast<const R2*>(r2), dynamic_cast<const R2*>(r1));
+	else if (supported(r2,r1))
+		return computeMerge(dynamic_cast<const R1*>(r2), dynamic_cast<const R2*>(r1));
 	else
 		return 0;
-}s
+}
 
 // Returns true if and only if r1 and r2 are of type R1 and R2 respectively.
 inline bool supported(const RenderItem * r1, const RenderItem * r2) const {
