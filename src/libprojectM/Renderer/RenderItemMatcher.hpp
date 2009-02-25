@@ -14,25 +14,40 @@
 #include <iostream>
 #include "HungarianMethod.hpp"
 
+typedef std::vector<std::pair<const RenderItem*, const RenderItem*> > RenderItemMatchList;
 
-class RenderItemMatcher : public std::binary_function<RenderItemList, RenderItemList, double> {
+class MatchResults;
+
+class RenderItemMatcher : public std::binary_function<RenderItemList, RenderItemList, MatchResults> {
+
 public:
+
+struct MatchResults {
+  RenderItemMatchList matches;
+  double error;
+};
+
 	static const std::size_t MAXIMUM_SET_SIZE = 1000;
 
 	/// Computes an optimal matching between two renderable item sets.
-	inline virtual double operator()(const RenderItemList & lhs, const RenderItemList & rhs) const {
+	/// @param lhs the "left-hand side" list of render items.
+	/// @param rhs the "right-hand side" list of render items.
+	/// @returns a list of match pairs, possibly self referencing, and an error estimate of the matching.
+	inline virtual MatchResults operator()(const RenderItemList & lhs, const RenderItemList & rhs) const {
+		
+		 MatchResults results;
 
 		// Ensure the first argument is greater than next to aid the helper function's logic.
-		if (lhs.size() >= rhs.size())
-			return computeMatching(lhs, rhs);
-		else
-			return computeMatching(rhs, lhs);
+		if (lhs.size() >= rhs.size()) {
+		  results.error = computeMatching(lhs, rhs);
+		  setMatches(results.matches, lhs, rhs);
+		} else {
+		  results.error = computeMatching(rhs, lhs);
+		  setMatches(results.matches, rhs, lhs);
+		}
+		return results;
+	
 	}
-
-	/// @idea could instead just pass back a vector of render item pointer pairs. ask sperl
-	inline int matching(int i) const { return _hungarianMethod.matching(i); }
-	inline int inverseMatching(int j) const { return _hungarianMethod.inverseMatching(j); }
-	inline double weight(int i, int j) const { return _weights[i][j]; }
 
 	RenderItemMatcher() {}
 	virtual ~RenderItemMatcher() {}
@@ -43,22 +58,13 @@ private:
 	mutable HungarianMethod<MAXIMUM_SET_SIZE> _hungarianMethod;
 	mutable double _weights[MAXIMUM_SET_SIZE][MAXIMUM_SET_SIZE];
 
+
 	/// @idea interface this entirely allow overriding of its type.
 	mutable MasterRenderItemDistance _distanceFunction;
 
-	inline double computeMatching(const RenderItemList & lhs, const RenderItemList & rhs) const {
-		for (int i = 0; i < lhs.size();i++) {
-			int j;
-			for (j = 0; j < rhs.size();j++)
-				_weights[i][j] = _distanceFunction(lhs[i], rhs[j]);
-			for (; j < lhs.size();j++)
-				_weights[i][j] = RenderItemDistanceMetric::NOT_COMPARABLE_VALUE;
-		}
+	double computeMatching(const RenderItemList & lhs, const RenderItemList & rhs) const;
 
-		const double error = _hungarianMethod(_weights, lhs.size());
-		std::cout << "[computeMatching] total error is " << error << std::endl;
-		return error;
-	}
+	void setMatches(RenderItemMatchList & dest, const RenderItemList & lhs_src, const RenderItemList & rhs_src) const;
 
 };
 

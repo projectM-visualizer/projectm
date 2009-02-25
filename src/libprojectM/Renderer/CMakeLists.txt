@@ -5,7 +5,7 @@ SET(SOIL_SOURCES SOIL/image_DXT.c SOIL/image_helper.c SOIL/SOIL.c SOIL/stb_image
 
 SET(Renderer_SOURCES FBO.cpp MilkdropWaveform.cpp PerPixelMesh.cpp Pipeline.cpp Renderer.cpp  ShaderEngine.cpp UserTexture.cpp  Waveform.cpp 
 Filters.cpp PerlinNoise.cpp PipelineContext.cpp  Renderable.cpp BeatDetect.cpp Shader.cpp TextureManager.cpp VideoEcho.cpp 
-RenderItemDistanceMetric.cpp ${SOIL_SOURCES})
+RenderItemDistanceMetric.cpp RenderItemMatcher.cpp ${SOIL_SOURCES})
 
 SET (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -fPIC)
 SET (CMAKE_C_FLAGS ${CMAKE_C_FLAGS} -fPIC)
