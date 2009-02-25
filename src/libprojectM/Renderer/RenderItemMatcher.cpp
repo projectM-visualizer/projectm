@@ -21,7 +21,7 @@ void RenderItemMatcher::setMatches(RenderItemMatchList & dest, const RenderItemL
 	  for (int i = 0; i < lhs_src.size();i++) {
 		const int j = _hungarianMethod.matching(i);
 		if (_weights[i][j] == RenderItemDistanceMetric::NOT_COMPARABLE_VALUE) {
-// 		    dest.push_back(std::make_pair(lhs_src[i], lhs_src[i]));
+ 		    dest.push_back(std::make_pair(lhs_src[i], lhs_src[i]));
 		    dest.push_back(std::make_pair(rhs_src[j], rhs_src[j]));
 		} else {
 		    dest.push_back(std::make_pair(lhs_src[i], rhs_src[j]));
