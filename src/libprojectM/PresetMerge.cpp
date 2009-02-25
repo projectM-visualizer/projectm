@@ -12,7 +12,7 @@ void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipe
 	out.screenDecay =lerp( b.screenDecay, a.screenDecay, ratio);
 	out.drawables.clear();
 
-	double error = matcher(a.drawables, b.drawables);
+	RenderItemMatcher::MatchResults results =  matcher(a.drawables, b.drawables);	
 	for (int i = 0; i < a.drawables.size();i++)
 		for (int j = 0; j < b.drawables.size();j++)
 			std::cerr << "[" << i << "][" << j << "]" << matcher.weight(i,j);
