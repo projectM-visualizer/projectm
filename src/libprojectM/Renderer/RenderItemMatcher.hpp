@@ -52,6 +52,8 @@ struct MatchResults {
 	RenderItemMatcher() {}
 	virtual ~RenderItemMatcher() {}
 
+	inline double weight(int i, int j) const { return _weights[i][j]; }
+
 	MasterRenderItemDistance & distanceFunction() { return _distanceFunction; }
 
 private:
