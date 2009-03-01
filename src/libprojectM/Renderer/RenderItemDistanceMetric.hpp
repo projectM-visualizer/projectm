@@ -44,9 +44,10 @@ inline virtual double  operator()(const RenderItem * r1, const RenderItem * r2) 
 		return NOT_COMPARABLE_VALUE;
 }
 
-// Returns true if and only if r1 and r2 are of type R1 and R2 respectively.
+// Returns true if and only if r1 and r2 are the same type as or derived from R1, R2 respectively
 inline bool supported(const RenderItem * r1, const RenderItem * r2) const {
-	return typeid(r1) == typeid(const R1 *) && typeid(r2) == typeid(const R2 *);
+	return dynamic_cast<const R1*>(r1) && dynamic_cast<const R2*>(r2);
+	//return typeid(r1) == typeid(const R1 *) && typeid(r2) == typeid(const R2 *);
 }
 
 inline TypeIdPair typeIdPair() const {
@@ -109,24 +110,29 @@ protected:
 		RenderItemDistanceMetric * metric;
 
 		TypeIdPair pair(typeid(lhs), typeid(rhs));
+
+
+		// If specialized metric exists, use it to get higher granularity
+		// of correctness
 		if (_distanceMetricMap.count(pair)) {
 			metric = _distanceMetricMap[pair];
 		} else if (_distanceMetricMap.count(pair = TypeIdPair(typeid(rhs), typeid(lhs)))) {
 			metric = _distanceMetricMap[pair];
-		} else {
-			metric  = 0;
+		} else { // Failing that, use rtti && shape distance if its a shape type
+
+			/// @bug This is a non elegant approach to supporting shape distance
+			const double rttiError = _rttiDistance(lhs,rhs);
+			if (rttiError == 0 && _shapeXYDistance.supported(lhs,rhs))
+			   return _shapeXYDistance(lhs, rhs);
+			else return rttiError;
 		}
 
-		// If specialized metric exists, use it to get higher granularity
-		// of correctness
-		if (metric)
-			return (*metric)(lhs, rhs);
-		else // Failing that, use rtti and return 0 if they match, max value otherwise
-			return _rttiDistance(lhs,rhs);
+		return (*metric)(lhs, rhs);
 	}
 
 private:
 	mutable RTIRenderItemDistance _rttiDistance;
+	mutable ShapeXYDistance _shapeXYDistance;
 	mutable DistanceMetricMap _distanceMetricMap;
 };
 

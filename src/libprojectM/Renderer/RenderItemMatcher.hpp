@@ -63,6 +63,7 @@ private:
 
 	/// @idea interface this entirely allow overriding of its type.
 	mutable MasterRenderItemDistance _distanceFunction;
+	
 
 	double computeMatching(const RenderItemList & lhs, const RenderItemList & rhs) const;
 
