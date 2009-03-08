@@ -20,11 +20,11 @@
 
 #ifdef USE_FTGL
 #ifdef WIN32
-#include <FTGL.h>
+#include <ftgl.h>
 #include <FTGLPixmapFont.h>
 #include <FTGLExtrdFont.h>
 #else
-#include <FTGL/FTGL.h>
+#include <FTGL/ftgl.h>
 #include <FTGL/FTGLPixmapFont.h>
 #include <FTGL/FTGLExtrdFont.h>
 #endif
