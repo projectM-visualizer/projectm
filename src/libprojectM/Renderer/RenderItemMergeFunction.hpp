@@ -16,24 +16,25 @@
 
 /// Merges two render items and returns zero if they are virtually equivalent and large values
 /// when they are dissimilar. If two render items cannot be compared, NOT_COMPARABLE_VALUE is returned.
-class RenderItemMergeFunction : public std::binary_function<const RenderItem*, const RenderItem*, RenderItem*> {
-public:s
-  virtual RenderItem * operator()(const RenderItem * r1, const RenderItem * r2) const = 0;
+class RenderItemMergeFunction : public std::ternary_function<const RenderItem*, const RenderItem*,
+  double ratio, RenderItem*> {
+public:
+  virtual RenderItem * operator()(const RenderItem * r1, const RenderItem * r2, double ratio) const = 0;
   virtual TypeIdPair typeIdPair() const = 0;
 };
 
-// A base class to construct render item distance mergeFunctions. Just specify your two concrete
-// render item types as template parameters and override the computeMerge() function.
+/// A base class to construct render item distance mergeFunctions. Just specify your two concrete
+/// render item types as template parameters and override the computeMerge() function.
 template <class R1, class R2=R1, class R3=R2>
 class RenderItemMerge : public RenderItemMergeFunction {
 
 protected:
-// Override to create your own distance mergeFunction for your specified custom types.
-virtual R3 * computeMerge(const R1 * r1, const R2 * r2) const = 0;
+/// Override to create your own distance mergeFunction for your specified custom types.
+virtual R3 * computeMerge(const R1 * r1, const R2 * r2, double ratio) const = 0;
 
 public:
 
-inline virtual RenderItem * operator()(const RenderItem * r1, const RenderItem * r2) const {
+inline virtual RenderItem * operator()(const RenderItem * r1, const RenderItem * r2, double ratio) const {
 	if (supported(r1, r2))
 		return computeMerge(dynamic_cast<const R1*>(r1), dynamic_cast<const R2*>(r2));
 	else if (supported(r2,r1))
@@ -42,7 +43,7 @@ inline virtual RenderItem * operator()(const RenderItem * r1, const RenderItem *
 		return 0;
 }
 
-// Returns true if and only if r1 and r2 are of type R1 and R2 respectively.
+/// Returns true if and only if r1 and r2 are of type R1 and R2 respectively.
 inline bool supported(const RenderItem * r1, const RenderItem * r2) const {
 	return typeid(r1) == typeid(const R1 *) && typeid(r2) == typeid(const R2 *);
 }
@@ -64,11 +65,11 @@ public:
 
 protected:
 
-	virtual inline Shape * computeMerge(const Shape * lhs, const Shape * rhs) const {
+	virtual inline Shape * computeMerge(const Shape * lhs, const Shape * rhs, double ratio) const {
   
 	    Shape * shape  = new Shape();
-	    shape->x = (lhs->x + rhs->x)/2;
-	    shape->y = (lhs->y + rhs->y)/2;
+	    shape->x = (ratio*lhs->x + (1-ratio)*rhs->x)/2;
+	    shape->y = (ratio*lhs->y + (1-ratio)*rhs->y)/2;
 	    return shape;
 	}
 
@@ -88,7 +89,7 @@ public:
 	}
 
 protected:
-	virtual inline RenderItem * computeMerge(const RenderItem * lhs, const RenderItem * rhs) const {
+	virtual inline RenderItem * computeMerge(const RenderItem * lhs, const RenderItem * rhs, double ratio) const {
 
 		RenderItemMergeFunction * mergeFunction;
 
@@ -104,7 +105,7 @@ protected:
 		// If specialized mergeFunction exists, use it to get higher granularity
 		// of correctness
 		if (mergeFunction)
-			return (*mergeFunction)(lhs, rhs);
+			return (*mergeFunction)(lhs, rhs, ratio);
 		else return 0;
 	}
 
