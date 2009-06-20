@@ -30,7 +30,7 @@ template <class R1, class R2>
 class RenderItemDistance : public RenderItemDistanceMetric {
 
 protected:
-// Override to create your own distance metric for your specified custom types.
+// Override to create your own distance fmetric for your specified custom types.
 virtual double computeDistance(const R1 * r1, const R2 * r2) const = 0;
 
 public:
@@ -65,10 +65,15 @@ public:
 
 protected:
 	virtual inline double computeDistance(const RenderItem * lhs, const RenderItem * rhs) const {
-		if (typeid(lhs) == typeid(rhs))
+		if (typeid(*lhs) == typeid(*rhs)) {
+			std::cerr << typeid(*lhs).name() << " and " << typeid(*rhs).name() <<  "are comparable" << std::endl;
+
 			return 0.0;
-		else
+		}
+		else {
+			std::cerr << typeid(*lhs).name() << " and " << typeid(*rhs).name() <<  "not comparable" << std::endl;
 			return NOT_COMPARABLE_VALUE;
+		}
 	}
 
 
@@ -120,8 +125,9 @@ protected:
 			metric = _distanceMetricMap[pair];
 		} else { // Failing that, use rtti && shape distance if its a shape type
 
-			/// @bug This is a non elegant approach to supporting shape distance
 			const double rttiError = _rttiDistance(lhs,rhs);
+
+			/// @bug This is a non elegant approach to supporting shape distance
 			if (rttiError == 0 && _shapeXYDistance.supported(lhs,rhs))
 			   return _shapeXYDistance(lhs, rhs);
 			else return rttiError;
