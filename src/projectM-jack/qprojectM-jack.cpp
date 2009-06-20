@@ -72,7 +72,7 @@ std::string read_config()
    FILE *in; 
    FILE *out;
 
-   char* home;
+   char * home;
    char projectM_home[1024];
    char projectM_config[1024];
 
@@ -197,7 +197,8 @@ int main( int argc, char **argv ) {
 
  // Start a new qapplication 
  QApplication app(argc, argv);
- 
+ setlocale(LC_NUMERIC, "C");  // Fix
+
 std::string config_file;
 config_file = read_config();
 
