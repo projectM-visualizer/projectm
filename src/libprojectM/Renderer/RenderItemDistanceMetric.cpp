@@ -6,5 +6,8 @@
  */
 
 #include "RenderItemDistanceMetric.hpp"
+
+// Assumes [0, 1] distance space because it's easy to manage with overflow
+// Underflow is obviously possible though.
 const double RenderItemDistanceMetric::NOT_COMPARABLE_VALUE
-	(std::numeric_limits<double>::max());
+	(1.0);
