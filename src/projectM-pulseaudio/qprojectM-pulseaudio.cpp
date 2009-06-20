@@ -90,6 +90,7 @@ int main ( int argc, char*argv[] )
 
 	QApplication app ( argc, argv );
 
+	setlocale(LC_NUMERIC, "C");  // Fix
 	std::string config_file;
 	config_file = read_config();
 
