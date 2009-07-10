@@ -377,6 +377,11 @@ DLLEXPORT void projectM::renderFrame()
 
 	/// @bug not sure if this is correct
 	renderer->RenderFrame(pipeline, pipelineContext());
+	
+	for (int i = 0; i < _matcher->matchResults().matches.size(); i++) {
+		delete(pipeline.drawables[0]);
+		pipeline.drawables.erase(pipeline.drawables.begin());
+	}
 
 	}
 	else
