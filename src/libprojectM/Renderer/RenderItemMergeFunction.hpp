@@ -39,7 +39,7 @@ inline bool interpolate(bool a, bool b, float ratio)
 /// when they are dissimilar. If two render items cannot be compared, NOT_COMPARABLE_VALUE is returned.
 class RenderItemMergeFunction {
 public:
-  virtual void operator()(const RenderItem * r1, const RenderItem * r2, RenderItem * r3, double ratio) const = 0;
+  virtual RenderItem * operator()(const RenderItem * r1, const RenderItem * r2, double ratio) const = 0;
   virtual TypeIdPair typeIdPair() const = 0;
 };
 
@@ -50,17 +50,17 @@ class RenderItemMerge : public RenderItemMergeFunction {
 
 protected:
 /// Override to create your own distance mergeFunction for your specified custom types.
-virtual void computeMerge(const R1 * r1, const R2 * r2, R3 * r3, double ratio) const = 0;
+virtual R3 * computeMerge(const R1 * r1, const R2 * r2, double ratio) const = 0;
 
 public:
 
-inline virtual void operator()(const RenderItem * r1, const RenderItem * r2, RenderItem * r3, double ratio) const {
+inline virtual R3 * operator()(const RenderItem * r1, const RenderItem * r2, double ratio) const {
 	if (supported(r1, r2))
-		return computeMerge(dynamic_cast<const R1*>(r1), dynamic_cast<const R2*>(r2), dynamic_cast<R3*>(r3), ratio);
+		return computeMerge(dynamic_cast<const R1*>(r1), dynamic_cast<const R2*>(r2), ratio);
 	else if (supported(r2,r1))
-		return computeMerge(dynamic_cast<const R1*>(r2), dynamic_cast<const R2*>(r1), dynamic_cast<R3*>(r3), ratio);
+		return computeMerge(dynamic_cast<const R1*>(r2), dynamic_cast<const R2*>(r1), ratio);
 	else
-		return;
+		return 0;
 }
 
 /// Returns true if and only if r1 and r2 are of type R1 and R2 respectively.
@@ -84,9 +84,10 @@ public:
 
 protected:
 
-	virtual inline Shape computeMerge(const Shape * lhs, const Shape * rhs, double ratio) const {
+	virtual inline Shape * computeMerge(const Shape * lhs, const Shape * rhs, double ratio) const {
 
-    Shape target;
+    	Shape * ret = new Shape();
+	Shape & target = *ret;
 
 	target.x = interpolate(lhs->x, rhs->x, ratio);
         target.y = interpolate(lhs->y, rhs->y, ratio);
@@ -120,7 +121,7 @@ protected:
         target.masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
         target.imageUrl = (ratio > 0.5) ? lhs->imageUrl : rhs->imageUrl, ratio;
 
-        return target;
+        return ret;
 	}
 };
 
@@ -133,9 +134,11 @@ class BorderMerge : public RenderItemMerge<Border> {
 
     protected:
 
-        virtual inline Border computeMerge(const Border * lhs, const Border * rhs, double ratio) const
+        virtual inline Border * computeMerge(const Border * lhs, const Border * rhs, double ratio) const
         {
-            Border target;
+            Border * ret = new Border();
+		
+	    Border & target = *ret;
 
             target.inner_a = interpolate(lhs->inner_a, rhs->inner_a, ratio);
             target.inner_r = interpolate(lhs->inner_r, rhs->inner_r, ratio);
@@ -151,9 +154,10 @@ class BorderMerge : public RenderItemMerge<Border> {
 
             target.masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
 
-            return target;
+            return ret;
         }
 };
+
 
 class WaveformMerge : public RenderItemMerge<Waveform> {
 
@@ -164,9 +168,13 @@ class WaveformMerge : public RenderItemMerge<Waveform> {
 
     protected:
 
-        virtual inline Waveform computeMerge(const Waveform * lhs, const Waveform * rhs, double ratio) const
+	/// @BUG unimplemented
+        virtual inline Waveform * computeMerge(const Waveform * lhs, const Waveform * rhs, double ratio) const
         {
-            Waveform target;
+		return 0;
+/*
+            Waveform * ret = new Waveform();
+	    Waveform & target = *ret;
 
             target.additive = interpolate(lhs->additive, rhs->additive, ratio);
             target.dots = interpolate(lhs->dots, rhs->dots, ratio);
@@ -178,7 +186,8 @@ class WaveformMerge : public RenderItemMerge<Waveform> {
             target.thick = interpolate(lhs->thick, rhs->thick, ratio);
             target.masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
 
-            return target;
+            return ret;
+*/
         }
 };
 
@@ -199,7 +208,7 @@ public:
 	}
 
 protected:
-	virtual inline void computeMerge(const RenderItem * lhs, const RenderItem * rhs, RenderItem * renderItem, double ratio) const {
+	virtual inline RenderItem * computeMerge(const RenderItem * lhs, const RenderItem * rhs,  double ratio) const {
 
 		RenderItemMergeFunction * mergeFunction;
 
@@ -215,7 +224,7 @@ protected:
 		// If specialized mergeFunction exists, use it to get higher granularity
 		// of correctness
 		if (mergeFunction)
-			(*mergeFunction)(lhs, rhs, renderItem, ratio);
+			return (*mergeFunction)(lhs, rhs, ratio);
 
 	}
 

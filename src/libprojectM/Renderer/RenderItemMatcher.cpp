@@ -17,15 +17,16 @@ double RenderItemMatcher::computeMatching(const RenderItemList & lhs, const Rend
 
 
 
-void RenderItemMatcher::setMatches(RenderItemMatchList & dest, const RenderItemList & lhs_src, const RenderItemList & rhs_src) const {
+void RenderItemMatcher::setMatches
+	(const RenderItemList & lhs_src, const RenderItemList & rhs_src) const {
 
 	  for (int i = 0; i < lhs_src.size();i++) {
 		const int j = _hungarianMethod.matching(i);
 		if (_weights[i][j] == RenderItemDistanceMetric::NOT_COMPARABLE_VALUE) {
- 		    dest.push_back(std::make_pair(lhs_src[i], lhs_src[i]));
-		    dest.push_back(std::make_pair(rhs_src[j], rhs_src[j]));
+ 			_results.unmatchedLeft.push_back(lhs_src[i]);
+			_results.unmatchedRight.push_back(rhs_src[i]);
 		} else {
-		    dest.push_back(std::make_pair(lhs_src[i], rhs_src[j]));
+		    _results.matches.push_back(std::make_pair(lhs_src[i], rhs_src[j]));
 		}
 	  }
 }
