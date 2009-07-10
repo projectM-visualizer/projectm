@@ -6,6 +6,7 @@
 #include <algorithm>
 #include "InitCondUtils.hpp"
 #include <sstream>
+#include <stdio.h>
 #include "Common.hpp"
 
 BuiltinParams::BuiltinParams() {}

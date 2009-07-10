@@ -54,6 +54,17 @@ inline TypeIdPair typeIdPair() const {
 };
 
 
+float interpolate(float a, float b, float ratio)
+{
+    return (ratio*a + (1-ratio)*b) * 0.5;
+}
+
+int interpolate(int a, int b, float ratio)
+{
+    return (int)(ratio*(float)a + (1-ratio)*(float)b) * 0.5;
+}
+
+
 /// EXAMPLE ONLY!!!
 class ShapeXYMerge : public RenderItemMerge<Shape> {
 
@@ -66,9 +77,38 @@ protected:
 
 	virtual inline void computeMerge(const Shape * lhs, const Shape * rhs, Shape * target, double ratio) const {
 
-	    target->x = (ratio*lhs->x + (1-ratio)*rhs->x)/2;
-	    target->y = (ratio*lhs->y + (1-ratio)*rhs->y)/2;
-	    return shape;
+	    target->x = interpolate(lhs->x, rhs->x, ratio);
+        target->y = interpolate(lhs->y, rhs->y, ratio);
+	    target->a = interpolate(lhs->a, rhs->a, ratio);
+        target->a2 = interpolate(lhs->a2, rhs->a2, ratio);
+        target->r = interpolate(lhs->r, rhs->r, ratio);
+        target->r2 = interpolate(lhs->r2, rhs->r2, ratio);
+        target->g = interpolate(lhs->g, rhs->g, ratio);
+        target->g2 = interpolate(lhs->g2, rhs->g2, ratio);
+        target->b = interpolate(lhs->b, rhs->b, ratio);
+        target->b2 = interpolate(lhs->b2, rhs->b2, ratio);
+
+        target->ang = interpolate(lhs->ang, rhs->ang, ratio);
+        target->radius = interpolate(lhs->radius, rhs->radius, ratio);
+
+        target->tex_ang = interpolate(lhs->tex_ang, rhs->tex_ang, ratio);
+        target->tex_zoom = interpolate(lhs->tex_zoom, rhs->tex_zoom, ratio);
+
+        target->border_a = interpolate(lhs->border_a, rhs->border_a, ratio);
+        target->border_r = interpolate(lhs->border_r, rhs->border_r, ratio);
+        target->border_g = interpolate(lhs->border_g, rhs->border_g, ratio);
+        target->border_b = interpolate(lhs->border_b, rhs->border_b, ratio);
+
+        target->sides = interpolate(lhs->sides, rhs->sides, ratio);
+
+        target->additive = interpolate(lhs->additive, rhs->additive, ratio);
+        target->textured = interpolate(lhs->textured, rhs->textured, ratio);
+        target->thickOutline = interpolate(lhs->thickOutline, rhs->thickOutline, ratio);
+
+        target->masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
+        target->imageUrl
+
+	    return;
 	}
 
 };
