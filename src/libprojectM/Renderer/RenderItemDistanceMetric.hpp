@@ -66,12 +66,12 @@ public:
 protected:
 	virtual inline double computeDistance(const RenderItem * lhs, const RenderItem * rhs) const {
 		if (typeid(*lhs) == typeid(*rhs)) {
-			std::cerr << typeid(*lhs).name() << " and " << typeid(*rhs).name() <<  "are comparable" << std::endl;
+			//std::cerr << typeid(*lhs).name() << " and " << typeid(*rhs).name() <<  "are comparable" << std::endl;
 
 			return 0.0;
 		}
 		else {
-			std::cerr << typeid(*lhs).name() << " and " << typeid(*rhs).name() <<  "not comparable" << std::endl;
+			//std::cerr << typeid(*lhs).name() << " and " << typeid(*rhs).name() <<  "not comparable" << std::endl;
 			return NOT_COMPARABLE_VALUE;
 		}
 	}

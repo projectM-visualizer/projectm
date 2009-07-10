@@ -11,7 +11,7 @@ double RenderItemMatcher::computeMatching(const RenderItemList & lhs, const Rend
 
 		
 		const double error = _hungarianMethod(_weights, lhs.size());
-		std::cout << "[computeMatching] total error is " << error << std::endl;
+		//std::cout << "[computeMatching] total error is " << error << std::endl;
 		return error;
 }
 
