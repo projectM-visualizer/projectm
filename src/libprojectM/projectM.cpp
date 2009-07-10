@@ -106,10 +106,18 @@ DLLEXPORT void projectM::projectM_resetTextures()
 DLLEXPORT  projectM::projectM ( std::string config_file, int flags) :
 		beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags), _pipelineContext(new PipelineContext())
 {
-	readConfig ( config_file );
+	readConfig(config_file);
 	projectM_reset();
-	projectM_resetGL ( _settings.windowWidth, _settings.windowHeight);
+	projectM_resetGL(_settings.windowWidth, _settings.windowHeight);
 
+}
+
+DLLEXPORT projectM::projectM(Settings settings, int flags):
+        beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags), _pipelineContext(new PipelineContext())
+{
+    readSettings(settings);
+    projectM_reset();
+    projectM_resetGL(_settings.windowWidth, _settings.windowHeight);
 }
 
 
@@ -209,6 +217,35 @@ void projectM::readConfig (const std::string & configFile )
 	else
 		_settings.aspectCorrection = renderer->correction = false;
 
+
+}
+
+
+void projectM::readSettings (const Settings & settings )
+{
+    _settings.meshX = settings.meshX;
+    _settings.meshY = settings.meshY;
+    _settings.textureSize = settings.textureSize;
+    _settings.fps = settings.fps;
+    _settings.windowWidth  = settings.windowWidth;
+    _settings.windowHeight = settings.windowHeight;
+    _settings.smoothPresetDuration = settings.smoothPresetDuration;
+    _settings.presetDuration = settings.presetDuration;
+
+
+    _settings.presetURL = settings.presetURL;
+    _settings.titleFontURL = settings.titleFontURL;
+    _settings.menuFontURL =  settings.menuFontURL;
+    _settings.shuffleEnabled = settings.shuffleEnabled;
+
+    _settings.easterEgg = settings.easterEgg;
+
+    projectM_init ( _settings.meshX, _settings.meshY, _settings.fps,
+                    _settings.textureSize, _settings.windowWidth,_settings.windowHeight);
+
+
+    _settings.beatSensitivity = settings.beatSensitivity;
+    _settings.aspectCorrection = settings.aspectCorrection;
 
 }
 
