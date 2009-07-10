@@ -372,7 +372,7 @@ DLLEXPORT void projectM::renderFrame()
 
 	assert(_matcher);
 	PipelineMerger::MergePipelines( m_activePreset->pipeline(),
-		m_activePreset2->pipeline(), pipeline, _matcher->matchResults().matches,
+		m_activePreset2->pipeline(), pipeline, _matcher->matchResults(),
 	*_merger, timeKeeper->SmoothRatio());
 
 	/// @bug not sure if this is correct

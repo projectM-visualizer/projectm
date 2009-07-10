@@ -2,7 +2,7 @@
 #include "RenderItemMatcher.hpp"
 #include "RenderItemMergeFunction.hpp"
 
-void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipeline & out, const RenderItemMatchList & matching, RenderItemMergeFunction & mergeFunction, float ratio)
+void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipeline & out, const RenderItemMatcher::MatchResults & results, RenderItemMergeFunction & mergeFunction, float ratio)
 {
 
 	double invratio = 1.0 - ratio;
@@ -12,7 +12,7 @@ void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipe
 	out.screenDecay = lerp( b.screenDecay, a.screenDecay, ratio);
 	out.drawables.clear();
 	
-	for (RenderItemMatchList::const_iterator pos = matching.begin(); pos != matching.end(); ++pos) {		
+	for (RenderItemMatchList::const_iterator pos = results.matches.begin(); pos != results.matches.end(); ++pos) {		
 				
 		const RenderItem * itemA = pos->first;
 		const RenderItem * itemB = pos->second;
@@ -22,15 +22,15 @@ void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipe
 		
 	}
 
-	for (std::vector<RenderItem*>::const_iterator pos = a.drawables.begin();
-		pos != a.drawables.end(); ++pos)
+	for (std::vector<RenderItem*>::const_iterator pos = results.unmatchedLeft.begin();
+		pos != results.unmatchedLeft.end(); ++pos)
 	    {
 	       (*pos)->masterAlpha = invratio;
 	       out.drawables.push_back(*pos);
 	    }
 
-	for (std::vector<RenderItem*>::const_iterator pos = b.drawables.begin();
-		pos != b.drawables.end(); ++pos)
+	for (std::vector<RenderItem*>::const_iterator pos = results.unmatchedRight.begin();
+		pos != results.unmatchedRight.end(); ++pos)
 		{
 		  (*pos)->masterAlpha = ratio;
 		   out.drawables.push_back(*pos);
