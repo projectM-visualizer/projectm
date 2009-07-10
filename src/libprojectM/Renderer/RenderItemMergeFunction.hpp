@@ -225,7 +225,8 @@ protected:
 		// of correctness
 		if (mergeFunction)
 			return (*mergeFunction)(lhs, rhs, ratio);
-
+		else
+			return 0;
 	}
 
 private:
