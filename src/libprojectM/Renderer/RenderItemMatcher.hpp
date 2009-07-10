@@ -14,7 +14,7 @@
 #include <iostream>
 #include "HungarianMethod.hpp"
 
-typedef std::vector<std::pair<const RenderItem*, const RenderItem*> > RenderItemMatchList;
+typedef std::vector<std::pair<RenderItem*, RenderItem*> > RenderItemMatchList;
 
 class MatchResults;
 
@@ -53,7 +53,7 @@ struct MatchResults {
 	RenderItemMatcher() {}
 	virtual ~RenderItemMatcher() {}
 
-	inline const MatchResults & matchResults() { return _results; }
+	inline MatchResults & matchResults() { return _results; }
 
 	inline double weight(int i, int j) const { return _weights[i][j]; }
 
