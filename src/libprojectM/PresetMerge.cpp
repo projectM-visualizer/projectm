@@ -1,21 +1,25 @@
 #include "PresetMerge.hpp"
 #include "RenderItemMatcher.hpp"
+#include "RenderItemMergeFunction.hpp"
 
-
-void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipeline & out, RenderItemMatcher & matcher, float ratio)
+void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipeline & out, const RenderItemMatchList & matching, RenderItemMergeFunction & mergeFunction, float ratio)
 {
 
 	double invratio = 1.0 - ratio;
 
 	out.textureWrap = (ratio < 0.5) ? a.textureWrap : b.textureWrap;
 
-	out.screenDecay =lerp( b.screenDecay, a.screenDecay, ratio);
+	out.screenDecay = lerp( b.screenDecay, a.screenDecay, ratio);
 	out.drawables.clear();
+	
+	for (RenderItemMatchList::const_iterator pos = matching.begin(); pos != matching.end(); ++pos) {		
+		
 
-	RenderItemMatcher::MatchResults results =  matcher(a.drawables, b.drawables);
-	for (int i = 0; i < a.drawables.size();i++)
-		for (int j = 0; j < b.drawables.size();j++)
-			std::cerr << "[" << i << "][" << j << "]" << matcher.weight(i,j) << std::endl;
+		const RenderItem * itemA = pos->first;
+		const RenderItem * itemB = pos->second;
+				
+		//mergeFunction(itemA, itemB, out, ratio);
+	}
 
 	for (std::vector<RenderItem*>::const_iterator pos = a.drawables.begin();
 		pos != a.drawables.end(); ++pos)

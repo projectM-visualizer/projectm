@@ -1,7 +1,7 @@
 //
 // C++ Implementation: MilkdropPresetFactory
 //
-// Description: 
+// Description:
 //
 //
 // Author: Carmelo Piccione <carmelo.piccione@gmail.com>, (C) 2008
@@ -22,8 +22,8 @@ MilkdropPresetFactory::MilkdropPresetFactory(int gx, int gy) {
 	BuiltinFuncs::init_builtin_func_db();
 
 	/* Initializes all infix operators */
-	Eval::init_infix_ops();	
-	
+	Eval::init_infix_ops();
+
 	initializePresetOutputs(gx,gy);
 }
 
@@ -31,12 +31,12 @@ MilkdropPresetFactory::~MilkdropPresetFactory() {
 
 	std::cerr << "[~MilkdropPresetFactory] destroy infix ops" << std::endl;
 	Eval::destroy_infix_ops();
-	std::cerr << "[~MilkdropPresetFactory] destroy builtin func" << std::endl;	
+	std::cerr << "[~MilkdropPresetFactory] destroy builtin func" << std::endl;
 	BuiltinFuncs::destroy_builtin_func_db();
 	std::cerr << "[~MilkdropPresetFactory] delete preset out puts" << std::endl;
 	delete(_presetOutputs);
 	std::cerr << "[~MilkdropPresetFactory] done" << std::endl;
-	
+
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
@@ -86,7 +86,7 @@ void MilkdropPresetFactory::reset()
 	_presetOutputs->mv.x_offset = 0.02;
 	_presetOutputs->mv.y_offset = 0.02;
 
-	
+
 	/* PER_FRAME CONSTANTS END */
 	_presetOutputs->fRating = 0;
 	_presetOutputs->fGammaAdj = 1.0;
@@ -121,7 +121,7 @@ void MilkdropPresetFactory::reset()
 	/* PER_PIXEL CONSTANT END */
 	/* Q VARIABLES START */
 
-	for (int i = 0;i<32;i++)
+	for (int i = 0;i< 32;i++)
 		_presetOutputs->q[i] = 0;
 
 	/* Q VARIABLES END */
@@ -197,7 +197,7 @@ std::auto_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url, c
 
 	std::string path;
 	if (PresetFactory::protocol(url, path) == PresetFactory::IDLE_PRESET_PROTOCOL) {
-		return IdlePresets::allocate(path, *_presetOutputs);	
+		return IdlePresets::allocate(path, *_presetOutputs);
 	} else
 		return std::auto_ptr<Preset>(new MilkdropPreset(url, name, *_presetOutputs));
 }

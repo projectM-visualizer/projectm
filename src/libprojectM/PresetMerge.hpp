@@ -3,6 +3,7 @@
 #include "Preset.hpp"
 #include "Pipeline.hpp"
 #include "RenderItemMatcher.hpp"
+#include "RenderItemMergeFunction.hpp"
 
 class PipelineMerger
 {
@@ -12,7 +13,8 @@ class PipelineMerger
 }
 
 public:
-  static void MergePipelines(const Pipeline &a,  const Pipeline &b, Pipeline &out, RenderItemMatcher & matcher, float ratio);
+  static void MergePipelines(const Pipeline &a,  const Pipeline &b, Pipeline &out, 
+	const RenderItemMatchList & matching, RenderItemMergeFunction & merger, float ratio);
 };
 
 

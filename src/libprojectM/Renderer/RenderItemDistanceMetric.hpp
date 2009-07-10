@@ -35,7 +35,7 @@ virtual double computeDistance(const R1 * r1, const R2 * r2) const = 0;
 
 public:
 
-inline virtual double  operator()(const RenderItem * r1, const RenderItem * r2) const {
+inline virtual double operator()(const RenderItem * r1, const RenderItem * r2) const {
 	if (supported(r1, r2))
 		return computeDistance(dynamic_cast<const R1*>(r1), dynamic_cast<const R2*>(r2));
 	else if (supported(r2,r1))
