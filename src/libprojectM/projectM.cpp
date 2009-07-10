@@ -373,13 +373,13 @@ DLLEXPORT void projectM::renderFrame()
 	assert(_matcher);
 	PipelineMerger::MergePipelines( m_activePreset->pipeline(),
 		m_activePreset2->pipeline(), pipeline, _matcher->matchResults(),
-	*_merger, timeKeeper->SmoothRatio());
+	*_merger, 1.0 - timeKeeper->SmoothRatio());
 
 	/// @bug not sure if this is correct
 	renderer->RenderFrame(pipeline, pipelineContext());
-	
+
 	for (int i = 0; i < _matcher->matchResults().matches.size(); i++) {
-		delete(pipeline.drawables[i]);		
+		delete(pipeline.drawables[i]);
 	}
 	pipeline.drawables.clear();
 	}
