@@ -13,12 +13,13 @@ void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipe
 	out.drawables.clear();
 	
 	for (RenderItemMatchList::const_iterator pos = matching.begin(); pos != matching.end(); ++pos) {		
-		
-
+				
 		const RenderItem * itemA = pos->first;
 		const RenderItem * itemB = pos->second;
-				
-		//mergeFunction(itemA, itemB, out, ratio);
+
+		RenderItem * itemC = mergeFunction(itemA, itemB, ratio);
+		out.drawables.push_back(itemC);
+		
 	}
 
 	for (std::vector<RenderItem*>::const_iterator pos = a.drawables.begin();
