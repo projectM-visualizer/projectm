@@ -378,8 +378,8 @@ DLLEXPORT void projectM::renderFrame()
 	/// @bug not sure if this is correct
 	renderer->RenderFrame(pipeline, pipelineContext());
 
-	for (int i = 0; i < _matcher->matchResults().matches.size(); i++) {
-		delete(pipeline.drawables[i]);
+	for (int i = 0; i < _matcher->matchResults().matches.size(); i++) {		
+		//delete(pipeline.drawables[i]);
 	}
 	pipeline.drawables.clear();
 	}
