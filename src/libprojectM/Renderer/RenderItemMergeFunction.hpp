@@ -122,6 +122,34 @@ protected:
 	}
 };
 
+class BorderMerge : public RenderItemMerge<Border> {
+
+    public:
+
+        BorderMerge() {}
+        virtual ~BorderMerge() {}
+
+    protected:
+
+        virtual inline void computeMerge(const Border * lhs, const Border * rhs, Border * target, double ratio) const
+        {
+            target->inner_a = interpolate(lhs->inner_a, rhs->inner_a, ratio);
+            target->inner_r = interpolate(lhs->inner_r, rhs->inner_r, ratio);
+            target->inner_g = interpolate(lhs->inner_g, rhs->inner_g, ratio);
+            target->inner_b = interpolate(lhs->inner_b, rhs->inner_b, ratio);
+            target->inner_size = interpolate(lhs->inner_size, rhs->inner_size, ratio);
+
+            target->outer_a = interpolate(lhs->outer_a, rhs->outer_a, ratio);
+            target->outer_r = interpolate(lhs->outer_r, rhs->outer_r, ratio);
+            target->outer_g = interpolate(lhs->outer_g, rhs->outer_g, ratio);
+            target->outer_b = interpolate(lhs->outer_b, rhs->outer_b, ratio);
+            target->outer_size = interpolate(lhs->outer_size, rhs->outer_size, ratio);
+
+            target->masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
+
+            return;
+        }
+};
 
 class WaveformMerge : public RenderItemMerge<Waveform> {
 
