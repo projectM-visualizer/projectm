@@ -22,7 +22,9 @@ void RenderItemMatcher::setMatches
 
 	  for (int i = 0; i < lhs_src.size();i++) {
 		const int j = _hungarianMethod.matching(i);
-		if (_weights[i][j] == RenderItemDistanceMetric::NOT_COMPARABLE_VALUE) {
+
+		// hack
+		if (true || _weights[i][j] == RenderItemDistanceMetric::NOT_COMPARABLE_VALUE) {
  			_results.unmatchedLeft.push_back(lhs_src[i]);
 			_results.unmatchedRight.push_back(rhs_src[i]);
 		} else {
