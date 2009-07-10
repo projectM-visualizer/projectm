@@ -54,7 +54,7 @@
 #include "ConfigFile.h"
 #include "TextureManager.hpp"
 #include "TimeKeeper.hpp"
-
+#include "RenderItemMergeFunction.hpp"
 #ifdef USE_THREADS
 #include "pthread.h"
 #endif
@@ -584,6 +584,11 @@ int projectM::initPresetTools(int gx, int gy)
 
 	_matcher = new RenderItemMatcher();
 	_merger = new MasterRenderItemMerge();
+	//_merger->add(new WaveFormMergeFunction());
+	_merger->add(new ShapeMerge());
+	_merger->add(new BorderMerge());
+	//_merger->add(new BorderMergeFunction());
+
 	/// @bug These should be requested by the preset factories.
 	_matcher->distanceFunction().addMetric(new ShapeXYDistance());
 

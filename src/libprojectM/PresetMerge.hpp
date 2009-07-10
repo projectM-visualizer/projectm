@@ -14,7 +14,7 @@ class PipelineMerger
 
 public:
   static void MergePipelines(const Pipeline &a,  const Pipeline &b, Pipeline &out, 
-	const RenderItemMatcher::MatchResults & matching, RenderItemMergeFunction & merger, float ratio);
+	RenderItemMatcher::MatchResults & matching, RenderItemMergeFunction & merger, float ratio);
 };
 
 

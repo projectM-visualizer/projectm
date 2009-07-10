@@ -2,7 +2,7 @@
 #include "RenderItemMatcher.hpp"
 #include "RenderItemMergeFunction.hpp"
 
-void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipeline & out, const RenderItemMatcher::MatchResults & results, RenderItemMergeFunction & mergeFunction, float ratio)
+void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipeline & out, RenderItemMatcher::MatchResults & results, RenderItemMergeFunction & mergeFunction, float ratio)
 {
 
 	double invratio = 1.0 - ratio;
@@ -12,13 +12,21 @@ void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipe
 	out.screenDecay = lerp( b.screenDecay, a.screenDecay, ratio);
 	out.drawables.clear();
 	
-	for (RenderItemMatchList::const_iterator pos = results.matches.begin(); pos != results.matches.end(); ++pos) {		
+
+	for (RenderItemMatchList::iterator pos = results.matches.begin(); pos != results.matches.end(); ++pos) {		
 				
-		const RenderItem * itemA = pos->first;
-		const RenderItem * itemB = pos->second;
+		RenderItem * itemA = pos->first;
+		RenderItem * itemB = pos->second;
 
 		RenderItem * itemC = mergeFunction(itemA, itemB, ratio);
-		out.drawables.push_back(itemC);
+
+		if (itemC == 0) {
+			itemA->masterAlpha = ratio;
+	        	out.drawables.push_back(itemA);
+			itemB->masterAlpha = invratio;
+	        	out.drawables.push_back(itemB);
+		} else 
+			out.drawables.push_back(itemC);
 		
 	}
 
