@@ -10,6 +10,7 @@
 
 #include "Common.hpp"
 #include "Renderable.hpp"
+#include "Waveform.hpp"
 #include <limits>
 #include <functional>
 #include <map>
@@ -64,14 +65,18 @@ int interpolate(int a, int b, float ratio)
     return (int)(ratio*(float)a + (1-ratio)*(float)b) * 0.5;
 }
 
+int interpolate(bool a, bool b, float ratio)
+{
+    return (ratio >= 0.5) ? a : b;
+}
 
-/// EXAMPLE ONLY!!!
-class ShapeXYMerge : public RenderItemMerge<Shape> {
+
+class ShapeMerge : public RenderItemMerge<Shape> {
 
 public:
 
-	ShapeXYMerge() {}
-	virtual ~ShapeXYMerge() {}
+	ShapeMerge() {}
+	virtual ~ShapeMerge() {}
 
 protected:
 
@@ -104,13 +109,39 @@ protected:
         target->additive = interpolate(lhs->additive, rhs->additive, ratio);
         target->textured = interpolate(lhs->textured, rhs->textured, ratio);
         target->thickOutline = interpolate(lhs->thickOutline, rhs->thickOutline, ratio);
+        target->enabled = interpolate(lhs->enabled, rhs->enabled, ratio);
 
         target->masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
-        target->imageUrl
+        target->imageUrl = (ratio > 0.5) ? lhs->imageUrl : rhs->imageUrl, ratio;
 
 	    return;
 	}
+};
 
+
+class WaveformMerge : public RenderItemMerge<Waveform> {
+
+    public:
+
+        WaveformMerge() {}
+        virtual ~WaveformMerge() {}
+
+    protected:
+
+        virtual inline void computeMerge(const Waveform * lhs, const Waveform * rhs, Waveform * target, double ratio) const
+        {
+            target->additive = interpolate(lhs->additive, rhs->additive, ratio);
+            target->dots = interpolate(lhs->dots, rhs->dots, ratio);
+            target->samples = (rhs->samples > lhs-> samples) ? lhs->samples : rhs->samples;
+            target->scaling = interpolate(lhs->scaling, rhs->scaling, ratio);
+            target->sep = interpolate(lhs->sep, rhs->sep, ratio);
+            target->smoothing = interpolate(lhs->smoothing, rhs->smoothing, ratio);
+            target->spectrum = interpolate(lhs->spectrum, rhs->spectrum, ratio);
+            target->thick = interpolate(lhs->thick, rhs->thick, ratio);
+            target->masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
+
+            return;
+        }
 };
 
 
