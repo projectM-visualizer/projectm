@@ -64,7 +64,6 @@
 #include "pthread.h"
 class PipelineContext;
 
-//#include "PipelineContext.hpp"
 #include <memory>
 
 class BeatDetect;
@@ -120,7 +119,26 @@ public:
 	static const int FLAG_NONE = 0;
 	static const int FLAG_DISABLE_PLAYLIST_LOAD = 1 << 0;
 
+    struct Settings {
+        int meshX;
+        int meshY;
+        int fps;
+        int textureSize;
+        int windowWidth;
+        int windowHeight;
+        std::string presetURL;
+        std::string titleFontURL;
+        std::string menuFontURL;
+        int smoothPresetDuration;
+        int presetDuration;
+        float beatSensitivity;
+        bool aspectCorrection;
+        float easterEgg;
+        bool shuffleEnabled;
+    };
+
   DLLEXPORT projectM(std::string config_file, int flags = FLAG_NONE);
+  DLLEXPORT projectM(Settings settings, int flags = FLAG_NONE);
 
   //DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url,std::string title_fonturl, std::string title_menuurl);
 
@@ -135,23 +153,7 @@ public:
   DLLEXPORT virtual ~projectM();
 
 
-  struct Settings {
-	int meshX;
-	int meshY;
-	int fps;
-	int textureSize;
-	int windowWidth;
-	int windowHeight;
-	std::string presetURL;
-	std::string titleFontURL;
-	std::string menuFontURL;
-	int smoothPresetDuration;
-	int presetDuration;
-	float beatSensitivity;
-	bool aspectCorrection;
-	float easterEgg;
-	bool shuffleEnabled;
-  };
+
 
 
   DLLEXPORT const Settings & settings() const {
@@ -267,7 +269,8 @@ private:
   int count;
   float fpsstart;
 
-  void readConfig(const std::string & configFile);
+  void readConfig(const std::string &configFile);
+  void readSettings(const Settings &settings);
   void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
   void projectM_reset();
 
