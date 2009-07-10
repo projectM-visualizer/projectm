@@ -209,6 +209,7 @@ inline double meanSquaredError(const double & x, const double & y) {
 		return (x-y)*(x-y);
 }
 
+
 #endif
 
 

@@ -20,6 +20,7 @@
  */
 
 #include "RenderItemMatcher.hpp"
+#include "RenderItemMergeFunction.hpp"
 #include "fatal.h"
 #include "Common.hpp"
 
@@ -320,19 +321,23 @@ DLLEXPORT void projectM::renderFrame()
 		{
 
 			timeKeeper->StartSmoothing();
-			//	printf("Start Smooth\n");
-			// if(timeKeeper->IsSmoothing())printf("Confirmed\n");
 			switchPreset(m_activePreset2);
+
+			// Compute best matching between the render items.
+			(*_matcher)(m_activePreset.get()->pipeline().drawables,
+				m_activePreset2.get()->pipeline().drawables);
+
 			presetSwitchedEvent(false, **m_presetPos);
 		}
 
-		else if ( ( beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) && timeKeeper->CanHardCut() )
+		else if ((beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) &&
+			 timeKeeper->CanHardCut())
 		{
 		  	// printf("Hard Cut\n");
 
 			switchPreset(m_activePreset);
 
-			//switchPreset(m_activePreset, presetInputs, presetOutputs);
+			//fz(m_activePreset, presetInputs, presetOutputs);
 
 			timeKeeper->StartPreset();
 			presetSwitchedEvent(true, **m_presetPos);
@@ -344,7 +349,6 @@ DLLEXPORT void projectM::renderFrame()
 	{
 
 	  //	 printf("start thread\n");
-
 		assert ( m_activePreset.get() );
 
 #ifdef USE_THREADS
@@ -359,23 +363,21 @@ DLLEXPORT void projectM::renderFrame()
 		evaluateSecondPreset();
 #endif
 
-	//PresetMerger::MergePresets ( m_activePreset->presetOutputs(),m_activePreset2->presetOutputs(),
-	//	timeKeeper->SmoothRatio(),presetInputs.gx, presetInputs.gy );
+	//PresetMerger::MergePresets(m_activePreset->presetOutputs(), m_activePreset2->presetOutputs(),
+	//	timeKeeper->SmoothRatio(), presetInputs.gx, presetInputs.gy);
 
+	Pipeline pipeline;
 
+	pipeline.setStaticPerPixel(settings().meshX, settings().meshY);
 
-Pipeline pipeline;
+	assert(_matcher);
+	PipelineMerger::MergePipelines( m_activePreset->pipeline(),
+		m_activePreset2->pipeline(), pipeline, _matcher->matchResults().matches,
+	*_merger, timeKeeper->SmoothRatio());
 
-pipeline.setStaticPerPixel(settings().meshX, settings().meshY);
+	/// @bug not sure if this is correct
+	renderer->RenderFrame(pipeline, pipelineContext());
 
-
-assert(_matcher);
-PipelineMerger::MergePipelines( m_activePreset->pipeline(),m_activePreset2->pipeline(), pipeline, *_matcher, timeKeeper->SmoothRatio());
-
-/// @bug not sure if this is correct
-renderer->RenderFrame(pipeline, pipelineContext());
-
-//renderer->RenderFrame ( pipeline, presetInputs );
 	}
 	else
 	{
@@ -468,6 +470,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	running = true;
 
 	initPresetTools(gx, gy);
+	
 
 #ifdef USE_THREADS
 	pthread_mutex_init(&mutex, NULL);
@@ -569,13 +572,15 @@ int projectM::initPresetTools(int gx, int gy)
 
 	// Case where no valid presets exist in directory. Could also mean
 	// playlist initialization was deferred
-	if ( m_presetChooser->empty() )
+	if (m_presetChooser->empty())
 	{
 		std::cerr << "[projectM] warning: no valid files found in preset directory \""
 		<< m_presetLoader->directoryName() << "\"" << std::endl;
 	}
 
 	_matcher = new RenderItemMatcher();
+	_merger = new MasterRenderItemMerge();
+	/// @bug These should be requested by the preset factories.
 	_matcher->distanceFunction().addMetric(new ShapeXYDistance());
 
 	//std::cerr << "[projectM] Idle preset allocated." << std::endl;

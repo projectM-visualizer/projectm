@@ -33,9 +33,9 @@ struct MatchResults {
 	/// @param lhs the "left-hand side" list of render items.
 	/// @param rhs the "right-hand side" list of render items.
 	/// @returns a list of match pairs, possibly self referencing, and an error estimate of the matching.
-	inline virtual MatchResults operator()(const RenderItemList & lhs, const RenderItemList & rhs) const {
+	inline virtual void operator()(const RenderItemList & lhs, const RenderItemList & rhs) const {
 		
-		 MatchResults results;
+		MatchResults & results = _results;
 
 		// Ensure the first argument is greater than next to aid the helper function's logic.
 		if (lhs.size() >= rhs.size()) {
@@ -45,12 +45,14 @@ struct MatchResults {
 		  results.error = computeMatching(rhs, lhs);
 		  setMatches(results.matches, rhs, lhs);
 		}
-		return results;
+		
 	
 	}
 
 	RenderItemMatcher() {}
 	virtual ~RenderItemMatcher() {}
+
+	inline const MatchResults & matchResults() { return _results; }
 
 	inline double weight(int i, int j) const { return _weights[i][j]; }
 
@@ -60,11 +62,11 @@ private:
 	mutable HungarianMethod<MAXIMUM_SET_SIZE> _hungarianMethod;
 	mutable double _weights[MAXIMUM_SET_SIZE][MAXIMUM_SET_SIZE];
 
+	mutable MatchResults _results;
 
 	/// @idea interface this entirely allow overriding of its type.
 	mutable MasterRenderItemDistance _distanceFunction;
 	
-
 	double computeMatching(const RenderItemList & lhs, const RenderItemList & rhs) const;
 
 	void setMatches(RenderItemMatchList & dest, const RenderItemList & lhs_src, const RenderItemList & rhs_src) const;
