@@ -15,6 +15,26 @@
 #include <functional>
 #include <map>
 
+
+template <class T>
+inline T interpolate(T a, T b, float ratio)
+{
+    return (ratio*a + (1-ratio)*b) * 0.5;
+}
+
+template <>
+inline int interpolate(int a, int b, float ratio)
+{
+    return (int)(ratio*(float)a + (1-ratio)*(float)b) * 0.5;
+}
+
+template <>
+inline bool interpolate(bool a, bool b, float ratio)
+{
+    return (ratio >= 0.5) ? a : b;
+}
+
+
 /// Merges two render items and returns zero if they are virtually equivalent and large values
 /// when they are dissimilar. If two render items cannot be compared, NOT_COMPARABLE_VALUE is returned.
 class RenderItemMergeFunction {
@@ -36,9 +56,9 @@ public:
 
 inline virtual void operator()(const RenderItem * r1, const RenderItem * r2, RenderItem * r3, double ratio) const {
 	if (supported(r1, r2))
-		return computeMerge(dynamic_cast<const R1*>(r1), dynamic_cast<const R2*>(r2), dynamic_cast<const R3*>(r3));
+		return computeMerge(dynamic_cast<const R1*>(r1), dynamic_cast<const R2*>(r2), dynamic_cast<R3*>(r3), ratio);
 	else if (supported(r2,r1))
-		return computeMerge(dynamic_cast<const R1*>(r2), dynamic_cast<const R2*>(r1), dynamic_cast<const R3*>(r3));
+		return computeMerge(dynamic_cast<const R1*>(r2), dynamic_cast<const R2*>(r1), dynamic_cast<R3*>(r3), ratio);
 	else
 		return;
 }
@@ -55,22 +75,6 @@ inline TypeIdPair typeIdPair() const {
 };
 
 
-float interpolate(float a, float b, float ratio)
-{
-    return (ratio*a + (1-ratio)*b) * 0.5;
-}
-
-int interpolate(int a, int b, float ratio)
-{
-    return (int)(ratio*(float)a + (1-ratio)*(float)b) * 0.5;
-}
-
-int interpolate(bool a, bool b, float ratio)
-{
-    return (ratio >= 0.5) ? a : b;
-}
-
-
 class ShapeMerge : public RenderItemMerge<Shape> {
 
 public:
@@ -82,9 +86,9 @@ protected:
 
 	virtual inline void computeMerge(const Shape * lhs, const Shape * rhs, Shape * target, double ratio) const {
 
-	    target->x = interpolate(lhs->x, rhs->x, ratio);
+	target->x = interpolate(lhs->x, rhs->x, ratio);
         target->y = interpolate(lhs->y, rhs->y, ratio);
-	    target->a = interpolate(lhs->a, rhs->a, ratio);
+	target->a = interpolate(lhs->a, rhs->a, ratio);
         target->a2 = interpolate(lhs->a2, rhs->a2, ratio);
         target->r = interpolate(lhs->r, rhs->r, ratio);
         target->r2 = interpolate(lhs->r2, rhs->r2, ratio);
@@ -114,7 +118,7 @@ protected:
         target->masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
         target->imageUrl = (ratio > 0.5) ? lhs->imageUrl : rhs->imageUrl, ratio;
 
-	    return;
+	return;
 	}
 };
 
@@ -177,9 +181,8 @@ protected:
 		// If specialized mergeFunction exists, use it to get higher granularity
 		// of correctness
 		if (mergeFunction)
-			renderItem = (*mergeFunction)(lhs, rhs, ratio);
-		else
-			renderItem = 0;
+			(*mergeFunction)(lhs, rhs, renderItem, ratio);
+
 	}
 
 private:

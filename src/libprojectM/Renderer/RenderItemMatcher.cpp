@@ -9,6 +9,7 @@ double RenderItemMatcher::computeMatching(const RenderItemList & lhs, const Rend
 				_weights[i][j] = RenderItemDistanceMetric::NOT_COMPARABLE_VALUE;
 		}
 
+		
 		const double error = _hungarianMethod(_weights, lhs.size());
 		std::cout << "[computeMatching] total error is " << error << std::endl;
 		return error;

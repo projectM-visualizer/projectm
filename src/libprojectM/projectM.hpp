@@ -77,6 +77,7 @@ class PresetLoader;
 class TimeKeeper;
 class Pipeline;
 class RenderItemMatcher;
+class MasterRenderItemMerge;
 
 #include <memory>
 #ifdef WIN32
@@ -304,7 +305,7 @@ private:
   int m_flags;
 
   RenderItemMatcher * _matcher;
-
+  MasterRenderItemMerge * _merger;
   pthread_mutex_t mutex;
   pthread_cond_t  condition;
   pthread_t thread;
