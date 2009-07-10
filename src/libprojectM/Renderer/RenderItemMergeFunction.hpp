@@ -84,41 +84,43 @@ public:
 
 protected:
 
-	virtual inline void computeMerge(const Shape * lhs, const Shape * rhs, Shape * target, double ratio) const {
+	virtual inline Shape computeMerge(const Shape * lhs, const Shape * rhs, double ratio) const {
 
-	target->x = interpolate(lhs->x, rhs->x, ratio);
-        target->y = interpolate(lhs->y, rhs->y, ratio);
-	target->a = interpolate(lhs->a, rhs->a, ratio);
-        target->a2 = interpolate(lhs->a2, rhs->a2, ratio);
-        target->r = interpolate(lhs->r, rhs->r, ratio);
-        target->r2 = interpolate(lhs->r2, rhs->r2, ratio);
-        target->g = interpolate(lhs->g, rhs->g, ratio);
-        target->g2 = interpolate(lhs->g2, rhs->g2, ratio);
-        target->b = interpolate(lhs->b, rhs->b, ratio);
-        target->b2 = interpolate(lhs->b2, rhs->b2, ratio);
+    Shape target;
 
-        target->ang = interpolate(lhs->ang, rhs->ang, ratio);
-        target->radius = interpolate(lhs->radius, rhs->radius, ratio);
+	target.x = interpolate(lhs->x, rhs->x, ratio);
+        target.y = interpolate(lhs->y, rhs->y, ratio);
+	target.a = interpolate(lhs->a, rhs->a, ratio);
+        target.a2 = interpolate(lhs->a2, rhs->a2, ratio);
+        target.r = interpolate(lhs->r, rhs->r, ratio);
+        target.r2 = interpolate(lhs->r2, rhs->r2, ratio);
+        target.g = interpolate(lhs->g, rhs->g, ratio);
+        target.g2 = interpolate(lhs->g2, rhs->g2, ratio);
+        target.b = interpolate(lhs->b, rhs->b, ratio);
+        target.b2 = interpolate(lhs->b2, rhs->b2, ratio);
 
-        target->tex_ang = interpolate(lhs->tex_ang, rhs->tex_ang, ratio);
-        target->tex_zoom = interpolate(lhs->tex_zoom, rhs->tex_zoom, ratio);
+        target.ang = interpolate(lhs->ang, rhs->ang, ratio);
+        target.radius = interpolate(lhs->radius, rhs->radius, ratio);
 
-        target->border_a = interpolate(lhs->border_a, rhs->border_a, ratio);
-        target->border_r = interpolate(lhs->border_r, rhs->border_r, ratio);
-        target->border_g = interpolate(lhs->border_g, rhs->border_g, ratio);
-        target->border_b = interpolate(lhs->border_b, rhs->border_b, ratio);
+        target.tex_ang = interpolate(lhs->tex_ang, rhs->tex_ang, ratio);
+        target.tex_zoom = interpolate(lhs->tex_zoom, rhs->tex_zoom, ratio);
 
-        target->sides = interpolate(lhs->sides, rhs->sides, ratio);
+        target.border_a = interpolate(lhs->border_a, rhs->border_a, ratio);
+        target.border_r = interpolate(lhs->border_r, rhs->border_r, ratio);
+        target.border_g = interpolate(lhs->border_g, rhs->border_g, ratio);
+        target.border_b = interpolate(lhs->border_b, rhs->border_b, ratio);
 
-        target->additive = interpolate(lhs->additive, rhs->additive, ratio);
-        target->textured = interpolate(lhs->textured, rhs->textured, ratio);
-        target->thickOutline = interpolate(lhs->thickOutline, rhs->thickOutline, ratio);
-        target->enabled = interpolate(lhs->enabled, rhs->enabled, ratio);
+        target.sides = interpolate(lhs->sides, rhs->sides, ratio);
 
-        target->masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
-        target->imageUrl = (ratio > 0.5) ? lhs->imageUrl : rhs->imageUrl, ratio;
+        target.additive = interpolate(lhs->additive, rhs->additive, ratio);
+        target.textured = interpolate(lhs->textured, rhs->textured, ratio);
+        target.thickOutline = interpolate(lhs->thickOutline, rhs->thickOutline, ratio);
+        target.enabled = interpolate(lhs->enabled, rhs->enabled, ratio);
 
-	return;
+        target.masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
+        target.imageUrl = (ratio > 0.5) ? lhs->imageUrl : rhs->imageUrl, ratio;
+
+        return target;
 	}
 };
 
@@ -131,23 +133,25 @@ class BorderMerge : public RenderItemMerge<Border> {
 
     protected:
 
-        virtual inline void computeMerge(const Border * lhs, const Border * rhs, Border * target, double ratio) const
+        virtual inline Border computeMerge(const Border * lhs, const Border * rhs, double ratio) const
         {
-            target->inner_a = interpolate(lhs->inner_a, rhs->inner_a, ratio);
-            target->inner_r = interpolate(lhs->inner_r, rhs->inner_r, ratio);
-            target->inner_g = interpolate(lhs->inner_g, rhs->inner_g, ratio);
-            target->inner_b = interpolate(lhs->inner_b, rhs->inner_b, ratio);
-            target->inner_size = interpolate(lhs->inner_size, rhs->inner_size, ratio);
+            Border target;
 
-            target->outer_a = interpolate(lhs->outer_a, rhs->outer_a, ratio);
-            target->outer_r = interpolate(lhs->outer_r, rhs->outer_r, ratio);
-            target->outer_g = interpolate(lhs->outer_g, rhs->outer_g, ratio);
-            target->outer_b = interpolate(lhs->outer_b, rhs->outer_b, ratio);
-            target->outer_size = interpolate(lhs->outer_size, rhs->outer_size, ratio);
+            target.inner_a = interpolate(lhs->inner_a, rhs->inner_a, ratio);
+            target.inner_r = interpolate(lhs->inner_r, rhs->inner_r, ratio);
+            target.inner_g = interpolate(lhs->inner_g, rhs->inner_g, ratio);
+            target.inner_b = interpolate(lhs->inner_b, rhs->inner_b, ratio);
+            target.inner_size = interpolate(lhs->inner_size, rhs->inner_size, ratio);
 
-            target->masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
+            target.outer_a = interpolate(lhs->outer_a, rhs->outer_a, ratio);
+            target.outer_r = interpolate(lhs->outer_r, rhs->outer_r, ratio);
+            target.outer_g = interpolate(lhs->outer_g, rhs->outer_g, ratio);
+            target.outer_b = interpolate(lhs->outer_b, rhs->outer_b, ratio);
+            target.outer_size = interpolate(lhs->outer_size, rhs->outer_size, ratio);
 
-            return;
+            target.masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
+
+            return target;
         }
 };
 
@@ -160,19 +164,21 @@ class WaveformMerge : public RenderItemMerge<Waveform> {
 
     protected:
 
-        virtual inline void computeMerge(const Waveform * lhs, const Waveform * rhs, Waveform * target, double ratio) const
+        virtual inline Waveform computeMerge(const Waveform * lhs, const Waveform * rhs, double ratio) const
         {
-            target->additive = interpolate(lhs->additive, rhs->additive, ratio);
-            target->dots = interpolate(lhs->dots, rhs->dots, ratio);
-            target->samples = (rhs->samples > lhs-> samples) ? lhs->samples : rhs->samples;
-            target->scaling = interpolate(lhs->scaling, rhs->scaling, ratio);
-            target->sep = interpolate(lhs->sep, rhs->sep, ratio);
-            target->smoothing = interpolate(lhs->smoothing, rhs->smoothing, ratio);
-            target->spectrum = interpolate(lhs->spectrum, rhs->spectrum, ratio);
-            target->thick = interpolate(lhs->thick, rhs->thick, ratio);
-            target->masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
+            Waveform target;
 
-            return;
+            target.additive = interpolate(lhs->additive, rhs->additive, ratio);
+            target.dots = interpolate(lhs->dots, rhs->dots, ratio);
+            target.samples = (rhs->samples > lhs-> samples) ? lhs->samples : rhs->samples;
+            target.scaling = interpolate(lhs->scaling, rhs->scaling, ratio);
+            target.sep = interpolate(lhs->sep, rhs->sep, ratio);
+            target.smoothing = interpolate(lhs->smoothing, rhs->smoothing, ratio);
+            target.spectrum = interpolate(lhs->spectrum, rhs->spectrum, ratio);
+            target.thick = interpolate(lhs->thick, rhs->thick, ratio);
+            target.masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
+
+            return target;
         }
 };
 

@@ -16,7 +16,7 @@ class PresetIterator {
 public:
     PresetIterator()  {}
 
-    /// Instantiate a preset iterator at the given starting position 
+    /// Instantiate a preset iterator at the given starting position
     PresetIterator(std::size_t start);
 
     /// Move iterator forward
@@ -24,7 +24,7 @@ public:
 
     /// Move iterator backword
     void operator--() ;
- 
+
     /// Not equal comparator
     bool operator !=(const PresetIterator & presetPos) const ;
 
@@ -72,7 +72,7 @@ public:
     /// Gets the number of presets last believed to exist in the preset loader's filename collection
     /// \returns the number of presets in the collection
     std::size_t size() const;
- 
+
     /// An STL-esque iterator to begin traversing presets from a directory
     /// \param index the index to begin iterating at. Assumed valid between [0, num presets)
     /// \returns the position of the first preset in the collection
@@ -90,10 +90,10 @@ public:
     /// \returns an iterator to the randomly selected preset
     iterator weightedRandom() const;
 
-    /// True if no presets in directory 
+    /// True if no presets in directory
     bool empty() const;
 
-    
+
     inline void nextPreset(PresetIterator & presetPos);
 
 private:
@@ -146,10 +146,10 @@ inline void PresetChooser::nextPreset(PresetIterator & presetPos) {
 		if (this->empty()) {
 			return;
 		}
-		
+
 		// Case: idle preset currently running, selected first preset of chooser
-		else if (presetPos == this->end()) 
-			presetPos = this->begin();		 
+		else if (presetPos == this->end())
+			presetPos = this->begin();
 		else
 			++(presetPos);
 
@@ -157,7 +157,7 @@ inline void PresetChooser::nextPreset(PresetIterator & presetPos) {
 		if (((presetPos) == this->end())) {
 			presetPos = this->begin();
 		}
-		
+
 }
 
 inline PresetIterator PresetChooser::begin() {

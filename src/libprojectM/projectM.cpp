@@ -470,7 +470,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
 	running = true;
 
 	initPresetTools(gx, gy);
-	
+
 
 #ifdef USE_THREADS
 	pthread_mutex_init(&mutex, NULL);
