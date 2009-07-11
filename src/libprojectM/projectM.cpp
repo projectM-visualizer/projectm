@@ -43,7 +43,7 @@
 #include "projectM.hpp"
 #include "BeatDetect.hpp"
 #include "Preset.hpp"
-#include "PresetMerge.hpp"
+#include "PipelineMerge.hpp"
 //#include "menu.h"
 #include "PCM.hpp"                    //Sound data handler (buffering, FFT, etc.)
 

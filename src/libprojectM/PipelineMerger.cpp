@@ -1,4 +1,4 @@
-#include "PresetMerge.hpp"
+#include "PipelineMerger.hpp"
 #include "RenderItemMatcher.hpp"
 #include "RenderItemMergeFunction.hpp"
 

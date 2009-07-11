@@ -33,7 +33,7 @@ SET (GLEW_LINK_TARGETS GLEW)
 endif(USE_NATIVE_GLEW)
 
 SET(projectM_SOURCES projectM.cpp PCM.cpp Preset.cpp fftsg.cpp KeyHandler.cpp
-timer.cpp wipemalloc.cpp PresetLoader.cpp  PresetChooser.cpp PresetMerge.cpp ConfigFile.cpp  TimeKeeper.cpp PresetFactory.cpp PresetFactoryManager.cpp ${GLEW_SOURCES})
+timer.cpp wipemalloc.cpp PresetLoader.cpp  PresetChooser.cpp PipelineMerger.cpp ConfigFile.cpp  TimeKeeper.cpp PresetFactory.cpp PresetFactoryManager.cpp ${GLEW_SOURCES})
 
 if (NOT DISABLE_NATIVE_PRESETS)
 add_subdirectory(NativePresetFactory)
