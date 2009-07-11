@@ -43,7 +43,7 @@
 #include "projectM.hpp"
 #include "BeatDetect.hpp"
 #include "Preset.hpp"
-#include "PipelineMerge.hpp"
+#include "PipelineMerger.hpp"
 //#include "menu.h"
 #include "PCM.hpp"                    //Sound data handler (buffering, FFT, etc.)
 
@@ -371,7 +371,7 @@ DLLEXPORT void projectM::renderFrame()
 	pipeline.setStaticPerPixel(settings().meshX, settings().meshY);
 
 	assert(_matcher);
-	PipelineMerger::MergePipelines( m_activePreset->pipeline(),
+	PipelineMerger::mergePipelines( m_activePreset->pipeline(),
 		m_activePreset2->pipeline(), pipeline, _matcher->matchResults(),
 	*_merger, 1.0 - timeKeeper->SmoothRatio());
 

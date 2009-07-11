@@ -13,7 +13,7 @@ class PipelineMerger
 }
 
 public:
-  static void MergePipelines(const Pipeline &a,  const Pipeline &b, Pipeline &out, 
+  static void mergePipelines(const Pipeline &a,  const Pipeline &b, Pipeline &out, 
 	RenderItemMatcher::MatchResults & matching, RenderItemMergeFunction & merger, float ratio);
 };
 
