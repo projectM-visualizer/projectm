@@ -11,8 +11,23 @@ void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipe
 
 	out.screenDecay = lerp( b.screenDecay, a.screenDecay, ratio);
 	out.drawables.clear();
-	
 
+
+	for (std::vector<RenderItem*>::const_iterator pos = a.drawables.begin();
+		pos != a.drawables.end(); ++pos)
+	    {
+	       (*pos)->masterAlpha = invratio;
+	       out.drawables.push_back(*pos);
+	    }
+
+	for (std::vector<RenderItem*>::const_iterator pos = b.drawables.begin(); 
+		pos != b.drawables.end();++pos)
+		{
+		  (*pos)->masterAlpha = ratio;
+		   out.drawables.push_back(*pos);
+		}
+	
+	/*
 	for (RenderItemMatchList::iterator pos = results.matches.begin(); pos != results.matches.end(); ++pos) {		
 				
 		RenderItem * itemA = pos->first;
@@ -29,6 +44,7 @@ void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipe
 			out.drawables.push_back(itemC);
 		
 	}
+	
 
 	for (std::vector<RenderItem*>::const_iterator pos = results.unmatchedLeft.begin();
 		pos != results.unmatchedLeft.end(); ++pos)
@@ -43,6 +59,7 @@ void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipe
 		  (*pos)->masterAlpha = ratio;
 		   out.drawables.push_back(*pos);
 		}
+	*/
 
 	if (a.staticPerPixel && b.staticPerPixel)
 	{
