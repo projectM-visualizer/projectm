@@ -2,7 +2,7 @@
 #include "RenderItemMatcher.hpp"
 #include "RenderItemMergeFunction.hpp"
 
-void PipelineMerger::MergePipelines(const Pipeline & a, const Pipeline & b, Pipeline & out, RenderItemMatcher::MatchResults & results, RenderItemMergeFunction & mergeFunction, float ratio)
+void PipelineMerger::mergePipelines(const Pipeline & a, const Pipeline & b, Pipeline & out, RenderItemMatcher::MatchResults & results, RenderItemMergeFunction & mergeFunction, float ratio)
 {
 
 	double invratio = 1.0 - ratio;
