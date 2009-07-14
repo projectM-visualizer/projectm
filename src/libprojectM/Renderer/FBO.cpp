@@ -90,20 +90,17 @@ return -1;
 /** Creates new pbuffers */
 RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 
-    int mindim = 0;
-    int origtexsize = 0;
-  
-    this->renderToTexture = 0;
+   int mindim = 0;
+   int origtexsize = 0;
 
-    this->texsize = texsize;
+   this->renderToTexture = 0;
+   this->texsize = texsize;
 
 #ifdef USE_FBO
-    this->useFBO = true;
-   if(this->useFBO)
-    { 
-      glewInit();
-      
-      if(glewIsSupported("GL_EXT_framebuffer_object"))
+   glewInit();
+      // Forceably disable FBO if user requested it but the video card / driver lacks
+      // the appropraite frame buffer extension.
+      if (useFBO = glewIsSupported("GL_EXT_framebuffer_object"))
 	{	 
 
 	  GLuint   fb,  depth_rb, rgba_tex,  other_tex;
@@ -148,23 +145,20 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 	    return;
 	  }	
 	}
-      
-    }
 
-#else
-   this->useFBO=false;
-#endif
-    /** Fallback pbuf;fer creation via teximage hack */
+#endif 
+
+// Can reach here via two code paths: 
+// (1) useFBO was set to false externally by cmake / system setting / etc.
+// (2) useFBO was true but forced to false as it failed to pass all the GLU extension checks.
+
+    /** Fallback pbuffer creation via teximage hack */
     /** Check the texture size against the viewport size */
     /** If the viewport is smaller, then we'll need to scale the texture size down */
     /** If the viewport is larger, scale it up */
     mindim = width < height ? width : height;
     origtexsize = this->texsize;
-    this->texsize = nearestPower2( mindim, SCALE_MINIFY );      
-
-  
-
- 
+    this->texsize = nearestPower2( mindim, SCALE_MINIFY );
         glGenTextures(1, &this->textureID[0] );
 
         glBindTexture(GL_TEXTURE_2D, this->textureID[0] );
