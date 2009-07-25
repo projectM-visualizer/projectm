@@ -33,7 +33,7 @@
 #include <string>
 
 /* Function Type */
-class Func {
+class DLLEXPORT Func {
 public:
 
     /// Create a new function wrapper object
@@ -43,7 +43,7 @@ public:
     Func(const std::string & name, float (*func_ptr)(float*), int num_args );
 
     /* Public Prototypes */
-    DLLEXPORT ~Func();
+    ~Func();
 
 	inline const std::string & getName() const {
 		return name;

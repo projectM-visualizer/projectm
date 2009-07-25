@@ -32,8 +32,10 @@
 #define _BEAT_DETECT_H
 
 #include "../PCM.hpp"
+#include "../dlldefs.h"
 
-class BeatDetect
+
+class DLLEXPORT BeatDetect
 {
 	public:
 		float treb ;

@@ -46,7 +46,7 @@ public:
   int type;
   int precedence;
 
-  DLLEXPORT InfixOp( int type, int precedence );
+  InfixOp( int type, int precedence );
 };
 
 /** Term */
