@@ -363,7 +363,7 @@ TreeExpr::~TreeExpr()
 }
 
 /* Initializes an infix operator */
-DLLEXPORT InfixOp::InfixOp ( int type, int precedence )
+InfixOp::InfixOp ( int type, int precedence )
 {
 
 	this->type = type;
