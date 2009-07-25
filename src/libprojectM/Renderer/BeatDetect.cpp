@@ -36,7 +36,7 @@
 #include <cmath>
 #include "BeatDetect.hpp"
 
-DLLEXPORT BeatDetect::BeatDetect(PCM *pcm) {
+BeatDetect::BeatDetect(PCM *pcm) {
   int x,y; 
 
   this->pcm=pcm;
@@ -75,7 +75,7 @@ DLLEXPORT BeatDetect::BeatDetect(PCM *pcm) {
   
   }
 
-DLLEXPORT BeatDetect::~BeatDetect() 
+BeatDetect::~BeatDetect() 
 {
 
 }

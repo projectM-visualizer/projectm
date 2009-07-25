@@ -114,7 +114,7 @@ class RandomizerFunctor {
 };
 
 
-class projectM
+class DLLEXPORT projectM
 {
 public:
 	static const int FLAG_NONE = 0;
@@ -138,26 +138,26 @@ public:
         bool shuffleEnabled;
     };
 
-  DLLEXPORT projectM(std::string config_file, int flags = FLAG_NONE);
-  DLLEXPORT projectM(Settings settings, int flags = FLAG_NONE);
+  projectM(std::string config_file, int flags = FLAG_NONE);
+  projectM(Settings settings, int flags = FLAG_NONE);
 
   //DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url,std::string title_fonturl, std::string title_menuurl);
 
-  DLLEXPORT void projectM_resetGL( int width, int height );
-  DLLEXPORT void projectM_resetTextures();
-  DLLEXPORT void projectM_setTitle( std::string title );
-  DLLEXPORT void renderFrame();
-  DLLEXPORT unsigned initRenderToTexture();
-  DLLEXPORT void key_handler( projectMEvent event,
+  void projectM_resetGL( int width, int height );
+  void projectM_resetTextures();
+  void projectM_setTitle( std::string title );
+  void renderFrame();
+  unsigned initRenderToTexture();
+  void key_handler( projectMEvent event,
 		    projectMKeycode keycode, projectMModifier modifier );
 
-  DLLEXPORT virtual ~projectM();
+  virtual ~projectM();
 
 
 
 
 
-  DLLEXPORT const Settings & settings() const {
+  const Settings & settings() const {
 		return _settings;
   }
 

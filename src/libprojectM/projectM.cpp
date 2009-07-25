@@ -93,18 +93,18 @@ projectM::~projectM()
 delete(_pipelineContext);
 }
 
-DLLEXPORT unsigned projectM::initRenderToTexture()
+unsigned projectM::initRenderToTexture()
 {
 	return renderer->initRenderToTexture();
 }
 
-DLLEXPORT void projectM::projectM_resetTextures()
+void projectM::projectM_resetTextures()
 {
 	renderer->ResetTextures();
 }
 
 
-DLLEXPORT  projectM::projectM ( std::string config_file, int flags) :
+projectM::projectM ( std::string config_file, int flags) :
 		beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags), _pipelineContext(new PipelineContext())
 {
 	readConfig(config_file);
@@ -113,7 +113,7 @@ DLLEXPORT  projectM::projectM ( std::string config_file, int flags) :
 
 }
 
-DLLEXPORT projectM::projectM(Settings settings, int flags):
+projectM::projectM(Settings settings, int flags):
         beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags), _pipelineContext(new PipelineContext())
 {
     readSettings(settings);
@@ -288,7 +288,7 @@ void projectM::evaluateSecondPreset()
 
 }
 
-DLLEXPORT void projectM::renderFrame()
+void projectM::renderFrame()
 {
 
 #ifdef DEBUG
@@ -512,7 +512,7 @@ void projectM::projectM_resetengine()
 }
 
 /** Resets OpenGL state */
-DLLEXPORT void projectM::projectM_resetGL ( int w, int h )
+void projectM::projectM_resetGL ( int w, int h )
 {
 
 	/** Stash the new dimensions */
@@ -521,7 +521,7 @@ DLLEXPORT void projectM::projectM_resetGL ( int w, int h )
 }
 
 /** Sets the title to display */
-DLLEXPORT void projectM::projectM_setTitle ( std::string title ) {
+void projectM::projectM_setTitle ( std::string title ) {
 
 	if ( title != renderer->title )
 	{

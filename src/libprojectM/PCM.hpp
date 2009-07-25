@@ -29,7 +29,9 @@
 #ifndef _PCM_H
 #define _PCM_H
 
-class PCM {
+#include "dlldefs.h"
+
+class DLLEXPORT PCM {
 public:
     float **PCMd;
     int start;
