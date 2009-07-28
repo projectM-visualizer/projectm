@@ -250,6 +250,7 @@ public:
   }
   void *thread_func(void *vptr_args);
   PipelineContext & pipelineContext() { return *_pipelineContext; }
+  PipelineContext & pipelineContext2() { return *_pipelineContext2; }
 
 private:
   PCM * _pcm;
@@ -257,6 +258,7 @@ private:
   BeatDetect * beatDetect;
   Renderer *renderer;
   PipelineContext * _pipelineContext;
+  PipelineContext * _pipelineContext2;
   Settings _settings;
 
 

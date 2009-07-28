@@ -162,7 +162,9 @@ void Renderer::RenderItems(const Pipeline &pipeline, const PipelineContext &pipe
 	renderContext.beatDetect = beatDetect;
 
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.drawables.begin(); pos != pipeline.drawables.end(); ++pos)
+    {
 		(*pos)->Draw(renderContext);
+    }
 }
 
 void Renderer::FinishPass1()

@@ -4,6 +4,7 @@
  *  Created on: Jun 25, 2008
  *      Author: pete
  */
+#include <iostream>
 
 #ifdef LINUX
 #include <GL/gl.h>
@@ -156,7 +157,6 @@ void MilkdropWaveform::MaximizeColors(RenderContext &context)
 	{
 		glColor4f(r, g, b, temp_a * masterAlpha);
 	}
-
 }
 
 
