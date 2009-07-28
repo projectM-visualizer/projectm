@@ -10,26 +10,46 @@ void PipelineMerger::mergePipelines(const Pipeline & a, const Pipeline & b, Pipe
 	out.textureWrap = (ratio < 0.5) ? a.textureWrap : b.textureWrap;
 
 	out.screenDecay = lerp( b.screenDecay, a.screenDecay, ratio);
-	out.drawables.clear();
 
+	out.drawables.clear();
+    out.compositeDrawables.clear();
 
 	for (std::vector<RenderItem*>::const_iterator pos = a.drawables.begin();
 		pos != a.drawables.end(); ++pos)
 	    {
-	       (*pos)->masterAlpha = invratio;
+           (*pos)->masterAlpha = invratio;
 	       out.drawables.push_back(*pos);
 	    }
 
-	for (std::vector<RenderItem*>::const_iterator pos = b.drawables.begin(); 
+	for (std::vector<RenderItem*>::const_iterator pos = b.drawables.begin();
 		pos != b.drawables.end();++pos)
 		{
-		  (*pos)->masterAlpha = ratio;
+		   (*pos)->masterAlpha = ratio;
 		   out.drawables.push_back(*pos);
 		}
-	
+
+    if (ratio < 0.5)
+    {
+    for (std::vector<RenderItem*>::const_iterator pos = a.compositeDrawables.begin();
+    pos != a.compositeDrawables.end(); ++pos)
+    {
+        //(*pos)->masterAlpha = invratio;
+        out.compositeDrawables.push_back(*pos);
+    }
+    }
+    else
+    {
+    for (std::vector<RenderItem*>::const_iterator pos = b.compositeDrawables.begin();
+    pos != b.compositeDrawables.end();++pos)
+    {
+        //(*pos)->masterAlpha = ratio;
+        out.compositeDrawables.push_back(*pos);
+    }
+    }
+
 	/*
-	for (RenderItemMatchList::iterator pos = results.matches.begin(); pos != results.matches.end(); ++pos) {		
-				
+	for (RenderItemMatchList::iterator pos = results.matches.begin(); pos != results.matches.end(); ++pos) {
+
 		RenderItem * itemA = pos->first;
 		RenderItem * itemB = pos->second;
 
@@ -40,11 +60,11 @@ void PipelineMerger::mergePipelines(const Pipeline & a, const Pipeline & b, Pipe
 	        	out.drawables.push_back(itemA);
 			itemB->masterAlpha = invratio;
 	        	out.drawables.push_back(itemB);
-		} else 
+		} else
 			out.drawables.push_back(itemC);
-		
+
 	}
-	
+
 
 	for (std::vector<RenderItem*>::const_iterator pos = results.unmatchedLeft.begin();
 		pos != results.unmatchedLeft.end(); ++pos)

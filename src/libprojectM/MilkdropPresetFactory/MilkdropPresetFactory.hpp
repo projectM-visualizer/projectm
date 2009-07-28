@@ -1,7 +1,7 @@
 //
 // C++ Interface: MilkdropPresetFactory
 //
-// Description: 
+// Description:
 //
 //
 // Author: Carmelo Piccione <carmelo.piccione@gmail.com>, (C) 2008
@@ -21,7 +21,7 @@ class DLLEXPORT PresetInputs;
 class MilkdropPresetFactory : public PresetFactory {
 
 public:
- 
+
  MilkdropPresetFactory(int gx, int gy);
 
  virtual ~MilkdropPresetFactory();
@@ -32,9 +32,11 @@ public:
  std::string supportedExtensions() const { return "milk prjm"; }
 
 private:
-	void initializePresetOutputs(int gx, int gy);
+    static PresetOutputs* createPresetOutputs(int gx, int gy);
 	void reset();
 	PresetOutputs * _presetOutputs;
+    PresetOutputs * _presetOutputs2;
+    bool _usePresetOutputs;
 	//PresetInputs _presetInputs;
 };
 
