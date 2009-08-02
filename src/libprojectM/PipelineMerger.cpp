@@ -5,6 +5,11 @@
 void PipelineMerger::mergePipelines(const Pipeline & a, const Pipeline & b, Pipeline & out, RenderItemMatcher::MatchResults & results, RenderItemMergeFunction & mergeFunction, float ratio)
 {
 
+    double s = 0.5;
+    double e = 2.71828182845904523536;
+    double x = (ratio - 0.5) * 20;
+    double sigmoid = 1.0 / (1.0 + e - s * x);
+
 	double invratio = 1.0 - ratio;
 
 	out.textureWrap = (ratio < 0.5) ? a.textureWrap : b.textureWrap;
