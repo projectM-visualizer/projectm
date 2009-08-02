@@ -382,7 +382,6 @@ static void *thread_callback(void *prjm) {
                                             m_activePreset2->pipeline(), pipeline, _matcher->matchResults(),
                                             *_merger, timeKeeper->SmoothRatio());
 
-            /// @bug not sure if this is correct
             renderer->RenderFrame(pipeline, pipelineContext());
 
             for (int i = 0; i < _matcher->matchResults().matches.size(); i++) {
@@ -400,12 +399,7 @@ static void *thread_callback(void *prjm) {
             }
             //printf("Normal\n");
 
-
             m_activePreset->Render(*beatDetect, pipelineContext());
-
-            //		m_activePreset->evaluateFrame();
-            //		m_activePreset->presetOutputs().Render(*beatDetect,presetInputs);
-
             renderer->RenderFrame (m_activePreset->pipeline(), pipelineContext());
         }
 
