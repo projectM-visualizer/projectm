@@ -59,7 +59,7 @@ void VideoEcho::Draw(RenderContext &context)
 		glMatrixMode(GL_TEXTURE);
 
 		//draw video echo
-		glColor4f(1.0, 1.0, 1.0, a);
+		glColor4f(1.0, 1.0, 1.0, a * masterAlpha);
 		glTranslatef(.5, .5, 0);
 		glScalef(1.0/zoom, 1.0/zoom, 1);
 		glTranslatef(-.5, -.5, 0);
