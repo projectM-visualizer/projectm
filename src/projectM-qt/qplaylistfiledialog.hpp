@@ -124,7 +124,7 @@
 		 
  private slots:
 	 
-	 void updateFileMode(const QString & fileName) {
+	 void updateFileMode(const QString fileName) {
 		 
 		 QString filter = getFilter();
 		 		
@@ -159,8 +159,9 @@
 	 
 	 void updateFileMode(const QStringList & selectedFiles) {
 		 if (selectedFiles.empty())
-			 updateFileMode(QString());
-		 updateFileMode(selectedFiles[0]);
+		 	updateFileMode(QString());
+		 else
+		 	updateFileMode(selectedFiles[0]);
 	}
 };
 
