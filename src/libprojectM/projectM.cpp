@@ -326,28 +326,21 @@ static void *thread_callback(void *prjm) {
             if ( timeKeeper->PresetProgressA()>=1.0 && !timeKeeper->IsSmoothing())
             {
 
-                timeKeeper->StartSmoothing();
-                switchPreset(m_activePreset2);
+		if (settings().shuffleEnabled)
+			selectRandom(false);
+		else
+			selectNext(false);
 
-                // Compute best matching between the render items.
-                /*
-                (*_matcher)(m_activePreset.get()->pipeline().drawables,
-                m_activePreset2.get()->pipeline().drawables);
-                */
-                presetSwitchedEvent(false, **m_presetPos);
-            }
+           }
 
             else if ((beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) &&
                 timeKeeper->CanHardCut())
             {
                 // printf("Hard Cut\n");
-
-                switchPreset(m_activePreset);
-
-                //fz(m_activePreset, presetInputs, presetOutputs);
-
-                timeKeeper->StartPreset();
-                presetSwitchedEvent(true, **m_presetPos);
+		if (settings().shuffleEnabled)
+			selectRandom(true);
+		else
+			selectNext(true);
             }
         }
 
@@ -685,15 +678,10 @@ static void *thread_callback(void *prjm) {
 
     void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
 
-        if (_settings.shuffleEnabled)
-            *m_presetPos = m_presetChooser->weightedRandom();
-        else
-            m_presetChooser->nextPreset(*m_presetPos);
-
         targetPreset = m_presetPos->allocate();
 
         // Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
-        renderer->setPresetName ( targetPreset->name() );
+        renderer->setPresetName(targetPreset->name());
         renderer->SetPipeline(targetPreset->pipeline());
 
     }
