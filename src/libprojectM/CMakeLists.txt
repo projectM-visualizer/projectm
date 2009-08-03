@@ -110,11 +110,11 @@ INCLUDE(FindPkgConfig.cmake)
 
 pkg_search_module (FTGL ftgl)
 
-if (FTGL_FOUND)
+#if (FTGL_FOUND)
 	OPTION(USE_FTGL "Use FTGL for on-screen fonts (found on your system)" ON)
-else (FTGL_FOUND)	
-	OPTION(USE_FTGL "Use FTGL for on-screen fonts (Warning: NOT found on your system! Turning this on will probably bust the compilation.)" OFF)
-endif(FTGL_FOUND)
+#else (FTGL_FOUND)	
+#	OPTION(USE_FTGL "Use FTGL for on-screen fonts (Warning: NOT found on your system! Turning this on will probably bust the compilation.)" OFF)
+#endif(FTGL_FOUND)
 
 #set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH};/opt/local/include;/Developer/SDKs/MACOSX10.5.sdk/usr/X11/include)
 #set(CMAKE_LIBRARY_PATH /opt/local/lib;/Developer/SDKs/MACOSX10.5.sdk;/Developer/SDKs/MacOSX10.5.sdk/usr/X11/lib/)
