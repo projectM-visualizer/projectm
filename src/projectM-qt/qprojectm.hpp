@@ -20,7 +20,7 @@ class QProjectM : public QObject, public projectM {
 	Q_OBJECT
 
 	public:
-		QProjectM(const std::string & config_file):projectM(config_file, projectM::FLAG_DISABLE_PLAYLIST_LOAD) {} 
+		QProjectM(const std::string & config_file):projectM(config_file, projectM::FLAG_DISABLE_PLAYLIST_LOAD) {}
 
 		void presetSwitchedEvent(bool hardCut, unsigned int index) const {
 			presetSwitchedSignal(hardCut, index);
@@ -28,6 +28,7 @@ class QProjectM : public QObject, public projectM {
 	signals:
 		void presetSwitchedSignal(bool hardCut, unsigned int index) const;
 	public slots:
-			
+
+
 };
 #endif

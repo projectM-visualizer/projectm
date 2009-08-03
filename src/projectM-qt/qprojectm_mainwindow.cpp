@@ -550,7 +550,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
                                         return;
 
                                 if (ui->tableView->hasFocus())
-                                        return;             
+                                        return;
                         }
 
                         setMenuAndStatusBarsVisible(!_menuAndStatusBarsVisible);
