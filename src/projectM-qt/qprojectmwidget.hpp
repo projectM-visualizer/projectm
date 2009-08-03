@@ -177,17 +177,26 @@ class QProjectMWidget : public QGLWidget
 					pkey =  PROJECTM_K_F1;
 					break;
 				case Qt::Key_R:
-					pkey =  PROJECTM_K_r;
-					break;
+					if (e->modifiers() & Qt::ShiftModifier)
+						pkey =  PROJECTM_K_R;
+					else
+						pkey =  PROJECTM_K_r;
+					break;				
 				case Qt::Key_L:
 					pkey =  PROJECTM_K_l;
 					ignore = true;
 					break;
-				case Qt::Key_N:
-					pkey =  PROJECTM_K_n;
+				case Qt::Key_N:	
+					if (e->modifiers() & Qt::ShiftModifier)
+						pkey =  PROJECTM_K_N;
+					else
+						pkey =  PROJECTM_K_n;
 					break;
 				case Qt::Key_P:
-					pkey =  PROJECTM_K_p;
+					if (e->modifiers() & Qt::ShiftModifier)
+						pkey =  PROJECTM_K_P;
+					else
+						pkey =  PROJECTM_K_p;
 					break;
 				case Qt::Key_F5:
 					pkey =  PROJECTM_K_F5;

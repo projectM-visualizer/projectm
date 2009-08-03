@@ -95,6 +95,7 @@ public:
 
 
     inline void nextPreset(PresetIterator & presetPos);
+    inline void previousPreset(PresetIterator & presetPos);
 
 private:
 
@@ -158,6 +159,26 @@ inline void PresetChooser::nextPreset(PresetIterator & presetPos) {
 			presetPos = this->begin();
 		}
 
+}
+
+
+inline void PresetChooser::previousPreset(PresetIterator & presetPos) {
+		if (this->empty())
+			return;
+
+		// Case: idle preset currently running, selected last preset of chooser
+		else if (presetPos == this->end()) {
+			--(presetPos);
+		}
+
+		else if (presetPos != this->begin()) {
+			--(presetPos);
+		}
+
+		else {
+		   presetPos = this->end();
+		   --(presetPos);
+		}
 }
 
 inline PresetIterator PresetChooser::begin() {

@@ -37,6 +37,10 @@
 class Preset;
 interface_t current_interface = DEFAULT_INTERFACE;
 
+void selectRandom(const bool hardCut);
+void selectNext(const bool hardCut);
+void selectPrevious(const bool hardCut);
+
 void refreshConsole() {
 
   switch (current_interface) {
@@ -166,53 +170,22 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_b:
 	      break;
             case PROJECTM_K_n:
-		m_presetChooser->nextPreset(*m_presetPos);
-		presetSwitchedEvent(true, **m_presetPos);
-		m_activePreset =  m_presetPos->allocate();
-		renderer->SetPipeline(m_activePreset->pipeline());
-		renderer->setPresetName(m_activePreset->name());
-		timeKeeper->StartPreset();
+		selectNext(true);
 	      break;
-
+            case PROJECTM_K_N:
+		selectNext(false);
+	      break;
 	    case PROJECTM_K_r:
-
-		if (m_presetChooser->empty())
-			break;
-
-		*m_presetPos = m_presetChooser->weightedRandom();
-		presetSwitchedEvent(true, **m_presetPos);
-		m_activePreset = m_presetPos->allocate();
-		renderer->SetPipeline(m_activePreset->pipeline());
-		assert(m_activePreset.get());
-
-		renderer->setPresetName(m_activePreset->name());
-
-		timeKeeper->StartPreset();
+		selectRandom(true);
+		break;
+	    case PROJECTM_K_R:
+		selectRandom(false);
 		break;
 	    case PROJECTM_K_p:
-
-		if (m_presetChooser->empty())
-			break;
-
-		// Case: idle preset currently running, selected last preset of chooser
-		else if (*m_presetPos == m_presetChooser->end()) {
-			--(*m_presetPos);
-		}
-
-		else if (*m_presetPos != m_presetChooser->begin()) {
-			--(*m_presetPos);
-		}
-
-		else {
-		   *m_presetPos = m_presetChooser->end();
-		   --(*m_presetPos);
-		}
-
-		m_activePreset =  m_presetPos->allocate();
-		renderer->SetPipeline(m_activePreset->pipeline());
-		renderer->setPresetName(m_activePreset->name());
-
-	       	timeKeeper->StartPreset();
+	      selectPrevious(true);
+	      break;
+	    case PROJECTM_K_P:
+	      selectPrevious(false);
 	      break;
 	    case PROJECTM_K_l:
 		renderer->noSwitch=!renderer->noSwitch;
@@ -243,4 +216,82 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		break;
 
 	}
+
+
+
+
+}
+
+void projectM::selectRandom(const bool hardCut) {
+
+		if (m_presetChooser->empty())
+			return;
+
+		if (!hardCut) {
+                	timeKeeper->StartSmoothing();
+		}
+
+		*m_presetPos = m_presetChooser->weightedRandom();
+
+		if (!hardCut) {
+			switchPreset(m_activePreset2);
+		} else {
+			switchPreset(m_activePreset);
+			timeKeeper->StartPreset();
+		}
+
+		presetSwitchedEvent(hardCut, **m_presetPos);
+
+}
+
+void projectM::selectPrevious(const bool hardCut) {
+
+		if (m_presetChooser->empty())
+			return;
+
+		if (!hardCut) {
+                	timeKeeper->StartSmoothing();
+		}
+
+		m_presetChooser->previousPreset(*m_presetPos);
+
+		if (!hardCut) {
+			switchPreset(m_activePreset2);
+		} else {
+			switchPreset(m_activePreset);
+			timeKeeper->StartPreset();
+		}
+
+		presetSwitchedEvent(hardCut, **m_presetPos);
+
+//		m_activePreset =  m_presetPos->allocate();
+//		renderer->SetPipeline(m_activePreset->pipeline());
+//		renderer->setPresetName(m_activePreset->name());
+
+	       	//timeKeeper->StartPreset();
+
+}
+
+void projectM::selectNext(const bool hardCut) {
+
+		if (m_presetChooser->empty())
+			return;
+
+		if (!hardCut) {
+                	timeKeeper->StartSmoothing();
+			std::cout << "start smoothing" << std::endl;
+		}
+
+		std::cout << "getting next preset" << std::endl;
+		m_presetChooser->nextPreset(*m_presetPos);
+
+		if (!hardCut) {
+			switchPreset(m_activePreset2);
+		} else {
+			switchPreset(m_activePreset);
+			timeKeeper->StartPreset();
+		}
+		presetSwitchedEvent(hardCut, **m_presetPos);
+		
+	
 }
