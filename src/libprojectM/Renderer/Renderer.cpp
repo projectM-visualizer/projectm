@@ -582,10 +582,10 @@ void Renderer::draw_preset()
 
 void Renderer::draw_help()
 {
-
+    std::cout<<"PRE"<<std::endl;
 #ifdef USE_FTGL
 	//glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-
+std::cout<<"HELP"<<std::endl;
 	glColor4f(1.0, 1.0, 1.0, 1.0);
 	glPushMatrix();
 	glTranslatef(0, 1, 0);
