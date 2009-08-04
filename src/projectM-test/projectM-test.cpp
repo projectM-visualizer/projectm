@@ -107,7 +107,7 @@ void renderLoop() {
 		while (SDL_PollEvent(&event)) {
 			/** Translate into projectM codes and process */
 			evt = sdl2pmEvent(event);
-			key = sdl2pmKeycode(event.key.keysym.sym);
+            key = sdl2pmKeycode(event.key.keysym.sym, event.key.keysym.mod);
 			mod = sdl2pmModifier(event.key.keysym.mod);
 
 			switch (evt) {
@@ -148,12 +148,12 @@ void renderLoop() {
 				break;
 			}
 		}
- fakePCM[0]=0;      
+ fakePCM[0]=0;
         for (int x = 1; x< 512;x++)
-        {                          
+        {
                 fakePCM[x] = fakePCM[x-1] + (rand()%200 - 100) *.002;
-        }                                                            
-                                                                    
+        }
+
 
         globalPM->pcm()->addPCMfloat(fakePCM, 512);
 
