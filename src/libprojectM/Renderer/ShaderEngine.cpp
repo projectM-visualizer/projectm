@@ -62,7 +62,7 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 	blur2_enabled = false;
 	blur3_enabled = false;
 
-	std::cout << "Generating Noise Textures" << std::endl;
+	//std::cout << "Generating Noise Textures" << std::endl;
 
 	PerlinNoise noise;
 
@@ -277,8 +277,8 @@ bool ShaderEngine::LoadCgProgram(Shader &shader)
 		temp.append(cgTemplate);
 		temp.append(program);
 
-		std::cout << "Cg: Compilation Results:" << std::endl << std::endl;
-		std::cout << program << std::endl;
+		//std::cout << "Cg: Compilation Results:" << std::endl << std::endl;
+		//std::cout << program << std::endl;
 
 		CGprogram p = cgCreateProgram(myCgContext, CG_SOURCE, temp.c_str(),//temp.c_str(),
 				myCgProfile, "projectm", NULL);
@@ -381,7 +381,7 @@ void ShaderEngine::SetupCg()
 
 	profileName = cgGetProfileString(myCgProfile);
 	std::cout << "Cg: Initialized profile: " << profileName << std::endl;
-std::cout<< blurProgram.c_str()<<std::endl;
+//std::cout<< blurProgram.c_str()<<std::endl;
 	blur1Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blur1", NULL);
 
 	checkForCgCompileError("creating blur1 program");
