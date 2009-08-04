@@ -97,7 +97,7 @@ void renderLoop() {
 		while (SDL_PollEvent(&event)) {
 			/** Translate into projectM codes and process */
 			evt = sdl2pmEvent(event);
-			key = sdl2pmKeycode(event.key.keysym.sym);
+            key = sdl2pmKeycode(event.key.keysym.sym, event.key.keysym.mod);
 			mod = sdl2pmModifier(event.key.keysym.mod);
 
 			switch (evt) {
