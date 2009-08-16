@@ -169,7 +169,7 @@ public:
   void selectPresetPosition(unsigned int index);
 
   /// Plays a preset immediately
-  void selectPreset(unsigned int index);
+  void selectPreset(unsigned int index, bool hardCut = true);
 
   /// Removes a preset from the play list. If it is playing then it will continue as normal until next switch
   void removePreset(unsigned int index);

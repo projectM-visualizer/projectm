@@ -658,24 +658,103 @@ static void *thread_callback(void *prjm) {
         return index;
     }
 
-    void projectM::selectPreset ( unsigned int index )
+    void projectM::selectPreset ( unsigned int index, bool hardCut)
     {
 
-        if ( m_presetChooser->empty() )
-            return;
+		if (m_presetChooser->empty())
+			return;
 
-        assert ( index < m_presetLoader->size());
-        assert ( index >= 0 );
+		if (!hardCut) {
+                	timeKeeper->StartSmoothing();
+		}
 
-        *m_presetPos = m_presetChooser->begin ( index );
+		*m_presetPos = m_presetChooser->begin(index);
 
-        m_activePreset = m_presetPos->allocate ();
+		if (!hardCut) {
+			switchPreset(m_activePreset2);
+		} else {
+			switchPreset(m_activePreset);
+			timeKeeper->StartPreset();
+		}
 
-        renderer->setPresetName ( m_activePreset->name() );
+	presetSwitchedEvent(hardCut, **m_presetPos);
 
-        timeKeeper->StartPreset();
     }
 
+
+void projectM::selectRandom(const bool hardCut) {
+
+		if (m_presetChooser->empty())
+			return;
+
+		if (!hardCut) {
+                	timeKeeper->StartSmoothing();
+		}
+
+		*m_presetPos = m_presetChooser->weightedRandom();
+
+		if (!hardCut) {
+			switchPreset(m_activePreset2);
+		} else {
+			switchPreset(m_activePreset);
+			timeKeeper->StartPreset();
+		}
+
+		presetSwitchedEvent(hardCut, **m_presetPos);
+
+}
+
+void projectM::selectPrevious(const bool hardCut) {
+
+		if (m_presetChooser->empty())
+			return;
+
+		if (!hardCut) {
+                	timeKeeper->StartSmoothing();
+		}
+
+		m_presetChooser->previousPreset(*m_presetPos);
+
+		if (!hardCut) {
+			switchPreset(m_activePreset2);
+		} else {
+			switchPreset(m_activePreset);
+			timeKeeper->StartPreset();
+		}
+
+		presetSwitchedEvent(hardCut, **m_presetPos);
+
+//		m_activePreset =  m_presetPos->allocate();
+//		renderer->SetPipeline(m_activePreset->pipeline());
+//		renderer->setPresetName(m_activePreset->name());
+
+	       	//timeKeeper->StartPreset();
+
+}
+
+void projectM::selectNext(const bool hardCut) {
+
+		if (m_presetChooser->empty())
+			return;
+
+		if (!hardCut) {
+                	timeKeeper->StartSmoothing();
+			std::cout << "start smoothing" << std::endl;
+		}
+
+		std::cout << "getting next preset" << std::endl;
+		m_presetChooser->nextPreset(*m_presetPos);
+
+		if (!hardCut) {
+			switchPreset(m_activePreset2);
+		} else {
+			switchPreset(m_activePreset);
+			timeKeeper->StartPreset();
+		}
+		presetSwitchedEvent(hardCut, **m_presetPos);
+		
+	
+}
     void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
 
         targetPreset = m_presetPos->allocate();
