@@ -17,7 +17,6 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 		std::string _titlefontURL, std::string _menufontURL) :
 	title_fontURL(_titlefontURL), menu_fontURL(_menufontURL), presetURL(_presetURL), m_presetName("None"), vw(width),
 			vh(height), texsize(texsize), mesh(gx, gy)
-
 {
 	int x;
 	int y;
@@ -163,7 +162,10 @@ void Renderer::RenderItems(const Pipeline &pipeline, const PipelineContext &pipe
 
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.drawables.begin(); pos != pipeline.drawables.end(); ++pos)
     {
+      if (*pos != NULL)
+      {
 		(*pos)->Draw(renderContext);
+      }
     }
 }
 

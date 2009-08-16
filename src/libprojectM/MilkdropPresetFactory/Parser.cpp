@@ -1842,7 +1842,9 @@ int Parser::parse_wavecode(char * token, std::istream &  fs, MilkdropPreset * pr
   }
 
   /* Create new initial condition */
-  if ((init_cond = new InitCond(param, init_val)) == NULL)
+  init_cond = new InitCond(param, init_val);
+  
+  if (init_cond == NULL)
   {
     if (PARSE_DEBUG) printf("parse_wavecode: new_init_cond failed!\n");
     return PROJECTM_FAILURE;
@@ -1851,7 +1853,7 @@ int Parser::parse_wavecode(char * token, std::istream &  fs, MilkdropPreset * pr
   std::pair<std::map<std::string, InitCond*>::iterator, bool> inserteePair =
     custom_wave->init_cond_tree.insert(std::make_pair(init_cond->param->name, init_cond));
 
-  assert(inserteePair.second);
+ // assert(inserteePair.second);
 
   line_mode = CUSTOM_WAVE_WAVECODE_LINE_MODE;
 
