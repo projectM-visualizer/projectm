@@ -109,6 +109,14 @@ void PipelineMerger::mergePipelines(const Pipeline & a, const Pipeline & b, Pipe
 		    }
 	}
 
+    if(ratio < 0.5)
+    {
 	out.compositeShader = a.compositeShader;
 	out.warpShader = a.warpShader;
+    }
+    else
+    {
+      out.compositeShader = b.compositeShader;
+      out.warpShader = b.warpShader;
+    }
 }
