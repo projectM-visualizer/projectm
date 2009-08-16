@@ -113,7 +113,8 @@ protected:
             void closeEvent(QCloseEvent *event);
 
 private slots:
-
+void presetHardCut();
+void presetSoftCut();
 	void insertPresetsDialog() ;
 	void removeSelectedPlaylistItems();
 
@@ -144,6 +145,7 @@ private slots:
 
 	
       private:
+
 	bool warnIfPlaylistModified();
 	
 	void insertPlaylistItem(const PlaylistItemMetaData & data, int targetIndex);

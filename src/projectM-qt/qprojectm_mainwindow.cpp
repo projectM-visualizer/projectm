@@ -999,7 +999,26 @@ void QProjectM_MainWindow::createActions()
 	connect (ui->actionRemove_selection, SIGNAL(triggered()), this, SLOT(removeSelectedPlaylistItems()));
 	connect (ui->actionInsert_presets, SIGNAL(triggered()), this, SLOT(insertPresetsDialog()));
 	connect (ui->actionEdit_this_preset, SIGNAL(triggered()), this, SLOT(openPresetEditorDialogForSelectedPreset()));
+	connect (ui->actionHard_cut_to_this_preset, SIGNAL(triggered()), this, SLOT(presetHardCut()));
+	connect (ui->actionSoft_cut_to_this_preset, SIGNAL(triggered()), this, SLOT(presetSoftCut()));
 }
+
+
+void QProjectM_MainWindow::presetHardCut() {
+	if (selectedPlaylistIndexes.empty())
+		return;
+
+	qprojectM()->selectPreset(selectedPlaylistIndexes[0].row(), true);	
+}
+
+
+void QProjectM_MainWindow::presetSoftCut() {
+	if (selectedPlaylistIndexes.empty())
+		return;
+	
+	qprojectM()->selectPreset(selectedPlaylistIndexes[0].row(), false);
+}
+
 
 void QProjectM_MainWindow::openPresetEditorDialogForSelectedPreset() {
 	
@@ -1025,7 +1044,10 @@ void QProjectM_MainWindow::createMenus()
 	
 	playlistContextMenu->addAction(ui->actionInsert_presets);
 	playlistContextMenu->addAction(ui->actionRemove_selection);
-	
+
+	playlistContextMenu->addAction(ui->actionHard_cut_to_this_preset);
+	playlistContextMenu->addAction(ui->actionSoft_cut_to_this_preset);
+
 	ui->menuBar->hide();
 
 	
