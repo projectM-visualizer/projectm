@@ -8,6 +8,8 @@ OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL libr
 
 OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disable this for OpenGL ES 1.x or if you are experiencing problems on older or poorly supported hardware." ON)
 
+OPTION(USE_FTGL "Use FTGL for on-screen fonts (found on your system)" ON)
+
 OPTION (USE_GLES1 "Use OpenGL ES 1.x" OFF)
 
 OPTION (USE_OPENMP "Use OpenMP and OMPTL for multi-core paralellization" ON)
@@ -75,6 +77,11 @@ if(USE_FBO)
 ADD_DEFINITIONS(-DUSE_FBO)
 endif(USE_FBO)
 
+if(USE_FTGL)
+ADD_DEFINITIONS(-DUSE_FTGL)
+endif(USE_FTGL)
+
+
 if(COMMAND cmake_policy)
        cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
@@ -109,12 +116,6 @@ FIND_PACKAGE(OpenGL)
 INCLUDE(FindPkgConfig.cmake)
 
 pkg_search_module (FTGL ftgl)
-
-if (FTGL_FOUND)
-	OPTION(USE_FTGL "Use FTGL for on-screen fonts (found on your system)" ON)
-else (FTGL_FOUND)	
-	OPTION(USE_FTGL "Use FTGL for on-screen fonts (Warning: NOT found on your system! Turning this on will probably bust the compilation.)" OFF)
-endif(FTGL_FOUND)
 
 #set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH};/opt/local/include;/Developer/SDKs/MACOSX10.5.sdk/usr/X11/include)
 #set(CMAKE_LIBRARY_PATH /opt/local/lib;/Developer/SDKs/MACOSX10.5.sdk;/Developer/SDKs/MacOSX10.5.sdk/usr/X11/lib/)
