@@ -1,4 +1,5 @@
 PROJECT(projectM-libvisual-alsa)
+cmake_minimum_required(VERSION 2.4.0)
 
 ADD_EXECUTABLE(projectM-libvisual-alsa projectM-libvisual-alsa.c display.c glxdriver.c x11driver.c sdldriver.c lv_x11_key.c)
 
@@ -9,6 +10,18 @@ INCLUDE(FindPkgConfig.cmake)
 FIND_PACKAGE(OpenGL)
 FIND_PACKAGE(SDL)
 FIND_PACKAGE(X11)
+
+
+SET(CPACK_BINARY_RPM OFF)
+#SET(CPACK_BINARY_Z OFF)
+SET(CPACK_SOURCE_TGZ ON)
+SET(CPACK_BINARY_TGZ ON)
+#SET(CPACK_SOURCE_Z OFF)
+SET(CPACK_PACKAGE_VERSION_MAJOR "2")
+SET(CPACK_PACKAGE_VERSION_MINOR "0")
+SET(CPACK_PACKAGE_VERSION_PATCH "0")
+
+INCLUDE(CPACK)
 
 if (${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
 	pkg_search_module(LIBPROJECTM REQUIRED libprojectM)
