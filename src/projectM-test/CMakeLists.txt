@@ -1,10 +1,22 @@
 PROJECT(projectM-tests)
-
+cmake_minimum_required(VERSION 2.4.0)
 cmake_policy(SET CMP0005 OLD)
 
 if(COMMAND cmake_policy)
        cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
+
+
+SET(CPACK_BINARY_RPM OFF)
+#SET(CPACK_BINARY_Z OFF)
+SET(CPACK_SOURCE_TGZ ON)
+SET(CPACK_BINARY_TGZ ON)
+#SET(CPACK_SOURCE_Z OFF)
+SET(CPACK_PACKAGE_VERSION_MAJOR "2")
+SET(CPACK_PACKAGE_VERSION_MINOR "0")
+SET(CPACK_PACKAGE_VERSION_PATCH "0")
+
+Include(CPack)
 
 ADD_EXECUTABLE(projectM-test         projectM-test.cpp         sdltoprojectM.h video_init.cpp ConfigFile.h ConfigFile.cpp getConfigFilename.cpp getConfigFilename.h)
 ADD_EXECUTABLE(projectM-test-memleak projectM-test-memleak.cpp sdltoprojectM.h video_init.cpp ConfigFile.h ConfigFile.cpp getConfigFilename.cpp getConfigFilename.h)

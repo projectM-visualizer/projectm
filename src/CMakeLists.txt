@@ -2,6 +2,17 @@ project (PROJECTM_ROOT)
 
 cmake_minimum_required(VERSION 2.4.0)
 
+SET(CPACK_BINARY_RPM OFF)
+#SET(CPACK_BINARY_Z OFF)
+SET(CPACK_SOURCE_TGZ ON)
+SET(CPACK_BINARY_TGZ ON)
+#SET(CPACK_SOURCE_Z OFF)
+SET(CPACK_PACKAGE_VERSION_MAJOR "2")
+SET(CPACK_PACKAGE_VERSION_MINOR "0")
+SET(CPACK_PACKAGE_VERSION_PATCH "0")
+SET(CPACK_PACKAGE_NAME "projectM-complete")
+INCLUDE(CPack)
+
 OPTION(INCLUDE-PROJECTM-QT "Build the projectM Qt4 user interface extension library (recommended)" ON)
 OPTION(INCLUDE-PROJECTM-PULSEAUDIO "Build the projectM pulse audio client (recommended for fedora users)" ON)
 OPTION(INCLUDE-PROJECTM-LIBVISUAL "Build the projectM libvisual client" ON)
