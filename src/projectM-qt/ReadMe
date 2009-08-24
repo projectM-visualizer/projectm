@@ -23,7 +23,8 @@ If this fails, go online and get help!
 
 
 WARNING: This is my first Qt4 (or Qt*) experience. As such, there will be bugs. 
-Please notify me if something goes wrong so I can polish up the 1.1 release. There will be incremental releases henceforth fixing bugs and adding minor features. 
+Please notify me if something goes wrong! There will be incremental 
+releases henceforth fixing bugs and adding minor features. 
 
 As an ode to Qt, the Qt4 platform has been generally a fun experience and 
 is much recommended to the developer. As for cross platform support, 
