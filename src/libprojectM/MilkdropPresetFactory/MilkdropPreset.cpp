@@ -70,15 +70,6 @@ MilkdropPreset::~MilkdropPreset()
 
   traverse<TraverseFunctors::Delete<Param> >(user_param_tree);
 
-  for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos)
-  {
-    	delete(*pos);
-  }
-
-  for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); pos != customShapes.end(); ++pos)
-  {
-    	delete(*pos);
-  }
 
 }
 
