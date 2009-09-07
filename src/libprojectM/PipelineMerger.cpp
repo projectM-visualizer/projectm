@@ -2,40 +2,41 @@
 #include "RenderItemMatcher.hpp"
 #include "RenderItemMergeFunction.hpp"
 
+const double PipelineMerger::e(2.71828182845904523536);
+const double PipelineMerger::s(0.5);
+
 void PipelineMerger::mergePipelines(const Pipeline & a, const Pipeline & b, Pipeline & out, RenderItemMatcher::MatchResults & results, RenderItemMergeFunction & mergeFunction, float ratio)
+
 {
 
-    double s = 0.5;
-    double e = 2.71828182845904523536;
-    double x = (ratio - 0.5) * 20;
-    double sigmoid = 1.0 / (1.0 + e - s * x);
+	const double x = ( ratio - 0.5 ) * 20;
+	const double sigmoid = 1.0 / ( 1.0 + e - s * x );
+	const double invratio = 1.0 - ratio;
 
-	double invratio = 1.0 - ratio;
+	out.textureWrap = ( ratio < 0.5 ) ? a.textureWrap : b.textureWrap;
 
-	out.textureWrap = (ratio < 0.5) ? a.textureWrap : b.textureWrap;
-
-	out.screenDecay = lerp( b.screenDecay, a.screenDecay, ratio);
+	out.screenDecay = lerp ( b.screenDecay, a.screenDecay, ratio );
 
 	out.drawables.clear();
-    out.compositeDrawables.clear();
+	out.compositeDrawables.clear();
 
-	for (std::vector<RenderItem*>::const_iterator pos = a.drawables.begin();
-		pos != a.drawables.end(); ++pos)
-	    {
-           (*pos)->masterAlpha = invratio;
-	       out.drawables.push_back(*pos);
-	    }
+	for ( std::vector<RenderItem*>::const_iterator pos = a.drawables.begin();
+	        pos != a.drawables.end(); ++pos )
+	{
+		( *pos )->masterAlpha = invratio;
+		out.drawables.push_back ( *pos );
+	}
 
-	for (std::vector<RenderItem*>::const_iterator pos = b.drawables.begin();
-		pos != b.drawables.end();++pos)
-		{
-		   (*pos)->masterAlpha = ratio;
-		   out.drawables.push_back(*pos);
-		}
+	for ( std::vector<RenderItem*>::const_iterator pos = b.drawables.begin();
+	        pos != b.drawables.end();++pos )
+	{
+		( *pos )->masterAlpha = ratio;
+		out.drawables.push_back ( *pos );
+	}
 
     if(ratio < 0.5)
     {
-        double local_ratio = (invratio - 0.5) * 2;
+        const double local_ratio = (invratio - 0.5) * 2;
 
         for (std::vector<RenderItem*>::const_iterator pos = a.compositeDrawables.begin();
         pos != a.compositeDrawables.end(); ++pos)
@@ -46,7 +47,7 @@ void PipelineMerger::mergePipelines(const Pipeline & a, const Pipeline & b, Pipe
     }
     else
     {
-        double local_ratio = (ratio - 0.5) * 2;
+        const double local_ratio = (ratio - 0.5) * 2;
 
         for (std::vector<RenderItem*>::const_iterator pos = b.compositeDrawables.begin();
         pos != b.compositeDrawables.end();++pos)
