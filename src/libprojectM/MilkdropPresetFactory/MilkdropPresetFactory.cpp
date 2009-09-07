@@ -135,6 +135,7 @@ void resetPresetOutputs(PresetOutputs *presetOutputs)
 /* Reinitializes the engine variables to a default (conservative and sane) value */
 void MilkdropPresetFactory::reset()
 {
+std::cout << "reset!" << std::endl;
     resetPresetOutputs(_presetOutputs);
     resetPresetOutputs(_presetOutputs2);
 }
@@ -204,9 +205,11 @@ PresetOutputs* MilkdropPresetFactory::createPresetOutputs(int gx, int gy)
 std::auto_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url, const std::string & name, const std::string & author) {
 
     PresetOutputs *presetOutputs = _usePresetOutputs ? _presetOutputs : _presetOutputs2;
-    _usePresetOutputs = !_usePresetOutputs;
+
+	_usePresetOutputs = !_usePresetOutputs;
 	presetOutputs->customWaves.clear();
-	presetOutputs->customShapes.clear();
+	presetOutputs->customShapes.clear();	
+	resetPresetOutputs(presetOutputs);
 
 	std::string path;
 	if (PresetFactory::protocol(url, path) == PresetFactory::IDLE_PRESET_PROTOCOL) {
