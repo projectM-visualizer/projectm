@@ -26,7 +26,7 @@
 
 #include <stdio.h>
 //#include <GL/gl.h>
-
+#include <iostream>
 #include "Common.hpp"
 #include "FBO.hpp"
 
@@ -144,6 +144,7 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
 	  if (status == GL_FRAMEBUFFER_COMPLETE_EXT) {
 	    return;
 	  }	
+	  std::cerr << "[projecM] warning: FBO support not detected. Using fallback." << std::endl;
 	}
 
 #endif 
