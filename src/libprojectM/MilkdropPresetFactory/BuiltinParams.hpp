@@ -31,6 +31,7 @@
 #include "PresetFrameIO.hpp"
 #include "Param.hpp"
 #include <map>
+#include <cstdio>
 
 class BuiltinParams {
 
