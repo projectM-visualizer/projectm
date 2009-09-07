@@ -84,8 +84,8 @@ QPulseAudioDeviceChooser::QPulseAudioDeviceChooser ( QPulseAudioThread * qpulseA
 	connect ( tryFirstPlayBackMonitorCheckBox, 
 		  SIGNAL(stateChanged(int)), this, SLOT(updateDevicesListViewLock(int)));
 
-	/// @bug wrong! should be based on HASH index, not display index
-	/// @bug wait! it's ok because we are piping the text, not the device index to the connect method!
+	// Using the display index is fine as as we are getting the text associated with it
+	// and passing the raw string to pulse audio.
 	connect ( devicesListView, SIGNAL ( doubleClicked ( const QModelIndex& ) ),
 		  _qpulseAudioThread, SLOT ( connectDevice ( const QModelIndex& ) ) );
 	

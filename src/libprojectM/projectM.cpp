@@ -308,7 +308,7 @@ static void *thread_callback(void *prjm) {
 
         mspf= ( int ) ( 1000.0/ ( float ) settings().fps ); //milliseconds per frame
 
-        /// @bug whois is responsible for updating this now?"
+        /// @bug who is responsible for updating this now?"
         pipelineContext().time = timeKeeper->GetRunningTime();
         pipelineContext().frame = timeKeeper->PresetFrameA();
         pipelineContext().progress = timeKeeper->PresetProgressA();
@@ -363,23 +363,18 @@ static void *thread_callback(void *prjm) {
             evaluateSecondPreset();
             #endif
 
-            //PresetMerger::MergePresets(m_activePreset->presetOutputs(), m_activePreset2->presetOutputs(),
-            //	timeKeeper->SmoothRatio(), presetInputs.gx, presetInputs.gy);
-
             Pipeline pipeline;
 
             pipeline.setStaticPerPixel(settings().meshX, settings().meshY);
 
             assert(_matcher);
             PipelineMerger::mergePipelines( m_activePreset->pipeline(),
-                                            m_activePreset2->pipeline(), pipeline, _matcher->matchResults(),
+                                            m_activePreset2->pipeline(), pipeline,
+					    _matcher->matchResults(),
                                             *_merger, timeKeeper->SmoothRatio());
 
             renderer->RenderFrame(pipeline, pipelineContext());
 
-            for (int i = 0; i < _matcher->matchResults().matches.size(); i++) {
-                //delete(pipeline.drawables[i]);
-            }
             pipeline.drawables.clear();
         }
         else
@@ -496,11 +491,6 @@ static void *thread_callback(void *prjm) {
             beatDetect->reset();
         }
 
-        /// @bug call factory clear here?
-        std::cerr << "call factory clear here?" << std::endl;
-        //	abort();
-
-
     }
 
     /** Resets OpenGL state */
@@ -598,19 +588,16 @@ static void *thread_callback(void *prjm) {
         if ( m_presetPos )
             delete ( m_presetPos );
 
-        /// @slow might not be necessary
         m_presetPos = 0;
 
         if ( m_presetChooser )
             delete ( m_presetChooser );
 
-        /// @slow might not be necessary
         m_presetChooser = 0;
 
         if ( m_presetLoader )
             delete ( m_presetLoader );
 
-        /// @slow might not be necessary
         m_presetLoader = 0;
 
     }
