@@ -150,6 +150,7 @@ void QProjectMConfigDialog::saveConfig() {
 
 	qSettings.setValue("PlaylistFile", _ui.startupPlaylistFileLineEdit->text());
 
+	qSettings.setValue("MouseHideOnTimeout", _ui.mouseHideTimeoutSpinBox->value());
 }
 
 
@@ -192,5 +193,6 @@ void QProjectMConfigDialog::loadConfig() {
 	_ui.fullscreenOnStartupCheckBox->setCheckState(qSettings.value("FullscreenOnStartup", false).toBool() ? Qt::Checked : Qt::Unchecked);
 	_ui.menuOnStartupCheckBox->setCheckState(qSettings.value("MenuOnStartup", false).toBool() ? Qt::Checked : Qt::Unchecked);
 	_ui.startupPlaylistFileLineEdit->setText(qSettings.value("PlaylistFile", QString()).toString()	);
+	_ui.mouseHideTimeoutSpinBox->setValue(qSettings.value("MouseHideOnTimeout", 5).toInt());
 
 }
