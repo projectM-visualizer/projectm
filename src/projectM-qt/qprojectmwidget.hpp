@@ -29,6 +29,7 @@
 #include <QKeyEvent>
 #include <QTimer>
 #include <QApplication>
+#include <QSettings>
 
 class QProjectMWidget : public QGLWidget
 {
@@ -42,7 +43,13 @@ class QProjectMWidget : public QGLWidget
 		{
 
 			m_mouseTimer = new QTimer ( this );
-			m_mouseTimer->start ( MOUSE_VISIBLE_TIMEOUT_MS );
+
+			QSettings settings("projectM", "qprojectM");
+			mouseHideTimeoutSeconds = 
+				settings.value("MouseHideOnTimeout", MOUSE_VISIBLE_TIMEOUT_MS/1000).toInt();
+			
+			if (mouseHideTimeoutSeconds > 0)
+				m_mouseTimer->start ( mouseHideTimeoutSeconds * 1000);
 
 			connect ( m_mouseTimer, SIGNAL ( timeout() ), this, SLOT ( hideMouse() ) );
 			this->setMouseTracking ( true );
@@ -89,7 +96,8 @@ class QProjectMWidget : public QGLWidget
 
 			m_mouseTimer->stop();
 			QApplication::restoreOverrideCursor();
-			m_mouseTimer->start ( MOUSE_VISIBLE_TIMEOUT_MS );
+			if (mouseHideTimeoutSeconds > 0)
+				m_mouseTimer->start ( mouseHideTimeoutSeconds*1000 );
 
 		}
 
@@ -248,7 +256,7 @@ class QProjectMWidget : public QGLWidget
 		}
 
 	private:
-
+		int mouseHideTimeoutSeconds;
 		void setup_opengl ( int w, int h )
 		{
 
