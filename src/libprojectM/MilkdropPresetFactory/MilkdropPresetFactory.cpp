@@ -127,6 +127,17 @@ void resetPresetOutputs(PresetOutputs *presetOutputs)
     for (int i = 0;i< 32;i++)
         presetOutputs->q[i] = 0;
 
+//	for ( std::vector<CustomWave*>::iterator pos = presetOutputs->customWaves.begin();
+//	        pos != presetOutputs->customWaves.end(); ++pos )
+//		if ( *pos != 0 ) delete ( *pos );
+	
+//	for ( std::vector<CustomShape*>::iterator pos = presetOutputs->customShapes.begin();
+//	        pos != presetOutputs->customShapes.end(); ++pos )
+//		if ( *pos != 0 ) delete ( *pos );
+	
+	presetOutputs->customWaves.clear();
+	presetOutputs->customShapes.clear();
+
     /* Q VARIABLES END */
 
 }
@@ -135,7 +146,7 @@ void resetPresetOutputs(PresetOutputs *presetOutputs)
 /* Reinitializes the engine variables to a default (conservative and sane) value */
 void MilkdropPresetFactory::reset()
 {
-std::cout << "reset!" << std::endl;
+
     resetPresetOutputs(_presetOutputs);
     resetPresetOutputs(_presetOutputs2);
 }
@@ -183,7 +194,7 @@ PresetOutputs* MilkdropPresetFactory::createPresetOutputs(int gx, int gy)
 	presetOutputs->bInvert = 0;
 	presetOutputs->bMotionVectorsOn = 1;
 
-    presetOutputs->fWarpAnimSpeed = 0;
+    	presetOutputs->fWarpAnimSpeed = 0;
 	presetOutputs->fWarpScale = 0;
 	presetOutputs->fShader = 0;
 
@@ -195,8 +206,7 @@ PresetOutputs* MilkdropPresetFactory::createPresetOutputs(int gx, int gy)
 
 	for (int i = 0;i<NUM_Q_VARIABLES;i++)
 		presetOutputs->q[i] = 0;
-
-
+	
 	/* Q AND T VARIABLES END */
     return presetOutputs;
 }
@@ -207,8 +217,6 @@ std::auto_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url, c
     PresetOutputs *presetOutputs = _usePresetOutputs ? _presetOutputs : _presetOutputs2;
 
 	_usePresetOutputs = !_usePresetOutputs;
-	presetOutputs->customWaves.clear();
-	presetOutputs->customShapes.clear();	
 	resetPresetOutputs(presetOutputs);
 
 	std::string path;
