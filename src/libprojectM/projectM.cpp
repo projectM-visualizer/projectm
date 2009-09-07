@@ -729,7 +729,6 @@ void projectM::selectNext(const bool hardCut) {
 			std::cout << "start smoothing" << std::endl;
 		}
 
-		std::cout << "getting next preset" << std::endl;
 		m_presetChooser->nextPreset(*m_presetPos);
 
 		if (!hardCut) {
