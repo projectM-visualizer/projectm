@@ -61,7 +61,7 @@ QXmlStreamReader::Error QXmlPlaylistHandler::readPlaylist (QIODevice * device, R
 			else if (reader.name() == "description") {
 				reader.readNext();
 				readFunc.setPlaylistDesc(reader.text().toString().replace("&amp;", "&"));
-				reader.readNext();
+				
 			}
 			else if (reader.name() == "item") {
 				readPlaylistItem<ReadFunctor>(reader, readFunc);
