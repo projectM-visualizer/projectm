@@ -41,19 +41,21 @@ class PresetLoader {
 		/// \param presetName a name for the preset
 		/// \param rating an integer representing the goodness of the preset
 		/// \returns The unique index assigned to the preset in the collection. Used with loadPreset
-		unsigned int addPresetURL ( const std::string & url, const std::string & presetName, int rating);
+		unsigned int addPresetURL ( const std::string & url, const std::string & presetName, int rating, int breedability);
 	
+
+		void setBreedability ( unsigned int index, int breedability);
 		
 		/// Add a preset to the loader's collection.
 		/// \param index insertion index
 		/// \param url an url referencing the preset
 		/// \param presetName a name for the preset
 		/// \param rating an integer representing the goodness of the preset
-		void insertPresetURL (unsigned int index, const std::string & url, const std::string & presetName, int rating);
+		void insertPresetURL (unsigned int index, const std::string & url, const std::string & presetName, int rating, int breedability);
 	
 		/// Clears all presets from the collection
-		inline void clear() { _entries.clear(); _presetNames.clear(); _ratings.clear(); _ratingsSum = 0; }
-		
+		inline void clear() { _entries.clear(); _presetNames.clear(); _ratings.clear(); _breedabilities.clear(); _ratingsSum = _breedabilitiesSum = 0; }
+		int getPresetBreedabilitiesSum() const;
 		const std::vector<int> & getPresetRatings() const;
 		int getPresetRatingsSum() const;
 		
@@ -85,21 +87,22 @@ class PresetLoader {
 		inline const std::string & directoryName() const {
 			return _dirname;
 		}
-
+		const std::vector<int> & getPresetBreedabilities () const;
 		/// Rescans the active preset directory
 		void rescan();
-
+		void setPresetName(unsigned int index, std::string name);
 	private:
 		void handleDirectoryError();
 		std::string _dirname;
 		DIR * _dir;
-		int _ratingsSum;
+		int _ratingsSum, _breedabilitiesSum;
 		mutable PresetFactoryManager _presetFactoryManager;
 
 		// vector chosen for speed, but not great for reverse index lookups
 		std::vector<std::string> _entries;
 		std::vector<std::string> _presetNames;
-		std::vector<int> _ratings;
+		std::vector<int> _ratings, _breedabilities;
+		
 
 };
 

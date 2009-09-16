@@ -102,30 +102,32 @@ QXmlStreamReader::Error QXmlPlaylistHandler::readPlaylist (QIODevice * device, R
 template <class ReadFunctor>
 QXmlStreamReader::Error QXmlPlaylistHandler::readPlaylistItem(QXmlStreamReader & reader, ReadFunctor & readFunctor) {
 
-	QString url;
-	int rating;
+	QString url, name;
+	int rating, breedability;
 
 	while (reader.readNext() != QXmlStreamReader::EndElement)
 		if (reader.name() == "url") {
 			bool repeat;
 			int result;
 
-			while (repeat = (result = reader.readNext()) == QXmlStreamReader::Characters) {
+			while (repeat = (result = reader.readNext()) == QXmlStreamReader::Characters) 	
+				url += reader.text().toString();			
 						
-			url += reader.text().toString();
-			 			
-			
-			//qDebug() << "result:" << result;
-			}
-			
-			
-			//qDebug() << "read url is " << url;				
 		} else if (reader.name() == "rating") {
 			reader.readNext();
 			rating = reader.text().toString().toInt();		
 			reader.readNext();
-		}
-		else {			
+		} else if (reader.name() == "breedability") {
+			reader.readNext();
+			breedability = reader.text().toString().toInt();
+			reader.readNext();
+		} else if (reader.name() == "name") {
+			bool repeat;
+			int result;
+
+			while (repeat = (result = reader.readNext()) == QXmlStreamReader::Characters)	
+				name += reader.text().toString();
+		} else {
 			if (reader.name() == "")
 				continue;
 			else if (reader.hasError())
@@ -139,7 +141,7 @@ QXmlStreamReader::Error QXmlPlaylistHandler::readPlaylistItem(QXmlStreamReader &
 			}
 		}
 
-	readFunctor.appendItem(url, QFileInfo(url).fileName(), rating);	
+	readFunctor.appendItem(url, QFileInfo(url).fileName(), rating, breedability);	
 
 	return QXmlStreamReader::NoError;
 
@@ -161,12 +163,19 @@ void QXmlPlaylistHandler::writePlaylist (QIODevice * device, WriteFunctor & writ
 	writer.writeCharacters(writeFunctor.playlistDesc());
 	writer.writeEndElement();
 
-
+	QString name;
 	QString url;
 	int rating;
-
-	while (writeFunctor.nextItem(url, rating)) {
+	int breedability;
+	
+	while (writeFunctor.nextItem(name, url, rating, breedability)) {
 		writer.writeStartElement("item");
+
+
+		writer.writeStartElement("name");
+		
+		writer.writeCharacters(name.replace("&amp;", "&"));
+		writer.writeEndElement();
 
 		writer.writeStartElement("url");
 		
@@ -175,6 +184,10 @@ void QXmlPlaylistHandler::writePlaylist (QIODevice * device, WriteFunctor & writ
 
 		writer.writeStartElement("rating");
 		writer.writeCharacters(QString("%1").arg(rating)+"\n");
+		writer.writeEndElement();
+
+		writer.writeStartElement("breedability");
+		writer.writeCharacters(QString("%1").arg(breedability)+"\n");
 		writer.writeEndElement();
 
 		writer.writeEndElement();

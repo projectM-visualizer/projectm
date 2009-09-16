@@ -40,12 +40,15 @@ class QPlaylistModel : public QAbstractTableModel
 public:
 static const int URLInfoRole = Qt::UserRole;
 static const int RatingRole = Qt::UserRole+1;
+static const int NameRole = Qt::UserRole+2;
+static const int BreedabilityRole = Qt::UserRole+3;
+
      QPlaylistModel(projectM & _projectM, QObject * parent = 0);
      ~QPlaylistModel() { }
 bool setData(const QModelIndex & index, const QVariant & value, int role=Qt::EditRole);
 
-void appendRow (const QString & presetURL, const QString & presetName, int rating = 3);
-void insertRow (int index, const QString & presetURL, const QString & presetName, int rating = 3);
+void appendRow (const QString & presetURL, const QString & presetName, int rating = 3, int breedability=3);
+void insertRow (int index, const QString & presetURL, const QString & presetName, int rating = 3, int breedability=3);
 
 bool removeRow (int index, const QModelIndex & parent = QModelIndex());
 bool removeRows ( int row, int count, const QModelIndex & parent = QModelIndex());
@@ -59,7 +62,8 @@ int columnCount ( const QModelIndex & parent= QModelIndex()) const ;
 
 bool readPlaylist(const QString & file);
 bool writePlaylist ( const QString & file );
-
+QVariant breedabilityToIcon( int rating )  const;
+QString getBreedabilityToolTip(int rating) const;
 Qt::ItemFlags flags(const QModelIndex &index) const;
 
 

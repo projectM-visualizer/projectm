@@ -201,11 +201,11 @@ public:
   bool selectedPresetIndex(unsigned int & index) const;
 
   /// Add a preset url to the play list. Appended to bottom. Returns index of preset
-  unsigned int addPresetURL(const std::string & presetURL, const std::string & presetName, int rating);
+  unsigned int addPresetURL(const std::string & presetURL, const std::string & presetName, int rating, int breedability);
 
   /// Insert a preset url to the play list at the suggested index.
   void insertPresetURL(unsigned int index,
-			       const std::string & presetURL, const std::string & presetName, int rating);
+			       const std::string & presetURL, const std::string & presetName, int rating, int breedability);
 
   /// Returns true if the selected preset position points to an actual preset in the
   /// currently loaded playlist
@@ -216,11 +216,16 @@ public:
 
   /// Returns the preset name associated with a preset index
   std::string getPresetName ( unsigned int index ) const;
+ 
+  void changePresetName ( unsigned int index, std::string name );
 
   /// Returns the rating associated with a preset index
   int getPresetRating (unsigned int index) const;
 
   void changePresetRating (unsigned int index, int rating);
+
+  int getPresetBreedability(unsigned int index) const;
+  void changePresetBreedability(unsigned int index, int breedability);
 
   /// Returns the size of the play list
   unsigned int getPlaylistSize() const;

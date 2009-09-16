@@ -35,7 +35,7 @@ extern "C"
 
 #include "Common.hpp"
 
-PresetLoader::PresetLoader (int gx, int gy, std::string dirname = std::string()) :_dirname ( dirname ), _dir ( 0 ), _ratingsSum ( 0 )
+PresetLoader::PresetLoader (int gx, int gy, std::string dirname = std::string()) :_dirname ( dirname ), _dir ( 0 ), _ratingsSum ( 0 ), _breedabilitiesSum(0)
 {
 	_presetFactoryManager.initialize(gx,gy);
 	// Do one scan
@@ -63,7 +63,10 @@ void PresetLoader::rescan()
 	_entries.clear();
 	_presetNames.clear();
 	_ratings.clear();
+	_breedabilities.clear();
 	_ratingsSum = 0;
+	_breedabilitiesSum = 0;
+
 	// If directory already opened, close it first
 	if ( _dir )
 	{
@@ -120,8 +123,14 @@ void PresetLoader::rescan()
 	_ratings = std::vector<int> ( _presetNames.size(), 3 );
 	_ratingsSum = 3 * _ratings.size();
 
+	// Give all presets equal breedability of 3 - why 3? I don't know
+	_breedabilities = std::vector<int> ( _presetNames.size(), 3 );
+	_breedabilitiesSum = 3 * _breedabilities.size();
+
 	assert ( _entries.size() == _presetNames.size() );
 	assert ( _ratings.size() == _entries.size() );
+	assert ( _breedabilities.size() == _entries.size() );
+
 
 
 }
@@ -202,15 +211,33 @@ void PresetLoader::setRating ( unsigned int index, int rating )
 
 }
 
-unsigned int PresetLoader::addPresetURL ( const std::string & url, const std::string & presetName, int rating )
+void PresetLoader::setBreedability ( unsigned int index, int breedability)
+{
+	assert ( index >=0 );
+	assert ( index < _breedabilities.size() );
+
+	_breedabilitiesSum -= _breedabilities[index];
+	_breedabilities[index] = breedability;
+	_breedabilitiesSum += breedability;
+
+	assert ( _entries.size() == _presetNames.size() );
+	assert ( _breedabilities.size() == _entries.size() );
+
+}
+
+unsigned int PresetLoader::addPresetURL ( const std::string & url, const std::string & presetName, int rating, int breedability )
 {
 	_entries.push_back ( url );
 	_presetNames.push_back ( presetName );
 	_ratings.push_back ( rating );
 	_ratingsSum += rating;
 
+	_breedabilities.push_back(breedability);
+	_breedabilitiesSum += breedability;
+
 	assert ( _entries.size() == _presetNames.size() );
 	assert ( _ratings.size() == _entries.size() );
+	assert ( _breedabilities.size() == _breedabilities.size() );
 
 	return _entries.size()-1;
 }
@@ -218,13 +245,18 @@ unsigned int PresetLoader::addPresetURL ( const std::string & url, const std::st
 void PresetLoader::removePreset ( unsigned int index )
 {
 
-	_entries.erase ( _entries.begin() +index );
-	_presetNames.erase ( _presetNames.begin() +index );
+	_entries.erase ( _entries.begin() + index );
+	_presetNames.erase ( _presetNames.begin() + index );
+
 	_ratingsSum -= _ratings[index];
-	_ratings.erase ( _ratings.begin() +index );
+	_ratings.erase ( _ratings.begin() + index );
+
+	_breedabilitiesSum -= _breedabilities[index];	
+	_breedabilities.erase ( _breedabilities.begin() + index );
 
 	assert ( _entries.size() == _presetNames.size() );
 	assert ( _ratings.size() == _entries.size() );
+	assert ( _breedabilities.size() == _entries.size() );
 
 }
 
@@ -243,6 +275,11 @@ int PresetLoader::getPresetRating ( unsigned int index ) const
 	return _ratings[index];
 }
 
+const std::vector<int> & PresetLoader::getPresetBreedabilities () const
+{
+	return _breedabilities;
+}
+
 
 const std::vector<int> & PresetLoader::getPresetRatings () const
 {
@@ -250,19 +287,29 @@ const std::vector<int> & PresetLoader::getPresetRatings () const
 }
 
 
+int PresetLoader::getPresetBreedabilitiesSum() const {
+	return _breedabilitiesSum;
+}
+
 int PresetLoader::getPresetRatingsSum () const
 {
 	return _ratingsSum;
 }
 
-void PresetLoader::insertPresetURL ( unsigned int index, const std::string & url, const std::string & presetName, int rating )
+void PresetLoader::setPresetName(unsigned int index, std::string name) {
+	_presetNames[index] = name;
+}
+
+void PresetLoader::insertPresetURL ( unsigned int index, const std::string & url, const std::string & presetName, int rating, int breedability )
 {
-	_entries.insert ( _entries.begin() +index, url );
+	_entries.insert ( _entries.begin() + index, url );
 	_presetNames.insert ( _presetNames.begin() + index, presetName );
-	_ratings.insert ( _ratings.begin() +index, rating );
+	_ratings.insert ( _ratings.begin() + index, rating );
 	_ratingsSum += rating;
+	_breedabilities.insert ( _breedabilities.begin() + index, rating );
+	_breedabilitiesSum += rating;
 
 	assert ( _entries.size() == _presetNames.size() );
 	assert ( _ratings.size() == _entries.size() );
-
+	assert ( _breedabilities.size() == _entries.size() );
 }
