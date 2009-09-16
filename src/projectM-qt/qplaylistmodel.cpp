@@ -40,8 +40,8 @@ class XmlReadFunctor {
 			m_model.setPlaylistDesc(desc);
 		}
 
-		inline void appendItem(const QString & url, const QString & name, int rating) {
-			m_model.appendRow(url, name, rating);
+		inline void appendItem(const QString & url, const QString & name, int rating, int breedability) {
+			m_model.appendRow(url, name, rating, breedability);
 		}
 		
 
@@ -60,7 +60,7 @@ class XmlWriteFunctor {
 			return m_model.playlistDesc();
 		}
 
-		inline bool nextItem(QString & url, int & rating) {
+		inline bool nextItem(QString & name, QString & url, int & rating, int & breedability) {
 
 			if (m_index >= m_model.rowCount())
 				return false;
@@ -68,6 +68,9 @@ class XmlWriteFunctor {
 			QModelIndex modelIndex = m_model.index(m_index, 0);
 			url = m_model.data(modelIndex, QPlaylistModel::URLInfoRole).toString();
 			rating = m_model.data(modelIndex, QPlaylistModel::RatingRole).toInt();
+
+			breedability = m_model.data(modelIndex, QPlaylistModel::BreedabilityRole).toInt();
+			
 			m_index++;
 			return true;
 		}
@@ -97,6 +100,14 @@ bool QPlaylistModel::setData ( const QModelIndex & index, const QVariant & value
 	if ( role == QPlaylistModel::RatingRole )
 	{
 		m_projectM.changePresetRating(index.row(), value.toInt());
+		emit ( dataChanged ( index, index ) );
+		return true;
+	} else if (role == QPlaylistModel::BreedabilityRole) {
+		m_projectM.changePresetBreedability(index.row(), value.toInt());
+		emit ( dataChanged ( index, index ) );
+		return true;
+	} else if (role == QPlaylistModel::NameRole) {
+		m_projectM.changePresetName(index.row(), value.toString().toStdString());
 		emit ( dataChanged ( index, index ) );
 		return true;
 	}
@@ -156,6 +167,30 @@ QVariant QPlaylistModel::ratingToIcon ( int rating )  const
 }
 
 
+QVariant QPlaylistModel::breedabilityToIcon( int rating )  const
+{
+	switch ( rating )
+	{
+		case 1:
+			return QVariant ();
+		case 2:
+			return QVariant ( QIcon ( ":/images/icons/rating-1.png" ) );
+		case 3:
+			return QVariant ( QIcon ( ":/images/icons/rating-2.png" ) );
+		case 4:
+			return QVariant ( QIcon ( ":/images/icons/rating-3.png" ) );
+		case 5:
+			return QVariant ( QIcon ( ":/images/icons/rating-4.png" ) );
+		case 6:
+			return QVariant ( QIcon ( ":/images/icons/rating-5.png" ) );
+		default:
+			if (rating <= 0)
+				return QVariant ();
+			else 
+				return QVariant ( QIcon ( ":/images/icons/rating-5.png" ) );
+	}
+}
+
 QString QPlaylistModel::getSillyRatingToolTip(int rating) {
 	
 switch (rating) {
@@ -179,6 +214,30 @@ switch (rating) {
 }
 }
 
+
+QString QPlaylistModel::getBreedabilityToolTip(int rating) const {
+	
+switch (rating) {
+	case 1:
+		return QString("Hidious.");
+	case 2:
+		return QString("Ugly.");
+	case 3:
+		return QString("Doable.");
+	case 4:
+		return QString("Hot.");
+	case 5:
+		return QString("Preset Magnet.");
+	case 6:		
+		return QString("Preset Whore.");
+	default:
+		if (rating <= 0 )
+			return QString("Infertile.");
+		else
+			return QString("Diseased slut.");
+}
+}
+
 QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::DisplayRole ) const
 {
 
@@ -197,15 +256,20 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 		case Qt::ToolTipRole:
 			if ( index.column() == 0 )
 				return QVariant ( QString ( m_projectM.getPresetName ( index.row() ).c_str() ) );
-			else
+			else if (index.column() == 1)
 				return QString ( getSillyRatingToolTip(m_projectM.getPresetRating(index.row())));
+			else return getBreedabilityToolTip(m_projectM.getPresetBreedability(index.row()));
 		case Qt::DecorationRole:
 			if ( index.column() == 1 )
 				return ratingToIcon ( m_projectM.getPresetRating(index.row()) );
+			else if (index.column() == 2)
+				return breedabilityToIcon ( m_projectM.getPresetBreedability(index.row()) );
 			else
 				return QVariant();
 		case QPlaylistModel::RatingRole:
 			return QVariant (  m_projectM.getPresetRating(index.row())  );
+		case QPlaylistModel::BreedabilityRole:
+			return QVariant (  m_projectM.getPresetBreedability(index.row())  );
 		case Qt::BackgroundRole:
 	
 			if (!m_projectM.selectedPresetIndex(pos))
@@ -232,6 +296,8 @@ QVariant QPlaylistModel::headerData ( int section, Qt::Orientation orientation, 
 		return QString ( tr ( "Preset" ) );
 	if ( ( section == 1 ) && ( role == Qt::DisplayRole ) )
 		return QString ( tr ( "Rating" ) );
+	if ( ( section == 2 ) && ( role == Qt::DisplayRole ) )
+		return QString ( tr ( "Breediness" ) );
 
 	return QAbstractTableModel::headerData ( section, orientation, role );
 }
@@ -246,21 +312,21 @@ int QPlaylistModel::columnCount ( const QModelIndex & parent ) const
 {
 
 	if ( rowCount() > 0 )
-		return 2;
+		return 3;
 	else
 		return 0;
 }
 
-void QPlaylistModel::appendRow ( const QString & presetURL, const QString & presetName, int rating )
+void QPlaylistModel::appendRow ( const QString & presetURL, const QString & presetName, int rating, int breedability )
 {
 	beginInsertRows ( QModelIndex(), rowCount(), rowCount() );
-	m_projectM.addPresetURL ( presetURL.toStdString(), presetName.toStdString(), rating );
+	m_projectM.addPresetURL ( presetURL.toStdString(), presetName.toStdString(), rating, breedability );
 	endInsertRows();
 }
 
-void QPlaylistModel::insertRow (int index, const QString & presetURL, const QString & presetName, int rating)  {
+void QPlaylistModel::insertRow (int index, const QString & presetURL, const QString & presetName, int rating, int breedability)  {
 	beginInsertRows ( QModelIndex(), index, index);
-	m_projectM.insertPresetURL (index, presetURL.toStdString(), presetName.toStdString(), rating );
+	m_projectM.insertPresetURL (index, presetURL.toStdString(), presetName.toStdString(), rating, breedability );
 	endInsertRows();
 }
 

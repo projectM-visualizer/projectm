@@ -68,14 +68,16 @@ inline std::size_t uniformInteger(std::size_t upperBound=1) {
 inline std::size_t weightedRandomNormalized(std::vector<float> weights) {
 
         // Choose a random bounded mass between 0 and 1
-	float cutoff = ((float)(rand())) / RAND_MAX;
+	float cutoff = ((float)(rand())) / (float)RAND_MAX;
 
+	//std::cout << "cutoff : " << cutoff << std::endl;
 
     // Sum up mass, stopping when cutoff is reached. This is the typical
     // weighted sampling algorithm.
 	float mass = 0;
 	for (std::size_t i = 0; i< weights.size() ; i++) {
 		mass += weights[i];
+		//std::cout << "mass: " << mass << std::endl;
 		if (mass >= cutoff)
 			return i;
 	}

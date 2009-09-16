@@ -630,14 +630,14 @@ static void *thread_callback(void *prjm) {
 
     }
 
-    unsigned int projectM::addPresetURL ( const std::string & presetURL, const std::string & presetName, int rating )
+    unsigned int projectM::addPresetURL ( const std::string & presetURL, const std::string & presetName, int rating, int breedability )
     {
         bool restorePosition = false;
 
         if (*m_presetPos == m_presetChooser->end())
             restorePosition = true;
 
-        int index = m_presetLoader->addPresetURL ( presetURL, presetName, rating);
+        int index = m_presetLoader->addPresetURL ( presetURL, presetName, rating, breedability);
 
         if (restorePosition)
             *m_presetPos = m_presetChooser->end();
@@ -668,6 +668,9 @@ static void *thread_callback(void *prjm) {
 
     }
 
+int projectM::getPresetBreedability(unsigned int index) const {
+	return m_presetLoader->getPresetBreedabilities()[index];
+}
 
 void projectM::selectRandom(const bool hardCut) {
 
@@ -678,7 +681,7 @@ void projectM::selectRandom(const bool hardCut) {
                 	timeKeeper->StartSmoothing();
 		}
 
-		*m_presetPos = m_presetChooser->weightedRandom();
+		*m_presetPos = m_presetChooser->weightedRandom(hardCut);
 
 		if (!hardCut) {
 			switchPreset(m_activePreset2);
@@ -810,7 +813,7 @@ void projectM::selectNext(const bool hardCut) {
         m_presetLoader->setRating(index, rating);
     }
 
-    void projectM::insertPresetURL(unsigned int index, const std::string & presetURL, const std::string & presetName, int rating)
+    void projectM::insertPresetURL(unsigned int index, const std::string & presetURL, const std::string & presetName, int rating, int breedability)
     {
         bool atEndPosition = false;
 
@@ -837,7 +840,7 @@ void projectM::selectNext(const bool hardCut) {
             newSelectedIndex++;
         }
 
-        m_presetLoader->insertPresetURL (index, presetURL, presetName, rating);
+        m_presetLoader->insertPresetURL (index, presetURL, presetName, rating, breedability);
 
         if (atEndPosition)
             *m_presetPos = m_presetChooser->end();
@@ -847,6 +850,11 @@ void projectM::selectNext(const bool hardCut) {
 
     }
 
+void projectM::changePresetName ( unsigned int index, std::string name ) {
+	m_presetLoader->setPresetName(index, name);
+}
 
-
+void projectM::changePresetBreedability( unsigned int index, int breedability) {
+	m_presetLoader->setBreedability(index, breedability);
+}
 
