@@ -48,7 +48,7 @@ class PlaylistWriteFunctor {
 			return m_desc;
 		}
 
-		inline bool nextItem(QString & url, int & rating) {
+		inline bool nextItem(QString & name, QString & url, int & rating, int & breedability) {
 
 			if (m_pos == m_end)
 				return false;
@@ -57,6 +57,8 @@ class PlaylistWriteFunctor {
 			
 			url = data.url;
 			rating = data.rating;
+			name = data.name;
+			breedability = data.breedability;
 			m_pos++;
 			return true;
 		}
@@ -118,7 +120,8 @@ activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDi
 	connect ( ui->tableView, SIGNAL ( activated ( const QModelIndex & ) ),
 		  this, SLOT ( selectPlaylistItem ( const QModelIndex & ) ) );
 	connect ( ui->tableView, SIGNAL ( clicked ( const QModelIndex & ) ),
-		  this, SLOT ( changeRating ( const QModelIndex & ) ) );
+		  this, SLOT ( changePresetAttribute ( const QModelIndex & ) ) );
+
 	connect ( ui->presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ),
 		  this, SLOT ( updateFilteredPlaylist ( const QString& ) ) );
 
@@ -444,25 +447,38 @@ void QProjectM_MainWindow::setMenuVisible(bool visible) {
 	
 }
 
-void QProjectM_MainWindow::changeRating ( const QModelIndex & index ) {
-	
+void QProjectM_MainWindow::changePresetAttribute ( const QModelIndex & index )
+{
+
 	if ( index.column() == 0 )
 		return;
 
-	/// @bug get rid of hard coded rating boundaries
-	int newRating = (( playlistModel->data ( index, QPlaylistModel::RatingRole ).toInt()  ) % 6)+1  ;
-	
-	
 	PlaylistItemVector & lastCache =  *historyHash[previousFilter];
-	
-	long id = lastCache[index.row()];
-	
-	playlistItemMetaDataHash[id].rating = newRating;
-	
-	playlistModel->setData( index, newRating, QPlaylistModel::RatingRole);
+	const long id = lastCache[index.row() ];
+
 	ui->presetPlayListDockWidget->setWindowModified ( true );
-	
-	
+
+	if ( index.column() == 1 )
+	{
+		/// @bug get rid of hard coded rating boundaries
+		int newRating = ( ( playlistModel->data ( index, QPlaylistModel::RatingRole ).toInt() ) % 6 ) +1  ;
+
+
+		playlistItemMetaDataHash[id].rating = newRating;
+
+		playlistModel->setData ( index, newRating, QPlaylistModel::RatingRole );
+	}
+	else if ( index.column() == 2 )
+	{
+
+		/// @bug get rid of hard coded breedability boundaries
+		const int newBreedability = ( ( playlistModel->data ( index, QPlaylistModel::BreedabilityRole ).toInt() ) % 6 ) +1  ;
+
+		playlistItemMetaDataHash[id].breedability = newBreedability;
+
+		playlistModel->setData ( index, newBreedability, QPlaylistModel::BreedabilityRole );
+	}
+
 }
 
 void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
@@ -592,8 +608,9 @@ void QProjectM_MainWindow::refreshHeaders(QResizeEvent * event) {
 	
 	
 	hHeader->setResizeMode ( 0, QHeaderView::Fixed);
-	hHeader->setResizeMode ( 1, QHeaderView::ResizeToContents);		
-	hHeader->resizeSection(0, ui->tableView->size().width()-20-hHeader->sectionSize(1));
+	hHeader->setResizeMode ( 1, QHeaderView::ResizeToContents);
+	hHeader->setResizeMode ( 2, QHeaderView::ResizeToContents);				
+	hHeader->resizeSection(0, ui->tableView->size().width()-20-hHeader->sectionSize(1)-hHeader->sectionSize(2));
 	
 	
 

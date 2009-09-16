@@ -72,8 +72,9 @@ class QProjectM_MainWindow:public QMainWindow
 			url(_url), name(_name), rating(_rating), id(_id) {}
 
 		QString url;
-		QString name;
+		QString name;		
 		int rating;
+		int breedability;
 		long id;
 		inline bool operator==(const PlaylistItemMetaData & data) {
 			return data.id == id;
@@ -136,7 +137,7 @@ void presetSoftCut();
       void postProjectM_Initialize();
       void updatePlaylistSelection(bool hardCut, unsigned int index);
       void selectPlaylistItem(const QModelIndex & index);
-      void changeRating(const QModelIndex & index);
+      void changePresetAttribute(const QModelIndex & index);
       void openSettingsDialog();
       void updateFilteredPlaylist(const QString & text);
       void refreshHeaders(QResizeEvent * event = 0);

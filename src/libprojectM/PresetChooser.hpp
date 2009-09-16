@@ -88,7 +88,7 @@ public:
 
     /// Perform a weighted sample to select a preset (uses preset rating values)
     /// \returns an iterator to the randomly selected preset
-    iterator weightedRandom() const;
+    iterator weightedRandom(bool hardCut) const;
 
     /// True if no presets in directory
     bool empty() const;
@@ -98,12 +98,17 @@ public:
     inline void previousPreset(PresetIterator & presetPos);
 
 private:
-
+    std::vector<float> sampleWeights;
     const PresetLoader * _presetLoader;
 };
 
 
-inline PresetChooser::PresetChooser(const PresetLoader & presetLoader):_presetLoader(&presetLoader) {}
+inline PresetChooser::PresetChooser(const PresetLoader & presetLoader):_presetLoader(&presetLoader) {
+	
+	const float breedProb = .80;
+	sampleWeights.push_back(breedProb); 
+	sampleWeights.push_back(1.0-breedProb);
+}
 
 inline std::size_t PresetChooser::size() const {
     return _presetLoader->size();
@@ -210,9 +215,32 @@ inline std::auto_ptr<Preset> PresetChooser::directoryIndex(std::size_t index) co
 }
 
 
-inline PresetChooser::iterator PresetChooser::weightedRandom() const {
-	std::size_t index = RandomNumberGenerators::weightedRandom
+inline PresetChooser::iterator PresetChooser::weightedRandom(bool hardCut) const {
+
+	std::size_t index;
+
+	if (hardCut) {
+		index = RandomNumberGenerators::weightedRandom
 		(_presetLoader->getPresetRatings(), _presetLoader->getPresetRatingsSum());
+
+	} else {
+		const std::size_t choice = RandomNumberGenerators::weightedRandomNormalized(sampleWeights);
+		if (choice == 0)  { // use smooth weights
+			index = RandomNumberGenerators::weightedRandom
+		(_presetLoader->getPresetBreedabilities(), _presetLoader->getPresetBreedabilitiesSum());
+			std::cout << "Using breed weights (sum=" << 
+				_presetLoader->getPresetBreedabilitiesSum() 
+			<< ")" << std::endl;
+		}
+		else {
+			index = RandomNumberGenerators::weightedRandom
+			(_presetLoader->getPresetRatings(), _presetLoader->getPresetRatingsSum());
+			std::cout << "Using regular weights (sum=" << 
+				_presetLoader->getPresetRatingsSum() 
+			<< ")" << std::endl;
+		}
+			
+	}
 	return begin(index);
 }
 
