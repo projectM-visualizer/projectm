@@ -103,7 +103,7 @@ activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDi
 	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized(QProjectM*) ), 
 		  this, SLOT ( postProjectM_Initialize() ) );
 	
-	connect(this, SIGNAL(dockLocationChanged ( Qt::DockWidgetArea)), SLOT(dockLocationChanged(Qt::DockWidgetArea)));
+	//connect(this, SIGNAL(dockLocationChanged ( Qt::DockWidgetArea)), SLOT(dockLocationChanged(Qt::DockWidgetArea)));
 	m_QProjectMWidget->makeCurrent();
 	m_QProjectMWidget->setFocus();
 	setCentralWidget ( m_QProjectMWidget );
