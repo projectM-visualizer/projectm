@@ -142,7 +142,7 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
     config.add("Aspect Correction", settings.aspectCorrection);
     config.add("Easter Egg Parameter", settings.easterEgg);
     config.add("Shuffle Enabled", settings.shuffleEnabled);
-
+    config.add("Soft Cut Ratings Enabled", settings.softCutRatingsEnabled);
     std::fstream file(configFile.c_str());
     if (file) {
         file << config;
@@ -206,7 +206,8 @@ void projectM::readConfig (const std::string & configFile )
     _settings.shuffleEnabled = config.read<bool> ( "Shuffle Enabled", true);
 
     _settings.easterEgg = config.read<float> ( "Easter Egg Parameter", 0.0);
-
+    _settings.softCutRatingsEnabled = 
+	config.read<float> ( "Soft Cut Ratings Enabled", false);
 
     projectM_init ( _settings.meshX, _settings.meshY, _settings.fps,
                     _settings.textureSize, _settings.windowWidth,_settings.windowHeight);
@@ -233,7 +234,7 @@ void projectM::readSettings (const Settings & settings )
     _settings.windowHeight = settings.windowHeight;
     _settings.smoothPresetDuration = settings.smoothPresetDuration;
     _settings.presetDuration = settings.presetDuration;
-
+    _settings.softCutRatingsEnabled = settings.softCutRatingsEnabled;
 
     _settings.presetURL = settings.presetURL;
     _settings.titleFontURL = settings.titleFontURL;
@@ -528,7 +529,7 @@ static void *thread_callback(void *prjm) {
             return PROJECTM_FAILURE;
         }
 
-        if ( ( m_presetChooser = new PresetChooser ( *m_presetLoader ) ) == 0 )
+        if ( ( m_presetChooser = new PresetChooser ( *m_presetLoader, settings().softCutRatingsEnabled ) ) == 0 )
         {
             delete ( m_presetLoader );
 
@@ -630,14 +631,14 @@ static void *thread_callback(void *prjm) {
 
     }
 
-    unsigned int projectM::addPresetURL ( const std::string & presetURL, const std::string & presetName, int rating, int breedability )
+    unsigned int projectM::addPresetURL ( const std::string & presetURL, const std::string & presetName, const RatingList & ratings)
     {
         bool restorePosition = false;
 
         if (*m_presetPos == m_presetChooser->end())
             restorePosition = true;
 
-        int index = m_presetLoader->addPresetURL ( presetURL, presetName, rating, breedability);
+        int index = m_presetLoader->addPresetURL ( presetURL, presetName, ratings);
 
         if (restorePosition)
             *m_presetPos = m_presetChooser->end();
@@ -666,11 +667,8 @@ static void *thread_callback(void *prjm) {
 
 	presetSwitchedEvent(hardCut, **m_presetPos);
 
-    }
-
-int projectM::getPresetBreedability(unsigned int index) const {
-	return m_presetLoader->getPresetBreedabilities()[index];
 }
+
 
 void projectM::selectRandom(const bool hardCut) {
 
@@ -769,9 +767,9 @@ void projectM::selectNext(const bool hardCut) {
         return m_presetLoader->getPresetURL(index);
     }
 
-    int projectM::getPresetRating ( unsigned int index ) const
+    int projectM::getPresetRating ( unsigned int index, const PresetRatingType ratingType) const
     {
-        return m_presetLoader->getPresetRating(index);
+        return m_presetLoader->getPresetRating(index, ratingType);
     }
 
     std::string projectM::getPresetName ( unsigned int index ) const
@@ -809,11 +807,11 @@ void projectM::selectNext(const bool hardCut) {
         return m_presetLoader->size();
     }
 
-    void projectM:: changePresetRating (unsigned int index, int rating) {
-        m_presetLoader->setRating(index, rating);
+    void projectM:: changePresetRating (unsigned int index, int rating, const PresetRatingType ratingType) {
+        m_presetLoader->setRating(index, rating, ratingType);
     }
 
-    void projectM::insertPresetURL(unsigned int index, const std::string & presetURL, const std::string & presetName, int rating, int breedability)
+    void projectM::insertPresetURL(unsigned int index, const std::string & presetURL, const std::string & presetName, const RatingList & ratings)
     {
         bool atEndPosition = false;
 
@@ -840,7 +838,7 @@ void projectM::selectNext(const bool hardCut) {
             newSelectedIndex++;
         }
 
-        m_presetLoader->insertPresetURL (index, presetURL, presetName, rating, breedability);
+        m_presetLoader->insertPresetURL (index, presetURL, presetName, ratings);
 
         if (atEndPosition)
             *m_presetPos = m_presetChooser->end();
@@ -854,7 +852,4 @@ void projectM::changePresetName ( unsigned int index, std::string name ) {
 	m_presetLoader->setPresetName(index, name);
 }
 
-void projectM::changePresetBreedability( unsigned int index, int breedability) {
-	m_presetLoader->setBreedability(index, breedability);
-}
 

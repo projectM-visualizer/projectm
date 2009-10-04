@@ -26,6 +26,7 @@
 
 #ifndef COMMON_HPP
 #define COMMON_HPP
+#include <vector>
 #include <typeinfo>
 #include <cstdarg>
 #include <cassert>
@@ -209,6 +210,17 @@ inline double meanSquaredError(const double & x, const double & y) {
 		return (x-y)*(x-y);
 }
 
+
+enum PresetRatingType {
+	FIRST_RATING_TYPE = 0,
+	HARD_CUT_RATING_TYPE = FIRST_RATING_TYPE,
+	SOFT_CUT_RATING_TYPE,
+	LAST_RATING_TYPE = SOFT_CUT_RATING_TYPE,
+	TOTAL_RATING_TYPES = SOFT_CUT_RATING_TYPE+1
+};
+
+
+typedef std::vector<int> RatingList;
 
 #endif
 

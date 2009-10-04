@@ -47,8 +47,8 @@ static const int BreedabilityRole = Qt::UserRole+3;
      ~QPlaylistModel() { }
 bool setData(const QModelIndex & index, const QVariant & value, int role=Qt::EditRole);
 
-void appendRow (const QString & presetURL, const QString & presetName, int rating = 3, int breedability=3);
-void insertRow (int index, const QString & presetURL, const QString & presetName, int rating = 3, int breedability=3);
+void appendRow (const QString & presetURL, const QString & presetName, int rating, int breedability);
+void insertRow (int index, const QString & presetURL, const QString & presetName, int rating, int breedability);
 
 bool removeRow (int index, const QModelIndex & parent = QModelIndex());
 bool removeRows ( int row, int count, const QModelIndex & parent = QModelIndex());
@@ -102,5 +102,8 @@ public slots:
 	projectM & m_projectM;
 	QString m_playlistName;
 	QString m_playlistDesc;
+
+private:
+bool softCutRatingsEnabled() const;
 };
 #endif
