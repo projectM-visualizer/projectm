@@ -103,7 +103,7 @@ activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDi
 	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized(QProjectM*) ), 
 		  this, SLOT ( postProjectM_Initialize() ) );
 	
-
+	connect(this, SIGNAL(dockLocationChanged ( Qt::DockWidgetArea)), SLOT(dockLocationChanged(Qt::DockWidgetArea)));
 	m_QProjectMWidget->makeCurrent();
 	m_QProjectMWidget->setFocus();
 	setCentralWidget ( m_QProjectMWidget );
@@ -115,8 +115,8 @@ activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDi
 	createToolBars();
 	createStatusBar();
 	readSettings();
-	
-	ui->presetPlayListDockWidget->hide();
+		
+	readPlaylistSettings();
 
 	connect ( ui->tableView, SIGNAL ( activated ( const QModelIndex & ) ),
 		  this, SLOT ( selectPlaylistItem ( const QModelIndex & ) ) );
@@ -126,6 +126,10 @@ activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDi
 	connect ( ui->presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ),
 		  this, SLOT ( updateFilteredPlaylist ( const QString& ) ) );
 
+}
+
+void QProjectM_MainWindow::dockLocationChanged(Qt::DockWidgetArea area) {
+	dockWidgetArea = area;
 }
 
 #include <QMouseEvent>
@@ -287,10 +291,6 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 		updatePlaylistUrl(url);
 		
 		refreshPlaylist();
-	//} else
-	//	refreshHeaders();
-	//firstOfRefreshPlaylist = false;
-	
 
 	if (!configDialog) {
 		configDialog = new QProjectMConfigDialog(m_QProjectMWidget->configFile(), m_QProjectMWidget, this);	
@@ -422,13 +422,45 @@ void QProjectM_MainWindow::setMenuAndStatusBarsVisible(bool visible) {
         }
 }
 
+void QProjectM_MainWindow::readPlaylistSettings() {
+	const QSettings settings ( "projectM", "qprojectM" );
+
+	/// @bug Hack for default values here. Should be auto placed or something elative to main window.	
+
+	const QPoint playlistPos = settings.value("playlistPos",
+		 QPoint(200,200)).toPoint();
+
+	bool playlistDocked = settings.value("playlistDocked", true).toBool();
+
+	const QSize playlistWindowSize = settings.value("playlistWindowSize", QSize(300,800)).toSize();
+
+	//ui->presetPlayListDockWidget
+	//ui->presetPlayListDockWidget->set
+
+	if (!playlistDocked) {
+		ui->presetPlayListDockWidget->hide();
+		ui->presetPlayListDockWidget->setFloating(!playlistDocked);	
+		//ui->presetPlayListDockWidget->setFloating(!playlistDocked);	
+		ui->presetPlayListDockWidget->move(playlistPos);
+		ui->presetPlayListDockWidget->resize(playlistWindowSize);
+	} else {
+	
+		if (!ui->menuBar->isVisible())
+			ui->presetPlayListDockWidget->hide();
+		else
+			ui->presetPlayListDockWidget->show();		
+		ui->presetPlayListDockWidget->hide();
+	}
+}
+
 void QProjectM_MainWindow::setMenuVisible(bool visible) {
 	
 	
 	
 	if (visible) {		
 		ui->dockWidgetContents->resize(_oldPlaylistSize);
-		ui->presetPlayListDockWidget->show();	
+		
+		ui->presetPlayListDockWidget->show();
 		if (_menuAndStatusBarsVisible) {	
 			menuBar()->show();
 			statusBar()->show();
@@ -440,7 +472,11 @@ void QProjectM_MainWindow::setMenuVisible(bool visible) {
 		_menuVisible = true;				
 	} else {		
 		_oldPlaylistSize = ui->dockWidgetContents->size();
-		ui->presetPlayListDockWidget->hide();
+
+		// Only hide the playlist when it is attached to the main window.
+		if (!ui->presetPlayListDockWidget->isFloating())
+			ui->presetPlayListDockWidget->hide();
+
 		menuBar()->hide();
 		statusBar()->hide();
 		_menuVisible = false;
@@ -947,7 +983,7 @@ void QProjectM_MainWindow::insertPlaylistItem
 				
 	qprojectMWidget()->seizePresetLock();
 	
-	long targetId = historyHash[previousFilter]->value(targetIndex);
+	const long targetId = historyHash[previousFilter]->value(targetIndex);
 		
 	playlistItemMetaDataHash[data.id] = data;
 	
@@ -1104,6 +1140,7 @@ void QProjectM_MainWindow::readSettings()
 	m_QPlaylistFileDialog->setDirectory
 	( settings.value ( "playlistPath", m_QPlaylistFileDialog->directory().absolutePath() ).toString() );
 
+
 	//resize ( size().width(), size().height() );
 	move ( pos );
 }
@@ -1118,6 +1155,15 @@ void QProjectM_MainWindow::writeSettings()
 	if (m_currentPlaylistUrl != QString())
 		settings.setValue("PlaylistFile", m_currentPlaylistUrl);
 	
+	const QPoint playlistPos = ui->presetPlayListDockWidget->pos();
+	const bool playlistDocked = !ui->presetPlayListDockWidget->isFloating();
+	
+	settings.setValue("playlistDocked", playlistDocked);
+	settings.setValue("playlistPos", playlistPos);
+	settings.setValue("playlistWindowSize", ui->presetPlayListDockWidget->size());
+
+	settings.setValue("playlistDockLocation", dockWidgetArea);
+
 }
 
 void QProjectM_MainWindow::loadFile ( const QString &fileName, int rating, int breed, const Nullable<int> & row)
