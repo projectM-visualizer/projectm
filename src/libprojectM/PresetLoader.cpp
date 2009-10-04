@@ -35,12 +35,14 @@ extern "C"
 
 #include "Common.hpp"
 
-PresetLoader::PresetLoader (int gx, int gy, std::string dirname = std::string()) :_dirname ( dirname ), _dir ( 0 ), _ratingsSum ( 0 ), _breedabilitiesSum(0)
+PresetLoader::PresetLoader (int gx, int gy, std::string dirname = std::string()) :_dirname ( dirname ), _dir ( 0 )
 {
 	_presetFactoryManager.initialize(gx,gy);
 	// Do one scan
 	if ( _dirname != std::string() )
 		rescan();
+	else
+		clear();
 }
 
 PresetLoader::~PresetLoader()
@@ -60,13 +62,8 @@ void PresetLoader::rescan()
 	// std::cerr << "Rescanning..." << std::endl;
 
 	// Clear the directory entry collection
-	_entries.clear();
-	_presetNames.clear();
-	_ratings.clear();
-	_breedabilities.clear();
-	_ratingsSum = 0;
-	_breedabilitiesSum = 0;
-
+	clear();
+	
 	// If directory already opened, close it first
 	if ( _dir )
 	{
@@ -120,16 +117,11 @@ void PresetLoader::rescan()
 		_presetNames.push_back ( *pos );
 
 	// Give all presets equal rating of 3 - why 3? I don't know
-	_ratings = std::vector<int> ( _presetNames.size(), 3 );
-	_ratingsSum = 3 * _ratings.size();
-
-	// Give all presets equal breedability of 3 - why 3? I don't know
-	_breedabilities = std::vector<int> ( _presetNames.size(), 3 );
-	_breedabilitiesSum = 3 * _breedabilities.size();
+	_ratings = std::vector<RatingList>(TOTAL_RATING_TYPES, RatingList( _presetNames.size(), 3 ));
+	_ratingsSums = std::vector<int>(2, 3 * _ratings.size());
+	
 
 	assert ( _entries.size() == _presetNames.size() );
-	assert ( _ratings.size() == _entries.size() );
-	assert ( _breedabilities.size() == _entries.size() );
 
 
 
@@ -197,48 +189,35 @@ void PresetLoader::handleDirectoryError()
 #endif
 }
 
-void PresetLoader::setRating ( unsigned int index, int rating )
+void PresetLoader::setRating(unsigned int index, int rating, const PresetRatingType ratingType)
 {
 	assert ( index >=0 );
-	assert ( index < _ratings.size() );
+	
+	const unsigned int ratingTypeIndex = static_cast<unsigned int>(ratingType);
+	assert (index < _ratings[ratingTypeIndex].size());
+ 
+	_ratingsSums[ratingTypeIndex] -= _ratings[ratingTypeIndex][index];
 
-	_ratingsSum -= _ratings[index];
-	_ratings[index] = rating;
-	_ratingsSum += rating;
-
-	assert ( _entries.size() == _presetNames.size() );
-	assert ( _ratings.size() == _entries.size() );
+	_ratings[ratingTypeIndex][index] = rating;
+	_ratingsSums[ratingType] += rating;
 
 }
 
-void PresetLoader::setBreedability ( unsigned int index, int breedability)
+
+unsigned int PresetLoader::addPresetURL ( const std::string & url, const std::string & presetName, const std::vector<int> & ratings)
 {
-	assert ( index >=0 );
-	assert ( index < _breedabilities.size() );
-
-	_breedabilitiesSum -= _breedabilities[index];
-	_breedabilities[index] = breedability;
-	_breedabilitiesSum += breedability;
-
-	assert ( _entries.size() == _presetNames.size() );
-	assert ( _breedabilities.size() == _entries.size() );
-
-}
-
-unsigned int PresetLoader::addPresetURL ( const std::string & url, const std::string & presetName, int rating, int breedability )
-{
-	_entries.push_back ( url );
+	_entries.push_back(url);
 	_presetNames.push_back ( presetName );
-	_ratings.push_back ( rating );
-	_ratingsSum += rating;
 
-	_breedabilities.push_back(breedability);
-	_breedabilitiesSum += breedability;
+	assert(ratings.size() == TOTAL_RATING_TYPES);
+	assert(ratings.size() == _ratings.size());
 
-	assert ( _entries.size() == _presetNames.size() );
-	assert ( _ratings.size() == _entries.size() );
-	assert ( _breedabilities.size() == _breedabilities.size() );
+	for (int i = 0; i < _ratings.size(); i++)
+		_ratings[i].push_back(ratings[i]);
 
+	for (int i = 0; i < ratings.size(); i++)
+		_ratingsSums[i] += ratings[i];
+	
 	return _entries.size()-1;
 }
 
@@ -247,16 +226,12 @@ void PresetLoader::removePreset ( unsigned int index )
 
 	_entries.erase ( _entries.begin() + index );
 	_presetNames.erase ( _presetNames.begin() + index );
-
-	_ratingsSum -= _ratings[index];
-	_ratings.erase ( _ratings.begin() + index );
-
-	_breedabilitiesSum -= _breedabilities[index];	
-	_breedabilities.erase ( _breedabilities.begin() + index );
-
-	assert ( _entries.size() == _presetNames.size() );
-	assert ( _ratings.size() == _entries.size() );
-	assert ( _breedabilities.size() == _entries.size() );
+	
+	for (int i = 0; i < _ratingsSums.size(); i++) {
+		_ratingsSums[i] -= _ratings[i][index];
+		_ratings[i].erase ( _ratings[i].begin() + index );
+	}
+	
 
 }
 
@@ -270,46 +245,37 @@ const std::string & PresetLoader::getPresetName ( unsigned int index ) const
 	return _presetNames[index];
 }
 
-int PresetLoader::getPresetRating ( unsigned int index ) const
+int PresetLoader::getPresetRating ( unsigned int index, const PresetRatingType ratingType ) const
 {
-	return _ratings[index];
+	return _ratings[ratingType][index];
 }
 
-const std::vector<int> & PresetLoader::getPresetBreedabilities () const
-{
-	return _breedabilities;
-}
-
-
-const std::vector<int> & PresetLoader::getPresetRatings () const
+const std::vector<RatingList> & PresetLoader::getPresetRatings () const
 {
 	return _ratings;
 }
 
-
-int PresetLoader::getPresetBreedabilitiesSum() const {
-	return _breedabilitiesSum;
-}
-
-int PresetLoader::getPresetRatingsSum () const
-{
-	return _ratingsSum;
+const std::vector<int> & PresetLoader::getPresetRatingsSums() const {
+	return _ratingsSums;
 }
 
 void PresetLoader::setPresetName(unsigned int index, std::string name) {
 	_presetNames[index] = name;
 }
 
-void PresetLoader::insertPresetURL ( unsigned int index, const std::string & url, const std::string & presetName, int rating, int breedability )
+void PresetLoader::insertPresetURL ( unsigned int index, const std::string & url, const std::string & presetName, const RatingList & ratings)
 {
 	_entries.insert ( _entries.begin() + index, url );
 	_presetNames.insert ( _presetNames.begin() + index, presetName );
-	_ratings.insert ( _ratings.begin() + index, rating );
-	_ratingsSum += rating;
-	_breedabilities.insert ( _breedabilities.begin() + index, rating );
-	_breedabilitiesSum += rating;
+	
+	
+
+	for (int i = 0; i < _ratingsSums.size();i++) {
+		_ratingsSums[i] += _ratings[i][index];
+		_ratings[i].insert ( _ratings[i].begin() + index, ratings[i] );
+	}
 
 	assert ( _entries.size() == _presetNames.size() );
 	assert ( _ratings.size() == _entries.size() );
-	assert ( _breedabilities.size() == _entries.size() );
+	
 }

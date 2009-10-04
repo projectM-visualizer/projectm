@@ -141,6 +141,8 @@ void QProjectMConfigDialog::saveConfig() {
 	settings.beatSensitivity = _ui.beatSensitivitySpinBox->value();
 	settings.easterEgg = _ui.easterEggParameterSpinBox->value();
 	settings.shuffleEnabled = _ui.shuffleOnStartupCheckBox->checkState() == Qt::Checked;
+	settings.softCutRatingsEnabled = _ui.softCutRatingsEnabledCheckBox->checkState() == Qt::Checked;
+
 	projectM::writeConfig(_configFile, settings);
 
 	QSettings qSettings("projectM", "qprojectM");
@@ -187,7 +189,7 @@ void QProjectMConfigDialog::loadConfig() {
 	_ui.smoothPresetDurationSpinBox->setValue(settings.smoothPresetDuration);
 	_ui.presetDurationSpinBox->setValue(settings.presetDuration);
 	_ui.easterEggParameterSpinBox->setValue(settings.easterEgg);
-
+	_ui.softCutRatingsEnabledCheckBox->setCheckState(settings.softCutRatingsEnabled ? Qt::Checked : Qt::Unchecked);
 
 	QSettings qSettings("projectM", "qprojectM");
 	_ui.fullscreenOnStartupCheckBox->setCheckState(qSettings.value("FullscreenOnStartup", false).toBool() ? Qt::Checked : Qt::Unchecked);

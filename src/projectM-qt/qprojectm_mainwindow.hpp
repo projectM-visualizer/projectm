@@ -68,8 +68,8 @@ class QProjectM_MainWindow:public QMainWindow
 
       typedef struct PlaylistItemMetaData {
 		PlaylistItemMetaData() {}
-		PlaylistItemMetaData(const QString & _url, const QString & _name, int _rating, long _id):
-			url(_url), name(_name), rating(_rating), id(_id) {}
+		PlaylistItemMetaData(const QString & _url, const QString & _name, int _rating, int _breed, long _id):
+			url(_url), name(_name), rating(_rating), breedability(_breed), id(_id) {}
 
 		QString url;
 		QString name;		
@@ -184,7 +184,7 @@ void presetSoftCut();
       void createStatusBar();
       void readSettings();
       void writeSettings();
-      void loadFile(const QString &fileName, int rating ,const Nullable<int> & row);
+      void loadFile(const QString &fileName, int rating , int breed, const Nullable<int> & row);
       QString strippedName(const QString &fullFileName);
 
       QProjectMWidget * m_QProjectMWidget;

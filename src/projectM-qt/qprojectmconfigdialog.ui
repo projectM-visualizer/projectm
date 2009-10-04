@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>676</width>
-    <height>372</height>
+    <width>683</width>
+    <height>409</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,7 +19,7 @@
      <x>8</x>
      <y>8</y>
      <width>662</width>
-     <height>364</height>
+     <height>385</height>
     </rect>
    </property>
    <layout class="QGridLayout">
@@ -416,6 +416,22 @@ p, li { white-space: pre-wrap; }
         </property>
         <property name="text">
          <string>Shuffle on startup</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="softCutRatingsEnabledCheckBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Enable to turn on a different rating system for soft cuts and hard cuts.</string>
+        </property>
+        <property name="text">
+         <string>Soft Cut Ratings</string>
         </property>
        </widget>
       </item>

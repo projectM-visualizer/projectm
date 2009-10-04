@@ -58,6 +58,7 @@ class PlaylistWriteFunctor {
 			url = data.url;
 			rating = data.rating;
 			name = data.name;
+			
 			breedability = data.breedability;
 			m_pos++;
 			return true;
@@ -609,8 +610,16 @@ void QProjectM_MainWindow::refreshHeaders(QResizeEvent * event) {
 	
 	hHeader->setResizeMode ( 0, QHeaderView::Fixed);
 	hHeader->setResizeMode ( 1, QHeaderView::ResizeToContents);
-	hHeader->setResizeMode ( 2, QHeaderView::ResizeToContents);				
-	hHeader->resizeSection(0, ui->tableView->size().width()-20-hHeader->sectionSize(1)-hHeader->sectionSize(2));
+	
+	const int numRatings =  qprojectM()->settings().softCutRatingsEnabled ? 2 : 1;
+
+	int sizeTotal = 0;
+	for (int i = 0; i < numRatings; i++) {
+		// Add 1 to skip the Name column
+		hHeader->setResizeMode (i+1, QHeaderView::ResizeToContents);
+		sizeTotal += hHeader->sectionSize(i+1);
+	}				
+	hHeader->resizeSection(0, ui->tableView->size().width()-20-sizeTotal);
 	
 	
 
@@ -685,7 +694,7 @@ void QProjectM_MainWindow::addPresetsDialog(const QModelIndex & index)
 					else
 						row = index.row()-1;				
 				}
-				loadFile ( *pos, 3, row);
+				loadFile ( *pos, 3, 3, row);
 				i++;
 			}
 		}
@@ -859,10 +868,10 @@ void QProjectM_MainWindow::copyPlaylist()
 		                      QPlaylistModel::URLInfoRole ).toString();
 		const QString & name = playlistModel->data ( index, Qt::DisplayRole ).toString();
 		int rating = playlistModel->data ( index, QPlaylistModel::RatingRole ).toInt();
-		
+		int breed = playlistModel->data ( index, QPlaylistModel::BreedabilityRole).toInt();		
 		items->push_back (playlistItemCounter );
 		playlistItemMetaDataHash[playlistItemCounter] =
-				PlaylistItemMetaData ( url, name, rating, playlistItemCounter );
+				PlaylistItemMetaData ( url, name, rating, breed, playlistItemCounter );
 		
 		playlistItemCounter++;
 
@@ -948,7 +957,7 @@ void QProjectM_MainWindow::insertPlaylistItem
 		items->insert(insertIndex, data.id);
 	}
 		
-	playlistModel->insertRow(targetIndex, data.url, data.name, data.rating);
+	playlistModel->insertRow(targetIndex, data.url, data.name, data.rating, data.breedability);
 	
 	qprojectMWidget()->releasePresetLock();
 }
@@ -1111,7 +1120,7 @@ void QProjectM_MainWindow::writeSettings()
 	
 }
 
-void QProjectM_MainWindow::loadFile ( const QString &fileName, int rating, const Nullable<int> & row)
+void QProjectM_MainWindow::loadFile ( const QString &fileName, int rating, int breed, const Nullable<int> & row)
 {
 
 	const QString & name = strippedName ( fileName );
@@ -1123,7 +1132,7 @@ void QProjectM_MainWindow::loadFile ( const QString &fileName, int rating, const
 		ui->presetSavePushButton->setEnabled(true);
 	
 	playlistItemMetaDataHash[playlistItemCounter] = 
-			PlaylistItemMetaData ( fileName, name, rating, playlistItemCounter) ;
+			PlaylistItemMetaData ( fileName, name, rating, breed, playlistItemCounter) ;
 	
 	
 	if (row.hasValue())
@@ -1177,7 +1186,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 		{
 			const PlaylistItemMetaData & data = playlistItemMetaDataHash[*pos];
 			
-			playlistModel->appendRow ( data.url, data.name,  data.rating);
+			playlistModel->appendRow ( data.url, data.name,  data.rating, data.breedability);
 			
 			if (activePresetId.hasValue() && data.id == activePresetId.value()) {
 				qprojectM()->selectPresetPosition(playlistModel->rowCount()-1);
@@ -1197,7 +1206,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 			
 			if ( ( data.name ).contains ( filter, Qt::CaseInsensitive ) )
 			{
-				playlistModel->appendRow ( data.url, data.name, data.rating);
+				playlistModel->appendRow ( data.url, data.name, data.rating, data.breedability);
 				if (activePresetId.hasValue() && data.id == activePresetId.value()) {
 					qprojectM()->selectPresetPosition(playlistModel->rowCount()-1);
 					presetExistsWithinFilter = true;

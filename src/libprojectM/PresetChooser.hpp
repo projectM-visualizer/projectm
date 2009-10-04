@@ -60,7 +60,11 @@ public:
     /// Initializes a chooser with an established preset loader.
     /// \param presetLoader an initialized preset loader to choose presets from
     /// \note The preset loader is refreshed via events or otherwise outside this class's scope
-    PresetChooser(const PresetLoader & presetLoader);
+    PresetChooser(const PresetLoader & presetLoader, bool 	softCutRatingsEnabled);
+
+    inline void setSoftCutRatingsEnabled(bool enabled) {
+	_softCutRatingsEnabled = enabled;
+    }
 
     /// Choose a preset via the passed in index. Must be between 0 and num valid presets in directory
     /// \param index An index lying in the interval [0, this->getNumPresets())
@@ -100,14 +104,12 @@ public:
 private:
     std::vector<float> sampleWeights;
     const PresetLoader * _presetLoader;
+    bool _softCutRatingsEnabled;
 };
 
 
-inline PresetChooser::PresetChooser(const PresetLoader & presetLoader):_presetLoader(&presetLoader) {
-	
-	const float breedProb = .80;
-	sampleWeights.push_back(breedProb); 
-	sampleWeights.push_back(1.0-breedProb);
+inline PresetChooser::PresetChooser(const PresetLoader & presetLoader, bool softCutRatingsEnabled):_presetLoader(&presetLoader), _softCutRatingsEnabled(softCutRatingsEnabled) {
+
 }
 
 inline std::size_t PresetChooser::size() const {
@@ -217,30 +219,22 @@ inline std::auto_ptr<Preset> PresetChooser::directoryIndex(std::size_t index) co
 
 inline PresetChooser::iterator PresetChooser::weightedRandom(bool hardCut) const {
 
-	std::size_t index;
+	
+	
 
-	if (hardCut) {
-		index = RandomNumberGenerators::weightedRandom
-		(_presetLoader->getPresetRatings(), _presetLoader->getPresetRatingsSum());
+	// TODO make a sophisticated function object interface to determine why a certain rating
+	// category is chosen, or weighted distribution thereover.
+	const PresetRatingType ratingType = hardCut || (!_softCutRatingsEnabled) ? 
+		HARD_CUT_RATING_TYPE : SOFT_CUT_RATING_TYPE;		
 
-	} else {
-		const std::size_t choice = RandomNumberGenerators::weightedRandomNormalized(sampleWeights);
-		if (choice == 0)  { // use smooth weights
-			index = RandomNumberGenerators::weightedRandom
-		(_presetLoader->getPresetBreedabilities(), _presetLoader->getPresetBreedabilitiesSum());
-			std::cout << "Using breed weights (sum=" << 
-				_presetLoader->getPresetBreedabilitiesSum() 
-			<< ")" << std::endl;
-		}
-		else {
-			index = RandomNumberGenerators::weightedRandom
-			(_presetLoader->getPresetRatings(), _presetLoader->getPresetRatingsSum());
-			std::cout << "Using regular weights (sum=" << 
-				_presetLoader->getPresetRatingsSum() 
-			<< ")" << std::endl;
-		}
-			
-	}
+	const std::size_t ratingsTypeIndex = static_cast<std::size_t>(ratingType);
+	
+	const std::vector<int> & weights = _presetLoader->getPresetRatings()[ratingsTypeIndex];
+
+	const std::size_t index = RandomNumberGenerators::weightedRandom
+		(weights,
+		 _presetLoader->getPresetRatingsSums()[ratingsTypeIndex]);
+	
 	return begin(index);
 }
 
