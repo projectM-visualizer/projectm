@@ -114,6 +114,8 @@ protected:
             void closeEvent(QCloseEvent *event);
 
 private slots:
+void dockLocationChanged(Qt::DockWidgetArea area);
+
 void presetHardCut();
 void presetSoftCut();
 	void insertPresetsDialog() ;
@@ -146,7 +148,7 @@ void presetSoftCut();
 
 	
       private:
-
+	void readPlaylistSettings();
 	bool warnIfPlaylistModified();
 	
 	void insertPlaylistItem(const PlaylistItemMetaData & data, int targetIndex);
@@ -189,9 +191,7 @@ void presetSoftCut();
 
       QProjectMWidget * m_QProjectMWidget;
 
-      QMenu *fileMenu;
-      QMenu *helpMenu;
-	  QMenu *playlistContextMenu;
+      QMenu *playlistContextMenu;
       QToolBar *fileToolBar;
 
       QAction *openAct;;
@@ -199,7 +199,8 @@ void presetSoftCut();
       QAction *aboutAct;
       QAction *aboutQtAct;
 
-      QString previousFilter;
+      QString previousFilter;	
+      Qt::DockWidgetArea dockWidgetArea;
 
       QPresetFileDialog * m_QPresetFileDialog;
       QPlaylistFileDialog * m_QPlaylistFileDialog;
