@@ -75,7 +75,7 @@
    <property name="minimumSize">
     <size>
      <width>315</width>
-     <height>110</height>
+     <height>111</height>
     </size>
    </property>
    <property name="baseSize">
@@ -130,7 +130,7 @@ p, li { white-space: pre-wrap; }
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
+     <item row="0" column="3">
       <widget class="QPushButton" name="presetSavePushButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
@@ -156,7 +156,7 @@ p, li { white-space: pre-wrap; }
        </property>
       </widget>
      </item>
-     <item row="0" column="3">
+     <item row="0" column="4">
       <widget class="QPushButton" name="clearPresetList_PushButton">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -179,11 +179,11 @@ p, li { white-space: pre-wrap; }
        </property>
       </widget>
      </item>
-     <item row="0" column="4">
+     <item row="0" column="5">
       <widget class="QLineEdit" name="presetSearchBarLineEdit">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-         <horstretch>20</horstretch>
+         <horstretch>30</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
@@ -198,7 +198,7 @@ p, li { white-space: pre-wrap; }
        </property>
       </widget>
      </item>
-     <item row="1" column="0" colspan="5">
+     <item row="1" column="0" colspan="6">
       <widget class="QPlaylistTableView" name="tableView">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -314,7 +314,7 @@ image: url(:/images/icons/hi16-action-projectm_random_no.png);
        </property>
       </widget>
      </item>
-     <item row="2" column="1" colspan="4">
+     <item row="2" column="1" colspan="5">
       <widget class="QCheckBox" name="lockPresetCheckBox">
        <property name="enabled">
         <bool>true</bool>
@@ -356,6 +356,30 @@ image: url(:/images/icons/hi16-action-projectm_unlock.png);
        </property>
        <property name="autoRepeat">
         <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QPushButton" name="loadPlaylistPushButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Open the file browser to load a playlist.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="application.qrc">
+         <normaloff>:/images/icons/hi16-action-projectm_edit.png</normaloff>:/images/icons/hi16-action-projectm_edit.png</iconset>
        </property>
       </widget>
      </item>
@@ -504,6 +528,22 @@ image: url(:/images/icons/hi16-action-projectm_unlock.png);
     <hint type="sourcelabel">
      <x>52</x>
      <y>66</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>loadPlaylistPushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>actionOpen_Play_List</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>83</x>
+     <y>76</y>
     </hint>
     <hint type="destinationlabel">
      <x>-1</x>
