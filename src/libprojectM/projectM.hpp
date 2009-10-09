@@ -313,7 +313,7 @@ private:
 
   RenderItemMatcher * _matcher;
   MasterRenderItemMerge * _merger;
-  pthread_mutex_t mutex;
+  pthread_mutex_t mutex, preset_switch_mutex;
   pthread_cond_t  condition;
   pthread_t thread;
   bool running;

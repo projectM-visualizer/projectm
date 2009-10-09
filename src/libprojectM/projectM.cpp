@@ -309,6 +309,7 @@ static void *thread_callback(void *prjm) {
 
         mspf= ( int ) ( 1000.0/ ( float ) settings().fps ); //milliseconds per frame
 
+	pthread_mutex_lock(&preset_switch_mutex);
         /// @bug who is responsible for updating this now?"
         pipelineContext().time = timeKeeper->GetRunningTime();
         pipelineContext().frame = timeKeeper->PresetFrameA();
@@ -375,8 +376,12 @@ static void *thread_callback(void *prjm) {
                                             *_merger, timeKeeper->SmoothRatio());
 
             renderer->RenderFrame(pipeline, pipelineContext());
+		
+	    while (!pipeline.drawables.empty()) {
+		delete(pipeline.drawables.back());
+		pipeline.drawables.pop_back();
+	    }
 
-            pipeline.drawables.clear();
         }
         else
         {
@@ -421,7 +426,7 @@ static void *thread_callback(void *prjm) {
         this->timestart=getTicks ( &timeKeeper->startTime );
         #endif /** !WIN32 */
 
-
+	pthread_mutex_unlock(&preset_switch_mutex);
     }
 
     void projectM::projectM_reset()
@@ -561,8 +566,8 @@ static void *thread_callback(void *prjm) {
         // playlist initialization was deferred
         if (m_presetChooser->empty())
         {
-            std::cerr << "[projectM] warning: no valid files found in preset directory \""
-            << m_presetLoader->directoryName() << "\"" << std::endl;
+            //std::cerr << "[projectM] warning: no valid files found in preset directory \""
+            //<< m_presetLoader->directoryName() << "\"" << std::endl;
         }
 
         _matcher = new RenderItemMatcher();
@@ -742,14 +747,17 @@ void projectM::selectNext(const bool hardCut) {
 		
 	
 }
-    void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
+
+void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
+
+	pthread_mutex_lock(&preset_switch_mutex);
 
         targetPreset = m_presetPos->allocate();
 
         // Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
         renderer->setPresetName(targetPreset->name());
         renderer->SetPipeline(targetPreset->pipeline());
-
+	pthread_mutex_unlock(&preset_switch_mutex);
     }
 
     void projectM::setPresetLock ( bool isLocked )
