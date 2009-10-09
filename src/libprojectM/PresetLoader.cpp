@@ -276,6 +276,6 @@ void PresetLoader::insertPresetURL ( unsigned int index, const std::string & url
 	}
 
 	assert ( _entries.size() == _presetNames.size() );
-	assert ( _ratings.size() == _entries.size() );
+	
 	
 }
