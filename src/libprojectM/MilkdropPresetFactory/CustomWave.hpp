@@ -41,7 +41,7 @@ class Preset;
 #include "Common.hpp"
 #include "Param.hpp"
 #include "PerFrameEqn.hpp"
-#include "Waveform.hpp"
+#include "Renderer/Waveform.hpp"
 
 #include <map>
 

@@ -34,7 +34,7 @@
 #include "Param.hpp"
 #include "PerFrameEqn.hpp"
 #include "InitCond.hpp"
-#include "Renderable.hpp"
+#include "Renderer/Renderable.hpp"
 #include <vector>
 
 class Preset;
