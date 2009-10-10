@@ -3,7 +3,7 @@
 #include <math.h>
 #include <cassert>
 #include <iostream>
-#include "BeatDetect.hpp"
+#include "Renderer/BeatDetect.hpp"
 
 PresetInputs::PresetInputs() : PipelineContext()
 {
