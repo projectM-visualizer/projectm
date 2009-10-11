@@ -71,9 +71,10 @@ MilkdropPreset::~MilkdropPreset()
 
   traverse<TraverseFunctors::Delete<Param> >(user_param_tree);
 
-  /// @bug below is a potential memory model of how we free custom waves, will remove
-  /// once a working model is determined.
-  /*
+  /// Testing deletion of render items by the preset. would be nice if it worked, 
+  /// and seems to be working if you use a mutex on the preset switching.
+
+  std::cout << "begin freeing of waves / shapes" << std::endl;  
   for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); 
 	pos != customWaves.end(); ++pos ) {
 	delete(*pos);
@@ -83,7 +84,7 @@ MilkdropPreset::~MilkdropPreset()
 	pos != customShapes.end(); ++pos ) {
 	delete(*pos);
   }
-  */
+  std::cout << "end freeing of waves / shapes" << std::endl;
 }
 
 /* Adds a per pixel equation according to its string name. This
