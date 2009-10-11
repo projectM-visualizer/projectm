@@ -19,9 +19,10 @@
  *
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+
 #ifdef WIN32
 #include "win32-dirent.h"
 #else
@@ -70,7 +71,19 @@ MilkdropPreset::~MilkdropPreset()
 
   traverse<TraverseFunctors::Delete<Param> >(user_param_tree);
 
+  /// @bug below is a potential memory model of how we free custom waves, will remove
+  /// once a working model is determined.
+  /*
+  for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); 
+	pos != customWaves.end(); ++pos ) {
+	delete(*pos);
+  }
 
+  for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); 
+	pos != customShapes.end(); ++pos ) {
+	delete(*pos);
+  }
+  */
 }
 
 /* Adds a per pixel equation according to its string name. This
