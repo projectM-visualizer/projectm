@@ -2,9 +2,6 @@ project (PROJECTM_ROOT)
 
 cmake_minimum_required(VERSION 2.4.0)
 
-set( CMAKE_MODULE_PATH    ${CMAKE_MODULE_PATH}
-                          ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
-
 
 SET(CPACK_BINARY_RPM OFF)
 #SET(CPACK_BINARY_Z OFF)
@@ -25,9 +22,6 @@ OPTION(INCLUDE-PROJECTM-JACK "Build the projectM JACK client" OFF)
 OPTION(INCLUDE-PROJECTM-TEST "Build the projectM test suite" ON)
 OPTION(INCLUDE-PROJECTM-XMMS "Build the projectM xmms module (deprecated, use audacious instead)" OFF)
 OPTION(INCLUDE-NATIVE-PRESETS "Build the projectM native preset sample collection " ON)
-
-find_package( Freetype2 REQUIRED)
-include_directories( ${FREETYPE2_INCLUDE_DIR} )
 
 add_subdirectory (libprojectM)
 

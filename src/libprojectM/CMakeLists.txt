@@ -15,7 +15,12 @@ INCLUDE(CPack)
 
 cmake_minimum_required(VERSION 2.4.0)
 
+
 cmake_policy(SET CMP0005 OLD)
+
+
+set( CMAKE_MODULE_PATH    ${CMAKE_MODULE_PATH}
+                          ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL library" OFF)
 
@@ -92,6 +97,10 @@ endif(USE_FBO)
 
 if(USE_FTGL)
 ADD_DEFINITIONS(-DUSE_FTGL)
+
+find_package( Freetype2 REQUIRED)
+include_directories( ${FREETYPE2_INCLUDE_DIR} )
+
 endif(USE_FTGL)
 
 
