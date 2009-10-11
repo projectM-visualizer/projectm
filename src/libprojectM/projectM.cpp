@@ -76,6 +76,7 @@ projectM::~projectM()
     pthread_cond_destroy(&condition);
     printf("u");
     pthread_mutex_destroy( &mutex );
+    pthread_mutex_destroy( &preset_switch_mutex );
     printf("p");
     std::cout << std::endl;
     #endif
@@ -309,7 +310,9 @@ static void *thread_callback(void *prjm) {
 
         mspf= ( int ) ( 1000.0/ ( float ) settings().fps ); //milliseconds per frame
 
+	std::cerr << "[render event] acquiring lock" << std::endl;
 	pthread_mutex_lock(&preset_switch_mutex);
+	std::cerr << "[render event] lock acquired" << std::endl;
         /// @bug who is responsible for updating this now?"
         pipelineContext().time = timeKeeper->GetRunningTime();
         pipelineContext().frame = timeKeeper->PresetFrameA();
@@ -376,6 +379,8 @@ static void *thread_callback(void *prjm) {
                                             *_merger, timeKeeper->SmoothRatio());
 
             renderer->RenderFrame(pipeline, pipelineContext());
+
+	    pipeline.drawables.clear();
 		
 	    while (!pipeline.drawables.empty()) {
 		delete(pipeline.drawables.back());
@@ -471,6 +476,7 @@ static void *thread_callback(void *prjm) {
 
         #ifdef USE_THREADS
         pthread_mutex_init(&mutex, NULL);
+	pthread_mutex_init(&preset_switch_mutex, NULL);
         pthread_cond_init(&condition, NULL);
         if (pthread_create(&thread, NULL, thread_callback, this) != 0)
         {
@@ -750,7 +756,9 @@ void projectM::selectNext(const bool hardCut) {
 
 void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
 
+	std::cout << "[keyboard event] acquiring lock" << std::endl;
 	pthread_mutex_lock(&preset_switch_mutex);
+	std::cout << "[keyboard event] lock acquired" << std::endl;
 
         targetPreset = m_presetPos->allocate();
 
@@ -758,6 +766,8 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
         renderer->setPresetName(targetPreset->name());
         renderer->SetPipeline(targetPreset->pipeline());
 	pthread_mutex_unlock(&preset_switch_mutex);
+	std::cout << "[keyboard event] lock released" << std::endl;
+
     }
 
     void projectM::setPresetLock ( bool isLocked )
