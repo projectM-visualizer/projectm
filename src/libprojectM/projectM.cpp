@@ -310,9 +310,6 @@ static void *thread_callback(void *prjm) {
 
         mspf= ( int ) ( 1000.0/ ( float ) settings().fps ); //milliseconds per frame
 
-	std::cerr << "[render event] acquiring lock" << std::endl;
-	pthread_mutex_lock(&preset_switch_mutex);
-	std::cerr << "[render event] lock acquired" << std::endl;
         /// @bug who is responsible for updating this now?"
         pipelineContext().time = timeKeeper->GetRunningTime();
         pipelineContext().frame = timeKeeper->PresetFrameA();
@@ -381,11 +378,12 @@ static void *thread_callback(void *prjm) {
             renderer->RenderFrame(pipeline, pipelineContext());
 
 	    pipeline.drawables.clear();
-		
+
+	    /*		
 	    while (!pipeline.drawables.empty()) {
 		delete(pipeline.drawables.back());
 		pipeline.drawables.pop_back();
-	    }
+	    } */
 
         }
         else
@@ -431,7 +429,8 @@ static void *thread_callback(void *prjm) {
         this->timestart=getTicks ( &timeKeeper->startTime );
         #endif /** !WIN32 */
 
-	pthread_mutex_unlock(&preset_switch_mutex);
+	
+	
     }
 
     void projectM::projectM_reset()
@@ -756,9 +755,9 @@ void projectM::selectNext(const bool hardCut) {
 
 void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
 
-	std::cout << "[keyboard event] acquiring lock" << std::endl;
+	std::cout << "[switch preset] acquiring lock" << std::endl;
 	pthread_mutex_lock(&preset_switch_mutex);
-	std::cout << "[keyboard event] lock acquired" << std::endl;
+	std::cout << "[switch preset] lock acquired" << std::endl;
 
         targetPreset = m_presetPos->allocate();
 
@@ -766,7 +765,7 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
         renderer->setPresetName(targetPreset->name());
         renderer->SetPipeline(targetPreset->pipeline());
 	pthread_mutex_unlock(&preset_switch_mutex);
-	std::cout << "[keyboard event] lock released" << std::endl;
+	std::cout << "[switch preset] lock released" << std::endl;
 
     }
 
