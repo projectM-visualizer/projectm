@@ -32,6 +32,8 @@ OPTION (USE_GLES1 "Use OpenGL ES 1.x" OFF)
 
 OPTION (USE_OPENMP "Use OpenMP and OMPTL for multi-core paralellization" ON)
 
+OPTION (SYNC_PRESET_SWITCHES "Experimental feature to synchronize preset switches internally" OFF)
+
 OPTION (USE_NATIVE_GLEW "Use projectM's native implemention of GLEW." OFF)
 
 OPTION (USE_CG "Use Cg for Pixel Shader support" OFF)
@@ -78,6 +80,9 @@ SET (projectM_SOURCES ${projectM_SOURCES})
 SET (IMAGE_LINK_TARGETS )
 endif (USE_DEVIL)
 
+if (SYNC_PRESET_SWITCHES)
+ADD_DEFINITIONS(-DSYNC_PRESET_SWITCHES)
+endif(SYNC_PRESET_SWITCHES)
 
 if (USE_CG)
 ADD_DEFINITIONS(-DUSE_CG)
