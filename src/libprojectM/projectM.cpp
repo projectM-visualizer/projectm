@@ -77,7 +77,7 @@ projectM::~projectM()
     printf("u");
     pthread_mutex_destroy( &mutex );
     #ifdef SYNC_PRESET_SWITCHES
-    pthread_mutex_destroy( &preset_switch_mutex );
+    //pthread_mutex_destroy( &mutex );
     #endif
 
     printf("p");
@@ -359,7 +359,7 @@ static void *thread_callback(void *prjm) {
 
             #ifdef USE_THREADS
 	    #ifdef SYNC_PRESET_SWITCHES
-    	    pthread_mutex_lock(&preset_switch_mutex);
+    	    //pthread_mutex_lock(&mutex);
 	    #endif
 
             pthread_cond_signal(&condition);
@@ -387,7 +387,7 @@ static void *thread_callback(void *prjm) {
 
 	    pipeline.drawables.clear();
 	    #ifdef SYNC_PRESET_SWITCHES
-    	    pthread_mutex_unlock(&preset_switch_mutex);
+    	    //pthread_mutex_unlock(&mutex);
 	    #endif
 	    /*		
 	    while (!pipeline.drawables.empty()) {
@@ -399,7 +399,7 @@ static void *thread_callback(void *prjm) {
         else
         {
 	    #ifdef SYNC_PRESET_SWITCHES
-	    pthread_mutex_lock(&preset_switch_mutex);
+	    pthread_mutex_lock(&mutex);
 	    #endif
 
             if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() > 1.0 )
@@ -414,7 +414,7 @@ static void *thread_callback(void *prjm) {
             renderer->RenderFrame (m_activePreset->pipeline(), pipelineContext());
 
 	    #ifdef SYNC_PRESET_SWITCHES
-            pthread_mutex_unlock(&preset_switch_mutex);
+            pthread_mutex_unlock(&mutex);
 	    #endif 
         }
 
@@ -494,7 +494,7 @@ static void *thread_callback(void *prjm) {
         #ifdef USE_THREADS
         pthread_mutex_init(&mutex, NULL);
 	#ifdef SYNC_PRESET_SWITCHES
-	pthread_mutex_init(&preset_switch_mutex, NULL);
+	//pthread_mutex_init(&mutex, NULL);
 	#endif
 
         pthread_cond_init(&condition, NULL);
@@ -783,7 +783,7 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
 	#ifdef SYNC_PRESET_SWITCHES
 	std::cout << "[switch preset] acquiring lock" << std::endl;
 	
-	pthread_mutex_lock(&preset_switch_mutex);
+	pthread_mutex_lock(&mutex);
 	std::cout << "[switch preset] lock acquired" << std::endl;
 	#endif 
 
@@ -794,7 +794,7 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
         renderer->SetPipeline(targetPreset->pipeline());
 
 	#ifdef SYNC_PRESET_SWITCHES	
-	pthread_mutex_unlock(&preset_switch_mutex);
+	pthread_mutex_unlock(&mutex);
 	std::cout << "[switch preset] lock released" << std::endl;
 	#endif 
     }
