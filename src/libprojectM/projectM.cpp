@@ -76,7 +76,10 @@ projectM::~projectM()
     pthread_cond_destroy(&condition);
     printf("u");
     pthread_mutex_destroy( &mutex );
+    #ifdef SYNC_PRESET_SWITCHES
     pthread_mutex_destroy( &preset_switch_mutex );
+    #endif
+
     printf("p");
     std::cout << std::endl;
     #endif
@@ -350,10 +353,15 @@ static void *thread_callback(void *prjm) {
         if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
         {
 
+	
             //	 printf("start thread\n");
             assert ( m_activePreset2.get() );
 
             #ifdef USE_THREADS
+	    #ifdef SYNC_PRESET_SWITCHES
+    	    pthread_mutex_lock(&preset_switch_mutex);
+	    #endif
+
             pthread_cond_signal(&condition);
             pthread_mutex_unlock( &mutex );
             #endif
@@ -378,7 +386,9 @@ static void *thread_callback(void *prjm) {
             renderer->RenderFrame(pipeline, pipelineContext());
 
 	    pipeline.drawables.clear();
-
+	    #ifdef SYNC_PRESET_SWITCHES
+    	    pthread_mutex_unlock(&preset_switch_mutex);
+	    #endif
 	    /*		
 	    while (!pipeline.drawables.empty()) {
 		delete(pipeline.drawables.back());
@@ -388,6 +398,10 @@ static void *thread_callback(void *prjm) {
         }
         else
         {
+	    #ifdef SYNC_PRESET_SWITCHES
+	    pthread_mutex_lock(&preset_switch_mutex);
+	    #endif
+
             if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() > 1.0 )
             {
                 //printf("End Smooth\n");
@@ -398,6 +412,10 @@ static void *thread_callback(void *prjm) {
 
             m_activePreset->Render(*beatDetect, pipelineContext());
             renderer->RenderFrame (m_activePreset->pipeline(), pipelineContext());
+
+	    #ifdef SYNC_PRESET_SWITCHES
+            pthread_mutex_unlock(&preset_switch_mutex);
+	    #endif 
         }
 
         //	std::cout<< m_activePreset->absoluteFilePath()<<std::endl;
@@ -475,7 +493,10 @@ static void *thread_callback(void *prjm) {
 
         #ifdef USE_THREADS
         pthread_mutex_init(&mutex, NULL);
+	#ifdef SYNC_PRESET_SWITCHES
 	pthread_mutex_init(&preset_switch_mutex, NULL);
+	#endif
+
         pthread_cond_init(&condition, NULL);
         if (pthread_create(&thread, NULL, thread_callback, this) != 0)
         {
@@ -753,20 +774,29 @@ void projectM::selectNext(const bool hardCut) {
 	
 }
 
+/**
+ * 
+ * @param targetPreset 
+ */
 void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
 
+	#ifdef SYNC_PRESET_SWITCHES
 	std::cout << "[switch preset] acquiring lock" << std::endl;
+	
 	pthread_mutex_lock(&preset_switch_mutex);
 	std::cout << "[switch preset] lock acquired" << std::endl;
+	#endif 
 
         targetPreset = m_presetPos->allocate();
 
         // Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
         renderer->setPresetName(targetPreset->name());
         renderer->SetPipeline(targetPreset->pipeline());
+
+	#ifdef SYNC_PRESET_SWITCHES	
 	pthread_mutex_unlock(&preset_switch_mutex);
 	std::cout << "[switch preset] lock released" << std::endl;
-
+	#endif 
     }
 
     void projectM::setPresetLock ( bool isLocked )
