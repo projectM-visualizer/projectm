@@ -5,6 +5,8 @@
 #include <cassert>
 #include <iostream>
 
+#define WEIGHTED_RANDOM_DEBUG 0
+
 namespace RandomNumberGenerators {
 
 inline float uniform()
@@ -96,15 +98,17 @@ inline std::size_t weightedRandom(const std::vector<int> & weights, unsigned int
 	
 	const int sampledSum = uniformInteger(weightTotalHint);
 	int sum = 0;
-	std::cout << "[RNG::weightedRandom()] weightTotal = " << weightTotalHint <<
+	if (WEIGHTED_RANDOM_DEBUG) std::cout << "[RNG::weightedRandom()] weightTotal = " << weightTotalHint <<
 			 std::endl; 
 
 	for (std::size_t i = 0; i < weights.size();i++) {
+		if (WEIGHTED_RANDOM_DEBUG) 
 		std::cout << "[RNG::weightedRandom()] weight[" << i << "] = " << weights[i] <<
 			 std::endl; 
 
 		sum += weights[i];
 		if (sampledSum <= sum) {
+			if (WEIGHTED_RANDOM_DEBUG) 
 			std::cout << "[RNG::weightedRandom()] sampled index " << i << "(" <<
 			 "running sum = " << sum << ", sampled sum = " << sampledSum << std::endl;
 			return i;
