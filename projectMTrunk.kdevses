@@ -1,22 +1,43 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="5" >
-  <Doc0 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-engine/Parser.cpp" >
-   <View0 Encoding="" line="1693" Type="Source" />
+ <DocsAndViews NumberOfDocuments="12" >
+  <Doc0 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/MilkdropPresetFactory/PerPixelEqn.cpp" >
+   <View0 Encoding="" Type="Source" />
   </Doc0>
-  <Doc1 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-engine/Parser.hpp" >
-   <View0 Encoding="" line="178" Type="Source" />
+  <Doc1 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/MilkdropPresetFactory/Parser.cpp" >
+   <View0 Encoding="" Type="Source" />
   </Doc1>
-  <Doc2 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-engine/PresetChooser.hpp" >
-   <View0 Encoding="" line="0" Type="Source" />
+  <Doc2 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/MilkdropPresetFactory/MilkdropPreset.cpp" >
+   <View0 Encoding="" Type="Source" />
   </Doc2>
-  <Doc3 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-engine/Preset.cpp" >
-   <View0 Encoding="" line="492" Type="Source" />
+  <Doc3 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/MilkdropPresetFactory/ParamUtils.hpp" >
+   <View0 Encoding="" Type="Source" />
   </Doc3>
-  <Doc4 NumberOfViews="1" URL="file:///home/carm/projects/projectM/trunk/src/projectM-qt/qpresettextedit.cpp" >
-   <View0 Encoding="" line="63" Type="Source" />
+  <Doc4 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/Renderer/Renderer.cpp" >
+   <View0 Encoding="" Type="Source" />
   </Doc4>
+  <Doc5 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/Renderer/Renderer.hpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc5>
+  <Doc6 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/Renderer/Renderable.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc6>
+  <Doc7 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/Renderer/Renderable.hpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc7>
+  <Doc8 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/Renderer/RenderItemMatcher.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc8>
+  <Doc9 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/Renderer/Shader.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc9>
+  <Doc10 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/Renderer/ShaderEngine.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc10>
+  <Doc11 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/projectM-jack/qprojectM-jack.cpp" >
+   <View0 Encoding="" line="172" Type="Source" />
+  </Doc11>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>

@@ -17,10 +17,10 @@
   <kdevcustomproject>
     <run>
       <directoryradio>executable</directoryradio>
-      <mainprogram>/home/carm/projects/projectM/trunk/src/projectM-pulseaudio/projectM-pulseaudio</mainprogram>
+      <mainprogram>/home/struktured/workspace/projectm_trunk/src</mainprogram>
       <programargs/>
       <globaldebugarguments/>
-      <globalcwd>/home/carm/projects/projectM/trunk/src/</globalcwd>
+      <globalcwd>/home/struktured/workspace/projectm_trunk/src</globalcwd>
       <useglobalprogram>false</useglobalprogram>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
@@ -47,7 +47,7 @@
     <blacklist/>
     <build>
       <buildtool>make</buildtool>
-      <builddir>/home/carm/projects/projectM/trunk/src/</builddir>
+      <builddir>/home/struktured/workspace/projectm_trunk/src/</builddir>
     </build>
     <other>
       <prio>0</prio>
@@ -152,12 +152,12 @@
       <includestyle>4</includestyle>
       <root>/usr/qt/3</root>
       <designerintegration>ExternalDesigner</designerintegration>
-      <qmake>/usr/qt/3/bin/qmake</qmake>
-      <designer>/usr/bin/designer</designer>
+      <qmake>/usr/bin/qmake-qt4</qmake>
+      <designer>/usr/bin/designer-qt4</designer>
       <designerpluginpaths/>
     </qt>
     <codecompletion>
-      <automaticCodeCompletion>true</automaticCodeCompletion>
+      <automaticCodeCompletion>false</automaticCodeCompletion>
       <automaticArgumentsHint>true</automaticArgumentsHint>
       <automaticHeaderCompletion>true</automaticHeaderCompletion>
       <codeCompletionDelay>300</codeCompletionDelay>
@@ -193,7 +193,7 @@
       <orientation>Vertical</orientation>
     </splitheadersource>
     <references>
-      <pcs>automatic_%2Fhome%2Fcarm%2Fprojects%2FprojectM%2Ftrunk</pcs>
+      <pcs>automatic_%2Fhome%2Fstruktured%2Fworkspace%2Fprojectm_trunk</pcs>
     </references>
   </kdevcppsupport>
   <cppsupportpart>
