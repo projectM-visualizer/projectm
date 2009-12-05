@@ -1,10 +1,10 @@
 PROJECT(projectM)
-cmake_minimum_required(VERSION 2.4.0)
+cmake_minimum_required(VERSION 2.6.0)
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The projectM core library.")
 
-INCLUDE(CPack-projectM.cmake)
+INCLUDE(cmake/CPack-projectM.cmake)
 
-cmake_minimum_required(VERSION 2.4.0)
+
 
 
 cmake_policy(SET CMP0005 OLD)
