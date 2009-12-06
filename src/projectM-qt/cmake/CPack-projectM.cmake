@@ -6,7 +6,7 @@ SET(CPACK_STRIP_FILES ON)
 #SET(CPACK_IGNORE_FILES 
  # "*~;CMakeCache.txt;CMakeFiles/;.svn;.*.bak;*.Z;_*/;.*.gz;.*.tgz;.*.tar;.*.bz2;.*.zip;.*.rpm;.*.deb;.*.o")
 SET(CPACK_SOURCE_IGNORE_FILES 
-  "Makefile;CMakeCache.txt;CMakeFiles/;.*.gz;.*.bz2;.*.Z;.*.zip")
+  "Makefile;CMakeCache.txt;CMakeFiles/;.*.gz;.*.bz2;.*.Z;.*.zip;.*svn")
 
 #SET(CPACK_BINARY_RPM OFF)
 # #SET(CPACK_BINARY_Z OFF)
