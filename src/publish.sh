@@ -34,6 +34,7 @@ cd ${OLDDIR}
 
 publish "libprojectM"
 
+publish "../fonts"
 publish "../presets"
 publish "../presets_milkdrop_104"
 publish "../presets_milkdrop_200"
@@ -46,7 +47,7 @@ publish "projectM-libvisual"
 publish "projectM-libvisual-alsa"
 publish "projectM-pulseaudio"
 publish "projectM-jack"
-publish "."
+publish ".."
 
 
 echo "[publisher] complete."

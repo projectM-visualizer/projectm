@@ -1,7 +1,7 @@
 <?xml version = '1.0' encoding = 'UTF-8'?>
 <!DOCTYPE KDevPrjSession>
 <KDevPrjSession>
- <DocsAndViews NumberOfDocuments="12" >
+ <DocsAndViews NumberOfDocuments="21" >
   <Doc0 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/MilkdropPresetFactory/PerPixelEqn.cpp" >
    <View0 Encoding="" Type="Source" />
   </Doc0>
@@ -36,8 +36,35 @@
    <View0 Encoding="" Type="Source" />
   </Doc10>
   <Doc11 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/projectM-jack/qprojectM-jack.cpp" >
-   <View0 Encoding="" line="172" Type="Source" />
+   <View0 Encoding="" Type="Source" />
   </Doc11>
+  <Doc12 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/projectM.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc12>
+  <Doc13 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/PresetChooser.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc13>
+  <Doc14 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/PresetChooser.hpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc14>
+  <Doc15 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/RandomNumberGenerators.hpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc15>
+  <Doc16 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/projectM.hpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc16>
+  <Doc17 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/PresetLoader.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc17>
+  <Doc18 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/MilkdropPresetFactory/MilkdropPreset.hpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc18>
+  <Doc19 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/MilkdropPresetFactory/PerFrameEqn.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc19>
+  <Doc20 NumberOfViews="1" URL="file:///home/struktured/workspace/projectm_trunk/src/libprojectM/MilkdropPresetFactory/Parser.hpp" >
+   <View0 Encoding="" line="173" Type="Source" />
+  </Doc20>
  </DocsAndViews>
  <pluginList>
   <kdevdebugger>
