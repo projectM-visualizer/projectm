@@ -7,16 +7,7 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 
-SET(CPACK_BINARY_RPM OFF)
-#SET(CPACK_BINARY_Z OFF)
-SET(CPACK_SOURCE_TGZ ON)
-SET(CPACK_BINARY_TGZ ON)
-#SET(CPACK_SOURCE_Z OFF)
-SET(CPACK_PACKAGE_VERSION_MAJOR "2")
-SET(CPACK_PACKAGE_VERSION_MINOR "0")
-SET(CPACK_PACKAGE_VERSION_PATCH "0")
-
-Include(CPack)
+INCLUDE(cmake/CPack-projectM.cmake)
 
 ADD_EXECUTABLE(projectM-test         projectM-test.cpp         sdltoprojectM.h video_init.cpp ConfigFile.h ConfigFile.cpp getConfigFilename.cpp getConfigFilename.h)
 ADD_EXECUTABLE(projectM-test-memleak projectM-test-memleak.cpp sdltoprojectM.h video_init.cpp ConfigFile.h ConfigFile.cpp getConfigFilename.cpp getConfigFilename.h)
