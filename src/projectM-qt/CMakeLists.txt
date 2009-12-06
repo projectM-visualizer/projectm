@@ -3,15 +3,7 @@ project(projectM-qt) # the name of your project
 cmake_minimum_required(VERSION 2.4.0)
 cmake_policy(SET CMP0005 OLD)
 
-SET(CPACK_BINARY_RPM OFF)
-#SET(CPACK_BINARY_Z OFF)
-SET(CPACK_SOURCE_TGZ ON)
-SET(CPACK_BINARY_TGZ ON)
-#SET(CPACK_SOURCE_Z OFF)
-SET(CPACK_PACKAGE_VERSION_MAJOR "2")
-SET(CPACK_PACKAGE_VERSION_MINOR "0")
-SET(CPACK_PACKAGE_VERSION_PATCH "0")
-include(CPack)
+include(cmake/CPack-projectM.cmake)
 
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
 include(FindPkgConfig.cmake)

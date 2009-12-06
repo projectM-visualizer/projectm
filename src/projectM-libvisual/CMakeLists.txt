@@ -5,16 +5,7 @@ cmake_minimum_required(VERSION 2.4.0)
     endif(COMMAND cmake_policy)    
 
 
-SET(CPACK_BINARY_RPM OFF)
-#SET(CPACK_BINARY_Z OFF)
-SET(CPACK_SOURCE_TGZ ON)
-SET(CPACK_BINARY_TGZ ON)
-#SET(CPACK_SOURCE_Z OFF)
-SET(CPACK_PACKAGE_VERSION_MAJOR "2")
-SET(CPACK_PACKAGE_VERSION_MINOR "0")
-SET(CPACK_PACKAGE_VERSION_PATCH "0")
-
-INCLUDE(CPack)
+INCLUDE(cmake/CPack-projectM.cmake)
 
 
 ADD_LIBRARY(projectM_libvisual SHARED actor_projectM.cpp lvtoprojectM.h ConfigFile.h ConfigFile.cpp)

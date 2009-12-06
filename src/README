@@ -4,7 +4,7 @@ NOTE: The projectM wiki at http://projectm.wiki.sourceforge.net/ is the official
 
 (1) How to configure the projectM build
 
-In the "src" directory from where you extracted projectM, run
+In the top level directory from where you extracted projectM, run
 
 ccmake .
 

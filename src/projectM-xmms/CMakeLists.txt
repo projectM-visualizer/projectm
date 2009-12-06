@@ -6,6 +6,8 @@ cmake_minimum_required(VERSION 2.4.0)
 
 INCLUDE(FindPkgConfig.cmake)
 
+INCLUDE(cmake/CPack-projectM.cmake)
+
 FIND_PACKAGE(OpenGL)
 FIND_PACKAGE(GTK)
 FIND_PACKAGE(SDL)
