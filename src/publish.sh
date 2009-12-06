@@ -1,6 +1,7 @@
 #!/bin/sh
 
 export TARGET_DIR=$1
+export VERSION=$2
 
 # Build targets
 export GZ=ON
@@ -32,6 +33,10 @@ cp *.gz -f ${TARGET_DIR}
 cd ${OLDDIR}
 }
 
+release() {
+scp ${TARGET_DIR}/*.gz w1z7ard,projectm@frs.sourceforge.net:/home/frs/project/p/pr/projectm/${VERSION}
+}
+
 publish "libprojectM"
 
 publish "../fonts"
@@ -49,6 +54,7 @@ publish "projectM-pulseaudio"
 publish "projectM-jack"
 publish ".."
 
+release
 
 echo "[publisher] complete."
 exit
