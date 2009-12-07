@@ -19,7 +19,7 @@ extern "C"
 
 typedef struct DIR DIR;
 
-static int errno;
+//static int errno;
 
 struct dirent
 {

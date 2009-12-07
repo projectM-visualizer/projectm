@@ -59,7 +59,7 @@ void TextureManager::Preload()
 	ilLoadL(IL_TYPE_UNKNOWN,(ILvoid*) M_data, M_bytes);
 	GLuint tex = ilutGLBindTexImage();
 #else
-	 uint tex = SOIL_load_OGL_texture_from_memory(
+	 unsigned int tex = SOIL_load_OGL_texture_from_memory(
 					  M_data,
 					  M_bytes,
 					  SOIL_LOAD_AUTO,
@@ -173,7 +173,7 @@ GLuint TextureManager::getTextureFullpath(const std::string filename, const std:
 #else
        int width, height;
 
-       uint tex = SOIL_load_OGL_texture_size(
+       unsigned int tex = SOIL_load_OGL_texture_size(
     		   imageURL.c_str(),
 					  SOIL_LOAD_AUTO,
 					  SOIL_CREATE_NEW_ID,
