@@ -1,0 +1,193 @@
+<?xml version="1.0" standalone="yes"?>
+<object class="NSIBObjectData">
+  <object name="rootObject" class="NSCustomObject" id="1">
+  </object>
+  <array count="16" name="allObjects">
+    <object class="IBCarbonMenuItem" id="282">
+      <string name="title">Item 2</string>
+      <boolean name="updateSingleItem">TRUE</boolean>
+    </object>
+    <object class="IBCarbonCheckBox" id="291">
+      <ostype name="controlSignature">vizK</ostype>
+      <int name="controlID">11</int>
+      <int name="initialState">1</int>
+      <string name="title">Check For Update On Startup</string>
+      <string name="viewFrame">40 43 211 18 </string>
+      <string name="bounds">85 61 103 272 </string>
+    </object>
+    <object class="IBCarbonUserPane" id="268">
+      <int name="featureBits">2</int>
+      <string name="viewFrame">0 37 292 132 </string>
+      <array count="1" name="subviews">
+        <object class="IBCarbonPopupButton" id="279">
+          <ostype name="controlSignature">vizK</ostype>
+          <int name="controlID">10</int>
+          <int name="controlSize">1</int>
+          <string name="helpTagText">Choose font for display of track information</string>
+          <object name="menu" class="IBCarbonMenu" id="280">
+            <string name="title">Popup:</string>
+            <array count="3" name="items">
+              <object class="IBCarbonMenuItem" id="283">
+                <string name="title">Item 1</string>
+                <boolean name="checked">TRUE</boolean>
+                <boolean name="updateSingleItem">TRUE</boolean>
+              </object>
+              <reference idRef="282"/>
+              <object class="IBCarbonMenuItem" id="281">
+                <string name="title">Item 3</string>
+                <boolean name="updateSingleItem">TRUE</boolean>
+              </object>
+            </array>
+          </object>
+          <string name="title">Font:</string>
+          <int name="titleJustification">-2</int>
+          <string name="viewFrame">29 43 243 17 </string>
+          <string name="bounds">85 50 102 293 </string>
+        </object>
+      </array>
+      <string name="bounds">42 21 174 313 </string>
+    </object>
+    <reference idRef="281"/>
+    <reference idRef="280"/>
+    <reference idRef="283"/>
+    <object class="IBCarbonStaticText" id="301">
+      <int name="controlSize">1</int>
+      <string name="title">© 2004-2009 Heiko Wichmann</string>
+      <int name="justification">1</int>
+      <string name="viewFrame">-2 93 295 13 </string>
+      <string name="bounds">135 19 148 314 </string>
+    </object>
+    <object class="IBCarbonRootControl" id="167">
+      <ostype name="controlSignature">vizK</ostype>
+      <string name="viewFrame">0 0 335 192 </string>
+      <array count="1" name="subviews">
+        <object class="IBCarbonTab" id="265">
+          <ostype name="controlSignature">vizK</ostype>
+          <int name="controlID">1</int>
+          <string name="viewFrame">21 5 292 169 </string>
+          <array count="3" name="subviews">
+            <object class="IBCarbonUserPane" id="269">
+              <int name="featureBits">2</int>
+              <string name="viewFrame">0 37 292 132 </string>
+              <array count="4" name="subviews">
+                <object class="IBCarbonStaticText" id="299">
+                  <int name="controlSize">1</int>
+                  <string name="title">Version 2.3</string>
+                  <int name="justification">1</int>
+                  <string name="viewFrame">-2 51 295 13 </string>
+                  <string name="bounds">93 19 106 314 </string>
+                </object>
+                <object class="IBCarbonStaticText" id="300">
+                  <string name="title">VizKit</string>
+                  <int name="justification">1</int>
+                  <string name="viewFrame">-2 20 295 23 </string>
+                  <string name="bounds">62 19 85 314 </string>
+                </object>
+                <reference idRef="301"/>
+                <object class="IBCarbonStaticText" id="302">
+                  <int name="controlSize">1</int>
+                  <string name="title">http://www.imagomat.de/vizkit</string>
+                  <int name="justification">1</int>
+                  <string name="viewFrame">-2 72 295 13 </string>
+                  <string name="bounds">114 19 127 314 </string>
+                </object>
+              </array>
+              <string name="bounds">42 21 174 313 </string>
+            </object>
+            <reference idRef="268"/>
+            <object class="IBCarbonUserPane" id="271">
+              <int name="featureBits">2</int>
+              <string name="viewFrame">0 37 292 132 </string>
+              <array count="1" name="subviews">
+                <reference idRef="291"/>
+              </array>
+              <string name="bounds">42 21 174 313 </string>
+            </object>
+          </array>
+          <string name="bounds">5 21 174 313 </string>
+          <array count="3" name="tabItems">
+            <dictionary count="4">
+              <string>contentResID</string>
+              <string>0</string>
+              <string>tabEnabled</string>
+              <string>1</string>
+              <string>tabName</string>
+              <string>About</string>
+              <string>userPane</string>
+              <reference idRef="269"/>
+            </dictionary>
+            <dictionary count="4">
+              <string>contentResID</string>
+              <string>0</string>
+              <string>tabEnabled</string>
+              <string>1</string>
+              <string>tabName</string>
+              <string>Font</string>
+              <string>userPane</string>
+              <reference idRef="268"/>
+            </dictionary>
+            <dictionary count="4">
+              <string>contentResID</string>
+              <string>0</string>
+              <string>tabEnabled</string>
+              <string>1</string>
+              <string>tabName</string>
+              <string>Update</string>
+              <string>userPane</string>
+              <reference idRef="271"/>
+            </dictionary>
+          </array>
+        </object>
+      </array>
+      <string name="bounds">0 0 192 335 </string>
+    </object>
+    <reference idRef="299"/>
+    <reference idRef="265"/>
+    <reference idRef="269"/>
+    <reference idRef="300"/>
+    <reference idRef="279"/>
+    <reference idRef="271"/>
+    <object class="IBCarbonWindow" id="166">
+      <boolean name="receiveActivates">FALSE</boolean>
+      <boolean name="receiveUpdates">FALSE</boolean>
+      <boolean name="hasHorizontalZoom">FALSE</boolean>
+      <boolean name="isResizable">FALSE</boolean>
+      <boolean name="hasVerticalZoom">FALSE</boolean>
+      <boolean name="compositing">TRUE</boolean>
+      <boolean name="hideOnFullScreen">TRUE</boolean>
+      <int name="themeBrush">1</int>
+      <int name="windowPosition">1</int>
+      <string name="title">Visualizer Options</string>
+      <reference name="rootControl" idRef="167"/>
+      <string name="windowRect">413 557 605 892 </string>
+      <string name="ScreenRectAtEncodeTime">0 0 768 1024 </string>
+    </object>
+    <reference idRef="302"/>
+  </array>
+  <array count="16" name="allParents">
+    <reference idRef="280"/>
+    <reference idRef="271"/>
+    <reference idRef="265"/>
+    <reference idRef="280"/>
+    <reference idRef="279"/>
+    <reference idRef="280"/>
+    <reference idRef="269"/>
+    <reference idRef="166"/>
+    <reference idRef="269"/>
+    <reference idRef="167"/>
+    <reference idRef="265"/>
+    <reference idRef="269"/>
+    <reference idRef="268"/>
+    <reference idRef="265"/>
+    <reference idRef="1"/>
+    <reference idRef="269"/>
+  </array>
+  <dictionary count="2" name="nameTable">
+    <string>File&apos;s Owner</string>
+    <reference idRef="1"/>
+    <string>OptionsDialog</string>
+    <reference idRef="166"/>
+  </dictionary>
+  <string name="targetFramework">IBCarbonFramework</string>
+  <unsigned_int name="nextObjectID">303</unsigned_int>
+</object>
