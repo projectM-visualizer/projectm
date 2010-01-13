@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: ProcessMonitorActor.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -59,27 +59,26 @@ ProcessMonitorActor::~ProcessMonitorActor() {
 }
 
 
-void ProcessMonitorActor::prepareShow(const VisualPlayerState& visualPlayerState) {
-	this->elapsedAudioTime = visualPlayerState.getElapsedAudioTime();
-	this->remainingAudioTime = visualPlayerState.getRemainingAudioTime();
-    processMonitor->prepareProcessMonitorShow();
+void ProcessMonitorActor::init() {
+	VisualNotification::registerNotification(this, kCanvasReshapeEvt);
 }
 
 
-void ProcessMonitorActor::show() {
+void ProcessMonitorActor::show(const VisualPlayerState& visualPlayerState) {
+	this->elapsedAudioTime = visualPlayerState.getElapsedAudioTime();
+	this->remainingAudioTime = visualPlayerState.getRemainingAudioTime();
+    processMonitor->prepareProcessMonitorShow();
+	
     processMonitor->showInfoStrings();
 	if (this->showAudioInfoBool == true) {
 		processMonitor->showAudioInfo(elapsedAudioTime, remainingAudioTime);
 	}
+	processMonitor->finishProcessMonitorShow();
 }
 
 
-void ProcessMonitorActor::finishShow() {
-    processMonitor->finishProcessMonitorShow();
-}
+void ProcessMonitorActor::handleNotification(VisualNotification& aNotification) {
 
-
-void ProcessMonitorActor::handleNotification(const VisualNotification& aNotification) {
 	//VisualActor::handleNotification(aNotification); // debug
 
 	VisualNotificationKey notificationKey = aNotification.getKey();
@@ -89,14 +88,18 @@ void ProcessMonitorActor::handleNotification(const VisualNotification& aNotifica
 			processMonitor->updateProgressMeterVertices();
 			break;
 		default:
-			writeLog("unhandled Notification in ProcessMonitorActor");
+			char notificationString[64];
+			VisualNotification::convertNotificationKeyToString(notificationKey, notificationString);
+			char errLog[256];
+			sprintf(errLog, "Unhandled VisualNotificationKey %s in file: %s (line: %d) [%s])", notificationString, __FILE__, __LINE__, __FUNCTION__);
+			writeLog(errLog);
 			break;
 	}
 
 }
 
 
-void ProcessMonitorActor::setState(const VisualActorState aVisualActorState) {
+void ProcessMonitorActor::setState(VisualActorState aVisualActorState) {
     this->state = aVisualActorState;
 }
 

@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: CoverArt.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -41,11 +41,13 @@ freely, subject to the following restrictions:
 #include "VisualStageBox.h"
 #include "VisualDispatch.h"
 #include "VisualDataStore.h"
+#include "VisualPreferences.h"
 #include "VisualAnimation.h"
 #include "VisualTimeline.h"
 #include "VisualConvolutionFilter.h"
 #include "VisualFile.h"
 #include "VisualString.h"
+#include "VisualCamera.h"
 
 
 
@@ -53,7 +55,7 @@ using namespace VizKit;
 
 
 CoverArt::CoverArt() {
-	coverArtAsset.setOpacityValue(kFrontVertexChain, 0.0f);
+	coverArtAsset.setOpacityValue(0.0);
 }
 
 
@@ -63,77 +65,59 @@ CoverArt::~CoverArt() {
 
 
 void CoverArt::prepareCoverAction() {
-	VisualActorGraphics::prepareCoverArtAction();
+	VisualActorGraphics::enableDepthTest();
+	double distance = this->coverArtAsset.getCamera().getMaxFarPos() - this->coverArtAsset.getCamera().getMaxNearPos();
+	double distanceCenter = distance / 2.0 * -1.0;
+	VisualStageBox* coverArtAssetBox = this->coverArtAsset.getBox();
+	double stageBoxDepth = coverArtAssetBox->getCoordDepth();
+	VisualActorGraphics::translateMatrix(0.0, 0.0, distanceCenter - this->coverArtAsset.getCamera().getMaxNearPos() - (stageBoxDepth / 2.0));
 }
 
 
 void CoverArt::showCover() {
-	this->coverArtAsset.draw(kFrontVertexChain);
+	this->coverArtAsset.draw(this->vertexChainId);
 }
 
 
 void CoverArt::finishCoverAction() {
-	VisualActorGraphics::finishCoverArtAction();
+	VisualActorGraphics::disableDepthTest();
 }
 
 
-void CoverArt::makeImageOfCover() {
-	if (VisualDataStore::getNumberOfCoverArtworksOfCurrentTrack() > 0) {
-
-		VisualImage* coverArtImage = VisualActorGraphics::createCoverArtImage();
-
+void CoverArt::setAlbumCoverArtWorkImage(VisualImage& albumCoverArtworkImage) {
+	this->coverArtAsset.setImage(albumCoverArtworkImage);
 /*
-		VisualImage* coverArtImage = new VisualImage;
-		VisualFile* inputFile = VisualFile::createWithUserDesktopDirectory();
-		VisualString inputFileName = VisualString("spot.png");
-		inputFile->appendFileName(inputFileName);
-		coverArtImage->initWithFile(*inputFile);
-		delete(inputFile);
+	VisualFile aFile;
+	aFile.initWithUserDesktopDirectory();
+	VisualString fileName("testCoverArt.png");
+	bool success = false;
+	success = aFile.appendFileName(fileName);
+	albumCoverArtworkImage.writeToPNGFile(aFile);
 */
-		
-		//VisualString url("http://www.imagomat.de/images/coverversion/screen_mac.png");
-		//VisualImage* coverArtImage = VisualImage::createWithURL(url);
-		
-		if (coverArtImage != NULL) {
-
-			//VisualConvolutionFilter aConvolutionFilter(VisualConvolutionFilter::kEmboss);
-			//coverArtImage->applyConvolutionFilter(aConvolutionFilter);
-
-/*
-			VisualFile outputFile;
-			outputFile.initWithUserDesktopDirectory();
-			VisualString aFileName = VisualString("vizKitCoverArtImage.png");
-			outputFile.appendFileName(aFileName);
-
-			OSStatus status = coverArtImage->writeToFile(outputFile);
-			if (status != noErr) {
-				printf("err %ld in CoverArt::makeImageOfCover()\n", status);
-			}
-*/
-
-			this->coverArtAsset.setImage(*coverArtImage);
-
-			VisualStageBox* coverArtAssetBox = this->coverArtAsset.getBox();
-			coverArtAssetBox->setContentPixelWidth(coverArtImage->getWidth());
-			coverArtAssetBox->setContentPixelHeight(coverArtImage->getHeight());
-			VisualActorGraphics::releaseCoverArtImage(&coverArtImage);
-		}
-	}
 }
 
 
-void CoverArt::calcPositionOnScreen() {
+void CoverArt::reshape() {
 
-	VisualActorGraphics::prepareCoverArtAction();
+	VisualCamera aCamera;
+	aCamera.setPerspectiveProjection(3.0);
+	this->coverArtAsset.setCamera(aCamera);
 
 	VisualStagePosition coverArtAssetPosition = this->coverArtAsset.getPosition();
 
 	coverArtAssetPosition.reset();
 	
+	VisualStageBox* coverArtAssetBox = this->coverArtAsset.getBox();
+	
+	double coordDepth = this->calcCoordDepth();
+		
+	coverArtAssetPosition.depthAlignment = kDepthCenterAligned;
+	coverArtAssetBox->setCoordDepth(coordDepth);
+
 	coverArtAssetPosition.horizontalAlignment = kCenterAligned;
 	coverArtAssetPosition.verticalAlignment = kMiddleAligned;
 
-	coverArtAssetPosition.minMarginBottom = (double)VisualDataStore::getValueInt(VisualConfiguration::kTrackInfoTextureHeight) + 5.0;
+	coverArtAssetPosition.minMarginBottom = (double)VisualDataStore::getValueInt(VisualDataStore::kTrackInfoTextureHeight) + 5.0;
 	coverArtAssetPosition.minMarginBottomUnit = kPixel;
 
 	coverArtAssetPosition.minMarginTop = 5;
@@ -147,58 +131,74 @@ void CoverArt::calcPositionOnScreen() {
 	
 	this->coverArtAsset.setPosition(coverArtAssetPosition);
 	
-	VisualStageBox* coverArtAssetBox = this->coverArtAsset.getBox();
 	coverArtAssetBox->update(); // VisualStageBox only updates automatically on value changed, after canvas reshape event we have to update manually (before calculating scaleFactor) 
 	coverArtAssetBox->setScalingBehaviour(kPreserveAspectRatio);
 	
-	this->coverArtAsset.generateVertexChain(kFrontVertexChain);
+	VisualVertex* aVertex = NULL;
+
+	coverArtAssetBox->initializeVertexChain(this->vertexChainId);
 	
-	VisualActorGraphics::finishCoverArtAction();
+	aVertex = coverArtAssetBox->createVertex(0.0, 1.0, 0.5, 0.0, 1.0);
+	coverArtAssetBox->addVertexToChain(this->vertexChainId, aVertex);
+	
+	aVertex = coverArtAssetBox->createVertex(0.0, 0.0, 0.5, 0.0, 0.0);
+	coverArtAssetBox->addVertexToChain(this->vertexChainId, aVertex);
+	
+	aVertex = coverArtAssetBox->createVertex(1.0, 0.0, 0.5, 1.0, 0.0);
+	coverArtAssetBox->addVertexToChain(this->vertexChainId, aVertex);
+
+	aVertex = coverArtAssetBox->createVertex(1.0, 1.0, 0.5, 1.0, 1.0);
+	coverArtAssetBox->addVertexToChain(this->vertexChainId, aVertex);
 
 }
 
 
-void CoverArt::fadeIn(UInt32 durationInMilliseconds) {
+double CoverArt::calcCoordDepth() {
+	VisualStageBox* coverArtAssetBox = this->coverArtAsset.getBox();
+	double ratio = 0.0;
+	VisualCamera aCamera;
+	aCamera.setPerspectiveProjection(3.0);
+	CoordSize3D size = aCamera.getSize();
+	if (size.width > size.height) {
+		ratio = coverArtAssetBox->getUnscaledCoordWidth() / size.width;
+	} else {
+		ratio = coverArtAssetBox->getUnscaledCoordHeight() / size.height;
+	}
+	double zCoordAmount = size.depth;
+	return zCoordAmount * ratio;
+}
+
+
+void CoverArt::fadeIn(uint32 durationInMilliseconds) {
 	VisualAnimation fadeInAnimation(kAnimatedOpacity);
 	fadeInAnimation.setDurationInMilliseconds(durationInMilliseconds);
 	this->coverArtAsset.addAnimation(fadeInAnimation);
 }
 
 
-void CoverArt::fadeOut(UInt32 durationInMilliseconds, double clampValue) {
+void CoverArt::fadeOut(uint32 durationInMilliseconds, double stopValue) {
+	double distance = 1.0;
+	AnimationSpeed animationSpeed = VisualAnimation::calcSpeed(distance, durationInMilliseconds);
 	VisualAnimation fadeOutAnimation(kAnimatedOpacity);
-	fadeOutAnimation.setDurationInMilliseconds(durationInMilliseconds);
-	fadeOutAnimation.setStartValue(1.0);
-	fadeOutAnimation.setEndValue(0.0);
-	if (clampValue > 0.0f) {
-		fadeOutAnimation.setMinClampValue(clampValue);
-	}
-	this->coverArtAsset.addAnimation(fadeOutAnimation, kContinueWithCurrentValueWithPossibleDelay);
-}
-
-
-void CoverArt::pulsate() {
-	VisualAnimation pulsateAnimation(kAnimatedOpacity);
-	UInt32 durationInMilliseconds = VisualDataStore::getPreferenceValueInt(VisualConfiguration::kFadeOutTimeOnPauseInMS);
-	pulsateAnimation.setDurationInMilliseconds(durationInMilliseconds);
-	pulsateAnimation.setLoopMode(kMirroredLoop, kInfiniteRepetition);
-	this->coverArtAsset.addAnimation(pulsateAnimation);
+	fadeOutAnimation.setSpeed(animationSpeed);
+	fadeOutAnimation.setStopValue(stopValue);
+	this->coverArtAsset.addAnimation(fadeOutAnimation);
 }
 
 
 void CoverArt::rotate() {
 	VisualAnimation rotateAnimation(kAnimatedRotation);
-	UInt32 durationInMilliseconds = 9000;
+	uint32 durationInMilliseconds = 9000;
 	rotateAnimation.setDurationInMilliseconds(durationInMilliseconds);
 	rotateAnimation.setLoopMode(kLoop, kInfiniteRepetition);
 	this->coverArtAsset.addAnimation(rotateAnimation);
 }
 
 
-void CoverArt::scaleSize(UInt32 durationInMilliseconds, double from, double to) {
+void CoverArt::scaleSize(uint32 durationInMilliseconds, double from, double to) {
 	VisualAnimation sizeAnimation(kAnimatedSize);
 	sizeAnimation.setStartValue(from);
-	sizeAnimation.setEndValue(to);
+	sizeAnimation.setStopValue(to);
 	sizeAnimation.setDurationInMilliseconds(durationInMilliseconds);
 	this->coverArtAsset.addAnimation(sizeAnimation);
 }
@@ -217,5 +217,5 @@ void CoverArt::clear() {
 	
 	this->coverArtAsset.removeAnimations();
 	
-	this->coverArtAsset.setOpacityValue(kFrontVertexChain, 0.0f);
+	this->coverArtAsset.setOpacityValue(0.0);
 }

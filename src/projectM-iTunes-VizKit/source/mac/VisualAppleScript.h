@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualAppleScript.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -37,13 +37,7 @@ freely, subject to the following restrictions:
 #define VisualAppleScript_h
 
 
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualTypes.h"
 
 
 namespace VizKit {
@@ -65,10 +59,10 @@ namespace VizKit {
 	
 	private:
 
-		/** The constructor.\ VisualAppleScript is a collection of static methods.\ Class does not need any instances.\ Constructor is private and not implemented. */
+		/** The constructor. VisualAppleScript is a collection of static methods. Class does not need any instances. Constructor is private and not implemented. */
 		VisualAppleScript();
 
-		/** The destructor.\ VisualAppleScript is a collection of static methods.\ Class does not need any instances.\ Destructor is private and not implemented. */
+		/** The destructor. VisualAppleScript is a collection of static methods. Class does not need any instances. Destructor is private and not implemented. */
 		~VisualAppleScript();
 
 	};

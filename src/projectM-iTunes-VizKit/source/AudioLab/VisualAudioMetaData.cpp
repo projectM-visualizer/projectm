@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
- * File: VisualString.cpp
+ * Date: 20090823
+ * File: VisualAudioMetaData.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -37,33 +37,21 @@ freely, subject to the following restrictions:
 #include "VisualDataStore.h"
 #include "VisualString.h"
 #include "VisualErrorHandling.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacMemory.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/macmemory.h> // DisposeHandle
-#endif
+#include "VisualMainAction.h"
+#include "VisualItemIdentifier.h"
 
 
 using namespace VizKit;
 
 
 VisualAudioMetaData::VisualAudioMetaData() {
-	isStream = false;
-	trackSizeInBytes = 0;
-	albumCoverArtworkHasBeenEvaluated = false;
-	numberOfArtworks = 0;
-	albumCoverArtworkFileType = '    ';
-	albumCoverArtworkHandle = NULL;
+	trackIdentifier = NULL;
+	init();
 }
 
 
 VisualAudioMetaData::~VisualAudioMetaData() {
-	if (albumCoverArtworkHandle != NULL) {
-		DisposeHandle(albumCoverArtworkHandle);
-	}
+	delete trackIdentifier;
 }
 
 
@@ -73,12 +61,13 @@ VisualAudioMetaData::VisualAudioMetaData(const VisualAudioMetaData& other) {
 
 
 VisualAudioMetaData& VisualAudioMetaData::operator=(const VisualAudioMetaData& other) {
-	if (this != &other) {
-		if (albumCoverArtworkHandle != NULL) {
-			DisposeHandle(albumCoverArtworkHandle);
-		}
-		this->copy(other);
-	}
+	
+	if (this == &other) return *this;
+
+	delete this->trackIdentifier;
+
+	this->copy(other);
+
 	return *this;
 }
 
@@ -89,7 +78,8 @@ bool VisualAudioMetaData::operator==(const VisualAudioMetaData& other) {
 		(this->trackName == other.trackName) &&
 		(this->trackArtist == other.trackArtist) &&
 		(this->trackAlbum == other.trackAlbum) &&
-		(this->isStream == other.isStream)) {
+		(this->isStream == other.isStream) &&
+		(this->streamTitle == other.streamTitle)) {
 		compareResult = true;
 	}
 	return compareResult;
@@ -106,12 +96,10 @@ void VisualAudioMetaData::copy(const VisualAudioMetaData& other) {
 	this->trackArtist = other.trackArtist;
 	this->trackAlbum = other.trackAlbum;
 	this->trackLyrics = other.trackLyrics;
+	this->streamTitle = other.streamTitle;
 	this->trackSizeInBytes = other.trackSizeInBytes;
 	this->isStream = other.isStream;
-	this->albumCoverArtworkHasBeenEvaluated = other.albumCoverArtworkHasBeenEvaluated;
-	this->numberOfArtworks = other.numberOfArtworks;
-	this->albumCoverArtworkFileType = other.albumCoverArtworkFileType;
-	this->albumCoverArtworkHandle = other.albumCoverArtworkHandle;
+	this->trackIdentifier = new VisualItemIdentifier(*(other.trackIdentifier));
 }
 
 
@@ -140,8 +128,33 @@ void VisualAudioMetaData::setTrackLyrics(const VisualString& someTrackLyrics) {
 }
 
 
-void VisualAudioMetaData::setTrackSizeInBytes(UInt32 aTrackSizeInBytes) {
+void VisualAudioMetaData::setTrackComposer(const VisualString& aComposer) {
+	this->trackComposer = aComposer;
+}
+
+
+void VisualAudioMetaData::setStreamTitle(const VisualString& aStreamTitle) {
+	this->streamTitle = aStreamTitle;
+}
+
+
+void VisualAudioMetaData::setStreamMessage(const VisualString& aStreamMessage) {
+	this->streamMessage = aStreamMessage;
+}
+
+
+void VisualAudioMetaData::setStreamURL(const VisualString& aStreamURL) {
+	this->streamURL = aStreamURL;
+}
+
+
+void VisualAudioMetaData::setTrackSizeInBytes(uint32 aTrackSizeInBytes) {
 	this->trackSizeInBytes = aTrackSizeInBytes;
+}
+
+
+void VisualAudioMetaData::setYear(uint16 aYear) {
+	this->year = aYear;
 }
 
 
@@ -165,8 +178,38 @@ const VisualString& VisualAudioMetaData::getTrackLyrics() {
 }
 
 
-UInt32 VisualAudioMetaData::getTrackSizeInBytes() {
+const VisualString& VisualAudioMetaData::getTrackComposer() {
+	return this->trackComposer;
+}
+
+
+const VisualString& VisualAudioMetaData::getStreamTitle() {
+	return this->streamTitle;
+}
+
+
+const VisualString& VisualAudioMetaData::getStreamMessage() {
+	return this->streamMessage;
+}
+
+
+const VisualString& VisualAudioMetaData::getStreamURL() {
+	return this->streamURL;
+}
+
+
+uint32 VisualAudioMetaData::getTrackSizeInBytes() {
 	return this->trackSizeInBytes;
+}
+
+
+uint16 VisualAudioMetaData::getYear() {
+	return this->year;
+}
+
+
+VisualItemIdentifier VisualAudioMetaData::getTrackIdentifier() {
+	return *this->trackIdentifier;
 }
 
 
@@ -175,39 +218,20 @@ bool VisualAudioMetaData::getIsStream() {
 }
 
 
-UInt16 VisualAudioMetaData::getNumberOfArtworks() {
-	if (this->albumCoverArtworkHasBeenEvaluated == false) {
-		this->numberOfArtworks = VisualDataStore::evaluateCoverArtInfo(&this->albumCoverArtworkFileType, &this->albumCoverArtworkHandle);
-		this->albumCoverArtworkHasBeenEvaluated = true;
+void VisualAudioMetaData::init() {
+	this->isStream = false;
+	this->trackSizeInBytes = 0;
+	this->year = 0;
+	this->trackName.clear();
+	this->trackArtist.clear();
+	this->trackAlbum.clear();
+	this->trackLyrics.clear();
+	this->trackComposer.clear();
+	this->streamTitle.clear();
+	this->streamMessage.clear();
+	this->streamURL.clear();
+	if (this->trackIdentifier != NULL) {
+		delete this->trackIdentifier;
 	}
-	return this->numberOfArtworks;
-}
-
-
-OSType VisualAudioMetaData::getAlbumCoverArtworkFileType() {
-	if (this->albumCoverArtworkHasBeenEvaluated == false) {
-		this->numberOfArtworks = VisualDataStore::evaluateCoverArtInfo(&this->albumCoverArtworkFileType, &this->albumCoverArtworkHandle);
-		this->albumCoverArtworkHasBeenEvaluated = true;
-	}
-	return this->albumCoverArtworkFileType;
-}
-
-
-Handle VisualAudioMetaData::getAlbumCoverArtworkHandle() {
-	if (this->albumCoverArtworkHasBeenEvaluated == false) {
-		this->numberOfArtworks = VisualDataStore::evaluateCoverArtInfo(&this->albumCoverArtworkFileType, &this->albumCoverArtworkHandle);
-		this->albumCoverArtworkHasBeenEvaluated = true;
-	}
-	return this->albumCoverArtworkHandle;
-}
-
-
-void VisualAudioMetaData::disposeAlbumCoverArtworkHandle() {
-	if (this->albumCoverArtworkHandle != NULL) {
-		DisposeHandle(this->albumCoverArtworkHandle);
-		this->albumCoverArtworkHandle = NULL;
-	}
-	this->numberOfArtworks = 0;
-	this->albumCoverArtworkFileType = '    ';
-	this->albumCoverArtworkHasBeenEvaluated = false;
+	this->trackIdentifier = new VisualItemIdentifier;
 }

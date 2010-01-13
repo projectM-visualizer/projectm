@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualGraphicsCore.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,6 +36,10 @@ freely, subject to the following restrictions:
 #ifndef VisualGraphicsCore_h
 #define VisualGraphicsCore_h
 
+
+#include "VisualTypes.h"
+#include "VisualGraphicTypes.h"
+
 #if TARGET_OS_MAC
 #include <AGL/agl.h>
 #endif
@@ -49,12 +53,8 @@ freely, subject to the following restrictions:
 	#endif
 #endif
 
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
 
 #if TARGET_OS_WIN
-#include <QT/MacTypes.h>
 #include <windows.h> // HDC
 #endif
 
@@ -93,14 +93,14 @@ namespace VizKit {
 		 * @return errNum: 0 if no error, > 0 error.
 		 * @remarks The context must be set back to the one set up initially with each render action in case Cover Flow did change it in the meantime.
 		 */
-		UInt16 setCurrentContext(void);
+		uint16 setCurrentContext(void);
 		
 #if TARGET_OS_MAC
 		/**
 		 * Sets up the AGL canvas. Mac-only.
-		 * @return ErrNum.\ 0 on success.
+		 * @return ErrNum. 0 on success.
 		 */
-		UInt8 setupAGL();
+		uint8 setupAGL();
 
 		/**
 		 * Cleans up the AGL canvas. Mac-only.
@@ -113,7 +113,7 @@ namespace VizKit {
 		 * Sets up the WGL canvas. Windows-only.
 		 * @return Error number (0 = noErr).
 		 */
-		UInt8 setupWGL();
+		uint8 setupWGL();
 
 		/**
 		 * Cleans up wgl.
@@ -142,35 +142,23 @@ namespace VizKit {
 		GRAPHICS_DEVICE getGraphicsDevicePort(void);
 
 		/**
-		 * Returns the current width of the screen in pixels.
-		 * @return The current width of the screen in pixels.
+		 * Returns the current dimensions of the screen.
+		 * @return The current dimensions of the screen.
 		 */
-		UInt16 getScreenWidth(void);
-
-		/**
-		 * Returns the current height of the screen in pixels.
-		 * @return The current height of the screen in pixels.
-		 */
-		UInt16 getScreenHeight(void);
+		PixelRect getScreenRect(void);
 
 		/**
 		 * Returns the current number of bits per pixel of the frame buffer.
 		 * @return The current number of bits per pixel of the frame buffer.
 		 */
-		UInt16 getBitsPerPixelOfScreen(void);
+		uint16 getBitsPerPixelOfScreen(void);
 
 		/**
 		 * Returns the current refresh rate of the screen.
 		 * Can return 0 if refresh rate can't be determined.
 		 * @return The current refresh rate of the screen.
 		 */
-		UInt16 getRefreshRateOfScreen(void);
-
-		/**
-		 * Returns the rect of the iTunes window relative to main screen rect.
-		 * @param[out] aRect The dimensions of the window rectangle. 
-		 */
-		void getCanvasSurroundingRect(::Rect* aRect);
+		uint16 getRefreshRateOfScreen(void);
 
 		/**
 		 * Ends the GL drawing by flushing, finishing and swaping the buffer content.
@@ -180,37 +168,28 @@ namespace VizKit {
 		void finishGLDrawing();
 
 		/**
-		 * Restricts the drawing to the inner rectangle.
-		 * Inner and outer rectangle can have the same dimensions.
-		 * The outer rectangle can not be smaller than the inner rectangle.
-		 * Drawing only takes place inside of the inner rect.
-		 * @param canvasRect The draw rect, i.e. the inner rect.
-		 * @param canvasSurroundingRect The bounding rectangle.
+		 * Sets the viewport of the drawing area.
+		 * @param canvasRect The draw rect, i.e. the inner rect. These are the rect dimensions as passed to the visualizer by iTunes via messages (u.showWindowMessage.drawRect, u.setWindowMessage.drawRect).
 		 * @param isFullscreen True if the context is set up on fullscreen, false if in windowed mode.
+		 * @remarks The canvasRect might be smaller than the graphics device / graphics port that is bount to the OpenGL context. The drawing area is clipped by AGL_BUFFER_RECT (Mac) or GL_SCISSOR_TEST (Windows).
 		 */
-		void setViewport(const ::Rect* const canvasRect, const ::Rect* const canvasSurroundingRect, const bool isFullscreen);
+		void setViewport(const BottomLeftPositionedPixelRect& canvasRect, const bool isFullscreen);
 
 		/**
-		 * Returns the horizontal origin of the scissor rect.
-		 * @return The horizontal origin of the scissor rect.
+		 * Returns the rect of the iTunes window relative to main screen rect.
+		 * @return The dimensions of the window rectangle. 
 		 */
-		int getCanvasXOriginOffset(void);
-
-		/**
-		 * Returns the vertical origin of the scissor rect.
-		 * @return The vertical origin of the scissor rect.
-		 */
-		int getCanvasYOriginOffset(void);
+		PixelRect getCanvasSurroundingRect(void);
 
 	private:
 
 		/**
-		 * The constructor.\ VisualGraphicsCore is a singleton class.\ The constructor is private.\ New instance of class can only be created internally.
+		 * The constructor. VisualGraphicsCore is a singleton class. The constructor is private. New instance of class can only be created internally.
 		 */
 		VisualGraphicsCore();
 
 		/**
-		 * The destructor.\ VisualGraphicsCore is a singleton class.\ The destructor is private.\ Instance of class can only be deleted internally.
+		 * The destructor. VisualGraphicsCore is a singleton class. The destructor is private. Instance of class can only be deleted internally.
 		 */
 		~VisualGraphicsCore();
 
@@ -231,10 +210,10 @@ namespace VizKit {
 		static VisualGraphicsCore* theVisualGraphicsCore;
 
 		/** The graphics port.
-		 * On Mac it is defined as CGrafPtr.\ On Windows it is defined as HWND. 
+		 * On Mac it is defined as CGrafPtr. On Windows it is defined as HWND. 
 		 */
 		GRAPHICS_DEVICE port;
-		
+
 #if TARGET_OS_MAC
 		/** The current AGL context. Mac-only. */
 		AGLContext ctx;
@@ -250,12 +229,6 @@ namespace VizKit {
 		/** A handle to the current device. Windows-only. */
 		HDC windowDC;
 #endif
-
-		/** The x-position of the canvas rectangle. */
-		int canvasXOriginOffset;
-		
-		/** The y-position of the canvas rectangle. */
-		int canvasYOriginOffset;
 
 	};
 

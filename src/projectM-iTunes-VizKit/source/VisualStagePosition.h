@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualStagePosition.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,15 +36,9 @@ freely, subject to the following restrictions:
 #ifndef VisualStagePosition_h
 #define VisualStagePosition_h
 
+
+#include "VisualTypes.h"
 #include "VisualGraphicTypes.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
 
  
 namespace VizKit {
@@ -77,6 +71,18 @@ namespace VizKit {
 		 * @param other Another VisualStagePosition.
 		 */
 		VisualStagePosition& operator=(const VisualStagePosition& other);
+
+		/**
+		 * Equality operator.
+		 * @param other Another VisualStagePosition.
+		 */
+		bool operator==(const VisualStagePosition& other) const;
+
+		/**
+		 * Inequality operator.
+		 * @param other Another VisualStagePosition.
+		 */
+		bool operator!=(const VisualStagePosition& other);
 
 		/**
 		 * Resets the values of the stage position to default.
@@ -116,6 +122,9 @@ namespace VizKit {
 		Unit maxWidthUnit; /**< The measure of the maximum width value. */
 		Unit minHeightUnit; /**< The measure of the minimum height value. */
 		Unit maxHeightUnit; /**< The measure of the maximum height value. */
+		
+		double horizontalCoordOffset; /**< The horizontal offset (measured in coord values). */
+		double verticalCoordOffset; /**< The vertical offset (measured in coord values). */
 		
 	private:
 	

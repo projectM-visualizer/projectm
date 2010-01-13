@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualTiming.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -35,6 +35,8 @@ freely, subject to the following restrictions:
 
 #include "VisualTiming.h"
 #include "VisualErrorHandling.h"
+#include "VisualThreading.h"
+#include "VisualThreadingManager.h"
 
 #if TARGET_OS_MAC
 #include <sys/time.h> // gettimeofday(), timeval
@@ -65,11 +67,30 @@ VisualTiming::~VisualTiming() {
 
 
 VisualTiming* VisualTiming::getInstance() {
-    if (theVisualTiming == NULL) {
-		theVisualTiming = new VisualTiming;
-    }
 	if (theVisualTiming == NULL) {
-		writeLog("ERR: init theVisualTiming failed");
+#if TARGET_OS_MAC
+		MPCriticalRegionID timeStoreSingletonCriticalRegion = VisualThreadingManager::getCriticalRegionID(VisualThreadingManager::timeStoreSingletonMutex);
+		OSStatus status = noErr;
+		status = ::MPEnterCriticalRegion(timeStoreSingletonCriticalRegion, kDurationForever);
+#endif
+#if TARGET_OS_WIN
+		LPCRITICAL_SECTION timeStoreSingletonCriticalSection = VisualThreadingManager::getCriticalSectionPointer(VisualThreadingManager::timeStoreSingletonMutex);
+		::EnterCriticalSection(timeStoreSingletonCriticalSection);
+#endif
+		if (theVisualTiming == NULL) {
+			theVisualTiming = new VisualTiming;
+			if (theVisualTiming == NULL) {
+				char errLog[256];
+				sprintf(errLog, "ERR: init VisualTiming failed in file: %s (line: %d) [%s])", __FILE__, __LINE__, __FUNCTION__);
+				writeLog(errLog);
+			}
+		}
+#if TARGET_OS_MAC
+		status = ::MPExitCriticalRegion(timeStoreSingletonCriticalRegion);
+#endif
+#if TARGET_OS_WIN
+		::LeaveCriticalSection(timeStoreSingletonCriticalSection);
+#endif
 	}
 	return theVisualTiming;
 }
@@ -83,15 +104,15 @@ void VisualTiming::dispose() {
 }
 
 
-void VisualTiming::setTimestampOfPlayerCall() {
+void VisualTiming::update() {
 	theVisualTiming = VisualTiming::getInstance();
 #if TARGET_OS_MAC
     struct timeval tod;
-    SInt8 retVal;
+    sint8 retVal;
     retVal = gettimeofday(&tod, NULL);
     
     if (retVal == 0) {
-        theVisualTiming->timestampOfPlayerCall = tod.tv_sec + tod.tv_usec * 1.0E-6;
+        theVisualTiming->currentTime = tod.tv_sec + tod.tv_usec * 1.0E-6;
     } else {
         if (retVal == -1) {
             //writeLog("Error in file \"%s\" (line %d): function \"%s\":\n%s\n", __FILE__, __LINE__, __func__, strerror(errno));
@@ -104,22 +125,70 @@ void VisualTiming::setTimestampOfPlayerCall() {
 #endif
 
 #if TARGET_OS_WIN
-	QueryPerformanceCounter(&theVisualTiming->timestampOfPlayerCall);
+	QueryPerformanceCounter(&theVisualTiming->currentTime);
 #endif
 
 }
 
 
-UInt32 VisualTiming::getElapsedMilliSecsSinceReset(const char* const durationName) {
+uint32 VisualTiming::getElapsedMilliSecsSinceReset(const char* const durationName) {
 	VisualItemIdentifier* visualDurationIdentifier = VisualItemIdentifier::createVisualItemIdentifier(durationName);
 	theVisualTiming = VisualTiming::getInstance();
-	UInt32 elapsedMilliSeconds = theVisualTiming->getElapsedMilliSecsSinceReset(*visualDurationIdentifier);
+	uint32 elapsedMilliSeconds = theVisualTiming->getElapsedMilliSecsSinceReset(*visualDurationIdentifier);
 	delete visualDurationIdentifier;
 	return elapsedMilliSeconds;
 }
 
 
-UInt32 VisualTiming::getElapsedMilliSecsSinceReset(const VisualItemIdentifier& visualDurationIdentifier) {
+uint32 VisualTiming::getElapsedMilliSecsSinceReset(const VisualItemIdentifier& visualDurationIdentifier) {
+	double timestampDelta;
+	theVisualTiming = VisualTiming::getInstance();
+
+#if TARGET_OS_MAC
+	MPCriticalRegionID timeStoreAccessCriticalRegion = VisualThreadingManager::getCriticalRegionID(VisualThreadingManager::timeStoreAccessMutex);
+	OSStatus status = noErr;
+	status = ::MPEnterCriticalRegion(timeStoreAccessCriticalRegion, kDurationForever);
+#endif
+#if TARGET_OS_WIN
+	LPCRITICAL_SECTION timeStoreAccessCriticalSection = VisualThreadingManager::getCriticalSectionPointer(VisualThreadingManager::timeStoreAccessMutex);
+	::EnterCriticalSection(timeStoreAccessCriticalSection);
+#endif
+	
+	DurationMapIterator it;
+	it = theVisualTiming->durationMap.find(visualDurationIdentifier);
+	if (it == theVisualTiming->durationMap.end()) {
+		DurationItem* durationItem;
+		durationItem = new DurationItem;
+		durationItem->firstTimestamp = theVisualTiming->currentTime;
+		durationItem->lastTimestamp = theVisualTiming->currentTime;
+		theVisualTiming->durationMap[visualDurationIdentifier] = durationItem;
+		it = theVisualTiming->durationMap.find(visualDurationIdentifier);
+	}
+	timestampDelta = theVisualTiming->getTimeDelta(theVisualTiming->currentTime, it->second->firstTimestamp);
+	it->second->lastTimestamp = theVisualTiming->currentTime;
+
+#if TARGET_OS_MAC
+	status = ::MPExitCriticalRegion(timeStoreAccessCriticalRegion);
+#endif
+#if TARGET_OS_WIN
+	::LeaveCriticalSection(timeStoreAccessCriticalSection);
+#endif
+	
+	return (uint32)(timestampDelta * 1000.0);
+
+}
+
+
+uint32 VisualTiming::getElapsedMilliSecsSinceLastCall(const char* const durationName) {
+	VisualItemIdentifier* visualDurationIdentifier = VisualItemIdentifier::createVisualItemIdentifier(durationName);
+	theVisualTiming = VisualTiming::getInstance();
+	uint32 elapsedMilliSeconds = theVisualTiming->getElapsedMilliSecsSinceLastCall(*visualDurationIdentifier);
+	delete visualDurationIdentifier;
+	return elapsedMilliSeconds;
+}
+
+
+uint32 VisualTiming::getElapsedMilliSecsSinceLastCall(const VisualItemIdentifier& visualDurationIdentifier) {
 	double timestampDelta;
 	theVisualTiming = VisualTiming::getInstance();
 	DurationMapIterator it;
@@ -127,43 +196,14 @@ UInt32 VisualTiming::getElapsedMilliSecsSinceReset(const VisualItemIdentifier& v
 	if (it == theVisualTiming->durationMap.end()) {
 		DurationItem* durationItem;
 		durationItem = new DurationItem;
-		durationItem->firstTimestamp = theVisualTiming->timestampOfPlayerCall;
-		durationItem->lastTimestamp = theVisualTiming->timestampOfPlayerCall;
+		durationItem->firstTimestamp = theVisualTiming->currentTime;
+		durationItem->lastTimestamp = theVisualTiming->currentTime;
 		theVisualTiming->durationMap[visualDurationIdentifier] = durationItem;
 		it = theVisualTiming->durationMap.find(visualDurationIdentifier);
 	}
-	timestampDelta = theVisualTiming->getTimeDelta(theVisualTiming->timestampOfPlayerCall, it->second->firstTimestamp);
-	it->second->lastTimestamp = theVisualTiming->timestampOfPlayerCall;
-	return (UInt32)(timestampDelta * 1000.0);
-
-}
-
-
-UInt32 VisualTiming::getElapsedMilliSecsSinceLastCall(const char* const durationName) {
-	VisualItemIdentifier* visualDurationIdentifier = VisualItemIdentifier::createVisualItemIdentifier(durationName);
-	theVisualTiming = VisualTiming::getInstance();
-	UInt32 elapsedMilliSeconds = theVisualTiming->getElapsedMilliSecsSinceLastCall(*visualDurationIdentifier);
-	delete visualDurationIdentifier;
-	return elapsedMilliSeconds;
-}
-
-
-UInt32 VisualTiming::getElapsedMilliSecsSinceLastCall(const VisualItemIdentifier& visualDurationIdentifier) {
-	double timestampDelta;
-	theVisualTiming = VisualTiming::getInstance();
-	DurationMapIterator it;
-	it = theVisualTiming->durationMap.find(visualDurationIdentifier);
-	if (it == theVisualTiming->durationMap.end()) {
-		DurationItem* durationItem;
-		durationItem = new DurationItem;
-		durationItem->firstTimestamp = theVisualTiming->timestampOfPlayerCall;
-		durationItem->lastTimestamp = theVisualTiming->timestampOfPlayerCall;
-		theVisualTiming->durationMap[visualDurationIdentifier] = durationItem;
-		it = theVisualTiming->durationMap.find(visualDurationIdentifier);
-	}
-	timestampDelta = theVisualTiming->getTimeDelta(theVisualTiming->timestampOfPlayerCall, it->second->lastTimestamp);
-	it->second->lastTimestamp = theVisualTiming->timestampOfPlayerCall;
-	return (UInt32)(timestampDelta * 1000.0);
+	timestampDelta = theVisualTiming->getTimeDelta(theVisualTiming->currentTime, it->second->lastTimestamp);
+	it->second->lastTimestamp = theVisualTiming->currentTime;
+	return (uint32)(timestampDelta * 1000.0);
 
 }
 
@@ -183,12 +223,12 @@ void VisualTiming::resetTimestamp(const VisualItemIdentifier& visualDurationIden
 	if (it == theVisualTiming->durationMap.end()) {
 		DurationItem* durationItem;
 		durationItem = new DurationItem;
-		durationItem->firstTimestamp = theVisualTiming->timestampOfPlayerCall;
-		durationItem->lastTimestamp = theVisualTiming->timestampOfPlayerCall;
+		durationItem->firstTimestamp = theVisualTiming->currentTime;
+		durationItem->lastTimestamp = theVisualTiming->currentTime;
 		theVisualTiming->durationMap[visualDurationIdentifier] = durationItem;
 	} else {
-		it->second->firstTimestamp = theVisualTiming->timestampOfPlayerCall;
-		it->second->lastTimestamp = theVisualTiming->timestampOfPlayerCall;
+		it->second->firstTimestamp = theVisualTiming->currentTime;
+		it->second->lastTimestamp = theVisualTiming->currentTime;
 	}
 }
 
@@ -206,7 +246,7 @@ const char* const VisualTiming::getCurrentMillisecsDateTime() {
 #if TARGET_OS_MAC
     struct timeval tod;
 	struct tm* ptm;
-    SInt8 retVal;
+    sint8 retVal;
 	
 	theVisualTiming = VisualTiming::getInstance();
 	
@@ -263,11 +303,11 @@ void VisualTiming::addDurationItemToDurationMap(const VisualItemIdentifier& visu
 	it = theVisualTiming->durationMap.find(visualDurationIdentifier);
 	if (it == theVisualTiming->durationMap.end()) {
 		DurationItem* durationItem = new DurationItem;
-		durationItem->firstTimestamp = theVisualTiming->timestampOfPlayerCall;
-		durationItem->lastTimestamp = theVisualTiming->timestampOfPlayerCall;
+		durationItem->firstTimestamp = theVisualTiming->currentTime;
+		durationItem->lastTimestamp = theVisualTiming->currentTime;
 		theVisualTiming->durationMap[visualDurationIdentifier] = durationItem;
 	} else {
-		it->second->firstTimestamp = theVisualTiming->timestampOfPlayerCall;
-		it->second->lastTimestamp = theVisualTiming->timestampOfPlayerCall;
+		it->second->firstTimestamp = theVisualTiming->currentTime;
+		it->second->lastTimestamp = theVisualTiming->currentTime;
 	}
 }

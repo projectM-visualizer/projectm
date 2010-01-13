@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: CoverArtActor.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -39,8 +39,10 @@ freely, subject to the following restrictions:
 #include "VisualErrorHandling.h"
 #include "VisualDispatch.h"
 #include "VisualDataStore.h"
+#include "VisualPreferences.h"
 #include "VisualTiming.h"
 #include "VisualConfiguration.h"
+#include "VisualImage.h"
 
 
 
@@ -60,79 +62,88 @@ CoverArtActor::~CoverArtActor() {
 }
 
 
-void CoverArtActor::prepareShow(const VisualPlayerState& visualPlayerState) {
+void CoverArtActor::init() {
+	VisualNotification::registerNotification(this, kImageWithIdentifierMsg);
+	VisualNotification::registerNotification(this, kAudioPlayTrackChangedEvt);
+	VisualNotification::registerNotification(this, kAudioPlayStoppedEvt);
+	VisualNotification::registerNotification(this, kAudioPlayPausedEvt);
+	VisualNotification::registerNotification(this, kAudioPlayResumedEvt);
+	VisualNotification::registerNotification(this, kAudioPlayReachedFadeOutTimeEvt);
+	VisualNotification::registerNotification(this, kCanvasReshapeEvt);
+	VisualNotification::registerNotification(this, kTrackInfoTextureChangedMsg);
+}
+
+
+void CoverArtActor::show(const VisualPlayerState& visualPlayerState) {
 	if ((this->currentAudioTrackHasCoverArt == true) && (this->state != kVisActOff)) {
 		this->coverArt->prepareCoverAction();
-	}
-}
-
-
-void CoverArtActor::show() {
-	if ((this->currentAudioTrackHasCoverArt == true) && (this->state != kVisActOff)) {
 		this->coverArt->showCover();
-	}
-}
-
-
-void CoverArtActor::finishShow() {
-	if ((this->currentAudioTrackHasCoverArt == true) && (this->state != kVisActOff)) {
 		this->coverArt->finishCoverAction();
 	}
 }
 
 
-void CoverArtActor::handleNotification(const VisualNotification& aNotification) {
+void CoverArtActor::handleNotification(VisualNotification& aNotification) {
 
-	//VisualActor::handleNotification(aNotification); // debug
+	// VisualActor::handleNotification(aNotification); // debug
 
 	VisualNotificationKey notificationKey = aNotification.getKey();
 	
 	switch (notificationKey) {
-		case kAudioMetadataIsAvailableMsg:
-			if (VisualDataStore::getNumberOfCoverArtworksOfCurrentTrack() > 0) {
-				this->coverArt->makeImageOfCover();
-				this->coverArt->calcPositionOnScreen();
-				this->currentAudioTrackHasCoverArt = true;
-			} else {
-				this->currentAudioTrackHasCoverArt = false;
-			}
-			if (this->currentAudioTrackHasCoverArt == true) {
-				VisualNotification::post(kCoverTextureIsAvailableMsg);
+	
+		case kImageWithIdentifierMsg:
+			{
+				if (aNotification.getIdentifier() == VisualDataStore::albumCoverArtworkImageId) {
+					VisualImage* albumCoverArtworkImage = dynamic_cast<VisualImage*>(aNotification.getObject());
+					this->coverArt->setAlbumCoverArtWorkImage(*albumCoverArtworkImage);
+					this->coverArt->reshape();
+					this->currentAudioTrackHasCoverArt = true;
+					this->coverArt->rotate();
+					this->coverArt->fadeIn(VisualPreferences::getValue(VisualPreferences::kFadeInTimeOnPlayInMS));
+				}
 			}
 			break;
-		case kCoverTextureIsAvailableMsg:
-			this->coverArt->rotate();
-			this->coverArt->fadeIn(VisualDataStore::getPreferenceValueInt(VisualConfiguration::kFadeInTimeOnPlayInMS));
-			break;
-		case kAudioPlayStartedEvt:
+			
+		case kAudioPlayTrackChangedEvt:
 			this->coverArt->clear();
 			this->currentAudioTrackHasCoverArt = false;
 			break;
+			
 		case kAudioPlayStoppedEvt:
 			this->coverArt->clear();
 			this->currentAudioTrackHasCoverArt = false;
 			break;
+			
 		case kAudioPlayPausedEvt:
-			this->coverArt->fadeOut(VisualDataStore::getPreferenceValueInt(VisualConfiguration::kFadeOutTimeOnPauseInMS), 0.15f);
+			this->coverArt->fadeOut(VisualPreferences::getValue(VisualPreferences::kFadeOutTimeOnPauseInMS), 0.15f);
 			break;
+			
 		case kAudioPlayResumedEvt:
-			this->coverArt->fadeIn(VisualDataStore::getPreferenceValueInt(VisualConfiguration::kFadeInTimeOnResumeInMS));
+			this->coverArt->fadeIn(VisualPreferences::getValue(VisualPreferences::kFadeInTimeOnResumeInMS));
 			break;
-		case kAudioPlayReachedFadeOutTimeBeforeEndOfTrackEvt:
-			this->coverArt->fadeOut(VisualDataStore::getPreferenceValueInt(VisualConfiguration::kFadeOutTimeBeforeEndOfTrackInMS));
+			
+		case kAudioPlayReachedFadeOutTimeEvt:
+			this->coverArt->fadeOut(VisualPreferences::getValue(VisualPreferences::kFadeOutTimeBeforeEndOfTrackInMS));
 			break;
+			
 		case kCanvasReshapeEvt:
 			if (this->currentAudioTrackHasCoverArt == true) {
-				this->coverArt->calcPositionOnScreen();
+				this->coverArt->reshape();
 			}
 			break;
+			
 		case kTrackInfoTextureChangedMsg:
 			if (this->currentAudioTrackHasCoverArt == true) {
-				this->coverArt->calcPositionOnScreen();
+				this->coverArt->reshape();
 			}
 			break;
+			
 		default:
-			writeLog("unhandled Notification in ProcessMonitorActor");
+			char notificationString[64];
+			VisualNotification::convertNotificationKeyToString(notificationKey, notificationString);
+			char errLog[256];
+			sprintf(errLog, "Unhandled VisualNotificationKey %s in file: %s (line: %d) [%s])", notificationString, __FILE__, __LINE__, __FUNCTION__);
+			writeLog(errLog);
 			break;
 	}
 

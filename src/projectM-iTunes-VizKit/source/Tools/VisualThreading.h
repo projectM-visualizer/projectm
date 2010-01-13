@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualThreading.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,12 +36,14 @@ freely, subject to the following restrictions:
 #ifndef VisualThreading_h
 #define VisualThreading_h
 
+
+#include "VisualTypes.h"
+
 #if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
+#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h> // signature typedef OSStatus (*ThreadingFuncPtr)(void* parameter);
 #endif
 
 #if TARGET_OS_WIN
-#include <QT/MacTypes.h>
 #include <windows.h>
 #endif
 
@@ -49,12 +51,14 @@ freely, subject to the following restrictions:
 namespace VizKit {
 
 
+#ifndef ThreadingFuncPtr_def
+#define ThreadingFuncPtr_def
 #if TARGET_OS_MAC
 typedef OSStatus (*ThreadingFuncPtr)(void* parameter);
 #endif
 #if TARGET_OS_WIN
 typedef DWORD (*ThreadingFuncPtr)(LPVOID lpParam);
-//typedef LPTHREAD_START_ROUTINE ThreadingFuncPtr;
+#endif
 #endif
 
 
@@ -66,18 +70,25 @@ typedef DWORD (*ThreadingFuncPtr)(LPVOID lpParam);
 	public:
 
 		/**
-		 * Creates a new thread by starting function.
+		 * Callback that is called after a thread died.
+		 */
+		typedef void (*ThreadDidDieCallback)();
+		
+		/**
+		 * Creates a new thread by calling task function.
 		 * @param aThreadingFuncPtr Pointer to function that should be started in new thread.
-		 * @param name Optional name for function-thread.\ Useful for debugging purposes.
+		 * @param param Optional name for function-thread. Useful for debugging purposes.
+		 * @param callbackAfterThreadDidDie Callback that is called after the created thread did finished execution.
+		 * @return True on success, false on failure.
 		 */	
-		static OSStatus createThread(ThreadingFuncPtr aThreadingFuncPtr, char* name = NULL);
+		static bool createThread(ThreadingFuncPtr aThreadingFuncPtr, void* param = NULL, ThreadDidDieCallback callbackAfterThreadDidDie = NULL);
 
 	private:
 
-		/** The constructor.\ VisualThreading is a collection of static methods.\ Class does not need any instances.\ Constructor is private and not implemented. */
+		/** The constructor. VisualThreading is a collection of static methods. Class does not need any instances. Constructor is private and not implemented. */
 		VisualThreading();
 
-		/** The destructor.\ VisualThreading is a collection of static methods.\ Class does not need any instances.\ Destructor is private and not implemented. */
+		/** The destructor. VisualThreading is a collection of static methods. Class does not need any instances. Destructor is private and not implemented. */
 		~VisualThreading();
 
 	};

@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualHostCommunication.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -33,43 +33,81 @@ freely, subject to the following restrictions:
 
  ***************************************************************************/
 
+#if TARGET_OS_WIN
+#include <stdio.h> // sprintf
+#endif
+
 #include "VisualHostCommunication.h"
 #include "VisualSignature.h"
+#include "VisualMainAction.h"
+#include "VisualErrorHandling.h"
+#include "VisualQuickTime.h"
+
+
+#include "iTunesAPI.h" // PlayerGetCurrentTrackCoverArt
+
 
 using namespace VizKit;
 
 
 
-UInt16 VisualHostCommunication::getCurrentTrackCoverArt(OSType* albumCoverArtworkFileType, Handle* albumCoverArtworkHandle) {
+VisualHostCommunication* VisualHostCommunication::theVisualHostCommunication = NULL;
 
-	UInt16 numberOfArtworks = 0;
 
-	OSStatus status = PlayerGetCurrentTrackCoverArt(VisualSignature::getAppCookie(), VisualSignature::getAppProc(), albumCoverArtworkHandle, albumCoverArtworkFileType);
-    if (status != noErr) {
-        //writeLog("Error at VisualDataStore.evaluateCoverArtInfo");
-    }
-	HLock(*albumCoverArtworkHandle);
-	Size coverArtHandleBlockSize = GetHandleSize(*albumCoverArtworkHandle); // win: malloc.h: _msize(coverArtHandle) (?)
-	if (coverArtHandleBlockSize == 0) {
-		*albumCoverArtworkFileType = (OSType)NULL;
-    } else {
-		numberOfArtworks = 1;
-    }
-	HUnlock(*albumCoverArtworkHandle);
-
-	return numberOfArtworks;
+VisualHostCommunication::VisualHostCommunication() {
+	// null
 }
 
 
-OSStatus VisualHostCommunication::setPreferredDisplayResolution(UInt16 minBitsPerPixel, UInt16 maxBitsPerPixel, UInt16 preferredBitsPerPixel, UInt16 horizontalPixels, UInt16 verticalPixels) {
+VisualHostCommunication::~VisualHostCommunication() {
+	//theVisualHostCommunication->notificationQueue.clear();
+}
 
-	OSStatus osStatus = PlayerSetFullScreenOptions(VisualSignature::getAppCookie(), 
-											VisualSignature::getAppProc(), 
-											minBitsPerPixel, 
-											maxBitsPerPixel, 
-											preferredBitsPerPixel, 
-											horizontalPixels, 
-											verticalPixels);
 
-	return osStatus;
+VisualHostCommunication* VisualHostCommunication::getInstance() {
+	if (theVisualHostCommunication == NULL) {
+		theVisualHostCommunication = new VisualHostCommunication;
+	}
+	return theVisualHostCommunication;
+}
+
+
+void VisualHostCommunication::dispose() {
+	if (theVisualHostCommunication != NULL) {
+		if (theVisualHostCommunication->coverArtImageDataHandle != NULL) {
+			VisualQuickTime::disposeHandle((Handle)(theVisualHostCommunication->coverArtImageDataHandle));
+		}
+		delete theVisualHostCommunication;
+		theVisualHostCommunication = NULL;
+	}
+}
+
+
+int VisualHostCommunication::getCurrentTrackCoverArt(void** albumCoverArtworkImageData, uint32& numberOfBytes) {
+
+	uint16 numberOfArtworks = 0;
+	OSType albumCoverArtworkFileType;
+
+	theVisualHostCommunication = VisualHostCommunication::getInstance();
+	Handle coverArtHandle = NULL;
+	OSStatus status = PlayerGetCurrentTrackCoverArt(VisualSignature::getAppCookie(), VisualSignature::getAppProc(), &coverArtHandle, &albumCoverArtworkFileType);
+    if (status != noErr) {
+		char errLog[256];
+		sprintf(errLog, "PlayerGetCurrentTrackCoverArt err (%ld) in file: %s (line: %d) [%s])", status, __FILE__, __LINE__, __FUNCTION__);
+		writeLog(errLog);
+		return numberOfArtworks;
+    }
+
+	numberOfBytes = VisualQuickTime::getHandleSize(coverArtHandle);
+
+	if (numberOfBytes > 0) {
+		numberOfArtworks = 1;
+		*albumCoverArtworkImageData = *coverArtHandle;
+	}
+
+	if (coverArtHandle) {
+		theVisualHostCommunication->coverArtImageDataHandle = coverArtHandle;
+	}
+
+	return numberOfArtworks;
 }

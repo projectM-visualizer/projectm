@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualActorState.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -42,7 +42,7 @@ using namespace VizKit;
 
 
 void convertVisualActorStateToString(const VisualActorState aVisualActorState, char* outString) {
-	char* messageString;
+	const char* messageString;
 	switch (aVisualActorState) {
 		case kVisActUndefinedState:
 			messageString = "kVisActUndefinedState";

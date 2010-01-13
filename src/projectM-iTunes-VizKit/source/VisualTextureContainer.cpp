@@ -1,50 +1,58 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualTextureContainer.cpp
  *
  */
 
 /***************************************************************************
-
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
-
-
-This software is provided 'as-is', without any expressed or implied warranty. 
-In no event will the authors be held liable for any damages
-arising from the use of this software.
-
-Permission is granted to anyone to use this software for any purpose,
-including commercial applications, and to alter it and redistribute it
-freely, subject to the following restrictions:
-
-1. The origin of this software must not be misrepresented; 
-   you must not claim that you wrote the original software. 
-   If you use this software in a product, an acknowledgment 
-   in the product documentation would be appreciated 
-   but is not required.
-
-2. Altered source versions must be plainly marked as such, 
-   and must not be misrepresented as being the original software.
-
-3. This notice may not be removed or altered from any source distribution.
-
+ 
+ Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
+ 
+ 
+ This software is provided 'as-is', without any expressed or implied warranty. 
+ In no event will the authors be held liable for any damages
+ arising from the use of this software.
+ 
+ Permission is granted to anyone to use this software for any purpose,
+ including commercial applications, and to alter it and redistribute it
+ freely, subject to the following restrictions:
+ 
+ 1. The origin of this software must not be misrepresented; 
+ you must not claim that you wrote the original software. 
+ If you use this software in a product, an acknowledgment 
+ in the product documentation would be appreciated 
+ but is not required.
+ 
+ 2. Altered source versions must be plainly marked as such, 
+ and must not be misrepresented as being the original software.
+ 
+ 3. This notice may not be removed or altered from any source distribution.
+ 
  ***************************************************************************/
 
 #include "VisualTextureContainer.h"
+#include "VisualGraphicTypes.h"
+#include "VisualVertex.h"
 #include "VisualConvolutionFilter.h"
-#include "VisualString.h"
-#include "VisualStringStyle.h"
+#include "VisualStyledString.h"
 #include "VisualFile.h"
-#include "VisualQuickTime.h"
 #include "VisualGraphics.h"
-#include "VisualStageBox.h"
+#include "VisualColorTools.h"
 #include "VisualErrorHandling.h"
 #include "VisualDispatch.h"
+#include "VisualCamera.h"
+#if TARGET_OS_MAC
+#include <ApplicationServices/../Frameworks/ImageIO.framework/Headers/ImageIO.h> // CGImage...
+#endif
 
-
+#if TARGET_OS_WIN
+#include <windows.h>
+#include <gdiplus.h>
+#include <stdio.h>
+#endif
 
 using namespace VizKit;
 
@@ -53,66 +61,20 @@ VisualTextureContainer::TextureRefCountMap VisualTextureContainer::textureRefCou
 
 
 VisualTextureContainer::VisualTextureContainer() {
-	textureIsSet = false;
+	aTextureIsSet = false;
 	textureName = 0;
-	textureWidth = 0;
-	textureHeight = 0;
-	textureLogicalWidth = 0.0;
-	textureLogicalHeight = 0.0;
-	imageWidth = 0;
-	imageHeight = 0;
+	textureRect.width = 0;
+	textureRect.height = 0;
+	logicalSize.width = 0.0;
+	logicalSize.height = 0.0;
+	imageRect.width = 0;
+	imageRect.height = 0;
 	useRectExtension = false;
-	pixelFormat = kGL_BGRA;
-#if __BIG_ENDIAN__
-	dataType = kGL_UNSIGNED_INT_8_8_8_8_REV;
-#else
-#if TARGET_OS_WIN
-	dataType = kGL_UNSIGNED_BYTE;
-#else
-	dataType = kGL_UNSIGNED_INT_8_8_8_8;
-#endif
-#endif
-	pixelBuffer = NULL;
-}
-
-
-VisualTextureContainer::VisualTextureContainer(UInt32 anImageWidth, UInt32 anImageHeight, bool useRectExtensionBool) {
-	textureIsSet = false;
-	textureName = 0;
-	imageWidth = anImageWidth;
-	imageHeight = anImageHeight;
-	useRectExtension = useRectExtensionBool;
-	if (useRectExtensionBool == false) {
-		VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-		textureWidth = theVisualGraphics->power2Ceiling(imageWidth);
-		textureHeight = theVisualGraphics->power2Ceiling(imageHeight);
-		textureLogicalWidth = (double)imageWidth / (double)textureWidth;
-		textureLogicalHeight = (double)imageHeight / (double)textureHeight;
-	} else {
-		textureWidth = imageWidth;
-		textureHeight = imageHeight;
-		textureLogicalWidth = (double)textureWidth;
-		textureLogicalHeight = (double)textureHeight;
-	}
-	pixelFormat = kGL_BGRA;
-#if __BIG_ENDIAN__
-	dataType = kGL_UNSIGNED_INT_8_8_8_8_REV;
-#else
-#if TARGET_OS_WIN
-	dataType = kGL_UNSIGNED_BYTE;
-#else
-	dataType = kGL_UNSIGNED_INT_8_8_8_8;
-#endif
-#endif
-	pixelBuffer = NULL;
 }
 
 
 VisualTextureContainer::~VisualTextureContainer() {
 	this->releaseTextureData();
-	if (this->pixelBuffer != NULL) {
-		free(this->pixelBuffer);
-	}
 }
 
 
@@ -122,269 +84,215 @@ VisualTextureContainer::VisualTextureContainer(const VisualTextureContainer& oth
 
 
 VisualTextureContainer& VisualTextureContainer::operator=(const VisualTextureContainer& other) {
-	if (this != &other) {
-		if ((this->textureIsSet) && (this->textureName != other.textureName)) {
-			this->releaseTextureData();
-		}
-		if (this->pixelBuffer != NULL) {
-			free(this->pixelBuffer);
-			this->pixelBuffer = NULL;
-		}
-		this->copy(other);
+	
+	if (this == &other) return *this;
+	
+	if ((this->aTextureIsSet) && (this->textureName != other.textureName)) {
+		this->releaseTextureData();
 	}
+	
+	this->copy(other);
+	
 	return *this;
 }
 
 
-OSStatus VisualTextureContainer::initWithDataHandle(Handle dataHandle, OSType fileType) {
+bool VisualTextureContainer::initWithFile(VisualFile& aFile) {
+	
+	bool success = true;
 	
 	this->releaseTextureData();
-	if (this->pixelBuffer != NULL) {
-		free(this->pixelBuffer);
-		this->pixelBuffer = NULL;
-	}
-
-	OSStatus status = noErr;
-	char errLog[64];
-	GraphicsImportComponent gi = 0;
-
-	status = VisualQuickTime::getGraphicsImporterForHandle(dataHandle, gi, fileType);
-	if (status != noErr) {
-		sprintf(errLog, "err %ld: getGraphicsImporterForHandle", status);
-		writeLog(errLog);
-		return status;
+	
+	void* encodedImageData = NULL;
+	size_t encodedImageDataSize = 0;
+	success = aFile.getData(&encodedImageData, encodedImageDataSize);
+	if (!success) {
+		return success;
 	}
 	
-	status = VisualQuickTime::setMaxQuality(gi);
-	if (status != noErr) {
-		sprintf(errLog, "err %ld: setMaxQuality", status);
-		writeLog(errLog);
-		return status;
-	}
+	success = this->initWithEncodedData((const char* const)encodedImageData, encodedImageDataSize);
+	
+	return success;
+}
 
-	VisualQuickTime::getImageDimensions(gi, this->imageWidth, this->imageHeight);
 
+bool VisualTextureContainer::initWithEncodedData(const char* const bufferData, size_t size) {
+	
+	bool success = true;
+	bool debug = false;
+	
+	this->releaseTextureData();
+	
+	uint32* aPixelBuffer = NULL;
+	
+#if TARGET_OS_WIN
+	
+	HGLOBAL hGlobal = ::GlobalAlloc(GMEM_MOVEABLE | GMEM_NODISCARD, (SIZE_T)size);
+	if (!hGlobal)
+		return false;
+	
+	BYTE* pDest = (BYTE*)::GlobalLock(hGlobal);
+	
+	memcpy(pDest, bufferData, size);
+	
+	::GlobalUnlock(hGlobal);
+	
+	IStream* pStream = NULL;
+	if (::CreateStreamOnHGlobal(hGlobal, FALSE, &pStream) != S_OK)
+		return false;
+	
+	Gdiplus::Bitmap* bitmap = Gdiplus::Bitmap::FromStream(pStream);
+	bitmap->RotateFlip(Gdiplus::RotateNoneFlipY);
+	
+	this->imageRect.width = bitmap->GetWidth();
+	this->imageRect.height = bitmap->GetHeight();
+	
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
 	this->useRectExtension = theVisualGraphics->canUseTextureRectExtension();
 	if (this->useRectExtension == false) {
-		this->textureWidth = theVisualGraphics->power2Ceiling(this->imageWidth);
-		this->textureHeight = theVisualGraphics->power2Ceiling(this->imageHeight);
+		this->textureRect.width = theVisualGraphics->power2Ceiling(this->imageRect.width);
+		this->textureRect.height = theVisualGraphics->power2Ceiling(this->imageRect.height);
 	} else {
-		this->textureWidth = this->imageWidth;
-		this->textureHeight = this->imageHeight;
-	}
-
-	status = VisualQuickTime::flipImportMatrix(gi, this->imageWidth, this->imageHeight);
-	if (status != noErr) {
-		sprintf(errLog, "err %ld: flipImportMatrix", status);
-		writeLog(errLog);
-		return status;
-	}
-
-#if TARGET_OS_MAC	
-	CGImageRef imageRef = VisualQuickTime::createCGImageRef(gi);
-	if (imageRef == NULL) {
-		char errStr[256];
-		sprintf(errStr, "imageRef is NULL in file: %s (line: %d) [%s])", __FILE__, __LINE__, __FUNCTION__);
-		writeLog(errStr);
-		return NULL;
+		this->textureRect.width = this->imageRect.width;
+		this->textureRect.height = this->imageRect.height;
 	}
 	
-	CGContextRef contextPtr = theVisualGraphics->createBitmapContext(this->textureWidth, this->textureHeight);
-
-	CGRect rect = CGRectMake(0, (this->textureHeight - this->imageHeight), this->imageWidth, this->imageHeight);
-	CGContextDrawImage(contextPtr, rect, imageRef);
-
-	this->pixelBuffer = static_cast<UInt32*>(CGBitmapContextGetData(contextPtr));
+	aPixelBuffer = (uint32*)malloc(this->imageRect.width * this->imageRect.height * sizeof(uint32));
+	Gdiplus::Rect rect(0, 0, this->imageRect.width, this->imageRect.height);
+	Gdiplus::BitmapData* bitmapData = new Gdiplus::BitmapData;
+	
+	bitmapData->Width = this->imageRect.width;
+	bitmapData->Height = this->imageRect.height;
+	bitmapData->Stride = sizeof(uint32) * bitmapData->Width;
+	bitmapData->PixelFormat = PixelFormat32bppARGB;
+	bitmapData->Scan0 = (VOID*)aPixelBuffer;
+	
+	Gdiplus::Status status = Gdiplus::Ok;
+	status = bitmap->LockBits(&rect, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeUserInputBuf, PixelFormat32bppPARGB, bitmapData);
+	
 #endif
-
-#if TARGET_OS_WIN
-	this->pixelBuffer = VisualQuickTime::getBitmapOfDrawing(gi, this->textureWidth, this->textureHeight);
-#endif
-
-	CloseComponent(gi);
-
-	this->textureName = theVisualGraphics->getNextFreeTextureName();
-	this->textureIsSet = true;
-	VisualTextureContainer::textureRefCountMap[this->textureName] = 1;
-#if TARGET_OS_WIN
-	theVisualGraphics->copyARGBBitmapDataToTexture(this->textureName, this->textureWidth, this->textureHeight, this->useRectExtension, this->pixelFormat, kGL_UNSIGNED_BYTE, const_cast<const UInt32**>(&(this->pixelBuffer)));
-#endif
+	
 #if TARGET_OS_MAC
-	theVisualGraphics->copyARGBBitmapDataToTexture(this->textureName, this->textureWidth, this->textureHeight, this->useRectExtension, this->pixelFormat, this->dataType, const_cast<const UInt32**>(&(this->pixelBuffer)));
+	
+	CFDataRef dataRef = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (UInt8*)bufferData, (CFIndex)size, kCFAllocatorDefault);
+	
+	CFDictionaryRef options = NULL;
+	CGImageSourceRef imageSourceRef = CGImageSourceCreateWithData(dataRef, options);
+	
+	CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSourceRef, 0, options);
+	
+	this->imageRect.width = CGImageGetWidth(imageRef);
+	this->imageRect.height = CGImageGetHeight(imageRef);
+	
+	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
+	this->useRectExtension = theVisualGraphics->canUseTextureRectExtension();
+	if (this->useRectExtension == false) {
+		this->textureRect.width = theVisualGraphics->power2Ceiling(this->imageRect.width);
+		this->textureRect.height = theVisualGraphics->power2Ceiling(this->imageRect.height);
+	} else {
+		this->textureRect.width = this->imageRect.width;
+		this->textureRect.height = this->imageRect.height;
+	}
+	
+	CGContextRef contextPtr = theVisualGraphics->createBitmapContext(this->imageRect.width, this->imageRect.height);
+	
+	CGContextTranslateCTM(contextPtr, 0, this->imageRect.height);
+	CGContextScaleCTM(contextPtr, 1.0f, -1.0f);
+	
+	CGRect rect = CGRectMake(0, 0, this->imageRect.width, this->imageRect.height);
+	CGContextDrawImage(contextPtr, rect, imageRef);
+	
+	aPixelBuffer = static_cast<uint32*>(CGBitmapContextGetData(contextPtr));
 #endif
-
+	
+	PixelColor* interleavedARGBColorPixelBuffer = NULL;
+	
+	if (debug == true) {
+		interleavedARGBColorPixelBuffer = VisualColorTools::createARGBCheckPixels(this->textureRect.width, this->textureRect.height);
+	} else {
+		interleavedARGBColorPixelBuffer = static_cast<PixelColor*>(aPixelBuffer);
+	}
+	success = this->initWithARGBPixelData(interleavedARGBColorPixelBuffer, this->imageRect.width, this->imageRect.height);
+	
 #if TARGET_OS_MAC
 	CGContextRelease(contextPtr);
-	if (this->pixelBuffer != NULL) {
-		free(this->pixelBuffer);
-		this->pixelBuffer = NULL;
-	}
 	CGImageRelease(imageRef);
 #endif
-
+	
 #if TARGET_OS_WIN
-	if (this->pixelBuffer != NULL) {
-		free(this->pixelBuffer);
-		this->pixelBuffer = NULL;
-	}
+	bitmap->UnlockBits(bitmapData);
 #endif
-
-	if (this->useRectExtension == false) {
-		this->textureLogicalWidth = (double)this->imageWidth / (double)this->textureWidth;
-		this->textureLogicalHeight = (double)this->imageHeight / (double)this->textureHeight;
-	} else {
-		this->textureLogicalWidth = (double)this->textureWidth;
-		this->textureLogicalHeight = (double)this->textureHeight;
-	}
-
-	return status;
+	
+	return success;
+	
 }
 
 
-OSStatus VisualTextureContainer::initWithDataPointerToPointer(const unsigned char** const aPointerToPointerToBuffer, UInt32 size, OSType aFileFormatType) {
-
-	this->releaseTextureData();
-	if (this->pixelBuffer != NULL) {
-		free(this->pixelBuffer);
-		this->pixelBuffer = NULL;
-	}
+bool VisualTextureContainer::initWithARGBPixelData(PixelColor* argbPixels, size_t imageWidth, size_t imageHeight, bool debug) {
 	
-	OSStatus status = noErr;
+	bool success = true;
 	
-	Handle handle;
-	PtrToHand(*aPointerToPointerToBuffer, &handle, size);
-	status = this->initWithDataHandle(handle, aFileFormatType);
+	this->imageRect.width = imageWidth;
+	this->imageRect.height = imageHeight;
 	
-	return status;
-}
-
-
-OSStatus VisualTextureContainer::initWithFile(const VisualFile& aFile, OSType fileType) {
-	
-	this->releaseTextureData();
-	if (this->pixelBuffer != NULL) {
-		free(this->pixelBuffer);
-		this->pixelBuffer = NULL;
-	}
-
-	OSStatus status = noErr;
-	char errLog[128];
-	GraphicsImportComponent gi = 0;
-	
-	status = VisualQuickTime::getGraphicsImporterForFile(aFile, gi, fileType);
-	if (status != noErr) {
-		sprintf(errLog, "err %ld: after getGraphicsImporterForFile() in file: %s (line: %d) [%s])", status, __FILE__, __LINE__, __FUNCTION__);
-		writeLog(errLog);
-		return status;
-	}
-	
-	status = VisualQuickTime::setMaxQuality(gi);
-	if (status != noErr) {
-		sprintf(errLog, "err %ld: after setMaxQuality() in file: %s (line: %d) [%s])", status, __FILE__, __LINE__, __FUNCTION__);
-		writeLog(errLog);
-		return status;
-	}
-
-	VisualQuickTime::getImageDimensions(gi, this->imageWidth, this->imageHeight);
-
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
 	this->useRectExtension = theVisualGraphics->canUseTextureRectExtension();
 	if (this->useRectExtension == false) {
-		this->textureWidth = theVisualGraphics->power2Ceiling(this->imageWidth);
-		this->textureHeight = theVisualGraphics->power2Ceiling(this->imageHeight);
+		this->textureRect.width = theVisualGraphics->power2Ceiling(this->imageRect.width);
+		this->textureRect.height = theVisualGraphics->power2Ceiling(this->imageRect.height);
 	} else {
-		this->textureWidth = this->imageWidth;
-		this->textureHeight = this->imageHeight;
-	}
-
-	status = VisualQuickTime::flipImportMatrix(gi, this->imageWidth, this->imageHeight);
-	if (status != noErr) {
-		sprintf(errLog, "err %ld: flipImportMatrix", status);
-		writeLog(errLog);
-		return status;
-	}
-
-#if TARGET_OS_MAC	
-	CGImageRef imageRef = VisualQuickTime::createCGImageRef(gi);
-	if (imageRef == NULL) {
-		char errStr[256];
-		sprintf(errStr, "imageRef is NULL in file: %s (line: %d) [%s])", __FILE__, __LINE__, __FUNCTION__);
-		writeLog(errStr);
-		return NULL;
+		this->textureRect.width = this->imageRect.width;
+		this->textureRect.height = this->imageRect.height;
 	}
 	
-	CGContextRef contextPtr = theVisualGraphics->createBitmapContext(this->textureWidth, this->textureHeight);
-
-	CGRect rect = CGRectMake(0, (this->textureHeight - this->imageHeight), this->imageWidth, this->imageHeight);
-	CGContextDrawImage(contextPtr, rect, imageRef);
-
-	this->pixelBuffer = static_cast<UInt32*>(CGBitmapContextGetData(contextPtr));
-#endif
-
-#if TARGET_OS_WIN
-	this->pixelBuffer = VisualQuickTime::getBitmapOfDrawing(gi, this->textureWidth, this->textureHeight);
-#endif
-
-	CloseComponent(gi);
-
 	this->textureName = theVisualGraphics->getNextFreeTextureName();
-	this->textureIsSet = true;
+	this->aTextureIsSet = true;
 	VisualTextureContainer::textureRefCountMap[this->textureName] = 1;
-#if TARGET_OS_WIN
-	theVisualGraphics->copyARGBBitmapDataToTexture(this->textureName, this->textureWidth, this->textureHeight, this->useRectExtension, this->pixelFormat, kGL_UNSIGNED_BYTE, const_cast<const UInt32**>(&(this->pixelBuffer)));
-#endif
-#if TARGET_OS_MAC
-	theVisualGraphics->copyARGBBitmapDataToTexture(this->textureName, this->textureWidth, this->textureHeight, this->useRectExtension, this->pixelFormat, this->dataType, const_cast<const UInt32**>(&(this->pixelBuffer)));
-#endif
-
-#if TARGET_OS_WIN
-	if (this->pixelBuffer != NULL) {
-		free(this->pixelBuffer);
-		this->pixelBuffer = NULL;
-	}
-#endif
-
-#if TARGET_OS_MAC
-	CGContextRelease(contextPtr);
-	if (this->pixelBuffer != NULL) {
-		free(this->pixelBuffer);
-		this->pixelBuffer = NULL;
-	}
-	CGImageRelease(imageRef);	
-#endif
-
+	
+	success = theVisualGraphics->copyARGBBitmapDataToTexture(this->textureName, this->imageRect.width, this->imageRect.height, this->useRectExtension, const_cast<const uint32**>(&(argbPixels)), debug);
+	
 	if (this->useRectExtension == false) {
-		this->textureLogicalWidth = (double)this->imageWidth / (double)this->textureWidth;
-		this->textureLogicalHeight = (double)this->imageHeight / (double)this->textureHeight;
+		this->logicalSize.width = (double)this->imageRect.width / (double)this->textureRect.width;
+		this->logicalSize.height = (double)this->imageRect.height / (double)this->textureRect.height;
 	} else {
-		this->textureLogicalWidth = (double)this->textureWidth;
-		this->textureLogicalHeight = (double)this->textureHeight;
+		this->logicalSize.width = (double)this->textureRect.width;
+		this->logicalSize.height = (double)this->textureRect.height;
 	}
-
-	return status;
+	
+	return success;
 }
 
 
-OSStatus VisualTextureContainer::initWithString(const VisualString& stringValue, VisualStringStyle& stringStyle) {
+bool VisualTextureContainer::initWithBGRAPixelData(PixelColor* bgraPixels, size_t imageWidth, size_t imageHeight, bool debug) {
+
+	uint32 numberOfPixels = imageWidth * imageHeight;
+	VisualColorTools::convertInterleavedPixels1234To4321(bgraPixels, numberOfPixels);
+	
+	return this->initWithARGBPixelData(bgraPixels, imageWidth, imageHeight, debug);
+}
+
+
+bool VisualTextureContainer::initWithStyledString(VisualStyledString& styledString) {
 	
 	this->releaseTextureData();
-	if (this->pixelBuffer != NULL) {
-		free(this->pixelBuffer);
-		this->pixelBuffer = NULL;
+	
+    bool success = true;
+	
+	const VisualString* aVisualString = &(styledString);
+	VisualStringStyle& stringStyle = styledString.getStyle();
+	if (aVisualString->getNumberOfCharacters() == 0) {
+		return false;
 	}
-
-    OSStatus status = noErr;
-
+	
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	UInt16 maxPixelWidth = theVisualGraphics->getCanvasPixelWidth();
-	UInt16 maxPixelHeight = theVisualGraphics->getCanvasPixelHeight();
+	uint32 maxPixelWidth = theVisualGraphics->getCanvasPixelWidth();
+	uint32 maxPixelHeight = theVisualGraphics->getCanvasPixelHeight();
 	
 	this->textureName = theVisualGraphics->getNextFreeTextureName();
-	this->textureIsSet = true;
+	this->aTextureIsSet = true;
 	VisualTextureContainer::textureRefCountMap[this->textureName] = 1;
 	this->useRectExtension = theVisualGraphics->canUseTextureRectExtension();
-
+	
 #if TARGET_OS_MAC
 	char alignmentStr[32];	
 	switch (stringStyle.horizontalAlignment) {
@@ -401,254 +309,186 @@ OSStatus VisualTextureContainer::initWithString(const VisualString& stringValue,
 			break;
 	}
 	
-	status = getDimensionsOfCocoaStringBitmap((void*)&stringValue, &(this->imageWidth), &(this->imageHeight), const_cast<char*>(stringStyle.fontNameStr), &(stringStyle.fontSize), stringStyle.fontColor.r, stringStyle.fontColor.g, stringStyle.fontColor.b, maxPixelWidth, maxPixelHeight, alignmentStr);
-	
-	if (this->useRectExtension == false) {
-		this->textureWidth = theVisualGraphics->power2Ceiling(this->imageWidth);
-		this->textureHeight = theVisualGraphics->power2Ceiling(this->imageHeight);
-	} else {
-		this->textureWidth = this->imageWidth;
-		this->textureHeight = this->imageHeight;
+	success = getDimensionsOfCocoaStringBitmap((void*)aVisualString, (void*)&stringStyle, &(this->imageRect.width), &(this->imageRect.height), maxPixelWidth, maxPixelHeight, alignmentStr);
+	if (!success) {
+		return success;
 	}
 	
-	this->pixelBuffer = (UInt32*)calloc(this->textureWidth * this->textureHeight, sizeof(UInt32));
-
-	status = getCocoaStringBitmapData((void*)&stringValue, this->textureWidth, this->textureHeight, const_cast<char*>(stringStyle.fontNameStr), stringStyle.fontSize, stringStyle.fontColor.r, stringStyle.fontColor.g, stringStyle.fontColor.b, alignmentStr, &(this->pixelBuffer));
+	if (this->useRectExtension == false) {
+		this->textureRect.width = theVisualGraphics->power2Ceiling(this->imageRect.width);
+		this->textureRect.height = theVisualGraphics->power2Ceiling(this->imageRect.height);
+	} else {
+		this->textureRect.width = this->imageRect.width;
+		this->textureRect.height = this->imageRect.height;
+	}
 	
-	theVisualGraphics->copyARGBBitmapDataToTexture(this->textureName, this->textureWidth, this->textureHeight, this->useRectExtension, this->pixelFormat, this->dataType, const_cast<const UInt32**>(&(this->pixelBuffer)));
-
+	PixelColor* pixelBuffer = (uint32*)calloc(this->textureRect.width * this->textureRect.height, sizeof(uint32));
+	
+	success = getCocoaStringBitmapData((void*)&styledString, this->textureRect.width, this->textureRect.height, alignmentStr, &(pixelBuffer));
+	
+	success = theVisualGraphics->copyARGBBitmapDataToTexture(this->textureName, this->textureRect.width, this->textureRect.height, this->useRectExtension, const_cast<const uint32**>(&(pixelBuffer)));
+	
 #endif
-
+	
 #if TARGET_OS_WIN
-
-	wchar_t* stringValueRef = (wchar_t*)stringValue.getCharactersPointer();
-	UInt8 red = (UInt8)(stringStyle.fontColor.r * 255.0f);
-	UInt8 green = (UInt8)(stringStyle.fontColor.g * 255.0f);
-	UInt8 blue = (UInt8)(stringStyle.fontColor.b * 255.0f);
 	
-	status = theVisualGraphics->makeTextureOfStringWin(stringValueRef, stringValue.getNumberOfCharacters(), this->textureName, this->textureWidth, this->textureHeight, this->imageWidth, this->imageHeight, stringStyle.fontNameStr, (UInt16)stringStyle.fontSize, red, green, blue, stringStyle.horizontalAlignment, maxPixelWidth, maxPixelHeight);
+	wchar_t* stringValueRef = (wchar_t*)(styledString.getCharactersPointer());
+	uint8 red = (uint8)(stringStyle.fontColor.r * 255.0f);
+	uint8 green = (uint8)(stringStyle.fontColor.g * 255.0f);
+	uint8 blue = (uint8)(stringStyle.fontColor.b * 255.0f);
 
-#endif
-
-	if (this->useRectExtension == false) {
-		this->textureLogicalWidth = (double)this->imageWidth / (double)this->textureWidth;
-		this->textureLogicalHeight = (double)this->imageHeight / (double)this->textureHeight;
-	} else {
-		this->textureLogicalWidth = (double)this->textureWidth;
-		this->textureLogicalHeight = (double)this->textureHeight;
+	if (!stringValueRef) {
+		success = false;
+		return success;
 	}
-
-	return status;
+	
+	success = theVisualGraphics->makeTextureOfStringWin(stringValueRef, styledString.getNumberOfCharacters(), this->textureName, this->textureRect.width, this->textureRect.height, this->imageRect.width, this->imageRect.height, stringStyle.fontNameStr, (uint16)stringStyle.fontSize, red, green, blue, stringStyle.horizontalAlignment, maxPixelWidth, maxPixelHeight);
+	
+#endif
+	
+	if (this->useRectExtension == false) {
+		this->logicalSize.width = (double)this->imageRect.width / (double)this->textureRect.width;
+		this->logicalSize.height = (double)this->imageRect.height / (double)this->textureRect.height;
+	} else {
+		this->logicalSize.width = (double)this->textureRect.width;
+		this->logicalSize.height = (double)this->textureRect.height;
+	}
+	
+	return success;
 }
 
 
-#if TARGET_OS_MAC
-OSStatus VisualTextureContainer::initWithURL(VisualString& anURL) {
-
+void VisualTextureContainer::clean() {
 	this->releaseTextureData();
-	if (this->pixelBuffer != NULL) {
-		free(this->pixelBuffer);
-		this->pixelBuffer = NULL;
-	}
-
-	OSStatus osStatus = noErr;
-	
-	CFURLRef imageURL = CFURLCreateWithString(kCFAllocatorDefault, anURL.getCharactersPointer(), NULL);
-	CGImageSourceRef imageSource = CGImageSourceCreateWithURL(imageURL, NULL);
-	CGImageRef imageRef = CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);
-	this->imageWidth = CGImageGetWidth(imageRef);
-	this->imageHeight = CGImageGetHeight(imageRef);
-	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	this->useRectExtension = theVisualGraphics->canUseTextureRectExtension();
-	if (this->useRectExtension == false) {
-		this->textureWidth = theVisualGraphics->power2Ceiling(this->imageWidth);
-		this->textureHeight = theVisualGraphics->power2Ceiling(this->imageHeight);
-	} else {
-		this->textureWidth = this->imageWidth;
-		this->textureHeight = this->imageHeight;
-	}
-	CGContextRef context = theVisualGraphics->createBitmapContext(this->textureWidth, this->textureHeight);
-
-	CGContextTranslateCTM(context, 0.0, (float)this->textureHeight + (float)(this->textureHeight - this->imageHeight));
-	CGContextScaleCTM(context, 1.0, -1.0);
-
-	CGRect rect = CGRectMake(0, (this->textureHeight - this->imageHeight), this->imageWidth, this->imageHeight);
-	CGContextDrawImage(context, rect, imageRef);
-
-	this->pixelBuffer = static_cast<UInt32*>(CGBitmapContextGetData(context));
-
-	this->textureName = theVisualGraphics->getNextFreeTextureName();
-	this->textureIsSet = true;
-	VisualTextureContainer::textureRefCountMap[this->textureName] = 1;
-	theVisualGraphics->copyARGBBitmapDataToTexture(this->textureName, this->textureWidth, this->textureHeight, this->useRectExtension, this->pixelFormat, this->dataType, const_cast<const UInt32**>(&(this->pixelBuffer)));
-
-	CGContextRelease(context);
-	if (this->pixelBuffer) {
-		free(this->pixelBuffer);
-		this->pixelBuffer = NULL;
-	}
-	CGImageRelease(imageRef);
-
-	if (this->useRectExtension == false) {
-		this->textureLogicalWidth = (double)this->imageWidth / (double)this->textureWidth;
-		this->textureLogicalHeight = (double)this->imageHeight / (double)this->textureHeight;
-	} else {
-		this->textureLogicalWidth = (double)this->textureWidth;
-		this->textureLogicalHeight = (double)this->textureHeight;
-	}
-
-	return osStatus;
-
 }
+
+
+bool VisualTextureContainer::initWithFramebuffer(const BottomLeftPositionedPixelRect& clipRect) {
+	
+	bool success = true;
+
+	uint16 dataType;
+	uint16 pixelFormat = kGL_BGRA;
+	// BGRA on intel machines and ARGB on ppc
+#if TARGET_OS_WIN
+	dataType = kGL_UNSIGNED_BYTE;
+#else
+#if __BIG_ENDIAN__
+	dataType = kGL_UNSIGNED_INT_8_8_8_8_REV;
+#else
+	dataType = kGL_UNSIGNED_INT_8_8_8_8;
 #endif
-
-
-OSStatus VisualTextureContainer::initWithFramebuffer(UInt32 xPos, UInt32 yPos, UInt32 width, UInt32 height) {
+#endif
 	
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-
+	
 	this->releaseTextureData();
-
+	
 	this->textureName = theVisualGraphics->getNextFreeTextureName();
-	this->textureIsSet = true;
+	this->aTextureIsSet = true;
 	VisualTextureContainer::textureRefCountMap[this->textureName] = 1;
 	this->useRectExtension = theVisualGraphics->canUseTextureRectExtension();
-
+	
 	int prevReadBuffer = theVisualGraphics->getCurrentColorBufferForPixelReadingOperations();
 	theVisualGraphics->setColorBufferForPixelReadingOperations(kGL_BACK_COLOR_BUFFER);
-
+	
 	int prevDrawBuffer = theVisualGraphics->getCurrentColorBufferForPixelDrawingOperations();
 	theVisualGraphics->setColorBufferForPixelDrawingOperations(kGL_BACK_COLOR_BUFFER);
-
+	
 	theVisualGraphics->enableTexturing(this->useRectExtension);
-	theVisualGraphics->copyFramebufferToTexture(this->textureName, this->useRectExtension, xPos, yPos, width, height, this->pixelFormat, this->dataType);
+	theVisualGraphics->copyFramebufferToTexture(this->textureName, this->useRectExtension, clipRect, pixelFormat, dataType);
 	theVisualGraphics->disableTexturing(this->useRectExtension);
-
+	
 	theVisualGraphics->setColorBufferForPixelDrawingOperations(prevDrawBuffer);
 	theVisualGraphics->setColorBufferForPixelReadingOperations(prevReadBuffer);
-
-
-	return noErr;
+	
+	this->imageRect.width = clipRect.pixelRect.width;
+	this->imageRect.height = clipRect.pixelRect.height;
+	
+	this->useRectExtension = theVisualGraphics->canUseTextureRectExtension();
+	if (this->useRectExtension == false) {
+		this->textureRect.width = theVisualGraphics->power2Ceiling(this->imageRect.width);
+		this->textureRect.height = theVisualGraphics->power2Ceiling(this->imageRect.height);
+	} else {
+		this->textureRect.width = this->imageRect.width;
+		this->textureRect.height = this->imageRect.height;
+	}
+	
+	return success;
 }
 
 
-UInt32* VisualTextureContainer::getTexturePixels(const UInt16 format, const UInt16 type) {
-
-	bool debug = false;
-
-	UInt8* pixelBuffer8Bit = NULL;
-		
-	char errStr[256];
-
+PixelColor* VisualTextureContainer::createARGBImagePixels(bool debug) {
+	
+	PixelColor* pixelBuffer = NULL;
+	
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
 	
 	if (debug == true) {
-		if (this->pixelBuffer != NULL) {
-			free(this->pixelBuffer);
-			this->pixelBuffer = NULL;
-		}
-		this->pixelBuffer = theVisualGraphics->createARGBCheckPixels(this->textureWidth, this->textureHeight);
-		return this->pixelBuffer;
+		pixelBuffer = VisualColorTools::createARGBCheckPixels(this->textureRect.width, this->textureRect.height);
+		return pixelBuffer;
 	}
 	
-	if ((debug == false) && (this->pixelBuffer != NULL)) {
-		//return this->pixelBuffer;
-	}
+	theVisualGraphics->enableTexturing(this->useRectExtension);
+	theVisualGraphics->bindTexture(this->textureName, this->useRectExtension);
+	theVisualGraphics->setPixelStorageParams();
 	
-	UInt8 numberOfBytesPerChannel = 0;
-	UInt8 numberOfChannels = 0; // channel == color resp. alpha channel
-	UInt8 numberOfBytesPerPixel = 0;
-	UInt32 numberOfBytesPerRow = 0;
-	if ((format == kGL_RGBA) || (format == kGL_BGRA)) {
-		numberOfChannels = 4;
-	} else {
-		sprintf(errStr, "unknown format %d in file: %s (line: %d) [%s])", format, __FILE__, __LINE__, __FUNCTION__);
-		writeLog(errStr);
-		return this->pixelBuffer;
-	}
+	uint16 format = kGL_BGRA;
+	uint16 type;
 	
-	if ((type == kGL_UNSIGNED_INT_8_8_8_8_REV) || (type == kGL_UNSIGNED_INT_8_8_8_8) || (type == kGL_UNSIGNED_BYTE)) {
-		numberOfBytesPerChannel = 1; // 1 byte (== 8 bits) per color/channel
-	} else {
-		sprintf(errStr, "unknown type %d in file: %s (line: %d) [%s])", type, __FILE__, __LINE__, __FUNCTION__);
-		writeLog(errStr);
-		return this->pixelBuffer;
-	}
-
-	if (this->pixelBuffer != NULL) {
-		free(this->pixelBuffer);
-		this->pixelBuffer = NULL;
-	}
-
+	// GL_BGRA/GL_UNSIGNED_BYTE and GL_BGRA/GL_UNSIGNED_INT_8_8_8_8_REV are equivalent on little endian machines
+	
 	if (this->useRectExtension == false) {
-		numberOfBytesPerPixel = numberOfBytesPerChannel * numberOfChannels;
-		numberOfBytesPerRow = numberOfBytesPerPixel * this->textureWidth;
-		if ((format == kGL_RGBA) || (format == kGL_BGRA)) {
-			if ((type == kGL_UNSIGNED_INT_8_8_8_8_REV) || (type == kGL_UNSIGNED_INT_8_8_8_8)) {
-				this->pixelBuffer = (UInt32*)calloc((numberOfBytesPerRow / numberOfBytesPerPixel) * this->textureHeight, numberOfBytesPerPixel);
-			} else if (type == kGL_UNSIGNED_BYTE) {
-				this->pixelBuffer = (UInt32*)calloc((numberOfBytesPerRow / numberOfBytesPerPixel) * this->textureHeight, numberOfBytesPerPixel);
-				pixelBuffer8Bit = (UInt8*)malloc(this->textureWidth * this->textureHeight * 4);
-			}
-		}
 		
-		theVisualGraphics->enableTexturing(this->useRectExtension);
-		theVisualGraphics->bindTexture(this->textureName, this->useRectExtension);
-		theVisualGraphics->setPixelStorageParams();
-		if ((type == kGL_UNSIGNED_INT_8_8_8_8_REV) || (type == kGL_UNSIGNED_INT_8_8_8_8)) {
-			theVisualGraphics->get32BitPixelsOfCurrentTexture(this->useRectExtension, format, type, &(this->pixelBuffer));
-		} else if (type == kGL_UNSIGNED_BYTE) {
-			theVisualGraphics->get8BitPixelsOfCurrentTexture(this->useRectExtension, format, type, &pixelBuffer8Bit);
+		pixelBuffer = (PixelColor*)malloc(this->textureRect.width * this->textureRect.height * sizeof(PixelColor));
+		
+		type = kGL_UNSIGNED_BYTE;
+		theVisualGraphics->getPixelsOfCurrentTexture(this->useRectExtension, format, type, &(pixelBuffer));
+		
+#if __BIG_ENDIAN__
+		VisualColorTools::convertInterleavedPixels1234To4321(pixelBuffer, this->textureRect.width * this->textureRect.height);
+#endif
+
+		if ((this->textureRect.width != this->imageRect.width) || (this->textureRect.height != this->imageRect.height)) {
+			// copy actual image pixel data out of texture pixel data
+			Pixel topLeftPosition;
+			topLeftPosition.x = 0;
+			topLeftPosition.y = 0;
+			TopLeftPositionedPixelRect clipRect;
+			clipRect.topLeftPixel = topLeftPosition;
+			clipRect.pixelRect = this->imageRect;
+			PixelColor* clippedPixelData = theVisualGraphics->clipPixelData(pixelBuffer, this->textureRect, clipRect);
+			free(pixelBuffer);
+			pixelBuffer = clippedPixelData;
 		}
-		theVisualGraphics->disableTexturing(this->useRectExtension);
 
 	} else {
-#if TARGET_OS_MAC
-		// glGetTexImage() does not always reliably return the pixelBuffer
-		// of npot (non-power-of-two, GL_TEXTURE_RECTANGLE_EXT) textures
-		// because of inconsistencies with Nvidia's GeForce4 MX card (1.4.18) [only with some not all textures the pixel data was returned]
-		// we grab the pixels with glReadPixels()
-		// (HW, 20070208)
-		this->pixelBuffer = this->getRectPixels(format, type);
-#endif
+		
+		pixelBuffer = (PixelColor*)malloc(this->imageRect.width * this->imageRect.height * sizeof(PixelColor));
+		
+		type = kGL_UNSIGNED_INT_8_8_8_8_REV;
+		theVisualGraphics->getPixelsOfCurrentTexture(this->useRectExtension, format, type, &pixelBuffer);
 	}
-
-	if (type == kGL_UNSIGNED_BYTE) {
-		UInt32 b, g, r, a, color32bit;
-		UInt32 pixelBufferIdx = 0;
-		UInt32 pixelBuffer8BitIdx = 0;
-		for (UInt32 i = 0; i < this->textureHeight; i++) {
-			for (UInt32 k = 0; k < this->textureWidth; k++) {
-				b = pixelBuffer8Bit[pixelBuffer8BitIdx + 0] << 24;
-				g = pixelBuffer8Bit[pixelBuffer8BitIdx + 1] << 16;
-				r = pixelBuffer8Bit[pixelBuffer8BitIdx + 2] << 8;
-				a = pixelBuffer8Bit[pixelBuffer8BitIdx + 3];
-				color32bit = b | g | r | a;
-				this->pixelBuffer[pixelBufferIdx] = color32bit;
-				pixelBufferIdx++;
-				pixelBuffer8BitIdx += 4;
-			}
-		}
-		free(pixelBuffer8Bit);
-	}
-
-	return this->pixelBuffer;
+	
+	theVisualGraphics->disableTexturing(this->useRectExtension);
+	
+	return pixelBuffer;
 }
 
 
-UInt32* VisualTextureContainer::getRectPixels(const UInt16 format, const UInt16 type) {
-
-	UInt32* pixels = NULL;
-	UInt32* prevPixels = NULL;
-
+PixelColor* VisualTextureContainer::createReadPixels(const uint16 format, const uint16 type) {
+	
+	PixelColor* pixels = NULL;
+	PixelColor* prevPixels = NULL;
+	
 	char errStr[512];
 	
 	double scaleFactor = 1.0;
-
-	UInt8 numberOfBytesPerChannel = 0;
-	UInt8 numberOfChannels = 0; // channel == color resp. alpha channel
-	UInt8 numberOfBytesPerPixel = 0;
-	UInt32 numberOfBytesPerRow = 0;
+	
+	uint8 numberOfBytesPerChannel = 0;
+	uint8 numberOfChannels = 0; // channel == color resp. alpha channel
+	uint8 numberOfBytesPerPixel = 0;
+	uint32 numberOfBytesPerRow = 0;
 	if ((format == kGL_RGBA) || (format == kGL_BGRA)) {
 		numberOfChannels = 4;
 	} else {
@@ -666,93 +506,71 @@ UInt32* VisualTextureContainer::getRectPixels(const UInt16 format, const UInt16 
 	}
 	
 	numberOfBytesPerPixel = numberOfBytesPerChannel * numberOfChannels;
-	numberOfBytesPerRow = numberOfBytesPerPixel * this->textureWidth;
-
-	VisualStageBox stageBox;
-
-	VisualStagePosition position;
-	position.horizontalAlignment = kLeftAligned;
-	position.verticalAlignment = kBottomAligned;
-	stageBox.setVisualStagePosition(position);
-
-	stageBox.setContentPixelWidth(this->getImageWidth());
-	stageBox.setContentPixelHeight(this->getImageHeight());
-
-	VertexChain aVertexChain;
-	Vertex* topLeftFrontVertex = new Vertex;
-	topLeftFrontVertex->vertexPosition.xPos = stageBox.getLeftCoord() * scaleFactor;
-	topLeftFrontVertex->vertexPosition.yPos = stageBox.getTopCoord() * scaleFactor;
-	topLeftFrontVertex->vertexPosition.zPos = stageBox.getFrontPosition();
-	topLeftFrontVertex->vertexColor.r = 1.0f;
-	topLeftFrontVertex->vertexColor.g = 1.0f;
-	topLeftFrontVertex->vertexColor.b = 1.0f;
-	topLeftFrontVertex->vertexColor.a = 1.0f;
-	topLeftFrontVertex->texCoordPosition.sPos = 0.0f;
-	topLeftFrontVertex->texCoordPosition.tPos = this->getTextureLogicalHeight();
-	aVertexChain.push_back(topLeftFrontVertex);
-
-	Vertex* bottomLeftFrontVertex = new Vertex;
-	bottomLeftFrontVertex->vertexPosition.xPos = stageBox.getLeftCoord() * scaleFactor;
-	bottomLeftFrontVertex->vertexPosition.yPos = stageBox.getBottomCoord() * scaleFactor;
-	bottomLeftFrontVertex->vertexPosition.zPos = stageBox.getFrontPosition();
-	bottomLeftFrontVertex->vertexColor.r = 1.0f;
-	bottomLeftFrontVertex->vertexColor.g = 1.0f;
-	bottomLeftFrontVertex->vertexColor.b = 1.0f;
-	bottomLeftFrontVertex->vertexColor.a = 1.0f;
-	bottomLeftFrontVertex->texCoordPosition.sPos = 0.0f;
-	bottomLeftFrontVertex->texCoordPosition.tPos = 0.0f;
-	aVertexChain.push_back(bottomLeftFrontVertex);
-
-	Vertex* bottomRightFrontVertex = new Vertex;
-	bottomRightFrontVertex->vertexPosition.xPos = stageBox.getRightCoord() * scaleFactor;
-	bottomRightFrontVertex->vertexPosition.yPos = stageBox.getBottomCoord() * scaleFactor;
-	bottomRightFrontVertex->vertexPosition.zPos = stageBox.getFrontPosition();
-	bottomRightFrontVertex->vertexColor.r = 1.0f;
-	bottomRightFrontVertex->vertexColor.g = 1.0f;
-	bottomRightFrontVertex->vertexColor.b = 1.0f;
-	bottomRightFrontVertex->vertexColor.a = 1.0f;
-	bottomRightFrontVertex->texCoordPosition.sPos = this->getTextureLogicalWidth();
-	bottomRightFrontVertex->texCoordPosition.tPos = 0.0f;
-	aVertexChain.push_back(bottomRightFrontVertex);
-
-	Vertex* topRightFrontVertex = new Vertex;
-	topRightFrontVertex->vertexPosition.xPos = stageBox.getRightCoord() * scaleFactor;
-	topRightFrontVertex->vertexPosition.yPos = stageBox.getTopCoord() * scaleFactor;
-	topRightFrontVertex->vertexPosition.zPos = stageBox.getFrontPosition();
-	topRightFrontVertex->vertexColor.r = 1.0f;
-	topRightFrontVertex->vertexColor.g = 1.0f;
-	topRightFrontVertex->vertexColor.b = 1.0f;
-	topRightFrontVertex->vertexColor.a = 1.0f;
-	topRightFrontVertex->texCoordPosition.sPos = this->getTextureLogicalWidth();
-	topRightFrontVertex->texCoordPosition.tPos = this->getTextureLogicalHeight();
-	aVertexChain.push_back(topRightFrontVertex);
-
+	numberOfBytesPerRow = numberOfBytesPerPixel * this->textureRect.width;
+	
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
+	
+	Coord coord;
+	VisualCamera aCamera;
+	aCamera.setOrthographicProjection();
+	coord.x = aCamera.getMaxLeftCoord() * scaleFactor;
+	coord.y = (aCamera.getMaxBottomCoord() + theVisualGraphics->yPixelToCoord(this->textureRect.height, aCamera)) * scaleFactor;
+	coord.z = aCamera.getMaxNearPos();
+	VertexChain aVertexChain;
+	TexCoord texCoord;
+	texCoord.s = 0.0;
+	texCoord.t = this->getTextureLogicalHeight();
+	VisualVertex* topLeftFrontVertex = new VisualVertex(coord, texCoord, white);
+	aVertexChain.push_back(topLeftFrontVertex);
+	
+	coord.x = aCamera.getMaxLeftCoord() * scaleFactor;
+	coord.y = aCamera.getMaxBottomCoord() * scaleFactor;
+	coord.z = aCamera.getMaxNearPos();
+	texCoord.s = 0.0;
+	texCoord.t = 0.0;
+	VisualVertex* bottomLeftFrontVertex = new VisualVertex(coord, texCoord, white);
+	aVertexChain.push_back(bottomLeftFrontVertex);
+	
+	coord.x = (aCamera.getMaxLeftCoord() + theVisualGraphics->xPixelToCoord(this->textureRect.width, aCamera)) * scaleFactor;
+	coord.y = aCamera.getMaxBottomCoord() * scaleFactor;
+	coord.z = aCamera.getMaxNearPos();
+	texCoord.s = this->getTextureLogicalWidth();
+	texCoord.t = 0.0;
+	VisualVertex* bottomRightFrontVertex = new VisualVertex(coord, texCoord, white);
+	aVertexChain.push_back(bottomRightFrontVertex);
+	
+	coord.x = (aCamera.getMaxLeftCoord() + theVisualGraphics->xPixelToCoord(this->textureRect.width, aCamera)) * scaleFactor;
+	coord.y = (aCamera.getMaxBottomCoord() + theVisualGraphics->yPixelToCoord(this->textureRect.height, aCamera)) * scaleFactor;
+	coord.z = aCamera.getMaxNearPos();
+	texCoord.s = this->getTextureLogicalWidth();
+	texCoord.t = this->getTextureLogicalHeight();
+	VisualVertex* topRightFrontVertex = new VisualVertex(coord, texCoord, white);
+	aVertexChain.push_back(topRightFrontVertex);
 	
 	// read previous pixels
 	if ((format == kGL_RGBA) || (format == kGL_BGRA)) {
-		prevPixels = (UInt32*)calloc((numberOfBytesPerRow / numberOfBytesPerPixel) * this->textureHeight, numberOfBytesPerPixel);
+		prevPixels = (uint32*)calloc((numberOfBytesPerRow / numberOfBytesPerPixel) * this->textureRect.height, numberOfBytesPerPixel);
 	}
-	theVisualGraphics->readPixels(stageBox.getLeftCoord(), stageBox.getBottomCoord(), this->textureWidth, this->textureHeight, &prevPixels, format, type);
-
+	theVisualGraphics->readPixels(aCamera.getMaxLeftCoord(), aCamera.getMaxBottomCoord(), this->textureRect.width, this->textureRect.height, &prevPixels, format, type, aCamera);
+	
 	// draw current texture
 	theVisualGraphics->drawTexture(this->textureName, &aVertexChain, this->getUseRectExtension(), kReplace);
-
+	
 	// read pixels of current texture
 	if ((format == kGL_RGBA) || (format == kGL_BGRA)) {
-		pixels = (UInt32*)calloc((numberOfBytesPerRow / numberOfBytesPerPixel) * this->textureHeight, numberOfBytesPerPixel);
+		pixels = (uint32*)calloc((numberOfBytesPerRow / numberOfBytesPerPixel) * this->textureRect.height, numberOfBytesPerPixel);
 	}
-	theVisualGraphics->readPixels(stageBox.getLeftCoord(), stageBox.getBottomCoord(), this->textureWidth, this->textureHeight, &pixels, format, type);
-
+	theVisualGraphics->readPixels(aCamera.getMaxLeftCoord(), aCamera.getMaxBottomCoord(), this->textureRect.width, this->textureRect.height, &pixels, format, type, aCamera);
+	
 	// restore previous pixels
-	theVisualGraphics->drawPixels(&prevPixels, stageBox.getLeftCoord(), stageBox.getBottomCoord(), this->textureWidth, this->textureHeight, format, type);
-
+	theVisualGraphics->drawPixels(&prevPixels, aCamera.getMaxLeftCoord(), aCamera.getMaxBottomCoord(), this->textureRect.width, this->textureRect.height, format, type);
+	
 	for (VertexChainIterator chainIt = aVertexChain.begin(); chainIt != aVertexChain.end(); chainIt++) {
 		delete *chainIt;
 		*chainIt = NULL;
 	}
 	aVertexChain.clear();
-
+	
 	free(prevPixels);
 	
 	return pixels;
@@ -760,91 +578,50 @@ UInt32* VisualTextureContainer::getRectPixels(const UInt16 format, const UInt16 
 
 
 void VisualTextureContainer::copy(const VisualTextureContainer& other) {
-	if (other.textureIsSet) {
+	if (other.aTextureIsSet) {
 		VisualTextureContainer::textureRefCountMap[other.textureName]++;
 	}
-	this->textureIsSet = other.textureIsSet;
+	this->aTextureIsSet = other.aTextureIsSet;
 	this->textureName = other.textureName;
-	this->textureWidth = other.textureWidth;
-	this->textureHeight = other.textureHeight;
-	this->textureLogicalWidth = other.textureLogicalWidth;
-	this->textureLogicalHeight = other.textureLogicalHeight;
-	this->imageWidth = other.imageWidth;
-	this->imageHeight = other.imageHeight;
+	this->textureRect = other.textureRect;
+	this->logicalSize = other.logicalSize;
+	this->imageRect = other.imageRect;
 	this->useRectExtension = other.useRectExtension;
-	this->pixelFormat = other.pixelFormat;
-	this->dataType = other.dataType;
-	if (other.pixelBuffer != NULL) {
-		this->pixelBuffer = (UInt32*)malloc(this->textureWidth * this->textureHeight * sizeof(UInt32));
-		memcpy(this->pixelBuffer, other.pixelBuffer, this->textureWidth * this->textureHeight * sizeof(UInt32));
-	} else {
-		this->pixelBuffer = NULL;
-	}
 }
 
 
-void VisualTextureContainer::setTextureWidth(UInt32 aTextureWidth) {
-	this->textureWidth = aTextureWidth;
-}
-
-
-void VisualTextureContainer::setTextureHeight(UInt32 aTextureHeight) {
-	this->textureHeight = aTextureHeight;
-}
-
-
-void VisualTextureContainer::setTextureLogicalWidth(double aTextureLogicalWidth) {
-	this->textureLogicalWidth = aTextureLogicalWidth;
-}
-
-
-void VisualTextureContainer::setTextureLogicalHeight(double aTextureLogicalHeight) {
-	this->textureLogicalHeight = aTextureLogicalHeight;
-}
-
-
-void VisualTextureContainer::setImageWidth(UInt32 anImageWidth) {
-	this->imageWidth = anImageWidth;
-}
-
-
-void VisualTextureContainer::setImageHeight(UInt32 anImageHeight) {
-	this->imageHeight = anImageHeight;
-}
-
-
-UInt32 VisualTextureContainer::getTextureName() const {
+uint32 VisualTextureContainer::getTextureName() const {
 	return this->textureName;
 }
 
 
-UInt32 VisualTextureContainer::getTextureWidth() const {
-	return this->textureWidth;
+size_t VisualTextureContainer::getTextureWidth() const {
+	return this->textureRect.width;
 }
 
 
-UInt32 VisualTextureContainer::getTextureHeight() const {
-	return this->textureHeight;
+size_t VisualTextureContainer::getTextureHeight() const {
+	return this->textureRect.height;
 }
 
 
 double VisualTextureContainer::getTextureLogicalWidth() const {
-	return this->textureLogicalWidth;
+	return this->logicalSize.width;
 }
 
 
 double VisualTextureContainer::getTextureLogicalHeight() const {
-	return this->textureLogicalHeight;
+	return this->logicalSize.height;
 }
 
 
-UInt32 VisualTextureContainer::getImageWidth() const {
-	return this->imageWidth;
+size_t VisualTextureContainer::getImageWidth() const {
+	return this->imageRect.width;
 }
 
 
-UInt32 VisualTextureContainer::getImageHeight() const {
-	return this->imageHeight;
+size_t VisualTextureContainer::getImageHeight() const {
+	return this->imageRect.height;
 }
 
 
@@ -854,15 +631,20 @@ bool VisualTextureContainer::getUseRectExtension() const {
 
 
 void VisualTextureContainer::releaseTextureData() {
-	if (this->textureIsSet) {
+	if (this->aTextureIsSet) {
 		VisualTextureContainer::textureRefCountMap[this->textureName]--;
 		if (VisualTextureContainer::textureRefCountMap[this->textureName] == 0) {
 			VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
 			theVisualGraphics->deleteTextures(1, &(this->textureName));
 			this->textureName = 0;
-			this->textureIsSet = false;
+			this->aTextureIsSet = false;
 		}
 	}
+}
+
+
+bool VisualTextureContainer::textureIsSet() {
+	return this->aTextureIsSet;
 }
 
 
@@ -870,67 +652,123 @@ void VisualTextureContainer::applyConvolutionFilter(const VisualConvolutionFilte
 	
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
 
-	int prevReadBuffer = theVisualGraphics->getCurrentColorBufferForPixelReadingOperations();
-	theVisualGraphics->setColorBufferForPixelReadingOperations(kGL_BACK_COLOR_BUFFER);
-
-	int prevDrawBuffer = theVisualGraphics->getCurrentColorBufferForPixelDrawingOperations();
-	theVisualGraphics->setColorBufferForPixelDrawingOperations(kGL_BACK_COLOR_BUFFER);
+	uint16 dataType;
+	uint16 pixelFormat = kGL_BGRA;
+	// BGRA on intel machines and ARGB on ppc
+#if TARGET_OS_WIN
+	dataType = kGL_UNSIGNED_BYTE;
+#else
+#if __BIG_ENDIAN__
+	dataType = kGL_UNSIGNED_INT_8_8_8_8_REV;
+#else
+	dataType = kGL_UNSIGNED_INT_8_8_8_8;
+#endif
+#endif
 	
-	UInt32* prevPixels = NULL;
+	if (theVisualGraphics->doesSupportGLConvolutionFilter()) {
+		
+		int prevReadBuffer = theVisualGraphics->getCurrentColorBufferForPixelReadingOperations();
+		theVisualGraphics->setColorBufferForPixelReadingOperations(kGL_BACK_COLOR_BUFFER);
+		
+		int prevDrawBuffer = theVisualGraphics->getCurrentColorBufferForPixelDrawingOperations();
+		theVisualGraphics->setColorBufferForPixelDrawingOperations(kGL_BACK_COLOR_BUFFER);
+		
+		uint32* prevPixels = NULL;
+		
+		char errStr[512];
+		
+		uint8 numberOfBytesPerChannel = 0;
+		uint8 numberOfChannels = 0; // channel == color resp. alpha channel
+		uint8 numberOfBytesPerPixel = 0;
+		uint32 numberOfBytesPerRow = 0;
+		if ((pixelFormat == kGL_RGBA) || (pixelFormat == kGL_BGRA)) {
+			numberOfChannels = 4;
+		} else {
+			sprintf(errStr, "unknown format %d in file: %s (line: %d) [%s])", pixelFormat, __FILE__, __LINE__, __FUNCTION__);
+			writeLog(errStr);
+			return;
+		}
+		
+		if ((dataType == kGL_UNSIGNED_INT_8_8_8_8_REV) || (dataType == kGL_UNSIGNED_INT_8_8_8_8) || (dataType == kGL_UNSIGNED_BYTE)) {
+			numberOfBytesPerChannel = 1; // // 1 byte (== 8 bits) per color/channel
+		} else {
+			sprintf(errStr, "unknown type %d in file: %s (line: %d) [%s])", dataType, __FILE__, __LINE__, __FUNCTION__);
+			writeLog(errStr);
+			return;
+		}
+		
+		numberOfBytesPerPixel = numberOfBytesPerChannel * numberOfChannels;
+		numberOfBytesPerRow = numberOfBytesPerPixel * this->textureRect.width;
+		
+		// read previous pixels
+		if ((pixelFormat == kGL_RGBA) || (pixelFormat == kGL_BGRA)) {
+			prevPixels = (uint32*)calloc((numberOfBytesPerRow / numberOfBytesPerPixel) * this->textureRect.height, numberOfBytesPerPixel);
+		}
+		VisualCamera aCamera;
+		aCamera.setOrthographicProjection();
+		theVisualGraphics->readPixels(aCamera.getMaxLeftCoord(), aCamera.getMaxBottomCoord(), this->textureRect.width, this->textureRect.height, &prevPixels, pixelFormat, dataType, aCamera);
+		
+		PixelColor* pixels = NULL;
+		pixels = this->createARGBImagePixels();
+		if (pixels == NULL) {
+			sprintf(errStr, "pixels == NULL in file: %s (line: %d) [%s])", __FILE__, __LINE__, __FUNCTION__);
+			writeLog(errStr);
+			return;
+		}
 
-	char errStr[512];
-
-	UInt8 numberOfBytesPerChannel = 0;
-	UInt8 numberOfChannels = 0; // channel == color resp. alpha channel
-	UInt8 numberOfBytesPerPixel = 0;
-	UInt32 numberOfBytesPerRow = 0;
-	if ((this->pixelFormat == kGL_RGBA) || (this->pixelFormat == kGL_BGRA)) {
-		numberOfChannels = 4;
+		theVisualGraphics->drawPixels(&pixels, aCamera.getMaxLeftCoord(), aCamera.getMaxBottomCoord(), this->imageRect.width, this->imageRect.height, pixelFormat, dataType, &aConvolutionFilter);
+		
+		free(pixels);
+		pixels = NULL;
+		
+		BottomLeftPositionedPixelRect clipRect;
+		clipRect.bottomLeftPixel.x = 0;
+		clipRect.bottomLeftPixel.y = 0;
+		clipRect.pixelRect.width = this->textureRect.width;
+		clipRect.pixelRect.height = this->textureRect.height;
+		
+		theVisualGraphics->enableTexturing(this->useRectExtension);
+		theVisualGraphics->copyFramebufferToTexture(this->textureName, this->useRectExtension, clipRect, pixelFormat, dataType);
+		theVisualGraphics->disableTexturing(this->useRectExtension);
+		
+		// restore previous pixels
+		theVisualGraphics->drawPixels(&prevPixels, aCamera.getMaxLeftCoord(), aCamera.getMaxBottomCoord(), this->textureRect.width, this->textureRect.height, pixelFormat, dataType);
+		
+		free(prevPixels);
+		
+		theVisualGraphics->setColorBufferForPixelDrawingOperations(prevDrawBuffer);
+		theVisualGraphics->setColorBufferForPixelReadingOperations(prevReadBuffer);
+		
 	} else {
-		sprintf(errStr, "unknown format %d in file: %s (line: %d) [%s])", this->pixelFormat, __FILE__, __LINE__, __FUNCTION__);
-		writeLog(errStr);
-		return;
+		
+		PixelColor* pixels = this->createARGBImagePixels();		
+		PixelColor* filteredPixels = NULL;
+		aConvolutionFilter.applyToPixelData(pixels, this->imageRect.width, this->imageRect.height, pixelFormat, dataType, &filteredPixels);
+		free(pixels);
+		pixels = NULL;
+		bool success = false;
+		const PixelColor* constFilteredPixels = const_cast<const PixelColor*>(filteredPixels);
+		success = theVisualGraphics->copyARGBBitmapDataToTexture(this->textureName, this->imageRect.width, this->imageRect.height, this->useRectExtension, &constFilteredPixels);
+		if (filteredPixels != NULL) {
+			free(filteredPixels);
+		}
 	}
 	
-	if ((this->dataType == kGL_UNSIGNED_INT_8_8_8_8_REV) || (this->dataType == kGL_UNSIGNED_INT_8_8_8_8) || (this->dataType == kGL_UNSIGNED_BYTE)) {
-		numberOfBytesPerChannel = 1; // // 1 byte (== 8 bits) per color/channel
-	} else {
-		sprintf(errStr, "unknown type %d in file: %s (line: %d) [%s])", this->dataType, __FILE__, __LINE__, __FUNCTION__);
-		writeLog(errStr);
-		return;
-	}
+}
+
+
+void VisualTextureContainer::resample(const PixelRect& pixelRect) {
 	
-	numberOfBytesPerPixel = numberOfBytesPerChannel * numberOfChannels;
-	numberOfBytesPerRow = numberOfBytesPerPixel * this->textureWidth;
+	PixelColor* pixels = this->createARGBImagePixels();
+	PixelColor* pixelsOut = (PixelColor*)malloc(pixelRect.width * pixelRect.height * sizeof(PixelColor));
+	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
+	uint16 aPixelFormat = kGL_RGBA;
+	uint16 dataTypeIn = kGL_UNSIGNED_BYTE;
+	uint16 dataTypeOut = dataTypeIn;
+	theVisualGraphics->resample(aPixelFormat, this->imageRect.width, this->imageRect.height, dataTypeIn, pixels, pixelRect.width, pixelRect.height, dataTypeOut, &pixelsOut);
+	free(pixels);
 
-	// read previous pixels
-	if ((this->pixelFormat == kGL_RGBA) || (this->pixelFormat == kGL_BGRA)) {
-		prevPixels = (UInt32*)calloc((numberOfBytesPerRow / numberOfBytesPerPixel) * this->textureHeight, numberOfBytesPerPixel);
-	}
-	theVisualGraphics->readPixels(theVisualGraphics->getMaxLeftCoordOfCanvas(), theVisualGraphics->getMaxBottomCoordOfCanvas(), this->textureWidth, this->textureHeight, &prevPixels, this->pixelFormat, this->dataType);
+	this->initWithARGBPixelData(pixelsOut, pixelRect.width, pixelRect.height);
+	free(pixelsOut);
 
-	UInt32* pixels = this->getTexturePixels(this->pixelFormat, this->dataType);
-	UInt32* passedPixels = (UInt32*)malloc(this->textureWidth * this->textureHeight * 4);
-	memcpy(passedPixels, pixels, this->textureWidth * this->textureHeight * 4); // VisualStudio does not like when we pass a non-const pointer to instance variable (crashes in runtime)
-	theVisualGraphics->drawPixels((UInt32**)&(passedPixels), theVisualGraphics->getMaxLeftCoordOfCanvas(), theVisualGraphics->getMaxBottomCoordOfCanvas(), this->textureWidth, this->textureHeight, this->pixelFormat, this->dataType, &aConvolutionFilter);
-	if (passedPixels != NULL) {
-		free(passedPixels);
-		passedPixels = NULL;
-	}
-
-	theVisualGraphics->copyFramebufferToTexture(this->textureName, this->useRectExtension, 0, 0, this->textureWidth, this->textureHeight, this->pixelFormat, this->dataType);
-
-	// restore previous pixels
-	theVisualGraphics->drawPixels(&prevPixels, theVisualGraphics->getMaxLeftCoordOfCanvas(), theVisualGraphics->getMaxBottomCoordOfCanvas(), this->textureWidth, this->textureHeight, this->pixelFormat, this->dataType);
-	
-	free(prevPixels);
-
-	theVisualGraphics->setColorBufferForPixelDrawingOperations(prevDrawBuffer);
-	theVisualGraphics->setColorBufferForPixelReadingOperations(prevReadBuffer);
-
-	if (this->pixelBuffer != NULL) {
-		free(this->pixelBuffer);
-		this->pixelBuffer = NULL;
-	}
-	
 }

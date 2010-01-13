@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: CoverArt.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,15 +36,9 @@ freely, subject to the following restrictions:
 #ifndef CoverArt_h
 #define CoverArt_h
 
+#include "VisualTypes.h"
 #include "VisualAsset.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualItemIdentifier.h"
 
 
 namespace VizKit {
@@ -83,32 +77,28 @@ namespace VizKit {
 		void finishCoverAction(void);
 
 		/**
-		 * Creates an image of the cover art image data.
+		 * Sets the image with the artwork of the album cover.
+		 * @param albumCoverArtworkImage The image with the artwork of the album cover.
 		 */
-		void makeImageOfCover(void);
+		void setAlbumCoverArtWorkImage(VisualImage& albumCoverArtworkImage);
 
 		/**
 		 * Calculates the screen position of the cover art.
 		 */
-		void calcPositionOnScreen(void);
+		void reshape(void);
 
 		/**
 		 * Starts fading in the texture of the album cover artwork.
 		 * @param durationInMilliseconds The duration of the animation measured in milliseconds.
 		 */
-		void fadeIn(UInt32 durationInMilliseconds);
+		void fadeIn(uint32 durationInMilliseconds);
 
 		/**
 		 * Starts fading out the texture of the album cover artwork.
 		 * @param durationInMilliseconds The duration of the animation measured in milliseconds.
-		 * @param clampValue The clamp value of the fade out process (default = 0.0).
+		 * @param stopValue The stop value of the fade out process (default = 0.0).
 		 */
-		void fadeOut(UInt32 durationInMilliseconds, double clampValue = 0.0);
-
-		/**
-		 * Starts pulsating the texture (fade in / fade out) of the album cover artwork.
-		 */
-		void pulsate(void);
+		void fadeOut(uint32 durationInMilliseconds, double stopValue = 0.0);
 
 		/**
 		 * Starts rotating the texture of the album cover artwork.
@@ -116,12 +106,17 @@ namespace VizKit {
 		void rotate(void);
 
 		/**
+		 * Calculates the coord depth.
+		 */
+		double calcCoordDepth(void);
+
+		/**
 		 * Scales the cover art by multiplying with the provided scaleFactor.
 		 * @param durationInMilliseconds The duration of the animation measured in milliseconds.
 		 * @param from The start scale factor of the animation.
 		 * @param to The end scale factor of the animation.
 		 */
-		void scaleSize(UInt32 durationInMilliseconds, double from, double to);
+		void scaleSize(uint32 durationInMilliseconds, double from, double to);
 
 		/**
 		 * Clears the memory allocated for the album cover artwork.
@@ -133,10 +128,13 @@ namespace VizKit {
 		/** The asset of the cover art (contains texture and position, too). */
 		VisualAsset coverArtAsset;
 		
+		/** Identifier of the vertex chain (the vertices used for display of the album cover artwork texture). */
+		VisualItemIdentifier vertexChainId;
+		
 		/** 
 		 * Returns the scale factor of the box.
 		 * @return The scale factor of the box.
-		 * @remarks The dimension of the stage box has to take into account the rotation and screen constraints.\ 
+		 * @remarks The dimension of the stage box has to take into account the rotation and screen constraints. 
 		 * On front view the rotating bitmap should have the same dimensions on screen as in 2-D world but available canvas space must not be exceeded.
 		 */
 		//double getBoxScaleFactor(void);

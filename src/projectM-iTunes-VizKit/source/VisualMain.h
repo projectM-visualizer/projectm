@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualMain.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -38,13 +38,7 @@ freely, subject to the following restrictions:
 
 #include "iTunesVisualAPI.h"
 
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualTypes.h"
 
 
 namespace VizKit {
@@ -85,76 +79,50 @@ namespace VizKit {
 						kVisualPluginEventMessage
 						kVisualPluginDisplayChangedMessage
 		 * @param message Type of message.
-		 * @param messageInfo Additional data.
+		 * @param visualPluginMessageInfo Additional data.
 		 * @param refCon Pointer to untyped additional data.
 		 * @return Error status.
 		 */
-		static OSStatus VisualPluginHandler(OSType message, VisualPluginMessageInfo* messageInfo, void* refCon);
+		static OSStatus VisualPluginHandler(OSType message, VisualPluginMessageInfo* visualPluginMessageInfo, void* refCon);
 
 		/**
 		 * Called by iTunes, dispatched from main function. Registers the visualizer plug-in to iTunes.
 		 * The function calls PlayerRegisterVisualPlugin to be registered by iTunes.
-		 * @param messageInfo A pointer to a data structure passed in by iTunes and sent on to PlayerRegisterVisualPlugin.
+		 * @param pluginMessageInfo A pointer to a data structure passed in by iTunes and sent on to PlayerRegisterVisualPlugin.
 		 * @return Status of the operation.
 		*/
-		static OSStatus RegisterVisualPlugin(PluginMessageInfo* messageInfo);
+		static OSStatus RegisterVisualPlugin(PluginMessageInfo* pluginMessageInfo);
 
 	private:
 
-		/** The constructor.\ VisualMain is a collection of static methods.\ Class does not need any instances.\ Constructor is private and not implemented. */
+		/** The constructor. VisualMain is a collection of static methods. Class does not need any instances. Constructor is private and not implemented. */
 		VisualMain();
 		
-		/** The destructor.\ VisualMain is a collection of static methods.\ Class does not need any instances.\ Destructor is private and not implemented. */
+		/** The destructor. VisualMain is a collection of static methods. Class does not need any instances. Destructor is private and not implemented. */
 		~VisualMain();
 
 		/**
-		 * Prepares rendering.
-		 * @return The error status.
-		 */	
-		static OSStatus prepareRenderAction(void);
-
-		/**
-		 * The rendering action executed with each kVisualPluginRenderMessage/kVisualPluginIdleMessage.
-		 * @return The error status.
-		 * @remarks Probably the most often called function.
-		 */	
-		static OSStatus renderAction(void);
-
-		/**
-		 * Finishes rendering.
-		 * @return The error status.
-		 */	
-		static OSStatus finishRenderAction(void);
-
-		/**
-		 * Called when iTunes stops playing audio.
-		 * Gathered audio data is cleared when the audio stops playing.
+		 * Stores textual audio track information.
+		 * @param trackMetadata Pointer to all accessible track information.
+		 * @param isAudioStream True if track meta data belongs to audio stream. False if meta data belongs to audio track.
+		 * @return True if audio track changed compared to previous one. False if metadata is the same as with the previous audio track.
 		 */
-		static void handleAudioPlayStoppedEvent(void);
+		static bool storeAudioTrackMetadata(const ITTrackInfo* const trackMetadata, bool isAudioStream);
 
 		/**
-		 * Called when iTunes starts playing audio.
+		 * Stores textual audio stream information.
+		 * @param streamMetadata Pointer to all accessible stream information.
 		 */
-		static void handleAudioPlayStartedEvent(bool trackDidChange);
+		static void storeAudioStreamMetadata(const ITStreamInfo* const streamMetadata);
 
 		/**
-		 * Called when iTunes starts showing the visualizer.
-		 * @param isFullscreen Set to true if fullscreen.
+		 * Stores textual audio stream information (single byte string data).
+		 * @param streamMetadata Pointer to all accessible stream information.
 		 */
-		static void handleShowShouldStartMessage(const bool isFullscreen);
+		static void storeAudioStreamMetadata(const ITStreamInfoV1* const streamMetadata);
 
 		/**
-		 * Called when visualizer plug-in is unloaded.
-		 */
-		static void handleCleanupMessage(void);
-
-		/**
-		 * Called when canvas is resized.
-		 */
-		static void handleCanvasReshape(void);
-
-		/**
-		 * Static helper function that converts a VisualPluginMessage to the string.\ Possibly useful for debugging or tracing purposes.
+		 * Static helper function that converts a VisualPluginMessage to the string. Possibly useful for debugging or tracing purposes.
 		 * @param visualPluginMessage The visualPluginMessage.
 		 * @param outString The character string value of the VisualNotificationKey enum value.
 		 */
@@ -170,23 +138,23 @@ extern "C" {
 #endif
 
 /**
- * C-callable function exported to iTunes.\ Calls the register function.
+ * C-callable function exported to iTunes. Calls the register function.
  * Gets called by iTunes on init and on cleanup.
  * On init the visualizer plug-in registers itself to iTunes via function RegisterVisualPlugin().
  * Message types: kPluginInitMessage, kPluginCleanupMessage.
  * On Mac the function is named iTunesPluginMainMachO for Mach-O plug-in. The function returns OSStatus.
  * On Windows the function is named iTunesPluginMain and declared with __declspec(dllexport).
- * @param message The kind of message passed in (e.g.\ kPluginInitMessage).
- * @param messageInfo Additional data passed in.
+ * @param message The kind of message passed in (e.g. kPluginInitMessage).
+ * @param pluginMessageInfo Additional data passed in.
  * @param refCon Pointer to untyped additional data.
  * @return Status of the operation.
  */
 #if TARGET_OS_MAC
 __attribute__((visibility("default")))
-extern OSStatus iTunesPluginMainMachO(OSType message, PluginMessageInfo* messageInfo, void* refCon);
+extern OSStatus iTunesPluginMainMachO(OSType message, PluginMessageInfo* pluginMessageInfo, void* refCon);
 #endif
 #if TARGET_OS_WIN
-extern __declspec(dllexport) OSStatus iTunesPluginMain(OSType message, PluginMessageInfo* messageInfo, void* refCon);
+extern __declspec(dllexport) OSStatus iTunesPluginMain(OSType message, PluginMessageInfo* pluginMessageInfo, void* refCon);
 #endif
 
 #ifdef __cplusplus

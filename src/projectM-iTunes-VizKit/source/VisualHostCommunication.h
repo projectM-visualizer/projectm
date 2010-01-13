@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualHostCommunication.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -37,54 +37,58 @@ freely, subject to the following restrictions:
 #define VisualHostCommunication_h
 
 
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualTypes.h"
 
 
 namespace VizKit {
 
 	/**
-	 * Collection of static methods to communicate with iTunes host application (e.g.\ to receive album cover artwork data).
+	 * Collection of static methods to communicate with iTunes host application (e.g. to receive album cover artwork data).
 	 */
 	class VisualHostCommunication {
 	
 	public:
 
 		/**
-		 * Returns the cover artwork of the current audio track.
-		 * @param[out] albumCoverArtworkFileType The file type of the album cover artwork.
-		 * @param[out] albumCoverArtworkHandle A handle to the album cover artwork data.
+		 * Retrieves the cover artwork of the current audio track.
+		 * @param[out] albumCoverArtworkImageData The image data of the album cover artwork data.
+		 * @param[out] numberOfBytes The size in bytes of the album cover artwork data.
 		 * @return The number of cover artworks.
 		*/
-		static UInt16 getCurrentTrackCoverArt(OSType* albumCoverArtworkFileType, Handle* albumCoverArtworkHandle);
+		static int getCurrentTrackCoverArt(void** albumCoverArtworkImageData, uint32& numberOfBytes);
 
 		/**
-		 * Tells iTunes about our preferred fullscreen resolution.
-		 * Once the preferred display resolution has been set it can not be revoked.
-		 * Only with the next restart of iTunes the default resolution of iTunes can be set again (by not calling PlayerSetFullScreenOptions).
-		 * @param minBitsPerPixel Minimum bit depth.
-		 * @param maxBitsPerPixel Maximum bit depth.
-		 * @param preferredBitsPerPixel Preferred bit depth.
-		 * @param horizontalPixels Desired width.
-		 * @param verticalPixels Desired height.
+		 * Disposes the cover artwork data of the current audio track as it has been retrieved the last time with getCurrentTrackCoverArt().
 		 */
-		static OSStatus setPreferredDisplayResolution(UInt16 minBitsPerPixel, UInt16 maxBitsPerPixel, UInt16 preferredBitsPerPixel, UInt16 horizontalPixels, UInt16 verticalPixels);
+		static void dispose(void);
 
 	private:
 	
-		/** The constructor.\ VisualHostCommunication is a collection of static methods.\ Class does not need any instances.\ Constructor is private and not implemented. */
+		/** VisualHostCommunication is a singleton class. Pointer to private instance is handled internally. */
+		static VisualHostCommunication* theVisualHostCommunication;
+	
+		/** The constructor. VisualHostCommunication is a singleton class. The constructor is private. New instance of class can only be created internally. */
 		VisualHostCommunication();
 		
-		/** The destructor.\ VisualHostCommunication is a collection of static methods.\ Class does not need any instances.\ Destructor is private and not implemented. */
+		/** The destructor. VisualHostCommunication is a singleton class. The destructor is private. Instance of class can only be destructed internally. */
 		~VisualHostCommunication();
-		
+
+		/**
+		 * Returns a pointer to the instance. 
+		 * Initializes the VisualNotificationQueue class if neccessary. 
+		 * The VisualNotificationQueue is of singleton type.
+		 * @return A pointer to the initialized VisualNotificationQueue.
+		 */
+		static VisualHostCommunication* getInstance(void);
+
+		/**
+		 * The Mac memory handle of the cover album artwork image data.
+		 * @remarks Not typed as Handle to avoid MacType dependency.
+		 */
+		void* coverArtImageDataHandle;
+
 	};
 	
 }
 
-#endif /* VisualSignature_h */
+#endif /* VisualHostCommunication_h */

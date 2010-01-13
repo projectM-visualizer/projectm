@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualAudioMetaData.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,18 +36,14 @@ freely, subject to the following restrictions:
 #ifndef VisualAudioMetaData_h
 #define VisualAudioMetaData_h
 
+
+#include "VisualTypes.h"
 #include "VisualString.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
 
 
 namespace VizKit {
+
+	class VisualItemIdentifier; // Forward declaration (to avoid include of header file).
 
 	/**
 	 * Meta data (like track name, artist name, or lyrics, etc.) of audio track or audio stream. 
@@ -88,10 +84,15 @@ namespace VizKit {
 		 * @param other Another VisualAudioMetaData.
 		 */
 		bool operator!=(const VisualAudioMetaData& other);
+
+		/**
+		 * Resets the values of the audio meta data to their initial default empty values.
+		 */
+		void init(void);
 		
 		/**
 		 * Sets whether data belongs to stream or track.
-		 * @param isAStream If true data is stream meta data.\ If false data is track meta data.
+		 * @param isAStream If true data is stream meta data. If false data is track meta data.
 		 */
 		void setIsStream(bool isAStream);
 
@@ -120,10 +121,40 @@ namespace VizKit {
 		void setTrackLyrics(const VisualString& someTrackLyrics);
 
 		/**
+		 * Sets the composer of the track.
+		 * @param aComposer The composer of the track.
+		 */
+		void setTrackComposer(const VisualString& aComposer);
+
+		/**
+		 * Sets the title of a stream.
+		 * @param aStreamTitle The title of a stream.
+		 */
+		void setStreamTitle(const VisualString& aStreamTitle);
+
+		/**
+		 * Sets the message of a stream.
+		 * @param aStreamMessage The message of a stream.
+		 */
+		void setStreamMessage(const VisualString& aStreamMessage);
+
+		/**
+		 * Sets the URL of a stream.
+		 * @param aStreamURL The URL of a stream.
+		 */
+		void setStreamURL(const VisualString& aStreamURL);
+
+		/**
 		 * Sets the size of the track in bytes.
 		 * @param aTrackSizeInBytes The size of the track in bytes.
 		 */
-		void setTrackSizeInBytes(UInt32 aTrackSizeInBytes);
+		void setTrackSizeInBytes(uint32 aTrackSizeInBytes);
+
+		/**
+		 * Sets the year of the audio data.
+		 * @param aYear The year of the audio data.
+		 */
+		void setYear(uint16 aYear);
 
 		/**
 		 * Returns the name of the track.
@@ -150,43 +181,56 @@ namespace VizKit {
 		const VisualString& getTrackLyrics(void);
 
 		/**
+		 * Returns the composer of the track.
+		 * @return The composer of the track.
+		 */
+		const VisualString& getTrackComposer(void);
+
+		/**
+		 * Returns the title of a stream.
+		 * @return The title of a stream.
+		 */
+		const VisualString& getStreamTitle(void);
+
+		/**
+		 * Returns the message of a stream.
+		 * @return The message of a stream.
+		 */
+		const VisualString& getStreamMessage(void);
+
+		/**
+		 * Returns the URL of a stream.
+		 * @return The URL of a stream.
+		 */
+		const VisualString& getStreamURL(void);
+
+		/**
 		 * Returns the size of the track in bytes.
 		 * @return The size of the track in bytes.
 		 */
-		UInt32 getTrackSizeInBytes(void);
+		uint32 getTrackSizeInBytes(void);
+		
+		/**
+		 * Returns the year of the audio data in bytes.
+		 * @return The year of the audio data in bytes.
+		 */
+		uint16 getYear(void);
+
+		/**
+		 * Returns the unique identifer of the track for the meta data.
+		 * @return The unique identifer of the track for the meta data.
+		 */
+		VisualItemIdentifier getTrackIdentifier(void);
 
 		/**
 		 * Answers the question whether audio meta data belongs to stream or track.
-		 * @return True if audio meta data belongs to stream.\ False if audio meta data belongs to track.
+		 * @return True if audio meta data belongs to stream. False if audio meta data belongs to track.
 		 */
 		bool getIsStream(void);
 
-		/**
-		 * Returns the number of available album cover artworks.
-		 * @return The number of available album cover artworks.
-		 */
-		UInt16 getNumberOfArtworks(void);
-
-		/**
-		 * Returns the file type of album cover artwork.
-		 * @return The file type of album cover artwork.
-		 */
-		OSType getAlbumCoverArtworkFileType(void);
-
-		/**
-		 * Returns a handle to the album cover artwork.
-		 * @return A handle to the album cover artwork.
-		 */
-		Handle getAlbumCoverArtworkHandle(void);
-
-		/**
-		 * Disposes any album cover artwork handle (and associated data).
-		 */
-		void disposeAlbumCoverArtworkHandle(void);
-
 	private:
 
-		/** True if audio meta data belongs to stream.\ False if audio meta data belongs to track. */
+		/** True if audio meta data belongs to stream. False if audio meta data belongs to track. */
 		bool isStream;
 		
 		/** Name of audio track. */
@@ -195,32 +239,33 @@ namespace VizKit {
 		/** Name of track artist. */
 		VisualString trackArtist;
 		
-		/** Name of album the track belogs to. */
+		/** Name of album the track belongs to. */
 		VisualString trackAlbum;
 		
 		/** Lyrics of track. */
 		VisualString trackLyrics;
+
+		/** Composer of track. */
+		VisualString trackComposer;
+
+		/** Title of a stream. */
+		VisualString streamTitle;
+
+		/** Message of a stream. */
+		VisualString streamMessage;
+
+		/** URL of a stream. */
+		VisualString streamURL;
 		
 		/** Size of audio track in bytes. */
-		UInt32 trackSizeInBytes;
-		
-		/** Flag denoting whether album cover artwork data has been evaluated yet. */
-		bool albumCoverArtworkHasBeenEvaluated;
+		uint32 trackSizeInBytes;
 
-		/** The number of artworks for current track.
-		 * Note that iTunes can handle more than one cover art work. But the API interface we use to query iTunes about the number of 
-		 * cover art works for current track cannot handle more than one cover art work. 
-		 * The function PlayerGetCurrentTrackCoverArt only returns the first cover art work for current track.
-		 * So the maximum value for this var will be 1.
-		 */		
-		UInt16 numberOfArtworks;
+		/** The year of the audio track. */
+		uint16 year;
 		
-		/** The 4-char-code identification of the file type (e.g.\ JPGf, PNGf). */
-		OSType albumCoverArtworkFileType;
-		
-		/** Handle to album cover artwork data. */
-		Handle albumCoverArtworkHandle;
-	
+		/** The identifier of the audio track. */
+		VisualItemIdentifier* trackIdentifier;
+			
 		/**
 		 * Copy method for assignment operator and copy constructor.
 		 * @param other Another VisualAudioMetaData.

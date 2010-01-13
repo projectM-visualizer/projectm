@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: CoverArtActor.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,15 +36,9 @@ freely, subject to the following restrictions:
 #ifndef CoverArtActor_h
 #define CoverArtActor_h
 
+
+#include "VisualTypes.h"
 #include "VisualActor.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
 
 
 namespace VizKit {
@@ -52,7 +46,7 @@ namespace VizKit {
 	class CoverArt;
 
 	/**
-	 * A visual representation of the cover art data included with the audio track. The cover rotates slowly around the y-axis.
+	 * A visual representation of the album cover art data included with the audio track. The cover rotates slowly around the y-axis.
 	 * iTunes can handle embedded cover art data. 
 	 * The CoverArtActor is responsible for displaying cover art data if there exists any with the current track. 
 	 * The visual representation of the cover art data is created as a texture. 
@@ -74,33 +68,28 @@ namespace VizKit {
 		~CoverArtActor();
 
 		/**
-		 * Prepares the show of the cover art.
-		 * @param visualPlayerState Read-only access to the VisualPlayerState.
+		 * Initialization.
 		 */
-		virtual void prepareShow(const VisualPlayerState& visualPlayerState);
+		virtual void init(void);
 				
 		/**
 		 * Performs the show of the cover art.
+		 * @param visualPlayerState Read-only access to the VisualPlayerState.
 		 */
-		virtual void show();
-
-		/**
-		 * Finishes the show of the cover art.
-		 */	
-		virtual void finishShow();
+		virtual void show(const VisualPlayerState& visualPlayerState);
 
 		/**
 		 * The actor receives a notification about an event that occured.
 		 * @param aNotification The notification passed in.
 		 */
-		virtual void handleNotification(const VisualNotification& aNotification);
+		virtual void handleNotification(VisualNotification& aNotification);
 
 	private:
 	
 		/** A pointer to the cover art action. */
 		CoverArt* coverArt;
 		
-		/** True if current audio track has cover art data. */
+		/** True if current audio track has album cover art data. */
 		bool currentAudioTrackHasCoverArt;
 		
 	};

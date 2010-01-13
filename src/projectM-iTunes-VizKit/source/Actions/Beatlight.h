@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: Beatlight.h
  *
  */
 
-/***************************************************************************
+/*************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -31,69 +31,61 @@ freely, subject to the following restrictions:
 
 3. This notice may not be removed or altered from any source distribution.
 
- ***************************************************************************/
+ *************************************************************************/
+
 
 #ifndef Beatlight_h
 #define Beatlight_h
 
+
+#include "VisualTypes.h"
 #include "VisualAsset.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualItemIdentifier.h"
+#include "VisualNotification.h"
 
 
 namespace VizKit {
 
 	/**
-	 * Performs the action of the BeatlightActor.
 	 * The Beatlight shows a moving point indicating beat impulses.
-	 * Beat detection not implemented yet.
 	 */
 	class Beatlight {
 
 	public:
 
 		/**
-		 * The constructor.
+		 * The constructor of the Beatlight action.
 		 */
 		Beatlight();
 
 		/**
-		 * Prepares the Beatlight for the show.
-		 */
-		void prepareBeatlightShow(void);
-
-		/**
 		 * Shows the Beatlight.
+		 * @param audioIsPlaying True if audio is playing, false if not.
 		 */
-		void showBeatlight(void);
+		void showBeatlight(const bool audioIsPlaying);
 
 		/**
-		 * Finishes the Beatlight show.
-		 */
-		void finishBeatlightShow(void);
+		 * Shows the BeatMeterLight.
+		 * @param audioIsPlaying True if audio is playing, false if not.
+		 */	
+		void showBeatMeterLight(const bool audioIsPlaying);
 
 		/**
-		 * Calculates the screen position of the beatlight.
+		 * Calculates the screen position of the beatlight action.
 		 */
-		void calcPositionOnScreen(void);
+		void reshape(void);
 		
+		/** By applying a fade out anmation, the behavior reflects the beat detection. */
+		void applyBehavior(void);
+		
+
 	private:
 
-		/**
-		 * Adds the resource spotlight image to Beatlight's private asset.
-		 */	
-		void addSpotlightImage(void);
-
-		/**
-		 * Beatlight's private asset.
-		 */	
+		/** The asset of the beatlight action (contains texture and position, too). */
 		VisualAsset beatlightAsset;
+
+		/** Identifier of the vertex chain (the vertices used for display of the beatlight texture). */
+		VisualItemIdentifier vertexChainId;
 
 	};
 

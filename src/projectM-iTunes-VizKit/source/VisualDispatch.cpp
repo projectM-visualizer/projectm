@@ -1,36 +1,36 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualDispatch.cpp
  *
  */
 
 /***************************************************************************
-
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
-
-
-This software is provided 'as-is', without any expressed or implied warranty. 
-In no event will the authors be held liable for any damages
-arising from the use of this software.
-
-Permission is granted to anyone to use this software for any purpose,
-including commercial applications, and to alter it and redistribute it
-freely, subject to the following restrictions:
-
-1. The origin of this software must not be misrepresented; 
-   you must not claim that you wrote the original software. 
-   If you use this software in a product, an acknowledgment 
-   in the product documentation would be appreciated 
-   but is not required.
-
-2. Altered source versions must be plainly marked as such, 
-   and must not be misrepresented as being the original software.
-
-3. This notice may not be removed or altered from any source distribution.
-
+ 
+ Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
+ 
+ 
+ This software is provided 'as-is', without any expressed or implied warranty. 
+ In no event will the authors be held liable for any damages
+ arising from the use of this software.
+ 
+ Permission is granted to anyone to use this software for any purpose,
+ including commercial applications, and to alter it and redistribute it
+ freely, subject to the following restrictions:
+ 
+ 1. The origin of this software must not be misrepresented; 
+ you must not claim that you wrote the original software. 
+ If you use this software in a product, an acknowledgment 
+ in the product documentation would be appreciated 
+ but is not required.
+ 
+ 2. Altered source versions must be plainly marked as such, 
+ and must not be misrepresented as being the original software.
+ 
+ 3. This notice may not be removed or altered from any source distribution.
+ 
  ***************************************************************************/
 
 #include "VisualDispatch.h"
@@ -39,9 +39,9 @@ freely, subject to the following restrictions:
 #include "VisualConfiguration.h"
 #include "VisualDataStore.h"
 #include "VisualPlayerState.h"
-#include "VisualAudioLab.h"
 #include "VisualGraphics.h"
 #include "VisualTiming.h"
+#include "VisualStyledString.h"
 #include "VisualString.h"
 
 #include <iostream> // cout
@@ -54,13 +54,10 @@ using namespace VizKit;
 #if TARGET_OS_MAC
 //	Function pointer prototypes to the Mach-O Cocoa wrappers
 
-typedef OSStatus (*InitCocoaForCarbonBundleProc)();
-InitCocoaForCarbonBundleProc doInitCocoaForCarbonBundle;
-
-typedef OSStatus (*GetDimensionsOfStringBitmapProc)(CFStringRef stringValue, UInt32* bitmapWidth, UInt32* bitmapHeight, const char* const fontNameStr, float* fontSize, float red, float green, float blue, UInt16 maxPixelWidth, UInt16 maxPixelHeight, const char* const alignment);
+typedef bool (*GetDimensionsOfStringBitmapProc)(CFStringRef stringValue, uint32* bitmapWidth, uint32* bitmapHeight, const char* const fontNameStr, double* fontSize, double red, double green, double blue, uint16 maxPixelWidth, uint16 maxPixelHeight, const char* const alignment);
 GetDimensionsOfStringBitmapProc doGetDimensionsOfStringBitmap;
 
-typedef OSStatus (*GetStringBitmapDataProc)(CFStringRef stringValue, UInt32 bitmapWidth, UInt32 bitmapHeight, const char* const fontNameStr, float fontSize, float red, float green, float blue, const char* const alignment, UInt32** bitmapOut);
+typedef bool (*GetStringBitmapDataProc)(CFStringRef stringValue, uint32 bitmapWidth, uint32 bitmapHeight, const char* const fontNameStr, double fontSize, double red, double green, double blue, const char* const alignment, uint32** bitmapOut);
 GetStringBitmapDataProc doGetStringBitmapData;
 
 typedef void (*LogStringProc)(CFStringRef aString);
@@ -71,21 +68,24 @@ CFBundleRef bundleRef = NULL;
 #endif
 
 
+// private declaration of internally used function
+bool initCocoaBundle();
+
+
 void setProcessInfo(const char* const labelStr, const char* const valueStr) {
     VisualDataStore::setProcessInfo(labelStr, valueStr);
 }
 
 
 void monitorRenderMessageProcess() {
-
+	
 	static float framesPerSecond = 0.0f;
-	static UInt16 frameCount = 0;
-	::Rect viewportRect;
-	UInt32 elapsedMilliseconds, remainingMilliseconds, totalMilliseconds = 0;
-	VisualAudioLab* theVisualAudioLab = NULL;
+	static uint16 frameCount = 0;
+	uint32 elapsedMilliseconds = 0;
+	uint32 remainingMilliseconds = 0;
 	VisualPlayerState* theVisualPlayerState = NULL;
 	VisualGraphics* theVisualGraphics = NULL;
-	UInt8 playState;
+	uint8 playState;
 	char cStr64[64];
 	
 	theVisualPlayerState = VisualPlayerState::getInstance();
@@ -103,13 +103,13 @@ void monitorRenderMessageProcess() {
     setProcessInfo("FramesPerSecond", cStr64);
 	
 	theVisualGraphics = VisualGraphics::getInstance();
-
+	
 	setProcessInfo("RendererName",theVisualGraphics->getRendererName());
-
+	
 	setProcessInfo("RendererVendor",theVisualGraphics->getRendererVendor());
-
+	
 	setProcessInfo("RendererVersion",theVisualGraphics->getRendererVersion());
-
+	
 	sprintf(cStr64, "%#x", theVisualGraphics->getGLVersion());
 	setProcessInfo("GLVersion", cStr64);
 	
@@ -117,7 +117,8 @@ void monitorRenderMessageProcess() {
 	setProcessInfo("Maximum Texture Size", cStr64);
 	
 	// screen measurements
-	sprintf(cStr64, "width: %d, height: %d, refreshRate: %d", theVisualGraphics->getScreenWidth(), theVisualGraphics->getScreenHeight(), theVisualGraphics->getRefreshRateOfScreen());
+	PixelRect screenRect = theVisualGraphics->getScreenRect();
+	sprintf(cStr64, "width: %d, height: %d, refreshRate: %d", screenRect.width, screenRect.height, theVisualGraphics->getRefreshRateOfScreen());
 	setProcessInfo("Screen", cStr64);
 	
 	sprintf(cStr64, "%d", theVisualGraphics->getBitsPerPixelOfScreen());
@@ -128,32 +129,27 @@ void monitorRenderMessageProcess() {
 	
 	sprintf(cStr64, "%d", theVisualGraphics->getCanvasPixelWidth());
 	setProcessInfo("CanvasPixelWidth", cStr64);
-
-	::Rect theCanvasRect;
-	theVisualGraphics->getCanvasRect(&theCanvasRect);
-	sprintf(cStr64, "top: %d, left: %d", theCanvasRect.top, theCanvasRect.left);
-	setProcessInfo("CanvasRectTopLeft", cStr64);
-	sprintf(cStr64, "bottom: %d, right: %d", theCanvasRect.bottom, theCanvasRect.right);
-	setProcessInfo("CanvasRectBottomRight", cStr64);
-
-	::Rect theCanvasSurroundingRect;
-	theVisualGraphics->getCanvasSurroundingRect(&theCanvasSurroundingRect);
-	sprintf(cStr64, "top: %d, left: %d", theCanvasSurroundingRect.top, theCanvasSurroundingRect.left);
-	setProcessInfo("CanvasSurroundRectTopLeft", cStr64);
-	sprintf(cStr64, "bottom: %d, right: %d", theCanvasSurroundingRect.bottom, theCanvasSurroundingRect.right);
-	setProcessInfo("CanvasSurroundRectBottomRight", cStr64);
 	
-	sprintf(cStr64, "top: %.2f, left: %.2f", theVisualGraphics->getMaxTopCoordOfCanvas(), theVisualGraphics->getMaxLeftCoordOfCanvas());
-	setProcessInfo("CoordMaxTopLeft", cStr64);
-	sprintf(cStr64, "bottom: %.2f, right: %.2f", theVisualGraphics->getMaxBottomCoordOfCanvas(), theVisualGraphics->getMaxRightCoordOfCanvas());
-	setProcessInfo("CoordMaxBottomRight", cStr64);
-	sprintf(cStr64, "near: %.2f, far: %.2f", theVisualGraphics->getMaxNearCoordOfCanvas(), theVisualGraphics->getMaxFarCoordOfCanvas());
-	setProcessInfo("CoordMaxNearFar", cStr64);
-
-	theVisualGraphics->getViewportRect(&viewportRect);
-	sprintf(cStr64, "top: %d, left: %d, bottom: %d, right: %d",  viewportRect.top, viewportRect.left, viewportRect.bottom, viewportRect.right);
+	BottomLeftPositionedPixelRect theCanvasRect;
+	theCanvasRect = theVisualGraphics->getCanvasRect();
+	sprintf(cStr64, "bottom: %d, left: %d", theCanvasRect.bottomLeftPixel.y, theCanvasRect.bottomLeftPixel.x);
+	setProcessInfo("CanvasRectTopLeft", cStr64);
+	sprintf(cStr64, "width: %d, height: %d", theCanvasRect.pixelRect.width, theCanvasRect.pixelRect.height);
+	setProcessInfo("CanvasRectWidthHeight", cStr64);
+	
+	/*
+	 sprintf(cStr64, "top: %.2f, left: %.2f", theVisualGraphics->getMaxTopCoordOfCanvas(), theVisualGraphics->getMaxLeftCoordOfCanvas());
+	 setProcessInfo("CoordMaxTopLeft", cStr64);
+	 sprintf(cStr64, "bottom: %.2f, right: %.2f", theVisualGraphics->getMaxBottomCoordOfCanvas(), theVisualGraphics->getMaxRightCoordOfCanvas());
+	 setProcessInfo("CoordMaxBottomRight", cStr64);
+	 sprintf(cStr64, "near: %.2f, far: %.2f", theVisualGraphics->getMaxNearCoordOfCanvas(), theVisualGraphics->getMaxFarCoordOfCanvas());
+	 setProcessInfo("CoordMaxNearFar", cStr64);
+	 */
+	
+	BottomLeftPositionedPixelRect bottomLeftPositionedPixelRect = theVisualGraphics->getViewportRect();
+	sprintf(cStr64, "bottom: %d, left: %d, width: %d, height: %d",  bottomLeftPositionedPixelRect.bottomLeftPixel.y, bottomLeftPositionedPixelRect.bottomLeftPixel.x, bottomLeftPositionedPixelRect.pixelRect.width, bottomLeftPositionedPixelRect.pixelRect.height);
 	setProcessInfo("ViewportRect", cStr64);
-
+	
 	playState = theVisualPlayerState->getAudioPlayState();
 	switch (playState) {
 		case kAudioIsPlaying:
@@ -177,22 +173,17 @@ void monitorRenderMessageProcess() {
 	setProcessInfo("AudioPlayState", cStr64);
 	
 	elapsedMilliseconds = theVisualPlayerState->getElapsedAudioTime();
-	sprintf(cStr64, "%ld", elapsedMilliseconds);
+	sprintf(cStr64, "%d", elapsedMilliseconds);
 	setProcessInfo("TrackTimeElapsed", cStr64);
-
+	
 	remainingMilliseconds = theVisualPlayerState->getRemainingAudioTime();
-	sprintf(cStr64, "%ld", remainingMilliseconds);
+	sprintf(cStr64, "%d", remainingMilliseconds);
 	setProcessInfo("TrackTimeRemaining", cStr64);
-
-	theVisualAudioLab = VisualAudioLab::getInstance();
-	totalMilliseconds = theVisualAudioLab->getTotalTimeOfCurrentTrack();
-	sprintf(cStr64, "%ld", totalMilliseconds);
-	setProcessInfo("TrackTimeTotal", cStr64);
-
+	
 }
 
 
-UInt8 graphicsDoSupportTextureRectExtension() {
+uint8 graphicsDoSupportTextureRectExtension() {
 	VisualGraphics* theVisualGraphics = NULL;
 	theVisualGraphics = VisualGraphics::getInstance();
 	return (theVisualGraphics->canUseTextureRectExtension());
@@ -203,16 +194,12 @@ UInt8 graphicsDoSupportTextureRectExtension() {
 
 void setRefsToCocoaFunctionCalls() {
 	CFStringRef pluginName;
-	pluginName = CFStringCreateWithCString(kCFAllocatorDefault, VisualConfiguration::kVisualPluginDomainIdentifier, kCFStringEncodingWindowsLatin1);
+	pluginName = CFStringCreateWithCString(kCFAllocatorDefault, VisualConfiguration::kVisualPluginDomainIdentifier, kCFStringEncodingASCII);
 	bundleRef = CFBundleGetBundleWithIdentifier(pluginName);
     if (!bundleRef) {
         writeLog("no bundleRef in setRefsToCocoaFunctionCalls");
         return;
     } else {
-        doInitCocoaForCarbonBundle = (InitCocoaForCarbonBundleProc)CFBundleGetFunctionPointerForName(bundleRef, CFSTR("initCocoaForCarbonBundle"));
-		if (!doInitCocoaForCarbonBundle) {
-			writeLog("no function pointer for doInitCocoaForCarbonBundle");
-		}
 		doGetDimensionsOfStringBitmap = (GetDimensionsOfStringBitmapProc)CFBundleGetFunctionPointerForName(bundleRef, CFSTR("getDimensionsOfStringBitmap"));
 		if (!doGetDimensionsOfStringBitmap) {
 			writeLog("no function pointer for doGetDimensionsOfStringBitmap");
@@ -230,109 +217,75 @@ void setRefsToCocoaFunctionCalls() {
 }
 
 
-OSStatus initCocoaTextInfo() {
-    OSStatus err;
-    err = doInitCocoaForCarbonBundle();
-    if (err != noErr) {
-        writeLog("Err in initCocoaTextInfo");
-        return 1000;
-    } else {
-        return noErr;
-    }
-}
-
-
-OSStatus initCocoaBundle() {
-    OSStatus status;
+bool initCocoaBundle() {
+    bool success = true;
     setRefsToCocoaFunctionCalls();
-    status = initCocoaTextInfo();
-	return status;
+	return success;
 }
 
 
-OSStatus getDimensionsOfCocoaStringBitmap(void* aVisualString, UInt32* imageWidth, UInt32* imageHeight, char* fontNameStr, float* fontSize, float red, float green, float blue, UInt16 maxPixelWidth, UInt16 maxPixelHeight, char* alignment) {
-
-    OSStatus err = noErr;
+bool getDimensionsOfCocoaStringBitmap(void* aVisualString, void* aVisualStringStyle, uint32* imageWidth, uint32* imageHeight, uint16 maxPixelWidth, uint16 maxPixelHeight, char* alignment) {
+	
+	bool success = true;
 	
 	if (!doGetDimensionsOfStringBitmap) {
 		initCocoaBundle();
 	}
-
-	VisualString* aString = reinterpret_cast<VisualString*>(aVisualString);
-	const CFStringRef aCFStringRef = aString->getCharactersPointer();
-    err = doGetDimensionsOfStringBitmap(aCFStringRef, imageWidth, imageHeight, fontNameStr, fontSize, red, green, blue, maxPixelWidth, maxPixelHeight, alignment);
 	
-    if (err != noErr) {
-		char logStr[64];
-		sprintf(logStr, "ERR: getDimensionsOfCocoaStringBitmap: %ld", err);
-        writeLog(logStr);
-        return 1;
-    } else {
-        return 0;
+	VisualString* aString = reinterpret_cast<VisualString*>(aVisualString);
+	VisualStringStyle* aStringStyle = reinterpret_cast<VisualStringStyle*>(aVisualStringStyle);
+	const CFStringRef aCFStringRef = aString->getCharactersPointer();
+	success = doGetDimensionsOfStringBitmap(aCFStringRef, imageWidth, imageHeight, aStringStyle->fontNameStr, &(aStringStyle->fontSize), aStringStyle->fontColor.red, aStringStyle->fontColor.green, aStringStyle->fontColor.blue, maxPixelWidth, maxPixelHeight, alignment);
+	
+    if (!success) {
+        writeLog("ERR: getDimensionsOfCocoaStringBitmap");
+        return false;
     }
 	
-	return err;
+	return success;
 }
 
 
-OSStatus getCocoaStringBitmapData(void* aVisualString, UInt32 bitmapWidth, UInt32 bitmapHeight, char* fontNameStr, float fontSize, float red, float green, float blue, char* alignment, UInt32** bitmapData) {
-
-    OSStatus err = noErr;
+bool getCocoaStringBitmapData(void* aVisualStyledString, uint32 bitmapWidth, uint32 bitmapHeight, char* alignment, uint32** bitmapData) {
+	
+	bool success = true;
 	
 	if (!doGetStringBitmapData) {
 		initCocoaBundle();
 	}
     
-	VisualString* aString = reinterpret_cast<VisualString*>(aVisualString);
-	CFStringRef aCFStringRef = aString->getCharactersPointer();
-    err = doGetStringBitmapData(aCFStringRef, bitmapWidth, bitmapHeight, fontNameStr, fontSize, red, green, blue, alignment, bitmapData);
+	VisualStyledString* aStyledString = reinterpret_cast<VisualStyledString*>(aVisualStyledString);
 	
-    if (err != noErr) {
-		char logStr[64];
-		sprintf(logStr, "ERR: getCocoaStringBitmapData: %ld", err);
-        writeLog(logStr);
-        return 1001;
+	CFStringRef aCFStringRef = aStyledString->getCharactersPointer();
+	VisualStringStyle aStringStyle = aStyledString->getStyle();
+    success = doGetStringBitmapData(aCFStringRef, bitmapWidth, bitmapHeight, aStringStyle.fontNameStr, aStringStyle.fontSize, aStringStyle.fontColor.red, aStringStyle.fontColor.green, aStringStyle.fontColor.blue, alignment, bitmapData);
+	
+    if (!success) {
+        writeLog("ERR: getCocoaStringBitmapData");
     }
 	
-	return err;
+	return success;
 }
 
 
-OSStatus copyBitmapDataToTexture(UInt32 textureNumber, UInt32 width, UInt32 height, bool canUseRectExtension, UInt16 format, UInt16 dataType, UInt32** bitmapData) {
+bool copyARGBBitmapDataToTexture(uint32 textureNumber, uint32 imageWidth, uint32 imageHeight, bool canUseRectExtension, uint32** bitmapData) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->copyARGBBitmapDataToTexture(textureNumber, width, height, canUseRectExtension, format, dataType, const_cast<const UInt32**>(bitmapData));
+	return theVisualGraphics->copyARGBBitmapDataToTexture(textureNumber, imageWidth, imageHeight, canUseRectExtension, const_cast<const uint32**>(bitmapData));
 }
 
 
-UInt32* createCheckPixels(UInt32 width, UInt32 height) {
-	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->createARGBCheckPixels(width, height);
-}
-
-
-void logString(void* aVisualString) {
+void logString(const void* aVisualString) {
 	if (!doLogString) {
 		initCocoaBundle();
 	}
-	VisualString* aString = reinterpret_cast<VisualString*>(aVisualString);
+	const VisualString* aString = reinterpret_cast<const VisualString*>(aVisualString);
 	CFStringRef aCFStringRef = aString->getCharactersPointer();
 	doLogString(aCFStringRef);
-}
-
-
-const char* getVisualPluginName() {
-	return VisualConfiguration::kVisualPluginName;
-}
-
-
-const char* getVisualPluginShowName() {
-	return VisualConfiguration::kVisualPluginShowName;
 }
 
 
 const char* getVisualPluginDomainIdentifier() {
 	return VisualConfiguration::kVisualPluginDomainIdentifier;
 }
-
 
 #endif

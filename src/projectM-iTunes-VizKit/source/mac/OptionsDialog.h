@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: OptionsDialog.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -38,8 +38,8 @@ freely, subject to the following restrictions:
 
 #include <vector>
 
-#include <Carbon/Carbon.h>
-
+#include <Carbon/Carbon.h> // UI data types
+		
 
 namespace VizKit {
 
@@ -53,11 +53,11 @@ namespace VizKit {
 		/**
 		 * Returns a pointer to the instance.
 		 */
-		static OptionsDialog* getOptionsDialog(void);
+		static OptionsDialog* getInstance(void);
 
 		/**
 		 * Displays the options dialog on screen.
-		 * If the options dialog is hidden it is revealed.\ Otherwise it is constructed.
+		 * If the options dialog is hidden it is revealed. Otherwise it is constructed.
 		 */
 		void show(void);
 
@@ -73,13 +73,18 @@ namespace VizKit {
 		 * @param userData Additional data.
 		 */
 		void handleEvent(EventHandlerCallRef inRef, EventRef inEvent, void* userData);
-			
+
+		/**
+		 * Callback which gets called on changes of the font base.
+		 */
+		static void fontBaseChanged(void);
+		
 	private:
 
-		/** The constructor.\ OptionsDialog is a singleton class.\ The constructor is private.\ New instance of class can only be created internally. */
+		/** The constructor. OptionsDialog is a singleton class. The constructor is private. New instance of class can only be created internally. */
 		OptionsDialog();
 		
-		/** The destructor.\ OptionsDialog is a singleton class.\ The destructor is private.\ Instance of class can only be destructed internally. */
+		/** The destructor. OptionsDialog is a singleton class. The destructor is private. Instance of class can only be destructed internally. */
 		~OptionsDialog();
 
 		/**
@@ -94,6 +99,55 @@ namespace VizKit {
 		 * @remarks Explicitely declared in private section and not implemented to enforce uniqueness of singleton pattern.
 		 */			
 		OptionsDialog& operator=(const OptionsDialog& other);
+
+		/**
+		 * Callback for control actions.
+		 * @param inRef Reference of type EventHandlerCallRef.
+		 * @param inEvent Type of event.
+		 * @param userData Optional additional user data.
+		 */	
+		static OSStatus optionsDialogControlHandler(EventHandlerCallRef inRef, EventRef inEvent, void* userData);
+
+		/**
+		 * Callback for window actions.
+		 * @param inRef Reference of type EventHandlerCallRef.
+		 * @param inEvent Type of event.
+		 * @param userData Optional additional user data.
+		 */	
+		static OSStatus optionsDialogWindowHandler(EventHandlerCallRef inRef, EventRef inEvent, void* userData);
+
+		/**
+		 * Loads the window from the nib resource file.
+		 * @return True on success, false on failure.
+		 */
+		bool loadWindowFromResource(void);
+
+		/**
+		 * Installs the event handler callbacks for the dialog.
+		 * @return True on success, false on failure.
+		 */
+		bool installWindowEventHandler(void);
+
+		/**
+		 * Populates the font menu with the list of names of currently available fonts.
+		 * @return True on success, false on failure.
+		 */
+		bool populateFontMenu(void);
+
+		/**
+		 * Removes the additonal data of the font menu.
+		 */
+		void removeFontMenuData(void);
+
+		/**
+		 * If true, the dialog window is currently displayed.
+		 */
+		bool isDisplayedNow;
+
+		/**
+		 * If true, the font list is created new at the next show event.
+		 */
+		bool doGetFontList;
 
 		/**
 		 * Shows the selected pane of the tab control (and hides the others).
@@ -113,14 +167,14 @@ namespace VizKit {
 		/** The ControlID of the tab control. */
 		static const ControlID tabControlID;
 		
-		/** The tab control. */
-		ControlRef tabControl;
-		
 		/** The id of the tab pane that display about information. */
 		static const SInt32 aboutTabPaneId;
 		
-		/** The id of the tab pane where fullscreen display resolution can be set. */
-		static const SInt32 displayResolutionTabPaneId;
+		/** The id of the tab pane where font options can be set. */
+		static const SInt32 optionsTabPaneId;
+		
+		/** The id of the tab pane where check for update on startup can be set. */
+		static const SInt32 updateTabPaneId;
 		
 		/** The TabPaneVector is a vector of all panes of the tab control. */
 		typedef std::vector<SInt32> TabPaneVector;
@@ -131,30 +185,76 @@ namespace VizKit {
 		/** A vector that contains the id's of all panes of the tab control. */
 		TabPaneVector tabPaneVector;
 		
-		/** The id of the display resolution pop up menu control. */
-		static const SInt32 displayResolutionMenuId;
+		/** Reference of events handler for window events. */
+		EventHandlerRef windowEventsHandlerRef;
 		
-		/** The ControlID of the display resolution pop up menu control. */
-		static const ControlID displayResolutionMenuControlID;
-		
-		/** The pop up control is used to construct the pop up menu. */
-		ControlRef displayResolutionPopUpControl;
-		
-		/** The menu is attached to the pop up control. */
-		MenuRef displayResolutionMenu;
-		
-		/** The currently selected index of the display resolution menu. */
-		SInt32 displayResolutionMenuSelectedIdx;
+		/** Reference of events handler for window control events. */
+		EventHandlerRef windowControlEventsHandlerRef;
 		
 		/** Event type definition of control hit event. */
 		static const EventTypeSpec controlHitEvent;
 		
 		/** Event type definition of window close event. */
 		static const EventTypeSpec windowCloseEvent;
+
+		/** Event type definition of window drag started event. */
+		static const EventTypeSpec windowDragStarted;
+
+		/** Event type definition of window drag completed event. */
+		static const EventTypeSpec windowDragCompleted;
 		
 		/** The window of the dialog. */
 		WindowRef optionsDialogWindow;
+
+		/** The numeric id of the font pop up menu. */
+		static const SInt32 kFontPopUpControlId;
 		
+		/** The ControlID of the font pop up menu. */
+		static const ControlID kFontPopUpControlID;
+
+		/** The numeric id of the check for update checkbox. */
+		static const SInt32 kCheckForUpdateCheckboxId;
+
+		/** The ControlID of the check for update checkbox. */
+		static const ControlID kCheckForUpdateCheckboxControlID;
+		
+		/** Menu with font names. */
+		MenuRef fontMenu;
+		
+		/** Sub menu of font. */
+		MenuRef selectedFontSubMenu;
+
+		/**
+		 * Sets the selected font menu.
+		 * @param selectedIdx The selected font menu.
+		 */
+		void setTrackInfoFontMenuSelectedIdx(UInt32 selectedIdx);
+
+		/**
+		 * Sets the selected font sub menu.
+		 * @param selectedIdx The selected font sub menu.
+		 * @param subMenuRef Reference of the font sub menu.
+		 */
+		void setTrackInfoFontSubMenuSelectedIdx(UInt32 selectedIdx, MenuRef subMenuRef);
+		
+		/** Unchecks the currently selected menu item of the font menu. */
+		void uncheckTrackInfoFontMenuSelection(void);
+		
+		/** Selects the currently selected menu item of the font menu. */
+		void checkTrackInfoFontMenuSelection(void);
+		
+		/** The selected index of the font submenu. */
+		SInt32 trackInfoFontSubMenuSelectedIdx;
+		
+		/** The selected index of the font menu. */
+		SInt32 trackInfoFontMenuSelectedIdx;
+		
+		/** The alpha (opacity) value of the window. */
+		float windowAlphaValue;
+
+		/** The alpha (opacity) value of the window when moved. */
+		float windowAlphaMoveValue;
+
 	};
 
 }

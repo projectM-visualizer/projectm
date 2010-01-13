@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>VizKit</string>
 	<key>CFBundleGetInfoString</key>
-	<string>VizKit 1.9, ©2004-2007, www.imagomat.de, Heiko Wichmann</string>
+	<string>VizKit 2.3, ©2004-2009, www.imagomat.de, Heiko Wichmann</string>
 	<key>CFBundleIconFile</key>
 	<string></string>
 	<key>CFBundleIdentifier</key>
@@ -19,10 +19,10 @@
 	<key>CFBundlePackageType</key>
 	<string>hvpl</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.9</string>
+	<string>2.3</string>
 	<key>CFBundleSignature</key>
 	<string>hook</string>
 	<key>CFBundleVersion</key>
-	<string>1.9</string>
+	<string>2.3</string>
 </dict>
 </plist>

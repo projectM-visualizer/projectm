@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: TrackLyricsActor.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,15 +36,9 @@ freely, subject to the following restrictions:
 #ifndef TrackLyricsActor_h
 #define TrackLyricsActor_h
 
+
+#include "VisualTypes.h"
 #include "VisualActor.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
 
 
 namespace VizKit {
@@ -70,20 +64,21 @@ namespace VizKit {
 		~TrackLyricsActor();
 
 		/**
-		 * Performs the show of the track lyrics.
+		 * Initialization.
 		 */
-		virtual void show();
+		virtual void init(void);
+		
+		/**
+		 * Performs the show of the track lyrics.
+		 * @param visualPlayerState Read-only access to the VisualPlayerState.
+		 */
+		virtual void show(const VisualPlayerState& visualPlayerState);
 
 		/**
 		 * The actor receives a notification about an event that occured.
 		 * @param aNotification The notification passed in.
 		 */
-		virtual void handleNotification(const VisualNotification& aNotification);
-
-		/**
-		 * Clears any memory allocated by the actor or action.
-		 */
-		void clear(void);
+		virtual void handleNotification(VisualNotification& aNotification);
 		
 	private:
 

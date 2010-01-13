@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: ProcessMonitor.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,21 +36,17 @@ freely, subject to the following restrictions:
 #ifndef ProcessMonitor_h
 #define ProcessMonitor_h
 
+
+#include "VisualTypes.h"
 #include "VisualGraphicTypes.h"
 
 #include <string>
 #include <map>
 
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
-
 
 namespace VizKit {
+
+	class VisualAsset; // Forward declaration (to avoid include of header file).
 
 	/**
 	 * Shows some information on screen for diagnostical and monitoring purposes.
@@ -86,7 +82,7 @@ namespace VizKit {
 		 * @param elapsedAudioTime The elapsed time of the current track in milliseconds. 0 if no time value is available.
 		 * @param remainingAudioTime The remaining time of the current track in milliseconds. 0 if no time value is available.
 		 */
-		void showAudioInfo(const UInt32 elapsedAudioTime, const UInt32 remainingAudioTime);
+		void showAudioInfo(const uint32 elapsedAudioTime, const uint32 remainingAudioTime);
 
 		/**
 		 * The processMonitorInfoMap is registered.
@@ -100,7 +96,7 @@ namespace VizKit {
 		void finishProcessMonitorShow(void);
 
 		/**
-		 * Updates the vertices of the components of the trackProgressMeter (e.g.\ after a reshape of the canvas).
+		 * Updates the vertices of the components of the trackProgressMeter (e.g. after a reshape of the canvas).
 		 */	
 		void updateProgressMeterVertices(void);
 		
@@ -114,7 +110,7 @@ namespace VizKit {
 		/**
 		 * Calculates the vertices of the components of the trackProgressMeter.
 		 */
-		void calcTrackProgressMeterVertices(const UInt32 elapsedAudioTime, const UInt32 remainingAudioTime);
+		void calcTrackProgressMeterVertices(const uint32 elapsedAudioTime, const uint32 remainingAudioTime);
 		
 		/**
 		 * Cleans up the memory allocated for the vertices of the components of the trackProgressMeter.
@@ -138,6 +134,9 @@ namespace VizKit {
 		
 		/** Vertices of outline of progress meter. */
 		VertexChain progressMeterOutlineVertices;
+		
+		/** Asset of the process monitor. */
+		VisualAsset* processMonitorAsset;
 
 	};
 

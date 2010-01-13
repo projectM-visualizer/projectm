@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualNotificationQueue.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,17 +36,11 @@ freely, subject to the following restrictions:
 #ifndef VisualNotificationQueue_h
 #define VisualNotificationQueue_h
 
+
+#include "VisualTypes.h"
 #include "VisualNotification.h"
 
 #include <queue>
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
 
 
 namespace VizKit {
@@ -87,15 +81,20 @@ namespace VizKit {
 		 */		
 		static size_t size(void);
 
+		/**
+		 * Updates the notification queue with the most recent input notifications.
+		 */	
+		static void update(void);
+
 	private:
 	
 		/** VisualNotificationQueue is a singleton class. Pointer to private instance is handled internally. */
-		static VisualNotificationQueue* theVisualNotificationQueue;
+		static VisualNotificationQueue* visualNotificationQueueInstance;
 	
-		/** The constructor.\ VisualNotificationQueue is a singleton class.\ The constructor is private.\ New instance of class can only be created internally. */
+		/** The constructor. VisualNotificationQueue is a singleton class. The constructor is private. New instance of class can only be created internally. */
 		VisualNotificationQueue();
 		
-		/** The destructor.\ VisualNotificationQueue is a singleton class.\ The destructor is private.\ Instance of class can only be destructed internally. */
+		/** The destructor. VisualNotificationQueue is a singleton class. The destructor is private. Instance of class can only be destructed internally. */
 		~VisualNotificationQueue();
 
 		/**
@@ -111,7 +110,7 @@ namespace VizKit {
 		 */			
 		VisualNotificationQueue& operator=(const VisualNotificationQueue& other);
 		
-		/** A NotificationQueue is a queue of notifications.
+		/** A NotificationQueue is a dequeue of notifications.
 		 * @remarks The VisualNotificationQueue stores its events as a NotificationQueue.
 		 */
 		typedef std::deque<VisualNotification> NotificationQueue;
@@ -122,8 +121,14 @@ namespace VizKit {
 		/** The queue of the notifications. */
 		NotificationQueue notificationQueue;
 		
+		/**
+		 * Input queue of notifications.
+		 * @remarks On push the arrived notification is stored in inputNotificationQueue to exclude concurrency conflicts with processing of notificationQueue in VisualMainAction::renderAction().
+		 */
+		NotificationQueue inputNotificationQueue;
+		
 	};
 	
 }
 
-#endif /* VisualThreading_h */
+#endif /* VisualNotificationQueue_h */

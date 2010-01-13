@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: TrackTitleActor.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,15 +36,10 @@ freely, subject to the following restrictions:
 #ifndef TrackTitleActor_h
 #define TrackTitleActor_h
 
+
+#include "VisualTypes.h"
 #include "VisualActor.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualItemIdentifier.h"
 
 
 namespace VizKit {
@@ -71,20 +66,21 @@ namespace VizKit {
 		~TrackTitleActor();
 
 		/**
-		 * Performs the show of the track title.
+		 * Initialization.
 		 */
-		virtual void show();
+		virtual void init(void);
 		
 		/**
-		 * Clears any memory allocated by the actor or action.
+		 * Performs the show of the track title.
+		 * @param visualPlayerState Read-only access to the VisualPlayerState.
 		 */
-		void clear(void);
+		virtual void show(const VisualPlayerState& visualPlayerState);
 
 		/**
 		 * The actor receives a notification about an event that occured.
 		 * @param aNotification The notification passed in.
 		 */
-		virtual void handleNotification(const VisualNotification& aNotification);
+		virtual void handleNotification(VisualNotification& aNotification);
 		
 	private:
 
@@ -93,6 +89,9 @@ namespace VizKit {
 
 		/** True if texture of current audio track's title has been created. */
 		bool textureOfCurrentTrackTitleIsAvailable;
+		
+		/** The identifier of the audio track for which the current track title has been created. */
+		VisualItemIdentifier trackTitleTrackIdentifier;
 		
 	};
 

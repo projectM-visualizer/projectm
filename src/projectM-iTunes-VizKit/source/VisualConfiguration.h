@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualConfiguration.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,12 +36,9 @@ freely, subject to the following restrictions:
 #ifndef VisualConfiguration_h
 #define VisualConfiguration_h
 
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
+#include "VisualTypes.h"
 
 #if TARGET_OS_WIN
-#include <QT/MacTypes.h>
 #include "win/resource.h"
 #endif
 
@@ -53,11 +50,11 @@ namespace VizKit {
 	
 	public:
 
-		/** The name of the plug-in, the identifier. */
-		static const char* const kVisualPluginName;
+		/** The name of the visualizer plug-in, the identifier. */
+		static const char* const visualizerPluginIdentifierName;
 
-		/** The name of the visualizer as shown in visual menu of iTunes. */
-		static const char* const kVisualPluginShowName;
+		/** The name of the visualizer as shown in menu of iTunes. */
+		static const char* const visualizerShowName;
 
 		/**
 		 * The identifier of the visualizer plug-in (as used on Mac OS X for preferences identification and as CFBundleIdentifier).
@@ -65,95 +62,58 @@ namespace VizKit {
 		 * The values are stored in preferences text file. 
 		 * The preferences file is located at application data (Windows);
 		 * and on Mac OS X the preferences are stored in Preferences folder inside Library folder in user's home directory.
-		 * The domain identifier specifies the name of the plist file on Mac OS X;
-		 * and on Windows the domain identifier specifies the name of the folder inside the application data directory.
+		 * The domain identifier specifies the name of the plist file on Mac OS X.
+		 * On Windows the domain identifier specifies the name of the folder inside the application data directory.
 		 */
 		static const char* const kVisualPluginDomainIdentifier;
 
-		typedef enum {
-			kFadeInTimeOnPlayInMS = 0,
-			kFadeInTimeOnResumeInMS,
-			kFadeOutTimeBeforeEndOfTrackInMS,
-			kFadeOutTimeOnStopInMS,
-			kFadeOutTimeOnPauseInMS,
-			
-			kTrackInfoFont,
-			kTrackInfoFontSize,
-			kTrackInfoFontColorRedFloat,
-			kTrackInfoFontColorGreenFloat,
-			kTrackInfoFontColorBlueFloat,
-			kTrackInfoFontColorAlphaFloat,
-			
-			kTrackInfoTextureColorTopLeftRed,
-			kTrackInfoTextureColorTopLeftGreen,
-			kTrackInfoTextureColorTopLeftBlue,
-			kTrackInfoTextureColorTopLeftAlpha,
-			kTrackInfoTextureColorBottomLeftRed,
-			kTrackInfoTextureColorBottomLeftGreen,
-			kTrackInfoTextureColorBottomLeftBlue,
-			kTrackInfoTextureColorBottomLeftAlpha,
-			kTrackInfoTextureColorBottomRightRed,
-			kTrackInfoTextureColorBottomRightGreen,
-			kTrackInfoTextureColorBottomRightBlue,
-			kTrackInfoTextureColorBottomRightAlpha,
-			kTrackInfoTextureColorTopRightRed,
-			kTrackInfoTextureColorTopRightGreen,
-			kTrackInfoTextureColorTopRightBlue,
-			kTrackInfoTextureColorTopRightAlpha,
+		/** The major release number of the visualizer (version number). Range: 0 - 99. For instance 1.2.5 means: major release number 1, minor release number 2, revision number 5. */
+		static const uint8 kMajorReleaseNumber;
 
-			kTrackLyricsFont,
-			kTrackLyricsFontSize,
-			kTrackLyricsFontColorRedFloat,
-			kTrackLyricsFontColorGreenFloat,
-			kTrackLyricsFontColorBlueFloat,
-			kTrackLyricsFontColorAlphaFloat,
+		/** The minor release number of the visualizer (version number). Range: 0 - 9. For instance 1.2.5 means: major release number 1, minor release number 2, revision number 5. */
+		static const uint8 kMinorReleaseNumber;
 
-			kTrackLyricsTextureColorTopLeftRed,
-			kTrackLyricsTextureColorTopLeftGreen,
-			kTrackLyricsTextureColorTopLeftBlue,
-			kTrackLyricsTextureColorTopLeftAlpha,
-			kTrackLyricsTextureColorBottomLeftRed,
-			kTrackLyricsTextureColorBottomLeftGreen,
-			kTrackLyricsTextureColorBottomLeftBlue,
-			kTrackLyricsTextureColorBottomLeftAlpha,
-			kTrackLyricsTextureColorBottomRightRed,
-			kTrackLyricsTextureColorBottomRightGreen,
-			kTrackLyricsTextureColorBottomRightBlue,
-			kTrackLyricsTextureColorBottomRightAlpha,
-			kTrackLyricsTextureColorTopRightRed,
-			kTrackLyricsTextureColorTopRightGreen,
-			kTrackLyricsTextureColorTopRightBlue,
-			kTrackLyricsTextureColorTopRightAlpha,
+		/** The revision number of the visualizer (version number). Range: 0 - 255. For instance 1.2.5 means: major release number 1, minor release number 2, revision number 5. */
+		static const uint8 kReleaseRevisionNumber;
 
-			kTrackLyricsAlignment,
+		/**
+		 * The URL of the current version information for this visualizer.
+		 * The text information contains three items, separated by "|": 
+		 * 1) The current version number (major.minor.revision), set each component of the version (including 0). Zero values at the end of the version are dropped when presenting the current version to the user.
+		 * 2) Info URL (web page with general information about the visualizer or specific information about the advertized version)
+		 * 3) Download URL (URL pointing to download file of current visualizer)
+		 * This information is used to prompt the user with update information in case an older version is running.
+		 * The feature is turned on/off by preference VisualPreferences::kCheckForUpdate.
+		 */
+		static const char* const kCurrentVersionInformationURL;
 
-			kFullscreenWidth,
-			kFullscreenHeight,
-			kFullscreenBitsPerPixel,
-			kFullscreenRefreshRate,
+		/**
+		 * Disposes the VisualConfiguration.
+		 */	
+		static void dispose(void);
 
-			kPreferencePane,
+		/** Returns the major release number encoded as BCD value.
+		 * @return The major release number encoded as BCD value.
+		 * @remarks The BCD value is passed to iTunes in PlayerRegisterVisualPlugin() by setting the pluginVersion of the PlayerRegisterVisualPluginMessage.
+		 */
+		static uint8 getMajorReleaseNumberAsBCD(void);
 
-			kBackgroundColorRed,
-			kBackgroundColorGreen,
-			kBackgroundColorBlue,
-			kBackgroundColorAlpha,
+		/** Returns the minor release number encoded as BCD value.
+		 * @return The minor release number encoded as BCD value.
+		 * @remarks The BCD value is passed to iTunes in PlayerRegisterVisualPlugin() by setting the pluginVersion of the PlayerRegisterVisualPluginMessage.
+		 */
+		static uint8 getMinorReleaseNumberAsBCD(void);
 
-			kTrackInfoTextureHeight,
-			kLyricsTextureIsAvailable
-		} PreferenceKey;
+		/** Returns the release revision number.
+		 * @return The release revision number.
+		 * @remarks The release revision number is not encoded as BCD.
+		 */
+		static uint8 getReleaseRevisionNumber(void);
 
-/* version info set by call to SetNumVersion */
-#define	gVisualPluginMajorVersion 1
-#define	gVisualPluginMinorVersion 9
-#if TARGET_OS_MAC
-#define gVisualPluginReleaseStage finalStage
-#endif
-#if TARGET_OS_WIN
-#define	gVisualPluginReleaseStage 0x80
-#endif
-#define	gVisualPluginNonFinalRelease 0
-
+		/** Returns the unicode-savvy show name of the visualizer.
+		 * @return The unicode-savvy show name of the visualizer.
+		 */
+		static uint16* getVisualizerShowNameUnicode(uint32& numberOfCharactersOfVisualizerShowNameUnicode);
 
 // Resources
 #if TARGET_OS_WIN
@@ -163,26 +123,57 @@ namespace VizKit {
 #define	SPOTPNG "spot.png"
 #endif
 
-		/**
-		 * Called upon init of the plug-in in VisualMain.
-		 * The default (factory) preferences are set.
-		 */
-		static void setDefaultPreferences(void);
-
-		/**
-		 * Static helper function that converts a PreferenceKey to the string.\ Possibly useful for debugging or tracing purposes.
-		 * @param aKey The key of a preference.
-		 * @param outString The character string value of the PreferenceKey enum value.
-		 */
-		static void convertPreferenceKeyToString(const PreferenceKey aKey, char* outString);
-
 	private:
 
-		/** The constructor.\ VisualConfiguration is a collection of static methods.\ Class does not need any instances.\ Constructor is private and not implemented. */
-		VisualConfiguration();
+		/**
+		 * Constructs a VisualConfiguration. The VisualConfiguration acts as a singleton. Returns a pointer to the initialised VisualConfiguration.
+		 * @return A pointer to the singleton instance.
+		 */
+		static VisualConfiguration* getInstance(void);
 
-		/** The destructor.\ VisualConfiguration is a collection of static methods.\ Class does not need any instances.\ Destructor is private and not implemented. */
+		/** The constructor. VisualConfiguration is a singleton class. The constructor is private. New instance of class can only be created internally. */
+		VisualConfiguration();
+		
+		/** The destructor. VisualConfiguration is a singleton class. The destructor is private. Instance of class can only be destructed internally. */
 		~VisualConfiguration();
+
+		/**
+		 * Copy constructor.
+		 * @param other Another VisualConfiguration.
+		 * @remarks Explicitely declared in private section and not implemented to enforce uniqueness of singleton pattern.
+		 */
+		VisualConfiguration(const VisualConfiguration& other);
+
+		/**
+		 * Assignment operator.
+		 * @remarks Explicitely declared in private section and not implemented to enforce uniqueness of singleton pattern.
+		 */			
+		VisualConfiguration& operator=(const VisualConfiguration& other);
+	
+		/** VisualConfiguration is a singleton class. Pointer to private instance is handled internally. */
+		static VisualConfiguration* theVisualConfiguration;
+		
+		/** Internal method to prepare the unicode-savvy show name of the visualizer. */
+		void prepareVisualizerShowNameUnicode(void);
+
+		/** Returns the binary-coded decimal value of a decimal number.
+		 * @param decimalNumber The decimal number to convert into binary-coded decimal number.
+		 * @remarks BCD or Binary-coded decimal format is a format where each digit has a range of 0 - 9 (normal binary digits have a range of 0 - 15). Further info on encoding of version information: http://developer.apple.com/technotes/tn/tn1132.html (Technote OV 12- Version Territory)
+		 */
+		static uint8 getBCD(uint8 decimalNumber);
+
+		/** The name of the visualizer as shown in menu of iTunes (declared as UTF-16 on Windows, declared as UTF-8 on Mac).
+		 * @remarks Routine
+		 */
+#if TARGET_OS_WIN
+		uint16* visualizerShowNameUnicode;
+#endif
+#if TARGET_OS_MAC
+		uint8* visualizerShowNameUnicode;
+#endif
+		
+		/** The internally stored unicode-savvy show name of the visualizer. */
+		uint16* unicodeShowName;
 		
 	};
 

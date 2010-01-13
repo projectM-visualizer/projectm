@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: ProcessMonitor.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -37,28 +37,35 @@ freely, subject to the following restrictions:
 #include "VisualErrorHandling.h"
 #include "VisualActorGraphics.h"
 #include "VisualAudioLab.h"
-
-
+#include "VisualGraphicTypes.h"
+#include "VisualVertex.h"
+#include "VisualAsset.h"
+#include "VisualCamera.h"
 
 using namespace VizKit;
 
 
 ProcessMonitor::ProcessMonitor() {
+	processMonitorAsset = new VisualAsset;
 	setupProgressMeterVertices();
 }
 
 
 ProcessMonitor::~ProcessMonitor() {
     cleanupProgressMeterVertices();
+	delete processMonitorAsset;
 }
 
 
 void ProcessMonitor::prepareProcessMonitorShow() {
+	VisualCamera aCamera;
+	aCamera.setOrthographicProjection();
+	processMonitorAsset->setCamera(aCamera);
 	RGBAColor theColor;
-	theColor.r = 0.0f;
-	theColor.g = 1.0f;
-	theColor.b = 0.0f;
-	theColor.a = 1.0f;
+	theColor.r = 0.0;
+	theColor.g = 1.0;
+	theColor.b = 0.0;
+	theColor.a = 1.0;
 	VisualActorGraphics::prepareProcessMonitorShow(theColor);
 }
 
@@ -70,21 +77,26 @@ void ProcessMonitor::showInfoStrings() {
     char finalTextString[255];
     double yNum;
     double xNum;
-	UInt8 charCountMax = 0; // in one line per column
+	uint8 charCountMax = 0; // in one line per column
 	double rowHeight, characterWidth;
+	
+	VisualCamera aCamera;
+	aCamera.setOrthographicProjection();
+	CoordSize3D size = aCamera.getSize();
+	rowHeight = size.height * (15.0f / VisualActorGraphics::getCanvasPixelHeight());
+	characterWidth = size.width * (9.0f / VisualActorGraphics::getCanvasPixelWidth());
 
-	rowHeight = VisualActorGraphics::getCanvasCoordHeight() * (15.0f / VisualActorGraphics::getCanvasPixelHeight());
-	characterWidth = VisualActorGraphics::getCanvasCoordWidth() * (9.0f / VisualActorGraphics::getCanvasPixelWidth());
-
-	xNum = VisualActorGraphics::getMaxLeftCoordOfCanvas() + characterWidth;
-	yNum = VisualActorGraphics::getMaxTopCoordOfCanvas();
+	xNum = aCamera.getMaxLeftCoord() + characterWidth;
+	yNum = aCamera.getMaxTopCoord();
+	
+	Coord coord;
 
 	for (it = this->processInfoMap.begin(); it != this->processInfoMap.end(); it++) {
 	
 		yNum = yNum - rowHeight;
-		if ((yNum - rowHeight) < VisualActorGraphics::getMaxBottomCoordOfCanvas()) {
+		if ((yNum - rowHeight) < aCamera.getMaxBottomCoord()) {
 			// we reached the bottom -> go to next column to the right
-			yNum = VisualActorGraphics::getMaxTopCoordOfCanvas() - rowHeight;
+			yNum = aCamera.getMaxTopCoord() - rowHeight;
 			xNum = xNum + characterWidth + (charCountMax * characterWidth);
 			charCountMax = 0;
 		}
@@ -94,7 +106,10 @@ void ProcessMonitor::showInfoStrings() {
 		if (strlen(finalTextString) > charCountMax) {
 			charCountMax = strlen(finalTextString);
 		}
-		VisualActorGraphics::showProcessInfoRow(xNum, yNum, finalTextString); // constant height of font
+		coord.x = xNum;
+		coord.y = yNum;
+		coord.z = 0.0;
+		VisualActorGraphics::showProcessInfoRow(coord, finalTextString); // constant height of font
 		
     }
 	
@@ -103,23 +118,21 @@ void ProcessMonitor::showInfoStrings() {
 }
 
 
-void ProcessMonitor::showAudioInfo(const UInt32 elapsedAudioTime, const UInt32 remainingAudioTime) {
+void ProcessMonitor::showAudioInfo(const uint32 elapsedAudioTime, const uint32 remainingAudioTime) {
 
 	VisualAudioLab* theVisualAudioLab;
 
-	UInt16 numberOfAudioDataChannels;
-	UInt32 numberOfSpectrumEntries;
-	UInt16 maxNumberOfMusicDataHistories;
-	const SInt8* waveformShapeArray;
-	UInt16 maxNumberOfWaveformShapeHistory;
+	uint16 numberOfAudioDataChannels;
+	uint32 numberOfSpectrumEntries;
+	uint16 maxNumberOfMusicDataHistories;
 
-	const SInt16** waveformDataMonoArray;
-	SInt16 currMusicDataHistory;
-	UInt8 prevMusicDataHistory;
-	UInt32 numberOfWaveformEntries;
+	const sint16** waveformDataMonoArray;
+	sint16 currMusicDataHistory;
+	uint16 prevMusicDataHistory;
+	uint32 numberOfWaveformEntries;
 
-	const UInt8*** spectrumDataArray;
-	const UInt32* beatHistogram;
+	const uint8*** spectrumDataArray;
+	//const uint32* beatHistogram;
 
 	theVisualAudioLab = VisualAudioLab::getInstance();
 
@@ -128,31 +141,26 @@ void ProcessMonitor::showAudioInfo(const UInt32 elapsedAudioTime, const UInt32 r
 	numberOfWaveformEntries = theVisualAudioLab->getNumberOfWaveformEntries();
 	maxNumberOfMusicDataHistories = theVisualAudioLab->getMaxNumberOfMusicDataHistories();
 	waveformDataMonoArray = theVisualAudioLab->getWaveformDataMonoArray();
-
-	maxNumberOfWaveformShapeHistory = theVisualAudioLab->getMaxNumberOfWaveformShapeHistory();
-	waveformShapeArray = theVisualAudioLab->getWaveformShapeArray();
 	
 	numberOfAudioDataChannels = theVisualAudioLab->getNumberOfDataChannels();
 	numberOfSpectrumEntries = theVisualAudioLab->getNumberOfSpectrumEntries();
 	spectrumDataArray = theVisualAudioLab->getSpectrumDataArray();
 
-    VisualActorGraphics::drawWaveform(currMusicDataHistory, maxNumberOfMusicDataHistories, numberOfWaveformEntries, waveformDataMonoArray);
+    VisualActorGraphics::drawWaveform(currMusicDataHistory, maxNumberOfMusicDataHistories, numberOfWaveformEntries, waveformDataMonoArray, processMonitorAsset->getCamera());
 	VisualActorGraphics::resetModelViewMatrix();
 
 	//theVisualGraphics->drawWaveform(currMusicDataHistory, 1, numberOfWaveformEntries, waveformDataMonoArray);
-	VisualActorGraphics::drawSpectrumAnalyzer(currMusicDataHistory, maxNumberOfMusicDataHistories, numberOfSpectrumEntries, numberOfAudioDataChannels, spectrumDataArray);
+	VisualActorGraphics::drawSpectrumAnalyzer(currMusicDataHistory, maxNumberOfMusicDataHistories, numberOfSpectrumEntries, numberOfAudioDataChannels, spectrumDataArray, processMonitorAsset->getCamera());
 	VisualActorGraphics::resetModelViewMatrix();
-	VisualActorGraphics::drawSpectrogram(currMusicDataHistory, maxNumberOfMusicDataHistories, numberOfSpectrumEntries, numberOfAudioDataChannels, spectrumDataArray);
+	VisualActorGraphics::drawSpectrogram(currMusicDataHistory, maxNumberOfMusicDataHistories, numberOfSpectrumEntries, numberOfAudioDataChannels, spectrumDataArray, processMonitorAsset->getCamera());
     VisualActorGraphics::resetModelViewMatrix();
 
-	//theVisualGraphics->drawWaveformShape(waveformShapeArray, maxNumberOfWaveformShapeHistory);
 	//theVisualGraphics->drawWaveformSpiral(currMusicDataHistory, numberOfWaveformEntries, waveformDataMonoArray);
-	beatHistogram = theVisualAudioLab->getBeatHistogram();
-	VisualActorGraphics::drawBeatHistogram(beatHistogram);
+	//beatHistogram = theVisualAudioLab->getBeatHistogram();
+	//VisualActorGraphics::drawBeatHistogram(beatHistogram, processMonitorAsset->getCamera());
 	//VisualActorGraphics::drawTrackProgressMeter(elapsedAudioTime, remainingAudioTime);
 	
 	//this->updateProgressMeterVertices();
-	//printf("elapsedAudioTime: %ld, remainingAudioTime: %ld\n", elapsedAudioTime, remainingAudioTime);
 	this->calcTrackProgressMeterVertices(elapsedAudioTime, remainingAudioTime);
 	VisualActorGraphics::drawTrackProgressMeter(&this->progressMeterBackgroundVertices, &this->progressMeterVertices, &this->progressMeterOutlineVertices);
     
@@ -173,114 +181,125 @@ void ProcessMonitor::updateProgressMeterVertices() {
 
 	double topPos, leftPos, bottomPos, rightPos, rightProgressPos;
 	
-	topPos = VisualActorGraphics::getMaxBottomCoordOfCanvas() + VisualActorGraphics::yPixelToCoord(10);
-	leftPos = VisualActorGraphics::getMaxLeftCoordOfCanvas();
-	bottomPos = VisualActorGraphics::getMaxBottomCoordOfCanvas();
-	rightPos = VisualActorGraphics::getMaxRightCoordOfCanvas();
-	rightProgressPos = VisualActorGraphics::getMaxLeftCoordOfCanvas();
+	VisualCamera aCamera;
+	aCamera.setOrthographicProjection();
+	topPos = aCamera.getMaxBottomCoord() + VisualActorGraphics::yPixelToCoord(10, aCamera);
+	leftPos = aCamera.getMaxLeftCoord();
+	bottomPos = aCamera.getMaxBottomCoord();
+	rightPos = aCamera.getMaxRightCoord();
+	rightProgressPos = aCamera.getMaxLeftCoord();
 	RGBAColor backgroundColor = VisualActorGraphics::getBackgroundColor();
 	
-	progressMeterBackgroundVertices[0]->vertexPosition.xPos = leftPos;
-	progressMeterBackgroundVertices[0]->vertexPosition.yPos = bottomPos;
-	progressMeterBackgroundVertices[0]->vertexPosition.zPos = 0.0f;
+	progressMeterBackgroundVertices[0]->vertexPosition.coord.x = leftPos;
+	progressMeterBackgroundVertices[0]->vertexPosition.coord.y = bottomPos;
+	progressMeterBackgroundVertices[0]->vertexPosition.coord.z = 0.0f;
 	progressMeterBackgroundVertices[0]->vertexColor.r = backgroundColor.r;
 	progressMeterBackgroundVertices[0]->vertexColor.g = backgroundColor.g;
 	progressMeterBackgroundVertices[0]->vertexColor.b = backgroundColor.b;
 	progressMeterBackgroundVertices[0]->vertexColor.a = backgroundColor.a;
 
-	progressMeterBackgroundVertices[1]->vertexPosition.xPos = rightPos;
-	progressMeterBackgroundVertices[1]->vertexPosition.yPos = bottomPos;
-	progressMeterBackgroundVertices[1]->vertexPosition.zPos = 0.0f;
+	progressMeterBackgroundVertices[1]->vertexPosition.coord.x = rightPos;
+	progressMeterBackgroundVertices[1]->vertexPosition.coord.y = bottomPos;
+	progressMeterBackgroundVertices[1]->vertexPosition.coord.z = 0.0f;
 	progressMeterBackgroundVertices[1]->vertexColor.r = backgroundColor.r;
 	progressMeterBackgroundVertices[1]->vertexColor.g = backgroundColor.g;
 	progressMeterBackgroundVertices[1]->vertexColor.b = backgroundColor.b;
 	progressMeterBackgroundVertices[1]->vertexColor.a = backgroundColor.a;
 
-	progressMeterBackgroundVertices[2]->vertexPosition.xPos = rightPos;
-	progressMeterBackgroundVertices[2]->vertexPosition.yPos = topPos;
-	progressMeterBackgroundVertices[2]->vertexPosition.zPos = 0.0f;
+	progressMeterBackgroundVertices[2]->vertexPosition.coord.x = rightPos;
+	progressMeterBackgroundVertices[2]->vertexPosition.coord.y = topPos;
+	progressMeterBackgroundVertices[2]->vertexPosition.coord.z = 0.0f;
 	progressMeterBackgroundVertices[2]->vertexColor.r = backgroundColor.r;
 	progressMeterBackgroundVertices[2]->vertexColor.g = backgroundColor.g;
 	progressMeterBackgroundVertices[2]->vertexColor.b = backgroundColor.b;
 	progressMeterBackgroundVertices[2]->vertexColor.a = backgroundColor.a;
 
-	progressMeterBackgroundVertices[3]->vertexPosition.xPos = leftPos;
-	progressMeterBackgroundVertices[3]->vertexPosition.yPos = topPos;
-	progressMeterBackgroundVertices[3]->vertexPosition.zPos = 0.0f;
+	progressMeterBackgroundVertices[3]->vertexPosition.coord.x = leftPos;
+	progressMeterBackgroundVertices[3]->vertexPosition.coord.y = topPos;
+	progressMeterBackgroundVertices[3]->vertexPosition.coord.z = 0.0f;
 	progressMeterBackgroundVertices[3]->vertexColor.r = backgroundColor.r;
 	progressMeterBackgroundVertices[3]->vertexColor.g = backgroundColor.g;
 	progressMeterBackgroundVertices[3]->vertexColor.b = backgroundColor.b;
 	progressMeterBackgroundVertices[3]->vertexColor.a = backgroundColor.a;
 	
-	progressMeterVertices[0]->vertexPosition.xPos = leftPos;
-	progressMeterVertices[0]->vertexPosition.yPos = bottomPos;
-	progressMeterVertices[0]->vertexPosition.zPos = 0.0f;
+	progressMeterVertices[0]->vertexPosition.coord.x = leftPos;
+	progressMeterVertices[0]->vertexPosition.coord.y = bottomPos;
+	progressMeterVertices[0]->vertexPosition.coord.z = 0.0f;
 	progressMeterVertices[0]->vertexColor.r = 1.0f;
 	progressMeterVertices[0]->vertexColor.g = 1.0f;
 	progressMeterVertices[0]->vertexColor.b = 1.0f;
 	progressMeterVertices[0]->vertexColor.a = 1.0f;
 
-	progressMeterVertices[1]->vertexPosition.xPos = rightProgressPos;
-	progressMeterVertices[1]->vertexPosition.yPos = bottomPos;
-	progressMeterVertices[1]->vertexPosition.zPos = 0.0f;
+	progressMeterVertices[1]->vertexPosition.coord.x = rightProgressPos;
+	progressMeterVertices[1]->vertexPosition.coord.y = bottomPos;
+	progressMeterVertices[1]->vertexPosition.coord.z = 0.0f;
 	progressMeterVertices[1]->vertexColor.r = 1.0f;
 	progressMeterVertices[1]->vertexColor.g = 1.0f;
 	progressMeterVertices[1]->vertexColor.b = 1.0f;
 	progressMeterVertices[1]->vertexColor.a = 1.0f;
 
-	progressMeterVertices[2]->vertexPosition.xPos = rightProgressPos;
-	progressMeterVertices[2]->vertexPosition.yPos = topPos;
-	progressMeterVertices[2]->vertexPosition.zPos = 0.0f;
+	progressMeterVertices[2]->vertexPosition.coord.x = rightProgressPos;
+	progressMeterVertices[2]->vertexPosition.coord.y = topPos;
+	progressMeterVertices[2]->vertexPosition.coord.z = 0.0f;
 	progressMeterVertices[2]->vertexColor.r = 1.0f;
 	progressMeterVertices[2]->vertexColor.g = 1.0f;
 	progressMeterVertices[2]->vertexColor.b = 1.0f;
 	progressMeterVertices[2]->vertexColor.a = 1.0f;
 
-	progressMeterVertices[3]->vertexPosition.xPos = leftPos;
-	progressMeterVertices[3]->vertexPosition.yPos = topPos;
-	progressMeterVertices[3]->vertexPosition.zPos = 0.0f;
+	progressMeterVertices[3]->vertexPosition.coord.x = leftPos;
+	progressMeterVertices[3]->vertexPosition.coord.y = topPos;
+	progressMeterVertices[3]->vertexPosition.coord.z = 0.0f;
 	progressMeterVertices[3]->vertexColor.r = 1.0f;
 	progressMeterVertices[3]->vertexColor.g = 1.0f;
 	progressMeterVertices[3]->vertexColor.b = 1.0f;
 	progressMeterVertices[3]->vertexColor.a = 1.0f;
 
-	progressMeterOutlineVertices[0]->vertexPosition.xPos = leftPos;
-	progressMeterOutlineVertices[0]->vertexPosition.yPos = bottomPos;
-	progressMeterOutlineVertices[0]->vertexPosition.zPos = 0.0f;
+	progressMeterOutlineVertices[0]->vertexPosition.coord.x = leftPos;
+	progressMeterOutlineVertices[0]->vertexPosition.coord.y = bottomPos;
+	progressMeterOutlineVertices[0]->vertexPosition.coord.z = 0.0f;
+	/*
 	progressMeterOutlineVertices[0]->vertexColor.r = 0.0f;
 	progressMeterOutlineVertices[0]->vertexColor.g = 0.0f;
 	progressMeterOutlineVertices[0]->vertexColor.b = 0.0f;
 	progressMeterOutlineVertices[0]->vertexColor.a = 1.0f;
+	*/
+	
 
-	progressMeterOutlineVertices[1]->vertexPosition.xPos = rightPos;
-	progressMeterOutlineVertices[1]->vertexPosition.yPos = bottomPos;
-	progressMeterOutlineVertices[1]->vertexPosition.zPos = 0.0f;
+	progressMeterOutlineVertices[1]->vertexPosition.coord.x = rightPos;
+	progressMeterOutlineVertices[1]->vertexPosition.coord.y = bottomPos;
+	progressMeterOutlineVertices[1]->vertexPosition.coord.z = 0.0f;
+	/*
 	progressMeterOutlineVertices[1]->vertexColor.r = 0.0f;
 	progressMeterOutlineVertices[1]->vertexColor.g = 0.0f;
 	progressMeterOutlineVertices[1]->vertexColor.b = 0.0f;
 	progressMeterOutlineVertices[1]->vertexColor.a = 1.0f;
+	*/
 
-	progressMeterOutlineVertices[2]->vertexPosition.xPos = rightPos;
-	progressMeterOutlineVertices[2]->vertexPosition.yPos = topPos;
-	progressMeterOutlineVertices[2]->vertexPosition.zPos = 0.0f;
+	progressMeterOutlineVertices[2]->vertexPosition.coord.x = rightPos;
+	progressMeterOutlineVertices[2]->vertexPosition.coord.y = topPos;
+	progressMeterOutlineVertices[2]->vertexPosition.coord.z = 0.0f;
+	/*
 	progressMeterOutlineVertices[2]->vertexColor.r = 0.0f;
 	progressMeterOutlineVertices[2]->vertexColor.g = 0.0f;
 	progressMeterOutlineVertices[2]->vertexColor.b = 0.0f;
 	progressMeterOutlineVertices[2]->vertexColor.a = 1.0f;
+	*/
 
-	progressMeterOutlineVertices[3]->vertexPosition.xPos = leftPos;
-	progressMeterOutlineVertices[3]->vertexPosition.yPos = topPos;
-	progressMeterOutlineVertices[3]->vertexPosition.zPos = 0.0f;
+	progressMeterOutlineVertices[3]->vertexPosition.coord.x = leftPos;
+	progressMeterOutlineVertices[3]->vertexPosition.coord.y = topPos;
+	progressMeterOutlineVertices[3]->vertexPosition.coord.z = 0.0f;
+	/*
 	progressMeterOutlineVertices[3]->vertexColor.r = 0.0f;
 	progressMeterOutlineVertices[3]->vertexColor.g = 0.0f;
 	progressMeterOutlineVertices[3]->vertexColor.b = 0.0f;
 	progressMeterOutlineVertices[3]->vertexColor.a = 1.0f;
+	*/
 }
 
 
 void ProcessMonitor::setupProgressMeterVertices() {
 
-	Vertex* aVertex;
+	VisualVertex* aVertex;
 	double topPos;
 	double leftPos;
 	double bottomPos;
@@ -288,143 +307,224 @@ void ProcessMonitor::setupProgressMeterVertices() {
 	double rightProgressPos;
 	RGBAColor backgroundColor;
 	
-	topPos = VisualActorGraphics::getMaxBottomCoordOfCanvas() + VisualActorGraphics::yPixelToCoord(10);
-	leftPos = VisualActorGraphics::getMaxLeftCoordOfCanvas();
-	bottomPos = VisualActorGraphics::getMaxBottomCoordOfCanvas();
-	rightPos = VisualActorGraphics::getMaxRightCoordOfCanvas();
-	rightProgressPos = VisualActorGraphics::getMaxLeftCoordOfCanvas();
+	VisualCamera aCamera;
+	aCamera.setOrthographicProjection();
+	topPos = aCamera.getMaxBottomCoord() + VisualActorGraphics::yPixelToCoord(10, aCamera);
+	leftPos = aCamera.getMaxLeftCoord();
+	bottomPos = aCamera.getMaxBottomCoord();
+	rightPos = aCamera.getMaxRightCoord();
+	rightProgressPos = aCamera.getMaxLeftCoord();
 	backgroundColor = VisualActorGraphics::getBackgroundColor();
 	
-	aVertex = new Vertex;
-	aVertex->vertexPosition.xPos = leftPos;
-	aVertex->vertexPosition.yPos = bottomPos;
-	aVertex->vertexPosition.zPos = 0.0f;
+	Coord coordPoint;
+	coordPoint.x = leftPos;
+	coordPoint.y = bottomPos;
+	coordPoint.z = 0.0;
+	//aVertex = new VisualVertex(leftPos, bottomPos, 0.0, backgroundColor);
+	aVertex = new VisualVertex(coordPoint, backgroundColor);
+	/*
+	aVertex->vertexPosition.coord.x = leftPos;
+	aVertex->vertexPosition.coord.y = bottomPos;
+	aVertex->vertexPosition.coord.z = 0.0f;
 	aVertex->vertexColor.r = backgroundColor.r;
 	aVertex->vertexColor.g = backgroundColor.g;
 	aVertex->vertexColor.b = backgroundColor.b;
 	aVertex->vertexColor.a = backgroundColor.a;
+	*/
 	progressMeterBackgroundVertices.push_back(aVertex);
 
-	aVertex = new Vertex;
-	aVertex->vertexPosition.xPos = rightPos;
-	aVertex->vertexPosition.yPos = bottomPos;
-	aVertex->vertexPosition.zPos = 0.0f;
+	coordPoint.x = rightPos;
+	coordPoint.y = bottomPos;
+	coordPoint.z = 0.0;
+	//aVertex = new VisualVertex(rightPos, bottomPos, 0.0, backgroundColor);
+	aVertex = new VisualVertex(coordPoint, backgroundColor);
+	/*
+	aVertex->vertexPosition.coord.x = rightPos;
+	aVertex->vertexPosition.coord.y = bottomPos;
+	aVertex->vertexPosition.coord.z = 0.0f;
 	aVertex->vertexColor.r = backgroundColor.r;
 	aVertex->vertexColor.g = backgroundColor.g;
 	aVertex->vertexColor.b = backgroundColor.b;
 	aVertex->vertexColor.a = backgroundColor.a;
+	*/
 	progressMeterBackgroundVertices.push_back(aVertex);
 
-	aVertex = new Vertex;
-	aVertex->vertexPosition.xPos = rightPos;
-	aVertex->vertexPosition.yPos = topPos;
-	aVertex->vertexPosition.zPos = 0.0f;
+	coordPoint.x = rightPos;
+	coordPoint.y = topPos;
+	coordPoint.z = 0.0;
+	//aVertex = new VisualVertex(rightPos, topPos, 0.0, backgroundColor);
+	aVertex = new VisualVertex(coordPoint, backgroundColor);
+	/*
+	aVertex->vertexPosition.coord.x = rightPos;
+	aVertex->vertexPosition.coord.y = topPos;
+	aVertex->vertexPosition.coord.z = 0.0f;
 	aVertex->vertexColor.r = backgroundColor.r;
 	aVertex->vertexColor.g = backgroundColor.g;
 	aVertex->vertexColor.b = backgroundColor.b;
 	aVertex->vertexColor.a = backgroundColor.a;
+	*/
 	progressMeterBackgroundVertices.push_back(aVertex);
 
-	aVertex = new Vertex;
-	aVertex->vertexPosition.xPos = leftPos;
-	aVertex->vertexPosition.yPos = topPos;
-	aVertex->vertexPosition.zPos = 0.0f;
+	coordPoint.x = leftPos;
+	coordPoint.y = topPos;
+	coordPoint.z = 0.0;
+	//aVertex = new VisualVertex(leftPos, topPos, 0.0, backgroundColor);
+	aVertex = new VisualVertex(coordPoint, backgroundColor);
+	/*
+	aVertex->vertexPosition.coord.x = leftPos;
+	aVertex->vertexPosition.coord.y = topPos;
+	aVertex->vertexPosition.coord.z = 0.0f;
 	aVertex->vertexColor.r = backgroundColor.r;
 	aVertex->vertexColor.g = backgroundColor.g;
 	aVertex->vertexColor.b = backgroundColor.b;
 	aVertex->vertexColor.a = backgroundColor.a;
+	*/
 	progressMeterBackgroundVertices.push_back(aVertex);
 
-	aVertex = new Vertex;
-	aVertex->vertexPosition.xPos = leftPos;
-	aVertex->vertexPosition.yPos = bottomPos;
-	aVertex->vertexPosition.zPos = 0.0f;
+	coordPoint.x = leftPos;
+	coordPoint.y = bottomPos;
+	coordPoint.z = 0.0;
+	//aVertex = new VisualVertex(leftPos, bottomPos, 0.0, white);
+	aVertex = new VisualVertex(coordPoint, white);
+	/*
+	aVertex->vertexPosition.coord.x = leftPos;
+	aVertex->vertexPosition.coord.y = bottomPos;
+	aVertex->vertexPosition.coord.z = 0.0f;
 	aVertex->vertexColor.r = 1.0f;
 	aVertex->vertexColor.g = 1.0f;
 	aVertex->vertexColor.b = 1.0f;
 	aVertex->vertexColor.a = 1.0f;
+	*/
 	progressMeterVertices.push_back(aVertex);
 
-	aVertex = new Vertex;
-	aVertex->vertexPosition.xPos = rightProgressPos;
-	aVertex->vertexPosition.yPos = bottomPos;
-	aVertex->vertexPosition.zPos = 0.0f;
+	coordPoint.x = rightProgressPos;
+	coordPoint.y = bottomPos;
+	coordPoint.z = 0.0;
+	//aVertex = new VisualVertex(rightProgressPos, bottomPos, 0.0, white);
+	aVertex = new VisualVertex(coordPoint, white);
+	/*
+	aVertex->vertexPosition.coord.x = rightProgressPos;
+	aVertex->vertexPosition.coord.y = bottomPos;
+	aVertex->vertexPosition.coord.z = 0.0f;
 	aVertex->vertexColor.r = 1.0f;
 	aVertex->vertexColor.g = 1.0f;
 	aVertex->vertexColor.b = 1.0f;
 	aVertex->vertexColor.a = 1.0f;
+	*/
 	progressMeterVertices.push_back(aVertex);
 
-	aVertex = new Vertex;
-	aVertex->vertexPosition.xPos = rightProgressPos;
-	aVertex->vertexPosition.yPos = topPos;
-	aVertex->vertexPosition.zPos = 0.0f;
+	coordPoint.x = rightProgressPos;
+	coordPoint.y = topPos;
+	coordPoint.z = 0.0;
+	//aVertex = new VisualVertex(rightProgressPos, topPos, 0.0, white);
+	aVertex = new VisualVertex(coordPoint, white);
+	/*
+	aVertex->vertexPosition.coord.x = rightProgressPos;
+	aVertex->vertexPosition.coord.y = topPos;
+	aVertex->vertexPosition.coord.z = 0.0f;
 	aVertex->vertexColor.r = 1.0f;
 	aVertex->vertexColor.g = 1.0f;
 	aVertex->vertexColor.b = 1.0f;
 	aVertex->vertexColor.a = 1.0f;
+	*/
 	progressMeterVertices.push_back(aVertex);
 
-	aVertex = new Vertex;
-	aVertex->vertexPosition.xPos = leftPos;
-	aVertex->vertexPosition.yPos = topPos;
-	aVertex->vertexPosition.zPos = 0.0f;
+	coordPoint.x = rightProgressPos;
+	coordPoint.y = topPos;
+	coordPoint.z = 0.0;
+	//aVertex = new VisualVertex(leftPos, topPos, 0.0, white);
+	aVertex = new VisualVertex(coordPoint, white);
+	/*
+	aVertex->vertexPosition.coord.x = leftPos;
+	aVertex->vertexPosition.coord.y = topPos;
+	aVertex->vertexPosition.coord.z = 0.0f;
 	aVertex->vertexColor.r = 1.0f;
 	aVertex->vertexColor.g = 1.0f;
 	aVertex->vertexColor.b = 1.0f;
 	aVertex->vertexColor.a = 1.0f;
+	*/
 	progressMeterVertices.push_back(aVertex);
 
-	aVertex = new Vertex;
-	aVertex->vertexPosition.xPos = leftPos;
-	aVertex->vertexPosition.yPos = bottomPos;
-	aVertex->vertexPosition.zPos = 0.0f;
+	coordPoint.x = leftPos;
+	coordPoint.y = bottomPos;
+	coordPoint.z = 0.0;
+	//aVertex = new VisualVertex(leftPos, bottomPos, 0.0, black);
+	//aVertex = new VisualVertex(coordPoint, black);
+	aVertex = new VisualVertex(coordPoint);
+	/*
+	aVertex->vertexPosition.coord.x = leftPos;
+	aVertex->vertexPosition.coord.y = bottomPos;
+	aVertex->vertexPosition.coord.z = 0.0f;
 	aVertex->vertexColor.r = 0.0f;
 	aVertex->vertexColor.g = 0.0f;
 	aVertex->vertexColor.b = 0.0f;
 	aVertex->vertexColor.a = 1.0f;
+	*/
 	progressMeterOutlineVertices.push_back(aVertex);
 
-	aVertex = new Vertex;
-	aVertex->vertexPosition.xPos = rightPos;
-	aVertex->vertexPosition.yPos = bottomPos;
-	aVertex->vertexPosition.zPos = 0.0f;
+	coordPoint.x = rightPos;
+	coordPoint.y = bottomPos;
+	coordPoint.z = 0.0;
+	//aVertex = new VisualVertex(rightPos, bottomPos, 0.0, black);
+	//aVertex = new VisualVertex(coordPoint, black);
+	aVertex = new VisualVertex(coordPoint);
+	/*
+	aVertex->vertexPosition.coord.x = rightPos;
+	aVertex->vertexPosition.coord.y = bottomPos;
+	aVertex->vertexPosition.coord.z = 0.0f;
 	aVertex->vertexColor.r = 0.0f;
 	aVertex->vertexColor.g = 0.0f;
 	aVertex->vertexColor.b = 0.0f;
 	aVertex->vertexColor.a = 1.0f;
+	*/
 	progressMeterOutlineVertices.push_back(aVertex);
 
-	aVertex = new Vertex;
-	aVertex->vertexPosition.xPos = rightPos;
-	aVertex->vertexPosition.yPos = topPos;
-	aVertex->vertexPosition.zPos = 0.0f;
+	coordPoint.x = rightPos;
+	coordPoint.y = topPos;
+	coordPoint.z = 0.0;
+	//aVertex = new VisualVertex(rightPos, topPos, 0.0, black);
+	//aVertex = new VisualVertex(coordPoint, black);
+	aVertex = new VisualVertex(coordPoint);
+	/*
+	aVertex->vertexPosition.coord.x = rightPos;
+	aVertex->vertexPosition.coord.y = topPos;
+	aVertex->vertexPosition.coord.z = 0.0f;
 	aVertex->vertexColor.r = 0.0f;
 	aVertex->vertexColor.g = 0.0f;
 	aVertex->vertexColor.b = 0.0f;
 	aVertex->vertexColor.a = 1.0f;
+	*/
 	progressMeterOutlineVertices.push_back(aVertex);
 
-	aVertex = new Vertex;
-	aVertex->vertexPosition.xPos = leftPos;
-	aVertex->vertexPosition.yPos = topPos;
-	aVertex->vertexPosition.zPos = 0.0f;
+	coordPoint.x = leftPos;
+	coordPoint.y = topPos;
+	coordPoint.z = 0.0;
+	//aVertex = new VisualVertex(leftPos, topPos, 0.0, black);
+	//aVertex = new VisualVertex(coordPoint, black);
+	aVertex = new VisualVertex(coordPoint);
+	/*
+	aVertex->vertexPosition.coord.x = leftPos;
+	aVertex->vertexPosition.coord.y = topPos;
+	aVertex->vertexPosition.coord.z = 0.0f;
 	aVertex->vertexColor.r = 0.0f;
 	aVertex->vertexColor.g = 0.0f;
 	aVertex->vertexColor.b = 0.0f;
 	aVertex->vertexColor.a = 1.0f;
+	*/
 	progressMeterOutlineVertices.push_back(aVertex);
 
 }
 
 
-void ProcessMonitor::calcTrackProgressMeterVertices(const UInt32 elapsedAudioTime, const UInt32 remainingAudioTime) {
+void ProcessMonitor::calcTrackProgressMeterVertices(const uint32 elapsedAudioTime, const uint32 remainingAudioTime) {
 	double rightProgressPos;
 	
-	rightProgressPos = VisualActorGraphics::getMaxLeftCoordOfCanvas() + ((VisualActorGraphics::getMaxRightCoordOfCanvas() - VisualActorGraphics::getMaxLeftCoordOfCanvas()) * ((float)elapsedAudioTime / (float)(remainingAudioTime + elapsedAudioTime)));
+	VisualCamera aCamera;
+	aCamera.setOrthographicProjection();
+	rightProgressPos = aCamera.getMaxLeftCoord() + ((aCamera.getMaxRightCoord() - aCamera.getMaxLeftCoord()) * ((float)elapsedAudioTime / (float)(remainingAudioTime + elapsedAudioTime)));
 
-	this->progressMeterVertices[1]->vertexPosition.xPos = rightProgressPos;
-	this->progressMeterVertices[2]->vertexPosition.xPos = rightProgressPos;
+	this->progressMeterVertices[1]->vertexPosition.coord.x = rightProgressPos;
+	this->progressMeterVertices[2]->vertexPosition.coord.x = rightProgressPos;
 
 }
 

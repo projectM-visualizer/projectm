@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualGraphicsCore.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -47,7 +47,6 @@ freely, subject to the following restrictions:
 #endif
 
 
-
 using namespace VizKit;
 
 
@@ -62,8 +61,6 @@ VisualGraphicsCore::VisualGraphicsCore() {
 #if TARGET_OS_WIN
 	windowDC = NULL;
 #endif
-	canvasXOriginOffset = 0;
-	canvasYOriginOffset = 0;
 }
 
 
@@ -91,7 +88,7 @@ void VisualGraphicsCore::dispose() {
 bool VisualGraphicsCore::setupContext() {
 
 	bool success = true;
-	UInt8 errNum = 0;
+	uint8 errNum = 0;
 	char errLog[256];
 	
 #if TARGET_OS_MAC
@@ -117,13 +114,12 @@ bool VisualGraphicsCore::setupContext() {
 
 
 #if TARGET_OS_MAC
-UInt8 VisualGraphicsCore::setupAGL() {
+uint8 VisualGraphicsCore::setupAGL() {
     GLboolean ok;
-    AGLPixelFormat fmt;
     
 	GLint attrib[] = {AGL_RGBA, AGL_RED_SIZE, 8, AGL_GREEN_SIZE, 8, AGL_BLUE_SIZE, 8, AGL_ALPHA_SIZE, 8, AGL_ACCELERATED, AGL_DOUBLEBUFFER, AGL_DEPTH_SIZE, 24, AGL_CLOSEST_POLICY, AGL_NONE};
     
-    fmt = aglChoosePixelFormat(NULL, 0, attrib);
+    AGLPixelFormat fmt = aglChoosePixelFormat(NULL, 0, attrib);
 
     if (fmt == NULL) {
         return 1;
@@ -172,7 +168,7 @@ void VisualGraphicsCore::cleanupAGL() {
 #endif
 
 
-UInt16 VisualGraphicsCore::setCurrentContext() {
+uint16 VisualGraphicsCore::setCurrentContext() {
 #if TARGET_OS_MAC
 	GLboolean ok;
     ok = aglSetCurrentContext(theVisualGraphicsCore->ctx);
@@ -192,7 +188,7 @@ UInt16 VisualGraphicsCore::setCurrentContext() {
 
 #if TARGET_OS_WIN
 
-UInt8 VisualGraphicsCore::setupWGL() {
+uint8 VisualGraphicsCore::setupWGL() {
 
     PIXELFORMATDESCRIPTOR pfd;
     memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
@@ -261,7 +257,12 @@ void VisualGraphicsCore::cleanUpWGL() {
 
 
 HDC VisualGraphicsCore::getWindowDC() {
-	return theVisualGraphicsCore->windowDC;
+	if (theVisualGraphicsCore->windowDC) {
+		return theVisualGraphicsCore->windowDC;
+	} else {
+		// if the HDC has not been set yet for the visualizer, we return the HDC of the main screen
+		return GetDC(NULL);
+	}
 }
 
 #endif
@@ -280,44 +281,38 @@ GRAPHICS_DEVICE VisualGraphicsCore::getGraphicsDevicePort() {
 }
 
 
-UInt16 VisualGraphicsCore::getScreenWidth() {
-	UInt16 screenWidth;
+PixelRect VisualGraphicsCore::getScreenRect() {
+	PixelRect screenRect;
+	uint32 screenWidth;
+	uint32 screenHeight;
 #if TARGET_OS_WIN
 	screenWidth = GetSystemMetrics(SM_CXSCREEN);
-#endif
-#if TARGET_OS_MAC
-	screenWidth = (UInt16)CGDisplayPixelsWide(theVisualGraphicsCore->directDisplayId);
-#endif
-	return screenWidth;
-}
-
-
-UInt16 VisualGraphicsCore::getScreenHeight() {
-	UInt16 screenHeight;
-#if TARGET_OS_WIN
 	screenHeight = GetSystemMetrics(SM_CYSCREEN);
 #endif
 #if TARGET_OS_MAC
-	screenHeight = (UInt16)CGDisplayPixelsHigh(theVisualGraphicsCore->directDisplayId);
+	screenWidth = (uint32)CGDisplayPixelsWide(theVisualGraphicsCore->directDisplayId);
+	screenHeight = (uint32)CGDisplayPixelsHigh(theVisualGraphicsCore->directDisplayId);
 #endif
-	return screenHeight;
+	screenRect.width = screenWidth;
+	screenRect.height = screenHeight;
+	return screenRect;
 }
 
 
-UInt16 VisualGraphicsCore::getBitsPerPixelOfScreen() {
-	UInt16 bitsPerPixel;
+uint16 VisualGraphicsCore::getBitsPerPixelOfScreen() {
+	uint16 bitsPerPixel;
 #if TARGET_OS_WIN
 	bitsPerPixel = GetDeviceCaps(theVisualGraphicsCore->windowDC, BITSPIXEL);
 #endif
 #if TARGET_OS_MAC
-	bitsPerPixel = (UInt16)CGDisplayBitsPerPixel(theVisualGraphicsCore->directDisplayId);
+	bitsPerPixel = (uint16)CGDisplayBitsPerPixel(theVisualGraphicsCore->directDisplayId);
 #endif
 	return bitsPerPixel;
 }
 
 
-UInt16 VisualGraphicsCore::getRefreshRateOfScreen() {
-	UInt16 refreshRate = 0;
+uint16 VisualGraphicsCore::getRefreshRateOfScreen() {
+	uint16 refreshRate = 0;
 #if TARGET_OS_MAC
 	long refreshRateLong;
 	CFDictionaryRef displayMode;
@@ -325,7 +320,7 @@ UInt16 VisualGraphicsCore::getRefreshRateOfScreen() {
 	displayMode = CGDisplayCurrentMode(theVisualGraphicsCore->directDisplayId);
 	number = (CFNumberRef)CFDictionaryGetValue(displayMode, kCGDisplayRefreshRate);
 	CFNumberGetValue(number, kCFNumberLongType, &refreshRateLong);
-	refreshRate = (UInt16)refreshRateLong;
+	refreshRate = (uint16)refreshRateLong;
 #endif
 #if TARGET_OS_WIN
 	refreshRate = GetDeviceCaps(theVisualGraphicsCore->windowDC, VREFRESH);
@@ -334,9 +329,25 @@ UInt16 VisualGraphicsCore::getRefreshRateOfScreen() {
 }
 
 
-void VisualGraphicsCore::getCanvasSurroundingRect(::Rect* aRect) {
+void VisualGraphicsCore::finishGLDrawing() {
+    //glFinish();
+    //glFlush();
 #if TARGET_OS_MAC
-	GetPortBounds(theVisualGraphicsCore->port, aRect);
+	aglSwapBuffers(theVisualGraphicsCore->ctx);
+#endif
+#if TARGET_OS_WIN
+	SwapBuffers(theVisualGraphicsCore->windowDC);
+#endif
+}
+
+
+PixelRect VisualGraphicsCore::getCanvasSurroundingRect() {
+	PixelRect pixelSize;
+#if TARGET_OS_MAC
+	::Rect aRect;
+	GetPortBounds(theVisualGraphicsCore->port, &aRect);
+	pixelSize.width = aRect.right - aRect.left;
+	pixelSize.height = aRect.bottom - aRect.top;
 #endif
 #if TARGET_OS_WIN
 	HWND windowHandle;
@@ -348,51 +359,34 @@ void VisualGraphicsCore::getCanvasSurroundingRect(::Rect* aRect) {
 	windowHandle = theVisualGraphicsCore->port;
 	ClientToScreen(windowHandle, &aPoint);
 	GetClientRect(windowHandle, &windowRect);
-	aRect->top = (short)aPoint.y;
-	aRect->left = (short)aPoint.x;
 	
 	windowRect.bottom += aPoint.y;
 	windowRect.right += aPoint.x;
-	aRect->bottom = (short)windowRect.bottom;
-	aRect->right = (short)windowRect.right;
+	pixelSize.width = windowRect.right - aPoint.x;
+	pixelSize.height =  windowRect.bottom - aPoint.y;
 #endif
+	return pixelSize;
 }
 
 
-void VisualGraphicsCore::finishGLDrawing() {
-    glFinish();
-    glFlush();
-#if TARGET_OS_MAC
-	aglSwapBuffers(theVisualGraphicsCore->ctx);
-#endif
-#if TARGET_OS_WIN
-	SwapBuffers(theVisualGraphicsCore->windowDC);
-#endif
-}
+void VisualGraphicsCore::setViewport(const BottomLeftPositionedPixelRect& canvasRect, const bool isFullscreen) {
 
-
-void VisualGraphicsCore::setViewport(const ::Rect* const canvasRect, const ::Rect* const canvasSurroundingRect, const bool isFullscreen) {
-
-	theVisualGraphicsCore->canvasXOriginOffset = 0;
-	theVisualGraphicsCore->canvasYOriginOffset = 0;
-
+	Pixel viewportBottomLeft;
+	viewportBottomLeft.x = 0;
+	viewportBottomLeft.y = 0;
 
 #if TARGET_OS_MAC
 	GLboolean ok;
 	GLint bufferRect[4];
-	// bufferRect:
-	// the x and y window coordinates 
-	// (bottom left origin) of the buffer rectangle, 
-	// followed by its width and height.
-	bufferRect[0] = (GLint)canvasRect->left;
-	bufferRect[1] = (GLint)(canvasSurroundingRect->bottom - canvasSurroundingRect->top - canvasRect->bottom);
-	bufferRect[2] = (GLint)(canvasRect->right - canvasRect->left);
-	bufferRect[3] = (GLint)(canvasRect->bottom - canvasRect->top);
+	bufferRect[0] = (GLint)canvasRect.bottomLeftPixel.x;
+	bufferRect[1] = (GLint)canvasRect.bottomLeftPixel.y;
+	bufferRect[2] = (GLint)canvasRect.pixelRect.width;
+	bufferRect[3] = (GLint)canvasRect.pixelRect.height;
 
 	ok = GL_FALSE;
 	ok = aglEnable(theVisualGraphicsCore->ctx, AGL_BUFFER_RECT);
 	if(!ok) {
-		writeLog("unable to enable AGL_BUFFER_RECT");
+		writeLog("setViewport: unable to enable AGL_BUFFER_RECT");
 	}
 	// adjust drawing rectange
 	ok = aglSetInteger(theVisualGraphicsCore->ctx, AGL_BUFFER_RECT, bufferRect);
@@ -401,37 +395,19 @@ void VisualGraphicsCore::setViewport(const ::Rect* const canvasRect, const ::Rec
 	}
 	ok = aglUpdateContext(theVisualGraphicsCore->ctx);
 	if(!ok) {
-		writeLog("reshapeAGL: aglUpdateContext != ok");
+		writeLog("setViewport: aglUpdateContext != ok");
 	}
 #endif
-
-GLsizei viewportWidth = canvasRect->right - canvasRect->left;
-GLsizei viewportHeight = canvasRect->bottom - canvasRect->top;
 	
 #if TARGET_OS_WIN
 if (isFullscreen == true) {
-	theVisualGraphicsCore->canvasXOriginOffset = canvasRect->left;
-	theVisualGraphicsCore->canvasYOriginOffset = (canvasSurroundingRect->bottom - canvasSurroundingRect->top - canvasRect->bottom);
-	
 	glEnable(GL_SCISSOR_TEST);
-	glScissor((GLint)theVisualGraphicsCore->canvasXOriginOffset, (GLint)theVisualGraphicsCore->canvasYOriginOffset, (GLsizei)viewportWidth, (GLsizei)viewportHeight);
-	//glViewport((GLint)canvasRect->left, (GLint)(canvasSurroundingRect->bottom - canvasSurroundingRect->top - canvasRect->bottom), (GLsizei)(canvasRect->right - canvasRect->left), (GLsizei)(canvasRect->bottom - canvasRect->top));
-
+	glScissor(canvasRect.bottomLeftPixel.x, canvasRect.bottomLeftPixel.y, (GLsizei)canvasRect.pixelRect.width, (GLsizei)canvasRect.pixelRect.height);
+	viewportBottomLeft.x = canvasRect.bottomLeftPixel.x;
+	viewportBottomLeft.y = canvasRect.bottomLeftPixel.y;
 }
 #endif
 
-	GLint leftPixelPos = theVisualGraphicsCore->canvasXOriginOffset;
-	GLint bottomPixelPos = theVisualGraphicsCore->canvasYOriginOffset;
-	glViewport(leftPixelPos, bottomPixelPos, viewportWidth, viewportHeight);
+	glViewport((GLint)viewportBottomLeft.x, (GLint)viewportBottomLeft.y, (GLsizei)canvasRect.pixelRect.width, (GLsizei)canvasRect.pixelRect.height);
 
-}
-
-
-int VisualGraphicsCore::getCanvasXOriginOffset() {
-	return this->canvasXOriginOffset;
-}
-
-
-int VisualGraphicsCore::getCanvasYOriginOffset() {
-	return this->canvasYOriginOffset;
 }
