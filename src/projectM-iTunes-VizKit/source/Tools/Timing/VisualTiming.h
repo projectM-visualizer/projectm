@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualTiming.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,17 +36,15 @@ freely, subject to the following restrictions:
 #ifndef VisualTiming_h
 #define VisualTiming_h
 
+
+#include "VisualTypes.h"
 #include "VisualItemIdentifier.h"
 
 #include <map>
 #include <string>
 
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
 
 #if TARGET_OS_WIN
-#include <QT/MacTypes.h>
 #include <windows.h> // LARGE_INTEGER
 #endif
 
@@ -66,9 +64,9 @@ namespace VizKit {
 		static void dispose(void);
 		
 		/**
-		 * Stores a timestamp of the player call.
+		 * Refreshes the current timestamp.
 		 */
-		static void setTimestampOfPlayerCall(void);
+		static void update(void);
 
 		/**
 		 * Returns the number of milliseconds that have elapsed since first call of the duration item.
@@ -79,7 +77,7 @@ namespace VizKit {
 		 * @param durationName The identifier of the duration.
 		 * @return The number of milliseconds that have elapsed since first call of the duration item.
 		 */
-		static UInt32 getElapsedMilliSecsSinceReset(const char* const durationName);
+		static uint32 getElapsedMilliSecsSinceReset(const char* const durationName);
 
 		/**
 		 * Returns the number of milliseconds that have elapsed since first call of the duration item.
@@ -90,7 +88,7 @@ namespace VizKit {
 		 * @param visualDurationIdentifier The identifier of the duration.
 		 * @return The number of milliseconds that have elapsed since first call of the duration item.
 		 */
-		static UInt32 getElapsedMilliSecsSinceReset(const VisualItemIdentifier& visualDurationIdentifier);
+		static uint32 getElapsedMilliSecsSinceReset(const VisualItemIdentifier& visualDurationIdentifier);
 		
 		/**
 		 * Returns the number of milliseconds that have elapsed since the last call of the duration item.
@@ -100,7 +98,7 @@ namespace VizKit {
 		 * @param durationName The identifier of the duration.
 		 * @return The number of milliseconds that have elapsed since the last call.
 		 */
-		static UInt32 getElapsedMilliSecsSinceLastCall(const char* const durationName);
+		static uint32 getElapsedMilliSecsSinceLastCall(const char* const durationName);
 
 		/**
 		 * Returns the number of milliseconds that have elapsed since the last call of the duration item.
@@ -110,7 +108,7 @@ namespace VizKit {
 		 * @param visualDurationIdentifier The identifier of the duration.
 		 * @return The number of milliseconds that have elapsed since the last call.
 		 */
-		static UInt32 getElapsedMilliSecsSinceLastCall(const VisualItemIdentifier& visualDurationIdentifier);
+		static uint32 getElapsedMilliSecsSinceLastCall(const VisualItemIdentifier& visualDurationIdentifier);
 		
 		/**
 		 * Resets the stored timing values for this duration item.
@@ -189,10 +187,10 @@ namespace VizKit {
 
 		/** The timestamp of the current render call. */
 #if TARGET_OS_MAC
-		double timestampOfPlayerCall;
+		double currentTime;
 #endif
 #if TARGET_OS_WIN
-		LARGE_INTEGER timestampOfPlayerCall;
+		LARGE_INTEGER currentTime;
 #endif
 
 		/** VisualTiming is a singleton class. Pointer to private instance is handled internally. */
@@ -206,7 +204,7 @@ namespace VizKit {
 		/** A string representing date and time (YYYYMMDDHHMISS). */
 		char dateTimeStr[32];
 
-		/** The constructor.\ VisualTiming is a singleton class.\ The constructor is private.\ New instance of class can only be created internally. */
+		/** The constructor. VisualTiming is a singleton class. The constructor is private. New instance of class can only be created internally. */
 		VisualTiming();
 
 		/**

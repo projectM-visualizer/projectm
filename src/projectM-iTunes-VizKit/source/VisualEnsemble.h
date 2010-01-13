@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualEnsemble.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,16 +36,9 @@ freely, subject to the following restrictions:
 #ifndef VisualEnsemble_h
 #define VisualEnsemble_h
 
+#include "VisualTypes.h"
 #include "VisualActor.h"
 #include "VisualNotificationKey.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
 
 #include <vector>
 #include <map>
@@ -54,8 +47,8 @@ freely, subject to the following restrictions:
 namespace VizKit {
 
 	/**
-	 * The group of all actors. Only the VisualStageControl creates its own VisualEnsemble and communicates with it.
-	 * The VisualEnsemble sends VisualNotifications to VisualActors that are registered as observers.
+	 * The VisualEnsemble is a group of all actors. The one and only VisualEnsemble of VizKit is owned by the VisualStageControl.
+	 * With its main method showEnsemble(), the VisualEnsemble calls each VisualActor to show(). The VisualEnsemble also passes VisualNotifications to VisualActors that are registered as observers.
 	 */
 
 	class VisualEnsemble {
@@ -83,6 +76,14 @@ namespace VizKit {
 		VisualEnsemble& operator=(const VisualEnsemble& other);
 
 		/**
+		 * Shows the show of the ensemble.
+		 * The show method of all active actors is called.
+		 * @param visualPlayerState Read-only access to the VisualPlayerState.
+		 * @return 0 for no error. 1 if error occured.
+		 */
+		void showEnsemble(const VisualPlayerState& visualPlayerState);
+
+		/**
 		 * Adds a VisualActor to the VisualEnsemble.
 		 * @param aVisualActor A pointer to a VisualActor.
 		 * @remarks VisualEnsemble stores the pointer to the VisualActor and deletes the memory when VisualEnsemble is destructed.
@@ -90,63 +91,32 @@ namespace VizKit {
 		void addEnsembleMember(VisualActor* aVisualActor);
 
 		/**
-		 * Shows the show of the ensemble.
-		 * The show method of all active actors is called.
-		 * @param visualPlayerState Read-only access to the VisualPlayerState.
-		 * @return 0 for no error. 1 if error occured.
-		 */
-		UInt8 showEnsemble(const VisualPlayerState& visualPlayerState);
-
-		/**
-		 * Resets the index of the internal iterator.
-		 * The VisualEnsemble iterates over all actors. 
-		 * This functions reset the internal pointer to the first actor.
-		 */
-		void resetVisualActorIterIndex(void);
-
-		/**
-		 * Resets the index of the internal iterator.
-		 * The VisualEnsemble iterates over all actors. 
-		 * This functions reset the internal pointer to the first actor.
-		 * @return The next VisualActor. NULL if there is no next actor.
-		 */
-		VisualActor* getNextVisualActor(void);
-
-		/**
-		 * The VisualEnsemble receives notifications that are passed to the actors of the ensemble.
-		 * Notifications ensure loose connections between external processes and the VisualEnsemble.
-		 * External processes can package and send a notification to the VisualEnsemble.
-		 * The VisualEnsemble processes the notification and each registered actor receives the notification (message/package).
-		 * @param aNotification A notification object.
-		 */
-		void dispatchNotification(const VisualNotification& aNotification);
-
-		/**
-		 * Any actor can register for an event.
-		 * Each registered actor (observer) receives a notification of the requested kind.
+		 * Registers a VisualActor for a specific notification (event/message).
 		 * @param aVisualActor A visual actor.
 		 * @param aNotificationKey An enum that denotes a notification.
 		 */
 		void registerObserverForNotification(VisualActor* aVisualActor, const VisualNotificationKey aNotificationKey);
-
+		
 		/**
-		 * Any actor that can register for an event can also be removed from the list of observers.
+		 * Removes a VisualActor from the list of observers for a specific notification (event/message).
 		 * @param aVisualActor A visual actor.
 		 * @param aNotificationKey An enum that denotes a notification.
 		 */
 		void removeObserverOfNotification(VisualActor* aVisualActor, const VisualNotificationKey aNotificationKey);
-
+		
 		/**
-		 * Returns the state of the actor expressed as visualActorState.
-		 * @param aVisualActorName The name of the visual actor.
-		 * @return The state of the actor expressed as visualActorState.
+		 * The VisualEnsemble receives notifications that are passed to the actors of the ensemble.
+		 * Notifications ensure loose connections between external processes and the VisualEnsemble.
+		 * External processes can package and send a notification to the VisualEnsemble.
+		 * The VisualEnsemble processes the notification and each registered actor receives the notification (event/message).
+		 * @param aNotification A notification object.
 		 */
-		VisualActorState getStateOfVisualActor(const char* const aVisualActorName);
-
+		void dispatchNotification(VisualNotification& aNotification);
+		
 		/**
 		 * Returns a pointer to a VisualActor whose name is aVisualActorName.
 		 * @param aVisualActorName The name of the visual actor.
-		 * @return A pointer to a VisualActor whose name is aVisualActorName.
+		 * @return A pointer to a VisualActor whose name is aVisualActorName or NULL if none is found.
 		 */	
 		VisualActor* getVisualActorByName(const char* const aVisualActorName);
 
@@ -159,7 +129,7 @@ namespace VizKit {
 		void copy(const VisualEnsemble& other);
 		
 		/** Current index of internal iterator. */
-		UInt16 visualActorIterIndex;
+		uint16 visualActorIterIndex;
 		
 		/** VisualEnsembleActors are collected as a vector of pointers to VisualActors. */
 		typedef std::vector<VisualActor*> VisualEnsembleActors;
@@ -170,7 +140,7 @@ namespace VizKit {
 		/** The VisualEnsembleActorsIterator is an iterator of the VisualEnsembleActors. */
 		typedef VisualEnsembleActors::iterator VisualEnsembleActorsIterator;
 		
-		/** The ObserverMap is a multimap of events/notifications and actors. */
+		/** The ObserverMap is a multimap of notifications (event types) and actors. */
 		typedef std::multimap<VisualNotificationKey, VisualActor*> ObserverMap;
 		
 		/** Multimap of all actors of the ensemble that are registered as observers. */

@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: AboutPane.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -33,13 +33,7 @@ freely, subject to the following restrictions:
 
  ***************************************************************************/
 
-
-#if !defined(AFX_ABOUTPANE_H__CDA85D4E_75D4_41D3_9856_C8BBE9366B33__INCLUDED_)
-#define AFX_ABOUTPANE_H__CDA85D4E_75D4_41D3_9856_C8BBE9366B33__INCLUDED_
-
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 
 #include "resource.h"
@@ -64,7 +58,7 @@ namespace VizKit {
 		~CAboutPane();
 
 		//{{AFX_DATA(CAboutPane)
-//		enum { IDD = IDD_DIALOG2 };
+		enum { IDD = IDD_DIALOG2 };
 			//
 		//}}AFX_DATA
 
@@ -95,6 +89,5 @@ namespace VizKit {
 }
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ fügt unmittelbar vor der vorhergehenden Zeile zusätzliche Deklarationen ein.
 
-#endif // AFX_ABOUTPANE_H__CDA85D4E_75D4_41D3_9856_C8BBE9366B33__INCLUDED_
+

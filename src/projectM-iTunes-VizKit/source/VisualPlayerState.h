@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualPlayerState.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -37,20 +37,14 @@ freely, subject to the following restrictions:
 #define VisualPlayerState_h
 
 
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualTypes.h"
 
 
 namespace VizKit {
 
 	/**
 	 * Constants for different modes of audio play.
-	 * @remarks The audioPlayState can be bitwise AND'ed with kAudioIsPlaying to evaluate the simple fact if audio is playing or not.
+	 * @remarks To query whether audio is playing or not, AudioPlayState can be bitwise AND'ed with kAudioIsPlaying.
 	 */
 	typedef enum {
 		kAudioIsNotPlaying = 0x0, /**< 00000000 - No audio is playing. */
@@ -61,15 +55,15 @@ namespace VizKit {
 	} AudioPlayState;
 
 	/**
-	 * Different modes of showing.\ Used by var showMode of VisualPlayerState.
-	 * @remarks The showMode can be bitwise AND'ed with kIsShowing to evaluate the simple fact if the visualizer is showing or not.
+	 * Different modes of showing. Used by var showMode of VisualPlayerState.
+	 * @remarks To query whether the visualizer is showing or not, PlayerShowMode can be bitwise AND'ed with kIsShowing.
 	 */
 	typedef enum {
 		kIsNotShowing = 0x0, /**< 00000000 - Default; the visualizer is not showing. */
-		kErrorState = 0x80, /**< 10000000 - The visualizer is in error state.\ Therefore it is showing an error message or nothing. */
+		kErrorState = 0x80, /**< 10000000 - The visualizer is in error state. Therefore it is showing an error message or nothing. */
 		kIsShowing = 0x1, /**< 00000001 - The visualizer is showing. */
-		kIsShowingInWindow = 0x1, /**< 00000001 - The visualizer is showing.\ And it is showing in a window. */
-		kIsShowingInFullScreen = 0x3 /**< 00000011 - The visualizer is showing.\ And it is showing fullscreen. */
+		kIsShowingInWindow = 0x1, /**< 00000001 - The visualizer is showing. And it is showing in a window. */
+		kIsShowingInFullScreen = 0x3 /**< 00000011 - The visualizer is showing. And it is showing fullscreen. */
 	} PlayerShowMode;
 
 	/**
@@ -80,7 +74,7 @@ namespace VizKit {
 	public:
 
 		/**
-		 * Constructs a VisualPlayerState.\ The VisualPlayerState acts as a singleton.\ Returns a pointer to the initialised VisualPlayerState.
+		 * Constructs a VisualPlayerState. The VisualPlayerState acts as a singleton. Returns a pointer to the initialised VisualPlayerState.
 		 * @return A pointer to the singleton instance.
 		 */
 		static VisualPlayerState* getInstance(void);
@@ -109,10 +103,10 @@ namespace VizKit {
 		PlayerShowMode getPlayerShowMode(void) const;
 		
 		/**
-		 * Returns the number of milliseconds of the current audio track that have been passed.\ 0 if no time value is available.\ The player position is returned.
+		 * Returns the number of milliseconds of the current audio track that have been passed. 0 if no time value is available. The player position is returned.
 		 * @return The number of milliseconds of the current audio track that have been passed.
 		 */
-		UInt32 getElapsedAudioTime(void) const;
+		uint32 getElapsedAudioTime(void) const;
 
 		/**
 		 * Answers the question whether the remaining time of the current audio track is known.
@@ -122,14 +116,14 @@ namespace VizKit {
 		bool remainingAudioTimeIsKnown(void) const;
 
 		/**
-		 * Returns the number of milliseconds of the current audio track that are waiting to be played.\ 0 if no time value is available.
+		 * Returns the number of milliseconds of the current audio track that are waiting to be played. 0 if no time value is available.
 		 * @return The number of milliseconds of the current audio track that are waiting to be played.
 		 */
-		UInt32 getRemainingAudioTime(void) const;
+		uint32 getRemainingAudioTime(void) const;
 
 		/**
-		 * Returns true if the fadeOut event should be sent because the remaining time is less than kAudioPlayReachedFadeOutTimeBeforeEndOfTrackEvt.
-		 * @return True if the fadeOut event should be sent because the remaining time is less than kAudioPlayReachedFadeOutTimeBeforeEndOfTrackEvt.
+		 * Returns true if the fadeOut event should be sent because the remaining time is less than kAudioPlayReachedFadeOutTimeEvt.
+		 * @return True if the fadeOut event should be sent because the remaining time is less than kAudioPlayReachedFadeOutTimeEvt.
 		 */
 		bool fadeOutEventShouldBeSent(void);
 
@@ -140,7 +134,7 @@ namespace VizKit {
 		 * If audioPlayStopTime > 0 then audio is not playing and audioPlayStartTime == 0.
 		 * @return The actual number of milliseconds that have passed since the last audio play start event.
 		 */
-		UInt32 getElapsedAudioPlayStartTime(void) const;
+		uint32 getElapsedAudioPlayStartTime(void) const;
 
 		/**
 		 * Returns the actual number of milliseconds that have passed since the last audio play stop event.
@@ -149,13 +143,13 @@ namespace VizKit {
 		 * If audioPlayStopTime > 0 then audio is not playing and audioPlayStartTime == 0.
 		 * @return The actual number of milliseconds that have passed since the last audio play stop event.
 		 */
-		UInt32 getElapsedAudioPlayStopTime(void) const;
+		uint32 getElapsedAudioPlayStopTime(void) const;
 
 		/**
 		 * Returns true if player is in debug mode, false otherwise.
 		 * Useful for temporarily and dynamically activated debug mode that can be checked against in different places.
 		 * @return True if player is in debug mode, false otherwise.
-		 * @remarks The debug mode does not change anything fundamentally.\ It is only a flag that can be set and asked for.
+		 * @remarks The debug mode does not change anything fundamentally. It is only a flag that can be set and asked for.
 		 */
 		bool isInDebugMode(void) const;
 
@@ -173,25 +167,25 @@ namespace VizKit {
 
 		/**
 		 * Sets the debug mode.
-		 * @param aDebugMode The debug mode.
+		 * @param requestedDebugMode The debug mode. True turns debug mode on, false turns it off.
 		 */
-		void setDebugMode(bool aDebugMode);
+		void setDebugMode(bool requestedDebugMode);
 
 		/**
 		 * The the play position of the current track is set.
 		 * @param positionInMS The play position in milliseconds.
 		 */	
-		void setTrackPlayPositionInMS(const UInt32 positionInMS);
+		void setTrackPlayPositionInMS(const uint32 positionInMS);
 
 		/**
-		 * Static helper function that converts an audioPlayState to the string.\ Possibly useful for debugging or tracing purposes.
+		 * Static helper function that converts an audioPlayState to the string. Possibly useful for debugging or tracing purposes.
 		 * @param anAudioPlayState An audioPlayState.
 		 * @param outString The character string value of the AudioPlayState enum value.
 		 */
 		static void convertAudioPlayStateToString(const AudioPlayState anAudioPlayState, char* outString);
 
 		/**
-		 * Static helper function that converts an showMode to the string.\ Possibly useful for debugging or tracing purposes.
+		 * Static helper function that converts an showMode to the string. Possibly useful for debugging or tracing purposes.
 		 * @param aShowMode A showMode.
 		 * @param outString The character string value of the ShowMode enum value.
 		 */
@@ -199,10 +193,10 @@ namespace VizKit {
 
 	private:
 
-		/** The constructor.\ VisualPlayerState is a singleton class.\ The constructor is private.\ New instance of class can only be created internally. */
+		/** The constructor. VisualPlayerState is a singleton class. The constructor is private. New instance of class can only be created internally. */
 		VisualPlayerState();
 		
-		/** The destructor.\ VisualPlayerState is a singleton class.\ The destructor is private.\ Instance of class can only be destructed internally. */
+		/** The destructor. VisualPlayerState is a singleton class. The destructor is private. Instance of class can only be destructed internally. */
 		~VisualPlayerState();
 
 		/**
@@ -235,7 +229,7 @@ namespace VizKit {
 		bool fadeOutEventHasBeenSent;
 
 		/** The current play position of the current track (in milliseconds). */
-		UInt32 trackPlayPositionInMS;
+		uint32 trackPlayPositionInMS;
 		
 		/** True if player is in debug mode, false otherwise. */
 		bool debugMode;

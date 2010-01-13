@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: TemplateAction.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -35,34 +35,86 @@ freely, subject to the following restrictions:
 
 #include "TemplateAction.h"
 #include "VisualActorGraphics.h"
-
-
+#include "VisualColorTools.h"
+#include "VisualAsset.h"
+#include "VisualCamera.h"
+#include "VisualImage.h"
+#include "VisualStageBox.h"
+#include "VisualTextureContainer.h"
+#include "VisualAnimationPackage.h"
 
 using namespace VizKit;
 
 
 TemplateAction::TemplateAction() {
-	VisualActorGraphics::createCheckTexture(textureNumber, textureWidth, textureHeight, imageWidth, imageHeight);
+
+	templateAsset = new VisualAsset;
+	testAsset = new VisualAsset;
+
+	uint32 width = 256;
+	uint32 height = 256;
+	uint32* argbPixels = VisualColorTools::createARGBCheckPixels(width, height);
+	
+	VisualImage* anImage = VisualImage::createWithARGBPixelData(argbPixels, width, height);
+	
+	free(argbPixels);
+	argbPixels = NULL;
+
+	VisualCamera aCamera;
+	aCamera.setPerspectiveProjection(3.0);
+	//aCamera.setOrthographicProjection();
+	templateAsset->setCamera(aCamera);
+
+	templateAsset->setImage(*anImage);
+	delete anImage;
+	
+	VisualStageBox* templateAssetBox = templateAsset->getBox();
+	
+	//templateAsset->setDebugMode(true);
+	
+	
+	templateAssetBox->initializeVertexChain(vertexChainId);
+
+	VisualVertex* aVertex = NULL;
+	aVertex = templateAssetBox->createVertex(0.0, 0.0, 1.0, 0.0, 1.0);
+	templateAssetBox->addVertexToChain(vertexChainId, aVertex);
+
+	aVertex = templateAssetBox->createVertex(0.0, 0.0, 0.0, 0.0, 0.0);
+	templateAssetBox->addVertexToChain(vertexChainId, aVertex);
+
+	aVertex = templateAssetBox->createVertex(1.0, 0.0, 0.0, 1.0, 0.0);
+	templateAssetBox->addVertexToChain(vertexChainId, aVertex);
+
+	aVertex = templateAssetBox->createVertex(1.0, 0.0, 1.0, 1.0, 1.0);
+	templateAssetBox->addVertexToChain(vertexChainId, aVertex);
+
+	VisualStagePosition testAssetPosition = this->testAsset->getPosition();
+	testAssetPosition.horizontalAlignment = kRightAligned;
+	this->testAsset->setPosition(testAssetPosition);
 }
 
 
 TemplateAction::~TemplateAction() {
-	if (textureNumber) {
-		VisualActorGraphics::deleteTextures(1, &textureNumber);		
-	}
+	delete templateAsset;
 }
 
 
-void TemplateAction::prepareTemplateAction() {
-	VisualActorGraphics::setPerspectiveProjection(3.0f);
+void TemplateAction::setImage(const VisualImage& anImage) {
+	testAsset->setImage(anImage);
+}
+
+
+void TemplateAction::removeImage() {
+	testAsset->removeImage();
 }
 
 
 void TemplateAction::show() {
-	VisualActorGraphics::drawPerspectiveSquare(textureNumber);
-}
-
-
-void TemplateAction::finishTemplateAction() {
-	VisualActorGraphics::setOrthographicProjection();
+	//VisualActorGraphics::translateMatrix(0.0, 0.0, -3.0);
+	
+	templateAsset->draw();
+	VisualActorGraphics::drawProjectionMetrics(templateAsset->getCamera());
+	if (testAsset->hasImage()) {
+		testAsset->draw();
+	}
 }

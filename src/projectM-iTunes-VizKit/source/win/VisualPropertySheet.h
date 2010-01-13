@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualPropertySheet.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -33,19 +33,16 @@ freely, subject to the following restrictions:
 
  ***************************************************************************/
 
-#if !defined(AFX_VISUALPROPERTYSHEET_H__6297EFE6_8738_4964_8897_123AE8AFFDF3__INCLUDED_)
-#define AFX_VISUALPROPERTYSHEET_H__6297EFE6_8738_4964_8897_123AE8AFFDF3__INCLUDED_
 
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 
 #include "resource.h"
 #include <StdAfx.h>
 
 #include "AboutPane.h"
-#include "DisplayResolutionPane.h"
+#include "OptionsPane.h"
+#include "UpdatePane.h"
 
 
 namespace VizKit {
@@ -119,14 +116,15 @@ namespace VizKit {
 		/** About pane. */
 		CAboutPane mAboutPane;
 
-		/** Display resolution pane. */
-		CDisplayResolutionPane mDisplayResolutionPane;
-		
+		/** Options pane. */
+		COptionsPane mOptionsPane;
+
+		/** Check for update pane. */
+		CUpdatePane mUpdatePane;
+
 	};
 
 }
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ fügt unmittelbar vor der vorhergehenden Zeile zusätzliche Deklarationen ein.
 
-#endif // AFX_VISUALPROPERTYSHEET_H__6297EFE6_8738_4964_8897_123AE8AFFDF3__INCLUDED_

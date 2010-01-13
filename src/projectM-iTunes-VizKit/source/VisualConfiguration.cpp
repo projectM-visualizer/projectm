@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualConfiguration.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -34,15 +34,54 @@ freely, subject to the following restrictions:
  ***************************************************************************/
 
 #include "VisualConfiguration.h"
-#include "VisualDataStore.h"
+#include "VisualErrorHandling.h"
 
+#if TARGET_OS_MAC
+#include <CoreFoundation/CFString.h> // CFStringRef
+#endif
 
+#include <string> // strlen
 
 using namespace VizKit;
 
 
-const char* const VisualConfiguration::kVisualPluginName = "VizKit";
-const char* const VisualConfiguration::kVisualPluginShowName = "VizKit";
+
+// ========= INDIVIDUAL VISUALIZER IDENTIFICATION CONFIGURATION (start) ========= //
+
+const char* const VisualConfiguration::visualizerPluginIdentifierName = "VizKit";
+const char* const VisualConfiguration::visualizerShowName = "VizKit";
+
+void VisualConfiguration::prepareVisualizerShowNameUnicode() {
+	
+#if TARGET_OS_WIN
+	wchar_t* visualizerShowNameUnicode_wchar = L"VizKit"; // utf-16
+	this->visualizerShowNameUnicode = (uint16*)visualizerShowNameUnicode_wchar;
+#endif
+
+#if TARGET_OS_MAC
+/*
+	// if you malloc the show name, do not forget to free the allocated heap memory in VisualConfiguration's destructor
+	
+	char* visualizerShowNameUnicodePrep = (char*)malloc(10 * sizeof(char));
+	visualizerShowNameUnicodePrep[0] = 'V';
+	visualizerShowNameUnicodePrep[1] = 'i';
+	visualizerShowNameUnicodePrep[2] = 'z';
+	visualizerShowNameUnicodePrep[3] = 0x00E3; // KATAKANA LETTER ZU (Unicode: 30BA, UTF8: E3 82 BA)
+	visualizerShowNameUnicodePrep[4] = 0x0082;
+	visualizerShowNameUnicodePrep[5] = 0x00BA;
+	visualizerShowNameUnicodePrep[6] = 'K';
+	visualizerShowNameUnicodePrep[7] = 'i';
+	visualizerShowNameUnicodePrep[8] = 't';
+	visualizerShowNameUnicodePrep[9] = '\0';
+	
+	this->visualizerShowNameUnicode = (uint8*)visualizerShowNameUnicodePrep;
+*/
+	this->visualizerShowNameUnicode = (uint8*)VisualConfiguration::visualizerShowName; // defaults to utf8 being the same as the ascii name
+
+#endif
+}
+
+
 #if TARGET_OS_MAC
 const char* const VisualConfiguration::kVisualPluginDomainIdentifier = "de.imagomat.vizkit";
 #endif
@@ -50,278 +89,97 @@ const char* const VisualConfiguration::kVisualPluginDomainIdentifier = "de.imago
 const char* const VisualConfiguration::kVisualPluginDomainIdentifier = "Imagomat";
 #endif
 
+const uint8 VisualConfiguration::kMajorReleaseNumber = 2;
+
+const uint8 VisualConfiguration::kMinorReleaseNumber = 3;
+
+const uint8 VisualConfiguration::kReleaseRevisionNumber = 0;
 
 
-void VisualConfiguration::convertPreferenceKeyToString(const PreferenceKey aKey, char* outString) {
-	char* messageString;
-	switch (aKey) {
-		case kFadeInTimeOnPlayInMS:
-			messageString = "kFadeInTimeOnPlayInMS";
-			break;
-		case kFadeInTimeOnResumeInMS:
-			messageString = "kFadeInTimeOnResumeInMS";
-			break;
-		case kFadeOutTimeBeforeEndOfTrackInMS:
-			messageString = "kFadeOutTimeBeforeEndOfTrackInMS";
-			break;
-		case kFadeOutTimeOnStopInMS:
-			messageString = "kFadeOutTimeOnStopInMS";
-			break;
-		case kFadeOutTimeOnPauseInMS:
-			messageString = "kFadeOutTimeOnPauseInMS";
-			break;
-		case kTrackInfoFont:
-			messageString = "kTrackInfoFont";
-			break;
-		case kTrackInfoFontSize:
-			messageString = "kTrackInfoFontSize";
-			break;
-		case kTrackInfoFontColorRedFloat:
-			messageString = "kTrackInfoFontColorRedFloat";
-			break;
-		case kTrackInfoFontColorBlueFloat:
-			messageString = "kTrackInfoFontColorBlueFloat";
-			break;
-		case kTrackInfoFontColorAlphaFloat:
-			messageString = "kTrackInfoFontColorAlphaFloat";
-			break;
-		case kTrackInfoTextureColorTopLeftRed:
-			messageString = "kTrackInfoTextureColorTopLeftRed";
-			break;
-		case kTrackInfoTextureColorTopLeftGreen:
-			messageString = "kTrackInfoTextureColorTopLeftGreen";
-			break;
-		case kTrackInfoTextureColorTopLeftBlue:
-			messageString = "kTrackInfoTextureColorTopLeftBlue";
-			break;
-		case kTrackInfoTextureColorTopLeftAlpha:
-			messageString = "kTrackInfoTextureColorTopLeftAlpha";
-			break;
-		case kTrackInfoTextureColorBottomLeftRed:
-			messageString = "kTrackInfoTextureColorBottomLeftRed";
-			break;
-		case kTrackInfoTextureColorBottomLeftGreen:
-			messageString = "kTrackInfoTextureColorBottomLeftGreen";
-			break;
-		case kTrackInfoTextureColorBottomLeftBlue:
-			messageString = "kTrackInfoTextureColorBottomLeftBlue";
-			break;
-		case kTrackInfoTextureColorBottomLeftAlpha:
-			messageString = "kTrackInfoTextureColorBottomLeftAlpha";
-			break;
-		case kTrackInfoTextureColorBottomRightRed:
-			messageString = "kTrackInfoTextureColorBottomRightRed";
-			break;
-		case kTrackInfoTextureColorBottomRightGreen:
-			messageString = "kTrackInfoTextureColorBottomRightGreen";
-			break;
-		case kTrackInfoTextureColorBottomRightBlue:
-			messageString = "kTrackInfoTextureColorBottomRightBlue";
-			break;
-		case kTrackInfoTextureColorBottomRightAlpha:
-			messageString = "kTrackInfoTextureColorBottomRightAlpha";
-			break;
-		case kTrackInfoTextureColorTopRightRed:
-			messageString = "kTrackInfoTextureColorTopRightRed";
-			break;
-		case kTrackInfoTextureColorTopRightGreen:
-			messageString = "kTrackInfoTextureColorTopRightGreen";
-			break;
-		case kTrackInfoTextureColorTopRightBlue:
-			messageString = "kTrackInfoTextureColorTopRightBlue";
-			break;
-		case kTrackInfoTextureColorTopRightAlpha:
-			messageString = "kTrackInfoTextureColorTopRightAlpha";
-			break;
-		case kTrackLyricsFont:
-			messageString = "kTrackLyricsFont";
-			break;
-		case kTrackLyricsFontSize:
-			messageString = "kTrackLyricsFontSize";
-			break;
-		case kTrackLyricsFontColorRedFloat:
-			messageString = "kTrackLyricsFontColorRedFloat";
-			break;
-		case kTrackLyricsFontColorGreenFloat:
-			messageString = "kTrackLyricsFontColorGreenFloat";
-			break;
-		case kTrackLyricsFontColorBlueFloat:
-			messageString = "kTrackLyricsFontColorBlueFloat";
-			break;
-		case kTrackLyricsFontColorAlphaFloat:
-			messageString = "kTrackLyricsFontColorAlphaFloat";
-			break;
-		case kTrackLyricsTextureColorTopLeftRed:
-			messageString = "kTrackLyricsTextureColorTopLeftRed";
-			break;
-		case kTrackLyricsTextureColorTopLeftGreen:
-			messageString = "kTrackLyricsTextureColorTopLeftGreen";
-			break;
-		case kTrackLyricsTextureColorTopLeftBlue:
-			messageString = "kTrackLyricsTextureColorTopLeftBlue";
-			break;
-		case kTrackLyricsTextureColorTopLeftAlpha:
-			messageString = "kTrackLyricsTextureColorTopLeftAlpha";
-			break;
-		case kTrackLyricsTextureColorBottomLeftRed:
-			messageString = "kTrackLyricsTextureColorBottomLeftRed";
-			break;
-		case kTrackLyricsTextureColorBottomLeftGreen:
-			messageString = "kTrackLyricsTextureColorBottomLeftGreen";
-			break;
-		case kTrackLyricsTextureColorBottomLeftBlue:
-			messageString = "kTrackLyricsTextureColorBottomLeftBlue";
-			break;
-		case kTrackLyricsTextureColorBottomLeftAlpha:
-			messageString = "kTrackLyricsTextureColorBottomLeftAlpha";
-			break;
-		case kTrackLyricsTextureColorBottomRightRed:
-			messageString = "kTrackLyricsTextureColorBottomRightRed";
-			break;
-		case kTrackLyricsTextureColorBottomRightGreen:
-			messageString = "kTrackLyricsTextureColorBottomRightGreen";
-			break;
-		case kTrackLyricsTextureColorBottomRightBlue:
-			messageString = "kTrackLyricsTextureColorBottomRightBlue";
-			break;
-		case kTrackLyricsTextureColorBottomRightAlpha:
-			messageString = "kTrackLyricsTextureColorBottomRightAlpha";
-			break;
-		case kTrackLyricsTextureColorTopRightRed:
-			messageString = "kTrackLyricsTextureColorTopRightRed";
-			break;
-		case kTrackLyricsTextureColorTopRightGreen:
-			messageString = "kTrackLyricsTextureColorTopRightGreen";
-			break;
-		case kTrackLyricsTextureColorTopRightBlue:
-			messageString = "kTrackLyricsTextureColorTopRightBlue";
-			break;
-		case kTrackLyricsTextureColorTopRightAlpha:
-			messageString = "kTrackLyricsTextureColorTopRightAlpha";
-			break;
-		case kTrackLyricsAlignment:
-			messageString = "kTrackLyricsAlignment";
-			break;
-		case kFullscreenWidth:
-			messageString = "kFullscreenWidth";
-			break;
-		case kFullscreenHeight:
-			messageString = "kFullscreenHeight";
-			break;
-		case kFullscreenBitsPerPixel:
-			messageString = "kFullscreenBitsPerPixel";
-			break;
-		case kFullscreenRefreshRate:
-			messageString = "kFullscreenRefreshRate";
-			break;
-		case kPreferencePane:
-			messageString = "kPreferencePane";
-			break;
-		case kBackgroundColorRed:
-			messageString = "kBackgroundColorRed";
-			break;
-		case kBackgroundColorGreen:
-			messageString = "kBackgroundColorGreen";
-			break;
-		case kBackgroundColorBlue:
-			messageString = "kBackgroundColorBlue";
-			break;
-		case kBackgroundColorAlpha:
-			messageString = "kBackgroundColorAlpha";
-			break;
-		case kTrackInfoTextureHeight:
-			messageString = "kTrackInfoTextureHeight";
-			break;
-		case kLyricsTextureIsAvailable:
-			messageString = "kLyricsTextureIsAvailable";
-			break;
-		default:
-			messageString = "unknownNotificationKey";
-	}
-	strcpy(outString, messageString);
+const char* const VisualConfiguration::kCurrentVersionInformationURL = "http://www.imagomat.de/vizkit/download/current_version.txt";
+
+
+// ========= INDIVIDUAL VISUALIZER IDENTIFICATION CONFIGURATION (end) ========= //
+
+
+VisualConfiguration* VisualConfiguration::theVisualConfiguration = NULL;
+
+
+VisualConfiguration::VisualConfiguration() {
+	unicodeShowName = NULL;
+	prepareVisualizerShowNameUnicode();
 }
 
 
-void VisualConfiguration::setDefaultPreferences() {
-	
-	// Factory Preferences
-	VisualDataStore::setDefaultPreferenceValueInt(VisualConfiguration::kFadeInTimeOnPlayInMS, 5000);
-	VisualDataStore::setDefaultPreferenceValueInt(VisualConfiguration::kFadeInTimeOnResumeInMS, 2000);
-	VisualDataStore::setDefaultPreferenceValueInt(VisualConfiguration::kFadeOutTimeBeforeEndOfTrackInMS, 5000);
-	VisualDataStore::setDefaultPreferenceValueInt(VisualConfiguration::kFadeOutTimeOnStopInMS, 5000);
-	VisualDataStore::setDefaultPreferenceValueInt(VisualConfiguration::kFadeOutTimeOnPauseInMS, 2000);
-
-	VisualDataStore::setDefaultPreferenceValueChar(VisualConfiguration::kTrackInfoFont, "Devroye");
-	VisualDataStore::setDefaultPreferenceValueInt(VisualConfiguration::kTrackInfoFontSize, 48);
-
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoFontColorRedFloat, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoFontColorGreenFloat, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoFontColorBlueFloat, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoFontColorAlphaFloat, 1.0f);
-
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopLeftRed, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopLeftGreen, 0.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopLeftBlue, 0.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopLeftAlpha, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomLeftRed, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomLeftGreen, 0.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomLeftBlue, 0.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomLeftAlpha, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomRightRed, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomRightGreen, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomRightBlue, 0.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomRightAlpha, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopRightRed, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopRightGreen, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopRightBlue, 0.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopRightAlpha, 1.0f);
-
+VisualConfiguration::~VisualConfiguration() {
 #if TARGET_OS_MAC
-	VisualDataStore::setDefaultPreferenceValueChar(VisualConfiguration::kTrackLyricsFont, "Lucida Grande");
+	if (theVisualConfiguration->unicodeShowName != NULL) {
+		free(theVisualConfiguration->unicodeShowName);
+	}
+	//if (theVisualConfiguration->visualizerShowNameUnicode != NULL) {
+		//free(theVisualConfiguration->visualizerShowNameUnicode);
+	//}
+#endif
+}
+
+
+VisualConfiguration* VisualConfiguration::getInstance() {
+    if (theVisualConfiguration == NULL) {
+		theVisualConfiguration = new VisualConfiguration;
+    }
+	if (theVisualConfiguration == NULL) {
+		writeLog("ERR: init theVisualConfiguration failed");
+	}
+	return theVisualConfiguration;
+}
+
+
+void VisualConfiguration::dispose() {
+	if (theVisualConfiguration != NULL) {
+		delete theVisualConfiguration;
+		theVisualConfiguration = NULL;
+	}
+}
+
+
+
+uint16* VisualConfiguration::getVisualizerShowNameUnicode(uint32& numberOfCharactersOfVisualizerShowNameUnicode) {
+	theVisualConfiguration = VisualConfiguration::getInstance();
+#if TARGET_OS_MAC
+	Boolean isExternalRepresentation = false;
+	CFStringRef unicodeNameStr = CFStringCreateWithBytes(kCFAllocatorDefault, (const UInt8*)theVisualConfiguration->visualizerShowNameUnicode, strlen((char*)theVisualConfiguration->visualizerShowNameUnicode), kCFStringEncodingUTF8, isExternalRepresentation);
+	numberOfCharactersOfVisualizerShowNameUnicode = CFStringGetLength(unicodeNameStr);
+	theVisualConfiguration->unicodeShowName = (UniChar*)malloc(numberOfCharactersOfVisualizerShowNameUnicode * sizeof(UniChar));
+	CFStringGetCharacters(unicodeNameStr, CFRangeMake(0, numberOfCharactersOfVisualizerShowNameUnicode), theVisualConfiguration->unicodeShowName);
+	CFRelease(unicodeNameStr);
 #endif
 #if TARGET_OS_WIN
-	VisualDataStore::setDefaultPreferenceValueChar(VisualConfiguration::kTrackLyricsFont, "Tahoma");
+	theVisualConfiguration->unicodeShowName = theVisualConfiguration->visualizerShowNameUnicode;
+	numberOfCharactersOfVisualizerShowNameUnicode = wcslen((wchar_t*)theVisualConfiguration->visualizerShowNameUnicode);
 #endif
-	VisualDataStore::setDefaultPreferenceValueInt(VisualConfiguration::kTrackLyricsFontSize, 18);
+	return theVisualConfiguration->unicodeShowName;
+}
+		
 
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsFontColorRedFloat, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsFontColorGreenFloat, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsFontColorBlueFloat, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsFontColorAlphaFloat, 1.0f);
-
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopLeftRed, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopLeftGreen, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopLeftBlue, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopLeftAlpha, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomLeftRed, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomLeftGreen, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomLeftBlue, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomLeftAlpha, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomRightRed, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomRightGreen, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomRightBlue, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomRightAlpha, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopRightRed, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopRightGreen, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopRightBlue, 1.0f);
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopRightAlpha, 1.0f);
+uint8 VisualConfiguration::getBCD(uint8 decimalNumber) {
 	
-	VisualDataStore::setDefaultPreferenceValueChar(VisualConfiguration::kTrackLyricsAlignment, "center");
+	if (decimalNumber > 99) return getBCD(99);
+	
+	uint8 bcd = 16 * (decimalNumber / 10) + (decimalNumber%10);
+	return bcd;
+}
 
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kBackgroundColorRed, (12.0f / 255.0f));
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kBackgroundColorGreen, (9.0f / 255.0f));
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kBackgroundColorBlue, (172.0f / 255.0f));
-	VisualDataStore::setDefaultPreferenceValueFloat(VisualConfiguration::kBackgroundColorAlpha, 1.0f);
 
-	VisualDataStore::setDefaultPreferenceValueInt(VisualConfiguration::kFullscreenWidth, 0);
-	VisualDataStore::setDefaultPreferenceValueInt(VisualConfiguration::kFullscreenHeight, 0);
-	VisualDataStore::setDefaultPreferenceValueInt(VisualConfiguration::kFullscreenBitsPerPixel, 32);
-	VisualDataStore::setDefaultPreferenceValueInt(VisualConfiguration::kFullscreenRefreshRate, 0);
-#if TARGET_OS_MAC
-	VisualDataStore::setDefaultPreferenceValueInt(VisualConfiguration::kPreferencePane, 1);
-#endif
-#if TARGET_OS_WIN
-	VisualDataStore::setDefaultPreferenceValueInt(VisualConfiguration::kPreferencePane, 0);
-#endif
+uint8 VisualConfiguration::getMajorReleaseNumberAsBCD(void) {
+	return VisualConfiguration::getBCD(VisualConfiguration::kMajorReleaseNumber);
+}
 
+
+uint8 VisualConfiguration::getMinorReleaseNumberAsBCD(void) {
+	return VisualConfiguration::getBCD(VisualConfiguration::kMinorReleaseNumber);
+}
+
+
+uint8 VisualConfiguration::getReleaseRevisionNumber(void) {
+	return VisualConfiguration::kReleaseRevisionNumber;
 }

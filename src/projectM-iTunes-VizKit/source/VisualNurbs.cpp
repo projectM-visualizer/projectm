@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualNurbs.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -43,7 +43,22 @@ freely, subject to the following restrictions:
 using namespace VizKit;
 
 
-VisualNurbs::VisualNurbs(UInt8 sKnotsCount, float* sKnotsPointer, UInt8 tKnotsCount, float* tKnotsPointer, UInt16 s_Stride, UInt16 t_Stride, UInt16 s_Order, UInt16 t_Order) {
+#ifdef __cplusplus
+extern "C" {
+#endif
+	GLvoid nurbsError(GLenum errorCode);
+#ifdef __cplusplus
+}
+#endif
+
+GLvoid nurbsError(GLenum errorCode) {
+	const GLubyte* estring;
+	estring = gluErrorString(errorCode);
+	writeLog((char*)estring);
+}
+
+
+VisualNurbs::VisualNurbs(uint8 sKnotsCount, float* sKnotsPointer, uint8 tKnotsCount, float* tKnotsPointer, uint16 s_Stride, uint16 t_Stride, uint16 s_Order, uint16 t_Order) {
 
 	sNumKnots = sKnotsCount;
 	sKnots = (GLfloat*)malloc(sKnotsCount * sizeof(GLfloat));
@@ -93,21 +108,24 @@ VisualNurbs::VisualNurbs(const VisualNurbs& other) {
 
 
 VisualNurbs& VisualNurbs::operator=(const VisualNurbs& other) {
-	if (this != &other) {
-		if (this->sKnots != NULL) {
-			free(this->sKnots);
-		}
-		if (this->tKnots != NULL) {
-			free(this->tKnots);
-		}
-		if (this->nurbsObject) {
-			gluDeleteNurbsRenderer(this->nurbsObject);
-		}
-		if (this->controlPoints != NULL) {
-			free(this->controlPoints);
-		}
-		this->copy(other);
+	
+	if (this == &other) return *this;
+	
+	if (this->sKnots != NULL) {
+		free(this->sKnots);
 	}
+	if (this->tKnots != NULL) {
+		free(this->tKnots);
+	}
+	if (this->nurbsObject) {
+		gluDeleteNurbsRenderer(this->nurbsObject);
+	}
+	if (this->controlPoints != NULL) {
+		free(this->controlPoints);
+	}
+
+	this->copy(other);
+
 	return *this;
 }
 
@@ -140,7 +158,7 @@ void VisualNurbs::copy(const VisualNurbs& other) {
 	this->nurbsObject = gluNewNurbsRenderer();
 	
 	this->controlPointsVisibility = other.controlPointsVisibility;
-	UInt16 numberOfControlPoints = (this->sNumKnots - this->sOrder) * (this->tNumKnots - this->tOrder);
+	uint16 numberOfControlPoints = (this->sNumKnots - this->sOrder) * (this->tNumKnots - this->tOrder);
 	this->controlPoints = (GLfloat*)malloc(numberOfControlPoints * sizeof(GLfloat));
 	for (int i = 0; i < numberOfControlPoints; i++) {
 		this->controlPoints[i] = other.controlPoints[i];
@@ -167,6 +185,7 @@ VisualNurbs::NurbsTexture::NurbsTexture() {
 	texturePoints = NULL;
 }
 
+
 VisualNurbs::NurbsTexture::~NurbsTexture() {
 	free(sKnots);
 	free(tKnots);
@@ -182,18 +201,21 @@ VisualNurbs::NurbsTexture::NurbsTexture(const NurbsTexture& other) {
 
 
 VisualNurbs::NurbsTexture& VisualNurbs::NurbsTexture::operator=(const VisualNurbs::NurbsTexture& other) {
-	if (this != &other) {
-		if (this->sKnots != NULL) {
-			free(this->sKnots);
-		}
-		if (this->tKnots != NULL) {
-			free(this->tKnots);
-		}
-		if (this->texturePoints != NULL) {
-			free(this->texturePoints);
-		}
-		this->copy(other);
+	
+	if (this == &other) return *this;
+	
+	if (this->sKnots != NULL) {
+		free(this->sKnots);
 	}
+	if (this->tKnots != NULL) {
+		free(this->tKnots);
+	}
+	if (this->texturePoints != NULL) {
+		free(this->texturePoints);
+	}
+	
+	this->copy(other);
+
 	return *this;
 }
 
@@ -223,7 +245,7 @@ void VisualNurbs::NurbsTexture::copy(const VisualNurbs::NurbsTexture& other) {
 	this->tOrder = other.tOrder;
 	this->textureName = other.textureName;
 	this->canUseRectExtension = other.canUseRectExtension;
-	UInt16 numberOfTextureControlPoints = (this->sNumKnots - this->sOrder) * (this->tNumKnots - this->tOrder);
+	uint16 numberOfTextureControlPoints = (this->sNumKnots - this->sOrder) * (this->tNumKnots - this->tOrder);
 	this->texturePoints = (GLfloat*)malloc(numberOfTextureControlPoints * sizeof(GLfloat));
 	for (int i = 0; i < numberOfTextureControlPoints; i++) {
 		this->texturePoints[i] = other.texturePoints[i];
@@ -231,7 +253,7 @@ void VisualNurbs::NurbsTexture::copy(const VisualNurbs::NurbsTexture& other) {
 }
 
 
-void VisualNurbs::setNurbsProperty(UInt32 property, float value) {
+void VisualNurbs::setNurbsProperty(uint32 property, float value) {
 
 /*
 	//gluNurbsCallback(this->coverNurb, GLU_ERROR, nurbsError);
@@ -260,20 +282,19 @@ void VisualNurbs::setControlPointsVisibility(Visibility visibility) {
 }
 
 
-void VisualNurbs::setControlPoints(UInt16 numberOfControlPoints, float* someControlPoints) {
-	
-	if (this->controlPoints) {
+void VisualNurbs::setControlPoints(uint16 numberOfControlPoints, double* someControlPoints) {
+	if (this->controlPoints != NULL) {
 		free(this->controlPoints);
 		this->controlPoints = NULL;
 	}
 	this->controlPoints = (GLfloat*)malloc(numberOfControlPoints * sizeof(GLfloat));
 	for (int i = 0; i < numberOfControlPoints; i++) {
-		this->controlPoints[i] = someControlPoints[i];
+		this->controlPoints[i] = (GLfloat)(someControlPoints[i]);
 	}
 }
 
 
-void VisualNurbs::setTexture(UInt8 sKnotsCount, float* sKnotsPointer, UInt8 tKnotsCount, float* tKnotsPointer, UInt16 s_Stride, UInt16 t_Stride, UInt16 s_Order, UInt16 t_Order, UInt32 aTextureName, bool canUseRectExtensionBool) {
+void VisualNurbs::setTexture(uint8 sKnotsCount, float* sKnotsPointer, uint8 tKnotsCount, float* tKnotsPointer, uint16 s_Stride, uint16 t_Stride, uint16 s_Order, uint16 t_Order, uint32 aTextureName, bool canUseRectExtensionBool) {
 
 	if (this->nurbsTexture != NULL) {
 		delete this->nurbsTexture;
@@ -302,10 +323,10 @@ void VisualNurbs::setTexture(UInt8 sKnotsCount, float* sKnotsPointer, UInt8 tKno
 }
 
 
-void VisualNurbs::setTextureControlPoints(UInt16 numberOfTextureControlPoints, float* someTextureControlPoints) {
+void VisualNurbs::setTextureControlPoints(uint16 numberOfTextureControlPoints, float* someTextureControlPoints) {
 
-	if (this->nurbsTexture) {
-		if (this->nurbsTexture->texturePoints) {
+	if (this->nurbsTexture != NULL) {
+		if (this->nurbsTexture->texturePoints != NULL) {
 			free(this->nurbsTexture->texturePoints);
 			this->nurbsTexture->texturePoints = NULL;
 		}
@@ -314,7 +335,9 @@ void VisualNurbs::setTextureControlPoints(UInt16 numberOfTextureControlPoints, f
 			this->nurbsTexture->texturePoints[i] = someTextureControlPoints[i];
 		}
 	} else {
-		writeLog("ERR: setTextureControlPoints: NurbsTexture not found");
+		char errLog[256];
+		sprintf(errLog, "no NurbsTexture available in file: %s (line: %d) [%s])", __FILE__, __LINE__, __FUNCTION__);
+		writeLog(errLog);
 	}
 }
 
@@ -373,7 +396,7 @@ void VisualNurbs::draw() {
 	if (this->controlPointsVisibility == kVisible) {
 		int cnt = 0;
 		glPointSize(3.0f);
-		glColor3f(1.0f, 1.0f, 0.0f);
+		glColor3d(1.0, 1.0, 0.0);
 		glBegin(GL_POINTS);
 		int i, j;
 		for (i = 0; i < 8; i++) {

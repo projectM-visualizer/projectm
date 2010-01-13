@@ -1,76 +1,51 @@
-/*
- * Project: VizKit
- * Version: 1.9
- 
- * Date: 20070503
- * File: iTunesVisualAPI.h
- *
- */
-
-
-/*
-	File:		iTunesVisualAPI.h
-	
-	Copyright: 	© Copyright 2003 Apple Computer, Inc. All rights reserved.
-	
-	Disclaimer:	IMPORTANT:  This Apple software is supplied to you by Apple Computer, Inc.
-				("Apple") in consideration of your agreement to the following terms, and your
-				use, installation, modification or redistribution of this Apple software
-				constitutes acceptance of these terms.  If you do not agree with these terms,
-				please do not use, install, modify or redistribute this Apple software.
-
-				In consideration of your agreement to abide by the following terms, and subject
-				to these terms, Apple grants you a personal, non-exclusive license, under Appleís
-				copyrights in this original Apple software (the "Apple Software"), to use,
-				reproduce, modify and redistribute the Apple Software, with or without
-				modifications, in source and/or binary forms; provided that if you redistribute
-				the Apple Software in its entirety and without modifications, you must retain
-				this notice and the following text and disclaimers in all such redistributions of
-				the Apple Software.  Neither the name, trademarks, service marks or logos of
-				Apple Computer, Inc. may be used to endorse or promote products derived from the
-				Apple Software without specific prior written permission from Apple.  Except as
-				expressly stated in this notice, no other rights or licenses, express or implied,
-				are granted by Apple herein, including but not limited to any patent rights that
-				may be infringed by your derivative works or by other works in which the Apple
-				Software may be incorporated.
-
-				The Apple Software is provided by Apple on an "AS IS" basis.  APPLE MAKES NO
-				WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED
-				WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A PARTICULAR
-				PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND OPERATION ALONE OR IN
-				COMBINATION WITH YOUR PRODUCTS.
-
-				IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL OR
-				CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
-				GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-				ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION, MODIFICATION AND/OR DISTRIBUTION
-				OF THE APPLE SOFTWARE, HOWEVER CAUSED AND WHETHER UNDER THEORY OF CONTRACT, TORT
-				(INCLUDING NEGLIGENCE), STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN
-				ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-				
-*/
-
+//
+// File:       iTunesVisualAPI.h
+//
+// Abstract:   part of iTunes Visual SDK
+//
+// Version:    1.2
+//
+// Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple Inc. ( "Apple" )
+//             in consideration of your agreement to the following terms, and your use,
+//             installation, modification or redistribution of this Apple software
+//             constitutes acceptance of these terms.  If you do not agree with these
+//             terms, please do not use, install, modify or redistribute this Apple
+//             software.
+//
+//             In consideration of your agreement to abide by the following terms, and
+//             subject to these terms, Apple grants you a personal, non - exclusive
+//             license, under Apple's copyrights in this original Apple software ( the
+//             "Apple Software" ), to use, reproduce, modify and redistribute the Apple
+//             Software, with or without modifications, in source and / or binary forms;
+//             provided that if you redistribute the Apple Software in its entirety and
+//             without modifications, you must retain this notice and the following text
+//             and disclaimers in all such redistributions of the Apple Software. Neither
+//             the name, trademarks, service marks or logos of Apple Inc. may be used to
+//             endorse or promote products derived from the Apple Software without specific
+//             prior written permission from Apple.  Except as expressly stated in this
+//             notice, no other rights or licenses, express or implied, are granted by
+//             Apple herein, including but not limited to any patent rights that may be
+//             infringed by your derivative works or by other works in which the Apple
+//             Software may be incorporated.
+//
+//             The Apple Software is provided by Apple on an "AS IS" basis.  APPLE MAKES NO
+//             WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED
+//             WARRANTIES OF NON - INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A
+//             PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND OPERATION
+//             ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
+//
+//             IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL OR
+//             CONSEQUENTIAL DAMAGES ( INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+//             SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+//             INTERRUPTION ) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION, MODIFICATION
+//             AND / OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED AND WHETHER
+//             UNDER THEORY OF CONTRACT, TORT ( INCLUDING NEGLIGENCE ), STRICT LIABILITY OR
+//             OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// Copyright ( C ) 2000-2007 Apple Inc. All Rights Reserved.
+//
 #ifndef ITUNESVISUALAPI_H_
 #define ITUNESVISUALAPI_H_
-
-/*
-	modified for cross-platform (mac/win) operation
-	20040509 (HW)
-*/
-
-
-#ifndef GRAPHICS_DEVICE
-	#if TARGET_OS_WIN
-		#define GRAPHICS_DEVICE	HWND
-	#endif
-	#if TARGET_OS_MAC
-		#define GRAPHICS_DEVICE	CGrafPtr
-	#endif
-#endif
-
-#if TARGET_OS_WIN
-	#include <QT/Sound.h>
-#endif
 
 #include "iTunesAPI.h"
 
@@ -147,7 +122,7 @@ typedef struct ITStreamInfoV1 ITStreamInfoV1;
 
 enum {
 	kITVisualPluginMajorMessageVersion = 10,
-	kITVisualPluginMinorMessageVersion = 5
+	kITVisualPluginMinorMessageVersion = 7
 };
 
 enum {
@@ -173,7 +148,7 @@ enum {
 	kVisualPluginUpdateMessage			= 'vupd',	/* Update the window */
 	
 	kVisualPluginPlayMessage			= 'vply',	/* Playing a track */
-	kVisualPluginChangeTrackMessage		= 'ctrk',	/* Change track (for CD continuous play) */
+	kVisualPluginChangeTrackMessage		= 'ctrk',	/* Change track (for CD continuous play) or info about currently playing track has changed */
 	kVisualPluginStopMessage			= 'vstp',	/* Stopping a track */
 	kVisualPluginSetPositionMessage		= 'setp',	/* Setting the position of a track */
 	
@@ -191,6 +166,7 @@ enum {
 
 enum {
 	kVisualMaxDataChannels		= 2,
+
 	kVisualNumWaveformEntries	= 512,
 	kVisualNumSpectrumEntries	= 512
 };
@@ -200,6 +176,13 @@ enum {
 	
 	kWindowIsFullScreen = (1L << 0),
 	kWindowIsStretched	= (1L << 1)
+};
+
+enum {
+	/* Initialize options */
+	
+	kVisualDoesNotNeedResolutionSwitch		= (1L << 0),		/* Added in 7.0 */
+	kVisualDoesNotNeedErase				 	= (1L << 1)			/* Added in 7.0 */
 };
 
 struct RenderVisualData {
@@ -225,39 +208,32 @@ struct VisualPluginInitMessage {
 typedef struct VisualPluginInitMessage VisualPluginInitMessage;
 
 struct VisualPluginShowWindowMessage {
-#if TARGET_OS_WIN
-	GRAPHICS_DEVICE					window;					/* Input */
-#endif
-#if TARGET_OS_MAC
-	GRAPHICS_DEVICE					port;					/* Input */
-#endif
+	GRAPHICS_DEVICE					GRAPHICS_DEVICE_NAME;	/* Input */
 	Rect							drawRect;				/* Input */
 	OptionBits						options;				/* Input */
+	Rect							totalVisualizerRect;	/* Input -- Added in 7.0 */
 };
 typedef struct VisualPluginShowWindowMessage VisualPluginShowWindowMessage;
 
 struct VisualPluginSetWindowMessage {
-#if TARGET_OS_WIN
-	GRAPHICS_DEVICE					window;					/* Input */
-#endif
-#if TARGET_OS_MAC
-	GRAPHICS_DEVICE					port;					/* Input */
-#endif
+	GRAPHICS_DEVICE					GRAPHICS_DEVICE_NAME;	/* Input */
 	Rect							drawRect;				/* Input */
 	OptionBits						options;				/* Input */
+	Rect							totalVisualizerRect;	/* Input -- Added in 7.0 */
 };
 typedef struct VisualPluginSetWindowMessage VisualPluginSetWindowMessage;
 
 struct VisualPluginPlayMessage {
 	ITTrackInfoV1 *					trackInfo;				/* Input */
 	ITStreamInfoV1 *				streamInfo;				/* Input */
-	SInt32                          volume;					/* Input */
+	SInt32							volume;					/* Input */
 	
-	UInt32                          bitRate;				/* Input */
+	UInt32							bitRate;				/* Input */
 	
-	SoundComponentData				soundFormat;			/* Input */
+	SoundComponentData				oldSoundFormat;			/* Input -- deprecated in 7.1 */
 	ITTrackInfo *					trackInfoUnicode;		/* Input */
 	ITStreamInfo *					streamInfoUnicode;		/* Input */
+	AudioStreamBasicDescription		audioFormat;			/* Input -- added in 7.1 */
 };
 typedef struct VisualPluginPlayMessage VisualPluginPlayMessage;
 
@@ -281,25 +257,29 @@ struct VisualPluginSetPositionMessage {
 };
 typedef struct VisualPluginSetPositionMessage VisualPluginSetPositionMessage;
 
+//#if TARGET_OS_MAC // uncommented by VizKit (20071216) to allow event handling by visualizer on Windows
+struct VisualPluginEventMessage {
+	EventRecord *					event;					/* Input */
+};
+//#endif
+typedef struct VisualPluginEventMessage VisualPluginEventMessage;
+
 enum {
 	kVisualDisplayDepthChanged 	= 1 << 0,					/* the display's depth has changed */
 	kVisualDisplayRectChanged	= 1 << 1,					/* the display's location changed */
-	kVisualWindowMovedMoved 	= 1 << 2					/* the window has moved location */	
+	kVisualWindowMovedMoved 	= 1 << 2,					/* the window has moved location */	
+	kVisualDisplayConfigChanged	= 1 << 3					/* something else about the display changed */
 };
 
-
-    
-struct VisualPluginEventMessage {
-    EventRecord *					event;					/* Input */
-};
-typedef struct VisualPluginEventMessage VisualPluginEventMessage;
-
-#if TARGET_OS_WIN
 struct VisualPluginDisplayChangedMessage {
-        UInt32							flags;		/* Input */
+	UInt32							flags;		/* Input */
 };
 typedef struct VisualPluginDisplayChangedMessage VisualPluginDisplayChangedMessage;
-#endif
+
+struct VisualPluginIdleMessage {
+	UInt32							timeBetweenDataInMS;	/* Output -- added in 4.8 */
+};
+typedef struct VisualPluginIdleMessage VisualPluginIdleMessage;
 
 struct VisualPluginMessageInfo {
 	union {
@@ -310,10 +290,11 @@ struct VisualPluginMessageInfo {
 		VisualPluginChangeTrackMessage		changeTrackMessage;
 		VisualPluginRenderMessage			renderMessage;
 		VisualPluginSetPositionMessage		setPositionMessage;
-        VisualPluginEventMessage			eventMessage;
-#if TARGET_OS_WIN
+//#if TARGET_OS_MAC // uncommented by VizKit (20071216) to allow event handling by visualizer on Windows
+		VisualPluginEventMessage			eventMessage;
+//#endif
 		VisualPluginDisplayChangedMessage	displayChangedMessage;
-#endif
+		VisualPluginIdleMessage				idleMessage;
 	} u;
 };
 typedef struct VisualPluginMessageInfo VisualPluginMessageInfo;

@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualStringStyle.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -41,15 +41,55 @@ using namespace VizKit;
 
 VisualStringStyle::VisualStringStyle() {
 	fontNameStr[0] = '\0';
-	fontSize = 0.0f;
-	fontColor.r = 0.0f;
-	fontColor.g = 0.0f;
-	fontColor.b = 0.0f;
+#if TARGET_OS_MAC
+	strcpy(fontNameStr, "Lucida Grande");
+#endif
+#if TARGET_OS_WIN
+	strcpy(fontNameStr, "Tahoma");
+#endif
+	fontSize = 16.0;
+	fontColor.red = 1.0;
+	fontColor.green = 1.0;
+	fontColor.blue = 1.0;
+	fontColor.alpha = 1.0;
+	fontColor.r = 1.0;
+	fontColor.g = 1.0;
+	fontColor.b = 1.0;
+	fontColor.a = 1.0;
 	horizontalAlignment = kLeftAligned;
 }
 
+
 VisualStringStyle::~VisualStringStyle() {
-	
+	// NULL
 }
 
 
+VisualStringStyle::VisualStringStyle(const VisualStringStyle& other) : VisualObject(other) {
+	copy(other);
+}
+
+
+VisualStringStyle& VisualStringStyle::operator=(const VisualStringStyle& other) {
+	
+	if (this == &other) return *this;
+	
+	VisualObject::operator=(other);
+	
+	this->copy(other);
+	
+	return *this;
+}
+
+
+VisualStringStyle* VisualStringStyle::clone(void) const {
+	return new VisualStringStyle(*this);
+}
+
+
+void VisualStringStyle::copy(const VisualStringStyle& other) {
+	strcpy(this->fontNameStr, other.fontNameStr);
+	this->fontSize = other.fontSize;
+	this->fontColor = other.fontColor;
+	this->horizontalAlignment = other.horizontalAlignment;
+}

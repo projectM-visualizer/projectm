@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualInterpolation.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -38,7 +38,7 @@ freely, subject to the following restrictions:
 
 #include <math.h>
 #include <stdio.h>
-
+#include <stdlib.h> // RAND_MAX
 
 
 #ifndef M_PI
@@ -49,9 +49,11 @@ freely, subject to the following restrictions:
 using namespace VizKit;
 
 
+const double VisualInterpolation::startValue = 0.0;
+const double VisualInterpolation::endValue = 1.0;
+
+
 VisualInterpolation::VisualInterpolation(InterpolationType anInterpolationType) {
-	startValue = 0.0;
-	endValue = 1.0;
 	calcDistance();
 	interpolationType = anInterpolationType;
 }
@@ -76,42 +78,17 @@ VisualInterpolation& VisualInterpolation::operator=(const VisualInterpolation& o
 
 
 void VisualInterpolation::copy(const VisualInterpolation& other) {
-	this->startValue = other.startValue;
-	this->endValue = other.endValue;
 	this->distance = other.distance;
 	this->interpolationType = other.interpolationType;
 }
 
 
-void VisualInterpolation::setStartValue(double aStartValue) {
-	this->startValue = aStartValue;
-	this->calcDistance();
-}
-
-		
-void VisualInterpolation::setEndValue(double anEndValue) {
-	this->endValue = anEndValue;
-	this->calcDistance();
-}
-
-
-double VisualInterpolation::getStartValue() {
-	return this->startValue;
-}
-		
-
-double VisualInterpolation::getEndValue() {
-	return this->endValue;
-}
-
-
-double VisualInterpolation::getValueAtPosition(double position) {
+double VisualInterpolation::getValueAtPosition(double position) const {
 	double valueAtPosition = 0.0;
 	if (position < 0.0 || position > 1.0) {
-		char errStr[64];
-		printf("%f\n", position);
-		sprintf(errStr, "invalid position %f in getValueAtPosition() of VisualInterpolation", position);
-		writeLog(errStr);
+		char errLog[64];
+		sprintf(errLog, "invalid position %f in file: %s (line: %d) [%s])", position, __FILE__, __LINE__, __FUNCTION__);
+		writeLog(errLog);
 		return valueAtPosition;
 	}
 	if (interpolationType == kSinusoidalInterpolation) {
@@ -141,4 +118,9 @@ void VisualInterpolation::calcDistance() {
 	} else {
 		this->distance = 0.0;
 	}
+}
+
+
+double VisualInterpolation::getRandomValue() {
+	return ((double)rand() / (double)RAND_MAX);
 }

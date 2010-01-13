@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: TrackTitle.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,15 +36,11 @@ freely, subject to the following restrictions:
 #ifndef TrackTitle_h
 #define TrackTitle_h
 
+
+#include "VisualTypes.h"
 #include "VisualAsset.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualItemIdentifier.h"
+#include "VisualStringStyle.h"
 
 
 namespace VizKit {
@@ -75,34 +71,39 @@ namespace VizKit {
 		void show(void);
 
 		/**
-		 * Creates the texture of the track title.
-		 * @param trackName The track title string.
-		 * @return Error state as SInt32 OSStatus.
+		 * Returns the current string style of the track info string.
+		 * @return The current string style of the track info string.
 		 */
-		OSStatus makeTextureOfTrackTitle(const VisualString& trackName);
+		VisualStringStyle getTrackInfoStringStyle(void);
+
+		/**
+		 * Sets the image with the track info string.
+		 * @param styledTrackInfoStringImage The image with the track info string.
+		 */
+		void setTrackInfoImage(VisualImage& styledTrackInfoStringImage);
 
 		/**
 		 * Returns the height of the track title texture in pixels.
 		 * @return The height of the track title texture in pixels.
 		 */
-		UInt16 getTrackInfoTextureHeightInPixels(void);
+		uint16 getTrackInfoTextureHeightInPixels(void);
 
 		/**
 		 * Calculates the screen position of the track title texture.
 		 */
-		void calcPositionOnScreen(void);
+		void reshape(void);
 
 		/**
 		 * Starts fading in the texture of the track title.
 		 * @param durationInMilliseconds The duration of the animation measured in milliseconds.
 		 */
-		void fadeIn(UInt32 durationInMilliseconds);
+		void fadeIn(uint32 durationInMilliseconds);
 
 		/**
 		 * Starts fading out the texture of the track title.
 		 * @param durationInMilliseconds The duration of the animation measured in milliseconds.
 		 */
-		void fadeOut(UInt32 durationInMilliseconds);
+		void fadeOut(uint32 durationInMilliseconds);
 
 		/**
 		 * Starts pulsating the texture (fade in / fade out) of the track title.
@@ -114,10 +115,18 @@ namespace VizKit {
 		 */
 		void clear(void);
 
+		/**
+		 * Adds a move animation to the asset.
+		 */
+		void addMoveAnimation(void);
+
 	private:
 
 		/** The asset of the track info action (contains texture and position too). */
 		VisualAsset trackInfoAsset;
+		
+		/** Identifier of the vertex chain (the vertices used for display of the track info string texture). */
+		VisualItemIdentifier vertexChainId;
 		
 	};
 

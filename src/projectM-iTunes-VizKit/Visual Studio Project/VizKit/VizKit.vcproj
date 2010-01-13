@@ -50,8 +50,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\..\WinLibs\QuickTime SDK\;.\..\..\..\WinLibs\QuickTime SDK\QT;.\..\..\source\;.\..\..\source\iTunesVisualAPI\;.\..\..\source\Actors\;.\..\..\source\Actions\;.\..\..\source\AudioLab\;.\..\..\source\Tools\;.\..\..\source\Tools\Timing\;.\..\..\source\win\;..\..\..\projectM-engine"
-				PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;_CRT_SECURE_NO_DEPRECATE=1;"
+				AdditionalIncludeDirectories=".\..\..\..\;.\..\..\..\QuickTime\CIncludes;.\..\..\source\;.\..\..\source\iTunesVisualAPI\;.\..\..\source\Actors\;.\..\..\source\Actions\;.\..\..\source\AudioLab\;.\..\..\source\Tools\;.\..\..\source\Tools\Timing\;.\..\..\source\win\"
+				PreprocessorDefinitions="TARGET_OS_WIN;DEBUG;WIN32;_DEBUG;_WINDOWS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;_CRT_SECURE_NO_DEPRECATE=1;_SCL_SECURE_NO_WARNINGS=1;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				RuntimeTypeInfo="true"
@@ -74,20 +74,19 @@
 				Name="VCResourceCompilerTool"
 				PreprocessorDefinitions="_DEBUG"
 				Culture="1031"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\hwichman\My Documents\diverse\QT\Libraries&quot;"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Nafxcwd.lib opengl32.lib glu32.lib qtmlClient.lib pthreadVC2.lib"
+				AdditionalDependencies="Nafxcwd.lib Libcmtd.lib gdiplus.lib opengl32.lib glu32.lib wininet.lib qtmlClient.lib"
 				ShowProgress="0"
 				OutputFile="../build/debug/VizKit.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="&quot;.\..\..\..\WinLibs\QuickTime SDK\Libraries&quot;;C:\Users\pete\Desktop\trunk\src\WinLibs\pthreads\lib"
-				IgnoreDefaultLibraryNames="Nafxcwd.lib;"
+				AdditionalLibraryDirectories=".\..\..\..\QuickTime\Libraries"
+				IgnoreDefaultLibraryNames="Nafxcwd.lib;Libcmtd.lib"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/VizKit.pdb"
 				SubSystem="2"
@@ -152,8 +151,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="4"
-				AdditionalIncludeDirectories="..\..\..\WinLibs\QuickTime SDK\;.\..\..\..\WinLibs\QuickTime SDK\QT;.\..\..\source\;.\..\..\source\iTunesVisualAPI\;.\..\..\source\Actors\;.\..\..\source\Actions\;.\..\..\source\AudioLab\;.\..\..\source\Tools\;.\..\..\source\Tools\Timing\;.\..\..\source\win\;..\..\..\projectM-engine"
-				PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;_CRT_SECURE_NO_DEPRECATE=1;"
+				AdditionalIncludeDirectories=".\..\..\..\;.\..\..\..\QuickTime\CIncludes;.\..\..\source\;.\..\..\source\iTunesVisualAPI\;.\..\..\source\Actors\;.\..\..\source\Actions\;.\..\..\source\AudioLab\;.\..\..\source\Tools\;.\..\..\source\Tools\Timing\;.\..\..\source\win\"
+				PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;_CRT_SECURE_NO_DEPRECATE=1;_SECURE_SCL=0"
 				RuntimeLibrary="0"
 				RuntimeTypeInfo="true"
 				UsePrecompiledHeader="0"
@@ -180,11 +179,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="Nafxcw.lib Libcmt.lib opengl32.lib glu32.lib qtmlClient.lib"
+				AdditionalDependencies="Nafxcw.lib Libcmt.lib gdiplus.lib opengl32.lib glu32.lib wininet.lib qtmlClient.lib"
 				OutputFile="../build/release/VizKit.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories=".\..\..\..\WinLibs\QuickTime SDK\Libraries"
+				AdditionalLibraryDirectories=".\..\..\..\QuickTime\Libraries"
 				IgnoreDefaultLibraryNames="Nafxcw.lib;Libcmt.lib"
 				ProgramDatabaseFile=".\Release/VizKit.pdb"
 				SubSystem="2"
@@ -217,14 +216,10 @@
 		</Configuration>
 	</Configurations>
 	<References>
-		<ProjectReference
-			ReferencedProjectIdentifier="{31B91091-431A-4842-8682-2A04B51C980A}"
-			RelativePathToProject="..\..\..\projectM-engine\libprojectM.vcproj"
-		/>
 	</References>
 	<Files>
 		<Filter
-			Name="Ressourcendateien"
+			Name="Resources"
 			Filter="ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 			>
 			<File
@@ -244,7 +239,6 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Documents and Settings\hwichman\My Documents\VizKit\source\win"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -253,7 +247,6 @@
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						AdditionalIncludeDirectories="\Documents and Settings\hwichman\My Documents\VizKit\source\win"
 					/>
 				</FileConfiguration>
 			</File>
@@ -269,26 +262,6 @@
 				<File
 					RelativePath="..\..\source\Actors\BeatlightActor.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\Actors\BeatlightActor.h"
@@ -297,26 +270,6 @@
 				<File
 					RelativePath="..\..\source\Actors\CoverArtActor.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\Actors\CoverArtActor.h"
@@ -325,26 +278,6 @@
 				<File
 					RelativePath="..\..\source\Actors\ProcessMonitorActor.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\Actors\ProcessMonitorActor.h"
@@ -353,26 +286,6 @@
 				<File
 					RelativePath="..\..\source\Actors\TemplateActor.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\Actors\TemplateActor.h"
@@ -389,29 +302,17 @@
 				<File
 					RelativePath="..\..\source\Actors\TrackTitleActor.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\Actors\TrackTitleActor.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Actors\UpdateServiceActor.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Actors\UpdateServiceActor.h"
 					>
 				</File>
 				<Filter
@@ -421,26 +322,6 @@
 					<File
 						RelativePath="..\..\source\Actions\Beatlight.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-								BasicRuntimeChecks="3"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\source\Actions\Beatlight.h"
@@ -449,26 +330,6 @@
 					<File
 						RelativePath="..\..\source\Actions\CoverArt.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-								BasicRuntimeChecks="3"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\source\Actions\CoverArt.h"
@@ -477,26 +338,6 @@
 					<File
 						RelativePath="..\..\source\Actions\ProcessMonitor.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-								BasicRuntimeChecks="3"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\source\Actions\ProcessMonitor.h"
@@ -505,26 +346,6 @@
 					<File
 						RelativePath="..\..\source\Actions\TemplateAction.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-								BasicRuntimeChecks="3"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\source\Actions\TemplateAction.h"
@@ -541,26 +362,6 @@
 					<File
 						RelativePath="..\..\source\Actions\TrackTitle.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-								BasicRuntimeChecks="3"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\source\Actions\TrackTitle.h"
@@ -573,26 +374,6 @@
 					<File
 						RelativePath="..\..\source\VisualActor.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								Optimization="0"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-								BasicRuntimeChecks="3"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								AdditionalIncludeDirectories=""
-								PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\..\source\VisualActor.h"
@@ -607,27 +388,6 @@
 				<File
 					RelativePath="..\..\source\iTunesVisualAPI\iTunesAPI.c"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-							UsePrecompiledHeader="0"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\iTunesVisualAPI\iTunesAPI.h"
@@ -645,26 +405,6 @@
 				<File
 					RelativePath="..\..\source\AudioLab\VisualAudioLab.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\AudioLab\VisualAudioLab.h"
@@ -686,29 +426,17 @@
 				<File
 					RelativePath="..\..\source\Tools\VisualColorTools.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\Tools\VisualColorTools.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Tools\VisualDownloadQueue.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Tools\VisualDownloadQueue.h"
 					>
 				</File>
 				<File
@@ -728,6 +456,22 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\Tools\VisualFontManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Tools\VisualFontManager.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Tools\VisualHistogram.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Tools\VisualHistogram.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\Tools\VisualInterpolation.cpp"
 					>
 				</File>
@@ -741,6 +485,22 @@
 				</File>
 				<File
 					RelativePath="..\..\source\Tools\VisualItemIdentifier.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Tools\VisualNetwork.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Tools\VisualNetwork.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Tools\VisualProgressIndicator.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Tools\VisualProgressIndicator.h"
 					>
 				</File>
 				<File
@@ -768,6 +528,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\Tools\VisualStyledString.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Tools\VisualStyledString.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\Tools\VisualThreading.cpp"
 					>
 				</File>
@@ -775,17 +543,25 @@
 					RelativePath="..\..\source\Tools\VisualThreading.h"
 					>
 				</File>
+				<File
+					RelativePath="..\..\source\Tools\VisualThreadingManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Tools\VisualThreadingManager.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Tools\VisualUpdateManager.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\Tools\VisualUpdateManager.h"
+					>
+				</File>
 				<Filter
 					Name="Timing"
 					>
-					<File
-						RelativePath="..\..\source\Tools\Timing\VisualAnimation.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\source\Tools\Timing\VisualAnimation.h"
-						>
-					</File>
 					<File
 						RelativePath="..\..\source\Tools\Timing\VisualTimeline.cpp"
 						>
@@ -802,6 +578,58 @@
 						RelativePath="..\..\source\Tools\Timing\VisualTiming.h"
 						>
 					</File>
+					<Filter
+						Name="Animation"
+						>
+						<File
+							RelativePath="..\..\source\Tools\Timing\VisualAnimation.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\source\Tools\Timing\VisualAnimation.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\source\Tools\Timing\VisualAnimationCluster.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\source\Tools\Timing\VisualAnimationCluster.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\source\Tools\Timing\VisualAnimationComponent.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\source\Tools\Timing\VisualAnimationComponent.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\source\Tools\Timing\VisualAnimationPackage.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\source\Tools\Timing\VisualAnimationQueue.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\source\Tools\Timing\VisualAnimationQueue.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\source\Tools\Timing\VisualAnimationSequence.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\source\Tools\Timing\VisualAnimationSequence.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\source\Tools\Timing\VisualAnimationTypes.h"
+							>
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter
@@ -811,57 +639,9 @@
 				<File
 					RelativePath="..\..\source\win\AboutPane.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\win\AboutPane.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\source\win\DisplayResolutionPane.cpp"
-					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\source\win\DisplayResolutionPane.h"
 					>
 				</File>
 				<File
@@ -877,61 +657,36 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\win\OptionsPane.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\win\OptionsPane.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\win\resource.h"
 					>
 				</File>
 				<File
 					RelativePath="..\..\source\win\StdAfx.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-							UsePrecompiledHeader="1"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\win\StdAfx.h"
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\win\UpdatePane.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\win\UpdatePane.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\win\VisualPropertySheet.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\win\VisualPropertySheet.h"
@@ -948,26 +703,6 @@
 				<File
 					RelativePath="..\..\source\VisualConfiguration.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\VisualConfiguration.h"
@@ -984,26 +719,6 @@
 				<File
 					RelativePath="..\..\source\VisualDataStore.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\VisualDataStore.h"
@@ -1012,29 +727,49 @@
 				<File
 					RelativePath="..\..\source\VisualMain.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\VisualMain.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\VisualMainAction.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\VisualMainAction.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\VisualObject.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\VisualObject.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\VisualObjectData.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\VisualObjectData.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\VisualObjectMutex.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\VisualObjectMutex.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\VisualPreferences.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\VisualPreferences.h"
 					>
 				</File>
 				<File
@@ -1045,6 +780,10 @@
 					RelativePath="..\..\source\VisualSignature.h"
 					>
 				</File>
+				<File
+					RelativePath="..\..\source\VisualTypes.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Ensemble"
@@ -1052,26 +791,6 @@
 				<File
 					RelativePath="..\..\source\VisualEnsemble.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\VisualEnsemble.h"
@@ -1080,26 +799,6 @@
 				<File
 					RelativePath="..\..\source\VisualStageControl.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\VisualStageControl.h"
@@ -1126,6 +825,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\source\VisualCamera.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\VisualCamera.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\source\VisualConvolutionFilter.cpp"
 					>
 				</File>
@@ -1136,26 +843,6 @@
 				<File
 					RelativePath="..\..\source\VisualGraphics.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\VisualGraphics.h"
@@ -1217,6 +904,14 @@
 					RelativePath="..\..\source\VisualTextureContainer.h"
 					>
 				</File>
+				<File
+					RelativePath="..\..\source\VisualVertex.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\source\VisualVertex.h"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="Messaging"
@@ -1232,26 +927,6 @@
 				<File
 					RelativePath="..\..\source\VisualDispatch.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\VisualDispatch.h"
@@ -1268,26 +943,6 @@
 				<File
 					RelativePath="..\..\source\VisualNotification.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\VisualNotification.h"
@@ -1308,26 +963,6 @@
 				<File
 					RelativePath="..\..\source\VisualPlayerState.cpp"
 					>
-					<FileConfiguration
-						Name="Debug|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;_DEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-							BasicRuntimeChecks="3"
-						/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Win32"
-						>
-						<Tool
-							Name="VCCLCompilerTool"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions="TARGET_OS_WIN;WIN32;NDEBUG;_WINDOWS;_MBCS;_USRDLL;WINVER=0x0500;_WIN32_WINNT=0x0500;$(NoInherit)"
-						/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\source\VisualPlayerState.h"
@@ -1335,15 +970,7 @@
 				</File>
 			</Filter>
 		</Filter>
-		<File
-			RelativePath="..\..\source\carbontoprojectm.hpp"
-			>
-		</File>
 	</Files>
 	<Globals>
-		<Global
-			Name="RESOURCE_FILE"
-			Value="\Documents and Settings\Administrator\My Documents\iTunes visualizer dev\VizKit\source\win\VizKit.rc"
-		/>
 	</Globals>
 </VisualStudioProject>

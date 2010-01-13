@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualThreading.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -34,40 +34,12 @@ freely, subject to the following restrictions:
  ***************************************************************************/
 
 #include "VisualThreading.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/Multiprocessing.h>
-#endif
-
+#include "VisualThreadingManager.h"
 
 
 using namespace VizKit;
 
 
-OSStatus VisualThreading::createThread(ThreadingFuncPtr aThreadingFuncPtr, char* name) {
-	OSStatus osStatus = noErr;
-#if TARGET_OS_MAC
-	void* param = NULL;
-	MPTaskID threadId;
-	ByteCount stackSize = 0;
-	osStatus = MPCreateTask(&(*aThreadingFuncPtr), param, stackSize, NULL, NULL, NULL, 0, &threadId);
-#endif
-#if TARGET_OS_WIN
-	LPSECURITY_ATTRIBUTES lpThreadAttributes = NULL;
-	SIZE_T stackSize = 0;
-	LPVOID param = NULL;
-	DWORD dwCreationFlags = 0;
-	LPDWORD threadId = 0;
-	HANDLE hdl = CreateThread(lpThreadAttributes, stackSize, (LPTHREAD_START_ROUTINE)aThreadingFuncPtr, param, dwCreationFlags, threadId);
-	/*
-	WaitForSingleObject(hdl, 3000);
-	DWORD exitCode;
-	BOOL success = GetExitCodeThread(hdl, &exitCode);
-	char logStr[64];
-	sprintf(logStr, "%s - exitCode: %ld", name, exitCode);
-	writeLog(logStr);
-	CloseHandle(hdl);
-	*/
-#endif
-	return osStatus;
+bool VisualThreading::createThread(ThreadingFuncPtr aThreadingFuncPtr, void* param, ThreadDidDieCallback callbackAfterThreadDidDie) {
+	return VisualThreadingManager::createThread(aThreadingFuncPtr, param, callbackAfterThreadDidDie);
 }

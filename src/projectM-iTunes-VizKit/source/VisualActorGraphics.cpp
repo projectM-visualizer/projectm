@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualActorGraphics.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -42,10 +42,6 @@ freely, subject to the following restrictions:
 #include "VisualErrorHandling.h"
 #include "VisualDispatch.h"
 
-#if TARGET_OS_WIN
-#include <QT/macmemory.h> // HLock
-#endif
-
 
 
 using namespace VizKit;
@@ -60,7 +56,7 @@ VisualActorGraphics::~VisualActorGraphics() {
 }
 
 
-UInt8 VisualActorGraphics::getError(char* errorString) {
+uint8 VisualActorGraphics::getError(char* errorString) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
 	return theVisualGraphics->getOpenGLError(errorString);
 }
@@ -68,7 +64,7 @@ UInt8 VisualActorGraphics::getError(char* errorString) {
 
 void VisualActorGraphics::setBackgroundColor(const RGBAColor& aColorVal) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	theVisualGraphics->setBackgroundColor(aColorVal);
+	theVisualGraphics->setCanvasBackgroundColor(aColorVal);
 }
 
 
@@ -78,61 +74,15 @@ RGBAColor VisualActorGraphics::getBackgroundColor() {
 }
 
 
-VisualImage* VisualActorGraphics::createCoverArtImage() {
-
-	Handle coverArtDataHdl = VisualDataStore::getHandleOfCoverArt();
-	HLock(coverArtDataHdl);
-	
-	OSType coverArtFileType = VisualDataStore::getCoverArtFileType();
-
-	char coverArtFileTypeCStr[5];
-	VisualDataStore::OSTypeToString(coverArtFileType, coverArtFileTypeCStr);
-	setProcessInfo("CoverArtFileType", coverArtFileTypeCStr);
-	
-	VisualImage* anImage = new VisualImage;
-	OSStatus osStatus = anImage->initWithDataHandle(coverArtDataHdl, coverArtFileType);
-
-	HUnlock(coverArtDataHdl);
-	VisualDataStore::disposeHandleOfCoverArt();
-	
-	if (osStatus != noErr) {
-		return NULL;
-	} else if (anImage->isEmpty()) {
-		delete anImage;
-		return NULL;
-	}
-	
-	return anImage;
-}
-
-
-void VisualActorGraphics::releaseCoverArtImage(VisualImage** coverArtImage) {
-	delete *coverArtImage;
-	*coverArtImage = NULL;
-}
-
-
-void VisualActorGraphics::createCheckTexture(UInt32& textureNumber, UInt32& textureWidth, UInt32& textureHeight, UInt32& imageWidth, UInt32& imageHeight) {
-	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	theVisualGraphics->createCheckTexture(textureNumber, textureWidth, textureHeight, imageWidth, imageHeight);
-}
-
-
-UInt32 VisualActorGraphics::getNextFreeTextureName() {
+uint32 VisualActorGraphics::getNextFreeTextureName() {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
 	return theVisualGraphics->getNextFreeTextureName();
 }
 
 
-void VisualActorGraphics::deleteTextures(const UInt16 numberOfTextures, const UInt32* const textureNames) {
+void VisualActorGraphics::deleteTextures(const uint16 numberOfTextures, const uint32* const textureNames) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
 	return theVisualGraphics->deleteTextures(numberOfTextures, textureNames);
-}
-
-
-void VisualActorGraphics::drawPerspectiveSquare(UInt32 textureNumber) {
-	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	theVisualGraphics->drawPerspectiveRect(textureNumber);
 }
 
 
@@ -162,7 +112,8 @@ bool VisualActorGraphics::getCoordsOfPixelPosition(
 									double* yCoordPos,
 									double* zCoordPos) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->getCoordsOfPixelPosition(xPixelPos + theVisualGraphics->getCanvasXOriginOffset(), yPixelPos + theVisualGraphics->getCanvasYOriginOffset(), zAxisPos, xCoordPos, yCoordPos, zCoordPos);
+	Pixel bottomLeftViewportOrigin = theVisualGraphics->getViewportBottomLeftOrigin();
+	return theVisualGraphics->getCoordsOfPixelPosition(xPixelPos + bottomLeftViewportOrigin.x, yPixelPos + bottomLeftViewportOrigin.y, zAxisPos, xCoordPos, yCoordPos, zCoordPos);
 }
 
 
@@ -178,87 +129,51 @@ bool VisualActorGraphics::getPixelsOfCoordPosition(
 }
 
 
-UInt16 VisualActorGraphics::getCanvasPixelWidth() {
+uint32 VisualActorGraphics::getCanvasPixelWidth() {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
 	return theVisualGraphics->getCanvasPixelWidth();
 }
 
 
-UInt16 VisualActorGraphics::getCanvasPixelHeight() {
+uint32 VisualActorGraphics::getCanvasPixelHeight() {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
 	return theVisualGraphics->getCanvasPixelHeight();
 }
 
 
-double VisualActorGraphics::getCanvasCoordWidth() {
+RelationalRect VisualActorGraphics::getViewportOrientationAndAspectRatio() {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->getCanvasCoordWidth();
+	return theVisualGraphics->getViewportOrientationAndAspectRatio();
 }
 
 
-double VisualActorGraphics::getCanvasCoordHeight() {
+uint16 VisualActorGraphics::xCoordToPixel(double coordPos, const VisualCamera& aCamera) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->getCanvasCoordHeight();
-}
-	
-
-double VisualActorGraphics::getMaxTopCoordOfCanvas() {
-	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->getMaxTopCoordOfCanvas();
+	return theVisualGraphics->xCoordToPixel(coordPos, aCamera);
 }
 
 
-double VisualActorGraphics::getMaxLeftCoordOfCanvas() {
+uint16 VisualActorGraphics::yCoordToPixel(double coordPos, const VisualCamera& aCamera) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->getMaxLeftCoordOfCanvas();
+	return theVisualGraphics->yCoordToPixel(coordPos, aCamera);
 }
 
 
-double VisualActorGraphics::getMaxBottomCoordOfCanvas() {
+double VisualActorGraphics::xPixelToCoord(const uint16 pixelPos, const VisualCamera& aCamera) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->getMaxBottomCoordOfCanvas();
+	return theVisualGraphics->xPixelToCoord(pixelPos, aCamera);
 }
 
 
-double VisualActorGraphics::getMaxRightCoordOfCanvas() {
+double VisualActorGraphics::yPixelToCoord(const uint16 pixelPos, const VisualCamera& aCamera) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->getMaxRightCoordOfCanvas();
+	return theVisualGraphics->yPixelToCoord(pixelPos, aCamera);
 }
 
 
-double VisualActorGraphics::getMaxNearCoordOfCanvas() {
+Coord VisualActorGraphics::getCirclePoint(uint32 sliceIdx, uint32 slicesCount, double radius, Coord circleCenter) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->getMaxNearCoordOfCanvas();
-}
-
-
-double VisualActorGraphics::getMaxFarCoordOfCanvas() {
-	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->getMaxFarCoordOfCanvas();
-}
-
-
-UInt16 VisualActorGraphics::xCoordToPixel(double coordPos) {
-	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->xCoordToPixel(coordPos);
-}
-
-
-UInt16 VisualActorGraphics::yCoordToPixel(double coordPos) {
-	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->yCoordToPixel(coordPos);
-}
-
-
-double VisualActorGraphics::xPixelToCoord(const UInt16 pixelPos) {
-	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->xPixelToCoord(pixelPos);
-}
-
-
-double VisualActorGraphics::yPixelToCoord(const UInt16 pixelPos) {
-	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	return theVisualGraphics->yPixelToCoord(pixelPos);
+	return theVisualGraphics->getCirclePoint(sliceIdx, slicesCount, radius, circleCenter);
 }
 
 
@@ -268,21 +183,21 @@ void VisualActorGraphics::spotGL(double zPlane) {
 }
 
 
-void VisualActorGraphics::drawSpot(const float xNum, const float yNum, const float r, const float g, const float b, UInt16 waveformIntensityVal, float intensity, const UInt8 tailSize) {
+void VisualActorGraphics::drawSpot(const double xNum, const double yNum, const double r, const double g, const double b, uint16 waveformIntensityVal, double intensity, const uint8 tailSize) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
 	theVisualGraphics->drawSpot(xNum, yNum, r, g, b, waveformIntensityVal, intensity, tailSize);
 }
 
 
-void VisualActorGraphics::setOrthographicProjection() {
+void VisualActorGraphics::drawProjectionMetrics(const VisualCamera& aCamera) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	theVisualGraphics->setOrthographicProjection();
+	theVisualGraphics->drawProjectionMetrics(aCamera);
 }
 
 
-void VisualActorGraphics::setPerspectiveProjection(double maxNearCoord) {
+void VisualActorGraphics::loadModelViewIdentityMatrix() {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	theVisualGraphics->setPerspectiveProjection(maxNearCoord);
+	theVisualGraphics->loadModelViewIdentityMatrix();
 }
 
 
@@ -292,9 +207,9 @@ void VisualActorGraphics::prepareProcessMonitorShow(RGBAColor& theColor) {
 }
 
 
-void VisualActorGraphics::showProcessInfoRow(double xNum, double yNum, const char* const textRowStr) {
+void VisualActorGraphics::showProcessInfoRow(Coord coord, const char* const textRowStr) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	theVisualGraphics->showProcessInfoRow(xNum, yNum, textRowStr);
+	theVisualGraphics->showProcessInfoRow(coord, textRowStr);
 }
 
 
@@ -304,27 +219,33 @@ void VisualActorGraphics::showProcessInfoNote() {
 }
 
 
-void VisualActorGraphics::drawWaveform(const SInt16 historyNum, const UInt16 maxNumberOfHistories, const UInt32 numberOfWaveformEntries, const SInt16** const waveformDataMonoArray) {
+void VisualActorGraphics::drawVertexChain(const VertexChain& vertexChain, int drawMode, BlendMode aBlendMode) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	theVisualGraphics->drawWaveform(historyNum, maxNumberOfHistories, numberOfWaveformEntries, const_cast<SInt16**>(waveformDataMonoArray));
+	theVisualGraphics->drawVertexChain(vertexChain, drawMode, aBlendMode);
 }
 
 
-void VisualActorGraphics::drawSpectrumAnalyzer(const SInt16 currHistoryNum, const UInt16 numberOfHistories, const UInt32 numberOfSpectrumEntries, const UInt16 numberOfAudioChannels, const UInt8*** const spectrumDataArray) {
+void VisualActorGraphics::drawWaveform(const sint16 historyNum, const uint16 maxNumberOfHistories, const uint32 numberOfWaveformEntries, const sint16** const waveformDataMonoArray, const VisualCamera& aCamera) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	theVisualGraphics->drawSpectrumAnalyzer(currHistoryNum, numberOfHistories, numberOfSpectrumEntries, numberOfAudioChannels, spectrumDataArray);
+	theVisualGraphics->drawWaveform(historyNum, maxNumberOfHistories, numberOfWaveformEntries, const_cast<sint16**>(waveformDataMonoArray), aCamera);
 }
 
 
-void VisualActorGraphics::drawSpectrogram(const SInt16 currHistoryNum, const UInt16 numberOfHistories, const UInt32 numberOfSpectrumEntries, const UInt16 numberOfAudioChannels, const UInt8*** const spectrumDataArray) {
+void VisualActorGraphics::drawSpectrumAnalyzer(const sint16 currHistoryNum, const uint16 numberOfHistories, const uint32 numberOfSpectrumEntries, const uint16 numberOfAudioChannels, const uint8*** const spectrumDataArray, const VisualCamera& aCamera) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	theVisualGraphics->drawSpectrogram(currHistoryNum, numberOfHistories, numberOfSpectrumEntries, numberOfAudioChannels, spectrumDataArray);
+	theVisualGraphics->drawSpectrumAnalyzer(currHistoryNum, numberOfHistories, numberOfSpectrumEntries, numberOfAudioChannels, spectrumDataArray, aCamera);
 }
 
 
-void VisualActorGraphics::drawBeatHistogram(const UInt32* const beatHistogram) {
+void VisualActorGraphics::drawSpectrogram(const sint16 currHistoryNum, const uint16 numberOfHistories, const uint32 numberOfSpectrumEntries, const uint16 numberOfAudioChannels, const uint8*** const spectrumDataArray, const VisualCamera& aCamera) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	theVisualGraphics->drawBeatHistogram(beatHistogram);
+	theVisualGraphics->drawSpectrogram(currHistoryNum, numberOfHistories, numberOfSpectrumEntries, numberOfAudioChannels, spectrumDataArray, aCamera);
+}
+
+
+void VisualActorGraphics::drawBeatHistogram(const uint32* const beatHistogram, const VisualCamera& aCamera) {
+	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
+	theVisualGraphics->drawBeatHistogram(beatHistogram, aCamera);
 }
 
 
@@ -336,23 +257,25 @@ void VisualActorGraphics::drawTrackProgressMeter(ConstVertexChainRef const progr
 	RGBAColor backgroundColor = theVisualGraphics->getBackgroundColor();
 	theVisualGraphics->setColor(backgroundColor);
 	
-	theVisualGraphics->drawColorlessGLPrimitive(kGL_QUADS, progressMeterBackgroundVertices);
+	theVisualGraphics->drawVertexChain(*progressMeterBackgroundVertices, kGL_QUADS);
 	
-	verticesColor.r = 0.8f;
-	verticesColor.g = 0.8f;
-	verticesColor.b = 0.8f;
-	verticesColor.a = 1.0f;
+	verticesColor.r = 0.8;
+	verticesColor.g = 0.8;
+	verticesColor.b = 0.8;
+	verticesColor.a = 1.0;
 	theVisualGraphics->setColor(verticesColor);
-	
-	theVisualGraphics->drawColorlessGLPrimitive(kGL_QUADS, progressMeterVertices);
 
-	verticesColor.r = 0.0f;
-	verticesColor.g = 0.0f;
-	verticesColor.b = 0.0f;
-	verticesColor.a = 1.0f;
+	theVisualGraphics->drawVertexChain(*progressMeterVertices, kGL_QUADS);
+
+	verticesColor.r = 1.0;
+	verticesColor.g = 1.0;
+	verticesColor.b = 1.0;
+	verticesColor.a = 1.0;
 	theVisualGraphics->setColor(verticesColor);
+	theVisualGraphics->setLineWidth(1.0);
 	
-	theVisualGraphics->drawColorlessGLPrimitive(kGL_LINE_LOOP, progressMeterOutlineVertices);
+	theVisualGraphics->drawVertexChain(*progressMeterOutlineVertices, kGL_LINE_LOOP);
+
 }
 
 
@@ -362,23 +285,19 @@ void VisualActorGraphics::doFallbackActorShow(const char* const visualActorName)
 }
 
 
-void VisualActorGraphics::prepareCoverArtAction() {
+void VisualActorGraphics::translateMatrix(double xNum, double yNum, double zNum) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	VisualActorGraphics::setPerspectiveProjection(3.0f);
-	theVisualGraphics->enableDepthTest();
-	theVisualGraphics->translateMatrix(0.0, 0.0, (theVisualGraphics->getMaxFarCoordOfCanvas() - theVisualGraphics->getMaxNearCoordOfCanvas()) / 2.0 * -1.0 - theVisualGraphics->getMaxNearCoordOfCanvas());
+	theVisualGraphics->translateMatrix(xNum, yNum, zNum);
 }
 
 
-void VisualActorGraphics::finishCoverArtAction() {
+void VisualActorGraphics::rotateMatrix(double angle, double xAmount, double yAmount, double zAmount) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	
-	theVisualGraphics->disableDepthTest();
-	VisualActorGraphics::setOrthographicProjection();
+	theVisualGraphics->rotateMatrix(angle, xAmount, yAmount, zAmount);
 }
 
 
-void VisualActorGraphics::scaleMatrix(float xFactor, float yFactor, float zFactor) {
+void VisualActorGraphics::scaleMatrix(double xFactor, double yFactor, double zFactor) {
 	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
 	theVisualGraphics->scaleMatrix(xFactor, yFactor, zFactor);
 }

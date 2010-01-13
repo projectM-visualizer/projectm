@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualItemIdentifier.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,22 +36,16 @@ freely, subject to the following restrictions:
 #ifndef VisualItemIdentifier_h
 #define VisualItemIdentifier_h
 
+
+#include "VisualTypes.h"
 #include <map>
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
 
 
 namespace VizKit {
 
 	/**
-	 * Identifier of an item (like e.g.\ a VisualDuaration or a VisualNurbs).
-	 * Identifiers can be shared by supplying a name. If another VisualItemIdentifier with the same name has been created already, it is returned by VisualItemIdentifierRegistry's getVisualItemIdentifier(). 
+	 * Identifier of an item (like e.g. a VisualNurbs or a VisualAnimationComponent).
+	 * The internal token of the identifier stays the same across copy operations. Comparisons of copied instances yield equal result. Identifiers can be shared by supplying a name. If another VisualItemIdentifier with the same name has been created already, it is returned by VisualItemIdentifierRegistry's getVisualItemIdentifier(). 
 	 */
 	class VisualItemIdentifier {
 	
@@ -95,7 +89,7 @@ namespace VizKit {
 		 * Equality operator.
 		 * @param other Another VisualItemIdentifier.
 		 */
-		bool operator==(const VisualItemIdentifier& other);
+		bool operator==(const VisualItemIdentifier& other) const;
 
 		/**
 		 * Inequality operator.
@@ -104,7 +98,7 @@ namespace VizKit {
 		bool operator!=(const VisualItemIdentifier& other);
 
 		/**
-		 * Returns a VisualItemIdentifier identified by name.\ By using a name as token, the same identifier can be used at different places.
+		 * Returns a VisualItemIdentifier identified by name. By using a name as token, the same identifier can be used at different places.
 		 * @param aName The name of the VisualItemIdentifier.
 		 * @return A pointer to a visualItemIdentifier identified by its name.
 		 * @remarks The caller has to release the allocated memory by calling delete() on the pointer.
@@ -124,7 +118,7 @@ namespace VizKit {
 		 * @param aName Name of VisualItemIdentifier.
 		 * @param aToken Token of VisualItemIdentifier.
 		 */
-		VisualItemIdentifier(const char* const aName, UInt32 aToken);
+		VisualItemIdentifier(const char* const aName, uint32 aToken);
 		
 		/**
 		 * Copy method for assignment operator and copy constructor.
@@ -135,21 +129,21 @@ namespace VizKit {
 		/**
 		 * The optional identifier name (for shared VisualItemIdentifiers).
 		 */	
-		char name[128];
+		char* name;
 
 		/**
 		 * Internal method to receive the next valid token.
 		 */	
-		static UInt32 getNextToken();
+		static uint32 getNextToken();
 		
 		/**
 		 * The internal identifier of the VisualItemIdentifier.
 		 * @remarks The internal identifier stays the same across copies and instances. Since it is typed as 32bit unsigned integer the number of identifiers is limited to 4294967296.
 		 */	
-		UInt32 token;
-
+		uint32 token;
+	
 		/** A VisualItemIdentifierTokenNameMap is a map of names and tokens. */
-		typedef std::map<std::string, UInt32> VisualItemIdentifierNameTokenMap;
+		typedef std::map<std::string, uint32> VisualItemIdentifierNameTokenMap;
 		
 		/** A map of names and tokens. */
 		static VisualItemIdentifierNameTokenMap visualItemIdentifierNameTokenMap;

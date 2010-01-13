@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: TrackLyrics.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,15 +36,11 @@ freely, subject to the following restrictions:
 #ifndef TrackLyrics_h
 #define TrackLyrics_h
 
+
+#include "VisualTypes.h"
 #include "VisualAsset.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualItemIdentifier.h"
+#include "VisualStringStyle.h"
 
 
 namespace VizKit {
@@ -75,29 +71,34 @@ namespace VizKit {
 		void show(void);
 
 		/**
-		 * Creates the texture of the track lyrics.
-		 * @param trackLyrics The track lyrics string.
-		 * @return Success or failure.
-		*/
-		OSStatus makeTextureOfTrackLyrics(const VisualString& trackLyrics);
+		 * Returns the current string style of the track lyrics string.
+		 * @return The current string style of the track lyrics string.
+		 */
+		VisualStringStyle getTrackLyricsStringStyle(void);
+
+		/**
+		 * Sets the image with the track lyrics string.
+		 * @param styledTrackLyricsStringImage The image with the track lyrics string.
+		 */
+		void setTrackLyricsImage(VisualImage& styledTrackLyricsStringImage);
 
 		/**
 		 * Calculates the screen position of the track lyrics texture.
 		 */
-		void calcPositionOnScreen(void);
+		void reshape(void);
 
 		/**
 		 * Starts fading in the texture of the track lyrics.
 		 * @param durationInMilliseconds The duration of the animation measured in milliseconds.
 		 */
-		void fadeIn(UInt32 durationInMilliseconds);
+		void fadeIn(uint32 durationInMilliseconds);
 
 		/**
 		 * Starts fading out the texture of the track lyrics.
 		 * @param durationInMilliseconds The duration of the animation measured in milliseconds.
 		 * @param clampValue The clamp value of the fade out process (default = 0.0f).
 		 */
-		void fadeOut(UInt32 durationInMilliseconds, float clampValue = 0.0f);
+		void fadeOut(uint32 durationInMilliseconds, float clampValue = 0.0f);
 
 		/**
 		 * Clears the memory allocated for the track lyrics action.
@@ -108,6 +109,9 @@ namespace VizKit {
 
 		/** The asset of the track lyrics action (contains texture and position too). */
 		VisualAsset trackLyricsAsset;
+		
+		/** Identifier of the vertex chain (the vertices used for display of the track lyrics string texture). */
+		VisualItemIdentifier vertexChainId;
 		
 	};
 

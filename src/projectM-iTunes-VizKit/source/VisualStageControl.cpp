@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualStageControl.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -34,28 +34,27 @@ freely, subject to the following restrictions:
  ***************************************************************************/
 
 #include "VisualStageControl.h"
+#include "VisualAnimationQueue.h"
 #include "VisualErrorHandling.h"
 #include "VisualDataStore.h"
 #include "VisualNotification.h"
 #include "VisualEnsemble.h"
-#include "VisualConfiguration.h"
+#include "VisualObject.h"
+#include "VisualString.h"
+#include "VisualStyledString.h"
+#include "VisualImage.h"
+#include "VisualUpdateManager.h"
 
+#include "VisualActor.h"
 #include "BeatlightActor.h"
 #include "CoverArtActor.h"
 #include "ProcessMonitorActor.h"
 #include "TemplateActor.h"
 #include "TrackTitleActor.h"
 #include "TrackLyricsActor.h"
+#include "UpdateServiceActor.h"
 
 #include <algorithm>
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacErrors.h> // unimpErr
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/macerrors.h> // unimpErr
-#endif
 
 
 using namespace VizKit;
@@ -80,7 +79,7 @@ VisualStageControl* VisualStageControl::getInstance() {
     if (theVisualStageControl == NULL) {
 		theVisualStageControl = new VisualStageControl;
 		if (theVisualStageControl != NULL) {
-			theVisualStageControl->initVisualStageControl();
+			theVisualStageControl->init();
 		}
     }
 	if (theVisualStageControl == NULL) {
@@ -98,117 +97,107 @@ void VisualStageControl::dispose() {
 }
 
 
-VisualStageControl* VisualStageControl::initVisualStageControl() {
+void VisualStageControl::init() {
 
 	VisualActor* aVisualActor;
-
-	theVisualStageControl = VisualStageControl::getInstance();
 	
-	theVisualStageControl->aVisualEnsemble = new VisualEnsemble;
-	if (theVisualStageControl->aVisualEnsemble == NULL) {
-		writeLog("ERR: theVisualStageControl->aVisualEnsemble == NULL");
+	this->aVisualEnsemble = new VisualEnsemble;
+	if (this->aVisualEnsemble == NULL) {
+		writeLog("ERR: this->aVisualEnsemble == NULL");
 	}
-
-
-	// TemplateActor
-	aVisualActor = new TemplateActor;
-	theVisualStageControl->aVisualEnsemble->addEnsembleMember(aVisualActor);
+	
+	bool doLoadCoverArtActor = true;
+	bool doLoadProcessMonitorActor = true;
+	bool doLoadTrackTitleActor = true;
+	bool doLoadBeatlightActor = true;
+	bool doLoadTrackLyricsActor = true;
+	bool doLoadTemplateActor = true;
+	bool doLoadUpdateServiceActor = true;
 
 	// CoverArtActor
-	aVisualActor = new CoverArtActor;
-	theVisualStageControl->aVisualEnsemble->addEnsembleMember(aVisualActor);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioMetadataIsAvailableMsg);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kCoverTextureIsAvailableMsg);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayStartedEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayStoppedEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayPausedEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayResumedEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayReachedFadeOutTimeBeforeEndOfTrackEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kCanvasReshapeEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kTrackInfoTextureChangedMsg);
-
-	// TrackTitleActor
-	aVisualActor = new TrackTitleActor;
-	theVisualStageControl->aVisualEnsemble->addEnsembleMember(aVisualActor);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioMetadataIsAvailableMsg);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kTrackInfoTextureIsAvailableMsg);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayStartedEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayStoppedEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayPausedEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayResumedEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayReachedFadeOutTimeBeforeEndOfTrackEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kCanvasReshapeEvt);
-
-	// ProcessMonitorActor
-	aVisualActor = new ProcessMonitorActor;
-	theVisualStageControl->aVisualEnsemble->addEnsembleMember(aVisualActor);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kCanvasReshapeEvt);
-
-	// BeatlightActor
-	aVisualActor = new BeatlightActor;
-	theVisualStageControl->aVisualEnsemble->addEnsembleMember(aVisualActor);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kCanvasReshapeEvt);
-
-	// TrackLyricsActor
-	aVisualActor = new TrackLyricsActor;
-	theVisualStageControl->aVisualEnsemble->addEnsembleMember(aVisualActor);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioMetadataIsAvailableMsg);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kLyricsAreAvailableMsg);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kLyricsTextureIsAvailableMsg);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayStartedEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayStoppedEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayPausedEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayResumedEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kAudioPlayReachedFadeOutTimeBeforeEndOfTrackEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kCanvasReshapeEvt);
-	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, kTrackInfoTextureChangedMsg);
-
-	return theVisualStageControl;
-}
-
-
-void VisualStageControl::processVisualStageControl(const VisualPlayerState& visualPlayerState) {
-
-    VisualActor* aVisualActor;
-    const char* aVisualActorName;
-
-	theVisualStageControl = VisualStageControl::getInstance();
-
-	OSStatus status = noErr;
-	VisualAnimationsIterator it = theVisualStageControl->visualAnimations.begin();
-	while (it != theVisualStageControl->visualAnimations.end()) {
-		if (it->second.isRunning() == true) {
-			status = it->second.callAnimateCallbackFunction();
-			it++;
-		} else if (it->second.isDead() == true) {
-			theVisualStageControl->visualAnimations.erase(it++); // increment iterator, then call erase with old iterator
-			// after erase, accessing iterator (for increment) is invalid
-		} else {
-			it++;
-		}
+	if (doLoadCoverArtActor) {
+		aVisualActor = new CoverArtActor;
+		aVisualActor->init();
+		this->aVisualEnsemble->addEnsembleMember(aVisualActor);
 	}
 
-    theVisualStageControl->aVisualEnsemble->resetVisualActorIterIndex();
-    while ((aVisualActor = theVisualStageControl->aVisualEnsemble->getNextVisualActor())) {
-        aVisualActorName = aVisualActor->getName();
-        if (strcmp(aVisualActorName, "PROCESSMONITOR") == 0) {
-			dynamic_cast<ProcessMonitorActor*>(aVisualActor)->registerProcessMonitorInfoMap(VisualDataStore::getProcessInfoMap());
-		}
-    }
+	// ProcessMonitorActor
+	if (doLoadProcessMonitorActor) {
+		aVisualActor = new ProcessMonitorActor;
+		aVisualActor->init();
+		this->aVisualEnsemble->addEnsembleMember(aVisualActor);
+	}
+
+	// TrackTitleActor
+	if (doLoadTrackTitleActor) {
+		aVisualActor = new TrackTitleActor;
+		aVisualActor->init();
+		this->aVisualEnsemble->addEnsembleMember(aVisualActor);
+	}
+
+	// BeatlightActor
+	if (doLoadBeatlightActor) {
+		aVisualActor = new BeatlightActor;
+		aVisualActor->init();
+		this->aVisualEnsemble->addEnsembleMember(aVisualActor);
+	}
+
+	// TrackLyricsActor
+	if (doLoadTrackLyricsActor) {
+		aVisualActor = new TrackLyricsActor;
+		aVisualActor->init();
+		this->aVisualEnsemble->addEnsembleMember(aVisualActor);
+	}
+	
+	// TemplateActor
+	if (doLoadTemplateActor) {
+		aVisualActor = new TemplateActor;
+		aVisualActor->init();
+		this->aVisualEnsemble->addEnsembleMember(aVisualActor);
+	}
+	
+	// UpdateServiceActor
+	if (doLoadUpdateServiceActor) {
+		aVisualActor = new UpdateServiceActor;
+		aVisualActor->init();
+		this->aVisualEnsemble->addEnsembleMember(aVisualActor);
+	}
+
 }
 
 
 void VisualStageControl::doEnsembleShow(const VisualPlayerState& visualPlayerState) {
 	theVisualStageControl = VisualStageControl::getInstance();
-	theVisualStageControl->processVisualStageControl(visualPlayerState);
+	ProcessMonitorActor* processMonitorActor = dynamic_cast<ProcessMonitorActor*>(VisualStageControl::getVisualActorByName("PROCESSMONITOR"));
+	if (processMonitorActor) {
+		processMonitorActor->registerProcessMonitorInfoMap(VisualDataStore::getProcessInfoMap());
+	}
+	VisualAnimationQueue::processAnimations();
     theVisualStageControl->aVisualEnsemble->showEnsemble(visualPlayerState);
 }
 
 
-void VisualStageControl::dispatchNotification(const VisualNotification& aNotification) {
+VisualActor* VisualStageControl::getVisualActorByName(const char* const aVisualActorName) {
+	theVisualStageControl = VisualStageControl::getInstance();
+	return theVisualStageControl->aVisualEnsemble->getVisualActorByName(aVisualActorName);
+}
+
+
+void VisualStageControl::registerObserverForNotification(VisualActor* aVisualActor, const VisualNotificationKey aNotificationKey) {
+	theVisualStageControl = VisualStageControl::getInstance();
+	theVisualStageControl->aVisualEnsemble->registerObserverForNotification(aVisualActor, aNotificationKey);
+}
+
+
+void VisualStageControl::removeObserverOfNotification(VisualActor* aVisualActor, const VisualNotificationKey aNotificationKey) {
+	theVisualStageControl = VisualStageControl::getInstance();
+	theVisualStageControl->aVisualEnsemble->removeObserverOfNotification(aVisualActor, aNotificationKey);
+}
+
+
+void VisualStageControl::dispatchNotification(VisualNotification& aNotification) {
 
 	VisualActor* aVisualActor;
-	const char* aVisualActorName;
 	ProcessMonitorActor* aProcessMonitorActor;
 	VisualNotificationKey keyOfNotification;
 
@@ -222,20 +211,22 @@ void VisualStageControl::dispatchNotification(const VisualNotification& aNotific
 			aVisualActor = theVisualStageControl->aVisualEnsemble->getVisualActorByName("PROCESSMONITOR");
 			if (aVisualActor) {
 				aProcessMonitorActor = dynamic_cast<ProcessMonitorActor*>(aVisualActor);
-				if (aProcessMonitorActor->getState() == kVisActNoShow) {
-					aProcessMonitorActor->setState(kVisActOn);
-				} else {
-					aProcessMonitorActor->setState(kVisActNoShow);
+				if (aProcessMonitorActor) {
+					if (aProcessMonitorActor->getState() == kVisActNoShow) {
+						aProcessMonitorActor->setState(kVisActOn);
+					} else {
+						aProcessMonitorActor->setState(kVisActNoShow);
+					}
 				}
 			}
 			break;
 
 		case kToggleProcessMonitorAudioInfoMsg:
-			theVisualStageControl->aVisualEnsemble->resetVisualActorIterIndex();
-			while ((aVisualActor = theVisualStageControl->aVisualEnsemble->getNextVisualActor())) {
-				aVisualActorName = aVisualActor->getName();
-				if (strcmp(aVisualActorName, "PROCESSMONITOR") == 0) {
-					aProcessMonitorActor = dynamic_cast<ProcessMonitorActor*>(aVisualActor);
+		
+			aVisualActor = theVisualStageControl->aVisualEnsemble->getVisualActorByName("PROCESSMONITOR");
+			if (aVisualActor) {
+				aProcessMonitorActor = dynamic_cast<ProcessMonitorActor*>(aVisualActor);
+				if (aProcessMonitorActor) {
 					if (aProcessMonitorActor->isAudioInfoShown() == true) {
 						aProcessMonitorActor->setShowAudioInfo(false);
 					} else {
@@ -243,6 +234,7 @@ void VisualStageControl::dispatchNotification(const VisualNotification& aNotific
 					}
 				}
 			}
+			
 			break;
 
 		default:
@@ -257,80 +249,12 @@ void VisualStageControl::dispatchNotification(const VisualNotification& aNotific
 void VisualStageControl::checkForFadeOutEvent() {
 	VisualPlayerState* theVisualPlayerState = VisualPlayerState::getInstance();
 	if (theVisualPlayerState->fadeOutEventShouldBeSent() == true) {
-		VisualNotification::post(kAudioPlayReachedFadeOutTimeBeforeEndOfTrackEvt);
+		VisualNotification::post(kAudioPlayReachedFadeOutTimeEvt);
 	}
 }
 
 
-const VisualItemIdentifier* const VisualStageControl::addVisualAnimation(VisualAnimation& aVisualAnimation, VisualItemIdentifier& anOwnerIdentifier) {
-	theVisualStageControl = VisualStageControl::getInstance();
-	VisualAnimationsIterator it = theVisualStageControl->visualAnimations.insert(std::make_pair(anOwnerIdentifier, aVisualAnimation));
-	it->second.start();
-	return it->second.getIdentifier();
-}
-
-
-void VisualStageControl::removeVisualAnimationsWithOwnerIdentifier(VisualItemIdentifier& anOwnerIdentifier, AnimatedProperty anAnimatedProperty) {
-	bool doErase;
-	theVisualStageControl = VisualStageControl::getInstance();
-	VisualAnimationsIterator it = theVisualStageControl->visualAnimations.lower_bound(anOwnerIdentifier);
-	while (it != theVisualStageControl->visualAnimations.upper_bound(anOwnerIdentifier)) {
-		doErase = true;
-		if (anAnimatedProperty != kUndefinedAnimatedProperty) {
-			if (it->second.getAnimatedProperty() != anAnimatedProperty) {
-				doErase = false;
-			}
-		}
-		if (doErase == true) {
-			theVisualStageControl->visualAnimations.erase(it++); // increment iterator, then call erase with old iterator
-			// after erase, accessing iterator (for increment) is invalid
-		} else {
-			it++;
-		}
-	}
-
-}
-
-
-void VisualStageControl::removeVisualAnimation(const VisualItemIdentifier* const animationIdentifier) {
-	theVisualStageControl = VisualStageControl::getInstance();
-	VisualAnimationsIterator it = theVisualStageControl->visualAnimations.begin();
-	while (it != theVisualStageControl->visualAnimations.end()) {
-		if (it->second.getIdentifier() == animationIdentifier) {
-			theVisualStageControl->visualAnimations.erase(it++); // increment iterator, then call erase with old iterator
-			// after erase, accessing iterator (for increment) is invalid
-		} else {
-			it++;
-		}
-	}
-}
-
-
-void VisualStageControl::resetVisualAnimationsIterIndex(VisualItemIdentifier& aVisualAssetIdentifier) {
-	theVisualStageControl = VisualStageControl::getInstance();
-	theVisualStageControl->persistentIdentifier = aVisualAssetIdentifier;
-	theVisualStageControl->persistentAnimationIterator = theVisualStageControl->visualAnimations.lower_bound(aVisualAssetIdentifier);
-}
-
-
-VisualAnimation* VisualStageControl::getNextVisualAnimation() {
-	theVisualStageControl = VisualStageControl::getInstance();
-	if (theVisualStageControl->persistentAnimationIterator == theVisualStageControl->visualAnimations.upper_bound(theVisualStageControl->persistentIdentifier)) {
-		return NULL;
-	} else {
-		return &theVisualStageControl->persistentAnimationIterator->second;
-	}
-}
-
-
-void VisualStageControl::advanceAnimationIterator() {
-	theVisualStageControl = VisualStageControl::getInstance();
-	theVisualStageControl->persistentAnimationIterator++;
-}
-
-
-OSStatus VisualStageControl::handleKeyPressed(const char keyboadVal, const PlayerShowMode showMode) {
-	OSStatus status = unimpErr;
+void VisualStageControl::handleKeyPressed(const char keyboadVal, const PlayerShowMode showMode) {
 	
 	VisualNotification aNotification;
 	
@@ -351,9 +275,39 @@ OSStatus VisualStageControl::handleKeyPressed(const char keyboadVal, const Playe
 				VisualStageControl::dispatchNotification(aNotification);
 			}
 			break;
+		case 'i':
+		case 'I':
+			{
+				VisualActor* aVisualActor = theVisualStageControl->aVisualEnsemble->getVisualActorByName("UPDATESERVICE");
+				if (aVisualActor) {
+					UpdateServiceActor* anUpdateServiceActor = dynamic_cast<UpdateServiceActor*>(aVisualActor);
+					if (anUpdateServiceActor) {
+						VisualActorState actorState = anUpdateServiceActor->getState();
+						if (actorState == kVisActOn) {
+							VisualUpdateManager::getMoreInfoAboutAvailableUpdate();
+						}
+					}
+				}
+			}
+			break;
+		case 'd':
+		case 'D':
+			{
+				VisualActor* aVisualActor = theVisualStageControl->aVisualEnsemble->getVisualActorByName("UPDATESERVICE");
+				if (aVisualActor) {
+					UpdateServiceActor* anUpdateServiceActor = dynamic_cast<UpdateServiceActor*>(aVisualActor);
+					if (anUpdateServiceActor) {
+						VisualActorState actorState = anUpdateServiceActor->getState();
+						if (actorState == kVisActOn) {
+							VisualUpdateManager::doDownloadAvailableUpdate();
+						}
+					}
+				}
+			}
+			break;
 		default:
 			// nothing
 			break;
 	}
-	return status;
+
 }

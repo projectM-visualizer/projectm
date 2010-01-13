@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualInterpolation.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,27 +36,15 @@ freely, subject to the following restrictions:
 #ifndef VisualInterpolation_h
 #define VisualInterpolation_h
 
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
 
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualTypes.h"
+#include "VisualAnimationTypes.h"
 
 
 namespace VizKit {
 
 	/**
-	 * Types of interpolation.
-	 */
-	typedef enum {
-		kLinearInterpolation = 0, /**< Linear interpolation. */
-		kSinusoidalInterpolation /**< Sinusoidal interpolation. */
-	} InterpolationType;
-
-	/**
-	 * Interpolation between two values.
+	 * Interpolation between values 0.0 and 1.0.
 	 */
 	class VisualInterpolation {
 
@@ -84,37 +72,13 @@ namespace VizKit {
 		 * @param other Another VisualInterpolation.
 		 */
 		VisualInterpolation& operator=(const VisualInterpolation& other);
-		
-		/**
-		 * Sets the start value of the interpolation.
-		 * @param aStartValue A start value.
-		 */
-		void setStartValue(double aStartValue);
-
-		/**
-		 * Sets the end value of the interpolation.
-		 * @param anEndValue An end value.
-		 */
-		void setEndValue(double anEndValue);
-
-		/**
-		 * Returns the start value of the interpolation.
-		 * @return The start value.
-		 */
-		double getStartValue(void);
-
-		/**
-		 * Returns the end value of the interpolation.
-		 * @return The end value.
-		 */
-		double getEndValue(void);
 
 		/**
 		 * Returns the computed value at a specific position.
-		 * @param position The position of the interpolation.\ Position can be between 0.0 and 1.0.
+		 * @param position The position of the interpolation. Position can be between 0.0 and 1.0.
 		 * @return The interpolated value.
 		 */
-		double getValueAtPosition(double position);
+		double getValueAtPosition(double position) const;
 
 		/**
 		 * Sets the type of interpolation.
@@ -122,6 +86,12 @@ namespace VizKit {
 		 * @remarks Linear and sinusoidal interpolation are possible.
 		 */
 		void setType(InterpolationType anInterpolationType);
+
+		/**
+		 * Returns a random value between 0.0 and 1.0.
+		 * @return A random value between 0.0 and 1.0.
+		 */
+		static double getRandomValue(void);
 	
 	private:
 	
@@ -133,9 +103,9 @@ namespace VizKit {
 		
 		void calcDistance(); /**< Internal method to compute the distance between start and end value. */
 		
-		double startValue; /**< The start value. */
+		static const double startValue; /**< The start value. */
 		
-		double endValue; /**< The end value. */
+		static const double endValue; /**< The end value. */
 		
 		double distance; /**< The calculated distance between start and end value. */
 		
@@ -143,8 +113,6 @@ namespace VizKit {
 	
 	};
 	
-	typedef VisualInterpolation* VisualInterpolationRef; /**< Pointer to instance typedefed as ref data type. */
-
 }
 
 #endif /* VisualInterpolation_h */

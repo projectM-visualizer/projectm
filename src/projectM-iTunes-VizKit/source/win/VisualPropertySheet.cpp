@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualPropertySheet.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,6 +36,7 @@ freely, subject to the following restrictions:
 #include "VisualPropertySheet.h"
 #include "VisualDataStore.h"
 #include "VisualErrorHandling.h"
+#include "VisualPreferences.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -68,7 +69,8 @@ CVisualPropertySheet::CVisualPropertySheet(UINT nIDCaption, CWnd* pParentWnd, UI
 CVisualPropertySheet::CVisualPropertySheet(LPCTSTR pszCaption, CWnd* pParentWnd, UINT iSelectPage)
 	:CPropertySheet(pszCaption, pParentWnd, iSelectPage) {
 	AddPage(&mAboutPane);
-	AddPage(&mDisplayResolutionPane);
+	AddPage(&mOptionsPane);
+	AddPage(&mUpdatePane);
 }
 
 
@@ -103,20 +105,17 @@ bool CVisualPropertySheet::isInitialized() {
 
 
 CVisualPropertySheet::~CVisualPropertySheet() {
-	writeLog("~CVisualPropertySheet()");
 	CVisualPropertySheet::propertysheetIsInitialized = false;
 }
 
 
 void CVisualPropertySheet::OnClose() {
-	writeLog("CVisualPropertySheet::OnClose");
 	CPropertySheet::OnClose();
 	DestroyWindow();
 }
 
 
 BOOL CVisualPropertySheet::DestroyWindow() {
-	writeLog("CVisualPropertySheet::DestroyWindow");
 	return CPropertySheet::DestroyWindow();
 }
 
@@ -149,7 +148,7 @@ BOOL CVisualPropertySheet::OnInitDialog()
 	
 	MoveWindow(rectWnd);
 
-	lastActivePage = VisualDataStore::getPreferenceValueInt(VisualConfiguration::kPreferencePane);
+	lastActivePage = VisualPreferences::getValue(VisualPreferences::kPreferencePane);
 
 	if (lastActivePage != 0) {
 		SetActivePage(lastActivePage);
@@ -162,7 +161,6 @@ BOOL CVisualPropertySheet::OnInitDialog()
 
 
 void CVisualPropertySheet::PostNcDestroy() {
-	writeLog("CVisualPropertySheet::PostNcDestroy");
 	delete this;
 	CPropertySheet::PostNcDestroy();
 }

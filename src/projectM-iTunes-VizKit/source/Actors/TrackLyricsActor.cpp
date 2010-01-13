@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: TrackLyricsActor.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -40,8 +40,10 @@ freely, subject to the following restrictions:
 #include "VisualConfiguration.h"
 #include "VisualDispatch.h"
 #include "VisualDataStore.h"
+#include "VisualPreferences.h"
 #include "VisualString.h"
-
+#include "VisualStringStyle.h"
+#include "VisualImage.h"
 
 
 using namespace VizKit;
@@ -61,75 +63,93 @@ TrackLyricsActor::~TrackLyricsActor() {
 }
 
 
-void TrackLyricsActor::show() {
+void TrackLyricsActor::init() {
+	VisualNotification::registerNotification(this, kGetTrackLyricsStringStyleMsg);
+	VisualNotification::registerNotification(this, kTrackLyricsImageMsg);
+	VisualNotification::registerNotification(this, kAudioPlayTrackChangedEvt);
+	VisualNotification::registerNotification(this, kAudioPlayStoppedEvt);
+	VisualNotification::registerNotification(this, kAudioPlayPausedEvt);
+	VisualNotification::registerNotification(this, kAudioPlayResumedEvt);
+	VisualNotification::registerNotification(this, kAudioPlayReachedFadeOutTimeEvt);
+	VisualNotification::registerNotification(this, kCanvasReshapeEvt);
+	VisualNotification::registerNotification(this, kTrackInfoTextureChangedMsg);
+}
+
+
+void TrackLyricsActor::show(const VisualPlayerState& visualPlayerState) {
 	if ((this->textureOfCurrentTrackLyricsIsAvailable == true) && (this->state != kVisActOff)) {
 		this->trackLyrics->show();
 	}
 }
 
 
-void TrackLyricsActor::handleNotification(const VisualNotification& aNotification) {
+void TrackLyricsActor::handleNotification(VisualNotification& aNotification) {
 
 	//VisualActor::handleNotification(aNotification); // debug
 	
 	VisualString trackLyricsStr;
-	const VisualString missingValueString("missing value"); // "missing value" is literally sent with streams that do not convey any lyrics
 
 	VisualNotificationKey notificationKey = aNotification.getKey();
 	
 	switch (notificationKey) {
-		case kAudioMetadataIsAvailableMsg:
-			VisualDataStore::createLyricsOfCurrentTrack();
-			break;
-		case kLyricsAreAvailableMsg:
-			trackLyricsStr = VisualDataStore::getLyricsOfCurrentTrack();
-			if (trackLyricsStr.getNumberOfNonWhitespaceCharacters() > 0 && trackLyricsStr != missingValueString) {
-				OSStatus status = this->trackLyrics->makeTextureOfTrackLyrics(trackLyricsStr);
-				if (status == noErr) {
-					this->trackLyrics->calcPositionOnScreen();
-					VisualNotification::post(kLyricsTextureIsAvailableMsg);
-				}
+	
+		case kGetTrackLyricsStringStyleMsg:
+			{
+				VisualStringStyle lyricsStringStyle = this->trackLyrics->getTrackLyricsStringStyle();
+				aNotification.setObject(lyricsStringStyle);				
 			}
 			break;
-		case kLyricsTextureIsAvailableMsg:
-			this->textureOfCurrentTrackLyricsIsAvailable = true;
-			this->trackLyrics->fadeIn(VisualDataStore::getPreferenceValueInt(VisualConfiguration::kFadeInTimeOnPlayInMS));
+
+		case kTrackLyricsImageMsg:
+			{
+				VisualImage* lyricsImage = dynamic_cast<VisualImage*>(aNotification.getObject());
+				this->trackLyrics->setTrackLyricsImage(*lyricsImage);
+				this->trackLyrics->reshape();
+				//VisualDataStore::setValue(VisualDataStore::kTrackInfoTextureHeight, this->trackTitle->getTrackInfoTextureHeightInPixels());
+				this->textureOfCurrentTrackLyricsIsAvailable = true;
+				//VisualNotification::post(kLyricsTextureIsAvailableMsg);
+				//VisualNotification::post(kTrackLyricsTextureChangedMsg);
+				this->trackLyrics->fadeIn(VisualPreferences::getValue(VisualPreferences::kFadeInTimeOnPlayInMS));
+			}
 			break;
-		case kAudioPlayStartedEvt:
+			
+		case kAudioPlayTrackChangedEvt:
 			this->trackLyrics->clear();
 			this->textureOfCurrentTrackLyricsIsAvailable = false;
 			break;
+			
 		case kAudioPlayStoppedEvt:
 			this->trackLyrics->clear();
 			this->textureOfCurrentTrackLyricsIsAvailable = false;
 			break;
+			
 		case kAudioPlayPausedEvt:
-			this->trackLyrics->fadeOut(VisualDataStore::getPreferenceValueInt(VisualConfiguration::kFadeOutTimeOnPauseInMS), 0.15f);
+			this->trackLyrics->fadeOut(VisualPreferences::getValue(VisualPreferences::kFadeOutTimeOnPauseInMS), 0.15f);
 			break;
+			
 		case kAudioPlayResumedEvt:
-			this->trackLyrics->fadeIn(VisualDataStore::getPreferenceValueInt(VisualConfiguration::kFadeInTimeOnResumeInMS));
+			this->trackLyrics->fadeIn(VisualPreferences::getValue(VisualPreferences::kFadeInTimeOnResumeInMS));
 			break;
-		case kAudioPlayReachedFadeOutTimeBeforeEndOfTrackEvt:
-			this->trackLyrics->fadeOut(VisualDataStore::getPreferenceValueInt(VisualConfiguration::kFadeOutTimeBeforeEndOfTrackInMS));
+			
+		case kAudioPlayReachedFadeOutTimeEvt:
+			this->trackLyrics->fadeOut(VisualPreferences::getValue(VisualPreferences::kFadeOutTimeBeforeEndOfTrackInMS));
 			break;
+			
 		case kCanvasReshapeEvt:
 			if (textureOfCurrentTrackLyricsIsAvailable == true) {
-				this->trackLyrics->calcPositionOnScreen();
+				this->trackLyrics->reshape();
 			}
 			break;
+			
 		case kTrackInfoTextureChangedMsg:
 			if (textureOfCurrentTrackLyricsIsAvailable == true) {
-				this->trackLyrics->calcPositionOnScreen();
+				this->trackLyrics->reshape();
 			}
 			break;
+			
 		default:
 			writeLog("unhandled Notification in TrackLyricsActor");
 			break;
 	}
 
-}
-
-
-void TrackLyricsActor::clear() {
-	this->trackLyrics->clear();
 }

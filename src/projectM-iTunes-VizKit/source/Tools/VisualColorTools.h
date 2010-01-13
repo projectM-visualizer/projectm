@@ -1,135 +1,260 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualColorTools.h
  *
  */
 
+/***************************************************************************
+ 
+ Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
+ 
+ 
+ This software is provided 'as-is', without any expressed or implied warranty. 
+ In no event will the authors be held liable for any damages
+ arising from the use of this software.
+ 
+ Permission is granted to anyone to use this software for any purpose,
+ including commercial applications, and to alter it and redistribute it
+ freely, subject to the following restrictions:
+ 
+ 1. The origin of this software must not be misrepresented; 
+ you must not claim that you wrote the original software. 
+ If you use this software in a product, an acknowledgment 
+ in the product documentation would be appreciated 
+ but is not required.
+ 
+ 2. Altered source versions must be plainly marked as such, 
+ and must not be misrepresented as being the original software.
+ 
+ 3. This notice may not be removed or altered from any source distribution.
+ 
+ ***************************************************************************/
 
 #ifndef VisualColorTools_h
 #define VisualColorTools_h
 
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
-
-
-/*
- * Copyright (C) 2002  Terence M. Welsh
- *
- * Rgbhsl is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * Rgbhsl is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
- 
-// This library converts between colors defined with RGB values and HSL
-// values.  It also finds in-between colors by moving linearly through
-// HSL space.
-// All functions take values for r, g, b, h, s, and l between 0.0 and 1.0
-// (RGB = red, green, blue;  HSL = hue, saturation, luminosity)
-
+#include "VisualTypes.h"
+#include "VisualGraphicTypes.h"
 
 
 namespace VizKit {
 
 	/**
-	 * Various functionality to deal with rgb and hsl color values.
+	 * Various utility functions dealing with pixel color values.
 	 */
 	class VisualColorTools {
 
 	public:
 
 		/**
-		 * Converts rgb values to their hsl equivalent.
-		 * @param r The red value.
-		 * @param g The green value.
-		 * @param b The blue value.
-		 * @param[out] h The hue value.
-		 * @param[out] s The saturation value.
-		 * @param[out] l The lightness value.
+		 * Converts from VertexColor to PixelColor.
+		 * @param vertexColor The vertexColor to convert.
+		 * @return Returns the pixel color value of the vertex color.
 		 */
-		static void rgb2hsl(const float r, const float g, const float b, float &h, float &s, float &l);
+		static PixelColor getPixelColor(const VertexColor& vertexColor);
+		
+		/**
+		 * Converts from PixelColor to VertexColor.
+		 * @param pixelColor The pixelColor to convert.
+		 * @return Returns the vertex color value of the pixel color.
+		 */
+		static VertexColor getVertexColor(const PixelColor& pixelColor);
+		
+		/**
+		 * Returns the alpha, red, green, and blue color channel values.
+		 * @param pixelColor The pixelColor to analyze.
+		 * @param[out] alpha The 8-bit value of the alpha component.
+		 * @param[out] red The 8-bit value of the red component.
+		 * @param[out] green The 8-bit value of the green component.
+		 * @param[out] blue The 8-bit value of the blue component.
+		 */
+		static void getColorComponentValues(const PixelColor& pixelColor, uint8& alpha, uint8& red, uint8& green, uint8& blue);
+		
+		/**
+		 * Returns the Pixel color value for given alpha, red, green, and blue color channel values.
+		 * @param[out] alpha The 8-bit value of the alpha component.
+		 * @param[out] red The 8-bit value of the red component.
+		 * @param[out] green The 8-bit value of the green component.
+		 * @param[out] blue The 8-bit value of the blue component.
+		 * @return The pixel color.
+		 */
+		static PixelColor getPixelColor(const uint8& alpha, const uint8& red, const uint8& green, const uint8& blue);
+		
+		/**
+		 * Calculates the average pixel color for a number of pixel colors.
+		 * @param colors Array of pixel colors.
+		 * @param count The number of pixel colors to summarize.
+		 * @param[out] avgPixelColor The average pixel color.
+		 */	
+		static void getMeanPixelColor(const PixelColor* colors, uint32 count, PixelColor& avgPixelColor);
+		
+		/**
+		 * Returns the weighted average value.
+		 * @param colorX The existing color value.
+		 * @param colorY The new incoming color value.
+		 * @param count The number of existing color values. The new incoming color value (colorY) is weighted with 1 while the existing color value (colorX) is weighted with (count - 1).
+		 */
+		static PixelColor getMeanRGBPixelColor(const PixelColor& colorX, const PixelColor& colorY, const uint32& count);
 
 		/**
-		 * Converts hsl values to their rgb equivalent.
-		 * @param h The hue value.
-		 * @param s The saturation value.
-		 * @param l The lightness value.
-		 * @param[out] r The red value.
-		 * @param[out] g The green value.
-		 * @param[out] b The blue value.
+		 * Converts a color from RGB to HSL.
+		 * @param r Red color component value.
+		 * @param g Green color component value.
+		 * @param b Blue color component value.
+		 * @param[out] h Hue color value.
+		 * @param[out] s Saturation color value.
+		 * @param[out] l Lightness color value.
 		 */
-		static void hsl2rgb(const float h, const float s, const float l, float &r, float &g, float &b);
+		static void RGBToHSL(const double& r, const double& g, const double& b, double* h, double* s, double* l);
 
 		/**
-		 * Calculates a tween value for two sets of hsl values.
-		 * A tween value of 0.0 will output the first
-		 * color while a tween value of 1.0 will output the second color.
-		 * A value of 0 for direction indicates a positive progression around
-		 * the color wheel (i.e. red -> yellow -> green -> cyan...).  A value of
-		 * 1 does the opposite.
-		 * @param h1 The first hue value.
-		 * @param s1 The first saturation value.
-		 * @param l1 The first lightness value.
-		 * @param h2 The second hue value.
-		 * @param s2 The second saturation value.
-		 * @param l2 The second lightness value.
-		 * @param tween The tween value.
-		 * @param direction The direction value.
-		 * @param[out] outh The calculated hue value.
-		 * @param[out] outs The calculated saturation value.
-		 * @param[out] outl The calculated lightness value.
+		 * Converts a color from HSL to RGB.
+		 * @param h Hue color value.
+		 * @param s Saturation color value.
+		 * @param l Lightness color value.
+		 * @param[out] r Red color component value.
+		 * @param[out] g Green color component value.
+		 * @param[out] b Blue color component value.
 		 */
-		static void hslTween(const float h1, const float s1, const float l1,
-					  const float h2, const float s2, const float l2, const float tween, const int direction,
-					  float &outh, float &outs, float &outl);
+		static void HSLToRGB(const double& h, const double& s, const double& l, double* r, double* g, double* b);
 
 		/**
-		 * Calculates a tween value for two sets of rgb values.
-		 * A tween value of 0.0 will output the first
-		 * color while a tween value of 1.0 will output the second color.
-		 * A value of 0 for direction indicates a positive progression around
-		 * the color wheel (i.e. red -> yellow -> green -> cyan...).  A value of
-		 * 1 does the opposite.
-		 * @param r1 The first hue value.
-		 * @param g1 The first saturation value.
-		 * @param b1 The first lightness value.
-		 * @param r2 The second hue value.
-		 * @param g2 The second saturation value.
-		 * @param b2 The second lightness value.
-		 * @param tween The tween value.
-		 * @param direction The direction value.
-		 * @param[out] outr The calculated red value.
-		 * @param[out] outg The calculated green value.
-		 * @param[out] outb The calculated blue value.
+		 * Converts a color from RGB to HSV.
+		 * @param r Red color component value.
+		 * @param g Green color component value.
+		 * @param b Blue color component value.
+		 * @param[out] h Hue color value.
+		 * @param[out] s Saturation color value.
+		 * @param[out] v Value color value.
 		 */
-		static void rgbTween(const float r1, const float g1, const float b1,
-					  const float r2, const float g2, const float b2, const float tween, const int direction,
-					  float &outr, float &outg, float &outb);
+		static void RGBToHSV(const double& r, const double& g, const double& b, double* h, double* s, double* v);
 
+		/**
+		 * Converts a color from HSV to RGB.
+		 * @param h Hue color value.
+		 * @param s Saturation color value.
+		 * @param v Value color value.
+		 * @param[out] r Red color component value.
+		 * @param[out] g Green color component value.
+		 * @param[out] b Blue color component value.
+		 */
+		static void HSVToRGB(const double& h, const double& s, const double& v, double* r, double* g, double* b);
+		
+		/**
+		 * Performs a pixel conversion in-place. E.g. ARGB pixel data is converted to BGRA.
+		 * @param pixels The buffer of 32bpp pixel data.
+		 * @param numberOfPixels The number of pixels.
+		 */
+		static void convertInterleavedPixels1234To4321(PixelColor* pixels, uint32 numberOfPixels);
+		
+		/**
+		 * Performs a pixel conversion in-place. E.g. BGRA pixel data is converted to RGBA.
+		 * @param pixels The buffer of 32bpp pixel data.
+		 * @param numberOfPixels The number of pixels.
+		 */
+		static void convertInterleavedPixels1234To3214(PixelColor* pixels, uint32 numberOfPixels);
+		
+		/**
+		 * Performs a pixel conversion in-place. ARGB is converted to RGB with alpha value being premultiplied.
+		 * @param[in,out] argbPixel An ARGB pixel (on return the ARGB pixel is converted to RGB with premultiplied alpha).
+		 */
+		static void convertARGBPixelToRGB(PixelColor& argbPixel);
+		
+		/**
+		 * Returns the distance between two RGB pixel values.
+		 * @param colorX One color.
+		 * @param colorY The other color.
+		 * @return The distance between two RGB pixel values.
+		 */
+		static double getDistance(const PixelColor& colorX, const PixelColor& colorY);
+
+		/**
+		 * Creates an image buffer with 8-bit per color/alpha channel ARGB pixel data.
+		 * @param width The width of the bitmap data.
+		 * @param height The height of the bitmap data.
+		 * @param checkColor The color of the check squares of the sample image.
+		 * @return A pointer to allocated pixel data.
+		 * @remarks The caller has to deallocate the pixel buffer by calling free().
+		 */
+		static PixelColor* createARGBCheckPixels(uint32 width, uint32 height, const VertexColor& checkColor = red);
+		
+		/**
+		 * Creates an image buffer with 8-bit per color/alpha channel BGRA pixel data.
+		 * @param width The width of the bitmap data.
+		 * @param height The height of the bitmap data.
+		 * @param checkColor The color of the check squares of the sample image.
+		 * @return A pointer to allocated pixel data.
+		 * @remarks The caller has to deallocate the pixel buffer by calling free().
+		 */
+		static PixelColor* createBGRACheckPixels(uint32 width, uint32 height, const VertexColor& checkColor = red);
+		
+		/**
+		 * Creates an image buffer with 8-bit per color/alpha channel RGBA pixel data.
+		 * @param width The width of the bitmap data.
+		 * @param height The height of the bitmap data.
+		 * @param checkColor The color of the check squares of the sample image.
+		 * @return A pointer to allocated pixel data.
+		 * @remarks The caller has to deallocate the pixel buffer by calling free().
+		 */
+		static PixelColor* createRGBACheckPixels(uint32 width, uint32 height, const VertexColor& checkColor = red);
+		
+		/**
+		 * Creates an image buffer with 8-bit per color/alpha channel ABGR pixel data.
+		 * @param width The width of the bitmap data.
+		 * @param height The height of the bitmap data.
+		 * @param checkColor The color of the check squares of the sample image.
+		 * @return A pointer to allocated pixel data.
+		 * @remarks The caller has to deallocate the pixel buffer by calling free().
+		 */
+		static PixelColor* createABGRCheckPixels(uint32 width, uint32 height, const VertexColor& checkColor = red);
+		
 	private:
 
-		/** The constructor.\ VisualColorTools is a collection of static methods.\ Class does not need any instances.\ Constructor is private and not implemented. */
+		/** The constructor. VisualColorTools is a collection of static methods. Class does not need any instances. Constructor is private and not implemented. */
 		VisualColorTools();
 
-		/** The destructor.\ VisualColorTools is a collection of static methods.\ Class does not need any instances.\ Destructor is private and not implemented. */
+		/** The destructor. VisualColorTools is a collection of static methods. Class does not need any instances. Destructor is private and not implemented. */
 		~VisualColorTools();
+
+		/**
+		 * Returns the minimum value of three values.
+		 * @param val1 First value.
+		 * @param val2 Second value.
+		 * @param val3 Third value.
+		 * @return The minimum value of the three values.
+		 */
+		static double min3(const double& val1, const double& val2, const double& val3);
+
+		/**
+		 * Returns the maximum value of three values.
+		 * @param val1 First value.
+		 * @param val2 Second value.
+		 * @param val3 Third value.
+		 * @return The maximum value of the three values.
+		 */
+		static double max3(const double& val1, const double& val2, const double& val3);
+		
+		/**
+		 * Helper function to match hue to a red, green, or blue value.
+		 * @param v1 First value.
+		 * @param v2 Second value.
+		 * @param hue Hue value.
+		 * @return Color component value (red, green, or blue).
+		 */
+		static double hueToRGB(const double& v1, const double& v2, const double& hue);
+		
+		/**
+		 * Internal method to create an image buffer with 8-bit per color/alpha channel pixel data in given format (ARGB, BGRA, RGBA, ABGR).
+		 * @param width The width of the bitmap data.
+		 * @param height The height of the bitmap data.
+		 * @param format The format of the pixel data (e.g. ARGB).
+		 * @param checkColor The color of the check squares of the sample image.
+		 * @return A pointer to allocated pixel data.
+		 */
+		static PixelColor* createCheckPixels(uint32 width, uint32 height, const char* const format, const VertexColor& checkColor);
 		
 	};
 

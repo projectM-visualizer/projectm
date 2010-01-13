@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: TrackLyrics.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -41,18 +41,19 @@ freely, subject to the following restrictions:
 #include "VisualStageBox.h"
 #include "VisualDispatch.h"
 #include "VisualDataStore.h"
-#include "VisualString.h"
-#include "VisualStringStyle.h"
+#include "VisualPreferences.h"
+#include "VisualStyledString.h"
 #include "VisualAnimation.h"
 #include "VisualTimeline.h"
 
+#include "VisualFile.h" // test
 
 
 using namespace VizKit;
 
 
 TrackLyrics::TrackLyrics() {
-	trackLyricsAsset.setOpacityValue(kFrontVertexChain, 0.0f);
+	trackLyricsAsset.setOpacityValue(0.0);
 }
 
 
@@ -62,45 +63,60 @@ TrackLyrics::~TrackLyrics() {
 
 
 void TrackLyrics::show() {
-	this->trackLyricsAsset.draw(kFrontVertexChain);
+	this->trackLyricsAsset.draw(this->vertexChainId);
 }
 
 
-OSStatus TrackLyrics::makeTextureOfTrackLyrics(const VisualString& trackLyrics) {
+VisualStringStyle TrackLyrics::getTrackLyricsStringStyle() {
 
 	VisualStringStyle stringStyle;
 	
-	VisualDataStore::getPreferenceValueChar(VisualConfiguration::kTrackLyricsFont, stringStyle.fontNameStr);
+	VisualPreferences::getValue(VisualPreferences::kTrackLyricsFont, stringStyle.fontNameStr);
 	
-	stringStyle.fontSize = (float)(VisualDataStore::getPreferenceValueInt(VisualConfiguration::kTrackLyricsFontSize));
+	stringStyle.fontSize = (float)(VisualPreferences::getValue(VisualPreferences::kTrackLyricsFontSize));
 
-	stringStyle.fontColor.r = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsFontColorRedFloat);
-	stringStyle.fontColor.g = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsFontColorGreenFloat);
-	stringStyle.fontColor.b = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsFontColorBlueFloat);
+	stringStyle.fontColor.r = VisualPreferences::getValue(VisualPreferences::kTrackLyricsFontColorRedFloat);
+	stringStyle.fontColor.g = VisualPreferences::getValue(VisualPreferences::kTrackLyricsFontColorGreenFloat);
+	stringStyle.fontColor.b = VisualPreferences::getValue(VisualPreferences::kTrackLyricsFontColorBlueFloat);
+	stringStyle.fontColor.red = VisualPreferences::getValue(VisualPreferences::kTrackLyricsFontColorRedFloat);
+	stringStyle.fontColor.green = VisualPreferences::getValue(VisualPreferences::kTrackLyricsFontColorGreenFloat);
+	stringStyle.fontColor.blue = VisualPreferences::getValue(VisualPreferences::kTrackLyricsFontColorBlueFloat);
 	
 	stringStyle.horizontalAlignment = kLeftAligned;
-
-	this->clear();
-
-	VisualImage lyricsImage;
-	OSStatus status = lyricsImage.initWithString(trackLyrics, stringStyle);
 	
-	if (status == noErr) {
-	
-		this->trackLyricsAsset.setImage(lyricsImage);
-		
-		VisualStageBox* trackLyricsAssetBox = this->trackLyricsAsset.getBox();
-		trackLyricsAssetBox->setContentPixelWidth(lyricsImage.getWidth());
-		trackLyricsAssetBox->setContentPixelHeight(lyricsImage.getHeight());
-		
-	}
-	
-	return status;
-
+	return stringStyle;
 }
 
 
-void TrackLyrics::calcPositionOnScreen() {
+void TrackLyrics::setTrackLyricsImage(VisualImage& styledTrackLyricsStringImage) {
+
+	// test
+	/*
+	VisualFile testFile;
+	bool success = testFile.initWithUserDesktopDirectory();
+	VisualString fileName("testDaten.txt");
+	success = testFile.appendFileName(fileName);
+	VisualString testString;
+	testString.initWithContentsOfFile(testFile);
+	bool success = lyricsImage.initWithString(testString, stringStyle);
+	*/
+	// test
+
+	this->clear();
+	this->trackLyricsAsset.setImage(styledTrackLyricsStringImage);
+
+/*
+	VisualFile aFile;
+	aFile.initWithUserDesktopDirectory();
+	VisualString fileName("testLyrics.png");
+	bool success = false;
+	success = aFile.appendFileName(fileName);
+	styledTrackLyricsStringImage.writeToPNGFile(aFile);
+*/
+}
+
+
+void TrackLyrics::reshape() {
 
 	VisualStageBox* trackLyricsAssetBox = this->trackLyricsAsset.getBox();
 	trackLyricsAssetBox->setScalingBehaviour(kPreserveAspectRatio);
@@ -111,82 +127,103 @@ void TrackLyrics::calcPositionOnScreen() {
 	
 	trackLyricsAssetPosition.horizontalAlignment = kCenterAligned;
 	trackLyricsAssetPosition.verticalAlignment = kTopAligned;
+	
+	trackLyricsAssetPosition.minMarginBottom = (double)VisualDataStore::getValueInt(VisualDataStore::kTrackInfoTextureHeight) + 5.0;
+	trackLyricsAssetPosition.minMarginBottomUnit = kPixel;
 
 	trackLyricsAssetPosition.minMarginTop = 5;
 	trackLyricsAssetPosition.minMarginTopUnit = kPixel;
 
+	trackLyricsAssetPosition.minMarginLeft = 5;
+	trackLyricsAssetPosition.minMarginLeftUnit = kPixel;
+
 	trackLyricsAssetPosition.minMarginRight = 5;
 	trackLyricsAssetPosition.minMarginRightUnit = kPixel;
 
-	trackLyricsAssetPosition.minMarginLeft = 5;
-	trackLyricsAssetPosition.minMarginLeftUnit = kPixel;
-	
-	trackLyricsAssetPosition.minMarginBottom = (double)VisualDataStore::getValueInt(VisualConfiguration::kTrackInfoTextureHeight) + 5.0;
-	trackLyricsAssetPosition.minMarginBottomUnit = kPixel;
-
 	this->trackLyricsAsset.setPosition(trackLyricsAssetPosition);
-	
+
+	VisualVertex* aVertex = NULL;
+	trackLyricsAssetBox->initializeVertexChain(this->vertexChainId);
+
 	VertexColor aVertexColor;
-	for (UInt8 i = 0; i < 4; i++) {
+	for (uint8 i = 0; i < 4; i++) {
 		switch (i) {
 			case 0:
-				aVertexColor.r = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopLeftRed);
-				aVertexColor.g = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopLeftGreen);
-				aVertexColor.b = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopLeftBlue);
-				aVertexColor.a = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopLeftAlpha);
-				this->trackLyricsAsset.setTopLeftFrontVertexColor(aVertexColor);
+				aVertexColor.r = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorTopLeftRed);
+				aVertexColor.g = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorTopLeftGreen);
+				aVertexColor.b = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorTopLeftBlue);
+				aVertexColor.a = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorTopLeftAlpha);
+				aVertexColor.red = aVertexColor.r;
+				aVertexColor.green = aVertexColor.g;
+				aVertexColor.blue = aVertexColor.b;
+				aVertexColor.alpha = aVertexColor.a;
+				aVertex = trackLyricsAssetBox->createVertex(0.0, 1.0, 0.0, 0.0, 1.0, aVertexColor);
+				trackLyricsAssetBox->addVertexToChain(this->vertexChainId, aVertex);
 				break;
 			case 1:
-				aVertexColor.r = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomLeftRed);
-				aVertexColor.g = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomLeftGreen);
-				aVertexColor.b = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomLeftBlue);
-				aVertexColor.a = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomLeftAlpha);
-				this->trackLyricsAsset.setBottomLeftFrontVertexColor(aVertexColor);
+				aVertexColor.r = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorBottomLeftRed);
+				aVertexColor.g = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorBottomLeftGreen);
+				aVertexColor.b = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorBottomLeftBlue);
+				aVertexColor.a = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorBottomLeftAlpha);
+				aVertexColor.red = aVertexColor.r;
+				aVertexColor.green = aVertexColor.g;
+				aVertexColor.blue = aVertexColor.b;
+				aVertexColor.alpha = aVertexColor.a;
+				aVertex = trackLyricsAssetBox->createVertex(0.0, 0.0, 0.0, 0.0, 0.0, aVertexColor);
+				trackLyricsAssetBox->addVertexToChain(this->vertexChainId, aVertex);
 				break;
 			case 2:
-				aVertexColor.r = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomRightRed);
-				aVertexColor.g = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomRightGreen);
-				aVertexColor.b = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomRightBlue);
-				aVertexColor.a = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorBottomRightAlpha);
-				this->trackLyricsAsset.setBottomRightFrontVertexColor(aVertexColor);
+				aVertexColor.r = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorBottomRightRed);
+				aVertexColor.g = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorBottomRightGreen);
+				aVertexColor.b = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorBottomRightBlue);
+				aVertexColor.a = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorBottomRightAlpha);
+				aVertexColor.red = aVertexColor.r;
+				aVertexColor.green = aVertexColor.g;
+				aVertexColor.blue = aVertexColor.b;
+				aVertexColor.alpha = aVertexColor.a;
+				aVertex = trackLyricsAssetBox->createVertex(1.0, 0.0, 0.0, 1.0, 0.0, aVertexColor);
+				trackLyricsAssetBox->addVertexToChain(this->vertexChainId, aVertex);
 				break;
 			case 3:
-				aVertexColor.r = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopRightRed);
-				aVertexColor.g = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopRightGreen);
-				aVertexColor.b = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopRightBlue);
-				aVertexColor.a = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackLyricsTextureColorTopRightAlpha);
-				this->trackLyricsAsset.setTopRightFrontVertexColor(aVertexColor);
+				aVertexColor.r = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorTopRightRed);
+				aVertexColor.g = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorTopRightGreen);
+				aVertexColor.b = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorTopRightBlue);
+				aVertexColor.a = VisualPreferences::getValue(VisualPreferences::kTrackLyricsTextureColorTopRightAlpha);
+				aVertexColor.red = aVertexColor.r;
+				aVertexColor.green = aVertexColor.g;
+				aVertexColor.blue = aVertexColor.b;
+				aVertexColor.alpha = aVertexColor.a;
+				aVertex = trackLyricsAssetBox->createVertex(1.0, 1.0, 0.0, 1.0, 1.0, aVertexColor);
+				trackLyricsAssetBox->addVertexToChain(this->vertexChainId, aVertex);
 				break;
 			default:
 				writeLog("ERR: switch case unknown");
 		}
 	}
 
-	this->trackLyricsAsset.generateVertexChain(kFrontVertexChain);
-
 	char trackLyricsLayoutPos[128];
-	sprintf(trackLyricsLayoutPos, "top: %f, left: %f, bottom: %f, right: %f", trackLyricsAssetBox->getTopCoord(), trackLyricsAssetBox->getLeftCoord(), trackLyricsAssetBox->getBottomCoord(), trackLyricsAssetBox->getRightCoord());
+	sprintf(trackLyricsLayoutPos, "trackLyrics top: %f, left: %f, bottom: %f, right: %f", trackLyricsAssetBox->getTopCoord(), trackLyricsAssetBox->getLeftCoord(), trackLyricsAssetBox->getBottomCoord(), trackLyricsAssetBox->getRightCoord());
 	setProcessInfo("TrackLyricsLayout", trackLyricsLayoutPos);
 
 }
 
 
-void TrackLyrics::fadeIn(UInt32 durationInMilliseconds) {
+void TrackLyrics::fadeIn(uint32 durationInMilliseconds) {
 	VisualAnimation fadeInAnimation(kAnimatedOpacity);
 	fadeInAnimation.setDurationInMilliseconds(durationInMilliseconds);
 	this->trackLyricsAsset.addAnimation(fadeInAnimation);
 }
 
 
-void TrackLyrics::fadeOut(UInt32 durationInMilliseconds, float clampValue) {
+void TrackLyrics::fadeOut(uint32 durationInMilliseconds, float clampValue) {
 	VisualAnimation fadeOutAnimation(kAnimatedOpacity);
 	fadeOutAnimation.setDurationInMilliseconds(durationInMilliseconds);
 	fadeOutAnimation.setStartValue(1.0);
-	fadeOutAnimation.setEndValue(0.0);
-	VisualTimeline* fadeOutTimeline = fadeOutAnimation.getTimeline();
-	fadeOutTimeline->setInterpolationType(kSinusoidalInterpolation);
+	fadeOutAnimation.setStopValue(0.0);
+	//VisualTimeline* fadeOutTimeline = fadeOutAnimation.getTimeline();
+	//fadeOutTimeline->setInterpolationType(kSinusoidalInterpolation);
 	if (clampValue > 0.0) {
-		fadeOutAnimation.setMinClampValue(clampValue);
+		//fadeOutAnimation.setMinClampValue(clampValue);
 	}
 	this->trackLyricsAsset.addAnimation(fadeOutAnimation);
 }
@@ -207,5 +244,5 @@ void TrackLyrics::clear() {
 	
 	this->trackLyricsAsset.removeAnimations();
 	
-	this->trackLyricsAsset.setOpacityValue(kFrontVertexChain, 0.0f);
+	this->trackLyricsAsset.setOpacityValue(0.0);
 }

@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: CocoaStringTexture.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -38,6 +38,8 @@ freely, subject to the following restrictions:
 #import <AppKit/AppKit.h>
 
 
+NSAutoreleasePool* temporaryAutoreleasePool;
+
 
 /* CocoaStringTexture generates a string texture by means of Cocoa framework. */
 
@@ -58,36 +60,59 @@ OSStatus initCocoaForCarbonBundle(void);
  * @param[out] bitmapWidth The width of the string (in pixels).
  * @param[out] bitmapHeight The height of the string (in pixels).
  * @param fontNameStr The name of the font.
- * @param[in,out] fontSize The font size.\ On return the fontSize is set and with regard to the optional contraints maxPixelWidth and maxPixelHeight.
+ * @param[in,out] fontSize The font size. On return the fontSize is set and with regard to the optional contraints maxPixelWidth and maxPixelHeight.
  * @param red The red color component of the text font.
  * @param green The green color component of the text font.
  * @param blue The blue color component of the text font.
- * @param maxPixelWidth The requested maximum width of the texture.\ If 0 the argument is ignored.
- * @param maxPixelHeight The requested maximum height of the texture.\ If 0 the argument is ignored.
- * @param alignment The horizontal alignment of the string.\ Possible values: left, center, right.
+ * @param maxPixelWidth The requested maximum width of the texture. If 0 the argument is ignored.
+ * @param maxPixelHeight The requested maximum height of the texture. If 0 the argument is ignored.
+ * @param alignment The horizontal alignment of the string. Possible values: left, center, right.
  * @remarks To access the function with CFBundleGetFunctionPointerForName() the visibility is set to default.
 */
 __attribute__((visibility("default")))
-OSStatus getDimensionsOfStringBitmap(CFStringRef stringValue, UInt32* bitmapWidth, UInt32* bitmapHeight, const char* const fontNameStr, float* fontSize, float red, float green, float blue, UInt16 maxPixelWidth, UInt16 maxPixelHeight, const char* const alignment);
+bool getDimensionsOfStringBitmap(CFStringRef stringValue, UInt32* bitmapWidth, UInt32* bitmapHeight, const char* const fontNameStr, double* fontSize, double red, double green, double blue, UInt16 maxPixelWidth, UInt16 maxPixelHeight, const char* const alignment);
 
 /**
  * Writes ARGB pixel bitmap data into provided buffer.
  * @param stringValue The string value that should be converted into a texture.
- * @param bitmapWidth The width of the bitmap (in pixels).\ The size of the bitmap can be different from the exact size of the string so that it may fit for a power-of-2 texture.
- * @param bitmapHeight The height of the bitmap (in pixels).\ The size of the bitmap can be different from the exact size of the string so that it may fit for a power-of-2 texture.
+ * @param bitmapWidth The width of the bitmap (in pixels). The size of the bitmap can be different from the exact size of the string so that it may fit for a power-of-2 texture.
+ * @param bitmapHeight The height of the bitmap (in pixels). The size of the bitmap can be different from the exact size of the string so that it may fit for a power-of-2 texture.
  * @param fontNameStr The name of the font.
  * @param fontSize The font size.
  * @param red The red color component of the text font.
  * @param green The green color component of the text font.
  * @param blue The blue color component of the text font.
- * @param maxPixelWidth The requested maximum width of the texture.\ If 0 the argument is ignored.
- * @param maxPixelHeight The requested maximum height of the texture.\ If 0 the argument is ignored.
- * @param alignment The horizontal alignment of the string.\ Possible values: left, center, right.
+ * @param maxPixelWidth The requested maximum width of the texture. If 0 the argument is ignored.
+ * @param maxPixelHeight The requested maximum height of the texture. If 0 the argument is ignored.
+ * @param alignment The horizontal alignment of the string. Possible values: left, center, right.
  * @param[out] bitmapOut Pointer to pointer to the buffer into which the pixel bitmap data is written.
- * @remarks The bitmapOut buffer is assumed to have allocated sufficient memory.\ To access the function with CFBundleGetFunctionPointerForName() the visibility is set to default.
+ * @remarks The bitmapOut buffer is assumed to have allocated sufficient memory. To access the function with CFBundleGetFunctionPointerForName() the visibility is set to default.
 */
 __attribute__((visibility("default")))
-OSStatus getStringBitmapData(CFStringRef stringValue, UInt32 bitmapWidth, UInt32 bitmapHeight, const char* const fontNameStr, float fontSize, float red, float green, float blue, const char* const alignment, UInt32** bitmapOut);
+bool getStringBitmapData(CFStringRef stringValue, UInt32 bitmapWidth, UInt32 bitmapHeight, const char* const fontNameStr, double fontSize, double red, double green, double blue, const char* const alignment, UInt32** bitmapOut);
+
+/**
+ * Returns a list of names of installed fonts.
+ * @return A list of names of installed fonts.
+ */
+__attribute__((visibility("default")))
+NSArray* getCocoaListOfFontNames(void);
+
+/**
+ * Answers the question whether a font is currently available.
+ * @param fontName The name of the font.
+ * @return noErr if font is available.
+ */
+__attribute__((visibility("default")))
+Boolean cocoaFontIsAvailable(NSString* fontName);
+
+/**
+ * Activates a font by loading a font resource.
+ * @param fontName The name of the font.
+ * @return Result of operation.
+ */
+__attribute__((visibility("default")))
+OSStatus activateCocoaFont(NSString* fontName);
 
 /**
  * Prints a CFString to log.
@@ -97,3 +122,8 @@ OSStatus getStringBitmapData(CFStringRef stringValue, UInt32 bitmapWidth, UInt32
 __attribute__((visibility("default")))
 void logCFString(CFStringRef aString);
 
+/**
+ * Releases the temporary autorelease pool.
+ */
+__attribute__((visibility("default")))
+void releaseTemporaryAutoreleasePool(void);

@@ -1,36 +1,36 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualConvolutionFilter.cpp
  *
  */
 
 /***************************************************************************
-
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
-
-
-This software is provided 'as-is', without any expressed or implied warranty. 
-In no event will the authors be held liable for any damages
-arising from the use of this software.
-
-Permission is granted to anyone to use this software for any purpose,
-including commercial applications, and to alter it and redistribute it
-freely, subject to the following restrictions:
-
-1. The origin of this software must not be misrepresented; 
-   you must not claim that you wrote the original software. 
-   If you use this software in a product, an acknowledgment 
-   in the product documentation would be appreciated 
-   but is not required.
-
-2. Altered source versions must be plainly marked as such, 
-   and must not be misrepresented as being the original software.
-
-3. This notice may not be removed or altered from any source distribution.
-
+ 
+ Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
+ 
+ 
+ This software is provided 'as-is', without any expressed or implied warranty. 
+ In no event will the authors be held liable for any damages
+ arising from the use of this software.
+ 
+ Permission is granted to anyone to use this software for any purpose,
+ including commercial applications, and to alter it and redistribute it
+ freely, subject to the following restrictions:
+ 
+ 1. The origin of this software must not be misrepresented; 
+ you must not claim that you wrote the original software. 
+ If you use this software in a product, an acknowledgment 
+ in the product documentation would be appreciated 
+ but is not required.
+ 
+ 2. Altered source versions must be plainly marked as such, 
+ and must not be misrepresented as being the original software.
+ 
+ 3. This notice may not be removed or altered from any source distribution.
+ 
  ***************************************************************************/
 
 #include "VisualConvolutionFilter.h"
@@ -41,57 +41,63 @@ freely, subject to the following restrictions:
 using namespace VizKit;
 
 
-VisualConvolutionFilter::VisualConvolutionFilter(const Effect effect, const UInt8 colCount, const UInt8 rowCount) {
-
+VisualConvolutionFilter::VisualConvolutionFilter(const Effect effect, const uint8 colCount, const uint8 rowCount) {
+	
 	numberOfKernelValueColumns = colCount;
 	numberOfKernelValueRows = rowCount;
 	
 	postConvolutionScaleFactor = 1.0f;
 	postConvolutionBias = 0.0f;
 	
-	/* If the sum of all elements of the filter is 1, the resulting image has the same brightness as the original. */
+	edgeAction = kZeroEdges;
+	
+	// If the sum of all elements of the filter is 1, the resulting image has the same brightness as the original.
 	
 	switch (effect) {
-	
+			
 		case kNone:
 			break;
-
+			
 		case kBlur:
-			for (UInt8 i = 0; i < (colCount * rowCount); i++) {
+		{
+			float count = (float)(colCount * rowCount);
+			for (uint8 i = 0; i < (colCount * rowCount); i++) {
+				//kernelValues.push_back(1.0f / count);
 				kernelValues.push_back(1.0f);
 			}
-			
-			postConvolutionScaleFactor = 1.0f / (float)(colCount * rowCount);
+			this->postConvolutionScaleFactor = 1.0f / count;
+		}
 			break;
-
+			
 		case kMotionBlur:
 			numberOfKernelValueColumns = 5;
 			numberOfKernelValueRows = 5;
-			for (UInt8 i = 0; i < numberOfKernelValueColumns; i++) {
-				for (UInt8 k = 0; k < numberOfKernelValueRows; k++) {
+			for (uint8 i = 0; i < numberOfKernelValueColumns; i++) {
+				for (uint8 k = 0; k < numberOfKernelValueRows; k++) {
 					if (k == i) {
-						kernelValues.push_back(1.0f);
+						kernelValues.push_back(1.0f / (float)numberOfKernelValueColumns);
 					} else {
 						kernelValues.push_back(0.0f);
 					}
 				}
-			}			
-			postConvolutionScaleFactor = 1.0f / (float)numberOfKernelValueColumns;
+			}
 			break;
-
+			
 		case kGaussianBlur:
-			kernelValues.push_back(1.0f);
-			kernelValues.push_back(2.0f);
-			kernelValues.push_back(1.0f);
-			kernelValues.push_back(2.0f);
-			kernelValues.push_back(4.0f);
-			kernelValues.push_back(2.0f);
-			kernelValues.push_back(1.0f);
-			kernelValues.push_back(2.0f);
-			kernelValues.push_back(1.0f);
-			postConvolutionScaleFactor = 1.0f / (float)16.0;
+		{
+			float count = 16.0f;
+			kernelValues.push_back(1.0f / count);
+			kernelValues.push_back(2.0f / count);
+			kernelValues.push_back(1.0f / count);
+			kernelValues.push_back(2.0f / count);
+			kernelValues.push_back(4.0f / count);
+			kernelValues.push_back(2.0f / count);
+			kernelValues.push_back(1.0f / count);
+			kernelValues.push_back(2.0f / count);
+			kernelValues.push_back(1.0f / count);
+		}
 			break;
-
+			
 		case kLaplacian:
 			kernelValues.push_back(-0.125f);
 			kernelValues.push_back(-0.125f);
@@ -103,7 +109,7 @@ VisualConvolutionFilter::VisualConvolutionFilter(const Effect effect, const UInt
 			kernelValues.push_back(-0.125f);
 			kernelValues.push_back(-0.125f);
 			break;
-
+			
 		case kEdgeDetect:
 			kernelValues.push_back(-1.0f);
 			kernelValues.push_back(-1.0f);
@@ -127,7 +133,7 @@ VisualConvolutionFilter::VisualConvolutionFilter(const Effect effect, const UInt
 			kernelValues.push_back(-1.0f);
 			kernelValues.push_back(-1.0f);
 			break;
-
+			
 		case kEmboss:
 			kernelValues.push_back(-1.0f);
 			kernelValues.push_back(-1.0f);
@@ -140,7 +146,7 @@ VisualConvolutionFilter::VisualConvolutionFilter(const Effect effect, const UInt
 			kernelValues.push_back(1.0f);
 			postConvolutionBias = 128.0f;
 			break;
-
+			
 		default:
 			char errStr[256];
 			sprintf(errStr, "unknown switch case (%d) in file: %s (line: %d) [%s])", effect, __FILE__, __LINE__, __FUNCTION__);
@@ -174,12 +180,12 @@ void VisualConvolutionFilter::copy(const VisualConvolutionFilter& other) {
 }
 
 
-UInt8 VisualConvolutionFilter::getNumberOfKernelValueRows() const {
+uint8 VisualConvolutionFilter::getNumberOfKernelValueRows() const {
 	return this->numberOfKernelValueRows;
 }
 
 
-UInt8 VisualConvolutionFilter::getNumberOfKernelValueColumns() const {
+uint8 VisualConvolutionFilter::getNumberOfKernelValueColumns() const {
 	return this->numberOfKernelValueColumns;
 }
 
@@ -195,9 +201,9 @@ float VisualConvolutionFilter::getPostConvolutionBias() const {
 
 
 void VisualConvolutionFilter::copyKernelValues(float* buffer) const {
-	UInt16 i = 0;
-	UInt16 k = 0;
-	UInt16 currIdx = 0;
+	uint16 i = 0;
+	uint16 k = 0;
+	uint16 currIdx = 0;
 	for (i = 0; i < this->numberOfKernelValueColumns; i++) {
 		for (k = 0; k < this->numberOfKernelValueRows; k++) {
 			buffer[currIdx] = this->kernelValues[currIdx];
@@ -207,85 +213,100 @@ void VisualConvolutionFilter::copyKernelValues(float* buffer) const {
 }
 
 
-void VisualConvolutionFilter::applyToPixelData(const unsigned char* const pixelData, UInt32 imageWidth, UInt32 imageHeight, int pixelFormat, int pixelDataType, unsigned char** filteredPixelData) const {
-
-	bool debug = false;
-	UInt32 imageX;
-	UInt32 imageY;
-	SInt8 kernelX;
-	SInt8 kernelY;
+void VisualConvolutionFilter::applyToPixelData(const PixelColor* inPixelData, uint32 imageWidth, uint32 imageHeight, int pixelFormat, int pixelDataType, PixelColor** outPixelData, uint16 numberOfInterations) const {
 	
-	char errStr[256];
+	bool alpha = true;
 	
-	float sum;
-	UInt32 kernelPos;
-	float grayscale;
-
-	UInt8 numberOfBytesPerChannel = 0;
-	UInt8 numberOfChannels = 0; // channel == color resp. alpha channel
-	UInt8 numberOfBytesPerPixel = 0;
-	//UInt32 numberOfBytesPerRow = 0;
-	if (pixelFormat == kGL_RGBA || pixelFormat == kGL_BGRA) {
-		numberOfChannels = 4;
-	} else if (pixelFormat == kGL_LUMINANCE_WITH_ALPHA) {
-		numberOfChannels = 2;
-	}
-
-	if ((pixelDataType == kGL_UNSIGNED_INT_8_8_8_8_REV) || (pixelDataType == kGL_UNSIGNED_INT_8_8_8_8) || (pixelDataType == kGL_UNSIGNED_BYTE)) {
-		numberOfBytesPerChannel = 1; // // 1 byte (== 8 bits) per color/channel
-	} else {
-		sprintf(errStr, "unknown type %d in file: %s (line: %d) [%s])", pixelDataType, __FILE__, __LINE__, __FUNCTION__);
-		writeLog(errStr);
-		return;
+	float* matrix = (float*)malloc(this->numberOfKernelValueRows * this->numberOfKernelValueColumns * sizeof(float));
+	this->copyKernelValues(matrix);
+	uint8 rows2 = this->numberOfKernelValueRows / 2;
+	uint8 cols2 = this->numberOfKernelValueColumns / 2;
+	
+	uint32 pixelDataSizeInBytes = imageWidth * imageHeight * sizeof(PixelColor);
+	
+	uint32* filteredPixelData = (uint32*)calloc(pixelDataSizeInBytes, sizeof(char));
+	
+	if (numberOfInterations > 1) {
+		memcpy(filteredPixelData, inPixelData, pixelDataSizeInBytes);
 	}
 	
-	numberOfBytesPerPixel = numberOfBytesPerChannel * numberOfChannels;
-
-/*
-	if ((pixelDataType == kGL_UNSIGNED_INT_8_8_8_8_REV) || (pixelDataType == kGL_UNSIGNED_INT_8_8_8_8) || (pixelDataType == kGL_UNSIGNED_BYTE)) {
-		*filteredPixelData = (unsigned char*)calloc(imageWidth * imageHeight, numberOfBytesPerPixel);
-	} else if (pixelDataType == kGL_FLOAT) {
-		*filteredPixelData = (float*)calloc(imageWidth * imageHeight * numberOfChannels, numberOfBytesPerPixel);
-	}
-*/
-	if (pixelFormat == kGL_RGBA || pixelFormat == kGL_BGRA) {
-		//*filteredPixelData = (unsigned char*)calloc(imageWidth * imageHeight, numberOfBytesPerPixel);
-	}
-
-	if (debug == true) {
-		memcpy(*filteredPixelData, pixelData, imageWidth * imageHeight * numberOfChannels);
-		return;
-	}
-
-	for (imageY = (this->numberOfKernelValueRows / 2) * numberOfChannels; imageY < (imageHeight * numberOfChannels) - ((this->numberOfKernelValueRows / 2) * numberOfChannels); imageY++) {
-		for (imageX = (this->numberOfKernelValueColumns / 2) * numberOfChannels; imageX < (imageWidth * numberOfChannels) - ((this->numberOfKernelValueColumns / 2) * numberOfChannels); imageX++) {
-			
-			sum = 0.0f;
-			kernelPos = 0;
-			grayscale = 0.0f;
-			for (kernelY = -1 * (this->numberOfKernelValueRows / 2); kernelY <= (this->numberOfKernelValueRows / 2); kernelY++) {
-				for (kernelX = -1 * (this->numberOfKernelValueColumns / 2); kernelX <= (this->numberOfKernelValueColumns / 2); kernelX++) {
-					SInt8 jColorShift = kernelY * numberOfChannels;
-					SInt8 kColorShift = kernelX * numberOfChannels;					
-					
-					if ((pixelDataType == kGL_UNSIGNED_INT_8_8_8_8_REV) || (pixelDataType == kGL_UNSIGNED_INT_8_8_8_8) || (pixelDataType == kGL_UNSIGNED_BYTE)) {
-						grayscale = ((unsigned char*)pixelData)[(imageY + jColorShift) * imageWidth + (imageX + kColorShift)];
-					} else if (pixelDataType == kGL_FLOAT) {
-						grayscale = ((float*)pixelData)[(imageY + jColorShift) * imageWidth + (imageX + kColorShift)];
-					}
-
-					sum = sum + (this->kernelValues[kernelPos] * grayscale);
-					kernelPos++;
-				}
-			}
-
-			if ((pixelDataType == kGL_UNSIGNED_INT_8_8_8_8_REV) || (pixelDataType == kGL_UNSIGNED_INT_8_8_8_8) || (pixelDataType == kGL_UNSIGNED_BYTE)) {
-				((unsigned char*)*filteredPixelData)[(imageY * imageWidth) + imageX] = (unsigned char)(sum * this->postConvolutionScaleFactor + this->postConvolutionBias);
-			} else if (pixelDataType == kGL_FLOAT) {
-				((float*)*filteredPixelData)[(imageY * imageWidth) + imageX] = sum * this->postConvolutionScaleFactor + this->postConvolutionBias;
-			}
-
+	for (uint16 i = 0; i < numberOfInterations; i++) {
+		
+		uint32 index = 0;
+		
+		if (numberOfInterations > 1) {
+			memcpy(*outPixelData, filteredPixelData, pixelDataSizeInBytes);
 		}
+		
+		for (uint32 y = 0; y < imageHeight; y++) {
+			
+			for (uint32 x = 0; x < imageWidth; x++) {
+				
+				float r = 0;
+				float g = 0;
+				float b = 0;
+				float a = 0;
+				
+				for (sint8 row = -rows2; row <= rows2; row++) {
+					sint32 iy = y + row;
+					sint32 ioffset;
+					if (0 <= iy && iy < static_cast<sint32>(imageHeight))
+						ioffset = iy * imageWidth;
+					else if (this->edgeAction == kClampEdges)
+						ioffset = y * imageWidth;
+					else if (this->edgeAction == kWrapEdges)
+						ioffset = ((iy + imageHeight) % imageHeight) * imageWidth;
+					else
+						continue;
+					uint32 moffset = this->numberOfKernelValueColumns * (row + rows2) + cols2;
+					for (sint8 col = -cols2; col <= cols2; col++) {
+						float f = matrix[moffset + col];
+						
+						if (f != 0) {
+							sint32 ix = x + col;
+							if (!(0 <= ix && ix < static_cast<sint32>(imageWidth))) {
+								if (this->edgeAction == kClampEdges)
+									ix = x;
+								else if (this->edgeAction == kWrapEdges)
+									ix = (x + imageWidth) % imageWidth;
+								else
+									continue;
+							}
+							uint32 rgb = (inPixelData)[ioffset + ix];
+							a += f * ((rgb >> 24) & 0xff);
+							r += f * ((rgb >> 16) & 0xff);
+							g += f * ((rgb >> 8) & 0xff);
+							b += f * (rgb & 0xff);
+						}
+					}
+				}
+				
+				if (alpha) {
+					a *= this->postConvolutionScaleFactor + this->postConvolutionBias;
+				}
+				r *= this->postConvolutionScaleFactor + this->postConvolutionBias;
+				g *= this->postConvolutionScaleFactor + this->postConvolutionBias;
+				b *= this->postConvolutionScaleFactor + this->postConvolutionBias;
+				
+				uint32 ia = alpha ? this->clamp((uint32)(a + 0.5)) : 0xff;
+				uint32 ir = this->clamp((uint32)(r + 0.5));
+				uint32 ig = this->clamp((uint32)(g + 0.5));
+				uint32 ib = this->clamp((uint32)(b + 0.5));
+				
+				filteredPixelData[index++] = (ia << 24) | (ir << 16) | (ig << 8) | ib;
+			}
+		}
+		
 	}
+	
+	free(matrix);
+	
+	*outPixelData = filteredPixelData;
+	
+}
 
+uint32 VisualConvolutionFilter::clamp(uint32 inVal) const {
+	if (inVal > 255) return 255;
+	if (inVal < 0) return 0;
+	return inVal;
 }

@@ -1,36 +1,36 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualFile.cpp
  *
  */
 
 /***************************************************************************
-
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
-
-
-This software is provided 'as-is', without any expressed or implied warranty. 
-In no event will the authors be held liable for any damages
-arising from the use of this software.
-
-Permission is granted to anyone to use this software for any purpose,
-including commercial applications, and to alter it and redistribute it
-freely, subject to the following restrictions:
-
-1. The origin of this software must not be misrepresented; 
-   you must not claim that you wrote the original software. hand
-   If you use this software in a product, an acknowledgment 
-   in the product documentation would be appreciated 
-   but is not required.
-
-2. Altered source versions must be plainly marked as such, 
-   and must not be misrepresented as being the original software.
-
-3. This notice may not be removed or altered from any source distribution.
-
+ 
+ Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
+ 
+ 
+ This software is provided 'as-is', without any expressed or implied warranty. 
+ In no event will the authors be held liable for any damages
+ arising from the use of this software.
+ 
+ Permission is granted to anyone to use this software for any purpose,
+ including commercial applications, and to alter it and redistribute it
+ freely, subject to the following restrictions:
+ 
+ 1. The origin of this software must not be misrepresented; 
+ you must not claim that you wrote the original software. 
+ If you use this software in a product, an acknowledgment 
+ in the product documentation would be appreciated 
+ but is not required.
+ 
+ 2. Altered source versions must be plainly marked as such, 
+ and must not be misrepresented as being the original software.
+ 
+ 3. This notice may not be removed or altered from any source distribution.
+ 
  ***************************************************************************/
 
 #include "VisualFile.h"
@@ -39,14 +39,12 @@ freely, subject to the following restrictions:
 #include "VisualConfiguration.h"
 
 #if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/Folders.h>
+#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/Folders.h> // FSFindFolder
 #endif
 
 #if TARGET_OS_WIN
-#include "MacErrors.h" // eofErr
-#include <shlobj.h> // SHGetFolderPath
+#include <shlobj.h> // SHGetSpecialFolderPathW
 //#include <io.h> // _access
-#include <QT/TextUtils.h> // CopyCStringToPascal()
 #endif
 
 
@@ -72,155 +70,177 @@ VisualFile::~VisualFile() {
 }
 
 
-VisualFile::VisualFile(const VisualFile& other) {
+VisualFile::VisualFile(const VisualFile& other) : VisualObject(other) {
 	copy(other);
 }
 
 
 VisualFile& VisualFile::operator=(const VisualFile& other) {
+	
+	if (this == &other) return *this;
+	
+	VisualObject::operator=(other);
+	
 	this->clear();
-	if (this != &other) {
-		this->copy(other);
-	}
+	
+	this->copy(other);
+	
 	return *this;
 }
 
 
-OSStatus VisualFile::initWithDirectoryOfTemporaryItems() {
-	OSStatus osStatus = noErr;
-
+bool VisualFile::initWithDirectoryOfTemporaryItems() {
+	
+	bool success = true;
+	
 	this->clear();
 	
 #if TARGET_OS_MAC
-	OSErr osErr = noErr;
-	osErr = FSFindFolder(kUserDomain, kTemporaryFolderType, kCreateFolder, &(this->fsRef)); // ~/Library/Caches/TemporaryItems/
+	OSErr osErr = FSFindFolder(kUserDomain, kTemporaryFolderType, kCreateFolder, &(this->fsRef)); // ~/Library/Caches/TemporaryItems/
 	if (osErr != noErr) {
-		return static_cast<OSStatus>(osErr);
+		success = false;
 	}
 #endif
-
+	
 #if TARGET_OS_WIN
 	BOOL createFolderIfNotAlreadyThere = true;
 	HRESULT hr = SHGetSpecialFolderPathW(NULL, (LPWSTR)filePathWin, CSIDL_INTERNET_CACHE, createFolderIfNotAlreadyThere);
+	if (!hr) {
+		success = false;
+	}
 #endif
-
+	
 	isDirectory = true;
 	knownWhetherFileOrDirectoryExists = true;
 	doesExistBool = true;
-
-	return osStatus;
+	
+	return success;
 }
 
 
-OSStatus VisualFile::initWithUserDesktopDirectory() {
-	OSStatus osStatus = noErr;
+bool VisualFile::initWithUserDesktopDirectory() {
+	
+	bool success = true;
 	
 	this->clear();
-
+	
 #if TARGET_OS_MAC
-	OSErr osErr = noErr;
-	osErr = FSFindFolder(kUserDomain, kDesktopFolderType, kCreateFolder, &(this->fsRef));
+	OSErr osErr = FSFindFolder(kUserDomain, kDesktopFolderType, kCreateFolder, &(this->fsRef));
 	if (osErr != noErr) {
-		return static_cast<OSStatus>(osErr);
+		success = false;
 	}
 #endif
-
+	
 #if TARGET_OS_WIN
 	BOOL createFolderIfNotAlreadyThere = true;
 	HRESULT hr = SHGetSpecialFolderPathW(NULL, (LPWSTR)this->filePathWin, CSIDL_DESKTOPDIRECTORY, createFolderIfNotAlreadyThere);
+	if (!hr) {
+		success = false;
+	}
 #endif
-
+	
 	isDirectory = true;
 	knownWhetherFileOrDirectoryExists = true;
 	doesExistBool = true;
-
-	return osStatus;
+	
+	return success;
 }
 
 
-OSStatus VisualFile::initWithPreferenceStoreDirectory() {
-	OSStatus osStatus = noErr;
+bool VisualFile::initWithPreferenceStoreDirectory() {
+	
+	bool success = true;
 	
 	this->clear();
-
+	
 #if TARGET_OS_MAC
-	OSErr osErr = noErr;
-	osErr = FSFindFolder(kUserDomain, kPreferencesFolderType, kCreateFolder, &(this->fsRef));
+	OSErr osErr = FSFindFolder(kUserDomain, kPreferencesFolderType, kCreateFolder, &(this->fsRef));
 	if (osErr != noErr) {
-		return static_cast<OSStatus>(osErr);
+		return false;
 	}
 #endif
-
+	
 #if TARGET_OS_WIN
 	BOOL createFolderIfNotAlreadyThere = true;
 	HRESULT hr = SHGetSpecialFolderPathW(NULL, (LPWSTR)this->filePathWin, CSIDL_APPDATA, createFolderIfNotAlreadyThere);
+	if (!hr) {
+		return false;
+	}
 #endif
-
+	
 	isDirectory = true;
 	knownWhetherFileOrDirectoryExists = true;
 	doesExistBool = true;
-
-	return osStatus;
+	
+	return success;
 }
 
 
 #if TARGET_OS_MAC
-OSStatus VisualFile::initWithResourcesDirectory() {
-	OSStatus osStatus = noErr;
+bool VisualFile::initWithResourcesDirectory() {
+	
+	bool success = true;
 	
 	this->clear();
-
-	CFStringRef pluginName = CFStringCreateWithCString(kCFAllocatorDefault, VisualConfiguration::kVisualPluginDomainIdentifier, kCFStringEncodingWindowsLatin1);
+	
+	CFStringRef pluginName = CFStringCreateWithCString(kCFAllocatorDefault, VisualConfiguration::kVisualPluginDomainIdentifier, kCFStringEncodingASCII);
 	CFBundleRef bundleRef = CFBundleGetBundleWithIdentifier(pluginName);
 	if (!bundleRef) {
-		return (OSStatus)1001;
+		return false;
 	}
 	CFURLRef resourcesDirectoryUrlRef = CFBundleCopyResourcesDirectoryURL(bundleRef);
 	if (!resourcesDirectoryUrlRef) {
-		return (OSStatus)1002;
+		return false;
 	}
-
+	
 	FSRef newFsRef;
-	Boolean success = CFURLGetFSRef(resourcesDirectoryUrlRef, &newFsRef);
-	if (!success) {
+	Boolean CFURLGetFSRefSuccess = CFURLGetFSRef(resourcesDirectoryUrlRef, &newFsRef);
+	if (!CFURLGetFSRefSuccess) {
 		CFRelease(resourcesDirectoryUrlRef);
-		return (OSStatus)1003;
+		return false;
 	} else {
 		this->fsRef = newFsRef;
 	}
 	
 	CFRelease(resourcesDirectoryUrlRef);
-
+	
 	isDirectory = true;
 	knownWhetherFileOrDirectoryExists = true;
 	doesExistBool = true;
-
-	return osStatus;
+	
+	return success;
 }
 #endif
 
 
-OSStatus VisualFile::appendFileName(VisualString& aFileName) {
-	OSStatus osStatus = noErr;
+VisualFile* VisualFile::clone(void) const {
+	return new VisualFile(*this);
+}
 
+
+bool VisualFile::appendFileName(VisualString& aFileName) {
+	
+	bool success = false;
+	
 #if TARGET_OS_MAC
+	OSStatus osStatus = noErr;
 	Boolean isDir = false;
 	CFURLRef url = CFURLCreateFromFSRef(kCFAllocatorDefault, &(this->fsRef));
 	CFURLRef urlWithFileName = CFURLCreateCopyAppendingPathComponent(kCFAllocatorDefault, url, aFileName.getCharactersPointer(), isDir);
 	CFRelease(url);
 	FSRef newFsRef;
-	Boolean success = CFURLGetFSRef(urlWithFileName, &newFsRef);
-	if (!success) {
+	Boolean CFURLGetFSRefSuccess = CFURLGetFSRef(urlWithFileName, &newFsRef);
+	if (!CFURLGetFSRefSuccess) {
 		// FSRef can only be set for existing files or directories
-				
+		
 		CFIndex fileNameLength = CFStringGetLength(aFileName.getCharactersPointer());
-		const UniChar* fileNameConstChars = CFStringGetCharactersPtr(aFileName.getCharactersPointer());
-		UniChar* fileNameChars = NULL;
+		const uint16* fileNameConstChars = CFStringGetCharactersPtr(aFileName.getCharactersPointer());
+		uint16* fileNameChars = NULL;
 		if (fileNameConstChars == NULL) {
-			fileNameChars = (UniChar*)malloc(fileNameLength * sizeof(UniChar));
+			fileNameChars = (uint16*)malloc(fileNameLength * sizeof(uint16));
 			CFStringGetCharacters(aFileName.getCharactersPointer(), CFRangeMake(0, fileNameLength), fileNameChars);
 		}
-
+		
 		FSCatalogInfoBitmap whichInfo = (FSCatalogInfoBitmap)NULL;
 		const FSCatalogInfo* catalogInfo = NULL;
 		FSSpec newSpec;
@@ -235,12 +255,12 @@ OSStatus VisualFile::appendFileName(VisualString& aFileName) {
 		if (osErr != noErr) {
 			osStatus = 1000;
 		}
-
+		
 		if (fileNameChars != NULL) {
 			free(fileNameChars);
 			fileNameChars = NULL;
 		}
-
+		
 	} else {
 		this->fsRef = newFsRef;
 	}
@@ -249,9 +269,14 @@ OSStatus VisualFile::appendFileName(VisualString& aFileName) {
 	
 	knownWhetherFileOrDirectoryExists = true;
 	doesExistBool = true;
-
+	
+	if (osStatus == noErr)
+	{
+		success = true;
+	}
+	
 #endif
-
+	
 #if TARGET_OS_WIN
 	wchar_t backslash[2];
 	backslash[0] = 0x5c;
@@ -260,19 +285,23 @@ OSStatus VisualFile::appendFileName(VisualString& aFileName) {
 	wcscat(this->filePathWin, aFileName.getCharactersPointer());
 	knownWhetherFileOrDirectoryExists = false;
 	doesExistBool = false;
+	success = true;
 #endif
-
-	isDirectory = false;
-
-	return osStatus;
-
+	
+	this->isDirectory = false;
+	
+	return success;
+	
 }
 
 
-OSStatus VisualFile::open() {
-	OSErr osErr = noErr;
+bool VisualFile::open() {
+	bool success = false;
 #if TARGET_OS_MAC
-	osErr = FSOpenFork(&(this->fsRef), 0, NULL, fsWrDenyPerm, &(this->currForkRefNum));
+	OSErr osErr = FSOpenFork(&(this->fsRef), 0, NULL, fsWrDenyPerm, &(this->currForkRefNum));
+	if (osErr == noErr) {
+		success = true;
+	}
 #endif
 #if TARGET_OS_WIN
 	DWORD dwDesiredAccess = GENERIC_READ;
@@ -282,82 +311,105 @@ OSStatus VisualFile::open() {
 	DWORD dwFlagsAndAttributes = FILE_ATTRIBUTE_NORMAL;
 	HANDLE hTemplateFile = NULL;
 	this->currHandle = CreateFileW((LPCWSTR)this->filePathWin, 
-									dwDesiredAccess, 
-									dwShareMode, 
-									lpSecurityAttributes,
-									dwCreationDisposition,
-									dwFlagsAndAttributes,
-									hTemplateFile);
-	if (this->currHandle == INVALID_HANDLE_VALUE) {
-		osErr = 1001;
+								   dwDesiredAccess, 
+								   dwShareMode, 
+								   lpSecurityAttributes,
+								   dwCreationDisposition,
+								   dwFlagsAndAttributes,
+								   hTemplateFile);
+	if (this->currHandle != INVALID_HANDLE_VALUE) {
+		knownWhetherFileOrDirectoryExists = true;
+		doesExistBool = true;
+		success = true;
 	}
-	knownWhetherFileOrDirectoryExists = true;
-	doesExistBool = true;
 #endif
-	return (OSStatus)osErr;
+	return success;
 }
 
 
-OSStatus VisualFile::close() {
-	OSErr osErr = noErr;
+bool VisualFile::close() {
+	bool success = false;
 #if TARGET_OS_MAC
-	osErr = FSCloseFork(this->currForkRefNum);
+	OSErr osErr = FSCloseFork(this->currForkRefNum);
 	this->currForkRefNum = 0;
-	return (OSStatus)osErr;
+	if (osErr == noErr) {
+		success = true;
+	}
 #endif
 #if TARGET_OS_WIN
-	BOOL success = CloseHandle(this->currHandle);
-	if (!success) {
-		osErr = 1001;
+	BOOL closeHandleSuccess = CloseHandle(this->currHandle);
+	if (closeHandleSuccess) {
+		success = true;
 	}
 #endif
-	return (OSStatus)osErr;
+	return success;
 }
 
 
-OSStatus VisualFile::getData(void** data, UInt32& size) {
-	OSStatus status = noErr;
-
+bool VisualFile::getData(void** dataOut, size_t& size) {
+	
+	bool success = true;
+	
 	bool debug = false;
 	char logStr[2048];
-		
-	status = this->open();
+	
+	if (debug == true) {
+		writeLog("getData() start");
+	}
+	
+	success = this->open();
+	if (!success) {
+		return success;
+	}
 	if (debug == true) {
 		writeLog("aFile.open()");
 	}
-	if (status != noErr) {
-		return status;
-	}
 	
+	uint32 numberOfBytesToReadPerFill = 0;
+	// some small optimization
+	size = 0;
+	success = this->getSize(size);
+	if (!success) {
+		success = false;
+	} else {
+		if (size > 4096) {
+			numberOfBytesToReadPerFill = 4096;
+		} else {
+			numberOfBytesToReadPerFill = 512;
+		}
+	}
+	if (!success) {
+		size = 0;
+		return success;
+	}
 	bool readOn = true;
-	UInt32 actualCount = 0;
-	UInt32 requestCount = 4096;
-	UInt32 offset = 0;
-	UInt32 maxNumberOfBufferFills = (size / requestCount) + 1;
-	UInt16 bufferFillCount = 0;
-	UInt32 numberOfBytesRead = 0;
-	char* buffer = (char*)malloc(requestCount * maxNumberOfBufferFills);
+	uint32 actualCount = 0;
+	uint32 offset = 0;
+	uint32 numberOfBufferFills = (size / numberOfBytesToReadPerFill) + 1;
+	uint16 bufferFillCount = 0;
+	uint32 numberOfBytesRead = 0;
+	char* buffer = (char*)malloc(numberOfBytesToReadPerFill * numberOfBufferFills);
 	char* bufferStart = buffer;
+	sint8 readDataValue = 0;
 	while (readOn == true) {
-		actualCount = requestCount;
-		status = this->readData(buffer, actualCount, offset);
+		actualCount = numberOfBytesToReadPerFill;
+		readDataValue = this->readData(buffer, actualCount, offset);
 		bufferFillCount++;
-		if (status != noErr) {
+		if (readDataValue != 1) {
 			readOn = false;
-			if (status == eofErr) {
+			if (readDataValue == -1) {
 				if (debug == true) {
 					writeLog("OK: readData: eofErr");
 				}
 			} else {
-				sprintf(logStr, "ERR: readData: %ld", status);
-				writeLog(logStr);
-				status = 1007;
+				writeLog("ERR: readData");
+				success = false;
 			}
 		} else {
 			offset += actualCount;
 			buffer = buffer + actualCount;
 			if (debug == true) {
-				sprintf(logStr, "OK: readData (cnt: %d, totalBytes: %ld, req: %ld, read: %ld)", bufferFillCount, numberOfBytesRead, requestCount, actualCount);
+				sprintf(logStr, "OK: readData (cnt: %d, totalBytes: %d, req: %d, read: %d)", bufferFillCount, numberOfBytesRead, numberOfBytesToReadPerFill, actualCount);
 				writeLog(logStr);
 				
 			}
@@ -370,65 +422,78 @@ OSStatus VisualFile::getData(void** data, UInt32& size) {
 		}
 	}
 	
-	status = this->close();
+	success = this->close();
 	if (debug == true) {
 		writeLog("aFile.close()");
 	}
-	if (status != noErr) {
-		return status;
-	}
 	
-	*data = (void*)bufferStart;
+	*dataOut = (void*)bufferStart;
 	size = numberOfBytesRead;
-
-	return status;
-
+	
+	return success;
+	
 }
 
 
-OSStatus VisualFile::readData(char* buffer, UInt32& numberOfbytes, UInt32 startOffset) {
-	OSErr osErr = noErr;
+sint8 VisualFile::readData(char* buffer, uint32& numberOfbytes, uint32 startOffset) {
+	sint8 retVal = 0;
 #if TARGET_OS_MAC
-	UInt32 numberOfbytesRequested = numberOfbytes;
-	osErr = FSReadFork(this->currForkRefNum, fsFromStart, startOffset, numberOfbytesRequested, buffer, &numberOfbytes);
+	ByteCount numberOfbytesRequested = static_cast<ByteCount>(numberOfbytes);
+	//osErr = FSReadFork(this->currForkRefNum, fsFromStart, startOffset, numberOfbytesRequested, buffer, static_cast<ByteCount*>(&numberOfbytes));
+	OSErr osErr = FSReadFork(this->currForkRefNum, fsFromStart, startOffset, numberOfbytesRequested, buffer, reinterpret_cast<ByteCount*>(&numberOfbytes));
+	if (osErr == noErr) {
+		retVal = 1;
+	} else if (osErr == eofErr) {
+		retVal = -1; // eof
+	}
 #endif
 #if TARGET_OS_WIN
 	DWORD nNumberOfBytesToRead = numberOfbytes;
 	LPOVERLAPPED lpOverlapped = NULL;
-	BOOL success = ReadFile(this->currHandle, buffer, nNumberOfBytesToRead, &numberOfbytes, lpOverlapped);
-	if (numberOfbytes == 0) osErr = eofErr;
-	if (!success) {
-		osErr = 1001;
+	DWORD numOfBytes = 0;
+	BOOL success = ReadFile(this->currHandle, buffer, nNumberOfBytesToRead, &numOfBytes, lpOverlapped);
+	if (success) {
+		numberOfbytes = static_cast<uint32>(numOfBytes);
+		if (numberOfbytes == 0) {
+			retVal = -1; // eof
+		} else {
+			retVal = 1;
+		}
 	}
 #endif
-	return (OSStatus)osErr;
+	return retVal;
 }
 
 
-OSStatus VisualFile::remove() {
-	OSErr osErr = noErr;
+bool VisualFile::remove() {
+	bool success = true;
 #if TARGET_OS_MAC
-	osErr = FSDeleteObject(&(this->fsRef));
+	OSErr osErr = FSDeleteObject(&(this->fsRef));
+	if (osErr != noErr) {
+		success = false;
+	}
 #endif
 #if TARGET_OS_WIN
-	return (OSStatus)osErr;
+	return false; // todo
 #endif
 	knownWhetherFileOrDirectoryExists = true;
 	doesExistBool = false;
-	return (OSStatus)osErr;
+	return success;
 }
 
-
-bool VisualFile::doesExist(void) {
-#if TARGET_OS_WIN
-	if (this->knownWhetherFileOrDirectoryExists == false) {
-		this->doesExistBool = 
-		this->knownWhetherFileOrDirectoryExists = true;
-	}
-#endif
-	return this->doesExistBool;
-}
-
+/*
+ bool VisualFile::doesExist(void) {
+ #if TARGET_OS_WIN
+ if (this->knownWhetherFileOrDirectoryExists == false) {
+ this->doesExistBool = 
+ test test
+ 
+ this->knownWhetherFileOrDirectoryExists = true;
+ }
+ #endif
+ return this->doesExistBool;
+ }
+ */
 
 void VisualFile::getFilePath(VisualString& filePath) const {
 #if TARGET_OS_MAC
@@ -451,12 +516,16 @@ void VisualFile::getFilePath(VisualString& filePath) const {
 }
 
 
-OSStatus VisualFile::getSize(UInt32& size) {
-	OSErr osErr = noErr;
+bool VisualFile::getSize(size_t& size) const {
+	bool success = false;
+	size = 0;
 #if TARGET_OS_MAC
 	FSCatalogInfo info;
-	osErr = FSGetCatalogInfo(&(this->fsRef), kFSCatInfoDataSizes, &info, NULL, NULL, NULL);
-	size = (UInt32)(info.dataLogicalSize);
+	OSErr osErr = FSGetCatalogInfo(&(this->fsRef), kFSCatInfoDataSizes, &info, NULL, NULL, NULL);
+	if (osErr == noErr) {
+		size = (size_t)(info.dataLogicalSize); // UInt64
+		success = true;
+	}
 #endif
 #if TARGET_OS_WIN
 	DWORD dwDesiredAccess = GENERIC_READ;
@@ -472,24 +541,25 @@ OSStatus VisualFile::getSize(UInt32& size) {
 									dwCreationDisposition,
 									dwFlagsAndAttributes,
 									hTemplateFile);
-	if (fileHandle == INVALID_HANDLE_VALUE) {
-		osErr = 1001;
+	if (fileHandle != INVALID_HANDLE_VALUE) {
+		LARGE_INTEGER sizeUInt64;
+		BOOL GetFileSizeExSuccess = GetFileSizeEx(fileHandle, &sizeUInt64);
+		CloseHandle(fileHandle);
+		if (GetFileSizeExSuccess) {
+			size = (size_t)sizeUInt64.QuadPart;
+			success = true;
+		}
 	}
-	LARGE_INTEGER sizeUInt64;
-	BOOL success = GetFileSizeEx(fileHandle, &sizeUInt64);
-	CloseHandle(fileHandle);
-	size = (UInt32)sizeUInt64.QuadPart;
 #endif
-
-
-	return (OSStatus)osErr;
+	
+	return success;
 }
 
 
 VisualFile* VisualFile::createWithDirectoryOfTemporaryItems() {
 	VisualFile* aVisualFile = new VisualFile;
-	OSStatus status = aVisualFile->initWithDirectoryOfTemporaryItems();
-	if (status != noErr) {
+	bool success = aVisualFile->initWithDirectoryOfTemporaryItems();
+	if (!success) {
 		delete aVisualFile;
 		aVisualFile = NULL;
 	}
@@ -499,8 +569,8 @@ VisualFile* VisualFile::createWithDirectoryOfTemporaryItems() {
 
 VisualFile* VisualFile::createWithUserDesktopDirectory() {
 	VisualFile* aVisualFile = new VisualFile;
-	OSStatus status = aVisualFile->initWithUserDesktopDirectory();
-	if (status != noErr) {
+	bool success = aVisualFile->initWithUserDesktopDirectory();
+	if (!success) {
 		delete aVisualFile;
 		aVisualFile = NULL;
 	}
@@ -510,8 +580,8 @@ VisualFile* VisualFile::createWithUserDesktopDirectory() {
 
 VisualFile* VisualFile::createWithPreferenceStoreDirectory() {
 	VisualFile* aVisualFile = new VisualFile;
-	OSStatus status = aVisualFile->initWithPreferenceStoreDirectory();
-	if (status != noErr) {
+	bool success = aVisualFile->initWithPreferenceStoreDirectory();
+	if (!success) {
 		delete aVisualFile;
 		aVisualFile = NULL;
 	}
@@ -522,8 +592,8 @@ VisualFile* VisualFile::createWithPreferenceStoreDirectory() {
 #if TARGET_OS_MAC
 VisualFile* VisualFile::createWithResourcesDirectory() {
 	VisualFile* aVisualFile = new VisualFile;
-	OSStatus status = aVisualFile->initWithResourcesDirectory();
-	if (status != noErr) {
+	bool success = aVisualFile->initWithResourcesDirectory();
+	if (!success) {
 		delete aVisualFile;
 		aVisualFile = NULL;
 	}
@@ -562,82 +632,38 @@ void VisualFile::clear() {
 }
 
 
-OSStatus VisualFile::setFSSpecByFileRef(const VisualFile& aFile, FSSpec& fsSpec) {
-
-	OSStatus osStatus = noErr;
-	OSErr osErr = noErr;
-	char errLog[256];
-
-	VisualString filePathString;
-	aFile.getFilePath(filePathString);
-	const char* const filePathCString = filePathString.getUtf8Representation();
-	
-#if TARGET_OS_MAC
-	FSRef fsRef;
-	
-	osStatus = FSPathMakeRef((UInt8*)filePathCString, &fsRef, false);
-	if (osStatus != noErr) {
-		sprintf(errLog, "err (%ld) in file: %s (line: %d) [%s])", osStatus, __FILE__, __LINE__, __FUNCTION__);
-		writeLog(errLog);
-	}
-	if (osStatus == noErr) {
-		osErr = FSGetCatalogInfo(&fsRef, kFSCatInfoNone, NULL, NULL, &fsSpec, NULL);
-		if (osErr != noErr) {
-			sprintf(errLog, "err (%d) in file: %s (line: %d) [%s])", osErr, __FILE__, __LINE__, __FUNCTION__);
-			writeLog(errLog);
-			osStatus = static_cast<OSStatus>(osErr);
-		}
-	}
-#endif
-
 #if TARGET_OS_WIN
-	if (strlen(filePathCString) > 255) {
-		return static_cast<OSStatus>(1001);
-	}
-	Str255 filePathPascal;
-	CopyCStringToPascal(filePathCString, filePathPascal);
-	osErr = FSMakeFSSpec(0, 0, filePathPascal, &fsSpec);
-	if (osErr != noErr) {
-		sprintf(errLog, "err (%d) in file: %s (line: %d) [%s])", osErr, __FILE__, __LINE__, __FUNCTION__);
-		writeLog(errLog);
-		osStatus = static_cast<OSStatus>(osErr);
-	}
-#endif
-
-	return osStatus;
-}
-
-
-#if TARGET_OS_WIN
-OSStatus VisualFile::getDataOfResource(int nameId, char* type, void** data, UInt32& size) {
-
-	OSStatus osStatus = noErr;
-
+bool VisualFile::getDataOfResource(int nameId, char* type, void** data, uint32& size) {
+	
+	bool success = true;
+	
 	HRSRC resInfoHandle;
 	HGLOBAL resHandle;
 	HMODULE plugInHandle;
 	char pluginFileName[256];
 	
-	sprintf(pluginFileName, "%s.dll", VisualConfiguration::kVisualPluginName);
+	sprintf(pluginFileName, "%s.dll", VisualConfiguration::visualizerPluginIdentifierName);
 	plugInHandle = GetModuleHandle(pluginFileName);
 	if (plugInHandle == NULL) {
 		writeLog("pluginHandle is NULL");
+		return false;
 	}
 	resInfoHandle = FindResource(plugInHandle, MAKEINTRESOURCE(nameId), type);
 	if (resInfoHandle == NULL) {
 		writeLog("resInfoHandle is NULL");
+		return false;
 	}
 	resHandle = LoadResource(plugInHandle, resInfoHandle);
 	*data = LockResource(resHandle);
 	size = SizeofResource(plugInHandle, resInfoHandle);
-
-	return osStatus;
+	
+	return success;
 }
 #endif
 
 
-OSStatus VisualFile::writeDataToFile(void** data, UInt32 size, VisualFile& aFile) {
-	OSStatus osStatus = noErr;
+bool VisualFile::writeDataToFile(void** data, uint32 size, VisualFile& aFile) {
+	bool success = true;
 	VisualString filePathString;
 	aFile.getFilePath(filePathString);
 	const char* const filePathCString = filePathString.getUtf8Representation();
@@ -654,5 +680,5 @@ OSStatus VisualFile::writeDataToFile(void** data, UInt32 size, VisualFile& aFile
 	bytesWritten = fwrite(*data, sizeof(char), size, file);
 	fclose(file);
 #endif
-	return osStatus;
+	return success;
 }

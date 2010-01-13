@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: TrackTitle.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -40,13 +40,16 @@ freely, subject to the following restrictions:
 #include "VisualImage.h"
 #include "VisualStageBox.h"
 #include "VisualDispatch.h"
-#include "VisualDataStore.h"
+#include "VisualPreferences.h"
 #include "VisualString.h"
 #include "VisualStringStyle.h"
+#include "VisualStyledString.h"
 #include "VisualFile.h"
 #include "VisualTimeline.h"
 #include "VisualAnimation.h"
+#include "VisualCamera.h"
 #include "VisualConvolutionFilter.h"
+#include "VisualFontManager.h"
 
 
 
@@ -54,7 +57,7 @@ using namespace VizKit;
 
 
 TrackTitle::TrackTitle() {
-	trackInfoAsset.setOpacityValue(kFrontVertexChain, 0.0f);
+	trackInfoAsset.setOpacityValue(0.0);
 }
 
 
@@ -63,68 +66,68 @@ TrackTitle::~TrackTitle() {
 
 
 void TrackTitle::show() {
-	this->trackInfoAsset.draw(kFrontVertexChain);
+	this->trackInfoAsset.draw(this->vertexChainId);
 }
 
 
-OSStatus TrackTitle::makeTextureOfTrackTitle(const VisualString& trackName) {
+VisualStringStyle TrackTitle::getTrackInfoStringStyle() {
 
-	OSStatus status = noErr;
 	VisualStringStyle stringStyle;
 	
-	VisualDataStore::getPreferenceValueChar(VisualConfiguration::kTrackInfoFont, stringStyle.fontNameStr);
+	VisualPreferences::getValue(VisualPreferences::kTrackInfoFont, stringStyle.fontNameStr);
+	if (VisualFontManager::fontIsAvailableAsVisualizerResource(stringStyle.fontNameStr) == true) {
+		VisualFontActivationResult result = VisualFontManager::activateFont(stringStyle.fontNameStr);
+		if (result == fontActivationUnableToActivateFont) {
+			VisualPreferences::getValue(VisualPreferences::kFallbackSystemFont, stringStyle.fontNameStr);
+		}
+	}
 	
-	stringStyle.fontSize = (float)(VisualDataStore::getPreferenceValueInt(VisualConfiguration::kTrackInfoFontSize));
+	stringStyle.fontSize = (float)(VisualPreferences::getValue(VisualPreferences::kTrackInfoFontSize));
 	
-	stringStyle.fontColor.r = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoFontColorRedFloat);
-	stringStyle.fontColor.g = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoFontColorGreenFloat);
-	stringStyle.fontColor.b = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoFontColorBlueFloat);
+	stringStyle.fontColor.r = VisualPreferences::getValue(VisualPreferences::kTrackInfoFontColorRedFloat);
+	stringStyle.fontColor.g = VisualPreferences::getValue(VisualPreferences::kTrackInfoFontColorGreenFloat);
+	stringStyle.fontColor.b = VisualPreferences::getValue(VisualPreferences::kTrackInfoFontColorBlueFloat);
+	stringStyle.fontColor.red = VisualPreferences::getValue(VisualPreferences::kTrackInfoFontColorRedFloat);
+	stringStyle.fontColor.green = VisualPreferences::getValue(VisualPreferences::kTrackInfoFontColorGreenFloat);
+	stringStyle.fontColor.blue = VisualPreferences::getValue(VisualPreferences::kTrackInfoFontColorBlueFloat);
 	
 	stringStyle.horizontalAlignment = kLeftAligned;
 	
-	this->clear();
-	
-	VisualImage trackInfoImage;
-	status = trackInfoImage.initWithString(trackName, stringStyle);
-
-	if (status == noErr) {
-
-		VisualConvolutionFilter aConvolutionFilter(VisualConvolutionFilter::kBlur);
-		trackInfoImage.applyConvolutionFilter(aConvolutionFilter);
-
-/*
-		VisualFile outputFile;
-		outputFile.initWithUserDesktopDirectory();
-		VisualString aFileName = VisualString("vizKitTrackTitleImage.png");
-		outputFile.appendFileName(aFileName);
-
-		status = trackInfoImage.writeToFile(outputFile);
-		if (status != noErr) {
-			printf("err %ld in TrackTitle::makeTextureOfTrackTitle()\n", status);
-		}
-*/
-
-		this->trackInfoAsset.setImage(trackInfoImage);
-
-		VisualStageBox* trackInfoAssetBox = this->trackInfoAsset.getBox();
-		trackInfoAssetBox->setContentPixelWidth(trackInfoImage.getWidth());
-		trackInfoAssetBox->setContentPixelHeight(trackInfoImage.getHeight());
-
-	}
-
-	return status;
+	return stringStyle;
 }
 
 
-UInt16 TrackTitle::getTrackInfoTextureHeightInPixels() {
-	UInt16 heightOfTrackInfoTextureInPixels = 0;
+void TrackTitle::setTrackInfoImage(VisualImage& styledTrackInfoStringImage) {
+	this->clear();
+	VisualConvolutionFilter aConvolutionFilter(VisualConvolutionFilter::kBlur);
+	styledTrackInfoStringImage.applyConvolutionFilter(aConvolutionFilter);
+	//styledTrackInfoStringImage.setBlendMode(kReplace);
+	this->trackInfoAsset.setImage(styledTrackInfoStringImage);
+/*
+	VisualFile aFile;
+	aFile.initWithUserDesktopDirectory();
+	VisualString fileName("testTrackInfo.png");
+	bool success = false;
+	success = aFile.appendFileName(fileName);
+	styledTrackInfoStringImage.writeToPNGFile(aFile);
+*/
+}
+
+
+uint16 TrackTitle::getTrackInfoTextureHeightInPixels() {
+	uint16 heightOfTrackInfoTextureInPixels = 0;
 	VisualStageBox* trackInfoAssetBox = this->trackInfoAsset.getBox();
-	heightOfTrackInfoTextureInPixels = VisualActorGraphics::yCoordToPixel(trackInfoAssetBox->getTopCoord()) - VisualActorGraphics::yCoordToPixel(trackInfoAssetBox->getBottomCoord());
+	VisualCamera& aCamera = this->trackInfoAsset.getCamera();
+	heightOfTrackInfoTextureInPixels = VisualActorGraphics::yCoordToPixel(trackInfoAssetBox->getTopCoord(), aCamera) - VisualActorGraphics::yCoordToPixel(trackInfoAssetBox->getBottomCoord(), aCamera);
 	return heightOfTrackInfoTextureInPixels;
 }
 
 
-void TrackTitle::calcPositionOnScreen() {
+void TrackTitle::reshape() {
+
+	VisualCamera aCamera;
+	aCamera.setOrthographicProjection();
+	this->trackInfoAsset.setCamera(aCamera);
 
 	VisualStageBox* trackInfoAssetBox = this->trackInfoAsset.getBox();
 	trackInfoAssetBox->setScalingBehaviour(kPreserveAspectRatio);
@@ -135,49 +138,67 @@ void TrackTitle::calcPositionOnScreen() {
 	
 	trackInfoAssetPosition.horizontalAlignment = kCenterAligned;
 	trackInfoAssetPosition.verticalAlignment = kBottomAligned;
-
-	trackInfoAssetPosition.minMarginBottom = 10;
-	trackInfoAssetPosition.minMarginBottomUnit = kPixel;	
-
-	this->trackInfoAsset.setPosition(trackInfoAssetPosition);
 	
+	this->trackInfoAsset.setPosition(trackInfoAssetPosition);
+
+	VisualVertex* aVertex = NULL;
+	trackInfoAssetBox->initializeVertexChain(this->vertexChainId);
+
 	VertexColor aVertexColor;
-	for (UInt8 i = 0; i < 4; i++) {
+	for (uint8 i = 0; i < 4; i++) {
 		switch (i) {
 			case 0:
-				aVertexColor.r = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopLeftRed);
-				aVertexColor.g = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopLeftGreen);
-				aVertexColor.b = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopLeftBlue);
-				aVertexColor.a = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopLeftAlpha);
-				this->trackInfoAsset.setTopLeftFrontVertexColor(aVertexColor);
+				aVertexColor.r = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorTopLeftRed);
+				aVertexColor.g = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorTopLeftGreen);
+				aVertexColor.b = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorTopLeftBlue);
+				aVertexColor.a = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorTopLeftAlpha);
+				aVertexColor.red = aVertexColor.r;
+				aVertexColor.green = aVertexColor.g;
+				aVertexColor.blue = aVertexColor.b;
+				aVertexColor.alpha = aVertexColor.a;
+				aVertex = trackInfoAssetBox->createVertex(0.0, 1.0, 0.0, 0.0, 1.0, aVertexColor);
+				trackInfoAssetBox->addVertexToChain(this->vertexChainId, aVertex);
 				break;
 			case 1:
-				aVertexColor.r = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomLeftRed);
-				aVertexColor.g = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomLeftGreen);
-				aVertexColor.b = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomLeftBlue);
-				aVertexColor.a = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomLeftAlpha);
-				this->trackInfoAsset.setBottomLeftFrontVertexColor(aVertexColor);
+				aVertexColor.r = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorBottomLeftRed);
+				aVertexColor.g = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorBottomLeftGreen);
+				aVertexColor.b = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorBottomLeftBlue);
+				aVertexColor.a = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorBottomLeftAlpha);
+				aVertexColor.red = aVertexColor.r;
+				aVertexColor.green = aVertexColor.g;
+				aVertexColor.blue = aVertexColor.b;
+				aVertexColor.alpha = aVertexColor.a;
+				aVertex = trackInfoAssetBox->createVertex(0.0, 0.0, 0.0, 0.0, 0.0, aVertexColor);
+				trackInfoAssetBox->addVertexToChain(this->vertexChainId, aVertex);
 				break;
 			case 2:
-				aVertexColor.r = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomRightRed);
-				aVertexColor.g = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomRightGreen);
-				aVertexColor.b = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomRightBlue);
-				aVertexColor.a = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorBottomRightAlpha);
-				this->trackInfoAsset.setBottomRightFrontVertexColor(aVertexColor);
+				aVertexColor.r = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorBottomRightRed);
+				aVertexColor.g = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorBottomRightGreen);
+				aVertexColor.b = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorBottomRightBlue);
+				aVertexColor.a = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorBottomRightAlpha);
+				aVertexColor.red = aVertexColor.r;
+				aVertexColor.green = aVertexColor.g;
+				aVertexColor.blue = aVertexColor.b;
+				aVertexColor.alpha = aVertexColor.a;
+				aVertex = trackInfoAssetBox->createVertex(1.0, 0.0, 0.0, 1.0, 0.0, aVertexColor);
+				trackInfoAssetBox->addVertexToChain(this->vertexChainId, aVertex);
 				break;
 			case 3:
-				aVertexColor.r = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopRightRed);
-				aVertexColor.g = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopRightGreen);
-				aVertexColor.b = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopRightBlue);
-				aVertexColor.a = VisualDataStore::getPreferenceValueFloat(VisualConfiguration::kTrackInfoTextureColorTopRightAlpha);
-				this->trackInfoAsset.setTopRightFrontVertexColor(aVertexColor);
+				aVertexColor.r = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorTopRightRed);
+				aVertexColor.g = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorTopRightGreen);
+				aVertexColor.b = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorTopRightBlue);
+				aVertexColor.a = VisualPreferences::getValue(VisualPreferences::kTrackInfoTextureColorTopRightAlpha);
+				aVertexColor.red = aVertexColor.r;
+				aVertexColor.green = aVertexColor.g;
+				aVertexColor.blue = aVertexColor.b;
+				aVertexColor.alpha = aVertexColor.a;
+				aVertex = trackInfoAssetBox->createVertex(1.0, 1.0, 0.0, 1.0, 1.0, aVertexColor);
+				trackInfoAssetBox->addVertexToChain(this->vertexChainId, aVertex);
 				break;
 			default:
 				writeLog("ERR: switch case unknown");
 		}
 	}
-	
-	this->trackInfoAsset.generateVertexChain(kFrontVertexChain);
 
 	char trackLayoutPos[128];
 	sprintf(trackLayoutPos, "top: %f, left: %f, bottom: %f, right: %f", trackInfoAssetBox->getTopCoord(), trackInfoAssetBox->getLeftCoord(), trackInfoAssetBox->getBottomCoord(), trackInfoAssetBox->getRightCoord());
@@ -186,27 +207,25 @@ void TrackTitle::calcPositionOnScreen() {
 }
 
 
-void TrackTitle::fadeIn(UInt32 durationInMilliseconds) {
+void TrackTitle::fadeIn(uint32 durationInMilliseconds) {
 	VisualAnimation fadeInAnimation(kAnimatedOpacity);
 	fadeInAnimation.setDurationInMilliseconds(durationInMilliseconds);
 	this->trackInfoAsset.addAnimation(fadeInAnimation);
 }
 
 
-void TrackTitle::fadeOut(UInt32 durationInMilliseconds) {
+void TrackTitle::fadeOut(uint32 durationInMilliseconds) {
 	VisualAnimation fadeOutAnimation(kAnimatedOpacity);
 	fadeOutAnimation.setDurationInMilliseconds(durationInMilliseconds);
 	fadeOutAnimation.setStartValue(1.0);
-	fadeOutAnimation.setEndValue(0.0);
-	VisualTimeline* fadeOutTimeline = fadeOutAnimation.getTimeline();
-	fadeOutTimeline->setInterpolationType(kSinusoidalInterpolation);
+	fadeOutAnimation.setStopValue(0.0);
 	this->trackInfoAsset.addAnimation(fadeOutAnimation);
 }
 
 
 void TrackTitle::pulsate() {
 	VisualAnimation pulsateAnimation(kAnimatedOpacity);
-	UInt32 durationInMilliseconds = VisualDataStore::getPreferenceValueInt(VisualConfiguration::kFadeOutTimeOnPauseInMS);
+	uint32 durationInMilliseconds = VisualPreferences::getValue(VisualPreferences::kFadeOutTimeOnPauseInMS);
 	pulsateAnimation.setDurationInMilliseconds(durationInMilliseconds);
 	pulsateAnimation.setLoopMode(kMirroredLoop, kInfiniteRepetition);
 	this->trackInfoAsset.addAnimation(pulsateAnimation);
@@ -226,5 +245,22 @@ void TrackTitle::clear() {
 	
 	this->trackInfoAsset.removeAnimations();
 	
-	this->trackInfoAsset.setOpacityValue(kFrontVertexChain, 0.0f);
+	this->trackInfoAsset.setOpacityValue(0.0);
+}
+
+
+void TrackTitle::addMoveAnimation() {
+	VisualAnimation moveAnimation(kAnimatedLocation);
+	uint32 durationInMilliseconds = 15000;
+	moveAnimation.setDurationInMilliseconds(durationInMilliseconds);
+	moveAnimation.setLoopMode(kMirroredLoop, kInfiniteRepetition);
+	VisualStagePosition startPosition;
+	startPosition.horizontalAlignment = kCenterAligned;
+	startPosition.verticalAlignment = kBottomAligned;
+	VisualStagePosition stopPosition;
+	stopPosition.horizontalAlignment = kCenterAligned;
+	stopPosition.verticalAlignment = kTopAligned;
+	moveAnimation.setStartValue(startPosition);
+	moveAnimation.setStopValue(stopPosition);
+	this->trackInfoAsset.addAnimation(moveAnimation);
 }

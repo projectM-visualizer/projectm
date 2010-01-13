@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualAnimation.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -34,221 +34,311 @@ freely, subject to the following restrictions:
  ***************************************************************************/
 
 #include "VisualAnimation.h"
+#include "VisualAsset.h"
+#include "VisualItemIdentifier.h"
 #include "VisualTiming.h"
 #include "VisualTimeline.h"
 #include "VisualErrorHandling.h"
-#include "VisualStageControl.h"
+#include "VisualAnimationQueue.h"
 #include "VisualGraphics.h"
-
+#include "VisualCamera.h"
 
 
 using namespace VizKit;
 
 
-const UInt32 VisualAnimation::maxNumberOfDebugHistoryEntries = 700;
+const uint32 VisualAnimation::maxNumberOfDebugHistoryEntries = 700;
 
 
-VisualAnimation::VisualAnimation(AnimatedProperty anAnimatedProperty) {
-	animationIdentifier = new VisualItemIdentifier;
-	theTimeline = new VisualTimeline;
-	animatedProperty = anAnimatedProperty;
+VisualAnimation::VisualAnimation(AnimatedProperty theAnimatedProperty, bool aDebugMode) {
+	if (aDebugMode == true) {
+		writeLog("VisualAnimation::VisualAnimation");
+	}
+	theTimeline = new VisualTimeline(aDebugMode);
+	animatedProperty = theAnimatedProperty;
 	remainingNumberOfRepeats = 0;
-	currentValue = 0.0;
-	currentValueIsSet = false;
-	animateCallbackFunctionPtr = NULL;
-	userData = NULL;
+	animateCallback = NULL;
+	animationUserData = NULL;
+	performAnyAdditionalActionCallback = NULL;
+	performAnyAdditionalActionCallbackUserData = NULL;
 	startDelayInMilliseconds = 0;
 	status = kIsNotRunning;
-	debugMode = false;
-	minimumClampValue = 0.0;
-	minimumClampValueIsSet = false;
-	maximumClampValue = 0.0;
-	maximumClampValueIsSet = false;
+	debugMode = aDebugMode;
 	currDebugHistoryEntry = 0;
-	debugHistoryIsInitialized = false;
+	collectionIdentifier = NULL;
+	enclosingAsset = NULL;
+	doStartAnimationWithCurrentPropertyValue = true;
+	startValue = 0.0;
+	stopValue = 1.0;
+	speed = theTimeline->getDistance() / theTimeline->getDurationInMilliseconds();
+	setSpeed(speed);
+	if (aDebugMode == true) {
+		for (size_t i = 0; i < this->maxNumberOfDebugHistoryEntries; i++) {
+			debugHistory.push_back(0.0);
+		}
+		debugHistoryIsInitialized = true;
+	} else {
+		debugHistoryIsInitialized = false;
+	}
+	willDieCallback = NULL;
+	willDieCallbackUserData = NULL;
 }
 
 
 VisualAnimation::~VisualAnimation() {
 	delete theTimeline;
-	delete animationIdentifier;
 	debugHistory.clear();
+	if (collectionIdentifier != NULL) {
+		delete collectionIdentifier;
+	}
 }
 
 
-VisualAnimation::VisualAnimation(const VisualAnimation& other) {
+VisualAnimation::VisualAnimation(const VisualAnimation& other) : VisualAnimationComponent(other) {
 	copy(other);
 }
 
 
 VisualAnimation& VisualAnimation::operator=(const VisualAnimation& other) {
-	if (this != &other) {
-		delete this->theTimeline;
-		delete this->animationIdentifier;
-		this->copy(other);
+
+	if (this == &other) return *this;
+	
+	VisualObject::operator=(other);
+	
+	delete this->theTimeline;
+	if (this->collectionIdentifier != NULL) {
+		delete this->collectionIdentifier;
 	}
+
+	this->copy(other);
+
 	return *this;
 }
 
 
+VisualAnimationComponent* VisualAnimation::clone(void) const {
+	return new VisualAnimation(*this);
+}
+
+
 void VisualAnimation::copy(const VisualAnimation& other) {
+	// deep copy
+	if (other.debugMode == true) {
+		writeLog("VisualAnimation::copy");
+	}
 	this->theTimeline = new VisualTimeline(*other.theTimeline);
-	this->animationIdentifier = new VisualItemIdentifier(*other.animationIdentifier);
 	this->animatedProperty = other.animatedProperty;
 	this->remainingNumberOfRepeats = other.remainingNumberOfRepeats;
-	this->currentValue = other.currentValue;
-	this->currentValueIsSet = other.currentValueIsSet;
-	this->animateCallbackFunctionPtr = other.animateCallbackFunctionPtr;
-	this->userData = other.userData;
+	this->animateCallback = other.animateCallback;
+	this->animationUserData = other.animationUserData;
+	this->performAnyAdditionalActionCallback = other.performAnyAdditionalActionCallback;
+	this->performAnyAdditionalActionCallbackUserData = other.performAnyAdditionalActionCallbackUserData;
 	this->startDelayInMilliseconds = other.startDelayInMilliseconds;
 	this->status = other.status;
 	this->debugMode = other.debugMode;
-	this->minimumClampValue = other.minimumClampValue;
-	this->minimumClampValueIsSet = other.minimumClampValueIsSet;
-	this->maximumClampValue = other.maximumClampValue;
-	this->maximumClampValueIsSet = other.maximumClampValueIsSet;
 	this->currDebugHistoryEntry = other.currDebugHistoryEntry;
 	this->debugHistory = other.debugHistory;
 	this->debugHistoryIsInitialized = other.debugHistoryIsInitialized;
+	this->doStartAnimationWithCurrentPropertyValue = other.doStartAnimationWithCurrentPropertyValue;
+	this->startValue = other.startValue;
+	this->stopValue = other.stopValue;
+	if (other.collectionIdentifier != NULL) {
+		this->collectionIdentifier = new VisualItemIdentifier(*(other.collectionIdentifier));
+	} else {
+		this->collectionIdentifier = NULL;
+	}
+	this->enclosingAsset = other.enclosingAsset;
+	this->willDieCallback = other.willDieCallback;
+	this->willDieCallbackUserData = other.willDieCallbackUserData;
 }
 
 
-void VisualAnimation::setAnimateCallbackFunctionPtr(VisualAnimationCallback theCallback, void* someUserData) {
-	this->animateCallbackFunctionPtr = theCallback;
-	this->userData = someUserData;
+void VisualAnimation::setAnimateCallbackFunctionPtr(VisualAnimationAnimateCallback theCallback, void* someUserData) {
+	this->animateCallback = theCallback;
+	this->animationUserData = someUserData;
 }
 
 
-OSStatus VisualAnimation::callAnimateCallbackFunction() {
-	OSStatus osStatus = noErr;
+void VisualAnimation::setIdentifierOfParentCollection(const VisualItemIdentifier& aCollectionIdentifier) {
+	if (this->collectionIdentifier != NULL) {
+		delete this->collectionIdentifier;
+	}
+	this->collectionIdentifier = new VisualItemIdentifier(aCollectionIdentifier);
+}
+
+
+void VisualAnimation::handleOneCollectionItemAnimationDied() {
+	char errLog[256];
+	sprintf(errLog, "Err: VisualAnimation is unable to handle collection animations in file: %s (line: %d) [%s])", __FILE__, __LINE__, __FUNCTION__);
+	writeLog(errLog);
+	return;
+}
+
+
+VisualAnimationComponent* VisualAnimation::getVisualAnimation(const VisualItemIdentifier& anAnimationIdentifier) {
+	if (VisualObject::getIdentifier() == anAnimationIdentifier) {
+		return this;
+	} else {
+		return NULL;
+	}
+}
+
+
+void VisualAnimation::animate() {
+
 	double currVal = this->theTimeline->getCurrentValue();
 	
 	if (this->debugMode == true) {
 		this->debugHistory[this->currDebugHistoryEntry] = currVal;
-		VisualGraphics::drawHistoryDiagram(this->debugHistory, this->currDebugHistoryEntry, 0.0, 1.0);
+		VisualCamera* aCamera = VisualCamera::createDefaultCamera();
+		VisualGraphics::drawHistoryDiagram(this->debugHistory, this->currDebugHistoryEntry, 0.0, 1.0, *aCamera);
+		delete aCamera;
 		if ((this->currDebugHistoryEntry + 1) < this->maxNumberOfDebugHistoryEntries) {
 			this->currDebugHistoryEntry++;
 		} else {
 			this->currDebugHistoryEntry = 0;
 		}
+		char logStr[128];
+		sprintf(logStr, "VisualAnimation::animate currVal: %f", currVal);
+		writeLog(logStr);
 	}
-	if ((this->minimumClampValueIsSet == true) && (currVal < this->minimumClampValue)) {
-		osStatus = this->animateCallbackFunctionPtr(this->minimumClampValue, this->userData);
-		this->status = kIsDead;
-	} else if ((this->maximumClampValueIsSet == true) && (currVal > this->maximumClampValue)) {
-		osStatus = this->animateCallbackFunctionPtr(this->maximumClampValue, this->userData);
-		this->status = kIsDead;
-	} else {
-		osStatus = this->animateCallbackFunctionPtr(currVal, this->userData);
+	this->animateCallback(currVal, this->animationUserData);
+	if (this->performAnyAdditionalActionCallback != NULL) {
+		this->performAnyAdditionalActionCallback(this, this->performAnyAdditionalActionCallbackUserData);
 	}
-	return osStatus;
-}
-
-
-VisualTimeline* VisualAnimation::getTimeline(void) {
-	return this->theTimeline;
 }
 
 
 void VisualAnimation::start() {
 	if (this->startDelayInMilliseconds > 0) {
-		VisualTiming::resetTimestamp(*(this->animationIdentifier));
-		// start() is called later by isRunning()
 		return;
 	}
 	if (this->remainingNumberOfRepeats == 0) {
 		this->remainingNumberOfRepeats = 1;
 	}
-	this->theTimeline->reset();
-	this->theTimeline->start(VisualAnimation::durationIsExceeded, this);
-	if (this->currentValueIsSet == true) {
-		// if we have clamp values, they may never be reached if the current value beyond (and moving direction does not fit)
-		// (e.g. if we call fadeOut with clampValue and continueCurrentValue when fadeIn just started)
-		// the requested end value should always be aimed
-		if ((this->minimumClampValueIsSet == true) && (this->currentValue < this->minimumClampValue)) {
-			if ((this->theTimeline->getMovingDirection() == kForward) && (theTimeline->getStartValue() > theTimeline->getEndValue())) {
-				this->theTimeline->setMovingDirection(kBackward);
-			} else if ((this->theTimeline->getMovingDirection() == kBackward) && (theTimeline->getEndValue() > theTimeline->getStartValue())) {
-				this->theTimeline->setMovingDirection(kForward);
-			}
-			this->maximumClampValue = this->minimumClampValue;
-			this->maximumClampValueIsSet = true;
-			this->minimumClampValue = 0.0;
-			this->minimumClampValueIsSet = false;
-		}
-		if ((this->maximumClampValueIsSet == true) && (this->currentValue > this->maximumClampValue)) {
-			if ((this->theTimeline->getMovingDirection() == kForward) && (theTimeline->getStartValue() < theTimeline->getEndValue())) {
-				this->theTimeline->setMovingDirection(kBackward);
-			} else if ((this->theTimeline->getMovingDirection() == kBackward) && (theTimeline->getEndValue() < theTimeline->getStartValue())) {
-				this->theTimeline->setMovingDirection(kForward);
-			}
-			this->minimumClampValue = this->maximumClampValue;
-			this->minimumClampValueIsSet = true;
-			this->maximumClampValue = 0.0;
-			this->maximumClampValueIsSet = false;
-		}
-
-		this->theTimeline->setCurrentValue(this->currentValue);
-
-	}
+	this->theTimeline->start();
 	this->status = kIsRunning;
+	this->animate();
 }
 
 
 void VisualAnimation::stop() {
-	this->status = kIsDead;
+	this->status = kIsReadyToDie;
+	if (this->collectionIdentifier != NULL) {
+		VisualAnimationComponent* animationCollection = VisualAnimationQueue::getVisualAnimation(*(this->collectionIdentifier));
+		if (animationCollection != NULL) {
+			animationCollection->handleOneCollectionItemAnimationDied();
+		} else {
+			char errLog[256];
+			sprintf(errLog, "CollectionAnimation not found in in file: %s (line: %d) [%s])", __FILE__, __LINE__, __FUNCTION__);
+			writeLog(errLog);
+		}
+
+	}
 }
 
 
-void VisualAnimation::setDurationInMilliseconds(UInt32 numberOfMilliseconds) {
-	theTimeline->setDurationInMilliseconds(numberOfMilliseconds);
+void VisualAnimation::setDurationInMilliseconds(uint32 numberOfMilliseconds) {
+	this->theTimeline->setDurationInMilliseconds(numberOfMilliseconds);
+	this->speed = this->calcSpeed(this->theTimeline->getDistance(), this->theTimeline->getDurationInMilliseconds());
+	this->durationSpeedConstraint = kDurationBound;
 }
 
 
-UInt32 VisualAnimation::getDurationInMilliseconds() {
-	return theTimeline->getDurationInMilliseconds();
+uint32 VisualAnimation::getDurationInMilliseconds() const {
+	return this->theTimeline->getDurationInMilliseconds();
 }
 
 
 void VisualAnimation::setCurrentValue(double aCurrentValue) {
-	this->currentValue = aCurrentValue;
-	this->currentValueIsSet = true;
+	AnimationSpeed prevSpeed = this->getSpeed();
+	bool adjustedDistanceAndDuration = this->theTimeline->setCurrentValue(aCurrentValue);
+	if (adjustedDistanceAndDuration == true) {
+		if (this->durationSpeedConstraint == kSpeedBound) {
+			this->setSpeed(prevSpeed);
+		}
+	}
+	// aCurrentValue might be out of range of this->startValue and this->stopValue
+	double maxValue = (this->startValue > this->stopValue) ? this->startValue : this->stopValue;
+	double minValue = (this->startValue < this->stopValue) ? this->startValue : this->stopValue;
+	if ((aCurrentValue < minValue) || (aCurrentValue > maxValue)) {
+		this->startValue = aCurrentValue;
+		this->doStartAnimationWithCurrentPropertyValue = true;
+	}
+	if (this->doStartAnimationWithCurrentPropertyValue == true) {
+		// movingDirection might need to change (we want to arrive at the stop position by way of the shortest distance)
+		MovingDirection movingDirection = this->theTimeline->getMovingDirection();
+		double theCurrentValue = this->theTimeline->getCurrentValue();
+		if ((movingDirection == kAscending) && theCurrentValue > this->stopValue) {
+			this->theTimeline->toggleMovingDirection();
+		} else if ((movingDirection == kDescending) && theCurrentValue < this->stopValue) {
+			this->theTimeline->toggleMovingDirection();
+		}
+	}
+	
 }
 
 
-void VisualAnimation::setStartValue(double aStartValue) {
-	theTimeline->setStartValue(aStartValue);
+double VisualAnimation::getCurrentValue() const {
+	return this->theTimeline->getCurrentValue();
 }
 
 
-double VisualAnimation::getStartValue() {
-	return theTimeline->getStartValue();
+void VisualAnimation::setStartValue(double aStartValue, bool startAnimationWithCurrentPropertyValue) {
+	AnimationSpeed prevSpeed = this->getSpeed();
+	this->theTimeline->setStartValue(aStartValue);
+	this->startValue = aStartValue;
+	this->doStartAnimationWithCurrentPropertyValue = startAnimationWithCurrentPropertyValue;
+	if (this->durationSpeedConstraint == kSpeedBound) {
+		this->setSpeed(prevSpeed);
+	}
 }
 
 
-void VisualAnimation::setEndValue(double anEndValue) {
-	theTimeline->setEndValue(anEndValue);
+void VisualAnimation::setStartValue(const VisualStagePosition& aPosition, bool startAnimationWithCurrentPropertyValue) {
+	AnimationSpeed prevSpeed = this->getSpeed();
+	//this->theTimeline->setStartValue(aStartValue);
+	//this->startValue = aStartValue;
+	this->startValueVisualStagePosition = aPosition;
+	this->doStartAnimationWithCurrentPropertyValue = startAnimationWithCurrentPropertyValue;
+	if (this->durationSpeedConstraint == kSpeedBound) {
+		this->setSpeed(prevSpeed);
+	}
 }
 
 
-double VisualAnimation::getEndValue() {
-	return theTimeline->getEndValue();
+double VisualAnimation::getStartValue() const {
+	return this->startValue;
 }
 
 
-void VisualAnimation::setMinClampValue(double aMinClampValue) {
-	this->minimumClampValue = aMinClampValue;
-	this->minimumClampValueIsSet = true;
+void VisualAnimation::setStopValue(double aStopValue) {
+	AnimationSpeed prevSpeed = this->getSpeed();
+	theTimeline->setStopValue(aStopValue);
+	this->stopValue = aStopValue;
+	if (this->durationSpeedConstraint == kSpeedBound) {
+		this->setSpeed(prevSpeed);
+	}
 }
 
 
-void VisualAnimation::setMaxClampValue(double aMaxClampValue) {
-	this->maximumClampValue = aMaxClampValue;
-	this->maximumClampValueIsSet = true;
+void VisualAnimation::setStopValue(const VisualStagePosition& aPosition) {
+	AnimationSpeed prevSpeed = this->getSpeed();
+	//theTimeline->setStopValue(aStopValue);
+	//this->stopValue = aStopValue;
+	this->stopValueVisualStagePosition = aPosition;
+	if (this->durationSpeedConstraint == kSpeedBound) {
+		this->setSpeed(prevSpeed);
+	}
 }
 
 
-void VisualAnimation::setLoopMode(LoopMode aLoopMode, SInt32 requestedNumberOfLoops) {
+double VisualAnimation::getStopValue() const {
+	return this->stopValue;
+}
+
+
+void VisualAnimation::setLoopMode(LoopMode aLoopMode, sint32 requestedNumberOfLoops) {
 	if ((aLoopMode & kMirroredLoop) == kMirroredLoop) {
 		theTimeline->setRepeatMode(kRepeatMirrored);
 	} else if ((aLoopMode & kLoop) == kLoop) {
@@ -258,31 +348,118 @@ void VisualAnimation::setLoopMode(LoopMode aLoopMode, SInt32 requestedNumberOfLo
 }
 
 
-UInt32 VisualAnimation::getStartDelayInMilliseconds() {
+void VisualAnimation::setInterpolationType(InterpolationType anInterpolationType) {
+	this->theTimeline->setInterpolationType(anInterpolationType);
+}
+
+
+uint32 VisualAnimation::getStartDelayInMilliseconds() const {
 	return this->startDelayInMilliseconds;
 }
 
 
-void VisualAnimation::setStartDelayInMilliseconds(UInt32 aStartDelayInMilliseconds) {
+void VisualAnimation::setStartDelayInMilliseconds(uint32 aStartDelayInMilliseconds) {
 	this->startDelayInMilliseconds = aStartDelayInMilliseconds;
 }
 
 
-const AnimatedProperty VisualAnimation::getAnimatedProperty() const {
+void VisualAnimation::setCallbackToPerformAnyAdditionalAction(VisualAnimationPerformAnyAdditionalActionCallback theCallback, void* userData) {
+	this->performAnyAdditionalActionCallback = theCallback;
+	this->performAnyAdditionalActionCallbackUserData = userData;
+}
+
+
+void VisualAnimation::setCallbackToNotifyBeforeDeath(VisualAnimationWillDieCallback theCallback, void* userData) {
+	this->willDieCallback = theCallback;
+	this->willDieCallbackUserData = userData;
+}
+
+
+void VisualAnimation::notifyBeforeDeath() {
+	if (this->willDieCallback != NULL) {
+		this->willDieCallback(this, this->willDieCallbackUserData);
+	}
+}
+
+
+AnimatedProperty VisualAnimation::getAnimatedProperty() const {
 	return this->animatedProperty;
 }
 
 
-const bool VisualAnimation::isRunning(void) {
-	if (this->startDelayInMilliseconds > 0) {
-		UInt32 elapsedMillisecondsOfDelay = VisualTiming::getElapsedMilliSecsSinceReset(*(this->animationIdentifier));
-		if (elapsedMillisecondsOfDelay > this->startDelayInMilliseconds) {
-			this->startDelayInMilliseconds = 0;
-			this->start();
+MovingDirection VisualAnimation::getMovingDirection(void) const {
+	return this->theTimeline->getMovingDirection();
+}
+
+
+RepeatMode VisualAnimation::getRepeatMode(void) const {
+	return this->theTimeline->getRepeatMode();
+}
+
+
+void VisualAnimation::update() {
+	if (this->status == kIsNotRunning) {
+		if (this->startDelayInMilliseconds > 0) {
+			uint32 elapsedMillisecondsOfDelay = VisualTiming::getElapsedMilliSecsSinceReset(VisualObject::getIdentifier());
+			if (elapsedMillisecondsOfDelay > this->startDelayInMilliseconds) {
+				this->startDelayInMilliseconds = 0;
+				VisualTiming::resetTimestamp(VisualObject::getIdentifier());
+				this->start();
+			}
+		}
+	} else if (this->status == kIsRunning) {
+		MovingDirection movingDirection = this->theTimeline->getMovingDirection();
+		TimelineUpdateResult result = this->theTimeline->update();
+		bool animateFinalValue = false;
+		double endValue = 0.0;
+		if (movingDirection == kAscending) {
+			if (this->startValue < this->stopValue) {
+				endValue = this->stopValue;
+			} else {
+				endValue = this->startValue;
+			}
+		} else if (movingDirection == kDescending) {
+			if (this->startValue < this->stopValue) {
+				endValue = this->startValue;
+			} else {
+				endValue = this->stopValue;
+			}
+		}
+		if (result != kTimelineUpdateOK) {
+			if (this->debugMode == true) {
+				char resultStr[128];
+				VisualTimeline::convertTimelineUpdateResultToString(result, resultStr);
+				char logStr[128];
+				sprintf(logStr, "VisualAnimation::update: TimelineUpdateResult == %s", resultStr);
+				writeLog(logStr);
+			}
+			animateFinalValue = true;
 		} else {
-			return false;
+			if (movingDirection == kAscending) {
+				if (this->theTimeline->getCurrentValue() >= endValue) {
+					if (this->debugMode == true) {
+						writeLog("VisualAnimation::update: this->theTimeline->getCurrentValue() >= endValue");
+					}
+					animateFinalValue = true;
+				}
+			} else if (movingDirection == kDescending) {
+				if (this->theTimeline->getCurrentValue() <= endValue) {
+					if (this->debugMode == true) {
+						writeLog("VisualAnimation::update: this->theTimeline->getCurrentValue() <= endValue");
+					}
+					animateFinalValue = true;
+				}
+			}
+		}
+		if (animateFinalValue == true) {
+			this->animateCallback(endValue, this->animationUserData);
+			this->durationIsExceeded();
 		}
 	}
+}
+
+
+bool VisualAnimation::isRunning() const {
 	if (this->status == kIsRunning) {
 		return true;
 	} else {
@@ -291,17 +468,12 @@ const bool VisualAnimation::isRunning(void) {
 }
 
 
-const bool VisualAnimation::isDead(void) const {
-	if (this->status == kIsDead) {
+bool VisualAnimation::isReadyToDie(void) const {
+	if (this->status == kIsReadyToDie) {
 		return true;
 	} else {
 		return false;
 	}
-}
-
-
-const VisualItemIdentifier* const VisualAnimation::getIdentifier() const {
-	return this->animationIdentifier;
 }
 
 
@@ -317,21 +489,128 @@ void VisualAnimation::setDebugMode(bool requestedDebugMode) {
 }
 
 
-void VisualAnimation::durationIsExceeded(void* visualAnimation) {
-	reinterpret_cast<VisualAnimation*>(visualAnimation)->decrementRemainingNumberOfRepeats();
+void VisualAnimation::durationIsExceeded() {
+	if (this->remainingNumberOfRepeats != kInfiniteRepetition) {
+		this->decrementRemainingNumberOfRepeats();
+	}
 }
 
 
-void VisualAnimation::decrementRemainingNumberOfRepeats() {
-
-	if (this->remainingNumberOfRepeats == kInfiniteRepetition) {
-		return;
-	}
-	
+void VisualAnimation::decrementRemainingNumberOfRepeats() {	
 	if (this->remainingNumberOfRepeats > 1) {
 		this->remainingNumberOfRepeats--;
 	} else {
 		this->stop();
 	}
+}
+
+
+void VisualAnimation::preparePriorToAddingToAsset(VisualAsset& visualAsset) {
+
+	VisualAnimationQueue::removeVisualAnimationsWithOwnerIdentifier(visualAsset.getIdentifier(), this->animatedProperty);
 	
+	if (this->doStartAnimationWithCurrentPropertyValue == true) {
+		this->setCurrentTimelineValueToCurrentPropertyValue(visualAsset, this->animatedProperty);
+	}
+
+	if (this->animatedProperty == kAnimatedOpacity) {
+		this->setAnimateCallbackFunctionPtr(VisualAsset::animateOpacity, (void*)&visualAsset);
+	} else if (this->animatedProperty == kAnimatedRotation) {
+		this->setAnimateCallbackFunctionPtr(VisualAsset::animateRotation, (void*)&visualAsset);
+	} else if (this->animatedProperty == kAnimatedSize) {
+		this->setAnimateCallbackFunctionPtr(VisualAsset::animateScaleFactor, (void*)&visualAsset);
+	} else if (this->animatedProperty == kAnimatedLocation) {
+		visualAsset.setStartValueVisualStagePosition(this->startValueVisualStagePosition);
+		visualAsset.setStopValueVisualStagePosition(this->stopValueVisualStagePosition);
+		this->setAnimateCallbackFunctionPtr(VisualAsset::animateLocation, (void*)&visualAsset);
+	}
+	
+	this->enclosingAsset = &visualAsset;
+
+}
+
+
+const VisualAsset* const VisualAnimation::getEnclosingAsset(void) const {
+	return this->enclosingAsset;
+}
+
+
+void VisualAnimation::setSpeed(AnimationSpeed animationSpeed) {
+	if (this->debugMode == true) {
+		char logStr[128];
+		sprintf(logStr, "VisualAnimation::setSpeed: %f", animationSpeed);
+		writeLog(logStr);
+	}
+	//double timelineStartValue = 0.0;
+	//MovingDirection movingDirection = this->theTimeline->getMovingDirection();
+	double distance = this->theTimeline->getDistance();
+	uint32 newDuration = (uint32)(distance / (double)animationSpeed);
+	if (this->debugMode == true) {
+		char logStr[128];
+		sprintf(logStr, "VisualAnimation::setSpeed: newDuration: %d (distance: %f)", newDuration, distance);
+		writeLog(logStr);
+	}
+	this->theTimeline->setDurationInMilliseconds(newDuration);
+	/*
+	if (movingDirection == kAscending) {
+		timelineStartValue = theTimeline->getMaxValue() - (this->theTimeline->getDurationInMilliseconds() * animationSpeed);
+	} else if (movingDirection == kDescending) {
+		timelineStartValue = theTimeline->getMinValue() + (this->theTimeline->getDurationInMilliseconds() * animationSpeed);
+	}
+	theTimeline->setStartValue(timelineStartValue);
+	*/
+	this->speed = animationSpeed;
+	this->durationSpeedConstraint = kSpeedBound;
+}
+
+
+AnimationSpeed VisualAnimation::getSpeed(void) const {
+	return this->speed;
+}
+
+
+AnimationSpeed VisualAnimation::calcSpeed(double aStartValue, double aStopValue, uint32 aDurationInMilliseconds) {
+	double aDistance = 0.0;
+	if (aStartValue < aStopValue) {
+		aDistance = aStopValue - aStartValue;
+	} else {
+		aDistance = aStartValue - aStopValue;
+	}
+	return VisualAnimation::calcSpeed(aDistance, aDurationInMilliseconds);
+}
+
+
+AnimationSpeed VisualAnimation::calcSpeed(double aDistance, uint32 aDurationInMilliseconds) {
+	return (aDistance / static_cast<double>(aDurationInMilliseconds));
+}
+
+
+uint32 VisualAnimation::calcDurationInMilliseconds(double aDistance, AnimationSpeed aSpeed) {
+	return static_cast<uint32>(aDistance / static_cast<double>(aSpeed));
+}
+
+
+void VisualAnimation::setCurrentTimelineValueToCurrentPropertyValue(const VisualAsset& visualAsset, AnimatedProperty anAnimatedProperty) {
+	AnimationSpeed prevSpeed = this->getSpeed();
+	bool adjustedDistanceAndDuration = false;
+	if (anAnimatedProperty == kAnimatedLocation) {
+		adjustedDistanceAndDuration = this->theTimeline->setCurrentValue(visualAsset.getCurrentAnimationValueForAnimatedLocation(this->startValueVisualStagePosition, this->stopValueVisualStagePosition));
+	} else {
+		adjustedDistanceAndDuration = this->theTimeline->setCurrentValue(visualAsset.getCurrentAnimationValueOfProperty(anAnimatedProperty));
+	}
+	// movingDirection might need to change (we want to arrive at the stop position by way of the shortest distance)
+	MovingDirection movingDirection = this->theTimeline->getMovingDirection();
+	double theCurrentValue = this->theTimeline->getCurrentValue();
+	if ((movingDirection == kAscending) && theCurrentValue > this->stopValue) {
+		this->startValue = theCurrentValue;
+		this->theTimeline->toggleMovingDirection();
+	} else if ((movingDirection == kDescending) && theCurrentValue < this->stopValue) {
+		this->startValue = theCurrentValue;
+		this->theTimeline->toggleMovingDirection();
+	}
+	if (adjustedDistanceAndDuration == true) {
+		if (this->durationSpeedConstraint == kSpeedBound) {
+			this->setSpeed(prevSpeed);
+		}
+	}
 }
