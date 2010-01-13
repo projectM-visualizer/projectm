@@ -1,0 +1,1091 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 42;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4288C457075A22CF003C29C8 /* VisualOptions.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4288C456075A22CF003C29C8 /* VisualOptions.nib */; };
+		42986573080806B20045411A /* VisualConfiguration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42986571080806B20045411A /* VisualConfiguration.cpp */; };
+		42986574080806B20045411A /* VisualConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 42986572080806B20045411A /* VisualConfiguration.h */; };
+		8D01CCCE0486CAD60068D4B7 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */; };
+		8F229E650D5E5774006D520A /* VisualTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 8F229E640D5E5774006D520A /* VisualTypes.h */; };
+		AC041FBA0CE44F1000072622 /* VisualProgressIndicator.h in Headers */ = {isa = PBXBuildFile; fileRef = AC041FB80CE44F1000072622 /* VisualProgressIndicator.h */; };
+		AC041FBB0CE44F1000072622 /* VisualProgressIndicator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC041FB90CE44F1000072622 /* VisualProgressIndicator.cpp */; };
+		AC04E6B607ED8FD000F4479D /* VisualNotification.h in Headers */ = {isa = PBXBuildFile; fileRef = AC04E6B407ED8FD000F4479D /* VisualNotification.h */; };
+		AC04E6B707ED8FD000F4479D /* VisualNotification.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC04E6B507ED8FD000F4479D /* VisualNotification.cpp */; };
+		AC0D105008A0117500EE4F2C /* VisualGraphicsCore.h in Headers */ = {isa = PBXBuildFile; fileRef = AC0D104E08A0117500EE4F2C /* VisualGraphicsCore.h */; };
+		AC0D105108A0117500EE4F2C /* VisualGraphicsCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC0D104F08A0117500EE4F2C /* VisualGraphicsCore.cpp */; };
+		AC0D4EF10A3BF91F00C3101B /* VisualThreading.h in Headers */ = {isa = PBXBuildFile; fileRef = AC0D4EEF0A3BF91F00C3101B /* VisualThreading.h */; };
+		AC0D4EF20A3BF91F00C3101B /* VisualThreading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC0D4EF00A3BF91F00C3101B /* VisualThreading.cpp */; };
+		AC0DF75D0ECCC48E00462EDC /* VisualHistogram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC0DF75B0ECCC48E00462EDC /* VisualHistogram.cpp */; };
+		AC0DF75E0ECCC48E00462EDC /* VisualHistogram.h in Headers */ = {isa = PBXBuildFile; fileRef = AC0DF75C0ECCC48E00462EDC /* VisualHistogram.h */; };
+		AC0F52770CEC315D00191EEA /* VisualStyledString.h in Headers */ = {isa = PBXBuildFile; fileRef = AC0F52750CEC315D00191EEA /* VisualStyledString.h */; };
+		AC0F52780CEC315D00191EEA /* VisualStyledString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC0F52760CEC315D00191EEA /* VisualStyledString.cpp */; };
+		AC16F683089EBDDD00C8BC79 /* VisualGraphicTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC16F682089EBDDD00C8BC79 /* VisualGraphicTypes.cpp */; };
+		AC19E56B0DB1F4F0005AB92D /* VisualUpdateManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC19E5690DB1F4F0005AB92D /* VisualUpdateManager.cpp */; };
+		AC19E56C0DB1F4F0005AB92D /* VisualUpdateManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AC19E56A0DB1F4F0005AB92D /* VisualUpdateManager.h */; };
+		AC1FB8820BB8F29D001C1810 /* VisualHostCommunication.h in Headers */ = {isa = PBXBuildFile; fileRef = AC1FB8800BB8F29D001C1810 /* VisualHostCommunication.h */; };
+		AC1FB8830BB8F29D001C1810 /* VisualHostCommunication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC1FB8810BB8F29D001C1810 /* VisualHostCommunication.cpp */; };
+		AC213CA20F756F5200B58BAB /* VisualObjectData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC213CA00F756F5200B58BAB /* VisualObjectData.cpp */; };
+		AC213CA30F756F5200B58BAB /* VisualObjectData.h in Headers */ = {isa = PBXBuildFile; fileRef = AC213CA10F756F5200B58BAB /* VisualObjectData.h */; };
+		AC214F8109FD653700B24379 /* VisualInterpolation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC214F7F09FD653700B24379 /* VisualInterpolation.cpp */; };
+		AC214F8209FD653700B24379 /* VisualInterpolation.h in Headers */ = {isa = PBXBuildFile; fileRef = AC214F8009FD653700B24379 /* VisualInterpolation.h */; };
+		AC214FFD09FD694000B24379 /* VisualAsset.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC214FF309FD694000B24379 /* VisualAsset.cpp */; };
+		AC214FFE09FD694000B24379 /* VisualAsset.h in Headers */ = {isa = PBXBuildFile; fileRef = AC214FF409FD694000B24379 /* VisualAsset.h */; };
+		AC214FFF09FD694000B24379 /* VisualNurbs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC214FF509FD694000B24379 /* VisualNurbs.cpp */; };
+		AC21500009FD694000B24379 /* VisualNurbs.h in Headers */ = {isa = PBXBuildFile; fileRef = AC214FF609FD694000B24379 /* VisualNurbs.h */; };
+		AC21500109FD694000B24379 /* VisualStageBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC214FF709FD694000B24379 /* VisualStageBox.cpp */; };
+		AC21500209FD694000B24379 /* VisualStageBox.h in Headers */ = {isa = PBXBuildFile; fileRef = AC214FF809FD694000B24379 /* VisualStageBox.h */; };
+		AC21500309FD694000B24379 /* VisualStagePosition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC214FF909FD694000B24379 /* VisualStagePosition.cpp */; };
+		AC21500409FD694000B24379 /* VisualStagePosition.h in Headers */ = {isa = PBXBuildFile; fileRef = AC214FFA09FD694000B24379 /* VisualStagePosition.h */; };
+		AC21500509FD694000B24379 /* VisualTextureContainer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC214FFB09FD694000B24379 /* VisualTextureContainer.cpp */; };
+		AC21500609FD694000B24379 /* VisualTextureContainer.h in Headers */ = {isa = PBXBuildFile; fileRef = AC214FFC09FD694000B24379 /* VisualTextureContainer.h */; };
+		AC21508C09FD705100B24379 /* CocoaStringTexture.m in Sources */ = {isa = PBXBuildFile; fileRef = AC21508A09FD705000B24379 /* CocoaStringTexture.m */; };
+		AC21508D09FD705100B24379 /* CocoaStringTexture.h in Headers */ = {isa = PBXBuildFile; fileRef = AC21508B09FD705000B24379 /* CocoaStringTexture.h */; };
+		AC243BFD07D524B4006D245A /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC243BFC07D524B4006D245A /* CoreFoundation.framework */; };
+		AC29E5E50BAC6FB000206180 /* VisualNotificationKey.h in Headers */ = {isa = PBXBuildFile; fileRef = AC29E5E40BAC6FB000206180 /* VisualNotificationKey.h */; };
+		AC2E84980A6CEB9F005DFF74 /* VisualAudioMetaData.h in Headers */ = {isa = PBXBuildFile; fileRef = AC2E84960A6CEB9F005DFF74 /* VisualAudioMetaData.h */; };
+		AC2E84990A6CEB9F005DFF74 /* VisualAudioMetaData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC2E84970A6CEB9F005DFF74 /* VisualAudioMetaData.cpp */; };
+		AC2EF1F60CE98A0D00220332 /* VisualObject.h in Headers */ = {isa = PBXBuildFile; fileRef = AC2EF1F40CE98A0D00220332 /* VisualObject.h */; };
+		AC2EF1F70CE98A0D00220332 /* VisualObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC2EF1F50CE98A0D00220332 /* VisualObject.cpp */; };
+		AC38BF640BAE70B4002FD4A4 /* VisualStringStyle.h in Headers */ = {isa = PBXBuildFile; fileRef = AC38BF630BAE70B4002FD4A4 /* VisualStringStyle.h */; };
+		AC3920610B59705600FEC228 /* VisualImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC39205F0B59705600FEC228 /* VisualImage.cpp */; };
+		AC3920620B59705600FEC228 /* VisualImage.h in Headers */ = {isa = PBXBuildFile; fileRef = AC3920600B59705600FEC228 /* VisualImage.h */; };
+		AC3EA1620DB3F581001C1A0F /* UpdateServiceActor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC3EA1600DB3F581001C1A0F /* UpdateServiceActor.cpp */; };
+		AC3EA1630DB3F581001C1A0F /* UpdateServiceActor.h in Headers */ = {isa = PBXBuildFile; fileRef = AC3EA1610DB3F581001C1A0F /* UpdateServiceActor.h */; };
+		AC42D2810DC4619500FE57BD /* VisualThreadingManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC42D27F0DC4619500FE57BD /* VisualThreadingManager.cpp */; };
+		AC42D2820DC4619500FE57BD /* VisualThreadingManager.h in Headers */ = {isa = PBXBuildFile; fileRef = AC42D2800DC4619500FE57BD /* VisualThreadingManager.h */; };
+		AC454CC00D11CF3D002A1428 /* VisualMainAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC454CBE0D11CF3C002A1428 /* VisualMainAction.cpp */; };
+		AC454CC10D11CF3D002A1428 /* VisualMainAction.h in Headers */ = {isa = PBXBuildFile; fileRef = AC454CBF0D11CF3D002A1428 /* VisualMainAction.h */; };
+		AC48DDB30B87123A0003AF42 /* VisualNotificationQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = AC48DDB10B87123A0003AF42 /* VisualNotificationQueue.h */; };
+		AC48DDB40B87123A0003AF42 /* VisualNotificationQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC48DDB20B87123A0003AF42 /* VisualNotificationQueue.cpp */; };
+		AC503DCC089C1384008CD23F /* VisualActorGraphics.h in Headers */ = {isa = PBXBuildFile; fileRef = AC503DCA089C1384008CD23F /* VisualActorGraphics.h */; };
+		AC503DCD089C1384008CD23F /* VisualActorGraphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC503DCB089C1384008CD23F /* VisualActorGraphics.cpp */; };
+		AC503EBF089C2176008CD23F /* VisualGraphicTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = AC503EBE089C2176008CD23F /* VisualGraphicTypes.h */; };
+		AC5B29FD0941E73B0040AE4E /* VisualActorState.h in Headers */ = {isa = PBXBuildFile; fileRef = AC5B29FC0941E73A0040AE4E /* VisualActorState.h */; };
+		AC7955E906DBD4D60026F7BA /* Beatlight.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC7955DF06DBD4D60026F7BA /* Beatlight.cpp */; };
+		AC7955EA06DBD4D60026F7BA /* Beatlight.h in Headers */ = {isa = PBXBuildFile; fileRef = AC7955E006DBD4D60026F7BA /* Beatlight.h */; };
+		AC7955EB06DBD4D60026F7BA /* CoverArt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC7955E106DBD4D60026F7BA /* CoverArt.cpp */; };
+		AC7955EC06DBD4D60026F7BA /* CoverArt.h in Headers */ = {isa = PBXBuildFile; fileRef = AC7955E206DBD4D60026F7BA /* CoverArt.h */; };
+		AC7955ED06DBD4D60026F7BA /* ProcessMonitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC7955E306DBD4D60026F7BA /* ProcessMonitor.cpp */; };
+		AC7955EE06DBD4D60026F7BA /* ProcessMonitor.h in Headers */ = {isa = PBXBuildFile; fileRef = AC7955E406DBD4D60026F7BA /* ProcessMonitor.h */; };
+		AC7955EF06DBD4D60026F7BA /* TemplateAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC7955E506DBD4D60026F7BA /* TemplateAction.cpp */; };
+		AC7955F006DBD4D60026F7BA /* TemplateAction.h in Headers */ = {isa = PBXBuildFile; fileRef = AC7955E606DBD4D60026F7BA /* TemplateAction.h */; };
+		AC7955F106DBD4D60026F7BA /* TrackTitle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC7955E706DBD4D60026F7BA /* TrackTitle.cpp */; };
+		AC7955F206DBD4D60026F7BA /* TrackTitle.h in Headers */ = {isa = PBXBuildFile; fileRef = AC7955E806DBD4D60026F7BA /* TrackTitle.h */; };
+		AC7F531D07255239004BE280 /* OptionsDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = AC7F531B07255239004BE280 /* OptionsDialog.h */; };
+		AC7F531E07255239004BE280 /* OptionsDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC7F531C07255239004BE280 /* OptionsDialog.cpp */; };
+		AC8E20F20A0944B6000ABA6D /* VisualTimeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC8E20EC0A0944B6000ABA6D /* VisualTimeline.cpp */; };
+		AC8E20F30A0944B6000ABA6D /* VisualTimeline.h in Headers */ = {isa = PBXBuildFile; fileRef = AC8E20ED0A0944B6000ABA6D /* VisualTimeline.h */; };
+		AC8E20F40A0944B6000ABA6D /* VisualTiming.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC8E20EE0A0944B6000ABA6D /* VisualTiming.cpp */; };
+		AC8E20F50A0944B6000ABA6D /* VisualTiming.h in Headers */ = {isa = PBXBuildFile; fileRef = AC8E20EF0A0944B6000ABA6D /* VisualTiming.h */; };
+		AC92E7750A9EDAC200507DCF /* VisualErrorHandling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC92E7740A9EDAC200507DCF /* VisualErrorHandling.cpp */; };
+		AC9CA85E0A11C78C006299D4 /* VisualItemIdentifier.h in Headers */ = {isa = PBXBuildFile; fileRef = AC9CA85C0A11C78C006299D4 /* VisualItemIdentifier.h */; };
+		AC9CA85F0A11C78C006299D4 /* VisualItemIdentifier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC9CA85D0A11C78C006299D4 /* VisualItemIdentifier.cpp */; };
+		ACAB14730D71F52900610EAE /* VisualQuickTime.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACAB14710D71F52900610EAE /* VisualQuickTime.cpp */; };
+		ACAB14740D71F52900610EAE /* VisualQuickTime.h in Headers */ = {isa = PBXBuildFile; fileRef = ACAB14720D71F52900610EAE /* VisualQuickTime.h */; };
+		ACAB696A0CCF5CA5009ECB49 /* VisualAnimationCluster.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACAB69600CCF5CA5009ECB49 /* VisualAnimationCluster.cpp */; };
+		ACAB696B0CCF5CA5009ECB49 /* VisualAnimationCluster.h in Headers */ = {isa = PBXBuildFile; fileRef = ACAB69610CCF5CA5009ECB49 /* VisualAnimationCluster.h */; };
+		ACAB696C0CCF5CA5009ECB49 /* VisualAnimationComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACAB69620CCF5CA5009ECB49 /* VisualAnimationComponent.cpp */; };
+		ACAB696D0CCF5CA5009ECB49 /* VisualAnimationComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = ACAB69630CCF5CA5009ECB49 /* VisualAnimationComponent.h */; };
+		ACAB696E0CCF5CA5009ECB49 /* VisualAnimationPackage.h in Headers */ = {isa = PBXBuildFile; fileRef = ACAB69640CCF5CA5009ECB49 /* VisualAnimationPackage.h */; };
+		ACAB696F0CCF5CA5009ECB49 /* VisualAnimationQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACAB69650CCF5CA5009ECB49 /* VisualAnimationQueue.cpp */; };
+		ACAB69700CCF5CA5009ECB49 /* VisualAnimationQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = ACAB69660CCF5CA5009ECB49 /* VisualAnimationQueue.h */; };
+		ACAB69710CCF5CA5009ECB49 /* VisualAnimationSequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACAB69670CCF5CA5009ECB49 /* VisualAnimationSequence.cpp */; };
+		ACAB69720CCF5CA5009ECB49 /* VisualAnimationSequence.h in Headers */ = {isa = PBXBuildFile; fileRef = ACAB69680CCF5CA5009ECB49 /* VisualAnimationSequence.h */; };
+		ACAB69730CCF5CA5009ECB49 /* VisualAnimationTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = ACAB69690CCF5CA5009ECB49 /* VisualAnimationTypes.h */; };
+		ACAB698D0CCF5D13009ECB49 /* VisualCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACAB698B0CCF5D13009ECB49 /* VisualCamera.cpp */; };
+		ACAB698E0CCF5D13009ECB49 /* VisualCamera.h in Headers */ = {isa = PBXBuildFile; fileRef = ACAB698C0CCF5D13009ECB49 /* VisualCamera.h */; };
+		ACAB69970CCF5D3E009ECB49 /* VisualPreferences.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACAB69950CCF5D3E009ECB49 /* VisualPreferences.cpp */; };
+		ACAB69980CCF5D3E009ECB49 /* VisualPreferences.h in Headers */ = {isa = PBXBuildFile; fileRef = ACAB69960CCF5D3E009ECB49 /* VisualPreferences.h */; };
+		ACAB6B180CCF8119009ECB49 /* VisualVertex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACAB6B160CCF8119009ECB49 /* VisualVertex.cpp */; };
+		ACAB6B190CCF8119009ECB49 /* VisualVertex.h in Headers */ = {isa = PBXBuildFile; fileRef = ACAB6B170CCF8119009ECB49 /* VisualVertex.h */; };
+		ACB63E970D8C7CCC00F05565 /* VisualNetwork.h in Headers */ = {isa = PBXBuildFile; fileRef = ACB63E950D8C7CCC00F05565 /* VisualNetwork.h */; };
+		ACB63E980D8C7CCC00F05565 /* VisualNetwork.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACB63E960D8C7CCC00F05565 /* VisualNetwork.cpp */; };
+		ACD043230942FEDA00A0CB1D /* VisualPlayerState.h in Headers */ = {isa = PBXBuildFile; fileRef = ACD0431F0942FED900A0CB1D /* VisualPlayerState.h */; };
+		ACD043240942FEDA00A0CB1D /* VisualPlayerState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACD043200942FEDA00A0CB1D /* VisualPlayerState.cpp */; };
+		ACD63AEB0D1E792900037877 /* VisualFontManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACD63AE90D1E792900037877 /* VisualFontManager.cpp */; };
+		ACD63AEC0D1E792900037877 /* VisualFontManager.h in Headers */ = {isa = PBXBuildFile; fileRef = ACD63AEA0D1E792900037877 /* VisualFontManager.h */; };
+		ACDAA940098FFD900067AA4A /* VisualActorState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACDAA93F098FFD900067AA4A /* VisualActorState.cpp */; };
+		ACE0DF5F06DBCE730018E8C0 /* BeatlightActor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF2106DBCE730018E8C0 /* BeatlightActor.cpp */; };
+		ACE0DF6006DBCE730018E8C0 /* BeatlightActor.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF2206DBCE730018E8C0 /* BeatlightActor.h */; };
+		ACE0DF6106DBCE730018E8C0 /* CoverArtActor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF2306DBCE730018E8C0 /* CoverArtActor.cpp */; };
+		ACE0DF6206DBCE730018E8C0 /* CoverArtActor.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF2406DBCE730018E8C0 /* CoverArtActor.h */; };
+		ACE0DF6306DBCE730018E8C0 /* ProcessMonitorActor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF2506DBCE730018E8C0 /* ProcessMonitorActor.cpp */; };
+		ACE0DF6406DBCE730018E8C0 /* ProcessMonitorActor.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF2606DBCE730018E8C0 /* ProcessMonitorActor.h */; };
+		ACE0DF6506DBCE730018E8C0 /* TemplateActor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF2706DBCE730018E8C0 /* TemplateActor.cpp */; };
+		ACE0DF6606DBCE730018E8C0 /* TemplateActor.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF2806DBCE730018E8C0 /* TemplateActor.h */; };
+		ACE0DF6706DBCE730018E8C0 /* TrackTitleActor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF2906DBCE730018E8C0 /* TrackTitleActor.cpp */; };
+		ACE0DF6806DBCE730018E8C0 /* TrackTitleActor.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF2A06DBCE730018E8C0 /* TrackTitleActor.h */; };
+		ACE0DF6906DBCE730018E8C0 /* VisualAudioLab.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF2C06DBCE730018E8C0 /* VisualAudioLab.cpp */; };
+		ACE0DF6A06DBCE730018E8C0 /* VisualAudioLab.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF2D06DBCE730018E8C0 /* VisualAudioLab.h */; };
+		ACE0DF6D06DBCE730018E8C0 /* iTunesAPI.c in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF3106DBCE730018E8C0 /* iTunesAPI.c */; };
+		ACE0DF6E06DBCE730018E8C0 /* iTunesAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF3206DBCE730018E8C0 /* iTunesAPI.h */; };
+		ACE0DF6F06DBCE730018E8C0 /* iTunesVisualAPI.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF3306DBCE730018E8C0 /* iTunesVisualAPI.h */; };
+		ACE0DF7506DBCE730018E8C0 /* VisualColorTools.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF3B06DBCE730018E8C0 /* VisualColorTools.cpp */; };
+		ACE0DF7606DBCE730018E8C0 /* VisualColorTools.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF3C06DBCE730018E8C0 /* VisualColorTools.h */; };
+		ACE0DF7806DBCE730018E8C0 /* VisualErrorHandling.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF3E06DBCE730018E8C0 /* VisualErrorHandling.h */; };
+		ACE0DF7B06DBCE730018E8C0 /* VisualActor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF4106DBCE730018E8C0 /* VisualActor.cpp */; };
+		ACE0DF7C06DBCE730018E8C0 /* VisualActor.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF4206DBCE730018E8C0 /* VisualActor.h */; };
+		ACE0DF7F06DBCE730018E8C0 /* VisualDataStore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF4506DBCE730018E8C0 /* VisualDataStore.cpp */; };
+		ACE0DF8006DBCE730018E8C0 /* VisualDataStore.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF4606DBCE730018E8C0 /* VisualDataStore.h */; };
+		ACE0DF8106DBCE730018E8C0 /* VisualDispatch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF4706DBCE730018E8C0 /* VisualDispatch.cpp */; };
+		ACE0DF8206DBCE730018E8C0 /* VisualDispatch.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF4806DBCE730018E8C0 /* VisualDispatch.h */; };
+		ACE0DF8306DBCE730018E8C0 /* VisualEnsemble.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF4906DBCE730018E8C0 /* VisualEnsemble.cpp */; };
+		ACE0DF8406DBCE730018E8C0 /* VisualEnsemble.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF4A06DBCE730018E8C0 /* VisualEnsemble.h */; };
+		ACE0DF8506DBCE730018E8C0 /* VisualGraphics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF4B06DBCE730018E8C0 /* VisualGraphics.cpp */; };
+		ACE0DF8606DBCE730018E8C0 /* VisualGraphics.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF4C06DBCE730018E8C0 /* VisualGraphics.h */; };
+		ACE0DF8706DBCE730018E8C0 /* VisualMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF4D06DBCE730018E8C0 /* VisualMain.cpp */; };
+		ACE0DF8806DBCE730018E8C0 /* VisualMain.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF4E06DBCE730018E8C0 /* VisualMain.h */; };
+		ACE0DF8906DBCE730018E8C0 /* VisualStageControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE0DF4F06DBCE730018E8C0 /* VisualStageControl.cpp */; };
+		ACE0DF8A06DBCE730018E8C0 /* VisualStageControl.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE0DF5006DBCE730018E8C0 /* VisualStageControl.h */; };
+		ACE0DFA006DBD0A00018E8C0 /* DEVROYE_.otf in Resources */ = {isa = PBXBuildFile; fileRef = ACE0DF9F06DBD0A00018E8C0 /* DEVROYE_.otf */; };
+		ACE0DFB406DBD1190018E8C0 /* AGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACE0DFAE06DBD1190018E8C0 /* AGL.framework */; };
+		ACE0DFB506DBD1190018E8C0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACE0DFAF06DBD1190018E8C0 /* Cocoa.framework */; };
+		ACE0DFB706DBD1190018E8C0 /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACE0DFB106DBD1190018E8C0 /* GLUT.framework */; };
+		ACE0DFB806DBD1190018E8C0 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ACE0DFB206DBD1190018E8C0 /* OpenGL.framework */; };
+		ACE30FA90ACE686800EC56B7 /* VisualAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE30FA70ACE686800EC56B7 /* VisualAnimation.cpp */; };
+		ACE30FAA0ACE686800EC56B7 /* VisualAnimation.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE30FA80ACE686800EC56B7 /* VisualAnimation.h */; };
+		ACE437100D91AB7800479608 /* VisualDownloadQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE4370E0D91AB7800479608 /* VisualDownloadQueue.cpp */; };
+		ACE437110D91AB7800479608 /* VisualDownloadQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE4370F0D91AB7800479608 /* VisualDownloadQueue.h */; };
+		ACE80D2D0BB84B960004DC20 /* VisualSignature.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE80D2B0BB84B960004DC20 /* VisualSignature.h */; };
+		ACE80D2E0BB84B960004DC20 /* VisualSignature.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE80D2C0BB84B960004DC20 /* VisualSignature.cpp */; };
+		ACE824400B88AE9400E9028B /* VisualFile.h in Headers */ = {isa = PBXBuildFile; fileRef = ACE8243E0B88AE9400E9028B /* VisualFile.h */; };
+		ACE824410B88AE9400E9028B /* VisualFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE8243F0B88AE9400E9028B /* VisualFile.cpp */; };
+		ACE8D72F0BB27A8500BEBD44 /* VisualStringStyle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE8D72E0BB27A8500BEBD44 /* VisualStringStyle.cpp */; };
+		ACEE984A0FBD35DD00111B35 /* VisualObjectMutex.h in Headers */ = {isa = PBXBuildFile; fileRef = ACEE98480FBD35DD00111B35 /* VisualObjectMutex.h */; };
+		ACEE984B0FBD35DD00111B35 /* VisualObjectMutex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACEE98490FBD35DD00111B35 /* VisualObjectMutex.cpp */; };
+		ACF08A490B5231CA0031A029 /* VisualConvolutionFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACF08A470B5231CA0031A029 /* VisualConvolutionFilter.cpp */; };
+		ACF08A4A0B5231CA0031A029 /* VisualConvolutionFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = ACF08A480B5231CA0031A029 /* VisualConvolutionFilter.h */; };
+		ACF08A550B5232490031A029 /* VisualAppleScript.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACF08A530B5232490031A029 /* VisualAppleScript.cpp */; };
+		ACF08A560B5232490031A029 /* VisualAppleScript.h in Headers */ = {isa = PBXBuildFile; fileRef = ACF08A540B5232490031A029 /* VisualAppleScript.h */; };
+		ACF08A620B5232D50031A029 /* getLyrics.applescript in Resources */ = {isa = PBXBuildFile; fileRef = ACF08A570B52326E0031A029 /* getLyrics.applescript */; };
+		E41E1F2E0A6BCBD1004565CB /* VisualString.h in Headers */ = {isa = PBXBuildFile; fileRef = E41E1F2C0A6BCBD1004565CB /* VisualString.h */; };
+		E41E1F2F0A6BCBD1004565CB /* VisualString.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E41E1F2D0A6BCBD1004565CB /* VisualString.cpp */; };
+		E428E9F20A4EBB010018F704 /* TrackLyricsActor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E428E9F00A4EBB010018F704 /* TrackLyricsActor.cpp */; };
+		E428E9F30A4EBB010018F704 /* TrackLyricsActor.h in Headers */ = {isa = PBXBuildFile; fileRef = E428E9F10A4EBB010018F704 /* TrackLyricsActor.h */; };
+		E428E9F60A4EBB170018F704 /* TrackLyrics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E428E9F40A4EBB170018F704 /* TrackLyrics.cpp */; };
+		E428E9F70A4EBB170018F704 /* TrackLyrics.h in Headers */ = {isa = PBXBuildFile; fileRef = E428E9F50A4EBB170018F704 /* TrackLyrics.h */; };
+		E4CF4CC70BDBC199007147F6 /* VisualConfigurationDialog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4CF4CC30BDBC199007147F6 /* VisualConfigurationDialog.cpp */; };
+		E4CF4CC80BDBC199007147F6 /* VisualConfigurationDialog.h in Headers */ = {isa = PBXBuildFile; fileRef = E4CF4CC40BDBC199007147F6 /* VisualConfigurationDialog.h */; };
+		E4D6CC610B9F3A530004750D /* spot.png in Resources */ = {isa = PBXBuildFile; fileRef = E4D6CC600B9F3A530004750D /* spot.png */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = ../../../System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		4288C456075A22CF003C29C8 /* VisualOptions.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; path = VisualOptions.nib; sourceTree = SOURCE_ROOT; };
+		42986571080806B20045411A /* VisualConfiguration.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = VisualConfiguration.cpp; sourceTree = "<group>"; };
+		42986572080806B20045411A /* VisualConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = VisualConfiguration.h; sourceTree = "<group>"; };
+		8D01CCD10486CAD60068D4B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		8D01CCD20486CAD60068D4B7 /* VizKit.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VizKit.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		8F229E640D5E5774006D520A /* VisualTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualTypes.h; sourceTree = "<group>"; };
+		AC041FB80CE44F1000072622 /* VisualProgressIndicator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualProgressIndicator.h; sourceTree = "<group>"; };
+		AC041FB90CE44F1000072622 /* VisualProgressIndicator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisualProgressIndicator.cpp; sourceTree = "<group>"; };
+		AC04E6B407ED8FD000F4479D /* VisualNotification.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = VisualNotification.h; sourceTree = "<group>"; };
+		AC04E6B507ED8FD000F4479D /* VisualNotification.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = VisualNotification.cpp; sourceTree = "<group>"; };
+		AC0D104E08A0117500EE4F2C /* VisualGraphicsCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualGraphicsCore.h; sourceTree = "<group>"; };
+		AC0D104F08A0117500EE4F2C /* VisualGraphicsCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisualGraphicsCore.cpp; sourceTree = "<group>"; };
+		AC0D4EEF0A3BF91F00C3101B /* VisualThreading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualThreading.h; sourceTree = "<group>"; };
+		AC0D4EF00A3BF91F00C3101B /* VisualThreading.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisualThreading.cpp; sourceTree = "<group>"; };
+		AC0DF75B0ECCC48E00462EDC /* VisualHistogram.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualHistogram.cpp; path = ../source/Tools/VisualHistogram.cpp; sourceTree = SOURCE_ROOT; };
+		AC0DF75C0ECCC48E00462EDC /* VisualHistogram.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualHistogram.h; path = ../source/Tools/VisualHistogram.h; sourceTree = SOURCE_ROOT; };
+		AC0F52750CEC315D00191EEA /* VisualStyledString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualStyledString.h; sourceTree = "<group>"; };
+		AC0F52760CEC315D00191EEA /* VisualStyledString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisualStyledString.cpp; sourceTree = "<group>"; };
+		AC16F682089EBDDD00C8BC79 /* VisualGraphicTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisualGraphicTypes.cpp; sourceTree = "<group>"; };
+		AC19E5690DB1F4F0005AB92D /* VisualUpdateManager.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualUpdateManager.cpp; path = ../source/Tools/VisualUpdateManager.cpp; sourceTree = SOURCE_ROOT; };
+		AC19E56A0DB1F4F0005AB92D /* VisualUpdateManager.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualUpdateManager.h; path = ../source/Tools/VisualUpdateManager.h; sourceTree = SOURCE_ROOT; };
+		AC1FB8800BB8F29D001C1810 /* VisualHostCommunication.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualHostCommunication.h; path = ../source/VisualHostCommunication.h; sourceTree = SOURCE_ROOT; };
+		AC1FB8810BB8F29D001C1810 /* VisualHostCommunication.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualHostCommunication.cpp; path = ../source/VisualHostCommunication.cpp; sourceTree = SOURCE_ROOT; };
+		AC213CA00F756F5200B58BAB /* VisualObjectData.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualObjectData.cpp; path = ../source/VisualObjectData.cpp; sourceTree = SOURCE_ROOT; };
+		AC213CA10F756F5200B58BAB /* VisualObjectData.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualObjectData.h; path = ../source/VisualObjectData.h; sourceTree = SOURCE_ROOT; };
+		AC214F7F09FD653700B24379 /* VisualInterpolation.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualInterpolation.cpp; path = ../source/Tools/VisualInterpolation.cpp; sourceTree = SOURCE_ROOT; };
+		AC214F8009FD653700B24379 /* VisualInterpolation.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualInterpolation.h; path = ../source/Tools/VisualInterpolation.h; sourceTree = SOURCE_ROOT; };
+		AC214FF309FD694000B24379 /* VisualAsset.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualAsset.cpp; path = ../source/VisualAsset.cpp; sourceTree = SOURCE_ROOT; };
+		AC214FF409FD694000B24379 /* VisualAsset.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualAsset.h; path = ../source/VisualAsset.h; sourceTree = SOURCE_ROOT; };
+		AC214FF509FD694000B24379 /* VisualNurbs.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualNurbs.cpp; path = ../source/VisualNurbs.cpp; sourceTree = SOURCE_ROOT; };
+		AC214FF609FD694000B24379 /* VisualNurbs.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualNurbs.h; path = ../source/VisualNurbs.h; sourceTree = SOURCE_ROOT; };
+		AC214FF709FD694000B24379 /* VisualStageBox.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualStageBox.cpp; path = ../source/VisualStageBox.cpp; sourceTree = SOURCE_ROOT; };
+		AC214FF809FD694000B24379 /* VisualStageBox.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualStageBox.h; path = ../source/VisualStageBox.h; sourceTree = SOURCE_ROOT; };
+		AC214FF909FD694000B24379 /* VisualStagePosition.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualStagePosition.cpp; path = ../source/VisualStagePosition.cpp; sourceTree = SOURCE_ROOT; };
+		AC214FFA09FD694000B24379 /* VisualStagePosition.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualStagePosition.h; path = ../source/VisualStagePosition.h; sourceTree = SOURCE_ROOT; };
+		AC214FFB09FD694000B24379 /* VisualTextureContainer.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualTextureContainer.cpp; path = ../source/VisualTextureContainer.cpp; sourceTree = SOURCE_ROOT; };
+		AC214FFC09FD694000B24379 /* VisualTextureContainer.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualTextureContainer.h; path = ../source/VisualTextureContainer.h; sourceTree = SOURCE_ROOT; };
+		AC21508A09FD705000B24379 /* CocoaStringTexture.m */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.objc; name = CocoaStringTexture.m; path = ../source/mac/CocoaStringTexture.m; sourceTree = SOURCE_ROOT; };
+		AC21508B09FD705000B24379 /* CocoaStringTexture.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = CocoaStringTexture.h; path = ../source/mac/CocoaStringTexture.h; sourceTree = SOURCE_ROOT; };
+		AC243BFC07D524B4006D245A /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = ../../../System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		AC29E5E40BAC6FB000206180 /* VisualNotificationKey.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualNotificationKey.h; path = ../source/VisualNotificationKey.h; sourceTree = SOURCE_ROOT; };
+		AC2E84960A6CEB9F005DFF74 /* VisualAudioMetaData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualAudioMetaData.h; sourceTree = "<group>"; };
+		AC2E84970A6CEB9F005DFF74 /* VisualAudioMetaData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisualAudioMetaData.cpp; sourceTree = "<group>"; };
+		AC2EF1F40CE98A0D00220332 /* VisualObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualObject.h; sourceTree = "<group>"; };
+		AC2EF1F50CE98A0D00220332 /* VisualObject.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisualObject.cpp; sourceTree = "<group>"; };
+		AC38BF630BAE70B4002FD4A4 /* VisualStringStyle.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualStringStyle.h; path = ../source/Tools/VisualStringStyle.h; sourceTree = SOURCE_ROOT; };
+		AC39205F0B59705600FEC228 /* VisualImage.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualImage.cpp; path = ../source/VisualImage.cpp; sourceTree = SOURCE_ROOT; };
+		AC3920600B59705600FEC228 /* VisualImage.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualImage.h; path = ../source/VisualImage.h; sourceTree = SOURCE_ROOT; };
+		AC3EA1600DB3F581001C1A0F /* UpdateServiceActor.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = UpdateServiceActor.cpp; path = ../source/Actors/UpdateServiceActor.cpp; sourceTree = SOURCE_ROOT; };
+		AC3EA1610DB3F581001C1A0F /* UpdateServiceActor.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = UpdateServiceActor.h; path = ../source/Actors/UpdateServiceActor.h; sourceTree = SOURCE_ROOT; };
+		AC42D27F0DC4619500FE57BD /* VisualThreadingManager.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualThreadingManager.cpp; path = ../source/Tools/VisualThreadingManager.cpp; sourceTree = SOURCE_ROOT; };
+		AC42D2800DC4619500FE57BD /* VisualThreadingManager.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualThreadingManager.h; path = ../source/Tools/VisualThreadingManager.h; sourceTree = SOURCE_ROOT; };
+		AC454CBE0D11CF3C002A1428 /* VisualMainAction.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualMainAction.cpp; path = ../source/VisualMainAction.cpp; sourceTree = SOURCE_ROOT; };
+		AC454CBF0D11CF3D002A1428 /* VisualMainAction.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualMainAction.h; path = ../source/VisualMainAction.h; sourceTree = SOURCE_ROOT; };
+		AC48DDB10B87123A0003AF42 /* VisualNotificationQueue.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualNotificationQueue.h; path = ../source/VisualNotificationQueue.h; sourceTree = SOURCE_ROOT; };
+		AC48DDB20B87123A0003AF42 /* VisualNotificationQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualNotificationQueue.cpp; path = ../source/VisualNotificationQueue.cpp; sourceTree = SOURCE_ROOT; };
+		AC503DCA089C1384008CD23F /* VisualActorGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualActorGraphics.h; sourceTree = "<group>"; };
+		AC503DCB089C1384008CD23F /* VisualActorGraphics.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisualActorGraphics.cpp; sourceTree = "<group>"; };
+		AC503EBE089C2176008CD23F /* VisualGraphicTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualGraphicTypes.h; sourceTree = "<group>"; };
+		AC5B29FC0941E73A0040AE4E /* VisualActorState.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualActorState.h; path = ../source/VisualActorState.h; sourceTree = SOURCE_ROOT; };
+		AC7955DF06DBD4D60026F7BA /* Beatlight.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = Beatlight.cpp; sourceTree = "<group>"; };
+		AC7955E006DBD4D60026F7BA /* Beatlight.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = Beatlight.h; sourceTree = "<group>"; };
+		AC7955E106DBD4D60026F7BA /* CoverArt.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = CoverArt.cpp; sourceTree = "<group>"; };
+		AC7955E206DBD4D60026F7BA /* CoverArt.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = CoverArt.h; sourceTree = "<group>"; };
+		AC7955E306DBD4D60026F7BA /* ProcessMonitor.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = ProcessMonitor.cpp; sourceTree = "<group>"; };
+		AC7955E406DBD4D60026F7BA /* ProcessMonitor.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = ProcessMonitor.h; sourceTree = "<group>"; };
+		AC7955E506DBD4D60026F7BA /* TemplateAction.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = TemplateAction.cpp; sourceTree = "<group>"; };
+		AC7955E606DBD4D60026F7BA /* TemplateAction.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = TemplateAction.h; sourceTree = "<group>"; };
+		AC7955E706DBD4D60026F7BA /* TrackTitle.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = TrackTitle.cpp; sourceTree = "<group>"; };
+		AC7955E806DBD4D60026F7BA /* TrackTitle.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = TrackTitle.h; sourceTree = "<group>"; };
+		AC7F531B07255239004BE280 /* OptionsDialog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OptionsDialog.h; sourceTree = "<group>"; };
+		AC7F531C07255239004BE280 /* OptionsDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OptionsDialog.cpp; sourceTree = "<group>"; };
+		AC8E20EC0A0944B6000ABA6D /* VisualTimeline.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualTimeline.cpp; path = ../source/Tools/Timing/VisualTimeline.cpp; sourceTree = SOURCE_ROOT; };
+		AC8E20ED0A0944B6000ABA6D /* VisualTimeline.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualTimeline.h; path = ../source/Tools/Timing/VisualTimeline.h; sourceTree = SOURCE_ROOT; };
+		AC8E20EE0A0944B6000ABA6D /* VisualTiming.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualTiming.cpp; path = ../source/Tools/Timing/VisualTiming.cpp; sourceTree = SOURCE_ROOT; };
+		AC8E20EF0A0944B6000ABA6D /* VisualTiming.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualTiming.h; path = ../source/Tools/Timing/VisualTiming.h; sourceTree = SOURCE_ROOT; };
+		AC92E7740A9EDAC200507DCF /* VisualErrorHandling.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualErrorHandling.cpp; path = ../source/Tools/VisualErrorHandling.cpp; sourceTree = SOURCE_ROOT; };
+		AC9CA85C0A11C78C006299D4 /* VisualItemIdentifier.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualItemIdentifier.h; path = ../source/Tools/VisualItemIdentifier.h; sourceTree = SOURCE_ROOT; };
+		AC9CA85D0A11C78C006299D4 /* VisualItemIdentifier.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualItemIdentifier.cpp; path = ../source/Tools/VisualItemIdentifier.cpp; sourceTree = SOURCE_ROOT; };
+		ACAB14710D71F52900610EAE /* VisualQuickTime.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualQuickTime.cpp; path = ../source/Tools/VisualQuickTime.cpp; sourceTree = SOURCE_ROOT; };
+		ACAB14720D71F52900610EAE /* VisualQuickTime.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualQuickTime.h; path = ../source/Tools/VisualQuickTime.h; sourceTree = SOURCE_ROOT; };
+		ACAB69600CCF5CA5009ECB49 /* VisualAnimationCluster.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualAnimationCluster.cpp; path = ../source/Tools/Timing/VisualAnimationCluster.cpp; sourceTree = SOURCE_ROOT; };
+		ACAB69610CCF5CA5009ECB49 /* VisualAnimationCluster.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualAnimationCluster.h; path = ../source/Tools/Timing/VisualAnimationCluster.h; sourceTree = SOURCE_ROOT; };
+		ACAB69620CCF5CA5009ECB49 /* VisualAnimationComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualAnimationComponent.cpp; path = ../source/Tools/Timing/VisualAnimationComponent.cpp; sourceTree = SOURCE_ROOT; };
+		ACAB69630CCF5CA5009ECB49 /* VisualAnimationComponent.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualAnimationComponent.h; path = ../source/Tools/Timing/VisualAnimationComponent.h; sourceTree = SOURCE_ROOT; };
+		ACAB69640CCF5CA5009ECB49 /* VisualAnimationPackage.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualAnimationPackage.h; path = ../source/Tools/Timing/VisualAnimationPackage.h; sourceTree = SOURCE_ROOT; };
+		ACAB69650CCF5CA5009ECB49 /* VisualAnimationQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualAnimationQueue.cpp; path = ../source/Tools/Timing/VisualAnimationQueue.cpp; sourceTree = SOURCE_ROOT; };
+		ACAB69660CCF5CA5009ECB49 /* VisualAnimationQueue.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualAnimationQueue.h; path = ../source/Tools/Timing/VisualAnimationQueue.h; sourceTree = SOURCE_ROOT; };
+		ACAB69670CCF5CA5009ECB49 /* VisualAnimationSequence.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualAnimationSequence.cpp; path = ../source/Tools/Timing/VisualAnimationSequence.cpp; sourceTree = SOURCE_ROOT; };
+		ACAB69680CCF5CA5009ECB49 /* VisualAnimationSequence.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualAnimationSequence.h; path = ../source/Tools/Timing/VisualAnimationSequence.h; sourceTree = SOURCE_ROOT; };
+		ACAB69690CCF5CA5009ECB49 /* VisualAnimationTypes.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualAnimationTypes.h; path = ../source/Tools/Timing/VisualAnimationTypes.h; sourceTree = SOURCE_ROOT; };
+		ACAB698B0CCF5D13009ECB49 /* VisualCamera.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualCamera.cpp; path = ../source/VisualCamera.cpp; sourceTree = SOURCE_ROOT; };
+		ACAB698C0CCF5D13009ECB49 /* VisualCamera.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualCamera.h; path = ../source/VisualCamera.h; sourceTree = SOURCE_ROOT; };
+		ACAB69950CCF5D3E009ECB49 /* VisualPreferences.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualPreferences.cpp; path = ../source/VisualPreferences.cpp; sourceTree = SOURCE_ROOT; };
+		ACAB69960CCF5D3E009ECB49 /* VisualPreferences.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualPreferences.h; path = ../source/VisualPreferences.h; sourceTree = SOURCE_ROOT; };
+		ACAB6B160CCF8119009ECB49 /* VisualVertex.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualVertex.cpp; path = ../source/VisualVertex.cpp; sourceTree = SOURCE_ROOT; };
+		ACAB6B170CCF8119009ECB49 /* VisualVertex.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualVertex.h; path = ../source/VisualVertex.h; sourceTree = SOURCE_ROOT; };
+		ACB63E950D8C7CCC00F05565 /* VisualNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualNetwork.h; sourceTree = "<group>"; };
+		ACB63E960D8C7CCC00F05565 /* VisualNetwork.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisualNetwork.cpp; sourceTree = "<group>"; };
+		ACD0431F0942FED900A0CB1D /* VisualPlayerState.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualPlayerState.h; path = ../source/VisualPlayerState.h; sourceTree = SOURCE_ROOT; };
+		ACD043200942FEDA00A0CB1D /* VisualPlayerState.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualPlayerState.cpp; path = ../source/VisualPlayerState.cpp; sourceTree = SOURCE_ROOT; };
+		ACD63AE90D1E792900037877 /* VisualFontManager.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualFontManager.cpp; path = ../source/Tools/VisualFontManager.cpp; sourceTree = SOURCE_ROOT; };
+		ACD63AEA0D1E792900037877 /* VisualFontManager.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualFontManager.h; path = ../source/Tools/VisualFontManager.h; sourceTree = SOURCE_ROOT; };
+		ACDAA93F098FFD900067AA4A /* VisualActorState.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualActorState.cpp; path = ../source/VisualActorState.cpp; sourceTree = SOURCE_ROOT; };
+		ACE0DF2106DBCE730018E8C0 /* BeatlightActor.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = BeatlightActor.cpp; sourceTree = "<group>"; };
+		ACE0DF2206DBCE730018E8C0 /* BeatlightActor.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = BeatlightActor.h; sourceTree = "<group>"; };
+		ACE0DF2306DBCE730018E8C0 /* CoverArtActor.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = CoverArtActor.cpp; sourceTree = "<group>"; };
+		ACE0DF2406DBCE730018E8C0 /* CoverArtActor.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = CoverArtActor.h; sourceTree = "<group>"; };
+		ACE0DF2506DBCE730018E8C0 /* ProcessMonitorActor.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = ProcessMonitorActor.cpp; sourceTree = "<group>"; };
+		ACE0DF2606DBCE730018E8C0 /* ProcessMonitorActor.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = ProcessMonitorActor.h; sourceTree = "<group>"; };
+		ACE0DF2706DBCE730018E8C0 /* TemplateActor.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = TemplateActor.cpp; sourceTree = "<group>"; };
+		ACE0DF2806DBCE730018E8C0 /* TemplateActor.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = TemplateActor.h; sourceTree = "<group>"; };
+		ACE0DF2906DBCE730018E8C0 /* TrackTitleActor.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = TrackTitleActor.cpp; sourceTree = "<group>"; };
+		ACE0DF2A06DBCE730018E8C0 /* TrackTitleActor.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = TrackTitleActor.h; sourceTree = "<group>"; };
+		ACE0DF2C06DBCE730018E8C0 /* VisualAudioLab.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = VisualAudioLab.cpp; sourceTree = "<group>"; };
+		ACE0DF2D06DBCE730018E8C0 /* VisualAudioLab.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = VisualAudioLab.h; sourceTree = "<group>"; };
+		ACE0DF3106DBCE730018E8C0 /* iTunesAPI.c */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.c; path = iTunesAPI.c; sourceTree = "<group>"; };
+		ACE0DF3206DBCE730018E8C0 /* iTunesAPI.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = iTunesAPI.h; sourceTree = "<group>"; };
+		ACE0DF3306DBCE730018E8C0 /* iTunesVisualAPI.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = iTunesVisualAPI.h; sourceTree = "<group>"; };
+		ACE0DF3B06DBCE730018E8C0 /* VisualColorTools.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = VisualColorTools.cpp; sourceTree = "<group>"; };
+		ACE0DF3C06DBCE730018E8C0 /* VisualColorTools.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = VisualColorTools.h; sourceTree = "<group>"; };
+		ACE0DF3E06DBCE730018E8C0 /* VisualErrorHandling.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = VisualErrorHandling.h; sourceTree = "<group>"; };
+		ACE0DF4106DBCE730018E8C0 /* VisualActor.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualActor.cpp; path = ../VisualActor.cpp; sourceTree = "<group>"; };
+		ACE0DF4206DBCE730018E8C0 /* VisualActor.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualActor.h; path = ../VisualActor.h; sourceTree = "<group>"; };
+		ACE0DF4506DBCE730018E8C0 /* VisualDataStore.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = VisualDataStore.cpp; sourceTree = "<group>"; };
+		ACE0DF4606DBCE730018E8C0 /* VisualDataStore.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = VisualDataStore.h; sourceTree = "<group>"; };
+		ACE0DF4706DBCE730018E8C0 /* VisualDispatch.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = VisualDispatch.cpp; sourceTree = "<group>"; };
+		ACE0DF4806DBCE730018E8C0 /* VisualDispatch.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = VisualDispatch.h; sourceTree = "<group>"; };
+		ACE0DF4906DBCE730018E8C0 /* VisualEnsemble.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = VisualEnsemble.cpp; sourceTree = "<group>"; };
+		ACE0DF4A06DBCE730018E8C0 /* VisualEnsemble.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = VisualEnsemble.h; sourceTree = "<group>"; };
+		ACE0DF4B06DBCE730018E8C0 /* VisualGraphics.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = VisualGraphics.cpp; sourceTree = "<group>"; };
+		ACE0DF4C06DBCE730018E8C0 /* VisualGraphics.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = VisualGraphics.h; sourceTree = "<group>"; };
+		ACE0DF4D06DBCE730018E8C0 /* VisualMain.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = VisualMain.cpp; sourceTree = "<group>"; };
+		ACE0DF4E06DBCE730018E8C0 /* VisualMain.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = VisualMain.h; sourceTree = "<group>"; };
+		ACE0DF4F06DBCE730018E8C0 /* VisualStageControl.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = VisualStageControl.cpp; sourceTree = "<group>"; };
+		ACE0DF5006DBCE730018E8C0 /* VisualStageControl.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; path = VisualStageControl.h; sourceTree = "<group>"; };
+		ACE0DF9F06DBD0A00018E8C0 /* DEVROYE_.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = DEVROYE_.otf; path = "../resources/Devroye/Devroye Open Type/DEVROYE_.otf"; sourceTree = "<group>"; };
+		ACE0DFAE06DBD1190018E8C0 /* AGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AGL.framework; path = ../../../System/Library/Frameworks/AGL.framework; sourceTree = SDKROOT; };
+		ACE0DFAF06DBD1190018E8C0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = ../../../System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		ACE0DFB106DBD1190018E8C0 /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = ../../../System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
+		ACE0DFB206DBD1190018E8C0 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = ../../../System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		ACE30FA70ACE686800EC56B7 /* VisualAnimation.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualAnimation.cpp; path = Timing/VisualAnimation.cpp; sourceTree = "<group>"; };
+		ACE30FA80ACE686800EC56B7 /* VisualAnimation.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualAnimation.h; path = Timing/VisualAnimation.h; sourceTree = "<group>"; };
+		ACE4370E0D91AB7800479608 /* VisualDownloadQueue.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualDownloadQueue.cpp; path = ../source/Tools/VisualDownloadQueue.cpp; sourceTree = SOURCE_ROOT; };
+		ACE4370F0D91AB7800479608 /* VisualDownloadQueue.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualDownloadQueue.h; path = ../source/Tools/VisualDownloadQueue.h; sourceTree = SOURCE_ROOT; };
+		ACE80D2B0BB84B960004DC20 /* VisualSignature.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualSignature.h; path = ../source/VisualSignature.h; sourceTree = SOURCE_ROOT; };
+		ACE80D2C0BB84B960004DC20 /* VisualSignature.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualSignature.cpp; path = ../source/VisualSignature.cpp; sourceTree = SOURCE_ROOT; };
+		ACE8243E0B88AE9400E9028B /* VisualFile.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualFile.h; path = ../source/VisualFile.h; sourceTree = SOURCE_ROOT; };
+		ACE8243F0B88AE9400E9028B /* VisualFile.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualFile.cpp; path = ../source/VisualFile.cpp; sourceTree = SOURCE_ROOT; };
+		ACE8D72E0BB27A8500BEBD44 /* VisualStringStyle.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualStringStyle.cpp; path = ../source/Tools/VisualStringStyle.cpp; sourceTree = SOURCE_ROOT; };
+		ACEE98480FBD35DD00111B35 /* VisualObjectMutex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualObjectMutex.h; sourceTree = "<group>"; };
+		ACEE98490FBD35DD00111B35 /* VisualObjectMutex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisualObjectMutex.cpp; sourceTree = "<group>"; };
+		ACF08A470B5231CA0031A029 /* VisualConvolutionFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualConvolutionFilter.cpp; path = ../source/VisualConvolutionFilter.cpp; sourceTree = SOURCE_ROOT; };
+		ACF08A480B5231CA0031A029 /* VisualConvolutionFilter.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualConvolutionFilter.h; path = ../source/VisualConvolutionFilter.h; sourceTree = SOURCE_ROOT; };
+		ACF08A530B5232490031A029 /* VisualAppleScript.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualAppleScript.cpp; path = ../source/mac/VisualAppleScript.cpp; sourceTree = SOURCE_ROOT; };
+		ACF08A540B5232490031A029 /* VisualAppleScript.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualAppleScript.h; path = ../source/mac/VisualAppleScript.h; sourceTree = SOURCE_ROOT; };
+		ACF08A570B52326E0031A029 /* getLyrics.applescript */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.applescript; name = getLyrics.applescript; path = ../source/mac/getLyrics.applescript; sourceTree = SOURCE_ROOT; };
+		E41E1F2C0A6BCBD1004565CB /* VisualString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VisualString.h; sourceTree = "<group>"; };
+		E41E1F2D0A6BCBD1004565CB /* VisualString.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = VisualString.cpp; sourceTree = "<group>"; };
+		E428E9F00A4EBB010018F704 /* TrackLyricsActor.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TrackLyricsActor.cpp; path = ../source/Actors/TrackLyricsActor.cpp; sourceTree = SOURCE_ROOT; };
+		E428E9F10A4EBB010018F704 /* TrackLyricsActor.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TrackLyricsActor.h; path = ../source/Actors/TrackLyricsActor.h; sourceTree = SOURCE_ROOT; };
+		E428E9F40A4EBB170018F704 /* TrackLyrics.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = TrackLyrics.cpp; path = ../source/Actions/TrackLyrics.cpp; sourceTree = SOURCE_ROOT; };
+		E428E9F50A4EBB170018F704 /* TrackLyrics.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = TrackLyrics.h; path = ../source/Actions/TrackLyrics.h; sourceTree = SOURCE_ROOT; };
+		E4CF4CC30BDBC199007147F6 /* VisualConfigurationDialog.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = VisualConfigurationDialog.cpp; path = ../source/VisualConfigurationDialog.cpp; sourceTree = SOURCE_ROOT; };
+		E4CF4CC40BDBC199007147F6 /* VisualConfigurationDialog.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = VisualConfigurationDialog.h; path = ../source/VisualConfigurationDialog.h; sourceTree = SOURCE_ROOT; };
+		E4D6CC600B9F3A530004750D /* spot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = spot.png; path = ../resources/spot.png; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8D01CCCD0486CAD60068D4B7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8D01CCCE0486CAD60068D4B7 /* Carbon.framework in Frameworks */,
+				ACE0DFB406DBD1190018E8C0 /* AGL.framework in Frameworks */,
+				ACE0DFB506DBD1190018E8C0 /* Cocoa.framework in Frameworks */,
+				ACE0DFB706DBD1190018E8C0 /* GLUT.framework in Frameworks */,
+				ACE0DFB806DBD1190018E8C0 /* OpenGL.framework in Frameworks */,
+				AC243BFD07D524B4006D245A /* CoreFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		089C166AFE841209C02AAC07 /* VizKit */ = {
+			isa = PBXGroup;
+			children = (
+				ACE0DF1406DBCE730018E8C0 /* Sources */,
+				089C167CFE841241C02AAC07 /* Resources */,
+				089C1671FE841209C02AAC07 /* External Frameworks and Libraries */,
+				19C28FB4FE9D528D11CA2CBB /* Products */,
+			);
+			name = VizKit;
+			sourceTree = "<group>";
+		};
+		089C1671FE841209C02AAC07 /* External Frameworks and Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				AC243BFC07D524B4006D245A /* CoreFoundation.framework */,
+				08EA7FFBFE8413EDC02AAC07 /* Carbon.framework */,
+				ACE0DFAF06DBD1190018E8C0 /* Cocoa.framework */,
+				ACE0DFB206DBD1190018E8C0 /* OpenGL.framework */,
+				ACE0DFAE06DBD1190018E8C0 /* AGL.framework */,
+				ACE0DFB106DBD1190018E8C0 /* GLUT.framework */,
+			);
+			name = "External Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+		089C167CFE841241C02AAC07 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				4288C456075A22CF003C29C8 /* VisualOptions.nib */,
+				8D01CCD10486CAD60068D4B7 /* Info.plist */,
+				ACE0DF9F06DBD0A00018E8C0 /* DEVROYE_.otf */,
+				E4D6CC600B9F3A530004750D /* spot.png */,
+			);
+			name = Resources;
+			path = ../resources;
+			sourceTree = SOURCE_ROOT;
+		};
+		19C28FB4FE9D528D11CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8D01CCD20486CAD60068D4B7 /* VizKit.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		AC1F9C6708A1652E00F92F64 /* Graphics */ = {
+			isa = PBXGroup;
+			children = (
+				AC503EBE089C2176008CD23F /* VisualGraphicTypes.h */,
+				AC16F682089EBDDD00C8BC79 /* VisualGraphicTypes.cpp */,
+				AC0D104E08A0117500EE4F2C /* VisualGraphicsCore.h */,
+				AC0D104F08A0117500EE4F2C /* VisualGraphicsCore.cpp */,
+				ACE0DF4C06DBCE730018E8C0 /* VisualGraphics.h */,
+				ACE0DF4B06DBCE730018E8C0 /* VisualGraphics.cpp */,
+				AC503DCA089C1384008CD23F /* VisualActorGraphics.h */,
+				AC503DCB089C1384008CD23F /* VisualActorGraphics.cpp */,
+				ACAB698C0CCF5D13009ECB49 /* VisualCamera.h */,
+				ACAB698B0CCF5D13009ECB49 /* VisualCamera.cpp */,
+				AC214FF409FD694000B24379 /* VisualAsset.h */,
+				AC214FF309FD694000B24379 /* VisualAsset.cpp */,
+				AC3920600B59705600FEC228 /* VisualImage.h */,
+				AC39205F0B59705600FEC228 /* VisualImage.cpp */,
+				AC214FFC09FD694000B24379 /* VisualTextureContainer.h */,
+				AC214FFB09FD694000B24379 /* VisualTextureContainer.cpp */,
+				AC214FFA09FD694000B24379 /* VisualStagePosition.h */,
+				AC214FF909FD694000B24379 /* VisualStagePosition.cpp */,
+				AC214FF809FD694000B24379 /* VisualStageBox.h */,
+				AC214FF709FD694000B24379 /* VisualStageBox.cpp */,
+				AC214FF609FD694000B24379 /* VisualNurbs.h */,
+				AC214FF509FD694000B24379 /* VisualNurbs.cpp */,
+				ACF08A480B5231CA0031A029 /* VisualConvolutionFilter.h */,
+				ACF08A470B5231CA0031A029 /* VisualConvolutionFilter.cpp */,
+				ACAB6B170CCF8119009ECB49 /* VisualVertex.h */,
+				ACAB6B160CCF8119009ECB49 /* VisualVertex.cpp */,
+			);
+			name = Graphics;
+			sourceTree = "<group>";
+		};
+		AC1F9C6808A1653A00F92F64 /* Messaging */ = {
+			isa = PBXGroup;
+			children = (
+				ACD0431F0942FED900A0CB1D /* VisualPlayerState.h */,
+				ACD043200942FEDA00A0CB1D /* VisualPlayerState.cpp */,
+				AC5B29FC0941E73A0040AE4E /* VisualActorState.h */,
+				ACDAA93F098FFD900067AA4A /* VisualActorState.cpp */,
+				ACE0DF4806DBCE730018E8C0 /* VisualDispatch.h */,
+				ACE0DF4706DBCE730018E8C0 /* VisualDispatch.cpp */,
+				AC29E5E40BAC6FB000206180 /* VisualNotificationKey.h */,
+				AC04E6B407ED8FD000F4479D /* VisualNotification.h */,
+				AC04E6B507ED8FD000F4479D /* VisualNotification.cpp */,
+				AC48DDB10B87123A0003AF42 /* VisualNotificationQueue.h */,
+				AC48DDB20B87123A0003AF42 /* VisualNotificationQueue.cpp */,
+				AC1FB8800BB8F29D001C1810 /* VisualHostCommunication.h */,
+				AC1FB8810BB8F29D001C1810 /* VisualHostCommunication.cpp */,
+			);
+			name = Messaging;
+			sourceTree = "<group>";
+		};
+		AC1F9C7708A167E700F92F64 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				8F229E640D5E5774006D520A /* VisualTypes.h */,
+				AC213CA10F756F5200B58BAB /* VisualObjectData.h */,
+				AC213CA00F756F5200B58BAB /* VisualObjectData.cpp */,
+				ACEE98480FBD35DD00111B35 /* VisualObjectMutex.h */,
+				ACEE98490FBD35DD00111B35 /* VisualObjectMutex.cpp */,
+				AC2EF1F40CE98A0D00220332 /* VisualObject.h */,
+				AC2EF1F50CE98A0D00220332 /* VisualObject.cpp */,
+				ACE80D2B0BB84B960004DC20 /* VisualSignature.h */,
+				ACE80D2C0BB84B960004DC20 /* VisualSignature.cpp */,
+				ACE0DF4E06DBCE730018E8C0 /* VisualMain.h */,
+				ACE0DF4D06DBCE730018E8C0 /* VisualMain.cpp */,
+				AC454CBF0D11CF3D002A1428 /* VisualMainAction.h */,
+				AC454CBE0D11CF3C002A1428 /* VisualMainAction.cpp */,
+				ACE0DF4606DBCE730018E8C0 /* VisualDataStore.h */,
+				ACE0DF4506DBCE730018E8C0 /* VisualDataStore.cpp */,
+				ACAB69960CCF5D3E009ECB49 /* VisualPreferences.h */,
+				ACAB69950CCF5D3E009ECB49 /* VisualPreferences.cpp */,
+				42986572080806B20045411A /* VisualConfiguration.h */,
+				42986571080806B20045411A /* VisualConfiguration.cpp */,
+				E4CF4CC40BDBC199007147F6 /* VisualConfigurationDialog.h */,
+				E4CF4CC30BDBC199007147F6 /* VisualConfigurationDialog.cpp */,
+			);
+			name = Main;
+			sourceTree = "<group>";
+		};
+		AC1F9C7808A1684600F92F64 /* Interface */ = {
+			isa = PBXGroup;
+			children = (
+				ACE0DF4206DBCE730018E8C0 /* VisualActor.h */,
+				ACE0DF4106DBCE730018E8C0 /* VisualActor.cpp */,
+			);
+			name = Interface;
+			sourceTree = "<group>";
+		};
+		AC1F9C7B08A1688200F92F64 /* Ensemble */ = {
+			isa = PBXGroup;
+			children = (
+				ACE0DF5006DBCE730018E8C0 /* VisualStageControl.h */,
+				ACE0DF4F06DBCE730018E8C0 /* VisualStageControl.cpp */,
+				ACE0DF4A06DBCE730018E8C0 /* VisualEnsemble.h */,
+				ACE0DF4906DBCE730018E8C0 /* VisualEnsemble.cpp */,
+			);
+			name = Ensemble;
+			sourceTree = "<group>";
+		};
+		AC214F6709FD64E200B24379 /* Timing */ = {
+			isa = PBXGroup;
+			children = (
+				ACAB695F0CCF5C72009ECB49 /* Animation */,
+				AC8E20ED0A0944B6000ABA6D /* VisualTimeline.h */,
+				AC8E20EC0A0944B6000ABA6D /* VisualTimeline.cpp */,
+				AC8E20EF0A0944B6000ABA6D /* VisualTiming.h */,
+				AC8E20EE0A0944B6000ABA6D /* VisualTiming.cpp */,
+			);
+			name = Timing;
+			sourceTree = "<group>";
+		};
+		AC7955DE06DBD4D60026F7BA /* Action */ = {
+			isa = PBXGroup;
+			children = (
+				AC7955E006DBD4D60026F7BA /* Beatlight.h */,
+				AC7955DF06DBD4D60026F7BA /* Beatlight.cpp */,
+				AC7955E206DBD4D60026F7BA /* CoverArt.h */,
+				AC7955E106DBD4D60026F7BA /* CoverArt.cpp */,
+				AC7955E406DBD4D60026F7BA /* ProcessMonitor.h */,
+				AC7955E306DBD4D60026F7BA /* ProcessMonitor.cpp */,
+				AC7955E606DBD4D60026F7BA /* TemplateAction.h */,
+				AC7955E506DBD4D60026F7BA /* TemplateAction.cpp */,
+				AC7955E806DBD4D60026F7BA /* TrackTitle.h */,
+				AC7955E706DBD4D60026F7BA /* TrackTitle.cpp */,
+				E428E9F50A4EBB170018F704 /* TrackLyrics.h */,
+				E428E9F40A4EBB170018F704 /* TrackLyrics.cpp */,
+			);
+			name = Action;
+			path = ../Actions;
+			sourceTree = "<group>";
+		};
+		ACAB695F0CCF5C72009ECB49 /* Animation */ = {
+			isa = PBXGroup;
+			children = (
+				ACAB69640CCF5CA5009ECB49 /* VisualAnimationPackage.h */,
+				ACAB69690CCF5CA5009ECB49 /* VisualAnimationTypes.h */,
+				ACAB69630CCF5CA5009ECB49 /* VisualAnimationComponent.h */,
+				ACAB69620CCF5CA5009ECB49 /* VisualAnimationComponent.cpp */,
+				ACAB69610CCF5CA5009ECB49 /* VisualAnimationCluster.h */,
+				ACAB69600CCF5CA5009ECB49 /* VisualAnimationCluster.cpp */,
+				ACAB69680CCF5CA5009ECB49 /* VisualAnimationSequence.h */,
+				ACAB69670CCF5CA5009ECB49 /* VisualAnimationSequence.cpp */,
+				ACE30FA80ACE686800EC56B7 /* VisualAnimation.h */,
+				ACE30FA70ACE686800EC56B7 /* VisualAnimation.cpp */,
+				ACAB69660CCF5CA5009ECB49 /* VisualAnimationQueue.h */,
+				ACAB69650CCF5CA5009ECB49 /* VisualAnimationQueue.cpp */,
+			);
+			name = Animation;
+			sourceTree = "<group>";
+		};
+		ACE0DF1406DBCE730018E8C0 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				ACE0DF3006DBCE730018E8C0 /* iTunes Visualizer API */,
+				AC1F9C7708A167E700F92F64 /* Main */,
+				AC1F9C7B08A1688200F92F64 /* Ensemble */,
+				ACE0DF2006DBCE730018E8C0 /* Actor */,
+				AC1F9C6808A1653A00F92F64 /* Messaging */,
+				AC1F9C6708A1652E00F92F64 /* Graphics */,
+				ACE0DF2B06DBCE730018E8C0 /* AudioLab */,
+				ACE0DF3A06DBCE730018E8C0 /* Tools */,
+				ACE0DF3406DBCE730018E8C0 /* mac */,
+			);
+			name = Sources;
+			path = ../source;
+			sourceTree = SOURCE_ROOT;
+		};
+		ACE0DF2006DBCE730018E8C0 /* Actor */ = {
+			isa = PBXGroup;
+			children = (
+				AC1F9C7808A1684600F92F64 /* Interface */,
+				AC7955DE06DBD4D60026F7BA /* Action */,
+				ACE0DF2206DBCE730018E8C0 /* BeatlightActor.h */,
+				ACE0DF2106DBCE730018E8C0 /* BeatlightActor.cpp */,
+				ACE0DF2406DBCE730018E8C0 /* CoverArtActor.h */,
+				ACE0DF2306DBCE730018E8C0 /* CoverArtActor.cpp */,
+				ACE0DF2606DBCE730018E8C0 /* ProcessMonitorActor.h */,
+				ACE0DF2506DBCE730018E8C0 /* ProcessMonitorActor.cpp */,
+				ACE0DF2806DBCE730018E8C0 /* TemplateActor.h */,
+				ACE0DF2706DBCE730018E8C0 /* TemplateActor.cpp */,
+				ACE0DF2A06DBCE730018E8C0 /* TrackTitleActor.h */,
+				ACE0DF2906DBCE730018E8C0 /* TrackTitleActor.cpp */,
+				E428E9F10A4EBB010018F704 /* TrackLyricsActor.h */,
+				E428E9F00A4EBB010018F704 /* TrackLyricsActor.cpp */,
+				AC3EA1610DB3F581001C1A0F /* UpdateServiceActor.h */,
+				AC3EA1600DB3F581001C1A0F /* UpdateServiceActor.cpp */,
+			);
+			name = Actor;
+			path = Actors;
+			sourceTree = "<group>";
+		};
+		ACE0DF2B06DBCE730018E8C0 /* AudioLab */ = {
+			isa = PBXGroup;
+			children = (
+				AC2E84960A6CEB9F005DFF74 /* VisualAudioMetaData.h */,
+				AC2E84970A6CEB9F005DFF74 /* VisualAudioMetaData.cpp */,
+				ACE0DF2D06DBCE730018E8C0 /* VisualAudioLab.h */,
+				ACE0DF2C06DBCE730018E8C0 /* VisualAudioLab.cpp */,
+			);
+			path = AudioLab;
+			sourceTree = "<group>";
+		};
+		ACE0DF3006DBCE730018E8C0 /* iTunes Visualizer API */ = {
+			isa = PBXGroup;
+			children = (
+				ACE0DF3306DBCE730018E8C0 /* iTunesVisualAPI.h */,
+				ACE0DF3206DBCE730018E8C0 /* iTunesAPI.h */,
+				ACE0DF3106DBCE730018E8C0 /* iTunesAPI.c */,
+			);
+			name = "iTunes Visualizer API";
+			path = iTunesVisualAPI;
+			sourceTree = "<group>";
+		};
+		ACE0DF3406DBCE730018E8C0 /* mac */ = {
+			isa = PBXGroup;
+			children = (
+				ACF08A570B52326E0031A029 /* getLyrics.applescript */,
+				AC21508B09FD705000B24379 /* CocoaStringTexture.h */,
+				AC21508A09FD705000B24379 /* CocoaStringTexture.m */,
+				AC7F531B07255239004BE280 /* OptionsDialog.h */,
+				AC7F531C07255239004BE280 /* OptionsDialog.cpp */,
+				ACF08A540B5232490031A029 /* VisualAppleScript.h */,
+				ACF08A530B5232490031A029 /* VisualAppleScript.cpp */,
+			);
+			path = mac;
+			sourceTree = "<group>";
+		};
+		ACE0DF3A06DBCE730018E8C0 /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				AC214F6709FD64E200B24379 /* Timing */,
+				ACAB14720D71F52900610EAE /* VisualQuickTime.h */,
+				ACAB14710D71F52900610EAE /* VisualQuickTime.cpp */,
+				ACE0DF3C06DBCE730018E8C0 /* VisualColorTools.h */,
+				ACE0DF3B06DBCE730018E8C0 /* VisualColorTools.cpp */,
+				ACE0DF3E06DBCE730018E8C0 /* VisualErrorHandling.h */,
+				AC92E7740A9EDAC200507DCF /* VisualErrorHandling.cpp */,
+				AC214F8009FD653700B24379 /* VisualInterpolation.h */,
+				AC214F7F09FD653700B24379 /* VisualInterpolation.cpp */,
+				AC9CA85C0A11C78C006299D4 /* VisualItemIdentifier.h */,
+				AC9CA85D0A11C78C006299D4 /* VisualItemIdentifier.cpp */,
+				AC38BF630BAE70B4002FD4A4 /* VisualStringStyle.h */,
+				ACE8D72E0BB27A8500BEBD44 /* VisualStringStyle.cpp */,
+				E41E1F2C0A6BCBD1004565CB /* VisualString.h */,
+				E41E1F2D0A6BCBD1004565CB /* VisualString.cpp */,
+				AC0F52750CEC315D00191EEA /* VisualStyledString.h */,
+				AC0F52760CEC315D00191EEA /* VisualStyledString.cpp */,
+				ACE8243E0B88AE9400E9028B /* VisualFile.h */,
+				ACE8243F0B88AE9400E9028B /* VisualFile.cpp */,
+				ACB63E950D8C7CCC00F05565 /* VisualNetwork.h */,
+				ACB63E960D8C7CCC00F05565 /* VisualNetwork.cpp */,
+				ACE4370F0D91AB7800479608 /* VisualDownloadQueue.h */,
+				ACE4370E0D91AB7800479608 /* VisualDownloadQueue.cpp */,
+				AC0D4EEF0A3BF91F00C3101B /* VisualThreading.h */,
+				AC0D4EF00A3BF91F00C3101B /* VisualThreading.cpp */,
+				AC42D2800DC4619500FE57BD /* VisualThreadingManager.h */,
+				AC42D27F0DC4619500FE57BD /* VisualThreadingManager.cpp */,
+				ACD63AEA0D1E792900037877 /* VisualFontManager.h */,
+				ACD63AE90D1E792900037877 /* VisualFontManager.cpp */,
+				AC19E56A0DB1F4F0005AB92D /* VisualUpdateManager.h */,
+				AC19E5690DB1F4F0005AB92D /* VisualUpdateManager.cpp */,
+				AC041FB80CE44F1000072622 /* VisualProgressIndicator.h */,
+				AC041FB90CE44F1000072622 /* VisualProgressIndicator.cpp */,
+				AC0DF75C0ECCC48E00462EDC /* VisualHistogram.h */,
+				AC0DF75B0ECCC48E00462EDC /* VisualHistogram.cpp */,
+			);
+			path = Tools;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		8D01CCC70486CAD60068D4B7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ACE0DF6006DBCE730018E8C0 /* BeatlightActor.h in Headers */,
+				ACE0DF6206DBCE730018E8C0 /* CoverArtActor.h in Headers */,
+				ACE0DF6406DBCE730018E8C0 /* ProcessMonitorActor.h in Headers */,
+				ACE0DF6606DBCE730018E8C0 /* TemplateActor.h in Headers */,
+				ACE0DF6806DBCE730018E8C0 /* TrackTitleActor.h in Headers */,
+				ACE0DF6A06DBCE730018E8C0 /* VisualAudioLab.h in Headers */,
+				ACE0DF6E06DBCE730018E8C0 /* iTunesAPI.h in Headers */,
+				ACE0DF6F06DBCE730018E8C0 /* iTunesVisualAPI.h in Headers */,
+				ACE0DF7606DBCE730018E8C0 /* VisualColorTools.h in Headers */,
+				ACE0DF7806DBCE730018E8C0 /* VisualErrorHandling.h in Headers */,
+				ACE0DF7C06DBCE730018E8C0 /* VisualActor.h in Headers */,
+				ACE0DF8006DBCE730018E8C0 /* VisualDataStore.h in Headers */,
+				ACE0DF8206DBCE730018E8C0 /* VisualDispatch.h in Headers */,
+				ACE0DF8406DBCE730018E8C0 /* VisualEnsemble.h in Headers */,
+				ACE0DF8606DBCE730018E8C0 /* VisualGraphics.h in Headers */,
+				ACE0DF8806DBCE730018E8C0 /* VisualMain.h in Headers */,
+				ACE0DF8A06DBCE730018E8C0 /* VisualStageControl.h in Headers */,
+				AC7955EA06DBD4D60026F7BA /* Beatlight.h in Headers */,
+				AC7955EC06DBD4D60026F7BA /* CoverArt.h in Headers */,
+				AC7955EE06DBD4D60026F7BA /* ProcessMonitor.h in Headers */,
+				AC7955F006DBD4D60026F7BA /* TemplateAction.h in Headers */,
+				AC7955F206DBD4D60026F7BA /* TrackTitle.h in Headers */,
+				AC7F531D07255239004BE280 /* OptionsDialog.h in Headers */,
+				AC04E6B607ED8FD000F4479D /* VisualNotification.h in Headers */,
+				42986574080806B20045411A /* VisualConfiguration.h in Headers */,
+				AC503DCC089C1384008CD23F /* VisualActorGraphics.h in Headers */,
+				AC503EBF089C2176008CD23F /* VisualGraphicTypes.h in Headers */,
+				AC0D105008A0117500EE4F2C /* VisualGraphicsCore.h in Headers */,
+				AC5B29FD0941E73B0040AE4E /* VisualActorState.h in Headers */,
+				ACD043230942FEDA00A0CB1D /* VisualPlayerState.h in Headers */,
+				AC214F8209FD653700B24379 /* VisualInterpolation.h in Headers */,
+				AC214FFE09FD694000B24379 /* VisualAsset.h in Headers */,
+				AC21500009FD694000B24379 /* VisualNurbs.h in Headers */,
+				AC21500209FD694000B24379 /* VisualStageBox.h in Headers */,
+				AC21500409FD694000B24379 /* VisualStagePosition.h in Headers */,
+				AC21500609FD694000B24379 /* VisualTextureContainer.h in Headers */,
+				AC21508D09FD705100B24379 /* CocoaStringTexture.h in Headers */,
+				AC8E20F30A0944B6000ABA6D /* VisualTimeline.h in Headers */,
+				AC8E20F50A0944B6000ABA6D /* VisualTiming.h in Headers */,
+				AC9CA85E0A11C78C006299D4 /* VisualItemIdentifier.h in Headers */,
+				AC0D4EF10A3BF91F00C3101B /* VisualThreading.h in Headers */,
+				E428E9F30A4EBB010018F704 /* TrackLyricsActor.h in Headers */,
+				E428E9F70A4EBB170018F704 /* TrackLyrics.h in Headers */,
+				E41E1F2E0A6BCBD1004565CB /* VisualString.h in Headers */,
+				AC2E84980A6CEB9F005DFF74 /* VisualAudioMetaData.h in Headers */,
+				ACE30FAA0ACE686800EC56B7 /* VisualAnimation.h in Headers */,
+				ACF08A4A0B5231CA0031A029 /* VisualConvolutionFilter.h in Headers */,
+				ACF08A560B5232490031A029 /* VisualAppleScript.h in Headers */,
+				AC3920620B59705600FEC228 /* VisualImage.h in Headers */,
+				AC48DDB30B87123A0003AF42 /* VisualNotificationQueue.h in Headers */,
+				ACE824400B88AE9400E9028B /* VisualFile.h in Headers */,
+				AC29E5E50BAC6FB000206180 /* VisualNotificationKey.h in Headers */,
+				AC38BF640BAE70B4002FD4A4 /* VisualStringStyle.h in Headers */,
+				ACE80D2D0BB84B960004DC20 /* VisualSignature.h in Headers */,
+				AC1FB8820BB8F29D001C1810 /* VisualHostCommunication.h in Headers */,
+				E4CF4CC80BDBC199007147F6 /* VisualConfigurationDialog.h in Headers */,
+				ACAB696B0CCF5CA5009ECB49 /* VisualAnimationCluster.h in Headers */,
+				ACAB696D0CCF5CA5009ECB49 /* VisualAnimationComponent.h in Headers */,
+				ACAB696E0CCF5CA5009ECB49 /* VisualAnimationPackage.h in Headers */,
+				ACAB69700CCF5CA5009ECB49 /* VisualAnimationQueue.h in Headers */,
+				ACAB69720CCF5CA5009ECB49 /* VisualAnimationSequence.h in Headers */,
+				ACAB69730CCF5CA5009ECB49 /* VisualAnimationTypes.h in Headers */,
+				ACAB698E0CCF5D13009ECB49 /* VisualCamera.h in Headers */,
+				ACAB69980CCF5D3E009ECB49 /* VisualPreferences.h in Headers */,
+				ACAB6B190CCF8119009ECB49 /* VisualVertex.h in Headers */,
+				AC041FBA0CE44F1000072622 /* VisualProgressIndicator.h in Headers */,
+				AC2EF1F60CE98A0D00220332 /* VisualObject.h in Headers */,
+				AC0F52770CEC315D00191EEA /* VisualStyledString.h in Headers */,
+				AC454CC10D11CF3D002A1428 /* VisualMainAction.h in Headers */,
+				ACD63AEC0D1E792900037877 /* VisualFontManager.h in Headers */,
+				8F229E650D5E5774006D520A /* VisualTypes.h in Headers */,
+				ACAB14740D71F52900610EAE /* VisualQuickTime.h in Headers */,
+				ACB63E970D8C7CCC00F05565 /* VisualNetwork.h in Headers */,
+				ACE437110D91AB7800479608 /* VisualDownloadQueue.h in Headers */,
+				AC19E56C0DB1F4F0005AB92D /* VisualUpdateManager.h in Headers */,
+				AC3EA1630DB3F581001C1A0F /* UpdateServiceActor.h in Headers */,
+				AC42D2820DC4619500FE57BD /* VisualThreadingManager.h in Headers */,
+				AC0DF75E0ECCC48E00462EDC /* VisualHistogram.h in Headers */,
+				AC213CA30F756F5200B58BAB /* VisualObjectData.h in Headers */,
+				ACEE984A0FBD35DD00111B35 /* VisualObjectMutex.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		8D01CCC60486CAD60068D4B7 /* VizKit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AC51A928087DBF37009E663F /* Build configuration list for PBXNativeTarget "VizKit" */;
+			buildPhases = (
+				8D01CCC70486CAD60068D4B7 /* Headers */,
+				8D01CCC90486CAD60068D4B7 /* Resources */,
+				8D01CCCB0486CAD60068D4B7 /* Sources */,
+				8D01CCCD0486CAD60068D4B7 /* Frameworks */,
+				8D01CCCF0486CAD60068D4B7 /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = VizKit;
+			productInstallPath = "$(HOME)/Library/Bundles";
+			productName = VizKit;
+			productReference = 8D01CCD20486CAD60068D4B7 /* VizKit.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		089C1669FE841209C02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = AC51A92C087DBF37009E663F /* Build configuration list for PBXProject "VizKit" */;
+			compatibilityVersion = "Xcode 2.4";
+			hasScannedForEncodings = 1;
+			mainGroup = 089C166AFE841209C02AAC07 /* VizKit */;
+			projectDirPath = "";
+			projectRoot = ..;
+			targets = (
+				8D01CCC60486CAD60068D4B7 /* VizKit */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8D01CCC90486CAD60068D4B7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ACF08A620B5232D50031A029 /* getLyrics.applescript in Resources */,
+				ACE0DFA006DBD0A00018E8C0 /* DEVROYE_.otf in Resources */,
+				4288C457075A22CF003C29C8 /* VisualOptions.nib in Resources */,
+				E4D6CC610B9F3A530004750D /* spot.png in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXRezBuildPhase section */
+		8D01CCCF0486CAD60068D4B7 /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXRezBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8D01CCCB0486CAD60068D4B7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				ACE0DF5F06DBCE730018E8C0 /* BeatlightActor.cpp in Sources */,
+				ACE0DF6106DBCE730018E8C0 /* CoverArtActor.cpp in Sources */,
+				ACE0DF6306DBCE730018E8C0 /* ProcessMonitorActor.cpp in Sources */,
+				ACE0DF6506DBCE730018E8C0 /* TemplateActor.cpp in Sources */,
+				ACE0DF6706DBCE730018E8C0 /* TrackTitleActor.cpp in Sources */,
+				ACE0DF6906DBCE730018E8C0 /* VisualAudioLab.cpp in Sources */,
+				ACE0DF6D06DBCE730018E8C0 /* iTunesAPI.c in Sources */,
+				ACE0DF7506DBCE730018E8C0 /* VisualColorTools.cpp in Sources */,
+				ACE0DF7B06DBCE730018E8C0 /* VisualActor.cpp in Sources */,
+				ACE0DF7F06DBCE730018E8C0 /* VisualDataStore.cpp in Sources */,
+				ACE0DF8106DBCE730018E8C0 /* VisualDispatch.cpp in Sources */,
+				ACE0DF8306DBCE730018E8C0 /* VisualEnsemble.cpp in Sources */,
+				ACE0DF8506DBCE730018E8C0 /* VisualGraphics.cpp in Sources */,
+				ACE0DF8706DBCE730018E8C0 /* VisualMain.cpp in Sources */,
+				ACE0DF8906DBCE730018E8C0 /* VisualStageControl.cpp in Sources */,
+				AC7955E906DBD4D60026F7BA /* Beatlight.cpp in Sources */,
+				AC7955EB06DBD4D60026F7BA /* CoverArt.cpp in Sources */,
+				AC7955ED06DBD4D60026F7BA /* ProcessMonitor.cpp in Sources */,
+				AC7955EF06DBD4D60026F7BA /* TemplateAction.cpp in Sources */,
+				AC7955F106DBD4D60026F7BA /* TrackTitle.cpp in Sources */,
+				AC7F531E07255239004BE280 /* OptionsDialog.cpp in Sources */,
+				AC04E6B707ED8FD000F4479D /* VisualNotification.cpp in Sources */,
+				42986573080806B20045411A /* VisualConfiguration.cpp in Sources */,
+				AC503DCD089C1384008CD23F /* VisualActorGraphics.cpp in Sources */,
+				AC16F683089EBDDD00C8BC79 /* VisualGraphicTypes.cpp in Sources */,
+				AC0D105108A0117500EE4F2C /* VisualGraphicsCore.cpp in Sources */,
+				ACD043240942FEDA00A0CB1D /* VisualPlayerState.cpp in Sources */,
+				ACDAA940098FFD900067AA4A /* VisualActorState.cpp in Sources */,
+				AC214F8109FD653700B24379 /* VisualInterpolation.cpp in Sources */,
+				AC214FFD09FD694000B24379 /* VisualAsset.cpp in Sources */,
+				AC214FFF09FD694000B24379 /* VisualNurbs.cpp in Sources */,
+				AC21500109FD694000B24379 /* VisualStageBox.cpp in Sources */,
+				AC21500309FD694000B24379 /* VisualStagePosition.cpp in Sources */,
+				AC21500509FD694000B24379 /* VisualTextureContainer.cpp in Sources */,
+				AC21508C09FD705100B24379 /* CocoaStringTexture.m in Sources */,
+				AC8E20F20A0944B6000ABA6D /* VisualTimeline.cpp in Sources */,
+				AC8E20F40A0944B6000ABA6D /* VisualTiming.cpp in Sources */,
+				AC9CA85F0A11C78C006299D4 /* VisualItemIdentifier.cpp in Sources */,
+				AC0D4EF20A3BF91F00C3101B /* VisualThreading.cpp in Sources */,
+				E428E9F20A4EBB010018F704 /* TrackLyricsActor.cpp in Sources */,
+				E428E9F60A4EBB170018F704 /* TrackLyrics.cpp in Sources */,
+				E41E1F2F0A6BCBD1004565CB /* VisualString.cpp in Sources */,
+				AC2E84990A6CEB9F005DFF74 /* VisualAudioMetaData.cpp in Sources */,
+				AC92E7750A9EDAC200507DCF /* VisualErrorHandling.cpp in Sources */,
+				ACE30FA90ACE686800EC56B7 /* VisualAnimation.cpp in Sources */,
+				ACF08A490B5231CA0031A029 /* VisualConvolutionFilter.cpp in Sources */,
+				ACF08A550B5232490031A029 /* VisualAppleScript.cpp in Sources */,
+				AC3920610B59705600FEC228 /* VisualImage.cpp in Sources */,
+				AC48DDB40B87123A0003AF42 /* VisualNotificationQueue.cpp in Sources */,
+				ACE824410B88AE9400E9028B /* VisualFile.cpp in Sources */,
+				ACE8D72F0BB27A8500BEBD44 /* VisualStringStyle.cpp in Sources */,
+				ACE80D2E0BB84B960004DC20 /* VisualSignature.cpp in Sources */,
+				AC1FB8830BB8F29D001C1810 /* VisualHostCommunication.cpp in Sources */,
+				E4CF4CC70BDBC199007147F6 /* VisualConfigurationDialog.cpp in Sources */,
+				ACAB696A0CCF5CA5009ECB49 /* VisualAnimationCluster.cpp in Sources */,
+				ACAB696C0CCF5CA5009ECB49 /* VisualAnimationComponent.cpp in Sources */,
+				ACAB696F0CCF5CA5009ECB49 /* VisualAnimationQueue.cpp in Sources */,
+				ACAB69710CCF5CA5009ECB49 /* VisualAnimationSequence.cpp in Sources */,
+				ACAB698D0CCF5D13009ECB49 /* VisualCamera.cpp in Sources */,
+				ACAB69970CCF5D3E009ECB49 /* VisualPreferences.cpp in Sources */,
+				ACAB6B180CCF8119009ECB49 /* VisualVertex.cpp in Sources */,
+				AC041FBB0CE44F1000072622 /* VisualProgressIndicator.cpp in Sources */,
+				AC2EF1F70CE98A0D00220332 /* VisualObject.cpp in Sources */,
+				AC0F52780CEC315D00191EEA /* VisualStyledString.cpp in Sources */,
+				AC454CC00D11CF3D002A1428 /* VisualMainAction.cpp in Sources */,
+				ACD63AEB0D1E792900037877 /* VisualFontManager.cpp in Sources */,
+				ACAB14730D71F52900610EAE /* VisualQuickTime.cpp in Sources */,
+				ACB63E980D8C7CCC00F05565 /* VisualNetwork.cpp in Sources */,
+				ACE437100D91AB7800479608 /* VisualDownloadQueue.cpp in Sources */,
+				AC19E56B0DB1F4F0005AB92D /* VisualUpdateManager.cpp in Sources */,
+				AC3EA1620DB3F581001C1A0F /* UpdateServiceActor.cpp in Sources */,
+				AC42D2810DC4619500FE57BD /* VisualThreadingManager.cpp in Sources */,
+				AC0DF75D0ECCC48E00462EDC /* VisualHistogram.cpp in Sources */,
+				AC213CA20F756F5200B58BAB /* VisualObjectData.cpp in Sources */,
+				ACEE984B0FBD35DD00111B35 /* VisualObjectMutex.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		AC51A929087DBF37009E663F /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CONFIGURATION_BUILD_DIR = "$(USER_LIBRARY_DIR)/iTunes/iTunes Plug-ins";
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_ENABLE_TRIGRAPHS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"TARGET_OS_MAC=1",
+					"DEBUG=1",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = YES;
+				GCC_WARN_PEDANTIC = NO;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_LABEL = YES;
+				GCC_WARN_UNUSED_PARAMETER = NO;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_STYLE = Bundle;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
+				PRODUCT_NAME = VizKit;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wshorten-64-to-32",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = YES;
+			};
+			name = Development;
+		};
+		AC51A92A087DBF37009E663F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				FRAMEWORK_SEARCH_PATHS = "";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_TRIGRAPHS = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GCC_PREFIX_HEADER = "";
+				GCC_PREPROCESSOR_DEFINITIONS = "TARGET_OS_MAC=1";
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GCC_WARN_FOUR_CHARACTER_CONSTANTS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
+				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = "";
+				INFOPLIST_FILE = Info.plist;
+				INSTALL_PATH = "$(HOME)/Library/Bundles";
+				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_STYLE = Bundle;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				OTHER_REZFLAGS = "";
+				PRECOMPS_INCLUDE_HEADERS_FROM_BUILT_PRODUCTS_DIR = NO;
+				PRODUCT_NAME = VizKit;
+				SECTORDER_FLAGS = "";
+				WARNING_CFLAGS = (
+					"-Wmost",
+					"-Wshorten-64-to-32",
+					"-Wno-four-char-constants",
+					"-Wno-unknown-pragmas",
+				);
+				WRAPPER_EXTENSION = bundle;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
+		AC51A92D087DBF37009E663F /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
+				GCC_VERSION = 4.0;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = YES;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = NO;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_PEDANTIC = NO;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				WARNING_CFLAGS = "";
+			};
+			name = Development;
+		};
+		AC51A92E087DBF37009E663F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = (
+					ppc,
+					i386,
+				);
+				GCC_CHAR_IS_UNSIGNED_CHAR = YES;
+				GCC_WARN_ABOUT_DEPRECATED_FUNCTIONS = NO;
+				GCC_WARN_ABOUT_MISSING_NEWLINE = YES;
+				GCC_WARN_EFFECTIVE_CPLUSPLUS_VIOLATIONS = NO;
+				GCC_WARN_HIDDEN_VIRTUAL_FUNCTIONS = YES;
+				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_PEDANTIC = NO;
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
+				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				WARNING_CFLAGS = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		AC51A928087DBF37009E663F /* Build configuration list for PBXNativeTarget "VizKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC51A929087DBF37009E663F /* Development */,
+				AC51A92A087DBF37009E663F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+		AC51A92C087DBF37009E663F /* Build configuration list for PBXProject "VizKit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AC51A92D087DBF37009E663F /* Development */,
+				AC51A92E087DBF37009E663F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Development;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 089C1669FE841209C02AAC07 /* Project object */;
+}
