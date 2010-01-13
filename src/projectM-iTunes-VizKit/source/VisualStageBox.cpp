@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualStageBox.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -35,25 +35,29 @@ freely, subject to the following restrictions:
 
 #include "VisualStageBox.h"
 #include "VisualGraphics.h"
-
-
+#include "VisualErrorHandling.h"
+#include "VisualGraphicTypes.h"
+#include "VisualVertex.h"
+#include "VisualAsset.h"
+#include "VisualImage.h"
+#include "VisualCamera.h"
 
 using namespace VizKit;
 
 
-VisualStageBox::VisualStageBox() {
+VisualStageBox::VisualStageBox(VisualAsset* anAssetRef) {
 
-	topCoord = 0.0f;
-	leftCoord = 0.0f;
-	bottomCoord = 0.0f;
-	rightCoord = 0.0f;
+	topCoord = 0.0;
+	leftCoord = 0.0;
+	bottomCoord = 0.0;
+	rightCoord = 0.0;
 	
-	frontPosition = 0.0f;
-	backPosition = 0.0f;
-	
-	coordWidth = 0.0;
-	coordHeight = 0.0;
+	this->coordWidth = 0.0;
+	unscaledCoordWidth = 0.0;
+	this->coordHeight = 0.0;
+	unscaledCoordHeight = 0.0;
 	coordDepth = 0.0;
+	unscaledCoordDepth = 0.0;
 	
 	contentPixelWidth = 0;
 	contentPixelHeight = 0;
@@ -63,11 +67,27 @@ VisualStageBox::VisualStageBox() {
 	
 	hasLayout = false;
 	
+	assetRef = anAssetRef;
+
+	if (anAssetRef == NULL) {
+		char errLog[64];
+		sprintf(errLog, "ERR: assetRef == NULL in file: %s (line: %d) [%s])", __FILE__, __LINE__, __FUNCTION__);
+		writeLog(errLog);
+	}
+
+	debugMode = false;
+	
+	// initially 2-D
+	VisualCamera aCamera;
+	aCamera.setOrthographicProjection();
+	frontPosition = aCamera.getMaxNearPos();
+	backPosition = aCamera.getMaxNearPos();
+	
 }
 
 
 VisualStageBox::~VisualStageBox() {
-	// NULL
+	removeAllVertexChains();
 }
 
 
@@ -77,9 +97,12 @@ VisualStageBox::VisualStageBox(const VisualStageBox& other) {
 
 
 VisualStageBox& VisualStageBox::operator=(const VisualStageBox& other) {
-	if (this != &other) {
-		this->copy(other);
-	}
+	
+	if (this == &other) return *this;
+	
+	this->removeAllVertexChains();
+	this->copy(other);
+
 	return *this;
 }
 
@@ -91,8 +114,11 @@ void VisualStageBox::copy(const VisualStageBox& other) {
 	this->rightCoord = other.rightCoord;
 	
 	this->coordWidth = other.coordWidth;
+	this->unscaledCoordWidth = other.unscaledCoordWidth;
 	this->coordHeight = other.coordHeight;
+	this->unscaledCoordHeight = other.unscaledCoordHeight;
 	this->coordDepth = other.coordDepth;
+	this->unscaledCoordDepth = other.unscaledCoordDepth;
 	
 	this->contentPixelWidth = other.contentPixelWidth;
 	this->contentPixelHeight = other.contentPixelHeight;
@@ -102,54 +128,83 @@ void VisualStageBox::copy(const VisualStageBox& other) {
 	this->scaleFactor = other.scaleFactor;
 	
 	this->hasLayout = other.hasLayout;
+	
+	for (ConstVertexChainMapIterator mapIt = other.vertexChainMap.begin(); mapIt != other.vertexChainMap.end(); mapIt++) {
+		VisualItemIdentifier mapId = mapIt->first;
+		this->vertexChainMap[mapId] = new VertexChain;
+		for (ConstVertexChainIterator chainIt = mapIt->second->begin(); chainIt != mapIt->second->end(); chainIt++) {
+			this->vertexChainMap[mapId]->push_back(new VisualVertex(**chainIt));
+		}
+	}
+	
+	this->assetRef = other.assetRef;
+	
+	this->debugMode = other.debugMode;
 }
 
 
-void VisualStageBox::setContentPixelWidth(UInt32 pixelWidth) {
-	if (pixelWidth != this->contentPixelWidth) {
+void VisualStageBox::setContentPixelWidth(uint32 pixelWidth) {
+	if (this->contentPixelWidth != pixelWidth) {
 		this->contentPixelWidth = pixelWidth;
 		this->hasLayout = false;
 	}
-	if (this->hasLayout == false) {
-		this->calcCoords();
+}
+
+
+void VisualStageBox::setContentPixelHeight(uint32 pixelHeight) {
+	if (this->contentPixelHeight != pixelHeight) {
+		this->contentPixelHeight = pixelHeight;
+		this->hasLayout = false;
 	}
 }
 
 
-void VisualStageBox::setContentPixelHeight(UInt32 pixelHeight) {
-	if (pixelHeight != this->contentPixelHeight) {
-		this->contentPixelHeight = pixelHeight;
+void VisualStageBox::setCoordDepth(double aCoordDepth) {
+	if (this->coordDepth != aCoordDepth) {
+		this->coordDepth = aCoordDepth;
+		this->unscaledCoordDepth = aCoordDepth;
 		this->hasLayout = false;
-	}
-	if (this->hasLayout == false) {
-		this->calcCoords();
 	}
 }
 
 
 void VisualStageBox::setFrontPosition(double aFrontPosition) {
-	this->frontPosition = aFrontPosition;
+	if (this->frontPosition != aFrontPosition) {
+		this->frontPosition = aFrontPosition;
+		this->hasLayout = false;
+	}
 }
 
 
 double VisualStageBox::getFrontPosition() {
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
 	return this->frontPosition;
 }
 
 
 void VisualStageBox::setBackPosition(double aBackPosition)  {
-	this->backPosition = aBackPosition;
+	if (this->backPosition != aBackPosition) {
+		this->backPosition = aBackPosition;
+		this->hasLayout = false;
+	}
 }
 
 
 double VisualStageBox::getBackPosition(void) {
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
 	return this->backPosition;
 }
 
 
 void VisualStageBox::setVisualStagePosition(const VisualStagePosition& aPosition) {
-	this->stagePosition = aPosition;
-	this->calcCoords();
+	if (this->stagePosition != aPosition) {
+		this->stagePosition = aPosition;
+		this->hasLayout = false;
+	}
 }
 
 
@@ -157,9 +212,6 @@ void VisualStageBox::setScalingBehaviour(ScalingBehaviour aScalingBehaviour) {
 	if (aScalingBehaviour != this->scalingBehaviour) {
 		this->scalingBehaviour = aScalingBehaviour;
 		this->hasLayout = false;
-	}
-	if (this->hasLayout == false) {
-		this->calcCoords();
 	}
 }
 
@@ -169,18 +221,28 @@ void VisualStageBox::setScaleFactor(double aScaleFactor) {
 		this->scaleFactor = aScaleFactor;
 		this->hasLayout = false;
 	}
-	if (this->hasLayout == false) {
-		this->calcCoords();
-	}
+}
+
+
+void VisualStageBox::setDirty() {
+	this->hasLayout = false;
 }
 
 
 void VisualStageBox::update() {
-	this->calcCoords();
+	this->hasLayout = false;
+	this->calcCoords(this->assetRef->getCamera());
 }
 
 
-void VisualStageBox::calcCoords() {
+void VisualStageBox::updateIfNeeded() {
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
+}
+
+
+void VisualStageBox::calcCoords(const VisualCamera& aCamera) {
 
 	double top = 0.0;
 	double left = 0.0;
@@ -202,77 +264,89 @@ void VisualStageBox::calcCoords() {
 	double finalMarginBottomCoord = 0.0;
 	
 	double prevCoordVal = 0.0;
+	
+	//printf("hwtest finalMarginLeftCoord1: %f\n", finalMarginLeftCoord);
 
-	VisualGraphics* theVisualGraphics;
-	theVisualGraphics = VisualGraphics::getInstance();
+	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
+	
+	//printf("hwtest contentPixelWidth: %f, getCanvasPixelWidth: %f, getCanvasCoordWidth: %f\n", (double)this->contentPixelWidth, (double)theVisualGraphics->getCanvasPixelWidth(), size.width);
 
-	this->coordWidth = theVisualGraphics->getCanvasCoordWidth() * ((double)this->contentPixelWidth / theVisualGraphics->getCanvasPixelWidth());
-	this->coordHeight = theVisualGraphics->getCanvasCoordHeight() * ((double)this->contentPixelHeight / theVisualGraphics->getCanvasPixelHeight());
+	//printf("hwtest coordWidth1: %f\n", this->coordWidth);
+	//this->contentPixelWidth = 0;
+	//printf("hwtesthwtest: %ld, %f\n", this->contentPixelWidth, (double)this->contentPixelWidth);
+
+	CoordSize3D size = aCamera.getSize();
+	this->coordWidth = size.width * ((double)this->contentPixelWidth / (double)theVisualGraphics->getCanvasPixelWidth());
+	//printf("hwtest coordWidth2: %f\n", this->coordWidth);
+	this->coordHeight = size.height * ((double)this->contentPixelHeight / (double)theVisualGraphics->getCanvasPixelHeight());
 
 	// calc margin values
 	if (this->stagePosition.marginBottom != 0.0) {
 		if (this->stagePosition.marginBottomUnit == kPercent) {
-			marginBottomCoord = theVisualGraphics->getCanvasCoordHeight() * (this->stagePosition.marginBottom / 100.0);
+			marginBottomCoord = size.height * (this->stagePosition.marginBottom / 100.0);
 		} else if (this->stagePosition.marginBottomUnit == kPixel) {
-			marginBottomCoord = theVisualGraphics->yPixelToCoord((UInt16)this->stagePosition.marginBottom);
+			marginBottomCoord = theVisualGraphics->yPixelToCoord((uint16)this->stagePosition.marginBottom, aCamera);
 		}
 	}
 
 	if (this->stagePosition.marginTop != 0.0) {
 		if (this->stagePosition.marginBottomUnit == kPercent) {
-			marginTopCoord = theVisualGraphics->getCanvasCoordHeight() * (this->stagePosition.marginBottom / 100.0);
+			marginTopCoord = size.height * (this->stagePosition.marginBottom / 100.0);
 		} else if (this->stagePosition.marginTopUnit == kPixel) {
-			marginTopCoord = theVisualGraphics->yPixelToCoord((UInt16)this->stagePosition.marginTop);
+			marginTopCoord = theVisualGraphics->yPixelToCoord((uint16)this->stagePosition.marginTop, aCamera);
 		}
 	}
 
 	if (this->stagePosition.marginLeft != 0.0) {
 		if (this->stagePosition.marginLeftUnit == kPercent) {
-			marginLeftCoord = theVisualGraphics->getCanvasCoordWidth() * (this->stagePosition.marginLeft / 100.0);
+			marginLeftCoord = size.width * (this->stagePosition.marginLeft / 100.0);
 		} else if (this->stagePosition.marginLeftUnit == kPixel) {
-			marginLeftCoord = theVisualGraphics->xPixelToCoord((UInt16)this->stagePosition.marginLeft);
+			marginLeftCoord = theVisualGraphics->xPixelToCoord((uint16)this->stagePosition.marginLeft, aCamera);
 		}
 	}
 
 	if (this->stagePosition.marginRight != 0.0) {
 		if (this->stagePosition.marginRightUnit == kPercent) {
-			marginRightCoord = theVisualGraphics->getCanvasCoordWidth() * (this->stagePosition.marginRight / 100.0);
+			marginRightCoord = size.width * (this->stagePosition.marginRight / 100.0);
 		} else if (this->stagePosition.marginRightUnit == kPixel) {
-			marginRightCoord = theVisualGraphics->xPixelToCoord((UInt16)this->stagePosition.marginRight);
+			marginRightCoord = theVisualGraphics->xPixelToCoord((uint16)this->stagePosition.marginRight, aCamera);
 		}
 	}
 
 	if (this->stagePosition.minMarginBottom != 0.0) {
 		if (this->stagePosition.minMarginBottomUnit == kPercent) {
-			minMarginBottomCoord = theVisualGraphics->getCanvasCoordHeight() * (this->stagePosition.minMarginBottom / 100.0);
+			minMarginBottomCoord = size.height * (this->stagePosition.minMarginBottom / 100.0);
 		} else if (this->stagePosition.minMarginBottomUnit == kPixel) {
-			minMarginBottomCoord = theVisualGraphics->yPixelToCoord((UInt16)this->stagePosition.minMarginBottom);
+			minMarginBottomCoord = theVisualGraphics->yPixelToCoord((uint16)this->stagePosition.minMarginBottom, aCamera);
 		}
 	}
 	
 	if (this->stagePosition.minMarginTop != 0.0) {
 		if (this->stagePosition.minMarginTopUnit == kPercent) {
-			minMarginTopCoord = theVisualGraphics->getCanvasCoordHeight() * (this->stagePosition.minMarginTop / 100.0);
+			minMarginTopCoord = size.height * (this->stagePosition.minMarginTop / 100.0);
 		} else if (this->stagePosition.minMarginTopUnit == kPixel) {
-			minMarginTopCoord = theVisualGraphics->yPixelToCoord((UInt16)this->stagePosition.minMarginTop);
+			minMarginTopCoord = theVisualGraphics->yPixelToCoord((uint16)this->stagePosition.minMarginTop, aCamera);
 		}
 	}
 
 	if (this->stagePosition.minMarginLeft != 0.0) {
 		if (this->stagePosition.minMarginLeftUnit == kPercent) {
-			minMarginLeftCoord = theVisualGraphics->getCanvasCoordWidth() * (this->stagePosition.minMarginLeft / 100.0);
+			minMarginLeftCoord = size.width * (this->stagePosition.minMarginLeft / 100.0);
 		} else if (this->stagePosition.minMarginLeftUnit == kPixel) {
-			minMarginLeftCoord = theVisualGraphics->xPixelToCoord((UInt16)this->stagePosition.minMarginLeft);
+			minMarginLeftCoord = theVisualGraphics->xPixelToCoord((uint16)this->stagePosition.minMarginLeft, aCamera);
 		}
 	}
 
 	if (this->stagePosition.minMarginRight != 0.0) {
 		if (this->stagePosition.minMarginRightUnit == kPercent) {
-			minMarginRightCoord = theVisualGraphics->getCanvasCoordWidth() * (this->stagePosition.minMarginRight / 100.0);
+			minMarginRightCoord = size.width * (this->stagePosition.minMarginRight / 100.0);
 		} else if (this->stagePosition.minMarginRightUnit == kPixel) {
-			minMarginRightCoord = theVisualGraphics->xPixelToCoord((UInt16)this->stagePosition.minMarginRight);
+			minMarginRightCoord = theVisualGraphics->xPixelToCoord((uint16)this->stagePosition.minMarginRight, aCamera);
 		}
 	}
+	
+	//printf("hwtest finalMarginLeftCoord2: %f\n", finalMarginLeftCoord);
+	//printf("hwtest coordWidth102: %f\n", this->coordWidth);
 	
 	// calc finalMarginValues
 	if (marginTopCoord > 0.0) {
@@ -287,23 +361,36 @@ void VisualStageBox::calcCoords() {
 	if (marginRightCoord > 0.0) {
 		finalMarginRightCoord = marginRightCoord;
 	}
-	if (coordWidth > (theVisualGraphics->getCanvasCoordWidth() - minMarginRightCoord - minMarginLeftCoord)) {
-		prevCoordVal = coordWidth;
-		coordWidth = theVisualGraphics->getCanvasCoordWidth() - minMarginRightCoord - minMarginLeftCoord;
+	// wider than canvas
+	if (this->coordWidth > (size.width - minMarginRightCoord - minMarginLeftCoord)) {
+		prevCoordVal = this->coordWidth;
+		this->coordWidth = size.width - minMarginRightCoord - minMarginLeftCoord;
 		if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-			coordHeight = coordHeight * (coordWidth / prevCoordVal);
+			if (prevCoordVal > 0.0) {
+				this->coordHeight = this->coordHeight * (this->coordWidth / prevCoordVal);
+			}
 		}
 		finalMarginLeftCoord = minMarginLeftCoord;
 		finalMarginRightCoord = minMarginRightCoord;
 	}
-	if (coordHeight > (theVisualGraphics->getCanvasCoordHeight() - minMarginTopCoord - minMarginBottomCoord)) {
-		prevCoordVal = coordHeight;
-		coordHeight = theVisualGraphics->getCanvasCoordHeight() - minMarginTopCoord - minMarginBottomCoord;
+	// higher than canvas
+	if (this->coordHeight > (size.height - minMarginTopCoord - minMarginBottomCoord)) {
+		prevCoordVal = this->coordHeight;
+		this->coordHeight = size.height - minMarginTopCoord - minMarginBottomCoord;
 		if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-			coordWidth = coordWidth * (coordHeight / prevCoordVal);
+			if (prevCoordVal > 0.0) {
+				this->coordWidth = this->coordWidth * (this->coordHeight / prevCoordVal);
+			}
 		}
 		finalMarginTopCoord = minMarginTopCoord;
 		finalMarginBottomCoord = minMarginBottomCoord;
+	}
+	
+	if (this->coordWidth == 0.0) {
+		this->coordWidth = size.width - finalMarginLeftCoord - finalMarginRightCoord;
+	}
+	if (this->coordHeight == 0.0) {
+		this->coordHeight = size.height - finalMarginTopCoord - finalMarginBottomCoord;
 	}
 
 	// calc coordWidth and coordHeight
@@ -311,145 +398,182 @@ void VisualStageBox::calcCoords() {
 
 		// < minWidth
 		if (this->stagePosition.minWidth > 0.0) {
-			prevCoordVal = coordWidth;
-			if ((this->stagePosition.minWidthUnit == kPercent) && ((coordWidth / theVisualGraphics->getCanvasCoordWidth() * 100.0) < this->stagePosition.minWidth)) {
-				coordWidth = this->stagePosition.minWidth * theVisualGraphics->getCanvasCoordWidth() / 100.0;
-				if (coordWidth > (theVisualGraphics->getCanvasCoordWidth() - (minMarginLeftCoord + minMarginRightCoord))) {
-					coordWidth -= (minMarginLeftCoord + minMarginRightCoord);
+			prevCoordVal = this->coordWidth;
+			if ((this->stagePosition.minWidthUnit == kPercent) && ((this->coordWidth / size.width * 100.0) < this->stagePosition.minWidth)) {
+				this->coordWidth = this->stagePosition.minWidth * size.width / 100.0;
+				if (this->coordWidth > (size.width - (minMarginLeftCoord + minMarginRightCoord))) {
+					this->coordWidth -= (minMarginLeftCoord + minMarginRightCoord);
 				} else {
-					coordWidth -= (finalMarginLeftCoord + finalMarginRightCoord);
+					this->coordWidth -= (finalMarginLeftCoord + finalMarginRightCoord);
 				}
 				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-					coordHeight = coordHeight * (coordWidth / prevCoordVal);
+					if (prevCoordVal > 0.0) {
+						this->coordHeight = this->coordHeight * (this->coordWidth / prevCoordVal);
+					}
 				}
-			} else if ((this->stagePosition.minWidthUnit == kPixel) && (static_cast<double>(theVisualGraphics->xCoordToPixel(coordWidth)) < this->stagePosition.minWidth)) {
-				coordWidth = theVisualGraphics->xPixelToCoord((UInt16)this->stagePosition.minWidth);
-				if (coordWidth > (theVisualGraphics->getCanvasCoordWidth() - (minMarginLeftCoord + minMarginRightCoord))) {
-					coordWidth -= (minMarginLeftCoord + minMarginRightCoord);
+			} else if ((this->stagePosition.minWidthUnit == kPixel) && (static_cast<double>(theVisualGraphics->xCoordToPixel(this->coordWidth, aCamera)) < this->stagePosition.minWidth)) {
+				this->coordWidth = theVisualGraphics->xPixelToCoord((uint16)this->stagePosition.minWidth, aCamera);
+				if (this->coordWidth > (size.width - (minMarginLeftCoord + minMarginRightCoord))) {
+					this->coordWidth -= (minMarginLeftCoord + minMarginRightCoord);
 				} else {
-					coordWidth -= (finalMarginLeftCoord + finalMarginRightCoord);
+					this->coordWidth -= (finalMarginLeftCoord + finalMarginRightCoord);
 				}
 				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-					coordHeight = coordHeight * (coordWidth / prevCoordVal);
+					if (prevCoordVal > 0.0) {
+						this->coordHeight = this->coordHeight * (this->coordWidth / prevCoordVal);
+					}
 				}
 			}
 		}
+		
+		//printf("hwtest coordWidth103: %f (%f)\n", this->coordWidth, this->stagePosition.minHeight);
 
 		// < minHeight
 		if (this->stagePosition.minHeight > 0.0) {
-			prevCoordVal = coordHeight;
-			if ((this->stagePosition.minHeightUnit == kPercent) && ((coordHeight / theVisualGraphics->getCanvasCoordHeight() * 100.0) < this->stagePosition.minHeight)) {
-				coordHeight = this->stagePosition.minHeight * theVisualGraphics->getCanvasCoordHeight() / 100.0;
-				if (coordHeight > (theVisualGraphics->getCanvasCoordHeight() - (minMarginTopCoord + minMarginBottomCoord))) {
-					coordHeight -= (minMarginTopCoord + minMarginBottomCoord);
+			prevCoordVal = this->coordHeight;
+			if ((this->stagePosition.minHeightUnit == kPercent) && ((this->coordHeight / size.height * 100.0) < this->stagePosition.minHeight)) {
+				this->coordHeight = this->stagePosition.minHeight * size.height / 100.0;
+				if (this->coordHeight > (size.height - (minMarginTopCoord + minMarginBottomCoord))) {
+					this->coordHeight -= (minMarginTopCoord + minMarginBottomCoord);
 				} else {
-					coordHeight -= (finalMarginTopCoord + finalMarginBottomCoord);
+					this->coordHeight -= (finalMarginTopCoord + finalMarginBottomCoord);
 				}
 				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-					coordWidth = coordWidth * (coordHeight / prevCoordVal);
+					if (prevCoordVal > 0.0) {
+						this->coordWidth = this->coordWidth * (this->coordHeight / prevCoordVal);
+						//printf("hwtest coordWidth103a: %f\n", this->coordWidth);
+					}
 				}
-			} else if ((this->stagePosition.minHeightUnit == kPixel) && (static_cast<double>(theVisualGraphics->yCoordToPixel(coordHeight)) < this->stagePosition.minHeight)) {
-				coordHeight = theVisualGraphics->xPixelToCoord((UInt16)this->stagePosition.minHeight);
-				if (coordHeight > (theVisualGraphics->getCanvasCoordHeight() - (minMarginTopCoord + minMarginBottomCoord))) {
-					coordHeight -= (minMarginTopCoord + minMarginBottomCoord);
+			} else if ((this->stagePosition.minHeightUnit == kPixel) && (static_cast<double>(theVisualGraphics->yCoordToPixel(this->coordHeight, aCamera)) < this->stagePosition.minHeight)) {
+				this->coordHeight = theVisualGraphics->xPixelToCoord((uint16)this->stagePosition.minHeight, aCamera);
+				if (this->coordHeight > (size.height - (minMarginTopCoord + minMarginBottomCoord))) {
+					this->coordHeight -= (minMarginTopCoord + minMarginBottomCoord);
 				} else {
-					coordHeight -= (finalMarginTopCoord + finalMarginBottomCoord);
+					this->coordHeight -= (finalMarginTopCoord + finalMarginBottomCoord);
 				}
 				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-					coordWidth = coordWidth * (coordHeight / prevCoordVal);
+					if (prevCoordVal > 0.0) {
+						this->coordWidth = this->coordWidth * (this->coordHeight / prevCoordVal);
+						//printf("hwtest coordWidth103b: %f\n", this->coordWidth);
+					}
 				}
 			}
 		}
 
 		// > maxWidth
 		if (this->stagePosition.maxWidth > 0.0) {
-			prevCoordVal = coordWidth;
-			if ((this->stagePosition.maxWidthUnit == kPercent) && ((coordWidth / theVisualGraphics->getCanvasCoordWidth() * 100.0) > this->stagePosition.maxWidth)) {
-				coordWidth = this->stagePosition.maxWidth * theVisualGraphics->getCanvasCoordWidth() / 100.0;
-				if (coordWidth > (theVisualGraphics->getCanvasCoordWidth() - (minMarginLeftCoord + minMarginRightCoord))) {
-					coordWidth -= (minMarginLeftCoord + minMarginRightCoord);
+			prevCoordVal = this->coordWidth;
+			if ((this->stagePosition.maxWidthUnit == kPercent) && ((this->coordWidth / size.width * 100.0) > this->stagePosition.maxWidth)) {
+				this->coordWidth = this->stagePosition.maxWidth * size.width / 100.0;
+				//printf("hwtest coordWidth103c: %f\n", this->coordWidth);
+				if (this->coordWidth > (size.width - (minMarginLeftCoord + minMarginRightCoord))) {
+					this->coordWidth -= (minMarginLeftCoord + minMarginRightCoord);
+					//printf("hwtest coordWidth103d: %f\n", this->coordWidth);
 				} else {
-					coordWidth -= (finalMarginLeftCoord + finalMarginRightCoord);
+					this->coordWidth -= (finalMarginLeftCoord + finalMarginRightCoord);
+					//printf("hwtest coordWidth103e: %f\n", this->coordWidth);
 				}
 				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-					coordHeight = coordHeight * (coordWidth / prevCoordVal);
+					if (prevCoordVal > 0.0) {
+						this->coordHeight = this->coordHeight * (this->coordWidth / prevCoordVal);
+					}
 				}
-			} else if ((this->stagePosition.maxWidthUnit == kPixel) && (static_cast<double>(theVisualGraphics->xCoordToPixel(coordWidth)) > this->stagePosition.maxWidth)) {
-				coordWidth = theVisualGraphics->xPixelToCoord((UInt16)this->stagePosition.maxWidth);
-				if (coordWidth > (theVisualGraphics->getCanvasCoordWidth() - (minMarginLeftCoord + minMarginRightCoord))) {
-					coordWidth -= (minMarginLeftCoord + minMarginRightCoord);
+			} else if ((this->stagePosition.maxWidthUnit == kPixel) && (static_cast<double>(theVisualGraphics->xCoordToPixel(this->coordWidth, aCamera)) > this->stagePosition.maxWidth)) {
+				this->coordWidth = theVisualGraphics->xPixelToCoord((uint16)this->stagePosition.maxWidth, aCamera);
+				if (this->coordWidth > (size.width - (minMarginLeftCoord + minMarginRightCoord))) {
+					this->coordWidth -= (minMarginLeftCoord + minMarginRightCoord);
+					//printf("hwtest coordWidth103f: %f\n", this->coordWidth);
 				} else {
-					coordWidth -= (finalMarginLeftCoord + finalMarginRightCoord);
+					this->coordWidth -= (finalMarginLeftCoord + finalMarginRightCoord);
+					//printf("hwtest coordWidth103g: %f\n", this->coordWidth);
 				}
 				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-					coordHeight = coordHeight * (coordWidth / prevCoordVal);
-				}
-			}
-		}
-
-		// > maxHeight
-		if (this->stagePosition.maxHeight > 0.0) {
-			prevCoordVal = coordHeight;
-			if ((this->stagePosition.maxHeightUnit == kPercent) && ((coordHeight / theVisualGraphics->getCanvasCoordHeight() * 100.0) > this->stagePosition.maxHeight)) {
-				coordHeight = this->stagePosition.maxHeight * theVisualGraphics->getCanvasCoordHeight() / 100.0;
-				if (coordHeight > (theVisualGraphics->getCanvasCoordHeight() - (minMarginTopCoord + minMarginBottomCoord))) {
-					coordHeight -= (minMarginTopCoord + minMarginBottomCoord);
-				} else {
-					coordHeight -= (finalMarginTopCoord + finalMarginBottomCoord);
-				}
-				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-					coordWidth = coordWidth * (coordHeight / prevCoordVal);
-				}
-			} else if ((this->stagePosition.maxHeightUnit == kPixel) && (static_cast<double>(theVisualGraphics->yCoordToPixel(coordHeight)) > this->stagePosition.maxHeight)) {
-				coordHeight = theVisualGraphics->xPixelToCoord((UInt16)this->stagePosition.maxHeight);
-				if (coordHeight > (theVisualGraphics->getCanvasCoordHeight() - (minMarginTopCoord + minMarginBottomCoord))) {
-					coordHeight -= (minMarginTopCoord + minMarginBottomCoord);
-				} else {
-					coordHeight -= (finalMarginTopCoord + finalMarginBottomCoord);
-				}
-				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-					//coordWidth = coordWidth * (coordHeight / prevCoordVal * (theVisualGraphics->getCanvasCoordWidth() / theVisualGraphics->getCanvasCoordHeight()));
-					coordWidth = coordWidth * (coordHeight / prevCoordVal);
+					if (prevCoordVal > 0.0) {
+						this->coordHeight = this->coordHeight * (this->coordWidth / prevCoordVal);
+					}
 				}
 			}
 		}
 		
-		if (!((this->scalingBehaviour & kClippingAllowed) == kClippingAllowed)) {
-			if (coordWidth > (theVisualGraphics->getCanvasCoordWidth() - (minMarginLeftCoord + minMarginRightCoord))) {
-				prevCoordVal = coordWidth;
-				coordWidth = theVisualGraphics->getCanvasCoordWidth() - (minMarginLeftCoord + minMarginRightCoord);
+		//printf("hwtest coordWidth104: %f\n", this->coordWidth);
+
+		// > maxHeight
+		if (this->stagePosition.maxHeight > 0.0) {
+			prevCoordVal = this->coordHeight;
+			if ((this->stagePosition.maxHeightUnit == kPercent) && ((this->coordHeight / size.height * 100.0) > this->stagePosition.maxHeight)) {
+				this->coordHeight = this->stagePosition.maxHeight * size.height / 100.0;
+				if (this->coordHeight > (size.height - (minMarginTopCoord + minMarginBottomCoord))) {
+					this->coordHeight -= (minMarginTopCoord + minMarginBottomCoord);
+				} else {
+					this->coordHeight -= (finalMarginTopCoord + finalMarginBottomCoord);
+				}
 				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-					coordHeight = coordHeight * (coordWidth / prevCoordVal);
+					if (prevCoordVal > 0.0) {
+						this->coordWidth = this->coordWidth * (this->coordHeight / prevCoordVal);
+					}
+				}
+			} else if ((this->stagePosition.maxHeightUnit == kPixel) && (static_cast<double>(theVisualGraphics->yCoordToPixel(this->coordHeight, aCamera)) > this->stagePosition.maxHeight)) {
+				this->coordHeight = theVisualGraphics->xPixelToCoord((uint16)this->stagePosition.maxHeight, aCamera);
+				if (this->coordHeight > (size.height - (minMarginTopCoord + minMarginBottomCoord))) {
+					this->coordHeight -= (minMarginTopCoord + minMarginBottomCoord);
+				} else {
+					this->coordHeight -= (finalMarginTopCoord + finalMarginBottomCoord);
+				}
+				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
+					if (prevCoordVal > 0.0) {
+						//this->coordWidth = this->coordWidth * (this->coordHeight / prevCoordVal * (size.width / size.height));
+						this->coordWidth = this->coordWidth * (this->coordHeight / prevCoordVal);
+					}
 				}
 			}
-			if (coordHeight > (theVisualGraphics->getCanvasCoordHeight() - (minMarginTopCoord + minMarginBottomCoord))) {
-				prevCoordVal = coordHeight;
-				coordHeight = theVisualGraphics->getCanvasCoordHeight() - (minMarginTopCoord + minMarginBottomCoord);
+		}
+		
+		//printf("hwtest coordWidth105: %f\n", this->coordWidth);
+		
+		//printf("hwtest finalMarginLeftCoord3: %f\n", finalMarginLeftCoord);
+		
+		if (!((this->scalingBehaviour & kClippingAllowed) == kClippingAllowed)) {
+			if (this->coordWidth > (size.width - (minMarginLeftCoord + minMarginRightCoord))) {
+				prevCoordVal = this->coordWidth;
+				this->coordWidth = size.width - (minMarginLeftCoord + minMarginRightCoord);
 				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-					coordWidth = coordWidth * (coordHeight / prevCoordVal);
+					if (prevCoordVal > 0.0) {
+						this->coordHeight = this->coordHeight * (this->coordWidth / prevCoordVal);
+					}
+				}
+			}
+			if (this->coordHeight > (size.height - (minMarginTopCoord + minMarginBottomCoord))) {
+				prevCoordVal = this->coordHeight;
+				this->coordHeight = size.height - (minMarginTopCoord + minMarginBottomCoord);
+				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
+					if (prevCoordVal > 0.0) {
+						this->coordWidth = this->coordWidth * (this->coordHeight / prevCoordVal);
+					}
 				}
 			}
 		}
 		
 /*
 		if (!((this->scalingBehaviour & kClippingAllowed) == kClippingAllowed)) {
-			double aspectRatioCanvas = theVisualGraphics->getCanvasCoordWidth() / theVisualGraphics->getCanvasCoordHeight();
+			double aspectRatioCanvas = size.width / size.height;
 			double aspectRatioCover = coverArtTextureContainer->getImageWidth() / coverArtTextureContainer->getImageHeight();
-			coordWidthUnscaled = (double)theVisualGraphics->getCanvasCoordWidth() * ((double)coverArtTextureContainer->getImageWidth() / (double)theVisualGraphics->getCanvasPixelWidth());
-			coordHeightUnscaled = (double)theVisualGraphics->getCanvasCoordHeight() * ((double)coverArtTextureContainer->getImageHeight() / (double)theVisualGraphics->getCanvasPixelHeight());
+			coordWidthUnscaled = (double)size.width * ((double)coverArtTextureContainer->getImageWidth() / (double)theVisualGraphics->getCanvasPixelWidth());
+			coordHeightUnscaled = (double)size.height * ((double)coverArtTextureContainer->getImageHeight() / (double)theVisualGraphics->getCanvasPixelHeight());
 			if (aspectRatioCanvas > aspectRatioCover) {
-				prevCoordVal = coordWidth;
-				coordWidth = (double)theVisualGraphics->getCanvasCoordWidth();
-				coordHeight = coordHeightUnscaled * (coordWidth / coordWidthUnscaled);
+				prevCoordVal = this->coordWidth;
+				this->coordWidth = (double)size.width;
+				this->coordHeight = coordHeightUnscaled * (this->coordWidth / coordWidthUnscaled);
 			} else {
-				coordHeight = (double)theVisualGraphics->getCanvasCoordHeight();
-				coordWidth = coordWidthUnscaled * (coordHeight / coordHeightUnscaled);
+				this->coordHeight = (double)size.height;
+				this->coordWidth = coordWidthUnscaled * (this->coordHeight / coordHeightUnscaled);
 			}
 		}
 */
 	}
 	
-	//printf("coordHeight: %f, coordWidth: %f\n", coordHeight, coordWidth);
+	//printf("hwtest finalMarginLeftCoord4: %f\n", finalMarginLeftCoord);
+	
+	//printf("this->coordHeight: %f, this->coordWidth: %f\n", this->coordHeight, this->coordWidth);
 
 	// recalc finalMarginCoords
 	if (this->stagePosition.verticalAlignment == kTopAligned) {
@@ -463,30 +587,33 @@ void VisualStageBox::calcCoords() {
 		} else {
 			finalMarginBottomCoord = marginBottomCoord;
 		}
-		if (coordHeight < (theVisualGraphics->getCanvasCoordHeight() - (finalMarginTopCoord + finalMarginBottomCoord))) {
+		if (this->coordHeight < (size.height - (finalMarginTopCoord + finalMarginBottomCoord))) {
 			finalMarginBottomCoord = 0.0;
 		}
 	} else if (this->stagePosition.verticalAlignment == kMiddleAligned) {
-		finalMarginTopCoord = (theVisualGraphics->getCanvasCoordHeight() / 2.0) - (coordHeight / 2.0) - marginTopCoord;
-		finalMarginBottomCoord = (theVisualGraphics->getCanvasCoordHeight() / 2.0) - (coordHeight / 2.0) - marginBottomCoord;
+		finalMarginTopCoord = (size.height / 2.0) - (this->coordHeight / 2.0) - marginTopCoord;
+		finalMarginBottomCoord = (size.height / 2.0) - (this->coordHeight / 2.0) - marginBottomCoord;
 		if (finalMarginTopCoord < minMarginTopCoord) {
 			finalMarginTopCoord = minMarginTopCoord;
 		}
 		if (finalMarginBottomCoord < minMarginBottomCoord) {
 			finalMarginBottomCoord = minMarginBottomCoord;
 		}
-		if ((coordHeight / 2.0) >= (theVisualGraphics->getCanvasCoordHeight() / 2.0) - minMarginBottomCoord) {
+		if ((this->coordHeight / 2.0) >= (size.height / 2.0) - minMarginBottomCoord) {
 			finalMarginBottomCoord = minMarginBottomCoord;
-			finalMarginTopCoord = theVisualGraphics->getCanvasCoordHeight() - (finalMarginBottomCoord + coordHeight);
-			if ((finalMarginTopCoord + coordHeight + finalMarginBottomCoord) > theVisualGraphics->getCanvasCoordHeight()) {
+			finalMarginTopCoord = size.height - (finalMarginBottomCoord + this->coordHeight);
+			if ((finalMarginTopCoord + this->coordHeight + finalMarginBottomCoord) > size.height) {
 				finalMarginTopCoord = minMarginTopCoord;
-				prevCoordVal = coordHeight;
-				coordHeight = theVisualGraphics->getCanvasCoordHeight() - finalMarginTopCoord - finalMarginBottomCoord;
+				prevCoordVal = this->coordHeight;
+				this->coordHeight = size.height - finalMarginTopCoord - finalMarginBottomCoord;
 				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-					coordWidth = coordWidth * (coordHeight / prevCoordVal);
+					if (prevCoordVal > 0.0) {
+						this->coordWidth = this->coordWidth * (this->coordHeight / prevCoordVal);
+					}
 				}
 			}
 		}
+		//printf("hwtest coordWidth106: %f\n", this->coordWidth);
 	} else if (this->stagePosition.verticalAlignment == kBottomAligned) {
 		if (minMarginBottomCoord > marginBottomCoord) {
 			finalMarginBottomCoord = minMarginBottomCoord;
@@ -498,12 +625,13 @@ void VisualStageBox::calcCoords() {
 		} else {
 			finalMarginTopCoord = marginTopCoord;
 		}
-		if (coordHeight < (theVisualGraphics->getCanvasCoordHeight() - (finalMarginTopCoord + finalMarginBottomCoord))) {
+		if (this->coordHeight < (size.height - (finalMarginTopCoord + finalMarginBottomCoord))) {
 			finalMarginTopCoord = 0.0;
 		}
 	}
 
 	if (this->stagePosition.horizontalAlignment == kLeftAligned) {
+		//printf("hwtest finalMarginLeftCoord4a: %f\n", finalMarginLeftCoord);
 		if (minMarginLeftCoord > marginLeftCoord) {
 			finalMarginLeftCoord = minMarginLeftCoord;
 		} else {
@@ -514,40 +642,49 @@ void VisualStageBox::calcCoords() {
 		} else {
 			finalMarginRightCoord = marginRightCoord;
 		}
-		if (coordWidth < (theVisualGraphics->getCanvasCoordWidth() - (finalMarginLeftCoord + finalMarginRightCoord))) {
+		if (this->coordWidth < (size.width - (finalMarginLeftCoord + finalMarginRightCoord))) {
 			finalMarginRightCoord = 0.0;
 		}
+		//printf("hwtest finalMarginLeftCoord4b: %f\n", finalMarginLeftCoord);
 	} else if (this->stagePosition.horizontalAlignment == kCenterAligned) {
 /*
-		if (coordWidth >= (theVisualGraphics->getCanvasCoordWidth() - (minMarginLeftCoord + minMarginRightCoord))) {
+		if (this->coordWidth >= (size.width - (minMarginLeftCoord + minMarginRightCoord))) {
 			finalMarginLeftCoord = minMarginLeftCoord;
 			finalMarginRightCoord = minMarginRightCoord;
 		} else {
-			finalMarginLeftCoord = (theVisualGraphics->getCanvasCoordWidth() / 2.0) - (coordWidth / 2.0) - marginLeftCoord;
-			finalMarginRightCoord = (theVisualGraphics->getCanvasCoordWidth() / 2.0) - (coordWidth / 2.0) - marginRightCoord;
+			finalMarginLeftCoord = (size.width / 2.0) - (this->coordWidth / 2.0) - marginLeftCoord;
+			finalMarginRightCoord = (size.width / 2.0) - (this->coordWidth / 2.0) - marginRightCoord;
 		}
 */
-		finalMarginLeftCoord = (theVisualGraphics->getCanvasCoordWidth() / 2.0) - (coordWidth / 2.0) - marginLeftCoord;
-		finalMarginRightCoord = (theVisualGraphics->getCanvasCoordWidth() / 2.0) - (coordWidth / 2.0) - marginRightCoord;
+		//printf("hwtest finalMarginLeftCoord4c1: %f , %f , %f\n", finalMarginLeftCoord, this->coordWidth, marginLeftCoord);
+		finalMarginLeftCoord = (size.width / 2.0) - (this->coordWidth / 2.0) - marginLeftCoord;
+		//printf("hwtest finalMarginLeftCoord4c2: %f\n", finalMarginLeftCoord);
+		finalMarginRightCoord = (size.width / 2.0) - (this->coordWidth / 2.0) - marginRightCoord;
 		if (finalMarginLeftCoord < minMarginLeftCoord) {
 			finalMarginLeftCoord = minMarginLeftCoord;
+			//printf("hwtest finalMarginLeftCoord4c3: %f\n", finalMarginLeftCoord);
 		}
 		if (finalMarginRightCoord < minMarginRightCoord) {
 			finalMarginRightCoord = minMarginRightCoord;
 		}
-		if ((coordWidth / 2.0) >= (theVisualGraphics->getCanvasCoordWidth() / 2.0) - minMarginRightCoord) {
+		//printf("hwtest finalMarginLeftCoord4d: %f\n", finalMarginLeftCoord);
+		if ((this->coordWidth / 2.0) >= (size.width / 2.0) - minMarginRightCoord) {
 			finalMarginRightCoord = minMarginRightCoord;
-			finalMarginLeftCoord = theVisualGraphics->getCanvasCoordWidth() - (finalMarginRightCoord - coordWidth);
-			if ((finalMarginLeftCoord + coordWidth + finalMarginRightCoord) > theVisualGraphics->getCanvasCoordWidth()) {
+			finalMarginLeftCoord = size.width - (finalMarginRightCoord - this->coordWidth);
+			if ((finalMarginLeftCoord + this->coordWidth + finalMarginRightCoord) > size.width) {
 				finalMarginLeftCoord = minMarginLeftCoord;
-				prevCoordVal = coordWidth;
-				coordWidth = theVisualGraphics->getCanvasCoordWidth() - finalMarginLeftCoord - finalMarginRightCoord;
+				prevCoordVal = this->coordWidth;
+				this->coordWidth = size.width - finalMarginLeftCoord - finalMarginRightCoord;
 				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-					coordWidth = coordWidth * (coordWidth / prevCoordVal);
+					if (prevCoordVal > 0.0) {
+						this->coordWidth = this->coordWidth * (this->coordWidth / prevCoordVal);
+					}
 				}
 			}
 		}
+		//printf("hwtest finalMarginLeftCoord4e: %f\n", finalMarginLeftCoord);
 	} else if (this->stagePosition.horizontalAlignment == kRightAligned) {
+		//printf("hwtest finalMarginLeftCoord4f: %f\n", finalMarginLeftCoord);
 		if (minMarginRightCoord > marginRightCoord) {
 			finalMarginRightCoord = minMarginRightCoord;
 		} else {
@@ -558,56 +695,70 @@ void VisualStageBox::calcCoords() {
 		} else {
 			finalMarginLeftCoord = marginLeftCoord;
 		}
-		if (coordWidth < (theVisualGraphics->getCanvasCoordHeight() - (finalMarginLeftCoord + finalMarginRightCoord))) {
+		if (this->coordWidth < (size.height - (finalMarginLeftCoord + finalMarginRightCoord))) {
 			finalMarginLeftCoord = 0.0;
 		}
+		//printf("hwtest finalMarginLeftCoord4g: %f\n", finalMarginLeftCoord);
 	}
+	
+	//printf("hwtest finalMarginLeftCoord5: %f\n", finalMarginLeftCoord);
+	
+	
+	//printf("hwtest left1: %f\n", left);
+	//printf("hwtest a: %f, b: %f\n", aCamera.getMaxLeftCoord(), finalMarginLeftCoord);
 
 	// position
 	if (this->stagePosition.horizontalAlignment == kLeftAligned) {
-		left = theVisualGraphics->getMaxLeftCoordOfCanvas() + finalMarginLeftCoord;
-		right = left + coordWidth;
+		left = aCamera.getMaxLeftCoord() + finalMarginLeftCoord;
+		right = left + this->coordWidth;
 	} else if (this->stagePosition.horizontalAlignment == kCenterAligned) {
-		left = theVisualGraphics->getMaxLeftCoordOfCanvas() + finalMarginLeftCoord;
-		right = theVisualGraphics->getMaxRightCoordOfCanvas() - finalMarginRightCoord;
+		left = aCamera.getMaxLeftCoord() + finalMarginLeftCoord;
+		right = aCamera.getMaxRightCoord() - finalMarginRightCoord;
 	} else if (this->stagePosition.horizontalAlignment == kRightAligned) {
-		right = theVisualGraphics->getMaxRightCoordOfCanvas() - finalMarginRightCoord;
-		left = right - coordWidth;
+		right = aCamera.getMaxRightCoord() - finalMarginRightCoord;
+		left = right - this->coordWidth;
 	}
 	
+	//printf("hwtest left2: %f\n", left);
+	
 	if (this->stagePosition.verticalAlignment == kTopAligned) {
-		top = theVisualGraphics->getMaxTopCoordOfCanvas() - finalMarginTopCoord;
-		bottom = top - coordHeight;
+		top = aCamera.getMaxTopCoord() - finalMarginTopCoord;
+		bottom = top - this->coordHeight;
 	} else if (this->stagePosition.verticalAlignment == kMiddleAligned) {
-		top = theVisualGraphics->getMaxTopCoordOfCanvas() - finalMarginTopCoord;
-		bottom = theVisualGraphics->getMaxBottomCoordOfCanvas() + finalMarginBottomCoord;
+		//printf("hwtest aCamera.getMaxTopCoord(): %f, aCamera.getMaxBottomCoord(): %f\n", aCamera.getMaxTopCoord(), aCamera.getMaxBottomCoord());
+		//printf("finalMarginTopCoord: %f\n", finalMarginTopCoord);
+		top = aCamera.getMaxTopCoord() - finalMarginTopCoord;
+		bottom = aCamera.getMaxBottomCoord() + finalMarginBottomCoord;
 	} else if (this->stagePosition.verticalAlignment == kBottomAligned) {
-		bottom = theVisualGraphics->getMaxBottomCoordOfCanvas() + finalMarginBottomCoord;
-		top = bottom + coordHeight;
+		bottom = aCamera.getMaxBottomCoord() + finalMarginBottomCoord;
+		top = bottom + this->coordHeight;
 	}
+	
+	//printf("hwtest coordWidth2a: %f, coordHeight2a: %f\n", this->coordWidth, this->coordHeight);
+	//printf("hwtest top1: %f, bottom1: %f, left1: %f, right1: %f\n", top, bottom, left, right);
 	
 /*
 	if (this->stagePosition.verticalAlignment == kTop) {
-		bottom = theVisualGraphics->getMaxTopCoordOfCanvas() - coordHeight - finalMarginTopCoord;
+		bottom = aCamera.getMaxTopCoord() - this->coordHeight - finalMarginTopCoord;
 	} else if (this->stagePosition.verticalAlignment == kMiddle) {
-		bottom = theVisualGraphics->getMaxBottomCoordOfCanvas() + finalMarginBottomCoord + (((theVisualGraphics->getCanvasCoordHeight() - finalMarginBottomCoord) / 2.0) - (coordHeight / 2.0));
-		if ((minMarginBottomCoord > marginBottomCoord) && ((theVisualGraphics->getMaxBottomCoordOfCanvas() - bottom) < minMarginBottomCoord)) {
-			//bottom = theVisualGraphics->getMaxBottomCoordOfCanvas() + minMarginBottomCoord;
+		bottom = aCamera.getMaxBottomCoord() + finalMarginBottomCoord + (((size.height - finalMarginBottomCoord) / 2.0) - (this->coordHeight / 2.0));
+		if ((minMarginBottomCoord > marginBottomCoord) && ((aCamera.getMaxBottomCoord() - bottom) < minMarginBottomCoord)) {
+			//bottom = aCamera.getMaxBottomCoord() + minMarginBottomCoord;
 		}
 	} else if (this->stagePosition.verticalAlignment == kBottom) {
-		bottom = theVisualGraphics->getMaxBottomCoordOfCanvas() + finalMarginBottomCoord;
+		bottom = aCamera.getMaxBottomCoord() + finalMarginBottomCoord;
 	}
-	top = bottom + coordHeight;
+	top = bottom + this->coordHeight;
 */	
 /*
 	if (this->stagePosition.horizontalAlignment == kLeft) {
-		left = theVisualGraphics->getMaxLeftCoordOfCanvas() + finalMarginLeftCoord;
+		left = aCamera.getMaxLeftCoord() + finalMarginLeftCoord;
 	} else if (this->stagePosition.horizontalAlignment == kCenter) {
-		left = (theVisualGraphics->getMaxLeftCoordOfCanvas() + finalMarginLeftCoord + (theVisualGraphics->getCanvasCoordWidth() / 2.0)) - (coordWidth / 2.0);
+		left = (aCamera.getMaxLeftCoord() + finalMarginLeftCoord + (size.width / 2.0)) - (this->coordWidth / 2.0);
 	} else if (this->stagePosition.horizontalAlignment == kRight) {
-		left = theVisualGraphics->getMaxRightCoordOfCanvas() - coordWidth - finalMarginRightCoord;
+		left = aCamera.getMaxRightCoord() - this->coordWidth - finalMarginRightCoord;
 	}
-	right = left + coordWidth;
+	right = left + this->coordWidth;
 */
 	// adjust bounds to current bounding rect
 	if ((this->scalingBehaviour & kScalingAllowed) == kScalingAllowed) {
@@ -615,174 +766,701 @@ void VisualStageBox::calcCoords() {
 		// positioning
 /*
 		if (this->stagePosition.verticalAlignment == kTop) {
-			bottom = theVisualGraphics->getMaxTopCoordOfCanvas() - coordHeight - finalMarginTopCoord;
+			bottom = aCamera.getMaxTopCoord() - this->coordHeight - finalMarginTopCoord;
 		} else if (this->stagePosition.verticalAlignment == kMiddle) {
-			bottom = theVisualGraphics->getMaxBottomCoordOfCanvas() + ((theVisualGraphics->getCanvasCoordHeight() / 2.0) - (coordHeight / 2.0));
+			bottom = aCamera.getMaxBottomCoord() + ((size.height / 2.0) - (this->coordHeight / 2.0));
 		} else if (this->stagePosition.verticalAlignment == kBottom) {
-			bottom = theVisualGraphics->getMaxBottomCoordOfCanvas() + finalMarginBottomCoord;
+			bottom = aCamera.getMaxBottomCoord() + finalMarginBottomCoord;
 		}
-		top = bottom + coordHeight;
+		top = bottom + this->coordHeight;
 */
 /*
 		if (this->stagePosition.horizontalAlignment == kLeft) {
-			left = theVisualGraphics->getMaxLeftCoordOfCanvas() + finalMarginLeftCoord;
+			left = aCamera.getMaxLeftCoord() + finalMarginLeftCoord;
 		} else if (this->stagePosition.horizontalAlignment == kCenter) {
-			left = theVisualGraphics->getMaxLeftCoordOfCanvas() + ((theVisualGraphics->getCanvasCoordWidth() / 2.0) - (coordWidth / 2.0));
+			left = aCamera.getMaxLeftCoord() + ((size.width / 2.0) - (this->coordWidth / 2.0));
 		} else if (this->stagePosition.horizontalAlignment == kRight) {
-			left = theVisualGraphics->getMaxRightCoordOfCanvas() - coordWidth - finalMarginRightCoord;
+			left = aCamera.getMaxRightCoord() - this->coordWidth - finalMarginRightCoord;
 		}
-		right = left + coordWidth;
+		right = left + this->coordWidth;
 */
 		// calc distances
 		double distanceBottom = 0.0;
 		if (bottom > 0.0) {
-			distanceBottom = (theVisualGraphics->getCanvasCoordHeight() / 2.0) + bottom;
+			distanceBottom = (size.height / 2.0) + bottom;
 		} else {
-			distanceBottom = (theVisualGraphics->getMaxBottomCoordOfCanvas() - bottom) * -1.0;
+			distanceBottom = (aCamera.getMaxBottomCoord() - bottom) * -1.0;
 		}
 		double distanceTop = 0.0;
 		if (top > 0.0) {
-			distanceTop = theVisualGraphics->getMaxTopCoordOfCanvas() - top;
+			distanceTop = aCamera.getMaxTopCoord() - top;
 		} else {
-			distanceTop = (theVisualGraphics->getCanvasCoordHeight() / 2.0) + (top * -1.0);
+			distanceTop = (size.height / 2.0) + (top * -1.0);
 		}
 		double distanceLeft = 0.0;
 		if (left > 0.0) {
-			distanceLeft = (theVisualGraphics->getCanvasCoordWidth() / 2.0) + left;
+			distanceLeft = (size.width / 2.0) + left;
 		} else {
-			distanceLeft = (theVisualGraphics->getMaxLeftCoordOfCanvas() - left) * -1.0;
+			distanceLeft = (aCamera.getMaxLeftCoord() - left) * -1.0;
 		}
 		double distanceRight = 0.0;
 		if (right > 0.0) {
-			distanceRight = theVisualGraphics->getMaxRightCoordOfCanvas() - right;
+			distanceRight = aCamera.getMaxRightCoord() - right;
 		} else {
-			distanceRight = (theVisualGraphics->getCanvasCoordWidth() / 2.0) + (right * -1.0);
+			distanceRight = (size.width / 2.0) + (right * -1.0);
 		}
 		// rescale because minMargin is exceeded?
 		//if ((distanceBottom < minMarginBottomCoord) || (distanceTop < minMarginTopCoord) || (distanceLeft < minMarginLeftCoord) || (distanceRight < minMarginRightCoord)) {
 		if (1 == 2) {
 			prevCoordVal = bottom;
 			if (this->stagePosition.verticalAlignment == kTopAligned) {
-				bottom = theVisualGraphics->getMaxTopCoordOfCanvas() - coordHeight - marginTopCoord;
+				bottom = aCamera.getMaxTopCoord() - this->coordHeight - marginTopCoord;
 			} else if (this->stagePosition.verticalAlignment == kMiddleAligned) {
-				bottom = theVisualGraphics->getMaxBottomCoordOfCanvas() + marginBottomCoord + (((theVisualGraphics->getCanvasCoordHeight() - marginBottomCoord) / 2.0) - (coordHeight / 2.0));
-				if ((minMarginBottomCoord > marginBottomCoord) && ((theVisualGraphics->getMaxBottomCoordOfCanvas() - bottom) < minMarginBottomCoord)) {
-					bottom = theVisualGraphics->getMaxBottomCoordOfCanvas() + minMarginBottomCoord;
+				bottom = aCamera.getMaxBottomCoord() + marginBottomCoord + (((size.height - marginBottomCoord) / 2.0) - (this->coordHeight / 2.0));
+				if ((minMarginBottomCoord > marginBottomCoord) && ((aCamera.getMaxBottomCoord() - bottom) < minMarginBottomCoord)) {
+					bottom = aCamera.getMaxBottomCoord() + minMarginBottomCoord;
 				}
 			} else if (this->stagePosition.verticalAlignment == kBottomAligned) {
-				bottom = theVisualGraphics->getMaxBottomCoordOfCanvas() + marginBottomCoord;
+				bottom = aCamera.getMaxBottomCoord() + marginBottomCoord;
 			}
 			top -= (prevCoordVal - bottom);
 			
 			prevCoordVal = left;
 			if (this->stagePosition.horizontalAlignment == kLeftAligned) {
-				left = theVisualGraphics->getMaxLeftCoordOfCanvas() + minMarginLeftCoord;
+				left = aCamera.getMaxLeftCoord() + minMarginLeftCoord;
 			} else if (this->stagePosition.horizontalAlignment == kCenterAligned) {
-				left = theVisualGraphics->getMaxLeftCoordOfCanvas() + marginLeftCoord + (((theVisualGraphics->getCanvasCoordWidth() - marginLeftCoord) / 2.0) - (coordWidth / 2.0));
-				if ((minMarginLeftCoord > marginLeftCoord) && ((theVisualGraphics->getMaxLeftCoordOfCanvas() - left) < minMarginLeftCoord)) {
-					left = theVisualGraphics->getMaxLeftCoordOfCanvas() + minMarginLeftCoord;
+				left = aCamera.getMaxLeftCoord() + marginLeftCoord + (((size.width - marginLeftCoord) / 2.0) - (this->coordWidth / 2.0));
+				if ((minMarginLeftCoord > marginLeftCoord) && ((aCamera.getMaxLeftCoord() - left) < minMarginLeftCoord)) {
+					left = aCamera.getMaxLeftCoord() + minMarginLeftCoord;
 				}
 			} else if (this->stagePosition.horizontalAlignment == kRightAligned) {
-				left = theVisualGraphics->getMaxRightCoordOfCanvas() - coordWidth - marginRightCoord;
+				left = aCamera.getMaxRightCoord() - this->coordWidth - marginRightCoord;
 			}
 			right -= (prevCoordVal - left);
 			
 			// scale?
-			if (top > (theVisualGraphics->getMaxTopCoordOfCanvas() - minMarginTopCoord)) {
-				prevCoordVal = coordHeight;
-				coordHeight = theVisualGraphics->getCanvasCoordHeight() - minMarginTopCoord - minMarginBottomCoord;
+			if (top > (aCamera.getMaxTopCoord() - minMarginTopCoord)) {
+				prevCoordVal = this->coordHeight;
+				this->coordHeight = size.height - minMarginTopCoord - minMarginBottomCoord;
 				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-					coordWidth = coordWidth * (coordHeight / prevCoordVal);
-					if (this->stagePosition.horizontalAlignment == kLeftAligned) {
-						left = theVisualGraphics->getMaxLeftCoordOfCanvas() + marginLeftCoord;
-					} else if (this->stagePosition.horizontalAlignment == kCenterAligned) {
-						left = (theVisualGraphics->getMaxLeftCoordOfCanvas() + marginLeftCoord + (theVisualGraphics->getCanvasCoordWidth() / 2.0)) - (coordWidth / 2.0);
-						//left = theVisualGraphics->getMaxLeftCoordOfCanvas() + marginLeftCoord + (coordWidth / 2.0);
-					} else if (this->stagePosition.horizontalAlignment == kRightAligned) {
-						left = theVisualGraphics->getMaxRightCoordOfCanvas() - coordWidth - marginRightCoord;
+					if (prevCoordVal > 0.0) {
+						this->coordWidth = this->coordWidth * (this->coordHeight / prevCoordVal);
 					}
-					right = left + coordWidth;
+					if (this->stagePosition.horizontalAlignment == kLeftAligned) {
+						left = aCamera.getMaxLeftCoord() + marginLeftCoord;
+					} else if (this->stagePosition.horizontalAlignment == kCenterAligned) {
+						left = (aCamera.getMaxLeftCoord() + marginLeftCoord + (size.width / 2.0)) - (this->coordWidth / 2.0);
+						//left = aCamera.getMaxLeftCoord() + marginLeftCoord + (this->coordWidth / 2.0);
+					} else if (this->stagePosition.horizontalAlignment == kRightAligned) {
+						left = aCamera.getMaxRightCoord() - this->coordWidth - marginRightCoord;
+					}
+					right = left + this->coordWidth;
 				}
-				top = bottom + coordHeight;
+				top = bottom + this->coordHeight;
 			}
-			if (right < (theVisualGraphics->getMaxRightCoordOfCanvas() - minMarginRightCoord)) {
-				prevCoordVal = coordWidth;
-				//coordWidth = theVisualGraphics->getCanvasCoordWidth() - minMarginLeftCoord - minMarginRightCoord;
+			if (right < (aCamera.getMaxRightCoord() - minMarginRightCoord)) {
+				prevCoordVal = this->coordWidth;
+				//this->coordWidth = size.width - minMarginLeftCoord - minMarginRightCoord;
 				/*
 				if ((this->scalingBehaviour & kPreserveAspectRatio) == kPreserveAspectRatio) {
-					coordHeight = coordHeight * (coordWidth / prevCoordVal);
+					this->coordHeight = this->coordHeight * (this->coordWidth / prevCoordVal);
 					if (this->stagePosition.verticalAlignment == kTop) {
-						top = theVisualGraphics->getMaxTopCoordOfCanvas() - marginTopCoord;
+						top = aCamera.getMaxTopCoord() - marginTopCoord;
 					} else if (this->stagePosition.verticalAlignment == kMiddle) {
-						top = (theVisualGraphics->getMaxTopCoordOfCanvas() - marginTopCoord - (theVisualGraphics->getCanvasCoordHeight() / 2.0)) + (coordHeight / 2.0);
+						top = (aCamera.getMaxTopCoord() - marginTopCoord - (size.height / 2.0)) + (this->coordHeight / 2.0);
 					} else if (this->stagePosition.verticalAlignment == kBottom) {
-						top = theVisualGraphics->getMaxBottomCoordOfCanvas() + coordHeight + marginBottomCoord;
+						top = aCamera.getMaxBottomCoord() + this->coordHeight + marginBottomCoord;
 					}
-					bottom = top - coordHeight;
+					bottom = top - this->coordHeight;
 				}
 				*/
-				//left = theVisualGraphics->getMaxLeftCoordOfCanvas() + minMarginLeftCoord;
-				//right = left + coordWidth;
+				//left = aCamera.getMaxLeftCoord() + minMarginLeftCoord;
+				//right = left + this->coordWidth;
 			}
 		}
+	}
+	
+	//printf("hwtest coordWidth2b: %f, coordHeight2b: %f\n", this->coordWidth, this->coordHeight);
+	//printf("hwtest top2: %f, bottom2: %f, left2: %f, right2: %f\n", top, bottom, left, right);
+
+	this->topCoord = top;
+	this->bottomCoord = bottom;
+	this->leftCoord = left;
+	this->rightCoord = right;
+
+	if (this->stagePosition.depthAlignment == kFrontAligned) {
+		this->frontPosition = aCamera.getMaxNearPos();
+		this->frontPosition += 0.01;
+		this->frontPosition *= -1.0;
+		this->backPosition = this->frontPosition - this->unscaledCoordDepth;
+	} else if (this->stagePosition.depthAlignment == kDepthCenterAligned) {
+		/*
+		double zCoordAmount = aCamera.getMaxFarPos() - aCamera.getMaxNearPos();
+		double zCenter = aCamera.getMaxNearPos() + (zCoordAmount / 2.0);
+		this->frontPosition = zCenter - (this->coordDepth / 2.0);
+		this->backPosition = zCenter + (this->coordDepth / 2.0);
+		*/
+		
+		this->frontPosition = 0.0 + (this->unscaledCoordDepth / 2.0);
+		this->backPosition = 0.0 - (this->unscaledCoordDepth / 2.0);
+		//printf("hwtest: kDepthCenterAligned1 font: %f, back: %f\n", this->frontPosition, this->backPosition);
+	} else if (this->stagePosition.depthAlignment == kBackAligned) {
+		this->backPosition = aCamera.getMaxFarPos();
+		this->frontPosition = this->backPosition - this->unscaledCoordDepth;
+	}
+
+	this->coordWidth = this->rightCoord - this->leftCoord;
+	this->unscaledCoordWidth = this->coordWidth;
+	this->coordHeight = this->topCoord - this->bottomCoord;
+	this->unscaledCoordHeight = this->coordHeight;
+	
+	this->leftCoord += this->stagePosition.horizontalCoordOffset;
+	this->rightCoord += this->stagePosition.horizontalCoordOffset;
+	this->bottomCoord += this->stagePosition.verticalCoordOffset;
+	this->topCoord += this->stagePosition.verticalCoordOffset;
+	
+	//printf("hwtest coordWidth2z: %f, coordHeight2z: %f\n", this->coordWidth, this->coordHeight);
+	
+	//printf("hwtest top3: %f, bottom3: %f, left3: %f, right3: %f\n", this->topCoord, this->bottomCoord, this->leftCoord, this->rightCoord);
+
+	this->applyScaleFactor();
+	
+	//printf("hwtest top4: %f, bottom4: %f, left4: %f, right4: %f\n", this->topCoord, this->bottomCoord, this->leftCoord, this->rightCoord);
+	
+	this->hasLayout = true;
+	
+	this->updateVertices();
+	
+	//printf("hwtest top5: %f, bottom5: %f, left5: %f, right5: %f\n", this->topCoord, this->bottomCoord, this->leftCoord, this->rightCoord);
+	
+	//printf("hwtest coordWidth3: %f, coordHeight3: %f\n", this->coordWidth, this->coordHeight);
+	
+}
+
+
+void VisualStageBox::applyScaleFactor() {
+
+	double top = this->topCoord;
+	double left = this->leftCoord;
+	double bottom = this->bottomCoord;
+	double right = this->rightCoord;
+	double front = this->frontPosition;
+	double back = this->backPosition;
+	
+	if (this->stagePosition.horizontalAlignment == kLeftAligned) {
+		right = left + (this->unscaledCoordWidth * this->scaleFactor);
+	} else if (this->stagePosition.horizontalAlignment == kCenterAligned) {
+		double widthDelta = this->unscaledCoordWidth - (this->unscaledCoordWidth * this->scaleFactor);
+		widthDelta /= 2.0;
+		left = this->leftCoord + widthDelta;
+		right = this->rightCoord - widthDelta;
+		//printf("hwtest left: %f, right: %f\n", left, right);
+	} else if (this->stagePosition.horizontalAlignment == kRightAligned) {
+		left = right - (this->unscaledCoordWidth * this->scaleFactor);
+	}
+	
+	if (this->stagePosition.verticalAlignment == kTopAligned) {
+		bottom = top - (this->unscaledCoordHeight * this->scaleFactor);
+	} else if (this->stagePosition.verticalAlignment == kMiddleAligned) {
+		double heightDelta = this->unscaledCoordHeight - (this->unscaledCoordHeight * this->scaleFactor);
+		heightDelta /= 2.0;
+		bottom = this->bottomCoord + heightDelta;
+		top = this->topCoord - heightDelta;
+	} else if (this->stagePosition.verticalAlignment == kBottomAligned) {
+		top = bottom + (this->unscaledCoordHeight * this->scaleFactor);
+	}
+
+	if (this->stagePosition.depthAlignment == kFrontAligned) {
+		back = front - (this->unscaledCoordDepth * this->scaleFactor);
+	} else if (this->stagePosition.depthAlignment == kDepthCenterAligned) {
+		//printf("hwtest: kDepthCenterAligned1: front: %f, back: %f\n", front, back);
+		double value = this->unscaledCoordDepth / 2.0 * this->scaleFactor;
+		front = 0.0 + (value);
+		back = 0.0 - (value);
+		//printf("hwtest: kDepthCenterAligned2: front: %f, back: %f\n", front, back);
+	} else if (this->stagePosition.depthAlignment == kBackAligned) {
+		front = back + (this->unscaledCoordDepth * this->scaleFactor);
 	}
 
 	this->topCoord = top;
 	this->leftCoord = left;
 	this->bottomCoord = bottom;
 	this->rightCoord = right;
+	this->frontPosition = front;
+	this->backPosition = back;
+
+	this->coordWidth = this->rightCoord - this->leftCoord;
+	this->coordHeight = this->topCoord - this->bottomCoord;
+	this->coordDepth = this->backPosition - this->frontPosition;
 
 }
 
 
-ScalingBehaviour VisualStageBox::getScalingBehaviour() {
+ScalingBehaviour VisualStageBox::getScalingBehaviour() const {
 	return this->scalingBehaviour;
 }
 
 
-double VisualStageBox::getScaleFactor() {
+double VisualStageBox::getScaleFactor() const {
 	return this->scaleFactor;
 }
 
 
 double VisualStageBox::getCoordWidth() {
-	this->coordWidth = this->rightCoord - this->leftCoord;
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
 	return this->coordWidth;
 }
 
 
+double VisualStageBox::getUnscaledCoordWidth() {
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
+	return this->unscaledCoordWidth;
+}
+
+
 double VisualStageBox::getCoordHeight() {
-	this->coordHeight = this->topCoord - this->bottomCoord;
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
 	return this->coordHeight;
 }
 
 
+double VisualStageBox::getUnscaledCoordHeight() {
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
+	return this->unscaledCoordHeight;
+}
+
+
 double VisualStageBox::getCoordDepth() {
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
 	return this->coordDepth;
 }
 
 
-double VisualStageBox::getTopCoord() {
-	return this->topCoord * this->scaleFactor;
+double VisualStageBox::getUnscaledCoordDepth() {
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
+	return this->unscaledCoordDepth;
 }
 
 
-double VisualStageBox::getLeftCoord() {
-	return this->leftCoord * this->scaleFactor;
+double VisualStageBox::getTopCoord(const VisualItemIdentifier* const vertexChainName) {
+	double top = 0.0;
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
+	if (vertexChainName == NULL) {
+		top = this->topCoord;
+	} else {
+		VertexChain* vertexChain = this->getVertexChain(*vertexChainName);
+		if (vertexChain != NULL) {
+			for (VertexChainIterator chainIt = vertexChain->begin(); chainIt != vertexChain->end(); chainIt++) {
+				if ((*chainIt)->vertexPosition.coord.y > top) {
+					top = (*chainIt)->vertexPosition.coord.y;
+				}
+			}
+		}
+	}
+	return top;
 }
 
 
-double VisualStageBox::getBottomCoord() {
-	return this->bottomCoord * this->scaleFactor;
+double VisualStageBox::getLeftCoord(const VisualItemIdentifier* const vertexChainName) {
+	double left = 0.0;
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
+	if (vertexChainName == NULL) {
+		left = this->leftCoord;
+	} else {
+		VertexChain* vertexChain = this->getVertexChain(*vertexChainName);
+		if (vertexChain != NULL) {
+			for (VertexChainIterator chainIt = vertexChain->begin(); chainIt != vertexChain->end(); chainIt++) {
+				if ((*chainIt)->vertexPosition.coord.x < left) {
+					left = (*chainIt)->vertexPosition.coord.x;
+				}
+			}
+		}
+	}
+	return left;
 }
 
 
-double VisualStageBox::getRightCoord() {
-	return this->rightCoord * this->scaleFactor;
+double VisualStageBox::getBottomCoord(const VisualItemIdentifier* const vertexChainName) {
+	double bottom = 0.0;
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
+	if (vertexChainName == NULL) {
+		bottom = this->bottomCoord;
+	} else {
+		VertexChain* vertexChain = this->getVertexChain(*vertexChainName);
+		if (vertexChain != NULL) {
+			for (VertexChainIterator chainIt = vertexChain->begin(); chainIt != vertexChain->end(); chainIt++) {
+				if ((*chainIt)->vertexPosition.coord.y < bottom) {
+					bottom = (*chainIt)->vertexPosition.coord.x;
+				}
+			}
+		}
+	}
+	return bottom;
 }
 
 
-VisualStagePosition VisualStageBox::getVisualStagePosition() {
+double VisualStageBox::getRightCoord(const VisualItemIdentifier* const vertexChainName) {
+	double right = 0.0;
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
+	if (vertexChainName == NULL) {
+		right = this->rightCoord;
+	} else {
+		VertexChain* vertexChain = this->getVertexChain(*vertexChainName);
+		if (vertexChain != NULL) {
+			for (VertexChainIterator chainIt = vertexChain->begin(); chainIt != vertexChain->end(); chainIt++) {
+				if ((*chainIt)->vertexPosition.coord.x > right) {
+					right = (*chainIt)->vertexPosition.coord.x;
+				}
+			}
+		}
+	}
+	return right;
+}
+
+
+uint32 VisualStageBox::getContentPixelWidth() const {
+	return this->contentPixelWidth;
+}
+
+
+uint32 VisualStageBox::getContentPixelHeight() const {
+	return this->contentPixelHeight;
+}
+
+
+VisualStagePosition VisualStageBox::getVisualStagePosition() const {
 	return this->stagePosition;
 }
 
+
+void VisualStageBox::initializeVertexChain(const VisualItemIdentifier& vertexChainName) {
+	this->vertexChainMap[vertexChainName] = new VertexChain;
+}
+		
+
+void VisualStageBox::addVertexToChain(const VisualItemIdentifier& vertexChainName, VisualVertex* aVertex) {
+	this->hasLayout = false;
+	this->vertexChainMap[vertexChainName]->push_back(aVertex);
+}
+
+
+VertexChain* VisualStageBox::getVertexChain(const VisualItemIdentifier& vertexChainName) {
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
+	VertexChain* vertexChainRef = NULL;
+	ConstVertexChainMapIterator mapIt = this->vertexChainMap.find(vertexChainName);
+	if (mapIt != this->vertexChainMap.end()) {
+		vertexChainRef = mapIt->second;
+	} else {
+		char errLog[64];
+		sprintf(errLog, "unable to find vertex chain to return in file: %s (line: %d) [%s])", __FILE__, __LINE__, __FUNCTION__);
+		writeLog(errLog);
+	}
+	return vertexChainRef;
+}
+
+
+VertexChain* VisualStageBox::getVertexChain(size_t vertexIdx) {
+	if (this->hasLayout == false) {
+		this->calcCoords(this->assetRef->getCamera());
+	}
+	if (vertexIdx > this->vertexChainMap.size() - 1) return NULL;
+	size_t count = 0;
+	for (VertexChainMapIterator mapIt = this->vertexChainMap.begin(); mapIt != this->vertexChainMap.end(); mapIt++) {
+		if (count == vertexIdx) {
+			return mapIt->second;
+		}
+		count++;
+	}
+	return NULL;
+}
+
+
+const VisualItemIdentifier& VisualStageBox::getVertexChainIdentifier(size_t vertexIdx) {
+	if (vertexIdx > this->vertexChainMap.size() - 1) return this->notFoundIdentifier;
+	size_t count = 0;
+	for (VertexChainMapIterator mapIt = this->vertexChainMap.begin(); mapIt != this->vertexChainMap.end(); mapIt++) {
+		if (count == vertexIdx) {
+			return mapIt->first;
+		}
+		count++;
+	}
+	return this->notFoundIdentifier;
+}
+
+
+size_t VisualStageBox::getNumberOfVertexChains(void) const {
+	return this->vertexChainMap.size();
+}
+
+
+bool VisualStageBox::hasVertexChain(const VisualItemIdentifier& vertexChainName) const {
+	bool result = false;
+	ConstVertexChainMapIterator mapIt = this->vertexChainMap.find(vertexChainName);
+	if (mapIt != this->vertexChainMap.end()) {
+		result = true;
+	}
+	return result;
+}
+
+
+void VisualStageBox::removeAllVertexChains() {
+	for (VertexChainMapIterator mapIt = this->vertexChainMap.begin(); mapIt != this->vertexChainMap.end(); mapIt++) {
+		for (VertexChainIterator chainIt = mapIt->second->begin(); chainIt != mapIt->second->end(); chainIt++) {
+			delete *chainIt;
+			*chainIt = NULL;
+		}
+		mapIt->second->clear();
+	}
+	this->vertexChainMap.clear();
+}
+
+
+void VisualStageBox::removeVertexChain(const VisualItemIdentifier& vertexChainName) {
+	VertexChainMapIterator mapIt = this->vertexChainMap.find(vertexChainName);
+	if (mapIt != this->vertexChainMap.end()) {
+		for (VertexChainIterator chainIt = mapIt->second->begin(); chainIt != mapIt->second->end(); chainIt++) {
+			delete *chainIt;
+			*chainIt = NULL;
+		}
+		mapIt->second->clear();
+		this->vertexChainMap.erase(mapIt);
+	}
+}
+
+
+double VisualStageBox::getMinSRelTexCoord() {
+	double minSRelCoord = 1.0;
+	size_t numberOfVertexChains = this->getNumberOfVertexChains();
+	for (size_t i = 0; i < numberOfVertexChains; i++) {
+		VertexChain* chain = this->getVertexChain(i);
+		for (VertexChainConstIterator chain_it = chain->begin(); chain_it != chain->end(); chain_it++) {
+			if ((*chain_it)->texCoordPosition.relCoord.s < minSRelCoord) {
+				minSRelCoord = (*chain_it)->texCoordPosition.relCoord.s;
+			}
+		}
+	}
+	return minSRelCoord;
+}
+
+
+double VisualStageBox::getMinTRelTexCoord() {
+	double minTRelCoord = 1.0;
+	size_t numberOfVertexChains = this->getNumberOfVertexChains();
+	for (size_t i = 0; i < numberOfVertexChains; i++) {
+		VertexChain* chain = this->getVertexChain(i);
+		for (VertexChainConstIterator chain_it = chain->begin(); chain_it != chain->end(); chain_it++) {
+			if ((*chain_it)->texCoordPosition.relCoord.t < minTRelCoord) {
+				minTRelCoord = (*chain_it)->texCoordPosition.relCoord.t;
+			}
+		}
+	}
+	return minTRelCoord;
+}
+
+
+double VisualStageBox::getMaxSRelTexCoord() {
+	double maxSRelCoord = 0.0;
+	size_t numberOfVertexChains = this->getNumberOfVertexChains();
+	for (size_t i = 0; i < numberOfVertexChains; i++) {
+		VertexChain* chain = this->getVertexChain(i);
+		for (VertexChainConstIterator chain_it = chain->begin(); chain_it != chain->end(); chain_it++) {
+			if ((*chain_it)->texCoordPosition.relCoord.s > maxSRelCoord) {
+				maxSRelCoord = (*chain_it)->texCoordPosition.relCoord.s;
+			}
+		}
+	}
+	return maxSRelCoord;
+}
+
+
+double VisualStageBox::getMaxTRelTexCoord() {
+	double maxTRelCoord = 0.0;
+	size_t numberOfVertexChains = this->getNumberOfVertexChains();
+	for (size_t i = 0; i < numberOfVertexChains; i++) {
+		VertexChain* chain = this->getVertexChain(i);
+		for (VertexChainConstIterator chain_it = chain->begin(); chain_it != chain->end(); chain_it++) {
+			if ((*chain_it)->texCoordPosition.relCoord.t > maxTRelCoord) {
+				maxTRelCoord = (*chain_it)->texCoordPosition.relCoord.t;
+			}
+		}
+	}
+	return maxTRelCoord;
+}
+
+
+void VisualStageBox::setOpacityValue(double anOpacityValue) {
+	for (ConstVertexChainMapIterator mapIt = this->vertexChainMap.begin(); mapIt != this->vertexChainMap.end(); ++mapIt) {
+		for (ConstVertexChainIterator chainIt = mapIt->second->begin(); chainIt != mapIt->second->end(); chainIt++) {
+			(*chainIt)->vertexColor.r = (*chainIt)->vertexColor.red * anOpacityValue;
+			(*chainIt)->vertexColor.g = (*chainIt)->vertexColor.green * anOpacityValue;
+			(*chainIt)->vertexColor.b = (*chainIt)->vertexColor.blue * anOpacityValue;
+			(*chainIt)->vertexColor.a = (*chainIt)->vertexColor.alpha * anOpacityValue;
+		}
+	}
+}
+
+
+VisualVertex* VisualStageBox::createVertex(double xPos, double yPos, double zPos, double aTexCoordSPos, double aTexCoordTPos, VertexColor anRGBAColor) {
+	
+	double xCoordPos = this->getLeftCoord() + (this->getCoordWidth() * xPos);
+	double yCoordPos = this->getBottomCoord() + (this->getCoordHeight() * yPos);
+	
+	double zCoordDistance = this->getBackPosition() - this->getFrontPosition();
+	double zCoordPos = zCoordDistance * zPos;
+	//printf("back: %f, front: %f\n", this->getBackPosition(), this->getFrontPosition()); // hwtest
+	zCoordPos += this->getFrontPosition();
+
+	TexCoord relTexCoord;
+	relTexCoord.s = aTexCoordSPos;
+	relTexCoord.t = aTexCoordTPos;
+
+	const VisualImage* const anImage = this->assetRef->getImage();
+	if (anImage != NULL) {
+		aTexCoordSPos = anImage->getLogicalWidth() * aTexCoordSPos;
+		aTexCoordTPos = anImage->getLogicalHeight() * aTexCoordTPos;
+	}
+	
+	Coord coord;
+	Coord relCoord;
+	coord.x = xCoordPos;
+	coord.y = yCoordPos;
+	coord.z = zCoordPos;
+	relCoord.x = xPos;
+	relCoord.y = yPos;
+	relCoord.z = zPos;
+
+	TexCoord texCoord;
+	texCoord.s = aTexCoordSPos;
+	texCoord.t = aTexCoordTPos;
+
+	VisualVertex* aVertex = new VisualVertex(coord, relCoord, texCoord, relTexCoord, anRGBAColor);
+	return aVertex;
+}
+
+
+VisualVertex* VisualStageBox::createVertex(double xPos, double yPos, double zPos, VertexColor anRGBAColor) {
+	
+	double xCoordPos = this->getLeftCoord() + (this->getCoordWidth() * xPos);
+	double yCoordPos = this->getBottomCoord() + (this->getCoordHeight() * yPos);
+	
+	double zCoordDistance = this->getBackPosition() - this->getFrontPosition();	
+	double zCoordPos = zCoordDistance * zPos;
+	zCoordPos += this->getFrontPosition();
+
+	Coord coord;
+	Coord relCoord;
+	coord.x = xCoordPos;
+	coord.y = yCoordPos;
+	coord.z = zCoordPos;
+	relCoord.x = xPos;
+	relCoord.y = yPos;
+	relCoord.z = zPos;
+
+	VisualVertex* aVertex = new VisualVertex(coord, relCoord, anRGBAColor);
+	return aVertex;
+}
+
+
+void VisualStageBox::setDebugMode(bool requestedDebugMode) {
+	this->debugMode = requestedDebugMode;
+}
+
+
+bool VisualStageBox::getDebugMode() {
+	return this->debugMode;
+}
+
+
+void VisualStageBox::updateVertices() {
+
+	double xOffset = this->getUnscaledCoordWidth() - this->getCoordWidth();
+	xOffset *= 0.5;
+	double yOffset = this->getUnscaledCoordHeight() - this->getCoordHeight();
+	yOffset *= 0.5;
+
+	double zCoordDistance = this->getBackPosition() - this->getFrontPosition();
+	for (VertexChainMapIterator mapIt = this->vertexChainMap.begin(); mapIt != this->vertexChainMap.end(); mapIt++) {
+		for (VertexChainIterator chainIt = mapIt->second->begin(); chainIt != mapIt->second->end(); chainIt++) {
+			if ((*chainIt)->vertexPosition.relCoord.x != -1.0) {
+				(*chainIt)->vertexPosition.coord.x = this->getLeftCoord() + (this->getCoordWidth() * (*chainIt)->vertexPosition.relCoord.x);
+				if ((*chainIt)->vertexPosition.relCoord.x > 0.5) {
+					//(*chainIt)->vertexPosition.coord.x -= xOffset;
+				} else {
+					//printf("hwtest x1: %f\n", (*chainIt)->vertexPosition.coord.x);
+					//(*chainIt)->vertexPosition.coord.x += xOffset;
+					//printf("hwtest x2: %f\n", (*chainIt)->vertexPosition.coord.x);
+				}
+			} else {
+				//(*chainIt)->vertexPosition.coord.x = this->getRightCoord();
+				//printf("coord.x == %f\n", (*chainIt)->vertexPosition.coord.x); // hwtest
+			}
+			if ((*chainIt)->vertexPosition.relCoord.y != -1.0) {
+				(*chainIt)->vertexPosition.coord.y = this->getBottomCoord() + (this->getCoordHeight() * (*chainIt)->vertexPosition.relCoord.y);
+				if ((*chainIt)->vertexPosition.relCoord.y > 0.5) {
+					//(*chainIt)->vertexPosition.coord.y -= yOffset;
+				} else {
+					//(*chainIt)->vertexPosition.coord.y += yOffset;
+				}
+			} else {
+				//(*chainIt)->vertexPosition.coord.y = this->getTopCoord();
+				//printf("coord.y == %f\n", (*chainIt)->vertexPosition.coord.y); // hwtest
+			}
+			if ((*chainIt)->vertexPosition.relCoord.z != -1.0) {
+				(*chainIt)->vertexPosition.coord.z = zCoordDistance * (*chainIt)->vertexPosition.relCoord.z;
+				(*chainIt)->vertexPosition.coord.z += this->getFrontPosition();
+			} else {
+				//(*chainIt)->vertexPosition.coord.z = this->getFrontPosition();
+			}
+			if ((*chainIt)->texCoordPosition.relCoord.s != -1.0) {
+				const VisualImage* const anImage = this->assetRef->getImage();
+				if (anImage != NULL) {
+					//double before = (*chainIt)->texCoordPosition.coord.s;
+					(*chainIt)->texCoordPosition.coord.s = anImage->getLogicalWidth() * (*chainIt)->texCoordPosition.relCoord.s;
+					//printf("before: %f, danach: %f\n", before, (*chainIt)->texCoordPosition.coord.s);
+				}
+			}
+			if ((*chainIt)->texCoordPosition.relCoord.t != -1.0) {
+				const VisualImage* const anImage = this->assetRef->getImage();
+				if (anImage != NULL) {
+					(*chainIt)->texCoordPosition.coord.t = anImage->getLogicalHeight() * (*chainIt)->texCoordPosition.relCoord.t;
+				}
+			}
+		}
+	}
+}
+
+
+VisualStagePosition VisualStageBox::tweenVisualStagePosition(const VisualStagePosition& startPosition, const VisualStagePosition& stopPosition, double currPosition, const VisualStageBox& currentAssetBox) {
+	VisualStagePosition tweenedPosition(startPosition);
+	VisualStageBox startBox(currentAssetBox);
+	startBox.setVisualStagePosition(startPosition);
+	VisualStageBox stopBox(currentAssetBox);
+	stopBox.setVisualStagePosition(stopPosition);
+	double distanceX = stopBox.getRightCoord() - startBox.getRightCoord();
+	double distanceY = stopBox.getBottomCoord() - startBox.getBottomCoord();
+	tweenedPosition.horizontalCoordOffset += (distanceX * currPosition);
+	tweenedPosition.verticalCoordOffset += (distanceY * currPosition);
+	return tweenedPosition;
+}

@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualAppleScript.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,10 +36,6 @@ freely, subject to the following restrictions:
 #include "VisualAppleScript.h"
 #include "VisualFile.h"
 #include "VisualString.h"
-
-#if TARGET_OS_MAC
-#include <Carbon/Carbon.h>
-#endif
 
 
 using namespace VizKit;

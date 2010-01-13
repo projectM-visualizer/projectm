@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualStagePosition.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -34,7 +34,6 @@ freely, subject to the following restrictions:
  ***************************************************************************/
 
 #include "VisualStagePosition.h"
-
 
 
 using namespace VizKit;
@@ -63,40 +62,85 @@ VisualStagePosition& VisualStagePosition::operator=(const VisualStagePosition& o
 }
 
 
+bool VisualStagePosition::operator==(const VisualStagePosition& other) const {
+	if (this->horizontalAlignment != other.horizontalAlignment) return false;
+	if (this->verticalAlignment != other.verticalAlignment) return false;
+	if (this->depthAlignment != other.depthAlignment) return false;
+	if (this->marginTop != other.marginTop) return false;
+	if (this->marginTop != other.marginTop) return false;
+	if (this->marginLeft != other.marginLeft) return false;
+	if (this->marginBottom != other.marginBottom) return false;
+	if (this->marginRight != other.marginRight) return false;
+	if (this->minMarginTop != other.minMarginTop) return false;
+	if (this->minMarginLeft != other.minMarginLeft) return false;
+	if (this->minMarginBottom != other.minMarginBottom) return false;
+	if (this->minMarginRight != other.minMarginRight) return false;
+	if (this->minWidth != other.minWidth) return false;
+	if (this->maxWidth != other.maxWidth) return false;
+	if (this->minHeight != other.minHeight) return false;
+	if (this->maxHeight != other.maxHeight) return false;
+	if (this->marginTopUnit != other.marginTopUnit) return false;
+	if (this->marginLeftUnit != other.marginLeftUnit) return false;
+	if (this->marginRightUnit != other.marginRightUnit) return false;
+	if (this->marginBottomUnit != other.marginBottomUnit) return false;
+	if (this->minMarginTopUnit != other.minMarginTopUnit) return false;
+	if (this->minMarginLeftUnit != other.minMarginLeftUnit) return false;
+	if (this->minMarginRightUnit != other.minMarginRightUnit) return false;
+	if (this->minMarginBottomUnit != other.minMarginBottomUnit) return false;
+	if (this->minWidthUnit != other.minWidthUnit) return false;
+	if (this->maxWidthUnit != other.maxWidthUnit) return false;
+	if (this->minHeightUnit != other.minHeightUnit) return false;
+	if (this->maxHeightUnit != other.maxHeightUnit) return false;
+	if (this->horizontalCoordOffset != other.horizontalCoordOffset) return false;
+	if (this->verticalCoordOffset != other.verticalCoordOffset) return false;
+
+	return true;
+}
+
+
+bool VisualStagePosition::operator!=(const VisualStagePosition& other) {
+	return !(*this == other);
+}
+
+
 void VisualStagePosition::copy(const VisualStagePosition& other) {
-	horizontalAlignment = other.horizontalAlignment;
-	verticalAlignment = other.verticalAlignment;
-	depthAlignment = other.depthAlignment;
 	
-	marginTop = other.marginTop;
-	marginLeft = other.marginLeft;
-	marginBottom = other.marginBottom;
-	marginRight = other.marginRight;
+	this->horizontalAlignment = other.horizontalAlignment;
+	this->verticalAlignment = other.verticalAlignment;
+	this->depthAlignment = other.depthAlignment;
+	
+	this->marginTop = other.marginTop;
+	this->marginLeft = other.marginLeft;
+	this->marginBottom = other.marginBottom;
+	this->marginRight = other.marginRight;
 
-	minMarginTop = other.minMarginTop;
-	minMarginLeft = other.minMarginLeft;
-	minMarginBottom = other.minMarginBottom;
-	minMarginRight = other.minMarginRight;
+	this->minMarginTop = other.minMarginTop;
+	this->minMarginLeft = other.minMarginLeft;
+	this->minMarginBottom = other.minMarginBottom;
+	this->minMarginRight = other.minMarginRight;
 	
-	minWidth = other.minWidth;
-	maxWidth = other.maxWidth;
-	minHeight = other.minHeight;
-	maxHeight = other.maxHeight;
+	this->minWidth = other.minWidth;
+	this->maxWidth = other.maxWidth;
+	this->minHeight = other.minHeight;
+	this->maxHeight = other.maxHeight;
 	
-	marginTopUnit = other.marginTopUnit;
-	marginLeftUnit = other.marginLeftUnit;
-	marginRightUnit = other.marginRightUnit;
-	marginBottomUnit = other.marginBottomUnit;
+	this->marginTopUnit = other.marginTopUnit;
+	this->marginLeftUnit = other.marginLeftUnit;
+	this->marginRightUnit = other.marginRightUnit;
+	this->marginBottomUnit = other.marginBottomUnit;
 
-	minMarginTopUnit = other.minMarginTopUnit;
-	minMarginLeftUnit = other.minMarginLeftUnit;
-	minMarginRightUnit = other.minMarginRightUnit;
-	minMarginBottomUnit = other.minMarginBottomUnit;
+	this->minMarginTopUnit = other.minMarginTopUnit;
+	this->minMarginLeftUnit = other.minMarginLeftUnit;
+	this->minMarginRightUnit = other.minMarginRightUnit;
+	this->minMarginBottomUnit = other.minMarginBottomUnit;
 	
-	minWidthUnit = other.minWidthUnit;
-	maxWidthUnit = other.maxWidthUnit;
-	minHeightUnit = other.minHeightUnit;
-	maxHeightUnit = other.maxHeightUnit;
+	this->minWidthUnit = other.minWidthUnit;
+	this->maxWidthUnit = other.maxWidthUnit;
+	this->minHeightUnit = other.minHeightUnit;
+	this->maxHeightUnit = other.maxHeightUnit;
+	
+	this->horizontalCoordOffset = other.horizontalCoordOffset;
+	this->verticalCoordOffset = other.verticalCoordOffset;
 }
 
 
@@ -104,7 +148,7 @@ void VisualStagePosition::reset() {
 
 	this->horizontalAlignment = kCenterAligned;
 	this->verticalAlignment = kMiddleAligned;
-	this->depthAlignment = kDepthCenterAligned;
+	this->depthAlignment = kFrontAligned;
 	
 	this->marginTop = 0.0;
 	this->marginLeft = 0.0;
@@ -135,5 +179,8 @@ void VisualStagePosition::reset() {
 	this->maxWidthUnit = kPixel;
 	this->minHeightUnit = kPixel;
 	this->maxHeightUnit = kPixel;
+	
+	this->horizontalCoordOffset = 0.0;
+	this->verticalCoordOffset = 0.0;
 	
 }

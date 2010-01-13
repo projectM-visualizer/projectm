@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualTimeline.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,39 +36,24 @@ freely, subject to the following restrictions:
 #ifndef VisualTimeline_h
 #define VisualTimeline_h
 
-#include "VisualInterpolation.h"
 
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualTypes.h"
+#include "VisualAnimationTypes.h"
 
 
 namespace VizKit {
 
 	class VisualItemIdentifier; // Forward declaration (to avoid include of header file).
+	class VisualInterpolation; // Forward declaration (to avoid include of header file).
 
-	/**
-	 * The type of repetition.
-	 */
+	/** Possible return values of the update() call. */
 	typedef enum {
-		kRepeatFromStart = 0, /**< After the duration of the timeline has been reached, the timeline starts anew at the start.\ The timeline is always processed in forward direction. */
-		kRepeatMirrored /**< After the duration of the timeline has been reached, the timeline is processed in backward direction.\ The moving direction toggles in mirrored loop. */
-	} RepeatMode;	
-
-	/**
-	 * The internal type of direction.
-	 */
-	typedef enum {
-		kForward = 0, /**< The timeline is processed in forward direction. */
-		kBackward /**< The timeline is processed in backward direction. */
-	} MovingDirection;
-
-	/** Callback function that is called each time when elapsed time exceeds duration time. */
-	typedef void (*VisualTimelineElapsedTimeDidExceedDurationCallback)(void* userData);
+		kTimelineUpdateOK, /**< No error, no special state. */
+		kElapsedTimeDidExceedDuration, /**< The elapsed time exceeded the set duration time. */
+		kStopValueHit, /**< The set stop value is hit or crossed (depending on the current move direction). */
+		kTimelineIsStopped, /**< The VisualTimeline is stopped. */
+		kNoDurationTime /**< The amount of the duration time is 0. */
+	} TimelineUpdateResult;
 
 	/**
 	 * Time synchronized interpolation between values.
@@ -80,8 +65,9 @@ namespace VizKit {
 
 		/**
 		 * The constructor.
+		 * @param aDebugMode If true, the timeline is in debug mode.
 		 */
-		VisualTimeline();
+		VisualTimeline(bool aDebugMode = false);
 
 		/**
 		 * The destructor.
@@ -107,34 +93,41 @@ namespace VizKit {
 		void setStartValue(double aStartValue);
 
 		/**
-		 * Returns the start value of the timeline.
-		 * @return The start value of the timeline.
+		 * Sets the stop value of the timeline.
+		 * @param aStopValue A stop value.
 		 */
-		double getStartValue(void);
+		void setStopValue(double aStopValue);
 
 		/**
-		 * Sets the end value of the timeline.
-		 * @param anEndValue An end value.
+		 * Returns the minimum value of the timeline.
+		 * @return The minimum value of the timeline.
 		 */
-		void setEndValue(double anEndValue);
+		double getMinValue(void) const;
 
 		/**
-		 * Returns the end value of the timeline.
-		 * @return The end value of the timeline.
+		 * Returns the maximum value of the timeline.
+		 * @return The maximum value of the timeline.
 		 */
-		double getEndValue(void);
+		double getMaxValue(void) const;
+
+		/**
+		 * Returns the distance of the start and stop values of the timeline.
+		 * @return The distance of the start and stop values of the timeline.
+		 * @remarks The distance is never a positive value.
+		 */
+		double getDistance(void) const;
 
 		/**
 		 * Sets the duration of the timeline.
 		 * @param numberOfMilliseconds The number of milliseconds the timeline spans.
 		 */
-		void setDurationInMilliseconds(UInt32 numberOfMilliseconds);
+		void setDurationInMilliseconds(uint32 numberOfMilliseconds);
 
 		/**
 		 * Returns the duration of the timeline.
 		 * @return The duration of the timeline.
 		 */
-		UInt32 getDurationInMilliseconds(void);
+		uint32 getDurationInMilliseconds(void) const;
 
 		/**
 		 * Sets the repeat mode of the timeline.
@@ -146,32 +139,38 @@ namespace VizKit {
 		 * Returns the current repeat mode of the timeline.
 		 * @return The current repeat mode of the timeline.
 		 */
-		RepeatMode getRepeatMode(void);
+		RepeatMode getRepeatMode(void) const;
 
 		/**
 		 * Sets the current value of the timeline.
-		 * @param newValue The value to which the timeline is supposed to jump.
-		 * @remarks The value of the timeline can be set from the outside (e.g.\ in case it is created new and should start with a established value).\ Normally only the start and end values are set and the client asks for the current value.
+		 * @param newCurrValue The value to which the timeline is supposed to jump.
+		 * @return True if the new current value was outside of current min and max value range (and distance and duration were adjusted because of that).
+		 * @remarks The value of the timeline can be set from the outside (e.g. in case it is created new and should start with a established value).
 		 */
-		void setCurrentValue(double newValue);
+		bool setCurrentValue(double newCurrValue);
 
 		/**
 		 * Returns the current value of the timeline.
 		 * @return The current value of the timeline.
 		 */
-		double getCurrentValue(void);
+		double getCurrentValue(void) const;
 
 		/**
-		 * Resets the timeline.\ The timeline starts anew at start.
+		 * Updates the current value of the timeline.
+		 * @return The result of the update operation expressed as enum value.
+		 * @remarks Called on update of the animation.
+		 */
+		TimelineUpdateResult update(void);
+
+		/**
+		 * Resets the timeline. The timeline starts anew at start.
 		 */
 		void reset(void);
 
 		/**
 		 * Starts the timeline.
-		 * @param aCallbackFunction A callback function that should be called each time when elapsed time exceeds duration time.
-		 * @param someUserData Additional data (e.g.\ pointer to instance variable of initialized class).
 		 */
-		void start(VisualTimelineElapsedTimeDidExceedDurationCallback aCallbackFunction = NULL, void* someUserData = NULL);
+		void start(void);
 
 		/**
 		 * Stops the timeline.
@@ -190,24 +189,29 @@ namespace VizKit {
 		void setInterpolationType(InterpolationType anInterpolationType);
 
 		/**
-		 * Sets the running direction of the timeline.
-		 * @param direction The requested running direction of the timeline.
+		 * Returns the moving direction (running direction) of the timeline.
+		 * @return The currently moving direction (running direction) of the timeline.
 		 */	
-		void setMovingDirection(MovingDirection direction);
+		MovingDirection getMovingDirection(void) const;
 
 		/**
-		 * Returns the running direction of the timeline.
-		 * @return The currently running direction of the timeline.
-		 */	
-		MovingDirection getMovingDirection(void);
+		 * Toggles the current moving direction of the timeline.
+		 */
+		void toggleMovingDirection(void);
 
 		/**
-		 * Sets the debug mode of the timeline object.
-		 * @param requestedDebugMode True if debug mode should be turned on, false if debug mode should be turned off.
-		 * @remarks Can be used to instrument custom ad hoc debugging.
-		 */	
+		 * Sets the debug mode.
+		 * @param requestedDebugMode The debug mode. True turns debug mode on, false turns it off.
+		 */
 		void setDebugMode(bool requestedDebugMode);
-			
+
+		/**
+		 * Static helper function that converts a TimelineUpdateResult to the string. Possibly useful for debugging or tracing purposes.
+		 * @param aResult A timelineUpdateResult.
+		 * @param outString The character string value of the TimelineUpdateResult enum value.
+		 */
+		static void convertTimelineUpdateResultToString(const TimelineUpdateResult aResult, char* outString);
+
 	private:
 	
 		/**
@@ -216,11 +220,14 @@ namespace VizKit {
 		 */
 		void copy(const VisualTimeline& other);
 
-		/** Call callback function that is called each time when elapsed time exceeds duration time. */
-		void elapsedTimeDidExceedDuration(void);
+		uint32 durationInMilliseconds; /**< The duration of the timeline in milliseconds. */
 
-		UInt32 durationInMilliseconds; /**< The duration of the timeline in milliseconds. */
+		double minValue; /**< The minimum value. */
 		
+		double maxValue; /**< The maximum value. */
+		
+		double distance; /**< The calculated distance between start and stop value. */
+
 		RepeatMode repeatMode; /**< The repeat mode of the timeline. */
 		
 		VisualItemIdentifier* durationIdentifier; /**< The internal identifier of the timeline. */
@@ -229,9 +236,9 @@ namespace VizKit {
 		
 		VisualInterpolation* visualInterpolation; /**< The interpolation model. */
 		
-		UInt32 elapsedMilliseconds; /**< The elapsed milliseconds. */
+		uint32 elapsedMilliseconds; /**< The elapsed milliseconds. */
 		
-		UInt32 offsetMilliseconds; /**< Internally used offset in milliseconds. */
+		uint32 offsetMilliseconds; /**< Internally used offset in milliseconds. */
 		
 		double currentValue; /**< The current value as it has been evaluated the last time. */
 		
@@ -239,11 +246,6 @@ namespace VizKit {
 		
 		bool debugMode; /**< True if in debug mode, false otherwise. */
 
-		/** Pointer to callback function that is called each time when elapsed time exceeds duration time. */
-		VisualTimelineElapsedTimeDidExceedDurationCallback elapsedTimeGreaterThanDurationCallback;
-
-		/** Internally stored pointer to provided user data (e.g.\ pointer to instance variable of initialized class). */
-		void* userData;
 	};
 	
 

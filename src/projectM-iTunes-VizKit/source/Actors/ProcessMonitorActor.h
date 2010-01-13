@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: ProcessMonitorActor.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,18 +36,12 @@ freely, subject to the following restrictions:
 #ifndef ProcessMonitorActor_h
 #define ProcessMonitorActor_h
 
+
+#include "VisualTypes.h"
 #include "VisualActor.h"
 
 #include <string>
 #include <map>
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
 
 
 namespace VizKit {
@@ -75,32 +69,27 @@ namespace VizKit {
 		~ProcessMonitorActor(void);
 
 		/**
-		 * Prepares the show of the process monitor.
-		 * @param visualPlayerState Read-only access to the VisualPlayerState.
+		 * Initialization.
 		 */
-		virtual void prepareShow(const VisualPlayerState& visualPlayerState);
-
+		virtual void init(void);
+		
 		/**
 		 * Performs the show of the process monitor.
+		 * @param visualPlayerState Read-only access to the VisualPlayerState.
 		 */
-		virtual void show();
-
-		/**
-		 * Finishes the show of the process monitor.
-		 */
-		virtual void finishShow();
+		virtual void show(const VisualPlayerState& visualPlayerState);
 
 		/**
 		 * The actor receives a notification about an event that occured.
 		 * @param aNotification The notification passed in.
 		 */	
-		void handleNotification(const VisualNotification& aNotification);
+		void handleNotification(VisualNotification& aNotification);
 
 		/**
 		 * Sets the state of the process monitor actor.
 		 * @param aVisualActorState The state of the process monitor actor.
 		 */
-		void setState(const VisualActorState aVisualActorState);
+		void setState(VisualActorState aVisualActorState);
 		
 		/**
 		 * The processMonitorInfoMap is registered.
@@ -129,10 +118,10 @@ namespace VizKit {
 		bool showAudioInfoBool;
 		
 		/** The elapsed time of the current audio track in milliseconds. */
-		UInt32 elapsedAudioTime;
+		uint32 elapsedAudioTime;
 		
 		/** The remaining time of the current audio track in milliseconds. */
-		UInt32 remainingAudioTime;
+		uint32 remainingAudioTime;
 		
 	};
 

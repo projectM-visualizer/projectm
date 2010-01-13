@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualActorState.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -37,13 +37,7 @@ freely, subject to the following restrictions:
 #define VisualActorState_h
 
 
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualTypes.h"
 
 
 namespace VizKit {
@@ -52,14 +46,14 @@ namespace VizKit {
 	 * The VisualActorState defines the possible state of the VisualActor.
 	 */
 	typedef enum {
-		kVisActUndefinedState = 0, /**< Undefined state that e.g.\ can be used to check against previous state with initialization state. */
-		kVisActOff = 1, /**< The actor is turned off.\ The actor is called during the show nevertheless.\ The actor can decide if it wants to display anything. */
+		kVisActUndefinedState = 0, /**< Undefined state that e.g. can be used to check against previous state with initialization state. */
+		kVisActOff = 1, /**< The actor is turned off. The actor is called during the show nevertheless. The actor can decide if it wants to display anything. */
 		kVisActOn = 2, /**< The actor is turned on. */
-		kVisActNoShow = 3, /**< The actor is turned off.\ The actor is not called during the show at all.\ Therefore the actor can not be turned on easily. */
+		kVisActNoShow = 3 /**< The actor is turned off. The actor is not called during the show at all. Therefore the actor can not be turned on by ensemble. */
 	} VisualActorState;
 
 	/**
-	 * Constants VisualActorState into char string.\ Possibly useful for debugging or tracing purposes.
+	 * Converts VisualActorState into char string. Possibly useful for debugging or tracing purposes.
 	 * @param aVisualActorState The state to convert.
 	 * @param outString The char string that can be printed and used for debugging output.
 	 */

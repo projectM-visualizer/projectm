@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualConfigurationDialog.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -55,7 +55,7 @@ void VisualConfigurationDialog::show() {
 	}
 #endif
 #if TARGET_OS_MAC
-	OptionsDialog* theOptionsDialog = OptionsDialog::getOptionsDialog();
+	OptionsDialog* theOptionsDialog = OptionsDialog::getInstance();
 	if (theOptionsDialog != NULL) {
 		theOptionsDialog->show();
 	}

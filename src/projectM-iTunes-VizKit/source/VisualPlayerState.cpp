@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualPlayerState.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,7 +36,7 @@ freely, subject to the following restrictions:
 #include "VisualPlayerState.h"
 #include "VisualTiming.h"
 #include "VisualAudioLab.h"
-#include "VisualDataStore.h"
+#include "VisualPreferences.h"
 #include "VisualConfiguration.h"
 #include "VisualErrorHandling.h"
 
@@ -100,7 +100,7 @@ PlayerShowMode VisualPlayerState::getPlayerShowMode() const {
 }
 
 
-UInt32 VisualPlayerState::getElapsedAudioTime() const {
+uint32 VisualPlayerState::getElapsedAudioTime() const {
 	return this->trackPlayPositionInMS;
 }
 
@@ -111,9 +111,9 @@ bool VisualPlayerState::remainingAudioTimeIsKnown() const {
 }
 
 
-UInt32 VisualPlayerState::getRemainingAudioTime() const {
+uint32 VisualPlayerState::getRemainingAudioTime() const {
 	VisualAudioLab* theVisualAudioLab = VisualAudioLab::getInstance();
-	return theVisualAudioLab->getRemainingTimeOfCurrentTrack(this->isAudioPlaying());
+	return theVisualAudioLab->getRemainingTimeOfCurrentTrack();
 }
 
 
@@ -121,7 +121,7 @@ bool VisualPlayerState::fadeOutEventShouldBeSent() {
 	bool retVal = false;
 	if (this->fadeOutEventHasBeenSent == false) {
 		if (this->remainingAudioTimeIsKnown() == true) {
-			if (this->getRemainingAudioTime() < (UInt32)VisualDataStore::getPreferenceValueInt(VisualConfiguration::kFadeOutTimeBeforeEndOfTrackInMS)) {
+			if (this->getRemainingAudioTime() < (uint32)VisualPreferences::getValue(VisualPreferences::kFadeOutTimeBeforeEndOfTrackInMS)) {
 				retVal = true;
 				this->fadeOutEventHasBeenSent = true;
 			}
@@ -131,12 +131,12 @@ bool VisualPlayerState::fadeOutEventShouldBeSent() {
 }
 
 
-UInt32 VisualPlayerState::getElapsedAudioPlayStartTime() const {
+uint32 VisualPlayerState::getElapsedAudioPlayStartTime() const {
 	return VisualTiming::getElapsedMilliSecsSinceReset("trackPlayStart");
 }
 
 
-UInt32 VisualPlayerState::getElapsedAudioPlayStopTime() const {
+uint32 VisualPlayerState::getElapsedAudioPlayStopTime() const {
 	return VisualTiming::getElapsedMilliSecsSinceReset("trackPlayStop");
 }
 
@@ -159,18 +159,18 @@ void VisualPlayerState::setPlayerShowMode(const PlayerShowMode aShowMode) {
 }
 
 
-void VisualPlayerState::setDebugMode(bool aDebugMode) {
-	this->debugMode = aDebugMode;
+void VisualPlayerState::setDebugMode(bool requestedDebugMode) {
+	this->debugMode = requestedDebugMode;
 }
 
 
-void VisualPlayerState::setTrackPlayPositionInMS(const UInt32 positionInMS) {
+void VisualPlayerState::setTrackPlayPositionInMS(const uint32 positionInMS) {
 	this->trackPlayPositionInMS = positionInMS;
 }
 
 
 void VisualPlayerState::convertAudioPlayStateToString(const AudioPlayState anAudioPlayState, char* outString) {
-	char* messageString;
+	const char* messageString;
 	switch (anAudioPlayState) {
 		case kAudioIsNotPlaying:
 			messageString = "kAudioIsNotPlaying";
@@ -195,7 +195,7 @@ void VisualPlayerState::convertAudioPlayStateToString(const AudioPlayState anAud
 
 
 void VisualPlayerState::convertPlayerShowModeToString(const PlayerShowMode aShowMode, char* outString) {
-	char* messageString;
+	const char* messageString;
 	switch (aShowMode) {
 		case kIsNotShowing:
 			messageString = "kIsNotShowing";

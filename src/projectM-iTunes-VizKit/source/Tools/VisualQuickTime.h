@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualQuickTime.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,137 +36,48 @@ freely, subject to the following restrictions:
 #ifndef VisualQuickTime_h
 #define VisualQuickTime_h
 
-#include "VisualFile.h"
-
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
-
-
-#if TARGET_OS_MAC
-	#include <QuickTime/QuickTime.h>
-#endif
-
-#if TARGET_OS_WIN
-	#include <QT/QTML.h>
-	#include <QT/Movies.h>
-	#include <QT/FixMath.h>
-#endif
+#include "VisualTypes.h"
 
 
 namespace VizKit {
 
 
 	/**
-	 * Collection of QuickTime functionality.\ Access of QuickTime functionality is restricted to this class.
+	 * Collection of QuickTime functionality. Access of QuickTime functionality is restricted to this class.
 	 */
 	class VisualQuickTime {
 	
 	public:
 
 		/**
-		 * Initializes the QuickTime system component.\ Necessary resp. recommended on Windows.
-		 * @return Error state as SInt16 OSErr.
-		 */
-		static OSErr initialize(void);
+		 * Returns the number of bytes allocated by a Mac memory handle.
+		 * @return The number of bytes allocated by a Mac memory handle.
+		 * @remarks Album cover artwork data is passed to the visualizer as Mac memory handle.
+		 */	
+		static uint32 getHandleSize(void* aHandle);
 
 		/**
-		 * Terminates the QuickTime system component.\ Necessary resp. recommended on Windows.
-		 * @return Error state as SInt16 OSErr.
+		 * Disposes a Mac memory handle. 
+		 * @param aHandle A Mac memory handle.
+		 * @remarks Album cover artwork data is passed to the visualizer as Mac memory handle.
 		 */
-		static OSErr terminate(void);
+		static void disposeHandle(void* aHandle);
 
 		/**
-		 * Returns a GraphicsImporter component suitable for a file.
-		 * @param aFile Reference to a file.
-		 * @param[out] importComponent The found GraphicsImporter component.
-		 * @param fileType Optional file type.\ Providing the file type as a hint may speed up finding the correct component.
-		 * @return Error state as SInt32 OSStatus.
+		 * Handles an OS event and returns the character that has been pressed on the keyboard.
+		 * @param theEvent The event to handle.
+		 * @param[out] aChar The character key that has been pressed on the keyboard. 
+		 * @return True on success, false on failure.
 		 */
-		static OSStatus getGraphicsImporterForFile(const VisualFile& aFile, GraphicsImportComponent& importComponent, OSType fileType = '    ');
-		
-		/**
-		 * Returns a GraphicsImporter component suitable for a data handle.
-		 * @param dataHandle The data handle.
-		 * @param[out] importComponent The found GraphicsImporter component.
-		 * @param fileType Optional file type.\ Providing the file type as a hint may speed up finding the correct component.
-		 * @return Error state as SInt32 OSStatus.
-		 */
-		static OSStatus getGraphicsImporterForHandle(Handle dataHandle, GraphicsImportComponent& importComponent, OSType fileType = '    ');
-		
-		/**
-		 * Returns the dimensions (width and height) in pixels.
-		 * @param importComponent The GraphicsImporter component.
-		 * @param[out] width The width of the image.
-		 * @param[out] height The height of the image.
-		 * @return Error state as SInt32 OSStatus.
-		 */
-		static OSStatus getImageDimensions(GraphicsImportComponent& importComponent, UInt32& width, UInt32& height);
-
-		/**
-		 * Sets the import quality to maximum for the GraphicsImporter component.
-		 * @param importComponent The GraphicsImporter component for which the quality is set.
-		 * @return Error state as SInt32 OSStatus.
-		 */
-		static OSStatus setMaxQuality(GraphicsImportComponent& importComponent);
-
-		/**
-		 * Flips the import matrix.
-		 * @param importComponent The GraphicsImporter component for which the matrix is flipped.
-		 * @param imageWidth The width of the image.
-		 * @param imageHeight The height of the image.
-		 * @return Error state as SInt32 OSStatus.
-		 */
-		static OSStatus flipImportMatrix(GraphicsImportComponent& importComponent, UInt32 imageWidth, UInt32 imageHeight);
-
-#if TARGET_OS_MAC
-		/**
-		 * Creates a CGImage.
-		 * @param importComponent The GraphicsImporter component for which the import matrix is flipped.
-		 * @return A pointer to the CGImage.
-		 */
-		static CGImageRef createCGImageRef(GraphicsImportComponent& importComponent);
-#endif
-
-#if TARGET_OS_WIN
-		/**
-		 * Returns a pointer to the bitmap that is created by drawing the content of the GraphicsImportComponent.
-		 * @param importComponent The GraphicsImporter component for which the import matrix is flipped.
-		 * @param width The width of the bitmap data.
-		 * @param height The height of the bitmap data.
-		 * @return A pointer to the bitmap.
-		 */
-		static UInt32* getBitmapOfDrawing(GraphicsImportComponent& importComponent, UInt32 width, UInt32 height);
-#endif
-
-		/**
-		 * Writes the bitmap data into a file stored on hard disk.
-		 * @param argbBitmap Pointer to RGBA bitmap data.
-		 * @param aFile Reference to a file.
-		 * @param width The width of the bitmap.
-		 * @param height The height of the bitmap.
-		 * @param aFileFormatType The requested file format of the image file to be written.
-		 * @return Error state as SInt32 OSStatus.
-		 */
-		static OSStatus writeARGBBitmapToFile(UInt32* argbBitmap, const VisualFile& aFile, UInt32 width, UInt32 height, OSType aFileFormatType);
+		static bool getPressedKeyOfEvent(void* theEvent, char& aChar);
 
 	private:
 
-		/** The constructor.\ VisualQuickTime is a collection of static methods.\ Class does not need any instances.\ Constructor is private and not implemented. */
+		/** The constructor. VisualQuickTime is a collection of static methods. Class does not need any instances. Constructor is private and not implemented. */
 		VisualQuickTime();
 
-		/** The destructor.\ VisualQuickTime is a collection of static methods.\ Class does not need any instances.\ Destructor is private and not implemented. */
+		/** The destructor. VisualQuickTime is a collection of static methods. Class does not need any instances. Destructor is private and not implemented. */
 		~VisualQuickTime();
-
-		/**
-		 * Returns a GraphicsImporter component suitable for the file type.
-		 * @param fileType The file type expressed as 4-char code file type.
-		 * @param[out] importComponent The found GraphicsImporter component.
-		 * @return Error state as SInt32 OSStatus.
-		 * @remarks Private helper function which returns QuickTime's component for a specific file type.
-		 */
-		static OSStatus getGraphicsImporterComponentForFileType(OSType fileType, GraphicsImportComponent& importComponent);
 
 	};
 

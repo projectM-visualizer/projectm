@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualEnsemble.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -53,10 +53,9 @@ VisualEnsemble::~VisualEnsemble() {
 	for (VisualEnsembleActorsIterator it = this->visualEnsembleActors.begin(); it != this->visualEnsembleActors.end(); it++) {
 		delete *it;
 	}
+
 	visualEnsembleActors.clear();
-	
 	observerMap.clear();
-	
 }
 
 
@@ -66,13 +65,16 @@ VisualEnsemble::VisualEnsemble(const VisualEnsemble& other) {
 
 
 VisualEnsemble& VisualEnsemble::operator=(const VisualEnsemble& other) {
-	if (this != &other) {
-		for (VisualEnsembleActorsIterator it = this->visualEnsembleActors.begin(); it != this->visualEnsembleActors.end(); it++) {
-			delete *it;
-		}
-		visualEnsembleActors.clear();
-		this->copy(other);
+
+	if (this == &other) return *this;
+	
+	for (VisualEnsembleActorsIterator it = this->visualEnsembleActors.begin(); it != this->visualEnsembleActors.end(); it++) {
+		delete *it;
 	}
+	visualEnsembleActors.clear();
+	
+	this->copy(other);
+
 	return *this;
 }
 
@@ -84,67 +86,46 @@ void VisualEnsemble::copy(const VisualEnsemble& other) {
 }
 
 
-void VisualEnsemble::addEnsembleMember(VisualActor* aVisualActor) {
-	this->visualEnsembleActors.push_back(aVisualActor);
-}
-
-
-UInt8 VisualEnsemble::showEnsemble(const VisualPlayerState& visualPlayerState) {
-    UInt16 graphicErrorNum;
+void VisualEnsemble::showEnsemble(const VisualPlayerState& visualPlayerState) {
+    uint16 graphicErrorNum;
     char graphicErrorString[256];
 	VisualEnsembleActorsIterator it;
 
 	for (it = this->visualEnsembleActors.begin(); it != this->visualEnsembleActors.end(); it++) {
 	
-        if ((*it)->getState() != kVisActNoShow) {
+		graphicErrorNum = (*it)->getError(graphicErrorString);
+		if (graphicErrorNum != 0) {
+			const char* visualActorName;
+			char logStr[512];
+			visualActorName = (*it)->getName();
+			sprintf(logStr, "GL error: showEnsemble: detected before show of Actor: %s: %s", visualActorName, graphicErrorString);
+			writeLog(logStr);
+		}
 		
-			VisualActorGraphics::resetModelViewMatrix();
-			
-            (*it)->prepareShow(visualPlayerState);
-            (*it)->show();
-            (*it)->finishShow();
+        if ((*it)->getState() == kVisActNoShow) {
+			continue;
+		}
+		
+		VisualActorGraphics::resetModelViewMatrix();
 
-            graphicErrorNum = (*it)->getError(graphicErrorString);
-            if (graphicErrorNum != 0) {
-                const char* visualActorName;
-				char logStr[512];
-                visualActorName = (*it)->getName();
-				sprintf(logStr, "GL error: showEnsemble: detected after show of Actor: %s: %s", visualActorName, graphicErrorString);
-                writeLog(logStr);
-            }
-        }
+		(*it)->show(visualPlayerState); // show
+
+		graphicErrorNum = (*it)->getError(graphicErrorString);
+		if (graphicErrorNum != 0) {
+			const char* visualActorName;
+			char logStr[512];
+			visualActorName = (*it)->getName();
+			sprintf(logStr, "GL error: showEnsemble: detected after show of Actor: %s: %s", visualActorName, graphicErrorString);
+			writeLog(logStr);
+		}
 		
 	}
-	
-    return 0;
+
 }
 
 
-void VisualEnsemble::resetVisualActorIterIndex() {
-    this->visualActorIterIndex = 0;
-}
-
-
-VisualActor* VisualEnsemble::getNextVisualActor() {
-	if (this->visualActorIterIndex < this->visualEnsembleActors.size()) {
-		this->visualActorIterIndex++;
-		return this->visualEnsembleActors[this->visualActorIterIndex - 1];
-	} else {
-		return NULL;
-	}
-}
-
-
-void VisualEnsemble::dispatchNotification(const VisualNotification& aNotification) {
-	ObserverMapIterator it;
-	VisualNotificationKey aNotificationKey = aNotification.getKey();
-
-	it = this->observerMap.find(aNotificationKey);
-	if (it == this->observerMap.end()) return;
-	
-	for (it = this->observerMap.lower_bound(aNotificationKey); it != this->observerMap.upper_bound(aNotificationKey); it++) {
-		it->second->handleNotification(aNotification);
-	}
+void VisualEnsemble::addEnsembleMember(VisualActor* aVisualActor) {
+	this->visualEnsembleActors.push_back(aVisualActor);
 }
 
 
@@ -173,28 +154,23 @@ void VisualEnsemble::removeObserverOfNotification(VisualActor* aVisualActor, con
 }
 
 
-VisualActorState VisualEnsemble::getStateOfVisualActor(const char* const aVisualActorName) {
-	VisualActor* aVisualActor;
-	const char* anotherVisualActorName;
-    this->resetVisualActorIterIndex();
-    while ((aVisualActor = this->getNextVisualActor())){
-        anotherVisualActorName = aVisualActor->getName();
-        if (strcmp(anotherVisualActorName, aVisualActorName) == 0) {
-			return aVisualActor->getState();
-		}
+void VisualEnsemble::dispatchNotification(VisualNotification& aNotification) {
+	ObserverMapIterator it;
+	VisualNotificationKey aNotificationKey = aNotification.getKey();
+	
+	it = this->observerMap.find(aNotificationKey);
+	if (it == this->observerMap.end()) return;
+	
+	for (it = this->observerMap.lower_bound(aNotificationKey); it != this->observerMap.upper_bound(aNotificationKey); it++) {
+		it->second->handleNotification(aNotification);
 	}
-	return kVisActUndefinedState;
 }
 
 
 VisualActor* VisualEnsemble::getVisualActorByName(const char* const aVisualActorName) {
-	VisualActor* aVisualActor;
-	const char* anotherVisualActorName;
-    this->resetVisualActorIterIndex();
-    while ((aVisualActor = this->getNextVisualActor())){
-        anotherVisualActorName = aVisualActor->getName();
-        if (strcmp(anotherVisualActorName, aVisualActorName) == 0) {
-			return aVisualActor;
+	for (VisualEnsembleActorsIterator it = visualEnsembleActors.begin(); it != visualEnsembleActors.end(); it++) {
+		if (strcmp((*it)->getName(), aVisualActorName) == 0) {
+			return (*it);
 		}
 	}
 	return NULL;

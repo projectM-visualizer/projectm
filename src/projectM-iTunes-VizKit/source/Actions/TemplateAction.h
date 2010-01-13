@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: TemplateAction.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,16 +36,15 @@ freely, subject to the following restrictions:
 #ifndef TemplateAction_h
 #define TemplateAction_h
 
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
 
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualTypes.h"
+#include "VisualItemIdentifier.h"
 
 
 namespace VizKit {
+
+	class VisualAsset; // Forward declaration (to avoid include of header file).
+	class VisualImage; // Forward declaration (to avoid include of header file).
 
 	/**
 	 * Performs the action of the TemplateActor.
@@ -69,36 +68,37 @@ namespace VizKit {
 		~TemplateAction();
 
 		/**
-		 * Prepares the action of the template.
-		 */	
-		void prepareTemplateAction(void);
-
-		/**
 		 * Shows the TemplateAction.
 		 */
 		void show(void);
-		
+
 		/**
-		 * Finishes the action of the template.
-		 */	
-		void finishTemplateAction(void);
+		 * Sets the image of TemplateAction's testAsset.
+		 * @param anImage The image of the template.
+		 */
+		void setImage(const VisualImage& anImage);
+
+		/**
+		 * Removes the image of TemplateAction's testAsset.
+		 */
+		void removeImage(void);
 
 	private:
 
-		/** The texture number (name/id). */	
-		UInt32 textureNumber;
-		
-		/** The texture width (in pixels). */
-		UInt32 textureWidth;
-		
-		/** The texture height (in pixels). */
-		UInt32 textureHeight;
-		
-		/** The image width (in pixels). */
-		UInt32 imageWidth;
-		
-		/** The image height (in pixels). */
-		UInt32 imageHeight;
+		/**
+		 * Asset of the TemplateAction for visualization of spatial layout.
+		 */
+		VisualAsset* templateAsset;
+
+		/**
+		 * An asset for testing.
+		 */
+		VisualAsset* testAsset;
+
+		/**
+		 * The vertex chain of the TemplateAction's asset.
+		 */
+		VisualItemIdentifier vertexChainId;
 
 	};
 

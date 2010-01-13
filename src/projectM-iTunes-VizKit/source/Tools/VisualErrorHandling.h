@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualErrorHandling.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -37,13 +37,7 @@ freely, subject to the following restrictions:
 #define VisualErrorHandling_h
 
 
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualTypes.h"
 
 
 #ifdef __cplusplus
@@ -55,8 +49,9 @@ extern "C" {
 
 
 /**
- * Writes a 8-bit string to the system log file.
+ * Writes a 8-bit string to the system log file or a log file on the Desktop. By setting internal variable textFile, the behavior of this function can be customized.
  * @param infoStr The 8-bit string to write to log file.
+ * @remarks In case of crash stop of iTunes on Mac, the system log messages sometimes are not written completely to the system log file because the flushing of the remaining string data does not occur.
  */
 void writeLog(const char* const infoStr);
 
@@ -72,9 +67,16 @@ void writeLogW(const wchar_t* const infoStr);
  */
 void writeDebugLog(const char* const infoStr);
 
+#if TARGET_OS_MAC
+/**
+ * Writes the call stack (backtrace) to the system log file.
+ */
+void stacktrace(void);
+#endif
+
 #if TARGET_OS_WIN
 	/**
-	 * Writes the last error to the system log file.\ Windows-only.
+	 * Writes the last error to the system log file. Windows-only.
 	 * @param lpszFunction The name of the function where the error occured.
 	 */
 	void writeLastErrorLog(char* lpszFunction);
@@ -82,11 +84,11 @@ void writeDebugLog(const char* const infoStr);
 
 	void addSourceToRegistry(char* pszAppname, char* pszMsgDLL);
 
-	void reportAnIEvent(UInt32 dwIdEvent, UInt16 cStrings, char* pszStrings);
+	void reportAnIEvent(uint32 dwIdEvent, uint16 cStrings, char* pszStrings);
 
-	void reportAnWEvent(UInt32 dwIdEvent, UInt16 cStrings, char* pszStrings);
+	void reportAnWEvent(uint32 dwIdEvent, uint16 cStrings, char* pszStrings);
 
-	void reportAnEEvent(UInt32 dwIdEvent, UInt16 cStrings, char* pszStrings);
+	void reportAnEEvent(uint32 dwIdEvent, uint16 cStrings, char* pszStrings);
 
 #endif
 

@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualNotification.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,30 +36,23 @@ freely, subject to the following restrictions:
 #ifndef VisualNotification_h
 #define VisualNotification_h
 
+
+#include "VisualTypes.h"
 #include "VisualNotificationKey.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualObject.h"
 
 
 namespace VizKit {
 
-	/** Callback function. */
-	typedef void (*VisualNotificationCallback)(void* userData);
+	class VisualItemIdentifier; // Forward declaration (to avoid include of header file).
+	class VisualActor; // Forward declaration (to avoid include of header file).
 
 	/**
-	 * A message that can be sent between VisualStageControl and VisualEnsemble.
-	 * Messaging object that is passed to VisualEnsemble.
-	 * VisualActors are notified about events and messages via an object. 
-	 * The VisualActors can query the VisualNotification for details.
-	 * The VisualActors can also set the value to pass it back to the caller.
+	 * A VisualActor is notified about events and messages with a VisualNotification. 
+	 * The VisualActor can query the VisualNotification for details.
+	 * The VisualActor can also set a value to pass it back to the caller.
 	 */
-	class VisualNotification {
+	class VisualNotification : public VisualObject {
 
 	public:
 
@@ -67,6 +60,12 @@ namespace VizKit {
 		 * The constructor.
 		 */
 		VisualNotification();
+
+		/**
+		 * Another constructor.
+		 * @param anIdentifier Identifier of the notification.
+		 */
+		VisualNotification(const VisualItemIdentifier& anIdentifier);
 
 		/**
 		 * The destructor.
@@ -82,7 +81,12 @@ namespace VizKit {
 		 * Assignment operator.
 		 */			
 		VisualNotification& operator=(const VisualNotification& other);
-		
+
+		/**
+		 * Copies the current VisualNotification and returns a pointer to a new VisualNotification.
+		 */
+		virtual VisualNotification* clone(void) const;
+
 		/**
 		 * Sets the key of a notification. Notification keys are implemented as enums.
 		 * @param aKey The enum key.
@@ -91,36 +95,53 @@ namespace VizKit {
 
 		/**
 		 * Returns the key of the notification.
-		 * @return The key of the notification.\ Notification keys are implemented as enums.
+		 * @return The key of the notification. Notification keys are implemented as enums.
 		 */
 		VisualNotificationKey getKey(void) const;
 
 		/**
 		 * Sets the value of a notification.
-		 * @param aValue The pointer to the memory location of the value.
-		 * @param valueLengthInBytes The length of the value in bytes.
-		 * @remarks The value (not only the pointer) is copied.
+		 * @param someData The pointer to the memory location of the data.
+		 * @param dataSizeInBytes The size of the data in bytes.
+		 * @remarks The data (not only the pointer) is copied.
 		 */
-		void setValue(const void* const aValue, UInt32 valueLengthInBytes);
+		void setData(const void* const someData, uint32 dataSizeInBytes);
 
 		/**
-		 * Returns the value of the notification.
-		 * @param[out] numberOfBytes The number of bytes the value occupies in memory.
-		 * @return The pointer to the memory location of the value.
+		 * Returns the untyped data of the notification.
+		 * @param[out] dataSizeInBytes The number of bytes the data occupies in memory.
+		 * @return The pointer to the memory location of the data.
+		 * @remarks To hold the data, the caller has to create and store a copy on his side.
 		 */
-		const void* const getValue(UInt32& numberOfBytes) const;
+		void* getData(uint32& dataSizeInBytes) const;
 
 		/**
-		 * Sets the second value of a notification.
-		 * @param aCallbackFunction Pointer to a callback function.
-		 * @param someUserData Optional user data.
+		 * Sets the object of a notification.
+		 * @param anObject The pointer to an object.
+		 * @remarks The object is copied by calling clone().
 		 */
-		void setCallbackFunction(VisualNotificationCallback aCallbackFunction, void* someUserData = NULL);
+		void setObject(const VisualObject& anObject);
 
 		/**
-		 * Calls the callback function.
+		 * Returns a pointer to the object of the notification.
+		 * @return A pointer to the object of the notification.
+		 * @remarks The object does not get copied automatically. If the caller wants to retain a copy, the data has to be copied by calling its object member function clone().
 		 */
-		void callCallbackFunction(void);
+		VisualObject* getObject(void) const;
+
+		/**
+		 * Sets a pointer to some memory address.
+		 * @param pointer A pointer to some memory address.
+		 * @remarks If possible, copying the data is preferred (by calling setData()).
+		 */
+		void setPointer(void* pointer);
+
+		/**
+		 * Returns a pointer to some memory address.
+		 * @return A pointer to some memory address.
+		 * @remarks If possible, copying the data is preferred (by using setData() / getData()).
+		 */
+		void* getPointer(void);
 
 		/**
 		 * The notification is posted to the VisualNotificationQueue (pushed at the end of the VisualNotificationQueue).
@@ -128,7 +149,7 @@ namespace VizKit {
 		void post(void);
 
 		/**
-		 * Static helper function that converts a VisualNotificationKey to the string.\ Possibly useful for debugging or tracing purposes.
+		 * Static helper function that converts a VisualNotificationKey to the string. Possibly useful for debugging or tracing purposes.
 		 * @param aKey The key of a notification.
 		 * @param outString The character string value of the VisualNotificationKey enum value.
 		 */
@@ -141,6 +162,20 @@ namespace VizKit {
 		 */
 		static void post(const VisualNotificationKey aKey);
 		
+		/**
+		 * A VisualActor can register for an event/message. The notification is passed with VisualActor::handleNotification().
+		 * @param aVisualActor A visual actor.
+		 * @param aNotificationKey An enum that denotes a notification.
+		 */
+		static void registerNotification(VisualActor* aVisualActor, const VisualNotificationKey aNotificationKey);
+		
+		/**
+		 * A VisualActor can be removed from the list of observers for a specific notification.
+		 * @param aVisualActor A visual actor.
+		 * @param aNotificationKey An enum that denotes a notification.
+		 */
+		static void removeNotification(VisualActor* aVisualActor, const VisualNotificationKey aNotificationKey);
+		
 	private:
 	
 		/**
@@ -149,20 +184,21 @@ namespace VizKit {
 		 */
 		void copy(const VisualNotification& other);
 		
-		/** Enum value of notification as UInt16. */
+		/** Enum value of notification as uint16. */
 		VisualNotificationKey notificationEnumKey;
 		
-		/** Optional value of notification as pure data (unspecified datatype void). */
-		void* notificationValue;
+		/** Optional data of notification. */
+		void* notificationData;
 		
-		/** The length of the optional value in bytes. */
-		UInt32 notificationValueLength;
+		/** The length of the optional data in bytes. */
+		uint32 notificationDataSize;
+		
+		/** Optional object of the notification. */
+		VisualObject* notificationObject;
+		
+		/** Internally stored pointer to some memory address. */
+		void* notificationPointer;
 
-		/** Callback function. */
-		VisualNotificationCallback callbackFunction;
-		
-		/** Internally stored pointer to provided user data (e.g.\ pointer to instance variable of initialized class). */
-		void* userData;
 	};
 
 }

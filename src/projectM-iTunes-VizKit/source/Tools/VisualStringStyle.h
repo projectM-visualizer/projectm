@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualStringStyle.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,15 +36,10 @@ freely, subject to the following restrictions:
 #ifndef VisualStringStyle_h
 #define VisualStringStyle_h
 
+
+#include "VisualTypes.h"
 #include "VisualGraphicTypes.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
+#include "VisualObject.h"
 
 
 namespace VizKit {
@@ -52,14 +47,37 @@ namespace VizKit {
 	/**
 	 * Definition of a style for a string (text).
 	 */
-	class VisualStringStyle {
-		public:
+	class VisualStringStyle : public VisualObject {
+	public:
 		VisualStringStyle(); /**< Constructor. */
 		~VisualStringStyle(); /**< Destructor. */
+		/**
+		 * Copy constructor.
+		 * @param other Reference to another VisualStringStyle.
+		 */
+		VisualStringStyle(const VisualStringStyle& other);
+
+		/**
+		 * Assignment operator.
+		 * @param other Reference to another VisualStringStyle.
+		 */
+		VisualStringStyle& operator=(const VisualStringStyle& other);
 		char fontNameStr[512]; /**< The name of the font. */
-		float fontSize; /**< The size of the font (in points). */
+		double fontSize; /**< The size of the font (in points). */
 		RGBAColor fontColor; /**< The color of the font. */
 		HorizontalAlignment horizontalAlignment; /** The horizontal alignment of the string. */
+		
+		/**
+		 * Copies the current VisualStringStyle and returns a pointer to a new VisualStringStyle.
+		 */
+		virtual VisualStringStyle* clone(void) const;
+		
+	private:
+		/**
+		 * Copy method for assignmentVisualStringStyleoperator and copy constructor.
+		 * @param other Another VisualString.
+		 */
+		void copy(const VisualStringStyle& other);
 	};
 	
 }

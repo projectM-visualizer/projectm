@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualNurbs.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,23 +36,16 @@ freely, subject to the following restrictions:
 #ifndef VisualNurbs_h
 #define VisualNurbs_h
 
+
+#include "VisualTypes.h"
 #include "VisualGraphicTypes.h"
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#include <windows.h>
-#endif
-
 
 #if TARGET_OS_MAC
 #include <OpenGL/glu.h>
 #endif
 
 #if TARGET_OS_WIN
+#include <windows.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #endif
@@ -71,15 +64,15 @@ namespace VizKit {
 		/**
 		 * The constructor with all necessary arguments to create a NURBS.
 		 * @param sKnotsCount The number of knots in horizontal direction.
-		 * @param sKnotsPointer A pointer to the array of horizontal knot values.\ The knot values are copied.
+		 * @param sKnotsPointer A pointer to the array of horizontal knot values. The knot values are copied.
 		 * @param tKnotsCount The number of knots in vertical direction.
-		 * @param tKnotsPointer A pointer to the array of vertical knot values.\ The knot values are copied.
+		 * @param tKnotsPointer A pointer to the array of vertical knot values. The knot values are copied.
 		 * @param s_Stride Specifies the offset (as a number of single-precision floating point values) between successive control points in the parametric u direction in control.
 		 * @param t_Stride Specifies the offset (as a number of single-precision floating point values) between successive control points in the parametric v direction in control.
 		 * @param s_Order Specifies the order of the NURBS surface in the parametric u direction. The order is one more than the degree, hence a surface that is cubic in u has a u order of 4.
 		 * @param t_Order Specifies the order of the NURBS surface in the parametric v direction. The order is one more than the degree, hence a surface that is cubic in v has a v order of 4.
 		 */
-		VisualNurbs(UInt8 sKnotsCount, float* sKnotsPointer, UInt8 tKnotsCount, float* tKnotsPointer, UInt16 s_Stride, UInt16 t_Stride, UInt16 s_Order, UInt16 t_Order);
+		VisualNurbs(uint8 sKnotsCount, float* sKnotsPointer, uint8 tKnotsCount, float* tKnotsPointer, uint16 s_Stride, uint16 t_Stride, uint16 s_Order, uint16 t_Order);
 		
 		/**
 		 * The destructor.
@@ -101,31 +94,31 @@ namespace VizKit {
 		/**
 		 * Stores the control points of the NURBS.
 		 * @param numberOfControlPoints The number of control points.
-		 * @param someControlPoints A pointer to an array of control points.\ The control points are copied.
+		 * @param someControlPoints A pointer to an array of control points. The control points are copied.
 		 */
-		void setControlPoints(UInt16 numberOfControlPoints, float* someControlPoints);
+		void setControlPoints(uint16 numberOfControlPoints, double* someControlPoints);
 
 		/**
 		 * Associates the NURBS with a texture.
 		 * @param sKnotsCount The number of knots in horizontal direction.
-		 * @param sKnotsPointer A pointer to the array of horizontal knot values.\ The knot values are copied.
+		 * @param sKnotsPointer A pointer to the array of horizontal knot values. The knot values are copied.
 		 * @param tKnotsCount The number of knots in vertical direction.
-		 * @param tKnotsPointer A pointer to the array of vertical knot values.\ The knot values are copied.
+		 * @param tKnotsPointer A pointer to the array of vertical knot values. The knot values are copied.
 		 * @param s_Stride Specifies the offset (as a number of single-precision floating point values) between successive control points in the parametric u direction in control.
 		 * @param t_Stride Specifies the offset (as a number of single-precision floating point values) between successive control points in the parametric v direction in control.
 		 * @param s_Order Specifies the order of the NURBS surface in the parametric u direction. The order is one more than the degree, hence a surface that is cubic in u has a u order of 4.
 		 * @param t_Order Specifies the order of the NURBS surface in the parametric v direction. The order is one more than the degree, hence a surface that is cubic in v has a v order of 4.
 		 * @param aTextureName The name/number/id of the texture.
-		 * @param canUseRectExtensionBool True if graphics system does support rectangular texture extension.\ False if only textures with power-of-2-dimensions are allowed.
+		 * @param canUseRectExtensionBool True if graphics system does support rectangular texture extension. False if only textures with power-of-2-dimensions are allowed.
 		 */
-		void setTexture(UInt8 sKnotsCount, float* sKnotsPointer, UInt8 tKnotsCount, float* tKnotsPointer, UInt16 s_Stride, UInt16 t_Stride, UInt16 s_Order, UInt16 t_Order, UInt32 aTextureName, bool canUseRectExtensionBool);
+		void setTexture(uint8 sKnotsCount, float* sKnotsPointer, uint8 tKnotsCount, float* tKnotsPointer, uint16 s_Stride, uint16 t_Stride, uint16 s_Order, uint16 t_Order, uint32 aTextureName, bool canUseRectExtensionBool);
 
 		/**
 		 * Stores the control points of the texture.
 		 * @param numberOfTextureControlPoints The number of control points.
-		 * @param someTextureControlPoints A pointer to an array of control points.\ The control points are copied.
+		 * @param someTextureControlPoints A pointer to an array of control points. The control points are copied.
 		 */
-		void setTextureControlPoints(UInt16 numberOfTextureControlPoints, float* someTextureControlPoints);
+		void setTextureControlPoints(uint16 numberOfTextureControlPoints, float* someTextureControlPoints);
 		
 		/**
 		 * Draws the NURBS on screen.
@@ -160,43 +153,43 @@ namespace VizKit {
 		
 		GLUnurbsObj* nurbsObject; /**< The NURBS object. */
 		
-		UInt8 sNumKnots; /**< The number of knots in horizontal direction. */
+		uint8 sNumKnots; /**< The number of knots in horizontal direction. */
 		
 		float* sKnots; /**< An array of horizontal knot values. */
 		
-		UInt8 tNumKnots; /**< The number of knots in vertical direction. */
+		uint8 tNumKnots; /**< The number of knots in vertical direction. */
 		
 		float* tKnots; /**< An array of vertical knot values. */
 		
-		UInt16 sStride; /**< The offset between successive control points in u direction. */
+		uint16 sStride; /**< The offset between successive control points in u direction. */
 		
-		UInt16 tStride; /**< The offset between successive control points in v direction. */
+		uint16 tStride; /**< The offset between successive control points in v direction. */
 		
-		UInt16 sOrder; /**< The order of the NURBS surface in u direction. */
+		uint16 sOrder; /**< The order of the NURBS surface in u direction. */
 		
-		UInt16 tOrder; /**< The order of the NURBS surface in v direction. */
+		uint16 tOrder; /**< The order of the NURBS surface in v direction. */
 		
 		float* controlPoints; /**< An array of control points. */
 		
 		Visibility controlPointsVisibility; /**< The visibility of the control points. */
 		
-		void setNurbsProperty(UInt32 property, float value); /**< Sets an OpenGL attribute of the NURBS object. */
+		void setNurbsProperty(uint32 property, float value); /**< Sets an OpenGL attribute of the NURBS object. */
 		
 		/** 
 		 * A texture of a NURBS.
 		 */
 		class NurbsTexture {
 		public:
-			UInt8 sNumKnots; /**< The number of knots in horizontal direction. */
+			uint8 sNumKnots; /**< The number of knots in horizontal direction. */
 			float* sKnots; /**< An array of horizontal knot values. */
-			UInt8 tNumKnots; /**< The number of knots in vertical direction. */
+			uint8 tNumKnots; /**< The number of knots in vertical direction. */
 			float* tKnots; /**< An array of vertical knot values. */
-			UInt16 sStride; /**< The offset between successive control points in u direction. */
-			UInt16 tStride; /**< The offset between successive control points in v direction. */
-			UInt16 sOrder; /**< The order of the texture in u direction. */
-			UInt16 tOrder; /**< The order of the texture in v direction. */
-			UInt32 textureName; /**< The name/number/id of the texture. */
-			bool canUseRectExtension; /**< True if graphics system does support rectangular texture extension.\ False if only textures with power-of-2-dimensions are allowed. */
+			uint16 sStride; /**< The offset between successive control points in u direction. */
+			uint16 tStride; /**< The offset between successive control points in v direction. */
+			uint16 sOrder; /**< The order of the texture in u direction. */
+			uint16 tOrder; /**< The order of the texture in v direction. */
+			uint32 textureName; /**< The name/number/id of the texture. */
+			bool canUseRectExtension; /**< True if graphics system does support rectangular texture extension. False if only textures with power-of-2-dimensions are allowed. */
 			float* texturePoints; /**< An array of control points. */
 			NurbsTexture(); /**< The constructor. */
 			~NurbsTexture(); /**< The destructor. */

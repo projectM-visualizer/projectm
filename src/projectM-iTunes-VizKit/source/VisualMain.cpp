@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualMain.cpp
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -34,285 +34,17 @@ freely, subject to the following restrictions:
  ***************************************************************************/
 
 #include "VisualMain.h"
-
-#include <time.h> // for srand()
-
-#include "VisualConfiguration.h"
-#include "VisualConfigurationDialog.h"
-#include "VisualErrorHandling.h"
-#include "VisualDispatch.h"
+#include "VisualMainAction.h"
 #include "VisualSignature.h"
-#include "VisualDataStore.h"
-#include "VisualQuickTime.h"
-#include "VisualGraphics.h"
-//#include "VisualAudioLab.h"
-#include "VisualTiming.h"
-#include "VisualStageControl.h"
-#include "VisualNotification.h"
-#include "VisualNotificationQueue.h"
+#include "VisualConfiguration.h"
 
-#include <string>
-#include "projectM.hpp"
-#include "carbontoprojectm.hpp"
-
-#if TARGET_OS_WIN
-#include <QT/macmemory.h> // HLock
-#endif
-
-
+#include <stdio.h>
 
 using namespace VizKit;
 
-projectM *globalPM;
-
-OSStatus VisualMain::prepareRenderAction() {
-
-	VisualQuickTime::initialize();
-	long QTVersion = 0;
-	OSErr osErr = noErr;
-	osErr = ::Gestalt(gestaltQuickTimeVersion, &QTVersion); 
-
-	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	
-	bool success = theVisualGraphics->setupContext();
-	if (!success) {
-		return 1001;
-	}
-	
-	//theVisualGraphics->setOrthographicProjection();
-
-	theVisualGraphics->gatherOpenGLCapabilities();
-
-#if TARGET_OS_WIN
-	//theVisualGraphics->buildFont(); 
-#endif
-
-	//theVisualGraphics->resetModelViewMatrix();
-
-	if (VisualDataStore::audioMetaDataHasBeenSentToEnsemble() == false) {
-		VisualNotification::post(kAudioMetadataIsAvailableMsg);
-		VisualDataStore::setAudioMetaDataHasBeenSentToEnsemble(true);
-	}
-
-	if(!globalPM)
-	{
-	globalPM = new projectM("C:\\Program\ Files\\projectM\\config.inp");		
-	}
-	return noErr;
-}
-
-
-OSStatus VisualMain::renderAction() {
-
-	bool debug = false;
-	size_t notificationCount = 0;
-	UInt16 currNotificationIdx = 1;
-
-	VisualPlayerState* theVisualPlayerState = VisualPlayerState::getInstance();
-	
-	VisualNotification aNotification;
-	VisualNotificationKey aKey;
-	
-	OSStatus status;
-
-	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	theVisualGraphics->setCurrentContext();
-	
-	//theVisualGraphics->clearBackground();
-
-	//VisualStageControl::checkForFadeOutEvent();
-
-	if (debug == true) {
-		notificationCount = VisualNotificationQueue::size();
-	}
-	
-	while (VisualNotificationQueue::size() > 0) {
-
-		char* keyPressed = NULL;
-	
-		aNotification = VisualNotificationQueue::pop();
-		aKey = aNotification.getKey();
-
-		if (debug == true) {
-			char notificationStr[64];
-			char logStr[64];
-			VisualNotification::convertNotificationKeyToString(aKey, notificationStr);
-			sprintf(logStr, "Notification (%d/%d): %s", currNotificationIdx, (UInt16)notificationCount, notificationStr);
-			writeLog(logStr);
-			currNotificationIdx++;
-		}
-
-		switch(aKey) {
-			case kAudioPlayStartedEvt:
-			case kAudioPlayStoppedEvt:
-			case kAudioPlayPausedEvt:
-			case kAudioPlayResumedEvt:
-			case kAudioPlayReachedFadeOutTimeBeforeEndOfTrackEvt:
-			case kAudioMetadataIsAvailableMsg:
-			case kLyricsAreAvailableMsg:
-			case kCoverTextureIsAvailableMsg:
-			case kLyricsTextureIsAvailableMsg:
-			case kTrackInfoTextureIsAvailableMsg:
-			case kTrackInfoTextureChangedMsg:
-			case kCanvasReshapeEvt:		
-								
-					//delete (globalPM);
-					//globalPM = new projectM("C:\\Program\ Files\\projectM\\config.inp");	
-				globalPM->projectM_resetTextures();
-				break;
-			case kKeyPressedEvt:
-				UInt32 numberOfBytes;
-				
-				keyPressed = (char*)aNotification.getValue(numberOfBytes);
-				status = VisualStageControl::handleKeyPressed(*keyPressed, theVisualPlayerState->getPlayerShowMode());
-				break;
-			default:
-				char notificationString[32];
-				VisualNotification::convertNotificationKeyToString(aKey, notificationString);
-				char errLog[256];
-				sprintf(errLog, "unhandled VisualNotificationKey %s in file: %s (line: %d) [%s])", notificationString, __FILE__, __LINE__, __FUNCTION__);
-				writeLog(errLog);
-		}
-
-	}
-
-	AudioPlayState playState = theVisualPlayerState->getAudioPlayState();
-	if (playState == kAudioPlayStarted) {
-		UInt32 fadeInTimeOnPlayInMS = VisualDataStore::getPreferenceValueInt(VisualConfiguration::kFadeInTimeOnPlayInMS);
-		if (theVisualPlayerState->getElapsedAudioPlayStartTime() > fadeInTimeOnPlayInMS) {
-			theVisualPlayerState->setAudioPlayState(kAudioIsPlaying);
-		}
-	} else if (playState == kAudioPlayResumed) {
-		UInt32 fadeInTimeOnResumeInMS = VisualDataStore::getPreferenceValueInt(VisualConfiguration::kFadeInTimeOnResumeInMS);
-		if (theVisualPlayerState->getElapsedAudioPlayStartTime() > fadeInTimeOnResumeInMS) {
-			theVisualPlayerState->setAudioPlayState(kAudioIsPlaying);
-		}
-	}
-
-	//monitorRenderMessageProcess();
-
-	// show action
-	//VisualStageControl::doEnsembleShow(*theVisualPlayerState);
-	
-	globalPM->projectM_resetGL(theVisualGraphics->getCanvasPixelWidth(),theVisualGraphics->getCanvasPixelHeight());				
-	
-	globalPM->renderFrame();
-	
-	theVisualGraphics->finishGLDrawing();
-
-	return noErr;
-	
-}
-
-
-OSStatus VisualMain::finishRenderAction() {
-	
-//	VisualStageControl::dispose();
-	VisualNotificationQueue::dispose();
-	VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-    theVisualGraphics->disposeContext();
-	VisualGraphics::dispose();
-	VisualQuickTime::terminate();	
-
-	return noErr;
-}
-
-
-void VisualMain::handleAudioPlayStoppedEvent() {
-
-	VisualPlayerState* theVisualPlayerState = VisualPlayerState::getInstance();
-	
-	VisualTiming::resetTimestamp("trackPlayStop");
-	
-	if (theVisualPlayerState->remainingAudioTimeIsKnown() == true && theVisualPlayerState->getRemainingAudioTime() > 2000) {
-		// if more than 2 secs. of audio is left to be played,
-		// we assume that playing paused
-		theVisualPlayerState->setAudioPlayState(kAudioPlayPaused);
-		if ((theVisualPlayerState->getPlayerShowMode() & kIsShowing) == kIsShowing) {
-			VisualNotification::post(kAudioPlayPausedEvt);
-		}
-	} else {
-		theVisualPlayerState->setAudioPlayState(kAudioIsNotPlaying);
-		theVisualPlayerState->setTrackPlayPositionInMS(0);
-		if ((theVisualPlayerState->getPlayerShowMode() & kIsShowing) == kIsShowing) {
-			VisualNotification::post(kAudioPlayStoppedEvt);
-		}
-	}
-}
-
-
-void VisualMain::handleAudioPlayStartedEvent(bool trackDidChange) {
-
-	VisualPlayerState* theVisualPlayerState = VisualPlayerState::getInstance();
-	AudioPlayState prevAudioPlayState = theVisualPlayerState->getAudioPlayState();
-	
-	VisualTiming::resetTimestamp("trackPlayStart");
-	
-	if (prevAudioPlayState == kAudioIsNotPlaying) {
-		theVisualPlayerState->setAudioPlayState(kAudioPlayStarted);
-	} else {
-		if (trackDidChange == true) {
-			theVisualPlayerState->setTrackPlayPositionInMS(0);
-			theVisualPlayerState->setAudioPlayState(kAudioPlayStarted);
-			prevAudioPlayState = kAudioIsNotPlaying;
-		} else {
-			theVisualPlayerState->setAudioPlayState(kAudioPlayResumed);
-		}
-	}
-
-	VisualNotification aVisualNotification;
-
-	if ((theVisualPlayerState->getPlayerShowMode() & kIsShowing) == kIsShowing) {
-		if (theVisualPlayerState->getAudioPlayState() == kAudioPlayResumed) {
-			VisualNotification::post(kAudioPlayResumedEvt);
-		} else {
-			VisualNotification::post(kAudioPlayStartedEvt);
-		}
-		if (trackDidChange == true) {
-			VisualNotification::post(kAudioMetadataIsAvailableMsg);
-			VisualDataStore::setAudioMetaDataHasBeenSentToEnsemble(true);
-		}
-	}
-
-}
-
-
-void VisualMain::handleShowShouldStartMessage(const bool isFullScreen) {
-    
-    srand((unsigned int)time(NULL)); // Seed random number generator
-
-	OSStatus osStatus = VisualMain::prepareRenderAction();
-	if (osStatus != noErr) {
-		VisualPlayerState* theVisualPlayerState = VisualPlayerState::getInstance();
-		theVisualPlayerState->setPlayerShowMode(kErrorState);
-	}
-
-}
-
-
-void VisualMain::handleCleanupMessage() {
-//	VisualAudioLab::dispose();
-	VisualTiming::dispose();
-	VisualDataStore::dispose();
-	VisualPlayerState::dispose();
-
-	if (globalPM) delete(globalPM);
-
-#if TARGET_OS_MAC
-	VisualConfigurationDialog::dispose();
-#endif
-}
-
-
-void VisualMain::handleCanvasReshape() {
-	//VisualGraphics* theVisualGraphics = VisualGraphics::getInstance();
-	//theVisualGraphics->setOrthographicProjection();
-	VisualNotification::post(kCanvasReshapeEvt);	
-}
-
 
 void VisualMain::convertVisualPluginMessageToString(const OSType visualPluginMessage, char* outString) {
-	char* messageString;
+	const char* messageString;
 	switch (visualPluginMessage) {
 		case kVisualPluginInitMessage:
 			messageString = "kVisualPluginInitMessage";
@@ -378,21 +110,110 @@ void VisualMain::convertVisualPluginMessageToString(const OSType visualPluginMes
 }
 
 
-OSStatus VisualMain::VisualPluginHandler(OSType message, VisualPluginMessageInfo* messageInfo, void* refCon) {
+bool VisualMain::storeAudioTrackMetadata(const ITTrackInfo* const trackMetadata, bool isAudioStream) {
+	
+	const uint16* trackName = trackMetadata->name;
+	if (trackName) {
+		trackName += 1;
+		VisualMainAction::setAudioTrackName((void*)trackName, (int)trackMetadata->name[0]);
+	}
+	
+	const uint16* trackArtist = trackMetadata->artist;
+	if (trackArtist) {
+		trackArtist += 1;
+		VisualMainAction::setAudioTrackArtistName((void*)trackArtist, (int)trackMetadata->artist[0]);
+	}
+	
+	const uint16* trackAlbum = trackMetadata->album;
+	if (trackAlbum) {
+		trackAlbum += 1;
+		VisualMainAction::setAudioTrackAlbumName((void*)trackAlbum, (int)trackMetadata->album[0]);
+	}
+
+	const uint16* trackComposer = trackMetadata->composer;
+	if (trackComposer) {
+		trackComposer += 1;
+		VisualMainAction::setAudioTrackComposer((void*)trackComposer, (int)trackMetadata->composer[0]);
+	}
+	
+	if (trackMetadata->year > 0) {
+		VisualMainAction::setAudioTrackYear(trackMetadata->year);
+	}
+
+	VisualMainAction::setAudioDataIsStream(isAudioStream);
+
+	bool audioTrackDidChange = VisualMainAction::analyzeCurrentlySetMetadata();
+
+	if (!isAudioStream) {
+		VisualMainAction::setAudioTrackSizeInBytes(static_cast<int>(trackMetadata->sizeInBytes));
+		VisualMainAction::setTotalTimeOfCurrentTrack(trackMetadata->totalTimeInMS);
+		VisualMainAction::setStartTimeOfCurrentTrack(trackMetadata->startTimeInMS);
+		VisualMainAction::setStopTimeOfCurrentTrack(trackMetadata->stopTimeInMS);
+	}
+	
+	return audioTrackDidChange;
+	
+}
+
+
+void VisualMain::storeAudioStreamMetadata(const ITStreamInfo* const streamMetadata) {
+	
+	const uint16* streamTitle = streamMetadata->streamTitle;
+	if (streamTitle) {
+		streamTitle += 1;
+		VisualMainAction::setAudioStreamTitle(streamTitle, (int)streamMetadata->streamTitle[0]);
+	}
+
+	const uint16* streamMessage = streamMetadata->streamMessage;
+	if (streamMessage) {
+		streamMessage += 1;
+		VisualMainAction::setAudioStreamMessage(streamMessage, (int)streamMetadata->streamMessage[0]);
+	}
+
+	const uint16* streamURL = streamMetadata->streamURL;
+	if (streamURL) {
+		streamURL += 1;
+		VisualMainAction::setAudioStreamURL(streamURL, (int)streamMetadata->streamURL[0]);
+	}
+
+	VisualMainAction::setTotalTimeOfCurrentTrack(0);
+	
+}
+
+
+void VisualMain::storeAudioStreamMetadata(const ITStreamInfoV1* const streamMetadata) {
+	
+	const char* streamTitle = reinterpret_cast<const char*>(streamMetadata->streamTitle);
+	if (streamTitle) {
+		streamTitle += 1;
+		VisualMainAction::setAudioStreamTitleV1(streamTitle, (int)streamMetadata->streamTitle[0]);
+	}
+
+	const char* streamMessage = reinterpret_cast<const char*>(streamMetadata->streamMessage);
+	if (streamMessage) {
+		streamMessage += 1;
+		VisualMainAction::setAudioStreamMessageV1(streamMessage, (int)streamMetadata->streamMessage[0]);
+	}
+
+	const char* streamURL = reinterpret_cast<const char*>(streamMetadata->streamURL);
+	if (streamURL) {
+		streamURL += 1;
+		VisualMainAction::setAudioStreamURLV1(streamURL, (int)streamMetadata->streamURL[0]);
+	}
+
+	VisualMainAction::setTotalTimeOfCurrentTrack(0);
+
+}
+
+
+OSStatus VisualMain::VisualPluginHandler(OSType message, VisualPluginMessageInfo* visualPluginMessageInfo, void* refCon) {
 
 	bool debug = false;
 
     OSStatus status;
-    EventRecord* eventPtr;
-	std::string thissucks;
 	
-    static UInt32 majorVersionNum;
-    static UInt32 minorVersionNum;
-    
-    //ITFileSpec pluginFileSpec;
-	VisualGraphics* theVisualGraphics = NULL;
-//	VisualAudioLab* theVisualAudioLab = NULL;
-	bool trackDidChange = false;
+    UInt32 majorVersionNum;
+    UInt32 minorVersionNum;
 
     //visualPluginData = (VisualPluginData*) refCon;
     
@@ -415,17 +236,17 @@ OSStatus VisualMain::VisualPluginHandler(OSType message, VisualPluginMessageInfo
 			firstTimeRun = false;
 		}
 		bool doWriteLog = true;
-		char visualPluginMessage[64];
-		char logStr[128];
 		if (message != messageWriteLogHistory[curr]) {
-			// don't log alternating messages (like render/idle/update messages during render loop)
+			// do not log alternating messages (like render/idle/update messages during render loop)
 			if (message == messageWriteLogHistory[prev] && prevMessage == messageWriteLogHistory[curr]) doWriteLog = false;
 			if (message == messageWriteLogHistory[oneBeforePrev] && prevMessage == messageWriteLogHistory[curr] && oneBeforePrevMessage == messageWriteLogHistory[prev]) doWriteLog = false;
 			if (message == messageWriteLogHistory[prev] && prevMessage == messageWriteLogHistory[oneBeforePrev] && oneBeforePrevMessage == messageWriteLogHistory[curr]) doWriteLog = false;
 			if (doWriteLog == true) {
+				char visualPluginMessage[64];
+				char logStr[128];
 				VisualMain::convertVisualPluginMessageToString(message, visualPluginMessage);
-				sprintf(logStr, "VisualPluginMessage: %s", visualPluginMessage);
-				writeLog(logStr);
+				sprintf(logStr, "VisualPluginHandler: message: %s", visualPluginMessage);
+				VisualMainAction::writeLogEntry(logStr);
 				messageWriteLogHistory[oneBeforePrev] = messageWriteLogHistory[prev];
 				messageWriteLogHistory[prev] = messageWriteLogHistory[curr];
 				messageWriteLogHistory[curr] = message;
@@ -435,342 +256,244 @@ OSStatus VisualMain::VisualPluginHandler(OSType message, VisualPluginMessageInfo
 		}
 	}
 
-	VisualPlayerState* theVisualPlayerState = VisualPlayerState::getInstance();
-	VisualTiming::setTimestampOfPlayerCall();
+	VisualMainAction::updateTiming();
 
     switch (message) {
 	
         case kVisualPluginInitMessage:
-			/*
-			Sent when the visual plugin is registered.
-			The plugin should do minimal memory allocations here. 
-			*/
-			
-			VisualDataStore::setAppVersionNum(messageInfo->u.initMessage.appVersion.majorRev, messageInfo->u.initMessage.appVersion.minorAndBugRev);
-			
-			VisualSignature::setAppCookie(messageInfo->u.initMessage.appCookie);
-			VisualSignature::setAppProc(messageInfo->u.initMessage.appProc);
-			
-//			VisualAudioLab::setMaxNumberOfAudioDataChannels(kVisualMaxDataChannels);
-//			VisualAudioLab::setNumberOfAudioWaveformDataEntries(kVisualNumWaveformEntries);
-//			VisualAudioLab::setNumberOfAudioSpectrumDataEntries(kVisualNumSpectrumEntries);
+			// Sent when the visual plugin is registered.
+			// The plugin should do minimal memory allocations here. 
 
-			VisualConfiguration::setDefaultPreferences();
+			majorVersionNum = visualPluginMessageInfo->u.initMessage.messageMajorVersion;
+			minorVersionNum = visualPluginMessageInfo->u.initMessage.messageMinorVersion;
 
-            majorVersionNum = messageInfo->u.initMessage.messageMajorVersion;
-            minorVersionNum = messageInfo->u.initMessage.messageMinorVersion;
+			visualPluginMessageInfo->u.initMessage.options = (kVisualDoesNotNeedResolutionSwitch);
 
-            //messageInfo->u.initMessage.refCon	= (void*) visualPluginData;
+			VisualSignature::setAppCookie(visualPluginMessageInfo->u.initMessage.appCookie);
+			VisualSignature::setAppProc(visualPluginMessageInfo->u.initMessage.appProc);
+
+			VisualMainAction::setAppVersionNum(visualPluginMessageInfo->u.initMessage.appVersion.majorRev, visualPluginMessageInfo->u.initMessage.appVersion.minorAndBugRev);
+			
+			VisualMainAction::handleInitMessage(kVisualMaxDataChannels, kVisualNumWaveformEntries, kVisualNumSpectrumEntries);
+			
+			//visualPluginMessageInfo->u.initMessage.refCon	= (void*) visualPluginData;
 			
             break;
 
         case kVisualPluginCleanupMessage:
-			/*
-			Sent when the visual plugin is unloaded
-			This message is sent when iTunes is about to quit. 
-			You should free any resources allocated by your visualizer plug-in at this time.
-			*/
+			// Sent when the visual plugin is unloaded
+			// This message is sent when iTunes is about to quit. 
+			// You should free any resources allocated by your visualizer plug-in at this time.
 
-            VisualMain::handleCleanupMessage();
+            VisualMainAction::closeThreads();
+			VisualMainAction::closePersistentStore();
 
             break;
                 
         case kVisualPluginEnableMessage:
-			/*
-			Sent when the visual plugin is enabled. 
-			iTunes currently enables all loaded visual plugins. 
-			The plugin should not do anything here.
-			*/
+			// Sent when the visual plugin is enabled. 
+			// iTunes currently enables all loaded visual plugins. 
+			// The plugin should not do anything here.
+			
+			break;
+
         case kVisualPluginDisableMessage:
 			
             break;
 
         case kVisualPluginIdleMessage:
-			/*
-			Sent if the plugin requests idle messages. 
-			Do this by setting the kVisualWantsIdleMessages option in the RegisterVisualMessage.options field.
-			*/
+			// Sent if the plugin requests idle messages. 
+			// Do this by setting the kVisualWantsIdleMessages option in the RegisterVisualMessage.options field.
 
-			if ((theVisualPlayerState->getPlayerShowMode() & kIsShowing) == kIsShowing) {
-				VisualMain::renderAction();
-			}
+			VisualMainAction::handleIdleAndUpdateMessage();
 			
             break;
 
         case kVisualPluginConfigureMessage:
-			/*
-			Sent if the plugin requests the ability for the user to configure it. 
-			Do this by setting the kVisualWantsConfigure option in the RegisterVisualMessage.options field.
-			*/
+			// Sent if the plugin requests the ability for the user to configure it. 
+			// Do this by setting the kVisualWantsConfigure option in the RegisterVisualMessage.options field.
 
-			VisualConfigurationDialog::show();
+			VisualMainAction::showConfigurationDialog();
 
 			break;
         
-        case kVisualPluginShowWindowMessage:			
-			/*
-			Sent when iTunes is going to show the visual plugin in a port. 
-			At this point, the plugin should allocate any large buffers it needs.
-			*/
-
-			theVisualGraphics = VisualGraphics::getInstance();
+        case kVisualPluginShowWindowMessage:
+			// Sent when iTunes is going to show the visual plugin in a port. 
+			// At this point, the plugin should allocate any large buffers it needs.
+			
 			{
-				DisplayResolution thePreferredDisplayResolution = theVisualGraphics->returnPreferredDisplayResolution();
-				if (thePreferredDisplayResolution.horizontalPixels > 0) {
-					UInt16 minBitsPerPixel = 24;
-					UInt16 maxBitsPerPixel = 32;
-					VisualDataStore::setPreferredDisplayResolution(minBitsPerPixel, maxBitsPerPixel, thePreferredDisplayResolution.bitsPerPixel, thePreferredDisplayResolution.horizontalPixels, thePreferredDisplayResolution.verticalPixels);
-				}
+				VisualMainAction::setGraphicsDevice(visualPluginMessageInfo->u.showWindowMessage.GRAPHICS_DEVICE_NAME);
+				
+				VisualMainAction::setTotalVisualizerRectVerticalOffsetFromBottom(visualPluginMessageInfo->u.showWindowMessage.totalVisualizerRect.top, visualPluginMessageInfo->u.showWindowMessage.totalVisualizerRect.bottom - visualPluginMessageInfo->u.showWindowMessage.totalVisualizerRect.top);
+				VisualMainAction::setTotalVisualizerRect(visualPluginMessageInfo->u.showWindowMessage.totalVisualizerRect.top, visualPluginMessageInfo->u.showWindowMessage.totalVisualizerRect.left, visualPluginMessageInfo->u.showWindowMessage.totalVisualizerRect.bottom, visualPluginMessageInfo->u.showWindowMessage.totalVisualizerRect.right);
+				VisualMainAction::setDrawRect(visualPluginMessageInfo->u.showWindowMessage.drawRect.top, visualPluginMessageInfo->u.showWindowMessage.drawRect.left, visualPluginMessageInfo->u.showWindowMessage.drawRect.bottom, visualPluginMessageInfo->u.showWindowMessage.drawRect.right);
+				bool isFullscreen = ((visualPluginMessageInfo->u.showWindowMessage.options & kWindowIsFullScreen) > 0);
+				VisualMainAction::handleShowWindowMessage(isFullscreen);
 			}
 
-            if ((messageInfo->u.showWindowMessage.options & kWindowIsFullScreen) == kWindowIsFullScreen) {
-				theVisualPlayerState->setPlayerShowMode(kIsShowingInFullScreen);
-            } else {
-				theVisualPlayerState->setPlayerShowMode(kIsShowingInWindow);
-            }
-            
-			theVisualGraphics = VisualGraphics::getInstance();
-			theVisualGraphics->isSetupForFullScreenMode((bool)((messageInfo->u.showWindowMessage.options & kWindowIsFullScreen) == kWindowIsFullScreen));
-#if TARGET_OS_MAC
-			theVisualGraphics->setGraphicsDevicePort(messageInfo->u.showWindowMessage.port);
-#endif
-#if TARGET_OS_WIN
-			theVisualGraphics->setGraphicsDevicePort(messageInfo->u.showWindowMessage.window);
-#endif
-			theVisualGraphics->setCanvasRect(&messageInfo->u.showWindowMessage.drawRect);
-            VisualMain::handleShowShouldStartMessage((bool)((messageInfo->u.showWindowMessage.options & kWindowIsFullScreen) == kWindowIsFullScreen));
-			
-			if ((theVisualPlayerState->getPlayerShowMode() & kIsShowing) == kIsShowing) {
-				VisualMain::renderAction();
-			}
-			
-			
             break;
 
         case kVisualPluginHideWindowMessage:
-			/*
-			Sent when iTunes is no longer displayed.
-			*/
-                        
-            theVisualPlayerState->setPlayerShowMode(kIsNotShowing);
+			// Sent when iTunes is no longer displayed.
+
+			VisualMainAction::handleHideWindowMessage();
 			
-			VisualMain::finishRenderAction();
-			
-			VisualDataStore::setAudioMetaDataHasBeenSentToEnsemble(false);
+			VisualMainAction::closeThreads();
             
             break;
 		
         case kVisualPluginSetWindowMessage:
-			/*
-			Sent when iTunes needs to change the port or rectangle of the currently displayed visual.
-			*/
-			
-            theVisualGraphics = VisualGraphics::getInstance();
-			theVisualGraphics->isSetupForFullScreenMode((bool)((messageInfo->u.setWindowMessage.options & kWindowIsFullScreen) == kWindowIsFullScreen));
-			theVisualGraphics->setCanvasRect(&messageInfo->u.setWindowMessage.drawRect);
-			VisualMain::handleCanvasReshape();									
+			// Sent when iTunes needs to change the port or rectangle of the currently displayed visual.
 
-			if ((theVisualPlayerState->getPlayerShowMode() & kIsShowing) == kIsShowing) {
-				VisualMain::renderAction();
+			{
+				VisualMainAction::setTotalVisualizerRectVerticalOffsetFromBottom(visualPluginMessageInfo->u.setWindowMessage.totalVisualizerRect.top, visualPluginMessageInfo->u.setWindowMessage.totalVisualizerRect.bottom - visualPluginMessageInfo->u.setWindowMessage.totalVisualizerRect.top);
+				VisualMainAction::setTotalVisualizerRect(visualPluginMessageInfo->u.setWindowMessage.totalVisualizerRect.top, visualPluginMessageInfo->u.setWindowMessage.totalVisualizerRect.left, visualPluginMessageInfo->u.setWindowMessage.totalVisualizerRect.bottom, visualPluginMessageInfo->u.setWindowMessage.totalVisualizerRect.right);
+				VisualMainAction::setDrawRect(visualPluginMessageInfo->u.setWindowMessage.drawRect.top, visualPluginMessageInfo->u.setWindowMessage.drawRect.left, visualPluginMessageInfo->u.setWindowMessage.drawRect.bottom, visualPluginMessageInfo->u.setWindowMessage.drawRect.right);
+				bool isFullscreen = ((visualPluginMessageInfo->u.setWindowMessage.options & kWindowIsFullScreen) > 0);
+				VisualMainAction::handleSetWindowMessage(isFullscreen);
 			}
-			
+
             break;
         
         case kVisualPluginRenderMessage:
-			/*
-			Sent for the visual plugin to render a frame.
-			*/
-			
-			//theVisualPlayerState->setTrackPlayPositionInMS(messageInfo->u.renderMessage.currentPositionInMS);
-			
-			/*
-			theVisualAudioLab = VisualAudioLab::getInstance();
-			if (messageInfo->u.renderMessage.timeStampID != theVisualAudioLab->getCurrTimestampIDOfRenderData()) {
-				theVisualAudioLab->processAudioData(
-									messageInfo->u.renderMessage.renderData->numWaveformChannels, 
-									kVisualNumWaveformEntries, 
-									(UInt8*)messageInfo->u.renderMessage.renderData->waveformData, 
-									messageInfo->u.renderMessage.renderData->numSpectrumChannels, 
-									kVisualNumSpectrumEntries, 
-									(UInt8*)messageInfo->u.renderMessage.renderData->spectrumData
-								);
-				theVisualAudioLab->setCurrTimestampIDOfRenderData(messageInfo->u.renderMessage.timeStampID);
-			}
-			*/
+			// Sent for the visual plugin to render a frame.
 
-			globalPM->pcm->addPCM8_512(messageInfo->u.renderMessage.renderData->waveformData);
-
-			if ((theVisualPlayerState->getPlayerShowMode() & kIsShowing) == kIsShowing) {
-				VisualMain::renderAction();
-            }
+			VisualMainAction::handleRenderMessage(visualPluginMessageInfo->u.renderMessage.currentPositionInMS, visualPluginMessageInfo->u.renderMessage.timeStampID, visualPluginMessageInfo->u.renderMessage.renderData->numWaveformChannels, kVisualNumWaveformEntries, (char*)visualPluginMessageInfo->u.renderMessage.renderData->waveformData, visualPluginMessageInfo->u.renderMessage.renderData->numSpectrumChannels, kVisualNumSpectrumEntries, (char*)visualPluginMessageInfo->u.renderMessage.renderData->spectrumData);
 			
             break;
 
 		case kVisualPluginDisplayChangedMessage:
-			/* 
-			Something about display state changed 
-			*/
+			// Something about display state changed 
 			
 			break;
 	
         case kVisualPluginUpdateMessage:
-			/*
-			Sent in response to an update event. 
-			The visual plugin should update into its remembered port. 
-			This will only be sent if the plugin has been previously given a ShowWindow message.
-			*/
+			// Sent in response to an update event. 
+			// The visual plugin should update into its remembered port. 
+			// This will only be sent if the plugin has been previously given a ShowWindow message.
 			
-			if ((theVisualPlayerState->getPlayerShowMode() & kIsShowing) == kIsShowing) {
-				VisualMain::renderAction();
-			}
+			VisualMainAction::handleIdleAndUpdateMessage();
 			
             break;        
 
         case kVisualPluginPlayMessage:
-			/*
-			Sent when the player starts.
-			*/
-/*
-			if ((theVisualPlayerState->getAudioPlayState() & kAudioPlayPaused) != kAudioPlayPaused) {
-				theVisualAudioLab = VisualAudioLab::getInstance();
-				theVisualAudioLab->resetVisualAudioLabData();
+			// Sent when the player starts.
+
+			{
+			
+				VisualMainAction::resetVisualAudioLabDataIfNotPaused();
+				VisualMainAction::resetCurrAudioMetaData();
+			
+				bool isAudioStream = false;
+				if (visualPluginMessageInfo->u.playMessage.streamInfoUnicode) {
+					isAudioStream = (bool)(visualPluginMessageInfo->u.playMessage.streamInfoUnicode->streamTitle[0] > 0 ||
+											visualPluginMessageInfo->u.playMessage.streamInfoUnicode->streamMessage[0] > 0 ||
+											visualPluginMessageInfo->u.playMessage.streamInfoUnicode->streamURL[0] > 0);
+				} else if (visualPluginMessageInfo->u.playMessage.streamInfo) {
+					isAudioStream = (bool)(visualPluginMessageInfo->u.playMessage.streamInfo->streamTitle[0] > 0 ||
+											visualPluginMessageInfo->u.playMessage.streamInfo->streamMessage[0] > 0 ||
+											visualPluginMessageInfo->u.playMessage.streamInfo->streamURL[0] > 0);
+				}
+
+				if (isAudioStream) {
+					if (visualPluginMessageInfo->u.playMessage.streamInfoUnicode) {
+						VisualMain::storeAudioStreamMetadata(const_cast<const ITStreamInfo*>(visualPluginMessageInfo->u.playMessage.streamInfoUnicode));
+					} else if (visualPluginMessageInfo->u.playMessage.streamInfo) {
+						VisualMain::storeAudioStreamMetadata(const_cast<const ITStreamInfoV1*>(visualPluginMessageInfo->u.playMessage.streamInfo));
+					}
+				}
+				bool trackDidChange = VisualMain::storeAudioTrackMetadata(visualPluginMessageInfo->u.playMessage.trackInfoUnicode, isAudioStream);
+							
+				VisualMainAction::handleAudioPlayStartedEvent(trackDidChange);
+			    
 			}
-*/
-			if (messageInfo->u.playMessage.streamInfoUnicode->streamTitle[0] > 0 ||
-				messageInfo->u.playMessage.streamInfoUnicode->streamMessage[0] > 0 ||
-				messageInfo->u.playMessage.streamInfoUnicode->streamURL[0] > 0) {
-				trackDidChange = VisualDataStore::storeAudioStreamMetadata(messageInfo->u.playMessage.streamInfoUnicode);
-			} else {
-				trackDidChange = VisualDataStore::storeAudioTrackMetadata(messageInfo->u.playMessage.trackInfoUnicode);
-			}
-						
-			VisualMain::handleAudioPlayStartedEvent(trackDidChange);
-            
-			/*
-            struct SoundComponentData {
-                long                flags;
-                OSType              format;
-                short               numChannels;
-                short               sampleSize;
-                UnsignedFixed       sampleRate;
-                long                sampleCount;
-                Byte *              buffer;
-                long                reserved;
-            };
-			*/
-            
+
             break;
 
         case kVisualPluginChangeTrackMessage:
-			/*
-			Sent when the player changes the current track information. 
-			This is used when the information about a track changes, 
-			or when the CD moves onto the next track. 
-			The visual plugin should update any displayed information about the currently playing song.
-			*/
-	/*		
-			if ((theVisualPlayerState->getAudioPlayState() & kAudioPlayPaused) != kAudioPlayPaused) {
-				theVisualAudioLab = VisualAudioLab::getInstance();
-				theVisualAudioLab->resetVisualAudioLabData();
-			}
-			*/
-
-			char *title;
+			// Sent when the player changes the current track information. 
+			// This is used when the information about a track changes, 
+			// or when the CD moves onto the next track. 
+			// The visual plugin should update any displayed information about the currently playing song.
 			
-
-			if (messageInfo->u.changeTrackMessage.streamInfoUnicode->streamTitle[0] > 0 ||
-				messageInfo->u.changeTrackMessage.streamInfoUnicode->streamMessage[0] > 0 ||
-				messageInfo->u.changeTrackMessage.streamInfoUnicode->streamURL[0] > 0) {
-				trackDidChange = VisualDataStore::storeAudioStreamMetadata(messageInfo->u.changeTrackMessage.streamInfoUnicode);
-			
-				//globalPM->projectM_setTitle(messageInfo->u.changeTrackMessage.streamInfo->streamTitle);
+			{
+				VisualMainAction::resetCurrAudioMetaData();
 				
-				//CopyPascalStringToC(messageInfo->u.changeTrackMessage.streamInfo->streamTitle, title);
+				bool isAudioStream = false;
+				if (visualPluginMessageInfo->u.changeTrackMessage.streamInfoUnicode) {
+					isAudioStream = (bool)(visualPluginMessageInfo->u.changeTrackMessage.streamInfoUnicode->streamTitle[0] > 0 ||
+											visualPluginMessageInfo->u.changeTrackMessage.streamInfoUnicode->streamMessage[0] > 0 ||
+											visualPluginMessageInfo->u.changeTrackMessage.streamInfoUnicode->streamURL[0] > 0);
+				} else if (visualPluginMessageInfo->u.changeTrackMessage.streamInfo) {
+					isAudioStream = (bool)(visualPluginMessageInfo->u.changeTrackMessage.streamInfo->streamTitle[0] > 0 ||
+											visualPluginMessageInfo->u.changeTrackMessage.streamInfo->streamMessage[0] > 0 ||
+											visualPluginMessageInfo->u.changeTrackMessage.streamInfo->streamURL[0] > 0);
+				}
 
-
-			} else {
-				trackDidChange = VisualDataStore::storeAudioTrackMetadata(messageInfo->u.changeTrackMessage.trackInfoUnicode);
-					//CopyPascalStringToC(messageInfo->u.changeTrackMessage.trackInfo->name, title);
+				if (isAudioStream) {
+					if (visualPluginMessageInfo->u.changeTrackMessage.streamInfoUnicode) {
+						VisualMain::storeAudioStreamMetadata(const_cast<const ITStreamInfo*>(visualPluginMessageInfo->u.changeTrackMessage.streamInfoUnicode));
+					} else if (visualPluginMessageInfo->u.changeTrackMessage.streamInfo) {
+						VisualMain::storeAudioStreamMetadata(const_cast<const ITStreamInfoV1*>(visualPluginMessageInfo->u.changeTrackMessage.streamInfo));
+					}
+				}
+				bool trackDidChange = VisualMain::storeAudioTrackMetadata(visualPluginMessageInfo->u.changeTrackMessage.trackInfoUnicode, isAudioStream);
+				
+				if (trackDidChange) {
+					VisualMainAction::resetVisualAudioLabDataIfNotPaused();
+					VisualMainAction::handleAudioPlayStartedEvent(trackDidChange);
+				}
 			}
-			
-			
-			//thissucks = new std::string(title);
 
-			//globalPM->projectM_setTitle(thissucks);
-
-			VisualMain::handleAudioPlayStartedEvent(trackDidChange);
-
-			
             break;
 
         case kVisualPluginStopMessage:
-			/*
-			Sent when the player stops.
-			*/
+			// Sent when the player stops.
 
-            VisualMain::handleAudioPlayStoppedEvent();
+            VisualMainAction::handleAudioPlayStoppedEvent();
 			
             break;
         
         case kVisualPluginSetPositionMessage:
-			/*
-			Sent when the player changes position.
-			*/
+			// Sent when the player changes position.
 
-			theVisualPlayerState->setTrackPlayPositionInMS(messageInfo->u.setPositionMessage.positionTimeInMS);
+			VisualMainAction::setTrackPlayPositionInMS(visualPluginMessageInfo->u.setPositionMessage.positionTimeInMS);
 			
             break;
 
         case kVisualPluginPauseMessage:
-			/*
-			Sent when the player pauses. 
-			iTunes does not currently use pause or unpause.
-			A pause in iTunes is handled by stopping and remembering the position.
-			*/
+			// Sent when the player pauses. 
+			// iTunes does not currently use pause or unpause.
+			// A pause in iTunes is handled by stopping and remembering the position.
 			
-			VisualMain::handleAudioPlayStoppedEvent();
+			VisualMainAction::handleAudioPlayStoppedEvent();
 
             break;
                 
         case kVisualPluginUnpauseMessage:
-			/*
-			Sent when the player unpauses. 
-			iTunes does not currently use pause or unpause.
-			A pause in iTunes is handled by stopping and remembering the position.
-			*/
+			// Sent when the player unpauses. 
+			// iTunes does not currently use pause or unpause.
+			// A pause in iTunes is handled by stopping and remembering the position.
 			
-            trackDidChange = false;
-            VisualMain::handleAudioPlayStartedEvent(trackDidChange);
-            
+			{
+				bool trackDidChange = false;
+				VisualMainAction::handleAudioPlayStartedEvent(trackDidChange);
+			}
+			
             break;        
 
         case kVisualPluginEventMessage:
-			/*
-			Sent to the plugin in response to a OS event. 
-			The plugin should return noErr for any event it handles completely, 
-			or an error (unimpErr) if iTunes should handle it.
-			*/
+			// Sent to the plugin in response to a OS event. 
+			// The plugin should return noErr for any event it handles completely, 
+			// or an error (unimpErr) if iTunes should handle it.
 			
-			eventPtr = messageInfo->u.eventMessage.event;
-			/*
-			if ((eventPtr->what == keyDown) || (eventPtr->what == autoKey)) {
-				char theChar = (char)(eventPtr->message & charCodeMask);
-			*/
+			{
+				EventRecord* eventPtr = visualPluginMessageInfo->u.eventMessage.event;
+				VisualMainAction::handleOSEvent((void*)eventPtr);
+			}
 
-			projectMEvent event;
-            projectMKeycode keycode;
-            projectMModifier mod;
-           
-            event = carbon2pmEvent( messageInfo->u.eventMessage.event );
-            keycode = carbon2pmKeycode( messageInfo->u.eventMessage.event );
+			status = unimpErr; // each event should be passed on to iTunes
 
-            if ( keycode == ' ' ) {
-                status = unimpErr;
-              }
-            globalPM->key_handler( event, keycode, mod );            				
-			status = noErr; // each key is passed on to iTunes
-
-			
             break;
 
         default:
@@ -786,25 +509,32 @@ OSStatus VisualMain::VisualPluginHandler(OSType message, VisualPluginMessageInfo
 }
 
 
-OSStatus VisualMain::RegisterVisualPlugin(PluginMessageInfo* messageInfo) {
+OSStatus VisualMain::RegisterVisualPlugin(PluginMessageInfo* pluginMessageInfo) {
 
-	OSType visualPluginCreator = 'hook';
-    OSStatus status;
     PlayerMessageInfo playerMessageInfo;
     
     memset(&playerMessageInfo.u.registerVisualPluginMessage, 0, sizeof(playerMessageInfo.u.registerVisualPluginMessage));
+	
+	playerMessageInfo.u.registerVisualPluginMessage.options = (kVisualWantsConfigure | kVisualWantsIdleMessages | kVisualProvidesUnicodeName);
 
-    playerMessageInfo.u.registerVisualPluginMessage.name[0] = (UInt8)strlen(VisualConfiguration::kVisualPluginShowName);
-    memcpy(&playerMessageInfo.u.registerVisualPluginMessage.name[1], VisualConfiguration::kVisualPluginShowName, strlen(VisualConfiguration::kVisualPluginShowName));
+    playerMessageInfo.u.registerVisualPluginMessage.name[0] = (UInt8)strlen(VisualConfiguration::visualizerShowName);
+    memcpy(&playerMessageInfo.u.registerVisualPluginMessage.name[1], VisualConfiguration::visualizerShowName, strlen(VisualConfiguration::visualizerShowName));
+	
+	uint32 numberOfCharactersOfVisualizerShowNameUnicode = 0;
+	uint16* visualizerShowNameUnicode = VisualConfiguration::getVisualizerShowNameUnicode(numberOfCharactersOfVisualizerShowNameUnicode);
+	playerMessageInfo.u.registerVisualPluginMessage.unicodeName[0] = numberOfCharactersOfVisualizerShowNameUnicode;
+	for (uint32 i = 0; i < numberOfCharactersOfVisualizerShowNameUnicode; i++) {
+		playerMessageInfo.u.registerVisualPluginMessage.unicodeName[i + 1] = visualizerShowNameUnicode[i];
+	}
     
-    SetNumVersion(&playerMessageInfo.u.registerVisualPluginMessage.pluginVersion, gVisualPluginMajorVersion, gVisualPluginMinorVersion, gVisualPluginReleaseStage, gVisualPluginNonFinalRelease);
-    
-	playerMessageInfo.u.registerVisualPluginMessage.options = (kVisualWantsConfigure | kVisualWantsIdleMessages);
+	const UInt8 stage = 0x80; // (dev = 0x20, alpha = 0x40, beta = 0x60, final = 0x80)
+	SetNumVersion(&playerMessageInfo.u.registerVisualPluginMessage.pluginVersion, VisualConfiguration::getMajorReleaseNumberAsBCD(), VisualConfiguration::getMinorReleaseNumberAsBCD(), stage, VisualConfiguration::getReleaseRevisionNumber());
     
     playerMessageInfo.u.registerVisualPluginMessage.handler = (VisualPluginProcPtr)VisualMain::VisualPluginHandler;
 
     playerMessageInfo.u.registerVisualPluginMessage.registerRefCon = 0;
 	
+	OSType visualPluginCreator = 'hook';
 	playerMessageInfo.u.registerVisualPluginMessage.creator = visualPluginCreator;
     
     playerMessageInfo.u.registerVisualPluginMessage.timeBetweenDataInMS = 0xFFFFFFFF; // 16 milliseconds = 1 Tick, 0xFFFFFFFF = Often as possible.
@@ -819,7 +549,7 @@ OSStatus VisualMain::RegisterVisualPlugin(PluginMessageInfo* messageInfo) {
     playerMessageInfo.u.registerVisualPluginMessage.maxFullScreenBitDepth = 0; /* 0 = Any */
     playerMessageInfo.u.registerVisualPluginMessage.windowAlignmentInBytes = 0; /* Reserved (should be zero) */
     
-    status = PlayerRegisterVisualPlugin(messageInfo->u.initMessage.appCookie, messageInfo->u.initMessage.appProc, &playerMessageInfo);
+    OSStatus status = PlayerRegisterVisualPlugin(pluginMessageInfo->u.initMessage.appCookie, pluginMessageInfo->u.initMessage.appProc, &playerMessageInfo);
     
     return status;
 	
@@ -827,22 +557,25 @@ OSStatus VisualMain::RegisterVisualPlugin(PluginMessageInfo* messageInfo) {
 
 
 #if TARGET_OS_MAC
-OSStatus iTunesPluginMainMachO(OSType message, PluginMessageInfo* messageInfo, void* refCon)
+OSStatus iTunesPluginMainMachO(OSType message, PluginMessageInfo* pluginMessageInfo, void* refCon)
 #endif
 #if TARGET_OS_WIN
-OSStatus iTunesPluginMain(OSType message, PluginMessageInfo* messageInfo, void* refCon)
+OSStatus iTunesPluginMain(OSType message, PluginMessageInfo* pluginMessageInfo, void* refCon)
 #endif
 {
     OSStatus status;
     
-    (void) refCon;
-    
     switch (message) {
         case kPluginInitMessage:
-            status = VisualMain::RegisterVisualPlugin(messageInfo);
+			pluginMessageInfo->u.initMessage.options = kPluginWantsDisplayNotification;
+            status = VisualMain::RegisterVisualPlugin(pluginMessageInfo);
             break;
                 
         case kPluginCleanupMessage:
+            status = noErr;
+            break;
+
+        case kPluginPrepareToQuitMessage:
             status = noErr;
             break;
                 

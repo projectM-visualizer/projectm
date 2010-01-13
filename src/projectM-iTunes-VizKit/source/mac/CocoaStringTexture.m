@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: CocoaStringTexture.m
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -42,26 +42,29 @@ freely, subject to the following restrictions:
 
 CGContextRef CreateBitmapContext( int inWidth, int inHeight, void ** outBitmap );
 
-__private_extern__ BOOL fontIsAvailable(NSString* fontName);
-__private_extern__ OSStatus activateFont(NSString* fontName);
+BOOL appLoadVal = NO;
 
 
 OSStatus initCocoaForCarbonBundle() {
 
-	BOOL appLoadVal;
+	if (appLoadVal == YES) {
+		return noErr;
+	}
 	
 	appLoadVal = NSApplicationLoad();
 	if (appLoadVal == NO) {
-		NSLog (@"NSApplicationLoad failed\n");
+		NSLog (@"VizKit: NSApplicationLoad failed\n");
 	}
 
     return noErr;
 }
 
 
-BOOL fontIsAvailable(NSString* fontName) {
+Boolean cocoaFontIsAvailable(NSString* fontName) {
 
-	BOOL fontIsActive = NO;
+	initCocoaForCarbonBundle();
+
+	Boolean result = false;
 
 	NSString* fontNameStr;
 	NSArray* fontArray;
@@ -73,54 +76,39 @@ BOOL fontIsAvailable(NSString* fontName) {
 	e = [fontArray objectEnumerator];
 	while ((fontNameStr = [e nextObject])) {
 		if ([fontNameStr isEqualToString:fontName]) {
-			fontIsActive = YES;
+			result = true;
 		}
 		/* NSLog(fontNameStr); */
 	}
-
-	return fontIsActive;
+	
+	return result;
 
 }
 
 
-OSStatus activateFont(NSString* fontName) {
+OSStatus activateCocoaFont(NSString* fontName) {
+
+	initCocoaForCarbonBundle();
 
 	OSStatus status = noErr;
 	OSErr err = noErr;
-	
-	BOOL fontIsActive = NO;
 
-	NSString* fontNameStr;
-	NSArray* fontArray;
-	NSEnumerator* e;
-
-	NSFontManager* fontManager = [NSFontManager sharedFontManager];
-
-	fontArray = [fontManager availableFonts];
-	e = [fontArray objectEnumerator];
-	while ((fontNameStr = [e nextObject])) {
-		if ([fontNameStr isEqualToString:fontName]) {
-			fontIsActive = YES;
-		}
+	/* assume Font is available as resource of bundle */
+	FSRef fsRef;
+	FSSpec fsSpec;
+	NSBundle* appBundle = [NSBundle bundleWithIdentifier:[NSString stringWithCString:getVisualPluginDomainIdentifier() encoding:NSUTF8StringEncoding]];
+	NSString* fontsPath = [appBundle resourcePath];
+	fontsPath = [fontsPath stringByAppendingString: @"/DEVROYE_.otf"];
+	status = FSPathMakeRef((UInt8 *)[fontsPath UTF8String], &fsRef, NULL);
+	if (status == noErr) {
+		err = FSGetCatalogInfo(&fsRef, kFSCatInfoNone, NULL, NULL, &fsSpec, NULL);
 	}
-
-	if (fontIsActive == NO) {
-		/* assume Font is available as resource of bundle */
-		FSRef fsRef;
-		FSSpec fsSpec;
-		NSBundle* appBundle = [NSBundle bundleWithIdentifier:[NSString stringWithCString:getVisualPluginDomainIdentifier()]];
-		/* NSString * fontsPath = [[appBundle resourcePath] stringByAppendingPathComponent:fontName]; */
-		NSString* fontsPath = [appBundle resourcePath];
-		status = FSPathMakeRef((UInt8 *)[fontsPath UTF8String], &fsRef, NULL);
-		if (status == noErr) {
-			err = FSGetCatalogInfo(&fsRef, kFSCatInfoNone, NULL, NULL, &fsSpec, NULL);
-		}
-		if (err == noErr) {
-			ATSFontContainerRef anATSFontContainerRef;
-			status = ATSFontActivateFromFileSpecification(&fsSpec, kATSFontContextLocal, kATSFontFormatUnspecified, NULL, kATSOptionFlagsDefault, &anATSFontContainerRef);
-		} else {
-			status = 1000;
-		}
+	if (err == noErr) {
+		ATSFontContainerRef anATSFontContainerRef;
+		status = ATSFontActivateFromFileSpecification(&fsSpec, kATSFontContextLocal, kATSFontFormatUnspecified, NULL, kATSOptionFlagsDefault, &anATSFontContainerRef);
+		// ATSFontActivateFromFileReference
+	} else {
+		status = 1001;
 	}
 
 	return status;
@@ -128,12 +116,17 @@ OSStatus activateFont(NSString* fontName) {
 }
 
 
-OSStatus getDimensionsOfStringBitmap(CFStringRef stringValue, UInt32* imageWidth, UInt32* imageHeight, const char* const fontNameStr, float* fontSize, float red, float green, float blue, UInt16 maxPixelWidth, UInt16 maxPixelHeight, const char* const alignment) {
+bool getDimensionsOfStringBitmap(CFStringRef stringValue, UInt32* imageWidth, UInt32* imageHeight, const char* const fontNameStr, double* fontSize, double red, double green, double blue, UInt16 maxPixelWidth, UInt16 maxPixelHeight, const char* const alignment) {
 
+	initCocoaForCarbonBundle();
+	
+	if (!stringValue) {
+		return false;
+	}
+	
 	NSAutoreleasePool* localPool = [[NSAutoreleasePool alloc] init];
 	
 	NSString* aFontNameStr;
-	OSStatus err;
 	
 	NSColor* textColor;
 	NSColor* boxColor;
@@ -144,7 +137,6 @@ OSStatus getDimensionsOfStringBitmap(CFStringRef stringValue, UInt32* imageWidth
 	NSMutableAttributedString* theAttributedString;
 	NSMutableDictionary* fontAttribs;
 
-	BOOL theFontIsAvailable;
 	NSGraphicsContext* context = NULL;
 	
 	context = [NSGraphicsContext currentContext];
@@ -152,39 +144,9 @@ OSStatus getDimensionsOfStringBitmap(CFStringRef stringValue, UInt32* imageWidth
 	
 	aFontNameStr = [[NSString alloc] initWithCStringNoCopy:(char*)fontNameStr length:strlen(fontNameStr) freeWhenDone:NO];
 	
-	theFontIsAvailable = fontIsAvailable(aFontNameStr);
-
-	if (theFontIsAvailable == NO) {
-		/* if the font is not available we will load it as private resource of our bundle */
-		err = activateFont(aFontNameStr);
-		if (err != noErr) {
-			return 1000;
-		} else {
-			BOOL fontIsActive = NO;
-			NSString* fontName;
-			NSArray* fontArray;
-			NSEnumerator* e;
-
-			NSFontManager* fontManager = [NSFontManager sharedFontManager];
-
-			fontArray = [fontManager availableFonts];
-			e = [fontArray objectEnumerator];
-			while ((fontName = [e nextObject])) {
-				if ([fontName isEqualToString:aFontNameStr]) {
-					fontIsActive = YES;
-				}
-			}
-			if (fontIsActive == NO) {
-				/* default fallback font */
-				//[aFontNameStr release];
-				//aFontNameStr = [[NSString alloc] initWithCStringNoCopy:"Lucida Grande" length:strlen("Lucida Grande") freeWhenDone:NO];
-			}
-		}
-	}
-	
     fontAttribs = [NSMutableDictionary dictionary];
-	[fontAttribs setObject: [NSFont fontWithName:aFontNameStr size: *fontSize] forKey:NSFontAttributeName];
-	[fontAttribs setObject: [NSColor colorWithDeviceRed:red green:green blue:blue alpha:1.0f] forKey: NSForegroundColorAttributeName];
+	[fontAttribs setObject: [NSFont fontWithName:aFontNameStr size: (float)*fontSize] forKey:NSFontAttributeName];
+	[fontAttribs setObject: [NSColor colorWithDeviceRed:(float)red green:(float)green blue:(float)blue alpha:1.0f] forKey: NSForegroundColorAttributeName];
 
 	theAttributedString = [[NSMutableAttributedString alloc] initWithString:(NSString*)stringValue attributes:fontAttribs];
 	
@@ -192,21 +154,21 @@ OSStatus getDimensionsOfStringBitmap(CFStringRef stringValue, UInt32* imageWidth
 	if (maxPixelWidth > 0 && maxPixelHeight > 0) {
 		while ((frameSize.width > (float)maxPixelWidth) || (frameSize.height > (float)maxPixelHeight)) {
 			*fontSize -= 0.1f;
-			[fontAttribs setObject: [NSFont fontWithName:aFontNameStr size:*fontSize] forKey:NSFontAttributeName];
+			[fontAttribs setObject: [NSFont fontWithName:aFontNameStr size:(float)*fontSize] forKey:NSFontAttributeName];
 			[theAttributedString setAttributes:fontAttribs range:NSMakeRange(0, [theAttributedString length])];
 			frameSize = [theAttributedString size];
 		}
 	} else if (maxPixelWidth > 0) {
 		while (frameSize.width > (float)maxPixelWidth) {
 			*fontSize -= 0.1f;
-			[fontAttribs setObject: [NSFont fontWithName:aFontNameStr size:*fontSize] forKey:NSFontAttributeName];
+			[fontAttribs setObject: [NSFont fontWithName:aFontNameStr size:(float)*fontSize] forKey:NSFontAttributeName];
 			[theAttributedString setAttributes:fontAttribs range:NSMakeRange(0, [theAttributedString length])];
 			frameSize = [theAttributedString size];
 		}
 	} else if (maxPixelHeight > 0) {
 		while (frameSize.height > (float)maxPixelHeight) {
 			*fontSize -= 0.1f;
-			[fontAttribs setObject: [NSFont fontWithName:aFontNameStr size:*fontSize] forKey:NSFontAttributeName];
+			[fontAttribs setObject: [NSFont fontWithName:aFontNameStr size:(float)*fontSize] forKey:NSFontAttributeName];
 			[theAttributedString setAttributes:fontAttribs range:NSMakeRange(0, [theAttributedString length])];
 			frameSize = [theAttributedString size];
 		}
@@ -220,7 +182,7 @@ OSStatus getDimensionsOfStringBitmap(CFStringRef stringValue, UInt32* imageWidth
 		[theAttributedString setAlignment:NSRightTextAlignment range:NSMakeRange(0, [theAttributedString length])];
 	}
 	
-	textColor = [NSColor colorWithDeviceRed:red green:green blue:blue alpha:1.0f];
+	textColor = [NSColor colorWithDeviceRed:(float)red green:(float)green blue:(float)blue alpha:1.0f];
 	boxColor = [NSColor colorWithDeviceRed:0.0f green:0.0f blue:0.0f alpha:0.0f];
 	borderColor = [NSColor colorWithDeviceRed:0.0f green:0.0f blue:0.0f alpha:0.0f];
 
@@ -242,16 +204,19 @@ OSStatus getDimensionsOfStringBitmap(CFStringRef stringValue, UInt32* imageWidth
 
     [localPool release];
 
-    return noErr;
+    return true;
 }
 
 
-OSStatus getStringBitmapData(CFStringRef stringValue, UInt32 bitmapWidth, UInt32 bitmapHeight, const char* const fontNameStr, float fontSize, float red, float green, float blue, const char* const alignment, UInt32** bitmapOut) {
+bool getStringBitmapData(CFStringRef stringValue, UInt32 bitmapWidth, UInt32 bitmapHeight, const char* const fontNameStr, double fontSize, double red, double green, double blue, const char* const alignment, UInt32** bitmapOut) {
 
+	initCocoaForCarbonBundle();
+	
 	NSAutoreleasePool* localPool = [[NSAutoreleasePool alloc] init];
 	
+	bool success = true;
+	
 	NSString* aFontNameStr;
-	OSStatus err;
 	
 	NSColor* textColor;
 	NSColor* boxColor;
@@ -267,47 +232,19 @@ OSStatus getStringBitmapData(CFStringRef stringValue, UInt32 bitmapWidth, UInt32
 	UInt32* from;
 	UInt32* to;
 	BOOL hasAlpha;
-	BOOL theFontIsAvailable;
 	NSGraphicsContext* context = NULL;
+	float imageWidth = 0.0f;
+	float imageHeight = 0.0f;
 	
 	context = [NSGraphicsContext currentContext];
 	[context saveGraphicsState];
 	
 	aFontNameStr = [[NSString alloc] initWithCStringNoCopy:(char*)fontNameStr length:strlen(fontNameStr) freeWhenDone:NO];
 	
-	theFontIsAvailable = fontIsAvailable(aFontNameStr);
-
-	if (theFontIsAvailable == NO) {
-		/* if the font is not available we will load it as private resource of our bundle */
-		err = activateFont(aFontNameStr);
-		if (err != noErr) {
-			return 1001;
-		} else {
-			BOOL fontIsActive = NO;
-			NSString* fontName;
-			NSArray* fontArray;
-			NSEnumerator* e;
-
-			NSFontManager* fontManager = [NSFontManager sharedFontManager];
-
-			fontArray = [fontManager availableFonts];
-			e = [fontArray objectEnumerator];
-			while ((fontName = [e nextObject])) {
-				if ([fontName isEqualToString:aFontNameStr]) {
-					fontIsActive = YES;
-				}
-			}
-			if (fontIsActive == NO) {
-				/* default fallback font */
-				//[aFontNameStr release];
-				//aFontNameStr = [[NSString alloc] initWithCStringNoCopy:"Lucida Grande" length:strlen("Lucida Grande") freeWhenDone:NO];
-			}
-		}
-	}
-	
     fontAttribs = [NSMutableDictionary dictionary];
-	[fontAttribs setObject: [NSFont fontWithName:aFontNameStr size: fontSize] forKey:NSFontAttributeName];
-	[fontAttribs setObject: [NSColor colorWithDeviceRed:red green:green blue:blue alpha:1.0f] forKey: NSForegroundColorAttributeName];
+	[fontAttribs setObject: [NSFont fontWithName:aFontNameStr size:(float)fontSize] forKey:NSFontAttributeName];
+	[fontAttribs setObject: [NSColor colorWithDeviceRed:(float)red green:(float)green blue:(float)blue alpha:1.0f] forKey:NSForegroundColorAttributeName];
+	
 	/*
 	//colorWithAlphaComponent
 	// CGImageCreate
@@ -329,7 +266,8 @@ OSStatus getStringBitmapData(CFStringRef stringValue, UInt32 bitmapWidth, UInt32
 		[theAttributedString setAlignment:NSRightTextAlignment range:NSMakeRange(0, [theAttributedString length])];
 	}
 	
-	textColor = [NSColor colorWithDeviceRed:red green:green blue:blue alpha:1.0f];
+	textColor = [NSColor colorWithDeviceRed:(float)red green:(float)green blue:(float)blue alpha:1.0f];
+	
 	boxColor = [NSColor colorWithDeviceRed:0.0f green:0.0f blue:0.0f alpha:0.0f];
 	borderColor = [NSColor colorWithDeviceRed:0.0f green:0.0f blue:0.0f alpha:0.0f];
 
@@ -351,17 +289,18 @@ NS_HANDLER
 		[localPool release];
 		return 1002;
 NS_ENDHANDLER
-	
-	[boxColor set];
-	NSRectFill(NSMakeRect (0.0f, 0.0f, frameSize.width, frameSize.height));
 
-	/* [borderColor set]; 
-	NSFrameRect (NSMakeRect (0.0f, 0.0f, frameSize.width, frameSize.height));
+	/*
+	[boxColor set];
+	NSRectFill(NSMakeRect(0.0f, 0.0f, frameSize.width, frameSize.height));
+
+	[borderColor set]; 
+	NSFrameRect(NSMakeRect(0.0f, 0.0f, frameSize.width, frameSize.height));
 	[textColor set];
 	*/
 	
-	float imageWidth = [theAttributedString size].width;
-	float imageHeight = [theAttributedString size].height;
+	imageWidth = [theAttributedString size].width;
+	imageHeight = [theAttributedString size].height;
 	[theAttributedString drawInRect:NSMakeRect(0.0f, 0.0f, imageWidth, imageHeight)];
 	
 	bitmap = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect(0.0f, 0.0f, frameSize.width, frameSize.height)];
@@ -390,17 +329,20 @@ NS_ENDHANDLER
 
     [localPool release];
 
-    return noErr;
+    return success;
 }
 
 
 void logCFString(CFStringRef aString) {
+	initCocoaForCarbonBundle();
 	NSLog(@"\"%@\"", (NSString*)aString);
 }
 
 
 CGContextRef CreateBitmapContext( int inWidth, int inHeight, void ** outBitmap )
 {
+	initCocoaForCarbonBundle();
+	
     CGContextRef    context = NULL;
     CGColorSpaceRef colorSpace;
     void *          bitmapData;
@@ -451,4 +393,101 @@ CGContextRef CreateBitmapContext( int inWidth, int inHeight, void ** outBitmap )
     CGColorSpaceRelease( colorSpace );
 
     return context;
+}
+
+
+NSComparisonResult fontNameListCompare(id obj1, id obj2, void *context);
+
+NSComparisonResult fontNameListCompare(id obj1, id obj2, void *context) {
+    /* Do the comparison here */
+	/* (CFStringRef)CFDictionaryGetValue((CFDictionaryRef)CFArrayGetValueAtIndex(fontFamilyMembersArray, k), CFSTR("fontFamilyMemberName")); */
+	return [(NSString*)[obj1 objectForKey:@"fontFamilyName"] compare:[obj2 objectForKey:@"fontFamilyName"]];
+}
+
+
+NSArray* getCocoaListOfFontNames() {
+
+	initCocoaForCarbonBundle();
+
+	temporaryAutoreleasePool = [[NSAutoreleasePool alloc] init];
+
+	NSString* fontFamilyName = nil;
+	NSArray* fontFamilyArray = nil;
+	NSEnumerator* fontFamilyArrayEnumerator = nil;
+	NSMutableArray* fontArray = nil;
+	NSMutableArray* fontFamilyMembersArray = nil;
+	NSArray* fontFamilyMembers = nil;
+	NSMutableDictionary* fontFamilyMembersDict = nil;
+	NSString* fontFamilyMemberFontName = nil;
+	NSString* fontFamilyMemberAttribute = nil;
+	NSMutableDictionary* fontFamilyDict = nil;
+	NSFontManager* fontManager = nil;
+	unsigned i = 0;
+	unsigned fontFamilyMembersCount = 0;
+	
+	fontArray = [[NSMutableArray alloc] init];
+	
+	fontManager = [NSFontManager sharedFontManager];
+	
+	fontFamilyArray = [fontManager availableFontFamilies];
+	
+	fontFamilyArrayEnumerator = [fontFamilyArray objectEnumerator];
+	while ((fontFamilyName = [fontFamilyArrayEnumerator nextObject])) {
+
+		fontFamilyDict = [[NSMutableDictionary alloc] initWithCapacity:0];
+		[fontFamilyDict setObject:fontFamilyName forKey:@"fontFamilyName"];
+		
+		fontFamilyMembers = [[NSFontManager sharedFontManager] availableMembersOfFontFamily:fontFamilyName];
+		
+		fontFamilyMembersCount = 0;
+		if (fontFamilyMembers != nil) {
+			fontFamilyMembersCount = [fontFamilyMembers count];
+		}
+		
+		if (fontFamilyMembersCount > 0) {
+		
+			fontFamilyMembersArray = [[NSMutableArray alloc] init];
+			
+			for (i = 0; i < fontFamilyMembersCount; i++) {
+				fontFamilyMembersDict = [[NSMutableDictionary alloc] initWithCapacity:0];
+				
+				fontFamilyMemberFontName = [[NSString alloc] initWithString:[[fontFamilyMembers objectAtIndex:i] objectAtIndex:0]];
+				fontFamilyMemberAttribute = [[NSString alloc] initWithString:[[fontFamilyMembers objectAtIndex:i] objectAtIndex:1]];
+
+				[fontFamilyMembersDict setObject:fontFamilyMemberFontName forKey:@"fontFamilyMemberName"];
+				[fontFamilyMembersDict setObject:fontFamilyMemberAttribute forKey:@"fontFamilyMemberAttribute"];
+				[fontFamilyMembersArray addObject:fontFamilyMembersDict];
+				
+				[fontFamilyMemberFontName release];
+				[fontFamilyMemberAttribute release];
+				
+				[fontFamilyMembersDict release];
+			}
+			[fontFamilyDict setObject:fontFamilyMembersArray forKey:@"fontFamilyMembersArray"];
+			
+			[fontFamilyMembersArray release];
+		
+		} else {
+			[fontFamilyDict setObject:nil forKey:@"fontFamilyMembersArray"];
+		}
+
+		[fontArray addObject:fontFamilyDict];
+		
+		[fontFamilyDict release];
+		
+	}
+	
+	[fontArray sortUsingFunction:fontNameListCompare context:nil];
+	
+	[fontArray autorelease];
+	
+	return fontArray;
+}
+
+
+void releaseTemporaryAutoreleasePool() {
+	initCocoaForCarbonBundle();
+	
+	[temporaryAutoreleasePool release];
+	temporaryAutoreleasePool = nil;
 }

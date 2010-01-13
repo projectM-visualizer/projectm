@@ -1,15 +1,15 @@
 /*
  * Project: VizKit
- * Version: 1.9
+ * Version: 2.3
  
- * Date: 20070503
+ * Date: 20090823
  * File: VisualActorGraphics.h
  *
  */
 
 /***************************************************************************
 
-Copyright (c) 2004-2007 Heiko Wichmann (http://www.imagomat.de/vizkit)
+Copyright (c) 2004-2009 Heiko Wichmann (http://www.imagomat.de/vizkit)
 
 
 This software is provided 'as-is', without any expressed or implied warranty. 
@@ -36,21 +36,16 @@ freely, subject to the following restrictions:
 #ifndef VisualActorGraphics_h
 #define VisualActorGraphics_h
 
+
+#include "VisualTypes.h"
 #include "VisualGraphicTypes.h" // RGBAColor
-
-#if TARGET_OS_MAC
-#include <CoreServices/../Frameworks/CarbonCore.framework/Headers/MacTypes.h>
-#endif
-
-#if TARGET_OS_WIN
-#include <QT/MacTypes.h>
-#endif
 
 
 namespace VizKit {
 
 	class VisualImage; // Forward declaration (to avoid include of header file).
 	class VisualString; // Forward declaration (to avoid include of header file).
+	class VisualCamera; // Forward declaration (to avoid include of header file).
 	
 	/**
 	 * The graphics related static functions for the Visual Actors.
@@ -69,7 +64,7 @@ namespace VizKit {
 		 * @param[out] errorString Pointer to character buffer to receive the error string.
 		 * @return Error Number.
 		 */
-		static UInt8 getError(char* errorString);
+		static uint8 getError(char* errorString);
 		
 		/**
 		 * Sets the value of the background color.
@@ -84,47 +79,49 @@ namespace VizKit {
 		static RGBAColor getBackgroundColor(void);
 
 		/**
-		 * Creates an image of the cover.
-		 * @return The image of the album cover artwork.\ Returns NULL if cover image is not available.
-		 * @remarks The caller has to release the allocated memory by calling VisualActorGraphics::releaseCoverArtImage().
+		 * Creates an image buffer with 8-bit per channel ARGB pixel data.
+		 * @param width The width of the bitmap data.
+		 * @param height The height of the bitmap data.
+		 * @return A pointer to pointer to pixel data.
 		 */
-		static VisualImage* createCoverArtImage(void);
+		static uint32* createARGBCheckPixels(uint32 width, uint32 height);
 
 		/**
-		 * Releases the allocated memory of the coverArtImage.
-		 * @param coverArtImage The image of the album cover artwork.
+		 * Creates an image buffer with 8-bit per channel BGRA pixel data.
+		 * @param width The width of the bitmap data.
+		 * @param height The height of the bitmap data.
+		 * @return A pointer to pointer to pixel data.
 		 */
-		static void releaseCoverArtImage(VisualImage** coverArtImage);
-		
+		static uint32* createBGRACheckPixels(uint32 width, uint32 height);
+
 		/**
-		 * Creates a texture of squares. Useful for testing purposes.
-		 * @param[out] textureNumber The texture number (texture name) of the generated texture.
-		 * @param[out] textureWidth The width of the generated texture.
-		 * @param[out] textureHeight The height of the generated texture.
-		 * @param[out] imageWidth The width of the image data.
-		 * @param[out] imageHeight The height of the image data.
+		 * Creates an image buffer with 8-bit per channel RGBA pixel data.
+		 * @param width The width of the bitmap data.
+		 * @param height The height of the bitmap data.
+		 * @return A pointer to pointer to pixel data.
 		 */
-		static void createCheckTexture(UInt32 &textureNumber, UInt32 &textureWidth, UInt32 &textureHeight, UInt32 &imageWidth, UInt32 &imageHeight);
+		static uint32* createRGBACheckPixels(uint32 width, uint32 height);
+
+		/**
+		 * Creates an image buffer with 8-bit per channel ABGR pixel data.
+		 * @param width The width of the bitmap data.
+		 * @param height The height of the bitmap data.
+		 * @return A pointer to pointer to pixel data.
+		 */
+		static uint32* createABGRCheckPixels(uint32 width, uint32 height);
 
 		/**
 		 * Returns a free texture name/index/number/id.
 		 * @return A free texture name/index/number.
 		 */
-		static UInt32 getNextFreeTextureName(void);
+		static uint32 getNextFreeTextureName(void);
 
 		/**
 		 * Frees memory bound by OpenGL textures.
 		 * @param numberOfTextures The number of textures to free.
 		 * @param textureNames Pointer to texture names (texture numbers) to free.
 		 */
-		static void deleteTextures(const UInt16 numberOfTextures, const UInt32* const textureNames);
-
-		/**
-		 * Draws a perspective square.
-		 * Used by template actor.
-		 * @param textureNumber The number/id/name of the texture (if any).
-		 */	
-		static void drawPerspectiveSquare(UInt32 textureNumber = NULL);
+		static void deleteTextures(const uint16 numberOfTextures, const uint32* const textureNames);
 		
 		/**
 		 * Resets the model view matrix.
@@ -181,89 +178,61 @@ namespace VizKit {
 		 * Returns the width of the canvas in pixels.
 		 * @return The width of the canvas in pixels.
 		 */
-		static UInt16 getCanvasPixelWidth(void);
+		static uint32 getCanvasPixelWidth(void);
 
 		/**
 		 * Returns the height of the canvas in pixels.
 		 * @return The height of the canvas in pixels.
 		 */
-		static UInt16 getCanvasPixelHeight(void);
+		static uint32 getCanvasPixelHeight(void);
 		
 		/**
-		 * Returns the width of the canvas in coords.
-		 * @return The width of the canvas in coords.
-		 */	
-		static double getCanvasCoordWidth(void);
-
-		/**
-		 * Returns the height of the canvas in coords.
-		 * @return The height of the canvas in coords.
-		 */	
-		static double getCanvasCoordHeight(void);
-
-		/**
-		 * Returns the maximum top position.
-		 * @return The maximum top position.
+		 * Returns the current orientation and aspect ratio of the viewport.
+		 * @return The current orientation and aspect ratio of the viewport.
 		 */
-		static double getMaxTopCoordOfCanvas(void);
-
-		/**
-		 * Returns the maximum left position.
-		 * @return The maximum left position.
-		 */
-		static double getMaxLeftCoordOfCanvas(void);
-
-		/**
-		 * Returns the maximum bottom position.
-		 * @return The maximum bottom position.
-		 */
-		static double getMaxBottomCoordOfCanvas(void);
-
-		/**
-		 * Returns the maximum right position.
-		 * @return The maximum right position.
-		 */
-		static double getMaxRightCoordOfCanvas(void);
-
-		/**
-		 * Returns the maximum near position.
-		 * @return The maximum near position.
-		 */
-		static double getMaxNearCoordOfCanvas(void);
-
-		/**
-		 * Returns the maximum far position.
-		 * @return The maximum far position.
-		 */
-		static double getMaxFarCoordOfCanvas(void);
+		static RelationalRect getViewportOrientationAndAspectRatio(void);
 
 		/**
 		 * Converts a horizontal coordinate to a horizontal pixel position.
 		 * @param coordPos The canvas coord position.
 		 * @return The canvas pixel position.
+		 * @param aCamera Camera with dimensions, position, perspective projection, and orientation of stage view.
 		 */	
-		static UInt16 xCoordToPixel(double coordPos);
+		static uint16 xCoordToPixel(double coordPos, const VisualCamera& aCamera);
 
 		/**
 		 * Converts a vertical coordinate to a horizontal pixel position.
 		 * @param coordPos The canvas coord position.
 		 * @return The canvas pixel position.
+		 * @param aCamera Camera with dimensions, position, perspective projection, and orientation of stage view.
 		 */	
-		static UInt16 yCoordToPixel(double coordPos);
+		static uint16 yCoordToPixel(double coordPos, const VisualCamera& aCamera);
 
 		/**
 		 * Converts a horizontal pixel position to a horizontal coordinate.
 		 * @param pixelPos The canvas pixel position.
 		 * @return The canvas coord position.
+		 * @param aCamera Camera with dimensions, position, perspective projection, and orientation of stage view.
 		 */	
-		static double xPixelToCoord(const UInt16 pixelPos);
+		static double xPixelToCoord(const uint16 pixelPos, const VisualCamera& aCamera);
 
 		/**
 		 * Converts a vertical pixel position to a vertical coordinate.
 		 * @param pixelPos The canvas pixel position.
 		 * @return The canvas coord position.
+		 * @param aCamera Camera with dimensions, position, perspective projection, and orientation of stage view.
 		 */		
-		static double yPixelToCoord(const UInt16 pixelPos);
+		static double yPixelToCoord(const uint16 pixelPos, const VisualCamera& aCamera);
+
+		/**
+		 * Returns a point on the outline of a circle.
+		 * @param sliceIdx The index of the requested slice.
+		 * @param slicesCount The number of slices.
+		 * @param radius The length of the radius. Default = 1.0.
+		 * @param circleCenter The center of the circle. Default is x = 0.0 and y = 0.0.
+		 * @remarks The center of the circle is at 0.0, 0.0. The number of slices determine how close the circle points are located to each other. The circle points start at the rightmost position in the middle of the circle (at 3 o'clock) and go in counter clockwise direction.
+		 */	
+		static Coord getCirclePoint(uint32 sliceIdx, uint32 slicesCount, double radius = 1.0, Coord circleCenter = zeroCoord);
 
 		/**
 		 * Draws a spot (for testing purpose).
@@ -282,28 +251,20 @@ namespace VizKit {
 		 * @param intensity The current intensity of the spot.
 		 * @param tailSize The current tailSize of the spot.
 		 */		
-		static void drawSpot(const float xNum, const float yNum, const float r, const float g, const float b, UInt16 waveformIntensityVal, float intensity, const UInt8 tailSize);
+		static void drawSpot(const double xNum, const double yNum, const double r, const double g, const double b, uint16 waveformIntensityVal, double intensity, const uint8 tailSize);
 
 		/**
-		 * Prepares the action of the cover art by setting up perspective projection and enabling depth testing.
-		 */	
-		static void prepareCoverArtAction(void);
+		 * Draws some metrics in the current scene.
+		 * @remarks For diagnostical puposes.
+		 * @param aCamera Camera with dimensions, position, perspective projection, and orientation of stage view.
+		 */
+		static void drawProjectionMetrics(const VisualCamera& aCamera);
 
 		/**
-		 * Finishes the action of the cover art.
-		 */			
-		static void finishCoverArtAction(void);
-
-		/**
-		 * Sets up a orthographic projection.
-		 */	
-		static void setOrthographicProjection(void);
-
-		/**
-		 * Sets up a perspective projection.
-		 * @param maxNearCoord The maximum near position.\ With the maxNearCoord the position of the near clipping plane of the viewing volume is set.\ By setting maxNearCoord the perspective projection (the shape of the viewing volume) can be adjusted.\ The value of maxNearCoord must be positive.
-		 */	
-		static void setPerspectiveProjection(double maxNearCoord);
+		 * Loads the identity matrix of the model view. The model view transformation are reset
+		 * @remarks It is assumed the model view is the currently active matrix mode.
+		 */
+		static void loadModelViewIdentityMatrix(void);
 
 		/**
 		 * Prepares the show of the Process Monitor.
@@ -314,11 +275,10 @@ namespace VizKit {
 		/**
 		 * Shows a row of Process Monitor Info.
 		 * The graphical operations involved in putting a row of textual process info on screen is encapsulated within this function.
-		 * @param xNum Horizontal position.
-		 * @param yNum Vertical position.
+		 * @param coord The coord where to place the text (left start position).
 		 * @param textRowStr Pointer to character buffer with process info string (label and value).
 		 */
-		static void showProcessInfoRow(double xNum, double yNum, const char* const textRowStr);
+		static void showProcessInfoRow(Coord coord, const char* const textRowStr);
 
 		/**
 		 * Shows a note about Process Monitor.
@@ -326,13 +286,22 @@ namespace VizKit {
 		static void showProcessInfoNote(void);
 
 		/**
+		 * Draws a vertex chain. Useful for debugging, monitoring or diagnistic purposes.
+		 * @param vertexChain A vector of vertices.
+		 * @param drawMode The requested draw mode (kGL_POINTS, kGL_LINES, kGL_LINE_STRIP, kGL_LINE_LOOP, kGL_TRIANGLES, kGL_TRIANGLE_STRIP, kGL_TRIANGLE_FAN, kGL_QUADS, kGL_QUAD_STRIP, kGL_POLYGON).
+		 * @param aBlendMode How to blend vertex chain drawing with the framebuffer data. Default kReplace.
+		 */
+		static void drawVertexChain(const VertexChain& vertexChain, int drawMode = kGL_LINE_LOOP, BlendMode aBlendMode = kReplace);
+
+		/**
 		 * Draws the waveform data.
 		 * @param historyNum The index of the history the waveform data is taken from.
 		 * @param maxNumberOfHistories Maximum number of histories stored in waveformDataMonoArray.
 		 * @param numberOfWaveformEntries The number of waveform values.
 		 * @param waveformDataMonoArray Pointer to waveform data of all histories. The array has two dimensions: history and index.
+		 * @param aCamera Camera with dimensions, position, perspective projection, and orientation of stage view.
 		 */		
-		static void drawWaveform(const SInt16 historyNum, const UInt16 maxNumberOfHistories, const UInt32 numberOfWaveformEntries, const SInt16** const waveformDataMonoArray);
+		static void drawWaveform(const sint16 historyNum, const uint16 maxNumberOfHistories, const uint32 numberOfWaveformEntries, const sint16** const waveformDataMonoArray, const VisualCamera& aCamera);
 
 		/**
 		 * Draws a graphical representation of the spectral data with subband bar graphs.
@@ -341,8 +310,9 @@ namespace VizKit {
 		 * @param numberOfSpectrumEntries The number of spectrum data values.
 		 * @param numberOfAudioChannels The number of audio channels.
 		 * @param spectrumDataArray Pointer to spectrum data of all histories.
+		 * @param aCamera Camera with dimensions, position, perspective projection, and orientation of stage view.
 		 */
-		static void drawSpectrumAnalyzer(const SInt16 currHistoryNum, const UInt16 numberOfHistories, const UInt32 numberOfSpectrumEntries, const UInt16 numberOfAudioChannels, const UInt8*** const spectrumDataArray);
+		static void drawSpectrumAnalyzer(const sint16 currHistoryNum, const uint16 numberOfHistories, const uint32 numberOfSpectrumEntries, const uint16 numberOfAudioChannels, const uint8*** const spectrumDataArray, const VisualCamera& aCamera);
 
 		/**
 		 * Draws a graphical representation of the spectral data as spectrogram.
@@ -351,14 +321,16 @@ namespace VizKit {
 		 * @param numberOfSpectrumEntries The number of spectrum data values.
 		 * @param numberOfAudioChannels The number of audio channels.
 		 * @param spectrumDataArray Pointer to spectrum data of all histories.
+		 * @param aCamera Camera with dimensions, position, perspective projection, and orientation of stage view.
 		 */
-		static void drawSpectrogram(const SInt16 currHistoryNum, const UInt16 numberOfHistories, const UInt32 numberOfSpectrumEntries, const UInt16 numberOfAudioChannels, const UInt8*** const spectrumDataArray);
+		static void drawSpectrogram(const sint16 currHistoryNum, const uint16 numberOfHistories, const uint32 numberOfSpectrumEntries, const uint16 numberOfAudioChannels, const uint8*** const spectrumDataArray, const VisualCamera& aCamera);
 
 		/**
 		 * Draws a histogram of the beat values.
 		 * @param beatHistogram The beat histogram.
+		 * @param aCamera Camera with dimensions, position, perspective projection, and orientation of stage view.
 		 */
-		static void drawBeatHistogram(const UInt32* const beatHistogram);
+		static void drawBeatHistogram(const uint32* const beatHistogram, const VisualCamera& aCamera);
 
 		/**
 		 * Draws a progress bar that advances with the progress of the currently playing audio track.
@@ -375,12 +347,29 @@ namespace VizKit {
 		static void doFallbackActorShow(const char* const visualActorName);
 
 		/**
-		 * Call of glScalef().
+		 * Call of glTranslate().
+		 * @param xNum Horizontal coord value.
+		 * @param yNum Vertical coord value.
+		 * @param zNum Z-coord value.
+		 */	
+		static void translateMatrix(double xNum, double yNum, double zNum);
+
+		/**
+		 * Call of glRotate().
+		 * @param angle The angle of the rotation.
+		 * @param xAmount The amount of the rotation around the horizontal axis.
+		 * @param yAmount The amount of the rotation around the vertical axis.
+		 * @param zAmount The amount of the rotation around the z-axis.
+		 */	
+		static void rotateMatrix(double angle, double xAmount, double yAmount, double zAmount);
+
+		/**
+		 * Call of glScale().
 		 * @param xFactor The scale factor in the horizontal dimension.
 		 * @param yFactor The scale factor in the vertical dimension.
 		 * @param zFactor The scale factor in the z-dimension.
 		 */
-		static void scaleMatrix(float xFactor, float yFactor, float zFactor);
+		static void scaleMatrix(double xFactor, double yFactor, double zFactor);
 
 		/**
 		 * Enables GL_DEPTH_TEST.
@@ -411,7 +400,7 @@ namespace VizKit {
 		 * Specifies that back-facing facets can be culled.
 		 */
 		static void cullFaceBack(void);
-		
+
 	private:
 
 		/**
