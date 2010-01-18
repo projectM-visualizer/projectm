@@ -40,7 +40,7 @@ PerlinNoise::PerlinNoise()
 	int seed = rand()%1000;
 
 	int size = 512;
-	int octaves = sqrt(size);
+	int octaves = sqrt((double)size);
 
 		for (int x = 0; x < size;x++)
 			for (int y = 0; y < size;y++)

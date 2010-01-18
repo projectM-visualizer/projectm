@@ -8,6 +8,7 @@
 #ifndef SHADERENGINE_HPP_
 #define SHADERENGINE_HPP_
 
+#include "Common.hpp"
 
 #ifdef USE_GLES1
 #include <GLES/gl.h>
