@@ -1,4 +1,5 @@
 
+#include "Common.hpp"
 
 #ifdef USE_GLES1
 #include <GLES/gl.h>
@@ -14,6 +15,10 @@
 
 #include "Renderable.hpp"
 #include <math.h>
+
+typedef float floatPair[2];
+typedef float floatTriple[3];
+typedef float floatQuad[4];
 
 RenderContext::RenderContext()
 	: time(0),texsize(512), aspectRatio(1), aspectCorrect(false){};
@@ -128,9 +133,9 @@ void Shape::Draw(RenderContext &context)
 				glEnableClientState(GL_COLOR_ARRAY);
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-				float colors[sides+2][4];
-				float tex[sides+2][2];
-				float points[sides+2][2];
+				floatQuad *colors = new float[sides+2][4];
+				floatPair *tex = new float[sides+2][2];
+				floatPair *points = new float[sides+2][2];
 
 				//Define the center point of the shape
 				colors[0][0] = r;
@@ -180,6 +185,9 @@ void Shape::Draw(RenderContext &context)
 				}
 */
 
+				delete[] colors;
+				delete[] tex;
+				delete[] points;							
 			}
 			else
 			{//Untextured (use color values)
@@ -189,8 +197,8 @@ void Shape::Draw(RenderContext &context)
 			  glEnableClientState(GL_COLOR_ARRAY);
 			  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-			  float colors[sides+2][4];
-			  float points[sides+2][2];
+			  floatQuad *colors = new float[sides+2][4];
+			  floatPair *points = new float[sides+2][2];
 
 			  //Define the center point of the shape
 			  colors[0][0]=r;
@@ -221,13 +229,15 @@ void Shape::Draw(RenderContext &context)
 			  glDrawArrays(GL_TRIANGLE_FAN,0,sides+2);
 			  //draw first n-1 triangular pieces
 
+			  delete[] colors;
+			  delete[] points;
 			}
 			if (thickOutline==1)  glLineWidth(context.texsize < 512 ? 1 : 2*context.texsize/512);
 
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glDisableClientState(GL_COLOR_ARRAY);
 
-			float points[sides+1][2];
+			floatPair *points = new float[sides+1][2];
 
 			glColor4f( border_r, border_g, border_b, border_a * masterAlpha);
 
@@ -244,7 +254,7 @@ void Shape::Draw(RenderContext &context)
 
 			if (thickOutline==1)  glLineWidth(context.texsize < 512 ? 1 : context.texsize/512);
 
-
+			delete[] points;
 
 
 }
@@ -267,7 +277,7 @@ void MotionVectors::Draw(RenderContext &context)
 	  {
 	int size = x_num * y_num ;
 
-	float points[size][2];
+	floatPair *points = new float[size][2];
 
 	for (int x=0;x<(int)x_num;x++)
 	{
@@ -284,6 +294,8 @@ void MotionVectors::Draw(RenderContext &context)
 
 	glVertexPointer(2,GL_FLOAT,0,points);
 	glDrawArrays(GL_POINTS,0,size);
+
+	delete[] points;
 	  }
 }
 

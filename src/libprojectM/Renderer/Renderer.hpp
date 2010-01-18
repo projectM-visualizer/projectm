@@ -3,6 +3,7 @@
 
 #include "FBO.hpp"
 #include "BeatDetect.hpp"
+#include "Common.hpp"
 #include <string>
 #include <set>
 
