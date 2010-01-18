@@ -4,6 +4,9 @@
  *  Created on: Jun 29, 2008
  *      Author: pete
  */
+
+#include "Common.hpp"
+
 #ifdef USE_GLES1
 #include <GLES/gl.h>
 #else

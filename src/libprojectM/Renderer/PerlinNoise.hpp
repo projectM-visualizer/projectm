@@ -37,13 +37,13 @@ private:
 	static inline float noise(int x, int y)
 	{
 		 int n = x + y * 57;
-		 noise(n);
+		 return noise(n);
 	}
 
 	static inline float noise(int x, int y, int z)
 	{
 		 int n = x + y * 57 + z * 141;
-		 noise(n);
+		 return noise(n);
 	}
 
 	static inline float cos_interp(float a, float b, float x)

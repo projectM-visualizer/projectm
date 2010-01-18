@@ -19,6 +19,10 @@
 #include <algorithm>
 #include "BeatDetect.hpp"
 
+typedef float floatPair[2];
+typedef float floatTriple[3];
+typedef float floatQuad[4];
+
 Waveform::Waveform(int samples)
 : RenderItem(),samples(samples), points(samples), pointContext(samples)
 {
@@ -51,8 +55,8 @@ void Waveform::Draw(RenderContext &context)
 			else glPointSize(context.texsize <= 512 ? 1 : context.texsize/512);
 
 
-			float value1[samples];
-			float value2[samples];
+			float *value1 = new float[samples];
+			float *value2 = new float[samples];
 			context.beatDetect->pcm->getPCM( value1, samples, 0, spectrum, smoothing, 0);
 			context.beatDetect->pcm->getPCM( value2, samples, 1, spectrum, smoothing, 0);
 			// printf("%f\n",pcmL[0]);
@@ -76,8 +80,8 @@ void Waveform::Draw(RenderContext &context)
 				points[x] = PerPoint(points[x],waveContext);
 			}
 
-			float colors[samples][4];
-			float p[samples][2];
+			floatQuad *colors = new float[samples][4];
+			floatPair *p = new float[samples][2];
 
 			for(int x=0;x< samples;x++)
 			{
@@ -108,6 +112,11 @@ void Waveform::Draw(RenderContext &context)
 #endif
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			//  glPopMatrix();
+
+			delete[] colors;
+			delete[] p;
+			delete[] value1;
+			delete[] value2;
 
    }
 

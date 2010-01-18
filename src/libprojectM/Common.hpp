@@ -34,6 +34,14 @@
 #define strcasecmp(s, t) _strcmpi(s, t)
 #endif
 
+#ifdef _MSC_VER
+	#pragma warning( disable : 4244 4305 4996; once : 4018 )
+	#define WIN32_LEAN_AND_MEAN
+	#define NOMINMAX
+	#include <windows.h>
+	typedef unsigned int uint;
+#endif
+
 #ifdef DEBUG
 //extern FILE *debugFile;
 #endif

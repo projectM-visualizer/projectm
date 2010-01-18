@@ -5,6 +5,8 @@
  *      Author: pete
  */
 
+#include "Common.hpp"
+
 #ifdef USE_GLES1
 #include <GLES/gl.h>
 #else
