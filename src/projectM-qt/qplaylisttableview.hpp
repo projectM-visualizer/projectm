@@ -62,6 +62,12 @@ class QPlaylistTableView : public QTableView
 		 
 		 int i = items[0].row();
 		 
+		 // Don't drag and drop into same slot
+		 if (i == dropIndex.row()) {
+			event->ignore();
+			return;
+		 }
+
 		 m_firstContiguousBlock.clear();
 		 foreach (QModelIndex index, items) {
 			if (index.row() == i)
