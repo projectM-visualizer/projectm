@@ -55,15 +55,18 @@
 #include "TextureManager.hpp"
 #include "TimeKeeper.hpp"
 #include "RenderItemMergeFunction.hpp"
+
 #ifdef USE_THREADS
 #include "pthread.h"
+
+pthread_mutex_t mutex;
+pthread_cond_t  condition;
+pthread_t thread;
 
 #ifdef SYNC_PRESET_SWITCHES
 pthread_mutex_t preset_mutex;
 #endif
 #endif
-
-
 
 projectM::~projectM()
 {
@@ -225,10 +228,17 @@ void projectM::readConfig (const std::string & configFile )
 
                     _settings.beatSensitivity = beatDetect->beat_sensitivity = config.read<float> ( "Hard Cut Sensitivity", 10.0 );
 
-                    if ( config.read ( "Aspect Correction", true ) )
-                    _settings.aspectCorrection = renderer->correction = true;
-                    else
-                        _settings.aspectCorrection = renderer->correction = false;
+	
+	if ( config.read ( "Aspect Correction", true ) )
+	{
+	    _settings.aspectCorrection = true;
+	    renderer->correction = true;
+	}
+	else
+	{
+	    _settings.aspectCorrection = false;
+	    renderer->correction = false;
+	}
 
 
 }
