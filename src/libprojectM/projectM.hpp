@@ -61,9 +61,7 @@
 #include "event.h"
 #include "fatal.h"
 #include "PCM.hpp"
-#ifdef USE_THREADS
-#include "pthread.h"
-#endif
+
 class PipelineContext;
 
 class BeatDetect;
@@ -315,12 +313,6 @@ private:
 
   RenderItemMatcher * _matcher;
   MasterRenderItemMerge * _merger;
-
-#ifdef USE_THREADS
-  pthread_mutex_t mutex;
-  pthread_cond_t  condition;
-  pthread_t thread;
-#endif
 
   bool running;
 
