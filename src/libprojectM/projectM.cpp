@@ -38,13 +38,11 @@
 #include <time.h>
 #endif
 #include "PipelineContext.hpp"
-//#include <xmms/plugin.h>
 #include <iostream>
 #include "projectM.hpp"
 #include "BeatDetect.hpp"
 #include "Preset.hpp"
 #include "PipelineMerger.hpp"
-//#include "menu.h"
 #include "PCM.hpp"                    //Sound data handler (buffering, FFT, etc.)
 
 #include <map>

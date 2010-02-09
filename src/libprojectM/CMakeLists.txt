@@ -25,8 +25,6 @@ OPTION (USE_THREADS "Use threads for parallelization" ON)
 
 OPTION (USE_OPENMP "Use OpenMP and OMPTL for multi-core parallelization" ON)
 
-OPTION (SYNC_PRESET_SWITCHES "Experimental feature to synchronize preset switches internally" OFF)
-
 OPTION (USE_NATIVE_GLEW "Use projectM's native implemention of GLEW." OFF)
 
 OPTION (USE_CG "Use Cg for Pixel Shader support" OFF)
@@ -76,10 +74,6 @@ else (USE_DEVIL)
 SET (projectM_SOURCES ${projectM_SOURCES})
 SET (IMAGE_LINK_TARGETS )
 endif (USE_DEVIL)
-
-if (SYNC_PRESET_SWITCHES)
-ADD_DEFINITIONS(-DSYNC_PRESET_SWITCHES)
-endif(SYNC_PRESET_SWITCHES)
 
 if (USE_CG)
 ADD_DEFINITIONS(-DUSE_CG)

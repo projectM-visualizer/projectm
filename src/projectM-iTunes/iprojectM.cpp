@@ -29,12 +29,11 @@
 #include <windows.h>
 #endif
 
-#include <projectM-engine/carbontoprojectM.hpp>
-#include <projectM-engine/Common.hpp>
-#include <projectM-engine/BeatDetect.hpp>
-#include <projectM-engine/PCM.hpp>
-#include <projectM-engine/projectM.hpp>
-//#include <projectM-engine/menu.h>
+#include <libprojectM/carbontoprojectM.hpp>
+#include <libprojectM/Common.hpp>
+#include <libprojectM/Renderer/BeatDetect.hpp>
+#include <libprojectM/Renderer/PCM.hpp>
+#include <libprojectM/projectM.hpp>
 
 #ifdef WIN32
 
@@ -712,7 +711,7 @@ OSStatus pluginMessageHandler( OSType message,
           }
     }
 
-    return status;  
+    return status;
 }
 
 // register plugin with iTunes
@@ -833,7 +832,7 @@ IMPEXP OSStatus MAIN (OSType message, PluginMessageInfo *messageInfo, void *refC
                     CFNumberGetValue( number, kCFNumberLongType, &dwidth ) ;
                     number = (CFNumberRef)CFDictionaryGetValue( desktopMode, kCGDisplayHeight ) ;
                     CFNumberGetValue( number, kCFNumberLongType, &dheight ) ;
-    
+
                     DWRITE( "stashing desktop mode: %d x %d -> %d\n",
                             dwidth, dheight, exactMatch );
                   }
@@ -845,13 +844,12 @@ IMPEXP OSStatus MAIN (OSType message, PluginMessageInfo *messageInfo, void *refC
 			delete(globalPM);
                 globalPM = new projectM();
                 globalPM->projectM_reset();
-    
                 /** Set basic rendering options */
                 globalPM->renderTarget->usePbuffers = 1;
                 globalPM->fullscreen = 0;
                 globalPM->renderTarget->texsize = 1024;
                 globalPM->showfps = 1;
-            
+
                 /** Get the font and preset locations */
                 PlayerGetPluginFileSpec( appCookie, appProc, &pluginSpec );
                 fss2path( &pluginSpec, fname );
@@ -859,13 +857,12 @@ IMPEXP OSStatus MAIN (OSType message, PluginMessageInfo *messageInfo, void *refC
                 sprintf( fontURL, "%s/Contents/Resources/fonts", fname );
                 globalPM->fontURL = (char *)malloc( sizeof( char ) * 1024 );
                 strncpy( globalPM->fontURL, fontURL, strlen( fontURL ) + 1 );
-            
                 DWRITE( "fontURL: %s\n", globalPM->fontURL );
-            
+
                 sprintf( presetURL, "%s/Contents/Resources/presets", fname );
                 globalPM->presetURL = (char *)malloc( sizeof( char ) * 1024 );
                 strncpy( globalPM->presetURL, presetURL, strlen( presetURL ) + 1 );
-        
+
                 DWRITE( "presetURL: %s\n", globalPM->presetURL );
               }
 
