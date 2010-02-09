@@ -60,7 +60,6 @@
 #include "dlldefs.h"
 #include "event.h"
 #include "fatal.h"
-#include "PCM.hpp"
 
 class PipelineContext;
 
