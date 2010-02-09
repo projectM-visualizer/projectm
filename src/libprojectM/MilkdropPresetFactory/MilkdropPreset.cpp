@@ -50,9 +50,11 @@ MilkdropPreset::MilkdropPreset(std::istream & in, const std::string & presetName
 }
 
 MilkdropPreset::MilkdropPreset(const std::string & absoluteFilePath, const std::string & presetName, PresetOutputs & presetOutputs):
+	Preset(presetName),
     builtinParams(_presetInputs, presetOutputs),
     _absoluteFilePath(absoluteFilePath),
-    _presetOutputs(presetOutputs)
+    _presetOutputs(presetOutputs),
+    _filename(parseFilename(absoluteFilePath))
 {
 
   initialize(absoluteFilePath);
@@ -543,5 +545,10 @@ int MilkdropPreset::loadPresetFile(const std::string & pathname)
 
  return readIn(fs);
 
+}
+
+const std::string & MilkdropPreset::name() const {
+	
+	return name().empty() ? filename() : name();
 }
 

@@ -204,7 +204,7 @@ const std::string PROJECTM_MODULE_EXTENSION("so");
 
 inline std::string parseExtension(const std::string & filename) {
 
-std::size_t start = filename.find_last_of('.');
+const std::size_t start = filename.find_last_of('.');
 
 if (start == std::string::npos || start >= (filename.length()-1))
 	return "";
@@ -213,6 +213,16 @@ else
 
 }
 
+inline std::string parseFilename(const std::string & filename) {
+
+const std::size_t start = filename.find_last_of('/');
+
+if (start == std::string::npos || start >= (filename.length()-1))
+	return "";
+else
+	return filename.substr(start+1, filename.length());
+
+}
 
 inline double meanSquaredError(const double & x, const double & y) {
 		return (x-y)*(x-y);

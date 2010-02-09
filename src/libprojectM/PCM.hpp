@@ -31,7 +31,11 @@
 
 #include "dlldefs.h"
 
-class DLLEXPORT PCM {
+class 
+#ifdef WIN32 
+DLLEXPORT 
+#endif 
+PCM {
 public:
     float **PCMd;
     int start;
