@@ -137,9 +137,10 @@ public:
   PresetOutputs & pipeline() { return _presetOutputs; } 
 
   void Render(const BeatDetect &music, const PipelineContext &context);
-
+  const std::string & name() const;
+  const std::string & filename() const { return _filename; } 
 private:
-
+  std::string _filename; 
   PresetInputs _presetInputs;
   /// Evaluates the MilkdropPreset for a frame given the current values of MilkdropPreset inputs / outputs
   /// All calculated values are stored in the associated MilkdropPreset outputs instance
@@ -172,7 +173,7 @@ private:
 
   void preloadInitialize();
   void postloadInitialize();
-
+  
   PresetOutputs & _presetOutputs;
 
 template <class CustomObject>

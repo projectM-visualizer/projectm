@@ -29,7 +29,7 @@
 // FIXME: portable includes?
 // i just added what works for me -fatray
 #include <GL/gl.h>
-#include <assert.h>
+#include <cassert>
 
 projectM *globalPM= NULL;
 

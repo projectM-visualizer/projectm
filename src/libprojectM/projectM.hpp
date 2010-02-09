@@ -62,7 +62,7 @@
 #include "fatal.h"
 
 class PipelineContext;
-
+#include "PCM.hpp"
 class BeatDetect;
 class PCM;
 class Func;
