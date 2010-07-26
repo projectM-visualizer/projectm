@@ -376,7 +376,10 @@ void ShaderEngine::SetupCg()
 	cgSetParameterSettingMode(myCgContext, CG_DEFERRED_PARAMETER_SETTING);
 
 	myCgProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
-	cgGLSetOptimalOptions(myCgProfile);
+	
+	// HACK breaks with buggy ati video drivers such as my own
+	// -carmelo.piccione@gmail.com 7/26/2010
+	//cgGLSetOptimalOptions(myCgProfile);
 	checkForCgError("selecting fragment profile");
 
 	profileName = cgGetProfileString(myCgProfile);
