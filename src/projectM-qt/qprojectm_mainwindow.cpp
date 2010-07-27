@@ -104,6 +104,14 @@ activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDi
 		  this, SLOT ( postProjectM_Initialize() ) );
 	
 	//connect(this, SIGNAL(dockLocationChanged ( Qt::DockWidgetArea)), SLOT(dockLocationChanged(Qt::DockWidgetArea)));
+	if (!m_QProjectMWidget->isValid()) {
+		int ret = QMessageBox::warning(this, tr("projectM cannot be started."),
+					       tr("Your graphics driver or configuration is not supported by projectM. Please contact the deveopers (carmelo.piccione+projectM@gmail.com or psperl+projectM@gmail.com) with your card and driver information so we can help you get it working."),
+			      QMessageBox::Ok);
+		exit(-1);
+	}
+
+	  
 	m_QProjectMWidget->makeCurrent();
 	m_QProjectMWidget->setFocus();
 	setCentralWidget ( m_QProjectMWidget );
