@@ -29,7 +29,7 @@ int BuiltinFuncs::load_builtin_func(const std::string & name, float (*func_ptr)(
   /* Create new function */
   func = new Func(name, func_ptr, num_args);
 
-  if (func == NULL)
+  if (func == 0)
     return PROJECTM_OUTOFMEM_ERROR;
 
   retval = insert_func( func );
@@ -115,12 +115,18 @@ int BuiltinFuncs::load_all_builtin_func() {
   return PROJECTM_SUCCESS;
 }
 
+volatile bool BuiltinFuncs::initialized = false;
 
 /* Initialize the builtin function database.
    Should only be necessary once */
 int BuiltinFuncs::init_builtin_func_db() {
   int retval;
 
+  if (initialized) {
+    return 0;
+  } else
+    initialized = true;
+  
   retval = load_all_builtin_func();
   return retval;
 }
@@ -134,7 +140,7 @@ int BuiltinFuncs::destroy_builtin_func_db() {
 traverse<TraverseFunctors::Delete<Func> >(builtin_func_tree);
 
 builtin_func_tree.clear();
-
+initialized = false;
 return PROJECTM_SUCCESS;
 }
 
@@ -142,9 +148,20 @@ return PROJECTM_SUCCESS;
 int BuiltinFuncs::insert_func( Func *func ) {
 
   assert(func);
-  std::pair<std::map<std::string, Func*>::iterator, bool> inserteePair =
-  	builtin_func_tree.insert(std::make_pair(std::string(func->getName()), func));
+  if (func == 0) {
+      std::cerr << "Received a null function object, ignoring...." << std::endl;
+      return PROJECTM_ERROR;
+  }
   
+  std::cout << "inserting function " << func->getName() << std::endl;
+  
+  const std::pair<std::string, Func*> pair = std::make_pair(std::string(func->getName()), func);
+  
+  assert(pair.second);
+  
+  const std::pair<std::map<std::string, Func*>::iterator, bool> inserteePair =
+  	builtin_func_tree.insert(pair);
+  	
   if (!inserteePair.second) {
 	std::cerr << "Failed to insert builtin function \"" << func->getName() << "\" into collection! Bailing..." << std::endl;
 	abort();
