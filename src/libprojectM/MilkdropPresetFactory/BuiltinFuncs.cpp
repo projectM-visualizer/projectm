@@ -148,12 +148,13 @@ return PROJECTM_SUCCESS;
 int BuiltinFuncs::insert_func( Func *func ) {
 
   assert(func);
+  
   if (func == 0) {
       std::cerr << "Received a null function object, ignoring...." << std::endl;
       return PROJECTM_ERROR;
   }
   
-  std::cout << "inserting function " << func->getName() << std::endl;
+//   //std::cout << "inserting function " << func->getName() << std::endl;
   
   const std::pair<std::string, Func*> pair = std::make_pair(std::string(func->getName()), func);
   
@@ -165,7 +166,6 @@ int BuiltinFuncs::insert_func( Func *func ) {
   if (!inserteePair.second) {
 	std::cerr << "Failed to insert builtin function \"" << func->getName() << "\" into collection! Bailing..." << std::endl;
 	abort();
-
   }
 
   return PROJECTM_SUCCESS;
