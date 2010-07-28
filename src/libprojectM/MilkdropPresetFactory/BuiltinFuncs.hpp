@@ -229,6 +229,7 @@ public:
     static Func *find_func( const std::string & name );
 private:
      static std::map<std::string, Func*> builtin_func_tree;
+     static volatile bool initialized;
 };
 
 #endif
