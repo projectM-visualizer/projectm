@@ -296,9 +296,7 @@ void QPulseAudioThread::pulseQuit ( int ret )
 {
 	assert ( mainloop_api );
 	mainloop_api->quit ( mainloop_api, ret );
-	if (*s_qprojectM_MainWindowPtr)
-		delete(*s_qprojectM_MainWindowPtr);
-	*s_qprojectM_MainWindowPtr = 0;
+	
 }
 
 
@@ -315,7 +313,8 @@ void QPulseAudioThread::stream_read_callback ( pa_stream *s, size_t length, void
 	{
 		fprintf ( stderr, "pa_stream_peek() failed: %s\n", pa_strerror ( pa_context_errno ( context ) ) );
 		pulseQuit ( 1 );
-		return;
+		return
+;
 	}
 
 	if ((!s_qprojectM_MainWindowPtr) || (!*s_qprojectM_MainWindowPtr))
@@ -352,16 +351,16 @@ void QPulseAudioThread::stream_state_callback ( pa_stream *s, void *userdata )
 	switch ( pa_stream_get_state ( s ) )
 	{
 		case PA_STREAM_UNCONNECTED:
-//			qDebug() << "UNCONNECTED";
+			qDebug() << "UNCONNECTED";
 			break;
 		case PA_STREAM_CREATING:
-//			qDebug() << "CREATED";
+		  qDebug() << "CREATED";
 			break;
 		case PA_STREAM_TERMINATED:
-//			qDebug() << "TERMINATED";
+			qDebug() << "TERMINATED";
 			break;
 		case PA_STREAM_READY:
-//			qDebug() << "READY";
+			qDebug() << "READY";
 			if ( verbose )
 			{
 				const pa_buffer_attr *a;

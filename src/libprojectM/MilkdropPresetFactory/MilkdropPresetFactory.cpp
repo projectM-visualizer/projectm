@@ -26,7 +26,7 @@ MilkdropPresetFactory::MilkdropPresetFactory(int gx, int gy): _usePresetOutputs(
 	Eval::init_infix_ops();
 
 	_presetOutputs = createPresetOutputs(gx,gy);
-    _presetOutputs2 = createPresetOutputs(gx, gy);
+	_presetOutputs2 = createPresetOutputs(gx, gy);
 }
 
 MilkdropPresetFactory::~MilkdropPresetFactory() {
@@ -37,13 +37,13 @@ MilkdropPresetFactory::~MilkdropPresetFactory() {
 	BuiltinFuncs::destroy_builtin_func_db();
 	std::cerr << "[~MilkdropPresetFactory] delete preset out puts" << std::endl;
 	delete(_presetOutputs);
-    delete(_presetOutputs2);
+        delete(_presetOutputs2);
 	std::cerr << "[~MilkdropPresetFactory] done" << std::endl;
 
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
-void resetPresetOutputs(PresetOutputs *presetOutputs)
+void resetPresetOutputs(PresetOutputs * presetOutputs)
 {
 
     presetOutputs->zoom=1.0;

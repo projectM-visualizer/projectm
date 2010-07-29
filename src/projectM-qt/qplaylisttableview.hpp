@@ -99,14 +99,14 @@ class QPlaylistTableView : public QTableView
 	 }
 	 
 	 inline void resizeEvent(QResizeEvent * event) {
-
+		QTableView::resizeEvent(event);
 		emit(resized(event));
 	 }	
 	 
 	 inline void mousePressEvent(QMouseEvent * event) {
 		QAbstractItemView::mousePressEvent(event);
 		if (event->button() == Qt::RightButton) {
-			emit(mousePressed(event, selectedIndexes()));			
+			emit(mousePressed(event, selectedIndexes()));
 		}
 		else
 				;
