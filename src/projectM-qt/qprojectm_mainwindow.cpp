@@ -98,7 +98,8 @@ activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDi
 
 	connect(ui->tableView, SIGNAL(resized(QResizeEvent *)), this, SLOT(refreshHeaders(QResizeEvent*)));
 	
-	connect(ui->tableView, SIGNAL(mousePressed(QMouseEvent*, const QModelIndexList &)), this, SLOT(popupPlaylistContextMenu(QMouseEvent*, const QModelIndexList &)));
+	connect(ui->tableView, SIGNAL(mousePressed(QMouseEvent*, const QModelIndexList &)), this,
+		SLOT(popupPlaylistContextMenu(QMouseEvent*, const QModelIndexList &)));
 	
 	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized(QProjectM*) ), 
 		  this, SLOT ( postProjectM_Initialize() ) );
@@ -662,7 +663,7 @@ void QProjectM_MainWindow::refreshHeaders(QResizeEvent * event) {
 		// Add 1 to skip the Name column
 		hHeader->setResizeMode (i+1, QHeaderView::ResizeToContents);
 		sizeTotal += hHeader->sectionSize(i+1);
-	}				
+	}
 	hHeader->resizeSection(0, ui->tableView->size().width()-20-sizeTotal);
 	
 	
@@ -883,11 +884,13 @@ void QProjectM_MainWindow::openPlaylistDialog()
 		QString url = m_QPlaylistFileDialog->selectedFiles() [0];
 
 		
-		if ( !playlistModel->readPlaylist ( url ) ) { 
+		const bool loadedOk = playlistModel->readPlaylist ( url );
+		
+		if (!loadedOk) { 
 			qDebug() << "could not open playlist";
 			url = QString();
-			
-		}
+		} 
+		
 		qDebug() << "url: " << url;
 		updatePlaylistUrl(url);
 		

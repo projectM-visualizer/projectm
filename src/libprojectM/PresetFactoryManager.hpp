@@ -21,7 +21,7 @@ class PresetFactoryException : public std::exception
 		virtual ~PresetFactoryException() throw() {}
 		const std::string & message() const { return _message; } 
 
-	private:	
+	private:
 		std::string _message;
 };
 
@@ -54,6 +54,6 @@ class PresetFactoryManager {
 		mutable std::map<std::string, PresetFactory *> _factoryMap;
 		mutable std::vector<PresetFactory *> _factoryList;
 		void registerFactory(const std::string & extension, PresetFactory * factory);
-
+		volatile bool initialized;
 };
 #endif

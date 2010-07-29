@@ -22,6 +22,7 @@
 #ifndef QPROJECTM_WIDGET_HPP
 #define QPROJECTM_WIDGET_HPP
 
+#include <iostream>
 #include "qprojectm.hpp"
 #include <QGLWidget>
 #include <QMutex>
@@ -111,7 +112,7 @@ class QProjectMWidget : public QGLWidget
 
 		void resetProjectM()
 		{
-
+			std::cout << "reseting" << std::endl;
 			qDebug() << "reset start";
 
 			emit ( projectM_BeforeDestroy() );
@@ -246,8 +247,10 @@ class QProjectMWidget : public QGLWidget
 		void initializeGL()
 		{
 
-			this->m_projectM = new QProjectM ( m_config_file );
-			projectM_Initialized ( m_projectM );
+		        if (m_projectM == 0) {
+			    this->m_projectM = new QProjectM ( m_config_file );
+			    projectM_Initialized ( m_projectM );
+			}
 		}
 
 		inline void paintGL()
