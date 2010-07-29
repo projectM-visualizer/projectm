@@ -118,7 +118,8 @@ int main ( int argc, char*argv[] )
 	
 	//QApplication::connect(mainWindow, SIGNAL(shuttingDown()), pulseThread, SLOT(cleanup()), Qt::DirectConnection);
  	int ret = app.exec();
-	devChooser.writeSettings();
+	if (pulseThread != 0)
+	  devChooser.writeSettings();
 	
 	if (mainWindow)
         	mainWindow->unregisterSettingsAction(&pulseAction);

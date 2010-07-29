@@ -30,7 +30,8 @@ void QPulseAudioDeviceChooser::writeSettings()
 	QSettings settings ( "projectM", "qprojectM-pulseaudio" );
 	settings.setValue ( "tryFirstAvailablePlaybackMonitor",
 	                    this->tryFirstPlayBackMonitorCheckBox->checkState() == Qt::Checked );
-	if (_qpulseAudioThread->sourcePosition() != _qpulseAudioThread->devices().end())
+			    
+	if ( _qpulseAudioThread != 0 && (_qpulseAudioThread->devices().size() > 0) && _qpulseAudioThread->sourcePosition() != _qpulseAudioThread->devices().end())
 		settings.setValue("pulseAudioDeviceName", *_qpulseAudioThread->sourcePosition());
 	
 }
@@ -63,6 +64,7 @@ void QPulseAudioDeviceChooser::updateDevicesListViewLock(int state) {
 	devicesListView->setEnabled(state != Qt::Checked);
 		
 	if (state == Qt::Checked) {
+	    if (_qpulseAudioThread != 0)
 		_qpulseAudioThread->connectDevice();
 	}
 }
