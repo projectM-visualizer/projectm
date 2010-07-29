@@ -20,7 +20,7 @@
 #endif
 
 #include <sstream>
-PresetFactoryManager::PresetFactoryManager() : _gx(0), _gy(0) {}
+PresetFactoryManager::PresetFactoryManager() : _gx(0), _gy(0), initialized(false) {}
 
 PresetFactoryManager::~PresetFactoryManager() {
 	for (std::vector<PresetFactory *>::iterator pos = _factoryList.begin(); 
@@ -29,11 +29,20 @@ PresetFactoryManager::~PresetFactoryManager() {
 		delete(*pos);
 	}
 
-
+  initialized = false;
 }
+
 void PresetFactoryManager::initialize(int gx, int gy) {
 	_gx = gx;
 	_gy = gy;
+	
+	if (!initialized) {
+	  initialized = true;
+	} else {
+	  std::cout << "already initialized " << std::endl;
+	  return;
+	}
+	  
 	PresetFactory * factory;
 	
 	#ifndef DISABLE_MILKDROP_PRESETS
