@@ -44,6 +44,8 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <math.h>
+#include <sys/types.h>                                                                                                                    
+#include <sys/stat.h>
 #include <projectM.hpp>
 #include <qprojectm_mainwindow.hpp>
 #include <QApplication>
