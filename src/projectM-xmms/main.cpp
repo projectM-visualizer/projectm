@@ -31,6 +31,8 @@ www.gamedev.net/reference/programming/features/beatdetection/
 #include <string.h>
 #include <string>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <xmms/util.h>

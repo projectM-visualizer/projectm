@@ -67,6 +67,9 @@ std::string read_config();
 #include <config.h>
 #endif
 
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
