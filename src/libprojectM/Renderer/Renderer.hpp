@@ -25,9 +25,7 @@
 #include <FTGLPixmapFont.h>
 #include <FTGLExtrdFont.h>
 #else
-#include <FTGL/FTFont.h>
-#include <FTGL/FTGLPixmapFont.h>
-#include <FTGL/FTGLExtrdFont.h>
+#include <FTGL/ftgl.h>
 #endif
 #endif /** USE_FTGL */
 
