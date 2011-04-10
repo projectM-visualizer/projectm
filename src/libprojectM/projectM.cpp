@@ -217,7 +217,7 @@ void projectM::readConfig (const std::string & configFile )
     _settings.shuffleEnabled = config.read<bool> ( "Shuffle Enabled", true);
 
     _settings.easterEgg = config.read<float> ( "Easter Egg Parameter", 0.0);
-    _settings.softCutRatingsEnabled = 
+    _settings.softCutRatingsEnabled =
 	config.read<float> ( "Soft Cut Ratings Enabled", false);
 
     projectM_init ( _settings.meshX, _settings.meshY, _settings.fps,
@@ -225,7 +225,7 @@ void projectM::readConfig (const std::string & configFile )
 
                     _settings.beatSensitivity = beatDetect->beat_sensitivity = config.read<float> ( "Hard Cut Sensitivity", 10.0 );
 
-	
+
 	if ( config.read ( "Aspect Correction", true ) )
 	{
 	    _settings.aspectCorrection = true;
@@ -306,9 +306,9 @@ static void *thread_callback(void *prjm) {
     void projectM::renderFrame()
     {
         #ifdef SYNC_PRESET_SWITCHES
-        pthread_mutex_lock(&preset_mutex);       
-        #endif 
-      
+        pthread_mutex_lock(&preset_mutex);
+        #endif
+
         #ifdef DEBUG
         char fname[1024];
         FILE *f = NULL;
@@ -369,7 +369,7 @@ static void *thread_callback(void *prjm) {
         if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
         {
 
-	
+
             //	 printf("start thread\n");
             assert ( m_activePreset2.get() );
 
@@ -400,7 +400,7 @@ static void *thread_callback(void *prjm) {
 
 	    pipeline.drawables.clear();
 
-	    /*		
+	    /*
 	    while (!pipeline.drawables.empty()) {
 		delete(pipeline.drawables.back());
 		pipeline.drawables.pop_back();
@@ -455,9 +455,9 @@ static void *thread_callback(void *prjm) {
         #endif /** !WIN32 */
 
 	#ifdef SYNC_PRESET_SWITCHES
-        pthread_mutex_unlock(&preset_mutex);        
-        #endif 
-	
+        pthread_mutex_unlock(&preset_mutex);
+        #endif
+
     }
 
     void projectM::projectM_reset()
@@ -469,11 +469,14 @@ static void *thread_callback(void *prjm) {
 
         this->fpsstart = 0;
 
+        setlocale(LC_NUMERIC, "C");
+
         projectM_resetengine();
     }
 
     void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, int height )
     {
+        setlocale(LC_NUMERIC, "C");
 
         /** Initialise start time */
         timeKeeper = new TimeKeeper(_settings.presetDuration,_settings.smoothPresetDuration, _settings.easterEgg);
@@ -502,9 +505,9 @@ static void *thread_callback(void *prjm) {
 
         #ifdef USE_THREADS
         pthread_mutex_init(&mutex, NULL);
-        
+
 	#ifdef SYNC_PRESET_SWITCHES
-        pthread_mutex_init(&preset_mutex, NULL);        
+        pthread_mutex_init(&preset_mutex, NULL);
 	#endif
 
         pthread_cond_init(&condition, NULL);
@@ -780,19 +783,19 @@ void projectM::selectNext(const bool hardCut) {
 			timeKeeper->StartPreset();
 		}
 		presetSwitchedEvent(hardCut, **m_presetPos);
-		
-	
+
+
 }
 
 /**
- * 
- * @param targetPreset 
+ *
+ * @param targetPreset
  */
 void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
 
-	#ifdef SYNC_PRESET_SWITCHES	
-	pthread_mutex_lock(&preset_mutex);	
-	#endif 
+	#ifdef SYNC_PRESET_SWITCHES
+	pthread_mutex_lock(&preset_mutex);
+	#endif
 
         targetPreset = m_presetPos->allocate();
 
@@ -800,9 +803,9 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
         renderer->setPresetName(targetPreset->name());
         renderer->SetPipeline(targetPreset->pipeline());
 
-	#ifdef SYNC_PRESET_SWITCHES	
-	pthread_mutex_unlock(&preset_mutex);	
-	#endif 
+	#ifdef SYNC_PRESET_SWITCHES
+	pthread_mutex_unlock(&preset_mutex);
+	#endif
     }
 
     void projectM::setPresetLock ( bool isLocked )
