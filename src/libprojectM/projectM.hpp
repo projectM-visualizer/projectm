@@ -153,7 +153,7 @@ public:
   virtual ~projectM();
 
   void changeTextureSize(int size);
-
+  void changePresetDuration(int seconds);
 
   const Settings & settings() const {
 		return _settings;
