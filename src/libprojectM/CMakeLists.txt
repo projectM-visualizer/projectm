@@ -9,7 +9,7 @@ cmake_policy(SET CMP0005 OLD)
 
 
 set( CMAKE_MODULE_PATH    ${CMAKE_MODULE_PATH}
-                          ${CMAKE_CURRENT_SOURCE_DIR}/cmake )     
+                          ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
 
 OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL library" OFF)
 
@@ -42,8 +42,8 @@ ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"")
 
 SET(LIB_INSTALL_DIR "\${exec_prefix}/lib${LIB_SUFFIX}"
   CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is /lib${LIB_SUFFIX})"
-  FORCE)  
-  
+  FORCE)
+
 if (USE_NATIVE_GLEW)
 ADD_DEFINITIONS(-DUSE_NATIVE_GLEW)
 SET(GLEW_SOURCES glew.h glew.c)
@@ -102,8 +102,8 @@ endif(USE_FBO)
 if(USE_FTGL)
 ADD_DEFINITIONS(-DUSE_FTGL)
 
-find_package( Freetype2 REQUIRED)
-include_directories( ${FREETYPE2_INCLUDE_DIR} )
+find_package( Freetype REQUIRED)
+include_directories( ${FREETYPE_INCLUDE_DIRS} )
 
 endif(USE_FTGL)
 
@@ -139,7 +139,7 @@ endif(APPLE)
 
 add_subdirectory(Renderer)
 
-#ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"") 
+#ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"")
 
 FIND_PACKAGE(OpenGL)
 
@@ -154,23 +154,23 @@ IF(USE_FTGL)
 	if (FTGL_FOUND)
 		MESSAGE(STATUS "[projectM] FTGL font support was detected and enabled.")
 	else (FTGL_FOUND)
-		MESSAGE(STATUS 
+		MESSAGE(STATUS
 	"[projectM] Warning! FTGL has been enabled but not detected. Your compilation will probably break. Turn off FTGL support by setting USE_FTGL to false, or visit http://ftgl.wiki.sourceforge.net/ for help on installing FTGL.")
 	endif (FTGL_FOUND)
-	
+
 	ADD_DEFINITIONS(-DUSE_FTGL)
-	
+
 	set (FTGL_INCUDE_DIRS ${FTGL_INCLUDE_DIRS} ${CMAKE_INCLUDE_PATH} ${OPENGL_INCLUDE_DIR})
 	set (FTGL_LINK_DIRS ${FTGL_LIBRARY_DIRS} )
 	set (FTGL_LINK_TARGETS ftgl freetype)
-	
+
 ELSE (USE_FTGL)
 	IF (FTGL_FOUND)
 		MESSAGE(STATUS "[projectM] Warning: FTGL font support was detected but NOT enabled. You can enable it by setting USE_FTGL=true")
 	ELSE (FTGL_FOUND)
 		MESSAGE(STATUS "[projectM] Warning: FTGL font support was not detected. Visit http://ftgl.wiki.sourceforge.net/ for help on installing FTGL.")
 	ENDIF(FTGL_FOUND)
-	
+
 	# todo: change this because its obscure and probably not being used
 	set (FTGL_INCLUDE_DIRS "/opt/local/include")
 	set (FTGL_LINK_DIRS )
