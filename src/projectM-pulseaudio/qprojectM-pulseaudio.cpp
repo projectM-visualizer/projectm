@@ -73,6 +73,7 @@ std::string read_config();
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 //#include <pulsecore/gccmacro.h>
 
