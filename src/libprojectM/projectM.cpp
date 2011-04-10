@@ -915,3 +915,7 @@ void projectM::changeTextureSize(int size) {
                           _settings.textureSize, beatDetect, _settings.presetURL,
                           _settings.titleFontURL, _settings.menuFontURL);
 }
+
+void projectM::changePresetDuration(int seconds) {
+  timeKeeper->ChangePresetDuration(seconds);
+}
