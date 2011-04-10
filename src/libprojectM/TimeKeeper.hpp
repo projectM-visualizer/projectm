@@ -37,6 +37,8 @@ public:
 
   double sampledPresetDuration();
 
+  void ChangePresetDuration(int seconds) { _presetDuration = seconds; }
+
 #ifndef WIN32
   /* The first ticks value of the application */
   struct timeval startTime;
