@@ -76,7 +76,7 @@ if (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 elseif (${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
    set(PROJECTM_INCLUDE ${LIBPROJECTM_INCLUDEDIR}/libprojectM ${LIBPROJECTM-QT_INCLUDEDIR}/libprojectM-qt)
    set(PROJECTM_LINK ${LIBPROJECTM_LDFLAGS} ${LIBPROJECTM-QT_LDFLAGS})
-# projectM-qt places itself in same location as (lib)projectM 
+# projectM-qt places itself in same location as (lib)projectM
 # whether it should is a whole other issue
 endif (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 
@@ -87,7 +87,7 @@ LINK_DIRECTORIES(${PROJECTM_LINK} ${PULSEAUDIO_LDFLAGS})
 
 if(COMMAND cmake_policy)
       cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy) 
+endif(COMMAND cmake_policy)
 
 ADD_EXECUTABLE(projectM-pulseaudio ${projectM_pulseaudio_SRCS} ${projectM_pulseaudio_MOC_SRCS} ${projectM_pulseaudio_UIS_H})
 

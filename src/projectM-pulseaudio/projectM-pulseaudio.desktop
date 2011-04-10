@@ -1,8 +1,7 @@
 [Desktop Entry]
-Encoding=UTF-8
-Name=projectM-pulseaudio
-GenericName=PulseAudio Visualization
-Comment=projectM for Pulse Audio
+Name=projectM PulseAudio Visualization
+GenericName=PulseAudio Stream Visualization
+Comment=Visualization of PulseAudio streams with projectM
 Exec=projectM-pulseaudio
 Icon=prjm16-transparent
 Terminal=false
