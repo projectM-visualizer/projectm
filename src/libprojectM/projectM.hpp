@@ -152,8 +152,7 @@ public:
 
   virtual ~projectM();
 
-
-
+  void changeTextureSize(int size);
 
 
   const Settings & settings() const {
