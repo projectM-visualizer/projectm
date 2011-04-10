@@ -5,13 +5,11 @@ SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The projectM core library.")
 INCLUDE(cmake/CPack-projectM.cmake)
 
 
-
-
 cmake_policy(SET CMP0005 OLD)
 
 
 set( CMAKE_MODULE_PATH    ${CMAKE_MODULE_PATH}
-                          ${CMAKE_CURRENT_SOURCE_DIR}/cmake )
+                          ${CMAKE_CURRENT_SOURCE_DIR}/cmake )     
 
 OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL library" OFF)
 
@@ -34,8 +32,18 @@ OPTION (BUILD_PROJECTM_STATIC "Build the projectM target library in the platform
 OPTION (DISABLE_NATIVE_PRESETS "Turn off support for native (C++ style) presets" OFF)
 OPTION (DISABLE_MILKDROP_PRESETS "Turn off support for Milkdrop (.milk / .prjm) presets"  OFF)
 
+SET(LIB_SUFFIX ""
+  CACHE STRING "Define suffix of directory name (32/64)"
+  FORCE)
+
+ADD_DEFINITIONS(-DLIB_SUFFIX="\\\"${LIB_SUFFIX}\\\"")
+
 ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"")
 
+SET(LIB_INSTALL_DIR "\${exec_prefix}/lib${LIB_SUFFIX}"
+  CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is /lib${LIB_SUFFIX})"
+  FORCE)  
+  
 if (USE_NATIVE_GLEW)
 ADD_DEFINITIONS(-DUSE_NATIVE_GLEW)
 SET(GLEW_SOURCES glew.h glew.c)
@@ -198,8 +206,6 @@ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/config.inp.in" "${CMAKE_CURRENT_SOUR
 
 FILE(GLOB presets "presets/*.milk" "presets/*.prjm" "presets/*.tga")
 INSTALL(FILES ${presets} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/presets)
-FILE(GLOB fonts "fonts/*.ttf")
-INSTALL(FILES ${fonts} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/fonts)
 INSTALL(FILES ${Renderer_SOURCE_DIR}/projectM.cg ${Renderer_SOURCE_DIR}/blur.cg DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/shaders)
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/libprojectM.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig)
 INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/config.inp DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM)
