@@ -1,10 +1,9 @@
 [Desktop Entry]
-Name=projectM-jack
-GenericName=JACK Audio Visualization
-Comment=A milkdrop based music visualizer using jack audio with a Qt4 gui
+Name=projectM Jack Audio Visualization
+GenericName=JACK Audio Stream Visualization
+Comment=A milkdrop based music visualizer visualizing JackAudio streams on a Qt4 GUI
 Exec=/usr/bin/projectM-jack
 Icon=prjm16-transparent.svg
 Type=Application
 Categories=AudioVideo;Audio;
-Encoding=UTF-8
 Terminal=false
