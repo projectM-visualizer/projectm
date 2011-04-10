@@ -906,3 +906,12 @@ void projectM::changePresetName ( unsigned int index, std::string name ) {
 }
 
 
+void projectM::changeTextureSize(int size) {
+  _settings.textureSize = size;
+
+  delete renderer;
+  renderer = new Renderer(_settings.windowWidth, _settings.windowHeight,
+                          _settings.meshX, _settings.meshY,
+                          _settings.textureSize, beatDetect, _settings.presetURL,
+                          _settings.titleFontURL, _settings.menuFontURL);
+}
