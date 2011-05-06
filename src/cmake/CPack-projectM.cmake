@@ -3,9 +3,9 @@
 SET(CPACK_GENERATORS "TGZ")
 SET(CPACK_SOURCE_GENERATORS "TGZ")
 SET(CPACK_STRIP_FILES ON)
-#SET(CPACK_IGNORE_FILES 
+#SET(CPACK_IGNORE_FILES
  # "*~;CMakeCache.txt;CMakeFiles/;.svn;.*.bak;*.Z;_*/;.*.gz;.*.tgz;.*.tar;.*.bz2;.*.zip;.*.rpm;.*.deb;.*.o")
-SET(CPACK_SOURCE_IGNORE_FILES 
+SET(CPACK_SOURCE_IGNORE_FILES
   "Makefile;CMakeCache.txt;CMakeFiles/;.*.gz;.*.bz2;.*.Z;.*.zip;.*svn")
 
 #SET(CPACK_BINARY_RPM OFF)
