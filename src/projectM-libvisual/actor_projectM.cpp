@@ -54,15 +54,15 @@ extern "C" const VisPluginInfo *get_plugin_info (int *count)
    * http://libvisual.sourceforge.net/newdocs/docs/html/struct__VisActorPlugin.html */
   static VisActorPlugin actor[1];
   static VisPluginInfo info[1];
-  
+
   actor[0].requisition = lv_projectm_requisition;
   actor[0].palette = lv_projectm_palette;
   actor[0].render = lv_projectm_render;
     actor[0].vidoptions.depth = VISUAL_VIDEO_DEPTH_GL; /* We want GL clearly */
-    
-    
+
+
     info[0].type = (char*)VISUAL_PLUGIN_TYPE_ACTOR;
-    
+
     info[0].plugname = (char*)"projectM";
     info[0].name = (char*)"libvisual projectM";
     info[0].author = (char*)"Peter Sperl";
@@ -112,8 +112,8 @@ extern "C" int lv_projectm_init (VisPluginData *plugin)
 	//FIXME
 	priv->PM = new projectM(config_file);
 	//globalPM = (projectM *)wipemalloc( sizeof( projectM ) );
-       
-    
+
+
 
 	return 0;
 }
@@ -157,14 +157,14 @@ extern "C" int lv_projectm_dimension (VisPluginData *plugin, VisVideo *video, in
 
 	visual_video_set_dimension (video, width, height);
 
-	priv->PM->projectM_resetGL( width, height ); 
+	priv->PM->projectM_resetGL( width, height );
 
 	return 0;
 }
 
 /* This is the main event loop, where all kind of events can be handled, more information
  * regarding these can be found at:
- * http://libvisual.sourceforge.net/newdocs/docs/html/union__VisEvent.html 
+ * http://libvisual.sourceforge.net/newdocs/docs/html/union__VisEvent.html
  */
 extern "C" int lv_projectm_events (VisPluginData *plugin, VisEventQueue *events)
 {
@@ -175,13 +175,13 @@ extern "C" int lv_projectm_events (VisPluginData *plugin, VisEventQueue *events)
 	projectMEvent evt;
         projectMKeycode key;
         projectMModifier mod;
-	
-	while (visual_event_queue_poll (events, &ev)) 
+
+	while (visual_event_queue_poll (events, &ev))
 	  {
-	    switch (ev.type) 
+	    switch (ev.type)
 	      {
 	      case VISUAL_EVENT_KEYUP:
-		
+
 		evt = lv2pmEvent( ev.type );
 		key = lv2pmKeycode( ev.event.keyboard.keysym.sym );
 		mod = lv2pmModifier( ev.event.keyboard.keysym.mod );
@@ -194,14 +194,14 @@ extern "C" int lv_projectm_events (VisPluginData *plugin, VisEventQueue *events)
 		break;
 	      case VISUAL_EVENT_NEWSONG:
 		priv->PM->projectM_setTitle(ev.event.newsong.songinfo->songname);
-		
+
 		break;
-		
+
 	      default: /* to avoid warnings */
 		break;
 	      }
 	}
-	
+
 	return 0;
 }
 
@@ -209,7 +209,7 @@ extern "C" int lv_projectm_events (VisPluginData *plugin, VisEventQueue *events)
  * we aren't with projectm, so just ignore :) */
 extern "C" VisPalette *lv_projectm_palette (VisPluginData *plugin)
 {
-	return NULL;
+	return (VisPalette *) NULL;
 }
 
 /* This is where the real rendering happens! This function is what we call, many times
@@ -218,7 +218,7 @@ extern "C" int lv_projectm_render (VisPluginData *plugin, VisVideo *video, VisAu
 {
 	ProjectmPrivate *priv = (ProjectmPrivate*)visual_object_get_private (VISUAL_OBJECT (plugin));
 	VisBuffer pcmb;
-	float pcm[2][512];	
+	float pcm[2][512];
 	int i;
 
 	if (video->parent != NULL) lv_projectm_dimension (plugin, video->parent, video->parent->width, video->parent->height);
@@ -231,7 +231,7 @@ extern "C" int lv_projectm_render (VisPluginData *plugin, VisVideo *video, VisAu
 	visual_audio_get_sample (audio, &pcmb, (char*)VISUAL_AUDIO_CHANNEL_RIGHT);
 
 	priv->PM->pcm()->addPCMfloat(*pcm,512);
-	
+
 	priv->PM->renderFrame();
 
 	return 0;
@@ -243,9 +243,9 @@ std::string read_config()
 {
 
    int n;
-   
+
    char num[512];
-   FILE *in; 
+   FILE *in;
    FILE *out;
 
    char* home;
@@ -261,8 +261,8 @@ std::string read_config()
    strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
    projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
 
-  
- if ((in = fopen(projectM_home, "r")) != 0) 
+
+ if ((in = fopen(projectM_home, "r")) != 0)
    {
      printf("reading ~/.projectM/config.inp \n");
      fclose(in);
@@ -280,24 +280,24 @@ std::string read_config()
      strcpy(projectM_home, home);
      strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
      projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
-     
+
      if((out = fopen(projectM_home,"w"))!=0)
        {
-	
-	 if ((in = fopen(projectM_config, "r")) != 0) 
+
+	 if ((in = fopen(projectM_config, "r")) != 0)
 	   {
-	     
+
 	     while(fgets(num,80,in)!=NULL)
 	       {
 		 fputs(num,out);
 	       }
 	     fclose(in);
 	     fclose(out);
-	    
 
-	     if ((in = fopen(projectM_home, "r")) != 0) 
-	       { 
-		 printf("created ~/.projectM/config.inp successfully\n");  
+
+	     if ((in = fopen(projectM_home, "r")) != 0)
+	       {
+		 printf("created ~/.projectM/config.inp successfully\n");
 		 fclose(in);
 		 return std::string(projectM_home);
 	       }
@@ -308,16 +308,16 @@ std::string read_config()
      else
        {
 	 printf("Cannot create ~/.projectM/config.inp, using default config file\n");
-	 if ((in = fopen(projectM_config, "r")) != 0) 
+	 if ((in = fopen(projectM_config, "r")) != 0)
 	   { printf("Successfully opened default config file\n");
 	     fclose(in);
 	     return std::string(projectM_config);}
 	 else{ printf("Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");  abort();}
-	   
+
        }
 
    }
 
-} 
+}
 
 
