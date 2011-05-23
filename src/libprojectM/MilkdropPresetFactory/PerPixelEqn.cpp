@@ -39,7 +39,7 @@
 void PerPixelEqn::evaluate(int mesh_i, int mesh_j) {
 
   GenExpr * eqn_ptr = 0;
- 
+
 
  eqn_ptr = this->gen_expr;
 
@@ -69,6 +69,6 @@ PerPixelEqn::PerPixelEqn(int _index, Param * _param, GenExpr * _gen_expr):index(
 	assert(index >= 0);
 	assert(param != 0);
 	assert(gen_expr != 0);
-	
+
 }
 
