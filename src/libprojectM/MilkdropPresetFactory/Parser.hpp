@@ -145,7 +145,7 @@ public:
     static int last_token_size;
     static bool tokenWrapAroundEnabled;
 
-    static PerFrameEqn *parse_per_frame_eqn( std::istream & fs, int index, 
+    static PerFrameEqn *parse_per_frame_eqn( std::istream & fs, int index,
                                              MilkdropPreset * preset);
     static int parse_per_pixel_eqn( std::istream & fs, MilkdropPreset * preset,
                                     char * init_string);
