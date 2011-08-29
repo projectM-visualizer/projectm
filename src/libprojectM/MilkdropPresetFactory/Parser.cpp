@@ -2294,7 +2294,7 @@ int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int 
     /// HACK the parse_line code already parsed the per_pixel variable name. This handles that case
     /// Parser needs reworked. Don't have time for it. So this is the result.
     if (init_string)
-      strncpy(string, init_string, strlen(init_string));
+      strncpy(string, init_string, strlen(init_string)+1);
     else
     {
       if (parseToken(fs, string) != tEq)
