@@ -252,6 +252,10 @@ public:
   PipelineContext & pipelineContext() { return *_pipelineContext; }
   PipelineContext & pipelineContext2() { return *_pipelineContext2; }
 
+
+  void selectPrevious(const bool);
+  void selectNext(const bool);
+  void selectRandom(const bool);
 private:
   PCM * _pcm;
   double sampledPresetDuration();
@@ -276,9 +280,6 @@ private:
   void readSettings(const Settings &settings);
   void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
   void projectM_reset();
-  void selectPrevious(const bool);
-  void selectNext(const bool);
-  void selectRandom(const bool);
 
   void projectM_initengine();
   void projectM_resetengine();
