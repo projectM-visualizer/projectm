@@ -525,6 +525,9 @@ static void *thread_callback(void *prjm) {
         timeKeeper->StartPreset();
         assert(pcm());
 
+       pipelineContext().fps = fps;
+       pipelineContext2().fps = fps;
+
     }
 
     /* Reinitializes the engine variables to a default (conservative and sane) value */
