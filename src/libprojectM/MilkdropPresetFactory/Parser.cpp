@@ -183,7 +183,7 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
           else {
 	    c = fs.get();
 	    if ( c != '=')
-            	buffer << c;
+            	buffer << (char)c;
 	}
 
         }
@@ -229,7 +229,8 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
       i--;
       break;
     default:
-
+    	if (c == EOF)
+    		std::cerr << "shouldn't happen: " << c << "(LINE " << line_count << ")" << std::endl;
         string[i] = tolower(c);
         //string[i+1] = 0;
         //std::cerr << "string is \n\"" << string << "\"" << std::endl;
@@ -1644,7 +1645,7 @@ InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, MilkdropPreset *
 
 bool Parser::scanForComment(std::istream & fs) {
 
-  char c;
+  int c;
   c = fs.get();
 
   if (c == '/') {
@@ -1671,8 +1672,8 @@ bool Parser::scanForComment(std::istream & fs) {
 void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool wrapAround, const std::set<char> & skipList) {
 
 	int string_line_buffer_index = 0;
-	char c;
-	char p;
+	int c;
+
 	/* Loop until a delimiter is found, or the maximum string size is found */
 	while (true)
 	{
@@ -2425,7 +2426,7 @@ int Parser::get_string_prefix_len(char * string)
   if (string[i] == 0)
     return PROJECTM_FAILURE;
 
-  /* Finished succesfully, return the length */
+  /* Finished successfully, return the length */
   return i;
 }
 
