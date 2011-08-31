@@ -508,7 +508,7 @@ int MilkdropPreset::readIn(std::istream & fs) {
 
   /// @note  We ignore the preset name because [preset00] is just not so useful
 
-  // Loop through each line in file, trying to succesfully parse the file.
+  // Loop through each line in file, trying to successfully parse the file.
   // If a line does not parse correctly, keep trucking along to next line.
   int retval;
   while ((retval = Parser::parse_line(fs, this)) != EOF)
