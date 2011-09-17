@@ -34,7 +34,6 @@ extern "C"
 {
 #include <pulse/introspect.h>
 #include <pulse/pulseaudio.h>
-#include <pulse/browser.h>
 }
 
 #include "qprojectm_mainwindow.hpp"
