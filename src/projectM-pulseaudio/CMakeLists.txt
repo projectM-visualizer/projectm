@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 2.4.0)
 
 Include(cmake/CPack-projectM.cmake)
 
+# Include the current dir as a source for find_package macro
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
+
 set(QT_USE_OPENGL TRUE)
 
 cmake_policy(SET CMP0005 OLD)
@@ -46,6 +49,29 @@ else (LIBPULSE_FOUND)
 MESSAGE(FATAL_ERROR "ERROR: Pulse Audio is NOT found. Please install pulse audio 0.9.8 or greater from www.pulseaudio.org.")
 endif(LIBPULSE_FOUND)
 
+# GLEW - A cross plataform C/C++ extension loading library
+find_package(GLEW)
+if (GLEW_FOUND)
+  MESSAGE(STATUS "[projectm-pulseaudio] glew library detected.")
+  message(STATUS "GLEW_LIBRARY = ${GLEW_LIBRARY}")
+  message(STATUS "GLEW_LIBRARY_DIR = ${GLEW_LIBRARY_DIR}")
+  include_directories(${GLEW_INCLUDE_DIR})
+  link_directories(${GLEW_LIBRARY_DIR})
+else (GLEW_FOUND)
+  MESSAGE(FATAL_ERROR "ERROR: glew library not detected. Please install it from glew.sourceforge.net")
+endif (GLEW_FOUND)
+
+# ftgl - OpenGL library to use arbitrary fonts
+pkg_search_module(FTGL REQUIRED ftgl)
+if (FTGL_FOUND)
+  message(STATUS "[projectm-pulseaudio] ftgl library detected.")
+  message(STATUS "FTGL_LIBRARIES = ${FTGL_LIBRARIES}")
+  message(STATUS "FTGL_LIBRARY_DIRS = ${FTGL_LIBRARY_DIRS}")
+  include_directories(${FTGL_INCLUDE_DIRS})
+  link_directories(${FTGL_LIBRARY_DIRS})
+else (FTGL_FOUND)
+  message(FATAL_ERROR "ERROR: ftgl library not detected. Please install it from ftgl.wiki.sourceforge.net")
+endif (FTGL_FOUND)
 
 set(projectM_pulseaudio_SRCS
   qprojectM-pulseaudio.cpp ConfigFile.h ConfigFile.cpp QPulseAudioThread.cpp QPulseAudioDeviceChooser.cpp QPulseAudioDeviceModel.cpp
@@ -91,7 +117,7 @@ endif(COMMAND cmake_policy)
 
 ADD_EXECUTABLE(projectM-pulseaudio ${projectM_pulseaudio_SRCS} ${projectM_pulseaudio_MOC_SRCS} ${projectM_pulseaudio_UIS_H})
 
-TARGET_LINK_LIBRARIES(projectM-pulseaudio projectM-qt projectM pulse ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTCORE_LIBRARIES} ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(projectM-pulseaudio projectM-qt projectM pulse ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTCORE_LIBRARIES} ${QT_LIBRARIES} ${GLEW_LIBRARY} ${FTGL_LIBRARIES})
 
 INSTALL(TARGETS projectM-pulseaudio DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 install(FILES "projectM-pulseaudio.desktop" DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)

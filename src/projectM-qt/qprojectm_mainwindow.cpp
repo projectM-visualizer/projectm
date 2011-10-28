@@ -310,7 +310,10 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 	
 	connect ( m_QProjectMWidget->qprojectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), 
 		  this, SLOT ( updatePlaylistSelection ( bool,unsigned int ) ) );
-		
+
+	connect ( m_QProjectMWidget->qprojectM(), SIGNAL ( presetRatingChangedSignal ( unsigned int,int, PresetRatingType) ),
+			  this, SLOT ( presetRatingChanged( unsigned int,int, PresetRatingType) ));
+
 	connect ( m_QProjectMWidget->qprojectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ), 
 		  playlistModel, SLOT ( updateItemHighlights() ) );
 
@@ -500,21 +503,20 @@ void QProjectM_MainWindow::changePresetAttribute ( const QModelIndex & index )
 		return;
 
 	PlaylistItemVector & lastCache =  *historyHash[previousFilter];
-	const long id = lastCache[index.row() ];
+	const long id = lastCache[index.row()];
 
 	ui->presetPlayListDockWidget->setWindowModified ( true );
 
-	if ( index.column() == 1 )
+	if (index.column() == 1)
 	{
 		/// @bug get rid of hard coded rating boundaries
-		int newRating = ( ( playlistModel->data ( index, QPlaylistModel::RatingRole ).toInt() ) % 6 ) +1  ;
-
-
-		playlistItemMetaDataHash[id].rating = newRating;
+		const int newRating = ( ( playlistModel->data ( index, QPlaylistModel::RatingRole ).toInt() ) % 6 ) +1  ;
 
 		playlistModel->setData ( index, newRating, QPlaylistModel::RatingRole );
+
+
 	}
-	else if ( index.column() == 2 )
+	else if (index.column() == 2)
 	{
 
 		/// @bug get rid of hard coded breedability boundaries
@@ -1279,5 +1281,21 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 	
 	previousFilter = filter;	
 	qprojectMWidget()->releasePresetLock();
+}
+
+
+void QProjectM_MainWindow::presetRatingChanged( unsigned int index, int rating, PresetRatingType ratingType)
+{
+
+	PlaylistItemVector & lastCache =  *historyHash[previousFilter];
+	const long id = lastCache[index];
+
+	qDebug() << "preset rating changed: " << index << " (rating = " << rating << ")";
+
+	playlistItemMetaDataHash[id].rating = rating;
+
+	ui->presetPlayListDockWidget->setWindowModified ( true );
+
+	playlistModel->notifyDataChanged(index);
 }
 

@@ -34,8 +34,17 @@ class QProjectM : public QObject, public projectM {
 		void presetSwitchedEvent(bool hardCut, unsigned int index) const {
 			presetSwitchedSignal(hardCut, index);
 		}
+
+		void presetRatingChanged(unsigned int index, int rating,
+						PresetRatingType ratingType) const {
+			 presetRatingChangedSignal(index, rating, ratingType);
+		}
+
 	signals:
 		void presetSwitchedSignal(bool hardCut, unsigned int index) const;
+		void presetRatingChangedSignal(unsigned int index, int rating,
+				PresetRatingType ratingType) const;
+
 	public slots:
 
 

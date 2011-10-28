@@ -115,7 +115,7 @@ protected:
 
 private slots:
 void dockLocationChanged(Qt::DockWidgetArea area);
-
+void presetRatingChanged(unsigned int, int, PresetRatingType);
 void presetHardCut();
 void presetSoftCut();
 	void insertPresetsDialog() ;
