@@ -209,6 +209,39 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      break;
 	    case PROJECTM_K_t:
 	      break;
+	    case PROJECTM_K_EQUALS:
+	    case PROJECTM_K_PLUS:
+
+	    	unsigned int index;
+
+	    	if (selectedPresetIndex(index)) {
+
+	    		const int oldRating = getPresetRating(index, HARD_CUT_RATING_TYPE);
+
+	    		if (oldRating >= 6)
+	    			  break;
+
+	    		const int rating = oldRating + 1;
+
+	    		changePresetRating(index, rating, HARD_CUT_RATING_TYPE);
+	    	}
+
+	    	break;
+
+	    case PROJECTM_K_MINUS:
+	    	if (selectedPresetIndex(index)) {
+
+	    		const int oldRating = getPresetRating(index, HARD_CUT_RATING_TYPE);
+
+	    		if (oldRating <= 1)
+	    			  break;
+
+	    		const int rating = oldRating - 1;
+
+	    		changePresetRating(index, rating, HARD_CUT_RATING_TYPE);
+	    	}
+	    	break;
+
 	    default:
 	      break;
 	    }

@@ -244,6 +244,9 @@ public:
   virtual void presetSwitchedEvent(bool isHardCut, unsigned int index) const {};
   virtual void shuffleEnabledValueChanged(bool isEnabled) const {};
 
+  /// Occurs whenever preset rating has changed via changePresetRating() method
+  virtual void presetRatingChanged(unsigned int index, int rating, PresetRatingType ratingType) const {};
+
 
   inline PCM * pcm() {
 	  return _pcm;

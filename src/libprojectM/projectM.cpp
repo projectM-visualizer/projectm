@@ -866,8 +866,9 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
         return m_presetLoader->size();
     }
 
-    void projectM:: changePresetRating (unsigned int index, int rating, const PresetRatingType ratingType) {
+    void projectM::changePresetRating (unsigned int index, int rating, const PresetRatingType ratingType) {
         m_presetLoader->setRating(index, rating, ratingType);
+        presetRatingChanged(index, rating, ratingType);
     }
 
     void projectM::insertPresetURL(unsigned int index, const std::string & presetURL, const std::string & presetName, const RatingList & ratings)
@@ -925,3 +926,5 @@ void projectM::changeTextureSize(int size) {
 void projectM::changePresetDuration(int seconds) {
   timeKeeper->ChangePresetDuration(seconds);
 }
+
+

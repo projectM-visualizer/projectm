@@ -231,6 +231,15 @@ class QProjectMWidget : public QGLWidget
 				case Qt::Key_F5:
 					pkey =  PROJECTM_K_F5;
 					break;
+				case Qt::Key_Plus:
+					pkey =  PROJECTM_K_PLUS;
+					break;
+				case Qt::Key_Minus:
+					pkey =  PROJECTM_K_MINUS;
+					break;
+				case Qt::Key_Equal:
+					pkey = PROJECTM_K_EQUALS;
+					break;
 				default:
 					e->ignore();
 					return;
