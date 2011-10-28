@@ -136,6 +136,9 @@ typedef enum {
     PROJECTM_K_y,
     PROJECTM_K_z,
     PROJECTM_K_NONE,
+    PROJECTM_K_PLUS,
+    PROJECTM_K_MINUS,
+    PROJECTM_K_EQUALS
   } projectMKeycode;
 
 typedef enum {

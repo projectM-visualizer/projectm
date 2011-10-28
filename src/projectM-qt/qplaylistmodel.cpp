@@ -104,15 +104,12 @@ bool QPlaylistModel::setData ( const QModelIndex & index, const QVariant & value
 	if ( role == QPlaylistModel::RatingRole )
 	{
 		m_projectM.changePresetRating(index.row(), value.toInt(), HARD_CUT_RATING_TYPE);
-		emit ( dataChanged ( index, index ) );
 		return true;
 	} else if (role == QPlaylistModel::BreedabilityRole) {
 		m_projectM.changePresetRating(index.row(), value.toInt(), SOFT_CUT_RATING_TYPE);
-		emit ( dataChanged ( index, index ) );
 		return true;
 	} else if (role == QPlaylistModel::NameRole) {
 		m_projectM.changePresetName(index.row(), value.toString().toStdString());
-		emit ( dataChanged ( index, index ) );
 		return true;
 	}
 	else
@@ -427,5 +424,13 @@ bool QPlaylistModel::readPlaylist ( const QString & file )
 	}
 
 	return true;
+}
+
+void QPlaylistModel::notifyDataChanged(unsigned int ind)
+{
+
+
+	QModelIndex modelIndex = index (ind, 1);
+	emit ( dataChanged ( modelIndex, modelIndex));
 }
 

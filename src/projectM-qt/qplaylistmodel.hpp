@@ -81,6 +81,8 @@ inline Qt::DropActions supportedDropActions() const
 	return Qt::MoveAction;
 }
 
+void notifyDataChanged(unsigned int index);
+
 inline QStringList mimeTypes () const  {
 	QStringList mimeTypes;
 	mimeTypes << PRESET_MIME_TYPE;
