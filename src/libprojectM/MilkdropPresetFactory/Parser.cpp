@@ -1014,7 +1014,7 @@ TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root)
      of the item to be inserted is greater than the root's
      precedence, then make gen_expr the root */
 
-  if (infix_op->precedence > (*root)->infix_op->precedence)
+  if (infix_op->precedence >= (*root)->infix_op->precedence)
   {
     new_root = new TreeExpr(infix_op, NULL, *root, NULL);
     (*root) = new_root;
