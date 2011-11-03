@@ -41,10 +41,15 @@ return floor(arg_list[0]);
 
 
 static inline float sqr_wrapper(float * arg_list) {
-
-return pow(2, arg_list[0]);
+	return pow(arg_list[0], 2);
 }
 
+
+static inline float sigmoid_wrapper(float * arg_list)
+{
+	const double t = (1+exp(-arg_list[0]*arg_list[1]));
+	return (fabs(t) > 0.00001) ? 1.0/t : 0;
+}
 
 static inline float sign_wrapper(float * arg_list) {
 
@@ -65,11 +70,6 @@ if (arg_list[0] > arg_list[1])
 return arg_list[0];
 
 return arg_list[1];
-}
-
-/* consult your AI book */
-static inline float sigmoid_wrapper(float * arg_list) {
-return (RR / (1 + exp( -(((float)(arg_list[0])) * arg_list[1]) / R) - R));
 }
 
 
