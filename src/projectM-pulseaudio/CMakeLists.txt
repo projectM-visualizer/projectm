@@ -18,11 +18,11 @@ include(${QT_USE_FILE} FindPkgConfig.cmake)
 if (${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
 	pkg_search_module(LIBPROJECTM REQUIRED libprojectM)
 	pkg_search_module(LIBPROJECTM-QT REQUIRED libprojectM-qt)
-	ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='"${LIBPROJECTM_PREFIX}"')
+	ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='\"${LIBPROJECTM_PREFIX}\"')
 else(${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
 	set(LIBPROJECTM_FOUND true)
 	set(LIBPROJECTM-QT_FOUND true)
-	ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='"${CMAKE_INSTALL_PREFIX}"')
+	ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='\"${CMAKE_INSTALL_PREFIX}\"')
 endif(${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
 
 FIND_PACKAGE(OpenGL)
@@ -50,16 +50,16 @@ MESSAGE(FATAL_ERROR "ERROR: Pulse Audio is NOT found. Please install pulse audio
 endif(LIBPULSE_FOUND)
 
 # GLEW - A cross plataform C/C++ extension loading library
-find_package(GLEW)
-if (GLEW_FOUND)
-  MESSAGE(STATUS "[projectm-pulseaudio] glew library detected.")
-  message(STATUS "GLEW_LIBRARY = ${GLEW_LIBRARY}")
-  message(STATUS "GLEW_LIBRARY_DIR = ${GLEW_LIBRARY_DIR}")
-  include_directories(${GLEW_INCLUDE_DIR})
-  link_directories(${GLEW_LIBRARY_DIR})
-else (GLEW_FOUND)
-  MESSAGE(FATAL_ERROR "ERROR: glew library not detected. Please install it from glew.sourceforge.net")
-endif (GLEW_FOUND)
+#find_package(GLEW)
+#if (GLEW_FOUND)
+#  MESSAGE(STATUS "[projectm-pulseaudio] glew library detected.")
+#  message(STATUS "GLEW_LIBRARY = ${GLEW_LIBRARY}")
+#  message(STATUS "GLEW_LIBRARY_DIR = ${GLEW_LIBRARY_DIR}")
+#  include_directories(${GLEW_INCLUDE_DIR})
+#  link_directories(${GLEW_LIBRARY_DIR})
+#else (GLEW_FOUND)
+#  MESSAGE(FATAL_ERROR "ERROR: glew library not detected. Please install it from glew.sourceforge.net")
+#endif (GLEW_FOUND)
 
 # ftgl - OpenGL library to use arbitrary fonts
 pkg_search_module(FTGL REQUIRED ftgl)
@@ -96,18 +96,25 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 ADD_DEFINITIONS(-DQT_NO_DEBUG)
 
 
-if (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
-   set(PROJECTM_INCLUDE ${PROJECTM_ROOT_SOURCE_DIR}/libprojectM ${PROJECTM_ROOT_SOURCE_DIR}/projectM-qt)
-   set(PROJECTM_LINK ${PROJECTM_ROOT_BINARY_DIR}/libprojectM ${PROJECTM_ROOT_BINARY_DIR}/projectM-qt)
+if (${CMAKE_PROJECT_NAME} MATCHES "projectM-complete")
+	set(PROJECTM_INCLUDE ${PROJECTM_ROOT_SOURCE_DIR}/libprojectM ${PROJECTM_ROOT_SOURCE_DIR}/projectM-qt)
+	set(PROJECTM_LINK ${PROJECTM_ROOT_BINARY_DIR}/libprojectM ${PROJECTM_ROOT_BINARY_DIR}/projectM-qt)
 elseif (${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
-   set(PROJECTM_INCLUDE ${LIBPROJECTM_INCLUDEDIR}/libprojectM ${LIBPROJECTM-QT_INCLUDEDIR}/libprojectM-qt)
-   set(PROJECTM_LINK ${LIBPROJECTM_LDFLAGS} ${LIBPROJECTM-QT_LDFLAGS})
-# projectM-qt places itself in same location as (lib)projectM
-# whether it should is a whole other issue
-endif (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
+	set(PROJECTM_INCLUDE ${LIBPROJECTM_INCLUDEDIR}/libprojectM ${LIBPROJECTM-QT_INCLUDEDIR}/libprojectM-qt)
+	set(PROJECTM_LINK ${LIBPROJECTM_LDFLAGS} ${LIBPROJECTM-QT_LDFLAGS})
+	# projectM-qt places itself in same location as (lib)projectM
+	# whether it should is a whole other issue
+endif (${CMAKE_PROJECT_NAME} MATCHES "projectM-complete")
 
-INCLUDE_DIRECTORIES(${PROJECTM_INCLUDE} ${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${QT_QTCORE_INCLUDE_DIR} ${LIBPULSE_INCLUDEDIR})
-INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR}/projectM-pulseaudio)
+INCLUDE_DIRECTORIES(${PROJECTM_INCLUDE}
+		${QT_INCLUDE_DIR}
+		${QT_QTGUI_INCLUDE_DIR}
+		${QT_QTOPENGL_INCLUDE_DIR}
+		${QT_QTCORE_INCLUDE_DIR}
+		${LIBPULSE_INCLUDEDIR}
+		${CMAKE_CURRENT_BINARY_DIR}
+		${CMAKE_BINARY_DIR}/projectM-pulseaudio
+)
 
 LINK_DIRECTORIES(${PROJECTM_LINK} ${PULSEAUDIO_LDFLAGS})
 

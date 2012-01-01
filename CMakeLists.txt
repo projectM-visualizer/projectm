@@ -7,5 +7,6 @@ if(COMMAND cmake_policy)
 endif(COMMAND cmake_policy)
 
 
-Include(src/cmake/CPack-projectM.cmake)
+include(src/cmake/CPack-projectM.cmake)
 
+add_subdirectory(src)
