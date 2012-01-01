@@ -54,7 +54,7 @@
        <string>&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;&quot;&gt;This sets the default preset playlist directory when projectM starts up. Every valid preset file in the specified directory will be loaded into the playlist upon initialization. &lt;span style=&quot; font-weight:600;&quot;&gt;NOTE:&lt;/span&gt; This option is overriden by a non empty value of the &lt;span style=&quot; font-style:italic;&quot;&gt;Playlist File &lt;/span&gt;option.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;&quot;&gt;This sets the default preset playlist directory when projectM starts up. Every valid preset file in the specified directory will be loaded into the playlist upon initialization. &lt;span style=&quot; font-weight:600;&quot;&gt;NOTE:&lt;/span&gt; This option is overridden by a non empty value of the &lt;span style=&quot; font-style:italic;&quot;&gt;Playlist File &lt;/span&gt;option.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
     </item>
