@@ -6,6 +6,7 @@ cmake_policy(SET CMP0005 OLD)
 include(cmake/CPack-projectM.cmake)
 
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR} )
+
 include(FindPkgConfig.cmake)
 if (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 	set(LIBPROJECTM_FOUND true)
@@ -34,7 +35,7 @@ endif(LIBPROJECTM_FOUND)
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libprojectM-qt.pc.in" "${CMAKE_CURRENT_SOURCE_DIR}/libprojectM-qt.pc" @ONLY)
 
-ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='"${PROJECTM_PREFIX}"')
+ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX="\"${PROJECTM_PREFIX}\"")
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 ADD_DEFINITIONS(-DQT_PLUGIN)
 ADD_DEFINITIONS(-DQT_NO_DEBUG)
@@ -97,7 +98,7 @@ qt4_wrap_cpp(projectM-qt_MOC_SRCS ${projectM-qt_MOC_HDRS})
 
 if(COMMAND cmake_policy)
       cmake_policy(SET CMP0003 NEW)
-endif(COMMAND cmake_policy)    
+endif(COMMAND cmake_policy)
 
 if (BUILD_PROJECTM_QT_STATIC)
 ADD_LIBRARY(projectM-qt STATIC ${projectM-qt_SRCS} ${projectM-qt_RC_SRCS} ${projectM-qt_MOC_SRCS} ${projectM-qt_UIS_H})
@@ -105,6 +106,8 @@ else(BUILD_PROJECTM_QT_STATIC)
 ADD_LIBRARY(projectM-qt SHARED ${projectM-qt_SRCS} ${projectM-qt_RC_SRCS} ${projectM-qt_MOC_SRCS} ${projectM-qt_UIS_H})
 endif(BUILD_PROJECTM_QT_STATIC)
 
+set_property(TARGET projectM-qt PROPERTY LINK_INTERFACE_LIBRARIES "")
+set_property(TARGET projectM-qt PROPERTY IMPORTED_LINK_DEPENDENT_LIBRARIES "")
 SET_TARGET_PROPERTIES(projectM-qt PROPERTIES VERSION 1.10 SOVERSION 1)
 
 if (${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
@@ -120,7 +123,7 @@ LINK_DIRECTORIES(${PROJECTM_LINK})
 include_directories(${PROJECTM_INCLUDE} ${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${CMAKE_CURRENT_LIBRARY_DIR})
 
 # link the "qprojectM" target against the Qt libraries. which libraries exactly, is defined by the "include(${QT_USE_FILE})" line above, which sets up this variable.
-target_link_libraries(projectM-qt projectM ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTXML_LIBRARIES} ${QT_LIBRARIES})
+target_link_libraries(projectM-qt projectM GLEW GL ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTXML_LIBRARIES} ${QT_LIBRARIES})
 
 install(FILES qprojectm_mainwindow.hpp DESTINATION include/libprojectM-qt)
 install(TARGETS projectM-qt DESTINATION lib${LIB_SUFFIX})
