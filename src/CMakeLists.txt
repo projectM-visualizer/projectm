@@ -1,4 +1,4 @@
-project (PROJECTM_ROOT)
+project (projectM-complete)
 
 cmake_minimum_required(VERSION 2.4.0)
 
@@ -10,6 +10,8 @@ OPTION(INCLUDE-PROJECTM-JACK "Build the projectM JACK client" OFF)
 OPTION(INCLUDE-PROJECTM-TEST "Build the projectM test suite" ON)
 OPTION(INCLUDE-PROJECTM-XMMS "Build the projectM xmms module (deprecated, use audacious instead)" OFF)
 OPTION(INCLUDE-NATIVE-PRESETS "Build the projectM native preset sample collection " ON)
+
+set(PROJECTM_ROOT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory (libprojectM)
 
