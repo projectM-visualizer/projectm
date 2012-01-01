@@ -9,5 +9,5 @@ Name: libprojectM
 Version: 2.0.0
 Description: projectM - OpenGL Milkdrop
 Requires:
-Libs: -L${libdir} -lprojectM 
-Cflags: -I${includedir} 
+Libs: -L${libdir} -lprojectM
+Cflags: -I${includedir}

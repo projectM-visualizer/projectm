@@ -46,11 +46,11 @@ SET(LIB_INSTALL_DIR "\${exec_prefix}/lib${LIB_SUFFIX}"
 
 if (USE_NATIVE_GLEW)
 ADD_DEFINITIONS(-DUSE_NATIVE_GLEW)
-SET(GLEW_SOURCES glew.h glew.c)
-SET(GLEW_LINK_TARGETS )
+ SET(GLEW_SOURCES glew.h glew.c)
+ SET(GLEW_LIBRARY "")
 else(USE_NATIVE_GLEW)
-SET(GLEW_SOURCES )
-SET (GLEW_LINK_TARGETS GLEW)
+ set (GLEW_SOURCES "")
+ find_package (GLEW)
 endif(USE_NATIVE_GLEW)
 
 SET(projectM_SOURCES projectM.cpp PCM.cpp Preset.cpp fftsg.cpp KeyHandler.cpp
