@@ -33,7 +33,7 @@ else (LIBPROJECTM_FOUND)
 endif(LIBPROJECTM_FOUND)
 
 
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libprojectM-qt.pc.in" "${CMAKE_CURRENT_SOURCE_DIR}/libprojectM-qt.pc" @ONLY)
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libprojectM-qt.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/libprojectM-qt.pc" @ONLY)
 
 ADD_DEFINITIONS(-DLINUX -DPROJECTM_PREFIX='\"${PROJECTM_PREFIX}\"')
 ADD_DEFINITIONS(${QT_DEFINITIONS})
@@ -127,5 +127,5 @@ target_link_libraries(projectM-qt projectM GLEW GL ${QT_QTGUI_LIBRARIES} ${QT_QT
 
 install(FILES qprojectm_mainwindow.hpp DESTINATION include/libprojectM-qt)
 install(TARGETS projectM-qt DESTINATION lib${LIB_SUFFIX})
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/libprojectM-qt.pc" DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig)
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/libprojectM-qt.pc" DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig)
 install(FILES "images/icons/prjm16-transparent.svg" DESTINATION	${CMAKE_INSTALL_PREFIX}/share/pixmaps)
