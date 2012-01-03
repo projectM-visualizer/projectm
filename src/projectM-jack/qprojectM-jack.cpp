@@ -64,13 +64,30 @@ int wvw=512,wvh=512;
 int fvw=1024,fvh=768;
 int fps=30, fullscreen=0;
 
+class ProjectMApplication : public QApplication {
+	public:
+		ProjectMApplication(int& argc, char ** argv) :
+			QApplication(argc, argv) { }
+		virtual ~ProjectMApplication() { }
+
+		// catch exceptions which are thrown in slots
+		virtual bool notify(QObject * receiver, QEvent * event) {
+			try {
+				return QApplication::notify(receiver, event);
+			} catch (std::exception& e) {
+				qCritical() << "Exception thrown:" << e.what();
+			}
+			return false;
+		}
+};
+
 std::string read_config()
 {
 
    int n;
-   
+
    char num[512];
-   FILE *in; 
+   FILE *in;
    FILE *out;
 
    char * home;
@@ -80,19 +97,19 @@ std::string read_config()
    int len;
    strcpy(projectM_config, PROJECTM_PREFIX);
    strcpy(projectM_config + (len = strlen(PROJECTM_PREFIX)), "/");
-   
+
    strcpy(projectM_config+(len += strlen("/")), RESOURCE_PREFIX);
    strcpy(projectM_config+(len += strlen(RESOURCE_PREFIX)), QPROJECTM_JACK_CONFIG_FILE);
    projectM_config[len += strlen(QPROJECTM_JACK_CONFIG_FILE)]='\0';
-   
+
    printf("dir:%s \n",projectM_config);
    home=getenv("HOME");
    strcpy(projectM_home, home);
    strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
    projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
 
-  
- if ((in = fopen(projectM_home, "r")) != 0) 
+
+ if ((in = fopen(projectM_home, "r")) != 0)
    {
      printf("reading ~/.projectM/config.inp \n");
      fclose(in);
@@ -110,24 +127,24 @@ std::string read_config()
      strcpy(projectM_home, home);
      strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
      projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
-     
+
      if((out = fopen(projectM_home,"w"))!=0)
        {
-	
-	 if ((in = fopen(projectM_config, "r")) != 0) 
+
+	 if ((in = fopen(projectM_config, "r")) != 0)
 	   {
-	     
+
 	     while(fgets(num,80,in)!=NULL)
 	       {
 		 fputs(num,out);
 	       }
 	     fclose(in);
 	     fclose(out);
-	    
 
-	     if ((in = fopen(projectM_home, "r")) != 0) 
-	       { 
-		 printf("created ~/.projectM/config.inp successfully\n");  
+
+	     if ((in = fopen(projectM_home, "r")) != 0)
+	       {
+		 printf("created ~/.projectM/config.inp successfully\n");
 		 fclose(in);
 		 return std::string(projectM_home);
 	       }
@@ -138,35 +155,35 @@ std::string read_config()
      else
        {
 	 printf("Cannot create ~/.projectM/config.inp, using default config file\n");
-	 if ((in = fopen(projectM_config, "r")) != 0) 
+	 if ((in = fopen(projectM_config, "r")) != 0)
 	   { printf("Successfully opened default config file\n");
 	     fclose(in);
 	     return std::string(projectM_config);}
 	 else{ printf("Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");  abort();}
-	   
+
        }
 
    }
 
 
  abort();
-} 
+}
 
 int
 process (jack_nframes_t nframes, void *arg)
 {
-	
+
 	jack_default_audio_sample_t *in;
 	jack_transport_state_t ts = jack_transport_query(client, NULL);
-	
+
 	if (ts == JackTransportRolling) {
 
 		if (client_state == Init)
 			client_state = Run;
 
 		in = (jack_default_audio_sample_t*)jack_port_get_buffer (input_port, nframes);
-	 
-		//memcpy (out, in,sizeof (jack_default_audio_sample_t) * nframes);	
+
+		//memcpy (out, in,sizeof (jack_default_audio_sample_t) * nframes);
 
 		globalPM->pcm()->addPCMfloat(in,nframes);
 //		printf("%x %f\n",nframes,in[128]);
@@ -187,32 +204,32 @@ void jack_shutdown (void *arg)
 	exit (1);
 }
 
-int main( int argc, char **argv ) {
+int main (int argc, char **argv) {
 	const char **ports;
 	const char *client_name;
 	const char *server_name = NULL;
 	jack_options_t options = JackNullOption;
 	jack_status_t status;
 	int i;
- char projectM_data[1024];
+	char projectM_data[1024];
 
- // Start a new qapplication 
- QApplication app(argc, argv);
- setlocale(LC_NUMERIC, "C");  // Fix
+	// Start a new application
+	ProjectMApplication app(argc, argv);
+	setlocale(LC_NUMERIC, "C");  // Fix
 
-std::string config_file;
-config_file = read_config();
-
-
-   QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow(config_file, 0);
-   mainWindow->show();
-
-   globalPM = mainWindow->GetProjectM();
+	std::string config_file;
+	config_file = read_config();
 
 
+	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow(config_file, 0);
+	mainWindow->show();
 
-  //JACK INIT
-  //----------------------------------------------
+	globalPM = mainWindow->GetProjectM();
+
+
+
+	//JACK INIT
+	//----------------------------------------------
 	if (argc >= 2) {		/* client name specified? */
 		client_name = argv[1];
 		if (argc >= 3) {	/* server name specified? */
@@ -257,7 +274,7 @@ config_file = read_config();
 		std::cerr << "qprojectM-jack: failed to set process callbank!. quitting..." << std::endl;
 		exit(EXIT_FAILURE);
 	}
-		
+
 	/* tell the JACK server to call `jack_shutdown()' if
 	   it ever shuts down, either entirely, or if it
 	   just decides to stop calling us.
@@ -265,7 +282,7 @@ config_file = read_config();
 
 	jack_on_shutdown (client, jack_shutdown, 0);
 
-	/* display the current sample rate. 
+	/* display the current sample rate.
 	 */
 
 	printf ("engine sample rate: %d\n",
@@ -285,7 +302,7 @@ config_file = read_config();
 	/* Tell the JACK server that we are ready to roll.  Our
 	 * process() callback will start running now. */
 
-	//END JACK INIT ----------------------------------
+	// END JACK INIT ----------------------------------
 
         //JACK BEGIN-----------------------------
 
@@ -310,8 +327,8 @@ config_file = read_config();
 
 
         i=0;
-        while (ports[i]!=NULL) 
-	 { 
+        while (ports[i]!=NULL)
+	 {
             printf("Connecting to Jack port %s\n",ports[i]);
 	    if (jack_connect (client, ports[i], jack_port_name (input_port))) {
 	      fprintf (stderr, "cannot connect input ports\n");

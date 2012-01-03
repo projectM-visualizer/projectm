@@ -44,7 +44,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <math.h>
-#include <sys/types.h>                                                                                                                    
+#include <sys/types.h>
 #include <sys/stat.h>
 #include <projectM.hpp>
 #include <qprojectm_mainwindow.hpp>
@@ -89,49 +89,66 @@ int wvw=512,wvh=512;
 int fvw=1024,fvh=768;
 int fps=30, fullscreen=0;
 
+class ProjectMApplication : public QApplication {
+	public:
+		ProjectMApplication(int& argc, char ** argv) :
+			QApplication(argc, argv) { }
+		virtual ~ProjectMApplication() { }
+
+		// catch exceptions which are thrown in slots
+		virtual bool notify(QObject * receiver, QEvent * event) {
+			try {
+				return QApplication::notify(receiver, event);
+			} catch (std::exception& e) {
+				qCritical() << "Exception thrown:" << e.what();
+			}
+			return false;
+		}
+};
+
 int main ( int argc, char*argv[] )
 {
 	int i;
 	char projectM_data[1024];
 
-	QApplication app ( argc, argv );
+	ProjectMApplication app ( argc, argv );
 
 	setlocale(LC_NUMERIC, "C");  // Fix
 	std::string config_file;
 	config_file = read_config();
 
-	
+
 	QMutex audioMutex;
-	
+
 	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow ( config_file, &audioMutex);
-	
+
 	QAction pulseAction("Pulse audio settings...", mainWindow);
-	
-	
+
+
       	mainWindow->registerSettingsAction(&pulseAction);
 	mainWindow->show();
-	
+
 	QPulseAudioThread * pulseThread = new QPulseAudioThread(argc, argv, mainWindow);
 
 	pulseThread->start();
-		
+
 	//QApplication::connect
 	//		(mainWindow->qprojectMWidget(), SIGNAL(projectM_Initialized(QProjectM *)), pulseThread, SLOT(setQrojectMWidget(QProjectMWidget*)));
-	
-	QPulseAudioDeviceChooser devChooser(pulseThread, mainWindow);	
-	QApplication::connect(&pulseAction, SIGNAL(triggered()), &devChooser, SLOT(open())); 
+
+	QPulseAudioDeviceChooser devChooser(pulseThread, mainWindow);
+	QApplication::connect(&pulseAction, SIGNAL(triggered()), &devChooser, SLOT(open()));
 	//QApplication::connect(pulseThread, SIGNAL(threadCleanedUp()), mainWindow, SLOT(close()));
-	
+
 	//QApplication::connect(mainWindow, SIGNAL(shuttingDown()), pulseThread, SLOT(cleanup()), Qt::DirectConnection);
  	int ret = app.exec();
 	if (pulseThread != 0)
 	  devChooser.writeSettings();
-	
+
 	if (mainWindow)
         	mainWindow->unregisterSettingsAction(&pulseAction);
 
 	pulseThread->cleanup();
-	
+
 	delete(pulseThread);
 	return ret;
 }
@@ -213,7 +230,7 @@ std::string read_config()
 				return std::string ( projectM_config );
 			}
 			else{ printf ( "Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n" );  abort();}
-			
+
 		}
 
 	}

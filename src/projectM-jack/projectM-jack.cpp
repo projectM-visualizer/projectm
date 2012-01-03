@@ -66,16 +66,13 @@ int wvw=512,wvh=512;
 int fvw=1024,fvh=768;
 int fps=30, fullscreen=0;
 
-
-
-
 std::string read_config()
 {
 
    int n;
-   
+
    char num[512];
-   FILE *in; 
+   FILE *in;
    FILE *out;
 
    char* home;
@@ -91,8 +88,8 @@ std::string read_config()
    strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
    projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
 
-  
- if ((in = fopen(projectM_home, "r")) != 0) 
+
+ if ((in = fopen(projectM_home, "r")) != 0)
    {
      printf("reading ~/.projectM/config.inp \n");
      fclose(in);
@@ -110,24 +107,24 @@ std::string read_config()
      strcpy(projectM_home, home);
      strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
      projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
-     
+
      if((out = fopen(projectM_home,"w"))!=0)
        {
-	
-	 if ((in = fopen(projectM_config, "r")) != 0) 
+
+	 if ((in = fopen(projectM_config, "r")) != 0)
 	   {
-	     
+
 	     while(fgets(num,80,in)!=NULL)
 	       {
 		 fputs(num,out);
 	       }
 	     fclose(in);
 	     fclose(out);
-	    
 
-	     if ((in = fopen(projectM_home, "r")) != 0) 
-	       { 
-		 printf("created ~/.projectM/config.inp successfully\n");  
+
+	     if ((in = fopen(projectM_home, "r")) != 0)
+	       {
+		 printf("created ~/.projectM/config.inp successfully\n");
 		 fclose(in);
 		 return std::string(projectM_home);
 	       }
@@ -138,19 +135,19 @@ std::string read_config()
      else
        {
 	 printf("Cannot create ~/.projectM/config.inp, using default config file\n");
-	 if ((in = fopen(projectM_config, "r")) != 0) 
+	 if ((in = fopen(projectM_config, "r")) != 0)
 	   { printf("Successfully opened default config file\n");
 	     fclose(in);
 	     return std::string(projectM_config);}
 	 else{ printf("Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");  abort();}
-	   
+
        }
 
    }
 
 
  abort();
-} 
+}
 
 void renderLoop() {
 
@@ -172,20 +169,20 @@ void renderLoop() {
             key = sdl2pmKeycode( event.key.keysym.sym );
             mod = sdl2pmModifier( event.key.keysym.mod );
 
-	    if ( evt == PROJECTM_KEYDOWN ) {                 
-     
+	    if ( evt == PROJECTM_KEYDOWN ) {
+
 
                 if(key == PROJECTM_K_f)
-                {                       
+                {
 		  if (++fullscreen%2)
 		    {
 		      resize_display(fvw, fvh, fullscreen%2);
-		      globalPM->projectM_resetGL( fvw, fvh ); 
+		      globalPM->projectM_resetGL( fvw, fvh );
 		    }
 		  else
 		    {
 		      resize_display(wvw, wvh, fullscreen%2);
-		      globalPM->projectM_resetGL( wvw, wvh ); 
+		      globalPM->projectM_resetGL( wvw, wvh );
 		    }
                 }
 		else if(key == PROJECTM_K_q || key == PROJECTM_K_ESCAPE) {delete(globalPM); exit (1);}
@@ -197,9 +194,9 @@ void renderLoop() {
                 wvw=event.resize.w;
                 wvh=event.resize.h;
                 resize_display(wvw, wvh, fullscreen%2);
-                globalPM->projectM_resetGL(  wvw, wvh ); 
+                globalPM->projectM_resetGL(  wvw, wvh );
 
-            } 
+            }
 
           }
 
@@ -208,13 +205,13 @@ void renderLoop() {
         /** Render the new frame */
         globalPM->renderFrame( );
 
-      
+
         SDL_GL_SwapBuffers();
       }
-	
+
   printf("Worker thread: Exiting\n");
   }
-           
+
 int
 process (jack_nframes_t nframes, void *arg)
 {
@@ -227,8 +224,8 @@ process (jack_nframes_t nframes, void *arg)
 			client_state = Run;
 
 		in = (jack_default_audio_sample_t*)jack_port_get_buffer (input_port, nframes);
-	       
-		//memcpy (out, in,sizeof (jack_default_audio_sample_t) * nframes);	
+
+		//memcpy (out, in,sizeof (jack_default_audio_sample_t) * nframes);
 
 		globalPM->pcm()->addPCMfloat(in,nframes);
 		//printf("%x %f\n",nframes,in[128]);
@@ -240,7 +237,7 @@ process (jack_nframes_t nframes, void *arg)
 			client_state = Exit;
 	}
 
-	return 0;      
+	return 0;
 }
 
 void jack_shutdown (void *arg)
@@ -255,33 +252,33 @@ int main( int argc, char **argv ) {
 	jack_options_t options = JackNullOption;
 	jack_status_t status;
 	int i;
- char projectM_data[1024];
+	char projectM_data[1024];
 
 
-std::string config_file;
- config_file = read_config();
+	std::string config_file;
+	config_file = read_config();
 
- ConfigFile config(config_file);
+	ConfigFile config(config_file);
 
- wvw = config.read<int>( "Window Width", 512 );
- wvh = config.read<int>( "Window Height", 512 );
- int fullscreen = 0;
- if (config.read("Fullscreen", true)) fullscreen = 1;
-      else fullscreen = 0;
- 
+	wvw = config.read<int>( "Window Width", 512 );
+	wvh = config.read<int>( "Window Height", 512 );
+	int fullscreen = 0;
+	if (config.read("Fullscreen", true)) fullscreen = 1;
+		else fullscreen = 0;
+
 
 #ifdef DEBUG
 	int value;
 	int rgb_size[3];
 #endif
 
-  const SDL_VideoInfo* info = NULL;
-  int bpp = 0;
-  /* Flags we will pass into SDL_SetVideoMode. */
-  int flags = 0;
+	const SDL_VideoInfo* info = NULL;
+	int bpp = 0;
+	/* Flags we will pass into SDL_SetVideoMode. */
+	int flags = 0;
 
-  //JACK INIT
-  //----------------------------------------------
+	//JACK INIT
+	//----------------------------------------------
 	if (argc >= 2) {		/* client name specified? */
 		client_name = argv[1];
 		if (argc >= 3) {	/* server name specified? */
@@ -329,7 +326,7 @@ std::string config_file;
 
 	jack_on_shutdown (client, jack_shutdown, 0);
 
-	/* display the current sample rate. 
+	/* display the current sample rate.
 	 */
 
 	printf ("engine sample rate: %d\n",
@@ -351,17 +348,14 @@ std::string config_file;
 
 
 
-	//END JACK INIT ----------------------------------
-  init_display(wvw,wvh,&fvw,&fvh,fullscreen);   
-    /** Setup some window stuff */
-    SDL_WM_SetCaption( PROJECTM_TITLE, NULL );
-  globalPM = new projectM(config_file);
-    /** Initialise projectM */
- 
+	// END JACK INIT ----------------------------------
+	init_display(wvw,wvh,&fvw,&fvh,fullscreen);
+	/** Setup some window stuff */
+	SDL_WM_SetCaption( PROJECTM_TITLE, NULL );
+	globalPM = new projectM(config_file);
+	/** Initialise projectM */
 
-
-
-    //JACK BEGIN-----------------------------
+	//JACK BEGIN-----------------------------
 
 	if (jack_activate (client)) {
 		fprintf (stderr, "cannot activate client");
@@ -381,27 +375,27 @@ std::string config_file;
 		fprintf(stderr, "no physical capture ports\n");
 		exit (1);
 	}
-      
-	
+
+
         i=0;
-        while (ports[i]!=NULL) 
-	 { 
+        while (ports[i]!=NULL)
+	 {
             printf("Connecting to Jack port %s\n",ports[i]);
 	    if (jack_connect (client, ports[i], jack_port_name (input_port))) {
 	      fprintf (stderr, "cannot connect input ports\n");
 	    }
 	      i++;
 	     }
-	     
+
 	free (ports);
 
 	//----------------------------------END
 
 
-    /** Initialise the thread */
-    renderLoop();
+	/** Initialise the thread */
+	renderLoop();
 
-    return 1;
+	return 1;
 }
 
 
