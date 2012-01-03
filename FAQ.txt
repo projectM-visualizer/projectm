@@ -35,10 +35,10 @@ Q8: Where are the presets?
 Q1: What is projectM?
 --------------------
 A: projectM makes pretty pictures from music in realtime.
-   Specifically it uses iterative image-based rendering techniques which 
-   are hardware accelerated via OpenGL.  projectM was developed with 
+   Specifically it uses iterative image-based rendering techniques which
+   are hardware accelerated via OpenGL.  projectM was developed with
    cross-platform support in mind, using SDL and OpenGL. The only port
-   right now is Linux/XMMS, but it should be easy to plug-in to other 
+   right now is Linux/XMMS, but it should be easy to plug-in to other
    music players on other platforms (even windows and Mac OS X).
 
    projectM aims for compatability with MilkDrop's latest release (1.04b at
@@ -47,37 +47,37 @@ A: projectM makes pretty pictures from music in realtime.
 
 Q2: What? This preset doesn't look like it does on Milkdrop.
 -----------------------------------------------------------
-A: We know. Some of the simple waveforms (1,2,3,4,5)  are not even close to 
-   correct. They are similiar, but not exactly the same. Also, the solarize, 
-   brighten, and darken filters aren't done yet either. 
+A: We know. Some of the simple waveforms (1,2,3,4,5)  are not even close to
+   correct. They are similiar, but not exactly the same. Also, the solarize,
+   brighten, and darken filters aren't done yet either.
 
    Sometimes things just don't look right because we might, for example, draw
    shapes a tiny bit too big or small. Small errors propagate and become HUGE
-   after a few manipulations. But who knows because it takes forever to tweak 
+   after a few manipulations. But who knows because it takes forever to tweak
    things like this.
 
 Q3: Where can I get more presets?
 --------------------------------
 A:  www.milkdrop.co.uk is a great place to start.  However, all their
     presets are packaged in self-unzipping .exe's for win32. I
-    extracted them with wine and it worked wonderfully. 
+    extracted them with wine and it worked wonderfully.
 
-    Check out the milkdrop forums at www.winamp.com to find new presets 
+    Check out the milkdrop forums at www.winamp.com to find new presets
     daily. The URL is below
 
 	http://forums.winamp.com/forumdisplay.php?forumid=81
 
 Q4: What are the system requirements?
 ------------------------------------
-A: To run projectM you need a Linux system w/a sound card and a video card 
+A: To run projectM you need a Linux system w/a sound card and a video card
    with OpenGL hardware acceleration. We find that projectM runs MUCH better
    with the 2.6 series kernel and ALSA sound.
 
    What does that mean? Well...
- 
-   projectM has only been tested prior to me writing this on 4 computers. 
 
-   All those computers used some form of Redhat (8,9, & Fedora 1), 
+   projectM has only been tested prior to me writing this on 4 computers.
+
+   All those computers used some form of Redhat (8,9, & Fedora 1),
    although this should make no differance if you run a differant distro.
 
    Also, all of them used Nvidia (Geforce 3 Ti200, Geforce 4 MX440 & Ti4200)
@@ -86,20 +86,20 @@ A: To run projectM you need a Linux system w/a sound card and a video card
 
 Q5: Why is projectM so slow!!!
 -----------------------------
-A: If projectM is slow for you all the time, and not just on a select few 
-   presets, you can try lowering the rendering quality, and this will speed 
+A: If projectM is slow for you all the time, and not just on a select few
+   presets, you can try lowering the rendering quality, and this will speed
    things up A LOT. To do this, lower the texsize and gridsize (gx,gy) in
-   /etc/projectM/config 
+   /etc/projectM/config
 
-   Texsize controls the size of the rendered image.  If you think your video 
-   card is too slow or doesn't have enough memory, then change this. A middle 
-   value for texsize is 512. 1024 is nice looking, and 256 is for VERY slow 
+   Texsize controls the size of the rendered image.  If you think your video
+   card is too slow or doesn't have enough memory, then change this. A middle
+   value for texsize is 512. 1024 is nice looking, and 256 is for VERY slow
    computers.
 
-   If your processor is the bottleneck, then lower gx and gy. gx and gy 
+   If your processor is the bottleneck, then lower gx and gy. gx and gy
    control the size of the interpolated per-pixel mesh. 24/18 is a low-middle
-   value. I run at 48/32 some times on my Athlon 64 3200, and I could 
-   probably go higher, although some presets slow down for me at this VERY 
+   value. I run at 48/32 some times on my Athlon 64 3200, and I could
+   probably go higher, although some presets slow down for me at this VERY
    high setting.
 
    Certain presets can be processor hogs and slow the framerate down to
@@ -117,4 +117,4 @@ A: /etc/projectM/config
 
 Q8: Where are the presets?
 --------------------------
-A: /etc/projectM/presets
+A: /usr/share/projectM/presets
