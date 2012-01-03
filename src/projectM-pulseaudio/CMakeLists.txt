@@ -49,18 +49,6 @@ else (LIBPULSE_FOUND)
 MESSAGE(FATAL_ERROR "ERROR: Pulse Audio is NOT found. Please install pulse audio 0.9.8 or greater from www.pulseaudio.org.")
 endif(LIBPULSE_FOUND)
 
-# GLEW - A cross plataform C/C++ extension loading library
-#find_package(GLEW)
-#if (GLEW_FOUND)
-#  MESSAGE(STATUS "[projectm-pulseaudio] glew library detected.")
-#  message(STATUS "GLEW_LIBRARY = ${GLEW_LIBRARY}")
-#  message(STATUS "GLEW_LIBRARY_DIR = ${GLEW_LIBRARY_DIR}")
-#  include_directories(${GLEW_INCLUDE_DIR})
-#  link_directories(${GLEW_LIBRARY_DIR})
-#else (GLEW_FOUND)
-#  MESSAGE(FATAL_ERROR "ERROR: glew library not detected. Please install it from glew.sourceforge.net")
-#endif (GLEW_FOUND)
-
 # ftgl - OpenGL library to use arbitrary fonts
 pkg_search_module(FTGL REQUIRED ftgl)
 if (FTGL_FOUND)
@@ -115,8 +103,6 @@ INCLUDE_DIRECTORIES(${PROJECTM_INCLUDE}
 		${CMAKE_CURRENT_BINARY_DIR}
 		${CMAKE_BINARY_DIR}/projectM-pulseaudio
 )
-
-LINK_DIRECTORIES(${PROJECTM_LINK} ${PULSEAUDIO_LDFLAGS})
 
 if(COMMAND cmake_policy)
       cmake_policy(SET CMP0003 NEW)
