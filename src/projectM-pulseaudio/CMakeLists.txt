@@ -104,6 +104,8 @@ INCLUDE_DIRECTORIES(${PROJECTM_INCLUDE}
 		${CMAKE_BINARY_DIR}/projectM-pulseaudio
 )
 
+LINK_DIRECTORIES(${PROJECTM_LINK})
+
 if(COMMAND cmake_policy)
       cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
