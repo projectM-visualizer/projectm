@@ -216,26 +216,13 @@ int
 process (jack_nframes_t nframes, void *arg)
 {
 	jack_default_audio_sample_t *in;
-	jack_transport_state_t ts = jack_transport_query(client, NULL);
 
-	if (ts == JackTransportRolling) {
+	in = (jack_default_audio_sample_t*)jack_port_get_buffer (input_port, nframes);
 
-		if (client_state == Init)
-			client_state = Run;
+	//memcpy (out, in,sizeof (jack_default_audio_sample_t) * nframes);
 
-		in = (jack_default_audio_sample_t*)jack_port_get_buffer (input_port, nframes);
-
-		//memcpy (out, in,sizeof (jack_default_audio_sample_t) * nframes);
-
-		globalPM->pcm()->addPCMfloat(in,nframes);
-		//printf("%x %f\n",nframes,in[128]);
-
-
-	} else if (ts == JackTransportStopped) {
-
-		if (client_state == Run)
-			client_state = Exit;
-	}
+	globalPM->pcm()->addPCMfloat(in,nframes);
+	//printf("%x %f\n",nframes,in[128]);
 
 	return 0;
 }
