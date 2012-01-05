@@ -39,6 +39,8 @@
 #define tex2d tex2D
 #define tex3d tex3D
 
+#define sampler sampler2D
+
 #define getrad sqrt((uv.x-0.5)*2*(uv.x-0.5)*2+(uv.y-0.5)*2*(uv.y-0.5)*2)*.7071067
 #define getang atan2(((uv.y-0.5)*2),((uv.x-0.5)*2))
 
@@ -113,6 +115,21 @@ float  vol_att;
 float4 texsize;
 float4 aspect;
 
+float max( float a, float b ) {
+      return (a > b ? a : b);
+}
+
+float3 max(float3 a, float4 b) {
+       return float3( a.x > b.x ? a.x : b.x,
+                      a.y > b.y ? a.y : b.y,
+                      a.z > b.z ? a.z : b.z );
+}
+
+float3 max(float3 a, float3 b) {
+       return float3( a.x > b.x ? a.x : b.x,
+                      a.y > b.y ? a.y : b.y,
+                      a.z > b.z ? a.z : b.z );
+}
 
 struct outtype {float4 color : COLOR;};
 outtype OUT;
