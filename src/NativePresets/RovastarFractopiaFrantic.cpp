@@ -74,7 +74,7 @@ public:
 
 	}
 
-	virtual Point PerPixel(Point p, const PerPixelContext context)
+	virtual PixelPoint PerPixel(PixelPoint p, const PerPixelContext context)
 	{
 		float myy = context.y-(0.250025);
 		float myx = context.x-0.5;

@@ -140,7 +140,7 @@ public:
 
 	}
 
-	virtual Point PerPixel(Point p, const PerPixelContext context)
+	virtual PixelPoint PerPixel(PixelPoint p, const PerPixelContext context)
 	{
 		float pdy=dy+0.008*cos((p.x-0.5 - 0.1*sin(q7))*(q6));
 		Transforms::Zoom(p,context,13.290894,1);
