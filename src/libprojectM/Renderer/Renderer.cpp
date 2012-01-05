@@ -49,16 +49,23 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
 	title_font = new FTGLPixmapFont(title_fontURL.c_str());
 	other_font = new FTGLPixmapFont(menu_fontURL.c_str());
-	other_font->UseDisplayList(true);
-	title_font->UseDisplayList(true);
-
 	poly_font = new FTGLExtrdFont(title_fontURL.c_str());
 
-	poly_font->UseDisplayList(true);
-	poly_font->Depth(20);
-	poly_font->FaceSize(72);
+	if(title_font->Error()) {
+		fprintf(stderr, "Failed to open font %s\n", title_fontURL.c_str());
+	} else {
+		title_font->UseDisplayList(true);
+	}
 
-	poly_font->UseDisplayList(true);
+	other_font->UseDisplayList(true);
+
+	if(poly_font->Error()) {
+		fprintf(stderr, "Failed to open font %s\n", title_fontURL.c_str());
+	} else {
+		poly_font->UseDisplayList(true);
+		poly_font->Depth(20);
+		poly_font->FaceSize(72);
+	}
 
 #endif /** USE_FTGL */
 
