@@ -84,6 +84,8 @@ void PresetLoader::rescan()
 
 	while ( ( dir_entry = readdir ( _dir ) ) != NULL )
 	{
+    if (dir_entry->d_name == 0)
+      continue;
 
 		std::ostringstream out;
 		// Convert char * to friendly string
