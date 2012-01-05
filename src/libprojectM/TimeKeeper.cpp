@@ -3,16 +3,6 @@
 #else
 #endif /** !WIN32 */
 #include <stdlib.h>
-#ifdef LINUX
-#include <GL/gl.h>
-#endif
-#ifdef WIN32
-#include "glew.h"
-#endif
-
-#ifdef __APPLE__
-#include <GL/gl.h>
-#endif
 
 #include "TimeKeeper.hpp"
 #include "RandomNumberGenerators.hpp"
