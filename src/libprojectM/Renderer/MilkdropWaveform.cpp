@@ -13,7 +13,7 @@
 #include "glew.h"
 #endif
 #ifdef __APPLE__
-#include <GL/gl.h>
+#include <OpenGL/gl.h>
 #endif
 
 #include "MilkdropWaveform.hpp"

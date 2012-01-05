@@ -45,5 +45,5 @@ if (staticPerPixel)
 }
 
 //void Pipeline::Render(const BeatDetect &music, const PipelineContext &context){}
-Point Pipeline::PerPixel(Point p, const PerPixelContext context)
+PixelPoint Pipeline::PerPixel(PixelPoint p, const PerPixelContext context)
 {return p;}
