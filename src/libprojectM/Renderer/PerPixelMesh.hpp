@@ -3,12 +3,12 @@
 
 #include <vector>
 
-struct Point
+struct PixelPoint
 {
 	float x;
 	float y;
 
-	Point(float x, float y);
+	PixelPoint(float x, float y);
 };
 
 struct PerPixelContext
@@ -31,8 +31,8 @@ public:
 	int height;
 	int size;
 
-	std::vector<Point> p;
-	std::vector<Point> p_original;
+	std::vector<PixelPoint> p;
+	std::vector<PixelPoint> p_original;
 	std::vector<PerPixelContext> identity;
 
 	PerPixelMesh(int width, int height);

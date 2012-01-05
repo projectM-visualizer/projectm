@@ -50,7 +50,7 @@ public:
 	 Pipeline();
 	 void setStaticPerPixel(int gx, int gy);
 	 virtual ~Pipeline();
-	 virtual Point PerPixel(Point p, const PerPixelContext context);
+	 virtual PixelPoint PerPixel(PixelPoint p, const PerPixelContext context);
 };
 
 #endif

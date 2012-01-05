@@ -5,8 +5,8 @@
 #include "omptl/omptl_algorithm"
 
 PerPixelMesh::PerPixelMesh(int width, int height) : width(width), height(height), size (width * height),
-		p(width * height, Point(0,0)),
-		p_original(width * height, Point(0,0)),
+		p(width * height, PixelPoint(0,0)),
+		p_original(width * height, PixelPoint(0,0)),
 		identity(width * height, PerPixelContext(0,0,0,0,0,0))
 		{
 		for (int j=0;j<height;j++)
@@ -42,7 +42,7 @@ void PerPixelMesh::Reset()
 	omptl::copy(p_original.begin(), p_original.end(), p.begin());
 }
 
-Point::Point(float x, float y)
+PixelPoint::PixelPoint(float x, float y)
 	: x(x), y(y) {}
 PerPixelContext::PerPixelContext(float x, float y, float rad, float theta, int i, int j)
 	: x(x), y(y), rad(rad), theta(theta), i(i), j(j) {}
