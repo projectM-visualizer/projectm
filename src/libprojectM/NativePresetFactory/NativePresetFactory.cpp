@@ -10,7 +10,10 @@
 //
 //
 
-#include <dlfcn.h>
+extern "C" {
+#  include <dlfcn.h>
+}
+
 #include "NativePresetFactory.hpp"
 
 typedef void Handle;
