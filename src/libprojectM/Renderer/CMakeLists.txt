@@ -30,3 +30,4 @@ TARGET_LINK_LIBRARIES(Renderer ${MATH_LIBRARIES}
 			${CG_LINK_TARGETS}
 			${FREETYPE2_LIBRARIES}
 )
+set_target_properties(Renderer PROPERTIES COMPILE_FLAGS "-Wno-parentheses")
