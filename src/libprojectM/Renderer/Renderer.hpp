@@ -123,7 +123,7 @@ private:
   void Pass2 (const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void CompositeOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext);
 
-  inline static Point PerPixel(Point p, PerPixelContext &context)
+  inline static PixelPoint PerPixel(PixelPoint p, PerPixelContext &context)
   {
 	  return currentPipe->PerPixel(p,context);
   }
