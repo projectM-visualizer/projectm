@@ -190,7 +190,10 @@ RenderTarget::RenderTarget(int texsize, int width, int height) : useFBO(false) {
   {
 	int mindim = width < height ? width : height;
     int origtexsize = this->texsize;
-    this->texsize = nearestPower2( mindim, SCALE_MINIFY );      
+    this->texsize = nearestPower2( mindim, SCALE_MINIFY );
+
+    if (origtexsize == texsize)
+      return;
 
     /* Create the texture that will be bound to the render this */
     /*
