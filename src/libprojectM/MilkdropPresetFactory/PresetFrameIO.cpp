@@ -3,6 +3,7 @@
 #include <math.h>
 #include <cassert>
 #include <iostream>
+#include <cmath>
 #include "Renderer/BeatDetect.hpp"
 
 PresetInputs::PresetInputs() : PipelineContext()
@@ -195,7 +196,7 @@ void PresetOutputs::PerPixelMath(const PipelineContext &context)
 	{
 		for (y = 0; y < gy; y++)
 		{
-			fZoom2 = powf(this->zoom_mesh[x][y], powf(this->zoomexp_mesh[x][y],
+			fZoom2 = std::pow(this->zoom_mesh[x][y], std::pow(this->zoomexp_mesh[x][y],
 					rad_mesh[x][y] * 2.0f - 1.0f));
 			fZoom2Inv = 1.0f / fZoom2;
 			this->x_mesh[x][y] = this->orig_x[x][y] * 0.5f * fZoom2Inv + 0.5f;

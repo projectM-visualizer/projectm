@@ -16,6 +16,8 @@
 #include <OpenGL/gl.h>
 #endif
 
+#include <cmath>
+
 #include "MilkdropWaveform.hpp"
 #include "math.h"
 #include "BeatDetect.hpp"
@@ -124,7 +126,7 @@ void MilkdropWaveform::MaximizeColors(RenderContext &context)
 			case 2048: temp_a *= 0.33f; break;
 		}
 		temp_a*=1.3f;
-		temp_a*=powf(context.beatDetect->treb , 2.0f);
+		temp_a*=std::pow(context.beatDetect->treb , 2.0f);
 	}
 
 	if (maximizeColors==true)
