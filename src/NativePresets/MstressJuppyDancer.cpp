@@ -190,7 +190,7 @@ public:
 		bass = music.bass;
 	}
 
-	virtual Point PerPixel(Point p, const PerPixelContext context)
+	virtual PixelPoint PerPixel(PixelPoint p, const PerPixelContext context)
 	{
 
 		float sx = -below(p.y,0.8)*.001;
