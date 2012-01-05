@@ -16,6 +16,11 @@ endif(${CMAKE_PROJECT_NAME} MATCHES "PROJECTM_ROOT")
 
 OPTION(BUILD_PROJECTM_QT_STATIC "Build a static library of projectM-qt rather than the usual shared library format" OFF)
 
+# projectM-Qt version block
+set(PROJECTM_QT_VERSION 1.10)
+set(PROJECTM_QT_ABI_LEVEL 1)
+#
+
 find_package(Qt4 REQUIRED) # find and setup Qt4 for this project
 include(${QT_USE_FILE})
 
@@ -108,7 +113,7 @@ endif(BUILD_PROJECTM_QT_STATIC)
 
 set_property(TARGET projectM-qt PROPERTY LINK_INTERFACE_LIBRARIES "")
 set_property(TARGET projectM-qt PROPERTY IMPORTED_LINK_DEPENDENT_LIBRARIES "")
-SET_TARGET_PROPERTIES(projectM-qt PROPERTIES VERSION 1.10 SOVERSION 1)
+SET_TARGET_PROPERTIES(projectM-qt PROPERTIES VERSION ${PROJECTM_QT_VERSION} SOVERSION ${PROJECTM_QT_ABI_LEVEL})
 
 if (${CMAKE_PROJECT_NAME} MATCHES "projectM-complete")
    set(PROJECTM_INCLUDE ${PROJECTM_ROOT_SOURCE_DIR}/libprojectM)
