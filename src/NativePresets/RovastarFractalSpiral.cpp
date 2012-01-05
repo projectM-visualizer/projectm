@@ -48,7 +48,7 @@ public:
 		dy = -0.008*sin(time*0.2);
 	}
 
-	virtual Point PerPixel(Point p, const PerPixelContext context)
+	virtual PixelPoint PerPixel(PixelPoint p, const PerPixelContext context)
 	{
 		float q1 = 8.05+(sin(p.x+0.137*time)-cos(p.y+0.213*time));
 		int val1 = abs(p.x*3-0.4*sin(q1));

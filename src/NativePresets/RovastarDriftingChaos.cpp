@@ -120,7 +120,7 @@ public:
 
 	}
 
-	virtual Point PerPixel(Point p, const PerPixelContext context)
+	virtual PixelPoint PerPixel(PixelPoint p, const PerPixelContext context)
 	{
 		Transforms::Zoom(p,context,1+0.05*context.rad,1);
 		Transforms::Transform(p,context,dx,dy);
