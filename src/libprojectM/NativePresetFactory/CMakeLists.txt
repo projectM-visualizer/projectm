@@ -1,3 +1,4 @@
+project(NativePresetFactory)
 
 SET(NativePresetFactory_SOURCES NativePresetFactory.cpp)
 
