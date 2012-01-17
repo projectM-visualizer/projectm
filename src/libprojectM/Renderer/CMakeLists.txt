@@ -1,3 +1,4 @@
+project(Renderer)
 
 SET(SOIL_SOURCES
 	SOIL/image_DXT.c

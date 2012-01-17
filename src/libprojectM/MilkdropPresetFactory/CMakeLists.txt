@@ -1,3 +1,4 @@
+project(MilkdropPresetFactory)
 
 SET(MilkdropPresetFactory_SOURCES
 	BuiltinFuncs.cpp
