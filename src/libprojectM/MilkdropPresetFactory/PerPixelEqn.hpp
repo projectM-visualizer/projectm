@@ -57,6 +57,7 @@ public:
 
     void evalPerPixelEqns( Preset *preset );
     void evaluate(int mesh_i, int mesh_j);
+    virtual ~PerPixelEqn();
 
     PerPixelEqn(int index, Param * param, GenExpr * gen_expr);
 
