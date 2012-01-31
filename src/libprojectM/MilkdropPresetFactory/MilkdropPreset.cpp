@@ -75,32 +75,24 @@ MilkdropPreset::~MilkdropPreset()
 
   /// Testing deletion of render items by the preset. would be nice if it worked, 
   /// and seems to be working if you use a mutex on the preset switching.
-/*
-  std::cout << "begin freeing of waves / shapes" << std::endl;  
-	
+  
   for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); 
 	pos != customWaves.end(); ++pos ) {
-	for (PresetOutputs::cwave_container::iterator pos2 = presetOutputs().customWaves.begin(); 
-		pos2 != presetOutputs().customWaves.end(); ++pos2 ) {
-		if ((*pos2)->id == (*pos)->id) 
-			presetOutputs().customWaves.erase(pos2);
-	}
-	delete(*pos);
+  //  __android_log_print(ANDROID_LOG_ERROR, "projectM", "not freeing wave %x", *pos);
+    delete(*pos);
   }
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); 
 	pos != customShapes.end(); ++pos ) {
+//__android_log_print(ANDROID_LOG_ERROR, "projectM", "not freeing shape %x", *pos);
 
-	for (PresetOutputs::cshape_container::iterator pos2 = presetOutputs().customShapes.begin(); 
-1aaa339f10vmlkd		pos2 != presetOutputs().customShapes.end(); ++pos2 ) {
-		if ((*pos2)->id == (*pos)->id)
-			presetOutputs().customShapes.erase(pos2);
-	}
 	delete(*pos);
   }
-
-  std::cout << "end freeing of waves / shapes" << std::endl;
-	*/
+  customWaves.clear();
+ customShapes.clear();
+ presetOutputs().customWaves.clear();
+ presetOutputs().customShapes.clear();
+  presetOutputs().drawables.clear();
 
 }
 
