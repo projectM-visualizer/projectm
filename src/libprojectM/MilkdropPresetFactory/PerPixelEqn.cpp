@@ -72,3 +72,10 @@ PerPixelEqn::PerPixelEqn(int _index, Param * _param, GenExpr * _gen_expr):index(
 
 }
 
+
+PerPixelEqn::~PerPixelEqn()
+{
+	if (gen_expr)
+		delete (gen_expr);
+
+}
