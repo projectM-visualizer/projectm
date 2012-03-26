@@ -57,8 +57,8 @@ if (FTGL_FOUND)
   message(STATUS "FTGL_LIBRARY_DIRS = ${FTGL_LIBRARY_DIRS}")
   include_directories(${FTGL_INCLUDE_DIRS})
   link_directories(${FTGL_LIBRARY_DIRS})
-else (FTGL_FOUND)
-  message(FATAL_ERROR "ERROR: ftgl library not detected. Please install it from ftgl.wiki.sourceforge.net")
+else (FTGL_FOUND USE)
+##  message(FATAL_ERROR "ERROR: ftgl library not detected. Please install it from ftgl.wiki.sourceforge.net")
 endif (FTGL_FOUND)
 
 set(projectM_pulseaudio_SRCS
