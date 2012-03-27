@@ -178,8 +178,22 @@ return (sqrt (arg_list[0]));
 
 static inline float print_wrapper(float * arg_list) {
 
-	std::cout << arg_list[0] << std::endl;
-	return arg_list[0];
+	int len = sizeof(arg_list)/sizeof(float);
+
+	for (int i = 0; i < len; i++)
+	{
+		std::cout << arg_list[0];
+		if (i != (len-1))
+			std::cout << " ";
+	}
+
+	if (len > 0)
+		std::cout << std::endl;
+
+	if (len > 0)
+		return arg_list[0];
+	else
+		return 0;
 }
 
 static inline float nchoosek_wrapper(float * arg_list) {
