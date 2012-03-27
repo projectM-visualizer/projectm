@@ -178,8 +178,7 @@ return (sqrt (arg_list[0]));
 
 static inline float print_wrapper(float * arg_list) {
 
-	int len = sizeof(arg_list)/sizeof(float);
-
+	int len  = 1;
 	for (int i = 0; i < len; i++)
 	{
 		std::cout << arg_list[i];
