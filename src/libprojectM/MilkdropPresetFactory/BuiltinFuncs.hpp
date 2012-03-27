@@ -89,7 +89,7 @@ return (float)(!(int)arg_list[0]);
 static inline float if_wrapper(float * arg_list) {
 
 if ((int)arg_list[0] == 0)
-return arg_list[2];
+	return arg_list[2];
 return arg_list[1];
 }
 
@@ -121,12 +121,8 @@ return (arg_list[0] < arg_list[1]);
 }
 
 static float sin_wrapper(float * arg_list) {
-
-  assert(arg_list);
-//return .5;
-float d = sinf(*arg_list);
-return d;
-//return (sin (arg_list[0]));
+	const float d = sinf(*arg_list);
+	return d;
 }
 
 
@@ -178,6 +174,12 @@ static inline float sqrt_wrapper(float * arg_list) {
 return (sqrt (arg_list[0]));
 }
 
+
+static inline float print_wrapper(float * arg_list) {
+
+	std::cout << arg_list[0] << std::endl;
+	return 0;
+}
 
 static inline float nchoosek_wrapper(float * arg_list) {
 unsigned long cnm = 1UL;

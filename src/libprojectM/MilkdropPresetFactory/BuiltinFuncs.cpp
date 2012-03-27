@@ -111,7 +111,8 @@ int BuiltinFuncs::load_all_builtin_func() {
     return PROJECTM_ERROR;
   if (load_builtin_func("fact", FuncWrappers::fact_wrapper, 1) < 0)
     return PROJECTM_ERROR;
-
+  if (load_builtin_func("print", FuncWrappers::print_wrapper, 1) < 0)
+      return PROJECTM_ERROR;
   return PROJECTM_SUCCESS;
 }
 
