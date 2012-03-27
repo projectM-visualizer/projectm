@@ -88,9 +88,10 @@ return (float)(!(int)arg_list[0]);
 
 static inline float if_wrapper(float * arg_list) {
 
-if ((int)arg_list[0] == 0)
-	return arg_list[2];
-return arg_list[1];
+	if ((int)arg_list[0] == 0)
+		return arg_list[2];
+	//std::cout <<"NOT ZERO: " << arg_list[0] << std::endl;
+	return arg_list[1];
 }
 
 
@@ -178,7 +179,7 @@ return (sqrt (arg_list[0]));
 static inline float print_wrapper(float * arg_list) {
 
 	std::cout << arg_list[0] << std::endl;
-	return 0;
+	return arg_list[0];
 }
 
 static inline float nchoosek_wrapper(float * arg_list) {
