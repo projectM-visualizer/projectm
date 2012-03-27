@@ -182,7 +182,7 @@ static inline float print_wrapper(float * arg_list) {
 
 	for (int i = 0; i < len; i++)
 	{
-		std::cout << arg_list[0];
+		std::cout << arg_list[i];
 		if (i != (len-1))
 			std::cout << " ";
 	}
