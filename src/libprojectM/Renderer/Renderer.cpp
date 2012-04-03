@@ -252,6 +252,17 @@ void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineCo
 void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
 
+#ifdef USE_FBO
+    // when not 'renderToTexture', the user may use its own couple FBO/texture
+    // so retrieve this external FBO if it exists, (0 means no FBO) and unbind it
+    GLint externalFBO = 0;
+    if (!renderTarget->renderToTexture)
+    {
+        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &externalFBO);
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    }
+#endif
+
 	SetupPass1(pipeline, pipelineContext);
 
 #ifdef USE_CG
@@ -264,6 +275,15 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
 
 	RenderItems(pipeline, pipelineContext);
 	FinishPass1();
+
+#ifdef USE_FBO
+    // when not 'renderToTexture', the user may use its own couple FBO/texture
+    // if it exists (0 means no external FBO)
+    // then rebind it just before calling the final pass: Pass2
+    if (!renderTarget->renderToTexture && externalFBO != 0)
+        glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, externalFBO);
+#endif
+
 	Pass2(pipeline, pipelineContext);
 }
 
