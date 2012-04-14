@@ -1,4 +1,3 @@
-
 projectM -- Milkdrop-esque visualisation SDK
 Copyright (C)2003-2007 projectM Team
 
@@ -25,12 +24,12 @@ Carmelo Piccione
     Evaluator
     Pulse Audio support (projectM-pulseaudio)
     Qt GUI (projectM-qt)
-	
+
 Peter Sperl
     Beat Detection
     Rendering
     XMMS Support (projectM-xmms)
-    libvisual Support (projectM-libvisual)   
+    libvisual Support (projectM-libvisual)
 
 Alligator Descartes
     Media Player Support (iTunes, Winamp, Windows Media Player)
@@ -40,3 +39,8 @@ Alligator Descartes
 
 Roger Dannenburg
     Advice & Support
+
+Matthias Klumpp
+    CMake build system
+    Distro integration
+    Bug fixes
