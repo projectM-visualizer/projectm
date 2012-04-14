@@ -201,16 +201,16 @@ void projectM::readConfig (const std::string & configFile )
 
     #ifdef LINUX
     _settings.titleFontURL = config.read<string>
-    ( "Title Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/Vera.ttf" );
+    ( "Title Font", projectM_FONT_TITLE );
     _settings.menuFontURL = config.read<string>
-    ( "Menu Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/VeraMono.ttf" );
+    ( "Menu Font", projectM_FONT_MENU );
     #endif
 
     #ifdef WIN32
     _settings.titleFontURL = config.read<string>
-    ( "Title Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/Vera.ttf" );
+    ( "Title Font", projectM_FONT_TITLE );
     _settings.menuFontURL = config.read<string>
-    ( "Menu Font", CMAKE_INSTALL_PREFIX  "/share/projectM/fonts/VeraMono.ttf" );
+    ( "Menu Font", projectM_FONT_MENU );
     #endif
 
 

@@ -33,16 +33,10 @@ set(PROJECTM_VERSION 2.0.1)
 set(PROJECTM_ABI_LEVEL 2)
 #
 
-SET(LIB_SUFFIX ""
-  CACHE STRING "Define suffix of directory name (32/64)"
-  FORCE)
-
-ADD_DEFINITIONS(-DLIB_SUFFIX="\\\"${LIB_SUFFIX}\\\"")
-
 ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"")
 
-SET(LIB_INSTALL_DIR "\${exec_prefix}/lib${LIB_SUFFIX}"
-  CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is /lib${LIB_SUFFIX})"
+SET(LIB_INSTALL_DIR "\${exec_prefix}/lib"
+  CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is /lib)"
   FORCE)
 
 if (USE_NATIVE_GLEW)
@@ -221,14 +215,26 @@ else(BUILD_PROJECTM_STATIC)
 	)
 endif(BUILD_PROJECTM_STATIC)
 
+SET(projectM_FONT_MENU "${CMAKE_INSTALL_PREFIX}/${RESOURCE_PREFIX}/fonts/VeraMono.ttf" CACHE FILEPATH "Path to the default menu TrueType font")
+SET(projectM_FONT_TITLE "${CMAKE_INSTALL_PREFIX}/${RESOURCE_PREFIX}/fonts/Vera.ttf" CACHE FILEPATH "Path to the default title TrueType font")
+ADD_DEFINITIONS(-DprojectM_FONT_MENU="\\\"${projectM_FONT_MENU}\\\"")
+ADD_DEFINITIONS(-DprojectM_FONT_TITLE="\\\"${projectM_FONT_TITLE}\\\"")
 
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/libprojectM.pc.in" "${CMAKE_CURRENT_BINARY_DIR}/libprojectM.pc" @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/config.inp.in" "${CMAKE_CURRENT_BINARY_DIR}/config.inp" @ONLY)
 
+IF(projectM_FONT_MENU MATCHES "${CMAKE_INSTALL_PREFIX}/${RESOURCE_PREFIX}/fonts/Vera.ttf" OR projectM_FONT_TITLE MATCHES "${CMAKE_INSTALL_PREFIX}/${RESOURCE_PREFIX}/fonts/Vera.ttf")
+	INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/fonts/VeraMono.ttf DESTINATION ${CMAKE_INSTALL_PREFIX}/${RESOURCE_PREFIX}/fonts)
+ENDIF(projectM_FONT_MENU MATCHES "${CMAKE_INSTALL_PREFIX}/${RESOURCE_PREFIX}/fonts/Vera.ttf" OR projectM_FONT_TITLE MATCHES "${CMAKE_INSTALL_PREFIX}/${RESOURCE_PREFIX}/fonts/Vera.ttf")
+
+IF(projectM_FONT_MENU MATCHES "${CMAKE_INSTALL_PREFIX}/${RESOURCE_PREFIX}/fonts/VeraMono.ttf" OR projectM_FONT_TITLE MATCHES "${CMAKE_INSTALL_PREFIX}/${RESOURCE_PREFIX}/fonts/VeraMono.ttf")
+	INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/fonts/VeraMono.ttf DESTINATION ${CMAKE_INSTALL_PREFIX}/${RESOURCE_PREFIX}/fonts)
+ENDIF(projectM_FONT_MENU MATCHES "${CMAKE_INSTALL_PREFIX}/${RESOURCE_PREFIX}/fonts/VeraMono.ttf" OR projectM_FONT_TITLE MATCHES "${CMAKE_INSTALL_PREFIX}/${RESOURCE_PREFIX}/fonts/VeraMono.ttf")
+
 FILE(GLOB presets "presets/*.milk" "presets/*.prjm" "presets/*.tga")
 INSTALL(FILES ${presets} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/presets)
 INSTALL(FILES ${Renderer_SOURCE_DIR}/projectM.cg ${Renderer_SOURCE_DIR}/blur.cg DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM/shaders)
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/libprojectM.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}/pkgconfig)
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/libprojectM.pc DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/pkgconfig)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/config.inp DESTINATION ${CMAKE_INSTALL_PREFIX}/share/projectM)
 INSTALL(FILES projectM.hpp event.h dlldefs.h fatal.h PCM.hpp Common.hpp DESTINATION include/libprojectM)
-INSTALL(TARGETS projectM DESTINATION lib${LIB_SUFFIX})
+INSTALL(TARGETS projectM DESTINATION lib)

@@ -1,18 +1,12 @@
 PROJECT(projectM_libvisual)
 cmake_minimum_required(VERSION 2.4.0)
-    if(COMMAND cmake_policy)
-      cmake_policy(SET CMP0003 NEW)
-    endif(COMMAND cmake_policy)
-
 
 INCLUDE(cmake/CPack-projectM.cmake)
-
 
 ADD_LIBRARY(projectM_libvisual SHARED actor_projectM.cpp lvtoprojectM.h ConfigFile.h ConfigFile.cpp)
 
 INCLUDE(FindPkgConfig.cmake)
 cmake_policy(SET CMP0005 OLD)
-
 
 FIND_PACKAGE(OpenGL)
 FIND_PACKAGE(SDL)
@@ -30,17 +24,16 @@ ADD_DEFINITIONS(-DLINUX)
 pkg_search_module(LIBVISUAL REQUIRED libvisual-0.4)
 
 if (LIBPROJECTM_FOUND)
-MESSAGE (STATUS "[projectM-libvisual] projectM detected.")
+	MESSAGE (STATUS "[projectM-libvisual] projectM detected.")
 else(LIBPROJECTM_FOUND)
-MESSAGE (FATAL_ERROR "projectM NOT detected. Please install the projectM module or build from the top level projectM source directory.")
+	MESSAGE (FATAL_ERROR "projectM NOT detected. Please install the projectM module or build from the top level projectM source directory.")
 endif(LIBPROJECTM_FOUND)
 
 if(LIBVISUAL_FOUND)
-MESSAGE(STATUS "[projectM-libvisual] libvisual detected.")
+	MESSAGE(STATUS "[projectM-libvisual] libvisual detected.")
 else(LIBVISUAL_FOUND)
-MESSAGE(FATAL_ERROR "libvisual 0.4 not found! Please visit http://libvisual.sf.net and download the module.")
+	MESSAGE(FATAL_ERROR "libvisual 0.4 not found! Please visit http://libvisual.sf.net and download the module.")
 endif(LIBVISUAL_FOUND)
-
 
 
 if (${CMAKE_PROJECT_NAME} MATCHES "projectM-complete")

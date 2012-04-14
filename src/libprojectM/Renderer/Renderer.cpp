@@ -6,6 +6,7 @@
 #include "TextureManager.hpp"
 #include <iostream>
 #include <algorithm>
+#include <sys/stat.h>
 #include <cassert>
 #include "omptl/omptl"
 #include "omptl/omptl_algorithm"
@@ -45,7 +46,17 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 	this->beatDetect = beatDetect;
 
 #ifdef USE_FTGL
-	/**f Load the standard fonts */
+	/** Load the standard fonts if they do exist */
+	struct stat buffer;
+
+	if (stat( title_fontURL.c_str(), &buffer )) {
+	  std::cout << "Could not open font file: " << title_fontURL << std::endl;
+	  exit(1);
+	}
+	if (stat( menu_fontURL.c_str(), &buffer )) {
+	  std::cout << "Could not open font file: " << menu_fontURL << std::endl;
+	  exit(1);
+	}
 
 	title_font = new FTGLPixmapFont(title_fontURL.c_str());
 	other_font = new FTGLPixmapFont(menu_fontURL.c_str());
