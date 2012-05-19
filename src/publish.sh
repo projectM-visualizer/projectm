@@ -29,7 +29,6 @@ cmake -DUSE_FTGL=${FTGL} -DCPACK_SOURCE_TGZ=${GZ} -DUSE_OPENMP=${OPENMP} -DCPACK
 
 make package_source 
 cp *.gz -f ${TARGET_DIR}
-#cp *.bz2 -f ${TARGET_DIR}
 cd ${OLDDIR}
 }
 
