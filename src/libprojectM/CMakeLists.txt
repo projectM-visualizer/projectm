@@ -29,7 +29,7 @@ OPTION (DISABLE_NATIVE_PRESETS "Turn off support for native (C++ style) presets"
 OPTION (DISABLE_MILKDROP_PRESETS "Turn off support for Milkdrop (.milk / .prjm) presets"  OFF)
 
 # projectM version block
-set(PROJECTM_VERSION 2.0.1)
+set(PROJECTM_VERSION 2.1.0)
 set(PROJECTM_ABI_LEVEL 2)
 #
 
