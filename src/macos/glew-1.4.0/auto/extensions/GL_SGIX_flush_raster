@@ -1,3 +1,0 @@
-GL_SGIX_flush_raster
-http://oss.sgi.com/projects/ogl-sample/registry/SGIX/flush_raster.txt
-	void glFlushRasterSGIX (void)
