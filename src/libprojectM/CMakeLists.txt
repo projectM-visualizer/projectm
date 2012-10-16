@@ -33,7 +33,7 @@ set(PROJECTM_VERSION 2.1.0)
 set(PROJECTM_ABI_LEVEL 2)
 #
 
-ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX="\\\"${CMAKE_INSTALL_PREFIX}\\\"")
+ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
 
 SET(LIB_INSTALL_DIR "\${exec_prefix}/lib"
   CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is /lib)"
