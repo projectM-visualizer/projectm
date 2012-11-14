@@ -160,18 +160,22 @@ float TreeExpr::eval_tree_expr ( int mesh_i, int mesh_j )
 	/* Safe guard in case the user gave a partially written expression */
 	if (left == NULL) {
 		if (infix_op == Eval::infix_mult)
-			return 1;
+			left_arg = 1;
 		else
-			return 0;
+			left_arg = 0;
 	}
+	else
+		left_arg = left->eval_tree_expr ( mesh_i, mesh_j );
 
-	left_arg = left->eval_tree_expr ( mesh_i, mesh_j );
-
-	/* Safe guard */
-	if (right == NULL)
-		return left_arg;
-
-	right_arg = right->eval_tree_expr ( mesh_i, mesh_j );
+	/* Safe guard in case the user gave a partially written expression */
+	if (right == NULL) {
+		if (infix_op == Eval::infix_mult)
+			right_arg = 1;
+		else
+			right_arg = 0;
+	}
+	else
+		right_arg = right->eval_tree_expr ( mesh_i, mesh_j );
 
 
 	switch ( infix_op->type )
