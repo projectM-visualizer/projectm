@@ -1070,7 +1070,7 @@ int Parser::insert_gen_rec(GenExpr * gen_expr, TreeExpr * root)
 
   if (root == NULL)
   {
-    //if (PARSE_DEBUG) printf("insert_gen_rec: root is null, returning failure\n");
+    if (PARSE_DEBUG) printf("insert_gen_rec: root is null, returning failure\n");
     return PROJECTM_FAILURE;
   }
 
