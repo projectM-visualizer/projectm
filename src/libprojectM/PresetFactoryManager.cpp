@@ -84,12 +84,14 @@ std::auto_ptr<Preset> PresetFactoryManager::allocate(const std::string & url, co
 		const std::string extension = parseExtension (url);
 
 		return factory(extension).allocate(url, name);
+	} catch (const PresetFactoryException & e) {
+		throw e;
 	} catch (const std::exception & e) {
 		throw PresetFactoryException(e.what());
 	} catch (...) {
 		throw PresetFactoryException("uncaught preset factory exception");
 	}
-
+	return std::auto_ptr<Preset>();
 }
 
 PresetFactory & PresetFactoryManager::factory(const std::string & extension) {
