@@ -310,6 +310,9 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 
 	connect ( m_QProjectMWidget->qprojectM(), SIGNAL ( presetSwitchedSignal ( bool,unsigned int ) ),
 		  this, SLOT ( updatePlaylistSelection ( bool,unsigned int ) ) );
+	connect ( m_QProjectMWidget->qprojectM(), SIGNAL ( presetSwitchFailedSignal ( bool,unsigned int, const QString & ) ),
+		  this, SLOT ( handleFailedPresetSwitch( bool,unsigned int, const QString &) ) );
+
 
 	connect ( m_QProjectMWidget->qprojectM(), SIGNAL ( presetRatingChangedSignal ( unsigned int,int, PresetRatingType) ),
 			  this, SLOT ( presetRatingChanged( unsigned int,int, PresetRatingType) ));
@@ -1297,5 +1300,15 @@ void QProjectM_MainWindow::presetRatingChanged( unsigned int index, int rating, 
 	ui->presetPlayListDockWidget->setWindowModified ( true );
 
 	playlistModel->notifyDataChanged(index);
+}
+
+void QProjectM_MainWindow::handleFailedPresetSwitch(const bool isHardCut, const unsigned int index,
+		const QString & message) {
+
+	const QString status = QString("Error switch to preset index %1: %2")
+	                 .arg(index).arg(message);
+
+	statusBar()->showMessage ( tr (status.toStdString().c_str() ) );
+
 }
 
