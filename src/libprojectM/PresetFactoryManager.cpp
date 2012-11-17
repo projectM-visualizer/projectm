@@ -96,9 +96,9 @@ std::auto_ptr<Preset> PresetFactoryManager::allocate(const std::string & url, co
 
 PresetFactory & PresetFactoryManager::factory(const std::string & extension) {
 
-	if (!_factoryMap.count(extension)) {		
+	if (!extensionHandled(extension)) {
 		std::ostringstream os;
-		os << "No factory associated with \"" << extension << "\"." << std::endl;
+		os << "No  preset factory associated with \"" << extension << "\"." << std::endl;
 		throw PresetFactoryException(os.str());
 	}
 	return *_factoryMap[extension];
