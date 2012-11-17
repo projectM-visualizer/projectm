@@ -157,11 +157,25 @@ float TreeExpr::eval_tree_expr ( int mesh_i, int mesh_j )
 	/* Otherwise, this node is an infix operator. Evaluate
 	   accordingly */
 
-	assert(left);
-	left_arg = left->eval_tree_expr ( mesh_i, mesh_j );
+	/* Safe guard in case the user gave a partially written expression */
+	if (left == NULL) {
+		if (infix_op == Eval::infix_mult)
+			left_arg = 1;
+		else
+			left_arg = 0;
+	}
+	else
+		left_arg = left->eval_tree_expr ( mesh_i, mesh_j );
 
-	assert(right);
-	right_arg = right->eval_tree_expr ( mesh_i, mesh_j );
+	/* Safe guard in case the user gave a partially written expression */
+	if (right == NULL) {
+		if (infix_op == Eval::infix_mult)
+			right_arg = 1;
+		else
+			right_arg = 0;
+	}
+	else
+		right_arg = right->eval_tree_expr ( mesh_i, mesh_j );
 
 
 	switch ( infix_op->type )

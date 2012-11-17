@@ -243,6 +243,8 @@ public:
   /// Occurs when active preset has switched. Switched to index is returned
   virtual void presetSwitchedEvent(bool isHardCut, unsigned int index) const {};
   virtual void shuffleEnabledValueChanged(bool isEnabled) const {};
+  virtual void presetSwitchFailedEvent(bool hardCut, unsigned int index, const std::string & message) const {};
+
 
   /// Occurs whenever preset rating has changed via changePresetRating() method
   virtual void presetRatingChanged(unsigned int index, int rating, PresetRatingType ratingType) const {};
@@ -320,7 +322,9 @@ private:
 
   Pipeline* currentPipe;
 
-void switchPreset(std::auto_ptr<Preset> & targetPreset);
+  std::string switchPreset(std::auto_ptr<Preset> & targetPreset);
+  void switchPreset(const bool hardCut);
+
 
 
 };
