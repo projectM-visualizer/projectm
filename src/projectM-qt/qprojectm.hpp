@@ -35,6 +35,10 @@ class QProjectM : public QObject, public projectM {
 			presetSwitchedSignal(hardCut, index);
 		}
 
+		void presetSwitchFailedEvent(bool hardCut, unsigned int index, const std::string & message) const {
+			presetSwitchFailedSignal(hardCut, index, QString(message.c_str()));
+		}
+
 		void presetRatingChanged(unsigned int index, int rating,
 						PresetRatingType ratingType) const {
 			 presetRatingChangedSignal(index, rating, ratingType);
@@ -42,6 +46,7 @@ class QProjectM : public QObject, public projectM {
 
 	signals:
 		void presetSwitchedSignal(bool hardCut, unsigned int index) const;
+		void presetSwitchFailedSignal(bool hardCut, unsigned int index, const QString & message) const;
 		void presetRatingChangedSignal(unsigned int index, int rating,
 				PresetRatingType ratingType) const;
 
