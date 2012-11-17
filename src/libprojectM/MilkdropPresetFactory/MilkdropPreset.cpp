@@ -37,8 +37,12 @@
 #include "fatal.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 #include "PresetFrameIO.hpp"
+
+#include "PresetFactoryManager.hpp"
+
 
 MilkdropPreset::MilkdropPreset(std::istream & in, const std::string & presetName,  PresetOutputs & presetOutputs):
 	Preset(presetName),
@@ -291,15 +295,7 @@ void MilkdropPreset::initialize(const std::string & pathname)
 if (MILKDROP_PRESET_DEBUG)
   std::cerr << "[Preset] loading file \"" << pathname << "\"..." << std::endl;
 
-  if ((retval = loadPresetFile(pathname)) < 0)
-  {
-if (MILKDROP_PRESET_DEBUG)
-     std::cerr << "[Preset] failed to load file \"" <<
-      pathname << "\"!" << std::endl;
-
-    /// @bug how should we handle this problem? a well define exception?
-    throw retval;
-  }
+ loadPresetFile(pathname);
 
   postloadInitialize();
 }
@@ -317,7 +313,7 @@ void MilkdropPreset::initialize(std::istream & in)
      std::cerr << "[Preset] failed to load from stream " << std::endl;
 
     /// @bug how should we handle this problem? a well define exception?
-    throw retval;
+    throw PresetFactoryException("failed to read from input stream");
   }
 
   postloadInitialize();
@@ -530,9 +526,12 @@ int MilkdropPreset::loadPresetFile(const std::string & pathname)
   /* Open the file corresponding to pathname */
   std::ifstream fs(pathname.c_str());
   if (!fs || fs.eof()) {
-    if (MILKDROP_PRESET_DEBUG)
-    	std::cerr << "loadPresetFile: loading of file \"" << pathname << "\" failed!\n";
-    return PROJECTM_ERROR;
+
+    std::ostringstream oss;
+    oss << "Problem reading file from path: \"" << pathname << "\"";
+
+    throw PresetFactoryException(oss.str());
+
   }
 
  return readIn(fs);
