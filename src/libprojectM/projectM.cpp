@@ -693,27 +693,35 @@ static void *thread_callback(void *prjm) {
         return index;
     }
 
-    void projectM::selectPreset ( unsigned int index, bool hardCut)
+    void projectM::selectPreset(unsigned int index, bool hardCut)
     {
 
 		if (m_presetChooser->empty())
 			return;
 
-		if (!hardCut) {
-                	timeKeeper->StartSmoothing();
-		}
 
 		*m_presetPos = m_presetChooser->begin(index);
+		switchPreset(hardCut);
+    }
 
+    void projectM::switchPreset(const bool hardCut) {
+		std::string result;
 		if (!hardCut) {
-			switchPreset(m_activePreset2);
+			result = switchPreset(m_activePreset2);
 		} else {
-			switchPreset(m_activePreset);
-			timeKeeper->StartPreset();
+			result = switchPreset(m_activePreset);
+			if (result.empty())
+				timeKeeper->StartPreset();
 		}
 
-	presetSwitchedEvent(hardCut, **m_presetPos);
+		if (result.empty() && !hardCut) {
+            timeKeeper->StartSmoothing();
+		}
 
+		if (result.empty())
+			presetSwitchedEvent(hardCut, **m_presetPos);
+		else
+			presetSwitchFailedEvent(hardCut, **m_presetPos, result);
 }
 
 
@@ -722,20 +730,9 @@ void projectM::selectRandom(const bool hardCut) {
 		if (m_presetChooser->empty())
 			return;
 
-		if (!hardCut) {
-                	timeKeeper->StartSmoothing();
-		}
-
 		*m_presetPos = m_presetChooser->weightedRandom(hardCut);
 
-		if (!hardCut) {
-			switchPreset(m_activePreset2);
-		} else {
-			switchPreset(m_activePreset);
-			timeKeeper->StartPreset();
-		}
-
-		presetSwitchedEvent(hardCut, **m_presetPos);
+		switchPreset(hardCut);
 
 }
 
@@ -744,27 +741,10 @@ void projectM::selectPrevious(const bool hardCut) {
 		if (m_presetChooser->empty())
 			return;
 
-		if (!hardCut) {
-                	timeKeeper->StartSmoothing();
-		}
 
 		m_presetChooser->previousPreset(*m_presetPos);
 
-		if (!hardCut) {
-			switchPreset(m_activePreset2);
-		} else {
-			switchPreset(m_activePreset);
-			timeKeeper->StartPreset();
-		}
-
-		presetSwitchedEvent(hardCut, **m_presetPos);
-
-//		m_activePreset =  m_presetPos->allocate();
-//		renderer->SetPipeline(m_activePreset->pipeline());
-//		renderer->setPresetName(m_activePreset->name());
-
-	       	//timeKeeper->StartPreset();
-
+		switchPreset(hardCut);
 }
 
 void projectM::selectNext(const bool hardCut) {
@@ -772,36 +752,30 @@ void projectM::selectNext(const bool hardCut) {
 		if (m_presetChooser->empty())
 			return;
 
-		if (!hardCut) {
-                	timeKeeper->StartSmoothing();
-			std::cout << "start smoothing" << std::endl;
-		}
-
 		m_presetChooser->nextPreset(*m_presetPos);
 
-		if (!hardCut) {
-			switchPreset(m_activePreset2);
-		} else {
-			switchPreset(m_activePreset);
-			timeKeeper->StartPreset();
-		}
-		presetSwitchedEvent(hardCut, **m_presetPos);
-
-
+		switchPreset(hardCut);
 }
 
 /**
- *
- * @param targetPreset
- */
-void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
+* Switches to the target preset.
+* @param targetPreset
+* @return a message indicating an error, empty otherwise.
+*/
+std::string projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
 
 	#ifdef SYNC_PRESET_SWITCHES
 	pthread_mutex_lock(&preset_mutex);
 	#endif
-
+	try {
         targetPreset = m_presetPos->allocate();
-
+	} catch (const PresetFactoryException & e) {
+		#ifdef SYNC_PRESET_SWITCHES
+		pthread_mutex_unlock(&preset_mutex);
+		#endif
+		std::cerr << "problem allocating target preset: " << e.message() << std::endl;
+		return e.message();
+	}
         // Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
         renderer->setPresetName(targetPreset->name());
         renderer->SetPipeline(targetPreset->pipeline());
@@ -809,7 +783,9 @@ void projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
 	#ifdef SYNC_PRESET_SWITCHES
 	pthread_mutex_unlock(&preset_mutex);
 	#endif
-    }
+
+	return std::string();
+  }
 
     void projectM::setPresetLock ( bool isLocked )
     {
