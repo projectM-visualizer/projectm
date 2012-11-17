@@ -1305,7 +1305,8 @@ void QProjectM_MainWindow::presetRatingChanged( unsigned int index, int rating, 
 void QProjectM_MainWindow::handleFailedPresetSwitch(const bool isHardCut, const unsigned int index,
 		const QString & message) {
 
-	const QString status = QString("Error switch to preset index %1: %2")
+	qDebug() << "handleFailedPresetSwitch";
+	const QString status = QString("Error switching to preset index %1 (%2)")
 	                 .arg(index).arg(message);
 
 	statusBar()->showMessage ( tr (status.toStdString().c_str() ) );
