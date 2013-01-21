@@ -34,6 +34,10 @@
 #include <sys/stat.h> // for mkdir
 #include <jack/jack.h>
 
+#ifdef HTTP_REMOTE_CONTROL
+#include "HTTPRemoteControl.h"
+#endif
+
 #define QPROJECTM_JACK_CONFIG_FILE "/config.inp"
 
 std::string read_config();
@@ -323,6 +327,26 @@ int main (int argc, char **argv) {
 	     }
 
 	free (ports);
+	
+	
+#ifdef HTTP_REMOTE_CONTROL
+  uint port=qgetenv("HTTP_PORT").toUInt();
+  QxtHttpServerConnector connector;
+
+  QxtHttpSessionManager session;
+  printf("session.setPort(%i\n", port); fflush(stdout);
+  session.setPort(port);
+  session.setConnector(&connector);
+
+  HTTPRemoteControl s1(&session, mainWindow->qprojectM());
+  session.setStaticContentService ( &s1);
+
+  printf("session.start()\n"); fflush(stdout);
+  if(port>0) { // I think it didn't work when the conditional was further up
+    session.start();
+  }
+#endif
+
 
 	//----------------------------------END
 
