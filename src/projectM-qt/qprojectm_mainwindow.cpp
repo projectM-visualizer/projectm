@@ -1058,7 +1058,7 @@ void QProjectM_MainWindow::openSettingsDialog() {
 }
 
 void QProjectM_MainWindow::aboutQt() {
-	return QApplication::aboutQt();
+	QApplication::aboutQt();
 }
 
 void QProjectM_MainWindow::createActions()
