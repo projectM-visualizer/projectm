@@ -1,0 +1,1022 @@
+
+-----------------------------------------------------------------------
+ WINAMP 2.X VISUALIZATION PLUG-IN "MEGA SDK"
+ ('Vis Mega SDK' for short)
+ ('VMS' for shorter)
+-----------------------------------------------------------------------
+ Description:  A codebase for rapidly creating robust and feature-rich
+                 DX8-based visualization plug-ins of your own.
+ Version:      custom version based on 1.05 beta 1; upgraded to use DX9.
+ Released:     n/a
+ Author:       Ryan Geiss
+ Copyright:    (c) 2002-2007 Nullsoft, Inc.
+ VMS HOMEPAGE:    http://www.nullsoft.com/free/vms/
+ VMS AT WINAMP:   http://www.winamp.com/nsdn/winamp2x/dev/plugins/vis.jhtml
+ SUPPORT FORUM:   http://forums.winamp.com/forumdisplay.php?forumid=147
+-----------------------------------------------------------------------
+
+
+TABLE OF CONTENTS
+-----------------
+     1. Purpose of this package
+     2. Features
+     3. Required software
+     4. Setting up the build environment
+     5. Starting Your Own Plugin Based on the Framework
+     6. Writing your own Plugin: A Brief Tour
+     7. Order of Function Calls
+     8. Using Data From the Base Class (CPluginShell)
+     9. Adding Controls to the Config Panel
+    10. Enabling Additional Tabs (pages) on the Config Panel
+    11. Using Visual C++ to Debug your Plugin
+    12. Releasing a Plugin
+    13. Tips to pass on the the user, in your documentation
+    14. Performance Tips for DirectX 8
+    15. Other Resources
+    16. Known Bugs
+    17. Version History
+    18. License
+
+
+Purpose of this package
+-----------------------
+    This package is for DEVELOPERS who want to write their own
+    visualization plugins.
+
+    It aims to provide a codebase that enables all developers 
+    (beginning to advanced) to easily build robust Winamp 2.x 
+    visualization plugins whose graphics are to be generated
+    though the DirectX 8 API.  This codebase will 1) drastically 
+    reduce the time it takes to write your plugin, 2) ensure 
+    that it is robust (if you follow directions), and 3) give 
+    you built-in support for many cool features, such as
+    multiple monitors.  (See below for more details.)
+    
+    Feel free to base any plugins on this "framework".
+
+
+Features
+--------
+    -DESKTOP MODE.  Lets your plugin run as animated wallpaper,
+        with very little CPU overhead.  (Your plugin can also
+        run in windowed or fullscreen modes, and the user can
+        switch between all 3 on the fly.)
+    -SUPERIOR MULTIMON SUPPORT.  Your plugin will work on systems
+        with multiple display adapters, as well as systems with
+        a multi-head card.  For multi-head cards that treat all
+        screens as one giant display (ie. resolutions like 2048x768 
+        or 1024x1536), your users can even use 'fake' fullscreen mode 
+        to run your plugin fullscreen on just one monitor!
+    -SOUND ANALYSIS: the framework provides your plugin with a 
+        super-high-quality FFT (fast fourier transform) for doing your 
+        own frequency analysis, or for drawing spectra.  Framework also 
+        provides super-simple loudness levels for 3 bands (bass, 
+        mids, and treble) and at varying attenuation (damping) rates.
+    -A very nice CONFIGURATION PANEL is provided for the plugin.
+        On the first page (tab) of the config panel are all the 
+        settings that all plugins share in common [handled by VMS]; 
+        on subsequent tabs, you add your own controls, for settings 
+        that are specific to your plugin.  The example plugin also 
+        shows you how to easily handle the reading/writing of settings 
+        that you add to/from the .INI file that will store your 
+        plugin's settings.  
+    -OTHER PERKS like a runtime help screen and playlist; high-precision
+        timing (accurate to 10 microseconds, or 0.00001 seconds); 
+        pause-filtering (so your timing code won't got haywire
+        when Winamp is unpaused); and many others.
+    -CPU-FRIENDLY: when the window is minimized, or when you're
+        in fullscreen mode and ALT-TAB out, the plugin sleeps to
+        preserve CPU.  FPS limiting also does its best to preserve
+        CPU, while at the same time, accurately limiting the FPS.
+    -ERROR FEEDBACK: provides detailed error messages to the user 
+        on failure, as well as suggestions on how to fix problems.
+
+    
+Required software
+-----------------
+    1. Nullsoft Winamp 2.X (~1 MB)
+          http://www.winamp.com/
+    2. Microsoft DirectX 8.0+ - (~11 MB)
+          http://www.microsoft.com/windows/directx/
+    3. Microsoft Developer Studio (Visual C++) 6.0
+          (a retail product)
+    4. Microsoft DirectX 8.0 SDK (Software Development Kit) - (~173 MB)
+          http://www.microsoft.com/windows/directx/
+          (then click the 'msdn' icon in the lower right, under 
+          "info for developers")
+          *** NOTE that you can use a later SDK, such as 8.1b; but if you
+          do, then your plugin will only run on systems with that version
+          (or later) of the DirectX runtime installed! ***
+          *** You can also install several versions of the SDK into 
+          different directories, and as long as the 8.0 sdk paths are 
+          selected in Dev Studio (see below), your plugin will only 
+          require the 8.0 runtime. ***
+    5. MSDN (Microsoft Developer Network) help library (OPTIONAL) (~1GB)
+          (also a retail product; optional, but highly recommended
+          to have around.  If you can't get the CD's, though, you 
+          can always access the help database online at 
+          http://msdn.microsoft.com/library/ )
+
+
+Setting up the build environment
+--------------------------------
+    [Note: for Visual C++ .Net users, see below]
+    
+    1. Make sure DirectX 8.0 or later is installed.
+    2. Make sure the DirectX 8.0 SDK (source development kit) is installed.
+          ** (see notes above & below) **
+    3. Configure Visual C++ to use the [appropriate] DX8 SDK: 
+
+        In Visual C++, go to Tools, then Options.  Click on the
+        'Directories' tab.  Under 'Show directories for:', select
+        'Include Files.'  Then, below, add the INCLUDE folder
+        underneath the folder into which you installed the DX8 SDK.
+        Now highlight your addition and use the fancy-looking 'up'
+        arrow icon to move it to the top of the list of directories.
+        
+        Now do the same thing for the LIB folder.  Under 'Show 
+        directories for:', select 'Library Files.'  Now add the LIB 
+        folder underneath the folder into which you installed the 
+        DX8 SDK.  Again, use the fancy-looking 'up' arrow icon
+        to move it to the top of the list of directories.
+
+        *** NOTE that if you have multiple DirectX 8 SDK's (such as 8.0
+        and 8.1b) installed to different directories, you'll want the
+        earliest one (hopefully 8.0) to be first in the list; that's 
+        the one that will get used when you compile & link.  Otherwise,
+        your plugin will only run on systems with the other version
+        (or later) of the DirectX runtime installed! ***
+
+    4. (optional) you might want to set Visual C++ up to use
+        4 spaces instead of symbolic tabs, to keep the formatting
+        of new code that you write consistent with this code.  
+        If you want to do this, go to menu:Tools->Options, click
+        the 'Tabs' tab, set the 'Tab Size' to 4 and click on
+        'Insert Spaces'.
+
+    [FOR VISUAL C++ .NET USERS:]
+        You'll want to start a fresh DLL-based project and manually 
+        add all the source/header files to it.  Then go into project 
+        settings and make it **Use MFC in a SHARED DLL**.
+
+
+Starting Your Own Plugin Based on the Framework
+-----------------------------------------------
+    1. Copy the files in the 'ExPlugin' folder to a new folder,
+        such as 'MyPlugin' - it can be anything.
+    2. In the new folder, rename the workspace file ExPlugin.dsw
+        to MyPlugin.dsw (or equivalent).
+    3. Open the new workspace file (that you just renamed) in Visual C++.
+    4. Go to menu:Build->Configurations and select 'plugin - Win32 Debug'.
+    5. Go to menu:Project->Settings
+        a. In the upper-left corner, where it says 'Settings For:',
+            select 'All Configurations' from the dropdown box.
+        b. Click the 'debug' tab, and under 'Executable for debug 
+            session', point it to winamp.exe (most likely 
+            c:\program files\winamp\winamp.exe).  (This will enable
+            you to debug your plugin using Visual C++.)
+        c. Click the 'link' tab, and under 'Output file name',
+            enter the name of the .DLL to write (such as 
+            c:\program files\winamp\plugins\vis_myplugin.dll).
+            This should start with 'vis_' and end in the 
+            '.dll' extension.  This DLL will be your plugin.
+        d. click OK.
+    6. On the left you should see the workspace view (if not, hit ALT+ZERO)
+        to bring it up) with 3 tabs at the bottom (ClassView, ResourceView,
+        FileView).  Click 'FileView'.  Expand everything in this view so you
+        can see all the files.  
+    7. Open 'defines.h' by double-clicking it.  Now edit this file according
+        to the comments, to give your plugin a name, a version number, enter
+        the author's name, copyright string, the name of the .INI file you 
+        want to save the user's settings in, the name of the documentation
+        file, and so on.  (You can always come back and change these values
+        later, of course).
+    
+    Now you're ready to build & run the plugin:
+
+    8. Press F7 to build the plugin.
+        a. If you get any of these error messages:
+                fatal error C1083: Cannot open include file: 'd3d8.h'...
+                fatal error C1083: Cannot open include file: 'd3dx8.h'...
+            Then you haven't added the DX8 SDK *include* path to your
+            build environment.  See 'To set up the build environment' 
+            above.
+        b. If you any linker error messages, such as this one:
+                LINK : fatal error LNK1104: cannot open file "d3d8.lib"
+            Then you haven't added the DX8 SDK *library* file path to your
+            build environment.  See 'To set up the build environment' 
+            above.
+    
+    9. Copy the files 'ex_tex.jpg' and 'vms_desktop.dll' from the MyPlugin 
+        directory to your Winamp PLUGINS folder (usually c:\program files\
+        winamp\plugins).
+
+    10. Run Winamp, press CTRL+P to select your plugin, and make sure that
+        it appears in the list.  Notice that the name matches what you 
+        entered into the 'defines.h' file as APPNAME; if you didn't change 
+        it, it will appear as 'Example Plugin v1.04 / VisMegaSDK' (or 
+        something similar).  Next, configure the plugin, hit OK, & run it 
+        by clicking 'Start'.
+
+
+Writing your own Plugin: A Brief Tour
+-------------------------------------
+    This starts out by pointing you at the important source code,
+    then by showing you around the resource editor and, finally,
+    the DirectX 8 and MSDN help libraries. 
+
+    1. Take a look at each of the 6 files in the 'My Plugin Source Files'
+        and 'My Plugin Header Files' groups.  These will give you an idea
+        of the code that makes up the example plugin.  All of the 
+        behind-the-scenes code is wrapped up in the 'Framework Files'
+        group, which you shouldn't have to bother with (unless you 
+        want to).
+    
+    2. Take a close look at plugin.h.  This is the C++ class that makes
+        up your plugin.  Note that the class is derived from the 
+        CPluginShell class (which is in pluginshell.h/cpp), so it inherits
+        all its functions & variables.  What you see here (in plugin.h)
+        are the data members and functions ADDED for this specific 
+        (example) plugin, as well as the 12 pure virtual functions we've
+        implemented from the base class.
+
+    3. Take a close look at plugin.cpp.  READ THE BRIEF COMMENTS AT THE 
+        TOP OF THOSE 12 VIRTUAL FUNCTIONS TO GET AN IDEA OF WHEN THEY'RE
+        CALLED AND WHAT THEY DO.  
+
+    4. Next we'll go into the Resource Editor.
+        Click the 'ResourceView' tab at the bottom of the Workspace view.
+        Then expand 'plugin resources' by double-clicking it, expand
+        'Dialog' in the same way, and double-click 'IDD_CONFIG' to open
+        the template for the config panel.  You can now double-click
+        individual controls to edit their properties; move/resize them;
+        press CTRL+T to test the dialog; press CTRL+D to define the tab
+        order; and even add new controls (using the floating toolbar) 
+        (note that added controls require a lot of support code in 
+        plugin.cpp; see 'Adding Controls to the Config Panel' below).
+
+        Also expand the 'Icon' folder on the left (just after 'Dialog')
+        and double-click IDI_PLUGIN_ICON.  This is the icon used in the
+        taskbar, window title, and ALT+TAB screen when your plugin is 
+        running.  Note that there are 5 different icons within this one,
+        all at different resolutions and color depths, accessible by
+        changing the 'device' (just above the enlarged icon in the
+        resource editor).  So, when you go to update the icon, don't forget 
+        to update it for all devices!      
+    
+    5. In Windows, go to Start Menu -> Program Files -> Microsoft 
+        DirectX 8 SDK -> DirectX Documentation (Visual C++).  This
+        is the help library for DirectX 8; you will need to refer to
+        it religiously in order to get anything done in DirectX 8.
+        The good news is, it's *extremely* well-written.
+
+    6. In Windows, go to Start Menu -> Program Files -> Microsoft
+        Developer Network -> MSDN Library.  This is the help library
+        for the general Win32 platform, but might not have info on
+        DirectX 8 (depending on when your version was published).
+        If you couldn't get the MSDN CD's, you can access the MSDN
+        library online at:
+            http://msdn.microsoft.com/library/
+        You'll have to do this from time to time to write a plugin,
+        but not nearly as often as you'll be accessing the DirectX 8
+        help library.
+
+    You might also want to take a look at the useful goodies inside
+    utility.cpp; they could come in handy.
+
+    That's it; you've now seen all the 'screens' you'll spend 99% of
+    your time on, in order to write your own plugin.
+
+
+Order of Function Calls
+-----------------------
+    The only code that will be called by the plugin framework are the
+    12 virtual functions in plugin.h.  But in what order are they called?  
+    A breakdown follows.  A function name in { } means that it is only 
+    called under certain conditions.
+
+    Order of function calls...
+    
+    When the PLUGIN launches
+    ------------------------
+        INITIALIZATION
+            OverrideDefaults
+            MyPreInitialize
+            MyReadConfig
+            << DirectX gets initialized at this point >>
+            AllocateMyNonDx8Stuff
+            AllocateMyDX8Stuff
+        RUNNING
+            +--> { CleanUpMyDX8Stuff + AllocateMyDX8Stuff }  // called together when user resizes window or toggles fullscreen<->windowed.
+            |    MyRenderFn
+            |    MyRenderUI
+            |    { MyWindowProc }                            // called, between frames, on mouse/keyboard/system events.  100% threadsafe.
+            +----<< repeat >>
+        CLEANUP        
+            CleanUpMyDX8Stuff
+            CleanUpMyNonDx8Stuff
+            << DirectX gets uninitialized at this point >>
+
+    When the CONFIG PANEL launches
+    ------------------------------
+        INITIALIZATION
+            OverrideDefaults
+            MyPreInitialize
+            MyReadConfig
+            << DirectX gets initialized at this point >>
+        RUNNING
+            { MyConfigTabProc }                  // called on startup & on keyboard events
+        CLEANUP
+            [ MyWriteConfig ]                    // only called if user clicked 'OK' to exit
+            << DirectX gets uninitialized at this point >>
+
+
+Using Data From the Base Class (CPluginShell)
+---------------------------------------------
+    The base class from which your CPlugin class (in plugin.cpp) is
+    derived is called CPluginShell and is defined in pluginshell.cpp.
+    Many of its data members are 'protected', which means that only that
+    class itself, *plus derived classes*, can access them.  ('Public'
+    members can be accessed by anyone; 'private' are unaccessible even
+    to derived classes.)
+
+    The protected data members and methods (functions) are as follows.  
+    Generally, you should treat the data members as READ-ONLY; the only 
+    exception is in OverrideDefaults(), where you can modify some of 
+    their values to alter the "default defaults".  See the comments at
+    the top of OverrideDefaults() in plugin.cpp for more information.
+
+    Here are all of the members & methods maintained by the plugin shell,
+    and available to CPlugin:
+
+
+    // GET METHODS
+    // ------------------------------------------------------------
+    int       GetFrame();          // returns current frame # (starts at zero)
+    float     GetTime();           // returns current animation time (in seconds) (starts at zero) (updated once per frame)
+    float     GetFps();            // returns current estimate of framerate (frames per second)
+    eScrMode  GetScreenMode();     // returns WINDOWED, FULLSCREEN, FAKE_FULLSCREEN, DESKTOP, or NOT_YET_KNOWN (if called before or during OverrideDefaults()).
+    HWND      GetWinampWindow();   // returns handle to Winamp main window
+    HINSTANCE GetInstance();       // returns handle to the plugin DLL module; used for things like loading resources (dialogs, bitmaps, icons...) that are built into the plugin.
+    char*     GetPluginsDirPath(); // usually returns 'c:\\program files\\winamp\\plugins\\'
+    char*     GetConfigIniFile();  // usually returns 'c:\\program files\\winamp\\plugins\\something.ini' - filename is determined from identifiers in 'defines.h'
+
+    // GET METHODS THAT ONLY WORK ONCE DIRECTX IS READY
+    // ------------------------------------------------------------
+    //  The following 'Get' methods are only available after DirectX has been initialized.
+    //  If you call these from OverrideDefaults, MyPreInitialize, or MyReadConfig, 
+    //    they will return NULL (zero).
+    // ------------------------------------------------------------
+    HWND         GetPluginWindow();      // returns handle to the plugin window.  NOT persistent; can change!  
+    int          GetWidth();             // returns width of plugin window interior, in pixels.
+    int          GetHeight();            // returns height of plugin window interior, in pixels.
+    int          GetBitDepth();          // returns 8, 16, 24 (rare), or 32
+    LPDIRECT3DDEVICE8  GetDevice();      // returns a pointer to the DirectX 8 Device.  NOT persistent; can change!
+    D3DCAPS8*    GetCaps();              // returns a pointer to the D3DCAPS8 structer for the device.  NOT persistent; can change.
+    D3DFORMAT    GetBackBufFormat();     // returns the pixelformat of the back buffer (probably D3DFMT_R8G8B8, D3DFMT_A8R8G8B8, D3DFMT_X8R8G8B8, D3DFMT_R5G6B5, D3DFMT_X1R5G5B5, D3DFMT_A1R5G5B5, D3DFMT_A4R4G4B4, D3DFMT_R3G3B2, D3DFMT_A8R3G3B2, D3DFMT_X4R4G4B4, or D3DFMT_UNKNOWN)
+    D3DFORMAT    GetBackBufZFormat();    // returns the pixelformat of the back buffer's Z buffer (probably D3DFMT_D16_LOCKABLE, D3DFMT_D32, D3DFMT_D15S1, D3DFMT_D24S8, D3DFMT_D16, D3DFMT_D24X8, D3DFMT_D24X4S4, or D3DFMT_UNKNOWN)
+    char*        GetDriverFilename();    // returns a text string with the filename of the current display adapter driver, such as "nv4_disp.dll"
+    char*        GetDriverDescription(); // returns a text string describing the current display adapter, such as "NVIDIA GeForce4 Ti 4200"
+
+    // FONTS & TEXT
+    // ------------------------------------------------------------
+    LPD3DXFONT   GetFont(eFontIndex idx);       // returns a D3DX font handle for drawing text; see shell_defines.h for the definition of the 'eFontIndex' enum.
+    int          GetFontHeight(eFontIndex idx); // returns the height of the font, in pixels; see shell_defines.h for the definition of the 'eFontIndex' enum.
+
+    // MISC
+    // ------------------------------------------------------------
+    td_soundinfo m_sound;                   // a structure always containing the most recent sound analysis information; defined in pluginshell.h.
+    void         SuggestHowToFreeSomeMem(); // gives the user a 'smart' messagebox that suggests how they can free up some video memory.
+
+    // CONFIG PANEL SETTINGS
+    // ------------------------------------------------------------
+    // *** only read/write these values during CPlugin::OverrideDefaults! ***
+    int          m_start_fullscreen;        // 0 or 1
+    int          m_start_desktop;           // 0 or 1
+    int          m_fake_fullscreen_mode;    // 0 or 1
+    int          m_max_fps_fs;              // 1-120, or 0 for 'unlimited'
+    int          m_max_fps_dm;              // 1-120, or 0 for 'unlimited'
+    int          m_max_fps_w;               // 1-120, or 0 for 'unlimited'
+    int          m_show_press_f1_msg;       // 0 or 1
+    int          m_allow_page_tearing_w;    // 0 or 1
+    int          m_allow_page_tearing_fs;   // 0 or 1
+    int          m_allow_page_tearing_dm;   // 0 or 1
+    int          m_minimize_winamp;         // 0 or 1
+    int          m_desktop_show_icons;      // 0 or 1
+    int          m_desktop_textlabel_boxes; // 0 or 1
+    int          m_desktop_manual_icon_scoot; // 0 or 1
+    int          m_desktop_555_fix;         // 0 = 555, 1 = 565, 2 = 888
+    int          m_dualhead_horz;           // 0 = both, 1 = left, 2 = right
+    int          m_dualhead_vert;           // 0 = both, 1 = top, 2 = bottom
+    int          m_save_cpu;                // 0 or 1
+    int          m_skin;                    // 0 or 1
+    td_fontinfo  m_fontinfo[NUM_BASIC_FONTS + NUM_EXTRA_FONTS];
+    D3DDISPLAYMODE m_disp_mode_fs;          // a D3DDISPLAYMODE struct that specifies the width, height, refresh rate, and color format to use when the plugin goes fullscreen.
+
+    
+Adding Controls to the Config Panel
+-----------------------------------
+    There are four basic aspects of adding a new control to the config panel,
+    outlined below.
+
+    1. Add the control to one of the property pages in the config panel (2..8), 
+        via the Resource Editor.  Note that you should not modify the config
+        panel itself (IDD_CONFIG) or the first property page (IDD_PROPSHEET_1).
+        Also, do not resize the page dialogs or the config panel; they are designed
+        to fit on a 640x480 screen, and should not be expanded.
+    
+    2. Add a variable (data member) to represent the control to your CPlugin class,
+        in plugin.h.  
+    
+    3. In plugin.cpp:
+        a. initialize the variable to its default value in MyPreInitialize(),
+        b. read its value from the INI file in MyReadConfig(), and 
+        c. write its value to the INI file in MyWriteConfig().
+    
+    4. In plugin.cpp, in the MyConfigTabProc function, **when 'nPage' is
+       the index (2..8) of the tab on which the control was placed:**
+        a. add code under WM_INITDIALOG to set the state of the control 
+            (from the variable) when the config panel is started
+        b. add code under WM_COMMAND, case IDOK, to read the state 
+            of the control and save the result in the variable
+        c. add a handler for your new control underneath WM_HELP, so that
+            when the user clicks the '?' in the config panel titlebar,
+            then clicks on your control, they get a helpful messagebox
+            explaining what the control does.
+
+
+Enabling Additional Tabs (pages) on the Config Panel
+----------------------------------------------------
+    By default, only two 'tabs' (pages) are enabled on the config panel.
+    The first is handled by the framework, and should not be modified;
+    the second, and any you add, are handled in plugin.cpp, in MyConfigTabProc().
+    The maximum number of tabs/pages is 8 (unless you want to modify the 
+    framework files).
+
+    To add a third page (for example), simply open defines.h, and give a name 
+    to the tab by setting the value of CONFIG_PANEL_BUTTON_3.  This is all you 
+    have to do to make the tab appear!  To add controls to the new page, see
+    the above section entitled 'Adding Controls to the Config Panel.'
+
+    If you want to extend the framework to add a 9th page (?!), you need to:
+        1. create a dialog called IDD_PROPPAGE_9 (style=child, border=none, visible, ctrl parent, control).
+        2. in config.cpp, increment MAX_PROPERTY_PAGES 
+        3. in config.cpp, add IDD_PROPPAGE_9 to g_proppage_id[]
+        4. in config.cpp, call AddButton for it
+
+
+Using Visual C++ to Debug your Plugin
+-------------------------------------
+    1. Build the plugin in the 'Debug' configuration
+        (menu:Build->Configurations, then select 'debug').
+    2. Go to menu:Project->Settings (ALT+F7) and click the 
+        'Debug' tab.  Under 'Executable for debug session', 
+        point it to winamp.exe.  
+    3. Press F5 to start debug session; it will launch winamp.
+    4. You can now configure your plugin or run it; just set a 
+        breakpoint anywhere in your code (F9) and when the code
+        gets to that point, it will break, and you can look at
+        variable values and browse structures (SHIFT+F9), jump
+        around on the call stack (ALT+7), and so on.
+
+
+Releasing a Plugin
+------------------
+    1. Build in Release Mode
+
+        Once you're done debugging and ready to share your plugin
+        with others, go to menu:Build->Configurations and select
+        'plugin - Win32 Release', then go to menu:Build->Clean and
+        menu:Build->Rebuild All.  Building in release mode makes
+        your code smaller and faster (but doesn't allow debugging).
+
+    2. Package it up an a self-installing .EXE
+        
+        Here you'll want to download the Nullsoft Superpimp Install
+        System (NSIS) from http://www.nullsoft.com/free/nsis/ to
+        make your users' lives easier.
+
+        Then read the instructions at the top of the install script
+        file 'installer.nsi' (next to DOCUMENTATION.TXT) and edit the 
+        install script to reflect the name and version of your plugin,
+        the paths & filenames & destination paths of everything you 
+        want packaged up, and the output installer filename.
+
+        After installing NSIS, editing installer.nsi, and doing
+        a final release build, run a command something like this
+        from the command prompt (you'll have to adjust the paths):
+            
+            "c:\program files\Nsis\makensis" C:\MyProjects\MyPlugin\installer.nsi
+        
+        If all goes well, you'll have a file named something like
+        'myplugin_100.exe' in your MyPlugin directory.  Test it
+        out on a fresh machine to make sure the install screens
+        say the right thing and install the right files, and
+        you're set to go!
+
+    3. Checklist: (prior to actually running makensis.exe)
+        
+        * Did you update the version number and APPNAME in defines.h?
+        * Did you do a final pass on the tab ordering (CTRL+D from the
+            Resource Editor) of the config panel?
+        * Did you add WM_HELP handlers to new controls on the config panel?
+        * If you added any MessageBox() commands, did you supply the right 
+            HWND parameter?  (The messagebox will pop up on the same monitor
+            that that HWND is on.)
+        * Did you test your plugin in Desktop Mode, while Winamp is
+            *paused*, and then try moving icons around, to make sure that
+            you're properly handling the 'redraw' flag in MyRenderFn()?
+        * Did you update the version numbers throughout installer.nsi?
+        * Did you update the help screen text? (see top of plugin.cpp)
+        * Did you do your final build in Release mode?
+        * Did you write/update documentation?  
+            Does the config panel link to it work?
+        * Did you make/update a webpage?  
+            Does the config panel link to it work?
+
+
+Tips to pass on the the user, in your documentation
+---------------------------------------------------
+    1. In general, it's a very good idea to use only Microsoft-certified 
+        WHQL (Windows Hardware Quality Labs) drivers for your video card.
+        Often people want to get the newest, fastest beta drivers, but 
+        these drivers are almost ALWAYS riddled with new bugs.
+
+    2. If you want Winamp to listen to your sound card's Line-In or Mic-In
+        (or other audio input channel on your system) for driving the
+        visuals, just do the following:
+
+        1. CONNECT WIRES
+            Connect your audio source (a stereo, a live feed, whatever) into
+            the line-in (or microphone) 1/8" jack on your sound card.  
+
+        2. SELECT SOUND INPUT CHANNEL & ADJUST VOLUME
+            In Windows, double-click the speaker icon in your systray (where
+            the clock is).  Then, on the menu, go to Options -> Properties
+            and select the "Recording" option.  Then make sure the Line In
+            (or Microphone) input channel (whichever is appropriate for
+            your case) is SELECTED (with a check mark) and that the volume 
+            is close to, or at, the maximum.  Hit OK.           
+
+        3. TELL WINAMP TO USE LINE-IN
+            Open Winamp, and hit CTRL+L (the "Open Location" hotkey).  Now
+            type in "linein://" as the location you want to open.  (Leave out
+            the quotes and make sure you use FORWARD slashes.)  Hit PLAY
+            in Winamp, and the little built-in oscilloscope (or spectrum 
+            analyzer) in Winamp should start showing your signal.
+
+        4. RUN YOUR VISUALIZATION PLUGIN OF CHOICE
+            If the plugin seems to be responding too much or too little,
+            try adjusting the volume from Windows' Volume Control, or adjust
+            the sound level at the source.
+
+    3. For the best graphics performance, try to close as many other 
+        applications as you can, before running the plugin, especially 
+        those that tend to work in the background, such as anti-virus 
+        or file-swapping software.  Also, if you must leave other 
+        applications open, try to minimize them (i.e. shrink the window 
+        down to the taskbar) so that they stay out of the painting loop.
+
+    4. LCD screens: Note that most LCD screens (flatpanels) run at 60 Hz only, 
+        meaning that they update the screen 60 times per second.  However, 
+        sometimes the video driver reports that it supports other refresh 
+        rates, such as 72, 75, 85, etc.  It is strongly recommended that 
+        [for fullscreen mode, and for Windows in general] you choose a 
+        display mode with a 60 Hz refresh rate, for the smoothest possible 
+        animation.  For this plugin, you will also want to choose 
+        Maximum Framerates that divide evenly into 60 - such as 60, 30, 20,
+        15, 12, 10, 6, 5, and so on - so that the # of times the LCD shows 
+        each frame of animation remains constant, resulting in the smoothest
+        possible animation.
+        
+    5. Multiple Monitors: It is recommended that whenever you modify your Windows
+        multimon setup (i.e. turn an adapter on/off, change its color depth, etc.)
+        that you reboot Windows before running this plugin.  
+    
+    6. Video Capture: If you'd like to save sequences of video from this plugin,
+        there are several programs out there that will let you do this.  Warning:
+        you will need a ton of free hard drive space, and a fast CPU helps.  A
+        few of these programs are:
+            "FRAPS"               http://www.fraps.com/
+            "Hypercam"            http://www.hyperionics.com
+        
+    (That's it, for now.  PLEASE include the tip about live audio input!)
+
+
+Performance Tips for DirectX 8
+------------------------------
+    1. Minimize state changes (SetTexture, SetTextureStageState,
+        and SetRenderState) at all cost; group polygons together
+        that share the same rendering settings and send them all
+        together.  You will be amazed at the performance gain.
+
+    2. Use Vertex Buffers and Index Buffers for all your static
+        geometry (i.e. vertices/indices that don't change every 
+        frame - like a static model that doesn't change, even
+        though it might move around, rotate, resize, etc. due
+        to the world/view/projection matrices).  These buffers 
+        will keep the geometry in video memory (if possible) so 
+        that the data doesn't have to cross the bus every frame; 
+        if not, they'll try to at least place the geometry/indices 
+        in AGP memory.  If you don't use these driver-managed 
+        buffers (and instead use DrawPrimitiveUP and 
+        DrawIndexedPrimitiveUP), you're keeping all of your data 
+        in non-AGP system memory, and unless the data is very 
+        small, you can expect a major bottleneck.  Note that for 
+        dynamically-generated vertex data (i.e. vertices are 
+        generated each frame - like when you draw a waveform), 
+        you don't have a choice.
+
+    If you follow these two tips and use common sense (and know
+    the basic theory behind how 3D accelerators work), you should
+    be getting 30 fps on a Voodoo 3 (assuming your overdraw is low,
+    i.e. you don't draw each pixel on the screen more than once or 
+    twice per frame).
+    
+    For more tips, look in the DX8 SDK Documentation, or look on 
+    the web.
+
+
+Other Resources
+---------------
+    1. DX8 SDK: The DX8 documentation that came with your DX8 SDK is, 
+        by far, the most critical resource you have.  It fully documents 
+        the entire API, and much more.  The SDK also comes with tons of
+        samples and their source code.
+    2. NSDN: the Nullsoft Developer Network, where the Winamp API 
+        is published: http://www.winamp.com/nsdn/winamp2x/
+        If you want to do anything in MyWindowProc() that involves
+        communicating with the Winamp window directly (such as
+        querying for the song title/time/length, querying the playlist,
+        adjusting the panning, toggling shuffle, etc.), you'll need
+        to delve into NSDN.  It's all extremely straightforward and
+        simple.  For a few examples of how to talk to the main Winamp
+        window, check out PluginShellWindowProc() in pluginshell.cpp.
+    3. Here are links to a few sites with good DirectX tutorials/faqs/code:
+           The X-Zone:     http://www.mvps.org/directx/
+           Gamedev.net:    http://www.gamedev.net/reference/
+
+
+Known Bugs
+----------
+    1. When running [true] fullscreen in a multimon setup,
+        sometimes when the user presses ALT-TAB to switch away from the plugin
+        and to another window, the plugin will minimize.  The 'sometimes' is
+        determined as follows:
+            -if the user releases TAB before depressing ALT, the window 
+                minimizes (undesired behavior).
+            -if the user depresses ALT before releasing TAB, the window does
+                not minimize (desired behavior).
+    2. Desktop Mode: some features are not implemented yet.  They are:
+            -right-click -> cut/copy/paste/rename
+            -right-click -> "send to" doesn't work on all machines
+            -no keyboard commands (delete, enter, arrows, CTRL+X/C/V/Z)
+            -no drag-and-drop for files
+            -desktop shortcuts mostly work when you double-click them, 
+                but on some machines bring up an "open/save" dialog 
+                instead of actually launching the file.
+            
+    That's it for now.
+
+    If anyone finds a solution for any of these bugs, please post the solution 
+    in the VMS forum, and it will be included in the next VMS release.
+
+
+Version History
+-----------------------------------------------------------------------
+[v1.05 beta 1 - June 26, 2003]
+
+    -revamped the way keyboard commands are routed between your plugin
+        and the plugin shell.  Before, the shell captured certain keys
+        ('p' for playlist, 'zxcvb' for playback, 's' for shuffle, 'F1'
+        for help, ESC to exit, arrows for volume/seeking, etc.)
+        and the plugin was unable to override these.  Now, the shell
+        will pass the WM_KEYDOWN/WM_CHAR message to the plugin
+        (MyWindowProc) first, to see if it wants to process it.  If the
+        plugin steals the key, it returns 0, and the shell ignores it.
+        If the plugin does not process the key, it returns 1, and then
+        the shell is free to process it.
+
+***     NOTE that if you are upgrading to VMS 1.05, this means you'll have to 
+***     update the way your WM_CHAR and WM_KEYDOWN handlers work in plugin.cpp!
+***     [primarily, you'll have to return 0 when you handle a key, and 1
+***      otherwise.]
+
+    -added key: 'r' for repeat
+    -added SKINNING; if you have Winamp 2.90+, you can now check the
+        'integrate with winamp' checkbox and the plugin [when running in 
+        windowed mode] will be skinned just like Winamp.  The integrated 
+        window works just like any other Winamp window; it docks with 
+        other windows, CTRL+TAB cycles between them all, and lots of new 
+        keys work (J, L, CTRL+P, ALT+E, etc.).
+    -fixed bug (or error in judgment?) where fake fullscreen mode window 
+        would actually run at the *bottom* of the Z order when running 
+        on a multiple monitor setup.  The problem was that if you clicked
+        on any other window, the taskbar would pop up, potentially overtop
+        of the plugin.  Since there's really no way around this, I decided
+        (before) to just stick the plugin at the bottom of the Z order in
+        this case.  Well, this is now fixed; the plugin tries its best
+        to stay on top, but watch out - if you try and click on any other
+        windows, the taskbar WILL pop up.  If you want to avoid that,
+        you'll have to run in true fullscreen mode.
+    -improved audio and video synchronization
+        -the current framerate is now used to tell Winamp, each frame, 
+            exactly how far in advance it should give us the audio data.
+            For example, if we're getting 20 fps, we should get the
+            audio 50 ms in advance for the proper video frame to appear
+            when the user will actually hear those audio samples.
+    -timing: added calls to beginTimePeriod and endTimePeriod, so the assumed
+        granularity for Sleep() is now 2 ms (down from 10 ms).
+        This means that CPU usage will dramatically drop, and
+        fortunately, there should be no effect on framerate accuracy.
+    -desktop mode: added 'show icons' option to the desktop mode options
+        dialog, so users can uncheck it (and hide/disable the icons) if they 
+        like.
+    -user can no longer shrink the window to less than 64x48 in size.
+        (often the minimum size will be higher than this though; see
+        WM_GETMINMAXINFO in pluginshell.cpp).
+    -user can now switch modes (windowed <-> fullscreen <-> desktop mode)
+        immediately.  (before, it was blocked until frame 5.)
+    -(fixed a small bug in the example plugin, where handler for WM_KEYUP
+        returned DefWindowProc instead of 1).
+    -any time the DirectX setup fails when starting up (or switching to)
+        windowed mode, the window coords are now saved to disk as a 256x256
+        window placed at (64,64).  That way, if the problem was due to running
+        out of video memory, it will be less likely to recur.
+    -config panel:
+        -added two more fonts: one for the playlist, and another for the
+            help screen.
+        -it's now easy to add your own fonts to the font dialog in the 
+            config panel; just add the appropriate #defines in the file 
+            defines.h.  Then you can access them easily from plugin.cpp by
+            calling GetFont(EXTRA_1), GetFont(EXTRA_2), and so on, up to
+            GetFont(EXTRA_5).  You can also get their height by calling
+            GetFontHeight(EXTRA_1) through GetFontHeight(EXTRA_5).
+    -greatly improved the installer script.
+        -now selects winamp2 dir by default, if both winamp 2 & 3 are installed.
+        -fixed a bug where the plugin wasn't being correctly set as the default plugin
+            in winamp.  Also, this is no longer an option - it just automatically does it.
+        -now, when you go to install to winamp 3, it checks to see if ClassicVis
+            is installed.  If it is, you're set; if not, it prompts you to go download
+            it.  If you choose not to, it alerts you that the installation failed.
+    -the FFT class (fft.cpp, fft.h) now has 2 extra optional init parameters.
+        -'bEqualize' is 1 by default; set it to 0 to have a non-equlized FFT;
+            bass frequencies will be much higher in magnitude than treble frequencies.
+        -'envelope_power' is 1.0 by default; adjust it to change the characteristics
+            of the resulting frequency spectrum (see comments in fft.cpp, in 
+            InitEnvelopeTable).  Set this to a negative value to not use an envelope.
+    -the help screen is no longer pre-rendered to a texture; it is now just drawn every
+        frame that it's needed.  (Decided that that precious memory on some 8MB graphics
+        cards was more important than having a good framerate, on some cards, while viewing
+        the help screen.)
+    -added some nice macros to MyRenderUI() in plugin.cpp; makes the code for drawing
+        text much simpler.
+    -added 2 functions, GetDriver and GetDesc, which will return text strings with the 
+        name & description of the currently active display adapter.  (search these
+        strings for vendor substrings like "nvidia", using strstr or something similar,
+        to do vendor-specific bug workarounds.  blech.)
+    -fixed a bug in SSE detection
+    -added handy memset_MMX() function to utility.cpp (alongside memcpy_MMX)
+    -fixed tabbing order for controls config panel tab #1 (doh) 
+    -in 'defines.h', you now specify a long name + a short name for your plugin.
+        The long name is used for the description string in winamp's list of plugins;
+        the short name is used for the window caption.
+    -in the example plugin, in plugin.cpp, the F3 key (show song length)
+        is now a three-state toggle: off, current time, and current time / total 
+        length.
+
+[v1.04 - October 29, 2002]
+
+    -DESKTOP MODE: the icing on the cake.
+        -Allows users to run your plugin as animated wallpaper, with very
+            little cpu overhead.  Uses no overlays or other unusual hardware
+            features.
+        -Just make sure you include the file 'vms_desktop.dll' with your
+            plugin; it is required for Desktop Mode to work properly.
+            It's small, though - only 48 kb.  This file is now included 
+            in the sample install script (installer.nsi).
+        -You can toggle Desktop Mode on/off at runtime by hitting ALT+D.
+            And as before, you can toggle Fullscreen via ALT+ENTER.
+        -Not all features of the desktop are fully implemented, but most
+            of the most-frequently-used features should be working.
+            For a list of the features not yet implemented, see the
+            'Known Bugs' section above.
+    -CHANGES MADE TO PLUGIN.H,CPP: (isolated for ease-of-merging purposes)
+        1. added a few config settings; see OverrideDefaults()
+            in PLUGIN.CPP.
+        2. added 'redraw' flag to MyRenderFn - see the comments
+            at the top of MyRenderFn.  Make sure you respect this
+            flag, or else, when the user moves icons around in
+            Desktop Mode while Winamp is paused, your plugin
+            will mysteriously start animating.
+        3. added the 'MyRenderUI' function - please break your 
+            text-rendering code in MyRenderFn off into this function.
+        4. removed the ClipPlaylist() functions and, instead, provided
+            pointers to some values as params to MyRenderUI() that tell 
+            you where to place text in each of the corners.  As you
+            draw text, be sure to update these values, so that any
+            text drawn by the plugin shell (parent class) won't try to
+            draw text overtop of your text.
+    -Plugins based on VMS now remember the window position when they last 
+        (successfully) exited windowed mode, and use that as the
+        default when they re-enter windowed mode (during the same
+        session or in a later session).  If there is an error creating
+        that window (too big/not enough video memory, off-screen
+        because display mode resolution decreased, etc.) it will
+        revert to the default window size & position.
+    -Config Panel:
+        -For users with DualHead cards that run two monitors as one 
+            virtual display (e.g. 2048x768 or 1024x1536), you can now
+            specify which half of the screen you want Fake Fullscreen Mode
+            and Desktop Mode to occupy, or both.  See the 'DualHead'
+            button on the config panel.
+        -Added an option to save cpu usage by using a more-tolerant
+            framerate limitation algorithm - saves 0-20%.  Default: ON.
+    -Fixed appearance of the help screen by adding +0.5-texel offset; 
+        on some cards, help screen text was kind of jaggy and munged.
+    -Release builds no longer log window messages to the debug 
+        output stream.
+    -The D3DX font for the help screen text is now created at
+        initialization time, instead of on demand.
+    -Framework Files:
+        -renamed 'fontdialog.cpp' to 'config2.cpp', since it now contains 
+            more than just the font dialog code.
+        -added 'desktop_mode.cpp' and 'icon_t.h' to support Desktop Mode.
+    -Changes made to the sample installer script: [installer.nsi]
+        -added UnInstall options for winamp 2 and 3
+        -simplified things by using some !define's at the top
+        -updated it to look for Winamp 3's new executable 
+            name: winamp3.exe (in addition to the old, which was 
+            studio.exe)
+
+-----------------------------------------------------------------------
+[v1.03 - August 27, 2002]
+
+  [MAJOR CHANGES]
+    -audio:
+        -vastly improved frequency analysis by multiplying the waveform by a 
+           bell-shaped envelope before sending it to the FFT, lessening the 
+           frequency response of the old square filter and producing a more 
+           precise frequency analysis.  Also improved it by doing a 1024-sample 
+           FFT (instead of a 512).  Special thanks goes out to Alan Seefeldt 
+           and Alan Peevers for sharing their extensive knowledge in this area!
+    -config panel: 
+        -split it into separate property sheets, so that
+           future updates to VMS (this sdk) will be easier to integrate
+           with code based on previous versions.  Also, this gives developers
+           a lot more space to add things to the config panel.
+        -split the settings for 'fake fullscreen' mode and regular
+           fullscreen mode into two separate sets of controls, instead
+           of sharing controls; it was too confusing that way.
+        -added option to minimize winamp when going fullscreen.  
+           Only actually minimizes winampwhen going fullscreen 
+           (or fake fullscreen) AND winamp and the plugin window 
+           are situated on the same monitor.
+        -added user-configurable fonts to the config panel.
+    -text:
+        -added a built-in playlist!
+        -added some sample code (in plugin.cpp / RenderText()) for showing 
+           the current song title, position, and length.
+    -timing:
+        -oops... hi-precision timer was disabled in last version!
+        -also discovered an even more high-precision timer, which provides 
+           a time sampling  precision of from 1 to 5 *MICRO*seconds!
+        -ditched the 'frame delay' system and replaced it with a 'max fps'
+           system that should work more intuitively, and be extremely
+           accurate (thanks to the new timer).
+    -classes:
+        -got rid of InitMyGDIStuff() and CleanUpMyGDIStuff() - not really needed
+        -got rid of MyPreRenderFn() - also not really needed
+    -in windowed mode, if there is not enough video memory to create
+       the window at the default size, the window will now try to shrink 
+       further and further, until it is small enough to work.
+    -fixed problem where the plugin wouldn't show up in the plug-ins list
+       in Winamp, if the user didn't have DX8 or later installed.  Now
+       it does show up in the list, and if they try to run/configure it
+       and DX8 is missing, it will indicate this, and even offer to
+       take them to the MS DirectX website to download it.
+    -also started calling LoadLibrary("d3d8.dll") before calling 
+       Direct3DCreate8(), so the latter wouldn't crash on systems
+       without DX8.
+    -yanked the fractal stuff out of the example plugin; too complicated.
+  
+  [MINOR CHANGES]
+    -now more resilient when user turns off some display (in a multimon
+       setup), then goes to run the plugin on that display (because they 
+       didn't return to the config panel and update the display adapter 
+       selection).
+    -improved suggested actions for when the plugin fails to start 
+       because there is not enough video memory; suggestions now
+       include turning off other programs that might be using up
+       video memory (Windows Media Player, NetMeeting, and so on).
+    -config panel: disabled caps checking; sometimes requesting
+       the caps fails when you dynamically enable/disable monitors in
+       a multimon setup, so adapters that really exist (and are on)
+       would be missing in the list.                
+    -config panel: added a sample combobox & slider to the 2nd property page,
+       which now features a checkbox, slider, and combobox, all
+       as simple examples for the plugin developer to build off of.
+    -noticed that multipsampling only works with D3DSWAPEFFECT_DISCARD,
+       so the code is now protected against using D3DSWAPEFFECT_COPY_VSYNC
+       with multisampling.  The config panel has also been updated to
+       indicate to the user that if page tearing is disallowed,
+       multisampling will not function.  This is a limitation of
+       the DirectX 8 API.
+    -added OverrideDefaults() function; see comments in plugin.cpp
+    -revamped the sample beat detection code
+    -tightened up the interface to CPluginShell
+    -made DirectX get initialized earlier (and cleaned up later)
+       so that GetWidth() and GetHeight() would be valid longer
+    -moved srand(time(NULL)) up to top of MyPreInitialize, in case 
+       the developer wants to randomly initialize any of their
+       variables there.    
+    -modified PrepareFor2DDrawing() so that it always makes the range
+       of X,Y coords -1..1 (before it was -width/2..width/2, and similarly
+       for height).  Also inverted Y, so that y==-1 is actually at the
+       top of the screen, and Y==1 is at the bottom.
+    -added PrepareFor3DDrawing()    
+    -improved auto-selection of best-match video mode; now, if it can't
+       find the exact pixel format that was in the INI file,
+       if will try other video modes that have the same bit depth,
+       but a different arrangement of the bits.  [This applies to both
+       the config panel, AND when you go to run the plugin fullscreen.]
+    -respected key repeat count for playlist navigation (up/down), volume
+       adjust (up/down), and seeking (left/right).                    
+    -fixed a bug where the plugin would close on WM_KEYUP/VK_ESCAPE.  Now, 
+       instead, it closes on WM_KEYDOWN/VK_ESCAPE.  This was a problem when 
+       you hit ESCAPE to close some other app (on WM_KEYDOWN), then the focus 
+       went to the plugin, and WM_KEYUP/VK_ESCAPE got sent to the plugin.  
+       Not sure why it was even like this in the first place...
+    -fixed a timing but where, when the frame delay was zero (or fps
+       was unlimited), and the plugin was using the low-precision timer,
+       the fps reading would blow up and m_time would stop.
+    -fixed a bug w/a parameter to CreateFont: max font weight was
+       900; 'twas calling it with 1000
+    -fixed bug with context menu cleanup
+    -fixed a bug where winamp playback nav. keys (zxcvbs) were 
+       handled under WM_KEYDOWN; should have been under WM_CHAR.
+    -fixed a bug where DXContext was calling DestroyWindow (on the final
+       exit of the plugin), when in fact, the window had already been
+       destroyed (by Windows, it seems).                    
+    -fixed a bug in config panel, where list of video modes wasn't updating
+       when you changed the fullscreen adapter.
+    -fixed a bug where DXContext was remembering the native windows display
+       mode for the first monitor that the window was created on, only.
+       This was a problem because if two monitors had different bit depths,
+       and you ran it and switched to another monitor by toggling fullscreen,
+       it would try to create a device with a back buffer whose bit depth
+       was that of the original monitor.  To fix this, it now does the 
+       following: the first time it creates a window, before changing the 
+       display mode, it remembers the native display mode for all the
+       adapters present, then uses the appropriate one whenever it needs
+       it.
+    -deleted the 'DX8 Includes' project folder from the workspace; 
+       use 'External Dependencies' folder instead, it automatically
+     points you to the right directories.
+
+
+-----------------------------------------------------------------------
+[1.02, August 5, 2002]
+  -Fixed bug where the plugin would minimize if you were running
+     [true] fullscreen with multiple monitors, and went to click
+     in another window.  Previously the workaround was to use fake
+     fullscreen mode, but now this is not necessary.  Fake fullscreen
+     mode still remains, though; for the rationale, see the help text
+     for the 'fake fullscreen mode' checkbox in the config panel.
+  -Decided that InitMyNonDx8Stuff() should be called first, instead
+     of last, and that CleanUpMyNonDx8Stuff() should be called last,
+     not first.
+  -Might have fixed a bug with high-precision timer.
+  -Added a custom icon (...which the developer can modify, of course).
+
+
+-----------------------------------------------------------------------
+[1.01, July 19, 2002]
+  -Initial release
+
+
+-----------------------------------------------------------------------
+
+License
+-------
+Copyright (C) 1999-2002 Nullsoft, Inc.
+
+  This source code is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this source code or the software it produces.
+
+  Permission is granted to anyone to use this source code for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this source code must not be misrepresented; you must not
+     claim that you wrote the original source code.  If you use this source code
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original source code.
+  3. This notice may not be removed or altered from any source distribution.
+
+
+
+
