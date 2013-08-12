@@ -162,5 +162,6 @@ OSStatus	ConfigureVisual( VisualPluginData * visualPluginData );
 
 void        initProjectM( VisualPluginData * visualPluginData );
 void        renderProjectMTexture( VisualPluginData * visualPluginData );
+void        keypressProjectM( VisualPluginData * visualPluginData, projectMEvent event, projectMKeycode keycode, projectMModifier mod );
 
 #endif

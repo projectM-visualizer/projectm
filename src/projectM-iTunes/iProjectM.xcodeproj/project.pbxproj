@@ -22,7 +22,26 @@
 		C3FAF97717B89F7400F4B110 /* shaders in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAF97617B89F7200F4B110 /* shaders */; };
 		C3FAF97817B89F7B00F4B110 /* config.inp in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAF97517B89F7200F4B110 /* config.inp */; };
 		C3FAF97B17B8A45200F4B110 /* fonts in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAF97917B8A43B00F4B110 /* fonts */; };
+		C3FAF98417B8C06900F4B110 /* GLEW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAF98317B8C05800F4B110 /* GLEW.framework */; };
+		C3FAF98617B8C09D00F4B110 /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAF98517B8C09D00F4B110 /* Cg.framework */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C3FAF98217B8C05800F4B110 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C3FAF97E17B8C05800F4B110 /* GLEW.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
+			remoteInfo = GLEW;
+		};
+		C3FAF98717B8C10700F4B110 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C3FAF97E17B8C05800F4B110 /* GLEW.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
+			remoteInfo = GLEW;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		C3FAE5A917B898BB00F4B110 /* CopyFiles */ = {
@@ -80,6 +99,8 @@
 		C3FAF97517B89F7200F4B110 /* config.inp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.inp; sourceTree = "<group>"; };
 		C3FAF97617B89F7200F4B110 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shaders; sourceTree = "<group>"; };
 		C3FAF97917B8A43B00F4B110 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../fonts; sourceTree = "<group>"; };
+		C3FAF97E17B8C05800F4B110 /* GLEW.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLEW.xcodeproj; path = "../../../../Downloads/projectM-complete-2.1.0-Source/src/macos/glew-1.4.0/Mac/GLEW.xcodeproj"; sourceTree = "<group>"; };
+		C3FAF98517B8C09D00F4B110 /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = /Library/Frameworks/Cg.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +108,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3FAF98617B8C09D00F4B110 /* Cg.framework in Frameworks */,
+				C3FAF98417B8C06900F4B110 /* GLEW.framework in Frameworks */,
 				C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */,
 				C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */,
 				C3FAE59D17B88BF800F4B110 /* libprojectM.a in Frameworks */,
@@ -102,6 +125,7 @@
 		C3F9D7A617B82CC3009E58CB = {
 			isa = PBXGroup;
 			children = (
+				C3FAF97E17B8C05800F4B110 /* GLEW.xcodeproj */,
 				C3FAF97A17B8A44100F4B110 /* share */,
 				C3FAE5A417B88C5B00F4B110 /* libprojectM */,
 				C3FAE59917B88B9000F4B110 /* iProjectM */,
@@ -127,6 +151,7 @@
 		C3F9D7B117B82CC3009E58CB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C3FAF98517B8C09D00F4B110 /* Cg.framework */,
 				C3F9D7CE17B831F3009E58CB /* OpenGL.framework */,
 				C3F9D7B217B82CC3009E58CB /* Cocoa.framework */,
 				C3F9D7B417B82CC3009E58CB /* Other Frameworks */,
@@ -199,6 +224,14 @@
 			name = share;
 			sourceTree = "<group>";
 		};
+		C3FAF97F17B8C05800F4B110 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C3FAF98317B8C05800F4B110 /* GLEW.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -215,6 +248,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				C3FAF98817B8C10700F4B110 /* PBXTargetDependency */,
 			);
 			name = iProjectM;
 			productName = iProjectM;
@@ -240,12 +274,28 @@
 			mainGroup = C3F9D7A617B82CC3009E58CB;
 			productRefGroup = C3F9D7B017B82CC3009E58CB /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = C3FAF97F17B8C05800F4B110 /* Products */;
+					ProjectRef = C3FAF97E17B8C05800F4B110 /* GLEW.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				C3F9D7AE17B82CC3009E58CB /* iProjectM */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		C3FAF98317B8C05800F4B110 /* GLEW.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = GLEW.framework;
+			remoteRef = C3FAF98217B8C05800F4B110 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		C3FAE5AB17B898F800F4B110 /* Generate Installer Package */ = {
@@ -278,6 +328,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		C3FAF98817B8C10700F4B110 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GLEW;
+			targetProxy = C3FAF98717B8C10700F4B110 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		C3F9D7BF17B82CC3009E58CB /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -293,6 +351,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -328,6 +387,7 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = YES;
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;

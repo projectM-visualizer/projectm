@@ -9,14 +9,13 @@
 #import <OpenGL/gl.h>
 #import <OpenGL/glu.h>
 #import <string.h>
+#include "libprojectM/cocoatoprojectM.h"
 
-//-------------------------------------------------------------------------------------------------
-//	constants, etc.
-//-------------------------------------------------------------------------------------------------
-
-#define kTVisualPluginName              CFSTR("projectM")
+#define kTVisualPluginName CFSTR("projectM")
 
 extern "C" OSStatus iTunesPluginMainMachO( OSType inMessage, PluginMessageInfo *inMessageInfoPtr, void *refCon ) __attribute__((visibility("default")));
+
+static bool _keypressProjectM( VisualPluginData * visualPluginData, projectMEvent eventType, NSEvent *event );
 
 #if USE_SUBVIEW
 @interface VisualView : NSOpenGLView
@@ -63,6 +62,10 @@ void DrawVisual( VisualPluginData * visualPluginData )
     
     glFlush();
     
+    return;
+    
+    // TODO: artwork overlay
+    
 	// should we draw the info/artwork in the bottom-left corner?
 	time_t		theTime = time( NULL );
 
@@ -94,6 +97,7 @@ void DrawVisual( VisualPluginData * visualPluginData )
 		}
 	}
 }
+
 
 //-------------------------------------------------------------------------------------------------
 //	UpdateArtwork
@@ -292,24 +296,43 @@ OSStatus ConfigureVisual( VisualPluginData * visualPluginData )
 	return YES;
 }
 
-//-------------------------------------------------------------------------------------------------
-//	keyDown
-//-------------------------------------------------------------------------------------------------
-//
--(void)keyDown:(NSEvent *)theEvent
-{
-	// Handle key events here.
+- (void)keyDown:(NSEvent *)event {
+    if ( _keypressProjectM( _visualPluginData, PROJECTM_KEYDOWN, event ) )
+        return;
+
+	[super keyDown:event];
+}
+
+- (void)keyUp:(NSEvent *)event {
+    if ( _keypressProjectM( _visualPluginData, PROJECTM_KEYUP, event ) )
+        return;
+    
+	[super keyUp:event];
+}
+
+static bool _keypressProjectM( VisualPluginData * visualPluginData, projectMEvent eventType, NSEvent *eventRec ) {
+    // Handle key events here.
 	// Do not eat the space bar, ESC key, TAB key, or the arrow keys: iTunes reserves those keys.
-
-	// if the 'i' key is pressed, reset the info timeout so that we draw it again
-	if ( [[theEvent charactersIgnoringModifiers] isEqualTo:@"i"] )
-	{
-		UpdateInfoTimeOut( _visualPluginData );
-		return;
-	}
-
-	// Pass all unhandled events up to super so that iTunes can handle them.
-	[super keyDown:theEvent];
+    
+    projectMKeycode keycode = cocoa2pmKeycode(eventRec);
+    projectMModifier mod = cocoa2pmModifier(eventRec);
+    
+    switch ([eventRec keyCode]) {
+        case kVK_Tab:
+        case kVK_Space:
+        case kVK_LeftArrow:
+        case kVK_RightArrow:
+        case kVK_UpArrow:
+        case kVK_DownArrow:
+        case kVK_Escape:
+            break;
+            
+        default:
+            keypressProjectM( visualPluginData, eventType, keycode, mod );
+            return true;
+    }
+    
+    return false;
 }
 
 @end
