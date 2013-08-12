@@ -18,6 +18,10 @@
 		C3FAE5A117B88C4B00F4B110 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE5A017B88C4B00F4B110 /* libMilkdropPresetFactory.a */; };
 		C3FAE5A317B88C5000F4B110 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE5A217B88C5000F4B110 /* libNativePresetFactory.a */; };
 		C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */; };
+		C3FAF97417B89F1C00F4B110 /* presets in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAF96717B89C7C00F4B110 /* presets */; };
+		C3FAF97717B89F7400F4B110 /* shaders in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAF97617B89F7200F4B110 /* shaders */; };
+		C3FAF97817B89F7B00F4B110 /* config.inp in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAF97517B89F7200F4B110 /* config.inp */; };
+		C3FAF97B17B8A45200F4B110 /* fonts in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAF97917B8A43B00F4B110 /* fonts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +32,19 @@
 			dstSubfolderSpec = 16;
 			files = (
 				C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C3FAF97317B89F1700F4B110 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = share;
+			dstSubfolderSpec = 16;
+			files = (
+				C3FAF97417B89F1C00F4B110 /* presets in CopyFiles */,
+				C3FAF97717B89F7400F4B110 /* shaders in CopyFiles */,
+				C3FAF97B17B8A45200F4B110 /* fonts in CopyFiles */,
+				C3FAF97817B89F7B00F4B110 /* config.inp in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,6 +71,15 @@
 		C3FAE5A017B88C4B00F4B110 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
 		C3FAE5A217B88C5000F4B110 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/libNativePresetFactory.a; sourceTree = "<group>"; };
 		C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "iProjectM-pkg.plist"; sourceTree = SOURCE_ROOT; };
+		C3FAF96717B89C7C00F4B110 /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
+		C3FAF96817B89C7C00F4B110 /* presets_milkdrop */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets_milkdrop; path = ../../presets_milkdrop; sourceTree = "<group>"; };
+		C3FAF96917B89C7C00F4B110 /* presets_milkdrop_104 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets_milkdrop_104; path = ../../presets_milkdrop_104; sourceTree = "<group>"; };
+		C3FAF96A17B89C7C00F4B110 /* presets_milkdrop_200 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets_milkdrop_200; path = ../../presets_milkdrop_200; sourceTree = "<group>"; };
+		C3FAF96B17B89C7C00F4B110 /* presets_projectM */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets_projectM; path = ../../presets_projectM; sourceTree = "<group>"; };
+		C3FAF96C17B89C7C00F4B110 /* presets_yin */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets_yin; path = ../../presets_yin; sourceTree = "<group>"; };
+		C3FAF97517B89F7200F4B110 /* config.inp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.inp; sourceTree = "<group>"; };
+		C3FAF97617B89F7200F4B110 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shaders; sourceTree = "<group>"; };
+		C3FAF97917B8A43B00F4B110 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../fonts; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +102,7 @@
 		C3F9D7A617B82CC3009E58CB = {
 			isa = PBXGroup;
 			children = (
+				C3FAF97A17B8A44100F4B110 /* share */,
 				C3FAE5A417B88C5B00F4B110 /* libprojectM */,
 				C3FAE59917B88B9000F4B110 /* iProjectM */,
 				C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */,
@@ -148,6 +175,30 @@
 			name = libprojectM;
 			sourceTree = "<group>";
 		};
+		C3FAE5AC17B89C3100F4B110 /* presets */ = {
+			isa = PBXGroup;
+			children = (
+				C3FAF96717B89C7C00F4B110 /* presets */,
+				C3FAF96817B89C7C00F4B110 /* presets_milkdrop */,
+				C3FAF96917B89C7C00F4B110 /* presets_milkdrop_104 */,
+				C3FAF96A17B89C7C00F4B110 /* presets_milkdrop_200 */,
+				C3FAF96B17B89C7C00F4B110 /* presets_projectM */,
+				C3FAF96C17B89C7C00F4B110 /* presets_yin */,
+			);
+			name = presets;
+			sourceTree = "<group>";
+		};
+		C3FAF97A17B8A44100F4B110 /* share */ = {
+			isa = PBXGroup;
+			children = (
+				C3FAF97917B8A43B00F4B110 /* fonts */,
+				C3FAF97517B89F7200F4B110 /* config.inp */,
+				C3FAF97617B89F7200F4B110 /* shaders */,
+				C3FAE5AC17B89C3100F4B110 /* presets */,
+			);
+			name = share;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -157,9 +208,9 @@
 			buildPhases = (
 				C3F9D7AB17B82CC3009E58CB /* Sources */,
 				C3F9D7AC17B82CC3009E58CB /* Frameworks */,
-				C3F9D7AD17B82CC3009E58CB /* Resources */,
 				C3FAE5A917B898BB00F4B110 /* CopyFiles */,
-				C3FAE5AB17B898F800F4B110 /* ShellScript */,
+				C3FAF97317B89F1700F4B110 /* CopyFiles */,
+				C3FAE5AB17B898F800F4B110 /* Generate Installer Package */,
 			);
 			buildRules = (
 			);
@@ -196,29 +247,20 @@
 		};
 /* End PBXProject section */
 
-/* Begin PBXResourcesBuildPhase section */
-		C3F9D7AD17B82CC3009E58CB /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
-
 /* Begin PBXShellScriptBuildPhase section */
-		C3FAE5AB17B898F800F4B110 /* ShellScript */ = {
+		C3FAE5AB17B898F800F4B110 /* Generate Installer Package */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Generate Installer Package";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "pkgbuild --component-plist $SRCROOT/iProjectM-pkg.plist --root $DSTROOT $SRCROOT/iProjectM.pkg\n";
+			shellScript = "mkdir -p $DSTROOT/usr/local/share/projectM\ncp -r $CONFIGURATION_BUILD_DIR/share/* $DSTROOT/usr/local/share/projectM\npkgbuild --component-plist $SRCROOT/iProjectM-pkg.plist --root $DSTROOT $SRCROOT/iProjectM.pkg\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
