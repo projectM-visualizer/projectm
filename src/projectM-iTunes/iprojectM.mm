@@ -8,12 +8,16 @@
 
 // projectM
 void initProjectM( VisualPluginData * visualPluginData ) {
-    std::string config_filename = getConfigFilename();
-    projectM *pm = new projectM(config_filename);
+//    std::string config_filename = getConfigFilename();
+    projectM *pm = new projectM("/usr/local/share/projectM/config.inp");
     
     visualPluginData->pm = pm;
+    
+    // start off with a random preset
+    unsigned int playlistSize = pm->getPlaylistSize();
+    unsigned int index = rand() % playlistSize;
+    pm->selectPreset(index, false);
 }
-
 
 //-------------------------------------------------------------------------------------------------
 // ProcessRenderData
