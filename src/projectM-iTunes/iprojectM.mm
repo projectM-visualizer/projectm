@@ -15,6 +15,10 @@ void initProjectM( VisualPluginData * visualPluginData ) {
     pm->selectRandom(true);
 }
 
+void keypressProjectM( VisualPluginData * visualPluginData, projectMEvent event, projectMKeycode keycode, projectMModifier mod ) {
+    visualPluginData->pm->key_handler(event, keycode, mod);
+}
+
 void renderProjectMTexture( VisualPluginData * visualPluginData ){
     static int textureHandle = visualPluginData->pm->initRenderToTexture();
     

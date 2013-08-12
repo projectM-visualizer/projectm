@@ -29,27 +29,11 @@ r/**
 #ifndef _CARBONTOPROJECTM_H
 #define _CARBONTOPROJECTM_H
 
-#include "event.h"
-
 #ifdef WIN32
 #else
 #endif
 
-projectMEvent carbon2pmEvent( EventRecord *event ) { 
-
-    switch ( event->what ) { 
-        case updateEvt: 
-            return PROJECTM_VIDEORESIZE; 
-        case keyUp: 
-            return PROJECTM_KEYUP; 
-        case keyDown: 
-            return PROJECTM_KEYDOWN; 
-        default:
-            return PROJECTM_KEYUP; 
-      } 
-  } 
-
-projectMKeycode carbon2pmKeycode( EventRecord *event ) { 
+projectMKeycode carbon2pmKeycode( NSEvent *event ) {
     projectMKeycode char_code = (projectMKeycode)(event->message & charCodeMask); 
     switch ( char_code ) { 
         case kFunctionKeyCharCode: { 
@@ -98,7 +82,7 @@ projectMKeycode carbon2pmKeycode( EventRecord *event ) {
       } 
   } 
 
-projectMModifier carbon2pmModifier( EventRecord *event ) { 
+projectMModifier carbon2pmModifier( NSEvent *event ) {
     return (projectMModifier)PROJECTM_K_LSHIFT; 
   } 
 
