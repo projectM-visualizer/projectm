@@ -12,10 +12,26 @@
 		C3F9D7D317B83CCB009E58CB /* iprojectM_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */; };
 		C3F9D7D417B83CCB009E58CB /* iprojectM.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D217B83CCB009E58CB /* iprojectM.mm */; };
 		C3F9D7D917B83CF1009E58CB /* iTunesAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D617B83CF1009E58CB /* iTunesAPI.cpp */; };
-		C3F9D7DB17B84081009E58CB /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7DA17B84081009E58CB /* libprojectM.a */; };
 		C3FAE59217B87D8700F4B110 /* getConfigFilename.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */; };
-		C3FAE59617B884FC00F4B110 /* iProjectM-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C3FAE59517B884FC00F4B110 /* iProjectM-Info.plist */; };
+		C3FAE59D17B88BF800F4B110 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE59C17B88BF800F4B110 /* libprojectM.a */; };
+		C3FAE59F17B88C3700F4B110 /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE59E17B88C3700F4B110 /* libRenderer.a */; };
+		C3FAE5A117B88C4B00F4B110 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE5A017B88C4B00F4B110 /* libMilkdropPresetFactory.a */; };
+		C3FAE5A317B88C5000F4B110 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE5A217B88C5000F4B110 /* libNativePresetFactory.a */; };
+		C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C3FAE5A917B898BB00F4B110 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		C3F9D7AF17B82CC3009E58CB /* iProjectM.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iProjectM.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -30,10 +46,14 @@
 		C3F9D7D617B83CF1009E58CB /* iTunesAPI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iTunesAPI.cpp; sourceTree = "<group>"; };
 		C3F9D7D717B83CF1009E58CB /* iTunesAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTunesAPI.h; sourceTree = "<group>"; };
 		C3F9D7D817B83CF1009E58CB /* iTunesVisualAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTunesVisualAPI.h; sourceTree = "<group>"; };
-		C3F9D7DA17B84081009E58CB /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/libprojectM.a; sourceTree = "<group>"; };
 		C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = getConfigFilename.cpp; sourceTree = "<group>"; };
 		C3FAE59117B87D8700F4B110 /* getConfigFilename.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = getConfigFilename.h; sourceTree = "<group>"; };
-		C3FAE59517B884FC00F4B110 /* iProjectM-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "iProjectM-Info.plist"; sourceTree = "<group>"; };
+		C3FAE59A17B88B9000F4B110 /* iProjectM-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "iProjectM-Info.plist"; sourceTree = "<group>"; };
+		C3FAE59C17B88BF800F4B110 /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/libprojectM.a; sourceTree = "<group>"; };
+		C3FAE59E17B88C3700F4B110 /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/libRenderer.a; sourceTree = "<group>"; };
+		C3FAE5A017B88C4B00F4B110 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
+		C3FAE5A217B88C5000F4B110 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/libNativePresetFactory.a; sourceTree = "<group>"; };
+		C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "iProjectM-pkg.plist"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,7 +63,10 @@
 			files = (
 				C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */,
 				C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */,
-				C3F9D7DB17B84081009E58CB /* libprojectM.a in Frameworks */,
+				C3FAE59D17B88BF800F4B110 /* libprojectM.a in Frameworks */,
+				C3FAE59F17B88C3700F4B110 /* libRenderer.a in Frameworks */,
+				C3FAE5A117B88C4B00F4B110 /* libMilkdropPresetFactory.a in Frameworks */,
+				C3FAE5A317B88C5000F4B110 /* libNativePresetFactory.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -53,13 +76,13 @@
 		C3F9D7A617B82CC3009E58CB = {
 			isa = PBXGroup;
 			children = (
-				C3F9D7DA17B84081009E58CB /* libprojectM.a */,
+				C3FAE5A417B88C5B00F4B110 /* libprojectM */,
+				C3FAE59917B88B9000F4B110 /* iProjectM */,
 				C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */,
 				C3FAE59117B87D8700F4B110 /* getConfigFilename.h */,
 				C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */,
 				C3F9D7D117B83CCB009E58CB /* iprojectM.hpp */,
 				C3F9D7D217B83CCB009E58CB /* iprojectM.mm */,
-				C3FAE59517B884FC00F4B110 /* iProjectM-Info.plist */,
 				C3F9D7D517B83CF1009E58CB /* iTunesVisualAPI */,
 				C3F9D7B117B82CC3009E58CB /* Frameworks */,
 				C3F9D7B017B82CC3009E58CB /* Products */,
@@ -105,6 +128,26 @@
 			path = macos;
 			sourceTree = "<group>";
 		};
+		C3FAE59917B88B9000F4B110 /* iProjectM */ = {
+			isa = PBXGroup;
+			children = (
+				C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */,
+				C3FAE59A17B88B9000F4B110 /* iProjectM-Info.plist */,
+			);
+			path = iProjectM;
+			sourceTree = "<group>";
+		};
+		C3FAE5A417B88C5B00F4B110 /* libprojectM */ = {
+			isa = PBXGroup;
+			children = (
+				C3FAE5A217B88C5000F4B110 /* libNativePresetFactory.a */,
+				C3FAE5A017B88C4B00F4B110 /* libMilkdropPresetFactory.a */,
+				C3FAE59E17B88C3700F4B110 /* libRenderer.a */,
+				C3FAE59C17B88BF800F4B110 /* libprojectM.a */,
+			);
+			name = libprojectM;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -115,6 +158,8 @@
 				C3F9D7AB17B82CC3009E58CB /* Sources */,
 				C3F9D7AC17B82CC3009E58CB /* Frameworks */,
 				C3F9D7AD17B82CC3009E58CB /* Resources */,
+				C3FAE5A917B898BB00F4B110 /* CopyFiles */,
+				C3FAE5AB17B898F800F4B110 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -156,11 +201,26 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3FAE59617B884FC00F4B110 /* iProjectM-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		C3FAE5AB17B898F800F4B110 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "pkgbuild --component-plist $SRCROOT/iProjectM-pkg.plist --root $DSTROOT $SRCROOT/iProjectM.pkg\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C3F9D7AB17B82CC3009E58CB /* Sources */ = {
@@ -249,6 +309,9 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../libprojectM\"",
+					"\"$(SRCROOT)/../libprojectM/Renderer\"",
+					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory\"",
+					"\"$(SRCROOT)/../libprojectM/NativePresetFactory\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = bundle;
@@ -266,6 +329,9 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../libprojectM\"",
+					"\"$(SRCROOT)/../libprojectM/Renderer\"",
+					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory\"",
+					"\"$(SRCROOT)/../libprojectM/NativePresetFactory\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = bundle;
