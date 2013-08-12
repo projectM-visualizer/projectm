@@ -59,6 +59,7 @@ void DrawVisual( VisualPluginData * visualPluginData )
     
     // render
     visualPluginData->pm->renderFrame();
+//    renderProjectMTexture(visualPluginData);
     
     glFlush();
     

@@ -10,13 +10,50 @@
 void initProjectM( VisualPluginData * visualPluginData ) {
 //    std::string config_filename = getConfigFilename();
     projectM *pm = new projectM("/usr/local/share/projectM/config.inp");
-    
     visualPluginData->pm = pm;
     
-    // start off with a random preset
-    unsigned int playlistSize = pm->getPlaylistSize();
-    unsigned int index = rand() % playlistSize;
-    pm->selectPreset(index, false);
+    pm->selectRandom(true);
+}
+
+void renderProjectMTexture( VisualPluginData * visualPluginData ){
+    static int textureHandle = visualPluginData->pm->initRenderToTexture();
+    
+    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT);
+    
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-1, 1, -1, 1, 2, 10);
+    
+    glEnable(GL_DEPTH_TEST);
+    
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    
+    glEnable(GL_TEXTURE_2D);
+    glMatrixMode(GL_TEXTURE);
+    glLoadIdentity();
+    
+    glBindTexture(GL_TEXTURE_2D, textureHandle);
+    glColor4d(1.0, 1.0, 1.0, 1.0);
+    
+    glBegin(GL_QUADS);
+    glTexCoord2d(0, 1);
+    glVertex3d(-0.8, 0.8, 0);
+    glTexCoord2d(0, 0);
+    glVertex3d(-0.8, -0.8, 0);
+    glTexCoord2d(1, 0);
+    glVertex3d(0.8, -0.8, 0);
+    glTexCoord2d(1, 1);
+    glVertex3d(0.8, 0.8, 0);
+    glEnd();
+    
+    glDisable(GL_TEXTURE_2D);
+    
+    glMatrixMode(GL_MODELVIEW);
+    glDisable(GL_DEPTH_TEST);
 }
 
 //-------------------------------------------------------------------------------------------------

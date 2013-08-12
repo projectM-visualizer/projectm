@@ -161,5 +161,6 @@ void		InvalidateVisual( VisualPluginData * visualPluginData );
 OSStatus	ConfigureVisual( VisualPluginData * visualPluginData );
 
 void        initProjectM( VisualPluginData * visualPluginData );
+void        renderProjectMTexture( VisualPluginData * visualPluginData );
 
 #endif
