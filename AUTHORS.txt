@@ -44,3 +44,6 @@ Matthias Klumpp
     CMake build system
     Distro integration
     Bug fixes
+
+Mischa Spiegelmock
+    Mac OS X updates and native iTunes visualization plugin
