@@ -1,21 +1,51 @@
-/*
-     File:       iTunesVisualAPI.h
- 
-     Contains:   iTunes Visual Plug-ins interfaces
- 
-     Version:    Technology: iTunes
-                 Release:    1.1
- 
-     Copyright:  © 2001 by Apple Computer, Inc., all rights reserved.
- 
-     Bugs?:      For bug reports, consult the following page on
-                 the World Wide Web:
- 
-                     http://developer.apple.com/bugreporter/
- 
-*/
-#ifndef __ITUNESVISUALAPI__
-#define __ITUNESVISUALAPI__
+//
+// File:       iTunesVisualAPI.h
+//
+// Abstract:   part of iTunes Visual SDK
+//
+// Version:    2.0
+//
+// Disclaimer: IMPORTANT:  This Apple software is supplied to you by Apple Inc. ( "Apple" )
+//             in consideration of your agreement to the following terms, and your use,
+//             installation, modification or redistribution of this Apple software
+//             constitutes acceptance of these terms.  If you do not agree with these
+//             terms, please do not use, install, modify or redistribute this Apple
+//             software.
+//
+//             In consideration of your agreement to abide by the following terms, and
+//             subject to these terms, Apple grants you a personal, non - exclusive
+//             license, under Apple's copyrights in this original Apple software ( the
+//             "Apple Software" ), to use, reproduce, modify and redistribute the Apple
+//             Software, with or without modifications, in source and / or binary forms;
+//             provided that if you redistribute the Apple Software in its entirety and
+//             without modifications, you must retain this notice and the following text
+//             and disclaimers in all such redistributions of the Apple Software. Neither
+//             the name, trademarks, service marks or logos of Apple Inc. may be used to
+//             endorse or promote products derived from the Apple Software without specific
+//             prior written permission from Apple.  Except as expressly stated in this
+//             notice, no other rights or licenses, express or implied, are granted by
+//             Apple herein, including but not limited to any patent rights that may be
+//             infringed by your derivative works or by other works in which the Apple
+//             Software may be incorporated.
+//
+//             The Apple Software is provided by Apple on an "AS IS" basis.  APPLE MAKES NO
+//             WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED
+//             WARRANTIES OF NON - INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A
+//             PARTICULAR PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND OPERATION
+//             ALONE OR IN COMBINATION WITH YOUR PRODUCTS.
+//
+//             IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL OR
+//             CONSEQUENTIAL DAMAGES ( INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+//             SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+//             INTERRUPTION ) ARISING IN ANY WAY OUT OF THE USE, REPRODUCTION, MODIFICATION
+//             AND / OR DISTRIBUTION OF THE APPLE SOFTWARE, HOWEVER CAUSED AND WHETHER
+//             UNDER THEORY OF CONTRACT, TORT ( INCLUDING NEGLIGENCE ), STRICT LIABILITY OR
+//             OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+// Copyright Â© 2000-2011 Apple Inc. All Rights Reserved.
+//
+#ifndef ITUNESVISUALAPI_H_
+#define ITUNESVISUALAPI_H_
 
 #include "iTunesAPI.h"
 
@@ -30,42 +60,50 @@ extern "C" {
 #if PRAGMA_STRUCT_ALIGN
     #pragma options align=power
 #elif PRAGMA_STRUCT_PACKPUSH
-    #pragma pack(push, 2)
+    #pragma pack(push, 4)
 #elif PRAGMA_STRUCT_PACK
-    #pragma pack(2)
+    #pragma pack(4)
 #endif
+
+
+enum {
+	kCurrentITStreamInfoVersion = 1
+};
+
+enum {
+	kITVisualPluginMajorMessageVersion = 10,
+	kITVisualPluginMinorMessageVersion = 7
+};
 
 enum {
 	/* VisualPlugin messages */
 	
-	kVisualPluginIdleMessage			= 'null',
-
 	kVisualPluginInitMessage			= 'init',
 	kVisualPluginCleanupMessage			= 'clr ',
 	
-	kVisualPluginConfigureMessage		= 'cnfg',	/* Configure the plugin (may not be enabled) */
-	
-	kVisualPluginEnableMessage			= 'von ',	/* Turn on the module (automatic)*/
-	kVisualPluginDisableMessage			= 'voff',	/* Turn off the module */
-	
-	kVisualPluginShowWindowMessage		= 'show',	/* Show the plugin window (allocate large memory here!) */
-	kVisualPluginHideWindowMessage		= 'hide',	/* Hide the plugin window (deallocate large memory here!) */
-		
-	kVisualPluginSetWindowMessage		= 'swin',	/* Change the window parameters */
+	kVisualPluginIdleMessage			= 'null',
 
-	kVisualPluginRenderMessage			= 'vrnd',	/* Render to window */
+	kVisualPluginConfigureMessage		= 'cnfg',	/* Configure the plugin. */
 	
-	kVisualPluginUpdateMessage			= 'vupd',	/* Update the window */
+	kVisualPluginEnableMessage			= 'von ',	/* Enable the plugin and make it available to the user (automatic). */
+	kVisualPluginDisableMessage			= 'voff',	/* Disable the plugin. */
 	
-	kVisualPluginPlayMessage			= 'vply',	/* Playing a track */
-	kVisualPluginChangeTrackMessage		= 'ctrk',	/* Change track (for CD continuous play) */
-	kVisualPluginStopMessage			= 'vstp',	/* Stopping a track */
-	kVisualPluginSetPositionMessage		= 'setp',	/* Setting the position of a track */
-	
-	kVisualPluginPauseMessage			= 'vpau',	/* Pausing a track (unused - Pause is stop) */
-	kVisualPluginUnpauseMessage			= 'vunp',	/* Unpausing a track (unused - Pause is stop) */
-	
-	kVisualPluginEventMessage			= 'vevt'	/* Mac-event. */
+	kVisualPluginActivateMessage		= 'Vact',	/* Visualizer is being shown on screen (allocate large memory here) */
+	kVisualPluginWindowChangedMessage	= 'Vmov',	/* The visualizer context was moved to a new window.  A draw message will be sent immediately. */
+	kVisualPluginDeactivateMessage		= 'Vdct',	/* Visualizer is being removed from the screen (deallocate large memory here) */
+
+	kVisualPluginPulseMessage			= 'Vpls',	/* Sent at the rate requested during plugin registration. Contains new data if currently playing audio. */
+	kVisualPluginDrawMessage			= 'Vdrw',	/* Draw a new frame.  Sent when the OS decides to repaint the backing view. */
+	kVisualPluginFrameChangedMessage	= 'Vfrm',	/* The visualizer area resized.  A draw message will be sent immediately. */
+
+	kVisualPluginPlayMessage			= 'Vply',	/* Starting playback. */
+	kVisualPluginChangeTrackMessage		= 'Ctrk',	/* Current track changed or info about the current track has changed. */
+	kVisualPluginSetPositionMessage		= 'setp',	/* Setting the position of the currently playing track. */
+	kVisualPluginStopMessage			= 'vstp',	/* Stopping playback. */
+	kVisualPluginCoverArtMessage		= 'Vart',	/* Delivers the current track artwork as requested by the plugin. Plugin must retain/copy it if it wants to keep it. */
+
+	kVisualPluginDisplayChangedMessage	= 'dchn'	/* Something about display state changed. */
+
 };
 
 /*
@@ -80,9 +118,16 @@ enum {
 };
 
 enum {
-	/* ShowWindow options */
+	/* CoverArt format types */
+	kVisualCoverArtFormatJPEG	= 13,
+	kVisualCoverArtFormatPNG	= 14,
+	kVisualCoverArtFormatBMP	= 27
+};
+
+enum {
+	/* Activate options */
 	
-	kWindowIsFullScreen = (1L << 0)
+	kWindowIsFullScreen = (1u << 0)
 };
 
 struct RenderVisualData {
@@ -102,33 +147,38 @@ struct VisualPluginInitMessage {
 	void *							appCookie;				/* Input */
 	ITAppProcPtr					appProc;				/* Input */
 
-	OptionBits						options;				/* Output */
+	OptionBits						unused;					/* N/A */
 	void *							refCon;					/* Output */
 };
 typedef struct VisualPluginInitMessage VisualPluginInitMessage;
 
-struct VisualPluginShowWindowMessage {
-	CGrafPtr						port;					/* Input */
-	Rect							drawRect;				/* Input */
+struct VisualPluginActivateMessage {
+	VISUAL_PLATFORM_VIEW			view;					/* Input - plugin should draw in entire bounds */
 	OptionBits						options;				/* Input */
 };
-typedef struct VisualPluginShowWindowMessage VisualPluginShowWindowMessage;
+typedef struct VisualPluginActivateMessage VisualPluginActivateMessage;
 
-struct VisualPluginSetWindowMessage {
-	CGrafPtr						port;					/* Input */
-	Rect							drawRect;				/* Input */
+struct VisualPluginWindowChangedMessage {
 	OptionBits						options;				/* Input */
 };
-typedef struct VisualPluginSetWindowMessage VisualPluginSetWindowMessage;
+typedef struct VisualPluginWindowChangedMessage VisualPluginWindowChangedMessage;
+
+struct VisualPluginPulseMessage {
+	RenderVisualData *				renderData;				/* Input */
+	UInt32							timeStampID;			/* Input */
+	UInt32							currentPositionInMS;	/* Input */
+	
+	UInt32							newPulseRateInHz;		/* Input/Output - contains current rate on input, modify it to get a new rate. */
+};
+typedef struct VisualPluginPulseMessage VisualPluginPulseMessage;
 
 struct VisualPluginPlayMessage {
 	ITTrackInfo *					trackInfo;				/* Input */
 	ITStreamInfo *					streamInfo;				/* Input */
-	SInt32							volume;					/* Input */
-	
+
+	AudioStreamBasicDescription		audioFormat;			/* Input */
 	UInt32							bitRate;				/* Input */
-	
-	SoundComponentData				soundFormat;			/* Input */
+	SInt32							volume;					/* Input */
 };
 typedef struct VisualPluginPlayMessage VisualPluginPlayMessage;
 
@@ -138,32 +188,43 @@ struct VisualPluginChangeTrackMessage {
 };
 typedef struct VisualPluginChangeTrackMessage VisualPluginChangeTrackMessage;
 
-struct VisualPluginRenderMessage {
-	RenderVisualData *				renderData;				/* Input */
-	UInt32							timeStampID;			/* Input */
+struct VisualPluginCoverArtMessage {
+	VISUAL_PLATFORM_DATA		coverArt;					/* input - client must retain (mac) or copy (windows) the data if they want to keep it after this message completes.
+																	 - note that coverArt will be NULL if the current track has no artwork */
+	UInt32						coverArtSize;				/* input - size of the coverArt in bytes */
+	UInt32						coverArtFormat;				/* input - format of cover art */
 };
-typedef struct VisualPluginRenderMessage VisualPluginRenderMessage;
+typedef struct VisualPluginCoverArtMessage VisualPluginCoverArtMessage;
 
 struct VisualPluginSetPositionMessage {
 	UInt32							positionTimeInMS;		/* Input */
 };
 typedef struct VisualPluginSetPositionMessage VisualPluginSetPositionMessage;
 
-struct VisualPluginEventMessage {
-	EventRecord *					event;					/* Input */
+enum {
+	kVisualDisplayDepthChanged 	= 1 << 0,					/* the display's depth has changed */
+	kVisualDisplayRectChanged	= 1 << 1,					/* the display's location changed */
+	kVisualWindowMoved			= 1 << 2,					/* the window has moved location */	
+	kVisualDisplayConfigChanged	= 1 << 3,					/* something else about the display changed */
 };
-typedef struct VisualPluginEventMessage VisualPluginEventMessage;
+
+struct VisualPluginDisplayChangedMessage {
+	UInt32							flags;		/* Input */
+};
+typedef struct VisualPluginDisplayChangedMessage VisualPluginDisplayChangedMessage;
+
 
 struct VisualPluginMessageInfo {
 	union {
-		VisualPluginInitMessage				initMessage;
-		VisualPluginShowWindowMessage		showWindowMessage;
-		VisualPluginSetWindowMessage		setWindowMessage;
-		VisualPluginPlayMessage				playMessage;
-		VisualPluginChangeTrackMessage		changeTrackMessage;
-		VisualPluginRenderMessage			renderMessage;
-		VisualPluginSetPositionMessage		setPositionMessage;
-		VisualPluginEventMessage			eventMessage;
+		VisualPluginInitMessage					initMessage;
+		VisualPluginActivateMessage				activateMessage;
+		VisualPluginWindowChangedMessage		windowChangedMessage;
+		VisualPluginPulseMessage				pulseMessage;
+		VisualPluginPlayMessage					playMessage;
+		VisualPluginChangeTrackMessage			changeTrackMessage;
+		VisualPluginSetPositionMessage			setPositionMessage;
+		VisualPluginCoverArtMessage				coverArtMessage;
+		VisualPluginDisplayChangedMessage		displayChangedMessage;
 	} u;
 };
 typedef struct VisualPluginMessageInfo VisualPluginMessageInfo;
@@ -180,4 +241,4 @@ typedef struct VisualPluginMessageInfo VisualPluginMessageInfo;
 }
 #endif
 
-#endif /* __ITUNESVISUALAPI__ */
+#endif /* ITUNESVISUALAPI_H_ */
