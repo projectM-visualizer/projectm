@@ -1,0 +1,471 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		C3D5F4B817B8CB2000A8C161 /* libMstressJuppyDancer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B317B8CB2000A8C161 /* libMstressJuppyDancer.dylib */; };
+		C3D5F4B917B8CB2000A8C161 /* libRovastarDarkSecret.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B417B8CB2000A8C161 /* libRovastarDarkSecret.dylib */; };
+		C3D5F4BA17B8CB2000A8C161 /* libRovastarDriftingChaos.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */; };
+		C3D5F4BB17B8CB2000A8C161 /* libRovastarFractalSpiral.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */; };
+		C3D5F4BC17B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */; };
+		C3D5F4BD17B8CB2E00A8C161 /* libMstressJuppyDancer.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B317B8CB2000A8C161 /* libMstressJuppyDancer.dylib */; };
+		C3D5F4BE17B8CB3100A8C161 /* libRovastarDarkSecret.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B417B8CB2000A8C161 /* libRovastarDarkSecret.dylib */; };
+		C3D5F4BF17B8CB3300A8C161 /* libRovastarDriftingChaos.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */; };
+		C3D5F4C017B8CB3500A8C161 /* libRovastarFractalSpiral.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */; };
+		C3D5F4C117B8CB3700A8C161 /* libRovastarFractopiaFrantic.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */; };
+		C3D5F4C217B8CBC900A8C161 /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAF98517B8C09D00F4B110 /* Cg.framework */; };
+		C3D5F4C417B8CD2800A8C161 /* Cg.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAF98517B8C09D00F4B110 /* Cg.framework */; };
+		C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7B217B82CC3009E58CB /* Cocoa.framework */; };
+		C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7CE17B831F3009E58CB /* OpenGL.framework */; };
+		C3F9D7D317B83CCB009E58CB /* iprojectM_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */; };
+		C3F9D7D417B83CCB009E58CB /* iprojectM.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D217B83CCB009E58CB /* iprojectM.mm */; };
+		C3F9D7D917B83CF1009E58CB /* iTunesAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D617B83CF1009E58CB /* iTunesAPI.cpp */; };
+		C3FAE59217B87D8700F4B110 /* getConfigFilename.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */; };
+		C3FAE59D17B88BF800F4B110 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE59C17B88BF800F4B110 /* libprojectM.a */; };
+		C3FAE59F17B88C3700F4B110 /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE59E17B88C3700F4B110 /* libRenderer.a */; };
+		C3FAE5A117B88C4B00F4B110 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE5A017B88C4B00F4B110 /* libMilkdropPresetFactory.a */; };
+		C3FAE5A317B88C5000F4B110 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE5A217B88C5000F4B110 /* libNativePresetFactory.a */; };
+		C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */; };
+		C3FAF97417B89F1C00F4B110 /* presets in share */ = {isa = PBXBuildFile; fileRef = C3FAF96717B89C7C00F4B110 /* presets */; };
+		C3FAF97717B89F7400F4B110 /* shaders in share */ = {isa = PBXBuildFile; fileRef = C3FAF97617B89F7200F4B110 /* shaders */; };
+		C3FAF97817B89F7B00F4B110 /* config.inp in share */ = {isa = PBXBuildFile; fileRef = C3FAF97517B89F7200F4B110 /* config.inp */; };
+		C3FAF97B17B8A45200F4B110 /* fonts in share */ = {isa = PBXBuildFile; fileRef = C3FAF97917B8A43B00F4B110 /* fonts */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		C3D5F4C317B8CD2100A8C161 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C3D5F4C417B8CD2800A8C161 /* Cg.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C3FAE5A917B898BB00F4B110 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C3FAF97317B89F1700F4B110 /* share */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = share;
+			dstSubfolderSpec = 16;
+			files = (
+				C3FAF97417B89F1C00F4B110 /* presets in share */,
+				C3FAF97717B89F7400F4B110 /* shaders in share */,
+				C3FAF97B17B8A45200F4B110 /* fonts in share */,
+				C3FAF97817B89F7B00F4B110 /* config.inp in share */,
+			);
+			name = share;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C3FAF98917B8C37F00F4B110 /* Native Presets */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C3D5F4C117B8CB3700A8C161 /* libRovastarFractopiaFrantic.dylib in Native Presets */,
+				C3D5F4C017B8CB3500A8C161 /* libRovastarFractalSpiral.dylib in Native Presets */,
+				C3D5F4BD17B8CB2E00A8C161 /* libMstressJuppyDancer.dylib in Native Presets */,
+				C3D5F4BF17B8CB3300A8C161 /* libRovastarDriftingChaos.dylib in Native Presets */,
+				C3D5F4BE17B8CB3100A8C161 /* libRovastarDarkSecret.dylib in Native Presets */,
+			);
+			name = "Native Presets";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		C3D5F4B317B8CB2000A8C161 /* libMstressJuppyDancer.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMstressJuppyDancer.dylib; path = ../NativePresets/libMstressJuppyDancer.dylib; sourceTree = "<group>"; };
+		C3D5F4B417B8CB2000A8C161 /* libRovastarDarkSecret.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarDarkSecret.dylib; path = ../NativePresets/libRovastarDarkSecret.dylib; sourceTree = "<group>"; };
+		C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarDriftingChaos.dylib; path = ../NativePresets/libRovastarDriftingChaos.dylib; sourceTree = "<group>"; };
+		C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarFractalSpiral.dylib; path = ../NativePresets/libRovastarFractalSpiral.dylib; sourceTree = "<group>"; };
+		C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarFractopiaFrantic.dylib; path = ../NativePresets/libRovastarFractopiaFrantic.dylib; sourceTree = "<group>"; };
+		C3F9D7AF17B82CC3009E58CB /* iProjectM.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iProjectM.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		C3F9D7B217B82CC3009E58CB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		C3F9D7B517B82CC3009E58CB /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		C3F9D7B617B82CC3009E58CB /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		C3F9D7B717B82CC3009E58CB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		C3F9D7CE17B831F3009E58CB /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iprojectM_mac.mm; sourceTree = "<group>"; };
+		C3F9D7D117B83CCB009E58CB /* iprojectM.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = iprojectM.hpp; sourceTree = "<group>"; };
+		C3F9D7D217B83CCB009E58CB /* iprojectM.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iprojectM.mm; sourceTree = "<group>"; };
+		C3F9D7D617B83CF1009E58CB /* iTunesAPI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iTunesAPI.cpp; sourceTree = "<group>"; };
+		C3F9D7D717B83CF1009E58CB /* iTunesAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTunesAPI.h; sourceTree = "<group>"; };
+		C3F9D7D817B83CF1009E58CB /* iTunesVisualAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTunesVisualAPI.h; sourceTree = "<group>"; };
+		C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = getConfigFilename.cpp; sourceTree = "<group>"; };
+		C3FAE59117B87D8700F4B110 /* getConfigFilename.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = getConfigFilename.h; sourceTree = "<group>"; };
+		C3FAE59A17B88B9000F4B110 /* iProjectM-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "iProjectM-Info.plist"; sourceTree = "<group>"; };
+		C3FAE59C17B88BF800F4B110 /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/libprojectM.a; sourceTree = "<group>"; };
+		C3FAE59E17B88C3700F4B110 /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/libRenderer.a; sourceTree = "<group>"; };
+		C3FAE5A017B88C4B00F4B110 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
+		C3FAE5A217B88C5000F4B110 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/libNativePresetFactory.a; sourceTree = "<group>"; };
+		C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "iProjectM-pkg.plist"; sourceTree = SOURCE_ROOT; };
+		C3FAF96717B89C7C00F4B110 /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
+		C3FAF96817B89C7C00F4B110 /* presets_milkdrop */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets_milkdrop; path = ../../presets_milkdrop; sourceTree = "<group>"; };
+		C3FAF96917B89C7C00F4B110 /* presets_milkdrop_104 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets_milkdrop_104; path = ../../presets_milkdrop_104; sourceTree = "<group>"; };
+		C3FAF96A17B89C7C00F4B110 /* presets_milkdrop_200 */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets_milkdrop_200; path = ../../presets_milkdrop_200; sourceTree = "<group>"; };
+		C3FAF96B17B89C7C00F4B110 /* presets_projectM */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets_projectM; path = ../../presets_projectM; sourceTree = "<group>"; };
+		C3FAF96C17B89C7C00F4B110 /* presets_yin */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets_yin; path = ../../presets_yin; sourceTree = "<group>"; };
+		C3FAF97517B89F7200F4B110 /* config.inp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.inp; sourceTree = "<group>"; };
+		C3FAF97617B89F7200F4B110 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shaders; sourceTree = "<group>"; };
+		C3FAF97917B8A43B00F4B110 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../fonts; sourceTree = "<group>"; };
+		C3FAF98517B8C09D00F4B110 /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = /Library/Frameworks/Cg.framework; sourceTree = "<absolute>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		C3F9D7AC17B82CC3009E58CB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */,
+				C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */,
+				C3D5F4C217B8CBC900A8C161 /* Cg.framework in Frameworks */,
+				C3FAE59D17B88BF800F4B110 /* libprojectM.a in Frameworks */,
+				C3FAE59F17B88C3700F4B110 /* libRenderer.a in Frameworks */,
+				C3FAE5A117B88C4B00F4B110 /* libMilkdropPresetFactory.a in Frameworks */,
+				C3FAE5A317B88C5000F4B110 /* libNativePresetFactory.a in Frameworks */,
+				C3D5F4B817B8CB2000A8C161 /* libMstressJuppyDancer.dylib in Frameworks */,
+				C3D5F4B917B8CB2000A8C161 /* libRovastarDarkSecret.dylib in Frameworks */,
+				C3D5F4BA17B8CB2000A8C161 /* libRovastarDriftingChaos.dylib in Frameworks */,
+				C3D5F4BB17B8CB2000A8C161 /* libRovastarFractalSpiral.dylib in Frameworks */,
+				C3D5F4BC17B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		C3F9D7A617B82CC3009E58CB = {
+			isa = PBXGroup;
+			children = (
+				C3FAF97A17B8A44100F4B110 /* share */,
+				C3FAE5A417B88C5B00F4B110 /* libprojectM */,
+				C3FAE59917B88B9000F4B110 /* iProjectM */,
+				C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */,
+				C3FAE59117B87D8700F4B110 /* getConfigFilename.h */,
+				C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */,
+				C3F9D7D117B83CCB009E58CB /* iprojectM.hpp */,
+				C3F9D7D217B83CCB009E58CB /* iprojectM.mm */,
+				C3F9D7D517B83CF1009E58CB /* iTunesVisualAPI */,
+				C3F9D7B117B82CC3009E58CB /* Frameworks */,
+				C3F9D7B017B82CC3009E58CB /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C3F9D7B017B82CC3009E58CB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C3F9D7AF17B82CC3009E58CB /* iProjectM.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		C3F9D7B117B82CC3009E58CB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C3FAF98517B8C09D00F4B110 /* Cg.framework */,
+				C3F9D7CE17B831F3009E58CB /* OpenGL.framework */,
+				C3F9D7B217B82CC3009E58CB /* Cocoa.framework */,
+				C3F9D7B417B82CC3009E58CB /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C3F9D7B417B82CC3009E58CB /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C3F9D7B517B82CC3009E58CB /* AppKit.framework */,
+				C3F9D7B617B82CC3009E58CB /* CoreData.framework */,
+				C3F9D7B717B82CC3009E58CB /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		C3F9D7D517B83CF1009E58CB /* iTunesVisualAPI */ = {
+			isa = PBXGroup;
+			children = (
+				C3F9D7D617B83CF1009E58CB /* iTunesAPI.cpp */,
+				C3F9D7D717B83CF1009E58CB /* iTunesAPI.h */,
+				C3F9D7D817B83CF1009E58CB /* iTunesVisualAPI.h */,
+			);
+			name = iTunesVisualAPI;
+			path = macos;
+			sourceTree = "<group>";
+		};
+		C3FAE59917B88B9000F4B110 /* iProjectM */ = {
+			isa = PBXGroup;
+			children = (
+				C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */,
+				C3FAE59A17B88B9000F4B110 /* iProjectM-Info.plist */,
+			);
+			path = iProjectM;
+			sourceTree = "<group>";
+		};
+		C3FAE5A417B88C5B00F4B110 /* libprojectM */ = {
+			isa = PBXGroup;
+			children = (
+				C3D5F4B317B8CB2000A8C161 /* libMstressJuppyDancer.dylib */,
+				C3D5F4B417B8CB2000A8C161 /* libRovastarDarkSecret.dylib */,
+				C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */,
+				C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */,
+				C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */,
+				C3FAE5A217B88C5000F4B110 /* libNativePresetFactory.a */,
+				C3FAE5A017B88C4B00F4B110 /* libMilkdropPresetFactory.a */,
+				C3FAE59E17B88C3700F4B110 /* libRenderer.a */,
+				C3FAE59C17B88BF800F4B110 /* libprojectM.a */,
+			);
+			name = libprojectM;
+			sourceTree = "<group>";
+		};
+		C3FAE5AC17B89C3100F4B110 /* presets */ = {
+			isa = PBXGroup;
+			children = (
+				C3FAF96717B89C7C00F4B110 /* presets */,
+				C3FAF96817B89C7C00F4B110 /* presets_milkdrop */,
+				C3FAF96917B89C7C00F4B110 /* presets_milkdrop_104 */,
+				C3FAF96A17B89C7C00F4B110 /* presets_milkdrop_200 */,
+				C3FAF96B17B89C7C00F4B110 /* presets_projectM */,
+				C3FAF96C17B89C7C00F4B110 /* presets_yin */,
+			);
+			name = presets;
+			sourceTree = "<group>";
+		};
+		C3FAF97A17B8A44100F4B110 /* share */ = {
+			isa = PBXGroup;
+			children = (
+				C3FAF97917B8A43B00F4B110 /* fonts */,
+				C3FAF97517B89F7200F4B110 /* config.inp */,
+				C3FAF97617B89F7200F4B110 /* shaders */,
+				C3FAE5AC17B89C3100F4B110 /* presets */,
+			);
+			name = share;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C3F9D7AE17B82CC3009E58CB /* iProjectM */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C3F9D7C117B82CC3009E58CB /* Build configuration list for PBXNativeTarget "iProjectM" */;
+			buildPhases = (
+				C3F9D7AB17B82CC3009E58CB /* Sources */,
+				C3F9D7AC17B82CC3009E58CB /* Frameworks */,
+				C3FAE5A917B898BB00F4B110 /* CopyFiles */,
+				C3FAF97317B89F1700F4B110 /* share */,
+				C3FAE5AB17B898F800F4B110 /* Generate Installer Package */,
+				C3FAF98917B8C37F00F4B110 /* Native Presets */,
+				C3D5F4C317B8CD2100A8C161 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = iProjectM;
+			productName = iProjectM;
+			productReference = C3F9D7AF17B82CC3009E58CB /* iProjectM.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C3F9D7A717B82CC3009E58CB /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = projectM;
+			};
+			buildConfigurationList = C3F9D7AA17B82CC3009E58CB /* Build configuration list for PBXProject "iProjectM" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = C3F9D7A617B82CC3009E58CB;
+			productRefGroup = C3F9D7B017B82CC3009E58CB /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C3F9D7AE17B82CC3009E58CB /* iProjectM */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		C3FAE5AB17B898F800F4B110 /* Generate Installer Package */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate Installer Package";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "mkdir -p $DSTROOT/usr/local/share/projectM\ncp -r \"$DSTROOT/Library/iTunes/iTunes Plug-ins/iProjectM.bundle\" $SRCROOT/\ncp -r $CONFIGURATION_BUILD_DIR/share/* $DSTROOT/usr/local/share/projectM\npkgbuild --component-plist $SRCROOT/iProjectM-pkg.plist --root $DSTROOT $SRCROOT/iProjectM.pkg\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		C3F9D7AB17B82CC3009E58CB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C3F9D7D317B83CCB009E58CB /* iprojectM_mac.mm in Sources */,
+				C3F9D7D417B83CCB009E58CB /* iprojectM.mm in Sources */,
+				C3F9D7D917B83CF1009E58CB /* iTunesAPI.cpp in Sources */,
+				C3FAE59217B87D8700F4B110 /* getConfigFilename.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		C3F9D7BF17B82CC3009E58CB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEPLOYMENT_LOCATION = YES;
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "${SRCROOT}/..";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		C3F9D7C017B82CC3009E58CB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEPLOYMENT_LOCATION = YES;
+				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "${SRCROOT}/..";
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		C3F9D7C217B82CC3009E58CB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GENERATE_PKGINFO_FILE = YES;
+				INFOPLIST_FILE = "iProjectM/iProjectM-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/iTunes/iTunes Plug-ins";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../libprojectM\"",
+					"\"$(SRCROOT)/../libprojectM/Renderer\"",
+					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory\"",
+					"\"$(SRCROOT)/../libprojectM/NativePresetFactory\"",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../NativePresets\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		C3F9D7C317B82CC3009E58CB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
+				GENERATE_PKGINFO_FILE = YES;
+				INFOPLIST_FILE = "iProjectM/iProjectM-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/iTunes/iTunes Plug-ins";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../libprojectM\"",
+					"\"$(SRCROOT)/../libprojectM/Renderer\"",
+					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory\"",
+					"\"$(SRCROOT)/../libprojectM/NativePresetFactory\"",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../NativePresets\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C3F9D7AA17B82CC3009E58CB /* Build configuration list for PBXProject "iProjectM" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C3F9D7BF17B82CC3009E58CB /* Debug */,
+				C3F9D7C017B82CC3009E58CB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C3F9D7C117B82CC3009E58CB /* Build configuration list for PBXNativeTarget "iProjectM" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C3F9D7C217B82CC3009E58CB /* Debug */,
+				C3F9D7C317B82CC3009E58CB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C3F9D7A717B82CC3009E58CB /* Project object */;
+}

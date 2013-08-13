@@ -1,0 +1,2 @@
+/usr/bin/ar cr libNativePresetFactory.a  CMakeFiles/NativePresetFactory.dir/NativePresetFactory.cpp.o
+/usr/bin/ranlib libNativePresetFactory.a
