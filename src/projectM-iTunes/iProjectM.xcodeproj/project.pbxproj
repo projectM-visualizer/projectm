@@ -318,7 +318,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "mkdir -p $DSTROOT/usr/local/share/projectM\ncp -r \"$DSTROOT/Library/iTunes/iTunes Plug-ins/iProjectM.bundle\" $SRCROOT/\ncp -r $CONFIGURATION_BUILD_DIR/share/* $DSTROOT/usr/local/share/projectM\npkgbuild --component-plist $SRCROOT/iProjectM-pkg.plist --root $DSTROOT $SRCROOT/iProjectM.pkg\n";
+			shellScript = "mkdir -p $DSTROOT/usr/local/share/projectM\n#rm -rf \"$SRCROOT/iProjectM.bundle\"\n#cp -r \"$DSTROOT/Library/iTunes/iTunes Plug-ins/iProjectM.bundle\" $SRCROOT/\ncp -r $CONFIGURATION_BUILD_DIR/share/* $DSTROOT/usr/local/share/projectM\npkgbuild --component-plist $SRCROOT/iProjectM-pkg.plist --root $DSTROOT $SRCROOT/iProjectM.pkg\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
