@@ -35,49 +35,21 @@
 projectMKeycode cocoa2pmKeycode( NSEvent *event ) {
     projectMKeycode char_code = (projectMKeycode)[event keyCode];
     switch ( char_code ) {
-        case kFunctionKeyCharCode: {
-            switch ( ( char_code << 16 ) >> 24 ) {
-                case 111: {
-                    return PROJECTM_K_F12;
-                }
-                case 103: {
-                    return PROJECTM_K_F11;
-                }
-                case 109: {
-                    return PROJECTM_K_F10;
-                }
-                case 101: {
-                    return PROJECTM_K_F9;
-                }
-                case 100: {
-                    return PROJECTM_K_F8;
-                }
-                case 98: {
-                    return PROJECTM_K_F7;
-                }
-                case 97: {
-                    return PROJECTM_K_F6;
-                }
-                case 96: {
-                    return PROJECTM_K_F5;
-                }
-                case 118: {
-                    return PROJECTM_K_F4;
-                }
-                case 99: {
-                    return PROJECTM_K_F3;
-                }
-                case 120: {
-                    return PROJECTM_K_F2;
-                }
-                case 122: {
-                    return PROJECTM_K_F1;
-                }
+        case kVK_F1:
+            return PROJECTM_K_F1;
+        case kVK_F2:
+            return PROJECTM_K_F2;
+        case kVK_F3:
+            return PROJECTM_K_F3;
+        case kVK_F4:
+            return PROJECTM_K_F4;
+        default:
+            // try and get ascii code
+            NSString *chars = [event charactersIgnoringModifiers];
+            if ([chars length]) {
+                return (projectMKeycode)[chars characterAtIndex:0];
             }
-        }
-        default: {
             return char_code;
-        }
     }
 }
 
