@@ -74,8 +74,8 @@
 #define	kTVisualPluginCreator			'hook'
 
 #define	kTVisualPluginMajorVersion		2
-#define	kTVisualPluginMinorVersion		0
-#define	kTVisualPluginReleaseStage		developStage
+#define	kTVisualPluginMinorVersion		1
+#define	kTVisualPluginReleaseStage		betaStage
 #define	kTVisualPluginNonFinalRelease	0
 
 struct VisualPluginData;
