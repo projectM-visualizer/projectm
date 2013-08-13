@@ -7,18 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C3D5F4B817B8CB2000A8C161 /* libMstressJuppyDancer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B317B8CB2000A8C161 /* libMstressJuppyDancer.dylib */; };
-		C3D5F4B917B8CB2000A8C161 /* libRovastarDarkSecret.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B417B8CB2000A8C161 /* libRovastarDarkSecret.dylib */; };
-		C3D5F4BA17B8CB2000A8C161 /* libRovastarDriftingChaos.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */; };
-		C3D5F4BB17B8CB2000A8C161 /* libRovastarFractalSpiral.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */; };
-		C3D5F4BC17B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */; };
 		C3D5F4BD17B8CB2E00A8C161 /* libMstressJuppyDancer.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B317B8CB2000A8C161 /* libMstressJuppyDancer.dylib */; };
 		C3D5F4BE17B8CB3100A8C161 /* libRovastarDarkSecret.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B417B8CB2000A8C161 /* libRovastarDarkSecret.dylib */; };
 		C3D5F4BF17B8CB3300A8C161 /* libRovastarDriftingChaos.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */; };
 		C3D5F4C017B8CB3500A8C161 /* libRovastarFractalSpiral.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */; };
 		C3D5F4C117B8CB3700A8C161 /* libRovastarFractopiaFrantic.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */; };
-		C3D5F4C217B8CBC900A8C161 /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAF98517B8C09D00F4B110 /* Cg.framework */; };
-		C3D5F4C417B8CD2800A8C161 /* Cg.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAF98517B8C09D00F4B110 /* Cg.framework */; };
 		C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7B217B82CC3009E58CB /* Cocoa.framework */; };
 		C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7CE17B831F3009E58CB /* OpenGL.framework */; };
 		C3F9D7D317B83CCB009E58CB /* iprojectM_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */; };
@@ -43,7 +36,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C3D5F4C417B8CD2800A8C161 /* Cg.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,7 +67,7 @@
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
-			dstSubfolderSpec = 13;
+			dstSubfolderSpec = 6;
 			files = (
 				C3D5F4C117B8CB3700A8C161 /* libRovastarFractopiaFrantic.dylib in Native Presets */,
 				C3D5F4C017B8CB3500A8C161 /* libRovastarFractalSpiral.dylib in Native Presets */,
@@ -133,16 +125,10 @@
 			files = (
 				C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */,
 				C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */,
-				C3D5F4C217B8CBC900A8C161 /* Cg.framework in Frameworks */,
 				C3FAE59D17B88BF800F4B110 /* libprojectM.a in Frameworks */,
 				C3FAE59F17B88C3700F4B110 /* libRenderer.a in Frameworks */,
 				C3FAE5A117B88C4B00F4B110 /* libMilkdropPresetFactory.a in Frameworks */,
 				C3FAE5A317B88C5000F4B110 /* libNativePresetFactory.a in Frameworks */,
-				C3D5F4B817B8CB2000A8C161 /* libMstressJuppyDancer.dylib in Frameworks */,
-				C3D5F4B917B8CB2000A8C161 /* libRovastarDarkSecret.dylib in Frameworks */,
-				C3D5F4BA17B8CB2000A8C161 /* libRovastarDriftingChaos.dylib in Frameworks */,
-				C3D5F4BB17B8CB2000A8C161 /* libRovastarFractalSpiral.dylib in Frameworks */,
-				C3D5F4BC17B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,11 +249,11 @@
 			buildConfigurationList = C3F9D7C117B82CC3009E58CB /* Build configuration list for PBXNativeTarget "iProjectM" */;
 			buildPhases = (
 				C3F9D7AB17B82CC3009E58CB /* Sources */,
+				C3FAF98917B8C37F00F4B110 /* Native Presets */,
 				C3F9D7AC17B82CC3009E58CB /* Frameworks */,
 				C3FAE5A917B898BB00F4B110 /* CopyFiles */,
 				C3FAF97317B89F1700F4B110 /* share */,
 				C3FAE5AB17B898F800F4B110 /* Generate Installer Package */,
-				C3FAF98917B8C37F00F4B110 /* Native Presets */,
 				C3D5F4C317B8CD2100A8C161 /* CopyFiles */,
 			);
 			buildRules = (

@@ -30,6 +30,7 @@ static bool _keypressProjectM( VisualPluginData * visualPluginData, projectMEven
 - (BOOL)becomeFirstResponder;
 - (BOOL)resignFirstResponder;
 - (void)keyDown:(NSEvent *)theEvent;
+- (void)keyUp:(NSEvent *)theEvent;
 
 @end
 
