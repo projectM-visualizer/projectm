@@ -74,7 +74,7 @@
 #define	kTVisualPluginCreator			'hook'
 
 #define	kTVisualPluginMajorVersion		2
-#define	kTVisualPluginMinorVersion		1
+#define	kTVisualPluginMinorVersion		2
 #define	kTVisualPluginReleaseStage		betaStage
 #define	kTVisualPluginNonFinalRelease	0
 

@@ -36,6 +36,7 @@ projectMKeycode cocoa2pmKeycode( NSEvent *event ) {
     projectMKeycode char_code = (projectMKeycode)[event keyCode];
     switch ( char_code ) {
         case kVK_F1:
+        case kVK_ANSI_H:
             return PROJECTM_K_F1;
         case kVK_F2:
             return PROJECTM_K_F2;
