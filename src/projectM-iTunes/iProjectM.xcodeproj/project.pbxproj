@@ -22,7 +22,7 @@
 		C3FAE59F17B88C3700F4B110 /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE59E17B88C3700F4B110 /* libRenderer.a */; };
 		C3FAE5A117B88C4B00F4B110 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE5A017B88C4B00F4B110 /* libMilkdropPresetFactory.a */; };
 		C3FAE5A317B88C5000F4B110 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE5A217B88C5000F4B110 /* libNativePresetFactory.a */; };
-		C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */; };
+		C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in plist */ = {isa = PBXBuildFile; fileRef = C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */; };
 		C3FAF97417B89F1C00F4B110 /* presets in share */ = {isa = PBXBuildFile; fileRef = C3FAF96717B89C7C00F4B110 /* presets */; };
 		C3FAF97717B89F7400F4B110 /* shaders in share */ = {isa = PBXBuildFile; fileRef = C3FAF97617B89F7200F4B110 /* shaders */; };
 		C3FAF97817B89F7B00F4B110 /* config.inp in share */ = {isa = PBXBuildFile; fileRef = C3FAF97517B89F7200F4B110 /* config.inp */; };
@@ -30,23 +30,25 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C3D5F4C317B8CD2100A8C161 /* CopyFiles */ = {
+		C3D5F4C317B8CD2100A8C161 /* Framework copy */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
 			);
+			name = "Framework copy";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C3FAE5A917B898BB00F4B110 /* CopyFiles */ = {
+		C3FAE5A917B898BB00F4B110 /* plist */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
-				C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in CopyFiles */,
+				C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in plist */,
 			);
+			name = plist;
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C3FAF97317B89F1700F4B110 /* share */ = {
@@ -251,10 +253,10 @@
 				C3F9D7AB17B82CC3009E58CB /* Sources */,
 				C3FAF98917B8C37F00F4B110 /* Native Presets */,
 				C3F9D7AC17B82CC3009E58CB /* Frameworks */,
-				C3FAE5A917B898BB00F4B110 /* CopyFiles */,
+				C3FAE5A917B898BB00F4B110 /* plist */,
 				C3FAF97317B89F1700F4B110 /* share */,
 				C3FAE5AB17B898F800F4B110 /* Generate Installer Package */,
-				C3D5F4C317B8CD2100A8C161 /* CopyFiles */,
+				C3D5F4C317B8CD2100A8C161 /* Framework copy */,
 			);
 			buildRules = (
 			);
