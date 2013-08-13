@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C3D5F4B817B8CB2000A8C161 /* libMstressJuppyDancer.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B317B8CB2000A8C161 /* libMstressJuppyDancer.dylib */; };
+		C3D5F4B917B8CB2000A8C161 /* libRovastarDarkSecret.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B417B8CB2000A8C161 /* libRovastarDarkSecret.dylib */; };
+		C3D5F4BA17B8CB2000A8C161 /* libRovastarDriftingChaos.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */; };
+		C3D5F4BB17B8CB2000A8C161 /* libRovastarFractalSpiral.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */; };
+		C3D5F4BC17B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */; };
+		C3D5F4BD17B8CB2E00A8C161 /* libMstressJuppyDancer.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B317B8CB2000A8C161 /* libMstressJuppyDancer.dylib */; };
+		C3D5F4BE17B8CB3100A8C161 /* libRovastarDarkSecret.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B417B8CB2000A8C161 /* libRovastarDarkSecret.dylib */; };
+		C3D5F4BF17B8CB3300A8C161 /* libRovastarDriftingChaos.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */; };
+		C3D5F4C017B8CB3500A8C161 /* libRovastarFractalSpiral.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */; };
+		C3D5F4C117B8CB3700A8C161 /* libRovastarFractopiaFrantic.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */; };
+		C3D5F4C217B8CBC900A8C161 /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAF98517B8C09D00F4B110 /* Cg.framework */; };
+		C3D5F4C417B8CD2800A8C161 /* Cg.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAF98517B8C09D00F4B110 /* Cg.framework */; };
 		C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7B217B82CC3009E58CB /* Cocoa.framework */; };
 		C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7CE17B831F3009E58CB /* OpenGL.framework */; };
 		C3F9D7D317B83CCB009E58CB /* iprojectM_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */; };
@@ -18,32 +30,23 @@
 		C3FAE5A117B88C4B00F4B110 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE5A017B88C4B00F4B110 /* libMilkdropPresetFactory.a */; };
 		C3FAE5A317B88C5000F4B110 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE5A217B88C5000F4B110 /* libNativePresetFactory.a */; };
 		C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */; };
-		C3FAF97417B89F1C00F4B110 /* presets in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAF96717B89C7C00F4B110 /* presets */; };
-		C3FAF97717B89F7400F4B110 /* shaders in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAF97617B89F7200F4B110 /* shaders */; };
-		C3FAF97817B89F7B00F4B110 /* config.inp in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAF97517B89F7200F4B110 /* config.inp */; };
-		C3FAF97B17B8A45200F4B110 /* fonts in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3FAF97917B8A43B00F4B110 /* fonts */; };
-		C3FAF98417B8C06900F4B110 /* GLEW.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAF98317B8C05800F4B110 /* GLEW.framework */; };
-		C3FAF98617B8C09D00F4B110 /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAF98517B8C09D00F4B110 /* Cg.framework */; };
+		C3FAF97417B89F1C00F4B110 /* presets in share */ = {isa = PBXBuildFile; fileRef = C3FAF96717B89C7C00F4B110 /* presets */; };
+		C3FAF97717B89F7400F4B110 /* shaders in share */ = {isa = PBXBuildFile; fileRef = C3FAF97617B89F7200F4B110 /* shaders */; };
+		C3FAF97817B89F7B00F4B110 /* config.inp in share */ = {isa = PBXBuildFile; fileRef = C3FAF97517B89F7200F4B110 /* config.inp */; };
+		C3FAF97B17B8A45200F4B110 /* fonts in share */ = {isa = PBXBuildFile; fileRef = C3FAF97917B8A43B00F4B110 /* fonts */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		C3FAF98217B8C05800F4B110 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C3FAF97E17B8C05800F4B110 /* GLEW.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8DC2EF5B0486A6940098B216;
-			remoteInfo = GLEW;
-		};
-		C3FAF98717B8C10700F4B110 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C3FAF97E17B8C05800F4B110 /* GLEW.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8DC2EF4F0486A6940098B216;
-			remoteInfo = GLEW;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
+		C3D5F4C317B8CD2100A8C161 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C3D5F4C417B8CD2800A8C161 /* Cg.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C3FAE5A917B898BB00F4B110 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -54,22 +57,43 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C3FAF97317B89F1700F4B110 /* CopyFiles */ = {
+		C3FAF97317B89F1700F4B110 /* share */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = share;
 			dstSubfolderSpec = 16;
 			files = (
-				C3FAF97417B89F1C00F4B110 /* presets in CopyFiles */,
-				C3FAF97717B89F7400F4B110 /* shaders in CopyFiles */,
-				C3FAF97B17B8A45200F4B110 /* fonts in CopyFiles */,
-				C3FAF97817B89F7B00F4B110 /* config.inp in CopyFiles */,
+				C3FAF97417B89F1C00F4B110 /* presets in share */,
+				C3FAF97717B89F7400F4B110 /* shaders in share */,
+				C3FAF97B17B8A45200F4B110 /* fonts in share */,
+				C3FAF97817B89F7B00F4B110 /* config.inp in share */,
 			);
+			name = share;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C3FAF98917B8C37F00F4B110 /* Native Presets */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				C3D5F4C117B8CB3700A8C161 /* libRovastarFractopiaFrantic.dylib in Native Presets */,
+				C3D5F4C017B8CB3500A8C161 /* libRovastarFractalSpiral.dylib in Native Presets */,
+				C3D5F4BD17B8CB2E00A8C161 /* libMstressJuppyDancer.dylib in Native Presets */,
+				C3D5F4BF17B8CB3300A8C161 /* libRovastarDriftingChaos.dylib in Native Presets */,
+				C3D5F4BE17B8CB3100A8C161 /* libRovastarDarkSecret.dylib in Native Presets */,
+			);
+			name = "Native Presets";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C3D5F4B317B8CB2000A8C161 /* libMstressJuppyDancer.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMstressJuppyDancer.dylib; path = ../NativePresets/libMstressJuppyDancer.dylib; sourceTree = "<group>"; };
+		C3D5F4B417B8CB2000A8C161 /* libRovastarDarkSecret.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarDarkSecret.dylib; path = ../NativePresets/libRovastarDarkSecret.dylib; sourceTree = "<group>"; };
+		C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarDriftingChaos.dylib; path = ../NativePresets/libRovastarDriftingChaos.dylib; sourceTree = "<group>"; };
+		C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarFractalSpiral.dylib; path = ../NativePresets/libRovastarFractalSpiral.dylib; sourceTree = "<group>"; };
+		C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarFractopiaFrantic.dylib; path = ../NativePresets/libRovastarFractopiaFrantic.dylib; sourceTree = "<group>"; };
 		C3F9D7AF17B82CC3009E58CB /* iProjectM.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iProjectM.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3F9D7B217B82CC3009E58CB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		C3F9D7B517B82CC3009E58CB /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -99,7 +123,6 @@
 		C3FAF97517B89F7200F4B110 /* config.inp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.inp; sourceTree = "<group>"; };
 		C3FAF97617B89F7200F4B110 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shaders; sourceTree = "<group>"; };
 		C3FAF97917B8A43B00F4B110 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../fonts; sourceTree = "<group>"; };
-		C3FAF97E17B8C05800F4B110 /* GLEW.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLEW.xcodeproj; path = "../../../../Downloads/projectM-complete-2.1.0-Source/src/macos/glew-1.4.0/Mac/GLEW.xcodeproj"; sourceTree = "<group>"; };
 		C3FAF98517B8C09D00F4B110 /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = /Library/Frameworks/Cg.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -108,14 +131,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3FAF98617B8C09D00F4B110 /* Cg.framework in Frameworks */,
-				C3FAF98417B8C06900F4B110 /* GLEW.framework in Frameworks */,
 				C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */,
 				C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */,
+				C3D5F4C217B8CBC900A8C161 /* Cg.framework in Frameworks */,
 				C3FAE59D17B88BF800F4B110 /* libprojectM.a in Frameworks */,
 				C3FAE59F17B88C3700F4B110 /* libRenderer.a in Frameworks */,
 				C3FAE5A117B88C4B00F4B110 /* libMilkdropPresetFactory.a in Frameworks */,
 				C3FAE5A317B88C5000F4B110 /* libNativePresetFactory.a in Frameworks */,
+				C3D5F4B817B8CB2000A8C161 /* libMstressJuppyDancer.dylib in Frameworks */,
+				C3D5F4B917B8CB2000A8C161 /* libRovastarDarkSecret.dylib in Frameworks */,
+				C3D5F4BA17B8CB2000A8C161 /* libRovastarDriftingChaos.dylib in Frameworks */,
+				C3D5F4BB17B8CB2000A8C161 /* libRovastarFractalSpiral.dylib in Frameworks */,
+				C3D5F4BC17B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,7 +152,6 @@
 		C3F9D7A617B82CC3009E58CB = {
 			isa = PBXGroup;
 			children = (
-				C3FAF97E17B8C05800F4B110 /* GLEW.xcodeproj */,
 				C3FAF97A17B8A44100F4B110 /* share */,
 				C3FAE5A417B88C5B00F4B110 /* libprojectM */,
 				C3FAE59917B88B9000F4B110 /* iProjectM */,
@@ -192,6 +218,11 @@
 		C3FAE5A417B88C5B00F4B110 /* libprojectM */ = {
 			isa = PBXGroup;
 			children = (
+				C3D5F4B317B8CB2000A8C161 /* libMstressJuppyDancer.dylib */,
+				C3D5F4B417B8CB2000A8C161 /* libRovastarDarkSecret.dylib */,
+				C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */,
+				C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */,
+				C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */,
 				C3FAE5A217B88C5000F4B110 /* libNativePresetFactory.a */,
 				C3FAE5A017B88C4B00F4B110 /* libMilkdropPresetFactory.a */,
 				C3FAE59E17B88C3700F4B110 /* libRenderer.a */,
@@ -224,14 +255,6 @@
 			name = share;
 			sourceTree = "<group>";
 		};
-		C3FAF97F17B8C05800F4B110 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				C3FAF98317B8C05800F4B110 /* GLEW.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -242,13 +265,14 @@
 				C3F9D7AB17B82CC3009E58CB /* Sources */,
 				C3F9D7AC17B82CC3009E58CB /* Frameworks */,
 				C3FAE5A917B898BB00F4B110 /* CopyFiles */,
-				C3FAF97317B89F1700F4B110 /* CopyFiles */,
+				C3FAF97317B89F1700F4B110 /* share */,
 				C3FAE5AB17B898F800F4B110 /* Generate Installer Package */,
+				C3FAF98917B8C37F00F4B110 /* Native Presets */,
+				C3D5F4C317B8CD2100A8C161 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				C3FAF98817B8C10700F4B110 /* PBXTargetDependency */,
 			);
 			name = iProjectM;
 			productName = iProjectM;
@@ -274,28 +298,12 @@
 			mainGroup = C3F9D7A617B82CC3009E58CB;
 			productRefGroup = C3F9D7B017B82CC3009E58CB /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = C3FAF97F17B8C05800F4B110 /* Products */;
-					ProjectRef = C3FAF97E17B8C05800F4B110 /* GLEW.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				C3F9D7AE17B82CC3009E58CB /* iProjectM */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		C3FAF98317B8C05800F4B110 /* GLEW.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = GLEW.framework;
-			remoteRef = C3FAF98217B8C05800F4B110 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		C3FAE5AB17B898F800F4B110 /* Generate Installer Package */ = {
@@ -327,14 +335,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		C3FAF98817B8C10700F4B110 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GLEW;
-			targetProxy = C3FAF98717B8C10700F4B110 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		C3F9D7BF17B82CC3009E58CB /* Debug */ = {
@@ -414,6 +414,8 @@
 					"\"$(SRCROOT)/../libprojectM/Renderer\"",
 					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory\"",
 					"\"$(SRCROOT)/../libprojectM/NativePresetFactory\"",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../NativePresets\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = bundle;
@@ -434,6 +436,8 @@
 					"\"$(SRCROOT)/../libprojectM/Renderer\"",
 					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory\"",
 					"\"$(SRCROOT)/../libprojectM/NativePresetFactory\"",
+					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../NativePresets\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = bundle;
