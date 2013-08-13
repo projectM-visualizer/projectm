@@ -12,6 +12,11 @@
 		C3D5F4BF17B8CB3300A8C161 /* libRovastarDriftingChaos.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */; };
 		C3D5F4C017B8CB3500A8C161 /* libRovastarFractalSpiral.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */; };
 		C3D5F4C117B8CB3700A8C161 /* libRovastarFractopiaFrantic.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */; };
+		C3D5F4E117B9F78F00A8C161 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4DC17B9F78F00A8C161 /* libbz2.a */; };
+		C3D5F4E217B9F78F00A8C161 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4DD17B9F78F00A8C161 /* libfreetype.a */; };
+		C3D5F4E317B9F78F00A8C161 /* libftgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4DE17B9F78F00A8C161 /* libftgl.a */; };
+		C3D5F4E417B9F78F00A8C161 /* libpng15.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4DF17B9F78F00A8C161 /* libpng15.a */; };
+		C3D5F4E517B9F78F00A8C161 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4E017B9F78F00A8C161 /* libz.a */; };
 		C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7B217B82CC3009E58CB /* Cocoa.framework */; };
 		C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7CE17B831F3009E58CB /* OpenGL.framework */; };
 		C3F9D7D317B83CCB009E58CB /* iprojectM_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */; };
@@ -88,6 +93,11 @@
 		C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarDriftingChaos.dylib; path = ../NativePresets/libRovastarDriftingChaos.dylib; sourceTree = "<group>"; };
 		C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarFractalSpiral.dylib; path = ../NativePresets/libRovastarFractalSpiral.dylib; sourceTree = "<group>"; };
 		C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarFractopiaFrantic.dylib; path = ../NativePresets/libRovastarFractopiaFrantic.dylib; sourceTree = "<group>"; };
+		C3D5F4DC17B9F78F00A8C161 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = macos/contrib/libbz2.a; sourceTree = "<group>"; };
+		C3D5F4DD17B9F78F00A8C161 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = macos/contrib/libfreetype.a; sourceTree = "<group>"; };
+		C3D5F4DE17B9F78F00A8C161 /* libftgl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libftgl.a; path = macos/contrib/libftgl.a; sourceTree = "<group>"; };
+		C3D5F4DF17B9F78F00A8C161 /* libpng15.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng15.a; path = macos/contrib/libpng15.a; sourceTree = "<group>"; };
+		C3D5F4E017B9F78F00A8C161 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = macos/contrib/libz.a; sourceTree = "<group>"; };
 		C3F9D7AF17B82CC3009E58CB /* iProjectM.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iProjectM.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3F9D7B217B82CC3009E58CB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		C3F9D7B517B82CC3009E58CB /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -131,15 +141,33 @@
 				C3FAE59F17B88C3700F4B110 /* libRenderer.a in Frameworks */,
 				C3FAE5A117B88C4B00F4B110 /* libMilkdropPresetFactory.a in Frameworks */,
 				C3FAE5A317B88C5000F4B110 /* libNativePresetFactory.a in Frameworks */,
+				C3D5F4E117B9F78F00A8C161 /* libbz2.a in Frameworks */,
+				C3D5F4E217B9F78F00A8C161 /* libfreetype.a in Frameworks */,
+				C3D5F4E317B9F78F00A8C161 /* libftgl.a in Frameworks */,
+				C3D5F4E417B9F78F00A8C161 /* libpng15.a in Frameworks */,
+				C3D5F4E517B9F78F00A8C161 /* libz.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C3D5F4DB17B9F75200A8C161 /* contrib */ = {
+			isa = PBXGroup;
+			children = (
+				C3D5F4DC17B9F78F00A8C161 /* libbz2.a */,
+				C3D5F4DD17B9F78F00A8C161 /* libfreetype.a */,
+				C3D5F4DE17B9F78F00A8C161 /* libftgl.a */,
+				C3D5F4DF17B9F78F00A8C161 /* libpng15.a */,
+				C3D5F4E017B9F78F00A8C161 /* libz.a */,
+			);
+			name = contrib;
+			sourceTree = "<group>";
+		};
 		C3F9D7A617B82CC3009E58CB = {
 			isa = PBXGroup;
 			children = (
+				C3D5F4DB17B9F75200A8C161 /* contrib */,
 				C3FAF97A17B8A44100F4B110 /* share */,
 				C3FAE5A417B88C5B00F4B110 /* libprojectM */,
 				C3FAE59917B88B9000F4B110 /* iProjectM */,
@@ -404,6 +432,8 @@
 					"\"$(SRCROOT)/../libprojectM/NativePresetFactory\"",
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/../NativePresets\"",
+					"\"$(SRCROOT)/..\"",
+					"\"$(SRCROOT)/macos/contrib\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = bundle;
@@ -426,6 +456,8 @@
 					"\"$(SRCROOT)/../libprojectM/NativePresetFactory\"",
 					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/../NativePresets\"",
+					"\"$(SRCROOT)/..\"",
+					"\"$(SRCROOT)/macos/contrib\"",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = bundle;
