@@ -11,6 +11,14 @@ OPTION(INCLUDE-PROJECTM-TEST "Build the projectM test suite" ON)
 OPTION(INCLUDE-PROJECTM-XMMS "Build the projectM xmms module (deprecated, use audacious instead)" OFF)
 OPTION(INCLUDE-NATIVE-PRESETS "Build the projectM native preset sample collection " ON)
 
+if(EMSCRIPTEN)
+  SET(INCLUDE-PROJECTM-QT OFF)
+  SET(INCLUDE-PROJECTM-PULSEAUDIO OFF)
+  SET(INCLUDE-PROJECTM-LIBVISUAL OFF)
+  SET(INCLUDE-PROJECTM-TEST OFF)
+  SET(INCLUDE-NATIVE-PRESETS OFF)
+endif(EMSCRIPTEN)
+
 set(PROJECTM_ROOT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory (libprojectM)
