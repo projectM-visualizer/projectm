@@ -64,7 +64,11 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #ifdef LINUX
 #include <cstdlib>
 #define projectM_isnan isnan
+#endif
 
+#ifdef EMSCRIPTEN
+#include <cstdlib>
+#define projectM_isnan isnan
 #endif
 
 #ifdef WIN32

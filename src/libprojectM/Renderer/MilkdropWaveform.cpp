@@ -9,6 +9,9 @@
 #ifdef LINUX
 #include <GL/gl.h>
 #endif
+#ifdef EMSCRIPTEN
+#include <GL/gl.h>
+#endif
 #ifdef WIN32
 #include "glew.h"
 #endif

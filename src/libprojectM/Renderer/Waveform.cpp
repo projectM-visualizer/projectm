@@ -14,6 +14,9 @@
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
 #endif
+#ifdef EMSCRIPTEN
+#include <GL/gl.h>
+#endif
 
 #include "Waveform.hpp"
 #include <algorithm>
