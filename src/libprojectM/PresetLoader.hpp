@@ -13,6 +13,10 @@
 #include <dirent.h>
 #endif
 
+#ifdef EMSCRIPTEN
+#include <dirent.h>
+#endif
+
 #ifdef MACOS
 #include <dirent.h>
 #endif

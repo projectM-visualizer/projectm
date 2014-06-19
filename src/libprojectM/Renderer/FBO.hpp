@@ -34,6 +34,11 @@
 #else
 #include <GL/glew.h>
 #endif
+
+#if EMSCRIPTEN
+#include <GL/glew.h>
+#endif
+
 #endif
 
 #ifdef MACOS
