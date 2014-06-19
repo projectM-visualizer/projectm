@@ -25,6 +25,8 @@
 	#include <OpenGL/gl.h>
 	#include <Carbon/Carbon.h>
 	#define APIENTRY
+#elif EMSCRIPTEN
+	#include <GL/gl.h>
 #else
 	#include <GL/gl.h>
 	#include <GL/glx.h>
@@ -2010,6 +2012,8 @@ int query_DXT_capability( void )
 				CFRelease( bundleURL );
 				CFRelease( extensionName );
 				CFRelease( bundle );
+			#elif EMSCRIPTEN
+				// should something go here? i have no idea
 			#else
 				ext_addr = (P_SOIL_GLCOMPRESSEDTEXIMAGE2DPROC)
 						glXGetProcAddressARB
