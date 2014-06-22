@@ -2,7 +2,11 @@
 #include "Common.hpp"
 
 #ifdef USE_GLES1
-#include <GLES/gl.h>
+	#ifdef EMSCRIPTEN
+	#include <GL/gl.h>
+	#else
+	#include <GLES/gl.h>
+	#endif
 #else
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
@@ -270,7 +274,9 @@ void MotionVectors::Draw(RenderContext &context)
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+#ifndef EMSCRIPTEN
 	glPointSize(length);
+#endif
 	glColor4f(r, g, b, a * masterAlpha);
 
 	if (x_num + y_num < 600)
@@ -331,11 +337,15 @@ void Border::Draw(RenderContext &context)
 
 	glColor4f(inner_r, inner_g, inner_b, inner_a * masterAlpha);
 
+	// glRect doesn't exist in GLES I think
+	// TODO: replace glRect
+#ifndef EMSCRIPTEN
 	glRectd(of, of, of+iff, texof);
 	glRectd(of+iff, of, texof-iff, of+iff);
 	glRectd(texof-iff, of, texof, texof);
 	glRectd(of+iff, texof, texof-iff, texof-iff);
-
+#endif
+	
 	float pointsE[4][2] = {{of,of},{of,texof},{of+iff,of},{of+iff,texof}};
 	glVertexPointer(2,GL_FLOAT,0,pointsE);
 	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
