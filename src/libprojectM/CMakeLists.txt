@@ -51,6 +51,14 @@ if (EMSCRIPTEN)
     ADD_DEFINITIONS(-DDISABLE_NATIVE_PRESETS)
 endif (EMSCRIPTEN)
 
+if (APPLE)
+    SET(USE_NATIVE_GLEW ON)
+	SET(USE_FTGL OFF)
+	SET(USE_OPENMP OFF)
+	SET(BUILD_PROJECTM_STATIC ON)
+    SET(USE_FBO OFF)
+endif(APPLE)
+
 ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
 
 SET(LIB_INSTALL_DIR "\${exec_prefix}/lib"
@@ -72,12 +80,6 @@ timer.cpp wipemalloc.cpp PresetLoader.cpp  PresetChooser.cpp PipelineMerger.cpp 
 if (MSVC)
 SET(projectM_SOURCES ${projectM_SOURCES} dlfcn.c win32-dirent.cpp)
 endif(MSVC)
-
-if (APPLE)
-	SET(USE_FTGL OFF)
-	SET(USE_OPENMP OFF)
-	SET(BUILD_PROJECTM_STATIC ON)
-endif(APPLE)
 
 if (NOT DISABLE_NATIVE_PRESETS)
 	add_subdirectory(NativePresetFactory)

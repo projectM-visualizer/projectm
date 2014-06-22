@@ -136,13 +136,12 @@ int main( int argc, char *argv[] ) {
     }
     #endif
 
-    settings.meshX = 2;
-    settings.meshY = 2;
+    settings.meshX = 1;
+    settings.meshY = 1;
     settings.fps   = FPS;
     settings.textureSize = 2048;  // idk?
     settings.windowWidth = width;
     settings.windowHeight = height;
-    settings.presetURL = "http://./presets";
     settings.smoothPresetDuration = 3; // seconds
     settings.presetDuration = 5; // seconds
     settings.beatSensitivity = 0.8;
@@ -150,7 +149,12 @@ int main( int argc, char *argv[] ) {
     settings.easterEgg = 0; // ???
     settings.shuffleEnabled = 1;
     settings.softCutRatingsEnabled = 1; // ???
-
+#ifdef EMSCRIPTEN
+    settings.presetURL = "http://./presets";
+#else
+    settings.presetURL = "presets";
+#endif
+    
     // init projectM
     printf("initting\n");
     globalPM = new projectM(settings);

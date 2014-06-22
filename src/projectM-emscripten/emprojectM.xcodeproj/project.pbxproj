@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C34E81051956B633001AC5B5 /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81041956B633001AC5B5 /* libRenderer.a */; };
+		C34E81071956B7BF001AC5B5 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81061956B7BF001AC5B5 /* CoreFoundation.framework */; };
+		C34E81091956B7D3001AC5B5 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81081956B7D3001AC5B5 /* libNativePresetFactory.a */; };
+		C34E810B1956B7D9001AC5B5 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E810A1956B7D9001AC5B5 /* libMilkdropPresetFactory.a */; };
+		C34E810D1956B832001AC5B5 /* presets in CopyFiles */ = {isa = PBXBuildFile; fileRef = C34E810C1956B821001AC5B5 /* presets */; };
 		C3F90686195670EF00C8DF0F /* projectM_SDL_emscripten.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3F90685195670EF00C8DF0F /* projectM_SDL_emscripten.cpp */; };
 		C3F9068A195676C500C8DF0F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F90689195676C500C8DF0F /* OpenGL.framework */; };
 		C3F9068C195676CC00C8DF0F /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9068B195676CC00C8DF0F /* GLUT.framework */; };
@@ -18,14 +23,20 @@
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
 			dstPath = "";
-			dstSubfolderSpec = 10;
+			dstSubfolderSpec = 16;
 			files = (
+				C34E810D1956B832001AC5B5 /* presets in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C34E81041956B633001AC5B5 /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/libRenderer.a; sourceTree = "<group>"; };
+		C34E81061956B7BF001AC5B5 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		C34E81081956B7D3001AC5B5 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/libNativePresetFactory.a; sourceTree = "<group>"; };
+		C34E810A1956B7D9001AC5B5 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
+		C34E810C1956B821001AC5B5 /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = build/presets; sourceTree = SOURCE_ROOT; };
 		C3F90678195670BC00C8DF0F /* emprojectM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = emprojectM; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3F90685195670EF00C8DF0F /* projectM_SDL_emscripten.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = projectM_SDL_emscripten.cpp; sourceTree = SOURCE_ROOT; };
 		C3F90689195676C500C8DF0F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -38,8 +49,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C34E81071956B7BF001AC5B5 /* CoreFoundation.framework in Frameworks */,
+				C34E810B1956B7D9001AC5B5 /* libMilkdropPresetFactory.a in Frameworks */,
 				C3F9069019567A4600C8DF0F /* libprojectM.a in Frameworks */,
 				C3F9068C195676CC00C8DF0F /* GLUT.framework in Frameworks */,
+				C34E81051956B633001AC5B5 /* libRenderer.a in Frameworks */,
+				C34E81091956B7D3001AC5B5 /* libNativePresetFactory.a in Frameworks */,
 				C3F9068A195676C500C8DF0F /* OpenGL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -50,6 +65,10 @@
 		C3F9066F195670BC00C8DF0F = {
 			isa = PBXGroup;
 			children = (
+				C34E810A1956B7D9001AC5B5 /* libMilkdropPresetFactory.a */,
+				C34E81081956B7D3001AC5B5 /* libNativePresetFactory.a */,
+				C34E81061956B7BF001AC5B5 /* CoreFoundation.framework */,
+				C34E81041956B633001AC5B5 /* libRenderer.a */,
 				C3F9068F19567A4600C8DF0F /* libprojectM.a */,
 				C3F9068B195676CC00C8DF0F /* GLUT.framework */,
 				C3F90689195676C500C8DF0F /* OpenGL.framework */,
@@ -69,6 +88,7 @@
 		C3F9067A195670BC00C8DF0F /* emprojectM */ = {
 			isa = PBXGroup;
 			children = (
+				C34E810C1956B821001AC5B5 /* presets */,
 				C3F90685195670EF00C8DF0F /* projectM_SDL_emscripten.cpp */,
 			);
 			path = emprojectM;
@@ -229,6 +249,9 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/snooz/dev/projectm/src/libprojectM,
+					/Users/snooz/dev/projectm/src/libprojectM/Renderer,
+					/Users/snooz/dev/projectm/src/libprojectM/NativePresetFactory,
+					/Users/snooz/dev/projectm/src/libprojectM/MilkdropPresetFactory,
 				);
 				OTHER_LDFLAGS = (
 					"-lSDL2",
@@ -255,6 +278,9 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/snooz/dev/projectm/src/libprojectM,
+					/Users/snooz/dev/projectm/src/libprojectM/Renderer,
+					/Users/snooz/dev/projectm/src/libprojectM/NativePresetFactory,
+					/Users/snooz/dev/projectm/src/libprojectM/MilkdropPresetFactory,
 				);
 				OTHER_LDFLAGS = (
 					"-lSDL2",
