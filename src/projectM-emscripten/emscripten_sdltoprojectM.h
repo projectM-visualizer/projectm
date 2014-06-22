@@ -37,11 +37,6 @@
 
 #include "event.h"
 
- //#include "projectM/projectM.hpp"
-#include <SDL/SDL.h>
-#include <GL/gl.h>
-
-
 projectMEvent sdl2pmEvent( SDL_Event event ) { \
 							
     switch ( event.type ) { \
