@@ -96,13 +96,12 @@ int main( int argc, char *argv[] ) {
 
     SDL_Init(SDL_INIT_VIDEO);
 
-    //  SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
-    //  SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
-    //  SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
-
-    //SDL_GL_SetAttribute( SDL_GL_ACCUM_RED_SIZE, 8 );
+    // SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
+    // SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
+    // SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
+    // SDL_GL_SetAttribute( SDL_GL_ACCUM_RED_SIZE, 8 );
     // SDL_GL_SetAttribute( SDL_GL_ACCUM_GREEN_SIZE, 8 );
-    //  SDL_GL_SetAttribute( SDL_GL_ACCUM_BLUE_SIZE, 8 );
+    // SDL_GL_SetAttribute( SDL_GL_ACCUM_BLUE_SIZE, 8 );
     // SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 8 );
     // SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
     // SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
@@ -117,7 +116,7 @@ int main( int argc, char *argv[] ) {
         SDL_SetWindowTitle(win, "SDL Fun Party Time");
         printf("SDL init version 2\n");
     #elif SDL_MAJOR_VERSION==1
-        screen = SDL_SetVideoMode(width, height, 32, SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF);
+        screen = SDL_SetVideoMode(width, height, 32, SDL_OPENGL | SDL_DOUBLEBUF);
         printf("SDL init version 1\n");
     #endif
     
