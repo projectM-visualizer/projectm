@@ -134,7 +134,7 @@ public:
         bool aspectCorrection;
         float easterEgg;
         bool shuffleEnabled;
-	bool softCutRatingsEnabled;
+        bool softCutRatingsEnabled;
     };
 
   projectM(std::string config_file, int flags = FLAG_NONE);

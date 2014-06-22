@@ -1,3 +1,5 @@
 Press "r" to change to a random preset.
 Press "h" to bring up a help menu.
 The projectM-iTunes directory contains an XCode 5 project that emits an installer bundle. Use that to install it.
+
+Binaries are available at: https://github.com/revmischa/projectm/releases
