@@ -18,7 +18,10 @@
 
 const char *PROJECTEM_CONFIG_PATH = "build/config.inp";
 
-projectM *globalPM = NULL;
+static projectM *globalPM = NULL;
+static SDL_Surface *screen;
+static SDL_Window *win;
+static SDL_Renderer *rend;
 
 bool done = false;
 
@@ -76,17 +79,20 @@ void renderFrame() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     globalPM->renderFrame();
-
     glFlush();
+
+    #if SDL_MAJOR_VERSION==2
+        SDL_RenderPresent(rend);
+    #elif SDL_MAJOR_VERSION==1
+        SDL_Flip(screen);
+    #endif
 }
 
 
 int main( int argc, char *argv[] ) {
     int width = 784,
         height = 784;
-    SDL_Surface *screen;
-    SDL_Window *win;
-    SDL_Renderer *rend;
+
 
     SDL_Init(SDL_INIT_VIDEO);
 
@@ -97,11 +103,10 @@ int main( int argc, char *argv[] ) {
     //SDL_GL_SetAttribute( SDL_GL_ACCUM_RED_SIZE, 8 );
     // SDL_GL_SetAttribute( SDL_GL_ACCUM_GREEN_SIZE, 8 );
     //  SDL_GL_SetAttribute( SDL_GL_ACCUM_BLUE_SIZE, 8 );
-    SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 8 );
-    SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
-    SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+    // SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 8 );
+    // SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
+    // SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
-    //  w = 512; h = 512; bpp = 16;
     #if SDL_MAJOR_VERSION==2
         win = SDL_CreateWindow("SDL Fun Party Time", 50, 50, width, height, 0);
         rend = SDL_CreateRenderer(win, 0, SDL_RENDERER_ACCELERATED);
@@ -110,8 +115,10 @@ int main( int argc, char *argv[] ) {
             return PROJECTM_ERROR;
         }
         SDL_SetWindowTitle(win, "SDL Fun Party Time");
+        printf("SDL init version 2\n");
     #elif SDL_MAJOR_VERSION==1
-        screen = SDL_SetVideoMode(width, height, 32, SDL_OPENGL | SDL_HWSURFACE) ;
+        screen = SDL_SetVideoMode(width, height, 32, SDL_OPENGL | SDL_HWSURFACE | SDL_DOUBLEBUF);
+        printf("SDL init version 1\n");
     #endif
     
     #ifdef PANTS
@@ -123,19 +130,10 @@ int main( int argc, char *argv[] ) {
     }
     #endif
 
+    // init projectM
     globalPM = new projectM(PROJECTEM_CONFIG_PATH);
-
-    //    globalPM->renderTarget->texsize = 1024;
-
-    //    globalPM->fontURL = (char *)malloc( sizeof( char ) * 512 );
-    //    strcpy( globalPM->fontURL, "/etc/projectM/fonts" );
-    //    
-    //    globalPM->presetURL = (char *)malloc( sizeof( char ) * 512 );
-    //    strcpy( globalPM->presetURL, "/etc/projectM/presets" );
-
     globalPM->selectRandom(true);
-
-    globalPM->projectM_resetGL( width, height );
+    globalPM->projectM_resetGL(width, height);
 
     // mainloop. non-emscripten version here for comparison/testing
 #ifdef EMSCRIPTEN
@@ -149,7 +147,6 @@ int main( int argc, char *argv[] ) {
         Uint32 elapsed = SDL_GetTicks() - last_time;
         if (elapsed < frame_delay)
             SDL_Delay(frame_delay - elapsed);
-        SDL_RenderPresent(rend);
         last_time = SDL_GetTicks();
     }
 #endif
