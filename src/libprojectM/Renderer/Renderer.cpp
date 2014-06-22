@@ -435,7 +435,9 @@ void Renderer::reset(int w, int h)
 	shaderEngine.setAspect(aspect);
 #endif
 
+#ifndef EMSCRIPTEN
 	glShadeModel(GL_SMOOTH);
+#endif
 
 	glCullFace(GL_BACK);
 	//glFrontFace( GL_CCW );
