@@ -16,6 +16,9 @@
 		C34E81221956D0D9001AC5B5 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81211956D0D9001AC5B5 /* libfreetype.a */; };
 		C34E81241956D0DA001AC5B5 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81231956D0DA001AC5B5 /* libbz2.a */; };
 		C37822041956D90D0058A694 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE59C17B88BF800F4B110 /* libprojectM.a */; };
+		C3C244321957646D0021FCD4 /* Cg.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3C244311957646D0021FCD4 /* Cg.framework */; };
+		C3C24433195764780021FCD4 /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C244311957646D0021FCD4 /* Cg.framework */; };
+		C3C24435195764870021FCD4 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C24434195764870021FCD4 /* libGLEW.a */; };
 		C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7B217B82CC3009E58CB /* Cocoa.framework */; };
 		C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7CE17B831F3009E58CB /* OpenGL.framework */; };
 		C3F9D7D317B83CCB009E58CB /* iprojectM_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */; };
@@ -30,6 +33,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		C3C24430195764660021FCD4 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				C3C244321957646D0021FCD4 /* Cg.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C3FAE5A917B898BB00F4B110 /* plist */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -71,6 +84,8 @@
 		C34E81231956D0DA001AC5B5 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = macos/contrib/libbz2.a; sourceTree = "<group>"; };
 		C37821FF1956D82A0058A694 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
 		C37822011956D8B30058A694 /* libprojectM.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libprojectM.2.dylib; path = ../libprojectM/libprojectM.2.dylib; sourceTree = "<group>"; };
+		C3C244311957646D0021FCD4 /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = macos/contrib/Cg.framework; sourceTree = "<group>"; };
+		C3C24434195764870021FCD4 /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLEW.a; path = macos/contrib/libGLEW.a; sourceTree = "<group>"; };
 		C3F9D7AF17B82CC3009E58CB /* iProjectM.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iProjectM.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3F9D7B217B82CC3009E58CB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		C3F9D7B517B82CC3009E58CB /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -105,6 +120,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C3C24435195764870021FCD4 /* libGLEW.a in Frameworks */,
+				C3C24433195764780021FCD4 /* Cg.framework in Frameworks */,
 				C37822041956D90D0058A694 /* libprojectM.a in Frameworks */,
 				C34E81241956D0DA001AC5B5 /* libbz2.a in Frameworks */,
 				C34E81221956D0D9001AC5B5 /* libfreetype.a in Frameworks */,
@@ -125,6 +142,7 @@
 		C3F9D7A617B82CC3009E58CB = {
 			isa = PBXGroup;
 			children = (
+				C3C244311957646D0021FCD4 /* Cg.framework */,
 				C34E81191956D0C3001AC5B5 /* contrib */,
 				C3FAF97A17B8A44100F4B110 /* share */,
 				C3FAE5A417B88C5B00F4B110 /* libprojectM */,
@@ -151,6 +169,7 @@
 		C3F9D7B117B82CC3009E58CB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C3C24434195764870021FCD4 /* libGLEW.a */,
 				C37822011956D8B30058A694 /* libprojectM.2.dylib */,
 				C37821FF1956D82A0058A694 /* libc++.1.dylib */,
 				C34E81231956D0DA001AC5B5 /* libbz2.a */,
@@ -243,6 +262,7 @@
 				C3F9D7AB17B82CC3009E58CB /* Sources */,
 				C3F9D7AC17B82CC3009E58CB /* Frameworks */,
 				C3FAE5A917B898BB00F4B110 /* plist */,
+				C3C24430195764660021FCD4 /* CopyFiles */,
 				C3FAF97317B89F1700F4B110 /* share */,
 				C3FAE5AB17B898F800F4B110 /* Generate Installer Package */,
 			);
@@ -325,7 +345,7 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer: Sean Cottrell (4GNZ4Z332S)";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DYLIB_CURRENT_VERSION = 1.0.0;
@@ -365,7 +385,7 @@
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Mac Developer: Sean Cottrell (4GNZ4Z332S)";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = YES;
@@ -391,6 +411,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/macos/contrib",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GENERATE_PKGINFO_FILE = YES;
 				INFOPLIST_FILE = "iProjectM/iProjectM-Info.plist";
@@ -420,6 +444,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/macos/contrib",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GENERATE_PKGINFO_FILE = YES;
 				INFOPLIST_FILE = "iProjectM/iProjectM-Info.plist";
