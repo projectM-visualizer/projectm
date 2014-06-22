@@ -28,17 +28,17 @@
 #ifndef _RENDERTARGET_H
 #define _RENDERTARGET_H
 
+
+#ifdef EMSCRIPTEN
+#include <GL/gl.h>
+#endif
+
 #ifdef USE_FBO
 #ifdef USE_NATIVE_GLEW
 #include "glew.h"
 #else
 #include <GL/glew.h>
 #endif
-
-#if EMSCRIPTEN
-#include <GL/glew.h>
-#endif
-
 #endif
 
 #ifdef MACOS

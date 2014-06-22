@@ -155,13 +155,11 @@ void Renderer::SetupPass1(const Pipeline &pipeline, const PipelineContext &pipel
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-#ifdef USE_GLES1
-	glOrthof(0.0, 1, 0.0, 1, -40, 40);
-#else
 	glOrtho(0.0, 1, 0.0, 1, -40, 40);
-#endif
 
+#ifndef EMSCRIPTEN
 	glMatrixMode(GL_MODELVIEW);
+#endif
 	glLoadIdentity();
 
 #ifdef USE_CG
@@ -222,20 +220,20 @@ void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineCo
 
 	glBindTexture(GL_TEXTURE_2D, this->renderTarget->textureID[0]);
 
+#ifndef EMSCRIPTEN
 	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-#ifdef USE_GLES1
-	glOrthof(-0.5, 0.5, -0.5, 0.5, -40, 40);
-#else
-	glOrtho(-0.5, 0.5, -0.5, 0.5, -40, 40);
 #endif
+	glLoadIdentity();
+	glOrtho(-0.5, 0.5, -0.5, 0.5, -40, 40);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize / 512.0);
 
 	CompositeOutput(pipeline, pipelineContext);
 
+#ifndef EMSCRIPTEN
 	glMatrixMode(GL_MODELVIEW);
+#endif
 	glLoadIdentity();
 	glTranslatef(-0.5, -0.5, 0);
 
@@ -339,8 +337,9 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 
 	//glVertexPointer(2, GL_FLOAT, 0, p);
 	//glTexCoordPointer(2, GL_FLOAT, 0, t);
+#ifndef EMSCRIPTEN
 	glInterleavedArrays(GL_T2F_V3F,0,p);
-
+#endif
 
 	if (pipeline.staticPerPixel)
 	{
