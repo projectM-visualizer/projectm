@@ -8,16 +8,19 @@ OPTION(INCLUDE-PROJECTM-LIBVISUAL "Build the projectM libvisual client" ON)
 OPTION(INCLUDE-PROJECTM-LIBVISUAL-ALSA "Build experimental libvisual / alsa input standalone client (NEW!)" OFF)
 OPTION(INCLUDE-PROJECTM-JACK "Build the projectM JACK client" OFF)
 OPTION(INCLUDE-PROJECTM-TEST "Build the projectM test suite" ON)
+OPTION(INCLUDE-PROJECTM-EMSCRIPTEN "Build projectM for the web (emscripten)" OFF)
 OPTION(INCLUDE-PROJECTM-XMMS "Build the projectM xmms module (deprecated, use audacious instead)" OFF)
 OPTION(INCLUDE-NATIVE-PRESETS "Build the projectM native preset sample collection " ON)
+
+set(PROJECTM_ROOT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 if(EMSCRIPTEN)
   SET(INCLUDE-PROJECTM-QT OFF)
   SET(INCLUDE-PROJECTM-PULSEAUDIO OFF)
   SET(INCLUDE-PROJECTM-LIBVISUAL OFF)
   SET(INCLUDE-PROJECTM-TEST OFF)
+  SET(INCLUDE-PROJECTM-EMSCRIPTEN ON)
   SET(INCLUDE-NATIVE-PRESETS OFF)
-  ADD_SUBDIRECTORY(projectM-emscripten)
 endif(EMSCRIPTEN)
 
 # sensible OSX defaults
@@ -29,12 +32,14 @@ if(APPLE)
   SET(INCLUDE-NATIVE-PRESETS OFF)
 endif(APPLE)
 
-set(PROJECTM_ROOT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-
 add_subdirectory (libprojectM)
 
+if(INCLUDE-PROJECTM-EMSCRIPTEN)
+  add_subdirectory (projectM-emscripten)
+endif(INCLUDE-PROJECTM-EMSCRIPTEN)
+
 if(INCLUDE-PROJECTM-TEST)
-	add_subdirectory (projectM-test)
+  add_subdirectory (projectM-test)
 endif(INCLUDE-PROJECTM-TEST)
 
 if (INCLUDE-PROJECTM-QT)

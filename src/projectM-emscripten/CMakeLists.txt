@@ -1,29 +1,28 @@
-cmake_minimum_required(VERSION 2.8.0)
+PROJECT(projectM-emscripten)
 
-INCLUDE(../cmake/CPack-projectM.cmake)
-
-PROJECT(projectEM)
+# no fucking idea wtf dont care
+cmake_minimum_required(VERSION 2.4.0)
+cmake_policy(SET CMP0005 OLD)
 if(COMMAND cmake_policy)
        cmake_policy(SET CMP0003 NEW)
 endif(COMMAND cmake_policy)
+INCLUDE(../cmake/CPack-projectM.cmake)
 
-ADD_EXECUTABLE(projectEM projectM_SDL_emscripten.cpp)
+# we're producing an executable called projectEM, it has one source input
+ADD_EXECUTABLE(projectEM projectM_SDL_emscripten.cpp ${PROJECTM_ROOT_SOURCE_DIR}/libprojectM/PresetFactory.cpp)
 
-TARGET_LINK_LIBRARIES(projectEM  projectM)
+# openGL
+SET(OPENGL_gl_LIBRARY "fake_gl_lib.a")
+FIND_PACKAGE(OpenGL)
 
-INCLUDE_DIRECTORIES(${projectM_SOURCE_DIR})
+# link in projectM
+# i have no idea if this is correct
+TARGET_LINK_LIBRARIES(projectEM  projectM ${OPENGL_LIBRARIES})
+SET(PROJECTM_INCLUDE ${PROJECTM_ROOT_SOURCE_DIR}/libprojectM)
+SET(PROJECTM_LINK ${LIBPROJECTM_LDFLAGS})
+INCLUDE_DIRECTORIES(${PROJECTM_INCLUDE})
+LINK_DIRECTORIES(${PROJECTM_LINK})
 
 
-#pkg_search_module(LIBPROJECTM REQUIRED libprojectM)
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../cmake)
-
-#INCLUDE(UseStaticLibs)
-#INCLUDE(FindSDL2)
-
-#FIND_PACKAGE(SDL2 REQUIRED)
-#INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
-#TARGET_LINK_LIBRARIES(projectEM ${SDL2_LIBRARIES})
-
-SET_TARGET_PROPERTIES(projectEM PROPERTIES LINK_FLAGS "-o build/projectEM.html -g --emrun")
+SET_TARGET_PROPERTIES(projectEM PROPERTIES LINK_FLAGS " -s REGAL_SYS_EMSCRIPTEN=1 -o build/projectEM.html --emrun")
 #SET_TARGET_PROPERTIES(projectEM PROPERTIES LINK_FLAGS "--emrun")

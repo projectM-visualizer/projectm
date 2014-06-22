@@ -142,9 +142,9 @@ int main( int argc, char *argv[] ) {
     settings.textureSize = 2048;  // idk?
     settings.windowWidth = width;
     settings.windowHeight = height;
-    settings.presetURL = "./presets";
-    settings.smoothPresetDuration = 5; // seconds
-    settings.presetDuration = 15; // seconds
+    settings.presetURL = "http://./presets";
+    settings.smoothPresetDuration = 3; // seconds
+    settings.presetDuration = 5; // seconds
     settings.beatSensitivity = 0.8;
     settings.aspectCorrection = 1;
     settings.easterEgg = 0; // ???
