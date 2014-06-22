@@ -33,7 +33,9 @@ void MilkdropWaveform::Draw(RenderContext &context)
 {
 	  WaveformMath(context);
 
-	glMatrixMode( GL_MODELVIEW );
+	#ifndef EMSCRIPTEN
+		glMatrixMode( GL_MODELVIEW );
+	#endif
 		glPushMatrix();
 		glLoadIdentity();
 

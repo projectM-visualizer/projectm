@@ -87,7 +87,7 @@ void renderFrame() {
     #if SDL_MAJOR_VERSION==2
         SDL_RenderPresent(rend);
     #elif SDL_MAJOR_VERSION==1
-        SDL_Flip(screen);
+        SDL_GL_SwapBuffers();
     #endif
 }
 
@@ -150,13 +150,12 @@ int main( int argc, char *argv[] ) {
     settings.shuffleEnabled = 1;
     settings.softCutRatingsEnabled = 1; // ???
 #ifdef EMSCRIPTEN
-    settings.presetURL = "http://./presets";
+    settings.presetURL = "/build/presets";
 #else
     settings.presetURL = "presets";
 #endif
     
     // init projectM
-    printf("initting\n");
     globalPM = new projectM(settings);
     printf("init projectM\n");
     globalPM->selectRandom(true);
@@ -166,7 +165,7 @@ int main( int argc, char *argv[] ) {
 
     // mainloop. non-emscripten version here for comparison/testing
 #ifdef EMSCRIPTEN
-    emscripten_set_main_loop(renderFrame, 30, 0);
+    emscripten_set_main_loop(renderFrame, 0, 0);
 #else
     // standard main loop
     const Uint32 frame_delay = 1000/FPS;
