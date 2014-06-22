@@ -16,6 +16,8 @@
 #include <SDL.h>
 #endif
 
+const char *PROJECTEM_CONFIG_PATH = "build/config.inp";
+
 projectM *globalPM = NULL;
 
 bool done = false;
@@ -121,7 +123,7 @@ int main( int argc, char *argv[] ) {
     }
     #endif
 
-    globalPM = new projectM("/usr/local/share/projectM/config.inp");
+    globalPM = new projectM(PROJECTEM_CONFIG_PATH);
 
     //    globalPM->renderTarget->texsize = 1024;
 
