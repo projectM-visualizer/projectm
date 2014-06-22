@@ -7,26 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C3D5F4BD17B8CB2E00A8C161 /* libMstressJuppyDancer.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B317B8CB2000A8C161 /* libMstressJuppyDancer.dylib */; };
-		C3D5F4BE17B8CB3100A8C161 /* libRovastarDarkSecret.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B417B8CB2000A8C161 /* libRovastarDarkSecret.dylib */; };
-		C3D5F4BF17B8CB3300A8C161 /* libRovastarDriftingChaos.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */; };
-		C3D5F4C017B8CB3500A8C161 /* libRovastarFractalSpiral.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */; };
-		C3D5F4C117B8CB3700A8C161 /* libRovastarFractopiaFrantic.dylib in Native Presets */ = {isa = PBXBuildFile; fileRef = C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */; };
-		C3D5F4E117B9F78F00A8C161 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4DC17B9F78F00A8C161 /* libbz2.a */; };
-		C3D5F4E217B9F78F00A8C161 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4DD17B9F78F00A8C161 /* libfreetype.a */; };
-		C3D5F4E317B9F78F00A8C161 /* libftgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4DE17B9F78F00A8C161 /* libftgl.a */; };
-		C3D5F4E417B9F78F00A8C161 /* libpng15.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4DF17B9F78F00A8C161 /* libpng15.a */; };
-		C3D5F4E517B9F78F00A8C161 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3D5F4E017B9F78F00A8C161 /* libz.a */; };
+		C34E81141956D096001AC5B5 /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81131956D096001AC5B5 /* libRenderer.a */; };
+		C34E81171956D0AC001AC5B5 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81151956D0AC001AC5B5 /* libMilkdropPresetFactory.a */; };
+		C34E81181956D0AC001AC5B5 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81161956D0AC001AC5B5 /* libNativePresetFactory.a */; };
+		C34E811C1956D0D4001AC5B5 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811B1956D0D4001AC5B5 /* libz.a */; };
+		C34E811E1956D0D6001AC5B5 /* libpng15.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811D1956D0D6001AC5B5 /* libpng15.a */; };
+		C34E81201956D0D8001AC5B5 /* libftgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811F1956D0D8001AC5B5 /* libftgl.a */; };
+		C34E81221956D0D9001AC5B5 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81211956D0D9001AC5B5 /* libfreetype.a */; };
+		C34E81241956D0DA001AC5B5 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81231956D0DA001AC5B5 /* libbz2.a */; };
+		C37822041956D90D0058A694 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE59C17B88BF800F4B110 /* libprojectM.a */; };
 		C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7B217B82CC3009E58CB /* Cocoa.framework */; };
 		C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7CE17B831F3009E58CB /* OpenGL.framework */; };
 		C3F9D7D317B83CCB009E58CB /* iprojectM_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */; };
 		C3F9D7D417B83CCB009E58CB /* iprojectM.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D217B83CCB009E58CB /* iprojectM.mm */; };
 		C3F9D7D917B83CF1009E58CB /* iTunesAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D617B83CF1009E58CB /* iTunesAPI.cpp */; };
 		C3FAE59217B87D8700F4B110 /* getConfigFilename.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */; };
-		C3FAE59D17B88BF800F4B110 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE59C17B88BF800F4B110 /* libprojectM.a */; };
-		C3FAE59F17B88C3700F4B110 /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE59E17B88C3700F4B110 /* libRenderer.a */; };
-		C3FAE5A117B88C4B00F4B110 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE5A017B88C4B00F4B110 /* libMilkdropPresetFactory.a */; };
-		C3FAE5A317B88C5000F4B110 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE5A217B88C5000F4B110 /* libNativePresetFactory.a */; };
 		C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in plist */ = {isa = PBXBuildFile; fileRef = C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */; };
 		C3FAF97417B89F1C00F4B110 /* presets in share */ = {isa = PBXBuildFile; fileRef = C3FAF96717B89C7C00F4B110 /* presets */; };
 		C3FAF97717B89F7400F4B110 /* shaders in share */ = {isa = PBXBuildFile; fileRef = C3FAF97617B89F7200F4B110 /* shaders */; };
@@ -35,16 +30,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C3D5F4C317B8CD2100A8C161 /* Framework copy */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Framework copy";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C3FAE5A917B898BB00F4B110 /* plist */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -70,34 +55,22 @@
 			name = share;
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C3FAF98917B8C37F00F4B110 /* Native Presets */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 6;
-			files = (
-				C3D5F4C117B8CB3700A8C161 /* libRovastarFractopiaFrantic.dylib in Native Presets */,
-				C3D5F4C017B8CB3500A8C161 /* libRovastarFractalSpiral.dylib in Native Presets */,
-				C3D5F4BD17B8CB2E00A8C161 /* libMstressJuppyDancer.dylib in Native Presets */,
-				C3D5F4BF17B8CB3300A8C161 /* libRovastarDriftingChaos.dylib in Native Presets */,
-				C3D5F4BE17B8CB3100A8C161 /* libRovastarDarkSecret.dylib in Native Presets */,
-			);
-			name = "Native Presets";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C3D5F4B317B8CB2000A8C161 /* libMstressJuppyDancer.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libMstressJuppyDancer.dylib; path = ../NativePresets/libMstressJuppyDancer.dylib; sourceTree = "<group>"; };
-		C3D5F4B417B8CB2000A8C161 /* libRovastarDarkSecret.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarDarkSecret.dylib; path = ../NativePresets/libRovastarDarkSecret.dylib; sourceTree = "<group>"; };
-		C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarDriftingChaos.dylib; path = ../NativePresets/libRovastarDriftingChaos.dylib; sourceTree = "<group>"; };
-		C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarFractalSpiral.dylib; path = ../NativePresets/libRovastarFractalSpiral.dylib; sourceTree = "<group>"; };
-		C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libRovastarFractopiaFrantic.dylib; path = ../NativePresets/libRovastarFractopiaFrantic.dylib; sourceTree = "<group>"; };
-		C3D5F4DC17B9F78F00A8C161 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = macos/contrib/libbz2.a; sourceTree = "<group>"; };
-		C3D5F4DD17B9F78F00A8C161 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = macos/contrib/libfreetype.a; sourceTree = "<group>"; };
-		C3D5F4DE17B9F78F00A8C161 /* libftgl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libftgl.a; path = macos/contrib/libftgl.a; sourceTree = "<group>"; };
-		C3D5F4DF17B9F78F00A8C161 /* libpng15.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng15.a; path = macos/contrib/libpng15.a; sourceTree = "<group>"; };
-		C3D5F4E017B9F78F00A8C161 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = macos/contrib/libz.a; sourceTree = "<group>"; };
+		C34E810E1956CD2F001AC5B5 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
+		C34E81101956CD3A001AC5B5 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
+		C34E81131956D096001AC5B5 /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/libRenderer.a; sourceTree = "<group>"; };
+		C34E81151956D0AC001AC5B5 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
+		C34E81161956D0AC001AC5B5 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/libNativePresetFactory.a; sourceTree = "<group>"; };
+		C34E81191956D0C3001AC5B5 /* contrib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = contrib; path = macos/contrib; sourceTree = "<group>"; };
+		C34E811B1956D0D4001AC5B5 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = macos/contrib/libz.a; sourceTree = "<group>"; };
+		C34E811D1956D0D6001AC5B5 /* libpng15.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng15.a; path = macos/contrib/libpng15.a; sourceTree = "<group>"; };
+		C34E811F1956D0D8001AC5B5 /* libftgl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libftgl.a; path = macos/contrib/libftgl.a; sourceTree = "<group>"; };
+		C34E81211956D0D9001AC5B5 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = macos/contrib/libfreetype.a; sourceTree = "<group>"; };
+		C34E81231956D0DA001AC5B5 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = macos/contrib/libbz2.a; sourceTree = "<group>"; };
+		C37821FF1956D82A0058A694 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
+		C37822011956D8B30058A694 /* libprojectM.2.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libprojectM.2.dylib; path = ../libprojectM/libprojectM.2.dylib; sourceTree = "<group>"; };
 		C3F9D7AF17B82CC3009E58CB /* iProjectM.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iProjectM.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3F9D7B217B82CC3009E58CB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		C3F9D7B517B82CC3009E58CB /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -114,9 +87,6 @@
 		C3FAE59117B87D8700F4B110 /* getConfigFilename.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = getConfigFilename.h; sourceTree = "<group>"; };
 		C3FAE59A17B88B9000F4B110 /* iProjectM-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "iProjectM-Info.plist"; sourceTree = "<group>"; };
 		C3FAE59C17B88BF800F4B110 /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/libprojectM.a; sourceTree = "<group>"; };
-		C3FAE59E17B88C3700F4B110 /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/libRenderer.a; sourceTree = "<group>"; };
-		C3FAE5A017B88C4B00F4B110 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
-		C3FAE5A217B88C5000F4B110 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/libNativePresetFactory.a; sourceTree = "<group>"; };
 		C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "iProjectM-pkg.plist"; sourceTree = SOURCE_ROOT; };
 		C3FAF96717B89C7C00F4B110 /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
 		C3FAF96817B89C7C00F4B110 /* presets_milkdrop */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets_milkdrop; path = ../../presets_milkdrop; sourceTree = "<group>"; };
@@ -135,39 +105,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C37822041956D90D0058A694 /* libprojectM.a in Frameworks */,
+				C34E81241956D0DA001AC5B5 /* libbz2.a in Frameworks */,
+				C34E81221956D0D9001AC5B5 /* libfreetype.a in Frameworks */,
+				C34E81201956D0D8001AC5B5 /* libftgl.a in Frameworks */,
+				C34E811E1956D0D6001AC5B5 /* libpng15.a in Frameworks */,
+				C34E811C1956D0D4001AC5B5 /* libz.a in Frameworks */,
 				C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */,
 				C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */,
-				C3FAE59D17B88BF800F4B110 /* libprojectM.a in Frameworks */,
-				C3FAE59F17B88C3700F4B110 /* libRenderer.a in Frameworks */,
-				C3FAE5A117B88C4B00F4B110 /* libMilkdropPresetFactory.a in Frameworks */,
-				C3FAE5A317B88C5000F4B110 /* libNativePresetFactory.a in Frameworks */,
-				C3D5F4E117B9F78F00A8C161 /* libbz2.a in Frameworks */,
-				C3D5F4E217B9F78F00A8C161 /* libfreetype.a in Frameworks */,
-				C3D5F4E317B9F78F00A8C161 /* libftgl.a in Frameworks */,
-				C3D5F4E417B9F78F00A8C161 /* libpng15.a in Frameworks */,
-				C3D5F4E517B9F78F00A8C161 /* libz.a in Frameworks */,
+				C34E81181956D0AC001AC5B5 /* libNativePresetFactory.a in Frameworks */,
+				C34E81141956D096001AC5B5 /* libRenderer.a in Frameworks */,
+				C34E81171956D0AC001AC5B5 /* libMilkdropPresetFactory.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C3D5F4DB17B9F75200A8C161 /* contrib */ = {
-			isa = PBXGroup;
-			children = (
-				C3D5F4DC17B9F78F00A8C161 /* libbz2.a */,
-				C3D5F4DD17B9F78F00A8C161 /* libfreetype.a */,
-				C3D5F4DE17B9F78F00A8C161 /* libftgl.a */,
-				C3D5F4DF17B9F78F00A8C161 /* libpng15.a */,
-				C3D5F4E017B9F78F00A8C161 /* libz.a */,
-			);
-			name = contrib;
-			sourceTree = "<group>";
-		};
 		C3F9D7A617B82CC3009E58CB = {
 			isa = PBXGroup;
 			children = (
-				C3D5F4DB17B9F75200A8C161 /* contrib */,
+				C34E81191956D0C3001AC5B5 /* contrib */,
 				C3FAF97A17B8A44100F4B110 /* share */,
 				C3FAE5A417B88C5B00F4B110 /* libprojectM */,
 				C3FAE59917B88B9000F4B110 /* iProjectM */,
@@ -193,6 +151,15 @@
 		C3F9D7B117B82CC3009E58CB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C37822011956D8B30058A694 /* libprojectM.2.dylib */,
+				C37821FF1956D82A0058A694 /* libc++.1.dylib */,
+				C34E81231956D0DA001AC5B5 /* libbz2.a */,
+				C34E81211956D0D9001AC5B5 /* libfreetype.a */,
+				C34E811F1956D0D8001AC5B5 /* libftgl.a */,
+				C34E811D1956D0D6001AC5B5 /* libpng15.a */,
+				C34E811B1956D0D4001AC5B5 /* libz.a */,
+				C34E81101956CD3A001AC5B5 /* libc++.dylib */,
+				C34E810E1956CD2F001AC5B5 /* libstdc++.dylib */,
 				C3FAF98517B8C09D00F4B110 /* Cg.framework */,
 				C3F9D7CE17B831F3009E58CB /* OpenGL.framework */,
 				C3F9D7B217B82CC3009E58CB /* Cocoa.framework */,
@@ -234,14 +201,9 @@
 		C3FAE5A417B88C5B00F4B110 /* libprojectM */ = {
 			isa = PBXGroup;
 			children = (
-				C3D5F4B317B8CB2000A8C161 /* libMstressJuppyDancer.dylib */,
-				C3D5F4B417B8CB2000A8C161 /* libRovastarDarkSecret.dylib */,
-				C3D5F4B517B8CB2000A8C161 /* libRovastarDriftingChaos.dylib */,
-				C3D5F4B617B8CB2000A8C161 /* libRovastarFractalSpiral.dylib */,
-				C3D5F4B717B8CB2000A8C161 /* libRovastarFractopiaFrantic.dylib */,
-				C3FAE5A217B88C5000F4B110 /* libNativePresetFactory.a */,
-				C3FAE5A017B88C4B00F4B110 /* libMilkdropPresetFactory.a */,
-				C3FAE59E17B88C3700F4B110 /* libRenderer.a */,
+				C34E81151956D0AC001AC5B5 /* libMilkdropPresetFactory.a */,
+				C34E81161956D0AC001AC5B5 /* libNativePresetFactory.a */,
+				C34E81131956D096001AC5B5 /* libRenderer.a */,
 				C3FAE59C17B88BF800F4B110 /* libprojectM.a */,
 			);
 			name = libprojectM;
@@ -279,12 +241,10 @@
 			buildConfigurationList = C3F9D7C117B82CC3009E58CB /* Build configuration list for PBXNativeTarget "iProjectM" */;
 			buildPhases = (
 				C3F9D7AB17B82CC3009E58CB /* Sources */,
-				C3FAF98917B8C37F00F4B110 /* Native Presets */,
 				C3F9D7AC17B82CC3009E58CB /* Frameworks */,
 				C3FAE5A917B898BB00F4B110 /* plist */,
 				C3FAF97317B89F1700F4B110 /* share */,
 				C3FAE5AB17B898F800F4B110 /* Generate Installer Package */,
-				C3D5F4C317B8CD2100A8C161 /* Framework copy */,
 			);
 			buildRules = (
 			);
@@ -358,19 +318,23 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = NO;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer: Sean Cottrell (4GNZ4Z332S)";
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
+				DYLIB_CURRENT_VERSION = 1.0.0;
 				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_INPUT_FILETYPE = automatic;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -381,9 +345,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "${SRCROOT}/..";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				SDKROOT = macosx;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Debug;
 		};
@@ -392,25 +358,32 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
-				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = NO;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer: Sean Cottrell (4GNZ4Z332S)";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = YES;
+				DYLIB_CURRENT_VERSION = 1.0.0;
 				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_INPUT_FILETYPE = automatic;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "${SRCROOT}/..";
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				SDKROOT = macosx;
+				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
@@ -428,10 +401,15 @@
 					"\"$(SRCROOT)/../libprojectM/Renderer\"",
 					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory\"",
 					"\"$(SRCROOT)/../libprojectM/NativePresetFactory\"",
-					"\"$(SRCROOT)\"",
+					"$(SRCROOT)",
 					"\"$(SRCROOT)/../NativePresets\"",
 					"\"$(SRCROOT)/..\"",
 					"\"$(SRCROOT)/macos/contrib\"",
+					/Users/snooz/dev/projectm/src/libprojectM,
+					/Users/snooz/dev/projectm/src/libprojectM/Renderer,
+					/Users/snooz/dev/projectm/src/libprojectM/MilkdropPresetFactory,
+					/Users/snooz/dev/projectm/src/libprojectM/NativePresetFactory,
+					"$(PROJECT_DIR)/macos/contrib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = bundle;
@@ -452,10 +430,15 @@
 					"\"$(SRCROOT)/../libprojectM/Renderer\"",
 					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory\"",
 					"\"$(SRCROOT)/../libprojectM/NativePresetFactory\"",
-					"\"$(SRCROOT)\"",
+					"$(SRCROOT)",
 					"\"$(SRCROOT)/../NativePresets\"",
 					"\"$(SRCROOT)/..\"",
 					"\"$(SRCROOT)/macos/contrib\"",
+					/Users/snooz/dev/projectm/src/libprojectM,
+					/Users/snooz/dev/projectm/src/libprojectM/Renderer,
+					/Users/snooz/dev/projectm/src/libprojectM/MilkdropPresetFactory,
+					/Users/snooz/dev/projectm/src/libprojectM/NativePresetFactory,
+					"$(PROJECT_DIR)/macos/contrib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = bundle;
