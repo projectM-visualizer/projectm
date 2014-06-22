@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.8.0)
+
 INCLUDE(../cmake/CPack-projectM.cmake)
 
 PROJECT(projectEM)
@@ -23,5 +25,5 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/../cmake)
 #INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS})
 #TARGET_LINK_LIBRARIES(projectEM ${SDL2_LIBRARIES})
 
-SET_TARGET_PROPERTIES(projectEM PROPERTIES LINK_FLAGS "-o build/projectEM.html --emrun")
+SET_TARGET_PROPERTIES(projectEM PROPERTIES LINK_FLAGS "-o build/projectEM.html -g --emrun")
 #SET_TARGET_PROPERTIES(projectEM PROPERTIES LINK_FLAGS "--emrun")
