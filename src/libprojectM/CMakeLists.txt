@@ -72,6 +72,12 @@ if (MSVC)
 SET(projectM_SOURCES ${projectM_SOURCES} dlfcn.c win32-dirent.cpp)
 endif(MSVC)
 
+if (APPLE)
+	SET(USE_FTGL OFF)
+	SET(USE_OPENMP OFF)
+	SET(BUILD_PROJECTM_STATIC ON)
+endif(APPLE)
+
 if (NOT DISABLE_NATIVE_PRESETS)
 	add_subdirectory(NativePresetFactory)
 	SET(PRESET_FACTORY_SOURCES ${PRESET_FACTORY_SOURCES} ${NativePresetFactory_SOURCE_DIR})

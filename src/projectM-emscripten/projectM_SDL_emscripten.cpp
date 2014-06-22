@@ -16,19 +16,25 @@
 #include <SDL.h>
 #endif
 
-//#include "emscripten_sdltoprojectM.h"
-
 projectM *globalPM = NULL;
 
-int dumpFrame = 0;
-int frameNumber = 0;
-
-extern void addPCM16(short [2][512]);
+bool done = false;
 
 void renderFrame() {
-
     int i;
     short pcm_data[2][512];
+    SDL_Event evt;
+    
+    SDL_PollEvent(&evt);
+    switch (evt.type) {
+        case SDL_KEYDOWN:
+            // ...
+            break;
+        case SDL_QUIT:
+            done = true;
+            break;
+    }
+
 
 //        projectMEvent evt;
 //        projectMKeycode key;
@@ -95,18 +101,17 @@ int main( int argc, char *argv[] ) {
 
     //  w = 512; h = 512; bpp = 16;
     #if SDL_MAJOR_VERSION==2
-    if (! SDL_CreateWindowAndRenderer(width, height, SDL_WINDOW_BORDERLESS, &win, &rend)) {
-        fprintf(stderr, "Failed to create renderer: %s\n", SDL_GetError());
-        return PROJECTM_ERROR;
-    }
+        win = SDL_CreateWindow("SDL Fun Party Time", 50, 50, width, height, 0);
+        rend = SDL_CreateRenderer(win, 0, SDL_RENDERER_ACCELERATED);
+        if (! rend) {
+            fprintf(stderr, "Failed to create renderer: %s\n", SDL_GetError());
+            return PROJECTM_ERROR;
+        }
+        SDL_SetWindowTitle(win, "SDL Fun Party Time");
     #elif SDL_MAJOR_VERSION==1
         screen = SDL_SetVideoMode(width, height, 32, SDL_OPENGL | SDL_HWSURFACE) ;
     #endif
-
-    if (screen == NULL) {
-        return PROJECTM_ERROR;
-    }
-
+    
     #ifdef PANTS
     if ( fsaa ) {
         SDL_GL_GetAttribute( SDL_GL_MULTISAMPLEBUFFERS, &value );
@@ -116,7 +121,7 @@ int main( int argc, char *argv[] ) {
     }
     #endif
 
-    globalPM = (projectM *)malloc( sizeof( projectM ) );
+    globalPM = new projectM("/usr/local/share/projectM/config.inp");
 
     //    globalPM->renderTarget->texsize = 1024;
 
@@ -131,20 +136,21 @@ int main( int argc, char *argv[] ) {
     globalPM->projectM_resetGL( width, height );
 
     // mainloop. non-emscripten version here for comparison/testing
-    #ifdef EMSCRIPTEN
+#ifdef EMSCRIPTEN
     emscripten_set_main_loop(renderFrame, 30, 0);
-    #else
-    Uint32 frame_start, frame_time;
-    const Uint32 frame_length = 1000/60;
-    while (1) {
-        frame_start = SDL_GetTicks();
+#else
+    // standard main loop
+    const Uint32 frame_delay = 1000/60;
+    Uint32 last_time = SDL_GetTicks();
+    while (! done) {
         renderFrame();
-        frame_time = SDL_GetTicks() - frame_start;
-        if (frame_length > frame_time) {
-            SDL_Delay(frame_length - frame_time);
-        }
+        Uint32 elapsed = SDL_GetTicks() - last_time;
+        if (elapsed < frame_delay)
+            SDL_Delay(frame_delay - elapsed);
+        SDL_RenderPresent(rend);
+        last_time = SDL_GetTicks();
     }
-    #endif
+#endif
 
     return PROJECTM_SUCCESS;
 }
