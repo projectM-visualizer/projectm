@@ -16,7 +16,7 @@
 #include <SDL.h>
 #endif
 
-const char *PROJECTEM_CONFIG_PATH = "build/config.inp";
+const float FPS = 60;
 
 static projectM *globalPM = NULL;
 static SDL_Surface *screen;
@@ -24,6 +24,9 @@ static SDL_Window *win;
 static SDL_Renderer *rend;
 
 bool done = false;
+
+// settings, yo
+projectM::Settings settings;
 
 void renderFrame() {
     int i;
@@ -118,6 +121,10 @@ int main( int argc, char *argv[] ) {
     #elif SDL_MAJOR_VERSION==1
         screen = SDL_SetVideoMode(width, height, 32, SDL_OPENGL | SDL_DOUBLEBUF);
         printf("SDL init version 1\n");
+        if (! screen) {
+            fprintf(stderr, "Failed to create renderer with SDL_SetVideoMode(): %s\n", SDL_GetError());
+            return PROJECTM_ERROR;
+        }
     #endif
     
     #ifdef PANTS
@@ -129,17 +136,36 @@ int main( int argc, char *argv[] ) {
     }
     #endif
 
+    settings.meshX = 2;
+    settings.meshY = 2;
+    settings.fps   = FPS;
+    settings.textureSize = 2048;  // idk?
+    settings.windowWidth = width;
+    settings.windowHeight = height;
+    settings.presetURL = "./presets";
+    settings.smoothPresetDuration = 5; // seconds
+    settings.presetDuration = 15; // seconds
+    settings.beatSensitivity = 0.8;
+    settings.aspectCorrection = 1;
+    settings.easterEgg = 0; // ???
+    settings.shuffleEnabled = 1;
+    settings.softCutRatingsEnabled = 1; // ???
+
     // init projectM
-    globalPM = new projectM(PROJECTEM_CONFIG_PATH);
+    printf("initting\n");
+    globalPM = new projectM(settings);
+    printf("init projectM\n");
     globalPM->selectRandom(true);
+    printf("select random\n");
     globalPM->projectM_resetGL(width, height);
+    printf("resetGL\n");
 
     // mainloop. non-emscripten version here for comparison/testing
 #ifdef EMSCRIPTEN
     emscripten_set_main_loop(renderFrame, 30, 0);
 #else
     // standard main loop
-    const Uint32 frame_delay = 1000/60;
+    const Uint32 frame_delay = 1000/FPS;
     Uint32 last_time = SDL_GetTicks();
     while (! done) {
         renderFrame();

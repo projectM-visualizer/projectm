@@ -27,7 +27,6 @@
 
 /* Begin PBXFileReference section */
 		C3F90678195670BC00C8DF0F /* emprojectM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = emprojectM; sourceTree = BUILT_PRODUCTS_DIR; };
-		C3F90684195670EF00C8DF0F /* emscripten_sdltoprojectM.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = emscripten_sdltoprojectM.h; sourceTree = SOURCE_ROOT; };
 		C3F90685195670EF00C8DF0F /* projectM_SDL_emscripten.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = projectM_SDL_emscripten.cpp; sourceTree = SOURCE_ROOT; };
 		C3F90689195676C500C8DF0F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		C3F9068B195676CC00C8DF0F /* GLUT.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLUT.framework; path = System/Library/Frameworks/GLUT.framework; sourceTree = SDKROOT; };
@@ -70,7 +69,6 @@
 		C3F9067A195670BC00C8DF0F /* emprojectM */ = {
 			isa = PBXGroup;
 			children = (
-				C3F90684195670EF00C8DF0F /* emscripten_sdltoprojectM.h */,
 				C3F90685195670EF00C8DF0F /* projectM_SDL_emscripten.cpp */,
 			);
 			path = emprojectM;
