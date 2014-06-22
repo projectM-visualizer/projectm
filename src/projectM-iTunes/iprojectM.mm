@@ -9,7 +9,31 @@
 // projectM
 void initProjectM( VisualPluginData * visualPluginData ) {
 //    std::string config_filename = getConfigFilename();
-    projectM *pm = new projectM("/usr/local/share/projectM/config.inp");
+    std::string cfg_path = "/usr/local/share/projectM/config.inp";
+
+    // hardcoded settings - disabled
+    projectM::Settings settings;
+    settings.meshX = 100;
+    settings.meshY = 100;
+    settings.fps   = 60;
+    settings.textureSize = 2048;  // idk?
+    settings.windowWidth = 1920;
+    settings.windowHeight = 1280;
+    settings.smoothPresetDuration = 3; // seconds
+    settings.presetDuration = 5; // seconds
+    settings.beatSensitivity = 0.8;
+    settings.aspectCorrection = 1;
+    settings.easterEgg = 0; // ???
+    settings.shuffleEnabled = 1;
+    settings.softCutRatingsEnabled = 1; // ???
+    settings.presetURL = "/usr/local/share/projectM/presets";
+    settings.titleFontURL = "/usr/local/share/projectM/fonts/Vera.ttf";
+    settings.menuFontURL = "/usr/local/share/projectM/fonts/VeraMono.ttf";
+    //projectM *pm = new projectM(settings, 0);
+    
+    // use config file
+    projectM *pm = new projectM(cfg_path);
+    
     visualPluginData->pm = pm;
     
     pm->selectRandom(true);
