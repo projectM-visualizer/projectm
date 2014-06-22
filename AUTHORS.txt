@@ -47,3 +47,4 @@ Matthias Klumpp
 
 Mischa Spiegelmock
     Mac OS X updates and native iTunes visualization plugin
+    Web support (projectM-emscripten)
