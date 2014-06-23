@@ -1,0 +1,297 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+[preset00]
+fRating=1.000000
+fGammaAdj=1.560
+fDecay=1.000
+fVideoEchoZoom=0.362
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=1
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=1.599
+fWaveSmoothing=0.000
+fWaveParam=-0.500
+fModWaveAlphaStart=2.000
+fModWaveAlphaEnd=2.000
+fWarpAnimSpeed=1.000
+fWarpScale=1.331
+fZoomExponent=1.00000
+fShader=1.000
+zoom=0.99952
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=-0.00500
+dy=0.00000
+warp=0.01000
+sx=1.00000
+sy=1.00000
+wave_r=0.510
+wave_g=0.500
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.005
+ob_r=1.000
+ob_g=1.000
+ob_b=1.000
+ob_a=1.000
+ib_size=0.000
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=1.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.500
+mv_r=0.000
+mv_g=0.000
+mv_b=0.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+wavecode_0_enabled=0
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=0.16188
+wavecode_0_smoothing=0.50000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wavecode_1_enabled=0
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=1
+wavecode_1_bAdditive=1
+wavecode_1_scaling=25.12601
+wavecode_1_smoothing=1.00000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=0.100
+wavecode_2_enabled=0
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.00000
+wavecode_2_smoothing=0.50000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=1.000
+wavecode_2_a=1.000
+wavecode_3_enabled=0
+wavecode_3_samples=512
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=1.000
+shapecode_0_enabled=0
+shapecode_0_sides=100
+shapecode_0_additive=0
+shapecode_0_thickOutline=1
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.50126
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=0.99996
+shapecode_0_r=1.000
+shapecode_0_g=1.000
+shapecode_0_b=1.000
+shapecode_0_a=1.000
+shapecode_0_r2=1.000
+shapecode_0_g2=0.000
+shapecode_0_b2=0.000
+shapecode_0_a2=0.000
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=0.000
+shapecode_1_enabled=0
+shapecode_1_sides=100
+shapecode_1_additive=0
+shapecode_1_thickOutline=1
+shapecode_1_textured=0
+shapecode_1_num_inst=1
+shapecode_1_x=0.500
+shapecode_1_y=0.500
+shapecode_1_rad=0.50126
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=1.00000
+shapecode_1_r=1.000
+shapecode_1_g=1.000
+shapecode_1_b=1.000
+shapecode_1_a=1.000
+shapecode_1_r2=0.000
+shapecode_1_g2=0.000
+shapecode_1_b2=1.000
+shapecode_1_a2=0.000
+shapecode_1_border_r=1.000
+shapecode_1_border_g=0.000
+shapecode_1_border_b=1.000
+shapecode_1_border_a=0.000
+shapecode_2_enabled=0
+shapecode_2_sides=100
+shapecode_2_additive=0
+shapecode_2_thickOutline=1
+shapecode_2_textured=0
+shapecode_2_num_inst=1
+shapecode_2_x=0.500
+shapecode_2_y=0.500
+shapecode_2_rad=0.50126
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=0.99980
+shapecode_2_r=1.000
+shapecode_2_g=1.000
+shapecode_2_b=1.000
+shapecode_2_a=1.000
+shapecode_2_r2=0.000
+shapecode_2_g2=1.000
+shapecode_2_b2=0.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=1.000
+shapecode_2_border_a=0.000
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=1
+shapecode_3_x=0.500
+shapecode_3_y=0.500
+shapecode_3_rad=0.10000
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.00000
+shapecode_3_r=1.000
+shapecode_3_g=0.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=1.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=1.000
+shapecode_3_border_b=1.000
+shapecode_3_border_a=0.100
+per_frame_1=// Flexis dampened sound response functions
+per_frame_2=
+per_frame_3=db = db*0.98 + bass*0.2; // dampener
+per_frame_4=bb = bb + db*0.1; // accumulation, replace time expressions with this ;)
+per_frame_5=
+per_frame_6=dt = dt*0.98 + treb*0.2;
+per_frame_7=tt = tt + dt*0.1;
+per_frame_8=
+per_frame_9=dm = dm*0.98 + mid*0.2;
+per_frame_10=mm = mm + dm*0.1;
+per_frame_11=
+per_frame_12=
+per_frame_13=//***** [q11-q18] variables for Flexis caleidoscope shader code *****
+per_frame_14=
+per_frame_15=// change
+per_frame_16=q13 = 0.5 + sin((bb-mm)*0.1)*0.25; // center x
+per_frame_17=q14 = 0.5 + sin((tt-mm)*0.1)*0.25; // center y
+per_frame_18=w = (bb-tt)*0.1;                   // angle
+per_frame_19=q16 = 0.25 - (db-dt)*0.025;        // size
+per_frame_20=
+per_frame_21=//don't change
+per_frame_22=q11 = sin(w);
+per_frame_23=q12 = cos(w);
+per_frame_24=q17 = sin(-w);
+per_frame_25=q18 = cos(-w);
+per_frame_26=q15 = 1/q16;
+warp_1=`float2 factorA, factorB, product, julia;
+warp_2=`
+warp_3=`shader_body
+warp_4=`{
+warp_5=`
+warp_6=`// ***** Flexis Julia fractal code *****
+warp_7=`
+warp_8=`julia = lerp(uv_orig,uv,0); // this is scaling the input motion from the per-vertex-calc, fractals are sensitive you know ;)
+warp_9=`julia = (julia-0.5)*1.59; // apply some zoom
+warp_10=`
+warp_11=`//complex multiplication
+warp_12=`factorA = julia;
+warp_13=`factorB = julia;
+warp_14=`product = float2( factorA.x*factorB.x - factorA.y*factorB.y,   // the products real part
+warp_15=`                  factorA.x*factorB.y + factorA.y*factorB.x);  // the products imaginary part
+warp_16=`
+warp_17=`julia = product + float2(.61,.69); // adding 'c'
+warp_18=`
+warp_19=`ret = tex2D( sampler_fc_main, julia ) - 0.004; // give a gradient
+warp_20=`
+warp_21=`// *****
+warp_22=`
+warp_23=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`
+comp_4=`// ***** Flexis rotating caleidoscope code *****
+comp_5=`
+comp_6=`float2 cntr = float2(q13,q14); float sin = q11; float cos = q12; float scale = q15;
+comp_7=`float2 uv_r = (uv-cntr)*aspect.xy;
+comp_8=`       uv_r = scale*float2( cos*uv_r.x - sin*uv_r.y, sin*uv_r.x + cos*uv_r.y); // rotation
+comp_9=`       uv_r = cntr + uv_r*aspect.zw;
+comp_10=`       uv_r = 1.0 - abs( frac( uv_r * 0.5 ) * 2.0 - 1.0 ); // mirror
+comp_11=`
+comp_12=`sin = q17; cos = q18; scale = q16;
+comp_13=`float2 uv_rr = (uv_r-cntr)*aspect.xy;
+comp_14=`       uv_rr = scale*float2( cos*uv_rr.x - sin*uv_rr.y, sin*uv_rr.x + cos*uv_rr.y); // counter-rotation
+comp_15=`       uv_rr = cntr + (uv_rr)*aspect.zw;
+comp_16=`
+comp_17=`float2 caleidoscope_uv = uv_rr;
+comp_18=`
+comp_19=`// *****
+comp_20=`
+comp_21=`
+comp_22=`ret = GetBlur3(uv_rr) + (GetPixel(uv_rr)-GetBlur2(uv_rr))*2.4 - 0.1; // nice edge enhancing, also makes an aura
+comp_23=`
+comp_24=`ret = lerp(ret,GetPixel(uv),0.333); // blend
+comp_25=`
+comp_26=`}
