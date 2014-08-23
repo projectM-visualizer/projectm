@@ -8,7 +8,7 @@ FPS  = 60                   # Frames Per Second
 Fullscreen  = false
 Window Width  = 1920  	    # startup window width
 Window Height = 1280        # startup window height
-
+Beat Sensitivity = 0.9
 Smooth Transition Duration = 5  # in seconds
 Preset Duration = 20 	     	# in seconds
 Easter Egg Parameter = .1
