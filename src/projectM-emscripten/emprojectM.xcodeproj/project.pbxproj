@@ -12,6 +12,13 @@
 		C34E81091956B7D3001AC5B5 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81081956B7D3001AC5B5 /* libNativePresetFactory.a */; };
 		C34E810B1956B7D9001AC5B5 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E810A1956B7D9001AC5B5 /* libMilkdropPresetFactory.a */; };
 		C34E810D1956B832001AC5B5 /* presets in CopyFiles */ = {isa = PBXBuildFile; fileRef = C34E810C1956B821001AC5B5 /* presets */; };
+		C37A1320195C137900928349 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C37A131F195C137900928349 /* libbz2.a */; };
+		C37A1322195C138200928349 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C37A1321195C138200928349 /* libfreetype.a */; };
+		C37A1324195C138400928349 /* libftgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C37A1323195C138400928349 /* libftgl.a */; };
+		C37A1326195C138600928349 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C37A1325195C138600928349 /* libGLEW.a */; };
+		C37A1328195C138700928349 /* libpng15.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C37A1327195C138700928349 /* libpng15.a */; };
+		C37A132A195C138900928349 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C37A1329195C138900928349 /* libz.a */; };
+		C37A132C195C147C00928349 /* fonts in CopyFiles */ = {isa = PBXBuildFile; fileRef = C37A132B195C145A00928349 /* fonts */; };
 		C3F90686195670EF00C8DF0F /* projectM_SDL_emscripten.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3F90685195670EF00C8DF0F /* projectM_SDL_emscripten.cpp */; };
 		C3F9068A195676C500C8DF0F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F90689195676C500C8DF0F /* OpenGL.framework */; };
 		C3F9068C195676CC00C8DF0F /* GLUT.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9068B195676CC00C8DF0F /* GLUT.framework */; };
@@ -26,6 +33,7 @@
 			dstSubfolderSpec = 16;
 			files = (
 				C34E810D1956B832001AC5B5 /* presets in CopyFiles */,
+				C37A132C195C147C00928349 /* fonts in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -37,6 +45,14 @@
 		C34E81081956B7D3001AC5B5 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/libNativePresetFactory.a; sourceTree = "<group>"; };
 		C34E810A1956B7D9001AC5B5 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
 		C34E810C1956B821001AC5B5 /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = build/presets; sourceTree = SOURCE_ROOT; };
+		C37A131D195C136600928349 /* contrib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = contrib; path = "../projectM-iTunes/macos/contrib"; sourceTree = "<group>"; };
+		C37A131F195C137900928349 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = "../projectM-iTunes/macos/contrib/libbz2.a"; sourceTree = "<group>"; };
+		C37A1321195C138200928349 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = "../projectM-iTunes/macos/contrib/libfreetype.a"; sourceTree = "<group>"; };
+		C37A1323195C138400928349 /* libftgl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libftgl.a; path = "../projectM-iTunes/macos/contrib/libftgl.a"; sourceTree = "<group>"; };
+		C37A1325195C138600928349 /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLEW.a; path = "../projectM-iTunes/macos/contrib/libGLEW.a"; sourceTree = "<group>"; };
+		C37A1327195C138700928349 /* libpng15.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng15.a; path = "../projectM-iTunes/macos/contrib/libpng15.a"; sourceTree = "<group>"; };
+		C37A1329195C138900928349 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = "../projectM-iTunes/macos/contrib/libz.a"; sourceTree = "<group>"; };
+		C37A132B195C145A00928349 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = build/fonts; sourceTree = SOURCE_ROOT; };
 		C3F90678195670BC00C8DF0F /* emprojectM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = emprojectM; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3F90685195670EF00C8DF0F /* projectM_SDL_emscripten.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = projectM_SDL_emscripten.cpp; sourceTree = SOURCE_ROOT; };
 		C3F90689195676C500C8DF0F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
@@ -49,6 +65,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C37A1320195C137900928349 /* libbz2.a in Frameworks */,
+				C37A1322195C138200928349 /* libfreetype.a in Frameworks */,
+				C37A1324195C138400928349 /* libftgl.a in Frameworks */,
+				C37A1326195C138600928349 /* libGLEW.a in Frameworks */,
+				C37A132A195C138900928349 /* libz.a in Frameworks */,
+				C37A1328195C138700928349 /* libpng15.a in Frameworks */,
 				C34E81071956B7BF001AC5B5 /* CoreFoundation.framework in Frameworks */,
 				C34E810B1956B7D9001AC5B5 /* libMilkdropPresetFactory.a in Frameworks */,
 				C3F9069019567A4600C8DF0F /* libprojectM.a in Frameworks */,
@@ -65,6 +87,13 @@
 		C3F9066F195670BC00C8DF0F = {
 			isa = PBXGroup;
 			children = (
+				C37A1329195C138900928349 /* libz.a */,
+				C37A1327195C138700928349 /* libpng15.a */,
+				C37A1325195C138600928349 /* libGLEW.a */,
+				C37A1323195C138400928349 /* libftgl.a */,
+				C37A1321195C138200928349 /* libfreetype.a */,
+				C37A131F195C137900928349 /* libbz2.a */,
+				C37A131D195C136600928349 /* contrib */,
 				C34E810A1956B7D9001AC5B5 /* libMilkdropPresetFactory.a */,
 				C34E81081956B7D3001AC5B5 /* libNativePresetFactory.a */,
 				C34E81061956B7BF001AC5B5 /* CoreFoundation.framework */,
@@ -88,6 +117,7 @@
 		C3F9067A195670BC00C8DF0F /* emprojectM */ = {
 			isa = PBXGroup;
 			children = (
+				C37A132B195C145A00928349 /* fonts */,
 				C34E810C1956B821001AC5B5 /* presets */,
 				C3F90685195670EF00C8DF0F /* projectM_SDL_emscripten.cpp */,
 			);
@@ -252,6 +282,7 @@
 					/Users/snooz/dev/projectm/src/libprojectM/Renderer,
 					/Users/snooz/dev/projectm/src/libprojectM/NativePresetFactory,
 					/Users/snooz/dev/projectm/src/libprojectM/MilkdropPresetFactory,
+					"/Users/snooz/dev/projectm/src/projectM-iTunes/macos/contrib",
 				);
 				OTHER_LDFLAGS = (
 					"-lSDL2",
@@ -281,6 +312,7 @@
 					/Users/snooz/dev/projectm/src/libprojectM/Renderer,
 					/Users/snooz/dev/projectm/src/libprojectM/NativePresetFactory,
 					/Users/snooz/dev/projectm/src/libprojectM/MilkdropPresetFactory,
+					"/Users/snooz/dev/projectm/src/projectM-iTunes/macos/contrib",
 				);
 				OTHER_LDFLAGS = (
 					"-lSDL2",
