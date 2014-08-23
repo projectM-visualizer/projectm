@@ -153,6 +153,8 @@ int main( int argc, char *argv[] ) {
     settings.presetURL = "/build/presets";
 #else
     settings.presetURL = "presets";
+    settings.menuFontURL = "fonts/Vera.ttf";
+    settings.titleFontURL = "fonts/Vera.ttf";
 #endif
     
     // init projectM

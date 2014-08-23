@@ -342,7 +342,9 @@ static OSStatus VisualPluginHandler(OSType message,VisualPluginMessageInfo *mess
 						 messageInfo->u.pulseMessage.renderData,
 						 &messageInfo->u.pulseMessage.newPulseRateInHz );
 
-			InvalidateVisual( visualPluginData );
+            // Invalidate visual seems to lag a few frames behind, so let's draw as soon as possible
+            DrawVisual( visualPluginData );
+            //InvalidateVisual( visualPluginData );
 			break;
 		}
 		/*
@@ -355,7 +357,8 @@ static OSStatus VisualPluginHandler(OSType message,VisualPluginMessageInfo *mess
 		case kVisualPluginDrawMessage:
 		{
 			#if !USE_SUBVIEW
-			DrawVisual( visualPluginData );
+            // Now drawing in kVisualPluginPulseMessage  -revmischa 09/14
+			//DrawVisual( visualPluginData );
 			#endif
 			break;
 		}
