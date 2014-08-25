@@ -670,39 +670,28 @@
         <window title="projectM Visualizer Installer" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="335" y="390" width="548" height="595"/>
+            <rect key="contentRect" x="335" y="390" width="548" height="550"/>
             <rect key="screenRect" x="0.0" y="0.0" width="2048" height="1130"/>
             <view key="contentView" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="548" height="595"/>
+                <rect key="frame" x="0.0" y="0.0" width="548" height="550"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <button verticalHuggingPriority="750" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aHR-DO-27f">
-                        <rect key="frame" x="50" y="497" width="476" height="41"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="smallSquare" title="Install Visualizer Plugin" bezelStyle="smallSquare" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="0cJ-Rd-qB5">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system" size="29"/>
-                        </buttonCell>
-                        <connections>
-                            <action selector="installPlugin:" target="Voe-Tx-rLC" id="cwU-9T-yKR"/>
-                        </connections>
-                    </button>
                     <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rdR-Lj-8JC">
-                        <rect key="frame" x="50" y="17" width="478" height="397"/>
+                        <rect key="frame" x="50" y="19" width="478" height="397"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <imageCell key="cell" refusesFirstResponder="YES" alignment="left" image="selectViz" id="5d9-ey-5n3"/>
                     </imageView>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="WxE-5t-dwb">
-                        <rect key="frame" x="20" y="545" width="284" height="30"/>
+                        <rect key="frame" x="20" y="500" width="284" height="30"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Step 1: Install iTunes Plugin:" id="4nu-EM-RDw">
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Step 1: Install iTunes Plugin" id="4nu-EM-RDw">
                             <font key="font" metaFont="system" size="20"/>
                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="sqM-dF-den">
-                        <rect key="frame" x="20" y="460" width="284" height="30"/>
+                        <rect key="frame" x="20" y="462" width="284" height="30"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Step 2: Restart iTunes" id="ww5-kf-xWp">
                             <font key="font" metaFont="system" size="20"/>
@@ -711,7 +700,7 @@
                         </textFieldCell>
                     </textField>
                     <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="RDv-Kr-zjJ">
-                        <rect key="frame" x="20" y="422" width="333" height="30"/>
+                        <rect key="frame" x="20" y="424" width="333" height="30"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="Step 3: Select projectM Visualizer:" id="P7q-kW-dKI">
                             <font key="font" metaFont="system" size="20"/>
@@ -721,10 +710,8 @@
                     </textField>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="trailing" secondItem="aHR-DO-27f" secondAttribute="trailing" constant="50" id="PIe-C2-Nuz"/>
                     <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="rdR-Lj-8JC" secondAttribute="trailing" constant="20" id="WgC-7L-DSV"/>
                     <constraint firstItem="rdR-Lj-8JC" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="50" id="eKX-mt-h88"/>
-                    <constraint firstItem="aHR-DO-27f" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="50" id="gmM-bS-TDU"/>
                     <constraint firstAttribute="trailing" secondItem="rdR-Lj-8JC" secondAttribute="trailing" constant="20" id="oQh-kR-eLT"/>
                     <constraint firstItem="rdR-Lj-8JC" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="50" id="s11-KO-9pQ"/>
                 </constraints>
