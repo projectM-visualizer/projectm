@@ -11,7 +11,7 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    
+    [self installPlugin:nil];
 }
 
 - (IBAction)installPlugin:(id)sender {
