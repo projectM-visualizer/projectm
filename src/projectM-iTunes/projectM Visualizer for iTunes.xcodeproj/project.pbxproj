@@ -103,7 +103,7 @@
 		C34E81211956D0D9001AC5B5 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = macos/contrib/libfreetype.a; sourceTree = "<group>"; };
 		C34E81231956D0DA001AC5B5 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = macos/contrib/libbz2.a; sourceTree = "<group>"; };
 		C37821FF1956D82A0058A694 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
-		C37EBD2B19A0112900220265 /* projectM Visualizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = "projectM Visualizer.app"; path = "projectM Visualizer for iTunes.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C37EBD2B19A0112900220265 /* projectM Visualizer for iTunes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "projectM Visualizer for iTunes.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C37EBD2F19A0112900220265 /* projectM Visualizer-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "projectM Visualizer-Info.plist"; sourceTree = "<group>"; };
 		C37EBD3119A0112900220265 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		C37EBD3319A0112900220265 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -236,7 +236,7 @@
 			isa = PBXGroup;
 			children = (
 				C3F9D7AF17B82CC3009E58CB /* iProjectM.bundle */,
-				C37EBD2B19A0112900220265 /* projectM Visualizer.app */,
+				C37EBD2B19A0112900220265 /* projectM Visualizer for iTunes.app */,
 				C37EBD4519A0112900220265 /* projectM VisualizerTests.xctest */,
 			);
 			name = Products;
@@ -330,7 +330,7 @@
 			);
 			name = "projectM Visualizer for iTunes";
 			productName = "projectM Visualizer";
-			productReference = C37EBD2B19A0112900220265 /* projectM Visualizer.app */;
+			productReference = C37EBD2B19A0112900220265 /* projectM Visualizer for iTunes.app */;
 			productType = "com.apple.product-type.application";
 		};
 		C37EBD4419A0112900220265 /* projectM VisualizerTests */ = {
