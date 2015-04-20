@@ -119,6 +119,7 @@
 		C37EBD5C19A0146F00220265 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = images; path = ../images; sourceTree = "<group>"; };
 		C37EBD5E19A0164400220265 /* selectViz.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = selectViz.png; path = images/selectViz.png; sourceTree = "<group>"; };
 		C37EBD6019A01BEE00220265 /* projectM Visualizer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "projectM Visualizer.entitlements"; sourceTree = "<group>"; };
+		C38212791A5A2114002A8D78 /* gles_conv.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = gles_conv.txt; sourceTree = "<group>"; };
 		C3C24434195764870021FCD4 /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLEW.a; path = macos/contrib/libGLEW.a; sourceTree = "<group>"; };
 		C3C2443D195770D70021FCD4 /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = macos/contrib/Cg.framework; sourceTree = "<group>"; };
 		C3F9D7AF17B82CC3009E58CB /* iProjectM.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iProjectM.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -213,6 +214,7 @@
 		C3F9D7A617B82CC3009E58CB = {
 			isa = PBXGroup;
 			children = (
+				C38212791A5A2114002A8D78 /* gles_conv.txt */,
 				C37EBD5E19A0164400220265 /* selectViz.png */,
 				C37EBD5A19A0118600220265 /* iProjectM.pkg */,
 				C3C2443D195770D70021FCD4 /* Cg.framework */,
