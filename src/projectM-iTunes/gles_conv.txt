@@ -1,0 +1,48 @@
+./src/libprojectM/Renderer/FBO.cpp:116:   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+./src/libprojectM/Renderer/FBO.cpp:120:   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+./src/libprojectM/Renderer/FBO.cpp:121:   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+./src/libprojectM/Renderer/FBO.cpp:128:   glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+./src/libprojectM/Renderer/FBO.cpp:131:   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+./src/libprojectM/Renderer/FBO.cpp:132:   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+./src/libprojectM/Renderer/FBO.cpp:172:        glTexImage2D(GL_TEXTURE_2D,
+./src/libprojectM/Renderer/FBO.cpp:213:        glTexImage2D(GL_TEXTURE_2D,
+./src/libprojectM/Renderer/FBO.cpp:75:      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+./src/libprojectM/Renderer/FBO.cpp:77:      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+./src/libprojectM/Renderer/FBO.cpp:78:      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+./src/libprojectM/Renderer/Renderable.cpp:171:                          glColorPointer(4,GL_FLOAT,0,colors);
+./src/libprojectM/Renderer/Renderable.cpp:230:                    glColorPointer(4,GL_FLOAT,0,colors);
+./src/libprojectM/Renderer/Renderable.cpp:340:  // glRect doesn't exist in GLES I think
+./src/libprojectM/Renderer/Renderable.cpp:341:  // TODO: replace glRect
+./src/libprojectM/Renderer/Renderable.cpp:343:  glRectd(of, of, of+iff, texof);
+./src/libprojectM/Renderer/Renderable.cpp:344:  glRectd(of+iff, of, texof-iff, of+iff);
+./src/libprojectM/Renderer/Renderable.cpp:345:  glRectd(texof-iff, of, texof, texof);
+./src/libprojectM/Renderer/Renderable.cpp:346:  glRectd(of+iff, texof, texof-iff, texof-iff);
+./src/libprojectM/Renderer/Renderable.cpp:61:           glColorPointer(4,GL_FLOAT,0,colors);
+./src/libprojectM/Renderer/Renderer.cpp:310:            glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+./src/libprojectM/Renderer/Renderer.cpp:311:            glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+./src/libprojectM/Renderer/Renderer.cpp:313:            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+./src/libprojectM/Renderer/Renderer.cpp:314:            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+./src/libprojectM/Renderer/SOIL/SOIL.c:1259:                            glTexImage2D(
+./src/libprojectM/Renderer/SOIL/SOIL.c:1263:                            check_for_GL_errors( "glTexImage2D" );
+./src/libprojectM/Renderer/SOIL/SOIL.c:1269:                    glTexImage2D(
+./src/libprojectM/Renderer/SOIL/SOIL.c:1273:                    check_for_GL_errors( "glTexImage2D" );
+./src/libprojectM/Renderer/SOIL/SOIL.c:1318:                                            glTexImage2D(
+./src/libprojectM/Renderer/SOIL/SOIL.c:1322:                                            check_for_GL_errors( "glTexImage2D" );
+./src/libprojectM/Renderer/SOIL/SOIL.c:1327:                                    glTexImage2D(
+./src/libprojectM/Renderer/SOIL/SOIL.c:1331:                                    check_for_GL_errors( "glTexImage2D" );
+./src/libprojectM/Renderer/SOIL/SOIL.c:1364:                    unsigned int clamp_mode = GL_CLAMP;
+./src/libprojectM/Renderer/SOIL/SOIL.c:1753:                            glTexImage2D(
+./src/libprojectM/Renderer/SOIL/SOIL.c:1782:                                    glTexImage2D(
+./src/libprojectM/Renderer/SOIL/SOIL.c:1831:                    unsigned int clamp_mode = GL_CLAMP;
+./src/libprojectM/Renderer/SOIL/SOIL.c:2019:                                            glXGetProcAddressARB
+./src/libprojectM/Renderer/ShaderEngine.cpp:107:        glTexImage2D(GL_TEXTURE_2D, 0, 4, 512, 512, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_perlin);
+./src/libprojectM/Renderer/ShaderEngine.cpp:39: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize/2, texsize/2, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+./src/libprojectM/Renderer/ShaderEngine.cpp:47: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize / 4, texsize / 4, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+./src/libprojectM/Renderer/ShaderEngine.cpp:492:                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture->wrap ? GL_REPEAT : GL_CLAMP);
+./src/libprojectM/Renderer/ShaderEngine.cpp:493:                glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->wrap ? GL_REPEAT : GL_CLAMP);
+./src/libprojectM/Renderer/ShaderEngine.cpp:55: glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize / 8, texsize / 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+./src/libprojectM/Renderer/ShaderEngine.cpp:71: glTexImage2D(GL_TEXTURE_2D, 0, 4, 32, 32, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_lq_lite);
+./src/libprojectM/Renderer/ShaderEngine.cpp:80: glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_lq);
+./src/libprojectM/Renderer/ShaderEngine.cpp:89: glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_mq);
+./src/libprojectM/Renderer/ShaderEngine.cpp:98: glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_hq);
+./src/libprojectM/Renderer/Waveform.cpp:108:                    glColorPointer(4,GL_FLOAT,0,colors);
