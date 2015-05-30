@@ -29,8 +29,6 @@
 		C37EBD5D19A0146F00220265 /* images in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD5C19A0146F00220265 /* images */; };
 		C37EBD5F19A0164400220265 /* selectViz.png in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD5E19A0164400220265 /* selectViz.png */; };
 		C3C24435195764870021FCD4 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C24434195764870021FCD4 /* libGLEW.a */; };
-		C3C2443E195770D70021FCD4 /* Cg.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3C2443D195770D70021FCD4 /* Cg.framework */; };
-		C3C2443F195770E50021FCD4 /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C2443D195770D70021FCD4 /* Cg.framework */; };
 		C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7B217B82CC3009E58CB /* Cocoa.framework */; };
 		C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7CE17B831F3009E58CB /* OpenGL.framework */; };
 		C3F9D7D317B83CCB009E58CB /* iprojectM_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */; };
@@ -54,14 +52,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C3C24430195764660021FCD4 /* CopyFiles */ = {
+		C3C24430195764660021FCD4 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C3C2443E195770D70021FCD4 /* Cg.framework in CopyFiles */,
 			);
+			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C3FAE5A917B898BB00F4B110 /* plist */ = {
@@ -93,9 +91,9 @@
 /* Begin PBXFileReference section */
 		C34E810E1956CD2F001AC5B5 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		C34E81101956CD3A001AC5B5 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
-		C34E81131956D096001AC5B5 /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/libRenderer.a; sourceTree = "<group>"; };
-		C34E81151956D0AC001AC5B5 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
-		C34E81161956D0AC001AC5B5 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/libNativePresetFactory.a; sourceTree = "<group>"; };
+		C34E81131956D096001AC5B5 /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/libRenderer.a; sourceTree = SOURCE_ROOT; };
+		C34E81151956D0AC001AC5B5 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.a; sourceTree = SOURCE_ROOT; };
+		C34E81161956D0AC001AC5B5 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/libNativePresetFactory.a; sourceTree = SOURCE_ROOT; };
 		C34E81191956D0C3001AC5B5 /* contrib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = contrib; path = macos/contrib; sourceTree = "<group>"; };
 		C34E811B1956D0D4001AC5B5 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = macos/contrib/libz.a; sourceTree = "<group>"; };
 		C34E811D1956D0D6001AC5B5 /* libpng15.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng15.a; path = macos/contrib/libpng15.a; sourceTree = "<group>"; };
@@ -137,7 +135,7 @@
 		C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = getConfigFilename.cpp; sourceTree = "<group>"; };
 		C3FAE59117B87D8700F4B110 /* getConfigFilename.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = getConfigFilename.h; sourceTree = "<group>"; };
 		C3FAE59A17B88B9000F4B110 /* projectM Visualizer for iTunes-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "projectM Visualizer for iTunes-Info.plist"; sourceTree = "<group>"; };
-		C3FAE59C17B88BF800F4B110 /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/libprojectM.a; sourceTree = "<group>"; };
+		C3FAE59C17B88BF800F4B110 /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/libprojectM.a; sourceTree = SOURCE_ROOT; };
 		C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "iProjectM-pkg.plist"; sourceTree = SOURCE_ROOT; };
 		C3FAF97517B89F7200F4B110 /* config.inp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.inp; sourceTree = "<group>"; };
 		C3FAF97617B89F7200F4B110 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shaders; sourceTree = "<group>"; };
@@ -177,7 +175,6 @@
 				C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */,
 				C34E81181956D0AC001AC5B5 /* libNativePresetFactory.a in Frameworks */,
 				C34E81141956D096001AC5B5 /* libRenderer.a in Frameworks */,
-				C3C2443F195770E50021FCD4 /* Cg.framework in Frameworks */,
 				C34E81171956D0AC001AC5B5 /* libMilkdropPresetFactory.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -360,7 +357,7 @@
 				C3F9D7AB17B82CC3009E58CB /* Sources */,
 				C3F9D7AC17B82CC3009E58CB /* Frameworks */,
 				C3FAE5A917B898BB00F4B110 /* plist */,
-				C3C24430195764660021FCD4 /* CopyFiles */,
+				C3C24430195764660021FCD4 /* Copy Files */,
 				C3FAF97317B89F1700F4B110 /* share */,
 				C3FAE5AB17B898F800F4B110 /* Generate Installer Package */,
 			);
@@ -452,7 +449,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "mkdir -p \"$DSTROOT/usr/local/share/projectM/presets\"\ncp -r \"$SRCROOT\"/../../presets/custom/* \"$DSTROOT/usr/local/share/projectM/presets/\"\n#rm -rf \"$SRCROOT/iProjectM.bundle\"\n#cp -r \"$DSTROOT/Library/iTunes/iTunes Plug-ins/iProjectM.bundle\" $SRCROOT/\ninstall_name_tool -change @executable_path/../Frameworks/Cg.framework/Cg @loader_path/../Frameworks/Cg.framework/Cg \"$DSTROOT/Library/iTunes/iTunes Plug-ins/iProjectM.bundle/Contents/MacOS/iProjectM\"\ncp -r $CONFIGURATION_BUILD_DIR/share/* \"$DSTROOT/usr/local/share/projectM\"\npkgbuild --component-plist \"$SRCROOT/iProjectM-pkg.plist\" --root \"$DSTROOT\" \"$SRCROOT/iProjectM.pkg\"\n";
+			shellScript = "mkdir -p \"$DSTROOT/usr/local/share/projectM/presets\"\ncp -r \"$SRCROOT\"/../../presets/custom/* \"$DSTROOT/usr/local/share/projectM/presets/\"\ncp -r \"$SRCROOT\"/../../presets/presets_tryptonaut/* \"$DSTROOT/usr/local/share/projectM/presets/\"\ncp -r \"$SRCROOT\"/../../presets/presets_bltc201/* \"$DSTROOT/usr/local/share/projectM/presets/\"\n#rm -rf \"$SRCROOT/iProjectM.bundle\"\n#cp -r \"$DSTROOT/Library/iTunes/iTunes Plug-ins/iProjectM.bundle\" $SRCROOT/\ninstall_name_tool -change @executable_path/../Frameworks/Cg.framework/Cg @loader_path/../Frameworks/Cg.framework/Cg \"$DSTROOT/Library/iTunes/iTunes Plug-ins/iProjectM.bundle/Contents/MacOS/iProjectM\"\ncp -r $CONFIGURATION_BUILD_DIR/share/* \"$DSTROOT/usr/local/share/projectM\"\npkgbuild --component-plist \"$SRCROOT/iProjectM-pkg.plist\" --root \"$DSTROOT\" \"$SRCROOT/iProjectM.pkg\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -533,7 +530,7 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CODE_SIGN_ENTITLEMENTS = "projectM Visualizer/projectM Visualizer.entitlements";
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -566,7 +563,7 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CODE_SIGN_ENTITLEMENTS = "projectM Visualizer/projectM Visualizer.entitlements";
-				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_IDENTITY = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
