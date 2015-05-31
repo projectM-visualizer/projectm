@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:projectM Visualizer for iTunes.xcodeproj">
+      location = "self:/Users/bobo/dev/projectm/src/projectM-iTunes/projectM Visualizer.xcodeproj">
    </FileRef>
 </Workspace>
