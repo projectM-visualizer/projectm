@@ -10,6 +10,7 @@ OPTION(INCLUDE-PROJECTM-JACK "Build the projectM JACK client" OFF)
 OPTION(INCLUDE-PROJECTM-TEST "Build the projectM test suite" ON)
 OPTION(INCLUDE-PROJECTM-EMSCRIPTEN "Build projectM for the web (emscripten)" OFF)
 OPTION(INCLUDE-PROJECTM-XMMS "Build the projectM xmms module (deprecated, use audacious instead)" OFF)
+OPTION(INCLUDE-PROJECTM-SDL "Build the projectM SDL application" OFF)
 OPTION(INCLUDE-NATIVE-PRESETS "Build the projectM native preset sample collection " ON)
 
 set(PROJECTM_ROOT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
@@ -63,8 +64,12 @@ if (INCLUDE-PROJECTM-LIBVISUAL)
 endif (INCLUDE-PROJECTM-LIBVISUAL)
 
 if (INCLUDE-PROJECTM-LIBVISUAL-ALSA)
-	add_subdirectory (projectM-libvisual-alsa)
+  add_subdirectory (projectM-libvisual-alsa)
 endif (INCLUDE-PROJECTM-LIBVISUAL-ALSA)
+
+if (INCLUDE-PROJECTM-SDL)
+  add_subdirectory (projectM-sdl)
+endif (INCLUDE-PROJECTM-SDL)
 
 if (INCLUDE-NATIVE-PRESETS)
 	add_subdirectory(NativePresets)
