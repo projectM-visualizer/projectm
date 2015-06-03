@@ -36,7 +36,8 @@
 }
 
 - (id)comboBox:(NSComboBox *)aComboBox objectValueForItemAtIndex:(NSInteger)index {
-    return [[_devices objectAtIndex:index] localizedName];
+    AVCaptureDeviceInputSource *src = [_devices objectAtIndex:index];
+    return [NSString stringWithFormat:@"%@" [src localizedName]];
 }
 
 @end
