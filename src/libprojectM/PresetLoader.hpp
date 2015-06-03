@@ -17,7 +17,7 @@
 #include <dirent.h>
 #endif
 
-#ifdef MACOS
+#ifdef __APPLE__
 #include <dirent.h>
 #endif
 
