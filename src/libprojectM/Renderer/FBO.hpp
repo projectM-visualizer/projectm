@@ -41,7 +41,7 @@
 #endif
 #endif
 
-#ifdef MACOS
+#ifdef __APPLE__
 #include <OpenGL/gl.h>
 #endif /** MACOS */
 
