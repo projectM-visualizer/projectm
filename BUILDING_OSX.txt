@@ -1,0 +1,22 @@
+BUILDING ON OSX FROM SCRATCH
+============================
+
+1. Get freetype
+http://download.savannah.gnu.org/releases/freetype/freetype-2.6.1.tar.bz2
+cp builds/unix/install-sh ./
+LIBTOOLIZE=libtoolize ./configure --prefix=/usr/local && make -j4 && sudo make install
+
+2. FTGL
+http://sourceforge.net/projects/ftgl/
+./configure --prefix=/usr/local && make -j4 && sudo make install
+
+3. GLEW
+git clone https://github.com/revmischa/glew
+cd glew
+make -j4
+
+4. Cg
+http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012.dmg
+
+5. SDL
+https://www.libsdl.org/release/SDL2-2.0.3.dmg
