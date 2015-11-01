@@ -12,8 +12,8 @@
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     //[self installPlugin:nil];
-    _prefs = [[Preferences alloc] initWithWindowNibName:@"Preferences" owner:self];
-    [_prefs showWindow:self];
+//    _prefs = [[Preferences alloc] initWithWindowNibName:@"Preferences" owner:self];
+//    [_prefs showWindow:self];
 }
 
 - (IBAction)installPlugin:(id)sender {
