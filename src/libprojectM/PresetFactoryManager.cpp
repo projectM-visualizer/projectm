@@ -52,7 +52,6 @@ void PresetFactoryManager::initialize(int gx, int gy) {
 	#endif
 	
 	#ifndef DISABLE_NATIVE_PRESETS
-	printf("UNDISABLED\n");
 	factory = new NativePresetFactory();
 	registerFactory(factory->supportedExtensions(), factory);
 	#endif
