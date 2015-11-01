@@ -32,15 +32,15 @@ int selectAudioInput(projectMApp *app) {
     // too bad the libsdl2 audio capture support doesn't exist
 
     #ifdef __APPLE__
-UInt32 audioInputIsAvailable;
-UInt32 propertySize = sizeof (audioInputIsAvailable);
+// UInt32 audioInputIsAvailable;
+// UInt32 propertySize = sizeof (audioInputIsAvailable);
  
-AudioSessionGetProperty (
-    kAudioSessionProperty_AudioInputAvailable,
-    &propertySize,
-    &audioInputIsAvailable // A nonzero value on output means that
-                           // audio input is available
-);
+// AudioSessionGetProperty (
+//     kAudioSessionProperty_AudioInputAvailable,
+//     &propertySize,
+//     &audioInputIsAvailable // A nonzero value on output means that
+//                            // audio input is available
+// );
 
     #endif
 
