@@ -234,6 +234,11 @@ else(MSVC)
 	SET (MATH_LIBRARIES m)
 endif(MSVC)
 
+# compiling on arm? relocation is gonna fail unless position-independent
+IF( CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l" )
+  SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-fPIC")
+ENDIF( CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l" )
+
 if(BUILD_PROJECTM_STATIC)
 	TARGET_LINK_LIBRARIES(projectM Renderer
 				${IMAGE_LINK_TARGETS}
