@@ -1,14 +1,3 @@
-./Renderer/FBO.cpp:116:	  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-./Renderer/FBO.cpp:120:	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-./Renderer/FBO.cpp:121:	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-./Renderer/FBO.cpp:128:	  glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-./Renderer/FBO.cpp:131:	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-./Renderer/FBO.cpp:132:	  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-./Renderer/FBO.cpp:172:        glTexImage2D(GL_TEXTURE_2D,
-./Renderer/FBO.cpp:213:        glTexImage2D(GL_TEXTURE_2D,
-./Renderer/FBO.cpp:75:      glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, texsize, texsize, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-./Renderer/FBO.cpp:77:      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-./Renderer/FBO.cpp:78:      glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 ./Renderer/Renderable.cpp:171:				glColorPointer(4,GL_FLOAT,0,colors);
 ./Renderer/Renderable.cpp:230:			  glColorPointer(4,GL_FLOAT,0,colors);
 ./Renderer/Renderable.cpp:340:	// glRect doesn't exist in GLES I think
@@ -22,27 +11,13 @@
 ./Renderer/Renderer.cpp:311:		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 ./Renderer/Renderer.cpp:313:		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 ./Renderer/Renderer.cpp:314:		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-./Renderer/SOIL/SOIL.c:1259:				glTexImage2D(
 ./Renderer/SOIL/SOIL.c:1263:				check_for_GL_errors( "glTexImage2D" );
-./Renderer/SOIL/SOIL.c:1269:			glTexImage2D(
 ./Renderer/SOIL/SOIL.c:1273:			check_for_GL_errors( "glTexImage2D" );
-./Renderer/SOIL/SOIL.c:1318:						glTexImage2D(
 ./Renderer/SOIL/SOIL.c:1322:						check_for_GL_errors( "glTexImage2D" );
-./Renderer/SOIL/SOIL.c:1327:					glTexImage2D(
 ./Renderer/SOIL/SOIL.c:1331:					check_for_GL_errors( "glTexImage2D" );
 ./Renderer/SOIL/SOIL.c:1364:			unsigned int clamp_mode = GL_CLAMP;
-./Renderer/SOIL/SOIL.c:1753:				glTexImage2D(
-./Renderer/SOIL/SOIL.c:1782:					glTexImage2D(
 ./Renderer/SOIL/SOIL.c:1831:			unsigned int clamp_mode = GL_CLAMP;
 ./Renderer/SOIL/SOIL.c:2019:						glXGetProcAddressARB
-./Renderer/ShaderEngine.cpp:107:	glTexImage2D(GL_TEXTURE_2D, 0, 4, 512, 512, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_perlin);
-./Renderer/ShaderEngine.cpp:39:	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize/2, texsize/2, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-./Renderer/ShaderEngine.cpp:47:	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize / 4, texsize / 4, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
 ./Renderer/ShaderEngine.cpp:492:		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture->wrap ? GL_REPEAT : GL_CLAMP);
 ./Renderer/ShaderEngine.cpp:493:		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->wrap ? GL_REPEAT : GL_CLAMP);
-./Renderer/ShaderEngine.cpp:55:	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize / 8, texsize / 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-./Renderer/ShaderEngine.cpp:71:	glTexImage2D(GL_TEXTURE_2D, 0, 4, 32, 32, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_lq_lite);
-./Renderer/ShaderEngine.cpp:80:	glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_lq);
-./Renderer/ShaderEngine.cpp:89:	glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_mq);
-./Renderer/ShaderEngine.cpp:98:	glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_hq);
 ./Renderer/Waveform.cpp:108:			glColorPointer(4,GL_FLOAT,0,colors);
