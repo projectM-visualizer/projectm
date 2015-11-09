@@ -7,7 +7,7 @@
 #
 
    FIND_PATH( GLEW_INCLUDE_DIR glew.h wglew.h
-              PATHS /usr/local /usr c:/glew "C:/Program Files/Microsoft Visual Studio 8/VC/PlatformSDK" "C:/Program Files/Microsoft Visual Studio .NET 2003/Vc7/PlatformSDK"
+              PATHS /usr/local /opt/local /usr c:/glew "C:/Program Files/Microsoft Visual Studio 8/VC/PlatformSDK" "C:/Program Files/Microsoft Visual Studio .NET 2003/Vc7/PlatformSDK"
               PATH_SUFFIXES include include/gl include/GL Include Include/gl Include/GL )
    FIND_LIBRARY( GLEW_LIBRARY
                  NAMES glew32 glew GLEW

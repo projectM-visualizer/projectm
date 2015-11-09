@@ -42,7 +42,7 @@ endif(MSVC)
 
 if (APPLE)
 	FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation)
-	INCLUDE_DIRECTORIES( /usr/include )
+	INCLUDE_DIRECTORIES( /usr/include /opt/local/include )
 	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/include")
 else (APPLE)
 	set(COREFOUNDATION_LIBRARY )
