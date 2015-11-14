@@ -8,10 +8,15 @@
 //  This is an implementation of projectM using libsdl2
 
 
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
 #include <SDL2/SDL.h>
+
+#ifdef __APPLE__
 #include <CoreAudio/CoreAudio.h>
+#include <OpenGL/gl.h>
+#endif
+
+#ifdef __linux__
+#include <GL/gl.h>
 #endif
 
 #include <projectM.hpp>
