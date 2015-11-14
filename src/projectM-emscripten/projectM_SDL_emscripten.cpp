@@ -190,7 +190,7 @@ int main( int argc, char *argv[] ) {
 
     // mainloop. non-emscripten version here for comparison/testing
 #ifdef EMSCRIPTEN
-    emscripten_set_main_loop(renderFrame, 0, 0);
+    emscripten_set_main_loop((void (*)())renderFrame, 0, 0);
 #else
     // standard main loop
     const Uint32 frame_delay = 1000/FPS;
