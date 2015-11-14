@@ -2,4 +2,4 @@
 
 set -x
 set -e
-emcc -I../libprojectm -s USE_SDL=2 projectM_SDL_emscripten.cpp -lMilkdropPresetFactory -lRenderer -lprojectM -lRenderer -lMilkdropPresetFactory -Llib
+emcc -I../libprojectm -I../libprojectM/Renderer/  -s USE_SDL=2 ../libprojectM/KeyHandler.cpp projectM_SDL_emscripten.cpp  -lRenderer  -lprojectM  -lMilkdropPresetFactory  -lprojectM   -lRenderer -Llib
