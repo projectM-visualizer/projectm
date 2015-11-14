@@ -986,7 +986,9 @@ GLAPI void GLAPIENTRY glPixelStorei (GLenum pname, GLint param);
 GLAPI void GLAPIENTRY glPixelTransferf (GLenum pname, GLfloat param);
 GLAPI void GLAPIENTRY glPixelTransferi (GLenum pname, GLint param);
 GLAPI void GLAPIENTRY glPixelZoom (GLfloat xfactor, GLfloat yfactor);
+#ifndef EMSCRIPTEN
 GLAPI void GLAPIENTRY glPointSize (GLfloat size);
+#endif
 GLAPI void GLAPIENTRY glPolygonMode (GLenum face, GLenum mode);
 GLAPI void GLAPIENTRY glPolygonOffset (GLfloat factor, GLfloat units);
 GLAPI void GLAPIENTRY glPolygonStipple (const GLubyte *mask);

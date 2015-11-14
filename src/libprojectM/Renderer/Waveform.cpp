@@ -110,9 +110,9 @@ void Waveform::Draw(RenderContext &context)
 			if (dots)	glDrawArrays(GL_POINTS,0,samples);
 			else  	glDrawArrays(GL_LINE_STRIP,0,samples);
 
+#ifndef EMSCRIPTEN
 			glPointSize(context.texsize < 512 ? 1 : context.texsize/512);
 			glLineWidth(context.texsize < 512 ? 1 : context.texsize/512);
-#ifndef USE_GLES1
 			glDisable(GL_LINE_STIPPLE);
 #endif
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
