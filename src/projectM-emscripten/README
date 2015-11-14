@@ -1,0 +1,6 @@
+HOW2COMPILE:
+
+emcc -I../libprojectm -I../libprojectM/Renderer -Llib \
+  ../libprojectM/KeyHandler.cpp projectM_SDL_emscripten.cpp \
+  -lRenderer -lprojectM -lMilkdropPresetFactory -lprojectM -lRenderer \
+  -s USE_SDL=2 
