@@ -1,0 +1,11 @@
+sudo apt-get install cmake libftgl-dev libglew-dev libsdl2-dev cmake-curses-gui curl
+
+
+(SDL2 for raspi)
+wget https://www.libsdl.org/tmp/SDL-2.0.4-9901.tar.gz
+tar -zxf SDL-2.0.4-9901.tar.gz
+cd SDL-2.0.4-9901
+./configure --disable-video-opengl --disable-video-x11
+
+cmake .
+
