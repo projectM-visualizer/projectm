@@ -1,10 +1,9 @@
 project(Renderer)
 
 SET(SOIL_SOURCES
-	SOIL/image_DXT.c
-	SOIL/image_helper.c
-	SOIL/SOIL.c
-	SOIL/stb_image_aug.c
+	SOIL2/image_DXT.c
+	SOIL2/image_helper.c
+	SOIL2/SOIL2.c
 )
 
 SET(Renderer_SOURCES
