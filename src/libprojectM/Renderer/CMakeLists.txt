@@ -4,6 +4,7 @@ SET(SOIL_SOURCES
 	SOIL2/image_DXT.c
 	SOIL2/image_helper.c
 	SOIL2/SOIL2.c
+	SOIL2/etc1_utils.c
 )
 
 SET(Renderer_SOURCES
