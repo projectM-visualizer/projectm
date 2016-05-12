@@ -1406,7 +1406,7 @@ PerFrameEqn * Parser::parse_implicit_per_frame_eqn(std::istream &  fs, char * pa
   PerFrameEqn * per_frame_eqn;
   GenExpr * gen_expr;
 
-  if (fs == NULL)
+  if (fs.fail())
     return NULL;
   if (param_string == NULL)
     return NULL;
@@ -1561,7 +1561,7 @@ InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, MilkdropPreset *
 
   if (preset == NULL)
     return NULL;
-  if (fs == NULL)
+  if (fs.fail())
     return NULL;
 
   if ((token = parseToken(fs, name)) != tEq)
@@ -1875,7 +1875,7 @@ int Parser::parse_shapecode(char * token, std::istream &  fs, MilkdropPreset * p
   /* Null argument checks */
   if (preset == NULL)
     return PROJECTM_FAILURE;
-  if (fs == NULL)
+  if (fs.fail())
     return PROJECTM_FAILURE;
   if (token == NULL)
     return PROJECTM_FAILURE;
@@ -2166,7 +2166,7 @@ int Parser::parse_wave(char * token, std::istream &  fs, MilkdropPreset * preset
 
   if (token == NULL)
     return PROJECTM_FAILURE;
-  if (fs == NULL)
+  if (fs.fail())
     return PROJECTM_FAILURE;
   if (preset == NULL)
     return PROJECTM_FAILURE;
@@ -2348,7 +2348,7 @@ int Parser::parse_shape(char * token, std::istream &  fs, MilkdropPreset * prese
   if (token == NULL)
 
     return PROJECTM_FAILURE;
-  if (fs == NULL)
+  if (fs.fail())
     return PROJECTM_FAILURE;
   if (preset == NULL)
     return PROJECTM_FAILURE;
