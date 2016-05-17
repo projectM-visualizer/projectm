@@ -36,6 +36,8 @@ endif(APPLE)
 
 add_subdirectory (libprojectM)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
 if(INCLUDE-PROJECTM-EMSCRIPTEN)
   add_subdirectory (projectM-emscripten)
 endif(INCLUDE-PROJECTM-EMSCRIPTEN)
