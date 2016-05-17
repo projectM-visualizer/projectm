@@ -547,6 +547,8 @@ static void *thread_callback(void *prjm) {
 
         /** Stash the new dimensions */
 
+        _settings.windowWidth = w;
+        _settings.windowHeight = h;
         renderer->reset ( w,h );
     }
 
@@ -901,6 +903,10 @@ void projectM::changeTextureSize(int size) {
 
 void projectM::changePresetDuration(int seconds) {
   timeKeeper->ChangePresetDuration(seconds);
+}
+void projectM::getMeshSize(int *w, int *h)	{
+	*w = _settings.meshX;
+	*h = _settings.meshY;
 }
 
 
