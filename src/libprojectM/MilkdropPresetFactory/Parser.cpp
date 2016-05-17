@@ -198,8 +198,12 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
 		for (int k = 0; k <= buf_size; k++) {
 			if (fs)
 				fs.unget();
-			else
-				abort();
+			else	{
+				std::cerr << "about to abort!  buf_size was " << buf_size << std::endl;
+				//	aborting kills the process, so instead of that we return a constant indicating an error, and hope that the lib bails gracefully
+				//abort();
+				return tStringTooLong;
+			}
 		}
 		return tEOL;
 	}
