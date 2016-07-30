@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8.0)
 
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The projectM core library.")
 INCLUDE(cmake/CPack-projectM.cmake)
+INCLUDE(CMakeDependentOption)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # projectM version block
