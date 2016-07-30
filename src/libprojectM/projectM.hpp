@@ -154,6 +154,7 @@ public:
 
   void changeTextureSize(int size);
   void changePresetDuration(int seconds);
+  void getMeshSize(int *w, int *h);
 
   const Settings & settings() const {
 		return _settings;
