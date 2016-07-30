@@ -36,6 +36,10 @@ if (APPLE)
     SET(USE_FBO ON)
     SET(USE_CG ON)
     SET(USE_GLES1 OFF)
+else (APPLE)
+    # other OS defaults
+    SET(USE_FTGL ON)
+    SET(BUILD_PROJECTM_STATIC ON)
 endif(APPLE)
 
 

@@ -3,7 +3,7 @@
 * [OSX Build instructions](BUILDING_OSX.txt)
 
 # Linux:
-* sudo apt-get install cmake-curses-gui libsdl2-dev libglew-dev libgles2-mesa-dev
+* sudo apt-get install cmake-curses-gui libsdl2-dev libglew-dev libgles2-mesa-dev libftgl-dev
 
 # Building
 Requires [cmake](https://cmake.org/download/).  
