@@ -10,13 +10,14 @@
 
 #include <SDL2/SDL.h>
 
-#ifdef __APPLE__
-#include <CoreAudio/CoreAudio.h>
-#include <OpenGL/gl.h>
-#endif
-
 #ifdef __linux__
 #include <GL/gl.h>
+#endif
+
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <SDL2/SDL.h>
+#include <CoreAudio/CoreAudio.h>
 #endif
 
 #include <projectM.hpp>
