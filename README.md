@@ -5,10 +5,12 @@ NOTE: The [projectM wiki](http://projectm.wiki.sourceforge.net) is the official 
 * [OSX Build instructions](BUILDING_OSX.txt)
 
 # Building
-Requires [cmake](https://cmake.org/download/).
-`cmake .`  
-`make`
-`make install`
+Requires [cmake](https://cmake.org/download/).  
+```
+cmake .
+make
+make install
+```
 
 ## Help
 Report issues on [GitHub](https://github.com/revmischa/projectm/issues/new)
