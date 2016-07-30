@@ -11,7 +11,10 @@ Requires [cmake](https://cmake.org/download/).
 ## Configure with cmake
 `ccmake .`
 
-This will present you with a simple console-based interface of options for projectM. Review the options and change what you think is necessary. Press 'g' to generate the make files and exit.
+This will present you with a simple console-based interface of options for projectM.   
+Press 'c' to generate the configuration.  
+Review the options and change what you think is necessary. Press 'g' to generate the make files and exit.  
+
 
 ## Compiling and installing 
 
