@@ -2,31 +2,8 @@ PROJECT(projectM)
 cmake_minimum_required(VERSION 2.8.0)
 
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The projectM core library.")
-
 INCLUDE(cmake/CPack-projectM.cmake)
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-
-OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL library" OFF)
-
-OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disable this for OpenGL ES 1.x or if you are experiencing problems on older or poorly supported hardware." ON)
-
-OPTION(USE_FTGL "Use FTGL for on-screen fonts (found on your system)" ON)
-
-OPTION (USE_GLES1 "Use OpenGL ES 1.x" OFF)
-
-OPTION (USE_THREADS "Use threads for parallelization" ON)
-
-OPTION (USE_OPENMP "Use OpenMP and OMPTL for multi-core parallelization" ON)
-
-OPTION (USE_NATIVE_GLEW "Use projectM's native implemention of GLEW." OFF)
-
-OPTION (USE_CG "Use Cg for Pixel Shader support" OFF)
-
-OPTION (BUILD_PROJECTM_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." OFF)
-
-OPTION (DISABLE_NATIVE_PRESETS "Turn off support for native (C++ style) presets" OFF)
-OPTION (DISABLE_MILKDROP_PRESETS "Turn off support for Milkdrop (.milk / .prjm) presets"  OFF)
 
 # projectM version block
 set(PROJECTM_VERSION 2.1.0)
@@ -35,7 +12,7 @@ set(PROJECTM_ABI_LEVEL 2)
 
 if (EMSCRIPTEN)
     SET(USE_GLES1 ON)
-    SET(USE_NATIVE_GLEW OFF)
+    SET(USE_INCLUDED_GLEW OFF)
     SET(USE_THREADS OFF)
     SET(USE_OPENMP OFF)
     SET(USE_FTGL OFF)
@@ -51,7 +28,7 @@ if (EMSCRIPTEN)
 endif (EMSCRIPTEN)
 
 if (APPLE)
-    SET(USE_NATIVE_GLEW OFF)
+    SET(USE_INCLUDED_GLEW OFF)
 	SET(USE_FTGL ON)
 	SET(USE_OPENMP OFF)
 	SET(BUILD_PROJECTM_STATIC ON)
@@ -60,20 +37,34 @@ if (APPLE)
     SET(USE_GLES1 OFF)
 endif(APPLE)
 
+
+OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disable this for OpenGL ES 1.x or if you are experiencing problems on older or poorly supported hardware." ${USE_FBO})
+OPTION(USE_FTGL "Use FTGL for on-screen fonts (found on your system)" ${USE_FTGL})
+OPTION (USE_GLES1 "Use OpenGL ES" ${USE_GLES1})
+OPTION (USE_THREADS "Use threads for parallelization" ${USE_THREADS})
+OPTION (USE_OPENMP "Use OpenMP and OMPTL for multi-core parallelization" ${USE_OPENMP})
+OPTION (USE_INCLUDED_GLEW "Use projectM's included implemention of GLEW" ${USE_INCLUDED_GLEW})
+OPTION (USE_CG "Use Cg for Pixel Shader support" ${USE_CG})
+OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL library" ${USE_DEVIL})
+OPTION (BUILD_PROJECTM_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." ${BUILD_PROJECTM_STATIC})
+OPTION (DISABLE_NATIVE_PRESETS "Turn off support for native (C++ style) presets" ${DISABLE_NATIVE_PRESETS})
+OPTION (DISABLE_MILKDROP_PRESETS "Turn off support for Milkdrop (.milk / .prjm) presets"  ${DISABLE_MILKDROP_PRESETS})
+
+
 ADD_DEFINITIONS(-DCMAKE_INSTALL_PREFIX=\"${CMAKE_INSTALL_PREFIX}\")
 
 SET(LIB_INSTALL_DIR "\${exec_prefix}/lib"
   CACHE PATH "The subdirectory relative to the install prefix where libraries will be installed (default is /lib)"
   FORCE)
 
-if (USE_NATIVE_GLEW)
+if (USE_INCLUDED_GLEW)
 ADD_DEFINITIONS(-DUSE_NATIVE_GLEW)
  SET(GLEW_SOURCES glew.h glew.c)
  SET(GLEW_LIBRARY "")
-else(USE_NATIVE_GLEW)
+else(USE_INCLUDED_GLEW)
  set (GLEW_SOURCES "")
  find_package (GLEW)
-endif(USE_NATIVE_GLEW)
+endif(USE_INCLUDED_GLEW)
 
 SET(projectM_SOURCES projectM.cpp PCM.cpp Preset.cpp fftsg.cpp KeyHandler.cpp
 timer.cpp wipemalloc.cpp PresetLoader.cpp  PresetChooser.cpp PipelineMerger.cpp ConfigFile.cpp  TimeKeeper.cpp PresetFactory.cpp PresetFactoryManager.cpp ${GLEW_SOURCES})
