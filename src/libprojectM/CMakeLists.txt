@@ -38,9 +38,9 @@ if (APPLE)
 endif(APPLE)
 
 
-OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disable this for OpenGL ES 1.x or if you are experiencing problems on older or poorly supported hardware." ${USE_FBO})
-OPTION(USE_FTGL "Use FTGL for on-screen fonts (found on your system)" ${USE_FTGL})
 OPTION (USE_GLES1 "Use OpenGL ES" ${USE_GLES1})
+CMAKE_DEPENDENT_OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disable this if you are experiencing problems on older or poorly supported hardware." ON "${USE_GLES1}" OFF)  # disabled by default for GLES
+OPTION(USE_FTGL "Use FTGL for on-screen fonts (found on your system)" ${USE_FTGL})
 OPTION (USE_THREADS "Use threads for parallelization" ${USE_THREADS})
 OPTION (USE_OPENMP "Use OpenMP and OMPTL for multi-core parallelization" ${USE_OPENMP})
 OPTION (USE_INCLUDED_GLEW "Use projectM's included implemention of GLEW" ${USE_INCLUDED_GLEW})
