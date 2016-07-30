@@ -34,14 +34,14 @@
 #endif
 
 #ifdef USE_FBO
-#ifdef USE_NATIVE_GLEW
+#ifdef USE_INCLUDED_GLEW
 #include "glew.h"
 #else
 #include <GL/glew.h>
 #endif
 #endif
 
-#ifdef MACOS
+#ifdef __APPLE__
 #include <OpenGL/gl.h>
 #endif /** MACOS */
 
