@@ -9,7 +9,7 @@
 
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
-#include <SDL2/SDL.h>
+#include "SDL.h"
 #elif EMSCRIPTEN
 #include <emscripten.h>
 #include <GL/gl.h>
@@ -18,17 +18,32 @@
 
 const float FPS = 60;
 
-static projectM *globalPM = NULL;
-static SDL_Surface *screen;
-static SDL_Window *win;
-static SDL_Renderer *rend;
+typedef struct {
+    projectM *pm;
+    SDL_Window *win;
+    SDL_Renderer *rend;
+    bool done;
+    projectM::Settings settings;
+    SDL_AudioDeviceID audioInputDevice;
+} projectMApp;
 
-bool done = false;
+int selectAudioInput(projectMApp *app) {
+    int i, count = SDL_GetNumAudioDevices(0);  // param=isCapture (not yet functional)
+    
+    if (! count) {
+        fprintf(stderr, "No audio input capture devices detected\n");
+        return 0;
+    }
+    
+    printf("count: %d\n", count);
+    for (i = 0; i < count; ++i) {
+        printf("Audio device %d: %s\n", i, SDL_GetAudioDeviceName(i, 0));
+    }
+    
+    return 1;
+}
 
-// settings, yo
-projectM::Settings settings;
-
-void renderFrame() {
+void renderFrame(projectMApp *app) {
     int i;
     short pcm_data[2][512];
     SDL_Event evt;
@@ -39,7 +54,7 @@ void renderFrame() {
             // ...
             break;
         case SDL_QUIT:
-            done = true;
+            app->done = true;
             break;
     }
 
@@ -76,28 +91,36 @@ void renderFrame() {
     }
 
     /** Add the waveform data */
-    globalPM->pcm()->addPCM16(pcm_data);
+    app->pm->pcm()->addPCM16(pcm_data);
 
     glClearColor( 0.0, 0.5, 0.0, 0.0 );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    globalPM->renderFrame();
+    app->pm->renderFrame();
     glFlush();
 
     #if SDL_MAJOR_VERSION==2
-        SDL_RenderPresent(rend);
+        SDL_RenderPresent(app->rend);
     #elif SDL_MAJOR_VERSION==1
         SDL_GL_SwapBuffers();
     #endif
 }
 
-
 int main( int argc, char *argv[] ) {
+    projectMApp app;
+    app.done = 0;
+
     int width = 784,
         height = 784;
 
 
-    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+    
+    // get an audio input device
+    if (! selectAudioInput(&app)) {
+        fprintf(stderr, "Failed to open audio input device\n");
+        return 1;
+    }
 
     // SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
     // SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
@@ -110,13 +133,13 @@ int main( int argc, char *argv[] ) {
     // SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
     #if SDL_MAJOR_VERSION==2
-        win = SDL_CreateWindow("SDL Fun Party Time", 50, 50, width, height, 0);
-        rend = SDL_CreateRenderer(win, 0, SDL_RENDERER_ACCELERATED);
-        if (! rend) {
+        app.win = SDL_CreateWindow("SDL Fun Party Time", 50, 50, width, height, 0);
+        app.rend = SDL_CreateRenderer(app.win, 0, SDL_RENDERER_ACCELERATED);
+        if (! app.rend) {
             fprintf(stderr, "Failed to create renderer: %s\n", SDL_GetError());
             return PROJECTM_ERROR;
         }
-        SDL_SetWindowTitle(win, "SDL Fun Party Time");
+        SDL_SetWindowTitle(app.win, "SDL Fun Party Time");
         printf("SDL init version 2\n");
     #elif SDL_MAJOR_VERSION==1
         screen = SDL_SetVideoMode(width, height, 32, SDL_OPENGL | SDL_DOUBLEBUF);
@@ -136,33 +159,33 @@ int main( int argc, char *argv[] ) {
     }
     #endif
 
-    settings.meshX = 1;
-    settings.meshY = 1;
-    settings.fps   = FPS;
-    settings.textureSize = 2048;  // idk?
-    settings.windowWidth = width;
-    settings.windowHeight = height;
-    settings.smoothPresetDuration = 3; // seconds
-    settings.presetDuration = 5; // seconds
-    settings.beatSensitivity = 0.8;
-    settings.aspectCorrection = 1;
-    settings.easterEgg = 0; // ???
-    settings.shuffleEnabled = 1;
-    settings.softCutRatingsEnabled = 1; // ???
+    app.settings.meshX = 1;
+    app.settings.meshY = 1;
+    app.settings.fps   = FPS;
+    app.settings.textureSize = 2048;  // idk?
+    app.settings.windowWidth = width;
+    app.settings.windowHeight = height;
+    app.settings.smoothPresetDuration = 3; // seconds
+    app.settings.presetDuration = 5; // seconds
+    app.settings.beatSensitivity = 0.8;
+    app.settings.aspectCorrection = 1;
+    app.settings.easterEgg = 0; // ???
+    app.settings.shuffleEnabled = 1;
+    app.settings.softCutRatingsEnabled = 1; // ???
 #ifdef EMSCRIPTEN
-    settings.presetURL = "/build/presets";
+    app.settings.presetURL = "/build/presets";
 #else
-    settings.presetURL = "presets";
-    settings.menuFontURL = "fonts/Vera.ttf";
-    settings.titleFontURL = "fonts/Vera.ttf";
+    app.settings.presetURL = "presets_tryptonaut";
+    app.settings.menuFontURL = "fonts/Vera.ttf";
+    app.settings.titleFontURL = "fonts/Vera.ttf";
 #endif
     
     // init projectM
-    globalPM = new projectM(settings);
+    app.pm = new projectM(app.settings);
     printf("init projectM\n");
-    globalPM->selectRandom(true);
+    app.pm->selectRandom(true);
     printf("select random\n");
-    globalPM->projectM_resetGL(width, height);
+    app.pm->projectM_resetGL(width, height);
     printf("resetGL\n");
 
     // mainloop. non-emscripten version here for comparison/testing
@@ -172,8 +195,8 @@ int main( int argc, char *argv[] ) {
     // standard main loop
     const Uint32 frame_delay = 1000/FPS;
     Uint32 last_time = SDL_GetTicks();
-    while (! done) {
-        renderFrame();
+    while (! app.done) {
+        renderFrame(&app);
         Uint32 elapsed = SDL_GetTicks() - last_time;
         if (elapsed < frame_delay)
             SDL_Delay(frame_delay - elapsed);

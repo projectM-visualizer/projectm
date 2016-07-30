@@ -1,10 +1,10 @@
 project(Renderer)
 
 SET(SOIL_SOURCES
-	SOIL/image_DXT.c
-	SOIL/image_helper.c
-	SOIL/SOIL.c
-	SOIL/stb_image_aug.c
+	SOIL2/image_DXT.c
+	SOIL2/image_helper.c
+	SOIL2/SOIL2.c
+	SOIL2/etc1_utils.c
 )
 
 SET(Renderer_SOURCES
@@ -42,6 +42,8 @@ endif(MSVC)
 
 if (APPLE)
 	FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation)
+	INCLUDE_DIRECTORIES( /usr/include )
+	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/include")
 else (APPLE)
 	set(COREFOUNDATION_LIBRARY )
 endif(APPLE)

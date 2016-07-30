@@ -14,7 +14,7 @@
 #ifdef USE_DEVIL
 #include <IL/ilut.h>
 #else
-#include "SOIL/SOIL.h"
+#include "SOIL2/SOIL2.h"
 #endif
 
 #ifdef WIN32
@@ -179,7 +179,7 @@ GLuint TextureManager::getTextureFullpath(const std::string filename, const std:
 #else
        int width, height;
 
-       unsigned int tex = SOIL_load_OGL_texture_size(
+       unsigned int tex = SOIL_load_OGL_texture(
     		   imageURL.c_str(),
 					  SOIL_LOAD_AUTO,
 					  SOIL_CREATE_NEW_ID,
@@ -189,7 +189,8 @@ GLuint TextureManager::getTextureFullpath(const std::string filename, const std:
 					    SOIL_FLAG_MULTIPLY_ALPHA
 					  //|  SOIL_FLAG_COMPRESS_TO_DXT
 					  //| SOIL_FLAG_DDS_LOAD_DIRECT
-					  ,&width,&height);
+					  //,&width,&height);
+                                                     );
 
 #endif
        textures[filename]=tex;
