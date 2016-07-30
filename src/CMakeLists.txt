@@ -1,17 +1,7 @@
 project (projectM-complete)
 
-cmake_minimum_required(VERSION 2.4.0)
+cmake_minimum_required(VERSION 2.6.0)
 
-OPTION(INCLUDE-PROJECTM-QT "Build the projectM Qt4 user interface extension library (recommended)" ON)
-OPTION(INCLUDE-PROJECTM-PULSEAUDIO "Build the projectM pulse audio client (recommended for fedora users)" ON)
-OPTION(INCLUDE-PROJECTM-LIBVISUAL "Build the projectM libvisual client" ON)
-OPTION(INCLUDE-PROJECTM-LIBVISUAL-ALSA "Build experimental libvisual / alsa input standalone client (NEW!)" OFF)
-OPTION(INCLUDE-PROJECTM-JACK "Build the projectM JACK client" OFF)
-OPTION(INCLUDE-PROJECTM-TEST "Build the projectM test suite" ON)
-OPTION(INCLUDE-PROJECTM-EMSCRIPTEN "Build projectM for the web (emscripten)" OFF)
-OPTION(INCLUDE-PROJECTM-XMMS "Build the projectM xmms module (deprecated, use audacious instead)" OFF)
-OPTION(INCLUDE-PROJECTM-SDL "Build the projectM SDL application" OFF)
-OPTION(INCLUDE-NATIVE-PRESETS "Build the projectM native preset sample collection " ON)
 
 set(PROJECTM_ROOT_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
@@ -24,15 +14,36 @@ if(EMSCRIPTEN)
   SET(INCLUDE-NATIVE-PRESETS OFF)
 endif(EMSCRIPTEN)
 
-# sensible OSX defaults
-if(APPLE)
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  # sensible OSX defaults
   SET(INCLUDE-PROJECTM-QT OFF)
   SET(INCLUDE-PROJECTM-PULSEAUDIO OFF)
   SET(INCLUDE-PROJECTM-LIBVISUAL OFF)
   SET(INCLUDE-PROJECTM-TEST OFF)
+  SET(INCLUDE-PROJECTM-EMSCRIPTEN OFF)
   SET(INCLUDE-PROJECTM-SDL ON)
-  SET(INCLUDE-NATIVE-PRESETS OFF)
-endif(APPLE)
+  SET(INCLUDE-NATIVE-PRESETS ON)
+ELSE(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  # sensible other OS defaults? whatever's easiest to build
+  SET(INCLUDE-PROJECTM-QT OFF)
+  SET(INCLUDE-PROJECTM-PULSEAUDIO OFF)
+  SET(INCLUDE-PROJECTM-LIBVISUAL OFF)
+  SET(INCLUDE-PROJECTM-TEST OFF)
+  SET(INCLUDE-PROJECTM-EMSCRIPTEN OFF)
+  SET(INCLUDE-PROJECTM-SDL ON)
+  SET(INCLUDE-NATIVE-PRESETS ON)
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+
+OPTION(INCLUDE-PROJECTM-QT "Build the projectM Qt4 user interface extension library (recommended)" ${INCLUDE-PROJECTM-QT})
+OPTION(INCLUDE-PROJECTM-PULSEAUDIO "Build the projectM pulse audio client (recommended for fedora users)" ${INCLUDE-PROJECTM-PULSEAUDIO})
+OPTION(INCLUDE-PROJECTM-LIBVISUAL "Build the projectM libvisual client" ${INCLUDE-PROJECTM-LIBVISUAL})
+OPTION(INCLUDE-PROJECTM-LIBVISUAL-ALSA "Build experimental libvisual / alsa input standalone client" ${INCLUDE-PROJECTM-LIBVISUAL-ALSA})
+OPTION(INCLUDE-PROJECTM-JACK "Build the projectM JACK client" ${INCLUDE-PROJECTM-JACK})
+OPTION(INCLUDE-PROJECTM-TEST "Build the projectM test suite" ${INCLUDE-PROJECTM-TEST})
+OPTION(INCLUDE-PROJECTM-EMSCRIPTEN "Build projectM for the web (emscripten)" ${INCLUDE-PROJECTM-EMSCRIPTEN})
+OPTION(INCLUDE-PROJECTM-XMMS "Build the projectM xmms module (deprecated, use audacious instead)" ${INCLUDE-PROJECTM-XMMS})
+OPTION(INCLUDE-PROJECTM-SDL "Build the projectM SDL application" ${INCLUDE-PROJECTM-SDL})
+OPTION(INCLUDE-NATIVE-PRESETS "Build the projectM native preset sample collection " ${INCLUDE-NATIVE-PRESETS})
 
 add_subdirectory (libprojectM)
 
