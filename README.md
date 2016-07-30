@@ -1,5 +1,3 @@
-NOTE: The [projectM wiki](http://projectm.wiki.sourceforge.net) is the official source for build instructions. What lies below is just a terse review of how to build the source yourself.
-
 # Mac OS X Users:
 * [Prebuilt iTunes plugin installer](https://github.com/revmischa/projectm/releases)
 * [OSX Build instructions](BUILDING_OSX.txt)
