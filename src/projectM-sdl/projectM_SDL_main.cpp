@@ -11,7 +11,11 @@
 #include <SDL2/SDL.h>
 
 #ifdef __linux__
+#ifdef USE_GLES1
+#include <GLES/gl.h>
+#else
 #include <GL/gl.h>
+#endif
 #endif
 
 #ifdef __APPLE__
