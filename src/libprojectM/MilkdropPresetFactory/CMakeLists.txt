@@ -13,6 +13,7 @@ SET(MilkdropPresetFactory_SOURCES
 	PerPointEqn.cpp Param.cpp
 	PerFrameEqn.cpp
 	IdlePreset.cpp
+	../PresetFactory.cpp
 )
 
 IF(NOT MSVC)
