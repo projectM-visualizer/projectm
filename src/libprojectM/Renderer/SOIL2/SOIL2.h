@@ -1,10 +1,12 @@
 /**
-	@mainpage SOIL
+	@mainpage SOIL2
 
-	Jonathan Dummer
+	Fork by Martin Lucas Golini
+	
+	Original author Jonathan Dummer
 	2007-07-26-10.36
 
-	Simple OpenGL Image Library
+	Simple OpenGL Image Library 2
 
 	A tiny c library for uploading images as
 	textures into OpenGL.  Also saving and
@@ -21,8 +23,11 @@
 	- BMP		load & save
 	- TGA		load & save
 	- DDS		load & save
-	- PNG		load
+	- PNG		load & save
 	- JPG		load
+	- PSD		load
+	- HDR		load
+	- PIC		load
 
 	OpenGL Texture Features:
 	- resample to power-of-two sizes
@@ -87,10 +92,11 @@ enum
 	SOIL_FLAG_MULTIPLY_ALPHA: for using (GL_ONE,GL_ONE_MINUS_SRC_ALPHA) blending
 	SOIL_FLAG_INVERT_Y: flip the image vertically
 	SOIL_FLAG_COMPRESS_TO_DXT: if the card can display them, will convert RGB to DXT1, RGBA to DXT5
-	SOIL_FLAG_DDS_LOAD_DIRECT: will load DDS files directly without _ANY_ additional processing
+	SOIL_FLAG_DDS_LOAD_DIRECT: will load DDS files directly without _ANY_ additional processing ( if supported )
 	SOIL_FLAG_NTSC_SAFE_RGB: clamps RGB components to the range [16,235]
 	SOIL_FLAG_CoCg_Y: Google YCoCg; RGB=>CoYCg, RGBA=>CoCgAY
 	SOIL_FLAG_TEXTURE_RECTANGE: uses ARB_texture_rectangle ; pixel indexed & no repeat or MIPmaps or cubemaps
+	SOIL_FLAG_PVR_LOAD_DIRECT: will load PVR files directly without _ANY_ additional processing ( if supported )
 **/
 enum
 {
@@ -103,7 +109,10 @@ enum
 	SOIL_FLAG_DDS_LOAD_DIRECT = 64,
 	SOIL_FLAG_NTSC_SAFE_RGB = 128,
 	SOIL_FLAG_CoCg_Y = 256,
-	SOIL_FLAG_TEXTURE_RECTANGLE = 512
+	SOIL_FLAG_TEXTURE_RECTANGLE = 512,
+	SOIL_FLAG_PVR_LOAD_DIRECT = 1024,
+	SOIL_FLAG_ETC1_LOAD_DIRECT = 2048,
+	SOIL_FLAG_GL_MIPMAPS = 4096
 };
 
 /**
@@ -111,12 +120,14 @@ enum
 	(TGA supports uncompressed RGB / RGBA)
 	(BMP supports uncompressed RGB)
 	(DDS supports DXT1 and DXT5)
+	(PNG supports RGB / RGBA)
 **/
 enum
 {
 	SOIL_SAVE_TYPE_TGA = 0,
 	SOIL_SAVE_TYPE_BMP = 1,
-	SOIL_SAVE_TYPE_DDS = 2
+	SOIL_SAVE_TYPE_PNG = 2,
+	SOIL_SAVE_TYPE_DDS = 3
 };
 
 /**
@@ -156,17 +167,6 @@ unsigned int
 		int force_channels,
 		unsigned int reuse_texture_ID,
 		unsigned int flags
-	);
-
-unsigned int
-	SOIL_load_OGL_texture_size
-	(
-		const char *filename,
-		int force_channels,
-		unsigned int reuse_texture_ID,
-		unsigned int flags,
-		int *width,
-		int *height
 	);
 
 /**
@@ -316,8 +316,8 @@ unsigned int
 	Creates a 2D OpenGL texture from raw image data.  Note that the raw data is
 	_NOT_ freed after the upload (so the user can load various versions).
 	\param data the raw data to be uploaded as an OpenGL texture
-	\param width the width of the image in pixels
-	\param height the height of the image in pixels
+	\param width the pointer of the width of the image in pixels ( if the texture size change, width will be overrided with the new width )
+	\param height the pointer of the height of the image in pixels ( if the texture size change, height will be overrided with the new height )
 	\param channels the number of channels: 1-luminous, 2-luminous/alpha, 3-RGB, 4-RGBA
 	\param reuse_texture_ID 0-generate a new texture ID, otherwise reuse the texture ID (overwriting the old texture)
 	\param flags can be any of SOIL_FLAG_POWER_OF_TWO | SOIL_FLAG_MIPMAPS | SOIL_FLAG_TEXTURE_REPEATS | SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_INVERT_Y | SOIL_FLAG_COMPRESS_TO_DXT
@@ -327,7 +327,7 @@ unsigned int
 	SOIL_create_OGL_texture
 	(
 		const unsigned char *const data,
-		int width, int height, int channels,
+		int *width, int *height, int channels,
 		unsigned int reuse_texture_ID,
 		unsigned int flags
 	);
@@ -436,6 +436,60 @@ const char*
 		void
 	);
 
+/** @return The address of the GL function proc, or NULL if the function is not found. */
+void *
+	SOIL_GL_GetProcAddress
+	(
+		const char *proc
+	);
+
+/** @return 1 if an OpenGL extension is supported for the current context, 0 otherwise. */
+int
+	SOIL_GL_ExtensionSupported
+	(
+		const char *extension
+	);
+
+/** Loads the DDS texture directly to the GPU memory ( if supported ) */
+unsigned int SOIL_direct_load_DDS(
+		const char *filename,
+		unsigned int reuse_texture_ID,
+		int flags,
+		int loading_as_cubemap );
+
+/** Loads the DDS texture directly to the GPU memory ( if supported ) */
+unsigned int SOIL_direct_load_DDS_from_memory(
+		const unsigned char *const buffer,
+		int buffer_length,
+		unsigned int reuse_texture_ID,
+		int flags,
+		int loading_as_cubemap );
+
+/** Loads the PVR texture directly to the GPU memory ( if supported ) */
+unsigned int SOIL_direct_load_PVR(
+		const char *filename,
+		unsigned int reuse_texture_ID,
+		int flags,
+		int loading_as_cubemap );
+
+/** Loads the PVR texture directly to the GPU memory ( if supported ) */
+unsigned int SOIL_direct_load_PVR_from_memory(
+		const unsigned char *const buffer,
+		int buffer_length,
+		unsigned int reuse_texture_ID,
+		int flags,
+		int loading_as_cubemap );
+
+/** Loads the PVR texture directly to the GPU memory ( if supported ) */
+unsigned int SOIL_direct_load_ETC1(const char *filename,
+		unsigned int reuse_texture_ID,
+		int flags );
+
+/** Loads the PVR texture directly to the GPU memory ( if supported ) */
+unsigned int SOIL_direct_load_ETC1_from_memory(const unsigned char *const buffer,
+		int buffer_length,
+		unsigned int reuse_texture_ID,
+		int flags );
 
 #ifdef __cplusplus
 }

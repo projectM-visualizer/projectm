@@ -7,47 +7,40 @@ INCLUDE(CMakeDependentOption)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # projectM version block
-set(PROJECTM_VERSION 2.1.0)
+set(PROJECTM_VERSION 2.2.0)
 set(PROJECTM_ABI_LEVEL 2)
 #
 
+SET(USE_THREADS_DEF ON)
+SET(USE_FTGL_DEF ON)
+SET(USE_FBO_DEF ON)
+
 if (EMSCRIPTEN)
+    SET(USE_THREADS-DEF OFF)
+    SET(USE_FTGL_DEF ON)
+    SET(USE_FBO_DEF OFF)
+
     SET(USE_GLES1 ON)
-    SET(USE_INCLUDED_GLEW OFF)
-    SET(USE_THREADS OFF)
-    SET(USE_OPENMP OFF)
-    SET(USE_FTGL OFF)
-    SET(USE_FBO OFF)
     SET(BUILD_PROJECTM_STATIC ON)
     SET(DISABLE_NATIVE_PRESETS ON)
-    SET(USE_CG OFF)
+
     SET(APPLE )
     SET(LINUX )
+
     SET(OPENGL_gl_LIBRARY "fake_gl_lib.a")
     SET(GLEW_LIBRARY "gl.symbols")
     ADD_DEFINITIONS(-DDISABLE_NATIVE_PRESETS)
 endif (EMSCRIPTEN)
 
-if (APPLE)
-    SET(USE_INCLUDED_GLEW OFF)
-	SET(USE_FTGL ON)
-	SET(USE_OPENMP OFF)
-	SET(BUILD_PROJECTM_STATIC ON)
-    SET(USE_FBO ON)
-    SET(USE_CG ON)
-    SET(USE_GLES1 ON)
-endif(APPLE)
-
-
-OPTION (USE_GLES1 "Use OpenGL ES" ${USE_GLES1})
-CMAKE_DEPENDENT_OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disable this if you are experiencing problems on older or poorly supported hardware." ON "NOT USE_GLES1" OFF)  # disabled by default for GLES
-OPTION(USE_FTGL "Use FTGL for on-screen fonts (found on your system)" ${USE_FTGL})
-OPTION (USE_THREADS "Use threads for parallelization" ${USE_THREADS})
-OPTION (USE_OPENMP "Use OpenMP and OMPTL for multi-core parallelization" ${USE_OPENMP})
-OPTION (USE_INCLUDED_GLEW "Use projectM's included implemention of GLEW" ${USE_INCLUDED_GLEW})
-OPTION (USE_CG "Use Cg for Pixel Shader support" ${USE_CG})
-OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL library" ${USE_DEVIL})
-OPTION (BUILD_PROJECTM_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." ${BUILD_PROJECTM_STATIC})
+OPTION (USE_GLES1 "Use OpenGL ES" ON)
+CMAKE_DEPENDENT_OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disable this if you are experiencing problems on older or poorly supported hardware." ON "${USE_GLES1}" OFF)  # disabled by default for GLES
+OPTION(USE_FTGL "Use FTGL for on-screen fonts" ${USE_FTGL_DEF})
+OPTION (USE_THREADS "Use threads for parallelization" ${USE_THREADS_DEF})
+OPTION (USE_OPENMP "Use OpenMP and OMPTL for multi-core parallelization" OFF)
+OPTION (USE_INCLUDED_GLEW "Use projectM's included implemention of GLEW" OFF)
+OPTION (USE_CG "Use Cg for Pixel Shader support" OFF)
+OPTION (USE_DEVIL "Use devIL for image loading rather than the builtin SOIL library" OFF)
+OPTION (BUILD_PROJECTM_STATIC "Build the projectM target library in the platform's native static (NOT shared) format." ON)
 OPTION (DISABLE_NATIVE_PRESETS "Turn off support for native (C++ style) presets" ${DISABLE_NATIVE_PRESETS})
 OPTION (DISABLE_MILKDROP_PRESETS "Turn off support for Milkdrop (.milk / .prjm) presets"  ${DISABLE_MILKDROP_PRESETS})
 
@@ -84,7 +77,7 @@ endif(NOT DISABLE_NATIVE_PRESETS)
 if (NOT DISABLE_MILKDROP_PRESETS)
 	add_subdirectory(MilkdropPresetFactory)
 	SET(PRESET_FACTORY_SOURCES ${PRESET_FACTORY_SOURCES} ${MilkdropPresetFactory_SOURCE_DIR})
-	SET(PRESET_FACTORY_BINARY_DIR ${PRESET_FACTORY_BINARY_DIR} ${MilkdropPrmaesetFactory_BINARY_DIR})
+	SET(PRESET_FACTORY_BINARY_DIR ${PRESET_FACTORY_BINARY_DIR} ${MilkdropPresetFactory_BINARY_DIR})
 	SET(PRESET_FACTORY_LINK_TARGETS ${PRESET_FACTORY_LINK_TARGETS} MilkdropPresetFactory)
 endif(NOT DISABLE_MILKDROP_PRESETS)
 
@@ -133,8 +126,6 @@ else(BUILD_PROJECTM_STATIC)
 	ADD_LIBRARY(projectM SHARED ${projectM_SOURCES})
 endif(BUILD_PROJECTM_STATIC)
 
-set_property(TARGET projectM PROPERTY LINK_INTERFACE_LIBRARIES "")
-set_property(TARGET projectM PROPERTY IMPORTED_LINK_DEPENDENT_LIBRARIES "")
 SET_TARGET_PROPERTIES(projectM PROPERTIES VERSION ${PROJECTM_VERSION} SOVERSION ${PROJECTM_ABI_LEVEL})
 
 if (USE_THREADS)
@@ -145,11 +136,6 @@ if (APPLE)
 	ADD_DEFINITIONS(-DMACOS -DSTBI_NO_DDS)
 	set(RESOURCE_PREFIX "Resources")
 	FIND_LIBRARY(COREFOUNDATION_LIBRARY CoreFoundation)
-#	if (USE_GLES1)
-#		FIND_LIBRARY(OPENGL_LIBRARIES OpenGLES)
-#	else (USE_GLES1)
-		FIND_LIBRARY(OPENGL_LIBRARIES OpenGL)
-#	endif (USE_GLES1)
 	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/include")
 	SET (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I/usr/local/include")
 else (APPLE)
@@ -168,7 +154,12 @@ endif(APPLE)
 
 add_subdirectory(Renderer)
 
-FIND_PACKAGE(OpenGL)
+if (USE_GLES1)
+	INCLUDE(cmake/FindOpenGLES.cmake)
+	FIND_PACKAGE(OpenGLES)
+else (USE_GLES1)
+	FIND_PACKAGE(OpenGL)
+endif (USE_GLES1)
 
 INCLUDE(FindPkgConfig.cmake)
 
@@ -228,34 +219,26 @@ else(MSVC)
 endif(MSVC)
 
 # compiling on arm? relocation is gonna fail unless position-independent
-IF( CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l" )
+IF( CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l" OR  NOT ${DISABLE_NATIVE_PRESETS})
   SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-fPIC")
-ENDIF( CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l" )
+ENDIF( CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l" OR NOT ${DISABLE_NATIVE_PRESETS})
 
-if(BUILD_PROJECTM_STATIC)
-	TARGET_LINK_LIBRARIES(projectM Renderer
-				${IMAGE_LINK_TARGETS}
-				${CG_LINK_TARGETS}
-				${PRESET_FACTORY_LINK_TARGETS}
-				${GLEW_LIBRARY}
-				${FTGL_LINK_TARGETS}
-				${MATH_LIBRARIES}
-				${COREFOUNDATION_LIBRARIES}
-				${OPENGL_LIBRARIES}
-				dl
-	)
-else(BUILD_PROJECTM_STATIC)
-	TARGET_LINK_LIBRARIES(projectM Renderer
-				${IMAGE_LINK_TARGETS}
-				${CG_LINK_TARGETS}
-				${PRESET_FACTORY_LINK_TARGETS}
-				${GLEW_LIBRARY}
-				${FTGL_LINK_TARGETS}
-				${MATH_LIBRARIES}
-				${OPENGL_LIBRARIES}
-				dl
-	)
-endif(BUILD_PROJECTM_STATIC)
+
+SET(projectM_LIBRARIES_TO_LINK
+	Renderer
+	${IMAGE_LINK_TARGETS}
+	${CG_LINK_TARGETS}
+	${PRESET_FACTORY_LINK_TARGETS}
+	${GLEW_LIBRARY}
+	${FTGL_LINK_TARGETS}
+	${MATH_LIBRARIES}
+	${COREFOUNDATION_LIBRARIES}
+	${OPENGL_LIBRARIES}
+	${OPENGLES_LIBRARIES}
+	dl
+)
+
+TARGET_LINK_LIBRARIES(projectM ${projectM_LIBRARIES_TO_LINK})
 
 SET(projectM_FONT_MENU "${CMAKE_INSTALL_PREFIX}/${RESOURCE_PREFIX}/fonts/VeraMono.ttf" CACHE FILEPATH "Path to the default menu TrueType font")
 SET(projectM_FONT_TITLE "${CMAKE_INSTALL_PREFIX}/${RESOURCE_PREFIX}/fonts/Vera.ttf" CACHE FILEPATH "Path to the default title TrueType font")

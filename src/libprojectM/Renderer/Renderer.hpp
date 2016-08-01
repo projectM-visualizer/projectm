@@ -8,14 +8,14 @@
 #include <set>
 
 #ifdef USE_GLES1
-#include <GLES/gl.h>
+  #include <GLES/gl.h>
 #else
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
+  #ifdef __APPLE__
+    #include <OpenGL/gl.h>
+  #else
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+  #endif
 #endif
 
 #ifdef USE_FTGL
