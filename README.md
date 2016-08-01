@@ -2,9 +2,12 @@
 * [Prebuilt iTunes plugin installer](https://github.com/revmischa/projectm/releases)
 * [OSX Build instructions](BUILDING_OSX.txt)
 
+<<<<<<< HEAD
 # Linux:
 * sudo apt-get install cmake-curses-gui libsdl2-dev libglew-dev libgles2-mesa-dev libftgl-dev
 
+=======
+>>>>>>> e879864f22d33efdee3735eddd68b96ffcfdecca
 # Building
 Requires [cmake](https://cmake.org/download/).  
 ```
