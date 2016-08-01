@@ -1,8 +1,8 @@
-## Mac OS X Users:
+## Mac OS X
 * [Prebuilt iTunes plugin installer](https://github.com/revmischa/projectm/releases)
 * [OSX Build instructions](BUILDING_OSX.txt)
 
-## Linux:
+## Linux
 * `sudo apt-get install cmake-curses-gui libsdl2-dev libglew-dev libftgl-dev libsdl2-dev`
 
 ## Building From Source
