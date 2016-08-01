@@ -152,7 +152,7 @@ int main( int argc, char *argv[] ) {
     app.settings.easterEgg = 0; // ???
     app.settings.shuffleEnabled = 1;
     app.settings.softCutRatingsEnabled = 1; // ???
-    app.settings.presetURL = "presets_tryptonaut";
+    app.settings.presetURL = "../../presets/presets_tryptonaut";
     app.settings.menuFontURL = "fonts/Vera.ttf";
     app.settings.titleFontURL = "fonts/Vera.ttf";
     
