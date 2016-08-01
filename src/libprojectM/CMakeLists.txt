@@ -235,7 +235,7 @@ IF( CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l" )
 ENDIF( CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7l" )
 
 if(BUILD_PROJECTM_STATIC)
-    message("-- Building static libproject")
+    message(STATUS "-- Building static libproject")
 	TARGET_LINK_LIBRARIES(projectM Renderer
 				${IMAGE_LINK_TARGETS}
 				${CG_LINK_TARGETS}
@@ -248,7 +248,7 @@ if(BUILD_PROJECTM_STATIC)
 				dl
 	)
 else(BUILD_PROJECTM_STATIC)
-    message("-- Building dynamic libprojectm")
+    MESSAGE(STATUS "-- Building dynamic libprojectm")
 	TARGET_LINK_LIBRARIES(projectM Renderer
 				${IMAGE_LINK_TARGETS}
 				${CG_LINK_TARGETS}
