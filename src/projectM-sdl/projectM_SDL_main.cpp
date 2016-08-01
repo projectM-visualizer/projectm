@@ -8,6 +8,16 @@
 //  This is an implementation of projectM using libsdl2
 
 
+#include <SDL2/SDL.h>
+
+#ifdef __linux__
+#ifdef USE_GLES1
+#include <GLES/gl.h>
+#else
+#include <GL/gl.h>
+#endif
+#endif
+
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
 #include <SDL2/SDL.h>
@@ -152,7 +162,7 @@ int main( int argc, char *argv[] ) {
     app.settings.easterEgg = 0; // ???
     app.settings.shuffleEnabled = 1;
     app.settings.softCutRatingsEnabled = 1; // ???
-    app.settings.presetURL = "presets_tryptonaut";
+    app.settings.presetURL = "../../presets/presets_tryptonaut";
     app.settings.menuFontURL = "fonts/Vera.ttf";
     app.settings.titleFontURL = "fonts/Vera.ttf";
     
