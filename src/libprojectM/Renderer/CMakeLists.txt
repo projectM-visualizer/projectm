@@ -26,6 +26,7 @@ SET(Renderer_SOURCES
 	VideoEcho.cpp
 	RenderItemDistanceMetric.cpp
 	RenderItemMatcher.cpp
+	../KeyHandler.cpp
 	${SOIL_SOURCES}
 )
 
@@ -48,7 +49,7 @@ else (APPLE)
 	set(COREFOUNDATION_LIBRARY )
 endif(APPLE)
 
-INCLUDE_DIRECTORIES(${projectM_SOURCE_DIR})
+INCLUDE_DIRECTORIES(${projectM_SOURCE_DIR} ${projectM_SOURCE_DIR}/Renderer)
 
 ADD_LIBRARY(Renderer STATIC ${Renderer_SOURCES})
 TARGET_LINK_LIBRARIES(Renderer ${MATH_LIBRARIES}
