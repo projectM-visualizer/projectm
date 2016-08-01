@@ -322,7 +322,7 @@ find_max_RGBE
 	for( i = width * height; i > 0; --i )
 	{
 		/* float scale = powf( 2.0f, img[3] - 128.0f ) / 255.0f; */
-		float scale = ldexp( 1.0f / 255.0f, (int)(img[3]) - 128 );
+		float scale = (float)ldexp( 1.0f / 255.0f, (int)(img[3]) - 128 );
 		for( j = 0; j < 3; ++j )
 		{
 			if( img[j] * scale > max_val )
@@ -363,14 +363,14 @@ RGBE_to_RGBdivA
 		/* decode this pixel, and find the max */
 		float r,g,b,e, m;
 		/* e = scale * powf( 2.0f, img[3] - 128.0f ) / 255.0f; */
-		e = scale * ldexp( 1.0f / 255.0f, (int)(img[3]) - 128 );
+		e = scale * (float)ldexp( 1.0f / 255.0f, (int)(img[3]) - 128 );
 		r = e * img[0];
 		g = e * img[1];
 		b = e * img[2];
 		m = (r > g) ? r : g;
 		m = (b > m) ? b : m;
 		/* and encode it into RGBdivA */
-		iv = (m != 0.0f) ? (int)(255.0f / m) : 1.0f;
+		iv = (m != 0.0f) ? (int)(255.0f / m) : 1;
 		iv = (iv < 1) ? 1 : iv;
 		img[3] = (iv > 255) ? 255 : iv;
 		iv = (int)(img[3] * r + 0.5f);
@@ -412,14 +412,14 @@ RGBE_to_RGBdivA2
 		/* decode this pixel, and find the max */
 		float r,g,b,e, m;
 		/* e = scale * powf( 2.0f, img[3] - 128.0f ) / 255.0f; */
-		e = scale * ldexp( 1.0f / 255.0f, (int)(img[3]) - 128 );
+		e = scale * (float)ldexp( 1.0f / 255.0f, (int)(img[3]) - 128 );
 		r = e * img[0];
 		g = e * img[1];
 		b = e * img[2];
 		m = (r > g) ? r : g;
 		m = (b > m) ? b : m;
 		/* and encode it into RGBdivA */
-		iv = (m != 0.0f) ? (int)sqrtf( 255.0f * 255.0f / m ) : 1.0f;
+		iv = (m != 0.0f) ? (int)sqrtf( 255.0f * 255.0f / m ) : 1;
 		iv = (iv < 1) ? 1 : iv;
 		img[3] = (iv > 255) ? 255 : iv;
 		iv = (int)(img[3] * img[3] * r / 255.0f + 0.5f);
