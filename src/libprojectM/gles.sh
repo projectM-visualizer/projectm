@@ -1,7 +1,7 @@
 #!/bin/sh
  
 search() {
-find . \( -name "*.h" -o -name "*.c" -o -name "*.cpp" -o -name "*.cxx" \) -exec grep -Hn "$*" {} \; | grep -v -E '\.\/glx?ew' | grep -v ./Renderer/SOIL2/SOIL2.c
+find . \( -name "*.h" -o -name "*.c" -o -name "*.cpp" -o -name "*.cxx" \) -exec grep -Hn "$*" {} \; | grep -v -E '\.\/glx?ew' | grep -v ./Renderer/SOIL2/SOIL2.c | grep -v FBO.cpp
 }
  
 listIssues() {
