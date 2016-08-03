@@ -1,5 +1,5 @@
 ## Mac OS X
-* [Prebuilt iTunes plugin installer](https://github.com/revmischa/projectm/releases)
+* [Prebuilt iTunes plugin installer](https://github.com/projectM-visualizer/projectm/releases)
 * [OSX Build instructions](BUILDING_OSX.txt)
 
 ## Linux
@@ -14,7 +14,7 @@ make install
 ```
 
 ## Help
-Report issues on [GitHub](https://github.com/revmischa/projectm/issues/new)
+Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues/new)
 
 ## Configure With cmake
 If you wish to configure build options run:  

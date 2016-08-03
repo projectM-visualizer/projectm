@@ -1,5 +1,5 @@
 projectM -- Milkdrop-esque visualisation SDK
-Copyright (C)2003-2007 projectM Team
+Copyright (C)2003-2016 projectM Team
 
 This library is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -48,3 +48,6 @@ Matthias Klumpp
 Mischa Spiegelmock
     Mac OS X updates and native iTunes visualization plugin
     Web support (projectM-emscripten)
+    CMake improvements for OSX and Linux
+    SDL and OpenGLES
+
