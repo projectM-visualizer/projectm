@@ -15,8 +15,11 @@ Its purpose in life is to read in audio input and produce mesmerizing visuals, d
 The preset files define the visualizations via pixel shaders and Milkdrop-style equations and parameters. Included with projectM are the bltc201, Milkdrop 1 and 2, projectM, tryptonaut and yin collections. You can grab all of the presets [here](http://spiegelmc.com.s3.amazonaws.com/pub/projectm_presets.zip).
 
 ### Also Featured In
-* [Kodi ![Kodi](web/kodi.png)](https://kodi.tv/)
-* [Helix ![Helix](web/helix.jpg)]](http://ghostfiregames.com/helixhome.html)
+![Kodi](web/kodi.png)(https://kodi.tv/)  
+Kodi (formerly XBMC)  
+
+![Helix](web/helix.jpg)](http://ghostfiregames.com/helixhome.html)  
+Helix
 
 ***
 
