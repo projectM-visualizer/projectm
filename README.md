@@ -1,3 +1,5 @@
+![Logo](web/logo.png)
+
 ## projectM - The most advanced open-source music visualizer
 projectM is an open-source project that reimplements the esteemed [Winamp Milkdrop](https://en.wikipedia.org/wiki/MilkDrop) by Geiss in a more modern, cross-platform reusable library.
 
@@ -11,6 +13,10 @@ Its purpose in life is to read in audio input and produce mesmerizing visuals, d
 
 ### Presets
 The preset files define the visualizations via pixel shaders and Milkdrop-style equations and parameters. Included with projectM are the bltc201, Milkdrop 1 and 2, projectM, tryptonaut and yin collections. You can grab all of the presets [here](http://spiegelmc.com.s3.amazonaws.com/pub/projectm_presets.zip).
+
+### Also Featured In
+* [Kodi (formerly XBMC) ![Kodi](web/kodi.png)](https://kodi.tv/)
+* [Helix ![Kodi](web/helix.jpg)](http://ghostfiregames.com/helixhome.html)
 
 ***
 
@@ -62,7 +68,8 @@ Review the options and change what you think is necessary. Press 'g' to generate
 Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues/new)
 
 ## Authors
-[Authors](AUTHORS.txt)
+[Authors](AUTHORS.txt)  
+If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues. 
 
 ## License
 [LGPL](LICENSE.txt)
