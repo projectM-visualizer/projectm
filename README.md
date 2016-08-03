@@ -1,11 +1,11 @@
-# Mac OS X Users:
+## Mac OS X
 * [Prebuilt iTunes plugin installer](https://github.com/revmischa/projectm/releases)
 * [OSX Build instructions](BUILDING_OSX.txt)
 
-# Linux:
-* sudo apt-get install cmake-curses-gui libsdl2-dev libglew-dev libftgl-dev
+## Linux
+* `sudo apt-get install cmake-curses-gui libsdl2-dev libglew-dev libftgl-dev libsdl2-dev`
 
-# Building
+## Building From Source
 Requires [cmake](https://cmake.org/download/).  
 ```
 cmake .
@@ -16,7 +16,7 @@ make install
 ## Help
 Report issues on [GitHub](https://github.com/revmischa/projectm/issues/new)
 
-## Configure with cmake
+## Configure With cmake
 If you wish to configure build options run:  
 `ccmake .`  
 This will present you with a simple console-based interface of options for projectM.  
