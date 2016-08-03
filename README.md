@@ -15,9 +15,9 @@ The preset files define the visualizations via pixel shaders and Milkdrop-style 
 ***
 
 ## Screenshots
-![Screenshot](https://github.com/projectM-visualizer/projectm/blob/master/src/projectM-iTunes/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.20%20AM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/blob/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.20%20AM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/blob/master/src/projectM-iTunes/projectM-iTunes/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.33.50%20AM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/blob/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.33.50%20AM.png)
 
 ![Screenshot](https://github.com/projectM-visualizer/projectm/blob/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.14.41%20PM.png)
 
@@ -25,9 +25,9 @@ The preset files define the visualizations via pixel shaders and Milkdrop-style 
 
 ![Screenshot](https://github.com/projectM-visualizer/projectm/blob/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.15.36%20PM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/blob/master/src/projectM-iTunes/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.49.32%20PM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/blob/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.49.32%20PM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/blob/master/src/projectM-iTunes/projectM-iTunes/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.50.37%20PM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/blob/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.50.37%20PM.png)
 
 ![Screenshot](https://github.com/projectM-visualizer/projectm/blob/master/src/projectM-iTunes/projectM-iTunes/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.07%20AM.png)
 
