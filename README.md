@@ -1,4 +1,4 @@
-![Logo](web/logo.png)
+![Logo](https://github.com/projectM-visualizer/projectm/raw/master/web/logo.png)
 
 ## projectM - The most advanced open-source music visualizer
 projectM is an open-source project that reimplements the esteemed [Winamp Milkdrop](https://en.wikipedia.org/wiki/MilkDrop) by Geiss in a more modern, cross-platform reusable library.
@@ -15,10 +15,10 @@ Its purpose in life is to read in audio input and produce mesmerizing visuals, d
 The preset files define the visualizations via pixel shaders and Milkdrop-style equations and parameters. Included with projectM are the bltc201, Milkdrop 1 and 2, projectM, tryptonaut and yin collections. You can grab all of the presets [here](http://spiegelmc.com.s3.amazonaws.com/pub/projectm_presets.zip).
 
 ### Also Featured In
-[![Kodi](web/kodi.png)](https://kodi.tv/)  
+[![Kodi](https://github.com/projectM-visualizer/projectm/raw/master/web/xbmc.png)](https://kodi.tv/)  
 Kodi (formerly XBMC)  
 
-[![Helix](web/helix.jpg)](http://ghostfiregames.com/helixhome.html)  
+[![Helix](https://github.com/projectM-visualizer/projectm/raw/master/web/helix.jpg)](http://ghostfiregames.com/helixhome.html)  
 Helix
 
 ***
@@ -46,7 +46,7 @@ Helix
 
 ## Mac OS X
 * [Prebuilt iTunes plugin installer](https://github.com/projectM-visualizer/projectm/releases)
-* [OSX Build instructions](BUILDING_OSX.txt)
+* [OSX Build instructions](https://github.com/projectM-visualizer/projectm/raw/master/BUILDING_OSX.txt)
 
 ## Linux
 * `sudo apt-get install cmake-curses-gui libsdl2-dev libglew-dev libftgl-dev libsdl2-dev`
@@ -71,8 +71,8 @@ Review the options and change what you think is necessary. Press 'g' to generate
 Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues/new)
 
 ## Authors
-[Authors](AUTHORS.txt)  
+[Authors](https://github.com/projectM-visualizer/projectm/raw/master/AUTHORS.txt)  
 If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues. 
 
 ## License
-[LGPL](LICENSE.txt)
+[LGPL](https://github.com/projectM-visualizer/projectm/raw/master/LICENSE.txt)
