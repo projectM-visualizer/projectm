@@ -50,11 +50,19 @@ make
 make install
 ```
 
-## Help
-Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues/new)
-
 ## Configure With cmake
 If you wish to configure build options run:  
 `ccmake .`  
 This will present you with a simple console-based interface of options for projectM.  
 Review the options and change what you think is necessary. Press 'g' to generate the make files and exit.  
+
+***
+
+## Help
+Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues/new)
+
+## Authors
+[Authors](AUTHORS.txt)
+
+## License
+[LGPL](LICENSE.txt)
