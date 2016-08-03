@@ -29,7 +29,7 @@ The preset files define the visualizations via pixel shaders and Milkdrop-style 
 
 ![Screenshot](https://github.com/projectM-visualizer/projectm/blob/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.50.37%20PM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/blob/master/src/projectM-iTunes/projectM-iTunes/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.07%20AM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/blob/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.07%20AM.png)
 
 ***
 
