@@ -46,8 +46,9 @@ Matthias Klumpp
     Bug fixes
 
 Mischa Spiegelmock
-    Mac OS X updates and native iTunes visualization plugin
-    Web support (projectM-emscripten)
-    CMake improvements for OSX and Linux
-    SDL and OpenGLES
+    OSX native iTunes visualization plugin
+    Preliminary web support (projectM-emscripten)
+    cmake improvements for OSX and Linux
+    SDL
+    OpenGLES
 
