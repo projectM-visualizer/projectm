@@ -35,7 +35,7 @@ float GenExpr::eval_gen_expr ( int mesh_i, int mesh_j )
 		return EVAL_ERROR;
 
 	switch ( this->type )
-	{
+	{  /* N.B. this code is responsible for 75% of all CPU time. making it faster will help a lot. */
 		case VAL_T:
 			return ( ( ValExpr* ) item )->eval_val_expr ( mesh_i, mesh_j );
 		case PREFUN_T:
