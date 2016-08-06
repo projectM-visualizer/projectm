@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C307DFD41D565B57002F6B9E /* presets in CopyFiles */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		C345214F1BF022A5001707D2 /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
 		C34521511BF022B1001707D2 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521501BF022B1001707D2 /* libprojectM.a */; };
 		C34521531BF022ED001707D2 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521521BF022ED001707D2 /* SDL2.framework */; };
@@ -32,12 +33,14 @@
 			dstSubfolderSpec = 16;
 			files = (
 				C3D30B901BF02BEC009AAACD /* fonts in CopyFiles */,
+				C307DFD41D565B57002F6B9E /* presets in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C307DFD31D565B57002F6B9E /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
 		C34521441BF02294001707D2 /* SDLprojectM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLprojectM; sourceTree = BUILT_PRODUCTS_DIR; };
 		C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = projectM_SDL_main.cpp; sourceTree = SOURCE_ROOT; };
 		C34521501BF022B1001707D2 /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprojectM.a; sourceTree = "<group>"; };
@@ -83,6 +86,7 @@
 		C345213B1BF02293001707D2 = {
 			isa = PBXGroup;
 			children = (
+				C307DFD31D565B57002F6B9E /* presets */,
 				C345215F1BF025E5001707D2 /* libbz2.a */,
 				C34521601BF025E5001707D2 /* libfreetype.a */,
 				C34521611BF025E5001707D2 /* libftgl.a */,
