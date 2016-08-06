@@ -32,7 +32,7 @@ if (EMSCRIPTEN)
     ADD_DEFINITIONS(-DDISABLE_NATIVE_PRESETS)
 endif (EMSCRIPTEN)
 
-OPTION (USE_GLES1 "Use OpenGL ES" ON)
+OPTION (USE_GLES1 "Use OpenGL ES" OFF)
 CMAKE_DEPENDENT_OPTION (USE_FBO "Use Framebuffer Objects for increased rendering quality.  Disable this if you are experiencing problems on older or poorly supported hardware." ON "${USE_GLES1}" OFF)  # disabled by default for GLES
 OPTION(USE_FTGL "Use FTGL for on-screen fonts" ${USE_FTGL_DEF})
 OPTION (USE_THREADS "Use threads for parallelization" ${USE_THREADS_DEF})
