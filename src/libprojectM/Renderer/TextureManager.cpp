@@ -95,7 +95,7 @@ void TextureManager::Preload()
 					  );
 #endif
 
-  textures["project.tga"]=tex;
+  // textures["project.tga"]=tex;
 
 #ifdef USE_DEVIL
   ilLoadL(IL_TYPE_UNKNOWN,(ILvoid*) headphones_data, headphones_bytes);
