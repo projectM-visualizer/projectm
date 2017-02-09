@@ -278,9 +278,9 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 			if (!m_projectM.selectedPresetIndex(pos))
 				return QVariant();						
 			if (m_projectM.isPresetLocked() && ( index.row() == pos ) )
-				return Qt::red;
+                return QColor(Qt::red);
 			if (!m_projectM.isPresetLocked() && ( index.row() == pos ) )
-				return Qt::green;
+                return QColor(Qt::green);
 			return QVariant();
 		case QPlaylistModel::URLInfoRole:
 			return QVariant ( QString ( m_projectM.getPresetURL ( index.row() ).c_str() ) );
