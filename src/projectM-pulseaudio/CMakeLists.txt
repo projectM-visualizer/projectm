@@ -26,7 +26,9 @@ else(${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
 endif(${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
 
 FIND_PACKAGE(OpenGL)
-FIND_PACKAGE(Qt4 REQUIRED)
+FIND_PACKAGE(Qt5Widgets REQUIRED)
+FIND_PACKAGE(Qt5OpenGL REQUIRED)
+FIND_PACKAGE(Qt5Core REQUIRED)
 
 
 pkg_search_module(LIBPULSE REQUIRED libpulse>=0.9.8)
@@ -74,10 +76,10 @@ set(projectM_pulseaudio_UIS
 )
 
 
-qt4_wrap_ui(projectM_pulseaudio_UIS_H ${projectM_pulseaudio_UIS})
+qt5_wrap_ui(projectM_pulseaudio_UIS_H ${projectM_pulseaudio_UIS})
 
 # After this call, foo_MOC_SRCS = moc_Class1.cxx moc_Class2.cxx moc_Class3.cxx.
-qt4_wrap_cpp(projectM_pulseaudio_MOC_SRCS ${projectM_pulseaudio_MOC_HDRS})
+qt5_wrap_cpp(projectM_pulseaudio_MOC_SRCS ${projectM_pulseaudio_MOC_HDRS})
 
 ADD_DEFINITIONS(-DLINUX)
 ADD_DEFINITIONS(${QT_DEFINITIONS})
@@ -95,10 +97,9 @@ elseif (${CMAKE_PROJECT_NAME} MATCHES ${PROJECT_NAME})
 endif (${CMAKE_PROJECT_NAME} MATCHES "projectM-complete")
 
 INCLUDE_DIRECTORIES(${PROJECTM_INCLUDE}
-		${QT_INCLUDE_DIR}
-		${QT_QTGUI_INCLUDE_DIR}
-		${QT_QTOPENGL_INCLUDE_DIR}
-		${QT_QTCORE_INCLUDE_DIR}
+                ${Qt5Widgets_INCLUDE_DIR}
+                ${Qt5OpenGL_INCLUDE_DIR}
+                ${Qt5Core_INCLUDE_DIR}
 		${LIBPULSE_INCLUDEDIR}
 		${CMAKE_CURRENT_BINARY_DIR}
 		${CMAKE_BINARY_DIR}/projectM-pulseaudio
@@ -112,7 +113,7 @@ endif(COMMAND cmake_policy)
 
 ADD_EXECUTABLE(projectM-pulseaudio ${projectM_pulseaudio_SRCS} ${projectM_pulseaudio_MOC_SRCS} ${projectM_pulseaudio_UIS_H})
 
-TARGET_LINK_LIBRARIES(projectM-pulseaudio projectM-qt projectM pulse ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTCORE_LIBRARIES} ${QT_LIBRARIES} ${GLEW_LIBRARY} ${FTGL_LIBRARIES})
+TARGET_LINK_LIBRARIES(projectM-pulseaudio projectM-qt projectM pulse ${Qt5Widgets_LIBRARIES} ${Qt5OpenGL_LIBRARIES} ${Qt5Core_LIBRARIES} ${GLEW_LIBRARY} ${FTGL_LIBRARIES})
 
 INSTALL(TARGETS projectM-pulseaudio DESTINATION ${CMAKE_INSTALL_PREFIX}/bin )
 install(FILES "projectM-pulseaudio.desktop" DESTINATION ${CMAKE_INSTALL_PREFIX}/share/applications)

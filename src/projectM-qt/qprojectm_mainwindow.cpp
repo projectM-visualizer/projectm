@@ -19,7 +19,7 @@
  *
  */
 
-#include <QtGui>
+#include <QtWidgets>
 #include "qprojectm_mainwindow.hpp"
 #include "qpresetfiledialog.hpp"
 #include "qplaylistfiledialog.hpp"
@@ -658,15 +658,15 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 void QProjectM_MainWindow::refreshHeaders(QResizeEvent * event) {
 
 
-	hHeader->setResizeMode ( 0, QHeaderView::Fixed);
-	hHeader->setResizeMode ( 1, QHeaderView::ResizeToContents);
+    hHeader->setSectionResizeMode ( 0, QHeaderView::Fixed);
+    hHeader->setSectionResizeMode ( 1, QHeaderView::ResizeToContents);
 
 	const int numRatings =  qprojectM()->settings().softCutRatingsEnabled ? 2 : 1;
 
 	int sizeTotal = 0;
 	for (int i = 0; i < numRatings; i++) {
 		// Add 1 to skip the Name column
-		hHeader->setResizeMode (i+1, QHeaderView::ResizeToContents);
+        hHeader->setSectionResizeMode (i+1, QHeaderView::ResizeToContents);
 		sizeTotal += hHeader->sectionSize(i+1);
 	}
 	hHeader->resizeSection(0, ui->tableView->size().width()-20-sizeTotal);
@@ -1024,7 +1024,7 @@ void QProjectM_MainWindow::refreshPlaylist()
 	hHeader = new QHeaderView ( Qt::Horizontal, this );
 	vHeader = new QHeaderView ( Qt::Vertical, this );
 
-	hHeader->setClickable ( false );
+    hHeader->setSectionsClickable ( false );
 	hHeader->setSortIndicatorShown ( false );
 
 	ui->tableView->setVerticalHeader ( vHeader );
