@@ -127,9 +127,7 @@
  private slots:
 	 
 	 void updateFileMode(const QString fileName) {
-		 
-		 QString filter = getFilter();
-		 		
+
 		 	
 		if (fileName == QString()) {
 			 if (isPlaylistSaveMode())
@@ -156,7 +154,7 @@
 				 this->setFileMode(QFileDialog::Directory);
 		}
 				
-		this->setFilter(filter);
+        this->setFilter(filter());
 	 }
 	 
 	 void updateFileMode(const QStringList & selectedFiles) {

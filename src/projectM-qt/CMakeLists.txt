@@ -21,14 +21,16 @@ set(PROJECTM_QT_VERSION 1.10)
 set(PROJECTM_QT_ABI_LEVEL 1)
 #
 
-find_package(Qt4 REQUIRED) # find and setup Qt4 for this project
-include(${QT_USE_FILE})
+find_package(Qt5Widgets REQUIRED) # find and setup Qt5 for this project
+find_package(Qt5OpenGL REQUIRED)
 
-if (QT4_FOUND)
-MESSAGE(STATUS "[projectM-qt] Qt4 detected.")
-else (QT4_FOUND)
-MESSAGE(FATAL_ERROR "Qt4 not detected. Please install Qt4 before continuing (visit www.trolltech.org for more info)")
-endif(QT4_FOUND)
+#include(${QT_USE_FILE})
+
+if (Qt5Widgets_FOUND)
+MESSAGE(STATUS "[projectM-qt] Qt5Widgets detected.")
+else (Qt5Widgets_FOUND)
+MESSAGE(FATAL_ERROR "Qt5Widgets not detected. Please install Qt5 before continuing (visit www.trolltech.org for more info)")
+endif(Qt5Widgets_FOUND)
 set(QT_USE_OPENGL TRUE)
 
 if (LIBPROJECTM_FOUND)
@@ -94,12 +96,12 @@ set( projectM-qt_RESOURCES
 )
 
 # compile resources
-qt4_add_resources( projectM-qt_RC_SRCS ${projectM-qt_RESOURCES} )
+qt5_add_resources( projectM-qt_RC_SRCS ${projectM-qt_RESOURCES} )
 
-qt4_wrap_ui(projectM-qt_UIS_H ${projectM-qt_UIS})
+qt5_wrap_ui(projectM-qt_UIS_H ${projectM-qt_UIS})
 
 # After this call, foo_MOC_SRCS = moc_Class1.cxx moc_Class2.cxx moc_Class3.cxx.
-qt4_wrap_cpp(projectM-qt_MOC_SRCS ${projectM-qt_MOC_HDRS})
+qt5_wrap_cpp(projectM-qt_MOC_SRCS ${projectM-qt_MOC_HDRS})
 
 if(COMMAND cmake_policy)
       cmake_policy(SET CMP0003 NEW)
@@ -123,10 +125,10 @@ endif (${CMAKE_PROJECT_NAME} MATCHES "projectM-complete")
 
 LINK_DIRECTORIES(${PROJECTM_LINK})
 
-include_directories(${PROJECTM_INCLUDE} ${QT_INCLUDE_DIR} ${QT_QTGUI_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR} ${QT_QTOPENGL_INCLUDE_DIR} ${CMAKE_CURRENT_LIBRARY_DIR})
+include_directories(${PROJECTM_INCLUDE} ${Qt5Widgets_INCLUDE_DIR} ${Qt5OpenGL_INCLUDE_DIR} ${CMAKE_CURRENT_LIBRARY_DIR})
 
 # link the "qprojectM" target against the Qt libraries. which libraries exactly, is defined by the "include(${QT_USE_FILE})" line above, which sets up this variable.
-target_link_libraries(projectM-qt projectM GLEW GL ${QT_QTGUI_LIBRARIES} ${QT_QTOPENGL_LIBRARIES} ${QT_QTXML_LIBRARIES} ${QT_LIBRARIES})
+target_link_libraries(projectM-qt projectM GLEW GL ${Qt5Widgets_LIBRARIES} ${Qt5OpenGL_LIBRARIES})
 
 install(FILES qprojectm_mainwindow.hpp DESTINATION include/libprojectM-qt)
 install(TARGETS projectM-qt DESTINATION lib)
