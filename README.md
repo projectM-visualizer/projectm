@@ -49,7 +49,7 @@ Helix
 * [OSX Build instructions](https://github.com/projectM-visualizer/projectm/raw/master/BUILDING_OSX.txt)
 
 ## Linux
-* `sudo apt-get install cmake-curses-gui libsdl2-dev libglew-dev libftgl-dev libsdl2-dev`
+* `sudo apt-get install cmake-curses-gui libsdl2-dev libglew-dev libftgl-dev libsdl2-dev libdevil-dev`
 
 ## Building From Source
 Requires [cmake](https://cmake.org/download/).  
