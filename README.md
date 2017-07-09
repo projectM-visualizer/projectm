@@ -67,7 +67,7 @@ Review the options and change what you think is necessary. Press 'g' to generate
 ***
 
 # Using the library
-At its core projectM is a library, [libprojectM](tree/master/src/libprojectM). This library is responsible for parsing presets, analyzing audio PCM data with beat detection and FFT, applying the preset to the audio feature data and rendering the resulting output with openGL. It can render to an openGL context or a texture.
+At its core projectM is a library, [libprojectM](src/libprojectM). This library is responsible for parsing presets, analyzing audio PCM data with beat detection and FFT, applying the preset to the audio feature data and rendering the resulting output with openGL. It can render to an openGL context or a texture.
 
 For an example of a very simple example use of the library see the [libSDL2 sample code](src/projectM-sdl/projectM_SDL_main.cpp).
 
@@ -78,7 +78,7 @@ There are many other applications that make use of libprojectM that can be found
 # Todo
 * Top priority has for a long time been to [port the calls from OpenGL immediate-mode (old-school) to be compatible with OpenGL ES](https://github.com/projectM-visualizer/projectm/issues/11), using [vertex buffer objects](http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-2.1:-Buffers-and-Textures.html). There's a [branch](https://github.com/projectM-visualizer/projectm/tree/gles) and [todo list of function calls to replace](https://github.com/projectM-visualizer/projectm/blob/gles/glES-porting.txt).
 * [macOS Sierra broke the iTunes plugin somehow](https://github.com/projectM-visualizer/projectm/issues/7)
-* Build a [libSDL2-based app](https://github.com/projectM-visualizer/projectm/tree/master/src/projectM-sdl) that can use audio from any input device and visualize it. Maybe using [portaudio](http://www.portaudio.com/) or the super new [audio capture support](https://wiki.libsdl.org/SDL_OpenAudioDevice) in libSDL 2.0.5.
+* Build a [libSDL2-based app](src/projectM-sdl) that can use audio from any input device and visualize it. Maybe using [portaudio](http://www.portaudio.com/) or the super new [audio capture support](https://wiki.libsdl.org/SDL_OpenAudioDevice) in libSDL 2.0.5.
 * Currently shader support is done via nVidia's Cg shader toolkit. This is ancient and no longer supported and very lame. Use standard OpenGL facilities for compiling and executing the shader-based presets.
 * Support for the missing Milkdrop waveforms to get full compatibility with Milkdrop presets.
 * Steal cool stuff from the recently-released Milkdrop source.
