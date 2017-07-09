@@ -76,7 +76,7 @@ There are many other applications that make use of libprojectM that can be found
 ***
 
 # Todo
-* Top priority has for a long time been to [port the calls from OpenGL immediate-mode (old-school) to be compatible with OpenGL ES](issues/11), using [vertex buffer objects](http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-2.1:-Buffers-and-Textures.html). There's a [branch](tree/gles) and [todo list of function calls to replace](blob/gles/glES-porting.txt).
+* Top priority has for a long time been to [port the calls from OpenGL immediate-mode (old-school) to be compatible with OpenGL ES](#11), using [vertex buffer objects](http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-2.1:-Buffers-and-Textures.html). There's a [branch](tree/gles) and [todo list of function calls to replace](blob/gles/glES-porting.txt).
 * [macOS Sierra broke the iTunes plugin somehow](https://github.com/projectM-visualizer/projectm/issues/7)
 * Build a [libSDL2-based app](https://github.com/projectM-visualizer/projectm/tree/master/src/projectM-sdl) that can use audio from any input device and visualize it. Maybe using [portaudio](http://www.portaudio.com/) or the super new [audio capture support](https://wiki.libsdl.org/SDL_OpenAudioDevice) in libSDL 2.0.5.
 * Currently shader support is done via nVidia's Cg shader toolkit. This is ancient and no longer supported and very lame. Use standard OpenGL facilities for compiling and executing the shader-based presets.
