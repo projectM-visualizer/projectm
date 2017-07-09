@@ -68,10 +68,11 @@ Review the options and change what you think is necessary. Press 'g' to generate
 ***
 
 # Using the library
-At its core projectM is a library, [libprojectM](blob/master/src/libprojectM). This library is responsible for parsing presets, analyzing audio PCM data with beat detection and FFT, applying the preset to the audio feature data and rendering the resulting output with openGL. It can render to an openGL context or a texture.
+At its core projectM is a library, [libprojectM](tree/master/src/libprojectM). This library is responsible for parsing presets, analyzing audio PCM data with beat detection and FFT, applying the preset to the audio feature data and rendering the resulting output with openGL. It can render to an openGL context or a texture.
 
 For an example of a very simple example use of the library see the [libSDL2 sample code](blob/master/src/projectM-sdl/projectM_SDL_main.cpp).
-There are many other applications that make use of libprojectM that can be found in the [src](blob/master/src/) directory.
+
+There are many other applications that make use of libprojectM that can be found in the [src](tree/master/src/) directory.
 
 ***
 
