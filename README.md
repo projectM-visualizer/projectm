@@ -64,7 +64,6 @@ If you wish to configure build options run:
 `ccmake .`  
 This will present you with a simple console-based interface of options for projectM.  
 Review the options and change what you think is necessary. Press 'g' to generate the make files and exit.  
-
 ***
 
 # Using the library
@@ -73,6 +72,19 @@ At its core projectM is a library, [libprojectM](tree/master/src/libprojectM). T
 For an example of a very simple example use of the library see the [libSDL2 sample code](blob/master/src/projectM-sdl/projectM_SDL_main.cpp).
 
 There are many other applications that make use of libprojectM that can be found in the [src](tree/master/src/) directory.
+
+***
+
+# Todo
+* Top priority has for a long time been to [port the calls from OpenGL immediate-mode (old-school) to be compatible with OpenGL ES](issues/11), using [vertex buffer objects](http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-2.1:-Buffers-and-Textures.html). There's a [branch](tree/gles) and [todo list of function calls to replace](blob/gles/glES-porting.txt).
+* [macOS Sierra broke the iTunes plugin somehow](https://github.com/projectM-visualizer/projectm/issues/7)
+* Build a [libSDL2-based app](https://github.com/projectM-visualizer/projectm/tree/master/src/projectM-sdl) that can use audio from any input device and visualize it. Maybe using [portaudio](http://www.portaudio.com/) or the super new [audio capture support](https://wiki.libsdl.org/SDL_OpenAudioDevice) in libSDL 2.0.5.
+* Currently shader support is done via nVidia's Cg shader toolkit. This is ancient and no longer supported and very lame. Use standard OpenGL facilities for compiling and executing the shader-based presets.
+* Support for the missing Milkdrop waveforms to get full compatibility with Milkdrop presets.
+* Steal cool stuff from the recently-released Milkdrop source.
+* Emscripten (transpile to JavaScript and use WebGL) support. [Some of the work is done](tree/emscripten) on this but it requires OpenGL ES (see item 1).
+* Update the [various applications using libprojectM](tree/master/src).
+* Getting rid of CMake would be awesome. CMake sucks. [build](https://github.com/c3d/build) could be nice.
 
 ***
 
