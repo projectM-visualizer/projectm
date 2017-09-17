@@ -10,7 +10,6 @@
 		C307DFD41D565B57002F6B9E /* presets in CopyFiles */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		C345214F1BF022A5001707D2 /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
 		C34521511BF022B1001707D2 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521501BF022B1001707D2 /* libprojectM.a */; };
-		C34521531BF022ED001707D2 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521521BF022ED001707D2 /* SDL2.framework */; };
 		C34521571BF0250D001707D2 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521561BF0250D001707D2 /* libMilkdropPresetFactory.a */; };
 		C34521591BF02516001707D2 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521581BF02516001707D2 /* libNativePresetFactory.a */; };
 		C345215A1BF0259C001707D2 /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521541BF02333001707D2 /* libRenderer.a */; };
@@ -44,7 +43,6 @@
 		C34521441BF02294001707D2 /* SDLprojectM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLprojectM; sourceTree = BUILT_PRODUCTS_DIR; };
 		C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = projectM_SDL_main.cpp; sourceTree = SOURCE_ROOT; };
 		C34521501BF022B1001707D2 /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprojectM.a; sourceTree = "<group>"; };
-		C34521521BF022ED001707D2 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		C34521541BF02333001707D2 /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/libRenderer.a; sourceTree = "<group>"; };
 		C34521561BF0250D001707D2 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
 		C34521581BF02516001707D2 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/libNativePresetFactory.a; sourceTree = "<group>"; };
@@ -74,7 +72,6 @@
 				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
 				C345215A1BF0259C001707D2 /* libRenderer.a in Frameworks */,
 				C34521591BF02516001707D2 /* libNativePresetFactory.a in Frameworks */,
-				C34521531BF022ED001707D2 /* SDL2.framework in Frameworks */,
 				C34521571BF0250D001707D2 /* libMilkdropPresetFactory.a in Frameworks */,
 				C34521511BF022B1001707D2 /* libprojectM.a in Frameworks */,
 			);
@@ -98,7 +95,6 @@
 				C34521581BF02516001707D2 /* libNativePresetFactory.a */,
 				C34521561BF0250D001707D2 /* libMilkdropPresetFactory.a */,
 				C34521541BF02333001707D2 /* libRenderer.a */,
-				C34521521BF022ED001707D2 /* SDL2.framework */,
 				C34521501BF022B1001707D2 /* libprojectM.a */,
 				C34521461BF02294001707D2 /* SDLprojectM */,
 				C34521451BF02294001707D2 /* Products */,
@@ -278,11 +274,16 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+					"$(USER_LIBRARY_DIR)/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../libprojectM";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					SDL2,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -294,11 +295,16 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+					"$(USER_LIBRARY_DIR)/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../libprojectM";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					SDL2,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

@@ -190,7 +190,7 @@ ELSE (USE_FTGL)
 	ENDIF(FTGL_FOUND)
 
 	# todo: change this because its obscure and probably not being used
-	set (FTGL_INCLUDE_DIRS "/opt/local/include")
+	set (FTGL_INCLUDE_DIRS "/usr/local/include")
 	set (FTGL_LINK_DIRS )
 	set (FTGL_LINK_TARGETS )
 ENDIF(USE_FTGL)
