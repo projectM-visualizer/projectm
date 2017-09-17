@@ -25,6 +25,7 @@
 #endif
 
 #include <projectM.hpp>
+#include <sdltoprojectM.h>
 #include <iostream>
 const float FPS = 60;
 
@@ -57,6 +58,22 @@ int selectAudioInput(projectMApp *app) {
     return 1;
 }
 
+void keyHandler(projectMApp *app, SDL_Event *sdl_evt) {
+    projectMEvent evt;
+    projectMKeycode key;
+    projectMModifier mod;
+    SDL_Keymod sdl_mod;
+
+    /** Translate into projectM codes and process */
+    evt = sdl2pmEvent(sdl_evt);
+    key = sdl2pmKeycode(sdl_evt->key.keysym);
+    sdl_mod = SDL_GetModState();
+    mod = sdl2pmModifier(sdl_mod);
+    if (evt == PROJECTM_KEYDOWN) {
+        app->pm->key_handler( evt, key, mod );
+    }
+}
+
 void renderFrame(projectMApp *app) {
     int i;
     short pcm_data[2][512];
@@ -65,29 +82,12 @@ void renderFrame(projectMApp *app) {
     SDL_PollEvent(&evt);
     switch (evt.type) {
         case SDL_KEYDOWN:
-            // ...
+            keyHandler(app, &evt);
             break;
         case SDL_QUIT:
             app->done = true;
             break;
     }
-
-
-//        projectMEvent evt;
-//        projectMKeycode key;
-//        projectMModifier mod;
-//
-//        /** Process SDL events */
-//        SDL_Event event;
-//        while ( SDL_PollEvent( &event ) ) {
-//            /** Translate into projectM codes and process */
-//            evt = sdl2pmEvent( event );
-//            key = sdl2pmKeycode( event.key.keysym.sym );
-//            mod = sdl2pmModifier( (SDLMod)event.key.keysym.mod );
-//            if ( evt == PROJECTM_KEYDOWN ) {
-//                pm->key_handler( evt, key, mod );
-//              }
-//          }
 
     /** Produce some fake PCM data to stuff into projectM */
     for ( i = 0 ; i < 512 ; i++ ) {
@@ -107,7 +107,7 @@ void renderFrame(projectMApp *app) {
     /** Add the waveform data */
     app->pm->pcm()->addPCM16(pcm_data);
 
-    glClearColor( 0.0, 0.5, 0.0, 0.0 );
+    glClearColor( 0.0, 0.0, 0.0, 0.0 );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     app->pm->renderFrame();
