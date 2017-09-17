@@ -1,6 +1,6 @@
 project(NativePresets)
 cmake_minimum_required(VERSION 2.4.0)
-cmake_policy(SET CMP0005 OLD)
+cmake_policy(SET CMP0005 NEW)
 
 include(FindPkgConfig.cmake)
 
