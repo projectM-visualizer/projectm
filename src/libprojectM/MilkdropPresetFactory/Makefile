@@ -17,9 +17,6 @@ SOURCES= \
 
 
 CPPFLAGS+= -I. -I..
-#LDFLAGS+=-lftgl -lgl -lfreetype -lprojectM
-
-#LIBRARIES=../libprojectM
 PRODUCTS=MilkdropPresetFactory.lib
 
 include $(BUILD)rules.mk
