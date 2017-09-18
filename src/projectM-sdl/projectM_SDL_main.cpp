@@ -21,7 +21,7 @@ int main( int argc, char *argv[] ) {
     settings.fps   = FPS;
     settings.textureSize = 2048;  // idk?
     settings.smoothPresetDuration = 3; // seconds
-    settings.presetDuration = 5; // seconds
+    settings.presetDuration = 7; // seconds
     settings.beatSensitivity = 0.8;
     settings.aspectCorrection = 1;
     settings.easterEgg = 0; // ???
