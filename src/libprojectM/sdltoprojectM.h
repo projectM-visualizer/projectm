@@ -58,8 +58,8 @@ inline projectMEvent sdl2pmEvent( SDL_Event *event ) { \
       } \
   } \
 
-inline projectMKeycode sdl2pmKeycode( SDL_Keysym keysym ) { \
-    switch ( keysym.sym ) { \
+inline projectMKeycode sdl2pmKeycode( SDL_Keycode keycode ) { \
+    switch ( keycode ) { \
         case SDLK_F1: \
             return PROJECTM_K_F1; \
         case SDLK_F2: \

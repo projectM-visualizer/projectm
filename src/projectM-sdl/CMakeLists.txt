@@ -11,7 +11,7 @@ INCLUDE(../cmake/CPack-projectM.cmake)
 SET(PROJECTM_INCLUDE ${PROJECTM_ROOT_SOURCE_DIR}/libprojectM ${PROJECTM_ROOT_SOURCE_DIR}/libprojectM/Renderer)
 
 # we're producing an executable called projectMSDL
-ADD_EXECUTABLE(projectMSDL projectM_SDL_main.cpp 
+ADD_EXECUTABLE(projectMSDL projectM_SDL_main.cpp  pmSDL.cpp
 )
 
 # openGL

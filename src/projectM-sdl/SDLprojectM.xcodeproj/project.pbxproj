@@ -7,9 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		161070C41F703F13001905AB /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 161070C31F703F13001905AB /* libprojectM.a */; };
+		169502001F7009E9008FAF86 /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
 		C307DFD41D565B57002F6B9E /* presets in CopyFiles */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		C345214F1BF022A5001707D2 /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
-		C34521511BF022B1001707D2 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521501BF022B1001707D2 /* libprojectM.a */; };
 		C34521571BF0250D001707D2 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521561BF0250D001707D2 /* libMilkdropPresetFactory.a */; };
 		C34521591BF02516001707D2 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521581BF02516001707D2 /* libNativePresetFactory.a */; };
 		C345215A1BF0259C001707D2 /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521541BF02333001707D2 /* libRenderer.a */; };
@@ -25,6 +26,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		161070C81F704047001905AB /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C34521421BF02293001707D2 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
@@ -39,10 +49,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		161070C31F703F13001905AB /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/libprojectM.a; sourceTree = "<group>"; };
+		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
+		169501FF1F7009E9008FAF86 /* pmSDL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pmSDL.hpp; sourceTree = "<group>"; };
 		C307DFD31D565B57002F6B9E /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
 		C34521441BF02294001707D2 /* SDLprojectM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLprojectM; sourceTree = BUILT_PRODUCTS_DIR; };
 		C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = projectM_SDL_main.cpp; sourceTree = SOURCE_ROOT; };
-		C34521501BF022B1001707D2 /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprojectM.a; sourceTree = "<group>"; };
 		C34521541BF02333001707D2 /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/libRenderer.a; sourceTree = "<group>"; };
 		C34521561BF0250D001707D2 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
 		C34521581BF02516001707D2 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/libNativePresetFactory.a; sourceTree = "<group>"; };
@@ -62,27 +74,39 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
+				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
 				C34521651BF025E5001707D2 /* libbz2.a in Frameworks */,
 				C34521661BF025E5001707D2 /* libfreetype.a in Frameworks */,
 				C34521671BF025E5001707D2 /* libftgl.a in Frameworks */,
 				C34521681BF025E5001707D2 /* libGLEW.a in Frameworks */,
 				C34521691BF025E5001707D2 /* libpng15.a in Frameworks */,
 				C345216A1BF025E5001707D2 /* libz.a in Frameworks */,
-				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
-				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
+				161070C41F703F13001905AB /* libprojectM.a in Frameworks */,
 				C345215A1BF0259C001707D2 /* libRenderer.a in Frameworks */,
 				C34521591BF02516001707D2 /* libNativePresetFactory.a in Frameworks */,
 				C34521571BF0250D001707D2 /* libMilkdropPresetFactory.a in Frameworks */,
-				C34521511BF022B1001707D2 /* libprojectM.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		161070CE1F7041B0001905AB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C345215D1BF025CF001707D2 /* CoreFoundation.framework */,
+				C345215B1BF025A9001707D2 /* OpenGL.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		C345213B1BF02293001707D2 = {
 			isa = PBXGroup;
 			children = (
+				169501FE1F7009E9008FAF86 /* pmSDL.cpp */,
+				169501FF1F7009E9008FAF86 /* pmSDL.hpp */,
+				C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */,
 				C307DFD31D565B57002F6B9E /* presets */,
 				C345215F1BF025E5001707D2 /* libbz2.a */,
 				C34521601BF025E5001707D2 /* libfreetype.a */,
@@ -90,13 +114,11 @@
 				C34521621BF025E5001707D2 /* libGLEW.a */,
 				C34521631BF025E5001707D2 /* libpng15.a */,
 				C34521641BF025E5001707D2 /* libz.a */,
-				C345215D1BF025CF001707D2 /* CoreFoundation.framework */,
-				C345215B1BF025A9001707D2 /* OpenGL.framework */,
 				C34521581BF02516001707D2 /* libNativePresetFactory.a */,
 				C34521561BF0250D001707D2 /* libMilkdropPresetFactory.a */,
 				C34521541BF02333001707D2 /* libRenderer.a */,
-				C34521501BF022B1001707D2 /* libprojectM.a */,
-				C34521461BF02294001707D2 /* SDLprojectM */,
+				161070C31F703F13001905AB /* libprojectM.a */,
+				161070CE1F7041B0001905AB /* Frameworks */,
 				C34521451BF02294001707D2 /* Products */,
 				C3D30B8F1BF02BE5009AAACD /* fonts */,
 			);
@@ -110,14 +132,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C34521461BF02294001707D2 /* SDLprojectM */ = {
-			isa = PBXGroup;
-			children = (
-				C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */,
-			);
-			path = SDLprojectM;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -128,6 +142,7 @@
 				C34521401BF02293001707D2 /* Sources */,
 				C34521411BF02293001707D2 /* Frameworks */,
 				C34521421BF02293001707D2 /* CopyFiles */,
+				161070C81F704047001905AB /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -174,6 +189,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				169502001F7009E9008FAF86 /* pmSDL.cpp in Sources */,
 				C345214F1BF022A5001707D2 /* projectM_SDL_main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -279,6 +295,8 @@
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 					"$(USER_LIBRARY_DIR)/Frameworks",
+					"$(PROJECT_DIR)",
+					"$(SRCROOT)",
 				);
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../libprojectM";
 				LIBRARY_SEARCH_PATHS = (
@@ -300,6 +318,8 @@
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 					"$(USER_LIBRARY_DIR)/Frameworks",
+					"$(PROJECT_DIR)",
+					"$(SRCROOT)",
 				);
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../libprojectM";
 				LIBRARY_SEARCH_PATHS = (
