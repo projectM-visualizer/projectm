@@ -36,26 +36,92 @@ typedef struct {
     bool done;
     projectM::Settings settings;
     SDL_AudioDeviceID audioInputDevice;
+    
+    // audio input device characteristics
+    unsigned short audioChannelsCount;
+    unsigned short audioSampleRate;
+    unsigned short audioSampleCount;
+    SDL_AudioFormat audioFormat;
+    SDL_AudioDeviceID audioDeviceID;
+    unsigned char *pcmBuffer;  // pre-allocated buffer for audioInputCallback
 } projectMApp;
 
-int selectAudioInput(projectMApp *app) {
-    // audio input stuff here is very platform-specific
-    // too bad the libsdl2 audio capture support doesn't exist
+void audioInputCallbackF32(void *userdata, unsigned char *stream, int len) {
+//    printf("LEN: %i\n", len);
+    projectMApp *app = (projectMApp *) userdata;
+    // stream is (i think) samples*channels floats (native byte order) of len BYTES
+    app->pm->pcm()->addPCMfloat((float *)stream, len/sizeof(float));
+}
 
-    #ifdef __APPLE__
-// UInt32 audioInputIsAvailable;
-// UInt32 propertySize = sizeof (audioInputIsAvailable);
- 
-// AudioSessionGetProperty (
-//     kAudioSessionProperty_AudioInputAvailable,
-//     &propertySize,
-//     &audioInputIsAvailable // A nonzero value on output means that
-//                            // audio input is available
-// );
+void audioInputCallbackS16(void *userdata, unsigned char *stream, int len) {
+//    printf("LEN: %i\n", len);
+    projectMApp *app = (projectMApp *) userdata;
+    short pcm16[2][512];
+    
+    for (int i = 0; i < 512; i++) { //
+        for (int j = 0; j < app->audioChannelsCount; j++) {
+            pcm16[j][i] = stream[i+j];
+        }
+    }
+    app->pm->pcm()->addPCM16(pcm16);
+}
 
-    #endif
+
+int openAudioInput(projectMApp *app) {
+    // get audio input device
+    int i, count = SDL_GetNumAudioDevices(true);  // capture, please
+    if (count == 0) {
+        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio capture devices found");
+        SDL_Quit();
+    }
+    for (i = 0; i < count; i++) {
+        SDL_Log("Found audio capture device %d: %s", i, SDL_GetAudioDeviceName(i, true));
+    }
+    
+    // params for audio input
+    SDL_AudioSpec want, have;
+    
+    // TODO: let user somehow select audio input device
+    SDL_AudioDeviceID selectedAudioDevice = 0;  // hardcoded to use first device for now :/
+
+    // requested format
+    SDL_zero(want);
+    want.freq = 48000;
+    want.format = AUDIO_F32;  // float
+    want.channels = 2;
+    want.samples = 512;
+    want.callback = audioInputCallbackF32;
+    want.userdata = app;
+
+    app->audioDeviceID = SDL_OpenAudioDevice(SDL_GetAudioDeviceName(selectedAudioDevice, true), true, &want, &have, 0);
+
+    if (app->audioDeviceID == 0) {
+        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Failed to open audio capture device: %s", SDL_GetError());
+        SDL_Quit();
+    }
+
+    // read characteristics of opened capture device
+    SDL_Log("Opened audio capture device %i: %s", app->audioDeviceID, SDL_GetAudioDeviceName(selectedAudioDevice, true));
+    SDL_Log("Sample rate: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
+    app->audioChannelsCount = have.channels;
+    app->audioSampleRate = have.freq;
+    app->audioSampleCount = have.samples;
+    app->audioFormat = have.format;
 
     return 1;
+}
+
+void beginAudioCapture(projectMApp *app) {
+    // allocate a buffer to store PCM data for feeding in
+    unsigned int maxSamples = app->audioChannelsCount * app->audioSampleCount;
+    app->pcmBuffer = (unsigned char *) malloc(maxSamples);
+    SDL_PauseAudioDevice(app->audioDeviceID, false);
+//    app->pm->pcm()->initPCM(maxSamples);
+}
+
+void endAudioCapture(projectMApp *app) {
+    free(app->pcmBuffer);
+    SDL_PauseAudioDevice(app->audioDeviceID, true);
 }
 
 void keyHandler(projectMApp *app, SDL_Event *sdl_evt) {
@@ -74,9 +140,29 @@ void keyHandler(projectMApp *app, SDL_Event *sdl_evt) {
     }
 }
 
-void renderFrame(projectMApp *app) {
+void addFakePCM(projectMApp *app) {
     int i;
     short pcm_data[2][512];
+    /** Produce some fake PCM data to stuff into projectM */
+    for ( i = 0 ; i < 512 ; i++ ) {
+        if ( i % 2 == 0 ) {
+            pcm_data[0][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
+            pcm_data[1][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
+        } else {
+            pcm_data[0][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
+            pcm_data[1][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
+        }
+        if ( i % 2 == 1 ) {
+            pcm_data[0][i] = -pcm_data[0][i];
+            pcm_data[1][i] = -pcm_data[1][i];
+        }
+    }
+    
+    /** Add the waveform data */
+    app->pm->pcm()->addPCM16(pcm_data);
+}
+
+void renderFrame(projectMApp *app) {
     SDL_Event evt;
     
     SDL_PollEvent(&evt);
@@ -88,24 +174,6 @@ void renderFrame(projectMApp *app) {
             app->done = true;
             break;
     }
-
-    /** Produce some fake PCM data to stuff into projectM */
-    for ( i = 0 ; i < 512 ; i++ ) {
-        if ( i % 2 == 0 ) {
-            pcm_data[0][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
-            pcm_data[1][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
-          } else {
-            pcm_data[0][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
-            pcm_data[1][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
-          }
-        if ( i % 2 == 1 ) {
-            pcm_data[0][i] = -pcm_data[0][i];
-            pcm_data[1][i] = -pcm_data[1][i];
-          }
-    }
-
-    /** Add the waveform data */
-    app->pm->pcm()->addPCM16(pcm_data);
 
     glClearColor( 0.0, 0.0, 0.0, 0.0 );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -123,13 +191,7 @@ int main( int argc, char *argv[] ) {
     int width = 784,
         height = 784;
 
-    SDL_Init(SDL_INIT_VIDEO);
-    
-    // get an audio input device
-    if (! selectAudioInput(&app)) {
-        fprintf(stderr, "Failed to open audio input device\n");
-        return 1;
-    }
+    SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
     app.win = SDL_CreateWindow("projectM", 0, 0, width, height, 0);
     app.rend = SDL_CreateRenderer(app.win, 0, SDL_RENDERER_ACCELERATED);
@@ -137,7 +199,7 @@ int main( int argc, char *argv[] ) {
         fprintf(stderr, "Failed to create renderer: %s\n", SDL_GetError());
         return PROJECTM_ERROR;
     }
-    SDL_SetWindowTitle(app.win, "SDL Fun Party Time");
+    SDL_SetWindowTitle(app.win, "projectM Visualizer");
     printf("SDL init version 2\n");
 
     #ifdef PANTS
@@ -170,6 +232,10 @@ int main( int argc, char *argv[] ) {
     app.pm = new projectM(app.settings);
     app.pm->selectRandom(true);
     app.pm->projectM_resetGL(width, height);
+    
+    // get an audio input device
+    openAudioInput(&app);
+    beginAudioCapture(&app);
 
     // standard main loop
     const Uint32 frame_delay = 1000/FPS;
