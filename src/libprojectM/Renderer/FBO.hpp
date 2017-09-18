@@ -81,7 +81,7 @@ public:
 
     /** Opaque pbuffer context and pbuffer */
 /*
-#ifdef MACOS
+#ifdef __APPLE__
     void *origContext;
     void *pbufferContext;
     void *pbuffer;

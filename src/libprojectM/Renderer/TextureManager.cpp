@@ -28,7 +28,7 @@
 #include <dirent.h>
 #endif
 
-#ifdef MACOS
+#ifdef __APPLE__
 #include <dirent.h>
 #endif
 #include "TextureManager.hpp"
@@ -219,7 +219,7 @@ unsigned int TextureManager::getTextureMemorySize()
 
 void TextureManager::loadTextureDir()
 {
-	std::string dirname = CMAKE_INSTALL_PREFIX "/share/projectM/textures";
+	std::string dirname = "/usr/local/share/projectM/textures";
 
 	  DIR * m_dir;
 
