@@ -69,6 +69,7 @@ int projectMSDL::openAudioInput() {
     audioSampleRate = have.freq;
     audioSampleCount = have.samples;
     audioFormat = have.format;
+    audioInputDevice = audioDeviceID;
     
     return 1;
 }
@@ -144,8 +145,8 @@ void projectMSDL::addFakePCM() {
 }
 
 void projectMSDL::resize(unsigned int width, unsigned int height) {
-    width = width;
-    height = height;
+    this->width = width;
+    this->height = height;
     settings.windowWidth = width;
     settings.windowHeight = height;
     projectM_resetGL(width, height);
