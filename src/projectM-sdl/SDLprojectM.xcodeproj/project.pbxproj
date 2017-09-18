@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		161070C41F703F13001905AB /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 161070C31F703F13001905AB /* libprojectM.a */; };
+		161070DD1F705069001905AB /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 161070DC1F705069001905AB /* Cg.framework */; };
 		169502001F7009E9008FAF86 /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
 		C307DFD41D565B57002F6B9E /* presets in CopyFiles */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		C345214F1BF022A5001707D2 /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
@@ -50,6 +51,7 @@
 
 /* Begin PBXFileReference section */
 		161070C31F703F13001905AB /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/libprojectM.a; sourceTree = "<group>"; };
+		161070DC1F705069001905AB /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = ../../../../../../Library/Frameworks/Cg.framework; sourceTree = "<group>"; };
 		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
 		169501FF1F7009E9008FAF86 /* pmSDL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pmSDL.hpp; sourceTree = "<group>"; };
 		C307DFD31D565B57002F6B9E /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
@@ -74,6 +76,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				161070DD1F705069001905AB /* Cg.framework in Frameworks */,
 				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
 				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
 				C34521651BF025E5001707D2 /* libbz2.a in Frameworks */,
@@ -95,6 +98,7 @@
 		161070CE1F7041B0001905AB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				161070DC1F705069001905AB /* Cg.framework */,
 				C345215D1BF025CF001707D2 /* CoreFoundation.framework */,
 				C345215B1BF025A9001707D2 /* OpenGL.framework */,
 			);
