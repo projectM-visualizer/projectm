@@ -1,4 +1,6 @@
-all: src.build
+.PHONY: src
 
-src.build:
+all: src
+
+src:
 	$(MAKE) -C src
