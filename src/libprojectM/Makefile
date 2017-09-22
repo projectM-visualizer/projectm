@@ -8,8 +8,9 @@ SOURCES=projectM.cpp PCM.cpp Preset.cpp fftsg.cpp KeyHandler.cpp \
 CONFIG=libgl
 
 CPPFLAGS+= -I . -I Renderer
+CPPFLAGS_linux=-DLINUX
 LDFLAGS+=-lgl
-LIBRARIES=Renderer MilkdropPresetFactory NativePresetFactory
+SUBDIRS=Renderer MilkdropPresetFactory NativePresetFactory
 
 PRODUCTS=libprojectM.lib
 

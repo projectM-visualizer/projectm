@@ -29,9 +29,10 @@ SOURCES= \
 CONFIG=libftgl libGL libfreetype
 
 CPPFLAGS+= -I. -I.. -ISOIL2
+CPPFLAGS_linux=-DLINUX
 LDFLAGS+=-lftgl -lgl -lfreetype -lprojectM
 
-LIBRARIES=../libprojectM
+LIBRARIES=
 PRODUCTS=Renderer.lib
 
 include $(BUILD)rules.mk
