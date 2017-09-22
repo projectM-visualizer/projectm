@@ -78,7 +78,8 @@ There are many other applications that make use of libprojectM that can be found
 ***
 
 ## Help
-Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues/new)
+Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues/new)  
+We're on IRC at irc.freenode.net #projectM
 
 ## Authors
 [Authors](https://github.com/projectM-visualizer/projectm/raw/master/AUTHORS.txt)  
