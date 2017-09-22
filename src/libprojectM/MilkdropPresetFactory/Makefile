@@ -17,6 +17,7 @@ SOURCES= \
 
 
 CPPFLAGS+= -I. -I..
+LIBRARIES=
 PRODUCTS=MilkdropPresetFactory.lib
 
 include $(BUILD)rules.mk
