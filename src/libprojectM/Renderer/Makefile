@@ -31,7 +31,7 @@ CONFIG=libftgl libGL libfreetype
 CPPFLAGS+= -I. -I.. -ISOIL2
 LDFLAGS+=-lftgl -lgl -lfreetype -lprojectM
 
-LIBRARIES=../libprojectM
+#LIBRARIES=../libprojectM
 PRODUCTS=Renderer.lib
 
 include $(BUILD)rules.mk
