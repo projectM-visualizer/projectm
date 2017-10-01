@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		1661BA161F8170D500AC03DF /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
-		1661BA181F8173B500AC03DF /* preset_test in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1661BA171F8173B400AC03DF /* preset_test */; };
 		169502001F7009E9008FAF86 /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
 		16BFF3A31F816F390063C312 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16BFF3A01F816F110063C312 /* libprojectM.a */; };
 		16BFF3A41F816F3C0063C312 /* MilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16BFF3A11F816F110063C312 /* MilkdropPresetFactory.a */; };
@@ -44,7 +43,6 @@
 			files = (
 				C3D30B901BF02BEC009AAACD /* fonts in CopyFiles */,
 				C307DFD41D565B57002F6B9E /* presets in CopyFiles */,
-				1661BA181F8173B500AC03DF /* preset_test in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
