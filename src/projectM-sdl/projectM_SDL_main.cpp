@@ -30,8 +30,8 @@ int main( int argc, char *argv[] ) {
     projectM::Settings settings;
     settings.windowWidth = width;
     settings.windowHeight = height;
-    settings.meshX = 1;
-    settings.meshY = 1;
+    settings.meshX = 10;
+    settings.meshY = 10;
     settings.fps   = FPS;
     settings.textureSize = 2048;  // idk?
     settings.smoothPresetDuration = 3; // seconds
@@ -42,6 +42,7 @@ int main( int argc, char *argv[] ) {
     settings.shuffleEnabled = 1;
     settings.softCutRatingsEnabled = 1; // ???
     settings.presetURL = base_path + "presets/presets_tryptonaut";
+//    settings.presetURL = base_path + "preset_test";
     settings.menuFontURL = base_path + "fonts/Vera.ttf";
     settings.titleFontURL = base_path + "fonts/Vera.ttf";
 

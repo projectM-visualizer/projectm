@@ -12,6 +12,8 @@ LIBRARIES=../libprojectM ../libprojectM/Renderer ../libprojectM/NativePresetFact
 
 PRODUCTS=projectMSDL.exe
 
+@echo "OBJDIR: $(OBJDIR)"
+
 include $(BUILD)rules.mk
 
 $(BUILD)rules.mk:
