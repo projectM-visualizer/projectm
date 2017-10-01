@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		161070C41F703F13001905AB /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 161070C31F703F13001905AB /* libprojectM.a */; };
-		161070DD1F705069001905AB /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 161070DC1F705069001905AB /* Cg.framework */; };
+		1661BA161F8170D500AC03DF /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
+		1661BA181F8173B500AC03DF /* preset_test in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1661BA171F8173B400AC03DF /* preset_test */; };
 		169502001F7009E9008FAF86 /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
+		16BFF3A31F816F390063C312 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16BFF3A01F816F110063C312 /* libprojectM.a */; };
+		16BFF3A41F816F3C0063C312 /* MilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16BFF3A11F816F110063C312 /* MilkdropPresetFactory.a */; };
+		16BFF3A51F816F3E0063C312 /* NativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16BFF3A21F816F110063C312 /* NativePresetFactory.a */; };
+		16BFF3A61F816F400063C312 /* Renderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16BFF39F1F816F110063C312 /* Renderer.a */; };
 		C307DFD41D565B57002F6B9E /* presets in CopyFiles */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		C345214F1BF022A5001707D2 /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
-		C34521571BF0250D001707D2 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521561BF0250D001707D2 /* libMilkdropPresetFactory.a */; };
-		C34521591BF02516001707D2 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521581BF02516001707D2 /* libNativePresetFactory.a */; };
-		C345215A1BF0259C001707D2 /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521541BF02333001707D2 /* libRenderer.a */; };
-		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
 		C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215D1BF025CF001707D2 /* CoreFoundation.framework */; };
 		C34521651BF025E5001707D2 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215F1BF025E5001707D2 /* libbz2.a */; };
 		C34521661BF025E5001707D2 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521601BF025E5001707D2 /* libfreetype.a */; };
@@ -44,22 +44,23 @@
 			files = (
 				C3D30B901BF02BEC009AAACD /* fonts in CopyFiles */,
 				C307DFD41D565B57002F6B9E /* presets in CopyFiles */,
+				1661BA181F8173B500AC03DF /* preset_test in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		161070C31F703F13001905AB /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/libprojectM.a; sourceTree = "<group>"; };
-		161070DC1F705069001905AB /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = ../../../../../../Library/Frameworks/Cg.framework; sourceTree = "<group>"; };
+		1661BA171F8173B400AC03DF /* preset_test */ = {isa = PBXFileReference; lastKnownFileType = folder; path = preset_test; sourceTree = "<group>"; };
 		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
 		169501FF1F7009E9008FAF86 /* pmSDL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pmSDL.hpp; sourceTree = "<group>"; };
+		16BFF39F1F816F110063C312 /* Renderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = Renderer.a; path = "../../build/objects/macosx-clang/opt/Renderer.a"; sourceTree = "<group>"; };
+		16BFF3A01F816F110063C312 /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = "../../build/objects/macosx-clang/opt/libprojectM.a"; sourceTree = "<group>"; };
+		16BFF3A11F816F110063C312 /* MilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = MilkdropPresetFactory.a; path = "../../build/objects/macosx-clang/opt/MilkdropPresetFactory.a"; sourceTree = "<group>"; };
+		16BFF3A21F816F110063C312 /* NativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = NativePresetFactory.a; path = "../../build/objects/macosx-clang/opt/NativePresetFactory.a"; sourceTree = "<group>"; };
 		C307DFD31D565B57002F6B9E /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
 		C34521441BF02294001707D2 /* SDLprojectM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLprojectM; sourceTree = BUILT_PRODUCTS_DIR; };
 		C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = projectM_SDL_main.cpp; sourceTree = SOURCE_ROOT; };
-		C34521541BF02333001707D2 /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/libRenderer.a; sourceTree = "<group>"; };
-		C34521561BF0250D001707D2 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
-		C34521581BF02516001707D2 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/libNativePresetFactory.a; sourceTree = "<group>"; };
 		C345215B1BF025A9001707D2 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		C345215D1BF025CF001707D2 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		C345215F1BF025E5001707D2 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = "../projectM-iTunes/macos/contrib/libbz2.a"; sourceTree = "<group>"; };
@@ -76,19 +77,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				161070DD1F705069001905AB /* Cg.framework in Frameworks */,
+				1661BA161F8170D500AC03DF /* OpenGL.framework in Frameworks */,
 				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
-				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
+				16BFF3A41F816F3C0063C312 /* MilkdropPresetFactory.a in Frameworks */,
+				16BFF3A51F816F3E0063C312 /* NativePresetFactory.a in Frameworks */,
+				16BFF3A61F816F400063C312 /* Renderer.a in Frameworks */,
+				16BFF3A31F816F390063C312 /* libprojectM.a in Frameworks */,
 				C34521651BF025E5001707D2 /* libbz2.a in Frameworks */,
 				C34521661BF025E5001707D2 /* libfreetype.a in Frameworks */,
 				C34521671BF025E5001707D2 /* libftgl.a in Frameworks */,
 				C34521681BF025E5001707D2 /* libGLEW.a in Frameworks */,
 				C34521691BF025E5001707D2 /* libpng15.a in Frameworks */,
 				C345216A1BF025E5001707D2 /* libz.a in Frameworks */,
-				161070C41F703F13001905AB /* libprojectM.a in Frameworks */,
-				C345215A1BF0259C001707D2 /* libRenderer.a in Frameworks */,
-				C34521591BF02516001707D2 /* libNativePresetFactory.a in Frameworks */,
-				C34521571BF0250D001707D2 /* libMilkdropPresetFactory.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,7 +98,6 @@
 		161070CE1F7041B0001905AB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				161070DC1F705069001905AB /* Cg.framework */,
 				C345215D1BF025CF001707D2 /* CoreFoundation.framework */,
 				C345215B1BF025A9001707D2 /* OpenGL.framework */,
 			);
@@ -108,6 +107,7 @@
 		C345213B1BF02293001707D2 = {
 			isa = PBXGroup;
 			children = (
+				1661BA171F8173B400AC03DF /* preset_test */,
 				169501FE1F7009E9008FAF86 /* pmSDL.cpp */,
 				169501FF1F7009E9008FAF86 /* pmSDL.hpp */,
 				C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */,
@@ -118,10 +118,10 @@
 				C34521621BF025E5001707D2 /* libGLEW.a */,
 				C34521631BF025E5001707D2 /* libpng15.a */,
 				C34521641BF025E5001707D2 /* libz.a */,
-				C34521581BF02516001707D2 /* libNativePresetFactory.a */,
-				C34521561BF0250D001707D2 /* libMilkdropPresetFactory.a */,
-				C34521541BF02333001707D2 /* libRenderer.a */,
-				161070C31F703F13001905AB /* libprojectM.a */,
+				16BFF3A01F816F110063C312 /* libprojectM.a */,
+				16BFF3A11F816F110063C312 /* MilkdropPresetFactory.a */,
+				16BFF3A21F816F110063C312 /* NativePresetFactory.a */,
+				16BFF39F1F816F110063C312 /* Renderer.a */,
 				161070CE1F7041B0001905AB /* Frameworks */,
 				C34521451BF02294001707D2 /* Products */,
 				C3D30B8F1BF02BE5009AAACD /* fonts */,
@@ -358,6 +358,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/../../build/objects/macosx-clang/opt",
 				);
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -381,6 +382,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+					"$(PROJECT_DIR)/../../build/objects/macosx-clang/opt",
 				);
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -400,6 +402,7 @@
 				161070E01F70942C001905AB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C345213F1BF02293001707D2 /* Build configuration list for PBXProject "SDLprojectM" */ = {
 			isa = XCConfigurationList;
