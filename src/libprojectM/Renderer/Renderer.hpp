@@ -1,6 +1,8 @@
 #ifndef Renderer_HPP
 #define Renderer_HPP
 
+#include <GL/glew.h>
+
 #include "FBO.hpp"
 #include "BeatDetect.hpp"
 #include "Common.hpp"
@@ -92,9 +94,7 @@ private:
   static Pipeline* currentPipe;
   RenderContext renderContext;
   //per pixel equation variables
-#ifdef USE_CG
   ShaderEngine shaderEngine;
-#endif
   std::string m_presetName;
 
   float* p;

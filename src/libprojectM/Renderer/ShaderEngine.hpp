@@ -8,6 +8,8 @@
 #ifndef SHADERENGINE_HPP_
 #define SHADERENGINE_HPP_
 
+#include <GL/glew.h>
+
 #include "Common.hpp"
 
 #ifdef USE_GLES1
@@ -22,13 +24,6 @@
 #endif
 #endif
 
-
-#ifdef USE_CG
-#include <Cg/cg.h>    /* Can't include this?  Is Cg Toolkit installed! */
-#include <Cg/cgGL.h>
-#endif
-
-
 #include "Pipeline.hpp"
 #include "PipelineContext.hpp"
 class ShaderEngine;
@@ -37,76 +32,61 @@ class ShaderEngine;
 #include <cstdlib>
 #include <iostream>
 #include <map>
+#include <sstream>
 #include "Shader.hpp"
 class ShaderEngine
 {
-#ifdef USE_CG
+    unsigned int mainTextureId;
+    int texsize;
+    float aspect;
+    BeatDetect *beatDetect;
+    TextureManager *textureManager;
 
+    GLuint noise_texture_lq_lite;
+    GLuint noise_texture_lq;
+    GLuint noise_texture_mq;
+    GLuint noise_texture_hq;
+    GLuint noise_texture_perlin;
+    GLuint noise_texture_lq_vol;
+    GLuint noise_texture_hq_vol;
 
-  unsigned int mainTextureId;
-  int texsize;
-  float aspect;
-  BeatDetect *beatDetect;
-  TextureManager *textureManager;
+    bool blur1_enabled;
+    bool blur2_enabled;
+    bool blur3_enabled;
+    GLuint blur1_tex;
+    GLuint blur2_tex;
+    GLuint blur3_tex;
 
-  GLuint noise_texture_lq_lite;
-  GLuint noise_texture_lq;
-  GLuint noise_texture_mq;
-  GLuint noise_texture_hq;
-  GLuint noise_texture_perlin;
-  GLuint noise_texture_lq_vol;
-  GLuint noise_texture_hq_vol;
+    float rand_preset[4];
 
-  bool blur1_enabled;
-  bool blur2_enabled;
-  bool blur3_enabled;
-  GLuint blur1_tex;
-  GLuint blur2_tex;
-  GLuint blur3_tex;
+    GLuint   blur1Program;
+    GLuint   blur2Program;
 
-  float rand_preset[4];
+    bool enabled;
 
-  CGcontext   myCgContext;
-  CGprofile myCgProfile;
-  CGprogram   blur1Program;
-  CGprogram   blur2Program;
+    std::map<Shader*,GLuint> programs;
 
-  bool enabled;
-
-  std::map<Shader*,CGprogram> programs;
-
-   std::string cgTemplate;
-   std::string blurProgram;
-
- bool LoadCgProgram(Shader &shader);
- bool checkForCgCompileError(const char *situation);
- void checkForCgError(const char *situation);
-
- void SetupCg();
- void SetupCgVariables(CGprogram program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
- void SetupCgQVariables(CGprogram program, const Pipeline &pipeline);
-
- void SetupUserTexture(CGprogram program, const UserTexture* texture);
- void SetupUserTextureState(const UserTexture* texture);
-
-
-
-#endif
+    void InitShaderProgram();
+    void SetupShaderQVariables(GLuint program, const Pipeline &q);
+    void SetupShaderVariables(GLuint program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
+    // void SetupUserTexture(CGprogram program, const UserTexture* texture);
+    void SetupUserTextureState(const UserTexture* texture);
+    GLuint makeShader(GLenum type, const char *filename);
+    void showInfoLog(
+                      GLuint object,
+                      PFNGLGETSHADERIVPROC glGet__iv,
+                      PFNGLGETSHADERINFOLOGPROC glGet__InfoLog
+                    );
 public:
 	ShaderEngine();
 	virtual ~ShaderEngine();
-#ifdef USE_CG
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext, const int texsize);
 	void loadShader(Shader &shader);
 
 	void setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect, TextureManager *textureManager);
-	void enableShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
-	void disableShader();
 	void reset();
 	void setAspect(float aspect);
     std::string profileName;
-
-#endif
 };
 
 #endif /* SHADERENGINE_HPP_ */

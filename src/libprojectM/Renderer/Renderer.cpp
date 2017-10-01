@@ -106,21 +106,15 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 		}
 	}
 
-
-#ifdef USE_CG
 	shaderEngine.setParams(renderTarget->texsize, renderTarget->textureID[1], aspect, beatDetect, textureManager);
-#endif
-
 }
 
 void Renderer::SetPipeline(Pipeline &pipeline)
 {
 	currentPipe = &pipeline;
-#ifdef USE_CG
 	shaderEngine.reset();
 	shaderEngine.loadShader(pipeline.warpShader);
 	shaderEngine.loadShader(pipeline.compositeShader);
-#endif
 }
 
 void Renderer::ResetTextures()
@@ -162,9 +156,7 @@ void Renderer::SetupPass1(const Pipeline &pipeline, const PipelineContext &pipel
 #endif
 	glLoadIdentity();
 
-#ifdef USE_CG
 	shaderEngine.RenderBlurTextures(pipeline, pipelineContext, renderTarget->texsize);
-#endif
 }
 
 void Renderer::RenderItems(const Pipeline &pipeline, const PipelineContext &pipelineContext)
@@ -274,13 +266,9 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
 
 	SetupPass1(pipeline, pipelineContext);
 
-#ifdef USE_CG
-	shaderEngine.enableShader(currentPipe->warpShader, pipeline, pipelineContext);
-#endif
+//    shaderEngine.enableShader(currentPipe->warpShader, pipeline, pipelineContext);
 	Interpolation(pipeline);
-#ifdef USE_CG
-	shaderEngine.disableShader();
-#endif
+//    shaderEngine.disableShader();
 
 	RenderItems(pipeline, pipelineContext);
 	FinishPass1();
@@ -430,9 +418,7 @@ void Renderer::reset(int w, int h)
 	this -> vw = w;
 	this -> vh = h;
 
-#if USE_CG
 	shaderEngine.setAspect(aspect);
-#endif
 
 #ifndef EMSCRIPTEN
 	glShadeModel(GL_SMOOTH);
@@ -715,8 +701,8 @@ void Renderer::draw_stats()
 	glRasterPos2f(0, -.25 + offset);
 	sprintf(buffer, "      textures: %.1fkB", textureManager->getTextureMemorySize() / 1000.0f);
 	other_font->Render(buffer);
-#ifdef USE_CG
-	glRasterPos2f(0, -.29 + offset);
+
+    glRasterPos2f(0, -.29 + offset);
 	sprintf(buffer, "shader profile: %s", shaderEngine.profileName.c_str());
 	other_font->Render(buffer);
 
@@ -727,8 +713,8 @@ void Renderer::draw_stats()
 	glRasterPos2f(0, -.37 + offset);
 	sprintf(buffer, "   comp shader: %s", currentPipe->compositeShader.enabled ? "on" : "off");
 	other_font->Render(buffer);
-#endif
-	glPopMatrix();
+
+    glPopMatrix();
 	// glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 
@@ -769,9 +755,7 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
 
 	glEnable(GL_TEXTURE_2D);
 
-#ifdef USE_CG
-	shaderEngine.enableShader(currentPipe->compositeShader, pipeline, pipelineContext);
-#endif
+//    shaderEngine.enableShader(currentPipe->compositeShader, pipeline, pipelineContext);
 
 	float tex[4][2] =
 	{
@@ -801,9 +785,7 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
 
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-#ifdef USE_CG
-	shaderEngine.disableShader();
-#endif
+//    shaderEngine.disableShader();
 
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.compositeDrawables.begin(); pos
 			!= pipeline.compositeDrawables.end(); ++pos)
