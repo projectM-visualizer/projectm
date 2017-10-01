@@ -41,8 +41,9 @@ int main( int argc, char *argv[] ) {
     settings.easterEgg = 0; // ???
     settings.shuffleEnabled = 1;
     settings.softCutRatingsEnabled = 1; // ???
-    settings.presetURL = base_path + "presets/presets_tryptonaut";
-//    settings.presetURL = base_path + "preset_test";
+//    settings.presetURL = base_path + "presets/presets_tryptonaut";
+    //    settings.presetURL = base_path + "preset_test";
+    settings.presetURL = base_path + "presets_all";
     settings.menuFontURL = base_path + "fonts/Vera.ttf";
     settings.titleFontURL = base_path + "fonts/Vera.ttf";
 
@@ -52,6 +53,8 @@ int main( int argc, char *argv[] ) {
     // get an audio input device
     app->openAudioInput();
     app->beginAudioCapture();
+    
+    app->toggleFullScreen();
     
     // standard main loop
     const Uint32 frame_delay = 1000/FPS;
