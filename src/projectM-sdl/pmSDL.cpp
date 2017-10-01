@@ -20,7 +20,7 @@ void projectMSDL::audioInputCallbackS16(void *userdata, unsigned char *stream, i
     projectMSDL *app = (projectMSDL *) userdata;
     short pcm16[2][512];
     
-    for (int i = 0; i < 512; i++) { //
+    for (int i = 0; i < 512; i++) {
         for (int j = 0; j < app->audioChannelsCount; j++) {
             pcm16[j][i] = stream[i+j];
         }
@@ -78,7 +78,7 @@ void projectMSDL::beginAudioCapture() {
     unsigned int maxSamples = audioChannelsCount * audioSampleCount;
     pcmBuffer = (unsigned char *) malloc(maxSamples);
     SDL_PauseAudioDevice(audioDeviceID, false);
-    //    pm->pcm()->initPCM(maxSamples);
+    this->pcm()->initPCM(2048);
 }
 
 void projectMSDL::endAudioCapture() {
@@ -86,11 +86,25 @@ void projectMSDL::endAudioCapture() {
     SDL_PauseAudioDevice(audioDeviceID, true);
 }
 
+void projectMSDL::maximize() {
+    SDL_DisplayMode dm;
+    if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
+        SDL_Log("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
+        return;
+    }
+    
+    SDL_SetWindowSize(win, dm.w, dm.h);
+    this->resize(dm.w, dm.h);
+}
+
 void projectMSDL::toggleFullScreen() {
+    maximize();
     if (isFullScreen) {
         SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN_DESKTOP);
         isFullScreen = false;
+        SDL_ShowCursor(true);
     } else {
+        SDL_ShowCursor(false);
         SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN);
         isFullScreen = true;
     }
