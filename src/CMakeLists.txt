@@ -10,7 +10,7 @@ elseif(EMSCRIPTEN)
   SET(EMSCRIPTEN-DEFAULT OFF)
 endif(EMSCRIPTEN)
 
-OPTION(INCLUDE-PROJECTM-QT "Build the projectM Qt4 user interface extension library (recommended)" OFF)
+OPTION(INCLUDE-PROJECTM-QT "Build the projectM Qt5 user interface extension library (recommended)" OFF)
 OPTION(INCLUDE-PROJECTM-PULSEAUDIO "Build the projectM pulse audio client (recommended for fedora users)" OFF)
 OPTION(INCLUDE-PROJECTM-LIBVISUAL "Build the projectM libvisual client" OFF)
 OPTION(INCLUDE-PROJECTM-LIBVISUAL-ALSA "Build experimental libvisual / alsa input standalone client" OFF)
