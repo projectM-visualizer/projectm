@@ -11,9 +11,14 @@
 
 #include "pmSDL.hpp"
 
-int main( int argc, char *argv[] ) {
+int main(int argc, char *argv[]) {
     const int width = 1024, height = 768;  // FIXME: use screen res?
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
+
+    if (! SDL_VERSION_ATLEAST(2, 0, 5)) {
+        SDL_Log("SDL version 2.0.5 or greater is required. You have %i.%i.%i", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
+        return 1;
+    }
     
     // get path to our app
     std::string base_path = SDL_GetBasePath();
