@@ -77,7 +77,7 @@ void VideoEcho::Draw(RenderContext &context)
 			default: flipx=1;flipy=1; break;
 		}
 
-		float pointsFlip[4][2] = {{-0.5*flipx, -0.5*flipy},
+		double pointsFlip[4][2] = {{-0.5*flipx, -0.5*flipy},
 					  {-0.5*flipx,  0.5*flipy},
 					  { 0.5*flipx,  0.5*flipy},
 					  { 0.5*flipx, -0.5*flipy}};
