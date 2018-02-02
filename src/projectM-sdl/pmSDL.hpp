@@ -42,6 +42,7 @@ public:
     void resize(unsigned int width, unsigned int height);
     void renderFrame();
     void pollEvent();
+    void maximize();
 
 private:
     SDL_Window *win;

@@ -29,7 +29,7 @@
 #ifndef _PARSER_H
 #define _PARSER_H
 //#define PARSE_DEBUG 2
-#define PARSE_DEBUG 1
+#define PARSE_DEBUG 0
 
 #include <stdio.h>
 
@@ -189,4 +189,3 @@ public:
   };
 
 #endif /** !_PARSER_H */
-
