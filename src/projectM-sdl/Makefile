@@ -7,8 +7,10 @@ SOURCES= \
 CPPFLAGS+=-I. -I../libprojectM
 CPPFLAGS_macosx-clang+=-F/Library/Frameworks
 
-LDFLAGS+=-framework OpenGL -F/Library/Frameworks -framework SDL2
-LIBRARIES=../libprojectM ../libprojectM/Renderer ../libprojectM/NativePresetFactory ../libprojectM/MilkdropPresetFactory
+LDFLAGS_macosx-clang+=-framework OpenGL -F/Library/Frameworks -framework SDL2
+LDFLAGS+=-lGL -ldl -lSDL2
+LIBRARIES=../libprojectM  \
+ ../libprojectM/NativePresetFactory ../libprojectM/MilkdropPresetFactory ../libprojectM/Renderer
 
 PRODUCTS=projectMSDL.exe
 
