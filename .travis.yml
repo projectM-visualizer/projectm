@@ -1,0 +1,16 @@
+language: cpp
+
+compiler:
+  - clang
+  - gcc
+
+addons:
+  apt:
+    packages:
+      - libsdl2-dev
+      - libglew-dev
+      - libftgl-dev
+      - libsdl2-dev
+      - libdevil-dev
+
+script: make -j4
