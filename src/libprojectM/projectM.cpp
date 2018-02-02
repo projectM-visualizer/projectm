@@ -180,7 +180,7 @@ void projectM::readConfig (const std::string & configFile )
     _settings.presetDuration = config.read<int> ( "Preset Duration", 15 );
 
     #ifdef LINUX
-    _settings.presetURL = config.read<string> ( "Preset Path", CMAKE_INSTALL_PREFIX "/share/projectM/presets" );
+    _settings.presetURL = config.read<string> ( "Preset Path", "/usr/local/share/projectM/presets" );
     #endif
 
     #ifdef __APPLE__
@@ -189,7 +189,7 @@ void projectM::readConfig (const std::string & configFile )
     #endif
 
     #ifdef WIN32
-    _settings.presetURL = config.read<string> ( "Preset Path", CMAKE_INSTALL_PREFIX "/share/projectM/presets" );
+    _settings.presetURL = config.read<string> ( "Preset Path", "/usr/local/share/projectM/presets" );
     #endif
 
     #ifdef __APPLE__
@@ -201,9 +201,9 @@ void projectM::readConfig (const std::string & configFile )
 
     #ifdef LINUX
     _settings.titleFontURL = config.read<string>
-    ( "Title Font", projectM_FONT_TITLE );
+    ( "Title Font", "/usr/local/share/projectM/fonts/Vera.tff" );
     _settings.menuFontURL = config.read<string>
-    ( "Menu Font", projectM_FONT_MENU );
+    ( "Menu Font", "/usr/local/share/projectM/fonts/VeraMono.tff" );
     #endif
 
     #ifdef WIN32

@@ -46,7 +46,7 @@
 //extern FILE *debugFile;
 #endif
 
-#ifdef MACOS
+#ifdef __APPLE__
 #include <cstdio>
 extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #endif /** MACOS */
@@ -75,7 +75,7 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define projectM_isnan(x) ((x) != (x))
 #endif
 
-#ifdef MACOS
+#ifdef __APPLE__
 #define projectM_isnan(x) ((x) != (x))
 #endif
 
@@ -87,7 +87,7 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define projectM_fmax(x,y) ((x) >= (y) ? (x): (y))
 #endif
 
-#ifdef MACOS
+#ifdef __APPLE__
 #define projectM_fmax(x,y) ((x) >= (y) ? (x): (y))
 #endif
 
@@ -99,7 +99,7 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define projectM_fmin(x,y) ((x) <= (y) ? (x): (y))
 #endif
 
-#ifdef MACOS
+#ifdef __APPLE__
 #define projectM_fmin(x,y) ((x) <= (y) ? (x): (y))
 #endif
 
