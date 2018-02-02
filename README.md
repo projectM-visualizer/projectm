@@ -6,19 +6,20 @@ projectM is an open-source project that reimplements the esteemed [Winamp Milkdr
 Its purpose in life is to read in audio input and produce mesmerizing visuals, detecting tempo, and rendering advanced equations into a limitless array of user-contributed visualizations.
 
 ### Available For
-* [Mac OS X iTunes (plugin)](https://github.com/projectM-visualizer/projectm/releases)
+* [Mac OS X, Linux (binary)](https://github.com/projectM-visualizer/projectm/releases/tag/v0.9.2-beta)
+* [Mac OS X iTunes (plugin)](https://github.com/projectM-visualizer/projectm/releases/tag/v0.9.1-beta)
 * [Android](https://play.google.com/store/apps/details?id=com.psperl.projectM)
 * [iOS](https://itunes.apple.com/us/app/projectm-music-visualizer/id530922227?mt=8&ign-mpt=uo%3D4)
-* [ALSA, Qt, xmms, winamp, jack, pulseaudio](https://sourceforge.net/projects/projectm/files/)
+* [ALSA, Qt, xmms, winamp, jack, pulseaudio](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
 
 ### Presets
 The preset files define the visualizations via pixel shaders and Milkdrop-style equations and parameters. Included with projectM are the bltc201, Milkdrop 1 and 2, projectM, tryptonaut and yin collections. You can grab all of the presets [here](http://spiegelmc.com.s3.amazonaws.com/pub/projectm_presets.zip).
 
 ### Also Featured In
-[![Kodi](https://github.com/projectM-visualizer/projectm/raw/master/web/kodi.png)](https://kodi.tv/)  
-Kodi (formerly XBMC)  
+[![Kodi](https://github.com/projectM-visualizer/projectm/raw/master/web/kodi.png)](https://kodi.tv/)
+Kodi (formerly XBMC)
 
-[![Helix](https://github.com/projectM-visualizer/projectm/raw/master/web/helix.jpg)](http://ghostfiregames.com/helixhome.html)  
+[![Helix](https://github.com/projectM-visualizer/projectm/raw/master/web/helix.jpg)](http://ghostfiregames.com/helixhome.html)
 Helix
 
 ***
@@ -52,7 +53,9 @@ Helix
 * `sudo apt-get install libsdl2-dev libglew-dev libftgl-dev libsdl2-dev libdevil-dev`
 
 ## Building From Source
-Uses [build](https://github.com/c3d/build) Make scripts  
+* Uses [build](https://github.com/c3d/build) Make scripts
+* Binaries are in `build/obj`
+* Symlink `presets` to the same directory as the binary
 ```
 make
 ```
@@ -69,7 +72,7 @@ There are many other applications that make use of libprojectM that can be found
 # Todo
 * Top priority has for a long time been to [port the calls from OpenGL immediate-mode (old-school) to be compatible with OpenGL ES](https://github.com/projectM-visualizer/projectm/issues/11), using [vertex buffer objects](http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-2.1:-Buffers-and-Textures.html). There's a [branch](https://github.com/projectM-visualizer/projectm/tree/gles) and [todo list of function calls to replace](https://github.com/projectM-visualizer/projectm/blob/gles/glES-porting.txt).
 * [macOS Sierra broke the iTunes plugin somehow](https://github.com/projectM-visualizer/projectm/issues/7)
-* Currently shader support is done via nVidia's Cg shader toolkit. This is ancient and no longer supported and very lame. Use standard OpenGL facilities for compiling and executing the shader-based presets.
+* Currently shader support is done via nVidia's Cg shader toolkit. This is ancient and no longer supported and very lame. [Use standard OpenGL facilities for compiling and executing the shader-based presets.](https://github.com/projectM-visualizer/projectm/pull/26)
 * Support for the missing Milkdrop waveforms to get full compatibility with Milkdrop presets.
 * Steal cool stuff from the recently-released Milkdrop source.
 * Emscripten (transpile to JavaScript and use WebGL) support. [Some of the work is done](https://github.com/projectM-visualizer/projectm/tree/emscripten) on this but it requires OpenGL ES (see item 1).
@@ -78,12 +81,12 @@ There are many other applications that make use of libprojectM that can be found
 ***
 
 ## Help
-Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues/new)  
+Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues/new)
 We're on IRC at irc.freenode.net #projectM
 
 ## Authors
-[Authors](https://github.com/projectM-visualizer/projectm/raw/master/AUTHORS.txt)  
-If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues. 
+[Authors](https://github.com/projectM-visualizer/projectm/raw/master/AUTHORS.txt)
+If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues.
 
 ## License
 [LGPL](https://github.com/projectM-visualizer/projectm/raw/master/LICENSE.txt)
