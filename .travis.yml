@@ -8,8 +8,8 @@ addons:
       - libftgl-dev
       - libsdl2-dev
       - libdevil-dev
-      - clang-5.0
+      - g++-7
     sources:
-      - llvm-toolchain-trusty-5.0
+      - ubuntu-toolchain-r-test
 
-script: CC=clang-5.0 CXX=clang-5.0 make -j4
+script: CC_STD=g++-7 CXX_STD=g++-7 make -j4
