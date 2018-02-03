@@ -1,0 +1,15 @@
+language: cpp
+
+addons:
+  apt:
+    packages:
+      - libsdl2-dev
+      - libglew-dev
+      - libftgl-dev
+      - libsdl2-dev
+      - libdevil-dev
+      - g++-7
+    sources:
+      - ubuntu-toolchain-r-test
+
+script: CC_STD=g++-7 CXX_STD=g++-7 make -j4
