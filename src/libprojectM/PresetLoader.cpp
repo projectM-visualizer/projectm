@@ -23,7 +23,7 @@ extern "C"
 }
 #endif
 
-#ifdef MACOS
+#ifdef __APPLE__
 extern "C"
 {
 #include <errno.h>
