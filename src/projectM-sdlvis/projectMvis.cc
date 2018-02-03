@@ -256,7 +256,7 @@ fprintf( debugFile, "post SDL_SetVideoMode()\n" );
       }
 #endif
     
-#ifdef MACOS
+#ifdef __APPLE__
     globalPM->fontURL = (char *)malloc( sizeof( char ) * 512 );
     strcpy( globalPM->fontURL, "../../fonts" );
 
