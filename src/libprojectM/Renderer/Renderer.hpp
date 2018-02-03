@@ -28,6 +28,10 @@
 #endif
 #endif /** USE_FTGL */
 
+#ifdef LINUX
+  #include <GL/gl.h>
+#endif
+
 
 #include "Pipeline.hpp"
 #include "PerPixelMesh.hpp"
