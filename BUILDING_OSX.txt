@@ -17,17 +17,9 @@ make
 cd ..
 make -j4
 
-4. Cg
-http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012.dmg
+4. SDL 2
+Download & install SDL:
+https://www.libsdl.org/release/SDL2-2.0.7.dmg
 
-5. SDL
-download & install SDL:
-https://www.libsdl.org/release/SDL2-2.0.3.dmg
-
-6. SDL + cmake
-https://github.com/brendan-w/collector/blob/master/cmake/FindSDL2.cmake
-copy FindSDL2.cmake to projectm/src/cmake/FindSDL2.cmake
-add the following line to projectm/src/CMakeLists.txt:
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-
-7. follow projectm build instructions
+5.
+make
