@@ -19,7 +19,7 @@ void projectMSDL::audioInputCallbackS16(void *userdata, unsigned char *stream, i
     //    printf("LEN: %i\n", len);
     projectMSDL *app = (projectMSDL *) userdata;
     short pcm16[2][512];
-    
+
     for (int i = 0; i < 512; i++) {
         for (int j = 0; j < app->audioChannelsCount; j++) {
             pcm16[j][i] = stream[i+j];
@@ -28,8 +28,22 @@ void projectMSDL::audioInputCallbackS16(void *userdata, unsigned char *stream, i
     app->pcm()->addPCM16(pcm16);
 }
 
+SDL_AudioDeviceID projectMSDL::selectAudioInput(int count) {
+    // ask the user which capture device to use
+    printf("Please select which audio input to use:\n");
+    for (int i = 0; i < count; i++) {
+        printf("%i: 🎤%s", i, SDL_GetAudioDeviceName(i, true));
+    }
+    SDL_AudioDeviceID device_id;
+    scanf("%u", &device_id);
+    return device_id;
+}
 
 int projectMSDL::openAudioInput() {
+    // get audio driver name (static)
+    const char* driver_name = SDL_GetCurrentAudioDriver();
+    SDL_Log("Using audio driver: %s\n", driver_name);
+
     // get audio input device
     int i, count = SDL_GetNumAudioDevices(true);  // capture, please
     if (count == 0) {
@@ -39,13 +53,20 @@ int projectMSDL::openAudioInput() {
     for (i = 0; i < count; i++) {
         SDL_Log("Found audio capture device %d: %s", i, SDL_GetAudioDeviceName(i, true));
     }
-    
+
+    SDL_AudioDeviceID selectedAudioDevice = 0;  // device to open
+    if (count > 1) {
+        // need to choose which input device to use
+        selectedAudioDevice = selectAudioInput(count);
+        if (selectedAudioDevice > count) {
+            SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio input device specified.");
+            SDL_Quit();
+        }
+    }
+
     // params for audio input
     SDL_AudioSpec want, have;
-    
-    // TODO: let user somehow select audio input device
-    SDL_AudioDeviceID selectedAudioDevice = 0;  // hardcoded to use first device for now :/
-    
+
     // requested format
     SDL_zero(want);
     want.freq = 48000;
@@ -54,14 +75,14 @@ int projectMSDL::openAudioInput() {
     want.samples = 512;
     want.callback = projectMSDL::audioInputCallbackF32;
     want.userdata = this;
-    
+
     audioDeviceID = SDL_OpenAudioDevice(SDL_GetAudioDeviceName(selectedAudioDevice, true), true, &want, &have, 0);
-    
+
     if (audioDeviceID == 0) {
         SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Failed to open audio capture device: %s", SDL_GetError());
         SDL_Quit();
     }
-    
+
     // read characteristics of opened capture device
     SDL_Log("Opened audio capture device %i: %s", audioDeviceID, SDL_GetAudioDeviceName(selectedAudioDevice, true));
     SDL_Log("Sample rate: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
@@ -69,7 +90,7 @@ int projectMSDL::openAudioInput() {
     audioSampleRate = have.freq;
     audioSampleCount = have.samples;
     audioFormat = have.format;
-    
+    audioInputDevice = audioDeviceID;
     return 1;
 }
 
@@ -92,7 +113,7 @@ void projectMSDL::maximize() {
         SDL_Log("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
         return;
     }
-    
+
     SDL_SetWindowSize(win, dm.w, dm.h);
     this->resize(dm.w, dm.h);
 }
@@ -116,7 +137,7 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
     projectMModifier mod;
     SDL_Keymod sdl_mod = (SDL_Keymod) sdl_evt->key.keysym.mod;
     SDL_Keycode sdl_keycode = sdl_evt->key.keysym.sym;
-    
+
     // handle keyboard input (for our app first, then projectM)
     switch (sdl_keycode) {
         case SDLK_f:
@@ -127,7 +148,7 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
             }
             break;
     }
-    
+
     // translate into projectM codes and perform default projectM handler
     evt = sdl2pmEvent(sdl_evt);
     key = sdl2pmKeycode(sdl_keycode);
@@ -152,7 +173,7 @@ void projectMSDL::addFakePCM() {
             pcm_data[1][i] = -pcm_data[1][i];
         }
     }
-    
+
     /** Add the waveform data */
     pcm()->addPCM16(pcm_data);
 }
@@ -167,7 +188,7 @@ void projectMSDL::resize(unsigned int width, unsigned int height) {
 
 void projectMSDL::pollEvent() {
     SDL_Event evt;
-    
+
     SDL_PollEvent(&evt);
     switch (evt.type) {
         case SDL_WINDOWEVENT:
@@ -189,10 +210,10 @@ void projectMSDL::pollEvent() {
 void projectMSDL::renderFrame() {
     glClearColor( 0.0, 0.0, 0.0, 0.0 );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
+
     projectM::renderFrame();
     glFlush();
-    
+
     SDL_RenderPresent(rend);
 }
 
