@@ -1,4 +1,4 @@
-BILDING ON OSX FROM SCRATCH
+BUILDING ON OSX FROM SCRATCH
 ============================
 
 1. Get freetype
