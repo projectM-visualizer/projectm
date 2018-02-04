@@ -58,10 +58,20 @@ my_CFLAGS="\
 "
 AC_SUBST([my_CFLAGS])
 
-case $host in
-  *-apple*)
+# check OS
+AC_CANONICAL_HOST
+AC_MSG_CHECKING("Freedom")
+case $host_os in
+  darwin*)
+    # OSX needs CoreFoundation
+    AC_MSG_RESULT("hoarderware detected")
     LIBS="$LIBS -framework CoreFoundation"
-    
+    ;;
+  linux*)
+    # limux needs dl
+    AC_MSG_RESULT("GNU/LINUX")
+    LIBS="$LIBS -ldl"
+    ;;
 esac
 
 
