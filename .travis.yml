@@ -10,6 +10,8 @@ addons:
       - libdevil-dev
 
 before_script: ./autogen.sh
+before_install:
+  - eval "${MATRIX_EVAL}"
 
 # test on GCC and Clang
 matrix:
