@@ -1,4 +1,4 @@
-BUILDING ON OSX FROM SCRATCH
+BILDING ON OSX FROM SCRATCH
 ============================
 
 1. Get freetype
@@ -22,4 +22,4 @@ Download & install SDL:
 https://www.libsdl.org/release/SDL2-2.0.7.dmg
 
 5.
-make
+./configure && make

@@ -51,12 +51,9 @@ my_CFLAGS="\
 -Wchar-subscripts \
 -Wformat-security \
 -Wmissing-declarations \
--Wmissing-prototypes \
--Wnested-externs \
 -Wpointer-arith \
 -Wshadow \
 -Wsign-compare \
--Wstrict-prototypes \
 -Wtype-limits \
 "
 AC_SUBST([my_CFLAGS])
