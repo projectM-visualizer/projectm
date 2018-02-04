@@ -6,8 +6,15 @@ LT_INIT
 
 AC_PROG_CXX
 
-AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_MACRO_DIRS([m4 m4/autoconf-archive])
+m4_include([m4/sdl2.m4])
 AX_CHECK_GL
+
+dnl Check for SDL
+SDL_VERSION=2.0.5
+AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
+CFLAGS="$CFLAGS $SDL_CFLAGS"
+LIBS="$LIBS $SDL_LIBS"
 
 AC_CONFIG_HEADERS([config.h])
 
@@ -15,6 +22,7 @@ AC_CONFIG_FILES([
   Makefile
   src/Makefile
   src/libprojectM/Makefile
+  src/projectM-sdl/Makefile
 ])
 
 AC_PREFIX_DEFAULT([/usr])
