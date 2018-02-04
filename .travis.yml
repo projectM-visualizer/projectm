@@ -10,6 +10,10 @@ addons:
       - libdevil-dev
 
 before_script: ./autogen.sh
+before_install:
+  - eval "${MATRIX_EVAL}"
+
+script: ./configure && make -j8
 
 # test on GCC and Clang
 matrix:
@@ -39,7 +43,7 @@ matrix:
     - os: osx
       osx_image: xcode8
       env:
-        - MATRIX_EVAL="brew install gcc && CC=gcc-7 && CXX=g++-7"
+        - MATRIX_EVAL="brew update && brew install sdl2"
 
     - os: linux
       addons:
