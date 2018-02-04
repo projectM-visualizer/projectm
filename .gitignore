@@ -1,5 +1,6 @@
 xcuserdata
 src/projectM-emscripten/build/presets
+src/libprojectM/libprojectM.xcodeproj
 presets/custom
 project.xcworkspace
 *.o
