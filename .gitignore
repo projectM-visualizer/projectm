@@ -19,3 +19,9 @@ Makefile.in
 /libtool
 /stamp-h1
 /src/libprojectM/config.h
+ar-lib
+compile
+depcomp
+install-sh
+ltmain.sh
+missing
