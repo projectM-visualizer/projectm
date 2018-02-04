@@ -9,7 +9,7 @@
 #include "win32-dirent.h"
 #endif
 
-#ifdef LINUX
+#ifdef __linux__
 #include <dirent.h>
 #endif
 
