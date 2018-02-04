@@ -12,4 +12,4 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
 
-script: CC_STD=g++-7 CXX_STD=g++-7 make -j4
+before_script: autoreconf --install
