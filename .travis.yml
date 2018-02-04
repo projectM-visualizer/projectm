@@ -9,8 +9,7 @@ addons:
       - libsdl2-dev
       - libdevil-dev
 
-before_script: autoreconf --install
-
+before_script: ./autogen.sh
 
 # test on GCC and Clang
 matrix:
