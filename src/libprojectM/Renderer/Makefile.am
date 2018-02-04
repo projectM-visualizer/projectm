@@ -1,6 +1,6 @@
-lib_LTLIBRARIES=libRenderer.la
+noinst_LTLIBRARIES = libRenderer.la
 
-libRenderer_la_SOURCES= \
+libRenderer_la_SOURCES = \
   SOIL2/image_DXT.c \
   SOIL2/image_helper.c \
   SOIL2/SOIL2.c \
@@ -22,10 +22,8 @@ libRenderer_la_SOURCES= \
   TextureManager.cpp \
   VideoEcho.cpp \
   RenderItemDistanceMetric.cpp \
-  RenderItemMatcher.cpp \
-  ../KeyHandler.cpp
+  RenderItemMatcher.cpp 
 
 libRenderer_la_CPPFLAGS = ${my_CFLAGS} \
 -I$(top_srcdir)/src/libprojectM
 
-libRenderer_la_LDFLAGS = -static
