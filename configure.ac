@@ -1,5 +1,5 @@
 AC_INIT([projectM], [1], [mischa@mvstg.biz], [https://github.com/revmischa/projectm])
-AM_INIT_AUTOMAKE([-Wall -Werror foreign])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 LT_INIT
@@ -13,8 +13,8 @@ AX_CHECK_GL
 dnl Check for SDL
 SDL_VERSION=2.0.5
 AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
-CFLAGS="$CFLAGS $SDL_CFLAGS"
-LIBS="$LIBS $SDL_LIBS"
+dnl CFLAGS="$CFLAGS $SDL_CFLAGS"
+dnl LIBS="$LIBS $SDL_LIBS"
 
 AC_CONFIG_HEADERS([config.h])
 
@@ -22,6 +22,7 @@ AC_CONFIG_FILES([
   Makefile
   src/Makefile
   src/libprojectM/Makefile
+  src/libprojectM/Renderer/Makefile
   src/projectM-sdl/Makefile
 ])
 

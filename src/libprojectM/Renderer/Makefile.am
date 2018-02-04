@@ -1,6 +1,6 @@
-BUILD=../../../build/
+lib_LTLIBRARIES=libRenderer.la
 
-SOURCES= \
+libRenderer_la_SOURCES= \
   SOIL2/image_DXT.c \
   SOIL2/image_helper.c \
   SOIL2/SOIL2.c \
@@ -25,17 +25,8 @@ SOURCES= \
   RenderItemMatcher.cpp \
   ../KeyHandler.cpp
 
-
-CONFIG=libftgl libGL libfreetype
-
-CPPFLAGS+= -I. -I.. -ISOIL2
-CPPFLAGS_linux=-DLINUX
-LDFLAGS+=-lftgl -lgl -lfreetype -lprojectM
-
-LIBRARIES=
-PRODUCTS=Renderer.lib
-
-include $(BUILD)rules.mk
-
-$(BUILD)rules.mk:
-	cd .. && git submodule update --init --recursive
+libRenderer_la_CPPFLAGS = ${my_CFLAGS} \
+-fvisibility=hidden \
+-ffunction-sections \
+-fdata-sections \
+-I$(top_srcdir)/src/libprojectM
