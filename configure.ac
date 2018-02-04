@@ -59,6 +59,13 @@ my_CFLAGS="\
 "
 AC_SUBST([my_CFLAGS])
 
+case $host in
+  *-apple*)
+    LIBS="$LIBS -framework CoreFoundation"
+esac
+
+
+
 AC_OUTPUT
 
 AC_MSG_RESULT([

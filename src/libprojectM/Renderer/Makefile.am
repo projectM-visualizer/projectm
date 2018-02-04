@@ -30,3 +30,5 @@ libRenderer_la_CPPFLAGS = ${my_CFLAGS} \
 -ffunction-sections \
 -fdata-sections \
 -I$(top_srcdir)/src/libprojectM
+
+libRenderer_la_LDFLAGS = -static
