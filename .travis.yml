@@ -13,6 +13,8 @@ before_script: ./autogen.sh
 before_install:
   - eval "${MATRIX_EVAL}"
 
+script: ./configure && make -j8
+
 # test on GCC and Clang
 matrix:
   include:
