@@ -9,27 +9,21 @@ AM_CPPFLAGS = \
 -I$(top_srcdir)/src/libprojectM \
 -I$(top_srcdir)/src/libprojectM/Renderer
 
-AM_CFLAGS = ${my_CFLAGS} \
--fvisibility=hidden \
--ffunction-sections \
--fdata-sections
+#lib_LTLIBRARIES = libprojectM.la  # public, shared library
+noinst_LTLIBRARIES = libprojectM_impl.la  # intermediate, static library
 
-AM_LDFLAGS = \
--Wl,--gc-sections \
--Wl,--as-needed
-
-lib_LTLIBRARIES = libprojectM.la
-
-libprojectM_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
+# link libRenderer, MilkdropPresetFactory, NativePresetFactory to intermediate lib
+libprojectM_impl_la_LIBADD = \
+$(top_srcdir)/src/libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.la \
+$(top_srcdir)/src/libprojectM/NativePresetFactory/libNativePresetFactory.la \
+$(top_srcdir)/src/libprojectM/Renderer/libRenderer.la
+libprojectM_impl_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
   KeyHandler.cpp PresetChooser.cpp TimeKeeper.cpp PCM.cpp PresetFactory.cpp \
 	fftsg.cpp wipemalloc.cpp PipelineMerger.cpp PresetFactoryManager.cpp projectM.cpp
 
-libprojectM_la_LIBADD = -lz \
-$(top_srcdir)/src/libprojectM/Renderer/libRenderer.la \
-$(top_srcdir)/src/libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.la \
-$(top_srcdir)/src/libprojectM/NativePresetFactory/libNativePresetFactory.la
-
-libprojectM_la_LDFLAGS = -static
+# just put intermediate lib in shared lib
+#libprojectM_la_SOURCES =
+#libprojectM_la_LIBADD = libprojectM_impl.la
 
 pkginclude_HEADERS = projectM.hpp
 pkgconfigdir = $(libdir)/pkgconfig
