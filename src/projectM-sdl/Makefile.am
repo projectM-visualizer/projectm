@@ -3,7 +3,7 @@ AM_CPPFLAGS = \
 -DSYSCONFDIR=\""$(sysconfdir)"\" \
 -I${top_srcdir}/src/libprojectM \
 -I${top_srcdir}/src/libprojectM/Renderer \
-$SDL_CFLAGS
+${SDL_CFLAGS}
 
 AM_CFLAGS = ${my_CFLAGS} \
 -fvisibility=hidden \
