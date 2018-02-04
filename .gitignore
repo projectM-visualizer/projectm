@@ -18,6 +18,7 @@ Makefile.in
 /configure
 /libtool
 /stamp-h1
+.dirstamp
 /src/libprojectM/config.h
 ar-lib
 compile
