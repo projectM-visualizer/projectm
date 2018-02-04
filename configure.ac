@@ -14,6 +14,7 @@ AC_CHECK_LIB(c, dlopen, LIBDL="", AC_CHECK_LIB(dl, dlopen, LIBDL="-ldl"))
 
 dnl Check for SDL
 SDL_VERSION=2.0.5
+AS_IF([test "$TRAVIS"], [SDL_VERSION=2.0.2])  # travis has old SDL, we don't care
 AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_WARN([*** SDL version $SDL_VERSION not found!]))
 
 AC_CONFIG_HEADERS([config.h])
