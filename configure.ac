@@ -10,11 +10,11 @@ AC_CONFIG_MACRO_DIRS([m4 m4/autoconf-archive])
 m4_include([m4/sdl2.m4])
 AX_CHECK_GL
 
+AC_CHECK_LIB(c, dlopen, LIBDL="", AC_CHECK_LIB(dl, dlopen, LIBDL="-ldl"))
+
 dnl Check for SDL
 SDL_VERSION=2.0.5
-AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
-dnl CFLAGS="$CFLAGS $SDL_CFLAGS"
-dnl LIBS="$LIBS $SDL_LIBS"
+AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_WARN([*** SDL version $SDL_VERSION not found!]))
 
 AC_CONFIG_HEADERS([config.h])
 
@@ -61,6 +61,7 @@ AC_SUBST([my_CFLAGS])
 case $host in
   *-apple*)
     LIBS="$LIBS -framework CoreFoundation"
+    
 esac
 
 
