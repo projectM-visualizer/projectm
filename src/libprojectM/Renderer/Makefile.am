@@ -26,9 +26,6 @@ libRenderer_la_SOURCES= \
   ../KeyHandler.cpp
 
 libRenderer_la_CPPFLAGS = ${my_CFLAGS} \
--fvisibility=hidden \
--ffunction-sections \
--fdata-sections \
 -I$(top_srcdir)/src/libprojectM
 
 libRenderer_la_LDFLAGS = -static

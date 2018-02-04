@@ -1,7 +1,7 @@
 EXTRA_DIST=
 CLEANFILES=
 
-SUBDIRS=Renderer
+SUBDIRS=Renderer NativePresetFactory MilkdropPresetFactory
 
 AM_CPPFLAGS = \
 -include $(top_builddir)/config.h \
@@ -24,8 +24,11 @@ libprojectM_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
   KeyHandler.cpp PresetChooser.cpp TimeKeeper.cpp PCM.cpp PresetFactory.cpp \
 	fftsg.cpp wipemalloc.cpp PipelineMerger.cpp PresetFactoryManager.cpp projectM.cpp
 
-# LDADD = $LDADD $(top_srcdir)/src/libprojectM/Renderer/libRenderer.la
-libprojectM_la_LIBADD = -lz $(top_srcdir)/src/libprojectM/Renderer/libRenderer.la
+libprojectM_la_LIBADD = -lz \
+$(top_srcdir)/src/libprojectM/Renderer/libRenderer.la \
+$(top_srcdir)/src/libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.la \
+$(top_srcdir)/src/libprojectM/NativePresetFactory/libNativePresetFactory.la
+
 libprojectM_la_LDFLAGS = -static
 
 pkginclude_HEADERS = projectM.hpp
