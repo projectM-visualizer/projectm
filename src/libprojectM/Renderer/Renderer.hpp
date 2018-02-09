@@ -28,7 +28,7 @@
 #endif
 #endif /** USE_FTGL */
 
-#ifdef LINUX
+#ifdef __linux__
   #include <GL/gl.h>
 #endif
 

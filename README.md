@@ -50,14 +50,12 @@ Helix
 * [OSX Build instructions](https://github.com/projectM-visualizer/projectm/raw/master/BUILDING_OSX.txt)
 
 ## Linux
-* `sudo apt-get install libsdl2-dev libglew-dev libftgl-dev libsdl2-dev libdevil-dev`
+* `sudo apt-get install autoconf libtool libsdl2-dev libglew-dev libftgl-dev libsdl2-dev libdevil-dev`
 
-## Building From Source
-* Uses [build](https://github.com/c3d/build) Make scripts
-* Binaries are in `build/obj`
-* Symlink `presets` to the same directory as the binary
+## Building From Source Clone
 ```
-make
+./autogen.sh
+./configure && make && sudo make install
 ```
 
 # Using the library
