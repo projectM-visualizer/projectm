@@ -141,7 +141,7 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
     // handle keyboard input (for our app first, then projectM)
     switch (sdl_keycode) {
         case SDLK_f:
-            if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI) {
+            if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
                 // command-f: fullscreen
                 toggleFullScreen();
                 return; // handled
