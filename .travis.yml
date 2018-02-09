@@ -1,15 +1,47 @@
 language: cpp
 
-addons:
-  apt:
-    packages:
-      - libsdl2-dev
-      - libglew-dev
-      - libftgl-dev
-      - libsdl2-dev
-      - libdevil-dev
-      - g++-7
-    sources:
-      - ubuntu-toolchain-r-test
+before_script: ./autogen.sh
+before_install:
+  - eval "${MATRIX_EVAL}"
 
-script: CC_STD=g++-7 CXX_STD=g++-7 make -j4
+script: ./configure && make -j8
+
+# test on GCC and Clang
+matrix:
+  include:
+    # linux/clang
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - clang-5.0
+            - libsdl2-dev
+            - libglew-dev
+            - libftgl-dev
+            - libsdl2-dev
+            - libdevil-dev
+      env:
+        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+    # linux/gcc
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-7
+            - libsdl2-dev
+            - libglew-dev
+            - libftgl-dev
+            - libsdl2-dev
+            - libdevil-dev
+      env:
+        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+
+    # osx/xcode/clang
+    - os: osx
+      osx_image: xcode8
+      env:
+        - MATRIX_EVAL="brew update && brew install sdl2"
