@@ -12,8 +12,7 @@ AM_CPPFLAGS = \
 # system headers/libraries to install
 include_HEADERS = projectM.hpp
 lib_LTLIBRARIES = libprojectM.la  # public, possibly-shared library
-# libprojectM_la_LDFLAGS = -no-undefined -version-info 0:2:0
-libprojectM_la_LDFLAGS = -version-info 0:2:0
+libprojectM_la_LDFLAGS = -no-undefined -version-info 0:2:0
 
 # link libRenderer, MilkdropPresetFactory, NativePresetFactory, and libprojectM sources
 libprojectM_la_LIBADD = \
