@@ -29,7 +29,7 @@ AC_CONFIG_FILES([
   src/projectM-sdl/Makefile
 ])
 
-AC_PREFIX_DEFAULT([/usr])
+AC_PREFIX_DEFAULT([/usr/local])
 
 AC_PROG_MKDIR_P
 
