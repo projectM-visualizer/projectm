@@ -24,12 +24,6 @@ libprojectM_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
   KeyHandler.cpp PresetChooser.cpp TimeKeeper.cpp PCM.cpp PresetFactory.cpp \
 	fftsg.cpp wipemalloc.cpp PipelineMerger.cpp PresetFactoryManager.cpp projectM.cpp
 
-# just put intermediate lib in shared lib
-# libprojectM_la_SOURCES =
-# libprojectM_la_SOURCES = $(libprojectM_impl_la_SOURCES)
-# libprojectM_la_LIBADD = $(libprojectM_impl_la_LIBADD)
-# libprojectM_la_LIBADD = libprojectM_impl.la
-
 pkginclude_HEADERS = projectM.hpp
 pkgconfigdir = $(libdir)/pkgconfig
 # pkgconfig_DATA = src/libprojectM.pc
