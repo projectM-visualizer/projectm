@@ -22,6 +22,9 @@ Kodi (formerly XBMC)
 [![Helix](https://github.com/projectM-visualizer/projectm/raw/master/web/helix.jpg)](http://ghostfiregames.com/helixhome.html)
 Helix
 
+[![Silverjuke](https://github.com/projectM-visualizer/projectm/raw/master/web/silverjuke.png)](https://www.silverjuke.net)
+Silverjuke (FOSS Jukebox)
+
 ***
 
 ## Screenshots

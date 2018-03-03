@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 AC_INIT([projectM], [2.0.0], [mischa@mvstg.biz], [https://github.com/revmischa/projectm])
+=======
+AC_INIT([projectM], [1], [mischa@mvstg.biz], [https://github.com/revmischa/projectm])
+>>>>>>> origin/master
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])

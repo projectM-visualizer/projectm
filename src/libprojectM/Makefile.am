@@ -22,9 +22,6 @@ libprojectM_impl_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.c
 	fftsg.cpp wipemalloc.cpp PipelineMerger.cpp PresetFactoryManager.cpp projectM.cpp
 
 # just put intermediate lib in shared lib
-#libprojectM_la_SOURCES =
-#libprojectM_la_LIBADD = libprojectM_impl.la
-
 # system headers/libraries to install
 include_HEADERS = projectM.hpp
 lib_LTLIBRARIES = libprojectM.la
