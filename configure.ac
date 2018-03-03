@@ -1,4 +1,4 @@
-AC_INIT([projectM], [1], [mischa@mvstg.biz], [https://github.com/revmischa/projectm])
+AC_INIT([projectM], [2.0.0], [mischa@mvstg.biz], [https://github.com/revmischa/projectm])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
@@ -61,16 +61,16 @@ AC_SUBST([my_CFLAGS])
 
 # check OS
 AC_CANONICAL_HOST
-AC_MSG_CHECKING("Freedom")
+AC_MSG_CHECKING(Freedom)
 case $host_os in
   darwin*)
     # OSX needs CoreFoundation
-    AC_MSG_RESULT("hoarderware detected")
+    AC_MSG_RESULT(Apple hoarderware detected)
     LIBS="$LIBS -framework CoreFoundation"
     ;;
   linux*)
     # limux needs dl
-    AC_MSG_RESULT("GNU/LINUX")
+    AC_MSG_RESULT(GNU/LINUX detected)
     LIBS="$LIBS -ldl"
     ;;
 esac
@@ -80,7 +80,7 @@ esac
 AC_OUTPUT
 
 AC_MSG_RESULT([
-$PACKAGE $VERSION
+projectM v$VERSION
 =====
 
 prefix:                 ${prefix}
