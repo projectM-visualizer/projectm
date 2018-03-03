@@ -28,6 +28,7 @@ AC_CONFIG_FILES([
   src/libprojectM/MilkdropPresetFactory/Makefile
   src/projectM-sdl/Makefile
 ])
+AC_CONFIG_FILES([src/libprojectM/config.inp], [sed -i -e"s/\${prefix}/$prefix/" src/libprojectM/config.inp])
 
 AC_PREFIX_DEFAULT([/usr/local])
 
