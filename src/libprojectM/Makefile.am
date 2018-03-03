@@ -25,6 +25,12 @@ libprojectM_impl_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.c
 #libprojectM_la_SOURCES =
 #libprojectM_la_LIBADD = libprojectM_impl.la
 
+# system headers/libraries to install
+include_HEADERS = projectM.hpp
+lib_LTLIBRARIES = libprojectM.la
+libprojectM_la_SOURCES =
+libprojectM_la_LIBADD = libprojectM_impl.la
+
 pkginclude_HEADERS = projectM.hpp
 pkgconfigdir = $(libdir)/pkgconfig
 # pkgconfig_DATA = src/libprojectM.pc
