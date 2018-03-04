@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/projectM-visualizer/projectm.svg?branch=master)](https://travis-ci.org/projectM-visualizer/projectm)
+
 ![Logo](https://github.com/projectM-visualizer/projectm/raw/master/web/logo.png)
 
 ## projectM - The most advanced open-source music visualizer
