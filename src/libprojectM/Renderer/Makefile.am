@@ -22,8 +22,15 @@ libRenderer_la_SOURCES = \
   TextureManager.cpp \
   VideoEcho.cpp \
   RenderItemDistanceMetric.cpp \
-  RenderItemMatcher.cpp 
+  RenderItemMatcher.cpp \
+	BeatDetect.hpp               PipelineContext.hpp          ShaderEngine.hpp\
+	FBO.hpp                      RenderItemDistanceMetric.hpp TextureManager.hpp\
+	Filters.hpp                  RenderItemMatcher.hpp        Transformation.hpp\
+	MilkdropWaveform.hpp         RenderItemMergeFunction.hpp  UserTexture.hpp\
+	PerPixelMesh.hpp             Renderable.hpp               VideoEcho.hpp\
+	PerlinNoise.hpp              Renderer.hpp                 Waveform.hpp\
+	Pipeline.hpp                 Shader.hpp
+
 
 libRenderer_la_CPPFLAGS = ${my_CFLAGS} \
 -I$(top_srcdir)/src/libprojectM
-
