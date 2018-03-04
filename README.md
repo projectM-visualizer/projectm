@@ -89,6 +89,7 @@ We're on IRC at irc.freenode.net #projectM
 
 ## Authors
 [Authors](https://github.com/projectM-visualizer/projectm/raw/master/AUTHORS.txt)
+
 If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues.
 
 ## License
