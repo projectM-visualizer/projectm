@@ -2,7 +2,7 @@ SUBDIRS=src
 EXTRA_DIST=README.md AUTHORS.txt
 CLEANFILES=
 
-pm_data_dir = @datarootdir@
+pm_data_dir = @datadir@
 pm_font_dir = $(pm_data_dir)/fonts
 pm_presets_dir = $(pm_data_dir)/presets
 pm_shaders_dir = $(pm_data_dir)/shaders
