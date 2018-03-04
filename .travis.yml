@@ -4,7 +4,16 @@ before_script: ./autogen.sh
 before_install:
   - eval "${MATRIX_EVAL}"
 
-script: ./configure --prefix=$PWD/local && make -j8 && make install
+script:
+  - ./configure --prefix=$PWD/local && make -j8 && make install  # build from checkoout
+  - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure --prefix=$PWD/local && make -j8 && make install  # build from dist
+  - test -e projectM-*/src/projectM-sdl/projectMSDL
+  - test -e projectM-*/src/libprojectM/libprojectM.la
+  - test -e projectM-*/local/share/projectM/fonts/Vera.ttf
+  - test -e projectM-*/local/share/projectM/shaders/blur.cg
+  - test -d projectM-*/local/share/projectM/presets
+  - test -e projectM-*/local/lib/libprojectM.la
+  - test -e projectM-*/include/projectM.hpp
 
 # test on GCC and Clang
 matrix:

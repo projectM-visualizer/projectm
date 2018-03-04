@@ -30,15 +30,20 @@ libprojectM_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
 	KeyHandler.hpp             PresetFactory.hpp          projectM.hpp\
 	PCM.hpp                    PresetFactoryManager.hpp\
 	projectM.hpp \
-	src/libprojectM/ConfigFile.h       src/libprojectM/glew.h\
-	src/libprojectM/carbontoprojectM.h src/libprojectM/glxew.h\
-	src/libprojectM/cocoatoprojectM.h  src/libprojectM/lvtoprojectM.h\
-	src/libprojectM/dlldefs.h          src/libprojectM/resource.h\
-	src/libprojectM/event.h            src/libprojectM/sdltoprojectM.h\
-	src/libprojectM/fatal.h            src/libprojectM/timer.h\
-	src/libprojectM/fftsg.h            src/libprojectM/win32-dirent.h\
-	src/libprojectM/glError.h          src/libprojectM/wipemalloc.h
-
+	ConfigFile.h       glew.h\
+	carbontoprojectM.h glxew.h\
+	cocoatoprojectM.h  lvtoprojectM.h\
+	dlldefs.h          resource.h\
+	event.h            sdltoprojectM.h\
+	fatal.h            timer.h\
+	fftsg.h            win32-dirent.h\
+	glError.h          wipemalloc.h\
+  omptl/omptl_numeric_extentions_ser.h\
+	omptl/omptl_algorithm_par.h          omptl/omptl_numeric_par.h\
+	omptl/omptl_algorithm_ser.h          omptl/omptl_numeric_ser.h\
+	omptl/omptl_numeric_extentions.h     omptl/omptl_tools.h\
+	omptl/omptl_numeric_extentions_par.h omptl/omptl omptl/omptl_numeric\
+	omptl/omptl_algorithm
 
 pkgconfigdir = $(libdir)/pkgconfig
 # pkgconfig_DATA = src/libprojectM.pc
