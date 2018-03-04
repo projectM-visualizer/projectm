@@ -1,5 +1,6 @@
 SUBDIRS=src
-EXTRA_DIST=README.md AUTHORS.txt
+PRESETSDIR = presets
+EXTRA_DIST=README.md AUTHORS.txt presets fonts src/libprojectM/Renderer/blur.cg src/libprojectM/Renderer/projectM.cg $(PRESETSDIR)
 CLEANFILES=
 
 # aka /usr/local/share/projectM
@@ -16,6 +17,5 @@ pm_shaders__DATA = src/libprojectM/Renderer/blur.cg \
                    src/libprojectM/Renderer/projectM.cg
 
 install-data-local:
-	@$(NORMAL_INSTALL)
-	$(MKDIR_P) $(pm_presets_dir)
-	$(INSTALL_DATA) presets/** $(pm_presets_dir)
+	test -z $(pkgdatadir) || $(MKDIR_P) $(pm_presets_dir)
+	find "$(PRESETSDIR)" -type f -exec $(INSTALL_DATA) {} $(pm_presets_dir) \;
