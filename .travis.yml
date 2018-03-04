@@ -4,7 +4,7 @@ before_script: ./autogen.sh
 before_install:
   - eval "${MATRIX_EVAL}"
 
-script: ./configure --prefix=local && make -j8 && make install
+script: ./configure --prefix=$PWD/local && make -j8 && make install
 
 # test on GCC and Clang
 matrix:
