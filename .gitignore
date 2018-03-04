@@ -1,4 +1,5 @@
 xcuserdata
+src/libprojectM/config.inp
 src/projectM-emscripten/build/presets
 src/libprojectM/libprojectM.xcodeproj
 presets/custom
