@@ -12,7 +12,6 @@ AM_CPPFLAGS = \
 # system headers/libraries/data to install
 include_HEADERS = projectM.hpp
 lib_LTLIBRARIES = libprojectM.la  # public, possibly-shared library
-dist_pkgdata_DATA = config.inp
 
 # link flags
 libprojectM_la_LDFLAGS = -no-undefined -version-info 0:2:0
@@ -26,7 +25,6 @@ libprojectM_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
   KeyHandler.cpp PresetChooser.cpp TimeKeeper.cpp PCM.cpp PresetFactory.cpp \
 	fftsg.cpp wipemalloc.cpp PipelineMerger.cpp PresetFactoryManager.cpp projectM.cpp
 
-pkginclude_HEADERS = projectM.hpp
 pkgconfigdir = $(libdir)/pkgconfig
 # pkgconfig_DATA = src/libprojectM.pc
 # EXTRA_DIST += src/libprojectM.pc.in
