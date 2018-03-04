@@ -15,7 +15,7 @@ script:
   - test -e local/share/projectM/shaders/blur.cg
   - test -d local/share/projectM/presets
   - test -e local/lib/libprojectM.la
-  - test -e include/projectM.hpp
+  - test -e local/include/projectM.hpp
 
 # test on GCC and Clang
 matrix:
