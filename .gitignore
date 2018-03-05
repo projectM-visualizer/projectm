@@ -8,6 +8,7 @@ project.xcworkspace
 *.lo
 *.la
 *.a
+projectM-*.tar.gz
 .deps/
 .libs/
 Makefile
