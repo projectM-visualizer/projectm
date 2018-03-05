@@ -1,5 +1,5 @@
 AC_INIT([projectM], [2.0.0], [mischa@mvstg.biz], [projectM], [https://github.com/revmischa/projectm])
-AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects])
+AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects tar-pax])
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 LT_INIT
