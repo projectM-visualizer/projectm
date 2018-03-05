@@ -11,7 +11,7 @@ AM_CFLAGS = ${my_CFLAGS} \
 -fdata-sections
 
 bin_PROGRAMS = projectMSDL
-projectMSDL_SOURCES = pmSDL.cpp projectM_SDL_main.cpp
+projectMSDL_SOURCES = pmSDL.cpp projectM_SDL_main.cpp pmSDL.hpp
 projectMSDL_LDADD = ${SDL_LIBS}	${top_srcdir}/src/libprojectM/libprojectM.la
 projectMSDL_LDFLAGS = -static
 projectMSDL_PROGRAM = projectMSDL
