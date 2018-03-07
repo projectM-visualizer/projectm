@@ -43,7 +43,7 @@
 #endif
 #include <sys/types.h>
 
-#ifdef MACOS
+#ifdef __APPLE__
 //#include <MacWindows.h>
 //#include <gl.h>
 //#include <glu.h>
@@ -84,7 +84,7 @@ class MasterRenderItemMerge;
 #pragma warning (disable:4305)
 #endif /** WIN32 */
 
-#ifdef MACOS2
+#ifdef __APPLE__2
 #define inline
 #endif
 
@@ -154,6 +154,7 @@ public:
 
   void changeTextureSize(int size);
   void changePresetDuration(int seconds);
+  void getMeshSize(int *w, int *h);
 
   const Settings & settings() const {
 		return _settings;

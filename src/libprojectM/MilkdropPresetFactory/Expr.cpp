@@ -35,7 +35,7 @@ float GenExpr::eval_gen_expr ( int mesh_i, int mesh_j )
 		return EVAL_ERROR;
 
 	switch ( this->type )
-	{
+	{  /* N.B. this code is responsible for 75% of all CPU time. making it faster will help a lot. */
 		case VAL_T:
 			return ( ( ValExpr* ) item )->eval_val_expr ( mesh_i, mesh_j );
 		case PREFUN_T:
@@ -56,8 +56,19 @@ float PrefunExpr::eval_prefun_expr ( int mesh_i, int mesh_j )
 
 
 	assert ( func_ptr );
+	float arg_list_stk[10];
 
-	float * arg_list = new float[this->num_args];
+	float * arg_list;
+	float * argp;
+	GenExpr **expr_listp = expr_list;
+
+
+	if (this->num_args > 10) {
+		arg_list = new float[this->num_args];
+	} else {
+		arg_list = arg_list_stk;
+	}
+	argp = arg_list;
 
 	assert(arg_list);
 
@@ -66,17 +77,17 @@ float PrefunExpr::eval_prefun_expr ( int mesh_i, int mesh_j )
 	/* Evaluate each argument before calling the function itself */
 	for ( int i = 0; i < num_args; i++ )
 	{
-		arg_list[i] = expr_list[i]->eval_gen_expr ( mesh_i, mesh_j );
+		*(argp++) = (*(expr_listp++))->eval_gen_expr ( mesh_i, mesh_j );
 		//printf("numargs %x", arg_list[i]);
-
-
 	}
 	/* Now we call the function, passing a list of
 	   floats as its argument */
 
 	const float value = ( func_ptr ) ( arg_list );
 
-	delete[](arg_list);
+	if (arg_list != arg_list_stk) {
+		delete[](arg_list);
+	}
 	return value;
 }
 

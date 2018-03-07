@@ -30,7 +30,7 @@
 
 #include "timer.h"
 #include <iostream>
-#ifdef LINUX
+#ifdef __linux__
 #include "time.h"
 #endif
 
@@ -179,8 +179,8 @@ void projectM::readConfig (const std::string & configFile )
     ( "Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 10));
     _settings.presetDuration = config.read<int> ( "Preset Duration", 15 );
 
-    #ifdef LINUX
-    _settings.presetURL = config.read<string> ( "Preset Path", CMAKE_INSTALL_PREFIX "/share/projectM/presets" );
+    #ifdef __linux__
+    _settings.presetURL = config.read<string> ( "Preset Path", "/usr/local/share/projectM/presets" );
     #endif
 
     #ifdef __APPLE__
@@ -189,7 +189,7 @@ void projectM::readConfig (const std::string & configFile )
     #endif
 
     #ifdef WIN32
-    _settings.presetURL = config.read<string> ( "Preset Path", CMAKE_INSTALL_PREFIX "/share/projectM/presets" );
+    _settings.presetURL = config.read<string> ( "Preset Path", "/usr/local/share/projectM/presets" );
     #endif
 
     #ifdef __APPLE__
@@ -199,11 +199,11 @@ void projectM::readConfig (const std::string & configFile )
     ( "Menu Font", "../Resources/fonts/VeraMono.ttf");
     #endif
 
-    #ifdef LINUX
+    #ifdef __linux__
     _settings.titleFontURL = config.read<string>
-    ( "Title Font", projectM_FONT_TITLE );
+    ( "Title Font", "/usr/local/share/projectM/fonts/Vera.tff" );
     _settings.menuFontURL = config.read<string>
-    ( "Menu Font", projectM_FONT_MENU );
+    ( "Menu Font", "/usr/local/share/projectM/fonts/VeraMono.tff" );
     #endif
 
     #ifdef WIN32
@@ -547,6 +547,8 @@ static void *thread_callback(void *prjm) {
 
         /** Stash the new dimensions */
 
+        _settings.windowWidth = w;
+        _settings.windowHeight = h;
         renderer->reset ( w,h );
     }
 
@@ -901,6 +903,10 @@ void projectM::changeTextureSize(int size) {
 
 void projectM::changePresetDuration(int seconds) {
   timeKeeper->ChangePresetDuration(seconds);
+}
+void projectM::getMeshSize(int *w, int *h)	{
+	*w = _settings.meshX;
+	*h = _settings.meshY;
 }
 
 

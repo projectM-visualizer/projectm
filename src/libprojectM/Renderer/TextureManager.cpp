@@ -1,4 +1,4 @@
-#ifdef LINUX
+#ifdef __linux__
 #include <GL/gl.h>
 #endif
 #ifdef EMSCRIPTEN
@@ -14,21 +14,21 @@
 #ifdef USE_DEVIL
 #include <IL/ilut.h>
 #else
-#include "SOIL/SOIL.h"
+#include "SOIL2/SOIL2.h"
 #endif
 
 #ifdef WIN32
 #include "win32-dirent.h"
 #endif
 
-#ifdef LINUX
+#ifdef __linux__
 #include <dirent.h>
 #endif
 #ifdef EMSCRIPTEN
 #include <dirent.h>
 #endif
 
-#ifdef MACOS
+#ifdef __APPLE__
 #include <dirent.h>
 #endif
 #include "TextureManager.hpp"
@@ -95,7 +95,7 @@ void TextureManager::Preload()
 					  );
 #endif
 
-  textures["project.tga"]=tex;
+  // textures["project.tga"]=tex;
 
 #ifdef USE_DEVIL
   ilLoadL(IL_TYPE_UNKNOWN,(ILvoid*) headphones_data, headphones_bytes);
@@ -179,7 +179,7 @@ GLuint TextureManager::getTextureFullpath(const std::string filename, const std:
 #else
        int width, height;
 
-       unsigned int tex = SOIL_load_OGL_texture_size(
+       unsigned int tex = SOIL_load_OGL_texture(
     		   imageURL.c_str(),
 					  SOIL_LOAD_AUTO,
 					  SOIL_CREATE_NEW_ID,
@@ -189,7 +189,8 @@ GLuint TextureManager::getTextureFullpath(const std::string filename, const std:
 					    SOIL_FLAG_MULTIPLY_ALPHA
 					  //|  SOIL_FLAG_COMPRESS_TO_DXT
 					  //| SOIL_FLAG_DDS_LOAD_DIRECT
-					  ,&width,&height);
+					  //,&width,&height);
+                                                     );
 
 #endif
        textures[filename]=tex;
@@ -218,7 +219,7 @@ unsigned int TextureManager::getTextureMemorySize()
 
 void TextureManager::loadTextureDir()
 {
-	std::string dirname = CMAKE_INSTALL_PREFIX "/share/projectM/textures";
+	std::string dirname = "/usr/local/share/projectM/textures";
 
 	  DIR * m_dir;
 

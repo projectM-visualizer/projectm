@@ -16,14 +16,14 @@
 #include <sstream>
 #include <set>
 
-#ifdef LINUX
+#ifdef __linux__
 extern "C"
 {
 #include <errno.h>
 }
 #endif
 
-#ifdef MACOS
+#ifdef __APPLE__
 extern "C"
 {
 #include <errno.h>

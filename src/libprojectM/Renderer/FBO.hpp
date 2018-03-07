@@ -34,7 +34,7 @@
 #endif
 
 #ifdef USE_FBO
-#ifdef USE_NATIVE_GLEW
+#ifdef USE_INCLUDED_GLEW
 #include "glew.h"
 #else
 #include <GL/glew.h>
@@ -49,7 +49,7 @@
 #include <windows.h>
 #endif /** WIN32 */
 
-#ifdef LINUX
+#ifdef __linux__
 #ifdef USE_GLES1
 #include <GLES/gl.h>
 #else
@@ -81,7 +81,7 @@ public:
 
     /** Opaque pbuffer context and pbuffer */
 /*
-#ifdef MACOS
+#ifdef __APPLE__
     void *origContext;
     void *pbufferContext;
     void *pbuffer;

@@ -7,9 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C34045C01B1E21B500139822 /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C34045BF1B1E21B500139822 /* Cg.framework */; };
-		C34045C11B1E21B500139822 /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C34045BF1B1E21B500139822 /* Cg.framework */; };
-		C34045C31B1E220800139822 /* Cg.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = C34045BF1B1E21B500139822 /* Cg.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C34E81141956D096001AC5B5 /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81131956D096001AC5B5 /* libRenderer.a */; };
 		C34E81171956D0AC001AC5B5 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81151956D0AC001AC5B5 /* libMilkdropPresetFactory.a */; };
 		C34E81181956D0AC001AC5B5 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81161956D0AC001AC5B5 /* libNativePresetFactory.a */; };
@@ -45,6 +42,16 @@
 		C3FAF97B17B8A45200F4B110 /* fonts in share */ = {isa = PBXBuildFile; fileRef = C3FAF97917B8A43B00F4B110 /* fonts */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		169501421F6EC5E6008FAF86 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1695013E1F6EC5E5008FAF86 /* libprojectM.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 169501301F6EC5E5008FAF86;
+			remoteInfo = libprojectM;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		C3C24430195764660021FCD4 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -52,7 +59,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C34045C31B1E220800139822 /* Cg.framework in Copy Files */,
 			);
 			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -84,7 +90,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C34045BF1B1E21B500139822 /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = /Library/Frameworks/Cg.framework; sourceTree = "<absolute>"; };
+		1695013E1F6EC5E5008FAF86 /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
 		C34E810E1956CD2F001AC5B5 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		C34E81101956CD3A001AC5B5 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		C34E81131956D096001AC5B5 /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/libRenderer.a; sourceTree = SOURCE_ROOT; };
@@ -146,7 +152,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C34045C11B1E21B500139822 /* Cg.framework in Frameworks */,
 				C37EBD2C19A0112900220265 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -159,7 +164,6 @@
 				C37822041956D90D0058A694 /* libprojectM.a in Frameworks */,
 				C34E81241956D0DA001AC5B5 /* libbz2.a in Frameworks */,
 				C34E81221956D0D9001AC5B5 /* libfreetype.a in Frameworks */,
-				C34045C01B1E21B500139822 /* Cg.framework in Frameworks */,
 				C34E81201956D0D8001AC5B5 /* libftgl.a in Frameworks */,
 				C34E811E1956D0D6001AC5B5 /* libpng15.a in Frameworks */,
 				C34E811C1956D0D4001AC5B5 /* libz.a in Frameworks */,
@@ -174,6 +178,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1695013F1F6EC5E5008FAF86 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				169501431F6EC5E6008FAF86 /* liblibprojectM.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		C37EBD2D19A0112900220265 /* projectM Visualizer */ = {
 			isa = PBXGroup;
 			children = (
@@ -208,10 +220,10 @@
 		C3F9D7A617B82CC3009E58CB = {
 			isa = PBXGroup;
 			children = (
+				1695013E1F6EC5E5008FAF86 /* libprojectM.xcodeproj */,
 				C38212791A5A2114002A8D78 /* gles_conv.txt */,
 				C37EBD5E19A0164400220265 /* selectViz.png */,
 				C37EBD5A19A0118600220265 /* iProjectM.pkg */,
-				C34045BF1B1E21B500139822 /* Cg.framework */,
 				C34E81191956D0C3001AC5B5 /* contrib */,
 				C3FAF97A17B8A44100F4B110 /* share */,
 				C3FAE5A417B88C5B00F4B110 /* libprojectM */,
@@ -354,7 +366,7 @@
 		C3F9D7A717B82CC3009E58CB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0630;
+				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = projectM;
 				TargetAttributes = {
 					C37EBD2A19A0112900220265 = {
@@ -378,6 +390,12 @@
 			mainGroup = C3F9D7A617B82CC3009E58CB;
 			productRefGroup = C3F9D7B017B82CC3009E58CB /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 1695013F1F6EC5E5008FAF86 /* Products */;
+					ProjectRef = 1695013E1F6EC5E5008FAF86 /* libprojectM.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				C3F9D7AE17B82CC3009E58CB /* iProjectM */,
@@ -385,6 +403,16 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		169501431F6EC5E6008FAF86 /* liblibprojectM.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = liblibprojectM.a;
+			remoteRef = 169501421F6EC5E6008FAF86 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		C37EBD2919A0112900220265 /* Resources */ = {
@@ -506,6 +534,7 @@
 				INFOPLIST_FILE = "projectM Visualizer/projectM Visualizer-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = biz.int80.iProjectM;
 				PRODUCT_NAME = "projectM Visualizer";
 				WRAPPER_EXTENSION = app;
 			};
@@ -538,6 +567,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = "projectM Visualizer/projectM Visualizer-Info.plist";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				PRODUCT_BUNDLE_IDENTIFIER = biz.int80.iProjectM;
 				PRODUCT_NAME = "projectM Visualizer";
 				WRAPPER_EXTENSION = app;
 			};
@@ -550,20 +580,27 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = NO;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
 				DYLIB_CURRENT_VERSION = 1.0.0;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_INPUT_FILETYPE = automatic;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -572,7 +609,9 @@
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "${SRCROOT}/..";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks/";
@@ -592,24 +631,32 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = NO;
+				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = YES;
 				DYLIB_CURRENT_VERSION = 1.0.0;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_INPUT_FILETYPE = automatic;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "${SRCROOT}/..";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks/";
@@ -645,12 +692,9 @@
 					"\"$(SRCROOT)/../NativePresets\"",
 					"\"$(SRCROOT)/..\"",
 					"\"$(SRCROOT)/macos/contrib\"",
-					/Users/snooz/dev/projectm/src/libprojectM,
-					/Users/snooz/dev/projectm/src/libprojectM/Renderer,
-					/Users/snooz/dev/projectm/src/libprojectM/MilkdropPresetFactory,
-					/Users/snooz/dev/projectm/src/libprojectM/NativePresetFactory,
 					"$(PROJECT_DIR)/macos/contrib",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "biz.int80.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = iProjectM;
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -679,12 +723,9 @@
 					"\"$(SRCROOT)/../NativePresets\"",
 					"\"$(SRCROOT)/..\"",
 					"\"$(SRCROOT)/macos/contrib\"",
-					/Users/snooz/dev/projectm/src/libprojectM,
-					/Users/snooz/dev/projectm/src/libprojectM/Renderer,
-					/Users/snooz/dev/projectm/src/libprojectM/MilkdropPresetFactory,
-					/Users/snooz/dev/projectm/src/libprojectM/NativePresetFactory,
 					"$(PROJECT_DIR)/macos/contrib",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "biz.int80.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = iProjectM;
 				WRAPPER_EXTENSION = bundle;
 			};

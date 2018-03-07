@@ -11,12 +11,15 @@ http://sourceforge.net/projects/ftgl/
 ./configure --prefix=/usr/local && make -j4 && sudo make install
 
 3. GLEW
-git clone https://github.com/revmischa/glew
-cd glew
+git clone https://github.com/nigels-com/glew.git
+cd glew/auto
+make
+cd ..
 make -j4
 
-4. Cg
-http://developer.download.nvidia.com/cg/Cg_3.1/Cg-3.1_April2012.dmg
+4. SDL 2
+Download & install SDL:
+https://www.libsdl.org/release/SDL2-2.0.7.dmg
 
-5. SDL
-https://www.libsdl.org/release/SDL2-2.0.3.dmg
+5. configure and build
+./autogen.sh && ./configure && make

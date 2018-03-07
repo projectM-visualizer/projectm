@@ -26,9 +26,13 @@
 #include "getConfigFilename.h"
 #include <stdlib.h>
 
-// FIXME: portable includes?
-// i just added what works for me -fatray
+#ifdef __linux__
 #include <GL/gl.h>
+#endif
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#endif
+
 #include <cassert>
 
 projectM *globalPM= NULL;

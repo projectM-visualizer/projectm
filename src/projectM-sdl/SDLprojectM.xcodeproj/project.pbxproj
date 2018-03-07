@@ -7,9 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		161070C41F703F13001905AB /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 161070C31F703F13001905AB /* libprojectM.a */; };
+		161070DD1F705069001905AB /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 161070DC1F705069001905AB /* Cg.framework */; };
+		169502001F7009E9008FAF86 /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
+		C307DFD41D565B57002F6B9E /* presets in CopyFiles */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		C345214F1BF022A5001707D2 /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
-		C34521511BF022B1001707D2 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521501BF022B1001707D2 /* libprojectM.a */; };
-		C34521531BF022ED001707D2 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521521BF022ED001707D2 /* SDL2.framework */; };
 		C34521571BF0250D001707D2 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521561BF0250D001707D2 /* libMilkdropPresetFactory.a */; };
 		C34521591BF02516001707D2 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521581BF02516001707D2 /* libNativePresetFactory.a */; };
 		C345215A1BF0259C001707D2 /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521541BF02333001707D2 /* libRenderer.a */; };
@@ -25,6 +27,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		161070C81F704047001905AB /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C34521421BF02293001707D2 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
@@ -32,16 +43,20 @@
 			dstSubfolderSpec = 16;
 			files = (
 				C3D30B901BF02BEC009AAACD /* fonts in CopyFiles */,
+				C307DFD41D565B57002F6B9E /* presets in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		161070C31F703F13001905AB /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/libprojectM.a; sourceTree = "<group>"; };
+		161070DC1F705069001905AB /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = ../../../../../../Library/Frameworks/Cg.framework; sourceTree = "<group>"; };
+		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
+		169501FF1F7009E9008FAF86 /* pmSDL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pmSDL.hpp; sourceTree = "<group>"; };
+		C307DFD31D565B57002F6B9E /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
 		C34521441BF02294001707D2 /* SDLprojectM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLprojectM; sourceTree = BUILT_PRODUCTS_DIR; };
 		C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = projectM_SDL_main.cpp; sourceTree = SOURCE_ROOT; };
-		C34521501BF022B1001707D2 /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprojectM.a; sourceTree = "<group>"; };
-		C34521521BF022ED001707D2 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		C34521541BF02333001707D2 /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/libRenderer.a; sourceTree = "<group>"; };
 		C34521561BF0250D001707D2 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
 		C34521581BF02516001707D2 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/libNativePresetFactory.a; sourceTree = "<group>"; };
@@ -61,42 +76,53 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				161070DD1F705069001905AB /* Cg.framework in Frameworks */,
+				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
+				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
 				C34521651BF025E5001707D2 /* libbz2.a in Frameworks */,
 				C34521661BF025E5001707D2 /* libfreetype.a in Frameworks */,
 				C34521671BF025E5001707D2 /* libftgl.a in Frameworks */,
 				C34521681BF025E5001707D2 /* libGLEW.a in Frameworks */,
 				C34521691BF025E5001707D2 /* libpng15.a in Frameworks */,
 				C345216A1BF025E5001707D2 /* libz.a in Frameworks */,
-				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
-				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
+				161070C41F703F13001905AB /* libprojectM.a in Frameworks */,
 				C345215A1BF0259C001707D2 /* libRenderer.a in Frameworks */,
 				C34521591BF02516001707D2 /* libNativePresetFactory.a in Frameworks */,
-				C34521531BF022ED001707D2 /* SDL2.framework in Frameworks */,
 				C34521571BF0250D001707D2 /* libMilkdropPresetFactory.a in Frameworks */,
-				C34521511BF022B1001707D2 /* libprojectM.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		161070CE1F7041B0001905AB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				161070DC1F705069001905AB /* Cg.framework */,
+				C345215D1BF025CF001707D2 /* CoreFoundation.framework */,
+				C345215B1BF025A9001707D2 /* OpenGL.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		C345213B1BF02293001707D2 = {
 			isa = PBXGroup;
 			children = (
+				169501FE1F7009E9008FAF86 /* pmSDL.cpp */,
+				169501FF1F7009E9008FAF86 /* pmSDL.hpp */,
+				C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */,
+				C307DFD31D565B57002F6B9E /* presets */,
 				C345215F1BF025E5001707D2 /* libbz2.a */,
 				C34521601BF025E5001707D2 /* libfreetype.a */,
 				C34521611BF025E5001707D2 /* libftgl.a */,
 				C34521621BF025E5001707D2 /* libGLEW.a */,
 				C34521631BF025E5001707D2 /* libpng15.a */,
 				C34521641BF025E5001707D2 /* libz.a */,
-				C345215D1BF025CF001707D2 /* CoreFoundation.framework */,
-				C345215B1BF025A9001707D2 /* OpenGL.framework */,
 				C34521581BF02516001707D2 /* libNativePresetFactory.a */,
 				C34521561BF0250D001707D2 /* libMilkdropPresetFactory.a */,
 				C34521541BF02333001707D2 /* libRenderer.a */,
-				C34521521BF022ED001707D2 /* SDL2.framework */,
-				C34521501BF022B1001707D2 /* libprojectM.a */,
-				C34521461BF02294001707D2 /* SDLprojectM */,
+				161070C31F703F13001905AB /* libprojectM.a */,
+				161070CE1F7041B0001905AB /* Frameworks */,
 				C34521451BF02294001707D2 /* Products */,
 				C3D30B8F1BF02BE5009AAACD /* fonts */,
 			);
@@ -110,15 +136,23 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C34521461BF02294001707D2 /* SDLprojectM */ = {
-			isa = PBXGroup;
-			children = (
-				C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */,
-			);
-			path = SDLprojectM;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		161070DE1F70942C001905AB /* projectMSDL */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 161070E11F70942C001905AB /* Build configuration list for PBXLegacyTarget "projectMSDL" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			dependencies = (
+			);
+			name = projectMSDL;
+			passBuildSettingsInEnvironment = 1;
+			productName = projectMSDL;
+		};
+/* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
 		C34521431BF02293001707D2 /* SDLprojectM */ = {
@@ -128,6 +162,7 @@
 				C34521401BF02293001707D2 /* Sources */,
 				C34521411BF02293001707D2 /* Frameworks */,
 				C34521421BF02293001707D2 /* CopyFiles */,
+				161070C81F704047001905AB /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -144,9 +179,13 @@
 		C345213C1BF02293001707D2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0710;
+				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = int80;
 				TargetAttributes = {
+					161070DE1F70942C001905AB = {
+						CreatedOnToolsVersion = 8.3.3;
+						ProvisioningStyle = Automatic;
+					};
 					C34521431BF02293001707D2 = {
 						CreatedOnToolsVersion = 7.1;
 					};
@@ -165,6 +204,7 @@
 			projectRoot = "";
 			targets = (
 				C34521431BF02293001707D2 /* SDLprojectM */,
+				161070DE1F70942C001905AB /* projectMSDL */,
 			);
 		};
 /* End PBXProject section */
@@ -174,6 +214,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				169502001F7009E9008FAF86 /* pmSDL.cpp in Sources */,
 				C345214F1BF022A5001707D2 /* projectM_SDL_main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -181,6 +222,37 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		161070DF1F70942C001905AB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				DEBUGGING_SYMBOLS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		161070E01F70942C001905AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		C34521491BF02294001707D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -194,8 +266,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
@@ -241,8 +315,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "";
@@ -274,11 +350,18 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+					"$(USER_LIBRARY_DIR)/Frameworks",
+					"$(PROJECT_DIR)",
+					"$(SRCROOT)",
 				);
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../libprojectM";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					SDL2,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -290,11 +373,18 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+					"$(USER_LIBRARY_DIR)/Frameworks",
+					"$(PROJECT_DIR)",
+					"$(SRCROOT)",
 				);
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../libprojectM";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
+				);
+				OTHER_LDFLAGS = (
+					"-framework",
+					SDL2,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -303,6 +393,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		161070E11F70942C001905AB /* Build configuration list for PBXLegacyTarget "projectMSDL" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				161070DF1F70942C001905AB /* Debug */,
+				161070E01F70942C001905AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		C345213F1BF02293001707D2 /* Build configuration list for PBXProject "SDLprojectM" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

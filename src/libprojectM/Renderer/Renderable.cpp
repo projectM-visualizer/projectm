@@ -339,7 +339,7 @@ void Border::Draw(RenderContext &context)
 
 	// glRect doesn't exist in GLES I think
 	// TODO: replace glRect
-#ifndef EMSCRIPTEN
+#ifndef USE_GLES1
 	glRectd(of, of, of+iff, texof);
 	glRectd(of+iff, of, texof-iff, of+iff);
 	glRectd(texof-iff, of, texof, texof);

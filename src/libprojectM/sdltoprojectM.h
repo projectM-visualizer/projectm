@@ -41,13 +41,13 @@
 #ifdef WIN32
 #include <SDL.h>
 #else
-#include <SDL/SDL.h>
+#include <SDL2/SDL.h>
 #endif
 
-inline projectMEvent sdl2pmEvent( SDL_Event event ) { \
+inline projectMEvent sdl2pmEvent( SDL_Event *event ) { \
 							
-    switch ( event.type ) { \
-        case SDL_VIDEORESIZE:
+    switch ( event->type ) { \
+        case SDL_WINDOWEVENT_RESIZED:
             return PROJECTM_VIDEORESIZE; \
         case SDL_KEYUP: \
             return PROJECTM_KEYUP; \
@@ -58,8 +58,8 @@ inline projectMEvent sdl2pmEvent( SDL_Event event ) { \
       } \
   } \
 
-inline projectMKeycode sdl2pmKeycode( SDLKey keysym ) { \
-    switch ( keysym ) { \
+inline projectMKeycode sdl2pmKeycode( SDL_Keycode keycode ) { \
+    switch ( keycode ) { \
         case SDLK_F1: \
             return PROJECTM_K_F1; \
         case SDLK_F2: \
@@ -158,7 +158,7 @@ inline projectMKeycode sdl2pmKeycode( SDLKey keysym ) { \
       } \
   } \
 
-inline projectMModifier sdl2pmModifier( SDLMod mod ) { \
+inline projectMModifier sdl2pmModifier( SDL_Keymod mod ) { \
     return PROJECTM_KMOD_LSHIFT; \
   } \
 
