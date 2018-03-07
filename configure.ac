@@ -48,6 +48,28 @@ AS_IF([test "x$enable_debug" = "xyes"], [
 AC_DEFINE(ENABLE_DEBUG, [1], [Debug messages.])
 ])
 
+dnl Qt
+AC_ARG_ENABLE([qt],
+AS_HELP_STRING([--enable-qt], [Build Qt]))
+AS_IF([test "x$enable_qt" = "xyes"], [
+PKG_CHECK_MODULES(QT, [QtCore, QtGui, QtNetwork], [], [AC_MSG_ERROR([Qt libraries are required.])])
+qt_CPPFLAGS="`$PKG_CONFIG --cflags-only-I QtCore QtGui QtNetwork` $CPPFLAGS"
+qt_LDFLAGS="`$PKG_CONFIG --libs-only-L QtCore QtGui QtNetwork` $LDFLAGS"
+qt_LIBS="`$PKG_CONFIG --libs-only-l QtCore QtGui QtNetwork` $LIBS"
+
+if ! `$PKG_CONFIG --atleast-version=4.0.0 QtCore`; then
+AC_MSG_ERROR([Qt >= 4.0.0 is required.])
+fi
+
+AC_CHECK_PROGS(MOC, [moc-qt5 moc-qt4 moc])
+AC_CHECK_PROGS(UIC, [uic-qt5 uic-qt4 uic])
+AC_CHECK_PROGS(RCC, [rcc])
+if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
+AC_MSG_ERROR([Qt utility programs moc, uic, and rcc are required.])
+fi
+])
+
+
 my_CFLAGS="\
 -Wall \
 -Wchar-subscripts \
