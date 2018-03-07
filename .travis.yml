@@ -56,3 +56,8 @@ matrix:
       osx_image: xcode8
       env:
         - MATRIX_EVAL="brew update && brew install sdl2"
+
+notifications:
+  email:
+    on_success: never
+    on_failure: change
