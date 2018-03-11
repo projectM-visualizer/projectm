@@ -11,7 +11,7 @@
 
 
 
-#ifdef __linux__
+#ifdef __unix__
 #ifdef USE_GLES1
 #include <GLES/gl.h>
 #else

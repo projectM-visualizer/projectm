@@ -49,7 +49,7 @@
 #include <windows.h>
 #endif /** WIN32 */
 
-#ifdef __linux__
+#ifdef __unix__
 #ifdef USE_GLES1
 #include <GLES/gl.h>
 #else
@@ -66,7 +66,7 @@ class RenderTarget {
 public:
     /** Texture size */
     int texsize;
-  
+
   int useFBO;
   int renderToTexture;
 
@@ -90,7 +90,7 @@ public:
     /** Render target texture ID for non-pbuffer systems */
     GLuint textureID[3];
 #ifdef USE_FBO
-    GLuint fbuffer[2]; 
+    GLuint fbuffer[2];
     GLuint depthb[2];
 #endif
   };

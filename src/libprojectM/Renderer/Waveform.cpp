@@ -5,7 +5,7 @@
  *      Author: pete
  */
 
-#ifdef __linux__
+#ifdef __unix__
 #include <GL/gl.h>
 #endif
 #ifdef WIN32
@@ -124,6 +124,3 @@ void Waveform::Draw(RenderContext &context)
 			delete[] value2;
 
    }
-
-
-

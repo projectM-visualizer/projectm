@@ -6,7 +6,7 @@
  */
 #include <iostream>
 
-#ifdef __linux__
+#ifdef __unix__
 #include <GL/gl.h>
 #endif
 #ifdef EMSCRIPTEN
