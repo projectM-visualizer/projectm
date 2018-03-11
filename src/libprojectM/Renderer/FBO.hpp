@@ -42,20 +42,16 @@
 #endif
 
 #ifdef __APPLE__
-#include <OpenGL/gl.h>
-#endif /** MACOS */
-
-#ifdef WIN32
-#include <windows.h>
-#endif /** WIN32 */
-
-#ifdef __linux__
-#ifdef USE_GLES1
-#include <GLES/gl.h>
-#else
-#include <GL/gl.h>
-#include <GL/glx.h>
-#endif
+# include <OpenGL/gl.h>
+#elif defined(WIN32)
+# include <windows.h>
+#else /* linux/unix/other */
+# ifdef USE_GLES1
+#  include <GLES/gl.h>
+# else
+#  include <GL/gl.h>
+#  include <GL/glx.h>
+# endif
 #endif
 
 typedef enum { SCALE_NEAREST, SCALE_MAGNIFY, SCALE_MINIFY } TextureScale;
