@@ -16,7 +16,7 @@
 #include <sstream>
 #include <set>
 
-#ifdef LINUX
+#ifdef __linux__
 extern "C"
 {
 #include <errno.h>

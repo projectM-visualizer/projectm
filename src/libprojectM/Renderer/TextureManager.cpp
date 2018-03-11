@@ -1,4 +1,4 @@
-#ifdef LINUX
+#ifdef __linux__
 #include <GL/gl.h>
 #endif
 #ifdef EMSCRIPTEN
@@ -21,7 +21,7 @@
 #include "win32-dirent.h"
 #endif
 
-#ifdef LINUX
+#ifdef __linux__
 #include <dirent.h>
 #endif
 #ifdef EMSCRIPTEN

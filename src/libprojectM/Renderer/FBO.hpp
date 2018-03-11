@@ -49,7 +49,7 @@
 #include <windows.h>
 #endif /** WIN32 */
 
-#ifdef LINUX
+#ifdef __linux__
 #ifdef USE_GLES1
 #include <GLES/gl.h>
 #else
