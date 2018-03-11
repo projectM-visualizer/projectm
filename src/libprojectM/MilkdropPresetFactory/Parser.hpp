@@ -189,4 +189,3 @@ public:
   };
 
 #endif /** !_PARSER_H */
-
