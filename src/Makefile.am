@@ -1,0 +1,1 @@
+SUBDIRS=libprojectM projectM-sdl

@@ -51,7 +51,7 @@ private:
     projectM::Settings settings;
     SDL_AudioDeviceID audioInputDevice;
     unsigned int width, height;
-    
+
     // audio input device characteristics
     unsigned short audioChannelsCount;
     unsigned short audioSampleRate;
@@ -62,10 +62,11 @@ private:
 
     static void audioInputCallbackF32(void *userdata, unsigned char *stream, int len);
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
-    
+
 
     void addFakePCM();
     void keyHandler(SDL_Event *);
+    SDL_AudioDeviceID selectAudioInput(int count);
 };
 
 
