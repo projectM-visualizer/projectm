@@ -48,29 +48,6 @@ AS_IF([test "x$enable_debug" = "xyes"], [
 AC_DEFINE(ENABLE_DEBUG, [1], [Debug messages.])
 ])
 
-dnl Qt
-AC_ARG_ENABLE([qt],
-  AS_HELP_STRING([--enable-qt], [Build Qt]),
-  [], [enable_qt=no])
-AS_IF([test "x$enable_qt" = "xyes"], [
-PKG_CHECK_MODULES(QT, [Qt5Core, Qt5Gui], [], [AC_MSG_ERROR([Qt libraries are required.])])
-qt_CPPFLAGS="`$PKG_CONFIG --cflags-only-I Qt5Core Qt5Gui` $CPPFLAGS"
-qt_LDFLAGS="`$PKG_CONFIG --libs-only-L Qt5Core Qt5Gui` $LDFLAGS"
-qt_LIBS="`$PKG_CONFIG --libs-only-l Qt5Core Qt5Gui` $LIBS"
-
-if ! `$PKG_CONFIG --atleast-version=5.0.0 Qt5Core`; then
-AC_MSG_ERROR([Qt >= 5.0.0 is required. Try installing qtdeclarative5-dev])
-fi
-
-AC_CHECK_PROGS(MOC, [moc-qt5 moc])
-AC_CHECK_PROGS(UIC, [uic-qt5 uic])
-AC_CHECK_PROGS(RCC, [rcc])
-if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
-AC_MSG_ERROR([Qt utility programs moc, uic, and rcc are required.])
-fi
-AC_CONFIG_FILES([src/projectM-qt/Makefile])
-])
-
 my_CFLAGS="\
 -Wall \
 -Wchar-subscripts \
@@ -118,7 +95,4 @@ ldflags:                ${LDFLAGS}
 
 logging:                ${enable_logging}
 debug:                  ${enable_debug}
-
-SDL application:        yes
-Qt:                     ${enable_qt}
 ])
