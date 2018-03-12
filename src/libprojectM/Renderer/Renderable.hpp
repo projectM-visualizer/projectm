@@ -3,6 +3,8 @@
 #include <vector>
 #include <typeinfo>
 #include "TextureManager.hpp"
+#include "projectM-opengl.h"
+
 class BeatDetect;
 
 
