@@ -61,7 +61,7 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define STRING_LINE_SIZE 1024
 
 
-#ifdef __linux__
+#ifdef __unix__
 #include <cstdlib>
 #define projectM_isnan std::isnan
 #endif
@@ -79,7 +79,7 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define projectM_isnan(x) ((x) != (x))
 #endif
 
-#ifdef __linux__
+#ifdef __unix__
 #define projectM_fmax fmax
 #endif
 
@@ -91,7 +91,7 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define projectM_fmax(x,y) ((x) >= (y) ? (x): (y))
 #endif
 
-#ifdef __linux__
+#ifdef __unix__
 #define projectM_fmin fmin
 #endif
 
@@ -245,5 +245,3 @@ enum PresetRatingType {
 typedef std::vector<int> RatingList;
 
 #endif
-
-
