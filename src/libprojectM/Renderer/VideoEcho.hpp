@@ -8,7 +8,9 @@
 #ifndef VIDEOECHO_HPP_
 #define VIDEOECHO_HPP_
 
+#include "projectM-opengl.h"
 #include "Renderable.hpp"
+#include "Common.hpp"
 
 enum Orientation
 {

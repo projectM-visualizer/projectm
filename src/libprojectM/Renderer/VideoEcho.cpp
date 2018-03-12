@@ -5,20 +5,6 @@
  *      Author: pete
  */
 
-#include "Common.hpp"
-
-#ifdef USE_GLES1
-#include <GLES/gl.h>
-#else
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
-#endif
-
 #include "VideoEcho.hpp"
 
 VideoEcho::VideoEcho(): a(0), zoom(1), orientation(Normal)

@@ -30,7 +30,7 @@
 
 #include "timer.h"
 #include <iostream>
-#ifdef __linux__
+#ifdef __unix__
 #include "time.h"
 #endif
 
@@ -179,7 +179,7 @@ void projectM::readConfig (const std::string & configFile )
     ( "Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 10));
     _settings.presetDuration = config.read<int> ( "Preset Duration", 15 );
 
-    #ifdef __linux__
+    #ifdef __unix__
     _settings.presetURL = config.read<string> ( "Preset Path", "/usr/local/share/projectM/presets" );
     #endif
 
@@ -199,7 +199,7 @@ void projectM::readConfig (const std::string & configFile )
     ( "Menu Font", "../Resources/fonts/VeraMono.ttf");
     #endif
 
-    #ifdef __linux__
+    #ifdef __unix__
     _settings.titleFontURL = config.read<string>
     ( "Title Font", "/usr/local/share/projectM/fonts/Vera.tff" );
     _settings.menuFontURL = config.read<string>
@@ -908,5 +908,3 @@ void projectM::getMeshSize(int *w, int *h)	{
 	*w = _settings.meshX;
 	*h = _settings.meshY;
 }
-
-

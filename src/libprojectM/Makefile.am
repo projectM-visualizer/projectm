@@ -29,7 +29,7 @@ libprojectM_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
 	IdleTextures.hpp           PresetChooser.hpp          TimeKeeper.hpp\
 	KeyHandler.hpp             PresetFactory.hpp          projectM.hpp\
 	PCM.hpp                    PresetFactoryManager.hpp\
-	projectM.hpp \
+	projectM.hpp projectM-opengl.h \
 	ConfigFile.h       glew.h\
 	carbontoprojectM.h glxew.h\
 	cocoatoprojectM.h  lvtoprojectM.h\
