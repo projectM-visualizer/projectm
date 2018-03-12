@@ -6,19 +6,7 @@
  */
 
 #include "Common.hpp"
-
-#ifdef USE_GLES1
-#include <GLES/gl.h>
-#else
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
-#endif
-
+#include "projectM-opengl.h"
 #include "Filters.hpp"
 
 void Brighten::Draw(RenderContext &context)
@@ -95,4 +83,3 @@ void Solarize::Draw(RenderContext &context)
 
 	glDisableClientState(GL_VERTEX_ARRAY);
 }
-

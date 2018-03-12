@@ -59,6 +59,9 @@ Silverjuke (FOSS Jukebox)
 ## Linux (debian/ubuntu)
 * `sudo apt-get install autoconf libtool libsdl2-dev libglew-dev libftgl-dev libsdl2-dev libdevil-dev`
 
+## FreeBSD
+* `pkg install gcc autoconf automake libtool mesa-libs libGLU sdl2`
+
 ## Mac OS X
 * [Prebuilt iTunes plugin installer](https://github.com/projectM-visualizer/projectm/releases)
 * [OSX Build instructions](https://github.com/projectM-visualizer/projectm/raw/master/BUILDING_OSX.txt)
