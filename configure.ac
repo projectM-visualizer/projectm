@@ -20,6 +20,7 @@ AS_IF([test "x$enable_sdl" = "xyes"], [
   SDL_VERSION=2.0.5
   AS_IF([test "$TRAVIS"], [SDL_VERSION=2.0.2])  # travis has old SDL, we don't care
   AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
+  AC_CONFIG_FILES([src/projectM-sdl/Makefile])
 ])
 
 AC_CONFIG_HEADERS([config.h])
@@ -30,10 +31,10 @@ AC_CONFIG_FILES([
   src/libprojectM/Renderer/Makefile
   src/libprojectM/NativePresetFactory/Makefile
   src/libprojectM/MilkdropPresetFactory/Makefile
-  src/projectM-sdl/Makefile
 ])
 dnl FIXME
-AC_CONFIG_FILES([src/libprojectM/config.inp], [sed -i -e"s/\${prefix}/$prefix/" src/libprojectM/config.inp])
+dnl AC_CONFIG_FILES([src/libprojectM/config.inp],
+dnl [cat src/libprojectM/config.inp | sed -e"s,\${prefix},$prefix," > src/libprojectM/config.inp.b])
 
 AC_PREFIX_DEFAULT([/usr/local])
 
