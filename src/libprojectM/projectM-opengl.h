@@ -7,7 +7,7 @@
 
 #ifdef __APPLE__
 # include <OpenGL/gl.h>
-#elif defined(WIN32)
+#elif defined(_WIN32)
 # include <windows.h>
 #else /* linux/unix/other */
 # ifdef USE_GLES1
