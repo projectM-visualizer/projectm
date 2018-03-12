@@ -5,8 +5,8 @@ before_install:
   - eval "${MATRIX_EVAL}"
 
 script:
-  - ./configure --prefix=$PWD/local && make -j8 && make install  # build from checkoout
-  - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure --prefix=$PWD/local && make -j8 && make install  # build from dist\
+  - ./configure --enable-sdl --prefix=$PWD/local && make -j8 && make install  # build from checkoout
+  - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure --enable-sdl --prefix=$PWD/local && make -j8 && make install  # build from dist\
   - echo "PWD $PWD"
   - ls .
   - test -e src/projectM-sdl/projectMSDL
