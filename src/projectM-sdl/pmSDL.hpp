@@ -9,20 +9,7 @@
 #ifndef pmSDL_hpp
 #define pmSDL_hpp
 
-
-
-#ifdef __linux__
-#ifdef USE_GLES1
-#include <GLES/gl.h>
-#else
-#include <GL/gl.h>
-#endif
-#endif
-
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#endif
-
+#include "projectM-opengl.h"
 #include <projectM.hpp>
 #include <sdltoprojectM.h>
 #include <iostream>

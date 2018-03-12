@@ -59,6 +59,9 @@ Silverjuke (FOSS Jukebox)
 ## Linux (debian/ubuntu)
 * `sudo apt-get install autoconf libtool libsdl2-dev libglew-dev libftgl-dev libsdl2-dev libdevil-dev`
 
+## FreeBSD
+* `pkg install gcc autoconf automake libtool mesa-libs libGLU sdl2`
+
 ## Mac OS X
 * [Prebuilt iTunes plugin installer](https://github.com/projectM-visualizer/projectm/releases)
 * [OSX Build instructions](https://github.com/projectM-visualizer/projectm/raw/master/BUILDING_OSX.txt)
@@ -87,10 +90,19 @@ There are many other applications that make use of libprojectM that can be found
 Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues/new)
 We're on IRC at irc.freenode.net #projectM
 
+If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues.
+
+## Maintainers
+If you maintain packages of libprojectM, we are happy to work with you! Please note well:
+* The main focus of this project is libprojectM. It's a library that only really depends on OpenGL. The other applications are more like examples and demos.
+* This project was converted to use GNU autotools instead of CMake in 2018. This was due to inflexibility of CMake, issues with OSX and SDL2, an unintuitive configuration interface, standardizing on the most common and well-understood build system, a desire to make it easier for others to get up and running and contribute, and other factors too lengthy to expound on here.
+* Most of the applications (e.g. `src/projectM-*`) are likely outdated and of less utility than the core library. If you desire to use them or depend on them, please file an issue so we can help update them.
+* The "canonical" application for actually viewing the visualizations is now projectM-sdl, based on libSDL2 because it supports audio input and is completely cross-platform.
+* This is an open source project! If you don't like something, feel free to contribute improvements!
+* Yes, you are looking at the official version. This is not a fork.
+
 ## Authors
 [Authors](https://github.com/projectM-visualizer/projectm/raw/master/AUTHORS.txt)
-
-If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues.
 
 ## License
 [LGPL](https://github.com/projectM-visualizer/projectm/raw/master/LICENSE.txt)
