@@ -9,6 +9,7 @@ AM_CFLAGS = ${my_CFLAGS} \
 -ffunction-sections \
 -fdata-sections
 
+# native presets are shared object files.
 lib_LTLIBRARIES = \
   libMstressJuppyDancer.la \
   libRLGFractalDrop7c.la \
@@ -24,5 +25,6 @@ libRovastarDriftingChaos_la_SOURCES = RovastarDriftingChaos.cpp
 libRovastarFractalSpiral_la_SOURCES = RovastarFractalSpiral.cpp
 libRovastarFractopiaFrantic_la_SOURCES = RovastarFractopiaFrantic.cpp
 
+# somehow they need to be installed in the presets dir
 presets_dir = $(pkgdatadir)/presets
 presets__DATA = libMstressJuppyDancer.la
