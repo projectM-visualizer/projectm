@@ -31,6 +31,7 @@ AC_CONFIG_FILES([
   src/libprojectM/Renderer/Makefile
   src/libprojectM/NativePresetFactory/Makefile
   src/libprojectM/MilkdropPresetFactory/Makefile
+  src/NativePresets/Makefile
 ])
 dnl FIXME
 dnl AC_CONFIG_FILES([src/libprojectM/config.inp],

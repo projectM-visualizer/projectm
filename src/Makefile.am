@@ -1,1 +1,1 @@
-SUBDIRS=libprojectM projectM-sdl
+SUBDIRS=libprojectM projectM-sdl NativePresets
