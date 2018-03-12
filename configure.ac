@@ -20,6 +20,7 @@ AS_IF([test "x$enable_sdl" = "xyes"], [
   SDL_VERSION=2.0.5
   AS_IF([test "$TRAVIS"], [SDL_VERSION=2.0.2])  # travis has old SDL, we don't care
   AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
+  AC_CONFIG_FILES([src/projectM-sdl/Makefile])
 ])
 
 AC_CONFIG_HEADERS([config.h])
@@ -30,7 +31,6 @@ AC_CONFIG_FILES([
   src/libprojectM/Renderer/Makefile
   src/libprojectM/NativePresetFactory/Makefile
   src/libprojectM/MilkdropPresetFactory/Makefile
-  src/projectM-sdl/Makefile
 ])
 
 dnl from https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable answer: https://stackoverflow.com/a/30960268
