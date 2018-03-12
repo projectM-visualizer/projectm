@@ -1,15 +1,4 @@
-#ifdef __linux__
-#include <GL/gl.h>
-#endif
-#ifdef EMSCRIPTEN
-#include <GL/gl.h>
-#endif
-#ifdef WIN32
-#include "glew.h"
-#endif
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#endif
+#include "projectM-opengl.h"
 
 #ifdef USE_DEVIL
 #include <IL/ilut.h>
@@ -21,7 +10,7 @@
 #include "win32-dirent.h"
 #endif
 
-#ifdef __linux__
+#ifdef __unix__
 #include <dirent.h>
 #endif
 #ifdef EMSCRIPTEN

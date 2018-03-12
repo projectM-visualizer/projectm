@@ -9,19 +9,7 @@
 #define SHADERENGINE_HPP_
 
 #include "Common.hpp"
-
-#ifdef USE_GLES1
-#include <GLES/gl.h>
-#else
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
-#endif
-
+#include "projectM-opengl.h"
 
 #ifdef USE_CG
 #include <Cg/cg.h>    /* Can't include this?  Is Cg Toolkit installed! */
@@ -110,4 +98,3 @@ public:
 };
 
 #endif /* SHADERENGINE_HPP_ */
-

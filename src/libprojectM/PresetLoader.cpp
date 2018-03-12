@@ -16,7 +16,7 @@
 #include <sstream>
 #include <set>
 
-#ifdef __linux__
+#ifdef __unix__
 extern "C"
 {
 #include <errno.h>
@@ -63,7 +63,7 @@ void PresetLoader::rescan()
 
 	// Clear the directory entry collection
 	clear();
-	
+
 	// If directory already opened, close it first
 	if ( _dir )
 	{
@@ -121,7 +121,7 @@ void PresetLoader::rescan()
 	// Give all presets equal rating of 3 - why 3? I don't know
 	_ratings = std::vector<RatingList>(TOTAL_RATING_TYPES, RatingList( _presetNames.size(), 3 ));
 	_ratingsSums = std::vector<int>(TOTAL_RATING_TYPES, 3 * _presetNames.size());
-	
+
 
 	assert ( _entries.size() == _presetNames.size() );
 
@@ -194,10 +194,10 @@ void PresetLoader::handleDirectoryError()
 void PresetLoader::setRating(unsigned int index, int rating, const PresetRatingType ratingType)
 {
 	assert ( index >=0 );
-	
+
 	const unsigned int ratingTypeIndex = static_cast<unsigned int>(ratingType);
 	assert (index < _ratings[ratingTypeIndex].size());
- 
+
 	_ratingsSums[ratingTypeIndex] -= _ratings[ratingTypeIndex][index];
 
 	_ratings[ratingTypeIndex][index] = rating;
@@ -219,7 +219,7 @@ unsigned int PresetLoader::addPresetURL ( const std::string & url, const std::st
 
 	for (int i = 0; i < ratings.size(); i++)
 		_ratingsSums[i] += ratings[i];
-	
+
 	return _entries.size()-1;
 }
 
@@ -228,12 +228,12 @@ void PresetLoader::removePreset ( unsigned int index )
 
 	_entries.erase ( _entries.begin() + index );
 	_presetNames.erase ( _presetNames.begin() + index );
-	
+
 	for (int i = 0; i < _ratingsSums.size(); i++) {
 		_ratingsSums[i] -= _ratings[i][index];
 		_ratings[i].erase ( _ratings[i].begin() + index );
 	}
-	
+
 
 }
 
@@ -269,8 +269,8 @@ void PresetLoader::insertPresetURL ( unsigned int index, const std::string & url
 {
 	_entries.insert ( _entries.begin() + index, url );
 	_presetNames.insert ( _presetNames.begin() + index, presetName );
-	
-	
+
+
 
 	for (int i = 0; i < _ratingsSums.size();i++) {
 		_ratingsSums[i] += _ratings[i][index];
@@ -278,6 +278,6 @@ void PresetLoader::insertPresetURL ( unsigned int index, const std::string & url
 	}
 
 	assert ( _entries.size() == _presetNames.size() );
-	
-	
+
+
 }
