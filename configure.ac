@@ -31,6 +31,7 @@ AC_CONFIG_FILES([
   src/libprojectM/Renderer/Makefile
   src/libprojectM/NativePresetFactory/Makefile
   src/libprojectM/MilkdropPresetFactory/Makefile
+  src/NativePresets/Makefile
 ])
 
 dnl from https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable answer: https://stackoverflow.com/a/30960268
