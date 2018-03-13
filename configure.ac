@@ -33,9 +33,14 @@ AC_CONFIG_FILES([
   src/libprojectM/MilkdropPresetFactory/Makefile
   src/NativePresets/Makefile
 ])
-dnl FIXME
-dnl AC_CONFIG_FILES([src/libprojectM/config.inp],
-dnl [cat src/libprojectM/config.inp | sed -e"s,\${prefix},$prefix," > src/libprojectM/config.inp.b])
+
+dnl from https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable answer: https://stackoverflow.com/a/30960268
+dnl ptomato https://stackoverflow.com/users/172999/ptomato 
+
+AC_SUBST([PACKAGE])
+AC_PROG_SED
+AC_CONFIG_FILES([src/libprojectM/config.inp.in])
+
 
 AC_PREFIX_DEFAULT([/usr/local])
 
