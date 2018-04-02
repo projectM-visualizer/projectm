@@ -11,6 +11,16 @@ AX_CHECK_GL
 
 AC_CHECK_LIB(c, dlopen, LIBDL="", AC_CHECK_LIB(dl, dlopen, LIBDL="-ldl"))
 
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([
+  Makefile
+  src/Makefile
+  src/libprojectM/Makefile
+  src/libprojectM/Renderer/Makefile
+  src/libprojectM/NativePresetFactory/Makefile
+  src/libprojectM/MilkdropPresetFactory/Makefile
+])
+
 dnl SDL
 AC_ARG_ENABLE([sdl],
   AS_HELP_STRING([--enable-sdl], [Build SDL2 app]),
@@ -20,18 +30,9 @@ AS_IF([test "x$enable_sdl" = "xyes"], [
   SDL_VERSION=2.0.5
   AS_IF([test "$TRAVIS"], [SDL_VERSION=2.0.2])  # travis has old SDL, we don't care
   AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
+  AC_CONFIG_FILES([src/projectM-sdl/Makefile])
 ])
 
-AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([
-  Makefile
-  src/Makefile
-  src/libprojectM/Makefile
-  src/libprojectM/Renderer/Makefile
-  src/libprojectM/NativePresetFactory/Makefile
-  src/libprojectM/MilkdropPresetFactory/Makefile
-  src/projectM-sdl/Makefile
-])
 dnl FIXME
 AC_CONFIG_FILES([src/libprojectM/config.inp], [sed -i -e"s/\${prefix}/$prefix/" src/libprojectM/config.inp])
 
@@ -44,23 +45,30 @@ AC_ARG_ENABLE([qt],
   AS_HELP_STRING([--enable-qt], [Build Qt]),
   [], [enable_qt=no])
 AS_IF([test "x$enable_qt" = "xyes"], [
-PKG_CHECK_MODULES(QT, [Qt5Core, Qt5Gui], [], [AC_MSG_ERROR([Qt libraries are required.])])
-qt_CPPFLAGS="`$PKG_CONFIG --cflags-only-I Qt5Core Qt5Gui` $CPPFLAGS"
-qt_LDFLAGS="`$PKG_CONFIG --libs-only-L Qt5Core Qt5Gui` $LDFLAGS"
-qt_LIBS="`$PKG_CONFIG --libs-only-l Qt5Core Qt5Gui` $LIBS"
-
-if ! `$PKG_CONFIG --atleast-version=5.0.0 Qt5Core`; then
-AC_MSG_ERROR([Qt >= 5.0.0 is required. Try installing qtdeclarative5-dev])
-fi
-
-AC_CHECK_PROGS(MOC, [moc-qt5 moc])
-AC_CHECK_PROGS(UIC, [uic-qt5 uic])
-AC_CHECK_PROGS(RCC, [rcc])
-if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
-AC_MSG_ERROR([Qt utility programs moc, uic, and rcc are required.])
-fi
-AC_CONFIG_FILES([src/projectM-qt/Makefile])
+  PKG_CHECK_MODULES(QT, [Qt5Core, Qt5Gui, Qt5Widgets Qt5OpenGL], [], [AC_MSG_ERROR([Qt libraries are required.])])
+  qt_CPPFLAGS="`$PKG_CONFIG --cflags-only-I Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $CPPFLAGS"
+  qt_LDFLAGS="`$PKG_CONFIG --libs-only-L Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LDFLAGS"
+  qt_LIBS="`$PKG_CONFIG --libs-only-l Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LIBS"
+  
+  if ! `$PKG_CONFIG --atleast-version=5.0.0 Qt5Core`; then
+    AC_MSG_ERROR([Qt >= 5.0.0 is required. Try installing qtdeclarative5-dev])
+  fi
+    
+  AC_CHECK_PROGS(MOC, [moc-qt5 moc])
+  AC_CHECK_PROGS(UIC, [uic-qt5 uic])
+  AC_CHECK_PROGS(RCC, [rcc])
+  if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
+    AC_MSG_ERROR([Qt utility programs moc, uic, and rcc are required.])
+  fi
+  AC_CONFIG_FILES([src/projectM-qt/Makefile])
+  AC_CONFIG_FILES([src/projectM-pulseaudio/Makefile])
+  
+  PKG_CHECK_MODULES(LIBPULSE, [libpulse], [], [AC_MSG_ERROR([Pulseaudio library libpulse is required.])])
 ])
+
+AM_CONDITIONAL([ENABLE_SDL], [test "$enable_sdl" = yes])
+AM_CONDITIONAL([ENABLE_QT], [test "$enable_qt" = yes])
+
 
 my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wmissing-declarations -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits "
 AC_SUBST([my_CFLAGS])
