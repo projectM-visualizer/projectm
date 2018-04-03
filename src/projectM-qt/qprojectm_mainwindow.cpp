@@ -38,6 +38,8 @@
 #include "nullable.hpp"
 #include "qprojectmwidget.hpp"
 
+extern int qInitResources();
+
 class PlaylistWriteFunctor {
 	public:
 		PlaylistWriteFunctor(const QVector<QProjectM_MainWindow::PlaylistItemMetaData*>::iterator & begin,
@@ -77,7 +79,7 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QM
 		configDialog(0), hHeader(0), vHeader(0), _menuVisible(true), _menuAndStatusBarsVisible(true),
 activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDialog(0)
 {
-
+	qInitResources();
 
 	ui = new Ui::QProjectM_MainWindow();
 	ui->setupUi ( this );
