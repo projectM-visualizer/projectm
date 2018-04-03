@@ -11,6 +11,7 @@
 #include "MilkdropCompatability.hpp"
 #include "VideoEcho.hpp"
 #include "NativePreset.hpp"
+#include "MilkdropWaveform.hpp"
 
 class RLGFractalDrop7c : public Pipeline
 {
@@ -140,7 +141,7 @@ public:
 		shape4.ang = time;
 	}
 
-	virtual Point PerPixel(Point p, const PerPixelContext context)
+	virtual PixelPoint PerPixel(PixelPoint p, const PerPixelContext context)
 	{
 		Transforms::Zoom(p,context,1.029902,1.00);
 		return p;
@@ -149,7 +150,7 @@ public:
 };
 
 
-typedef NativePreset<RLGFractalDrop7> RLGFractalDrop7Preset;
+typedef NativePreset<RLGFractalDrop7c> RLGFractalDrop7Preset;
 
 extern "C" RLGFractalDrop7Preset * create(const char * url) {
 	return new RLGFractalDrop7Preset(std::string(url));
