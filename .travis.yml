@@ -6,7 +6,7 @@ before_install:
 
 script:
   - ./configure --enable-sdl --prefix=$PWD/local && make -j8 && make install  # build from checkoout
-  - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure --enable-sdl --prefix=$PWD/local && make -j8 && make install  # build from dist\
+  - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure --enable-sdl --prefix=$PWD/distbuild && make -j8 && make install  # build from dist\
   - echo "PWD $PWD"
   - ls .
   - test -e src/projectM-sdl/projectMSDL
