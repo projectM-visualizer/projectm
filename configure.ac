@@ -33,8 +33,23 @@ AS_IF([test "x$enable_sdl" = "xyes"], [
   AC_CONFIG_FILES([src/projectM-sdl/Makefile])
 ])
 
-dnl FIXME
-AC_CONFIG_FILES([src/libprojectM/config.inp], [sed -i -e"s/\${prefix}/$prefix/" src/libprojectM/config.inp])
+AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_FILES([
+  Makefile
+  src/Makefile
+  src/libprojectM/Makefile
+  src/libprojectM/Renderer/Makefile
+  src/libprojectM/NativePresetFactory/Makefile
+  src/libprojectM/MilkdropPresetFactory/Makefile
+  src/NativePresets/Makefile
+])
+
+dnl from https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable answer: https://stackoverflow.com/a/30960268
+dnl ptomato https://stackoverflow.com/users/172999/ptomato
+
+AC_SUBST([PACKAGE])
+AC_PROG_SED
+AC_CONFIG_FILES([src/libprojectM/config.inp.in])
 
 AC_PREFIX_DEFAULT([/usr/local])
 
@@ -49,11 +64,11 @@ AS_IF([test "x$enable_qt" = "xyes"], [
   qt_CPPFLAGS="`$PKG_CONFIG --cflags-only-I Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $CPPFLAGS"
   qt_LDFLAGS="`$PKG_CONFIG --libs-only-L Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LDFLAGS"
   qt_LIBS="`$PKG_CONFIG --libs-only-l Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LIBS"
-  
+
   if ! `$PKG_CONFIG --atleast-version=5.0.0 Qt5Core`; then
     AC_MSG_ERROR([Qt >= 5.0.0 is required. Try installing qtdeclarative5-dev])
   fi
-    
+
   AC_CHECK_PROGS(MOC, [moc-qt5 moc])
   AC_CHECK_PROGS(UIC, [uic-qt5 uic])
   AC_CHECK_PROGS(RCC, [rcc])
@@ -62,7 +77,7 @@ AS_IF([test "x$enable_qt" = "xyes"], [
   fi
   AC_CONFIG_FILES([src/projectM-qt/Makefile])
   AC_CONFIG_FILES([src/projectM-pulseaudio/Makefile])
-  
+
   PKG_CHECK_MODULES(LIBPULSE, [libpulse], [], [AC_MSG_ERROR([Pulseaudio library libpulse is required.])])
 ])
 
