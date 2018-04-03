@@ -11,7 +11,7 @@ projectM_qt_qtheaders = qprojectm_mainwindow.hpp \
 	qprojectm.hpp \
 	qprojectmwidget.hpp
 
-projectM_qt_moc_sources = $(projectM_qt_qtheaders:.hpp=_moc.cpp)
+nodist_projectM_qt_moc_sources = $(projectM_qt_qtheaders:.hpp=_moc.cpp)
 
 .hpp_moc.cpp:
 	@MOC@ -o$@ $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(CPPFLAGS) $(MOC_CPPFLAGS)\
@@ -19,10 +19,10 @@ projectM_qt_moc_sources = $(projectM_qt_qtheaders:.hpp=_moc.cpp)
 
 ui_qprojectm_mainwindow.h: qprojectm_mainwindow.ui
 	@UIC@ -o $@ $<
-	
+
 ui_qpreseteditordialog.h: qpreseteditordialog.ui
 	@UIC@ -o $@ $<
-	
+
 ui_qprojectmconfigdialog.h: qprojectmconfigdialog.ui
 	@UIC@ -o $@ $<
 
@@ -45,10 +45,11 @@ libprojectM_qt_a_SOURCES = \
 	qplaylistmodel.cpp \
 	qprojectmconfigdialog.cpp \
 	qpresettextedit.cpp \
-	qpreseteditordialog.cpp \
+	qpreseteditordialog.cpp
+
+nodist_libprojectM_qt_a_SOURCES = \
 	application_qrc.cpp \
 	$(test_moc_sources)
-
 
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
@@ -62,7 +63,7 @@ AM_CFLAGS = ${my_CFLAGS} \
 	-fvisibility=hidden \
 	-ffunction-sections \
 	-fdata-sections
-	
+
 CLEANFILES = \
 	application_qrc.cpp \
 	${BUILT_SOURCES} \
