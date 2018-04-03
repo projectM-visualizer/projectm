@@ -20,6 +20,9 @@ AC_CONFIG_FILES([
   src/libprojectM/NativePresetFactory/Makefile
   src/libprojectM/MilkdropPresetFactory/Makefile
   src/NativePresets/Makefile
+  src/projectM-sdl/Makefile
+  src/projectM-qt/Makefile
+  src/projectM-pulseaudio/Makefile
 ])
 
 dnl SDL
@@ -31,7 +34,6 @@ AS_IF([test "x$enable_sdl" = "xyes"], [
   SDL_VERSION=2.0.5
   AS_IF([test "$TRAVIS"], [SDL_VERSION=2.0.2])  # travis has old SDL, we don't care
   AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
-  AC_CONFIG_FILES([src/projectM-sdl/Makefile])
 ])
 
 dnl from https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable answer: https://stackoverflow.com/a/30960268
@@ -64,8 +66,6 @@ AS_IF([test "x$enable_qt" = "xyes"], [
   if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
     AC_MSG_ERROR([Qt utility programs moc, uic, and rcc are required.])
   fi
-  AC_CONFIG_FILES([src/projectM-qt/Makefile])
-  AC_CONFIG_FILES([src/projectM-pulseaudio/Makefile])
 
   PKG_CHECK_MODULES(LIBPULSE, [libpulse], [], [AC_MSG_ERROR([Pulseaudio library libpulse is required.])])
 ])
@@ -115,7 +115,7 @@ ldflags:                ${LDFLAGS}
 Applications:
 =====
 
-libprojectM:            Yes
+libprojectM:            yes
 SDL:                    ${enable_sdl}
 Qt & Pulseaudio:        ${enable_qt}
 ])
