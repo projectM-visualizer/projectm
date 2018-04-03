@@ -19,6 +19,7 @@ AC_CONFIG_FILES([
   src/libprojectM/Renderer/Makefile
   src/libprojectM/NativePresetFactory/Makefile
   src/libprojectM/MilkdropPresetFactory/Makefile
+  src/NativePresets/Makefile
 ])
 
 dnl SDL
@@ -33,20 +34,8 @@ AS_IF([test "x$enable_sdl" = "xyes"], [
   AC_CONFIG_FILES([src/projectM-sdl/Makefile])
 ])
 
-AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([
-  Makefile
-  src/Makefile
-  src/libprojectM/Makefile
-  src/libprojectM/Renderer/Makefile
-  src/libprojectM/NativePresetFactory/Makefile
-  src/libprojectM/MilkdropPresetFactory/Makefile
-  src/NativePresets/Makefile
-])
-
 dnl from https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable answer: https://stackoverflow.com/a/30960268
 dnl ptomato https://stackoverflow.com/users/172999/ptomato
-
 AC_SUBST([PACKAGE])
 AC_PROG_SED
 AC_CONFIG_FILES([src/libprojectM/config.inp.in])
