@@ -115,6 +115,7 @@ ldflags:                ${LDFLAGS}
 Applications:
 =====
 
+libprojectM:            Yes
 SDL:                    ${enable_sdl}
-Qt:                     ${enable_qt}
+Qt & Pulseaudio:        ${enable_qt}
 ])
