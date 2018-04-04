@@ -22,7 +22,7 @@ install-data-local:
 	find "$(PRESETSDIR)" -type f -exec $(INSTALL_DATA) {} $(pm_presets_dir) \;
 
 # from https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable answer: https://stackoverflow.com/a/30960268
-# ptomato https://stackoverflow.com/users/172999/ptomato 
+# ptomato https://stackoverflow.com/users/172999/ptomato
 
 src/libprojectM/config.inp: src/libprojectM/config.inp.in Makefile
 	$(AM_V_GEN)rm -f $@ $@.tmp && \
