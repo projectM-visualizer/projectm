@@ -4,18 +4,19 @@ before_script: ./autogen.sh
 before_install:
   - eval "${MATRIX_EVAL}"
 
+# TODO: test different combinations of flags, --enable-sdl, --enable-qt, etc
 script:
-  - ./configure --enable-sdl --prefix=$PWD/local && make -j8 && make install  # build from checkoout
-  - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure --enable-sdl --prefix=$PWD/local && make -j8 && make install  # build from dist\
+  - ./configure --enable-sdl --prefix=$PWD/local && make -j8 && make install  # build from checkout
+  - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure --enable-sdl --prefix=$PWD/dist_install && make -j8 && make install  # build from dist
   - echo "PWD $PWD"
   - ls .
   - test -e src/projectM-sdl/projectMSDL
   - test -e src/libprojectM/libprojectM.la
-  - test -e local/share/projectM/fonts/Vera.ttf
-  - test -e local/share/projectM/shaders/blur.cg
-  - test -d local/share/projectM/presets
-  - test -e local/lib/libprojectM.la
-  - test -e local/include/projectM.hpp
+  - test -e dist_install/share/projectM/fonts/Vera.ttf
+  - test -e dist_install/share/projectM/shaders/blur.cg
+  - test -d dist_install/share/projectM/presets
+  - test -e dist_install/lib/libprojectM.la
+  - test -e dist_install/include/projectM.hpp
 
 # test on GCC and Clang
 matrix:
