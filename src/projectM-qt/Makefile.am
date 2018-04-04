@@ -38,18 +38,25 @@ BUILT_SOURCES =               \
 noinst_LIBRARIES = libprojectM_qt.a
 
 libprojectM_qt_a_SOURCES = \
-	$(projectM_qt_moc_sources) \
 	qprojectm_mainwindow.cpp \
 	configfile.hpp configfile.cpp \
 	qplaylistfiledialog.cpp \
 	qplaylistmodel.cpp \
 	qprojectmconfigdialog.cpp \
 	qpresettextedit.cpp \
-	qpreseteditordialog.cpp
+	qpreseteditordialog.cpp \
+	qprojectm_mainwindow.ui \
+	qpreseteditordialog.ui \
+	qprojectmconfigdialog.ui \
+	$(projectM_qt_qtheaders) \
+	qxmlplaylisthandler.hpp \
+	nullable.hpp \
+	application.qrc \
+	images/*
 
 nodist_libprojectM_qt_a_SOURCES = \
 	application_qrc.cpp \
-	$(test_moc_sources)
+	$(nodist_projectM_qt_moc_sources)
 
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
@@ -67,4 +74,4 @@ AM_CFLAGS = ${my_CFLAGS} \
 CLEANFILES = \
 	application_qrc.cpp \
 	${BUILT_SOURCES} \
-	${projectM_qt_moc_sources}
+	${nodist_projectM_qt_moc_sources}
