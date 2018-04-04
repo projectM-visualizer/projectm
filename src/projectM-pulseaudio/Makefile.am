@@ -33,11 +33,15 @@ AM_CFLAGS = ${my_CFLAGS} \
 bin_PROGRAMS = projectM-pulseaudio
 
 projectM_pulseaudio_SOURCES = \
-	$(projectM_pulseaudio_moc_sources) \
 	qprojectM-pulseaudio.cpp \
 	QPulseAudioDeviceChooser.cpp \
 	QPulseAudioDeviceModel.cpp \
-	QPulseAudioThread.cpp
+	QPulseAudioThread.cpp \
+	PulseDeviceChooserDialog.ui \
+	$(projectM_pulseaudio_qtheaders)
+
+nodist_projectM_pulseaudio_SOURCES = \
+	$(nodist_projectM_pulseaudio_moc_sources)
 
 projectM_pulseaudio_LDADD = \
 	${QT_LIBS} \
@@ -54,7 +58,7 @@ BUILT_SOURCES =               \
 
 CLEANFILES = \
 	${BUILT_SOURCES} \
-	${projectM_pulseaudio_moc_sources}
+	${nodist_projectM_pulseaudio_moc_sources}
 
 desktopdir = $(datadir)/applications
 dist_desktop_DATA = projectM-pulseaudio.desktop
