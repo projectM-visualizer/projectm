@@ -36,6 +36,15 @@ AS_IF([test "x$enable_sdl" = "xyes"], [
   AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
 ])
 
+dnl FTGL
+AC_ARG_ENABLE([ftgl],
+  AS_HELP_STRING([--enable-ftgl], [FTGL support to display text such as preset title, stats, fps, ...]),
+  [], [enable_ftgl=no])
+AS_IF([test "x$enable_ftgl" = "xyes"], [
+  PKG_CHECK_MODULES(FTGL, [ftgl], [], [AC_MSG_ERROR([libftgl is required.])])
+  AC_DEFINE([USE_FTGL], [1], [Define USE_FTGL])
+])
+
 dnl from https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable answer: https://stackoverflow.com/a/30960268
 dnl ptomato https://stackoverflow.com/users/172999/ptomato
 AC_SUBST([PACKAGE])
@@ -118,4 +127,5 @@ Applications:
 libprojectM:            yes
 SDL:                    ${enable_sdl}
 Qt & Pulseaudio:        ${enable_qt}
+FTGL:                   ${enable_ftgl}
 ])
