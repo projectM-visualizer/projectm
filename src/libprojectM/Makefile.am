@@ -4,10 +4,11 @@ CLEANFILES=
 SUBDIRS=Renderer NativePresetFactory MilkdropPresetFactory
 
 AM_CPPFLAGS = \
--include $(top_builddir)/config.h \
--DSYSCONFDIR=\""$(sysconfdir)"\" \
--I$(top_srcdir)/src/libprojectM \
--I$(top_srcdir)/src/libprojectM/Renderer
+	-include $(top_builddir)/config.h \
+	-DSYSCONFDIR=\""$(sysconfdir)"\" \
+	-I$(top_srcdir)/src/libprojectM \
+	-I$(top_srcdir)/src/libprojectM/Renderer \
+	${FTGL_CFLAGS}
 
 # system headers/libraries/data to install
 include_HEADERS = projectM.hpp
