@@ -56,7 +56,7 @@ matrix:
     - os: osx
       osx_image: xcode8
       env:
-        - MATRIX_EVAL="brew update && brew install sdl2"
+        - MATRIX_EVAL="brew update && brew install sdl2 && brew install ftgl"
 
 notifications:
   email:
