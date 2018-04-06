@@ -67,8 +67,8 @@ Silverjuke (FOSS Jukebox)
 * `pkg install gcc autoconf automake libtool mesa-libs libGLU sdl2`
 
 ## Mac OS X
-* [Prebuilt iTunes plugin installer](https://github.com/projectM-visualizer/projectm/releases)
-* [OSX Build instructions](https://github.com/projectM-visualizer/projectm/raw/master/BUILDING_OSX.txt)
+* Install the [SDL2 Framework](https://www.libsdl.org/download-2.0.php)
+* `./configure --enable-sdl`
 
 
 # Using the library
