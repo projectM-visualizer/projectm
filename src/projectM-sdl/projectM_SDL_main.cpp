@@ -12,7 +12,6 @@
 #include "pmSDL.hpp"
 
 int main(int argc, char *argv[]) {
-    const int width = 1024, height = 768;  // FIXME: use screen res?
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
     if (! SDL_VERSION_ATLEAST(2, 0, 5)) {
@@ -20,9 +19,13 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     
-    // get path to our app
-    std::string base_path = SDL_GetBasePath();
-    
+    // default window size to usable bounds (e.g. minus menubar and dock)
+    SDL_Rect initialWindowBounds;
+    SDL_GetDisplayUsableBounds(0, &initialWindowBounds);
+    int width = initialWindowBounds.w;
+    int height = initialWindowBounds.h;
+    float heightWidthRatio = (float)height / (float)width;
+
     SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_RESIZABLE);
     SDL_Renderer *rend = SDL_CreateRenderer(win, 0, SDL_RENDERER_ACCELERATED);
     if (! rend) {
@@ -30,13 +33,13 @@ int main(int argc, char *argv[]) {
         SDL_Quit();
     }
     SDL_SetWindowTitle(win, "projectM Visualizer");
-
+    
     // init projectM
     projectM::Settings settings;
     settings.windowWidth = width;
     settings.windowHeight = height;
-    settings.meshX = 1;
-    settings.meshY = 1;
+    settings.meshX = 200;
+    settings.meshY = settings.meshX * heightWidthRatio;
     settings.fps   = FPS;
     settings.textureSize = 2048;  // idk?
     settings.smoothPresetDuration = 3; // seconds
@@ -46,6 +49,8 @@ int main(int argc, char *argv[]) {
     settings.easterEgg = 0; // ???
     settings.shuffleEnabled = 1;
     settings.softCutRatingsEnabled = 1; // ???
+    // get path to our app
+    std::string base_path = SDL_GetBasePath();
     settings.presetURL = base_path + "presets/presets_tryptonaut";
     settings.menuFontURL = base_path + "fonts/Vera.ttf";
     settings.titleFontURL = base_path + "fonts/Vera.ttf";
