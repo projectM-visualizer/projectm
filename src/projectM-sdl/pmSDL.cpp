@@ -31,16 +31,12 @@ void projectMSDL::audioInputCallbackS16(void *userdata, unsigned char *stream, i
 SDL_AudioDeviceID projectMSDL::selectAudioInput(int count) {
     // ask the user which capture device to use
     // printf("Please select which audio input to use:\n");
-    printf("Detected devices\n");
+    printf("Detected devices:\n");
     for (int i = 0; i < count; i++) {
-        printf("%i: 🎤%s", i, SDL_GetAudioDeviceName(i, true));
+        printf("  %i: 🎤%s\n", i, SDL_GetAudioDeviceName(i, true));
     }
-    SDL_AudioDeviceID device_id;
 
     return 0;
-
-    scanf("%u", &device_id);
-    return device_id;
 }
 
 int projectMSDL::openAudioInput() {
