@@ -12,7 +12,11 @@ Its purpose in life is to read in audio input and produce mesmerizing visuals, d
 * [Mac OS X iTunes (plugin)](https://github.com/projectM-visualizer/projectm/releases/tag/v0.9.1-beta)
 * [Android](https://play.google.com/store/apps/details?id=com.psperl.projectM)
 * [iOS](https://itunes.apple.com/us/app/projectm-music-visualizer/id530922227?mt=8&ign-mpt=uo%3D4)
-* [ALSA, Qt, xmms, winamp, jack, pulseaudio](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
+* Qt5 + Pulseaudio
+* [ALSA, xmms, winamp, jack](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
+
+### Project Status
+You can read more about how it works and the current state of development [here](https://lwn.net/Articles/750152/).
 
 ### Presets
 The preset files define the visualizations via pixel shaders and Milkdrop-style equations and parameters. Included with projectM are the bltc201, Milkdrop 1 and 2, projectM, tryptonaut and yin collections. You can grab all of the presets [here](http://spiegelmc.com.s3.amazonaws.com/pub/projectm_presets.zip).
