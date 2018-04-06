@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
     settings.softCutRatingsEnabled = 1; // ???
     // get path to our app
     std::string base_path = SDL_GetBasePath();
-    settings.presetURL = base_path + "presets/presets_tryptonaut";
+    settings.presetURL = base_path + "presets";
     settings.menuFontURL = base_path + "fonts/Vera.ttf";
     settings.titleFontURL = base_path + "fonts/Vera.ttf";
 

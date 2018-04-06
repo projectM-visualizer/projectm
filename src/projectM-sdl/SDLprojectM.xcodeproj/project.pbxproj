@@ -10,10 +10,11 @@
 		161070DD1F705069001905AB /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 161070DC1F705069001905AB /* Cg.framework */; };
 		169502001F7009E9008FAF86 /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
 		16A4214120781067006F30CE /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214020781067006F30CE /* libRenderer.a */; };
+		16A42142207817AE006F30CE /* Cg.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 161070DC1F705069001905AB /* Cg.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		16A9B64F20772F71003DF747 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A9B64E20772F71003DF747 /* libMilkdropPresetFactory.a */; };
 		16A9B65120772F7C003DF747 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A9B65020772F7C003DF747 /* libNativePresetFactory.a */; };
 		16A9B655207732FF003DF747 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A9B654207732FF003DF747 /* libprojectM.a */; };
-		C307DFD41D565B57002F6B9E /* presets in CopyFiles */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
+		C307DFD41D565B57002F6B9E /* presets in Copy Files */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		C345214F1BF022A5001707D2 /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
 		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
 		C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215D1BF025CF001707D2 /* CoreFoundation.framework */; };
@@ -23,7 +24,7 @@
 		C34521681BF025E5001707D2 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521621BF025E5001707D2 /* libGLEW.a */; };
 		C34521691BF025E5001707D2 /* libpng15.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521631BF025E5001707D2 /* libpng15.a */; };
 		C345216A1BF025E5001707D2 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521641BF025E5001707D2 /* libz.a */; };
-		C3D30B901BF02BEC009AAACD /* fonts in CopyFiles */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
+		C3D30B901BF02BEC009AAACD /* fonts in Copy Files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,18 +34,20 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				16A42142207817AE006F30CE /* Cg.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C34521421BF02293001707D2 /* CopyFiles */ = {
+		C34521421BF02293001707D2 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
-				C3D30B901BF02BEC009AAACD /* fonts in CopyFiles */,
-				C307DFD41D565B57002F6B9E /* presets in CopyFiles */,
+				C3D30B901BF02BEC009AAACD /* fonts in Copy Files */,
+				C307DFD41D565B57002F6B9E /* presets in Copy Files */,
 			);
+			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -161,7 +164,7 @@
 			buildPhases = (
 				C34521401BF02293001707D2 /* Sources */,
 				C34521411BF02293001707D2 /* Frameworks */,
-				C34521421BF02293001707D2 /* CopyFiles */,
+				C34521421BF02293001707D2 /* Copy Files */,
 				161070C81F704047001905AB /* CopyFiles */,
 			);
 			buildRules = (
