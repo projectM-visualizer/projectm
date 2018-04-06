@@ -9,9 +9,9 @@
 /* Begin PBXBuildFile section */
 		161070DD1F705069001905AB /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 161070DC1F705069001905AB /* Cg.framework */; };
 		169502001F7009E9008FAF86 /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
+		16A4214120781067006F30CE /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214020781067006F30CE /* libRenderer.a */; };
 		16A9B64F20772F71003DF747 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A9B64E20772F71003DF747 /* libMilkdropPresetFactory.a */; };
 		16A9B65120772F7C003DF747 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A9B65020772F7C003DF747 /* libNativePresetFactory.a */; };
-		16A9B65320772F86003DF747 /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A9B65220772F85003DF747 /* libRenderer.a */; };
 		16A9B655207732FF003DF747 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A9B654207732FF003DF747 /* libprojectM.a */; };
 		C307DFD41D565B57002F6B9E /* presets in CopyFiles */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		C345214F1BF022A5001707D2 /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
@@ -53,9 +53,9 @@
 		161070DC1F705069001905AB /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = ../../../../../../Library/Frameworks/Cg.framework; sourceTree = "<group>"; };
 		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
 		169501FF1F7009E9008FAF86 /* pmSDL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pmSDL.hpp; sourceTree = "<group>"; };
+		16A4214020781067006F30CE /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/.libs/libRenderer.a; sourceTree = "<group>"; };
 		16A9B64E20772F71003DF747 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/.libs/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
 		16A9B65020772F7C003DF747 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/.libs/libNativePresetFactory.a; sourceTree = "<group>"; };
-		16A9B65220772F85003DF747 /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/.libs/libRenderer.a; sourceTree = "<group>"; };
 		16A9B654207732FF003DF747 /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/.libs/libprojectM.a; sourceTree = "<group>"; };
 		C307DFD31D565B57002F6B9E /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
 		C34521441BF02294001707D2 /* SDLprojectM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLprojectM; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -77,6 +77,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				161070DD1F705069001905AB /* Cg.framework in Frameworks */,
+				16A4214120781067006F30CE /* libRenderer.a in Frameworks */,
 				16A9B655207732FF003DF747 /* libprojectM.a in Frameworks */,
 				16A9B64F20772F71003DF747 /* libMilkdropPresetFactory.a in Frameworks */,
 				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
@@ -86,7 +87,6 @@
 				C34521661BF025E5001707D2 /* libfreetype.a in Frameworks */,
 				C34521671BF025E5001707D2 /* libftgl.a in Frameworks */,
 				C34521681BF025E5001707D2 /* libGLEW.a in Frameworks */,
-				16A9B65320772F86003DF747 /* libRenderer.a in Frameworks */,
 				C34521691BF025E5001707D2 /* libpng15.a in Frameworks */,
 				C345216A1BF025E5001707D2 /* libz.a in Frameworks */,
 			);
@@ -105,6 +105,30 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		16A42128207802AF006F30CE /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				C345215F1BF025E5001707D2 /* libbz2.a */,
+				C34521601BF025E5001707D2 /* libfreetype.a */,
+				C34521611BF025E5001707D2 /* libftgl.a */,
+				C34521621BF025E5001707D2 /* libGLEW.a */,
+				C34521631BF025E5001707D2 /* libpng15.a */,
+				C34521641BF025E5001707D2 /* libz.a */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		16A42129207802C5006F30CE /* projectM libraries */ = {
+			isa = PBXGroup;
+			children = (
+				16A9B64E20772F71003DF747 /* libMilkdropPresetFactory.a */,
+				16A9B65020772F7C003DF747 /* libNativePresetFactory.a */,
+				16A9B654207732FF003DF747 /* libprojectM.a */,
+				16A4214020781067006F30CE /* libRenderer.a */,
+			);
+			name = "projectM libraries";
+			sourceTree = "<group>";
+		};
 		C345213B1BF02293001707D2 = {
 			isa = PBXGroup;
 			children = (
@@ -112,16 +136,8 @@
 				169501FF1F7009E9008FAF86 /* pmSDL.hpp */,
 				C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */,
 				C307DFD31D565B57002F6B9E /* presets */,
-				C345215F1BF025E5001707D2 /* libbz2.a */,
-				C34521601BF025E5001707D2 /* libfreetype.a */,
-				C34521611BF025E5001707D2 /* libftgl.a */,
-				C34521621BF025E5001707D2 /* libGLEW.a */,
-				C34521631BF025E5001707D2 /* libpng15.a */,
-				C34521641BF025E5001707D2 /* libz.a */,
-				16A9B64E20772F71003DF747 /* libMilkdropPresetFactory.a */,
-				16A9B65020772F7C003DF747 /* libNativePresetFactory.a */,
-				16A9B65220772F85003DF747 /* libRenderer.a */,
-				16A9B654207732FF003DF747 /* libprojectM.a */,
+				16A42128207802AF006F30CE /* Dependencies */,
+				16A42129207802C5006F30CE /* projectM libraries */,
 				161070CE1F7041B0001905AB /* Frameworks */,
 				C34521451BF02294001707D2 /* Products */,
 				C3D30B8F1BF02BE5009AAACD /* fonts */,
@@ -314,6 +330,7 @@
 					"$(PROJECT_DIR)",
 					"$(SRCROOT)",
 				);
+				GCC_LINK_WITH_DYNAMIC_LIBRARIES = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../libprojectM",
 					"$(SRCROOT)/../../",
@@ -340,6 +357,7 @@
 					"$(PROJECT_DIR)",
 					"$(SRCROOT)",
 				);
+				GCC_LINK_WITH_DYNAMIC_LIBRARIES = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../libprojectM",
 					"$(SRCROOT)/../../",

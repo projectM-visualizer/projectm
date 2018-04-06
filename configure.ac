@@ -45,6 +45,22 @@ AS_IF([test "x$enable_ftgl" = "xyes"], [
   AC_DEFINE([USE_FTGL], [1], [Define USE_FTGL])
 ])
 
+dnl Cg framework OSX -- replace with GLSL someday!
+CG_CFLAGS=
+CG_LDFLAGS=
+FRAMEWORK_SEARCH_PATHS="-F/Library/Frameworks -F$HOME/Library/Frameworks"
+AC_ARG_ENABLE([cg],
+AS_HELP_STRING([--enable-cg], [Cg framework for shaders]),
+[], [enable_cg=no])
+AS_IF([test "x$enable_cg" = "xyes"], [
+dnl AC_CHECK_HEADERS([Cg/cg.h], [], [AC_MSG_ERROR([Cg framework not found.])])
+AC_DEFINE([USE_CG], [1], [Define USE_CG])
+CG_LDFLAGS+="$FRAMEWORK_SEARCH_PATHS -framework Cg"
+CG_CFLAGS+="$FRAMEWORK_SEARCH_PATHS"
+])
+AC_SUBST([CG_CFLAGS])
+AC_SUBST([CG_LDFLAGS])
+
 dnl from https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable answer: https://stackoverflow.com/a/30960268
 dnl ptomato https://stackoverflow.com/users/172999/ptomato
 AC_SUBST([PACKAGE])
@@ -128,4 +144,5 @@ libprojectM:            yes
 SDL:                    ${enable_sdl}
 Qt & Pulseaudio:        ${enable_qt}
 FTGL:                   ${enable_ftgl}
+CG:                     ${enable_cg}
 ])

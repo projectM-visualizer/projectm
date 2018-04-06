@@ -8,14 +8,14 @@ AM_CPPFLAGS = \
 	-DSYSCONFDIR=\""$(sysconfdir)"\" \
 	-I$(top_srcdir)/src/libprojectM \
 	-I$(top_srcdir)/src/libprojectM/Renderer \
-	${FTGL_CFLAGS}
+	$(FTGL_CFLAGS) $(CG_CFLAGS)
 
 # system headers/libraries/data to install
 include_HEADERS = projectM.hpp
 lib_LTLIBRARIES = libprojectM.la  # public, possibly-shared library
 
 # link flags
-libprojectM_la_LDFLAGS = -no-undefined -version-info 0:2:0
+libprojectM_la_LDFLAGS = $(CG_LDFLAGS) -no-undefined -version-info 0:2:0
 
 # link libRenderer, MilkdropPresetFactory, NativePresetFactory, and libprojectM sources
 libprojectM_la_LIBADD = \

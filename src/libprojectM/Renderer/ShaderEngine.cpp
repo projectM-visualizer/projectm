@@ -101,6 +101,8 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	textureManager->setTexture("noise_hq", noise_texture_hq, 256, 256);
+  // this is made-up
+	textureManager->setTexture("texsize_noisevol_hq", noise_texture_hq_vol, 256, 256);
 
 	glGenTextures(1, &noise_texture_perlin);
 	glBindTexture(GL_TEXTURE_2D, noise_texture_perlin);
@@ -342,7 +344,7 @@ void ShaderEngine::checkForCgError(const char *situation)
 void ShaderEngine::SetupCg()
 {
 	std::string line;
-	std::ifstream myfile(CMAKE_INSTALL_PREFIX "/share/projectM/shaders/projectM.cg");
+	std::ifstream myfile(DATADIR_PATH "/shaders/projectM.cg");
 	if (myfile.is_open())
 	{
 		while (!myfile.eof())
@@ -354,9 +356,9 @@ void ShaderEngine::SetupCg()
 	}
 
 	else
-		std::cout << "Unable to load shader template \"" << CMAKE_INSTALL_PREFIX "/share/projectM/shaders/projectM.cg\"" << std::endl;
+      std::cout << "Unable to load shader template \"" << DATADIR_PATH << "/shaders/projectM.cg\"" << std::endl;
 
-	std::ifstream myfile2(CMAKE_INSTALL_PREFIX "/share/projectM/shaders/blur.cg");
+	std::ifstream myfile2(DATADIR_PATH "/shaders/blur.cg");
 	if (myfile2.is_open())
 	{
 		while (!myfile2.eof())
@@ -376,7 +378,7 @@ void ShaderEngine::SetupCg()
 	cgSetParameterSettingMode(myCgContext, CG_DEFERRED_PARAMETER_SETTING);
 
 	myCgProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
-	
+
 	// HACK breaks with buggy ati video drivers such as my own
 	// -carmelo.piccione@gmail.com 7/26/2010
 	//cgGLSetOptimalOptions(myCgProfile);
