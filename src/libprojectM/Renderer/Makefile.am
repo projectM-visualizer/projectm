@@ -39,11 +39,10 @@ libRenderer_la_SOURCES = \
 	SOIL2/stb_image.h       SOIL2/stbi_pvr.h\
 	SOIL2/stb_image_write.h SOIL2/stbi_pvr_c.h
 
-
 libRenderer_la_CPPFLAGS = ${my_CFLAGS} \
 	-I$(top_srcdir)/src/libprojectM \
-	${FTGL_CFLAGS}
-
+	${FTGL_CFLAGS} ${CG_CFLAGS} \
+  -DDATADIR_PATH='"${pkgdatadir}"'
 
 libRenderer_la_LDFLAGS = \
-	${FTGL_LIBS}
+  ${FTGL_LIBS}  ${CG_LDFLAGS}
