@@ -40,13 +40,15 @@ void DrawVisual( VisualPluginData * visualPluginData )
 {
 	CGPoint where;
 
+#if USE_SUBVIEW
     VISUAL_PLATFORM_VIEW drawView = visualPluginData->subview;
-    	
+        	
 	if ( drawView == NULL )
 		return;
-    
-    [[drawView openGLContext] makeCurrentContext];
 
+    [[drawView openGLContext] makeCurrentContext];
+#endif
+    
     if (visualPluginData->pm == NULL) {
         initProjectM(visualPluginData);
         
