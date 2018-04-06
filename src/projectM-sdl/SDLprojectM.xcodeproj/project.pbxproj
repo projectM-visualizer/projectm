@@ -140,22 +140,6 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXLegacyTarget section */
-		161070DE1F70942C001905AB /* projectMSDL */ = {
-			isa = PBXLegacyTarget;
-			buildArgumentsString = "$(ACTION)";
-			buildConfigurationList = 161070E11F70942C001905AB /* Build configuration list for PBXLegacyTarget "projectMSDL" */;
-			buildPhases = (
-			);
-			buildToolPath = /usr/bin/make;
-			dependencies = (
-			);
-			name = projectMSDL;
-			passBuildSettingsInEnvironment = 1;
-			productName = projectMSDL;
-		};
-/* End PBXLegacyTarget section */
-
 /* Begin PBXNativeTarget section */
 		C34521431BF02293001707D2 /* SDLprojectM */ = {
 			isa = PBXNativeTarget;
@@ -184,10 +168,6 @@
 				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = int80;
 				TargetAttributes = {
-					161070DE1F70942C001905AB = {
-						CreatedOnToolsVersion = 8.3.3;
-						ProvisioningStyle = Automatic;
-					};
 					C34521431BF02293001707D2 = {
 						CreatedOnToolsVersion = 7.1;
 					};
@@ -206,7 +186,6 @@
 			projectRoot = "";
 			targets = (
 				C34521431BF02293001707D2 /* SDLprojectM */,
-				161070DE1F70942C001905AB /* projectMSDL */,
 			);
 		};
 /* End PBXProject section */
@@ -224,37 +203,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		161070DF1F70942C001905AB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				DEBUGGING_SYMBOLS = YES;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Debug;
-		};
-		161070E01F70942C001905AB /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-			};
-			name = Release;
-		};
 		C34521491BF02294001707D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -413,15 +361,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		161070E11F70942C001905AB /* Build configuration list for PBXLegacyTarget "projectMSDL" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				161070DF1F70942C001905AB /* Debug */,
-				161070E01F70942C001905AB /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		C345213F1BF02293001707D2 /* Build configuration list for PBXProject "SDLprojectM" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
