@@ -1,9 +1,10 @@
 # config.inp
 # Configuration File for projectM
 
-Texture Size = 1024			# Size of internal rendering texture
-Mesh X  = 32            	# Width of PerPixel Equation mesh
-Mesh Y  = 24          		# Height of PerPixel Equation mesh
+#Texture Size = 1024			# Size of internal rendering texture
+
+Mesh X  = 220            	# Width of PerPixel Equation mesh
+Mesh Y  = 125          		# Height of PerPixel Equation mesh
 FPS  = 35          		# Frames Per Second
 Fullscreen  = false
 Window Width  = 512  	       	# startup window width

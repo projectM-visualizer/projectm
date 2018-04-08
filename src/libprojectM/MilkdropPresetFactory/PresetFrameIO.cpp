@@ -185,7 +185,7 @@ void PresetOutputs::Render(const BeatDetect &music, const PipelineContext &conte
 		compositeDrawables.push_back(&invert);
 }
 
-
+// N.B. The more optimization that can be done on this method, the better! This is called a lot and can probably be improved.
 void PresetOutputs::PerPixelMath(const PipelineContext &context)
 {
 

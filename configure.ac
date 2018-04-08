@@ -45,6 +45,19 @@ AS_IF([test "x$enable_ftgl" = "xyes"], [
   AC_DEFINE([USE_FTGL], [1], [Define USE_FTGL])
 ])
 
+dnl Threading
+AC_ARG_ENABLE([threading],
+AS_HELP_STRING([--enable-threading], [multhreading]),
+[], [enable_threading=yes])
+AS_IF([test "x$enable_threading" = "xyes"], [
+m4_include([m4/autoconf-archive/ax_pthread.m4])
+AX_PTHREAD([
+    AC_DEFINE([USE_THREADS], [1], [Define USE_THREADS])
+  ], [
+    AC_MSG_ERROR([pthreads not found])
+  ])
+])
+
 dnl Cg framework OSX -- replace with GLSL someday!
 CG_CFLAGS=
 CG_LDFLAGS=
@@ -133,7 +146,7 @@ libdir:                 ${libdir}
 includedir:             ${includedir}
 
 compiler:               ${CC}
-cflags:                 ${CFLAGS}
+cflags:                 ${CFLAGS} ${my_CFLAGS}
 ldflags:                ${LDFLAGS}
 
 - - -
@@ -145,5 +158,6 @@ libprojectM:            yes
 SDL:                    ${enable_sdl}
 Qt & Pulseaudio:        ${enable_qt}
 FTGL:                   ${enable_ftgl}
-CG:                     ${enable_cg}
+Cg:                     ${enable_cg}
+Threading:              ${enable_threading}
 ])
