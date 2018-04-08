@@ -155,6 +155,7 @@ Applications:
 =====
 
 libprojectM:            yes
+Threading:              ${enable_threading}
 SDL:                    ${enable_sdl}
 Qt & Pulseaudio:        ${enable_qt}
 FTGL:                   ${enable_ftgl}
