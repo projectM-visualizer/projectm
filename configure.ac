@@ -146,5 +146,4 @@ SDL:                    ${enable_sdl}
 Qt & Pulseaudio:        ${enable_qt}
 FTGL:                   ${enable_ftgl}
 Cg:                     ${enable_cg}
-Threading:              ${enable_threading}
 ])
