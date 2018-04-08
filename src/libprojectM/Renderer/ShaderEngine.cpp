@@ -379,7 +379,7 @@ void ShaderEngine::SetupCg()
 
 	// HACK breaks with buggy ati video drivers such as my own
 	// -carmelo.piccione@gmail.com 7/26/2010
-	//cgGLSetOptimalOptions(myCgProfile);
+    cgGLSetOptimalOptions(myCgProfile);
 	checkForCgError("selecting fragment profile");
 
 	profileName = cgGetProfileString(myCgProfile);
