@@ -298,6 +298,11 @@ if (MILKDROP_PRESET_DEBUG)
  loadPresetFile(pathname);
 
   postloadInitialize();
+    
+    if (!presetOutputs().compositeShader.programSource.empty())
+        pipeline().compositeShaderFilename = pathname;
+    if (!presetOutputs().warpShader.programSource.empty())
+        pipeline().warpShaderFilename = pathname;
 }
 
 void MilkdropPreset::initialize(std::istream & in)
