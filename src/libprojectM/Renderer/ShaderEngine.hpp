@@ -12,7 +12,7 @@
 #include "projectM-opengl.h"
 
 #ifdef USE_CG
-#include <Cg/cg.h>    /* Can't include this?  Is Cg Toolkit installed! */
+#include <Cg/cg.h>
 #include <Cg/cgGL.h>
 #endif
 
