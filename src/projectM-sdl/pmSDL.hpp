@@ -19,7 +19,7 @@
 // built with autotools.
 #ifndef DATADIR_PATH
     #ifdef DEBUG
-        #define DATADIR_PATH "./"
+        #define DATADIR_PATH "."
         #warning "DATADIR_PATH is not defined - falling back to ./"
     #else
         #define DATADIR_PATH "/usr/local/share/projectM"
