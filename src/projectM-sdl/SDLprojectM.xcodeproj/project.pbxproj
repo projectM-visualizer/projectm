@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		161070DD1F705069001905AB /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 161070DC1F705069001905AB /* Cg.framework */; };
-		16178B0D207A6E8300D3B0C8 /* liblibprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16178B0C207A6E7D00D3B0C8 /* liblibprojectM.a */; };
 		169502001F7009E9008FAF86 /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
 		16A42142207817AE006F30CE /* Cg.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 161070DC1F705069001905AB /* Cg.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C307DFD41D565B57002F6B9E /* presets in Copy Files */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
@@ -38,6 +36,34 @@
 			proxyType = 2;
 			remoteGlobalIDString = 161789C0207A675B00D3B0C8;
 			remoteInfo = libprojectM;
+		};
+		16AE4F9D207A737C00AF7136 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 16178B07207A6E7D00D3B0C8 /* libprojectM.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 161789BF207A675B00D3B0C8;
+			remoteInfo = projectM;
+		};
+		16AE4FA1207A737C00AF7136 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 16178B07207A6E7D00D3B0C8 /* libprojectM.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 16178B12207A6F4000D3B0C8;
+			remoteInfo = Renderer;
+		};
+		16AE4FA5207A737C00AF7136 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 16178B01207A6E5600D3B0C8 /* libprojectM.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 16178B12207A6F4000D3B0C8;
+			remoteInfo = Renderer;
+		};
+		16AE4FA8207A762B00AF7136 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 16178B07207A6E7D00D3B0C8 /* libprojectM.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 16178B11207A6F4000D3B0C8;
+			remoteInfo = Renderer;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -91,7 +117,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				161070DD1F705069001905AB /* Cg.framework in Frameworks */,
 				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
 				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
 				C34521651BF025E5001707D2 /* libbz2.a in Frameworks */,
@@ -100,7 +125,6 @@
 				C34521681BF025E5001707D2 /* libGLEW.a in Frameworks */,
 				C34521691BF025E5001707D2 /* libpng15.a in Frameworks */,
 				C345216A1BF025E5001707D2 /* libz.a in Frameworks */,
-				16178B0D207A6E8300D3B0C8 /* liblibprojectM.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,7 +145,8 @@
 		16178B02207A6E5600D3B0C8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				16178B06207A6E5600D3B0C8 /* liblibprojectM.a */,
+				16178B06207A6E5600D3B0C8 /* libprojectM.a */,
+				16AE4FA6207A737C00AF7136 /* libRenderer.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -129,7 +154,8 @@
 		16178B08207A6E7D00D3B0C8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				16178B0C207A6E7D00D3B0C8 /* liblibprojectM.a */,
+				16178B0C207A6E7D00D3B0C8 /* libprojectM.a */,
+				16AE4FA2207A737C00AF7136 /* libRenderer.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -193,6 +219,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				16AE4FA9207A762B00AF7136 /* PBXTargetDependency */,
+				16AE4F9E207A737C00AF7136 /* PBXTargetDependency */,
 			);
 			name = SDLprojectM;
 			productName = SDLprojectM;
@@ -241,18 +269,32 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		16178B06207A6E5600D3B0C8 /* liblibprojectM.a */ = {
+		16178B06207A6E5600D3B0C8 /* libprojectM.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = liblibprojectM.a;
+			path = libprojectM.a;
 			remoteRef = 16178B05207A6E5600D3B0C8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		16178B0C207A6E7D00D3B0C8 /* liblibprojectM.a */ = {
+		16178B0C207A6E7D00D3B0C8 /* libprojectM.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = liblibprojectM.a;
+			path = libprojectM.a;
 			remoteRef = 16178B0B207A6E7D00D3B0C8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		16AE4FA2207A737C00AF7136 /* libRenderer.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRenderer.a;
+			remoteRef = 16AE4FA1207A737C00AF7136 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		16AE4FA6207A737C00AF7136 /* libRenderer.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRenderer.a;
+			remoteRef = 16AE4FA5207A737C00AF7136 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -268,6 +310,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		16AE4F9E207A737C00AF7136 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = projectM;
+			targetProxy = 16AE4F9D207A737C00AF7136 /* PBXContainerItemProxy */;
+		};
+		16AE4FA9207A762B00AF7136 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Renderer;
+			targetProxy = 16AE4FA8207A762B00AF7136 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		C34521491BF02294001707D2 /* Debug */ = {
