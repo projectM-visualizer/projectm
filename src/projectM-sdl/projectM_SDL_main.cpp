@@ -21,7 +21,12 @@ int main(int argc, char *argv[]) {
     
     // default window size to usable bounds (e.g. minus menubar and dock)
     SDL_Rect initialWindowBounds;
+#if SDL_VERSION_ATLEAST(2, 0, 5)
+    // new and better
     SDL_GetDisplayUsableBounds(0, &initialWindowBounds);
+#else
+    SDL_GetDisplayBounds(0, &initialWindowBounds);
+#endif
     int width = initialWindowBounds.w;
     int height = initialWindowBounds.h;
     float heightWidthRatio = (float)height / (float)width;
