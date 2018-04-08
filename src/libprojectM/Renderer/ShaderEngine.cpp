@@ -101,8 +101,6 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	textureManager->setTexture("noise_hq", noise_texture_hq, 256, 256);
-  // this is made-up
-	textureManager->setTexture("texsize_noisevol_hq", noise_texture_hq_vol, 256, 256);
 
 	glGenTextures(1, &noise_texture_perlin);
 	glBindTexture(GL_TEXTURE_2D, noise_texture_perlin);
