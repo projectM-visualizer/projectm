@@ -27,6 +27,16 @@
 		C3D30B901BF02BEC009AAACD /* fonts in Copy Files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		16178AFF207A69AA00D3B0C8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 16178AFB207A69AA00D3B0C8 /* libprojectM.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 161789C0207A675B00D3B0C8;
+			remoteInfo = libprojectM;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
 		161070C81F704047001905AB /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -54,6 +64,7 @@
 
 /* Begin PBXFileReference section */
 		161070DC1F705069001905AB /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = ../../../../../../Library/Frameworks/Cg.framework; sourceTree = "<group>"; };
+		16178AFB207A69AA00D3B0C8 /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
 		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
 		169501FF1F7009E9008FAF86 /* pmSDL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pmSDL.hpp; sourceTree = "<group>"; };
 		16A4214020781067006F30CE /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/.libs/libRenderer.a; sourceTree = "<group>"; };
@@ -108,6 +119,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		16178AFC207A69AA00D3B0C8 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				16178B00207A69AA00D3B0C8 /* liblibprojectM.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		16A42128207802AF006F30CE /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -135,6 +154,7 @@
 		C345213B1BF02293001707D2 = {
 			isa = PBXGroup;
 			children = (
+				16178AFB207A69AA00D3B0C8 /* libprojectM.xcodeproj */,
 				169501FE1F7009E9008FAF86 /* pmSDL.cpp */,
 				169501FF1F7009E9008FAF86 /* pmSDL.hpp */,
 				C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */,
@@ -200,12 +220,28 @@
 			mainGroup = C345213B1BF02293001707D2;
 			productRefGroup = C34521451BF02294001707D2 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 16178AFC207A69AA00D3B0C8 /* Products */;
+					ProjectRef = 16178AFB207A69AA00D3B0C8 /* libprojectM.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				C34521431BF02293001707D2 /* SDLprojectM */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		16178B00207A69AA00D3B0C8 /* liblibprojectM.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = liblibprojectM.a;
+			remoteRef = 16178AFF207A69AA00D3B0C8 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C34521401BF02293001707D2 /* Sources */ = {

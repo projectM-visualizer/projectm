@@ -8,6 +8,21 @@
 
 #include "pmSDL.hpp"
 
+void projectMSDL::loadConfig() {
+    const char *path = DATADIR_PATH;
+    struct stat sb;
+    
+    // check if datadir exists.
+    // it should exist if this application was installed. if not, assume we're developing it and use currect directory
+    if (stat(path, &sb) != 0 || !S_ISDIR(sb.st_mode)) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "Could not open datadir path %s. Using current directory\n", DATADIR_PATH);
+        path = SDL_GetBasePath();
+    }
+    
+//    std::string configFilePath = path + "/config.inp"
+    
+}
+
 void projectMSDL::audioInputCallbackF32(void *userdata, unsigned char *stream, int len) {
     projectMSDL *app = (projectMSDL *) userdata;
     //    printf("LEN: %i\n", len);
@@ -218,6 +233,7 @@ void projectMSDL::renderFrame() {
 }
 
 projectMSDL::projectMSDL(Settings settings, int flags) : projectM(settings, flags) {
+    
     width = settings.windowWidth;
     height = settings.windowHeight;
     done = 0;

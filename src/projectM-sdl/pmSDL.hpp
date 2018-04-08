@@ -13,6 +13,14 @@
 #include <projectM.hpp>
 #include <sdltoprojectM.h>
 #include <iostream>
+#include <sys/stat.h>
+
+// DATADIR_PATH should be set by the root Makefile if this is being
+// built with autotools.
+#ifndef DATADIR_PATH
+    #define DATADIR_PATH "/usr/local/share/projectM"
+    #warning "DATADIR_PATH is not defined - falling back to /usr/local/share/projectM"
+#endif
 
 const float FPS = 60;
 
@@ -22,6 +30,7 @@ public:
 
     projectMSDL(Settings settings, int flags = FLAG_NONE);
     void init(SDL_Window *window, SDL_Renderer *renderer);
+    void loadConfig();
     int openAudioInput();
     void beginAudioCapture();
     void endAudioCapture();
