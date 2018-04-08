@@ -1,0 +1,290 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 48;
+	objects = {
+
+/* Begin PBXFileReference section */
+		161789D0207A68A200D3B0C8 /* CustomShape.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CustomShape.cpp; sourceTree = "<group>"; };
+		161789D1207A68A200D3B0C8 /* Func.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Func.cpp; sourceTree = "<group>"; };
+		161789D2207A68A200D3B0C8 /* libMilkdropPresetFactory_la-MilkdropPreset.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-MilkdropPreset.lo"; sourceTree = "<group>"; };
+		161789D3207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PerPixelEqn.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-PerPixelEqn.lo"; sourceTree = "<group>"; };
+		161789D4207A68A200D3B0C8 /* MilkdropPreset.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MilkdropPreset.cpp; sourceTree = "<group>"; };
+		161789D5207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Eval.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-Eval.o"; sourceTree = "<group>"; };
+		161789D6207A68A200D3B0C8 /* libMilkdropPresetFactory_la-CustomShape.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-CustomShape.o"; sourceTree = "<group>"; };
+		161789D7207A68A200D3B0C8 /* libMilkdropPresetFactory_la-BuiltinFuncs.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-BuiltinFuncs.lo"; sourceTree = "<group>"; };
+		161789D8207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PerFrameEqn.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-PerFrameEqn.lo"; sourceTree = "<group>"; };
+		161789D9207A68A200D3B0C8 /* .DS_Store */ = {isa = PBXFileReference; lastKnownFileType = file; path = .DS_Store; sourceTree = "<group>"; };
+		161789DA207A68A200D3B0C8 /* PerPointEqn.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PerPointEqn.cpp; sourceTree = "<group>"; };
+		161789DB207A68A200D3B0C8 /* Parser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Parser.hpp; sourceTree = "<group>"; };
+		161789DC207A68A200D3B0C8 /* PresetFrameIO.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PresetFrameIO.hpp; sourceTree = "<group>"; };
+		161789DD207A68A200D3B0C8 /* Eval.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Eval.hpp; sourceTree = "<group>"; };
+		161789DE207A68A200D3B0C8 /* IdlePreset.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = IdlePreset.hpp; sourceTree = "<group>"; };
+		161789DF207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Param.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-Param.lo"; sourceTree = "<group>"; };
+		161789E0207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PerPointEqn.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-PerPointEqn.lo"; sourceTree = "<group>"; };
+		161789E1207A68A200D3B0C8 /* PerFrameEqn.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerFrameEqn.hpp; sourceTree = "<group>"; };
+		161789E2207A68A200D3B0C8 /* libMilkdropPresetFactory_la-MilkdropPresetFactory.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-MilkdropPresetFactory.lo"; sourceTree = "<group>"; };
+		161789E3207A68A200D3B0C8 /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		161789E4207A68A200D3B0C8 /* BuiltinParams.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BuiltinParams.hpp; sourceTree = "<group>"; };
+		161789E5207A68A200D3B0C8 /* libMilkdropPresetFactory_la-BuiltinParams.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-BuiltinParams.o"; sourceTree = "<group>"; };
+		161789E6207A68A200D3B0C8 /* PerPixelEqn.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerPixelEqn.hpp; sourceTree = "<group>"; };
+		161789E7207A68A200D3B0C8 /* MilkdropPresetFactory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MilkdropPresetFactory.cpp; sourceTree = "<group>"; };
+		161789E8207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PerPointEqn.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-PerPointEqn.o"; sourceTree = "<group>"; };
+		161789E9207A68A200D3B0C8 /* BuiltinFuncs.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BuiltinFuncs.cpp; sourceTree = "<group>"; };
+		161789EA207A68A200D3B0C8 /* CValue.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CValue.hpp; sourceTree = "<group>"; };
+		161789EB207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PerFrameEqn.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-PerFrameEqn.o"; sourceTree = "<group>"; };
+		161789EC207A68A200D3B0C8 /* Expr.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Expr.cpp; sourceTree = "<group>"; };
+		161789ED207A68A200D3B0C8 /* Param.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Param.hpp; sourceTree = "<group>"; };
+		161789EE207A68A200D3B0C8 /* CustomWave.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CustomWave.hpp; sourceTree = "<group>"; };
+		161789EF207A68A200D3B0C8 /* InitCond.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InitCond.cpp; sourceTree = "<group>"; };
+		161789F0207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Param.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-Param.o"; sourceTree = "<group>"; };
+		161789F1207A68A200D3B0C8 /* libMilkdropPresetFactory_la-CustomWave.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-CustomWave.o"; sourceTree = "<group>"; };
+		161789F2207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Func.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-Func.o"; sourceTree = "<group>"; };
+		161789F3207A68A200D3B0C8 /* Makefile.am */ = {isa = PBXFileReference; lastKnownFileType = text; path = Makefile.am; sourceTree = "<group>"; };
+		161789F4207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PresetFrameIO.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-PresetFrameIO.o"; sourceTree = "<group>"; };
+		161789F5207A68A200D3B0C8 /* BuiltinParams.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BuiltinParams.cpp; sourceTree = "<group>"; };
+		161789F6207A68A200D3B0C8 /* libMilkdropPresetFactory_la-CustomShape.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-CustomShape.lo"; sourceTree = "<group>"; };
+		161789F7207A68A200D3B0C8 /* PerPixelEqn.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PerPixelEqn.cpp; sourceTree = "<group>"; };
+		161789F8207A68A200D3B0C8 /* MilkdropPresetFactory.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MilkdropPresetFactory.hpp; sourceTree = "<group>"; };
+		161789F9207A68A200D3B0C8 /* BuiltinFuncs.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BuiltinFuncs.hpp; sourceTree = "<group>"; };
+		161789FA207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Parser.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-Parser.lo"; sourceTree = "<group>"; };
+		161789FB207A68A200D3B0C8 /* Param.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Param.cpp; sourceTree = "<group>"; };
+		161789FC207A68A200D3B0C8 /* Expr.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Expr.hpp; sourceTree = "<group>"; };
+		161789FD207A68A200D3B0C8 /* CustomWave.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CustomWave.cpp; sourceTree = "<group>"; };
+		161789FE207A68A200D3B0C8 /* libMilkdropPresetFactory_la-BuiltinFuncs.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-BuiltinFuncs.o"; sourceTree = "<group>"; };
+		161789FF207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PresetFrameIO.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-PresetFrameIO.lo"; sourceTree = "<group>"; };
+		16178A00207A68A200D3B0C8 /* InitCond.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = InitCond.hpp; sourceTree = "<group>"; };
+		16178A01207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PerPixelEqn.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-PerPixelEqn.o"; sourceTree = "<group>"; };
+		16178A02207A68A200D3B0C8 /* libMilkdropPresetFactory_la-MilkdropPreset.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-MilkdropPreset.o"; sourceTree = "<group>"; };
+		16178A03207A68A200D3B0C8 /* libMilkdropPresetFactory_la-InitCond.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-InitCond.lo"; sourceTree = "<group>"; };
+		16178A04207A68A200D3B0C8 /* libMilkdropPresetFactory_la-CustomWave.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-CustomWave.lo"; sourceTree = "<group>"; };
+		16178A05207A68A200D3B0C8 /* ParamUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ParamUtils.hpp; sourceTree = "<group>"; };
+		16178A06207A68A200D3B0C8 /* libMilkdropPresetFactory_la-MilkdropPresetFactory.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-MilkdropPresetFactory.o"; sourceTree = "<group>"; };
+		16178A07207A68A200D3B0C8 /* libMilkdropPresetFactory_la-InitCond.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-InitCond.o"; sourceTree = "<group>"; };
+		16178A08207A68A200D3B0C8 /* CustomShape.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CustomShape.hpp; sourceTree = "<group>"; };
+		16178A09207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Expr.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-Expr.lo"; sourceTree = "<group>"; };
+		16178A0A207A68A200D3B0C8 /* Func.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Func.hpp; sourceTree = "<group>"; };
+		16178A0B207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Func.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-Func.lo"; sourceTree = "<group>"; };
+		16178A0C207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Parser.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-Parser.o"; sourceTree = "<group>"; };
+		16178A0D207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Expr.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-Expr.o"; sourceTree = "<group>"; };
+		16178A0E207A68A200D3B0C8 /* MilkdropPreset.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = MilkdropPreset.hpp; sourceTree = "<group>"; };
+		16178A0F207A68A200D3B0C8 /* .deps */ = {isa = PBXFileReference; lastKnownFileType = folder; path = .deps; sourceTree = "<group>"; };
+		16178A10207A68A200D3B0C8 /* libMilkdropPresetFactory.la */ = {isa = PBXFileReference; lastKnownFileType = text; path = libMilkdropPresetFactory.la; sourceTree = "<group>"; };
+		16178A11207A68A200D3B0C8 /* .libs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = .libs; sourceTree = "<group>"; };
+		16178A12207A68A200D3B0C8 /* Makefile.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = Makefile.in; sourceTree = "<group>"; };
+		16178A13207A68A200D3B0C8 /* PerPointEqn.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PerPointEqn.hpp; sourceTree = "<group>"; };
+		16178A14207A68A200D3B0C8 /* Parser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Parser.cpp; sourceTree = "<group>"; };
+		16178A15207A68A200D3B0C8 /* PresetFrameIO.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PresetFrameIO.cpp; sourceTree = "<group>"; };
+		16178A16207A68A200D3B0C8 /* Eval.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Eval.cpp; sourceTree = "<group>"; };
+		16178A17207A68A200D3B0C8 /* IdlePreset.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = IdlePreset.cpp; sourceTree = "<group>"; };
+		16178A18207A68A200D3B0C8 /* libMilkdropPresetFactory_la-BuiltinParams.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-BuiltinParams.lo"; sourceTree = "<group>"; };
+		16178A19207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Eval.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-Eval.lo"; sourceTree = "<group>"; };
+		16178A1A207A68A200D3B0C8 /* libMilkdropPresetFactory_la-IdlePreset.lo */ = {isa = PBXFileReference; lastKnownFileType = text; path = "libMilkdropPresetFactory_la-IdlePreset.lo"; sourceTree = "<group>"; };
+		16178A1B207A68A200D3B0C8 /* PerFrameEqn.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PerFrameEqn.cpp; sourceTree = "<group>"; };
+		16178A1C207A68A200D3B0C8 /* InitCondUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = InitCondUtils.hpp; sourceTree = "<group>"; };
+		16178A1D207A68A200D3B0C8 /* libMilkdropPresetFactory_la-IdlePreset.o */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.objfile"; path = "libMilkdropPresetFactory_la-IdlePreset.o"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		161789CA207A68A200D3B0C8 = {
+			isa = PBXGroup;
+			children = (
+				161789D0207A68A200D3B0C8 /* CustomShape.cpp */,
+				161789D1207A68A200D3B0C8 /* Func.cpp */,
+				161789D2207A68A200D3B0C8 /* libMilkdropPresetFactory_la-MilkdropPreset.lo */,
+				161789D3207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PerPixelEqn.lo */,
+				161789D4207A68A200D3B0C8 /* MilkdropPreset.cpp */,
+				161789D5207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Eval.o */,
+				161789D6207A68A200D3B0C8 /* libMilkdropPresetFactory_la-CustomShape.o */,
+				161789D7207A68A200D3B0C8 /* libMilkdropPresetFactory_la-BuiltinFuncs.lo */,
+				161789D8207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PerFrameEqn.lo */,
+				161789D9207A68A200D3B0C8 /* .DS_Store */,
+				161789DA207A68A200D3B0C8 /* PerPointEqn.cpp */,
+				161789DB207A68A200D3B0C8 /* Parser.hpp */,
+				161789DC207A68A200D3B0C8 /* PresetFrameIO.hpp */,
+				161789DD207A68A200D3B0C8 /* Eval.hpp */,
+				161789DE207A68A200D3B0C8 /* IdlePreset.hpp */,
+				161789DF207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Param.lo */,
+				161789E0207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PerPointEqn.lo */,
+				161789E1207A68A200D3B0C8 /* PerFrameEqn.hpp */,
+				161789E2207A68A200D3B0C8 /* libMilkdropPresetFactory_la-MilkdropPresetFactory.lo */,
+				161789E3207A68A200D3B0C8 /* Makefile */,
+				161789E4207A68A200D3B0C8 /* BuiltinParams.hpp */,
+				161789E5207A68A200D3B0C8 /* libMilkdropPresetFactory_la-BuiltinParams.o */,
+				161789E6207A68A200D3B0C8 /* PerPixelEqn.hpp */,
+				161789E7207A68A200D3B0C8 /* MilkdropPresetFactory.cpp */,
+				161789E8207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PerPointEqn.o */,
+				161789E9207A68A200D3B0C8 /* BuiltinFuncs.cpp */,
+				161789EA207A68A200D3B0C8 /* CValue.hpp */,
+				161789EB207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PerFrameEqn.o */,
+				161789EC207A68A200D3B0C8 /* Expr.cpp */,
+				161789ED207A68A200D3B0C8 /* Param.hpp */,
+				161789EE207A68A200D3B0C8 /* CustomWave.hpp */,
+				161789EF207A68A200D3B0C8 /* InitCond.cpp */,
+				161789F0207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Param.o */,
+				161789F1207A68A200D3B0C8 /* libMilkdropPresetFactory_la-CustomWave.o */,
+				161789F2207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Func.o */,
+				161789F3207A68A200D3B0C8 /* Makefile.am */,
+				161789F4207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PresetFrameIO.o */,
+				161789F5207A68A200D3B0C8 /* BuiltinParams.cpp */,
+				161789F6207A68A200D3B0C8 /* libMilkdropPresetFactory_la-CustomShape.lo */,
+				161789F7207A68A200D3B0C8 /* PerPixelEqn.cpp */,
+				161789F8207A68A200D3B0C8 /* MilkdropPresetFactory.hpp */,
+				161789F9207A68A200D3B0C8 /* BuiltinFuncs.hpp */,
+				161789FA207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Parser.lo */,
+				161789FB207A68A200D3B0C8 /* Param.cpp */,
+				161789FC207A68A200D3B0C8 /* Expr.hpp */,
+				161789FD207A68A200D3B0C8 /* CustomWave.cpp */,
+				161789FE207A68A200D3B0C8 /* libMilkdropPresetFactory_la-BuiltinFuncs.o */,
+				161789FF207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PresetFrameIO.lo */,
+				16178A00207A68A200D3B0C8 /* InitCond.hpp */,
+				16178A01207A68A200D3B0C8 /* libMilkdropPresetFactory_la-PerPixelEqn.o */,
+				16178A02207A68A200D3B0C8 /* libMilkdropPresetFactory_la-MilkdropPreset.o */,
+				16178A03207A68A200D3B0C8 /* libMilkdropPresetFactory_la-InitCond.lo */,
+				16178A04207A68A200D3B0C8 /* libMilkdropPresetFactory_la-CustomWave.lo */,
+				16178A05207A68A200D3B0C8 /* ParamUtils.hpp */,
+				16178A06207A68A200D3B0C8 /* libMilkdropPresetFactory_la-MilkdropPresetFactory.o */,
+				16178A07207A68A200D3B0C8 /* libMilkdropPresetFactory_la-InitCond.o */,
+				16178A08207A68A200D3B0C8 /* CustomShape.hpp */,
+				16178A09207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Expr.lo */,
+				16178A0A207A68A200D3B0C8 /* Func.hpp */,
+				16178A0B207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Func.lo */,
+				16178A0C207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Parser.o */,
+				16178A0D207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Expr.o */,
+				16178A0E207A68A200D3B0C8 /* MilkdropPreset.hpp */,
+				16178A0F207A68A200D3B0C8 /* .deps */,
+				16178A10207A68A200D3B0C8 /* libMilkdropPresetFactory.la */,
+				16178A11207A68A200D3B0C8 /* .libs */,
+				16178A12207A68A200D3B0C8 /* Makefile.in */,
+				16178A13207A68A200D3B0C8 /* PerPointEqn.hpp */,
+				16178A14207A68A200D3B0C8 /* Parser.cpp */,
+				16178A15207A68A200D3B0C8 /* PresetFrameIO.cpp */,
+				16178A16207A68A200D3B0C8 /* Eval.cpp */,
+				16178A17207A68A200D3B0C8 /* IdlePreset.cpp */,
+				16178A18207A68A200D3B0C8 /* libMilkdropPresetFactory_la-BuiltinParams.lo */,
+				16178A19207A68A200D3B0C8 /* libMilkdropPresetFactory_la-Eval.lo */,
+				16178A1A207A68A200D3B0C8 /* libMilkdropPresetFactory_la-IdlePreset.lo */,
+				16178A1B207A68A200D3B0C8 /* PerFrameEqn.cpp */,
+				16178A1C207A68A200D3B0C8 /* InitCondUtils.hpp */,
+				16178A1D207A68A200D3B0C8 /* libMilkdropPresetFactory_la-IdlePreset.o */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXLegacyTarget section */
+		161789CF207A68A200D3B0C8 /* MilkdropPresetFactory */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "$(ACTION)";
+			buildConfigurationList = 16178A1E207A68A200D3B0C8 /* Build configuration list for PBXLegacyTarget "MilkdropPresetFactory" */;
+			buildPhases = (
+			);
+			buildToolPath = /usr/bin/make;
+			buildWorkingDirectory = /Users/cyber/dev/projectm/src/libprojectM/MilkdropPresetFactory;
+			dependencies = (
+			);
+			name = MilkdropPresetFactory;
+			passBuildSettingsInEnvironment = 1;
+			productName = MilkdropPresetFactory;
+		};
+/* End PBXLegacyTarget section */
+
+/* Begin PBXProject section */
+		161789CB207A68A200D3B0C8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+			};
+			buildConfigurationList = 161789CE207A68A200D3B0C8 /* Build configuration list for PBXProject "MilkdropPresetFactory" */;
+			compatibilityVersion = "Xcode 8.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 161789CA207A68A200D3B0C8;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				161789CF207A68A200D3B0C8 /* MilkdropPresetFactory */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin XCBuildConfiguration section */
+		161789CC207A68A200D3B0C8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Debug;
+		};
+		161789CD207A68A200D3B0C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				COPY_PHASE_STRIP = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+		16178A1F207A68A200D3B0C8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUGGING_SYMBOLS = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = MilkdropPresetFactory;
+			};
+			name = Debug;
+		};
+		16178A20207A68A200D3B0C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				OTHER_CFLAGS = "";
+				OTHER_LDFLAGS = "";
+				PRODUCT_NAME = MilkdropPresetFactory;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		161789CE207A68A200D3B0C8 /* Build configuration list for PBXProject "MilkdropPresetFactory" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				161789CC207A68A200D3B0C8 /* Debug */,
+				161789CD207A68A200D3B0C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		16178A1E207A68A200D3B0C8 /* Build configuration list for PBXLegacyTarget "MilkdropPresetFactory" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				16178A1F207A68A200D3B0C8 /* Debug */,
+				16178A20207A68A200D3B0C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 161789CB207A68A200D3B0C8 /* Project object */;
+}

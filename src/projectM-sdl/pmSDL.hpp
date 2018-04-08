@@ -28,9 +28,9 @@ class projectMSDL : projectM {
 public:
     bool done;
 
-    projectMSDL(Settings settings, int flags = FLAG_NONE);
+    projectMSDL(Settings settings, int flags);
+    projectMSDL(std::string config_file, int flags);
     void init(SDL_Window *window, SDL_Renderer *renderer);
-    void loadConfig();
     int openAudioInput();
     void beginAudioCapture();
     void endAudioCapture();
