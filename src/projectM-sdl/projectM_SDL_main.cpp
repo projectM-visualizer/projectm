@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
         projectM::Settings settings;
         settings.windowWidth = width;
         settings.windowHeight = height;
-        settings.meshX = 200;
+        settings.meshX = 300;
         settings.meshY = settings.meshX * heightWidthRatio;
         settings.fps   = FPS;
         settings.smoothPresetDuration = 3; // seconds
