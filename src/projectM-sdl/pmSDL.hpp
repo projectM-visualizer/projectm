@@ -18,8 +18,13 @@
 // DATADIR_PATH should be set by the root Makefile if this is being
 // built with autotools.
 #ifndef DATADIR_PATH
-    #define DATADIR_PATH "/usr/local/share/projectM"
-    #warning "DATADIR_PATH is not defined - falling back to /usr/local/share/projectM"
+    #ifdef DEBUG
+        #define DATADIR_PATH "./"
+        #warning "DATADIR_PATH is not defined - falling back to ./"
+    #else
+        #define DATADIR_PATH "/usr/local/share/projectM"
+        #warning "DATADIR_PATH is not defined - falling back to /usr/local/share/projectM"
+    #endif
 #endif
 
 const float FPS = 60;

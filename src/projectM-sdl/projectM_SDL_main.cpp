@@ -24,7 +24,8 @@ std::string getConfigFilePath() {
     
     // check if config file exists
     if (stat(configFilePath.c_str(), &sb) != 0) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "No config file %s found.\n", configFilePath.c_str());
+        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "No config file %s found. Using development settings.\n", configFilePath.c_str());
+        return "";
     }
     
     return configFilePath;
@@ -52,10 +53,37 @@ int main(int argc, char *argv[]) {
     }
     SDL_SetWindowTitle(win, "projectM Visualizer");
     
+    projectMSDL *app;
+    
     // load configuration file
     std::string configFilePath = getConfigFilePath();
-
-    projectMSDL *app = new projectMSDL(configFilePath, 0);
+    
+    if (! configFilePath.empty()) {
+        // found config file, use it
+        app = new projectMSDL(configFilePath, 0);
+    } else {
+        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Config file not found, using development settings\n");
+        float heightWidthRatio = (float)height / (float)width;
+        projectM::Settings settings;
+        settings.windowWidth = width;
+        settings.windowHeight = height;
+        settings.meshX = 200;
+        settings.meshY = settings.meshX * heightWidthRatio;
+        settings.fps   = FPS;
+        settings.smoothPresetDuration = 3; // seconds
+        settings.presetDuration = 7; // seconds
+        settings.beatSensitivity = 0.8;
+        settings.aspectCorrection = 1;
+        settings.shuffleEnabled = 1;
+        settings.softCutRatingsEnabled = 1; // ???
+        // get path to our app, use CWD for presets/fonts/etc
+        std::string base_path = SDL_GetBasePath();
+        settings.presetURL = base_path + "presets";
+        settings.menuFontURL = base_path + "fonts/Vera.ttf";
+        settings.titleFontURL = base_path + "fonts/Vera.ttf";
+        // init with settings
+        app = new projectMSDL(settings, 0);
+    }
     app->init(win, rend);
 
     // get an audio input device
@@ -73,6 +101,8 @@ int main(int argc, char *argv[]) {
             SDL_Delay(frame_delay - elapsed);
         last_time = SDL_GetTicks();
     }
+    
+    delete app;
 
     return PROJECTM_SUCCESS;
 }
