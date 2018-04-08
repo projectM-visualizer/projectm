@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 
     // default window size to usable bounds (e.g. minus menubar and dock)
     SDL_Rect initialWindowBounds;
-#ifdef SDL_GetDisplayUsableBounds
+#if SDL_VERSION_ATLEAST(2, 0, 5)
     // new and better
     SDL_GetDisplayUsableBounds(0, &initialWindowBounds);
 #else
