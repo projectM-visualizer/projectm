@@ -544,9 +544,11 @@ static void *thread_callback(void *prjm) {
     /** Resets OpenGL state */
     void projectM::projectM_resetGL ( int w, int h )
     {
-
+        /** sanity check **/
+        assert(w > 0);
+        assert(h > 0);
+        
         /** Stash the new dimensions */
-
         _settings.windowWidth = w;
         _settings.windowHeight = h;
         renderer->reset ( w,h );

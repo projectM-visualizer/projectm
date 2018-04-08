@@ -3,7 +3,6 @@
 //  SDLprojectM
 //
 //  Created by Mischa Spiegelmock on 2017-09-18.
-//  Copyright © 2017 MVS Technical Group Inc. All rights reserved.
 //
 
 #include "pmSDL.hpp"
@@ -218,15 +217,15 @@ void projectMSDL::renderFrame() {
 }
 
 projectMSDL::projectMSDL(Settings settings, int flags) : projectM(settings, flags) {
-    width = settings.windowWidth;
-    height = settings.windowHeight;
+    width = getWindowWidth();
+    height = getWindowHeight();
     done = 0;
     isFullScreen = false;
 }
 
 projectMSDL::projectMSDL(std::string config_file, int flags) : projectM(config_file, flags) {
-    width = settings.windowWidth;
-    height = settings.windowHeight;
+    width = getWindowWidth();
+    height = getWindowHeight();
     done = 0;
     isFullScreen = false;
 }
