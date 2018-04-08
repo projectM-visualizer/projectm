@@ -3,7 +3,6 @@
 //  SDLprojectM
 //
 //  Created by Mischa Spiegelmock on 2017-09-18.
-//  Copyright © 2017 MVS Technical Group Inc. All rights reserved.
 //
 
 #ifndef pmSDL_hpp
@@ -14,6 +13,7 @@
 #include <sdltoprojectM.h>
 #include <iostream>
 #include <sys/stat.h>
+#include <SDL2/SDL.h>
 
 // DATADIR_PATH should be set by the root Makefile if this is being
 // built with autotools.
