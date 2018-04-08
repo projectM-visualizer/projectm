@@ -45,19 +45,6 @@ AS_IF([test "x$enable_ftgl" = "xyes"], [
   AC_DEFINE([USE_FTGL], [1], [Define USE_FTGL])
 ])
 
-dnl Threading
-AC_ARG_ENABLE([threading],
-AS_HELP_STRING([--enable-threading], [multhreading]),
-[], [enable_threading=yes])
-AS_IF([test "x$enable_threading" = "xyes"], [
-m4_include([m4/autoconf-archive/ax_pthread.m4])
-AX_PTHREAD([
-    AC_DEFINE([USE_THREADS], [1], [Define USE_THREADS])
-  ], [
-    AC_MSG_ERROR([pthreads not found])
-  ])
-])
-
 dnl Cg framework OSX -- replace with GLSL someday!
 CG_CFLAGS=
 CG_LDFLAGS=
