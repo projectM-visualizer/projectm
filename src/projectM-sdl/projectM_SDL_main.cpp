@@ -11,6 +11,28 @@
 
 #include "pmSDL.hpp"
 
+// return path to config file to use
+std::string getConfigFilePath() {
+    const char *path = DATADIR_PATH;
+    struct stat sb;
+    
+    // check if datadir exists.
+    // it should exist if this application was installed. if not, assume we're developing it and use currect directory
+    if (stat(path, &sb) != 0) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "Could not open datadir path %s.\n", DATADIR_PATH);
+    }
+    
+    std::string configFilePath = path;
+    configFilePath += "/config.inp";
+    
+    // check if config file exists
+    if (stat(configFilePath.c_str(), &sb) != 0) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "No config file %s found.\n", configFilePath.c_str());
+    }
+    
+    return configFilePath;
+}
+
 int main(int argc, char *argv[]) {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
@@ -24,7 +46,6 @@ int main(int argc, char *argv[]) {
     SDL_GetDisplayUsableBounds(0, &initialWindowBounds);
     int width = initialWindowBounds.w;
     int height = initialWindowBounds.h;
-    float heightWidthRatio = (float)height / (float)width;
 
     SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_RESIZABLE);
     SDL_Renderer *rend = SDL_CreateRenderer(win, 0, SDL_RENDERER_ACCELERATED);
@@ -35,29 +56,9 @@ int main(int argc, char *argv[]) {
     SDL_SetWindowTitle(win, "projectM Visualizer");
     
     // load configuration file
+    std::string configFilePath = getConfigFilePath();
 
-    // init projectM
-    projectM::Settings settings;
-    settings.windowWidth = width;
-    settings.windowHeight = height;
-    settings.meshX = 500;
-    settings.meshY = settings.meshX * heightWidthRatio;
-    settings.fps   = FPS;
-    settings.textureSize = 2048;  // idk?
-    settings.smoothPresetDuration = 3; // seconds
-    settings.presetDuration = 7; // seconds
-    settings.beatSensitivity = 0.8;
-    settings.aspectCorrection = 1;
-    settings.easterEgg = 0; // ???
-    settings.shuffleEnabled = 1;
-    settings.softCutRatingsEnabled = 1; // ???
-    // get path to our app
-    std::string base_path = SDL_GetBasePath();
-    settings.presetURL = base_path + "presets/presets_tryptonaut";
-    settings.menuFontURL = base_path + "fonts/Vera.ttf";
-    settings.titleFontURL = base_path + "fonts/Vera.ttf";
-
-    projectMSDL *app = new projectMSDL(settings, 0);
+    projectMSDL *app = new projectMSDL(configFilePath, 0);
     app->init(win, rend);
 
     // get an audio input device
