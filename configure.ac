@@ -100,6 +100,7 @@ AM_CONDITIONAL([ENABLE_QT], [test "$enable_qt" = yes])
 
 
 my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wmissing-declarations -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits "
+my_CFLAGS+='-DDATADIR_PATH=\""$(pkgdatadir)"\"'
 AC_SUBST([my_CFLAGS])
 
 # check OS
