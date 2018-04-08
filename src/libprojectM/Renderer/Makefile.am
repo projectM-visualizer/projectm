@@ -41,8 +41,7 @@ libRenderer_la_SOURCES = \
 
 libRenderer_la_CPPFLAGS = ${my_CFLAGS} \
 	-I$(top_srcdir)/src/libprojectM \
-	${FTGL_CFLAGS} ${CG_CFLAGS} \
-  -DDATADIR_PATH='"${pkgdatadir}"'
+	${FTGL_CFLAGS} ${CG_CFLAGS}
 
 libRenderer_la_LDFLAGS = \
   ${FTGL_LIBS}  ${CG_LDFLAGS}

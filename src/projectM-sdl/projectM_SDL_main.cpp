@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
         SDL_Log("SDL version 2.0.5 or greater is required. You have %i.%i.%i", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
         return 1;
     }
-    
+
     // default window size to usable bounds (e.g. minus menubar and dock)
     SDL_Rect initialWindowBounds;
     SDL_GetDisplayUsableBounds(0, &initialWindowBounds);
@@ -34,11 +34,13 @@ int main(int argc, char *argv[]) {
     }
     SDL_SetWindowTitle(win, "projectM Visualizer");
     
+    // load configuration file
+
     // init projectM
     projectM::Settings settings;
     settings.windowWidth = width;
     settings.windowHeight = height;
-    settings.meshX = 200;
+    settings.meshX = 500;
     settings.meshY = settings.meshX * heightWidthRatio;
     settings.fps   = FPS;
     settings.textureSize = 2048;  // idk?
@@ -51,17 +53,17 @@ int main(int argc, char *argv[]) {
     settings.softCutRatingsEnabled = 1; // ???
     // get path to our app
     std::string base_path = SDL_GetBasePath();
-    settings.presetURL = base_path + "presets";
+    settings.presetURL = base_path + "presets/presets_tryptonaut";
     settings.menuFontURL = base_path + "fonts/Vera.ttf";
     settings.titleFontURL = base_path + "fonts/Vera.ttf";
 
     projectMSDL *app = new projectMSDL(settings, 0);
     app->init(win, rend);
-    
+
     // get an audio input device
     app->openAudioInput();
     app->beginAudioCapture();
-    
+
     // standard main loop
     const Uint32 frame_delay = 1000/FPS;
     Uint32 last_time = SDL_GetTicks();
@@ -73,6 +75,6 @@ int main(int argc, char *argv[]) {
             SDL_Delay(frame_delay - elapsed);
         last_time = SDL_GetTicks();
     }
-    
+
     return PROJECTM_SUCCESS;
 }
