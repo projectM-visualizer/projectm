@@ -111,7 +111,6 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	textureManager->setTexture("noise_perlin", noise_texture_perlin, 512, 512);
 
-	/*
 	 glGenTextures( 1, &noise_texture_lq_vol );
 	 glBindTexture( GL_TEXTURE_3D, noise_texture_lq_vol );
 	 glTexImage3D(GL_TEXTURE_3D,0,4,32,32,32,0,GL_LUMINANCE,GL_FLOAT,noise->noise_lq_vol);
@@ -129,11 +128,9 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	 textureManager->setTexture("noisevol_hq", noise_texture_hq_vol, 8, 8);
-	 */
-
 }
 
-bool ShaderEngine::LoadCgProgram(Shader &shader)
+bool ShaderEngine::LoadCgProgram(Shader &shader, std::string &shaderFilename)
 {
 	//if (p != NULL) cgDestroyProgram(p);
 	//p = NULL;
@@ -283,13 +280,13 @@ bool ShaderEngine::LoadCgProgram(Shader &shader)
 		CGprogram p = cgCreateProgram(myCgContext, CG_SOURCE, temp.c_str(),//temp.c_str(),
 				myCgProfile, "projectm", NULL);
 
-		checkForCgCompileError("creating shader program");
+		checkForCgCompileError(shaderFilename, "creating shader program");
 		if (p == NULL)
 			return false;
 
 		cgGLLoadProgram(p);
 
-		if (checkForCgCompileError("loading shader program"))
+		if (checkForCgCompileError(shaderFilename, "loading shader program"))
 		{
 			p = NULL;
 			return false;
@@ -303,15 +300,15 @@ bool ShaderEngine::LoadCgProgram(Shader &shader)
 		return false;
 }
 
-bool ShaderEngine::checkForCgCompileError(const char *situation)
+bool ShaderEngine::checkForCgCompileError(std::string &context, const char *situation)
 {
 	CGerror error;
 	const char *string = cgGetLastErrorString(&error);
 	error = cgGetError();
 	if (error != CG_NO_ERROR)
 	{
-		std::cout << "Cg: Compilation Error" << std::endl;
-		std::cout << "Cg: %" << situation << " - " << string << std::endl;
+		std::cout << "Cg: Compilation Error For " << context << std::endl;
+		std::cout << "Cg: " << situation << " - " << string << std::endl;
 		if (error == CG_COMPILER_ERROR)
 		{
 			std::cout << "Cg: " << cgGetLastListing(myCgContext) << std::endl;
@@ -387,7 +384,8 @@ void ShaderEngine::SetupCg()
 //std::cout<< blurProgram.c_str()<<std::endl;
 	blur1Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blur1", NULL);
 
-	checkForCgCompileError("creating blur1 program");
+    std::string blur1Filename = "blur1";
+    checkForCgCompileError(blur1Filename, "creating blur1 program");
 	if (blur1Program == NULL)
 		exit(1);
 	cgGLLoadProgram(blur1Program);
@@ -396,7 +394,8 @@ void ShaderEngine::SetupCg()
 
 	blur2Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blurVert", NULL);
 
-	checkForCgCompileError("creating blur2 program");
+    std::string blur2Filename = "blur2";
+	checkForCgCompileError(blur2Filename, "creating blur2 program");
 	if (blur2Program == NULL)
 		exit(1);
 	cgGLLoadProgram(blur2Program);
@@ -638,14 +637,14 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
 	}
 }
 
-void ShaderEngine::loadShader(Shader &shader)
+void ShaderEngine::loadShader(Shader &shader, std::string &shaderFilename)
 {
 	if (shader.enabled)
 	{
 		cgDestroyProgram(programs[&shader]);
 		programs.erase(&shader);
 	}
-	shader.enabled = LoadCgProgram(shader);
+	shader.enabled = LoadCgProgram(shader, shaderFilename);
 }
 
 void ShaderEngine::disableShader()

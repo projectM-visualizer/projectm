@@ -66,8 +66,8 @@ class ShaderEngine
    std::string cgTemplate;
    std::string blurProgram;
 
- bool LoadCgProgram(Shader &shader);
- bool checkForCgCompileError(const char *situation);
+ bool LoadCgProgram(Shader &shader, std::string &shaderFilename);
+ bool checkForCgCompileError(std::string &context, const char *situation);
  void checkForCgError(const char *situation);
 
  void SetupCg();
@@ -85,7 +85,7 @@ public:
 	virtual ~ShaderEngine();
 #ifdef USE_CG
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext, const int texsize);
-	void loadShader(Shader &shader);
+	void loadShader(Shader &shader, std::string &shaderFilename);
 
 	void setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect, TextureManager *textureManager);
 	void enableShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);

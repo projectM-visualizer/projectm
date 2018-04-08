@@ -20,7 +20,8 @@ public:
 
     bool enabled;
 
-	std::string programSource;
+    std::string programSource;
+    std::string presetPath;
 
 	Shader();
 };
