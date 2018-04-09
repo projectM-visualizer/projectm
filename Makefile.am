@@ -1,4 +1,5 @@
 ACLOCAL_AMFLAGS = -I m4
+AM_CPPFLAGS=-DDATADIR_PATH='"${pkgdatadir}"'
 SUBDIRS=src
 PRESETSDIR = presets
 EXTRA_DIST=README.md AUTHORS.txt presets fonts src/libprojectM/Renderer/blur.cg src/libprojectM/Renderer/projectM.cg $(PRESETSDIR)

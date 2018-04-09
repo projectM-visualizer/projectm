@@ -4,6 +4,7 @@ CLEANFILES=
 SUBDIRS=Renderer NativePresetFactory MilkdropPresetFactory
 
 AM_CPPFLAGS = \
+  $(my_CFLAGS) \
 	-include $(top_builddir)/config.h \
 	-DSYSCONFDIR=\""$(sysconfdir)"\" \
 	-I$(top_srcdir)/src/libprojectM \

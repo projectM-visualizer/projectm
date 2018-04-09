@@ -544,9 +544,11 @@ static void *thread_callback(void *prjm) {
     /** Resets OpenGL state */
     void projectM::projectM_resetGL ( int w, int h )
     {
-
+        /** sanity check **/
+        assert(w > 0);
+        assert(h > 0);
+        
         /** Stash the new dimensions */
-
         _settings.windowWidth = w;
         _settings.windowHeight = h;
         renderer->reset ( w,h );
@@ -611,7 +613,7 @@ static void *thread_callback(void *prjm) {
         if (m_presetChooser->empty())
         {
             //std::cerr << "[projectM] warning: no valid files found in preset directory \""
-            //<< m_presetLoader->directoryName() << "\"" << std::endl;
+            ///< m_presetLoader->directoryName() << "\"" << std::endl;
         }
 
         _matcher = new RenderItemMatcher();
@@ -853,7 +855,7 @@ std::string projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
     {
         bool atEndPosition = false;
 
-        int newSelectedIndex;
+        int newSelectedIndex = 0;
 
 
         if (*m_presetPos == m_presetChooser->end()) // Case: preset not selected
