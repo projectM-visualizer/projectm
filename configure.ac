@@ -36,6 +36,23 @@ AS_IF([test "x$enable_sdl" = "xyes"], [
   AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
 ])
 
+dnl Threading
+AC_ARG_ENABLE([threading],
+AS_HELP_STRING([--enable-threading], [multhreading]),
+[], [enable_threading=yes])
+AS_IF([test "x$enable_threading" = "xyes"], [
+  m4_include([m4/autoconf-archive/ax_pthread.m4])
+  AX_PTHREAD([
+    AC_DEFINE([USE_THREADS], [1], [Define USE_THREADS])
+    LIBS="$LIBS $PTHREAD_LIBS $PTHREAD_CFLAGS"
+    CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+    CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
+    echo "LIBS=$LIBS"
+  ], [
+    AC_MSG_ERROR([pthreads not found])
+  ])
+])
+
 dnl FTGL
 AC_ARG_ENABLE([ftgl],
   AS_HELP_STRING([--enable-ftgl], [FTGL support to display text such as preset title, stats, fps, ...]),
@@ -142,6 +159,7 @@ Applications:
 =====
 
 libprojectM:            yes
+Threading:              ${enable_threading}
 SDL:                    ${enable_sdl}
 Qt & Pulseaudio:        ${enable_qt}
 FTGL:                   ${enable_ftgl}
