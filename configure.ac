@@ -1,4 +1,4 @@
-AC_INIT([projectM], [2.2.1], [mischa@mvstg.biz], [projectM], [https://github.com/revmischa/projectm])
+AC_INIT([projectM], [2.2.2], [mischa@mvstg.biz], [projectM], [https://github.com/revmischa/projectm])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects tar-pax])
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
@@ -100,6 +100,7 @@ AM_CONDITIONAL([ENABLE_QT], [test "$enable_qt" = yes])
 
 
 my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wmissing-declarations -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits "
+my_CFLAGS+='-DDATADIR_PATH=\""$(pkgdatadir)"\"'
 AC_SUBST([my_CFLAGS])
 
 # check OS
@@ -132,7 +133,7 @@ libdir:                 ${libdir}
 includedir:             ${includedir}
 
 compiler:               ${CC}
-cflags:                 ${CFLAGS}
+cflags:                 ${CFLAGS} ${my_CFLAGS}
 ldflags:                ${LDFLAGS}
 
 - - -
@@ -144,5 +145,5 @@ libprojectM:            yes
 SDL:                    ${enable_sdl}
 Qt & Pulseaudio:        ${enable_qt}
 FTGL:                   ${enable_ftgl}
-CG:                     ${enable_cg}
+Cg:                     ${enable_cg}
 ])

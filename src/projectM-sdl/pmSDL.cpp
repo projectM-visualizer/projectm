@@ -3,7 +3,6 @@
 //  SDLprojectM
 //
 //  Created by Mischa Spiegelmock on 2017-09-18.
-//  Copyright © 2017 MVS Technical Group Inc. All rights reserved.
 //
 
 #include "pmSDL.hpp"
@@ -99,7 +98,7 @@ void projectMSDL::beginAudioCapture() {
     unsigned int maxSamples = audioChannelsCount * audioSampleCount;
     pcmBuffer = (unsigned char *) malloc(maxSamples);
     SDL_PauseAudioDevice(audioDeviceID, false);
-    this->pcm()->initPCM(2048);
+    pcm()->initPCM(2048);
 }
 
 void projectMSDL::endAudioCapture() {
@@ -115,7 +114,7 @@ void projectMSDL::maximize() {
     }
 
     SDL_SetWindowSize(win, dm.w, dm.h);
-    this->resize(dm.w, dm.h);
+    resize(dm.w, dm.h);
 }
 
 void projectMSDL::toggleFullScreen() {
@@ -178,9 +177,9 @@ void projectMSDL::addFakePCM() {
     pcm()->addPCM16(pcm_data);
 }
 
-void projectMSDL::resize(unsigned int width, unsigned int height) {
-    this->width = width;
-    this->height = height;
+void projectMSDL::resize(unsigned int width_, unsigned int height_) {
+    width = width_;
+    height = height_;
     settings.windowWidth = width;
     settings.windowHeight = height;
     projectM_resetGL(width, height);
@@ -218,8 +217,15 @@ void projectMSDL::renderFrame() {
 }
 
 projectMSDL::projectMSDL(Settings settings, int flags) : projectM(settings, flags) {
-    width = settings.windowWidth;
-    height = settings.windowHeight;
+    width = getWindowWidth();
+    height = getWindowHeight();
+    done = 0;
+    isFullScreen = false;
+}
+
+projectMSDL::projectMSDL(std::string config_file, int flags) : projectM(config_file, flags) {
+    width = getWindowWidth();
+    height = getWindowHeight();
     done = 0;
     isFullScreen = false;
 }
