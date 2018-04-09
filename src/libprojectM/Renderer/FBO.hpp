@@ -28,7 +28,7 @@
 #ifndef _RENDERTARGET_H
 #define _RENDERTARGET_H
 
-#include <projectM-opengl.h>
+#include "projectM-opengl.h"
 
 typedef enum { SCALE_NEAREST, SCALE_MAGNIFY, SCALE_MINIFY } TextureScale;
 

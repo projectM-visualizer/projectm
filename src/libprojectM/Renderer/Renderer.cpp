@@ -118,8 +118,8 @@ void Renderer::SetPipeline(Pipeline &pipeline)
 	currentPipe = &pipeline;
 #ifdef USE_CG
 	shaderEngine.reset();
-	shaderEngine.loadShader(pipeline.warpShader);
-	shaderEngine.loadShader(pipeline.compositeShader);
+	shaderEngine.loadShader(pipeline.warpShader, pipeline.warpShaderFilename);
+	shaderEngine.loadShader(pipeline.compositeShader, pipeline.compositeShaderFilename);
 #endif
 }
 
