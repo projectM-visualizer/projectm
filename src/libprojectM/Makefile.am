@@ -12,7 +12,7 @@ AM_CPPFLAGS = \
 	$(FTGL_CFLAGS) $(CG_CFLAGS)
 
 # system headers/libraries/data to install
-include_HEADERS = projectM.hpp
+include_HEADERS = projectM.hpp Common.hpp dlldefs.h event.h fatal.h PCM.hpp
 lib_LTLIBRARIES = libprojectM.la  # public, possibly-shared library
 
 # link flags
