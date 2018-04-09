@@ -82,7 +82,7 @@ There are many other applications that make use of libprojectM that can be found
 
 # Todo
 * Top priority has for a long time been to [port the calls from OpenGL immediate-mode (old-school) to be compatible with OpenGL ES](https://github.com/projectM-visualizer/projectm/issues/11), using [vertex buffer objects](http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-2.1:-Buffers-and-Textures.html). There's a [todo list of function calls to replace](https://github.com/projectM-visualizer/projectm/blob/gles/glES-porting.txt).
-* [macOS Sierra broke the iTunes plugin somehow](https://github.com/projectM-visualizer/projectm/issues/7)
+* [macOS Sierra broke the iTunes plugin somehow](https://github.com/projectM-visualizer/projectm/issues/7) (this is semi-fixed)
 * Currently shader support is done via nVidia's Cg shader toolkit. This is ancient and no longer supported and very lame. [Use standard OpenGL facilities for compiling and executing the shader-based presets.](https://github.com/projectM-visualizer/projectm/pull/26)
 * Support for the missing Milkdrop waveforms to get full compatibility with Milkdrop presets.
 * Steal cool stuff from the recently-released Milkdrop source.
