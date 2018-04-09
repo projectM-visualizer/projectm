@@ -45,6 +45,8 @@ AS_IF([test "x$enable_threading" = "xyes"], [
   AX_PTHREAD([
     AC_DEFINE([USE_THREADS], [1], [Define USE_THREADS])
     LIBS="$LIBS $PTHREAD_LIBS $PTHREAD_CFLAGS"
+    CFLAGS="$CFLAGS $PTHREAD_CFLAGS"
+    CXXFLAGS="$CXXFLAGS $PTHREAD_CFLAGS"
     echo "LIBS=$LIBS"
   ], [
     AC_MSG_ERROR([pthreads not found])
