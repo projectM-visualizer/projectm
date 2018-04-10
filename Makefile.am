@@ -17,9 +17,6 @@ pm_font__DATA = fonts/Vera.ttf fonts/VeraMono.ttf
 pm_shaders__DATA = src/libprojectM/Renderer/blur.cg \
                    src/libprojectM/Renderer/projectM.cg
 
-# system headers/libraries/data to install
-include_HEADERS = config.h
-
 # find and install all preset files
 install-data-local:
 	test -z $(pkgdatadir) || $(MKDIR_P) $(pm_presets_dir)
