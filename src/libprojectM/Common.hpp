@@ -30,7 +30,7 @@
 #include <typeinfo>
 #include <cstdarg>
 #include <cassert>
-#include "config.h"
+
 #ifdef _MSC_sVER
 #define strcasecmp(s, t) _strcmpi(s, t)
 #endif
