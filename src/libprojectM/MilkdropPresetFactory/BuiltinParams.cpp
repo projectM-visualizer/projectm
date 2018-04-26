@@ -367,8 +367,8 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("mv_x", (void*)&presetOutputs.mv.x_num,  NULL,P_FLAG_NONE, 0.0, 64.0, 0.0, "nmotionvectorsx");
   load_builtin_param_float("mv_y", (void*)&presetOutputs.mv.y_num,  NULL,P_FLAG_NONE, 0.0, 48.0, 0.0, "nmotionvectorsy");
   load_builtin_param_float("mv_l", (void*)&presetOutputs.mv.length,  NULL,P_FLAG_NONE, 0.0, 5.0, 0.0, "");
-  load_builtin_param_float("mv_dy", (void*)&presetOutputs.mv.x_offset, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
-  load_builtin_param_float("mv_dx", (void*)&presetOutputs.mv.y_offset,  NULL,P_FLAG_NONE, 0.0, 1.0, -1.0, "");
+  load_builtin_param_float("mv_dx", (void*)&presetOutputs.mv.x_offset, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
+  load_builtin_param_float("mv_dy", (void*)&presetOutputs.mv.y_offset,  NULL,P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("mv_a", (void*)&presetOutputs.mv.a,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, "");
 
   load_builtin_param_float("time", (void*)&presetInputs.time,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0.0, "");
