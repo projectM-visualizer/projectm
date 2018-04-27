@@ -19,6 +19,7 @@ AC_CONFIG_FILES([
   src/libprojectM/Renderer/Makefile
   src/libprojectM/NativePresetFactory/Makefile
   src/libprojectM/MilkdropPresetFactory/Makefile
+  src/libprojectM/libprojectM.pc
   src/NativePresets/Makefile
   src/projectM-sdl/Makefile
   src/projectM-qt/Makefile
