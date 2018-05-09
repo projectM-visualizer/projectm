@@ -27,21 +27,6 @@
 #include <iostream>
 #include "Eval.hpp"
 
-float GenExpr::eval ( int mesh_i, int mesh_j )
-{
-	if (item == 0)
-		return EVAL_ERROR;
-
-	switch ( this->type )
-	{  /* N.B. this code is responsible for 75% of all CPU time. making it faster will help a lot. */
-		case VAL_T:
-		case PREFUN_T:
-		case TREE_T:
-			return item->eval( mesh_i, mesh_j );
-		default:
-			return EVAL_ERROR;
-	}
-}
 
 /* Evaluates functions in prefix form */
 float PrefunExpr::eval ( int mesh_i, int mesh_j )
@@ -51,7 +36,7 @@ float PrefunExpr::eval ( int mesh_i, int mesh_j )
 
 	float * arg_list;
 	float * argp;
-	GenExpr **expr_listp = expr_list;
+	Expr **expr_listp = expr_list;
 
 
 	if (this->num_args > 10) {
@@ -68,7 +53,7 @@ float PrefunExpr::eval ( int mesh_i, int mesh_j )
 	/* Evaluate each argument before calling the function itself */
 	for ( int i = 0; i < num_args; i++ )
 	{
-		*(argp++) = (*(expr_listp++))->eval_gen_expr ( mesh_i, mesh_j );
+		*(argp++) = (*(expr_listp++))->eval ( mesh_i, mesh_j );
 		//printf("numargs %x", arg_list[i]);
 	}
 	/* Now we call the function, passing a list of
@@ -100,47 +85,47 @@ public:
 
 /* Evaluates a value expression */
 float ParameterExpr::eval ( int mesh_i, int mesh_j )
+{
+	switch ( term.param->type )
 	{
-		switch ( term.param->type )
-		{
 
-			case P_TYPE_BOOL:
+		case P_TYPE_BOOL:
 
 
-				return ( float ) ( * ( ( bool* ) ( term.param->engine_val ) ) );
-			case P_TYPE_INT:
+			return ( float ) ( * ( ( bool* ) ( term.param->engine_val ) ) );
+		case P_TYPE_INT:
 
 
-				return ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) );
-			case P_TYPE_DOUBLE:
+			return ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) );
+		case P_TYPE_DOUBLE:
 
 
-				if ( term.param->matrix_flag | ( term.param->flags & P_FLAG_ALWAYS_MATRIX ) )
+			if ( term.param->matrix_flag | ( term.param->flags & P_FLAG_ALWAYS_MATRIX ) )
+			{
+
+				/* Sanity check the matrix is there... */
+				assert ( term.param->matrix != NULL );
+
+				/// @slow boolean check could be expensive in this critical (and common) step of evaluation
+				if ( mesh_i >= 0 )
 				{
-
-					/* Sanity check the matrix is there... */
-					assert ( term.param->matrix != NULL );
-
-					/// @slow boolean check could be expensive in this critical (and common) step of evaluation
-					if ( mesh_i >= 0 )
+					if ( mesh_j >= 0 )
 					{
-						if ( mesh_j >= 0 )
-						{
-							return ( ( ( float** ) term.param->matrix ) [mesh_i][mesh_j] );
-						}
-						else
-						{
-							return ( ( ( float* ) term.param->matrix ) [mesh_i] );
-						}
+						return ( ( ( float** ) term.param->matrix ) [mesh_i][mesh_j] );
 					}
-					//assert(mesh_i >=0);
+					else
+					{
+						return ( ( ( float* ) term.param->matrix ) [mesh_i] );
+					}
 				}
-				//std::cout << term.param->name << ": " << (*((float*)term.param->engine_val)) << std::endl;
-				return * ( ( float* ) ( term.param->engine_val ) );
-			default:
-				return EVAL_ERROR;
-		}
+				//assert(mesh_i >=0);
+			}
+			//std::cout << term.param->name << ": " << (*((float*)term.param->engine_val)) << std::endl;
+			return * ( ( float* ) ( term.param->engine_val ) );
+		default:
+			return EVAL_ERROR;
 	}
+}
 
 
 /* This could be optimized a lot more if we could return an Expr instead of a TreeExpr */
@@ -151,14 +136,14 @@ TreeExpr * TreeExpr::create( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _
 	if (_infix_op == NULL)
 	{
 		if (_gen_expr == NULL)
-			_gen_expr = GenExpr::const_to_expr(0.0f);
+			_gen_expr = Expr::const_to_expr(0.0f);
 	}
 	else
 	{
 		if (_left == NULL)
-			_left = new TreeExpr(NULL, GenExpr::const_to_expr(defautFloat), NULL, NULL);
+			_left = new TreeExpr(NULL, Expr::const_to_expr(defautFloat), NULL, NULL);
 		if (_right == NULL)
-			_right = new TreeExpr(NULL, GenExpr::const_to_expr(defautFloat), NULL, NULL);
+			_right = new TreeExpr(NULL, Expr::const_to_expr(defautFloat), NULL, NULL);
 	}
 	return new TreeExpr( _infix_op, _gen_expr, _left, _right);
 }
@@ -212,33 +197,16 @@ float TreeExpr::eval ( int mesh_i, int mesh_j )
 }
 
 /* Converts a float value to a general expression */
-GenExpr * GenExpr::const_to_expr ( float val )
+Expr * Expr::const_to_expr ( float val )
 {
-
-	GenExpr * gen_expr;
-	ValExpr * val_expr;
 	Term term;
-
 	term.constant = val;
-
-	if ( ( val_expr = ValExpr::create( CONSTANT_TERM_T, &term ) ) == NULL )
-		return NULL;
-
-	gen_expr = new GenExpr ( VAL_T, val_expr );
-
-	if ( gen_expr == NULL )
-	{
-		delete val_expr;
-	}
-
-	return gen_expr;
+	return ValExpr::create( CONSTANT_TERM_T, &term );
 }
 
 /* Converts a regular parameter to an expression */
-GenExpr * GenExpr::param_to_expr ( Param * param )
+Expr * Expr::param_to_expr ( Param * param )
 {
-
-	GenExpr * gen_expr = NULL;
 	ValExpr * val_expr = NULL;
 	Term term;
 
@@ -260,39 +228,19 @@ GenExpr * GenExpr::param_to_expr ( Param * param )
 
 
 	term.param = param;
-	if ( ( val_expr = ValExpr::create( PARAM_TERM_T, &term ) ) == NULL )
-		return NULL;
-
-	if ( ( gen_expr = new GenExpr ( VAL_T, val_expr ) ) == NULL )
-	{
-		delete val_expr;
-		return NULL;
-	}
-	return gen_expr;
+	return ValExpr::create( PARAM_TERM_T, &term );
 }
 
 /* Converts a prefix function to an expression */
-GenExpr * GenExpr::prefun_to_expr ( float ( *func_ptr ) ( void * ), GenExpr ** expr_list, int num_args )
+Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( void * ), Expr ** expr_list, int num_args )
 {
-
-	GenExpr * gen_expr;
 	PrefunExpr * prefun_expr;
 
 	prefun_expr = new PrefunExpr();
-
-	if ( prefun_expr == NULL )
-		return NULL;
-
 	prefun_expr->num_args = num_args;
 	prefun_expr->func_ptr = ( float ( * ) ( void* ) ) func_ptr;
 	prefun_expr->expr_list = expr_list;
-
-	gen_expr = new GenExpr ( PREFUN_T, prefun_expr );
-
-	if ( gen_expr == NULL )
-		delete prefun_expr;
-
-	return gen_expr;
+	return prefun_expr;
 }
 
 /* Creates a new tree expression */
@@ -316,27 +264,9 @@ ValExpr *ValExpr::create ( int _type , Term * _term )
 		return new ParameterExpr( _type, _term );	
 }
 
-/* Creates a new general expression */
-
-GenExpr::GenExpr ( int _type, Expr * _item ) :type ( _type ), item ( _item ) {}
-
-/* Frees a general expression */
-GenExpr::~GenExpr()
-{
-	switch ( type )
-	{
-		case VAL_T:
-		case PREFUN_T:
-		case TREE_T:
-			delete item;
-			break;
-	}
-}
-
 /* Frees a function in prefix notation */
 PrefunExpr::~PrefunExpr()
 {
-
 	int i;
 
 	/* Free every element in expression list */

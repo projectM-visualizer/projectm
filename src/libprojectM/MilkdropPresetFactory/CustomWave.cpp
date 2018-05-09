@@ -450,7 +450,7 @@ CustomWave::~CustomWave()
 
 
 // Comments: index is not passed, so we assume monotonic increment by 1 is ok here
-int CustomWave::add_per_point_eqn(char * name, GenExpr * gen_expr)
+int CustomWave::add_per_point_eqn(char * name, Expr * gen_expr)
 {
 
   PerPointEqn * per_point_eqn;

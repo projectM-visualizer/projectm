@@ -65,10 +65,14 @@ public:
   virtual ~Expr() {};
   virtual bool isConstant(int mesh_i, int mesh_j) { return false; };
   virtual float eval(int mesh_i, int mesh_j) = 0;
+
+  static Expr *const_to_expr( float val );
+  static Expr *param_to_expr( Param *param );
+  static Expr *prefun_to_expr( float (*func_ptr)(void *), Expr **expr_list, int num_args );
 };
 
-/* General Expression Type */
-class GenExpr : public Expr
+/* General Expression Type
+class GenExpr : public GenExpr
 {
 public:
   int type;
@@ -79,11 +83,7 @@ public:
   GenExpr( int type, Expr *item );
   float eval(int mesh_i, int mesh_j);
   float eval_gen_expr(int mesh_i, int mesh_j) { return eval(mesh_i, mesh_j); }
- 
-  static GenExpr *const_to_expr( float val );
-  static GenExpr *param_to_expr( Param *param );
-  static GenExpr *prefun_to_expr( float (*func_ptr)(void *), GenExpr **expr_list, int num_args );
-};
+ };  */
 
 /* Value expression, contains a term union */
 class ValExpr : public Expr
@@ -125,7 +125,7 @@ class PrefunExpr : public Expr
 public:
   float (*func_ptr)(void*);
   int num_args;
-  GenExpr **expr_list;
+  Expr **expr_list;
   PrefunExpr();
   ~PrefunExpr();
 
