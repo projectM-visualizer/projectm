@@ -84,7 +84,7 @@ public:
     static int init_infix_ops();
     static int destroy_infix_ops();
     void reset_engine_vars();
-    
+
     GenExpr * clone_gen_expr(GenExpr * gen_expr);
     TreeExpr * clone_tree_expr(TreeExpr * tree_expr);
     ValExpr * clone_val_expr(ValExpr * val_expr);

@@ -999,7 +999,7 @@ TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root)
 
   if (*root == NULL)
   {
-    new_root = new TreeExpr(infix_op, NULL, NULL, NULL);
+    new_root = TreeExpr::create(infix_op, NULL, NULL, NULL);
     *root = new_root;
     return new_root;
   }
@@ -1009,7 +1009,7 @@ TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root)
 
   if ((*root)->infix_op == NULL)
   {
-    new_root = new TreeExpr(infix_op, NULL, *root, NULL);
+    new_root = TreeExpr::create(infix_op, NULL, *root, NULL);
     (*root) = new_root;
     return new_root;
   }
@@ -1020,7 +1020,7 @@ TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root)
 
   if (infix_op->precedence >= (*root)->infix_op->precedence)
   {
-    new_root = new TreeExpr(infix_op, NULL, *root, NULL);
+    new_root = TreeExpr::create(infix_op, NULL, *root, NULL);
     (*root) = new_root;
     return new_root;
   }
@@ -1053,7 +1053,7 @@ TreeExpr * Parser::insert_gen_expr(GenExpr * gen_expr, TreeExpr ** root)
 
   if (*root == NULL)
   {
-    new_root = new TreeExpr(NULL, gen_expr, NULL, NULL);
+    new_root = TreeExpr::create(NULL, gen_expr, NULL, NULL);
     *root = new_root;
     return new_root;
   }
@@ -1085,7 +1085,7 @@ int Parser::insert_gen_rec(GenExpr * gen_expr, TreeExpr * root)
 
   if ((root->left == NULL) && (root->infix_op != NULL))
   {
-    root->left = new TreeExpr(NULL, gen_expr, NULL, NULL);
+    root->left = TreeExpr::create(NULL, gen_expr, NULL, NULL);
     return PROJECTM_SUCCESS;
   }
 
@@ -1095,7 +1095,7 @@ int Parser::insert_gen_rec(GenExpr * gen_expr, TreeExpr * root)
 
   if ((root->right == NULL) && (root->infix_op != NULL))
   {
-    root->right = new TreeExpr(NULL, gen_expr, NULL, NULL);
+    root->right = TreeExpr::create(NULL, gen_expr, NULL, NULL);
     return PROJECTM_SUCCESS;
   }
 
@@ -1131,14 +1131,14 @@ int Parser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root)
      I don't think this will ever happen */
   if (root->left == NULL)
   {
-    root->left = new TreeExpr(infix_op, NULL, root->left, NULL);
+    root->left = TreeExpr::create(infix_op, NULL, root->left, NULL);
     return PROJECTM_SUCCESS;
   }
 
   /* Right tree is empty, attach this operator to it */
   if (root->right == NULL)
   {
-    root->right = new TreeExpr(infix_op, NULL, root->right, NULL);
+    root->right = TreeExpr::create(infix_op, NULL, root->right, NULL);
     return PROJECTM_SUCCESS;
   }
 
@@ -1151,7 +1151,7 @@ int Parser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root)
 
   if (root->right->infix_op == NULL)
   {
-    root->right = new TreeExpr(infix_op, NULL, root->right, NULL);
+    root->right = TreeExpr::create(infix_op, NULL, root->right, NULL);
     return PROJECTM_SUCCESS;
   }
 
@@ -1162,7 +1162,7 @@ int Parser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root)
 
   /* Otherwise, insert the operator here */
 
-  root->right = new TreeExpr(infix_op, NULL, root->right, NULL);
+  root->right = TreeExpr::create(infix_op, NULL, root->right, NULL);
   return PROJECTM_SUCCESS;
 
 }
@@ -1212,7 +1212,7 @@ GenExpr * Parser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * t
   case tRPr:
   case tComma:
     if (PARSE_DEBUG) printf("parse_infix_op: terminal found (LINE %d)\n", line_count);
-    gen_expr = new GenExpr(TREE_T, (void*)tree_expr);
+    gen_expr = new GenExpr(TREE_T, tree_expr);
     assert(gen_expr);
     return gen_expr;
   default:
