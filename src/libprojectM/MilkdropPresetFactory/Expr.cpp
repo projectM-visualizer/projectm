@@ -27,34 +27,25 @@
 #include <iostream>
 #include "Eval.hpp"
 
-float GenExpr::eval_gen_expr ( int mesh_i, int mesh_j )
+float GenExpr::eval ( int mesh_i, int mesh_j )
 {
-	float l;
-
 	if (item == 0)
 		return EVAL_ERROR;
 
 	switch ( this->type )
 	{  /* N.B. this code is responsible for 75% of all CPU time. making it faster will help a lot. */
 		case VAL_T:
-			return ( ( ValExpr* ) item )->eval_val_expr ( mesh_i, mesh_j );
 		case PREFUN_T:
-			l = ( ( PrefunExpr * ) item )->eval_prefun_expr ( mesh_i, mesh_j );
-			//if (EVAL_DEBUG) DWRITE( "eval_gen_expr: prefix function return value: %f\n", l);
-			return l;
 		case TREE_T:
-			return ( ( TreeExpr* ) ( item ) )->eval_tree_expr ( mesh_i, mesh_j );
+			return item->eval( mesh_i, mesh_j );
 		default:
 			return EVAL_ERROR;
 	}
-
 }
 
 /* Evaluates functions in prefix form */
-float PrefunExpr::eval_prefun_expr ( int mesh_i, int mesh_j )
+float PrefunExpr::eval ( int mesh_i, int mesh_j )
 {
-
-
 	assert ( func_ptr );
 	float arg_list_stk[10];
 
@@ -92,19 +83,23 @@ float PrefunExpr::eval_prefun_expr ( int mesh_i, int mesh_j )
 }
 
 
-/* Evaluates a value expression */
-float ValExpr::eval_val_expr ( int mesh_i, int mesh_j )
+// private subclasses of ValExpr -- ConstantExpr, ParameterExpr
+class ConstantExpr : public ValExpr
 {
+public:
+	ConstantExpr( int type, Term *term ) : ValExpr(type,term) {}
+	float eval(int mesh_i, int mesh_j ) { return term.constant; }
+};
 
+class ParameterExpr : public ValExpr
+{
+public:
+	ParameterExpr( int type, Term *term ) : ValExpr(type,term) {}
+	float eval(int mesh_i, int mesh_j );
+};
 
-	/* Value is a constant, return the float value */
-	if ( type == CONSTANT_TERM_T )
-	{
-		return ( term.constant );
-	}
-
-	/* Value is variable, dereference it */
-	if ( type == PARAM_TERM_T )
+/* Evaluates a value expression */
+float ParameterExpr::eval ( int mesh_i, int mesh_j )
 	{
 		switch ( term.param->type )
 		{
@@ -146,48 +141,44 @@ float ValExpr::eval_val_expr ( int mesh_i, int mesh_j )
 				return EVAL_ERROR;
 		}
 	}
-	/* Unknown type, return failure */
-	return PROJECTM_FAILURE;
+
+
+/* This could be optimized a lot more if we could return an Expr instead of a TreeExpr */
+TreeExpr * TreeExpr::create( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right )
+{
+	float defautFloat = _infix_op == Eval::infix_mult ? 1.0f : 0.0f;
+
+	if (_infix_op == NULL)
+	{
+		if (_gen_expr == NULL)
+			_gen_expr = GenExpr::const_to_expr(0.0f);
+	}
+	else
+	{
+		if (_left == NULL)
+			_left = new TreeExpr(NULL, GenExpr::const_to_expr(defautFloat), NULL, NULL);
+		if (_right == NULL)
+			_right = new TreeExpr(NULL, GenExpr::const_to_expr(defautFloat), NULL, NULL);
+	}
+	return new TreeExpr( _infix_op, _gen_expr, _left, _right);
 }
 
 /* Evaluates an expression tree */
-float TreeExpr::eval_tree_expr ( int mesh_i, int mesh_j )
+float TreeExpr::eval ( int mesh_i, int mesh_j )
 {
-
 	float left_arg, right_arg;
 
 	/* A leaf node, evaluate the general expression. If the expression is null as well, return zero */
 	if ( infix_op == NULL )
 	{
-		if ( gen_expr == NULL )
-			return 0;
-		else
-			return gen_expr->eval_gen_expr ( mesh_i, mesh_j );
+		return gen_expr->eval( mesh_i, mesh_j );
 	}
 
 	/* Otherwise, this node is an infix operator. Evaluate
 	   accordingly */
 
-	/* Safe guard in case the user gave a partially written expression */
-	if (left == NULL) {
-		if (infix_op == Eval::infix_mult)
-			left_arg = 1;
-		else
-			left_arg = 0;
-	}
-	else
-		left_arg = left->eval_tree_expr ( mesh_i, mesh_j );
-
-	/* Safe guard in case the user gave a partially written expression */
-	if (right == NULL) {
-		if (infix_op == Eval::infix_mult)
-			right_arg = 1;
-		else
-			right_arg = 0;
-	}
-	else
-		right_arg = right->eval_tree_expr ( mesh_i, mesh_j );
-
+	left_arg = left->eval ( mesh_i, mesh_j );
+	right_arg = right->eval ( mesh_i, mesh_j );
 
 	switch ( infix_op->type )
 	{
@@ -230,10 +221,10 @@ GenExpr * GenExpr::const_to_expr ( float val )
 
 	term.constant = val;
 
-	if ( ( val_expr = new ValExpr ( CONSTANT_TERM_T, &term ) ) == NULL )
+	if ( ( val_expr = ValExpr::create( CONSTANT_TERM_T, &term ) ) == NULL )
 		return NULL;
 
-	gen_expr = new GenExpr ( VAL_T, ( void* ) val_expr );
+	gen_expr = new GenExpr ( VAL_T, val_expr );
 
 	if ( gen_expr == NULL )
 	{
@@ -269,10 +260,10 @@ GenExpr * GenExpr::param_to_expr ( Param * param )
 
 
 	term.param = param;
-	if ( ( val_expr = new ValExpr ( PARAM_TERM_T, &term ) ) == NULL )
+	if ( ( val_expr = ValExpr::create( PARAM_TERM_T, &term ) ) == NULL )
 		return NULL;
 
-	if ( ( gen_expr = new GenExpr ( VAL_T, ( void* ) val_expr ) ) == NULL )
+	if ( ( gen_expr = new GenExpr ( VAL_T, val_expr ) ) == NULL )
 	{
 		delete val_expr;
 		return NULL;
@@ -296,7 +287,7 @@ GenExpr * GenExpr::prefun_to_expr ( float ( *func_ptr ) ( void * ), GenExpr ** e
 	prefun_expr->func_ptr = ( float ( * ) ( void* ) ) func_ptr;
 	prefun_expr->expr_list = expr_list;
 
-	gen_expr = new GenExpr ( PREFUN_T, ( void* ) prefun_expr );
+	gen_expr = new GenExpr ( PREFUN_T, prefun_expr );
 
 	if ( gen_expr == NULL )
 		delete prefun_expr;
@@ -305,7 +296,7 @@ GenExpr * GenExpr::prefun_to_expr ( float ( *func_ptr ) ( void * ), GenExpr ** e
 }
 
 /* Creates a new tree expression */
-TreeExpr::TreeExpr ( InfixOp * _infix_op, GenExpr * _gen_expr, TreeExpr * _left, TreeExpr * _right ) :
+TreeExpr::TreeExpr ( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right ) :
 		infix_op ( _infix_op ), gen_expr ( _gen_expr ),
 	left ( _left ), right ( _right ) {}
 
@@ -313,33 +304,31 @@ TreeExpr::TreeExpr ( InfixOp * _infix_op, GenExpr * _gen_expr, TreeExpr * _left,
 /* Creates a new value expression */
 ValExpr::ValExpr ( int _type, Term * _term ) :type ( _type )
 {
-
-
-	//val_expr->type = _type;
 	term.constant = _term->constant;
 	term.param = _term->param;
+}
 
-	//return val_expr;
+ValExpr *ValExpr::create ( int _type , Term * _term )
+{
+	if (_type == CONSTANT_TERM_T)
+		return new ConstantExpr( _type, _term );
+	else
+		return new ParameterExpr( _type, _term );	
 }
 
 /* Creates a new general expression */
 
-GenExpr::GenExpr ( int _type, void * _item ) :type ( _type ), item ( _item ) {}
+GenExpr::GenExpr ( int _type, Expr * _item ) :type ( _type ), item ( _item ) {}
 
 /* Frees a general expression */
 GenExpr::~GenExpr()
 {
-
 	switch ( type )
 	{
 		case VAL_T:
-			delete ( ( ValExpr* ) item );
-			break;
 		case PREFUN_T:
-			delete ( ( PrefunExpr* ) item );
-			break;
 		case TREE_T:
-			delete ( ( TreeExpr* ) item );
+			delete item;
 			break;
 	}
 }

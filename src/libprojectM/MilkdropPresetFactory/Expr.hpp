@@ -58,18 +58,27 @@ public:
 
   Term() { this->constant = 0; this->param = 0; }
 };
+ 
+class Expr
+{
+public:
+  virtual ~Expr() {};
+  virtual bool isConstant(int mesh_i, int mesh_j) { return false; };
+  virtual float eval(int mesh_i, int mesh_j) = 0;
+};
 
 /* General Expression Type */
-class GenExpr
+class GenExpr : public Expr
 {
 public:
   int type;
-  void * item;
+  Expr * item;
 
   ~GenExpr();
 
-  GenExpr( int type, void *item );
-  float eval_gen_expr(int mesh_i, int mesh_j);
+  GenExpr( int type, Expr *item );
+  float eval(int mesh_i, int mesh_j);
+  float eval_gen_expr(int mesh_i, int mesh_j) { return eval(mesh_i, mesh_j); }
  
   static GenExpr *const_to_expr( float val );
   static GenExpr *param_to_expr( Param *param );
@@ -77,35 +86,41 @@ public:
 };
 
 /* Value expression, contains a term union */
-class ValExpr
+class ValExpr : public Expr
 {
+protected:
+  ValExpr( int type, Term *term );
 public:
   int type;
   Term term;
 
+  static ValExpr *create( int type, Term *term );
   ~ValExpr();
-  ValExpr( int type, Term *term );
   
-  float eval_val_expr(int mesh_i, int mesh_j);
+  float eval_val_expr(int mesh_i, int mesh_j) { return eval(mesh_i, mesh_j); }
 };
 
 /* A binary expression tree ordered by operator precedence */
-class TreeExpr
+class TreeExpr : public Expr
 {
+private:
+  TreeExpr( InfixOp *infix_op, Expr *gen_expr,
+                                  TreeExpr *left, TreeExpr *right );
 public:
+  static TreeExpr *create( InfixOp *infix_op, Expr *gen_expr,
+                                  TreeExpr *left, TreeExpr *right );
   InfixOp * infix_op; /* null if leaf */
-  GenExpr * gen_expr;
+  Expr * gen_expr;
   TreeExpr *left, *right;
 
   ~TreeExpr();
-  TreeExpr( InfixOp *infix_op, GenExpr *gen_expr,
-                                  TreeExpr *left, TreeExpr *right );
   
-  float eval_tree_expr(int mesh_i, int mesh_j);
+  float eval(int mesh_i, int mesh_j);
+  float eval_tree_expr(int mesh_i, int mesh_j) { return eval(mesh_i, mesh_j); }
 };
 
 /* A function expression in prefix form */
-class PrefunExpr
+class PrefunExpr : public Expr
 {
 public:
   float (*func_ptr)(void*);
@@ -115,8 +130,8 @@ public:
   ~PrefunExpr();
 
   /* Evaluates functions in prefix form */
-  float eval_prefun_expr(int mesh_i, int mesh_j);
-
+  float eval(int mesh_i, int mesh_j);
+  float eval_prefun_expr(int mesh_i, int mesh_j) { return eval(mesh_i, mesh_j); }
 };
 
 #endif /** _EXPR_H */
