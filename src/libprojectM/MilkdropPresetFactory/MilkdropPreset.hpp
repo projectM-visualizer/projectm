@@ -95,7 +95,7 @@ public:
 
   /// Used by parser
   /// @bug refactor
-  int add_per_pixel_eqn( char *name, GenExpr *gen_expr );
+  int add_per_pixel_eqn( char *name, Expr *gen_expr );
 
   /// Accessor method to retrieve the absolute file path of the loaded MilkdropPreset
   /// \returns a file path string

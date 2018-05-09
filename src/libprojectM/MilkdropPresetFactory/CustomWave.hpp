@@ -32,7 +32,7 @@
 #define CUSTOM_WAVE_DEBUG 0
 
 class CustomWave;
-class GenExpr;
+class Expr;
 class PerPointEqn;
 class Preset;
 
@@ -115,7 +115,7 @@ public:
     int per_frame_eqn_string_index;
     int per_frame_init_eqn_string_index;
 
-    int add_per_point_eqn(char * name, GenExpr * gen_expr);
+    int add_per_point_eqn(char * name, Expr * gen_expr);
     void evalCustomWaveInitConditions(Preset *preset);
     
 
