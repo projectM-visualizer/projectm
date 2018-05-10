@@ -72,8 +72,8 @@ class ConstantExpr : public Expr
 {
 	float constant;
 public:
-	ConstantExpr( float constant ) : constant(constant) {}
-	ConstantExpr( int type, Term *term ) : constant(term->constant) {}
+	ConstantExpr( float value ) : Expr(CONSTANT), constant(value) {}
+	ConstantExpr( int type, Term *term ) : Expr(CONSTANT), constant(term->constant) {}
 	bool isConstant() 
 	{
 		return true; 
@@ -93,7 +93,7 @@ class ParameterExpr : public Expr
 protected:
 	Term term;
 public:
-	ParameterExpr( int type, Term *term ) : term(*term) {}
+	ParameterExpr( int _type, Term *_term ) : Expr(PARAMETER), term(*_term) {}
 	float eval(int mesh_i, int mesh_j );
 	std::ostream& to_string(std::ostream& out)
 	{
@@ -105,19 +105,19 @@ public:
 class BoolParameterExpr : public ParameterExpr
 {
 public:
-	BoolParameterExpr( int type, Term *term ) : ParameterExpr(type,term) {}
+	BoolParameterExpr( int _type, Term *_term ) : ParameterExpr(_type,_term) {}
 	float eval ( int mesh_i, int mesh_j ) { return ( float ) ( * ( ( bool* ) ( term.param->engine_val ) ) ); }	
 };
 class IntParameterExpr : public ParameterExpr
 {
 public:
-	IntParameterExpr( int type, Term *term ) : ParameterExpr(type,term) {}
+	IntParameterExpr( int _type, Term *_term ) : ParameterExpr(_type,_term) {}
 	float eval ( int mesh_i, int mesh_j ) { return ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) ); }	
 };
 class FloatParameterExpr : public ParameterExpr
 {
 public:
-	FloatParameterExpr( int type, Term *term ) : ParameterExpr(type,term) {}
+	FloatParameterExpr( int _type, Term *_term ) : ParameterExpr(_type,_term) {}
 	float eval ( int mesh_i, int mesh_j ) { return ( * ( ( float* ) ( term.param->engine_val ) ) ); }	
 };
 
@@ -159,23 +159,31 @@ float ParameterExpr::eval ( int mesh_i, int mesh_j )
 }
 
 
+class MultAndAddExpr : public Expr
+{
+	Expr *a, *b, *c;
+public:
+	MultAndAddExpr(Expr *_a, Expr *_b, Expr *_c) : Expr(OTHER),
+		a(_a), b(_b), c(_c)
+	{
+	}
+	float eval(int mesh_i, int mesh_j)
+	{
+		float a_value = a->eval(mesh_i,mesh_j);
+		float b_value = b->eval(mesh_i,mesh_j);
+		float c_value = c->eval(mesh_i,mesh_j);
+		return a_value * b_value + c_value;
+	}
+	std::ostream &to_string(std::ostream &out)
+	{
+		out << "(" << a << " * " << b << ") + " << c;
+		return out;
+	}
+};
+
 /* This could be optimized a lot more if we could return an Expr instead of a TreeExpr */
 TreeExpr * TreeExpr::create( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right )
 {
-	// float defautFloat = _infix_op == Eval::infix_mult ? 1.0f : 0.0f;
-
-	// if (_infix_op == NULL)
-	// {
-	// 	if (_gen_expr == NULL)
-	// 		_gen_expr = Expr::const_to_expr(0.0f);
-	// }
-	// else
-	// {
-	// 	if (_left == NULL)
-	// 		_left = new TreeExpr(NULL, Expr::const_to_expr(defautFloat), NULL, NULL);
-	// 	if (_right == NULL)
-	// 		_right = new TreeExpr(NULL, Expr::const_to_expr(defautFloat), NULL, NULL);
-	// }
 	return new TreeExpr( _infix_op, _gen_expr, _left, _right);
 }
 
@@ -225,30 +233,61 @@ Expr *TreeExpr::optimize()
 		gen_expr = NULL;
 		return opt;
 	}
-	if (left == NULL)
-	{
-		left = new TreeExpr(NULL, Expr::const_to_expr(infix_op == Eval::infix_mult ? 1.0f : 0.0f), NULL, NULL);
-	}
-	else
+	if (left != NULL)
 	{
 		Expr *l = left->optimize();
 		if (l != left)
 			delete left;
 		left = l;
 	}
-	if (right == NULL)
-	{
-		right = new TreeExpr(NULL, Expr::const_to_expr(infix_op == Eval::infix_mult ? 1.0f : 0.0f), NULL, NULL);
-	}
-	else
+	if (right != NULL)
 	{
 		Expr *r = right->optimize();
 		if (r != right)
 			delete right;
 		right = r;
 	}
+	if (left == NULL)
+	{
+		Expr *opt = right;
+		right = NULL;
+		return opt;
+	}
+	if (right == NULL)
+	{
+		Expr *opt = left;
+		left = NULL;
+		return opt;
+	}
 	if (left->isConstant() && right->isConstant())
-		return Expr::const_to_expr(eval(0.5, 0.5));
+		return Expr::const_to_expr(eval(-1, -1));
+
+	// this is gratuitious, but a*b+c is super common, so as proof-of-concept, let's make a special Expr
+	if (infix_op->type == INFIX_ADD && 
+		((left->clazz == TREE && ((TreeExpr *)left)->infix_op->type == INFIX_MULT) ||
+		(right->clazz == TREE && ((TreeExpr *)right)->infix_op->type == INFIX_MULT)))
+	{
+		Expr *a, *b, *c;
+		if (left->clazz == TREE && ((TreeExpr *)left)->infix_op->type == INFIX_MULT)
+		{
+			a = ((TreeExpr *)left)->left;
+			b = ((TreeExpr *)left)->right;
+			c = right;
+			((TreeExpr *)left)->left = NULL;
+			((TreeExpr *)left)->right = NULL;
+			right = NULL;
+		}
+		else
+		{
+			a = ((TreeExpr *)right)->left;
+			b = ((TreeExpr *)right)->right;
+			c = left;
+			((TreeExpr *)right)->left = NULL;
+			((TreeExpr *)right)->right = NULL;
+			left = NULL;
+		}
+		return new MultAndAddExpr(a,b,c);
+	}
 	return this;
 }
 
@@ -257,14 +296,8 @@ float TreeExpr::eval ( int mesh_i, int mesh_j )
 {
 	float left_arg, right_arg;
 
-	/* A leaf node, evaluate the general expression. If the expression is null as well, return zero */
-	if ( infix_op == NULL )
-	{
-		return gen_expr->eval( mesh_i, mesh_j );
-	}
-
-	/* Otherwise, this node is an infix operator. Evaluate
-	   accordingly */
+	/* shouldn't be null if we've called optimize() */
+	assert(NULL != infix_op);
 
 	left_arg = left->eval ( mesh_i, mesh_j );
 	right_arg = right->eval ( mesh_i, mesh_j );
@@ -360,6 +393,7 @@ Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( void * ), Expr ** expr_list,
 
 /* Creates a new tree expression */
 TreeExpr::TreeExpr ( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right ) :
+		Expr( TREE ),
 		infix_op ( _infix_op ), gen_expr ( _gen_expr ),
 	left ( _left ), right ( _right ) {}
 
@@ -405,15 +439,15 @@ TreeExpr::~TreeExpr()
 }
 
 /* Initializes an infix operator */
-InfixOp::InfixOp ( int type, int precedence )
+InfixOp::InfixOp ( int _type, int _precedence )
 {
-	this->type = type;
-	this->precedence = precedence;
+	this->type = _type;
+	this->precedence = _precedence;
 }
 
-
-
-PrefunExpr::PrefunExpr() {}
+PrefunExpr::PrefunExpr() : Expr(FUNCTION)
+{
+}
 
 Expr *PrefunExpr::optimize()
 {
@@ -432,13 +466,13 @@ Expr *PrefunExpr::optimize()
 
 std::ostream& PrefunExpr::to_string(std::ostream& out)
 {
-	char *comma = "";
+	char comma = ' ';
 	out << "<function>(";
 	for (int i=0 ; i < num_args ; i++)
 	{
 		out << comma;
 		out << expr_list[i];
-		comma = ",";
+		comma = ',';
 	}
 	out << ")";
 	return out;
