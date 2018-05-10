@@ -186,6 +186,8 @@ public:
     static int parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_shape, MilkdropPreset * preset);
     static int parse_wave_per_frame_eqn(std::istream & fs, CustomWave * custom_wave, MilkdropPreset * preset);
     static bool wrapsToNextLine(const std::string & str);
+private:
+  static Expr * _parse_gen_expr(std::istream & fs, TreeExpr * tree_expr, MilkdropPreset * preset);
   };
 
 #endif /** !_PARSER_H */
