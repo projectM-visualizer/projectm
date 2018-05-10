@@ -60,9 +60,17 @@ public:
   Term() { this->constant = 0; this->param = 0; }
 };
  
+
+enum ExprClass
+{
+  TREE, CONSTANT, PARAMETER, FUNCTION, OTHER
+};
+
 class Expr
 {
 public:
+  ExprClass clazz;
+  Expr(ExprClass c) : clazz(c) {};
   virtual ~Expr() {};
   virtual Expr *optimize() { return this; };
   virtual bool isConstant() { return false; };
