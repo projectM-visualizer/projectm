@@ -715,11 +715,9 @@ int Parser::parse_line(std::istream &  fs, MilkdropPreset * preset)
 }
 
 
-
 /* Parses a general expression, this function is the meat of the parser */
-Expr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, MilkdropPreset * preset)
+Expr * Parser::_parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, MilkdropPreset * preset)
 {
-
   int i;
   char string[MAX_TOKEN_SIZE];
   token_t token;
@@ -981,6 +979,15 @@ Expr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Milkdr
 }
 
 
+Expr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, MilkdropPreset * preset)
+{
+  Expr *gen_expr = _parse_gen_expr( fs, tree_expr, preset );
+  //std::cout << gen_expr << std::endl;
+  Expr *opt = gen_expr->optimize();
+  //std::cout << opt << std::endl;
+  return opt;
+}
+
 
 /* Inserts expressions into tree according to operator precedence.
    If root is null, a new tree is created, with infix_op as only element */
@@ -1103,8 +1110,8 @@ int Parser::insert_gen_rec(Expr * gen_expr, TreeExpr * root)
      this succeeds then return. If it fails, try
      recursing down to the right */
 
-  if (insert_gen_rec(gen_expr, root->left) == PROJECTM_FAILURE)
-    return insert_gen_rec(gen_expr, root->right);
+  if (insert_gen_rec(gen_expr, root->leftTree()) == PROJECTM_FAILURE)
+    return insert_gen_rec(gen_expr, root->rightTree());
 
   /* Impossible for control flow to reach here, but in
      the world of C programming, who knows... */
@@ -1131,14 +1138,14 @@ int Parser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root)
      I don't think this will ever happen */
   if (root->left == NULL)
   {
-    root->left = TreeExpr::create(infix_op, NULL, root->left, NULL);
+    root->left = TreeExpr::create(infix_op, NULL, root->leftTree(), NULL);
     return PROJECTM_SUCCESS;
   }
 
   /* Right tree is empty, attach this operator to it */
   if (root->right == NULL)
   {
-    root->right = TreeExpr::create(infix_op, NULL, root->right, NULL);
+    root->right = TreeExpr::create(infix_op, NULL, root->rightTree(), NULL);
     return PROJECTM_SUCCESS;
   }
 
@@ -1149,20 +1156,20 @@ int Parser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root)
      then insert the expression here, attaching the old right branch
      to the left of the new expression */
 
-  if (root->right->infix_op == NULL)
+  if (root->rightTree()->infix_op == NULL)
   {
-    root->right = TreeExpr::create(infix_op, NULL, root->right, NULL);
+    root->right = TreeExpr::create(infix_op, NULL, root->rightTree(), NULL);
     return PROJECTM_SUCCESS;
   }
 
   /* Traverse deeper if the inserting operator precedence is less than the
      the root's right operator precedence */
-  if (infix_op->precedence < root->right->infix_op->precedence)
-    return insert_infix_rec(infix_op, root->right);
+  if (infix_op->precedence < root->rightTree()->infix_op->precedence)
+    return insert_infix_rec(infix_op, root->rightTree());
 
   /* Otherwise, insert the operator here */
 
-  root->right = TreeExpr::create(infix_op, NULL, root->right, NULL);
+  root->right = TreeExpr::create(infix_op, NULL, root->rightTree(), NULL);
   return PROJECTM_SUCCESS;
 
 }

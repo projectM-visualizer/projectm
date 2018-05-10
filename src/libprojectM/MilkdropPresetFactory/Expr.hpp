@@ -31,6 +31,7 @@
 
 #include "dlldefs.h"
 #include "CValue.hpp"
+#include <iostream> 
 
 class Param;
 
@@ -63,42 +64,27 @@ class Expr
 {
 public:
   virtual ~Expr() {};
-  virtual bool isConstant(int mesh_i, int mesh_j) { return false; };
+  virtual Expr *optimize() { return this; };
+  virtual bool isConstant() { return false; };
   virtual float eval(int mesh_i, int mesh_j) = 0;
+  virtual std::ostream& to_string(std::ostream &out)
+  {
+      std::cout << "nyi"; return out;
+  }
 
   static Expr *const_to_expr( float val );
   static Expr *param_to_expr( Param *param );
   static Expr *prefun_to_expr( float (*func_ptr)(void *), Expr **expr_list, int num_args );
 };
 
-/* General Expression Type
-class GenExpr : public GenExpr
+inline std::ostream& operator<<(std::ostream& out, Expr *expr)
 {
-public:
-  int type;
-  Expr * item;
-
-  ~GenExpr();
-
-  GenExpr( int type, Expr *item );
-  float eval(int mesh_i, int mesh_j);
-  float eval_gen_expr(int mesh_i, int mesh_j) { return eval(mesh_i, mesh_j); }
- };  */
-
-/* Value expression, contains a term union */
-class ValExpr : public Expr
-{
-protected:
-  ValExpr( int type, Term *term );
-public:
-  int type;
-  Term term;
-
-  static ValExpr *create( int type, Term *term );
-  ~ValExpr();
-  
-  float eval_val_expr(int mesh_i, int mesh_j) { return eval(mesh_i, mesh_j); }
-};
+  if (NULL == expr)
+      out << "NULL";
+  else 
+      expr->to_string(out);
+  return out;
+}
 
 /* A binary expression tree ordered by operator precedence */
 class TreeExpr : public Expr
@@ -111,12 +97,17 @@ public:
                                   TreeExpr *left, TreeExpr *right );
   InfixOp * infix_op; /* null if leaf */
   Expr * gen_expr;
-  TreeExpr *left, *right;
+  // NOTE: before optimize() left and right will always be TreeExpr
+  Expr *left, *right;
+  // these are for type-safe access in Parser.cpp
+  TreeExpr *&leftTree()  { return *(TreeExpr **)&left; };
+  TreeExpr *&rightTree() { return *(TreeExpr **)&right; };
 
   ~TreeExpr();
   
+  Expr *optimize();
   float eval(int mesh_i, int mesh_j);
-  float eval_tree_expr(int mesh_i, int mesh_j) { return eval(mesh_i, mesh_j); }
+  std::ostream& to_string(std::ostream &out);
 };
 
 /* A function expression in prefix form */
@@ -130,8 +121,9 @@ public:
   ~PrefunExpr();
 
   /* Evaluates functions in prefix form */
+  Expr *optimize();
   float eval(int mesh_i, int mesh_j);
-  float eval_prefun_expr(int mesh_i, int mesh_j) { return eval(mesh_i, mesh_j); }
+  std::ostream& to_string(std::ostream &out);
 };
 
 #endif /** _EXPR_H */

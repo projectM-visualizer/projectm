@@ -68,19 +68,57 @@ float PrefunExpr::eval ( int mesh_i, int mesh_j )
 }
 
 
-// private subclasses of ValExpr -- ConstantExpr, ParameterExpr
-class ConstantExpr : public ValExpr
+class ConstantExpr : public Expr
 {
+	float constant;
 public:
-	ConstantExpr( int type, Term *term ) : ValExpr(type,term) {}
-	float eval(int mesh_i, int mesh_j ) { return term.constant; }
+	ConstantExpr( float constant ) : constant(constant) {}
+	ConstantExpr( int type, Term *term ) : constant(term->constant) {}
+	bool isConstant() 
+	{
+		return true; 
+	}
+	float eval(int mesh_i, int mesh_j ) 
+	{ 
+		return constant; 
+	}
+	std::ostream &to_string(std::ostream &out)
+	{
+		out << constant; return out;
+	}
 };
 
-class ParameterExpr : public ValExpr
+class ParameterExpr : public Expr
+{
+protected:
+	Term term;
+public:
+	ParameterExpr( int type, Term *term ) : term(*term) {}
+	float eval(int mesh_i, int mesh_j );
+	std::ostream& to_string(std::ostream& out)
+	{
+		out << term.param->name;
+		return out;
+	}
+};
+
+class BoolParameterExpr : public ParameterExpr
 {
 public:
-	ParameterExpr( int type, Term *term ) : ValExpr(type,term) {}
-	float eval(int mesh_i, int mesh_j );
+	BoolParameterExpr( int type, Term *term ) : ParameterExpr(type,term) {}
+	float eval ( int mesh_i, int mesh_j ) { return ( float ) ( * ( ( bool* ) ( term.param->engine_val ) ) ); }	
+};
+class IntParameterExpr : public ParameterExpr
+{
+public:
+	IntParameterExpr( int type, Term *term ) : ParameterExpr(type,term) {}
+	float eval ( int mesh_i, int mesh_j ) { return ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) ); }	
+};
+class FloatParameterExpr : public ParameterExpr
+{
+public:
+	FloatParameterExpr( int type, Term *term ) : ParameterExpr(type,term) {}
+	float eval ( int mesh_i, int mesh_j ) { return ( * ( ( float* ) ( term.param->engine_val ) ) ); }	
 };
 
 /* Evaluates a value expression */
@@ -88,18 +126,11 @@ float ParameterExpr::eval ( int mesh_i, int mesh_j )
 {
 	switch ( term.param->type )
 	{
-
 		case P_TYPE_BOOL:
-
-
 			return ( float ) ( * ( ( bool* ) ( term.param->engine_val ) ) );
 		case P_TYPE_INT:
-
-
 			return ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) );
 		case P_TYPE_DOUBLE:
-
-
 			if ( term.param->matrix_flag | ( term.param->flags & P_FLAG_ALWAYS_MATRIX ) )
 			{
 
@@ -131,21 +162,94 @@ float ParameterExpr::eval ( int mesh_i, int mesh_j )
 /* This could be optimized a lot more if we could return an Expr instead of a TreeExpr */
 TreeExpr * TreeExpr::create( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right )
 {
-	float defautFloat = _infix_op == Eval::infix_mult ? 1.0f : 0.0f;
+	// float defautFloat = _infix_op == Eval::infix_mult ? 1.0f : 0.0f;
 
-	if (_infix_op == NULL)
+	// if (_infix_op == NULL)
+	// {
+	// 	if (_gen_expr == NULL)
+	// 		_gen_expr = Expr::const_to_expr(0.0f);
+	// }
+	// else
+	// {
+	// 	if (_left == NULL)
+	// 		_left = new TreeExpr(NULL, Expr::const_to_expr(defautFloat), NULL, NULL);
+	// 	if (_right == NULL)
+	// 		_right = new TreeExpr(NULL, Expr::const_to_expr(defautFloat), NULL, NULL);
+	// }
+	return new TreeExpr( _infix_op, _gen_expr, _left, _right);
+}
+
+std::ostream &TreeExpr::to_string(std::ostream &out)
+{
+	if (NULL == infix_op)
 	{
-		if (_gen_expr == NULL)
-			_gen_expr = Expr::const_to_expr(0.0f);
+		out << gen_expr;
 	}
 	else
 	{
-		if (_left == NULL)
-			_left = new TreeExpr(NULL, Expr::const_to_expr(defautFloat), NULL, NULL);
-		if (_right == NULL)
-			_right = new TreeExpr(NULL, Expr::const_to_expr(defautFloat), NULL, NULL);
+		out << "(" << left << " ";
+		switch ( infix_op->type )
+		{
+		case INFIX_ADD:
+			out << "+"; break;
+		case INFIX_MINUS:
+			out << "-"; break;
+		case INFIX_MULT:
+			out << "+"; break;
+		case INFIX_MOD:
+			out << "%"; break;
+		case INFIX_OR:
+			out << "|"; break;
+		case INFIX_AND:
+			out << "&"; break;
+		case INFIX_DIV:
+			out << "/"; break;
+		default:
+			out << "infix_op_ERROR"; break;
+		}
+		out << " " << right << ")";
 	}
-	return new TreeExpr( _infix_op, _gen_expr, _left, _right);
+	return out;
+}
+
+/* NOTE: Parser.cpp directly manipulates TreeExpr, so it is easier to optimizer AFTER parsing
+ * than while building up the tree initially 
+ */
+Expr *TreeExpr::optimize()
+{
+	if (infix_op == NULL)
+	{
+		Expr *opt = gen_expr->optimize();
+		if (opt != gen_expr)
+			delete gen_expr;
+		gen_expr = NULL;
+		return opt;
+	}
+	if (left == NULL)
+	{
+		left = new TreeExpr(NULL, Expr::const_to_expr(infix_op == Eval::infix_mult ? 1.0f : 0.0f), NULL, NULL);
+	}
+	else
+	{
+		Expr *l = left->optimize();
+		if (l != left)
+			delete left;
+		left = l;
+	}
+	if (right == NULL)
+	{
+		right = new TreeExpr(NULL, Expr::const_to_expr(infix_op == Eval::infix_mult ? 1.0f : 0.0f), NULL, NULL);
+	}
+	else
+	{
+		Expr *r = right->optimize();
+		if (r != right)
+			delete right;
+		right = r;
+	}
+	if (left->isConstant() && right->isConstant())
+		return Expr::const_to_expr(eval(0.5, 0.5));
+	return this;
 }
 
 /* Evaluates an expression tree */
@@ -201,13 +305,12 @@ Expr * Expr::const_to_expr ( float val )
 {
 	Term term;
 	term.constant = val;
-	return ValExpr::create( CONSTANT_TERM_T, &term );
+	return new ConstantExpr( CONSTANT_TERM_T, &term );
 }
 
 /* Converts a regular parameter to an expression */
 Expr * Expr::param_to_expr ( Param * param )
 {
-	ValExpr * val_expr = NULL;
 	Term term;
 
 	if ( param == NULL )
@@ -226,9 +329,21 @@ Expr * Expr::param_to_expr ( Param * param )
 	   making the parser handle the case where parameters are essentially per pixel equation
 	   substitutions */
 
-
 	term.param = param;
-	return ValExpr::create( PARAM_TERM_T, &term );
+
+	switch ( param->type )
+	{
+		case P_TYPE_BOOL:
+			return new BoolParameterExpr( PARAM_TERM_T, &term );
+		case P_TYPE_INT:
+			return new IntParameterExpr( PARAM_TERM_T, &term );
+		case P_TYPE_DOUBLE:
+			// TODO are these flags constant??? can I check them now?
+			if ( param->matrix_flag | ( param->flags & P_FLAG_ALWAYS_MATRIX ) )
+				return new ParameterExpr( PARAM_TERM_T, &term );
+			return new FloatParameterExpr( PARAM_TERM_T, &term );
+	}
+	return NULL;
 }
 
 /* Converts a prefix function to an expression */
@@ -249,21 +364,6 @@ TreeExpr::TreeExpr ( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, Tr
 	left ( _left ), right ( _right ) {}
 
 
-/* Creates a new value expression */
-ValExpr::ValExpr ( int _type, Term * _term ) :type ( _type )
-{
-	term.constant = _term->constant;
-	term.param = _term->param;
-}
-
-ValExpr *ValExpr::create ( int _type , Term * _term )
-{
-	if (_type == CONSTANT_TERM_T)
-		return new ConstantExpr( _type, _term );
-	else
-		return new ParameterExpr( _type, _term );	
-}
-
 /* Frees a function in prefix notation */
 PrefunExpr::~PrefunExpr()
 {
@@ -276,10 +376,6 @@ PrefunExpr::~PrefunExpr()
 	}
 	free ( expr_list );
 }
-
-/* Frees values of type VARIABLE and CONSTANT */
-ValExpr::~ValExpr()
-{}
 
 /* Frees a tree expression */
 TreeExpr::~TreeExpr()
@@ -311,7 +407,6 @@ TreeExpr::~TreeExpr()
 /* Initializes an infix operator */
 InfixOp::InfixOp ( int type, int precedence )
 {
-
 	this->type = type;
 	this->precedence = precedence;
 }
@@ -319,3 +414,32 @@ InfixOp::InfixOp ( int type, int precedence )
 
 
 PrefunExpr::PrefunExpr() {}
+
+Expr *PrefunExpr::optimize()
+{
+	bool constant_args = true;
+	for (int i=0 ; i < num_args ; i++)
+	{
+		Expr *orig = expr_list[i];
+		expr_list[i] = orig->optimize();
+		if (orig != expr_list[i])
+			delete orig;
+		constant_args &= expr_list[i]->isConstant();
+	}
+    // TODO most functions can be pre-evaluated if inputs are constant, but not all
+	return this;
+}
+
+std::ostream& PrefunExpr::to_string(std::ostream& out)
+{
+	char *comma = "";
+	out << "<function>(";
+	for (int i=0 ; i < num_args ; i++)
+	{
+		out << comma;
+		out << expr_list[i];
+		comma = ",";
+	}
+	out << ")";
+	return out;
+}
