@@ -207,7 +207,7 @@ std::ostream &TreeExpr::to_string(std::ostream &out)
 		case INFIX_MINUS:
 			out << "-"; break;
 		case INFIX_MULT:
-			out << "+"; break;
+			out << "*"; break;
 		case INFIX_MOD:
 			out << "%"; break;
 		case INFIX_OR:
