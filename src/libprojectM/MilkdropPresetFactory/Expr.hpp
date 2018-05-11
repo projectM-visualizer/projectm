@@ -97,7 +97,7 @@ inline std::ostream& operator<<(std::ostream& out, Expr *expr)
 /* A binary expression tree ordered by operator precedence */
 class TreeExpr : public Expr
 {
-private:
+protected:
   TreeExpr( InfixOp *infix_op, Expr *gen_expr,
                                   TreeExpr *left, TreeExpr *right );
 public:
