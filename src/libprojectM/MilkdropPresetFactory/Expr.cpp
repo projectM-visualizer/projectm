@@ -191,12 +191,6 @@ public:
 	}
 };
 
-/* This could be optimized a lot more if we could return an Expr instead of a TreeExpr */
-TreeExpr * TreeExpr::create( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right )
-{
-	return new TreeExpr( _infix_op, _gen_expr, _left, _right);
-}
-
 std::ostream &TreeExpr::to_string(std::ostream &out)
 {
 	if (NULL == infix_op)
@@ -409,6 +403,52 @@ TreeExpr::TreeExpr ( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, Tr
 		infix_op ( _infix_op ), gen_expr ( _gen_expr ),
 	left ( _left ), right ( _right ) {}
 
+class TreeExprAdd : public TreeExpr
+{
+public:
+	TreeExprAdd( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right ) :
+	 	TreeExpr( _infix_op, _gen_expr, _left, _right) {}
+	float eval( int mesh_i, int mesh_j)
+	{
+		return left->eval(mesh_i, mesh_j) + right->eval(mesh_i, mesh_j);
+	}
+};
+
+class TreeExprMinus : public TreeExpr
+{
+public:
+	TreeExprMinus( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right ) :
+	 	TreeExpr( _infix_op, _gen_expr, _left, _right) {}
+	float eval( int mesh_i, int mesh_j)
+	{
+		return left->eval(mesh_i, mesh_j) - right->eval(mesh_i, mesh_j);
+	}
+};
+
+class TreeExprMult : public TreeExpr
+{
+public:
+	TreeExprMult( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right ) :
+	 	TreeExpr( _infix_op, _gen_expr, _left, _right) {}
+	float eval( int mesh_i, int mesh_j)
+	{
+		return left->eval(mesh_i, mesh_j) * right->eval(mesh_i, mesh_j);
+	}
+};
+
+TreeExpr * TreeExpr::create( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right )
+{
+	if ( NULL != _infix_op )
+	{
+		if ( _infix_op->type == INFIX_ADD )
+			return new TreeExprAdd( _infix_op, _gen_expr, _left, _right);
+		if ( _infix_op->type == INFIX_MINUS )
+			return new TreeExprMinus( _infix_op, _gen_expr, _left, _right);
+		if ( _infix_op->type == INFIX_MULT )
+			return new TreeExprMult( _infix_op, _gen_expr, _left, _right);
+	}
+	return new TreeExpr( _infix_op, _gen_expr, _left, _right );
+}
 
 /* Frees a function in prefix notation */
 PrefunExpr::~PrefunExpr()
