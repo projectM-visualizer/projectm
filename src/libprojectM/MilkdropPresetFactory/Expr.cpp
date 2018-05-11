@@ -68,6 +68,16 @@ float PrefunExpr::eval ( int mesh_i, int mesh_j )
 }
 
 
+class PrefunExprOne : public PrefunExpr
+{
+	float eval ( int mesh_i, int mesh_j )
+	{
+		float val = expr_list[0]->eval ( mesh_i, mesh_j );
+		return (func_ptr)(&val);
+	}
+};
+
+
 class ConstantExpr : public Expr
 {
 	float constant;
@@ -383,8 +393,10 @@ Expr * Expr::param_to_expr ( Param * param )
 Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( void * ), Expr ** expr_list, int num_args )
 {
 	PrefunExpr * prefun_expr;
-
-	prefun_expr = new PrefunExpr();
+	if (num_args == 1)
+		prefun_expr = new PrefunExprOne();
+	else
+		prefun_expr = new PrefunExpr();
 	prefun_expr->num_args = num_args;
 	prefun_expr->func_ptr = ( float ( * ) ( void* ) ) func_ptr;
 	prefun_expr->expr_list = expr_list;
