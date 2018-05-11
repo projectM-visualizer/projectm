@@ -982,9 +982,11 @@ Expr * Parser::_parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Milkd
 Expr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, MilkdropPreset * preset)
 {
   Expr *gen_expr = _parse_gen_expr( fs, tree_expr, preset );
+  if (NULL == gen_expr)
+    return NULL;
   //std::cout << gen_expr << std::endl;
   Expr *opt = gen_expr->optimize();
-  //std::cout << opt << std::endl;
+  //std::cout << opt << std::endl << std::endl;
   return opt;
 }
 
