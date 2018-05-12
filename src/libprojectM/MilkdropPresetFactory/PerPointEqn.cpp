@@ -42,7 +42,7 @@ void PerPointEqn::evaluate(int i)
 {
 
   float * param_matrix;
-  GenExpr * eqn_ptr;
+  Expr * eqn_ptr;
 
   //  samples = CustomWave::interface_wave->samples;
 
@@ -51,8 +51,7 @@ void PerPointEqn::evaluate(int i)
   if (param->matrix == NULL)
   {
     assert(param->matrix_flag == false);
-    (*(float*)param->engine_val) = eqn_ptr->eval_gen_expr(i,-1);
-
+    (*(float*)param->engine_val) = eqn_ptr->eval(i,-1);
   
     return;
   }
@@ -62,7 +61,7 @@ void PerPointEqn::evaluate(int i)
     param_matrix = (float*)param->matrix;
   
       // -1 is because per points only use one dimension
-      param_matrix[i] = eqn_ptr->eval_gen_expr(i, -1);
+      param_matrix[i] = eqn_ptr->eval(i, -1);
     
 
     /* Now that this parameter has been referenced with a per
@@ -76,7 +75,7 @@ void PerPointEqn::evaluate(int i)
 
 }
 
-PerPointEqn::PerPointEqn(int _index, Param * _param, GenExpr * _gen_expr, int _samples):
+PerPointEqn::PerPointEqn(int _index, Param * _param, Expr * _gen_expr, int _samples):
     index(_index),
     samples(_samples),
     param(_param),
