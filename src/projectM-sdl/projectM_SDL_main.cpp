@@ -107,6 +107,7 @@ int main(int argc, char *argv[]) {
         last_time = SDL_GetTicks();
     }
     
+    app->endAudioCapture();
     delete app;
 
     return PROJECTM_SUCCESS;
