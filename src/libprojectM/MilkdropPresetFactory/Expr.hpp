@@ -31,6 +31,7 @@
 
 #include "dlldefs.h"
 #include "CValue.hpp"
+#include <iostream> 
 
 class Param;
 
@@ -58,65 +59,79 @@ public:
 
   Term() { this->constant = 0; this->param = 0; }
 };
-
-/* General Expression Type */
-class GenExpr
-{
-public:
-  int type;
-  void * item;
-
-  ~GenExpr();
-
-  GenExpr( int type, void *item );
-  float eval_gen_expr(int mesh_i, int mesh_j);
  
-  static GenExpr *const_to_expr( float val );
-  static GenExpr *param_to_expr( Param *param );
-  static GenExpr *prefun_to_expr( float (*func_ptr)(void *), GenExpr **expr_list, int num_args );
+
+enum ExprClass
+{
+  TREE, CONSTANT, PARAMETER, FUNCTION, OTHER
 };
 
-/* Value expression, contains a term union */
-class ValExpr
+class Expr
 {
 public:
-  int type;
-  Term term;
+  ExprClass clazz;
+  Expr(ExprClass c) : clazz(c) {};
+  virtual ~Expr() {};
+  virtual Expr *optimize() { return this; };
+  virtual bool isConstant() { return false; };
+  virtual float eval(int mesh_i, int mesh_j) = 0;
+  virtual std::ostream& to_string(std::ostream &out)
+  {
+      std::cout << "nyi"; return out;
+  }
 
-  ~ValExpr();
-  ValExpr( int type, Term *term );
-  
-  float eval_val_expr(int mesh_i, int mesh_j);
+  static Expr *const_to_expr( float val );
+  static Expr *param_to_expr( Param *param );
+  static Expr *prefun_to_expr( float (*func_ptr)(void *), Expr **expr_list, int num_args );
 };
+
+inline std::ostream& operator<<(std::ostream& out, Expr *expr)
+{
+  if (NULL == expr)
+      out << "NULL";
+  else 
+      expr->to_string(out);
+  return out;
+}
 
 /* A binary expression tree ordered by operator precedence */
-class TreeExpr
+class TreeExpr : public Expr
 {
+protected:
+  TreeExpr( InfixOp *infix_op, Expr *gen_expr,
+                                  TreeExpr *left, TreeExpr *right );
 public:
+  static TreeExpr *create( InfixOp *infix_op, Expr *gen_expr,
+                                  TreeExpr *left, TreeExpr *right );
   InfixOp * infix_op; /* null if leaf */
-  GenExpr * gen_expr;
-  TreeExpr *left, *right;
+  Expr * gen_expr;
+  // NOTE: before optimize() left and right will always be TreeExpr
+  Expr *left, *right;
+  // these are for type-safe access in Parser.cpp
+  TreeExpr *&leftTree()  { return *(TreeExpr **)&left; };
+  TreeExpr *&rightTree() { return *(TreeExpr **)&right; };
 
   ~TreeExpr();
-  TreeExpr( InfixOp *infix_op, GenExpr *gen_expr,
-                                  TreeExpr *left, TreeExpr *right );
   
-  float eval_tree_expr(int mesh_i, int mesh_j);
+  Expr *optimize();
+  float eval(int mesh_i, int mesh_j);
+  std::ostream& to_string(std::ostream &out);
 };
 
 /* A function expression in prefix form */
-class PrefunExpr
+class PrefunExpr : public Expr
 {
 public:
   float (*func_ptr)(void*);
   int num_args;
-  GenExpr **expr_list;
+  Expr **expr_list;
   PrefunExpr();
   ~PrefunExpr();
 
   /* Evaluates functions in prefix form */
-  float eval_prefun_expr(int mesh_i, int mesh_j);
-
+  Expr *optimize();
+  float eval(int mesh_i, int mesh_j);
+  std::ostream& to_string(std::ostream &out);
 };
 
 #endif /** _EXPR_H */
