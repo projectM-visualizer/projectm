@@ -103,7 +103,7 @@ MilkdropPreset::~MilkdropPreset()
 /* Adds a per pixel equation according to its string name. This
    will be used only by the parser */
 
-int MilkdropPreset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
+int MilkdropPreset::add_per_pixel_eqn(char * name, Expr * gen_expr)
 {
 
   PerPixelEqn * per_pixel_eqn = NULL;

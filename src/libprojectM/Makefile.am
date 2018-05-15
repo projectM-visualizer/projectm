@@ -11,8 +11,6 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/libprojectM/Renderer \
 	$(FTGL_CFLAGS) $(CG_CFLAGS)
 
-# system headers/libraries/data to install
-include_HEADERS = projectM.hpp
 lib_LTLIBRARIES = libprojectM.la  # public, possibly-shared library
 
 # link flags
@@ -48,6 +46,6 @@ libprojectM_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
 	omptl/omptl_algorithm
 
 pkgconfigdir = $(libdir)/pkgconfig
-# pkgconfig_DATA = src/libprojectM.pc
-# EXTRA_DIST += src/libprojectM.pc.in
-# CLEANFILES += src/libprojectM.pc
+pkgconfig_DATA = libprojectM.pc
+EXTRA_DIST += libprojectM.pc.in
+CLEANFILES += libprojectM.pc
