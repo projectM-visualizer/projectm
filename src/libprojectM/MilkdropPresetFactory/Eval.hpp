@@ -69,25 +69,22 @@ public:
                    *infix_negative,
                    *infix_positive;
 
-    float eval_gen_expr(GenExpr * gen_expr);
-    inline GenExpr * opt_gen_expr(GenExpr * gen_expr, int ** param_list);
+    float eval_gen_expr(Expr * gen_expr);
+    inline Expr * opt_gen_expr(Expr * gen_expr, int ** param_list);
 
-    GenExpr * const_to_expr(float val);
-    GenExpr * param_to_expr(Param * param);
-    GenExpr * prefun_to_expr(float (*func_ptr)(), GenExpr ** expr_list, int num_args);
+    Expr * const_to_expr(float val);
+    Expr * param_to_expr(Param * param);
+    Expr * prefun_to_expr(float (*func_ptr)(), Expr ** expr_list, int num_args);
 
-    static TreeExpr * new_tree_expr(InfixOp * infix_op, GenExpr * gen_expr, TreeExpr * left, TreeExpr * right);
-    static GenExpr * new_gen_expr(int type, void * item);
-    static ValExpr * new_val_expr(int type, Term *term);
-
+    static TreeExpr * new_tree_expr(InfixOp * infix_op, Expr * gen_expr, TreeExpr * left, TreeExpr * right);
+    static Expr * new_gen_expr(int type, void * item);
+    
     static InfixOp * new_infix_op(int type, int precedence);
     static int init_infix_ops();
     static int destroy_infix_ops();
     void reset_engine_vars();
-    
-    GenExpr * clone_gen_expr(GenExpr * gen_expr);
+
     TreeExpr * clone_tree_expr(TreeExpr * tree_expr);
-    ValExpr * clone_val_expr(ValExpr * val_expr);
     PrefunExpr * clone_prefun_expr(PrefunExpr * prefun_expr);
   };
 
