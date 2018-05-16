@@ -9,9 +9,11 @@
 //#include <emmintrin.h> // X86 SSE2
 #include <immintrin.h>
 
+
 PresetInputs::PresetInputs() : PipelineContext()
 {
 }
+
 
 void PresetInputs::update(const BeatDetect & music, const PipelineContext & context) {
 
@@ -30,6 +32,7 @@ void PresetInputs::update(const BeatDetect & music, const PipelineContext & cont
     this->frame = context.frame;
     this->progress = context.progress;
 }
+
 
 void PresetInputs::Initialize ( int gx, int gy )
 {
@@ -102,13 +105,12 @@ void PresetInputs::Initialize ( int gx, int gy )
 			this->origtheta[x][y]=atan2 ( ( ( this->origy[x][y]-.5 ) *2 ), ( ( this->origx[x][y]-.5 ) *2 ) );
 		}
 	}
-
-
-
 }
+
 
 PresetOutputs::PresetOutputs() : Pipeline()
 {}
+
 
 PresetOutputs::~PresetOutputs()
 {
@@ -132,21 +134,21 @@ PresetOutputs::~PresetOutputs()
 		free(this->rad_mesh[x]);
 	}
 
-		free(this->rad_mesh);
-		free(this->sx_mesh);
-		free(this->sy_mesh);
-		free(this->dy_mesh);
-		free(this->dx_mesh);
-		free(this->cy_mesh);
-		free(this->cx_mesh);
-		free(this->warp_mesh);
-		free(this->zoom_mesh);
-		free(this->zoomexp_mesh);
-		free(this->rot_mesh);
-		free(this->orig_x);
-		free(this->orig_y);
-
+	free(this->rad_mesh);
+	free(this->sx_mesh);
+	free(this->sy_mesh);
+	free(this->dy_mesh);
+	free(this->dx_mesh);
+	free(this->cy_mesh);
+	free(this->cx_mesh);
+	free(this->warp_mesh);
+	free(this->zoom_mesh);
+	free(this->zoomexp_mesh);
+	free(this->rot_mesh);
+	free(this->orig_x);
+	free(this->orig_y);
 }
+
 
 void PresetOutputs::Render(const BeatDetect &music, const PipelineContext &context)
 {
@@ -158,18 +160,22 @@ void PresetOutputs::Render(const BeatDetect &music, const PipelineContext &conte
 
 	for (PresetOutputs::cshape_container::iterator pos = customShapes.begin();
 			pos != customShapes.end(); ++pos)
-			{
-				if( (*pos)->enabled==1)	drawables.push_back((*pos));
-			}
+	{
+		if ((*pos)->enabled==1)
+			drawables.push_back((*pos));
+	}
 
 	for (PresetOutputs::cwave_container::iterator pos = customWaves.begin();
 			pos != customWaves.end(); ++pos)
-			{
-				if( (*pos)->enabled==1)	drawables.push_back((*pos));
-			}
+	{
+		if ((*pos)->enabled==1)
+			drawables.push_back((*pos));
+	}
 
-    	drawables.push_back(&wave);
-	if(bDarkenCenter==1) drawables.push_back(&darkenCenter);
+	drawables.push_back(&wave);
+
+	if (bDarkenCenter==1)
+		drawables.push_back(&darkenCenter);
 	drawables.push_back(&border);
 
 	compositeDrawables.clear();
@@ -188,20 +194,17 @@ void PresetOutputs::Render(const BeatDetect &music, const PipelineContext &conte
 		compositeDrawables.push_back(&invert);
 }
 
+
 // N.B. The more optimization that can be done on this method, the better! This is called a lot and can probably be improved.
 void PresetOutputs::PerPixelMath_c(const PipelineContext &context)
 {
-
-	int x, y;
-	float fZoom2, fZoom2Inv;
-
-	for (x = 0; x < gx; x++)
+	for (int x = 0; x < gx; x++)
 	{
-		for (y = 0; y < gy; y++)
+		for (int y = 0; y < gy; y++)
 		{
-			fZoom2 = std::pow(this->zoom_mesh[x][y], std::pow(this->zoomexp_mesh[x][y],
+			const float fZoom2 = std::pow(this->zoom_mesh[x][y], std::pow(this->zoomexp_mesh[x][y],
 					rad_mesh[x][y] * 2.0f - 1.0f));
-			fZoom2Inv = 1.0f / fZoom2;
+			const float fZoom2Inv = 1.0f / fZoom2;
 			this->x_mesh[x][y] = this->orig_x[x][y] * 0.5f * fZoom2Inv + 0.5f;
 			this->x_mesh[x][y] = (this->x_mesh[x][y] - this->cx_mesh[x][y]) / this->sx_mesh[x][y] + this->cx_mesh[x][y];
 			this->y_mesh[x][y] = this->orig_y[x][y] * 0.5f * fZoom2Inv + 0.5f;
@@ -209,71 +212,35 @@ void PresetOutputs::PerPixelMath_c(const PipelineContext &context)
 		}
 	}
 
-	float fWarpTime = context.time * this->fWarpAnimSpeed;
-	float fWarpScaleInv = 1.0f / this->fWarpScale;
+	const float fWarpTime = context.time * this->fWarpAnimSpeed;
+	const float fWarpScaleInv = 1.0f / this->fWarpScale;
 	float f[4];
 	f[0] = 11.68f + 4.0f * cosf(fWarpTime * 1.413f + 10);
 	f[1] = 8.77f + 3.0f * cosf(fWarpTime * 1.113f + 7);
 	f[2] = 10.54f + 3.0f * cosf(fWarpTime * 1.233f + 3);
 	f[3] = 11.49f + 4.0f * cosf(fWarpTime * 0.933f + 5);
 
-	for (x = 0; x < gx; x++)
+	for (int x = 0; x < gx; x++)
 	{
-		for (y = 0; y < gy; y++)
+		for (int y = 0; y < gy; y++)
 		{
-#if 0
-			this->x_mesh[x][y] += this->warp_mesh[x][y] * 0.0035f * sinf(fWarpTime * 0.333f
-					+ fWarpScaleInv * (this->orig_x[x][y] * f[0] - this->orig_y[x][y] * f[3]));
-			this->y_mesh[x][y] += this->warp_mesh[x][y] * 0.0035f * cosf(fWarpTime * 0.375f
-					- fWarpScaleInv * (this->orig_x[x][y] * f[2] + this->orig_y[x][y] * f[1]));
-			this->x_mesh[x][y] += this->warp_mesh[x][y] * 0.0035f * cosf(fWarpTime * 0.753f
-					- fWarpScaleInv * (this->orig_x[x][y] * f[1] - this->orig_y[x][y] * f[2]));
-			this->y_mesh[x][y] += this->warp_mesh[x][y] * 0.0035f * sinf(fWarpTime * 0.825f
-					+ fWarpScaleInv * (this->orig_x[x][y] * f[0] + this->orig_y[x][y] * f[3]));
-#else
-			float orig_x = this->orig_x[x][y];
-			float orig_y = this->orig_y[x][y];
-			float warp_mesh = this->warp_mesh[x][y] * 0.0035f;
+			const float orig_x = this->orig_x[x][y];
+			const float orig_y = this->orig_y[x][y];
+			const float warp_mesh = this->warp_mesh[x][y] * 0.0035f;
 
-			this->x_mesh[x][y] += 
+			this->x_mesh[x][y] +=
 				(warp_mesh * sinf(fWarpTime * 0.333f + fWarpScaleInv * (orig_x * f[0] - orig_y * f[3]))) +
 				(warp_mesh * cosf(fWarpTime * 0.753f - fWarpScaleInv * (orig_x * f[1] - orig_y * f[2])));
 
-			this->y_mesh[x][y] += 
+			this->y_mesh[x][y] +=
 				(warp_mesh * cosf(fWarpTime * 0.375f - fWarpScaleInv * (orig_x * f[2] + orig_y * f[1]))) +
 				(warp_mesh * sinf(fWarpTime * 0.825f + fWarpScaleInv * (orig_x * f[0] + orig_y * f[3])));
-#endif
 		}
 	}
 
-#if 0
-	for (x = 0; x < gx; x++)
+	for (int x = 0; x < gx; x++)
 	{
-		for (y = 0; y < gy; y++)
-		{
-			float u2 = this->x_mesh[x][y] - this->cx_mesh[x][y];
-			float v2 = this->y_mesh[x][y] - this->cy_mesh[x][y];
-
-			float cos_rot = cosf(this->rot_mesh[x][y]);
-			float sin_rot = sinf(this->rot_mesh[x][y]);
-
-			this->x_mesh[x][y] = u2 * cos_rot - v2 * sin_rot + this->cx_mesh[x][y];
-			this->y_mesh[x][y] = u2 * sin_rot + v2 * cos_rot + this->cy_mesh[x][y];
-
-		}
-	}
-
-	for (x = 0; x < gx; x++)
-		for (y = 0; y < gy; y++)
-			this->x_mesh[x][y] -= this->dx_mesh[x][y];
-
-	for (x = 0; x < gx; x++)
-		for (y = 0; y < gy; y++)
-			this->y_mesh[x][y] -= this->dy_mesh[x][y];
-#else
-	for (x = 0; x < gx; x++)
-	{
-		for (y = 0; y < gy; y++)
+		for (int y = 0; y < gy; y++)
 		{
 			const float u2 = this->x_mesh[x][y] - this->cx_mesh[x][y];
 			const float v2 = this->y_mesh[x][y] - this->cy_mesh[x][y];
@@ -286,9 +253,7 @@ void PresetOutputs::PerPixelMath_c(const PipelineContext &context)
 			this->y_mesh[x][y] = u2 * sin_rot + v2 * cos_rot + this->cy_mesh[x][y] - this->dy_mesh[x][y];
 		}
 	}
-#endif
 }
-
 
 
 #ifdef __SSE2__
@@ -501,6 +466,7 @@ void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 }
 #endif
 
+
 void PresetOutputs::PerPixelMath(const PipelineContext &context)
 {
 #ifdef __SSE2__
@@ -616,6 +582,7 @@ void PresetOutputs::Initialize ( int gx, int gy )
 		}
 }
 
+
 PresetInputs::~PresetInputs()
 {
 	for ( int x = 0; x < this->gx; x++ )
@@ -673,7 +640,6 @@ void PresetInputs::resetMesh()
 			theta_mesh[x][y]=this->origtheta[x][y];
 		}
 	}
-
 }
 
 
