@@ -44,6 +44,7 @@ public:
     void renderFrame();
     void pollEvent();
     void maximize();
+    std::string getActivePresetName();
 
 private:
     SDL_Window *win;
@@ -59,11 +60,9 @@ private:
     unsigned short audioSampleCount;
     SDL_AudioFormat audioFormat;
     SDL_AudioDeviceID audioDeviceID;
-    unsigned char *pcmBuffer;  // pre-allocated buffer for audioInputCallback
 
     static void audioInputCallbackF32(void *userdata, unsigned char *stream, int len);
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
-
 
     void addFakePCM();
     void keyHandler(SDL_Event *);
