@@ -27,7 +27,8 @@
 #include "wipemalloc.h"
 
  void *wipemalloc( size_t count ) {
-    void *mem = malloc( count );
+    count = (count + 15) & ~(size_t)15;
+    void *mem = aligned_alloc( 16, count );
     if ( mem != NULL ) {
         memset( mem, 0, count );
       } else {
