@@ -188,21 +188,23 @@ void projectMSDL::resize(unsigned int width_, unsigned int height_) {
 void projectMSDL::pollEvent() {
     SDL_Event evt;
 
-    SDL_PollEvent(&evt);
-    switch (evt.type) {
-        case SDL_WINDOWEVENT:
-            switch (evt.window.event) {
-                case SDL_WINDOWEVENT_RESIZED:
-                    resize(evt.window.data1, evt.window.data2);
-                    break;
-            }
-            break;
-        case SDL_KEYDOWN:
-            keyHandler(&evt);
-            break;
-        case SDL_QUIT:
-            done = true;
-            break;
+    while (SDL_PollEvent(&evt))
+    {
+        switch (evt.type) {
+            case SDL_WINDOWEVENT:
+                switch (evt.window.event) {
+                    case SDL_WINDOWEVENT_RESIZED:
+                        resize(evt.window.data1, evt.window.data2);
+                        break;
+                }
+                break;
+            case SDL_KEYDOWN:
+                keyHandler(&evt);
+                break;
+            case SDL_QUIT:
+                done = true;
+                break;
+        }
     }
 }
 
