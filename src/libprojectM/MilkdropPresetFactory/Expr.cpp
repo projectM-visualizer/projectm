@@ -104,7 +104,7 @@ protected:
 	Term term;
 public:
 	ParameterExpr( int _type, Term *_term ) : Expr(PARAMETER), term(*_term) {}
-	float eval(int mesh_i, int mesh_j );
+	float eval(int mesh_i, int mesh_j ) = 0;
 	std::ostream& to_string(std::ostream& out)
 	{
 		out << term.param->name;
@@ -116,56 +116,57 @@ class BoolParameterExpr : public ParameterExpr
 {
 public:
 	BoolParameterExpr( int _type, Term *_term ) : ParameterExpr(_type,_term) {}
-	float eval ( int mesh_i, int mesh_j ) { return ( float ) ( * ( ( bool* ) ( term.param->engine_val ) ) ); }	
+	float eval ( int mesh_i, int mesh_j )
+	{
+		assert( term.param->type == P_TYPE_BOOL );
+		return ( float ) ( * ( ( bool* ) ( term.param->engine_val ) ) );
+	}
 };
 class IntParameterExpr : public ParameterExpr
 {
 public:
 	IntParameterExpr( int _type, Term *_term ) : ParameterExpr(_type,_term) {}
-	float eval ( int mesh_i, int mesh_j ) { return ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) ); }	
+	float eval ( int mesh_i, int mesh_j )
+	{
+		assert( term.param->type == P_TYPE_INT );
+		return ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) );
+	}
 };
 class FloatParameterExpr : public ParameterExpr
 {
 public:
 	FloatParameterExpr( int _type, Term *_term ) : ParameterExpr(_type,_term) {}
-	float eval ( int mesh_i, int mesh_j ) { return ( * ( ( float* ) ( term.param->engine_val ) ) ); }	
+	float eval ( int mesh_i, int mesh_j );
 };
-
-/* Evaluates a value expression */
-float ParameterExpr::eval ( int mesh_i, int mesh_j )
+/* TODO optimize FloatParameterExpr::eval() further.
+//  - flag "never matrix" parameters
+//  - always pass in 2d matrix. instead of using  (i, -1) for 1d matrix, we could just use (0, i) and avoid check
+//  - instead of using matrix_flag to give "copy on write" behavior, maybe pre-copy from engine_val to matrix[]
+*/
+float FloatParameterExpr::eval ( int mesh_i, int mesh_j )
 {
-	switch ( term.param->type )
+	assert( term.param->type == P_TYPE_DOUBLE );
+	if ( term.param->matrix_flag | ( term.param->flags & P_FLAG_ALWAYS_MATRIX ) )
 	{
-		case P_TYPE_BOOL:
-			return ( float ) ( * ( ( bool* ) ( term.param->engine_val ) ) );
-		case P_TYPE_INT:
-			return ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) );
-		case P_TYPE_DOUBLE:
-			if ( term.param->matrix_flag | ( term.param->flags & P_FLAG_ALWAYS_MATRIX ) )
+		/* Sanity check the matrix is there... */
+		assert ( term.param->matrix != NULL );
+
+		/// @slow boolean check could be expensive in this critical (and common) step of evaluation
+		if ( mesh_i >= 0 )
+		{
+			if ( mesh_j >= 0 )
 			{
-
-				/* Sanity check the matrix is there... */
-				assert ( term.param->matrix != NULL );
-
-				/// @slow boolean check could be expensive in this critical (and common) step of evaluation
-				if ( mesh_i >= 0 )
-				{
-					if ( mesh_j >= 0 )
-					{
-						return ( ( ( float** ) term.param->matrix ) [mesh_i][mesh_j] );
-					}
-					else
-					{
-						return ( ( ( float* ) term.param->matrix ) [mesh_i] );
-					}
-				}
-				//assert(mesh_i >=0);
+				return ( ( ( float** ) term.param->matrix ) [mesh_i][mesh_j] );
 			}
-			//std::cout << term.param->name << ": " << (*((float*)term.param->engine_val)) << std::endl;
-			return * ( ( float* ) ( term.param->engine_val ) );
-		default:
-			return EVAL_ERROR;
+			else
+			{
+				return ( ( ( float* ) term.param->matrix ) [mesh_i] );
+			}
+		}
+		//assert(mesh_i >=0);
 	}
+	//std::cout << term.param->name << ": " << (*((float*)term.param->engine_val)) << std::endl;
+	return * ( ( float* ) ( term.param->engine_val ) );
 }
 
 
@@ -375,9 +376,6 @@ Expr * Expr::param_to_expr ( Param * param )
 		case P_TYPE_INT:
 			return new IntParameterExpr( PARAM_TERM_T, &term );
 		case P_TYPE_DOUBLE:
-			// TODO are these flags constant??? can I check them now?
-			if ( param->matrix_flag | ( param->flags & P_FLAG_ALWAYS_MATRIX ) )
-				return new ParameterExpr( PARAM_TERM_T, &term );
 			return new FloatParameterExpr( PARAM_TERM_T, &term );
 	}
 	return NULL;
