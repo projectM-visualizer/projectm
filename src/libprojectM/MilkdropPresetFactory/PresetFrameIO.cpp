@@ -168,8 +168,11 @@ void PresetOutputs::Render(const BeatDetect &music, const PipelineContext &conte
 
 
 // N.B. The more optimization that can be done on this method, the better! This is called a lot and can probably be improved.
+// NOTE : Keep PerPixelMath_sse and PerPixelMath_c in sync
+
 void PresetOutputs::PerPixelMath_c(const PipelineContext &context)
 {
+
 	for (int x = 0; x < gx; x++)
 	{
 		for (int y = 0; y < gy; y++)
@@ -280,6 +283,28 @@ inline __m128 _mm_cosf(__m128 x)
 }
 
 
+/**
+ * SSE instructions let us do the math on 4 floats in parallel.  You an see the main loop uses y += 4.  Each time through the loop,
+ * we read operands in group of 4.  This looks like a mess, but just think of it as rewriting the infix expressions as a prefix expression
+ * 
+ * e.g.
+ *   this->orig_x[x][y] * 0.5f * fZoom2Inv + 0.5f
+ * becomes
+ *			__m128 x_mesh = 
+ *				_mm_add_ps(
+ *					_mm_mul_ps(
+ *						_mm_load_ps(&this->orig_x[x][y]), 
+ *						_mm_mul_ps(fZoomInv,_mm_set_ps1(0.5f))),		// CONSIDER: common sub-expression
+ *					_mm_set_ps1(0.5f));
+ *
+ * _mm_load_ps loads an SSE register from memory (4 floats at a time)
+ * _mm_set_ps1 takes a constant 0.5 and loads it (replicated 4 times)
+ *  * The other expressions are what they sound like:
+ *    a + b --> _mm_add_ps(a, b)
+ *    a * b --> _mm_mul_ps(a, b)
+ */
+// NOTE : Keep PerPixelMath_sse and PerPixelMath_c in sync
+// NOTE : Even better would be to rewrite this as a compute shader
 void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 {
 	for (int x = 0; x < gx; x++)
