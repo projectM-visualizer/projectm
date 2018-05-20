@@ -11,37 +11,26 @@ Pipeline::Pipeline() : staticPerPixel(false),gx(0),gy(0),blur1n(1), blur2n(1), b
 blur1x(1), blur2x(1), blur3x(1),
 blur1ed(1){}
 
+float **alloc_mesh(size_t gx, size_t gy);
+float **free_mesh(float **mesh);
+
 void Pipeline::setStaticPerPixel(int gx, int gy)
 {
-	 staticPerPixel = true;
-	 this->gx = gx;
-	 this->gy = gy;
+	staticPerPixel = true;
+	this->gx = gx;
+	this->gy = gy;
 
-		this->x_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-		for ( int x = 0; x < gx; x++ )
-		{
-			this->x_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-		}
-		this->y_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-		for ( int x = 0; x < gx; x++ )
-		{
-			this->y_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-		}
-
+	this->x_mesh = alloc_mesh(gx, gy);
+	this->y_mesh = alloc_mesh(gx, gy);
 }
 
 Pipeline::~Pipeline()
 {
-if (staticPerPixel)
-{
-	for ( int x = 0; x < this->gx; x++ )
+	if (staticPerPixel)
 	{
-		free(this->x_mesh[x]);
-		free(this->y_mesh[x]);
+		free_mesh(x_mesh);
+		free_mesh(y_mesh);
 	}
-	free(x_mesh);
-	free(y_mesh);
-}
 }
 
 //void Pipeline::Render(const BeatDetect &music, const PipelineContext &context){}
