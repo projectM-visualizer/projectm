@@ -5,8 +5,6 @@
 #include <iostream>
 #include <cmath>
 #include "Renderer/BeatDetect.hpp"
-//#include <xmmintrin.h> // X86 SSE1
-//#include <emmintrin.h> // X86 SSE2
 #include <immintrin.h>
 
 
@@ -34,12 +32,37 @@ void PresetInputs::update(const BeatDetect & music, const PipelineContext & cont
 }
 
 
+float **alloc_mesh(size_t gx, size_t gy)
+{
+	// round gy up to multiple 4 (for possible SSE optimization) 
+	gy = (gy+3) & ~(size_t)3;
+
+	float **mesh = (float **)wipemalloc(gx * sizeof(float *));
+	float *m = (float *)wipemalloc(gx * gy * sizeof(float));
+	for ( int x = 0; x < gx; x++ )
+		mesh[x] = m + (gy * x);
+	return mesh;
+}
+
+float **free_mesh(float **mesh)
+{
+	free(mesh[0]);
+	free(mesh);
+	return NULL;
+}
+
+void copy_mesh(float **dst, float **src, int gx, int gy)
+{
+	memcpy(dst[0], src[0], gx*gy*sizeof(float));
+}
+
+
 void PresetInputs::Initialize ( int gx, int gy )
 {
 	int x, y;
 
-	this->gx =gx;
-	this->gy= gy;
+	this->gx = gx;
+	this->gy = gy;
 
 
 	/// @bug no clue if this block belongs here
@@ -53,47 +76,14 @@ void PresetInputs::Initialize ( int gx, int gy )
 	ang_per_pixel = 0;
 	// ***
 
-	this->x_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->x_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->y_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x <gx; x++ )
-	{
-		this->y_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->rad_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->rad_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->theta_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x <gx; x++ )
-	{
-		this->theta_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-
-	this->origtheta= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->origtheta[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->origrad= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->origrad[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->origx= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->origx[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->origy= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->origy[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
+	this->x_mesh    = alloc_mesh(gx, gy);
+	this->y_mesh    = alloc_mesh(gx, gy);
+	this->rad_mesh  = alloc_mesh(gx, gy);
+	this->theta_mesh= alloc_mesh(gx, gy);
+	this->origtheta = alloc_mesh(gx, gy);
+	this->origrad   = alloc_mesh(gx, gy);
+	this->origx     = alloc_mesh(gx, gy);
+	this->origy     = alloc_mesh(gx, gy);
 
 	for ( x=0;x<gx;x++ )
 	{
@@ -116,37 +106,19 @@ PresetOutputs::~PresetOutputs()
 {
 	assert(this->gx > 0);
 
-	for ( int x = 0; x < this->gx; x++ )
-	{
-		free(this->sx_mesh[x]);
-		free(this->sy_mesh[x]);
-		free(this->dy_mesh[x]);
-		free(this->dx_mesh[x]);
-		free(this->cy_mesh[x]);
-		free(this->cx_mesh[x]);
-
-		free(this->warp_mesh[x]);
-		free(this->zoom_mesh[x]);
-		free(this->zoomexp_mesh[x]);
-		free(this->rot_mesh[x]);
-		free(this->orig_x[x]);
-		free(this->orig_y[x]);
-		free(this->rad_mesh[x]);
-	}
-
-	free(this->rad_mesh);
-	free(this->sx_mesh);
-	free(this->sy_mesh);
-	free(this->dy_mesh);
-	free(this->dx_mesh);
-	free(this->cy_mesh);
-	free(this->cx_mesh);
-	free(this->warp_mesh);
-	free(this->zoom_mesh);
-	free(this->zoomexp_mesh);
-	free(this->rot_mesh);
-	free(this->orig_x);
-	free(this->orig_y);
+	this->rad_mesh = free_mesh(this->rad_mesh);
+	this->sx_mesh  = free_mesh(this->sx_mesh);
+	this->sy_mesh  = free_mesh(this->sy_mesh);
+	this->dy_mesh  = free_mesh(this->dy_mesh);
+	this->dx_mesh  = free_mesh(this->dx_mesh);
+	this->cy_mesh  = free_mesh(this->cy_mesh);
+	this->cx_mesh  = free_mesh(this->cx_mesh);
+	this->warp_mesh = free_mesh(this->warp_mesh);
+	this->zoom_mesh = free_mesh(this->zoom_mesh);
+	this->zoomexp_mesh = free_mesh(this->zoomexp_mesh);
+	this->rot_mesh = free_mesh(this->rot_mesh);
+	this->orig_x   = free_mesh(this->orig_x);
+	this->orig_y   = free_mesh(this->orig_y);
 }
 
 
@@ -265,10 +237,10 @@ inline __m128 _mm_pow(__m128 x, __m128 y)
 	float Y[4];
 	_mm_store_ps(X,x);
 	_mm_store_ps(Y,x);
-	X[0] = std::pow(X[0],Y[0]);
-	X[1] = std::pow(X[1],Y[1]);
-	X[2] = std::pow(X[2],Y[2]);
-	X[3] = std::pow(X[3],Y[3]);
+	X[0] = __builtin_powf(X[0],Y[0]);
+	X[1] = __builtin_powf(X[1],Y[1]);
+	X[2] = __builtin_powf(X[2],Y[2]);
+	X[3] = __builtin_powf(X[3],Y[3]);
 	return _mm_load_ps(X);
 }
 inline __m128 _mm_sincosf(__m128 x, __m128 &sinx, __m128 &cosx)
@@ -316,7 +288,6 @@ void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 		{
 			// fZoom2 = std::pow(this->zoom_mesh[x][y], std::pow(this->zoomexp_mesh[x][y],
 			// 		rad_mesh[x][y] * 2.0f - 1.0f));
-			// fZoom2Inv = 1.0f / fZoom2;
 			__m128 rad_mesh_scaled = 
 				_mm_sub_ps(
 					_mm_mul_ps(
@@ -326,14 +297,15 @@ void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 			__m128 zoom_mesh = _mm_load_ps(&this->zoom_mesh[x][y]);
 			__m128 zoomexp_mesh = _mm_load_ps(&this->zoomexp_mesh[x][y]);
 			__m128 fZoom2 = _mm_pow(zoom_mesh, _mm_pow(zoomexp_mesh, rad_mesh_scaled));
-			__m128 fZoomInv = _mm_mul_ps(_mm_rcp_ps(fZoom2), _mm_set_ps1(0.5f));
+			// fZoom2Inv = 1.0f / fZoom2;
+			__m128 fZoomInv = _mm_rcp_ps(fZoom2);
+
 			// this->x_mesh[x][y] = this->orig_x[x][y] * 0.5f * fZoom2Inv + 0.5f;
-			__m128 x_mesh = _mm_load_ps(&this->orig_x[x][y]); 
-			x_mesh = 
+			__m128 x_mesh = 
 				_mm_add_ps(
 					_mm_mul_ps(
 						_mm_load_ps(&this->orig_x[x][y]), 
-						fZoomInv),
+						_mm_mul_ps(fZoomInv,_mm_set_ps1(0.5f))),		// CONSIDER: common sub-expression
 					_mm_set_ps1(0.5f));
 			// this->x_mesh[x][y] = (this->x_mesh[x][y] - this->cx_mesh[x][y]) / this->sx_mesh[x][y] + this->cx_mesh[x][y];
 			__m128 cx_mesh = _mm_load_ps(&this->cx_mesh[x][y]);
@@ -351,7 +323,7 @@ void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 				_mm_add_ps(
 					_mm_mul_ps(
 						_mm_load_ps(&this->orig_y[x][y]), 
-						fZoomInv),
+						_mm_mul_ps(fZoomInv,_mm_set_ps1(0.5f))),
 					_mm_set_ps1(0.5f));
 			// this->y_mesh[x][y] = (this->y_mesh[x][y] - this->cy_mesh[x][y]) / this->sy_mesh[x][y] + this->cy_mesh[x][y];
 			__m128 cy_mesh = _mm_load_ps(&this->cy_mesh[x][y]);
@@ -481,165 +453,71 @@ void PresetOutputs::Initialize ( int gx, int gy )
 {
 	assert(gx > 0);
 
-	// round gx/gy up to multiple 4 (for possible SSE optimization)
-	this->gx = (gx+3) & ~(size_t)3;
-	this->gy = (gy+3) & ~(size_t)3;
+	this->gx = gx;
+	this->gy = gy;
 
 	staticPerPixel = true;
 	setStaticPerPixel(gx,gy);
 
 	assert(this->gx > 0);
 	int x;
-	this->x_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->x_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->y_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->y_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->sx_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->sx_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->sy_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->sy_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->dx_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->dx_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->dy_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->dy_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->cx_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->cx_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->cy_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->cy_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->zoom_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->zoom_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->zoomexp_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->zoomexp_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->rot_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->rot_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
+	this->x_mesh  = alloc_mesh( gx, gy );
+	this->y_mesh  = alloc_mesh( gx, gy );
+	this->sx_mesh = alloc_mesh( gx, gy );
+	this->sy_mesh = alloc_mesh( gx, gy );
+	this->dx_mesh = alloc_mesh( gx, gy );
+	this->dy_mesh = alloc_mesh( gx, gy );
+	this->cx_mesh = alloc_mesh( gx, gy );
+	this->cy_mesh = alloc_mesh( gx, gy );
+	this->zoom_mesh = alloc_mesh( gx, gy );
+	this->zoomexp_mesh = alloc_mesh( gx, gy );
+	this->rot_mesh = alloc_mesh( gx, gy );
 
-	this->warp_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->warp_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->rad_mesh= ( float ** ) wipemalloc ( gx * sizeof ( float * ) );
-	for ( x = 0; x < gx; x++ )
-	{
-		this->rad_mesh[x] = ( float * ) wipemalloc ( gy * sizeof ( float ) );
-	}
-	this->orig_x = (float **) wipemalloc(gx * sizeof(float *));
+	this->warp_mesh = alloc_mesh( gx, gy );
+	this->rad_mesh = alloc_mesh( gx, gy );
+	this->orig_x  = alloc_mesh( gx, gy );
+	this->orig_y  = alloc_mesh( gx, gy );
+
+	//initialize reference grid values
 	for (x = 0; x < gx; x++)
 	{
-		this->orig_x[x] = (float *) wipemalloc(gy * sizeof(float));
-	}
-	this->orig_y = (float **) wipemalloc(gx * sizeof(float *));
-	for (x = 0; x < gx; x++)
-	{
-		this->orig_y[x] = (float *) wipemalloc(gy * sizeof(float));
-	}
-
-		//initialize reference grid values
-		for (x = 0; x < gx; x++)
+		for (int y = 0; y < gy; y++)
 		{
-			for (int y = 0; y < gy; y++)
-			{
-				float origx = x / (float) (gx - 1);
-				float origy = -((y / (float) (gy - 1)) - 1);
+			float origx = x / (float) (gx - 1);
+			float origy = -((y / (float) (gy - 1)) - 1);
 
-				rad_mesh[x][y]=hypot ( ( origx-.5 ) *2, ( origy-.5 ) *2 ) * .7071067;
-				orig_x[x][y] = (origx - .5) * 2;
-				orig_y[x][y] = (origy - .5) * 2;
-			}
+			rad_mesh[x][y]=hypot ( ( origx-.5 ) *2, ( origy-.5 ) *2 ) * .7071067;
+			orig_x[x][y] = (origx - .5) * 2;
+			orig_y[x][y] = (origy - .5) * 2;
 		}
+	}
 }
 
 
 PresetInputs::~PresetInputs()
 {
-	for ( int x = 0; x < this->gx; x++ )
-	{
-		free ( this->origtheta[x] );
-		free ( this->origrad[x] );
-		free ( this->origx[x] );
-		free ( this->origy[x] );
-
-		free ( this->x_mesh[x] );
-		free ( this->y_mesh[x] );
-		free ( this->rad_mesh[x] );
-		free ( this->theta_mesh[x] );
-	}
-
-
-	free ( this->origx );
-	free ( this->origy );
-	free ( this->origrad );
-	free ( this->origtheta );
-
-	free ( this->x_mesh );
-	free ( this->y_mesh );
-	free ( this->rad_mesh );
-	free ( this->theta_mesh );
-
-	this->origx = NULL;
-	this->origy = NULL;
-	this->origtheta = NULL;
-	this->origrad = NULL;
-
-	this->x_mesh = NULL;
-	this->y_mesh = NULL;
-	this->rad_mesh = NULL;
-	this->theta_mesh = NULL;
+	this->origx = free_mesh ( this->origx );
+	this->origy = free_mesh ( this->origy );
+	this->origrad = free_mesh ( this->origrad );
+	this->origtheta = free_mesh ( this->origtheta );
+	this->x_mesh = free_mesh ( this->x_mesh );
+	this->y_mesh = free_mesh ( this->y_mesh );
+	this->rad_mesh = free_mesh ( this->rad_mesh );
+	this->theta_mesh = free_mesh ( this->theta_mesh );
 }
 
 
 void PresetInputs::resetMesh()
 {
-	int x,y;
-
 	assert ( x_mesh );
 	assert ( y_mesh );
 	assert ( rad_mesh );
 	assert ( theta_mesh );
 
-	for ( x=0;x<this->gx;x++ )
-	{
-		for ( y=0;y<this->gy;y++ )
-		{
-			x_mesh[x][y]=this->origx[x][y];
-			y_mesh[x][y]=this->origy[x][y];
-			rad_mesh[x][y]=this->origrad[x][y];
-			theta_mesh[x][y]=this->origtheta[x][y];
-		}
-	}
+	copy_mesh(this->x_mesh, this->origx, gx, gy);
+	copy_mesh(this->y_mesh, this->origy, gx, gy);
+	copy_mesh(this->rad_mesh, this->origrad, gx, gy);
+	copy_mesh(this->theta_mesh, this->origtheta, gx, gy);
 }
 
 
