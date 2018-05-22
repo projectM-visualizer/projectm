@@ -25,17 +25,18 @@
  */
 
 #include "wipemalloc.h"
+#include <assert.h>
 
- void *wipemalloc( size_t count ) {
-    count = (count + 15) & ~(size_t)15;
-    void *mem = aligned_alloc( 16, count );
+ void *wipemalloc( size_t count )
+ {
+    void *mem = malloc( count );
     if ( mem != NULL ) {
         memset( mem, 0, count );
       } else {
         printf( "wipemalloc() failed to allocate %d bytes\n", (int)count );
       }
     return mem;
-  }
+ }
 
 /** Safe memory deallocator */
  void wipefree( void *ptr ) {
@@ -43,3 +44,42 @@
         free( ptr );
       }
   }
+
+void *wipe_aligned_alloc( size_t align, size_t size )
+{
+#if TARGET_OS_MAC
+    // only support powers of 2 for align
+    assert( (align & (align-1)) == 0 );
+    void *allocated = malloc(size + align - 1 + sizeof(void*));
+    if (allocated == NULL)
+    {
+        printf( "wipe_aligned_malloc() failed to allocate %d bytes\n", (int)size );
+        return NULL;
+    }
+    void *ret = (void*) (((size_t)allocated + sizeof(void*) + align -1) & ~(align-1));
+    *((void**)((size_t)ret - sizeof(void*))) = allocated;
+    return ret;
+#else
+    void *mem = aligned_alloc( align, size );
+    if ( mem != NULL ) {
+        memset( mem, 0, size );
+      } else {
+        printf( "wipe_aligned_alloc() failed to allocate %d bytes\n", (int)size );
+      }
+    return mem;
+#endif
+}
+
+void wipe_aligned_free( void *p )
+{
+#if TARGET_OS_MAC
+    if (p != NULL)
+    {
+        void *allocated = *((void**)((size_t)p - sizeof(void*)));
+        free(allocated);
+    }
+#else
+    if (p != NULL)
+        free(p);
+#endif
+}
