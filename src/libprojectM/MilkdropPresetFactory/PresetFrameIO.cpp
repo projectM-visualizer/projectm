@@ -243,7 +243,7 @@ inline __m128 _mm_pow(__m128 x, __m128 y)
 	X[3] = __builtin_powf(X[3],Y[3]);
 	return _mm_load_ps(X);
 }
-inline __m128 _mm_sincosf(__m128 x, __m128 &sinx, __m128 &cosx)
+inline void _mm_sincosf(__m128 x, __m128 &sinx, __m128 &cosx)
 {
 	float X[4], S[4], C[4];
 	_mm_store_ps(X,x);
