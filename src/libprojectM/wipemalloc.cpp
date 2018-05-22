@@ -47,7 +47,7 @@
 
 void *wipe_aligned_alloc( size_t align, size_t size )
 {
-#if TARGET_OS_MAC
+#if __APPLE__
     // only support powers of 2 for align
     assert( (align & (align-1)) == 0 );
     void *allocated = malloc(size + align - 1 + sizeof(void*));
@@ -72,7 +72,7 @@ void *wipe_aligned_alloc( size_t align, size_t size )
 
 void wipe_aligned_free( void *p )
 {
-#if TARGET_OS_MAC
+#if __APPLE__
     if (p != NULL)
     {
         void *allocated = *((void**)((size_t)p - sizeof(void*)));
