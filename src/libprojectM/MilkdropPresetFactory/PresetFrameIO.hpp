@@ -138,6 +138,12 @@ public:
     float **orig_x;  //original mesh
     float **orig_y;
     float **rad_mesh;
+
+private:
+    void PerPixelMath_c( const PipelineContext &context);
+#ifdef __SSE2__
+    void PerPixelMath_sse( const PipelineContext &context);
+#endif
 };
 
 
