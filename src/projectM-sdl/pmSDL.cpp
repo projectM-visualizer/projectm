@@ -96,13 +96,11 @@ int projectMSDL::openAudioInput() {
 void projectMSDL::beginAudioCapture() {
     // allocate a buffer to store PCM data for feeding in
     unsigned int maxSamples = audioChannelsCount * audioSampleCount;
-    pcmBuffer = (unsigned char *) malloc(maxSamples);
     SDL_PauseAudioDevice(audioDeviceID, false);
     pcm()->initPCM(2048);
 }
 
 void projectMSDL::endAudioCapture() {
-    free(pcmBuffer);
     SDL_PauseAudioDevice(audioDeviceID, true);
 }
 
@@ -237,4 +235,10 @@ void projectMSDL::init(SDL_Window *window, SDL_Renderer *renderer) {
     rend = renderer;
     selectRandom(true);
     projectM_resetGL(width, height);
+}
+
+
+std::string projectMSDL::getActivePresetName()
+{
+    return std::string("hey");
 }

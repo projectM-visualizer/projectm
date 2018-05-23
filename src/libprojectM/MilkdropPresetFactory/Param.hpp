@@ -58,6 +58,8 @@ class InitCond;
 class Param;
 class Preset;
 //#include <map>
+#include <immintrin.h>
+
 
 /* Parameter Type */
 class Param {
@@ -71,6 +73,9 @@ public:
     CValue default_init_val; /* a default initial condition value */
     CValue upper_bound; /* this parameter's upper bound */
     CValue lower_bound; /* this parameter's lower bound */
+
+    // for a local variable, engine_val can point here
+    float local_value;
 
     /// Create a new parameter
     Param(std::string name, short int type, short int flags,
