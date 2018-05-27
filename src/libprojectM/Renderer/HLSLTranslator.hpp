@@ -21,12 +21,12 @@
 #include "GLSLGenerator.h"
 #include <sys/types.h>
 #include "projectM-opengl.h"
+#include <iostream>
+#include <cstdlib>
 
 class HLSLTranslator {
  public:
-    // HLSLTranslator();
-    // virtual ~HLSLTranslator();
-    std::unique_ptr<std::string> parse(GLenum shaderType, const char *fileName, const char *source, size_t size);
+    std::unique_ptr<std::string> parse(GLenum shaderType, const char *fileName, std::string &source);
 };
 
 #endif

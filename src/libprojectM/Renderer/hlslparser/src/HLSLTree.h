@@ -47,6 +47,20 @@ enum HLSLNodeType
     HLSLNodeType_Stage,
 };
 
+enum HLSLTypeDimension
+{
+    HLSLTypeDimension_None,
+    HLSLTypeDimension_Scalar,
+    HLSLTypeDimension_Vector2,
+    HLSLTypeDimension_Vector3,
+    HLSLTypeDimension_Vector4,
+    HLSLTypeDimension_Matrix2x2,
+    HLSLTypeDimension_Matrix3x3,
+    HLSLTypeDimension_Matrix4x4,
+    HLSLTypeDimension_Matrix4x3,
+    HLSLTypeDimension_Matrix4x2
+};
+    
 enum HLSLBaseType
 {
     HLSLBaseType_Unknown,
@@ -83,6 +97,14 @@ enum HLSLBaseType
     HLSLBaseType_Uint2,
     HLSLBaseType_Uint3,
     HLSLBaseType_Uint4,
+    /*HLSLBaseType_Short,   // @@ Separate dimension from Base type, this is getting out of control.
+    HLSLBaseType_Short2,
+    HLSLBaseType_Short3,
+    HLSLBaseType_Short4,
+    HLSLBaseType_Ushort,
+    HLSLBaseType_Ushort2,
+    HLSLBaseType_Ushort3,
+    HLSLBaseType_Ushort4,*/
     HLSLBaseType_LastInteger = HLSLBaseType_Uint4,
     HLSLBaseType_LastNumeric = HLSLBaseType_Uint4,
     HLSLBaseType_Texture,
@@ -94,10 +116,15 @@ enum HLSLBaseType
     HLSLBaseType_Sampler2DMS,
     HLSLBaseType_Sampler2DArray,
     HLSLBaseType_UserDefined,       // struct
+    HLSLBaseType_Expression,        // type argument for defined() sizeof() and typeof().
+    HLSLBaseType_Auto,
     
     HLSLBaseType_Count,
     HLSLBaseType_NumericCount = HLSLBaseType_LastNumeric - HLSLBaseType_FirstNumeric + 1
 };
+    
+extern const HLSLTypeDimension BaseTypeDimension[HLSLBaseType_Count];
+extern const HLSLBaseType ScalarBaseType[HLSLBaseType_Count];
 
 inline bool IsSamplerType(HLSLBaseType baseType)
 {
@@ -116,7 +143,7 @@ inline bool IsMatrixType(HLSLBaseType baseType)
         baseType == HLSLBaseType_Half3x3 || baseType == HLSLBaseType_Half4x4 || baseType == HLSLBaseType_Half4x3 || baseType == HLSLBaseType_Half4x2;
 }
 
-inline bool isScalarType( HLSLBaseType baseType )
+inline bool IsScalarType( HLSLBaseType baseType )
 {
 	return  baseType == HLSLBaseType_Float ||
 			baseType == HLSLBaseType_Half ||
@@ -125,7 +152,7 @@ inline bool isScalarType( HLSLBaseType baseType )
 			baseType == HLSLBaseType_Uint;
 }
 
-inline bool isVectorType( HLSLBaseType baseType )
+inline bool IsVectorType( HLSLBaseType baseType )
 {
 	return  baseType == HLSLBaseType_Float2 ||
 		baseType == HLSLBaseType_Float3 ||
@@ -169,7 +196,7 @@ enum HLSLBinaryOp
     HLSLBinaryOp_DivAssign,
 };
 
-inline bool isCompareOp( HLSLBinaryOp op )
+inline bool IsCompareOp( HLSLBinaryOp op )
 {
 	return op == HLSLBinaryOp_Less ||
 		op == HLSLBinaryOp_Greater ||
@@ -179,6 +206,30 @@ inline bool isCompareOp( HLSLBinaryOp op )
 		op == HLSLBinaryOp_NotEqual;
 }
 
+inline bool IsArithmeticOp( HLSLBinaryOp op )
+{
+    return op == HLSLBinaryOp_Add ||
+        op == HLSLBinaryOp_Sub ||
+        op == HLSLBinaryOp_Mul ||
+        op == HLSLBinaryOp_Div;
+}
+
+inline bool IsLogicOp( HLSLBinaryOp op )
+{
+    return op == HLSLBinaryOp_And ||
+        op == HLSLBinaryOp_Or;
+}
+
+inline bool IsAssignOp( HLSLBinaryOp op )
+{
+    return op == HLSLBinaryOp_Assign ||
+        op == HLSLBinaryOp_AddAssign ||
+        op == HLSLBinaryOp_SubAssign ||
+        op == HLSLBinaryOp_MulAssign ||
+        op == HLSLBinaryOp_DivAssign;
+}
+
+    
 enum HLSLUnaryOp
 {
     HLSLUnaryOp_Negative,       // -x
@@ -223,7 +274,7 @@ enum HLSLTypeFlags
     HLSLTypeFlag_Sample = 0x100000,
 
     // Misc.
-    //HLSLTypeFlag_Swizzle_BGRA = 0x200000,
+    HLSLTypeFlag_NoPromote = 0x200000,
 };
 
 enum HLSLAttributeType
@@ -232,6 +283,7 @@ enum HLSLAttributeType
     HLSLAttributeType_Unroll,
     HLSLAttributeType_Branch,
     HLSLAttributeType_Flatten,
+    HLSLAttributeType_NoFastMath,
 };
 
 enum HLSLAddressSpace
@@ -269,6 +321,7 @@ struct HLSLType
     explicit HLSLType(HLSLBaseType _baseType = HLSLBaseType_Unknown)
     { 
         baseType    = _baseType;
+        samplerType = HLSLBaseType_Float;
         typeName    = NULL;
         array       = false;
         arraySize   = NULL;
@@ -276,6 +329,7 @@ struct HLSLType
         addressSpace = HLSLAddressSpace_Undefined;
     }
     HLSLBaseType        baseType;
+    HLSLBaseType        samplerType;    // Half or Float
     const char*         typeName;       // For user defined types.
     bool                array;
     HLSLExpression*     arraySize;
@@ -288,14 +342,14 @@ inline bool IsSamplerType(const HLSLType & type)
     return IsSamplerType(type.baseType);
 }
 
-inline bool isScalarType(const HLSLType & type)
+inline bool IsScalarType(const HLSLType & type)
 {
-	return isScalarType(type.baseType);
+	return IsScalarType(type.baseType);
 }
 
-inline bool isVectorType(const HLSLType & type)
+inline bool IsVectorType(const HLSLType & type)
 {
-	return isVectorType(type.baseType);
+	return IsVectorType(type.baseType);
 }
 
 
@@ -421,6 +475,7 @@ struct HLSLFunction : public HLSLStatement
         statement       = NULL;
         argument        = NULL;
         numArguments    = 0;
+        numOutputArguments = 0;
         forward         = NULL;
     }
     const char*         name;
@@ -428,6 +483,7 @@ struct HLSLFunction : public HLSLStatement
     const char*         semantic;
     const char*         sv_semantic;
     int                 numArguments;
+    int                 numOutputArguments;     // Includes out and inout arguments.
     HLSLArgument*       argument;
     HLSLStatement*      statement;
     HLSLFunction*       forward; // Which HLSLFunction this one forward-declares
@@ -501,10 +557,12 @@ struct HLSLIfStatement : public HLSLStatement
         condition     = NULL;
         statement     = NULL;
         elseStatement = NULL;
+        isStatic      = false;
     }
     HLSLExpression*     condition;
     HLSLStatement*      statement;
     HLSLStatement*      elseStatement;
+    bool                isStatic;
 };
 
 struct HLSLForStatement : public HLSLStatement
@@ -886,6 +944,8 @@ public:
     virtual void VisitSamplerState(HLSLSamplerState * node);
     virtual void VisitPass(HLSLPass * node);
     virtual void VisitTechnique(HLSLTechnique * node);
+    virtual void VisitPipeline(HLSLPipeline * node);
+
 
     virtual void VisitFunctions(HLSLRoot * root);
     virtual void VisitParameters(HLSLRoot * root);
@@ -902,7 +962,8 @@ extern void SortTree(HLSLTree* tree);
 extern void GroupParameters(HLSLTree* tree);
 extern void HideUnusedArguments(HLSLFunction * function);
 extern bool EmulateAlphaTest(HLSLTree* tree, const char* entryName, float alphaRef = 0.5f);
-
+extern void FlattenExpressions(HLSLTree* tree);
+    
 } // M4
 
 #endif

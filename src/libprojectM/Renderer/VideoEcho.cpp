@@ -35,16 +35,19 @@ void VideoEcho::Draw(RenderContext &context)
 				      { 0.5,  0.5},
 				      { 0.5,  -0.5}};
 
+#ifndef GL_TRANSITION
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_COLOR_ARRAY);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
 		glVertexPointer(2,GL_FLOAT,0,points);
 		glTexCoordPointer(2,GL_FLOAT,0,tex);
-
+#endif
+    
 		//Now Blend the Video Echo
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+#ifndef GL_TRANSITION
 		glMatrixMode(GL_TEXTURE);
 
 		//draw video echo
@@ -52,7 +55,7 @@ void VideoEcho::Draw(RenderContext &context)
 		glTranslatef(.5, .5, 0);
 		glScalef(1.0/zoom, 1.0/zoom, 1);
 		glTranslatef(-.5, -.5, 0);
-
+    
 		int flipx=1, flipy=1;
 		switch (orientation)
 		{
@@ -75,5 +78,6 @@ void VideoEcho::Draw(RenderContext &context)
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+#endif
 
 }

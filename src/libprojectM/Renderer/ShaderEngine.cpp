@@ -155,9 +155,7 @@ bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::str
     if (found != std::string::npos)
     {
         //std::cout << "first 'shader_body' found at: " << int(found) << std::endl;
-        // HLSL version:
-//        program.replace(int(found), 11, "outtype projectm(float2 uv : TEXCOORD0)\n");
-        program.replace(int(found), 11, "void main()\n");
+        program.replace(int(found), 11, "outtype projectm(float2 uv : TEXCOORD0)\n");
     }
     else
         return false;
@@ -173,7 +171,6 @@ bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::str
 
         if (end != std::string::npos)
         {
-
             std::string sampler = program.substr((int) found, (int) end - found);
             UserTexture* texture = new UserTexture(sampler);
 
@@ -226,6 +223,7 @@ bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::str
             else
                 delete (texture);
 
+            // we need to pass the sampler in to the source before transpiling it
         }
 
         found = program.find("sampler_", found);
@@ -268,11 +266,13 @@ bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::str
         }
     }
 
-    std::cout << "Got program: " << program << std::endl;
+//    std::cout << "Got program: " << program << std::endl;
+    
+    // now we need to prepend the HLSL template to the program
 
     // transpile from HLSL (aka preset shader aka directX shader) to GLSL (aka OpenGL shader lang)
     HLSLTranslator translator = HLSLTranslator();
-    std::unique_ptr<std::string> glslSource = translator.parse(shaderType, shaderFilename.c_str(), program.c_str(), program.size());
+    std::unique_ptr<std::string> glslSource = translator.parse(shaderType, shaderFilename.c_str(), program);
     if (!glslSource) {
         std::cerr << "Failed to parse shader from " << shaderFilename << std::endl;
         return false;
@@ -281,24 +281,31 @@ bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::str
     // https://www.khronos.org/opengl/wiki/Shader_Compilation#Shader_object_compilation
     GLuint shader = glCreateShader(shaderType);
     
+    // replace shader_body in preset with parameters and main():
+    //        const char *main = "void main(in sampler2D myTexture)\n";
+    //        program.replace(int(found), 11, main);
+
     // Get strings for glShaderSource.
+    std::cout << "Got program: " << glslSource.get()->c_str() << std::endl;
     const char *shaderSourceCStr = glslSource.get()->c_str();
     glShaderSource(shader, 1, &shaderSourceCStr, NULL);
     
+    // compile shader
     glCompileShader(shader);
     
+    // check result
     GLint isCompiled = 0;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
     if (isCompiled == GL_FALSE)
     {
-        GLint maxLength = 0;
+        GLint maxLength = 1024;
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
         
         // The maxLength includes the NULL character
-        std::vector<GLchar> errorLog(maxLength);
-        glGetShaderInfoLog(shader, maxLength, &maxLength, &errorLog[0]);
+        GLchar infoLog[512];
+        glGetShaderInfoLog(shader, 512, nullptr, infoLog);
         
-        std::cerr << "Error compiling GLSL shader: " << errorLog[0] << std::endl;
+        std::cerr << (std::string("Failed to compile shader: ") + infoLog) << std::endl;
         
         glDeleteShader(shader); // Don't leak the shader.
         return false;
@@ -352,12 +359,10 @@ GLuint ShaderEngine::makeShader(GLenum type, const char *filename)
 void ShaderEngine::InitShaderProgram()
 {
     GLuint projectMShader, blurShader;
-    projectMShader = makeShader(GL_FRAGMENT_SHADER, "/usr/local/share/projectM/shaders/projectM.cg");
     blurShader = makeShader(GL_FRAGMENT_SHADER, "/usr/local/share/projectM/shaders/blur");
 
     GLint program_ok;
     GLuint program = glCreateProgram();
-    glAttachShader(program, projectMShader);
     glAttachShader(program, blurShader);
     glLinkProgram(program);
     glGetProgramiv(program, GL_LINK_STATUS, &program_ok);
@@ -428,47 +433,55 @@ void ShaderEngine::SetupShaderVariables(GLuint program, const Pipeline &pipeline
 	}
      */
 }
-/*
-void ShaderEngine::SetupUserTexture(CGprogram program, const UserTexture* texture)
+
+void ShaderEngine::SetupUserTexture(GLuint program, const UserTexture* texture)
 {
 	std::string samplerName = "sampler_" + texture->qname;
 
-	CGparameter param = glGetUniformLocation(program, samplerName.c_str());
-	checkForCgError("getting parameter");
-	cgGLSetTextureParameter(param, texture->texID);
-	checkForCgError("setting parameter");
-	cgGLEnableTextureParameter(param);
-	checkForCgError("enabling parameter");
-	//std::cout<<texture->texID<<" "<<samplerName<<std::endl;
+    // https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Binding_textures_to_samplers
+	GLint param = glGetUniformLocation(program, samplerName.c_str());
+    if (param < 0) {
+        std::cerr << "invalid uniform name " << samplerName << std::endl;
+        return;
+    }
 
+    glUniform1i(param, 0);
+    
+    glActiveTexture(GL_TEXTURE0 + 0);
+    glBindTexture(GL_TEXTURE_2D, texture->texID);
+    
 	if (texture->texsizeDefined)
 	{
 		std::string texsizeName = "texsize_" + texture->name;
-		glProgramUniform4f(glGetUniformLocation(program, texsizeName.c_str()), texture->width, texture->height, 1
-				/ (float) texture->width, 1 / (float) texture->height);
-		checkForCgError("setting parameter texsize");
+        GLint textSizeParam = glGetUniformLocation(program, texsizeName.c_str());
+        if (param >= 0) {
+            glProgramUniform4f(textSizeParam, texture->width, texture->height, 0,
+                               1 / (float) texture->width, 1 / (float) texture->height);
+        } else {
+            std::cerr << "invalid texsizeName " << texsizeName << std::endl;
+            return;
+        }
 	}
 }
-*/
+
 void ShaderEngine::SetupUserTextureState( const UserTexture* texture)
 {
-	    glBindTexture(GL_TEXTURE_2D, texture->texID);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture->wrap ? GL_REPEAT : GL_CLAMP);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->wrap ? GL_REPEAT : GL_CLAMP);
+    glBindTexture(GL_TEXTURE_2D, texture->texID);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture->wrap ? GL_REPEAT : GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->wrap ? GL_REPEAT : GL_CLAMP);
 }
 
 void ShaderEngine::SetupShaderQVariables(GLuint program, const Pipeline &q)
 {
-		glProgramUniform4f(glGetUniformLocation(program, "_qa"), 4, q.q[0], q.q[1], q.q[2], q.q[3]);
-		glProgramUniform4f(glGetUniformLocation(program, "_qb"), 4, q.q[4], q.q[5], q.q[6], q.q[7]);
-		glProgramUniform4f(glGetUniformLocation(program, "_qc"), 4, q.q[8], q.q[9], q.q[10], q.q[11]);
-		glProgramUniform4f(glGetUniformLocation(program, "_qd"), 4, q.q[12], q.q[13], q.q[14], q.q[15]);
-		glProgramUniform4f(glGetUniformLocation(program, "_qe"), 4, q.q[16], q.q[17], q.q[18], q.q[19]);
-		glProgramUniform4f(glGetUniformLocation(program, "_qf"), 4, q.q[20], q.q[21], q.q[22], q.q[23]);
-		glProgramUniform4f(glGetUniformLocation(program, "_qg"), 4, q.q[24], q.q[25], q.q[26], q.q[27]);
-		glProgramUniform4f(glGetUniformLocation(program, "_qh"), 4, q.q[28], q.q[29], q.q[30], q.q[31]);
+    // set program uniform "q" values (q1, q2, ... q32)
+    for (int i=0; i < 32; i++) {
+        std::string varName = "q";
+        varName.append(std::to_string(i+1));
+        int loc = glGetUniformLocation(program, varName.c_str());
+        glProgramUniform1f(program, loc, q.q[i]);
+    }
 }
 
 void ShaderEngine::setAspect(float aspect)
@@ -606,45 +619,37 @@ void ShaderEngine::loadShader(GLenum shaderType, Shader &shader, std::string &sh
 	shader.enabled = LoadHLSLProgram(shaderType, shader, shaderFilename);
 }
 
-// void ShaderEngine::disableShader()
-// {
-// 	if (enabled)
-// 	{
-// 		cgGLUnbindProgram(myCgProfile);
-// 		checkForCgError("disabling fragment profile");
-// 		cgGLDisableProfile(myCgProfile);
-// 		checkForCgError("disabling fragment profile");
-// 	}
-// 	enabled = false;
-// }
+ void ShaderEngine::disableShader(Shader &shader)
+ {
+     if (enabled) {
+         // NOTE: this is probably wrong. if we re-enable a program after calling this probably terrible things will happen.
+         // this is temporary.
+         GLuint program = programs[&shader];
+         glDeleteProgram(program);
+     }
+     enabled = false;
+ }
 
-// void ShaderEngine::enableShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext)
-// {
-// 	enabled = false;
-// 	if (shader.enabled)
-// 	{
+ void ShaderEngine::enableShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext)
+ {
+     enabled = false;
+     if (shader.enabled)
+     {
+         for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos != shader.textures.end(); ++pos)
+             SetupUserTextureState(pos->second);
 
-// 		for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos	!= shader.textures.end(); ++pos)
-// 							SetupUserTextureState( pos->second);
+         GLuint program = programs[&shader];
+         for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos != shader.textures.end(); ++pos)
+             SetupUserTexture(program, pos->second);
 
+         glUseProgram(program);
 
-// 		CGprogram program = programs[&shader];
-// 		for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos
-// 						!= shader.textures.end(); ++pos)
-// 					SetupUserTexture(program, pos->second);
+//         SetupCgVariables(program, pipeline, pipelineContext);
+//         SetupCgQVariables(program, pipeline);
 
-// 		cgGLEnableProfile(myCgProfile);
-// 		checkForCgError("enabling warp profile");
-
-// 		cgGLBindProgram(program);
-// 		checkForCgError("binding warp program");
-
-// 		SetupCgVariables(program, pipeline, pipelineContext);
-// 		SetupCgQVariables(program, pipeline);
-
-// 		enabled = true;
-// 	}
-// }
+         enabled = true;
+     }
+ }
 
 void ShaderEngine::reset()
 {

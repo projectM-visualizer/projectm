@@ -27,6 +27,7 @@ enum CompareFunctionsResult
     Function2Better
 };
 
+    
 /** This structure stores a HLSLFunction-like declaration for an intrinsic function */
 struct Intrinsic
 {
@@ -93,6 +94,14 @@ struct Intrinsic
     HLSLFunction    function;
     HLSLArgument    argument[4];
 };
+    
+Intrinsic SamplerIntrinsic(const char* name, HLSLBaseType returnType, HLSLBaseType arg1, HLSLBaseType samplerType, HLSLBaseType arg2)
+{
+    Intrinsic i(name, returnType, arg1, arg2);
+    i.argument[0].type.samplerType = samplerType;
+    return i;
+}
+
 
 enum NumericType
 {
@@ -411,15 +420,25 @@ struct BaseTypeDescription
 
 #define INTRINSIC_FLOAT3_FUNCTION(name) \
         Intrinsic( name, HLSLBaseType_Float,   HLSLBaseType_Float,   HLSLBaseType_Float,  HLSLBaseType_Float ),   \
-        Intrinsic( name, HLSLBaseType_Float2,  HLSLBaseType_Float2,  HLSLBaseType_Float,  HLSLBaseType_Float2 ),  \
-        Intrinsic( name, HLSLBaseType_Float3,  HLSLBaseType_Float3,  HLSLBaseType_Float,  HLSLBaseType_Float3 ),  \
-        Intrinsic( name, HLSLBaseType_Float4,  HLSLBaseType_Float4,  HLSLBaseType_Float,  HLSLBaseType_Float4 ),  \
+        Intrinsic( name, HLSLBaseType_Float2,  HLSLBaseType_Float2,  HLSLBaseType_Float2,  HLSLBaseType_Float2 ),  \
+        Intrinsic( name, HLSLBaseType_Float3,  HLSLBaseType_Float3,  HLSLBaseType_Float3,  HLSLBaseType_Float3 ),  \
+        Intrinsic( name, HLSLBaseType_Float4,  HLSLBaseType_Float4,  HLSLBaseType_Float4,  HLSLBaseType_Float4 ),  \
         Intrinsic( name, HLSLBaseType_Half,    HLSLBaseType_Half,    HLSLBaseType_Half,   HLSLBaseType_Half ),    \
-        Intrinsic( name, HLSLBaseType_Half2,   HLSLBaseType_Half2,   HLSLBaseType_Half2,  HLSLBaseType_Half2 ),   \
-        Intrinsic( name, HLSLBaseType_Half3,   HLSLBaseType_Half3,   HLSLBaseType_Half3,  HLSLBaseType_Half3 ),   \
+        Intrinsic( name, HLSLBaseType_Half2,   HLSLBaseType_Half2,   HLSLBaseType_Half2,  HLSLBaseType_Half2 ),    \
+        Intrinsic( name, HLSLBaseType_Half3,   HLSLBaseType_Half3,   HLSLBaseType_Half3,  HLSLBaseType_Half3 ),    \
         Intrinsic( name, HLSLBaseType_Half4,   HLSLBaseType_Half4,   HLSLBaseType_Half4,  HLSLBaseType_Half4 )
 
-const Intrinsic _intrinsic[] = 
+#if 0
+// @@ IC: For some reason this is not working with the Visual Studio compiler:
+#define SAMPLER_INTRINSIC_FUNCTION(name, sampler, arg1) \
+        SamplerIntrinsic( name, HLSLBaseType_Float4, sampler, HLSLBaseType_Float, arg1),   \
+        SamplerIntrinsic( name, HLSLBaseType_Half4,  sampler, HLSLBaseType_Half,  arg1  )
+#else
+#define SAMPLER_INTRINSIC_FUNCTION(name, sampler, arg1) \
+        Intrinsic( name, HLSLBaseType_Float4, sampler, arg1)
+#endif
+    
+const Intrinsic _intrinsic[] =
     {
         INTRINSIC_FLOAT1_FUNCTION( "abs" ),
         INTRINSIC_FLOAT1_FUNCTION( "acos" ),
@@ -521,6 +540,9 @@ const Intrinsic _intrinsic[] =
 		Intrinsic( "transpose", HLSLBaseType_Float2x2, HLSLBaseType_Float2x2 ),
         Intrinsic( "transpose", HLSLBaseType_Float3x3, HLSLBaseType_Float3x3 ),
         Intrinsic( "transpose", HLSLBaseType_Float4x4, HLSLBaseType_Float4x4 ),
+        Intrinsic( "transpose", HLSLBaseType_Half2x2, HLSLBaseType_Half2x2 ),
+        Intrinsic( "transpose", HLSLBaseType_Half3x3, HLSLBaseType_Half3x3 ),
+        Intrinsic( "transpose", HLSLBaseType_Half4x4, HLSLBaseType_Half4x4 ),
 
         INTRINSIC_FLOAT1_FUNCTION( "normalize" ),
         INTRINSIC_FLOAT2_FUNCTION( "pow" ),
@@ -545,11 +567,17 @@ const Intrinsic _intrinsic[] =
 		INTRINSIC_FLOAT1_FUNCTION("isinf"),
 
 		Intrinsic("asuint",    HLSLBaseType_Uint, HLSLBaseType_Float),
-        Intrinsic("tex2D",     HLSLBaseType_Float4, HLSLBaseType_Sampler2D, HLSLBaseType_Float2),
+
+        SAMPLER_INTRINSIC_FUNCTION("tex2D", HLSLBaseType_Sampler2D, HLSLBaseType_Float2),
+        
         Intrinsic("tex2Dproj", HLSLBaseType_Float4, HLSLBaseType_Sampler2D, HLSLBaseType_Float4),
-        Intrinsic("tex2Dlod",  HLSLBaseType_Float4, HLSLBaseType_Sampler2D, HLSLBaseType_Float4),
+
+        SAMPLER_INTRINSIC_FUNCTION("tex2Dlod", HLSLBaseType_Sampler2D, HLSLBaseType_Float4),
+        
         Intrinsic("tex2Dlod",  HLSLBaseType_Float4, HLSLBaseType_Sampler2D, HLSLBaseType_Float4, HLSLBaseType_Int2),   // With offset.
-        Intrinsic("tex2Dbias", HLSLBaseType_Float4, HLSLBaseType_Sampler2D, HLSLBaseType_Float4),
+
+        SAMPLER_INTRINSIC_FUNCTION("tex2Dbias", HLSLBaseType_Sampler2D, HLSLBaseType_Float4),
+        
         Intrinsic("tex2Dgrad", HLSLBaseType_Float4, HLSLBaseType_Sampler2D, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2),
         Intrinsic("tex2Dgather", HLSLBaseType_Float4, HLSLBaseType_Sampler2D, HLSLBaseType_Float2, HLSLBaseType_Int),
         Intrinsic("tex2Dgather", HLSLBaseType_Float4, HLSLBaseType_Sampler2D, HLSLBaseType_Float2, HLSLBaseType_Int2, HLSLBaseType_Int),    // With offset.
@@ -624,7 +652,7 @@ const BaseTypeDescription _baseTypeDescriptions[HLSLBaseType_Count] =
         { "half2",              NumericType_Half,       2, 1, 1,  1 },      // HLSLBaseType_Half2
         { "half3",              NumericType_Half,       3, 1, 1,  1 },      // HLSLBaseType_Half3
         { "half4",              NumericType_Half,       4, 1, 1,  1 },      // HLSLBaseType_Half4
-		{ "half2x2",		NumericType_Float,		 2, 2, 2, 0 },		// HLSLBaseType_Half2x2
+		{ "half2x2",            NumericType_Float,		2, 2, 2,  0 },		// HLSLBaseType_Half2x2
         { "half3x3",            NumericType_Half,       3, 2, 3,  1 },      // HLSLBaseType_Half3x3
         { "half4x4",            NumericType_Half,       4, 2, 4,  1 },      // HLSLBaseType_Half4x4
         { "half4x3",            NumericType_Half,       4, 2, 3,  1 },      // HLSLBaseType_Half4x3
@@ -653,7 +681,8 @@ const BaseTypeDescription _baseTypeDescriptions[HLSLBaseType_Count] =
         { "sampler2DShadow",    NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_Sampler2DShadow
         { "sampler2DMS",        NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_Sampler2DMS
         { "sampler2DArray",     NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_Sampler2DArray
-        { "user defined",       NumericType_NaN,        1, 0, 0, -1 }       // HLSLBaseType_UserDefined
+        { "user defined",       NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_UserDefined
+        { "expression",         NumericType_NaN,        1, 0, 0, -1 }       // HLSLBaseType_Expression
     };
 
 // IC: I'm not sure this table is right, but any errors should be caught by the backend compiler.
@@ -960,6 +989,11 @@ static int GetTypeCastRank(HLSLTree * tree, const HLSLType& srcType, const HLSLT
 
     if (srcType.baseType == dstType.baseType)
     {
+        if (IsSamplerType(srcType.baseType))
+        {
+            return srcType.samplerType == dstType.samplerType ? 0 : -1;
+        }
+        
         return 0;
     }
 
@@ -1254,9 +1288,10 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
     int line             = GetLineNumber();
     const char* fileName = GetFileName();
     
-    HLSLBaseType type;
-    const char*  typeName = NULL;
-    int          typeFlags = false;
+    HLSLType type;
+    //HLSLBaseType type;
+    //const char*  typeName = NULL;
+    //int          typeFlags = false;
 
     bool doesNotExpectSemicolon = false;
 
@@ -1367,7 +1402,7 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
 
         statement = buffer;
     }
-    else if (AcceptType(true, type, typeName, &typeFlags))
+    else if (AcceptType(true, type))
     {
         // Global declaration (uniform or function).
         const char* globalName = NULL;
@@ -1382,12 +1417,13 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
 
             HLSLFunction* function = m_tree->AddNode<HLSLFunction>(fileName, line);
             function->name                  = globalName;
-            function->returnType.baseType   = type;
-            function->returnType.typeName   = typeName;
+            function->returnType.baseType   = type.baseType;
+            function->returnType.typeName   = type.typeName;
+            function->attributes            = attributes;
 
             BeginScope();
 
-            if (!ParseArgumentList(function->argument, function->numArguments))
+            if (!ParseArgumentList(function->argument, function->numArguments, function->numOutputArguments))
             {
                 return false;
             }
@@ -1437,6 +1473,7 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
 
             // Note, no semi-colon at the end of a function declaration.
             statement = function;
+            
             return true;
         }
         else
@@ -1444,8 +1481,7 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
             // Uniform declaration.
             HLSLDeclaration* declaration = m_tree->AddNode<HLSLDeclaration>(fileName, line);
             declaration->name            = globalName;
-            declaration->type.baseType   = type;
-            declaration->type.flags      = typeFlags;
+            declaration->type            = type;
 
             // Handle array syntax.
             if (Accept('['))
@@ -1502,22 +1538,31 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
     return doesNotExpectSemicolon || Expect(';');
 }
 
-bool HLSLParser::ParseStatementOrBlock(HLSLStatement*& firstStatement, const HLSLType& returnType)
+bool HLSLParser::ParseStatementOrBlock(HLSLStatement*& firstStatement, const HLSLType& returnType, bool scoped/*=true*/)
 {
-    if (Accept('{'))
+    if (scoped)
     {
         BeginScope();
+    }
+    if (Accept('{'))
+    {
         if (!ParseBlock(firstStatement, returnType))
         {
             return false;
         }
-        EndScope();
-        return true;
     }
     else
     {
-        return ParseStatement(firstStatement, returnType);
+        if (!ParseStatement(firstStatement, returnType))
+        {
+            return false;
+        }
     }
+    if (scoped)
+    {
+        EndScope();
+    }
+    return true;
 }
 
 bool HLSLParser::ParseBlock(HLSLStatement*& firstStatement, const HLSLType& returnType)
@@ -1545,6 +1590,7 @@ bool HLSLParser::ParseBlock(HLSLStatement*& firstStatement, const HLSLType& retu
                 lastStatement->nextStatement = statement;
             }
             lastStatement = statement;
+            while (lastStatement->nextStatement) lastStatement = lastStatement->nextStatement;
         }
     }
     return true;
@@ -1564,6 +1610,74 @@ bool HLSLParser::ParseStatement(HLSLStatement*& statement, const HLSLType& retur
     HLSLAttribute * attributes = NULL;
     ParseAttributeBlock(attributes);    // @@ Leak if not assigned to node? 
 
+#if 0 // @@ Work in progress.
+    // Static statements: @if only for now.
+    if (Accept('@'))
+    {
+        if (Accept(HLSLToken_If))
+        {
+            //HLSLIfStatement* ifStatement = m_tree->AddNode<HLSLIfStatement>(fileName, line);
+            //ifStatement->isStatic = true;
+            //ifStatement->attributes = attributes;
+            
+            HLSLExpression * condition = NULL;
+            
+            m_allowUndeclaredIdentifiers = true;    // Not really correct... better to push to stack?
+            if (!Expect('(') || !ParseExpression(condition) || !Expect(')'))
+            {
+                m_allowUndeclaredIdentifiers = false;
+                return false;
+            }
+            m_allowUndeclaredIdentifiers = false;
+            
+            if ((condition->expressionType.flags & HLSLTypeFlag_Const) == 0)
+            {
+                m_tokenizer.Error("Syntax error: @if condition is not constant");
+                return false;
+            }
+            
+            int conditionValue;
+            if (!m_tree->GetExpressionValue(condition, conditionValue))
+            {
+                m_tokenizer.Error("Syntax error: Cannot evaluate @if condition");
+                return false;
+            }
+            
+            if (!conditionValue) m_disableSemanticValidation = true;
+            
+            HLSLStatement * ifStatements = NULL;
+            HLSLStatement * elseStatements = NULL;
+            
+            if (!ParseStatementOrBlock(ifStatements, returnType, /*scoped=*/false))
+            {
+                m_disableSemanticValidation = false;
+                return false;
+            }
+            if (Accept(HLSLToken_Else))
+            {
+                if (conditionValue) m_disableSemanticValidation = true;
+                
+                if (!ParseStatementOrBlock(elseStatements, returnType, /*scoped=*/false))
+                {
+                    m_disableSemanticValidation = false;
+                    return false;
+                }
+            }
+            m_disableSemanticValidation = false;
+            
+            if (conditionValue) statement = ifStatements;
+            else statement = elseStatements;
+            
+            // @@ Free the pruned statements?
+            
+            return true;
+        }
+        else {
+            m_tokenizer.Error("Syntax error: unexpected token '@'");
+        }
+    }
+#endif
+    
     // If statement.
     if (Accept(HLSLToken_If))
     {
@@ -1584,7 +1698,7 @@ bool HLSLParser::ParseStatement(HLSLStatement*& statement, const HLSLType& retur
         }
         return true;
     }
-
+    
     // For statement.
     if (Accept(HLSLToken_For))
     {
@@ -1708,7 +1822,7 @@ bool HLSLParser::ParseDeclaration(HLSLDeclaration*& declaration)
     int         line        = GetLineNumber();
 
     HLSLType type;
-    if (!AcceptType(/*allowVoid=*/false, type.baseType, type.typeName, &type.flags))
+    if (!AcceptType(/*allowVoid=*/false, type))
     {
         return false;
     }
@@ -2018,6 +2132,10 @@ bool HLSLParser::ParseBinaryExpression(int priority, HLSLExpression*& expression
 
                 return false;
             }
+            
+            // Propagate constness.
+            binaryExpression->expressionType.flags = (expression->expressionType.flags | expression2->expressionType.flags) & HLSLTypeFlag_Const;
+            
             expression = binaryExpression;
         }
         else if (_conditionalOpPriority > priority && Accept('?'))
@@ -2112,6 +2230,9 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, bool& need
         if (unaryOp == HLSLUnaryOp_Not)
         {
             unaryExpression->expressionType = HLSLType(HLSLBaseType_Bool);
+            
+            // Propagate constness.
+            unaryExpression->expressionType.flags = unaryExpression->expression->expressionType.flags & HLSLTypeFlag_Const;
         }
         else
         {
@@ -2126,7 +2247,7 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, bool& need
     {
         // Check for a casting operator.
         HLSLType type;
-        if (AcceptType(false, type.baseType, type.typeName, &type.flags))
+        if (AcceptType(false, type))
         {
             // This is actually a type constructor like (float2(...
             if (Accept('('))
@@ -2204,24 +2325,24 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, bool& need
         }
 
         // Type constructor.
-        HLSLBaseType    type;
-        const char*     typeName = NULL;
-        if (AcceptType(/*allowVoid=*/false, type, typeName, NULL))
+        HLSLType type;
+        if (AcceptType(/*allowVoid=*/false, type))
         {
             Expect('(');
-            if (!ParsePartialConstructor(expression, type, typeName))
+            if (!ParsePartialConstructor(expression, type.baseType, type.typeName))
             {
                 return false;
             }
         }
         else
         {
-
             HLSLIdentifierExpression* identifierExpression = m_tree->AddNode<HLSLIdentifierExpression>(fileName, line);
             if (!ExpectIdentifier(identifierExpression->name))
             {
                 return false;
             }
+
+            bool undeclaredIdentifier = false;
 
             const HLSLType* identifierType = FindVariable(identifierExpression->name, identifierExpression->global);
             if (identifierType != NULL)
@@ -2230,16 +2351,37 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, bool& need
             }
             else
             {
-                if (!GetIsFunction(identifierExpression->name))
+                if (GetIsFunction(identifierExpression->name))
+                {
+                    // Functions are always global scope.
+                    identifierExpression->global = true;
+                }
+                else
+                {
+                    undeclaredIdentifier = true;
+                }
+            }
+
+            if (undeclaredIdentifier)
+            {
+                if (m_allowUndeclaredIdentifiers)
+                {
+                    HLSLLiteralExpression* literalExpression = m_tree->AddNode<HLSLLiteralExpression>(fileName, line);
+                    literalExpression->bValue = false;
+                    literalExpression->type = HLSLBaseType_Bool;
+                    literalExpression->expressionType.baseType = literalExpression->type;
+                    literalExpression->expressionType.flags = HLSLTypeFlag_Const;
+                    expression = literalExpression;
+                }
+                else
                 {
                     m_tokenizer.Error("Undeclared identifier '%s'", identifierExpression->name);
                     return false;
                 }
-                // Functions are always global scope.
-                identifierExpression->global = true;
             }
-
-            expression = identifierExpression;
+            else {
+                expression = identifierExpression;
+            }
         }
     }
 
@@ -2432,7 +2574,7 @@ bool HLSLParser::ParseExpressionList(int endToken, bool allowEmptyEnd, HLSLExpre
     return true;
 }
 
-bool HLSLParser::ParseArgumentList(HLSLArgument*& firstArgument, int& numArguments)
+bool HLSLParser::ParseArgumentList(HLSLArgument*& firstArgument, int& numArguments, int& numOutputArguments)
 {
     const char* fileName = GetFileName();
     int         line     = GetLineNumber();
@@ -2489,6 +2631,10 @@ bool HLSLParser::ParseArgumentList(HLSLArgument*& firstArgument, int& numArgumen
         lastArgument = argument;
 
         ++numArguments;
+        if (argument->modifier == HLSLArgumentModifier_Out || argument->modifier == HLSLArgumentModifier_Inout)
+        {
+            ++numOutputArguments;
+        }
     }
     return true;
 }
@@ -2950,6 +3096,7 @@ bool HLSLParser::ParseAttributeList(HLSLAttribute*& firstAttribute)
         if (strcmp(identifier, "unroll") == 0) attribute->attributeType = HLSLAttributeType_Unroll;
         else if (strcmp(identifier, "flatten") == 0) attribute->attributeType = HLSLAttributeType_Flatten;
         else if (strcmp(identifier, "branch") == 0) attribute->attributeType = HLSLAttributeType_Branch;
+        else if (strcmp(identifier, "nofastmath") == 0) attribute->attributeType = HLSLAttributeType_NoFastMath;
         
         // @@ parse arguments, () not required if attribute constructor has no arguments.
 
@@ -3066,6 +3213,7 @@ bool HLSLParser::Parse(HLSLTree* tree)
                 lastStatement->nextStatement = statement;
             }
             lastStatement = statement;
+            while (lastStatement->nextStatement) lastStatement = lastStatement->nextStatement;
         }
     }
     return true;
@@ -3140,143 +3288,172 @@ bool HLSLParser::AcceptInterpolationModifier(int& flags)
 }
 
 
-bool HLSLParser::AcceptType(bool allowVoid, HLSLBaseType& type, const char*& typeName, int* typeFlags)
+bool HLSLParser::AcceptType(bool allowVoid, HLSLType& type/*, bool acceptFlags*/)
 {
-    if (typeFlags != NULL) {
-        *typeFlags = 0;
-        while(AcceptTypeModifier(*typeFlags) || AcceptInterpolationModifier(*typeFlags)) {}
+    //if (type.flags != NULL)
+    {
+        type.flags = 0;
+        while(AcceptTypeModifier(type.flags) || AcceptInterpolationModifier(type.flags)) {}
     }
 
     int token = m_tokenizer.GetToken();
 
     // Check built-in types.
-    type = HLSLBaseType_Void;
+    type.baseType = HLSLBaseType_Void;
     switch (token)
     {
     case HLSLToken_Float:
-        type = HLSLBaseType_Float;
+        type.baseType = HLSLBaseType_Float;
         break;
     case HLSLToken_Float2:      
-        type = HLSLBaseType_Float2;
+        type.baseType = HLSLBaseType_Float2;
         break;
     case HLSLToken_Float3:
-        type = HLSLBaseType_Float3;
+        type.baseType = HLSLBaseType_Float3;
         break;
     case HLSLToken_Float4:
-        type = HLSLBaseType_Float4;
+        type.baseType = HLSLBaseType_Float4;
         break;
 	case HLSLToken_Float2x2:
-		type = HLSLBaseType_Float2x2;
+		type.baseType = HLSLBaseType_Float2x2;
 		break;
     case HLSLToken_Float3x3:
-        type = HLSLBaseType_Float3x3;
+        type.baseType = HLSLBaseType_Float3x3;
         break;
     case HLSLToken_Float4x4:
-        type = HLSLBaseType_Float4x4;
+        type.baseType = HLSLBaseType_Float4x4;
         break;
     case HLSLToken_Float4x3:
-        type = HLSLBaseType_Float4x3;
+        type.baseType = HLSLBaseType_Float4x3;
         break;
     case HLSLToken_Float4x2:
-        type = HLSLBaseType_Float4x2;
+        type.baseType = HLSLBaseType_Float4x2;
         break;
     case HLSLToken_Half:
-        type = HLSLBaseType_Half;
+        type.baseType = HLSLBaseType_Half;
         break;
     case HLSLToken_Half2:      
-        type = HLSLBaseType_Half2;
+        type.baseType = HLSLBaseType_Half2;
         break;
     case HLSLToken_Half3:
-        type = HLSLBaseType_Half3;
+        type.baseType = HLSLBaseType_Half3;
         break;
     case HLSLToken_Half4:
-        type = HLSLBaseType_Half4;
+        type.baseType = HLSLBaseType_Half4;
         break;
 	case HLSLToken_Half2x2:
-		type = HLSLBaseType_Half2x2;
+		type.baseType = HLSLBaseType_Half2x2;
 		break;
     case HLSLToken_Half3x3:
-        type = HLSLBaseType_Half3x3;
+        type.baseType = HLSLBaseType_Half3x3;
         break;
     case HLSLToken_Half4x4:
-        type = HLSLBaseType_Half4x4;
+        type.baseType = HLSLBaseType_Half4x4;
         break;
     case HLSLToken_Half4x3:
-        type = HLSLBaseType_Half4x3;
+        type.baseType = HLSLBaseType_Half4x3;
         break;
     case HLSLToken_Half4x2:
-        type = HLSLBaseType_Half4x2;
+        type.baseType = HLSLBaseType_Half4x2;
         break;
     case HLSLToken_Bool:
-        type = HLSLBaseType_Bool;
+        type.baseType = HLSLBaseType_Bool;
         break;
 	case HLSLToken_Bool2:
-		type = HLSLBaseType_Bool2;
+		type.baseType = HLSLBaseType_Bool2;
 		break;
 	case HLSLToken_Bool3:
-		type = HLSLBaseType_Bool3;
+		type.baseType = HLSLBaseType_Bool3;
 		break;
 	case HLSLToken_Bool4:
-		type = HLSLBaseType_Bool4;
+		type.baseType = HLSLBaseType_Bool4;
 		break;
     case HLSLToken_Int:
-        type = HLSLBaseType_Int;
+        type.baseType = HLSLBaseType_Int;
         break;
     case HLSLToken_Int2:
-        type = HLSLBaseType_Int2;
+        type.baseType = HLSLBaseType_Int2;
         break;
     case HLSLToken_Int3:
-        type = HLSLBaseType_Int3;
+        type.baseType = HLSLBaseType_Int3;
         break;
     case HLSLToken_Int4:
-        type = HLSLBaseType_Int4;
+        type.baseType = HLSLBaseType_Int4;
         break;
     case HLSLToken_Uint:
-        type = HLSLBaseType_Uint;
+        type.baseType = HLSLBaseType_Uint;
         break;
     case HLSLToken_Uint2:
-        type = HLSLBaseType_Uint2;
+        type.baseType = HLSLBaseType_Uint2;
         break;
     case HLSLToken_Uint3:
-        type = HLSLBaseType_Uint3;
+        type.baseType = HLSLBaseType_Uint3;
         break;
     case HLSLToken_Uint4:
-        type = HLSLBaseType_Uint4;
+        type.baseType = HLSLBaseType_Uint4;
         break;
     case HLSLToken_Texture:
-        type = HLSLBaseType_Texture;
+        type.baseType = HLSLBaseType_Texture;
         break;
     case HLSLToken_Sampler:
-        type = HLSLBaseType_Sampler2D;  // @@ IC: For now we assume that generic samplers are always sampler2D
+        type.baseType = HLSLBaseType_Sampler2D;  // @@ IC: For now we assume that generic samplers are always sampler2D
         break;
     case HLSLToken_Sampler2D:
-        type = HLSLBaseType_Sampler2D;
+        type.baseType = HLSLBaseType_Sampler2D;
         break;
     case HLSLToken_Sampler3D:
-        type = HLSLBaseType_Sampler3D;
+        type.baseType = HLSLBaseType_Sampler3D;
         break;
     case HLSLToken_SamplerCube:
-        type = HLSLBaseType_SamplerCube;
+        type.baseType = HLSLBaseType_SamplerCube;
         break;
     case HLSLToken_Sampler2DShadow:
-        type = HLSLBaseType_Sampler2DShadow;
+        type.baseType = HLSLBaseType_Sampler2DShadow;
         break;
     case HLSLToken_Sampler2DMS:
-        type = HLSLBaseType_Sampler2DMS;
+        type.baseType = HLSLBaseType_Sampler2DMS;
         break;
     case HLSLToken_Sampler2DArray:
-        type = HLSLBaseType_Sampler2DArray;
+        type.baseType = HLSLBaseType_Sampler2DArray;
         break;
     }
-    if (type != HLSLBaseType_Void)
+    if (type.baseType != HLSLBaseType_Void)
     {
         m_tokenizer.Next();
+        
+        if (IsSamplerType(type.baseType))
+        {
+            // Parse optional sampler type.
+            if (Accept('<'))
+            {
+                int token = m_tokenizer.GetToken();
+                if (token == HLSLToken_Float)
+                {
+                    type.samplerType = HLSLBaseType_Float;
+                }
+                else if (token == HLSLToken_Half)
+                {
+                    type.samplerType = HLSLBaseType_Half;
+                }
+                else
+                {
+                    m_tokenizer.Error("Expected half or float.");
+                    return false;
+                }
+                m_tokenizer.Next();
+                
+                if (!Expect('>'))
+                {
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
     if (allowVoid && Accept(HLSLToken_Void))
     {
-        type = HLSLBaseType_Void;
+        type.baseType = HLSLBaseType_Void;
         return true;
     }
     if (token == HLSLToken_Identifier)
@@ -3285,17 +3462,17 @@ bool HLSLParser::AcceptType(bool allowVoid, HLSLBaseType& type, const char*& typ
         if (FindUserDefinedType(identifier) != NULL)
         {
             m_tokenizer.Next();
-            type        = HLSLBaseType_UserDefined;
-            typeName    = identifier;
+            type.baseType = HLSLBaseType_UserDefined;
+            type.typeName = identifier;
             return true;
         }
     }
     return false;
 }
 
-bool HLSLParser::ExpectType(bool allowVoid, HLSLBaseType& type, const char*& typeName, int* typeFlags)
+bool HLSLParser::ExpectType(bool allowVoid, HLSLType& type)
 {
-    if (!AcceptType(allowVoid, type, typeName, typeFlags))
+    if (!AcceptType(allowVoid, type))
     {
         m_tokenizer.Error("Expected type");
         return false;
@@ -3305,7 +3482,7 @@ bool HLSLParser::ExpectType(bool allowVoid, HLSLBaseType& type, const char*& typ
 
 bool HLSLParser::AcceptDeclaration(bool allowUnsizedArray, HLSLType& type, const char*& name)
 {
-    if (!AcceptType(/*allowVoid=*/false, type.baseType, type.typeName, &type.flags))
+    if (!AcceptType(/*allowVoid=*/false, type))
     {
         return false;
     }

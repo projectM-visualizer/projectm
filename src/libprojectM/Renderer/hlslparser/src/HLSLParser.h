@@ -49,8 +49,8 @@ private:
     bool AcceptFloat(float& value);
 	bool AcceptHalf( float& value );
     bool AcceptInt(int& value);
-    bool AcceptType(bool allowVoid, HLSLBaseType& type, const char*& typeName, int* typeFlags);
-    bool ExpectType(bool allowVoid, HLSLBaseType& type, const char*& typeName, int* typeFlags);
+    bool AcceptType(bool allowVoid, HLSLType& type);
+    bool ExpectType(bool allowVoid, HLSLType& type);
     bool AcceptBinaryOperator(int priority, HLSLBinaryOp& binaryOp);
     bool AcceptUnaryOperator(bool pre, HLSLUnaryOp& unaryOp);
     bool AcceptAssign(HLSLBinaryOp& binaryOp);
@@ -66,7 +66,7 @@ private:
 
     bool ParseTopLevel(HLSLStatement*& statement);
     bool ParseBlock(HLSLStatement*& firstStatement, const HLSLType& returnType);
-    bool ParseStatementOrBlock(HLSLStatement*& firstStatement, const HLSLType& returnType);
+    bool ParseStatementOrBlock(HLSLStatement*& firstStatement, const HLSLType& returnType, bool scoped = true);
     bool ParseStatement(HLSLStatement*& statement, const HLSLType& returnType);
     bool ParseDeclaration(HLSLDeclaration*& declaration);
     bool ParseFieldDeclaration(HLSLStructField*& field);
@@ -75,7 +75,7 @@ private:
     bool ParseBinaryExpression(int priority, HLSLExpression*& expression);
     bool ParseTerminalExpression(HLSLExpression*& expression, bool& needsEndParen);
     bool ParseExpressionList(int endToken, bool allowEmptyEnd, HLSLExpression*& firstExpression, int& numExpressions);
-    bool ParseArgumentList(HLSLArgument*& firstArgument, int& numArguments);
+    bool ParseArgumentList(HLSLArgument*& firstArgument, int& numArguments, int& numOutputArguments);
     bool ParseDeclarationAssignment(HLSLDeclaration* declaration);
     bool ParsePartialConstructor(HLSLExpression*& expression, HLSLBaseType type, const char* typeName);
 
@@ -135,6 +135,9 @@ private:
     int                     m_numGlobals;
 
     HLSLTree*               m_tree;
+    
+    bool                    m_allowUndeclaredIdentifiers = false;
+    bool                    m_disableSemanticValidation = false;
 };
 
 }
