@@ -5,6 +5,8 @@
 #ifndef  __PROJECTM_OPENGL_H__
 #define  __PROJECTM_OPENGL_H__
 
+//#define GL_TRANSITION
+
 //#include <GL/glew.h>
 
 #ifdef __APPLE__

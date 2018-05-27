@@ -35,12 +35,18 @@ public:
         unsigned int flags;
         unsigned int bufferRegisterOffset;
         int (*attributeCallback)(const char* name, unsigned int index);
+        bool treatHalfAsFloat;
+        bool usePreciseFma;
+        bool use16BitIntegers;
 
         Options()
         {
             flags = 0;
             bufferRegisterOffset = 0;
             attributeCallback = NULL;
+            treatHalfAsFloat = true;
+            usePreciseFma = false;
+            use16BitIntegers = false;
         }
     };
 
@@ -82,19 +88,26 @@ private:
     void OutputBuffer(int indent, HLSLBuffer* buffer);
     void OutputFunction(int indent, HLSLFunction* function);
     void OutputExpression(HLSLExpression* expression, HLSLExpression* parentExpression);
+    void OutputTypedExpression(const HLSLType& type, HLSLExpression* expression, HLSLExpression* parentExpression);
+    bool NeedsCast(const HLSLType & target, const HLSLType & source);
     void OutputCast(const HLSLType& type);
     
     void OutputArguments(HLSLArgument* argument);
     void OutputDeclaration(const HLSLType& type, const char* name, HLSLExpression* assignment, bool isRef = false, bool isConst = false, int alignment = 0);
-    void OutputDeclarationType(const HLSLType& type, bool isConst = false, bool isRef = false, int alignment = 0);
+    void OutputDeclarationType(const HLSLType& type, bool isConst = false, bool isRef = false, int alignment = 0, bool isTypeCast = false);
     void OutputDeclarationBody(const HLSLType& type, const char* name, HLSLExpression* assignment, bool isRef = false);
     void OutputExpressionList(HLSLExpression* expression);
-    void OutputFunctionCallStatement(int indent, HLSLFunctionCall* functionCall);
-    void OutputFunctionCall(HLSLFunctionCall* functionCall);
+    void OutputExpressionList(const HLSLType& type, HLSLExpression* expression);
+    void OutputExpressionList(HLSLArgument* argument, HLSLExpression* expression);
+    
+    void OutputFunctionCallStatement(int indent, HLSLFunctionCall* functionCall, HLSLDeclaration* assingmentExpression);
+    void OutputFunctionCall(HLSLFunctionCall* functionCall, HLSLExpression * parentExpression);
 
     const char* TranslateInputSemantic(const char* semantic);
     const char* TranslateOutputSemantic(const char* semantic);
 
+    const char* GetTypeName(const HLSLType& type);
+    
     void Error(const char* format, ...);
 
 private:
@@ -110,6 +123,8 @@ private:
 
     ClassArgument * m_firstClassArgument;
     ClassArgument * m_lastClassArgument;
+    
+    HLSLFunction *  m_currentFunction;
 };
 
 } // M4

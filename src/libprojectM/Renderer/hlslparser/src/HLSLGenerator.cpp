@@ -32,15 +32,15 @@ static const char* GetTypeName(const HLSLType& type)
     case HLSLBaseType_Float4x4:     return "float4x4";
     case HLSLBaseType_Float4x3:     return "float4x3";
     case HLSLBaseType_Float4x2:     return "float4x2";
-    case HLSLBaseType_Half:         return "half";
-    case HLSLBaseType_Half2:        return "half2";
-    case HLSLBaseType_Half3:        return "half3";
-    case HLSLBaseType_Half4:        return "half4";
-	case HLSLBaseType_Half2x2:      return "half2x2";
-    case HLSLBaseType_Half3x3:      return "half3x3";
-    case HLSLBaseType_Half4x4:      return "half4x4";
-    case HLSLBaseType_Half4x3:      return "half4x3";
-    case HLSLBaseType_Half4x2:      return "half4x2";
+    case HLSLBaseType_Half:        return "float";
+    case HLSLBaseType_Half2:       return "float2";
+    case HLSLBaseType_Half3:       return "float3";
+    case HLSLBaseType_Half4:       return "float4";
+    case HLSLBaseType_Half2x2:     return "float2x2";
+    case HLSLBaseType_Half3x3:     return "float3x3";
+    case HLSLBaseType_Half4x4:     return "float4x4";
+    case HLSLBaseType_Half4x3:     return "float4x3";
+    case HLSLBaseType_Half4x2:     return "float4x2";
     case HLSLBaseType_Bool:         return "bool";
 	case HLSLBaseType_Bool2:        return "bool2";
 	case HLSLBaseType_Bool3:        return "bool3";
@@ -749,6 +749,8 @@ void HLSLGenerator::OutputArguments(HLSLArgument* argument)
             break;
         case HLSLArgumentModifier_Uniform:
             m_writer.Write("uniform ");
+            break;
+        default:
             break;
         }
 
