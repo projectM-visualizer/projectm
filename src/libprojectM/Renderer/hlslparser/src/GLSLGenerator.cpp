@@ -447,7 +447,7 @@ void GLSLGenerator::OutputExpressionList(HLSLExpression* expression, HLSLArgumen
 
 const HLSLType* commonScalarType(const HLSLType& lhs, const HLSLType& rhs)
 {
-    if (!isScalarType(lhs) || !isScalarType(rhs))
+    if (!IsScalarType(lhs) || !IsScalarType(rhs))
         return NULL;
 
     if (lhs.baseType == HLSLBaseType_Float || lhs.baseType == HLSLBaseType_Half ||
@@ -523,12 +523,10 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             }
             break;
         case HLSLBaseType_Int:
+        case HLSLBaseType_Uint:
             m_writer.Write("%d", literalExpression->iValue);
             break;
-        case HLSLBaseType_Uint:
-            m_writer.Write("%uu", literalExpression->iValue);
-	    break;
-	case HLSLBaseType_Bool:
+        case HLSLBaseType_Bool:
             m_writer.Write("%s", literalExpression->bValue ? "true" : "false");
             break;
         default:
@@ -573,8 +571,8 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
         const HLSLType* dstType2 = NULL;
 
 		//
-		bool vectorExpression = isVectorType( binaryExpression->expression1->expressionType ) || isVectorType( binaryExpression->expression2->expressionType );
-		if( vectorExpression && isCompareOp( binaryExpression->binaryOp ))
+		bool vectorExpression = IsVectorType( binaryExpression->expression1->expressionType ) || IsVectorType( binaryExpression->expression2->expressionType );
+		if( vectorExpression && IsCompareOp( binaryExpression->binaryOp ))
 		{
 			switch (binaryExpression->binaryOp)
 			{
@@ -588,9 +586,9 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 				ASSERT(0); // is so, check isCompareOp
 			}
 
-			if( isVectorType( binaryExpression->expression1->expressionType ) && isScalarType( binaryExpression->expression2->expressionType ) )
+			if( IsVectorType( binaryExpression->expression1->expressionType ) && IsScalarType( binaryExpression->expression2->expressionType ) )
 				dstType2 = &binaryExpression->expression1->expressionType;
-			else if( isScalarType( binaryExpression->expression1->expressionType ) && isVectorType( binaryExpression->expression2->expressionType ) )
+			else if( IsScalarType( binaryExpression->expression1->expressionType ) && IsVectorType( binaryExpression->expression2->expressionType ) )
 				dstType1 = &binaryExpression->expression2->expressionType;
 			// TODO if both expressions are vector but with different dimension handle it here or in parser?
 
@@ -621,8 +619,8 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 			case HLSLBinaryOp_And:          op = " && "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
 			case HLSLBinaryOp_Or:           op = " || "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
 			case HLSLBinaryOp_BitAnd:       op = " & "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
-			case HLSLBinaryOp_BitOr:	op = " | "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
-			case HLSLBinaryOp_BitXor:	op = " ^ "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
+			case HLSLBinaryOp_BitOr:        op = " | "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
+			case HLSLBinaryOp_BitXor:       op = " ^ "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
 			default:
 				ASSERT(0);
 			}
@@ -636,7 +634,7 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
     else if (expression->nodeType == HLSLNodeType_ConditionalExpression)
     {
         HLSLConditionalExpression* conditionalExpression = static_cast<HLSLConditionalExpression*>(expression);
-		if( isVectorType( conditionalExpression->condition->expressionType ) )
+		if( IsVectorType( conditionalExpression->condition->expressionType ) )
 		{
 			m_writer.Write( "%s", m_bvecTernary );
 			m_writer.Write( "( " );

@@ -19,6 +19,8 @@ void MilkdropWaveform::Draw(RenderContext &context)
 {
 	  WaveformMath(context);
 
+#ifndef GL_TRANSITION
+    
 	#ifndef EMSCRIPTEN
 		glMatrixMode( GL_MODELVIEW );
 	#endif
@@ -74,6 +76,8 @@ void MilkdropWaveform::Draw(RenderContext &context)
 	#endif
 
 		glPopMatrix();
+    
+#endif
 }
 
 void MilkdropWaveform::ModulateOpacityByVolume(RenderContext &context)
@@ -93,7 +97,7 @@ void MilkdropWaveform::ModulateOpacityByVolume(RenderContext &context)
 
 void MilkdropWaveform::MaximizeColors(RenderContext &context)
 {
-
+#ifndef GL_TRANSITION
 	float wave_r_switch=0, wave_g_switch=0, wave_b_switch=0;
 	//wave color brightening
 	//
@@ -150,6 +154,7 @@ void MilkdropWaveform::MaximizeColors(RenderContext &context)
 	{
 		glColor4f(r, g, b, temp_a * masterAlpha);
 	}
+#endif
 }
 
 

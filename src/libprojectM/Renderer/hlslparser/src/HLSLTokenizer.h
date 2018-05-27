@@ -92,7 +92,7 @@ enum HLSLToken
     HLSLToken_DivideEqual,
     HLSLToken_AndAnd,       // &&
     HLSLToken_BarBar,       // ||
-
+    
     // Other token types.
     HLSLToken_FloatLiteral,
 	HLSLToken_HalfLiteral,

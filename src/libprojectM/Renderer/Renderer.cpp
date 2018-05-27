@@ -113,7 +113,8 @@ void Renderer::SetPipeline(Pipeline &pipeline)
 {
 	currentPipe = &pipeline;
 	shaderEngine.reset();
-    shaderEngine.loadShader(GL_VERTEX_SHADER, pipeline.warpShader, pipeline.warpShaderFilename);
+    // N.B. i'm actually not sure if they're always fragment shaders... I think so...  -mischa
+    shaderEngine.loadShader(GL_FRAGMENT_SHADER, pipeline.warpShader, pipeline.warpShaderFilename);
 	shaderEngine.loadShader(GL_FRAGMENT_SHADER, pipeline.compositeShader, pipeline.compositeShaderFilename);
 }
 
@@ -266,9 +267,9 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
 
 	SetupPass1(pipeline, pipelineContext);
 
-//    shaderEngine.enableShader(currentPipe->warpShader, pipeline, pipelineContext);
+    shaderEngine.enableShader(currentPipe->warpShader, pipeline, pipelineContext);
 	Interpolation(pipeline);
-//    shaderEngine.disableShader();
+    shaderEngine.disableShader(currentPipe->warpShader);
 
 	RenderItems(pipeline, pipelineContext);
 	FinishPass1();
@@ -755,7 +756,7 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
 
 	glEnable(GL_TEXTURE_2D);
 
-//    shaderEngine.enableShader(currentPipe->compositeShader, pipeline, pipelineContext);
+    shaderEngine.enableShader(currentPipe->compositeShader, pipeline, pipelineContext);
 
 	float tex[4][2] =
 	{
@@ -785,7 +786,7 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
 
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-//    shaderEngine.disableShader();
+    shaderEngine.disableShader(currentPipe->compositeShader);
 
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.compositeDrawables.begin(); pos
 			!= pipeline.compositeDrawables.end(); ++pos)

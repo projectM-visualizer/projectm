@@ -88,6 +88,7 @@ void Waveform::Draw(RenderContext &context)
 
 			}
 
+#ifndef GL_TRANSITION
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glEnableClientState(GL_COLOR_ARRAY);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -105,7 +106,7 @@ void Waveform::Draw(RenderContext &context)
 #endif
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			//  glPopMatrix();
-
+#endif
 			delete[] colors;
 			delete[] p;
 			delete[] value1;

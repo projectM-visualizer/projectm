@@ -99,6 +99,7 @@ static bool GetIsSymbol(char c)
     case '.':
     case '<': case '>':
     case '|': case '&': case '^': case '~':
+    case '@':
         return true;
     }
     return false;
@@ -228,7 +229,6 @@ void HLSLTokenizer::Next()
     }
 
     // Must be an identifier or a reserved word.
-
     while (m_buffer < m_bufferEnd && m_buffer[0] != 0 && !GetIsSymbol(m_buffer[0]) && !isspace(m_buffer[0]))
     {
         ++m_buffer;
@@ -237,7 +237,7 @@ void HLSLTokenizer::Next()
     size_t length = m_buffer - start;
     memcpy(m_identifier, start, length);
     m_identifier[length] = 0;
-
+    
     const int numReservedWords = sizeof(_reservedWords) / sizeof(const char*);
     for (int i = 0; i < numReservedWords; ++i)
     {
@@ -623,7 +623,7 @@ void HLSLTokenizer::GetTokenName(int token, char buffer[s_maxIdentifier])
             break;
         case HLSLToken_EndOfStream:
             strcpy(buffer, "<eof>");
-			break;
+            break;
         default:
             strcpy(buffer, "unknown");
             break;

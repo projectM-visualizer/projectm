@@ -58,7 +58,7 @@ class ShaderEngine
     void InitShaderProgram();
     void SetupShaderQVariables(GLuint program, const Pipeline &q);
     void SetupShaderVariables(GLuint program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
-    // void SetupUserTexture(CGprogram program, const UserTexture* texture);
+    void SetupUserTexture(GLuint program, const UserTexture* texture);
     void SetupUserTextureState(const UserTexture* texture);
     GLuint makeShader(GLenum type, const char *filename);
     bool LoadHLSLProgram(GLenum shaderType, Shader &shader, std::string &shaderFilename);
@@ -68,6 +68,8 @@ public:
 	virtual ~ShaderEngine();
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext, const int texsize);
 	void loadShader(GLenum shaderType, Shader &shader, std::string &shaderFilename);
+    void enableShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
+    void disableShader(Shader &shader);
 
 	void setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect, TextureManager *textureManager);
 	void reset();
