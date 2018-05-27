@@ -1,0 +1,118 @@
+Running Time,Self (ms),,Symbol Name
+39610.5ms   97.2%,0, ,start
+39609.3ms   97.2%,0, , main
+38545.5ms   94.6%,0.357, ,  projectMSDL::renderFrame()
+38471.4ms   94.4%,0, ,   projectM::renderFrame()
+25370.2ms   62.2%,0, ,    MilkdropPreset::Render(BeatDetect const&, PipelineContext const&)
+25370.2ms   62.2%,0, ,     MilkdropPreset::evaluateFrame()
+24881.0ms   61.0%,231.275, ,      MilkdropPreset::evalPerPixelEqns()
+24144.3ms   59.2%,963.2910000000001, ,       PerPixelEqn::evaluate(int, int)
+14773.1ms   36.2%,2747.08, ,        PrefunExpr::eval_prefun_expr(int, int)
+7622.4ms   18.7%,3573.485, ,         TreeExpr::eval_tree_expr(int, int)
+3397.9ms    8.3%,428.0020000000001, ,          PrefunExpr::eval_prefun_expr(int, int)
+1870.6ms    4.5%,1214.765, ,           TreeExpr::eval_tree_expr(int, int)
+426.0ms    1.0%,425.953, ,            ValExpr::eval_val_expr(int, int)
+229.9ms    0.5%,229.926, ,            GenExpr::eval_gen_expr(int, int)
+957.1ms    2.3%,957.1080000000002, ,           0x7fff5a635a80
+69.2ms    0.1%,69.18900000000001, ,           FuncWrappers::sin_wrapper(float*)
+52.9ms    0.1%,52.924, ,           GenExpr::eval_gen_expr(int, int)
+18.2ms    0.0%,18.225, ,           FuncWrappers::sqrt_wrapper(float*)
+1.8ms    0.0%,1.829, ,           ValExpr::eval_val_expr(int, int)
+341.2ms    0.8%,341.182, ,          ValExpr::eval_val_expr(int, int)
+306.8ms    0.7%,306.788, ,          GenExpr::eval_gen_expr(int, int)
+3.0ms    0.0%,3.034, ,          DYLD-STUB$$sinf
+2173.9ms    5.3%,2173.943, ,         GenExpr::eval_gen_expr(int, int)
+1328.8ms    3.2%,1328.753, ,         ValExpr::eval_val_expr(int, int)
+347.5ms    0.8%,347.524, ,         FuncWrappers::if_wrapper(float*)
+124.6ms    0.3%,124.614, ,         FuncWrappers::above_wrapper(float*)
+93.4ms    0.2%,70.691, ,         FuncWrappers::abs_wrapper(float*)
+84.5ms    0.2%,84.53600000000002, ,         FuncWrappers::below_wrapper(float*)
+83.8ms    0.2%,83.82999999999998, ,         FuncWrappers::max_wrapper(float*)
+81.9ms    0.2%,81.926, ,         FuncWrappers::min_wrapper(float*)
+66.3ms    0.1%,66.32199999999999, ,         0x7fff5a635b60
+14.4ms    0.0%,14.443, ,         FuncWrappers::sqrt_wrapper(float*)
+4.3ms    0.0%,4.016, ,         FuncWrappers::cos_wrapper(float*)
+7950.3ms   19.5%,2588.943, ,        TreeExpr::eval_tree_expr(int, int)
+4078.4ms   10.0%,449.852, ,         PrefunExpr::eval_prefun_expr(int, int)
+1753.6ms    4.3%,748.124, ,          TreeExpr::eval_tree_expr(int, int)
+758.4ms    1.8%,107.168, ,           PrefunExpr::eval_prefun_expr(int, int)
+326.2ms    0.8%,166.993, ,            TreeExpr::eval_tree_expr(int, int)
+84.1ms    0.2%,13.756, ,             PrefunExpr::eval_prefun_expr(int, int)
+45.2ms    0.1%,45.22399999999999, ,              0x7fff5a641d20
+11.4ms    0.0%,11.407, ,              GenExpr::eval_gen_expr(int, int)
+8.7ms    0.0%,8.745000000000001, ,              ValExpr::eval_val_expr(int, int)
+5.0ms    0.0%,5.003, ,              TreeExpr::eval_tree_expr(int, int)
+45.8ms    0.1%,45.84299999999999, ,             ValExpr::eval_val_expr(int, int)
+29.2ms    0.0%,29.187, ,             GenExpr::eval_gen_expr(int, int)
+252.3ms    0.6%,252.3270000000001, ,            0x7fff5a635a80
+47.6ms    0.1%,47.57000000000001, ,            GenExpr::eval_gen_expr(int, int)
+13.5ms    0.0%,13.525, ,            FuncWrappers::sin_wrapper(float*)
+6.5ms    0.0%,6.5, ,            ValExpr::eval_val_expr(int, int)
+3.6ms    0.0%,3.606, ,            FuncWrappers::abs_wrapper(float*)
+1.6ms    0.0%,1.553, ,            FuncWrappers::sqrt_wrapper(float*)
+132.2ms    0.3%,132.175, ,           ValExpr::eval_val_expr(int, int)
+114.9ms    0.2%,114.905, ,           GenExpr::eval_gen_expr(int, int)
+1150.7ms    2.8%,1150.687, ,          0x7fff5a635a80
+261.0ms    0.6%,260.964, ,          ValExpr::eval_val_expr(int, int)
+227.5ms    0.5%,227.49, ,          GenExpr::eval_gen_expr(int, int)
+61.7ms    0.1%,61.744, ,          0x7fff5a641d20
+46.9ms    0.1%,46.852, ,          FuncWrappers::sin_wrapper(float*)
+45.3ms    0.1%,45.266, ,          tanf
+40.6ms    0.0%,40.63700000000001, ,          logf
+13.1ms    0.0%,13.063, ,          0x7fff5a635b60
+12.6ms    0.0%,12.574, ,          FuncWrappers::sqrt_wrapper(float*)
+5.9ms    0.0%,2.59, ,          FuncWrappers::abs_wrapper(float*)
+5.5ms    0.0%,5.495, ,          FuncWrappers::if_wrapper(float*)
+3.0ms    0.0%,3.009, ,          FuncWrappers::below_wrapper(float*)
+1.3ms    0.0%,1.31, ,          FuncWrappers::pow_wrapper(float*)
+770.5ms    1.8%,770.4860000000001, ,         ValExpr::eval_val_expr(int, int)
+512.5ms    1.2%,512.4949999999999, ,         GenExpr::eval_gen_expr(int, int)
+456.1ms    1.1%,456.092, ,        GenExpr::eval_gen_expr(int, int)
+1.5ms    0.0%,1.508, ,        ValExpr::eval_val_expr(int, int)
+454.3ms    1.1%,0, ,       std::__1::__map_iterator<std::__1::__tree_iterator<std::__1::__value_type<int, PerPixelEqn*>, std::__1::__tree_node<std::__1::__value_type<int, PerPixelEqn*>, void*>*, long> >::operator++()
+23.2ms    0.0%,0, ,       std::__1::map<int, PerPixelEqn*, std::__1::less<int>, std::__1::allocator<std::__1::pair<int const, PerPixelEqn*> > >::begin()
+21.7ms    0.0%,21.732, ,       GenExpr::eval_gen_expr(int, int)
+6.2ms    0.0%,6.161, ,       TreeExpr::eval_tree_expr(int, int)
+458.0ms    1.1%,432.9309999999999, ,      MilkdropPreset::initialize_PerPixelMeshes()
+23.0ms    0.0%,0, ,      MilkdropPreset::evalPerFrameEquations()
+4.5ms    0.0%,1.229, ,      MilkdropPreset::evalCustomWavePerFrameEquations()
+3.8ms    0.0%,0, ,      MilkdropPreset::evalCustomShapePerFrameEquations()
+8806.0ms   21.6%,0, ,    PresetOutputs::Render(BeatDetect const&, PipelineContext const&)
+8716.8ms   21.4%,2973.374999999999, ,     PresetOutputs::PerPixelMath(PipelineContext const&)
+1990.5ms    4.8%,61.58499999999999, ,      pow(float, float)
+1928.9ms    4.7%,1928.904, ,       0x7fff5a641d20
+1759.8ms    4.3%,1759.843, ,      0x7fff5a635a80
+1640.9ms    4.0%,1640.884, ,      0x7fff5a635b60
+352.2ms    0.8%,352.167, ,      0x7fff5a635c50
+46.0ms    0.1%,46.01799999999999, ,     DYLD-STUB$$sinf
+22.9ms    0.0%,22.921, ,     DYLD-STUB$$powf
+20.2ms    0.0%,20.186, ,     DYLD-STUB$$__sincosf_stret
+0.1ms    0.0%,0.097, ,     DYLD-STUB$$cosf
+2468.0ms    6.0%,2.129, ,    Renderer::RenderFrame(Pipeline const&, PipelineContext const&)
+1748.7ms    4.2%,0, ,    usleep
+76.9ms    0.1%,0, ,    Renderer::Pass2(Pipeline const&, PipelineContext const&)
+1.6ms    0.0%,1.557, ,    BeatDetect::getBeatVals(float*, float*)
+70.6ms    0.1%,0.016, ,   glrATI_Hwl_SubmitPacketsWithToken
+3.1ms    0.0%,0.193, ,   glClear_Exec
+0.0ms    0.0%,0.02, ,   glrFlushContextToken
+0.0ms    0.0%,0.014, ,   glFlush
+421.2ms    1.0%,0, ,  projectMSDL::pollEvent()
+237.4ms    0.5%,0, ,  projectMSDL::projectMSDL(std::__1::basic_string<char, std::__1::char_traits<char>, std::__1::allocator<char> >, int)
+213.2ms    0.5%,0.376, ,  0x104e8d210
+115.1ms    0.2%,0, ,  0x104e837a0
+30.3ms    0.0%,0, ,  0x104ed6640
+18.5ms    0.0%,0, ,  0x104ed1cc0
+10.4ms    0.0%,0, ,  projectMSDL::~projectMSDL()
+6.4ms    0.0%,0, ,  projectMSDL::init(SDL_Window*, SDL_Renderer*)
+4.1ms    0.0%,4.071, ,  SDL_RenderPresent
+3.3ms    0.0%,0.337, ,  0x104ef74f0
+2.4ms    0.0%,0, ,  0x104e88850
+1.6ms    0.0%,0, ,  projectMSDL::openAudioInput()
+1.2ms    0.0%,0, , exit
+857.2ms    2.1%,0, ,thread_start
+184.8ms    0.4%,0, ,start_wqthread
+76.9ms    0.1%,0, ,_dyld_start
+0.2ms    0.0%,0, ,0x1fffffffffffffff
+0.2ms    0.0%,0, ,0x400040003ffff
+0.0ms    0.0%,0, ,0x60001
+0.0ms    0.0%,0, ,0x104d50fff

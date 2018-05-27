@@ -65,7 +65,7 @@ Param::Param(std::string _name) :
         matrix(0)
         {
 
-	engine_val = new float();
+	engine_val = (float *)&local_value;
 
 	default_init_val.float_val = DEFAULT_DOUBLE_IV;
         upper_bound.float_val = DEFAULT_DOUBLE_UB;
@@ -73,18 +73,10 @@ Param::Param(std::string _name) :
 
     /// @note may have fixed a recent bug. testing
     *((float*)engine_val) = default_init_val.float_val;
-
-   
-}
+ }
 
 /* Free's a parameter type */
 Param::~Param() {
-
-    // I hate this, but will let it be for now
-    if (flags & P_FLAG_USERDEF) {
-        delete((double*)engine_val);
-    }
-
     if (PARAM_DEBUG) printf("~Param: freeing \"%s\".\n", name.c_str());
 }
 

@@ -3,7 +3,6 @@
 //  SDLprojectM
 //
 //  Created by Mischa Spiegelmock on 2017-09-18.
-//  Copyright © 2017 MVS Technical Group Inc. All rights reserved.
 //
 
 #include "pmSDL.hpp"
@@ -30,13 +29,13 @@ void projectMSDL::audioInputCallbackS16(void *userdata, unsigned char *stream, i
 
 SDL_AudioDeviceID projectMSDL::selectAudioInput(int count) {
     // ask the user which capture device to use
-    printf("Please select which audio input to use:\n");
+    // printf("Please select which audio input to use:\n");
+    printf("Detected devices:\n");
     for (int i = 0; i < count; i++) {
-        printf("%i: 🎤%s", i, SDL_GetAudioDeviceName(i, true));
+        printf("  %i: 🎤%s\n", i, SDL_GetAudioDeviceName(i, true));
     }
-    SDL_AudioDeviceID device_id;
-    scanf("%u", &device_id);
-    return device_id;
+
+    return 0;
 }
 
 int projectMSDL::openAudioInput() {
@@ -97,13 +96,11 @@ int projectMSDL::openAudioInput() {
 void projectMSDL::beginAudioCapture() {
     // allocate a buffer to store PCM data for feeding in
     unsigned int maxSamples = audioChannelsCount * audioSampleCount;
-    pcmBuffer = (unsigned char *) malloc(maxSamples);
     SDL_PauseAudioDevice(audioDeviceID, false);
-    this->pcm()->initPCM(2048);
+    pcm()->initPCM(2048);
 }
 
 void projectMSDL::endAudioCapture() {
-    free(pcmBuffer);
     SDL_PauseAudioDevice(audioDeviceID, true);
 }
 
@@ -115,7 +112,7 @@ void projectMSDL::maximize() {
     }
 
     SDL_SetWindowSize(win, dm.w, dm.h);
-    this->resize(dm.w, dm.h);
+    resize(dm.w, dm.h);
 }
 
 void projectMSDL::toggleFullScreen() {
@@ -178,9 +175,9 @@ void projectMSDL::addFakePCM() {
     pcm()->addPCM16(pcm_data);
 }
 
-void projectMSDL::resize(unsigned int width, unsigned int height) {
-    this->width = width;
-    this->height = height;
+void projectMSDL::resize(unsigned int width_, unsigned int height_) {
+    width = width_;
+    height = height_;
     settings.windowWidth = width;
     settings.windowHeight = height;
     projectM_resetGL(width, height);
@@ -189,21 +186,23 @@ void projectMSDL::resize(unsigned int width, unsigned int height) {
 void projectMSDL::pollEvent() {
     SDL_Event evt;
 
-    SDL_PollEvent(&evt);
-    switch (evt.type) {
-        case SDL_WINDOWEVENT:
-            switch (evt.window.event) {
-                case SDL_WINDOWEVENT_RESIZED:
-                    resize(evt.window.data1, evt.window.data2);
-                    break;
-            }
-            break;
-        case SDL_KEYDOWN:
-            keyHandler(&evt);
-            break;
-        case SDL_QUIT:
-            done = true;
-            break;
+    while (SDL_PollEvent(&evt))
+    {
+        switch (evt.type) {
+            case SDL_WINDOWEVENT:
+                switch (evt.window.event) {
+                    case SDL_WINDOWEVENT_RESIZED:
+                        resize(evt.window.data1, evt.window.data2);
+                        break;
+                }
+                break;
+            case SDL_KEYDOWN:
+                keyHandler(&evt);
+                break;
+            case SDL_QUIT:
+                done = true;
+                break;
+        }
     }
 }
 
@@ -218,8 +217,15 @@ void projectMSDL::renderFrame() {
 }
 
 projectMSDL::projectMSDL(Settings settings, int flags) : projectM(settings, flags) {
-    width = settings.windowWidth;
-    height = settings.windowHeight;
+    width = getWindowWidth();
+    height = getWindowHeight();
+    done = 0;
+    isFullScreen = false;
+}
+
+projectMSDL::projectMSDL(std::string config_file, int flags) : projectM(config_file, flags) {
+    width = getWindowWidth();
+    height = getWindowHeight();
     done = 0;
     isFullScreen = false;
 }
@@ -229,4 +235,10 @@ void projectMSDL::init(SDL_Window *window, SDL_Renderer *renderer) {
     rend = renderer;
     selectRandom(true);
     projectM_resetGL(width, height);
+}
+
+
+std::string projectMSDL::getActivePresetName()
+{
+    return std::string("hey");
 }

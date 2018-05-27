@@ -1,7 +1,7 @@
 //
 // C++ Interface: NativePresetFactory
 //
-// Description: 
+// Description:
 //
 //
 // Author: Carmelo Piccione <carmelo.piccione@gmail.com>, (C) 2008
@@ -26,16 +26,16 @@ public:
 
  virtual ~NativePresetFactory();
 
- virtual std::auto_ptr<Preset> allocate(const std::string & url, const std::string & name = std::string(), 
+ virtual std::auto_ptr<Preset> allocate(const std::string & url, const std::string & name = std::string(),
 	const std::string & author = std::string());
 
- virtual std::string supportedExtensions() const { return "so"; }
+ virtual std::string supportedExtensions() const { return "so dylib"; }
 
 private:
 	PresetLibrary * loadLibrary(const std::string & url);
 	typedef std::map<std::string, PresetLibrary*> PresetLibraryMap;
 	PresetLibraryMap _libraries;
-	
+
 };
 
 #endif

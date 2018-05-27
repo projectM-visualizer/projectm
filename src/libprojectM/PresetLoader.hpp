@@ -9,7 +9,7 @@
 #include "win32-dirent.h"
 #endif
 
-#ifdef __linux__
+#ifdef __unix__
 #include <dirent.h>
 #endif
 
@@ -31,15 +31,15 @@ class PresetFactory;
 
 class PresetLoader {
 	public:
-		
-		
-		/// Initializes the preset loader with the target directory specified 
+
+
+		/// Initializes the preset loader with the target directory specified
 		PresetLoader(int gx, int gy, std::string dirname);
-				
+
 		~PresetLoader();
-	
+
 		/// Load a preset by specifying its unique identifier given when the preset url
-		/// was added to this loader	
+		/// was added to this loader
 		std::auto_ptr<Preset> loadPreset(unsigned int index) const;
 		std::auto_ptr<Preset> loadPreset ( const std::string & url )  const;
 		/// Add a preset to the loader's collection.
@@ -48,17 +48,17 @@ class PresetLoader {
 		/// \param rating an integer representing the goodness of the preset
 		/// \returns The unique index assigned to the preset in the collection. Used with loadPreset
 		unsigned int addPresetURL ( const std::string & url, const std::string & presetName, const RatingList & ratings);
-			
+
 		/// Add a preset to the loader's collection.
 		/// \param index insertion index
 		/// \param url an url referencing the preset
 		/// \param presetName a name for the preset
 		/// \param rating an integer representing the goodness of the preset
 		void insertPresetURL (unsigned int index, const std::string & url, const std::string & presetName, const RatingList & ratings);
-	
+
 		/// Clears all presets from the collection
-		inline void clear() { 
-			_entries.clear(); _presetNames.clear(); 
+		inline void clear() {
+			_entries.clear(); _presetNames.clear();
 			_ratings = std::vector<RatingList>(TOTAL_RATING_TYPES, RatingList());
 			clearRatingsSum();
  		}
@@ -66,8 +66,8 @@ class PresetLoader {
 		inline void clearRatingsSum() {
 			_ratingsSums = std::vector<int>(TOTAL_RATING_TYPES, 0);
 		}
-		
-		const std::vector<RatingList> & getPresetRatings() const;		
+
+		const std::vector<RatingList> & getPresetRatings() const;
 		const std::vector<int> & getPresetRatingsSums() const;
 
 		/// Removes a preset from the loader
@@ -76,29 +76,29 @@ class PresetLoader {
 
 		/// Sets the rating of a preset to a new value
 		void setRating(unsigned int index, int rating, const PresetRatingType ratingType);
-		
+
 		/// Get a preset rating given an index
 		int getPresetRating ( unsigned int index, const PresetRatingType ratingType) const;
-		
+
 		/// Get a preset url given an index
 		const std::string & getPresetURL ( unsigned int index) const;
-		
+
 		/// Get a preset name given an index
 		const std::string & getPresetName ( unsigned int index) const;
-		
-		/// Returns the number of presets in the active directory 
+
+		/// Returns the number of presets in the active directory
 		inline std::size_t size() const {
 			return _entries.size();
 		}
-					
-		/// Sets the directory where the loader will search for files 
+
+		/// Sets the directory where the loader will search for files
 		void setScanDirectory(std::string pathname);
 
 		/// Returns the directory path associated with this preset chooser
 		inline const std::string & directoryName() const {
 			return _dirname;
 		}
-		
+
 		/// Rescans the active preset directory
 		void rescan();
 		void setPresetName(unsigned int index, std::string name);
@@ -115,7 +115,7 @@ class PresetLoader {
 
 		// Indexed by ratingType, preset position.
 		std::vector<RatingList> _ratings;
-		
+
 
 };
 

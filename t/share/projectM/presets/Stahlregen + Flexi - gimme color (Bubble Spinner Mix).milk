@@ -1,0 +1,328 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+[preset00]
+fRating=1.000000
+fGammaAdj=1.000
+fDecay=0.500
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=1.311
+fWaveSmoothing=0.000
+fWaveParam=0.000
+fModWaveAlphaStart=1.000
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=0.010
+fWarpScale=100.000
+fZoomExponent=0.19913
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01359
+sx=1.00000
+sy=1.00000
+wave_r=0.000
+wave_g=0.700
+wave_b=1.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=1.000
+ob_b=0.000
+ob_a=0.030
+ib_size=0.500
+ib_r=1.000
+ib_g=1.000
+ib_b=1.000
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.000
+mv_r=1.000
+mv_g=1.000
+mv_b=0.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=0
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=0.16188
+wavecode_0_smoothing=0.50000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wavecode_1_enabled=0
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=1
+wavecode_1_bAdditive=1
+wavecode_1_scaling=25.12601
+wavecode_1_smoothing=1.00000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=0.100
+wavecode_2_enabled=0
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.00000
+wavecode_2_smoothing=0.50000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=1.000
+wavecode_2_a=1.000
+wavecode_3_enabled=0
+wavecode_3_samples=512
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=1.000
+shapecode_0_enabled=1
+shapecode_0_sides=32
+shapecode_0_additive=1
+shapecode_0_thickOutline=1
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=1.19120
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=1.00000
+shapecode_0_r=1.000
+shapecode_0_g=0.000
+shapecode_0_b=1.000
+shapecode_0_a=1.000
+shapecode_0_r2=0.000
+shapecode_0_g2=0.000
+shapecode_0_b2=0.000
+shapecode_0_a2=0.000
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=0.000
+shape_0_per_frame1=//ang = q1;
+shape_0_per_frame2=//rad = 1.6-.2*treb_att;
+shapecode_1_enabled=1
+shapecode_1_sides=100
+shapecode_1_additive=1
+shapecode_1_thickOutline=1
+shapecode_1_textured=1
+shapecode_1_num_inst=1
+shapecode_1_x=0.420
+shapecode_1_y=0.300
+shapecode_1_rad=0.39310
+shapecode_1_ang=0.94248
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=0.82770
+shapecode_1_r=0.000
+shapecode_1_g=1.000
+shapecode_1_b=0.000
+shapecode_1_a=0.920
+shapecode_1_r2=0.600
+shapecode_1_g2=0.300
+shapecode_1_b2=0.000
+shapecode_1_a2=0.000
+shapecode_1_border_r=0.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=0.000
+shapecode_1_border_a=0.000
+shape_1_per_frame1=ang = -0.5*q1;
+shapecode_2_enabled=1
+shapecode_2_sides=100
+shapecode_2_additive=0
+shapecode_2_thickOutline=1
+shapecode_2_textured=0
+shapecode_2_num_inst=1
+shapecode_2_x=0.420
+shapecode_2_y=0.300
+shapecode_2_rad=0.10783
+shapecode_2_ang=0.94248
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=0.82770
+shapecode_2_r=0.300
+shapecode_2_g=1.000
+shapecode_2_b=0.000
+shapecode_2_a=0.920
+shapecode_2_r2=0.600
+shapecode_2_g2=0.300
+shapecode_2_b2=0.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=0.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=0.000
+shapecode_2_border_a=0.000
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=1
+shapecode_3_x=0.500
+shapecode_3_y=0.500
+shapecode_3_rad=0.10000
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.00000
+shapecode_3_r=1.000
+shapecode_3_g=0.000
+shapecode_3_b=0.000
+shapecode_3_a=1.000
+shapecode_3_r2=0.000
+shapecode_3_g2=1.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=1.000
+shapecode_3_border_b=1.000
+shapecode_3_border_a=0.100
+per_frame_1=
+per_frame_2=// buffering bass, mid and treb
+per_frame_3=
+per_frame_4=db = 0.6*db+.25*bass_att;
+per_frame_5=dm = 0.6*dm+.25*mid_att;
+per_frame_6=dt = 0.6*dt+.25*treb_att;
+per_frame_7=
+per_frame_8=//buffering them again
+per_frame_9=dbmt = 0.5*dbmt+.33*(db+dm+dt);
+per_frame_10=
+per_frame_11=//integrations over time
+per_frame_12=vv = vv + .1 * dbmt;
+per_frame_13=bb = bb +.1*db;
+per_frame_14=mm = mm +.1*dm;
+per_frame_15=tt = tt +.1*tt;
+per_frame_16=
+per_frame_17=q1 = 0.5*vv;
+per_frame_18=
+per_frame_19=//so I heard these things were slow as hell in the shaders...
+per_frame_20=q2 = sin(q1);
+per_frame_21=q3 = cos(q1);
+per_frame_22=
+per_frame_23=q4 = tt-bb+.15*vv;
+per_frame_24=q5 = bb-tt+.15*vv;
+per_frame_25=
+per_frame_26=//mhhm, color cycling...
+per_frame_27=
+per_frame_28=q6 = .5+.5*sin(0.15*q1);
+per_frame_29=q7 = .5+.5*cos(0.21*q1);
+per_frame_30=q8 = .5+.3*sin(0.05*q1)+.2*cos(0.3*q1);
+per_frame_31=q9 = .3+.7*sin(0.27*q1);
+per_pixel_1=vx = 0.25+cos(q4*0.2)*1;
+per_pixel_2=vy = 0.25+sin(q5*0.2)*1;
+per_pixel_3=z = 0;
+per_pixel_4=x = x - vx;
+per_pixel_5=y = y - vy;
+per_pixel_6=
+per_pixel_7=d = q1*0.1;
+per_pixel_8=xx = sin(d)*x + cos(d)*y;
+per_pixel_9=yy = cos(d)*x - sin(d)*y;
+per_pixel_10=
+per_pixel_11=x = xx;
+per_pixel_12=y = yy;
+per_pixel_13=
+per_pixel_14=cx = .2+.4*sin(0.2*q3);
+per_pixel_15=cy = .5+.1*tan(q2);
+per_pixel_16=cz = 0.5+.2*sin(0.1*q1);
+per_pixel_17=
+per_pixel_18=zoom = 0.32;
+per_pixel_19=w = 1/zoom*(1+sqrt(sqr(z-cz) + sqr(x-cx)+sqr(y-cy)));
+per_pixel_20=dx = -x*w;// + w*y;
+per_pixel_21=dy = -y*w ;// - w*x;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`
+warp_4=`float2 uv_m = 1.0 - abs( frac( uv * 0.5 ) * 2.0 - 1.0 ); // Eo.S' mirror code
+warp_5=`ret.x = tex2D( sampler_fc_main, uv_m ).x*0.5;
+warp_6=`
+warp_7=`
+warp_8=`// Fractal calculation in the green color channel
+warp_9=`float2 zoom =1.7;
+warp_10=`float2 c = float2(0.3875,0.73);
+warp_11=`
+warp_12=`float2 my_uv2 = (uv_orig-0.5)*zoom;
+warp_13=`my_uv2 = float2(my_uv2.x*my_uv2.x - my_uv2.y*my_uv2.y, 2*my_uv2.x*my_uv2.y) + c; // u -> u^2 + c
+warp_14=`
+warp_15=`ret.y = tex2D( sampler_fc_main, my_uv2).y;
+warp_16=`
+warp_17=`//Fade-out on all channels...
+warp_18=`ret = (ret -.02)*.98;
+warp_19=`
+warp_20=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`
+comp_4=`//I'm too lazy to use a custom float here... 
+comp_5=`rand_preset = float4(q6,q7,q8,q9);
+comp_6=`
+comp_7=`// coloration of the red color channel
+comp_8=`ret = float3(1,1,1)*GetBlur3(uv).x; 
+comp_9=`ret = lerp( ret, rand_preset.yzx, GetBlur2(uv).x*2);
+comp_10=`ret = lerp( ret, max(rand_preset.yxz*2,1), GetBlur1(uv).x*0.5);
+comp_11=`ret = lerp( ret, -0.1*rand_preset.zwy, GetPixel(uv).x);
+comp_12=`
+comp_13=`//spinning uv coordinates! (q2/3 are sin/cos calculations)
+comp_14=`float2 uv2 = uv-.5;
+comp_15=`uv2 = float2((uv2.x)*q3 - (uv2.y) * q2,(uv2.x)* q2 + (uv2.y) * q3)+.5;
+comp_16=`
+comp_17=`//adding some plasticity
+comp_18=`float2 d = texsize.zw*4;
+comp_19=`float1 dx = ( GetBlur1(uv2+float2(1,0)*d)-GetBlur1(uv2-float2(1,0)*d) ).y;
+comp_20=`float1 dy = ( GetBlur1(uv2+float2(0,1)*d)-GetBlur1(uv2-float2(0,1)*d) ).y;
+comp_21=`float2 uv_y = uv2+float2(dx,dy)*0.4;
+comp_22=`
+comp_23=`//coloration of the green color channel
+comp_24=`ret = lerp(ret,float3(.8,.8,.8),tex2D(sampler_main,uv_y).y); 
+comp_25=`ret = lerp( ret, rand_preset, GetBlur2(uv2).y*2);
+comp_26=`ret = lerp( ret, max(rand_preset*2,1.2), GetBlur1(uv_y).y*0.5);
+comp_27=`ret = lerp( ret, -.01*rand_preset.xyw, GetPixel(uv2).y);
+comp_28=`
+comp_29=`//enable to check the warp shader
+comp_30=`//ret = GetPixel(uv);
+comp_31=`}

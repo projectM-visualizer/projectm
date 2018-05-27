@@ -25,7 +25,7 @@
 #include "ConfigFile.h"
 #include "getConfigFilename.h"
 
-#ifdef __linux__
+#ifdef __unix__
 #include <GL/gl.h>
 #endif
 #ifdef __APPLE__
@@ -204,4 +204,3 @@ void textureTest() {
 	glMatrixMode(GL_MODELVIEW);
 	glDisable(GL_DEPTH_TEST);
 }
-

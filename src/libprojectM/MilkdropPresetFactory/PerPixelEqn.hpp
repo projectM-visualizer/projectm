@@ -43,7 +43,7 @@
 #define WARP_OP 9
 #define NUM_OPS 10 /* obviously, this number is dependent on the number of existing per pixel operations */
 
-class GenExpr;
+class Expr;
 class Param;
 class PerPixelEqn;
 class Preset;
@@ -53,13 +53,13 @@ public:
     int index; /* used for splay tree ordering. */
     int flags; /* primarily to specify if this variable is user-defined */
     Param *param;
-    GenExpr *gen_expr;
+    Expr *gen_expr;
 
     void evalPerPixelEqns( Preset *preset );
     void evaluate(int mesh_i, int mesh_j);
     virtual ~PerPixelEqn();
 
-    PerPixelEqn(int index, Param * param, GenExpr * gen_expr);
+    PerPixelEqn(int index, Param * param, Expr * gen_expr);
 
   };
 
