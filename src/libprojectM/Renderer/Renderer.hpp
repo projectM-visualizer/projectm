@@ -1,24 +1,18 @@
 #ifndef Renderer_HPP
 #define Renderer_HPP
 
-#include <GL/glew.h>
+//#include <GL/glew.h>
 
 #include "FBO.hpp"
 #include "BeatDetect.hpp"
 #include "Common.hpp"
 #include <string>
 #include <set>
-
-#ifdef USE_GLES1
-  #include <GLES/gl.h>
-#else
-  #ifdef __APPLE__
-    #include <OpenGL/gl.h>
-  #else
-    #include <GL/gl.h>
-    #include <GL/glu.h>
-  #endif
-#endif
+#include "projectM-opengl.h"
+#include "Pipeline.hpp"
+#include "PerPixelMesh.hpp"
+#include "Transformation.hpp"
+#include "ShaderEngine.hpp"
 
 #ifdef USE_FTGL
 #ifdef WIN32
@@ -30,15 +24,6 @@
 #endif
 #endif /** USE_FTGL */
 
-#ifdef __linux__
-  #include <GL/gl.h>
-#endif
-
-
-#include "Pipeline.hpp"
-#include "PerPixelMesh.hpp"
-#include "Transformation.hpp"
-#include "ShaderEngine.hpp"
 
 class UserTexture;
 class BeatDetect;
