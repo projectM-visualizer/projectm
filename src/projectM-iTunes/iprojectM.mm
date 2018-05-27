@@ -344,7 +344,7 @@ static OSStatus VisualPluginHandler(OSType message,VisualPluginMessageInfo *mess
 
             // Invalidate visual seems to lag a few frames behind, so let's draw as soon as possible
             DrawVisual( visualPluginData );
-            //InvalidateVisual( visualPluginData );
+//            InvalidateVisual( visualPluginData );
 			break;
 		}
 		/*
@@ -356,10 +356,10 @@ static OSStatus VisualPluginHandler(OSType message,VisualPluginMessageInfo *mess
 		*/
 		case kVisualPluginDrawMessage:
 		{
-			#if !USE_SUBVIEW
+#if !USE_SUBVIEW
             // Now drawing in kVisualPluginPulseMessage  -revmischa 09/14
-			//DrawVisual( visualPluginData );
-			#endif
+            DrawVisual( visualPluginData );
+#endif
 			break;
 		}
 		/*

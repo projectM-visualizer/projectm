@@ -1,4 +1,4 @@
-/**
+ /**
  * projectM -- Milkdrop-esque visualisation SDK
  * Copyright (C)2003-2007 projectM Team
  *
@@ -28,35 +28,7 @@
 #ifndef _RENDERTARGET_H
 #define _RENDERTARGET_H
 
-
-#ifdef EMSCRIPTEN
-#include <GL/gl.h>
-#endif
-
-#ifdef USE_FBO
-#ifdef USE_INCLUDED_GLEW
-#include "glew.h"
-#else
-#include <GL/glew.h>
-#endif
-#endif
-
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#endif /** MACOS */
-
-#ifdef WIN32
-#include <windows.h>
-#endif /** WIN32 */
-
-#ifdef __linux__
-#ifdef USE_GLES1
-#include <GLES/gl.h>
-#else
-#include <GL/gl.h>
-#include <GL/glx.h>
-#endif
-#endif
+#include "projectM-opengl.h"
 
 typedef enum { SCALE_NEAREST, SCALE_MAGNIFY, SCALE_MINIFY } TextureScale;
 
@@ -66,7 +38,7 @@ class RenderTarget {
 public:
     /** Texture size */
     int texsize;
-  
+
   int useFBO;
   int renderToTexture;
 
@@ -90,7 +62,7 @@ public:
     /** Render target texture ID for non-pbuffer systems */
     GLuint textureID[3];
 #ifdef USE_FBO
-    GLuint fbuffer[2]; 
+    GLuint fbuffer[2];
     GLuint depthb[2];
 #endif
   };

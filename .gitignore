@@ -1,5 +1,8 @@
+src/projectM-sdl/SDLprojectM.xcodeproj/xcshareddata
 xcuserdata
 src/libprojectM/config.inp
+src/libprojectM/config.inp.b
+src/libprojectM/config.inp.in
 src/projectM-emscripten/build/presets
 src/libprojectM/libprojectM.xcodeproj
 presets/custom

@@ -2,8 +2,8 @@
 # Configuration File for projectM
 
 Texture Size = 2048			# Size of internal rendering texture
-Mesh X  = 64            	# Width of PerPixel Equation mesh
-Mesh Y  = 36          		# Height of PerPixel Equation mesh
+Mesh X  = 200            	# Width of PerPixel Equation mesh
+Mesh Y  = 160          		# Height of PerPixel Equation mesh
 FPS  = 60                   # Frames Per Second
 Fullscreen  = false
 Window Width  = 1920  	    # startup window width

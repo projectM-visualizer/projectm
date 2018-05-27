@@ -262,6 +262,9 @@ public:
   void selectPrevious(const bool);
   void selectNext(const bool);
   void selectRandom(const bool);
+    
+  int getWindowWidth() { return _settings.windowWidth; }
+  int getWindowHeight() { return _settings.windowHeight; }
 private:
   PCM * _pcm;
   double sampledPresetDuration();

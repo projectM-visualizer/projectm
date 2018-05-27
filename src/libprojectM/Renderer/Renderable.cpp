@@ -1,22 +1,5 @@
 
 #include "Common.hpp"
-
-#ifdef USE_GLES1
-	#ifdef EMSCRIPTEN
-	#include <GL/gl.h>
-	#else
-	#include <GLES/gl.h>
-	#endif
-#else
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
-#endif
-
 #include "Renderable.hpp"
 #include <math.h>
 
@@ -191,7 +174,7 @@ void Shape::Draw(RenderContext &context)
 
 				delete[] colors;
 				delete[] tex;
-				delete[] points;							
+				delete[] points;
 			}
 			else
 			{//Untextured (use color values)
@@ -345,7 +328,7 @@ void Border::Draw(RenderContext &context)
 	glRectd(texof-iff, of, texof, texof);
 	glRectd(of+iff, texof, texof-iff, texof-iff);
 #endif
-	
+
 	float pointsE[4][2] = {{of,of},{of,texof},{of+iff,of},{of+iff,texof}};
 	glVertexPointer(2,GL_FLOAT,0,pointsE);
 	glDrawArrays(GL_TRIANGLE_STRIP,0,4);

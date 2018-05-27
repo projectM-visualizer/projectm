@@ -113,8 +113,8 @@ void Renderer::SetPipeline(Pipeline &pipeline)
 {
 	currentPipe = &pipeline;
 	shaderEngine.reset();
-	shaderEngine.loadShader(pipeline.warpShader);
-	shaderEngine.loadShader(pipeline.compositeShader);
+    shaderEngine.loadShader(GL_VERTEX_SHADER, pipeline.warpShader, pipeline.warpShaderFilename);
+	shaderEngine.loadShader(GL_FRAGMENT_SHADER, pipeline.compositeShader, pipeline.compositeShaderFilename);
 }
 
 void Renderer::ResetTextures()
@@ -792,4 +792,3 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
 		(*pos)->Draw(renderContext);
 
 }
-

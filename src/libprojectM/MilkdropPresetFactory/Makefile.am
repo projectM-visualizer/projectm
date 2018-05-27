@@ -15,5 +15,5 @@ Eval.hpp                  MilkdropPresetFactory.hpp PresetFrameIO.hpp\
 Expr.hpp                  Param.hpp
 
 :
-libMilkdropPresetFactory_la_CPPFLAGS = ${my_CFLAGS} \
--I$(top_srcdir)/src/libprojectM
+libMilkdropPresetFactory_la_CPPFLAGS = $(my_CFLAGS) \
+-I$(top_srcdir)/src/libprojectM $(CG_CFLAGS)

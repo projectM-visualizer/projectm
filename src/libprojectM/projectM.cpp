@@ -30,7 +30,7 @@
 
 #include "timer.h"
 #include <iostream>
-#ifdef __linux__
+#ifdef __unix__
 #include "time.h"
 #endif
 
@@ -179,7 +179,7 @@ void projectM::readConfig (const std::string & configFile )
     ( "Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 10));
     _settings.presetDuration = config.read<int> ( "Preset Duration", 15 );
 
-    #ifdef __linux__
+    #ifdef __unix__
     _settings.presetURL = config.read<string> ( "Preset Path", "/usr/local/share/projectM/presets" );
     #endif
 
@@ -199,7 +199,7 @@ void projectM::readConfig (const std::string & configFile )
     ( "Menu Font", "../Resources/fonts/VeraMono.ttf");
     #endif
 
-    #ifdef __linux__
+    #ifdef __unix__
     _settings.titleFontURL = config.read<string>
     ( "Title Font", "/usr/local/share/projectM/fonts/Vera.tff" );
     _settings.menuFontURL = config.read<string>
@@ -544,9 +544,11 @@ static void *thread_callback(void *prjm) {
     /** Resets OpenGL state */
     void projectM::projectM_resetGL ( int w, int h )
     {
-
+        /** sanity check **/
+        assert(w > 0);
+        assert(h > 0);
+        
         /** Stash the new dimensions */
-
         _settings.windowWidth = w;
         _settings.windowHeight = h;
         renderer->reset ( w,h );
@@ -611,7 +613,7 @@ static void *thread_callback(void *prjm) {
         if (m_presetChooser->empty())
         {
             //std::cerr << "[projectM] warning: no valid files found in preset directory \""
-            //<< m_presetLoader->directoryName() << "\"" << std::endl;
+            ///< m_presetLoader->directoryName() << "\"" << std::endl;
         }
 
         _matcher = new RenderItemMatcher();
@@ -853,7 +855,7 @@ std::string projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
     {
         bool atEndPosition = false;
 
-        int newSelectedIndex;
+        int newSelectedIndex = 0;
 
 
         if (*m_presetPos == m_presetChooser->end()) // Case: preset not selected
@@ -908,5 +910,3 @@ void projectM::getMeshSize(int *w, int *h)	{
 	*w = _settings.meshX;
 	*h = _settings.meshY;
 }
-
-

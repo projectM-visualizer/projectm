@@ -8,26 +8,15 @@
 #ifndef SHADERENGINE_HPP_
 #define SHADERENGINE_HPP_
 
-#include <GL/glew.h>
-
 #include "Common.hpp"
-
-#ifdef USE_GLES1
-#include <GLES/gl.h>
-#else
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
-#endif
+#include "projectM-opengl.h"
 
 #include "Pipeline.hpp"
 #include "PipelineContext.hpp"
 class ShaderEngine;
 #include "TextureManager.hpp"
+
+#include "HLSLTranslator.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -72,16 +61,13 @@ class ShaderEngine
     // void SetupUserTexture(CGprogram program, const UserTexture* texture);
     void SetupUserTextureState(const UserTexture* texture);
     GLuint makeShader(GLenum type, const char *filename);
-    void showInfoLog(
-                      GLuint object,
-                      PFNGLGETSHADERIVPROC glGet__iv,
-                      PFNGLGETSHADERINFOLOGPROC glGet__InfoLog
-                    );
+    bool LoadHLSLProgram(GLenum shaderType, Shader &shader, std::string &shaderFilename);
+
 public:
 	ShaderEngine();
 	virtual ~ShaderEngine();
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext, const int texsize);
-	void loadShader(Shader &shader);
+	void loadShader(GLenum shaderType, Shader &shader, std::string &shaderFilename);
 
 	void setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect, TextureManager *textureManager);
 	void reset();
@@ -90,4 +76,3 @@ public:
 };
 
 #endif /* SHADERENGINE_HPP_ */
-

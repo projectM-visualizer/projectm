@@ -1,0 +1,88 @@
+[preset00]
+fRating=2.000000
+fGammaAdj=2.000000
+fDecay=0.975000
+fVideoEchoZoom=1.006596
+fVideoEchoAlpha=0.000000
+nVideoEchoOrientation=3
+nWaveMode=3
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=4.099998
+fWaveScale=0.799885
+fWaveSmoothing=0.153000
+fWaveParam=0.000000
+fModWaveAlphaStart=0.710000
+fModWaveAlphaEnd=1.300000
+fWarpAnimSpeed=1.000000
+fWarpScale=1.331000
+fZoomExponent=1.000000
+fShader=0.000000
+zoom=1.070549
+rot=0.020000
+cx=0.500000
+cy=0.500000
+dx=0.000000
+dy=0.000000
+warp=0.198054
+sx=1.000000
+sy=1.000000
+wave_r=0.650000
+wave_g=0.650000
+wave_b=0.650000
+wave_x=0.500000
+wave_y=0.500000
+ob_size=0.010000
+ob_r=0.000000
+ob_g=0.000000
+ob_b=0.400000
+ob_a=1.000000
+ib_size=0.010000
+ib_r=0.650000
+ib_g=0.250000
+ib_b=0.250000
+ib_a=1.000000
+nMotionVectorsX=12.000000
+nMotionVectorsY=9.000000
+mv_dx=0.000000
+mv_dy=0.000000
+mv_l=0.900000
+mv_r=1.000000
+mv_g=1.000000
+mv_b=1.000000
+mv_a=0.000000
+per_frame_1=warp =0;
+per_frame_2=wave_r = sin(time*0.561)*0.5+0.5;
+per_frame_3=wave_g = cos(time*0.431)*0.5+0.5;
+per_frame_4=wave_b = cos(time*0.531)*0.5+0.5;
+per_frame_5=volume = 0.15*(bass_att+bass+mid+mid_att);
+per_frame_6=beatrate = if(equal(beatrate,0),1,if(below(volume,0.01),1,beatrate));
+per_frame_7=lastbeat = if(equal(lastbeat,0),time,lastbeat);
+per_frame_8=meanbass_att = 0.1*(meanbass_att*9 + bass_att);
+per_frame_9=peakbass_att = if(above(bass_att,peakbass_att),bass_att,peakbass_att);
+per_frame_10=beat = if(above(volume,0.8),if(below(peakbass_att - bass_att, 0.05*peakbass_att),if(above(time - lastbeat,0.1+0.5*(beatrate-0.1)),1,0),0),0);
+per_frame_11=beatrate = max(if(beat,if(below(time-lastbeat,2*beatrate),0.1*(beatrate*9 + time - lastbeat),beatrate),beatrate),0.1);
+per_frame_12=peakbass_att = if(equal(beat,0),if(above(time - lastbeat,2*beatrate),peakbass_att*0.95,peakbass_att*0.995),bass_att);
+per_frame_13=lastbeat = if(beat,time,lastbeat);
+per_frame_14=countertime = if(beat,time,countertime);
+per_frame_15=counter =-1*pow(min((time-countertime-3),0),3);
+per_frame_16=q1=oldq1+0.003*counter;
+per_frame_17=oldq1 =q1;
+per_frame_18=monitor=q1;
+per_frame_19=ib_r = 0.5 +0.5*sin(q1);
+per_frame_20=ib_g = 0.5 + 0.5*cos(beat+0.1*q1);
+per_frame_21=ob_r = wave_r;
+per_pixel_1=atime = q1;
+per_pixel_2=rot=0.1*pow(tan((ang-3.14*atime+rad)),3);
+per_pixel_3=zoom = 1- 0.05*(1-rad);
+per_frame_init_1=q1=1;

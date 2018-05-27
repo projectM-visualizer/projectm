@@ -7,15 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C34E81141956D096001AC5B5 /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81131956D096001AC5B5 /* libRenderer.a */; };
-		C34E81171956D0AC001AC5B5 /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81151956D0AC001AC5B5 /* libMilkdropPresetFactory.a */; };
-		C34E81181956D0AC001AC5B5 /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81161956D0AC001AC5B5 /* libNativePresetFactory.a */; };
+		16A4214820781836006F30CE /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214420781835006F30CE /* libRenderer.a */; };
+		16A4214920781836006F30CE /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214420781835006F30CE /* libRenderer.a */; };
+		16A4214A20781836006F30CE /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214520781835006F30CE /* libMilkdropPresetFactory.a */; };
+		16A4214B20781836006F30CE /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214520781835006F30CE /* libMilkdropPresetFactory.a */; };
+		16A4214C20781836006F30CE /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214620781835006F30CE /* libNativePresetFactory.a */; };
+		16A4214D20781836006F30CE /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214620781835006F30CE /* libNativePresetFactory.a */; };
+		16A4214E20781836006F30CE /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214720781836006F30CE /* libprojectM.a */; };
+		16A4214F20781836006F30CE /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214720781836006F30CE /* libprojectM.a */; };
+		16A42151207818F6006F30CE /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A42150207818F6006F30CE /* Cg.framework */; };
+		16A421522078196A006F30CE /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A42150207818F6006F30CE /* Cg.framework */; };
+		16A4215320781A41006F30CE /* Cg.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 16A42150207818F6006F30CE /* Cg.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C34E811C1956D0D4001AC5B5 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811B1956D0D4001AC5B5 /* libz.a */; };
 		C34E811E1956D0D6001AC5B5 /* libpng15.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811D1956D0D6001AC5B5 /* libpng15.a */; };
 		C34E81201956D0D8001AC5B5 /* libftgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811F1956D0D8001AC5B5 /* libftgl.a */; };
 		C34E81221956D0D9001AC5B5 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81211956D0D9001AC5B5 /* libfreetype.a */; };
 		C34E81241956D0DA001AC5B5 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81231956D0DA001AC5B5 /* libbz2.a */; };
-		C37822041956D90D0058A694 /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3FAE59C17B88BF800F4B110 /* libprojectM.a */; };
 		C37EBD2C19A0112900220265 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7B217B82CC3009E58CB /* Cocoa.framework */; };
 		C37EBD3219A0112900220265 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD3019A0112900220265 /* InfoPlist.strings */; };
 		C37EBD3419A0112900220265 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C37EBD3319A0112900220265 /* main.m */; };
@@ -59,6 +66,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				16A4215320781A41006F30CE /* Cg.framework in Copy Files */,
 			);
 			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -91,11 +99,13 @@
 
 /* Begin PBXFileReference section */
 		1695013E1F6EC5E5008FAF86 /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
+		16A4214420781835006F30CE /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/.libs/libRenderer.a; sourceTree = "<group>"; };
+		16A4214520781835006F30CE /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/.libs/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
+		16A4214620781835006F30CE /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/.libs/libNativePresetFactory.a; sourceTree = "<group>"; };
+		16A4214720781836006F30CE /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/.libs/libprojectM.a; sourceTree = "<group>"; };
+		16A42150207818F6006F30CE /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = ../../../../../../Library/Frameworks/Cg.framework; sourceTree = "<group>"; };
 		C34E810E1956CD2F001AC5B5 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		C34E81101956CD3A001AC5B5 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
-		C34E81131956D096001AC5B5 /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/libRenderer.a; sourceTree = SOURCE_ROOT; };
-		C34E81151956D0AC001AC5B5 /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.a; sourceTree = SOURCE_ROOT; };
-		C34E81161956D0AC001AC5B5 /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/libNativePresetFactory.a; sourceTree = SOURCE_ROOT; };
 		C34E81191956D0C3001AC5B5 /* contrib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = contrib; path = macos/contrib; sourceTree = "<group>"; };
 		C34E811B1956D0D4001AC5B5 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = macos/contrib/libz.a; sourceTree = "<group>"; };
 		C34E811D1956D0D6001AC5B5 /* libpng15.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng15.a; path = macos/contrib/libpng15.a; sourceTree = "<group>"; };
@@ -140,7 +150,6 @@
 		C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = getConfigFilename.cpp; sourceTree = "<group>"; };
 		C3FAE59117B87D8700F4B110 /* getConfigFilename.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = getConfigFilename.h; sourceTree = "<group>"; };
 		C3FAE59A17B88B9000F4B110 /* projectM Visualizer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "projectM Visualizer-Info.plist"; sourceTree = "<group>"; };
-		C3FAE59C17B88BF800F4B110 /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/libprojectM.a; sourceTree = SOURCE_ROOT; };
 		C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "iProjectM-pkg.plist"; sourceTree = SOURCE_ROOT; };
 		C3FAF97517B89F7200F4B110 /* config.inp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.inp; sourceTree = "<group>"; };
 		C3FAF97617B89F7200F4B110 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shaders; sourceTree = "<group>"; };
@@ -152,6 +161,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				16A421522078196A006F30CE /* Cg.framework in Frameworks */,
+				16A4214D20781836006F30CE /* libNativePresetFactory.a in Frameworks */,
+				16A4214920781836006F30CE /* libRenderer.a in Frameworks */,
+				16A4214B20781836006F30CE /* libMilkdropPresetFactory.a in Frameworks */,
+				16A4214F20781836006F30CE /* libprojectM.a in Frameworks */,
 				C37EBD2C19A0112900220265 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -160,18 +174,19 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				16A42151207818F6006F30CE /* Cg.framework in Frameworks */,
 				C3C24435195764870021FCD4 /* libGLEW.a in Frameworks */,
-				C37822041956D90D0058A694 /* libprojectM.a in Frameworks */,
+				16A4214C20781836006F30CE /* libNativePresetFactory.a in Frameworks */,
 				C34E81241956D0DA001AC5B5 /* libbz2.a in Frameworks */,
 				C34E81221956D0D9001AC5B5 /* libfreetype.a in Frameworks */,
+				16A4214A20781836006F30CE /* libMilkdropPresetFactory.a in Frameworks */,
 				C34E81201956D0D8001AC5B5 /* libftgl.a in Frameworks */,
+				16A4214820781836006F30CE /* libRenderer.a in Frameworks */,
+				16A4214E20781836006F30CE /* libprojectM.a in Frameworks */,
 				C34E811E1956D0D6001AC5B5 /* libpng15.a in Frameworks */,
 				C34E811C1956D0D4001AC5B5 /* libz.a in Frameworks */,
 				C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */,
 				C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */,
-				C34E81181956D0AC001AC5B5 /* libNativePresetFactory.a in Frameworks */,
-				C34E81141956D096001AC5B5 /* libRenderer.a in Frameworks */,
-				C34E81171956D0AC001AC5B5 /* libMilkdropPresetFactory.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,6 +267,7 @@
 		C3F9D7B117B82CC3009E58CB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				16A42150207818F6006F30CE /* Cg.framework */,
 				C3C24434195764870021FCD4 /* libGLEW.a */,
 				C37821FF1956D82A0058A694 /* libc++.1.dylib */,
 				C34E81231956D0DA001AC5B5 /* libbz2.a */,
@@ -302,10 +318,10 @@
 		C3FAE5A417B88C5B00F4B110 /* libprojectM */ = {
 			isa = PBXGroup;
 			children = (
-				C34E81151956D0AC001AC5B5 /* libMilkdropPresetFactory.a */,
-				C34E81161956D0AC001AC5B5 /* libNativePresetFactory.a */,
-				C34E81131956D096001AC5B5 /* libRenderer.a */,
-				C3FAE59C17B88BF800F4B110 /* libprojectM.a */,
+				16A4214520781835006F30CE /* libMilkdropPresetFactory.a */,
+				16A4214620781835006F30CE /* libNativePresetFactory.a */,
+				16A4214720781836006F30CE /* libprojectM.a */,
+				16A4214420781835006F30CE /* libRenderer.a */,
 			);
 			name = libprojectM;
 			sourceTree = "<group>";
@@ -366,7 +382,7 @@
 		C3F9D7A717B82CC3009E58CB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0830;
+				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = projectM;
 				TargetAttributes = {
 					C37EBD2A19A0112900220265 = {
@@ -532,6 +548,18 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = "projectM Visualizer/projectM Visualizer-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../libprojectM/.libs\"",
+					"\"$(SRCROOT)/../libprojectM/Renderer/.libs\"",
+					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory/.libs\"",
+					"\"$(SRCROOT)/../libprojectM/NativePresetFactory/.libs\"",
+					"$(SRCROOT)",
+					"\"$(SRCROOT)/../NativePresets/.libs\"",
+					"\"$(SRCROOT)/..\"",
+					"\"$(SRCROOT)/macos/contrib\"",
+					"$(PROJECT_DIR)/macos/contrib",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = biz.int80.iProjectM;
@@ -566,6 +594,18 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				INFOPLIST_FILE = "projectM Visualizer/projectM Visualizer-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../libprojectM/.libs\"",
+					"\"$(SRCROOT)/../libprojectM/Renderer/.libs\"",
+					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory/.libs\"",
+					"\"$(SRCROOT)/../libprojectM/NativePresetFactory/.libs\"",
+					"$(SRCROOT)",
+					"\"$(SRCROOT)/../NativePresets/.libs\"",
+					"\"$(SRCROOT)/..\"",
+					"\"$(SRCROOT)/macos/contrib\"",
+					"$(PROJECT_DIR)/macos/contrib",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_BUNDLE_IDENTIFIER = biz.int80.iProjectM;
 				PRODUCT_NAME = "projectM Visualizer";
@@ -580,12 +620,18 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = NO;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -631,12 +677,18 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = NO;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -680,20 +732,26 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"${SRCROOT}/..",
+					"${SRCROOT}/../..",
+					"$(SRCROOT)/../libprojectM",
+				);
 				INFOPLIST_FILE = "iProjectM/projectM Visualizer-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/iTunes/iTunes Plug-ins";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../libprojectM\"",
-					"\"$(SRCROOT)/../libprojectM/Renderer\"",
-					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory\"",
-					"\"$(SRCROOT)/../libprojectM/NativePresetFactory\"",
+					"\"$(SRCROOT)/../libprojectM/.libs\"",
+					"\"$(SRCROOT)/../libprojectM/Renderer/.libs\"",
+					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory/.libs\"",
+					"\"$(SRCROOT)/../libprojectM/NativePresetFactory/.libs\"",
 					"$(SRCROOT)",
-					"\"$(SRCROOT)/../NativePresets\"",
+					"\"$(SRCROOT)/../NativePresets/.libs\"",
 					"\"$(SRCROOT)/..\"",
 					"\"$(SRCROOT)/macos/contrib\"",
 					"$(PROJECT_DIR)/macos/contrib",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_BUNDLE_IDENTIFIER = "biz.int80.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = iProjectM;
 				WRAPPER_EXTENSION = bundle;
@@ -711,20 +769,26 @@
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GENERATE_PKGINFO_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"${SRCROOT}/..",
+					"${SRCROOT}/../..",
+					"$(SRCROOT)/../libprojectM",
+				);
 				INFOPLIST_FILE = "iProjectM/projectM Visualizer-Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/iTunes/iTunes Plug-ins";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../libprojectM\"",
-					"\"$(SRCROOT)/../libprojectM/Renderer\"",
-					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory\"",
-					"\"$(SRCROOT)/../libprojectM/NativePresetFactory\"",
+					"\"$(SRCROOT)/../libprojectM/.libs\"",
+					"\"$(SRCROOT)/../libprojectM/Renderer/.libs\"",
+					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory/.libs\"",
+					"\"$(SRCROOT)/../libprojectM/NativePresetFactory/.libs\"",
 					"$(SRCROOT)",
-					"\"$(SRCROOT)/../NativePresets\"",
+					"\"$(SRCROOT)/../NativePresets/.libs\"",
 					"\"$(SRCROOT)/..\"",
 					"\"$(SRCROOT)/macos/contrib\"",
 					"$(PROJECT_DIR)/macos/contrib",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_BUNDLE_IDENTIFIER = "biz.int80.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = iProjectM;
 				WRAPPER_EXTENSION = bundle;

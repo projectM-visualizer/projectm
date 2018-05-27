@@ -4,17 +4,17 @@ CLEANFILES=
 SUBDIRS=Renderer NativePresetFactory MilkdropPresetFactory
 
 AM_CPPFLAGS = \
--include $(top_builddir)/config.h \
--DSYSCONFDIR=\""$(sysconfdir)"\" \
--I$(top_srcdir)/src/libprojectM \
--I$(top_srcdir)/src/libprojectM/Renderer
+  $(my_CFLAGS) \
+	-include $(top_builddir)/config.h \
+	-DSYSCONFDIR=\""$(sysconfdir)"\" \
+	-I$(top_srcdir)/src/libprojectM \
+	-I$(top_srcdir)/src/libprojectM/Renderer \
+	$(FTGL_CFLAGS) $(CG_CFLAGS)
 
-# system headers/libraries/data to install
-include_HEADERS = projectM.hpp
 lib_LTLIBRARIES = libprojectM.la  # public, possibly-shared library
 
 # link flags
-libprojectM_la_LDFLAGS = -no-undefined -version-info 0:2:0
+libprojectM_la_LDFLAGS = $(CG_LDFLAGS) -no-undefined -version-info 0:2:0
 
 # link libRenderer, MilkdropPresetFactory, NativePresetFactory, and libprojectM sources
 libprojectM_la_LIBADD = \
@@ -29,7 +29,7 @@ libprojectM_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
 	IdleTextures.hpp           PresetChooser.hpp          TimeKeeper.hpp\
 	KeyHandler.hpp             PresetFactory.hpp          projectM.hpp\
 	PCM.hpp                    PresetFactoryManager.hpp\
-	projectM.hpp \
+	projectM.hpp projectM-opengl.h \
 	ConfigFile.h       glew.h\
 	carbontoprojectM.h glxew.h\
 	cocoatoprojectM.h  lvtoprojectM.h\
@@ -46,6 +46,6 @@ libprojectM_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
 	omptl/omptl_algorithm
 
 pkgconfigdir = $(libdir)/pkgconfig
-# pkgconfig_DATA = src/libprojectM.pc
-# EXTRA_DIST += src/libprojectM.pc.in
-# CLEANFILES += src/libprojectM.pc
+pkgconfig_DATA = libprojectM.pc
+EXTRA_DIST += libprojectM.pc.in
+CLEANFILES += libprojectM.pc

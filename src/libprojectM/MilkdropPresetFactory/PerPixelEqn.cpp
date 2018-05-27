@@ -38,7 +38,7 @@
 /* Evaluates a per pixel equation */
 void PerPixelEqn::evaluate(int mesh_i, int mesh_j) {
 
-  GenExpr * eqn_ptr = 0;
+  Expr * eqn_ptr = 0;
 
 
  eqn_ptr = this->gen_expr;
@@ -47,13 +47,13 @@ void PerPixelEqn::evaluate(int mesh_i, int mesh_j) {
 
  if (param_matrix == 0) {
 	 assert(param->engine_val);
-	 (*(float*)param->engine_val) = eqn_ptr->eval_gen_expr(mesh_i, mesh_j);
+	 (*(float*)param->engine_val) = eqn_ptr->eval(mesh_i, mesh_j);
 
   } else {
 
   assert(!(eqn_ptr == NULL || param_matrix == NULL));
 
-  param_matrix[mesh_i][mesh_j] = eqn_ptr->eval_gen_expr(mesh_i, mesh_j);
+  param_matrix[mesh_i][mesh_j] = eqn_ptr->eval(mesh_i, mesh_j);
 
   /* Now that this parameter has been referenced with a per
      pixel equation, we let the evaluator know by setting
@@ -64,7 +64,7 @@ void PerPixelEqn::evaluate(int mesh_i, int mesh_j) {
   }
 }
 
-PerPixelEqn::PerPixelEqn(int _index, Param * _param, GenExpr * _gen_expr):index(_index), param(_param), gen_expr(_gen_expr) {
+PerPixelEqn::PerPixelEqn(int _index, Param * _param, Expr * _gen_expr):index(_index), param(_param), gen_expr(_gen_expr) {
 
 	assert(index >= 0);
 	assert(param != 0);
