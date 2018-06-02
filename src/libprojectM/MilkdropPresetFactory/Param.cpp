@@ -47,6 +47,7 @@ Param::Param( std::string _name, short int _type, short int _flags, void * _engi
         flags (_flags),
         matrix_flag (0),
         engine_val(_engine_val),
+        local_value(0.0),
         matrix (_matrix),
         default_init_val (_default_init_val),
         upper_bound (_upper_bound),
@@ -62,6 +63,7 @@ Param::Param(std::string _name) :
         type(P_TYPE_DOUBLE),
 	flags(P_FLAG_USERDEF),
         matrix_flag(0),
+        local_value(0.0),
         matrix(0)
         {
 
