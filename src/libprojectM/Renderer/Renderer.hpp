@@ -87,7 +87,7 @@ private:
   std::string m_presetName;
 
   float* p;
-
+  GLuint pVBO;
 
   int vw;
   int vh;
@@ -104,6 +104,7 @@ private:
   FTGLExtrdFont *poly_font;
 #endif /** USE_FTGL */
 
+  GLuint getMeshSize();
   void SetupPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void Interpolation(const Pipeline &pipeline);
   void RenderItems(const Pipeline &pipeline, const PipelineContext &pipelineContext);

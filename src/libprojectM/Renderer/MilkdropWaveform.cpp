@@ -13,66 +13,73 @@
 
 MilkdropWaveform::MilkdropWaveform(): RenderItem(),
 	x(0.5), y(0.5), r(1), g(0), b(0), a(1), mystery(0), mode(Line), scale(10), smoothing(0), rot(0), samples(0),modOpacityStart(0),modOpacityEnd(1),
-	modulateAlphaByVolume(false), maximizeColors(false), additive(false), dots(false), thick(false), loop(false) {}
+	modulateAlphaByVolume(false), maximizeColors(false), additive(false), dots(false), thick(false), loop(false) {
+        glGenBuffers(1, &wave1VBO);
+        glGenBuffers(1, &wave2VBO);
+    }
+
+MilkdropWaveform::~MilkdropWaveform() {
+    glDeleteBuffers(1, &wave1VBO);
+    glDeleteBuffers(1, &wave2VBO);
+}
 
 void MilkdropWaveform::Draw(RenderContext &context)
 {
-	  WaveformMath(context);
-
+    WaveformMath(context);
+    
+    if(modulateAlphaByVolume)
+        ModulateOpacityByVolume(context);
+    else
+        temp_a = a;
+    MaximizeColors(context);
+    
 #ifndef GL_TRANSITION
+    if (dots==1)
+        glEnable(GL_LINE_STIPPLE);
+#endif
     
-		glMatrixMode( GL_MODELVIEW );
-		glPushMatrix();
-		glLoadIdentity();
-
-		if(modulateAlphaByVolume) ModulateOpacityByVolume(context);
-		else temp_a = a;
-		MaximizeColors(context);
-
-		if(dots==1) glEnable(GL_LINE_STIPPLE);
-
-		//Thick wave drawing
-		if (thick==1)  glLineWidth( (context.texsize < 512 ) ? 2 : 2*context.texsize/512);
-		else glLineWidth( (context.texsize < 512 ) ? 1 : context.texsize/512);
-
-		//Additive wave drawing (vice overwrite)
-		if (additive==1)glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		else glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-
-		glTranslatef(.5, .5, 0);
-		glRotatef(rot, 0, 0, 1);
-		glScalef(aspectScale, 1.0, 1.0);
-		glTranslatef(-.5, -.5, 0);
-
-
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDisableClientState(GL_COLOR_ARRAY);
-		glVertexPointer(2,GL_FLOAT,0,wavearray);
-
-		if (loop)
-		  glDrawArrays(GL_LINE_LOOP,0,samples);
-		else
-		  glDrawArrays(GL_LINE_STRIP,0,samples);
-
-
-		if (two_waves)
-		  {
-		    glVertexPointer(2,GL_FLOAT,0,wavearray2);
-		    if (loop)
-		      glDrawArrays(GL_LINE_LOOP,0,samples);
-		    else
-		      glDrawArrays(GL_LINE_STRIP,0,samples);
-		  }
-
-
-	#ifndef USE_GLES1
-		if(dots==1) glDisable(GL_LINE_STIPPLE);
-	#endif
-
-		glPopMatrix();
+    //Thick wave drawing
+    if (thick==1)
+        glLineWidth( (context.texsize < 512 ) ? 2 : 2*context.texsize/512);
+    else
+        glLineWidth( (context.texsize < 512 ) ? 1 : context.texsize/512);
     
+    //Additive wave drawing (vice overwrite)
+    if (additive==1)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    else
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    check_gl_error();
+    
+    // FIXME: convert to dynamic drawing
+    glBindBuffer(GL_ARRAY_BUFFER, wave1VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(wavearray), wavearray, GL_STREAM_DRAW);
+    check_gl_error();
+
+    if (loop)
+        glDrawArrays(GL_LINE_LOOP,0,samples);
+    else
+        glDrawArrays(GL_LINE_STRIP,0,samples);
+    check_gl_error();
+
+    
+    if (two_waves)
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, wave2VBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(wavearray2), wavearray2, GL_STREAM_DRAW);
+        check_gl_error();
+        
+        if (loop)
+            glDrawArrays(GL_LINE_LOOP,0,samples);
+        else
+            glDrawArrays(GL_LINE_STRIP,0,samples);
+        check_gl_error();
+    }
+    
+    
+#ifndef GL_TRANSITION
+    if (dots==1)
+        glDisable(GL_LINE_STIPPLE);
 #endif
 }
 
