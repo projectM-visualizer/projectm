@@ -5,21 +5,17 @@
 #ifndef  __PROJECTM_OPENGL_H__
 #define  __PROJECTM_OPENGL_H__
 
-//#define GL_TRANSITION
-
-//#include <GL/glew.h>
+// temporary flag signalling that we are using OpenGL 3 (as a stepping stone to getting to GLES compatibility)
+#define GL_TRANSITION
 
 #ifdef __APPLE__
-# include <OpenGL/gl.h>
+//# include <OpenGL/gl.h>
 # include <OpenGL/gl3.h>
 #elif defined(_WIN32)
 # include <windows.h>
 #else /* linux/unix/other */
-# ifdef USE_GLES1
-#  include <GLES/gl.h>
-# else
+// may need to be changed to use GLES/GL3 or whatever is modern on linux
 #  include <GL/gl.h>
-# endif
 #endif
 
 #endif // __PROJECTM_OPENGL_H__

@@ -21,9 +21,7 @@ void MilkdropWaveform::Draw(RenderContext &context)
 
 #ifndef GL_TRANSITION
     
-	#ifndef EMSCRIPTEN
 		glMatrixMode( GL_MODELVIEW );
-	#endif
 		glPushMatrix();
 		glLoadIdentity();
 
@@ -31,9 +29,7 @@ void MilkdropWaveform::Draw(RenderContext &context)
 		else temp_a = a;
 		MaximizeColors(context);
 
-	#ifndef USE_GLES1
 		if(dots==1) glEnable(GL_LINE_STIPPLE);
-	#endif
 
 		//Thick wave drawing
 		if (thick==1)  glLineWidth( (context.texsize < 512 ) ? 2 : 2*context.texsize/512);

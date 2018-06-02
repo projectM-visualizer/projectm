@@ -37,8 +37,6 @@ void Waveform::Draw(RenderContext &context)
 			if (additive)  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 			else glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-// webGL doesn't do glPointSize
-#ifndef EMSCRIPTEN
 			if (thick)
 			{
 			  glLineWidth(context.texsize <= 512 ? 2 : 2*context.texsize/512);
@@ -46,7 +44,6 @@ void Waveform::Draw(RenderContext &context)
 
 			}
 			else glPointSize(context.texsize <= 512 ? 1 : context.texsize/512);
-#endif
 
 			float *value1 = new float[samples];
 			float *value2 = new float[samples];
@@ -101,9 +98,7 @@ void Waveform::Draw(RenderContext &context)
 
 			glPointSize(context.texsize < 512 ? 1 : context.texsize/512);
 			glLineWidth(context.texsize < 512 ? 1 : context.texsize/512);
-#ifndef USE_GLES1
 			glDisable(GL_LINE_STIPPLE);
-#endif
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			//  glPopMatrix();
 #endif

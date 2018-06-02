@@ -62,7 +62,7 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 	//std::cout << "Generating Noise Textures" << std::endl;
 
 	PerlinNoise		*noise = new PerlinNoise;
-
+#ifndef GL_TRANSITION
 	glGenTextures(1, &noise_texture_lq_lite);
 	glBindTexture(GL_TEXTURE_2D, noise_texture_lq_lite);
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, 32, 32, 0, GL_LUMINANCE, GL_FLOAT, noise->noise_lq_lite);
@@ -125,6 +125,7 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	 textureManager->setTexture("noisevol_hq", noise_texture_hq_vol, 8, 8);
+#endif
 }
 
 bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::string &shaderFilename) {
@@ -469,8 +470,10 @@ void ShaderEngine::SetupUserTextureState( const UserTexture* texture)
     glBindTexture(GL_TEXTURE_2D, texture->texID);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
+#ifndef GL_TRANSITION
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture->wrap ? GL_REPEAT : GL_CLAMP);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->wrap ? GL_REPEAT : GL_CLAMP);
+#endif
 }
 
 void ShaderEngine::SetupShaderQVariables(GLuint program, const Pipeline &q)
@@ -491,6 +494,7 @@ void ShaderEngine::setAspect(float aspect)
 void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineContext &pipelineContext,
 		const int texsize)
 {
+#ifndef GL_TRANSITION
 	if (blur1_enabled || blur2_enabled || blur3_enabled)
 	{
 		float tex[4][2] =
@@ -598,15 +602,11 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
 
 
 		}
-
-//            cgGLUnbindProgram(myCgProfile);
-
-//        cgGLDisableProfile(myCgProfile);
-
 		glDisable(GL_TEXTURE_2D);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	}
+#endif
 }
 
 void ShaderEngine::loadShader(GLenum shaderType, Shader &shader, std::string &shaderFilename)
