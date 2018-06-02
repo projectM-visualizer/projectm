@@ -117,6 +117,7 @@
 		161070DC1F705069001905AB /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = ../../../../../../Library/Frameworks/Cg.framework; sourceTree = "<group>"; };
 		1612C98C207A807000862A3A /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
 		1612CA10207A8D2400862A3A /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shaders; sourceTree = "<group>"; };
+		1687171B20C2C92800947E7E /* notes */ = {isa = PBXFileReference; lastKnownFileType = text; path = notes; sourceTree = "<group>"; };
 		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
 		169501FF1F7009E9008FAF86 /* pmSDL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pmSDL.hpp; sourceTree = "<group>"; };
 		C307DFD31D565B57002F6B9E /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
@@ -199,6 +200,7 @@
 				169501FE1F7009E9008FAF86 /* pmSDL.cpp */,
 				169501FF1F7009E9008FAF86 /* pmSDL.hpp */,
 				C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */,
+				1687171B20C2C92800947E7E /* notes */,
 				C307DFD31D565B57002F6B9E /* presets */,
 				16A42128207802AF006F30CE /* Dependencies */,
 				161070CE1F7041B0001905AB /* Frameworks */,

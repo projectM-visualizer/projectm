@@ -87,13 +87,14 @@ int main(int argc, char *argv[]) {
         // get path to our app, use CWD for presets/fonts/etc
         std::string base_path = SDL_GetBasePath();
         settings.presetURL = base_path + "presets/presets_shader_test";
+//        settings.presetURL = base_path + "presets/presets_milkdrop_200";
         settings.menuFontURL = base_path + "fonts/Vera.ttf";
         settings.titleFontURL = base_path + "fonts/Vera.ttf";
         // init with settings
         app = new projectMSDL(settings, 0);
     }
     app->init(win, rend);
-
+    
     // get an audio input device
     app->openAudioInput();
     app->beginAudioCapture();
