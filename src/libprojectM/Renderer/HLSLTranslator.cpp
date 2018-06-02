@@ -5,6 +5,7 @@
 
 using namespace M4;
 
+// http://www.geisswerks.com/milkdrop/milkdrop_preset_authoring.html#3f6
 std::string HLSLShaderTemplate = ""
 "    static const float  M_PI = 3.14159265359;\n"
 "    static const float  M_PI_2 = 6.28318530718;\n"
@@ -106,8 +107,6 @@ std::string HLSLShaderTemplate = ""
 
 //"    #define getrad sqrt((uv.x-0.5)*2*(uv.x-0.5)*2+(uv.y-0.5)*2*(uv.y-0.5)*2)*.7071067\n"
 //"    #define getang atan2(((uv.y-0.5)*2),((uv.x-0.5)*2))\n"
-//"    float rad = sqrt((uv.x-0.5)*2*(uv.x-0.5)*2+(uv.y-0.5)*2*(uv.y-0.5)*2)*.7071067;\n"
-//"    float getang = atan2(((uv.y-0.5)*2),((uv.x-0.5)*2));\n"
 "    float3 getrad(float2 uv) { return sqrt((uv.x-0.5)*2*(uv.x-0.5)*2+(uv.y-0.5)*2*(uv.y-0.5)*2)*.7071067; };\n"
 "    float3 getang(float2 uv) { return atan2(((uv.y-0.5)*2),((uv.x-0.5)*2)); };\n"
 
@@ -139,8 +138,6 @@ std::string HLSLShaderTemplate = ""
 "    }\n"
 
 "    struct outtype {float4 color : COLOR;};\n";
-//"    outtype OUT;\n";
-//"    static float3 ret;\n\n";
 
 
 std::unique_ptr<std::string> HLSLTranslator::parse(GLenum shaderType, const char *fileName, std::string &source) {
@@ -154,7 +151,6 @@ std::unique_ptr<std::string> HLSLTranslator::parse(GLenum shaderType, const char
     fullSource.append(source);
     
     // parse
-//    std::cout << "FULL PROGRAM:\n\n****\n\n" <<  fullSource << "\n\n\n\n";
     HLSLParser parser(&allocator, fileName, fullSource.c_str(), fullSource.size());
     HLSLTree tree( &allocator );
     if( !parser.Parse(&tree) ) {

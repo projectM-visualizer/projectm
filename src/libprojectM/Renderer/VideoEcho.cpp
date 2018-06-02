@@ -20,11 +20,6 @@ VideoEcho::~VideoEcho()
 
 void VideoEcho::Draw(RenderContext &context)
 {
-
-
-		glEnable(GL_TEXTURE_2D);
-
-
 		float tex[4][2] = {{0, 1},
 				   {0, 0},
 				   {1, 0},
@@ -74,7 +69,6 @@ void VideoEcho::Draw(RenderContext &context)
 		glVertexPointer(2,GL_FLOAT,0,pointsFlip);
 		glDrawArrays(GL_TRIANGLE_FAN,0,4);
 
-		glDisable(GL_TEXTURE_2D);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);

@@ -7,6 +7,10 @@
 
 #include "pmSDL.hpp"
 
+void projectMSDL::presetSwitchedEvent(bool isHardCut, size_t index) const {
+    std::cout << "Now using preset: " << getPresetName(index) << std::endl;
+}
+
 void projectMSDL::audioInputCallbackF32(void *userdata, unsigned char *stream, int len) {
     projectMSDL *app = (projectMSDL *) userdata;
     //    printf("LEN: %i\n", len);
@@ -211,7 +215,7 @@ void projectMSDL::renderFrame() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     projectM::renderFrame();
-    glFlush();
+    SDL_GL_SwapWindow(win);
 }
 
 projectMSDL::projectMSDL(Settings settings, int flags) : projectM(settings, flags) {
@@ -235,8 +239,8 @@ void projectMSDL::init(SDL_Window *window, SDL_GLContext *ctx) {
     projectM_resetGL(width, height);
 }
 
+//std::string projectMSDL::getActivePresetName()
+//{
+//    return std::string("hey");
+//}
 
-std::string projectMSDL::getActivePresetName()
-{
-    return std::string("hey");
-}
