@@ -129,13 +129,12 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 }
 
 bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::string &shaderFilename) {
-    //if (p != NULL) cgDestroyProgram(p);
-    //p = NULL;
     std::string program = pmShader.programSource;
 
     if (program.length() <= 0)
         return false;
 
+    // replace "}" with return statement (this can probably be optimized for the GLSL conversion...)
     size_t found = program.rfind('}');
     if (found != std::string::npos)
     {
@@ -144,11 +143,12 @@ bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::str
     }
     else
         return false;
+    
+    // replace "{" with some variable declarations
     found = program.rfind('{');
     if (found != std::string::npos)
     {
         //std::cout << "first '{' found at: " << int(found) << std::endl;
-//         program.replace(int(found), 1, "{\nfloat rad=getrad;\nfloat ang=getang;\n");
         const char *progMain = \
         "{\n"
         "float2 uv_orig = uv;\n"
@@ -160,6 +160,8 @@ bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::str
     }
     else
         return false;
+    
+    // replace shader_body with entry point function
     found = program.find("shader_body");
     if (found != std::string::npos)
     {
@@ -171,6 +173,7 @@ bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::str
 
     pmShader.textures.clear();
 
+    // set up texture samplers for all samplers references in the shader program
     found = 0;
     found = program.find("sampler_", found);
     while (found != std::string::npos)
@@ -231,14 +234,13 @@ bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::str
 
             else
                 delete (texture);
-
-            // we need to pass the sampler in to the source before transpiling it
         }
 
         found = program.find("sampler_", found);
     }
     textureManager->clearRandomTextures();
 
+    // add texture size vars
     found = 0;
     found = program.find("texsize_", found);
     while (found != std::string::npos)
@@ -259,6 +261,7 @@ bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::str
         found = program.find("texsize_", found);
     }
 
+    // blur programs
     found = program.find("GetBlur3");
     if (found != std::string::npos)
         blur1_enabled = blur2_enabled = blur3_enabled = true;
@@ -274,8 +277,6 @@ bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::str
                 blur1_enabled = true;
         }
     }
-
-//    std::cout << "Got program: " << program << std::endl;
     
     // now we need to prepend the HLSL template to the program
 
@@ -284,18 +285,14 @@ bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::str
     std::unique_ptr<std::string> glslSource = translator.parse(shaderType, shaderFilename.c_str(), program);
     if (!glslSource) {
         std::cerr << "Failed to parse shader from " << shaderFilename << std::endl;
+        std::cerr << "Original program: " << program << std::endl;
         return false;
     }
     
     // https://www.khronos.org/opengl/wiki/Shader_Compilation#Shader_object_compilation
     GLuint shader = glCreateShader(shaderType);
     
-    // replace shader_body in preset with parameters and main():
-    //        const char *main = "void main(in sampler2D myTexture)\n";
-    //        program.replace(int(found), 11, main);
-
     // Get strings for glShaderSource.
-    std::cout << "Got program: " << glslSource.get()->c_str() << std::endl;
     const char *shaderSourceCStr = glslSource.get()->c_str();
     glShaderSource(shader, 1, &shaderSourceCStr, NULL);
     
@@ -315,7 +312,8 @@ bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::str
         glGetShaderInfoLog(shader, 512, nullptr, infoLog);
         
         std::cerr << (std::string("Failed to compile shader: ") + infoLog) << std::endl;
-        
+        std::cout << "Translated program: " << glslSource.get()->c_str() << std::endl;
+
         glDeleteShader(shader); // Don't leak the shader.
         return false;
     }
