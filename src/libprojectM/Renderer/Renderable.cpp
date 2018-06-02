@@ -16,36 +16,34 @@ DarkenCenter::DarkenCenter():RenderItem(){}
 MotionVectors::MotionVectors():RenderItem(){}
 Border::Border():RenderItem(){}
 
-void DarkenCenter::Draw(RenderContext &context)
-	{
-		//float unit=0.05f;
+void DarkenCenter::Draw(RenderContext &context) {
+#ifndef GL_TRANSITION
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    float colors[6][4] = {{0, 0, 0, (3.0f/32.0f) * masterAlpha},
+                  {0, 0, 0, 0},
+                  {0, 0, 0, 0},
+                  {0, 0, 0, 0},
+                  {0, 0, 0, 0},
+                  {0, 0, 0, 0}};
 
-		float colors[6][4] = {{0, 0, 0, (3.0f/32.0f) * masterAlpha},
-				      {0, 0, 0, 0},
-				      {0, 0, 0, 0},
-				      {0, 0, 0, 0},
-				      {0, 0, 0, 0},
-				      {0, 0, 0, 0}};
+    float points[6][2] = {{ 0.5,  0.5},
+                  { 0.45, 0.5},
+                  { 0.5,  0.45},
+                  { 0.55, 0.5},
+                  { 0.5,  0.55},
+                  { 0.45, 0.5}};
 
-		float points[6][2] = {{ 0.5,  0.5},
-				      { 0.45, 0.5},
-				      { 0.5,  0.45},
-				      { 0.55, 0.5},
-				      { 0.5,  0.55},
-				      { 0.45, 0.5}};
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_COLOR_ARRAY);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+    glVertexPointer(2,GL_FLOAT,0,points);
+    glColorPointer(4,GL_FLOAT,0,colors);
 
-		glVertexPointer(2,GL_FLOAT,0,points);
-		glColorPointer(4,GL_FLOAT,0,colors);
-
-		glDrawArrays(GL_TRIANGLE_FAN,0,6);
-
-	}
+    glDrawArrays(GL_TRIANGLE_FAN,0,6);
+#endif
+}
 
 Shape::Shape():RenderItem()
 {
@@ -84,6 +82,7 @@ Shape::Shape():RenderItem()
 
 void Shape::Draw(RenderContext &context)
 {
+#ifndef GL_TRANSITION
 
 	float xval, yval;
 	float t;
@@ -109,11 +108,6 @@ void Shape::Draw(RenderContext &context)
 						context.aspectRatio=1.0;
 					}
 				}
-
-				glMatrixMode(GL_TEXTURE);
-				glPushMatrix();
-				glLoadIdentity();
-
 				glEnable(GL_TEXTURE_2D);
 
 				glEnableClientState(GL_VERTEX_ARRAY);
@@ -243,11 +237,13 @@ void Shape::Draw(RenderContext &context)
 
 			delete[] points;
 
-
+#endif
 }
 
 void MotionVectors::Draw(RenderContext &context)
 {
+#ifndef GL_TRANSITION
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
@@ -257,9 +253,7 @@ void MotionVectors::Draw(RenderContext &context)
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-#ifndef EMSCRIPTEN
 	glPointSize(length);
-#endif
 	glColor4f(r, g, b, a * masterAlpha);
 
 	if (x_num + y_num < 600)
@@ -286,10 +280,13 @@ void MotionVectors::Draw(RenderContext &context)
 
 	delete[] points;
 	  }
+#endif
 }
 
 void Border::Draw(RenderContext &context)
 {
+#ifndef GL_TRANSITION
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -320,14 +317,11 @@ void Border::Draw(RenderContext &context)
 
 	glColor4f(inner_r, inner_g, inner_b, inner_a * masterAlpha);
 
-	// glRect doesn't exist in GLES I think
 	// TODO: replace glRect
-#ifndef USE_GLES1
 	glRectd(of, of, of+iff, texof);
 	glRectd(of+iff, of, texof-iff, of+iff);
 	glRectd(texof-iff, of, texof, texof);
 	glRectd(of+iff, texof, texof-iff, texof-iff);
-#endif
 
 	float pointsE[4][2] = {{of,of},{of,texof},{of+iff,of},{of+iff,texof}};
 	glVertexPointer(2,GL_FLOAT,0,pointsE);
@@ -344,5 +338,5 @@ void Border::Draw(RenderContext &context)
 	float pointsH[4][2] = {{of+iff,texof},{of+iff,texof-iff},{texof-iff,texof},{texof-iff,texof-iff}};
 	glVertexPointer(2,GL_FLOAT,0,pointsH);
 	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
-
+#endif
 }

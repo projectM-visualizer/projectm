@@ -95,9 +95,9 @@ int projectMSDL::openAudioInput() {
 
 void projectMSDL::beginAudioCapture() {
     // allocate a buffer to store PCM data for feeding in
-    unsigned int maxSamples = audioChannelsCount * audioSampleCount;
-    SDL_PauseAudioDevice(audioDeviceID, false);
+//    unsigned int maxSamples = audioChannelsCount * audioSampleCount;
     pcm()->initPCM(2048);
+    SDL_PauseAudioDevice(audioDeviceID, false);
 }
 
 void projectMSDL::endAudioCapture() {
@@ -212,8 +212,6 @@ void projectMSDL::renderFrame() {
 
     projectM::renderFrame();
     glFlush();
-
-    SDL_RenderPresent(rend);
 }
 
 projectMSDL::projectMSDL(Settings settings, int flags) : projectM(settings, flags) {
@@ -230,9 +228,9 @@ projectMSDL::projectMSDL(std::string config_file, int flags) : projectM(config_f
     isFullScreen = false;
 }
 
-void projectMSDL::init(SDL_Window *window, SDL_Renderer *renderer) {
+void projectMSDL::init(SDL_Window *window, SDL_GLContext *ctx) {
     win = window;
-    rend = renderer;
+    glCtx = ctx;
     selectRandom(true);
     projectM_resetGL(width, height);
 }

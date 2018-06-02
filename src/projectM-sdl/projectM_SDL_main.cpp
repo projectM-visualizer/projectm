@@ -8,6 +8,9 @@
 
 #include "pmSDL.hpp"
 
+void configureGL();
+std::string getConfigFilePath();
+
 // return path to config file to use
 std::string getConfigFilePath() {
     const char *path = DATADIR_PATH;
@@ -31,6 +34,13 @@ std::string getConfigFilePath() {
     return configFilePath;
 }
 
+void configureGL() {
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+}
+
 int main(int argc, char *argv[]) {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
     
@@ -52,12 +62,9 @@ int main(int argc, char *argv[]) {
     int width = initialWindowBounds.w;
     int height = initialWindowBounds.h;
 
-    SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_RESIZABLE);
-    SDL_Renderer *rend = SDL_CreateRenderer(win, 0, SDL_RENDERER_ACCELERATED);
-    if (! rend) {
-        fprintf(stderr, "Failed to create renderer: %s\n", SDL_GetError());
-        SDL_Quit();
-    }
+    configureGL();
+    SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    SDL_GLContext glCtx = SDL_GL_CreateContext(win);
     SDL_SetWindowTitle(win, "projectM Visualizer");
     
     projectMSDL *app;
@@ -93,7 +100,7 @@ int main(int argc, char *argv[]) {
         // init with settings
         app = new projectMSDL(settings, 0);
     }
-    app->init(win, rend);
+    app->init(win, &glCtx);
     
     // get an audio input device
     app->openAudioInput();
@@ -111,6 +118,7 @@ int main(int argc, char *argv[]) {
         last_time = SDL_GetTicks();
     }
     
+    SDL_GL_DeleteContext(glCtx);
     app->endAudioCapture();
     delete app;
 

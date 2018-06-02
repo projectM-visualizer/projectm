@@ -11,6 +11,7 @@
 
 void Brighten::Draw(RenderContext &context)
 {
+#ifndef GL_TRANSITION
 	float points[4][2] = {{-0.5, -0.5},
 				      {-0.5,  0.5},
 				      { 0.5,  0.5},
@@ -29,10 +30,12 @@ void Brighten::Draw(RenderContext &context)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
+#endif
 }
 
 void Darken::Draw(RenderContext &context)
 {
+#ifndef GL_TRANSITION
 	float points[4][2] = {{-0.5, -0.5},
 				      {-0.5,  0.5},
 				      { 0.5,  0.5},
@@ -45,11 +48,14 @@ void Darken::Draw(RenderContext &context)
 		glDrawArrays(GL_TRIANGLE_FAN,0,4);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glDisableClientState(GL_VERTEX_ARRAY);
+#endif
 }
 
 void Invert::Draw(RenderContext &context)
 {
-	float points[4][2] = {{-0.5, -0.5},
+#ifndef GL_TRANSITION
+
+    float points[4][2] = {{-0.5, -0.5},
 				      {-0.5,  0.5},
 				      { 0.5,  0.5},
 				      { 0.5,  -0.5}};
@@ -62,10 +68,12 @@ void Invert::Draw(RenderContext &context)
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glDisableClientState(GL_VERTEX_ARRAY);
+#endif
 }
 
 void Solarize::Draw(RenderContext &context)
 {
+#ifndef GL_TRANSITION
 	float points[4][2] = {{-0.5, -0.5},
 					      {-0.5,  0.5},
 					      { 0.5,  0.5},
@@ -82,4 +90,5 @@ void Solarize::Draw(RenderContext &context)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glDisableClientState(GL_VERTEX_ARRAY);
+#endif
 }

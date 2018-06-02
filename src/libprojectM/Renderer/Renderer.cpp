@@ -131,31 +131,11 @@ void Renderer::ResetTextures()
 
 void Renderer::SetupPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
-	//glMatrixMode(GL_PROJECTION);
-	//glPushMatrix();
-	//glMatrixMode(GL_MODELVIEW);
-	//glPushMatrix();
-
 	totalframes++;
 	renderTarget->lock();
 	glViewport(0, 0, renderTarget->texsize, renderTarget->texsize);
 
 	glEnable(GL_TEXTURE_2D);
-
-	//If using FBO, switch to FBO texture
-
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	glOrtho(0.0, 1, 0.0, 1, -40, 40);
-
-#ifndef EMSCRIPTEN
-	glMatrixMode(GL_MODELVIEW);
-#endif
-	glLoadIdentity();
 
 	shaderEngine.RenderBlurTextures(pipeline, pipelineContext, renderTarget->texsize);
 }
@@ -194,6 +174,8 @@ void Renderer::FinishPass1()
 
 void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
+#ifndef GL_TRANSITION
+
 	//BEGIN PASS 2
 	//
 	//end of texture rendering
@@ -213,9 +195,7 @@ void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineCo
 
 	glBindTexture(GL_TEXTURE_2D, this->renderTarget->textureID[0]);
 
-#ifndef EMSCRIPTEN
 	glMatrixMode(GL_PROJECTION);
-#endif
 	glLoadIdentity();
 	glOrtho(-0.5, 0.5, -0.5, 0.5, -40, 40);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -224,9 +204,7 @@ void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineCo
 
 	CompositeOutput(pipeline, pipelineContext);
 
-#ifndef EMSCRIPTEN
 	glMatrixMode(GL_MODELVIEW);
-#endif
 	glLoadIdentity();
 	glTranslatef(-0.5, -0.5, 0);
 
@@ -248,6 +226,7 @@ void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineCo
 #ifdef USE_FBO
 	if (renderTarget->renderToTexture)
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+#endif
 #endif
 }
 
@@ -287,6 +266,7 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
 
 void Renderer::Interpolation(const Pipeline &pipeline)
 {
+#ifndef GL_TRANSITION
 	if (this->renderTarget->useFBO)
 		glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[1]);
 	else
@@ -295,13 +275,8 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 	//Texture wrapping( clamp vs. wrap)
 	if (pipeline.textureWrap == 0)
 	{
-#ifdef USE_GLES1
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-#else
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-#endif
 	}
 	else
 	{
@@ -326,9 +301,7 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 
 	//glVertexPointer(2, GL_FLOAT, 0, p);
 	//glTexCoordPointer(2, GL_FLOAT, 0, t);
-#ifndef EMSCRIPTEN
 	glInterleavedArrays(GL_T2F_V3F,0,p);
-#endif
 
 	if (pipeline.staticPerPixel)
 	{
@@ -382,7 +355,7 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 	glDisable(GL_TEXTURE_2D);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
+#endif
 }
 Pipeline* Renderer::currentPipe;
 
@@ -415,15 +388,14 @@ Renderer::~Renderer()
 
 void Renderer::reset(int w, int h)
 {
+#ifndef GL_TRANSITION
 	aspect = (float) h / (float) w;
 	this -> vw = w;
 	this -> vh = h;
 
 	shaderEngine.setAspect(aspect);
 
-#ifndef EMSCRIPTEN
 	glShadeModel(GL_SMOOTH);
-#endif
 
 	glCullFace(GL_BACK);
 	//glFrontFace( GL_CCW );
@@ -441,10 +413,8 @@ void Renderer::reset(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-#ifndef USE_GLES1
 	glDrawBuffer(GL_BACK);
 	glReadBuffer(GL_BACK);
-#endif
 	glEnable(GL_BLEND);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -454,9 +424,7 @@ void Renderer::reset(int w, int h)
 	glEnable(GL_POINT_SMOOTH);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-#ifndef USE_GLES1
 	glLineStipple(2, 0xAAAA);
-#endif
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -471,6 +439,7 @@ void Renderer::reset(int w, int h)
 	{
 		this->renderTarget->fallbackRescale(w, h);
 	}
+#endif
 }
 
 GLuint Renderer::initRenderToTexture()
@@ -743,7 +712,7 @@ void Renderer::draw_fps(float realfps)
 
 void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
-
+#ifndef GL_TRANSITION
 	glMatrixMode(GL_TEXTURE);
 	glLoadIdentity();
 
@@ -791,5 +760,5 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.compositeDrawables.begin(); pos
 			!= pipeline.compositeDrawables.end(); ++pos)
 		(*pos)->Draw(renderContext);
-
+#endif
 }
