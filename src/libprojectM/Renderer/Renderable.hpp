@@ -7,6 +7,10 @@
 
 class BeatDetect;
 
+typedef float floatPair[2];
+typedef float floatTriple[3];
+typedef float floatQuad[4];
+
 
 class RenderContext
 {
@@ -26,7 +30,12 @@ class RenderItem
 public:
 	float masterAlpha;
 	virtual void Draw(RenderContext &context) = 0;
-	RenderItem();
+    RenderItem();
+    ~RenderItem();
+
+protected:
+    // vertex buffer storage
+    GLuint vbo;
 };
 
 typedef std::vector<RenderItem*> RenderItemList;
@@ -74,6 +83,9 @@ public:
 
     Shape();
     virtual void Draw(RenderContext &context);
+    
+private:
+    void DrawVertices(GLenum mode, GLsizei count, GLuint pointsSize, floatPair *points, GLuint colorsSize, floatQuad *colors);
 };
 
 class Text : RenderItem

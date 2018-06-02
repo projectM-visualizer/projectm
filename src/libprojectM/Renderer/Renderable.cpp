@@ -3,14 +3,18 @@
 #include "Renderable.hpp"
 #include <math.h>
 
-typedef float floatPair[2];
-typedef float floatTriple[3];
-typedef float floatQuad[4];
-
 RenderContext::RenderContext()
 	: time(0),texsize(512), aspectRatio(1), aspectCorrect(false){};
 
-RenderItem::RenderItem():masterAlpha(1){}
+RenderItem::RenderItem() : masterAlpha(1) {
+    glGenBuffers(1, &vbo);
+    check_gl_error();
+}
+
+RenderItem::~RenderItem() {
+    glDeleteBuffers(1, &vbo);
+    check_gl_error();
+}
 
 DarkenCenter::DarkenCenter():RenderItem(){}
 MotionVectors::MotionVectors():RenderItem(){}
@@ -48,196 +52,190 @@ void DarkenCenter::Draw(RenderContext &context) {
 Shape::Shape():RenderItem()
 {
 	 std::string imageUrl = "";
-	     sides = 4;
-	     thickOutline = false;
-	     enabled = true;
-	     additive = false;
-	     textured = false;
+     sides = 4;
+     thickOutline = false;
+     enabled = true;
+     additive = false;
+     textured = false;
 
-	     tex_zoom = 1.0;
-	     tex_ang = 0.0;
+     tex_zoom = 1.0;
+     tex_ang = 0.0;
 
-	     x = 0.5;
-	     y = 0.5;
-	     radius = 1.0;
-	     ang = 0.0;
+     x = 0.5;
+     y = 0.5;
+     radius = 1.0;
+     ang = 0.0;
 
-	     r = 0.0; /* red color value */
-	     g = 0.0; /* green color value */
-	     b = 0.0; /* blue color value */
-	     a = 0.0; /* alpha color value */
+     r = 0.0; /* red color value */
+     g = 0.0; /* green color value */
+     b = 0.0; /* blue color value */
+     a = 0.0; /* alpha color value */
 
-	     r2 = 0.0; /* red color value */
-	     g2 = 0.0; /* green color value */
-	     b2 = 0.0; /* blue color value */
-	     a2 = 0.0; /* alpha color value */
+     r2 = 0.0; /* red color value */
+     g2 = 0.0; /* green color value */
+     b2 = 0.0; /* blue color value */
+     a2 = 0.0; /* alpha color value */
 
-	     border_r = 0.0; /* red color value */
-	     border_g = 0.0; /* green color value */
-	     border_b = 0.0; /* blue color value */
-	     border_a = 0.0; /* alpha color value */
-
-
+     border_r = 0.0; /* red color value */
+     border_g = 0.0; /* green color value */
+     border_b = 0.0; /* blue color value */
+     border_a = 0.0; /* alpha color value */
 }
 
 void Shape::Draw(RenderContext &context)
 {
+    float xval, yval;
+    float t;
+
+//    printf("drawing shape %f\n", ang);
+
+    float temp_radius = radius*(.707*.707*.707*1.04);
+    
+    //Additive Drawing or Overwrite
+    check_gl_error();
+    if (additive==0)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    else
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    check_gl_error();
+    
+    xval= x;
+    yval= -(y-1);
+    
+    if (textured)
+    {
+        if (imageUrl !="")
+        {
+            GLuint tex= context.textureManager->getTexture(imageUrl);
+            if (tex != 0)
+            {
+                context.aspectRatio=1.0;
+            }
+        }
+
+        floatQuad *colors = new float[sides+2][4];
+        floatPair *tex = new float[sides+2][2];
+        floatPair *points = new float[sides+2][2];
+        
+        //Define the center point of the shape
+        colors[0][0] = r;
+        colors[0][1] = g;
+        colors[0][2] = b;
+        colors[0][3] = a * masterAlpha;
+        tex[0][0] = 0.5;
+        tex[0][1] = 0.5;
+        points[0][0] = xval;
+        points[0][1] = yval;
+        
+        for ( int i=1;i< sides+2;i++)
+        {
+            colors[i][0]= r2;
+            colors[i][1]=g2;
+            colors[i][2]=b2;
+            colors[i][3]=a2 * masterAlpha;
+            
+            t = (i-1)/(float) sides;
+            tex[i][0] =0.5f + 0.5f*cosf(t*3.1415927f*2 +  tex_ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)/ tex_zoom;
+            tex[i][1] =  0.5f + 0.5f*sinf(t*3.1415927f*2 +  tex_ang + 3.1415927f*0.25f)/ tex_zoom;
+            points[i][0]=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
+            points[i][1]=temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
+        }
+        
 #ifndef GL_TRANSITION
-
-	float xval, yval;
-	float t;
-
-			// printf("drawing shape %f\n", ang);
-
-			float temp_radius= radius*(.707*.707*.707*1.04);
-			//Additive Drawing or Overwrite
-			if ( additive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			else    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-
-			xval= x;
-			yval= -(y-1);
-
-			if ( textured)
-			{
-				if (imageUrl !="")
-				{
-					GLuint tex= context.textureManager->getTexture(imageUrl);
-					if (tex != 0)
-					{
-						glBindTexture(GL_TEXTURE_2D, tex);
-						context.aspectRatio=1.0;
-					}
-				}
-				glEnable(GL_TEXTURE_2D);
-
-				glEnableClientState(GL_VERTEX_ARRAY);
-				glEnableClientState(GL_COLOR_ARRAY);
-				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-				floatQuad *colors = new float[sides+2][4];
-				floatPair *tex = new float[sides+2][2];
-				floatPair *points = new float[sides+2][2];
-
-				//Define the center point of the shape
-				colors[0][0] = r;
-				colors[0][1] = g;
-				colors[0][2] = b;
-				colors[0][3] = a * masterAlpha;
-			  	   tex[0][0] = 0.5;
-				   tex[0][1] = 0.5;
-				points[0][0] = xval;
-				points[0][1] = yval;
-
-				for ( int i=1;i< sides+2;i++)
-				{
-				  colors[i][0]= r2;
-				  colors[i][1]=g2;
-				  colors[i][2]=b2;
-				  colors[i][3]=a2 * masterAlpha;
-
-				  t = (i-1)/(float) sides;
-				  tex[i][0] =0.5f + 0.5f*cosf(t*3.1415927f*2 +  tex_ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)/ tex_zoom;
-				  tex[i][1] =  0.5f + 0.5f*sinf(t*3.1415927f*2 +  tex_ang + 3.1415927f*0.25f)/ tex_zoom;
-				  points[i][0]=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
-				  points[i][1]=temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
-
-
-				}
-
-				glVertexPointer(2,GL_FLOAT,0,points);
-				glColorPointer(4,GL_FLOAT,0,colors);
-				glTexCoordPointer(2,GL_FLOAT,0,tex);
-
-				glDrawArrays(GL_TRIANGLE_FAN,0,sides+2);
-
-				glDisable(GL_TEXTURE_2D);
-				glPopMatrix();
-				glMatrixMode(GL_MODELVIEW);
-
-				//Reset Texture state since we might have changed it
-/*
-				if(this->renderTarget->useFBO)
-				{
-					glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
-				}
-				else
-				{
-					glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
-				}
-*/
-
-				delete[] colors;
-				delete[] tex;
-				delete[] points;
-			}
-			else
-			{//Untextured (use color values)
-
-
-			  glEnableClientState(GL_VERTEX_ARRAY);
-			  glEnableClientState(GL_COLOR_ARRAY);
-			  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-			  floatQuad *colors = new float[sides+2][4];
-			  floatPair *points = new float[sides+2][2];
-
-			  //Define the center point of the shape
-			  colors[0][0]=r;
-			  colors[0][1]=g;
-			  colors[0][2]=b;
-			  colors[0][3]=a * masterAlpha;
-			  points[0][0]=xval;
-			  points[0][1]=yval;
-
-
-
-			  for ( int i=1;i< sides+2;i++)
-			    {
-			      colors[i][0]=r2;
-			      colors[i][1]=g2;
-			      colors[i][2]=b2;
-			      colors[i][3]=a2 * masterAlpha;
-			      t = (i-1)/(float) sides;
-			      points[i][0]=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
-			      points[i][1]=temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
-
-			    }
-
-			  glVertexPointer(2,GL_FLOAT,0,points);
-			  glColorPointer(4,GL_FLOAT,0,colors);
-
-
-			  glDrawArrays(GL_TRIANGLE_FAN,0,sides+2);
-			  //draw first n-1 triangular pieces
-
-			  delete[] colors;
-			  delete[] points;
-			}
-			if (thickOutline==1)  glLineWidth(context.texsize < 512 ? 1 : 2*context.texsize/512);
-
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glDisableClientState(GL_COLOR_ARRAY);
-
-			floatPair *points = new float[sides+1][2];
-
-			glColor4f( border_r, border_g, border_b, border_a * masterAlpha);
-
-			for ( int i=0;i< sides;i++)
-			{
-				t = (i-1)/(float) sides;
-				points[i][0]= temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
-				points[i][1]=  temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
-
-			}
-
-			glVertexPointer(2,GL_FLOAT,0,points);
-			glDrawArrays(GL_LINE_LOOP,0,sides);
-
-			if (thickOutline==1)  glLineWidth(context.texsize < 512 ? 1 : context.texsize/512);
-
-			delete[] points;
-
+        glVertexPointer(2,GL_FLOAT,0,points);
+        glColorPointer(4,GL_FLOAT,0,colors);
+        glTexCoordPointer(2,GL_FLOAT,0,tex);
+        
+        glDrawArrays(GL_TRIANGLE_FAN,0,sides+2);
+        
+        glDisable(GL_TEXTURE_2D);
+        glPopMatrix();
+        glMatrixMode(GL_MODELVIEW);
 #endif
+        
+        //Reset Texture state since we might have changed it
+        /*
+         if(this->renderTarget->useFBO)
+         {
+         glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
+         }
+         else
+         {
+         glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
+         }
+         */
+        
+        delete[] colors;
+        delete[] tex;
+        delete[] points;
+    } else {
+        //Untextured (use color values)
+        floatQuad *colors = new float[sides+2][4];
+        floatPair *points = new float[sides+2][2];
+        
+        //Define the center point of the shape
+        colors[0][0]=r;
+        colors[0][1]=g;
+        colors[0][2]=b;
+        colors[0][3]=a * masterAlpha;
+        points[0][0]=xval;
+        points[0][1]=yval;
+        
+        for (int i=1;i< sides+2;i++) {
+            colors[i][0]=r2;
+            colors[i][1]=g2;
+            colors[i][2]=b2;
+            colors[i][3]=a2 * masterAlpha;
+            t = (i-1)/(float) sides;
+            points[i][0]=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
+            points[i][1]=temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
+        }
+        
+        DrawVertices(GL_TRIANGLE_FAN, sides+2, sizeof(points), points, sizeof(colors), colors);
+        
+        delete[] colors;
+        delete[] points;
+    }
+    
+    if (thickOutline==1)
+        glLineWidth(context.texsize < 512 ? 1 : 2*context.texsize/512);
+    check_gl_error();
+
+    floatPair *points = new float[sides+1][2];
+    
+    // FIXME
+//    glColor4f( border_r, border_g, border_b, border_a * masterAlpha);
+    
+    for ( int i=0;i< sides;i++)
+    {
+        t = (i-1)/(float) sides;
+        points[i][0]= temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
+        points[i][1]=  temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
+        
+    }
+    
+    DrawVertices(GL_LINE_LOOP, sides, sizeof(points), points, 0, nullptr);
+    
+    if (thickOutline==1)
+        glLineWidth(context.texsize < 512 ? 1 : context.texsize/512);
+    
+    delete[] points;
+}
+
+void Shape::DrawVertices(GLenum mode, GLsizei count, GLuint pointsSize, floatPair *points, GLuint colorsSize, floatQuad *colors) {
+
+    // draw a set of points with colors
+    
+    // create VBO of points
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    check_gl_error();
+    glBufferData(GL_ARRAY_BUFFER, pointsSize, points, GL_STREAM_DRAW);
+    check_gl_error();
+    
+    // bind colors...
+    
+    glDrawArrays(mode, 0, count);
+    check_gl_error();
 }
 
 void MotionVectors::Draw(RenderContext &context)

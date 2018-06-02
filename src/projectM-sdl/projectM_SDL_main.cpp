@@ -65,6 +65,7 @@ int main(int argc, char *argv[]) {
     configureGL();
     SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     SDL_GLContext glCtx = SDL_GL_CreateContext(win);
+    check_gl_error();
     SDL_SetWindowTitle(win, "projectM Visualizer");
     
     projectMSDL *app;
@@ -101,7 +102,8 @@ int main(int argc, char *argv[]) {
         app = new projectMSDL(settings, 0);
     }
     app->init(win, &glCtx);
-    
+    check_gl_error();
+
     // get an audio input device
     app->openAudioInput();
     app->beginAudioCapture();
@@ -109,6 +111,7 @@ int main(int argc, char *argv[]) {
     // standard main loop
     const Uint32 frame_delay = 1000/FPS;
     Uint32 last_time = SDL_GetTicks();
+    
     while (! app->done) {
         app->renderFrame();
         app->pollEvent();

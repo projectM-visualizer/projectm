@@ -64,6 +64,8 @@ private:
     static void audioInputCallbackF32(void *userdata, unsigned char *stream, int len);
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
 
+    virtual void presetSwitchedEvent(bool isHardCut, size_t index) const;
+    
     void addFakePCM();
     void keyHandler(SDL_Event *);
     SDL_AudioDeviceID selectAudioInput(int count);
