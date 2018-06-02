@@ -148,7 +148,15 @@ bool ShaderEngine::LoadHLSLProgram(GLenum shaderType, Shader &pmShader, std::str
     if (found != std::string::npos)
     {
         //std::cout << "first '{' found at: " << int(found) << std::endl;
-//        program.replace(int(found), 1, "{\nfloat rad=getrad;\nfloat ang=getang;\n");
+//         program.replace(int(found), 1, "{\nfloat rad=getrad;\nfloat ang=getang;\n");
+        const char *progMain = \
+        "{\n"
+        "float2 uv_orig = uv;\n"
+        "float rad=getrad(uv);\n"
+        "float ang=getang(uv);\n"
+        "float3 ret;\n"
+        "outtype OUT;\n";
+        program.replace(int(found), 1, progMain);
     }
     else
         return false;
