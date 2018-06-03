@@ -140,7 +140,7 @@ public:
 };
 /* TODO optimize FloatParameterExpr::eval() further.
 //  - flag "never matrix" parameters
-//  - always pass in 2d matrix. instead of using  (i, -1) for 1d matrix, we could just use (0, i) and avoid check
+//  - always pass in 2d matrix. instead of using (i, -1) for 1d matrix, we could just use (0, i) and avoid check
 //  - instead of using matrix_flag to give "copy on write" behavior, maybe pre-copy from engine_val to matrix[]
 */
 float FloatParameterExpr::eval ( int mesh_i, int mesh_j )
@@ -160,7 +160,9 @@ float FloatParameterExpr::eval ( int mesh_i, int mesh_j )
 			}
 			else
 			{
-				return ( ( ( float* ) term.param->matrix ) [mesh_i] );
+				// issue 64, make sure we're not reading a P_FLAG_PER_PIXEL matrix variable
+				if (!(term.param->flags & P_FLAG_PER_PIXEL))
+					return ( ( ( float* ) term.param->matrix ) [mesh_i] );
 			}
 		}
 		//assert(mesh_i >=0);
