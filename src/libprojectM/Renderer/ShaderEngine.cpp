@@ -36,22 +36,25 @@ void ShaderEngine::initShaderProgram()
 {
     // our program
     program = glCreateProgram();
-    glProgramParameteri(program, GL_PROGRAM_SEPARABLE, GL_TRUE);
+//    glProgramParameteri(program, GL_PROGRAM_SEPARABLE, GL_TRUE);
     check_gl_error();
 
     // our VAO
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     check_gl_error();
-
+    
     // our vertex shader
     const char* vertexSource = R"glsl(
     #version 150 core
     
     in vec2 position;
-    
+    in vec3 color;
+    out vec3 Color;
+
     void main()
     {
+        Color = color;
         gl_Position = vec4(position, 0.0, 1.0);
     }
     )glsl";
@@ -66,11 +69,12 @@ void ShaderEngine::initShaderProgram()
     const char* fragmentSource = R"glsl(
     #version 150 core
     
+    in vec3 Color;
     out vec4 outColor;
-    
+
     void main()
     {
-        outColor = vec4(1.0, 1.0, 1.0, 1.0);
+        outColor = vec4(Color, 1.0);
     }
     )glsl";
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -78,20 +82,29 @@ void ShaderEngine::initShaderProgram()
     glCompileShader(fragmentShader);
     checkCompileStatus(fragmentShader, "internal fragment shader");
     check_gl_error();
+    
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
+    check_gl_error();
 
     glBindFragDataLocation(program, 0, "outColor");
     check_gl_error();
-
+    
     relinkProgram();
     glUseProgram(program);
     
     // configure vertex position input for vertex shader
-    GLint posAttrib = glGetAttribLocation(program, "position");
+    context.positionAttribute = glGetAttribLocation(program, "position");
+//    glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(context.positionAttribute);
     check_gl_error();
-    glVertexAttribPointer(posAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    
+    context.colorAttribute = glGetAttribLocation(program, "color");
+    glEnableVertexAttribArray(context.colorAttribute);
     check_gl_error();
-    glEnableVertexAttribArray(posAttrib);
-    check_gl_error();
+
+    
+    // TODO: pre-lookup uniform locations here and save them
 
     printf("shader program initialized\n");
 }

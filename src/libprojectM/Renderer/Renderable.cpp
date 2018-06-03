@@ -1,18 +1,18 @@
 
 #include "Common.hpp"
 #include "Renderable.hpp"
+#include "RenderContext.hpp"
 #include <math.h>
-
-RenderContext::RenderContext()
-	: time(0),texsize(512), aspectRatio(1), aspectCorrect(false){};
 
 RenderItem::RenderItem() : masterAlpha(1) {
     glGenBuffers(1, &vbo);
+    glGenBuffers(1, &cbo);
     check_gl_error();
 }
 
 RenderItem::~RenderItem() {
     glDeleteBuffers(1, &vbo);
+    glDeleteBuffers(1, &cbo);
     check_gl_error();
 }
 
@@ -191,7 +191,7 @@ void Shape::Draw(RenderContext &context)
             points[i][1]=temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
         }
         
-        DrawVertices(GL_TRIANGLE_FAN, sides+2, sizeof(points), points, sizeof(colors), colors);
+        DrawVertices(context, GL_TRIANGLE_FAN, sides+2, sizeof(points), points, sizeof(colors), colors);
         
         delete[] colors;
         delete[] points;
@@ -214,7 +214,7 @@ void Shape::Draw(RenderContext &context)
         
     }
     
-    DrawVertices(GL_LINE_LOOP, sides, sizeof(points), points, 0, nullptr);
+    DrawVertices(context, GL_LINE_LOOP, sides, sizeof(points), points, 0, nullptr);
     
     if (thickOutline==1)
         glLineWidth(context.texsize < 512 ? 1 : context.texsize/512);
@@ -222,7 +222,7 @@ void Shape::Draw(RenderContext &context)
     delete[] points;
 }
 
-void Shape::DrawVertices(GLenum mode, GLsizei count, GLuint pointsSize, floatPair *points, GLuint colorsSize, floatQuad *colors) {
+void Shape::DrawVertices(RenderContext &context, GLenum mode, GLsizei count, GLuint pointsSize, floatPair *points, GLuint colorsSize, floatQuad *colors) {
 
     // draw a set of points with colors
     
@@ -231,10 +231,21 @@ void Shape::DrawVertices(GLenum mode, GLsizei count, GLuint pointsSize, floatPai
     check_gl_error();
     glBufferData(GL_ARRAY_BUFFER, pointsSize, points, GL_STREAM_DRAW);
     check_gl_error();
-    
+    glVertexAttribPointer(context.shaderContext->positionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    check_gl_error();
+
     // bind colors...
+    if (colors && colorsSize) {
+        glBindBuffer(GL_ARRAY_BUFFER, cbo);
+        check_gl_error();
+        glBufferData(GL_ARRAY_BUFFER, colorsSize, colors, GL_STREAM_DRAW);
+        check_gl_error();
+        glVertexAttribPointer(context.shaderContext->colorAttribute, 3, GL_FLOAT, GL_FALSE, 0, 0);
+        check_gl_error();
+    }
     
     glDrawArrays(mode, 0, count);
+    
     check_gl_error();
 }
 

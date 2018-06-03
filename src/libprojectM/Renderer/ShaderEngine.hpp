@@ -11,11 +11,12 @@
 #include "Common.hpp"
 #include "projectM-opengl.h"
 
+class ShaderEngine;
+#include "ShaderContext.hpp"
 #include "Pipeline.hpp"
 #include "PipelineContext.hpp"
-class ShaderEngine;
 #include "TextureManager.hpp"
-
+#include "BeatDetect.hpp"
 #include "HLSLTranslator.hpp"
 
 #include <cstdlib>
@@ -77,6 +78,7 @@ public:
 	void reset();
 	void setAspect(float aspect);
     std::string profileName;
+    ShaderContext context;
 };
 
 #endif /* SHADERENGINE_HPP_ */
