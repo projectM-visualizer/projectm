@@ -115,7 +115,7 @@ void Renderer::SetPipeline(Pipeline &pipeline)
 	currentPipe = &pipeline;
 	shaderEngine.reset();
     // N.B. i'm actually not sure if they're always fragment shaders... I think so...  -mischa
-    shaderEngine.loadPresetShader(GL_FRAGMENT_SHADER, pipeline.warpShader, pipeline.warpShaderFilename);
+//    shaderEngine.loadPresetShader(GL_FRAGMENT_SHADER, pipeline.warpShader, pipeline.warpShaderFilename);
     // enable!
 //    shaderEngine.loadPresetShader(GL_FRAGMENT_SHADER, pipeline.compositeShader, pipeline.compositeShaderFilename);
 }
@@ -149,6 +149,7 @@ void Renderer::RenderItems(const Pipeline &pipeline, const PipelineContext &pipe
 	renderContext.aspectRatio = aspect;
 	renderContext.textureManager = textureManager;
 	renderContext.beatDetect = beatDetect;
+    renderContext.shaderContext = &shaderEngine.context;
 
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.drawables.begin(); pos != pipeline.drawables.end(); ++pos)
     {
@@ -332,12 +333,15 @@ void Renderer::Interpolation(const Pipeline &pipeline)
     check_gl_error();
     glBufferData(GL_ARRAY_BUFFER, getMeshSize(), p, GL_DYNAMIC_DRAW);
     check_gl_error();
+    glVertexAttribPointer(getPositionAttribute(), 2, GL_FLOAT, GL_FALSE, 0, 0);
+    check_gl_error();
+
+//    glVertexAttribPointer(getColorAttribute(), 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), 0);
 
     // render each row of the mesh
     for (int j = 0; j < mesh.height - 1; j++)
-        glDrawArrays(GL_TRIANGLE_STRIP, j * mesh.width * 2, mesh.width * 2);
+//        glDrawArrays(GL_TRIANGLE_STRIP, j * mesh.width * 2, mesh.width * 2);
     check_gl_error();
-
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     check_gl_error();
@@ -744,3 +748,13 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
 			!= pipeline.compositeDrawables.end(); ++pos)
 		(*pos)->Draw(renderContext);
 }
+
+GLuint Renderer::getPositionAttribute() {
+    return shaderEngine.context.positionAttribute;
+}
+
+GLuint Renderer::getColorAttribute() {
+    return shaderEngine.context.colorAttribute;
+}
+
+

@@ -4,26 +4,11 @@
 #include <typeinfo>
 #include "TextureManager.hpp"
 #include "projectM-opengl.h"
-
-class BeatDetect;
+#include "RenderContext.hpp"
 
 typedef float floatPair[2];
 typedef float floatTriple[3];
 typedef float floatQuad[4];
-
-
-class RenderContext
-{
-public:
-	float time;
-	int texsize;
-	float aspectRatio;
-	bool aspectCorrect;
-	BeatDetect *beatDetect;
-	TextureManager *textureManager;
-
-	RenderContext();
-};
 
 class RenderItem
 {
@@ -34,8 +19,8 @@ public:
     ~RenderItem();
 
 protected:
-    // vertex buffer storage
-    GLuint vbo;
+    // vertex and color buffer storage
+    GLuint vbo, cbo;
 };
 
 typedef std::vector<RenderItem*> RenderItemList;
@@ -85,7 +70,7 @@ public:
     virtual void Draw(RenderContext &context);
     
 private:
-    void DrawVertices(GLenum mode, GLsizei count, GLuint pointsSize, floatPair *points, GLuint colorsSize, floatQuad *colors);
+    void DrawVertices(RenderContext &context, GLenum mode, GLsizei count, GLuint pointsSize, floatPair *points, GLuint colorsSize, floatQuad *colors);
 };
 
 class Text : RenderItem
