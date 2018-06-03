@@ -32,7 +32,6 @@ void Waveform::Draw(RenderContext &context)
     
     //if (samples > 2048) samples = 2048;
     
-    
     if (additive)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     else
@@ -86,7 +85,16 @@ void Waveform::Draw(RenderContext &context)
     
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glBufferData(GL_ARRAY_BUFFER, samples * 2, p, GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(context.shaderContext->positionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
     check_gl_error();
+    
+    GLuint cbo;
+    glGenBuffers(1, &cbo);
+    glBindBuffer(GL_ARRAY_BUFFER, cbo);
+    glBufferData(GL_ARRAY_BUFFER, samples * 4, colors, GL_STREAM_DRAW);
+//    glEnableVertexAttribArray(context.shaderContext->colorAttribute);
+    glVertexAttribPointer(context.shaderContext->colorAttribute, 4, GL_FLOAT, GL_FALSE, 0, 0);
+    glDeleteBuffers(1, &cbo);
 
 //    glVertexPointer(2,GL_FLOAT,0,p);
 //    glColorPointer(4,GL_FLOAT,0,colors);
