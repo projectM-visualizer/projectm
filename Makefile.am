@@ -19,8 +19,8 @@ pm_shaders__DATA = src/libprojectM/Renderer/blur.cg \
 
 # find and install all preset files
 install-data-local:
-	test -z $(pkgdatadir) || $(MKDIR_P) $(pm_presets_dir)
-	find "$(PRESETSDIR)" -type f -exec $(INSTALL_DATA) {} $(pm_presets_dir) \;
+	test -z $(DESTDIR)$(pkgdatadir) || $(MKDIR_P) $(DESTDIR)$(pm_presets_dir)
+	find "$(PRESETSDIR)" -type f -exec $(INSTALL_DATA) {} $(DESTDIR)$(pm_presets_dir) \;
 
 # from https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable answer: https://stackoverflow.com/a/30960268
 # ptomato https://stackoverflow.com/users/172999/ptomato
