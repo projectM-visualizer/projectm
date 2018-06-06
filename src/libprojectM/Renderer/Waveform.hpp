@@ -53,6 +53,7 @@ public:
     int sep;  /* no idea what this is yet... */
 
     Waveform(int samples);
+    void InitVertexAttrib();
     void Draw(RenderContext &context);
 
 private:

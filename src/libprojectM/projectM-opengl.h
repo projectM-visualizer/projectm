@@ -10,10 +10,15 @@
 #elif defined(_WIN32)
 # include <windows.h>
 #else /* linux/unix/other */
-# ifdef USE_GLES1
-#  include <GLES/gl.h>
+# ifdef USE_GLES
+#  include <GLES3/gl3.h>
+#  include <GLES3/gl32.h>
 # else
+#  if !defined(GL_GLEXT_PROTOTYPES)
+#     define GL_GLEXT_PROTOTYPES
+#  endif
 #  include <GL/gl.h>
+#  include <GL/glext.h>
 # endif
 #endif
 
