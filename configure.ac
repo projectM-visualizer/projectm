@@ -65,6 +65,15 @@ AS_IF([test "x$enable_ftgl" = "xyes"], [
   AC_DEFINE([USE_FTGL], [1], [Define USE_FTGL])
 ])
 
+PKG_CHECK_MODULES(glm, [glm], [], [AC_MSG_ERROR([libglm is required.])])
+
+AC_ARG_ENABLE([gles],
+  AS_HELP_STRING([--enable-gles], [OpenGL ES support]),
+  [], [enable_gles=yes])
+  AS_IF([test "x$enable_gles" = "xyes"], [
+    AC_DEFINE([USE_GLES], [1], [Define USE_GLES])
+])
+
 dnl Cg framework OSX -- replace with GLSL someday!
 CG_CFLAGS=
 CG_LDFLAGS=
@@ -167,4 +176,5 @@ SDL:                    ${enable_sdl}
 Qt & Pulseaudio:        ${enable_qt}
 FTGL:                   ${enable_ftgl}
 Cg:                     ${enable_cg}
+OpenGL ES:              ${enable_gles}
 ])

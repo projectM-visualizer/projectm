@@ -9,11 +9,89 @@
 #include "ShaderEngine.hpp"
 #include "BeatDetect.hpp"
 
+std::string v2f_c4f_vert(
+    "#version 300 es\n"
+    ""
+    "layout(location = 0) in vec2 vertex_position;\n"
+    "layout(location = 1) in vec4 vertex_color;\n"
+    ""
+    "uniform mat4 vertex_transformation;\n"
+    "uniform float vertex_point_size;\n"
+    ""
+    "out vec4 fragment_color;\n"
+    ""
+    "void main(){\n"
+    "    gl_Position = vertex_transformation * vec4(vertex_position, 0.0, 1.0);\n"
+    "    gl_PointSize = vertex_point_size;\n"
+    "    fragment_color = vertex_color;\n"
+    "}\n");
+
+std::string v2f_c4f_frag(
+        "#version 300 es\n"
+        "precision mediump float;\n"
+        ""
+        "in vec4 fragment_color;\n"
+        "out vec4 color;\n"
+        ""
+        "void main(){\n"
+        "    color = fragment_color;\n"
+        "}\n");
+
+
+std::string v2f_c4f_t2f_vert(
+        "#version 300 es\n"
+        ""
+        "layout(location = 0) in vec2 vertex_position;\n"
+        "layout(location = 1) in vec4 vertex_color;\n"
+        "layout(location = 2) in vec2 vertex_texture;\n"
+        ""
+        "uniform mat4 vertex_transformation;\n"
+        ""
+        "out vec4 fragment_color;\n"
+        "out vec2 fragment_texture;\n"
+        ""
+        "void main(){\n"
+        "    gl_Position = vertex_transformation * vec4(vertex_position, 0.0, 1.0);\n"
+        "    fragment_color = vertex_color;\n"
+        "    fragment_texture = vertex_texture;\n"
+        "}\n");
+
+std::string v2f_c4f_t2f_frag(
+        "#version 300 es\n"
+        "precision mediump float;\n"
+        ""
+        "in vec4 fragment_color;\n"
+        "in vec2 fragment_texture;\n"
+        ""
+        "uniform sampler2D texture_sampler;\n"
+        ""
+        "out vec4 color;\n"
+        ""
+        "void main(){\n"
+        "    color = fragment_color * texture2D(texture_sampler, fragment_texture.st);\n"
+        "}\n");
+
+
+GLint ShaderEngine::UNIFORM_V2F_C4F_VERTEX_TRANFORMATION = 0;
+GLint ShaderEngine::UNIFORM_V2F_C4F_VERTEX_POINT_SIZE = 0;
+GLint ShaderEngine::UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION = 0;
+GLint ShaderEngine::UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER = 0;
+
+
+
 ShaderEngine::ShaderEngine()
 {
 #ifdef USE_CG
 	SetupCg();
 #endif
+
+    programID_v2f_c4f = CompileShaderProgram(v2f_c4f_vert, v2f_c4f_frag);
+    programID_v2f_c4f_t2f = CompileShaderProgram(v2f_c4f_t2f_vert, v2f_c4f_t2f_frag);
+
+    UNIFORM_V2F_C4F_VERTEX_TRANFORMATION = glGetUniformLocation(programID_v2f_c4f, "vertex_transformation");
+    UNIFORM_V2F_C4F_VERTEX_POINT_SIZE = glGetUniformLocation(programID_v2f_c4f, "vertex_point_size");
+    UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION = glGetUniformLocation(programID_v2f_c4f_t2f, "vertex_transformation");
+    UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER = glGetUniformLocation(programID_v2f_c4f_t2f, "texture_sampler");
 }
 
 ShaderEngine::~ShaderEngine()
@@ -696,3 +774,82 @@ void ShaderEngine::reset()
 }
 
 #endif
+
+
+GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode){
+
+    // Create the shaders
+    GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+    GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+    GLint Result = GL_FALSE;
+    int InfoLogLength;
+
+
+    // Compile Vertex Shader
+    char const * VertexSourcePointer = VertexShaderCode.c_str();
+    glShaderSource(VertexShaderID, 1, &VertexSourcePointer , NULL);
+    glCompileShader(VertexShaderID);
+
+    // Check Vertex Shader
+    glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
+    glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    if ( InfoLogLength > 0 ){
+        std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
+        glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
+        fprintf(stderr, "%s\n", &VertexShaderErrorMessage[0]);
+    }
+
+
+    // Compile Fragment Shader
+    char const * FragmentSourcePointer = FragmentShaderCode.c_str();
+    glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer , NULL);
+    glCompileShader(FragmentShaderID);
+
+    // Check Fragment Shader
+    glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
+    glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    if ( InfoLogLength > 0 ){
+        std::vector<char> FragmentShaderErrorMessage(InfoLogLength+1);
+        glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
+        fprintf(stderr, "%s\n", &FragmentShaderErrorMessage[0]);
+    }
+
+
+
+    // Link the program
+    GLuint programID = glCreateProgram();
+    glAttachShader(programID, VertexShaderID);
+    glAttachShader(programID, FragmentShaderID);
+    glLinkProgram(programID);
+
+    // Check the program
+    glGetProgramiv(programID, GL_LINK_STATUS, &Result);
+    glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    if ( InfoLogLength > 0 ){
+        std::vector<char> ProgramErrorMessage(InfoLogLength+1);
+        glGetProgramInfoLog(programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+        fprintf(stderr, "%s\n", &ProgramErrorMessage[0]);
+    }
+
+
+    glValidateProgram(programID);
+
+    // Check the program
+    glGetProgramiv(programID, GL_VALIDATE_STATUS, &Result);
+    glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    if ( InfoLogLength > 0 ){
+        std::vector<char> ProgramErrorMessage(InfoLogLength+1);
+        glGetProgramInfoLog(programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+        fprintf(stderr, "%s\n", &ProgramErrorMessage[0]);
+    }
+
+
+    glDetachShader(programID, VertexShaderID);
+    glDetachShader(programID, FragmentShaderID);
+
+    glDeleteShader(VertexShaderID);
+    glDeleteShader(FragmentShaderID);
+
+    return programID;
+}
