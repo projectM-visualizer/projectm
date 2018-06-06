@@ -8,6 +8,27 @@
 
 #include "pmSDL.hpp"
 
+#define OGL_DEBUG	0
+
+#if OGL_DEBUG
+void DebugLog(GLenum source,
+               GLenum type,
+               GLuint id,
+               GLenum severity,
+               GLsizei length,
+               const GLchar* message,
+               const void* userParam) {
+
+    /*if (type != GL_DEBUG_TYPE_OTHER)*/ 
+	{
+        std::cerr << " -- \n" << "Type: " <<
+           type << "; Source: " <<
+           source <<"; ID: " << id << "; Severity: " <<
+           severity << "\n" << message << "\n";
+       }
+ }
+#endif
+
 // return path to config file to use
 std::string getConfigFilePath() {
     const char *path = DATADIR_PATH;
@@ -49,13 +70,38 @@ int main(int argc, char *argv[]) {
 #endif
     int width = initialWindowBounds.w;
     int height = initialWindowBounds.h;
+    int renderIndex = 0;
+
+#ifdef USE_GLES
+    for(int i = 0; i < SDL_GetNumRenderDrivers(); i++) {
+        SDL_RendererInfo info;
+        if (SDL_GetRenderDriverInfo(i, &info) == 0) {
+            if (std::string(info.name) == "opengles2") {
+				renderIndex = i;
+				break;
+			}
+        }
+    }
+
+#else
+	// Disabling compatibility profile
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+#endif
 
     SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_RESIZABLE);
-    SDL_Renderer *rend = SDL_CreateRenderer(win, 0, SDL_RENDERER_ACCELERATED);
+    SDL_Renderer *rend = SDL_CreateRenderer(win, renderIndex, SDL_RENDERER_ACCELERATED);
     if (! rend) {
         fprintf(stderr, "Failed to create renderer: %s\n", SDL_GetError());
         SDL_Quit();
     }
+
+    SDL_Log("GL_VERSION: %s", glGetString(GL_VERSION));
+    SDL_Log("GL_SHADING_LANGUAGE_VERSION: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+    SDL_Log("GL_VENDOR: %s", glGetString(GL_VENDOR));
+
     SDL_SetWindowTitle(win, "projectM Visualizer");
     
     projectMSDL *app;
@@ -90,6 +136,12 @@ int main(int argc, char *argv[]) {
         app = new projectMSDL(settings, 0);
     }
     app->init(win, rend);
+
+#if OGL_DEBUG
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(DebugLog, NULL);
+#endif
 
     // get an audio input device
     app->openAudioInput();
