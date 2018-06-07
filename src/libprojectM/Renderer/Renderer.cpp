@@ -330,7 +330,7 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 	//Texture wrapping( clamp vs. wrap)
 	if (pipeline.textureWrap == 0)
 	{
-#ifdef USE_GLES
+#ifdef GL_TRANSITION
         glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 #else
@@ -466,7 +466,7 @@ void Renderer::reset(int w, int h)
 	glCullFace(GL_BACK);
 	//glFrontFace( GL_CCW );
 
-#ifndef USE_GLES
+#ifndef GL_TRANSITION
     glEnable(GL_LINE_SMOOTH);
 #endif
 
