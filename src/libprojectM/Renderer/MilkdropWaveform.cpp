@@ -79,7 +79,7 @@ void MilkdropWaveform::Draw(RenderContext &context)
     else temp_a = a;
     MaximizeColors(context);
 
-#ifndef USE_GLES
+#ifndef GL_TRANSITION
     if(dots==1) glEnable(GL_LINE_STIPPLE);
 #endif
 
@@ -109,7 +109,7 @@ void MilkdropWaveform::Draw(RenderContext &context)
 
     glBindVertexArray(0);
 
-    #ifndef USE_GLES
+    #ifndef GL_TRANSITION
 		if(dots==1) glDisable(GL_LINE_STIPPLE);
 	#endif
 
