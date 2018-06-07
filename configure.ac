@@ -5,6 +5,7 @@ m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 LT_INIT
 
 AC_PROG_CXX
+AC_LANG(C++)
 
 AC_CONFIG_MACRO_DIRS([m4 m4/autoconf-archive])
 AX_CHECK_GL
@@ -65,7 +66,7 @@ AS_IF([test "x$enable_ftgl" = "xyes"], [
   AC_DEFINE([USE_FTGL], [1], [Define USE_FTGL])
 ])
 
-PKG_CHECK_MODULES(glm, [glm], [], [AC_MSG_ERROR([libglm is required.])])
+AC_CHECK_HEADER([glm/glm.hpp],, AC_MSG_ERROR(libglm is required.))
 
 AC_ARG_ENABLE([gles],
   AS_HELP_STRING([--enable-gles], [OpenGL ES support]),
