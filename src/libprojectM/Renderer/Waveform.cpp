@@ -91,14 +91,14 @@ void Waveform::Draw(RenderContext &context)
 	{
 		glLineWidth(context.texsize <= 512 ? 2 : 2*context.texsize/512);
 
-#ifndef USE_GLES
+#ifndef GL_TRANSITION
 		glPointSize(context.texsize <= 512 ? 2 : 2*context.texsize/512);
 #endif
         glUniform1f(ShaderEngine::Uniform_V2F_C4F_VertexPointSize(), context.texsize <= 512 ? 2 : 2*context.texsize/512);
 	}
     else
     {
-#ifndef USE_GLES
+#ifndef GL_TRANSITION
         glPointSize(context.texsize <= 512 ? 1 : context.texsize/512);
 #endif
         glUniform1f(ShaderEngine::Uniform_V2F_C4F_VertexPointSize(), context.texsize <= 512 ? 1 : context.texsize/512);

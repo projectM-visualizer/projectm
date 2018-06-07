@@ -348,7 +348,7 @@ void MotionVectors::Draw(RenderContext &context)
 
         glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
 
-		#ifndef USE_GLES
+		#ifndef GL_TRANSITION
         if (length <= 0.0) {
             glPointSize(1.0);
         } else {
