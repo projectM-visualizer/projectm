@@ -79,7 +79,7 @@ void VideoEcho::Draw(RenderContext &context)
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, NULL, GL_DYNAMIC_DRAW);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, buffer_data, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
