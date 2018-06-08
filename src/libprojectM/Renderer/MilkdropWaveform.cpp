@@ -38,11 +38,11 @@ void MilkdropWaveform::Draw(RenderContext &context)
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * samples * 2, nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * samples * 2, NULL, GL_DYNAMIC_DRAW);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * samples * 2, wavearray, GL_DYNAMIC_DRAW);
 
     if (two_waves) {
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * samples * 2, nullptr, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * samples * 2, NULL, GL_DYNAMIC_DRAW);
         glBufferData(GL_ARRAY_BUFFER, sizeof(float) * samples * 2, wavearray2, GL_DYNAMIC_DRAW);
     }
 
