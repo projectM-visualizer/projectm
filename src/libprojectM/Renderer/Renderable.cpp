@@ -215,7 +215,7 @@ void Shape::Draw(RenderContext &context)
 
         glBindBuffer(GL_ARRAY_BUFFER, m_vboID_texture);
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(struct_data)*(sides+2), nullptr, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(struct_data)*(sides+2), NULL, GL_DYNAMIC_DRAW);
         glBufferData(GL_ARRAY_BUFFER, sizeof(struct_data)*(sides+2), buffer_data, GL_DYNAMIC_DRAW);
 
         glUseProgram(context.programID_v2f_c4f_t2f);
@@ -255,7 +255,7 @@ void Shape::Draw(RenderContext &context)
 
         glBindBuffer(GL_ARRAY_BUFFER, m_vboID_not_texture);
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(struct_data)*(sides+2), nullptr, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(struct_data)*(sides+2), NULL, GL_DYNAMIC_DRAW);
         glBufferData(GL_ARRAY_BUFFER, sizeof(struct_data)*(sides+2), buffer_data, GL_DYNAMIC_DRAW);
 
         glUseProgram(context.programID_v2f_c4f);
@@ -279,7 +279,7 @@ void Shape::Draw(RenderContext &context)
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair)*(sides), nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair)*(sides), NULL, GL_DYNAMIC_DRAW);
     glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair)*(sides), points, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -336,7 +336,7 @@ void MotionVectors::Draw(RenderContext &context)
 
         glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair) * size, nullptr, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair) * size, NULL, GL_DYNAMIC_DRAW);
         glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair) * size, points, GL_DYNAMIC_DRAW);
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -398,7 +398,7 @@ void Border::Draw(RenderContext &context)
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 40, nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 40, NULL, GL_DYNAMIC_DRAW);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 40, points, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);

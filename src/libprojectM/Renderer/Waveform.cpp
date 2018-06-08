@@ -66,16 +66,14 @@ void Waveform::Draw(RenderContext &context)
 
     std::vector<ColoredPoint> points_transf = points;
 
-    std::for_each(points_transf.begin(), points_transf.end(),
-                  [this](ColoredPoint &point){
-        point.y = -(point.y-1);
-        point.a *= masterAlpha;
+    for (std::vector<ColoredPoint>::iterator iter = points_transf.begin(); iter != points_transf.end(); ++iter) {
+        (*iter).y = -( (*iter).y-1);
+        (*iter).a *= masterAlpha;
     }
-    );
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * samples, nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * samples, NULL, GL_DYNAMIC_DRAW);
     glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * samples, &points_transf[0], GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
