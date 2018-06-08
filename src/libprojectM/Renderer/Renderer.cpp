@@ -394,7 +394,7 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_Interpolation);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * size, nullptr, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * size, NULL, GL_DYNAMIC_DRAW);
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * size, p, GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
