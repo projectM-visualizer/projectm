@@ -11,6 +11,8 @@
 #define OGL_DEBUG	0
 
 #if OGL_DEBUG
+#include <GLES3/gl32.h>
+
 void DebugLog(GLenum source,
                GLenum type,
                GLuint id,

@@ -12,7 +12,6 @@
 #else /* linux/unix/other */
 # ifdef USE_GLES
 #  include <GLES3/gl3.h>
-#  include <GLES3/gl32.h>
 # else
 #  if !defined(GL_GLEXT_PROTOTYPES)
 #     define GL_GLEXT_PROTOTYPES
