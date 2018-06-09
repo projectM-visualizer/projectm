@@ -9,8 +9,12 @@
 #include "ShaderEngine.hpp"
 #include "BeatDetect.hpp"
 
+#define GLSL_VERSION "410"
+
 std::string v2f_c4f_vert(
-    "#version 130\n"
+    "#version "
+    GLSL_VERSION
+    "\n"
     ""
     "in vec2 vertex_position;\n"
     "in vec4 vertex_color;\n"
@@ -27,7 +31,9 @@ std::string v2f_c4f_vert(
     "}\n");
 
 std::string v2f_c4f_frag(
-        "#version 130\n"
+        "#version "
+        GLSL_VERSION
+        "\n"
         "precision mediump float;\n"
         ""
         "in vec4 fragment_color;\n"
@@ -39,8 +45,9 @@ std::string v2f_c4f_frag(
 
 
 std::string v2f_c4f_t2f_vert(
-        "#version 130\n"
-        ""
+        "#version "
+        GLSL_VERSION
+        "\n"
         "in vec2 vertex_position;\n"
         "in vec4 vertex_color;\n"
         "in vec2 vertex_texture;\n"
@@ -57,7 +64,9 @@ std::string v2f_c4f_t2f_vert(
         "}\n");
 
 std::string v2f_c4f_t2f_frag(
-        "#version 130\n"
+        "#version "
+        GLSL_VERSION
+        "\n"
         "precision mediump float;\n"
         ""
         "in vec4 fragment_color;\n"
@@ -68,7 +77,7 @@ std::string v2f_c4f_t2f_frag(
         "out vec4 color;\n"
         ""
         "void main(){\n"
-        "    color = fragment_color * texture2D(texture_sampler, fragment_texture.st);\n"
+        "    color = fragment_color * texture(texture_sampler, fragment_texture.st);\n"
         "}\n");
 
 
@@ -797,7 +806,7 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
     if ( InfoLogLength > 0 ){
         std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
         glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-        fprintf(stderr, "%s\n", &VertexShaderErrorMessage[0]);
+        fprintf(stderr, "Error compiling base vertex shader: %s\n", &VertexShaderErrorMessage[0]);
     }
 
 
@@ -812,7 +821,7 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
     if ( InfoLogLength > 0 ){
         std::vector<char> FragmentShaderErrorMessage(InfoLogLength+1);
         glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
-        fprintf(stderr, "%s\n", &FragmentShaderErrorMessage[0]);
+        fprintf(stderr, "Error compiling base fragment shader: %s\n", &FragmentShaderErrorMessage[0]);
     }
 
 
