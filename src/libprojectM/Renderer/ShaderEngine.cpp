@@ -16,8 +16,8 @@ std::string v2f_c4f_vert(
     GLSL_VERSION
     "\n"
     ""
-    "in vec2 vertex_position;\n"
-    "in vec4 vertex_color;\n"
+    "layout(location = 0) in vec2 vertex_position;\n"
+    "layout(location = 1) in vec4 vertex_color;\n"
     ""
     "uniform mat4 vertex_transformation;\n"
     "uniform float vertex_point_size;\n"
@@ -48,9 +48,9 @@ std::string v2f_c4f_t2f_vert(
         "#version "
         GLSL_VERSION
         "\n"
-        "in vec2 vertex_position;\n"
-        "in vec4 vertex_color;\n"
-        "in vec2 vertex_texture;\n"
+        "layout(location = 0) in vec2 vertex_position;\n"
+        "layout(location = 1) in vec4 vertex_color;\n"
+        "layout(location = 2) in vec2 vertex_texture;\n"
         ""
         "uniform mat4 vertex_transformation;\n"
         ""
