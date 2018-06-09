@@ -88,17 +88,14 @@ int main(int argc, char *argv[]) {
 #else
 	// Disabling compatibility profile
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 #endif
+    
+    SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    SDL_GLContext glCtx = SDL_GL_CreateContext(win);
 
-    SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_RESIZABLE);
-    SDL_Renderer *rend = SDL_CreateRenderer(win, renderIndex, SDL_RENDERER_ACCELERATED);
-    if (! rend) {
-        fprintf(stderr, "Failed to create renderer: %s\n", SDL_GetError());
-        SDL_Quit();
-    }
 
     SDL_Log("GL_VERSION: %s", glGetString(GL_VERSION));
     SDL_Log("GL_SHADING_LANGUAGE_VERSION: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
@@ -137,7 +134,7 @@ int main(int argc, char *argv[]) {
         // init with settings
         app = new projectMSDL(settings, 0);
     }
-    app->init(win, rend);
+    app->init(win, &glCtx);
 
 #if OGL_DEBUG
     glEnable(GL_DEBUG_OUTPUT);
@@ -161,6 +158,7 @@ int main(int argc, char *argv[]) {
         last_time = SDL_GetTicks();
     }
     
+    SDL_GL_DeleteContext(glCtx);
     app->endAudioCapture();
     delete app;
 

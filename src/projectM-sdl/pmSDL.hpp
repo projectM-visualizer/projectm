@@ -35,7 +35,7 @@ public:
 
     projectMSDL(Settings settings, int flags);
     projectMSDL(std::string config_file, int flags);
-    void init(SDL_Window *window, SDL_Renderer *renderer);
+    void init(SDL_Window *window, SDL_GLContext *glCtx);
     int openAudioInput();
     void beginAudioCapture();
     void endAudioCapture();
@@ -48,7 +48,7 @@ public:
 
 private:
     SDL_Window *win;
-    SDL_Renderer *rend;
+    SDL_GLContext *glCtx;
     bool isFullScreen;
     projectM::Settings settings;
     SDL_AudioDeviceID audioInputDevice;

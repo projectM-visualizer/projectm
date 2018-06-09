@@ -211,9 +211,6 @@ void projectMSDL::renderFrame() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     projectM::renderFrame();
-    glFlush();
-
-    SDL_RenderPresent(rend);
 }
 
 projectMSDL::projectMSDL(Settings settings, int flags) : projectM(settings, flags) {
@@ -230,9 +227,9 @@ projectMSDL::projectMSDL(std::string config_file, int flags) : projectM(config_f
     isFullScreen = false;
 }
 
-void projectMSDL::init(SDL_Window *window, SDL_Renderer *renderer) {
+void projectMSDL::init(SDL_Window *window, SDL_GLContext *_glCtx) {
     win = window;
-    rend = renderer;
+    glCtx = _glCtx;
     selectRandom(true);
     projectM_resetGL(width, height);
 }
