@@ -93,7 +93,11 @@ ShaderEngine::ShaderEngine()
 #ifdef USE_CG
 	SetupCg();
 #endif
-
+    
+    GLuint m_temp_vao;
+    glGenVertexArrays(1, &m_temp_vao);
+    glBindVertexArray(m_temp_vao);
+    
     programID_v2f_c4f = CompileShaderProgram(v2f_c4f_vert, v2f_c4f_frag);
     programID_v2f_c4f_t2f = CompileShaderProgram(v2f_c4f_t2f_vert, v2f_c4f_t2f_frag);
 
