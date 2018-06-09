@@ -10,10 +10,10 @@
 #include "BeatDetect.hpp"
 
 std::string v2f_c4f_vert(
-    "#version 150 core\n"
+    "#version 130\n"
     ""
-    "layout(location = 0) in vec2 vertex_position;\n"
-    "layout(location = 1) in vec4 vertex_color;\n"
+    "in vec2 vertex_position;\n"
+    "in vec4 vertex_color;\n"
     ""
     "uniform mat4 vertex_transformation;\n"
     "uniform float vertex_point_size;\n"
@@ -27,7 +27,7 @@ std::string v2f_c4f_vert(
     "}\n");
 
 std::string v2f_c4f_frag(
-        "#version 150 core\n"
+        "#version 130\n"
         "precision mediump float;\n"
         ""
         "in vec4 fragment_color;\n"
@@ -39,11 +39,11 @@ std::string v2f_c4f_frag(
 
 
 std::string v2f_c4f_t2f_vert(
-        "#version 150 core\n"
+        "#version 130\n"
         ""
-        "layout(location = 0) in vec2 vertex_position;\n"
-        "layout(location = 1) in vec4 vertex_color;\n"
-        "layout(location = 2) in vec2 vertex_texture;\n"
+        "in vec2 vertex_position;\n"
+        "in vec4 vertex_color;\n"
+        "in vec2 vertex_texture;\n"
         ""
         "uniform mat4 vertex_transformation;\n"
         ""
@@ -57,7 +57,7 @@ std::string v2f_c4f_t2f_vert(
         "}\n");
 
 std::string v2f_c4f_t2f_frag(
-        "#version 150 core\n"
+        "#version 130\n"
         "precision mediump float;\n"
         ""
         "in vec4 fragment_color;\n"
