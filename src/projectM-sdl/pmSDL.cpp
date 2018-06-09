@@ -211,6 +211,7 @@ void projectMSDL::renderFrame() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     projectM::renderFrame();
+    SDL_GL_SwapWindow(win);
 }
 
 projectMSDL::projectMSDL(Settings settings, int flags) : projectM(settings, flags) {
