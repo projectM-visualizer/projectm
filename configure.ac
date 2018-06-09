@@ -70,7 +70,7 @@ AC_CHECK_HEADER([glm/glm.hpp],, AC_MSG_ERROR(libglm is required.))
 
 AC_ARG_ENABLE([gles],
   AS_HELP_STRING([--enable-gles], [OpenGL ES support]),
-  [], [enable_gles=yes])
+  [], [enable_gles=no])
   AS_IF([test "x$enable_gles" = "xyes"], [
     AC_DEFINE([USE_GLES], [1], [Define USE_GLES])
 ])
