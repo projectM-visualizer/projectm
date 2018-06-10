@@ -387,7 +387,8 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glUseProgram(renderContext.programID_v2f_c4f_t2f);
+//    glUseProgram(renderContext.programID_v2f_c4f_t2f);
+    shaderEngine.enableInterpolationShader();
 
     glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_T2F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(renderContext.mat_ortho));
     glUniform1i(ShaderEngine::Uniform_V2F_C4F_T2F_FragTextureSampler(), 0);
