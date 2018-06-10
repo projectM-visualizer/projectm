@@ -32,18 +32,19 @@ std::string v2f_c4f_vert(
     "}\n");
 
 std::string v2f_c4f_frag(
-        "#version "
-        GLSL_VERSION
-        "\n"
-        "precision mediump float;\n"
-        ""
-        "in vec4 fragment_color;\n"
-        "out vec4 color;\n"
-        ""
-        "void main(){\n"
-        "    color = fragment_color;\n"
-        "}\n");
-
+    "#version "
+    GLSL_VERSION
+    "\n"
+    "precision mediump float;\n"
+    ""
+    "in vec4 fragment_color;\n"
+    "out vec4 color;\n"
+    "out vec2 frag_TEXCOORD0;\n"
+    ""
+    "void main(){\n"
+    "    color = fragment_color;\n"
+    "    frag_TEXCOORD0 = vec2(0,0);\n"
+    "}\n");
 
 std::string v2f_c4f_t2f_vert(
         "#version "
@@ -72,6 +73,7 @@ std::string v2f_c4f_t2f_frag(
         ""
         "in vec4 fragment_color;\n"
         "in vec2 fragment_texture;\n"
+                             "out vec2 frag_TEXCOORD0;\n"
         ""
         "uniform sampler2D texture_sampler;\n"
         ""
@@ -79,6 +81,7 @@ std::string v2f_c4f_t2f_frag(
         ""
         "void main(){\n"
         "    color = fragment_color * texture(texture_sampler, fragment_texture.st);\n"
+                             "    frag_TEXCOORD0 = vec2(0,0);\n"
         "}\n");
 
 
@@ -397,6 +400,9 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
     // Get strings for glShaderSource.
     const char *shaderSourceCStr = glslSource.get()->c_str();
     glShaderSource(shader, 1, &shaderSourceCStr, NULL);
+    
+//     uncomment to view transpiled shader source
+//    std::cout << "Transpiled GLSL shader source:" << std::endl << *glslSource.get() << std::endl;
 
     // compile shader
     glCompileShader(shader);
@@ -747,47 +753,25 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
     char const * VertexSourcePointer = VertexShaderCode.c_str();
     glShaderSource(VertexShaderID, 1, &VertexSourcePointer , NULL);
     glCompileShader(VertexShaderID);
-
-    // Check Vertex Shader
-    glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
-    glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    if ( InfoLogLength > 0 ){
-        std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
-        glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
-        fprintf(stderr, "Error compiling base vertex shader: %s\n", &VertexShaderErrorMessage[0]);
-    }
+    checkCompileStatus(VertexShaderID, "built-in vertex shader");
 
 
     // Compile Fragment Shader
     char const * FragmentSourcePointer = FragmentShaderCode.c_str();
     glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer , NULL);
     glCompileShader(FragmentShaderID);
-
-    // Check Fragment Shader
-    glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
-    glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    if ( InfoLogLength > 0 ){
-        std::vector<char> FragmentShaderErrorMessage(InfoLogLength+1);
-        glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
-        fprintf(stderr, "Error compiling base fragment shader: %s\n", &FragmentShaderErrorMessage[0]);
-    }
+    checkCompileStatus(FragmentShaderID, "built-in fragment shader");
 
     
     // Link the program
     programID = glCreateProgram();
+    
+    // permit multiple shaders to run without interfering
+//    glProgramParameteri(programID, GL_PROGRAM_SEPARABLE, GL_TRUE);
+    
     glAttachShader(programID, VertexShaderID);
     glAttachShader(programID, FragmentShaderID);
-    glLinkProgram(programID);
-
-    // Check the program
-    glGetProgramiv(programID, GL_LINK_STATUS, &Result);
-    glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &InfoLogLength);
-    if ( InfoLogLength > 0 ){
-        std::vector<char> ProgramErrorMessage(InfoLogLength+1);
-        glGetProgramInfoLog(programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
-        fprintf(stderr, "%s\n", &ProgramErrorMessage[0]);
-    }
-
+    relinkProgram();
 
     glValidateProgram(programID);
 
