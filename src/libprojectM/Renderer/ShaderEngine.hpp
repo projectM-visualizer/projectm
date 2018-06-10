@@ -11,11 +11,11 @@
 #include "Common.hpp"
 #include "projectM-opengl.h"
 
+class ShaderEngine;
 #include "Pipeline.hpp"
 #include "PipelineContext.hpp"
-class ShaderEngine;
 #include "TextureManager.hpp"
-
+#include "BeatDetect.hpp"
 #include "HLSLTranslator.hpp"
 
 #include <cstdlib>
@@ -51,25 +51,23 @@ class ShaderEngine
     GLuint   blur1Program;
     GLuint   blur2Program;
 
-    bool enabled;
+    std::map<Shader*, GLuint> presetShaders;
 
-    std::map<Shader*,GLuint> programs;
-
-    void InitShaderProgram();
     void SetupShaderQVariables(GLuint program, const Pipeline &q);
     void SetupShaderVariables(GLuint program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
-    void SetupUserTexture(GLuint program, const UserTexture* texture);
-    void SetupUserTextureState(const UserTexture* texture);
-    GLuint makeShader(GLenum type, const char *filename);
-    bool LoadHLSLProgram(GLenum shaderType, Shader &shader, std::string &shaderFilename);
+    void setupUserTexture(const UserTexture* texture);
+    void setupUserTextureState(const UserTexture* texture);
+    GLuint compilePresetShader(GLenum shaderType, Shader &shader, std::string &shaderFilename);
+    bool checkCompileStatus(GLuint shader, const char *shaderTitle);
+    void relinkProgram();
+    void disablePresetShaders();
 
 public:
 	ShaderEngine();
 	virtual ~ShaderEngine();
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext, const int texsize);
-	void loadShader(GLenum shaderType, Shader &shader, std::string &shaderFilename);
-    void enableShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
-    void disableShader(Shader &shader);
+	void loadPresetShader(Shader &shader, std::string &shaderFilename);
+    void deletePresetShader(Shader &shader);
 
 	void setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect, TextureManager *textureManager);
 	void reset();
@@ -78,6 +76,7 @@ public:
 
     GLuint programID_v2f_c4f;
     GLuint programID_v2f_c4f_t2f;
+    GLuint programID;
 
 
     GLuint CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode);
