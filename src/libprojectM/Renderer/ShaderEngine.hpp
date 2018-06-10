@@ -12,7 +12,6 @@
 #include "projectM-opengl.h"
 
 class ShaderEngine;
-#include "ShaderContext.hpp"
 #include "Pipeline.hpp"
 #include "PipelineContext.hpp"
 #include "TextureManager.hpp"
@@ -74,7 +73,6 @@ public:
 	void reset();
 	void setAspect(float aspect);
     std::string profileName;
-    ShaderContext context;
 
     GLuint programID_v2f_c4f;
     GLuint programID_v2f_c4f_t2f;

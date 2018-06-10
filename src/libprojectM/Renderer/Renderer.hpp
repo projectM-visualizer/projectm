@@ -58,8 +58,6 @@ public:
   void ResetTextures();
   void reset(int w, int h);
   GLuint initRenderToTexture();
-  GLuint getPositionAttribute();
-  GLuint getColorAttribute();
 
   void SetPipeline(Pipeline &pipeline);
 
@@ -86,7 +84,6 @@ private:
   std::string m_presetName;
 
   float* p;
-  GLuint pVBO;
 
   int vw;
   int vh;

@@ -19,6 +19,8 @@ enum MilkdropWaveformMode
 class MilkdropWaveform : public RenderItem
 {
 public:
+
+
 	float x;
 	float y;
 
@@ -56,7 +58,6 @@ private:
 	bool loop;
 	float wavearray[2048][2];
 	float wavearray2[2048][2];
-    GLuint wave1VBO, wave2VBO;
 
 	void MaximizeColors(RenderContext &context);
 	void ModulateOpacityByVolume(RenderContext &context);
