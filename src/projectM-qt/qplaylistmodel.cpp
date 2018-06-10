@@ -318,11 +318,7 @@ int QPlaylistModel::rowCount ( const QModelIndex & parent ) const
 
 int QPlaylistModel::columnCount ( const QModelIndex & parent ) const
 {
-
-	if ( rowCount() > 0 )
-		return softCutRatingsEnabled() ? 3 : 2;
-	else
-		return 0;
+	return softCutRatingsEnabled() ? 3 : 2;
 }
 
 void QPlaylistModel::appendRow ( const QString & presetURL, const QString & presetName, int rating, int breedability )

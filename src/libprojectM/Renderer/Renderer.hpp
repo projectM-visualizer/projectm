@@ -1,8 +1,6 @@
 #ifndef Renderer_HPP
 #define Renderer_HPP
 
-//#include <GL/glew.h>
-
 #include "FBO.hpp"
 #include "BeatDetect.hpp"
 #include "Common.hpp"
@@ -98,6 +96,12 @@ private:
   std::string title_fontURL;
   std::string menu_fontURL;
   std::string presetURL;
+
+  GLuint m_vbo_Interpolation;
+  GLuint m_vao_Interpolation;
+
+  GLuint m_vbo_CompositeOutput;
+  GLuint m_vao_CompositeOutput;
 
 #ifdef USE_FTGL
   FTGLPixmapFont *title_font;

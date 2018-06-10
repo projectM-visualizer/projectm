@@ -6,8 +6,8 @@ before_install:
 
 # TODO: test different combinations of flags, --enable-sdl, --enable-qt, etc
 script:
-  - ./configure --enable-sdl --enable-ftgl --prefix=$PWD/local && make -j8 && make install  # build from checkout
-  - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure --enable-sdl --enable-ftgl --prefix=$PWD/dist_install && make -j8 && make install  # build from dist
+  - ./configure --enable-sdl --prefix=$PWD/local && make -j8 && make install  # build from checkout
+  - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure --enable-sdl --prefix=$PWD/dist_install && make -j8 && make install  # build from dist
   - echo "PWD $PWD"
   - ls .
   - test -e src/projectM-sdl/projectMSDL
@@ -36,6 +36,7 @@ matrix:
             - libftgl-dev
             - libsdl2-dev
             - libdevil-dev
+            - libglm-dev
       env:
         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
     # linux/gcc
@@ -51,6 +52,7 @@ matrix:
             - libftgl-dev
             - libsdl2-dev
             - libdevil-dev
+            - libglm-dev
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 
@@ -58,7 +60,7 @@ matrix:
     - os: osx
       osx_image: xcode8
       env:
-        - MATRIX_EVAL="brew update && brew install sdl2 && brew install ftgl"
+        - MATRIX_EVAL="brew update && brew install sdl2 ftgl glm"
 
 notifications:
   email:

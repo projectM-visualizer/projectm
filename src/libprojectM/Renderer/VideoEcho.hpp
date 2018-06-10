@@ -27,6 +27,7 @@ public:
 	float zoom;
 	Orientation orientation;
 
+    void InitVertexAttrib();
 	void Draw(RenderContext &context);
 };
 
