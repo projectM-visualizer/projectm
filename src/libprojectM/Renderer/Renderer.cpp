@@ -44,7 +44,6 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
 	/// @bug put these on member init list
 	this->renderTarget = new RenderTarget(texsize, width, height);
-    std::cout << "init texture manager wtih " << presetURL << std::endl;
 	this->textureManager = new TextureManager(presetURL);
 	this->beatDetect = beatDetect;
 
