@@ -1,6 +1,8 @@
 #ifndef HLSLTRANSLATOR_CPP_
 #define HLSLTRANSLATOR_CPP_
 
+#include <memory>
+
 #include "HLSLTranslator.hpp"
 
 using namespace M4;
