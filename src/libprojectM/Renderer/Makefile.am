@@ -46,12 +46,13 @@ libRenderer_la_SOURCES = \
 	hlslparser/src/HLSLTokenizer.cpp hlslparser/src/HLSLTree.h \
 	hlslparser/src/Engine.cpp hlslparser/src/GLSLGenerator.h hlslparser/src/HLSLParser.cpp \
 	hlslparser/src/HLSLTokenizer.h   hlslparser/src/MSLGenerator.cpp \
-  HLSLTranslator.cpp HLSLTranslator.hpp
+	HLSLTranslator.cpp HLSLTranslator.hpp
 
 libRenderer_la_CPPFLAGS = ${my_CFLAGS} \
--I$(top_srcdir)/src/libprojectM \
--I$(top_srcdir)/src/libprojectM/Renderer/hlslparser/src \
-  ${FTGL_CFLAGS} ${CG_CFLAGS}
+	-include $(top_builddir)/config.h \
+	-I$(top_srcdir)/src/libprojectM/Renderer/hlslparser/src \
+	-I$(top_srcdir)/src/libprojectM \
+	${FTGL_CFLAGS} ${CG_CFLAGS}
 
 libRenderer_la_LDFLAGS = \
   ${FTGL_LIBS}  ${CG_LDFLAGS}

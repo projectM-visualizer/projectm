@@ -11,6 +11,8 @@
 #include "omptl/omptl"
 #include "omptl/omptl_algorithm"
 #include "UserTexture.hpp"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 class Preset;
 
@@ -19,6 +21,9 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 	title_fontURL(_titlefontURL), menu_fontURL(_menufontURL), presetURL(_presetURL), m_presetName("None"), vw(width),
 			vh(height), texsize(texsize), mesh(gx, gy)
 {
+	int x;
+	int y;
+
 	this->totalframes = 1;
 	this->noSwitch = false;
 	this->showfps = false;
@@ -77,54 +82,99 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
 #endif /** USE_FTGL */
 
-    GLuint size = getMeshSize();
+
+    int size = (mesh.height - 1) *mesh.width * 4 * 2;
 	p = ( float * ) wipemalloc ( size * sizeof ( float ) );
+
 
 	for (int j = 0; j < mesh.height - 1; j++)
 	{
-		int base = j * mesh.width * 2 * 5;
+        int base = j * mesh.width * 4 * 2;
+
 
 		for (int i = 0; i < mesh.width; i++)
 		{
 			int index = j * mesh.width + i;
 			int index2 = (j + 1) * mesh.width + i;
 
-			int strip = base + i * 10;
-			p[strip + 2] = mesh.identity[index].x;
-			p[strip + 3] = mesh.identity[index].y;
-			p[strip + 4] = 0;
+            int strip = base + i * 8;
+            p[strip + 0] = mesh.identity[index].x;
+            p[strip + 1] = mesh.identity[index].y;
 
-			p[strip + 7] = mesh.identity[index2].x;
-			p[strip + 8] = mesh.identity[index2].y;
-			p[strip + 9] = 0;
+            p[strip + 4] = mesh.identity[index2].x;
+            p[strip + 5] = mesh.identity[index2].y;
 		}
 	}
-    
-    glGenBuffers(1, &pVBO);
-    check_gl_error();
 
-	shaderEngine.setParams(renderTarget->texsize, renderTarget->textureID[1], aspect, beatDetect, textureManager);
-}
+    renderContext.programID_v2f_c4f = shaderEngine.programID_v2f_c4f;
+    renderContext.programID_v2f_c4f_t2f = shaderEngine.programID_v2f_c4f_t2f;
 
-GLuint Renderer::getMeshSize() {
-    return(mesh.height - 1) *mesh.width * 5 * 2;
+    // Interpolation VAO/VBO's
+    glGenBuffers(1, &m_vbo_Interpolation);
+    glGenVertexArrays(1, &m_vao_Interpolation);
+
+    glBindVertexArray(m_vao_Interpolation);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo_Interpolation);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)0); // Positions
+
+    glDisableVertexAttribArray(1);
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)(sizeof(float)*2)); // Textures
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // CompositeOutput VAO/VBO's
+    glGenBuffers(1, &m_vbo_CompositeOutput);
+    glGenVertexArrays(1, &m_vao_CompositeOutput);
+
+    float composite_buffer_data[8][2] =
+    {
+        { -0.5, -0.5 },
+        { 0, 1 },
+        { -0.5, 0.5 },
+        { 0, 0 },
+        { 0.5, 0.5 },
+        { 1, 0 },
+        { 0.5, -0.5 },
+        { 1, 1 } };
+
+
+    glBindVertexArray(m_vao_CompositeOutput);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo_CompositeOutput);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8 * 2, composite_buffer_data, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)0); // Positions
+
+    glDisableVertexAttribArray(1);
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)(sizeof(float)*2)); // Textures
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Renderer::SetPipeline(Pipeline &pipeline)
 {
 	currentPipe = &pipeline;
 	shaderEngine.reset();
-    // N.B. i'm actually not sure if they're always fragment shaders... I think so...  -mischa
-//    shaderEngine.loadPresetShader(GL_FRAGMENT_SHADER, pipeline.warpShader, pipeline.warpShaderFilename);
-    // enable!
-//    shaderEngine.loadPresetShader(GL_FRAGMENT_SHADER, pipeline.compositeShader, pipeline.compositeShaderFilename);
+  // TEMP
+  // N.B. i'm actually not sure if they're always fragment shaders... I think so...  -mischa
+  //shaderEngine.loadShader(GL_FRAGMENT_SHADER, pipeline.warpShader, pipeline.warpShaderFilename);
+	//shaderEngine.loadShader(GL_FRAGMENT_SHADER, pipeline.compositeShader, pipeline.compositeShaderFilename);
 }
 
 void Renderer::ResetTextures()
 {
 	textureManager->Clear();
 
-	delete(renderTarget);
+	delete (renderTarget);
 	renderTarget = new RenderTarget(texsize, vw, vh);
 	reset(vw, vh);
 
@@ -136,7 +186,8 @@ void Renderer::SetupPass1(const Pipeline &pipeline, const PipelineContext &pipel
 	totalframes++;
 	renderTarget->lock();
 	glViewport(0, 0, renderTarget->texsize, renderTarget->texsize);
-    check_gl_error();
+
+    renderContext.mat_ortho = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -40.0f, 40.0f);
 
 	shaderEngine.RenderBlurTextures(pipeline, pipelineContext, renderTarget->texsize);
 }
@@ -149,7 +200,6 @@ void Renderer::RenderItems(const Pipeline &pipeline, const PipelineContext &pipe
 	renderContext.aspectRatio = aspect;
 	renderContext.textureManager = textureManager;
 	renderContext.beatDetect = beatDetect;
-    renderContext.shaderContext = &shaderEngine.context;
 
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.drawables.begin(); pos != pipeline.drawables.end(); ++pos)
     {
@@ -179,22 +229,29 @@ void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineCo
 #ifdef USE_FBO
 	if (renderTarget->renderToTexture)
 	{
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->renderTarget->fbuffer[1]);
+        glBindFramebuffer(GL_FRAMEBUFFER, this->renderTarget->fbuffer[1]);
 		glViewport(0, 0, this->renderTarget->texsize, this->renderTarget->texsize);
 	}
 	else
 #endif
 		glViewport(0, 0, this->vw, this->vh);
 
-//    glBindTexture(GL_TEXTURE_2D, this->renderTarget->textureID[0]);
+	glBindTexture(GL_TEXTURE_2D, this->renderTarget->textureID[0]);
+
+    renderContext.mat_ortho = glm::ortho(-0.5f, 0.5f, -0.5f, 0.5f, -40.0f, 40.0f);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    check_gl_error();
 
 	glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize / 512.0);
-    check_gl_error();
 
 	CompositeOutput(pipeline, pipelineContext);
+
+/* FTGL does not support OpenGL ES
+#ifndef EMSCRIPTEN
+	glMatrixMode(GL_MODELVIEW);
+#endif
+	glLoadIdentity();
+	glTranslatef(-0.5, -0.5, 0);
 
 	// When console refreshes, there is a chance the preset has been changed by the user
 	refreshConsole();
@@ -209,10 +266,12 @@ void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineCo
 		draw_preset();
 	if (this->showstats % 2)
 		draw_stats();
+	glTranslatef(0.5, 0.5, 0);
+*/
 
 #ifdef USE_FBO
 	if (renderTarget->renderToTexture)
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 #endif
 }
 
@@ -226,15 +285,15 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
     if (!renderTarget->renderToTexture)
     {
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &externalFBO);
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 #endif
 
 	SetupPass1(pipeline, pipelineContext);
 
-//    shaderEngine.enablePresetShader(currentPipe->warpShader, pipeline, pipelineContext);
+//    shaderEngine.enableShader(currentPipe->warpShader, pipeline, pipelineContext);
 	Interpolation(pipeline);
-//    shaderEngine.disablePresetShader(currentPipe->warpShader);
+//    shaderEngine.disableShader(currentPipe->warpShader);
 
 	RenderItems(pipeline, pipelineContext);
 	FinishPass1();
@@ -244,7 +303,7 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
     // if it exists (0 means no external FBO)
     // then rebind it just before calling the final pass: Pass2
     if (!renderTarget->renderToTexture && externalFBO != 0)
-        glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, externalFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, externalFBO);
 #endif
 
 	Pass2(pipeline, pipelineContext);
@@ -252,99 +311,101 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
 
 void Renderer::Interpolation(const Pipeline &pipeline)
 {
-#ifndef GL_TRANSITION
-    if (this->renderTarget->useFBO)
-        glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[1]);
-    else
-        glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[0]);
-#endif
-    
-    // Texture wrapping(clamp vs. wrap)
-    if (pipeline.textureWrap == 0)
-    {
+	if (this->renderTarget->useFBO)
+		glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[1]);
+	else
+		glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[0]);
+
+	//Texture wrapping( clamp vs. wrap)
+	if (pipeline.textureWrap == 0)
+	{
+#ifdef GL_TRANSITION
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+#else
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    }
-    else
-    {
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    }
-    check_gl_error();
+#endif
+	}
+	else
+	{
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	}
+
+    glActiveTexture(GL_TEXTURE0);
+
+    int size = (mesh.height - 1) * mesh.width * 4 * 2;
+
+	if (pipeline.staticPerPixel)
+	{
+		for (int j = 0; j < mesh.height - 1; j++)
+		{
+            int base = j * mesh.width * 2 * 4;
+
+			for (int i = 0; i < mesh.width; i++)
+			{
+                int strip = base + i * 8;
+                p[strip + 2] = pipeline.x_mesh[i][j];
+                p[strip + 3] = pipeline.y_mesh[i][j];
+
+                p[strip + 6] = pipeline.x_mesh[i][j+1];
+                p[strip + 7] = pipeline.y_mesh[i][j+1];
+			}
+		}
+
+	}
+	else
+	{
+		mesh.Reset();
+		omptl::transform(mesh.p.begin(), mesh.p.end(), mesh.identity.begin(), mesh.p.begin(), &Renderer::PerPixel);
+
+	for (int j = 0; j < mesh.height - 1; j++)
+	{
+            int base = j * mesh.width * 2 * 4;
+
+			for (int i = 0; i < mesh.width; i++)
+			{
+                int strip = base + i * 8;
+				int index = j * mesh.width + i;
+				int index2 = (j + 1) * mesh.width + i;
+
+                p[strip + 2] = mesh.p[index].x;
+                p[strip + 3] = mesh.p[index].y;
+
+                p[strip + 6] = mesh.p[index2].x;
+                p[strip + 7] = mesh.p[index2].y;
+
+
+			}
+		}
+	}
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo_Interpolation);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * size, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * size, p, GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glUseProgram(renderContext.programID_v2f_c4f_t2f);
+
+    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_T2F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(renderContext.mat_ortho));
+    glUniform1i(ShaderEngine::Uniform_V2F_C4F_T2F_FragTextureSampler(), 0);
+
+    glVertexAttrib4f(1, 1.0, 1.0, 1.0, pipeline.screenDecay);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
-    check_gl_error();
 
-//    glColor4f(1.0, 1.0, 1.0, pipeline.screenDecay);
+    glBindVertexArray(m_vao_Interpolation);
 
-    
-//    glEnableClientState(GL_VERTEX_ARRAY);
-//    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-//    glDisableClientState(GL_COLOR_ARRAY);
-//
-    
-    //glVertexPointer(2, GL_FLOAT, 0, p);
-    //glTexCoordPointer(2, GL_FLOAT, 0, t);
-    
-    // NOTE: how to convert this properly?
-//    glInterleavedArrays(GL_T2F_V3F,0,p);
-    
-    if (pipeline.staticPerPixel)
-    {
-        for (int j = 0; j < mesh.height - 1; j++)
-        {
-            int base = j * mesh.width * 2 * 5;
-            
-            for (int i = 0; i < mesh.width; i++)
-            {
-                int strip = base + i * 10;
-                p[strip] = pipeline.x_mesh[i][j];
-                p[strip + 1] = pipeline.y_mesh[i][j];
-                
-                p[strip + 5] = pipeline.x_mesh[i][j+1];
-                p[strip + 6] = pipeline.y_mesh[i][j+1];
-            }
-        }
-    } else {
-        mesh.Reset();
-        omptl::transform(mesh.p.begin(), mesh.p.end(), mesh.identity.begin(), mesh.p.begin(), &Renderer::PerPixel);
-        
-        for (int j = 0; j < mesh.height - 1; j++)
-        {
-            int base = j * mesh.width * 2 * 5;
-            
-            for (int i = 0; i < mesh.width; i++)
-            {
-                int strip = base + i * 10;
-                int index = j * mesh.width + i;
-                int index2 = (j + 1) * mesh.width + i;
-                
-                p[strip] = mesh.p[index].x;
-                p[strip + 1] = mesh.p[index].y;
-                
-                p[strip + 5] = mesh.p[index2].x;
-                p[strip + 6] = mesh.p[index2].y;
-            }
-        }
-    }
-    
-    // upload mesh
-    glBindBuffer(GL_ARRAY_BUFFER, pVBO);
-    check_gl_error();
-    glBufferData(GL_ARRAY_BUFFER, getMeshSize(), p, GL_DYNAMIC_DRAW);
-    check_gl_error();
-    glVertexAttribPointer(getPositionAttribute(), 2, GL_FLOAT, GL_FALSE, 0, 0);
-    check_gl_error();
+	for (int j = 0; j < mesh.height - 1; j++)
+		glDrawArrays(GL_TRIANGLE_STRIP,j* mesh.width* 2,mesh.width*2);
 
-//    glVertexAttribPointer(getColorAttribute(), 3, GL_FLOAT, GL_FALSE, 3*sizeof(float), 0);
+    glBindVertexArray(0);
 
-    // render each row of the mesh
-    for (int j = 0; j < mesh.height - 1; j++)
-//        glDrawArrays(GL_TRIANGLE_STRIP, j * mesh.width * 2, mesh.width * 2);
-    check_gl_error();
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    check_gl_error();
 }
 Pipeline* Renderer::currentPipe;
 
@@ -361,8 +422,6 @@ Renderer::~Renderer()
 	//std::cerr << "grid assign end" << std::endl;
 
 	free(p);
-    
-    glDeleteBuffers(1, &pVBO);
 
 #ifdef USE_FTGL
 	//	std::cerr << "freeing title fonts" << std::endl;
@@ -375,62 +434,54 @@ Renderer::~Renderer()
 	//	std::cerr << "freeing title fonts finished" << std::endl;
 #endif
 	//	std::cerr << "exiting destructor" << std::endl;
+
+    glDeleteBuffers(1, &m_vbo_Interpolation);
+    glDeleteVertexArrays(1, &m_vao_Interpolation);
+
+    glDeleteBuffers(1, &m_vbo_CompositeOutput);
+    glDeleteVertexArrays(1, &m_vao_CompositeOutput);
 }
 
 void Renderer::reset(int w, int h)
 {
-#ifndef GL_TRANSITION
 	aspect = (float) h / (float) w;
 	this -> vw = w;
 	this -> vh = h;
 
 	shaderEngine.setAspect(aspect);
 
-	glShadeModel(GL_SMOOTH);
-
 	glCullFace(GL_BACK);
 	//glFrontFace( GL_CCW );
+
+#ifndef GL_TRANSITION
+    glEnable(GL_LINE_SMOOTH);
+#endif
+
 
 	glClearColor(0, 0, 0, 0);
 
 	glViewport(0, 0, w, h);
 
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
 
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+    glEnable(GL_BLEND);
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glDrawBuffer(GL_BACK);
-	glReadBuffer(GL_BACK);
-	glEnable(GL_BLEND);
+    glActiveTexture(GL_TEXTURE0);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glEnable(GL_LINE_SMOOTH);
-
-	glEnable(GL_POINT_SMOOTH);
 	glClear(GL_COLOR_BUFFER_BIT);
-
-	glLineStipple(2, 0xAAAA);
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    // TODO: how to port this to modern openGL ?
+    // glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-	//glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-	//glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-	if (!this->renderTarget->useFBO)
-	{
-		this->renderTarget->fallbackRescale(w, h);
-	}
-#endif
+//	if (!this->renderTarget->useFBO)
+//	{
+//		this->renderTarget->fallbackRescale(w, h);
+//	}
 }
 
 GLuint Renderer::initRenderToTexture()
@@ -458,10 +509,6 @@ void Renderer::draw_title_to_screen(bool flip)
 	if (this->drawtitle > 0)
 	{
 
-		//setUpLighting();
-
-		//glEnable(GL_POLYGON_SMOOTH);
-		//glEnable( GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
 		glClear(GL_DEPTH_BUFFER_BIT);
 
@@ -703,58 +750,29 @@ void Renderer::draw_fps(float realfps)
 
 void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
-#ifndef GL_TRANSITION
+    glUseProgram(renderContext.programID_v2f_c4f_t2f);
+
+    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_T2F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(renderContext.mat_ortho));
+    glUniform1i(ShaderEngine::Uniform_V2F_C4F_T2F_FragTextureSampler(), 0);
+
 	//Overwrite anything on the screen
 	glBlendFunc(GL_ONE, GL_ZERO);
-	glColor4f(1.0, 1.0, 1.0, 1.0f);
-	glEnable(GL_TEXTURE_2D);
-#endif
+    glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 
-//    shaderEngine.enablePresetShader(currentPipe->compositeShader, pipeline, pipelineContext);
+    glActiveTexture(GL_TEXTURE0);
 
-#ifndef GL_TRANSITION
-	float tex[4][2] =
-	{
-	{ 0, 1 },
-	{ 0, 0 },
-	{ 1, 0 },
-	{ 1, 1 } };
+//    shaderEngine.enableShader(currentPipe->compositeShader, pipeline, pipelineContext);
 
-	float points[4][2] =
-	{
-	{ -0.5, -0.5 },
-	{ -0.5, 0.5 },
-	{ 0.5, 0.5 },
-	{ 0.5, -0.5 } };
+    glBindVertexArray(m_vao_CompositeOutput);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-	glVertexPointer(2, GL_FLOAT, 0, points);
-	glTexCoordPointer(2, GL_FLOAT, 0, tex);
+    glBindVertexArray(0);
 
-	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-	glDisable(GL_TEXTURE_2D);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-#endif
-
-//    shaderEngine.disablePresetShader(currentPipe->compositeShader);
 
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.compositeDrawables.begin(); pos
 			!= pipeline.compositeDrawables.end(); ++pos)
 		(*pos)->Draw(renderContext);
+
 }
-
-GLuint Renderer::getPositionAttribute() {
-    return shaderEngine.context.positionAttribute;
-}
-
-GLuint Renderer::getColorAttribute() {
-    return shaderEngine.context.colorAttribute;
-}
-
-

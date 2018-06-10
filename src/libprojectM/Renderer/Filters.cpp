@@ -8,19 +8,31 @@
 #include "Common.hpp"
 #include "projectM-opengl.h"
 #include "Filters.hpp"
+#include "ShaderEngine.hpp"
+#include <glm/gtc/type_ptr.hpp>
+
+void Brighten::InitVertexAttrib() {
+    float points[4][2] = {{-0.5, -0.5},
+                      {-0.5,  0.5},
+                      { 0.5,  0.5},
+                      { 0.5,  -0.5}};
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glDisableVertexAttribArray(1);
+}
 
 void Brighten::Draw(RenderContext &context)
 {
-#ifndef GL_TRANSITION
-	float points[4][2] = {{-0.5, -0.5},
-				      {-0.5,  0.5},
-				      { 0.5,  0.5},
-				      { 0.5,  -0.5}};
+    glUseProgram(context.programID_v2f_c4f);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(2,GL_FLOAT,0,points);
+    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
 
-	glColor4f(1.0, 1.0, 1.0, 1.0);
+    glBindVertexArray(m_vaoID);
+
+    glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 	glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
 	glDrawArrays(GL_TRIANGLE_FAN,0,4);
 	glBlendFunc(GL_ZERO, GL_DST_COLOR);
@@ -29,66 +41,98 @@ void Brighten::Draw(RenderContext &context)
 	glDrawArrays(GL_TRIANGLE_FAN,0,4);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glDisableClientState(GL_VERTEX_ARRAY);
-#endif
+    glBindVertexArray(0);
+}
+
+void Darken::InitVertexAttrib() {
+    float points[4][2] = {{-0.5, -0.5},
+                      {-0.5,  0.5},
+                      { 0.5,  0.5},
+                      { 0.5,  -0.5}};
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glDisableVertexAttribArray(1);
 }
 
 void Darken::Draw(RenderContext &context)
 {
-#ifndef GL_TRANSITION
-	float points[4][2] = {{-0.5, -0.5},
-				      {-0.5,  0.5},
-				      { 0.5,  0.5},
-				      { 0.5,  -0.5}};
+    glUseProgram(context.programID_v2f_c4f);
 
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glVertexPointer(2,GL_FLOAT,0,points);
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glBlendFunc(GL_ZERO, GL_DST_COLOR);
-		glDrawArrays(GL_TRIANGLE_FAN,0,4);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glDisableClientState(GL_VERTEX_ARRAY);
-#endif
+    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+
+    glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
+
+	glBlendFunc(GL_ZERO, GL_DST_COLOR);
+
+    glBindVertexArray(m_vaoID);
+	glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glBindVertexArray(0);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void Invert::InitVertexAttrib() {
+    float points[4][2] = {{-0.5, -0.5},
+                      {-0.5,  0.5},
+                      { 0.5,  0.5},
+                      { 0.5,  -0.5}};
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glDisableVertexAttribArray(1);
 }
 
 void Invert::Draw(RenderContext &context)
 {
-#ifndef GL_TRANSITION
 
+    glUseProgram(context.programID_v2f_c4f);
+
+    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+
+    glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
+
+	glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
+
+    glBindVertexArray(m_vaoID);
+	glDrawArrays(GL_TRIANGLE_FAN,0,4);
+    glBindVertexArray(0);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+void Solarize::InitVertexAttrib() {
     float points[4][2] = {{-0.5, -0.5},
-				      {-0.5,  0.5},
-				      { 0.5,  0.5},
-				      { 0.5,  -0.5}};
+                          {-0.5,  0.5},
+                          { 0.5,  0.5},
+                          { 0.5,  -0.5}};
 
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glVertexPointer(2,GL_FLOAT,0,points);
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
-		glDrawArrays(GL_TRIANGLE_FAN,0,4);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
 
-		glDisableClientState(GL_VERTEX_ARRAY);
-#endif
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glDisableVertexAttribArray(1);
 }
 
 void Solarize::Draw(RenderContext &context)
 {
-#ifndef GL_TRANSITION
-	float points[4][2] = {{-0.5, -0.5},
-					      {-0.5,  0.5},
-					      { 0.5,  0.5},
-					      { 0.5,  -0.5}};
+    glUseProgram(context.programID_v2f_c4f);
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(2,GL_FLOAT,0,points);
+    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
 
-	glColor4f(1.0, 1.0, 1.0, 1.0);
+    glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
+
 	glBlendFunc(GL_ZERO, GL_ONE_MINUS_DST_COLOR);
+
+    glBindVertexArray(m_vaoID);
 	glDrawArrays(GL_TRIANGLE_FAN,0,4);
 	glBlendFunc(GL_DST_COLOR, GL_ONE);
 	glDrawArrays(GL_TRIANGLE_FAN,0,4);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBindVertexArray(0);
 
-	glDisableClientState(GL_VERTEX_ARRAY);
-#endif
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
