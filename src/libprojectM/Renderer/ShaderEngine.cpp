@@ -39,11 +39,9 @@ std::string v2f_c4f_frag(
     ""
     "in vec4 fragment_color;\n"
     "out vec4 color;\n"
-    "out vec2 frag_TEXCOORD0;\n"
     ""
     "void main(){\n"
     "    color = fragment_color;\n"
-    "    frag_TEXCOORD0 = vec2(0,0);\n"
     "}\n");
 
 std::string v2f_c4f_t2f_vert(
@@ -73,7 +71,6 @@ std::string v2f_c4f_t2f_frag(
         ""
         "in vec4 fragment_color;\n"
         "in vec2 fragment_texture;\n"
-                             "out vec2 frag_TEXCOORD0;\n"
         ""
         "uniform sampler2D texture_sampler;\n"
         ""
@@ -81,7 +78,6 @@ std::string v2f_c4f_t2f_frag(
         ""
         "void main(){\n"
         "    color = fragment_color * texture(texture_sampler, fragment_texture.st);\n"
-                             "    frag_TEXCOORD0 = vec2(0,0);\n"
         "}\n");
 
 
@@ -109,7 +105,6 @@ ShaderEngine::ShaderEngine()
 
 ShaderEngine::~ShaderEngine()
 {
-    glDeleteProgram(programID);
 }
 
 bool ShaderEngine::checkCompileStatus(GLuint shader, const char *shaderTitle) {
@@ -234,11 +229,12 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 #endif
 }
 
+// compile a user-defined shader from a preset. returns program ID if successful.
 GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, std::string &shaderFilename) {
     std::string program = pmShader.programSource;
 
     if (program.length() <= 0)
-        return false;
+        return GL_FALSE;
 
     // replace "}" with return statement (this can probably be optimized for the GLSL conversion...)
     size_t found = program.rfind('}');
@@ -248,7 +244,7 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
         program.replace(int(found), 1, "OUT.color.xyz=ret.xyz;\nOUT.color.w=1;\nreturn OUT;\n}");
     }
     else
-        return false;
+        return GL_FALSE;
 
     // replace "{" with some variable declarations
     found = program.rfind('{');
@@ -265,7 +261,7 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
         program.replace(int(found), 1, progMain);
     }
     else
-        return false;
+        return GL_FALSE;
 
     // replace shader_body with entry point function
     found = program.find("shader_body");
@@ -275,7 +271,7 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
         program.replace(int(found), 11, "outtype projectm(float2 uv : TEXCOORD0)\n");
     }
     else
-        return false;
+        return GL_FALSE;
 
     pmShader.textures.clear();
 
@@ -392,33 +388,12 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
     if (!glslSource) {
         std::cerr << "Failed to parse shader from " << shaderFilename << std::endl;
         std::cerr << "Original program: " << program << std::endl;
-        return false;
+        return GL_FALSE;
     }
-
-    // https://www.khronos.org/opengl/wiki/Shader_Compilation#Shader_object_compilation
-    GLuint shader = glCreateShader(shaderType);
-    // Get strings for glShaderSource.
-    const char *shaderSourceCStr = glslSource.get()->c_str();
-    glShaderSource(shader, 1, &shaderSourceCStr, NULL);
     
-//     uncomment to view transpiled shader source
-//    std::cout << "Transpiled GLSL shader source:" << std::endl << *glslSource.get() << std::endl;
-
-    // compile shader
-    glCompileShader(shader);
-
-    // check result
-    GLint isCompiled = 0;
-    glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
-    if (!checkCompileStatus(shader, shaderFilename.c_str())) {
-        // failed to compile the preset shader
-        std::cout << "Translated program: " << glslSource.get()->c_str() << std::endl;
-        glDeleteShader(shader); // Don't leak the shader.
-        return false;
-    }
-    presetShaders[&pmShader] = shader;
-
-   return shader;
+    // now we have GLSL source for the preset shader program (hopefully it's valid!)
+    // copmile the preset shader fragment shader with the standard vertex shader and cross our fingers
+    return CompileShaderProgram(*glslSource.get(), v2f_c4f_t2f_frag);  // returns new program
 }
 
 
@@ -488,7 +463,7 @@ void ShaderEngine::setupUserTexture(const UserTexture* texture)
 	std::string samplerName = "sampler_" + texture->qname;
 
     // https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Binding_textures_to_samplers
-	GLint param = glGetUniformLocation(programID, samplerName.c_str());
+	GLint param = glGetUniformLocation(programID_preset, samplerName.c_str());
     if (param < 0) {
         // FIXME: turn this on and fix it.
         // i think sampler names are carrying over from previous shaders...
@@ -504,7 +479,7 @@ void ShaderEngine::setupUserTexture(const UserTexture* texture)
 	if (texture->texsizeDefined)
 	{
 		std::string texsizeName = "texsize_" + texture->name;
-        GLint textSizeParam = glGetUniformLocation(programID, texsizeName.c_str());
+        GLint textSizeParam = glGetUniformLocation(programID_preset, texsizeName.c_str());
         if (param >= 0) {
             glProgramUniform4f(textSizeParam, texture->width, texture->height, 0,
                                1 / (float) texture->width, 1 / (float) texture->height);
@@ -659,7 +634,7 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
 #endif
 }
 
-void ShaderEngine::relinkProgram() {
+void ShaderEngine::linkProgram(GLuint programID) {
     glLinkProgram(programID);
 
     GLint program_linked;
@@ -671,63 +646,45 @@ void ShaderEngine::relinkProgram() {
         std::cerr << "Failed to link program: " << message << std::endl;
         return;
     }
-
-    printf("LINK OK\n");
+    
 }
 
 #pragma mark Preset Shaders
 void ShaderEngine::loadPresetShader(Shader &presetShader, std::string &shaderFilename)
 {
+    assert(!presetShaderProgramLoaded);
+    
     assert(!presetShader.enabled);
     // i think they're always fragment shaders? not positive -mischa
-    auto shader = compilePresetShader(GL_FRAGMENT_SHADER, presetShader, shaderFilename);
+    programID_preset = compilePresetShader(GL_FRAGMENT_SHADER, presetShader, shaderFilename);
 
-    if (!shader) {
+    if (programID_preset == GL_FALSE) {
         // failed to compile
         return;
     }
+    printf("linked shader %s\n", presetShader.presetPath.c_str());
 
-    presetShaders[&presetShader] = shader;
-
+    presetShaders[&presetShader] = programID_preset;
+    
     // pass texture info from preset to shader
     for (auto &userTexture : presetShader.textures) {
         setupUserTextureState(userTexture.second);
         setupUserTexture(userTexture.second);
     }
 
-    // turn shader on
-    glAttachShader(programID, shader);
     presetShader.enabled = true;
-    printf("linked shader %s\n", presetShader.presetPath.c_str());
+    presetShaderProgramLoaded = true;
 
-    relinkProgram();
 }
 
-void ShaderEngine::deletePresetShader(Shader &presetShader)
-{
-    printf("deleting shader... enabled=%d, path=%s\n", presetShader.enabled, presetShader.presetPath.c_str());
-    if (! presetShader.enabled)
-        return;
-
-    auto shader = presetShaders[&presetShader];
-    glDeleteShader(shader);
-    glDetachShader(programID, shader);
-    presetShader.enabled = false;
-}
-
-// disable all preset shaders
+// deactivate preset shaders
 void ShaderEngine::disablePresetShaders() {
-    if (presetShaders.size() == 0) {
-        // nothing to do
+    if (!presetShaderProgramLoaded)
         return;
-    }
-
-    for (auto &i : presetShaders) {
-        deletePresetShader(*i.first);
-    }
-    presetShaders.clear();
-    printf("DISABLED ALL\n");
-    relinkProgram();
+    
+    glDeleteProgram(programID_preset);
+    
+    presetShaderProgramLoaded = false;
 }
 
 void ShaderEngine::reset()
@@ -764,14 +721,11 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
 
     
     // Link the program
-    programID = glCreateProgram();
-    
-    // permit multiple shaders to run without interfering
-//    glProgramParameteri(programID, GL_PROGRAM_SEPARABLE, GL_TRUE);
+    GLuint programID = glCreateProgram();
     
     glAttachShader(programID, VertexShaderID);
     glAttachShader(programID, FragmentShaderID);
-    relinkProgram();
+    linkProgram(programID);
 
     glValidateProgram(programID);
 
@@ -792,4 +746,14 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
     glDeleteShader(FragmentShaderID);
 
     return programID;
+}
+
+// use the appropriate shader program for rendering the interpolation.
+// it will use the preset shader if available, otherwise the textured shader
+void ShaderEngine::enableInterpolationShader() {
+    if (!presetShaderProgramLoaded) {
+        glUseProgram(programID_v2f_c4f_t2f);
+    } else {
+        glUseProgram(programID_preset);
+    }
 }
