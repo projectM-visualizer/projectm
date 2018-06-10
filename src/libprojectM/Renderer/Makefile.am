@@ -49,8 +49,9 @@ libRenderer_la_SOURCES = \
   HLSLTranslator.cpp HLSLTranslator.hpp
 
 libRenderer_la_CPPFLAGS = ${my_CFLAGS} \
--I$(top_srcdir)/src/libprojectM \
--I$(top_srcdir)/src/libprojectM/Renderer/hlslparser/src \
+	-include $(top_builddir)/config.h \
+  -I$(top_srcdir)/src/libprojectM/Renderer/hlslparser/src \
+	-I$(top_srcdir)/src/libprojectM \
   ${FTGL_CFLAGS} ${CG_CFLAGS}
 
 libRenderer_la_LDFLAGS = \
