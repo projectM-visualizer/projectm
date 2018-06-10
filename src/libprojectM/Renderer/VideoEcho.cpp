@@ -6,56 +6,30 @@
  */
 
 #include "VideoEcho.hpp"
+#include "ShaderEngine.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 VideoEcho::VideoEcho(): a(0), zoom(1), orientation(Normal)
 {
-	// TODO Auto-generated constructor stub
-
+    Init();
 }
 
 VideoEcho::~VideoEcho()
 {
-	// TODO Auto-generated destructor stub
+}
+
+void VideoEcho::InitVertexAttrib() {
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)0);   // Positions
+
+    glDisableVertexAttribArray(1);
+
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)(sizeof(float)*2)); // Textures
 }
 
 void VideoEcho::Draw(RenderContext &context)
 {
-
-
-		glEnable(GL_TEXTURE_2D);
-
-
-		float tex[4][2] = {{0, 1},
-				   {0, 0},
-				   {1, 0},
-				   {1, 1}};
-
-		float points[4][2] = {{-0.5, -0.5},
-				      {-0.5,  0.5},
-				      { 0.5,  0.5},
-				      { 0.5,  -0.5}};
-
-#ifndef GL_TRANSITION
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_COLOR_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-		glVertexPointer(2,GL_FLOAT,0,points);
-		glTexCoordPointer(2,GL_FLOAT,0,tex);
-#endif
-    
-		//Now Blend the Video Echo
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-#ifndef GL_TRANSITION
-		glMatrixMode(GL_TEXTURE);
-
-		//draw video echo
-		glColor4f(1.0, 1.0, 1.0, a * masterAlpha);
-		glTranslatef(.5, .5, 0);
-		glScalef(1.0/zoom, 1.0/zoom, 1);
-		glTranslatef(-.5, -.5, 0);
-    
 		int flipx=1, flipy=1;
 		switch (orientation)
 		{
@@ -66,18 +40,66 @@ void VideoEcho::Draw(RenderContext &context)
 			default: flipx=1;flipy=1; break;
 		}
 
-		double pointsFlip[4][2] = {{-0.5*flipx, -0.5*flipy},
-					  {-0.5*flipx,  0.5*flipy},
-					  { 0.5*flipx,  0.5*flipy},
-					  { 0.5*flipx, -0.5*flipy}};
+    float buffer_data[8][2] = {
+        {-0.5f*flipx, -0.5f*flipy},
+        {0.0, 1.0},
 
-		glVertexPointer(2,GL_FLOAT,0,pointsFlip);
-		glDrawArrays(GL_TRIANGLE_FAN,0,4);
+        {-0.5f*flipx,  0.5f*flipy},
+        {0.0, 0.0},
 
-		glDisable(GL_TEXTURE_2D);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        { 0.5f*flipx,  0.5f*flipy},
+        {1.0, 0.0},
 
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-#endif
+        { 0.5f*flipx, -0.5f*flipy},
+        {1.0, 1.0}
+    };
 
+    glm::mat4 mat_first_translation = glm::mat4(1.0);
+    mat_first_translation[3][0] = -0.5;
+    mat_first_translation[3][1] = -0.5;
+
+    glm::mat4  mat_scale = glm::mat4(1.0);
+    mat_scale[0][0] = 1.0/zoom;
+    mat_scale[1][1] = 1.0/zoom;
+
+    glm::mat4  mat_second_translation = glm::mat4(1.0);
+    mat_second_translation[3][0] = 0.5;
+    mat_second_translation[3][1] = 0.5;
+
+    for (int i = 1; i < 8; i+=2) {
+        glm::vec4 texture = glm::vec4(buffer_data[i][0], buffer_data[i][1], 0, 1);
+        texture = mat_first_translation * texture;
+        texture = mat_scale * texture;
+        texture = mat_second_translation * texture;
+
+        buffer_data[i][0] = texture[0];
+        buffer_data[i][1] = texture[1];
+    }
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, buffer_data, GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glActiveTexture(GL_TEXTURE0);
+
+    glUseProgram(context.programID_v2f_c4f_t2f);
+
+    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_T2F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+
+    glUniform1i(ShaderEngine::Uniform_V2F_C4F_T2F_FragTextureSampler(), 0);
+
+    glVertexAttrib4f(1, 1.0, 1.0, 1.0, a * masterAlpha);
+
+    glBindVertexArray(m_vaoID);
+
+    //draw video echo
+    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+    glBindVertexArray(0);
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }

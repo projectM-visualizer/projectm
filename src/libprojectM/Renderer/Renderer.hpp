@@ -98,6 +98,12 @@ private:
   std::string menu_fontURL;
   std::string presetURL;
 
+  GLuint m_vbo_Interpolation;
+  GLuint m_vao_Interpolation;
+
+  GLuint m_vbo_CompositeOutput;
+  GLuint m_vao_CompositeOutput;
+
 #ifdef USE_FTGL
   FTGLPixmapFont *title_font;
   FTGLPixmapFont *other_font;

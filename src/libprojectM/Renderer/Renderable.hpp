@@ -4,6 +4,7 @@
 #include <typeinfo>
 #include "TextureManager.hpp"
 #include "projectM-opengl.h"
+#include <glm/mat4x4.hpp>
 
 class BeatDetect;
 
@@ -17,6 +18,9 @@ public:
 	bool aspectCorrect;
 	BeatDetect *beatDetect;
 	TextureManager *textureManager;
+    GLuint programID_v2f_c4f;
+    GLuint programID_v2f_c4f_t2f;
+    glm::mat4 mat_ortho;
 
 	RenderContext();
 };
@@ -24,9 +28,18 @@ public:
 class RenderItem
 {
 public:
+    RenderItem();
+    ~RenderItem();
+
 	float masterAlpha;
+    virtual void InitVertexAttrib() = 0;
 	virtual void Draw(RenderContext &context) = 0;
-	RenderItem();
+
+protected:
+    virtual void Init();
+
+    GLuint m_vboID;
+    GLuint m_vaoID;
 };
 
 typedef std::vector<RenderItem*> RenderItemList;
@@ -35,6 +48,7 @@ class DarkenCenter : public RenderItem
 {
 public:
 	DarkenCenter();
+    void InitVertexAttrib();
 	void Draw(RenderContext &context);
 };
 
@@ -73,7 +87,28 @@ public:
 
 
     Shape();
+    ~Shape();
+    void InitVertexAttrib();
     virtual void Draw(RenderContext &context);
+
+private:
+
+    struct struct_data {
+        float point_x;
+        float point_y;
+        float color_r;
+        float color_g;
+        float color_b;
+        float color_a;
+        float tex_x;
+        float tex_y;
+    };
+
+    GLuint m_vboID_texture;
+    GLuint m_vaoID_texture;
+
+    GLuint m_vboID_not_texture;
+    GLuint m_vaoID_not_texture;
 };
 
 class Text : RenderItem
@@ -93,6 +128,7 @@ public:
     float x_offset;
     float y_offset;
 
+    void InitVertexAttrib();
     void Draw(RenderContext &context);
     MotionVectors();
 };
@@ -112,6 +148,7 @@ public:
     float inner_b;
     float inner_a;
 
+    void InitVertexAttrib();
     void Draw(RenderContext &context);
     Border();
 };
