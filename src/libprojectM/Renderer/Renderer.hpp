@@ -1,8 +1,6 @@
 #ifndef Renderer_HPP
 #define Renderer_HPP
 
-//#include <GL/glew.h>
-
 #include "FBO.hpp"
 #include "BeatDetect.hpp"
 #include "Common.hpp"

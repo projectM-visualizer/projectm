@@ -164,9 +164,10 @@ void Renderer::SetPipeline(Pipeline &pipeline)
 {
 	currentPipe = &pipeline;
 	shaderEngine.reset();
-    // N.B. i'm actually not sure if they're always fragment shaders... I think so...  -mischa
-    shaderEngine.loadShader(GL_FRAGMENT_SHADER, pipeline.warpShader, pipeline.warpShaderFilename);
-	shaderEngine.loadShader(GL_FRAGMENT_SHADER, pipeline.compositeShader, pipeline.compositeShaderFilename);
+  // TEMP
+  // N.B. i'm actually not sure if they're always fragment shaders... I think so...  -mischa
+  //shaderEngine.loadShader(GL_FRAGMENT_SHADER, pipeline.warpShader, pipeline.warpShaderFilename);
+	//shaderEngine.loadShader(GL_FRAGMENT_SHADER, pipeline.compositeShader, pipeline.compositeShaderFilename);
 }
 
 void Renderer::ResetTextures()
