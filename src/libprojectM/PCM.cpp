@@ -42,14 +42,14 @@ int PCM::maxsamples = 2048;
 // number of samples specified.
 #include <iostream>
 PCM::PCM() {
-    initPCM( 2048 );
+    _initPCM( 2048 );
 
     #ifdef DEBUG
     std::cerr << "[PCM] MAX SAMPLES:" << maxsamples << std::endl;
     #endif
   }
 
-void PCM::initPCM(int samples) {
+void PCM::_initPCM(int samples) {
   int i;
 
     waveSmoothing = 0;
