@@ -106,7 +106,7 @@ ShaderEngine::ShaderEngine()
 
 ShaderEngine::~ShaderEngine()
 {
-    glDeleteProgram(program);
+    glDeleteProgram(programID);
 }
 
 bool ShaderEngine::checkCompileStatus(GLuint shader, const char *shaderTitle) {
@@ -119,83 +119,6 @@ bool ShaderEngine::checkCompileStatus(GLuint shader, const char *shaderTitle) {
     glGetShaderInfoLog(shader, 2048, NULL, buffer);
     std::cerr << "Failed to compile shader '" << shaderTitle << "'. Error: " << buffer << std::endl;
     return false;
-}
-
-void ShaderEngine::initShaderProgram()
-{
-    // our program
-    program = glCreateProgram();
-//    glProgramParameteri(program, GL_PROGRAM_SEPARABLE, GL_TRUE);
-    check_gl_error();
-
-    // our VAO
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    check_gl_error();
-
-    // our vertex shader
-    const char* vertexSource = R"glsl(
-    #version 150 core
-
-    in vec2 position;
-    in vec3 color;
-    out vec3 Color;
-
-    void main()
-    {
-        Color = color;
-        gl_Position = vec4(position, 0.0, 1.0);
-    }
-    )glsl";
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertexSource, NULL);
-    glCompileShader(vertexShader);
-    checkCompileStatus(vertexShader, "internal vertex shader");
-    check_gl_error();
-
-
-    // our fragment shader
-    const char* fragmentSource = R"glsl(
-    #version 150 core
-
-    in vec3 Color;
-    out vec4 outColor;
-
-    void main()
-    {
-        outColor = vec4(Color, 1.0);
-    }
-    )glsl";
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentSource, NULL);
-    glCompileShader(fragmentShader);
-    checkCompileStatus(fragmentShader, "internal fragment shader");
-    check_gl_error();
-
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragmentShader);
-    check_gl_error();
-
-    glBindFragDataLocation(program, 0, "outColor");
-    check_gl_error();
-
-    relinkProgram();
-    glUseProgram(program);
-
-    // configure vertex position input for vertex shader
-    context.positionAttribute = glGetAttribLocation(program, "position");
-//    glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(context.positionAttribute);
-    check_gl_error();
-
-    context.colorAttribute = glGetAttribLocation(program, "color");
-    glEnableVertexAttribArray(context.colorAttribute);
-    check_gl_error();
-
-
-    // TODO: pre-lookup uniform locations here and save them
-
-    printf("shader program initialized\n");
 }
 
 void ShaderEngine::setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect,
@@ -487,7 +410,7 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
         glDeleteShader(shader); // Don't leak the shader.
         return false;
     }
-    programs[&pmShader] = shader;
+    presetShaders[&pmShader] = shader;
 
    return shader;
 }
@@ -559,7 +482,7 @@ void ShaderEngine::setupUserTexture(const UserTexture* texture)
 	std::string samplerName = "sampler_" + texture->qname;
 
     // https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Binding_textures_to_samplers
-	GLint param = glGetUniformLocation(program, samplerName.c_str());
+	GLint param = glGetUniformLocation(programID, samplerName.c_str());
     if (param < 0) {
         // FIXME: turn this on and fix it.
         // i think sampler names are carrying over from previous shaders...
@@ -575,7 +498,7 @@ void ShaderEngine::setupUserTexture(const UserTexture* texture)
 	if (texture->texsizeDefined)
 	{
 		std::string texsizeName = "texsize_" + texture->name;
-        GLint textSizeParam = glGetUniformLocation(program, texsizeName.c_str());
+        GLint textSizeParam = glGetUniformLocation(programID, texsizeName.c_str());
         if (param >= 0) {
             glProgramUniform4f(textSizeParam, texture->width, texture->height, 0,
                                1 / (float) texture->width, 1 / (float) texture->height);
@@ -731,14 +654,14 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
 }
 
 void ShaderEngine::relinkProgram() {
-    glLinkProgram(program);
+    glLinkProgram(programID);
 
     GLint program_linked;
-    glGetProgramiv(program, GL_LINK_STATUS, &program_linked);
+    glGetProgramiv(programID, GL_LINK_STATUS, &program_linked);
     if (program_linked != GL_TRUE) {
         GLsizei log_length = 0;
         GLchar message[1024];
-        glGetProgramInfoLog(program, 1024, &log_length, message);
+        glGetProgramInfoLog(programID, 1024, &log_length, message);
         std::cerr << "Failed to link program: " << message << std::endl;
         return;
     }
@@ -747,10 +670,11 @@ void ShaderEngine::relinkProgram() {
 }
 
 #pragma mark Preset Shaders
-void ShaderEngine::loadPresetShader(GLenum shaderType, Shader &presetShader, std::string &shaderFilename)
+void ShaderEngine::loadPresetShader(Shader &presetShader, std::string &shaderFilename)
 {
     assert(!presetShader.enabled);
-    auto shader = compilePresetShader(shaderType, presetShader, shaderFilename);
+    // i think they're always fragment shaders? not positive -mischa
+    auto shader = compilePresetShader(GL_FRAGMENT_SHADER, presetShader, shaderFilename);
 
     if (!shader) {
         // failed to compile
@@ -766,7 +690,7 @@ void ShaderEngine::loadPresetShader(GLenum shaderType, Shader &presetShader, std
     }
 
     // turn shader on
-    glAttachShader(program, shader);
+    glAttachShader(programID, shader);
     presetShader.enabled = true;
     printf("linked shader %s\n", presetShader.presetPath.c_str());
 
@@ -781,7 +705,7 @@ void ShaderEngine::deletePresetShader(Shader &presetShader)
 
     auto shader = presetShaders[&presetShader];
     glDeleteShader(shader);
-    glDetachShader(program, shader);
+    glDetachShader(programID, shader);
     presetShader.enabled = false;
 }
 
@@ -848,10 +772,9 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
         fprintf(stderr, "Error compiling base fragment shader: %s\n", &FragmentShaderErrorMessage[0]);
     }
 
-
-
+    
     // Link the program
-    GLuint programID = glCreateProgram();
+    programID = glCreateProgram();
     glAttachShader(programID, VertexShaderID);
     glAttachShader(programID, FragmentShaderID);
     glLinkProgram(programID);
