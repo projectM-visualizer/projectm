@@ -7,10 +7,6 @@
 
 #include "pmSDL.hpp"
 
-void projectMSDL::presetSwitchedEvent(bool isHardCut, size_t index) const {
-    std::cout << "Now using preset: " << getPresetName(index) << std::endl;
-}
-
 void projectMSDL::audioInputCallbackF32(void *userdata, unsigned char *stream, int len) {
     projectMSDL *app = (projectMSDL *) userdata;
     //    printf("LEN: %i\n", len);
@@ -99,9 +95,9 @@ int projectMSDL::openAudioInput() {
 
 void projectMSDL::beginAudioCapture() {
     // allocate a buffer to store PCM data for feeding in
-//    unsigned int maxSamples = audioChannelsCount * audioSampleCount;
-    pcm()->initPCM(2048);
+    unsigned int maxSamples = audioChannelsCount * audioSampleCount;
     SDL_PauseAudioDevice(audioDeviceID, false);
+    pcm()->initPCM(2048);
 }
 
 void projectMSDL::endAudioCapture() {
@@ -232,15 +228,15 @@ projectMSDL::projectMSDL(std::string config_file, int flags) : projectM(config_f
     isFullScreen = false;
 }
 
-void projectMSDL::init(SDL_Window *window, SDL_GLContext *ctx) {
+void projectMSDL::init(SDL_Window *window, SDL_GLContext *_glCtx) {
     win = window;
-    glCtx = ctx;
+    glCtx = _glCtx;
     selectRandom(true);
     projectM_resetGL(width, height);
 }
 
-//std::string projectMSDL::getActivePresetName()
-//{
-//    return std::string("hey");
-//}
 
+std::string projectMSDL::getActivePresetName()
+{
+    return std::string("hey");
+}

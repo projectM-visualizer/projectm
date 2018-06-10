@@ -35,7 +35,7 @@ public:
 
     projectMSDL(Settings settings, int flags);
     projectMSDL(std::string config_file, int flags);
-    void init(SDL_Window *window, SDL_GLContext *ctx);
+    void init(SDL_Window *window, SDL_GLContext *glCtx);
     int openAudioInput();
     void beginAudioCapture();
     void endAudioCapture();
@@ -64,8 +64,6 @@ private:
     static void audioInputCallbackF32(void *userdata, unsigned char *stream, int len);
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
 
-    virtual void presetSwitchedEvent(bool isHardCut, size_t index) const;
-    
     void addFakePCM();
     void keyHandler(SDL_Event *);
     SDL_AudioDeviceID selectAudioInput(int count);

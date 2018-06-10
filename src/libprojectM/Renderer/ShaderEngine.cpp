@@ -10,9 +10,98 @@
 #include "BeatDetect.hpp"
 #include "HLSLTranslator.hpp"
 
+#define GLSL_VERSION "410"
+
+std::string v2f_c4f_vert(
+    "#version "
+    GLSL_VERSION
+    "\n"
+    ""
+    "layout(location = 0) in vec2 vertex_position;\n"
+    "layout(location = 1) in vec4 vertex_color;\n"
+    ""
+    "uniform mat4 vertex_transformation;\n"
+    "uniform float vertex_point_size;\n"
+    ""
+    "out vec4 fragment_color;\n"
+    ""
+    "void main(){\n"
+    "    gl_Position = vertex_transformation * vec4(vertex_position, 0.0, 1.0);\n"
+    "    gl_PointSize = vertex_point_size;\n"
+    "    fragment_color = vertex_color;\n"
+    "}\n");
+
+std::string v2f_c4f_frag(
+        "#version "
+        GLSL_VERSION
+        "\n"
+        "precision mediump float;\n"
+        ""
+        "in vec4 fragment_color;\n"
+        "out vec4 color;\n"
+        ""
+        "void main(){\n"
+        "    color = fragment_color;\n"
+        "}\n");
+
+
+std::string v2f_c4f_t2f_vert(
+        "#version "
+        GLSL_VERSION
+        "\n"
+        "layout(location = 0) in vec2 vertex_position;\n"
+        "layout(location = 1) in vec4 vertex_color;\n"
+        "layout(location = 2) in vec2 vertex_texture;\n"
+        ""
+        "uniform mat4 vertex_transformation;\n"
+        ""
+        "out vec4 fragment_color;\n"
+        "out vec2 fragment_texture;\n"
+        ""
+        "void main(){\n"
+        "    gl_Position = vertex_transformation * vec4(vertex_position, 0.0, 1.0);\n"
+        "    fragment_color = vertex_color;\n"
+        "    fragment_texture = vertex_texture;\n"
+        "}\n");
+
+std::string v2f_c4f_t2f_frag(
+        "#version "
+        GLSL_VERSION
+        "\n"
+        "precision mediump float;\n"
+        ""
+        "in vec4 fragment_color;\n"
+        "in vec2 fragment_texture;\n"
+        ""
+        "uniform sampler2D texture_sampler;\n"
+        ""
+        "out vec4 color;\n"
+        ""
+        "void main(){\n"
+        "    color = fragment_color * texture(texture_sampler, fragment_texture.st);\n"
+        "}\n");
+
+
+GLint ShaderEngine::UNIFORM_V2F_C4F_VERTEX_TRANFORMATION = 0;
+GLint ShaderEngine::UNIFORM_V2F_C4F_VERTEX_POINT_SIZE = 0;
+GLint ShaderEngine::UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION = 0;
+GLint ShaderEngine::UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER = 0;
+
+
+
 ShaderEngine::ShaderEngine()
 {
-	initShaderProgram();
+    GLuint m_temp_vao;
+    glGenVertexArrays(1, &m_temp_vao);
+    glBindVertexArray(m_temp_vao);
+
+    programID_v2f_c4f = CompileShaderProgram(v2f_c4f_vert, v2f_c4f_frag);
+    programID_v2f_c4f_t2f = CompileShaderProgram(v2f_c4f_t2f_vert, v2f_c4f_t2f_frag);
+
+    UNIFORM_V2F_C4F_VERTEX_TRANFORMATION = glGetUniformLocation(programID_v2f_c4f, "vertex_transformation");
+    UNIFORM_V2F_C4F_VERTEX_POINT_SIZE = glGetUniformLocation(programID_v2f_c4f, "vertex_point_size");
+    UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION = glGetUniformLocation(programID_v2f_c4f_t2f, "vertex_transformation");
+    UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER = glGetUniformLocation(programID_v2f_c4f_t2f, "texture_sampler");
 }
 
 ShaderEngine::~ShaderEngine()
@@ -25,7 +114,7 @@ bool ShaderEngine::checkCompileStatus(GLuint shader, const char *shaderTitle) {
     glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
     if (status == GL_TRUE)
         return true;  // success
-    
+
     char buffer[2048];
     glGetShaderInfoLog(shader, 2048, NULL, buffer);
     std::cerr << "Failed to compile shader '" << shaderTitle << "'. Error: " << buffer << std::endl;
@@ -43,11 +132,11 @@ void ShaderEngine::initShaderProgram()
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
     check_gl_error();
-    
+
     // our vertex shader
     const char* vertexSource = R"glsl(
     #version 150 core
-    
+
     in vec2 position;
     in vec3 color;
     out vec3 Color;
@@ -64,11 +153,11 @@ void ShaderEngine::initShaderProgram()
     checkCompileStatus(vertexShader, "internal vertex shader");
     check_gl_error();
 
-    
+
     // our fragment shader
     const char* fragmentSource = R"glsl(
     #version 150 core
-    
+
     in vec3 Color;
     out vec4 outColor;
 
@@ -82,28 +171,28 @@ void ShaderEngine::initShaderProgram()
     glCompileShader(fragmentShader);
     checkCompileStatus(fragmentShader, "internal fragment shader");
     check_gl_error();
-    
+
     glAttachShader(program, vertexShader);
     glAttachShader(program, fragmentShader);
     check_gl_error();
 
     glBindFragDataLocation(program, 0, "outColor");
     check_gl_error();
-    
+
     relinkProgram();
     glUseProgram(program);
-    
+
     // configure vertex position input for vertex shader
     context.positionAttribute = glGetAttribLocation(program, "position");
 //    glVertexAttribPointer(positionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(context.positionAttribute);
     check_gl_error();
-    
+
     context.colorAttribute = glGetAttribLocation(program, "color");
     glEnableVertexAttribArray(context.colorAttribute);
     check_gl_error();
 
-    
+
     // TODO: pre-lookup uniform locations here and save them
 
     printf("shader program initialized\n");
@@ -145,7 +234,7 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 #endif
-    
+
 	blur1_enabled = false;
 	blur2_enabled = false;
 	blur3_enabled = false;
@@ -234,7 +323,7 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
     }
     else
         return false;
-    
+
     // replace "{" with some variable declarations
     found = program.rfind('{');
     if (found != std::string::npos)
@@ -251,7 +340,7 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
     }
     else
         return false;
-    
+
     // replace shader_body with entry point function
     found = program.find("shader_body");
     if (found != std::string::npos)
@@ -368,7 +457,7 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
                 blur1_enabled = true;
         }
     }
-    
+
     // now we need to prepend the HLSL template to the program
 
     // transpile from HLSL (aka preset shader aka directX shader) to GLSL (aka OpenGL shader lang)
@@ -379,17 +468,16 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
         std::cerr << "Original program: " << program << std::endl;
         return false;
     }
-    
+
     // https://www.khronos.org/opengl/wiki/Shader_Compilation#Shader_object_compilation
     GLuint shader = glCreateShader(shaderType);
-    
     // Get strings for glShaderSource.
     const char *shaderSourceCStr = glslSource.get()->c_str();
     glShaderSource(shader, 1, &shaderSourceCStr, NULL);
-    
+
     // compile shader
     glCompileShader(shader);
-    
+
     // check result
     GLint isCompiled = 0;
     glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
@@ -399,10 +487,9 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
         glDeleteShader(shader); // Don't leak the shader.
         return false;
     }
-    
-//    std::cerr << "Original program: " << shaderSourceCStr << std::endl;
-    
-    return shader;
+    programs[&pmShader] = shader;
+
+   return shader;
 }
 
 
@@ -410,7 +497,7 @@ void ShaderEngine::SetupShaderVariables(GLuint program, const Pipeline &pipeline
 {
     // pass info from projectM to the shader uniforms
     // these are the inputs: http://www.geisswerks.com/milkdrop/milkdrop_preset_authoring.html#3f6
-    
+
 	GLfloat slow_roam_cos[4] =	{ 0.5f + 0.5f * (float)cos(context.time * 0.005), 0.5f + 0.5f * (float)cos(context.time * 0.008), 0.5f + 0.5f * (float)cos(context.time * 0.013), 0.5f + 0.5f * (float)cos(context.time * 0.022) };
 	GLfloat roam_cos[4] =	{ 0.5f + 0.5f * cosf(context.time * 0.3), 0.5f + 0.5f * cosf(context.time * 1.3), 0.5f + 0.5f * cosf(context.time * 5), 0.5f + 0.5f * cosf(context.time * 20) };
 	GLfloat slow_roam_sin[4] =	{ 0.5f + 0.5f * sinf(context.time * 0.005), 0.5f + 0.5f * sinf(context.time * 0.008), 0.5f + 0.5f * sinf(context.time * 0.013), 0.5f + 0.5f * sinf(context.time * 0.022) };
@@ -481,10 +568,10 @@ void ShaderEngine::setupUserTexture(const UserTexture* texture)
     }
 
     glUniform1i(param, 0);
-    
+
     glActiveTexture(GL_TEXTURE0 + 0);
     glBindTexture(GL_TEXTURE_2D, texture->texID);
-    
+
 	if (texture->texsizeDefined)
 	{
 		std::string texsizeName = "texsize_" + texture->name;
@@ -645,7 +732,7 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
 
 void ShaderEngine::relinkProgram() {
     glLinkProgram(program);
-    
+
     GLint program_linked;
     glGetProgramiv(program, GL_LINK_STATUS, &program_linked);
     if (program_linked != GL_TRUE) {
@@ -655,7 +742,7 @@ void ShaderEngine::relinkProgram() {
         std::cerr << "Failed to link program: " << message << std::endl;
         return;
     }
-    
+
     printf("LINK OK\n");
 }
 
@@ -664,25 +751,25 @@ void ShaderEngine::loadPresetShader(GLenum shaderType, Shader &presetShader, std
 {
     assert(!presetShader.enabled);
     auto shader = compilePresetShader(shaderType, presetShader, shaderFilename);
-    
+
     if (!shader) {
         // failed to compile
         return;
     }
-    
+
     presetShaders[&presetShader] = shader;
-    
+
     // pass texture info from preset to shader
     for (auto &userTexture : presetShader.textures) {
         setupUserTextureState(userTexture.second);
         setupUserTexture(userTexture.second);
     }
-    
+
     // turn shader on
     glAttachShader(program, shader);
     presetShader.enabled = true;
     printf("linked shader %s\n", presetShader.presetPath.c_str());
-    
+
     relinkProgram();
 }
 
@@ -691,7 +778,7 @@ void ShaderEngine::deletePresetShader(Shader &presetShader)
     printf("deleting shader... enabled=%d, path=%s\n", presetShader.enabled, presetShader.presetPath.c_str());
     if (! presetShader.enabled)
         return;
-        
+
     auto shader = presetShaders[&presetShader];
     glDeleteShader(shader);
     glDetachShader(program, shader);
@@ -704,7 +791,7 @@ void ShaderEngine::disablePresetShaders() {
         // nothing to do
         return;
     }
-    
+
     for (auto &i : presetShaders) {
         deletePresetShader(*i.first);
     }
@@ -720,4 +807,82 @@ void ShaderEngine::reset()
 	rand_preset[1] = (rand() % 100) * .01;
 	rand_preset[2] = (rand() % 100) * .01;
 	rand_preset[3] = (rand() % 100) * .01;
+}
+
+GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode){
+
+    // Create the shaders
+    GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+    GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
+
+    GLint Result = GL_FALSE;
+    int InfoLogLength;
+
+
+    // Compile Vertex Shader
+    char const * VertexSourcePointer = VertexShaderCode.c_str();
+    glShaderSource(VertexShaderID, 1, &VertexSourcePointer , NULL);
+    glCompileShader(VertexShaderID);
+
+    // Check Vertex Shader
+    glGetShaderiv(VertexShaderID, GL_COMPILE_STATUS, &Result);
+    glGetShaderiv(VertexShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    if ( InfoLogLength > 0 ){
+        std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
+        glGetShaderInfoLog(VertexShaderID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
+        fprintf(stderr, "Error compiling base vertex shader: %s\n", &VertexShaderErrorMessage[0]);
+    }
+
+
+    // Compile Fragment Shader
+    char const * FragmentSourcePointer = FragmentShaderCode.c_str();
+    glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer , NULL);
+    glCompileShader(FragmentShaderID);
+
+    // Check Fragment Shader
+    glGetShaderiv(FragmentShaderID, GL_COMPILE_STATUS, &Result);
+    glGetShaderiv(FragmentShaderID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    if ( InfoLogLength > 0 ){
+        std::vector<char> FragmentShaderErrorMessage(InfoLogLength+1);
+        glGetShaderInfoLog(FragmentShaderID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
+        fprintf(stderr, "Error compiling base fragment shader: %s\n", &FragmentShaderErrorMessage[0]);
+    }
+
+
+
+    // Link the program
+    GLuint programID = glCreateProgram();
+    glAttachShader(programID, VertexShaderID);
+    glAttachShader(programID, FragmentShaderID);
+    glLinkProgram(programID);
+
+    // Check the program
+    glGetProgramiv(programID, GL_LINK_STATUS, &Result);
+    glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    if ( InfoLogLength > 0 ){
+        std::vector<char> ProgramErrorMessage(InfoLogLength+1);
+        glGetProgramInfoLog(programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+        fprintf(stderr, "%s\n", &ProgramErrorMessage[0]);
+    }
+
+
+    glValidateProgram(programID);
+
+    // Check the program
+    glGetProgramiv(programID, GL_VALIDATE_STATUS, &Result);
+    glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    if ( InfoLogLength > 0 ){
+        std::vector<char> ProgramErrorMessage(InfoLogLength+1);
+        glGetProgramInfoLog(programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+        fprintf(stderr, "%s\n", &ProgramErrorMessage[0]);
+    }
+
+
+    glDetachShader(programID, VertexShaderID);
+    glDetachShader(programID, FragmentShaderID);
+
+    glDeleteShader(VertexShaderID);
+    glDeleteShader(FragmentShaderID);
+
+    return programID;
 }
