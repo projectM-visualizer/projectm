@@ -132,7 +132,6 @@ void MilkdropWaveform::ModulateOpacityByVolume(RenderContext &context)
 
 void MilkdropWaveform::MaximizeColors(RenderContext &context)
 {
-#ifndef GL_TRANSITION
 	float wave_r_switch=0, wave_g_switch=0, wave_b_switch=0;
 	//wave color brightening
 	//
@@ -189,7 +188,6 @@ void MilkdropWaveform::MaximizeColors(RenderContext &context)
 	{
         glVertexAttrib4f(1, r, g, b, temp_a * masterAlpha);
 	}
-#endif
 }
 
 
@@ -356,7 +354,7 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			rot = -mystery*90;
 			aspectScale =1.0+wave_x_temp;
 			wave_x_temp=-1*(x-1.0);
-			samples = context.beatDetect->pcm->numsamples;
+			samples = 0 ? 512-32 : context.beatDetect->pcm->numsamples;
 
 			for ( int i=0;i<  samples;i++)
 			{
@@ -378,7 +376,7 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			aspectScale =1.0+wave_x_temp;
 
 
-			samples = context.beatDetect->pcm->numsamples;
+			samples = 0 ? 512-32 : context.beatDetect->pcm->numsamples;
 			two_waves = true;
 
 			double y_adj = y*y*.5;
