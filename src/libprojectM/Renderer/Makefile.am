@@ -1,4 +1,3 @@
-SUBDIRS = hlslparser
 
 noinst_LTLIBRARIES = libRenderer.la
 

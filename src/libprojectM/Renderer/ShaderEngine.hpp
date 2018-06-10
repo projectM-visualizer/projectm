@@ -16,7 +16,6 @@ class ShaderEngine;
 #include "PipelineContext.hpp"
 #include "TextureManager.hpp"
 #include "BeatDetect.hpp"
-#include "HLSLTranslator.hpp"
 
 #include <cstdlib>
 #include <iostream>
