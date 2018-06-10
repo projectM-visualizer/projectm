@@ -61,13 +61,13 @@ Silverjuke (FOSS Jukebox)
 ```
 
 ## Linux (debian/ubuntu)
-* `sudo apt-get install autoconf libtool libsdl2-dev libglew-dev libftgl-dev libsdl2-dev libdevil-dev`
+* `sudo apt-get install autoconf libtool libsdl2-dev libglew-dev libftgl-dev libsdl2-dev libdevil-dev libglm-dev`
 
 ## FreeBSD
-* `pkg install gcc autoconf automake libtool mesa-libs libGLU sdl2`
+* `pkg install gcc autoconf automake libtool mesa-libs libGLU sdl2 glm`
 
 ## Mac OS X
-* Install the [SDL2 Framework](https://www.libsdl.org/download-2.0.php)
+* `brew install glm sdl2`
 * `./configure --enable-sdl`
 
 

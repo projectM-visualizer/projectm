@@ -75,6 +75,22 @@ public:
 	void reset();
 	void setAspect(float aspect);
     std::string profileName;
+
+    GLuint programID_v2f_c4f;
+    GLuint programID_v2f_c4f_t2f;
+
+
+    GLuint CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode);
+
+    static GLint Uniform_V2F_C4F_VertexTranformation() { return UNIFORM_V2F_C4F_VERTEX_TRANFORMATION; }
+    static GLint Uniform_V2F_C4F_VertexPointSize() { return UNIFORM_V2F_C4F_VERTEX_POINT_SIZE; }
+    static GLint Uniform_V2F_C4F_T2F_VertexTranformation() { return UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION; }
+    static GLint Uniform_V2F_C4F_T2F_FragTextureSampler() { return UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER; }
+
+    static GLint UNIFORM_V2F_C4F_VERTEX_TRANFORMATION;
+    static GLint UNIFORM_V2F_C4F_VERTEX_POINT_SIZE;
+    static GLint UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION;
+    static GLint UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER;
 };
 
 #endif /* SHADERENGINE_HPP_ */
