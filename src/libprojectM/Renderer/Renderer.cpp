@@ -158,6 +158,8 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    shaderEngine.setParams(renderTarget->texsize, renderTarget->textureID[1], aspect, beatDetect, textureManager);
 }
 
 void Renderer::SetPipeline(Pipeline &pipeline)
@@ -166,7 +168,7 @@ void Renderer::SetPipeline(Pipeline &pipeline)
 	shaderEngine.reset();
     // N.B. i'm actually not sure if they're always fragment shaders... I think so...  -mischa
     shaderEngine.loadPresetShader(pipeline.warpShader, pipeline.warpShaderFilename);
-    shaderEngine.loadPresetShader(pipeline.compositeShader, pipeline.compositeShaderFilename);
+//    shaderEngine.loadPresetShader(pipeline.compositeShader, pipeline.compositeShaderFilename);
 }
 
 void Renderer::ResetTextures()
