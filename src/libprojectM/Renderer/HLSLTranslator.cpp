@@ -5,6 +5,7 @@
 
 using namespace M4;
 
+// http://www.geisswerks.com/milkdrop/milkdrop_preset_authoring.html#3f6
 std::string HLSLShaderTemplate = ""
 "    static const float  M_PI = 3.14159265359;\n"
 "    static const float  M_PI_2 = 6.28318530718;\n"
@@ -47,9 +48,10 @@ std::string HLSLShaderTemplate = ""
 //"    #define tex3d tex3D\n"
 //
 //"    #define sampler sampler2D\n"
-//"    #define uv_orig uv\n"
 
+// get the color of a pixel rendered by the preset
 "    uniform sampler2D sampler_main;\n"
+
 "    uniform sampler2D sampler_fw_main;\n"
 "    uniform sampler2D sampler_pw_main;\n"
 "    uniform sampler2D sampler_fc_main;\n"
@@ -105,8 +107,8 @@ std::string HLSLShaderTemplate = ""
 
 //"    #define getrad sqrt((uv.x-0.5)*2*(uv.x-0.5)*2+(uv.y-0.5)*2*(uv.y-0.5)*2)*.7071067\n"
 //"    #define getang atan2(((uv.y-0.5)*2),((uv.x-0.5)*2))\n"
-//"    float rad = sqrt((uv.x-0.5)*2*(uv.x-0.5)*2+(uv.y-0.5)*2*(uv.y-0.5)*2)*.7071067;\n"
-//"    float getang = atan2(((uv.y-0.5)*2),((uv.x-0.5)*2));\n"
+"    float3 getrad(float2 uv) { return sqrt((uv.x-0.5)*2*(uv.x-0.5)*2+(uv.y-0.5)*2*(uv.y-0.5)*2)*.7071067; };\n"
+"    float3 getang(float2 uv) { return atan2(((uv.y-0.5)*2),((uv.x-0.5)*2)); };\n"
 
 //"    #define GetMain(uv) (tex2D(sampler_main,uv).xyz)\n"
 //"    #define GetPixel(uv) (tex2D(sampler_main,uv).xyz)\n"
@@ -135,9 +137,7 @@ std::string HLSLShaderTemplate = ""
 "                      a.z > b.z ? a.z : b.z );\n"
 "    }\n"
 
-"    struct outtype {float4 color : COLOR;};\n"
-"    outtype OUT;\n"
-"    float3 ret;\n\n";
+"    struct outtype {float4 color : COLOR;};\n";
 
 
 std::unique_ptr<std::string> HLSLTranslator::parse(GLenum shaderType, const char *fileName, std::string &source) {
@@ -151,7 +151,6 @@ std::unique_ptr<std::string> HLSLTranslator::parse(GLenum shaderType, const char
     fullSource.append(source);
     
     // parse
-//    std::cout << "FULL PROGRAM:\n\n****\n\n" <<  fullSource << "\n\n\n\n";
     HLSLParser parser(&allocator, fileName, fullSource.c_str(), fullSource.size());
     HLSLTree tree( &allocator );
     if( !parser.Parse(&tree) ) {
@@ -174,7 +173,7 @@ std::unique_ptr<std::string> HLSLTranslator::parse(GLenum shaderType, const char
     }
 
     // generate GLSL
-    if (!generator.Generate(&tree, GLSLGenerator::Target(shaderType), GLSLGenerator::Version, "projectm")) {
+    if (!generator.Generate(&tree, GLSLGenerator::Target(shaderType), GLSLGenerator::Version_140, "projectm")) {
         fprintf(stderr, "Failed to transpile HLSL shader to GLSL\n");
         return nullptr;
     }

@@ -164,10 +164,9 @@ void Renderer::SetPipeline(Pipeline &pipeline)
 {
 	currentPipe = &pipeline;
 	shaderEngine.reset();
-  // TEMP
-  // N.B. i'm actually not sure if they're always fragment shaders... I think so...  -mischa
-  //shaderEngine.loadShader(GL_FRAGMENT_SHADER, pipeline.warpShader, pipeline.warpShaderFilename);
-	//shaderEngine.loadShader(GL_FRAGMENT_SHADER, pipeline.compositeShader, pipeline.compositeShaderFilename);
+    // N.B. i'm actually not sure if they're always fragment shaders... I think so...  -mischa
+    shaderEngine.loadPresetShader(pipeline.warpShader, pipeline.warpShaderFilename);
+    shaderEngine.loadPresetShader(pipeline.compositeShader, pipeline.compositeShaderFilename);
 }
 
 void Renderer::ResetTextures()
@@ -291,9 +290,7 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
 
 	SetupPass1(pipeline, pipelineContext);
 
-    shaderEngine.enableShader(currentPipe->warpShader, pipeline, pipelineContext);
 	Interpolation(pipeline);
-    shaderEngine.disableShader(currentPipe->warpShader);
 
 	RenderItems(pipeline, pipelineContext);
 	FinishPass1();
@@ -760,8 +757,6 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 
     glActiveTexture(GL_TEXTURE0);
-
-    shaderEngine.enableShader(currentPipe->compositeShader, pipeline, pipelineContext);
 
     glBindVertexArray(m_vao_CompositeOutput);
 

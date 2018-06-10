@@ -242,7 +242,7 @@ public:
   }
 
   /// Occurs when active preset has switched. Switched to index is returned
-  virtual void presetSwitchedEvent(bool isHardCut, unsigned int index) const {};
+  virtual void presetSwitchedEvent(bool isHardCut, size_t index) const {};
   virtual void shuffleEnabledValueChanged(bool isEnabled) const {};
   virtual void presetSwitchFailedEvent(bool hardCut, unsigned int index, const std::string & message) const {};
 
@@ -265,6 +265,7 @@ public:
     
   int getWindowWidth() { return _settings.windowWidth; }
   int getWindowHeight() { return _settings.windowHeight; }
+
 private:
   PCM * _pcm;
   double sampledPresetDuration();
