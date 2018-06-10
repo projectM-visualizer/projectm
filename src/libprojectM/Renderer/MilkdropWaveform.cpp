@@ -109,9 +109,9 @@ void MilkdropWaveform::Draw(RenderContext &context)
 
     glBindVertexArray(0);
 
-    #ifndef GL_TRANSITION
+#ifndef GL_TRANSITION
 		if(dots==1) glDisable(GL_LINE_STIPPLE);
-	#endif
+#endif
 
 }
 
@@ -132,7 +132,6 @@ void MilkdropWaveform::ModulateOpacityByVolume(RenderContext &context)
 
 void MilkdropWaveform::MaximizeColors(RenderContext &context)
 {
-
 	float wave_r_switch=0, wave_g_switch=0, wave_b_switch=0;
 	//wave color brightening
 	//

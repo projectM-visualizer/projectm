@@ -8,6 +8,7 @@
 #include "PerlinNoise.hpp"
 #include "ShaderEngine.hpp"
 #include "BeatDetect.hpp"
+#include "HLSLTranslator.hpp"
 
 #define GLSL_VERSION "410"
 
@@ -90,14 +91,10 @@ GLint ShaderEngine::UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER = 0;
 
 ShaderEngine::ShaderEngine()
 {
-#ifdef USE_CG
-	SetupCg();
-#endif
-    
     GLuint m_temp_vao;
     glGenVertexArrays(1, &m_temp_vao);
     glBindVertexArray(m_temp_vao);
-    
+
     programID_v2f_c4f = CompileShaderProgram(v2f_c4f_vert, v2f_c4f_frag);
     programID_v2f_c4f_t2f = CompileShaderProgram(v2f_c4f_t2f_vert, v2f_c4f_t2f_frag);
 
@@ -109,10 +106,20 @@ ShaderEngine::ShaderEngine()
 
 ShaderEngine::~ShaderEngine()
 {
-	// TODO Auto-generated destructor stub
+    glDeleteProgram(programID);
 }
 
-#ifdef USE_CG
+bool ShaderEngine::checkCompileStatus(GLuint shader, const char *shaderTitle) {
+    GLint status;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+    if (status == GL_TRUE)
+        return true;  // success
+
+    char buffer[2048];
+    glGetShaderInfoLog(shader, 2048, NULL, buffer);
+    std::cerr << "Failed to compile shader '" << shaderTitle << "'. Error: " << buffer << std::endl;
+    return false;
+}
 
 void ShaderEngine::setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect,
 		TextureManager *textureManager)
@@ -125,6 +132,7 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 
 	textureManager->setTexture("main", texId, texsize, texsize);
 
+#ifndef GL_TRANSITION
 	glGenTextures(1, &blur1_tex);
 	glBindTexture(GL_TEXTURE_2D, blur1_tex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize/2, texsize/2, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
@@ -148,6 +156,7 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+#endif
 
 	blur1_enabled = false;
 	blur2_enabled = false;
@@ -156,7 +165,7 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 	//std::cout << "Generating Noise Textures" << std::endl;
 
 	PerlinNoise		*noise = new PerlinNoise;
-
+#ifndef GL_TRANSITION
 	glGenTextures(1, &noise_texture_lq_lite);
 	glBindTexture(GL_TEXTURE_2D, noise_texture_lq_lite);
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, 32, 32, 0, GL_LUMINANCE, GL_FLOAT, noise->noise_lq_lite);
@@ -219,380 +228,307 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	 textureManager->setTexture("noisevol_hq", noise_texture_hq_vol, 8, 8);
+#endif
 }
 
-bool ShaderEngine::LoadCgProgram(Shader &shader, std::string &shaderFilename)
-{
-	//if (p != NULL) cgDestroyProgram(p);
-	//p = NULL;
-	std::string program = shader.programSource;
+GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, std::string &shaderFilename) {
+    std::string program = pmShader.programSource;
 
-	if (program.length() > 0)
-	{
-		size_t found = program.rfind('}');
-		if (found != std::string::npos)
-		{
-			//std::cout << "last '}' found at: " << int(found) << std::endl;
-			program.replace(int(found), 1, "OUT.color.xyz=ret.xyz;\nOUT.color.w=1;\nreturn OUT;\n}");
-		}
-		else
-			return false;
-		found = program.rfind('{');
-		if (found != std::string::npos)
-		{
-			//std::cout << "first '{' found at: " << int(found) << std::endl;
-			program.replace(int(found), 1, "{\nfloat rad=getrad;\nfloat ang=getang;\n");
-		}
-		else
-			return false;
-		found = program.find("shader_body");
-		if (found != std::string::npos)
-		{
-			//std::cout << "first 'shader_body' found at: " << int(found) << std::endl;
-			program.replace(int(found), 11, "outtype projectm(float2 uv : TEXCOORD0)\n");
-		}
-		else
-			return false;
+    if (program.length() <= 0)
+        return false;
 
-		shader.textures.clear();
+    // replace "}" with return statement (this can probably be optimized for the GLSL conversion...)
+    size_t found = program.rfind('}');
+    if (found != std::string::npos)
+    {
+        //std::cout << "last '}' found at: " << int(found) << std::endl;
+        program.replace(int(found), 1, "OUT.color.xyz=ret.xyz;\nOUT.color.w=1;\nreturn OUT;\n}");
+    }
+    else
+        return false;
 
-		found = 0;
-		found = program.find("sampler_", found);
-		while (found != std::string::npos)
-		{
-			found += 8;
-			size_t end = program.find_first_of(" ;,\n\r)", found);
+    // replace "{" with some variable declarations
+    found = program.rfind('{');
+    if (found != std::string::npos)
+    {
+        //std::cout << "first '{' found at: " << int(found) << std::endl;
+        const char *progMain = \
+        "{\n"
+        "float2 uv_orig = uv;\n"
+        "float rad=getrad(uv);\n"
+        "float ang=getang(uv);\n"
+        "float3 ret;\n"
+        "outtype OUT;\n";
+        program.replace(int(found), 1, progMain);
+    }
+    else
+        return false;
 
-			if (end != std::string::npos)
-			{
+    // replace shader_body with entry point function
+    found = program.find("shader_body");
+    if (found != std::string::npos)
+    {
+        //std::cout << "first 'shader_body' found at: " << int(found) << std::endl;
+        program.replace(int(found), 11, "outtype projectm(float2 uv : TEXCOORD0)\n");
+    }
+    else
+        return false;
 
-				std::string sampler = program.substr((int) found, (int) end - found);
-				UserTexture* texture = new UserTexture(sampler);
+    pmShader.textures.clear();
 
-				texture->texID = textureManager->getTexture(texture->name);
-				if (texture->texID != 0)
-				{
-					texture->width = textureManager->getTextureWidth(texture->name);
-					texture->height = textureManager->getTextureHeight(texture->name);
-				}
-				else
-				{
-					if (sampler.substr(0, 4) == "rand")
-					{
-						std::string random_name = textureManager->getRandomTextureName(texture->name);
-						if (random_name.size() > 0)
-						{
-							texture->texID = textureManager->getTexture(random_name);
-							texture->width = textureManager->getTextureWidth(random_name);
-							texture->height = textureManager->getTextureHeight(random_name);
-						}
-					}
-					else
-					{
-						std::string extensions[6];
-						extensions[0] = ".jpg";
-						extensions[1] = ".dds";
-						extensions[2] = ".png";
-						extensions[3] = ".tga";
-						extensions[4] = ".bmp";
-						extensions[5] = ".dib";
+    // set up texture samplers for all samplers references in the shader program
+    found = 0;
+    found = program.find("sampler_", found);
+    while (found != std::string::npos)
+    {
+        found += 8;
+        size_t end = program.find_first_of(" ;,\n\r)", found);
 
-						for (int x = 0; x < 6; x++)
-						{
+        if (end != std::string::npos)
+        {
+            std::string sampler = program.substr((int) found, (int) end - found);
+            UserTexture* texture = new UserTexture(sampler);
 
-							std::string filename = texture->name + extensions[x];
-							texture->texID = textureManager->getTexture(filename);
-							if (texture->texID != 0)
-							{
-								texture->width = textureManager->getTextureWidth(filename);
-								texture->height = textureManager->getTextureHeight(filename);
-								break;
-							}
-						}
+            texture->texID = textureManager->getTexture(texture->name);
+            if (texture->texID != 0)
+            {
+                texture->width = textureManager->getTextureWidth(texture->name);
+                texture->height = textureManager->getTextureHeight(texture->name);
+            }
+            else
+            {
+                if (sampler.substr(0, 4) == "rand")
+                {
+                    std::string random_name = textureManager->getRandomTextureName(texture->name);
+                    if (random_name.size() > 0)
+                    {
+                        texture->texID = textureManager->getTexture(random_name);
+                        texture->width = textureManager->getTextureWidth(random_name);
+                        texture->height = textureManager->getTextureHeight(random_name);
+                    }
+                }
+                else
+                {
+                    std::string extensions[6];
+                    extensions[0] = ".jpg";
+                    extensions[1] = ".dds";
+                    extensions[2] = ".png";
+                    extensions[3] = ".tga";
+                    extensions[4] = ".bmp";
+                    extensions[5] = ".dib";
 
-					}
-				}
-				if (texture->texID != 0 && shader.textures.find(texture->qname) == shader.textures.end())
-					shader.textures[texture->qname] = texture;
+                    for (int x = 0; x < 6; x++)
+                    {
 
-				else
-					delete (texture);
+                        std::string filename = texture->name + extensions[x];
+                        texture->texID = textureManager->getTexture(filename);
+                        if (texture->texID != 0)
+                        {
+                            texture->width = textureManager->getTextureWidth(filename);
+                            texture->height = textureManager->getTextureHeight(filename);
+                            break;
+                        }
+                    }
 
-			}
+                }
+            }
+            if (texture->texID != 0 && pmShader.textures.find(texture->qname) == pmShader.textures.end())
+                pmShader.textures[texture->qname] = texture;
 
-			found = program.find("sampler_", found);
-		}
-		textureManager->clearRandomTextures();
+            else
+                delete (texture);
+        }
 
-		found = 0;
-		found = program.find("texsize_", found);
-		while (found != std::string::npos)
-		{
-			found += 8;
-			size_t end = program.find_first_of(" ;.,\n\r)", found);
+        found = program.find("sampler_", found);
+    }
+    textureManager->clearRandomTextures();
 
-			if (end != std::string::npos)
-			{
-				std::string tex = program.substr((int) found, (int) end - found);
-				if (shader.textures.find(tex) != shader.textures.end())
-				{
-					UserTexture* texture = shader.textures[tex];
-					texture->texsizeDefined = true;
-					//std::cout << "texsize_" << tex << " found" << std::endl;
-				}
-			}
-			found = program.find("texsize_", found);
-		}
+    // add texture size vars
+    found = 0;
+    found = program.find("texsize_", found);
+    while (found != std::string::npos)
+    {
+        found += 8;
+        size_t end = program.find_first_of(" ;.,\n\r)", found);
 
-		found = program.find("GetBlur3");
-		if (found != std::string::npos)
-			blur1_enabled = blur2_enabled = blur3_enabled = true;
-		else
-		{
-			found = program.find("GetBlur2");
-			if (found != std::string::npos)
-				blur1_enabled = blur2_enabled = true;
-			else
-			{
-				found = program.find("GetBlur1");
-				if (found != std::string::npos)
-					blur1_enabled = true;
-			}
-		}
+        if (end != std::string::npos)
+        {
+            std::string tex = program.substr((int) found, (int) end - found);
+            if (pmShader.textures.find(tex) != pmShader.textures.end())
+            {
+                UserTexture* texture = pmShader.textures[tex];
+                texture->texsizeDefined = true;
+                //std::cout << "texsize_" << tex << " found" << std::endl;
+            }
+        }
+        found = program.find("texsize_", found);
+    }
 
-		std::string temp;
+    // blur programs
+    found = program.find("GetBlur3");
+    if (found != std::string::npos)
+        blur1_enabled = blur2_enabled = blur3_enabled = true;
+    else
+    {
+        found = program.find("GetBlur2");
+        if (found != std::string::npos)
+            blur1_enabled = blur2_enabled = true;
+        else
+        {
+            found = program.find("GetBlur1");
+            if (found != std::string::npos)
+                blur1_enabled = true;
+        }
+    }
 
-		temp.append(cgTemplate);
-		temp.append(program);
+    // now we need to prepend the HLSL template to the program
 
-		//std::cout << "Cg: Compilation Results:" << std::endl << std::endl;
-		//std::cout << program << std::endl;
+    // transpile from HLSL (aka preset shader aka directX shader) to GLSL (aka OpenGL shader lang)
+    HLSLTranslator translator = HLSLTranslator();
+    std::unique_ptr<std::string> glslSource = translator.parse(shaderType, shaderFilename.c_str(), program);
+    if (!glslSource) {
+        std::cerr << "Failed to parse shader from " << shaderFilename << std::endl;
+        std::cerr << "Original program: " << program << std::endl;
+        return false;
+    }
 
-		CGprogram p = cgCreateProgram(myCgContext, CG_SOURCE, temp.c_str(),//temp.c_str(),
-				myCgProfile, "projectm", NULL);
+    // https://www.khronos.org/opengl/wiki/Shader_Compilation#Shader_object_compilation
+    GLuint shader = glCreateShader(shaderType);
+    // Get strings for glShaderSource.
+    const char *shaderSourceCStr = glslSource.get()->c_str();
+    glShaderSource(shader, 1, &shaderSourceCStr, NULL);
 
-		checkForCgCompileError(shaderFilename, "creating shader program");
-		if (p == NULL)
-			return false;
+    // compile shader
+    glCompileShader(shader);
 
-		cgGLLoadProgram(p);
+    // check result
+    GLint isCompiled = 0;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &isCompiled);
+    if (!checkCompileStatus(shader, shaderFilename.c_str())) {
+        // failed to compile the preset shader
+        std::cout << "Translated program: " << glslSource.get()->c_str() << std::endl;
+        glDeleteShader(shader); // Don't leak the shader.
+        return false;
+    }
+    presetShaders[&pmShader] = shader;
 
-		if (checkForCgCompileError(shaderFilename, "loading shader program"))
-		{
-			p = NULL;
-			return false;
-		}
-
-		programs[&shader] = p;
-
-		return true;
-	}
-	else
-		return false;
+   return shader;
 }
 
-bool ShaderEngine::checkForCgCompileError(std::string &context, const char *situation)
+
+void ShaderEngine::SetupShaderVariables(GLuint program, const Pipeline &pipeline, const PipelineContext &context)
 {
-	CGerror error;
-	const char *string = cgGetLastErrorString(&error);
-	error = cgGetError();
-	if (error != CG_NO_ERROR)
-	{
-		std::cout << "Cg: Compilation Error For " << context << std::endl;
-		std::cout << "Cg: " << situation << " - " << string << std::endl;
-		if (error == CG_COMPILER_ERROR)
-		{
-			std::cout << "Cg: " << cgGetLastListing(myCgContext) << std::endl;
+    // pass info from projectM to the shader uniforms
+    // these are the inputs: http://www.geisswerks.com/milkdrop/milkdrop_preset_authoring.html#3f6
 
-		}
-		return true;
-	}
+	GLfloat slow_roam_cos[4] =	{ 0.5f + 0.5f * (float)cos(context.time * 0.005), 0.5f + 0.5f * (float)cos(context.time * 0.008), 0.5f + 0.5f * (float)cos(context.time * 0.013), 0.5f + 0.5f * (float)cos(context.time * 0.022) };
+	GLfloat roam_cos[4] =	{ 0.5f + 0.5f * cosf(context.time * 0.3), 0.5f + 0.5f * cosf(context.time * 1.3), 0.5f + 0.5f * cosf(context.time * 5), 0.5f + 0.5f * cosf(context.time * 20) };
+	GLfloat slow_roam_sin[4] =	{ 0.5f + 0.5f * sinf(context.time * 0.005), 0.5f + 0.5f * sinf(context.time * 0.008), 0.5f + 0.5f * sinf(context.time * 0.013), 0.5f + 0.5f * sinf(context.time * 0.022) };
+	GLfloat roam_sin[4] =	{ 0.5f + 0.5f * sinf(context.time * 0.3), 0.5f + 0.5f * sinf(context.time * 1.3), 0.5f + 0.5f * sinf(context.time * 5), 0.5f + 0.5f * sinf(context.time * 20) };
 
-	return false;
-}
+	glProgramUniform4fv(program, glGetUniformLocation(program, "slow_roam_cos"), 4, slow_roam_cos);
+	glProgramUniform4fv(program, glGetUniformLocation(program, "roam_cos"), 4, roam_cos);
+	glProgramUniform4fv(program, glGetUniformLocation(program, "slow_roam_sin"), 4, slow_roam_sin);
+	glProgramUniform4fv(program, glGetUniformLocation(program, "roam_sin"), 4, roam_sin);
 
-void ShaderEngine::checkForCgError(const char *situation)
-{
-	CGerror error;
-	const char *string = cgGetLastErrorString(&error);
+	glProgramUniform1f(program, glGetUniformLocation(program, "time"), context.time);
+	glProgramUniform4f(program, glGetUniformLocation(program, "rand_preset"), rand_preset[0], rand_preset[1], rand_preset[2],	rand_preset[3]);
+	glProgramUniform4f(program, glGetUniformLocation(program, "rand_frame"), (rand() % 100) * .01, (rand() % 100) * .01, (rand()% 100) * .01, (rand() % 100) * .01);
+	glProgramUniform1f(program, glGetUniformLocation(program, "fps"), context.fps);
+	glProgramUniform1f(program, glGetUniformLocation(program, "frame"), context.frame);
+	glProgramUniform1f(program, glGetUniformLocation(program, "progress"), context.progress);
 
-	if (error != CG_NO_ERROR)
-	{
-		std::cout << "Cg: %" << situation << " - " << string << std::endl;
-		if (error == CG_COMPILER_ERROR)
-		{
-			std::cout << "Cg: " << cgGetLastListing(myCgContext) << std::endl;
-		}
-		exit(1);
-	}
-}
+	glProgramUniform1f(program, glGetUniformLocation(program, "blur1_min"), pipeline.blur1n);
+	glProgramUniform1f(program, glGetUniformLocation(program, "blur1_max"), pipeline.blur1x);
+	glProgramUniform1f(program, glGetUniformLocation(program, "blur2_min"), pipeline.blur2n);
+	glProgramUniform1f(program, glGetUniformLocation(program, "blur2_max"), pipeline.blur2x);
+	glProgramUniform1f(program, glGetUniformLocation(program, "blur3_min"), pipeline.blur3n);
+	glProgramUniform1f(program, glGetUniformLocation(program, "blur3_max"), pipeline.blur3x);
 
-void ShaderEngine::SetupCg()
-{
-	std::string line;
-	std::ifstream myfile(DATADIR_PATH "/shaders/projectM.cg");
-	if (myfile.is_open())
-	{
-		while (!myfile.eof())
-		{
-			std::getline(myfile, line);
-			cgTemplate.append(line + "\n");
-		}
-		myfile.close();
-	}
+	glProgramUniform1f(program, glGetUniformLocation(program, "bass"), beatDetect->bass);
+	glProgramUniform1f(program, glGetUniformLocation(program, "mid"), beatDetect->mid);
+	glProgramUniform1f(program, glGetUniformLocation(program, "treb"), beatDetect->treb);
+	glProgramUniform1f(program, glGetUniformLocation(program, "bass_att"), beatDetect->bass_att);
+	glProgramUniform1f(program, glGetUniformLocation(program, "mid_att"), beatDetect->mid_att);
+	glProgramUniform1f(program, glGetUniformLocation(program, "treb_att"), beatDetect->treb_att);
+	glProgramUniform1f(program, glGetUniformLocation(program, "vol"), beatDetect->vol);
+	glProgramUniform1f(program, glGetUniformLocation(program, "vol_att"), beatDetect->vol);
 
-	else
-      std::cout << "Unable to load shader template \"" << DATADIR_PATH << "/shaders/projectM.cg\"" << std::endl;
-
-	std::ifstream myfile2(DATADIR_PATH "/shaders/blur.cg");
-	if (myfile2.is_open())
-	{
-		while (!myfile2.eof())
-		{
-			std::getline(myfile2, line);
-			blurProgram.append(line + "\n");
-		}
-		myfile2.close();
-	}
-
-	else
-		std::cout << "Unable to load blur template" << std::endl;
-
-	myCgContext = cgCreateContext();
-	checkForCgError("creating context");
-	cgGLSetDebugMode(CG_FALSE);
-	cgSetParameterSettingMode(myCgContext, CG_DEFERRED_PARAMETER_SETTING);
-
-	myCgProfile = cgGLGetLatestProfile(CG_GL_FRAGMENT);
-
-	// HACK breaks with buggy ati video drivers such as my own
-	// -carmelo.piccione@gmail.com 7/26/2010
-    cgGLSetOptimalOptions(myCgProfile);
-	checkForCgError("selecting fragment profile");
-
-	profileName = cgGetProfileString(myCgProfile);
-	std::cout << "Cg: Initialized profile: " << profileName << std::endl;
-//std::cout<< blurProgram.c_str()<<std::endl;
-	blur1Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blur1", NULL);
-
-    std::string blur1Filename = "blur1";
-    checkForCgCompileError(blur1Filename, "creating blur1 program");
-	if (blur1Program == NULL)
-		exit(1);
-	cgGLLoadProgram(blur1Program);
-
-	checkForCgError("loading blur1 program");
-
-	blur2Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blurVert", NULL);
-
-    std::string blur2Filename = "blur2";
-	checkForCgCompileError(blur2Filename, "creating blur2 program");
-	if (blur2Program == NULL)
-		exit(1);
-	cgGLLoadProgram(blur2Program);
-
-	checkForCgError("loading blur2 program");
-
-}
-
-void ShaderEngine::SetupCgVariables(CGprogram program, const Pipeline &pipeline, const PipelineContext &context)
-{
-
-	double slow_roam_cos[4] =	{ 0.5 + 0.5 * cos(context.time * 0.005), 0.5 + 0.5 * cos(context.time * 0.008), 0.5 + 0.5 * cos(context.time * 0.013), 0.5 + 0.5 * cos(context.time * 0.022) };
-	double roam_cos[4] =	{ 0.5 + 0.5 * cos(context.time * 0.3), 0.5 + 0.5 * cos(context.time * 1.3), 0.5 + 0.5 * cos(context.time * 5), 0.5	+ 0.5 * cos(context.time * 20) };
-	double slow_roam_sin[4] =	{ 0.5 + 0.5 * sin(context.time * 0.005), 0.5 + 0.5 * sin(context.time * 0.008), 0.5 + 0.5 * sin(context.time * 0.013), 0.5 + 0.5 * sin(context.time * 0.022) };
-	double roam_sin[4] =	{ 0.5 + 0.5 * sin(context.time * 0.3), 0.5 + 0.5 * sin(context.time * 1.3), 0.5 + 0.5 * sin(context.time * 5), 0.5	+ 0.5 * sin(context.time * 20) };
-
-	cgGLSetParameter4dv(cgGetNamedParameter(program, "slow_roam_cos"), slow_roam_cos);
-	cgGLSetParameter4dv(cgGetNamedParameter(program, "roam_cos"), roam_cos);
-	cgGLSetParameter4dv(cgGetNamedParameter(program, "slow_roam_sin"), slow_roam_sin);
-	cgGLSetParameter4dv(cgGetNamedParameter(program, "roam_sin"), roam_sin);
-
-	cgGLSetParameter1f(cgGetNamedParameter(program, "time"), context.time);
-	cgGLSetParameter4f(cgGetNamedParameter(program, "rand_preset"), rand_preset[0], rand_preset[1], rand_preset[2],	rand_preset[3]);
-	cgGLSetParameter4f(cgGetNamedParameter(program, "rand_frame"), (rand() % 100) * .01, (rand() % 100) * .01, (rand()% 100) * .01, (rand() % 100) * .01);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "fps"), context.fps);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "frame"), context.frame);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "progress"), context.progress);
-
-	cgGLSetParameter1f(cgGetNamedParameter(program, "blur1_min"), pipeline.blur1n);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "blur1_max"), pipeline.blur1x);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "blur2_min"), pipeline.blur2n);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "blur2_max"), pipeline.blur2x);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "blur3_min"), pipeline.blur3n);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "blur3_max"), pipeline.blur3x);
-
-	cgGLSetParameter1f(cgGetNamedParameter(program, "bass"), beatDetect->bass);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "mid"), beatDetect->mid);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "treb"), beatDetect->treb);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "bass_att"), beatDetect->bass_att);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "mid_att"), beatDetect->mid_att);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "treb_att"), beatDetect->treb_att);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "vol"), beatDetect->vol);
-	cgGLSetParameter1f(cgGetNamedParameter(program, "vol_att"), beatDetect->vol);
-
-	cgGLSetParameter4f(cgGetNamedParameter(program, "texsize"), texsize, texsize, 1 / (float) texsize, 1
+	glProgramUniform4f(program, glGetUniformLocation(program, "texsize"), texsize, texsize, 1 / (float) texsize, 1
 			/ (float) texsize);
-	cgGLSetParameter4f(cgGetNamedParameter(program, "aspect"), 1 / aspect, 1, aspect, 1);
+	glProgramUniform4f(program, glGetUniformLocation(program, "aspect"), 1 / aspect, 1, aspect, 1);
 
+    /*
 	if (blur1_enabled)
 	{
-		cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_blur1"), blur1_tex);
-		cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_blur1"));
+		cgGLSetTextureParameter(program, glGetUniformLocation(program, "sampler_blur1"), blur1_tex);
+		cgGLEnableTextureParameter(program, glGetUniformLocation(program, "sampler_blur1"));
 	}
 	if (blur2_enabled)
 	{
-		cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_blur2"), blur2_tex);
-		cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_blur2"));
+		cgGLSetTextureParameter(glGetUniformLocation(program, "sampler_blur2"), blur2_tex);
+		cgGLEnableTextureParameter(glGetUniformLocation(program, "sampler_blur2"));
 	}
 	if (blur3_enabled)
 	{
-		cgGLSetTextureParameter(cgGetNamedParameter(program, "sampler_blur3"), blur3_tex);
-		cgGLEnableTextureParameter(cgGetNamedParameter(program, "sampler_blur3"));
+		cgGLSetTextureParameter(glGetUniformLocation(program, "sampler_blur3"), blur3_tex);
+		cgGLEnableTextureParameter(glGetUniformLocation(program, "sampler_blur3"));
 	}
-
+     */
 }
 
-void ShaderEngine::SetupUserTexture(CGprogram program, const UserTexture* texture)
+void ShaderEngine::setupUserTexture(const UserTexture* texture)
 {
 	std::string samplerName = "sampler_" + texture->qname;
 
-	CGparameter param = cgGetNamedParameter(program, samplerName.c_str());
-	checkForCgError("getting parameter");
-	cgGLSetTextureParameter(param, texture->texID);
-	checkForCgError("setting parameter");
-	cgGLEnableTextureParameter(param);
-	checkForCgError("enabling parameter");
-	//std::cout<<texture->texID<<" "<<samplerName<<std::endl;
+    // https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Binding_textures_to_samplers
+	GLint param = glGetUniformLocation(programID, samplerName.c_str());
+    if (param < 0) {
+        // FIXME: turn this on and fix it.
+        // i think sampler names are carrying over from previous shaders...
+//        std::cerr << "invalid uniform name " << samplerName << std::endl;
+        return;
+    }
+
+    glUniform1i(param, 0);
+
+    glActiveTexture(GL_TEXTURE0 + 0);
+    glBindTexture(GL_TEXTURE_2D, texture->texID);
 
 	if (texture->texsizeDefined)
 	{
 		std::string texsizeName = "texsize_" + texture->name;
-		cgGLSetParameter4f(cgGetNamedParameter(program, texsizeName.c_str()), texture->width, texture->height, 1
-				/ (float) texture->width, 1 / (float) texture->height);
-		checkForCgError("setting parameter texsize");
+        GLint textSizeParam = glGetUniformLocation(programID, texsizeName.c_str());
+        if (param >= 0) {
+            glProgramUniform4f(textSizeParam, texture->width, texture->height, 0,
+                               1 / (float) texture->width, 1 / (float) texture->height);
+        } else {
+            std::cerr << "invalid texsizeName " << texsizeName << std::endl;
+            return;
+        }
 	}
 }
 
-void ShaderEngine::SetupUserTextureState( const UserTexture* texture)
+void ShaderEngine::setupUserTextureState( const UserTexture* texture)
 {
-	    glBindTexture(GL_TEXTURE_2D, texture->texID);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture->wrap ? GL_REPEAT : GL_CLAMP);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->wrap ? GL_REPEAT : GL_CLAMP);
+    glBindTexture(GL_TEXTURE_2D, texture->texID);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
+#ifndef GL_TRANSITION
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture->wrap ? GL_REPEAT : GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->wrap ? GL_REPEAT : GL_CLAMP);
+#endif
 }
 
-void ShaderEngine::SetupCgQVariables(CGprogram program, const Pipeline &q)
+void ShaderEngine::SetupShaderQVariables(GLuint program, const Pipeline &q)
 {
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qa"), q.q[0], q.q[1], q.q[2], q.q[3]);
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qb"), q.q[4], q.q[5], q.q[6], q.q[7]);
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qc"), q.q[8], q.q[9], q.q[10], q.q[11]);
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qd"), q.q[12], q.q[13], q.q[14], q.q[15]);
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qe"), q.q[16], q.q[17], q.q[18], q.q[19]);
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qf"), q.q[20], q.q[21], q.q[22], q.q[23]);
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qg"), q.q[24], q.q[25], q.q[26], q.q[27]);
-		cgGLSetParameter4f(cgGetNamedParameter(program, "_qh"), q.q[28], q.q[29], q.q[30], q.q[31]);
+    // set program uniform "q" values (q1, q2, ... q32)
+    for (int i=0; i < 32; i++) {
+        std::string varName = "q";
+        varName.append(std::to_string(i+1));
+        int loc = glGetUniformLocation(program, varName.c_str());
+        glProgramUniform1f(program, loc, q.q[i]);
+    }
 }
 
 void ShaderEngine::setAspect(float aspect)
@@ -602,6 +538,7 @@ void ShaderEngine::setAspect(float aspect)
 void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineContext &pipelineContext,
 		const int texsize)
 {
+#ifndef GL_TRANSITION
 	if (blur1_enabled || blur2_enabled || blur3_enabled)
 	{
 		float tex[4][2] =
@@ -622,14 +559,11 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glTexCoordPointer(2, GL_FLOAT, 0, tex);
 
-		cgGLEnableProfile(myCgProfile);
-		checkForCgError("enabling profile");
-
 		if (blur1_enabled)
 		{
-			cgGLSetParameter4f(cgGetNamedParameter(blur1Program, "srctexsize"), texsize/2, texsize/2, 2 / (float) texsize,
+			glProgramUniform4f(glGetUniformLocation(blur1Program, "srctexsize"), 4, texsize/2, texsize/2, 2 / (float) texsize,
 					2 / (float) texsize);
-			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize/2 , texsize/2, 2 / (float) texsize,
+			glProgramUniform4f(glGetUniformLocation(blur2Program, "srctexsize"), 4, texsize/2 , texsize/2, 2 / (float) texsize,
 								2 / (float) texsize);
 
 
@@ -647,8 +581,7 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
 						{ 0.5, 0 },
 						{ 0.5, 0.5 } };
 
-			cgGLBindProgram(blur1Program);
-						checkForCgError("binding blur1 program");
+//            cgGLBindProgram(blur1Program);
 
 			glVertexPointer(2, GL_FLOAT, 0, points);
 			glBlendFunc(GL_ONE,GL_ZERO);
@@ -663,9 +596,9 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
 
 		if (blur2_enabled)
 		{
-			cgGLSetParameter4f(cgGetNamedParameter(blur1Program, "srctexsize"), texsize/2, texsize/2, 2 / (float) texsize,
+			glProgramUniform4f(glGetUniformLocation(blur1Program, "srctexsize"), 4, texsize/2, texsize/2, 2 / (float) texsize,
 								2 / (float) texsize);
-			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize/2, texsize/2, 2 / (float) texsize,
+			glProgramUniform4f(glGetUniformLocation(blur2Program, "srctexsize"), 4, texsize/2, texsize/2, 2 / (float) texsize,
 					2 / (float) texsize);
 
 
@@ -691,9 +624,9 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
 
 		if (blur3_enabled)
 		{
-			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize/4, texsize/4, 4 / (float) texsize,
+			glProgramUniform4f(glGetUniformLocation(blur2Program, "srctexsize"), 4, texsize/4, texsize/4, 4 / (float) texsize,
 								4/ (float) texsize);
-			cgGLSetParameter4f(cgGetNamedParameter(blur2Program, "srctexsize"), texsize / 4, texsize / 4, 4
+			glProgramUniform4f(glGetUniformLocation(blur2Program, "srctexsize"), 4, texsize / 4, texsize / 4, 4
 					/ (float) texsize, 4 / (float) texsize);
 			float points[4][2] =
 			{
@@ -713,81 +646,92 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
 
 
 		}
-
-
-			cgGLUnbindProgram(myCgProfile);
-			checkForCgError("unbinding blur2 program");
-
-
-		cgGLDisableProfile(myCgProfile);
-		checkForCgError("disabling blur profile");
-
 		glDisable(GL_TEXTURE_2D);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	}
+#endif
 }
 
-void ShaderEngine::loadShader(Shader &shader, std::string &shaderFilename)
-{
-	if (shader.enabled)
-	{
-		cgDestroyProgram(programs[&shader]);
-		programs.erase(&shader);
-	}
-	shader.enabled = LoadCgProgram(shader, shaderFilename);
+void ShaderEngine::relinkProgram() {
+    glLinkProgram(programID);
+
+    GLint program_linked;
+    glGetProgramiv(programID, GL_LINK_STATUS, &program_linked);
+    if (program_linked != GL_TRUE) {
+        GLsizei log_length = 0;
+        GLchar message[1024];
+        glGetProgramInfoLog(programID, 1024, &log_length, message);
+        std::cerr << "Failed to link program: " << message << std::endl;
+        return;
+    }
+
+    printf("LINK OK\n");
 }
 
-void ShaderEngine::disableShader()
+#pragma mark Preset Shaders
+void ShaderEngine::loadPresetShader(Shader &presetShader, std::string &shaderFilename)
 {
-	if (enabled)
-	{
-		cgGLUnbindProgram(myCgProfile);
-		checkForCgError("disabling fragment profile");
-		cgGLDisableProfile(myCgProfile);
-		checkForCgError("disabling fragment profile");
-	}
-	enabled = false;
+    assert(!presetShader.enabled);
+    // i think they're always fragment shaders? not positive -mischa
+    auto shader = compilePresetShader(GL_FRAGMENT_SHADER, presetShader, shaderFilename);
+
+    if (!shader) {
+        // failed to compile
+        return;
+    }
+
+    presetShaders[&presetShader] = shader;
+
+    // pass texture info from preset to shader
+    for (auto &userTexture : presetShader.textures) {
+        setupUserTextureState(userTexture.second);
+        setupUserTexture(userTexture.second);
+    }
+
+    // turn shader on
+    glAttachShader(programID, shader);
+    presetShader.enabled = true;
+    printf("linked shader %s\n", presetShader.presetPath.c_str());
+
+    relinkProgram();
 }
 
-void ShaderEngine::enableShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext)
+void ShaderEngine::deletePresetShader(Shader &presetShader)
 {
-	enabled = false;
-	if (shader.enabled)
-	{
+    printf("deleting shader... enabled=%d, path=%s\n", presetShader.enabled, presetShader.presetPath.c_str());
+    if (! presetShader.enabled)
+        return;
 
-		for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos	!= shader.textures.end(); ++pos)
-							SetupUserTextureState( pos->second);
+    auto shader = presetShaders[&presetShader];
+    glDeleteShader(shader);
+    glDetachShader(programID, shader);
+    presetShader.enabled = false;
+}
 
+// disable all preset shaders
+void ShaderEngine::disablePresetShaders() {
+    if (presetShaders.size() == 0) {
+        // nothing to do
+        return;
+    }
 
-		CGprogram program = programs[&shader];
-		for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos
-						!= shader.textures.end(); ++pos)
-					SetupUserTexture(program, pos->second);
-
-		cgGLEnableProfile(myCgProfile);
-		checkForCgError("enabling warp profile");
-
-		cgGLBindProgram(program);
-		checkForCgError("binding warp program");
-
-		SetupCgVariables(program, pipeline, pipelineContext);
-		SetupCgQVariables(program, pipeline);
-
-		enabled = true;
-	}
+    for (auto &i : presetShaders) {
+        deletePresetShader(*i.first);
+    }
+    presetShaders.clear();
+    printf("DISABLED ALL\n");
+    relinkProgram();
 }
 
 void ShaderEngine::reset()
 {
+    disablePresetShaders();
 	rand_preset[0] = (rand() % 100) * .01;
 	rand_preset[1] = (rand() % 100) * .01;
 	rand_preset[2] = (rand() % 100) * .01;
 	rand_preset[3] = (rand() % 100) * .01;
 }
-
-#endif
-
 
 GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode){
 
@@ -828,10 +772,9 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
         fprintf(stderr, "Error compiling base fragment shader: %s\n", &FragmentShaderErrorMessage[0]);
     }
 
-
-
+    
     // Link the program
-    GLuint programID = glCreateProgram();
+    programID = glCreateProgram();
     glAttachShader(programID, VertexShaderID);
     glAttachShader(programID, FragmentShaderID);
     glLinkProgram(programID);

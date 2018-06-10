@@ -11,92 +11,72 @@
 #include "Common.hpp"
 #include "projectM-opengl.h"
 
-#ifdef USE_CG
-#include <Cg/cg.h>
-#include <Cg/cgGL.h>
-#endif
-
-
+class ShaderEngine;
 #include "Pipeline.hpp"
 #include "PipelineContext.hpp"
-class ShaderEngine;
 #include "TextureManager.hpp"
+#include "BeatDetect.hpp"
+#include "HLSLTranslator.hpp"
 
 #include <cstdlib>
 #include <iostream>
 #include <map>
+#include <sstream>
 #include "Shader.hpp"
 class ShaderEngine
 {
-#ifdef USE_CG
+    unsigned int mainTextureId;
+    int texsize;
+    float aspect;
+    BeatDetect *beatDetect;
+    TextureManager *textureManager;
 
+    GLuint noise_texture_lq_lite;
+    GLuint noise_texture_lq;
+    GLuint noise_texture_mq;
+    GLuint noise_texture_hq;
+    GLuint noise_texture_perlin;
+    GLuint noise_texture_lq_vol;
+    GLuint noise_texture_hq_vol;
 
-  unsigned int mainTextureId;
-  int texsize;
-  float aspect;
-  BeatDetect *beatDetect;
-  TextureManager *textureManager;
+    bool blur1_enabled;
+    bool blur2_enabled;
+    bool blur3_enabled;
+    GLuint blur1_tex;
+    GLuint blur2_tex;
+    GLuint blur3_tex;
 
-  GLuint noise_texture_lq_lite;
-  GLuint noise_texture_lq;
-  GLuint noise_texture_mq;
-  GLuint noise_texture_hq;
-  GLuint noise_texture_perlin;
-  GLuint noise_texture_lq_vol;
-  GLuint noise_texture_hq_vol;
+    float rand_preset[4];
 
-  bool blur1_enabled;
-  bool blur2_enabled;
-  bool blur3_enabled;
-  GLuint blur1_tex;
-  GLuint blur2_tex;
-  GLuint blur3_tex;
+    GLuint   blur1Program;
+    GLuint   blur2Program;
 
-  float rand_preset[4];
+    std::map<Shader*, GLuint> presetShaders;
 
-  CGcontext   myCgContext;
-  CGprofile myCgProfile;
-  CGprogram   blur1Program;
-  CGprogram   blur2Program;
+    void SetupShaderQVariables(GLuint program, const Pipeline &q);
+    void SetupShaderVariables(GLuint program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
+    void setupUserTexture(const UserTexture* texture);
+    void setupUserTextureState(const UserTexture* texture);
+    GLuint compilePresetShader(GLenum shaderType, Shader &shader, std::string &shaderFilename);
+    bool checkCompileStatus(GLuint shader, const char *shaderTitle);
+    void relinkProgram();
+    void disablePresetShaders();
 
-  bool enabled;
-
-  std::map<Shader*,CGprogram> programs;
-
-   std::string cgTemplate;
-   std::string blurProgram;
-
- bool LoadCgProgram(Shader &shader, std::string &shaderFilename);
- bool checkForCgCompileError(std::string &context, const char *situation);
- void checkForCgError(const char *situation);
-
- void SetupCg();
- void SetupCgVariables(CGprogram program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
- void SetupCgQVariables(CGprogram program, const Pipeline &pipeline);
-
- void SetupUserTexture(CGprogram program, const UserTexture* texture);
- void SetupUserTextureState(const UserTexture* texture);
-
-
-
-#endif
 public:
 	ShaderEngine();
 	virtual ~ShaderEngine();
-#ifdef USE_CG
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext, const int texsize);
-	void loadShader(Shader &shader, std::string &shaderFilename);
+	void loadPresetShader(Shader &shader, std::string &shaderFilename);
+    void deletePresetShader(Shader &shader);
 
 	void setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect, TextureManager *textureManager);
-	void enableShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
-	void disableShader();
 	void reset();
 	void setAspect(float aspect);
     std::string profileName;
 
-#endif
     GLuint programID_v2f_c4f;
     GLuint programID_v2f_c4f_t2f;
+    GLuint programID;
 
 
     GLuint CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode);
@@ -110,7 +90,6 @@ public:
     static GLint UNIFORM_V2F_C4F_VERTEX_POINT_SIZE;
     static GLint UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION;
     static GLint UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER;
-
 };
 
 #endif /* SHADERENGINE_HPP_ */

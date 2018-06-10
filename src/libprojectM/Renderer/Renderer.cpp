@@ -109,10 +109,6 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
     renderContext.programID_v2f_c4f = shaderEngine.programID_v2f_c4f;
     renderContext.programID_v2f_c4f_t2f = shaderEngine.programID_v2f_c4f_t2f;
 
-#ifdef USE_CG
-	shaderEngine.setParams(renderTarget->texsize, renderTarget->textureID[1], aspect, beatDetect, textureManager);
-#endif
-
     // Interpolation VAO/VBO's
     glGenBuffers(1, &m_vbo_Interpolation);
     glGenVertexArrays(1, &m_vao_Interpolation);
@@ -162,17 +158,15 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 }
 
 void Renderer::SetPipeline(Pipeline &pipeline)
 {
 	currentPipe = &pipeline;
-#ifdef USE_CG
 	shaderEngine.reset();
-	shaderEngine.loadShader(pipeline.warpShader, pipeline.warpShaderFilename);
-	shaderEngine.loadShader(pipeline.compositeShader, pipeline.compositeShaderFilename);
-#endif
+    // N.B. i'm actually not sure if they're always fragment shaders... I think so...  -mischa
+    shaderEngine.loadPresetShader(pipeline.warpShader, pipeline.warpShaderFilename);
+    shaderEngine.loadPresetShader(pipeline.compositeShader, pipeline.compositeShaderFilename);
 }
 
 void Renderer::ResetTextures()
@@ -194,9 +188,7 @@ void Renderer::SetupPass1(const Pipeline &pipeline, const PipelineContext &pipel
 
     renderContext.mat_ortho = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -40.0f, 40.0f);
 
-#ifdef USE_CG
 	shaderEngine.RenderBlurTextures(pipeline, pipelineContext, renderTarget->texsize);
-#endif
 }
 
 void Renderer::RenderItems(const Pipeline &pipeline, const PipelineContext &pipelineContext)
@@ -298,13 +290,7 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
 
 	SetupPass1(pipeline, pipelineContext);
 
-#ifdef USE_CG
-	shaderEngine.enableShader(currentPipe->warpShader, pipeline, pipelineContext);
-#endif
 	Interpolation(pipeline);
-#ifdef USE_CG
-	shaderEngine.disableShader();
-#endif
 
 	RenderItems(pipeline, pipelineContext);
 	FinishPass1();
@@ -459,9 +445,7 @@ void Renderer::reset(int w, int h)
 	this -> vw = w;
 	this -> vh = h;
 
-#if USE_CG
 	shaderEngine.setAspect(aspect);
-#endif
 
 	glCullFace(GL_BACK);
 	//glFrontFace( GL_CCW );
@@ -722,8 +706,8 @@ void Renderer::draw_stats()
 	glRasterPos2f(0, -.25 + offset);
 	sprintf(buffer, "      textures: %.1fkB", textureManager->getTextureMemorySize() / 1000.0f);
 	other_font->Render(buffer);
-#ifdef USE_CG
-	glRasterPos2f(0, -.29 + offset);
+
+    glRasterPos2f(0, -.29 + offset);
 	sprintf(buffer, "shader profile: %s", shaderEngine.profileName.c_str());
 	other_font->Render(buffer);
 
@@ -734,8 +718,8 @@ void Renderer::draw_stats()
 	glRasterPos2f(0, -.37 + offset);
 	sprintf(buffer, "   comp shader: %s", currentPipe->compositeShader.enabled ? "on" : "off");
 	other_font->Render(buffer);
-#endif
-	glPopMatrix();
+
+    glPopMatrix();
 	// glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 
@@ -774,10 +758,6 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
 
     glActiveTexture(GL_TEXTURE0);
 
-#ifdef USE_CG
-	shaderEngine.enableShader(currentPipe->compositeShader, pipeline, pipelineContext);
-#endif
-
     glBindVertexArray(m_vao_CompositeOutput);
 
     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
@@ -786,13 +766,8 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-#ifdef USE_CG
-	shaderEngine.disableShader();
-#endif
-
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.compositeDrawables.begin(); pos
 			!= pipeline.compositeDrawables.end(); ++pos)
 		(*pos)->Draw(renderContext);
 
 }
-
