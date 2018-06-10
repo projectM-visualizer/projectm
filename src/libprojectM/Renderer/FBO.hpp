@@ -49,7 +49,6 @@ public:
   void unlock();
   GLuint initRenderToTexture();
   int nearestPower2( int value, TextureScale scaleRule );
-  void fallbackRescale(int width, int height);
 
     /** Opaque pbuffer context and pbuffer */
 /*

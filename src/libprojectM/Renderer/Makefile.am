@@ -40,6 +40,7 @@ libRenderer_la_SOURCES = \
 	SOIL2/stb_image_write.h SOIL2/stbi_pvr_c.h
 
 libRenderer_la_CPPFLAGS = ${my_CFLAGS} \
+	-include $(top_builddir)/config.h \
 	-I$(top_srcdir)/src/libprojectM \
   ${FTGL_CFLAGS} ${CG_CFLAGS}
 

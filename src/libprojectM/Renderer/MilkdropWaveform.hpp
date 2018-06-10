@@ -42,7 +42,9 @@ public:
 	float smoothing;
 
 	MilkdropWaveform();
+    ~MilkdropWaveform();
 	void Draw(RenderContext &context);
+    void InitVertexAttrib();
 
 	float modOpacityStart;
 	float modOpacityEnd;
