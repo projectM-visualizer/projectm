@@ -10,70 +10,109 @@
 #include "MilkdropWaveform.hpp"
 #include "math.h"
 #include "BeatDetect.hpp"
+#include "ShaderEngine.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 MilkdropWaveform::MilkdropWaveform(): RenderItem(),
 	x(0.5), y(0.5), r(1), g(0), b(0), a(1), mystery(0), mode(Line), scale(10), smoothing(0), rot(0), samples(0),modOpacityStart(0),modOpacityEnd(1),
-	modulateAlphaByVolume(false), maximizeColors(false), additive(false), dots(false), thick(false), loop(false) {}
+    modulateAlphaByVolume(false), maximizeColors(false), additive(false), dots(false), thick(false), loop(false) {
+
+    Init();
+}
+
+MilkdropWaveform::~MilkdropWaveform() {
+}
+
+void MilkdropWaveform::InitVertexAttrib() {
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glDisableVertexAttribArray(1);
+
+}
+
 
 void MilkdropWaveform::Draw(RenderContext &context)
 {
 	  WaveformMath(context);
 
-	#ifndef EMSCRIPTEN
-		glMatrixMode( GL_MODELVIEW );
-	#endif
-		glPushMatrix();
-		glLoadIdentity();
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-		if(modulateAlphaByVolume) ModulateOpacityByVolume(context);
-		else temp_a = a;
-		MaximizeColors(context);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * samples * 2, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * samples * 2, wavearray, GL_DYNAMIC_DRAW);
 
-	#ifndef USE_GLES1
-		if(dots==1) glEnable(GL_LINE_STIPPLE);
-	#endif
+    if (two_waves) {
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * samples * 2, NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * samples * 2, wavearray2, GL_DYNAMIC_DRAW);
+    }
 
-		//Thick wave drawing
-		if (thick==1)  glLineWidth( (context.texsize < 512 ) ? 2 : 2*context.texsize/512);
-		else glLineWidth( (context.texsize < 512 ) ? 1 : context.texsize/512);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		//Additive wave drawing (vice overwrite)
-		if (additive==1)glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		else glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glUseProgram(context.programID_v2f_c4f);
+
+    glm::mat4 mat_first_translation = glm::mat4(1.0);
+    mat_first_translation[3][0] = -0.5;
+    mat_first_translation[3][1] = -0.5;
+
+    glm::mat4  mat_scale = glm::mat4(1.0);
+    mat_scale[0][0] = aspectScale;
+
+    float s = glm::sin(glm::radians(-rot));
+    float c = glm::cos(glm::radians(-rot));
+    glm::mat4  mat_rotation = glm::mat4( c,-s, 0, 0,
+                                         s, c, 0, 0,
+                                         0, 0, 1, 0,
+                                         0, 0, 0, 1);
+
+    glm::mat4  mat_second_translation = glm::mat4(1.0);
+    mat_second_translation[3][0] = 0.5;
+    mat_second_translation[3][1] = 0.5;
+
+    glm::mat4 mat_vertex = context.mat_ortho;
+    mat_vertex = mat_first_translation * mat_vertex;
+    mat_vertex = mat_scale * mat_vertex;
+    mat_vertex = mat_rotation * mat_vertex;
+    mat_vertex = mat_second_translation * mat_vertex;
+    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(mat_vertex));
+
+    if(modulateAlphaByVolume) ModulateOpacityByVolume(context);
+    else temp_a = a;
+    MaximizeColors(context);
+
+#ifndef GL_TRANSITION
+    if(dots==1) glEnable(GL_LINE_STIPPLE);
+#endif
+
+    //Thick wave drawing
+    if (thick==1)  glLineWidth( (context.texsize < 512 ) ? 2 : 2*context.texsize/512);
+    else glLineWidth( (context.texsize < 512 ) ? 1 : context.texsize/512);
+
+    //Additive wave drawing (vice overwrite)
+    if (additive==1)glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    else glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glBindVertexArray(m_vaoID);
+
+    if (loop)
+      glDrawArrays(GL_LINE_LOOP,0,samples);
+    else
+      glDrawArrays(GL_LINE_STRIP,0,samples);
 
 
-		glTranslatef(.5, .5, 0);
-		glRotatef(rot, 0, 0, 1);
-		glScalef(aspectScale, 1.0, 1.0);
-		glTranslatef(-.5, -.5, 0);
+    if (two_waves)
+      {
+        if (loop)
+          glDrawArrays(GL_LINE_LOOP,0,samples);
+        else
+          glDrawArrays(GL_LINE_STRIP,0,samples);
+      }
 
+    glBindVertexArray(0);
 
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDisableClientState(GL_COLOR_ARRAY);
-		glVertexPointer(2,GL_FLOAT,0,wavearray);
-
-		if (loop)
-		  glDrawArrays(GL_LINE_LOOP,0,samples);
-		else
-		  glDrawArrays(GL_LINE_STRIP,0,samples);
-
-
-		if (two_waves)
-		  {
-		    glVertexPointer(2,GL_FLOAT,0,wavearray2);
-		    if (loop)
-		      glDrawArrays(GL_LINE_LOOP,0,samples);
-		    else
-		      glDrawArrays(GL_LINE_STRIP,0,samples);
-		  }
-
-
-	#ifndef USE_GLES1
+    #ifndef GL_TRANSITION
 		if(dots==1) glDisable(GL_LINE_STIPPLE);
 	#endif
 
-		glPopMatrix();
 }
 
 void MilkdropWaveform::ModulateOpacityByVolume(RenderContext &context)
@@ -144,11 +183,11 @@ void MilkdropWaveform::MaximizeColors(RenderContext &context)
 		}
 
 
-		glColor4f(wave_r_switch, wave_g_switch, wave_b_switch, temp_a * masterAlpha);
+        glVertexAttrib4f(1, wave_r_switch, wave_g_switch, wave_b_switch, temp_a * masterAlpha);
 	}
 	else
 	{
-		glColor4f(r, g, b, temp_a * masterAlpha);
+        glVertexAttrib4f(1, r, g, b, temp_a * masterAlpha);
 	}
 }
 
