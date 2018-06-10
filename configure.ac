@@ -101,6 +101,9 @@ AC_PREFIX_DEFAULT([/usr/local])
 
 AC_PROG_MKDIR_P
 
+AX_CHECK_COMPILE_FLAG([-std=c++14], [
+                        CXXFLAGS="$CXXFLAGS -std=c++14"])
+
 dnl Qt
 AC_ARG_ENABLE([qt],
   AS_HELP_STRING([--enable-qt], [Build Qt]),
