@@ -44,6 +44,7 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
 	/// @bug put these on member init list
 	this->renderTarget = new RenderTarget(texsize, width, height);
+    std::cout << "init texture manager wtih " << presetURL << std::endl;
 	this->textureManager = new TextureManager(presetURL);
 	this->beatDetect = beatDetect;
 
@@ -164,10 +165,9 @@ void Renderer::SetPipeline(Pipeline &pipeline)
 {
 	currentPipe = &pipeline;
 	shaderEngine.reset();
-  // TEMP
-  // N.B. i'm actually not sure if they're always fragment shaders... I think so...  -mischa
-  //shaderEngine.loadShader(GL_FRAGMENT_SHADER, pipeline.warpShader, pipeline.warpShaderFilename);
-	//shaderEngine.loadShader(GL_FRAGMENT_SHADER, pipeline.compositeShader, pipeline.compositeShaderFilename);
+    // N.B. i'm actually not sure if they're always fragment shaders... I think so...  -mischa
+    shaderEngine.loadPresetShader(pipeline.warpShader, pipeline.warpShaderFilename);
+    shaderEngine.loadPresetShader(pipeline.compositeShader, pipeline.compositeShaderFilename);
 }
 
 void Renderer::ResetTextures()

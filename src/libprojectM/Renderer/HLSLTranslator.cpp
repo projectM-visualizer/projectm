@@ -173,7 +173,7 @@ std::unique_ptr<std::string> HLSLTranslator::parse(GLenum shaderType, const char
     }
 
     // generate GLSL
-    if (!generator.Generate(&tree, GLSLGenerator::Target(shaderType), GLSLGenerator::Version, "projectm")) {
+    if (!generator.Generate(&tree, GLSLGenerator::Target(shaderType), GLSLGenerator::Version_140, "projectm")) {
         fprintf(stderr, "Failed to transpile HLSL shader to GLSL\n");
         return nullptr;
     }

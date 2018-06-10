@@ -54,7 +54,6 @@ class ShaderEngine
 
     std::map<Shader*, GLuint> presetShaders;
 
-    void initShaderProgram();
     void SetupShaderQVariables(GLuint program, const Pipeline &q);
     void SetupShaderVariables(GLuint program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
     void setupUserTexture(const UserTexture* texture);
@@ -68,7 +67,7 @@ public:
 	ShaderEngine();
 	virtual ~ShaderEngine();
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext, const int texsize);
-	void loadPresetShader(GLenum shaderType, Shader &shader, std::string &shaderFilename);
+	void loadPresetShader(Shader &shader, std::string &shaderFilename);
     void deletePresetShader(Shader &shader);
 
 	void setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect, TextureManager *textureManager);
@@ -79,6 +78,7 @@ public:
 
     GLuint programID_v2f_c4f;
     GLuint programID_v2f_c4f_t2f;
+    GLuint programID;
 
 
     GLuint CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode);
