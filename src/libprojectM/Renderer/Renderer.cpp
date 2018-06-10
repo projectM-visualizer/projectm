@@ -291,9 +291,7 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
 
 	SetupPass1(pipeline, pipelineContext);
 
-//    shaderEngine.enableShader(currentPipe->warpShader, pipeline, pipelineContext);
 	Interpolation(pipeline);
-//    shaderEngine.disableShader(currentPipe->warpShader);
 
 	RenderItems(pipeline, pipelineContext);
 	FinishPass1();
@@ -760,8 +758,6 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 
     glActiveTexture(GL_TEXTURE0);
-
-//    shaderEngine.enableShader(currentPipe->compositeShader, pipeline, pipelineContext);
 
     glBindVertexArray(m_vao_CompositeOutput);
 
