@@ -92,6 +92,10 @@ void VideoEcho::Draw(RenderContext &context)
 
     glUniform1i(ShaderEngine::Uniform_V2F_C4F_T2F_FragTextureSampler(), 0);
 
+
+    //Now Blend the Video Echo
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, a * masterAlpha);
 
     glBindVertexArray(m_vaoID);
@@ -101,5 +105,5 @@ void VideoEcho::Draw(RenderContext &context)
 
     glBindVertexArray(0);
 
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
