@@ -2,7 +2,6 @@
 #ifndef RenderContext_hpp
 #define RenderContext_hpp
 #include "TextureManager.hpp"
-#include "ShaderContext.hpp"
 
 class BeatDetect;
 class ShaderEngine;
@@ -16,8 +15,7 @@ public:
     bool aspectCorrect;
     BeatDetect *beatDetect;
     TextureManager *textureManager;
-    ShaderContext *shaderContext;
-    
+
     RenderContext();
 };
 
