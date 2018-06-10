@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #include "projectM-opengl.h"
 #include <iostream>
+#include <memory>
 #include <cstdlib>
 
 class HLSLTranslator {
