@@ -13,28 +13,32 @@
 class Brighten : public RenderItem
 {
 public:
-	Brighten(){}
+    Brighten(){ Init(); }
+    void InitVertexAttrib();
 	void Draw(RenderContext &context);
 };
 
 class Darken : public RenderItem
 {
 public:
-	Darken(){}
+    Darken(){ Init(); }
+    void InitVertexAttrib();
 	void Draw(RenderContext &context);
 };
 
 class Invert : public RenderItem
 {
 public:
-	Invert(){}
+    Invert(){ Init(); }
+    void InitVertexAttrib();
 	void Draw(RenderContext &context);
 };
 
 class Solarize : public RenderItem
 {
 public:
-	Solarize(){}
+    Solarize(){ Init(); }
+    void InitVertexAttrib();
 	void Draw(RenderContext &context);
 };
 

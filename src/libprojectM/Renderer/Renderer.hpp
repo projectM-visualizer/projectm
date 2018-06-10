@@ -81,9 +81,7 @@ private:
   static Pipeline* currentPipe;
   RenderContext renderContext;
   //per pixel equation variables
-#ifdef USE_CG
   ShaderEngine shaderEngine;
-#endif
   std::string m_presetName;
 
   float* p;
@@ -97,6 +95,12 @@ private:
   std::string title_fontURL;
   std::string menu_fontURL;
   std::string presetURL;
+
+  GLuint m_vbo_Interpolation;
+  GLuint m_vao_Interpolation;
+
+  GLuint m_vbo_CompositeOutput;
+  GLuint m_vao_CompositeOutput;
 
 #ifdef USE_FTGL
   FTGLPixmapFont *title_font;
