@@ -56,8 +56,6 @@ std::string getConfigFilePath() {
 
 int main(int argc, char *argv[]) {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-    
-    SDL_LogSetAllPriority(SDL_LOG_PRIORITY_DEBUG);
 
     if (! SDL_VERSION_ATLEAST(2, 0, 5)) {
         SDL_Log("SDL version 2.0.5 or greater is required. You have %i.%i.%i", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
@@ -112,7 +110,6 @@ int main(int argc, char *argv[]) {
     
     if (! configFilePath.empty()) {
         // found config file, use it
-        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Loading configuration from %s\n", configFilePath.c_str());
         app = new projectMSDL(configFilePath, 0);
     } else {
         SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Config file not found, using development settings\n");
@@ -131,8 +128,7 @@ int main(int argc, char *argv[]) {
         settings.softCutRatingsEnabled = 1; // ???
         // get path to our app, use CWD for presets/fonts/etc
         std::string base_path = SDL_GetBasePath();
-        settings.presetURL = base_path + "presets/presets_shader_test";
-//        settings.presetURL = base_path + "presets/presets_milkdrop_200";
+        settings.presetURL = base_path + "presets/presets_tryptonaut";
         settings.menuFontURL = base_path + "fonts/Vera.ttf";
         settings.titleFontURL = base_path + "fonts/Vera.ttf";
         // init with settings
