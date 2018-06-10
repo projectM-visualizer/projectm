@@ -51,7 +51,7 @@ class ShaderEngine
     GLuint   blur1Program;
     GLuint   blur2Program;
 
-    std::map<Shader*, GLuint> presetShaders;
+    std::map<Shader*, GLuint> presetShaders;  // map of shader to gl program
 
     void SetupShaderQVariables(GLuint program, const Pipeline &q);
     void SetupShaderVariables(GLuint program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
@@ -59,7 +59,7 @@ class ShaderEngine
     void setupUserTextureState(const UserTexture* texture);
     GLuint compilePresetShader(GLenum shaderType, Shader &shader, std::string &shaderFilename);
     bool checkCompileStatus(GLuint shader, const char *shaderTitle);
-    void relinkProgram();
+    void linkProgram(GLuint programID);
     void disablePresetShaders();
 
 public:
@@ -68,6 +68,7 @@ public:
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext, const int texsize);
 	void loadPresetShader(Shader &shader, std::string &shaderFilename);
     void deletePresetShader(Shader &shader);
+    void enableInterpolationShader();
 
 	void setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect, TextureManager *textureManager);
 	void reset();
@@ -76,7 +77,8 @@ public:
 
     GLuint programID_v2f_c4f;
     GLuint programID_v2f_c4f_t2f;
-    GLuint programID;
+    GLuint programID_preset;  // program generated from preset shader code
+    bool presetShaderProgramLoaded;  // does programID_preset exist?
 
 
     GLuint CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode);
