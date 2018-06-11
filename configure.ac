@@ -57,15 +57,6 @@ AS_IF([test "x$enable_threading" = "xyes"], [
   ])
 ])
 
-#dnl FTGL
-#AC_ARG_ENABLE([ftgl],
-#  AS_HELP_STRING([--enable-ftgl], [FTGL support to display text such as preset title, stats, fps, ...]),
-#  [], [enable_ftgl=no])
-#AS_IF([test "x$enable_ftgl" = "xyes"], [
-#  PKG_CHECK_MODULES(FTGL, [ftgl], [], [AC_MSG_ERROR([libftgl is required.])])
-#  AC_DEFINE([USE_FTGL], [1], [Define USE_FTGL])
-#])
-
 AC_CHECK_HEADER([glm/glm.hpp],, AC_MSG_ERROR(libglm is required.))
 
 AC_ARG_ENABLE([gles],
@@ -74,22 +65,6 @@ AC_ARG_ENABLE([gles],
   AS_IF([test "x$enable_gles" = "xyes"], [
     AC_DEFINE([USE_GLES], [1], [Define USE_GLES])
 ])
-
-dnl Cg framework OSX -- replace with GLSL someday!
-CG_CFLAGS=
-CG_LDFLAGS=
-FRAMEWORK_SEARCH_PATHS="-F/Library/Frameworks -F$HOME/Library/Frameworks"
-#AC_ARG_ENABLE([cg],
-#AS_HELP_STRING([--enable-cg], [Cg framework for shaders]),
-#[], [enable_cg=no])
-#AS_IF([test "x$enable_cg" = "xyes"], [
-#dnl AC_CHECK_HEADERS([Cg/cg.h], [], [AC_MSG_ERROR([Cg framework not found.])])
-#AC_DEFINE([USE_CG], [1], [Define USE_CG])
-#CG_LDFLAGS+="$FRAMEWORK_SEARCH_PATHS -framework Cg"
-#CG_CFLAGS+="$FRAMEWORK_SEARCH_PATHS"
-#])
-AC_SUBST([CG_CFLAGS])
-AC_SUBST([CG_LDFLAGS])
 
 dnl from https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable answer: https://stackoverflow.com/a/30960268
 dnl ptomato https://stackoverflow.com/users/172999/ptomato
@@ -178,7 +153,5 @@ libprojectM:            yes
 Threading:              ${enable_threading}
 SDL:                    ${enable_sdl}
 Qt & Pulseaudio:        ${enable_qt}
-FTGL:                   ${enable_ftgl}
-Cg:                     ${enable_cg}
 OpenGL ES:              ${enable_gles}
 ])

@@ -12,6 +12,27 @@
 
 #define GLSL_VERSION "410"
 
+std::string presetVertexShader(
+   "#version "
+   GLSL_VERSION
+   "\n"
+   ""
+   "layout(location = 0) in vec2 vertex_position;\n"
+   "layout(location = 1) in vec4 vertex_color;\n"
+   ""
+   "uniform mat4 vertex_transformation;\n"
+   "uniform float vertex_point_size;\n"
+   ""
+   //     "out vec4 fragment_color;\n"
+   "out vec2 frag_TEXCOORD0;\n"
+   ""
+   "void main(){\n"
+   "    gl_Position = vertex_transformation * vec4(vertex_position, 0.0, 1.0);\n"
+   "    gl_PointSize = vertex_point_size;\n"
+   //     "    fragment_color = vertex_color;\n"
+   "    frag_TEXCOORD0 = vec2(0,0);\n"  // FIXME: what should this be?
+   "}\n");
+
 std::string v2f_c4f_vert(
     "#version "
     GLSL_VERSION
@@ -393,7 +414,7 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
     
     // now we have GLSL source for the preset shader program (hopefully it's valid!)
     // copmile the preset shader fragment shader with the standard vertex shader and cross our fingers
-    return CompileShaderProgram(*glslSource.get(), v2f_c4f_t2f_frag);  // returns new program
+    return CompileShaderProgram(presetVertexShader, *glslSource.get());  // returns new program
 }
 
 
@@ -458,12 +479,12 @@ void ShaderEngine::SetupShaderVariables(GLuint program, const Pipeline &pipeline
      */
 }
 
-void ShaderEngine::setupUserTexture(const UserTexture* texture)
+void ShaderEngine::setupUserTexture(GLuint program, const UserTexture* texture)
 {
 	std::string samplerName = "sampler_" + texture->qname;
 
     // https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Binding_textures_to_samplers
-	GLint param = glGetUniformLocation(programID_preset, samplerName.c_str());
+	GLint param = glGetUniformLocation(program, samplerName.c_str());
     if (param < 0) {
         // FIXME: turn this on and fix it.
         // i think sampler names are carrying over from previous shaders...
@@ -479,7 +500,7 @@ void ShaderEngine::setupUserTexture(const UserTexture* texture)
 	if (texture->texsizeDefined)
 	{
 		std::string texsizeName = "texsize_" + texture->name;
-        GLint textSizeParam = glGetUniformLocation(programID_preset, texsizeName.c_str());
+        GLint textSizeParam = glGetUniformLocation(program, texsizeName.c_str());
         if (param >= 0) {
             glProgramUniform4f(textSizeParam, texture->width, texture->height, 0,
                                1 / (float) texture->width, 1 / (float) texture->height);
@@ -490,7 +511,7 @@ void ShaderEngine::setupUserTexture(const UserTexture* texture)
 	}
 }
 
-void ShaderEngine::setupUserTextureState( const UserTexture* texture)
+void ShaderEngine::setupUserTextureState(GLuint program, const UserTexture* texture)
 {
     glBindTexture(GL_TEXTURE_2D, texture->texID);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
@@ -646,45 +667,52 @@ void ShaderEngine::linkProgram(GLuint programID) {
         std::cerr << "Failed to link program: " << message << std::endl;
         return;
     }
-    
 }
 
 #pragma mark Preset Shaders
-void ShaderEngine::loadPresetShader(Shader &presetShader, std::string &shaderFilename)
-{
-    assert(!presetShaderProgramLoaded);
-    
-    assert(!presetShader.enabled);
-    // i think they're always fragment shaders? not positive -mischa
-    programID_preset = compilePresetShader(GL_FRAGMENT_SHADER, presetShader, shaderFilename);
 
-    if (programID_preset == GL_FALSE) {
+void ShaderEngine::loadPresetShaders(Pipeline &pipeline) {
+    // compile and link warp and composite shaders from pipeline
+    programID_presetWarp = loadPresetShader(pipeline.warpShader, pipeline.warpShaderFilename);
+    programID_presetComp = loadPresetShader(pipeline.compositeShader, pipeline.compositeShaderFilename);
+
+    if (programID_presetComp)
+        presetCompShaderLoaded = true;
+    
+    if (programID_presetWarp)
+        presetWarpShaderLoaded = true;
+}
+
+GLuint ShaderEngine::loadPresetShader(Shader &presetShader, std::string &shaderFilename) {
+    // i think they're always fragment shaders? not positive -mischa
+    GLuint program = compilePresetShader(GL_FRAGMENT_SHADER, presetShader, shaderFilename);
+
+    if (program == GL_FALSE) {
         // failed to compile
-        return;
+        return GL_FALSE;
     }
     printf("linked shader %s\n", presetShader.presetPath.c_str());
 
-    presetShaders[&presetShader] = programID_preset;
-    
     // pass texture info from preset to shader
     for (auto &userTexture : presetShader.textures) {
-        setupUserTextureState(userTexture.second);
-        setupUserTexture(userTexture.second);
+        setupUserTextureState(program, userTexture.second);
+        setupUserTexture(program, userTexture.second);
     }
 
-    presetShader.enabled = true;
-    presetShaderProgramLoaded = true;
+    return program;
 
 }
 
 // deactivate preset shaders
 void ShaderEngine::disablePresetShaders() {
-    if (!presetShaderProgramLoaded)
-        return;
+    if (presetCompShaderLoaded)
+        glDeleteProgram(programID_presetComp);
     
-    glDeleteProgram(programID_preset);
+    if (presetWarpShaderLoaded)
+        glDeleteProgram(programID_presetWarp);
     
-    presetShaderProgramLoaded = false;
+    presetCompShaderLoaded = false;
+    presetWarpShaderLoaded = false;
 }
 
 void ShaderEngine::reset()
@@ -751,9 +779,9 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
 // use the appropriate shader program for rendering the interpolation.
 // it will use the preset shader if available, otherwise the textured shader
 void ShaderEngine::enableInterpolationShader() {
-    if (!presetShaderProgramLoaded) {
-        glUseProgram(programID_v2f_c4f_t2f);
+    if (presetCompShaderLoaded) {
+        glUseProgram(programID_presetComp);
     } else {
-        glUseProgram(programID_preset);
+        glUseProgram(programID_v2f_c4f_t2f);
     }
 }
