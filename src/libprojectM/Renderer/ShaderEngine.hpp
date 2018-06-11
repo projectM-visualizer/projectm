@@ -50,22 +50,21 @@ class ShaderEngine
     GLuint   blur1Program;
     GLuint   blur2Program;
 
-    std::map<Shader*, GLuint> presetShaders;  // map of shader to gl program
-
     void SetupShaderQVariables(GLuint program, const Pipeline &q);
     void SetupShaderVariables(GLuint program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
-    void setupUserTexture(const UserTexture* texture);
-    void setupUserTextureState(const UserTexture* texture);
+    void setupUserTexture(GLuint program, const UserTexture* texture);
+    void setupUserTextureState(GLuint program, const UserTexture* texture);
     GLuint compilePresetShader(GLenum shaderType, Shader &shader, std::string &shaderFilename);
     bool checkCompileStatus(GLuint shader, const char *shaderTitle);
     void linkProgram(GLuint programID);
     void disablePresetShaders();
+    GLuint loadPresetShader(Shader &shader, std::string &shaderFilename);
 
 public:
 	ShaderEngine();
 	virtual ~ShaderEngine();
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext, const int texsize);
-	void loadPresetShader(Shader &shader, std::string &shaderFilename);
+    void loadPresetShaders(Pipeline &pipeline);
     void deletePresetShader(Shader &shader);
     void enableInterpolationShader();
 
@@ -76,8 +75,10 @@ public:
 
     GLuint programID_v2f_c4f;
     GLuint programID_v2f_c4f_t2f;
-    GLuint programID_preset;  // program generated from preset shader code
-    bool presetShaderProgramLoaded;  // does programID_preset exist?
+    
+    // programs generated from preset shader code
+    GLuint programID_presetComp, programID_presetWarp;
+    bool presetCompShaderLoaded, presetWarpShaderLoaded;
 
 
     GLuint CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode);
