@@ -748,7 +748,7 @@ void Renderer::draw_fps(float realfps)
 
 void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
-    glUseProgram(renderContext.programID_v2f_c4f_t2f);
+    shaderEngine.enableCompositeShader();
 
     glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_T2F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(renderContext.mat_ortho));
     glUniform1i(ShaderEngine::Uniform_V2F_C4F_T2F_FragTextureSampler(), 0);

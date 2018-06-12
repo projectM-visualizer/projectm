@@ -8,6 +8,8 @@
 #ifndef SHADERENGINE_HPP_
 #define SHADERENGINE_HPP_
 
+#define PRESET_SHADERS_ENABLED 1
+
 #include "Common.hpp"
 #include "projectM-opengl.h"
 
@@ -67,6 +69,7 @@ public:
     void loadPresetShaders(Pipeline &pipeline);
     void deletePresetShader(Shader &shader);
     void enableInterpolationShader();
+    void enableCompositeShader();
 
 	void setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect, TextureManager *textureManager);
 	void reset();

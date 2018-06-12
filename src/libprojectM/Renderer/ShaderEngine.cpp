@@ -412,6 +412,10 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
         return GL_FALSE;
     }
     
+    GLuint m_temp_vao;
+    glGenVertexArrays(1, &m_temp_vao);
+    glBindVertexArray(m_temp_vao);
+    
     // now we have GLSL source for the preset shader program (hopefully it's valid!)
     // copmile the preset shader fragment shader with the standard vertex shader and cross our fingers
     return CompileShaderProgram(presetVertexShader, *glslSource.get());  // returns new program
@@ -676,11 +680,13 @@ void ShaderEngine::loadPresetShaders(Pipeline &pipeline) {
     programID_presetWarp = loadPresetShader(pipeline.warpShader, pipeline.warpShaderFilename);
     programID_presetComp = loadPresetShader(pipeline.compositeShader, pipeline.compositeShaderFilename);
 
-    if (programID_presetComp)
+    if (programID_presetComp != GL_FALSE)
         presetCompShaderLoaded = true;
     
-    if (programID_presetWarp)
+    if (programID_presetWarp != GL_FALSE)
         presetWarpShaderLoaded = true;
+    
+    std::cout << "Preset composite shader active: " << presetCompShaderLoaded << ", preset warp shader active: " << presetWarpShaderLoaded << std::endl;
 }
 
 GLuint ShaderEngine::loadPresetShader(Shader &presetShader, std::string &shaderFilename) {
@@ -691,7 +697,7 @@ GLuint ShaderEngine::loadPresetShader(Shader &presetShader, std::string &shaderF
         // failed to compile
         return GL_FALSE;
     }
-    printf("linked shader %s\n", presetShader.presetPath.c_str());
+//    printf("linked shader %s\n", presetShader.presetPath.c_str());
 
     // pass texture info from preset to shader
     for (auto &userTexture : presetShader.textures) {
@@ -779,7 +785,15 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
 // use the appropriate shader program for rendering the interpolation.
 // it will use the preset shader if available, otherwise the textured shader
 void ShaderEngine::enableInterpolationShader() {
-    if (presetCompShaderLoaded) {
+    if (presetWarpShaderLoaded && PRESET_SHADERS_ENABLED) {
+        glUseProgram(programID_presetWarp);
+    } else {
+        glUseProgram(programID_v2f_c4f_t2f);
+    }
+}
+
+void ShaderEngine::enableCompositeShader() {
+    if (presetCompShaderLoaded && PRESET_SHADERS_ENABLED) {
         glUseProgram(programID_presetComp);
     } else {
         glUseProgram(programID_v2f_c4f_t2f);

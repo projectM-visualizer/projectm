@@ -144,7 +144,7 @@ std::auto_ptr<Preset> PresetLoader::loadPreset ( unsigned int index )  const
 
 std::auto_ptr<Preset> PresetLoader::loadPreset ( const std::string & url )  const
 {
-	std::cout << "Loading preset " << url << std::endl;
+//    std::cout << "Loading preset " << url << std::endl;
 
 	try {
 		/// @bug probably should not use url for preset name
