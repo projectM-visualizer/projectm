@@ -102,6 +102,122 @@ std::string v2f_c4f_t2f_frag(
         "}\n");
 
 
+std::string BlurShader1(
+"	//texture   PrevFrameImage;\n"
+"	//sampler2D sampler_main = sampler_state { Texture = <PrevFrameImage>; };\n"
+"	//float4 _c0; // source texsize (.xy), and inverse (.zw)\n"
+"	//float4 _c1; // w1..w4\n"
+"	//float4 _c2; // d1..d4\n"
+"	//float4 _c3; // scale, bias, w_div\n"
+
+"	void PS( float2 uv       : TEXCOORD,\n"
+"	     out float4 ret      : COLOR0      )\n"
+
+"	    // LONG HORIZ. PASS 1:\n"
+"	    //const float w[8] = { 4.0, 3.8, 3.5, 2.9, 1.9, 1.2, 0.7, 0.3 };  <- user can specify these\n"
+"	    //const float w1 = w[0] + w[1];\n"
+"	    //const float w2 = w[2] + w[3];\n"
+"	    //const float w3 = w[4] + w[5];\n"
+"	    //const float w4 = w[6] + w[7];\n"
+"	    //const float d1 = 0 + 2*w[1]/w1;\n"
+"	    //const float d2 = 2 + 2*w[3]/w2;\n"
+"	    //const float d3 = 4 + 2*w[5]/w3;\n"
+"	    //const float d4 = 6 + 2*w[7]/w4;\n"
+"	    //const float w_div = 0.5/(w1+w2+w3+w4);\n"
+"	    #define srctexsize _c0\n"
+"	    #define w1 _c1.x\n"
+"	    #define w2 _c1.y\n"
+"	    #define w3 _c1.z\n"
+"	    #define w4 _c1.w\n"
+"	    #define d1 _c2.x\n"
+"	    #define d2 _c2.y\n"
+"	    #define d3 _c2.z\n"
+"	    #define d4 _c2.w\n"
+"	    #define fscale _c3.x\n"
+"	    #define fbias  _c3.y\n"
+"	    #define w_div  _c3.z\n"
+
+"	    // note: if you just take one sample at exactly uv.xy, you get an avg of 4 pixels.\n"
+"	    //float2 uv2 = uv.xy;// + srctexsize.zw*float2(0.5,0.5);\n"
+"	    float2 uv2 = uv.xy + srctexsize.zw*float2(1,1);     // + moves blur UP, LEFT by 1-pixel increments\n"
+
+"	    float3 blur = \n"
+"	            ( tex2D( sampler_main, uv2 + float2( d1*srctexsize.z,0) ).xyz\n"
+"	            + tex2D( sampler_main, uv2 + float2(-d1*srctexsize.z,0) ).xyz)*w1 +\n"
+"	            ( tex2D( sampler_main, uv2 + float2( d2*srctexsize.z,0) ).xyz\n"
+"	            + tex2D( sampler_main, uv2 + float2(-d2*srctexsize.z,0) ).xyz)*w2 +\n"
+"	            ( tex2D( sampler_main, uv2 + float2( d3*srctexsize.z,0) ).xyz\n"
+"	            + tex2D( sampler_main, uv2 + float2(-d3*srctexsize.z,0) ).xyz)*w3 +\n"
+"	            ( tex2D( sampler_main, uv2 + float2( d4*srctexsize.z,0) ).xyz\n"
+"	            + tex2D( sampler_main, uv2 + float2(-d4*srctexsize.z,0) ).xyz)*w4\n"
+"	            ;\n"
+"	    blur.xyz *= w_div;\n"
+
+"	    blur.xyz = blur.xyz*fscale + fbias;\n"
+
+"	    ret.xyz = blur;\n"
+"	    ret.w   = 1;\n"
+"	    //ret.xyzw = tex2D(sampler_main, uv + 0*srctexsize.zw);    \n"
+"	}\n"
+);
+
+std::string BlurShader2(
+"	//texture   PrevFrameImage;\n"
+"	//sampler2D sampler_main = sampler_state { Texture = <PrevFrameImage>; };\n"
+"	//float4 _c0; // source texsize (.xy), and inverse (.zw)\n"
+
+"	//float4 _c5; // w1,w2,d1,d2\n"
+"	//float4 _c6; // w_div, edge_darken_c1, edge_darken_c2, edge_darken_c3\n"
+
+"	void PS( float2 uv       : TEXCOORD,\n"
+"	     out float4 ret      : COLOR0      )\n"
+
+"	    //SHORT VERTICAL PASS 2:\n"
+"	    //const float w1 = w[0]+w[1] + w[2]+w[3];\n"
+"	    //const float w2 = w[4]+w[5] + w[6]+w[7];\n"
+"	    //const float d1 = 0 + 2*((w[2]+w[3])/w1);\n"
+"	    //const float d2 = 2 + 2*((w[6]+w[7])/w2);\n"
+"	    //const float w_div = 1.0/((w1+w2)*2);\n"
+
+"	    #define srctexsize _c0\n"
+"	    #define w1 _c5.x\n"
+"	    #define w2 _c5.y\n"
+
+"	    #define d1 _c5.z\n"
+"	    #define d2 _c5.w\n"
+"	    \n"
+
+"	    #define edge_darken_c1 _c6.y\n"
+"	    #define edge_darken_c2 _c6.z\n"
+"	    #define edge_darken_c3 _c6.w\n"
+
+"	    #define w_div   _c6.x\n"
+
+"	    // note: if you just take one sample at exactly uv.xy, you get an avg of 4 pixels.\n"
+"	    //float2 uv2 = uv.xy;// + srctexsize.zw*float2(-0.5,-0.5);\n"
+"	    float2 uv2 = uv.xy + srctexsize.zw*float2(1,0);     // + moves blur UP, LEFT by TWO-pixel increments! (since texture is 1/2 the size of blur1_ps)\n"
+
+"	    float3 blur = \n"
+"	            ( tex2D( sampler_main, uv2 + float2(0, d1*srctexsize.w) ).xyz\n"
+"	            + tex2D( sampler_main, uv2 + float2(0,-d1*srctexsize.w) ).xyz)*w1 +\n"
+"	            ( tex2D( sampler_main, uv2 + float2(0, d2*srctexsize.w) ).xyz\n"
+"	            + tex2D( sampler_main, uv2 + float2(0,-d2*srctexsize.w) ).xyz)*w2\n"
+"	            ;\n"
+"	    blur.xyz *= w_div;\n"
+
+"	    // tone it down at the edges:  (only happens on 1st X pass!)\n"
+"	    float t = min( min(uv.x, uv.y), 1-max(uv.x,uv.y) );\n"
+"	    t = sqrt(t);\n"
+"	    t = edge_darken_c1 + edge_darken_c2*saturate(t*edge_darken_c3);\n"
+"	    blur.xyz *= t;\n"
+
+"	    ret.xyz = blur;\n"
+"	    ret.w   = 1;\n"
+"	    //ret.xyzw = tex2D(sampler_main, uv + 0*srctexsize.zw);    \n"
+"	}\n");
+
+
+
 GLint ShaderEngine::UNIFORM_V2F_C4F_VERTEX_TRANFORMATION = 0;
 GLint ShaderEngine::UNIFORM_V2F_C4F_VERTEX_POINT_SIZE = 0;
 GLint ShaderEngine::UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION = 0;
@@ -124,36 +240,6 @@ ShaderEngine::ShaderEngine() : presetCompShaderLoaded(false), presetWarpShaderLo
     UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER = glGetUniformLocation(programID_v2f_c4f_t2f, "texture_sampler");
 
 
-
-	std::string line;
-	std::ifstream myfile(DATADIR_PATH "/shaders/projectM.cg");
-	if (myfile.is_open())
-	{
-		while (!myfile.eof())
-		{
-			std::getline(myfile, line);
-            shaderTemplate.append(line + "\n");
-		}
-		myfile.close();
-	}
-
-	else
-      std::cout << "Unable to load shader template \"" << DATADIR_PATH << "/shaders/projectM.cg\"" << std::endl;
-
-	std::ifstream myfile2(DATADIR_PATH "/shaders/blur.cg");
-	if (myfile2.is_open())
-	{
-		while (!myfile2.eof())
-		{
-			std::getline(myfile2, line);
-			blurProgram.append(line + "\n");
-		}
-		myfile2.close();
-	}
-
-	else
-		std::cout << "Unable to load blur template" << std::endl;
-	
     /* TODO compile blur programs: needed for RenderBlurTextures
      * why 2 blur programs loaded for only one effectively used ???????
      *
@@ -460,19 +546,14 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
         }
     }
 
-    std::string fullShader;
-
-    fullShader.append(shaderTemplate);
-    fullShader.append(program);
-
     // now we need to prepend the HLSL template to the program
 
     // transpile from HLSL (aka preset shader aka directX shader) to GLSL (aka OpenGL shader lang)
     HLSLTranslator translator = HLSLTranslator();
-    std::unique_ptr<std::string> glslSource = translator.parse(shaderType, shaderFilename.c_str(), fullShader);
+    std::unique_ptr<std::string> glslSource = translator.parse(shaderType, shaderFilename.c_str(), program);
     if (!glslSource) {
         std::cerr << "Failed to parse shader from " << shaderFilename << std::endl;
-        std::cerr << "Original program: " << fullShader << std::endl;
+        std::cerr << "Original program: " << program << std::endl;
         return GL_FALSE;
     }
     
