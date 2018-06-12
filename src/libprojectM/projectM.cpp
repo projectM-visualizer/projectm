@@ -602,7 +602,7 @@ static void *thread_callback(void *prjm) {
         *m_presetPos = m_presetChooser->end();
 
         // Load idle preset
-        std::cerr << "[projectM] Allocating idle preset..." << std::endl;
+//        std::cerr << "[projectM] Allocating idle preset..." << std::endl;
         m_activePreset = m_presetLoader->loadPreset
         ("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
 

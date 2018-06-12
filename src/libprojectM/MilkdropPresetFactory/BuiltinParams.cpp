@@ -293,7 +293,7 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("gamma", (void*)&presetOutputs.fGammaAdj, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fGammaAdj");
   load_builtin_param_float("echo_zoom", (void*)&presetOutputs.videoEcho.zoom, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fVideoEchoZoom");
   load_builtin_param_float("echo_alpha", (void*)&presetOutputs.videoEcho.a, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fvideoechoalpha");
-  load_builtin_param_float("wave_a", (void*)&presetOutputs.wave.a, NULL, P_FLAG_NONE, 0.0, 1.0, 0, "fwavealpha");
+    load_builtin_param_float("wave_a", (void*)&presetOutputs.wave.a, NULL, P_FLAG_NONE, 0.2, 1.0, 0, "fwavealpha");  // TEMP FIX: min = 0.2 because some presets have fWaveAlpha=0.0 which is invisible 
   load_builtin_param_float("fwavesmoothing", (void*)&presetOutputs.wave.smoothing, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("fmodwavealphastart", (void*)&presetOutputs.wave.modOpacityStart, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("fmodwavealphaend", (void*)&presetOutputs.wave.modOpacityEnd, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
