@@ -32,7 +32,6 @@ class ShaderEngine
     BeatDetect *beatDetect;
     TextureManager *textureManager;
 
-    std::string shaderTemplate;
     std::string blurProgram;
 
     GLuint noise_texture_lq_lite;
