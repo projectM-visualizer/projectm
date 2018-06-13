@@ -9,7 +9,11 @@
 #include "ShaderEngine.hpp"
 #include "BeatDetect.hpp"
 
-#define GLSL_VERSION "410"
+#ifdef USE_GLES
+    #define GLSL_VERSION "300 es"
+#else
+    #define GLSL_VERSION "410"
+#endif
 
 std::string v2f_c4f_vert(
     "#version "
@@ -94,6 +98,7 @@ ShaderEngine::ShaderEngine()
 	SetupCg();
 #endif
     
+    // glValidateProgram needs a VAO for its checks
     GLuint m_temp_vao;
     glGenVertexArrays(1, &m_temp_vao);
     glBindVertexArray(m_temp_vao);
@@ -105,6 +110,8 @@ ShaderEngine::ShaderEngine()
     UNIFORM_V2F_C4F_VERTEX_POINT_SIZE = glGetUniformLocation(programID_v2f_c4f, "vertex_point_size");
     UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION = glGetUniformLocation(programID_v2f_c4f_t2f, "vertex_transformation");
     UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER = glGetUniformLocation(programID_v2f_c4f_t2f, "texture_sampler");
+
+    glDeleteVertexArrays(1, &m_temp_vao);
 }
 
 ShaderEngine::~ShaderEngine()
