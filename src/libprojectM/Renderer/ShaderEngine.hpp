@@ -32,6 +32,8 @@ class ShaderEngine
     BeatDetect *beatDetect;
     TextureManager *textureManager;
 
+    std::string blurProgram;
+
     GLuint noise_texture_lq_lite;
     GLuint noise_texture_lq;
     GLuint noise_texture_mq;
@@ -49,9 +51,6 @@ class ShaderEngine
 
     float rand_preset[4];
 
-    GLuint   blur1Program;
-    GLuint   blur2Program;
-
     void SetupShaderQVariables(GLuint program, const Pipeline &q);
     void SetupShaderVariables(GLuint program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
     void setupUserTexture(GLuint program, const UserTexture* texture);
@@ -68,8 +67,8 @@ public:
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext, const int texsize);
     void loadPresetShaders(Pipeline &pipeline);
     void deletePresetShader(Shader &shader);
-    void enableInterpolationShader();
-    void enableCompositeShader();
+    void enableInterpolationShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
+    void enableCompositeShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
 
 	void setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect, TextureManager *textureManager);
 	void reset();
@@ -81,6 +80,7 @@ public:
     
     // programs generated from preset shader code
     GLuint programID_presetComp, programID_presetWarp;
+    GLuint programID_blur;
     bool presetCompShaderLoaded, presetWarpShaderLoaded;
 
 
