@@ -102,6 +102,122 @@ std::string v2f_c4f_t2f_frag(
         "}\n");
 
 
+std::string BlurShader1(
+"	//texture   PrevFrameImage;\n"
+"	//sampler2D sampler_main = sampler_state { Texture = <PrevFrameImage>; };\n"
+"	//float4 _c0; // source texsize (.xy), and inverse (.zw)\n"
+"	//float4 _c1; // w1..w4\n"
+"	//float4 _c2; // d1..d4\n"
+"	//float4 _c3; // scale, bias, w_div\n"
+
+"	void PS( float2 uv       : TEXCOORD,\n"
+"	     out float4 ret      : COLOR0      )\n"
+
+"	    // LONG HORIZ. PASS 1:\n"
+"	    //const float w[8] = { 4.0, 3.8, 3.5, 2.9, 1.9, 1.2, 0.7, 0.3 };  <- user can specify these\n"
+"	    //const float w1 = w[0] + w[1];\n"
+"	    //const float w2 = w[2] + w[3];\n"
+"	    //const float w3 = w[4] + w[5];\n"
+"	    //const float w4 = w[6] + w[7];\n"
+"	    //const float d1 = 0 + 2*w[1]/w1;\n"
+"	    //const float d2 = 2 + 2*w[3]/w2;\n"
+"	    //const float d3 = 4 + 2*w[5]/w3;\n"
+"	    //const float d4 = 6 + 2*w[7]/w4;\n"
+"	    //const float w_div = 0.5/(w1+w2+w3+w4);\n"
+"	    #define srctexsize _c0\n"
+"	    #define w1 _c1.x\n"
+"	    #define w2 _c1.y\n"
+"	    #define w3 _c1.z\n"
+"	    #define w4 _c1.w\n"
+"	    #define d1 _c2.x\n"
+"	    #define d2 _c2.y\n"
+"	    #define d3 _c2.z\n"
+"	    #define d4 _c2.w\n"
+"	    #define fscale _c3.x\n"
+"	    #define fbias  _c3.y\n"
+"	    #define w_div  _c3.z\n"
+
+"	    // note: if you just take one sample at exactly uv.xy, you get an avg of 4 pixels.\n"
+"	    //float2 uv2 = uv.xy;// + srctexsize.zw*float2(0.5,0.5);\n"
+"	    float2 uv2 = uv.xy + srctexsize.zw*float2(1,1);     // + moves blur UP, LEFT by 1-pixel increments\n"
+
+"	    float3 blur = \n"
+"	            ( tex2D( sampler_main, uv2 + float2( d1*srctexsize.z,0) ).xyz\n"
+"	            + tex2D( sampler_main, uv2 + float2(-d1*srctexsize.z,0) ).xyz)*w1 +\n"
+"	            ( tex2D( sampler_main, uv2 + float2( d2*srctexsize.z,0) ).xyz\n"
+"	            + tex2D( sampler_main, uv2 + float2(-d2*srctexsize.z,0) ).xyz)*w2 +\n"
+"	            ( tex2D( sampler_main, uv2 + float2( d3*srctexsize.z,0) ).xyz\n"
+"	            + tex2D( sampler_main, uv2 + float2(-d3*srctexsize.z,0) ).xyz)*w3 +\n"
+"	            ( tex2D( sampler_main, uv2 + float2( d4*srctexsize.z,0) ).xyz\n"
+"	            + tex2D( sampler_main, uv2 + float2(-d4*srctexsize.z,0) ).xyz)*w4\n"
+"	            ;\n"
+"	    blur.xyz *= w_div;\n"
+
+"	    blur.xyz = blur.xyz*fscale + fbias;\n"
+
+"	    ret.xyz = blur;\n"
+"	    ret.w   = 1;\n"
+"	    //ret.xyzw = tex2D(sampler_main, uv + 0*srctexsize.zw);    \n"
+"	}\n"
+);
+
+std::string BlurShader2(
+"	//texture   PrevFrameImage;\n"
+"	//sampler2D sampler_main = sampler_state { Texture = <PrevFrameImage>; };\n"
+"	//float4 _c0; // source texsize (.xy), and inverse (.zw)\n"
+
+"	//float4 _c5; // w1,w2,d1,d2\n"
+"	//float4 _c6; // w_div, edge_darken_c1, edge_darken_c2, edge_darken_c3\n"
+
+"	void PS( float2 uv       : TEXCOORD,\n"
+"	     out float4 ret      : COLOR0      )\n"
+
+"	    //SHORT VERTICAL PASS 2:\n"
+"	    //const float w1 = w[0]+w[1] + w[2]+w[3];\n"
+"	    //const float w2 = w[4]+w[5] + w[6]+w[7];\n"
+"	    //const float d1 = 0 + 2*((w[2]+w[3])/w1);\n"
+"	    //const float d2 = 2 + 2*((w[6]+w[7])/w2);\n"
+"	    //const float w_div = 1.0/((w1+w2)*2);\n"
+
+"	    #define srctexsize _c0\n"
+"	    #define w1 _c5.x\n"
+"	    #define w2 _c5.y\n"
+
+"	    #define d1 _c5.z\n"
+"	    #define d2 _c5.w\n"
+"	    \n"
+
+"	    #define edge_darken_c1 _c6.y\n"
+"	    #define edge_darken_c2 _c6.z\n"
+"	    #define edge_darken_c3 _c6.w\n"
+
+"	    #define w_div   _c6.x\n"
+
+"	    // note: if you just take one sample at exactly uv.xy, you get an avg of 4 pixels.\n"
+"	    //float2 uv2 = uv.xy;// + srctexsize.zw*float2(-0.5,-0.5);\n"
+"	    float2 uv2 = uv.xy + srctexsize.zw*float2(1,0);     // + moves blur UP, LEFT by TWO-pixel increments! (since texture is 1/2 the size of blur1_ps)\n"
+
+"	    float3 blur = \n"
+"	            ( tex2D( sampler_main, uv2 + float2(0, d1*srctexsize.w) ).xyz\n"
+"	            + tex2D( sampler_main, uv2 + float2(0,-d1*srctexsize.w) ).xyz)*w1 +\n"
+"	            ( tex2D( sampler_main, uv2 + float2(0, d2*srctexsize.w) ).xyz\n"
+"	            + tex2D( sampler_main, uv2 + float2(0,-d2*srctexsize.w) ).xyz)*w2\n"
+"	            ;\n"
+"	    blur.xyz *= w_div;\n"
+
+"	    // tone it down at the edges:  (only happens on 1st X pass!)\n"
+"	    float t = min( min(uv.x, uv.y), 1-max(uv.x,uv.y) );\n"
+"	    t = sqrt(t);\n"
+"	    t = edge_darken_c1 + edge_darken_c2*saturate(t*edge_darken_c3);\n"
+"	    blur.xyz *= t;\n"
+
+"	    ret.xyz = blur;\n"
+"	    ret.w   = 1;\n"
+"	    //ret.xyzw = tex2D(sampler_main, uv + 0*srctexsize.zw);    \n"
+"	}\n");
+
+
+
 GLint ShaderEngine::UNIFORM_V2F_C4F_VERTEX_TRANFORMATION = 0;
 GLint ShaderEngine::UNIFORM_V2F_C4F_VERTEX_POINT_SIZE = 0;
 GLint ShaderEngine::UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION = 0;
@@ -109,7 +225,7 @@ GLint ShaderEngine::UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER = 0;
 
 
 
-ShaderEngine::ShaderEngine()
+ShaderEngine::ShaderEngine() : presetCompShaderLoaded(false), presetWarpShaderLoaded(false)
 {
     GLuint m_temp_vao;
     glGenVertexArrays(1, &m_temp_vao);
@@ -122,10 +238,33 @@ ShaderEngine::ShaderEngine()
     UNIFORM_V2F_C4F_VERTEX_POINT_SIZE = glGetUniformLocation(programID_v2f_c4f, "vertex_point_size");
     UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION = glGetUniformLocation(programID_v2f_c4f_t2f, "vertex_transformation");
     UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER = glGetUniformLocation(programID_v2f_c4f_t2f, "texture_sampler");
+
+
+    /* TODO compile blur programs: needed for RenderBlurTextures
+     * why 2 blur programs loaded for only one effectively used ???????
+     *
+	
+blur1Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blur1", NULL);
+
+    std::string blur1Filename = "blur1";
+    checkForCgCompileError(blur1Filename, "creating blur1 program");
+	if (blur1Program == NULL)
+		exit(1);
+	cgGLLoadProgram(blur1Program);
+
+	checkForCgError("loading blur1 program");
+
+	blur2Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blurVert", NULL);
+*/
+
 }
 
 ShaderEngine::~ShaderEngine()
 {
+    glDeleteProgram(programID_v2f_c4f);
+    glDeleteProgram(programID_v2f_c4f_t2f);
+
+    disablePresetShaders();
 }
 
 bool ShaderEngine::checkCompileStatus(GLuint shader, const char *shaderTitle) {
@@ -134,9 +273,14 @@ bool ShaderEngine::checkCompileStatus(GLuint shader, const char *shaderTitle) {
     if (status == GL_TRUE)
         return true;  // success
 
-    char buffer[2048];
-    glGetShaderInfoLog(shader, 2048, NULL, buffer);
-    std::cerr << "Failed to compile shader '" << shaderTitle << "'. Error: " << buffer << std::endl;
+    int InfoLogLength;
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    if ( InfoLogLength > 0 ){
+        std::vector<char> FragmentShaderErrorMessage(InfoLogLength+1);
+        glGetShaderInfoLog(shader, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
+        std::cerr << "Failed to compile shader '" << shaderTitle << "'. Error: " << &FragmentShaderErrorMessage[0] << std::endl;
+    }
+
     return false;
 }
 
@@ -183,11 +327,11 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 
 	//std::cout << "Generating Noise Textures" << std::endl;
 
-	PerlinNoise		*noise = new PerlinNoise;
+	PerlinNoise noise;
 #ifndef GL_TRANSITION
 	glGenTextures(1, &noise_texture_lq_lite);
 	glBindTexture(GL_TEXTURE_2D, noise_texture_lq_lite);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, 32, 32, 0, GL_LUMINANCE, GL_FLOAT, noise->noise_lq_lite);
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, 32, 32, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_lq_lite);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -196,7 +340,7 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 
 	glGenTextures(1, &noise_texture_lq);
 	glBindTexture(GL_TEXTURE_2D, noise_texture_lq);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise->noise_lq);
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_lq);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -205,7 +349,7 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 
 	glGenTextures(1, &noise_texture_mq);
 	glBindTexture(GL_TEXTURE_2D, noise_texture_mq);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise->noise_mq);
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_mq);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -214,7 +358,7 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 
 	glGenTextures(1, &noise_texture_hq);
 	glBindTexture(GL_TEXTURE_2D, noise_texture_hq);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise->noise_hq);
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_hq);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -223,7 +367,7 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 
 	glGenTextures(1, &noise_texture_perlin);
 	glBindTexture(GL_TEXTURE_2D, noise_texture_perlin);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, 512, 512, 0, GL_LUMINANCE, GL_FLOAT, noise->noise_perlin);
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, 512, 512, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_perlin);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -232,7 +376,7 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 
 	 glGenTextures( 1, &noise_texture_lq_vol );
 	 glBindTexture( GL_TEXTURE_3D, noise_texture_lq_vol );
-	 glTexImage3D(GL_TEXTURE_3D,0,4,32,32,32,0,GL_LUMINANCE,GL_FLOAT,noise->noise_lq_vol);
+	 glTexImage3D(GL_TEXTURE_3D,0,4,32,32,32,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq_vol);
 	 glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	 glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -241,7 +385,7 @@ void ShaderEngine::setParams(const int texsize, const unsigned int texId, const 
 
 	 glGenTextures( 1, &noise_texture_hq_vol );
 	 glBindTexture( GL_TEXTURE_3D, noise_texture_hq_vol );
-	 glTexImage3D(GL_TEXTURE_3D,0,4,32,32,32,0,GL_LUMINANCE,GL_FLOAT,noise->noise_hq_vol);
+	 glTexImage3D(GL_TEXTURE_3D,0,4,32,32,32,0,GL_LUMINANCE,GL_FLOAT,noise.noise_hq_vol);
 	 glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	 glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -272,6 +416,7 @@ GLuint ShaderEngine::compilePresetShader(GLenum shaderType, Shader &pmShader, st
     if (found != std::string::npos)
     {
         //std::cout << "first '{' found at: " << int(found) << std::endl;
+//	Cg-era code:		program.replace(int(found), 1, "{\nfloat rad=getrad;\nfloat ang=getang;\n");
         const char *progMain = \
         "{\n"
         "float2 uv_orig = uv;\n"
@@ -487,6 +632,8 @@ void ShaderEngine::setupUserTexture(GLuint program, const UserTexture* texture)
 {
 	std::string samplerName = "sampler_" + texture->qname;
 
+ 	// FIXME: check if each texture binding will overwrite previous one
+
     // https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Binding_textures_to_samplers
 	GLint param = glGetUniformLocation(program, samplerName.c_str());
     if (param < 0) {
@@ -506,7 +653,7 @@ void ShaderEngine::setupUserTexture(GLuint program, const UserTexture* texture)
 		std::string texsizeName = "texsize_" + texture->name;
         GLint textSizeParam = glGetUniformLocation(program, texsizeName.c_str());
         if (param >= 0) {
-            glProgramUniform4f(textSizeParam, texture->width, texture->height, 0,
+            glProgramUniform4f(program, textSizeParam, texture->width, texture->height,
                                1 / (float) texture->width, 1 / (float) texture->height);
         } else {
             std::cerr << "invalid texsizeName " << texsizeName << std::endl;
@@ -521,19 +668,27 @@ void ShaderEngine::setupUserTextureState(GLuint program, const UserTexture* text
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
 #ifndef GL_TRANSITION
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture->wrap ? GL_REPEAT : GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->wrap ? GL_REPEAT : GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture->wrap ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->wrap ? GL_REPEAT : GL_CLAMP_TO_EDGE);
 #endif
 }
 
 void ShaderEngine::SetupShaderQVariables(GLuint program, const Pipeline &q)
 {
-    // set program uniform "q" values (q1, q2, ... q32)
-    for (int i=0; i < 32; i++) {
+// static shader code: q[1-32] are copies of _q[a-h] float4
+//#define q1 _qa.x
+//#define q2 _qa.y
+//#define q3 _qa.z
+//#define q4 _qa.w
+
+	// FIXME: to validate
+
+    // set program uniform "_q[a-h]" values (_qa.x, _qa.y, _qa.z, _qa.w, _qb.x, _qb.y ... )
+    for (int i=0; i < 32; i+=4) {
         std::string varName = "q";
-        varName.append(std::to_string(i+1));
+        varName.push_back('a' + i/4);
         int loc = glGetUniformLocation(program, varName.c_str());
-        glProgramUniform1f(program, loc, q.q[i]);
+        glProgramUniform4f(program, loc, q.q[i], q.q[i+1], q.q[i+2], q.q[i+3]);
     }
 }
 
@@ -541,12 +696,17 @@ void ShaderEngine::setAspect(float aspect)
 {
 	this->aspect = aspect;
 }
-void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineContext &pipelineContext,
-		const int texsize)
+void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineContext &pipelineContext, const int texsize)
 {
 #ifndef GL_TRANSITION
 	if (blur1_enabled || blur2_enabled || blur3_enabled)
 	{
+        glUseProgram(programID_blur);
+
+        glProgramUniform4f(programID_blur, glGetUniformLocation(programID_blur, "srctexsize"), texsize/2, texsize/2, 2 / (float) texsize,
+                2 / (float) texsize);
+
+
 		float tex[4][2] =
 		{
 		{ 0, 1 },
@@ -567,13 +727,6 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
 
 		if (blur1_enabled)
 		{
-			glProgramUniform4f(glGetUniformLocation(blur1Program, "srctexsize"), 4, texsize/2, texsize/2, 2 / (float) texsize,
-					2 / (float) texsize);
-			glProgramUniform4f(glGetUniformLocation(blur2Program, "srctexsize"), 4, texsize/2 , texsize/2, 2 / (float) texsize,
-								2 / (float) texsize);
-
-
-
 			float pointsold[4][2] =
 			{
 			{ 0, 1 },
@@ -587,7 +740,6 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
 						{ 0.5, 0 },
 						{ 0.5, 0.5 } };
 
-//            cgGLBindProgram(blur1Program);
 
 			glVertexPointer(2, GL_FLOAT, 0, points);
 			glBlendFunc(GL_ONE,GL_ZERO);
@@ -602,11 +754,6 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
 
 		if (blur2_enabled)
 		{
-			glProgramUniform4f(glGetUniformLocation(blur1Program, "srctexsize"), 4, texsize/2, texsize/2, 2 / (float) texsize,
-								2 / (float) texsize);
-			glProgramUniform4f(glGetUniformLocation(blur2Program, "srctexsize"), 4, texsize/2, texsize/2, 2 / (float) texsize,
-					2 / (float) texsize);
-
 
 
 			float points[4][2] =
@@ -630,10 +777,9 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
 
 		if (blur3_enabled)
 		{
-			glProgramUniform4f(glGetUniformLocation(blur2Program, "srctexsize"), 4, texsize/4, texsize/4, 4 / (float) texsize,
-								4/ (float) texsize);
-			glProgramUniform4f(glGetUniformLocation(blur2Program, "srctexsize"), 4, texsize / 4, texsize / 4, 4
-					/ (float) texsize, 4 / (float) texsize);
+            glProgramUniform4f(programID_blur, glGetUniformLocation(programID_blur, "srctexsize"), texsize/4, texsize/4, 4 / (float) texsize,
+                               4/ (float) texsize);
+
 			float points[4][2] =
 			{
 			{ 0, 0.125 },
@@ -664,12 +810,16 @@ void ShaderEngine::linkProgram(GLuint programID) {
 
     GLint program_linked;
     glGetProgramiv(programID, GL_LINK_STATUS, &program_linked);
-    if (program_linked != GL_TRUE) {
-        GLsizei log_length = 0;
-        GLchar message[1024];
-        glGetProgramInfoLog(programID, 1024, &log_length, message);
-        std::cerr << "Failed to link program: " << message << std::endl;
-        return;
+    if (program_linked == GL_TRUE) {
+		return;	// success
+	}
+
+    int InfoLogLength;
+    glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    if ( InfoLogLength > 0 ){
+        std::vector<char> ProgramErrorMessage(InfoLogLength+1);
+        glGetProgramInfoLog(programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+        std::cerr << "Failed to link program: " << &ProgramErrorMessage[0] << std::endl;
     }
 }
 
@@ -784,17 +934,39 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
 
 // use the appropriate shader program for rendering the interpolation.
 // it will use the preset shader if available, otherwise the textured shader
-void ShaderEngine::enableInterpolationShader() {
+void ShaderEngine::enableInterpolationShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext) {
     if (presetWarpShaderLoaded && PRESET_SHADERS_ENABLED) {
         glUseProgram(programID_presetWarp);
+
+        for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos	!= shader.textures.end(); ++pos)
+                            setupUserTextureState(programID_presetWarp, pos->second);
+
+        for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos
+                        != shader.textures.end(); ++pos)
+                    setupUserTexture(programID_presetWarp, pos->second);
+
+        SetupShaderVariables(programID_presetWarp, pipeline, pipelineContext);
+        SetupShaderQVariables(programID_presetWarp, pipeline);
+
     } else {
         glUseProgram(programID_v2f_c4f_t2f);
     }
 }
 
-void ShaderEngine::enableCompositeShader() {
+void ShaderEngine::enableCompositeShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext) {
     if (presetCompShaderLoaded && PRESET_SHADERS_ENABLED) {
         glUseProgram(programID_presetComp);
+
+        for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos	!= shader.textures.end(); ++pos)
+                            setupUserTextureState(programID_presetComp, pos->second);
+
+        for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos
+                        != shader.textures.end(); ++pos)
+                    setupUserTexture(programID_presetWarp, pos->second);
+
+        SetupShaderVariables(programID_presetWarp, pipeline, pipelineContext);
+        SetupShaderQVariables(programID_presetWarp, pipeline);
+
     } else {
         glUseProgram(programID_v2f_c4f_t2f);
     }
