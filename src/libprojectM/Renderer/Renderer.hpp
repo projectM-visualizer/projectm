@@ -109,7 +109,7 @@ private:
 #endif /** USE_FTGL */
 
   void SetupPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
-  void Interpolation(const Pipeline &pipeline);
+  void Interpolation(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderItems(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void FinishPass1();
   void Pass2 (const Pipeline &pipeline, const PipelineContext &pipelineContext);

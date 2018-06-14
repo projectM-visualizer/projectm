@@ -290,7 +290,7 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
 
 	SetupPass1(pipeline, pipelineContext);
 
-	Interpolation(pipeline);
+    Interpolation(pipeline, pipelineContext);
 
 	RenderItems(pipeline, pipelineContext);
 	FinishPass1();
@@ -306,7 +306,7 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
 	Pass2(pipeline, pipelineContext);
 }
 
-void Renderer::Interpolation(const Pipeline &pipeline)
+void Renderer::Interpolation(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
 	if (this->renderTarget->useFBO)
 		glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[1]);
@@ -385,8 +385,7 @@ void Renderer::Interpolation(const Pipeline &pipeline)
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-//    glUseProgram(renderContext.programID_v2f_c4f_t2f);
-    shaderEngine.enableInterpolationShader();
+    shaderEngine.enableInterpolationShader(currentPipe->warpShader, pipeline, pipelineContext);
 
     glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_T2F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(renderContext.mat_ortho));
     glUniform1i(ShaderEngine::Uniform_V2F_C4F_T2F_FragTextureSampler(), 0);
@@ -748,7 +747,7 @@ void Renderer::draw_fps(float realfps)
 
 void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
-    shaderEngine.enableCompositeShader();
+    shaderEngine.enableCompositeShader(currentPipe->compositeShader, pipeline, pipelineContext);
 
     glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_T2F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(renderContext.mat_ortho));
     glUniform1i(ShaderEngine::Uniform_V2F_C4F_T2F_FragTextureSampler(), 0);
