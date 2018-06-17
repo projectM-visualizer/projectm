@@ -8,8 +8,7 @@ AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-DSYSCONFDIR=\""$(sysconfdir)"\" \
 	-I$(top_srcdir)/src/libprojectM \
-	-I$(top_srcdir)/src/libprojectM/Renderer \
-	$(FTGL_CFLAGS) $(CG_CFLAGS)
+	-I$(top_srcdir)/src/libprojectM/Renderer
 
 lib_LTLIBRARIES = libprojectM.la  # public, possibly-shared library
 
