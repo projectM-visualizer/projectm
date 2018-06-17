@@ -119,6 +119,10 @@ PresetOutputs::~PresetOutputs()
 	this->rot_mesh = free_mesh(this->rot_mesh);
 	this->orig_x   = free_mesh(this->orig_x);
 	this->orig_y   = free_mesh(this->orig_y);
+
+    customWaves.clear();
+    customShapes.clear();
+    drawables.clear();
 }
 
 
@@ -457,7 +461,6 @@ void PresetOutputs::Initialize ( int gx, int gy )
 	this->gy = gy;
 
 	staticPerPixel = true;
-	setStaticPerPixel(gx,gy);
 
 	assert(this->gx > 0);
 	int x;
