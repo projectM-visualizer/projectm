@@ -10,7 +10,11 @@
 #include "BeatDetect.hpp"
 #include "HLSLTranslator.hpp"
 
-#define GLSL_VERSION "410"
+#ifdef USE_GLES
+    #define GLSL_VERSION "300 es"
+#else
+    #define GLSL_VERSION "410"
+#endif
 
 std::string presetVertexShader(
    "#version "
@@ -227,6 +231,7 @@ GLint ShaderEngine::UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER = 0;
 
 ShaderEngine::ShaderEngine() : presetCompShaderLoaded(false), presetWarpShaderLoaded(false)
 {
+    // glValidateProgram needs a VAO for its checks
     GLuint m_temp_vao;
     glGenVertexArrays(1, &m_temp_vao);
     glBindVertexArray(m_temp_vao);
@@ -239,24 +244,7 @@ ShaderEngine::ShaderEngine() : presetCompShaderLoaded(false), presetWarpShaderLo
     UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION = glGetUniformLocation(programID_v2f_c4f_t2f, "vertex_transformation");
     UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER = glGetUniformLocation(programID_v2f_c4f_t2f, "texture_sampler");
 
-
-    /* TODO compile blur programs: needed for RenderBlurTextures
-     * why 2 blur programs loaded for only one effectively used ???????
-     *
-	
-blur1Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blur1", NULL);
-
-    std::string blur1Filename = "blur1";
-    checkForCgCompileError(blur1Filename, "creating blur1 program");
-	if (blur1Program == NULL)
-		exit(1);
-	cgGLLoadProgram(blur1Program);
-
-	checkForCgError("loading blur1 program");
-
-	blur2Program = cgCreateProgram(myCgContext, CG_SOURCE, blurProgram.c_str(), myCgProfile, "blurVert", NULL);
-*/
-
+    glDeleteVertexArrays(1, &m_temp_vao);
 }
 
 ShaderEngine::~ShaderEngine()
