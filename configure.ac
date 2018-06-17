@@ -1,4 +1,4 @@
-AC_INIT([projectM], [2.2.2], [mischa@mvstg.biz], [projectM], [https://github.com/revmischa/projectm])
+AC_INIT([projectM], [3.0.0], [mischa@mvstg.biz], [projectM], [https://github.com/revmischa/projectm])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects tar-pax])
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
@@ -153,5 +153,5 @@ libprojectM:            yes
 Threading:              ${enable_threading}
 SDL:                    ${enable_sdl}
 Qt & Pulseaudio:        ${enable_qt}
-OpenGL ES:              ${enable_gles}
+OpenGLES:               ${enable_gles}
 ])
