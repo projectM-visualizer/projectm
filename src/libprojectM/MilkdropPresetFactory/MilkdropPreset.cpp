@@ -93,11 +93,7 @@ MilkdropPreset::~MilkdropPreset()
 	delete(*pos);
   }
   customWaves.clear();
- customShapes.clear();
- presetOutputs().customWaves.clear();
- presetOutputs().customShapes.clear();
-  presetOutputs().drawables.clear();
-
+  customShapes.clear();
 }
 
 /* Adds a per pixel equation according to its string name. This
