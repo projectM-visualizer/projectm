@@ -58,7 +58,6 @@ public:
     static int maxsamples;
     PCM();
     ~PCM();
-    void initPCM(int maxsamples);
     void addPCMfloat(const float *PCMdata, int samples);
     void addPCM16(short [2][512]);
     void addPCM16Data(const short* pcm_data, short samples);
@@ -68,6 +67,8 @@ public:
     void freePCM();
     int getPCMnew(float *PCMdata, int channel, int freq, float smoothing, int derive,int reset);
 
+private:
+    void _initPCM(int maxsamples);
 
   };
 
