@@ -14,8 +14,6 @@
 		1612C9E3207A85C100862A3A /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C9E1207A85BD00862A3A /* libNativePresetFactory.a */; };
 		1612CA11207A8D2F00862A3A /* shaders in Copy Files */ = {isa = PBXBuildFile; fileRef = 1612CA10207A8D2400862A3A /* shaders */; };
 		169502001F7009E9008FAF86 /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
-		16A42142207817AE006F30CE /* Cg.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 161070DC1F705069001905AB /* Cg.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		C307DFD41D565B57002F6B9E /* presets in Copy Files */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		C345214F1BF022A5001707D2 /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
 		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
 		C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215D1BF025CF001707D2 /* CoreFoundation.framework */; };
@@ -88,16 +86,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		161070C81F704047001905AB /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				16A42142207817AE006F30CE /* Cg.framework in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C34521421BF02293001707D2 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
@@ -105,7 +93,6 @@
 			dstSubfolderSpec = 16;
 			files = (
 				C3D30B901BF02BEC009AAACD /* fonts in Copy Files */,
-				C307DFD41D565B57002F6B9E /* presets in Copy Files */,
 				1612CA11207A8D2F00862A3A /* shaders in Copy Files */,
 			);
 			name = "Copy Files";
@@ -225,7 +212,7 @@
 				C34521401BF02293001707D2 /* Sources */,
 				C34521411BF02293001707D2 /* Frameworks */,
 				C34521421BF02293001707D2 /* Copy Files */,
-				161070C81F704047001905AB /* CopyFiles */,
+				1659FEE920D67E2E00092B7D /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -307,6 +294,24 @@
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1659FEE920D67E2E00092B7D /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/../../presets",
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/presets",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "POUT=$BUILT_PRODUCTS_DIR/presets\nPIN=$SRCROOT/../../presets\n\nmkdir -p $POUT\ncp $PIN/presets_bltc201/* $POUT/\ncp $PIN/presets_milkdrop/* $POUT/\ncp $PIN/presets_milkdrop_104/* $POUT/\ncp $PIN/presets_milkdrop_200/* $POUT/\ncp $PIN/presets_projectM/* $POUT/\ncp $PIN/presets_stock/* $POUT/\ncp $PIN/presets_tryptonaut/* $POUT/\ncp $PIN/presets_yin/* $POUT/\necho \"Copied presets to $POUT\"";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C34521401BF02293001707D2 /* Sources */ = {
