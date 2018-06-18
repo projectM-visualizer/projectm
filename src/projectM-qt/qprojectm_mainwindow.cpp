@@ -118,6 +118,7 @@ activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDi
 	m_QProjectMWidget->makeCurrent();
 	m_QProjectMWidget->setFocus();
 	setCentralWidget ( m_QProjectMWidget );
+	m_QProjectMWidget->installEventFilter(this);
 
 	m_timer->start ( 0 );
 
@@ -1315,3 +1316,16 @@ void QProjectM_MainWindow::handleFailedPresetSwitch(const bool isHardCut, const 
 
 }
 
+bool QProjectM_MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+	    if (event->type() == QEvent::MouseButtonDblClick && ((QMouseEvent*)event)->button() == Qt::LeftButton) {
+			    this->setWindowState ( this->windowState() ^ Qt::WindowFullScreen );
+			    return true;
+		} else if (event->type() == QEvent::MouseButtonPress && ((QMouseEvent*)event)->button() == Qt::RightButton) {
+			    setMenuVisible(!_menuVisible);
+				refreshHeaders();
+				return true;
+		} else {
+			    return false;
+		}
+}
