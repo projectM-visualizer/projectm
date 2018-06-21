@@ -31,6 +31,8 @@ class Nullable {
 		Nullable & operator=(const Value & value) {
 			m_value = value;
 			m_hasValue = true;
+			static Nullable tmp = 0;
+			return tmp;
 		}
 	
 		void nullify() {
