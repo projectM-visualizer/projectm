@@ -31,14 +31,14 @@ MilkdropPresetFactory::MilkdropPresetFactory(int gx, int gy): _usePresetOutputs(
 
 MilkdropPresetFactory::~MilkdropPresetFactory() {
 
-	std::cerr << "[~MilkdropPresetFactory] destroy infix ops" << std::endl;
+//	std::cerr << "[~MilkdropPresetFactory] destroy infix ops" << std::endl;
 	Eval::destroy_infix_ops();
-	std::cerr << "[~MilkdropPresetFactory] destroy builtin func" << std::endl;
+//	std::cerr << "[~MilkdropPresetFactory] destroy builtin func" << std::endl;
 	BuiltinFuncs::destroy_builtin_func_db();
-	std::cerr << "[~MilkdropPresetFactory] delete preset out puts" << std::endl;
+//	std::cerr << "[~MilkdropPresetFactory] delete preset out puts" << std::endl;
 	delete(_presetOutputs);
         delete(_presetOutputs2);
-	std::cerr << "[~MilkdropPresetFactory] done" << std::endl;
+//	std::cerr << "[~MilkdropPresetFactory] done" << std::endl;
 
 }
 

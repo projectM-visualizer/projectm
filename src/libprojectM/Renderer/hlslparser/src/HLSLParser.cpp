@@ -476,6 +476,7 @@ const Intrinsic _intrinsic[] =
         INTRINSIC_FLOAT2_FUNCTION( "atan2" ),
         INTRINSIC_FLOAT3_FUNCTION( "clamp" ),
         INTRINSIC_FLOAT1_FUNCTION( "cos" ),
+        INTRINSIC_FLOAT1_FUNCTION( "tan" ),
 
         INTRINSIC_FLOAT3_FUNCTION( "lerp" ),
         INTRINSIC_FLOAT3_FUNCTION( "smoothstep" ),
@@ -543,6 +544,8 @@ const Intrinsic _intrinsic[] =
         Intrinsic( "transpose", HLSLBaseType_Half2x2, HLSLBaseType_Half2x2 ),
         Intrinsic( "transpose", HLSLBaseType_Half3x3, HLSLBaseType_Half3x3 ),
         Intrinsic( "transpose", HLSLBaseType_Half4x4, HLSLBaseType_Half4x4 ),
+
+        INTRINSIC_FLOAT2_FUNCTION( "modf" ),
 
         INTRINSIC_FLOAT1_FUNCTION( "normalize" ),
         INTRINSIC_FLOAT2_FUNCTION( "pow" ),
@@ -1165,14 +1168,14 @@ static bool GetBinaryOpResultType(HLSLBinaryOp binaryOp, const HLSLType& type1, 
 
 }
 
-HLSLParser::HLSLParser(Allocator* allocator, const char* fileName, const char* buffer, size_t length) : 
-    m_tokenizer(fileName, buffer, length),
+HLSLParser::HLSLParser(Allocator* allocator, HLSLTree* tree) :
     m_userTypes(allocator),
     m_variables(allocator),
-    m_functions(allocator)
+    m_functions(allocator),
+    m_macros(allocator)
 {
     m_numGlobals = 0;
-    m_tree = NULL;
+    m_tree = tree;
 }
 
 bool HLSLParser::Accept(int token)
@@ -1478,47 +1481,61 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
         }
         else
         {
-            // Uniform declaration.
-            HLSLDeclaration* declaration = m_tree->AddNode<HLSLDeclaration>(fileName, line);
-            declaration->name            = globalName;
-            declaration->type            = type;
+            HLSLDeclaration * firstDeclaration = NULL;
+            HLSLDeclaration * lastDeclaration = NULL;
 
-            // Handle array syntax.
-            if (Accept('['))
-            {
-                if (!Accept(']'))
-                {
-                    if (!ParseExpression(declaration->type.arraySize) || !Expect(']'))
+            do {
+                if (firstDeclaration != NULL) {
+                    if (!ExpectIdentifier(globalName))
                     {
                         return false;
                     }
                 }
-                declaration->type.array = true;
-            }
 
-            // Handle optional register.
-            if (Accept(':'))
-            {
-                // @@ Currently we support either a semantic or a register, but not both.
-                if (AcceptIdentifier(declaration->semantic)) {
-                    int k = 1;
+                // Uniform declaration.
+                HLSLDeclaration* declaration = m_tree->AddNode<HLSLDeclaration>(fileName, line);
+                declaration->name            = globalName;
+                declaration->type            = type;
+
+                // Handle array syntax.
+                if (Accept('['))
+                {
+                    if (!Accept(']'))
+                    {
+                        if (!ParseExpression(declaration->type.arraySize) || !Expect(']'))
+                        {
+                            return false;
+                        }
+                    }
+                    declaration->type.array = true;
                 }
-                else if (!Expect(HLSLToken_Register) || !Expect('(') || !ExpectIdentifier(declaration->registerName) || !Expect(')'))
+
+                // Handle optional register.
+                if (Accept(':'))
+                {
+                    // @@ Currently we support either a semantic or a register, but not both.
+                    if (AcceptIdentifier(declaration->semantic)) {
+                        int k = 1;
+                    }
+                    else if (!Expect(HLSLToken_Register) || !Expect('(') || !ExpectIdentifier(declaration->registerName) || !Expect(')'))
+                    {
+                        return false;
+                    }
+                }
+
+                DeclareVariable( globalName, declaration->type );
+
+                if (!ParseDeclarationAssignment(declaration))
                 {
                     return false;
                 }
-            }
+                if (firstDeclaration == NULL) firstDeclaration = declaration;
+                if (lastDeclaration != NULL) lastDeclaration->nextDeclaration = declaration;
+                lastDeclaration = declaration;
 
-            DeclareVariable( globalName, declaration->type );
+            } while(Accept(','));
 
-            if (!ParseDeclarationAssignment(declaration))
-            {
-                return false;
-            }
-
-            // TODO: Multiple variables declared on one line.
-            
-            statement = declaration;
+            statement = firstDeclaration;
         }
     }
     else if (ParseTechnique(statement)) {
@@ -1736,6 +1753,24 @@ bool HLSLParser::ParseStatement(HLSLStatement*& statement, const HLSLType& retur
         return true;
     }
 
+    // While statement.
+    if (Accept(HLSLToken_While))
+    {
+        HLSLWhileStatement* whileStatement = m_tree->AddNode<HLSLWhileStatement>(fileName, line);
+        whileStatement->attributes = attributes;
+        if (!Expect('(') || !ParseExpression(whileStatement->condition) || !Expect(')'))
+        {
+            return false;
+        }
+        statement = whileStatement;
+        if (!ParseStatementOrBlock(whileStatement->statement, returnType))
+        {
+            return false;
+        }
+        return true;
+    }
+
+
     if (attributes != NULL)
     {
         // @@ Error. Unexpected attribute. We only support attributes associated to if and for statements.
@@ -1809,6 +1844,14 @@ bool HLSLParser::ParseStatement(HLSLStatement*& statement, const HLSLType& retur
         expressionStatement->expression = expression;
         statement = expressionStatement;
     }
+
+/* Not entirely sure about this, occurs in:
+ * ech0 - liquid firesticks I.milk:710
+    // Some statements are separated by a colon instead of a semicolon
+    if (Accept(',')) {
+        return true;
+    }
+*/
 
     return Expect(';');
 }
@@ -2170,13 +2213,13 @@ bool HLSLParser::ParseBinaryExpression(int priority, HLSLExpression*& expression
         {
             break;
         }
+    }
 
-		if( needsEndParen )
-		{
-			if( !Expect( ')' ) )
-				return false;
-			needsEndParen = false;
-		}
+    if( needsEndParen )
+    {
+        if( !Expect( ')' ) )
+            return false;
+        needsEndParen = false;
     }
 
     return !needsEndParen || Expect(')');
@@ -3188,13 +3231,12 @@ bool HLSLParser::ParseStage(HLSLStatement*& statement)
 
 
 
-bool HLSLParser::Parse(HLSLTree* tree)
-{
-    m_tree = tree;
-    
+bool HLSLParser::Parse(const char* fileName, const char* buffer, size_t length)
+{    
     HLSLRoot* root = m_tree->GetRoot();
     HLSLStatement* lastStatement = NULL;
 
+    m_tokenizer = HLSLTokenizer(fileName, buffer, length);
     while (!Accept(HLSLToken_EndOfStream))
     {
         HLSLStatement* statement = NULL;
@@ -3219,6 +3261,395 @@ bool HLSLParser::Parse(HLSLTree* tree)
     return true;
 }
 
+
+bool HLSLParser::ParsePreprocessorDefine()
+{
+    int line             = GetLineNumber();
+    const char* fileName = GetFileName();
+
+    // Define identifier parsing:
+    // Don't use AcceptIdentifier to be able to check for whitespace after define name
+    // This is required to separate define name and value as both could contains parenthesis
+    const char* macroName = NULL;
+    m_tokenizer.Next();
+    if (m_tokenizer.GetToken() == HLSLToken_Identifier)
+    {
+        macroName = m_tree->AddString( m_tokenizer.GetIdentifier() );
+    }
+    else
+    {
+        char near[HLSLTokenizer::s_maxIdentifier];
+        m_tokenizer.GetTokenName(near);
+        m_tokenizer.Error("Syntax error: expected identifier near '%s'", near);
+        return false;
+    }
+
+    bool macroWithArguments = !m_tokenizer.NextIsWhitespace();
+
+    // Macro declaration
+    HLSLMacro* macro = m_tree->AddNode<HLSLMacro>(fileName, line);
+    macro->name = macroName;
+    m_macros.PushBack(macro);
+
+    // Prepare next token
+    m_tokenizer.Next();
+
+    std::string value;
+    if (macroWithArguments)
+    {
+        // Macro with arguments
+        if (Accept('('))
+        {
+            HLSLArgument* lastArgument = NULL;
+            uint numArguments = 0;
+
+            while (!Accept(')'))
+            {
+                if (CheckForUnexpectedEndOfStream(')'))
+                {
+                    return false;
+                }
+                if (numArguments > 0 && !Expect(','))
+                {
+                    return false;
+                }
+
+                HLSLArgument* argument = m_tree->AddNode<HLSLArgument>(fileName, line);
+                if (!ExpectIdentifier(argument->name))
+                {
+                    return false;
+                }
+
+                if (lastArgument != NULL)
+                {
+                    lastArgument->nextArgument = argument;
+                }
+                else
+                {
+                    macro->argument = argument;
+                }
+                lastArgument = argument;
+
+                ++numArguments;
+            }
+        }
+
+        // Macro value
+        while(m_tokenizer.GetToken() != HLSLToken_EndOfLine)
+        {
+            bool addOriginalSource = true;
+
+            if (m_tokenizer.GetToken() == HLSLToken_Identifier)
+            {
+                // Search for macro attributes
+                HLSLArgument* argument = macro->argument;
+                uint argNum = 0;
+                while(argument != NULL)
+                {
+                    if (String_Equal(argument->name, m_tokenizer.GetIdentifier()))
+                    {
+                        value.append("#" + std::to_string(argNum) + "#");
+                        addOriginalSource = false;
+                        break;
+                    }
+
+                    argument = argument->nextArgument;
+                    argNum++;
+                }
+            }
+
+            if (addOriginalSource)
+            {
+                value.append(m_tokenizer.getLastPos(true),
+                             m_tokenizer.getCurrentPos() - m_tokenizer.getLastPos(true));
+            }
+
+            m_tokenizer.Next(false);
+        }
+
+
+    }
+    else
+    {
+        // Macro value
+        while(m_tokenizer.GetToken() != HLSLToken_EndOfLine)
+        {
+            const char * start = m_tokenizer.getLastPos(true);
+
+            std::string valueAdd(start, m_tokenizer.getCurrentPos() - start);
+            value.append(valueAdd);
+
+            m_tokenizer.Next(false);
+        }
+    }
+
+    // Remove extra parenthesis
+    if (value[0] == '(')
+    {
+        value.erase(value.length()-1, 1);
+        value.erase(0, 1);
+    }
+
+    macro->value = value;
+
+    return true;
+}
+
+
+bool HLSLParser::ApplyPreprocessor(const char* fileName, const char* buffer, size_t length,
+                                   std::string & sourcePreprocessed) {
+
+    m_tokenizer = HLSLTokenizer(fileName, buffer, length);
+
+    // Fisrt pass, grab #define
+    while (m_tokenizer.GetToken() != HLSLToken_EndOfStream)
+    {
+        if (m_tokenizer.GetToken() == HLSLToken_PreprocessorDefine)
+        {
+            ParsePreprocessorDefine();
+        }
+
+        m_tokenizer.Next();
+    }
+
+
+    // Second pass, propagate macros definitions across macros values
+    int index = 0;
+    while (index <  m_macros.GetSize())
+    {
+        HLSLMacro * macro = m_macros[index];
+        m_tokenizer = HLSLTokenizer(fileName, macro->value.c_str(), macro->value.length());
+        std::string valueProcessed;
+
+        while (m_tokenizer.GetToken() != HLSLToken_EndOfStream)
+        {
+            bool addOriginalSource = true;
+            if (m_tokenizer.GetToken() == HLSLToken_Identifier)
+            {
+                HLSLMacro * matchedMacro = ProcessMacroFromIdentifier(valueProcessed, addOriginalSource);
+                if (matchedMacro != NULL)
+                {
+                    CheckIfAnAlias(macro, matchedMacro);
+                }
+            }
+
+            if (addOriginalSource)
+            {
+                valueProcessed.append(m_tokenizer.getLastPos(true),
+                                      m_tokenizer.getCurrentPos() - m_tokenizer.getLastPos(true));
+            }
+
+            m_tokenizer.Next();
+        }
+
+        if (valueProcessed != macro->value)
+        {
+            // Define value referenced another define, it was replaced
+            // try again until there is no replacement
+            macro->value = valueProcessed;
+
+        } else {
+            index++;
+        }
+    }
+
+    // Third pass, macro aliases get original value and arguments
+    index = 0;
+    while (index <  m_macros.GetSize())
+    {
+        HLSLMacro * macro = m_macros[index];
+
+        if (macro->macroAliased != NULL) {
+            macro->argument = macro->macroAliased->argument;
+            macro->value = macro->macroAliased->value;
+        }
+
+        index++;
+    }
+
+    // Fouth pass, search and replace define uses
+    m_tokenizer = HLSLTokenizer(fileName, buffer, length);
+    sourcePreprocessed.clear();
+    while (m_tokenizer.GetToken() != HLSLToken_EndOfStream)
+    {
+        bool addOriginalSource = true;
+
+        if (m_tokenizer.GetToken() == HLSLToken_PreprocessorDefine)
+        {
+            // Skip macros definition
+            while(m_tokenizer.GetToken() != HLSLToken_EndOfLine)
+            {
+                m_tokenizer.Next(false);
+            }
+
+            addOriginalSource = false;
+        }
+        else if (m_tokenizer.GetToken() == HLSLToken_Identifier)
+        {
+            ProcessMacroFromIdentifier(sourcePreprocessed, addOriginalSource);
+        }
+
+        if (addOriginalSource)
+        {
+            sourcePreprocessed.append(m_tokenizer.getLastPos(false),
+                                      m_tokenizer.getCurrentPos() - m_tokenizer.getLastPos(false));
+        }
+
+        m_tokenizer.Next();
+    }
+
+
+    return true;
+}
+
+
+HLSLMacro * HLSLParser::ProcessMacroFromIdentifier(std::string & sourcePreprocessed, bool & addOriginalSource)
+{
+    // Search a define matching
+    for (int i = m_macros.GetSize() - 1; i >= 0; --i)
+    {
+        if (String_Equal(m_macros[i]->name, m_tokenizer.GetIdentifier()))
+        {
+            if (m_macros[i]->argument == NULL)
+            {
+                // Macro without arguments
+                sourcePreprocessed.append("(");
+                sourcePreprocessed.append(m_macros[i]->value);
+                sourcePreprocessed.append(")");
+            }
+            else
+            {
+                // Macro with arguments
+                m_tokenizer.Next();
+                sourcePreprocessed.append("(");
+                ProcessMacroArguments(m_macros[i], sourcePreprocessed);
+                sourcePreprocessed.append(")");
+            }
+
+            addOriginalSource = false;
+
+            return m_macros[i];
+        }
+    }
+
+    return NULL;
+}
+
+
+
+void HLSLParser::ProcessMacroArguments(HLSLMacro* macro, std::string & sourcePreprocessed)
+{
+    uint scopeLevel = 0;
+    std::vector<std::string> argumentsValues;
+    std::string argValue;
+
+    // Parse arguments values
+    while(m_tokenizer.GetToken() != HLSLToken_EndOfStream) {
+        bool addToValue = true;
+
+        if (m_tokenizer.GetToken() == '(')
+        {
+            scopeLevel++;
+            if (scopeLevel == 1)
+            {
+                addToValue = false;
+            }
+        }
+        else if (m_tokenizer.GetToken() == ')')
+        {
+            scopeLevel--;
+            if (scopeLevel == 0)
+            {
+                argumentsValues.push_back(argValue);
+                break;
+            }
+        }
+        else if (m_tokenizer.GetToken() == ',')
+        {
+            if (scopeLevel == 1)
+            {
+                argumentsValues.push_back(argValue);
+                argValue.clear();
+                addToValue = false;
+            }
+        }
+        else if (m_tokenizer.GetToken() == HLSLToken_Identifier)
+        {
+            ProcessMacroFromIdentifier(argValue, addToValue);
+        }
+
+        if (addToValue)
+        {
+            argValue.append(m_tokenizer.getLastPos(false),
+                            m_tokenizer.getCurrentPos() - m_tokenizer.getLastPos(false));
+        }
+
+        m_tokenizer.Next();
+    }
+
+    // Write arguments value
+    uint index = 0;
+    std::string arg;
+    bool argFound = false;
+    while(index < macro->value.length())
+    {
+        if (macro->value[index] == '#' && !argFound)
+        {
+            argFound = true;
+            arg.clear();
+        }
+        else if (macro->value[index] == '#' && argFound)
+        {
+            uint indexArg = std::stoi(arg);
+            if (indexArg < argumentsValues.size())
+            {
+                sourcePreprocessed.append(argumentsValues[indexArg]);
+            }
+            argFound = false;
+        }
+        else if (argFound)
+        {
+            arg += macro->value[index];
+        }
+        else
+        {
+            sourcePreprocessed += macro->value[index];
+        }
+
+        index++;
+    }
+
+}
+
+void HLSLParser::CheckIfAnAlias(HLSLMacro * macro, HLSLMacro * matchedMacro)
+{
+    // Check if macro is just an alias
+    // compare args count in macro definition vs macro value
+    uint nbArgsIn = 0;
+    HLSLArgument* argument = macro->argument;
+    while(argument != NULL)
+    {
+        nbArgsIn++;
+        argument = argument->nextArgument;
+    }
+
+    uint nbArgsOut = 0;
+    size_t found = matchedMacro->value.find("#" + std::to_string(nbArgsOut) + "#");
+    while(found != std::string::npos)
+    {
+        nbArgsOut++;
+        found = matchedMacro->value.find("#" + std::to_string(nbArgsOut) + "#");
+    }
+
+    if (nbArgsIn != nbArgsOut)
+    {
+        // Macro is an alias for matched macro
+        macro->macroAliased = matchedMacro;
+    }
+}
+
+
+
 bool HLSLParser::AcceptTypeModifier(int& flags)
 {
     if (Accept(HLSLToken_Const))
@@ -3233,7 +3664,7 @@ bool HLSLParser::AcceptTypeModifier(int& flags)
     }
     else if (Accept(HLSLToken_Uniform))
     {
-        //flags |= HLSLTypeFlag_Uniform;      // @@ Ignored.
+        flags |= HLSLTypeFlag_Uniform;
         return true;
     }
     else if (Accept(HLSLToken_Inline))
@@ -3303,6 +3734,7 @@ bool HLSLParser::AcceptType(bool allowVoid, HLSLType& type/*, bool acceptFlags*/
     switch (token)
     {
     case HLSLToken_Float:
+    case HLSLToken_Float1:
         type.baseType = HLSLBaseType_Float;
         break;
     case HLSLToken_Float2:      
@@ -3427,7 +3859,7 @@ bool HLSLParser::AcceptType(bool allowVoid, HLSLType& type/*, bool acceptFlags*/
             if (Accept('<'))
             {
                 int token = m_tokenizer.GetToken();
-                if (token == HLSLToken_Float)
+                if (token == HLSLToken_Float || token == HLSLToken_Float1)
                 {
                     type.samplerType = HLSLBaseType_Float;
                 }

@@ -5,6 +5,8 @@
 #include "Engine.h"
 
 #include <new>
+#include <map>
+#include <vector>
 
 namespace M4
 {
@@ -19,6 +21,7 @@ enum HLSLNodeType
     HLSLNodeType_BufferField,
     HLSLNodeType_Function,
     HLSLNodeType_Argument,
+    HLSLNodeType_Macro,
     HLSLNodeType_ExpressionStatement,
     HLSLNodeType_Expression,
     HLSLNodeType_ReturnStatement,
@@ -27,6 +30,7 @@ enum HLSLNodeType
     HLSLNodeType_ContinueStatement,
     HLSLNodeType_IfStatement,
     HLSLNodeType_ForStatement,
+    HLSLNodeType_WhileStatement,
     HLSLNodeType_BlockStatement,
     HLSLNodeType_UnaryExpression,
     HLSLNodeType_BinaryExpression,
@@ -257,7 +261,7 @@ enum HLSLTypeFlags
     HLSLTypeFlag_None = 0,
     HLSLTypeFlag_Const = 0x01,
     HLSLTypeFlag_Static = 0x02,
-    //HLSLTypeFlag_Uniform = 0x04,
+    HLSLTypeFlag_Uniform = 0x04,
     //HLSLTypeFlag_Extern = 0x10,
     //HLSLTypeFlag_Volatile = 0x20,
     //HLSLTypeFlag_Shared = 0x40,
@@ -513,6 +517,22 @@ struct HLSLArgument : public HLSLNode
     bool                    hidden;
 };
 
+/** Macro declaration */
+struct HLSLMacro : public HLSLStatement
+{
+    static const HLSLNodeType s_type = HLSLNodeType_Macro;
+    HLSLMacro()
+    {
+        name            = NULL;
+        argument        = NULL;
+        macroAliased    = NULL;
+    }
+    const char*         name;
+    HLSLArgument*       argument;
+    std::string         value;
+    HLSLMacro*          macroAliased;
+};
+
 /** A expression which forms a complete statement. */
 struct HLSLExpressionStatement : public HLSLStatement
 {
@@ -578,6 +598,18 @@ struct HLSLForStatement : public HLSLStatement
     HLSLDeclaration*    initialization;
     HLSLExpression*     condition;
     HLSLExpression*     increment;
+    HLSLStatement*      statement;
+};
+
+struct HLSLWhileStatement : public HLSLStatement
+{
+    static const HLSLNodeType s_type = HLSLNodeType_WhileStatement;
+    HLSLWhileStatement()
+    {
+        condition = NULL;
+        statement = NULL;
+    }
+    HLSLExpression*     condition;
     HLSLStatement*      statement;
 };
 

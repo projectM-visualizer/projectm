@@ -10,6 +10,7 @@ enum HLSLToken
 {
     // Built-in types.
     HLSLToken_Float         = 256,
+    HLSLToken_Float1,
     HLSLToken_Float2,
     HLSLToken_Float3,
     HLSLToken_Float4,
@@ -67,6 +68,7 @@ enum HLSLToken
     HLSLToken_Const,
     HLSLToken_Static,
     HLSLToken_Inline,
+    HLSLToken_PreprocessorDefine,
 
     // Input modifiers.
     HLSLToken_Uniform,
@@ -99,6 +101,8 @@ enum HLSLToken
     HLSLToken_IntLiteral,
     HLSLToken_Identifier,
 
+    HLSLToken_EndOfLine,
+
     HLSLToken_EndOfStream,
 };
 
@@ -106,6 +110,7 @@ class HLSLTokenizer
 {
 
 public:
+    HLSLTokenizer() { }
 
     /// Maximum string length of an identifier.
     static const int s_maxIdentifier = 255 + 1;
@@ -114,7 +119,7 @@ public:
     HLSLTokenizer(const char* fileName, const char* buffer, size_t length);
 
     /** Advances to the next token in the stream. */
-    void Next();
+    void Next(const bool EOLSkipping = true);
 
     /** Returns the current token in the stream. */
     int GetToken() const;
@@ -142,10 +147,17 @@ public:
     /** Gets a human readable text description of the specified token. */
     static void GetTokenName(int token, char buffer[s_maxIdentifier]);
 
+    /** Returns true if the next caracterer is a whitespace. */
+    bool NextIsWhitespace();
+
+    const char* getLastPos(const bool trimmed);
+    const char* getCurrentPos()  { return m_buffer; }
+
+
 private:
 
-    bool SkipWhitespace();
-    bool SkipComment();
+    bool SkipWhitespace(const bool EOLSkipping);
+    bool SkipComment(const char **buffer, const bool EOLSkipping);
 	bool SkipPragmaDirective();
     bool ScanNumber();
     bool ScanLineDirective();
@@ -154,6 +166,7 @@ private:
 
     const char*         m_fileName;
     const char*         m_buffer;
+    const char*         m_bufferPrevious;
     const char*         m_bufferEnd;
     int                 m_lineNumber;
     bool                m_error;
