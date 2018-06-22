@@ -29,7 +29,7 @@
 
 const float FPS = 60;
 
-class projectMSDL : projectM {
+class projectMSDL : public projectM {
 public:
     bool done;
 

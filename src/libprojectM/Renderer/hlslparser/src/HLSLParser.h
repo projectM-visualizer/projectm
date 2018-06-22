@@ -16,6 +16,7 @@
 
 #include "HLSLTokenizer.h"
 #include "HLSLTree.h"
+#include <string>
 
 namespace M4
 {
@@ -27,9 +28,10 @@ class HLSLParser
 
 public:
 
-    HLSLParser(Allocator* allocator, const char* fileName, const char* buffer, size_t length);
+    HLSLParser(Allocator* allocator, HLSLTree *tree);
 
-    bool Parse(HLSLTree* tree);
+    bool Parse(const char *fileName, const char *buffer, size_t length);
+    bool ApplyPreprocessor(const char* fileName, const char* buffer, size_t length, std::string & sourcePreprocessed);
 
 private:
 
@@ -88,6 +90,7 @@ private:
     bool ParsePass(HLSLPass*& pass);
     bool ParsePipeline(HLSLStatement*& pipeline);
     bool ParseStage(HLSLStatement*& stage);
+    bool ParsePreprocessorDefine();
 
     bool ParseAttributeList(HLSLAttribute*& attribute);
     bool ParseAttributeBlock(HLSLAttribute*& attribute);
@@ -120,6 +123,10 @@ private:
     const char* GetFileName();
     int GetLineNumber() const;
 
+    void ProcessMacroArguments(HLSLMacro* macro, std::string & sourcePreprocessed);
+    HLSLMacro *ProcessMacroFromIdentifier(std::string & sourcePreprocessed, bool &addOriginalSource);
+    void CheckIfAnAlias(HLSLMacro * macro, HLSLMacro * macroMatched);
+
 private:
 
     struct Variable
@@ -132,6 +139,7 @@ private:
     Array<HLSLStruct*>      m_userTypes;
     Array<Variable>         m_variables;
     Array<HLSLFunction*>    m_functions;
+    Array<HLSLMacro*>       m_macros;
     int                     m_numGlobals;
 
     HLSLTree*               m_tree;

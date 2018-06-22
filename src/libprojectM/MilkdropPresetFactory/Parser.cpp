@@ -1707,6 +1707,7 @@ void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool w
 					break;
 				} else {
 					line_count++;
+                    out_buffer->push_back('\n');
 					return;
 				}
 			}
