@@ -8,6 +8,8 @@
 // stuff that needs to be ported to newer GL calls
 #define GL_TRANSITION
 
+#define DUMP_SHADERS_ON_ERROR
+
 #ifdef __APPLE__
 # include <OpenGL/gl3.h>
 # include <OpenGL/gl3ext.h>

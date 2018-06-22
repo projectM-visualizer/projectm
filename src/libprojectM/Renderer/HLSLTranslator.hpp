@@ -27,7 +27,7 @@
 
 class HLSLTranslator {
  public:
-    std::unique_ptr<std::string> parse(GLenum shaderType, const char *fileName, std::string &source);
+    std::unique_ptr<std::string> parse(const std::string & shaderType, const char *fileName, const std::string &fullSource);
 };
 
 #endif
