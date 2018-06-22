@@ -117,7 +117,7 @@ AS_IF([test "x$enable_qt" = "xyes"], [
 
   AC_CHECK_PROGS(MOC, [moc-qt5 moc])
   AC_CHECK_PROGS(UIC, [uic-qt5 uic])
-  AC_CHECK_PROGS(RCC, [rcc])
+  AC_CHECK_PROGS(RCC, [rcc-qt5 rcc])
   if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
     AC_MSG_ERROR([Qt utility programs moc, uic, and rcc are required.])
   fi
