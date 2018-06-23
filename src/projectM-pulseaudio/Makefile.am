@@ -63,4 +63,7 @@ CLEANFILES = \
 desktopdir = $(datadir)/applications
 dist_desktop_DATA = projectM-pulseaudio.desktop
 
+icondir = $(datadir)/pixmaps
+dist_icon_DATA = ${top_srcdir}/src/projectM-qt/images/icons/prjm16-transparent.svg
+
 dist_man_MANS = projectM-pulseaudio.1
