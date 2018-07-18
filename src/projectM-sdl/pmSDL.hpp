@@ -45,6 +45,7 @@ public:
     void pollEvent();
     void maximize();
     std::string getActivePresetName();
+    void addFakePCM();
 
 private:
     SDL_Window *win;
@@ -64,7 +65,6 @@ private:
     static void audioInputCallbackF32(void *userdata, unsigned char *stream, int len);
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
 
-    void addFakePCM();
     void keyHandler(SDL_Event *);
     SDL_AudioDeviceID selectAudioInput(int count);
 };
