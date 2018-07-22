@@ -8,8 +8,6 @@
 #ifndef SHADERENGINE_HPP_
 #define SHADERENGINE_HPP_
 
-#define PRESET_SHADERS_ENABLED 1
-
 #include "Common.hpp"
 #include "projectM-opengl.h"
 
@@ -24,6 +22,8 @@ class ShaderEngine;
 #include <map>
 #include <sstream>
 #include "Shader.hpp"
+
+
 class ShaderEngine
 {
 public:
@@ -38,12 +38,15 @@ public:
     ShaderEngine();
     virtual ~ShaderEngine();
     void loadPresetShaders(Pipeline &pipeline);
-    void enableWarpShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
-    void enableCompositeShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
-    void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext, const int texsize);
-    void setAspect(float aspect);
-    void setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect, TextureManager *textureManager);
+    bool enableWarpShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext, const glm::mat4 & mat_ortho);
+    bool enableCompositeShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
+    void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext);
+    void setParams(const int _texsizeX, const int texsizeY, BeatDetect *beatDetect, TextureManager *_textureManager);
     void reset();
+
+    static GLuint CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode, const std::string & shaderTypeString);
+    static bool checkCompileStatus(GLuint shader, const std::string & shaderTitle);
+    static bool linkProgram(GLuint programID);
 
     static GLint Uniform_V2F_C4F_VertexTranformation() { return UNIFORM_V2F_C4F_VERTEX_TRANFORMATION; }
     static GLint Uniform_V2F_C4F_VertexPointSize() { return UNIFORM_V2F_C4F_VERTEX_POINT_SIZE; }
@@ -53,20 +56,24 @@ public:
     GLuint programID_v2f_c4f;
     GLuint programID_v2f_c4f_t2f;
 
+    const static std::string v2f_c4f_vert;
+    const static std::string v2f_c4f_frag;
+    const static std::string v2f_c4f_t2f_vert;
+    const static std::string v2f_c4f_t2f_frag;
+
 private:
-    unsigned int mainTextureId;
-    int texsize;
-    float aspect;
+    int texsizeX;
+    int texsizeY;
+    float aspectX;
+    float aspectY;
     BeatDetect *beatDetect;
     TextureManager *textureManager;
+    GLint uniform_vertex_transf_warp_shader;
 
-    GLuint noise_texture_lq_lite;
-    GLuint noise_texture_lq;
-    GLuint noise_texture_mq;
-    GLuint noise_texture_hq;
-    GLuint noise_texture_perlin;
-    GLuint noise_texture_lq_vol;
-    GLuint noise_texture_hq_vol;
+    GLuint programID_warp_fallback;
+    GLuint programID_comp_fallback;
+    GLuint programID_blur1;
+    GLuint programID_blur2;
 
     bool blur1_enabled;
     bool blur2_enabled;
@@ -79,11 +86,8 @@ private:
 
     void SetupShaderQVariables(GLuint program, const Pipeline &q);
     void SetupShaderVariables(GLuint program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
-    void setupUserTexture(GLuint program, const UserTexture* texture);
-    void setupUserTextureState(GLuint program, const UserTexture* texture);
+    void SetupTextures(GLuint program, const Shader &shader);
     GLuint compilePresetShader(const ShaderEngine::PresentShaderType shaderType, Shader &shader, const std::string &shaderFilename);
-    bool checkCompileStatus(GLuint shader, const std::string & shaderTitle);
-    bool linkProgram(GLuint programID);
     void disablePresetShaders();
     GLuint loadPresetShader(const PresentShaderType shaderType, Shader &shader, std::string &shaderFilename);
 
@@ -92,13 +96,8 @@ private:
     
     // programs generated from preset shader code
     GLuint programID_presetComp, programID_presetWarp;
-    GLuint programID_blur1, programID_blur2;
 
     bool presetCompShaderLoaded, presetWarpShaderLoaded;
-
-
-    GLuint CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode, const std::string & shaderTypeString);
-
 
     static GLint UNIFORM_V2F_C4F_VERTEX_TRANFORMATION;
     static GLint UNIFORM_V2F_C4F_VERTEX_POINT_SIZE;

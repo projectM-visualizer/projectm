@@ -1,7 +1,6 @@
 #ifndef Renderer_HPP
 #define Renderer_HPP
 
-#include "FBO.hpp"
 #include "BeatDetect.hpp"
 #include "Common.hpp"
 #include <string>
@@ -23,7 +22,7 @@
 #endif /** USE_FTGL */
 
 
-class UserTexture;
+class Texture;
 class BeatDetect;
 class TextureManager;
 
@@ -49,9 +48,10 @@ public:
   std::string title;
   int drawtitle;
   int texsize;
+  int texsizeX;
+  int texsizeY;
 
-
-  Renderer( int width, int height, int gx, int gy, int texsize,  BeatDetect *beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
+  Renderer(int width, int height, int gx, int gy, int _texsize,  BeatDetect *_beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
   ~Renderer();
 
   void RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext);
@@ -75,7 +75,6 @@ public:
 private:
 
 	PerPixelMesh mesh;
-  RenderTarget *renderTarget;
   BeatDetect *beatDetect;
   TextureManager *textureManager;
   static Pipeline* currentPipe;
@@ -129,6 +128,10 @@ private:
   void draw_title();
   void draw_title_to_screen(bool flip);
   void draw_title_to_texture();
+
+  int nearestPower2( int value );
+
+  GLuint textureRenderToTexture;
 
 };
 
