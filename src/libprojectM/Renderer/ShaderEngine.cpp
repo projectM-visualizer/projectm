@@ -6,10 +6,11 @@
  */
 #include <fstream>
 #include <algorithm>
-#include "PerlinNoise.hpp"
 #include "ShaderEngine.hpp"
 #include "BeatDetect.hpp"
+#include "Texture.hpp"
 #include "HLSLTranslator.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 #ifdef USE_GLES
     #define GLSL_VERSION "300 es"
@@ -63,7 +64,7 @@ std::string presetCompVertexShader(
     "}\n");
 
 
-std::string v2f_c4f_vert(
+const std::string ShaderEngine::v2f_c4f_vert(
     "#version "
     GLSL_VERSION
     "\n"
@@ -82,7 +83,7 @@ std::string v2f_c4f_vert(
     "    fragment_color = vertex_color;\n"
     "}\n");
 
-std::string v2f_c4f_frag(
+const std::string ShaderEngine::v2f_c4f_frag(
     "#version "
     GLSL_VERSION
     "\n"
@@ -95,7 +96,7 @@ std::string v2f_c4f_frag(
     "    color = fragment_color;\n"
     "}\n");
 
-std::string v2f_c4f_t2f_vert(
+const std::string ShaderEngine::v2f_c4f_t2f_vert(
         "#version "
         GLSL_VERSION
         "\n"
@@ -114,7 +115,7 @@ std::string v2f_c4f_t2f_vert(
         "    fragment_texture = vertex_texture;\n"
         "}\n");
 
-std::string v2f_c4f_t2f_frag(
+const std::string ShaderEngine::v2f_c4f_t2f_frag(
         "#version "
         GLSL_VERSION
         "\n"
@@ -133,10 +134,6 @@ std::string v2f_c4f_t2f_frag(
 
 
 std::string PresetShaderIncludes = ""
-//        "float2 a = 1.0 + 2.0 * 3.0 + 4.0;\n"
-//        "float2 _uv, dx, dy, _c7;\n"
-//        "float2 uv_y =(_uv.xy)-( float2(0,-1.2) + float2(dx.y,dy.y)*8 + float2(dx.x,dy.x)*4 )*(_c7).zw;\n"
-
 "#define  M_PI   3.14159265359\n"
 "#define  M_PI_2 6.28318530718\n"
 "#define  M_INV_PI_2  0.159154943091895\n"
@@ -432,114 +429,14 @@ bool ShaderEngine::checkCompileStatus(GLuint shader, const std::string & shaderT
     return false;
 }
 
-void ShaderEngine::setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect,
-		TextureManager *textureManager)
+void ShaderEngine::setParams(const int _texsizeX, const int _texsizeY, BeatDetect *_beatDetect,
+        TextureManager *_textureManager)
 {
-	mainTextureId = texId;
-	this->beatDetect = beatDetect;
-	this->textureManager = textureManager;
-	this->aspect = aspect;
-	this->texsize = texsize;
+    this->beatDetect = _beatDetect;
+    this->textureManager = _textureManager;
 
-	textureManager->setTexture("main", texId, texsize, texsize);
-
-#ifndef GL_TRANSITION
-	glGenTextures(1, &blur1_tex);
-	glBindTexture(GL_TEXTURE_2D, blur1_tex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize/2, texsize/2, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glGenTextures(1, &blur2_tex);
-	glBindTexture(GL_TEXTURE_2D, blur2_tex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize / 4, texsize / 4, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
-	glGenTextures(1, &blur3_tex);
-	glBindTexture(GL_TEXTURE_2D, blur3_tex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsize / 8, texsize / 8, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-#endif
-
-	blur1_enabled = false;
-	blur2_enabled = false;
-	blur3_enabled = false;
-
-	//std::cout << "Generating Noise Textures" << std::endl;
-
-	PerlinNoise noise;
-#ifndef GL_TRANSITION
-	glGenTextures(1, &noise_texture_lq_lite);
-	glBindTexture(GL_TEXTURE_2D, noise_texture_lq_lite);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, 32, 32, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_lq_lite);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	textureManager->setTexture("noise_lq_lite", noise_texture_lq_lite, 32, 32);
-
-	glGenTextures(1, &noise_texture_lq);
-	glBindTexture(GL_TEXTURE_2D, noise_texture_lq);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_lq);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	textureManager->setTexture("noise_lq", noise_texture_lq, 256, 256);
-
-	glGenTextures(1, &noise_texture_mq);
-	glBindTexture(GL_TEXTURE_2D, noise_texture_mq);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_mq);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	textureManager->setTexture("noise_mq", noise_texture_mq, 256, 256);
-
-	glGenTextures(1, &noise_texture_hq);
-	glBindTexture(GL_TEXTURE_2D, noise_texture_hq);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, 256, 256, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_hq);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	textureManager->setTexture("noise_hq", noise_texture_hq, 256, 256);
-
-	glGenTextures(1, &noise_texture_perlin);
-	glBindTexture(GL_TEXTURE_2D, noise_texture_perlin);
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, 512, 512, 0, GL_LUMINANCE, GL_FLOAT, noise.noise_perlin);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	textureManager->setTexture("noise_perlin", noise_texture_perlin, 512, 512);
-
-	 glGenTextures( 1, &noise_texture_lq_vol );
-	 glBindTexture( GL_TEXTURE_3D, noise_texture_lq_vol );
-	 glTexImage3D(GL_TEXTURE_3D,0,4,32,32,32,0,GL_LUMINANCE,GL_FLOAT,noise.noise_lq_vol);
-	 glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	 glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	 textureManager->setTexture("noisevol_lq", noise_texture_lq_vol, 256, 256);
-
-	 glGenTextures( 1, &noise_texture_hq_vol );
-	 glBindTexture( GL_TEXTURE_3D, noise_texture_hq_vol );
-	 glTexImage3D(GL_TEXTURE_3D,0,4,32,32,32,0,GL_LUMINANCE,GL_FLOAT,noise.noise_hq_vol);
-	 glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	 glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	 textureManager->setTexture("noisevol_hq", noise_texture_hq_vol, 8, 8);
-#endif
+    this->texsizeX = _texsizeX;
+    this->texsizeY = _texsizeY;
 }
 
 // compile a user-defined shader from a preset. returns program ID if successful.
@@ -592,24 +489,6 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
 
     pmShader.textures.clear();
 
-    std::vector<std::string> standard_samplers = {
-        "main",
-        "fc_main",
-        "pc_main",
-        "fw_main",
-        "pw_main",
-        "noise_lq",
-        "noise_lq_lite",
-        "noise_mq",
-        "noise_hq",
-        "noisevol_lq",
-        "noisevol_hq",
-        "blur1",
-        "blur2",
-        "blur3",
-    };
-
-
     // set up texture samplers for all samplers references in the shader program
     found = 0;
     found = program.find("sampler_", found);
@@ -621,117 +500,98 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
         if (end != std::string::npos)
         {
             std::string sampler = program.substr((int) found, (int) end - found);
-            UserTexture* texture = new UserTexture(sampler);
+            std::string lowerCaseName(sampler);
+            std::transform(lowerCaseName.begin(), lowerCaseName.end(), lowerCaseName.begin(), tolower);
 
-            texture->texID = textureManager->getTexture(texture->name);
-            if (texture->texID != 0)
+            TextureSamplerDesc texDesc = textureManager->getTexture(sampler, GL_REPEAT, GL_LINEAR);
+
+            if (texDesc.first == NULL)
             {
-                texture->width = textureManager->getTextureWidth(texture->name);
-                texture->height = textureManager->getTextureHeight(texture->name);
-            }
-            else
-            {
-
-                // Insert uniform keyword for GLSL sampler declarations
-                std::string sampler_lowercase(sampler);
-                std::transform(sampler_lowercase.begin(), sampler_lowercase.end(), sampler_lowercase.begin(), ::tolower);
-                std::vector<std::string>::iterator it = standard_samplers.begin();
-                it = std::find(standard_samplers.begin(), standard_samplers.end(), sampler_lowercase);
-
-                // Declare a uniform for sampler defined in preset but out from the shader body
-                if (it == standard_samplers.end() && found < program_start) {
-                    int index = found;
-                    while(index >= 0 && program[index] != '\n') { index--; }
-                    program.insert(index+1, "uniform ");
-                    found += 8;
-                    program_start += 8;
-                }
-
-                if (sampler.substr(0, 4) == "rand")
+                if (lowerCaseName.substr(0, 4) == "rand")
                 {
-                    std::string random_name = textureManager->getRandomTextureName(texture->name);
+                    std::string random_name = textureManager->getRandomTextureName(lowerCaseName);
                     if (random_name.size() > 0)
                     {
-                        texture->texID = textureManager->getTexture(random_name);
-                        texture->width = textureManager->getTextureWidth(random_name);
-                        texture->height = textureManager->getTextureHeight(random_name);
+                        texDesc = textureManager->getTexture(random_name, GL_REPEAT, GL_LINEAR);
                     }
                 }
                 else
                 {
-                    std::string extensions[6];
-                    extensions[0] = ".jpg";
-                    extensions[1] = ".dds";
-                    extensions[2] = ".png";
-                    extensions[3] = ".tga";
-                    extensions[4] = ".bmp";
-                    extensions[5] = ".dib";
-
-                    for (int x = 0; x < 6; x++)
-                    {
-
-                        std::string filename = texture->name + extensions[x];
-                        texture->texID = textureManager->getTexture(filename);
-                        if (texture->texID != 0)
-                        {
-                            texture->width = textureManager->getTextureWidth(filename);
-                            texture->height = textureManager->getTextureHeight(filename);
-                            break;
-                        }
-                    }
-
+                    texDesc = textureManager->tryLoadingTexture(sampler);
                 }
             }
-            if (texture->texID != 0 && pmShader.textures.find(texture->qname) == pmShader.textures.end())
-                pmShader.textures[texture->qname] = texture;
 
+            if (texDesc.first == NULL)
+            {
+                std::cerr << "Texture loading error for: " << sampler << std::endl;
+            }
             else
-                delete (texture);
+            {
+                // The shader declares a new sampler -> declaring it with a "uniform" outside the shader body
+                if (texDesc.first->userTexture) {
+                    if (found < program_start) {
+                        int index = found;
+                        while(index >= 0 && program[index] != '\n') { index--; }
+                        program.insert(index+1, "uniform ");
+                        found += 8;
+                        program_start += 8;
+                    }
+                }
+
+                // Add built-in textures
+                // Add user textures only if used
+                if (!texDesc.first->userTexture || found > program_start)
+                {
+                    std::map<std::string, TextureSamplerDesc>::const_iterator iter = pmShader.textures.cbegin();
+                    for ( ; iter != pmShader.textures.cend(); ++iter)
+                    {
+                        if (iter->first == sampler)
+                            break;
+                    }
+
+                    if (iter == pmShader.textures.cend())
+                        pmShader.textures[sampler] = texDesc;
+                }
+            }
         }
 
         found = program.find("sampler_", found);
     }
+
     textureManager->clearRandomTextures();
-
-    // add texture size vars
-    found = 0;
-    found = program.find("texsize_", found);
-    while (found != std::string::npos)
-    {
-        found += 8;
-        size_t end = program.find_first_of(" ;.,\n\r)", found);
-
-        if (end != std::string::npos)
-        {
-            std::string tex = program.substr((int) found, (int) end - found);
-            if (pmShader.textures.find(tex) != pmShader.textures.end())
-            {
-                UserTexture* texture = pmShader.textures[tex];
-                texture->texsizeDefined = true;
-                //std::cout << "texsize_" << tex << " found" << std::endl;
-            }
-        }
-        found = program.find("texsize_", found);
-    }
 
     // blur programs
     blur1_enabled = false;
     blur2_enabled = false;
     blur3_enabled = false;
 
+    if (program.find("GetMain") != std::string::npos || program.find("GetPixel") != std::string::npos)
+    {
+        pmShader.textures["main"] = textureManager->getTexture("main", GL_REPEAT, GL_LINEAR);
+    }
+
     found = program.find("GetBlur3");
     if (found != std::string::npos)
+    {
         blur1_enabled = blur2_enabled = blur3_enabled = true;
+        pmShader.textures["blur3"] = textureManager->getTexture("blur3", GL_CLAMP_TO_EDGE, GL_LINEAR);
+    }
     else
     {
         found = program.find("GetBlur2");
         if (found != std::string::npos)
+        {
             blur1_enabled = blur2_enabled = true;
+            pmShader.textures["blur2"] = textureManager->getTexture("blur2", GL_CLAMP_TO_EDGE, GL_LINEAR);
+        }
         else
         {
             found = program.find("GetBlur1");
             if (found != std::string::npos)
+            {
                 blur1_enabled = true;
+                pmShader.textures["blur1"] = textureManager->getTexture("blur1", GL_CLAMP_TO_EDGE, GL_LINEAR);
+            }
         }
     }
 
@@ -838,71 +698,49 @@ void ShaderEngine::SetupShaderVariables(GLuint program, const Pipeline &pipeline
 	glProgramUniform1f(program, glGetUniformLocation(program, "vol"), beatDetect->vol);
 	glProgramUniform1f(program, glGetUniformLocation(program, "vol_att"), beatDetect->vol);
 
-    glProgramUniform4f(program, glGetUniformLocation(program, "texsize"), texsize, texsize, 1 / (float) texsize, 1 / (float) texsize);
-	glProgramUniform4f(program, glGetUniformLocation(program, "aspect"), 1 / aspect, 1, aspect, 1);
+    glProgramUniform4f(program, glGetUniformLocation(program, "texsize"), texsizeX, texsizeY, 1 / (float) texsizeX, 1 / (float) texsizeY);
+    glProgramUniform4f(program, glGetUniformLocation(program, "aspect"), 1 / aspectX, 1, aspectX, 1);
 
-    /*
-	if (blur1_enabled)
-	{
-		cgGLSetTextureParameter(program, glGetUniformLocation(program, "sampler_blur1"), blur1_tex);
-		cgGLEnableTextureParameter(program, glGetUniformLocation(program, "sampler_blur1"));
-	}
-	if (blur2_enabled)
-	{
-		cgGLSetTextureParameter(glGetUniformLocation(program, "sampler_blur2"), blur2_tex);
-		cgGLEnableTextureParameter(glGetUniformLocation(program, "sampler_blur2"));
-	}
-	if (blur3_enabled)
-	{
-		cgGLSetTextureParameter(glGetUniformLocation(program, "sampler_blur3"), blur3_tex);
-		cgGLEnableTextureParameter(glGetUniformLocation(program, "sampler_blur3"));
-	}
-     */
 }
 
-void ShaderEngine::setupUserTexture(GLuint program, const UserTexture* texture)
+void ShaderEngine::SetupTextures(GLuint program, const Shader &shader)
 {
-	std::string samplerName = "sampler_" + texture->qname;
 
- 	// FIXME: check if each texture binding will overwrite previous one
+    uint texNum = 0;
+    for (std::map<std::string, TextureSamplerDesc>::const_iterator iter = shader.textures.begin(); iter
+                    != shader.textures.end(); ++iter)
+    {
+        std::string texName = iter->first;
+        Texture * texture = iter->second.first;
+        Sampler * sampler = iter->second.second;
+        std::string samplerName = "sampler_" + texName;
 
-    // https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Binding_textures_to_samplers
-	GLint param = glGetUniformLocation(program, samplerName.c_str());
-    if (param < 0) {
-        // FIXME: turn this on and fix it.
-        // i think sampler names are carrying over from previous shaders...
-//        std::cerr << "invalid uniform name " << samplerName << std::endl;
-        return;
-    }
+        // https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Binding_textures_to_samplers
+        GLint param = glGetUniformLocation(program, samplerName.c_str());
+        if (param < 0) {
+            // unused uniform have been optimized out by glsl compiler
+            continue;
+        }
 
-    glUniform1i(param, 0);
 
-    glActiveTexture(GL_TEXTURE0 + 0);
-    glBindTexture(GL_TEXTURE_2D, texture->texID);
+        glActiveTexture(GL_TEXTURE0 + texNum);
+        glBindTexture(texture->type, texture->texID);
+        glBindSampler(texNum, sampler->samplerID);
 
-	if (texture->texsizeDefined)
-	{
-		std::string texsizeName = "texsize_" + texture->name;
+        glUniform1i(param, texNum);
+
+        std::string texsizeName = "texsize_" + texName;
         GLint textSizeParam = glGetUniformLocation(program, texsizeName.c_str());
         if (param >= 0) {
             glProgramUniform4f(program, textSizeParam, texture->width, texture->height,
                                1 / (float) texture->width, 1 / (float) texture->height);
         } else {
-            std::cerr << "invalid texsizeName " << texsizeName << std::endl;
+            std::cerr << "invalid texsize name " << texsizeName << std::endl;
             return;
         }
-	}
-}
 
-void ShaderEngine::setupUserTextureState(GLuint program, const UserTexture* texture)
-{
-    glBindTexture(GL_TEXTURE_2D, texture->texID);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texture->bilinear ? GL_LINEAR : GL_NEAREST);
-#ifndef GL_TRANSITION
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, texture->wrap ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, texture->wrap ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-#endif
+        texNum++;
+    }
 }
 
 void ShaderEngine::SetupShaderQVariables(GLuint program, const Pipeline &q)
@@ -924,12 +762,7 @@ void ShaderEngine::SetupShaderQVariables(GLuint program, const Pipeline &q)
     }
 }
 
-void ShaderEngine::setAspect(float aspect)
-{
-	this->aspect = aspect;
-}
-
-void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineContext &pipelineContext, const int texsize)
+void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
 #ifndef GL_TRANSITION
 	if (blur1_enabled || blur2_enabled || blur3_enabled)
@@ -1058,19 +891,24 @@ bool ShaderEngine::linkProgram(GLuint programID) {
     return false;
 }
 
-#pragma mark Preset Shaders
 
 void ShaderEngine::loadPresetShaders(Pipeline &pipeline) {
+/*
     // compile and link warp and composite shaders from pipeline
-    programID_presetWarp = loadPresetShader(PresentWarpShader, pipeline.warpShader, pipeline.warpShaderFilename);
-    programID_presetComp = loadPresetShader(PresentCompositeShader, pipeline.compositeShader, pipeline.compositeShaderFilename);
+    if (!pipeline.compositeShader.programSource.empty()) {
+        programID_presetComp = loadPresetShader(PresentCompositeShader, pipeline.compositeShader, pipeline.compositeShaderFilename);
+        if (programID_presetComp != GL_FALSE)
+            presetCompShaderLoaded = true;
+    }
 
-    if (programID_presetComp != GL_FALSE)
-        presetCompShaderLoaded = true;
-    
-    if (programID_presetWarp != GL_FALSE)
-        presetWarpShaderLoaded = true;
-    
+    if (!pipeline.warpShader.programSource.empty()) {
+        programID_presetWarp = loadPresetShader(PresentWarpShader, pipeline.warpShader, pipeline.warpShaderFilename);
+        if (programID_presetWarp != GL_FALSE) {
+            uniform_vertex_transf_warp_shader = glGetUniformLocation(programID_presetWarp, "vertex_transformation");
+            presetWarpShaderLoaded = true;
+        }
+    }
+    */
     std::cout << "Preset composite shader active: " << presetCompShaderLoaded << ", preset warp shader active: " << presetWarpShaderLoaded << std::endl;
 }
 
@@ -1082,14 +920,7 @@ GLuint ShaderEngine::loadPresetShader(const ShaderEngine::PresentShaderType shad
         return GL_FALSE;
     }
 
-    // pass texture info from preset to shader
-    for (auto &userTexture : presetShader.textures) {
-        setupUserTextureState(program, userTexture.second);
-        setupUserTexture(program, userTexture.second);
-    }
-
     return program;
-
 }
 
 // deactivate preset shaders
@@ -1173,40 +1004,43 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
 
 // use the appropriate shader program for rendering the interpolation.
 // it will use the preset shader if available, otherwise the textured shader
-void ShaderEngine::enableWarpShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext) {
-    if (presetWarpShaderLoaded && PRESET_SHADERS_ENABLED) {
+bool ShaderEngine::enableWarpShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext, const glm::mat4 & mat_ortho) {
+    if (presetWarpShaderLoaded) {
         glUseProgram(programID_presetWarp);
 
-        for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos	!= shader.textures.end(); ++pos)
-                            setupUserTextureState(programID_presetWarp, pos->second);
-
-        for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos
-                        != shader.textures.end(); ++pos)
-                    setupUserTexture(programID_presetWarp, pos->second);
+        SetupTextures(programID_presetWarp, shader);
 
         SetupShaderVariables(programID_presetWarp, pipeline, pipelineContext);
         SetupShaderQVariables(programID_presetWarp, pipeline);
 
-    } else {
-        glUseProgram(programID_v2f_c4f_t2f);
+        glUniformMatrix4fv(uniform_vertex_transf_warp_shader, 1, GL_FALSE, glm::value_ptr(mat_ortho));
+
+        return true;
     }
+
+    glUseProgram(programID_v2f_c4f_t2f);
+
+    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_T2F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(mat_ortho));
+    glUniform1i(ShaderEngine::Uniform_V2F_C4F_T2F_FragTextureSampler(), 0);
+
+    return false;
 }
 
-void ShaderEngine::enableCompositeShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext) {
-    if (presetCompShaderLoaded && PRESET_SHADERS_ENABLED) {
+bool ShaderEngine::enableCompositeShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext) {
+    if (presetCompShaderLoaded) {
         glUseProgram(programID_presetComp);
 
-        for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos	!= shader.textures.end(); ++pos)
-                            setupUserTextureState(programID_presetComp, pos->second);
-
-        for (std::map<std::string, UserTexture*>::const_iterator pos = shader.textures.begin(); pos
-                        != shader.textures.end(); ++pos)
-                    setupUserTexture(programID_presetComp, pos->second);
+        SetupTextures(programID_presetComp, shader);
 
         SetupShaderVariables(programID_presetComp, pipeline, pipelineContext);
         SetupShaderQVariables(programID_presetComp, pipeline);
 
-    } else {
-        glUseProgram(programID_v2f_c4f_t2f);
+        return true;
     }
+
+    glUseProgram(programID_v2f_c4f_t2f);
+
+    return false;
 }
+
+

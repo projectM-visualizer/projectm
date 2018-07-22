@@ -10,16 +10,19 @@
 #include <cassert>
 #include "omptl/omptl"
 #include "omptl/omptl_algorithm"
-#include "UserTexture.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+
+Pipeline* Renderer::currentPipe;
+
+
 class Preset;
 
-Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetect *beatDetect, std::string _presetURL,
+Renderer::Renderer(int width, int height, int gx, int gy, int _texsize, BeatDetect *_beatDetect, std::string _presetURL,
 		std::string _titlefontURL, std::string _menufontURL) :
 	title_fontURL(_titlefontURL), menu_fontURL(_menufontURL), presetURL(_presetURL), m_presetName("None"), vw(width),
-			vh(height), texsize(texsize), mesh(gx, gy)
+            vh(height), texsize(_texsize), mesh(gx, gy)
 {
 	int x;
 	int y;
@@ -40,12 +43,12 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
 	/** Other stuff... */
 	this->correction = true;
-	this->aspect = (float) height / (float) width;;
 
 	/// @bug put these on member init list
-	this->renderTarget = new RenderTarget(texsize, width, height);
-	this->textureManager = new TextureManager(presetURL);
-	this->beatDetect = beatDetect;
+    this->textureManager = NULL;
+    this->beatDetect = _beatDetect;
+
+    textureRenderToTexture = 0;
 
 #ifdef USE_FTGL
 	/** Load the standard fonts if they do exist */
@@ -159,7 +162,6 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    shaderEngine.setParams(renderTarget->texsize, renderTarget->textureID[1], aspect, beatDetect, textureManager);
 }
 
 void Renderer::SetPipeline(Pipeline &pipeline)
@@ -173,8 +175,6 @@ void Renderer::ResetTextures()
 {
 	textureManager->Clear();
 
-	delete (renderTarget);
-	renderTarget = new RenderTarget(texsize, vw, vh);
 	reset(vw, vh);
 
 	textureManager->Preload();
@@ -183,12 +183,11 @@ void Renderer::ResetTextures()
 void Renderer::SetupPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
 	totalframes++;
-	renderTarget->lock();
-	glViewport(0, 0, renderTarget->texsize, renderTarget->texsize);
+    glViewport(0, 0, texsizeX, texsizeY);
 
     renderContext.mat_ortho = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -40.0f, 40.0f);
 
-	shaderEngine.RenderBlurTextures(pipeline, pipelineContext, renderTarget->texsize);
+    shaderEngine.RenderBlurTextures(pipeline, pipelineContext);
 }
 
 void Renderer::RenderItems(const Pipeline &pipeline, const PipelineContext &pipelineContext)
@@ -212,8 +211,8 @@ void Renderer::RenderItems(const Pipeline &pipeline, const PipelineContext &pipe
 void Renderer::FinishPass1()
 {
 	draw_title_to_texture();
-	renderTarget->unlock();
 
+    textureManager->updateMainTexture();
 }
 
 void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineContext)
@@ -225,25 +224,14 @@ void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineCo
 	//video texture memory and render fullscreen.
 
 	/** Reset the viewport size */
-#ifdef USE_FBO
-	if (renderTarget->renderToTexture)
+	if (textureRenderToTexture)
 	{
-        glBindFramebuffer(GL_FRAMEBUFFER, this->renderTarget->fbuffer[1]);
-		glViewport(0, 0, this->renderTarget->texsize, this->renderTarget->texsize);
+        glViewport(0, 0, texsizeX, texsizeY);
 	}
 	else
-#endif
-		glViewport(0, 0, this->vw, this->vh);
+    	glViewport(0, 0, this->vw, this->vh);
 
-	glBindTexture(GL_TEXTURE_2D, this->renderTarget->textureID[0]);
-
-    renderContext.mat_ortho = glm::ortho(-0.5f, 0.5f, -0.5f, 0.5f, -40.0f, 40.0f);
-
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize / 512.0);
-
-	CompositeOutput(pipeline, pipelineContext);
+    CompositeOutput(pipeline, pipelineContext);
 
 /* FTGL does not support OpenGL ES
 #ifndef EMSCRIPTEN
@@ -268,69 +256,43 @@ void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineCo
 	glTranslatef(0.5, 0.5, 0);
 */
 
-#ifdef USE_FBO
-	if (renderTarget->renderToTexture)
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-#endif
+	if (textureRenderToTexture) {
+	    glBindTexture(GL_TEXTURE_2D, textureRenderToTexture);
+	    glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsizeX, texsizeY);
+	    glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 
 void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
-
-#ifdef USE_FBO
-    // when not 'renderToTexture', the user may use its own couple FBO/texture
-    // so retrieve this external FBO if it exists, (0 means no FBO) and unbind it
-    GLint externalFBO = 0;
-    if (!renderTarget->renderToTexture)
-    {
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &externalFBO);
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    }
-#endif
 
 	SetupPass1(pipeline, pipelineContext);
 
     Interpolation(pipeline, pipelineContext);
 
 	RenderItems(pipeline, pipelineContext);
-	FinishPass1();
 
-#ifdef USE_FBO
-    // when not 'renderToTexture', the user may use its own couple FBO/texture
-    // if it exists (0 means no external FBO)
-    // then rebind it just before calling the final pass: Pass2
-    if (!renderTarget->renderToTexture && externalFBO != 0)
-        glBindFramebuffer(GL_FRAMEBUFFER, externalFBO);
-#endif
+	FinishPass1();
 
 	Pass2(pipeline, pipelineContext);
 }
 
 void Renderer::Interpolation(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
-	if (this->renderTarget->useFBO)
-		glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[1]);
-	else
-		glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[0]);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureManager->getMainTexture()->texID);
 
 	//Texture wrapping( clamp vs. wrap)
 	if (pipeline.textureWrap == 0)
 	{
-#ifdef GL_TRANSITION
-        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-#else
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-#endif
-	}
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
 	else
 	{
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
-
-    glActiveTexture(GL_TEXTURE0);
 
     int size = (mesh.height - 1) * mesh.width * 4 * 2;
 
@@ -357,15 +319,15 @@ void Renderer::Interpolation(const Pipeline &pipeline, const PipelineContext &pi
 		mesh.Reset();
 		omptl::transform(mesh.p.begin(), mesh.p.end(), mesh.identity.begin(), mesh.p.begin(), &Renderer::PerPixel);
 
-	for (int j = 0; j < mesh.height - 1; j++)
-	{
+        for (int j = 0; j < mesh.height - 1; j++)
+        {
             int base = j * mesh.width * 2 * 4;
 
-			for (int i = 0; i < mesh.width; i++)
-			{
+            for (int i = 0; i < mesh.width; i++)
+            {
                 int strip = base + i * 8;
-				int index = j * mesh.width + i;
-				int index2 = (j + 1) * mesh.width + i;
+                int index = j * mesh.width + i;
+                int index2 = (j + 1) * mesh.width + i;
 
                 p[strip + 2] = mesh.p[index].x;
                 p[strip + 3] = mesh.p[index].y;
@@ -374,8 +336,8 @@ void Renderer::Interpolation(const Pipeline &pipeline, const PipelineContext &pi
                 p[strip + 7] = mesh.p[index2].y;
 
 
-			}
-		}
+            }
+        }
 	}
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_Interpolation);
@@ -385,10 +347,7 @@ void Renderer::Interpolation(const Pipeline &pipeline, const PipelineContext &pi
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    shaderEngine.enableWarpShader(currentPipe->warpShader, pipeline, pipelineContext);
-
-    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_T2F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(renderContext.mat_ortho));
-    glUniform1i(ShaderEngine::Uniform_V2F_C4F_T2F_FragTextureSampler(), 0);
+    shaderEngine.enableWarpShader(currentPipe->warpShader, pipeline, pipelineContext, renderContext.mat_ortho);
 
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, pipeline.screenDecay);
 
@@ -396,23 +355,19 @@ void Renderer::Interpolation(const Pipeline &pipeline, const PipelineContext &pi
 
     glBindVertexArray(m_vao_Interpolation);
 
-	for (int j = 0; j < mesh.height - 1; j++)
-		glDrawArrays(GL_TRIANGLE_STRIP,j* mesh.width* 2,mesh.width*2);
+    for (int j = 0; j < mesh.height - 1; j++)
+        glDrawArrays(GL_TRIANGLE_STRIP,j* mesh.width* 2,mesh.width*2);
 
     glBindVertexArray(0);
 
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
-Pipeline* Renderer::currentPipe;
 
 Renderer::~Renderer()
 {
 
-	int x;
-
-	if (renderTarget)
-		delete (renderTarget);
 	if (textureManager)
 		delete (textureManager);
 
@@ -437,6 +392,8 @@ Renderer::~Renderer()
 
     glDeleteBuffers(1, &m_vbo_CompositeOutput);
     glDeleteVertexArrays(1, &m_vao_CompositeOutput);
+
+    glDeleteTextures(1, &textureRenderToTexture);
 }
 
 void Renderer::reset(int w, int h)
@@ -445,45 +402,53 @@ void Renderer::reset(int w, int h)
 	this -> vw = w;
 	this -> vh = h;
 
-	shaderEngine.setAspect(aspect);
-
 	glCullFace(GL_BACK);
-	//glFrontFace( GL_CCW );
 
 #ifndef GL_TRANSITION
     glEnable(GL_LINE_SMOOTH);
 #endif
 
-
 	glClearColor(0, 0, 0, 0);
 
 	glViewport(0, 0, w, h);
 
-
     glEnable(GL_BLEND);
 
-    glActiveTexture(GL_TEXTURE0);
+    texsizeX = w;
+    texsizeY = h;
+
+    // snap to 16x16 blocks
+    texsizeX = ((texsizeX+15)/16)*16;
+    texsizeY = ((texsizeY+15)/16)*16;
+
+    if (textureManager != NULL) {
+        delete textureManager;
+    }
+    textureManager = new TextureManager(presetURL, texsizeX, texsizeY);
+
+    shaderEngine.setParams(texsizeX, texsizeY, beatDetect, textureManager);
+    shaderEngine.reset();
+    shaderEngine.loadPresetShaders(*currentPipe);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glClear(GL_COLOR_BUFFER_BIT);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    // TODO: how to port this to modern openGL ?
-    // glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-
-//	if (!this->renderTarget->useFBO)
-//	{
-//		this->renderTarget->fallbackRescale(w, h);
-//	}
 }
 
 GLuint Renderer::initRenderToTexture()
 {
-	return renderTarget->initRenderToTexture();
+    if (textureRenderToTexture == 0) {
+        glGenTextures(1, &textureRenderToTexture);
+        glBindTexture(GL_TEXTURE_2D, textureRenderToTexture);
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, texsizeX, texsizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
+    return textureRenderToTexture;
 }
 
 void Renderer::draw_title_to_texture()
@@ -747,6 +712,15 @@ void Renderer::draw_fps(float realfps)
 
 void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, textureManager->getMainTexture()->texID);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    renderContext.mat_ortho = glm::ortho(-0.5f, 0.5f, -0.5f, 0.5f, -40.0f, 40.0f);
+
     shaderEngine.enableCompositeShader(currentPipe->compositeShader, pipeline, pipelineContext);
 
     glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_T2F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(renderContext.mat_ortho));
@@ -755,8 +729,6 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
 	//Overwrite anything on the screen
 	glBlendFunc(GL_ONE, GL_ZERO);
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
-
-    glActiveTexture(GL_TEXTURE0);
 
     glBindVertexArray(m_vao_CompositeOutput);
 
@@ -770,4 +742,37 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
 			!= pipeline.compositeDrawables.end(); ++pos)
 		(*pos)->Draw(renderContext);
 
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
+
+/**
+ * Calculates the nearest power of two to the given number using the
+ * appropriate rule
+ */
+int Renderer::nearestPower2( int value ) {
+
+    int x = value;
+    int power = 0;
+
+    while ( ( x & 0x01 ) != 1 ) {
+        x >>= 1;
+    }
+
+    if ( x == 1 ) {
+        return value;
+    } else {
+        x = value;
+        while ( x != 0 ) {
+            x >>= 1;
+            power++;
+          }
+          if ( ( ( 1 << power ) - value ) <= ( value - ( 1 << ( power - 1 ) ) ) ) {
+            return 1 << power;
+          } else {
+            return 1 << ( power - 1 );
+          }
+    }
+    return 0;
+}
+
+
