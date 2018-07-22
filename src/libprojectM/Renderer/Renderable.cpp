@@ -1,6 +1,7 @@
 
 #include "Common.hpp"
 #include "Renderable.hpp"
+#include "Texture.hpp"
 #include <math.h>
 #include "ShaderEngine.hpp"
 #include <glm/gtc/type_ptr.hpp>
@@ -179,10 +180,13 @@ void Shape::Draw(RenderContext &context)
 	{
 		if (imageUrl !="")
 		{
-			GLuint tex= context.textureManager->getTexture(imageUrl);
-			if (tex != 0)
+            TextureSamplerDesc tex = context.textureManager->getTexture(imageUrl, GL_CLAMP_TO_EDGE, GL_LINEAR);
+            if (tex.first != NULL)
 			{
-				glBindTexture(GL_TEXTURE_2D, tex);
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, tex.first->texID);
+                glBindSampler(0, tex.second->samplerID);
+
 				context.aspectRatio=1.0;
 			}
 		}
@@ -220,10 +224,7 @@ void Shape::Draw(RenderContext &context)
 
         glUseProgram(context.programID_v2f_c4f_t2f);
 
-        glActiveTexture(GL_TEXTURE0);
-
         glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_T2F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
-
         glUniform1i(ShaderEngine::Uniform_V2F_C4F_T2F_FragTextureSampler(), 0);
 
         glBindVertexArray(m_vaoID_texture);
@@ -295,6 +296,9 @@ void Shape::Draw(RenderContext &context)
     glBindVertexArray(m_vaoID);
 	glDrawArrays(GL_LINE_LOOP,0,sides);
     glBindVertexArray(0);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindSampler(0, 0);
 
 	if (thickOutline==1)  glLineWidth(context.texsize < 512 ? 1 : context.texsize/512);
 

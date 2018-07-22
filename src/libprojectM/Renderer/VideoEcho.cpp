@@ -84,12 +84,9 @@ void VideoEcho::Draw(RenderContext &context)
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-    glActiveTexture(GL_TEXTURE0);
-
     glUseProgram(context.programID_v2f_c4f_t2f);
 
     glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_T2F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
-
     glUniform1i(ShaderEngine::Uniform_V2F_C4F_T2F_FragTextureSampler(), 0);
 
 
