@@ -9,11 +9,11 @@
 /* Begin PBXBuildFile section */
 		1612C997207A80A200862A3A /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C994207A807000862A3A /* libprojectM.a */; };
 		1612C998207A80A200862A3A /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C992207A807000862A3A /* libRenderer.a */; };
-		1612C99B207A82F900862A3A /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 161070DC1F705069001905AB /* Cg.framework */; };
 		1612C9E2207A85C100862A3A /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C9DF207A85BD00862A3A /* libMilkdropPresetFactory.a */; };
 		1612C9E3207A85C100862A3A /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C9E1207A85BD00862A3A /* libNativePresetFactory.a */; };
 		1612CA11207A8D2F00862A3A /* shaders in Copy Files */ = {isa = PBXBuildFile; fileRef = 1612CA10207A8D2400862A3A /* shaders */; };
 		165E542A20D68810004AEA81 /* presets in Resources */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
+		166853F12105E2850042793A /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 166853F02105E2850042793A /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		169502001F7009E9008FAF86 /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
 		C345214F1BF022A5001707D2 /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
 		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
@@ -87,6 +87,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		166853EF2105E25B0042793A /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				166853F12105E2850042793A /* SDL2.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C34521421BF02293001707D2 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 12;
@@ -102,9 +112,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		161070DC1F705069001905AB /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = ../../../../../../Library/Frameworks/Cg.framework; sourceTree = "<group>"; };
 		1612C98C207A807000862A3A /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
 		1612CA10207A8D2400862A3A /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shaders; sourceTree = "<group>"; };
+		166853F02105E2850042793A /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
+		166853F22105E2CF0042793A /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
 		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
 		169501FF1F7009E9008FAF86 /* pmSDL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pmSDL.hpp; sourceTree = "<group>"; };
 		C307DFD31D565B57002F6B9E /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
@@ -138,7 +149,6 @@
 				C345216A1BF025E5001707D2 /* libz.a in Frameworks */,
 				1612C997207A80A200862A3A /* libprojectM.a in Frameworks */,
 				1612C998207A80A200862A3A /* libRenderer.a in Frameworks */,
-				1612C99B207A82F900862A3A /* Cg.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -148,7 +158,7 @@
 		161070CE1F7041B0001905AB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				161070DC1F705069001905AB /* Cg.framework */,
+				166853F22105E2CF0042793A /* SDL2.framework */,
 				C345215D1BF025CF001707D2 /* CoreFoundation.framework */,
 				C345215B1BF025A9001707D2 /* OpenGL.framework */,
 			);
@@ -182,6 +192,7 @@
 		C345213B1BF02293001707D2 = {
 			isa = PBXGroup;
 			children = (
+				166853F02105E2850042793A /* SDL2.framework */,
 				1612CA10207A8D2400862A3A /* shaders */,
 				1612C98C207A807000862A3A /* libprojectM.xcodeproj */,
 				169501FE1F7009E9008FAF86 /* pmSDL.cpp */,
@@ -215,6 +226,7 @@
 				C34521421BF02293001707D2 /* Copy Files */,
 				1659FEE920D67E2E00092B7D /* Run Script */,
 				165E542920D68779004AEA81 /* Resources */,
+				166853EF2105E25B0042793A /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -411,6 +423,7 @@
 					"$(SRCROOT)/../libprojectM",
 					/usr/local/include,
 				);
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/Frameworks/";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../projectM-iTunes/macos/contrib";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -460,6 +473,7 @@
 					"$(SRCROOT)/../libprojectM",
 					/usr/local/include,
 				);
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/Frameworks/";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../projectM-iTunes/macos/contrib";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;

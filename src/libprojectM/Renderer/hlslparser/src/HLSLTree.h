@@ -7,6 +7,7 @@
 #include <new>
 #include <map>
 #include <vector>
+#include <string>
 
 namespace M4
 {
