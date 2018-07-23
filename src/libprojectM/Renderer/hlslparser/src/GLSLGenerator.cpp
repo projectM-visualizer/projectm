@@ -50,6 +50,8 @@ static const char* GetTypeName(const HLSLType& type)
 	case HLSLBaseType_Float2x2:     return "mat2";
     case HLSLBaseType_Float3x3:     return "mat3";
     case HLSLBaseType_Float4x4:     return "mat4";
+    case HLSLBaseType_Float4x3:     return "mat4";
+    case HLSLBaseType_Float4x2:     return "mat4";
     case HLSLBaseType_Half:         return "float";
     case HLSLBaseType_Half2:        return "vec2";
     case HLSLBaseType_Half3:        return "vec3";
@@ -57,6 +59,8 @@ static const char* GetTypeName(const HLSLType& type)
 	case HLSLBaseType_Half2x2:      return "mat2";
     case HLSLBaseType_Half3x3:      return "mat3";
     case HLSLBaseType_Half4x4:      return "mat4";
+    case HLSLBaseType_Half4x3:      return "mat4";
+    case HLSLBaseType_Half4x2:      return "mat4";
     case HLSLBaseType_Bool:         return "bool";
 	case HLSLBaseType_Bool2:        return "bvec2";
 	case HLSLBaseType_Bool3:        return "bvec3";
@@ -77,7 +81,9 @@ static const char* GetTypeName(const HLSLType& type)
     case HLSLBaseType_Sampler2DMS:  return "sampler2DMS";
     case HLSLBaseType_Sampler2DArray:  return "sampler2DArray";
     case HLSLBaseType_UserDefined:  return type.typeName;
-    default: return "?";
+    default:
+        ASSERT(0);
+        return "?";
     }
 }
 
@@ -991,7 +997,7 @@ void GLSLGenerator::OutputStatements(int indent, HLSLStatement* statement, const
             if (declaration->type.baseType != HLSLBaseType_Texture)
             {
                 m_writer.BeginLine(indent, declaration->fileName, declaration->line);
-                if (indent == 0)
+                if (indent == 0 && (declaration->type.flags & HLSLTypeFlag_Uniform))
                 {
                     // At the top level, we need the "uniform" keyword.
                     m_writer.Write("uniform ");
@@ -1117,6 +1123,17 @@ void GLSLGenerator::OutputStatements(int indent, HLSLStatement* statement, const
             m_writer.Write(") {");
             m_writer.EndLine();
             OutputStatements(indent + 1, forStatement->statement, returnType);
+            m_writer.WriteLine(indent, "}");
+        }
+        else if (statement->nodeType == HLSLNodeType_WhileStatement)
+        {
+            HLSLWhileStatement* whileStatement = static_cast<HLSLWhileStatement*>(statement);
+            m_writer.BeginLine(indent, whileStatement->fileName, whileStatement->line);
+            m_writer.Write("while (");
+            OutputExpression(whileStatement->condition, &kBoolType);
+            m_writer.Write(") {");
+            m_writer.EndLine();
+            OutputStatements(indent + 1, whileStatement->statement, returnType);
             m_writer.WriteLine(indent, "}");
         }
         else

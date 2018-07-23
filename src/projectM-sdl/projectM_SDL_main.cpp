@@ -9,6 +9,8 @@
 #include "pmSDL.hpp"
 
 #define OGL_DEBUG	0
+#define UNLOCK_FPS	0
+#define FAKE_AUDIO	0
 
 #if OGL_DEBUG
 #include <GLES3/gl32.h>
@@ -55,6 +57,11 @@ std::string getConfigFilePath() {
 }
 
 int main(int argc, char *argv[]) {
+
+#if UNLOCK_FPS
+    setenv("vblank_mode", "0", 1);
+#endif
+
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
     if (! SDL_VERSION_ATLEAST(2, 0, 5)) {
@@ -143,25 +150,54 @@ int main(int argc, char *argv[]) {
     glDebugMessageCallback(DebugLog, NULL);
 #endif
 
+#if !FAKE_AUDIO
     // get an audio input device
     app->openAudioInput();
     app->beginAudioCapture();
+#endif
+
+
+#if UNLOCK_FPS
+    int32_t frame_count = 0;
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &now);
+    int64_t start = ( ((int64_t)now.tv_sec * 1000L) + (now.tv_nsec / 1000000L) );
+#endif
 
     // standard main loop
     const Uint32 frame_delay = 1000/FPS;
     Uint32 last_time = SDL_GetTicks();
     while (! app->done) {
         app->renderFrame();
+#if FAKE_AUDIO
+        app->addFakePCM();
+#endif
+
+#if UNLOCK_FPS
+        frame_count++;
+        clock_gettime(CLOCK_MONOTONIC_RAW, &now);
+        if (( ((int64_t)now.tv_sec * 1000L) + (now.tv_nsec / 1000000L) ) - start > 5000) {
+            SDL_GL_DeleteContext(glCtx);
+            delete(app);
+            fprintf(stdout, "Frames[%d]\n", frame_count);
+            exit(0);
+        }
+#else
         app->pollEvent();
         Uint32 elapsed = SDL_GetTicks() - last_time;
         if (elapsed < frame_delay)
             SDL_Delay(frame_delay - elapsed);
         last_time = SDL_GetTicks();
+#endif
     }
     
     SDL_GL_DeleteContext(glCtx);
+#if !FAKE_AUDIO
     app->endAudioCapture();
+#endif
     delete app;
 
     return PROJECTM_SUCCESS;
 }
+
+

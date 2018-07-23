@@ -297,6 +297,7 @@ static void *thread_callback(void *prjm) {
     void projectM::evaluateSecondPreset()
     {
         pipelineContext2().time = timeKeeper->GetRunningTime();
+        pipelineContext2().presetStartTime = timeKeeper->PresetTimeB();
         pipelineContext2().frame = timeKeeper->PresetFrameB();
         pipelineContext2().progress = timeKeeper->PresetProgressB();
 
@@ -331,6 +332,7 @@ static void *thread_callback(void *prjm) {
 
         /// @bug who is responsible for updating this now?"
         pipelineContext().time = timeKeeper->GetRunningTime();
+        pipelineContext().presetStartTime = timeKeeper->PresetTimeA();
         pipelineContext().frame = timeKeeper->PresetFrameA();
         pipelineContext().progress = timeKeeper->PresetProgressA();
 
@@ -496,7 +498,7 @@ static void *thread_callback(void *prjm) {
             mspf= ( int ) ( 1000.0/ ( float ) _settings.fps );
         else mspf = 0;
 
-        this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
+        this->renderer = new Renderer ( width, height, gx, gy, beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
 
         running = true;
 
@@ -899,7 +901,7 @@ void projectM::changeTextureSize(int size) {
   delete renderer;
   renderer = new Renderer(_settings.windowWidth, _settings.windowHeight,
                           _settings.meshX, _settings.meshY,
-                          _settings.textureSize, beatDetect, _settings.presetURL,
+                          beatDetect, _settings.presetURL,
                           _settings.titleFontURL, _settings.menuFontURL);
 }
 

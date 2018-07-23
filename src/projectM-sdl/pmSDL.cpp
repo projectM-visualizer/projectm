@@ -6,6 +6,9 @@
 //
 
 #include "pmSDL.hpp"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include "Renderer/ShaderEngine.hpp"
 
 void projectMSDL::audioInputCallbackF32(void *userdata, unsigned char *stream, int len) {
     projectMSDL *app = (projectMSDL *) userdata;
@@ -211,6 +214,11 @@ void projectMSDL::renderFrame() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     projectM::renderFrame();
+
+    if (renderToTexture) {
+        renderTexture();
+    }
+
     SDL_GL_SwapWindow(win);
 }
 
@@ -228,15 +236,107 @@ projectMSDL::projectMSDL(std::string config_file, int flags) : projectM(config_f
     isFullScreen = false;
 }
 
-void projectMSDL::init(SDL_Window *window, SDL_GLContext *_glCtx) {
+void projectMSDL::init(SDL_Window *window, SDL_GLContext *_glCtx, const bool _renderToTexture) {
     win = window;
     glCtx = _glCtx;
-    selectRandom(true);
     projectM_resetGL(width, height);
+
+    renderToTexture = _renderToTexture;
+
+    if (renderToTexture) {
+        programID = ShaderEngine::CompileShaderProgram(ShaderEngine::v2f_c4f_t2f_vert, ShaderEngine::v2f_c4f_t2f_frag, "v2f_c4f_t2f");
+        textureID = projectM::initRenderToTexture();
+
+        float points[16] = {
+            -0.8, -0.8,
+            0.0,    0.0,
+
+            -0.8, 0.8,
+            0.0,   1.0,
+
+            0.8, -0.8,
+            1.0,    0.0,
+
+            0.8, 0.8,
+            1.0,    1.0,
+        };
+
+        glGenBuffers(1, &m_vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, points, GL_DYNAMIC_DRAW);
+
+        glGenVertexArrays(1, &m_vao);
+        glBindVertexArray(m_vao);
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)0); // Positions
+
+        glDisableVertexAttribArray(1);
+
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)(sizeof(float)*2)); // Textures
+
+        glBindVertexArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    }
 }
 
 
 std::string projectMSDL::getActivePresetName()
 {
-    return std::string("hey");
+    unsigned int index = 0;
+    if (selectedPresetIndex(index)) {
+        return getPresetName(index);
+    }
+    return std::string();
 }
+
+
+void projectMSDL::renderTexture() {
+    static int frame = 0;
+    frame++;
+
+    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glViewport(0, 0, getWindowWidth(), getWindowHeight());
+
+    glUseProgram(programID);
+
+    glUniform1i(glGetUniformLocation(programID, "texture_sampler"), 0);
+
+    glm::mat4 mat_proj = glm::frustum(-1.0f, 1.0f, -1.0f, 1.0f, 2.0f, 10.0f);
+
+    glEnable(GL_DEPTH_TEST);
+
+    glm::mat4 mat_model = glm::mat4(1.0f);
+    mat_model = glm::translate(mat_model, glm::vec3(cos(frame*0.023),
+                                                    cos(frame*0.017),
+                                                    -5+sin(frame*0.022)*2));
+    mat_model = glm::rotate(mat_model, glm::radians((float) sin(frame*0.0043)*360),
+                            glm::vec3(sin(frame*0.0017),
+                                      sin(frame *0.0032),
+                                      1));
+
+    glm::mat4 mat_transf = glm::mat4(1.0f);
+    mat_transf = mat_proj * mat_model;
+
+    glUniformMatrix4fv(glGetUniformLocation(programID, "vertex_transformation"), 1, GL_FALSE, glm::value_ptr(mat_transf));
+
+    glActiveTexture(GL_TEXTURE0);
+
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
+
+    glBindVertexArray(m_vao);
+
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    glBindVertexArray(0);
+
+    glDisable(GL_DEPTH_TEST);
+}
+

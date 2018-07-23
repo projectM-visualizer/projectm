@@ -8,8 +8,6 @@
 #ifndef SHADERENGINE_HPP_
 #define SHADERENGINE_HPP_
 
-#define PRESET_SHADERS_ENABLED 1
-
 #include "Common.hpp"
 #include "projectM-opengl.h"
 
@@ -24,72 +22,97 @@ class ShaderEngine;
 #include <map>
 #include <sstream>
 #include "Shader.hpp"
+#include <glm/vec3.hpp>
+
+
 class ShaderEngine
 {
-    unsigned int mainTextureId;
-    int texsize;
-    float aspect;
-    BeatDetect *beatDetect;
-    TextureManager *textureManager;
-
-    std::string blurProgram;
-
-    GLuint noise_texture_lq_lite;
-    GLuint noise_texture_lq;
-    GLuint noise_texture_mq;
-    GLuint noise_texture_hq;
-    GLuint noise_texture_perlin;
-    GLuint noise_texture_lq_vol;
-    GLuint noise_texture_hq_vol;
-
-    bool blur1_enabled;
-    bool blur2_enabled;
-    bool blur3_enabled;
-    GLuint blur1_tex;
-    GLuint blur2_tex;
-    GLuint blur3_tex;
-
-    float rand_preset[4];
-
-    void SetupShaderQVariables(GLuint program, const Pipeline &q);
-    void SetupShaderVariables(GLuint program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
-    void setupUserTexture(GLuint program, const UserTexture* texture);
-    void setupUserTextureState(GLuint program, const UserTexture* texture);
-    GLuint compilePresetShader(GLenum shaderType, Shader &shader, std::string &shaderFilename);
-    bool checkCompileStatus(GLuint shader, const char *shaderTitle);
-    void linkProgram(GLuint programID);
-    void disablePresetShaders();
-    GLuint loadPresetShader(Shader &shader, std::string &shaderFilename);
-
 public:
-	ShaderEngine();
-	virtual ~ShaderEngine();
-    void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext, const int texsize);
+    enum PresentShaderType
+    {
+        PresentCompositeShader,
+        PresentWarpShader,
+        PresentBlur1Shader,
+        PresentBlur2Shader,
+    };
+
+    ShaderEngine();
+    virtual ~ShaderEngine();
     void loadPresetShaders(Pipeline &pipeline);
-    void deletePresetShader(Shader &shader);
-    void enableInterpolationShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
-    void enableCompositeShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
+    bool enableWarpShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext, const glm::mat4 & mat_ortho);
+    bool enableCompositeShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
+    void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext);
+    void setParams(const int _texsizeX, const int texsizeY, BeatDetect *beatDetect, TextureManager *_textureManager);
+    void reset();
 
-	void setParams(const int texsize, const unsigned int texId, const float aspect, BeatDetect *beatDetect, TextureManager *textureManager);
-	void reset();
-	void setAspect(float aspect);
-    std::string profileName;
-
-    GLuint programID_v2f_c4f;
-    GLuint programID_v2f_c4f_t2f;
-    
-    // programs generated from preset shader code
-    GLuint programID_presetComp, programID_presetWarp;
-    GLuint programID_blur;
-    bool presetCompShaderLoaded, presetWarpShaderLoaded;
-
-
-    GLuint CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode);
+    static GLuint CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode, const std::string & shaderTypeString);
+    static bool checkCompileStatus(GLuint shader, const std::string & shaderTitle);
+    static bool linkProgram(GLuint programID);
 
     static GLint Uniform_V2F_C4F_VertexTranformation() { return UNIFORM_V2F_C4F_VERTEX_TRANFORMATION; }
     static GLint Uniform_V2F_C4F_VertexPointSize() { return UNIFORM_V2F_C4F_VERTEX_POINT_SIZE; }
     static GLint Uniform_V2F_C4F_T2F_VertexTranformation() { return UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION; }
     static GLint Uniform_V2F_C4F_T2F_FragTextureSampler() { return UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER; }
+
+    GLuint programID_v2f_c4f;
+    GLuint programID_v2f_c4f_t2f;
+
+    const static std::string v2f_c4f_vert;
+    const static std::string v2f_c4f_frag;
+    const static std::string v2f_c4f_t2f_vert;
+    const static std::string v2f_c4f_t2f_frag;
+
+private:
+    int texsizeX;
+    int texsizeY;
+    float aspectX;
+    float aspectY;
+    BeatDetect *beatDetect;
+    TextureManager *textureManager;
+    GLint uniform_vertex_transf_warp_shader;
+
+    GLuint programID_warp_fallback;
+    GLuint programID_comp_fallback;
+    GLuint programID_blur1;
+    GLuint programID_blur2;
+
+    bool blur1_enabled;
+    bool blur2_enabled;
+    bool blur3_enabled;
+
+    GLint uniform_blur1_sampler;
+    GLint uniform_blur1_c0;
+    GLint uniform_blur1_c1;
+    GLint uniform_blur1_c2;
+    GLint uniform_blur1_c3;
+
+    GLint uniform_blur2_sampler;
+    GLint uniform_blur2_c0;
+    GLint uniform_blur2_c5;
+    GLint uniform_blur2_c6;
+
+    GLuint vboBlur;
+    GLuint vaoBlur;
+
+    float rand_preset[4];
+    glm::vec3 xlate[20];
+    glm::vec3 rot_base[20];
+    glm::vec3 rot_speed[20];
+
+    void SetupShaderVariables(GLuint program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
+    void SetupTextures(GLuint program, const Shader &shader);
+    GLuint compilePresetShader(const ShaderEngine::PresentShaderType shaderType, Shader &shader, const std::string &shaderFilename);
+
+    void disablePresetShaders();
+    GLuint loadPresetShader(const PresentShaderType shaderType, Shader &shader, std::string &shaderFilename);
+
+    void deletePresetShader(Shader &shader);
+
+    
+    // programs generated from preset shader code
+    GLuint programID_presetComp, programID_presetWarp;
+
+    bool presetCompShaderLoaded, presetWarpShaderLoaded;
 
     static GLint UNIFORM_V2F_C4F_VERTEX_TRANFORMATION;
     static GLint UNIFORM_V2F_C4F_VERTEX_POINT_SIZE;

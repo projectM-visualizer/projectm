@@ -17,6 +17,7 @@ namespace M4
 static const char* _reservedWords[] =
     {
         "float",
+        "float1",
         "float2",
         "float3",
         "float4",
@@ -72,6 +73,7 @@ static const char* _reservedWords[] =
         "const",
         "static",
         "inline",
+        "#define",
         "uniform",
         "in",
         "out",
@@ -114,6 +116,7 @@ static bool GetIsNumberSeparator(char c)
 HLSLTokenizer::HLSLTokenizer(const char* fileName, const char* buffer, size_t length)
 {
     m_buffer            = buffer;
+    m_bufferPrevious    = m_buffer;
     m_bufferEnd         = buffer + length;
     m_fileName          = fileName;
     m_lineNumber        = 1;
@@ -122,16 +125,23 @@ HLSLTokenizer::HLSLTokenizer(const char* fileName, const char* buffer, size_t le
     Next();
 }
 
-void HLSLTokenizer::Next()
+void HLSLTokenizer::Next(const bool EOLSkipping)
 {
+    m_bufferPrevious = m_buffer;
 
-	while( SkipWhitespace() || SkipComment() || ScanLineDirective() || SkipPragmaDirective() )
+    while( SkipWhitespace(EOLSkipping) || SkipComment(&m_buffer, EOLSkipping) || ScanLineDirective() || SkipPragmaDirective() )
     {
     }
 
     if (m_error)
     {
         m_token = HLSLToken_EndOfStream;
+        return;
+    }
+
+    if (!EOLSkipping && m_buffer[0] == '\n')
+    {
+        m_token = HLSLToken_EndOfLine;
         return;
     }
 
@@ -252,10 +262,32 @@ void HLSLTokenizer::Next()
 
 }
 
-bool HLSLTokenizer::SkipWhitespace()
+bool HLSLTokenizer::NextIsWhitespace()
+{
+    return isspace(m_buffer[0]);
+}
+
+const char* HLSLTokenizer::getLastPos(const bool trimmed)
+{
+    const char * start = m_bufferPrevious;
+
+    if (trimmed)
+    {
+        // Skip white space
+        while(isspace(start[0])) {
+            start++;
+        }
+    }
+
+    return start;
+}
+
+
+bool HLSLTokenizer::SkipWhitespace(const bool EOLSkipping)
 {
     bool result = false;
-    while (m_buffer < m_bufferEnd && isspace(m_buffer[0]))
+    while (m_buffer < m_bufferEnd && isspace(m_buffer[0]) &&
+            (EOLSkipping || (!EOLSkipping && m_buffer[0] != '\n')))
     {
         result = true;
         if (m_buffer[0] == '\n')
@@ -267,45 +299,50 @@ bool HLSLTokenizer::SkipWhitespace()
     return result;
 }
 
-bool HLSLTokenizer::SkipComment()
+bool HLSLTokenizer::SkipComment(const char** buffer, const bool EOLSkipping)
 {
     bool result = false;
-    if (m_buffer[0] == '/')
+    if ((*buffer)[0] == '/')
     {
-        if (m_buffer[1] == '/')
+        if ((*buffer)[1] == '/')
         {
             // Single line comment.
             result = true;
-            m_buffer += 2;
-            while (m_buffer < m_bufferEnd)
+            *buffer += 2;
+            while (*buffer < m_bufferEnd)
             {
-                if (*(m_buffer++) == '\n')
+                if ((*buffer)[0] == '\n')
                 {
                     ++m_lineNumber;
+					if (EOLSkipping) 
+					{
+						++*buffer;
+					}
                     break;
                 }
+                ++*buffer;
             }
         }
-        else if (m_buffer[1] == '*')
+        else if ((*buffer)[1] == '*')
         {
             // Multi-line comment.
             result = true;
-            m_buffer += 2;
-            while (m_buffer < m_bufferEnd)
+            *buffer += 2;
+            while (*buffer < m_bufferEnd)
             {
-                if (m_buffer[0] == '\n')
+                if ((*buffer)[0] == '\n')
                 {
                     ++m_lineNumber;
                 }
-                if (m_buffer[0] == '*' && m_buffer[1] == '/')
+                if ((*buffer)[0] == '*' && (*buffer)[1] == '/')
                 {
                     break;
                 }
-                ++m_buffer;
+                ++*buffer;
             }
-            if (m_buffer < m_bufferEnd)
+            if (*buffer < m_bufferEnd)
             {
-                m_buffer += 2;
+                *buffer += 2;
             }
         }
     }
