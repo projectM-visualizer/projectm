@@ -1845,13 +1845,10 @@ bool HLSLParser::ParseStatement(HLSLStatement*& statement, const HLSLType& retur
         statement = expressionStatement;
     }
 
-/* Not entirely sure about this, occurs in:
- * ech0 - liquid firesticks I.milk:710
     // Some statements are separated by a colon instead of a semicolon
     if (Accept(',')) {
         return true;
     }
-*/
 
     return Expect(';');
 }
@@ -3429,7 +3426,11 @@ bool HLSLParser::ApplyPreprocessor(const char* fileName, const char* buffer, siz
                 HLSLMacro * matchedMacro = ProcessMacroFromIdentifier(valueProcessed, addOriginalSource);
                 if (matchedMacro != NULL)
                 {
-                    CheckIfAnAlias(macro, matchedMacro);
+                    // Check if macro is just an alias
+                    // macros value must be equal to matched macro name
+                    if (macro->value == matchedMacro->name) {
+                        macro->macroAliased = matchedMacro;
+                    }
                 }
             }
 
@@ -3620,34 +3621,6 @@ void HLSLParser::ProcessMacroArguments(HLSLMacro* macro, std::string & sourcePre
     }
 
 }
-
-void HLSLParser::CheckIfAnAlias(HLSLMacro * macro, HLSLMacro * matchedMacro)
-{
-    // Check if macro is just an alias
-    // compare args count in macro definition vs macro value
-    uint nbArgsIn = 0;
-    HLSLArgument* argument = macro->argument;
-    while(argument != NULL)
-    {
-        nbArgsIn++;
-        argument = argument->nextArgument;
-    }
-
-    uint nbArgsOut = 0;
-    size_t found = matchedMacro->value.find("#" + std::to_string(nbArgsOut) + "#");
-    while(found != std::string::npos)
-    {
-        nbArgsOut++;
-        found = matchedMacro->value.find("#" + std::to_string(nbArgsOut) + "#");
-    }
-
-    if (nbArgsIn != nbArgsOut)
-    {
-        // Macro is an alias for matched macro
-        macro->macroAliased = matchedMacro;
-    }
-}
-
 
 
 bool HLSLParser::AcceptTypeModifier(int& flags)

@@ -26,6 +26,7 @@
 #include "PerlinNoise.hpp"
 
 
+#define NUM_BLUR_TEX    6
 
 
 TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX, const int texsizeY):
@@ -48,6 +49,33 @@ TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX
     mainTexture->getSampler(GL_CLAMP_TO_EDGE, GL_LINEAR);
     mainTexture->getSampler(GL_CLAMP_TO_EDGE, GL_NEAREST);
     textures["main"] = mainTexture;
+
+    // Initialize blur textures
+    int w = texsizeX;
+    int h = texsizeY;
+    for (int i=0; i<NUM_BLUR_TEX; i++)
+    {
+        // main VS = 1024
+        // blur0 = 512
+        // blur1 = 256  <-  user sees this as "blur1"
+        // blur2 = 128
+        // blur3 = 128  <-  user sees this as "blur2"
+        // blur4 =  64
+        // blur5 =  64  <-  user sees this as "blur3"
+        if (!(i&1) || (i<2))
+        {
+            w = std::max(16, w/2);
+            h = std::max(16, h/2);
+        }
+        int w2 = ((w+3)/16)*16;
+        int h2 = ((h+3)/4)*4;
+
+        Texture * textureBlur = new Texture(w2, h2, false);
+        textureBlur->getSampler(GL_CLAMP_TO_EDGE, GL_LINEAR);
+        std::string texname = "blur" + std::to_string(i/2+1) + ((i%2) ? "" : "doNOTuseME");
+        textures[texname] = textureBlur;
+        blurTextures.push_back(textureBlur);
+    }
 
     PerlinNoise noise;
 

@@ -35,6 +35,9 @@ public:
   int PresetFrameA();
   int PresetFrameB();
 
+  int PresetTimeA();
+  int PresetTimeB();
+
   double sampledPresetDuration();
 
   void ChangePresetDuration(int seconds) { _presetDuration = seconds; }

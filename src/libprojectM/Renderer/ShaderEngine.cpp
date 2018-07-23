@@ -10,6 +10,8 @@
 #include "BeatDetect.hpp"
 #include "Texture.hpp"
 #include "HLSLTranslator.hpp"
+#include <glm/mat4x4.hpp> // glm::mat4
+#include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <glm/gtc/type_ptr.hpp>
 
 #ifdef USE_GLES
@@ -17,6 +19,10 @@
 #else
     #define GLSL_VERSION "410"
 #endif
+
+
+#define FRAND ((rand() % 7381)/7380.0f)
+
 
 std::string presetWarpVertexShader(
     "#version "
@@ -48,19 +54,18 @@ std::string presetCompVertexShader(
     "layout(location = 0) in vec2 vertex_position;\n"
     "layout(location = 1) in vec4 vertex_color;\n"
     "layout(location = 2) in vec2 vertex_texture;\n"
-    ""
-    "uniform mat4 vertex_transformation;\n"
+    "layout(location = 3) in vec2 vertex_rad_ang;\n"
     ""
     "out vec4 frag_COLOR;\n"
     "out vec2 frag_TEXCOORD0;\n"
     "out vec2 frag_TEXCOORD1;\n"
     ""
     "void main(){\n"
-    "    vec4 position = vertex_transformation * vec4(vertex_position, 0.0, 1.0);\n"
+    "    vec4 position = vec4(vertex_position, 0.0, 1.0);\n"
     "    gl_Position = position;\n"
     "    frag_COLOR = vertex_color;\n"
     "    frag_TEXCOORD0 = vertex_texture;\n"
-    "    frag_TEXCOORD1 = vec2(0.0, 0.0);\n"
+    "    frag_TEXCOORD1 = vertex_rad_ang;\n"
     "}\n");
 
 
@@ -294,92 +299,122 @@ std::string PresetShaderIncludes = ""
 ;
 
 
-std::string BlurShader1(
-"	uniform sampler2D sampler_main;\n"
-"	uniform float4 _c0; // source texsize (.xy), and inverse (.zw)\n"
-"	uniform float4 _c1; // w1..w4\n"
-"	uniform float4 _c2; // d1..d4\n"
-"	uniform float4 _c3; // scale, bias, w_div\n"
+std::string blur_vert(
+    "#version "
+    GLSL_VERSION
+    "\n"
+    "layout(location = 0) in vec2 vertex_position;\n"
+    "layout(location = 1) in vec2 vertex_texture;\n"
+    ""
+    "out vec2 fragment_texture;\n"
+    ""
+    "void main(){\n"
+    "    gl_Position = vec4(vertex_position, 0.0, 1.0);\n"
+    "    fragment_texture = vertex_texture;\n"
+    "}\n");
 
-"	void PS( float2 uv       : TEXCOORD,\n"
-"	     out float4 ret      : COLOR0      )\n"
-"       {\n"
-"	    // LONG HORIZ. PASS 1:\n"
-"	    #define srctexsize _c0\n"
-"	    #define w1 _c1.x\n"
-"	    #define w2 _c1.y\n"
-"	    #define w3 _c1.z\n"
-"	    #define w4 _c1.w\n"
-"	    #define d1 _c2.x\n"
-"	    #define d2 _c2.y\n"
-"	    #define d3 _c2.z\n"
-"	    #define d4 _c2.w\n"
-"	    #define fscale _c3.x\n"
-"	    #define fbias  _c3.y\n"
-"	    #define w_div  _c3.z\n"
 
-"	    // note: if you just take one sample at exactly uv.xy, you get an avg of 4 pixels.\n"
-"	    float2 uv2 = uv.xy + srctexsize.zw*float2(1,1);     // + moves blur UP, LEFT by 1-pixel increments\n"
+std::string blur1_frag(
+    "#version "
+    GLSL_VERSION
+    "\n"
+    "precision mediump float;\n"
+    ""
+    "in vec2 fragment_texture;\n"
+    ""
+    "uniform sampler2D texture_sampler;\n"
+    "uniform vec4 _c0; // source texsize (.xy), and inverse (.zw)\n"
+    "uniform vec4 _c1; // w1..w4\n"
+    "uniform vec4 _c2; // d1..d4\n"
+    "uniform vec4 _c3; // scale, bias, w_div\n"
+    ""
+    "out vec4 color;\n"
+    ""
+    "void main(){\n"
+    ""
+    "   // LONG HORIZ. PASS 1:\n"
+    "   #define srctexsize _c0\n"
+    "   #define w1 _c1.x\n"
+    "   #define w2 _c1.y\n"
+    "   #define w3 _c1.z\n"
+    "   #define w4 _c1.w\n"
+    "   #define d1 _c2.x\n"
+    "   #define d2 _c2.y\n"
+    "   #define d3 _c2.z\n"
+    "   #define d4 _c2.w\n"
+    "   #define fscale _c3.x\n"
+    "   #define fbias  _c3.y\n"
+    "   #define w_div  _c3.z\n"
+    ""
+    "   // note: if you just take one sample at exactly uv.xy, you get an avg of 4 pixels.\n"
+    "   vec2 uv2 = fragment_texture.xy + srctexsize.zw*vec2(1,1);     // + moves blur UP, LEFT by 1-pixel increments\n"
+    ""
+    "   vec3 blur = \n"
+    "           ( texture( texture_sampler, uv2 + vec2( d1*srctexsize.z,0) ).xyz\n"
+    "           + texture( texture_sampler, uv2 + vec2(-d1*srctexsize.z,0) ).xyz)*w1 +\n"
+    "           ( texture( texture_sampler, uv2 + vec2( d2*srctexsize.z,0) ).xyz\n"
+    "           + texture( texture_sampler, uv2 + vec2(-d2*srctexsize.z,0) ).xyz)*w2 +\n"
+    "           ( texture( texture_sampler, uv2 + vec2( d3*srctexsize.z,0) ).xyz\n"
+    "           + texture( texture_sampler, uv2 + vec2(-d3*srctexsize.z,0) ).xyz)*w3 +\n"
+    "           ( texture( texture_sampler, uv2 + vec2( d4*srctexsize.z,0) ).xyz\n"
+    "           + texture( texture_sampler, uv2 + vec2(-d4*srctexsize.z,0) ).xyz)*w4\n"
+    "           ;\n"
+    "   blur.xyz *= w_div;\n"
+    ""
+    "   blur.xyz = blur.xyz*fscale + fbias;\n"
+    ""
+    "   color.xyz = blur;\n"
+    "   color.w   = 1;\n"
+    "}\n");
 
-"	    float3 blur = \n"
-"	            ( tex2D( sampler_main, uv2 + float2( d1*srctexsize.z,0) ).xyz\n"
-"	            + tex2D( sampler_main, uv2 + float2(-d1*srctexsize.z,0) ).xyz)*w1 +\n"
-"	            ( tex2D( sampler_main, uv2 + float2( d2*srctexsize.z,0) ).xyz\n"
-"	            + tex2D( sampler_main, uv2 + float2(-d2*srctexsize.z,0) ).xyz)*w2 +\n"
-"	            ( tex2D( sampler_main, uv2 + float2( d3*srctexsize.z,0) ).xyz\n"
-"	            + tex2D( sampler_main, uv2 + float2(-d3*srctexsize.z,0) ).xyz)*w3 +\n"
-"	            ( tex2D( sampler_main, uv2 + float2( d4*srctexsize.z,0) ).xyz\n"
-"	            + tex2D( sampler_main, uv2 + float2(-d4*srctexsize.z,0) ).xyz)*w4\n"
-"	            ;\n"
-"	    blur.xyz *= w_div;\n"
-
-"	    blur.xyz = blur.xyz*fscale + fbias;\n"
-
-"	    ret.xyz = blur;\n"
-"	    ret.w   = 1;\n"
-"	}\n"
-);
-
-std::string BlurShader2(
-"	uniform sampler2D sampler_main;\n"
-"	uniform float4 _c0; // source texsize (.xy), and inverse (.zw)\n"
-"	uniform float4 _c5; // w1,w2,d1,d2\n"
-"	uniform float4 _c6; // w_div, edge_darken_c1, edge_darken_c2, edge_darken_c3\n"
-
-"	void PS( float2 uv       : TEXCOORD,\n"
-"	     out float4 ret      : COLOR0      )\n"
-"       {\n"
-"	    //SHORT VERTICAL PASS 2:\n"
-"	    #define srctexsize _c0\n"
-"	    #define w1 _c5.x\n"
-"	    #define w2 _c5.y\n"
-"	    #define d1 _c5.z\n"
-"	    #define d2 _c5.w\n"
-"	    #define edge_darken_c1 _c6.y\n"
-"	    #define edge_darken_c2 _c6.z\n"
-"	    #define edge_darken_c3 _c6.w\n"
-"	    #define w_div   _c6.x\n"
-
-"	    // note: if you just take one sample at exactly uv.xy, you get an avg of 4 pixels.\n"
-"	    float2 uv2 = uv.xy + srctexsize.zw*float2(1,0);     // + moves blur UP, LEFT by TWO-pixel increments! (since texture is 1/2 the size of blur1_ps)\n"
-
-"	    float3 blur = \n"
-"	            ( tex2D( sampler_main, uv2 + float2(0, d1*srctexsize.w) ).xyz\n"
-"	            + tex2D( sampler_main, uv2 + float2(0,-d1*srctexsize.w) ).xyz)*w1 +\n"
-"	            ( tex2D( sampler_main, uv2 + float2(0, d2*srctexsize.w) ).xyz\n"
-"	            + tex2D( sampler_main, uv2 + float2(0,-d2*srctexsize.w) ).xyz)*w2\n"
-"	            ;\n"
-"	    blur.xyz *= w_div;\n"
-
-"	    // tone it down at the edges:  (only happens on 1st X pass!)\n"
-"	    float t = min( min(uv.x, uv.y), 1-max(uv.x,uv.y) );\n"
-"	    t = sqrt(t);\n"
-"	    t = edge_darken_c1 + edge_darken_c2*saturate(t*edge_darken_c3);\n"
-"	    blur.xyz *= t;\n"
-
-"	    ret.xyz = blur;\n"
-"	    ret.w   = 1;\n"
-"	}\n");
+std::string blur2_frag(
+    "#version "
+    GLSL_VERSION
+    "\n"
+    "precision mediump float;\n"
+    ""
+    "in vec2 fragment_texture;\n"
+    ""
+    "uniform sampler2D texture_sampler;\n"
+    "uniform vec4 _c0; // source texsize (.xy), and inverse (.zw)\n"
+    "uniform vec4 _c5; // w1,w2,d1,d2\n"
+    "uniform vec4 _c6; // w_div, edge_darken_c1, edge_darken_c2, edge_darken_c3\n"
+    ""
+    "out vec4 color;\n"
+    ""
+    "void main(){\n"
+    ""
+    "   //SHORT VERTICAL PASS 2:\n"
+    "   #define srctexsize _c0\n"
+    "   #define w1 _c5.x\n"
+    "   #define w2 _c5.y\n"
+    "   #define d1 _c5.z\n"
+    "   #define d2 _c5.w\n"
+    "   #define edge_darken_c1 _c6.y\n"
+    "   #define edge_darken_c2 _c6.z\n"
+    "   #define edge_darken_c3 _c6.w\n"
+    "   #define w_div   _c6.x\n"
+    ""
+    "   // note: if you just take one sample at exactly uv.xy, you get an avg of 4 pixels.\n"
+    "   vec2 uv2 = fragment_texture.xy + srctexsize.zw*vec2(0,0);     // + moves blur UP, LEFT by TWO-pixel increments! (since texture is 1/2 the size of blur1_ps)\n"
+    ""
+    "   vec3 blur = \n"
+    "           ( texture( texture_sampler, uv2 + vec2(0, d1*srctexsize.w) ).xyz\n"
+    "           + texture( texture_sampler, uv2 + vec2(0,-d1*srctexsize.w) ).xyz)*w1 +\n"
+    "           ( texture( texture_sampler, uv2 + vec2(0, d2*srctexsize.w) ).xyz\n"
+    "           + texture( texture_sampler, uv2 + vec2(0,-d2*srctexsize.w) ).xyz)*w2\n"
+    "           ;\n"
+    "   blur.xyz *= w_div;\n"
+    ""
+    "   // tone it down at the edges:  (only happens on 1st X pass!)\n"
+    "   float t = min( min(fragment_texture.x, fragment_texture.y), 1-max(fragment_texture.x, fragment_texture.y) );\n"
+    "   t = sqrt(t);\n"
+    "   t = edge_darken_c1 + edge_darken_c2*clamp(t*edge_darken_c3, 0.0, 1.0);\n"
+    "   blur.xyz *= t;\n"
+    ""
+    "   color.xyz = blur;\n"
+    "   color.w   = 1;\n"
+    "}\n");
 
 
 
@@ -395,10 +430,48 @@ ShaderEngine::ShaderEngine() : presetCompShaderLoaded(false), presetWarpShaderLo
     programID_v2f_c4f = CompileShaderProgram(v2f_c4f_vert, v2f_c4f_frag, "v2f_c4f");
     programID_v2f_c4f_t2f = CompileShaderProgram(v2f_c4f_t2f_vert, v2f_c4f_t2f_frag, "v2f_c4f_t2f");
 
+    programID_blur1 = CompileShaderProgram(blur_vert, blur1_frag, "blur1");
+    programID_blur2 = CompileShaderProgram(blur_vert, blur2_frag, "blur2");
+
     UNIFORM_V2F_C4F_VERTEX_TRANFORMATION = glGetUniformLocation(programID_v2f_c4f, "vertex_transformation");
     UNIFORM_V2F_C4F_VERTEX_POINT_SIZE = glGetUniformLocation(programID_v2f_c4f, "vertex_point_size");
     UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION = glGetUniformLocation(programID_v2f_c4f_t2f, "vertex_transformation");
     UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER = glGetUniformLocation(programID_v2f_c4f_t2f, "texture_sampler");
+
+    uniform_blur1_sampler = glGetUniformLocation(programID_blur1, "texture_sampler");
+    uniform_blur1_c0 = glGetUniformLocation(programID_blur1, "_c0");
+    uniform_blur1_c1 = glGetUniformLocation(programID_blur1, "_c1");
+    uniform_blur1_c2 = glGetUniformLocation(programID_blur1, "_c2");
+    uniform_blur1_c3 = glGetUniformLocation(programID_blur1, "_c3");
+
+    uniform_blur2_sampler = glGetUniformLocation(programID_blur2, "texture_sampler");
+    uniform_blur2_c0 = glGetUniformLocation(programID_blur2, "_c0");
+    uniform_blur2_c5 = glGetUniformLocation(programID_blur2, "_c5");
+    uniform_blur2_c6 = glGetUniformLocation(programID_blur2, "_c6");
+
+    // Initialize Blur vao/vbo
+    float pointsBlur[16] = {
+        -1.0, -1.0,     0.0,    1.0,
+         1.0, -1.0,     1.0,    1.0,
+        -1.0,  1.0,     0.0,    0.0,
+         1.0,  1.0,     1.0,    0.0};
+
+    glGenBuffers(1, &vboBlur);
+    glGenVertexArrays(1, &vaoBlur);
+
+    glBindVertexArray(vaoBlur);
+    glBindBuffer(GL_ARRAY_BUFFER, vboBlur);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8 * 2, pointsBlur, GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)0); // Positions
+
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)(sizeof(float)*2)); // Textures
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 ShaderEngine::~ShaderEngine()
@@ -408,6 +481,9 @@ ShaderEngine::~ShaderEngine()
 
     glDeleteProgram(programID_blur1);
     glDeleteProgram(programID_blur2);
+
+    glDeleteBuffers(1, &vboBlur);
+    glDeleteVertexArrays(1, &vaoBlur);
 
     disablePresetShaders();
 }
@@ -435,9 +511,17 @@ void ShaderEngine::setParams(const int _texsizeX, const int _texsizeY, BeatDetec
     this->beatDetect = _beatDetect;
     this->textureManager = _textureManager;
 
+    aspectX = 1;
+    aspectY = 1;
+    if (_texsizeX > _texsizeY)
+        aspectY = (float)_texsizeY/(float)_texsizeX;
+    else
+        aspectX = (float)_texsizeX/(float)_texsizeY;
+
     this->texsizeX = _texsizeX;
     this->texsizeY = _texsizeY;
 }
+
 
 // compile a user-defined shader from a preset. returns program ID if successful.
 GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Shader &pmShader, const std::string &shaderFilename) {
@@ -665,42 +749,113 @@ void ShaderEngine::SetupShaderVariables(GLuint program, const Pipeline &pipeline
     // pass info from projectM to the shader uniforms
     // these are the inputs: http://www.geisswerks.com/milkdrop/milkdrop_preset_authoring.html#3f6
 
-	GLfloat slow_roam_cos[4] =	{ 0.5f + 0.5f * (float)cos(context.time * 0.005), 0.5f + 0.5f * (float)cos(context.time * 0.008), 0.5f + 0.5f * (float)cos(context.time * 0.013), 0.5f + 0.5f * (float)cos(context.time * 0.022) };
-	GLfloat roam_cos[4] =	{ 0.5f + 0.5f * cosf(context.time * 0.3), 0.5f + 0.5f * cosf(context.time * 1.3), 0.5f + 0.5f * cosf(context.time * 5), 0.5f + 0.5f * cosf(context.time * 20) };
-	GLfloat slow_roam_sin[4] =	{ 0.5f + 0.5f * sinf(context.time * 0.005), 0.5f + 0.5f * sinf(context.time * 0.008), 0.5f + 0.5f * sinf(context.time * 0.013), 0.5f + 0.5f * sinf(context.time * 0.022) };
-	GLfloat roam_sin[4] =	{ 0.5f + 0.5f * sinf(context.time * 0.3), 0.5f + 0.5f * sinf(context.time * 1.3), 0.5f + 0.5f * sinf(context.time * 5), 0.5f + 0.5f * sinf(context.time * 20) };
+    float time_since_preset_start = context.time - context.presetStartTime;
+    float time_since_preset_start_wrapped = time_since_preset_start - (int)(time_since_preset_start/10000)*10000;
+    float mip_x = logf((float)texsizeX)/logf(2.0f);
+    float mip_y = logf((float)texsizeX)/logf(2.0f);
+    float mip_avg = 0.5f*(mip_x + mip_y);
 
-	glProgramUniform4fv(program, glGetUniformLocation(program, "slow_roam_cos"), 4, slow_roam_cos);
-	glProgramUniform4fv(program, glGetUniformLocation(program, "roam_cos"), 4, roam_cos);
-	glProgramUniform4fv(program, glGetUniformLocation(program, "slow_roam_sin"), 4, slow_roam_sin);
-	glProgramUniform4fv(program, glGetUniformLocation(program, "roam_sin"), 4, roam_sin);
+    glProgramUniform4f(program, glGetUniformLocation(program, "rand_frame"), (rand() % 100) * .01, (rand() % 100) * .01, (rand()% 100) * .01, (rand() % 100) * .01);
+    glProgramUniform4f(program, glGetUniformLocation(program, "rand_preset"), rand_preset[0], rand_preset[1], rand_preset[2], rand_preset[3]);
 
-	glProgramUniform1f(program, glGetUniformLocation(program, "time"), context.time);
-	glProgramUniform4f(program, glGetUniformLocation(program, "rand_preset"), rand_preset[0], rand_preset[1], rand_preset[2],	rand_preset[3]);
-	glProgramUniform4f(program, glGetUniformLocation(program, "rand_frame"), (rand() % 100) * .01, (rand() % 100) * .01, (rand()% 100) * .01, (rand() % 100) * .01);
-	glProgramUniform1f(program, glGetUniformLocation(program, "fps"), context.fps);
-	glProgramUniform1f(program, glGetUniformLocation(program, "frame"), context.frame);
-	glProgramUniform1f(program, glGetUniformLocation(program, "progress"), context.progress);
+    glProgramUniform4f(program, glGetUniformLocation(program, "_c0"), aspectX, aspectY, 1 / aspectX, 1 / aspectY);
+    glProgramUniform4f(program, glGetUniformLocation(program, "_c1"), 0.0, 0.0, 0.0, 0.0);
+    glProgramUniform4f(program, glGetUniformLocation(program, "_c2"), time_since_preset_start_wrapped, context.fps,  context.frame, context.progress);
+    glProgramUniform4f(program, glGetUniformLocation(program, "_c3"), beatDetect->bass/100, beatDetect->mid/100, beatDetect->treb/100, beatDetect->vol/100);
+    glProgramUniform4f(program, glGetUniformLocation(program, "_c4"), beatDetect->bass_att/100, beatDetect->mid_att/100, beatDetect->treb_att/100, beatDetect->vol_att/100);
+    glProgramUniform4f(program, glGetUniformLocation(program, "_c5"), pipeline.blur1x-pipeline.blur1n, pipeline.blur1n, pipeline.blur2x-pipeline.blur2n, pipeline.blur2n);
+    glProgramUniform4f(program, glGetUniformLocation(program, "_c6"), pipeline.blur3x-pipeline.blur3n, pipeline.blur3n, pipeline.blur1n, pipeline.blur1x);
+    glProgramUniform4f(program, glGetUniformLocation(program, "_c7"), texsizeX, texsizeY, 1 / (float) texsizeX, 1 / (float) texsizeY);
 
-	glProgramUniform1f(program, glGetUniformLocation(program, "blur1_min"), pipeline.blur1n);
-	glProgramUniform1f(program, glGetUniformLocation(program, "blur1_max"), pipeline.blur1x);
-	glProgramUniform1f(program, glGetUniformLocation(program, "blur2_min"), pipeline.blur2n);
-	glProgramUniform1f(program, glGetUniformLocation(program, "blur2_max"), pipeline.blur2x);
-	glProgramUniform1f(program, glGetUniformLocation(program, "blur3_min"), pipeline.blur3n);
-	glProgramUniform1f(program, glGetUniformLocation(program, "blur3_max"), pipeline.blur3x);
+    glProgramUniform4f(program, glGetUniformLocation(program, "_c8"), 0.5f+0.5f*cosf(context.time* 0.329f+1.2f),
+                                                                      0.5f+0.5f*cosf(context.time* 1.293f+3.9f),
+                                                                      0.5f+0.5f*cosf(context.time* 5.070f+2.5f),
+                                                                      0.5f+0.5f*cosf(context.time*20.051f+5.4f));
 
-	glProgramUniform1f(program, glGetUniformLocation(program, "bass"), beatDetect->bass);
-	glProgramUniform1f(program, glGetUniformLocation(program, "mid"), beatDetect->mid);
-	glProgramUniform1f(program, glGetUniformLocation(program, "treb"), beatDetect->treb);
-	glProgramUniform1f(program, glGetUniformLocation(program, "bass_att"), beatDetect->bass_att);
-	glProgramUniform1f(program, glGetUniformLocation(program, "mid_att"), beatDetect->mid_att);
-	glProgramUniform1f(program, glGetUniformLocation(program, "treb_att"), beatDetect->treb_att);
-	glProgramUniform1f(program, glGetUniformLocation(program, "vol"), beatDetect->vol);
-	glProgramUniform1f(program, glGetUniformLocation(program, "vol_att"), beatDetect->vol);
+    glProgramUniform4f(program, glGetUniformLocation(program, "_c9"), 0.5f+0.5f*sinf(context.time* 0.329f+1.2f),
+                                                                      0.5f+0.5f*sinf(context.time* 1.293f+3.9f),
+                                                                      0.5f+0.5f*sinf(context.time* 5.070f+2.5f),
+                                                                      0.5f+0.5f*sinf(context.time*20.051f+5.4f));
 
-    glProgramUniform4f(program, glGetUniformLocation(program, "texsize"), texsizeX, texsizeY, 1 / (float) texsizeX, 1 / (float) texsizeY);
-    glProgramUniform4f(program, glGetUniformLocation(program, "aspect"), 1 / aspectX, 1, aspectX, 1);
+    glProgramUniform4f(program, glGetUniformLocation(program, "_c10"),  0.5f+0.5f*cosf(context.time*0.0050f+2.7f),
+                                                                        0.5f+0.5f*cosf(context.time*0.0085f+5.3f),
+                                                                        0.5f+0.5f*cosf(context.time*0.0133f+4.5f),
+                                                                        0.5f+0.5f*cosf(context.time*0.0217f+3.8f));
 
+    glProgramUniform4f(program, glGetUniformLocation(program, "_c11"),  0.5f+0.5f*sinf(context.time*0.0050f+2.7f),
+                                                                        0.5f+0.5f*sinf(context.time*0.0085f+5.3f),
+                                                                        0.5f+0.5f*sinf(context.time*0.0133f+4.5f),
+                                                                        0.5f+0.5f*sinf(context.time*0.0217f+3.8f));
+
+    glProgramUniform4f(program, glGetUniformLocation(program, "_c12"), mip_x, mip_y, mip_avg, 0 );
+    glProgramUniform4f(program, glGetUniformLocation(program, "_c13"), pipeline.blur2n, pipeline.blur2x, pipeline.blur3n, pipeline.blur3x);
+
+
+    glm::mat4 temp_mat[24];
+
+    // write matrices
+    for (int i=0; i<20; i++)
+    {
+        glm::mat4 mx, my, mz, mxlate;
+
+        mx = glm::rotate(glm::mat4(1.0f), rot_base[i].x + rot_speed[i].x*context.time, glm::vec3(1.0f, 0.0f, 0.0f));
+        my = glm::rotate(glm::mat4(1.0f), rot_base[i].y + rot_speed[i].y*context.time, glm::vec3(0.0f, 1.0f, 0.0f));
+        mz = glm::rotate(glm::mat4(1.0f), rot_base[i].z + rot_speed[i].z*context.time, glm::vec3(0.0f, 0.0f, 1.0f));
+
+        mxlate = glm::translate(glm::mat4(1.0f), glm::vec3(xlate[i].x, xlate[i].y, xlate[i].z));
+
+        temp_mat[i] = mxlate * mx;
+        temp_mat[i] = mz * temp_mat[i];
+        temp_mat[i] = my * temp_mat[i];
+    }
+
+    // the last 4 are totally random, each frame
+    for (int i=20; i<24; i++)
+    {
+        glm::mat4 mx, my, mz, mxlate;
+
+        mx = glm::rotate(glm::mat4(1.0f), FRAND * 6.28f, glm::vec3(1.0f, 0.0f, 0.0f));
+        my = glm::rotate(glm::mat4(1.0f), FRAND * 6.28f, glm::vec3(0.0f, 1.0f, 0.0f));
+        mz = glm::rotate(glm::mat4(1.0f), FRAND * 6.28f, glm::vec3(0.0f, 0.0f, 1.0f));
+
+        mxlate = glm::translate(glm::mat4(1.0f), glm::vec3(FRAND, FRAND, FRAND));
+
+        temp_mat[i] = mxlate * mx;
+        temp_mat[i] = mz * temp_mat[i];
+        temp_mat[i] = my * temp_mat[i];
+    }
+
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_s1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[0])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_s2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[1])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_s3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[2])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_s4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[3])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_d1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[4])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_d2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[5])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_d3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[6])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_d4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[7])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_f1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[8])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_f2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[9])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_f3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[10])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_f4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[11])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_vf1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[12])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_vf2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[13])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_vf3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[14])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_vf4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[15])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_uf1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[16])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_uf2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[17])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_uf3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[18])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_uf4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[19])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_rand1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[20])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_rand2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[21])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_rand3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[22])));
+    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_rand4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[23])));
+
+    // set program uniform "_q[a-h]" values (_qa.x, _qa.y, _qa.z, _qa.w, _qb.x, _qb.y ... ) alias q[1-32]
+    for (int i=0; i < 32; i+=4) {
+        std::string varName = "_q";
+        varName.push_back('a' + i/4);
+        glProgramUniform4f(program, glGetUniformLocation(program, varName.c_str()), pipeline.q[i], pipeline.q[i+1], pipeline.q[i+2], pipeline.q[i+3]);
+    }
 }
 
 void ShaderEngine::SetupTextures(GLuint program, const Shader &shader)
@@ -743,132 +898,168 @@ void ShaderEngine::SetupTextures(GLuint program, const Shader &shader)
     }
 }
 
-void ShaderEngine::SetupShaderQVariables(GLuint program, const Pipeline &q)
-{
-    // static shader code: q[1-32] are copies of _q[a-h] float4
-    //#define q1 _qa.x
-    //#define q2 _qa.y
-    //#define q3 _qa.z
-    //#define q4 _qa.w
-
-	// FIXME: to validate
-
-    // set program uniform "_q[a-h]" values (_qa.x, _qa.y, _qa.z, _qa.w, _qb.x, _qb.y ... )
-    for (int i=0; i < 32; i+=4) {
-        std::string varName = "q";
-        varName.push_back('a' + i/4);
-        int loc = glGetUniformLocation(program, varName.c_str());
-        glProgramUniform4f(program, loc, q.q[i], q.q[i+1], q.q[i+2], q.q[i+3]);
-    }
-}
 
 void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
-#ifndef GL_TRANSITION
-	if (blur1_enabled || blur2_enabled || blur3_enabled)
-	{
-        glUseProgram(programID_blur);
+    uint passes = 0;
+    if (blur3_enabled) {
+        passes = 6;
+    } else if (blur2_enabled) {
+        passes = 4;
+    } else if (blur1_enabled) {
+        passes = 2;
+    } else {
+        return;
+    }
 
-        glProgramUniform4f(programID_blur, glGetUniformLocation(programID_blur, "srctexsize"), texsize/2, texsize/2, 2 / (float) texsize,
-                2 / (float) texsize);
+    const float w[8] = { 4.0f, 3.8f, 3.5f, 2.9f, 1.9f, 1.2f, 0.7f, 0.3f };  //<- user can specify these
+    float edge_darken = pipeline.blur1ed;
+    float blur_min[3], blur_max[3];
 
+    blur_min[0] = pipeline.blur1n;
+    blur_min[1] = pipeline.blur2n;
+    blur_min[2] = pipeline.blur3n;
+    blur_max[0] = pipeline.blur1x;
+    blur_max[1] = pipeline.blur2x;
+    blur_max[2] = pipeline.blur3x;
 
-		float tex[4][2] =
-		{
-		{ 0, 1 },
-		{ 0, 0 },
-		{ 1, 0 },
-		{ 1, 1 } };
+    // check that precision isn't wasted in later blur passes [...min-max gap can't grow!]
+    // also, if min-max are close to each other, push them apart:
+    const float fMinDist = 0.1f;
+    if (blur_max[0] - blur_min[0] < fMinDist) {
+        float avg = (blur_min[0] + blur_max[0])*0.5f;
+        blur_min[0] = avg - fMinDist*0.5f;
+        blur_max[0] = avg - fMinDist*0.5f;
+    }
+    blur_max[1] = std::min(blur_max[0], blur_max[1]);
+    blur_min[1] = std::max(blur_min[0], blur_min[1]);
+    if (blur_max[1] - blur_min[1] < fMinDist) {
+        float avg = (blur_min[1] + blur_max[1])*0.5f;
+        blur_min[1] = avg - fMinDist*0.5f;
+        blur_max[1] = avg - fMinDist*0.5f;
+    }
+    blur_max[2] = std::min(blur_max[1], blur_max[2]);
+    blur_min[2] = std::max(blur_min[1], blur_min[2]);
+    if (blur_max[2] - blur_min[2] < fMinDist) {
+        float avg = (blur_min[2] + blur_max[2])*0.5f;
+        blur_min[2] = avg - fMinDist*0.5f;
+        blur_max[2] = avg - fMinDist*0.5f;
+    }
 
-		glBlendFunc(GL_ONE, GL_ZERO);
-		glColor4f(1.0, 1.0, 1.0, 1.0f);
+    float fscale[3];
+    float fbias[3];
 
-		glBindTexture(GL_TEXTURE_2D, mainTextureId);
-		glEnable(GL_TEXTURE_2D);
+    // figure out the progressive scale & bias needed, at each step,
+    // to go from one [min..max] range to the next.
+    float temp_min, temp_max;
+    fscale[0] = 1.0f / (blur_max[0] - blur_min[0]);
+    fbias [0] = -blur_min[0] * fscale[0];
+    temp_min  = (blur_min[1] - blur_min[0]) / (blur_max[0] - blur_min[0]);
+    temp_max  = (blur_max[1] - blur_min[0]) / (blur_max[0] - blur_min[0]);
+    fscale[1] = 1.0f / (temp_max - temp_min);
+    fbias [1] = -temp_min * fscale[1];
+    temp_min  = (blur_min[2] - blur_min[1]) / (blur_max[1] - blur_min[1]);
+    temp_max  = (blur_max[2] - blur_min[1]) / (blur_max[1] - blur_min[1]);
+    fscale[2] = 1.0f / (temp_max - temp_min);
+    fbias [2] = -temp_min * fscale[2];
 
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_COLOR_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT, 0, tex);
+    const std::vector<Texture*> & blurTextures = textureManager->getBlurTextures();
+    const Texture * mainTexture = textureManager->getMainTexture();
 
-		if (blur1_enabled)
-		{
-			float pointsold[4][2] =
-			{
-			{ 0, 1 },
-			{ 0, 0 },
-			{ 1, 0 },
-			{ 1, 1 } };
-			float points[4][2] =
-						{
-						{ 0, 0.5 },
-						{ 0, 0 },
-						{ 0.5, 0 },
-						{ 0.5, 0.5 } };
+    glBlendFunc(GL_ONE, GL_ZERO);
+    glBindVertexArray(vaoBlur);
 
+    for (uint i=0; i<passes; i++)
+    {
+        // set pixel shader
+        if ((i%2) == 0) {
+            glUseProgram(programID_blur1);
+            glUniform1i(uniform_blur1_sampler, 0);
 
-			glVertexPointer(2, GL_FLOAT, 0, points);
-			glBlendFunc(GL_ONE,GL_ZERO);
-			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        } else {
+            glUseProgram(programID_blur2);
+            glUniform1i(uniform_blur2_sampler, 0);
 
+        }
 
-			glBindTexture(GL_TEXTURE_2D, blur1_tex);
-			glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize/2, texsize/2);
+        glViewport(0, 0, blurTextures[i]->width, blurTextures[i]->height);
 
+        // hook up correct source texture - assume there is only one, at stage 0
+        glActiveTexture(GL_TEXTURE0);
+        if (i == 0) {
+            glBindTexture(GL_TEXTURE_2D, mainTexture->texID);
+        } else {
+            glBindTexture(GL_TEXTURE_2D, blurTextures[i-1]->texID);
+        }
 
-		}
-
-		if (blur2_enabled)
-		{
-
-
-			float points[4][2] =
-			{
-			{ 0, 0.25 },
-			{ 0, 0 },
-			{ 0.25, 0 },
-			{ 0.25, 0.25 } };
-
-			glVertexPointer(2, GL_FLOAT, 0, points);
-			glBlendFunc(GL_ONE,GL_ZERO);
-			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-
-
-						glBindTexture(GL_TEXTURE_2D, blur2_tex);
-						glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize/4, texsize/4);
-
-
-		}
-
-		if (blur3_enabled)
-		{
-            glProgramUniform4f(programID_blur, glGetUniformLocation(programID_blur, "srctexsize"), texsize/4, texsize/4, 4 / (float) texsize,
-                               4/ (float) texsize);
-
-			float points[4][2] =
-			{
-			{ 0, 0.125 },
-			{ 0, 0 },
-			{ 0.125, 0 },
-			{ 0.125, 0.125 } };
-
-			glVertexPointer(2, GL_FLOAT, 0, points);
-			glBlendFunc(GL_ONE,GL_ZERO);
-			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-
-
-						glBindTexture(GL_TEXTURE_2D, blur3_tex);
-						glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsize/8, texsize/8);
+        float srcw = (i==0) ? mainTexture->width : blurTextures[i-1]->width;
+        float srch = (i==0) ? mainTexture->height : blurTextures[i-1]->height;
 
 
-		}
-		glDisable(GL_TEXTURE_2D);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        float fscale_now = fscale[i/2];
+        float fbias_now  = fbias[i/2];
 
-	}
-#endif
+        // set constants
+        if (i%2==0)
+        {
+            // pass 1 (long horizontal pass)
+            //-------------------------------------
+            const float w1 = w[0] + w[1];
+            const float w2 = w[2] + w[3];
+            const float w3 = w[4] + w[5];
+            const float w4 = w[6] + w[7];
+            const float d1 = 0 + 2*w[1]/w1;
+            const float d2 = 2 + 2*w[3]/w2;
+            const float d3 = 4 + 2*w[5]/w3;
+            const float d4 = 6 + 2*w[7]/w4;
+            const float w_div = 0.5f/(w1+w2+w3+w4);
+            //-------------------------------------
+            //float4 _c0; // source texsize (.xy), and inverse (.zw)
+            //float4 _c1; // w1..w4
+            //float4 _c2; // d1..d4
+            //float4 _c3; // scale, bias, w_div, 0
+            //-------------------------------------
+            glUniform4f(uniform_blur1_c0, srcw, srch, 1.0f/srcw, 1.0f/srch);
+            glUniform4f(uniform_blur1_c1, w1,w2,w3,w4);
+            glUniform4f(uniform_blur1_c2, d1,d2,d3,d4);
+            glUniform4f(uniform_blur1_c3, fscale_now, fbias_now, w_div, 0.0);
+        }
+        else
+        {
+            // pass 2 (short vertical pass)
+            //-------------------------------------
+            const float w1 = w[0]+w[1] + w[2]+w[3];
+            const float w2 = w[4]+w[5] + w[6]+w[7];
+            const float d1 = 0 + 2*((w[2]+w[3])/w1);
+            const float d2 = 2 + 2*((w[6]+w[7])/w2);
+            const float w_div = 1.0f/((w1+w2)*2);
+            //-------------------------------------
+            //float4 _c0; // source texsize (.xy), and inverse (.zw)
+            //float4 _c5; // w1,w2,d1,d2
+            //float4 _c6; // w_div, edge_darken_c1, edge_darken_c2, edge_darken_c3
+            //-------------------------------------
+            glUniform4f(uniform_blur2_c0, srcw, srch, 1.0f/srcw, 1.0f/srch);
+            glUniform4f(uniform_blur2_c5, w1,w2,d1,d2);
+            // note: only do this first time; if you do it many times,
+            // then the super-blurred levels will have big black lines along the top & left sides.
+            if (i==1)
+                glUniform4f(uniform_blur2_c6, w_div, (1-edge_darken), edge_darken, 5.0f); //darken edges
+            else
+                glUniform4f(uniform_blur2_c6, w_div, 1.0f, 0.0f, 5.0f); // don't darken
+        }
+
+        // draw fullscreen quad
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        // save to blur texture
+        glBindTexture(GL_TEXTURE_2D, blurTextures[i]->texID);
+        glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, blurTextures[i]->width, blurTextures[i]->height);
+    }
+
+    glBindVertexArray(0);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 bool ShaderEngine::linkProgram(GLuint programID) {
@@ -893,7 +1084,7 @@ bool ShaderEngine::linkProgram(GLuint programID) {
 
 
 void ShaderEngine::loadPresetShaders(Pipeline &pipeline) {
-/*
+
     // compile and link warp and composite shaders from pipeline
     if (!pipeline.compositeShader.programSource.empty()) {
         programID_presetComp = loadPresetShader(PresentCompositeShader, pipeline.compositeShader, pipeline.compositeShaderFilename);
@@ -908,7 +1099,7 @@ void ShaderEngine::loadPresetShaders(Pipeline &pipeline) {
             presetWarpShaderLoaded = true;
         }
     }
-    */
+    
     std::cout << "Preset composite shader active: " << presetCompShaderLoaded << ", preset warp shader active: " << presetWarpShaderLoaded << std::endl;
 }
 
@@ -938,10 +1129,31 @@ void ShaderEngine::disablePresetShaders() {
 void ShaderEngine::reset()
 {
     disablePresetShaders();
-	rand_preset[0] = (rand() % 100) * .01;
-	rand_preset[1] = (rand() % 100) * .01;
-	rand_preset[2] = (rand() % 100) * .01;
-	rand_preset[3] = (rand() % 100) * .01;
+    rand_preset[0] = FRAND;
+    rand_preset[1] = FRAND;
+    rand_preset[2] = FRAND;
+    rand_preset[3] = FRAND;
+
+    uint k = 0;
+    do
+    {
+        for (int i=0; i<4; i++)
+        {
+            float xlate_mult = 1;
+            float rot_mult = 0.9f*powf(k/8.0f, 3.2f);
+            xlate[k].x = (FRAND*2-1)*xlate_mult;
+            xlate[k].y = (FRAND*2-1)*xlate_mult;
+            xlate[k].z = (FRAND*2-1)*xlate_mult;
+            rot_base[k].x = FRAND*6.28f;
+            rot_base[k].y = FRAND*6.28f;
+            rot_base[k].z = FRAND*6.28f;
+            rot_speed[k].x = (FRAND*2-1)*rot_mult;
+            rot_speed[k].y = (FRAND*2-1)*rot_mult;
+            rot_speed[k].z = (FRAND*2-1)*rot_mult;
+            k++;
+        }
+    }
+    while (k < sizeof(xlate)/sizeof(xlate[0]));
 }
 
 GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode, const std::string & shaderTypeString){
@@ -1011,7 +1223,6 @@ bool ShaderEngine::enableWarpShader(Shader &shader, const Pipeline &pipeline, co
         SetupTextures(programID_presetWarp, shader);
 
         SetupShaderVariables(programID_presetWarp, pipeline, pipelineContext);
-        SetupShaderQVariables(programID_presetWarp, pipeline);
 
         glUniformMatrix4fv(uniform_vertex_transf_warp_shader, 1, GL_FALSE, glm::value_ptr(mat_ortho));
 
@@ -1033,7 +1244,6 @@ bool ShaderEngine::enableCompositeShader(Shader &shader, const Pipeline &pipelin
         SetupTextures(programID_presetComp, shader);
 
         SetupShaderVariables(programID_presetComp, pipeline, pipelineContext);
-        SetupShaderQVariables(programID_presetComp, pipeline);
 
         return true;
     }

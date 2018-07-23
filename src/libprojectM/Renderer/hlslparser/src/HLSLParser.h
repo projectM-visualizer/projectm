@@ -125,7 +125,6 @@ private:
 
     void ProcessMacroArguments(HLSLMacro* macro, std::string & sourcePreprocessed);
     HLSLMacro *ProcessMacroFromIdentifier(std::string & sourcePreprocessed, bool &addOriginalSource);
-    void CheckIfAnAlias(HLSLMacro * macro, HLSLMacro * macroMatched);
 
 private:
 
