@@ -13,6 +13,7 @@
 		1612C9E2207A85C100862A3A /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C9DF207A85BD00862A3A /* libMilkdropPresetFactory.a */; };
 		1612C9E3207A85C100862A3A /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C9E1207A85BD00862A3A /* libNativePresetFactory.a */; };
 		1612CA11207A8D2F00862A3A /* shaders in Copy Files */ = {isa = PBXBuildFile; fileRef = 1612CA10207A8D2400862A3A /* shaders */; };
+		165E542A20D68810004AEA81 /* presets in Resources */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		169502001F7009E9008FAF86 /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
 		C345214F1BF022A5001707D2 /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
 		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
@@ -212,7 +213,8 @@
 				C34521401BF02293001707D2 /* Sources */,
 				C34521411BF02293001707D2 /* Frameworks */,
 				C34521421BF02293001707D2 /* Copy Files */,
-				1659FEE920D67E2E00092B7D /* ShellScript */,
+				1659FEE920D67E2E00092B7D /* Run Script */,
+				165E542920D68779004AEA81 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -295,8 +297,19 @@
 		};
 /* End PBXReferenceProxy section */
 
+/* Begin PBXResourcesBuildPhase section */
+		165E542920D68779004AEA81 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				165E542A20D68810004AEA81 /* presets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXShellScriptBuildPhase section */
-		1659FEE920D67E2E00092B7D /* ShellScript */ = {
+		1659FEE920D67E2E00092B7D /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -304,8 +317,9 @@
 			inputPaths = (
 				"$(SRCROOT)/../../presets",
 			);
+			name = "Run Script";
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/presets",
+				"$(BUILT_PRODUCTS_DIR)/presets",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
