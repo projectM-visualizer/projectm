@@ -6,13 +6,12 @@ libRenderer_la_SOURCES = \
   SOIL2/image_helper.c \
   SOIL2/SOIL2.c \
   SOIL2/etc1_utils.c \
-  FBO.cpp \
   MilkdropWaveform.cpp \
   PerPixelMesh.cpp \
   Pipeline.cpp \
   Renderer.cpp \
   ShaderEngine.cpp \
-  UserTexture.cpp \
+  Texture.cpp \
   Waveform.cpp \
   Filters.cpp \
   PerlinNoise.cpp \
@@ -25,9 +24,9 @@ libRenderer_la_SOURCES = \
   RenderItemDistanceMetric.cpp \
   RenderItemMatcher.cpp \
 	BeatDetect.hpp               PipelineContext.hpp          ShaderEngine.hpp\
-	FBO.hpp                      RenderItemDistanceMetric.hpp TextureManager.hpp\
+	RenderItemDistanceMetric.hpp TextureManager.hpp\
 	Filters.hpp                  RenderItemMatcher.hpp        Transformation.hpp\
-	MilkdropWaveform.hpp         RenderItemMergeFunction.hpp  UserTexture.hpp\
+	MilkdropWaveform.hpp         RenderItemMergeFunction.hpp  Texture.hpp\
 	PerPixelMesh.hpp             Renderable.hpp               VideoEcho.hpp\
 	PerlinNoise.hpp              Renderer.hpp                 Waveform.hpp\
 	Pipeline.hpp                 Shader.hpp\

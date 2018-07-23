@@ -35,7 +35,7 @@ void PresetInputs::update(const BeatDetect & music, const PipelineContext & cont
 float **alloc_mesh(size_t gx, size_t gy)
 {
 	// round gy up to multiple 4 (for possible SSE optimization) 
-	gy = (gy+3) & ~(size_t)3;
+//	gy = (gy+3) & ~(size_t)3;
 
 	float **mesh = (float **)wipe_aligned_alloc(gx * sizeof(float *));
 	float *m = (float *)wipe_aligned_alloc(gx * gy * sizeof(float));
@@ -441,11 +441,11 @@ void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 
 void PresetOutputs::PerPixelMath(const PipelineContext &context)
 {
-#ifdef __SSE2__
-	PerPixelMath_sse(context);
-#else
+//#ifdef __SSE2__
+//    PerPixelMath_sse(context);
+//#else
 	PerPixelMath_c(context);
-#endif
+//#endif
 }
 
 
