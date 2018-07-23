@@ -3298,7 +3298,7 @@ bool HLSLParser::ParsePreprocessorDefine()
         if (Accept('('))
         {
             HLSLArgument* lastArgument = NULL;
-            uint numArguments = 0;
+            unsigned numArguments = 0;
 
             while (!Accept(')'))
             {
@@ -3340,7 +3340,7 @@ bool HLSLParser::ParsePreprocessorDefine()
             {
                 // Search for macro attributes
                 HLSLArgument* argument = macro->argument;
-                uint argNum = 0;
+                unsigned argNum = 0;
                 while(argument != NULL)
                 {
                     if (String_Equal(argument->name, m_tokenizer.GetIdentifier()))
@@ -3540,7 +3540,7 @@ HLSLMacro * HLSLParser::ProcessMacroFromIdentifier(std::string & sourcePreproces
 
 void HLSLParser::ProcessMacroArguments(HLSLMacro* macro, std::string & sourcePreprocessed)
 {
-    uint scopeLevel = 0;
+    unsigned scopeLevel = 0;
     std::vector<std::string> argumentsValues;
     std::string argValue;
 
@@ -3589,7 +3589,7 @@ void HLSLParser::ProcessMacroArguments(HLSLMacro* macro, std::string & sourcePre
     }
 
     // Write arguments value
-    uint index = 0;
+    unsigned index = 0;
     std::string arg;
     bool argFound = false;
     while(index < macro->value.length())
@@ -3601,7 +3601,7 @@ void HLSLParser::ProcessMacroArguments(HLSLMacro* macro, std::string & sourcePre
         }
         else if (macro->value[index] == '#' && argFound)
         {
-            uint indexArg = std::stoi(arg);
+            unsigned indexArg = std::stoi(arg);
             if (indexArg < argumentsValues.size())
             {
                 sourcePreprocessed.append(argumentsValues[indexArg]);
