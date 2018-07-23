@@ -96,6 +96,16 @@ int TimeKeeper::PresetFrameA()
     return _presetFrameA;
   }
 
+int TimeKeeper::PresetTimeB()
+  {
+    return _presetTimeB;
+  }
+
+int TimeKeeper::PresetTimeA()
+  {
+    return _presetTimeA;
+  }
+
 double TimeKeeper::sampledPresetDuration() {
 #ifdef WIN32
 	return  _presetDuration;

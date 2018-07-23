@@ -78,16 +78,30 @@ private:
     bool blur1_enabled;
     bool blur2_enabled;
     bool blur3_enabled;
-    GLuint blur1_tex;
-    GLuint blur2_tex;
-    GLuint blur3_tex;
+
+    GLint uniform_blur1_sampler;
+    GLint uniform_blur1_c0;
+    GLint uniform_blur1_c1;
+    GLint uniform_blur1_c2;
+    GLint uniform_blur1_c3;
+
+    GLint uniform_blur2_sampler;
+    GLint uniform_blur2_c0;
+    GLint uniform_blur2_c5;
+    GLint uniform_blur2_c6;
+
+    GLuint vboBlur;
+    GLuint vaoBlur;
 
     float rand_preset[4];
+    glm::vec3 xlate[20];
+    glm::vec3 rot_base[20];
+    glm::vec3 rot_speed[20];
 
-    void SetupShaderQVariables(GLuint program, const Pipeline &q);
     void SetupShaderVariables(GLuint program, const Pipeline &pipeline, const PipelineContext &pipelineContext);
     void SetupTextures(GLuint program, const Shader &shader);
     GLuint compilePresetShader(const ShaderEngine::PresentShaderType shaderType, Shader &shader, const std::string &shaderFilename);
+
     void disablePresetShaders();
     GLuint loadPresetShader(const PresentShaderType shaderType, Shader &shader, std::string &shaderFilename);
 
