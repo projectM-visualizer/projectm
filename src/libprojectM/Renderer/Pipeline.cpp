@@ -33,6 +33,5 @@ Pipeline::~Pipeline()
 	}
 }
 
-//void Pipeline::Render(const BeatDetect &music, const PipelineContext &context){}
 PixelPoint Pipeline::PerPixel(PixelPoint p, const PerPixelContext context)
 {return p;}

@@ -29,13 +29,13 @@
 
 const float FPS = 60;
 
-class projectMSDL : projectM {
+class projectMSDL : public projectM {
 public:
     bool done;
 
     projectMSDL(Settings settings, int flags);
     projectMSDL(std::string config_file, int flags);
-    void init(SDL_Window *window, SDL_GLContext *glCtx);
+    void init(SDL_Window *window, SDL_GLContext *glCtx, const bool renderToTexture = false);
     int openAudioInput();
     void beginAudioCapture();
     void endAudioCapture();
@@ -45,6 +45,7 @@ public:
     void pollEvent();
     void maximize();
     std::string getActivePresetName();
+    void addFakePCM();
 
 private:
     SDL_Window *win;
@@ -53,6 +54,11 @@ private:
     projectM::Settings settings;
     SDL_AudioDeviceID audioInputDevice;
     unsigned int width, height;
+    bool renderToTexture;
+    GLuint programID = 0;
+    GLuint m_vbo = 0;
+    GLuint m_vao = 0;
+    GLuint textureID = 0;
 
     // audio input device characteristics
     unsigned short audioChannelsCount;
@@ -64,9 +70,9 @@ private:
     static void audioInputCallbackF32(void *userdata, unsigned char *stream, int len);
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
 
-    void addFakePCM();
     void keyHandler(SDL_Event *);
     SDL_AudioDeviceID selectAudioInput(int count);
+    void renderTexture();
 };
 
 
