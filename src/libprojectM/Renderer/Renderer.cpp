@@ -440,10 +440,6 @@ void Renderer::reset(int w, int h)
     texsizeX = w;
     texsizeY = h;
 
-    // snap to 16x16 blocks
-    texsizeX = ((texsizeX+15)/16)*16;
-    texsizeY = ((texsizeY+15)/16)*16;
-
     m_fAspectX = (texsizeY > texsizeX) ? (float)texsizeX/(float)texsizeY : 1.0f;
     m_fAspectY = (texsizeX > texsizeY) ? (float)texsizeY/(float)texsizeX : 1.0f;
     m_fInvAspectX = 1.0f/m_fAspectX;
