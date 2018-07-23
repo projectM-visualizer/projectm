@@ -22,6 +22,7 @@ class ShaderEngine;
 #include <map>
 #include <sstream>
 #include "Shader.hpp"
+#include <glm/vec3.hpp>
 
 
 class ShaderEngine
