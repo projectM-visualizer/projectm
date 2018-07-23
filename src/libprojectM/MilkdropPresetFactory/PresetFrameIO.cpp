@@ -241,7 +241,7 @@ inline __m128 _mm_pow(__m128 x, __m128 y)
 	float X[4];
 	float Y[4];
 	_mm_store_ps(X,x);
-	_mm_store_ps(Y,x);
+	_mm_store_ls(Y,y);
 	X[0] = __builtin_powf(X[0],Y[0]);
 	X[1] = __builtin_powf(X[1],Y[1]);
 	X[2] = __builtin_powf(X[2],Y[2]);
