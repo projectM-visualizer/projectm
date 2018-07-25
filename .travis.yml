@@ -34,6 +34,7 @@ matrix:
             - libglew-dev
             - libftgl-dev
             - libglm-dev
+            - libc++-dev
       env:
         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
     # linux/gcc
@@ -48,6 +49,7 @@ matrix:
             - libglew-dev
             - libftgl-dev
             - libglm-dev
+            - libc++-dev
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 
