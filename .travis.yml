@@ -13,7 +13,6 @@ script:
   - test -e src/projectM-sdl/projectMSDL
   - test -e src/libprojectM/libprojectM.la
   - test -e dist_install/share/projectM/fonts/Vera.ttf
-  - test -e dist_install/share/projectM/shaders/blur.cg
   - test -d dist_install/share/projectM/presets
   - test -e dist_install/lib/libprojectM.la
   - test -e dist_install/include/libprojectM/projectM.hpp
@@ -34,9 +33,8 @@ matrix:
             - libsdl2-dev
             - libglew-dev
             - libftgl-dev
-            - libsdl2-dev
-            - libdevil-dev
             - libglm-dev
+            - libc++-dev
       env:
         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
     # linux/gcc
@@ -50,9 +48,8 @@ matrix:
             - libsdl2-dev
             - libglew-dev
             - libftgl-dev
-            - libsdl2-dev
-            - libdevil-dev
             - libglm-dev
+            - libc++-dev
       env:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 

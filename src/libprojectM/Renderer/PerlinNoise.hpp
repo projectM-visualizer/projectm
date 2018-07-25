@@ -14,13 +14,12 @@ class PerlinNoise
 {
 public:
 
-	float noise_lq[256][256];
-	float noise_lq_lite[32][32];
-	float noise_mq[256][256];
-	float noise_hq[256][256];
-	float noise_perlin[512][512];
-	float noise_lq_vol[32][32][32];
-	float noise_hq_vol[32][32][32];
+    float noise_lq[256][256][3];
+    float noise_lq_lite[32][32][3];
+    float noise_mq[256][256][3];
+    float noise_hq[256][256][3];
+    float noise_lq_vol[32][32][32][3];
+    float noise_hq_vol[32][32][32][3];
 
 
 	PerlinNoise();
@@ -44,14 +43,6 @@ private:
 	{
 		 int n = x + y * 57 + z * 141;
 		 return noise(n);
-	}
-
-	static inline float cos_interp(float a, float b, float x)
-	{
-		float ft = x * 3.1415927;
-		float f = (1 - cos(ft)) * .5;
-
-		return  a*(1-f) + b*f;
 	}
 
 	static inline float cubic_interp(float v0, float v1, float v2, float v3, float x)
@@ -99,53 +90,6 @@ private:
 		return cubic_interp(i0, i1 , i2 , i3, fractional_Y);
 
 	}
-
-	static inline float perlin_octave_2d(float x,float y, int width, int seed, float period)
-	{
-
-	           float freq=1/(float)(period);
-
-	           int num=(int)(width*freq);
-	           int step_x=(int)(x*freq);
-	           int step_y=(int)(y*freq);
-	           float zone_x=x*freq-step_x;
-	           float zone_y=y*freq-step_y;
-	           int box=step_x+step_y*num;
-	           int noisedata=(box+seed);
-
-	           float u=cubic_interp(noise(noisedata-num-1),noise(noisedata-num),noise(noisedata-num+1),noise(noisedata-num+2),zone_x);
-	           float a=cubic_interp(noise(noisedata-1),noise(noisedata),noise(noisedata+1),noise(noisedata+2),zone_x);
-	           float b=cubic_interp(noise(noisedata+num -1),noise(noisedata+num),noise(noisedata+1+num),noise(noisedata+2+num),zone_x);
-	           float v=cubic_interp(noise(noisedata+2*num -1),noise(noisedata+2*num),noise(noisedata+1+2*num),noise(noisedata+2+2*num),zone_x);
-
-	           float value=cubic_interp(u,a,b,v,zone_y);
-
-	          return value;
-	}
-
-
-	static inline float perlin_octave_2d_cos(float x,float y, int width, int seed, float period)
-		{
-
-		           float freq=1/(float)(period);
-
-		           int num=(int)(width*freq);
-		           int step_x=(int)(x*freq);
-		           int step_y=(int)(y*freq);
-		           float zone_x=x*freq-step_x;
-		           float zone_y=y*freq-step_y;
-		           int box=step_x+step_y*num;
-		           int noisedata=(box+seed);
-
-		           float a=cos_interp(noise(noisedata),noise(noisedata+1),zone_x);
-		           float b=cos_interp(noise(noisedata+num),noise(noisedata+1+num),zone_x);
-
-		           float value=cos_interp(a,b,zone_y);
-
-		          return value;
-		}
-
-
 
 	static inline float perlin_octave_3d(float x,float y, float z,int width, int seed, float period)
 		{
@@ -203,21 +147,6 @@ private:
 		           return value;
 		}
 
-
-	static inline float perlin_noise_2d(int x, int y,  int width, int octaves, int seed, float persistance, float basePeriod)
-		{
-			float p = persistance;
-			float val = 0.0;
-
-			for (int i = 0; i<octaves;i++)
-			{
-				val += perlin_octave_2d_cos(x,y,width,seed,basePeriod) * p;
-
-				basePeriod *= 0.5;
-				p *= persistance;
-			}
-			return val;
-		}
 
 	static inline float perlin_noise_3d(int x, int y, int z, int width, int octaves, int seed, float persistance, float basePeriod)
 		{

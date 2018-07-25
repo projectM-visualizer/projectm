@@ -75,9 +75,12 @@ AC_CONFIG_FILES([src/libprojectM/config.inp.in])
 AC_PREFIX_DEFAULT([/usr/local])
 
 AC_PROG_MKDIR_P
+                        
+AX_CHECK_COMPILE_FLAG([-stdlib=libc++], [
+                        CXXFLAGS="$CXXFLAGS -stdlib=libc++"])
 
-AX_CHECK_COMPILE_FLAG([-std=c++14], [
-                        CXXFLAGS="$CXXFLAGS -std=c++14"])
+AX_CHECK_COMPILE_FLAG([-std=c++11], [
+                        CXXFLAGS="$CXXFLAGS -std=c++11"])
 
 dnl Qt
 AC_ARG_ENABLE([qt],

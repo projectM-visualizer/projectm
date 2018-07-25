@@ -10,7 +10,7 @@
 using namespace M4;
 
 
-std::unique_ptr<std::string> HLSLTranslator::parse(const std::string & shaderType, const char *fileName, const std::string &fullSource) {
+std::string HLSLTranslator::parse(const std::string & shaderType, const char *fileName, const std::string &fullSource) {
     // alloc
     GLSLGenerator generator;
     Allocator allocator;
@@ -37,7 +37,7 @@ std::unique_ptr<std::string> HLSLTranslator::parse(const std::string & shaderTyp
             out2 << sourcePreprocessed;
             out2.close();
 #endif
-        return nullptr;
+            return std::string();
     }
 
     // generate GLSL
@@ -50,10 +50,10 @@ std::unique_ptr<std::string> HLSLTranslator::parse(const std::string & shaderTyp
             out2 << sourcePreprocessed;
             out2.close();
 #endif
-        return nullptr;
+        return std::string();
     }
 
-    return std::make_unique<std::string>(generator.GetResult());
+    return std::string(generator.GetResult());
 }
 
 
