@@ -711,8 +711,8 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
 
     // transpile from HLSL (aka preset shader aka directX shader) to GLSL (aka OpenGL shader lang)
     HLSLTranslator translator = HLSLTranslator();
-    std::unique_ptr<std::string> glslSource = translator.parse(shaderTypeString, shaderFilename.c_str(), fullSource);
-    if (!glslSource) {
+    std::string glslSource = translator.parse(shaderTypeString, shaderFilename.c_str(), fullSource);
+    if (glslSource.empty()) {
         std::cerr << "Failed to translate " << shaderTypeString << std::endl;
         return GL_FALSE;
     }
@@ -721,9 +721,9 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     // copmile the preset shader fragment shader with the standard vertex shader and cross our fingers
     GLuint ret = 0;
     if (shaderType == PresentWarpShader) {
-        ret = CompileShaderProgram(presetWarpVertexShader, *glslSource.get(), shaderTypeString);  // returns new program
+        ret = CompileShaderProgram(presetWarpVertexShader, glslSource, shaderTypeString);  // returns new program
     } else {
-        ret = CompileShaderProgram(presetCompVertexShader, *glslSource.get(), shaderTypeString);  // returns new program
+        ret = CompileShaderProgram(presetCompVertexShader, glslSource, shaderTypeString);  // returns new program
     }
 
     if (ret != GL_FALSE) {
@@ -735,7 +735,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
         std::cerr << "Source:" << std::endl << *glslSource.get() << std::endl;
 #else
         std::ofstream out2("/tmp/shader_glsl_" + shaderTypeString + ".txt");
-            out2 << *glslSource.get();
+            out2 << glslSource;
             out2.close();
 #endif
     }
@@ -755,40 +755,40 @@ void ShaderEngine::SetupShaderVariables(GLuint program, const Pipeline &pipeline
     float mip_y = logf((float)texsizeX)/logf(2.0f);
     float mip_avg = 0.5f*(mip_x + mip_y);
 
-    glProgramUniform4f(program, glGetUniformLocation(program, "rand_frame"), (rand() % 100) * .01, (rand() % 100) * .01, (rand()% 100) * .01, (rand() % 100) * .01);
-    glProgramUniform4f(program, glGetUniformLocation(program, "rand_preset"), rand_preset[0], rand_preset[1], rand_preset[2], rand_preset[3]);
+    glUniform4f(glGetUniformLocation(program, "rand_frame"), (rand() % 100) * .01, (rand() % 100) * .01, (rand()% 100) * .01, (rand() % 100) * .01);
+    glUniform4f(glGetUniformLocation(program, "rand_preset"), rand_preset[0], rand_preset[1], rand_preset[2], rand_preset[3]);
 
-    glProgramUniform4f(program, glGetUniformLocation(program, "_c0"), aspectX, aspectY, 1 / aspectX, 1 / aspectY);
-    glProgramUniform4f(program, glGetUniformLocation(program, "_c1"), 0.0, 0.0, 0.0, 0.0);
-    glProgramUniform4f(program, glGetUniformLocation(program, "_c2"), time_since_preset_start_wrapped, context.fps,  context.frame, context.progress);
-    glProgramUniform4f(program, glGetUniformLocation(program, "_c3"), beatDetect->bass/100, beatDetect->mid/100, beatDetect->treb/100, beatDetect->vol/100);
-    glProgramUniform4f(program, glGetUniformLocation(program, "_c4"), beatDetect->bass_att/100, beatDetect->mid_att/100, beatDetect->treb_att/100, beatDetect->vol_att/100);
-    glProgramUniform4f(program, glGetUniformLocation(program, "_c5"), pipeline.blur1x-pipeline.blur1n, pipeline.blur1n, pipeline.blur2x-pipeline.blur2n, pipeline.blur2n);
-    glProgramUniform4f(program, glGetUniformLocation(program, "_c6"), pipeline.blur3x-pipeline.blur3n, pipeline.blur3n, pipeline.blur1n, pipeline.blur1x);
-    glProgramUniform4f(program, glGetUniformLocation(program, "_c7"), texsizeX, texsizeY, 1 / (float) texsizeX, 1 / (float) texsizeY);
+    glUniform4f(glGetUniformLocation(program, "_c0"), aspectX, aspectY, 1 / aspectX, 1 / aspectY);
+    glUniform4f(glGetUniformLocation(program, "_c1"), 0.0, 0.0, 0.0, 0.0);
+    glUniform4f(glGetUniformLocation(program, "_c2"), time_since_preset_start_wrapped, context.fps,  context.frame, context.progress);
+    glUniform4f(glGetUniformLocation(program, "_c3"), beatDetect->bass/100, beatDetect->mid/100, beatDetect->treb/100, beatDetect->vol/100);
+    glUniform4f(glGetUniformLocation(program, "_c4"), beatDetect->bass_att/100, beatDetect->mid_att/100, beatDetect->treb_att/100, beatDetect->vol_att/100);
+    glUniform4f(glGetUniformLocation(program, "_c5"), pipeline.blur1x-pipeline.blur1n, pipeline.blur1n, pipeline.blur2x-pipeline.blur2n, pipeline.blur2n);
+    glUniform4f(glGetUniformLocation(program, "_c6"), pipeline.blur3x-pipeline.blur3n, pipeline.blur3n, pipeline.blur1n, pipeline.blur1x);
+    glUniform4f(glGetUniformLocation(program, "_c7"), texsizeX, texsizeY, 1 / (float) texsizeX, 1 / (float) texsizeY);
 
-    glProgramUniform4f(program, glGetUniformLocation(program, "_c8"), 0.5f+0.5f*cosf(context.time* 0.329f+1.2f),
+    glUniform4f(glGetUniformLocation(program, "_c8"), 0.5f+0.5f*cosf(context.time* 0.329f+1.2f),
                                                                       0.5f+0.5f*cosf(context.time* 1.293f+3.9f),
                                                                       0.5f+0.5f*cosf(context.time* 5.070f+2.5f),
                                                                       0.5f+0.5f*cosf(context.time*20.051f+5.4f));
 
-    glProgramUniform4f(program, glGetUniformLocation(program, "_c9"), 0.5f+0.5f*sinf(context.time* 0.329f+1.2f),
+    glUniform4f(glGetUniformLocation(program, "_c9"), 0.5f+0.5f*sinf(context.time* 0.329f+1.2f),
                                                                       0.5f+0.5f*sinf(context.time* 1.293f+3.9f),
                                                                       0.5f+0.5f*sinf(context.time* 5.070f+2.5f),
                                                                       0.5f+0.5f*sinf(context.time*20.051f+5.4f));
 
-    glProgramUniform4f(program, glGetUniformLocation(program, "_c10"),  0.5f+0.5f*cosf(context.time*0.0050f+2.7f),
+    glUniform4f(glGetUniformLocation(program, "_c10"),  0.5f+0.5f*cosf(context.time*0.0050f+2.7f),
                                                                         0.5f+0.5f*cosf(context.time*0.0085f+5.3f),
                                                                         0.5f+0.5f*cosf(context.time*0.0133f+4.5f),
                                                                         0.5f+0.5f*cosf(context.time*0.0217f+3.8f));
 
-    glProgramUniform4f(program, glGetUniformLocation(program, "_c11"),  0.5f+0.5f*sinf(context.time*0.0050f+2.7f),
+    glUniform4f(glGetUniformLocation(program, "_c11"),  0.5f+0.5f*sinf(context.time*0.0050f+2.7f),
                                                                         0.5f+0.5f*sinf(context.time*0.0085f+5.3f),
                                                                         0.5f+0.5f*sinf(context.time*0.0133f+4.5f),
                                                                         0.5f+0.5f*sinf(context.time*0.0217f+3.8f));
 
-    glProgramUniform4f(program, glGetUniformLocation(program, "_c12"), mip_x, mip_y, mip_avg, 0 );
-    glProgramUniform4f(program, glGetUniformLocation(program, "_c13"), pipeline.blur2n, pipeline.blur2x, pipeline.blur3n, pipeline.blur3x);
+    glUniform4f(glGetUniformLocation(program, "_c12"), mip_x, mip_y, mip_avg, 0 );
+    glUniform4f(glGetUniformLocation(program, "_c13"), pipeline.blur2n, pipeline.blur2x, pipeline.blur3n, pipeline.blur3x);
 
 
     glm::mat4 temp_mat[24];
@@ -825,36 +825,36 @@ void ShaderEngine::SetupShaderVariables(GLuint program, const Pipeline &pipeline
         temp_mat[i] = my * temp_mat[i];
     }
 
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_s1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[0])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_s2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[1])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_s3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[2])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_s4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[3])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_d1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[4])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_d2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[5])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_d3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[6])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_d4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[7])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_f1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[8])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_f2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[9])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_f3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[10])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_f4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[11])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_vf1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[12])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_vf2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[13])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_vf3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[14])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_vf4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[15])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_uf1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[16])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_uf2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[17])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_uf3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[18])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_uf4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[19])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_rand1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[20])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_rand2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[21])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_rand3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[22])));
-    glProgramUniformMatrix4x3fv(program, glGetUniformLocation(program, "rot_rand4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[23])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_s1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[0])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_s2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[1])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_s3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[2])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_s4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[3])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_d1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[4])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_d2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[5])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_d3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[6])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_d4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[7])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_f1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[8])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_f2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[9])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_f3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[10])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_f4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[11])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_vf1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[12])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_vf2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[13])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_vf3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[14])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_vf4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[15])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_uf1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[16])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_uf2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[17])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_uf3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[18])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_uf4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[19])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_rand1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[20])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_rand2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[21])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_rand3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[22])));
+    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_rand4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[23])));
 
     // set program uniform "_q[a-h]" values (_qa.x, _qa.y, _qa.z, _qa.w, _qb.x, _qb.y ... ) alias q[1-32]
     for (int i=0; i < 32; i+=4) {
         std::string varName = "_q";
         varName.push_back('a' + i/4);
-        glProgramUniform4f(program, glGetUniformLocation(program, varName.c_str()), pipeline.q[i], pipeline.q[i+1], pipeline.q[i+2], pipeline.q[i+3]);
+        glUniform4f(glGetUniformLocation(program, varName.c_str()), pipeline.q[i], pipeline.q[i+1], pipeline.q[i+2], pipeline.q[i+3]);
     }
 }
 
@@ -887,8 +887,8 @@ void ShaderEngine::SetupTextures(GLuint program, const Shader &shader)
         std::string texsizeName = "texsize_" + texName;
         GLint textSizeParam = glGetUniformLocation(program, texsizeName.c_str());
         if (param >= 0) {
-            glProgramUniform4f(program, textSizeParam, texture->width, texture->height,
-                               1 / (float) texture->width, 1 / (float) texture->height);
+            glUniform4f(textSizeParam, texture->width, texture->height,
+                            1 / (float) texture->width, 1 / (float) texture->height);
         } else {
             std::cerr << "invalid texsize name " << texsizeName << std::endl;
             return;
