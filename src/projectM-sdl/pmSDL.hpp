@@ -27,8 +27,6 @@
     #endif
 #endif
 
-const float FPS = 60;
-
 class projectMSDL : public projectM {
 public:
     bool done;
@@ -51,7 +49,6 @@ private:
     SDL_Window *win;
     SDL_GLContext *glCtx;
     bool isFullScreen;
-    projectM::Settings settings;
     SDL_AudioDeviceID audioInputDevice;
     unsigned int width, height;
     bool renderToTexture;
