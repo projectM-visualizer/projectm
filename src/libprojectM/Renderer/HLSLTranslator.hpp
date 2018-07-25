@@ -27,7 +27,7 @@
 
 class HLSLTranslator {
  public:
-    std::unique_ptr<std::string> parse(const std::string & shaderType, const char *fileName, const std::string &fullSource);
+    std::string parse(const std::string & shaderType, const char *fileName, const std::string &fullSource);
 };
 
 #endif

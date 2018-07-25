@@ -75,6 +75,9 @@ AC_CONFIG_FILES([src/libprojectM/config.inp.in])
 AC_PREFIX_DEFAULT([/usr/local])
 
 AC_PROG_MKDIR_P
+                        
+AX_CHECK_COMPILE_FLAG([-stdlib=libstdc++], [
+                        CXXFLAGS="$CXXFLAGS -stdlib=libstdc++"])
 
 AX_CHECK_COMPILE_FLAG([-std=c++14], [
                         CXXFLAGS="$CXXFLAGS -std=c++14"])

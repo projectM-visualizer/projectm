@@ -196,7 +196,7 @@ TextureSamplerDesc TextureManager::getTexture(const std::string fullName, const 
     ExtractTextureSettings(fullName, wrap_mode, filter_mode, name);
     if (textures.find(name) == textures.end())
     {
-        return {NULL, NULL};
+        return TextureSamplerDesc(NULL, NULL);
     }
 
     if (fullName == name) {
@@ -209,7 +209,7 @@ TextureSamplerDesc TextureManager::getTexture(const std::string fullName, const 
     Texture * texture = textures[name];
     Sampler * sampler = texture->getSampler(wrap_mode, filter_mode);
 
-    return {texture, sampler};
+    return TextureSamplerDesc(texture, sampler);
 }
 
 
@@ -246,7 +246,7 @@ TextureSamplerDesc TextureManager::loadTexture(const std::string name, const std
 
     if (tex == 0)
     {
-        return {NULL, NULL};
+        return TextureSamplerDesc(NULL, NULL);
     }
 
     Texture * newTexture = new Texture(tex, GL_TEXTURE_2D, width, height, true);
@@ -254,7 +254,7 @@ TextureSamplerDesc TextureManager::loadTexture(const std::string name, const std
 
     textures[name] = newTexture;
 
-    return {newTexture, sampler};
+    return TextureSamplerDesc(newTexture, sampler);
 }
 
 
