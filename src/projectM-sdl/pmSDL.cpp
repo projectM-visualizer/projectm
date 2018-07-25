@@ -181,8 +181,6 @@ void projectMSDL::addFakePCM() {
 void projectMSDL::resize(unsigned int width_, unsigned int height_) {
     width = width_;
     height = height_;
-    settings.windowWidth = width;
-    settings.windowHeight = height;
     projectM_resetGL(width, height);
 }
 

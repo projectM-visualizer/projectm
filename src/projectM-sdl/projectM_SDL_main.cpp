@@ -118,15 +118,16 @@ int main(int argc, char *argv[]) {
     if (! configFilePath.empty()) {
         // found config file, use it
         app = new projectMSDL(configFilePath, 0);
+        SDL_Log("Using config from %s", configFilePath.c_str());
     } else {
-        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Config file not found, using development settings\n");
+        SDL_Log("Config file not found, using development settings");
         float heightWidthRatio = (float)height / (float)width;
         projectM::Settings settings;
         settings.windowWidth = width;
         settings.windowHeight = height;
         settings.meshX = 300;
         settings.meshY = settings.meshX * heightWidthRatio;
-        settings.fps   = FPS;
+        settings.fps   = 60;
         settings.smoothPresetDuration = 3; // seconds
         settings.presetDuration = 7; // seconds
         settings.beatSensitivity = 0.8;
@@ -165,7 +166,11 @@ int main(int argc, char *argv[]) {
 #endif
 
     // standard main loop
-    const Uint32 frame_delay = 1000/FPS;
+    int fps = app->settings().fps;
+    printf("fps: %d\n", fps);
+    if (fps <= 0)
+        fps = 60;
+    const Uint32 frame_delay = 1000/fps;
     Uint32 last_time = SDL_GetTicks();
     while (! app->done) {
         app->renderFrame();
