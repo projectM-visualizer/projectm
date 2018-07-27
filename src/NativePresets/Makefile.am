@@ -1,4 +1,4 @@
-AM_CPPFLAGS = \
+AM_CPPFLAGS = ${my_CFLAGS} \
 -include $(top_builddir)/config.h \
 -I${top_srcdir}/src/libprojectM \
 -I${top_srcdir}/src/libprojectM/Renderer \
