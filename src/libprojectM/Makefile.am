@@ -4,11 +4,12 @@ CLEANFILES=
 SUBDIRS=Renderer NativePresetFactory MilkdropPresetFactory
 
 AM_CPPFLAGS = \
-  $(my_CFLAGS) \
+  ${my_CFLAGS} \
 	-include $(top_builddir)/config.h \
 	-DSYSCONFDIR=\""$(sysconfdir)"\" \
 	-I$(top_srcdir)/src/libprojectM \
-	-I$(top_srcdir)/src/libprojectM/Renderer
+	-I$(top_srcdir)/src/libprojectM/Renderer \
+	-I$(top_srcdir)/vendor
 
 lib_LTLIBRARIES = libprojectM.la  # public, possibly-shared library
 

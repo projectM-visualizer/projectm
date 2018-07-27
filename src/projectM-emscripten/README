@@ -1,4 +1,12 @@
-HOW2COMPILE:
+Building w/ emscripten
+
+* Activate the emsdk
+* `emconfigure ./configure --enable-emscripten --enable-gles --enable-sdl`
+* `emmake make -j4`
+
+
+
+
 
 emcc -I../libprojectm -I../libprojectM/Renderer -Llib \
   ../libprojectM/KeyHandler.cpp projectM_SDL_emscripten.cpp \

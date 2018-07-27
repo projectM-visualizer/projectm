@@ -232,7 +232,7 @@ AC_DEFUN_ONCE([_WITH_XQUARTZ_GL],[
 # OSX specific setup for OpenGL check
 AC_DEFUN([_AX_CHECK_DARWIN_GL], [
  AC_REQUIRE([_WITH_XQUARTZ_GL])
- AS_IF([test "x$with_xquartz_gl" != "xno"],
+ AS_IF([test "x$with_xquartz_gl" != "xno" && test "x$EMSCRIPTEN" == "x"],
        [GL_LIBS="${GL_LIBS:--lGL}"],
        [GL_LIBS="${GL_LIBS:--framework OpenGL}"])
 ])

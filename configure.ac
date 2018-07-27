@@ -8,7 +8,37 @@ AC_PROG_CXX
 AC_LANG(C++)
 
 AC_CONFIG_MACRO_DIRS([m4 m4/autoconf-archive])
-AX_CHECK_GL
+
+dnl emscripten
+AC_ARG_ENABLE([emscripten],
+AS_HELP_STRING([--enable-emscripten], [Build for web with emscripten]),
+[], [enable_emscripten=no])
+AS_IF([test "x$enable_emscripten" = "xyes"], [
+  dnl Set up emscripten
+  m4_include([m4/emscripten.m4])
+  AC_DEFINE([EMSCRIPTEN], [1], [Define EMSCRIPTEN])
+  enable_threading=no
+], [
+  dnl Running in a normal OS (not emscripten)
+  AX_CHECK_GL
+
+  # check OS
+  AC_CANONICAL_HOST
+  AC_MSG_CHECKING(Freedom)
+  case $host_os in
+  darwin*)
+    # OSX needs CoreFoundation
+    AC_MSG_RESULT(Apple hoarderware detected)
+    LIBS="$LIBS -framework CoreFoundation"
+    ;;
+  linux*)
+    # limux needs dl
+    AC_MSG_RESULT(GNU/LINUX detected)
+    LIBS="$LIBS -ldl"
+    ;;
+  esac
+])
+
 
 AC_CHECK_LIB(c, dlopen, LIBDL="", AC_CHECK_LIB(dl, dlopen, LIBDL="-ldl"))
 
@@ -25,6 +55,7 @@ AC_CONFIG_FILES([
   src/libprojectM/libprojectM.pc
   src/NativePresets/Makefile
   src/projectM-sdl/Makefile
+  src/projectM-emscripten/Makefile
   src/projectM-qt/Makefile
   src/projectM-pulseaudio/Makefile
 ])
@@ -37,14 +68,20 @@ AS_IF([test "x$enable_sdl" = "xyes"], [
   m4_include([m4/sdl2.m4])
   SDL_VERSION=2.0.5
   AS_IF([test "$TRAVIS"], [SDL_VERSION=2.0.2])  # travis has old SDL, we don't care
+  AS_IF([test "EMSCRIPTEN"], [SDL_VERSION=2.0.0])  # emscripten has old SDL, we don't care
   AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
+])
+
+dnl glm
+AS_IF([test "x$enable_emscripten" != "xyes"], [
+  AC_CHECK_HEADER([glm/glm.hpp],, AC_MSG_ERROR(libglm is required.))
 ])
 
 dnl Threading
 AC_ARG_ENABLE([threading],
 AS_HELP_STRING([--enable-threading], [multhreading]),
 [], [enable_threading=yes])
-AS_IF([test "x$enable_threading" = "xyes"], [
+AS_IF([test "x$enable_threading" = "xyes" && ! test "$EMSCRIPTEN"], [
   m4_include([m4/autoconf-archive/ax_pthread.m4])
   AX_PTHREAD([
     AC_DEFINE([USE_THREADS], [1], [Define USE_THREADS])
@@ -56,8 +93,6 @@ AS_IF([test "x$enable_threading" = "xyes"], [
     AC_MSG_ERROR([pthreads not found])
   ])
 ])
-
-AC_CHECK_HEADER([glm/glm.hpp],, AC_MSG_ERROR(libglm is required.))
 
 AC_ARG_ENABLE([gles],
   AS_HELP_STRING([--enable-gles], [OpenGL ES support]),
@@ -75,7 +110,7 @@ AC_CONFIG_FILES([src/libprojectM/config.inp.in])
 AC_PREFIX_DEFAULT([/usr/local])
 
 AC_PROG_MKDIR_P
-                        
+
 AX_CHECK_COMPILE_FLAG([-stdlib=libc++], [
                         CXXFLAGS="$CXXFLAGS -stdlib=libc++"])
 
@@ -108,27 +143,13 @@ AS_IF([test "x$enable_qt" = "xyes"], [
 
 AM_CONDITIONAL([ENABLE_SDL], [test "$enable_sdl" = yes])
 AM_CONDITIONAL([ENABLE_QT], [test "$enable_qt" = yes])
+AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test "$enable_emscripten" = yes])
 
 
 my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wmissing-declarations -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits "
-my_CFLAGS+='-DDATADIR_PATH=\""$(pkgdatadir)"\"'
+my_CFLAGS+='-DDATADIR_PATH=\""$(pkgdatadir)"\" '
+my_CFLAGS+='-I$(top_srcdir)/vendor '
 AC_SUBST([my_CFLAGS])
-
-# check OS
-AC_CANONICAL_HOST
-AC_MSG_CHECKING(Freedom)
-case $host_os in
-  darwin*)
-    # OSX needs CoreFoundation
-    AC_MSG_RESULT(Apple hoarderware detected)
-    LIBS="$LIBS -framework CoreFoundation"
-    ;;
-  linux*)
-    # limux needs dl
-    AC_MSG_RESULT(GNU/LINUX detected)
-    LIBS="$LIBS -ldl"
-    ;;
-esac
 
 
 
@@ -157,4 +178,5 @@ Threading:              ${enable_threading}
 SDL:                    ${enable_sdl}
 Qt & Pulseaudio:        ${enable_qt}
 OpenGLES:               ${enable_gles}
+Emscripten:             ${enable_emscripten}
 ])
