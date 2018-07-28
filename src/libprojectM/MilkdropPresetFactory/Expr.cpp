@@ -180,6 +180,11 @@ public:
 		a(_a), b(_b), c(_c)
 	{
 	}
+    ~MultAndAddExpr() {
+        delete a;
+        delete b;
+        delete c;
+    }
 	float eval(int mesh_i, int mesh_j)
 	{
 		float a_value = a->eval(mesh_i,mesh_j);

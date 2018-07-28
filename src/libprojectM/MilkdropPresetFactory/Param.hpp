@@ -62,7 +62,6 @@ class Preset;
 #include <immintrin.h>
 #endif
 
-
 /* Parameter Type */
 class Param {
 public:
