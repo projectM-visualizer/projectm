@@ -17,7 +17,7 @@
 #ifdef USE_GLES
     #define GLSL_VERSION "300 es"
 #else
-    #define GLSL_VERSION "410"
+    #define GLSL_VERSION "330"
 #endif
 
 
