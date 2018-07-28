@@ -101,6 +101,11 @@ projectM::~projectM()
         _pcm = 0;
     }
 
+    if(timeKeeper) {
+        delete timeKeeper;
+        timeKeeper = NULL;
+    }
+
     delete(_pipelineContext);
     delete(_pipelineContext2);
 }
@@ -117,7 +122,8 @@ void projectM::projectM_resetTextures()
 
 
 projectM::projectM ( std::string config_file, int flags) :
-beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext())
+beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()),
+  timeKeeper(NULL), _matcher(NULL), _merger(NULL)
 {
     readConfig(config_file);
     projectM_reset();
@@ -126,7 +132,8 @@ beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags), _pip
 }
 
 projectM::projectM(Settings settings, int flags):
-beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext())
+beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()),
+  timeKeeper(NULL), _matcher(NULL), _merger(NULL)
 {
     readSettings(settings);
     projectM_reset();
@@ -654,6 +661,15 @@ static void *thread_callback(void *prjm) {
 
         m_presetLoader = 0;
 
+        if (_matcher) {
+            delete _matcher;
+            _matcher = NULL;
+        }
+
+        if (_merger) {
+            delete _merger;
+            _merger = NULL;
+        }
     }
 
     /// @bug queuePreset case isn't handled

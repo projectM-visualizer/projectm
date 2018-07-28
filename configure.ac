@@ -4,6 +4,18 @@ AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects tar-pax])
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 LT_INIT
 
+# Check if we should disable rpath.
+#
+# For advanced users: In certain configurations, the rpath attributes
+# added by libtool cause problems as rpath will be preferred over
+# LD_LIBRARY_PATH. This does not seem to be a problem with
+# clang. When using --disable-rpath you will likely need to set
+# LD_LIBRARY_PATH if you are using libraries in non-system locations.
+# YMMV.
+#
+
+DISABLE_RPATH
+
 AC_PROG_CXX
 AC_LANG(C++)
 
@@ -133,7 +145,7 @@ AS_IF([test "x$enable_qt" = "xyes"], [
 
   AC_CHECK_PROGS(MOC, [moc-qt5 moc])
   AC_CHECK_PROGS(UIC, [uic-qt5 uic])
-  AC_CHECK_PROGS(RCC, [rcc])
+  AC_CHECK_PROGS(RCC, [rcc-qt5 rcc])
   if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
     AC_MSG_ERROR([Qt utility programs moc, uic, and rcc are required.])
   fi

@@ -986,6 +986,10 @@ Expr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Milkdr
     return NULL;
   //std::cout << gen_expr << std::endl;
   Expr *opt = gen_expr->optimize();
+
+  if (opt != gen_expr) {
+      delete gen_expr;
+  }
   //std::cout << opt << std::endl << std::endl;
   return opt;
 }
@@ -2461,6 +2465,8 @@ int Parser::parse_shape_per_frame_init_eqn(std::istream &  fs, CustomShape * cus
 
   line_mode = CUSTOM_SHAPE_PER_FRAME_INIT_LINE_MODE;
   init_cond->evaluate(true);
+
+  delete init_cond;
   return PROJECTM_SUCCESS;
 }
 
