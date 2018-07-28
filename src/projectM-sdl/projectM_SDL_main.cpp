@@ -89,6 +89,10 @@ int main(int argc, char *argv[]) {
 			}
         }
     }
+    // use GLES 2.0 (this may need adjusting)
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 
 #else
 	// Disabling compatibility profile
@@ -151,8 +155,8 @@ int main(int argc, char *argv[]) {
 
 #if !FAKE_AUDIO
     // get an audio input device
-    app->openAudioInput();
-    app->beginAudioCapture();
+    if (app->openAudioInput())
+	    app->beginAudioCapture();
 #endif
 
 

@@ -5,7 +5,10 @@
 #include <iostream>
 #include <cmath>
 #include "Renderer/BeatDetect.hpp"
+
+#ifdef __SSE2__
 #include <immintrin.h>
+#endif
 
 
 PresetInputs::PresetInputs() : PipelineContext()
