@@ -39,6 +39,7 @@ inline bool interpolate(bool a, bool b, float ratio)
 /// when they are dissimilar. If two render items cannot be compared, NOT_COMPARABLE_VALUE is returned.
 class RenderItemMergeFunction {
 public:
+    virtual ~RenderItemMergeFunction() {}
   virtual RenderItem * operator()(const RenderItem * r1, const RenderItem * r2, double ratio) const = 0;
   virtual TypeIdPair typeIdPair() const = 0;
 };
@@ -201,7 +202,11 @@ typedef std::map<TypeIdPair, RenderItemMergeFunction*> MergeFunctionMap;
 public:
 
 	MasterRenderItemMerge() {}
-	virtual ~MasterRenderItemMerge() {}
+    virtual ~MasterRenderItemMerge() {
+        for (MergeFunctionMap::iterator it = _mergeFunctionMap.begin(); it != _mergeFunctionMap.end(); ++it)
+            delete (it->second);
+        _mergeFunctionMap.clear();
+    }
 
 	inline void add(RenderItemMergeFunction * fun) {
 		_mergeFunctionMap[fun->typeIdPair()] = fun;
