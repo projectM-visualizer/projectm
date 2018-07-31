@@ -11,10 +11,11 @@
 		1612C998207A80A200862A3A /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C992207A807000862A3A /* libRenderer.a */; };
 		1612C9E2207A85C100862A3A /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C9DF207A85BD00862A3A /* libMilkdropPresetFactory.a */; };
 		1612C9E3207A85C100862A3A /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C9E1207A85BD00862A3A /* libNativePresetFactory.a */; };
-		1612CA11207A8D2F00862A3A /* shaders in Copy Files */ = {isa = PBXBuildFile; fileRef = 1612CA10207A8D2400862A3A /* shaders */; };
 		165E542A20D68810004AEA81 /* presets in Resources */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
-		166853F12105E2850042793A /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 166853F02105E2850042793A /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		166853F12105E2850042793A /* SDL2.framework in Copy SDL2 framework */ = {isa = PBXBuildFile; fileRef = 166853F02105E2850042793A /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		169502001F7009E9008FAF86 /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
+		16B52AA9211054E900830F34 /* projectMSDL-pkg.plist in Resources */ = {isa = PBXBuildFile; fileRef = 16B52AA8211054E900830F34 /* projectMSDL-pkg.plist */; };
+		16B52AAB21105A6900830F34 /* config.inp in Copy Files */ = {isa = PBXBuildFile; fileRef = 16B52AAA21105A6900830F34 /* config.inp */; };
 		C345214F1BF022A5001707D2 /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
 		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
 		C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215D1BF025CF001707D2 /* CoreFoundation.framework */; };
@@ -87,14 +88,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		166853EF2105E25B0042793A /* CopyFiles */ = {
+		166853EF2105E25B0042793A /* Copy SDL2 framework */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				166853F12105E2850042793A /* SDL2.framework in CopyFiles */,
+				166853F12105E2850042793A /* SDL2.framework in Copy SDL2 framework */,
 			);
+			name = "Copy SDL2 framework";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C34521421BF02293001707D2 /* Copy Files */ = {
@@ -103,8 +105,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				16B52AAB21105A6900830F34 /* config.inp in Copy Files */,
 				C3D30B901BF02BEC009AAACD /* fonts in Copy Files */,
-				1612CA11207A8D2F00862A3A /* shaders in Copy Files */,
 			);
 			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -118,6 +120,8 @@
 		166853F22105E2CF0042793A /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
 		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
 		169501FF1F7009E9008FAF86 /* pmSDL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pmSDL.hpp; sourceTree = "<group>"; };
+		16B52AA8211054E900830F34 /* projectMSDL-pkg.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "projectMSDL-pkg.plist"; sourceTree = "<group>"; };
+		16B52AAA21105A6900830F34 /* config.inp */ = {isa = PBXFileReference; lastKnownFileType = text; path = config.inp; sourceTree = "<group>"; };
 		C307DFD31D565B57002F6B9E /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
 		C34521441BF02294001707D2 /* SDLprojectM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLprojectM; sourceTree = BUILT_PRODUCTS_DIR; };
 		C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = projectM_SDL_main.cpp; sourceTree = SOURCE_ROOT; };
@@ -192,6 +196,8 @@
 		C345213B1BF02293001707D2 = {
 			isa = PBXGroup;
 			children = (
+				16B52AAA21105A6900830F34 /* config.inp */,
+				16B52AA8211054E900830F34 /* projectMSDL-pkg.plist */,
 				166853F02105E2850042793A /* SDL2.framework */,
 				1612CA10207A8D2400862A3A /* shaders */,
 				1612C98C207A807000862A3A /* libprojectM.xcodeproj */,
@@ -226,7 +232,8 @@
 				C34521421BF02293001707D2 /* Copy Files */,
 				1659FEE920D67E2E00092B7D /* Run Script */,
 				165E542920D68779004AEA81 /* Resources */,
-				166853EF2105E25B0042793A /* CopyFiles */,
+				166853EF2105E25B0042793A /* Copy SDL2 framework */,
+				16B52AA7211053B500830F34 /* Generate Installer Package */,
 			);
 			buildRules = (
 			);
@@ -315,6 +322,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				165E542A20D68810004AEA81 /* presets in Resources */,
+				16B52AA9211054E900830F34 /* projectMSDL-pkg.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -336,6 +344,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "POUT=$BUILT_PRODUCTS_DIR/presets\nPIN=$SRCROOT/../../presets\n\nmkdir -p $POUT\ncp $PIN/presets_bltc201/* $POUT/\ncp $PIN/presets_milkdrop/* $POUT/\ncp $PIN/presets_milkdrop_104/* $POUT/\ncp $PIN/presets_milkdrop_200/* $POUT/\ncp $PIN/presets_projectM/* $POUT/\ncp $PIN/presets_stock/* $POUT/\ncp $PIN/presets_tryptonaut/* $POUT/\ncp $PIN/presets_yin/* $POUT/\necho \"Copied presets to $POUT\"";
+		};
+		16B52AA7211053B500830F34 /* Generate Installer Package */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate Installer Package";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\n\nmkdir -p \"$DSTROOT/usr/local/share/projectM\"\nmkdir -p \"$DSTROOT/Applications/projectM\"\ncp -p \"$CONFIGURATION_BUILD_DIR/SDLprojectM\" \"$DSTROOT/Applications/projectM/SDL\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/SDL2.framework\" \"$DSTROOT/Applications/projectM/\"\ncp -r \"$CONFIGURATION_BUILD_DIR\"/presets \"$DSTROOT/usr/local/share/projectM/\"\ncp -r \"$CONFIGURATION_BUILD_DIR\"/fonts \"$DSTROOT/usr/local/share/projectM/\"\ncp \"$CONFIGURATION_BUILD_DIR\"/config.inp \"$DSTROOT/usr/local/share/projectM/\"\n\n#install_name_tool -change @executable_path/../Frameworks/Cg.framework/Cg @loader_path/../Frameworks/SDL2.framework/SDL2 \"$DSTROOT/Library/iTunes/iTunes Plug-ins/iProjectM.bundle/Contents/MacOS/iProjectM\"\n#cp -r $CONFIGURATION_BUILD_DIR/share/* \"$DSTROOT/usr/local/share/projectM\"\npkgbuild --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$SRCROOT/projectM.pkg\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
