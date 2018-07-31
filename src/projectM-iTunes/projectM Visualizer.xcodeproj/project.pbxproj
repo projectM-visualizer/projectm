@@ -15,9 +15,6 @@
 		16A4214D20781836006F30CE /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214620781835006F30CE /* libNativePresetFactory.a */; };
 		16A4214E20781836006F30CE /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214720781836006F30CE /* libprojectM.a */; };
 		16A4214F20781836006F30CE /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214720781836006F30CE /* libprojectM.a */; };
-		16A42151207818F6006F30CE /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A42150207818F6006F30CE /* Cg.framework */; };
-		16A421522078196A006F30CE /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A42150207818F6006F30CE /* Cg.framework */; };
-		16A4215320781A41006F30CE /* Cg.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 16A42150207818F6006F30CE /* Cg.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C34E811C1956D0D4001AC5B5 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811B1956D0D4001AC5B5 /* libz.a */; };
 		C34E811E1956D0D6001AC5B5 /* libpng15.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811D1956D0D6001AC5B5 /* libpng15.a */; };
 		C34E81201956D0D8001AC5B5 /* libftgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811F1956D0D8001AC5B5 /* libftgl.a */; };
@@ -44,7 +41,6 @@
 		C3F9D7D917B83CF1009E58CB /* iTunesAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D617B83CF1009E58CB /* iTunesAPI.cpp */; };
 		C3FAE59217B87D8700F4B110 /* getConfigFilename.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */; };
 		C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in plist */ = {isa = PBXBuildFile; fileRef = C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */; };
-		C3FAF97717B89F7400F4B110 /* shaders in share */ = {isa = PBXBuildFile; fileRef = C3FAF97617B89F7200F4B110 /* shaders */; };
 		C3FAF97817B89F7B00F4B110 /* config.inp in share */ = {isa = PBXBuildFile; fileRef = C3FAF97517B89F7200F4B110 /* config.inp */; };
 		C3FAF97B17B8A45200F4B110 /* fonts in share */ = {isa = PBXBuildFile; fileRef = C3FAF97917B8A43B00F4B110 /* fonts */; };
 /* End PBXBuildFile section */
@@ -66,7 +62,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				16A4215320781A41006F30CE /* Cg.framework in Copy Files */,
 			);
 			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -88,7 +83,6 @@
 			dstPath = share;
 			dstSubfolderSpec = 16;
 			files = (
-				C3FAF97717B89F7400F4B110 /* shaders in share */,
 				C3FAF97B17B8A45200F4B110 /* fonts in share */,
 				C3FAF97817B89F7B00F4B110 /* config.inp in share */,
 			);
@@ -161,7 +155,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				16A421522078196A006F30CE /* Cg.framework in Frameworks */,
 				16A4214D20781836006F30CE /* libNativePresetFactory.a in Frameworks */,
 				16A4214920781836006F30CE /* libRenderer.a in Frameworks */,
 				16A4214B20781836006F30CE /* libMilkdropPresetFactory.a in Frameworks */,
@@ -174,7 +167,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				16A42151207818F6006F30CE /* Cg.framework in Frameworks */,
 				C3C24435195764870021FCD4 /* libGLEW.a in Frameworks */,
 				16A4214C20781836006F30CE /* libNativePresetFactory.a in Frameworks */,
 				C34E81241956D0DA001AC5B5 /* libbz2.a in Frameworks */,
