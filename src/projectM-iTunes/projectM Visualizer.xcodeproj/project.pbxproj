@@ -46,12 +46,33 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		169501421F6EC5E6008FAF86 /* PBXContainerItemProxy */ = {
+		168F716821125D85001806E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1695013E1F6EC5E5008FAF86 /* libprojectM.xcodeproj */;
+			containerPortal = 168F716121125D85001806E7 /* libprojectM.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 169501301F6EC5E5008FAF86;
-			remoteInfo = libprojectM;
+			remoteGlobalIDString = 16178B12207A6F4000D3B0C8;
+			remoteInfo = Renderer;
+		};
+		168F716A21125D85001806E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 168F716121125D85001806E7 /* libprojectM.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 16A49E57207A7C8C00E508EA;
+			remoteInfo = projectM;
+		};
+		168F716C21125D85001806E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 168F716121125D85001806E7 /* libprojectM.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1612C9A4207A855D00862A3A;
+			remoteInfo = MilkdropPresetFactory;
+		};
+		168F716E21125D85001806E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 168F716121125D85001806E7 /* libprojectM.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1612C9AC207A856A00862A3A;
+			remoteInfo = NativePresetFactory;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -92,7 +113,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1695013E1F6EC5E5008FAF86 /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
+		168F716121125D85001806E7 /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
 		16A4214420781835006F30CE /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/.libs/libRenderer.a; sourceTree = "<group>"; };
 		16A4214520781835006F30CE /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/.libs/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
 		16A4214620781835006F30CE /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/.libs/libNativePresetFactory.a; sourceTree = "<group>"; };
@@ -185,10 +206,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1695013F1F6EC5E5008FAF86 /* Products */ = {
+		168F716221125D85001806E7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				169501431F6EC5E6008FAF86 /* liblibprojectM.a */,
+				168F716921125D85001806E7 /* libRenderer.a */,
+				168F716B21125D85001806E7 /* libprojectM.a */,
+				168F716D21125D85001806E7 /* libMilkdropPresetFactory.a */,
+				168F716F21125D85001806E7 /* libNativePresetFactory.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -227,7 +251,7 @@
 		C3F9D7A617B82CC3009E58CB = {
 			isa = PBXGroup;
 			children = (
-				1695013E1F6EC5E5008FAF86 /* libprojectM.xcodeproj */,
+				168F716121125D85001806E7 /* libprojectM.xcodeproj */,
 				C38212791A5A2114002A8D78 /* gles_conv.txt */,
 				C37EBD5E19A0164400220265 /* selectViz.png */,
 				C37EBD5A19A0118600220265 /* iProjectM.pkg */,
@@ -400,8 +424,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 1695013F1F6EC5E5008FAF86 /* Products */;
-					ProjectRef = 1695013E1F6EC5E5008FAF86 /* libprojectM.xcodeproj */;
+					ProductGroup = 168F716221125D85001806E7 /* Products */;
+					ProjectRef = 168F716121125D85001806E7 /* libprojectM.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -413,11 +437,32 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		169501431F6EC5E6008FAF86 /* liblibprojectM.a */ = {
+		168F716921125D85001806E7 /* libRenderer.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = liblibprojectM.a;
-			remoteRef = 169501421F6EC5E6008FAF86 /* PBXContainerItemProxy */;
+			path = libRenderer.a;
+			remoteRef = 168F716821125D85001806E7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		168F716B21125D85001806E7 /* libprojectM.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libprojectM.a;
+			remoteRef = 168F716A21125D85001806E7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		168F716D21125D85001806E7 /* libMilkdropPresetFactory.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libMilkdropPresetFactory.a;
+			remoteRef = 168F716C21125D85001806E7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		168F716F21125D85001806E7 /* libNativePresetFactory.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libNativePresetFactory.a;
+			remoteRef = 168F716E21125D85001806E7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
