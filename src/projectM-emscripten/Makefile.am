@@ -19,7 +19,7 @@ projectW_bc_PROGRAM = projectW.bc
 projectW.html: generate-html
 
 generate-html:
-	emcc $(EMSCRIPTEN_FLAGS) projectW.bc
+	emcc  ALLOW_MEMORY_GROWTH=1 $(EMSCRIPTEN_FLAGS) projectW.bc
 
 run: projectW.html
 	emrun projectW.html
