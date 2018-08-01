@@ -25,11 +25,13 @@ dnl emscripten
 AC_ARG_ENABLE([emscripten],
 AS_HELP_STRING([--enable-emscripten], [Build for web with emscripten]),
 [], [enable_emscripten=no])
-AS_IF([test "x$enable_emscripten" = "xyes"], [
+AS_IF([test "x$enable_emscripten" = "xyes" || test "x$EMSCRIPTEN"], [
   dnl Set up emscripten
   m4_include([m4/emscripten.m4])
   AC_DEFINE([EMSCRIPTEN], [1], [Define EMSCRIPTEN])
   enable_threading=no
+  enable_gles=yes
+  enable_sdl=yes
 ], [
   dnl Running in a normal OS (not emscripten)
   AX_CHECK_GL
