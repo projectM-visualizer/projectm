@@ -1,24 +1,19 @@
 Building w/ emscripten
 
+## Crepare
 * Activate the emsdk (https://github.com/juj/emsdk#installation-instructions)
 * make sure you are in the root directory of this project
 * on fresh repositories: `./autogen.sh`
+
+## Compile
 * `emconfigure ./configure --enable-emscripten --enable-gles --enable-sdl`
 * `emmake make -j4`
+
+## Create wasm & html files
+* `cd src/projectM-emscripten`
+* `emcc -s USE_SDL=2 -s ALLOW_MEMORY_GROWTH=1 projectW.bc -o projectW.html`
 
 Does not work? Try:
 
 * `mkdir vendor && cp /usr/local/Cellar/glm/xx/include/glm ./vendor/`
 * `emmake make -j4 -lvendor`
-
-emcc -Isrc/libprojectm -Isrc/libprojectM/Renderer -Llib -Ivendor \
-  src/libprojectM/KeyHandler.cpp src/projectM-emscripten/projectM_SDL_emscripten.cpp \
-  -lRenderer -lprojectM -lMilkdropPresetFactory -lprojectM -lRenderer \
-  -s USE_SDL=2 -s LEGACY_GL_EMULATION=1 \
-  -o build/projectEM.html
-
-emcc -I../libprojectm -I../libprojectM/Renderer -Llib \
-  ../libprojectM/KeyHandler.cpp projectM_SDL_emscripten.cpp \
-  -lRenderer -lprojectM -lMilkdropPresetFactory -lprojectM -lRenderer \
-  -s USE_SDL=2 -s LEGACY_GL_EMULATION=1 \
-  -o build/projectEM.html
