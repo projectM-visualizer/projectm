@@ -100,7 +100,6 @@ void projectMSDL::beginAudioCapture() {
     // allocate a buffer to store PCM data for feeding in
     unsigned int maxSamples = audioChannelsCount * audioSampleCount;
     SDL_PauseAudioDevice(audioDeviceID, false);
-    pcm()->initPCM(2048);
 }
 
 void projectMSDL::endAudioCapture() {

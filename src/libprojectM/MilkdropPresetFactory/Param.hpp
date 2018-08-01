@@ -62,7 +62,6 @@ class Preset;
 #include <immintrin.h>
 #endif
 
-
 /* Parameter Type */
 class Param {
 public:
@@ -155,3 +154,4 @@ inline void Param::set_param( float val) {
 }
 
 #endif /** !_PARAM_TYPES_H */
+
