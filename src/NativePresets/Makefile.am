@@ -27,3 +27,10 @@ libRovastarDarkSecret_la_SOURCES = RovastarDarkSecret.cpp
 libRovastarDriftingChaos_la_SOURCES = RovastarDriftingChaos.cpp
 libRovastarFractalSpiral_la_SOURCES = RovastarFractalSpiral.cpp
 libRovastarFractopiaFrantic_la_SOURCES = RovastarFractopiaFrantic.cpp
+
+libMstressJuppyDancer_la_LDFLAGS = -avoid-version
+libRLGFractalDrop7c_la_LDFLAGS = -avoid-version
+libRovastarDarkSecret_la_LDFLAGS = -avoid-version
+libRovastarDriftingChaos_la_LDFLAGS = -avoid-version
+libRovastarFractalSpiral_la_LDFLAGS = -avoid-version
+libRovastarFractopiaFrantic_la_LDFLAGS = -avoid-version
