@@ -4,7 +4,6 @@ ${my_CFLAGS} \
 -DSYSCONFDIR=\""$(sysconfdir)"\" \
 -I${top_srcdir}/src/libprojectM \
 -I${top_srcdir}/src/libprojectM/Renderer \
-USE_SDL=2 \
 ${SDL_CFLAGS}
 
 REALSRCDIR=${top_srcdir}/src/projectM-sdl
