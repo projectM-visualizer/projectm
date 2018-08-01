@@ -2,10 +2,14 @@ Building w/ emscripten
 
 * Activate the emsdk (https://github.com/juj/emsdk#installation-instructions)
 * make sure you are in the root directory of this project
-* `mkdir vendor && cp /usr/local/Cellar/glm/xx/include/glm ./vendor/`
 * on fresh repositories: `./autogen.sh`
 * `emconfigure ./configure --enable-emscripten --enable-gles --enable-sdl`
 * `emmake make -j4`
+
+Does not work? Try:
+
+* `mkdir vendor && cp /usr/local/Cellar/glm/xx/include/glm ./vendor/`
+* `emmake make -j4 -lvendor`
 
 emcc -Isrc/libprojectm -Isrc/libprojectM/Renderer -Llib -Ivendor \
   src/libprojectM/KeyHandler.cpp src/projectM-emscripten/projectM_SDL_emscripten.cpp \
