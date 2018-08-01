@@ -1,12 +1,17 @@
 Building w/ emscripten
 
-* Activate the emsdk
+* Activate the emsdk (https://github.com/juj/emsdk#installation-instructions)
+* make sure you are in the root directory of this project
+* `mkdir vendor && cp /usr/local/Cellar/glm/xx/include/glm ./vendor/`
+* on fresh repositories: `./autogen.sh`
 * `emconfigure ./configure --enable-emscripten --enable-gles --enable-sdl`
 * `emmake make -j4`
 
-
-
-
+emcc -Isrc/libprojectm -Isrc/libprojectM/Renderer -Llib -Ivendor \
+  src/libprojectM/KeyHandler.cpp src/projectM-emscripten/projectM_SDL_emscripten.cpp \
+  -lRenderer -lprojectM -lMilkdropPresetFactory -lprojectM -lRenderer \
+  -s USE_SDL=2 -s LEGACY_GL_EMULATION=1 \
+  -o build/projectEM.html
 
 emcc -I../libprojectm -I../libprojectM/Renderer -Llib \
   ../libprojectM/KeyHandler.cpp projectM_SDL_emscripten.cpp \
