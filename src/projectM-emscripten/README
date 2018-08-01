@@ -1,6 +1,14 @@
-Building w/ emscripten
+Running on the web.
 
-## Crepare
+# Easy way:
+* `make run`
+
+
+
+
+# Hard way:
+
+## Prepare
 * Activate the emsdk (https://github.com/juj/emsdk#installation-instructions)
 * make sure you are in the root directory of this project
 * on fresh repositories: `./autogen.sh`
