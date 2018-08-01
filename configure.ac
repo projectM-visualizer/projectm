@@ -25,7 +25,7 @@ dnl emscripten
 AC_ARG_ENABLE([emscripten],
 AS_HELP_STRING([--enable-emscripten], [Build for web with emscripten]),
 [], [enable_emscripten=no])
-AS_IF([test "x$enable_emscripten" = "xyes" || test "x$EMSCRIPTEN"], [
+AS_IF([test "x$enable_emscripten" = "xyes" || test "x$EMSCRIPTEN" = "xyes"], [
   dnl Set up emscripten
   m4_include([m4/emscripten.m4])
   AC_DEFINE([EMSCRIPTEN], [1], [Define EMSCRIPTEN])
