@@ -19,17 +19,19 @@ Running on the web.
 
 ## Compile
 * `emconfigure ./configure --enable-emscripten --enable-gles --enable-sdl`
-* `emmake make -j4`
+* `emmake make -j4 -lvendor`
 
 ## Create wasm & html files
 * `cd src/projectM-emscripten`
 * `emcc -s USE_SDL=2 -s ALLOW_MEMORY_GROWTH=1 projectW.bc -o projectW.html`
 
-Does not work? Try:
+## Troubleshooting
 
-* `mkdir vendor && cp /usr/local/Cellar/glm/xx/include/glm ./vendor/`
-* `emmake make -j4 -lvendor`
+### General
 
+Want to restart the process after pulling or changing config?
+* `rm src/projectM-emscripten/projectW*`
+* restart with emconfigure or emmake
 
 ### OS X troubleshooting:
 
