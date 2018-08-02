@@ -1,6 +1,7 @@
 AM_CPPFLAGS = \
 ${my_CFLAGS} \
 -include $(top_builddir)/config.h \
+-l$(top_builddir)/vendor \
 -DSYSCONFDIR=\""$(sysconfdir)"\" \
 -I${top_srcdir}/src/libprojectM \
 -I${top_srcdir}/src/libprojectM/Renderer \
@@ -21,4 +22,4 @@ generate-html:
 	emcc -s ALLOW_MEMORY_GROWTH=1 $(EMSCRIPTEN_FLAGS) projectW.bc -o projectW.html
 
 run: projectW.html
-	emrun projectW.html
+	emrun --browser chrome projectW.html

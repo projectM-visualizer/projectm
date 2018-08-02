@@ -1,29 +1,17 @@
 Running on the web.
 
-# TLDR:
-* `./autogen.sh`
-* `emconfigure ./configure --enable-emscripten --enable-gles --enable-sdl`
-* `emmake make -j4 -lvendor`
-* `cd src/projectM-emscripten`
-* `make run`
-
-
-# Detailed:
-
 ## Prepare
 * Activate the emsdk (https://github.com/juj/emsdk#installation-instructions)
-* make sure you are in the root directory of this project
-* on fresh repositories: `./autogen.sh`
-* download latest glm from https://github.com/g-truc/glm/releases/latest
-* make sure to move it to `./vendor/glm`
+* Make sure you are in the root directory of this project
+* On fresh repositories: `./autogen.sh`
 
 ## Compile
-* `emconfigure ./configure --enable-emscripten --enable-gles --enable-sdl`
-* `emmake make -j4 -lvendor`
+* `emconfigure ./configure --enable-emscripten`
+* `emmake make`
 
 ## Create wasm & html files
 * `cd src/projectM-emscripten`
-* `emcc -s USE_SDL=2 -s ALLOW_MEMORY_GROWTH=1 projectW.bc -o projectW.html`
+* `make run`
 
 ## Troubleshooting
 
