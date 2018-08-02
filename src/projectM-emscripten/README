@@ -1,17 +1,21 @@
 Running on the web.
 
-# Easy way:
+# TLDR:
+* `./autogen.sh`
+* `emconfigure ./configure --enable-emscripten --enable-gles --enable-sdl`
+* `emmake make -j4 -lvendor`
+* `cd src/projectM-emscripten`
 * `make run`
 
 
-
-
-# Hard way:
+# Detailed:
 
 ## Prepare
 * Activate the emsdk (https://github.com/juj/emsdk#installation-instructions)
 * make sure you are in the root directory of this project
 * on fresh repositories: `./autogen.sh`
+* download latest glm from https://github.com/g-truc/glm/releases/latest
+* make sure to move it to `./vendor/glm`
 
 ## Compile
 * `emconfigure ./configure --enable-emscripten --enable-gles --enable-sdl`
@@ -25,3 +29,9 @@ Does not work? Try:
 
 * `mkdir vendor && cp /usr/local/Cellar/glm/xx/include/glm ./vendor/`
 * `emmake make -j4 -lvendor`
+
+
+### OS X troubleshooting:
+
+#### `./autogen.sh: line 3: autoreconf: command not found`
+fix via `brew install automake`
