@@ -23,7 +23,7 @@
 		C37EBD3B19A0112900220265 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C37EBD3A19A0112900220265 /* AppDelegate.m */; };
 		C37EBD3E19A0112900220265 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD3C19A0112900220265 /* MainMenu.xib */; };
 		C37EBD4019A0112900220265 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD3F19A0112900220265 /* Images.xcassets */; };
-		C37EBD5B19A0118600220265 /* iProjectM.pkg in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD5A19A0118600220265 /* iProjectM.pkg */; };
+		C37EBD5B19A0118600220265 /* iTunes Visualizer.pkg in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD5A19A0118600220265 /* iTunes Visualizer.pkg */; };
 		C37EBD5D19A0146F00220265 /* images in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD5C19A0146F00220265 /* images */; };
 		C37EBD5F19A0164400220265 /* selectViz.png in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD5E19A0164400220265 /* selectViz.png */; };
 		C38E8C881B1A12540029901E /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = C38E8C871B1A12540029901E /* Preferences.xib */; };
@@ -139,7 +139,7 @@
 		C37EBD3D19A0112900220265 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		C37EBD3F19A0112900220265 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		C37EBD4619A0112900220265 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		C37EBD5A19A0118600220265 /* iProjectM.pkg */ = {isa = PBXFileReference; lastKnownFileType = text; path = iProjectM.pkg; sourceTree = "<group>"; };
+		C37EBD5A19A0118600220265 /* iTunes Visualizer.pkg */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iTunes Visualizer.pkg"; sourceTree = "<group>"; };
 		C37EBD5C19A0146F00220265 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = images; path = ../images; sourceTree = "<group>"; };
 		C37EBD5E19A0164400220265 /* selectViz.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = selectViz.png; path = images/selectViz.png; sourceTree = "<group>"; };
 		C37EBD6019A01BEE00220265 /* projectM Visualizer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "projectM Visualizer.entitlements"; sourceTree = "<group>"; };
@@ -250,7 +250,7 @@
 				168F716121125D85001806E7 /* libprojectM.xcodeproj */,
 				C38212791A5A2114002A8D78 /* gles_conv.txt */,
 				C37EBD5E19A0164400220265 /* selectViz.png */,
-				C37EBD5A19A0118600220265 /* iProjectM.pkg */,
+				C37EBD5A19A0118600220265 /* iTunes Visualizer.pkg */,
 				C34E81191956D0C3001AC5B5 /* contrib */,
 				C3FAF97A17B8A44100F4B110 /* share */,
 				C3FAE5A417B88C5B00F4B110 /* libprojectM */,
@@ -476,7 +476,7 @@
 				C37EBD4019A0112900220265 /* Images.xcassets in Resources */,
 				C37EBD3819A0112900220265 /* Credits.rtf in Resources */,
 				C37EBD3E19A0112900220265 /* MainMenu.xib in Resources */,
-				C37EBD5B19A0118600220265 /* iProjectM.pkg in Resources */,
+				C37EBD5B19A0118600220265 /* iTunes Visualizer.pkg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
