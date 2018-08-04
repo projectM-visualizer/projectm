@@ -3,11 +3,12 @@
 
 // based on the iTunes SDK example code
 
+// https://www.fenestrated.net/mirrors/Apple%20Technotes%20(As%20of%202002)/tn/tn2016.html
+
 #import "iprojectM.hpp"
 
 #import <AppKit/AppKit.h>
-#import <OpenGL/gl.h>
-#import <OpenGL/glu.h>
+#import <OpenGL/gl3.h>
 #import <string.h>
 #include "libprojectM/cocoatoprojectM.h"
 
@@ -48,7 +49,6 @@ void DrawVisual( VisualPluginData * visualPluginData )
 
     [[drawView openGLContext] makeCurrentContext];
 #endif
-    
     if (visualPluginData->pm == NULL) {
         initProjectM(visualPluginData);
         
@@ -62,8 +62,9 @@ void DrawVisual( VisualPluginData * visualPluginData )
     // render
     visualPluginData->pm->renderFrame();
     //renderProjectMTexture(visualPluginData);
-    
-    glFlush();
+
+    [[drawView openGLContext] flushBuffer];
+//    glFlush();
     
     return;
     
@@ -249,6 +250,26 @@ OSStatus ConfigureVisual( VisualPluginData * visualPluginData )
 @implementation VisualView
 
 @synthesize visualPluginData = _visualPluginData;
+
+- (id)initWithFrame:(NSRect)frame
+{
+    NSLog(@"initWithFrame called");
+    NSOpenGLPixelFormatAttribute pixelFormatAttributes[] =
+    {
+        NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,
+//        NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion4_1Core,
+        NSOpenGLPFAColorSize    , 24                           ,
+        NSOpenGLPFAAlphaSize    , 8                            ,
+        NSOpenGLPFADoubleBuffer ,
+        NSOpenGLPFAAccelerated  ,
+        NSOpenGLPFANoRecovery   ,
+        0
+    };
+    NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelFormatAttributes];
+    self = [super initWithFrame:frame pixelFormat:pixelFormat];
+    
+    return self;
+}
 
 //-------------------------------------------------------------------------------------------------
 //	isOpaque

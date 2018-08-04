@@ -7,14 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		16A4214820781836006F30CE /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214420781835006F30CE /* libRenderer.a */; };
-		16A4214920781836006F30CE /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214420781835006F30CE /* libRenderer.a */; };
-		16A4214A20781836006F30CE /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214520781835006F30CE /* libMilkdropPresetFactory.a */; };
-		16A4214B20781836006F30CE /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214520781835006F30CE /* libMilkdropPresetFactory.a */; };
-		16A4214C20781836006F30CE /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214620781835006F30CE /* libNativePresetFactory.a */; };
-		16A4214D20781836006F30CE /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214620781835006F30CE /* libNativePresetFactory.a */; };
-		16A4214E20781836006F30CE /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214720781836006F30CE /* libprojectM.a */; };
-		16A4214F20781836006F30CE /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214720781836006F30CE /* libprojectM.a */; };
+		16FE0B2121157D62005F170D /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 168F716D21125D85001806E7 /* libMilkdropPresetFactory.a */; };
+		16FE0B2221157D63005F170D /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 168F716F21125D85001806E7 /* libNativePresetFactory.a */; };
+		16FE0B2321157D63005F170D /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 168F716B21125D85001806E7 /* libprojectM.a */; };
+		16FE0B2421157D63005F170D /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 168F716921125D85001806E7 /* libRenderer.a */; };
 		C34E811C1956D0D4001AC5B5 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811B1956D0D4001AC5B5 /* libz.a */; };
 		C34E811E1956D0D6001AC5B5 /* libpng15.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811D1956D0D6001AC5B5 /* libpng15.a */; };
 		C34E81201956D0D8001AC5B5 /* libftgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811F1956D0D8001AC5B5 /* libftgl.a */; };
@@ -74,19 +70,23 @@
 			remoteGlobalIDString = 1612C9AC207A856A00862A3A;
 			remoteInfo = NativePresetFactory;
 		};
+		16FE0B1B21157D55005F170D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 168F716121125D85001806E7 /* libprojectM.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 16A49E56207A7C8C00E508EA;
+			remoteInfo = projectM;
+		};
+		16FE0B2521157D84005F170D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C3F9D7A717B82CC3009E58CB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C3F9D7AE17B82CC3009E58CB;
+			remoteInfo = iProjectM;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C3C24430195764660021FCD4 /* Copy Files */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Copy Files";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C3FAE5A917B898BB00F4B110 /* plist */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -176,10 +176,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				16A4214D20781836006F30CE /* libNativePresetFactory.a in Frameworks */,
-				16A4214920781836006F30CE /* libRenderer.a in Frameworks */,
-				16A4214B20781836006F30CE /* libMilkdropPresetFactory.a in Frameworks */,
-				16A4214F20781836006F30CE /* libprojectM.a in Frameworks */,
 				C37EBD2C19A0112900220265 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -188,14 +184,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				16FE0B2121157D62005F170D /* libMilkdropPresetFactory.a in Frameworks */,
+				16FE0B2221157D63005F170D /* libNativePresetFactory.a in Frameworks */,
+				16FE0B2321157D63005F170D /* libprojectM.a in Frameworks */,
+				16FE0B2421157D63005F170D /* libRenderer.a in Frameworks */,
 				C3C24435195764870021FCD4 /* libGLEW.a in Frameworks */,
-				16A4214C20781836006F30CE /* libNativePresetFactory.a in Frameworks */,
 				C34E81241956D0DA001AC5B5 /* libbz2.a in Frameworks */,
 				C34E81221956D0D9001AC5B5 /* libfreetype.a in Frameworks */,
-				16A4214A20781836006F30CE /* libMilkdropPresetFactory.a in Frameworks */,
 				C34E81201956D0D8001AC5B5 /* libftgl.a in Frameworks */,
-				16A4214820781836006F30CE /* libRenderer.a in Frameworks */,
-				16A4214E20781836006F30CE /* libprojectM.a in Frameworks */,
 				C34E811E1956D0D6001AC5B5 /* libpng15.a in Frameworks */,
 				C34E811C1956D0D4001AC5B5 /* libz.a in Frameworks */,
 				C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */,
@@ -366,6 +362,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				16FE0B2621157D84005F170D /* PBXTargetDependency */,
 			);
 			name = "projectM Visualizer";
 			productName = "projectM Visualizer";
@@ -379,13 +376,13 @@
 				C3F9D7AB17B82CC3009E58CB /* Sources */,
 				C3F9D7AC17B82CC3009E58CB /* Frameworks */,
 				C3FAE5A917B898BB00F4B110 /* plist */,
-				C3C24430195764660021FCD4 /* Copy Files */,
 				C3FAF97317B89F1700F4B110 /* share */,
 				C3FAE5AB17B898F800F4B110 /* Generate Installer Package */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				16FE0B1C21157D55005F170D /* PBXTargetDependency */,
 			);
 			name = iProjectM;
 			productName = iProjectM;
@@ -526,6 +523,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		16FE0B1C21157D55005F170D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = projectM;
+			targetProxy = 16FE0B1B21157D55005F170D /* PBXContainerItemProxy */;
+		};
+		16FE0B2621157D84005F170D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C3F9D7AE17B82CC3009E58CB /* iProjectM */;
+			targetProxy = 16FE0B2521157D84005F170D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		C37EBD3019A0112900220265 /* InfoPlist.strings */ = {
