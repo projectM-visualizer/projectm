@@ -19,7 +19,7 @@ void initProjectM( VisualPluginData * visualPluginData ) {
     settings.textureSize = 2048;  // idk?
     settings.windowWidth = 1920;
     settings.windowHeight = 1280;
-    settings.smoothPresetDuration = 3; // seconds
+    settings.smoothPresetDuration = 1; // seconds
     settings.presetDuration = 5; // seconds
     settings.beatSensitivity = 0.8;
     settings.aspectCorrection = 1;
@@ -35,11 +35,9 @@ void initProjectM( VisualPluginData * visualPluginData ) {
     NSLog(@"GL_SHADING_LANGUAGE_VERSION: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
     NSLog(@"GL_VENDOR: %s", glGetString(GL_VENDOR));
 
-    NSLog(@"opening config");
-
     // use config file
     projectM *pm = new projectM(cfg_path);
-    
+
     visualPluginData->pm = pm;
     
     pm->selectRandom(true);
