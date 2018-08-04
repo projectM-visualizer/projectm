@@ -80,18 +80,14 @@
 
 struct VisualPluginData;
 
-#if TARGET_OS_MAC
 #import <Cocoa/Cocoa.h>
 #import <AppKit/AppKit.h>
 
 // "namespace" our ObjC classname to avoid load conflicts between multiple visualizer plugins
 #define VisualView		iProjectM_VisualView
-#define GLVisualView	iProjectM_GLVisualView
 
 @class VisualView;
-@class GLVisualView;
 
-#endif
 
 #define kInfoTimeOutInSeconds		10							// draw info/artwork for N seconds when it changes or playback starts
 #define kPlayingPulseRateInHz		60							// when iTunes is playing, draw N times a second
@@ -162,7 +158,7 @@ void		InvalidateVisual( VisualPluginData * visualPluginData );
 
 OSStatus	ConfigureVisual( VisualPluginData * visualPluginData );
 
-void        initProjectM( VisualPluginData * visualPluginData );
+void        initProjectM( VisualPluginData * visualPluginData, std::string presetPath );
 void        renderProjectMTexture( VisualPluginData * visualPluginData );
 void        keypressProjectM( VisualPluginData * visualPluginData, projectMEvent event, projectMKeycode keycode, projectMModifier mod );
 

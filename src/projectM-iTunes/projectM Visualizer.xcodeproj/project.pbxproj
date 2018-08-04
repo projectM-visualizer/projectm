@@ -495,7 +495,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "mkdir -p \"$DSTROOT/usr/local/share/projectM/presets\"\n#cp -r \"$SRCROOT\"/../../presets/custom/* \"$DSTROOT/usr/local/share/projectM/presets/\"\ncp -r \"$SRCROOT\"/../../presets/presets_tryptonaut/* \"$DSTROOT/usr/local/share/projectM/presets/\"\ncp -r \"$SRCROOT\"/../../presets/presets_bltc201/* \"$DSTROOT/usr/local/share/projectM/presets/\"\n#rm -rf \"$SRCROOT/iProjectM.bundle\"\n#cp -r \"$DSTROOT/Library/iTunes/iTunes Plug-ins/iProjectM.bundle\" $SRCROOT/\ninstall_name_tool -change @executable_path/../Frameworks/Cg.framework/Cg @loader_path/../Frameworks/Cg.framework/Cg \"$DSTROOT/Library/iTunes/iTunes Plug-ins/iProjectM.bundle/Contents/MacOS/iProjectM\"\ncp -r $CONFIGURATION_BUILD_DIR/share/* \"$DSTROOT/usr/local/share/projectM\"\npkgbuild --component-plist \"$SRCROOT/iProjectM-pkg.plist\" --root \"$DSTROOT\" \"$SRCROOT/iProjectM.pkg\"\n";
+			shellScript = "POUT=\"$BUILT_PRODUCTS_DIR\"/\"$CONTENTS_FOLDER_PATH/Resources/presets\"\nPIN=\"$SRCROOT\"/../../presets\n\nmkdir -p \"$POUT\"\nfor preset_dir in \"$PIN/\"*; do\ncp \"$preset_dir/\"* \"$POUT/\"\ndone\necho \"Copied presets to $POUT\"\n\n\npkgbuild --component-plist \"$SRCROOT/iProjectM-pkg.plist\" --root \"$DSTROOT\" \"$SRCROOT/iTunes Visualizer.pkg\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
