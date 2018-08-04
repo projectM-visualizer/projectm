@@ -41,20 +41,9 @@ void DrawVisual( VisualPluginData * visualPluginData )
 {
 	CGPoint where;
 
-#if USE_SUBVIEW
     VISUAL_PLATFORM_VIEW drawView = visualPluginData->subview;
-        	
-	if ( drawView == NULL )
-		return;
-
-    [[drawView openGLContext] makeCurrentContext];
-#endif
-    if (visualPluginData->pm == NULL) {
-        initProjectM(visualPluginData);
-        
-        // correctly size it
-        ResizeVisual(visualPluginData);
-    }
+    if (!visualPluginData->readyToDraw)
+        return;
     
 	glClearColor( 0.0, 0.5, 0.0, 0.0 );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -63,8 +52,8 @@ void DrawVisual( VisualPluginData * visualPluginData )
     visualPluginData->pm->renderFrame();
     //renderProjectMTexture(visualPluginData);
 
-    [[drawView openGLContext] flushBuffer];
-//    glFlush();
+//    [[drawView openGLContext] flushBuffer];
+    glFlush();
     
     return;
     
@@ -149,6 +138,7 @@ OSStatus ActivateVisual( VisualPluginData * visualPluginData, VISUAL_PLATFORM_VI
 	visualPluginData->destView			= destView;
 	visualPluginData->destRect			= [destView bounds];
 	visualPluginData->destOptions		= options;
+    visualPluginData->readyToDraw = false;
 
 	UpdateInfoTimeOut( visualPluginData );
 
@@ -169,7 +159,20 @@ OSStatus ActivateVisual( VisualPluginData * visualPluginData, VISUAL_PLATFORM_VI
 		status = memFullErr;
 	}
 
+    
+    [[visualPluginData->subview openGLContext] makeCurrentContext];
+
+    
 #endif
+    NSLog(@"activate visual");
+    if (visualPluginData->pm == NULL) {
+        initProjectM(visualPluginData);
+        
+        // correctly size it
+        ResizeVisual(visualPluginData);
+    }
+    
+    NSLog(@"activated visual");
     
 	return status;
 }
@@ -203,7 +206,8 @@ OSStatus DeactivateVisual( VisualPluginData * visualPluginData )
 	visualPluginData->destView			= NULL;
 	visualPluginData->destRect			= CGRectNull;
 	visualPluginData->drawInfoTimeOut	= 0;
-    
+    visualPluginData->readyToDraw = false;
+
     if (visualPluginData->pm != NULL) {
         delete(visualPluginData->pm);
         visualPluginData->pm = NULL;
@@ -218,10 +222,13 @@ OSStatus DeactivateVisual( VisualPluginData * visualPluginData )
 //
 OSStatus ResizeVisual( VisualPluginData * visualPluginData )
 {
-	visualPluginData->destRect = [visualPluginData->destView bounds];
+	visualPluginData->destRect = [visualPluginData->subview bounds];
 
     if (visualPluginData->pm != NULL) {
         visualPluginData->pm->projectM_resetGL(visualPluginData->destRect.size.width, visualPluginData->destRect.size.height);
+        NSLog(@"resized to %@ %@", [NSNumber numberWithDouble: visualPluginData->destRect.size.width], [NSNumber numberWithDouble: visualPluginData->destRect.size.height]);
+        
+        visualPluginData->readyToDraw = true;
     }
 
 	return noErr;
@@ -259,15 +266,27 @@ OSStatus ConfigureVisual( VisualPluginData * visualPluginData )
         NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,
 //        NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion4_1Core,
         NSOpenGLPFAColorSize    , 24                           ,
-        NSOpenGLPFAAlphaSize    , 8                            ,
-        NSOpenGLPFADoubleBuffer ,
+//        NSOpenGLPFAAlphaSize    , 8                            ,
+//        NSOpenGLPFADoubleBuffer ,
         NSOpenGLPFAAccelerated  ,
         NSOpenGLPFANoRecovery   ,
         0
     };
     NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelFormatAttributes];
+    if (pixelFormat == nil)
+    {
+        NSLog(@"Unable to create pixel format.");
+        return self;
+    }
     self = [super initWithFrame:frame pixelFormat:pixelFormat];
-    
+    if (self == nil)
+    {
+        NSLog(@"Unable to create an OpenGL context.");
+        return self;
+    }
+
+    NSLog(@"super initWithFrame called");
+
     return self;
 }
 
@@ -383,7 +402,7 @@ void GetVisualName( ITUniStr255 name )
 //
 OptionBits GetVisualOptions( void )
 {
-	OptionBits		options = (kVisualSupportsMuxedGraphics | kVisualWantsIdleMessages);
+	OptionBits		options = (kVisualUsesOnly3D | kVisualWantsIdleMessages);
 	
 #if USE_SUBVIEW
 	options |= kVisualUsesSubview;

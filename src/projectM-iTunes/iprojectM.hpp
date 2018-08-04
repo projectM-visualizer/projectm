@@ -130,6 +130,8 @@ struct VisualPluginData
 
 	Boolean				playing;								// is iTunes currently playing audio?
 	Boolean				padding[3];
+    
+    Boolean             readyToDraw;
 
 	time_t				drawInfoTimeOut;						// when should we stop showing info/artwork?
 
