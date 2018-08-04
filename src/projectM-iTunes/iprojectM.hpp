@@ -52,7 +52,7 @@
 #include "libprojectM/projectM.hpp"
 #include "getConfigFilename.h"
 #include <time.h>
-#include <OpenGL/gl.h>
+#include <OpenGL/gl3.h>
 
 #if TARGET_OS_MAC
 #import <Cocoa/Cocoa.h>

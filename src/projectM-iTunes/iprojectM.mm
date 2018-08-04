@@ -31,12 +31,20 @@ void initProjectM( VisualPluginData * visualPluginData ) {
     settings.menuFontURL = "/usr/local/share/projectM/fonts/VeraMono.ttf";
     //projectM *pm = new projectM(settings, 0);
     
+    NSLog(@"GL_VERSION: %s", glGetString(GL_VERSION));
+    NSLog(@"GL_SHADING_LANGUAGE_VERSION: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+    NSLog(@"GL_VENDOR: %s", glGetString(GL_VENDOR));
+
+    NSLog(@"opening config");
+
     // use config file
     projectM *pm = new projectM(cfg_path);
     
     visualPluginData->pm = pm;
     
     pm->selectRandom(true);
+    NSLog(@"random selected");
+
 }
 
 void keypressProjectM( VisualPluginData * visualPluginData, projectMEvent event, projectMKeycode keycode, projectMModifier mod ) {
@@ -44,6 +52,8 @@ void keypressProjectM( VisualPluginData * visualPluginData, projectMEvent event,
 }
 
 void renderProjectMTexture( VisualPluginData * visualPluginData ){
+    // this needs to be updated for gl3 (see SDL version)
+#if 0
     static int textureHandle = visualPluginData->pm->initRenderToTexture();
     
     glClear(GL_COLOR_BUFFER_BIT);
@@ -82,6 +92,7 @@ void renderProjectMTexture( VisualPluginData * visualPluginData ){
     
     glMatrixMode(GL_MODELVIEW);
     glDisable(GL_DEPTH_TEST);
+#endif
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -463,6 +474,6 @@ OSStatus RegisterVisualPlugin( PluginMessageInfo * messageInfo )
 	playerMessageInfo.u.registerVisualPluginMessage.maxHeight				= 0;	// no max height limit
 	
 	status = PlayerRegisterVisualPlugin( messageInfo->u.initMessage.appCookie, messageInfo->u.initMessage.appProc, &playerMessageInfo );
-		
+    
 	return status;
 }
