@@ -55,7 +55,7 @@ void DrawVisual( VisualPluginData * visualPluginData )
 //    [[drawView openGLContext] flushBuffer];
     glFlush();
     
-    return;
+//    return;
     
     // TODO: artwork overlay
     
@@ -166,7 +166,13 @@ OSStatus ActivateVisual( VisualPluginData * visualPluginData, VISUAL_PLATFORM_VI
 #endif
     NSLog(@"activate visual");
     if (visualPluginData->pm == NULL) {
-        initProjectM(visualPluginData);
+        
+        NSBundle* me = [NSBundle bundleForClass: VisualView.class];
+        NSLog(@"main bundle: %@", [me bundlePath]);
+        NSString* presetsPath = [me pathForResource:@"presets" ofType:nil];
+        NSLog(@"presets path %@", presetsPath);
+        
+        initProjectM(visualPluginData, std::string([presetsPath UTF8String]));
         
         // correctly size it
         ResizeVisual(visualPluginData);
