@@ -185,6 +185,7 @@ enum HLSLBinaryOp
     HLSLBinaryOp_Sub,
     HLSLBinaryOp_Mul,
     HLSLBinaryOp_Div,
+    HLSLBinaryOp_Mod,
     HLSLBinaryOp_Less,
     HLSLBinaryOp_Greater,
     HLSLBinaryOp_LessEqual,
@@ -216,7 +217,8 @@ inline bool IsArithmeticOp( HLSLBinaryOp op )
     return op == HLSLBinaryOp_Add ||
         op == HLSLBinaryOp_Sub ||
         op == HLSLBinaryOp_Mul ||
-        op == HLSLBinaryOp_Div;
+        op == HLSLBinaryOp_Div ||
+        op == HLSLBinaryOp_Mod;
 }
 
 inline bool IsLogicOp( HLSLBinaryOp op )
@@ -597,6 +599,7 @@ struct HLSLForStatement : public HLSLStatement
         statement = NULL;
     }
     HLSLDeclaration*    initialization;
+    HLSLExpression*     initializationWithoutType;
     HLSLExpression*     condition;
     HLSLExpression*     increment;
     HLSLStatement*      statement;
@@ -962,6 +965,7 @@ public:
     virtual void VisitContinueStatement(HLSLContinueStatement * node);
     virtual void VisitIfStatement(HLSLIfStatement * node);
     virtual void VisitForStatement(HLSLForStatement * node);
+    virtual void VisitWhileStatement(HLSLWhileStatement * node);
     virtual void VisitBlockStatement(HLSLBlockStatement * node);
     virtual void VisitUnaryExpression(HLSLUnaryExpression * node);
     virtual void VisitBinaryExpression(HLSLBinaryExpression * node);
