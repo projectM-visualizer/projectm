@@ -16,6 +16,8 @@
 #include <algorithm>
 #include <ctype.h>
 #include <string.h>
+#include <stack>
+#include <iostream>
 
 namespace M4
 {
@@ -930,6 +932,7 @@ static const char* GetBinaryOpName(HLSLBinaryOp binaryOp)
     case HLSLBinaryOp_Sub:          return "-";
     case HLSLBinaryOp_Mul:          return "*";
     case HLSLBinaryOp_Div:          return "/";
+    case HLSLBinaryOp_Mod:          return "%";
     case HLSLBinaryOp_Less:         return "<";
     case HLSLBinaryOp_Greater:      return ">";
     case HLSLBinaryOp_LessEqual:    return "<=";
@@ -1117,6 +1120,25 @@ static CompareFunctionsResult CompareFunctions(HLSLTree* tree, const HLSLFunctio
             return Function2Better;
         }
     }
+
+//    // Dump matched function argument types
+//    std::string arg1;
+//    std::string arg2;
+//    const HLSLArgument* argument1 = function1->argument;
+//    const HLSLArgument* argument2 = function2->argument;
+//    for (int i = 0; i < call->numArguments; ++i)
+//    {
+//        arg1 += GetTypeName(argument1->type);
+//        arg1 += " ";
+//        arg2 += GetTypeName(argument2->type);
+//        arg2 += " ";
+
+//        argument1 = argument1->nextArgument;
+//        argument2 = argument2->nextArgument;
+//    }
+
+//    std::cout << "(" << arg1 << ") vs (" << arg2 << ")" << std::endl;
+
 
     return FunctionsEqual;
 
@@ -1726,7 +1748,7 @@ bool HLSLParser::ParseStatement(HLSLStatement*& statement, const HLSLType& retur
             return false;
         }
         BeginScope();
-        if (!ParseDeclaration(forStatement->initialization))
+        if (!ParseDeclaration(forStatement->initialization) && !ParseExpression(forStatement->initializationWithoutType))
         {
             return false;
         }
@@ -2047,6 +2069,7 @@ bool HLSLParser::AcceptBinaryOperator(int priority, HLSLBinaryOp& binaryOp)
     case '-':                       binaryOp = HLSLBinaryOp_Sub;          break;
     case '*':                       binaryOp = HLSLBinaryOp_Mul;          break;
     case '/':                       binaryOp = HLSLBinaryOp_Div;          break;
+    case '%':                       binaryOp = HLSLBinaryOp_Mod;          break;
     case '<':                       binaryOp = HLSLBinaryOp_Less;         break;
     case '>':                       binaryOp = HLSLBinaryOp_Greater;      break;
     case HLSLToken_LessEqual:       binaryOp = HLSLBinaryOp_LessEqual;    break;
@@ -2196,7 +2219,7 @@ bool HLSLParser::ParseBinaryExpression(int priority, HLSLExpression*& expression
             {
                 const char* srcTypeName = GetTypeName(expression2->expressionType);
                 const char* dstTypeName = GetTypeName(expression1->expressionType);
-                m_tokenizer.Error("':' no possible conversion from from '%s' to '%s'", srcTypeName, dstTypeName);
+                m_tokenizer.Error("':' no possible conversion from '%s' to '%s'", srcTypeName, dstTypeName);
                 return false;
             }
 
@@ -3468,14 +3491,47 @@ bool HLSLParser::ApplyPreprocessor(const char* fileName, const char* buffer, siz
         index++;
     }
 
-    // Fouth pass, search and replace define uses
+    // Fouth pass, search and replace preprocessor directives
+    std::stack<bool> isCodeActive;
+    isCodeActive.push(true);
     m_tokenizer = HLSLTokenizer(fileName, buffer, length);
     sourcePreprocessed.clear();
     while (m_tokenizer.GetToken() != HLSLToken_EndOfStream)
     {
         bool addOriginalSource = true;
 
-        if (m_tokenizer.GetToken() == HLSLToken_PreprocessorDefine)
+        if (m_tokenizer.GetToken() == HLSLToken_PreprocessorIf)
+        {
+            while (m_tokenizer.GetToken() != HLSLToken_IntLiteral && m_tokenizer.GetToken() != HLSLToken_EndOfLine)
+            {
+                m_tokenizer.Next(false);
+            }
+
+            if (m_tokenizer.GetToken() == HLSLToken_IntLiteral)
+            {
+                isCodeActive.push(m_tokenizer.GetInt() != 0);
+            }
+            else
+            {
+                m_tokenizer.Error("#if evaluation failed: not an integer");
+                return false;
+            }
+            addOriginalSource = false;
+        }
+        else if (m_tokenizer.GetToken() == HLSLToken_PreprocessorElse)
+        {
+            // Invert stack state
+            bool state = isCodeActive.top();
+            isCodeActive.pop();
+            isCodeActive.push(!state);
+            addOriginalSource = false;
+        }
+        else if (m_tokenizer.GetToken() == HLSLToken_PreprocessorEndif)
+        {
+            isCodeActive.pop();
+            addOriginalSource = false;
+        }
+        else if (m_tokenizer.GetToken() == HLSLToken_PreprocessorDefine)
         {
             // Skip macros definition
             while(m_tokenizer.GetToken() != HLSLToken_EndOfLine)
@@ -3485,9 +3541,13 @@ bool HLSLParser::ApplyPreprocessor(const char* fileName, const char* buffer, siz
 
             addOriginalSource = false;
         }
-        else if (m_tokenizer.GetToken() == HLSLToken_Identifier)
+        else if (m_tokenizer.GetToken() == HLSLToken_Identifier && isCodeActive.top())
         {
             ProcessMacroFromIdentifier(sourcePreprocessed, addOriginalSource);
+        }
+        else if (!isCodeActive.top())
+        {
+            addOriginalSource = false;
         }
 
         if (addOriginalSource)
@@ -3500,7 +3560,7 @@ bool HLSLParser::ApplyPreprocessor(const char* fileName, const char* buffer, siz
     }
 
 
-    return true;
+    return isCodeActive.size() == 1;
 }
 
 
@@ -3849,6 +3909,7 @@ bool HLSLParser::AcceptType(bool allowVoid, HLSLType& type/*, bool acceptFlags*/
                 
                 if (!Expect('>'))
                 {
+                    m_tokenizer.Error("Syntax error: '>' expected for sampler type");
                     return false;
                 }
             }

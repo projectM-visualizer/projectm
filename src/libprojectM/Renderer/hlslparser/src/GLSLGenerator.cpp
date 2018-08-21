@@ -36,6 +36,8 @@ const char* GLSLGenerator::s_reservedWord[] =
         "fract",
         "dFdx",
         "dFdy",
+        "filter",
+		"main",
     };
 
 static const char* GetTypeName(const HLSLType& type)
@@ -230,6 +232,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     }
 
     // Output the special function used to access rows in a matrix.
+    m_writer.WriteLine(0, "vec2 %s(mat2 m, int i) { return vec2( m[0][i], m[1][i] ); }", m_matrixRowFunction);
     m_writer.WriteLine(0, "vec3 %s(mat3 m, int i) { return vec3( m[0][i], m[1][i], m[2][i] ); }", m_matrixRowFunction);
     m_writer.WriteLine(0, "vec4 %s(mat4 m, int i) { return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }", m_matrixRowFunction);
 
@@ -611,6 +614,7 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 			case HLSLBinaryOp_Sub:          op = " - "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
 			case HLSLBinaryOp_Mul:          op = " * "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
 			case HLSLBinaryOp_Div:          op = " / "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
+            case HLSLBinaryOp_Mod:          op = " % "; dstType1 = dstType2 = &kIntType; break;
 			case HLSLBinaryOp_Less:         op = " < "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
 			case HLSLBinaryOp_Greater:      op = " > "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
 			case HLSLBinaryOp_LessEqual:    op = " <= "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
@@ -822,6 +826,19 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             m_writer.Write("clamp(");
             OutputExpression(argument[0]);
             m_writer.Write(", 0.0, 1.0)");
+            handled = true;
+        }
+        else if (String_Equal(functionName, "rsqrt"))
+        {
+            HLSLExpression* argument[1];
+            if (GetFunctionArguments(functionCall, argument, 1) != 1)
+            {
+                Error("saturate expects 1 argument");
+                return;
+            }
+            m_writer.Write("inversesqrt(");
+            OutputExpression(argument[0]);
+            m_writer.Write(")");
             handled = true;
         }
 
@@ -1115,7 +1132,14 @@ void GLSLGenerator::OutputStatements(int indent, HLSLStatement* statement, const
             HLSLForStatement* forStatement = static_cast<HLSLForStatement*>(statement);
             m_writer.BeginLine(indent, forStatement->fileName, forStatement->line);
             m_writer.Write("for (");
-            OutputDeclaration(forStatement->initialization);
+            if (forStatement->initialization != NULL)
+            {
+                OutputDeclaration(forStatement->initialization);
+            }
+            else
+            {
+                OutputExpression(forStatement->initializationWithoutType);
+            }
             m_writer.Write("; ");
             OutputExpression(forStatement->condition, &kBoolType);
             m_writer.Write("; ");
@@ -1134,6 +1158,13 @@ void GLSLGenerator::OutputStatements(int indent, HLSLStatement* statement, const
             m_writer.Write(") {");
             m_writer.EndLine();
             OutputStatements(indent + 1, whileStatement->statement, returnType);
+            m_writer.WriteLine(indent, "}");
+        }
+        else if (statement->nodeType == HLSLNodeType_BlockStatement)
+        {
+            HLSLBlockStatement* blockStatement = static_cast<HLSLBlockStatement*>(statement);
+            m_writer.WriteLine(indent, "{");
+            OutputStatements(indent + 1, blockStatement->statement, returnType);
             m_writer.WriteLine(indent, "}");
         }
         else

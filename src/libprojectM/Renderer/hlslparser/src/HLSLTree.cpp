@@ -383,6 +383,9 @@ bool HLSLTree::GetExpressionValue(HLSLExpression * expression, int & value)
             case HLSLBinaryOp_Div:
                 value = value1 / value2;
                 return true;
+            case HLSLBinaryOp_Mod:
+                value = value1 % value2;
+                return true;
             case HLSLBinaryOp_Less:
                 value = value1 < value2;
                 return true;
@@ -615,6 +618,9 @@ int HLSLTree::GetExpressionValue(HLSLExpression * expression, float values[4])
             case HLSLBinaryOp_Div:
                 for (int i = 0; i < dim; i++) values[i] = values1[i] / values2[i];
                 return dim;
+            case HLSLBinaryOp_Mod:
+                for (int i = 0; i < dim; i++) values[i] = int(values1[i]) % int(values2[i]);
+                return dim;
             default:
                 return 0;
         }
@@ -772,6 +778,9 @@ void HLSLTreeVisitor::VisitStatement(HLSLStatement * node)
     else if (node->nodeType == HLSLNodeType_ForStatement) {
         VisitForStatement((HLSLForStatement *)node);
     }
+    else if (node->nodeType == HLSLNodeType_WhileStatement) {
+        VisitWhileStatement((HLSLWhileStatement *)node);
+    }
     else if (node->nodeType == HLSLNodeType_BlockStatement) {
         VisitBlockStatement((HLSLBlockStatement *)node);
     }
@@ -922,6 +931,14 @@ void HLSLTreeVisitor::VisitForStatement(HLSLForStatement * node)
     }
     if (node->increment) {
         VisitExpression(node->increment);
+    }
+    VisitStatements(node->statement);
+}
+
+void HLSLTreeVisitor::VisitWhileStatement(HLSLWhileStatement * node)
+{
+    if (node->condition) {
+        VisitExpression(node->condition);
     }
     VisitStatements(node->statement);
 }

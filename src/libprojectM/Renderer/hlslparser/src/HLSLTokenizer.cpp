@@ -74,6 +74,9 @@ static const char* _reservedWords[] =
         "static",
         "inline",
         "#define",
+        "#if",
+        "#else",
+        "#endif",
         "uniform",
         "in",
         "out",
@@ -93,7 +96,7 @@ static bool GetIsSymbol(char c)
     case '[': case ']':
     case '{': case '}':
     case '-': case '+':
-    case '*': case '/':
+    case '*': case '/': case '%':
     case '?':
     case '!':
     case ',':
