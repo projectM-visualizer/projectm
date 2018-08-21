@@ -838,12 +838,7 @@ void Renderer::UvToMathSpace(float u, float v, float* rad, float* ang)
 void Renderer::InitCompositeShaderVertex() {
 
     // BUILD VERTEX LIST for final composite blit
-    //   note the +0.5-texel offset!
-    //   (otherwise, a 1-pixel-wide line of the image would wrap at the top and left edges).
     memset(m_comp_verts, 0, sizeof(composite_shader_vertex)*FCGSX*FCGSY);
-
-    float fHalfTexelW =  0.5f / (float)vw;   // 2.5: 2 pixels bad @ bottom right
-    float fHalfTexelH =  0.5f / (float)vh;
     float fDivX = 1.0f / (float)(FCGSX-2);
     float fDivY = 1.0f / (float)(FCGSY-2);
     for (int j=0; j<FCGSY; j++)
@@ -851,13 +846,13 @@ void Renderer::InitCompositeShaderVertex() {
         int j2 = j - j/(FCGSY/2);
         float v = j2*fDivY;
         v = SquishToCenter(v, 3.0f);
-        float sy = -((v-fHalfTexelH)*2-1);//fOnePlusInvHeight*v*2-1;
+        float sy = -((v)*2-1);
         for (int i=0; i<FCGSX; i++)
         {
             int i2 = i - i/(FCGSX/2);
             float u = i2*fDivX;
             u = SquishToCenter(u, 3.0f);
-            float sx = (u-fHalfTexelW)*2-1;//fOnePlusInvWidth*u*2-1;
+            float sx = (u)*2-1;
             composite_shader_vertex* pComp = &m_comp_verts[i + j*FCGSX];
             pComp->x = sx;
             pComp->y = sy;
@@ -932,17 +927,22 @@ void Renderer::InitCompositeShaderVertex() {
             {
                 *(cur_index+0) = (y  )*FCGSX + (x  );
                 *(cur_index+1) = (y  )*FCGSX + (x+1);
-                *(cur_index+2) = (y+1)*FCGSX + (x  );
+                *(cur_index+2) = (y+1)*FCGSX + (x+1);
                 *(cur_index+3) = (y+1)*FCGSX + (x+1);
+                *(cur_index+4) = (y+1)*FCGSX + (x  );
+                *(cur_index+5) = (y  )*FCGSX + (x  );
             }
             else
             {
                 *(cur_index+0) = (y+1)*FCGSX + (x  );
                 *(cur_index+1) = (y  )*FCGSX + (x  );
-                *(cur_index+2) = (y+1)*FCGSX + (x+1);
+                *(cur_index+2) = (y  )*FCGSX + (x+1);
                 *(cur_index+3) = (y  )*FCGSX + (x+1);
+                *(cur_index+4) = (y+1)*FCGSX + (x+1);
+                *(cur_index+5) = (y+1)*FCGSX + (x  );
             }
-            cur_index += 4;
+
+            cur_index += 6;
         }
     }
 }
@@ -996,7 +996,7 @@ void Renderer::CompositeShaderOutput(const Pipeline &pipeline, const PipelineCon
     }
 
 
-    int primCount = (FCGSX-2)*(FCGSY-2)*4;
+    int primCount = (FCGSX-2)*(FCGSY-2)*6;
     composite_shader_vertex tempv[primCount];
     memset(tempv, 0, sizeof(composite_shader_vertex) * primCount);
     int src_idx = 0;
@@ -1017,7 +1017,7 @@ void Renderer::CompositeShaderOutput(const Pipeline &pipeline, const PipelineCon
     glBindVertexArray(m_vao_CompositeShaderOutput);
 
     // Now do the final composite blit, fullscreen;
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, primCount);
+    glDrawArrays(GL_TRIANGLES, 0, primCount);
 
     glBindVertexArray(0);
 
