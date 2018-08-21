@@ -431,10 +431,10 @@ int GetVectorDimension(HLSLType & type)
     if (type.baseType >= HLSLBaseType_FirstNumeric &&
         type.baseType <= HLSLBaseType_LastNumeric)
     {
-        if (type.baseType == HLSLBaseType_Float || type.baseType == HLSLBaseType_Half) return 1;
-        if (type.baseType == HLSLBaseType_Float2 || type.baseType == HLSLBaseType_Half2) return 2;
-        if (type.baseType == HLSLBaseType_Float3 || type.baseType == HLSLBaseType_Half3) return 3;
-        if (type.baseType == HLSLBaseType_Float4 || type.baseType == HLSLBaseType_Half4) return 4;
+        if (type.baseType == HLSLBaseType_Float) return 1;
+        if (type.baseType == HLSLBaseType_Float2) return 2;
+        if (type.baseType == HLSLBaseType_Float3) return 3;
+        if (type.baseType == HLSLBaseType_Float4) return 4;
 
     }
     return 0;
@@ -600,7 +600,6 @@ int HLSLTree::GetExpressionValue(HLSLExpression * expression, float values[4])
         HLSLLiteralExpression * literal = (HLSLLiteralExpression *)expression;
 
         if (literal->expressionType.baseType == HLSLBaseType_Float) values[0] = literal->fValue;
-        else if (literal->expressionType.baseType == HLSLBaseType_Half) values[0] = literal->fValue;
         else if (literal->expressionType.baseType == HLSLBaseType_Bool) values[0] = literal->bValue;
         else if (literal->expressionType.baseType == HLSLBaseType_Int) values[0] = (float)literal->iValue;  // @@ Warn if conversion is not exact.
         else return 0;
@@ -708,6 +707,78 @@ bool HLSLTree::ReplaceUniformsAssignements()
     return true;
 }
 
+
+matrixCtor matrixCtorBuilder(HLSLType type, HLSLExpression * arguments) {
+    matrixCtor ctor;
+
+    ctor.matrixType = type.baseType;
+
+    // Fetch all arguments
+    HLSLExpression* argument = arguments;
+    while (argument != NULL)
+    {
+        ctor.argumentTypes.push_back(argument->expressionType.baseType);
+        argument = argument->nextExpression;
+    }
+
+    return ctor;
+}
+
+void HLSLTree::EnumerateMatrixCtorsNeeded(std::vector<matrixCtor> & matrixCtors) {
+
+    struct EnumerateMatrixCtorsVisitor: HLSLTreeVisitor
+    {
+        std::vector<matrixCtor> matrixCtorsNeeded;
+
+        virtual void VisitConstructorExpression(HLSLConstructorExpression * node)
+        {
+            if (IsMatrixType(node->expressionType.baseType))
+            {
+                matrixCtor ctor = matrixCtorBuilder(node->expressionType, node->argument);
+
+                if (std::find(matrixCtorsNeeded.cbegin(), matrixCtorsNeeded.cend(), ctor) == matrixCtorsNeeded.cend())
+                {
+                    matrixCtorsNeeded.push_back(ctor);
+                }
+            }
+
+            HLSLTreeVisitor::VisitConstructorExpression(node);
+        }
+
+        virtual void VisitDeclaration(HLSLDeclaration * node)
+        {
+            if (    IsMatrixType(node->type.baseType) &&
+                    (node->type.flags & HLSLArgumentModifier_Uniform) == 0 )
+            {
+                matrixCtor ctor = matrixCtorBuilder(node->type, node->assignment);
+
+                // No special constructor needed if it already a matrix
+                bool matrixArgument = false;
+                for(HLSLBaseType & type: ctor.argumentTypes)
+                {
+                    if (IsMatrixType(type))
+                    {
+                        matrixArgument = true;
+                        break;
+                    }
+                }
+
+                if (    !matrixArgument &&
+                        std::find(matrixCtorsNeeded.cbegin(), matrixCtorsNeeded.cend(), ctor) == matrixCtorsNeeded.cend())
+                {
+                    matrixCtorsNeeded.push_back(ctor);
+                }
+            }
+
+            HLSLTreeVisitor::VisitDeclaration(node);
+        }
+    };
+
+    EnumerateMatrixCtorsVisitor visitor;
+    visitor.VisitRoot(m_root);
+
+    matrixCtors = visitor.matrixCtorsNeeded;
+}
 
 
 void HLSLTreeVisitor::VisitType(HLSLType & type)
@@ -1574,7 +1645,7 @@ bool EmulateAlphaTest(HLSLTree* tree, const char* entryName, float alphaRef/*=0.
                 HLSLDiscardStatement * discard = tree->AddNode<HLSLDiscardStatement>(statement->fileName, statement->line);
                 
                 HLSLExpression * alpha = NULL;
-                if (returnType == HLSLBaseType_Float4 || returnType == HLSLBaseType_Half4)
+                if (returnType == HLSLBaseType_Float4)
                 {
                     // @@ If return expression is a constructor, grab 4th argument.
                     // That's not as easy, since we support 'float4(float3, float)' or 'float4(float, float3)', extracting
@@ -1595,7 +1666,7 @@ bool EmulateAlphaTest(HLSLTree* tree, const char* entryName, float alphaRef/*=0.
                         alpha = access;
                     }
                 }
-                else if (returnType == HLSLBaseType_Float || returnType == HLSLBaseType_Half)
+                else if (returnType == HLSLBaseType_Float)
                 {
                     alpha = returnStatement->expression;     // @@ Is reference OK? Or should we clone expression?
                 }
