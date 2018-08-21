@@ -75,7 +75,7 @@ private:
     //bool ParseBufferFieldDeclaration(HLSLBufferField*& field);
     bool ParseExpression(HLSLExpression*& expression);
     bool ParseBinaryExpression(int priority, HLSLExpression*& expression);
-    bool ParseTerminalExpression(HLSLExpression*& expression, bool& needsEndParen);
+    bool ParseTerminalExpression(HLSLExpression*& expression, char &needsExpressionEndChar);
     bool ParseExpressionList(int endToken, bool allowEmptyEnd, HLSLExpression*& firstExpression, int& numExpressions);
     bool ParseArgumentList(HLSLArgument*& firstArgument, int& numArguments, int& numOutputArguments);
     bool ParseDeclarationAssignment(HLSLDeclaration* declaration);
@@ -123,7 +123,7 @@ private:
     const char* GetFileName();
     int GetLineNumber() const;
 
-    void ProcessMacroArguments(HLSLMacro* macro, std::string & sourcePreprocessed);
+    bool ProcessMacroArguments(HLSLMacro* macro, std::string & sourcePreprocessed);
     HLSLMacro *ProcessMacroFromIdentifier(std::string & sourcePreprocessed, bool &addOriginalSource);
 
 private:

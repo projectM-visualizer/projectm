@@ -52,19 +52,6 @@ enum HLSLNodeType
     HLSLNodeType_Stage,
 };
 
-enum HLSLTypeDimension
-{
-    HLSLTypeDimension_None,
-    HLSLTypeDimension_Scalar,
-    HLSLTypeDimension_Vector2,
-    HLSLTypeDimension_Vector3,
-    HLSLTypeDimension_Vector4,
-    HLSLTypeDimension_Matrix2x2,
-    HLSLTypeDimension_Matrix3x3,
-    HLSLTypeDimension_Matrix4x4,
-    HLSLTypeDimension_Matrix4x3,
-    HLSLTypeDimension_Matrix4x2
-};
     
 enum HLSLBaseType
 {
@@ -128,9 +115,6 @@ enum HLSLBaseType
     HLSLBaseType_NumericCount = HLSLBaseType_LastNumeric - HLSLBaseType_FirstNumeric + 1
 };
     
-extern const HLSLTypeDimension BaseTypeDimension[HLSLBaseType_Count];
-extern const HLSLBaseType ScalarBaseType[HLSLBaseType_Count];
-
 inline bool IsSamplerType(HLSLBaseType baseType)
 {
     return baseType == HLSLBaseType_Sampler ||
@@ -528,10 +512,12 @@ struct HLSLMacro : public HLSLStatement
     {
         name            = NULL;
         argument        = NULL;
+        numArguments    = 0;
         macroAliased    = NULL;
     }
     const char*         name;
     HLSLArgument*       argument;
+    int                 numArguments;
     std::string         value;
     HLSLMacro*          macroAliased;
 };
@@ -913,6 +899,7 @@ public:
     int GetExpressionValue(HLSLExpression * expression, float values[4]);
 
     bool NeedsFunction(const char * name);
+    bool ReplaceUniformsAssignements();
 
 private:
 

@@ -18,6 +18,8 @@
 #include <string.h>
 #include <stack>
 #include <iostream>
+#include <cmath>
+#include <cstdlib>
 
 namespace M4
 {
@@ -122,8 +124,8 @@ static const int _numberTypeRank[NumericType_Count][NumericType_Count] =
     { 0, 4, 4, 4, 4 },  // NumericType_Float
     { 1, 0, 4, 4, 4 },  // NumericType_Half
     { 5, 5, 0, 5, 5 },  // NumericType_Bool
-    { 5, 5, 4, 0, 3 },  // NumericType_Int
-    { 5, 5, 4, 2, 0 }   // NumericType_Uint
+    { 2, 2, 4, 0, 1 },  // NumericType_Int
+    { 2, 2, 4, 1, 0 }   // NumericType_Uint
 };
 
 
@@ -1010,28 +1012,36 @@ static int GetTypeCastRank(HLSLTree * tree, const HLSLType& srcType, const HLSLT
         return -1;
     }
 
-    // Result bits: T R R R P (T = truncation, R = conversion rank, P = dimension promotion)
-    int result = _numberTypeRank[srcDesc.numericType][dstDesc.numericType] << 1;
+    // Result bits: T R R R P H C (T = truncation, R = conversion rank, P = dimension promotion, H = height promotion, C = component promotion)
+    int result = _numberTypeRank[srcDesc.numericType][dstDesc.numericType] << 3;
 
     if (srcDesc.numDimensions == 0 && dstDesc.numDimensions > 0)
     {
         // Scalar dimension promotion
-        result |= (1 << 0);
+        result |= (1 << 2);
     }
     else if ((srcDesc.numDimensions == dstDesc.numDimensions && (srcDesc.numComponents > dstDesc.numComponents || srcDesc.height > dstDesc.height)) ||
              (srcDesc.numDimensions > 0 && dstDesc.numDimensions == 0))
     {
         // Truncation
-        result |= (1 << 4);
+        result |= (1 << 6);
     }
-    else if (srcDesc.numDimensions != dstDesc.numDimensions ||
-             srcDesc.numComponents != dstDesc.numComponents ||
-             srcDesc.height != dstDesc.height)
+    else if (srcDesc.numDimensions != dstDesc.numDimensions)
     {
         // Can't convert
         return -1;
     }
-    
+    else if (srcDesc.height != dstDesc.height)
+    {
+        // Scalar height promotion
+        result |= (1 << 1);
+    }
+    else if (srcDesc.numComponents != dstDesc.numComponents)
+    {
+        // Scalar components promotion
+        result |= (1 << 0);
+    }
+
     return result;
     
 }
@@ -2159,23 +2169,24 @@ bool HLSLParser::ParseBinaryExpression(int priority, HLSLExpression*& expression
     const char* fileName = GetFileName();
     int         line     = GetLineNumber();
 
-    bool needsEndParen;
+    char needsExpressionEndChar;
 
-    if (!ParseTerminalExpression(expression, needsEndParen))
+    if (!ParseTerminalExpression(expression, needsExpressionEndChar))
     {
         return false;
     }
 
 	// reset priority cause openned parenthesis
-	if( needsEndParen )
+    if( needsExpressionEndChar != 0 )
 		priority = 0;
 
+    bool acceptBinaryOp = false;
     while (1)
     {
         HLSLBinaryOp binaryOp;
-        if (AcceptBinaryOperator(priority, binaryOp))
+        if (acceptBinaryOp || AcceptBinaryOperator(priority, binaryOp))
         {
-
+            acceptBinaryOp = false;
             HLSLExpression* expression2 = NULL;
             ASSERT( binaryOp < sizeof(_binaryOpPriority) / sizeof(int) );
             if (!ParseBinaryExpression(_binaryOpPriority[binaryOp], expression2))
@@ -2233,16 +2244,23 @@ bool HLSLParser::ParseBinaryExpression(int priority, HLSLExpression*& expression
         {
             break;
         }
+
+        //  First: try if next is a binary op before exiting the loop
+        if (AcceptBinaryOperator(priority, binaryOp))
+        {
+            acceptBinaryOp = true;
+            continue;
+        }
+
+        if( needsExpressionEndChar != 0 )
+        {
+            if( !Expect(needsExpressionEndChar) )
+                return false;
+            needsExpressionEndChar = 0;
+        }
     }
 
-    if( needsEndParen )
-    {
-        if( !Expect( ')' ) )
-            return false;
-        needsEndParen = false;
-    }
-
-    return !needsEndParen || Expect(')');
+    return needsExpressionEndChar == 0 || Expect(needsExpressionEndChar);
 }
 
 bool HLSLParser::ParsePartialConstructor(HLSLExpression*& expression, HLSLBaseType type, const char* typeName)
@@ -2264,19 +2282,19 @@ bool HLSLParser::ParsePartialConstructor(HLSLExpression*& expression, HLSLBaseTy
     return true;
 }
 
-bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, bool& needsEndParen)
+bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, char& needsExpressionEndChar)
 {
     const char* fileName = GetFileName();
     int         line     = GetLineNumber();
 
-    needsEndParen = false;
+    needsExpressionEndChar = 0;
 
     HLSLUnaryOp unaryOp;
     if (AcceptUnaryOperator(true, unaryOp))
     {
         HLSLUnaryExpression* unaryExpression = m_tree->AddNode<HLSLUnaryExpression>(fileName, line);
         unaryExpression->unaryOp = unaryOp;
-        if (!ParseTerminalExpression(unaryExpression->expression, needsEndParen))
+        if (!ParseTerminalExpression(unaryExpression->expression, needsExpressionEndChar))
         {
             return false;
         }
@@ -2292,10 +2310,47 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, bool& need
         }
         if (unaryOp == HLSLUnaryOp_Not)
         {
+            if (unaryExpression->expression->expressionType.baseType != HLSLBaseType_Bool)
+            {
+                // Insert a cast to bool
+                HLSLCastingExpression* castingExpression = m_tree->AddNode<HLSLCastingExpression>(fileName, line);
+                castingExpression->type.baseType = HLSLBaseType_Bool;
+                castingExpression->expression = unaryExpression->expression;
+                castingExpression->expressionType.baseType = HLSLBaseType_Bool;
+
+                unaryExpression->expression = castingExpression;
+                expression = unaryExpression;
+            }
+
             unaryExpression->expressionType = HLSLType(HLSLBaseType_Bool);
             
             // Propagate constness.
             unaryExpression->expressionType.flags = unaryExpression->expression->expressionType.flags & HLSLTypeFlag_Const;
+        }
+
+        if (unaryOp == HLSLUnaryOp_Negative || unaryOp == HLSLUnaryOp_Positive)
+        {
+            if (unaryExpression->expression->expressionType.baseType <= HLSLBaseType_Bool4 &&
+                unaryExpression->expression->expressionType.baseType >= HLSLBaseType_Bool)
+            {
+                // Insert a cast bool to int
+                int numComponents = _baseTypeDescriptions[ unaryExpression->expression->expressionType.baseType ].numComponents;
+                HLSLBaseType baseType = HLSLBaseType( HLSLBaseType_Int + numComponents - 1 );
+
+                unaryExpression->expressionType = unaryExpression->expression->expressionType;
+
+                HLSLCastingExpression* castingExpression = m_tree->AddNode<HLSLCastingExpression>(fileName, line);
+                castingExpression->type.baseType = baseType;
+                castingExpression->expression = unaryExpression->expression;
+                castingExpression->expressionType.baseType = baseType;
+
+                unaryExpression->expression = castingExpression;
+                expression = unaryExpression;
+            }
+            else
+            {
+                unaryExpression->expressionType = unaryExpression->expression->expressionType;
+            }
         }
         else
         {
@@ -2306,7 +2361,18 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, bool& need
     }
     
     // Expressions inside parenthesis or casts.
+    char expressionEndChar = 0;
     if (Accept('('))
+    {
+        expressionEndChar = ')';
+    }
+    else if (Accept('{'))
+    {
+        expressionEndChar = '}';
+    }
+
+
+    if (expressionEndChar != 0)
     {
         // Check for a casting operator.
         HLSLType type;
@@ -2315,7 +2381,7 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, bool& need
             // This is actually a type constructor like (float2(...
             if (Accept('('))
             {
-                needsEndParen = true;
+                needsExpressionEndChar = expressionEndChar;
                 return ParsePartialConstructor(expression, type.baseType, type.typeName);
             }
             HLSLCastingExpression* castingExpression = m_tree->AddNode<HLSLCastingExpression>(fileName, line);
@@ -2325,9 +2391,19 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, bool& need
             return Expect(')') && ParseExpression(castingExpression->expression);
         }
         
-        if (!ParseExpression(expression) || !Expect(')'))
+        int numArguments = 0;
+        if (!ParseExpressionList(expressionEndChar, false, expression, numArguments))
         {
             return false;
+        }
+
+        if (expressionEndChar == ')')
+        {
+            // Allows comma separated expression lists, HLSL compiler keeps the last one
+            HLSLExpression* lastExpression = expression;
+            while(lastExpression->nextExpression != NULL) {
+                lastExpression = lastExpression->nextExpression;
+            }
         }
     }
     else
@@ -3320,8 +3396,8 @@ bool HLSLParser::ParsePreprocessorDefine()
         // Macro with arguments
         if (Accept('('))
         {
+            uint numArguments = 0;
             HLSLArgument* lastArgument = NULL;
-            unsigned numArguments = 0;
 
             while (!Accept(')'))
             {
@@ -3352,6 +3428,8 @@ bool HLSLParser::ParsePreprocessorDefine()
 
                 ++numArguments;
             }
+
+            macro->numArguments = numArguments;
         }
 
         // Macro value
@@ -3451,7 +3529,8 @@ bool HLSLParser::ApplyPreprocessor(const char* fileName, const char* buffer, siz
                 {
                     // Check if macro is just an alias
                     // macros value must be equal to matched macro name
-                    if (macro->value == matchedMacro->name) {
+                    if (macro->value == matchedMacro->name)
+                    {
                         macro->macroAliased = matchedMacro;
                     }
                 }
@@ -3466,13 +3545,20 @@ bool HLSLParser::ApplyPreprocessor(const char* fileName, const char* buffer, siz
             m_tokenizer.Next();
         }
 
+        if (valueProcessed == "main") 
+		{
+            valueProcessed = "sampler_fw_main";
+        }
+
         if (valueProcessed != macro->value)
         {
             // Define value referenced another define, it was replaced
             // try again until there is no replacement
             macro->value = valueProcessed;
 
-        } else {
+        }
+        else
+        {
             index++;
         }
     }
@@ -3483,8 +3569,10 @@ bool HLSLParser::ApplyPreprocessor(const char* fileName, const char* buffer, siz
     {
         HLSLMacro * macro = m_macros[index];
 
-        if (macro->macroAliased != NULL) {
+        if (macro->macroAliased != NULL)
+        {
             macro->argument = macro->macroAliased->argument;
+            macro->numArguments = macro->macroAliased->numArguments;
             macro->value = macro->macroAliased->value;
         }
 
@@ -3577,17 +3665,31 @@ HLSLMacro * HLSLParser::ProcessMacroFromIdentifier(std::string & sourcePreproces
                 sourcePreprocessed.append("(");
                 sourcePreprocessed.append(m_macros[i]->value);
                 sourcePreprocessed.append(")");
+                addOriginalSource = false;
             }
             else
             {
                 // Macro with arguments
-                m_tokenizer.Next();
-                sourcePreprocessed.append("(");
-                ProcessMacroArguments(m_macros[i], sourcePreprocessed);
-                sourcePreprocessed.append(")");
-            }
+                const char * savePos = m_tokenizer.getLastPos(false);
 
-            addOriginalSource = false;
+                m_tokenizer.Next();
+
+                if (ProcessMacroArguments(m_macros[i], sourcePreprocessed))
+                {
+                    // Macro replaced
+                    addOriginalSource = false;
+                }
+                else
+                {
+                    // Macro signatures does not match: writing back readed parts
+                    sourcePreprocessed.append(savePos,
+                                              m_tokenizer.getLastPos(false) - savePos);
+
+                    m_tokenizer.ReturnToPos(m_tokenizer.getLastPos(false));
+
+                    addOriginalSource = true;
+                }
+            }
 
             return m_macros[i];
         }
@@ -3598,17 +3700,22 @@ HLSLMacro * HLSLParser::ProcessMacroFromIdentifier(std::string & sourcePreproces
 
 
 
-void HLSLParser::ProcessMacroArguments(HLSLMacro* macro, std::string & sourcePreprocessed)
+bool HLSLParser::ProcessMacroArguments(HLSLMacro* macro, std::string & sourcePreprocessed)
 {
     unsigned scopeLevel = 0;
     std::vector<std::string> argumentsValues;
     std::string argValue;
+    bool firstToken = true;
 
     // Parse arguments values
     while(m_tokenizer.GetToken() != HLSLToken_EndOfStream) {
         bool addToValue = true;
 
-        if (m_tokenizer.GetToken() == '(')
+        if (firstToken && m_tokenizer.GetToken() != '(')
+        {
+            break;
+        }
+        else if (m_tokenizer.GetToken() == '(')
         {
             scopeLevel++;
             if (scopeLevel == 1)
@@ -3646,7 +3753,16 @@ void HLSLParser::ProcessMacroArguments(HLSLMacro* macro, std::string & sourcePre
         }
 
         m_tokenizer.Next();
+        firstToken = false;
     }
+
+    // Arguments count does not match
+    if (argumentsValues.size() != macro->numArguments) {
+        return false;
+    }
+
+    // Surround macro definition with parenthesis
+    sourcePreprocessed.append("(");
 
     // Write arguments value
     unsigned index = 0;
@@ -3680,6 +3796,10 @@ void HLSLParser::ProcessMacroArguments(HLSLMacro* macro, std::string & sourcePre
         index++;
     }
 
+    // Surround macro definition with parenthesis
+    sourcePreprocessed.append(")");
+
+    return true;
 }
 
 
