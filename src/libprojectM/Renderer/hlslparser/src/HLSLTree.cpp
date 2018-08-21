@@ -3,103 +3,12 @@
 
 #include "HLSLTree.h"
 #include <assert.h>
+#include <map>
+#include <string>
+#include <algorithm>
 
 namespace M4
 {
-
-const HLSLTypeDimension BaseTypeDimension[HLSLBaseType_Count] =
-{
-    HLSLTypeDimension_None,     // HLSLBaseType_Unknown,
-    HLSLTypeDimension_None,     // HLSLBaseType_Void,
-    HLSLTypeDimension_Scalar,   // HLSLBaseType_Float,
-    HLSLTypeDimension_Vector2,  // HLSLBaseType_Float2,
-    HLSLTypeDimension_Vector3,  // HLSLBaseType_Float3,
-    HLSLTypeDimension_Vector4,  // HLSLBaseType_Float4,
-    HLSLTypeDimension_Matrix2x2,// HLSLBaseType_Float2x2,
-    HLSLTypeDimension_Matrix3x3,// HLSLBaseType_Float3x3,
-    HLSLTypeDimension_Matrix4x4,// HLSLBaseType_Float4x4,
-    HLSLTypeDimension_Matrix4x3,// HLSLBaseType_Float4x3,
-    HLSLTypeDimension_Matrix4x2,// HLSLBaseType_Float4x2,
-    HLSLTypeDimension_Scalar,   // HLSLBaseType_Half,
-    HLSLTypeDimension_Vector2,  // HLSLBaseType_Half2,
-    HLSLTypeDimension_Vector3,  // HLSLBaseType_Half3,
-    HLSLTypeDimension_Vector4,  // HLSLBaseType_Half4,
-    HLSLTypeDimension_Matrix2x2,// HLSLBaseType_Half2x2,
-    HLSLTypeDimension_Matrix3x3,// HLSLBaseType_Half3x3,
-    HLSLTypeDimension_Matrix4x4,// HLSLBaseType_Half4x4,
-    HLSLTypeDimension_Matrix4x3,// HLSLBaseType_Half4x3,
-    HLSLTypeDimension_Matrix4x2,// HLSLBaseType_Half4x2,
-    HLSLTypeDimension_Scalar,   // HLSLBaseType_Bool,
-    HLSLTypeDimension_Vector2,  // HLSLBaseType_Bool2,
-    HLSLTypeDimension_Vector3,  // HLSLBaseType_Bool3,
-    HLSLTypeDimension_Vector4,  // HLSLBaseType_Bool4,
-    HLSLTypeDimension_Scalar,   // HLSLBaseType_Int,
-    HLSLTypeDimension_Vector2,  // HLSLBaseType_Int2,
-    HLSLTypeDimension_Vector3,  // HLSLBaseType_Int3,
-    HLSLTypeDimension_Vector4,  // HLSLBaseType_Int4,
-    HLSLTypeDimension_Scalar,   // HLSLBaseType_Uint,
-    HLSLTypeDimension_Vector2,  // HLSLBaseType_Uint2,
-    HLSLTypeDimension_Vector3,  // HLSLBaseType_Uint3,
-    HLSLTypeDimension_Vector4,  // HLSLBaseType_Uint4,
-    HLSLTypeDimension_None,     // HLSLBaseType_Texture,
-    HLSLTypeDimension_None,     // HLSLBaseType_Sampler,           // @@ use type inference to determine sampler type.
-    HLSLTypeDimension_None,     // HLSLBaseType_Sampler2D,
-    HLSLTypeDimension_None,     // HLSLBaseType_Sampler3D,
-    HLSLTypeDimension_None,     // HLSLBaseType_SamplerCube,
-    HLSLTypeDimension_None,     // HLSLBaseType_Sampler2DShadow,
-    HLSLTypeDimension_None,     // HLSLBaseType_Sampler2DMS,
-    HLSLTypeDimension_None,     // HLSLBaseType_Sampler2DArray,
-    HLSLTypeDimension_None,     // HLSLBaseType_UserDefined,       // struct
-    HLSLTypeDimension_None,     // HLSLBaseType_Expression,        // type argument for defined() sizeof() and typeof().
-    HLSLTypeDimension_None,     // HLSLBaseType_Auto,
-};
-
-const HLSLBaseType ScalarBaseType[HLSLBaseType_Count] = {
-    HLSLBaseType_Unknown,       // HLSLBaseType_Unknown,
-    HLSLBaseType_Void,          // HLSLBaseType_Void,
-    HLSLBaseType_Float,         // HLSLBaseType_Float,
-    HLSLBaseType_Float,         // HLSLBaseType_Float2,
-    HLSLBaseType_Float,         // HLSLBaseType_Float3,
-    HLSLBaseType_Float,         // HLSLBaseType_Float4,
-    HLSLBaseType_Float,         // HLSLBaseType_Float2x2,
-    HLSLBaseType_Float,         // HLSLBaseType_Float3x3,
-    HLSLBaseType_Float,         // HLSLBaseType_Float4x4,
-    HLSLBaseType_Float,         // HLSLBaseType_Float4x3,
-    HLSLBaseType_Float,         // HLSLBaseType_Float4x2,
-    HLSLBaseType_Half,          // HLSLBaseType_Half,
-    HLSLBaseType_Half,          // HLSLBaseType_Half2,
-    HLSLBaseType_Half,          // HLSLBaseType_Half3,
-    HLSLBaseType_Half,          // HLSLBaseType_Half4,
-    HLSLBaseType_Half,          // HLSLBaseType_Half2x2,
-    HLSLBaseType_Half,          // HLSLBaseType_Half3x3,
-    HLSLBaseType_Half,          // HLSLBaseType_Half4x4,
-    HLSLBaseType_Half,          // HLSLBaseType_Half4x3,
-    HLSLBaseType_Half,          // HLSLBaseType_Half4x2,
-    HLSLBaseType_Bool,          // HLSLBaseType_Bool,
-    HLSLBaseType_Bool,          // HLSLBaseType_Bool2,
-    HLSLBaseType_Bool,          // HLSLBaseType_Bool3,
-    HLSLBaseType_Bool,          // HLSLBaseType_Bool4,
-    HLSLBaseType_Int,           // HLSLBaseType_Int,
-    HLSLBaseType_Int,           // HLSLBaseType_Int2,
-    HLSLBaseType_Int,           // HLSLBaseType_Int3,
-    HLSLBaseType_Int,           // HLSLBaseType_Int4,
-    HLSLBaseType_Uint,          // HLSLBaseType_Uint,
-    HLSLBaseType_Uint,          // HLSLBaseType_Uint2,
-    HLSLBaseType_Uint,          // HLSLBaseType_Uint3,
-    HLSLBaseType_Uint,          // HLSLBaseType_Uint4,
-    HLSLBaseType_Unknown,       // HLSLBaseType_Texture,
-    HLSLBaseType_Unknown,       // HLSLBaseType_Sampler,           // @@ use type inference to determine sampler type.
-    HLSLBaseType_Unknown,       // HLSLBaseType_Sampler2D,
-    HLSLBaseType_Unknown,       // HLSLBaseType_Sampler3D,
-    HLSLBaseType_Unknown,       // HLSLBaseType_SamplerCube,
-    HLSLBaseType_Unknown,       // HLSLBaseType_Sampler2DShadow,
-    HLSLBaseType_Unknown,       // HLSLBaseType_Sampler2DMS,
-    HLSLBaseType_Unknown,       // HLSLBaseType_Sampler2DArray,
-    HLSLBaseType_Unknown,       // HLSLBaseType_UserDefined,       // struct
-    HLSLBaseType_Unknown,       // HLSLBaseType_Expression,        // type argument for defined() sizeof() and typeof().
-    HLSLBaseType_Unknown,       // HLSLBaseType_Auto,
-};
-
 
 HLSLTree::HLSLTree(Allocator* allocator) :
     m_allocator(allocator), m_stringPool(allocator)
@@ -702,6 +611,102 @@ int HLSLTree::GetExpressionValue(HLSLExpression * expression, float values[4])
     return 0;
 }
 
+bool HLSLTree::ReplaceUniformsAssignements()
+{
+    struct ReplaceUniformsAssignementsVisitor: HLSLTreeVisitor
+    {
+        HLSLTree * tree;
+        std::map<std::string, HLSLDeclaration *> uniforms;
+        std::map<std::string, std::string> uniformsReplaced;
+        bool withinAssignement;
+
+        virtual void VisitDeclaration(HLSLDeclaration * node)
+        {
+            HLSLTreeVisitor::VisitDeclaration(node);
+
+            // Enumerate uniforms
+            if (node->type.flags & HLSLTypeFlag_Uniform)
+            {
+                uniforms[node->name] = node;
+            }
+        }
+
+        virtual void VisitFunction(HLSLFunction * node)
+        {
+            uniformsReplaced.clear();
+
+            // Detect uniforms assignments
+            HLSLTreeVisitor::VisitFunction(node);
+
+            // Declare uniforms replacements
+            std::map<std::string, std::string>::const_iterator iter = uniformsReplaced.cbegin();
+            for ( ; iter != uniformsReplaced.cend(); ++iter)
+            {
+                HLSLDeclaration * uniformDeclaration = uniforms[iter->first];
+                HLSLDeclaration * declaration = tree->AddNode<HLSLDeclaration>(node->fileName, node->line);
+
+                declaration->name = tree->AddString(iter->second.c_str());
+                declaration->type = uniformDeclaration->type;
+
+                // Add declaration within function statements
+                declaration->nextStatement = node->statement;
+                node->statement = declaration;
+            }
+        }
+
+        virtual void VisitBinaryExpression(HLSLBinaryExpression * node)
+        {
+            // Visit expression 2 first to not replace possible uniform reading
+            VisitExpression(node->expression2);
+
+            if (IsAssignOp(node->binaryOp))
+            {
+                withinAssignement = true;
+            }
+
+            VisitExpression(node->expression1);
+
+            withinAssignement = false;
+        }
+
+        virtual void VisitIdentifierExpression(HLSLIdentifierExpression * node)
+        {
+            if (withinAssignement)
+            {
+                // Check if variable is a uniform
+                if (uniforms.find(node->name) != uniforms.end())
+                {
+                    // Check if variable is not already replaced
+                    if (uniformsReplaced.find(node->name) == uniformsReplaced.end())
+                    {
+                        std::string newName(node->name);
+                        do
+                        {
+                            newName.insert(0, "new");
+                        }
+                        while(tree->GetContainsString(newName.c_str()));
+
+                        uniformsReplaced[node->name] = newName;
+                    }
+                }
+            }
+
+            // Check if variable need to be replaced
+            if (uniformsReplaced.find(node->name) != uniformsReplaced.end())
+            {
+                // Replace
+                node->name = tree->AddString( uniformsReplaced[node->name].c_str() );
+            }
+        }
+    };
+
+    ReplaceUniformsAssignementsVisitor visitor;
+    visitor.tree = this;
+    visitor.withinAssignement = false;
+    visitor.VisitRoot(m_root);
+
+    return true;
+}
 
 
 

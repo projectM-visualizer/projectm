@@ -156,6 +156,7 @@ public:
     const char* getLastPos(const bool trimmed);
     const char* getCurrentPos()  { return m_buffer; }
 
+    void ReturnToPos(const char * pos);
 
 private:
 
