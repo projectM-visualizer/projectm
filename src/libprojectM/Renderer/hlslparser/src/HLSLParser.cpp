@@ -107,25 +107,14 @@ Intrinsic SamplerIntrinsic(const char* name, HLSLBaseType returnType, HLSLBaseTy
 }
 
 
-enum NumericType
-{
-    NumericType_Float,
-    NumericType_Half,
-    NumericType_Bool,
-    NumericType_Int,
-    NumericType_Uint,
-    NumericType_Count,
-    NumericType_NaN,
-};
 
 static const int _numberTypeRank[NumericType_Count][NumericType_Count] = 
 {
-    //F  H  B  I  U    
-    { 0, 4, 4, 4, 4 },  // NumericType_Float
-    { 1, 0, 4, 4, 4 },  // NumericType_Half
-    { 5, 5, 0, 5, 5 },  // NumericType_Bool
-    { 2, 2, 4, 0, 1 },  // NumericType_Int
-    { 2, 2, 4, 1, 0 }   // NumericType_Uint
+    //F  B  I  U
+    { 0, 4, 4, 4 },  // NumericType_Float
+    { 5, 0, 5, 5 },  // NumericType_Bool
+    { 2, 4, 0, 1 },  // NumericType_Int
+    { 2, 4, 1, 0 }   // NumericType_Uint
 };
 
 
@@ -391,52 +380,30 @@ static const EffectState pipelineStates[] = {
 
 
 
-struct BaseTypeDescription
-{
-    const char*     typeName;
-    NumericType     numericType;
-    int             numComponents;
-    int             numDimensions;
-    int             height;
-    int             binaryOpRank;
-};
 
 
 #define INTRINSIC_FLOAT1_FUNCTION(name) \
         Intrinsic( name, HLSLBaseType_Float,   HLSLBaseType_Float  ),   \
         Intrinsic( name, HLSLBaseType_Float2,  HLSLBaseType_Float2 ),   \
         Intrinsic( name, HLSLBaseType_Float3,  HLSLBaseType_Float3 ),   \
-        Intrinsic( name, HLSLBaseType_Float4,  HLSLBaseType_Float4 ),   \
-        Intrinsic( name, HLSLBaseType_Half,    HLSLBaseType_Half   ),   \
-        Intrinsic( name, HLSLBaseType_Half2,   HLSLBaseType_Half2  ),   \
-        Intrinsic( name, HLSLBaseType_Half3,   HLSLBaseType_Half3  ),   \
-        Intrinsic( name, HLSLBaseType_Half4,   HLSLBaseType_Half4  )
+        Intrinsic( name, HLSLBaseType_Float4,  HLSLBaseType_Float4 )
 
 #define INTRINSIC_FLOAT2_FUNCTION(name) \
         Intrinsic( name, HLSLBaseType_Float,   HLSLBaseType_Float,   HLSLBaseType_Float  ),   \
         Intrinsic( name, HLSLBaseType_Float2,  HLSLBaseType_Float2,  HLSLBaseType_Float2 ),   \
         Intrinsic( name, HLSLBaseType_Float3,  HLSLBaseType_Float3,  HLSLBaseType_Float3 ),   \
-        Intrinsic( name, HLSLBaseType_Float4,  HLSLBaseType_Float4,  HLSLBaseType_Float4 ),   \
-        Intrinsic( name, HLSLBaseType_Half,    HLSLBaseType_Half,    HLSLBaseType_Half   ),   \
-        Intrinsic( name, HLSLBaseType_Half2,   HLSLBaseType_Half2,   HLSLBaseType_Half2  ),   \
-        Intrinsic( name, HLSLBaseType_Half3,   HLSLBaseType_Half3,   HLSLBaseType_Half3  ),   \
-        Intrinsic( name, HLSLBaseType_Half4,   HLSLBaseType_Half4,   HLSLBaseType_Half4  )
+        Intrinsic( name, HLSLBaseType_Float4,  HLSLBaseType_Float4,  HLSLBaseType_Float4 )
 
 #define INTRINSIC_FLOAT3_FUNCTION(name) \
         Intrinsic( name, HLSLBaseType_Float,   HLSLBaseType_Float,   HLSLBaseType_Float,  HLSLBaseType_Float ),   \
         Intrinsic( name, HLSLBaseType_Float2,  HLSLBaseType_Float2,  HLSLBaseType_Float2,  HLSLBaseType_Float2 ),  \
         Intrinsic( name, HLSLBaseType_Float3,  HLSLBaseType_Float3,  HLSLBaseType_Float3,  HLSLBaseType_Float3 ),  \
-        Intrinsic( name, HLSLBaseType_Float4,  HLSLBaseType_Float4,  HLSLBaseType_Float4,  HLSLBaseType_Float4 ),  \
-        Intrinsic( name, HLSLBaseType_Half,    HLSLBaseType_Half,    HLSLBaseType_Half,   HLSLBaseType_Half ),    \
-        Intrinsic( name, HLSLBaseType_Half2,   HLSLBaseType_Half2,   HLSLBaseType_Half2,  HLSLBaseType_Half2 ),    \
-        Intrinsic( name, HLSLBaseType_Half3,   HLSLBaseType_Half3,   HLSLBaseType_Half3,  HLSLBaseType_Half3 ),    \
-        Intrinsic( name, HLSLBaseType_Half4,   HLSLBaseType_Half4,   HLSLBaseType_Half4,  HLSLBaseType_Half4 )
+        Intrinsic( name, HLSLBaseType_Float4,  HLSLBaseType_Float4,  HLSLBaseType_Float4,  HLSLBaseType_Float4 )
 
 #if 0
 // @@ IC: For some reason this is not working with the Visual Studio compiler:
 #define SAMPLER_INTRINSIC_FUNCTION(name, sampler, arg1) \
-        SamplerIntrinsic( name, HLSLBaseType_Float4, sampler, HLSLBaseType_Float, arg1),   \
-        SamplerIntrinsic( name, HLSLBaseType_Half4,  sampler, HLSLBaseType_Half,  arg1  )
+        SamplerIntrinsic( name, HLSLBaseType_Float4, sampler, HLSLBaseType_Float, arg1)
 #else
 #define SAMPLER_INTRINSIC_FUNCTION(name, sampler, arg1) \
         Intrinsic( name, HLSLBaseType_Float4, sampler, arg1)
@@ -451,20 +418,15 @@ const Intrinsic _intrinsic[] =
         Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Float2 ),
         Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Float3 ),
         Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Float4 ),
+        Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Float2x4 ),
+        Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Float2x3 ),
 		Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Float2x2 ),
+        Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Float3x4 ),
         Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Float3x3 ),
+        Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Float3x2 ),
         Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Float4x4 ),
         Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Float4x3 ),
         Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Float4x2 ),
-        Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Half ),
-        Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Half2 ),
-        Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Half3 ),
-        Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Half4 ),
-		Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Half2x2 ),
-        Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Half3x3 ),
-        Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Half4x4 ),
-        Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Half4x3 ),
-        Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Half4x2 ),
         Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Bool ),
         Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Int ),
         Intrinsic( "any", HLSLBaseType_Bool, HLSLBaseType_Int2 ),
@@ -495,19 +457,11 @@ const Intrinsic _intrinsic[] =
         Intrinsic( "clip", HLSLBaseType_Void,  HLSLBaseType_Float2   ),
         Intrinsic( "clip", HLSLBaseType_Void,  HLSLBaseType_Float3   ),
         Intrinsic( "clip", HLSLBaseType_Void,  HLSLBaseType_Float4   ),
-        Intrinsic( "clip", HLSLBaseType_Void,  HLSLBaseType_Half     ),
-        Intrinsic( "clip", HLSLBaseType_Void,  HLSLBaseType_Half2    ),
-        Intrinsic( "clip", HLSLBaseType_Void,  HLSLBaseType_Half3    ),
-        Intrinsic( "clip", HLSLBaseType_Void,  HLSLBaseType_Half4    ),
 
         Intrinsic( "dot", HLSLBaseType_Float,  HLSLBaseType_Float,   HLSLBaseType_Float  ),
         Intrinsic( "dot", HLSLBaseType_Float,  HLSLBaseType_Float2,  HLSLBaseType_Float2 ),
         Intrinsic( "dot", HLSLBaseType_Float,  HLSLBaseType_Float3,  HLSLBaseType_Float3 ),
         Intrinsic( "dot", HLSLBaseType_Float,  HLSLBaseType_Float4,  HLSLBaseType_Float4 ),
-        Intrinsic( "dot", HLSLBaseType_Half,   HLSLBaseType_Half,    HLSLBaseType_Half   ),
-        Intrinsic( "dot", HLSLBaseType_Half,   HLSLBaseType_Half2,   HLSLBaseType_Half2  ),
-        Intrinsic( "dot", HLSLBaseType_Half,   HLSLBaseType_Half3,   HLSLBaseType_Half3  ),
-        Intrinsic( "dot", HLSLBaseType_Half,   HLSLBaseType_Half4,   HLSLBaseType_Half4  ),
 
         Intrinsic( "cross", HLSLBaseType_Float3,  HLSLBaseType_Float3,  HLSLBaseType_Float3 ),
 
@@ -515,39 +469,126 @@ const Intrinsic _intrinsic[] =
         Intrinsic( "length", HLSLBaseType_Float,  HLSLBaseType_Float2 ),
         Intrinsic( "length", HLSLBaseType_Float,  HLSLBaseType_Float3 ),
         Intrinsic( "length", HLSLBaseType_Float,  HLSLBaseType_Float4 ),
-        Intrinsic( "length", HLSLBaseType_Half,   HLSLBaseType_Half   ),
-        Intrinsic( "length", HLSLBaseType_Half,   HLSLBaseType_Half2  ),
-        Intrinsic( "length", HLSLBaseType_Half,   HLSLBaseType_Half3  ),
-        Intrinsic( "length", HLSLBaseType_Half,   HLSLBaseType_Half4  ),
 
         INTRINSIC_FLOAT2_FUNCTION( "max" ),
         INTRINSIC_FLOAT2_FUNCTION( "min" ),
 
         // @@ Add all combinations.
+        // https://docs.microsoft.com/en-us/windows/desktop/direct3dhlsl/dx-graphics-hlsl-mul
+
         // scalar = mul(scalar, scalar)
+        Intrinsic( "mul", HLSLBaseType_Float, HLSLBaseType_Float, HLSLBaseType_Float),
+
         // vector<N> = mul(scalar, vector<N>)
+        Intrinsic( "mul", HLSLBaseType_Float4, HLSLBaseType_Float, HLSLBaseType_Float4),
+        Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float, HLSLBaseType_Float3),
+        Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float, HLSLBaseType_Float2),
+
+        // matrix<N,M> = mul(scalar, matrix<M,N>)
+        Intrinsic( "mul", HLSLBaseType_Float4x4, HLSLBaseType_Float, HLSLBaseType_Float4x4),
+        Intrinsic( "mul", HLSLBaseType_Float4x3, HLSLBaseType_Float, HLSLBaseType_Float4x3),
+        Intrinsic( "mul", HLSLBaseType_Float4x2, HLSLBaseType_Float, HLSLBaseType_Float4x2),
+
+        Intrinsic( "mul", HLSLBaseType_Float3x4, HLSLBaseType_Float, HLSLBaseType_Float3x4),
+        Intrinsic( "mul", HLSLBaseType_Float3x3, HLSLBaseType_Float, HLSLBaseType_Float3x3),
+        Intrinsic( "mul", HLSLBaseType_Float3x2, HLSLBaseType_Float, HLSLBaseType_Float3x2),
+
+        Intrinsic( "mul", HLSLBaseType_Float2x4, HLSLBaseType_Float, HLSLBaseType_Float2x4),
+        Intrinsic( "mul", HLSLBaseType_Float2x3, HLSLBaseType_Float, HLSLBaseType_Float2x3),
+        Intrinsic( "mul", HLSLBaseType_Float2x2, HLSLBaseType_Float, HLSLBaseType_Float2x2),
+
         // vector<N> = mul(vector<N>, scalar)
-        // vector<N> = mul(vector<N>, vector<N>)
-        // vector<M> = mul(vector<N>, matrix<N,M>) ?
-        // vector<N> = mul(matrix<N,M>, vector<M>) ?
-        // matrix<N,M> = mul(matrix<N,M>, matrix<M,N>) ?
-        
-        INTRINSIC_FLOAT2_FUNCTION( "mul" ),
-		Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2x2 ),
-        Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float3x3 ),
-        Intrinsic( "mul", HLSLBaseType_Float4, HLSLBaseType_Float4, HLSLBaseType_Float4x4 ),
-        Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float2x2, HLSLBaseType_Float2 ),
-        Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float3x3, HLSLBaseType_Float3 ),
-        Intrinsic( "mul", HLSLBaseType_Float4, HLSLBaseType_Float4x4, HLSLBaseType_Float4 ),
-        Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float4x3 ),
-        Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float4, HLSLBaseType_Float4x2 ),
+        Intrinsic( "mul", HLSLBaseType_Float4, HLSLBaseType_Float4, HLSLBaseType_Float),
+        Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float),
+        Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float),
+
+        // scalar = mul(vector<N>, vector<N>) it's a dot product !
+        Intrinsic( "mul", HLSLBaseType_Float, HLSLBaseType_Float4, HLSLBaseType_Float4),
+        Intrinsic( "mul", HLSLBaseType_Float, HLSLBaseType_Float3, HLSLBaseType_Float3),
+        Intrinsic( "mul", HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float2),
+
+        // vector<M> = mul(vector<N>, matrix<N,M>)
+        Intrinsic( "mul", HLSLBaseType_Float4, HLSLBaseType_Float4, HLSLBaseType_Float4x4),
+        Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float4x3),
+        Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float4, HLSLBaseType_Float4x2),
+
+        Intrinsic( "mul", HLSLBaseType_Float4, HLSLBaseType_Float3, HLSLBaseType_Float3x4),
+        Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float3x3),
+        Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3x2),
+
+        Intrinsic( "mul", HLSLBaseType_Float4, HLSLBaseType_Float2, HLSLBaseType_Float2x4),
+        Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float2x3),
+        Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2x2),
+
+        // matrix<N,M> = mul(matrix<N,M>,scalar)
+        Intrinsic( "mul", HLSLBaseType_Float4x4, HLSLBaseType_Float4x4, HLSLBaseType_Float),
+        Intrinsic( "mul", HLSLBaseType_Float3x4, HLSLBaseType_Float3x4, HLSLBaseType_Float),
+        Intrinsic( "mul", HLSLBaseType_Float2x4, HLSLBaseType_Float2x4, HLSLBaseType_Float),
+
+        Intrinsic( "mul", HLSLBaseType_Float4x3, HLSLBaseType_Float4x3, HLSLBaseType_Float),
+        Intrinsic( "mul", HLSLBaseType_Float3x3, HLSLBaseType_Float3x3, HLSLBaseType_Float),
+        Intrinsic( "mul", HLSLBaseType_Float2x3, HLSLBaseType_Float2x3, HLSLBaseType_Float),
+
+        Intrinsic( "mul", HLSLBaseType_Float4x2, HLSLBaseType_Float4x2, HLSLBaseType_Float),
+        Intrinsic( "mul", HLSLBaseType_Float3x2, HLSLBaseType_Float3x2, HLSLBaseType_Float),
+        Intrinsic( "mul", HLSLBaseType_Float2x2, HLSLBaseType_Float2x2, HLSLBaseType_Float),
+
+        // vector<N> = mul(matrix<N,M>, vector<M>)
+        Intrinsic( "mul", HLSLBaseType_Float4, HLSLBaseType_Float4x4, HLSLBaseType_Float4),
+        Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float3x4, HLSLBaseType_Float4),
+        Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float2x4, HLSLBaseType_Float4),
+
+        Intrinsic( "mul", HLSLBaseType_Float4, HLSLBaseType_Float4x3, HLSLBaseType_Float3),
+        Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float3x3, HLSLBaseType_Float3),
+        Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float2x3, HLSLBaseType_Float3),
+
+        Intrinsic( "mul", HLSLBaseType_Float4, HLSLBaseType_Float4x2, HLSLBaseType_Float2),
+        Intrinsic( "mul", HLSLBaseType_Float3, HLSLBaseType_Float3x2, HLSLBaseType_Float2),
+        Intrinsic( "mul", HLSLBaseType_Float2, HLSLBaseType_Float2x2, HLSLBaseType_Float2),
+
+        // matrix<N,M> = mul(matrix<N,4>, matrix<4,M)
+        Intrinsic( "mul", HLSLBaseType_Float4x4, HLSLBaseType_Float4x4, HLSLBaseType_Float4x4 ),
+        Intrinsic( "mul", HLSLBaseType_Float4x3, HLSLBaseType_Float4x4, HLSLBaseType_Float4x3 ),
+        Intrinsic( "mul", HLSLBaseType_Float4x2, HLSLBaseType_Float4x4, HLSLBaseType_Float4x2 ),
+
+        Intrinsic( "mul", HLSLBaseType_Float3x4, HLSLBaseType_Float3x4, HLSLBaseType_Float4x4 ),
+        Intrinsic( "mul", HLSLBaseType_Float3x3, HLSLBaseType_Float3x4, HLSLBaseType_Float4x3 ),
+        Intrinsic( "mul", HLSLBaseType_Float3x2, HLSLBaseType_Float3x4, HLSLBaseType_Float4x2 ),
+
+        Intrinsic( "mul", HLSLBaseType_Float2x4, HLSLBaseType_Float2x4, HLSLBaseType_Float4x4 ),
+        Intrinsic( "mul", HLSLBaseType_Float2x3, HLSLBaseType_Float2x4, HLSLBaseType_Float4x3 ),
+        Intrinsic( "mul", HLSLBaseType_Float2x2, HLSLBaseType_Float2x4, HLSLBaseType_Float4x2 ),
+
+        // matrix<N,M> = mul(matrix<N,3>, matrix<3,M>)
+        Intrinsic( "mul", HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float3x4 ),
+        Intrinsic( "mul", HLSLBaseType_Float4x3, HLSLBaseType_Float4x3, HLSLBaseType_Float3x3 ),
+        Intrinsic( "mul", HLSLBaseType_Float4x2, HLSLBaseType_Float4x3, HLSLBaseType_Float3x2 ),
+
+        Intrinsic( "mul", HLSLBaseType_Float3x4, HLSLBaseType_Float3x3, HLSLBaseType_Float3x4 ),
+        Intrinsic( "mul", HLSLBaseType_Float3x3, HLSLBaseType_Float3x3, HLSLBaseType_Float3x3 ),
+        Intrinsic( "mul", HLSLBaseType_Float3x2, HLSLBaseType_Float3x3, HLSLBaseType_Float3x2 ),
+
+        Intrinsic( "mul", HLSLBaseType_Float2x4, HLSLBaseType_Float2x3, HLSLBaseType_Float3x4 ),
+        Intrinsic( "mul", HLSLBaseType_Float2x3, HLSLBaseType_Float2x3, HLSLBaseType_Float3x3 ),
+        Intrinsic( "mul", HLSLBaseType_Float2x2, HLSLBaseType_Float2x3, HLSLBaseType_Float3x2 ),
+
+        // matrix<N,M> = mul(matrix<N,2>, matrix<2,M>)
+        Intrinsic( "mul", HLSLBaseType_Float4x4, HLSLBaseType_Float4x2, HLSLBaseType_Float2x4 ),
+        Intrinsic( "mul", HLSLBaseType_Float4x3, HLSLBaseType_Float4x2, HLSLBaseType_Float2x3 ),
+        Intrinsic( "mul", HLSLBaseType_Float4x2, HLSLBaseType_Float4x2, HLSLBaseType_Float2x2 ),
+
+        Intrinsic( "mul", HLSLBaseType_Float3x4, HLSLBaseType_Float3x2, HLSLBaseType_Float2x4 ),
+        Intrinsic( "mul", HLSLBaseType_Float3x3, HLSLBaseType_Float3x2, HLSLBaseType_Float2x3 ),
+        Intrinsic( "mul", HLSLBaseType_Float3x2, HLSLBaseType_Float3x2, HLSLBaseType_Float2x2 ),
+
+        Intrinsic( "mul", HLSLBaseType_Float2x4, HLSLBaseType_Float2x2, HLSLBaseType_Float2x4 ),
+        Intrinsic( "mul", HLSLBaseType_Float2x3, HLSLBaseType_Float2x2, HLSLBaseType_Float2x3 ),
+        Intrinsic( "mul", HLSLBaseType_Float2x2, HLSLBaseType_Float2x2, HLSLBaseType_Float2x2 ),
+
 
 		Intrinsic( "transpose", HLSLBaseType_Float2x2, HLSLBaseType_Float2x2 ),
         Intrinsic( "transpose", HLSLBaseType_Float3x3, HLSLBaseType_Float3x3 ),
         Intrinsic( "transpose", HLSLBaseType_Float4x4, HLSLBaseType_Float4x4 ),
-        Intrinsic( "transpose", HLSLBaseType_Half2x2, HLSLBaseType_Half2x2 ),
-        Intrinsic( "transpose", HLSLBaseType_Half3x3, HLSLBaseType_Half3x3 ),
-        Intrinsic( "transpose", HLSLBaseType_Half4x4, HLSLBaseType_Half4x4 ),
 
         INTRINSIC_FLOAT2_FUNCTION( "modf" ),
 
@@ -612,19 +653,11 @@ const Intrinsic _intrinsic[] =
         Intrinsic( "sincos", HLSLBaseType_Void,  HLSLBaseType_Float2,  HLSLBaseType_Float,  HLSLBaseType_Float2 ),
         Intrinsic( "sincos", HLSLBaseType_Void,  HLSLBaseType_Float3,  HLSLBaseType_Float,  HLSLBaseType_Float3 ),
         Intrinsic( "sincos", HLSLBaseType_Void,  HLSLBaseType_Float4,  HLSLBaseType_Float,  HLSLBaseType_Float4 ),
-        Intrinsic( "sincos", HLSLBaseType_Void,  HLSLBaseType_Half,    HLSLBaseType_Half,   HLSLBaseType_Half ),
-        Intrinsic( "sincos", HLSLBaseType_Void,  HLSLBaseType_Half2,   HLSLBaseType_Half2,  HLSLBaseType_Half2 ),
-        Intrinsic( "sincos", HLSLBaseType_Void,  HLSLBaseType_Half3,   HLSLBaseType_Half3,  HLSLBaseType_Half3 ),
-        Intrinsic( "sincos", HLSLBaseType_Void,  HLSLBaseType_Half4,   HLSLBaseType_Half4,  HLSLBaseType_Half4 ),
 
         Intrinsic( "mad", HLSLBaseType_Float, HLSLBaseType_Float, HLSLBaseType_Float, HLSLBaseType_Float ),
         Intrinsic( "mad", HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2 ),
         Intrinsic( "mad", HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float3 ),
         Intrinsic( "mad", HLSLBaseType_Float4, HLSLBaseType_Float4, HLSLBaseType_Float4, HLSLBaseType_Float4 ),
-        Intrinsic( "mad", HLSLBaseType_Half, HLSLBaseType_Half, HLSLBaseType_Half, HLSLBaseType_Half ),
-        Intrinsic( "mad", HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2 ),
-        Intrinsic( "mad", HLSLBaseType_Half3, HLSLBaseType_Half3, HLSLBaseType_Half3, HLSLBaseType_Half3 ),
-        Intrinsic( "mad", HLSLBaseType_Half4, HLSLBaseType_Half4, HLSLBaseType_Half4, HLSLBaseType_Half4 ),
     };
 
 const int _numIntrinsics = sizeof(_intrinsic) / sizeof(Intrinsic);
@@ -641,56 +674,6 @@ const int _binaryOpPriority[] =
         5, 3, 4, // &, |, ^
     };
 
-const BaseTypeDescription _baseTypeDescriptions[HLSLBaseType_Count] = 
-    {
-        { "unknown type",       NumericType_NaN,        0, 0, 0, -1 },      // HLSLBaseType_Unknown
-        { "void",               NumericType_NaN,        0, 0, 0, -1 },      // HLSLBaseType_Void
-        { "float",              NumericType_Float,      1, 0, 1,  0 },      // HLSLBaseType_Float
-        { "float2",             NumericType_Float,      2, 1, 1,  0 },      // HLSLBaseType_Float2
-        { "float3",             NumericType_Float,      3, 1, 1,  0 },      // HLSLBaseType_Float3
-        { "float4",             NumericType_Float,      4, 1, 1,  0 },      // HLSLBaseType_Float4
-		{ "float2x2",			NumericType_Float,		2, 2, 2,  0 },		// HLSLBaseType_Float2x2
-        { "float3x3",           NumericType_Float,      3, 2, 3,  0 },      // HLSLBaseType_Float3x3
-        { "float4x4",           NumericType_Float,      4, 2, 4,  0 },      // HLSLBaseType_Float4x4
-        { "float4x3",           NumericType_Float,      4, 2, 3,  0 },      // HLSLBaseType_Float4x3
-        { "float4x2",           NumericType_Float,      4, 2, 2,  0 },      // HLSLBaseType_Float4x2
-
-        { "half",               NumericType_Half,       1, 0, 1,  1 },      // HLSLBaseType_Half
-        { "half2",              NumericType_Half,       2, 1, 1,  1 },      // HLSLBaseType_Half2
-        { "half3",              NumericType_Half,       3, 1, 1,  1 },      // HLSLBaseType_Half3
-        { "half4",              NumericType_Half,       4, 1, 1,  1 },      // HLSLBaseType_Half4
-		{ "half2x2",            NumericType_Float,		2, 2, 2,  0 },		// HLSLBaseType_Half2x2
-        { "half3x3",            NumericType_Half,       3, 2, 3,  1 },      // HLSLBaseType_Half3x3
-        { "half4x4",            NumericType_Half,       4, 2, 4,  1 },      // HLSLBaseType_Half4x4
-        { "half4x3",            NumericType_Half,       4, 2, 3,  1 },      // HLSLBaseType_Half4x3
-        { "half4x2",            NumericType_Half,       4, 2, 2,  1 },      // HLSLBaseType_Half4x2
-
-        { "bool",               NumericType_Bool,       1, 0, 1,  4 },      // HLSLBaseType_Bool
-		{ "bool2",				NumericType_Bool,		2, 1, 1,  4 },      // HLSLBaseType_Bool2
-		{ "bool3",				NumericType_Bool,		3, 1, 1,  4 },      // HLSLBaseType_Bool3
-		{ "bool4",				NumericType_Bool,		4, 1, 1,  4 },      // HLSLBaseType_Bool4
-
-        { "int",                NumericType_Int,        1, 0, 1,  3 },      // HLSLBaseType_Int
-        { "int2",               NumericType_Int,        2, 1, 1,  3 },      // HLSLBaseType_Int2
-        { "int3",               NumericType_Int,        3, 1, 1,  3 },      // HLSLBaseType_Int3
-        { "int4",               NumericType_Int,        4, 1, 1,  3 },      // HLSLBaseType_Int4
-
-        { "uint",               NumericType_Uint,       1, 0, 1,  2 },      // HLSLBaseType_Uint
-        { "uint2",              NumericType_Uint,       2, 1, 1,  2 },      // HLSLBaseType_Uint2
-        { "uint3",              NumericType_Uint,       3, 1, 1,  2 },      // HLSLBaseType_Uint3
-        { "uint4",              NumericType_Uint,       4, 1, 1,  2 },      // HLSLBaseType_Uint4
-
-        { "texture",            NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_Texture
-        { "sampler",            NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_Sampler
-        { "sampler2D",          NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_Sampler2D
-        { "sampler3D",          NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_Sampler3D
-        { "samplerCUBE",        NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_SamplerCube
-        { "sampler2DShadow",    NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_Sampler2DShadow
-        { "sampler2DMS",        NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_Sampler2DMS
-        { "sampler2DArray",     NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_Sampler2DArray
-        { "user defined",       NumericType_NaN,        1, 0, 0, -1 },      // HLSLBaseType_UserDefined
-        { "expression",         NumericType_NaN,        1, 0, 0, -1 }       // HLSLBaseType_Expression
-    };
 
 // IC: I'm not sure this table is right, but any errors should be caught by the backend compiler.
 // Also, this is operator dependent. The type resulting from (float4 * float4x4) is not the same as (float4 + float4x4).
@@ -698,211 +681,226 @@ const BaseTypeDescription _baseTypeDescriptions[HLSLBaseType_Count] =
 HLSLBaseType _binaryOpTypeLookup[HLSLBaseType_NumericCount][HLSLBaseType_NumericCount] = 
     {
         {   // float
-            HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float2x2, HLSLBaseType_Float3x3, HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
-            HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float2x2, HLSLBaseType_Float3x3, HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
+            HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4,
+            HLSLBaseType_Float2x4, HLSLBaseType_Float2x3, HLSLBaseType_Float2x2,
+            HLSLBaseType_Float3x4, HLSLBaseType_Float3x3, HLSLBaseType_Float3x2,
+            HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
             HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4,
             HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4,
             HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4
         },
         {   // float2
-            HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2,
             HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2,
             HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2
         },
         {   // float3
-            HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3,
             HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3,
             HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3
         },
         {   // float4
-            HLSLBaseType_Float4, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Float4, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float4, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float4, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4,
             HLSLBaseType_Float4, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4,
             HLSLBaseType_Float4, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4
         },
+        {   // float2x4
+            HLSLBaseType_Float2x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float2x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float2x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float2x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float2x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown
+        },
+        {   // float2x3
+            HLSLBaseType_Float2x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Float2x3, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float2x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float2x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float2x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown
+        },
         {   // float2x2
-            HLSLBaseType_Float2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Float2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float2x2,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown
         },
+        {   // float3x4
+            HLSLBaseType_Float3x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float3x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float3x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float3x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float3x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown
+        },
         {   // float3x3
-            HLSLBaseType_Float3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Float3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Float3x3, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown
         },
+        {   // float3x2
+            HLSLBaseType_Float3x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float3x2,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float3x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float3x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float3x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown
+        },
         {   // float4x4
-            HLSLBaseType_Float4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Float4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown
         },
         {   // float4x3
-            HLSLBaseType_Float4x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float4x3, HLSLBaseType_Unknown,
-            HLSLBaseType_Float4x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float4x3, HLSLBaseType_Unknown,
+            HLSLBaseType_Float4x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Float4x3, HLSLBaseType_Unknown,
             HLSLBaseType_Float4x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float4x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float4x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown
         },
         {   // float4x2
-            HLSLBaseType_Float4x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float4x2,
-            HLSLBaseType_Float4x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float4x2,
+            HLSLBaseType_Float4x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float4x2,
             HLSLBaseType_Float4x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float4x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Float4x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown
         },
-        {   // half
-            HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float2x2, HLSLBaseType_Float3x3, HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2, 
-            HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Half2x2, HLSLBaseType_Half3x3, HLSLBaseType_Half4x4, HLSLBaseType_Half4x3, HLSLBaseType_Half4x2, 
-            HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4,
-            HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4,
-            HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4
-        },
-        {   // half2
-            HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2,
-            HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2,
-            HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2
-        },
-        {   // half3
-            HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half3, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half3, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half3,
-            HLSLBaseType_Half3, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half3,
-            HLSLBaseType_Half3, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half3
-        },
-        {   // half4
-            HLSLBaseType_Float4, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half4, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half4, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4,
-            HLSLBaseType_Half4, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4,
-            HLSLBaseType_Half4, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4
-        },
-        {   // half2x2
-            HLSLBaseType_Float2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Half2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half2x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown
-        },
-        {   // half3x3
-            HLSLBaseType_Float3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Half3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half3x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown
-        },
-        {   // half4x4
-            HLSLBaseType_Float4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Half4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half4x4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown
-        },
-        {   // float4x3
-            HLSLBaseType_Float4x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float4x3, HLSLBaseType_Unknown,
-            HLSLBaseType_Half4x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Half4x3, HLSLBaseType_Unknown,
-            HLSLBaseType_Half4x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half4x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half4x3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown
-        },
-        {   // float4x2
-            HLSLBaseType_Float4x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Float4x2,
-            HLSLBaseType_Half4x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Half4x2,
-            HLSLBaseType_Half4x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half4x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half4x2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown
-        },
-        {   // bool
-            HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float2x2, HLSLBaseType_Float3x3, HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
-            HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Half2x2, HLSLBaseType_Half3x3, HLSLBaseType_Half4x4, HLSLBaseType_Half4x3, HLSLBaseType_Half4x2,
+         {   // bool
+            HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4,
+            HLSLBaseType_Float2x4, HLSLBaseType_Float2x3, HLSLBaseType_Float2x2,
+            HLSLBaseType_Float3x4, HLSLBaseType_Float3x3, HLSLBaseType_Float3x2,
+            HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
             HLSLBaseType_Int, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Int, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Uint, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4
         },
         {   // bool2
-            HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float2x2, HLSLBaseType_Float3x3, HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
-            HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Half2x2, HLSLBaseType_Half3x3, HLSLBaseType_Half4x4, HLSLBaseType_Half4x3, HLSLBaseType_Half4x2,
+            HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4,
+            HLSLBaseType_Float2x4, HLSLBaseType_Float2x3, HLSLBaseType_Float2x2,
+            HLSLBaseType_Float3x4, HLSLBaseType_Float3x3, HLSLBaseType_Float3x2,
+            HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
             HLSLBaseType_Int2, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Int2, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4
         },
         {   // bool3
-            HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float2x2, HLSLBaseType_Float3x3, HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
-            HLSLBaseType_Half3, HLSLBaseType_Half3, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Half2x2, HLSLBaseType_Half3x3, HLSLBaseType_Half4x4, HLSLBaseType_Half4x3, HLSLBaseType_Half4x2,
+            HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Float4,
+            HLSLBaseType_Float2x4, HLSLBaseType_Float2x3, HLSLBaseType_Float2x2,
+            HLSLBaseType_Float3x4, HLSLBaseType_Float3x3, HLSLBaseType_Float3x2,
+            HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
             HLSLBaseType_Int3, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Int3, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Uint3, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4
         },
         {   // bool4
-            HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float2x2, HLSLBaseType_Float3x3, HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
-            HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Half2x2, HLSLBaseType_Half3x3, HLSLBaseType_Half4x4, HLSLBaseType_Half4x3, HLSLBaseType_Half4x2,
+            HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4,
+            HLSLBaseType_Float2x4, HLSLBaseType_Float2x3, HLSLBaseType_Float2x2,
+            HLSLBaseType_Float3x4, HLSLBaseType_Float3x3, HLSLBaseType_Float3x2,
+            HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
             HLSLBaseType_Int, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Int, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Uint, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4
         },
         {   // int
-            HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float2x2, HLSLBaseType_Float3x3, HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
-            HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Half2x2, HLSLBaseType_Half3x3, HLSLBaseType_Half4x4, HLSLBaseType_Half4x3, HLSLBaseType_Half4x2,
+            HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4,
+            HLSLBaseType_Float2x4, HLSLBaseType_Float2x3, HLSLBaseType_Float2x2,
+            HLSLBaseType_Float3x4, HLSLBaseType_Float3x3, HLSLBaseType_Float3x2,
+            HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
             HLSLBaseType_Int, HLSLBaseType_Int2, HLSLBaseType_Int2, HLSLBaseType_Int2,
             HLSLBaseType_Int, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Uint, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4
         },
         {   // int2
-            HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Int2, HLSLBaseType_Int2, HLSLBaseType_Int2, HLSLBaseType_Int2,
             HLSLBaseType_Int2, HLSLBaseType_Int2, HLSLBaseType_Int2, HLSLBaseType_Int2,
             HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2
         },
         {   // int3
-            HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half3, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Int3, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int3,
             HLSLBaseType_Int3, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int3,
             HLSLBaseType_Uint3, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint3
         },
         {   // int4
-            HLSLBaseType_Float4, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half4, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float4, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Int4, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Int4, HLSLBaseType_Int2, HLSLBaseType_Int3, HLSLBaseType_Int4,
             HLSLBaseType_Uint4, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4
         },
         {   // uint
-            HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Float2x2, HLSLBaseType_Float3x3, HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
-            HLSLBaseType_Half, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Half2x2, HLSLBaseType_Half3x3, HLSLBaseType_Half4x4, HLSLBaseType_Half4x3, HLSLBaseType_Half4x2,
+            HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4,
+            HLSLBaseType_Float2x4, HLSLBaseType_Float2x3, HLSLBaseType_Float2x2,
+            HLSLBaseType_Float3x4, HLSLBaseType_Float3x3, HLSLBaseType_Float3x2,
+            HLSLBaseType_Float4x4, HLSLBaseType_Float4x3, HLSLBaseType_Float4x2,
             HLSLBaseType_Uint, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4,
             HLSLBaseType_Uint, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4,
             HLSLBaseType_Uint, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4
         },
         {   // uint2
-            HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Half2, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2, HLSLBaseType_Float2,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2,
             HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2,
             HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2, HLSLBaseType_Uint2
         },
         {   // uint3
-            HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half3, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half3, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float3, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float3,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Uint3, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint3,
             HLSLBaseType_Uint3, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint3,
             HLSLBaseType_Uint3, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint3
         },
         {   // uint4
-            HLSLBaseType_Float4, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
-            HLSLBaseType_Half4, HLSLBaseType_Half2, HLSLBaseType_Half3, HLSLBaseType_Half4, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Float4, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
+            HLSLBaseType_Unknown, HLSLBaseType_Unknown, HLSLBaseType_Unknown,
             HLSLBaseType_Uint4, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4,
             HLSLBaseType_Uint4, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4,
             HLSLBaseType_Uint4, HLSLBaseType_Uint2, HLSLBaseType_Uint3, HLSLBaseType_Uint4
@@ -920,7 +918,7 @@ static const char* GetTypeName(const HLSLType& type)
     }
     else
     {
-        return _baseTypeDescriptions[type.baseType].typeName;
+        return baseTypeDescriptions[type.baseType].typeName;
     }
 }
 
@@ -1005,8 +1003,8 @@ static int GetTypeCastRank(HLSLTree * tree, const HLSLType& srcType, const HLSLT
         return 0;
     }
 
-    const BaseTypeDescription& srcDesc = _baseTypeDescriptions[srcType.baseType];
-    const BaseTypeDescription& dstDesc = _baseTypeDescriptions[dstType.baseType];
+    const BaseTypeDescription& srcDesc = baseTypeDescriptions[srcType.baseType];
+    const BaseTypeDescription& dstDesc = baseTypeDescriptions[dstType.baseType];
     if (srcDesc.numericType == NumericType_NaN || dstDesc.numericType == NumericType_NaN)
     {
         return -1;
@@ -1182,7 +1180,7 @@ static bool GetBinaryOpResultType(HLSLBinaryOp binaryOp, const HLSLType& type1, 
     case HLSLBinaryOp_Equal:
 	case HLSLBinaryOp_NotEqual:
 		{
-			int numComponents = std::max( _baseTypeDescriptions[ type1.baseType ].numComponents, _baseTypeDescriptions[ type2.baseType ].numComponents );
+            int numComponents = std::max( baseTypeDescriptions[ type1.baseType ].numComponents, baseTypeDescriptions[ type2.baseType ].numComponents );
 			result.baseType = HLSLBaseType( HLSLBaseType_Bool + numComponents - 1 );
 			break;
 		}
@@ -1291,17 +1289,6 @@ bool HLSLParser::AcceptFloat(float& value)
         return true;
     }
     return false;
-}
-
-bool HLSLParser::AcceptHalf( float& value )
-{
-	if( m_tokenizer.GetToken() == HLSLToken_HalfLiteral )
-	{
-		value = m_tokenizer.GetFloat();
-		m_tokenizer.Next();
-		return true;
-	}
-	return false;
 }
 
 bool HLSLParser::AcceptInt(int& value)
@@ -2334,7 +2321,7 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, char& need
                 unaryExpression->expression->expressionType.baseType >= HLSLBaseType_Bool)
             {
                 // Insert a cast bool to int
-                int numComponents = _baseTypeDescriptions[ unaryExpression->expression->expressionType.baseType ].numComponents;
+                int numComponents = baseTypeDescriptions[ unaryExpression->expression->expressionType.baseType ].numComponents;
                 HLSLBaseType baseType = HLSLBaseType( HLSLBaseType_Int + numComponents - 1 );
 
                 unaryExpression->expressionType = unaryExpression->expression->expressionType;
@@ -2422,16 +2409,6 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, char& need
             expression = literalExpression;
             return true;
         }
-		if( AcceptHalf( fValue ) )
-		{
-			HLSLLiteralExpression* literalExpression = m_tree->AddNode<HLSLLiteralExpression>( fileName, line );
-			literalExpression->type = HLSLBaseType_Half;
-			literalExpression->fValue = fValue;
-			literalExpression->expressionType.baseType = literalExpression->type;
-			literalExpression->expressionType.flags = HLSLTypeFlag_Const;
-			expression = literalExpression;
-			return true;
-		}
         else if (AcceptInt(iValue))
         {
             HLSLLiteralExpression* literalExpression = m_tree->AddNode<HLSLLiteralExpression>(fileName, line);
@@ -2584,40 +2561,25 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, char& need
                 case HLSLBaseType_Float4:
                     arrayAccess->expressionType.baseType = HLSLBaseType_Float;
                     break;
-				case HLSLBaseType_Float2x2:
-					arrayAccess->expressionType.baseType = HLSLBaseType_Float2;
-					break;
-                case HLSLBaseType_Float3x3:
-                    arrayAccess->expressionType.baseType = HLSLBaseType_Float3;
-                    break;
                 case HLSLBaseType_Float4x4:
+                case HLSLBaseType_Float3x4:
+                case HLSLBaseType_Float2x4:
                     arrayAccess->expressionType.baseType = HLSLBaseType_Float4;
                     break;
                 case HLSLBaseType_Float4x3:
+                case HLSLBaseType_Float3x3:
+                case HLSLBaseType_Float2x3:
                     arrayAccess->expressionType.baseType = HLSLBaseType_Float3;
                     break;
                 case HLSLBaseType_Float4x2:
+                case HLSLBaseType_Float3x2:
+                case HLSLBaseType_Float2x2:
                     arrayAccess->expressionType.baseType = HLSLBaseType_Float2;
                     break;
-                case HLSLBaseType_Half2:
-                case HLSLBaseType_Half3:
-                case HLSLBaseType_Half4:
-                    arrayAccess->expressionType.baseType = HLSLBaseType_Half;
-                    break;
-				case HLSLBaseType_Half2x2:
-					arrayAccess->expressionType.baseType = HLSLBaseType_Half2;
-					break;
-                case HLSLBaseType_Half3x3:
-                    arrayAccess->expressionType.baseType = HLSLBaseType_Half3;
-                    break;
-                case HLSLBaseType_Half4x4:
-                    arrayAccess->expressionType.baseType = HLSLBaseType_Half4;
-                    break;
-                case HLSLBaseType_Half4x3:
-                    arrayAccess->expressionType.baseType = HLSLBaseType_Half3;
-                    break;
-                case HLSLBaseType_Half4x2:
-                    arrayAccess->expressionType.baseType = HLSLBaseType_Half2;
+                case HLSLBaseType_Bool2:
+                case HLSLBaseType_Bool3:
+                case HLSLBaseType_Bool4:
+                    arrayAccess->expressionType.baseType = HLSLBaseType_Bool;
                     break;
                 case HLSLBaseType_Int2:
                 case HLSLBaseType_Int3:
@@ -3888,58 +3850,83 @@ bool HLSLParser::AcceptType(bool allowVoid, HLSLType& type/*, bool acceptFlags*/
     {
     case HLSLToken_Float:
     case HLSLToken_Float1:
+    case HLSLToken_Float1x1:
+    case HLSLToken_Half:
+    case HLSLToken_Half1:
+    case HLSLToken_Half1x1:
+    case HLSLToken_Double:
+    case HLSLToken_Double1:
+    case HLSLToken_Double1x1:
         type.baseType = HLSLBaseType_Float;
         break;
     case HLSLToken_Float2:      
+    case HLSLToken_Float2x1:
+    case HLSLToken_Half2:
+    case HLSLToken_Half2x1:
+    case HLSLToken_Double2:
+    case HLSLToken_Double2x1:
         type.baseType = HLSLBaseType_Float2;
         break;
     case HLSLToken_Float3:
+    case HLSLToken_Float3x1:
+    case HLSLToken_Half3:
+    case HLSLToken_Half3x1:
+    case HLSLToken_Double3:
+    case HLSLToken_Double3x1:
         type.baseType = HLSLBaseType_Float3;
         break;
     case HLSLToken_Float4:
+    case HLSLToken_Float4x1:
+    case HLSLToken_Half4:
+    case HLSLToken_Half4x1:
+    case HLSLToken_Double4:
+    case HLSLToken_Double4x1:
         type.baseType = HLSLBaseType_Float4;
         break;
+    case HLSLToken_Float2x4:
+    case HLSLToken_Half2x4:
+    case HLSLToken_Double2x4:
+        type.baseType = HLSLBaseType_Float2x4;
+        break;
+    case HLSLToken_Float2x3:
+    case HLSLToken_Half2x3:
+    case HLSLToken_Double2x3:
+        type.baseType = HLSLBaseType_Float2x3;
+        break;
 	case HLSLToken_Float2x2:
+    case HLSLToken_Half2x2:
+    case HLSLToken_Double2x2:
 		type.baseType = HLSLBaseType_Float2x2;
 		break;
+    case HLSLToken_Float3x4:
+    case HLSLToken_Half3x4:
+    case HLSLToken_Double3x4:
+        type.baseType = HLSLBaseType_Float3x4;
+        break;
     case HLSLToken_Float3x3:
+    case HLSLToken_Half3x3:
+    case HLSLToken_Double3x3:
         type.baseType = HLSLBaseType_Float3x3;
         break;
+    case HLSLToken_Float3x2:
+    case HLSLToken_Half3x2:
+    case HLSLToken_Double3x2:
+        type.baseType = HLSLBaseType_Float3x2;
+        break;
     case HLSLToken_Float4x4:
+    case HLSLToken_Half4x4:
+    case HLSLToken_Double4x4:
         type.baseType = HLSLBaseType_Float4x4;
         break;
     case HLSLToken_Float4x3:
+    case HLSLToken_Half4x3:
+    case HLSLToken_Double4x3:
         type.baseType = HLSLBaseType_Float4x3;
         break;
     case HLSLToken_Float4x2:
-        type.baseType = HLSLBaseType_Float4x2;
-        break;
-    case HLSLToken_Half:
-        type.baseType = HLSLBaseType_Half;
-        break;
-    case HLSLToken_Half2:      
-        type.baseType = HLSLBaseType_Half2;
-        break;
-    case HLSLToken_Half3:
-        type.baseType = HLSLBaseType_Half3;
-        break;
-    case HLSLToken_Half4:
-        type.baseType = HLSLBaseType_Half4;
-        break;
-	case HLSLToken_Half2x2:
-		type.baseType = HLSLBaseType_Half2x2;
-		break;
-    case HLSLToken_Half3x3:
-        type.baseType = HLSLBaseType_Half3x3;
-        break;
-    case HLSLToken_Half4x4:
-        type.baseType = HLSLBaseType_Half4x4;
-        break;
-    case HLSLToken_Half4x3:
-        type.baseType = HLSLBaseType_Half4x3;
-        break;
     case HLSLToken_Half4x2:
-        type.baseType = HLSLBaseType_Half4x2;
+    case HLSLToken_Double4x2:
+        type.baseType = HLSLBaseType_Float4x2;
         break;
     case HLSLToken_Bool:
         type.baseType = HLSLBaseType_Bool;
@@ -4015,10 +4002,6 @@ bool HLSLParser::AcceptType(bool allowVoid, HLSLType& type/*, bool acceptFlags*/
                 if (token == HLSLToken_Float || token == HLSLToken_Float1)
                 {
                     type.samplerType = HLSLBaseType_Float;
-                }
-                else if (token == HLSLToken_Half)
-                {
-                    type.samplerType = HLSLBaseType_Half;
                 }
                 else
                 {
@@ -4351,7 +4334,7 @@ bool HLSLParser::GetMemberType(const HLSLType& objectType, HLSLMemberAccess * me
         return false;
     }
 
-    if (_baseTypeDescriptions[objectType.baseType].numericType == NumericType_NaN)
+    if (baseTypeDescriptions[objectType.baseType].numericType == NumericType_NaN)
     {
         // Currently we don't have an non-numeric types that allow member access.
         return false;
@@ -4359,7 +4342,7 @@ bool HLSLParser::GetMemberType(const HLSLType& objectType, HLSLMemberAccess * me
 
     int swizzleLength = 0;
 
-    if (_baseTypeDescriptions[objectType.baseType].numDimensions <= 1)
+    if (baseTypeDescriptions[objectType.baseType].numDimensions <= 1)
     {
         // Check for a swizzle on the scalar/vector types.
         for (int i = 0; fieldName[i] != 0; ++i)
@@ -4396,8 +4379,8 @@ bool HLSLParser::GetMemberType(const HLSLType& objectType, HLSLMemberAccess * me
 
             int r = (n[0] - '0') - base;
             int c = (n[1] - '0') - base;
-            if (r >= _baseTypeDescriptions[objectType.baseType].height ||
-                c >= _baseTypeDescriptions[objectType.baseType].numComponents)
+            if (r >= baseTypeDescriptions[objectType.baseType].height ||
+                c >= baseTypeDescriptions[objectType.baseType].numComponents)
             {
                 return false;
             }
@@ -4420,18 +4403,14 @@ bool HLSLParser::GetMemberType(const HLSLType& objectType, HLSLMemberAccess * me
     }
 
     static const HLSLBaseType floatType[] = { HLSLBaseType_Float, HLSLBaseType_Float2, HLSLBaseType_Float3, HLSLBaseType_Float4 };
-    static const HLSLBaseType halfType[]  = { HLSLBaseType_Half,  HLSLBaseType_Half2,  HLSLBaseType_Half3,  HLSLBaseType_Half4  };
     static const HLSLBaseType intType[]   = { HLSLBaseType_Int,   HLSLBaseType_Int2,   HLSLBaseType_Int3,   HLSLBaseType_Int4   };
     static const HLSLBaseType uintType[]  = { HLSLBaseType_Uint,  HLSLBaseType_Uint2,  HLSLBaseType_Uint3,  HLSLBaseType_Uint4  };
     static const HLSLBaseType boolType[]  = { HLSLBaseType_Bool,  HLSLBaseType_Bool2,  HLSLBaseType_Bool3,  HLSLBaseType_Bool4  };
     
-    switch (_baseTypeDescriptions[objectType.baseType].numericType)
+    switch (baseTypeDescriptions[objectType.baseType].numericType)
     {
     case NumericType_Float:
         memberAccess->expressionType.baseType = floatType[swizzleLength - 1];
-        break;
-    case NumericType_Half:
-        memberAccess->expressionType.baseType = halfType[swizzleLength - 1];
         break;
     case NumericType_Int:
         memberAccess->expressionType.baseType = intType[swizzleLength - 1];

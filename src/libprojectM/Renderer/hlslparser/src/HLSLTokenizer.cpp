@@ -18,23 +18,61 @@ static const char* _reservedWords[] =
     {
         "float",
         "float1",
+        "float1x1",
         "float2",
+        "float2x1",
         "float3",
+        "float3x1",
         "float4",
+        "float4x1",
+        "float2x4",
+        "float2x3",
 		"float2x2",
+        "float3x4",
         "float3x3",
+        "float3x2",
         "float4x4",
         "float4x3",
         "float4x2",
+
         "half",
+        "half1",
+        "half1x1",
         "half2",
+        "half2x1",
         "half3",
+        "half3x1",
         "half4",
+        "half4x1",
+        "half2x4",
+        "half2x3",
 		"half2x2",
+        "half3x4",
         "half3x3",
+        "half3x2",
         "half4x4",
         "half4x3",
         "half4x2",
+
+        "double",
+        "double1",
+        "double1x1",
+        "double2",
+        "double2x1",
+        "double3",
+        "double3x1",
+        "double4",
+        "double4x1",
+        "double2x4",
+        "double2x3",
+        "double2x2",
+        "double3x4",
+        "double3x3",
+        "double3x2",
+        "double4x4",
+        "double4x3",
+        "double4x2",
+
         "bool",
 		"bool2",
 		"bool3",
@@ -422,7 +460,7 @@ bool HLSLTokenizer::ScanNumber()
 	if( fEnd > iEnd && GetIsNumberSeparator( fEnd[ 0 ] ) )
 	{
 		m_buffer = fEnd;
-		m_token = fEnd[ 0 ] == 'f' ? HLSLToken_FloatLiteral : HLSLToken_HalfLiteral;
+        m_token = HLSLToken_FloatLiteral;
         m_fValue = static_cast<float>(fValue);
         return true;
     }
@@ -598,7 +636,7 @@ void HLSLTokenizer::Error(const char* format, ...)
 
 void HLSLTokenizer::GetTokenName(char buffer[s_maxIdentifier]) const
 {
-    if (m_token == HLSLToken_FloatLiteral || m_token == HLSLToken_HalfLiteral )
+    if (m_token == HLSLToken_FloatLiteral)
     {
         sprintf(buffer, "%f", m_fValue);
     }
@@ -649,9 +687,6 @@ void HLSLTokenizer::GetTokenName(int token, char buffer[s_maxIdentifier])
         case HLSLToken_DivideEqual:
             strcpy(buffer, "/=");
             break;
-		case HLSLToken_HalfLiteral:
-			strcpy( buffer, "half" );
-			break;
         case HLSLToken_FloatLiteral:
             strcpy(buffer, "float");
             break;
