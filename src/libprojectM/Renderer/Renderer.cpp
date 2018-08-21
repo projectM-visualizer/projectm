@@ -184,11 +184,15 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetec
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Renderer::SetPipeline(Pipeline &pipeline)
+std::string Renderer::SetPipeline(Pipeline &pipeline)
 {
     currentPipe = &pipeline;
     shaderEngine.reset();
-    shaderEngine.loadPresetShaders(pipeline);
+    if (!shaderEngine.loadPresetShaders(pipeline)) {
+        return "Shader compilation error";
+    }
+
+    return std::string();
 }
 
 void Renderer::ResetTextures()

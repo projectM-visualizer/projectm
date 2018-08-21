@@ -1083,24 +1083,38 @@ bool ShaderEngine::linkProgram(GLuint programID) {
 }
 
 
-void ShaderEngine::loadPresetShaders(Pipeline &pipeline) {
+bool ShaderEngine::loadPresetShaders(Pipeline &pipeline) {
+
+    bool ok = true;
+
+    // blur programs
+    blur1_enabled = false;
+    blur2_enabled = false;
+    blur3_enabled = false;
 
     // compile and link warp and composite shaders from pipeline
-    if (!pipeline.compositeShader.programSource.empty()) {
-        programID_presetComp = loadPresetShader(PresentCompositeShader, pipeline.compositeShader, pipeline.compositeShaderFilename);
-        if (programID_presetComp != GL_FALSE)
-            presetCompShaderLoaded = true;
-    }
-
     if (!pipeline.warpShader.programSource.empty()) {
         programID_presetWarp = loadPresetShader(PresentWarpShader, pipeline.warpShader, pipeline.warpShaderFilename);
         if (programID_presetWarp != GL_FALSE) {
             uniform_vertex_transf_warp_shader = glGetUniformLocation(programID_presetWarp, "vertex_transformation");
             presetWarpShaderLoaded = true;
+        } else {
+            ok = false;
         }
     }
     
-    std::cout << "Preset composite shader active: " << presetCompShaderLoaded << ", preset warp shader active: " << presetWarpShaderLoaded << std::endl;
+    if (!pipeline.compositeShader.programSource.empty()) {
+        programID_presetComp = loadPresetShader(PresentCompositeShader, pipeline.compositeShader, pipeline.compositeShaderFilename);
+        if (programID_presetComp != GL_FALSE) {
+            presetCompShaderLoaded = true;
+        } else {
+            ok = false;
+        }
+    }
+
+//    std::cout << "Preset composite shader active: " << presetCompShaderLoaded << ", preset warp shader active: " << presetWarpShaderLoaded << std::endl;
+
+    return ok;
 }
 
 GLuint ShaderEngine::loadPresetShader(const ShaderEngine::PresentShaderType shaderType, Shader &presetShader, std::string &shaderFilename) {
@@ -1187,13 +1201,20 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
     glAttachShader(programID, FragmentShaderID);
     bool linkOK = linkProgram(programID);
 
-    GLuint m_temp_vao;
-    glGenVertexArrays(1, &m_temp_vao);
-    glBindVertexArray(m_temp_vao);
+    glDetachShader(programID, VertexShaderID);
+    glDetachShader(programID, FragmentShaderID);
+
+    glDeleteShader(VertexShaderID);
+    glDeleteShader(FragmentShaderID);
+
+    return linkOK ? programID : GL_FALSE;
+}
+
+void ShaderEngine::validateProgram(const GLuint programID) {
+    GLint Result = GL_FALSE;
+    int InfoLogLength;
 
     glValidateProgram(programID);
-
-    glDeleteVertexArrays(1, &m_temp_vao);
 
     // Check the program
     glGetProgramiv(programID, GL_VALIDATE_STATUS, &Result);
@@ -1203,15 +1224,6 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
         glGetProgramInfoLog(programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
         fprintf(stderr, "%s\n", &ProgramErrorMessage[0]);
     }
-
-
-    glDetachShader(programID, VertexShaderID);
-    glDetachShader(programID, FragmentShaderID);
-
-    glDeleteShader(VertexShaderID);
-    glDeleteShader(FragmentShaderID);
-
-    return linkOK ? programID : GL_FALSE;
 }
 
 // use the appropriate shader program for rendering the interpolation.
@@ -1225,6 +1237,10 @@ bool ShaderEngine::enableWarpShader(Shader &shader, const Pipeline &pipeline, co
         SetupShaderVariables(programID_presetWarp, pipeline, pipelineContext);
 
         glUniformMatrix4fv(uniform_vertex_transf_warp_shader, 1, GL_FALSE, glm::value_ptr(mat_ortho));
+
+#if OGL_DEBUG
+        validateProgram(programID_presetWarp);
+#endif
 
         return true;
     }
@@ -1244,6 +1260,10 @@ bool ShaderEngine::enableCompositeShader(Shader &shader, const Pipeline &pipelin
         SetupTextures(programID_presetComp, shader);
 
         SetupShaderVariables(programID_presetComp, pipeline, pipelineContext);
+
+#if OGL_DEBUG
+        validateProgram(programID_presetComp);
+#endif
 
         return true;
     }

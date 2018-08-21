@@ -38,7 +38,7 @@ public:
 
     ShaderEngine();
     virtual ~ShaderEngine();
-    void loadPresetShaders(Pipeline &pipeline);
+    bool loadPresetShaders(Pipeline &pipeline);
     bool enableWarpShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext, const glm::mat4 & mat_ortho);
     bool enableCompositeShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext);
@@ -107,6 +107,7 @@ private:
     GLuint loadPresetShader(const PresentShaderType shaderType, Shader &shader, std::string &shaderFilename);
 
     void deletePresetShader(Shader &shader);
+    void validateProgram(const GLuint programID);
 
     
     // programs generated from preset shader code
