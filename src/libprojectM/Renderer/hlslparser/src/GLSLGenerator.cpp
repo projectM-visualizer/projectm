@@ -17,6 +17,9 @@
 
 #include <stdarg.h>
 #include <string.h>
+#include <vector>
+#include <algorithm>
+#include <string>
 
 namespace M4
 {
@@ -183,6 +186,8 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
         m_inAttribPrefix  = "frag_";
         m_outAttribPrefix = "rast_";
     }
+
+    m_tree->ReplaceUniformsAssignements();
 
     HLSLRoot* root = m_tree->GetRoot();
     HLSLStatement* statement = root->statement;
@@ -793,22 +798,19 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             const HLSLType& type0 = functionCall->function->argument->type;
             const HLSLType& type1 = functionCall->function->argument->nextArgument->type;
 
-            const char* prefix = (m_options.flags & Flag_LowerMatrixMultiplication) ? m_matrixMulFunction : "";
-            const char* infix = (m_options.flags & Flag_LowerMatrixMultiplication) ? "," : "*";
-
-            if (m_options.flags & Flag_PackMatrixRowMajor)
+            if (IsVectorType(type0.baseType) && IsVectorType(type1.baseType))
             {
-                m_writer.Write("%s((", prefix);
-                OutputExpression(argument[1], &type1);
-                m_writer.Write(")%s(", infix);
+                m_writer.Write("dot((");
                 OutputExpression(argument[0], &type0);
+                m_writer.Write("),(");
+                OutputExpression(argument[1], &type1);
                 m_writer.Write("))");
             }
             else
             {
-                m_writer.Write("%s((", prefix);
+                m_writer.Write("((");
                 OutputExpression(argument[0], &type0);
-                m_writer.Write(")%s(", infix);
+                m_writer.Write(")*(");
                 OutputExpression(argument[1], &type1);
                 m_writer.Write("))");
             }

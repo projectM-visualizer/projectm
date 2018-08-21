@@ -672,4 +672,10 @@ void HLSLTokenizer::GetTokenName(int token, char buffer[s_maxIdentifier])
 
 }
 
+void HLSLTokenizer::ReturnToPos(const char * pos)
+{
+    m_buffer = pos;
+}
+
+
 }
