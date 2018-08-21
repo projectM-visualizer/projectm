@@ -76,7 +76,7 @@ public:
   GLuint initRenderToTexture();
 
 
-  void SetPipeline(Pipeline &pipeline);
+  std::string SetPipeline(Pipeline &pipeline);
 
   void setPresetName(const std::string& theValue)
   {

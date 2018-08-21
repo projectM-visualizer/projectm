@@ -265,6 +265,7 @@ public:
     
   int getWindowWidth() { return _settings.windowWidth; }
   int getWindowHeight() { return _settings.windowHeight; }
+  bool getErrorLoadingCurrentPreset() const { return errorLoadingCurrentPreset; }
 
 private:
   PCM * _pcm;
@@ -324,6 +325,7 @@ private:
   MasterRenderItemMerge * _merger;
 
   bool running;
+  bool errorLoadingCurrentPreset;
 
   Pipeline* currentPipe;
 
