@@ -69,6 +69,9 @@ enum HLSLToken
     HLSLToken_Static,
     HLSLToken_Inline,
     HLSLToken_PreprocessorDefine,
+    HLSLToken_PreprocessorIf,
+    HLSLToken_PreprocessorElse,
+    HLSLToken_PreprocessorEndif,
 
     // Input modifiers.
     HLSLToken_Uniform,
