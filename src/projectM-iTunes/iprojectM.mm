@@ -20,8 +20,8 @@ void initProjectM( VisualPluginData * visualPluginData, std::string presetPath )
     settings.windowWidth = 1920;
     settings.windowHeight = 1280;
     settings.smoothPresetDuration = 1; // seconds
-    settings.presetDuration = 1; // seconds
-    settings.beatSensitivity = 0.8;
+    settings.presetDuration = 9; // seconds
+    settings.beatSensitivity = 3;
     settings.aspectCorrection = 1;
     settings.easterEgg = 0; // ???
     settings.shuffleEnabled = 1;
