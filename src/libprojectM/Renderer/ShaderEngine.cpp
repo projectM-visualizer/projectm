@@ -9,10 +9,13 @@
 #include "ShaderEngine.hpp"
 #include "BeatDetect.hpp"
 #include "Texture.hpp"
-#include "HLSLTranslator.hpp"
+#include "HLSLParser.h"
+#include "GLSLGenerator.h"
 #include <glm/mat4x4.hpp> // glm::mat4
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <glm/gtc/type_ptr.hpp>
+#include <set>
+#include <regex>
 
 #ifdef USE_GLES
     #define GLSL_VERSION "300 es"
@@ -255,12 +258,6 @@ std::string PresetShaderIncludes = ""
 "#define blur3_min _c13.z\n"
 "#define blur3_max _c13.w\n"
 
-"// previous-frame-image samplers:\n"
-"uniform sampler2D sampler_main;\n"
-"uniform sampler2D sampler_fc_main;\n"
-"uniform sampler2D sampler_pc_main;\n"
-"uniform sampler2D sampler_fw_main;\n"
-"uniform sampler2D sampler_pw_main;\n"
 "#define sampler_FC_main sampler_fc_main\n"
 "#define sampler_PC_main sampler_pc_main\n"
 "#define sampler_FW_main sampler_fw_main\n"
@@ -275,27 +272,6 @@ std::string PresetShaderIncludes = ""
 "#define lum(x) (dot(x,float3(0.32,0.49,0.29)))\n"
 "#define tex2d tex2D\n"
 "#define tex3d tex3D\n"
-
-
-
-"// built-in noise textures:\n"
-"uniform sampler2D sampler_noise_lq;\n"
-"uniform sampler2D sampler_noise_lq_lite;\n"
-"uniform sampler2D sampler_noise_mq;\n"
-"uniform sampler2D sampler_noise_hq;\n"
-"uniform sampler3D sampler_noisevol_lq;\n"
-"uniform sampler3D sampler_noisevol_hq;\n"
-"uniform float4 texsize_noise_lq;\n"
-"uniform float4 texsize_noise_lq_lite;\n"
-"uniform float4 texsize_noise_mq;\n"
-"uniform float4 texsize_noise_hq;\n"
-"uniform float4 texsize_noisevol_lq;\n"
-"uniform float4 texsize_noisevol_hq;\n"
-
-"// procedural blur textures:\n"
-"uniform sampler2D sampler_blur1;\n"
-"uniform sampler2D sampler_blur2;\n"
-"uniform sampler2D sampler_blur3;\n"
 ;
 
 
@@ -418,13 +394,6 @@ std::string blur2_frag(
 
 
 
-GLint ShaderEngine::UNIFORM_V2F_C4F_VERTEX_TRANFORMATION = 0;
-GLint ShaderEngine::UNIFORM_V2F_C4F_VERTEX_POINT_SIZE = 0;
-GLint ShaderEngine::UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION = 0;
-GLint ShaderEngine::UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER = 0;
-
-
-
 ShaderEngine::ShaderEngine() : presetCompShaderLoaded(false), presetWarpShaderLoaded(false)
 {
     programID_v2f_c4f = CompileShaderProgram(v2f_c4f_vert, v2f_c4f_frag, "v2f_c4f");
@@ -433,10 +402,10 @@ ShaderEngine::ShaderEngine() : presetCompShaderLoaded(false), presetWarpShaderLo
     programID_blur1 = CompileShaderProgram(blur_vert, blur1_frag, "blur1");
     programID_blur2 = CompileShaderProgram(blur_vert, blur2_frag, "blur2");
 
-    UNIFORM_V2F_C4F_VERTEX_TRANFORMATION = glGetUniformLocation(programID_v2f_c4f, "vertex_transformation");
-    UNIFORM_V2F_C4F_VERTEX_POINT_SIZE = glGetUniformLocation(programID_v2f_c4f, "vertex_point_size");
-    UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION = glGetUniformLocation(programID_v2f_c4f_t2f, "vertex_transformation");
-    UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER = glGetUniformLocation(programID_v2f_c4f_t2f, "texture_sampler");
+    uniform_v2f_c4f_vertex_tranformation = glGetUniformLocation(programID_v2f_c4f, "vertex_transformation");
+    uniform_v2f_c4f_vertex_point_size = glGetUniformLocation(programID_v2f_c4f, "vertex_point_size");
+    uniform_v2f_c4f_t2f_vertex_tranformation = glGetUniformLocation(programID_v2f_c4f_t2f, "vertex_transformation");
+    uniform_v2f_c4f_t2f_frag_texture_sampler = glGetUniformLocation(programID_v2f_c4f_t2f, "texture_sampler");
 
     uniform_blur1_sampler = glGetUniformLocation(programID_blur1, "texture_sampler");
     uniform_blur1_c0 = glGetUniformLocation(programID_blur1, "_c0");
@@ -543,7 +512,6 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
 
     // replace shader_body with entry point function
     found = program.find("shader_body");
-    size_t program_start = found;
     if (found != std::string::npos)
     {
         //std::cout << "first 'shader_body' found at: " << int(found) << std::endl;
@@ -573,6 +541,23 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
 
     pmShader.textures.clear();
 
+
+    // Add builtin textures
+    pmShader.textures["main"] = textureManager->getTexture("main", GL_REPEAT, GL_LINEAR);
+    pmShader.textures["fc_main"] = textureManager->getTexture("main", GL_CLAMP_TO_EDGE, GL_LINEAR);
+    pmShader.textures["pc_main"] = textureManager->getTexture("main", GL_CLAMP_TO_EDGE, GL_NEAREST);
+    pmShader.textures["fw_main"] = textureManager->getTexture("main", GL_REPEAT, GL_LINEAR);
+    pmShader.textures["pw_main"] = textureManager->getTexture("main", GL_REPEAT, GL_NEAREST);
+
+    pmShader.textures["noise_lq"] = textureManager->getTexture("noise_lq", GL_CLAMP_TO_EDGE, GL_LINEAR);
+    pmShader.textures["noise_lq_lite"] = textureManager->getTexture("noise_lq_lite", GL_CLAMP_TO_EDGE, GL_LINEAR);
+    pmShader.textures["noise_mq"] = textureManager->getTexture("noise_mq", GL_CLAMP_TO_EDGE, GL_LINEAR);
+    pmShader.textures["noise_hq"] = textureManager->getTexture("noise_hq", GL_CLAMP_TO_EDGE, GL_LINEAR);
+    pmShader.textures["noisevol_lq"] = textureManager->getTexture("noisevol_lq", GL_CLAMP_TO_EDGE, GL_LINEAR);
+    pmShader.textures["noisevol_hq"] = textureManager->getTexture("noisevol_hq", GL_CLAMP_TO_EDGE, GL_LINEAR);
+
+
+
     // set up texture samplers for all samplers references in the shader program
     found = 0;
     found = program.find("sampler_", found);
@@ -591,13 +576,9 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
 
             if (texDesc.first == NULL)
             {
-                if (lowerCaseName.substr(0, 4) == "rand")
+                if (lowerCaseName.substr(0, 4) == "rand" || lowerCaseName.substr(2, 5) == "_rand")
                 {
-                    std::string random_name = textureManager->getRandomTextureName(lowerCaseName);
-                    if (random_name.size() > 0)
-                    {
-                        texDesc = textureManager->getTexture(random_name, GL_REPEAT, GL_LINEAR);
-                    }
+                    texDesc = textureManager->getRandomTextureName(sampler);
                 }
                 else
                 {
@@ -611,31 +592,15 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
             }
             else
             {
-                // The shader declares a new sampler -> declaring it with a "uniform" outside the shader body
-                if (texDesc.first->userTexture) {
-                    if (found < program_start) {
-                        int index = found;
-                        while(index >= 0 && program[index] != '\n') { index--; }
-                        program.insert(index+1, "uniform ");
-                        found += 8;
-                        program_start += 8;
-                    }
-                }
-
-                // Add built-in textures
-                // Add user textures only if used
-                if (!texDesc.first->userTexture || found > program_start)
+                std::map<std::string, TextureSamplerDesc>::const_iterator iter = pmShader.textures.cbegin();
+                for ( ; iter != pmShader.textures.cend(); ++iter)
                 {
-                    std::map<std::string, TextureSamplerDesc>::const_iterator iter = pmShader.textures.cbegin();
-                    for ( ; iter != pmShader.textures.cend(); ++iter)
-                    {
-                        if (iter->first == sampler)
-                            break;
-                    }
-
-                    if (iter == pmShader.textures.cend())
-                        pmShader.textures[sampler] = texDesc;
+                    if (iter->first == sampler)
+                        break;
                 }
+
+                if (iter == pmShader.textures.cend())
+                    pmShader.textures[sampler] = texDesc;
             }
         }
 
@@ -644,21 +609,13 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
 
     textureManager->clearRandomTextures();
 
-    // blur programs
-    blur1_enabled = false;
-    blur2_enabled = false;
-    blur3_enabled = false;
-
-    if (program.find("GetMain") != std::string::npos || program.find("GetPixel") != std::string::npos)
-    {
-        pmShader.textures["main"] = textureManager->getTexture("main", GL_REPEAT, GL_LINEAR);
-    }
-
     found = program.find("GetBlur3");
     if (found != std::string::npos)
     {
         blur1_enabled = blur2_enabled = blur3_enabled = true;
         pmShader.textures["blur3"] = textureManager->getTexture("blur3", GL_CLAMP_TO_EDGE, GL_LINEAR);
+        pmShader.textures["blur2"] = textureManager->getTexture("blur2", GL_CLAMP_TO_EDGE, GL_LINEAR);
+        pmShader.textures["blur1"] = textureManager->getTexture("blur1", GL_CLAMP_TO_EDGE, GL_LINEAR);
     }
     else
     {
@@ -667,6 +624,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
         {
             blur1_enabled = blur2_enabled = true;
             pmShader.textures["blur2"] = textureManager->getTexture("blur2", GL_CLAMP_TO_EDGE, GL_LINEAR);
+            pmShader.textures["blur1"] = textureManager->getTexture("blur1", GL_CLAMP_TO_EDGE, GL_LINEAR);
         }
         else
         {
@@ -709,11 +667,89 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     default:    shaderTypeString = "Other";
     }
 
+    M4::GLSLGenerator generator;
+    M4::Allocator allocator;
+
+    M4::HLSLTree tree( &allocator );
+    M4::HLSLParser parser(&allocator, &tree);
+
+    // preprocess define macros
+    std::string sourcePreprocessed;
+    if (!parser.ApplyPreprocessor(shaderFilename.c_str(), fullSource.c_str(), fullSource.size(), sourcePreprocessed)) {
+        std::cerr << "Failed to preprocess HLSL(step1) " << shaderTypeString << " shader" << std::endl;
+
+#ifndef DUMP_SHADERS_ON_ERROR
+        std::cerr << "Source: " << std::endl << fullSource << std::endl;
+#else
+        std::ofstream out("/tmp/shader_" + shaderTypeString + "_step1.txt");
+            out << fullSource;
+            out.close();
+#endif
+            return GL_FALSE;
+    }
+
+    // Remove previous shader declarations
+    std::smatch matches;
+    while(std::regex_search(sourcePreprocessed, matches, std::regex("sampler(2D|3D|)(\\s+|\\().*"))) {
+        sourcePreprocessed.replace(matches.position(), matches.length(), "");
+    }
+
+    // Remove previous texsize declarations
+    while(std::regex_search(sourcePreprocessed, matches, std::regex("float4\\s+texsize_.*"))) {
+        sourcePreprocessed.replace(matches.position(), matches.length(), "");
+    }
+
+    // Declare samplers
+    std::set<std::string> texsizes;
+    std::map<std::string, TextureSamplerDesc>::const_iterator iter_samplers = pmShader.textures.cbegin();
+    for ( ; iter_samplers != pmShader.textures.cend(); ++iter_samplers)
+    {
+        Texture * texture = iter_samplers->second.first;
+
+        if (texture->type == GL_TEXTURE_3D) {
+            sourcePreprocessed.insert(0, "uniform sampler3D sampler_" + iter_samplers->first + ";\n");
+        } else {
+            sourcePreprocessed.insert(0, "uniform sampler2D sampler_" + iter_samplers->first + ";\n");
+        }
+
+        texsizes.insert(iter_samplers->first);
+        texsizes.insert(texture->name);
+    }
+
+    // Declare texsizes
+    std::set<std::string>::const_iterator iter_texsizes = texsizes.cbegin();
+    for ( ; iter_texsizes != texsizes.cend(); ++iter_texsizes)
+    {
+        sourcePreprocessed.insert(0, "uniform float4 texsize_" + *iter_texsizes + ";\n");
+    }
+
+
     // transpile from HLSL (aka preset shader aka directX shader) to GLSL (aka OpenGL shader lang)
-    HLSLTranslator translator = HLSLTranslator();
-    std::string glslSource = translator.parse(shaderTypeString, shaderFilename.c_str(), fullSource);
-    if (glslSource.empty()) {
-        std::cerr << "Failed to translate " << shaderTypeString << std::endl;
+
+    // parse
+    if( !parser.Parse(shaderFilename.c_str(), sourcePreprocessed.c_str(), sourcePreprocessed.size()) ) {
+        std::cerr << "Failed to parse HLSL(step2) " << shaderTypeString << " shader" << std::endl;
+
+#ifndef DUMP_SHADERS_ON_ERROR
+        std::cerr << "Source: " << std::endl << sourcePreprocessed << std::endl;
+#else
+        std::ofstream out2("/tmp/shader_" + shaderTypeString + "_step2.txt");
+            out2 << sourcePreprocessed;
+            out2.close();
+#endif
+            return GL_FALSE;
+    }
+
+    // generate GLSL
+    if (!generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader, M4::GLSLGenerator::Version_140, "PS")) {
+        std::cerr << "Failed to transpile HLSL(step3) " << shaderTypeString << " shader to GLSL" << std::endl;
+#ifndef DUMP_SHADERS_ON_ERROR
+        std::cerr << "Source: " << std::endl << sourcePreprocessed << std::endl;
+#else
+        std::ofstream out2("/tmp/shader_" + shaderTypeString + "_step2.txt");
+            out2 << sourcePreprocessed;
+            out2.close();
+#endif
         return GL_FALSE;
     }
 
@@ -721,22 +757,22 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     // copmile the preset shader fragment shader with the standard vertex shader and cross our fingers
     GLuint ret = 0;
     if (shaderType == PresentWarpShader) {
-        ret = CompileShaderProgram(presetWarpVertexShader, glslSource, shaderTypeString);  // returns new program
+        ret = CompileShaderProgram(presetWarpVertexShader, generator.GetResult(), shaderTypeString);  // returns new program
     } else {
-        ret = CompileShaderProgram(presetCompVertexShader, glslSource, shaderTypeString);  // returns new program
+        ret = CompileShaderProgram(presetCompVertexShader, generator.GetResult(), shaderTypeString);  // returns new program
     }
 
     if (ret != GL_FALSE) {
         std::cerr << "Successfull compilation of " << shaderTypeString << std::endl;
     } else {
-        std::cerr << "Compilation error of " << shaderTypeString << std::endl;
+        std::cerr << "Compilation error (step3) of " << shaderTypeString << std::endl;
 
 #ifndef DUMP_SHADERS_ON_ERROR
-        std::cerr << "Source:" << std::endl << *glslSource.get() << std::endl;
+        std::cerr << "Source:" << std::endl << generator.GetResult() << std::endl;
 #else
-        std::ofstream out2("/tmp/shader_glsl_" + shaderTypeString + ".txt");
-            out2 << glslSource;
-            out2.close();
+        std::ofstream out3("/tmp/shader_" + shaderTypeString + "_step3.txt");
+            out3 << generator.GetResult();
+            out3.close();
 #endif
     }
 
@@ -862,12 +898,15 @@ void ShaderEngine::SetupTextures(GLuint program, const Shader &shader)
 {
 
     uint texNum = 0;
-    for (std::map<std::string, TextureSamplerDesc>::const_iterator iter = shader.textures.begin(); iter
-                    != shader.textures.end(); ++iter)
+    std::map<std::string, Texture*> texsizes;
+
+    // Set samplers
+    for (std::map<std::string, TextureSamplerDesc>::const_iterator iter_samplers = shader.textures.begin(); iter_samplers
+                    != shader.textures.end(); ++iter_samplers)
     {
-        std::string texName = iter->first;
-        Texture * texture = iter->second.first;
-        Sampler * sampler = iter->second.second;
+        std::string texName = iter_samplers->first;
+        Texture * texture = iter_samplers->second.first;
+        Sampler * sampler = iter_samplers->second.second;
         std::string samplerName = "sampler_" + texName;
 
         // https://www.khronos.org/opengl/wiki/Sampler_(GLSL)#Binding_textures_to_samplers
@@ -877,24 +916,33 @@ void ShaderEngine::SetupTextures(GLuint program, const Shader &shader)
             continue;
         }
 
+        texsizes[texName] = texture;
+        texsizes[texture->name] = texture;
 
         glActiveTexture(GL_TEXTURE0 + texNum);
         glBindTexture(texture->type, texture->texID);
         glBindSampler(texNum, sampler->samplerID);
 
         glUniform1i(param, texNum);
+        texNum++;
+    }
 
-        std::string texsizeName = "texsize_" + texName;
+
+    // Set texsizes
+    std::map<std::string, Texture*>::const_iterator iter_textures = texsizes.cbegin();
+    for ( ; iter_textures != texsizes.cend(); ++iter_textures)
+    {
+        Texture * texture = iter_textures->second;
+
+        std::string texsizeName = "texsize_" + iter_textures->first;
         GLint textSizeParam = glGetUniformLocation(program, texsizeName.c_str());
-        if (param >= 0) {
+        if (textSizeParam >= 0) {
             glUniform4f(textSizeParam, texture->width, texture->height,
                             1 / (float) texture->width, 1 / (float) texture->height);
         } else {
-            std::cerr << "invalid texsize name " << texsizeName << std::endl;
-            return;
+            // unused uniform have been optimized out by glsl compiler
+            continue;
         }
-
-        texNum++;
     }
 }
 
@@ -1083,24 +1131,38 @@ bool ShaderEngine::linkProgram(GLuint programID) {
 }
 
 
-void ShaderEngine::loadPresetShaders(Pipeline &pipeline) {
+bool ShaderEngine::loadPresetShaders(Pipeline &pipeline) {
+
+    bool ok = true;
+
+    // blur programs
+    blur1_enabled = false;
+    blur2_enabled = false;
+    blur3_enabled = false;
 
     // compile and link warp and composite shaders from pipeline
-    if (!pipeline.compositeShader.programSource.empty()) {
-        programID_presetComp = loadPresetShader(PresentCompositeShader, pipeline.compositeShader, pipeline.compositeShaderFilename);
-        if (programID_presetComp != GL_FALSE)
-            presetCompShaderLoaded = true;
-    }
-
     if (!pipeline.warpShader.programSource.empty()) {
         programID_presetWarp = loadPresetShader(PresentWarpShader, pipeline.warpShader, pipeline.warpShaderFilename);
         if (programID_presetWarp != GL_FALSE) {
             uniform_vertex_transf_warp_shader = glGetUniformLocation(programID_presetWarp, "vertex_transformation");
             presetWarpShaderLoaded = true;
+        } else {
+            ok = false;
         }
     }
     
-    std::cout << "Preset composite shader active: " << presetCompShaderLoaded << ", preset warp shader active: " << presetWarpShaderLoaded << std::endl;
+    if (!pipeline.compositeShader.programSource.empty()) {
+        programID_presetComp = loadPresetShader(PresentCompositeShader, pipeline.compositeShader, pipeline.compositeShaderFilename);
+        if (programID_presetComp != GL_FALSE) {
+            presetCompShaderLoaded = true;
+        } else {
+            ok = false;
+        }
+    }
+
+//    std::cout << "Preset composite shader active: " << presetCompShaderLoaded << ", preset warp shader active: " << presetWarpShaderLoaded << std::endl;
+
+    return ok;
 }
 
 GLuint ShaderEngine::loadPresetShader(const ShaderEngine::PresentShaderType shaderType, Shader &presetShader, std::string &shaderFilename) {
@@ -1187,13 +1249,20 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
     glAttachShader(programID, FragmentShaderID);
     bool linkOK = linkProgram(programID);
 
-    GLuint m_temp_vao;
-    glGenVertexArrays(1, &m_temp_vao);
-    glBindVertexArray(m_temp_vao);
+    glDetachShader(programID, VertexShaderID);
+    glDetachShader(programID, FragmentShaderID);
+
+    glDeleteShader(VertexShaderID);
+    glDeleteShader(FragmentShaderID);
+
+    return linkOK ? programID : GL_FALSE;
+}
+
+void ShaderEngine::validateProgram(const GLuint programID) {
+    GLint Result = GL_FALSE;
+    int InfoLogLength;
 
     glValidateProgram(programID);
-
-    glDeleteVertexArrays(1, &m_temp_vao);
 
     // Check the program
     glGetProgramiv(programID, GL_VALIDATE_STATUS, &Result);
@@ -1203,15 +1272,6 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
         glGetProgramInfoLog(programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
         fprintf(stderr, "%s\n", &ProgramErrorMessage[0]);
     }
-
-
-    glDetachShader(programID, VertexShaderID);
-    glDetachShader(programID, FragmentShaderID);
-
-    glDeleteShader(VertexShaderID);
-    glDeleteShader(FragmentShaderID);
-
-    return linkOK ? programID : GL_FALSE;
 }
 
 // use the appropriate shader program for rendering the interpolation.
@@ -1226,13 +1286,17 @@ bool ShaderEngine::enableWarpShader(Shader &shader, const Pipeline &pipeline, co
 
         glUniformMatrix4fv(uniform_vertex_transf_warp_shader, 1, GL_FALSE, glm::value_ptr(mat_ortho));
 
+#if OGL_DEBUG
+        validateProgram(programID_presetWarp);
+#endif
+
         return true;
     }
 
     glUseProgram(programID_v2f_c4f_t2f);
 
-    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_T2F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(mat_ortho));
-    glUniform1i(ShaderEngine::Uniform_V2F_C4F_T2F_FragTextureSampler(), 0);
+    glUniformMatrix4fv(uniform_v2f_c4f_t2f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(mat_ortho));
+    glUniform1i(uniform_v2f_c4f_t2f_frag_texture_sampler, 0);
 
     return false;
 }
@@ -1244,6 +1308,10 @@ bool ShaderEngine::enableCompositeShader(Shader &shader, const Pipeline &pipelin
         SetupTextures(programID_presetComp, shader);
 
         SetupShaderVariables(programID_presetComp, pipeline, pipelineContext);
+
+#if OGL_DEBUG
+        validateProgram(programID_presetComp);
+#endif
 
         return true;
     }
