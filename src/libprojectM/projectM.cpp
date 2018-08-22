@@ -740,10 +740,14 @@ static void *thread_callback(void *prjm) {
             timeKeeper->StartSmoothing();
 		}
 
-		if (result.empty())
+        if (result.empty()) {
 			presetSwitchedEvent(hardCut, **m_presetPos);
-		else
+            errorLoadingCurrentPreset = false;
+        } else {
 			presetSwitchFailedEvent(hardCut, **m_presetPos, result);
+            errorLoadingCurrentPreset = true;
+
+        }
 }
 
 
@@ -786,6 +790,8 @@ void projectM::selectNext(const bool hardCut) {
 */
 std::string projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
 
+    std::string result;
+
 	#ifdef SYNC_PRESET_SWITCHES
 	pthread_mutex_lock(&preset_mutex);
 	#endif
@@ -798,15 +804,16 @@ std::string projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
 		std::cerr << "problem allocating target preset: " << e.message() << std::endl;
 		return e.message();
 	}
-        // Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
-        renderer->setPresetName(targetPreset->name());
-        renderer->SetPipeline(targetPreset->pipeline());
+
+    // Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
+    renderer->setPresetName(targetPreset->name());
+    result = renderer->SetPipeline(targetPreset->pipeline());
 
 	#ifdef SYNC_PRESET_SWITCHES
 	pthread_mutex_unlock(&preset_mutex);
 	#endif
 
-	return std::string();
+    return result;
   }
 
     void projectM::setPresetLock ( bool isLocked )
@@ -929,21 +936,3 @@ void projectM::getMeshSize(int *w, int *h)	{
 	*h = _settings.meshY;
 }
 
-void _check_gl_error(const char *file, int line) {
-    GLenum err (glGetError());
-    
-    while(err!=GL_NO_ERROR) {
-        string error;
-        
-        switch(err) {
-            case GL_INVALID_OPERATION:      error="INVALID_OPERATION";      break;
-            case GL_INVALID_ENUM:           error="INVALID_ENUM";           break;
-            case GL_INVALID_VALUE:          error="INVALID_VALUE";          break;
-            case GL_OUT_OF_MEMORY:          error="OUT_OF_MEMORY";          break;
-            case GL_INVALID_FRAMEBUFFER_OPERATION:  error="INVALID_FRAMEBUFFER_OPERATION";  break;
-        }
-        
-        std::cerr << "GL_" << error.c_str() <<" - "<<file<<":"<<line<<std::endl;
-        err=glGetError();
-    }
-}

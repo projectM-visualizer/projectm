@@ -116,10 +116,12 @@ private:
 
     const char* GetBuiltInSemantic(const char* semantic, AttributeModifier modifier, int* outputIndex = 0);
     const char* GetAttribQualifier(AttributeModifier modifier);
+    void CompleteConstructorArguments(HLSLExpression* expression, HLSLBaseType dstType);
+    void OutputMatrixCtors();
 
 private:
 
-    static const int    s_numReservedWords = 7;
+    static const int    s_numReservedWords = 9;
     static const char*  s_reservedWord[s_numReservedWords];
 
     CodeWriter          m_writer;
@@ -156,6 +158,9 @@ private:
     bool                m_error;
 
     char                m_reservedWord[s_numReservedWords][64];
+
+    std::vector<matrixCtor> matrixCtors;
+    std::map<matrixCtor,std::string> matrixCtorsId;
 
 };
 

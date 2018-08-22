@@ -76,7 +76,7 @@ public:
   GLuint initRenderToTexture();
 
 
-  void SetPipeline(Pipeline &pipeline);
+  std::string SetPipeline(Pipeline &pipeline);
 
   void setPresetName(const std::string& theValue)
   {
@@ -157,7 +157,7 @@ private:
   float SquishToCenter(float x, float fExp);
   void UvToMathSpace(float u, float v, float* rad, float* ang);
   composite_shader_vertex    m_comp_verts[FCGSX*FCGSY];
-  int         m_comp_indices[(FCGSX-2)*(FCGSY-2)*4];
+  int         m_comp_indices[(FCGSX-2)*(FCGSY-2)*6];
 
 };
 
