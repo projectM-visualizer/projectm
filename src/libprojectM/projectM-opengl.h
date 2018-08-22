@@ -8,6 +8,10 @@
 // stuff that needs to be ported to newer GL calls
 #define GL_TRANSITION
 
+// Enable openGL extra checks, better not be enabled in release build
+#define OGL_DEBUG  0
+
+
 #define DUMP_SHADERS_ON_ERROR
 
 #ifdef __APPLE__
@@ -27,7 +31,5 @@
 # endif
 #endif
 
-void _check_gl_error(const char *file, int line);
-#define check_gl_error() _check_gl_error(__FILE__,__LINE__)
 
 #endif // __PROJECTM_OPENGL_H__
