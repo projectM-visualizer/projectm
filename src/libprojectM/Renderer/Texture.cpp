@@ -19,8 +19,9 @@ Sampler::~Sampler()
 
 
 
-Texture::Texture(const int _width, const int _height, const bool _userTexture) :
+Texture::Texture(const std::string &_name, const int _width, const int _height, const bool _userTexture) :
     type(GL_TEXTURE_2D),
+    name(_name),
     width(_width),
     height(_height),
     userTexture(_userTexture)
@@ -31,9 +32,10 @@ Texture::Texture(const int _width, const int _height, const bool _userTexture) :
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-Texture::Texture(const GLuint _texID, const GLenum _type, const int _width, const int _height, const bool _userTexture) :
+Texture::Texture(const std::string &_name, const GLuint _texID, const GLenum _type, const int _width, const int _height, const bool _userTexture) :
     texID(_texID),
     type(_type),
+    name(_name),
     width(_width),
     height(_height),
     userTexture(_userTexture)

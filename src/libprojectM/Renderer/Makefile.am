@@ -43,8 +43,7 @@ libRenderer_la_SOURCES = \
 	hlslparser/src/CodeWriter.h hlslparser/src/GLSLGenerator.cpp \
 	hlslparser/src/HLSLTokenizer.cpp hlslparser/src/HLSLTree.h \
 	hlslparser/src/Engine.cpp hlslparser/src/GLSLGenerator.h hlslparser/src/HLSLParser.cpp \
-	hlslparser/src/HLSLTokenizer.h \
-	HLSLTranslator.cpp HLSLTranslator.hpp
+	hlslparser/src/HLSLTokenizer.h
 
 libRenderer_la_CPPFLAGS = ${my_CFLAGS} \
 	-include $(top_builddir)/config.h \

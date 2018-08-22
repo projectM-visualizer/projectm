@@ -17,7 +17,7 @@ class TextureManager
   Texture * mainTexture;
 
   std::vector<std::string> random_textures;
-  void loadTextureDir();
+  void loadTextureDir(const std::string & dirname);
   TextureSamplerDesc loadTexture(const std::string name, const std::string imageUrl);
   void ExtractTextureSettings(const std::string qualifiedName, GLint &_wrap_mode, GLint &_filter_mode, std::string & name);
   std::vector<std::string> extensions;
@@ -35,7 +35,7 @@ public:
 
   void updateMainTexture();
 
-  std::string getRandomTextureName(std::string rand_name);
+  TextureSamplerDesc getRandomTextureName(std::string rand_name);
   void clearRandomTextures();
 };
 
