@@ -37,8 +37,6 @@
 		C3F9D7D917B83CF1009E58CB /* iTunesAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D617B83CF1009E58CB /* iTunesAPI.cpp */; };
 		C3FAE59217B87D8700F4B110 /* getConfigFilename.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */; };
 		C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in plist */ = {isa = PBXBuildFile; fileRef = C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */; };
-		C3FAF97817B89F7B00F4B110 /* config.inp in share */ = {isa = PBXBuildFile; fileRef = C3FAF97517B89F7200F4B110 /* config.inp */; };
-		C3FAF97B17B8A45200F4B110 /* fonts in share */ = {isa = PBXBuildFile; fileRef = C3FAF97917B8A43B00F4B110 /* fonts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,18 +94,6 @@
 				C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in plist */,
 			);
 			name = plist;
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C3FAF97317B89F1700F4B110 /* share */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = share;
-			dstSubfolderSpec = 16;
-			files = (
-				C3FAF97B17B8A45200F4B110 /* fonts in share */,
-				C3FAF97817B89F7B00F4B110 /* config.inp in share */,
-			);
-			name = share;
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -376,7 +362,6 @@
 				C3F9D7AB17B82CC3009E58CB /* Sources */,
 				C3F9D7AC17B82CC3009E58CB /* Frameworks */,
 				C3FAE5A917B898BB00F4B110 /* plist */,
-				C3FAF97317B89F1700F4B110 /* share */,
 				C3FAE5AB17B898F800F4B110 /* Generate Installer Package */,
 			);
 			buildRules = (

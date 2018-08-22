@@ -271,11 +271,10 @@ OSStatus ConfigureVisual( VisualPluginData * visualPluginData )
     {
         NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion3_2Core,
 //        NSOpenGLPFAOpenGLProfile, NSOpenGLProfileVersion4_1Core,
-        NSOpenGLPFAColorSize    , 24                           ,
+//        NSOpenGLPFAColorSize    , 24                           ,
 //        NSOpenGLPFAAlphaSize    , 8                            ,
 //        NSOpenGLPFADoubleBuffer ,
         NSOpenGLPFAAccelerated  ,
-        NSOpenGLPFANoRecovery   ,
         0
     };
     NSOpenGLPixelFormat *pixelFormat = [[NSOpenGLPixelFormat alloc] initWithAttributes:pixelFormatAttributes];
