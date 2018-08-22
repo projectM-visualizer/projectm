@@ -38,7 +38,7 @@ public:
 
     ShaderEngine();
     virtual ~ShaderEngine();
-    void loadPresetShaders(Pipeline &pipeline);
+    bool loadPresetShaders(Pipeline &pipeline);
     bool enableWarpShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext, const glm::mat4 & mat_ortho);
     bool enableCompositeShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext);
@@ -49,13 +49,14 @@ public:
     static bool checkCompileStatus(GLuint shader, const std::string & shaderTitle);
     static bool linkProgram(GLuint programID);
 
-    static GLint Uniform_V2F_C4F_VertexTranformation() { return UNIFORM_V2F_C4F_VERTEX_TRANFORMATION; }
-    static GLint Uniform_V2F_C4F_VertexPointSize() { return UNIFORM_V2F_C4F_VERTEX_POINT_SIZE; }
-    static GLint Uniform_V2F_C4F_T2F_VertexTranformation() { return UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION; }
-    static GLint Uniform_V2F_C4F_T2F_FragTextureSampler() { return UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER; }
 
     GLuint programID_v2f_c4f;
     GLuint programID_v2f_c4f_t2f;
+
+    GLint uniform_v2f_c4f_vertex_tranformation;
+    GLint uniform_v2f_c4f_vertex_point_size;
+    GLint uniform_v2f_c4f_t2f_vertex_tranformation;
+    GLint uniform_v2f_c4f_t2f_frag_texture_sampler;
 
     const static std::string v2f_c4f_vert;
     const static std::string v2f_c4f_frag;
@@ -107,17 +108,13 @@ private:
     GLuint loadPresetShader(const PresentShaderType shaderType, Shader &shader, std::string &shaderFilename);
 
     void deletePresetShader(Shader &shader);
+    void validateProgram(const GLuint programID);
 
     
     // programs generated from preset shader code
     GLuint programID_presetComp, programID_presetWarp;
 
     bool presetCompShaderLoaded, presetWarpShaderLoaded;
-
-    static GLint UNIFORM_V2F_C4F_VERTEX_TRANFORMATION;
-    static GLint UNIFORM_V2F_C4F_VERTEX_POINT_SIZE;
-    static GLint UNIFORM_V2F_C4F_T2F_VERTEX_TRANFORMATION;
-    static GLint UNIFORM_V2F_C4F_T2F_FRAG_TEXTURE_SAMPLER;
 };
 
 #endif /* SHADERENGINE_HPP_ */

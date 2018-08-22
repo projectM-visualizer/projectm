@@ -73,7 +73,7 @@ void MilkdropWaveform::Draw(RenderContext &context)
     mat_vertex = mat_scale * mat_vertex;
     mat_vertex = mat_rotation * mat_vertex;
     mat_vertex = mat_second_translation * mat_vertex;
-    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(mat_vertex));
+    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(mat_vertex));
 
     if(modulateAlphaByVolume) ModulateOpacityByVolume(context);
     else temp_a = a;

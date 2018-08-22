@@ -537,7 +537,7 @@ warp_64=`pln.xw=-pln.xw;
 warp_65=`pln.yz=op.yz+surfp.yz*(pln.w+0.5).xx;
 warp_66=`bpr.xy=op.yz+surfp.yz*(pln.w-5).xx;
 warp_67=`cnt.xyz=pln.x>0?((abs(bpr.x)<5)&&(abs(bpr.y)<5)?bpr.xyz:cnt):cnt;
-warp_68=`tuv.xyz=pln.x>0?( (abs(pln.y)<0.5)&&(abs(pln.z)<0.5)?pln.yzx:tuv):tuv;
+warp_68=`tuv.xyzw=pln.x>0?( (abs(pln.y)<0.5)&&(abs(pln.z)<0.5)?pln.yzxw:tuv):tuv;
 warp_69=`sp=tuv.x;
 warp_70=`float3 t1,t2,a1,a2;
 warp_71=`b2=tex2D(base02,cnt.xy*0.1+0.5);

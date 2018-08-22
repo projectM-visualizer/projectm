@@ -17,6 +17,9 @@
 
 #include <stdarg.h>
 #include <string.h>
+#include <vector>
+#include <algorithm>
+#include <string>
 
 namespace M4
 {
@@ -36,6 +39,8 @@ const char* GLSLGenerator::s_reservedWord[] =
         "fract",
         "dFdx",
         "dFdy",
+        "filter",
+		"main",
     };
 
 static const char* GetTypeName(const HLSLType& type)
@@ -47,20 +52,15 @@ static const char* GetTypeName(const HLSLType& type)
     case HLSLBaseType_Float2:       return "vec2";
     case HLSLBaseType_Float3:       return "vec3";
     case HLSLBaseType_Float4:       return "vec4";
-	case HLSLBaseType_Float2x2:     return "mat2";
+    case HLSLBaseType_Float2x4:     return "mat4x2";
+    case HLSLBaseType_Float2x3:     return "mat3x2";
+    case HLSLBaseType_Float2x2:     return "mat2";
+    case HLSLBaseType_Float3x4:     return "mat4x3";
     case HLSLBaseType_Float3x3:     return "mat3";
+    case HLSLBaseType_Float3x2:     return "mat2x3";
     case HLSLBaseType_Float4x4:     return "mat4";
-    case HLSLBaseType_Float4x3:     return "mat4";
-    case HLSLBaseType_Float4x2:     return "mat4";
-    case HLSLBaseType_Half:         return "float";
-    case HLSLBaseType_Half2:        return "vec2";
-    case HLSLBaseType_Half3:        return "vec3";
-    case HLSLBaseType_Half4:        return "vec4";
-	case HLSLBaseType_Half2x2:      return "mat2";
-    case HLSLBaseType_Half3x3:      return "mat3";
-    case HLSLBaseType_Half4x4:      return "mat4";
-    case HLSLBaseType_Half4x3:      return "mat4";
-    case HLSLBaseType_Half4x2:      return "mat4";
+    case HLSLBaseType_Float4x3:     return "mat3x4";
+    case HLSLBaseType_Float4x2:     return "mat2x4";
     case HLSLBaseType_Bool:         return "bool";
 	case HLSLBaseType_Bool2:        return "bvec2";
 	case HLSLBaseType_Bool3:        return "bvec3";
@@ -182,6 +182,8 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
         m_outAttribPrefix = "rast_";
     }
 
+    m_tree->ReplaceUniformsAssignements();
+
     HLSLRoot* root = m_tree->GetRoot();
     HLSLStatement* statement = root->statement;
 
@@ -230,6 +232,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     }
 
     // Output the special function used to access rows in a matrix.
+    m_writer.WriteLine(0, "vec2 %s(mat2 m, int i) { return vec2( m[0][i], m[1][i] ); }", m_matrixRowFunction);
     m_writer.WriteLine(0, "vec3 %s(mat3 m, int i) { return vec3( m[0][i], m[1][i], m[2][i] ); }", m_matrixRowFunction);
     m_writer.WriteLine(0, "vec4 %s(mat4 m, int i) { return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }", m_matrixRowFunction);
 
@@ -391,6 +394,21 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
 	m_writer.WriteLine( 0, "vec3 %s(bvec3 cond, vec3 trueExpr, vec3 falseExpr) { vec3 ret; ret.x = cond.x ? trueExpr.x : falseExpr.x; ret.y = cond.y ? trueExpr.y : falseExpr.y; ret.z = cond.z ? trueExpr.z : falseExpr.z; return ret; }", m_bvecTernary );
 	m_writer.WriteLine( 0, "vec4 %s(bvec4 cond, vec4 trueExpr, vec4 falseExpr) { vec4 ret; ret.x = cond.x ? trueExpr.x : falseExpr.x; ret.y = cond.y ? trueExpr.y : falseExpr.y; ret.z = cond.z ? trueExpr.z : falseExpr.z; ret.w = cond.w ? trueExpr.w : falseExpr.w; return ret; }", m_bvecTernary );
 
+    m_tree->EnumerateMatrixCtorsNeeded(matrixCtors);
+    for(matrixCtor & ctor : matrixCtors)
+    {
+        std::string id = GetTypeName(HLSLType(ctor.matrixType));
+        id += "_from";
+        for(HLSLBaseType argType : ctor.argumentTypes)
+        {
+            id += "_";
+            id += GetTypeName(HLSLType(argType));
+        }
+        matrixCtorsId[ctor] = id;
+    }
+
+    OutputMatrixCtors();
+
     // Output the extension used for dFdx/dFdy in GLES2
     if (m_version == Version_100_ES && (m_tree->NeedsFunction("ddx") || m_tree->NeedsFunction("ddy")))
     {
@@ -456,8 +474,7 @@ const HLSLType* commonScalarType(const HLSLType& lhs, const HLSLType& rhs)
     if (!IsScalarType(lhs) || !IsScalarType(rhs))
         return NULL;
 
-    if (lhs.baseType == HLSLBaseType_Float || lhs.baseType == HLSLBaseType_Half ||
-        rhs.baseType == HLSLBaseType_Float || rhs.baseType == HLSLBaseType_Half)
+    if (lhs.baseType == HLSLBaseType_Float || rhs.baseType == HLSLBaseType_Float)
         return &kFloatType;
 
     if (lhs.baseType == HLSLBaseType_Uint || rhs.baseType == HLSLBaseType_Uint)
@@ -502,9 +519,31 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
     else if (expression->nodeType == HLSLNodeType_ConstructorExpression)
     {
         HLSLConstructorExpression* constructorExpression = static_cast<HLSLConstructorExpression*>(expression);
-        m_writer.Write("%s(", GetTypeName(constructorExpression->type));
-        OutputExpressionList(constructorExpression->argument);
-        m_writer.Write(")");
+
+        bool matrixCtorNeeded = false;
+        if (IsMatrixType(constructorExpression->type.baseType))
+        {
+            matrixCtor ctor = matrixCtorBuilder(constructorExpression->type, constructorExpression->argument);
+            if (std::find(matrixCtors.cbegin(), matrixCtors.cend(), ctor) != matrixCtors.cend())
+            {
+                matrixCtorNeeded = true;
+            }
+        }
+
+        if (matrixCtorNeeded)
+        {
+            // Matrix contructors needs to be adapted since GLSL access a matrix as m[c][r] while HLSL is m[r][c]
+            matrixCtor ctor = matrixCtorBuilder(constructorExpression->type, constructorExpression->argument);
+            m_writer.Write("%s(", matrixCtorsId[ctor].c_str());
+            OutputExpressionList(constructorExpression->argument);
+            m_writer.Write(")");
+        }
+        else
+        {
+            m_writer.Write("%s(", GetTypeName(constructorExpression->type));
+            OutputExpressionList(constructorExpression->argument);
+            m_writer.Write(")");
+        }
     }
     else if (expression->nodeType == HLSLNodeType_CastingExpression)
     {
@@ -519,7 +558,6 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
         HLSLLiteralExpression* literalExpression = static_cast<HLSLLiteralExpression*>(expression);
         switch (literalExpression->type)
         {
-        case HLSLBaseType_Half:
         case HLSLBaseType_Float:
             {
                 // Don't use printf directly so that we don't use the system locale.
@@ -611,6 +649,7 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 			case HLSLBinaryOp_Sub:          op = " - "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
 			case HLSLBinaryOp_Mul:          op = " * "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
 			case HLSLBinaryOp_Div:          op = " / "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
+            case HLSLBinaryOp_Mod:          op = " % "; dstType1 = dstType2 = &kIntType; break;
 			case HLSLBinaryOp_Less:         op = " < "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
 			case HLSLBinaryOp_Greater:      op = " > "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
 			case HLSLBinaryOp_LessEqual:    op = " <= "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
@@ -667,8 +706,7 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 
         HLSLMemberAccess* memberAccess = static_cast<HLSLMemberAccess*>(expression);
 
-        if (memberAccess->object->expressionType.baseType == HLSLBaseType_Half  ||
-            memberAccess->object->expressionType.baseType == HLSLBaseType_Float ||
+        if (memberAccess->object->expressionType.baseType == HLSLBaseType_Float ||
             memberAccess->object->expressionType.baseType == HLSLBaseType_Int   ||
             memberAccess->object->expressionType.baseType == HLSLBaseType_Uint)
         {
@@ -696,12 +734,7 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             OutputExpression(memberAccess->object);
             m_writer.Write(")");
 
-			if( memberAccess->object->expressionType.baseType == HLSLBaseType_Float2x2 ||
-				memberAccess->object->expressionType.baseType == HLSLBaseType_Float3x3 ||
-                memberAccess->object->expressionType.baseType == HLSLBaseType_Float4x4 ||
-				memberAccess->object->expressionType.baseType == HLSLBaseType_Half2x2 ||
-				memberAccess->object->expressionType.baseType == HLSLBaseType_Half3x3 ||
-				memberAccess->object->expressionType.baseType == HLSLBaseType_Half4x4 )
+            if( IsMatrixType(memberAccess->object->expressionType.baseType))
             {
                 // Handle HLSL matrix "swizzling".
                 // TODO: Properly handle multiple element selection such as _m00_m12
@@ -745,12 +778,7 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
         HLSLArrayAccess* arrayAccess = static_cast<HLSLArrayAccess*>(expression);
 
         if (!arrayAccess->array->expressionType.array &&
-			(arrayAccess->array->expressionType.baseType == HLSLBaseType_Float2x2 ||
-			 arrayAccess->array->expressionType.baseType == HLSLBaseType_Float3x3 ||
-             arrayAccess->array->expressionType.baseType == HLSLBaseType_Float4x4 ||
-			 arrayAccess->array->expressionType.baseType == HLSLBaseType_Half2x2 ||
-			 arrayAccess->array->expressionType.baseType == HLSLBaseType_Half3x3 ||
-			 arrayAccess->array->expressionType.baseType == HLSLBaseType_Half4x4 ) )
+            IsMatrixType(arrayAccess->array->expressionType.baseType) )
         {
             // GLSL access a matrix as m[c][r] while HLSL is m[r][c], so use our
             // special row access function to convert.
@@ -789,22 +817,19 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             const HLSLType& type0 = functionCall->function->argument->type;
             const HLSLType& type1 = functionCall->function->argument->nextArgument->type;
 
-            const char* prefix = (m_options.flags & Flag_LowerMatrixMultiplication) ? m_matrixMulFunction : "";
-            const char* infix = (m_options.flags & Flag_LowerMatrixMultiplication) ? "," : "*";
-
-            if (m_options.flags & Flag_PackMatrixRowMajor)
+            if (IsVectorType(type0.baseType) && IsVectorType(type1.baseType))
             {
-                m_writer.Write("%s((", prefix);
-                OutputExpression(argument[1], &type1);
-                m_writer.Write(")%s(", infix);
+                m_writer.Write("dot((");
                 OutputExpression(argument[0], &type0);
+                m_writer.Write("),(");
+                OutputExpression(argument[1], &type1);
                 m_writer.Write("))");
             }
             else
             {
-                m_writer.Write("%s((", prefix);
+                m_writer.Write("((");
                 OutputExpression(argument[0], &type0);
-                m_writer.Write(")%s(", infix);
+                m_writer.Write(")*(");
                 OutputExpression(argument[1], &type1);
                 m_writer.Write("))");
             }
@@ -824,6 +849,19 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             m_writer.Write(", 0.0, 1.0)");
             handled = true;
         }
+        else if (String_Equal(functionName, "rsqrt"))
+        {
+            HLSLExpression* argument[1];
+            if (GetFunctionArguments(functionCall, argument, 1) != 1)
+            {
+                Error("saturate expects 1 argument");
+                return;
+            }
+            m_writer.Write("inversesqrt(");
+            OutputExpression(argument[0]);
+            m_writer.Write(")");
+            handled = true;
+        }
 
         if (!handled)
         {
@@ -840,19 +878,10 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 
     if (cast)
     {
-/*
-        const BaseTypeDescription& srcTypeDesc = _baseTypeDescriptions[expression->expressionType.baseType];
-        const BaseTypeDescription& dstTypeDesc = _baseTypeDescriptions[dstType->baseType];
-
-        if (dstTypeDesc.numDimensions == 1 && dstTypeDesc.numComponents > 1)
+        if (IsVectorType(dstType->baseType) || IsMatrixType(dstType->baseType))
         {
-            // Casting to a vector - pad with 0s
-            for (int i = srcTypeDesc.numComponents; i < dstTypeDesc.numComponents; ++i)
-            {
-                m_writer.Write(", 0");
-            }
+            CompleteConstructorArguments(expression, dstType->baseType);
         }
-*/
 
         m_writer.Write(")");
     }
@@ -1115,7 +1144,14 @@ void GLSLGenerator::OutputStatements(int indent, HLSLStatement* statement, const
             HLSLForStatement* forStatement = static_cast<HLSLForStatement*>(statement);
             m_writer.BeginLine(indent, forStatement->fileName, forStatement->line);
             m_writer.Write("for (");
-            OutputDeclaration(forStatement->initialization);
+            if (forStatement->initialization != NULL)
+            {
+                OutputDeclaration(forStatement->initialization);
+            }
+            else
+            {
+                OutputExpression(forStatement->initializationWithoutType);
+            }
             m_writer.Write("; ");
             OutputExpression(forStatement->condition, &kBoolType);
             m_writer.Write("; ");
@@ -1134,6 +1170,13 @@ void GLSLGenerator::OutputStatements(int indent, HLSLStatement* statement, const
             m_writer.Write(") {");
             m_writer.EndLine();
             OutputStatements(indent + 1, whileStatement->statement, returnType);
+            m_writer.WriteLine(indent, "}");
+        }
+        else if (statement->nodeType == HLSLNodeType_BlockStatement)
+        {
+            HLSLBlockStatement* blockStatement = static_cast<HLSLBlockStatement*>(statement);
+            m_writer.WriteLine(indent, "{");
+            OutputStatements(indent + 1, blockStatement->statement, returnType);
             m_writer.WriteLine(indent, "}");
         }
         else
@@ -1791,8 +1834,31 @@ void GLSLGenerator::OutputDeclaration(HLSLDeclaration* declaration)
 				m_writer.Write( " )" );
 			}
 			else
-			{
-				OutputExpression( declaration->assignment, &declaration->type );
+            {
+                bool matrixCtorNeeded = false;
+                if (IsMatrixType(declaration->type.baseType))
+                {
+                    matrixCtor ctor = matrixCtorBuilder(declaration->type, declaration->assignment);
+                    if (std::find(matrixCtors.cbegin(), matrixCtors.cend(), ctor) != matrixCtors.cend())
+                    {
+                        matrixCtorNeeded = true;
+                    }
+                }
+
+                if (matrixCtorNeeded)
+                {
+                    // Matrix contructors needs to be adapted since GLSL access a matrix as m[c][r] while HLSL is m[r][c]
+                    matrixCtor ctor = matrixCtorBuilder(declaration->type, declaration->assignment);
+                    m_writer.Write("%s(", matrixCtorsId[ctor].c_str());
+                    OutputExpressionList(declaration->assignment);
+                    m_writer.Write(")");
+                }
+                else
+                {
+                    m_writer.Write( "%s( ", GetTypeName( declaration->type ) );
+                    OutputExpressionList( declaration->assignment );
+                    m_writer.Write( " )" );
+                }
 			}
 		}
 
@@ -1925,5 +1991,100 @@ const char* GLSLGenerator::GetBuiltInSemantic(const char* semantic, AttributeMod
 
     return NULL;
 }
+
+void GLSLGenerator::CompleteConstructorArguments(HLSLExpression* expression, HLSLBaseType dstType)
+{
+    int nbComponentsProvided = 0;
+    int nbComponentsNeeded = 0;
+
+    const BaseTypeDescription& dstTypeDesc = baseTypeDescriptions[dstType];
+    nbComponentsNeeded = dstTypeDesc.numComponents * dstTypeDesc.height;
+
+    const BaseTypeDescription& srcTypeDesc = baseTypeDescriptions[expression->expressionType.baseType];
+    nbComponentsProvided = srcTypeDesc.numComponents * srcTypeDesc.height;
+    if (IsMatrixType(expression->expressionType.baseType) ||
+        IsVectorType(expression->expressionType.baseType) )
+    {
+        for(int i = nbComponentsProvided; i < nbComponentsNeeded; i++)
+        {
+            m_writer.Write(", 0");
+        }
+    }
+}
+
+
+void GLSLGenerator::OutputMatrixCtors() {
+    for(matrixCtor & ctor : matrixCtors)
+    {
+        m_writer.Write("%s %s(",
+                            GetTypeName(HLSLType(ctor.matrixType)),
+                            matrixCtorsId[ctor].c_str());
+        int argNum = 0;
+        for(HLSLBaseType argType : ctor.argumentTypes)
+        {
+            if (argNum == 0)
+            {
+                m_writer.Write("%s %c", GetTypeName(HLSLType(argType)), 'a' + argNum);
+            }
+            else
+            {
+                m_writer.Write(", %s %c", GetTypeName(HLSLType(argType)), 'a' + argNum);
+            }
+            argNum++;
+        }
+        m_writer.Write( ") { return %s(", GetTypeName(HLSLType(ctor.matrixType)));
+
+        const BaseTypeDescription& ctorTypeDesc = baseTypeDescriptions[ctor.matrixType];
+        std::vector<std::string> args(ctorTypeDesc.numComponents * ctorTypeDesc.height, "0");
+        int argNumIn = 0;
+        int argNumOut = 0;
+        for(HLSLBaseType argType : ctor.argumentTypes)
+        {
+            std::string arg;
+            arg += 'a' + argNumIn;
+
+            if (IsScalarType(argType))
+            {
+                int index = (argNumOut % ctorTypeDesc.height) * (ctorTypeDesc.numComponents) +
+                            (argNumOut / ctorTypeDesc.height);
+                args[index] = arg;
+                argNumOut++;
+            }
+            else if (IsVectorType(argType))
+            {
+                const BaseTypeDescription& argTypeDesc = baseTypeDescriptions[argType];
+                for(int dim = 0; dim < argTypeDesc.numComponents; dim++)
+                {
+                    std::string argVect = arg + ".";
+                    argVect += "xyzw"[dim];
+                    int index = (argNumOut % ctorTypeDesc.height) * (ctorTypeDesc.numComponents) +
+                                (argNumOut / ctorTypeDesc.height);
+                    args[index] = argVect;
+                    argNumOut++;
+                }
+            }
+
+            argNumIn++;
+        }
+
+        bool first = true;
+        for(std::string & arg : args)
+        {
+            if (!first)
+            {
+                m_writer.Write(",%s", arg.c_str());
+            }
+            else
+            {
+                m_writer.Write("%s", arg.c_str());
+            }
+            first = false;
+        }
+
+        m_writer.Write("); }");
+        m_writer.EndLine();
+    }
+}
+
 
 }

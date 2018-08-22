@@ -8,9 +8,9 @@
 
 #include "pmSDL.hpp"
 
-#define OGL_DEBUG	0
 #define UNLOCK_FPS	0
 #define FAKE_AUDIO	0
+#define TEST_ALL_PRESETS	0
 
 #if OGL_DEBUG
 void DebugLog(GLenum source,
@@ -159,6 +159,22 @@ int main(int argc, char *argv[]) {
 	    app->beginAudioCapture();
 #endif
 
+#if TEST_ALL_PRESETS
+    uint buildErrors = 0;
+    for(int i = 0; i < app->getPlaylistSize(); i++) {
+        std::cout << i << "\t" << app->getPresetName(i) << std::endl;
+        app->selectPreset(i);
+        if (app->getErrorLoadingCurrentPreset()) {
+            buildErrors++;
+        }
+    }
+
+    if (app->getPlaylistSize()) {
+        fprintf(stdout, "Preset loading errors: %d/%d [%d%%]\n", buildErrors, app->getPlaylistSize(), (buildErrors*100) / app->getPlaylistSize());
+    }
+
+    return PROJECTM_SUCCESS;
+#endif
 
 #if UNLOCK_FPS
     int32_t frame_count = 0;

@@ -11,23 +11,61 @@ enum HLSLToken
     // Built-in types.
     HLSLToken_Float         = 256,
     HLSLToken_Float1,
+    HLSLToken_Float1x1,
     HLSLToken_Float2,
+    HLSLToken_Float2x1,
     HLSLToken_Float3,
+    HLSLToken_Float3x1,
     HLSLToken_Float4,
-	HLSLToken_Float2x2,
+    HLSLToken_Float4x1,
+    HLSLToken_Float2x4,
+    HLSLToken_Float2x3,
+    HLSLToken_Float2x2,
+    HLSLToken_Float3x4,
     HLSLToken_Float3x3,
+    HLSLToken_Float3x2,
     HLSLToken_Float4x4,
     HLSLToken_Float4x3,
     HLSLToken_Float4x2,
+
     HLSLToken_Half,
+    HLSLToken_Half1,
+    HLSLToken_Half1x1,
     HLSLToken_Half2,
+    HLSLToken_Half2x1,
     HLSLToken_Half3,
+    HLSLToken_Half3x1,
     HLSLToken_Half4,
+    HLSLToken_Half4x1,
+    HLSLToken_Half2x4,
+    HLSLToken_Half2x3,
 	HLSLToken_Half2x2,
+    HLSLToken_Half3x4,
     HLSLToken_Half3x3,
+    HLSLToken_Half3x2,
     HLSLToken_Half4x4,
     HLSLToken_Half4x3,
     HLSLToken_Half4x2,
+
+    HLSLToken_Double,
+    HLSLToken_Double1,
+    HLSLToken_Double1x1,
+    HLSLToken_Double2,
+    HLSLToken_Double2x1,
+    HLSLToken_Double3,
+    HLSLToken_Double3x1,
+    HLSLToken_Double4,
+    HLSLToken_Double4x1,
+    HLSLToken_Double2x4,
+    HLSLToken_Double2x3,
+    HLSLToken_Double2x2,
+    HLSLToken_Double3x4,
+    HLSLToken_Double3x3,
+    HLSLToken_Double3x2,
+    HLSLToken_Double4x4,
+    HLSLToken_Double4x3,
+    HLSLToken_Double4x2,
+
     HLSLToken_Bool,
 	HLSLToken_Bool2,
 	HLSLToken_Bool3,
@@ -69,6 +107,9 @@ enum HLSLToken
     HLSLToken_Static,
     HLSLToken_Inline,
     HLSLToken_PreprocessorDefine,
+    HLSLToken_PreprocessorIf,
+    HLSLToken_PreprocessorElse,
+    HLSLToken_PreprocessorEndif,
 
     // Input modifiers.
     HLSLToken_Uniform,
@@ -97,7 +138,6 @@ enum HLSLToken
     
     // Other token types.
     HLSLToken_FloatLiteral,
-	HLSLToken_HalfLiteral,
     HLSLToken_IntLiteral,
     HLSLToken_Identifier,
 
@@ -153,6 +193,7 @@ public:
     const char* getLastPos(const bool trimmed);
     const char* getCurrentPos()  { return m_buffer; }
 
+    void ReturnToPos(const char * pos);
 
 private:
 
