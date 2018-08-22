@@ -8,7 +8,6 @@
 
 #include "pmSDL.hpp"
 
-#define OGL_DEBUG	0
 #define UNLOCK_FPS	0
 #define FAKE_AUDIO	0
 #define TEST_ALL_PRESETS	0
@@ -170,7 +169,9 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    fprintf(stdout, "Preset loading errors: %d/%d [%d%%]\n", buildErrors, app->getPlaylistSize(), (buildErrors*100) / app->getPlaylistSize());
+    if (app->getPlaylistSize()) {
+        fprintf(stdout, "Preset loading errors: %d/%d [%d%%]\n", buildErrors, app->getPlaylistSize(), (buildErrors*100) / app->getPlaylistSize());
+    }
 
     return PROJECTM_SUCCESS;
 #endif
