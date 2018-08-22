@@ -109,6 +109,11 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetec
     renderContext.programID_v2f_c4f = shaderEngine.programID_v2f_c4f;
     renderContext.programID_v2f_c4f_t2f = shaderEngine.programID_v2f_c4f_t2f;
 
+    renderContext.uniform_v2f_c4f_vertex_tranformation = shaderEngine.uniform_v2f_c4f_vertex_tranformation;
+    renderContext.uniform_v2f_c4f_vertex_point_size = shaderEngine.uniform_v2f_c4f_vertex_point_size;
+    renderContext.uniform_v2f_c4f_t2f_vertex_tranformation = shaderEngine.uniform_v2f_c4f_t2f_vertex_tranformation;
+    renderContext.uniform_v2f_c4f_t2f_frag_texture_sampler = shaderEngine.uniform_v2f_c4f_t2f_frag_texture_sampler;
+
     // Interpolation VAO/VBO's
     glGenBuffers(1, &m_vbo_Interpolation);
     glGenVertexArrays(1, &m_vao_Interpolation);
@@ -757,8 +762,8 @@ void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &
 
     shaderEngine.enableCompositeShader(currentPipe->compositeShader, pipeline, pipelineContext);
 
-    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_T2F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(renderContext.mat_ortho));
-    glUniform1i(ShaderEngine::Uniform_V2F_C4F_T2F_FragTextureSampler(), 0);
+    glUniformMatrix4fv(shaderEngine.uniform_v2f_c4f_t2f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(renderContext.mat_ortho));
+    glUniform1i(shaderEngine.uniform_v2f_c4f_t2f_frag_texture_sampler, 0);
 
     //Overwrite anything on the screen
     glBlendFunc(GL_ONE, GL_ZERO);

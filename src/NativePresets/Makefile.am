@@ -34,3 +34,11 @@ libRovastarDarkSecret_la_LDFLAGS = -avoid-version
 libRovastarDriftingChaos_la_LDFLAGS = -avoid-version
 libRovastarFractalSpiral_la_LDFLAGS = -avoid-version
 libRovastarFractopiaFrantic_la_LDFLAGS = -avoid-version
+
+
+libMstressJuppyDancer_la_LIBADD = ../libprojectM/libprojectM.la
+libRLGFractalDrop7c_la_LIBADD = ../libprojectM/libprojectM.la
+libRovastarDarkSecret_la_LIBADD = ../libprojectM/libprojectM.la
+libRovastarDriftingChaos_la_LIBADD = ../libprojectM/libprojectM.la
+libRovastarFractalSpiral_la_LIBADD = ../libprojectM/libprojectM.la
+libRovastarFractopiaFrantic_la_LIBADD = ../libprojectM/libprojectM.la
