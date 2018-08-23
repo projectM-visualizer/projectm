@@ -44,10 +44,10 @@ nodist_projectM_pulseaudio_SOURCES = \
 	$(nodist_projectM_pulseaudio_moc_sources)
 
 projectM_pulseaudio_LDADD = \
-	${QT_LIBS} \
 	${LIBPULSE_LIBS} \
 	../projectM-qt/libprojectM_qt.a \
-	../libprojectM/libprojectM.la
+	../libprojectM/libprojectM.la \
+	${QT_LIBS}
 
 projectM_pulseaudio_LDFLAGS = -static
 
