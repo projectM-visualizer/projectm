@@ -18,9 +18,9 @@ libprojectM_la_LDFLAGS = $(CG_LDFLAGS) -no-undefined -version-info 2:0:0
 
 # link libRenderer, MilkdropPresetFactory, NativePresetFactory, and libprojectM sources
 libprojectM_la_LIBADD = \
-$(top_srcdir)/src/libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.la \
-$(top_srcdir)/src/libprojectM/NativePresetFactory/libNativePresetFactory.la \
-$(top_srcdir)/src/libprojectM/Renderer/libRenderer.la
+../libprojectM/MilkdropPresetFactory/libMilkdropPresetFactory.la \
+../libprojectM/NativePresetFactory/libNativePresetFactory.la \
+../libprojectM/Renderer/libRenderer.la
 libprojectM_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
   KeyHandler.cpp PresetChooser.cpp TimeKeeper.cpp PCM.cpp PresetFactory.cpp \
 	fftsg.cpp wipemalloc.cpp PipelineMerger.cpp PresetFactoryManager.cpp projectM.cpp \
