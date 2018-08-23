@@ -459,6 +459,9 @@ void Renderer::reset(int w, int h)
 	this -> vw = w;
 	this -> vh = h;
 
+    delete renderTarget;
+    renderTarget = new RenderTarget(texsize, vw, vh);
+
 #if USE_CG
 	shaderEngine.setAspect(aspect);
 #endif
