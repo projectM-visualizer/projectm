@@ -8,7 +8,6 @@
 
 #include "pmSDL.hpp"
 
-#define UNLOCK_FPS	0
 #define FAKE_AUDIO	0
 #define TEST_ALL_PRESETS	0
 
