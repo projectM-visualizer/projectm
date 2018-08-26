@@ -678,7 +678,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     if (!parser.ApplyPreprocessor(shaderFilename.c_str(), fullSource.c_str(), fullSource.size(), sourcePreprocessed)) {
         std::cerr << "Failed to preprocess HLSL(step1) " << shaderTypeString << " shader" << std::endl;
 
-#ifndef DUMP_SHADERS_ON_ERROR
+#if !DUMP_SHADERS_ON_ERROR
         std::cerr << "Source: " << std::endl << fullSource << std::endl;
 #else
         std::ofstream out("/tmp/shader_" + shaderTypeString + "_step1.txt");
@@ -730,7 +730,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     if( !parser.Parse(shaderFilename.c_str(), sourcePreprocessed.c_str(), sourcePreprocessed.size()) ) {
         std::cerr << "Failed to parse HLSL(step2) " << shaderTypeString << " shader" << std::endl;
 
-#ifndef DUMP_SHADERS_ON_ERROR
+#if !DUMP_SHADERS_ON_ERROR
         std::cerr << "Source: " << std::endl << sourcePreprocessed << std::endl;
 #else
         std::ofstream out2("/tmp/shader_" + shaderTypeString + "_step2.txt");
@@ -743,7 +743,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     // generate GLSL
     if (!generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader, M4::GLSLGenerator::Version_140, "PS")) {
         std::cerr << "Failed to transpile HLSL(step3) " << shaderTypeString << " shader to GLSL" << std::endl;
-#ifndef DUMP_SHADERS_ON_ERROR
+#if !DUMP_SHADERS_ON_ERROR
         std::cerr << "Source: " << std::endl << sourcePreprocessed << std::endl;
 #else
         std::ofstream out2("/tmp/shader_" + shaderTypeString + "_step2.txt");
@@ -767,7 +767,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     } else {
         std::cerr << "Compilation error (step3) of " << shaderTypeString << std::endl;
 
-#ifndef DUMP_SHADERS_ON_ERROR
+#if !DUMP_SHADERS_ON_ERROR
         std::cerr << "Source:" << std::endl << generator.GetResult() << std::endl;
 #else
         std::ofstream out3("/tmp/shader_" + shaderTypeString + "_step3.txt");
