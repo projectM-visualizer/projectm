@@ -449,6 +449,7 @@ static void *thread_callback(void *prjm) {
             this->fpsstart=getTicks ( &timeKeeper->startTime );
         }
 
+#ifndef UNLOCK_FPS
         int timediff = getTicks ( &timeKeeper->startTime )-this->timestart;
 
         if ( timediff < this->mspf )
@@ -461,6 +462,8 @@ static void *thread_callback(void *prjm) {
                 if ( usleep ( sleepTime ) != 0 ) {}}
         }
         this->timestart=getTicks ( &timeKeeper->startTime );
+#endif
+
         #endif /** !WIN32 */
 
 	#ifdef SYNC_PRESET_SWITCHES
