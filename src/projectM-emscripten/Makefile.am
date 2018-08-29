@@ -7,7 +7,8 @@ ${my_CFLAGS} \
 -I${top_srcdir}/src/libprojectM/Renderer \
 ${SDL_CFLAGS}
 
-EMSCRIPTEN_FLAGS =  -s USE_SDL=2 -s USE_WEBGL2=1 -s WASM=0
+EMSCRIPTEN_FLAGS =  -s USE_SDL=2 -s USE_WEBGL2=1 
+# -s WASM=0
 
 bin_PROGRAMS = projectW.bc
 projectW_bc_SOURCES = ../libprojectM/KeyHandler.cpp projectM_SDL_emscripten.cpp

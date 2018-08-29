@@ -189,6 +189,25 @@ int main( int argc, char *argv[] ) {
     app.pm->projectM_resetGL(width, height);
     printf("resetGL\n");
 
+    // Allocate a new a stream given the current directory name
+    DIR * m_dir;
+    if ((m_dir = opendir("/")) == NULL)
+    {
+        printf("error opening /\n");
+    } else {
+		
+		struct dirent * dir_entry;
+		while ((dir_entry = readdir(m_dir)) != NULL)
+		{
+			printf("%s\n", dir_entry->d_name);			
+		}
+	}
+
+
+    for(int i = 0; i < app.pm->getPlaylistSize(); i++) {
+        printf("%d\t%s\n", i, app.pm->getPresetName(i).c_str());
+    }
+
     // mainloop. non-emscripten version here for comparison/testing
 #ifdef EMSCRIPTEN
     emscripten_set_main_loop(renderFrame, 0, 0);

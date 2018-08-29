@@ -323,7 +323,7 @@ std::string blur1_frag(
     "   #define w_div  _c3.z\n"
     ""
     "   // note: if you just take one sample at exactly uv.xy, you get an avg of 4 pixels.\n"
-    "   vec2 uv2 = fragment_texture.xy + srctexsize.zw*vec2(1,1);     // + moves blur UP, LEFT by 1-pixel increments\n"
+    "   vec2 uv2 = fragment_texture.xy + srctexsize.zw*vec2(1.0,1.0);     // + moves blur UP, LEFT by 1-pixel increments\n"
     ""
     "   vec3 blur = \n"
     "           ( texture( texture_sampler, uv2 + vec2( d1*srctexsize.z,0) ).xyz\n"
@@ -340,7 +340,7 @@ std::string blur1_frag(
     "   blur.xyz = blur.xyz*fscale + fbias;\n"
     ""
     "   color.xyz = blur;\n"
-    "   color.w   = 1;\n"
+    "   color.w   = 1.0;\n"
     "}\n");
 
 std::string blur2_frag(
@@ -383,13 +383,13 @@ std::string blur2_frag(
     "   blur.xyz *= w_div;\n"
     ""
     "   // tone it down at the edges:  (only happens on 1st X pass!)\n"
-    "   float t = min( min(fragment_texture.x, fragment_texture.y), 1-max(fragment_texture.x, fragment_texture.y) );\n"
+    "   float t = min( min(fragment_texture.x, fragment_texture.y), 1.0-max(fragment_texture.x, fragment_texture.y) );\n"
     "   t = sqrt(t);\n"
     "   t = edge_darken_c1 + edge_darken_c2*clamp(t*edge_darken_c3, 0.0, 1.0);\n"
     "   blur.xyz *= t;\n"
     ""
     "   color.xyz = blur;\n"
-    "   color.w   = 1;\n"
+    "   color.w   = 1.0;\n"
     "}\n");
 
 
@@ -1150,7 +1150,7 @@ bool ShaderEngine::loadPresetShaders(Pipeline &pipeline) {
             ok = false;
         }
     }
-    
+
     if (!pipeline.compositeShader.programSource.empty()) {
         programID_presetComp = loadPresetShader(PresentCompositeShader, pipeline.compositeShader, pipeline.compositeShaderFilename);
         if (programID_presetComp != GL_FALSE) {
@@ -1180,10 +1180,10 @@ GLuint ShaderEngine::loadPresetShader(const ShaderEngine::PresentShaderType shad
 void ShaderEngine::disablePresetShaders() {
     if (presetCompShaderLoaded)
         glDeleteProgram(programID_presetComp);
-    
+
     if (presetWarpShaderLoaded)
         glDeleteProgram(programID_presetWarp);
-    
+
     presetCompShaderLoaded = false;
     presetWarpShaderLoaded = false;
 }
@@ -1241,10 +1241,10 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
     glCompileShader(FragmentShaderID);
     checkCompileStatus(FragmentShaderID, "Fragment: " + shaderTypeString);
 
-    
+
     // Link the program
     GLuint programID = glCreateProgram();
-    
+
     glAttachShader(programID, VertexShaderID);
     glAttachShader(programID, FragmentShaderID);
     bool linkOK = linkProgram(programID);
