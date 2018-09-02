@@ -228,7 +228,7 @@ void projectM::readConfig (const std::string & configFile )
 
     _settings.easterEgg = config.read<float> ( "Easter Egg Parameter", 0.0);
     _settings.softCutRatingsEnabled =
-	config.read<float> ( "Soft Cut Ratings Enabled", false);
+    config.read<bool> ( "Soft Cut Ratings Enabled", false);
 
     projectM_init ( _settings.meshX, _settings.meshY, _settings.fps,
                     _settings.textureSize, _settings.windowWidth,_settings.windowHeight);
