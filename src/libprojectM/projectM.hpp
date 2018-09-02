@@ -135,6 +135,21 @@ public:
         float easterEgg;
         bool shuffleEnabled;
         bool softCutRatingsEnabled;
+
+        Settings() :
+            meshX(32),
+            meshY(24),
+            fps(35),
+            textureSize(512),
+            windowWidth(512),
+            windowHeight(512),
+            smoothPresetDuration(10),
+            presetDuration(15),
+            beatSensitivity(10.0),
+            aspectCorrection(true),
+            easterEgg(0.0),
+            shuffleEnabled(true),
+            softCutRatingsEnabled(false) {}
     };
 
   projectM(std::string config_file, int flags = FLAG_NONE);
