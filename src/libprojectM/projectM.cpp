@@ -68,15 +68,18 @@ pthread_mutex_t preset_mutex;
 
 projectM::~projectM()
 {
+    void *status;
 
     #ifdef USE_THREADS
     std::cout << "[projectM] thread ";
     printf("c");
+    pthread_mutex_lock( &mutex );
     running = false;
+    pthread_mutex_unlock( &mutex );
     printf("l");
     pthread_cond_signal(&condition);
     printf("e");
-    pthread_mutex_unlock( &mutex );
+    pthread_join(thread, &status);
     printf("a");
     pthread_detach(thread);
     printf("n");
@@ -381,16 +384,17 @@ static void *thread_callback(void *prjm) {
             assert ( m_activePreset2.get() );
 
             #ifdef USE_THREADS
-
-            pthread_cond_signal(&condition);
-            pthread_mutex_unlock( &mutex );
+                pthread_cond_signal(&condition);
             #endif
+
             m_activePreset->Render(*beatDetect, pipelineContext());
 
             #ifdef USE_THREADS
-            pthread_mutex_lock( &mutex );
+                // wait for the thread
+                pthread_mutex_lock( &mutex );
+                pthread_mutex_unlock( &mutex );
             #else
-            evaluateSecondPreset();
+                evaluateSecondPreset();
             #endif
 
             Pipeline pipeline;
@@ -524,7 +528,6 @@ static void *thread_callback(void *prjm) {
             std::cerr << "[projectM] failed to allocate a thread! try building with option USE_THREADS turned off" << std::endl;;
             exit(EXIT_FAILURE);
         }
-        pthread_mutex_lock( &mutex );
         #endif
 
         /// @bug order of operatoins here is busted
