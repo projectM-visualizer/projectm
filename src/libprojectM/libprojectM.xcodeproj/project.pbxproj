@@ -68,10 +68,7 @@
 		166854442105E4FC0042793A /* image_helper.c in Sources */ = {isa = PBXBuildFile; fileRef = 1612C9E7207A85DC00862A3A /* image_helper.c */; };
 		166854452105E4FC0042793A /* SOIL2.c in Sources */ = {isa = PBXBuildFile; fileRef = 1612C9E5207A85DC00862A3A /* SOIL2.c */; };
 		166854462105E4FC0042793A /* BeatDetect.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687172820C33DF300947E7E /* BeatDetect.hpp */; };
-		166854472105E4FC0042793A /* FBO.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687173120C33DF300947E7E /* FBO.hpp */; };
 		166854482105E4FC0042793A /* Filters.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687172920C33DF300947E7E /* Filters.hpp */; };
-		166854492105E4FC0042793A /* HLSLTranslator.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687172520C33DF300947E7E /* HLSLTranslator.hpp */; };
-		1668544A2105E4FC0042793A /* MilkdropWaveform.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687172D20C33DF300947E7E /* MilkdropWaveform.hpp */; };
 		1668544B2105E4FC0042793A /* PerlinNoise.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687172E20C33DF300947E7E /* PerlinNoise.hpp */; };
 		1668544C2105E4FC0042793A /* PerPixelMesh.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687173420C33DF400947E7E /* PerPixelMesh.hpp */; };
 		1668544D2105E4FC0042793A /* Pipeline.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687173520C33DF400947E7E /* Pipeline.hpp */; };
@@ -83,24 +80,19 @@
 		166854532105E4FC0042793A /* RenderItemMatcher.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687172720C33DF300947E7E /* RenderItemMatcher.hpp */; };
 		166854542105E4FC0042793A /* RenderItemMergeFunction.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687173320C33DF300947E7E /* RenderItemMergeFunction.hpp */; };
 		166854552105E4FC0042793A /* Shader.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687172B20C33DF300947E7E /* Shader.hpp */; };
-		166854562105E4FC0042793A /* ShaderContext.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687175220C340B800947E7E /* ShaderContext.hpp */; };
 		166854572105E4FC0042793A /* ShaderEngine.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687173620C33DF400947E7E /* ShaderEngine.hpp */; };
 		166854582105E4FC0042793A /* TextureManager.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687172320C33DF300947E7E /* TextureManager.hpp */; };
 		166854592105E4FD0042793A /* Transformation.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687173220C33DF300947E7E /* Transformation.hpp */; };
-		1668545A2105E4FD0042793A /* UserTexture.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687173720C33DF400947E7E /* UserTexture.hpp */; };
 		1668545B2105E4FD0042793A /* VideoEcho.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687172F20C33DF300947E7E /* VideoEcho.hpp */; };
 		1668545C2105E4FD0042793A /* Waveform.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 1687173020C33DF300947E7E /* Waveform.hpp */; };
 		1668545D2105E4FD0042793A /* CodeWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 168C689520BB1FE0000AFC1B /* CodeWriter.cpp */; };
 		1668545E2105E4FD0042793A /* Engine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 168C688F20BB1FDF000AFC1B /* Engine.cpp */; };
 		1668545F2105E4FD0042793A /* GLSLGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 168C689120BB1FDF000AFC1B /* GLSLGenerator.cpp */; };
-		166854602105E4FD0042793A /* HLSLGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 168C689620BB1FE0000AFC1B /* HLSLGenerator.cpp */; };
 		166854612105E4FD0042793A /* HLSLParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 168C689220BB1FDF000AFC1B /* HLSLParser.cpp */; };
 		166854622105E4FD0042793A /* HLSLTokenizer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 168C689420BB1FE0000AFC1B /* HLSLTokenizer.cpp */; };
 		166854632105E4FD0042793A /* HLSLTree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 168C689320BB1FE0000AFC1B /* HLSLTree.cpp */; };
-		166854642105E4FD0042793A /* MSLGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 168C689020BB1FDF000AFC1B /* MSLGenerator.cpp */; };
 		166854652105E4FD0042793A /* BeatDetect.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 166854202105E4BC0042793A /* BeatDetect.cpp */; };
 		166854662105E4FD0042793A /* Filters.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 166854222105E4BD0042793A /* Filters.cpp */; };
-		166854672105E4FD0042793A /* HLSLTranslator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 166854272105E4BD0042793A /* HLSLTranslator.cpp */; };
 		166854682105E4FD0042793A /* MilkdropWaveform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1668542D2105E4BD0042793A /* MilkdropWaveform.cpp */; };
 		166854692105E4FD0042793A /* PerlinNoise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1668541B2105E4BC0042793A /* PerlinNoise.cpp */; };
 		1668546A2105E4FD0042793A /* PerPixelMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 166854232105E4BD0042793A /* PerPixelMesh.cpp */; };
@@ -781,10 +773,7 @@
 				166854442105E4FC0042793A /* image_helper.c in Sources */,
 				166854452105E4FC0042793A /* SOIL2.c in Sources */,
 				166854462105E4FC0042793A /* BeatDetect.hpp in Sources */,
-				166854472105E4FC0042793A /* FBO.hpp in Sources */,
 				166854482105E4FC0042793A /* Filters.hpp in Sources */,
-				166854492105E4FC0042793A /* HLSLTranslator.hpp in Sources */,
-				1668544A2105E4FC0042793A /* MilkdropWaveform.hpp in Sources */,
 				1668544B2105E4FC0042793A /* PerlinNoise.hpp in Sources */,
 				1668544C2105E4FC0042793A /* PerPixelMesh.hpp in Sources */,
 				1668544D2105E4FC0042793A /* Pipeline.hpp in Sources */,
@@ -796,24 +785,19 @@
 				166854532105E4FC0042793A /* RenderItemMatcher.hpp in Sources */,
 				166854542105E4FC0042793A /* RenderItemMergeFunction.hpp in Sources */,
 				166854552105E4FC0042793A /* Shader.hpp in Sources */,
-				166854562105E4FC0042793A /* ShaderContext.hpp in Sources */,
 				166854572105E4FC0042793A /* ShaderEngine.hpp in Sources */,
 				166854582105E4FC0042793A /* TextureManager.hpp in Sources */,
 				166854592105E4FD0042793A /* Transformation.hpp in Sources */,
-				1668545A2105E4FD0042793A /* UserTexture.hpp in Sources */,
 				1668545B2105E4FD0042793A /* VideoEcho.hpp in Sources */,
 				1668545C2105E4FD0042793A /* Waveform.hpp in Sources */,
 				1668545D2105E4FD0042793A /* CodeWriter.cpp in Sources */,
 				1668545E2105E4FD0042793A /* Engine.cpp in Sources */,
 				1668545F2105E4FD0042793A /* GLSLGenerator.cpp in Sources */,
-				166854602105E4FD0042793A /* HLSLGenerator.cpp in Sources */,
 				166854612105E4FD0042793A /* HLSLParser.cpp in Sources */,
 				166854622105E4FD0042793A /* HLSLTokenizer.cpp in Sources */,
 				166854632105E4FD0042793A /* HLSLTree.cpp in Sources */,
-				166854642105E4FD0042793A /* MSLGenerator.cpp in Sources */,
 				166854652105E4FD0042793A /* BeatDetect.cpp in Sources */,
 				166854662105E4FD0042793A /* Filters.cpp in Sources */,
-				166854672105E4FD0042793A /* HLSLTranslator.cpp in Sources */,
 				166854682105E4FD0042793A /* MilkdropWaveform.cpp in Sources */,
 				166854692105E4FD0042793A /* PerlinNoise.cpp in Sources */,
 				1668546A2105E4FD0042793A /* PerPixelMesh.cpp in Sources */,
