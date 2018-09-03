@@ -9,10 +9,8 @@ AM_CFLAGS = ${my_CFLAGS} \
 -ffunction-sections \
 -fdata-sections
 
-presetsdir = $(pkgdatadir)/presets
+presetsdir = $(libdir)/projectM
 
-# native presets are shared object files.
-# they should get installed to $presetsdir/
 presets_LTLIBRARIES = \
   libMstressJuppyDancer.la \
   libRLGFractalDrop7c.la \
