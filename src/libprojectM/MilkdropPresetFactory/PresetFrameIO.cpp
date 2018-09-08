@@ -5,9 +5,11 @@
 #include <iostream>
 #include <cmath>
 #include "Renderer/BeatDetect.hpp"
+
 #ifdef __SSE2__
 #include <immintrin.h>
 #endif
+
 
 PresetInputs::PresetInputs() : PipelineContext()
 {
@@ -35,7 +37,7 @@ void PresetInputs::update(const BeatDetect & music, const PipelineContext & cont
 
 float **alloc_mesh(size_t gx, size_t gy)
 {
-	// round gy up to multiple 4 (for possible SSE optimization) 
+	// round gy up to multiple 4 (for possible SSE optimization)
 	gy = (gy+3) & ~(size_t)3;
 
 	float **mesh = (float **)wipe_aligned_alloc(gx * sizeof(float *));
@@ -293,11 +295,11 @@ void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 		{
 			// fZoom2 = std::pow(this->zoom_mesh[x][y], std::pow(this->zoomexp_mesh[x][y],
 			// 		rad_mesh[x][y] * 2.0f - 1.0f));
-			__m128 rad_mesh_scaled = 
+			__m128 rad_mesh_scaled =
 				_mm_sub_ps(
 					_mm_mul_ps(
-						_mm_load_ps(&this->rad_mesh[x][y]), 
-						_mm_set_ps1(2.0f)), 
+						_mm_load_ps(&this->rad_mesh[x][y]),
+						_mm_set_ps1(2.0f)),
 					_mm_set_ps1(1.0f));
 			__m128 zoom_mesh = _mm_load_ps(&this->zoom_mesh[x][y]);
 			__m128 zoomexp_mesh = _mm_load_ps(&this->zoomexp_mesh[x][y]);
@@ -306,10 +308,10 @@ void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 			__m128 fZoomInv = _mm_rcp_ps(fZoom2);
 
 			// this->x_mesh[x][y] = this->orig_x[x][y] * 0.5f * fZoom2Inv + 0.5f;
-			__m128 x_mesh = 
+			__m128 x_mesh =
 				_mm_add_ps(
 					_mm_mul_ps(
-						_mm_load_ps(&this->orig_x[x][y]), 
+						_mm_load_ps(&this->orig_x[x][y]),
 						_mm_mul_ps(fZoomInv,_mm_set_ps1(0.5f))),		// CONSIDER: common sub-expression
 					_mm_set_ps1(0.5f));
 			// this->x_mesh[x][y] = (this->x_mesh[x][y] - this->cx_mesh[x][y]) / this->sx_mesh[x][y] + this->cx_mesh[x][y];
@@ -324,10 +326,10 @@ void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 				));
 
 			// this->y_mesh[x][y] = this->orig_y[x][y] * 0.5f * fZoom2Inv + 0.5f;
-			__m128 y_mesh =  
+			__m128 y_mesh =
 				_mm_add_ps(
 					_mm_mul_ps(
-						_mm_load_ps(&this->orig_y[x][y]), 
+						_mm_load_ps(&this->orig_y[x][y]),
 						_mm_mul_ps(fZoomInv,_mm_set_ps1(0.5f))),
 					_mm_set_ps1(0.5f));
 			// this->y_mesh[x][y] = (this->y_mesh[x][y] - this->cy_mesh[x][y]) / this->sy_mesh[x][y] + this->cy_mesh[x][y];
@@ -345,7 +347,7 @@ void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 
 	const float fWarpTime = context.time * this->fWarpAnimSpeed;
 	const float fWarpScaleInv = 1.0f / this->fWarpScale;
-	const float f[4] = 
+	const float f[4] =
 	{
 		11.68f + 4.0f * cosf(fWarpTime * 1.413f + 10),
 		 8.77f + 3.0f * cosf(fWarpTime * 1.113f + 7),
@@ -364,7 +366,7 @@ void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 			const __m128 orig_y = _mm_load_ps(&this->orig_y[x][y]);
 			const __m128 warp_mesh = _mm_mul_ps(_mm_load_ps(&this->warp_mesh[x][y]), _mm_set_ps1(0.0035f));
 
-			// this->x_mesh[x][y] += 
+			// this->x_mesh[x][y] +=
 			// 	(warp_mesh * sinf(fWarpTime * 0.333f + fWarpScaleInv * (orig_x * f[0] - orig_y * f[3]))) +
 			// 	(warp_mesh * cosf(fWarpTime * 0.753f - fWarpScaleInv * (orig_x * f[1] - orig_y * f[2])));
 			_mm_store_ps(&this->x_mesh[x][y],
@@ -387,7 +389,7 @@ void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 										_mm_mul_ps(orig_y, _mm_set_ps1(f[2]))
 									))))))));
 
-			// this->y_mesh[x][y] += 
+			// this->y_mesh[x][y] +=
 			// 	(warp_mesh * cosf(fWarpTime * 0.375f - fWarpScaleInv * (orig_x * f[2] + orig_y * f[1]))) +
 			// 	(warp_mesh * sinf(fWarpTime * 0.825f + fWarpScaleInv * (orig_x * f[0] + orig_y * f[3])));
 			_mm_store_ps(&this->y_mesh[x][y],
