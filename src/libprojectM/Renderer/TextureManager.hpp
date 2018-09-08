@@ -5,30 +5,37 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "projectM-opengl.h"
+#include "Texture.hpp"
+
 
 class TextureManager
 {
-  std::string presetURL;
-  std::map<std::string,unsigned int> textures;
-  std::map<std::string,unsigned int> heights;
-  std::map<std::string,unsigned int> widths;
-  std::vector<unsigned int> user_textures;
-  std::vector<std::string> user_texture_names;
+  std::string presetsURL;
+  std::map<std::string, Texture*> textures;
+  std::vector<Texture*> blurTextures;
+  Texture * mainTexture;
+
   std::vector<std::string> random_textures;
+  void loadTextureDir(const std::string & dirname);
+  TextureSamplerDesc loadTexture(const std::string name, const std::string imageUrl);
+  void ExtractTextureSettings(const std::string qualifiedName, GLint &_wrap_mode, GLint &_filter_mode, std::string & name);
+  std::vector<std::string> extensions;
+
 public:
+  TextureManager(std::string _presetsURL, const int texsizeX, const int texsizeY);
   ~TextureManager();
-  TextureManager(std::string _presetURL);
-  //void unloadTextures(const PresetOutputs::cshape_container &shapes);
+
   void Clear();
   void Preload();
-  unsigned int getTexture(const std::string filenamne);
-  unsigned int getTextureFullpath(const std::string filename, const std::string imageUrl);
-  unsigned int getTextureMemorySize();
-  int getTextureWidth(const std::string imageUrl);
-  int getTextureHeight(const std::string imageUrl);
-  void setTexture(const std::string name, const unsigned int texId, const int width, const int height);
-  void loadTextureDir();
-  std::string getRandomTextureName(std::string rand_name);
+  TextureSamplerDesc tryLoadingTexture(const std::string name);
+  TextureSamplerDesc getTexture(const std::string fullName, const GLenum defaultWrap, const GLenum defaultFilter);
+  const Texture * getMainTexture() const;
+  const std::vector<Texture *> & getBlurTextures() const;
+
+  void updateMainTexture();
+
+  TextureSamplerDesc getRandomTextureName(std::string rand_name);
   void clearRandomTextures();
 };
 

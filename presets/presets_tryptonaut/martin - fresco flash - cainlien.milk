@@ -663,5 +663,5 @@ comp_55=`
 comp_56=`ret = 1-exp(.1-ret1) ;
 comp_57=`}
 comp_58=`
-comp_59=`written by martin
-comp_60=`END
+comp_59=`//written by martin
+comp_60=`//END

@@ -307,6 +307,7 @@ static void *thread_callback(void *prjm) {
     void projectM::evaluateSecondPreset()
     {
         pipelineContext2().time = timeKeeper->GetRunningTime();
+        pipelineContext2().presetStartTime = timeKeeper->PresetTimeB();
         pipelineContext2().frame = timeKeeper->PresetFrameB();
         pipelineContext2().progress = timeKeeper->PresetProgressB();
 
@@ -341,6 +342,7 @@ static void *thread_callback(void *prjm) {
 
         /// @bug who is responsible for updating this now?"
         pipelineContext().time = timeKeeper->GetRunningTime();
+        pipelineContext().presetStartTime = timeKeeper->PresetTimeA();
         pipelineContext().frame = timeKeeper->PresetFrameA();
         pipelineContext().progress = timeKeeper->PresetProgressA();
 
@@ -451,6 +453,7 @@ static void *thread_callback(void *prjm) {
             this->fpsstart=getTicks ( &timeKeeper->startTime );
         }
 
+#ifndef UNLOCK_FPS
         int timediff = getTicks ( &timeKeeper->startTime )-this->timestart;
 
         if ( timediff < this->mspf )
@@ -463,6 +466,8 @@ static void *thread_callback(void *prjm) {
                 if ( usleep ( sleepTime ) != 0 ) {}}
         }
         this->timestart=getTicks ( &timeKeeper->startTime );
+#endif
+
         #endif /** !WIN32 */
 
 	#ifdef SYNC_PRESET_SWITCHES
@@ -507,7 +512,7 @@ static void *thread_callback(void *prjm) {
             mspf= ( int ) ( 1000.0/ ( float ) _settings.fps );
         else mspf = 0;
 
-        this->renderer = new Renderer ( width, height, gx, gy, texsize,  beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
+        this->renderer = new Renderer ( width, height, gx, gy, beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
 
         running = true;
 
@@ -612,7 +617,7 @@ static void *thread_callback(void *prjm) {
         *m_presetPos = m_presetChooser->end();
 
         // Load idle preset
-        std::cerr << "[projectM] Allocating idle preset..." << std::endl;
+//        std::cerr << "[projectM] Allocating idle preset..." << std::endl;
         m_activePreset = m_presetLoader->loadPreset
         ("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
 
@@ -676,7 +681,7 @@ static void *thread_callback(void *prjm) {
     /// @bug queuePreset case isn't handled
     void projectM::removePreset(unsigned int index) {
 
-        unsigned int chooserIndex = **m_presetPos;
+        size_t chooserIndex = **m_presetPos;
 
         m_presetLoader->removePreset(index);
 
@@ -741,10 +746,14 @@ static void *thread_callback(void *prjm) {
             timeKeeper->StartSmoothing();
 		}
 
-		if (result.empty())
+        if (result.empty()) {
 			presetSwitchedEvent(hardCut, **m_presetPos);
-		else
+            errorLoadingCurrentPreset = false;
+        } else {
 			presetSwitchFailedEvent(hardCut, **m_presetPos, result);
+            errorLoadingCurrentPreset = true;
+
+        }
 }
 
 
@@ -787,6 +796,8 @@ void projectM::selectNext(const bool hardCut) {
 */
 std::string projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
 
+    std::string result;
+
 	#ifdef SYNC_PRESET_SWITCHES
 	pthread_mutex_lock(&preset_mutex);
 	#endif
@@ -799,15 +810,16 @@ std::string projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
 		std::cerr << "problem allocating target preset: " << e.message() << std::endl;
 		return e.message();
 	}
-        // Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
-        renderer->setPresetName(targetPreset->name());
-        renderer->SetPipeline(targetPreset->pipeline());
+
+    // Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
+    renderer->setPresetName(targetPreset->name());
+    result = renderer->SetPipeline(targetPreset->pipeline());
 
 	#ifdef SYNC_PRESET_SWITCHES
 	pthread_mutex_unlock(&preset_mutex);
 	#endif
 
-	return std::string();
+    return result;
   }
 
     void projectM::setPresetLock ( bool isLocked )
@@ -918,7 +930,7 @@ void projectM::changeTextureSize(int size) {
   delete renderer;
   renderer = new Renderer(_settings.windowWidth, _settings.windowHeight,
                           _settings.meshX, _settings.meshY,
-                          _settings.textureSize, beatDetect, _settings.presetURL,
+                          beatDetect, _settings.presetURL,
                           _settings.titleFontURL, _settings.menuFontURL);
 }
 
@@ -929,3 +941,4 @@ void projectM::getMeshSize(int *w, int *h)	{
 	*w = _settings.meshX;
 	*h = _settings.meshY;
 }
+

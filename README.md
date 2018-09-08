@@ -8,12 +8,13 @@ projectM is an open-source project that reimplements the esteemed [Winamp Milkdr
 Its purpose in life is to read in audio input and produce mesmerizing visuals, detecting tempo, and rendering advanced equations into a limitless array of user-contributed visualizations.
 
 ### Available For
-* [Mac OS X, Linux (binary)](https://github.com/projectM-visualizer/projectm/releases/tag/v0.9.2-beta)
-* [Mac OS X iTunes (plugin)](https://github.com/projectM-visualizer/projectm/releases/tag/v0.9.1-beta)
+* [macOS, Linux (binary)](https://github.com/projectM-visualizer/projectm/releases/tag/v0.9.2-beta)
 * [Android](https://play.google.com/store/apps/details?id=com.psperl.projectM)
 * [iOS](https://itunes.apple.com/us/app/projectm-music-visualizer/id530922227?mt=8&ign-mpt=uo%3D4)
 * Qt5 + Pulseaudio
 * [ALSA, xmms, winamp, jack](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
+* [iTunes plugin (macOS)](https://github.com/projectM-visualizer/projectm/releases/tag/v0.9.1-beta)
+* Windows (in progress)
 
 ### Project Status
 You can read more about how it works and the current state of development [here](https://lwn.net/Articles/750152/).
@@ -74,19 +75,19 @@ Silverjuke (FOSS Jukebox)
 # Using the library
 At its core projectM is a library, [libprojectM](src/libprojectM). This library is responsible for parsing presets, analyzing audio PCM data with beat detection and FFT, applying the preset to the audio feature data and rendering the resulting output with openGL. It can render to an openGL context or a texture.
 
-For an example of a very simple example use of the library see the [libSDL2 sample code](src/projectM-sdl/projectM_SDL_main.cpp).
+For an example of a simple example use of the library see the [libSDL2 sample code](src/projectM-sdl/projectM_SDL_main.cpp).
 
 There are many other applications that make use of libprojectM that can be found in the [src](src/) directory.
 
 ***
 
 # Todo
-* Top priority has for a long time been to [port the calls from OpenGL immediate-mode (old-school) to be compatible with OpenGL ES](https://github.com/projectM-visualizer/projectm/issues/11), using [vertex buffer objects](http://duriansoftware.com/joe/An-intro-to-modern-OpenGL.-Chapter-2.1:-Buffers-and-Textures.html). There's a [todo list of function calls to replace](https://github.com/projectM-visualizer/projectm/blob/gles/glES-porting.txt).
-* [macOS Sierra broke the iTunes plugin somehow](https://github.com/projectM-visualizer/projectm/issues/7) (this is semi-fixed)
-* Currently shader support is done via nVidia's Cg shader toolkit. This is ancient and no longer supported and very lame. [Use standard OpenGL facilities for compiling and executing the shader-based presets.](https://github.com/projectM-visualizer/projectm/pull/26)
+* Make it build on windows again. There is support, it just needs updating.
 * Support for the missing Milkdrop waveforms to get full compatibility with Milkdrop presets.
 * Steal cool stuff from the recently-released Milkdrop source.
-* Update the [various applications using libprojectM](src).
+* Finish emscripten support for building to wasm/webGL for the web.
+* Update the [various implementations using libprojectM](src).
+* Update downstream projects with new versions.
 
 ***
 

@@ -25,7 +25,7 @@ CodeWriter::CodeWriter(bool writeFileNames)
     m_currentLine       = 1;
     m_currentFileName   = NULL;
     m_spacesPerIndent   = 4;
-    m_writeLines        = true;
+    m_writeLines        = false;
     m_writeFileNames    = writeFileNames;
 }
 
@@ -57,11 +57,11 @@ void CodeWriter::BeginLine(int indent, const char* fileName, int lineNumber)
             {
                 m_buffer += " \"";
                 m_buffer += fileName;
-                m_buffer += "\"\n";
+                m_buffer += "\"\n\n";
             }
             else
             {
-                m_buffer += "\n";
+                m_buffer += "\n\n";
             }
         }
     }

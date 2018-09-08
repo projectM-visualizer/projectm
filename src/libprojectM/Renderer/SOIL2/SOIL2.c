@@ -364,12 +364,14 @@ unsigned int
 		const char *filename,
 		int force_channels,
 		unsigned int reuse_texture_ID,
-		unsigned int flags
+        unsigned int flags,
+        int *width,
+        int *height
 	)
 {
 	/*	variables	*/
 	unsigned char* img;
-	int width, height, channels;
+    int channels;
 	unsigned int tex_id;
 	/*	does the user want direct uploading of the image as a DDS file?	*/
 	if( flags & SOIL_FLAG_DDS_LOAD_DIRECT )
@@ -407,7 +409,7 @@ unsigned int
 	}
 
 	/*	try to load the image	*/
-	img = SOIL_load_image( filename, &width, &height, &channels, force_channels );
+    img = SOIL_load_image( filename, width, height, &channels, force_channels );
 	/*	channels holds the original number of channels, which may have been forced	*/
 	if( (force_channels >= 1) && (force_channels <= 4) )
 	{
@@ -421,7 +423,7 @@ unsigned int
 	}
 	/*	OK, make it a texture!	*/
 	tex_id = SOIL_internal_create_OGL_texture(
-			img, &width, &height, channels,
+            img, width, height, channels,
 			reuse_texture_ID, flags,
 			GL_TEXTURE_2D, GL_TEXTURE_2D,
 			GL_MAX_TEXTURE_SIZE );
@@ -496,12 +498,14 @@ unsigned int
 		int buffer_length,
 		int force_channels,
 		unsigned int reuse_texture_ID,
-		unsigned int flags
+        unsigned int flags,
+        int * width,
+        int * height
 	)
 {
 	/*	variables	*/
 	unsigned char* img;
-	int width, height, channels;
+    int channels;
 	unsigned int tex_id;
 	/*	does the user want direct uploading of the image as a DDS file?	*/
 	if( flags & SOIL_FLAG_DDS_LOAD_DIRECT )
@@ -547,7 +551,7 @@ unsigned int
 	/*	try to load the image	*/
 	img = SOIL_load_image_from_memory(
 					buffer, buffer_length,
-					&width, &height, &channels,
+                    width, height, &channels,
 					force_channels );
 	/*	channels holds the original number of channels, which may have been forced	*/
 	if( (force_channels >= 1) && (force_channels <= 4) )
@@ -562,7 +566,7 @@ unsigned int
 	}
 	/*	OK, make it a texture!	*/
 	tex_id = SOIL_internal_create_OGL_texture(
-			img, &width, &height, channels,
+            img, width, height, channels,
 			reuse_texture_ID, flags,
 			GL_TEXTURE_2D, GL_TEXTURE_2D,
 			GL_MAX_TEXTURE_SIZE );

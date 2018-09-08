@@ -8,11 +8,10 @@
 
 #include "pmSDL.hpp"
 
-#define OGL_DEBUG	0
+#define FAKE_AUDIO	0
+#define TEST_ALL_PRESETS	0
 
 #if OGL_DEBUG
-#include <GLES3/gl32.h>
-
 void DebugLog(GLenum source,
                GLenum type,
                GLuint id,
@@ -55,6 +54,11 @@ std::string getConfigFilePath() {
 }
 
 int main(int argc, char *argv[]) {
+
+#if UNLOCK_FPS
+    setenv("vblank_mode", "0", 1);
+#endif
+
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
     if (! SDL_VERSION_ATLEAST(2, 0, 5)) {
@@ -84,6 +88,10 @@ int main(int argc, char *argv[]) {
 			}
         }
     }
+    // use GLES 2.0 (this may need adjusting)
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 
 #else
 	// Disabling compatibility profile
@@ -111,15 +119,16 @@ int main(int argc, char *argv[]) {
     if (! configFilePath.empty()) {
         // found config file, use it
         app = new projectMSDL(configFilePath, 0);
+        SDL_Log("Using config from %s", configFilePath.c_str());
     } else {
-        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "Config file not found, using development settings\n");
+        SDL_Log("Config file not found, using development settings");
         float heightWidthRatio = (float)height / (float)width;
         projectM::Settings settings;
         settings.windowWidth = width;
         settings.windowHeight = height;
         settings.meshX = 300;
         settings.meshY = settings.meshX * heightWidthRatio;
-        settings.fps   = FPS;
+        settings.fps   = 60;
         settings.smoothPresetDuration = 3; // seconds
         settings.presetDuration = 7; // seconds
         settings.beatSensitivity = 0.8;
@@ -128,7 +137,8 @@ int main(int argc, char *argv[]) {
         settings.softCutRatingsEnabled = 1; // ???
         // get path to our app, use CWD for presets/fonts/etc
         std::string base_path = SDL_GetBasePath();
-        settings.presetURL = base_path + "presets/presets_tryptonaut";
+        settings.presetURL = base_path + "presets";
+//        settings.presetURL = base_path + "presets/presets_shader_test";
         settings.menuFontURL = base_path + "fonts/Vera.ttf";
         settings.titleFontURL = base_path + "fonts/Vera.ttf";
         // init with settings
@@ -142,25 +152,74 @@ int main(int argc, char *argv[]) {
     glDebugMessageCallback(DebugLog, NULL);
 #endif
 
+#if !FAKE_AUDIO
     // get an audio input device
-    app->openAudioInput();
-    app->beginAudioCapture();
+    if (app->openAudioInput())
+	    app->beginAudioCapture();
+#endif
+
+#if TEST_ALL_PRESETS
+    uint buildErrors = 0;
+    for(int i = 0; i < app->getPlaylistSize(); i++) {
+        std::cout << i << "\t" << app->getPresetName(i) << std::endl;
+        app->selectPreset(i);
+        if (app->getErrorLoadingCurrentPreset()) {
+            buildErrors++;
+        }
+    }
+
+    if (app->getPlaylistSize()) {
+        fprintf(stdout, "Preset loading errors: %d/%d [%d%%]\n", buildErrors, app->getPlaylistSize(), (buildErrors*100) / app->getPlaylistSize());
+    }
+
+    return PROJECTM_SUCCESS;
+#endif
+
+#if UNLOCK_FPS
+    int32_t frame_count = 0;
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC_RAW, &now);
+    int64_t start = ( ((int64_t)now.tv_sec * 1000L) + (now.tv_nsec / 1000000L) );
+#endif
 
     // standard main loop
-    const Uint32 frame_delay = 1000/FPS;
+    int fps = app->settings().fps;
+    printf("fps: %d\n", fps);
+    if (fps <= 0)
+        fps = 60;
+    const Uint32 frame_delay = 1000/fps;
     Uint32 last_time = SDL_GetTicks();
     while (! app->done) {
         app->renderFrame();
+#if FAKE_AUDIO
+        app->addFakePCM();
+#endif
+
+#if UNLOCK_FPS
+        frame_count++;
+        clock_gettime(CLOCK_MONOTONIC_RAW, &now);
+        if (( ((int64_t)now.tv_sec * 1000L) + (now.tv_nsec / 1000000L) ) - start > 5000) {
+            SDL_GL_DeleteContext(glCtx);
+            delete(app);
+            fprintf(stdout, "Frames[%d]\n", frame_count);
+            exit(0);
+        }
+#else
         app->pollEvent();
         Uint32 elapsed = SDL_GetTicks() - last_time;
         if (elapsed < frame_delay)
             SDL_Delay(frame_delay - elapsed);
         last_time = SDL_GetTicks();
+#endif
     }
     
     SDL_GL_DeleteContext(glCtx);
+#if !FAKE_AUDIO
     app->endAudioCapture();
+#endif
     delete app;
 
     return PROJECTM_SUCCESS;
 }
+
+

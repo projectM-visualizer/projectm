@@ -80,7 +80,7 @@ void Waveform::Draw(RenderContext &context)
 
     glUseProgram(context.programID_v2f_c4f);
 
-    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
 
 	if (additive)  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	else glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -92,14 +92,14 @@ void Waveform::Draw(RenderContext &context)
 #ifndef GL_TRANSITION
 		glPointSize(context.texsize <= 512 ? 2 : 2*context.texsize/512);
 #endif
-        glUniform1f(ShaderEngine::Uniform_V2F_C4F_VertexPointSize(), context.texsize <= 512 ? 2 : 2*context.texsize/512);
+        glUniform1f(context.uniform_v2f_c4f_vertex_point_size, context.texsize <= 512 ? 2 : 2*context.texsize/512);
 	}
     else
     {
 #ifndef GL_TRANSITION
         glPointSize(context.texsize <= 512 ? 1 : context.texsize/512);
 #endif
-        glUniform1f(ShaderEngine::Uniform_V2F_C4F_VertexPointSize(), context.texsize <= 512 ? 1 : context.texsize/512);
+        glUniform1f(context.uniform_v2f_c4f_vertex_point_size, context.texsize <= 512 ? 1 : context.texsize/512);
     }
 
     glBindVertexArray(m_vaoID);
