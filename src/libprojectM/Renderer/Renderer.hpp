@@ -1,7 +1,6 @@
 #ifndef Renderer_HPP
 #define Renderer_HPP
 
-#include "FBO.hpp"
 #include "BeatDetect.hpp"
 #include "Common.hpp"
 #include <string>
@@ -22,8 +21,21 @@
 #endif
 #endif /** USE_FTGL */
 
+// for final composite grid:
+#define FCGSX 32 // final composite gridsize - # verts - should be EVEN.
+#define FCGSY 24 // final composite gridsize - # verts - should be EVEN.
+                 // # of grid *cells* is two less,
+                 // since we have redundant verts along the center line in X and Y (...for clean 'ang' interp)
+typedef struct
+{
+    float x, y;     // screen position + Z-buffer depth
+    float Diffuse[4];     // diffuse color
+    float tu, tv;           // DYNAMIC
+    float rad, ang;         // STATIC
+} composite_shader_vertex;
 
-class UserTexture;
+
+class Texture;
 class BeatDetect;
 class TextureManager;
 
@@ -48,10 +60,14 @@ public:
 
   std::string title;
   int drawtitle;
-  int texsize;
+  int texsizeX;
+  int texsizeY;
+  float m_fAspectX;
+  float m_fAspectY;
+  float m_fInvAspectX;
+  float m_fInvAspectY;
 
-
-  Renderer( int width, int height, int gx, int gy, int texsize,  BeatDetect *beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
+  Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
   ~Renderer();
 
   void RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext);
@@ -60,7 +76,7 @@ public:
   GLuint initRenderToTexture();
 
 
-  void SetPipeline(Pipeline &pipeline);
+  std::string SetPipeline(Pipeline &pipeline);
 
   void setPresetName(const std::string& theValue)
   {
@@ -75,7 +91,6 @@ public:
 private:
 
 	PerPixelMesh mesh;
-  RenderTarget *renderTarget;
   BeatDetect *beatDetect;
   TextureManager *textureManager;
   static Pipeline* currentPipe;
@@ -102,6 +117,9 @@ private:
   GLuint m_vbo_CompositeOutput;
   GLuint m_vao_CompositeOutput;
 
+  GLuint m_vbo_CompositeShaderOutput;
+  GLuint m_vao_CompositeShaderOutput;
+
 #ifdef USE_FTGL
   FTGLPixmapFont *title_font;
   FTGLPixmapFont *other_font;
@@ -109,10 +127,11 @@ private:
 #endif /** USE_FTGL */
 
   void SetupPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
-  void Interpolation(const Pipeline &pipeline);
+  void Interpolation(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderItems(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void FinishPass1();
   void Pass2 (const Pipeline &pipeline, const PipelineContext &pipelineContext);
+  void CompositeShaderOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void CompositeOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext);
 
   inline static PixelPoint PerPixel(PixelPoint p, PerPixelContext &context)
@@ -129,6 +148,16 @@ private:
   void draw_title();
   void draw_title_to_screen(bool flip);
   void draw_title_to_texture();
+
+  int nearestPower2( int value );
+
+  GLuint textureRenderToTexture;
+
+  void InitCompositeShaderVertex();
+  float SquishToCenter(float x, float fExp);
+  void UvToMathSpace(float u, float v, float* rad, float* ang);
+  composite_shader_vertex    m_comp_verts[FCGSX*FCGSY];
+  int         m_comp_indices[(FCGSX-2)*(FCGSY-2)*6];
 
 };
 

@@ -166,8 +166,9 @@ unsigned int
 		const char *filename,
 		int force_channels,
 		unsigned int reuse_texture_ID,
-		unsigned int flags
-	);
+        unsigned int flags,
+        int *width,
+        int *height);
 
 /**
 	Loads 6 images from disk into an OpenGL cubemap texture.
@@ -249,7 +250,9 @@ unsigned int
 		int buffer_length,
 		int force_channels,
 		unsigned int reuse_texture_ID,
-		unsigned int flags
+        unsigned int flags,
+        int * width,
+        int * height
 	);
 
 /**

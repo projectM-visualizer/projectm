@@ -6,7 +6,11 @@ if ENABLE_QT
   PROJECTM_QT_SUBDIR = projectM-qt projectM-pulseaudio
 endif
 
-SUBDIRS=libprojectM NativePresets ${PROJECTM_SDL_SUBDIR} ${PROJECTM_QT_SUBDIR}
+if ENABLE_EMSCRIPTEN
+  PROJECTM_EMSCRIPTEN_SUBDIR = projectM-emscripten
+endif
+
+SUBDIRS=libprojectM NativePresets ${PROJECTM_SDL_SUBDIR} ${PROJECTM_QT_SUBDIR} ${PROJECTM_EMSCRIPTEN_SUBDIR}
 
 # system headers/libraries/data to install
 # for compatibility reasons here as nobase_include

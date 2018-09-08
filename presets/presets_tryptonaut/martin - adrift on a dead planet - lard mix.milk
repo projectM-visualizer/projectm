@@ -743,8 +743,8 @@ warp_146=`ret = 1-exp(-ret1*2); //finally !
 warp_147=`//ret = hormask;
 warp_148=`}
 warp_149=`
-warp_150=`written by martin
-warp_151=`END
+warp_150=`//written by martin
+warp_151=`//END
 comp_1=`shader_body
 comp_2=`{
 comp_3=`

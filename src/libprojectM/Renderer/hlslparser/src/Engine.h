@@ -18,8 +18,9 @@
 #endif
 
 // Engine/Assert.h
+#include <cassert>
 
-#define ASSERT(...)
+#define ASSERT(...) // (assert(__VA_ARGS__))
 
 namespace M4 {
 

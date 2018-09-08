@@ -7,17 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		16A4214820781836006F30CE /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214420781835006F30CE /* libRenderer.a */; };
-		16A4214920781836006F30CE /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214420781835006F30CE /* libRenderer.a */; };
-		16A4214A20781836006F30CE /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214520781835006F30CE /* libMilkdropPresetFactory.a */; };
-		16A4214B20781836006F30CE /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214520781835006F30CE /* libMilkdropPresetFactory.a */; };
-		16A4214C20781836006F30CE /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214620781835006F30CE /* libNativePresetFactory.a */; };
-		16A4214D20781836006F30CE /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214620781835006F30CE /* libNativePresetFactory.a */; };
-		16A4214E20781836006F30CE /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214720781836006F30CE /* libprojectM.a */; };
-		16A4214F20781836006F30CE /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A4214720781836006F30CE /* libprojectM.a */; };
-		16A42151207818F6006F30CE /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A42150207818F6006F30CE /* Cg.framework */; };
-		16A421522078196A006F30CE /* Cg.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16A42150207818F6006F30CE /* Cg.framework */; };
-		16A4215320781A41006F30CE /* Cg.framework in Copy Files */ = {isa = PBXBuildFile; fileRef = 16A42150207818F6006F30CE /* Cg.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		16FE0B2121157D62005F170D /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 168F716D21125D85001806E7 /* libMilkdropPresetFactory.a */; };
+		16FE0B2221157D63005F170D /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 168F716F21125D85001806E7 /* libNativePresetFactory.a */; };
+		16FE0B2321157D63005F170D /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 168F716B21125D85001806E7 /* libprojectM.a */; };
+		16FE0B2421157D63005F170D /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 168F716921125D85001806E7 /* libRenderer.a */; };
 		C34E811C1956D0D4001AC5B5 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811B1956D0D4001AC5B5 /* libz.a */; };
 		C34E811E1956D0D6001AC5B5 /* libpng15.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811D1956D0D6001AC5B5 /* libpng15.a */; };
 		C34E81201956D0D8001AC5B5 /* libftgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811F1956D0D8001AC5B5 /* libftgl.a */; };
@@ -30,7 +23,7 @@
 		C37EBD3B19A0112900220265 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C37EBD3A19A0112900220265 /* AppDelegate.m */; };
 		C37EBD3E19A0112900220265 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD3C19A0112900220265 /* MainMenu.xib */; };
 		C37EBD4019A0112900220265 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD3F19A0112900220265 /* Images.xcassets */; };
-		C37EBD5B19A0118600220265 /* iProjectM.pkg in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD5A19A0118600220265 /* iProjectM.pkg */; };
+		C37EBD5B19A0118600220265 /* iTunes Visualizer.pkg in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD5A19A0118600220265 /* iTunes Visualizer.pkg */; };
 		C37EBD5D19A0146F00220265 /* images in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD5C19A0146F00220265 /* images */; };
 		C37EBD5F19A0164400220265 /* selectViz.png in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD5E19A0164400220265 /* selectViz.png */; };
 		C38E8C881B1A12540029901E /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = C38E8C871B1A12540029901E /* Preferences.xib */; };
@@ -44,33 +37,54 @@
 		C3F9D7D917B83CF1009E58CB /* iTunesAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D617B83CF1009E58CB /* iTunesAPI.cpp */; };
 		C3FAE59217B87D8700F4B110 /* getConfigFilename.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */; };
 		C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in plist */ = {isa = PBXBuildFile; fileRef = C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */; };
-		C3FAF97717B89F7400F4B110 /* shaders in share */ = {isa = PBXBuildFile; fileRef = C3FAF97617B89F7200F4B110 /* shaders */; };
-		C3FAF97817B89F7B00F4B110 /* config.inp in share */ = {isa = PBXBuildFile; fileRef = C3FAF97517B89F7200F4B110 /* config.inp */; };
-		C3FAF97B17B8A45200F4B110 /* fonts in share */ = {isa = PBXBuildFile; fileRef = C3FAF97917B8A43B00F4B110 /* fonts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		169501421F6EC5E6008FAF86 /* PBXContainerItemProxy */ = {
+		168F716821125D85001806E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1695013E1F6EC5E5008FAF86 /* libprojectM.xcodeproj */;
+			containerPortal = 168F716121125D85001806E7 /* libprojectM.xcodeproj */;
 			proxyType = 2;
-			remoteGlobalIDString = 169501301F6EC5E5008FAF86;
-			remoteInfo = libprojectM;
+			remoteGlobalIDString = 16178B12207A6F4000D3B0C8;
+			remoteInfo = Renderer;
+		};
+		168F716A21125D85001806E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 168F716121125D85001806E7 /* libprojectM.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 16A49E57207A7C8C00E508EA;
+			remoteInfo = projectM;
+		};
+		168F716C21125D85001806E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 168F716121125D85001806E7 /* libprojectM.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1612C9A4207A855D00862A3A;
+			remoteInfo = MilkdropPresetFactory;
+		};
+		168F716E21125D85001806E7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 168F716121125D85001806E7 /* libprojectM.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1612C9AC207A856A00862A3A;
+			remoteInfo = NativePresetFactory;
+		};
+		16FE0B1B21157D55005F170D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 168F716121125D85001806E7 /* libprojectM.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 16A49E56207A7C8C00E508EA;
+			remoteInfo = projectM;
+		};
+		16FE0B2521157D84005F170D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C3F9D7A717B82CC3009E58CB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C3F9D7AE17B82CC3009E58CB;
+			remoteInfo = iProjectM;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C3C24430195764660021FCD4 /* Copy Files */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				16A4215320781A41006F30CE /* Cg.framework in Copy Files */,
-			);
-			name = "Copy Files";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C3FAE5A917B898BB00F4B110 /* plist */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -82,23 +96,10 @@
 			name = plist;
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		C3FAF97317B89F1700F4B110 /* share */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = share;
-			dstSubfolderSpec = 16;
-			files = (
-				C3FAF97717B89F7400F4B110 /* shaders in share */,
-				C3FAF97B17B8A45200F4B110 /* fonts in share */,
-				C3FAF97817B89F7B00F4B110 /* config.inp in share */,
-			);
-			name = share;
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1695013E1F6EC5E5008FAF86 /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
+		168F716121125D85001806E7 /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
 		16A4214420781835006F30CE /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/.libs/libRenderer.a; sourceTree = "<group>"; };
 		16A4214520781835006F30CE /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/.libs/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
 		16A4214620781835006F30CE /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/.libs/libNativePresetFactory.a; sourceTree = "<group>"; };
@@ -124,7 +125,7 @@
 		C37EBD3D19A0112900220265 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		C37EBD3F19A0112900220265 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		C37EBD4619A0112900220265 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		C37EBD5A19A0118600220265 /* iProjectM.pkg */ = {isa = PBXFileReference; lastKnownFileType = text; path = iProjectM.pkg; sourceTree = "<group>"; };
+		C37EBD5A19A0118600220265 /* iTunes Visualizer.pkg */ = {isa = PBXFileReference; lastKnownFileType = file; path = "iTunes Visualizer.pkg"; sourceTree = "<group>"; };
 		C37EBD5C19A0146F00220265 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = images; path = ../images; sourceTree = "<group>"; };
 		C37EBD5E19A0164400220265 /* selectViz.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = selectViz.png; path = images/selectViz.png; sourceTree = "<group>"; };
 		C37EBD6019A01BEE00220265 /* projectM Visualizer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "projectM Visualizer.entitlements"; sourceTree = "<group>"; };
@@ -161,11 +162,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				16A421522078196A006F30CE /* Cg.framework in Frameworks */,
-				16A4214D20781836006F30CE /* libNativePresetFactory.a in Frameworks */,
-				16A4214920781836006F30CE /* libRenderer.a in Frameworks */,
-				16A4214B20781836006F30CE /* libMilkdropPresetFactory.a in Frameworks */,
-				16A4214F20781836006F30CE /* libprojectM.a in Frameworks */,
 				C37EBD2C19A0112900220265 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -174,15 +170,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				16A42151207818F6006F30CE /* Cg.framework in Frameworks */,
+				16FE0B2121157D62005F170D /* libMilkdropPresetFactory.a in Frameworks */,
+				16FE0B2221157D63005F170D /* libNativePresetFactory.a in Frameworks */,
+				16FE0B2321157D63005F170D /* libprojectM.a in Frameworks */,
+				16FE0B2421157D63005F170D /* libRenderer.a in Frameworks */,
 				C3C24435195764870021FCD4 /* libGLEW.a in Frameworks */,
-				16A4214C20781836006F30CE /* libNativePresetFactory.a in Frameworks */,
 				C34E81241956D0DA001AC5B5 /* libbz2.a in Frameworks */,
 				C34E81221956D0D9001AC5B5 /* libfreetype.a in Frameworks */,
-				16A4214A20781836006F30CE /* libMilkdropPresetFactory.a in Frameworks */,
 				C34E81201956D0D8001AC5B5 /* libftgl.a in Frameworks */,
-				16A4214820781836006F30CE /* libRenderer.a in Frameworks */,
-				16A4214E20781836006F30CE /* libprojectM.a in Frameworks */,
 				C34E811E1956D0D6001AC5B5 /* libpng15.a in Frameworks */,
 				C34E811C1956D0D4001AC5B5 /* libz.a in Frameworks */,
 				C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */,
@@ -193,10 +188,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1695013F1F6EC5E5008FAF86 /* Products */ = {
+		168F716221125D85001806E7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				169501431F6EC5E6008FAF86 /* liblibprojectM.a */,
+				168F716921125D85001806E7 /* libRenderer.a */,
+				168F716B21125D85001806E7 /* libprojectM.a */,
+				168F716D21125D85001806E7 /* libMilkdropPresetFactory.a */,
+				168F716F21125D85001806E7 /* libNativePresetFactory.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -235,10 +233,10 @@
 		C3F9D7A617B82CC3009E58CB = {
 			isa = PBXGroup;
 			children = (
-				1695013E1F6EC5E5008FAF86 /* libprojectM.xcodeproj */,
+				168F716121125D85001806E7 /* libprojectM.xcodeproj */,
 				C38212791A5A2114002A8D78 /* gles_conv.txt */,
 				C37EBD5E19A0164400220265 /* selectViz.png */,
-				C37EBD5A19A0118600220265 /* iProjectM.pkg */,
+				C37EBD5A19A0118600220265 /* iTunes Visualizer.pkg */,
 				C34E81191956D0C3001AC5B5 /* contrib */,
 				C3FAF97A17B8A44100F4B110 /* share */,
 				C3FAE5A417B88C5B00F4B110 /* libprojectM */,
@@ -350,6 +348,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				16FE0B2621157D84005F170D /* PBXTargetDependency */,
 			);
 			name = "projectM Visualizer";
 			productName = "projectM Visualizer";
@@ -363,13 +362,12 @@
 				C3F9D7AB17B82CC3009E58CB /* Sources */,
 				C3F9D7AC17B82CC3009E58CB /* Frameworks */,
 				C3FAE5A917B898BB00F4B110 /* plist */,
-				C3C24430195764660021FCD4 /* Copy Files */,
-				C3FAF97317B89F1700F4B110 /* share */,
 				C3FAE5AB17B898F800F4B110 /* Generate Installer Package */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				16FE0B1C21157D55005F170D /* PBXTargetDependency */,
 			);
 			name = iProjectM;
 			productName = iProjectM;
@@ -408,8 +406,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 1695013F1F6EC5E5008FAF86 /* Products */;
-					ProjectRef = 1695013E1F6EC5E5008FAF86 /* libprojectM.xcodeproj */;
+					ProductGroup = 168F716221125D85001806E7 /* Products */;
+					ProjectRef = 168F716121125D85001806E7 /* libprojectM.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -421,11 +419,32 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		169501431F6EC5E6008FAF86 /* liblibprojectM.a */ = {
+		168F716921125D85001806E7 /* libRenderer.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
-			path = liblibprojectM.a;
-			remoteRef = 169501421F6EC5E6008FAF86 /* PBXContainerItemProxy */;
+			path = libRenderer.a;
+			remoteRef = 168F716821125D85001806E7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		168F716B21125D85001806E7 /* libprojectM.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libprojectM.a;
+			remoteRef = 168F716A21125D85001806E7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		168F716D21125D85001806E7 /* libMilkdropPresetFactory.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libMilkdropPresetFactory.a;
+			remoteRef = 168F716C21125D85001806E7 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		168F716F21125D85001806E7 /* libNativePresetFactory.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libNativePresetFactory.a;
+			remoteRef = 168F716E21125D85001806E7 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -442,7 +461,7 @@
 				C37EBD4019A0112900220265 /* Images.xcassets in Resources */,
 				C37EBD3819A0112900220265 /* Credits.rtf in Resources */,
 				C37EBD3E19A0112900220265 /* MainMenu.xib in Resources */,
-				C37EBD5B19A0118600220265 /* iProjectM.pkg in Resources */,
+				C37EBD5B19A0118600220265 /* iTunes Visualizer.pkg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -461,7 +480,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "mkdir -p \"$DSTROOT/usr/local/share/projectM/presets\"\n#cp -r \"$SRCROOT\"/../../presets/custom/* \"$DSTROOT/usr/local/share/projectM/presets/\"\ncp -r \"$SRCROOT\"/../../presets/presets_tryptonaut/* \"$DSTROOT/usr/local/share/projectM/presets/\"\ncp -r \"$SRCROOT\"/../../presets/presets_bltc201/* \"$DSTROOT/usr/local/share/projectM/presets/\"\n#rm -rf \"$SRCROOT/iProjectM.bundle\"\n#cp -r \"$DSTROOT/Library/iTunes/iTunes Plug-ins/iProjectM.bundle\" $SRCROOT/\ninstall_name_tool -change @executable_path/../Frameworks/Cg.framework/Cg @loader_path/../Frameworks/Cg.framework/Cg \"$DSTROOT/Library/iTunes/iTunes Plug-ins/iProjectM.bundle/Contents/MacOS/iProjectM\"\ncp -r $CONFIGURATION_BUILD_DIR/share/* \"$DSTROOT/usr/local/share/projectM\"\npkgbuild --component-plist \"$SRCROOT/iProjectM-pkg.plist\" --root \"$DSTROOT\" \"$SRCROOT/iProjectM.pkg\"\n";
+			shellScript = "POUT=\"$BUILT_PRODUCTS_DIR\"/\"$CONTENTS_FOLDER_PATH/Resources/presets\"\nPIN=\"$SRCROOT\"/../../presets\n\nmkdir -p \"$POUT\"\nfor preset_dir in \"$PIN/\"*; do\ncp \"$preset_dir/\"* \"$POUT/\"\ndone\necho \"Copied presets to $POUT\"\n\n\npkgbuild --component-plist \"$SRCROOT/iProjectM-pkg.plist\" --root \"$DSTROOT\" \"$SRCROOT/iTunes Visualizer.pkg\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -489,6 +508,19 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		16FE0B1C21157D55005F170D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = projectM;
+			targetProxy = 16FE0B1B21157D55005F170D /* PBXContainerItemProxy */;
+		};
+		16FE0B2621157D84005F170D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C3F9D7AE17B82CC3009E58CB /* iProjectM */;
+			targetProxy = 16FE0B2521157D84005F170D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		C37EBD3019A0112900220265 /* InfoPlist.strings */ = {

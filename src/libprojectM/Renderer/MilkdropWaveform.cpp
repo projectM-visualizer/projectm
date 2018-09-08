@@ -73,7 +73,7 @@ void MilkdropWaveform::Draw(RenderContext &context)
     mat_vertex = mat_scale * mat_vertex;
     mat_vertex = mat_rotation * mat_vertex;
     mat_vertex = mat_second_translation * mat_vertex;
-    glUniformMatrix4fv(ShaderEngine::Uniform_V2F_C4F_VertexTranformation(), 1, GL_FALSE, glm::value_ptr(mat_vertex));
+    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(mat_vertex));
 
     if(modulateAlphaByVolume) ModulateOpacityByVolume(context);
     else temp_a = a;
@@ -109,9 +109,9 @@ void MilkdropWaveform::Draw(RenderContext &context)
 
     glBindVertexArray(0);
 
-    #ifndef GL_TRANSITION
+#ifndef GL_TRANSITION
 		if(dots==1) glDisable(GL_LINE_STIPPLE);
-	#endif
+#endif
 
 }
 
@@ -132,7 +132,6 @@ void MilkdropWaveform::ModulateOpacityByVolume(RenderContext &context)
 
 void MilkdropWaveform::MaximizeColors(RenderContext &context)
 {
-
 	float wave_r_switch=0, wave_g_switch=0, wave_b_switch=0;
 	//wave color brightening
 	//

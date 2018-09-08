@@ -7,7 +7,7 @@
 
 
 // projectM
-void initProjectM( VisualPluginData * visualPluginData ) {
+void initProjectM( VisualPluginData * visualPluginData, std::string presetPath ) {
 //    std::string config_filename = getConfigFilename();
     std::string cfg_path = "/usr/local/share/projectM/config.inp";
 
@@ -19,24 +19,31 @@ void initProjectM( VisualPluginData * visualPluginData ) {
     settings.textureSize = 2048;  // idk?
     settings.windowWidth = 1920;
     settings.windowHeight = 1280;
-    settings.smoothPresetDuration = 3; // seconds
-    settings.presetDuration = 5; // seconds
-    settings.beatSensitivity = 0.8;
+    settings.smoothPresetDuration = 1; // seconds
+    settings.presetDuration = 9; // seconds
+    settings.beatSensitivity = 3;
     settings.aspectCorrection = 1;
     settings.easterEgg = 0; // ???
     settings.shuffleEnabled = 1;
     settings.softCutRatingsEnabled = 1; // ???
-    settings.presetURL = "/usr/local/share/projectM/presets";
+
+    settings.presetURL = presetPath;
     settings.titleFontURL = "/usr/local/share/projectM/fonts/Vera.ttf";
     settings.menuFontURL = "/usr/local/share/projectM/fonts/VeraMono.ttf";
-    //projectM *pm = new projectM(settings, 0);
+    projectM *pm = new projectM(settings, 0);
     
+    NSLog(@"GL_VERSION: %s", glGetString(GL_VERSION));
+    NSLog(@"GL_SHADING_LANGUAGE_VERSION: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
+    NSLog(@"GL_VENDOR: %s", glGetString(GL_VENDOR));
+
     // use config file
-    projectM *pm = new projectM(cfg_path);
-    
+//    projectM *pm = new projectM(cfg_path);
+
     visualPluginData->pm = pm;
     
     pm->selectRandom(true);
+    NSLog(@"random selected");
+
 }
 
 void keypressProjectM( VisualPluginData * visualPluginData, projectMEvent event, projectMKeycode keycode, projectMModifier mod ) {
@@ -44,6 +51,8 @@ void keypressProjectM( VisualPluginData * visualPluginData, projectMEvent event,
 }
 
 void renderProjectMTexture( VisualPluginData * visualPluginData ){
+    // this needs to be updated for gl3 (see SDL version)
+#if 0
     static int textureHandle = visualPluginData->pm->initRenderToTexture();
     
     glClear(GL_COLOR_BUFFER_BIT);
@@ -82,6 +91,7 @@ void renderProjectMTexture( VisualPluginData * visualPluginData ){
     
     glMatrixMode(GL_MODELVIEW);
     glDisable(GL_DEPTH_TEST);
+#endif
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -463,6 +473,6 @@ OSStatus RegisterVisualPlugin( PluginMessageInfo * messageInfo )
 	playerMessageInfo.u.registerVisualPluginMessage.maxHeight				= 0;	// no max height limit
 	
 	status = PlayerRegisterVisualPlugin( messageInfo->u.initMessage.appCookie, messageInfo->u.initMessage.appProc, &playerMessageInfo );
-		
+    
 	return status;
 }

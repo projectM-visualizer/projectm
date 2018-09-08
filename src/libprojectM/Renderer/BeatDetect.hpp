@@ -47,6 +47,7 @@ class DLLEXPORT BeatDetect
 		float mid_att ;
 		float bass_att ;
 		float vol;
+        float vol_att ;
 
 		PCM *pcm;
 
