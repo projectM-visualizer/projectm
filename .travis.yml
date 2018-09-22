@@ -31,8 +31,6 @@ matrix:
           packages:
             - clang-5.0
             - libsdl2-dev
-            - libglew-dev
-            - libftgl-dev
             - libglm-dev
             - libc++-dev
       env:
@@ -46,8 +44,6 @@ matrix:
           packages:
             - g++-7
             - libsdl2-dev
-            - libglew-dev
-            - libftgl-dev
             - libglm-dev
             - libc++-dev
       env:
@@ -57,7 +53,7 @@ matrix:
     - os: osx
       osx_image: xcode8
       env:
-        - MATRIX_EVAL="brew update && brew install sdl2 ftgl glm"
+        - MATRIX_EVAL="brew update && brew install sdl2 glm"
 
 notifications:
   email:
