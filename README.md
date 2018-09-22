@@ -20,7 +20,7 @@ Its purpose in life is to read in audio input and produce mesmerizing visuals, d
 You can read more about how it works and the current state of development [here](https://lwn.net/Articles/750152/).
 
 ### Presets
-The preset files define the visualizations via pixel shaders and Milkdrop-style equations and parameters. Included with projectM are the bltc201, Milkdrop 1 and 2, projectM, tryptonaut and yin collections. You can grab all of the presets [here](http://spiegelmc.com.s3.amazonaws.com/pub/projectm_presets.zip).
+The preset files define the visualizations via pixel shaders and Milkdrop-style equations and parameters. Included with projectM are the bltc201, Milkdrop 1 and 2, projectM, tryptonaut and yin collections. You can grab all of the presets [here](http://spiegelmc.com/pub/projectm_presets.zip).
 
 ### Also Featured In
 [![Kodi](https://github.com/projectM-visualizer/projectm/raw/master/web/kodi.png)](https://kodi.tv/)
@@ -62,7 +62,7 @@ Silverjuke (FOSS Jukebox)
 ```
 
 ## Linux (debian/ubuntu)
-* `sudo apt-get install autoconf libtool libsdl2-dev libglew-dev libglm-dev`
+* `sudo apt-get install autoconf libtool libsdl2-dev libglm-dev`
 
 ## FreeBSD
 * `pkg install gcc autoconf automake libtool mesa-libs libGLU sdl2 glm`
