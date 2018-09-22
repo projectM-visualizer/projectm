@@ -62,7 +62,7 @@ Silverjuke (FOSS Jukebox)
 ```
 
 ## Linux (debian/ubuntu)
-* `sudo apt-get install autoconf libtool libsdl2-dev libglew-dev libftgl-dev libsdl2-dev libdevil-dev libglm-dev`
+* `sudo apt-get install autoconf libtool libsdl2-dev libglew-dev libglm-dev`
 
 ## FreeBSD
 * `pkg install gcc autoconf automake libtool mesa-libs libGLU sdl2 glm`
@@ -70,6 +70,10 @@ Silverjuke (FOSS Jukebox)
 ## Mac OS X
 * `brew install glm sdl2`
 * `./configure --enable-sdl`
+
+
+### OpenGL ES
+projectM supports OpenGL ES 2 and 3 for embedded systems. Be sure to configure with the `--enable--gles` flag.
 
 
 # Using the library
