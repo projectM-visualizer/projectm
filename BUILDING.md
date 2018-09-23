@@ -22,8 +22,6 @@ If you don't want native presets, and you probably don't, don't bother with them
 * libglm for matrix math is required, just the headers though. We are considering "vendoring" them.
 * A modified version of hlslparser is included in Renderer and used to transpile HLSL shaders to GLSL
 * OpenGL 3+ or OpenGLES is required
-* libftgl was used for drawing text. It is optional and may or may not be dropped
-* libglew was used. not sure if it's still used.
 * libsdl >= 2.0.5 is required for the SDL and emscripten apps. src/projectM-sdl is the current reference application implementation. maybe try getting that to build and run as your testbench.
 
 
