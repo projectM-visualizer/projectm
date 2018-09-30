@@ -16,6 +16,9 @@ Its purpose in life is to read in audio input and produce mesmerizing visuals, d
 * [iTunes plugin (macOS)](https://github.com/projectM-visualizer/projectm/releases/tag/v0.9.1-beta)
 * Windows (in progress)
 
+### Download
+Get it from the [Releases](https://github.com/projectM-visualizer/projectm/releases) tab
+
 ### Project Status
 You can read more about how it works and the current state of development [here](https://lwn.net/Articles/750152/).
 

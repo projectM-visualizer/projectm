@@ -238,8 +238,8 @@ void projectMSDL::init(SDL_Window *window, SDL_GLContext *_glCtx, const bool _re
     glCtx = _glCtx;
     projectM_resetGL(width, height);
 
+    // are we rendering to a texture?
     renderToTexture = _renderToTexture;
-
     if (renderToTexture) {
         programID = ShaderEngine::CompileShaderProgram(ShaderEngine::v2f_c4f_t2f_vert, ShaderEngine::v2f_c4f_t2f_frag, "v2f_c4f_t2f");
         textureID = projectM::initRenderToTexture();
