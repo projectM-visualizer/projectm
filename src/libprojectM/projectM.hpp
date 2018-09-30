@@ -155,8 +155,6 @@ public:
   projectM(std::string config_file, int flags = FLAG_NONE);
   projectM(Settings settings, int flags = FLAG_NONE);
 
-  //DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url,std::string title_fonturl, std::string title_menuurl);
-
   void projectM_resetGL( int width, int height );
   void projectM_resetTextures();
   void projectM_setTitle( std::string title );
