@@ -50,12 +50,9 @@ void DrawVisual( VisualPluginData * visualPluginData )
     
     // render
     visualPluginData->pm->renderFrame();
-    //renderProjectMTexture(visualPluginData);
 
-//    [[drawView openGLContext] flushBuffer];
     glFlush();
     
-//    return;
     
     // TODO: artwork overlay
     

@@ -13,8 +13,6 @@
 		16FE0B2421157D63005F170D /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 168F716921125D85001806E7 /* libRenderer.a */; };
 		C34E811C1956D0D4001AC5B5 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811B1956D0D4001AC5B5 /* libz.a */; };
 		C34E811E1956D0D6001AC5B5 /* libpng15.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811D1956D0D6001AC5B5 /* libpng15.a */; };
-		C34E81201956D0D8001AC5B5 /* libftgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811F1956D0D8001AC5B5 /* libftgl.a */; };
-		C34E81221956D0D9001AC5B5 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81211956D0D9001AC5B5 /* libfreetype.a */; };
 		C34E81241956D0DA001AC5B5 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81231956D0DA001AC5B5 /* libbz2.a */; };
 		C37EBD2C19A0112900220265 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7B217B82CC3009E58CB /* Cocoa.framework */; };
 		C37EBD3219A0112900220265 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD3019A0112900220265 /* InfoPlist.strings */; };
@@ -29,7 +27,6 @@
 		C38E8C881B1A12540029901E /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = C38E8C871B1A12540029901E /* Preferences.xib */; };
 		C38E8C8B1B1A13AE0029901E /* Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = C38E8C8A1B1A13AE0029901E /* Preferences.m */; };
 		C38E8C8E1B1A14470029901E /* AudioInputDeviceList.m in Sources */ = {isa = PBXBuildFile; fileRef = C38E8C8D1B1A14470029901E /* AudioInputDeviceList.m */; };
-		C3C24435195764870021FCD4 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C3C24434195764870021FCD4 /* libGLEW.a */; };
 		C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7B217B82CC3009E58CB /* Cocoa.framework */; };
 		C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7CE17B831F3009E58CB /* OpenGL.framework */; };
 		C3F9D7D317B83CCB009E58CB /* iprojectM_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */; };
@@ -174,10 +171,7 @@
 				16FE0B2221157D63005F170D /* libNativePresetFactory.a in Frameworks */,
 				16FE0B2321157D63005F170D /* libprojectM.a in Frameworks */,
 				16FE0B2421157D63005F170D /* libRenderer.a in Frameworks */,
-				C3C24435195764870021FCD4 /* libGLEW.a in Frameworks */,
 				C34E81241956D0DA001AC5B5 /* libbz2.a in Frameworks */,
-				C34E81221956D0D9001AC5B5 /* libfreetype.a in Frameworks */,
-				C34E81201956D0D8001AC5B5 /* libftgl.a in Frameworks */,
 				C34E811E1956D0D6001AC5B5 /* libpng15.a in Frameworks */,
 				C34E811C1956D0D4001AC5B5 /* libz.a in Frameworks */,
 				C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */,
