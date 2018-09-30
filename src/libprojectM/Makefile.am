@@ -30,8 +30,8 @@ libprojectM_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
 	KeyHandler.hpp             PresetFactory.hpp          projectM.hpp\
 	PCM.hpp                    PresetFactoryManager.hpp\
 	projectM.hpp projectM-opengl.h \
-	ConfigFile.h       glew.h\
-	carbontoprojectM.h glxew.h\
+	ConfigFile.h      \
+	carbontoprojectM.h \
 	cocoatoprojectM.h  lvtoprojectM.h\
 	dlldefs.h          resource.h\
 	event.h            sdltoprojectM.h\

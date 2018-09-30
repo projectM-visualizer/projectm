@@ -11,13 +11,13 @@
 		1612C998207A80A200862A3A /* libRenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C992207A807000862A3A /* libRenderer.a */; };
 		1612C9E2207A85C100862A3A /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C9DF207A85BD00862A3A /* libMilkdropPresetFactory.a */; };
 		1612C9E3207A85C100862A3A /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C9E1207A85BD00862A3A /* libNativePresetFactory.a */; };
+		16355BFE2143C0F400B3748F /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
+		16355BFF2143C0F600B3748F /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
 		168F7156211248E4001806E7 /* SDLprojectM in Executable */ = {isa = PBXBuildFile; fileRef = C34521441BF02294001707D2 /* SDLprojectM */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		168F715921124C0E001806E7 /* config.inp in Support files */ = {isa = PBXBuildFile; fileRef = 16B52AAA21105A6900830F34 /* config.inp */; };
 		168F715A21124C14001806E7 /* fonts in Support files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
 		168F715C21124CDF001806E7 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 166853F02105E2850042793A /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		168F718021126256001806E7 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 168F717F21126256001806E7 /* AppIcon.icns */; };
-		168F71812112631C001806E7 /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
-		168F71822112631C001806E7 /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
 		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
 		C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215D1BF025CF001707D2 /* CoreFoundation.framework */; };
 		C34521651BF025E5001707D2 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215F1BF025E5001707D2 /* libbz2.a */; };
@@ -449,8 +449,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				168F71822112631C001806E7 /* pmSDL.cpp in Sources */,
-				168F71812112631C001806E7 /* projectM_SDL_main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -458,6 +456,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				16355BFE2143C0F400B3748F /* projectM_SDL_main.cpp in Sources */,
+				16355BFF2143C0F600B3748F /* pmSDL.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
