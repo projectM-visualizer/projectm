@@ -67,7 +67,7 @@ public:
   float m_fInvAspectX;
   float m_fInvAspectY;
 
-  Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL);
+  Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL, const std::string& datadir = "");
   ~Renderer();
 
   void RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext);
@@ -98,6 +98,7 @@ private:
   //per pixel equation variables
   ShaderEngine shaderEngine;
   std::string m_presetName;
+  std::string m_datadir;
 
   float* p;
 

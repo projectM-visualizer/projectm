@@ -29,7 +29,7 @@
 #define NUM_BLUR_TEX    6
 
 
-TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX, const int texsizeY):
+TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX, const int texsizeY, std::string datadir):
     presetsURL(_presetsURL)
 {
     extensions.push_back(".jpg");
@@ -40,9 +40,11 @@ TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX
     extensions.push_back(".dib");
 
     Preload();
+    if (datadir.empty())
+      datadir = DATADIR_PATH;
 
-    loadTextureDir(std::string(DATADIR_PATH) + "/presets");
-    loadTextureDir(std::string(DATADIR_PATH) + "/textures");
+    loadTextureDir(datadir + "/presets");
+    loadTextureDir(datadir + "/textures");
     loadTextureDir(_presetsURL);
 
     // Create main texture ans associated samplers
