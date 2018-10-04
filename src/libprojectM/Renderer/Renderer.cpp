@@ -20,9 +20,9 @@ Pipeline* Renderer::currentPipe;
 class Preset;
 
 Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetect, std::string _presetURL,
-        std::string _titlefontURL, std::string _menufontURL) :
+        std::string _titlefontURL, std::string _menufontURL, const std::string& datadir) :
     title_fontURL(_titlefontURL), menu_fontURL(_menufontURL), presetURL(_presetURL), m_presetName("None"), vw(width),
-            vh(height), mesh(gx, gy)
+            vh(height), mesh(gx, gy), m_datadir(datadir)
 {
     this->totalframes = 1;
     this->noSwitch = false;
@@ -463,7 +463,7 @@ void Renderer::reset(int w, int h)
     if (textureManager != NULL) {
         delete textureManager;
     }
-    textureManager = new TextureManager(presetURL, texsizeX, texsizeY);
+    textureManager = new TextureManager(presetURL, texsizeX, texsizeY, m_datadir);
 
     shaderEngine.setParams(texsizeX, texsizeY, beatDetect, textureManager);
     shaderEngine.reset();
