@@ -40,6 +40,8 @@ TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX
     extensions.push_back(".dib");
 
     Preload();
+    // if not data directory specified from user code
+    // we use the built-in default directory (unix prefix based)
     if (datadir.empty())
       datadir = DATADIR_PATH;
 
