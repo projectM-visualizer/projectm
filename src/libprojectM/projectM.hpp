@@ -128,6 +128,7 @@ public:
         std::string presetURL;
         std::string titleFontURL;
         std::string menuFontURL;
+        std::string datadir;
         int smoothPresetDuration;
         int presetDuration;
         float beatSensitivity;
