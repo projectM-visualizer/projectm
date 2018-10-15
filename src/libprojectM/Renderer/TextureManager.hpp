@@ -23,7 +23,8 @@ class TextureManager
   std::vector<std::string> extensions;
 
 public:
-  TextureManager(std::string _presetsURL, const int texsizeX, const int texsizeY);
+  TextureManager(std::string _presetsURL, const int texsizeX, const int texsizeY,
+                 std::string datadir = "");
   ~TextureManager();
 
   void Clear();

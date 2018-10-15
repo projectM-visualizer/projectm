@@ -267,6 +267,7 @@ void projectM::readSettings (const Settings & settings )
     _settings.titleFontURL = settings.titleFontURL;
     _settings.menuFontURL =  settings.menuFontURL;
     _settings.shuffleEnabled = settings.shuffleEnabled;
+    _settings.datadir = settings.datadir;
 
     _settings.easterEgg = settings.easterEgg;
 
@@ -512,7 +513,7 @@ static void *thread_callback(void *prjm) {
             mspf= ( int ) ( 1000.0/ ( float ) _settings.fps );
         else mspf = 0;
 
-        this->renderer = new Renderer ( width, height, gx, gy, beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL );
+        this->renderer = new Renderer ( width, height, gx, gy, beatDetect, settings().presetURL, settings().titleFontURL, settings().menuFontURL, settings().datadir );
 
         running = true;
 
@@ -931,7 +932,8 @@ void projectM::changeTextureSize(int size) {
   renderer = new Renderer(_settings.windowWidth, _settings.windowHeight,
                           _settings.meshX, _settings.meshY,
                           beatDetect, _settings.presetURL,
-                          _settings.titleFontURL, _settings.menuFontURL);
+                          _settings.titleFontURL, _settings.menuFontURL,
+                          _settings.datadir);
 }
 
 void projectM::changePresetDuration(int seconds) {
