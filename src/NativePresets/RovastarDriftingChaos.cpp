@@ -69,7 +69,6 @@ public:
 		xamp = xamp + 0.5*(xamptarg-xamp);
 
 		xdir = if_milk(above(abs(xpos),xamp),-sign(xpos),if_milk(below(abs(xspeed),0.1),2*above(xpos,0)-1,xdir));
-		float xaccel =  xdir*xamp - xpos - xspeed*0.055*below(abs(xpos),xamp);
 		xspeed += xdir*xamp - xpos - xspeed*0.055*below(abs(xpos),xamp);
 		xpos = xpos + 0.001*xspeed;
 		dx = xpos*0.005;
@@ -77,7 +76,6 @@ public:
 		yamp +=  0.5*(yamptarg-yamp);
 		ydir = if_milk(above(abs(ypos),yamp),-sign(ypos),if_milk(below(abs(yspeed),0.1),2*above(ypos,0)-1,ydir));
 
-		float yaccel = ydir*yamp - ypos - yspeed*0.055*below(abs(ypos),yamp);
 		yspeed += ydir*yamp - ypos - yspeed*0.055*below(abs(ypos),yamp);
 		ypos = ypos + 0.001*yspeed;
 

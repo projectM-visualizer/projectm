@@ -1,8 +1,8 @@
 #include "RenderItemMatcher.hpp"
 
 double RenderItemMatcher::computeMatching(const RenderItemList & lhs, const RenderItemList & rhs) const {
-		for (int i = 0; i < lhs.size();i++) {
-			int j;
+        for (unsigned int i = 0; i < lhs.size();i++) {
+            unsigned int j;
 			for (j = 0; j < rhs.size();j++)
 				_weights[i][j] = _distanceFunction(lhs[i], rhs[j]);
 			for (; j < lhs.size();j++)
@@ -20,7 +20,7 @@ double RenderItemMatcher::computeMatching(const RenderItemList & lhs, const Rend
 void RenderItemMatcher::setMatches
 	(const RenderItemList & lhs_src, const RenderItemList & rhs_src) const {
 
-	  for (int i = 0; i < lhs_src.size();i++) {
+      for (unsigned int i = 0; i < lhs_src.size();i++) {
 		const int j = _hungarianMethod.matching(i);
 
 		// hack

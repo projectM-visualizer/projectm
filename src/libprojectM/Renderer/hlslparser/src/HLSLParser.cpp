@@ -339,6 +339,7 @@ static const EffectStateValue witnessStencilModeValues[] = {
     {NULL, 0}
 };
 
+/* not used
 static const EffectStateValue witnessFilterModeValues[] = {
     {"Point", 0},
     {"Linear", 1},
@@ -354,6 +355,7 @@ static const EffectStateValue witnessWrapModeValues[] = {
     {"ClampToBorder", 2},
     {NULL, 0}
 };
+*/
 
 static const EffectState pipelineStates[] = {
     {"VertexShader", 0, NULL},
@@ -1534,7 +1536,7 @@ bool HLSLParser::ParseTopLevel(HLSLStatement*& statement)
                 {
                     // @@ Currently we support either a semantic or a register, but not both.
                     if (AcceptIdentifier(declaration->semantic)) {
-                        int k = 1;
+                        // nothing
                     }
                     else if (!Expect(HLSLToken_Register) || !Expect('(') || !ExpectIdentifier(declaration->registerName) || !Expect(')'))
                     {
@@ -1913,20 +1915,20 @@ bool HLSLParser::ParseDeclaration(HLSLDeclaration*& declaration)
             }
         }
 
-        HLSLDeclaration * declaration = m_tree->AddNode<HLSLDeclaration>(fileName, line);
-        declaration->type  = type;
-        declaration->name  = name;
+        HLSLDeclaration * declaration2 = m_tree->AddNode<HLSLDeclaration>(fileName, line);
+        declaration2->type  = type;
+        declaration2->name  = name;
 
-        DeclareVariable( declaration->name, declaration->type );
+        DeclareVariable( declaration2->name, declaration2->type );
 
         // Handle option assignment of the declared variables(s).
-        if (!ParseDeclarationAssignment( declaration )) {
+        if (!ParseDeclarationAssignment( declaration2 )) {
             return false;
         }
 
-        if (firstDeclaration == NULL) firstDeclaration = declaration;
-        if (lastDeclaration != NULL) lastDeclaration->nextDeclaration = declaration;
-        lastDeclaration = declaration;
+        if (firstDeclaration == NULL) firstDeclaration = declaration2;
+        if (lastDeclaration != NULL) lastDeclaration->nextDeclaration = declaration2;
+        lastDeclaration = declaration2;
 
     } while(Accept(','));
 
@@ -2168,9 +2170,9 @@ bool HLSLParser::ParseBinaryExpression(int priority, HLSLExpression*& expression
 		priority = 0;
 
     bool acceptBinaryOp = false;
+    HLSLBinaryOp binaryOp;
     while (1)
     {
-        HLSLBinaryOp binaryOp;
         if (acceptBinaryOp || AcceptBinaryOperator(priority, binaryOp))
         {
             acceptBinaryOp = false;
@@ -2507,11 +2509,11 @@ bool HLSLParser::ParseTerminalExpression(HLSLExpression*& expression, char& need
         done = true;
 
         // Post fix unary operator
-        HLSLUnaryOp unaryOp;
-        while (AcceptUnaryOperator(false, unaryOp))
+        HLSLUnaryOp unaryOp2;
+        while (AcceptUnaryOperator(false, unaryOp2))
         {
             HLSLUnaryExpression* unaryExpression = m_tree->AddNode<HLSLUnaryExpression>(fileName, line);
-            unaryExpression->unaryOp = unaryOp;
+            unaryExpression->unaryOp = unaryOp2;
             unaryExpression->expression = expression;
             unaryExpression->expressionType = unaryExpression->expression->expressionType;
             expression = unaryExpression;
@@ -3358,7 +3360,7 @@ bool HLSLParser::ParsePreprocessorDefine()
         // Macro with arguments
         if (Accept('('))
         {
-            uint numArguments = 0;
+            unsigned int numArguments = 0;
             HLSLArgument* lastArgument = NULL;
 
             while (!Accept(')'))
@@ -3998,8 +4000,8 @@ bool HLSLParser::AcceptType(bool allowVoid, HLSLType& type/*, bool acceptFlags*/
             // Parse optional sampler type.
             if (Accept('<'))
             {
-                int token = m_tokenizer.GetToken();
-                if (token == HLSLToken_Float || token == HLSLToken_Float1)
+                int token2 = m_tokenizer.GetToken();
+                if (token2 == HLSLToken_Float || token2 == HLSLToken_Float1)
                 {
                     type.samplerType = HLSLBaseType_Float;
                 }
@@ -4244,7 +4246,6 @@ const HLSLFunction* HLSLParser::MatchFunctionCall(const HLSLFunctionCall* functi
 {
     const HLSLFunction* matchedFunction     = NULL;
 
-    int  numArguments           = functionCall->numArguments;
     int  numMatchedOverloads    = 0;
     bool nameMatches            = false;
 
