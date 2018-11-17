@@ -4,6 +4,9 @@
  *  Created on: Jun 22, 2008
  *      Author: pete
  */
+
+#include <cmath>
+
 #include "Pipeline.hpp"
 #include "Transformation.hpp"
 #include "MilkdropCompatability.hpp"

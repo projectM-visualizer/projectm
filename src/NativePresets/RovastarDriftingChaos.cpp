@@ -5,6 +5,8 @@
  *      Author: pete
  */
 
+#include <cmath>
+
 #include "Pipeline.hpp"
 #include "MilkdropCompatability.hpp"
 #include "Transformation.hpp"
