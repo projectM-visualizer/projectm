@@ -114,7 +114,7 @@ GLSLGenerator::GLSLGenerator() :
     m_tree                      = NULL;
     m_entryName                 = NULL;
     m_target                    = Target_VertexShader;
-    m_version                   = Version_140;
+    m_version                   = Version_330;
     m_versionLegacy             = false;
     m_inAttribPrefix            = NULL;
     m_outAttribPrefix           = NULL;
@@ -146,6 +146,8 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     m_version   = version;
     m_versionLegacy = (version == Version_110 || version == Version_100_ES);
     m_options   = options;
+
+    globalVarsAssignements.clear();
 
     ChooseUniqueName("matrix_row", m_matrixRowFunction, sizeof(m_matrixRowFunction));
     ChooseUniqueName("matrix_ctor", m_matrixCtorFunction, sizeof(m_matrixCtorFunction));
@@ -215,6 +217,10 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     {
         m_writer.WriteLine(0, "#version 150");
     }
+    else if (m_version == Version_330)
+    {
+        m_writer.WriteLine(0, "#version 330");
+    }
     else if (m_version == Version_100_ES)
     {
         m_writer.WriteLine(0, "#version 100");
@@ -224,6 +230,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     {
         m_writer.WriteLine(0, "#version 300 es");
         m_writer.WriteLine(0, "precision highp float;");
+        m_writer.WriteLine(0, "precision highp sampler3D;");
     }
     else
     {
@@ -846,7 +853,30 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             }
             m_writer.Write("clamp(");
             OutputExpression(argument[0]);
-            m_writer.Write(", 0.0, 1.0)");
+            HLSLBaseType baseType = argument[0]->expressionType.baseType;
+            switch (baseType) {
+            case HLSLBaseType_Float:
+            case HLSLBaseType_Float2:
+            case HLSLBaseType_Float3:
+            case HLSLBaseType_Float4:
+                m_writer.Write(", 0.0, 1.0)");
+                break;
+
+            case HLSLBaseType_Int:
+            case HLSLBaseType_Int2:
+            case HLSLBaseType_Int3:
+            case HLSLBaseType_Int4:
+            case HLSLBaseType_Uint:
+            case HLSLBaseType_Uint2:
+            case HLSLBaseType_Uint3:
+            case HLSLBaseType_Uint4:
+                m_writer.Write(", 0, 1)");
+                break;
+
+            default:
+                Error("saturate unhandled type: %s", GetTypeName(argument[0]->expressionType));
+                break;
+            }
             handled = true;
         }
         else if (String_Equal(functionName, "rsqrt"))
@@ -854,7 +884,7 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
             HLSLExpression* argument[1];
             if (GetFunctionArguments(functionCall, argument, 1) != 1)
             {
-                Error("saturate expects 1 argument");
+                Error("rsqrt expects 1 argument");
                 return;
             }
             m_writer.Write("inversesqrt(");
@@ -1025,13 +1055,20 @@ void GLSLGenerator::OutputStatements(int indent, HLSLStatement* statement, const
             // GLSL doesn't seem have texture uniforms, so just ignore them.
             if (declaration->type.baseType != HLSLBaseType_Texture)
             {
+                bool skipAssignement = true;
+                if (indent != 0)
+                {
+                    skipAssignement = false;
+                }
+
                 m_writer.BeginLine(indent, declaration->fileName, declaration->line);
                 if (indent == 0 && (declaration->type.flags & HLSLTypeFlag_Uniform))
                 {
                     // At the top level, we need the "uniform" keyword.
                     m_writer.Write("uniform ");
+                    skipAssignement = false;
                 }
-                OutputDeclaration(declaration);
+                OutputDeclaration(declaration, skipAssignement);
                 m_writer.EndLine(";");
             }
         }
@@ -1146,7 +1183,7 @@ void GLSLGenerator::OutputStatements(int indent, HLSLStatement* statement, const
             m_writer.Write("for (");
             if (forStatement->initialization != NULL)
             {
-                OutputDeclaration(forStatement->initialization);
+                OutputDeclaration(forStatement->initialization, false);
             }
             else
             {
@@ -1757,6 +1794,18 @@ void GLSLGenerator::OutputEntryCaller(HLSLFunction* entryFunction)
         argument = argument->nextArgument;
     }
 
+
+    // Initialize global variables
+    for(HLSLDeclaration *declaration : globalVarsAssignements)
+    {
+        m_writer.BeginLine(1, declaration->fileName, declaration->line);
+        OutputDeclarationBody( declaration->type, GetSafeIdentifierName( declaration->name ) );
+
+        OutputDeclarationAssignement(declaration);
+        m_writer.EndLine(";");
+    }
+
+
     const char* resultName = "result";
 
     // Call the original entry function.
@@ -1812,7 +1861,7 @@ void GLSLGenerator::OutputEntryCaller(HLSLFunction* entryFunction)
     m_writer.WriteLine(0, "}");
 }
 
-void GLSLGenerator::OutputDeclaration(HLSLDeclaration* declaration)
+void GLSLGenerator::OutputDeclaration(HLSLDeclaration* declaration, const bool skipAssignement)
 {
 	OutputDeclarationType( declaration->type );
 
@@ -1826,45 +1875,57 @@ void GLSLGenerator::OutputDeclaration(HLSLDeclaration* declaration)
 
 		if( declaration->assignment != NULL )
 		{
-			m_writer.Write( " = " );
-			if( declaration->type.array )
-			{
-				m_writer.Write( "%s[]( ", GetTypeName( declaration->type ) );
-				OutputExpressionList( declaration->assignment );
-				m_writer.Write( " )" );
-			}
-			else
+            if (!skipAssignement)
             {
-                bool matrixCtorNeeded = false;
-                if (IsMatrixType(declaration->type.baseType))
-                {
-                    matrixCtor ctor = matrixCtorBuilder(declaration->type, declaration->assignment);
-                    if (std::find(matrixCtors.cbegin(), matrixCtors.cend(), ctor) != matrixCtors.cend())
-                    {
-                        matrixCtorNeeded = true;
-                    }
-                }
-
-                if (matrixCtorNeeded)
-                {
-                    // Matrix contructors needs to be adapted since GLSL access a matrix as m[c][r] while HLSL is m[r][c]
-                    matrixCtor ctor = matrixCtorBuilder(declaration->type, declaration->assignment);
-                    m_writer.Write("%s(", matrixCtorsId[ctor].c_str());
-                    OutputExpressionList(declaration->assignment);
-                    m_writer.Write(")");
-                }
-                else
-                {
-                    m_writer.Write( "%s( ", GetTypeName( declaration->type ) );
-                    OutputExpressionList( declaration->assignment );
-                    m_writer.Write( " )" );
-                }
-			}
-		}
+                OutputDeclarationAssignement(declaration);
+            }
+            else
+            {
+                globalVarsAssignements.push_back(declaration);
+            }
+        }
 
 		lastDecl = declaration;
 		declaration = declaration->nextDeclaration;
 	}
+}
+
+void GLSLGenerator::OutputDeclarationAssignement(HLSLDeclaration* declaration)
+{
+   m_writer.Write( " = " );
+   if( declaration->type.array )
+   {
+       m_writer.Write( "%s[]( ", GetTypeName( declaration->type ) );
+       OutputExpressionList( declaration->assignment );
+       m_writer.Write( " )" );
+   }
+   else
+   {
+       bool matrixCtorNeeded = false;
+       if (IsMatrixType(declaration->type.baseType))
+       {
+           matrixCtor ctor = matrixCtorBuilder(declaration->type, declaration->assignment);
+           if (std::find(matrixCtors.cbegin(), matrixCtors.cend(), ctor) != matrixCtors.cend())
+           {
+               matrixCtorNeeded = true;
+           }
+       }
+
+       if (matrixCtorNeeded)
+       {
+           // Matrix contructors needs to be adapted since GLSL access a matrix as m[c][r] while HLSL is m[r][c]
+           matrixCtor ctor = matrixCtorBuilder(declaration->type, declaration->assignment);
+           m_writer.Write("%s(", matrixCtorsId[ctor].c_str());
+           OutputExpressionList(declaration->assignment);
+           m_writer.Write(")");
+       }
+       else
+       {
+           m_writer.Write( "%s( ", GetTypeName( declaration->type ) );
+           OutputExpressionList( declaration->assignment );
+           m_writer.Write( " )" );
+       }
+   }
 }
 
 void GLSLGenerator::OutputDeclaration(const HLSLType& type, const char* name)

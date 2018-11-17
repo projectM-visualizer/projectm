@@ -193,7 +193,7 @@ std::string Renderer::SetPipeline(Pipeline &pipeline)
 {
     currentPipe = &pipeline;
     shaderEngine.reset();
-    if (!shaderEngine.loadPresetShaders(pipeline)) {
+    if (!shaderEngine.loadPresetShaders(pipeline, m_presetName)) {
         return "Shader compilation error";
     }
 
@@ -467,7 +467,7 @@ void Renderer::reset(int w, int h)
 
     shaderEngine.setParams(texsizeX, texsizeY, beatDetect, textureManager);
     shaderEngine.reset();
-    shaderEngine.loadPresetShaders(*currentPipe);
+    shaderEngine.loadPresetShaders(*currentPipe, m_presetName);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
