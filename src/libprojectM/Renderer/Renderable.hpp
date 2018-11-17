@@ -159,7 +159,7 @@ public:
 
 struct TypeIdPair {
 	TypeIdPair(const std::type_info & info1, const std::type_info & info2): id1(info1.name()), id2(info2.name()) {}
-	TypeIdPair(const std::string & id1, const std::string & id2): id1(id1), id2(id2) {}
+    TypeIdPair(const std::string & _id1, const std::string & _id2): id1(_id1), id2(_id2) {}
 	std::string id1;
 	std::string id2;
 	inline bool operator<(const TypeIdPair & rhs) const {

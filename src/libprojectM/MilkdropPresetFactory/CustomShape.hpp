@@ -76,9 +76,9 @@ public:
 
     /// Allocate a new custom shape, including param associations, per point equations, and initial values.
     /// \param id an integer id to associate with this custom wave. Future line parsing uses this as a reference key.
-    CustomShape( int id );
+    CustomShape(int _id );
     CustomShape();
-    ~CustomShape();
+    virtual ~CustomShape();
 
     void loadUnspecInitConds();
     void evalInitConds();

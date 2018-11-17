@@ -76,18 +76,8 @@ int main(int argc, char *argv[]) {
 #endif
     int width = initialWindowBounds.w;
     int height = initialWindowBounds.h;
-    int renderIndex = 0;
 
 #ifdef USE_GLES
-    for(int i = 0; i < SDL_GetNumRenderDrivers(); i++) {
-        SDL_RendererInfo info;
-        if (SDL_GetRenderDriverInfo(i, &info) == 0) {
-            if (std::string(info.name) == "opengles2") {
-				renderIndex = i;
-				break;
-			}
-        }
-    }
     // use GLES 2.0 (this may need adjusting)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
@@ -160,7 +150,7 @@ int main(int argc, char *argv[]) {
 
 #if TEST_ALL_PRESETS
     uint buildErrors = 0;
-    for(int i = 0; i < app->getPlaylistSize(); i++) {
+    for(unsigned int i = 0; i < app->getPlaylistSize(); i++) {
         std::cout << i << "\t" << app->getPresetName(i) << std::endl;
         app->selectPreset(i);
         if (app->getErrorLoadingCurrentPreset()) {

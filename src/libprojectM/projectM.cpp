@@ -125,8 +125,8 @@ void projectM::projectM_resetTextures()
 
 
 projectM::projectM ( std::string config_file, int flags) :
-beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()),
-  timeKeeper(NULL), _matcher(NULL), _merger(NULL)
+_pcm(0), beatDetect ( 0 ), renderer ( 0 ), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()), m_presetPos(0),
+  timeKeeper(NULL), m_flags(flags), _matcher(NULL), _merger(NULL)
 {
     readConfig(config_file);
     projectM_reset();
@@ -135,8 +135,8 @@ beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags), _pip
 }
 
 projectM::projectM(Settings settings, int flags):
-beatDetect ( 0 ), renderer ( 0 ),  _pcm(0), m_presetPos(0), m_flags(flags), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()),
-  timeKeeper(NULL), _matcher(NULL), _merger(NULL)
+_pcm(0), beatDetect ( 0 ), renderer ( 0 ), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()), m_presetPos(0),
+  timeKeeper(NULL), m_flags(flags), _matcher(NULL), _merger(NULL)
 {
     readSettings(settings);
     projectM_reset();
@@ -428,7 +428,7 @@ static void *thread_callback(void *prjm) {
             if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() > 1.0 )
             {
                 //printf("End Smooth\n");
-                m_activePreset = m_activePreset2;
+                m_activePreset = std::move(m_activePreset2);
                 timeKeeper->EndSmoothing();
             }
             //printf("Normal\n");
@@ -795,7 +795,7 @@ void projectM::selectNext(const bool hardCut) {
 * @param targetPreset
 * @return a message indicating an error, empty otherwise.
 */
-std::string projectM::switchPreset(std::auto_ptr<Preset> & targetPreset) {
+std::string projectM::switchPreset(std::unique_ptr<Preset> & targetPreset) {
 
     std::string result;
 

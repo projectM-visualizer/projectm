@@ -326,14 +326,14 @@ void stbiw__write_hdr_scanline(FILE *f, int width, int comp, unsigned char *scra
 
       /* RLE each component separately */
       for (c=0; c < 4; c++) {
-         unsigned char *comp = &scratch[width*c];
+         unsigned char *comp2 = &scratch[width*c];
 
          x = 0;
          while (x < width) {
             // find first run
             r = x;
             while (r+2 < width) {
-               if (comp[r] == comp[r+1] && comp[r] == comp[r+2])
+               if (comp2[r] == comp2[r+1] && comp2[r] == comp2[r+2])
                   break;
                ++r;
             }
@@ -343,19 +343,19 @@ void stbiw__write_hdr_scanline(FILE *f, int width, int comp, unsigned char *scra
             while (x < r) {
                int len = r-x;
                if (len > 128) len = 128;
-               stbiw__write_dump_data(f, len, &comp[x]);
+               stbiw__write_dump_data(f, len, &comp2[x]);
                x += len;
             }
             // if there's a run, output it
             if (r+2 < width) { // same test as what we break out of in search loop, so only true if we break'd
                // find next byte after run
-               while (r < width && comp[r] == comp[x])
+               while (r < width && comp2[r] == comp2[x])
                   ++r;
                // output run up to r
                while (x < r) {
                   int len = r-x;
                   if (len > 127) len = 127;
-                  stbiw__write_run_data(f, len, comp[x]);
+                  stbiw__write_run_data(f, len, comp2[x]);
                   x += len;
                }
             }
@@ -550,12 +550,12 @@ unsigned char * stbi_zlib_compress(unsigned char *data, int data_len, int *out_l
 
    {
       // compute adler32 on input
-      unsigned int i=0, s1=1, s2=0, blocklen = data_len % 5552;
-      int j=0;
-      while (j < data_len) {
-         for (i=0; i < blocklen; ++i) s1 += data[j+i], s2 += s1;
+      unsigned int i2=0, s1=1, s2=0, blocklen = data_len % 5552;
+      int j2=0;
+      while (j2 < data_len) {
+         for (i2=0; i2 < blocklen; ++i2) s1 += data[j2+i2], s2 += s1;
          s1 %= 65521, s2 %= 65521;
-         j += blocklen;
+         j2 += blocklen;
          blocklen = 5552;
       }
       stbiw__sbpush(out, (unsigned char) (s2 >> 8));

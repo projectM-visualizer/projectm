@@ -26,7 +26,7 @@ public:
 
  virtual ~NativePresetFactory();
 
- virtual std::auto_ptr<Preset> allocate(const std::string & url, const std::string & name = std::string(),
+ virtual std::unique_ptr<Preset> allocate(const std::string & url, const std::string & name = std::string(),
 	const std::string & author = std::string());
 
  virtual std::string supportedExtensions() const { return "so dylib"; }
