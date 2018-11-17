@@ -31,6 +31,7 @@ public:
         Version_110, // OpenGL 2.0
         Version_140, // OpenGL 3.1
         Version_150, // OpenGL 3.2
+        Version_330, // OpenGL 3.3
         Version_100_ES, // OpenGL ES 2.0
         Version_300_ES, // OpenGL ES 3.0
     };
@@ -82,10 +83,11 @@ private:
     void OutputAttribute(const HLSLType& type, const char* semantic, AttributeModifier modifier);
     void OutputAttributes(HLSLFunction* entryFunction);
     void OutputEntryCaller(HLSLFunction* entryFunction);
-    void OutputDeclaration(HLSLDeclaration* declaration);
+    void OutputDeclaration(HLSLDeclaration* declaration, const bool skipAssignement);
 	void OutputDeclarationType( const HLSLType& type );
 	void OutputDeclarationBody( const HLSLType& type, const char* name );
     void OutputDeclaration(const HLSLType& type, const char* name);
+    void OutputDeclarationAssignement(HLSLDeclaration* declaration);
     void OutputCast(const HLSLType& type);
 
     void OutputSetOutAttribute(const char* semantic, const char* resultName);
@@ -161,6 +163,7 @@ private:
 
     std::vector<matrixCtor> matrixCtors;
     std::map<matrixCtor,std::string> matrixCtorsId;
+    std::vector<HLSLDeclaration*> globalVarsAssignements;
 
 };
 

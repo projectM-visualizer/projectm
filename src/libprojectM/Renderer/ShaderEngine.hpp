@@ -38,7 +38,7 @@ public:
 
     ShaderEngine();
     virtual ~ShaderEngine();
-    bool loadPresetShaders(Pipeline &pipeline);
+    bool loadPresetShaders(Pipeline &pipeline, const std::string &presetName);
     bool enableWarpShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext, const glm::mat4 & mat_ortho);
     bool enableCompositeShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext);
@@ -115,6 +115,8 @@ private:
     GLuint programID_presetComp, programID_presetWarp;
 
     bool presetCompShaderLoaded, presetWarpShaderLoaded;
+
+    std::string m_presetName;
 };
 
 #endif /* SHADERENGINE_HPP_ */
