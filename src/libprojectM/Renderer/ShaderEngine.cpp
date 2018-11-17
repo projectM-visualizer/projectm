@@ -19,8 +19,10 @@
 
 #ifdef USE_GLES
     #define GLSL_VERSION "300 es"
+    #define SHADER_VERSION  M4::GLSLGenerator::Version_300_ES
 #else
     #define GLSL_VERSION "330"
+    #define SHADER_VERSION  M4::GLSLGenerator::Version_330
 #endif
 
 
@@ -340,7 +342,7 @@ std::string blur1_frag(
     "   blur.xyz = blur.xyz*fscale + fbias;\n"
     ""
     "   color.xyz = blur;\n"
-    "   color.w   = 1;\n"
+    "   color.w   = 1.0;\n"
     "}\n");
 
 std::string blur2_frag(
@@ -383,13 +385,13 @@ std::string blur2_frag(
     "   blur.xyz *= w_div;\n"
     ""
     "   // tone it down at the edges:  (only happens on 1st X pass!)\n"
-    "   float t = min( min(fragment_texture.x, fragment_texture.y), 1-max(fragment_texture.x, fragment_texture.y) );\n"
+    "   float t = min( min(fragment_texture.x, fragment_texture.y), 1.0-max(fragment_texture.x, fragment_texture.y) );\n"
     "   t = sqrt(t);\n"
     "   t = edge_darken_c1 + edge_darken_c2*clamp(t*edge_darken_c3, 0.0, 1.0);\n"
     "   blur.xyz *= t;\n"
     ""
     "   color.xyz = blur;\n"
-    "   color.w   = 1;\n"
+    "   color.w   = 1.0;\n"
     "}\n");
 
 
@@ -741,7 +743,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     }
 
     // generate GLSL
-    if (!generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader, M4::GLSLGenerator::Version_140, "PS")) {
+    if (!generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader, SHADER_VERSION, "PS")) {
         std::cerr << "Failed to transpile HLSL(step3) " << shaderTypeString << " shader to GLSL" << std::endl;
 #if !DUMP_SHADERS_ON_ERROR
         std::cerr << "Source: " << std::endl << sourcePreprocessed << std::endl;
@@ -1131,7 +1133,7 @@ bool ShaderEngine::linkProgram(GLuint programID) {
 }
 
 
-bool ShaderEngine::loadPresetShaders(Pipeline &pipeline) {
+bool ShaderEngine::loadPresetShaders(Pipeline &pipeline, const std::string & presetName) {
 
     bool ok = true;
 
@@ -1139,6 +1141,8 @@ bool ShaderEngine::loadPresetShaders(Pipeline &pipeline) {
     blur1_enabled = false;
     blur2_enabled = false;
     blur3_enabled = false;
+
+    m_presetName = presetName;
 
     // compile and link warp and composite shaders from pipeline
     if (!pipeline.warpShader.programSource.empty()) {
