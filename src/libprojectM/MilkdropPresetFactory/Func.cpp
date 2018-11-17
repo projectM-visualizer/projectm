@@ -31,7 +31,7 @@
 #include <map>
 
 Func::Func (const std::string & _name, float (*_func_ptr)(float*), int _num_args):
-	name(_name), func_ptr(_func_ptr), num_args(_num_args) {}
+    func_ptr(_func_ptr), name(_name), num_args(_num_args) {}
 
 /* Frees a function type, real complicated... */
 Func::~Func() {}

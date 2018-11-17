@@ -88,7 +88,7 @@ void DestroyRange(T * buffer, int new_size, int old_size) {
 template <typename T>
 class Array {
 public:
-    Array(Allocator * allocator) : allocator(allocator), buffer(NULL), size(0), capacity(0) {}
+    Array(Allocator * _allocator) : allocator(_allocator), buffer(NULL), size(0), capacity(0) {}
 
     void PushBack(const T & val) {
         ASSERT(&val < buffer || &val >= buffer+size);

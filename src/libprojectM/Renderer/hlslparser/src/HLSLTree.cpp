@@ -1168,7 +1168,7 @@ class MarkVisibleStatementsVisitor : public HLSLTreeVisitor
 {
 public:
     HLSLTree * tree;
-    MarkVisibleStatementsVisitor(HLSLTree * tree) : tree(tree) {}
+    MarkVisibleStatementsVisitor(HLSLTree * _tree) : tree(_tree) {}
 
     virtual void VisitFunction(HLSLFunction * node)
     {
@@ -1581,10 +1581,10 @@ public:
 		name  = NULL;
 	}
 
-    bool FindArgument(const char * name, HLSLFunction * function)
+    bool FindArgument(const char * _name, HLSLFunction * function)
     {
         this->found = false;
-        this->name = name;
+        this->name = _name;
         VisitStatements(function->statement);
         return found;
     }
@@ -1929,9 +1929,7 @@ struct StatementList {
             declaration->name = m_tree->AddStringFormat("tmp%d", tmp_index++);
             declaration->type = expr->expressionType;
             declaration->assignment = expr;
-            
-            HLSLIdentifierExpression * ident = (HLSLIdentifierExpression *)expr;
-            
+                        
             return declaration;
         }
 

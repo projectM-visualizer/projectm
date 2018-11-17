@@ -83,7 +83,6 @@ void DarkenCenter::Draw(RenderContext &context)
 
 Shape::Shape():RenderItem()
 {
-	 std::string imageUrl = "";
 	     sides = 4;
 	     thickOutline = false;
 	     enabled = true;
@@ -329,7 +328,7 @@ void MotionVectors::Draw(RenderContext &context)
 		{
 			for(int y=0;y<(int)y_num;y++)
 			{
-				float lx, ly, lz;
+                float lx, ly;
 				lx = x_offset+x*intervalx;
 				ly = y_offset+y*intervaly;
 

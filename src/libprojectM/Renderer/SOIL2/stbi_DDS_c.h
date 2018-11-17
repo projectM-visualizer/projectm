@@ -241,7 +241,8 @@ void stbi_decode_DXT_color_block(
 }
 
 static int stbi__dds_info( stbi__context *s, int *x, int *y, int *comp, int *iscompressed ) {
-	int flags,is_compressed,has_alpha;
+    unsigned int flags;
+    int is_compressed,has_alpha;
 	DDS_header header={0};
 
 	if( sizeof( DDS_header ) != 128 )
@@ -342,7 +343,8 @@ static stbi_uc * stbi__dds_load(stbi__context *s, int *x, int *y, int *comp, int
 	stbi_uc *dds_data = NULL;
 	stbi_uc block[16*4];
 	stbi_uc compressed[8];
-	int flags, DXT_family;
+    unsigned int flags;
+    int DXT_family;
 	int has_alpha, has_mipmap;
 	int is_compressed, cubemap_faces;
 	int block_pitch, num_blocks;

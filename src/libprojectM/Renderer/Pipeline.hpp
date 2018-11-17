@@ -50,9 +50,12 @@ public:
 	 std::vector<RenderItem*> compositeDrawables;
 
 	 Pipeline();
-	 void setStaticPerPixel(int gx, int gy);
+     void setStaticPerPixel(int _gx, int _gy);
 	 virtual ~Pipeline();
 	 virtual PixelPoint PerPixel(PixelPoint p, const PerPixelContext context);
 };
+
+float **alloc_mesh(size_t gx, size_t gy);
+float **free_mesh(float **mesh);
 
 #endif

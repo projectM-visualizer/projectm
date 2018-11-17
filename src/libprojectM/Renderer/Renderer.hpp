@@ -142,7 +142,7 @@ private:
 
   void rescale_per_pixel_matrices();
 
-  void draw_fps( float realfps );
+  void draw_fps();
   void draw_stats();
   void draw_help();
   void draw_preset();

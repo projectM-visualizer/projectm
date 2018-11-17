@@ -582,12 +582,12 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
         HLSLUnaryExpression* unaryExpression = static_cast<HLSLUnaryExpression*>(expression);
         const char* op = "?";
         bool pre = true;
-        const HLSLType* dstType = NULL;
+        const HLSLType* dstType2 = NULL;
         switch (unaryExpression->unaryOp)
         {
         case HLSLUnaryOp_Negative:      op = "-";  break;
         case HLSLUnaryOp_Positive:      op = "+";  break;
-        case HLSLUnaryOp_Not:           op = "!";  dstType = &unaryExpression->expressionType; break;
+        case HLSLUnaryOp_Not:           op = "!";  dstType2 = &unaryExpression->expressionType; break;
         case HLSLUnaryOp_PreIncrement:  op = "++"; break;
         case HLSLUnaryOp_PreDecrement:  op = "--"; break;
         case HLSLUnaryOp_PostIncrement: op = "++"; pre = false; break;
@@ -598,11 +598,11 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
         if (pre)
         {
             m_writer.Write("%s", op);
-            OutputExpression(unaryExpression->expression, dstType);
+            OutputExpression(unaryExpression->expression, dstType2);
         }
         else
         {
-            OutputExpression(unaryExpression->expression, dstType);
+            OutputExpression(unaryExpression->expression, dstType2);
             m_writer.Write("%s", op);
         }
         m_writer.Write(")");

@@ -9,9 +9,7 @@ void PipelineMerger::mergePipelines(const Pipeline & a, const Pipeline & b, Pipe
 
 {
 
-	const double x = ( ratio - 0.5 ) * 20;
-	const double sigmoid = 1.0 / ( 1.0 + e - s * x );
-	const double invratio = 1.0 - ratio;
+    const double invratio = 1.0 - ratio;
 
 	out.textureWrap = ( ratio < 0.5 ) ? a.textureWrap : b.textureWrap;
 

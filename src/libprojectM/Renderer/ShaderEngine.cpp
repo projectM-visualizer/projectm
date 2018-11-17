@@ -897,7 +897,7 @@ void ShaderEngine::SetupShaderVariables(GLuint program, const Pipeline &pipeline
 void ShaderEngine::SetupTextures(GLuint program, const Shader &shader)
 {
 
-    uint texNum = 0;
+    unsigned int texNum = 0;
     std::map<std::string, Texture*> texsizes;
 
     // Set samplers
@@ -949,7 +949,7 @@ void ShaderEngine::SetupTextures(GLuint program, const Shader &shader)
 
 void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
-    uint passes = 0;
+    unsigned int passes = 0;
     if (blur3_enabled) {
         passes = 6;
     } else if (blur2_enabled) {
@@ -1017,7 +1017,7 @@ void ShaderEngine::RenderBlurTextures(const Pipeline &pipeline, const PipelineCo
     glBlendFunc(GL_ONE, GL_ZERO);
     glBindVertexArray(vaoBlur);
 
-    for (uint i=0; i<passes; i++)
+    for (unsigned int i=0; i<passes; i++)
     {
         // set pixel shader
         if ((i%2) == 0) {
@@ -1196,7 +1196,7 @@ void ShaderEngine::reset()
     rand_preset[2] = FRAND;
     rand_preset[3] = FRAND;
 
-    uint k = 0;
+    unsigned int k = 0;
     do
     {
         for (int i=0; i<4; i++)
@@ -1223,9 +1223,6 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
     // Create the shaders
     GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
     GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-
-    GLint Result = GL_FALSE;
-    int InfoLogLength;
 
 
     // Compile Vertex Shader

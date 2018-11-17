@@ -16,8 +16,8 @@ typedef float floatPair[2];
 typedef float floatTriple[3];
 typedef float floatQuad[4];
 
-Waveform::Waveform(int samples)
-: RenderItem(),samples(samples), points(samples), pointContext(samples)
+Waveform::Waveform(int _samples)
+: RenderItem(),samples(_samples), points(_samples), pointContext(_samples)
 {
 
 	spectrum = false; /* spectrum data or pcm data */

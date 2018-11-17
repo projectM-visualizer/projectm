@@ -8,7 +8,7 @@ struct PixelPoint
 	float x;
 	float y;
 
-	PixelPoint(float x, float y);
+    PixelPoint(float _x, float _y);
 };
 
 struct PerPixelContext
@@ -21,7 +21,7 @@ struct PerPixelContext
 	int i;
 	int j;
 
-	PerPixelContext(float x, float y, float rad, float theta, int i, int j);
+    PerPixelContext(float x, float _y, float _rad, float _theta, int _i, int _j);
 };
 
 class PerPixelMesh
@@ -35,7 +35,7 @@ public:
 	std::vector<PixelPoint> p_original;
 	std::vector<PerPixelContext> identity;
 
-	PerPixelMesh(int width, int height);
+    PerPixelMesh(int _width, int _height);
 
 	void Reset();
 };

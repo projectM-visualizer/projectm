@@ -56,9 +56,9 @@ MilkdropPreset::MilkdropPreset(std::istream & in, const std::string & presetName
 MilkdropPreset::MilkdropPreset(const std::string & absoluteFilePath, const std::string & presetName, PresetOutputs & presetOutputs):
 	Preset(presetName),
     builtinParams(_presetInputs, presetOutputs),
+    _filename(parseFilename(absoluteFilePath)),
     _absoluteFilePath(absoluteFilePath),
-    _presetOutputs(presetOutputs),
-    _filename(parseFilename(absoluteFilePath))
+    _presetOutputs(presetOutputs)
 {
 
   initialize(absoluteFilePath);
@@ -172,15 +172,15 @@ void MilkdropPreset::evalCustomWavePerFrameEquations()
   for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos)
   {
 
-    std::map<std::string, InitCond*> & init_cond_tree = (*pos)->init_cond_tree;
-    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos)
+    std::map<std::string, InitCond*> & init_cond_tree2 = (*pos)->init_cond_tree;
+    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree2.begin(); _pos != init_cond_tree2.end(); ++_pos)
     {
       assert(_pos->second);
       _pos->second->evaluate();
     }
 
-    std::vector<PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
-    for (std::vector<PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
+    std::vector<PerFrameEqn*> & per_frame_eqn_tree2 = (*pos)->per_frame_eqn_tree;
+    for (std::vector<PerFrameEqn*>::iterator _pos = per_frame_eqn_tree2.begin(); _pos != per_frame_eqn_tree2.end(); ++_pos)
     {
       (*_pos)->evaluate();
     }
@@ -194,15 +194,15 @@ void MilkdropPreset::evalCustomShapePerFrameEquations()
   for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); pos != customShapes.end(); ++pos)
   {
 
-    std::map<std::string, InitCond*> & init_cond_tree = (*pos)->init_cond_tree;
-    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos)
+    std::map<std::string, InitCond*> & init_cond_tree2 = (*pos)->init_cond_tree;
+    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree2.begin(); _pos != init_cond_tree2.end(); ++_pos)
     {
       assert(_pos->second);
       _pos->second->evaluate();
     }
 
-    std::vector<PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
-    for (std::vector<PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
+    std::vector<PerFrameEqn*> & per_frame_eqn_tree2 = (*pos)->per_frame_eqn_tree;
+    for (std::vector<PerFrameEqn*>::iterator _pos = per_frame_eqn_tree2.begin(); _pos != per_frame_eqn_tree2.end(); ++_pos)
     {
       (*_pos)->evaluate();
     }
@@ -284,8 +284,6 @@ void MilkdropPreset::Render(const BeatDetect &music, const PipelineContext &cont
 
 void MilkdropPreset::initialize(const std::string & pathname)
 {
-  int retval;
-
   preloadInitialize();
 
 if (MILKDROP_PRESET_DEBUG)
@@ -474,7 +472,6 @@ void MilkdropPreset::evalPerPixelEqns()
 
 int MilkdropPreset::readIn(std::istream & fs) {
 
-  line_mode_t line_mode;
   presetOutputs().compositeShader.programSource.clear();
   presetOutputs().warpShader.programSource.clear();
 
@@ -504,7 +501,6 @@ int MilkdropPreset::readIn(std::istream & fs) {
   {
     if (retval == PROJECTM_PARSE_ERROR)
     {
-      line_mode = UNSET_LINE_MODE;
       // std::cerr << "[Preset::readIn()] parse error in file \"" << this->absoluteFilePath() << "\"" << std::endl;
     }
   }
@@ -541,6 +537,6 @@ int MilkdropPreset::loadPresetFile(const std::string & pathname)
 
 const std::string & MilkdropPreset::name() const {
 	
-	return name().empty() ? filename() : name();
+    return filename();
 }
 

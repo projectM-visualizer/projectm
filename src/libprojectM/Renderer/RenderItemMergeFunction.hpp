@@ -120,7 +120,7 @@ protected:
         target.enabled = interpolate(lhs->enabled, rhs->enabled, ratio);
 
         target.masterAlpha = interpolate(lhs->masterAlpha, rhs->masterAlpha, ratio);
-        target.imageUrl = (ratio > 0.5) ? lhs->imageUrl : rhs->imageUrl, ratio;
+        target.imageUrl = (ratio > 0.5) ? lhs->imageUrl : rhs->imageUrl;
 
         return ret;
 	}

@@ -40,14 +40,14 @@
 CustomShape::CustomShape() : Shape()
 {
 	CustomShape(0);
-};
+}
 
-CustomShape::CustomShape ( int id ) : Shape()
+CustomShape::CustomShape ( int _id ) : Shape()
 {
 
 	Param * param;
 
-	this->id = id;
+    this->id = _id;
 	this->per_frame_count = 0;
 
 	/* Start: Load custom shape parameters */
@@ -213,7 +213,7 @@ CustomShape::CustomShape ( int id ) : Shape()
 	os << "q" << i;
 	param = Param::new_param_float ( os.str().c_str(), P_FLAG_QVAR, &this->q[i], NULL, MAX_DOUBLE_SIZE,
 		 -MAX_DOUBLE_SIZE, 0.0 );
-	if ( ParamUtils::insert ( param, &this->param_tree ) < 0 )
+    if ( !ParamUtils::insert ( param, &this->param_tree ) )
 	{
 		abort();
 	}

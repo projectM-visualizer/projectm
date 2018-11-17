@@ -105,15 +105,15 @@ PresetLibrary * NativePresetFactory::loadLibrary(const std::string & url) {
 }
 
 
-std::auto_ptr<Preset> NativePresetFactory::allocate
+std::unique_ptr<Preset> NativePresetFactory::allocate
 	(const std::string & url, const std::string & name, const std::string & author) {
 		
 	PresetLibrary * library;
 	
 	if ((library = loadLibrary(url)) == 0)
-		return std::auto_ptr<Preset>(0);
+        return std::unique_ptr<Preset>();
 	
-	return std::auto_ptr<Preset>(new LibraryPreset
+	return std::unique_ptr<Preset>(new LibraryPreset
 		(library->createFunctor()(url.c_str()), library->destroyFunctor()));
 		 
 }

@@ -156,8 +156,6 @@ class MstressJuppyDancer : public Pipeline
 public:
 	Dancer dancer[10];
 
-	float dx, dy, cx, cy, time;
-
 	float q1,meanmid,middiff,mi_prg,gam, bass;
 
 	MstressJuppyDancer() : Pipeline()
@@ -194,14 +192,14 @@ public:
 	{
 
 		float sx = -below(p.y,0.8)*.001;
-		float dx = .01*bass*(1-q1*2)*below(p.y,0.8);
-		float rot=rot+.051*below(p.y,0.8);
-		float cx=trunc(p.x*16)/16;
-		float cy=trunc(p.y*16)/16;
+        float dx = .01*bass*(1-q1*2)*below(p.y,0.8);
+        float rot= .051*below(p.y,0.8);
+        float cx=trunc(p.x*16)/16;
+        float cy=trunc(p.y*16)/16;
 
-		Transforms::Scale(p,context,sx,1,cx,cy);
-		Transforms::Rotate(p,context,rot,cx,cy);
-		Transforms::Transform(p,context,dx,0);
+        Transforms::Scale(p,context,sx,1,cx,cy);
+        Transforms::Rotate(p,context,rot,cx,cy);
+        Transforms::Transform(p,context,dx,0);
 
 		return p;
 	}

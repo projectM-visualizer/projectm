@@ -245,15 +245,14 @@ unsigned int
 **/
 unsigned int
 	SOIL_load_OGL_texture_from_memory
-	(
-		const unsigned char *const buffer,
-		int buffer_length,
-		int force_channels,
-		unsigned int reuse_texture_ID,
+    (const unsigned char *const buffer,
+        unsigned int buffer_length,
+        int force_channels,
+        unsigned int reuse_texture_ID,
         unsigned int flags,
         int * width,
         int * height
-	);
+    );
 
 /**
 	Loads 6 images from memory into an OpenGL cubemap texture.
@@ -463,7 +462,7 @@ unsigned int SOIL_direct_load_DDS(
 /** Loads the DDS texture directly to the GPU memory ( if supported ) */
 unsigned int SOIL_direct_load_DDS_from_memory(
 		const unsigned char *const buffer,
-		int buffer_length,
+        unsigned int buffer_length,
 		unsigned int reuse_texture_ID,
 		int flags,
 		int loading_as_cubemap );
