@@ -54,8 +54,8 @@ public:
 	virtual PixelPoint PerPixel(PixelPoint p, const PerPixelContext context)
 	{
 		float q1 = 8.05+(sin(p.x+0.137*time)-cos(p.y+0.213*time));
-		int val1 = abs(p.x*3-0.4*sin(q1));
-		int val2 = abs(p.y*3+0.4*sin(q1));
+		int val1 = std::abs(p.x*3-0.4*sin(q1));
+		int val2 = std::abs(p.y*3+0.4*sin(q1));
 		val1 = val1%2;
 		val2 = val2%2;
 
