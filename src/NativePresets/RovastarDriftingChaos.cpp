@@ -70,15 +70,15 @@ public:
 		xamptarg = if_milk(equal(context.frame%15,0),min(0.5*volume*music.bass_att,0.5),xamptarg);
 		xamp = xamp + 0.5*(xamptarg-xamp);
 
-		xdir = if_milk(above(abs(xpos),xamp),-sign(xpos),if_milk(below(abs(xspeed),0.1),2*above(xpos,0)-1,xdir));
-		xspeed += xdir*xamp - xpos - xspeed*0.055*below(abs(xpos),xamp);
+		xdir = if_milk(above(std::abs(xpos),xamp),-sign(xpos),if_milk(below(std::abs(xspeed),0.1),2*above(xpos,0)-1,xdir));
+		xspeed += xdir*xamp - xpos - xspeed*0.055*below(std::abs(xpos),xamp);
 		xpos = xpos + 0.001*xspeed;
 		dx = xpos*0.005;
 		yamptarg = if_milk(equal(context.frame%15,0),min(0.3*volume*music.treb_att,0.5),yamptarg);
 		yamp +=  0.5*(yamptarg-yamp);
-		ydir = if_milk(above(abs(ypos),yamp),-sign(ypos),if_milk(below(abs(yspeed),0.1),2*above(ypos,0)-1,ydir));
+		ydir = if_milk(above(std::abs(ypos),yamp),-sign(ypos),if_milk(below(std::abs(yspeed),0.1),2*above(ypos,0)-1,ydir));
 
-		yspeed += ydir*yamp - ypos - yspeed*0.055*below(abs(ypos),yamp);
+		yspeed += ydir*yamp - ypos - yspeed*0.055*below(std::abs(ypos),yamp);
 		ypos = ypos + 0.001*yspeed;
 
 		dy = ypos*0.005;
