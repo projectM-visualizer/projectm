@@ -147,7 +147,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     m_versionLegacy = (version == Version_110 || version == Version_100_ES);
     m_options   = options;
 
-    globalVarsAssignements.clear();
+    globalVarsAssignments.clear();
 
     ChooseUniqueName("matrix_row", m_matrixRowFunction, sizeof(m_matrixRowFunction));
     ChooseUniqueName("matrix_ctor", m_matrixCtorFunction, sizeof(m_matrixCtorFunction));
@@ -184,7 +184,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
         m_outAttribPrefix = "rast_";
     }
 
-    m_tree->ReplaceUniformsAssignements();
+    m_tree->ReplaceUniformsAssignments();
 
     HLSLRoot* root = m_tree->GetRoot();
     HLSLStatement* statement = root->statement;
@@ -1055,10 +1055,10 @@ void GLSLGenerator::OutputStatements(int indent, HLSLStatement* statement, const
             // GLSL doesn't seem have texture uniforms, so just ignore them.
             if (declaration->type.baseType != HLSLBaseType_Texture)
             {
-                bool skipAssignement = true;
+                bool skipAssignment = true;
                 if (indent != 0)
                 {
-                    skipAssignement = false;
+                    skipAssignment = false;
                 }
 
                 m_writer.BeginLine(indent, declaration->fileName, declaration->line);
@@ -1066,9 +1066,9 @@ void GLSLGenerator::OutputStatements(int indent, HLSLStatement* statement, const
                 {
                     // At the top level, we need the "uniform" keyword.
                     m_writer.Write("uniform ");
-                    skipAssignement = false;
+                    skipAssignment = false;
                 }
-                OutputDeclaration(declaration, skipAssignement);
+                OutputDeclaration(declaration, skipAssignment);
                 m_writer.EndLine(";");
             }
         }
@@ -1796,12 +1796,12 @@ void GLSLGenerator::OutputEntryCaller(HLSLFunction* entryFunction)
 
 
     // Initialize global variables
-    for(HLSLDeclaration *declaration : globalVarsAssignements)
+    for(HLSLDeclaration *declaration : globalVarsAssignments)
     {
         m_writer.BeginLine(1, declaration->fileName, declaration->line);
         OutputDeclarationBody( declaration->type, GetSafeIdentifierName( declaration->name ) );
 
-        OutputDeclarationAssignement(declaration);
+        OutputDeclarationAssignment(declaration);
         m_writer.EndLine(";");
     }
 
@@ -1861,7 +1861,7 @@ void GLSLGenerator::OutputEntryCaller(HLSLFunction* entryFunction)
     m_writer.WriteLine(0, "}");
 }
 
-void GLSLGenerator::OutputDeclaration(HLSLDeclaration* declaration, const bool skipAssignement)
+void GLSLGenerator::OutputDeclaration(HLSLDeclaration* declaration, const bool skipAssignment)
 {
 	OutputDeclarationType( declaration->type );
 
@@ -1875,13 +1875,13 @@ void GLSLGenerator::OutputDeclaration(HLSLDeclaration* declaration, const bool s
 
 		if( declaration->assignment != NULL )
 		{
-            if (!skipAssignement)
+            if (!skipAssignment)
             {
-                OutputDeclarationAssignement(declaration);
+                OutputDeclarationAssignment(declaration);
             }
             else
             {
-                globalVarsAssignements.push_back(declaration);
+                globalVarsAssignments.push_back(declaration);
             }
         }
 
@@ -1890,7 +1890,7 @@ void GLSLGenerator::OutputDeclaration(HLSLDeclaration* declaration, const bool s
 	}
 }
 
-void GLSLGenerator::OutputDeclarationAssignement(HLSLDeclaration* declaration)
+void GLSLGenerator::OutputDeclarationAssignment(HLSLDeclaration* declaration)
 {
    m_writer.Write( " = " );
    if( declaration->type.array )
