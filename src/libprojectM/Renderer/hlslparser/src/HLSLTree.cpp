@@ -610,14 +610,14 @@ int HLSLTree::GetExpressionValue(HLSLExpression * expression, float values[4])
     return 0;
 }
 
-bool HLSLTree::ReplaceUniformsAssignements()
+bool HLSLTree::ReplaceUniformsAssignments()
 {
-    struct ReplaceUniformsAssignementsVisitor: HLSLTreeVisitor
+    struct ReplaceUniformsAssignmentsVisitor: HLSLTreeVisitor
     {
         HLSLTree * tree;
         std::map<std::string, HLSLDeclaration *> uniforms;
         std::map<std::string, std::string> uniformsReplaced;
-        bool withinAssignement;
+        bool withinAssignment;
 
         virtual void VisitDeclaration(HLSLDeclaration * node)
         {
@@ -660,17 +660,17 @@ bool HLSLTree::ReplaceUniformsAssignements()
 
             if (IsAssignOp(node->binaryOp))
             {
-                withinAssignement = true;
+                withinAssignment = true;
             }
 
             VisitExpression(node->expression1);
 
-            withinAssignement = false;
+            withinAssignment = false;
         }
 
         virtual void VisitIdentifierExpression(HLSLIdentifierExpression * node)
         {
-            if (withinAssignement)
+            if (withinAssignment)
             {
                 // Check if variable is a uniform
                 if (uniforms.find(node->name) != uniforms.end())
@@ -699,9 +699,9 @@ bool HLSLTree::ReplaceUniformsAssignements()
         }
     };
 
-    ReplaceUniformsAssignementsVisitor visitor;
+    ReplaceUniformsAssignmentsVisitor visitor;
     visitor.tree = this;
-    visitor.withinAssignement = false;
+    visitor.withinAssignment = false;
     visitor.VisitRoot(m_root);
 
     return true;

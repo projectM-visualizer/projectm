@@ -83,11 +83,11 @@ private:
     void OutputAttribute(const HLSLType& type, const char* semantic, AttributeModifier modifier);
     void OutputAttributes(HLSLFunction* entryFunction);
     void OutputEntryCaller(HLSLFunction* entryFunction);
-    void OutputDeclaration(HLSLDeclaration* declaration, const bool skipAssignement);
+    void OutputDeclaration(HLSLDeclaration* declaration, const bool skipAssignment);
 	void OutputDeclarationType( const HLSLType& type );
 	void OutputDeclarationBody( const HLSLType& type, const char* name );
     void OutputDeclaration(const HLSLType& type, const char* name);
-    void OutputDeclarationAssignement(HLSLDeclaration* declaration);
+    void OutputDeclarationAssignment(HLSLDeclaration* declaration);
     void OutputCast(const HLSLType& type);
 
     void OutputSetOutAttribute(const char* semantic, const char* resultName);
@@ -163,7 +163,7 @@ private:
 
     std::vector<matrixCtor> matrixCtors;
     std::map<matrixCtor,std::string> matrixCtorsId;
-    std::vector<HLSLDeclaration*> globalVarsAssignements;
+    std::vector<HLSLDeclaration*> globalVarsAssignments;
 
 };
 

@@ -993,7 +993,7 @@ public:
     int GetExpressionValue(HLSLExpression * expression, float values[4]);
 
     bool NeedsFunction(const char * name);
-    bool ReplaceUniformsAssignements();
+    bool ReplaceUniformsAssignments();
     void EnumerateMatrixCtorsNeeded(std::vector<matrixCtor> & matrixCtors);
 
 private:
