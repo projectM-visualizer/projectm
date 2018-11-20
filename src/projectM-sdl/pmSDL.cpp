@@ -35,7 +35,7 @@ SDL_AudioDeviceID projectMSDL::selectAudioInput(int _count) {
     // printf("Please select which audio input to use:\n");
     printf("Detected devices:\n");
     for (int i = 0; i < _count; i++) {
-        printf("  %i: %s\n", i, SDL_GetAudioDeviceName(i, true));
+        printf("  %i: 🎤%s\n", i, SDL_GetAudioDeviceName(i, true));
     }
 
     return 0;
