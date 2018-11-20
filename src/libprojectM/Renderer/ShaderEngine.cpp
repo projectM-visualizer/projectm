@@ -325,7 +325,7 @@ std::string blur1_frag(
     "   #define w_div  _c3.z\n"
     ""
     "   // note: if you just take one sample at exactly uv.xy, you get an avg of 4 pixels.\n"
-    "   vec2 uv2 = fragment_texture.xy + srctexsize.zw*vec2(1,1);     // + moves blur UP, LEFT by 1-pixel increments\n"
+    "   vec2 uv2 = fragment_texture.xy + srctexsize.zw*vec2(1.0,1.0);     // + moves blur UP, LEFT by 1-pixel increments\n"
     ""
     "   vec3 blur = \n"
     "           ( texture( texture_sampler, uv2 + vec2( d1*srctexsize.z,0) ).xyz\n"
@@ -863,30 +863,30 @@ void ShaderEngine::SetupShaderVariables(GLuint program, const Pipeline &pipeline
         temp_mat[i] = my * temp_mat[i];
     }
 
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_s1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[0])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_s2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[1])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_s3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[2])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_s4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[3])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_d1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[4])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_d2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[5])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_d3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[6])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_d4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[7])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_f1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[8])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_f2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[9])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_f3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[10])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_f4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[11])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_vf1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[12])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_vf2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[13])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_vf3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[14])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_vf4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[15])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_uf1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[16])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_uf2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[17])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_uf3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[18])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_uf4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[19])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_rand1"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[20])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_rand2"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[21])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_rand3"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[22])));
-    glUniformMatrix4x3fv(glGetUniformLocation(program, "rot_rand4"), 1, GL_FALSE, glm::value_ptr(glm::mat4x3(temp_mat[23])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_s1"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[0])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_s2"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[1])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_s3"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[2])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_s4"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[3])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_d1"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[4])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_d2"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[5])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_d3"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[6])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_d4"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[7])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_f1"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[8])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_f2"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[9])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_f3"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[10])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_f4"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[11])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_vf1"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[12])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_vf2"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[13])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_vf3"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[14])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_vf4"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[15])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_uf1"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[16])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_uf2"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[17])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_uf3"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[18])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_uf4"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[19])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_rand1"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[20])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_rand2"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[21])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_rand3"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[22])));
+    glUniformMatrix3x4fv(glGetUniformLocation(program, "rot_rand4"), 1, GL_FALSE, glm::value_ptr(glm::mat3x4(temp_mat[23])));
 
     // set program uniform "_q[a-h]" values (_qa.x, _qa.y, _qa.z, _qa.w, _qb.x, _qb.y ... ) alias q[1-32]
     for (int i=0; i < 32; i+=4) {
