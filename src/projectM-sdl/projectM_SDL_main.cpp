@@ -8,8 +8,8 @@
 
 #include "pmSDL.hpp"
 
-#define FAKE_AUDIO	0
-#define TEST_ALL_PRESETS	0
+#define FAKE_AUDIO          0
+#define TEST_ALL_PRESETS    0
 
 #if OGL_DEBUG
 void DebugLog(GLenum source,
@@ -146,7 +146,7 @@ int main(int argc, char *argv[]) {
     }
     app->init(win, &glCtx);
 
-#if OGL_DEBUG
+#if OGL_DEBUG && !USE_GLES
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     glDebugMessageCallback(DebugLog, NULL);
@@ -171,6 +171,8 @@ int main(int argc, char *argv[]) {
     if (app->getPlaylistSize()) {
         fprintf(stdout, "Preset loading errors: %d/%d [%d%%]\n", buildErrors, app->getPlaylistSize(), (buildErrors*100) / app->getPlaylistSize());
     }
+
+    delete app;
 
     return PROJECTM_SUCCESS;
 #endif
