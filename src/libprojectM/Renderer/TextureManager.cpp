@@ -283,6 +283,10 @@ TextureSamplerDesc TextureManager::loadTexture(const std::string name, const std
     Texture * newTexture = new Texture(unqualifiedName, tex, GL_TEXTURE_2D, width, height, true);
     Sampler * sampler = newTexture->getSampler(wrap_mode, filter_mode);
 
+    if (textures.find(name) != textures.end()) {
+        delete textures[name];
+    }
+
     textures[name] = newTexture;
 
     return TextureSamplerDesc(newTexture, sampler);

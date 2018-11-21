@@ -266,7 +266,7 @@ void PCM::addPCM8_512( const unsigned char PCMdata[2][512])
 
 void PCM::getPCM(float *PCMdata, int samples, int channel, int freq, float smoothing, int derive)
 {
-   int i,index;
+   int index;
 
    index=start-1;
 
@@ -274,7 +274,7 @@ void PCM::getPCM(float *PCMdata, int samples, int channel, int freq, float smoot
 
    PCMdata[0]=PCMd[channel][index];
 
-   for(i=1;i<samples;i++)
+   for(int i=1;i<samples;i++)
      {
        index=start-1-i;
        if (index<0) index=maxsamples+index;
@@ -285,7 +285,7 @@ void PCM::getPCM(float *PCMdata, int samples, int channel, int freq, float smoot
    //return derivative of PCM data
    if(derive)
      {
-       for(i=0;i<samples-1;i++)
+       for(int i=0;i<samples-1;i++)
 	 {
 	   PCMdata[i]=PCMdata[i]-PCMdata[i+1];
 	 }

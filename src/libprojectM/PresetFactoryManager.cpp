@@ -78,7 +78,7 @@ void PresetFactoryManager::registerFactory(const std::string & extensions, Prese
 
 
 
-std::auto_ptr<Preset> PresetFactoryManager::allocate(const std::string & url, const std::string & name)
+std::unique_ptr<Preset> PresetFactoryManager::allocate(const std::string & url, const std::string & name)
 {
 	try {
 		const std::string extension = parseExtension (url);
@@ -91,7 +91,7 @@ std::auto_ptr<Preset> PresetFactoryManager::allocate(const std::string & url, co
 	} catch (...) {
 		throw PresetFactoryException("uncaught preset factory exception");
 	}
-	return std::auto_ptr<Preset>();
+    return std::unique_ptr<Preset>();
 }
 
 PresetFactory & PresetFactoryManager::factory(const std::string & extension) {

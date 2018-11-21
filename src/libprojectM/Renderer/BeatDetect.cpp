@@ -36,10 +36,10 @@
 #include <cmath>
 #include "BeatDetect.hpp"
 
-BeatDetect::BeatDetect(PCM *pcm) {
+BeatDetect::BeatDetect(PCM *_pcm) {
   int x,y; 
 
-  this->pcm=pcm;
+  this->pcm=_pcm;
 
   this->vol_instant=0;
   this->vol_history=0;

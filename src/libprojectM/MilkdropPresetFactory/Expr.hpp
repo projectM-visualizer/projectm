@@ -108,8 +108,8 @@ public:
   // NOTE: before optimize() left and right will always be TreeExpr
   Expr *left, *right;
   // these are for type-safe access in Parser.cpp
-  TreeExpr *&leftTree()  { return *(TreeExpr **)&left; };
-  TreeExpr *&rightTree() { return *(TreeExpr **)&right; };
+  TreeExpr *leftTree()  { return dynamic_cast<TreeExpr *>(left); }
+  TreeExpr *rightTree() { return dynamic_cast<TreeExpr *>(right); }
 
   ~TreeExpr();
   

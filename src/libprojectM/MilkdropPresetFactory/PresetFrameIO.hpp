@@ -52,7 +52,7 @@ public:
     /// \param gx the width of the mesh 
     /// \param gy the height of the mesh
     /// \note This must be called before reading values from this class
-    void Initialize(int gx, int gy);
+    void Initialize(int _gx, int _gy);
 
     /// Updates this preset inputs with the latest values from the
     /// the pipeline context and beat detection unit
@@ -73,7 +73,7 @@ public:
     cwave_container customWaves;
     cshape_container customShapes;
 
-    void Initialize(int gx, int gy);
+    void Initialize(int _gx, int _gy);
     PresetOutputs();
     ~PresetOutputs();
     virtual void Render(const BeatDetect &music, const PipelineContext &context);

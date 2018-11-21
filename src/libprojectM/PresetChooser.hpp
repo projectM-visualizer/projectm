@@ -40,7 +40,7 @@ public:
     /// \param presetInputs the preset inputs to associate with the preset upon construction
     /// \param presetOutputs the preset outputs to associate with the preset upon construction
     /// \returns an autopointer of the newly allocated preset
-    std::auto_ptr<Preset> allocate();
+    std::unique_ptr<Preset> allocate();
 
     ///  Set the chooser asocciated with this iterator
     void setChooser(const PresetChooser & chooser);
@@ -71,7 +71,7 @@ public:
     /// \param presetInputs the preset inputs to associate with the preset upon construction
     /// \param presetOutputs the preset outputs to associate with the preset upon construction
     /// \returns an auto pointer of the newly allocated preset
-    std::auto_ptr<Preset> directoryIndex(std::size_t index) const;
+    std::unique_ptr<Preset> directoryIndex(std::size_t index) const;
 
     /// Gets the number of presets last believed to exist in the preset loader's filename collection
     /// \returns the number of presets in the collection
@@ -145,7 +145,7 @@ inline bool PresetIterator::operator ==(const PresetIterator & presetPos) const 
     return (*presetPos == **this);
 }
 
-inline std::auto_ptr<Preset> PresetIterator::allocate() {
+inline std::unique_ptr<Preset> PresetIterator::allocate() {
     return _presetChooser->directoryIndex(_currentIndex);
 }
 
@@ -211,7 +211,7 @@ inline bool PresetChooser::empty() const {
 	return _presetLoader->size() == 0;
 }
 
-inline std::auto_ptr<Preset> PresetChooser::directoryIndex(std::size_t index) const {
+inline std::unique_ptr<Preset> PresetChooser::directoryIndex(std::size_t index) const {
 
 	return _presetLoader->loadPreset(index);
 }

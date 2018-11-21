@@ -67,9 +67,9 @@ int String_ToInteger(const char * str, char ** endptr) {
 	return strtol(str, endptr, 10);
 }
 
-int String_ToIntegerHex(const char * str, char ** endptr) {
-	return strtol(str, endptr, 16);
-}
+//int String_ToIntegerHex(const char * str, char ** endptr) {
+//	return strtol(str, endptr, 16);
+//}
 
 
 

@@ -586,7 +586,7 @@ struct HLSLMacro : public HLSLStatement
     }
     const char*         name;
     HLSLArgument*       argument;
-    int                 numArguments;
+    unsigned int        numArguments;
     std::string         value;
     HLSLMacro*          macroAliased;
 };

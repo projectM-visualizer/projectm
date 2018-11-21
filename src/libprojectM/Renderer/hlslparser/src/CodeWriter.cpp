@@ -105,6 +105,7 @@ void CodeWriter::WriteLine(int indent, const char* format, ...)
 
     int result = String_PrintfArgList(buffer, sizeof(buffer), format, args);
     ASSERT(result != -1);
+    (void) result;
 
     for (int i = 0; i < indent * m_spacesPerIndent; ++i)
     {
@@ -127,6 +128,7 @@ void CodeWriter::WriteLineTagged(int indent, const char* fileName, int lineNumbe
     char buffer[_maxLineLength];
     int result = String_PrintfArgList(buffer, sizeof(buffer), format, args);
     ASSERT(result != -1);
+    (void) result;
 
     m_buffer += buffer;
 

@@ -495,7 +495,7 @@ unsigned int
 	SOIL_load_OGL_texture_from_memory
 	(
 		const unsigned char *const buffer,
-		int buffer_length,
+        unsigned int buffer_length,
 		int force_channels,
 		unsigned int reuse_texture_ID,
         unsigned int flags,
@@ -1939,7 +1939,7 @@ const char*
 
 unsigned int SOIL_direct_load_DDS_from_memory(
 		const unsigned char *const buffer,
-		int buffer_length,
+		unsigned int buffer_length,
 		unsigned int reuse_texture_ID,
 		int flags,
 		int loading_as_cubemap )
@@ -2124,7 +2124,7 @@ unsigned int SOIL_direct_load_DDS_from_memory(
 	/*	do this for each face of the cubemap!	*/
 	for( cf_target = ogl_target_start; cf_target <= ogl_target_end; ++cf_target )
 	{
-		if( buffer_index + DDS_full_size <= (unsigned int)buffer_length )
+		if( buffer_index + DDS_full_size <= buffer_length )
 		{
 			unsigned int byte_offset = DDS_main_size;
 			memcpy( (void*)DDS_data, (const void*)(&buffer[buffer_index]), DDS_full_size );

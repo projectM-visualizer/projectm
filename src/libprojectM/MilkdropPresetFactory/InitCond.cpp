@@ -138,7 +138,7 @@ void InitCond::init_cond_to_string() {
 		return;
 	
 	/* Copy the string into the initial condition string buffer */	
-	strncpy(init_cond_string_buffer + init_cond_string_buffer_index, string, string_length);
+    memcpy(init_cond_string_buffer + init_cond_string_buffer_index, string, string_length + 1);
 	
 	/* Increment the string buffer, offset by one for the null terminator, which will be
 	   overwritten by the next call to this function */

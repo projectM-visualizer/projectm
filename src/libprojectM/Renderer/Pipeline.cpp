@@ -11,14 +11,11 @@ Pipeline::Pipeline() : staticPerPixel(false),gx(0),gy(0),blur1n(1), blur2n(1), b
 blur1x(1), blur2x(1), blur3x(1),
 blur1ed(1){}
 
-float **alloc_mesh(size_t gx, size_t gy);
-float **free_mesh(float **mesh);
-
-void Pipeline::setStaticPerPixel(int gx, int gy)
+void Pipeline::setStaticPerPixel(int _gx, int _gy)
 {
 	staticPerPixel = true;
-	this->gx = gx;
-	this->gy = gy;
+    this->gx = _gx;
+    this->gy = _gy;
 
 	this->x_mesh = alloc_mesh(gx, gy);
 	this->y_mesh = alloc_mesh(gx, gy);

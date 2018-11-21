@@ -143,7 +143,7 @@ private:
     HLSLTree*               m_tree;
     
     bool                    m_allowUndeclaredIdentifiers = false;
-    bool                    m_disableSemanticValidation = false;
+    // not used bool                    m_disableSemanticValidation = false;
 };
 
 }
