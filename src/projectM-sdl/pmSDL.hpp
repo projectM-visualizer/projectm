@@ -68,7 +68,7 @@ private:
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
 
     void keyHandler(SDL_Event *);
-    SDL_AudioDeviceID selectAudioInput(int count);
+    SDL_AudioDeviceID selectAudioInput(int _count);
     void renderTexture();
 };
 

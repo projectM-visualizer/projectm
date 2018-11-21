@@ -40,8 +40,8 @@ class PresetLoader {
 
 		/// Load a preset by specifying its unique identifier given when the preset url
 		/// was added to this loader
-		std::auto_ptr<Preset> loadPreset(unsigned int index) const;
-		std::auto_ptr<Preset> loadPreset ( const std::string & url )  const;
+		std::unique_ptr<Preset> loadPreset(unsigned int index) const;
+		std::unique_ptr<Preset> loadPreset ( const std::string & url )  const;
 		/// Add a preset to the loader's collection.
 		/// \param url an url referencing the preset
 		/// \param presetName a name for the preset

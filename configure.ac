@@ -160,7 +160,8 @@ AM_CONDITIONAL([ENABLE_QT], [test "$enable_qt" = yes])
 AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test "$enable_emscripten" = yes])
 
 
-my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wmissing-declarations -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits "
+my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits "
+#my_CFLAGS+="-fsanitize=address -fno-omit-frame-pointer "
 my_CFLAGS+='-DDATADIR_PATH=\""$(pkgdatadir)"\" '
 my_CFLAGS+='-I$(top_srcdir)/vendor '
 AC_SUBST([my_CFLAGS])

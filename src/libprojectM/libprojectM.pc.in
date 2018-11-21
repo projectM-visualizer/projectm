@@ -2,8 +2,8 @@ prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
-pkgdatadir=@datadir@/@PACKAGE_NAME@
-sysconfdir=@datadir@/@PACKAGE_NAME@
+pkgdatadir=@datarootdir@/@PACKAGE_NAME@
+sysconfdir=@datarootdir@/@PACKAGE_NAME@
 
 Name: libprojectM
 Version: @PACKAGE_VERSION@

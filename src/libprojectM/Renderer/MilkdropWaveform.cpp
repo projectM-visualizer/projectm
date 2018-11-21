@@ -14,8 +14,9 @@
 #include <glm/gtc/type_ptr.hpp>
 
 MilkdropWaveform::MilkdropWaveform(): RenderItem(),
-	x(0.5), y(0.5), r(1), g(0), b(0), a(1), mystery(0), mode(Line), scale(10), smoothing(0), rot(0), samples(0),modOpacityStart(0),modOpacityEnd(1),
-    modulateAlphaByVolume(false), maximizeColors(false), additive(false), dots(false), thick(false), loop(false) {
+    x(0.5), y(0.5), r(1), g(0), b(0), a(1), mystery(0), mode(Line), additive(false), dots(false), thick(false),
+    modulateAlphaByVolume(false), maximizeColors(false), scale(10), smoothing(0),
+    modOpacityStart(0), modOpacityEnd(1), rot(0), samples(0), loop(false) {
 
     Init();
 }
@@ -194,11 +195,7 @@ void MilkdropWaveform::MaximizeColors(RenderContext &context)
 void MilkdropWaveform::WaveformMath(RenderContext &context)
 {
 
-	int i;
-
-	float r, theta;
-
-	float offset;
+    float r2, theta;
 
 	float wave_x_temp=0;
 	float wave_y_temp=0;
@@ -206,7 +203,6 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 	float cos_rot;
 	float sin_rot;
 
-	offset=x-.5;
     float temp_y;
 
 	two_waves = false;
@@ -237,11 +233,11 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			  float value = context.beatDetect->pcm->pcmdataR[i]+context.beatDetect->pcm->pcmdataL[i];
 			  value += offset * (i/(float)samples);
 
-			  r=(0.5 + 0.4f*.12*value*scale + mystery)*.5;
-			  theta=i*inv_nverts_minus_one*6.28f + context.time*0.2f;
+              r2=(0.5 + 0.4f*.12*value*scale + mystery)*.5;
+              theta=i*inv_nverts_minus_one*6.28f + context.time*0.2f;
 
-			  wavearray[i][0]=(r*cos(theta)*(context.aspectCorrect? context.aspectRatio : 1.0)+x);
-			  wavearray[i][1]=(r*sin(theta)+temp_y);
+              wavearray[i][0]=(r2*cos(theta)*(context.aspectCorrect? context.aspectRatio : 1.0)+x);
+              wavearray[i][1]=(r2*sin(theta)+temp_y);
 			}
 		  }
 
@@ -257,11 +253,11 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			samples = 512-32;
 			for ( int i=0;i<512-32;i++)
 			{
-				theta=context.beatDetect->pcm->pcmdataL[i+32]*0.06*scale * 1.57 + context.time*2.3;
-				r=(0.53 + 0.43*context.beatDetect->pcm->pcmdataR[i]*0.12*scale+ mystery)*.5;
+                theta=context.beatDetect->pcm->pcmdataL[i+32]*0.06*scale * 1.57 + context.time*2.3;
+                r2=(0.53 + 0.43*context.beatDetect->pcm->pcmdataR[i]*0.12*scale+ mystery)*.5;
 
-				wavearray[i][0]=(r*cos(theta)*(context.aspectCorrect ? context.aspectRatio : 1.0)+x);
-				wavearray[i][1]=(r*sin(theta)+temp_y);
+                wavearray[i][0]=(r2*cos(theta)*(context.aspectCorrect ? context.aspectRatio : 1.0)+x);
+                wavearray[i][1]=(r2*sin(theta)+temp_y);
 			}
 
 			break;

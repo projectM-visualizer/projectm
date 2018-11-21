@@ -1392,18 +1392,30 @@ static unsigned char *stbi__convert_format(unsigned char *data, int img_n, int r
       // convert source image with img_n components to one with req_comp components;
       // avoid switch per pixel, so use switch per scanline and massive macros
       switch (COMBO(img_n, req_comp)) {
-         CASE(1,2) dest[0]=src[0], dest[1]=255; break;
-         CASE(1,3) dest[0]=dest[1]=dest[2]=src[0]; break;
-         CASE(1,4) dest[0]=dest[1]=dest[2]=src[0], dest[3]=255; break;
-         CASE(2,1) dest[0]=src[0]; break;
-         CASE(2,3) dest[0]=dest[1]=dest[2]=src[0]; break;
-         CASE(2,4) dest[0]=dest[1]=dest[2]=src[0], dest[3]=src[1]; break;
-         CASE(3,4) dest[0]=src[0],dest[1]=src[1],dest[2]=src[2],dest[3]=255; break;
-         CASE(3,1) dest[0]=stbi__compute_y(src[0],src[1],src[2]); break;
-         CASE(3,2) dest[0]=stbi__compute_y(src[0],src[1],src[2]), dest[1] = 255; break;
-         CASE(4,1) dest[0]=stbi__compute_y(src[0],src[1],src[2]); break;
-         CASE(4,2) dest[0]=stbi__compute_y(src[0],src[1],src[2]), dest[1] = src[3]; break;
-         CASE(4,3) dest[0]=src[0],dest[1]=src[1],dest[2]=src[2]; break;
+         CASE(1,2) dest[0]=src[0], dest[1]=255;
+         break;
+         CASE(1,3) dest[0]=dest[1]=dest[2]=src[0];
+         break;
+         CASE(1,4) dest[0]=dest[1]=dest[2]=src[0], dest[3]=255;
+         break;
+         CASE(2,1) dest[0]=src[0];
+         break;
+         CASE(2,3) dest[0]=dest[1]=dest[2]=src[0];
+         break;
+         CASE(2,4) dest[0]=dest[1]=dest[2]=src[0], dest[3]=src[1];
+         break;
+         CASE(3,4) dest[0]=src[0],dest[1]=src[1],dest[2]=src[2],dest[3]=255;
+         break;
+         CASE(3,1) dest[0]=stbi__compute_y(src[0],src[1],src[2]);
+         break;
+         CASE(3,2) dest[0]=stbi__compute_y(src[0],src[1],src[2]), dest[1] = 255;
+         break;
+         CASE(4,1) dest[0]=stbi__compute_y(src[0],src[1],src[2]);
+         break;
+         CASE(4,2) dest[0]=stbi__compute_y(src[0],src[1],src[2]), dest[1] = src[3];
+         break;
+         CASE(4,3) dest[0]=src[0],dest[1]=src[1],dest[2]=src[2];
+         break;
          default: STBI_ASSERT(0);
       }
       #undef CASE
@@ -3554,10 +3566,10 @@ static int stbi__zbuild_huffman(stbi__zhuffman *z, stbi_uc *sizelist, int num)
          z->size [c] = (stbi_uc     ) s;
          z->value[c] = (stbi__uint16) i;
          if (s <= STBI__ZFAST_BITS) {
-            int k = stbi__bit_reverse(next_code[s],s);
-            while (k < (1 << STBI__ZFAST_BITS)) {
-               z->fast[k] = fastv;
-               k += (1 << s);
+            int k2 = stbi__bit_reverse(next_code[s],s);
+            while (k2 < (1 << STBI__ZFAST_BITS)) {
+               z->fast[k2] = fastv;
+               k2 += (1 << s);
             }
          }
          ++next_code[s];
@@ -4080,13 +4092,20 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
                 for (k=0; k < nk; ++k)
          switch (filter) {
             // "none" filter turns into a memcpy here; make that explicit.
-            case STBI__F_none:         memcpy(cur, raw, nk); break;
-            CASE(STBI__F_sub)          cur[k] = STBI__BYTECAST(raw[k] + cur[k-filter_bytes]); break;
-            CASE(STBI__F_up)           cur[k] = STBI__BYTECAST(raw[k] + prior[k]); break;
-            CASE(STBI__F_avg)          cur[k] = STBI__BYTECAST(raw[k] + ((prior[k] + cur[k-filter_bytes])>>1)); break;
-            CASE(STBI__F_paeth)        cur[k] = STBI__BYTECAST(raw[k] + stbi__paeth(cur[k-filter_bytes],prior[k],prior[k-filter_bytes])); break;
-            CASE(STBI__F_avg_first)    cur[k] = STBI__BYTECAST(raw[k] + (cur[k-filter_bytes] >> 1)); break;
-            CASE(STBI__F_paeth_first)  cur[k] = STBI__BYTECAST(raw[k] + stbi__paeth(cur[k-filter_bytes],0,0)); break;
+            case STBI__F_none:         memcpy(cur, raw, nk);
+             break;
+            CASE(STBI__F_sub)          cur[k] = STBI__BYTECAST(raw[k] + cur[k-filter_bytes]);
+             break;
+            CASE(STBI__F_up)           cur[k] = STBI__BYTECAST(raw[k] + prior[k]);
+             break;
+            CASE(STBI__F_avg)          cur[k] = STBI__BYTECAST(raw[k] + ((prior[k] + cur[k-filter_bytes])>>1));
+             break;
+            CASE(STBI__F_paeth)        cur[k] = STBI__BYTECAST(raw[k] + stbi__paeth(cur[k-filter_bytes],prior[k],prior[k-filter_bytes]));
+             break;
+            CASE(STBI__F_avg_first)    cur[k] = STBI__BYTECAST(raw[k] + (cur[k-filter_bytes] >> 1));
+             break;
+            CASE(STBI__F_paeth_first)  cur[k] = STBI__BYTECAST(raw[k] + stbi__paeth(cur[k-filter_bytes],0,0));
+             break;
          }
          #undef CASE
          raw += nk;
@@ -4097,13 +4116,20 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
                 for (i=x-1; i >= 1; --i, cur[img_n]=255,raw+=img_n,cur+=out_n,prior+=out_n) \
                    for (k=0; k < img_n; ++k)
          switch (filter) {
-            CASE(STBI__F_none)         cur[k] = raw[k]; break;
-            CASE(STBI__F_sub)          cur[k] = STBI__BYTECAST(raw[k] + cur[k-out_n]); break;
-            CASE(STBI__F_up)           cur[k] = STBI__BYTECAST(raw[k] + prior[k]); break;
-            CASE(STBI__F_avg)          cur[k] = STBI__BYTECAST(raw[k] + ((prior[k] + cur[k-out_n])>>1)); break;
-            CASE(STBI__F_paeth)        cur[k] = STBI__BYTECAST(raw[k] + stbi__paeth(cur[k-out_n],prior[k],prior[k-out_n])); break;
-            CASE(STBI__F_avg_first)    cur[k] = STBI__BYTECAST(raw[k] + (cur[k-out_n] >> 1)); break;
-            CASE(STBI__F_paeth_first)  cur[k] = STBI__BYTECAST(raw[k] + stbi__paeth(cur[k-out_n],0,0)); break;
+            CASE(STBI__F_none)         cur[k] = raw[k];
+            break;
+            CASE(STBI__F_sub)          cur[k] = STBI__BYTECAST(raw[k] + cur[k-out_n]);
+            break;
+            CASE(STBI__F_up)           cur[k] = STBI__BYTECAST(raw[k] + prior[k]);
+            break;
+            CASE(STBI__F_avg)          cur[k] = STBI__BYTECAST(raw[k] + ((prior[k] + cur[k-out_n])>>1));
+            break;
+            CASE(STBI__F_paeth)        cur[k] = STBI__BYTECAST(raw[k] + stbi__paeth(cur[k-out_n],prior[k],prior[k-out_n]));
+            break;
+            CASE(STBI__F_avg_first)    cur[k] = STBI__BYTECAST(raw[k] + (cur[k-out_n] >> 1));
+            break;
+            CASE(STBI__F_paeth_first)  cur[k] = STBI__BYTECAST(raw[k] + stbi__paeth(cur[k-out_n],0,0));
+            break;
          }
          #undef CASE
       }
@@ -4163,20 +4189,20 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
          }
          if (img_n != out_n) {
             // insert alpha = 255
-            stbi_uc *cur = a->out + stride*j;
-            int i;
+            stbi_uc *cur2 = a->out + stride*j;
+            int i2;
             if (img_n == 1) {
-               for (i=x-1; i >= 0; --i) {
-                  cur[i*2+1] = 255;
-                  cur[i*2+0] = cur[i];
+               for (i2=x-1; i2 >= 0; --i2) {
+                  cur2[i2*2+1] = 255;
+                  cur2[i2*2+0] = cur2[i2];
                }
             } else {
                STBI_ASSERT(img_n == 3);
-               for (i=x-1; i >= 0; --i) {
-                  cur[i*4+3] = 255;
-                  cur[i*4+2] = cur[i*3+2];
-                  cur[i*4+1] = cur[i*3+1];
-                  cur[i*4+0] = cur[i*3+0];
+               for (i2=x-1; i2 >= 0; --i2) {
+                  cur2[i2*4+3] = 255;
+                  cur2[i2*4+2] = cur2[i2*3+2];
+                  cur2[i2*4+1] = cur2[i2*3+1];
+                  cur2[i2*4+0] = cur2[i2*3+0];
                }
             }
          }
@@ -4961,8 +4987,8 @@ static stbi_uc *stbi__tga_load(stbi__context *s, int *x, int *y, int *comp, int 
 
    if ( !tga_indexed && !tga_is_RLE) {
       for (i=0; i < tga_height; ++i) {
-         int y = tga_inverted ? tga_height -i - 1 : i;
-         stbi_uc *tga_row = tga_data + y*tga_width*tga_comp;
+         int y2 = tga_inverted ? tga_height -i - 1 : i;
+         stbi_uc *tga_row = tga_data + y2*tga_width*tga_comp;
          stbi__getn(s, tga_row, tga_width * tga_comp);
       }
    } else  {
@@ -5401,7 +5427,6 @@ static stbi_uc *stbi__pic_load_core(stbi__context *s,int width,int height,int *c
 
                   if (count >= 128) { // Repeated
                      stbi_uc value[4];
-                     int i;
 
                      if (count==128)
                         count = stbi__get16be(s);
@@ -5643,22 +5668,22 @@ static stbi_uc *stbi__process_gif_raster(stbi__context *s, stbi__gif *g)
          bits |= (stbi__int32) stbi__get8(s) << valid_bits;
          valid_bits += 8;
       } else {
-         stbi__int32 code = bits & codemask;
+         stbi__int32 code2 = bits & codemask;
          bits >>= codesize;
          valid_bits -= codesize;
          // @OPTIMIZE: is there some way we can accelerate the non-clear path?
-         if (code == clear) {  // clear code
+         if (code2 == clear) {  // clear code
             codesize = lzw_cs + 1;
             codemask = (1 << codesize) - 1;
             avail = clear + 2;
             oldcode = -1;
             first = 0;
-         } else if (code == clear + 1) { // end of stream code
+         } else if (code2 == clear + 1) { // end of stream code
             stbi__skip(s, len);
             while ((len = stbi__get8(s)) > 0)
                stbi__skip(s,len);
             return g->out;
-         } else if (code <= avail) {
+         } else if (code2 <= avail) {
             if (first) return stbi__errpuc("no clear code", "Corrupt GIF");
 
             if (oldcode >= 0) {
@@ -5666,18 +5691,18 @@ static stbi_uc *stbi__process_gif_raster(stbi__context *s, stbi__gif *g)
                if (avail > 4096)        return stbi__errpuc("too many codes", "Corrupt GIF");
                p->prefix = (stbi__int16) oldcode;
                p->first = g->codes[oldcode].first;
-               p->suffix = (code == avail) ? p->first : g->codes[code].first;
-            } else if (code == avail)
+               p->suffix = (code2 == avail) ? p->first : g->codes[code2].first;
+            } else if (code2 == avail)
                return stbi__errpuc("illegal code in raster", "Corrupt GIF");
 
-            stbi__out_gif_code(g, (stbi__uint16) code);
+            stbi__out_gif_code(g, (stbi__uint16) code2);
 
             if ((avail & codemask) == 0 && avail <= 0x0FFF) {
                codesize++;
                codemask = (1 << codesize) - 1;
             }
 
-            oldcode = code;
+            oldcode = code2;
          } else {
             return stbi__errpuc("illegal code in raster", "Corrupt GIF");
          }

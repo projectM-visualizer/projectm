@@ -60,7 +60,7 @@ int Parser::per_frame_eqn_count;
 int Parser::per_frame_init_eqn_count;
 int Parser::last_custom_wave_id;
 int Parser::last_custom_shape_id;
-char Parser::last_eqn_type[MAX_TOKEN_SIZE];
+char Parser::last_eqn_type[MAX_TOKEN_SIZE+1];
 int Parser::last_token_size;
 
 std::string Parser::lastLinePrefix("");
@@ -336,7 +336,7 @@ int Parser::parse_per_pixel_eqn(std::istream &  fs, MilkdropPreset * preset, cha
 
   if (init_string != 0)
   {
-    strncpy(string, init_string, strlen(init_string));
+    memcpy(string, init_string, strlen(init_string) + 1);
   }
   else
   {
@@ -1255,11 +1255,11 @@ int Parser::parse_int(std::istream &  fs, int * int_ptr)
   {
   case tMinus:
     sign = -1;
-    token = parseToken(fs, string);
+    parseToken(fs, string);
     break;
   case tPlus:
     sign = 1;
-    token = parseToken(fs, string);
+    parseToken(fs, string);
     break;
   default:
     sign = 1;
@@ -1328,11 +1328,11 @@ int Parser::parse_float(std::istream &  fs, float * float_ptr)
   {
   case tMinus:
     sign = -1;
-    token = parseToken(fs, string);
+    parseToken(fs, string);
     break;
   case tPlus:
     sign = 1;
-    token = parseToken(fs, string);
+    parseToken(fs, string);
     break;
   default:
     sign = 1;
@@ -1501,7 +1501,7 @@ InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, MilkdropPres
   if (PARSE_DEBUG) printf("parsed_init_cond: parsing initial condition value... (LINE %d)\n", line_count);
 
   /* integer value (boolean is an integer in C) */
-  if ( (param->type == P_TYPE_BOOL))
+  if (param->type == P_TYPE_BOOL)
   {
     int bool_test;
     if ((parse_int(fs, &bool_test)) == PROJECTM_PARSE_ERROR)
@@ -1512,7 +1512,7 @@ InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, MilkdropPres
     init_val.bool_val = bool_test;
   }
 
-  else if ((param->type == P_TYPE_INT))
+  else if (param->type == P_TYPE_INT)
   {
     if ((parse_int(fs, (int*)&init_val.int_val)) == PROJECTM_PARSE_ERROR)
     {
@@ -1551,10 +1551,6 @@ InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, MilkdropPres
 
 
 void Parser::parse_string_block(std::istream &  fs, std::string * out_string) {
-
-
-	char name[MAX_TOKEN_SIZE];
-	token_t token;
 
 	std::set<char> skipList;
 	skipList.insert('`');
@@ -1628,7 +1624,7 @@ InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, MilkdropPreset *
     init_val.bool_val = (bool)val;
   }
 
-  else if ((param->type == P_TYPE_INT))
+  else if (param->type == P_TYPE_INT)
   {
     init_val.int_val = (int)val;
   }
@@ -1688,7 +1684,6 @@ bool Parser::scanForComment(std::istream & fs) {
 
 void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool wrapAround, const std::set<char> & skipList) {
 
-	int string_line_buffer_index = 0;
 	int c;
 
 	/* Loop until a delimiter is found, or the maximum string size is found */
@@ -1746,7 +1741,6 @@ void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool w
 
 
 					if (!wrapsToNextLine(buffer.str())) {
-						wrapAround = false;
 						int buf_size = (int)buffer.str().length();
 						// <= to also remove equal sign parsing from stream
 						for (int k = 0; k <= buf_size; k++) {
@@ -1822,7 +1816,7 @@ int Parser::parse_wavecode(char * token, std::istream &  fs, MilkdropPreset * pr
 
   /* integer value (boolean is an integer in C) */
 
-  if ((param->type == P_TYPE_BOOL))
+  if (param->type == P_TYPE_BOOL)
   {
     int bool_test;
     if ((parse_int(fs, &bool_test)) == PROJECTM_PARSE_ERROR)
@@ -1833,7 +1827,7 @@ int Parser::parse_wavecode(char * token, std::istream &  fs, MilkdropPreset * pr
     }
     init_val.bool_val = bool_test;
   }
-  else if ((param->type == P_TYPE_INT))
+  else if (param->type == P_TYPE_INT)
   {
     if ((parse_int(fs, (int*)&init_val.int_val)) == PROJECTM_PARSE_ERROR)
     {
@@ -1869,10 +1863,7 @@ int Parser::parse_wavecode(char * token, std::istream &  fs, MilkdropPreset * pr
     return PROJECTM_FAILURE;
   }
 
-  std::pair<std::map<std::string, InitCond*>::iterator, bool> inserteePair =
-    custom_wave->init_cond_tree.insert(std::make_pair(init_cond->param->name, init_cond));
-
- // assert(inserteePair.second);
+  custom_wave->init_cond_tree.insert(std::make_pair(init_cond->param->name, init_cond));
 
   line_mode = CUSTOM_WAVE_WAVECODE_LINE_MODE;
 
@@ -1948,7 +1939,7 @@ int Parser::parse_shapecode(char * token, std::istream &  fs, MilkdropPreset * p
   /* integer value (boolean is an integer in C) */
 
 
-  if ((param->type == P_TYPE_BOOL))
+  if (param->type == P_TYPE_BOOL)
   {
     int bool_test;
     if ((parse_int(fs, &bool_test)) == PROJECTM_PARSE_ERROR)
@@ -1958,7 +1949,7 @@ int Parser::parse_shapecode(char * token, std::istream &  fs, MilkdropPreset * p
     }
     init_val.bool_val = bool_test;
   }
-  else if ((param->type == P_TYPE_INT))
+  else if (param->type == P_TYPE_INT)
   {
     if ((parse_int(fs, (int*)&init_val.int_val)) == PROJECTM_PARSE_ERROR)
     {
@@ -2313,7 +2304,7 @@ int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int 
     /// HACK the parse_line code already parsed the per_pixel variable name. This handles that case
     /// Parser needs reworked. Don't have time for it. So this is the result.
     if (init_string)
-      strncpy(string, init_string, strlen(init_string)+1);
+      memcpy(string, init_string, strlen(init_string)+1);
     else
     {
       if (parseToken(fs, string) != tEq)
