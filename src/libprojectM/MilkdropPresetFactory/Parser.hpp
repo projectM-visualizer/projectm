@@ -141,7 +141,7 @@ public:
     static int per_frame_init_eqn_count;
     static int last_custom_wave_id;
     static int last_custom_shape_id;
-    static char last_eqn_type[MAX_TOKEN_SIZE];
+    static char last_eqn_type[MAX_TOKEN_SIZE+1];
     static int last_token_size;
     static bool tokenWrapAroundEnabled;
 

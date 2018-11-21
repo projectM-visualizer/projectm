@@ -30,11 +30,11 @@ void projectMSDL::audioInputCallbackS16(void *userdata, unsigned char *stream, i
     app->pcm()->addPCM16(pcm16);
 }
 
-SDL_AudioDeviceID projectMSDL::selectAudioInput(int count) {
+SDL_AudioDeviceID projectMSDL::selectAudioInput(int _count) {
     // ask the user which capture device to use
     // printf("Please select which audio input to use:\n");
     printf("Detected devices:\n");
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < _count; i++) {
         printf("  %i: 🎤%s\n", i, SDL_GetAudioDeviceName(i, true));
     }
 
@@ -47,20 +47,20 @@ int projectMSDL::openAudioInput() {
     SDL_Log("Using audio driver: %s\n", driver_name);
 
     // get audio input device
-    int i, count = SDL_GetNumAudioDevices(true);  // capture, please
-    if (count == 0) {
+    unsigned int i, count2 = SDL_GetNumAudioDevices(true);  // capture, please
+    if (count2 == 0) {
         SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio capture devices found");
         SDL_Quit();
     }
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < count2; i++) {
         SDL_Log("Found audio capture device %d: %s", i, SDL_GetAudioDeviceName(i, true));
     }
 
     SDL_AudioDeviceID selectedAudioDevice = 0;  // device to open
-    if (count > 1) {
+    if (count2 > 1) {
         // need to choose which input device to use
-        selectedAudioDevice = selectAudioInput(count);
-        if (selectedAudioDevice > count) {
+	selectedAudioDevice = selectAudioInput(count2);
+	if (selectedAudioDevice > count2) {
             SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio input device specified.");
             SDL_Quit();
         }
@@ -98,7 +98,6 @@ int projectMSDL::openAudioInput() {
 
 void projectMSDL::beginAudioCapture() {
     // allocate a buffer to store PCM data for feeding in
-    unsigned int maxSamples = audioChannelsCount * audioSampleCount;
     SDL_PauseAudioDevice(audioDeviceID, false);
 }
 

@@ -1,4 +1,4 @@
-
+#include <cmath>
 
 #include "Pipeline.hpp"
 #include "Transformation.hpp"
@@ -74,7 +74,7 @@ public:
 		float mi = min(above(middiff,0)*middiff*.005,.11);
 
 		mi2_prg = mi2_prg+mi;
-		gam = abs(gam-above(mi2_prg,5));
+        gam = std::abs(gam-above(mi2_prg,5));
 		mi2_prg= if_milk(above(mi2_prg,5),0,mi2_prg);
 
 		float s = context.sample_int;
@@ -156,8 +156,6 @@ class MstressJuppyDancer : public Pipeline
 public:
 	Dancer dancer[10];
 
-	float dx, dy, cx, cy, time;
-
 	float q1,meanmid,middiff,mi_prg,gam, bass;
 
 	MstressJuppyDancer() : Pipeline()
@@ -184,7 +182,7 @@ public:
 		middiff = (music.mid - meanmid)*15;
 		float mi = min(above(middiff,0)*middiff*.005,.11);
 		mi_prg = mi_prg+mi;
-		gam = abs(gam-above(mi_prg,.5));
+        gam = std::abs(gam-above(mi_prg,.5));
 		mi_prg= if_milk(above(mi_prg,.5),0,mi_prg);
 		q1 = gam;
 		bass = music.bass;
@@ -194,14 +192,14 @@ public:
 	{
 
 		float sx = -below(p.y,0.8)*.001;
-		float dx = .01*bass*(1-q1*2)*below(p.y,0.8);
-		float rot=rot+.051*below(p.y,0.8);
-		float cx=trunc(p.x*16)/16;
-		float cy=trunc(p.y*16)/16;
+        float dx = .01*bass*(1-q1*2)*below(p.y,0.8);
+        float rot= .051*below(p.y,0.8);
+        float cx=trunc(p.x*16)/16;
+        float cy=trunc(p.y*16)/16;
 
-		Transforms::Scale(p,context,sx,1,cx,cy);
-		Transforms::Rotate(p,context,rot,cx,cy);
-		Transforms::Transform(p,context,dx,0);
+        Transforms::Scale(p,context,sx,1,cx,cy);
+        Transforms::Rotate(p,context,rot,cx,cy);
+        Transforms::Transform(p,context,dx,0);
 
 		return p;
 	}

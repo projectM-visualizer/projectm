@@ -204,7 +204,7 @@ PresetOutputs* MilkdropPresetFactory::createPresetOutputs(int gx, int gy)
 
 	/* Q AND T VARIABLES START */
 
-	for (int i = 0;i<NUM_Q_VARIABLES;i++)
+    for (unsigned int i = 0;i<NUM_Q_VARIABLES;i++)
 		presetOutputs->q[i] = 0;
 	
 	/* Q AND T VARIABLES END */
@@ -212,7 +212,7 @@ PresetOutputs* MilkdropPresetFactory::createPresetOutputs(int gx, int gy)
 }
 
 
-std::auto_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url, const std::string & name, const std::string & author) {
+std::unique_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url, const std::string & name, const std::string & author) {
 
     PresetOutputs *presetOutputs = _usePresetOutputs ? _presetOutputs : _presetOutputs2;
 
@@ -223,5 +223,5 @@ std::auto_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url, c
 	if (PresetFactory::protocol(url, path) == PresetFactory::IDLE_PRESET_PROTOCOL) {
 		return IdlePresets::allocate(path, *presetOutputs);
 	} else
-		return std::auto_ptr<Preset>(new MilkdropPreset(url, name, *presetOutputs));
+		return std::unique_ptr<Preset>(new MilkdropPreset(url, name, *presetOutputs));
 }

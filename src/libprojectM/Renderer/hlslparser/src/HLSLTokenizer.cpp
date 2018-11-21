@@ -628,7 +628,7 @@ void HLSLTokenizer::Error(const char* format, ...)
     char buffer[1024];
     va_list args;
     va_start(args, format);
-    int result = vsnprintf(buffer, sizeof(buffer) - 1, format, args);
+    vsnprintf(buffer, sizeof(buffer) - 1, format, args);
     va_end(args);
 
     Log_Error("%s(%d) : %s\n", m_fileName, m_lineNumber, buffer);
