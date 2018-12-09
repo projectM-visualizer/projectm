@@ -71,7 +71,8 @@ Silverjuke (FOSS Jukebox)
 * `pkg install gcc autoconf automake libtool mesa-libs libGLU sdl2 glm`
 
 ## Mac OS X
-* `brew install glm sdl2`
+* `brew install glm sdl2 automake libtool pkg-config`
+* `./autogen.sh`
 * `./configure --enable-sdl`
 
 
