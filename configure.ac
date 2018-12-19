@@ -72,6 +72,7 @@ AC_CONFIG_FILES([
   src/projectM-emscripten/Makefile
   src/projectM-qt/Makefile
   src/projectM-pulseaudio/Makefile
+  src/hlsl2glsl/Makefile
 ])
 
 dnl SDL
