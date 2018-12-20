@@ -215,41 +215,35 @@ std::string hlsl2glsl(const std::string &shaderTypeString, const std::string &hl
     M4::HLSLTree tree( &allocator );
     M4::HLSLParser parser(&allocator, &tree);
 
+    size_t found = program.find("#define");
+    if (found != std::string::npos)
+    {
+        std::cerr << "h2g does not support programs with #define";
+        exit(1);
+    }
+
     // replace shader_body with entry point function
-    size_t found = program.find("shader_body");
+    found = program.find("shader_body");
     if (found == std::string::npos)
     {
         std::cerr << "shader_body not found";
-        return "";
+        exit(1);
     }
     program.replace(int(found), 11, "void PS(float4 _vDiffuse : COLOR, float4 _uv : TEXCOORD0, float2 _rad_ang : TEXCOORD1, out float4 _return_value : COLOR)\n");
 
-    std::string sourcePreprocessed;
-//    if (!parser.ApplyPreprocessor("input", fullSource.c_str(), fullSource.size(), sourcePreprocessed))
-//    {
-//        std::cerr << "Failed to preprocess HLSL (step1) " << shaderTypeString << " shader" << std::endl;
-//        return "";
-//    }
-//
-
-    sourcePreprocessed.append(TextureIncludes);
-    sourcePreprocessed.append(PresetShaderIncludes);
-    sourcePreprocessed.append(addl_declarations);
+    std::string fullsource;
+    fullsource.append(TextureIncludes);
+    fullsource.append(PresetShaderIncludes);
+    fullsource.append(addl_declarations);
     // COMMENTS don't survive translation apparently use variable as MARKER
-    sourcePreprocessed.append("\nfloat SHADER_START;\n");
-    sourcePreprocessed.append(program);
-    sourcePreprocessed.append("\nfloat SHADER_END;\n");
+    fullsource.append("\nfloat SHADER_START;\n");
+    fullsource.append(program);
+    fullsource.append("\nfloat SHADER_END;\n");
 
-    if( !parser.Parse("input", sourcePreprocessed.c_str(), sourcePreprocessed.size()) )
+    if( !parser.Parse("input", fullsource.c_str(), fullsource.size()) )
     {
         std::cerr << "Failed to parse HLSL (step2) " << shaderTypeString << " shader" << std::endl;
-        std::cerr << "vv FULL SOURCE  vv" << std::endl;
-        std::cerr << program << std::endl;
-        std::cerr << "^^ FULL SOURCE  ^^" << std::endl;
-        std::cerr << "vv PREPROCESSED vv" << std::endl;
-        std::cerr << sourcePreprocessed << std::endl;
-        std::cerr << "^^ PREPROCESSED ^^" << std::endl;
-        return "";
+        exit(1);
     }
 
     M4::GLSLGenerator generator;
@@ -257,9 +251,9 @@ std::string hlsl2glsl(const std::string &shaderTypeString, const std::string &hl
     if (!generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader, getShaderVersionEnum(), "PS"))
     {
         std::cerr << "Failed to transpile HLSL(step3) " << getShaderVersionString() << " shader to GLSL" << std::endl;
-        return "";
+        exit(1);
     }
-
+    
     return std::string(generator.GetResult());
 }
 
