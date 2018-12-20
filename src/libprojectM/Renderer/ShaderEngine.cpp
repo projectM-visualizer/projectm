@@ -756,7 +756,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     }
 
     // now we have GLSL source for the preset shader program (hopefully it's valid!)
-    // copmile the preset shader fragment shader with the standard vertex shader and cross our fingers
+    // compile the preset shader fragment shader with the standard vertex shader and cross our fingers
     GLuint ret = 0;
     if (shaderType == PresentWarpShader) {
         ret = CompileShaderProgram(presetWarpVertexShader, generator.GetResult(), shaderTypeString);  // returns new program

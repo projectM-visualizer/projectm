@@ -3467,7 +3467,7 @@ bool HLSLParser::ApplyPreprocessor(const char* fileName, const char* buffer, siz
 
     m_tokenizer = HLSLTokenizer(fileName, buffer, length);
 
-    // Fisrt pass, grab #define
+    // First pass, grab #define
     while (m_tokenizer.GetToken() != HLSLToken_EndOfStream)
     {
         if (m_tokenizer.GetToken() == HLSLToken_PreprocessorDefine)
@@ -3547,7 +3547,7 @@ bool HLSLParser::ApplyPreprocessor(const char* fileName, const char* buffer, siz
         index++;
     }
 
-    // Fouth pass, search and replace preprocessor directives
+    // Fourth pass, search and replace preprocessor directives
     std::stack<bool> isCodeActive;
     isCodeActive.push(true);
     m_tokenizer = HLSLTokenizer(fileName, buffer, length);
