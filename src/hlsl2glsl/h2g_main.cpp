@@ -3,6 +3,7 @@
 #include <fstream>
 #include <sstream>
 #include <boost/algorithm/string.hpp>
+#include <regex>
 #include <sys/stat.h>
 #include "../libprojectM/Renderer/hlslparser/src/HLSLParser.h"
 #include "../libprojectM/Renderer/hlslparser/src/GLSLGenerator.h"
@@ -31,6 +32,7 @@ M4::GLSLGenerator::Version getShaderVersionEnum()
 
 #define starts_with(s,f)  boost::algorithm::starts_with(s,f)
 #define trim(s) boost::algorithm::trim(s)
+#define replace_all(s,f,r) boost::algorithm::replace_all(s,f,r)
 #define replace_all_copy(s,f,r) boost::algorithm::replace_all_copy(s,f,r)
 
 std::string TextureIncludes =
@@ -185,15 +187,15 @@ std::string PresetShaderIncludes =
 "float sampler_FW_main;\n"
 "float sampler_PW_main;\n"
 
-"float3 GetMain(in float2 uv) {}\n"
-"float3 GetPixel(in float2 uv) {}\n"
-"float3 GetBlur1(in float2 uv) {}\n"
-"float3 GetBlur2(in float2 uv) {}\n"
-"float3 GetBlur3(in float2 uv) {}\n"
-
-"float lum(float3 x) { return 0;}\n"
-//"#define tex2d tex2D\n"
-//"#define tex3d tex3D\n"
+"float3 GetMain(in float2 uv) {return float3(0,0,0);}\n"
+"float3 GetPixel(in float2 uv) {return float3(0,0,0);}\n"
+"float3 GetBlur1(in float2 uv) {return float3(0,0,0);}\n"
+"float3 GetBlur2(in float2 uv) {return float3(0,0,0);}\n"
+"float3 GetBlur3(in float2 uv) {return float3(0,0,0);}\n"
+// NOTE float lum = lum() in preset only woks because lum is a macro, convet lum() -> LUM(), and then back
+"float LUM(float3 x) { return 0; }\n"
+// some presets call tex3D() on sampler2D which causes an error
+"float3 tex3D( sampler2D s, float3 v) { return float3(0,0,0); }"
 ;
 
 
@@ -207,7 +209,7 @@ const std::string addl_declarations(
     );
 
 
-std::string hlsl2glsl(const std::string &shaderTypeString, const std::string &hlsl)
+std::string hlsl2glsl(const std::string &source, const std::string &shaderTypeString, const std::string &hlsl)
 {
     std::string program = hlsl;
 
@@ -215,34 +217,79 @@ std::string hlsl2glsl(const std::string &shaderTypeString, const std::string &hl
     M4::HLSLTree tree( &allocator );
     M4::HLSLParser parser(&allocator, &tree);
 
-    size_t found = program.find("#define");
-    if (found != std::string::npos)
+    if (program.find("#define") != std::string::npos || program.find("#if") != std::string::npos)
     {
-        std::cerr << "h2g does not support programs with #define";
-        exit(1);
+        std::cerr << "WARN converting file " << source << std::endl;
+        std::cerr << "h2g does not preseve #define, #if and other preprocessor commands" << std::endl;
     }
 
     // replace shader_body with entry point function
-    found = program.find("shader_body");
+    size_t found = program.find("shader_body");
     if (found == std::string::npos)
     {
-        std::cerr << "shader_body not found";
+        std::cerr << "ERROR converting file " << source << std::endl;
+        std::cerr << "shader_body not found" << std::endl;
         exit(1);
     }
     program.replace(int(found), 11, "void PS(float4 _vDiffuse : COLOR, float4 _uv : TEXCOORD0, float2 _rad_ang : TEXCOORD1, out float4 _return_value : COLOR)\n");
+
+
+    // We mostly _do_not_ want to preprocess macros because we are transpiling to generate preset source not to compile
+    // however, by doing some minimal preprocessing here we can get more presets to convert
+    program.insert(0,
+            "#define tex2d tex2D\n"
+            "#define tex3d tex3D\n"
+            "#define lum(x) LUM(x)\n"
+            );
+
+    std::string sourcePreprocessed;
+    if (!parser.ApplyPreprocessor(source.c_str(), program.c_str(), program.size(), sourcePreprocessed))
+    {
+        std::cerr << "ERROR converting file " << source << std::endl;
+        std::cerr << "Failed to preprocess HLSL(step1) " << shaderTypeString << " shader" << std::endl;
+        std::cerr << program << std::endl;
+        exit(1);
+    }
+
+    // UNDO the mangling of sampler2D and sampler3D
+    std::smatch matches;
+    while(std::regex_search(sourcePreprocessed, matches, std::regex("sampler(2D|3D|)\\([^\\)]*\\)")))
+    {
+        std::string sampler = sourcePreprocessed.substr(matches.position(), matches.length());
+        std::string new_declaration = sampler;
+        replace_all(new_declaration,"("," ");
+        replace_all(new_declaration,")","");
+        sourcePreprocessed.replace(matches.position(), matches.length(), new_declaration);
+    }
+//    replace_all(sourcePreprocessed, "sampler2D", "uniform sampler2D ");
+//    replace_all(sourcePreprocessed, "sampler3D", "uniform sampler3D ");
+
+//
+//    // Remove previous texsize declarations
+//    while(std::regex_search(sourcePreprocessed, matches, std::regex("float4\\s+texsize_.*"))) {
+//        sourcePreprocessed.replace(matches.position(), matches.length(), "");
+//    }
+
+    std::string START_SOURCE = "float SHADER_START;";
+    std::string END_SOURCE = "float SHADER_END;";
 
     std::string fullsource;
     fullsource.append(TextureIncludes);
     fullsource.append(PresetShaderIncludes);
     fullsource.append(addl_declarations);
-    // COMMENTS don't survive translation apparently use variable as MARKER
-    fullsource.append("\nfloat SHADER_START;\n");
-    fullsource.append(program);
-    fullsource.append("\nfloat SHADER_END;\n");
+    fullsource.append("\n");
+    fullsource.append(START_SOURCE);
+    fullsource.append("\n");
+    fullsource.append(sourcePreprocessed);
+    fullsource.append("\n");
+    fullsource.append(END_SOURCE);
+    fullsource.append("\n");
 
     if( !parser.Parse("input", fullsource.c_str(), fullsource.size()) )
     {
+        std::cerr << "ERROR converting file " << source << std::endl;
         std::cerr << "Failed to parse HLSL (step2) " << shaderTypeString << " shader" << std::endl;
+        std::cerr << fullsource << std::endl;
         exit(1);
     }
 
@@ -250,11 +297,34 @@ std::string hlsl2glsl(const std::string &shaderTypeString, const std::string &hl
 
     if (!generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader, getShaderVersionEnum(), "PS"))
     {
+        std::cerr << "ERROR converting file " << source << std::endl;
         std::cerr << "Failed to transpile HLSL(step3) " << getShaderVersionString() << " shader to GLSL" << std::endl;
+        std::cerr << fullsource << std::endl;
         exit(1);
     }
-    
-    return std::string(generator.GetResult());
+
+    std::string result;
+    std::stringstream ss(generator.GetResult());
+    bool started=false;
+    std::string line;
+    while (std::getline(ss, line,'\n'))
+    {
+        if (!started)
+        {
+            if (starts_with(line, START_SOURCE))
+                started = true;
+        }
+        else if (starts_with(line, END_SOURCE))
+            break;
+        else if (starts_with(line, "void PS("))
+            result.append("shader_body {\n");
+        else
+        {
+            replace_all(line, "LUM(", "lum(");
+            result.append(line + "\n");
+        }
+    }
+    return result;
 }
 
 
@@ -262,21 +332,10 @@ void output_program(std::ostream &output, const std::string &prefix, const std::
 {
     size_t line_count = 0;
     std::stringstream ss(program);
-    bool started=false;
     std::string line;
     while (std::getline(ss, line,'\n'))
     {
-        if (!started)
-        {
-            if (starts_with(line, "float SHADER_START"))
-                started = true;
-        }
-        else if (starts_with(line, "float SHADER_END"))
-            break;
-        else if (starts_with(line, "void PS("))
-            output << prefix << ++line_count << "=`shader_body {" <<  std::endl;
-        else
-            output << prefix << ++line_count << "=`" << line << std::endl;
+        output << prefix << ++line_count << "=`" << line << std::endl;
     }
     output.flush();
 }
@@ -284,11 +343,13 @@ void output_program(std::ostream &output, const std::string &prefix, const std::
 
 int main(int argc, char *argv[])
 {
+    std::string source = "-";
     std::istream *pinput = &std::cin;
     std::ostream *poutput = &std::cout;
 
     if (argc >= 2)
     {
+        source = argv[1];
         pinput = new std::ifstream(argv[1]);
     }
 
@@ -330,7 +391,7 @@ int main(int argc, char *argv[])
     std::string warp_glsl;
     if (warp.length() > 0)
     {
-        warp_glsl = hlsl2glsl("warp", warp);
+        warp_glsl = hlsl2glsl(source, "warp", warp);
         output << warp_prefix << "lang=glsl_" << replace_all_copy(getShaderVersionString(), " ", "_") << std::endl;
         output_program(output, warp_prefix, warp_glsl);
     }
@@ -339,7 +400,7 @@ int main(int argc, char *argv[])
     std::string comp_glsl;
     if (comp.length() > 0)
     {
-        comp_glsl = hlsl2glsl("comp", comp);
+        comp_glsl = hlsl2glsl(source, "comp", comp);
         output << comp_prefix << "lang=glsl_" << replace_all_copy(getShaderVersionString(), " ", "_") << std::endl;
         output_program(output, comp_prefix, comp_glsl);
     }
