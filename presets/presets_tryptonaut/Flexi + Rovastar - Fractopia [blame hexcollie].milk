@@ -325,10 +325,10 @@ comp_8=`dy = GetBlur1(uv_orig + float2(0,1)*d) - GetBlur1(uv_orig - float2(0,1)*
 comp_9=`
 comp_10=`float z = GetPixel(uv).x*(1-GetPixel(uv).z);
 comp_11=`float y = (1-GetPixel(uv).y)*(1-GetPixel(uv).x);
-comp_12=`q7 = time*200;
+comp_12=`float _q7 = time*200;
 comp_13=` float2 bg = (uv-0.5+float2(dx.x,dy.x)*0.15)*texsize.xy;
-comp_14=` float bg1 = saturate((abs(bg.x)+abs(bg.y)+q7)%64-32);
-comp_15=` float bg2 = saturate((-abs(bg.x)-abs(bg.y)+q7)%64-32);
+comp_14=` float bg1 = saturate((abs(bg.x)+abs(bg.y)+_q7)%64-32);
+comp_15=` float bg2 = saturate((-abs(bg.x)-abs(bg.y)+_q7)%64-32);
 comp_16=` float fnord;
 comp_17=` if(length(bg)> 0.25*texsize.y){
 comp_18=`  fnord = bg2;

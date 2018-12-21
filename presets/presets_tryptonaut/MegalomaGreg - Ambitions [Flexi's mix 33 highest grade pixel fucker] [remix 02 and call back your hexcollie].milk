@@ -296,10 +296,10 @@ comp_9=`
 comp_10=`float z = GetPixel(uv).x*(1-GetPixel(uv).z);
 comp_11=`float y = (1-GetPixel(uv).y)*(1-GetPixel(uv).x);
 comp_12=`
-comp_13=`q7 = time*200;
+comp_13=`float _q7 = time*200;
 comp_14=` float2 bg = (uv-0.5+float2(dx.x,dy.x)*0.15)*texsize.xy;
-comp_15=` float bg1 = saturate((abs(bg.x)+abs(bg.y)+q7)%64-32);
-comp_16=` float bg2 = saturate((-abs(bg.x)-abs(bg.y)+q7)%64-32);
+comp_15=` float bg1 = saturate((abs(bg.x)+abs(bg.y)+_q7)%64-32);
+comp_16=` float bg2 = saturate((-abs(bg.x)-abs(bg.y)+_q7)%64-32);
 comp_17=` float fnord;
 comp_18=` if(length(bg)> 0.25*texsize.y){
 comp_19=`  fnord = bg2;

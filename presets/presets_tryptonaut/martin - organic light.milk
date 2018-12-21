@@ -372,8 +372,8 @@ warp_22=`float3 crisp= tex2D(sampler_main,uv);
 warp_23=`
 warp_24=`float3 ret1 = crisp - blur*.02 + .1*mus;
 warp_25=`
-warp_26=`q25 = 1;
-warp_27=`ret = q25*(ret1*.99-.025) + (1-q25)* GetPixel(uv_orig);
+warp_26=`float _q25 = 1;
+warp_27=`ret = _q25*(ret1*.99-.025) + (1-_q25)* GetPixel(uv_orig);
 warp_28=`
 warp_29=`}
 comp_1=`float z;

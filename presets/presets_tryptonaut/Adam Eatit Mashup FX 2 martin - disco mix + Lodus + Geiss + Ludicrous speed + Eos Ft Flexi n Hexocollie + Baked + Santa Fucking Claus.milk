@@ -307,7 +307,7 @@ warp_22=`
 warp_23=`float3 ret1 = crisp - blur*.03 + .1*mus;
 warp_24=`//float2 uv2 = (uv_orig-.5)-float2(.5,.5+0.1*q25);
 warp_25=`
-warp_26=`q25 = 1;
-warp_27=`ret = q25*(ret1*.99-.02) + (1-q25)* GetPixel(uv_orig);
+warp_26=`float _q25 = 1;
+warp_27=`ret = _q25*(ret1*.99-.02) + (1-_q25)* GetPixel(uv_orig);
 warp_28=`
 warp_29=`}

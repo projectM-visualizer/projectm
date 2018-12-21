@@ -474,9 +474,9 @@ warp_27=`float3 crisp= tex2D(sampler_main,(uv1)*(.8+.2*z)+.5);
 warp_28=`
 warp_29=`float3 ret1 = crisp + mus;
 warp_30=`
-warp_31=`q25 = q24+.4; //##hier auf 1 setzen
-warp_32=`q25 = .5;
-warp_33=`ret = q25*(ret1*.96-.025) + (1-q25)* GetPixel(uv_orig);
+warp_31=`float _q25 = q24+.4; //##hier auf 1 setzen
+warp_32=`_q25 = .5;
+warp_33=`ret = _q25*(ret1*.96-.025) + (1-_q25)* GetPixel(uv_orig);
 warp_34=`
 warp_35=`}
 comp_1=`shader_body

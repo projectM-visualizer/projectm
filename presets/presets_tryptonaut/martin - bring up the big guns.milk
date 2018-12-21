@@ -401,8 +401,8 @@ warp_23=`//Glitzereffekt durch +.1*z; Zentralstern mit .1/z !!!
 warp_24=`
 warp_25=`float3 ret1 = crisp + mus;
 warp_26=`
-warp_27=`q25 = 1;
-warp_28=`ret = q25*(ret1*.94-.01) + (1-q25)* GetPixel(uv_orig);
+warp_27=`float _q25 = 1;
+warp_28=`ret = _q25*(ret1*.94-.01) + (1-_q25)* GetPixel(uv_orig);
 warp_29=`
 warp_30=`}
 comp_1=`

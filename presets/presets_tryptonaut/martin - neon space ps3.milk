@@ -343,8 +343,8 @@ warp_23=`
 warp_24=`float3 ret1 = crisp - blur*.04 + .15*mus;
 warp_25=`
 warp_26=`//ret1 = lerp(ret1,ret1.gbr,lum(ret1));
-warp_27=`q25 = q24+.01;
-warp_28=`ret = q25*(ret1-.02)*.98 + (1-q25)* (GetPixel(uv_orig)-.0015);
+warp_27=`float _q25 = q24+.01;
+warp_28=`ret = _q25*(ret1-.02)*.98 + (1-_q25)* (GetPixel(uv_orig)-.0015);
 warp_29=`}
 comp_1=`float3 ret1, neu;
 comp_2=`float2 uv2,uv3;

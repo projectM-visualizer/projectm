@@ -336,12 +336,12 @@ comp_1=`sampler sampler_rand00;
 comp_2=`sampler sampler_rand01;
 comp_3=`shader_body
 comp_4=`{
-comp_5=`q30=(abs(bass-bass_att)+abs(treb-treb_att)+abs(mid-mid_att))*.01;
+comp_5=`float _q30=(abs(bass-bass_att)+abs(treb-treb_att)+abs(mid-mid_att))*.01;
 comp_6=`float2 uv2 = uv;
 comp_7=`uv2.x=1-uv2.x;
-comp_8=`ret = tex2D(sampler_rand00, frac(1-GetBlur2(uv).yx*0.6 + time*float2(0.0053*roam_cos.x*q30,.0038*roam_sin.x*q30)))
+comp_8=`ret = tex2D(sampler_rand00, frac(1-GetBlur2(uv).yx*0.6 + time*float2(0.0053*roam_cos.x*_q30,.0038*roam_sin.x*_q30)))
 comp_9=`*(1+GetPixel(uv).x + GetBlur1(uv).y)*0.4;
-comp_10=`float3 ret2 = tex2D(sampler_rand01, frac(1-GetBlur2(uv2).yx*0.6 + time*float2(0.0057*roam_sin.x*q30,.0036*roam_cos.x*q30)))
+comp_10=`float3 ret2 = tex2D(sampler_rand01, frac(1-GetBlur2(uv2).yx*0.6 + time*float2(0.0057*roam_sin.x*_q30,.0036*roam_cos.x*_q30)))
 comp_11=`*(1+GetPixel(uv2).x + GetBlur1(uv2).y)*0.4;
 comp_12=`ret+=ret2;
 comp_13=`}
