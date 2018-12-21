@@ -29,10 +29,8 @@
 #define FRAND ((rand() % 7381)/7380.0f)
 
 
-std::string presetWarpVertexShader(
-    "#version "
-    GLSL_VERSION
-    "\n"
+const std::string presetWarpVertexShader(
+    "#version " GLSL_VERSION "\n"
     "layout(location = 0) in vec2 vertex_position;\n"
     "layout(location = 1) in vec4 vertex_color;\n"
     "layout(location = 2) in vec2 vertex_texture;\n"
@@ -52,10 +50,8 @@ std::string presetWarpVertexShader(
     "    frag_TEXCOORD1 = vec2(0.0, 0.0);\n"
     "}\n");
 
-std::string presetCompVertexShader(
-    "#version "
-    GLSL_VERSION
-    "\n"
+const std::string presetCompVertexShader(
+    "#version " GLSL_VERSION "\n"
     "layout(location = 0) in vec2 vertex_position;\n"
     "layout(location = 1) in vec4 vertex_color;\n"
     "layout(location = 2) in vec2 vertex_texture;\n"
@@ -75,9 +71,7 @@ std::string presetCompVertexShader(
 
 
 const std::string ShaderEngine::v2f_c4f_vert(
-    "#version "
-    GLSL_VERSION
-    "\n"
+    "#version " GLSL_VERSION "\n"
     ""
     "layout(location = 0) in vec2 vertex_position;\n"
     "layout(location = 1) in vec4 vertex_color;\n"
@@ -94,9 +88,7 @@ const std::string ShaderEngine::v2f_c4f_vert(
     "}\n");
 
 const std::string ShaderEngine::v2f_c4f_frag(
-    "#version "
-    GLSL_VERSION
-    "\n"
+    "#version " GLSL_VERSION "\n"
     "precision mediump float;\n"
     ""
     "in vec4 fragment_color;\n"
@@ -107,9 +99,7 @@ const std::string ShaderEngine::v2f_c4f_frag(
     "}\n");
 
 const std::string ShaderEngine::v2f_c4f_t2f_vert(
-        "#version "
-        GLSL_VERSION
-        "\n"
+        "#version " GLSL_VERSION "\n"
         "layout(location = 0) in vec2 vertex_position;\n"
         "layout(location = 1) in vec4 vertex_color;\n"
         "layout(location = 2) in vec2 vertex_texture;\n"
@@ -126,9 +116,7 @@ const std::string ShaderEngine::v2f_c4f_t2f_vert(
         "}\n");
 
 const std::string ShaderEngine::v2f_c4f_t2f_frag(
-        "#version "
-        GLSL_VERSION
-        "\n"
+        "#version " GLSL_VERSION "\n"
         "precision mediump float;\n"
         ""
         "in vec4 fragment_color;\n"
@@ -143,7 +131,7 @@ const std::string ShaderEngine::v2f_c4f_t2f_frag(
         "}\n");
 
 
-std::string PresetShaderIncludes = ""
+const std::string PresetShaderIncludes_hlsl =
 "#define  M_PI   3.14159265359\n"
 "#define  M_PI_2 6.28318530718\n"
 "#define  M_INV_PI_2  0.159154943091895\n"
@@ -276,11 +264,143 @@ std::string PresetShaderIncludes = ""
 "#define tex3d tex3D\n"
 ;
 
+const std::string PresetShaderIncludes_glsl =
+"#define  M_PI   3.14159265359\n"
+"#define  M_PI_2 6.28318530718\n"
+"#define  M_INV_PI_2  0.159154943091895\n"
 
-std::string blur_vert(
-    "#version "
-    GLSL_VERSION
-    "\n"
+"uniform vec4   rand_frame;		// random vec4, updated each frame\n"
+"uniform vec4   rand_preset;   // random vec4, updated once per *preset*\n"
+"uniform vec4   _c0;  // .xy: multiplier to use on UV's to paste an image fullscreen, *aspect-aware*; .zw = inverse.\n"
+"uniform vec4   _c1, _c2, _c3, _c4;\n"
+"uniform vec4   _c5;  //.xy = scale,bias for reading blur1; .zw = scale,bias for reading blur2; \n"
+"uniform vec4   _c6;  //.xy = scale,bias for reading blur3; .zw = blur1_min,blur1_max\n"
+"uniform vec4   _c7;  // .xy ~= float2(1024,768); .zw ~= float2(1/1024.0, 1/768.0)\n"
+"uniform vec4   _c8;  // .xyzw ~= 0.5 + 0.5*cos(time * vec4(~0.3, ~1.3, ~5, ~20))\n"
+"uniform vec4   _c9;  // .xyzw ~= same, but using sin()\n"
+"uniform vec4   _c10;  // .xyzw ~= 0.5 + 0.5*cos(time * vec4(~0.005, ~0.008, ~0.013, ~0.022))\n"
+"uniform vec4   _c11;  // .xyzw ~= same, but using sin()\n"
+"uniform vec4   _c12;  // .xyz = mip info for main image (.x=#across, .y=#down, .z=avg); .w = unused\n"
+"uniform vec4   _c13;  //.xy = blur2_min,blur2_max; .zw = blur3_min, blur3_max.\n"
+"uniform vec4   _qa;  // q vars bank 1 [q1-q4]\n"
+"uniform vec4   _qb;  // q vars bank 2 [q5-q8]\n"
+"uniform vec4   _qc;  // q vars ...\n"
+"uniform vec4   _qd;  // q vars\n"
+"uniform vec4   _qe;  // q vars\n"
+"uniform vec4   _qf;  // q vars\n"
+"uniform vec4   _qg;  // q vars\n"
+"uniform vec4   _qh;  // q vars bank 8 [q29-q32]\n"
+
+"// note: in general, don't use the current time w/the *dynamic* rotations!\n"
+"uniform mat4x3 rot_s1;  // four random, static rotations.  randomized @ preset load time.\n"
+"uniform mat4x3 rot_s2;  // minor translation component (<1).\n"
+"uniform mat4x3 rot_s3;\n"
+"uniform mat4x3 rot_s4;\n"
+
+"uniform mat4x3 rot_d1;  // four random, slowly changing rotations.\n"
+"uniform mat4x3 rot_d2;  \n"
+"uniform mat4x3 rot_d3;\n"
+"uniform mat4x3 rot_d4;\n"
+"uniform mat4x3 rot_f1;  // faster-changing.\n"
+"uniform mat4x3 rot_f2;\n"
+"uniform mat4x3 rot_f3;\n"
+"uniform mat4x3 rot_f4;\n"
+"uniform mat4x3 rot_vf1;  // very-fast-changing.\n"
+"uniform mat4x3 rot_vf2;\n"
+"uniform mat4x3 rot_vf3;\n"
+"uniform mat4x3 rot_vf4;\n"
+"uniform mat4x3 rot_uf1;  // ultra-fast-changing.\n"
+"uniform mat4x3 rot_uf2;\n"
+"uniform mat4x3 rot_uf3;\n"
+"uniform mat4x3 rot_uf4;\n"
+
+"uniform mat4x3 rot_rand1; // random every frame\n"
+"uniform mat4x3 rot_rand2;\n"
+"uniform mat4x3 rot_rand3;\n"
+"uniform mat4x3 rot_rand4;\n"
+
+"#define time     _c2.x\n"
+"#define fps      _c2.y\n"
+"#define frame    _c2.z\n"
+"#define progress _c2.w\n"
+"#define bass _c3.x\n"
+"#define mid  _c3.y\n"
+"#define treb _c3.z\n"
+"#define vol  _c3.w\n"
+"#define bass_att _c4.x\n"
+"#define mid_att  _c4.y\n"
+"#define treb_att _c4.z\n"
+"#define vol_att  _c4.w\n"
+"#define q1 _qa.x\n"
+"#define q2 _qa.y\n"
+"#define q3 _qa.z\n"
+"#define q4 _qa.w\n"
+"#define q5 _qb.x\n"
+"#define q6 _qb.y\n"
+"#define q7 _qb.z\n"
+"#define q8 _qb.w\n"
+"#define q9 _qc.x\n"
+"#define q10 _qc.y\n"
+"#define q11 _qc.z\n"
+"#define q12 _qc.w\n"
+"#define q13 _qd.x\n"
+"#define q14 _qd.y\n"
+"#define q15 _qd.z\n"
+"#define q16 _qd.w\n"
+"#define q17 _qe.x\n"
+"#define q18 _qe.y\n"
+"#define q19 _qe.z\n"
+"#define q20 _qe.w\n"
+"#define q21 _qf.x\n"
+"#define q22 _qf.y\n"
+"#define q23 _qf.z\n"
+"#define q24 _qf.w\n"
+"#define q25 _qg.x\n"
+"#define q26 _qg.y\n"
+"#define q27 _qg.z\n"
+"#define q28 _qg.w\n"
+"#define q29 _qh.x\n"
+"#define q30 _qh.y\n"
+"#define q31 _qh.z\n"
+"#define q32 _qh.w\n"
+
+"#define aspect   _c0\n"
+"#define texsize  _c7 // .xy = (w,h); .zw = (1/(float)w, 1/(float)h)\n"
+"#define roam_cos _c8\n"
+"#define roam_sin _c9\n"
+"#define slow_roam_cos _c10\n"
+"#define slow_roam_sin _c11\n"
+"#define mip_x   _c12.x\n"
+"#define mip_y   _c12.y\n"
+"#define mip_xy  _c12.xy\n"
+"#define mip_avg _c12.z\n"
+"#define blur1_min _c6.z\n"
+"#define blur1_max _c6.w\n"
+"#define blur2_min _c13.x\n"
+"#define blur2_max _c13.y\n"
+"#define blur3_min _c13.z\n"
+"#define blur3_max _c13.w\n"
+
+"#define sampler_FC_main sampler_fc_main\n"
+"#define sampler_PC_main sampler_pc_main\n"
+"#define sampler_FW_main sampler_fw_main\n"
+"#define sampler_PW_main sampler_pw_main\n"
+
+"#define GetMain(uv) (texture(sampler_main,uv).xyz)\n"
+"#define GetPixel(uv) (texture(sampler_main,uv).xyz)\n"
+"#define GetBlur1(uv) (texture(sampler_blur1,uv).xyz*_c5.x + _c5.y)\n"
+"#define GetBlur2(uv) (texture(sampler_blur2,uv).xyz*_c5.z + _c5.w)\n"
+"#define GetBlur3(uv) (texture(sampler_blur3,uv).xyz*_c6.x + _c6.y)\n"
+
+"#define lum(x) (dot(x,vec3(0.32,0.49,0.29)))\n"
+"#define tex2d texture\n"
+"#define tex2D texture\n"
+"#define tex3d texture\n"
+"#define tex3D texture\n"
+;
+
+const std::string blur_vert(
+    "#version " GLSL_VERSION "\n"
     "layout(location = 0) in vec2 vertex_position;\n"
     "layout(location = 1) in vec2 vertex_texture;\n"
     ""
@@ -292,10 +412,8 @@ std::string blur_vert(
     "}\n");
 
 
-std::string blur1_frag(
-    "#version "
-    GLSL_VERSION
-    "\n"
+const std::string blur1_frag(
+    "#version " GLSL_VERSION "\n"
     "precision mediump float;\n"
     ""
     "in vec2 fragment_texture;\n"
@@ -345,10 +463,8 @@ std::string blur1_frag(
     "   color.w   = 1.0;\n"
     "}\n");
 
-std::string blur2_frag(
-    "#version "
-    GLSL_VERSION
-    "\n"
+const std::string blur2_frag(
+    "#version " GLSL_VERSION "\n"
     "precision mediump float;\n"
     ""
     "in vec2 fragment_texture;\n"
@@ -495,8 +611,10 @@ void ShaderEngine::setParams(const int _texsizeX, const int _texsizeY, BeatDetec
 
 
 // compile a user-defined shader from a preset. returns program ID if successful.
-GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Shader &pmShader, const std::string &shaderFilename) {
+GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Shader &pmShader, const std::string &shaderFilename)
+{
     std::string program = pmShader.programSource;
+    bool isHLSL = pmShader.language == "hlsl";
 
     if (program.length() <= 0)
         return GL_FALSE;
@@ -506,8 +624,10 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     if (found != std::string::npos)
     {
         //std::cout << "last '}' found at: " << int(found) << std::endl;
-        program.replace(int(found), 1, "_return_value = float4(ret.xyz, 1.0);\n"
-                                       "}\n");
+        if (isHLSL)
+            program.replace(int(found), 1, "_return_value = float4(ret.xyz, 1.0);\n}\n");
+        else
+            program.replace(int(found), 1, "_return_value = vec4(ret.xyz, 1.0);\n}\n");
     }
     else
         return GL_FALSE;
@@ -517,13 +637,22 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     if (found != std::string::npos)
     {
         //std::cout << "first 'shader_body' found at: " << int(found) << std::endl;
-        if (shaderType == PresentWarpShader) {
-            program.replace(int(found), 11, "void PS(float4 _vDiffuse : COLOR, float4 _uv : TEXCOORD0, float2 _rad_ang : TEXCOORD1, out float4 _return_value : COLOR)\n");
-
-        } else {
-            program.replace(int(found), 11, "void PS(float4 _vDiffuse : COLOR, float2 _uv : TEXCOORD0, float2 _rad_ang : TEXCOORD1, out float4 _return_value : COLOR)\n");
-
+        const char *fn_decl;
+        if (shaderType == PresentWarpShader)
+        {
+            if (isHLSL)
+                fn_decl = "void PS(float4 _vDiffuse : COLOR, float4 _uv : TEXCOORD0, float2 _rad_ang : TEXCOORD1, out float4 _return_value : COLOR)\n";
+            else
+                fn_decl = "void PS(vec4 _vDiffuse, vec4 _uv, vec2 _rad_ang, out vec4 _return_value)\n";
         }
+        else
+        {
+            if (isHLSL)
+                fn_decl = "void PS(float4 _vDiffuse : COLOR, float2 _uv : TEXCOORD0, float2 _rad_ang : TEXCOORD1, out float4 _return_value : COLOR)\n";
+            else
+                fn_decl = "void PS(vec4 _vDiffuse, vec2 _uv, vec2 _rad_ang, out vec4 _return_value)\n";
+        }
+        program.replace(int(found), 11, fn_decl);
     }
     else
         return GL_FALSE;
@@ -532,11 +661,10 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     found = program.find('{',found);
     if (found != std::string::npos)
     {
-        //std::cout << "first '{' found at: " << int(found) << std::endl;
-        const char *progMain = \
-        "{\n"
-        "float3 ret = 0;\n";
-        program.replace(int(found), 1, progMain);
+        if (isHLSL)
+            program.replace( int(found), 1, "{\nfloat3 ret = 0;\n");
+        else
+            program.replace( int(found), 1, "{\nvec3 ret = vec3(0,0,0);\n");
     }
     else
         return GL_FALSE;
@@ -641,8 +769,21 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
 
     std::string fullSource;
 
-    // prepend our HLSL template to the actual program source
-    fullSource.append(PresetShaderIncludes);
+//    // if GLSL add #defines to translate types
+//    if (!isHLSL)
+//    {
+//        fullSource.append(
+//                "#define float3 vec3\n"
+//                "#define float4 vec4\n"
+//                "#define float4x3 mat4x3\n"
+//        );
+//    }
+
+    // prepend our HLSL/GLSL template to the actual program source
+    if (isHLSL)
+        fullSource.append(PresetShaderIncludes_hlsl);
+    else
+        fullSource.append(PresetShaderIncludes_glsl);
 
     if (shaderType == PresentWarpShader) {
         fullSource.append(  "#define rad _rad_ang.x\n"
@@ -702,6 +843,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     }
 
     // Declare samplers
+    std::string declarations;
     std::set<std::string> texsizes;
     std::map<std::string, TextureSamplerDesc>::const_iterator iter_samplers = pmShader.textures.cbegin();
     for ( ; iter_samplers != pmShader.textures.cend(); ++iter_samplers)
@@ -709,9 +851,9 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
         Texture * texture = iter_samplers->second.first;
 
         if (texture->type == GL_TEXTURE_3D) {
-            sourcePreprocessed.insert(0, "uniform sampler3D sampler_" + iter_samplers->first + ";\n");
+            declarations.append("uniform sampler3D sampler_" + iter_samplers->first + ";\n");
         } else {
-            sourcePreprocessed.insert(0, "uniform sampler2D sampler_" + iter_samplers->first + ";\n");
+            declarations.append("uniform sampler2D sampler_" + iter_samplers->first + ";\n");
         }
 
         texsizes.insert(iter_samplers->first);
@@ -722,46 +864,124 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     std::set<std::string>::const_iterator iter_texsizes = texsizes.cbegin();
     for ( ; iter_texsizes != texsizes.cend(); ++iter_texsizes)
     {
-        sourcePreprocessed.insert(0, "uniform float4 texsize_" + *iter_texsizes + ";\n");
+        if (isHLSL)
+            declarations.append("uniform float4 texsize_" + *iter_texsizes + ";\n");
+        else
+            declarations.append("uniform vec4 texsize_" + *iter_texsizes + ";\n");
     }
 
+    sourcePreprocessed.insert(0, declarations);
 
-    // transpile from HLSL (aka preset shader aka directX shader) to GLSL (aka OpenGL shader lang)
+    std::string sourceProcessed;
 
-    // parse
-    if( !parser.Parse(shaderFilename.c_str(), sourcePreprocessed.c_str(), sourcePreprocessed.size()) ) {
-        std::cerr << "Failed to parse HLSL(step2) " << shaderTypeString << " shader" << std::endl;
+    if (!isHLSL)
+    {
+        // TODO Generator() does a lot of other useful stuff!  How do I use it w/o using HLSLParser?
+        sourceProcessed.append(
+                "#version " GLSL_VERSION "\n"
+                "vec2 matrix_row0(mat2 m, int i) { return vec2( m[0][i], m[1][i] ); }\n"
+                "vec3 matrix_row0(mat3 m, int i) { return vec3( m[0][i], m[1][i], m[2][i] ); }\n"
+                "vec4 matrix_row0(mat4 m, int i) { return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }\n"
+                "vec2  m_scalar_swizzle20(float x) { return  vec2(x, x); }\n"
+                "ivec2 m_scalar_swizzle20(int   x) { return ivec2(x, x); }\n"
+                "vec3  m_scalar_swizzle30(float x) { return  vec3(x, x, x); }\n"
+                "ivec3 m_scalar_swizzle30(int   x) { return ivec3(x, x, x); }\n"
+                "vec4  m_scalar_swizzle40(float x) { return  vec4(x, x, x, x); }\n"
+                "ivec4 m_scalar_swizzle40(int   x) { return ivec4(x, x, x, x); }\n"
+                "uvec2 m_scalar_swizzle20(uint  x) { return uvec2(x, x); }\n"
+                "uvec3 m_scalar_swizzle30(uint  x) { return uvec3(x, x, x); }\n"
+                "uvec4 m_scalar_swizzle40(uint  x) { return uvec4(x, x, x, x); }\n"
+                "vec2 bvecTernary0(bvec2 cond, vec2 trueExpr, vec2 falseExpr) { vec2 ret; ret.x = cond.x ? trueExpr.x : falseExpr.x; ret.y = cond.y ? trueExpr.y : falseExpr.y; return ret; }\n"
+                "vec3 bvecTernary0(bvec3 cond, vec3 trueExpr, vec3 falseExpr) { vec3 ret; ret.x = cond.x ? trueExpr.x : falseExpr.x; ret.y = cond.y ? trueExpr.y : falseExpr.y; ret.z = cond.z ? trueExpr.z : falseExpr.z; return ret; }\n"
+                "vec4 bvecTernary0(bvec4 cond, vec4 trueExpr, vec4 falseExpr) { vec4 ret; ret.x = cond.x ? trueExpr.x : falseExpr.x; ret.y = cond.y ? trueExpr.y : falseExpr.y; ret.z = cond.z ? trueExpr.z : falseExpr.z; ret.w = cond.w ? trueExpr.w : falseExpr.w; return ret; }\n"
+                "mat2 mat2_from_float_float_float_float(float a, float b, float c, float d) { return mat2(a,c,b,d); }\n"
+                "mat2 mat2_from_vec4(vec4 a) { return mat2(a.x,a.z,a.y,a.w); }\n"
+                "mat3x2 mat3x2_from_vec3_vec3(vec3 a, vec3 b) { return mat3x2(a.x,b.x,a.y,b.y,a.z,b.z); }\n"
+                "in vec4 frag_COLOR;\n");
+        if (shaderType == PresentWarpShader)
+            sourceProcessed.append("in vec4 frag_TEXCOORD0;\n");
+        else
+            sourceProcessed.append("in vec2 frag_TEXCOORD0;\n");
+        sourceProcessed.append(
+                "in vec2 frag_TEXCOORD1;\n"
+                "out vec4 rast_FragData[1];");
+        sourceProcessed.append(sourcePreprocessed);
+        if (shaderType == PresentWarpShader)
+        {
+            sourceProcessed.append(
+                    "\n\n"
+                    "void main() {\n"
+                    "    vec4 _vDiffuse;\n"
+                    "    _vDiffuse = frag_COLOR;\n"
+                    "    vec4 _uv;\n"
+                    "    _uv = frag_TEXCOORD0;\n"
+                    "    vec2 _rad_ang;\n"
+                    "    _rad_ang = frag_TEXCOORD1;\n"
+                    "    vec4 _return_value;\n"
+                    "    PS(_vDiffuse, _uv, _rad_ang, _return_value);\n"
+                    "    rast_FragData[0] = _return_value;\n"
+                    "}");
+        }
+        else
+        {
+            sourceProcessed.append(
+                    "\n\n"
+                    "void main() {\n"
+                    "    vec4 _vDiffuse;\n"
+                    "    _vDiffuse = frag_COLOR;\n"
+                    "    vec2 _uv;\n"
+                    "    _uv = frag_TEXCOORD0;\n"
+                    "    vec2 _rad_ang;\n"
+                    "    _rad_ang = frag_TEXCOORD1;\n"
+                    "    vec4 _return_value;\n"
+                    "    PS(_vDiffuse, _uv, _rad_ang, _return_value);\n"
+                    "    rast_FragData[0] = _return_value;\n"
+                    "}");
+        }
+//        std::cerr << "\n\n******** " << shaderTypeString << "\n\n" << sourceProcessed << "\n\n*********\n\n";
+    }
+    else
+    {
+        // transpile from HLSL (aka preset shader aka directX shader) to GLSL (aka OpenGL shader lang)
+        // parse
+        if (!parser.Parse(shaderFilename.c_str(), sourcePreprocessed.c_str(), sourcePreprocessed.size()))
+        {
+            std::cerr << "Failed to parse HLSL(step2) " << shaderTypeString << " shader" << std::endl;
 
 #if !DUMP_SHADERS_ON_ERROR
-        std::cerr << "Source: " << std::endl << sourcePreprocessed << std::endl;
+            std::cerr << "Source: " << std::endl << sourcePreprocessed << std::endl;
 #else
-        std::ofstream out2("/tmp/shader_" + shaderTypeString + "_step2.txt");
-            out2 << sourcePreprocessed;
-            out2.close();
+            std::ofstream out2("/tmp/shader_" + shaderTypeString + "_step2.txt");
+                out2 << sourcePreprocessed;
+                out2.close();
 #endif
             return GL_FALSE;
-    }
+        }
 
-    // generate GLSL
-    if (!generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader, SHADER_VERSION, "PS")) {
-        std::cerr << "Failed to transpile HLSL(step3) " << shaderTypeString << " shader to GLSL" << std::endl;
+        // generate GLSL
+        if (!generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader, SHADER_VERSION, "PS"))
+        {
+            std::cerr << "Failed to transpile HLSL(step3) " << shaderTypeString << " shader to GLSL" << std::endl;
 #if !DUMP_SHADERS_ON_ERROR
-        std::cerr << "Source: " << std::endl << sourcePreprocessed << std::endl;
+            std::cerr << "Source: " << std::endl << sourcePreprocessed << std::endl;
 #else
-        std::ofstream out2("/tmp/shader_" + shaderTypeString + "_step2.txt");
-            out2 << sourcePreprocessed;
-            out2.close();
+            std::ofstream out2("/tmp/shader_" + shaderTypeString + "_step2.txt");
+                out2 << sourcePreprocessed;
+                out2.close();
 #endif
-        return GL_FALSE;
+            return GL_FALSE;
+        }
+
+        sourceProcessed = generator.GetResult();
     }
 
     // now we have GLSL source for the preset shader program (hopefully it's valid!)
     // compile the preset shader fragment shader with the standard vertex shader and cross our fingers
     GLuint ret = 0;
     if (shaderType == PresentWarpShader) {
-        ret = CompileShaderProgram(presetWarpVertexShader, generator.GetResult(), shaderTypeString);  // returns new program
+        ret = CompileShaderProgram(presetWarpVertexShader, sourceProcessed, shaderTypeString);  // returns new program
     } else {
-        ret = CompileShaderProgram(presetCompVertexShader, generator.GetResult(), shaderTypeString);  // returns new program
+        ret = CompileShaderProgram(presetCompVertexShader, sourceProcessed, shaderTypeString);  // returns new program
     }
 
     if (ret != GL_FALSE) {
@@ -770,10 +990,10 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
         std::cerr << "Compilation error (step3) of " << shaderTypeString << std::endl;
 
 #if !DUMP_SHADERS_ON_ERROR
-        std::cerr << "Source:" << std::endl << generator.GetResult() << std::endl;
+        std::cerr << "Source:" << std::endl << shaderTypeString << std::endl;
 #else
         std::ofstream out3("/tmp/shader_" + shaderTypeString + "_step3.txt");
-            out3 << generator.GetResult();
+            out3 << sourceProcessed;
             out3.close();
 #endif
     }

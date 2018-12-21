@@ -66,9 +66,13 @@
 
 #define WARP_STRING "warp_"
 #define WARP_STRING_LENGTH 5
+#define WARP_LANG_STRING "warp_lang"
+#define WARP_LANG_STRING_LENGTH 9
 
 #define COMPOSITE_STRING "comp_"
 #define COMPOSITE_STRING_LENGTH 5
+#define COMPOSITE_LANG_STRING "comp_lang"
+#define COMPOSITE_LANG_STRING_LENGTH 9
 
 #define SHAPE_STRING "shape_"
 #define SHAPE_STRING_LENGTH 6

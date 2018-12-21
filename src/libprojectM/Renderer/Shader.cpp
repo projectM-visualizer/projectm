@@ -7,4 +7,4 @@
 
 #include "Shader.hpp"
 
-Shader::Shader() {}
+Shader::Shader() : language("hlsl"){}

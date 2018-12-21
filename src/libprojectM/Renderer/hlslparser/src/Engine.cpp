@@ -40,7 +40,17 @@ int String_Printf(char * buffer, int size, const char * format, ...) {
 }
 
 int String_FormatFloat(char * buffer, int size, float value) {
-    return String_Printf(buffer, size, "%f", value);
+    int len = String_Printf(buffer, size, "%f", value);
+    char *p = strchr(buffer,'.');
+    if (!p)
+        return len;
+    p = buffer + len;
+    while ('0'==*--p) *p = '\0';
+    if (*p == '.')
+        *p = '\0';
+    else
+        p++;
+    return int(p - buffer);
 }
 
 bool String_Equal(const char * a, const char * b) {

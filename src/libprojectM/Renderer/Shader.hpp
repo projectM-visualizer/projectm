@@ -18,6 +18,7 @@ public:
 
     std::map<std::string, TextureSamplerDesc> textures;
 
+    std::string language;
     std::string programSource;
     std::string presetPath;
 

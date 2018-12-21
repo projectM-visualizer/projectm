@@ -239,7 +239,7 @@ std::string hlsl2glsl(const std::string &source, const std::string &shaderTypeSt
     program.insert(0,
             "#define tex2d tex2D\n"
             "#define tex3d tex3D\n"
-            "#define lum(x) LUM(x)\n"
+            "#define lum(x) LUM(x)\n"           // fix lum = lum()
             );
 
     std::string sourcePreprocessed;
@@ -355,7 +355,16 @@ int main(int argc, char *argv[])
 
     if (argc >= 3)
     {
-        poutput = new std::ofstream(argv[2]);
+        std::string outputfile = argv[2];
+
+        struct stat s = {0};
+        if (0 == stat(argv[2],&s))
+        {
+            // todo handle case where input file has directory
+            if (s.st_mode & S_IFDIR)
+                outputfile += "/" + source;
+        }
+        poutput = new std::ofstream(outputfile);
     }
 
     std::istream &input = *pinput;

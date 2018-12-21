@@ -470,7 +470,7 @@ void GLSLGenerator::OutputExpressionList(HLSLExpression* expression, HLSLArgumen
             argument = argument->nextArgument;
         }
 
-        OutputExpression(expression, expectedType);
+        OutputExpression(expression, expectedType, false);
         expression = expression->nextExpression;
         ++numExpressions;
     }
@@ -496,7 +496,7 @@ const HLSLType* commonScalarType(const HLSLType& lhs, const HLSLType& rhs)
     return NULL;
 }
 
-void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType* dstType)
+void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType* dstType, bool wrapParen)
 {
 
     bool cast = dstType != NULL && !GetCanImplicitCast(expression->expressionType, *dstType);
@@ -557,7 +557,7 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
         HLSLCastingExpression* castingExpression = static_cast<HLSLCastingExpression*>(expression);
         OutputCast(castingExpression->type);
         m_writer.Write("(");
-        OutputExpression(castingExpression->expression);
+        OutputExpression(castingExpression->expression, NULL, false);
         m_writer.Write(")");
     }
     else if (expression->nodeType == HLSLNodeType_LiteralExpression)
@@ -650,6 +650,7 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 		}
 		else
 		{
+		    bool parenLeft = true, parenRight = true;
 			switch (binaryExpression->binaryOp)
 			{
 			case HLSLBinaryOp_Add:          op = " + "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
@@ -663,11 +664,11 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 			case HLSLBinaryOp_GreaterEqual: op = " >= "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
 			case HLSLBinaryOp_Equal:        op = " == "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
 			case HLSLBinaryOp_NotEqual:     op = " != "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
-			case HLSLBinaryOp_Assign:       op = " = ";  dstType2 = &binaryExpression->expressionType; break;
-			case HLSLBinaryOp_AddAssign:    op = " += "; dstType2 = &binaryExpression->expressionType; break;
-			case HLSLBinaryOp_SubAssign:    op = " -= "; dstType2 = &binaryExpression->expressionType; break;
-			case HLSLBinaryOp_MulAssign:    op = " *= "; dstType2 = &binaryExpression->expressionType; break;
-			case HLSLBinaryOp_DivAssign:    op = " /= "; dstType2 = &binaryExpression->expressionType; break;
+			case HLSLBinaryOp_Assign:       op = " = ";  dstType2 = &binaryExpression->expressionType; parenRight=false; break;
+			case HLSLBinaryOp_AddAssign:    op = " += "; dstType2 = &binaryExpression->expressionType; parenRight=false; break;
+			case HLSLBinaryOp_SubAssign:    op = " -= "; dstType2 = &binaryExpression->expressionType; parenRight=false; break;
+			case HLSLBinaryOp_MulAssign:    op = " *= "; dstType2 = &binaryExpression->expressionType; parenRight=false; break;
+			case HLSLBinaryOp_DivAssign:    op = " /= "; dstType2 = &binaryExpression->expressionType; parenRight=false; break;
 			case HLSLBinaryOp_And:          op = " && "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
 			case HLSLBinaryOp_Or:           op = " || "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
 			case HLSLBinaryOp_BitAnd:       op = " & "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
@@ -676,11 +677,13 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 			default:
 				ASSERT(0);
 			}
-			m_writer.Write("(");
-			OutputExpression(binaryExpression->expression1, dstType1);
+            if (wrapParen)
+                m_writer.Write("(");
+			OutputExpression(binaryExpression->expression1, dstType1, parenLeft);
 			m_writer.Write("%s", op);
-			OutputExpression(binaryExpression->expression2, dstType2);
-			m_writer.Write(")");
+			OutputExpression(binaryExpression->expression2, dstType2, parenRight);
+            if (wrapParen)
+                m_writer.Write(")");
 		}
     }
     else if (expression->nodeType == HLSLNodeType_ConditionalExpression)
@@ -737,9 +740,12 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
         }
         else
         {
-            m_writer.Write("(");
-            OutputExpression(memberAccess->object);
-            m_writer.Write(")");
+            bool simple = memberAccess->object->nodeType==HLSLNodeType_IdentifierExpression || memberAccess->object->nodeType==HLSLNodeType_FunctionCall;
+            if (!simple)
+                m_writer.Write("(");
+            OutputExpression(memberAccess->object, NULL, true);
+            if (!simple)
+                m_writer.Write(")");
 
             if( IsMatrixType(memberAccess->object->expressionType.baseType))
             {
@@ -1123,7 +1129,7 @@ void GLSLGenerator::OutputStatements(int indent, HLSLStatement* statement, const
         {
             HLSLExpressionStatement* expressionStatement = static_cast<HLSLExpressionStatement*>(statement);
             m_writer.BeginLine(indent, statement->fileName, statement->line);
-            OutputExpression(expressionStatement->expression);
+            OutputExpression(expressionStatement->expression, NULL, false);
             m_writer.EndLine(";");
         }
         else if (statement->nodeType == HLSLNodeType_ReturnStatement)
@@ -1936,18 +1942,18 @@ void GLSLGenerator::OutputDeclaration(const HLSLType& type, const char* name)
 
 void GLSLGenerator::OutputDeclarationType( const HLSLType& type )
 {
-	m_writer.Write( "%s ", GetTypeName( type ) );
+	m_writer.Write( "%s", GetTypeName( type ) );
 }
 
 void GLSLGenerator::OutputDeclarationBody( const HLSLType& type, const char* name )
 {
 	if( !type.array )
 	{
-		m_writer.Write( "%s", GetSafeIdentifierName( name ) );
+		m_writer.Write( " %s", GetSafeIdentifierName( name ) );
 	}
 	else
 	{
-		m_writer.Write( "%s[", GetSafeIdentifierName( name ) );
+		m_writer.Write( " %s[", GetSafeIdentifierName( name ) );
 		if( type.arraySize != NULL )
 		{
 			OutputExpression( type.arraySize );

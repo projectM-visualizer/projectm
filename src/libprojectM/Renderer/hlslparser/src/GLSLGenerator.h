@@ -70,7 +70,7 @@ private:
     };
 
     void OutputExpressionList(HLSLExpression* expression, HLSLArgument* argument = NULL);
-    void OutputExpression(HLSLExpression* expression, const HLSLType* dstType = NULL);
+    void OutputExpression(HLSLExpression* expression, const HLSLType* dstType = NULL, bool wrapParent=true);
     void OutputIdentifier(const char* name);
     void OutputArguments(HLSLArgument* argument);
     
