@@ -292,32 +292,32 @@ const std::string PresetShaderIncludes_glsl =
 "uniform vec4   _qh;  // q vars bank 8 [q29-q32]\n"
 
 "// note: in general, don't use the current time w/the *dynamic* rotations!\n"
-"uniform mat4x3 rot_s1;  // four random, static rotations.  randomized @ preset load time.\n"
-"uniform mat4x3 rot_s2;  // minor translation component (<1).\n"
-"uniform mat4x3 rot_s3;\n"
-"uniform mat4x3 rot_s4;\n"
+"uniform mat3x4 rot_s1;  // four random, static rotations.  randomized @ preset load time.\n"
+"uniform mat3x4 rot_s2;  // minor translation component (<1).\n"
+"uniform mat3x4 rot_s3;\n"
+"uniform mat3x4 rot_s4;\n"
 
-"uniform mat4x3 rot_d1;  // four random, slowly changing rotations.\n"
-"uniform mat4x3 rot_d2;  \n"
-"uniform mat4x3 rot_d3;\n"
-"uniform mat4x3 rot_d4;\n"
-"uniform mat4x3 rot_f1;  // faster-changing.\n"
-"uniform mat4x3 rot_f2;\n"
-"uniform mat4x3 rot_f3;\n"
-"uniform mat4x3 rot_f4;\n"
-"uniform mat4x3 rot_vf1;  // very-fast-changing.\n"
-"uniform mat4x3 rot_vf2;\n"
-"uniform mat4x3 rot_vf3;\n"
-"uniform mat4x3 rot_vf4;\n"
-"uniform mat4x3 rot_uf1;  // ultra-fast-changing.\n"
-"uniform mat4x3 rot_uf2;\n"
-"uniform mat4x3 rot_uf3;\n"
-"uniform mat4x3 rot_uf4;\n"
+"uniform mat3x4 rot_d1;  // four random, slowly changing rotations.\n"
+"uniform mat3x4 rot_d2;  \n"
+"uniform mat3x4 rot_d3;\n"
+"uniform mat3x4 rot_d4;\n"
+"uniform mat3x4 rot_f1;  // faster-changing.\n"
+"uniform mat3x4 rot_f2;\n"
+"uniform mat3x4 rot_f3;\n"
+"uniform mat3x4 rot_f4;\n"
+"uniform mat3x4 rot_vf1;  // very-fast-changing.\n"
+"uniform mat3x4 rot_vf2;\n"
+"uniform mat3x4 rot_vf3;\n"
+"uniform mat3x4 rot_vf4;\n"
+"uniform mat3x4 rot_uf1;  // ultra-fast-changing.\n"
+"uniform mat3x4 rot_uf2;\n"
+"uniform mat3x4 rot_uf3;\n"
+"uniform mat3x4 rot_uf4;\n"
 
-"uniform mat4x3 rot_rand1; // random every frame\n"
-"uniform mat4x3 rot_rand2;\n"
-"uniform mat4x3 rot_rand3;\n"
-"uniform mat4x3 rot_rand4;\n"
+"uniform mat3x4 rot_rand1; // random every frame\n"
+"uniform mat3x4 rot_rand2;\n"
+"uniform mat3x4 rot_rand3;\n"
+"uniform mat3x4 rot_rand4;\n"
 
 "#define time     _c2.x\n"
 "#define fps      _c2.y\n"
@@ -920,7 +920,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
                     "    vec4 _return_value;\n"
                     "    PS(_vDiffuse, _uv, _rad_ang, _return_value);\n"
                     "    rast_FragData[0] = _return_value;\n"
-                    "}");
+                    "}\n");
         }
         else
         {
@@ -936,7 +936,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
                     "    vec4 _return_value;\n"
                     "    PS(_vDiffuse, _uv, _rad_ang, _return_value);\n"
                     "    rast_FragData[0] = _return_value;\n"
-                    "}");
+                    "}\n");
         }
 //        std::cerr << "\n\n******** " << shaderTypeString << "\n\n" << sourceProcessed << "\n\n*********\n\n";
     }
@@ -991,6 +991,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
 
 #if !DUMP_SHADERS_ON_ERROR
         std::cerr << "Source:" << std::endl << shaderTypeString << std::endl;
+	std::cerr << sourceProcessed;
 #else
         std::ofstream out3("/tmp/shader_" + shaderTypeString + "_step3.txt");
             out3 << sourceProcessed;

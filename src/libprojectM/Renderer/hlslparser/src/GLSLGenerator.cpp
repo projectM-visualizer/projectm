@@ -89,7 +89,9 @@ static const char* GetTypeName(const HLSLType& type)
 
 static bool GetCanImplicitCast(const HLSLType& srcType, const HLSLType& dstType)
 {
-    return srcType.baseType == dstType.baseType;
+    if (srcType.baseType == dstType.baseType)
+        return true;
+    return dstType.baseType == HLSLBaseType_Float && srcType.baseType == HLSLBaseType_Int;
 }
 
 static int GetFunctionArguments(HLSLFunctionCall* functionCall, HLSLExpression* expression[], int maxArguments)
@@ -496,6 +498,19 @@ const HLSLType* commonScalarType(const HLSLType& lhs, const HLSLType& rhs)
     return NULL;
 }
 
+
+// mul and plus are super common and associative so let's avoid a few paren
+bool isBinaryMul(HLSLExpression *expression)
+{
+    return expression->nodeType==HLSLNodeType_BinaryExpression &&
+            static_cast<HLSLBinaryExpression*>(expression)->binaryOp==HLSLBinaryOp_Mul;
+}
+bool isBinaryAdd(HLSLExpression *expression)
+{
+    return expression->nodeType==HLSLNodeType_BinaryExpression &&
+           static_cast<HLSLBinaryExpression*>(expression)->binaryOp==HLSLBinaryOp_Add;
+}
+
 void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType* dstType, bool wrapParen)
 {
 
@@ -653,9 +668,15 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 		    bool parenLeft = true, parenRight = true;
 			switch (binaryExpression->binaryOp)
 			{
-			case HLSLBinaryOp_Add:          op = " + "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
+			case HLSLBinaryOp_Add:          op = " + "; dstType1 = dstType2 = &binaryExpression->expressionType;
+			    parenLeft =  !(isBinaryAdd(binaryExpression->expression1) || isBinaryMul(binaryExpression->expression1));
+                parenRight = !(isBinaryAdd(binaryExpression->expression2) || isBinaryMul(binaryExpression->expression2));
+			    break;
 			case HLSLBinaryOp_Sub:          op = " - "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
-			case HLSLBinaryOp_Mul:          op = " * "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
+			case HLSLBinaryOp_Mul:          op = " * "; dstType1 = dstType2 = &binaryExpression->expressionType;
+                parenLeft =  !isBinaryMul(binaryExpression->expression1);
+                parenRight = !isBinaryMul(binaryExpression->expression2);
+                break;
 			case HLSLBinaryOp_Div:          op = " / "; dstType1 = dstType2 = &binaryExpression->expressionType; break;
             case HLSLBinaryOp_Mod:          op = " % "; dstType1 = dstType2 = &kIntType; break;
 			case HLSLBinaryOp_Less:         op = " < "; dstType1 = dstType2 = commonScalarType(binaryExpression->expression1->expressionType, binaryExpression->expression2->expressionType); break;
@@ -702,13 +723,17 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 		}
 		else
 		{
-			m_writer.Write( "((" );
-			OutputExpression( conditionalExpression->condition, &kBoolType );
-			m_writer.Write( ")?(" );
-			OutputExpression( conditionalExpression->trueExpression, dstType );
-			m_writer.Write( "):(" );
-			OutputExpression( conditionalExpression->falseExpression, dstType );
-			m_writer.Write( "))" );
+		    if (wrapParen)
+    			m_writer.Write( "(" );
+    		m_writer.Write( "(" );
+			OutputExpression( conditionalExpression->condition, &kBoolType, false );
+			m_writer.Write( ") ? (" );
+			OutputExpression( conditionalExpression->trueExpression, dstType, false );
+			m_writer.Write( ") : (" );
+			OutputExpression( conditionalExpression->falseExpression, dstType, false );
+			m_writer.Write( ")" );
+			if (wrapParen)
+                m_writer.Write( ")" );
 		}
     }
     else if (expression->nodeType == HLSLNodeType_MemberAccess)
