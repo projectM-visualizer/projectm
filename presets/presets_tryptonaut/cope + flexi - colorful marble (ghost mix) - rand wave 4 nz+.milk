@@ -386,10 +386,10 @@ warp_42=`polar = polar;
 warp_43=`
 warp_44=`    float3 pos = float3(polar,time*0.15);
 warp_45=`    float3 rc = tex3D(sampler_noisevol_hq, pos);
-warp_46=`    rc += tex3D(sampler_noisevol_hq, 2*pos)*0.5;
-warp_47=`    rc += tex3D(sampler_noisevol_hq, 4*pos)*0.25;
-warp_48=`    rc += tex3D(sampler_noisevol_hq, 8*pos)*0.125;
-warp_49=`    rc += tex3D(sampler_noisevol_hq, 16*pos)*0.0625;
+warp_46=`    rc += tex3D(sampler_noisevol_hq, 2*pos).xyz*0.5;
+warp_47=`    rc += tex3D(sampler_noisevol_hq, 4*pos).xyz*0.25;
+warp_48=`    rc += tex3D(sampler_noisevol_hq, 8*pos).xyz*0.125;
+warp_49=`    rc += tex3D(sampler_noisevol_hq, 16*pos).xyz*0.0625;
 warp_50=`    //rc = rc*0.556;    
 warp_51=`    rc = (rc*rc*rc)*2;
 warp_52=`    //rc -= GetBlur1(uv);   

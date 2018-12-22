@@ -366,10 +366,10 @@ warp_3=`{
 warp_4=`
 warp_5=`    float3 pos = float3(uv.x, uv.y, q1);
 warp_6=`    float3 rc = tex3D(sampler_fw_noisevol_hq, pos);
-warp_7=`    rc += tex3D(sampler_fw_noisevol_hq, 2*pos)*0.5;
-warp_8=`    rc += tex3D(sampler_fw_noisevol_hq, 4*pos)*0.25;
-warp_9=`    rc += tex3D(sampler_fw_noisevol_hq, 8*pos)*0.125;
-warp_10=`    rc += tex3D(sampler_fw_noisevol_hq, 16*pos)*0.0625;
+warp_7=`    rc += tex3D(sampler_fw_noisevol_hq, 2*pos).xyz*0.5;
+warp_8=`    rc += tex3D(sampler_fw_noisevol_hq, 4*pos).xyz*0.25;
+warp_9=`    rc += tex3D(sampler_fw_noisevol_hq, 8*pos).xyz*0.125;
+warp_10=`    rc += tex3D(sampler_fw_noisevol_hq, 16*pos).xyz*0.0625;
 warp_11=`    //rc = rc*0.556;    
 warp_12=`    rc = (rc*rc*rc);
 warp_13=`    rc -= GetBlur1(uv);   
