@@ -838,7 +838,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     }
 
     // Remove previous texsize declarations
-    while(std::regex_search(sourcePreprocessed, matches, std::regex("float4\\s+texsize_.*"))) {
+    while(std::regex_search(sourcePreprocessed, matches, std::regex("(float4|vec4)\\s+texsize_.*"))) {
         sourcePreprocessed.replace(matches.position(), matches.length(), "");
     }
 
