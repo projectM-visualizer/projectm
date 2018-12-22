@@ -23,6 +23,7 @@ public:
     std::string presetPath;
 
 	Shader();
+	void clear();	// clear before parse (doesn't touch textures)
 };
 
 #endif /* SHADER_HPP_ */

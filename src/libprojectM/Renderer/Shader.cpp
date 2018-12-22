@@ -8,3 +8,9 @@
 #include "Shader.hpp"
 
 Shader::Shader() : language("hlsl"){}
+
+void Shader::clear()
+{
+    language = "hlsl";
+    programSource.clear();
+};

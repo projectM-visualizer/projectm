@@ -471,8 +471,8 @@ void MilkdropPreset::evalPerPixelEqns()
 }
 
 int MilkdropPreset::readIn(std::istream & fs) {
-  presetOutputs().compositeShader = Shader();
-  presetOutputs().warpShader = Shader();
+  presetOutputs().compositeShader.clear();
+  presetOutputs().warpShader.clear();
 
   /* Parse any comments */
   if (Parser::parse_top_comment(fs) < 0)
