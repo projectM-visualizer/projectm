@@ -882,6 +882,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
                 "vec2 matrix_row0(mat2 m, int i) { return vec2( m[0][i], m[1][i] ); }\n"
                 "vec3 matrix_row0(mat3 m, int i) { return vec3( m[0][i], m[1][i], m[2][i] ); }\n"
                 "vec4 matrix_row0(mat4 m, int i) { return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }\n"
+                "vec4 tex2Dbias0(sampler2D samp, vec4 texCoord) { return texture(samp, texCoord.xy, texCoord.w);  }\n"
                 "vec2  m_scalar_swizzle20(float x) { return  vec2(x, x); }\n"
                 "ivec2 m_scalar_swizzle20(int   x) { return ivec2(x, x); }\n"
                 "vec3  m_scalar_swizzle30(float x) { return  vec3(x, x, x); }\n"
@@ -897,6 +898,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
                 "mat2 mat2_from_float_float_float_float(float a, float b, float c, float d) { return mat2(a,c,b,d); }\n"
                 "mat2 mat2_from_vec4(vec4 a) { return mat2(a.x,a.z,a.y,a.w); }\n"
                 "mat3x2 mat3x2_from_vec3_vec3(vec3 a, vec3 b) { return mat3x2(a.x,b.x,a.y,b.y,a.z,b.z); }\n"
+                // TODO add functions as needed ....
                 "in vec4 frag_COLOR;\n");
         if (shaderType == PresentWarpShader)
             sourceProcessed.append("in vec4 frag_TEXCOORD0;\n");
