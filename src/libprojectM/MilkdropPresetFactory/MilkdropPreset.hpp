@@ -70,7 +70,10 @@ public:
   /// \param MilkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
   /// \param MilkdropPresetInputs a reference to read only projectM engine variables
   /// \param MilkdropPresetOutputs initialized and filled with data parsed from a MilkdropPreset
-  MilkdropPreset(std::istream & in, const std::string & milkdropPresetName, PresetOutputs & presetOutputs);
+  MilkdropPreset(const std::string & milkdropPresetName, PresetOutputs & presetOutputs);
+
+  void initialize(const std::string & pathname);
+  void initialize(std::istream & in);
 
   ~MilkdropPreset();
 
@@ -152,9 +155,6 @@ private:
   // The absolute path of the MilkdropPreset
   std::string _absolutePath;
 
-  void initialize(const std::string & pathname);
-  void initialize(std::istream & in);
-
   int loadPresetFile(const std::string & pathname);
 
   void loadBuiltinParamsUnspecInitConds();
@@ -169,11 +169,12 @@ private:
   void evalPerPixelEqns();
   void evalPerFrameEquations();
   void initialize_PerPixelMeshes();
-  int readIn(std::istream & fs);
-
+protected:
+  virtual int readIn(std::istream & fs);
+private:
   void preloadInitialize();
   void postloadInitialize();
-  
+
   PresetOutputs & _presetOutputs;
 
 template <class CustomObject>

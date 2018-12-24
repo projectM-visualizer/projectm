@@ -42,15 +42,16 @@
 #include "PresetFrameIO.hpp"
 
 #include "PresetFactoryManager.hpp"
+#include "SaltWaterTaffyPreset.hpp"
 
 
-MilkdropPreset::MilkdropPreset(std::istream & in, const std::string & presetName,  PresetOutputs & presetOutputs):
+MilkdropPreset::MilkdropPreset(const std::string & presetName,  PresetOutputs & presetOutputs):
 	Preset(presetName),
     	builtinParams(_presetInputs, presetOutputs),
     	_presetOutputs(presetOutputs)
 {
-  initialize(in);
-
+  // NOTE: don't call initialize here, because subclass vtable is not set up yet
+  // initialize(in);
 }
 
 MilkdropPreset::MilkdropPreset(const std::string & absoluteFilePath, const std::string & presetName, PresetOutputs & presetOutputs):
@@ -60,10 +61,10 @@ MilkdropPreset::MilkdropPreset(const std::string & absoluteFilePath, const std::
     _absoluteFilePath(absoluteFilePath),
     _presetOutputs(presetOutputs)
 {
-
-  initialize(absoluteFilePath);
-
+  // NOTE: don't call initialize here, because subclass vtable is not set up yet
+  // initialize(absoluteFilePath);
 }
+
 MilkdropPreset::~MilkdropPreset()
 {
 

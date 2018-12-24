@@ -777,6 +777,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
             out3.close();
 #endif
     }
+    std::cerr.flush();
 
     return ret;
 }

@@ -12,6 +12,7 @@
 //
 #include "MilkdropPresetFactory.hpp"
 #include "MilkdropPreset.hpp"
+#include "SaltWaterTaffyPreset.hpp"
 #include "BuiltinFuncs.hpp"
 #include "Eval.hpp"
 #include "IdlePreset.hpp"
@@ -220,8 +221,20 @@ std::unique_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url,
 	resetPresetOutputs(presetOutputs);
 
 	std::string path;
-	if (PresetFactory::protocol(url, path) == PresetFactory::IDLE_PRESET_PROTOCOL) {
-		return IdlePresets::allocate(path, *presetOutputs);
-	} else
-		return std::unique_ptr<Preset>(new MilkdropPreset(url, name, *presetOutputs));
+	if (PresetFactory::protocol(url, path) == PresetFactory::IDLE_PRESET_PROTOCOL)
+    {
+        return IdlePresets::allocate(path, *presetOutputs);
+    }
+	else if (url.substr(url.length()-5)==".salt")
+    {
+        auto *preset = new SaltWaterTaffyPreset(url, name, *presetOutputs);
+        preset->initialize(url);
+        return std::unique_ptr<Preset>(preset);
+    }
+	else
+    {
+        auto *preset = new MilkdropPreset(url, name, *presetOutputs);
+	    preset->initialize(url);
+		return std::unique_ptr<Preset>(preset);
+    }
 }
