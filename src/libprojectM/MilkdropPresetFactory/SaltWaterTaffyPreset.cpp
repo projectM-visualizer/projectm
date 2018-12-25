@@ -5,7 +5,7 @@
 #include "SaltWaterTaffyPreset.hpp"
 #include "Parser.hpp"
 #include "fatal.h"
-#include <stack>
+#include <cstring>
 
 
 int convert(std::istream & fs, std::ostream & os);
