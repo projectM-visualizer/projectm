@@ -21,7 +21,7 @@
 
 std::map<std::string, Func*> BuiltinFuncs::builtin_func_tree;
 
-int BuiltinFuncs::load_builtin_func(const std::string & name, float (*func_ptr)(float*), int num_args) {
+int BuiltinFuncs::load_builtin_func(const std::string & name, expr_t (*func_ptr)(expr_t*), int num_args) {
 	
   Func * func; 
   int retval; 
@@ -113,6 +113,10 @@ int BuiltinFuncs::load_all_builtin_func() {
     return PROJECTM_ERROR;
   if (load_builtin_func("print", FuncWrappers::print_wrapper, 1) < 0)
       return PROJECTM_ERROR;
+  if (load_builtin_func("rgb", FuncWrappers::rgb_wrapper, 3) < 0)
+    return PROJECTM_ERROR;
+  if (load_builtin_func("rgba", FuncWrappers::rgba_wrapper, 4) < 0)
+    return PROJECTM_ERROR;
   return PROJECTM_SUCCESS;
 }
 

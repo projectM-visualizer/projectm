@@ -66,6 +66,8 @@ public:
 
     int load_builtin_param_string( const std::string & name, std::string * engine_val, short int flags);
 
+    int load_builtin_param_rgba(const std::string & name, const char *name_r, const char *name_b, const char *name_g, const char *name_a);
+
     int insert_builtin_param( Param *param );
 
     template <class Fun>

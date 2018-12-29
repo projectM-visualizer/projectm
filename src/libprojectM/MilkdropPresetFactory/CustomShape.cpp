@@ -44,7 +44,6 @@ CustomShape::CustomShape() : Shape()
 
 CustomShape::CustomShape ( int _id ) : Shape()
 {
-
 	Param * param;
 
     this->id = _id;

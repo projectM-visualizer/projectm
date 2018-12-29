@@ -161,7 +161,8 @@ public:
     static Expr ** parse_prefix_args(std::istream & fs, int num_args, MilkdropPreset * preset);
     static Expr * parse_infix_op(std::istream & fs, token_t token, TreeExpr * tree_expr, MilkdropPreset * preset);
     static Expr * parse_sign_arg(std::istream & fs);
-    static int parse_float(std::istream & fs, float * float_ptr);
+    static int parse_float(std::istream & fs, double * float_ptr);
+    static int parse_color(std::istream & fs, double * float_ptr);
     static int parse_int(std::istream & fs, int * int_ptr);
     static int insert_gen_rec(Expr * gen_expr, TreeExpr * root);
     static int insert_infix_rec(InfixOp * infix_op, TreeExpr * root);
@@ -188,6 +189,7 @@ public:
     static bool wrapsToNextLine(const std::string & str);
 private:
   static Expr * _parse_gen_expr(std::istream & fs, TreeExpr * tree_expr, MilkdropPreset * preset);
+  static int _parse_float(std::istream & fs, double * float_ptr, token_t &token);
   };
 
 #endif /** !_PARSER_H */

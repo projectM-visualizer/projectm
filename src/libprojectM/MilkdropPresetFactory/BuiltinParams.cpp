@@ -38,9 +38,9 @@ int BuiltinParams::load_builtin_param_float(const std::string & name, void * eng
   Param * param = NULL;
   CValue iv, ub, lb;
 
-  iv.float_val = init_val;
-  ub.float_val = upper_bound;
-  lb.float_val = lower_bound;
+  iv = CValue(init_val);
+  ub = CValue(upper_bound);
+  lb= CValue(lower_bound);
 
   /* Create new parameter of type float */
   if (BUILTIN_PARAMS_DEBUG == 2)
@@ -163,9 +163,9 @@ int BuiltinParams::load_builtin_param_int(const std::string & name, void * engin
   Param * param;
   CValue iv, ub, lb;
 
-  iv.int_val = init_val;
-  ub.int_val = upper_bound;
-  lb.int_val = lower_bound;
+  iv = CValue(init_val);
+  ub = CValue(upper_bound);
+  lb = CValue(lower_bound);
 
   // normalize to lower case as milkdrop scripts depend on this
   std::string lowerName(name);
@@ -217,9 +217,9 @@ int BuiltinParams::load_builtin_param_bool(const std:: string & name, void * eng
   Param * param;
   CValue iv, ub, lb;
 
-  iv.int_val = init_val;
-  ub.int_val = TRUE;
-  lb.int_val = false;
+  iv = CValue((bool)init_val);
+  ub = CValue((bool)true);
+  lb = CValue((bool)false);
 
 std::string lowerName(name);
 std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
@@ -247,6 +247,39 @@ std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
   return PROJECTM_SUCCESS;
 
 }
+
+
+/* load a color value (unsigned integer) into r,g,b,a components.  'a' is optional */
+int BuiltinParams::load_builtin_param_rgba(const std::string & name, const char *name_r, const char *name_b, const char *name_g, const char *name_a)
+{
+  Param *r = builtin_param_tree[name_r];
+  Param *g = builtin_param_tree[name_g];
+  Param *b = builtin_param_tree[name_b];
+  Param *a = nullptr==name_a ? nullptr : builtin_param_tree[name_a];
+
+  if (nullptr == r || nullptr == b || nullptr == g || (nullptr == a && nullptr != name_a))
+    return PROJECTM_ERROR;
+
+  std::string lowerName(name);
+  std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
+
+  ParamRGBA * param_rgba = new ParamRGBA(name, r, g, b, a);
+  CValue iv, ub, lb;
+
+  if (nullptr == param_rgba)
+  {
+    return PROJECTM_OUTOFMEM_ERROR;
+  }
+
+  if (insert_builtin_param( param_rgba ) < 0)
+  {
+    delete param_rgba;
+    return PROJECTM_ERROR;
+  }
+  return PROJECTM_SUCCESS;
+}
+
+
 
 /* Inserts a parameter into the builtin database */
 int BuiltinParams::insert_builtin_param( Param *param )
@@ -348,18 +381,23 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("wave_x", (void*)&presetOutputs.wave.x, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
   load_builtin_param_float("wave_y", (void*)&presetOutputs.wave.y, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
   load_builtin_param_float("wave_mystery", (void*)&presetOutputs.wave.mystery, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "fWaveParam");
+    load_builtin_param_rgba("wave_rgb", "wave_r", "wave_g", "wave_b", nullptr);
 
   load_builtin_param_float("ob_size", (void*)&presetOutputs.border.outer_size, NULL, P_FLAG_NONE, 0.0, 0.5, 0, "");
   load_builtin_param_float("ob_r", (void*)&presetOutputs.border.outer_r, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
   load_builtin_param_float("ob_g", (void*)&presetOutputs.border.outer_g, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
   load_builtin_param_float("ob_b", (void*)&presetOutputs.border.outer_b, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
   load_builtin_param_float("ob_a", (void*)&presetOutputs.border.outer_a, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_rgba("ob_rgb", "ob_r", "ob_g", "ob_b", nullptr);
+  load_builtin_param_rgba("ob_rgba", "ob_r", "ob_g", "ob_b", "ob_a");
 
   load_builtin_param_float("ib_size", (void*)&presetOutputs.border.inner_size,  NULL,P_FLAG_NONE, 0.0, .5, 0.0, "");
   load_builtin_param_float("ib_r", (void*)&presetOutputs.border.inner_r,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, "");
   load_builtin_param_float("ib_g", (void*)&presetOutputs.border.inner_g,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, "");
   load_builtin_param_float("ib_b", (void*)&presetOutputs.border.inner_b,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, "");
   load_builtin_param_float("ib_a", (void*)&presetOutputs.border.inner_a,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_rgba("ib_rgb", "ib_r", "ib_g", "ib_b", nullptr);
+  load_builtin_param_rgba("ib_rgba", "ib_r", "ib_g", "ib_b", "ib_a");
 
   load_builtin_param_float("mv_r", (void*)&presetOutputs.mv.r,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, "");
   load_builtin_param_float("mv_g", (void*)&presetOutputs.mv.g,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, "");
@@ -370,6 +408,8 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("mv_dx", (void*)&presetOutputs.mv.x_offset, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("mv_dy", (void*)&presetOutputs.mv.y_offset,  NULL,P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("mv_a", (void*)&presetOutputs.mv.a,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, "");
+  load_builtin_param_rgba("mv_rgb", "mv_r", "mv_g", "mv_b", nullptr);
+  load_builtin_param_rgba("mv_rgba", "mv_r", "mv_g", "mv_b", "mv_a");
 
   load_builtin_param_float("time", (void*)&presetInputs.time,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0.0, "");
   load_builtin_param_float("bass", (void*)&presetInputs.bass,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0.0, "");

@@ -69,17 +69,111 @@ Param::Param(std::string _name) :
 
 	engine_val = (float *)&local_value;
 
-	default_init_val.float_val = DEFAULT_DOUBLE_IV;
-        upper_bound.float_val = DEFAULT_DOUBLE_UB;
-        lower_bound.float_val = DEFAULT_DOUBLE_LB;
+	default_init_val = CValue(DEFAULT_DOUBLE_IV);
+        upper_bound= CValue(DEFAULT_DOUBLE_UB);
+        lower_bound= CValue(DEFAULT_DOUBLE_LB);
 
     /// @note may have fixed a recent bug. testing
-    *((float*)engine_val) = default_init_val.float_val;
+    *((float*)engine_val) = to_float(default_init_val.float_val());
  }
 
 /* Free's a parameter type */
 Param::~Param() {
     if (PARAM_DEBUG) printf("~Param: freeing \"%s\".\n", name.c_str());
+}
+
+
+/* Sets the parameter engine value to value val.
+	clipping occurs if necessary */
+void Param::set_param( double val) {
+
+    switch (type) {
+
+        case P_TYPE_BOOL:
+            if (val < 0)
+                *((bool*)engine_val) = false;
+            else if (val > 0)
+                *((bool*)engine_val) = true;
+            else
+                *((bool*)engine_val) = false;
+            break;
+        case P_TYPE_INT:
+            /* Make sure value is an integer */
+            val = floor(val);
+            if (val < lower_bound.int_val())
+                *((int*)engine_val) = lower_bound.int_val();
+            else if (val > upper_bound.int_val())
+                *((int*)engine_val) = upper_bound.int_val();
+            else
+                *((int*)engine_val) = (int)val;
+            break;
+        case P_TYPE_DOUBLE:
+            /* Make sure value is an integer */
+
+
+            if (val < lower_bound.float_val())
+                *((float*)engine_val) = to_float(lower_bound.float_val());
+            else if (val > upper_bound.float_val())
+                *((float*)engine_val) = to_float(upper_bound.float_val());
+            else
+                *((float*)engine_val) = to_float(val);
+            break;
+        default:
+            //abort();
+            break;
+
+    }
+
+    return;
+}
+
+
+void Param::set_param( CValue val )
+{
+    assert( type == val.type || val.int_val() == 0 || val.int_val() == 1);
+
+    switch (type) {
+
+        case P_TYPE_BOOL:
+            *((bool *)engine_val) = val.bool_val();
+            break;
+        case P_TYPE_INT:
+            *((int *)engine_val) = val.int_val();
+            break;
+        case P_TYPE_DOUBLE:
+            *((float *)engine_val) = to_float(val.float_val());
+            break;
+        default:
+            //abort();
+            break;
+    }
+}
+
+
+void Param::set_param( const std::string &val )
+{
+    assert( type == P_TYPE_STRING );
+    *((std::string*)engine_val) = val;
+}
+
+
+void ParamRGBA::set_param( double val )
+{
+    float r, g, b, a;
+    unpackRGBA(val, r, g, b, a);
+    if (nullptr != param_a)
+    {
+        param_a->set_param( a );
+    }
+    param_b->set_param( b );
+    param_g->set_param( g );
+    param_r->set_param( r );
+}
+
+
+void ParamRGBA::set_param( CValue val )
+{
+    set_param( val.float_val() );
 }
 
 
@@ -119,9 +213,9 @@ Param * Param::new_param_float(const char * name, short int flags, void * engine
     CValue iv, ub, lb;
     assert(engine_val);
 
-    iv.float_val = init_val;
-    ub.float_val = upper_bound;
-    lb.float_val = lower_bound;
+    iv = CValue(init_val);
+    ub = CValue(upper_bound);
+    lb = CValue(lower_bound);
 
     if ((param = new Param(name, P_TYPE_DOUBLE, flags, engine_val, matrix,iv, ub, lb)) == NULL)
         return NULL;
@@ -139,9 +233,9 @@ Param * Param::new_param_int(const char * name, short int flags, void * engine_v
     CValue iv, ub, lb;
     assert(engine_val);
 
-    iv.int_val = init_val;
-    ub.int_val = upper_bound;
-    lb.int_val = lower_bound;
+    iv = CValue(init_val);
+    ub = CValue(upper_bound);
+    lb = CValue(lower_bound);
 
     if ((param = new Param(name, P_TYPE_INT, flags, engine_val, NULL, iv, ub, lb)) == NULL)
         return NULL;
@@ -159,9 +253,9 @@ Param * Param::new_param_bool(const char * name, short int flags, void * engine_
     CValue iv, ub, lb;
     assert(engine_val);
 
-    iv.bool_val = init_val;
-    ub.bool_val = upper_bound;
-    lb.bool_val = lower_bound;
+    iv = CValue(init_val);
+    ub = CValue(upper_bound);
+    lb = CValue(lower_bound);
 
     if ((param = new Param(name, P_TYPE_BOOL, flags, engine_val, NULL, iv, ub, lb)) == NULL)
         return NULL;
@@ -178,9 +272,9 @@ Param * Param::new_param_string(const char * name, short int flags, void * engin
     CValue iv, ub, lb;
     assert(engine_val);
 
-    iv.bool_val = 0;
-    ub.bool_val = 0;
-    lb.bool_val = 0;
+    iv = CValue(false);
+    ub = CValue(false);
+    lb = CValue(false);
 
     if ((param = new Param(name, P_TYPE_STRING, flags, engine_val, NULL, iv, ub, lb)) == NULL)
         return NULL;

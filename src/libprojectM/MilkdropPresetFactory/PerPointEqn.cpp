@@ -50,8 +50,7 @@ void PerPointEqn::evaluate(int i)
 
   if (param->matrix == NULL)
   {
-    assert(param->matrix_flag == false);
-    (*(float*)param->engine_val) = eqn_ptr->eval(i,-1);
+    param->set_param( eqn_ptr->eval(i,-1) );
   
     return;
   }

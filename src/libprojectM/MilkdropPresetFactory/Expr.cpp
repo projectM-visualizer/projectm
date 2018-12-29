@@ -27,20 +27,51 @@
 #include <iostream>
 #include "Eval.hpp"
 
+const int RGB_BITS = 12;
+const unsigned RGB_MASK = ((1<<RGB_BITS)-1);
+const float RGB_SCALE= ((float)RGB_MASK);
+
+expr_t packRGB(expr_t r, expr_t g, expr_t b, expr_t a)
+{
+	unsigned long rgba = 0;
+	rgba += (unsigned)(RGB_SCALE * fmax(0, fmin(1.0, r)));
+	rgba <<= RGB_BITS;
+	rgba += (unsigned)(RGB_SCALE * fmax(0, fmin(1.0, g)));
+	rgba <<= RGB_BITS;
+	rgba += (unsigned)(RGB_SCALE * fmax(0, fmin(1.0, b)));
+	rgba <<= RGB_BITS;
+	rgba += (unsigned)(RGB_SCALE * fmax(0, fmin(1.0, a)));
+	return (double)rgba;
+}
+
+void unpackRGBA(double RGBA, float &r, float &g, float &b, float &a)
+{
+	// extract 52 bit unsigned int
+	auto rgba = (uint64_t)fmax(0, fmin((double)0xfffffffffffful, RGBA));
+	// extract 4 13-bit integers and scale 0.0-1.0
+	a = (rgba & RGB_MASK) / RGB_SCALE;
+	rgba >>= RGB_BITS;
+	b = (rgba & RGB_MASK) / RGB_SCALE;
+	rgba >>= RGB_BITS;
+	g = (rgba & RGB_MASK) / RGB_SCALE;
+	rgba >>= RGB_BITS;
+	r = (rgba & RGB_MASK) / RGB_SCALE;
+}
+
 
 /* Evaluates functions in prefix form */
-float PrefunExpr::eval ( int mesh_i, int mesh_j )
+expr_t PrefunExpr::eval ( int mesh_i, int mesh_j )
 {
 	assert ( func_ptr );
-	float arg_list_stk[10];
+    expr_t arg_list_stk[10];
 
-	float * arg_list;
-	float * argp;
+    expr_t * arg_list;
+    expr_t * argp;
 	Expr **expr_listp = expr_list;
 
 
 	if (this->num_args > 10) {
-		arg_list = new float[this->num_args];
+		arg_list = new expr_t[this->num_args];
 	} else {
 		arg_list = arg_list_stk;
 	}
@@ -59,7 +90,7 @@ float PrefunExpr::eval ( int mesh_i, int mesh_j )
 	/* Now we call the function, passing a list of
 	   floats as its argument */
 
-	const float value = ( func_ptr ) ( arg_list );
+	const expr_t value = ( func_ptr ) ( arg_list );
 
 	if (arg_list != arg_list_stk) {
 		delete[](arg_list);
@@ -70,29 +101,32 @@ float PrefunExpr::eval ( int mesh_i, int mesh_j )
 
 class PrefunExprOne : public PrefunExpr
 {
-	float eval ( int mesh_i, int mesh_j )
+    expr_t eval ( int mesh_i, int mesh_j ) override
 	{
-		float val = expr_list[0]->eval ( mesh_i, mesh_j );
-		return (func_ptr)(&val);
+        expr_t val = expr_list[0]->eval ( mesh_i, mesh_j );
+		expr_t ret = (func_ptr)(&val);
+		if (ret > 100)
+		    ret = (func_ptr)(&val);
+		return ret;
 	}
 };
 
 
 class ConstantExpr : public Expr
 {
-	float constant;
+	expr_t constant;
 public:
-	ConstantExpr( float value ) : Expr(CONSTANT), constant(value) {}
+	ConstantExpr( double value ) : Expr(CONSTANT), constant(value) {}
 	ConstantExpr( int type, Term *term ) : Expr(CONSTANT), constant(term->constant) {}
-	bool isConstant() 
+	bool isConstant() override
 	{
 		return true; 
 	}
-	float eval(int mesh_i, int mesh_j ) 
+    expr_t eval(int mesh_i, int mesh_j ) override
 	{ 
 		return constant; 
 	}
-	std::ostream &to_string(std::ostream &out)
+	std::ostream &to_string(std::ostream &out) override
 	{
 		out << constant; return out;
 	}
@@ -104,7 +138,7 @@ protected:
 	Term term;
 public:
 	ParameterExpr( int _type, Term *_term ) : Expr(PARAMETER), term(*_term) {}
-	float eval(int mesh_i, int mesh_j ) = 0;
+    expr_t eval(int mesh_i, int mesh_j ) = 0;
 	std::ostream& to_string(std::ostream& out)
 	{
 		out << term.param->name;
@@ -116,34 +150,34 @@ class BoolParameterExpr : public ParameterExpr
 {
 public:
 	BoolParameterExpr( int _type, Term *_term ) : ParameterExpr(_type,_term) {}
-	float eval ( int mesh_i, int mesh_j )
+    expr_t eval ( int mesh_i, int mesh_j )
 	{
 		assert( term.param->type == P_TYPE_BOOL );
-		return ( float ) ( * ( ( bool* ) ( term.param->engine_val ) ) );
+		return  (float)term.param->eval();
 	}
 };
 class IntParameterExpr : public ParameterExpr
 {
 public:
 	IntParameterExpr( int _type, Term *_term ) : ParameterExpr(_type,_term) {}
-	float eval ( int mesh_i, int mesh_j )
+    expr_t eval ( int mesh_i, int mesh_j ) override
 	{
 		assert( term.param->type == P_TYPE_INT );
-		return ( float ) ( * ( ( int* ) ( term.param->engine_val ) ) );
+		return  (float)term.param->eval();
 	}
 };
 class FloatParameterExpr : public ParameterExpr
 {
 public:
 	FloatParameterExpr( int _type, Term *_term ) : ParameterExpr(_type,_term) {}
-	float eval ( int mesh_i, int mesh_j );
+    expr_t eval ( int mesh_i, int mesh_j ) override;
 };
 /* TODO optimize FloatParameterExpr::eval() further.
 //  - flag "never matrix" parameters
 //  - always pass in 2d matrix. instead of using (i, -1) for 1d matrix, we could just use (0, i) and avoid check
 //  - instead of using matrix_flag to give "copy on write" behavior, maybe pre-copy from engine_val to matrix[]
 */
-float FloatParameterExpr::eval ( int mesh_i, int mesh_j )
+expr_t FloatParameterExpr::eval ( int mesh_i, int mesh_j )
 {
 	assert( term.param->type == P_TYPE_DOUBLE );
 	if ( term.param->matrix_flag | ( term.param->flags & P_FLAG_ALWAYS_MATRIX ) )
@@ -168,7 +202,7 @@ float FloatParameterExpr::eval ( int mesh_i, int mesh_j )
 		//assert(mesh_i >=0);
 	}
 	//std::cout << term.param->name << ": " << (*((float*)term.param->engine_val)) << std::endl;
-	return * ( ( float* ) ( term.param->engine_val ) );
+	return term.param->eval();
 }
 
 
@@ -180,19 +214,26 @@ public:
 		a(_a), b(_b), c(_c)
 	{
 	}
-    ~MultAndAddExpr() {
+    ~MultAndAddExpr() override {
         delete a;
         delete b;
         delete c;
     }
-	float eval(int mesh_i, int mesh_j)
+    expr_t eval(int mesh_i, int mesh_j)
 	{
-		float a_value = a->eval(mesh_i,mesh_j);
-		float b_value = b->eval(mesh_i,mesh_j);
-		float c_value = c->eval(mesh_i,mesh_j);
+        expr_t a_value = a->eval(mesh_i,mesh_j);
+        if (fabs(a_value) > 100)
+            a_value = a->eval(mesh_i,mesh_j);
+        expr_t b_value = b->eval(mesh_i,mesh_j);
+        if (fabs(b_value) > 100)
+            b_value = b->eval(mesh_i,mesh_j);
+        expr_t c_value = c->eval(mesh_i,mesh_j);
+        if (fabs(c_value) > 100)
+            c_value = c->eval(mesh_i,mesh_j);
+
 		return a_value * b_value + c_value;
 	}
-	std::ostream &to_string(std::ostream &out)
+	std::ostream &to_string(std::ostream &out) override
 	{
 		out << "(" << a << " * " << b << ") + " << c;
 		return out;
@@ -304,9 +345,9 @@ Expr *TreeExpr::optimize()
 }
 
 /* Evaluates an expression tree */
-float TreeExpr::eval ( int mesh_i, int mesh_j )
+expr_t TreeExpr::eval ( int mesh_i, int mesh_j )
 {
-	float left_arg, right_arg;
+    expr_t left_arg, right_arg;
 
 	/* shouldn't be null if we've called optimize() */
 	assert(NULL != infix_op);
@@ -346,7 +387,7 @@ float TreeExpr::eval ( int mesh_i, int mesh_j )
 }
 
 /* Converts a float value to a general expression */
-Expr * Expr::const_to_expr ( float val )
+Expr * Expr::const_to_expr ( double val )
 {
 	Term term;
 	term.constant = val;
@@ -389,7 +430,7 @@ Expr * Expr::param_to_expr ( Param * param )
 }
 
 /* Converts a prefix function to an expression */
-Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( void * ), Expr ** expr_list, int num_args )
+Expr * Expr::prefun_to_expr ( expr_t ( *func_ptr ) ( void * ), Expr ** expr_list, int num_args )
 {
 	PrefunExpr * prefun_expr;
 	if (num_args == 1)
@@ -397,7 +438,7 @@ Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( void * ), Expr ** expr_list,
 	else
 		prefun_expr = new PrefunExpr();
 	prefun_expr->num_args = num_args;
-	prefun_expr->func_ptr = ( float ( * ) ( void* ) ) func_ptr;
+	prefun_expr->func_ptr = ( expr_t ( * ) ( void* ) ) func_ptr;
 	prefun_expr->expr_list = expr_list;
 	return prefun_expr;
 }
@@ -413,7 +454,7 @@ class TreeExprAdd : public TreeExpr
 public:
 	TreeExprAdd( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right ) :
 	 	TreeExpr( _infix_op, _gen_expr, _left, _right) {}
-	float eval( int mesh_i, int mesh_j)
+    expr_t eval( int mesh_i, int mesh_j)
 	{
 		return left->eval(mesh_i, mesh_j) + right->eval(mesh_i, mesh_j);
 	}
@@ -424,7 +465,7 @@ class TreeExprMinus : public TreeExpr
 public:
 	TreeExprMinus( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right ) :
 	 	TreeExpr( _infix_op, _gen_expr, _left, _right) {}
-	float eval( int mesh_i, int mesh_j)
+    expr_t eval( int mesh_i, int mesh_j)
 	{
 		return left->eval(mesh_i, mesh_j) - right->eval(mesh_i, mesh_j);
 	}
@@ -435,9 +476,12 @@ class TreeExprMult : public TreeExpr
 public:
 	TreeExprMult( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right ) :
 	 	TreeExpr( _infix_op, _gen_expr, _left, _right) {}
-	float eval( int mesh_i, int mesh_j)
+    expr_t eval( int mesh_i, int mesh_j)
 	{
-		return left->eval(mesh_i, mesh_j) * right->eval(mesh_i, mesh_j);
+	    expr_t l=left->eval(mesh_i, mesh_j);
+	    expr_t r=right->eval(mesh_i, mesh_j);
+	    expr_t ret = l*r;
+	    return ret;
 	}
 };
 

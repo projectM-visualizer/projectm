@@ -29,27 +29,7 @@
 #ifndef _PARAM_H
 #define _PARAM_H
 
-/* Debug level, zero for none */
-#define PARAM_DEBUG 0
-
-#define P_CREATE 1
-#define P_NONE 0
-
-#define P_TYPE_BOOL 0
-#define P_TYPE_INT 1
-#define P_TYPE_DOUBLE 2
-#define P_TYPE_STRING 3
-
-#define P_FLAG_NONE 0
-#define P_FLAG_READONLY 1
-#define P_FLAG_USERDEF (1 << 1)
-#define P_FLAG_QVAR (1 << 2)
-#define P_FLAG_TVAR (1 << 3)
-#define P_FLAG_ALWAYS_MATRIX (1 << 4)
-#define P_FLAG_PER_PIXEL (1 << 6)
-#define P_FLAG_PER_POINT (1 << 7)
-
-
+#include "ParamDef.hpp"
 #include "Expr.hpp"
 #include "Common.hpp"
 #include <cmath>
@@ -69,7 +49,9 @@ public:
     short int type; /* parameter number type (int, bool, or float) */
     short int flags; /* read, write, user defined, etc */
     short int matrix_flag; /* for optimization purposes */
+private:
     void * engine_val; /* pointer to the engine variable */
+public:
     void * matrix; /* per pixel / per point matrix for this variable */
     CValue default_init_val; /* a default initial condition value */
     CValue upper_bound; /* this parameter's upper bound */
@@ -83,23 +65,32 @@ public:
            void * eqn_val, void *matrix,
            CValue default_init_val, CValue upper_bound,
            CValue lower_bound);
-
+virtual
     ~Param();
 
     /// Create a user defined floating point parameter
-    Param( std::string name );
+    explicit Param( std::string name );
+
+    virtual double eval()
+    {
+        if ( type == P_TYPE_DOUBLE )
+            return *(float *)engine_val;
+        else if ( type == P_TYPE_INT )
+            return (float)*(int *)engine_val;
+        else if ( type == P_TYPE_BOOL )
+            return (float)*(bool *)engine_val;
+        assert(false);
+    }
 
     static bool is_valid_param_string( const char *string );
-    void set_param( float val );
+    virtual void set_param( const std::string &val ); // does not convert
+    virtual void set_param( double val );
+    virtual void set_param( CValue val );
 
     static Param *new_param_float( const char *name, short int flags, void *engine_val,
                              void *matrix, float upper_bound,
                              float lower_bound,
                              float init_val );
-    static Param *new_param_double(const char *name, short int flags, void *engine_val,
-                             void *matrix, double upper_bound,
-                             double lower_bound,
-                             double init_val );
     static Param * new_param_int(const char * name, short int flags, void * engine_val,
                            int upper_bound, int lower_bound, int init_val );
     static Param * new_param_bool(const char * name, short int flags, void * engine_val,
@@ -109,49 +100,21 @@ public:
 };
 
 
-/* Sets the parameter engine value to value val.
-	clipping occurs if necessary */
-inline void Param::set_param( float val) {
-
-    switch (type) {
-
-    case P_TYPE_BOOL:
-        if (val < 0)
-            *((bool*)engine_val) = false;
-        else if (val > 0)
-            *((bool*)engine_val) = true;
-        else
-            *((bool*)engine_val) = false;
-        break;
-    case P_TYPE_INT:
-        /* Make sure value is an integer */
-        val = floor(val);
-        if (val < lower_bound.int_val)
-            *((int*)engine_val) = lower_bound.int_val;
-        else if (val > upper_bound.int_val)
-            *((int*)engine_val) = upper_bound.int_val;
-        else
-            *((int*)engine_val) = (int)val;
-        break;
-    case P_TYPE_DOUBLE:
-        /* Make sure value is an integer */
-
-
-        if (val < lower_bound.float_val)
-            *((float*)engine_val) = lower_bound.float_val;
-        else if (val > upper_bound.float_val)
-            *((float*)engine_val) = upper_bound.float_val;
-        else
-            *((float*)engine_val) = val;
-        break;
-    default:
-	//abort();
-        break;
-
+class ParamRGBA : public Param
+{
+public:
+    ParamRGBA(std::string name_, Param *r, Param *g, Param *b, Param *a):
+            Param(name_, P_TYPE_DOUBLE, P_FLAG_RGB, nullptr, nullptr, 0, CValue(0x00ffffff), CValue(0)),
+            param_r(r), param_g(g), param_b(b), param_a(a)
+    {
     }
 
-    return;
-}
+    virtual void set_param( double val ) override;
+    virtual void set_param( CValue val ) override;
+
+private:
+    Param *param_r, *param_g, *param_b, *param_a;
+};
 
 #endif /** !_PARAM_TYPES_H */
 

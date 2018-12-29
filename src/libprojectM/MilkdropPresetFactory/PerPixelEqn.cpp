@@ -45,9 +45,9 @@ void PerPixelEqn::evaluate(int mesh_i, int mesh_j) {
 
  float ** param_matrix = (float**)this->param->matrix;
 
- if (param_matrix == 0) {
-	 assert(param->engine_val);
-	 (*(float*)param->engine_val) = eqn_ptr->eval(mesh_i, mesh_j);
+ if (param_matrix == 0)
+ {
+     param->set_param( eqn_ptr->eval(mesh_i, mesh_j) );
 
   } else {
 

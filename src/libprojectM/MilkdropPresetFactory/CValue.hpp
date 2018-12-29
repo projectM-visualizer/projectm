@@ -29,10 +29,37 @@
 #ifndef _CVALUE_H
 #define _CVALUE_H
 
-typedef union CValue_t {
-    bool bool_val;
-    int int_val;
-    float float_val;
-  } CValue;
+#include "ParamDef.hpp"
+#include <assert.h>
+
+typedef struct CValue_t
+{
+private:
+    union
+    {
+        int int_value;
+        double double_value;
+    };
+
+public:
+#ifndef NDEBUG
+    int type;
+#endif
+
+#ifndef NDEBUG
+    CValue_t()         : double_value(0.0), type(P_TYPE_DOUBLE) {}
+    CValue_t(bool b)   : int_value(b), type(P_TYPE_BOOL)       {}
+    CValue_t(int v)    : int_value(v), type(P_TYPE_INT)        {}
+    CValue_t(double d) : double_value(d), type(P_TYPE_DOUBLE)   {}
+#else
+    CValue_t()         : double_value(0.0) {}
+    CValue_t(bool b)   : int_value(b)     {}
+    CValue_t(int v)    : int_value(v)     {}
+    CValue_t(double d) : double_value(d)   {}
+#endif
+    bool bool_val()    { return int_value != 0; }
+    int int_val()      { return int_value; }
+    double float_val() { return double_value; }
+} CValue;
 
 #endif /** _CVALUE_H */

@@ -46,7 +46,7 @@ InitCond::InitCond( Param * _param, CValue _init_val ):param(_param), init_val(_
   //  std::cerr <<  "InitCond::InitCond: " << this->param->name << std::endl;
  
   assert(param);
-  assert(param->engine_val);
+  // assert(param->engine_val);
 }
 
 /* Frees initial condition structure */
@@ -60,53 +60,21 @@ void InitCond::evaluate()
 /* Evaluate an initial conditon */
 void InitCond::evaluate(bool evalUser) {
 
-
-
    assert(this);
    assert(param);
 
-if (param->flags & P_FLAG_USERDEF && !evalUser)
+  if (param->flags & P_FLAG_USERDEF && !evalUser)
 	return;
 
    /* Set matrix flag to zero. This ensures
      its constant value will be used rather than a matrix value 
   */
-param->matrix_flag = false;
-  
-  /* Parameter is of boolean type, either true/false */
-  
-  if (param->type == P_TYPE_BOOL) {
+  param->matrix_flag = false;
+  param->set_param( init_val );
 
-    //        printf( "init_cond: %s = %d (TYPE BOOL)\n", param->name.c_str(), init_val.bool_val); 
-	//std::cerr << "[InitCond] param is a boolean of with name " 
-	//	<< param->name << std::endl;
-
-	assert(param->engine_val);
-
-	 *((bool*)param->engine_val) = init_val.bool_val;
-
-     return;
-  }
-  
-  /* Parameter is an integer type, just like C */
-  
-  if ( param->type == P_TYPE_INT) {
- 	assert(param->engine_val);
-	 *((int*)param->engine_val) = init_val.int_val;
-     return;
-  }
-
-  /* Parameter is of a float type, just like C */
-
-  if (param->type == P_TYPE_DOUBLE) {
-	assert(param->engine_val);
-	*((float*)param->engine_val) = init_val.float_val;
-    return;
-  }
-
-  /* Unknown type of parameter */
   return;
 }
+
 
 /* WIP */
 void InitCond::init_cond_to_string() {
@@ -118,13 +86,13 @@ void InitCond::init_cond_to_string() {
 	switch (param->type) {
 		
 		case P_TYPE_BOOL:
-			sprintf(string, "%s=%d\n", param->name.c_str(), init_val.bool_val);
+			sprintf(string, "%s=%d\n", param->name.c_str(), init_val.bool_val());
 			break; 
 		case P_TYPE_INT:
-			sprintf(string, "%s=%d\n", param->name.c_str(), init_val.int_val);
+			sprintf(string, "%s=%d\n", param->name.c_str(), init_val.int_val());
 			break;
 		case P_TYPE_DOUBLE:
-			sprintf(string, "%s=%f\n", param->name.c_str(), init_val.float_val);
+			sprintf(string, "%s=%f\n", param->name.c_str(), init_val.float_val());
 			break;
 		default:
 			return;

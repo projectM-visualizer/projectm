@@ -31,9 +31,55 @@
 
 #include "dlldefs.h"
 #include "CValue.hpp"
-#include <iostream> 
+#include <iostream>
+#include <cfloat>
+#include <cmath>
 
 class Param;
+
+
+#define USE_DOUBLE_EVAL 1
+inline float to_float(double d)
+{
+    return (float)fmin(FLT_MAX, fmax(-FLT_MAX, d));
+}
+inline float to_float(float f)
+{
+    return f;
+}
+#if USE_DOUBLE_EVAL
+    typedef double expr_t;
+    inline expr_t expr_value(double d)
+    {
+        return d;
+    }
+    inline expr_t expr_value(float f)
+    {
+        return (double)f;
+    }
+    double packRGB(expr_t r, expr_t g, expr_t b, expr_t a=1.0f);
+    void unpackRGBA(double RGBA, float &r, float &g, float &b, float &a);
+#else
+    typedef float expr_t;
+    inline expr_t expr_value(double d)
+    {
+        return to_float(d);
+    }
+    inline expr_t expr_value(float f)
+    {
+        return f;
+    }
+    inline expr_t packRGB(expr_t r, expr_t g, expr_t b, expr_t a=1.0f);
+    {
+        assert false;
+        return 0;       // NOTE SUPPORTED!
+    }
+    inline void unpackRGBA(float &r, float &g, float &b, float &a)
+    {
+        r = g = b = a = 0;
+    }
+#endif
+
 
 #define CONST_STACK_ELEMENT 0
 #define EXPR_STACK_ELEMENT 1
@@ -54,7 +100,7 @@ public:
 class Term
 {
 public:
-  float constant; /* static variable */
+  expr_t constant; /* static variable */
   Param *param; /* pointer to a changing variable */
 
   Term() { this->constant = 0; this->param = 0; }
@@ -70,19 +116,20 @@ class Expr
 {
 public:
   ExprClass clazz;
-  Expr(ExprClass c) : clazz(c) {};
+
+  explicit Expr(ExprClass c) : clazz(c) {};
   virtual ~Expr() {};
   virtual Expr *optimize() { return this; };
   virtual bool isConstant() { return false; };
-  virtual float eval(int mesh_i, int mesh_j) = 0;
+  virtual expr_t eval(int mesh_i, int mesh_j) = 0;
   virtual std::ostream& to_string(std::ostream &out)
   {
       std::cout << "nyi"; return out;
   }
 
-  static Expr *const_to_expr( float val );
+  static Expr *const_to_expr( double val );
   static Expr *param_to_expr( Param *param );
-  static Expr *prefun_to_expr( float (*func_ptr)(void *), Expr **expr_list, int num_args );
+  static Expr *prefun_to_expr( expr_t (*func_ptr)(void *), Expr **expr_list, int num_args );
 };
 
 inline std::ostream& operator<<(std::ostream& out, Expr *expr)
@@ -111,27 +158,27 @@ public:
   TreeExpr *leftTree()  { return dynamic_cast<TreeExpr *>(left); }
   TreeExpr *rightTree() { return dynamic_cast<TreeExpr *>(right); }
 
-  ~TreeExpr();
+  ~TreeExpr() override;
   
-  Expr *optimize();
-  float eval(int mesh_i, int mesh_j);
-  std::ostream& to_string(std::ostream &out);
+  Expr *optimize() override;
+  expr_t eval(int mesh_i, int mesh_j) override;
+  std::ostream& to_string(std::ostream &out) override;
 };
 
 /* A function expression in prefix form */
 class PrefunExpr : public Expr
 {
 public:
-  float (*func_ptr)(void*);
+  expr_t (*func_ptr)(void*);
   int num_args;
   Expr **expr_list;
   PrefunExpr();
-  ~PrefunExpr();
+  ~PrefunExpr() override;
 
   /* Evaluates functions in prefix form */
-  Expr *optimize();
-  float eval(int mesh_i, int mesh_j);
-  std::ostream& to_string(std::ostream &out);
+  Expr *optimize() override;
+  expr_t eval(int mesh_i, int mesh_j) override;
+  std::ostream& to_string(std::ostream &out) override;
 };
 
 #endif /** _EXPR_H */

@@ -2,6 +2,7 @@
 #define _INIT_COND_UTILS_HPP
 #include <map>
 #include "InitCond.hpp"
+#include <cstring>
 #include <iostream>
 #include <stdlib.h>
 
@@ -20,13 +21,21 @@ class LoadUnspecInitCond {
 };
 
 
+inline bool ends_with(std::string str, const char *match)
+{
+    size_t len = strlen(match);
+    if (str.length() < len)
+        return false;
+    return 0 == strcmp(str.c_str() + str.length() - len, match);
+}
+
 inline void LoadUnspecInitCond::operator() (Param * param) {
 
     InitCond * init_cond = 0;
     CValue init_val;
 
     assert(param);
-    assert(param->engine_val);
+//    assert(param->engine_val);
 
 
     /* Don't count these parameters as initial conditions */
@@ -38,6 +47,8 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
  //       return;
     if (param->flags & P_FLAG_USERDEF)
         return;
+    if (param->flags & P_FLAG_RGB)
+        return;
 
     /* If initial condition was not defined by the preset file, force a default one
        with the following code */
@@ -48,14 +59,30 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
 	if (m_perFrameInitEqnTree.find(param->name) != m_perFrameInitEqnTree.end())
 		return;
 
+	// _rgba and _rgb hide corresponding _r, _g _b, _a parameters
+    if (ends_with(param->name, "_r") || ends_with(param->name,"_g") || ends_with(param->name,"_b"))
+    {
+        std::string param_rgb = param->name.substr(0,param->name.length()-2) + "_rgb";
+        std::string param_rgba = param->name.substr(0,param->name.length()-2) + "_rgba";
+        if (m_initCondTree.find(param_rgba) != m_initCondTree.end() || m_initCondTree.find(param_rgb) != m_initCondTree.end() ||
+            m_perFrameInitEqnTree.find(param_rgba) != m_perFrameInitEqnTree.end() || m_perFrameInitEqnTree.find(param_rgb) != m_perFrameInitEqnTree.end())
+            return;
+    }
+    if (ends_with(param->name, "_a"))
+    {
+        std::string param_rgba = param->name.substr(0,param->name.length()-2) + "_rgba";
+        if (m_initCondTree.find(param_rgba) != m_initCondTree.end() || m_perFrameInitEqnTree.find(param_rgba) != m_perFrameInitEqnTree.end())
+            return;
+    }
+
 	// Set an initial vialue via correct union member
         if (param->type == P_TYPE_BOOL)
-            init_val.bool_val = param->default_init_val.bool_val;
+            init_val = param->default_init_val.bool_val();
         else if (param->type == P_TYPE_INT)
-            init_val.int_val = param->default_init_val.int_val;
+            init_val = param->default_init_val.int_val();
 
         else if (param->type == P_TYPE_DOUBLE) {
-           		init_val.float_val = param->default_init_val.float_val;
+           		init_val = param->default_init_val.float_val();
 	}
 
         //printf("%s\n", param->name);
