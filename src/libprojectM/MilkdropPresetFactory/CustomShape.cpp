@@ -44,52 +44,72 @@ CustomShape::CustomShape() : Shape()
 
 CustomShape::CustomShape ( int _id ) : Shape()
 {
-	Param * param;
+	Param *param, *param_r, *param_b, *param_g, *param_a;
 
     this->id = _id;
 	this->per_frame_count = 0;
 
 	/* Start: Load custom shape parameters */
-	param = Param::new_param_float ( "r", P_FLAG_NONE, &this->r, NULL, 1.0, 0.0, 0.5 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
+	param_r = Param::new_param_float ( "r", P_FLAG_NONE, &this->r, NULL, 1.0, 0.0, 0.5 );
+	if ( !ParamUtils::insert( param_r, &this->param_tree ) )
 	{
 		abort();
 	}
-	param = Param::new_param_float ( "g", P_FLAG_NONE, &this->g, NULL, 1.0, 0.0, .5 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
+	param_g = Param::new_param_float ( "g", P_FLAG_NONE, &this->g, NULL, 1.0, 0.0, .5 );
+	if ( !ParamUtils::insert( param_g, &this->param_tree ) )
 	{
 		abort();
 	}
-	param = Param::new_param_float ( "b", P_FLAG_NONE, &this->b, NULL, 1.0, 0.0, .5 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
+	param_b = Param::new_param_float ( "b", P_FLAG_NONE, &this->b, NULL, 1.0, 0.0, .5 );
+	if ( !ParamUtils::insert( param_b, &this->param_tree ) )
 	{
 		abort();
 	}
-	param = Param::new_param_float ( "a", P_FLAG_NONE, &this->a, NULL, 1.0, 0.0, .5 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
+	param_a = Param::new_param_float ( "a", P_FLAG_NONE, &this->a, NULL, 1.0, 0.0, .5 );
+	if ( !ParamUtils::insert( param_a, &this->param_tree ) )
 	{
 		abort();
 	}
-	param = Param::new_param_float ( "border_r", P_FLAG_NONE, &this->border_r, NULL, 1.0, 0.0, .5 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
+	param = new ParamRGBA( "rgb", param_r, param_g, param_b, nullptr );
+    if ( !ParamUtils::insert( param, &this->param_tree ) )
+    {
+        abort();
+    }
+    param = new ParamRGBA( "rgba", param_r, param_g, param_b, param_a );
+    if ( !ParamUtils::insert( param, &this->param_tree ) )
+    {
+        abort();
+    }
+	param_r = Param::new_param_float ( "border_r", P_FLAG_NONE, &this->border_r, NULL, 1.0, 0.0, .5 );
+	if ( !ParamUtils::insert( param_r, &this->param_tree ) )
 	{
 		abort();
 	}
-	param = Param::new_param_float ( "border_g", P_FLAG_NONE, &this->border_g, NULL, 1.0, 0.0, .5 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
+	param_g = Param::new_param_float ( "border_g", P_FLAG_NONE, &this->border_g, NULL, 1.0, 0.0, .5 );
+	if ( !ParamUtils::insert( param_g, &this->param_tree ) )
 	{
 		abort();
 	}
-	param = Param::new_param_float ( "border_b", P_FLAG_NONE, &this->border_b, NULL, 1.0, 0.0, .5 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
+	param_b = Param::new_param_float ( "border_b", P_FLAG_NONE, &this->border_b, NULL, 1.0, 0.0, .5 );
+	if ( !ParamUtils::insert( param_b, &this->param_tree ) )
 	{
 		abort();
 	}
-	param = Param::new_param_float ( "border_a", P_FLAG_NONE, &this->border_a, NULL, 1.0, 0.0, .5 );
-	if ( !ParamUtils::insert( param, &this->param_tree ) )
+	param_a = Param::new_param_float ( "border_a", P_FLAG_NONE, &this->border_a, NULL, 1.0, 0.0, .5 );
+	if ( !ParamUtils::insert( param_a, &this->param_tree ) )
 	{
 		abort();
 	}
+    param = new ParamRGBA( "border_rgb", param_r, param_g, param_b, nullptr );
+    if ( !ParamUtils::insert( param, &this->param_tree ) )
+    {
+        abort();
+    }
+    param = new ParamRGBA( "border_rgba", param_r, param_g, param_b, param_a );
+    if ( !ParamUtils::insert( param, &this->param_tree ) )
+    {
+        abort();
+    }
 	param = Param::new_param_float ( "r2", P_FLAG_NONE, &this->r2, NULL, 1.0, 0.0, .5 );
 	if ( !ParamUtils::insert( param, &this->param_tree ) )
 	{

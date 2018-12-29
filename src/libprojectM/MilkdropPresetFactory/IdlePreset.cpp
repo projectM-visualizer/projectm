@@ -73,26 +73,17 @@ out << "[preset00]\n" <<
 "shapecode_3_ang=0\n" <<
 "shapecode_3_tex_ang=0\n" <<
 "shapecode_3_tex_zoom=0.71\n" <<
-"shapecode_3_r=1\n" <<
-"shapecode_3_g=1\n" <<
-"shapecode_3_b=1\n" <<
-"shapecode_3_a=1\n" <<
-"shapecode_3_r2=1\n" <<
-"shapecode_3_g2=1\n" <<
-"shapecode_3_b2=1\n" <<
-"shapecode_3_a2=1\n" <<
-"shapecode_3_border_r=0\n" <<
-"shapecode_3_border_g=0\n" <<
-"shapecode_3_border_b=0\n" <<
-"shapecode_3_border_a=0\n" <<
+"shapecode_3_rgba=  rgba(1,1,1,1)\n" <<
+"shapecode_3_rgba2= rgba(1,1,1,1)\n" <<
+"shapecode_3_border_rgba= rgba(0,0,0,0)\n" <<
 "shape_3_per_frame1=x = x + q1;\n" <<
 "shape_3_per_frame2=y = y + q2;\n" <<
-"shape_3_per_frame3=r =0.5 + 0.5*sin(q8*0.613 + 1);\n" <<
-"shape_3_per_frame4=g = 0.5 + 0.5*sin(q8*0.763 + 2);\n" <<
-"shape_3_per_frame5=b = 0.5 + 0.5*sin(q8*0.771 + 5);\n" <<
-"shape_3_per_frame6=r2 = 0.5 + 0.5*sin(q8*0.635 + 4);\n" <<
-"shape_3_per_frame7=g2 = 0.5 + 0.5*sin(q8*0.616+ 1);\n" <<
-"shape_3_per_frame8=b2 = 0.5 + 0.5*sin(q8*0.538 + 3);\n" <<
+"shape_3_per_frame3=rgb  = rgb(0.5 + 0.5*sin(q8*0.613 + 1), " <<
+                            " 0.5 + 0.5*sin(q8*0.763 + 2), " <<
+                            " 0.5 + 0.5*sin(q8*0.771 + 5) );\n" <<
+"shape_3_per_frame6=rgb2 = rgb(0.5 + 0.5*sin(q8*0.635 + 4), " <<
+                             " 0.5 + 0.5*sin(q8*0.616+ 1), " <<
+                             " 0.5 + 0.5*sin(q8*0.538 + 3) );\n" <<
 "shapecode_4_enabled=1\n" <<
 "shapecode_4_sides=4\n" <<
 "shapecode_4_additive=0\n" <<
@@ -105,18 +96,9 @@ out << "[preset00]\n" <<
 "shapecode_4_ang=0\n" <<
 "shapecode_4_tex_ang=0\n" <<
 "shapecode_4_tex_zoom=0.71\n" <<
-"shapecode_4_r=1\n" <<
-"shapecode_4_g=1\n" <<
-"shapecode_4_b=1\n" <<
-"shapecode_4_a=1\n" <<
-"shapecode_4_r2=1\n" <<
-"shapecode_4_g2=1\n" <<
-"shapecode_4_b2=1\n" <<
-"shapecode_4_a2=1\n" <<
-"shapecode_4_border_r=0\n" <<
-"shapecode_4_border_g=0\n" <<
-"shapecode_4_border_b=0\n" <<
-"shapecode_4_border_a=0\n" <<
+"shapecode_4_rgba=rgba(1,1,1,1)\n" <<
+"shapecode_4_rgba2=rgba(1,1,1,1)\n" <<
+"shapecode_4_border_rgba=rgba(0,0,0,0)\n" <<
 "shape_4_per_frame1=x = x + q1;\n" <<
 "shape_4_per_frame2=y = y + q2;\n" <<
 "shape_4_per_frame3=rad = rad + bass * 0.1;\n" <<
@@ -151,12 +133,12 @@ out << "[preset00]\n" <<
 // "shape_6_per_frame2=y = y + q2;\n" <<
 // "shape_6_per_frame3=a = q3;\n" <<
 // "shape_6_per_frame4=a2 = q3;\n" <<
-"per_frame_1=ob_r = 0.5 + 0.4*sin(time*1.324);\n" <<
-"per_frame_2=ob_g = 0.5 + 0.4*cos(time*1.371);\n" <<
-"per_frame_3=ob_b = 0.5+0.4*sin(2.332*time);\n" <<
-"per_frame_4=ib_r = 0.5 + 0.25*sin(time*1.424);\n" <<
-"per_frame_5=ib_g = 0.25 + 0.25*cos(time*1.871);\n" <<
-"per_frame_6=ib_b = 1-ob_b;\n" <<
+"per_frame_1=ob_rgb = rgb( 0.50 + 0.40*sin(time*1.324), " <<
+                         " 0.50 + 0.40*cos(time*1.371), " <<
+                         " 0.50 + 0.40*sin(2.332*time) );\n" <<
+"per_frame_4=ib_rgb = rgb( 0.50 + 0.25*sin(time*1.424), " <<
+                         " 0.25 + 0.25*cos(time*1.871), " <<
+                         " 1 - ob_b );\n" <<
 "per_frame_7=volume = 0.15*(bass+bass_att+treb+treb_att+mid+mid_att);\n" <<
 "per_frame_8=xamptarg = if(equal(frame%15,0),min(0.5*volume*bass_att,0.5),xamptarg);\n" <<
 "per_frame_9=xamp = xamp + 0.5*(xamptarg-xamp);\n" <<

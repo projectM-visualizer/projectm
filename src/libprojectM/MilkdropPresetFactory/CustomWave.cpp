@@ -52,7 +52,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     a(0)
 {
 
-  Param * param;
+  Param *param, *param_r, *param_g, *param_b, *param_a;
 
   /// @bug deprecate the use of wipemalloc
   this->r_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
@@ -67,34 +67,34 @@ CustomWave::CustomWave(int _id) : Waveform(512),
 
   /* Start: Load custom wave parameters */
 
-  if ((param = Param::new_param_float("r", P_FLAG_NONE | P_FLAG_PER_POINT, &this->r, this->r_mesh, 1.0, 0.0, .5)) == NULL)
+  if ((param_r = Param::new_param_float("r", P_FLAG_NONE | P_FLAG_PER_POINT, &this->r, this->r_mesh, 1.0, 0.0, .5)) == NULL)
   {
     ;
     /// @bug make exception
     abort();
   }
 
-  if (!ParamUtils::insert(param, &param_tree))
+  if (!ParamUtils::insert(param_r, &param_tree))
   {
     /// @bug make exception
     abort();
   }
 
-  if ((param = Param::new_param_float("g", P_FLAG_NONE | P_FLAG_PER_POINT, &this->g,  this->g_mesh, 1.0, 0.0, .5)) == NULL)
-  {
-    ;
-    /// @bug make exception
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &param_tree))
+  if ((param_g = Param::new_param_float("g", P_FLAG_NONE | P_FLAG_PER_POINT, &this->g,  this->g_mesh, 1.0, 0.0, .5)) == NULL)
   {
     ;
     /// @bug make exception
     abort();
   }
 
-  if ((param = Param::new_param_float("b", P_FLAG_NONE | P_FLAG_PER_POINT, &this->b,  this->b_mesh, 1.0, 0.0, .5)) == NULL)
+  if (!ParamUtils::insert(param_g, &param_tree))
+  {
+    ;
+    /// @bug make exception
+    abort();
+  }
+
+  if ((param_b = Param::new_param_float("b", P_FLAG_NONE | P_FLAG_PER_POINT, &this->b,  this->b_mesh, 1.0, 0.0, .5)) == NULL)
   {
     ;
     /// @bug make exception
@@ -102,6 +102,28 @@ CustomWave::CustomWave(int _id) : Waveform(512),
 
   }
 
+  if (!ParamUtils::insert(param_b, &this->param_tree))
+  {
+    ;
+    /// @bug make exception
+    abort();
+  }
+
+  if ((param_a = Param::new_param_float("a", P_FLAG_NONE | P_FLAG_PER_POINT, &this->a,  this->a_mesh, 1.0, 0.0, .5)) == NULL)
+  {
+    ;
+    /// @bug make exception
+    abort();
+  }
+
+  if (!ParamUtils::insert(param_a, &this->param_tree))
+  {
+    ;
+    /// @bug make exception
+    abort();
+  }
+
+  param = new ParamRGBA("rgb", param_r, param_g, param_b, nullptr);
   if (!ParamUtils::insert(param, &this->param_tree))
   {
     ;
@@ -109,13 +131,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("a", P_FLAG_NONE | P_FLAG_PER_POINT, &this->a,  this->a_mesh, 1.0, 0.0, .5)) == NULL)
-  {
-    ;
-    /// @bug make exception
-    abort();
-  }
-
+  param = new ParamRGBA("rgba", param_r, param_g, param_b, param_a);
   if (!ParamUtils::insert(param, &this->param_tree))
   {
     ;

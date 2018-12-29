@@ -60,17 +60,24 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
 		return;
 
 	// _rgba and _rgb hide corresponding _r, _g _b, _a parameters
-    if (ends_with(param->name, "_r") || ends_with(param->name,"_g") || ends_with(param->name,"_b"))
+	std::string param_name = param->name;
+	std::string suffix;
+	if (ends_with(param_name, "2"))
     {
-        std::string param_rgb = param->name.substr(0,param->name.length()-2) + "_rgb";
-        std::string param_rgba = param->name.substr(0,param->name.length()-2) + "_rgba";
+	    param_name = param_name.substr(0,param_name.length()-1);
+	    suffix = "2";
+    }
+    if (ends_with(param_name, "_r") || ends_with(param_name,"_g") || ends_with(param_name,"_b"))
+    {
+        std::string param_rgb = param_name.substr(0,param_name.length()-2) + "_rgb" + suffix;
+        std::string param_rgba = param_name.substr(0,param_name.length()-2) + "_rgba" + suffix;
         if (m_initCondTree.find(param_rgba) != m_initCondTree.end() || m_initCondTree.find(param_rgb) != m_initCondTree.end() ||
             m_perFrameInitEqnTree.find(param_rgba) != m_perFrameInitEqnTree.end() || m_perFrameInitEqnTree.find(param_rgb) != m_perFrameInitEqnTree.end())
             return;
     }
-    if (ends_with(param->name, "_a"))
+    if (ends_with(param_name, "_a"))
     {
-        std::string param_rgba = param->name.substr(0,param->name.length()-2) + "_rgba";
+        std::string param_rgba = param_name.substr(0,param_name.length()-2) + "_rgba" + suffix;
         if (m_initCondTree.find(param_rgba) != m_initCondTree.end() || m_perFrameInitEqnTree.find(param_rgba) != m_perFrameInitEqnTree.end())
             return;
     }
