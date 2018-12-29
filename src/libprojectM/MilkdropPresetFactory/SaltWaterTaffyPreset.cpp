@@ -33,7 +33,9 @@ int SaltWaterTaffyPreset::readIn(std::istream & fs)
     if (ret != PROJECTM_SUCCESS)
         return ret;
     std::string converted = os.str();
-std::cerr << converted << std::endl;
+#if PARSE_DEBUG==2
+    std::cerr << converted << std::endl;
+#endif
     std::istringstream is(converted);
     return MilkdropPreset::readIn(is);
 }
@@ -258,7 +260,8 @@ int parse_object(const char *prefix_init, const char *prefix_eqn, std::istream &
                 lang = "glsl_330";
             if (starts_with(name, "warp"))
                 shader = "warp";
-            os << shader << "_lang=" << lang << name << std::endl;
+            // TODO enable this with the glsl branch
+            // os << shader << "_lang=" << lang << name << std::endl;
             sprintf(prefix_buffer, "%s_", shader.c_str());
             ret = parse_shader(prefix_buffer, fs, os);
             if (ret != PROJECTM_SUCCESS)
