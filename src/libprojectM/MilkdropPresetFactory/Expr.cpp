@@ -27,6 +27,20 @@
 #include <iostream>
 #include "Eval.hpp"
 
+
+
+/**
+ * NOTE in order to allow color functions/values we could either
+ *   a) make eval return a union type
+ *   b) special case evaluation of rgb/rgba parameters
+ *   c) figure out how to return an RGBA value in a double.
+ *
+ * I went with c. The idea is to 12 bits for each of R, G, B, A to create a 48bit integer,
+ * and then return the computed value integer value as as a double.
+ *
+ * The scheme can be changed as long as packRGB() and unpackRGB() match.
+ */
+
 const int RGB_BITS = 12;
 const unsigned RGB_MASK = ((1<<RGB_BITS)-1);
 const float RGB_SCALE= ((float)RGB_MASK);
@@ -46,9 +60,9 @@ expr_t packRGB(expr_t r, expr_t g, expr_t b, expr_t a)
 
 void unpackRGBA(double RGBA, float &r, float &g, float &b, float &a)
 {
-	// extract 52 bit unsigned int
+	// extract 48 bit unsigned int
 	auto rgba = (uint64_t)fmax(0, fmin((double)0xfffffffffffful, RGBA));
-	// extract 4 13-bit integers and scale 0.0-1.0
+	// extract 4 12-bit integers and scale 0.0-1.0
 	a = (rgba & RGB_MASK) / RGB_SCALE;
 	rgba >>= RGB_BITS;
 	b = (rgba & RGB_MASK) / RGB_SCALE;
