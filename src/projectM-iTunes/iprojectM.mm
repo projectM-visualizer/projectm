@@ -13,14 +13,14 @@ void initProjectM( VisualPluginData * visualPluginData, std::string presetPath )
 
     // hardcoded settings - disabled
     projectM::Settings settings;
-    settings.meshX = 100;
-    settings.meshY = 100;
+    settings.meshX = 140;
+    settings.meshY = 110;
     settings.fps   = 60;
     settings.textureSize = 2048;  // idk?
     settings.windowWidth = 1920;
     settings.windowHeight = 1280;
-    settings.smoothPresetDuration = 1; // seconds
-    settings.presetDuration = 9; // seconds
+    settings.smoothPresetDuration = 0.5; // seconds
+    settings.presetDuration = 15; // seconds
     settings.beatSensitivity = 3;
     settings.aspectCorrection = 1;
     settings.easterEgg = 0; // ???
