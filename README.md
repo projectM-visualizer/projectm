@@ -21,6 +21,10 @@ Its purpose in life is to read in audio input and produce mesmerizing visuals, d
 ### Download
 Get it from the [Releases](https://github.com/projectM-visualizer/projectm/releases) tab
 
+### Demo Video
+[![](http://img.youtube.com/vi/2dSam8zwSFw/0.jpg)](http://www.youtube.com/watch?v=2dSam8zwSFw "Demo")
+
+
 ### Project Status
 You can read more about how it works and the current state of development [here](https://lwn.net/Articles/750152/).
 
@@ -80,6 +84,11 @@ Silverjuke (FOSS Jukebox)
 
 ### OpenGL ES
 projectM supports OpenGL ES 2 and 3 for embedded systems. Be sure to configure with the `--enable--gles` flag.
+
+
+### Raspberry Pi (and other embedded systems)
+* projectM is arch-independent, although there are some SSE2 enhancements for x86
+* [Notes on running on raspberry pi](https://github.com/projectM-visualizer/projectm/issues/115)
 
 
 # Using the library
