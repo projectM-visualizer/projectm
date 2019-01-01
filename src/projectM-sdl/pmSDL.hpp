@@ -44,6 +44,8 @@ public:
     void maximize();
     std::string getActivePresetName();
     void addFakePCM();
+    
+    virtual void presetSwitchedEvent(bool isHardCut, size_t index) const;
 
 private:
     SDL_Window *win;
