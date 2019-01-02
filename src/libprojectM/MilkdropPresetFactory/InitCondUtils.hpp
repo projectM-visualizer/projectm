@@ -59,7 +59,10 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
 	if (m_perFrameInitEqnTree.find(param->name) != m_perFrameInitEqnTree.end())
 		return;
 
-	// _rgba and _rgb hide corresponding _r, _g _b, _a parameters
+	/* If an _rgb or _rgba init_cond is specified, we want to act as if the corresponding _r, _g _b, and _a
+	 * init conditions were explicitly specified.  That is we don't want the default or "unspecified" init conditions
+	 * added to m_initCondTree.
+	 */
 	std::string param_name = param->name;
 	std::string suffix;
 	if (ends_with(param_name, "2"))
@@ -82,7 +85,7 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
             return;
     }
 
-	// Set an initial vialue via correct union member
+	// Set an initial value via correct union member
         if (param->type == P_TYPE_BOOL)
             init_val = param->default_init_val.bool_val();
         else if (param->type == P_TYPE_INT)

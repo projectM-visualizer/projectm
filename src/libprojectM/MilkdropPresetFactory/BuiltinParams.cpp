@@ -264,7 +264,6 @@ int BuiltinParams::load_builtin_param_rgba(const std::string & name, const char 
   std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
 
   ParamRGBA * param_rgba = new ParamRGBA(name, r, g, b, a);
-  CValue iv, ub, lb;
 
   if (nullptr == param_rgba)
   {
