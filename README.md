@@ -1,4 +1,6 @@
 [![Build Status](https://travis-ci.org/projectM-visualizer/projectm.svg?branch=master)](https://travis-ci.org/projectM-visualizer/projectm)
+[![Backers on Open Collective](https://opencollective.com/projectm/backers/badge.svg)](#backers)
+ [![Sponsors on Open Collective](https://opencollective.com/projectm/sponsors/badge.svg)](#sponsors) 
 
 ![Logo](https://github.com/projectM-visualizer/projectm/raw/master/web/logo.png)
 
@@ -18,6 +20,10 @@ Its purpose in life is to read in audio input and produce mesmerizing visuals, d
 
 ### Download
 Get it from the [Releases](https://github.com/projectM-visualizer/projectm/releases) tab
+
+### Demo Video
+[![](http://img.youtube.com/vi/2dSam8zwSFw/0.jpg)](http://www.youtube.com/watch?v=2dSam8zwSFw "Demo")
+
 
 ### Project Status
 You can read more about how it works and the current state of development [here](https://lwn.net/Articles/750152/).
@@ -80,6 +86,11 @@ Silverjuke (FOSS Jukebox)
 projectM supports OpenGL ES 2 and 3 for embedded systems. Be sure to configure with the `--enable--gles` flag.
 
 
+### Raspberry Pi (and other embedded systems)
+* projectM is arch-independent, although there are some SSE2 enhancements for x86
+* [Notes on running on raspberry pi](https://github.com/projectM-visualizer/projectm/issues/115)
+
+
 # Using the library
 At its core projectM is a library, [libprojectM](src/libprojectM). This library is responsible for parsing presets, analyzing audio PCM data with beat detection and FFT, applying the preset to the audio feature data and rendering the resulting output with openGL. It can render to an openGL context or a texture.
 
@@ -116,6 +127,36 @@ If you maintain packages of libprojectM, we are happy to work with you! Please n
 
 ## Authors
 [Authors](https://github.com/projectM-visualizer/projectm/raw/master/AUTHORS.txt)
+
+## Contributors
+
+This project exists thanks to all the people who contribute. 
+<a href="https://github.com/projectM-visualizer/projectm/graphs/contributors"><img src="https://opencollective.com/projectm/contributors.svg?width=890&button=false" /></a>
+
+
+## Backers
+
+Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/projectm#backer)]
+
+<a href="https://opencollective.com/projectm#backers" target="_blank"><img src="https://opencollective.com/projectm/backers.svg?width=890"></a>
+
+
+## Sponsors
+
+Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/projectm#sponsor)]
+
+<a href="https://opencollective.com/projectm/sponsor/0/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/0/avatar.svg"></a>
+<a href="https://opencollective.com/projectm/sponsor/1/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/1/avatar.svg"></a>
+<a href="https://opencollective.com/projectm/sponsor/2/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/2/avatar.svg"></a>
+<a href="https://opencollective.com/projectm/sponsor/3/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/3/avatar.svg"></a>
+<a href="https://opencollective.com/projectm/sponsor/4/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/4/avatar.svg"></a>
+<a href="https://opencollective.com/projectm/sponsor/5/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/5/avatar.svg"></a>
+<a href="https://opencollective.com/projectm/sponsor/6/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/6/avatar.svg"></a>
+<a href="https://opencollective.com/projectm/sponsor/7/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/7/avatar.svg"></a>
+<a href="https://opencollective.com/projectm/sponsor/8/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/8/avatar.svg"></a>
+<a href="https://opencollective.com/projectm/sponsor/9/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/9/avatar.svg"></a>
+
+
 
 ## License
 [LGPL](https://github.com/projectM-visualizer/projectm/raw/master/LICENSE.txt)
