@@ -735,6 +735,13 @@ static void *thread_callback(void *prjm) {
 
     void projectM::switchPreset(const bool hardCut) {
 		std::string result;
+
+        // if we're already switching, promote the current m_activePreset2
+        // see note in switchPreset() about not having too many presets allocated at once
+        if (m_activePreset2 != nullptr)
+            m_activePreset.swap(m_activePreset2);
+        m_activePreset2 = nullptr;
+
 		if (!hardCut) {
 			result = switchPreset(m_activePreset2);
 		} else {
@@ -803,6 +810,17 @@ std::string projectM::switchPreset(std::unique_ptr<Preset> & targetPreset) {
 	pthread_mutex_lock(&preset_mutex);
 	#endif
 	try {
+	    // NOTE SUBTLE BUG!
+        // MilkdropPresetFactory acts as if there can only ever be two presets allocated at a time, and so only
+        // allocates two PresetOutputs objects.  However, this is not true.  If we are in the middle of a soft transition
+        // already, we can have three.  m_activePreset, m_activePreset2, and the one we are about to allocate()
+        // to avoid very strange missing objects (waves/shapes), make sure to free the targetPreset BEFORE calling allocate()
+        //   but wait there is more...
+        // Just because we make sure we never have two presets allocated at once, isn't enough.  We actually
+        // have make sure we release the first allocated preset (or both presets) to make sure we're alternating.
+        // Otherwise, the two allocated presets may be pointing at the same PresetOutputs object.
+        // CONSIDER actually allocating or ref-counting PresetOutputs, or allocating more of them or something.
+        targetPreset = nullptr;
         targetPreset = m_presetPos->allocate();
 	} catch (const PresetFactoryException & e) {
 		#ifdef SYNC_PRESET_SWITCHES

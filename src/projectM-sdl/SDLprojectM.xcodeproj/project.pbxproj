@@ -21,9 +21,6 @@
 		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
 		C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215D1BF025CF001707D2 /* CoreFoundation.framework */; };
 		C34521651BF025E5001707D2 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215F1BF025E5001707D2 /* libbz2.a */; };
-		C34521661BF025E5001707D2 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521601BF025E5001707D2 /* libfreetype.a */; };
-		C34521671BF025E5001707D2 /* libftgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521611BF025E5001707D2 /* libftgl.a */; };
-		C34521681BF025E5001707D2 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521621BF025E5001707D2 /* libGLEW.a */; };
 		C34521691BF025E5001707D2 /* libpng15.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521631BF025E5001707D2 /* libpng15.a */; };
 		C345216A1BF025E5001707D2 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521641BF025E5001707D2 /* libz.a */; };
 /* End PBXBuildFile section */
@@ -185,9 +182,6 @@
 				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
 				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
 				C34521651BF025E5001707D2 /* libbz2.a in Frameworks */,
-				C34521661BF025E5001707D2 /* libfreetype.a in Frameworks */,
-				C34521671BF025E5001707D2 /* libftgl.a in Frameworks */,
-				C34521681BF025E5001707D2 /* libGLEW.a in Frameworks */,
 				C34521691BF025E5001707D2 /* libpng15.a in Frameworks */,
 				C345216A1BF025E5001707D2 /* libz.a in Frameworks */,
 				1612C997207A80A200862A3A /* libprojectM.a in Frameworks */,
@@ -425,7 +419,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "POUT=\"$BUILT_PRODUCTS_DIR\"/\"$CONTENTS_FOLDER_PATH/Resources/presets\"\nPIN=\"$SRCROOT\"/../../presets\n\nmkdir -p \"$POUT\"\nfor preset_dir in \"$PIN/\"*; do\n  cp \"$preset_dir/\"* \"$POUT/\"\ndone\necho \"Copied presets to $POUT\"";
+			shellScript = "POUT=\"$BUILT_PRODUCTS_DIR\"/\"$CONTENTS_FOLDER_PATH/Resources/presets\"\nPIN=\"$SRCROOT\"/../../presets\n\nmkdir -p \"$POUT\"\nfor preset_dir in \"$PIN/\"*; do\n  cp \"$preset_dir/\"* \"$POUT/\"\ndone\necho \"Copied presets to $POUT\"\n";
 		};
 		168F715D21124CF8001806E7 /* Generate Installer Package */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -595,6 +589,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
 			};
 			name = Debug;
 		};
@@ -644,6 +639,7 @@
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../projectM-iTunes/macos/contrib";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
 			};
 			name = Release;
 		};
