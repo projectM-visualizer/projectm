@@ -336,3 +336,7 @@ void projectMSDL::renderTexture() {
     glDisable(GL_DEPTH_TEST);
 }
 
+void projectMSDL::presetSwitchedEvent(bool isHardCut, size_t index) const {
+    std::string presetName = getPresetName(index);
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Displaying preset: %s\n", presetName.c_str());
+}
