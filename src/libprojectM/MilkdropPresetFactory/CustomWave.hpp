@@ -80,9 +80,6 @@ public:
     float * b_mesh;
     float * g_mesh;
     float * a_mesh;
-    float * value1;
-    float * value2;
-    float * sample_mesh;
 
     bool enabled; /* if true then wave is visible, hidden otherwise */
 
