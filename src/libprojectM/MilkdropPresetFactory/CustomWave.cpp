@@ -61,9 +61,6 @@ CustomWave::CustomWave(int _id) : Waveform(512),
   this->a_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
   this->x_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
   this->y_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  this->value1 = (float*) wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  this->value2 = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  this->sample_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
 
   /* Start: Load custom wave parameters */
 
@@ -254,8 +251,8 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("sample", P_FLAG_READONLY | P_FLAG_NONE | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT,
-                                      &this->sample, this->sample_mesh, 1.0, 0.0, 0.0)) == NULL)
+  if ((param = Param::new_param_float("sample", P_FLAG_READONLY | P_FLAG_NONE,
+                                      &this->sample, NULL, 1.0, 0.0, 0.0)) == NULL)
   {
     ;
     abort();
@@ -266,7 +263,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("value1", P_FLAG_READONLY | P_FLAG_NONE | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v1, this->value1, 1.0, -1.0, 0.0)) == NULL)
+  if ((param = Param::new_param_float("value1", P_FLAG_READONLY | P_FLAG_NONE, &this->v1, NULL, 1.0, -1.0, 0.0)) == NULL)
   {
     abort();
   }
@@ -276,7 +273,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("value2", P_FLAG_READONLY | P_FLAG_NONE | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v2, this->value2, 1.0, -1.0, 0.0)) == NULL)
+  if ((param = Param::new_param_float("value2", P_FLAG_READONLY | P_FLAG_NONE, &this->v2, NULL, 1.0, -1.0, 0.0)) == NULL)
   {
     abort();
   }
@@ -440,10 +437,6 @@ CustomWave::~CustomWave()
   free(a_mesh);
   free(x_mesh);
   free(y_mesh);
-  free(value1);
-  free(value2);
-  free(sample_mesh);
-
 }
 
 
@@ -512,9 +505,8 @@ ColoredPoint CustomWave::PerPoint(ColoredPoint p, const WaveformContext context)
 	    x_mesh[context.sample_int] = x;
 	    y_mesh[context.sample_int] = y;
 	    sample = context.sample;
-	    sample_mesh[context.sample_int] = context.sample;
-	    v1 = context.left;
-	    v2 = context.right;
+        v1 = context.left;
+        v2 = context.right;
 
 	for (std::vector<PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos)
 	    (*pos)->evaluate(context.sample_int);
