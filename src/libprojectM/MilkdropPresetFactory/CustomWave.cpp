@@ -308,7 +308,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("t1", P_FLAG_PER_POINT | P_FLAG_TVAR, &this->t1, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  if ((param = Param::new_param_float("t1", P_FLAG_TVAR, &this->t1, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
     ;
     abort();
@@ -320,7 +320,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("t2",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t2, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  if ((param = Param::new_param_float("t2", P_FLAG_TVAR, &this->t2, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
     ;
     abort();
@@ -331,7 +331,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("t3",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t3, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  if ((param = Param::new_param_float("t3", P_FLAG_TVAR, &this->t3, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
     abort();
   }
@@ -341,7 +341,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
 
     abort();
   }
-  if ((param = Param::new_param_float("t4",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t4, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  if ((param = Param::new_param_float("t4", P_FLAG_TVAR, &this->t4, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
 
     abort();
@@ -361,7 +361,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
   
-  if ((param = Param::new_param_float("t6", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  if ((param = Param::new_param_float("t6", P_FLAG_TVAR, &this->t6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
     abort();
   }
@@ -371,7 +371,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
 
     abort();
   }
-  if ((param = Param::new_param_float("t7", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  if ((param = Param::new_param_float("t7", P_FLAG_TVAR, &this->t7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
 
     abort();
@@ -383,7 +383,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("t8", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t8, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  if ((param = Param::new_param_float("t8", P_FLAG_TVAR, &this->t8, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
     ;
     abort();
