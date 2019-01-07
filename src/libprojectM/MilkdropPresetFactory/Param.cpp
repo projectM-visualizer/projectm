@@ -399,7 +399,7 @@ Param * Param::create( const std::string &name, short int type, short int flags,
         assert(0 == (flags & (P_FLAG_PER_PIXEL|P_FLAG_PER_POINT)));
         return new _FloatParam( name, type, flags, eqn_val, matrix, default_init_val, upper_bound, lower_bound );
     }
-    if (flags & P_FLAG_ALWAYS_MATRIX)
+    if ( (flags & P_FLAG_ALWAYS_MATRIX) && !(flags & P_FLAG_PER_POINT) )
     {
         return new _AlwaysMatrixParam( name, type, flags, eqn_val, matrix, default_init_val, upper_bound, lower_bound );
     }
