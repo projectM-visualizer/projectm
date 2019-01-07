@@ -250,8 +250,8 @@ void MilkdropPreset::preloadInitialize() {
 
 }
 
-void MilkdropPreset::postloadInitialize() {
-
+void MilkdropPreset::postloadInitialize()
+{
   /* It's kind of ugly to reset these values here. Should definitely be placed in the parser somewhere */
   this->per_frame_eqn_count = 0;
   this->per_frame_init_eqn_count = 0;
@@ -453,21 +453,17 @@ void MilkdropPreset::initialize_PerPixelMeshes()
 	for(y=0;y<presetInputs().gy;y++){
 	  _presetOutputs.warp_mesh[x][y]=presetOutputs().warp;
 	}}
-
-
-
 }
+
+
 // Evaluates all per-pixel equations
 void MilkdropPreset::evalPerPixelEqns()
 {
-
-  /* Evaluate all per pixel equations in the tree datastructure */
-  for (int mesh_x = 0; mesh_x < presetInputs().gx; mesh_x++)
-	  for (int mesh_y = 0; mesh_y < presetInputs().gy; mesh_y++)
-  for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin();
-       pos != per_pixel_eqn_tree.end(); ++pos)
-    pos->second->evaluate(mesh_x, mesh_y);
-
+    /* Evaluate all per pixel equations in the tree datastructure */
+    for (int mesh_x = 0; mesh_x < presetInputs().gx; mesh_x++)
+	    for (int mesh_y = 0; mesh_y < presetInputs().gy; mesh_y++)
+            for (auto &pos : per_pixel_eqn_tree)
+                pos.second->evaluate(mesh_x, mesh_y);
 }
 
 int MilkdropPreset::readIn(std::istream & fs) {

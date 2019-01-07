@@ -40,39 +40,8 @@
 /* Evaluates a per point equation for the current custom wave given by interface_wave ptr */
 void PerPointEqn::evaluate(int i)
 {
-
-  float * param_matrix;
-  Expr * eqn_ptr;
-
-  //  samples = CustomWave::interface_wave->samples;
-
-  eqn_ptr = gen_expr;
-
-  if (param->matrix == NULL)
-  {
-    assert(param->matrix_flag == false);
-    (*(float*)param->engine_val) = eqn_ptr->eval(i,-1);
-  
-    return;
-  }
-
-  else
-  {
-    param_matrix = (float*)param->matrix;
-  
-      // -1 is because per points only use one dimension
-      param_matrix[i] = eqn_ptr->eval(i, -1);
-    
-
-    /* Now that this parameter has been referenced with a per
-       point equation, we let the evaluator know by setting
-       this flag */
-
-    if (!param->matrix_flag)
-      param->matrix_flag = true;
-
-  }
-
+    float v = gen_expr->eval( i, -1 );
+    param->set_matrix( i, -1, v );
 }
 
 PerPointEqn::PerPointEqn(int _index, Param * _param, Expr * _gen_expr, int _samples):
@@ -86,5 +55,5 @@ PerPointEqn::PerPointEqn(int _index, Param * _param, Expr * _gen_expr, int _samp
 
 PerPointEqn::~PerPointEqn()
 {
-  delete gen_expr;
+  Expr::delete_expr(gen_expr);
 }
