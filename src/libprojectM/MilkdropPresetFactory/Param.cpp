@@ -295,7 +295,7 @@ public:
     {
         // Hmm, presets do this... not sure why it's allowed
         // assert( mesh_i >=0 && mesh_j >= 0)
-        if (mesh_i < 0)
+        if (mesh_j < 0)
             return *(float *)engine_val;
         return ((float **)matrix)[mesh_i][mesh_j];
     }
