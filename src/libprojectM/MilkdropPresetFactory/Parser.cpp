@@ -2621,6 +2621,7 @@ else
 #include <PresetLoader.hpp>
 
 #define TEST(cond) if (!verify(#cond,cond)) return false
+#define TEST2(str,cond) if (!verify(str,cond)) return false
 
 struct ParserTest : public Test
 {
@@ -2667,7 +2668,7 @@ public:
     bool eval_expr(float expected, const char *s)
     {
         float f1, f2;
-        Expr *expr = Parser::parse_gen_expr(ss("1.0"),nullptr,preset);
+        Expr *expr = Parser::parse_gen_expr(ss(s),nullptr,preset);
         TEST(expr != nullptr);
         TEST(ParserTest::eq(expected, f1=expr->eval(-1,-1)));
         // this is really a test for Expr.cpp, but since we're here
@@ -2683,12 +2684,12 @@ public:
 
     bool test_eqn()
     {
-        eval_expr(1.0f, "1.0");
-        eval_expr(-1.0f, "-(1.0)");         // unary`
-        eval_expr(0.5f, "5/10.000");        // binary
-        eval_expr(1.0f, "sin(3.14159/2)");
+        TEST(eval_expr(1.0f, "1.0"));
+        TEST(eval_expr(-1.0f, "-(1.0)"));         // unary`
+        TEST(eval_expr(0.5f, "5/10.000"));        // binary
+        TEST(eval_expr(1.0f, "sin(3.14159/2)"));
         preset->presetOutputs().rot = 0.99f;
-        eval_expr(0.99f, "rot");
+        TEST(eval_expr(0.99f, "rot"));
         return true;
     }
 
