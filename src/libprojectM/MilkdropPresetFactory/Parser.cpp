@@ -46,6 +46,7 @@
 #include <iostream>
 #include <sstream>
 #include "BuiltinFuncs.hpp"
+#include "MilkdropPresetFactory.hpp"
 
 /* Grabs the next token from the file. The second argument points
    to the raw string */
@@ -2603,3 +2604,143 @@ else
 	return false;
 
 }
+
+
+
+
+
+
+
+// TESTS
+
+
+#include <TestRunner.hpp>
+
+#ifndef NDEBUG
+
+#include <PresetLoader.hpp>
+
+#define TEST(cond) if (!verify(#cond,cond)) return false
+
+struct ParserTest : public Test
+{
+    ParserTest() : Test("ParserTest")
+    {}
+
+    MilkdropPreset *preset;
+    std::istringstream is;
+    std::istringstream &ss(const char *s) { return is = std::istringstream(s); }
+
+    bool eq(float a, float b)
+    {
+        return abs(a-b) < (abs(a)+abs(b))/1000.0f;
+    }
+
+public:
+
+    bool test_float()
+    {
+        float f=-1.0f;
+        TEST(PROJECTM_SUCCESS == Parser::parse_float(ss("1.1"),&f));
+        TEST(1.1f == f);
+        TEST(PROJECTM_SUCCESS == Parser::parse_float(ss("+1.2"),&f));
+        TEST(PROJECTM_SUCCESS == Parser::parse_float(ss("-1.3"),&f));
+        TEST(PROJECTM_PARSE_ERROR == Parser::parse_float(ss(""),&f));
+        TEST(PROJECTM_PARSE_ERROR == Parser::parse_float(ss("\n"),&f));
+        TEST(PROJECTM_PARSE_ERROR == Parser::parse_float(ss("+"),&f));
+        return true;
+    }
+
+    bool test_int()
+    {
+        int i=-1;
+        TEST(PROJECTM_SUCCESS == Parser::parse_int(ss("1"),&i));
+        TEST(1 == i);
+        TEST(PROJECTM_SUCCESS == Parser::parse_int(ss("+2"),&i));
+        TEST(PROJECTM_SUCCESS == Parser::parse_int(ss("-3"),&i));
+        TEST(PROJECTM_PARSE_ERROR == Parser::parse_int(ss(""),&i));
+        TEST(PROJECTM_PARSE_ERROR == Parser::parse_int(ss("\n"),&i));
+        TEST(PROJECTM_PARSE_ERROR == Parser::parse_int(ss("+"),&i));
+        return true;
+    }
+
+    bool eval_expr(float expected, const char *s)
+    {
+        float f1, f2;
+        Expr *expr = Parser::parse_gen_expr(ss("1.0"),nullptr,preset);
+        TEST(expr != nullptr);
+        TEST(ParserTest::eq(expected, f1=expr->eval(-1,-1)));
+        // this is really a test for Expr.cpp, but since we're here
+        Expr *opt = Expr::optimize(expr);
+        if (opt != expr)
+        {
+            TEST(ParserTest::eq(expected, f2 = opt->eval(-1, -1)));
+            Expr::delete_expr(opt);
+        }
+        Expr::delete_expr(expr);
+        return true;
+    }
+
+    bool test_eqn()
+    {
+        eval_expr(1.0f, "1.0");
+        eval_expr(-1.0f, "-(1.0)");         // unary`
+        eval_expr(0.5f, "5/10.000");        // binary
+        eval_expr(1.0f, "sin(3.14159/2)");
+        preset->presetOutputs().rot = 0.99f;
+        eval_expr(0.99f, "rot");
+        return true;
+    }
+
+    // test multi-line expression, and multi-expression line
+    bool test_lines()
+    {
+        // TODO
+        return true;
+    }
+
+    bool test_params()
+    {
+        // TODO
+        return true;
+    }
+
+
+    bool _test()
+    {
+        bool success = true;
+        success &= test_float();
+        success &= test_int();
+        success &= test_eqn();
+        success &= test_lines();
+        success &= test_params();
+        return success;
+    }
+
+    bool test() override
+    {
+        // load IdlePreset
+        PresetLoader *presetLoader = new PresetLoader ( 400, 400, "" );
+        std::unique_ptr<Preset> preset_ptr = presetLoader->loadPreset("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
+        preset = (MilkdropPreset *)preset_ptr.get();
+
+        bool success = _test();
+
+        delete presetLoader;
+        return success;
+    }
+};
+
+Test* Parser::test()
+{
+  return new ParserTest();
+}
+
+#else
+
+Test* Param::test()
+{
+    return null;
+}
+
+#endif
