@@ -31,12 +31,16 @@ public:
 
  std::string supportedExtensions() const { return "milk prjm"; }
 
+ // called by ~MilkdropPreset
+  void releasePreset(Preset *preset);
+
 private:
     static PresetOutputs* createPresetOutputs(int gx, int gy);
 	void reset();
+	int gx;
+	int gy;
 	PresetOutputs * _presetOutputs;
     PresetOutputs * _presetOutputs2;
-    bool _usePresetOutputs;
 	//PresetInputs _presetInputs;
 };
 
