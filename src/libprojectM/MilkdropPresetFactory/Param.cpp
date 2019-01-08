@@ -323,7 +323,10 @@ public:
     float eval(int mesh_i, int mesh_j) override
     {
         assert( type == P_TYPE_DOUBLE );
-        if ( matrix_flag && mesh_i >= 0 )
+        // see issue 64: There are presets with per_point equations that read from pre_frame/per_pixel parameters,
+        //    e.g. per_point1=dx=dx*1.01
+        // any this means that we get called with (i>=0,j==-1)
+        if ( matrix_flag && mesh_i >= 0 && mesh_j >= 0)
             return ( ( ( float** ) matrix ) [mesh_i][mesh_j] );
         return * ( ( float* ) ( engine_val ) );
     }
