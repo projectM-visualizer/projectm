@@ -585,3 +585,47 @@ std::ostream& AssignMatrixExpr::to_string(std::ostream &out)
 	out << lhs << "[i,j] = " << rhs;
 	return out;
 }
+
+
+
+
+
+// TESTS
+
+
+#include <TestRunner.hpp>
+
+#ifndef NDEBUG
+
+struct ExprTest : public Test
+{
+	ExprTest() : Test("ExprTest")
+	{}
+
+public:
+	bool test_rand()
+	{
+		Expr *constant =  Expr::const_to_expr ( 10 );
+	}
+
+
+	bool test() override
+	{
+
+		return true;
+	}
+};
+
+Test* Expr::test()
+{
+	return new ExprTest();
+}
+
+#else
+
+Test* Expr::test()
+{
+    return null;
+}
+
+#endif

@@ -33,6 +33,7 @@
 #include "CValue.hpp"
 #include <iostream> 
 
+class Test;
 class Param;
 
 #define CONST_STACK_ELEMENT 0
@@ -80,6 +81,7 @@ public:
       std::cout << "nyi"; return out;
   }
 
+  static Test *test();
   static Expr *const_to_expr( float val );
   static Expr *param_to_expr( Param *param );
   static Expr *prefun_to_expr( float (*func_ptr)(void *), Expr **expr_list, int num_args );
