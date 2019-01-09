@@ -39,8 +39,7 @@ private:
 	void reset();
 	int gx;
 	int gy;
-	PresetOutputs * _presetOutputs;
-    PresetOutputs * _presetOutputs2;
+	PresetOutputs * _presetOutputsCache;
 	//PresetInputs _presetInputs;
 };
 

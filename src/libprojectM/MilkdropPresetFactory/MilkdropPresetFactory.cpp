@@ -17,7 +17,7 @@
 #include "IdlePreset.hpp"
 #include "PresetFrameIO.hpp"
 
-MilkdropPresetFactory::MilkdropPresetFactory(int gx_, int gy_): gx(gx_), gy(gy_), _presetOutputs(nullptr), _presetOutputs2(nullptr)
+MilkdropPresetFactory::MilkdropPresetFactory(int gx_, int gy_): gx(gx_), gy(gy_), _presetOutputsCache(nullptr)
 {
 	/* Initializes the builtin function database */
 	BuiltinFuncs::init_builtin_func_db();
@@ -33,10 +33,8 @@ MilkdropPresetFactory::~MilkdropPresetFactory() {
 //	std::cerr << "[~MilkdropPresetFactory] destroy builtin func" << std::endl;
 	BuiltinFuncs::destroy_builtin_func_db();
 //	std::cerr << "[~MilkdropPresetFactory] delete preset out puts" << std::endl;
-	delete(_presetOutputs);
-        delete(_presetOutputs2);
+	delete(_presetOutputsCache);
 //	std::cerr << "[~MilkdropPresetFactory] done" << std::endl;
-
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
@@ -144,10 +142,8 @@ void resetPresetOutputs(PresetOutputs * presetOutputs)
 void MilkdropPresetFactory::reset()
 {
 
-    if (_presetOutputs)
-        resetPresetOutputs(_presetOutputs);
-    if (_presetOutputs2)
-        resetPresetOutputs(_presetOutputs2);
+    if (_presetOutputsCache)
+        resetPresetOutputs(_presetOutputsCache);
 }
 
 PresetOutputs* MilkdropPresetFactory::createPresetOutputs(int gx, int gy)
@@ -215,15 +211,10 @@ std::unique_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url,
 
     PresetOutputs *presetOutputs;
     // use cached PresetOutputs if there is one, otherwise allocate
-    if (_presetOutputs)
+    if (_presetOutputsCache)
     {
-        presetOutputs = _presetOutputs;
-        _presetOutputs = nullptr;
-    }
-    else if (_presetOutputs2)
-    {
-        presetOutputs = _presetOutputs2;
-        _presetOutputs2 = nullptr;
+        presetOutputs = _presetOutputsCache;
+        _presetOutputsCache = nullptr;
     }
     else
     {
@@ -244,10 +235,8 @@ void MilkdropPresetFactory::releasePreset(Preset *preset_)
 {
     MilkdropPreset *preset = (MilkdropPreset *)preset_;
     // return PresetOutputs to the cache
-    if (nullptr == _presetOutputs)
-        _presetOutputs = &preset->_presetOutputs;
-    else if (nullptr == _presetOutputs2)
-        _presetOutputs2 = &preset->_presetOutputs;
+    if (nullptr == _presetOutputsCache)
+        _presetOutputsCache = &preset->_presetOutputs;
     else
         delete &preset->_presetOutputs;
 }
