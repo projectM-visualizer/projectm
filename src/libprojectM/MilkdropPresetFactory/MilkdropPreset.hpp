@@ -47,6 +47,7 @@
 #include "InitCond.hpp"
 #include "Preset.hpp"
 
+class MilkdropPresetFactory;
 class CustomWave;
 class CustomShape;
 class InitCond;
@@ -63,14 +64,14 @@ public:
   /// \param MilkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
   /// \param MilkdropPresetInputs a reference to read only projectM engine variables
   /// \param MilkdropPresetOutputs initialized and filled with data parsed from a MilkdropPreset
-  MilkdropPreset(const std::string & absoluteFilePath, const std::string & milkdropPresetName, PresetOutputs & presetOutputs);
+  MilkdropPreset(MilkdropPresetFactory *factory, const std::string & absoluteFilePath, const std::string & milkdropPresetName, PresetOutputs & presetOutputs);
 
   ///  Load a MilkdropPreset from an input stream with input and output buffers specified.
   /// \param in an already initialized input stream to read the MilkdropPreset file from
   /// \param MilkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
   /// \param MilkdropPresetInputs a reference to read only projectM engine variables
   /// \param MilkdropPresetOutputs initialized and filled with data parsed from a MilkdropPreset
-  MilkdropPreset(std::istream & in, const std::string & milkdropPresetName, PresetOutputs & presetOutputs);
+  MilkdropPreset(MilkdropPresetFactory *factory, std::istream & in, const std::string & milkdropPresetName, PresetOutputs & presetOutputs);
 
   ~MilkdropPreset();
 
@@ -173,11 +174,14 @@ private:
 
   void preloadInitialize();
   void postloadInitialize();
-  
+
+  MilkdropPresetFactory *_factory;
   PresetOutputs & _presetOutputs;
 
 template <class CustomObject>
 void transfer_q_variables(std::vector<CustomObject*> & customObjects);
+
+friend class MilkdropPresetFactory;
 };
 
 
