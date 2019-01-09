@@ -42,28 +42,32 @@
 #include "PresetFrameIO.hpp"
 
 #include "PresetFactoryManager.hpp"
+#include "MilkdropPresetFactory.hpp"
 
 
-MilkdropPreset::MilkdropPreset(std::istream & in, const std::string & presetName,  PresetOutputs & presetOutputs):
+MilkdropPreset::MilkdropPreset(MilkdropPresetFactory *factory, std::istream & in, const std::string & presetName,  PresetOutputs & presetOutputs):
 	Preset(presetName),
-    	builtinParams(_presetInputs, presetOutputs),
-    	_presetOutputs(presetOutputs)
+    builtinParams(_presetInputs, presetOutputs),
+    _factory(factory),
+    _presetOutputs(presetOutputs)
 {
   initialize(in);
-
 }
 
-MilkdropPreset::MilkdropPreset(const std::string & absoluteFilePath, const std::string & presetName, PresetOutputs & presetOutputs):
+
+MilkdropPreset::MilkdropPreset(MilkdropPresetFactory *factory, const std::string & absoluteFilePath, const std::string & presetName, PresetOutputs & presetOutputs):
 	Preset(presetName),
     builtinParams(_presetInputs, presetOutputs),
     _filename(parseFilename(absoluteFilePath)),
     _absoluteFilePath(absoluteFilePath),
+    _factory(factory),
     _presetOutputs(presetOutputs)
 {
 
   initialize(absoluteFilePath);
-
 }
+
+
 MilkdropPreset::~MilkdropPreset()
 {
 
@@ -94,6 +98,9 @@ MilkdropPreset::~MilkdropPreset()
   }
   customWaves.clear();
   customShapes.clear();
+
+  if (nullptr != _factory)
+      _factory->releasePreset(this);
 }
 
 /* Adds a per pixel equation according to its string name. This
