@@ -5,7 +5,7 @@
 
 Mesh X  = 220            	# Width of PerPixel Equation mesh
 Mesh Y  = 125          		# Height of PerPixel Equation mesh
-FPS  = 120          		# Frames Per Second
+FPS  = 60          		# Frames Per Second
 Fullscreen  = false
 Window Width  = 512  	       	# startup window width
 Window Height = 512            	# startup window height
@@ -17,6 +17,6 @@ Easter Egg Parameter = 1
 Hard Cut Sensitivity = 10       # Lower to make hard cuts more frequent
 Aspect Correction = true	# Custom Shape Aspect Correction
 
-Preset Path = presets/presets_tryptonaut # preset location
+Preset Path = presets # preset location
 Title Font = Vera.ttf
 Menu Font = VeraMono.ttf
