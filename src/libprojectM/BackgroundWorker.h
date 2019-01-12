@@ -23,7 +23,7 @@ public:
     {
         pthread_mutex_init(&mutex, NULL);
         pthread_cond_init(&condition_start_work, NULL);
-        pthread_cond_init(&condition_start_work, NULL);
+        pthread_cond_init(&condition_work_done, NULL);
     }
 
     // called by foreground
