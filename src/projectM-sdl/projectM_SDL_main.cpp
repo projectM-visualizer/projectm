@@ -32,7 +32,7 @@ void DebugLog(GLenum source,
 
 // return path to config file to use
 std::string getConfigFilePath() {
-    const char *path = DATADIR_PATH;
+    const char *path = ".";
     struct stat sb;
     
     // check if datadir exists.
