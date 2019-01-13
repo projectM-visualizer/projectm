@@ -39,19 +39,19 @@
 /* Evaluates a per pixel equation */
 void PerPixelEqn::evaluate(int mesh_i, int mesh_j)
 {
-    float v = gen_expr->eval( mesh_i, mesh_j );
-    param->set_matrix( mesh_i, mesh_j, v );
+    assign_expr->eval( mesh_i, mesh_j );
 }
 
-PerPixelEqn::PerPixelEqn(int _index, Param * _param, Expr * _gen_expr):index(_index), param(_param), gen_expr(_gen_expr) {
-
+PerPixelEqn::PerPixelEqn(int _index, Param * param, Expr * gen_expr):index(_index)
+{
 	assert(index >= 0);
 	assert(param != 0);
 	assert(gen_expr != 0);
+    assign_expr = new AssignMatrixExpr(param, gen_expr);
 }
 
 
 PerPixelEqn::~PerPixelEqn()
 {
-    Expr::delete_expr(gen_expr);
+    Expr::delete_expr(assign_expr);
 }

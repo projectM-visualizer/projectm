@@ -130,6 +130,7 @@ public:
   /* Data structures that contain equation and initial condition information */
   std::vector<PerFrameEqn*>  per_frame_eqn_tree;   /* per frame equations */
   std::map<int, PerPixelEqn*>  per_pixel_eqn_tree; /* per pixel equation tree */
+  Expr *per_pixel_program;
   std::map<std::string,InitCond*>  per_frame_init_eqn_tree; /* per frame initial equations */
   std::map<std::string,InitCond*>  init_cond_tree; /* initial conditions */
   std::map<std::string,Param*> user_param_tree; /* user parameter splay tree */

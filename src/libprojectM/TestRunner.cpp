@@ -18,6 +18,7 @@ bool TestRunner::run()
         //   but tests may choose to comment out body to save space
         tests.push_back(Param::test());
         tests.push_back(Parser::test());
+        tests.push_back(Expr::test());
     }
 
     int count = 0;

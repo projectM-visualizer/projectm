@@ -48,6 +48,7 @@
 MilkdropPreset::MilkdropPreset(MilkdropPresetFactory *factory, std::istream & in, const std::string & presetName,  PresetOutputs & presetOutputs):
 	Preset(presetName),
     builtinParams(_presetInputs, presetOutputs),
+    per_pixel_program(nullptr),
     _factory(factory),
     _presetOutputs(presetOutputs)
 {
@@ -58,6 +59,7 @@ MilkdropPreset::MilkdropPreset(MilkdropPresetFactory *factory, std::istream & in
 MilkdropPreset::MilkdropPreset(MilkdropPresetFactory *factory, const std::string & absoluteFilePath, const std::string & presetName, PresetOutputs & presetOutputs):
 	Preset(presetName),
     builtinParams(_presetInputs, presetOutputs),
+    per_pixel_program(nullptr),
     _filename(parseFilename(absoluteFilePath)),
     _absoluteFilePath(absoluteFilePath),
     _factory(factory),
@@ -76,6 +78,7 @@ MilkdropPreset::~MilkdropPreset()
   traverse<TraverseFunctors::Delete<InitCond> >(per_frame_init_eqn_tree);
 
   traverse<TraverseFunctors::Delete<PerPixelEqn> >(per_pixel_eqn_tree);
+  Expr::delete_expr(per_pixel_program);
 
   traverseVector<TraverseFunctors::Delete<PerFrameEqn> >(per_frame_eqn_tree);
 
@@ -464,17 +467,20 @@ void MilkdropPreset::initialize_PerPixelMeshes()
 
 
 }
+
 // Evaluates all per-pixel equations
 void MilkdropPreset::evalPerPixelEqns()
 {
-
-  /* Evaluate all per pixel equations in the tree datastructure */
-  for (int mesh_x = 0; mesh_x < presetInputs().gx; mesh_x++)
-	  for (int mesh_y = 0; mesh_y < presetInputs().gy; mesh_y++)
-  for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin();
-       pos != per_pixel_eqn_tree.end(); ++pos)
-    pos->second->evaluate(mesh_x, mesh_y);
-
+    if (nullptr == per_pixel_program)
+    {
+        std::vector<Expr *> steps;
+        for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin(); pos != per_pixel_eqn_tree.end(); ++pos)
+            steps.push_back(pos->second->assign_expr);
+        per_pixel_program = new ProgramExpr(steps,false);
+    }
+    for (int mesh_x = 0; mesh_x < presetInputs().gx; mesh_x++)
+        for (int mesh_y = 0; mesh_y < presetInputs().gy; mesh_y++)
+            per_pixel_program->eval( mesh_x, mesh_y );
 }
 
 int MilkdropPreset::readIn(std::istream & fs) {

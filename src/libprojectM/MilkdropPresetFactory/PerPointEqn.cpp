@@ -40,20 +40,17 @@
 /* Evaluates a per point equation for the current custom wave given by interface_wave ptr */
 void PerPointEqn::evaluate(int i)
 {
-    float v = gen_expr->eval( i, -1 );
-    param->set_matrix( i, -1, v );
+    assign_expr->eval( i, -1 );
 }
 
-PerPointEqn::PerPointEqn(int _index, Param * _param, Expr * _gen_expr, int _samples):
-    index(_index),
-    samples(_samples),
-    param(_param),
-    gen_expr(_gen_expr)
-
-{}
+PerPointEqn::PerPointEqn(int _index, Param * param, Expr * gen_expr):
+    index(_index)
+{
+    assign_expr = new AssignExpr(param, gen_expr);
+}
 
 
 PerPointEqn::~PerPointEqn()
 {
-  Expr::delete_expr(gen_expr);
+  Expr::delete_expr(assign_expr);
 }

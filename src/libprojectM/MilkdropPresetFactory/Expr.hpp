@@ -31,7 +31,8 @@
 
 #include "dlldefs.h"
 #include "CValue.hpp"
-#include <iostream> 
+#include <iostream>
+#include <vector>
 
 class Test;
 class Param;
@@ -64,7 +65,7 @@ public:
 
 enum ExprClass
 {
-  TREE, CONSTANT, PARAMETER, FUNCTION, ASSIGN, OTHER
+  TREE, CONSTANT, PARAMETER, FUNCTION, ASSIGN, PROGRAM, OTHER
 };
 
 class Expr
@@ -178,6 +179,32 @@ public:
     AssignMatrixExpr(LValue *lhs, Expr *rhs);
     float eval(int mesh_i, int mesh_j) override;
     std::ostream& to_string(std::ostream &out) override;
+};
+
+
+class ProgramExpr : public Expr
+{
+protected:
+    std::vector<Expr *> steps;
+    bool own;
+public:
+    ProgramExpr(std::vector<Expr*> &steps_, bool ownSteps) : Expr(PROGRAM), steps(steps_), own(ownSteps)
+    {
+    }
+    ~ProgramExpr()
+    {
+        if (!own)
+            return;
+        for (auto it=steps.begin() ; it<steps.end() ; it++)
+            Expr::delete_expr(*it);
+    }
+    float eval(int mesh_i, int mesh_j) override
+    {
+        float f=0.0f;
+        for (auto it=steps.begin() ; it<steps.end() ; it++)
+            f = (*it)->eval(mesh_i,mesh_j);
+        return f;
+    }
 };
 
 #endif /** _EXPR_H */
