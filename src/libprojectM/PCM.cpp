@@ -143,9 +143,9 @@ void PCM::addPCMfloat_2ch(const float *PCMdata, int samples)
 {
     int i,j;
 
-    for(i=0;i<samples;i+=2)
+    for(i=0;i<samples/2;i++)
     {
-        j=i+start;
+        j=(i/2)+start;
         PCMd[0][j%maxsamples] = PCMdata[i];
         PCMd[1][j%maxsamples] = PCMdata[i+1];
     }
