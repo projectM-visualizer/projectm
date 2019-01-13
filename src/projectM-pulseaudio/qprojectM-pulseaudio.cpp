@@ -109,8 +109,7 @@ class ProjectMApplication : public QApplication {
 
 int main ( int argc, char*argv[] )
 {
-	if (!TestRunner::run())
-		exit(1);
+//	if (!TestRunner::run()) exit(1);
 
 	int i;
 	char projectM_data[1024];
