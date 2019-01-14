@@ -620,13 +620,13 @@ public:
 		Expr::delete_expr(x);
 
         Expr **expr_array = (Expr **)malloc(sizeof(Expr *));
-        expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( M_PIf32 ), nullptr, nullptr);
+        expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( (float)M_PI ), nullptr, nullptr);
         Expr *sin = Expr::prefun_to_expr((float (*)(void *))FuncWrappers::sin_wrapper, expr_array, 1);
         x = Expr::optimize(sin);
         TEST(x != sin);
         Expr::delete_expr( sin );
         TEST(x->clazz == CONSTANT);
-        TEST(sinf(M_PIf32) == x->eval(-1,-10));
+        TEST(sinf( (float)M_PI ) == x->eval(-1,-10));
         Expr::delete_expr(x);
 
         // make sure rand() is not optimized away
