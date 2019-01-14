@@ -631,7 +631,7 @@ public:
 
         // make sure rand() is not optimized away
         expr_array = (Expr **)malloc(sizeof(Expr *));
-		expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( M_PIf32 ), nullptr, nullptr);
+		expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( (float)M_PI ), nullptr, nullptr);
 		Expr *rand = Expr::prefun_to_expr((float (*)(void *))FuncWrappers::rand_wrapper, expr_array, 1);
 		x = Expr::optimize(rand);
 		TEST(x == rand);
