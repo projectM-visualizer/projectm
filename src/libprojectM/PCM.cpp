@@ -143,17 +143,17 @@ void PCM::addPCMfloat_2ch(const float *PCMdata, int samples)
 {
     int i,j;
 
-    for(i=0;i<samples/2;i++)
+    for(i=0;i<samples;i+=2)
     {
         j=(i/2)+start;
         PCMd[0][j%maxsamples] = PCMdata[i];
         PCMd[1][j%maxsamples] = PCMdata[i+1];
     }
 
-    start+=samples;
+    start+=samples/2;
     start=start%maxsamples;
 
-    newsamples+=samples;
+    newsamples+=samples/2;
     if (newsamples>maxsamples)
         newsamples=maxsamples;
     numsamples = getPCMnew(pcmdataR,1,0,waveSmoothing,0,0);
