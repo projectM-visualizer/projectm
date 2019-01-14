@@ -47,18 +47,20 @@ InfixOp *Eval::infix_positive = NULL;
 /* Initializes all infix operators */
 int Eval::init_infix_ops() {
 
-	Eval::infix_add = new InfixOp(INFIX_ADD, 4);
-	Eval::infix_minus = new InfixOp(INFIX_MINUS, 3);
-	Eval::infix_div = new InfixOp(INFIX_DIV, 2);
-	Eval::infix_or = new InfixOp(INFIX_OR, 5);
-	Eval::infix_and = new InfixOp(INFIX_AND,4);
-	Eval::infix_mod = new InfixOp(INFIX_MOD, 1);
-	Eval::infix_mult = new InfixOp(INFIX_MULT, 2);
-	
-	/* Prefix operators */
-	Eval::infix_positive = new InfixOp(INFIX_ADD, 0);
-	Eval::infix_negative = new InfixOp(INFIX_MINUS, 0);
+    if (nullptr == Eval::infix_add)
+    {
+        Eval::infix_add = new InfixOp(INFIX_ADD, 4);
+        Eval::infix_minus = new InfixOp(INFIX_MINUS, 3);
+        Eval::infix_div = new InfixOp(INFIX_DIV, 2);
+        Eval::infix_or = new InfixOp(INFIX_OR, 5);
+        Eval::infix_and = new InfixOp(INFIX_AND, 4);
+        Eval::infix_mod = new InfixOp(INFIX_MOD, 1);
+        Eval::infix_mult = new InfixOp(INFIX_MULT, 2);
 
+        /* Prefix operators */
+        Eval::infix_positive = new InfixOp(INFIX_ADD, 0);
+        Eval::infix_negative = new InfixOp(INFIX_MINUS, 0);
+    }
 	return PROJECTM_SUCCESS;
 }
 

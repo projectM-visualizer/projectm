@@ -120,6 +120,7 @@ typedef enum {
     tStringBufferFilled /* the string buffer for this line is maxed out */
   } token_t;
 
+class Test;
 class CustomShape;
 class CustomWave;
 class Expr;
@@ -145,6 +146,7 @@ public:
     static int last_token_size;
     static bool tokenWrapAroundEnabled;
 
+    static Test *test();
     static PerFrameEqn *parse_per_frame_eqn( std::istream & fs, int index,
                                              MilkdropPreset * preset);
     static int parse_per_pixel_eqn( std::istream & fs, MilkdropPreset * preset,

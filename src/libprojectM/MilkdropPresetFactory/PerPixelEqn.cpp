@@ -35,47 +35,23 @@
 
 #include "wipemalloc.h"
 #include <cassert>
+
 /* Evaluates a per pixel equation */
-void PerPixelEqn::evaluate(int mesh_i, int mesh_j) {
-
-  Expr * eqn_ptr = 0;
-
-
- eqn_ptr = this->gen_expr;
-
- float ** param_matrix = (float**)this->param->matrix;
-
- if (param_matrix == 0) {
-	 assert(param->engine_val);
-	 (*(float*)param->engine_val) = eqn_ptr->eval(mesh_i, mesh_j);
-
-  } else {
-
-  assert(!(eqn_ptr == NULL || param_matrix == NULL));
-
-  param_matrix[mesh_i][mesh_j] = eqn_ptr->eval(mesh_i, mesh_j);
-
-  /* Now that this parameter has been referenced with a per
-     pixel equation, we let the evaluator know by setting
-     this flag */
-  /// @bug review and verify this behavior
-  param->matrix_flag = true;
-  param->flags |= P_FLAG_PER_PIXEL;
-  }
+void PerPixelEqn::evaluate(int mesh_i, int mesh_j)
+{
+    assign_expr->eval( mesh_i, mesh_j );
 }
 
-PerPixelEqn::PerPixelEqn(int _index, Param * _param, Expr * _gen_expr):index(_index), param(_param), gen_expr(_gen_expr) {
-
+PerPixelEqn::PerPixelEqn(int _index, Param * param, Expr * gen_expr):index(_index)
+{
 	assert(index >= 0);
 	assert(param != 0);
 	assert(gen_expr != 0);
-
+    assign_expr = new AssignMatrixExpr(param, gen_expr);
 }
 
 
 PerPixelEqn::~PerPixelEqn()
 {
-	if (gen_expr)
-		delete (gen_expr);
-
+    Expr::delete_expr(assign_expr);
 }

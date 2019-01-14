@@ -52,7 +52,7 @@ int BuiltinParams::load_builtin_param_float(const std::string & name, void * eng
 std::string lowerName(name);
 std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
 
-  if ((param = new Param(lowerName, P_TYPE_DOUBLE, flags, engine_val, matrix, iv, ub, lb)) == NULL)
+  if ((param = Param::create(lowerName, P_TYPE_DOUBLE, flags, engine_val, matrix, iv, ub, lb)) == NULL)
   {
     return PROJECTM_OUTOFMEM_ERROR;
   }
@@ -171,7 +171,7 @@ int BuiltinParams::load_builtin_param_int(const std::string & name, void * engin
   std::string lowerName(name);
   std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
 
-  param = new Param(lowerName, P_TYPE_INT, flags, engine_val, NULL, iv, ub, lb);
+  param = Param::create(lowerName, P_TYPE_INT, flags, engine_val, NULL, iv, ub, lb);
 
   if (param == NULL)
   {
@@ -224,7 +224,7 @@ int BuiltinParams::load_builtin_param_bool(const std:: string & name, void * eng
 std::string lowerName(name);
 std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
 
-  param = new Param(lowerName, P_TYPE_BOOL, flags, engine_val, NULL, iv, ub, lb);
+  param = Param::create(lowerName, P_TYPE_BOOL, flags, engine_val, NULL, iv, ub, lb);
 
   if (param == NULL)
   {
@@ -397,7 +397,7 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   for (unsigned int i = 0; i < NUM_Q_VARIABLES;i++) {
 	std::ostringstream os;
 	os << "q" << i;
-	load_builtin_param_float(os.str().c_str(), (void*)&presetOutputs.q[i],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+	load_builtin_param_float(os.str().c_str(), (void*)&presetOutputs.q[i],  NULL, P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
 
   }
 

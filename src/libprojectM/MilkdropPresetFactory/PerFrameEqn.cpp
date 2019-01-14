@@ -36,8 +36,8 @@
 #include <cassert>
 
 /* Evaluate an equation */
-void PerFrameEqn::evaluate() {
-
+void PerFrameEqn::evaluate()
+{
      if (PER_FRAME_EQN_DEBUG) { 
 		 printf("per_frame_%d=%s= ", index, param->name.c_str());
 		 fflush(stdout); 
@@ -46,20 +46,19 @@ void PerFrameEqn::evaluate() {
     //*((float*)per_frame_eqn->param->engine_val) = eval(per_frame_eqn->gen_expr);
 	assert(gen_expr);
 	assert(param);
-	param->set_param(gen_expr->eval(-1,-1));
+	float v = gen_expr->eval(-1,-1);
+	param->set_param(v);
 
-     if (PER_FRAME_EQN_DEBUG) printf(" = %.4f\n", *((float*)param->engine_val)); 
-		 
+	if (PER_FRAME_EQN_DEBUG) printf(" = %.4f\n", v);
 }
 
 
 /* Frees perframe equation structure. Warning: assumes gen_expr pointer is not freed by anyone else! */
-PerFrameEqn::~PerFrameEqn() {
+PerFrameEqn::~PerFrameEqn()
+{
+    Expr::delete_expr(gen_expr);
 
-  delete gen_expr;
-
-  // param is freed in param_tree container of some other class
-
+    // param is freed in param_tree container of some other class
 }
 
 /* Create a new per frame equation */

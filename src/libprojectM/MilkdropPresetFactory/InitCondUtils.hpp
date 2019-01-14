@@ -25,10 +25,6 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
     InitCond * init_cond = 0;
     CValue init_val;
 
-    assert(param);
-    assert(param->engine_val);
-
-
     /* Don't count these parameters as initial conditions */
     if (param->flags & P_FLAG_READONLY)
         return;
@@ -48,15 +44,7 @@ inline void LoadUnspecInitCond::operator() (Param * param) {
 	if (m_perFrameInitEqnTree.find(param->name) != m_perFrameInitEqnTree.end())
 		return;
 
-	// Set an initial vialue via correct union member
-        if (param->type == P_TYPE_BOOL)
-            init_val.bool_val = param->default_init_val.bool_val;
-        else if (param->type == P_TYPE_INT)
-            init_val.int_val = param->default_init_val.int_val;
-
-        else if (param->type == P_TYPE_DOUBLE) {
-           		init_val.float_val = param->default_init_val.float_val;
-	}
+	init_val = param->default_init_val;
 
         //printf("%s\n", param->name);
         /* Create new initial condition */

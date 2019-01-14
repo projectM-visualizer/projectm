@@ -105,6 +105,7 @@ public:
     std::map<std::string,InitCond*>  init_cond_tree;
     std::vector<PerFrameEqn*>  per_frame_eqn_tree;
     std::vector<PerPointEqn*>  per_point_eqn_tree;
+    Expr *per_point_program;
     std::map<std::string,InitCond*>  per_frame_init_eqn_tree;
 
     /* Denotes the index of the last character for each string buffer */
