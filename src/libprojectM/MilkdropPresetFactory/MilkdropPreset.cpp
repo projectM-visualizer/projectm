@@ -435,11 +435,17 @@ void MilkdropPreset::evalPerPixelEqns()
 {
     if (nullptr == per_pixel_program)
     {
+        // This is a little forward looking, but if we want to JIT assignments expressions, we might
+        // as well JIT the batch all together rather than one at a time.  At the moment ProgramExpr is
+        // just a different place to loop over the individual steps, but the idea is that this encapsulates
+        // an optimizable chunk of work.
+        // See also CustomWave which does the same for PerPointEqn
         std::vector<Expr *> steps;
         for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin(); pos != per_pixel_eqn_tree.end(); ++pos)
             steps.push_back(pos->second->assign_expr);
         per_pixel_program = new ProgramExpr(steps,false);
     }
+
     for (int mesh_x = 0; mesh_x < presetInputs().gx; mesh_x++)
         for (int mesh_y = 0; mesh_y < presetInputs().gy; mesh_y++)
             per_pixel_program->eval( mesh_x, mesh_y );

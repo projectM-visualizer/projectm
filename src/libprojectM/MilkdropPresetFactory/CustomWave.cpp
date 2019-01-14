@@ -501,6 +501,8 @@ ColoredPoint CustomWave::PerPoint(ColoredPoint p, const WaveformContext context)
 {
     if (nullptr == per_point_program)
     {
+        // see comment in MilkdropPreset, collect a list of assignments into one ProgramExpr
+        // which (theoretically) could be compiled together.
         std::vector<Expr *> steps;
         for (auto pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos)
             steps.push_back((*pos)->assign_expr);
