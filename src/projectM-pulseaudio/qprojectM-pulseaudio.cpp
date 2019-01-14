@@ -74,6 +74,7 @@ std::string read_config();
 #include <string.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <src/libprojectM/TestRunner.hpp>
 
 //#include <pulsecore/gccmacro.h>
 
@@ -108,6 +109,8 @@ class ProjectMApplication : public QApplication {
 
 int main ( int argc, char*argv[] )
 {
+//	if (!TestRunner::run()) exit(1);
+
 	int i;
 	char projectM_data[1024];
 
