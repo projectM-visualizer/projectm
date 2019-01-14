@@ -31,8 +31,10 @@
 
 #include "dlldefs.h"
 #include "CValue.hpp"
-#include <iostream> 
+#include <iostream>
+#include <vector>
 
+class Test;
 class Param;
 
 #define CONST_STACK_ELEMENT 0
@@ -63,7 +65,7 @@ public:
 
 enum ExprClass
 {
-  TREE, CONSTANT, PARAMETER, FUNCTION, OTHER
+  TREE, CONSTANT, PARAMETER, FUNCTION, ASSIGN, PROGRAM, OTHER
 };
 
 class Expr
@@ -72,7 +74,7 @@ public:
   ExprClass clazz;
   Expr(ExprClass c) : clazz(c) {};
   virtual ~Expr() {};
-  virtual Expr *optimize() { return this; };
+
   virtual bool isConstant() { return false; };
   virtual float eval(int mesh_i, int mesh_j) = 0;
   virtual std::ostream& to_string(std::ostream &out)
@@ -80,9 +82,23 @@ public:
       std::cout << "nyi"; return out;
   }
 
+  static Test *test();
   static Expr *const_to_expr( float val );
   static Expr *param_to_expr( Param *param );
   static Expr *prefun_to_expr( float (*func_ptr)(void *), Expr **expr_list, int num_args );
+
+  static void delete_expr(Expr *expr) { if (nullptr != expr) expr->_delete_from_tree(); }
+  static Expr *optimize(Expr *root) { return root->_optimize(); };
+
+public: // but don't call these from outside Expr.cpp
+
+  virtual Expr *_optimize() { return this; };
+
+  // override if this expr is not 'owned' by the containg expression tree
+  virtual void _delete_from_tree()
+  {
+    delete this;
+  }
 };
 
 inline std::ostream& operator<<(std::ostream& out, Expr *expr)
@@ -111,11 +127,11 @@ public:
   TreeExpr *leftTree()  { return dynamic_cast<TreeExpr *>(left); }
   TreeExpr *rightTree() { return dynamic_cast<TreeExpr *>(right); }
 
-  ~TreeExpr();
+  ~TreeExpr() override;
   
-  Expr *optimize();
-  float eval(int mesh_i, int mesh_j);
-  std::ostream& to_string(std::ostream &out);
+  Expr *_optimize() override;
+  float eval(int mesh_i, int mesh_j) override;
+  std::ostream& to_string(std::ostream &out) override;
 };
 
 /* A function expression in prefix form */
@@ -126,12 +142,69 @@ public:
   int num_args;
   Expr **expr_list;
   PrefunExpr();
-  ~PrefunExpr();
+  ~PrefunExpr() override;
 
   /* Evaluates functions in prefix form */
-  Expr *optimize();
-  float eval(int mesh_i, int mesh_j);
-  std::ostream& to_string(std::ostream &out);
+  Expr *_optimize() override;
+  float eval(int mesh_i, int mesh_j) override;
+  std::ostream& to_string(std::ostream &out) override;
+};
+
+class LValue : public Expr
+{
+public:
+    explicit LValue(ExprClass c) : Expr(c) {};
+    virtual void set(float value) = 0;
+    virtual void set_matrix(int mesh_i, int mesh_j, float value) = 0;
+};
+
+
+class AssignExpr : public Expr
+{
+protected:
+    LValue *lhs;
+    Expr *rhs;
+public:
+    AssignExpr(LValue *lhs, Expr *rhs);
+    ~AssignExpr() override;
+    Expr *_optimize() override;
+    float eval(int mesh_i, int mesh_j) override;
+    std::ostream& to_string(std::ostream &out) override;
+};
+
+
+class AssignMatrixExpr : public AssignExpr
+{
+public:
+    AssignMatrixExpr(LValue *lhs, Expr *rhs);
+    float eval(int mesh_i, int mesh_j) override;
+    std::ostream& to_string(std::ostream &out) override;
+};
+
+
+class ProgramExpr : public Expr
+{
+protected:
+    std::vector<Expr *> steps;
+    bool own;
+public:
+    ProgramExpr(std::vector<Expr*> &steps_, bool ownSteps) : Expr(PROGRAM), steps(steps_), own(ownSteps)
+    {
+    }
+    ~ProgramExpr()
+    {
+        if (!own)
+            return;
+        for (auto it=steps.begin() ; it<steps.end() ; it++)
+            Expr::delete_expr(*it);
+    }
+    float eval(int mesh_i, int mesh_j) override
+    {
+        float f=0.0f;
+        for (auto it=steps.begin() ; it<steps.end() ; it++)
+            f = (*it)->eval(mesh_i,mesh_j);
+        return f;
+    }
 };
 
 #endif /** _EXPR_H */

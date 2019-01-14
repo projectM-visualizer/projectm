@@ -46,7 +46,7 @@ public:
         return NULL;
 
       /* Now, create the user defined parameter given the passed name */
-      if ((param = new Param(name)) == NULL)
+      if ((param = Param::createUser(name)) == NULL)
         return NULL;
 
       /* Finally, insert the new parameter into this preset's parameter tree */

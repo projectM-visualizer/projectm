@@ -51,9 +51,6 @@ class Preset;
 class PerPixelEqn {
 public:
     int index; /* used for splay tree ordering. */
-    int flags; /* primarily to specify if this variable is user-defined */
-    Param *param;
-    Expr *gen_expr;
 
     void evalPerPixelEqns( Preset *preset );
     void evaluate(int mesh_i, int mesh_j);
@@ -61,6 +58,7 @@ public:
 
     PerPixelEqn(int index, Param * param, Expr * gen_expr);
 
+    Expr *assign_expr;
   };
 
 

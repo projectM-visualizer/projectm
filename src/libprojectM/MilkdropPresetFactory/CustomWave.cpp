@@ -49,7 +49,8 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     r(0),
     g(0),
     b(0),
-    a(0)
+    a(0),
+    per_point_program(nullptr)
 {
 
   Param * param;
@@ -308,7 +309,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("t1", P_FLAG_PER_POINT | P_FLAG_TVAR, &this->t1, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  if ((param = Param::new_param_float("t1", P_FLAG_TVAR, &this->t1, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
     ;
     abort();
@@ -320,7 +321,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("t2",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t2, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  if ((param = Param::new_param_float("t2", P_FLAG_TVAR, &this->t2, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
     ;
     abort();
@@ -331,7 +332,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("t3",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t3, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  if ((param = Param::new_param_float("t3", P_FLAG_TVAR, &this->t3, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
     abort();
   }
@@ -341,7 +342,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
 
     abort();
   }
-  if ((param = Param::new_param_float("t4",  P_FLAG_PER_POINT |P_FLAG_TVAR, &this->t4, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  if ((param = Param::new_param_float("t4", P_FLAG_TVAR, &this->t4, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
 
     abort();
@@ -361,7 +362,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
   
-  if ((param = Param::new_param_float("t6", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  if ((param = Param::new_param_float("t6", P_FLAG_TVAR, &this->t6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
     abort();
   }
@@ -371,7 +372,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
 
     abort();
   }
-  if ((param = Param::new_param_float("t7", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  if ((param = Param::new_param_float("t7", P_FLAG_TVAR, &this->t7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
 
     abort();
@@ -383,7 +384,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("t8", P_FLAG_TVAR | P_FLAG_PER_POINT, &this->t8, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
+  if ((param = Param::new_param_float("t8", P_FLAG_TVAR, &this->t8, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
   {
     ;
     abort();
@@ -471,10 +472,10 @@ int CustomWave::add_per_point_eqn(char * name, Expr * gen_expr)
   index = per_point_eqn_tree.size();
 
   /* Create the per point equation given the index, parameter, and general expression */
-  if ((per_point_eqn = new PerPointEqn(index, param, gen_expr, samples)) == NULL)
+  if ((per_point_eqn = new PerPointEqn(index, param, gen_expr)) == NULL)
     return PROJECTM_FAILURE;
   if (CUSTOM_WAVE_DEBUG)
-    printf("add_per_point_eqn: created new equation (index = %d) (name = \"%s\")\n", per_point_eqn->index, per_point_eqn->param->name.c_str());
+    printf("add_per_point_eqn: created new equation (index = %d) (name = \"%s\")\n", per_point_eqn->index, param->name.c_str());
 
   /* Insert the per pixel equation into the preset per pixel database */
 
@@ -498,18 +499,28 @@ void CustomWave::evalInitConds()
 
 ColoredPoint CustomWave::PerPoint(ColoredPoint p, const WaveformContext context)
 {
-	    r_mesh[context.sample_int] = r;
-	    g_mesh[context.sample_int] = g;
-	    b_mesh[context.sample_int] = b;
-	    a_mesh[context.sample_int] = a;
-	    x_mesh[context.sample_int] = x;
-	    y_mesh[context.sample_int] = y;
-	    sample = context.sample;
-        v1 = context.left;
-        v2 = context.right;
+    if (nullptr == per_point_program)
+    {
+        // see comment in MilkdropPreset, collect a list of assignments into one ProgramExpr
+        // which (theoretically) could be compiled together.
+        std::vector<Expr *> steps;
+        for (auto pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos)
+            steps.push_back((*pos)->assign_expr);
+        per_point_program = new ProgramExpr(steps, false);
+    }
 
-	for (std::vector<PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos)
-	    (*pos)->evaluate(context.sample_int);
+
+    r_mesh[context.sample_int] = r;
+    g_mesh[context.sample_int] = g;
+    b_mesh[context.sample_int] = b;
+    a_mesh[context.sample_int] = a;
+    x_mesh[context.sample_int] = x;
+    y_mesh[context.sample_int] = y;
+    sample = context.sample;
+    v1 = context.left;
+    v2 = context.right;
+
+    per_point_program->eval(context.sample_int, -1);
 
     p.a = a_mesh[context.sample_int];
     p.r = r_mesh[context.sample_int];
