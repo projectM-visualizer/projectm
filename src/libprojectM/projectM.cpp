@@ -785,8 +785,6 @@ std::string projectM::switchPreset(std::unique_ptr<Preset> & targetPreset) {
     pthread_mutex_lock(&preset_mutex);
 #endif
     try {
-        // nice to free preset resources, before allocation new preset
-        targetPreset = nullptr;
         targetPreset = m_presetPos->allocate();
     } catch (const PresetFactoryException & e) {
 #ifdef SYNC_PRESET_SWITCHES
