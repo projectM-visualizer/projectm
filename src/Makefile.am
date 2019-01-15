@@ -1,5 +1,5 @@
 if ENABLE_SDL
-  PROJECTM_SDL_SUBDIR = projectM-sdl
+  PROJECTM_SDL_SUBDIR = projectM-sdl projectM-test
 endif
 
 if ENABLE_QT
