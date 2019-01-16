@@ -2,6 +2,7 @@ AM_CPPFLAGS = \
 ${my_CFLAGS} \
 -include $(top_builddir)/config.h \
 -DSYSCONFDIR=\""$(sysconfdir)"\" \
+-DPROJECTM_PREFIX=\""${prefix}"\" \
 -I${top_srcdir}/src/libprojectM \
 -I${top_srcdir}/src/libprojectM/Renderer \
 ${SDL_CFLAGS}

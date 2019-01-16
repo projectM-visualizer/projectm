@@ -9,8 +9,8 @@
 #ifndef _GETCONFIGFILENAME_H
 #define	_GETCONFIGFILENAME_H
 
-// For testing look in current directory
-#define CONFIG_FILE "./config.inp"
+//FIXME: define this here?  in .cpp? or somewhere else?
+#define CONFIG_FILE "/share/projectM/config.inp"
 
 // get the full pathname of a configfile
 std::string getConfigFilename();
