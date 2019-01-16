@@ -2667,16 +2667,17 @@ public:
 
     bool eval_expr(float expected, const char *s)
     {
-        float f1, f2;
-        Expr *expr = Parser::parse_gen_expr(ss(s),nullptr,preset);
-        TEST(expr != nullptr);
-        TEST(ParserTest::eq(expected, f1=expr->eval(-1,-1)));
-        // this is really a test for Expr.cpp, but since we're here
-        Expr *opt = Expr::optimize(expr);
-        if (opt != expr)
+        float result;
+        Expr *expr_parse = Parser::parse_gen_expr(ss(s),nullptr,preset);
+        TEST(expr_parse != nullptr);
+        // Expr doesn't really expect to run 'non-optimized' expressions any longer
+        Expr *expr = Expr::optimize(expr_parse);
+        if (expr != expr_parse)
+            Expr::delete_expr(expr_parse);
+        if (!ParserTest::eq(expected, result=expr->eval(-1,-1)))
         {
-            TEST(ParserTest::eq(expected, f2 = opt->eval(-1, -1)));
-            Expr::delete_expr(opt);
+            std::cout << "failed: expected " << expected << " found " << result << std::endl;
+            return false;
         }
         Expr::delete_expr(expr);
         return true;
