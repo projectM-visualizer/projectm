@@ -24,10 +24,13 @@
 #include <stdlib.h>
 #include <cassert>
 #include <src/libprojectM/TestRunner.hpp>
-
+#include <SDL2/SDL.h>
 
 int main(int argc, char **argv)
 {
+    SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, 100, 100, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    SDL_GLContext glCtx = SDL_GL_CreateContext(win);
+
     // try unit tests
     if (!TestRunner::run())
     {
@@ -35,5 +38,7 @@ int main(int argc, char **argv)
         exit(1);
     }
     printf("unit tests succeeded\n");
+
+    SDL_GL_DeleteContext(glCtx);
     exit(0);
 }
