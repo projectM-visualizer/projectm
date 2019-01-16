@@ -2634,7 +2634,7 @@ struct ParserTest : public Test
 
     bool eq(float a, float b)
     {
-        return abs(a-b) < (abs(a)+abs(b))/1000.0f;
+        return std::abs(a-b) < (std::abs(a)+std::abs(b))/1000.0f;
     }
 
 public:
