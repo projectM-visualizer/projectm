@@ -18,6 +18,7 @@ script:
   - test -e dist_install/include/libprojectM/projectM.hpp
   - test -e dist_install/include/libprojectM/Common.hpp
   - test -e dist_install/include/libprojectM/PCM.hpp
+  - dist_install/bin/projectM-unittest
 
 # test on GCC and Clang
 matrix:

@@ -69,11 +69,10 @@ pthread_mutex_t preset_mutex;
 
 projectM::~projectM()
 {
-    void *status;
-
 #ifdef USE_THREADS
+    void *status;
     std::cout << "[projectM] thread ";
-    printf("c");
+    printf("cl");
     worker_sync.finish_up();
     printf("e");
     pthread_join(thread, &status);
@@ -83,8 +82,7 @@ projectM::~projectM()
     #ifdef SYNC_PRESET_SWITCHES
     pthread_mutex_destroy( &preset_mutex );
     #endif
-
-    printf("p");
+    printf("up");
     std::cout << std::endl;
 #endif
     destroyPresetTools();
