@@ -242,7 +242,7 @@ projectM * QProjectM_MainWindow::GetProjectM()
 
 void QProjectM_MainWindow::addPCM(float * buffer, unsigned int bufferSize) {
 
-	qprojectM()->pcm()->addPCMfloat(buffer, bufferSize);
+	qprojectM()->pcm()->addPCMfloat_2ch(buffer, bufferSize);
 }
 
 void QProjectM_MainWindow::updatePlaylistSelection ( bool hardCut, unsigned int index )
