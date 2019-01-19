@@ -406,9 +406,9 @@ inline void init_mesh(float **mesh, const float value, const int gx, const int g
 #else
 inline void init_mesh(float **mesh, const float value, const int gx, const int gy)
 {
-    for (x=0;x<gx;x++)
-        for(y=0;gy;y++)
-            mesh[x,y] = value;
+    for (int x=0; x<gx; x++)
+        for (int y=0; y<gy; y++)
+            mesh[x][y] = value;
 }
 #endif
 

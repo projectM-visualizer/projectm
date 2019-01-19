@@ -450,7 +450,7 @@ Test* Param::test()
 
 Test* Param::test()
 {
-    return null;
+    return nullptr;
 }
 
 #endif
