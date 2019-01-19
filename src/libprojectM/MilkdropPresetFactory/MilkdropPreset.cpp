@@ -428,17 +428,6 @@ void MilkdropPreset::initialize_PerPixelMeshes()
   init_mesh(_presetOutputs.rot_mesh, presetOutputs().rot, gx, gy);
   init_mesh(_presetOutputs.warp_mesh, presetOutputs().warp, gx, gy);
 }
-    init_mesh(_presetOutputs.cx_mesh, presetOutputs().cx, gx, gy);
-    init_mesh(_presetOutputs.cy_mesh, presetOutputs().cy, gx, gy);
-    init_mesh(_presetOutputs.sx_mesh, presetOutputs().sx, gx, gy);
-    init_mesh(_presetOutputs.sy_mesh, presetOutputs().sy, gx, gy);
-    init_mesh(_presetOutputs.dx_mesh, presetOutputs().dx, gx, gy);
-    init_mesh(_presetOutputs.dy_mesh, presetOutputs().dy, gx, gy);
-    init_mesh(_presetOutputs.zoom_mesh, presetOutputs().zoom, gx, gy);
-    init_mesh(_presetOutputs.zoomexp_mesh, presetOutputs().zoomexp, gx, gy);
-    init_mesh(_presetOutputs.rot_mesh, presetOutputs().rot, gx, gy);
-    init_mesh(_presetOutputs.warp_mesh, presetOutputs().warp, gx, gy);
-}
 
 
 // Evaluates all per-pixel equations
