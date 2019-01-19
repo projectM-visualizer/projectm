@@ -131,7 +131,7 @@ Param * Param::new_param_float(const char * name, short int flags, void * engine
 }
 
 /* Creates a new parameter of type int */
-Param * Param::new_param_int(const char * name, short int flags, void * engine_val,        
+Param * Param::new_param_int(const char * name, short int flags, void * engine_val,
                              int upper_bound, int lower_bound, int init_val) {
 
     Param * param;
@@ -202,7 +202,10 @@ struct _Param : public Param
                 CValue default_init_val_, CValue upper_bound_,
                 CValue lower_bound_) :
             Param(name_, type_, flags_, eqn_val_, matrix_, default_init_val_, upper_bound_, lower_bound_)
-    {}
+    {
+        if (flags & P_FLAG_ALWAYS_MATRIX)
+            matrix_flag = true;
+    }
     explicit _Param( const std::string &name_) : Param(name_) {}
 
     LValue *getExpr() override
@@ -283,6 +286,7 @@ public:
     }
 };
 
+/*This isn't that useful yet.  Maybe later
 class _AlwaysMatrixParam : public _FloatParam
 {
 public:
@@ -290,13 +294,13 @@ public:
                         void * eqn_val_, void *matrix_,
                         CValue default_init_val_, CValue upper_bound_,
                         CValue lower_bound_) :
-            _FloatParam(name_, type_, flags_, eqn_val_, matrix_, default_init_val_, upper_bound_, lower_bound_) {}
+            _FloatParam(name_, type_, flags_, eqn_val_, matrix_, default_init_val_, upper_bound_, lower_bound_)
+    {
+        matrix_flag = true;
+    }
     float eval(int mesh_i, int mesh_j) override
     {
-        // Hmm, presets do this... not sure why it's allowed
-        // assert( mesh_i >=0 && mesh_j >= 0)
-        if (mesh_j < 0)
-            return *(float *)engine_val;
+        assert( mesh_i >=0 && mesh_j >= 0 );
         return ((float **)matrix)[mesh_i][mesh_j];
     }
     void set_matrix(int mesh_i, int mesh_j, float value) override
@@ -306,8 +310,7 @@ public:
         // assert(!(flags & P_FLAG_READONLY));
         ((float **)matrix)[mesh_i][mesh_j] = value;
     }
-};
-
+};*/
 
 class _MeshParam : public _FloatParam
 {
@@ -320,7 +323,10 @@ public:
     float eval(int mesh_i, int mesh_j) override
     {
         assert( type == P_TYPE_DOUBLE );
-        if ( matrix_flag && mesh_i >= 0 )
+        // see issue 64: There are presets with per_point equations that read from pre_frame/per_pixel parameters,
+        //    e.g. per_point1=dx=dx*1.01
+        // any this means that we get called with (i>=0,j==-1)
+        if ( matrix_flag && mesh_i >= 0 && mesh_j >= 0)
             return ( ( ( float** ) matrix ) [mesh_i][mesh_j] );
         return * ( ( float* ) ( engine_val ) );
     }
@@ -399,19 +405,52 @@ Param * Param::create( const std::string &name, short int type, short int flags,
         assert(0 == (flags & (P_FLAG_PER_PIXEL|P_FLAG_PER_POINT)));
         return new _FloatParam( name, type, flags, eqn_val, matrix, default_init_val, upper_bound, lower_bound );
     }
-    if ( (flags & P_FLAG_ALWAYS_MATRIX) && !(flags & P_FLAG_PER_POINT) )
-    {
-        return new _AlwaysMatrixParam( name, type, flags, eqn_val, matrix, default_init_val, upper_bound, lower_bound );
-    }
     assert( flags & (P_FLAG_PER_PIXEL|P_FLAG_PER_POINT) );
     if (flags & P_FLAG_PER_PIXEL)
     {
         return new _MeshParam( name, type, flags, eqn_val, matrix, default_init_val, upper_bound, lower_bound );
     }
-    return new _PointsParam( name, type, flags, eqn_val, matrix, default_init_val, upper_bound, lower_bound );
+    else
+    {
+        return new _PointsParam( name, type, flags, eqn_val, matrix, default_init_val, upper_bound, lower_bound );
+    }
 }
 
 Param * Param::createUser( const std::string &name )
 {
     return new _FloatParam( name );
 }
+
+
+// TESTS
+
+
+#include <TestRunner.hpp>
+
+#ifndef NDEBUG
+
+struct ParamTest : public Test
+{
+    ParamTest() : Test("ParamTest")
+    {}
+
+public:
+    bool test() override
+    {
+        return true;
+    }
+};
+
+Test* Param::test()
+{
+    return new ParamTest();
+}
+
+#else
+
+Test* Param::test()
+{
+    return null;
+}
+
+#endif

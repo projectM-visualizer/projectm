@@ -57,6 +57,8 @@
 class InitCond;
 class Param;
 class Preset;
+class Test;
+
 
 #ifdef __SSE2__
 #include <immintrin.h>
@@ -99,6 +101,8 @@ public:
            CValue lower_bound);
 
     static Param * createUser(const std::string &name);
+
+    static Test *test();
 
     virtual ~Param();
 

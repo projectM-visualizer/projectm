@@ -585,3 +585,81 @@ std::ostream& AssignMatrixExpr::to_string(std::ostream &out)
 	out << lhs << "[i,j] = " << rhs;
 	return out;
 }
+
+
+
+
+
+// TESTS
+
+
+#include <TestRunner.hpp>
+
+#ifndef NDEBUG
+
+#define TEST(cond) if (!verify(#cond,cond)) return false
+
+
+struct ExprTest : public Test
+{
+	ExprTest() : Test("ExprTest")
+	{}
+
+public:
+    bool optimize_constant_expr()
+    {
+        TreeExpr *a = TreeExpr::create(nullptr, Expr::const_to_expr( 1.0 ), nullptr, nullptr);
+        TreeExpr *b = TreeExpr::create(nullptr, Expr::const_to_expr( 2.0 ), nullptr, nullptr);
+	    Expr *c = TreeExpr::create(Eval::infix_add, nullptr, a, b);
+        //TEST(3.0f == c->eval(-1,-1));
+        Expr *x = Expr::optimize(c);
+        TEST(x != c);
+		Expr::delete_expr(c);
+        TEST(x->clazz == CONSTANT);
+        TEST(3.0f == x->eval(-1,-1));
+		Expr::delete_expr(x);
+
+        Expr **expr_array = (Expr **)malloc(sizeof(Expr *));
+        expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( (float)M_PI ), nullptr, nullptr);
+        Expr *sin = Expr::prefun_to_expr((float (*)(void *))FuncWrappers::sin_wrapper, expr_array, 1);
+        x = Expr::optimize(sin);
+        TEST(x != sin);
+        Expr::delete_expr( sin );
+        TEST(x->clazz == CONSTANT);
+        TEST(sinf( (float)M_PI ) == x->eval(-1,-10));
+        Expr::delete_expr(x);
+
+        // make sure rand() is not optimized away
+        expr_array = (Expr **)malloc(sizeof(Expr *));
+		expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( (float)M_PI ), nullptr, nullptr);
+		Expr *rand = Expr::prefun_to_expr((float (*)(void *))FuncWrappers::rand_wrapper, expr_array, 1);
+		x = Expr::optimize(rand);
+		TEST(x == rand);
+		TEST(x->clazz != CONSTANT);
+		Expr::delete_expr(x);
+
+        return true;
+    }
+
+	bool test() override
+	{
+        Eval::init_infix_ops();
+	    bool result = true;
+	    result &= optimize_constant_expr();
+		return result;
+	}
+};
+
+Test* Expr::test()
+{
+	return new ExprTest();
+}
+
+#else
+
+Test* Expr::test()
+{
+    return null;
+}
+
+#endif

@@ -42,33 +42,38 @@
 #include "PresetFrameIO.hpp"
 
 #include "PresetFactoryManager.hpp"
-
+#include "MilkdropPresetFactory.hpp"
 
 #ifdef __SSE2__
 #include <immintrin.h>
 #endif
 
 
-MilkdropPreset::MilkdropPreset(std::istream & in, const std::string & presetName,  PresetOutputs & presetOutputs):
-        Preset(presetName),
-            builtinParams(_presetInputs, presetOutputs),
-            _presetOutputs(presetOutputs)
+MilkdropPreset::MilkdropPreset(MilkdropPresetFactory *factory, std::istream & in, const std::string & presetName,  PresetOutputs & presetOutputs):
+	Preset(presetName),
+    builtinParams(_presetInputs, presetOutputs),
+    per_pixel_program(nullptr),
+    _factory(factory),
+    _presetOutputs(presetOutputs)
 {
   initialize(in);
-
 }
 
-MilkdropPreset::MilkdropPreset(const std::string & absoluteFilePath, const std::string & presetName, PresetOutputs & presetOutputs):
-        Preset(presetName),
+
+MilkdropPreset::MilkdropPreset(MilkdropPresetFactory *factory, const std::string & absoluteFilePath, const std::string & presetName, PresetOutputs & presetOutputs):
+	Preset(presetName),
     builtinParams(_presetInputs, presetOutputs),
+    per_pixel_program(nullptr),
     _filename(parseFilename(absoluteFilePath)),
     _absoluteFilePath(absoluteFilePath),
+    _factory(factory),
     _presetOutputs(presetOutputs)
 {
 
   initialize(absoluteFilePath);
-
 }
+
+
 MilkdropPreset::~MilkdropPreset()
 {
 
@@ -77,6 +82,7 @@ MilkdropPreset::~MilkdropPreset()
   traverse<TraverseFunctors::Delete<InitCond> >(per_frame_init_eqn_tree);
 
   traverse<TraverseFunctors::Delete<PerPixelEqn> >(per_pixel_eqn_tree);
+  Expr::delete_expr(per_pixel_program);
 
   traverseVector<TraverseFunctors::Delete<PerFrameEqn> >(per_frame_eqn_tree);
 
@@ -99,6 +105,9 @@ MilkdropPreset::~MilkdropPreset()
   }
   customWaves.clear();
   customShapes.clear();
+
+  if (nullptr != _factory)
+      _factory->releasePreset(this);
 }
 
 /* Adds a per pixel equation according to its string name. This
@@ -389,10 +398,10 @@ void MilkdropPreset::evaluateFrame()
 #ifdef __SSE2__
 inline void init_mesh(float **mesh, const float value, const int gx, const int gy)
 {
-    __m128 mvalue = _mm_set_ps1(value);
-    for (int x = 0; x < gx; x++)
-        for (int y = 0; y < gy; y += 4)
-            _mm_store_ps(&mesh[x][y], mvalue);
+  __m128 mvalue = _mm_set_ps1(value);
+  for (int x = 0; x < gx; x++)
+    for (int y = 0; y < gy; y += 4)
+      _mm_store_ps(&mesh[x][y], mvalue);
 }
 #else
 inline void init_mesh(float **mesh, const float value, const int gx, const int gy)
@@ -405,9 +414,20 @@ inline void init_mesh(float **mesh, const float value, const int gx, const int g
 
 void MilkdropPreset::initialize_PerPixelMeshes()
 {
-    int gx = presetInputs().gx;
-    int gy = presetInputs().gy;
+  int gx = presetInputs().gx;
+  int gy = presetInputs().gy;
 
+  init_mesh(_presetOutputs.cx_mesh, presetOutputs().cx, gx, gy);
+  init_mesh(_presetOutputs.cy_mesh, presetOutputs().cy, gx, gy);
+  init_mesh(_presetOutputs.sx_mesh, presetOutputs().sx, gx, gy);
+  init_mesh(_presetOutputs.sy_mesh, presetOutputs().sy, gx, gy);
+  init_mesh(_presetOutputs.dx_mesh, presetOutputs().dx, gx, gy);
+  init_mesh(_presetOutputs.dy_mesh, presetOutputs().dy, gx, gy);
+  init_mesh(_presetOutputs.zoom_mesh, presetOutputs().zoom, gx, gy);
+  init_mesh(_presetOutputs.zoomexp_mesh, presetOutputs().zoomexp, gx, gy);
+  init_mesh(_presetOutputs.rot_mesh, presetOutputs().rot, gx, gy);
+  init_mesh(_presetOutputs.warp_mesh, presetOutputs().warp, gx, gy);
+}
     init_mesh(_presetOutputs.cx_mesh, presetOutputs().cx, gx, gy);
     init_mesh(_presetOutputs.cy_mesh, presetOutputs().cy, gx, gy);
     init_mesh(_presetOutputs.sx_mesh, presetOutputs().sx, gx, gy);
@@ -424,11 +444,22 @@ void MilkdropPreset::initialize_PerPixelMeshes()
 // Evaluates all per-pixel equations
 void MilkdropPreset::evalPerPixelEqns()
 {
-    /* Evaluate all per pixel equations in the tree datastructure */
+    if (nullptr == per_pixel_program)
+    {
+        // This is a little forward looking, but if we want to JIT assignments expressions, we might
+        // as well JIT the batch all together rather than one at a time.  At the moment ProgramExpr is
+        // just a different place to loop over the individual steps, but the idea is that this encapsulates
+        // an optimizable chunk of work.
+        // See also CustomWave which does the same for PerPointEqn
+        std::vector<Expr *> steps;
+        for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin(); pos != per_pixel_eqn_tree.end(); ++pos)
+            steps.push_back(pos->second->assign_expr);
+        per_pixel_program = new ProgramExpr(steps,false);
+    }
+
     for (int mesh_x = 0; mesh_x < presetInputs().gx; mesh_x++)
-            for (int mesh_y = 0; mesh_y < presetInputs().gy; mesh_y++)
-            for (auto &pos : per_pixel_eqn_tree)
-                pos.second->evaluate(mesh_x, mesh_y);
+        for (int mesh_y = 0; mesh_y < presetInputs().gy; mesh_y++)
+            per_pixel_program->eval( mesh_x, mesh_y );
 }
 
 int MilkdropPreset::readIn(std::istream & fs) {
@@ -497,7 +528,7 @@ int MilkdropPreset::loadPresetFile(const std::string & pathname)
 }
 
 const std::string & MilkdropPreset::name() const {
-        
+
     return filename();
 }
 

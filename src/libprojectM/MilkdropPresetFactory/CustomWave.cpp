@@ -49,7 +49,8 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     r(0),
     g(0),
     b(0),
-    a(0)
+    a(0),
+    per_point_program(nullptr)
 {
 
   Param * param;
@@ -61,9 +62,6 @@ CustomWave::CustomWave(int _id) : Waveform(512),
   this->a_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
   this->x_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
   this->y_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  this->value1 = (float*) wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  this->value2 = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  this->sample_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
 
   /* Start: Load custom wave parameters */
 
@@ -254,8 +252,8 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("sample", P_FLAG_READONLY | P_FLAG_NONE | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT,
-                                      &this->sample, this->sample_mesh, 1.0, 0.0, 0.0)) == NULL)
+  if ((param = Param::new_param_float("sample", P_FLAG_READONLY | P_FLAG_NONE,
+                                      &this->sample, NULL, 1.0, 0.0, 0.0)) == NULL)
   {
     ;
     abort();
@@ -266,7 +264,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("value1", P_FLAG_READONLY | P_FLAG_NONE | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v1, this->value1, 1.0, -1.0, 0.0)) == NULL)
+  if ((param = Param::new_param_float("value1", P_FLAG_READONLY | P_FLAG_NONE, &this->v1, NULL, 1.0, -1.0, 0.0)) == NULL)
   {
     abort();
   }
@@ -276,7 +274,7 @@ CustomWave::CustomWave(int _id) : Waveform(512),
     abort();
   }
 
-  if ((param = Param::new_param_float("value2", P_FLAG_READONLY | P_FLAG_NONE | P_FLAG_ALWAYS_MATRIX | P_FLAG_PER_POINT, &this->v2, this->value2, 1.0, -1.0, 0.0)) == NULL)
+  if ((param = Param::new_param_float("value2", P_FLAG_READONLY | P_FLAG_NONE, &this->v2, NULL, 1.0, -1.0, 0.0)) == NULL)
   {
     abort();
   }
@@ -440,10 +438,6 @@ CustomWave::~CustomWave()
   free(a_mesh);
   free(x_mesh);
   free(y_mesh);
-  free(value1);
-  free(value2);
-  free(sample_mesh);
-
 }
 
 
@@ -478,10 +472,10 @@ int CustomWave::add_per_point_eqn(char * name, Expr * gen_expr)
   index = per_point_eqn_tree.size();
 
   /* Create the per point equation given the index, parameter, and general expression */
-  if ((per_point_eqn = new PerPointEqn(index, param, gen_expr, samples)) == NULL)
+  if ((per_point_eqn = new PerPointEqn(index, param, gen_expr)) == NULL)
     return PROJECTM_FAILURE;
   if (CUSTOM_WAVE_DEBUG)
-    printf("add_per_point_eqn: created new equation (index = %d) (name = \"%s\")\n", per_point_eqn->index, per_point_eqn->param->name.c_str());
+    printf("add_per_point_eqn: created new equation (index = %d) (name = \"%s\")\n", per_point_eqn->index, param->name.c_str());
 
   /* Insert the per pixel equation into the preset per pixel database */
 
@@ -505,19 +499,28 @@ void CustomWave::evalInitConds()
 
 ColoredPoint CustomWave::PerPoint(ColoredPoint p, const WaveformContext context)
 {
-	    r_mesh[context.sample_int] = r;
-	    g_mesh[context.sample_int] = g;
-	    b_mesh[context.sample_int] = b;
-	    a_mesh[context.sample_int] = a;
-	    x_mesh[context.sample_int] = x;
-	    y_mesh[context.sample_int] = y;
-	    sample = context.sample;
-	    sample_mesh[context.sample_int] = context.sample;
-	    v1 = context.left;
-	    v2 = context.right;
+    if (nullptr == per_point_program)
+    {
+        // see comment in MilkdropPreset, collect a list of assignments into one ProgramExpr
+        // which (theoretically) could be compiled together.
+        std::vector<Expr *> steps;
+        for (auto pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos)
+            steps.push_back((*pos)->assign_expr);
+        per_point_program = new ProgramExpr(steps, false);
+    }
 
-	for (std::vector<PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos)
-	    (*pos)->evaluate(context.sample_int);
+
+    r_mesh[context.sample_int] = r;
+    g_mesh[context.sample_int] = g;
+    b_mesh[context.sample_int] = b;
+    a_mesh[context.sample_int] = a;
+    x_mesh[context.sample_int] = x;
+    y_mesh[context.sample_int] = y;
+    sample = context.sample;
+    v1 = context.left;
+    v2 = context.right;
+
+    per_point_program->eval(context.sample_int, -1);
 
     p.a = a_mesh[context.sample_int];
     p.r = r_mesh[context.sample_int];

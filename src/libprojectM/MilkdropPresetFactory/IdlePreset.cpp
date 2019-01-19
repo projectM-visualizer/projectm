@@ -198,12 +198,12 @@ return out.str();
 
 }
 
-std::unique_ptr<Preset> IdlePresets::allocate(const std::string & name, PresetOutputs & presetOutputs)
+std::unique_ptr<Preset> IdlePresets::allocate(MilkdropPresetFactory *factory, const std::string & name, PresetOutputs & presetOutputs)
 {
 
   if (name == IDLE_PRESET_NAME) {
   	std::istringstream in(presetText());
-  	return std::unique_ptr<Preset>(new MilkdropPreset(in, IDLE_PRESET_NAME, presetOutputs));
+  	return std::unique_ptr<Preset>(new MilkdropPreset(factory, in, IDLE_PRESET_NAME, presetOutputs));
   }
   else
     return std::unique_ptr<Preset>();

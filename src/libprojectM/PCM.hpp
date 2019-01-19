@@ -59,6 +59,7 @@ public:
     PCM();
     ~PCM();
     void addPCMfloat(const float *PCMdata, int samples);
+    void addPCMfloat_2ch(const float *PCMdata, int samples);
     void addPCM16(short [2][512]);
     void addPCM16Data(const short* pcm_data, short samples);
     void addPCM8( unsigned char [2][1024]);
