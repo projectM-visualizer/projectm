@@ -226,7 +226,13 @@ struct _Param : public Param
     {
         set_param(value);
     }
+
+    llvm::Value *_llvm(JitContext &jit) override
+    {
+        return Expr::generate_eval_call(jit, this);
+    }
 };
+
 
 class _BoolParam : public _Param
 {

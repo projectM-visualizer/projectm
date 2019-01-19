@@ -28,6 +28,48 @@
 #include "Eval.hpp"
 #include "BuiltinFuncs.hpp"
 
+// #ifdef USE_LLVM
+#include "llvm/ADT/STLExtras.h"
+#include "llvm/ExecutionEngine/ExecutionEngine.h"
+#include "llvm/ExecutionEngine/GenericValue.h"
+#include "llvm/IR/Argument.h"
+#include "llvm/IR/BasicBlock.h"
+#include "llvm/IR/Constants.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Function.h"
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/Instructions.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Type.h"
+#include "llvm/Support/Casting.h"
+#include "llvm/Support/ManagedStatic.h"
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Support/raw_ostream.h"
+#include <algorithm>
+#include <cassert>
+#include <memory>
+#include <vector>
+
+
+struct JitContext
+{
+	JitContext(llvm::LLVMContext &context_, llvm::IRBuilder<llvm::ConstantFolder,llvm::IRBuilderDefaultInserter> &builder_, llvm::Value *i, llvm::Value *j) :
+	    context(context_), builder(builder_), mesh_i(i), mesh_j(j)
+	{
+		floatType = llvm::Type::getFloatTy(context);
+	}
+
+	llvm::LLVMContext &context;
+	llvm::IRBuilder<llvm::ConstantFolder,llvm::IRBuilderDefaultInserter> builder;
+	llvm::Type *floatType;
+	llvm::Value *mesh_i;
+	llvm::Value *mesh_j;
+};
+
+
+// #endif
+
 
 /* Evaluates functions in prefix form */
 float PrefunExpr::eval ( int mesh_i, int mesh_j )
@@ -133,6 +175,11 @@ public:
 	{
 		out << constant; return out;
 	}
+
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        return llvm::ConstantFP::get(jitx.floatType, constant);
+    }
 };
 
 
@@ -331,8 +378,33 @@ float TreeExpr::eval ( int mesh_i, int mesh_j )
 		default:
 			return EVAL_ERROR;
 	}
+}
 
-	return EVAL_ERROR;
+llvm::Value *TreeExpr::_llvm(JitContext &jitx)
+{
+	llvm::Value *lhs = left->_llvm(jitx);
+	llvm::Value *rhs = right->_llvm(jitx);
+	if (nullptr == lhs || nullptr == rhs)
+		return nullptr;
+	switch ( infix_op->type )
+	{
+	case INFIX_ADD:
+		return jitx.builder.CreateFAdd(lhs, rhs);
+	case INFIX_MINUS:
+		return jitx.builder.CreateFSub(lhs, rhs);
+	case INFIX_MULT:
+		return jitx.builder.CreateFMul(lhs, rhs);
+	case INFIX_MOD:
+		return Expr::_llvm(jitx);
+	case INFIX_OR:
+		return Expr::_llvm(jitx);
+	case INFIX_AND:
+		return Expr::_llvm(jitx);
+	case INFIX_DIV:
+		return Expr::_llvm(jitx);
+	default:
+		return nullptr;
+	}
 }
 
 /* Converts a float value to a general expression */
@@ -399,7 +471,7 @@ Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( void * ), Expr ** expr_list,
 }
 
 /* Creates a new tree expression */
-TreeExpr::TreeExpr ( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right ) :
+TreeExpr::TreeExpr ( InfixOp * _infix_op, Expr * _gen_expr, Expr * _left, Expr * _right ) :
 		Expr( TREE ),
 		infix_op ( _infix_op ), gen_expr ( _gen_expr ),
 	left ( _left ), right ( _right ) {}
@@ -429,8 +501,8 @@ public:
 class TreeExprMult : public TreeExpr
 {
 public:
-	TreeExprMult( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right ) :
-	 	TreeExpr( _infix_op, _gen_expr, _left, _right) {}
+	TreeExprMult( Expr * _left, Expr * _right ) :
+	 	TreeExpr( Eval::infix_mult, nullptr, (TreeExpr *)_left, (TreeExpr *)_right) {}		// TODO fix TreeExpr constructor to avoid bogus cast
 	float eval( int mesh_i, int mesh_j)
 	{
 		return left->eval(mesh_i, mesh_j) * right->eval(mesh_i, mesh_j);
@@ -446,7 +518,7 @@ TreeExpr * TreeExpr::create( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _
 		if ( _infix_op->type == INFIX_MINUS )
 			return new TreeExprMinus( _infix_op, _gen_expr, _left, _right);
 		if ( _infix_op->type == INFIX_MULT )
-			return new TreeExprMult( _infix_op, _gen_expr, _left, _right);
+			return new TreeExprMult( _left, _right);
 	}
 	return new TreeExpr( _infix_op, _gen_expr, _left, _right );
 }
@@ -641,11 +713,36 @@ public:
         return true;
     }
 
+    bool jit()
+    {
+		float bound, result;
+		CValue iv, lb, ub;
+		iv.float_val = 0; lb.float_val=-1000000; ub.float_val=1000000;
+
+		Expr *jitExpr;
+	    Expr *CONST = Expr::const_to_expr(3.0f);
+		jitExpr = Expr::jit(CONST);
+	    TEST(3.0f == jitExpr->eval(-1,-1));
+	    delete jitExpr;
+
+		bound = 4.0f;
+	    Expr *PARAM = Param::create("test", P_TYPE_DOUBLE, P_FLAG_NONE, &bound, nullptr, iv,ub,lb);
+		jitExpr = Expr::jit(PARAM);
+	    TEST(4.0f == jitExpr->eval(-1,-1));
+		delete jitExpr;
+
+	    Expr *MULT = new TreeExprMult(CONST, PARAM);
+		jitExpr = Expr::jit(MULT);
+	    TEST(12.0f == jitExpr->eval(-1,-1));
+		delete jitExpr;
+    }
+
 	bool test() override
 	{
         Eval::init_infix_ops();
 	    bool result = true;
 	    result &= optimize_constant_expr();
+	    result &= jit();
 		return result;
 	}
 };
@@ -663,3 +760,139 @@ Test* Expr::test()
 }
 
 #endif
+
+
+
+
+// JIT!
+
+using namespace llvm;
+
+
+class JitExpr : public Expr
+{
+	ExecutionEngine *engine;
+	Expr *expr;
+	float (*fn)(int,int);
+
+public:
+	JitExpr(ExecutionEngine *engine_, Expr *orig, float (*fn_)(int,int)) : Expr(OTHER), engine(engine_), expr(orig), fn(fn_)
+	{
+
+	}
+
+	float eval(int mesh_i, int mesh_j) override
+	{
+		return fn(mesh_i, mesh_j);
+	}
+
+	~JitExpr() override
+	{
+		Expr::delete_expr(expr);
+		delete engine;
+	}
+};
+
+
+__attribute__((noinline)) float eval_thunk(Expr *e, int i, int j)
+{
+	return e->eval(i,j);
+}
+
+__attribute__((noinline)) void set_matrix_thunk(LValue *lvalue, int i, int j, float v)
+{
+
+    return lvalue->set_matrix(i, j, v);
+}
+
+
+LLVMContext *llvmGLobalContext;
+
+LLVMContext& getGlobalContext()
+{
+	if (nullptr == llvmGLobalContext)
+	{
+		InitializeNativeTarget();
+		LLVMInitializeX86TargetInfo();
+		LLVMInitializeX86Target();
+		LLVMInitializeX86TargetMC();
+		LLVMInitializeNativeAsmPrinter();
+		LLVMInitializeNativeAsmParser();
+
+		llvmGLobalContext = new LLVMContext();
+	}
+	return *llvmGLobalContext;
+}
+
+
+Value * Expr::generate_eval_call(JitContext &jitx, Expr *expr)
+{
+	// turn this into "void *"
+	ConstantInt * thisConstant = ConstantInt::get(IntegerType::getInt64Ty(jitx.context), (uint64_t)expr, false);
+
+	// thunk_expr into float ()(void *,int, int)
+	ConstantInt * thunkConstant = ConstantInt::get(IntegerType::getInt64Ty(jitx.context), (uint64_t)eval_thunk, false);
+	// TODO create type once
+	std::vector<Type*> exprEvalFunctionArgs;
+	exprEvalFunctionArgs.push_back(IntegerType::getInt64Ty(jitx.context));    // Expr *
+	exprEvalFunctionArgs.push_back(IntegerType::getInt32Ty(jitx.context));
+	exprEvalFunctionArgs.push_back(IntegerType::getInt32Ty(jitx.context));
+	auto evalFunctionType = FunctionType::get(jitx.floatType, exprEvalFunctionArgs, false);
+	auto evalFunctionPtrType = PointerType::get(evalFunctionType,1);
+	Value* thunkFunctionPtr = llvm::ConstantExpr::getIntToPtr(thunkConstant , evalFunctionPtrType);
+
+	std::vector<Value *> args;
+	args.push_back(thisConstant);
+    args.push_back(jitx.mesh_i);
+    args.push_back(jitx.mesh_j);
+	Value *ret = jitx.builder.CreateCall(thunkFunctionPtr, args);
+	return ret;
+}
+
+
+Expr *Expr::jit(Expr *root)
+{
+	LLVMContext &Context = getGlobalContext();
+
+	// Create some module to put our function into it.
+	std::unique_ptr<Module> module_ptr = make_unique<Module>("ExprEvalTest", Context);
+
+	std::vector<Type *> arg_typess;
+	arg_typess.push_back(IntegerType::get(Context,32));
+	arg_typess.push_back(IntegerType::get(Context,32));
+	Constant* c = module_ptr->getOrInsertFunction<Type*>("Expr_eval",
+			Type::getFloatTy(Context),
+			IntegerType::get(Context,32),
+			IntegerType::get(Context,32));
+	Function *expr_eval_fun = cast<Function>(c);
+	BasicBlock *BB = BasicBlock::Create(Context, "EntryBlock", expr_eval_fun);
+	IRBuilder<> builder(BB);
+	builder.SetInsertPoint(BB);
+
+	Argument *i = &expr_eval_fun->arg_begin()[0];
+	Argument *j = &expr_eval_fun->arg_begin()[1];
+	JitContext jitx( Context, builder, i, j);
+    Value *retValue = root->_llvm( jitx );
+    if (nullptr == retValue)
+    	return nullptr;
+	builder.CreateRet(retValue);
+
+	// Now we create the JIT.
+	ExecutionEngine* executionEngine = EngineBuilder(std::move(module_ptr)).create();
+
+	outs() << "We just constructed this LLVM module:\n\n" << *module_ptr;
+	outs() << "\n\nRunning foo: ";
+	outs().flush();
+
+	auto fn = (float (*)(int,int))executionEngine->getFunctionAddress("Expr_eval");
+	auto v  = (*fn)(12,45);
+	outs() << "Result: " << v << "\n";
+
+	return new JitExpr(executionEngine, root, fn);
+}
+
+/*
+
+  return Builder->CreateSelect(Builder->CreateICmp(Pred, A, B), A, B);
+
+ */

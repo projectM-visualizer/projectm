@@ -36,6 +36,11 @@
 
 class Test;
 class Param;
+class JitContext;
+class JitException;
+namespace llvm {
+  class Value;
+}
 
 #define CONST_STACK_ELEMENT 0
 #define EXPR_STACK_ELEMENT 1
@@ -89,10 +94,13 @@ public:
 
   static void delete_expr(Expr *expr) { if (nullptr != expr) expr->_delete_from_tree(); }
   static Expr *optimize(Expr *root) { return root->_optimize(); };
+  static Expr *jit(Expr *root);
 
 public: // but don't call these from outside Expr.cpp
 
   virtual Expr *_optimize() { return this; };
+  virtual llvm::Value *_llvm(JitContext &jit) { return nullptr; };
+  static  llvm::Value *generate_eval_call(JitContext &jit, Expr *expr);
 
   // override if this expr is not 'owned' by the containg expression tree
   virtual void _delete_from_tree()
@@ -114,8 +122,7 @@ inline std::ostream& operator<<(std::ostream& out, Expr *expr)
 class TreeExpr : public Expr
 {
 protected:
-  TreeExpr( InfixOp *infix_op, Expr *gen_expr,
-                                  TreeExpr *left, TreeExpr *right );
+  TreeExpr( InfixOp *infix_op, Expr *gen_expr, Expr *left, Expr *right );
 public:
   static TreeExpr *create( InfixOp *infix_op, Expr *gen_expr,
                                   TreeExpr *left, TreeExpr *right );
@@ -131,6 +138,7 @@ public:
   
   Expr *_optimize() override;
   float eval(int mesh_i, int mesh_j) override;
+  llvm::Value *_llvm(JitContext &jitx) override;
   std::ostream& to_string(std::ostream &out) override;
 };
 
