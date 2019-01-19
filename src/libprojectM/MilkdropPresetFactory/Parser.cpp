@@ -2740,9 +2740,9 @@ Test* Parser::test()
 
 #else
 
-Test* Param::test()
+Test* Parser::test()
 {
-    return null;
+    return nullptr;
 }
 
 #endif
