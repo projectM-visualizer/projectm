@@ -407,7 +407,7 @@ inline void init_mesh(float **mesh, const float value, const int gx, const int g
 inline void init_mesh(float **mesh, const float value, const int gx, const int gy)
 {
     for (x=0;x<gx;x++)
-        for(y=0;gy;y++)
+        for(y=0;y<gy;y++)
             mesh[x,y] = value;
 }
 #endif
