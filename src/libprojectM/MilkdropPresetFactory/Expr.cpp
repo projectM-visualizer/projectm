@@ -78,6 +78,19 @@ class PrefunExprOne : public PrefunExpr
 	}
 };
 
+// short circuiting IF
+class IfExpr : public PrefunExpr
+{
+	float eval ( int mesh_i, int mesh_j )
+	{
+		// see if_wrapper()
+		float val = expr_list[0]->eval ( mesh_i, mesh_j );
+		if (val == 0)
+			return expr_list[2]->eval ( mesh_i, mesh_j );
+		return expr_list[1]->eval ( mesh_i, mesh_j );
+	}
+};
+
 class SinExpr : public PrefunExpr
 {
 	float eval ( int mesh_i, int mesh_j ) override
@@ -387,6 +400,13 @@ Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( void * ), Expr ** expr_list,
         else
             prefun_expr = new PrefunExpr();
     }
+    else if (num_args == 3)
+	{
+		if (func_ptr == (float (*)(void *)) FuncWrappers::if_wrapper)
+			prefun_expr = new IfExpr();
+		else
+			prefun_expr = new PrefunExpr();
+	}
     else
     {
         prefun_expr = new PrefunExpr();
@@ -659,7 +679,7 @@ Test* Expr::test()
 
 Test* Expr::test()
 {
-    return null;
+    return nullptr;
 }
 
 #endif
