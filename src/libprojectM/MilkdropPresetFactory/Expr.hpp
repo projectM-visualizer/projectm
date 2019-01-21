@@ -70,7 +70,7 @@ public:
 
 enum ExprClass
 {
-  TREE, CONSTANT, PARAMETER, FUNCTION, ASSIGN, PROGRAM, OTHER
+  TREE, CONSTANT, PARAMETER, FUNCTION, ASSIGN, PROGRAM, JIT, OTHER
 };
 
 class Expr
@@ -93,14 +93,18 @@ public:
   static Expr *prefun_to_expr( float (*func_ptr)(void *), Expr **expr_list, int num_args );
 
   static void delete_expr(Expr *expr) { if (nullptr != expr) expr->_delete_from_tree(); }
-  static Expr *optimize(Expr *root) { return root->_optimize(); };
+  static Expr *optimize(Expr *root);
   static Expr *jit(Expr *root);
 
 public: // but don't call these from outside Expr.cpp
 
   virtual Expr *_optimize() { return this; };
-  virtual llvm::Value *_llvm(JitContext &jit) { return nullptr; };
-  static  llvm::Value *generate_eval_call(JitContext &jit, Expr *expr);
+  virtual llvm::Value *_llvm(JitContext &jit)
+  {
+      return nullptr;
+  };
+  static llvm::Value *generate_eval_call(JitContext &jit, Expr *expr);
+  static llvm::Value *generate_set_matrix_call(JitContext &jitx, Expr *expr, llvm::Value *value);
 
   // override if this expr is not 'owned' by the containg expression tree
   virtual void _delete_from_tree()
@@ -124,8 +128,9 @@ class TreeExpr : public Expr
 protected:
   TreeExpr( InfixOp *infix_op, Expr *gen_expr, Expr *left, Expr *right );
 public:
-  static TreeExpr *create( InfixOp *infix_op, Expr *gen_expr,
-                                  TreeExpr *left, TreeExpr *right );
+  static TreeExpr *create( InfixOp *infix_op, Expr *gen_expr, TreeExpr *left, TreeExpr *right );
+  static TreeExpr *create( InfixOp *infix_op, Expr *left, Expr *right );
+
   InfixOp * infix_op; /* null if leaf */
   Expr * gen_expr;
   // NOTE: before optimize() left and right will always be TreeExpr
@@ -156,6 +161,7 @@ public:
   Expr *_optimize() override;
   float eval(int mesh_i, int mesh_j) override;
   std::ostream& to_string(std::ostream &out) override;
+  llvm::Value *_llvm(JitContext &jitx) override;
 };
 
 class LValue : public Expr
@@ -187,6 +193,7 @@ public:
     AssignMatrixExpr(LValue *lhs, Expr *rhs);
     float eval(int mesh_i, int mesh_j) override;
     std::ostream& to_string(std::ostream &out) override;
+    llvm::Value *_llvm(JitContext &jit) override;
 };
 
 
@@ -213,6 +220,7 @@ public:
             f = (*it)->eval(mesh_i,mesh_j);
         return f;
     }
+    llvm::Value *_llvm(JitContext &jit) override;
 };
 
 #endif /** _EXPR_H */

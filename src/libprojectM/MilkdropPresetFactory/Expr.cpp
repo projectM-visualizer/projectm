@@ -24,7 +24,6 @@
 #include "Expr.hpp"
 #include <cassert>
 
-#include <iostream>
 #include "Eval.hpp"
 #include "BuiltinFuncs.hpp"
 
@@ -32,39 +31,64 @@
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/ExecutionEngine/GenericValue.h"
-#include "llvm/IR/Argument.h"
-#include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Constants.h"
-#include "llvm/IR/DerivedTypes.h"
-#include "llvm/IR/Function.h"
 #include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/Instructions.h"
-#include "llvm/IR/LLVMContext.h"
-#include "llvm/IR/Module.h"
-#include "llvm/IR/Type.h"
-#include "llvm/Support/Casting.h"
-#include "llvm/Support/ManagedStatic.h"
 #include "llvm/Support/TargetSelect.h"
-#include "llvm/Support/raw_ostream.h"
-#include <algorithm>
-#include <cassert>
-#include <memory>
-#include <vector>
-
+#if 0
+#include "llvm/IR/PassManager.h"
+#include "llvm/Support/TargetSelect.h"
+#include "llvm/Transforms/Scalar.h"
+#include "llvm/Transforms/Scalar/GVN.h"
+#include "llvm/Transforms/Utils.h"
+#include "llvm/Analysis/BasicAliasAnalysis.h"
+#include "llvm/Transforms/InstCombine/InstCombine.h"
+#endif
 
 struct JitContext
 {
-	JitContext(llvm::LLVMContext &context_, llvm::IRBuilder<llvm::ConstantFolder,llvm::IRBuilderDefaultInserter> &builder_, llvm::Value *i, llvm::Value *j) :
-	    context(context_), builder(builder_), mesh_i(i), mesh_j(j)
-	{
-		floatType = llvm::Type::getFloatTy(context);
-	}
+    JitContext(llvm::LLVMContext &context_, llvm::Module *module_, llvm::IRBuilder<llvm::ConstantFolder,llvm::IRBuilderDefaultInserter> &builder_, llvm::Value *i, llvm::Value *j) :
+        context(context_), module(module_), builder(builder_), mesh_i(i), mesh_j(j)
+    {
+        floatType = llvm::Type::getFloatTy(context);
+    }
 
-	llvm::LLVMContext &context;
-	llvm::IRBuilder<llvm::ConstantFolder,llvm::IRBuilderDefaultInserter> builder;
-	llvm::Type *floatType;
-	llvm::Value *mesh_i;
-	llvm::Value *mesh_j;
+    llvm::LLVMContext &context;
+    llvm::Module *module;
+    llvm::IRBuilder<llvm::ConstantFolder,llvm::IRBuilderDefaultInserter> builder;
+    llvm::Type *floatType;
+    llvm::Value *mesh_i;
+    llvm::Value *mesh_j;
+
+    // helpers
+
+    llvm::Value *CreateConstant(float x)
+    {
+        return llvm::ConstantFP::get(floatType, x);
+    }
+    llvm::Value *CreateConstant(int i32)
+    {
+        return llvm::ConstantInt::get(llvm::Type::getInt32Ty(context), (uint64_t)(int64_t)i32);
+    }
+    llvm::Value *CallIntrinsic(llvm::Intrinsic::ID id, llvm::Value *value)
+    {
+        std::vector<llvm::Type *> arg_type;
+        arg_type.push_back(floatType);
+        llvm::Function *sinFunction = llvm::Intrinsic::getDeclaration(module, id, arg_type);
+        std::vector<llvm::Value *> arg;
+        arg.push_back(value);
+        return builder.CreateCall(sinFunction, arg);
+    }
+    llvm::Value *CallIntrinsic2(llvm::Intrinsic::ID id, llvm::Value *x, llvm::Value *y)
+    {
+        std::vector<llvm::Type *> arg_type;
+        arg_type.push_back(floatType);
+        arg_type.push_back(floatType);
+        llvm::Function *sinFunction = llvm::Intrinsic::getDeclaration(module, id, arg_type);
+        std::vector<llvm::Value *> arg;
+        arg.push_back(x);
+        arg.push_back(y);
+        return builder.CreateCall(sinFunction, arg);
+    }
 };
 
 
@@ -74,76 +98,123 @@ struct JitContext
 /* Evaluates functions in prefix form */
 float PrefunExpr::eval ( int mesh_i, int mesh_j )
 {
-	assert ( func_ptr );
-	float arg_list_stk[10];
+    assert ( func_ptr );
+    float arg_list_stk[10];
 
-	float * arg_list;
-	float * argp;
-	Expr **expr_listp = expr_list;
+    float * arg_list;
+    float * argp;
+    Expr **expr_listp = expr_list;
 
 
-	if (this->num_args > 10) {
-		arg_list = new float[this->num_args];
-	} else {
-		arg_list = arg_list_stk;
-	}
-	argp = arg_list;
+    if (this->num_args > 10) {
+        arg_list = new float[this->num_args];
+    } else {
+        arg_list = arg_list_stk;
+    }
+    argp = arg_list;
 
-	assert(arg_list);
+    assert(arg_list);
 
-	//printf("numargs %d", num_args);
+    //printf("numargs %d", num_args);
 
-	/* Evaluate each argument before calling the function itself */
-	for ( int i = 0; i < num_args; i++ )
-	{
-		*(argp++) = (*(expr_listp++))->eval ( mesh_i, mesh_j );
-		//printf("numargs %x", arg_list[i]);
-	}
-	/* Now we call the function, passing a list of
-	   floats as its argument */
+    /* Evaluate each argument before calling the function itself */
+    for ( int i = 0; i < num_args; i++ )
+    {
+        *(argp++) = (*(expr_listp++))->eval ( mesh_i, mesh_j );
+        //printf("numargs %x", arg_list[i]);
+    }
+    /* Now we call the function, passing a list of
+       floats as its argument */
 
-	const float value = ( func_ptr ) ( arg_list );
+    const float value = ( func_ptr ) ( arg_list );
 
-	if (arg_list != arg_list_stk) {
-		delete[](arg_list);
-	}
-	return value;
+    if (arg_list != arg_list_stk) {
+        delete[](arg_list);
+    }
+    return value;
+}
+
+llvm::Value *PrefunExpr::_llvm(JitContext &jitx)
+{
+    //llvm::ArrayType *array_ty = llvm::ArrayType::get(jitx.floatType, num_args);
+    //llvm::AllocaInst *array = jitx.builder.CreateAlloca(array_ty);
+    llvm::AllocaInst *array = jitx.builder.CreateAlloca(jitx.floatType, jitx.CreateConstant(num_args));
+    for ( unsigned i = 0; i < (unsigned)num_args; i++ )
+    {
+        llvm::Value *v = expr_list[i]->_llvm(jitx);
+        if (nullptr == v)
+            return nullptr;
+        llvm::ConstantInt *idx = llvm::ConstantInt::get(llvm::Type::getInt32Ty(jitx.context), i);
+        jitx.builder.CreateStore(v, jitx.builder.CreateGEP(jitx.floatType, array, idx));
+    }
+
+    std::vector<llvm::Type *> arg_types;
+    arg_types.push_back(llvm::PointerType::get(jitx.floatType,1)); // float *
+    auto prefun_type = llvm::FunctionType::get(jitx.floatType, arg_types, false);
+    auto prefun_ptr_type = llvm::PointerType::get(prefun_type,1);
+    llvm::Constant *fn_const = llvm::ConstantInt::get(llvm::Type::getInt64Ty(jitx.context), (uint64_t)func_ptr);
+    auto function_ptr = llvm::ConstantExpr::getIntToPtr(fn_const , prefun_ptr_type);
+
+    std::vector<llvm::Value *> args;
+    args.push_back(array);
+    return jitx.builder.CreateCall(function_ptr, args);
 }
 
 
 class PrefunExprOne : public PrefunExpr
 {
-	float eval ( int mesh_i, int mesh_j )
-	{
-		float val = expr_list[0]->eval ( mesh_i, mesh_j );
-		return (func_ptr)(&val);
-	}
+    float eval ( int mesh_i, int mesh_j )
+    {
+        float val = expr_list[0]->eval ( mesh_i, mesh_j );
+        return (func_ptr)(&val);
+    }
 };
 
 class SinExpr : public PrefunExpr
 {
-	float eval ( int mesh_i, int mesh_j ) override
-	{
-		float val = expr_list[0]->eval ( mesh_i, mesh_j );
-		return sinf(val);
-	}
+    float eval ( int mesh_i, int mesh_j ) override
+    {
+        float val = expr_list[0]->eval ( mesh_i, mesh_j );
+        return sinf(val);
+    }
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Value *val = expr_list[0]->_llvm(jitx);
+        if (nullptr == val)
+            return nullptr;
+        return jitx.CallIntrinsic(llvm::Intrinsic::sin, val);
+    }
 };
 
 class CosExpr : public PrefunExpr
 {
-	float eval ( int mesh_i, int mesh_j ) override
-	{
-		float val = expr_list[0]->eval ( mesh_i, mesh_j );
-		return cosf(val);
-	}
+    float eval ( int mesh_i, int mesh_j ) override
+    {
+        float val = expr_list[0]->eval ( mesh_i, mesh_j );
+        return cosf(val);
+    }
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Value *val = expr_list[0]->_llvm(jitx);
+        if (nullptr == val)
+            return nullptr;
+        return jitx.CallIntrinsic(llvm::Intrinsic::cos, val);
+    }
 };
 
 class LogExpr : public PrefunExpr
 {
     float eval ( int mesh_i, int mesh_j ) override
     {
-        float val = expr_list[0]->eval ( mesh_i, mesh_j );
+        float val = expr_list[0]->eval( mesh_i, mesh_j );
         return logf(val);
+    }
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Value *val = expr_list[0]->_llvm(jitx);
+        if (nullptr == val)
+            return nullptr;
+        return jitx.CallIntrinsic(llvm::Intrinsic::log, val);
     }
 };
 
@@ -151,63 +222,81 @@ class PowExpr : public PrefunExpr
 {
     float eval ( int mesh_i, int mesh_j ) override
     {
-        float x = expr_list[0]->eval ( mesh_i, mesh_j );
-        float y = expr_list[1]->eval ( mesh_i, mesh_j );
+        float x = expr_list[0]->eval( mesh_i, mesh_j );
+        float y = expr_list[1]->eval( mesh_i, mesh_j );
         return powf(x, y);
+    }
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Value *x = expr_list[0]->_llvm(jitx);
+        llvm::Value *y = expr_list[1]->_llvm(jitx);
+        if (nullptr == x || nullptr == y)
+            return nullptr;
+        return jitx.CallIntrinsic2(llvm::Intrinsic::pow, x, y);
     }
 };
 
 class ConstantExpr : public Expr
 {
-	float constant;
+    float constant;
 public:
-	ConstantExpr( float value ) : Expr(CONSTANT), constant(value) {}
-	ConstantExpr( int type, Term *term ) : Expr(CONSTANT), constant(term->constant) {}
-	bool isConstant() 
-	{
-		return true; 
-	}
-	float eval(int mesh_i, int mesh_j ) 
-	{ 
-		return constant; 
-	}
-	std::ostream &to_string(std::ostream &out)
-	{
-		out << constant; return out;
-	}
+    ConstantExpr( float value ) : Expr(CONSTANT), constant(value) {}
+    ConstantExpr( int type, Term *term ) : Expr(CONSTANT), constant(term->constant) {}
+    bool isConstant() 
+    {
+        return true; 
+    }
+    float eval(int mesh_i, int mesh_j ) 
+    { 
+        return constant; 
+    }
+    std::ostream &to_string(std::ostream &out)
+    {
+        out << constant; return out;
+    }
 
     llvm::Value *_llvm(JitContext &jitx) override
     {
-        return llvm::ConstantFP::get(jitx.floatType, constant);
+        return jitx.CreateConstant(constant);
     }
 };
 
 
 class MultAndAddExpr : public Expr
 {
-	Expr *a, *b, *c;
+    Expr *a, *b, *c;
 public:
-	MultAndAddExpr(Expr *_a, Expr *_b, Expr *_c) : Expr(OTHER),
-		a(_a), b(_b), c(_c)
-	{
-	}
+    MultAndAddExpr(Expr *_a, Expr *_b, Expr *_c) : Expr(OTHER),
+        a(_a), b(_b), c(_c)
+    {
+    }
     ~MultAndAddExpr() override {
         Expr::delete_expr(a);
         Expr::delete_expr(b);
         Expr::delete_expr(c);
     }
-	float eval(int mesh_i, int mesh_j) override
-	{
-		float a_value = a->eval(mesh_i,mesh_j);
-		float b_value = b->eval(mesh_i,mesh_j);
-		float c_value = c->eval(mesh_i,mesh_j);
-		return a_value * b_value + c_value;
-	}
-	std::ostream &to_string(std::ostream &out) override
-	{
-		out << "(" << a << " * " << b << ") + " << c;
-		return out;
-	}
+    float eval(int mesh_i, int mesh_j) override
+    {
+        float a_value = a->eval(mesh_i,mesh_j);
+        float b_value = b->eval(mesh_i,mesh_j);
+        float c_value = c->eval(mesh_i,mesh_j);
+        return a_value * b_value + c_value;
+    }
+    std::ostream &to_string(std::ostream &out) override
+    {
+        out << "(" << a << " * " << b << ") + " << c;
+        return out;
+    }
+
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Value *avalue = a->_llvm(jitx);
+        llvm::Value *bvalue = b->_llvm(jitx);
+        llvm::Value *cvalue = c->_llvm(jitx);
+        if (nullptr == avalue || nullptr == bvalue || nullptr == cvalue)
+            return nullptr;
+        return jitx.builder.CreateFAdd(jitx.builder.CreateFMul(avalue,bvalue),cvalue);
+    }
 };
 
 class MultConstExpr : public Expr
@@ -233,39 +322,46 @@ public:
         out << "(" << expr << " * " << c << ") + " << c;
         return out;
     }
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Value *value= expr->_llvm(jitx);
+        if (nullptr == value)
+            return nullptr;
+        return jitx.builder.CreateFMul(jitx.CreateConstant(c), value);
+    }
 };
 
 std::ostream &TreeExpr::to_string(std::ostream &out)
 {
-	if (NULL == infix_op)
-	{
-		out << gen_expr;
-	}
-	else
-	{
-		out << "(" << left << " ";
-		switch ( infix_op->type )
-		{
-		case INFIX_ADD:
-			out << "+"; break;
-		case INFIX_MINUS:
-			out << "-"; break;
-		case INFIX_MULT:
-			out << "*"; break;
-		case INFIX_MOD:
-			out << "%"; break;
-		case INFIX_OR:
-			out << "|"; break;
-		case INFIX_AND:
-			out << "&"; break;
-		case INFIX_DIV:
-			out << "/"; break;
-		default:
-			out << "infix_op_ERROR"; break;
-		}
-		out << " " << right << ")";
-	}
-	return out;
+    if (NULL == infix_op)
+    {
+        out << gen_expr;
+    }
+    else
+    {
+        out << "(" << left << " ";
+        switch ( infix_op->type )
+        {
+        case INFIX_ADD:
+            out << "+"; break;
+        case INFIX_MINUS:
+            out << "-"; break;
+        case INFIX_MULT:
+            out << "*"; break;
+        case INFIX_MOD:
+            out << "%"; break;
+        case INFIX_OR:
+            out << "|"; break;
+        case INFIX_AND:
+            out << "&"; break;
+        case INFIX_DIV:
+            out << "/"; break;
+        default:
+            out << "infix_op_ERROR"; break;
+        }
+        out << " " << right << ")";
+    }
+    return out;
 }
 
 /* NOTE: Parser.cpp directly manipulates TreeExpr, so it is easier to _optimizer AFTER parsing
@@ -273,168 +369,195 @@ std::ostream &TreeExpr::to_string(std::ostream &out)
  */
 Expr *TreeExpr::_optimize()
 {
-	if (infix_op == NULL)
-	{
-		Expr *opt = gen_expr->_optimize();
-		if (opt != gen_expr)
-			Expr::delete_expr(gen_expr);
-		gen_expr = NULL;
-		return opt;
-	}
-	if (left != NULL)
-	{
-		Expr *l = left->_optimize();
-		if (l != left)
-		    Expr::delete_expr(left);
-		left = l;
-	}
-	if (right != NULL)
-	{
-		Expr *r = right->_optimize();
-		if (r != right)
-			Expr::delete_expr(right);
-		right = r;
-	}
-	if (left == NULL)
-	{
-		Expr *opt = right;
-		right = NULL;
-		return opt;
-	}
-	if (right == NULL)
-	{
-		Expr *opt = left;
-		left = NULL;
-		return opt;
-	}
-	if (left->isConstant() && right->isConstant())
-		return Expr::const_to_expr(eval(-1, -1));
+    if (infix_op == NULL)
+    {
+        Expr *opt = gen_expr->_optimize();
+        if (opt != gen_expr)
+            Expr::delete_expr(gen_expr);
+        gen_expr = NULL;
+        return opt;
+    }
+    if (left != NULL)
+    {
+        Expr *l = left->_optimize();
+        if (l != left)
+            Expr::delete_expr(left);
+        left = l;
+    }
+    if (right != NULL)
+    {
+        Expr *r = right->_optimize();
+        if (r != right)
+            Expr::delete_expr(right);
+        right = r;
+    }
+    if (left == NULL)
+    {
+        Expr *opt = right;
+        right = NULL;
+        return opt;
+    }
+    if (right == NULL)
+    {
+        Expr *opt = left;
+        left = NULL;
+        return opt;
+    }
+    if (left->isConstant() && right->isConstant())
+        return Expr::const_to_expr(eval(-1, -1));
 
-	// this is gratuitious, but a*b+c is super common, so as proof-of-concept, let's make a special Expr
-	if (infix_op->type == INFIX_ADD && 
-		((left->clazz == TREE && ((TreeExpr *)left)->infix_op->type == INFIX_MULT) ||
-		(right->clazz == TREE && ((TreeExpr *)right)->infix_op->type == INFIX_MULT)))
-	{
-		Expr *a, *b, *c;
-		if (left->clazz == TREE && ((TreeExpr *)left)->infix_op->type == INFIX_MULT)
-		    std::swap(left,right);
+    // this is gratuitious, but a*b+c is super common, so as proof-of-concept, let's make a special Expr
+    if (infix_op->type == INFIX_ADD && 
+        ((left->clazz == TREE && ((TreeExpr *)left)->infix_op->type == INFIX_MULT) ||
+        (right->clazz == TREE && ((TreeExpr *)right)->infix_op->type == INFIX_MULT)))
+    {
+        Expr *a, *b, *c;
+        if (left->clazz == TREE && ((TreeExpr *)left)->infix_op->type == INFIX_MULT)
+            std::swap(left,right);
         a = ((TreeExpr *)right)->left;
         b = ((TreeExpr *)right)->right;
         c = left;
         ((TreeExpr *)right)->left = NULL;
         ((TreeExpr *)right)->right = NULL;
         left = NULL;
-		return new MultAndAddExpr(a,b,c);
-	}
+        return new MultAndAddExpr(a,b,c);
+    }
 
-	if (infix_op->type == INFIX_MULT && (left->isConstant() || right->isConstant()))
+    if (infix_op->type == INFIX_MULT && (left->isConstant() || right->isConstant()))
     {
-	    if (right->isConstant())
-	        std::swap(left, right);
+        if (right->isConstant())
+            std::swap(left, right);
         float c = left->eval(-1,-1);
         Expr *expr = right;
         right = left = nullptr;
         return new MultConstExpr(expr, c);
     }
 
-	return this;
+    return this;
 }
 
 /* Evaluates an expression tree */
 float TreeExpr::eval ( int mesh_i, int mesh_j )
 {
-	float left_arg, right_arg;
+    float left_arg, right_arg;
 
-	/* shouldn't be null if we've called _optimize() */
-	assert(NULL != infix_op);
+    /* shouldn't be null if we've called _optimize() */
+    assert(NULL != infix_op);
 
-	left_arg = left->eval ( mesh_i, mesh_j );
-	right_arg = right->eval ( mesh_i, mesh_j );
+    left_arg = left->eval ( mesh_i, mesh_j );
+    right_arg = right->eval ( mesh_i, mesh_j );
 
-	switch ( infix_op->type )
-	{
-		case INFIX_ADD:
-			return ( left_arg + right_arg );
-		case INFIX_MINUS:
-			return ( left_arg - right_arg );
-		case INFIX_MULT:
-			return ( left_arg * right_arg );
-		case INFIX_MOD:
-			if ( ( int ) right_arg == 0 )
-			{
-				return PROJECTM_DIV_BY_ZERO;
-			}
-			return ( ( int ) left_arg % ( int ) right_arg );
-		case INFIX_OR:
-			return ( ( int ) left_arg | ( int ) right_arg );
-		case INFIX_AND:
-			return ( ( int ) left_arg & ( int ) right_arg );
-		case INFIX_DIV:
-			if ( right_arg == 0 )
-			{
-				return MAX_DOUBLE_SIZE;
-			}
-			return ( left_arg / right_arg );
-		default:
-			return EVAL_ERROR;
-	}
+    switch ( infix_op->type )
+    {
+        case INFIX_ADD:
+            return ( left_arg + right_arg );
+        case INFIX_MINUS:
+            return ( left_arg - right_arg );
+        case INFIX_MULT:
+            return ( left_arg * right_arg );
+        case INFIX_MOD:
+            if ( ( int ) right_arg == 0 )
+            {
+                return 0;
+            }
+            return ( ( int ) left_arg % ( int ) right_arg );
+        case INFIX_OR:
+            return ( ( int ) left_arg | ( int ) right_arg );
+        case INFIX_AND:
+            return ( ( int ) left_arg & ( int ) right_arg );
+        case INFIX_DIV:
+            if ( right_arg == 0 )
+            {
+                return MAX_DOUBLE_SIZE;
+            }
+            return ( left_arg / right_arg );
+        default:
+            return EVAL_ERROR;
+    }
 }
 
 llvm::Value *TreeExpr::_llvm(JitContext &jitx)
 {
-	llvm::Value *lhs = left->_llvm(jitx);
-	llvm::Value *rhs = right->_llvm(jitx);
-	if (nullptr == lhs || nullptr == rhs)
-		return nullptr;
-	switch ( infix_op->type )
-	{
-	case INFIX_ADD:
-		return jitx.builder.CreateFAdd(lhs, rhs);
-	case INFIX_MINUS:
-		return jitx.builder.CreateFSub(lhs, rhs);
-	case INFIX_MULT:
-		return jitx.builder.CreateFMul(lhs, rhs);
-	case INFIX_MOD:
-		return Expr::_llvm(jitx);
-	case INFIX_OR:
-		return Expr::_llvm(jitx);
-	case INFIX_AND:
-		return Expr::_llvm(jitx);
-	case INFIX_DIV:
-		return Expr::_llvm(jitx);
-	default:
-		return nullptr;
-	}
+    llvm::Value *lhs = left->_llvm(jitx);
+    llvm::Value *rhs = right->_llvm(jitx);
+    if (nullptr == lhs || nullptr == rhs)
+        return nullptr;
+    switch ( infix_op->type )
+    {
+    case INFIX_ADD:
+        return jitx.builder.CreateFAdd(lhs, rhs);
+    case INFIX_MINUS:
+        return jitx.builder.CreateFSub(lhs, rhs);
+    case INFIX_MULT:
+        return jitx.builder.CreateFMul(lhs, rhs);
+    case INFIX_MOD:
+    {
+        llvm::Type *int32_ty = llvm::IntegerType::get(jitx.context,32);
+        llvm::Value *zeroInt = llvm::ConstantInt::get(int32_ty, 0, true);
+        llvm::Value *lhsInt = jitx.builder.CreateFPToSI(lhs, int32_ty);
+        llvm::Value *rhsInt = jitx.builder.CreateFPToSI(rhs, int32_ty);
+        // TODO check the semantics of C operator % (might not be the same as srem)
+        llvm::Value *q = jitx.builder.CreateSRem(lhsInt,rhsInt);
+        return jitx.builder.CreateSelect(jitx.builder.CreateICmpEQ(zeroInt,rhs), zeroInt, q);
+    }
+    case INFIX_OR:
+    {
+        // bit-wise integer OR
+        llvm::Type *int32_ty = llvm::IntegerType::get(jitx.context,32);
+        llvm::Value *lhsInt = jitx.builder.CreateFPToSI(lhs, int32_ty);
+        llvm::Value *rhsInt = jitx.builder.CreateFPToSI(rhs, int32_ty);
+        llvm::Value *i = jitx.builder.CreateOr(lhsInt,rhsInt);
+        return jitx.builder.CreateSIToFP(i, jitx.floatType);
+    }
+    case INFIX_AND:
+    {
+        // bit-wise integer AND
+        llvm::Type *int32_ty = llvm::IntegerType::get(jitx.context, 32);
+        llvm::Value *lhsInt = jitx.builder.CreateFPToSI(lhs, int32_ty);
+        llvm::Value *rhsInt = jitx.builder.CreateFPToSI(rhs, int32_ty);
+        llvm::Value *i = jitx.builder.CreateAnd(lhsInt, rhsInt);
+        return jitx.builder.CreateSIToFP(i, jitx.floatType);
+    }
+    case INFIX_DIV:
+    {
+        llvm::Value *zero = jitx.CreateConstant(0.0f);
+        llvm::Value *maxValue = jitx.CreateConstant((float)MAX_DOUBLE_SIZE);
+        llvm::Value *q = jitx.builder.CreateFDiv(lhs,rhs);
+        return jitx.builder.CreateSelect(jitx.builder.CreateFCmpUEQ(zero,rhs), maxValue, q);
+    }
+    default:
+        return nullptr;
+    }
 }
 
 /* Converts a float value to a general expression */
 Expr * Expr::const_to_expr ( float val )
 {
-	Term term;
-	term.constant = val;
-	return new ConstantExpr( CONSTANT_TERM_T, &term );
+    Term term;
+    term.constant = val;
+    return new ConstantExpr( CONSTANT_TERM_T, &term );
 }
 
 /* Converts a regular parameter to an expression */
 Expr * Expr::param_to_expr ( Param * param )
 {
-	if ( param == NULL )
-		return NULL;
+    if ( param == NULL )
+        return NULL;
 
-	switch ( param->type )
-	{
-		case P_TYPE_BOOL:
-		    return param->getExpr();
-			//return new BoolParameterExpr( PARAM_TERM_T, &term );
-		case P_TYPE_INT:
+    switch ( param->type )
+    {
+        case P_TYPE_BOOL:
             return param->getExpr();
-			//return new IntParameterExpr( PARAM_TERM_T, &term );
-		case P_TYPE_DOUBLE:
+            //return new BoolParameterExpr( PARAM_TERM_T, &term );
+        case P_TYPE_INT:
+            return param->getExpr();
+            //return new IntParameterExpr( PARAM_TERM_T, &term );
+        case P_TYPE_DOUBLE:
             return param->getExpr();
             //return new FloatParameterExpr( PARAM_TERM_T, &term );
-		default:
-			return NULL;
-	}
+        default:
+            return NULL;
+    }
 }
 
 /* Converts a prefix function to an expression */
@@ -464,110 +587,133 @@ Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( void * ), Expr ** expr_list,
         prefun_expr = new PrefunExpr();
     }
 
-	prefun_expr->num_args = num_args;
-	prefun_expr->func_ptr = ( float ( * ) ( void* ) ) func_ptr;
-	prefun_expr->expr_list = expr_list;
-	return prefun_expr;
+    prefun_expr->num_args = num_args;
+    prefun_expr->func_ptr = ( float ( * ) ( void* ) ) func_ptr;
+    prefun_expr->expr_list = expr_list;
+    return prefun_expr;
 }
 
 /* Creates a new tree expression */
 TreeExpr::TreeExpr ( InfixOp * _infix_op, Expr * _gen_expr, Expr * _left, Expr * _right ) :
-		Expr( TREE ),
-		infix_op ( _infix_op ), gen_expr ( _gen_expr ),
-	left ( _left ), right ( _right ) {}
+        Expr( TREE ),
+        infix_op ( _infix_op ), gen_expr ( _gen_expr ),
+    left ( _left ), right ( _right ) {}
 
 class TreeExprAdd : public TreeExpr
 {
 public:
-	TreeExprAdd( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right ) :
-	 	TreeExpr( _infix_op, _gen_expr, _left, _right) {}
-	float eval( int mesh_i, int mesh_j)
-	{
-		return left->eval(mesh_i, mesh_j) + right->eval(mesh_i, mesh_j);
-	}
+    TreeExprAdd( Expr * _left, Expr * _right ) :
+         TreeExpr( Eval::infix_add, nullptr, _left, _right) {}
+    float eval( int mesh_i, int mesh_j)
+    {
+        return left->eval(mesh_i, mesh_j) + right->eval(mesh_i, mesh_j);
+    }
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Value *l = left->_llvm(jitx);
+        llvm::Value *r = right->_llvm(jitx);
+        if (nullptr == l || nullptr == r)
+            return nullptr;
+        return jitx.builder.CreateFAdd(l,r);
+    }
 };
 
 class TreeExprMinus : public TreeExpr
 {
 public:
-	TreeExprMinus( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right ) :
-	 	TreeExpr( _infix_op, _gen_expr, _left, _right) {}
-	float eval( int mesh_i, int mesh_j)
-	{
-		return left->eval(mesh_i, mesh_j) - right->eval(mesh_i, mesh_j);
-	}
+    TreeExprMinus( Expr * _left, Expr * _right ) :
+         TreeExpr( Eval::infix_minus, nullptr, _left, _right) {}
+    float eval( int mesh_i, int mesh_j)
+    {
+        return left->eval(mesh_i, mesh_j) - right->eval(mesh_i, mesh_j);
+    }
 };
 
 class TreeExprMult : public TreeExpr
 {
 public:
-	TreeExprMult( Expr * _left, Expr * _right ) :
-	 	TreeExpr( Eval::infix_mult, nullptr, (TreeExpr *)_left, (TreeExpr *)_right) {}		// TODO fix TreeExpr constructor to avoid bogus cast
-	float eval( int mesh_i, int mesh_j)
-	{
-		return left->eval(mesh_i, mesh_j) * right->eval(mesh_i, mesh_j);
-	}
+    TreeExprMult( Expr * _left, Expr * _right ) :
+         TreeExpr( Eval::infix_mult, nullptr, (TreeExpr *)_left, (TreeExpr *)_right) {}        // TODO fix TreeExpr constructor to avoid bogus cast
+    float eval( int mesh_i, int mesh_j)
+    {
+        return left->eval(mesh_i, mesh_j) * right->eval(mesh_i, mesh_j);
+    }
 };
 
+// NOTE: Parser expects left and right to be TreeExpr, but other code paths don't require this
 TreeExpr * TreeExpr::create( InfixOp * _infix_op, Expr * _gen_expr, TreeExpr * _left, TreeExpr * _right )
 {
-	if ( NULL != _infix_op )
-	{
-		if ( _infix_op->type == INFIX_ADD )
-			return new TreeExprAdd( _infix_op, _gen_expr, _left, _right);
-		if ( _infix_op->type == INFIX_MINUS )
-			return new TreeExprMinus( _infix_op, _gen_expr, _left, _right);
-		if ( _infix_op->type == INFIX_MULT )
-			return new TreeExprMult( _left, _right);
-	}
-	return new TreeExpr( _infix_op, _gen_expr, _left, _right );
+    if ( NULL != _infix_op )
+    {
+        // TODO move to TreeExpr::optimize()
+        if ( _infix_op->type == INFIX_ADD )
+            return new TreeExprAdd( _left, _right);
+        if ( _infix_op->type == INFIX_MINUS )
+            return new TreeExprMinus( _left, _right);
+        if ( _infix_op->type == INFIX_MULT )
+            return new TreeExprMult( _left, _right);
+    }
+    return new TreeExpr( _infix_op, _gen_expr, _left, _right );
+}
+
+TreeExpr * TreeExpr::create( InfixOp * _infix_op, Expr * _left, Expr * _right )
+{
+    assert( nullptr != _infix_op );
+    // TODO move to TreeExpr::optimize()
+    if ( _infix_op->type == INFIX_ADD )
+        return new TreeExprAdd( _left, _right);
+    if ( _infix_op->type == INFIX_MINUS )
+        return new TreeExprMinus( _left, _right);
+    if ( _infix_op->type == INFIX_MULT )
+        return new TreeExprMult( _left, _right);
+    return new TreeExpr( _infix_op, nullptr, _left, _right );
 }
 
 /* Frees a function in prefix notation */
 PrefunExpr::~PrefunExpr()
 {
-	int i;
+    int i;
 
-	/* Free every element in expression list */
-	for ( i = 0 ; i < num_args; i++ )
-	{
-		Expr::delete_expr(expr_list[i]);
-	}
-	free ( expr_list );
+    /* Free every element in expression list */
+    for ( i = 0 ; i < num_args; i++ )
+    {
+        Expr::delete_expr(expr_list[i]);
+    }
+    free ( expr_list );
 }
 
 /* Frees a tree expression */
 TreeExpr::~TreeExpr()
 {
 
-	/* free left tree */
-	if ( left != NULL )
-	{
-		Expr::delete_expr(left);
-	}
+    /* free left tree */
+    if ( left != NULL )
+    {
+        Expr::delete_expr(left);
+    }
 
-	/* free general expression object */
-	if ( gen_expr != NULL )
-	{
-		Expr::delete_expr(gen_expr);
-	}
+    /* free general expression object */
+    if ( gen_expr != NULL )
+    {
+        Expr::delete_expr(gen_expr);
+    }
 
-	/* Note that infix operators are always
-	   stored in memory unless the program
-	   exits, so we don't remove them here */
+    /* Note that infix operators are always
+       stored in memory unless the program
+       exits, so we don't remove them here */
 
-	/* free right tree */
-	if ( right != NULL )
-	{
-		Expr::delete_expr(right);
-	}
+    /* free right tree */
+    if ( right != NULL )
+    {
+        Expr::delete_expr(right);
+    }
 }
 
 /* Initializes an infix operator */
 InfixOp::InfixOp ( int _type, int _precedence )
 {
-	this->type = _type;
-	this->precedence = _precedence;
+    this->type = _type;
+    this->precedence = _precedence;
 }
 
 PrefunExpr::PrefunExpr() : Expr(FUNCTION)
@@ -582,34 +728,34 @@ bool isConstantFn(float (* fn)(void*))
 
 Expr *PrefunExpr::_optimize()
 {
-	bool constant_args = true;
-	for (int i=0 ; i < num_args ; i++)
-	{
-		Expr *orig = expr_list[i];
-		expr_list[i] = orig->_optimize();
-		if (orig != expr_list[i])
+    bool constant_args = true;
+    for (int i=0 ; i < num_args ; i++)
+    {
+        Expr *orig = expr_list[i];
+        expr_list[i] = orig->_optimize();
+        if (orig != expr_list[i])
             Expr::delete_expr(orig);
-		constant_args = constant_args && expr_list[i]->isConstant();
-	}
-	if (constant_args && isConstantFn(func_ptr))
+        constant_args = constant_args && expr_list[i]->isConstant();
+    }
+    if (constant_args && isConstantFn(func_ptr))
     {
         return Expr::const_to_expr(eval(-1, -1));
     }
-	return this;
+    return this;
 }
 
 std::ostream& PrefunExpr::to_string(std::ostream& out)
 {
-	char comma = ' ';
-	out << "<function>(";
-	for (int i=0 ; i < num_args ; i++)
-	{
-		out << comma;
-		out << expr_list[i];
-		comma = ',';
-	}
-	out << ")";
-	return out;
+    char comma = ' ';
+    out << "<function>(";
+    for (int i=0 ; i < num_args ; i++)
+    {
+        out << comma;
+        out << expr_list[i];
+        comma = ',';
+    }
+    out << ")";
+    return out;
 }
 
 
@@ -639,31 +785,55 @@ float AssignExpr::eval(int mesh_i, int mesh_j)
 
 std::ostream& AssignExpr::to_string(std::ostream &out)
 {
-	out << lhs << " = " << rhs;
-	return out;
+    out << lhs << " = " << rhs;
+    return out;
 }
 
 AssignMatrixExpr::AssignMatrixExpr(LValue *lhs_, Expr *rhs_) : AssignExpr(lhs_, rhs_) {}
 
 float AssignMatrixExpr::eval(int mesh_i, int mesh_j)
 {
-	float v = rhs->eval( mesh_i, mesh_j );
-	lhs->set_matrix( mesh_i, mesh_j, v );
-	return v;
+    float v = rhs->eval( mesh_i, mesh_j );
+    lhs->set_matrix( mesh_i, mesh_j, v );
+    return v;
 }
 
 std::ostream& AssignMatrixExpr::to_string(std::ostream &out)
 {
-	out << lhs << "[i,j] = " << rhs;
-	return out;
+    out << lhs << "[i,j] = " << rhs;
+    return out;
+}
+
+llvm::Value *AssignMatrixExpr::_llvm(JitContext &jitx)
+{
+    llvm::Value *value = rhs->_llvm(jitx);
+    if (nullptr == value)
+        return nullptr;
+    return Expr::generate_set_matrix_call(jitx, this, value);
+}
+
+/* caller only has to delete returned expression.  optimize() will delete unused nodes in original expr;
+ * CONSIDER delete old expr for caller?
+ */
+Expr *Expr::optimize(Expr *expr)
+{
+    Expr *optimized = expr->_optimize();
+    if (optimized != expr)
+        Expr::delete_expr(expr);
+    return optimized;
 }
 
 
-
+llvm::Value *ProgramExpr::_llvm(JitContext &jitx)
+{
+    llvm::Value *v = jitx.CreateConstant(0.0f);
+    for (auto it=steps.begin() ; it<steps.end() ; it++)
+        v = (*it)->_llvm(jitx);
+    return v;
+}
 
 
 // TESTS
-
 
 #include <TestRunner.hpp>
 
@@ -674,93 +844,150 @@ std::ostream& AssignMatrixExpr::to_string(std::ostream &out)
 
 struct ExprTest : public Test
 {
-	ExprTest() : Test("ExprTest")
-	{}
+    bool eq(float a, float b)
+    {
+        return std::abs(a-b) < (std::abs(a)+std::abs(b) + 1)/1000.0f;
+    }
+
+    Expr *constant(float f)
+    {
+        return Expr::const_to_expr(3.0f);
+    }
+
+    ExprTest() : Test("ExprTest")
+    {}
 
 public:
     bool optimize_constant_expr()
     {
         TreeExpr *a = TreeExpr::create(nullptr, Expr::const_to_expr( 1.0 ), nullptr, nullptr);
         TreeExpr *b = TreeExpr::create(nullptr, Expr::const_to_expr( 2.0 ), nullptr, nullptr);
-	    Expr *c = TreeExpr::create(Eval::infix_add, nullptr, a, b);
+        Expr *c = TreeExpr::create(Eval::infix_add, nullptr, a, b);
         //TEST(3.0f == c->eval(-1,-1));
         Expr *x = Expr::optimize(c);
         TEST(x != c);
-		Expr::delete_expr(c);
+		c = nullptr;
         TEST(x->clazz == CONSTANT);
         TEST(3.0f == x->eval(-1,-1));
-		Expr::delete_expr(x);
+        Expr::delete_expr(x);
 
         Expr **expr_array = (Expr **)malloc(sizeof(Expr *));
         expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( (float)M_PI ), nullptr, nullptr);
         Expr *sin = Expr::prefun_to_expr((float (*)(void *))FuncWrappers::sin_wrapper, expr_array, 1);
         x = Expr::optimize(sin);
         TEST(x != sin);
-        Expr::delete_expr( sin );
+        sin = nullptr;
         TEST(x->clazz == CONSTANT);
         TEST(sinf( (float)M_PI ) == x->eval(-1,-10));
         Expr::delete_expr(x);
 
         // make sure rand() is not optimized away
         expr_array = (Expr **)malloc(sizeof(Expr *));
-		expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( (float)M_PI ), nullptr, nullptr);
-		Expr *rand = Expr::prefun_to_expr((float (*)(void *))FuncWrappers::rand_wrapper, expr_array, 1);
-		x = Expr::optimize(rand);
-		TEST(x == rand);
-		TEST(x->clazz != CONSTANT);
-		Expr::delete_expr(x);
+        expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( (float)M_PI ), nullptr, nullptr);
+        Expr *rand = Expr::prefun_to_expr((float (*)(void *))FuncWrappers::rand_wrapper, expr_array, 1);
+        x = Expr::optimize(rand);
+        TEST(x == rand);
+        rand = nullptr;
+        TEST(x->clazz != CONSTANT);
+        Expr::delete_expr(x);
 
         return true;
     }
 
+//#ifdef USE_LLVM
     bool jit()
     {
-		float bound, result;
-		CValue iv, lb, ub;
-		iv.float_val = 0; lb.float_val=-1000000; ub.float_val=1000000;
+        {
+        Expr *CONST = Expr::const_to_expr(3.0f);
+        Expr *jitExpr = Expr::jit(CONST);
+        TEST(3.0f == jitExpr->eval(-1,-1));
+        delete jitExpr;    // jitExpr now owns CONST, TODO make behavior consistent with optimize()
+        }
 
-		Expr *jitExpr;
-	    Expr *CONST = Expr::const_to_expr(3.0f);
-		jitExpr = Expr::jit(CONST);
-	    TEST(3.0f == jitExpr->eval(-1,-1));
-	    delete jitExpr;
+        {
+        Param *PARAM = Param::createUser("test");
+        PARAM->set_param(4.0f);
+        Expr *jitExpr = Expr::jit(PARAM);
+        TEST(4.0f == jitExpr->eval(-1,-1));
+        delete jitExpr;
+        }
 
-		bound = 4.0f;
-	    Expr *PARAM = Param::create("test", P_TYPE_DOUBLE, P_FLAG_NONE, &bound, nullptr, iv,ub,lb);
-		jitExpr = Expr::jit(PARAM);
-	    TEST(4.0f == jitExpr->eval(-1,-1));
-		delete jitExpr;
+        {
+        Expr *CONST = Expr::const_to_expr(3.0f);
+        Param *PARAM = Param::createUser("test");
+        PARAM->set_param(4.0f);
+        Expr *MULT = new TreeExprMult(CONST, PARAM);
+        Expr *jitExpr = Expr::jit(MULT);
+        TEST(12.0f == jitExpr->eval(-1,-1));
+        delete jitExpr;
+        }
 
-	    Expr *MULT = new TreeExprMult(CONST, PARAM);
-		jitExpr = Expr::jit(MULT);
-	    TEST(12.0f == jitExpr->eval(-1,-1));
-		delete jitExpr;
+        {
+        Expr *CONST = Expr::const_to_expr(3.0f);
+        Param *PARAM = Param::createUser("test");
+        PARAM->set_param(4.0f);
+        Expr *ASSIGN = new AssignMatrixExpr(PARAM, CONST);
+        Expr *jitExpr = Expr::jit(ASSIGN);
+        TEST(3.0f == jitExpr->eval(-1,-1));
+        TEST(3.0f == PARAM->eval(-1,-1));
+        delete jitExpr;
+        }
+
+        {
+        Expr *CONST = Expr::const_to_expr(3.0f);
+        SinExpr *SIN = new SinExpr();    // TODO constructor
+        SIN->num_args = 1;
+        SIN->func_ptr = ( float ( * ) ( void* ) ) FuncWrappers::sin_wrapper;
+        SIN->expr_list = (Expr **)malloc(1 * sizeof(Expr *));
+        SIN->expr_list[0] = CONST;
+        Expr *jitExpr = Expr::jit(SIN);
+        TEST(sinf(3.0f) == jitExpr->eval(-1,-1));
+        delete jitExpr;
+        }
+
+        {
+            Expr *CONST1 = Expr::const_to_expr(1.0f);
+            Expr *CONST2 = Expr::const_to_expr(2.0f);
+            Expr *CONST3 = Expr::const_to_expr(3.0f);
+            PrefunExpr *IF = new PrefunExpr();    // TODO constructor
+            IF->num_args = 3;
+            IF->func_ptr = ( float ( * ) ( void* ) ) FuncWrappers::if_wrapper;
+            IF->expr_list = (Expr **)malloc(3 * sizeof(Expr *));
+            IF->expr_list[0] = CONST1;
+            IF->expr_list[1] = CONST2;
+            IF->expr_list[2] = CONST3;
+            Expr *jitExpr = Expr::jit(IF);
+            TEST(2.0f == jitExpr->eval(-1,-1));
+            delete jitExpr;
+        }
+
+        return true;
     }
+//#endif
 
-	bool test() override
-	{
+    bool test() override
+    {
         Eval::init_infix_ops();
-	    bool result = true;
-	    result &= optimize_constant_expr();
-	    result &= jit();
-		return result;
-	}
+        bool result = true;
+        result &= optimize_constant_expr();
+        result &= jit();
+        return result;
+    }
 };
 
 Test* Expr::test()
 {
-	return new ExprTest();
+    return new ExprTest();
 }
 
 #else
 
 Test* Expr::test()
 {
-    return null;
+    return nullptr;
 }
 
 #endif
-
 
 
 
@@ -771,32 +998,32 @@ using namespace llvm;
 
 class JitExpr : public Expr
 {
-	ExecutionEngine *engine;
-	Expr *expr;
-	float (*fn)(int,int);
+    ExecutionEngine *engine;
+    Expr *expr;
+    float (*fn)(int,int);
 
 public:
-	JitExpr(ExecutionEngine *engine_, Expr *orig, float (*fn_)(int,int)) : Expr(OTHER), engine(engine_), expr(orig), fn(fn_)
-	{
+    JitExpr(ExecutionEngine *engine_, Expr *orig, float (*fn_)(int,int)) : Expr(JIT), engine(engine_), expr(orig), fn(fn_)
+    {
 
-	}
+    }
 
-	float eval(int mesh_i, int mesh_j) override
-	{
-		return fn(mesh_i, mesh_j);
-	}
+    float eval(int mesh_i, int mesh_j) override
+    {
+        return fn(mesh_i, mesh_j);
+    }
 
-	~JitExpr() override
-	{
-		Expr::delete_expr(expr);
-		delete engine;
-	}
+    ~JitExpr() override
+    {
+        Expr::delete_expr(expr);
+        delete engine;
+    }
 };
 
 
 __attribute__((noinline)) float eval_thunk(Expr *e, int i, int j)
 {
-	return e->eval(i,j);
+    return e->eval(i,j);
 }
 
 __attribute__((noinline)) void set_matrix_thunk(LValue *lvalue, int i, int j, float v)
@@ -810,85 +1037,153 @@ LLVMContext *llvmGLobalContext;
 
 LLVMContext& getGlobalContext()
 {
-	if (nullptr == llvmGLobalContext)
-	{
-		InitializeNativeTarget();
-		LLVMInitializeX86TargetInfo();
-		LLVMInitializeX86Target();
-		LLVMInitializeX86TargetMC();
-		LLVMInitializeNativeAsmPrinter();
-		LLVMInitializeNativeAsmParser();
+    if (nullptr == llvmGLobalContext)
+    {
+        InitializeNativeTarget();
+        LLVMInitializeX86TargetInfo();
+        LLVMInitializeX86Target();
+        LLVMInitializeX86TargetMC();
+        LLVMInitializeNativeAsmPrinter();
+        LLVMInitializeNativeAsmParser();
 
-		llvmGLobalContext = new LLVMContext();
-	}
-	return *llvmGLobalContext;
+        llvmGLobalContext = new LLVMContext();
+    }
+    return *llvmGLobalContext;
 }
 
 
 Value * Expr::generate_eval_call(JitContext &jitx, Expr *expr)
 {
-	// turn this into "void *"
-	ConstantInt * thisConstant = ConstantInt::get(IntegerType::getInt64Ty(jitx.context), (uint64_t)expr, false);
+    // turn this into "void *"
+    ConstantInt * thisConstant = ConstantInt::get(IntegerType::getInt64Ty(jitx.context), (uint64_t)expr, false);
 
-	// thunk_expr into float ()(void *,int, int)
-	ConstantInt * thunkConstant = ConstantInt::get(IntegerType::getInt64Ty(jitx.context), (uint64_t)eval_thunk, false);
-	// TODO create type once
-	std::vector<Type*> exprEvalFunctionArgs;
-	exprEvalFunctionArgs.push_back(IntegerType::getInt64Ty(jitx.context));    // Expr *
-	exprEvalFunctionArgs.push_back(IntegerType::getInt32Ty(jitx.context));
-	exprEvalFunctionArgs.push_back(IntegerType::getInt32Ty(jitx.context));
-	auto evalFunctionType = FunctionType::get(jitx.floatType, exprEvalFunctionArgs, false);
-	auto evalFunctionPtrType = PointerType::get(evalFunctionType,1);
-	Value* thunkFunctionPtr = llvm::ConstantExpr::getIntToPtr(thunkConstant , evalFunctionPtrType);
+    // thunk_expr into float ()(void *,int, int)
+    // use eval_thunk
+    ConstantInt * thunkConstant = ConstantInt::get(IntegerType::getInt64Ty(jitx.context), (uint64_t)eval_thunk, false);
+    // TODO create type once
+    std::vector<Type*> exprEvalFunctionArgs;
+    exprEvalFunctionArgs.push_back(IntegerType::getInt64Ty(jitx.context));    // Expr *
+    exprEvalFunctionArgs.push_back(IntegerType::getInt32Ty(jitx.context));
+    exprEvalFunctionArgs.push_back(IntegerType::getInt32Ty(jitx.context));
+    auto evalFunctionType = FunctionType::get(jitx.floatType, exprEvalFunctionArgs, false);
+    auto evalFunctionPtrType = PointerType::get(evalFunctionType,1);
 
-	std::vector<Value *> args;
-	args.push_back(thisConstant);
+    Value* thunkFunctionPtr = llvm::ConstantExpr::getIntToPtr(thunkConstant , evalFunctionPtrType);
+
+    std::vector<Value *> args;
+    args.push_back(thisConstant);
     args.push_back(jitx.mesh_i);
     args.push_back(jitx.mesh_j);
-	Value *ret = jitx.builder.CreateCall(thunkFunctionPtr, args);
-	return ret;
+    Value *ret = jitx.builder.CreateCall(thunkFunctionPtr, args);
+    return ret;
+}
+
+
+Value * Expr::generate_set_matrix_call(JitContext &jitx, Expr *expr, Value *value)
+{
+    // turn this into "void *"
+    ConstantInt * thisConstant = ConstantInt::get(IntegerType::getInt64Ty(jitx.context), (uint64_t)expr, false);
+
+    // thunk_expr into float ()(void *,int, int, float)
+    // use eval_thunk
+    ConstantInt * thunkConstant = ConstantInt::get(IntegerType::getInt64Ty(jitx.context), (uint64_t)eval_thunk, false);
+    // TODO create type once
+    std::vector<Type*> setMatrixFunctionArgs;
+    setMatrixFunctionArgs.push_back(IntegerType::getInt64Ty(jitx.context));    // Expr *
+    setMatrixFunctionArgs.push_back(IntegerType::getInt32Ty(jitx.context));
+    setMatrixFunctionArgs.push_back(IntegerType::getInt32Ty(jitx.context));
+    setMatrixFunctionArgs.push_back(jitx.floatType);
+    auto evalFunctionType = FunctionType::get(jitx.floatType, setMatrixFunctionArgs, false);
+    auto evalFunctionPtrType = PointerType::get(evalFunctionType,1);
+
+    Value* thunkFunctionPtr = llvm::ConstantExpr::getIntToPtr(thunkConstant , evalFunctionPtrType);
+
+    std::vector<Value *> args;
+    args.push_back(thisConstant);
+    args.push_back(jitx.mesh_i);
+    args.push_back(jitx.mesh_j);
+    args.push_back(value);
+    Value *ret = jitx.builder.CreateCall(thunkFunctionPtr, args);
+    return ret;
 }
 
 
 Expr *Expr::jit(Expr *root)
 {
-	LLVMContext &Context = getGlobalContext();
+    LLVMContext &Context = getGlobalContext();
 
-	// Create some module to put our function into it.
-	std::unique_ptr<Module> module_ptr = make_unique<Module>("ExprEvalTest", Context);
+    // Create some module to put our function into it.
+    std::unique_ptr<Module> module_ptr = make_unique<Module>("ExprEvalTest", Context);
 
-	std::vector<Type *> arg_typess;
-	arg_typess.push_back(IntegerType::get(Context,32));
-	arg_typess.push_back(IntegerType::get(Context,32));
-	Constant* c = module_ptr->getOrInsertFunction<Type*>("Expr_eval",
-			Type::getFloatTy(Context),
-			IntegerType::get(Context,32),
-			IntegerType::get(Context,32));
-	Function *expr_eval_fun = cast<Function>(c);
-	BasicBlock *BB = BasicBlock::Create(Context, "EntryBlock", expr_eval_fun);
-	IRBuilder<> builder(BB);
-	builder.SetInsertPoint(BB);
+    std::vector<Type *> arg_typess;
+    arg_typess.push_back(IntegerType::get(Context,32));
+    arg_typess.push_back(IntegerType::get(Context,32));
+    Constant* c = module_ptr->getOrInsertFunction<Type*>("Expr_eval",
+            Type::getFloatTy(Context),
+            IntegerType::get(Context,32),
+            IntegerType::get(Context,32));
+    Function *expr_eval_fun = cast<Function>(c);
+    BasicBlock *BB = BasicBlock::Create(Context, "EntryBlock", expr_eval_fun);
+    IRBuilder<> builder(BB);
+    builder.SetInsertPoint(BB);
 
-	Argument *i = &expr_eval_fun->arg_begin()[0];
-	Argument *j = &expr_eval_fun->arg_begin()[1];
-	JitContext jitx( Context, builder, i, j);
+    Argument *i = &expr_eval_fun->arg_begin()[0];
+    Argument *j = &expr_eval_fun->arg_begin()[1];
+    JitContext jitx( Context, module_ptr.get(), builder, i, j );
     Value *retValue = root->_llvm( jitx );
     if (nullptr == retValue)
-    	return nullptr;
-	builder.CreateRet(retValue);
+    {
+        // module is still owned by module_ptr and should be cleaned up
+        return nullptr;
+    }
+    builder.CreateRet(retValue);
 
-	// Now we create the JIT.
-	ExecutionEngine* executionEngine = EngineBuilder(std::move(module_ptr)).create();
 
-	outs() << "We just constructed this LLVM module:\n\n" << *module_ptr;
-	outs() << "\n\nRunning foo: ";
+#if 1
+    outs() << "MODULE\n\n" << *module_ptr << "\n\n";
 	outs().flush();
+#endif
 
-	auto fn = (float (*)(int,int))executionEngine->getFunctionAddress("Expr_eval");
-	auto v  = (*fn)(12,45);
-	outs() << "Result: " << v << "\n";
+	Module *module = module_ptr.get();
+    ExecutionEngine* executionEngine = EngineBuilder(std::move(module_ptr)).create();
 
-	return new JitExpr(executionEngine, root, fn);
+/*
+// Create a function pass manager for this engine
+    FunctionPassManager *FPM = new FunctionPassManager();
+    // Set up the optimizer pipeline.  Start with registering info about how the
+// target lays out data structures.
+    FPM->addPass(new DataLayout(executionEngine->getDataLayout()));
+// Provide basic AliasAnalysis support for GVN.
+    FPM->addPass(createBasicAAWrapperPass());
+// Promote allocas to registers.
+    FPM->addPass(createPromoteMemoryToRegisterPass());
+// Do simple "peephole" optimizations and bit-twiddling optzns.
+    FPM->addPass(createInstructionCombiningPass());
+// Reassociate expressions.
+    FPM->addPass(createReassociatePass());
+// Eliminate Common SubExpressions.
+    FPM->addPass(createGVNPass());
+// Simplify the control flow graph (deleting unreachable blocks, etc).
+    FPM->addPass(createCFGSimplificationPass());
+//    FPM->doInitialization();
+    // For each function in the module
+    FunctionAnalysisManager FAM(false);
+    Module::iterator end = module->end();
+    for (auto it = module_ptr->begin(); it != end; ++it) {
+        // Run the FPM on this function
+        FPM->run(*it,FAM);
+    }
+#if 1
+    outs() << "MODULE AFTER\n\n" << *module_ptr << "\n\n";
+    outs().flush();
+#endif
+*/
+
+
+
+    auto fn = (float (*)(int,int))executionEngine->getFunctionAddress("Expr_eval");
+
+    return new JitExpr(executionEngine, root, fn);
 }
 
 /*

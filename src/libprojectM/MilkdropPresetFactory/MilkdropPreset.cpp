@@ -443,7 +443,9 @@ void MilkdropPreset::evalPerPixelEqns()
         std::vector<Expr *> steps;
         for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin(); pos != per_pixel_eqn_tree.end(); ++pos)
             steps.push_back(pos->second->assign_expr);
-        per_pixel_program = new ProgramExpr(steps,false);
+        Expr *program_expr = new ProgramExpr(steps,false);
+        Expr *jit = Expr::jit(program_expr);
+        per_pixel_program = jit ? jit : program_expr;
     }
 
     for (int mesh_x = 0; mesh_x < presetInputs().gx; mesh_x++)
