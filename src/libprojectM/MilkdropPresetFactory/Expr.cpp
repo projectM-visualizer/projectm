@@ -28,31 +28,61 @@
 #include "BuiltinFuncs.hpp"
 
 // #ifdef USE_LLVM
+#include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
 #include "llvm/ExecutionEngine/GenericValue.h"
+#include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/Constants.h"
+#include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/Function.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/LegacyPassManager.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/IR/Module.h"
+#include "llvm/IR/Type.h"
+#include "llvm/IR/Verifier.h"
 #include "llvm/Support/TargetSelect.h"
-#if 0
-#include "llvm/IR/PassManager.h"
-#include "llvm/Support/TargetSelect.h"
+#include "llvm/Target/TargetMachine.h"
+#include "llvm/Transforms/InstCombine/InstCombine.h"
 #include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Scalar/GVN.h"
-#include "llvm/Transforms/Utils.h"
-#include "llvm/Analysis/BasicAliasAnalysis.h"
-#include "llvm/Transforms/InstCombine/InstCombine.h"
-#endif
 
+
+llvm::LLVMContext& getGlobalContext();
+
+// Wrapper for one module which corresponds to one jit'd Expr
+// TODO consider associating one JitContext with one Preset
 struct JitContext
 {
-    JitContext(llvm::LLVMContext &context_, llvm::Module *module_, llvm::IRBuilder<llvm::ConstantFolder,llvm::IRBuilderDefaultInserter> &builder_, llvm::Value *i, llvm::Value *j) :
-        context(context_), module(module_), builder(builder_), mesh_i(i), mesh_j(j)
+//    JitContext(llvm::LLVMContext &context_, llvm::Module *module_, llvm::IRBuilder<llvm::ConstantFolder,llvm::IRBuilderDefaultInserter> &builder_, llvm::Value *i, llvm::Value *j) :
+//        context(context_), module(module_), builder(context_), mesh_i(i), mesh_j(j)
+//    {
+//        floatType = llvm::Type::getFloatTy(context);
+//    }
+
+    JitContext(std::string name="LLVMModule") :
+            context(getGlobalContext()), builder(getGlobalContext())
     {
         floatType = llvm::Type::getFloatTy(context);
+        module_ptr = llvm::make_unique<llvm::Module>(name, context);
+        module = module_ptr.get();
+
+//        module->setDataLayout(getTargetMachine().createDataLayout());
+
+        // Create a new pass manager attached to it.
+        fpm = llvm::make_unique<llvm::legacy::FunctionPassManager>(module);
+        fpm->add(llvm::createInstructionCombiningPass());
+        fpm->add(llvm::createReassociatePass());
+        fpm->add(llvm::createGVNPass());
+        fpm->add(llvm::createCFGSimplificationPass());
+        fpm->doInitialization();
     }
 
+    // NOTE: the module is either "owned" by module_ptr OR executionEngine
     llvm::LLVMContext &context;
+    std::unique_ptr<llvm::Module> module_ptr;
+    std::unique_ptr<llvm::legacy::FunctionPassManager> fpm;
     llvm::Module *module;
     llvm::IRBuilder<llvm::ConstantFolder,llvm::IRBuilderDefaultInserter> builder;
     llvm::Type *floatType;
@@ -60,6 +90,13 @@ struct JitContext
     llvm::Value *mesh_j;
 
     // helpers
+
+    void OptimizePass()
+    {
+        auto end = module->end();
+        for (auto it = module->begin(); it != end; ++it)
+            fpm->run(*it);
+    }
 
     llvm::Value *CreateConstant(float x)
     {
@@ -88,6 +125,40 @@ struct JitContext
         arg.push_back(x);
         arg.push_back(y);
         return builder.CreateCall(sinFunction, arg);
+    }
+
+    llvm::Function *parent=nullptr;
+    llvm::BasicBlock *then_block=nullptr;
+    llvm::BasicBlock *else_block=nullptr;
+    llvm::BasicBlock *merge_block=nullptr;
+
+    void StartTernary(llvm::Value *condition)
+    {
+        parent = builder.GetInsertBlock()->getParent();
+        then_block = llvm::BasicBlock::Create(context, "then", parent);
+        else_block = llvm::BasicBlock::Create(context, "else");
+        merge_block = llvm::BasicBlock::Create(context, "ifcont");
+        builder.CreateCondBr(condition, then_block, else_block);
+    }
+    void withThen()
+    {
+        builder.SetInsertPoint(then_block);
+    }
+    void withElse()
+    {
+        parent->getBasicBlockList().push_back(else_block);
+        builder.SetInsertPoint(else_block);
+    }
+    llvm::Value *finishTernary(llvm::Value *thenValue, llvm::Value *elseValue)
+    {
+        parent->getBasicBlockList().push_back(merge_block);
+        builder.SetInsertPoint(merge_block);
+        llvm::PHINode *mergeValue = builder.CreatePHI(floatType, 2, "iftmp");
+        mergeValue->addIncoming(thenValue, then_block);
+        mergeValue->addIncoming(elseValue, else_block);
+        parent = nullptr;
+        then_block = else_block = merge_block = nullptr;
+        return mergeValue;
     }
 };
 
@@ -141,7 +212,7 @@ llvm::Value *PrefunExpr::_llvm(JitContext &jitx)
     llvm::AllocaInst *array = jitx.builder.CreateAlloca(jitx.floatType, jitx.CreateConstant(num_args));
     for ( unsigned i = 0; i < (unsigned)num_args; i++ )
     {
-        llvm::Value *v = expr_list[i]->_llvm(jitx);
+        llvm::Value *v = Expr::llvm(jitx,expr_list[i]);
         if (nullptr == v)
             return nullptr;
         llvm::ConstantInt *idx = llvm::ConstantInt::get(llvm::Type::getInt32Ty(jitx.context), i);
@@ -179,7 +250,7 @@ class SinExpr : public PrefunExpr
     }
     llvm::Value *_llvm(JitContext &jitx) override
     {
-        llvm::Value *val = expr_list[0]->_llvm(jitx);
+        llvm::Value *val = Expr::llvm(jitx, expr_list[0]);
         if (nullptr == val)
             return nullptr;
         return jitx.CallIntrinsic(llvm::Intrinsic::sin, val);
@@ -195,7 +266,7 @@ class CosExpr : public PrefunExpr
     }
     llvm::Value *_llvm(JitContext &jitx) override
     {
-        llvm::Value *val = expr_list[0]->_llvm(jitx);
+        llvm::Value *val = Expr::llvm(jitx, expr_list[0]);
         if (nullptr == val)
             return nullptr;
         return jitx.CallIntrinsic(llvm::Intrinsic::cos, val);
@@ -211,7 +282,7 @@ class LogExpr : public PrefunExpr
     }
     llvm::Value *_llvm(JitContext &jitx) override
     {
-        llvm::Value *val = expr_list[0]->_llvm(jitx);
+        llvm::Value *val = Expr::llvm(jitx, expr_list[0]);
         if (nullptr == val)
             return nullptr;
         return jitx.CallIntrinsic(llvm::Intrinsic::log, val);
@@ -228,8 +299,8 @@ class PowExpr : public PrefunExpr
     }
     llvm::Value *_llvm(JitContext &jitx) override
     {
-        llvm::Value *x = expr_list[0]->_llvm(jitx);
-        llvm::Value *y = expr_list[1]->_llvm(jitx);
+        llvm::Value *x = Expr::llvm(jitx, expr_list[0]);
+        llvm::Value *y = Expr::llvm(jitx, expr_list[1]);
         if (nullptr == x || nullptr == y)
             return nullptr;
         return jitx.CallIntrinsic2(llvm::Intrinsic::pow, x, y);
@@ -290,9 +361,9 @@ public:
 
     llvm::Value *_llvm(JitContext &jitx) override
     {
-        llvm::Value *avalue = a->_llvm(jitx);
-        llvm::Value *bvalue = b->_llvm(jitx);
-        llvm::Value *cvalue = c->_llvm(jitx);
+        llvm::Value *avalue = Expr::llvm(jitx, a);
+        llvm::Value *bvalue = Expr::llvm(jitx, b);
+        llvm::Value *cvalue = Expr::llvm(jitx, c);
         if (nullptr == avalue || nullptr == bvalue || nullptr == cvalue)
             return nullptr;
         return jitx.builder.CreateFAdd(jitx.builder.CreateFMul(avalue,bvalue),cvalue);
@@ -324,7 +395,7 @@ public:
     }
     llvm::Value *_llvm(JitContext &jitx) override
     {
-        llvm::Value *value= expr->_llvm(jitx);
+        llvm::Value *value = Expr::llvm(jitx, expr);
         if (nullptr == value)
             return nullptr;
         return jitx.builder.CreateFMul(jitx.CreateConstant(c), value);
@@ -478,8 +549,8 @@ float TreeExpr::eval ( int mesh_i, int mesh_j )
 
 llvm::Value *TreeExpr::_llvm(JitContext &jitx)
 {
-    llvm::Value *lhs = left->_llvm(jitx);
-    llvm::Value *rhs = right->_llvm(jitx);
+    llvm::Value *lhs = Expr::llvm(jitx, left);
+    llvm::Value *rhs = Expr::llvm(jitx, right);
     if (nullptr == lhs || nullptr == rhs)
         return nullptr;
     switch ( infix_op->type )
@@ -493,12 +564,17 @@ llvm::Value *TreeExpr::_llvm(JitContext &jitx)
     case INFIX_MOD:
     {
         llvm::Type *int32_ty = llvm::IntegerType::get(jitx.context,32);
-        llvm::Value *zeroInt = llvm::ConstantInt::get(int32_ty, 0, true);
-        llvm::Value *lhsInt = jitx.builder.CreateFPToSI(lhs, int32_ty);
-        llvm::Value *rhsInt = jitx.builder.CreateFPToSI(rhs, int32_ty);
+        llvm::Value *rhsInt = jitx.builder.CreateFPToSI(jitx.builder.CreateIntrinsic(llvm::Intrinsic::floor, rhs), int32_ty);
+        // BUG??? Calling CreateICmpNE without the floor() (just FPToSI()) causes stack overflow, bug in llvm::ConstantFoldCompareInstruction()?
+        llvm::Value *condNotZero = jitx.builder.CreateICmpNE(jitx.CreateConstant(0), rhsInt, "ifcond");
+        jitx.StartTernary(condNotZero);
+        jitx.withThen();
+        llvm::Value *lhsInt = jitx.builder.CreateFPToSI(jitx.builder.CreateIntrinsic(llvm::Intrinsic::floor, lhs), int32_ty);
         // TODO check the semantics of C operator % (might not be the same as srem)
-        llvm::Value *q = jitx.builder.CreateSRem(lhsInt,rhsInt);
-        return jitx.builder.CreateSelect(jitx.builder.CreateICmpEQ(zeroInt,rhs), zeroInt, q);
+        llvm::Value *thenValue = jitx.builder.CreateSIToFP(jitx.builder.CreateSRem(lhsInt,rhsInt), jitx.floatType);
+        jitx.withElse();
+        llvm::Value *elseValue = jitx.CreateConstant(0.0f);
+        return jitx.finishTernary(thenValue,elseValue);
     }
     case INFIX_OR:
     {
@@ -521,9 +597,13 @@ llvm::Value *TreeExpr::_llvm(JitContext &jitx)
     case INFIX_DIV:
     {
         llvm::Value *zero = jitx.CreateConstant(0.0f);
-        llvm::Value *maxValue = jitx.CreateConstant((float)MAX_DOUBLE_SIZE);
-        llvm::Value *q = jitx.builder.CreateFDiv(lhs,rhs);
-        return jitx.builder.CreateSelect(jitx.builder.CreateFCmpUEQ(zero,rhs), maxValue, q);
+        llvm::Value *condNotZero = jitx.builder.CreateICmpNE(jitx.CreateConstant(0.0f), rhs, "ifcond");
+        jitx.StartTernary(condNotZero);
+        jitx.withThen();
+        llvm::Value *thenValue = jitx.builder.CreateFDiv(lhs,rhs);
+        jitx.withElse();
+        llvm::Value *elseValue = jitx.CreateConstant((float)MAX_DOUBLE_SIZE);
+        return jitx.finishTernary(thenValue,elseValue);
     }
     default:
         return nullptr;
@@ -610,8 +690,8 @@ public:
     }
     llvm::Value *_llvm(JitContext &jitx) override
     {
-        llvm::Value *l = left->_llvm(jitx);
-        llvm::Value *r = right->_llvm(jitx);
+        llvm::Value *l = Expr::llvm(jitx, left);
+        llvm::Value *r = Expr::llvm(jitx, right);
         if (nullptr == l || nullptr == r)
             return nullptr;
         return jitx.builder.CreateFAdd(l,r);
@@ -806,7 +886,7 @@ std::ostream& AssignMatrixExpr::to_string(std::ostream &out)
 
 llvm::Value *AssignMatrixExpr::_llvm(JitContext &jitx)
 {
-    llvm::Value *value = rhs->_llvm(jitx);
+    llvm::Value *value = Expr::llvm(jitx, rhs);
     if (nullptr == value)
         return nullptr;
     return Expr::generate_set_matrix_call(jitx, this, value);
@@ -828,7 +908,7 @@ llvm::Value *ProgramExpr::_llvm(JitContext &jitx)
 {
     llvm::Value *v = jitx.CreateConstant(0.0f);
     for (auto it=steps.begin() ; it<steps.end() ; it++)
-        v = (*it)->_llvm(jitx);
+        v = Expr::llvm(jitx, *it);
     return v;
 }
 
@@ -945,6 +1025,7 @@ public:
         delete jitExpr;
         }
 
+        // test_prefun_if:
         {
             Expr *CONST1 = Expr::const_to_expr(1.0f);
             Expr *CONST2 = Expr::const_to_expr(2.0f);
@@ -960,6 +1041,27 @@ public:
             TEST(2.0f == jitExpr->eval(-1,-1));
             delete jitExpr;
         }
+
+        //test_ternary_mod_1:
+        {
+            Expr *CONST2 = Expr::const_to_expr(2.0f);
+            Expr *CONST3 = Expr::const_to_expr(3.0f);
+            TreeExpr *MOD = TreeExpr::create(Eval::infix_mod, CONST3, CONST2);
+            Expr *jitExpr = Expr::jit(MOD);
+            TEST(1.0f == jitExpr->eval(-1,-1));
+            delete jitExpr;
+        }
+
+        //test_ternary_mod_2:
+        {
+            Expr *CONST0 = Expr::const_to_expr(0.0f);
+            Expr *CONST3 = Expr::const_to_expr(3.0f);
+            TreeExpr *MOD = TreeExpr::create(Eval::infix_mod, CONST3, CONST0);
+            Expr *jitExpr = Expr::jit(MOD);
+            TEST(0.0f == jitExpr->eval(-1,-1));
+            delete jitExpr;
+        }
+
 
         return true;
     }
@@ -1017,6 +1119,12 @@ public:
     {
         Expr::delete_expr(expr);
         delete engine;
+    }
+
+    Value *_llvm(JitContext &jit) override
+    {
+        assert(false);
+        return nullptr;
     }
 };
 
@@ -1108,44 +1216,55 @@ Value * Expr::generate_set_matrix_call(JitContext &jitx, Expr *expr, Value *valu
 }
 
 
+/* this is mostly a passthrough, but can be used to intercept calls to Param */
+Value *Expr::llvm(JitContext &jitx, Expr *root)
+{
+    return root->_llvm(jitx);
+}
+
+
 Expr *Expr::jit(Expr *root)
 {
     LLVMContext &Context = getGlobalContext();
 
     // Create some module to put our function into it.
-    std::unique_ptr<Module> module_ptr = make_unique<Module>("ExprEvalTest", Context);
+    JitContext jitx;
 
     std::vector<Type *> arg_typess;
     arg_typess.push_back(IntegerType::get(Context,32));
     arg_typess.push_back(IntegerType::get(Context,32));
-    Constant* c = module_ptr->getOrInsertFunction<Type*>("Expr_eval",
+    Constant* c = jitx.module->getOrInsertFunction<Type*>("Expr_eval",
             Type::getFloatTy(Context),
             IntegerType::get(Context,32),
             IntegerType::get(Context,32));
-    Function *expr_eval_fun = cast<Function>(c);
+    auto *expr_eval_fun = cast<Function>(c);
     BasicBlock *BB = BasicBlock::Create(Context, "EntryBlock", expr_eval_fun);
-    IRBuilder<> builder(BB);
-    builder.SetInsertPoint(BB);
+    jitx.builder.SetInsertPoint(BB);
+    jitx.mesh_i = &expr_eval_fun->arg_begin()[0];
+    jitx.mesh_j = &expr_eval_fun->arg_begin()[1];
 
-    Argument *i = &expr_eval_fun->arg_begin()[0];
-    Argument *j = &expr_eval_fun->arg_begin()[1];
-    JitContext jitx( Context, module_ptr.get(), builder, i, j );
-    Value *retValue = root->_llvm( jitx );
+    // Generate IR Code!
+    Value *retValue = Expr::llvm(jitx, root);
     if (nullptr == retValue)
     {
         // module is still owned by module_ptr and should be cleaned up
         return nullptr;
     }
-    builder.CreateRet(retValue);
+    jitx.builder.CreateRet(retValue);
 
 
 #if 1
-    outs() << "MODULE\n\n" << *module_ptr << "\n\n";
+    outs() << "MODULE\n\n" << *jitx.module << "\n\n";
 	outs().flush();
 #endif
 
-	Module *module = module_ptr.get();
-    ExecutionEngine* executionEngine = EngineBuilder(std::move(module_ptr)).create();
+	// and JIT!
+	jitx.OptimizePass();
+#if 1
+    outs() << "MODULE AFTER\n\n" << *jitx.module << "\n\n";
+    outs().flush();
+#endif
+    ExecutionEngine* executionEngine = EngineBuilder(std::move(jitx.module_ptr)).create();
 
 /*
 // Create a function pass manager for this engine
@@ -1169,10 +1288,6 @@ Expr *Expr::jit(Expr *root)
     // For each function in the module
     FunctionAnalysisManager FAM(false);
     Module::iterator end = module->end();
-    for (auto it = module_ptr->begin(); it != end; ++it) {
-        // Run the FPM on this function
-        FPM->run(*it,FAM);
-    }
 #if 1
     outs() << "MODULE AFTER\n\n" << *module_ptr << "\n\n";
     outs().flush();

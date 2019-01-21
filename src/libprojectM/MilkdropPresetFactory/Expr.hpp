@@ -99,10 +99,8 @@ public:
 public: // but don't call these from outside Expr.cpp
 
   virtual Expr *_optimize() { return this; };
-  virtual llvm::Value *_llvm(JitContext &jit)
-  {
-      return nullptr;
-  };
+  static  llvm::Value *llvm(JitContext &jit, Expr *);
+  virtual llvm::Value *_llvm(JitContext &jit) = 0;  //ONLY called by llvm()
   static llvm::Value *generate_eval_call(JitContext &jit, Expr *expr);
   static llvm::Value *generate_set_matrix_call(JitContext &jitx, Expr *expr, llvm::Value *value);
 
