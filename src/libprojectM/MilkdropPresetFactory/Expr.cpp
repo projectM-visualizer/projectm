@@ -146,11 +146,15 @@ struct JitContext
     }
     void withElse()
     {
+        // finish the withThen block
+        builder.CreateBr(merge_block);
         parent->getBasicBlockList().push_back(else_block);
         builder.SetInsertPoint(else_block);
     }
-    llvm::Value *finishTernary(llvm::Value *thenValue, llvm::Value *elseValue)
+    llvm::Value *FinishTernary(llvm::Value *thenValue, llvm::Value *elseValue)
     {
+        // finish the withElse block
+        builder.CreateBr(merge_block);
         parent->getBasicBlockList().push_back(merge_block);
         builder.SetInsertPoint(merge_block);
         llvm::PHINode *mergeValue = builder.CreatePHI(floatType, 2, "iftmp");
@@ -238,6 +242,37 @@ class PrefunExprOne : public PrefunExpr
     {
         float val = expr_list[0]->eval ( mesh_i, mesh_j );
         return (func_ptr)(&val);
+    }
+};
+
+// short circuiting IF
+// TODO consider IfAboveExpr, IfEqualExpr
+class IfExpr : public PrefunExpr
+{
+    float eval ( int mesh_i, int mesh_j )
+    {
+        // see if_wrapper()
+        float val = expr_list[0]->eval ( mesh_i, mesh_j );
+        if (val == 0)
+            return expr_list[2]->eval ( mesh_i, mesh_j );
+        return expr_list[1]->eval ( mesh_i, mesh_j );
+    }
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Value *testValue = Expr::llvm(jitx, expr_list[0]);
+        if (nullptr == testValue)
+            return nullptr;
+        llvm::Value *condition = jitx.builder.CreateFCmpUNE(testValue, jitx.CreateConstant(0.0f));
+        jitx.StartTernary(condition);
+        jitx.withThen();
+        llvm::Value *thenValue = Expr::llvm(jitx, expr_list[1]);
+        jitx.withElse();
+        llvm::Value *elseValue = Expr::llvm(jitx, expr_list[2]);
+        if (nullptr == thenValue || nullptr == elseValue)
+            return nullptr;
+        return jitx.FinishTernary(thenValue, elseValue);
+        // CONSIDER use switch if left and right are both constant?
+        //return jitx.builder.CreateSelect(jitx.builder.CreateICmpNEQ(zeroInt,expr0), expr1, expr2);
     }
 };
 
@@ -574,7 +609,7 @@ llvm::Value *TreeExpr::_llvm(JitContext &jitx)
         llvm::Value *thenValue = jitx.builder.CreateSIToFP(jitx.builder.CreateSRem(lhsInt,rhsInt), jitx.floatType);
         jitx.withElse();
         llvm::Value *elseValue = jitx.CreateConstant(0.0f);
-        return jitx.finishTernary(thenValue,elseValue);
+        return jitx.FinishTernary(thenValue, elseValue);
     }
     case INFIX_OR:
     {
@@ -596,14 +631,13 @@ llvm::Value *TreeExpr::_llvm(JitContext &jitx)
     }
     case INFIX_DIV:
     {
-        llvm::Value *zero = jitx.CreateConstant(0.0f);
         llvm::Value *condNotZero = jitx.builder.CreateICmpNE(jitx.CreateConstant(0.0f), rhs, "ifcond");
         jitx.StartTernary(condNotZero);
         jitx.withThen();
         llvm::Value *thenValue = jitx.builder.CreateFDiv(lhs,rhs);
         jitx.withElse();
         llvm::Value *elseValue = jitx.CreateConstant((float)MAX_DOUBLE_SIZE);
-        return jitx.finishTernary(thenValue,elseValue);
+        return jitx.FinishTernary(thenValue, elseValue);
     }
     default:
         return nullptr;
@@ -659,6 +693,13 @@ Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( void * ), Expr ** expr_list,
     {
         if (func_ptr == (float (*)(void *)) FuncWrappers::pow_wrapper)
             prefun_expr = new PowExpr();
+        else
+            prefun_expr = new PrefunExpr();
+    }
+    else if (num_args == 3)
+    {
+        if (func_ptr == (float (*)(void *)) FuncWrappers::if_wrapper)
+            prefun_expr = new IfExpr();
         else
             prefun_expr = new PrefunExpr();
     }
