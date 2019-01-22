@@ -631,7 +631,7 @@ llvm::Value *TreeExpr::_llvm(JitContext &jitx)
     }
     case INFIX_DIV:
     {
-        llvm::Value *condNotZero = jitx.builder.CreateICmpNE(jitx.CreateConstant(0.0f), rhs, "ifcond");
+        llvm::Value *condNotZero = jitx.builder.CreateFCmpUNE(jitx.CreateConstant(0.0f), rhs, "ifcond");
         jitx.StartTernary(condNotZero);
         jitx.withThen();
         llvm::Value *thenValue = jitx.builder.CreateFDiv(lhs,rhs);
