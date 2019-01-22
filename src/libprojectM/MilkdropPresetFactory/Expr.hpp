@@ -101,7 +101,8 @@ public: // but don't call these from outside Expr.cpp
   virtual Expr *_optimize() { return this; };
   static  llvm::Value *llvm(JitContext &jit, Expr *);
   virtual llvm::Value *_llvm(JitContext &jit) = 0;  //ONLY called by llvm()
-  static llvm::Value *generate_eval_call(JitContext &jit, Expr *expr);
+  static llvm::Value *generate_eval_call(JitContext &jit, Expr *expr, const char *name=nullptr);
+  static llvm::Value *generate_set_call(JitContext &jitx, Expr *expr, llvm::Value *value);
   static llvm::Value *generate_set_matrix_call(JitContext &jitx, Expr *expr, llvm::Value *value);
 
   // override if this expr is not 'owned' by the containg expression tree
@@ -182,6 +183,7 @@ public:
     Expr *_optimize() override;
     float eval(int mesh_i, int mesh_j) override;
     std::ostream& to_string(std::ostream &out) override;
+    llvm::Value *_llvm(JitContext &jit) override;
 };
 
 

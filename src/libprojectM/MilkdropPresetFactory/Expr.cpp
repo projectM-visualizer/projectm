@@ -53,13 +53,24 @@ llvm::LLVMContext& getGlobalContext();
 
 // Wrapper for one module which corresponds to one jit'd Expr
 // TODO consider associating one JitContext with one Preset
+struct Symbol
+{
+    llvm::Value *value = nullptr;
+    llvm::Value *assigned_value = nullptr;
+};
 struct JitContext
 {
-//    JitContext(llvm::LLVMContext &context_, llvm::Module *module_, llvm::IRBuilder<llvm::ConstantFolder,llvm::IRBuilderDefaultInserter> &builder_, llvm::Value *i, llvm::Value *j) :
-//        context(context_), module(module_), builder(context_), mesh_i(i), mesh_j(j)
-//    {
-//        floatType = llvm::Type::getFloatTy(context);
-//    }
+    // NOTE: the module is either "owned" by module_ptr OR executionEngine
+    llvm::LLVMContext &context;
+    std::unique_ptr<llvm::Module> module_ptr;
+    std::unique_ptr<llvm::legacy::FunctionPassManager> fpm;
+    llvm::Module *module;
+    llvm::IRBuilder<llvm::ConstantFolder,llvm::IRBuilderDefaultInserter> builder;
+    llvm::Type *floatType;
+    llvm::Value *mesh_i;
+    llvm::Value *mesh_j;
+    std::map<Param *,Symbol *> symbols;
+
 
     JitContext(std::string name="LLVMModule") :
             context(getGlobalContext()), builder(getGlobalContext())
@@ -79,15 +90,10 @@ struct JitContext
         fpm->doInitialization();
     }
 
-    // NOTE: the module is either "owned" by module_ptr OR executionEngine
-    llvm::LLVMContext &context;
-    std::unique_ptr<llvm::Module> module_ptr;
-    std::unique_ptr<llvm::legacy::FunctionPassManager> fpm;
-    llvm::Module *module;
-    llvm::IRBuilder<llvm::ConstantFolder,llvm::IRBuilderDefaultInserter> builder;
-    llvm::Type *floatType;
-    llvm::Value *mesh_i;
-    llvm::Value *mesh_j;
+    ~JitContext()
+    {
+        traverse<TraverseFunctors::Delete<Symbol> >(symbols);
+    }
 
     // helpers
 
@@ -127,42 +133,76 @@ struct JitContext
         return builder.CreateCall(sinFunction, arg);
     }
 
-    llvm::Function *parent=nullptr;
-    llvm::BasicBlock *then_block=nullptr;
-    llvm::BasicBlock *else_block=nullptr;
-    llvm::BasicBlock *merge_block=nullptr;
+    std::vector<llvm::Function *> parent;
+    std::vector<llvm::BasicBlock *> then_block;
+    std::vector<llvm::BasicBlock *> else_block;
+    std::vector<llvm::BasicBlock *> merge_block;
 
     void StartTernary(llvm::Value *condition)
     {
-        parent = builder.GetInsertBlock()->getParent();
-        then_block = llvm::BasicBlock::Create(context, "then", parent);
-        else_block = llvm::BasicBlock::Create(context, "else");
-        merge_block = llvm::BasicBlock::Create(context, "ifcont");
-        builder.CreateCondBr(condition, then_block, else_block);
+        parent.push_back(builder.GetInsertBlock()->getParent());
+        then_block.push_back(llvm::BasicBlock::Create(context, "then", parent.back()));
+        else_block.push_back(llvm::BasicBlock::Create(context, "else"));
+        merge_block.push_back(llvm::BasicBlock::Create(context, "fi"));
+        builder.CreateCondBr(condition, then_block.back(), else_block.back());
     }
     void withThen()
     {
-        builder.SetInsertPoint(then_block);
+        builder.SetInsertPoint(then_block.back());
     }
     void withElse()
     {
         // finish the withThen block
-        builder.CreateBr(merge_block);
-        parent->getBasicBlockList().push_back(else_block);
-        builder.SetInsertPoint(else_block);
+        builder.CreateBr(merge_block.back());
+        parent.back()->getBasicBlockList().push_back(else_block.back());
+        builder.SetInsertPoint(else_block.back());
     }
     llvm::Value *FinishTernary(llvm::Value *thenValue, llvm::Value *elseValue)
     {
         // finish the withElse block
-        builder.CreateBr(merge_block);
-        parent->getBasicBlockList().push_back(merge_block);
-        builder.SetInsertPoint(merge_block);
+        builder.CreateBr(merge_block.back());
+        parent.back()->getBasicBlockList().push_back(merge_block.back());
+        builder.SetInsertPoint(merge_block.back());
         llvm::PHINode *mergeValue = builder.CreatePHI(floatType, 2, "iftmp");
-        mergeValue->addIncoming(thenValue, then_block);
-        mergeValue->addIncoming(elseValue, else_block);
-        parent = nullptr;
-        then_block = else_block = merge_block = nullptr;
+        mergeValue->addIncoming(thenValue, then_block.back());
+        mergeValue->addIncoming(elseValue, else_block.back());
+        parent.pop_back();
+        then_block.pop_back();
+        else_block.pop_back();
+        merge_block.pop_back();
         return mergeValue;
+    }
+
+    llvm::Value *getSymbolValue(Param *p)
+    {
+        auto it = symbols.find(p);
+        Symbol *sym = (it == symbols.end()) ? nullptr : it->second;
+        if (sym && sym->value)
+            return sym->value;
+        llvm::Value *v = Expr::generate_eval_call(*this, p, p->name.c_str());
+        // don't remember if we are in a conditional
+        if (!merge_block.empty())
+            return v;
+        if (nullptr == sym)
+        {
+            sym = new Symbol();
+            symbols.insert(std::make_pair(p, sym));
+        }
+        sym->value = v;
+        return v;
+    }
+    void assignSymbolValue(Param *p, llvm::Value *v)
+    {
+        v->setName(p->name.c_str());
+        auto it = symbols.find(p);
+        Symbol *sym = (it == symbols.end()) ? nullptr : it->second;
+        if (nullptr == sym)
+        {
+            sym = new Symbol();
+            symbols.insert(std::make_pair(p, sym));
+        }
+        sym->value = v;
+        sym->assigned_value = v;
     }
 };
 
@@ -433,6 +473,10 @@ public:
         llvm::Value *value = Expr::llvm(jitx, expr);
         if (nullptr == value)
             return nullptr;
+        if (c == 1.0f)
+            return value;
+        if (c == 0.0f)
+            return jitx.CreateConstant(0.0f);
         return jitx.builder.CreateFMul(jitx.CreateConstant(c), value);
     }
 };
@@ -631,6 +675,14 @@ llvm::Value *TreeExpr::_llvm(JitContext &jitx)
     }
     case INFIX_DIV:
     {
+        if (right->isConstant())
+        {
+            float f = right->eval(-1,-1);
+            if (1.0f == f)
+                return lhs;
+            else if (0.0f != f)
+                return jitx.builder.CreateFDiv(lhs,rhs);
+        }
         llvm::Value *condNotZero = jitx.builder.CreateFCmpUNE(jitx.CreateConstant(0.0f), rhs, "ifcond");
         jitx.StartTernary(condNotZero);
         jitx.withThen();
@@ -910,6 +962,18 @@ std::ostream& AssignExpr::to_string(std::ostream &out)
     return out;
 }
 
+llvm::Value *AssignExpr::_llvm(JitContext &jitx)
+{
+    llvm::Value *value = Expr::llvm(jitx, rhs);
+    if (nullptr == value)
+        return nullptr;
+    // TODO optimze to only call set_matrix() once at end of program
+    Expr::generate_set_call(jitx, this->lhs, value);
+    jitx.assignSymbolValue((Param *)this->lhs, value);
+    return value;
+}
+
+
 AssignMatrixExpr::AssignMatrixExpr(LValue *lhs_, Expr *rhs_) : AssignExpr(lhs_, rhs_) {}
 
 float AssignMatrixExpr::eval(int mesh_i, int mesh_j)
@@ -930,7 +994,10 @@ llvm::Value *AssignMatrixExpr::_llvm(JitContext &jitx)
     llvm::Value *value = Expr::llvm(jitx, rhs);
     if (nullptr == value)
         return nullptr;
-    return Expr::generate_set_matrix_call(jitx, this, value);
+    // TODO optimze to only call set_matrix() once at end of program
+    Expr::generate_set_matrix_call(jitx, this->lhs, value);
+    jitx.assignSymbolValue((Param *)this->lhs, value);
+    return value;
 }
 
 /* caller only has to delete returned expression.  optimize() will delete unused nodes in original expr;
@@ -1103,7 +1170,6 @@ public:
             delete jitExpr;
         }
 
-
         return true;
     }
 //#endif
@@ -1178,9 +1244,14 @@ __attribute__((noinline)) float eval_thunk(Expr *e, int i, int j)
 __attribute__((noinline)) void set_matrix_thunk(LValue *lvalue, int i, int j, float v)
 {
 
-    return lvalue->set_matrix(i, j, v);
+    lvalue->set_matrix(i, j, v);
 }
 
+__attribute__((noinline)) void set_thunk(LValue *lvalue, float v)
+{
+
+    lvalue->set(v);
+}
 
 LLVMContext *llvmGLobalContext;
 
@@ -1201,7 +1272,7 @@ LLVMContext& getGlobalContext()
 }
 
 
-Value * Expr::generate_eval_call(JitContext &jitx, Expr *expr)
+Value * Expr::generate_eval_call(JitContext &jitx, Expr *expr, const char *name)
 {
     // turn this into "void *"
     ConstantInt * thisConstant = ConstantInt::get(IntegerType::getInt64Ty(jitx.context), (uint64_t)expr, false);
@@ -1223,26 +1294,51 @@ Value * Expr::generate_eval_call(JitContext &jitx, Expr *expr)
     args.push_back(thisConstant);
     args.push_back(jitx.mesh_i);
     args.push_back(jitx.mesh_j);
-    Value *ret = jitx.builder.CreateCall(thunkFunctionPtr, args);
+    Value *ret = jitx.builder.CreateCall(thunkFunctionPtr, args, name);
     return ret;
+}
+
+
+Value * Expr::generate_set_call(JitContext &jitx, Expr *expr, Value *value)
+{
+    // turn expr into "void *"
+    ConstantInt * thisConstant = ConstantInt::get(IntegerType::getInt64Ty(jitx.context), (uint64_t)expr, false);
+
+    // thunk_expr into float ()(void *,int, int, float)
+    // use eval_thunk
+    ConstantInt * thunkConstant = ConstantInt::get(IntegerType::getInt64Ty(jitx.context), (uint64_t)set_thunk, false);
+    // TODO create type once
+    std::vector<Type*> setMatrixFunctionArgs;
+    setMatrixFunctionArgs.push_back(IntegerType::getInt64Ty(jitx.context));    // Expr *
+    setMatrixFunctionArgs.push_back(jitx.floatType);
+    auto evalFunctionType = FunctionType::get(llvm::Type::getVoidTy(jitx.context), setMatrixFunctionArgs, false);
+    auto evalFunctionPtrType = PointerType::get(evalFunctionType,1);
+
+    Value* thunkFunctionPtr = llvm::ConstantExpr::getIntToPtr(thunkConstant , evalFunctionPtrType);
+
+    std::vector<Value *> args;
+    args.push_back(thisConstant);
+    args.push_back(value);
+    jitx.builder.CreateCall(thunkFunctionPtr, args);
+    return value;
 }
 
 
 Value * Expr::generate_set_matrix_call(JitContext &jitx, Expr *expr, Value *value)
 {
-    // turn this into "void *"
+    // turn expr into "void *"
     ConstantInt * thisConstant = ConstantInt::get(IntegerType::getInt64Ty(jitx.context), (uint64_t)expr, false);
 
     // thunk_expr into float ()(void *,int, int, float)
     // use eval_thunk
-    ConstantInt * thunkConstant = ConstantInt::get(IntegerType::getInt64Ty(jitx.context), (uint64_t)eval_thunk, false);
+    ConstantInt * thunkConstant = ConstantInt::get(IntegerType::getInt64Ty(jitx.context), (uint64_t)set_matrix_thunk, false);
     // TODO create type once
     std::vector<Type*> setMatrixFunctionArgs;
     setMatrixFunctionArgs.push_back(IntegerType::getInt64Ty(jitx.context));    // Expr *
     setMatrixFunctionArgs.push_back(IntegerType::getInt32Ty(jitx.context));
     setMatrixFunctionArgs.push_back(IntegerType::getInt32Ty(jitx.context));
     setMatrixFunctionArgs.push_back(jitx.floatType);
-    auto evalFunctionType = FunctionType::get(jitx.floatType, setMatrixFunctionArgs, false);
+    auto evalFunctionType = FunctionType::get(llvm::Type::getVoidTy(jitx.context), setMatrixFunctionArgs, false);
     auto evalFunctionPtrType = PointerType::get(evalFunctionType,1);
 
     Value* thunkFunctionPtr = llvm::ConstantExpr::getIntToPtr(thunkConstant , evalFunctionPtrType);
@@ -1252,20 +1348,27 @@ Value * Expr::generate_set_matrix_call(JitContext &jitx, Expr *expr, Value *valu
     args.push_back(jitx.mesh_i);
     args.push_back(jitx.mesh_j);
     args.push_back(value);
-    Value *ret = jitx.builder.CreateCall(thunkFunctionPtr, args);
-    return ret;
+    jitx.builder.CreateCall(thunkFunctionPtr, args);
+    return value;
 }
 
 
 /* this is mostly a passthrough, but can be used to intercept calls to Param */
 Value *Expr::llvm(JitContext &jitx, Expr *root)
 {
+    if (root->clazz == PARAMETER)
+    {
+        return jitx.getSymbolValue((Param *)root);
+    }
     return root->_llvm(jitx);
 }
 
 
 Expr *Expr::jit(Expr *root)
 {
+#ifdef NEVER_JIT
+    return root;
+#endif
     LLVMContext &Context = getGlobalContext();
 
     // Create some module to put our function into it.
