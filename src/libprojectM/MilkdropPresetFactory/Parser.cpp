@@ -757,7 +757,7 @@ Expr * Parser::_parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Milkd
       }
 
       /* Convert function to expression */
-      if ((gen_expr = Expr::prefun_to_expr((float (*)(void *))func->func_ptr, expr_list, func->getNumArgs())) == NULL)
+      if ((gen_expr = Expr::prefun_to_expr(func->func_ptr, expr_list, func->getNumArgs())) == NULL)
       {
         if (PARSE_DEBUG) printf("parse_prefix_args: failed to convert prefix function to general expression (LINE %d) \n",
                                   line_count);

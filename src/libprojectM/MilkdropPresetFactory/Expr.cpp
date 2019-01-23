@@ -33,38 +33,20 @@
 float PrefunExpr::eval ( int mesh_i, int mesh_j )
 {
 	assert ( func_ptr );
-	float arg_list_stk[10];
-
-	float * arg_list;
-	float * argp;
-	Expr **expr_listp = expr_list;
-
-
-	if (this->num_args > 10) {
-		arg_list = new float[this->num_args];
-	} else {
-		arg_list = arg_list_stk;
-	}
-	argp = arg_list;
-
-	assert(arg_list);
+	float arg_list[num_args];	// variable length array supported by GCC
 
 	//printf("numargs %d", num_args);
 
 	/* Evaluate each argument before calling the function itself */
 	for ( int i = 0; i < num_args; i++ )
 	{
-		*(argp++) = (*(expr_listp++))->eval ( mesh_i, mesh_j );
+		arg_list[i] = expr_list[i]->eval ( mesh_i, mesh_j );
 		//printf("numargs %x", arg_list[i]);
 	}
 	/* Now we call the function, passing a list of
 	   floats as its argument */
 
 	const float value = ( func_ptr ) ( arg_list );
-
-	if (arg_list != arg_list_stk) {
-		delete[](arg_list);
-	}
 	return value;
 }
 
@@ -78,6 +60,55 @@ class PrefunExprOne : public PrefunExpr
 	}
 };
 
+class IfAboveExpr : public PrefunExpr
+{
+public:
+	IfAboveExpr(Expr *a, Expr *b, Expr *t, Expr *e) : PrefunExpr()
+	{
+        num_args = 4;
+		expr_list = (Expr **)malloc(num_args*sizeof(Expr *));
+		expr_list[0] = a;
+		expr_list[1] = b;
+		expr_list[2] = t;
+		expr_list[3] = e;
+	}
+	float eval ( int mesh_i, int mesh_j ) override
+	{
+		// see above_wrapper(), below_wrapper()
+		float aval = expr_list[0]->eval(mesh_i,mesh_j);
+		float bval = expr_list[1]->eval(mesh_i,mesh_j);
+		if (aval > bval)
+			return expr_list[2]->eval(mesh_i,mesh_j);
+		else
+			return expr_list[3]->eval(mesh_i,mesh_j);
+	}
+};
+
+class IfEqualExpr : public PrefunExpr
+{
+public:
+	IfEqualExpr(Expr *a, Expr *b, Expr *t, Expr *e) : PrefunExpr()
+	{
+        num_args = 4;
+        expr_list = (Expr **)malloc(num_args*sizeof(Expr *));
+		expr_list[0] = a;
+		expr_list[1] = b;
+		expr_list[2] = t;
+		expr_list[3] = e;
+	}
+	float eval ( int mesh_i, int mesh_j ) override
+	{
+		// see above_wrapper(), below_wrapper()
+		float aval = expr_list[0]->eval(mesh_i,mesh_j);
+		float bval = expr_list[1]->eval(mesh_i,mesh_j);
+		if (aval == bval)
+			return expr_list[2]->eval(mesh_i,mesh_j);
+		else
+			return expr_list[3]->eval(mesh_i,mesh_j);
+	}
+};
+
+
 // short circuiting IF
 class IfExpr : public PrefunExpr
 {
@@ -88,6 +119,34 @@ class IfExpr : public PrefunExpr
 		if (val == 0)
 			return expr_list[2]->eval ( mesh_i, mesh_j );
 		return expr_list[1]->eval ( mesh_i, mesh_j );
+	}
+
+public:
+	Expr *_optimize() override
+	{
+		Expr *opt = PrefunExpr::_optimize();
+		if (opt != this)
+			return opt;
+		if (expr_list[0]->clazz!=FUNCTION)
+			return this;
+		auto *compExpr = (PrefunExpr *)expr_list[0];
+		if (compExpr->func_ptr == FuncWrappers::above_wrapper || compExpr->func_ptr == FuncWrappers::below_wrapper ||
+		    compExpr->func_ptr == FuncWrappers::equal_wrapper)
+		{
+			Expr *ret;
+			if (compExpr->func_ptr == FuncWrappers::above_wrapper)
+				ret = new IfAboveExpr(compExpr->expr_list[0], compExpr->expr_list[1], expr_list[1], expr_list[2]);
+			else if (compExpr->func_ptr == FuncWrappers::below_wrapper)
+				ret = new IfAboveExpr(compExpr->expr_list[1], compExpr->expr_list[0], expr_list[1], expr_list[2]);
+			else
+				ret = new IfEqualExpr(compExpr->expr_list[0], compExpr->expr_list[1], expr_list[1], expr_list[2]);
+			compExpr->expr_list[0] = nullptr;
+			compExpr->expr_list[1] = nullptr;
+			expr_list[1] = nullptr;
+			expr_list[2] = nullptr;
+			return ret;
+		}
+		return this;
 	}
 };
 
@@ -379,30 +438,30 @@ Expr * Expr::param_to_expr ( Param * param )
 }
 
 /* Converts a prefix function to an expression */
-Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( void * ), Expr ** expr_list, int num_args )
+Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( float * ), Expr ** expr_list, int num_args )
 {
     PrefunExpr *prefun_expr;
     if (num_args == 1)
     {
-        if (func_ptr == (float (*)(void *)) FuncWrappers::sin_wrapper)
+        if (func_ptr == (float (*)(float *)) FuncWrappers::sin_wrapper)
             prefun_expr = new SinExpr();
-        else if (func_ptr == (float (*)(void *)) FuncWrappers::cos_wrapper)
+        else if (func_ptr == (float (*)(float *)) FuncWrappers::cos_wrapper)
             prefun_expr = new CosExpr();
-        else if (func_ptr == (float (*)(void *)) FuncWrappers::log_wrapper)
+        else if (func_ptr == (float (*)(float *)) FuncWrappers::log_wrapper)
             prefun_expr = new LogExpr();
         else
             prefun_expr = new PrefunExprOne();
     }
     else if (num_args == 2)
     {
-        if (func_ptr == (float (*)(void *)) FuncWrappers::pow_wrapper)
+        if (func_ptr == (float (*)(float *)) FuncWrappers::pow_wrapper)
             prefun_expr = new PowExpr();
         else
             prefun_expr = new PrefunExpr();
     }
     else if (num_args == 3)
 	{
-		if (func_ptr == (float (*)(void *)) FuncWrappers::if_wrapper)
+		if (func_ptr == (float (*)(float *)) FuncWrappers::if_wrapper)
 			prefun_expr = new IfExpr();
 		else
 			prefun_expr = new PrefunExpr();
@@ -413,7 +472,7 @@ Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( void * ), Expr ** expr_list,
     }
 
 	prefun_expr->num_args = num_args;
-	prefun_expr->func_ptr = ( float ( * ) ( void* ) ) func_ptr;
+	prefun_expr->func_ptr = func_ptr;
 	prefun_expr->expr_list = expr_list;
 	return prefun_expr;
 }
@@ -522,10 +581,11 @@ PrefunExpr::PrefunExpr() : Expr(FUNCTION)
 {
 }
 
-bool isConstantFn(float (* fn)(void*))
+// consider: move method to FunctionWrappers?
+bool isConstantFn(float (* fn)(float *))
 {
-    return (float (*)(float *))fn != FuncWrappers::print_wrapper &&
-           (float (*)(float *))fn != FuncWrappers::rand_wrapper;
+    return fn != FuncWrappers::print_wrapper &&
+           fn != FuncWrappers::rand_wrapper;
 }
 
 Expr *PrefunExpr::_optimize()
@@ -631,7 +691,6 @@ public:
         TreeExpr *a = TreeExpr::create(nullptr, Expr::const_to_expr( 1.0 ), nullptr, nullptr);
         TreeExpr *b = TreeExpr::create(nullptr, Expr::const_to_expr( 2.0 ), nullptr, nullptr);
 	    Expr *c = TreeExpr::create(Eval::infix_add, nullptr, a, b);
-        //TEST(3.0f == c->eval(-1,-1));
         Expr *x = Expr::optimize(c);
         TEST(x != c);
 		Expr::delete_expr(c);
@@ -641,7 +700,7 @@ public:
 
         Expr **expr_array = (Expr **)malloc(sizeof(Expr *));
         expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( (float)M_PI ), nullptr, nullptr);
-        Expr *sin = Expr::prefun_to_expr((float (*)(void *))FuncWrappers::sin_wrapper, expr_array, 1);
+        Expr *sin = Expr::prefun_to_expr(FuncWrappers::sin_wrapper, expr_array, 1);
         x = Expr::optimize(sin);
         TEST(x != sin);
         Expr::delete_expr( sin );
@@ -652,7 +711,7 @@ public:
         // make sure rand() is not optimized away
         expr_array = (Expr **)malloc(sizeof(Expr *));
 		expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( (float)M_PI ), nullptr, nullptr);
-		Expr *rand = Expr::prefun_to_expr((float (*)(void *))FuncWrappers::rand_wrapper, expr_array, 1);
+		Expr *rand = Expr::prefun_to_expr(FuncWrappers::rand_wrapper, expr_array, 1);
 		x = Expr::optimize(rand);
 		TEST(x == rand);
 		TEST(x->clazz != CONSTANT);
