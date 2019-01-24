@@ -11,7 +11,7 @@ Then run these commands to configure
 ```
 export LDFLAGS="$(llvm-config --ldflags)"
 export LIBS="$(llvm-config --libs)"
-export CXXFLAGS='-DNDEBUG -O2 -g'
+export CXXFLAGS="-DNDEBUG -O2 -g -I$(llvm-config --includedir)"
 ./autogen.sh && ./configure --enable-sdl --enable-qt --prefix=$PWD/local
 ```
 
