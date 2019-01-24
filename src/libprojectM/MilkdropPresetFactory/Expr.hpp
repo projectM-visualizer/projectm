@@ -90,7 +90,7 @@ public:
   static Test *test();
   static Expr *const_to_expr( float val );
   static Expr *param_to_expr( Param *param );
-  static Expr *prefun_to_expr( float (*func_ptr)(void *), Expr **expr_list, int num_args );
+  static Expr *prefun_to_expr( float (*func_ptr)(float *), Expr **expr_list, int num_args );
 
   static void delete_expr(Expr *expr) { if (nullptr != expr) expr->_delete_from_tree(); }
   static Expr *optimize(Expr *root);
@@ -150,7 +150,7 @@ public:
 class PrefunExpr : public Expr
 {
 public:
-  float (*func_ptr)(void*);
+  float (*func_ptr)(float *);
   int num_args;
   Expr **expr_list;
   PrefunExpr();

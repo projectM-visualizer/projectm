@@ -152,14 +152,18 @@ struct JitContext
     }
     void withElse()
     {
-        // finish the withThen block
+        // finish the withThen block, remember the last block of the THEN (may have changed)
+        llvm::BasicBlock *lastBlockOfThen = &parent.back()->getBasicBlockList().back();
+        then_block.back() = lastBlockOfThen;
         builder.CreateBr(merge_block.back());
         parent.back()->getBasicBlockList().push_back(else_block.back());
         builder.SetInsertPoint(else_block.back());
     }
     llvm::Value *FinishTernary(llvm::Value *thenValue, llvm::Value *elseValue)
     {
-        // finish the withElse block
+        // finish the withElse block, remember the last block of the ELSE
+        llvm::BasicBlock *lastBlockOfElse = &parent.back()->getBasicBlockList().back();
+        else_block.back() = lastBlockOfElse;
         builder.CreateBr(merge_block.back());
         parent.back()->getBasicBlockList().push_back(merge_block.back());
         builder.SetInsertPoint(merge_block.back());
@@ -213,46 +217,27 @@ struct JitContext
 /* Evaluates functions in prefix form */
 float PrefunExpr::eval ( int mesh_i, int mesh_j )
 {
-    assert ( func_ptr );
-    float arg_list_stk[10];
-
-    float * arg_list;
-    float * argp;
-    Expr **expr_listp = expr_list;
-
-
-    if (this->num_args > 10) {
-        arg_list = new float[this->num_args];
-    } else {
-        arg_list = arg_list_stk;
-    }
-    argp = arg_list;
-
-    assert(arg_list);
+	assert ( func_ptr );
+	float arg_list[num_args];	// variable length array supported by GCC
 
     //printf("numargs %d", num_args);
 
-    /* Evaluate each argument before calling the function itself */
-    for ( int i = 0; i < num_args; i++ )
-    {
-        *(argp++) = (*(expr_listp++))->eval ( mesh_i, mesh_j );
-        //printf("numargs %x", arg_list[i]);
-    }
-    /* Now we call the function, passing a list of
-       floats as its argument */
+	/* Evaluate each argument before calling the function itself */
+	for ( int i = 0; i < num_args; i++ )
+	{
+		arg_list[i] = expr_list[i]->eval ( mesh_i, mesh_j );
+		//printf("numargs %x", arg_list[i]);
+	}
+	/* Now we call the function, passing a list of
+	   floats as its argument */
 
-    const float value = ( func_ptr ) ( arg_list );
-
-    if (arg_list != arg_list_stk) {
-        delete[](arg_list);
-    }
-    return value;
+	const float value = ( func_ptr ) ( arg_list );
+	return value;
 }
 
 llvm::Value *PrefunExpr::_llvm(JitContext &jitx)
 {
-    //llvm::ArrayType *array_ty = llvm::ArrayType::get(jitx.floatType, num_args);
-    //llvm::AllocaInst *array = jitx.builder.CreateAlloca(array_ty);
+    // TODO match up all wrapper functions with llvm Intrinsics
     llvm::AllocaInst *array = jitx.builder.CreateAlloca(jitx.floatType, jitx.CreateConstant(num_args));
     for ( unsigned i = 0; i < (unsigned)num_args; i++ )
     {
@@ -285,18 +270,126 @@ class PrefunExprOne : public PrefunExpr
     }
 };
 
+class IfAboveExpr : public PrefunExpr
+{
+public:
+	IfAboveExpr(Expr *a, Expr *b, Expr *t, Expr *e) : PrefunExpr()
+	{
+        num_args = 4;
+		expr_list = (Expr **)malloc(num_args*sizeof(Expr *));
+		expr_list[0] = a;
+		expr_list[1] = b;
+		expr_list[2] = t;
+		expr_list[3] = e;
+	}
+	float eval ( int mesh_i, int mesh_j ) override
+	{
+		// see above_wrapper(), below_wrapper()
+		float aval = expr_list[0]->eval(mesh_i,mesh_j);
+		float bval = expr_list[1]->eval(mesh_i,mesh_j);
+		if (aval > bval)
+			return expr_list[2]->eval(mesh_i,mesh_j);
+		else
+			return expr_list[3]->eval(mesh_i,mesh_j);
+	}
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Value *aValue = Expr::llvm(jitx, expr_list[0]);
+        llvm::Value *bValue = Expr::llvm(jitx, expr_list[1]);
+        if (nullptr == aValue || nullptr == bValue)
+            return nullptr;
+        llvm::Value *condition = jitx.builder.CreateFCmpUGT(aValue, bValue);
+        jitx.StartTernary(condition);
+        jitx.withThen();
+        llvm::Value *thenValue = Expr::llvm(jitx, expr_list[2]);
+        jitx.withElse();
+        llvm::Value *elseValue = Expr::llvm(jitx, expr_list[3]);
+        if (nullptr == thenValue || nullptr == elseValue)
+            return nullptr;
+        return jitx.FinishTernary(thenValue, elseValue);
+    }
+};
+
+class IfEqualExpr : public PrefunExpr
+{
+public:
+	IfEqualExpr(Expr *a, Expr *b, Expr *t, Expr *e) : PrefunExpr()
+	{
+        num_args = 4;
+        expr_list = (Expr **)malloc(num_args*sizeof(Expr *));
+		expr_list[0] = a;
+		expr_list[1] = b;
+		expr_list[2] = t;
+		expr_list[3] = e;
+	}
+	float eval ( int mesh_i, int mesh_j ) override
+	{
+		// see above_wrapper(), below_wrapper()
+		float aval = expr_list[0]->eval(mesh_i,mesh_j);
+		float bval = expr_list[1]->eval(mesh_i,mesh_j);
+		if (aval == bval)
+			return expr_list[2]->eval(mesh_i,mesh_j);
+		else
+			return expr_list[3]->eval(mesh_i,mesh_j);
+	}
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Value *aValue = Expr::llvm(jitx, expr_list[0]);
+        llvm::Value *bValue = Expr::llvm(jitx, expr_list[1]);
+        if (nullptr == aValue || nullptr == bValue)
+            return nullptr;
+        llvm::Value *condition = jitx.builder.CreateFCmpUEQ(aValue, bValue);
+        jitx.StartTernary(condition);
+        jitx.withThen();
+        llvm::Value *thenValue = Expr::llvm(jitx, expr_list[2]);
+        jitx.withElse();
+        llvm::Value *elseValue = Expr::llvm(jitx, expr_list[3]);
+        if (nullptr == thenValue || nullptr == elseValue)
+            return nullptr;
+        return jitx.FinishTernary(thenValue, elseValue);
+    }
+};
+
+
 // short circuiting IF
-// TODO consider IfAboveExpr, IfEqualExpr
 class IfExpr : public PrefunExpr
 {
-    float eval ( int mesh_i, int mesh_j )
-    {
-        // see if_wrapper()
-        float val = expr_list[0]->eval ( mesh_i, mesh_j );
-        if (val == 0)
-            return expr_list[2]->eval ( mesh_i, mesh_j );
-        return expr_list[1]->eval ( mesh_i, mesh_j );
-    }
+	float eval ( int mesh_i, int mesh_j )
+	{
+		// see if_wrapper()
+		float val = expr_list[0]->eval ( mesh_i, mesh_j );
+		if (val == 0)
+			return expr_list[2]->eval ( mesh_i, mesh_j );
+		return expr_list[1]->eval ( mesh_i, mesh_j );
+	}
+
+public:
+	Expr *_optimize() override
+	{
+		Expr *opt = PrefunExpr::_optimize();
+		if (opt != this)
+			return opt;
+		if (expr_list[0]->clazz!=FUNCTION)
+			return this;
+		auto *compExpr = (PrefunExpr *)expr_list[0];
+		if (compExpr->func_ptr == FuncWrappers::above_wrapper || compExpr->func_ptr == FuncWrappers::below_wrapper ||
+		    compExpr->func_ptr == FuncWrappers::equal_wrapper)
+		{
+			Expr *ret;
+			if (compExpr->func_ptr == FuncWrappers::above_wrapper)
+				ret = new IfAboveExpr(compExpr->expr_list[0], compExpr->expr_list[1], expr_list[1], expr_list[2]);
+			else if (compExpr->func_ptr == FuncWrappers::below_wrapper)
+				ret = new IfAboveExpr(compExpr->expr_list[1], compExpr->expr_list[0], expr_list[1], expr_list[2]);
+			else
+				ret = new IfEqualExpr(compExpr->expr_list[0], compExpr->expr_list[1], expr_list[1], expr_list[2]);
+			compExpr->expr_list[0] = nullptr;
+			compExpr->expr_list[1] = nullptr;
+			expr_list[1] = nullptr;
+			expr_list[2] = nullptr;
+			return ret;
+		}
+		return this;
+	}
     llvm::Value *_llvm(JitContext &jitx) override
     {
         llvm::Value *testValue = Expr::llvm(jitx, expr_list[0]);
@@ -388,13 +481,13 @@ class ConstantExpr : public Expr
 public:
     ConstantExpr( float value ) : Expr(CONSTANT), constant(value) {}
     ConstantExpr( int type, Term *term ) : Expr(CONSTANT), constant(term->constant) {}
-    bool isConstant() 
+    bool isConstant()
     {
-        return true; 
+        return true;
     }
-    float eval(int mesh_i, int mesh_j ) 
-    { 
-        return constant; 
+    float eval(int mesh_i, int mesh_j )
+    {
+        return constant;
     }
     std::ostream &to_string(std::ostream &out)
     {
@@ -557,7 +650,7 @@ Expr *TreeExpr::_optimize()
         return Expr::const_to_expr(eval(-1, -1));
 
     // this is gratuitious, but a*b+c is super common, so as proof-of-concept, let's make a special Expr
-    if (infix_op->type == INFIX_ADD && 
+    if (infix_op->type == INFIX_ADD &&
         ((left->clazz == TREE && ((TreeExpr *)left)->infix_op->type == INFIX_MULT) ||
         (right->clazz == TREE && ((TreeExpr *)right)->infix_op->type == INFIX_MULT)))
     {
@@ -727,43 +820,50 @@ Expr * Expr::param_to_expr ( Param * param )
 }
 
 /* Converts a prefix function to an expression */
-Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( void * ), Expr ** expr_list, int num_args )
+Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( float * ), Expr ** expr_list, int num_args )
 {
     PrefunExpr *prefun_expr;
     if (num_args == 1)
     {
-        if (func_ptr == (float (*)(void *)) FuncWrappers::sin_wrapper)
+        if (func_ptr == FuncWrappers::sin_wrapper)
             prefun_expr = new SinExpr();
-        else if (func_ptr == (float (*)(void *)) FuncWrappers::cos_wrapper)
+        else if (func_ptr == (float (*)(float *)) FuncWrappers::cos_wrapper)
             prefun_expr = new CosExpr();
-        else if (func_ptr == (float (*)(void *)) FuncWrappers::log_wrapper)
+        else if (func_ptr == (float (*)(float *)) FuncWrappers::log_wrapper)
             prefun_expr = new LogExpr();
         else
             prefun_expr = new PrefunExprOne();
     }
     else if (num_args == 2)
     {
-        if (func_ptr == (float (*)(void *)) FuncWrappers::pow_wrapper)
+        if (func_ptr == FuncWrappers::pow_wrapper)
             prefun_expr = new PowExpr();
         else
             prefun_expr = new PrefunExpr();
     }
     else if (num_args == 3)
     {
-        if (func_ptr == (float (*)(void *)) FuncWrappers::if_wrapper)
+        if (func_ptr == FuncWrappers::if_wrapper)
             prefun_expr = new IfExpr();
         else
             prefun_expr = new PrefunExpr();
     }
+    else if (num_args == 3)
+	{
+		if (func_ptr == (float (*)(float *)) FuncWrappers::if_wrapper)
+			prefun_expr = new IfExpr();
+		else
+			prefun_expr = new PrefunExpr();
+	}
     else
     {
         prefun_expr = new PrefunExpr();
     }
 
-    prefun_expr->num_args = num_args;
-    prefun_expr->func_ptr = ( float ( * ) ( void* ) ) func_ptr;
-    prefun_expr->expr_list = expr_list;
-    return prefun_expr;
+	prefun_expr->num_args = num_args;
+	prefun_expr->func_ptr = func_ptr;
+	prefun_expr->expr_list = expr_list;
+	return prefun_expr;
 }
 
 /* Creates a new tree expression */
@@ -893,10 +993,11 @@ PrefunExpr::PrefunExpr() : Expr(FUNCTION)
 {
 }
 
-bool isConstantFn(float (* fn)(void*))
+// consider: move method to FunctionWrappers?
+bool isConstantFn(float (* fn)(float *))
 {
-    return (float (*)(float *))fn != FuncWrappers::print_wrapper &&
-           (float (*)(float *))fn != FuncWrappers::rand_wrapper;
+    return fn != FuncWrappers::print_wrapper &&
+           fn != FuncWrappers::rand_wrapper;
 }
 
 Expr *PrefunExpr::_optimize()
@@ -1050,8 +1151,7 @@ public:
     {
         TreeExpr *a = TreeExpr::create(nullptr, Expr::const_to_expr( 1.0 ), nullptr, nullptr);
         TreeExpr *b = TreeExpr::create(nullptr, Expr::const_to_expr( 2.0 ), nullptr, nullptr);
-        Expr *c = TreeExpr::create(Eval::infix_add, nullptr, a, b);
-        //TEST(3.0f == c->eval(-1,-1));
+	    Expr *c = TreeExpr::create(Eval::infix_add, nullptr, a, b);
         Expr *x = Expr::optimize(c);
         TEST(x != c);
 		c = nullptr;
@@ -1061,7 +1161,7 @@ public:
 
         Expr **expr_array = (Expr **)malloc(sizeof(Expr *));
         expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( (float)M_PI ), nullptr, nullptr);
-        Expr *sin = Expr::prefun_to_expr((float (*)(void *))FuncWrappers::sin_wrapper, expr_array, 1);
+        Expr *sin = Expr::prefun_to_expr(FuncWrappers::sin_wrapper, expr_array, 1);
         x = Expr::optimize(sin);
         TEST(x != sin);
         sin = nullptr;
@@ -1072,7 +1172,7 @@ public:
         // make sure rand() is not optimized away
         expr_array = (Expr **)malloc(sizeof(Expr *));
         expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( (float)M_PI ), nullptr, nullptr);
-        Expr *rand = Expr::prefun_to_expr((float (*)(void *))FuncWrappers::rand_wrapper, expr_array, 1);
+        Expr *rand = Expr::prefun_to_expr(FuncWrappers::rand_wrapper, expr_array, 1);
         x = Expr::optimize(rand);
         TEST(x == rand);
         rand = nullptr;
@@ -1125,7 +1225,7 @@ public:
         Expr *CONST = Expr::const_to_expr(3.0f);
         SinExpr *SIN = new SinExpr();    // TODO constructor
         SIN->num_args = 1;
-        SIN->func_ptr = ( float ( * ) ( void* ) ) FuncWrappers::sin_wrapper;
+        SIN->func_ptr = FuncWrappers::sin_wrapper;
         SIN->expr_list = (Expr **)malloc(1 * sizeof(Expr *));
         SIN->expr_list[0] = CONST;
         Expr *jitExpr = Expr::jit(SIN);
@@ -1140,7 +1240,7 @@ public:
             Expr *CONST3 = Expr::const_to_expr(3.0f);
             PrefunExpr *IF = new PrefunExpr();    // TODO constructor
             IF->num_args = 3;
-            IF->func_ptr = ( float ( * ) ( void* ) ) FuncWrappers::if_wrapper;
+            IF->func_ptr = FuncWrappers::if_wrapper;
             IF->expr_list = (Expr **)malloc(3 * sizeof(Expr *));
             IF->expr_list[0] = CONST1;
             IF->expr_list[1] = CONST2;
