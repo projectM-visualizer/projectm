@@ -1,6 +1,6 @@
 ### Building with LLVM JIT
 
-I haven't updated ./autogen.sh && ./configure yet.  However, you can build with LLVM JIT enabled by getting the LLVM development libraries
+Install the LLVM libraries (I've used llvm-7 so far).
 
 ```
 sudo apt-get install llvm-7-dev llvm-7-tools
@@ -9,10 +9,7 @@ sudo apt-get install llvm-7-dev llvm-7-tools
 Then run these commands to configure
 
 ```
-export LDFLAGS="$(llvm-config --ldflags)"
-export LIBS="$(llvm-config --libs)"
-export CXXFLAGS="-DNDEBUG -O2 -g -I$(llvm-config --includedir)"
-./autogen.sh && ./configure --enable-sdl --enable-qt --prefix=$PWD/local
+./autogen.sh && ./configure --enable-sdl --enable-qt --enable-llvm --prefix=$PWD/local
 ```
 
 And a clean build of course.

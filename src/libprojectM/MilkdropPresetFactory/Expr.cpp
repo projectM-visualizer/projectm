@@ -27,7 +27,7 @@
 #include "Eval.hpp"
 #include "BuiltinFuncs.hpp"
 
-// #ifdef USE_LLVM
+#if HAVE_LLVM
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ExecutionEngine/ExecutionEngine.h"
@@ -209,9 +209,7 @@ struct JitContext
         sym->assigned_value = v;
     }
 };
-
-
-// #endif
+#endif
 
 
 /* Evaluates functions in prefix form */
@@ -235,6 +233,8 @@ float PrefunExpr::eval ( int mesh_i, int mesh_j )
 	return value;
 }
 
+
+#if HAVE_LLVM
 llvm::Value *PrefunExpr::_llvm(JitContext &jitx)
 {
     // TODO match up all wrapper functions with llvm Intrinsics
@@ -259,6 +259,7 @@ llvm::Value *PrefunExpr::_llvm(JitContext &jitx)
     args.push_back(array);
     return jitx.builder.CreateCall(function_ptr, args);
 }
+#endif
 
 
 class PrefunExprOne : public PrefunExpr
@@ -292,6 +293,7 @@ public:
 		else
 			return expr_list[3]->eval(mesh_i,mesh_j);
 	}
+#if HAVE_LLVM
     llvm::Value *_llvm(JitContext &jitx) override
     {
         llvm::Value *aValue = Expr::llvm(jitx, expr_list[0]);
@@ -308,6 +310,7 @@ public:
             return nullptr;
         return jitx.FinishTernary(thenValue, elseValue);
     }
+#endif
 };
 
 class IfEqualExpr : public PrefunExpr
@@ -332,6 +335,7 @@ public:
 		else
 			return expr_list[3]->eval(mesh_i,mesh_j);
 	}
+#if HAVE_LLVM
     llvm::Value *_llvm(JitContext &jitx) override
     {
         llvm::Value *aValue = Expr::llvm(jitx, expr_list[0]);
@@ -348,6 +352,7 @@ public:
             return nullptr;
         return jitx.FinishTernary(thenValue, elseValue);
     }
+#endif
 };
 
 
@@ -390,6 +395,7 @@ public:
 		}
 		return this;
 	}
+#if HAVE_LLVM
     llvm::Value *_llvm(JitContext &jitx) override
     {
         llvm::Value *testValue = Expr::llvm(jitx, expr_list[0]);
@@ -407,6 +413,7 @@ public:
         // CONSIDER use switch if left and right are both constant?
         //return jitx.builder.CreateSelect(jitx.builder.CreateICmpNEQ(zeroInt,expr0), expr1, expr2);
     }
+#endif
 };
 
 class SinExpr : public PrefunExpr
@@ -416,6 +423,7 @@ class SinExpr : public PrefunExpr
         float val = expr_list[0]->eval ( mesh_i, mesh_j );
         return sinf(val);
     }
+#if HAVE_LLVM
     llvm::Value *_llvm(JitContext &jitx) override
     {
         llvm::Value *val = Expr::llvm(jitx, expr_list[0]);
@@ -423,6 +431,7 @@ class SinExpr : public PrefunExpr
             return nullptr;
         return jitx.CallIntrinsic(llvm::Intrinsic::sin, val);
     }
+#endif
 };
 
 class CosExpr : public PrefunExpr
@@ -432,6 +441,7 @@ class CosExpr : public PrefunExpr
         float val = expr_list[0]->eval ( mesh_i, mesh_j );
         return cosf(val);
     }
+#if HAVE_LLVM
     llvm::Value *_llvm(JitContext &jitx) override
     {
         llvm::Value *val = Expr::llvm(jitx, expr_list[0]);
@@ -439,6 +449,7 @@ class CosExpr : public PrefunExpr
             return nullptr;
         return jitx.CallIntrinsic(llvm::Intrinsic::cos, val);
     }
+#endif
 };
 
 class LogExpr : public PrefunExpr
@@ -448,6 +459,7 @@ class LogExpr : public PrefunExpr
         float val = expr_list[0]->eval( mesh_i, mesh_j );
         return logf(val);
     }
+#if HAVE_LLVM
     llvm::Value *_llvm(JitContext &jitx) override
     {
         llvm::Value *val = Expr::llvm(jitx, expr_list[0]);
@@ -455,6 +467,7 @@ class LogExpr : public PrefunExpr
             return nullptr;
         return jitx.CallIntrinsic(llvm::Intrinsic::log, val);
     }
+#endif
 };
 
 class PowExpr : public PrefunExpr
@@ -465,6 +478,7 @@ class PowExpr : public PrefunExpr
         float y = expr_list[1]->eval( mesh_i, mesh_j );
         return powf(x, y);
     }
+#if HAVE_LLVM
     llvm::Value *_llvm(JitContext &jitx) override
     {
         llvm::Value *x = Expr::llvm(jitx, expr_list[0]);
@@ -473,6 +487,7 @@ class PowExpr : public PrefunExpr
             return nullptr;
         return jitx.CallIntrinsic2(llvm::Intrinsic::pow, x, y);
     }
+#endif
 };
 
 class ConstantExpr : public Expr
@@ -494,10 +509,12 @@ public:
         out << constant; return out;
     }
 
+#if HAVE_LLVM
     llvm::Value *_llvm(JitContext &jitx) override
     {
         return jitx.CreateConstant(constant);
     }
+#endif
 };
 
 
@@ -526,7 +543,7 @@ public:
         out << "(" << a << " * " << b << ") + " << c;
         return out;
     }
-
+#if HAVE_LLVM
     llvm::Value *_llvm(JitContext &jitx) override
     {
         llvm::Value *avalue = Expr::llvm(jitx, a);
@@ -536,6 +553,7 @@ public:
             return nullptr;
         return jitx.builder.CreateFAdd(jitx.builder.CreateFMul(avalue,bvalue),cvalue);
     }
+#endif
 };
 
 class MultConstExpr : public Expr
@@ -561,6 +579,7 @@ public:
         out << "(" << expr << " * " << c << ") + " << c;
         return out;
     }
+#if HAVE_LLVM
     llvm::Value *_llvm(JitContext &jitx) override
     {
         llvm::Value *value = Expr::llvm(jitx, expr);
@@ -572,6 +591,7 @@ public:
             return jitx.CreateConstant(0.0f);
         return jitx.builder.CreateFMul(jitx.CreateConstant(c), value);
     }
+#endif
 };
 
 std::ostream &TreeExpr::to_string(std::ostream &out)
@@ -719,6 +739,7 @@ float TreeExpr::eval ( int mesh_i, int mesh_j )
     }
 }
 
+#if HAVE_LLVM
 llvm::Value *TreeExpr::_llvm(JitContext &jitx)
 {
     llvm::Value *lhs = Expr::llvm(jitx, left);
@@ -788,6 +809,7 @@ llvm::Value *TreeExpr::_llvm(JitContext &jitx)
         return nullptr;
     }
 }
+#endif
 
 /* Converts a float value to a general expression */
 Expr * Expr::const_to_expr ( float val )
@@ -881,6 +903,7 @@ public:
     {
         return left->eval(mesh_i, mesh_j) + right->eval(mesh_i, mesh_j);
     }
+#if HAVE_LLVM
     llvm::Value *_llvm(JitContext &jitx) override
     {
         llvm::Value *l = Expr::llvm(jitx, left);
@@ -889,6 +912,7 @@ public:
             return nullptr;
         return jitx.builder.CreateFAdd(l,r);
     }
+#endif
 };
 
 class TreeExprMinus : public TreeExpr
@@ -1063,6 +1087,7 @@ std::ostream& AssignExpr::to_string(std::ostream &out)
     return out;
 }
 
+#if HAVE_LLVM
 llvm::Value *AssignExpr::_llvm(JitContext &jitx)
 {
     llvm::Value *value = Expr::llvm(jitx, rhs);
@@ -1073,7 +1098,7 @@ llvm::Value *AssignExpr::_llvm(JitContext &jitx)
     jitx.assignSymbolValue((Param *)this->lhs, value);
     return value;
 }
-
+#endif
 
 AssignMatrixExpr::AssignMatrixExpr(LValue *lhs_, Expr *rhs_) : AssignExpr(lhs_, rhs_) {}
 
@@ -1090,6 +1115,7 @@ std::ostream& AssignMatrixExpr::to_string(std::ostream &out)
     return out;
 }
 
+#if HAVE_LLVM
 llvm::Value *AssignMatrixExpr::_llvm(JitContext &jitx)
 {
     llvm::Value *value = Expr::llvm(jitx, rhs);
@@ -1100,6 +1126,7 @@ llvm::Value *AssignMatrixExpr::_llvm(JitContext &jitx)
     jitx.assignSymbolValue((Param *)this->lhs, value);
     return value;
 }
+#endif
 
 /* caller only has to delete returned expression.  optimize() will delete unused nodes in original expr;
  * CONSIDER delete old expr for caller?
@@ -1113,6 +1140,7 @@ Expr *Expr::optimize(Expr *expr)
 }
 
 
+#if HAVE_LLVM
 llvm::Value *ProgramExpr::_llvm(JitContext &jitx)
 {
     llvm::Value *v = jitx.CreateConstant(0.0f);
@@ -1120,6 +1148,7 @@ llvm::Value *ProgramExpr::_llvm(JitContext &jitx)
         v = Expr::llvm(jitx, *it);
     return v;
 }
+#endif
 
 
 // TESTS
@@ -1182,7 +1211,7 @@ public:
         return true;
     }
 
-//#ifdef USE_LLVM
+#if HAVE_LLVM
     bool jit()
     {
         {
@@ -1272,14 +1301,16 @@ public:
 
         return true;
     }
-//#endif
+#endif
 
     bool test() override
     {
         Eval::init_infix_ops();
         bool result = true;
         result &= optimize_constant_expr();
+#if HAVE_LLVM
         result &= jit();
+#endif
         return result;
     }
 };
@@ -1300,8 +1331,7 @@ Test* Expr::test()
 
 
 
-// JIT!
-
+#if HAVE_LLVM
 using namespace llvm;
 
 
@@ -1497,56 +1527,21 @@ Expr *Expr::jit(Expr *root)
     jitx.builder.CreateRet(retValue);
 
 
-#if 1
-    outs() << "MODULE\n\n" << *jitx.module << "\n\n";
-	outs().flush();
+#if DEBUG
+    outs() << "MODULE\n\n" << *jitx.module << "\n\n"; outs().flush();
 #endif
 
 	// and JIT!
 	jitx.OptimizePass();
-#if 1
-    outs() << "MODULE AFTER\n\n" << *jitx.module << "\n\n";
-    outs().flush();
+
+#if DEBUG
+    outs() << "MODULE AFTER\n\n" << *jitx.module << "\n\n"; outs().flush();
 #endif
+
     ExecutionEngine* executionEngine = EngineBuilder(std::move(jitx.module_ptr)).create();
-
-/*
-// Create a function pass manager for this engine
-    FunctionPassManager *FPM = new FunctionPassManager();
-    // Set up the optimizer pipeline.  Start with registering info about how the
-// target lays out data structures.
-    FPM->addPass(new DataLayout(executionEngine->getDataLayout()));
-// Provide basic AliasAnalysis support for GVN.
-    FPM->addPass(createBasicAAWrapperPass());
-// Promote allocas to registers.
-    FPM->addPass(createPromoteMemoryToRegisterPass());
-// Do simple "peephole" optimizations and bit-twiddling optzns.
-    FPM->addPass(createInstructionCombiningPass());
-// Reassociate expressions.
-    FPM->addPass(createReassociatePass());
-// Eliminate Common SubExpressions.
-    FPM->addPass(createGVNPass());
-// Simplify the control flow graph (deleting unreachable blocks, etc).
-    FPM->addPass(createCFGSimplificationPass());
-//    FPM->doInitialization();
-    // For each function in the module
-    FunctionAnalysisManager FAM(false);
-    Module::iterator end = module->end();
-#if 1
-    outs() << "MODULE AFTER\n\n" << *module_ptr << "\n\n";
-    outs().flush();
-#endif
-*/
-
-
 
     auto fn = (float (*)(int,int))executionEngine->getFunctionAddress("Expr_eval");
 
     return new JitExpr(executionEngine, root, fn);
 }
-
-/*
-
-  return Builder->CreateSelect(Builder->CreateICmp(Pred, A, B), A, B);
-
- */
+#endif

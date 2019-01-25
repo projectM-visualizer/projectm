@@ -444,7 +444,10 @@ void MilkdropPreset::evalPerPixelEqns()
         for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin(); pos != per_pixel_eqn_tree.end(); ++pos)
             steps.push_back(pos->second->assign_expr);
         Expr *program_expr = new ProgramExpr(steps,false);
-        Expr *jit = Expr::jit(program_expr);
+        Expr *jit = nullptr;
+#if HAVE_LLVM
+        jit = Expr::jit(program_expr);
+#endif
         per_pixel_program = jit ? jit : program_expr;
     }
 
