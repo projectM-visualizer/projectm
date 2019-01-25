@@ -32,6 +32,7 @@
 #include "config.h"
 #include "dlldefs.h"
 #include "CValue.hpp"
+#include "Func.hpp"
 #include <iostream>
 #include <vector>
 
@@ -92,7 +93,7 @@ public:
   static Test *test();
   static Expr *const_to_expr( float val );
   static Expr *param_to_expr( Param *param );
-  static Expr *prefun_to_expr( float (*func_ptr)(float *), Expr **expr_list, int num_args );
+  static Expr *prefun_to_expr( Func *func, Expr **expr_list );
 
   static void delete_expr(Expr *expr) { if (nullptr != expr) expr->_delete_from_tree(); }
   static Expr *optimize(Expr *root);
@@ -156,10 +157,15 @@ public:
 class PrefunExpr : public Expr
 {
 public:
+  Func *function;
   float (*func_ptr)(float *);
   int num_args;
   Expr **expr_list;
-  PrefunExpr();
+
+protected:
+  PrefunExpr() : Expr(FUNCTION) {}
+public:
+  PrefunExpr(Func *func, Expr **expr_list);
   ~PrefunExpr() override;
 
   /* Evaluates functions in prefix form */

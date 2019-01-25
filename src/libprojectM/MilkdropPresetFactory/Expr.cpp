@@ -116,21 +116,34 @@ struct JitContext
     {
         std::vector<llvm::Type *> arg_type;
         arg_type.push_back(floatType);
-        llvm::Function *sinFunction = llvm::Intrinsic::getDeclaration(module, id, arg_type);
+        llvm::Function *function = llvm::Intrinsic::getDeclaration(module, id, arg_type);
         std::vector<llvm::Value *> arg;
         arg.push_back(value);
-        return builder.CreateCall(sinFunction, arg);
+        return builder.CreateCall(function, arg);
     }
     llvm::Value *CallIntrinsic2(llvm::Intrinsic::ID id, llvm::Value *x, llvm::Value *y)
     {
         std::vector<llvm::Type *> arg_type;
         arg_type.push_back(floatType);
         arg_type.push_back(floatType);
-        llvm::Function *sinFunction = llvm::Intrinsic::getDeclaration(module, id, arg_type);
+        llvm::Function *function = llvm::Intrinsic::getDeclaration(module, id, arg_type);
         std::vector<llvm::Value *> arg;
         arg.push_back(x);
         arg.push_back(y);
-        return builder.CreateCall(sinFunction, arg);
+        return builder.CreateCall(function, arg);
+    }
+    llvm::Value *CallIntrinsic3(llvm::Intrinsic::ID id, llvm::Value *x, llvm::Value *y, llvm::Value *z)
+    {
+        std::vector<llvm::Type *> arg_type;
+        arg_type.push_back(floatType);
+        arg_type.push_back(floatType);
+        arg_type.push_back(floatType);
+        llvm::Function *function = llvm::Intrinsic::getDeclaration(module, id, arg_type);
+        std::vector<llvm::Value *> arg;
+        arg.push_back(x);
+        arg.push_back(y);
+        arg.push_back(z);
+        return builder.CreateCall(function, arg);
     }
 
     std::vector<llvm::Function *> parent;
@@ -237,7 +250,53 @@ float PrefunExpr::eval ( int mesh_i, int mesh_j )
 #if HAVE_LLVM
 llvm::Value *PrefunExpr::_llvm(JitContext &jitx)
 {
-    // TODO match up all wrapper functions with llvm Intrinsics
+    if (nullptr != function && 0 != function->llvm_intrinsic)
+    {
+        if (num_args == 1)
+        {
+            llvm::Value *x = Expr::llvm(jitx, expr_list[0]);
+            if (nullptr == x)
+                return nullptr;
+            return jitx.CallIntrinsic((llvm::Intrinsic::ID)function->llvm_intrinsic, x);
+        }
+        else if (num_args == 2)
+        {
+            llvm::Value *x = Expr::llvm(jitx, expr_list[0]);
+            llvm::Value *y = Expr::llvm(jitx, expr_list[1]);
+            if (nullptr == x || nullptr == y)
+                return nullptr;
+            return jitx.CallIntrinsic2((llvm::Intrinsic::ID)function->llvm_intrinsic, x, y);
+        }
+    }
+
+    // TODO : change wrapper functions from float (*fn)(float *) to float (*fn)(float), float (*fn)(float, float) etc
+    // For now handle a few C library functions w/o LLVM intrinsics
+    if (func_ptr == FuncWrappers::tan_wrapper || func_ptr == FuncWrappers::asin_wrapper || func_ptr == FuncWrappers::acos_wrapper || func_ptr == FuncWrappers::atan_wrapper)
+    {
+        llvm::Value *x = Expr::llvm(jitx, expr_list[0]);
+        if (nullptr == x)
+            return nullptr;
+        std::vector<llvm::Type *> arg_types;
+        arg_types.push_back(jitx.floatType); // float
+        auto prefun_type = llvm::FunctionType::get(jitx.floatType, arg_types, false);
+        auto prefun_ptr_type = llvm::PointerType::get(prefun_type,1);
+        float (*clib_fn)(float);
+        if (func_ptr == FuncWrappers::tan_wrapper)
+            clib_fn = tanf;
+        else if (func_ptr == FuncWrappers::asin_wrapper)
+            clib_fn = asinf;
+        else if (func_ptr == FuncWrappers::acos_wrapper)
+            clib_fn = acosf;
+        else
+            clib_fn = atanf;
+        llvm::Constant *fn_const = llvm::ConstantInt::get(llvm::Type::getInt64Ty(jitx.context), (uint64_t)clib_fn);
+        auto function_ptr = llvm::ConstantExpr::getIntToPtr(fn_const , prefun_ptr_type);
+        std::vector<llvm::Value *> args;
+        args.push_back(x);
+        return jitx.builder.CreateCall(function_ptr, args);
+    }
+
+    // fallback, call function wrapper e.g. float (*fn)(float *)
     llvm::AllocaInst *array = jitx.builder.CreateAlloca(jitx.floatType, jitx.CreateConstant(num_args));
     for ( unsigned i = 0; i < (unsigned)num_args; i++ )
     {
@@ -264,6 +323,8 @@ llvm::Value *PrefunExpr::_llvm(JitContext &jitx)
 
 class PrefunExprOne : public PrefunExpr
 {
+public:
+    PrefunExprOne(Func *function, Expr **expr_list_) : PrefunExpr(function,expr_list_) {}
     float eval ( int mesh_i, int mesh_j )
     {
         float val = expr_list[0]->eval ( mesh_i, mesh_j );
@@ -359,7 +420,10 @@ public:
 // short circuiting IF
 class IfExpr : public PrefunExpr
 {
-	float eval ( int mesh_i, int mesh_j )
+public:
+    IfExpr(Func *function, Expr **expr_list_) : PrefunExpr(function,expr_list_) {}
+
+    float eval ( int mesh_i, int mesh_j )
 	{
 		// see if_wrapper()
 		float val = expr_list[0]->eval ( mesh_i, mesh_j );
@@ -368,7 +432,6 @@ class IfExpr : public PrefunExpr
 		return expr_list[1]->eval ( mesh_i, mesh_j );
 	}
 
-public:
 	Expr *_optimize() override
 	{
 		Expr *opt = PrefunExpr::_optimize();
@@ -418,83 +481,43 @@ public:
 
 class SinExpr : public PrefunExpr
 {
+public:
+    SinExpr(Func *function, Expr **expr_list_) : PrefunExpr(function,expr_list_) {}
     float eval ( int mesh_i, int mesh_j ) override
     {
         float val = expr_list[0]->eval ( mesh_i, mesh_j );
         return sinf(val);
     }
-#if HAVE_LLVM
-    llvm::Value *_llvm(JitContext &jitx) override
-    {
-        llvm::Value *val = Expr::llvm(jitx, expr_list[0]);
-        if (nullptr == val)
-            return nullptr;
-        return jitx.CallIntrinsic(llvm::Intrinsic::sin, val);
-    }
-#endif
 };
 
 class CosExpr : public PrefunExpr
 {
+public:
+    CosExpr(Func *function, Expr **expr_list_) : PrefunExpr(function,expr_list_) {}
     float eval ( int mesh_i, int mesh_j ) override
     {
         float val = expr_list[0]->eval ( mesh_i, mesh_j );
         return cosf(val);
     }
-#if HAVE_LLVM
-    llvm::Value *_llvm(JitContext &jitx) override
-    {
-        llvm::Value *val = Expr::llvm(jitx, expr_list[0]);
-        if (nullptr == val)
-            return nullptr;
-        return jitx.CallIntrinsic(llvm::Intrinsic::cos, val);
-    }
-#endif
 };
 
 class LogExpr : public PrefunExpr
 {
+public:
+    LogExpr(Func *function, Expr **expr_list_) : PrefunExpr(function,expr_list_) {}
     float eval ( int mesh_i, int mesh_j ) override
     {
         float val = expr_list[0]->eval( mesh_i, mesh_j );
         return logf(val);
     }
-#if HAVE_LLVM
-    llvm::Value *_llvm(JitContext &jitx) override
-    {
-        llvm::Value *val = Expr::llvm(jitx, expr_list[0]);
-        if (nullptr == val)
-            return nullptr;
-        return jitx.CallIntrinsic(llvm::Intrinsic::log, val);
-    }
-#endif
 };
 
-class PowExpr : public PrefunExpr
-{
-    float eval ( int mesh_i, int mesh_j ) override
-    {
-        float x = expr_list[0]->eval( mesh_i, mesh_j );
-        float y = expr_list[1]->eval( mesh_i, mesh_j );
-        return powf(x, y);
-    }
-#if HAVE_LLVM
-    llvm::Value *_llvm(JitContext &jitx) override
-    {
-        llvm::Value *x = Expr::llvm(jitx, expr_list[0]);
-        llvm::Value *y = Expr::llvm(jitx, expr_list[1]);
-        if (nullptr == x || nullptr == y)
-            return nullptr;
-        return jitx.CallIntrinsic2(llvm::Intrinsic::pow, x, y);
-    }
-#endif
-};
 
 class ConstantExpr : public Expr
 {
     float constant;
 public:
-    ConstantExpr( float value ) : Expr(CONSTANT), constant(value) {}
+    explicit ConstantExpr( float value ) : Expr(CONSTANT), constant(value) {}
     ConstantExpr( int type, Term *term ) : Expr(CONSTANT), constant(term->constant) {}
     bool isConstant()
     {
@@ -551,7 +574,7 @@ public:
         llvm::Value *cvalue = Expr::llvm(jitx, c);
         if (nullptr == avalue || nullptr == bvalue || nullptr == cvalue)
             return nullptr;
-        return jitx.builder.CreateFAdd(jitx.builder.CreateFMul(avalue,bvalue),cvalue);
+        return jitx.CallIntrinsic3(llvm::Intrinsic::fma,avalue,bvalue,cvalue);
     }
 #endif
 };
@@ -814,9 +837,7 @@ llvm::Value *TreeExpr::_llvm(JitContext &jitx)
 /* Converts a float value to a general expression */
 Expr * Expr::const_to_expr ( float val )
 {
-    Term term;
-    term.constant = val;
-    return new ConstantExpr( CONSTANT_TERM_T, &term );
+    return new ConstantExpr( val );
 }
 
 /* Converts a regular parameter to an expression */
@@ -842,49 +863,34 @@ Expr * Expr::param_to_expr ( Param * param )
 }
 
 /* Converts a prefix function to an expression */
-Expr * Expr::prefun_to_expr ( float ( *func_ptr ) ( float * ), Expr ** expr_list, int num_args )
+Expr * Expr::prefun_to_expr( Func *function, Expr ** expr_list )
 {
+    float (*func_ptr)(float *)= function->func_ptr;
+    int num_args = function->getNumArgs();
     PrefunExpr *prefun_expr;
+    // NOTE: all these PrefunExpr subclasses are a only helpful if we don't JIT
     if (num_args == 1)
     {
         if (func_ptr == FuncWrappers::sin_wrapper)
-            prefun_expr = new SinExpr();
+            prefun_expr = new SinExpr(function, expr_list);
         else if (func_ptr == (float (*)(float *)) FuncWrappers::cos_wrapper)
-            prefun_expr = new CosExpr();
+            prefun_expr = new CosExpr(function, expr_list);
         else if (func_ptr == (float (*)(float *)) FuncWrappers::log_wrapper)
-            prefun_expr = new LogExpr();
+            prefun_expr = new LogExpr(function, expr_list);
         else
-            prefun_expr = new PrefunExprOne();
-    }
-    else if (num_args == 2)
-    {
-        if (func_ptr == FuncWrappers::pow_wrapper)
-            prefun_expr = new PowExpr();
-        else
-            prefun_expr = new PrefunExpr();
+            prefun_expr = new PrefunExprOne(function, expr_list);
     }
     else if (num_args == 3)
     {
         if (func_ptr == FuncWrappers::if_wrapper)
-            prefun_expr = new IfExpr();
+            prefun_expr = new IfExpr(function, expr_list);
         else
-            prefun_expr = new PrefunExpr();
+            prefun_expr = new PrefunExpr(function, expr_list);
     }
-    else if (num_args == 3)
-	{
-		if (func_ptr == (float (*)(float *)) FuncWrappers::if_wrapper)
-			prefun_expr = new IfExpr();
-		else
-			prefun_expr = new PrefunExpr();
-	}
     else
     {
-        prefun_expr = new PrefunExpr();
+        prefun_expr = new PrefunExpr(function, expr_list);
     }
-
-	prefun_expr->num_args = num_args;
-	prefun_expr->func_ptr = func_ptr;
-	prefun_expr->expr_list = expr_list;
 	return prefun_expr;
 }
 
@@ -1013,8 +1019,11 @@ InfixOp::InfixOp ( int _type, int _precedence )
     this->precedence = _precedence;
 }
 
-PrefunExpr::PrefunExpr() : Expr(FUNCTION)
+
+PrefunExpr::PrefunExpr(Func *func, Expr **expr_list_) : Expr(FUNCTION),
+    function(func), func_ptr(func->func_ptr), num_args(func->getNumArgs()), expr_list(expr_list_)
 {
+    assert(func_ptr);
 }
 
 // consider: move method to FunctionWrappers?
@@ -1178,6 +1187,9 @@ struct ExprTest : public Test
 public:
     bool optimize_constant_expr()
     {
+        Func *sin_fn = BuiltinFuncs::find_func("sin");
+        Func *rand_fn = BuiltinFuncs::find_func("rand");
+
         TreeExpr *a = TreeExpr::create(nullptr, Expr::const_to_expr( 1.0 ), nullptr, nullptr);
         TreeExpr *b = TreeExpr::create(nullptr, Expr::const_to_expr( 2.0 ), nullptr, nullptr);
 	    Expr *c = TreeExpr::create(Eval::infix_add, nullptr, a, b);
@@ -1190,7 +1202,7 @@ public:
 
         Expr **expr_array = (Expr **)malloc(sizeof(Expr *));
         expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( (float)M_PI ), nullptr, nullptr);
-        Expr *sin = Expr::prefun_to_expr(FuncWrappers::sin_wrapper, expr_array, 1);
+        Expr *sin = Expr::prefun_to_expr(sin_fn, expr_array);
         x = Expr::optimize(sin);
         TEST(x != sin);
         sin = nullptr;
@@ -1201,7 +1213,7 @@ public:
         // make sure rand() is not optimized away
         expr_array = (Expr **)malloc(sizeof(Expr *));
         expr_array[0] = TreeExpr::create(nullptr, Expr::const_to_expr( (float)M_PI ), nullptr, nullptr);
-        Expr *rand = Expr::prefun_to_expr(FuncWrappers::rand_wrapper, expr_array, 1);
+        Expr *rand = Expr::prefun_to_expr(rand_fn, expr_array);
         x = Expr::optimize(rand);
         TEST(x == rand);
         rand = nullptr;
@@ -1214,6 +1226,10 @@ public:
 #if HAVE_LLVM
     bool jit()
     {
+        Func *if_fn =  BuiltinFuncs::find_func("if");
+        Func *sin_fn = BuiltinFuncs::find_func("sin");
+        Func *rand_fn = BuiltinFuncs::find_func("rand");
+
         {
         Expr *CONST = Expr::const_to_expr(3.0f);
         Expr *jitExpr = Expr::jit(CONST);
@@ -1252,7 +1268,8 @@ public:
 
         {
         Expr *CONST = Expr::const_to_expr(3.0f);
-        SinExpr *SIN = new SinExpr();    // TODO constructor
+        Expr **expr_list = (Expr **)malloc(1 * sizeof(Expr *));
+        SinExpr *SIN = new SinExpr(sin_fn, expr_list);
         SIN->num_args = 1;
         SIN->func_ptr = FuncWrappers::sin_wrapper;
         SIN->expr_list = (Expr **)malloc(1 * sizeof(Expr *));
@@ -1264,39 +1281,37 @@ public:
 
         // test_prefun_if:
         {
-            Expr *CONST1 = Expr::const_to_expr(1.0f);
-            Expr *CONST2 = Expr::const_to_expr(2.0f);
-            Expr *CONST3 = Expr::const_to_expr(3.0f);
-            PrefunExpr *IF = new PrefunExpr();    // TODO constructor
-            IF->num_args = 3;
-            IF->func_ptr = FuncWrappers::if_wrapper;
-            IF->expr_list = (Expr **)malloc(3 * sizeof(Expr *));
-            IF->expr_list[0] = CONST1;
-            IF->expr_list[1] = CONST2;
-            IF->expr_list[2] = CONST3;
-            Expr *jitExpr = Expr::jit(IF);
-            TEST(2.0f == jitExpr->eval(-1,-1));
-            delete jitExpr;
+        Expr *CONST1 = Expr::const_to_expr(1.0f);
+        Expr *CONST2 = Expr::const_to_expr(2.0f);
+        Expr *CONST3 = Expr::const_to_expr(3.0f);
+        Expr **expr_list = (Expr **)malloc(3 * sizeof(Expr *));
+          expr_list[0] = CONST1;
+          expr_list[1] = CONST2;
+          expr_list[2] = CONST3;
+        PrefunExpr *IF = new IfExpr(if_fn, expr_list);    // TODO constructor
+        Expr *jitExpr = Expr::jit(IF);
+        TEST(2.0f == jitExpr->eval(-1,-1));
+        delete jitExpr;
         }
 
         //test_ternary_mod_1:
         {
-            Expr *CONST2 = Expr::const_to_expr(2.0f);
-            Expr *CONST3 = Expr::const_to_expr(3.0f);
-            TreeExpr *MOD = TreeExpr::create(Eval::infix_mod, CONST3, CONST2);
-            Expr *jitExpr = Expr::jit(MOD);
-            TEST(1.0f == jitExpr->eval(-1,-1));
-            delete jitExpr;
+        Expr *CONST2 = Expr::const_to_expr(2.0f);
+        Expr *CONST3 = Expr::const_to_expr(3.0f);
+        TreeExpr *MOD = TreeExpr::create(Eval::infix_mod, CONST3, CONST2);
+        Expr *jitExpr = Expr::jit(MOD);
+        TEST(1.0f == jitExpr->eval(-1,-1));
+        delete jitExpr;
         }
 
         //test_ternary_mod_2:
         {
-            Expr *CONST0 = Expr::const_to_expr(0.0f);
-            Expr *CONST3 = Expr::const_to_expr(3.0f);
-            TreeExpr *MOD = TreeExpr::create(Eval::infix_mod, CONST3, CONST0);
-            Expr *jitExpr = Expr::jit(MOD);
-            TEST(0.0f == jitExpr->eval(-1,-1));
-            delete jitExpr;
+        Expr *CONST0 = Expr::const_to_expr(0.0f);
+        Expr *CONST3 = Expr::const_to_expr(3.0f);
+        TreeExpr *MOD = TreeExpr::create(Eval::infix_mod, CONST3, CONST0);
+        Expr *jitExpr = Expr::jit(MOD);
+        TEST(0.0f == jitExpr->eval(-1,-1));
+        delete jitExpr;
         }
 
         return true;
@@ -1527,14 +1542,14 @@ Expr *Expr::jit(Expr *root)
     jitx.builder.CreateRet(retValue);
 
 
-#if DEBUG
+#if 1
     outs() << "MODULE\n\n" << *jitx.module << "\n\n"; outs().flush();
 #endif
 
 	// and JIT!
 	jitx.OptimizePass();
 
-#if DEBUG
+#if 1
     outs() << "MODULE AFTER\n\n" << *jitx.module << "\n\n"; outs().flush();
 #endif
 
