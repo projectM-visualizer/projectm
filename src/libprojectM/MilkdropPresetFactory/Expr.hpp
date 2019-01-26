@@ -196,6 +196,7 @@ public:
     ~AssignExpr() override;
     Expr *_optimize() override;
     float eval(int mesh_i, int mesh_j) override;
+    LValue *getLValue() { return lhs; }
     std::ostream& to_string(std::ostream &out) override;
 #if HAVE_LLVM
     llvm::Value *_llvm(JitContext &jitx) override;

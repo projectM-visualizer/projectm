@@ -38,6 +38,7 @@
 #include <map>
 #include <iostream>
 #include <cassert>
+#include "JitContext.hpp"
 
 /** Constructor */
 Param::Param( const std::string &_name, short int _type, short int _flags, void * _engine_val, void * _matrix,
@@ -208,11 +209,6 @@ struct _Param : public Param
     }
     explicit _Param( const std::string &name_) : Param(name_) {}
 
-    LValue *getExpr() override
-    {
-        return (LValue *)this;
-    }
-
     void _delete_from_tree() override
     {
         /* do nothing, as the param isn't owned by the expresion tree */
@@ -229,7 +225,7 @@ struct _Param : public Param
 #if HAVE_LLVM
     llvm::Value *_llvm(JitContext &jit) override
     {
-        return Expr::generate_eval_call(jit, this);
+        return Expr::generate_eval_call(jit, this, name.c_str());
     }
 #endif
 };
@@ -291,6 +287,13 @@ public:
     {
         return *(float *)engine_val;
     }
+#if HAVE_LLVM
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Constant *ptr = jitx.CreateFloatPtr((float *)engine_val);
+        return jitx.builder.CreateLoad(ptr, name);
+    }
+#endif
 };
 
 /*This isn't that useful yet.  Maybe later
@@ -319,14 +322,14 @@ public:
     }
 };*/
 
-class _MeshParam : public _FloatParam
+class _MeshParam : public _Param
 {
 public:
     _MeshParam( const std::string &name_, short int type_, short int flags_,
                  void * eqn_val_, void *matrix_,
                  CValue default_init_val_, CValue upper_bound_,
                  CValue lower_bound_) :
-            _FloatParam(name_, type_, flags_, eqn_val_, matrix_, default_init_val_, upper_bound_, lower_bound_) {}
+            _Param(name_, type_, flags_, eqn_val_, matrix_, default_init_val_, upper_bound_, lower_bound_) {}
     float eval(int mesh_i, int mesh_j) override
     {
         assert( type == P_TYPE_DOUBLE );
@@ -353,14 +356,14 @@ public:
 
 
 // TODO merge PointsParam/MeshParam
-class _PointsParam : public _FloatParam
+class _PointsParam : public _Param
 {
 public:
     _PointsParam( const std::string &name_, short int type_, short int flags_,
                  void * eqn_val_, void *matrix_,
                  CValue default_init_val_, CValue upper_bound_,
                  CValue lower_bound_) :
-            _FloatParam(name_, type_, flags_, eqn_val_, matrix_, default_init_val_, upper_bound_, lower_bound_) {}
+            _Param(name_, type_, flags_, eqn_val_, matrix_, default_init_val_, upper_bound_, lower_bound_) {}
     float eval(int mesh_i, int mesh_j) override
     {
         assert( mesh_j == -1 );
