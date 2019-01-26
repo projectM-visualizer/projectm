@@ -757,7 +757,7 @@ Expr * Parser::_parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Milkd
       }
 
       /* Convert function to expression */
-      if ((gen_expr = Expr::prefun_to_expr((float (*)(void *))func->func_ptr, expr_list, func->getNumArgs())) == NULL)
+      if ((gen_expr = Expr::prefun_to_expr(func, expr_list)) == NULL)
       {
         if (PARSE_DEBUG) printf("parse_prefix_args: failed to convert prefix function to general expression (LINE %d) \n",
                                   line_count);
@@ -981,14 +981,11 @@ Expr * Parser::_parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Milkd
 Expr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, MilkdropPreset * preset)
 {
   Expr *gen_expr = _parse_gen_expr( fs, tree_expr, preset );
-  if (NULL == gen_expr)
-    return NULL;
+  if (nullptr == gen_expr)
+    return nullptr;
   //std::cout << gen_expr << std::endl;
   Expr *opt = Expr::optimize(gen_expr);
-
-  if (opt != gen_expr) {
-      Expr::delete_expr(gen_expr);
-  }
+  gen_expr = nullptr;
   //std::cout << opt << std::endl << std::endl;
   return opt;
 }
@@ -2672,8 +2669,7 @@ public:
         TEST(expr_parse != nullptr);
         // Expr doesn't really expect to run 'non-optimized' expressions any longer
         Expr *expr = Expr::optimize(expr_parse);
-        if (expr != expr_parse)
-            Expr::delete_expr(expr_parse);
+        expr_parse = nullptr;
         if (!ParserTest::eq(expected, result=expr->eval(-1,-1)))
         {
             std::cout << "failed: expected " << expected << " found " << result << std::endl;

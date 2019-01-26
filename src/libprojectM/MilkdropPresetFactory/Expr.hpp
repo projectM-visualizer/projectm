@@ -29,13 +29,21 @@
 #ifndef _EXPR_H
 #define _EXPR_H
 
+#include "config.h"
 #include "dlldefs.h"
 #include "CValue.hpp"
+#include "Func.hpp"
 #include <iostream>
 #include <vector>
 
 class Test;
 class Param;
+class JitContext;
+#ifdef HAVE_LLVM
+namespace llvm {
+  class Value;
+}
+#endif
 
 #define CONST_STACK_ELEMENT 0
 #define EXPR_STACK_ELEMENT 1
@@ -65,15 +73,15 @@ public:
 
 enum ExprClass
 {
-  TREE, CONSTANT, PARAMETER, FUNCTION, ASSIGN, PROGRAM, OTHER
+  TREE, CONSTANT, PARAMETER, FUNCTION, ASSIGN, PROGRAM, JIT, OTHER
 };
 
 class Expr
 {
 public:
   ExprClass clazz;
-  Expr(ExprClass c) : clazz(c) {};
-  virtual ~Expr() {};
+  explicit Expr(ExprClass c) : clazz(c) {};
+  virtual ~Expr() = default;
 
   virtual bool isConstant() { return false; };
   virtual float eval(int mesh_i, int mesh_j) = 0;
@@ -85,14 +93,22 @@ public:
   static Test *test();
   static Expr *const_to_expr( float val );
   static Expr *param_to_expr( Param *param );
-  static Expr *prefun_to_expr( float (*func_ptr)(void *), Expr **expr_list, int num_args );
+  static Expr *prefun_to_expr( Func *func, Expr **expr_list );
 
   static void delete_expr(Expr *expr) { if (nullptr != expr) expr->_delete_from_tree(); }
-  static Expr *optimize(Expr *root) { return root->_optimize(); };
+  static Expr *optimize(Expr *root);
+  static Expr *jit(Expr *root);
 
 public: // but don't call these from outside Expr.cpp
 
   virtual Expr *_optimize() { return this; };
+#if HAVE_LLVM
+  static  llvm::Value *llvm(JitContext &jit, Expr *);
+  virtual llvm::Value *_llvm(JitContext &jit) = 0;  //ONLY called by llvm()
+  static llvm::Value *generate_eval_call(JitContext &jit, Expr *expr, const char *name=nullptr);
+  static llvm::Value *generate_set_call(JitContext &jitx, Expr *expr, llvm::Value *value);
+  static llvm::Value *generate_set_matrix_call(JitContext &jitx, Expr *expr, llvm::Value *value);
+#endif
 
   // override if this expr is not 'owned' by the containg expression tree
   virtual void _delete_from_tree()
@@ -103,7 +119,7 @@ public: // but don't call these from outside Expr.cpp
 
 inline std::ostream& operator<<(std::ostream& out, Expr *expr)
 {
-  if (NULL == expr)
+  if (nullptr == expr)
       out << "NULL";
   else 
       expr->to_string(out);
@@ -114,11 +130,11 @@ inline std::ostream& operator<<(std::ostream& out, Expr *expr)
 class TreeExpr : public Expr
 {
 protected:
-  TreeExpr( InfixOp *infix_op, Expr *gen_expr,
-                                  TreeExpr *left, TreeExpr *right );
+  TreeExpr( InfixOp *infix_op, Expr *gen_expr, Expr *left, Expr *right );
 public:
-  static TreeExpr *create( InfixOp *infix_op, Expr *gen_expr,
-                                  TreeExpr *left, TreeExpr *right );
+  static TreeExpr *create( InfixOp *infix_op, Expr *gen_expr, TreeExpr *left, TreeExpr *right );
+  static TreeExpr *create( InfixOp *infix_op, Expr *left, Expr *right );
+
   InfixOp * infix_op; /* null if leaf */
   Expr * gen_expr;
   // NOTE: before optimize() left and right will always be TreeExpr
@@ -131,6 +147,9 @@ public:
   
   Expr *_optimize() override;
   float eval(int mesh_i, int mesh_j) override;
+#if HAVE_LLVM
+  llvm::Value *_llvm(JitContext &jitx) override;
+#endif
   std::ostream& to_string(std::ostream &out) override;
 };
 
@@ -138,16 +157,24 @@ public:
 class PrefunExpr : public Expr
 {
 public:
-  float (*func_ptr)(void*);
+  Func *function;
+  float (*func_ptr)(float *);
   int num_args;
   Expr **expr_list;
-  PrefunExpr();
+
+protected:
+  PrefunExpr() : Expr(FUNCTION) {}
+public:
+  PrefunExpr(Func *func, Expr **expr_list);
   ~PrefunExpr() override;
 
   /* Evaluates functions in prefix form */
   Expr *_optimize() override;
   float eval(int mesh_i, int mesh_j) override;
   std::ostream& to_string(std::ostream &out) override;
+#if HAVE_LLVM
+    llvm::Value *_llvm(JitContext &jitx) override;
+#endif
 };
 
 class LValue : public Expr
@@ -169,7 +196,11 @@ public:
     ~AssignExpr() override;
     Expr *_optimize() override;
     float eval(int mesh_i, int mesh_j) override;
+    LValue *getLValue() { return lhs; }
     std::ostream& to_string(std::ostream &out) override;
+#if HAVE_LLVM
+    llvm::Value *_llvm(JitContext &jitx) override;
+#endif
 };
 
 
@@ -179,6 +210,9 @@ public:
     AssignMatrixExpr(LValue *lhs, Expr *rhs);
     float eval(int mesh_i, int mesh_j) override;
     std::ostream& to_string(std::ostream &out) override;
+#if HAVE_LLVM
+    llvm::Value *_llvm(JitContext &jitx) override;
+#endif
 };
 
 
@@ -191,7 +225,7 @@ public:
     ProgramExpr(std::vector<Expr*> &steps_, bool ownSteps) : Expr(PROGRAM), steps(steps_), own(ownSteps)
     {
     }
-    ~ProgramExpr()
+    ~ProgramExpr() override
     {
         if (!own)
             return;
@@ -205,6 +239,9 @@ public:
             f = (*it)->eval(mesh_i,mesh_j);
         return f;
     }
+#if HAVE_LLVM
+    llvm::Value *_llvm(JitContext &jit) override;
+#endif
 };
 
 #endif /** _EXPR_H */
