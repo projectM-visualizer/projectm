@@ -97,7 +97,7 @@ public:
 
   static void delete_expr(Expr *expr) { if (nullptr != expr) expr->_delete_from_tree(); }
   static Expr *optimize(Expr *root);
-  static Expr *jit(Expr *root);
+  static Expr *jit(Expr *root, std::string name="Expr::jit");
 
 public: // but don't call these from outside Expr.cpp
 

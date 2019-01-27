@@ -1304,7 +1304,7 @@ Value *Expr::llvm(JitContext &jitx, Expr *root)
 }
 
 
-Expr *Expr::jit(Expr *root)
+Expr *Expr::jit(Expr *root, std::string name)
 {
 #ifdef NEVER_JIT
     return root;
@@ -1312,7 +1312,7 @@ Expr *Expr::jit(Expr *root)
     LLVMContext &Context = getGlobalContext();
 
     // Create some module to put our function into it.
-    JitContext jitx;
+    JitContext jitx(name);
 
     std::vector<Type *> arg_typess;
     arg_typess.push_back(IntegerType::get(Context,32));
@@ -1337,15 +1337,15 @@ Expr *Expr::jit(Expr *root)
     jitx.builder.CreateRet(retValue);
 
 
-#if 1
+#ifdef DEBUG
     outs() << "MODULE\n\n" << *jitx.module << "\n\n"; outs().flush();
 #endif
 
 	// and JIT!
 	jitx.OptimizePass();
 
-#if 1
-    outs() << "MODULE AFTER\n\n" << *jitx.module << "\n\n"; outs().flush();
+#ifdef DEBUG
+    outs() << "MODULE OPTIMIZED\n\n" << *jitx.module << "\n\n"; outs().flush();
 #endif
 
     ExecutionEngine* executionEngine = EngineBuilder(std::move(jitx.module_ptr)).create();
