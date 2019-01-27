@@ -1337,14 +1337,14 @@ Expr *Expr::jit(Expr *root)
     jitx.builder.CreateRet(retValue);
 
 
-#if 1
+#ifdef DEBUG
     outs() << "MODULE\n\n" << *jitx.module << "\n\n"; outs().flush();
 #endif
 
 	// and JIT!
 	jitx.OptimizePass();
 
-#if 1
+#ifdef DEBUG
     outs() << "MODULE AFTER\n\n" << *jitx.module << "\n\n"; outs().flush();
 #endif
 
