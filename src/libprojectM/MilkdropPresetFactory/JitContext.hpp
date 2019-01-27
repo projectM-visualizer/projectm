@@ -59,7 +59,7 @@ struct JitContext
         module = module_ptr.get();
 
         llvm::FastMathFlags fmf;
-        fmf.setFast(true);
+        fmf.set();
         builder.setFastMathFlags(fmf);
 
 //        module->setDataLayout(getTargetMachine().createDataLayout());
