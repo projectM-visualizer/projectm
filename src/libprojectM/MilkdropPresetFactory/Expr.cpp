@@ -922,6 +922,7 @@ llvm::Value *AssignMatrixExpr::_llvm(JitContext &jitx)
         return nullptr;
     // TODO optimze to only call set_matrix() once at end of program
     LValue *lvalue = this->lhs;
+    lvalue->_llvm_set_matrix(jitx, value);
     return value;
 }
 #endif
@@ -1294,13 +1295,10 @@ Value *Expr::llvm(JitContext &jitx, Expr *root)
     {
         return jitx.getSymbolValue((Param *)root);
     }
+    Value *value = root->_llvm(jitx);
     if (root->clazz == ASSIGN)
-    {
-        Value *value = root->_llvm(jitx);
         jitx.assignSymbolValue((Param *)((AssignExpr *)root)->getLValue(), value);
-        return value;
-    }
-    return root->_llvm(jitx);
+    return value;
 }
 
 
