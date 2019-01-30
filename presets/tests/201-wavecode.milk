@@ -1,6 +1,6 @@
 [preset00]
-per_frame_1000=// use wavecode
-per_frame_1001=// red circle with blue line
+// use wavecode
+// red circle wave with blue squiggly wave
 
 fDecay=0.980000
 nWaveMode=0
@@ -26,9 +26,9 @@ wavecode_0_bDrawThick=0
 wavecode_0_bAdditive=1
 wavecode_0_scaling=1.000000
 wavecode_0_smoothing=0.500000
-wavecode_0_r=1.000000
-wavecode_0_g=0.000000
-wavecode_0_b=0.000000
+wavecode_0_r=0.000000
+wavecode_0_g=1.000000
+wavecode_0_b=1.000000
 wavecode_0_a=1.000000
 wave_0_per_point41=x=x+value1;
 wave_0_per_point42=y=y+value2;
