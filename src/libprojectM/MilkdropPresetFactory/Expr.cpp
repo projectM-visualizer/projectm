@@ -585,12 +585,12 @@ llvm::Value *TreeExpr::_llvm(JitContext &jitx)
     case INFIX_MOD:
     {
         llvm::Type *int32_ty = llvm::IntegerType::get(jitx.context,32);
-        llvm::Value *rhsInt = jitx.builder.CreateFPToSI(jitx.builder.CreateIntrinsic(llvm::Intrinsic::floor, rhs), int32_ty);
+        llvm::Value *rhsInt = jitx.builder.CreateFPToSI(jitx.CallIntrinsic(llvm::Intrinsic::floor, rhs), int32_ty);
         // BUG??? Calling CreateICmpNE without the floor() (just FPToSI()) causes stack overflow, bug in llvm::ConstantFoldCompareInstruction()?
         llvm::Value *condNotZero = jitx.builder.CreateICmpNE(jitx.CreateConstant(0), rhsInt, "ifcond");
         jitx.StartTernary(condNotZero);
         jitx.withThen();
-        llvm::Value *lhsInt = jitx.builder.CreateFPToSI(jitx.builder.CreateIntrinsic(llvm::Intrinsic::floor, lhs), int32_ty);
+        llvm::Value *lhsInt = jitx.builder.CreateFPToSI(jitx.CallIntrinsic(llvm::Intrinsic::floor, lhs), int32_ty);
         // TODO check the semantics of C operator % (might not be the same as srem)
         llvm::Value *thenValue = jitx.builder.CreateSIToFP(jitx.builder.CreateSRem(lhsInt,rhsInt), jitx.floatType);
         jitx.withElse();
@@ -922,7 +922,6 @@ llvm::Value *AssignMatrixExpr::_llvm(JitContext &jitx)
         return nullptr;
     // TODO optimze to only call set_matrix() once at end of program
     LValue *lvalue = this->lhs;
-    lvalue->_llvm_set_matrix(jitx, value);
     return value;
 }
 #endif

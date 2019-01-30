@@ -96,8 +96,7 @@ protected:
 public:
     /// Create a new parameter
     static Param * create(const std::string &name, short int type, short int flags,
-           void * eqn_val, void *matrix,
-           CValue default_init_val, CValue upper_bound,
+           void * eqn_val, void *matrix, CValue default_init_val, CValue upper_bound,
            CValue lower_bound);
 
     static Param * createUser(const std::string &name);
@@ -121,8 +120,9 @@ public:
     static Param * new_param_bool(const char * name, short int flags, void * engine_val,
                             bool upper_bound, bool lower_bound, bool init_val );
     static Param * new_param_string(const char * name, short int flags, void * engine_val);
-
+#if HAVE_LLVM
     virtual llvm::Value *_llvm(JitContext &jit) = 0;
+#endif
 };
 
 
