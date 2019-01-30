@@ -121,8 +121,9 @@ public:
     static Param * new_param_bool(const char * name, short int flags, void * engine_val,
                             bool upper_bound, bool lower_bound, bool init_val );
     static Param * new_param_string(const char * name, short int flags, void * engine_val);
-
+#if HAVE_LLVM
     virtual llvm::Value *_llvm(JitContext &jit) = 0;
+#endif
 };
 
 
