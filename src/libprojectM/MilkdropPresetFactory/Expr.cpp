@@ -922,7 +922,6 @@ llvm::Value *AssignMatrixExpr::_llvm(JitContext &jitx)
         return nullptr;
     // TODO optimze to only call set_matrix() once at end of program
     LValue *lvalue = this->lhs;
-    lvalue->_llvm_set_matrix(jitx, value);
     return value;
 }
 #endif

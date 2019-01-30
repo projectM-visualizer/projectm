@@ -96,8 +96,7 @@ protected:
 public:
     /// Create a new parameter
     static Param * create(const std::string &name, short int type, short int flags,
-           void * eqn_val, void *matrix,
-           CValue default_init_val, CValue upper_bound,
+           void * eqn_val, void *matrix, CValue default_init_val, CValue upper_bound,
            CValue lower_bound);
 
     static Param * createUser(const std::string &name);
