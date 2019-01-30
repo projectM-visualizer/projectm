@@ -2319,7 +2319,7 @@ int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int 
     if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL)
     {
       if (PARSE_DEBUG) printf("parse_wave_helper (per_point): equation evaluated to null? (LINE %d)\n", line_count);
-
+      current_wave = NULL;
       return PROJECTM_PARSE_ERROR;
     }
 
@@ -2328,7 +2328,7 @@ int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int 
     if (custom_wave->add_per_point_eqn(string, gen_expr) < 0)
     {
       Expr::delete_expr(gen_expr);
-
+      current_wave = NULL;
       return PROJECTM_PARSE_ERROR;
     }
     // This tells the parser we are no longer parsing a custom wave
