@@ -97,7 +97,7 @@ public:
 
   static void delete_expr(Expr *expr) { if (nullptr != expr) expr->_delete_from_tree(); }
   static Expr *optimize(Expr *root);
-  static Expr *jit(Expr *root);
+  static Expr *jit(Expr *root, std::string name="Expr::jit");
 
 public: // but don't call these from outside Expr.cpp
 
@@ -183,6 +183,13 @@ public:
     explicit LValue(ExprClass c) : Expr(c) {};
     virtual void set(float value) = 0;
     virtual void set_matrix(int mesh_i, int mesh_j, float value) = 0;
+#if HAVE_LLVM
+    virtual llvm::Value *_llvm_set_matrix(JitContext &jitx, llvm::Value *rhs)
+    {
+        Expr::generate_set_matrix_call(jitx, this, rhs);
+        return rhs;
+    }
+#endif
 };
 
 
