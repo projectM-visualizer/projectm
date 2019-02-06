@@ -1335,14 +1335,14 @@ Expr *Expr::jit(Expr *root, std::string name)
     jitx.builder.CreateRet(retValue);
 
 
-#ifdef DEBUG
+#ifdef DEBUG_LLVM
     outs() << "MODULE\n\n" << *jitx.module << "\n\n"; outs().flush();
 #endif
 
 	// and JIT!
 	jitx.OptimizePass();
 
-#ifdef DEBUG
+#ifdef DEBUG_LLVM
     outs() << "MODULE OPTIMIZED\n\n" << *jitx.module << "\n\n"; outs().flush();
 #endif
 
