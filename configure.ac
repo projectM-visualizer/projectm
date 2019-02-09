@@ -190,7 +190,12 @@ AC_ARG_ENABLE([pulseaudio], AS_HELP_STRING([--enable-pulseaudio], [Build Pulseau
 AS_IF([test "$enable_pulseaudio" != "no"],
     [PKG_CHECK_MODULES([libpulse],
         [libpulse],
-        [enable_pulseaudio=yes],
+        [
+            # still need qt
+            AS_IF([test "$enable_qt" = "yes"],
+                [enable_pulseaudio=yes],
+                [enable_pulseaudio="Qt required"])
+        ],
         [AS_IF([test "$enable_pulseaudio" = "yes"],
             [AC_MSG_ERROR([libpulse required, but not found.])],
             [enable_pulseaudio=no])])])
@@ -201,17 +206,22 @@ AC_ARG_ENABLE([jack], AS_HELP_STRING([--enable-jack], [Build Jack]), [], [enable
 AS_IF([test "$enable_jack" != "no"],
     [PKG_CHECK_MODULES([jack],
     [jack],
-    [enable_jack=yes],
+    [
+        # still need qt
+        AS_IF([test "$enable_qt" = "yes"],
+            [enable_jack=yes],
+            [enable_jack="Qt required"])
+    ],
     [AS_IF([test "$enable_jack" = "yes"],
         [AC_MSG_ERROR([jack required, but not found.])],
         [enable_jack=no])])])
 
 
-AM_CONDITIONAL([ENABLE_SDL], [test x$enable_sdl = xyes])
-AM_CONDITIONAL([ENABLE_QT], [test x$enable_qt = xyes])
-AM_CONDITIONAL([ENABLE_JACK], [test x$enable_jack = xyes])
-AM_CONDITIONAL([ENABLE_PULSEAUDIO], [test x$enable_pulseaudio = xyes])
-AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test x$enable_emscripten = xyes])
+AM_CONDITIONAL([ENABLE_SDL], [test "x$enable_sdl" = "xyes"])
+AM_CONDITIONAL([ENABLE_QT], [test "x$enable_qt" = "xyes"])
+AM_CONDITIONAL([ENABLE_JACK], [test "x$enable_jack" = "xyes"])
+AM_CONDITIONAL([ENABLE_PULSEAUDIO], [test "x$enable_pulseaudio" = "xyes"])
+AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test "x$enable_emscripten" = "xyes"])
 
 
 my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits "
