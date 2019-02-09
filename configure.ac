@@ -214,7 +214,7 @@ AS_IF([test "$enable_pulseaudio" != "no"],
 AC_ARG_ENABLE([jack], AS_HELP_STRING([--enable-jack], [Build Jack]), [], [enable_jack=check])
 AS_IF([test "$enable_jack" != "no"],
     [PKG_CHECK_MODULES([jack],
-    [libpulse],
+    [jack],
     [enable_jack=yes],
     [AS_IF([test "$enable_jack" = "yes"],
         [AC_MSG_ERROR([jack required, but not found.])],
