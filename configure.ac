@@ -1,4 +1,4 @@
-AC_INIT([projectM], [3.1.0], [mischa@mvstg.biz], [projectM], [https://github.com/revmischa/projectm])
+AC_INIT([projectM], [3.1.1], [mischa@mvstg.biz], [projectM], [https://github.com/projectM-visualizer/projectm/])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects tar-pax])
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
@@ -134,7 +134,7 @@ AX_CHECK_COMPILE_FLAG([-std=c++11], [
 
 dnl Qt
 AC_ARG_ENABLE([qt],
-  AS_HELP_STRING([--enable-qt], [Build Qt]),
+  AS_HELP_STRING([--enable-qt], [Enable Qt: needed for pulseaudio and jack GUIs]),
   [], [enable_qt=no])
 AS_IF([test "x$enable_qt" = "xyes"], [
   PKG_CHECK_MODULES(QT, [Qt5Core, Qt5Gui, Qt5Widgets Qt5OpenGL], [], [AC_MSG_ERROR([Qt libraries are required.])])
@@ -152,12 +152,28 @@ AS_IF([test "x$enable_qt" = "xyes"], [
   if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
     AC_MSG_ERROR([Qt utility programs moc, uic, and rcc are required.])
   fi
+])
 
+
+dnl Pulseaudio
+AC_MSG_CHECKING([libpulse])
+PKG_CHECK_MODULES(PULSE, [libpulse],
+                         [AC_MSG_RESULT([yes]); enable_pulseaudio=yes]
+                         [AC_MSG_RESULT([no])]
+)
+
+AC_ARG_ENABLE([pulseaudio],
+AS_HELP_STRING([--enable-pulseaudio], [Build Pulseaudio]),
+                                      [], [enable_pulseaudio=no])
+AS_IF([test "x$enable_pulseaudio" = "xyes"], [
+PKG_CHECK_MODULES(PULSE, [pulse], [], [AC_MSG_ERROR([Pulseaudio libraries are required.])])
   PKG_CHECK_MODULES(LIBPULSE, [libpulse], [], [AC_MSG_ERROR([Pulseaudio library libpulse is required.])])
 ])
 
 AM_CONDITIONAL([ENABLE_SDL], [test "$enable_sdl" = yes])
 AM_CONDITIONAL([ENABLE_QT], [test "$enable_qt" = yes])
+AM_CONDITIONAL([ENABLE_JACK], [test "$enable_jack" = yes])
+AM_CONDITIONAL([ENABLE_PULSEAUDIO], [test "$enable_pulseaudio" = yes])
 AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test "$enable_emscripten" = yes])
 
 
@@ -192,7 +208,9 @@ Applications:
 libprojectM:            yes
 Threading:              ${enable_threading}
 SDL:                    ${enable_sdl}
-Qt & Pulseaudio:        ${enable_qt}
+Qt:                     ${enable_qt}
+Pulseaudio:             ${enable_pulseaudio}
+Jack:                   ${enable_jack}
 OpenGLES:               ${enable_gles}
 Emscripten:             ${enable_emscripten}
 ])
