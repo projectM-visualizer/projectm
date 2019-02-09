@@ -954,28 +954,28 @@ public:
 
     float eval(int mesh_i, int mesh_j) override
     {
-        float v = rhs->eval( mesh_i, mesh_j );
-        lhs->set_matrix( mesh_i, mesh_j, v );
+        float v = rhs->eval(mesh_i, mesh_j);
+        lhs->set_matrix(mesh_i, mesh_j, v);
         return v;
     }
 
-    std::ostream& to_string(std::ostream &out) override
+    std::ostream &to_string(std::ostream &out) override
     {
         out << lhs << "[i,j] = " << rhs;
         return out;
     }
 
 #if HAVE_LLVM
-llvm::Value *AssignMatrixExpr::_llvm(JitContext &jitx)
-{
-    llvm::Value *value = Expr::llvm(jitx, rhs);
-    if (nullptr == value)
-        return nullptr;
-    // TODO optimze to only call set_matrix() once at end of program
-    LValue *lvalue = this->lhs;
-    lvalue->_llvm_set_matrix(jitx, value);
-    return value;
-}
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Value *value = Expr::llvm(jitx, rhs);
+        if (nullptr == value)
+            return nullptr;
+        // TODO optimze to only call set_matrix() once at end of program
+        LValue *lvalue = this->lhs;
+        lvalue->_llvm_set_matrix(jitx, value);
+        return value;
+    }
 #endif
 };
 
