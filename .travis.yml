@@ -50,6 +50,7 @@ matrix:
             - libqt5opengl5-dev
             - libjack-dev
             - libpulse-dev
+            - libsdl-dev  # for jack
       env:
         - MATRIX_EVAL="CC=clang-5.0 CXX=clang++-5.0 PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio\""
      # linux/gcc
