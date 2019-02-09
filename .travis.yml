@@ -43,6 +43,7 @@ matrix:
           sources:
             - llvm-toolchain-trusty-5.0
           packages:
+            - libsdl2-dev
             - clang-5.0
             - libglm-dev
             - libc++-dev
