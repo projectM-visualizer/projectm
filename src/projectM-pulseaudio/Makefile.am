@@ -9,10 +9,10 @@ nodist_projectM_pulseaudio_moc_sources = $(projectM_pulseaudio_qtheaders:.hpp=_m
 
 .hpp_moc.cpp:
 	@MOC@ -o$@ $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(CPPFLAGS) $(MOC_CPPFLAGS)\
-	$(qt_CPPFLAGS) $(qt_LDFLAGS) $(qt_LIBS) $<
+	$(qt_CPPFLAGS) $(qt_LDFLAGS) $<
 
 ui_PulseDeviceChooserDialog.h: PulseDeviceChooserDialog.ui
-	@UIC@ -o $@ $<
+	@UIC@ $(qt_CPPFLAGS) -o $@ $<
 
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
@@ -21,8 +21,9 @@ AM_CPPFLAGS = \
 	-I${top_srcdir}/src/libprojectM \
 	-I${top_srcdir}/src/libprojectM/Renderer \
 	-I${top_srcdir}/src/projectM-qt \
-	${QT_CFLAGS} \
-	${LIBPULSE_CFLAGS} \
+	${qt_CFLAGS} \
+	${qt_CPPFLAGS} \
+	${libpulse_CFLAGS} \
 	-fPIC
 
 AM_CFLAGS = ${my_CFLAGS} \
@@ -44,12 +45,12 @@ nodist_projectM_pulseaudio_SOURCES = \
 	$(nodist_projectM_pulseaudio_moc_sources)
 
 projectM_pulseaudio_LDADD = \
-	${LIBPULSE_LIBS} \
+	${libpulse_LIBS} \
 	../projectM-qt/libprojectM_qt.a \
 	../libprojectM/libprojectM.la \
-	${QT_LIBS}
+	${qt_LIBS}
 
-projectM_pulseaudio_LDFLAGS = -static
+projectM_pulseaudio_LDFLAGS = -static ${qt_LIBS}
 
 projectM_pulseaudio_PROGRAM = projectM-pulseaudio
 
