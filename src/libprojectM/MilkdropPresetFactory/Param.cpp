@@ -293,6 +293,12 @@ public:
         llvm::Constant *ptr = jitx.CreateFloatPtr((float *)engine_val);
         return jitx.builder.CreateLoad(ptr, name);
     }
+    virtual llvm::Value *_llvm_set_matrix(JitContext &jitx, llvm::Value *rhs)
+    {
+        llvm::Constant *ptr = jitx.CreateFloatPtr((float *)engine_val);
+        jitx.builder.CreateStore(rhs, ptr, false);
+        return rhs;
+    }
 #endif
 };
 

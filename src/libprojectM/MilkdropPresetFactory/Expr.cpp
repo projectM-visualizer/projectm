@@ -966,15 +966,16 @@ public:
     }
 
 #if HAVE_LLVM
-    llvm::Value *_llvm(JitContext &jitx) override
-    {
-        llvm::Value *value = Expr::llvm(jitx, rhs);
-        if (nullptr == value)
-            return nullptr;
-        // TODO optimze to only call set_matrix() once at end of program
-        Expr::generate_set_matrix_call(jitx, this->lhs, value);
-        return value;
-    }
+llvm::Value *AssignMatrixExpr::_llvm(JitContext &jitx)
+{
+    llvm::Value *value = Expr::llvm(jitx, rhs);
+    if (nullptr == value)
+        return nullptr;
+    // TODO optimze to only call set_matrix() once at end of program
+    LValue *lvalue = this->lhs;
+    lvalue->_llvm_set_matrix(jitx, value);
+    return value;
+}
 #endif
 };
 
@@ -1386,17 +1387,14 @@ Value *Expr::llvm(JitContext &jitx, Expr *root)
     {
         return jitx.getSymbolValue((Param *)root);
     }
+    Value *value = root->_llvm(jitx);
     if (root->clazz == ASSIGN)
-    {
-        Value *value = root->_llvm(jitx);
         jitx.assignSymbolValue((Param *)((AssignExpr *)root)->getLValue(), value);
-        return value;
-    }
-    return root->_llvm(jitx);
+    return value;
 }
 
 
-Expr *Expr::jit(Expr *root)
+Expr *Expr::jit(Expr *root, std::string name)
 {
 #ifdef NEVER_JIT
     return root;
@@ -1404,7 +1402,7 @@ Expr *Expr::jit(Expr *root)
     LLVMContext &Context = getGlobalContext();
 
     // Create some module to put our function into it.
-    JitContext jitx;
+    JitContext jitx(name);
 
     std::vector<Type *> arg_typess;
     arg_typess.push_back(IntegerType::get(Context,32));
@@ -1429,15 +1427,15 @@ Expr *Expr::jit(Expr *root)
     jitx.builder.CreateRet(retValue);
 
 
-#ifdef DEBUG
+#ifdef DEBUG_LLVM
     outs() << "MODULE\n\n" << *jitx.module << "\n\n"; outs().flush();
 #endif
 
 	// and JIT!
 	jitx.OptimizePass();
 
-#ifdef DEBUG
-    outs() << "MODULE AFTER\n\n" << *jitx.module << "\n\n"; outs().flush();
+#ifdef DEBUG_LLVM
+    outs() << "MODULE OPTIMIZED\n\n" << *jitx.module << "\n\n"; outs().flush();
 #endif
 
     ExecutionEngine* executionEngine = EngineBuilder(std::move(jitx.module_ptr)).create();

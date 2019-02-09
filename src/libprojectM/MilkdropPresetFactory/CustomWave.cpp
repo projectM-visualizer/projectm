@@ -509,11 +509,13 @@ ColoredPoint CustomWave::PerPoint(ColoredPoint p, const WaveformContext context)
         Expr *program_expr  = Expr::create_program_expr(steps, false);
         Expr *jit = nullptr;
 #if HAVE_LLVM
-        jit = Expr::jit(program_expr);
+        char buffer[100];
+        sprintf(buffer, "wave_%d", id);
+        if (!steps.empty())
+            jit = Expr::jit(program_expr, buffer);
 #endif
         per_point_program = jit ? jit : program_expr;
     }
-
 
     r_mesh[context.sample_int] = r;
     g_mesh[context.sample_int] = g;
