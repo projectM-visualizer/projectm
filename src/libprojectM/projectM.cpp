@@ -469,15 +469,11 @@ void projectM::projectM_reset()
 
     this->fpsstart = 0;
 
-    setlocale(LC_NUMERIC, "C");
-
     projectM_resetengine();
 }
 
 void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, int height )
 {
-    setlocale(LC_NUMERIC, "C");
-
     /** Initialise start time */
     timeKeeper = new TimeKeeper(_settings.presetDuration,_settings.smoothPresetDuration, _settings.easterEgg);
 
