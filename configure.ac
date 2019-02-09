@@ -169,6 +169,8 @@ AS_IF([test "$enable_qt" != "no"],
         AC_MSG_WARN([Qt utility programs moc, uic, and rcc are required.])
         enable_qt=no
     fi
+
+    export QT_SELECT=qt5
     ],
     [AS_IF([test "$enable_qt" = "yes"],
         [AC_MSG_ERROR(["Qt5 not found"])],

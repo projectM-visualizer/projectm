@@ -6,7 +6,7 @@ before_install:
 
 # TODO: test different combinations of flags, --enable-sdl, --enable-qt, etc
 script:
-  - ./configure --enable-sdl --prefix=$PWD/local && make -j8 && make install  # build from checkout
+  - ./configure --enable-sdl $PM_OPTS --prefix=$PWD/local && make -j8 && make install  # build from checkout
   - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure --enable-sdl --prefix=$PWD/dist_install && make -j8 && make install  # build from dist
   - echo "PWD $PWD"
   - ls .
@@ -23,7 +23,7 @@ script:
 # test on GCC and Clang
 matrix:
   include:
-    # linux/clang
+    # linux/clang with SDL
     - os: linux
       addons:
         apt:
@@ -35,7 +35,7 @@ matrix:
             - libglm-dev
             - libc++-dev
       env:
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
+        - MATRIX_EVAL="CC=clang-5.0 CXX=clang++-5.0 PM_OPTS=\"--enable-sdl\""
     # linux/clang with pulseaudio/qt/jack
     - os: linux
       addons:
@@ -44,7 +44,6 @@ matrix:
             - llvm-toolchain-trusty-5.0
           packages:
             - clang-5.0
-            - libsdl2-dev
             - libglm-dev
             - libc++-dev
             - qtdeclarative5-dev
