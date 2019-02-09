@@ -6,8 +6,8 @@ before_install:
 
 # TODO: test different combinations of flags, --enable-sdl, --enable-qt, etc
 script:
-  - ./configure $PM_OPTS --prefix=$PWD/local && make -j8 && make install  # build from checkout
-  - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure $PM_OPTS --prefix=$PWD/dist_install && make -j8 && make install  # build from dist
+  - ./configure $PM_OPTS --prefix=$PWD/local && make -j6 && make install  # build from checkout
+  - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure $PM_OPTS --prefix=$PWD/dist_install && make -j6 && make install  # build from dist
   - echo "PWD=$PWD"
   - ls .
   # - test -e src/projectM-sdl/projectMSDL
