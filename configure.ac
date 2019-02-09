@@ -173,6 +173,9 @@ AS_IF([test "$enable_qt" != "no"],
             AC_MSG_WARN([Qt utility programs moc, uic, and rcc are required.])
             enable_qt=no
         fi
+        MOC="$MOC -qt=5"
+        UIC="$UIC -qt=5"
+        RCC="$RCC -qt=5"
 
         export QT_SELECT=qt5
     ],
@@ -180,24 +183,6 @@ AS_IF([test "$enable_qt" != "no"],
         [AC_MSG_ERROR(["Qt5 not found"])],
         [enable_qt=no])]
 )])
-
-AS_IF([test "x$enable_qt" = "xyes"], [
-  PKG_CHECK_MODULES(Qt, [Qt5Core, Qt5Gui, Qt5Widgets Qt5OpenGL], [], [AC_MSG_ERROR([Qt libraries are required.])])
-  qt_CPPFLAGS="`$PKG_CONFIG --cflags-only-I Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $CPPFLAGS"
-  qt_LDFLAGS="`$PKG_CONFIG --libs-only-L Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LDFLAGS"
-  qt_LIBS="`$PKG_CONFIG --libs-only-l Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LIBS"
-
-  if ! `$PKG_CONFIG --atleast-version=5.0.0 Qt5Core`; then
-      AC_MSG_ERROR([Qt >= 5.0.0 is required. Try installing qtdeclarative5-dev])
-  fi
-
-  AC_CHECK_PROGS(MOC, [moc-qt5 moc])
-  AC_CHECK_PROGS(UIC, [uic-qt5 uic])
-  AC_CHECK_PROGS(RCC, [rcc-qt5 rcc])
-  if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
-      AC_MSG_ERROR([Qt utility programs moc, uic, and rcc are required.])
-  fi
-])
 
 
 # Pulseaudio

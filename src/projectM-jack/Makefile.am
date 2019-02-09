@@ -12,6 +12,7 @@ ${qt_CPPFLAGS} \
 -fPIC \
 ${qt_CFLAGS}
 
+# TODO: add remote control if we have qxt network lib
 # if QT_NETWORK_ENABLED
 # EXTRA_SRCS = HTTPRemoteControl.cpp
 # endif
