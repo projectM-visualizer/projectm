@@ -79,22 +79,22 @@ AC_CONFIG_FILES([
 # SDL
 AC_ARG_ENABLE([sdl], AS_HELP_STRING([--enable-sdl], [Build SDL2 application]), [], [enable_sdl=check])
 AS_IF([test "$enable_sdl" != "no"], [
-    m4_include([m4/sdl2.m4])
-    SDL_VERSION="2.0.5"
-    AS_IF([test "$TRAVIS"], [SDL_VERSION=2.0.2])  # travis has old SDL, we don't care
-    AS_IF([test "$EMSCRIPTEN"], [SDL_VERSION=2.0.0])  # emscripten has old SDL, we don't care
+    PKG_CHECK_MODULES([SDL], [sdl2], [
+        m4_include([m4/sdl2.m4])
+        SDL_VERSION="2.0.5"
+        AS_IF([test "$TRAVIS"], [SDL_VERSION=2.0.2])  # travis has old SDL, we don't care
+        AS_IF([test "$EMSCRIPTEN"], [SDL_VERSION=2.0.0])  # emscripten has old SDL, we don't care
 
-    # Check for libSDL >= $SDL_VERSION
-    found_sdl=no
-    AM_PATH_SDL2($SDL_VERSION,
-        [found_sdl=yes; enable_sdl=yes],
-        [:])
-
-    AC_MSG_CHECKING(SDL2 >= $SDL_VERSION)
-    AS_IF([test "$found_sdl" = "yes"], AC_MSG_RESULT([yes]), AC_MSG_RESULT(no))
-
-    # blow up if user asked for SDL and we don't have it
-    AS_IF([test "$enable_sdl" = "yes" && test "$found_sdl" = "no"], AC_MSG_ERROR([*** SDL version >= $SDL_VERSION not found!]))
+        # Check for libSDL >= $SDL_VERSION
+        AM_PATH_SDL2($SDL_VERSION,
+            [enable_sdl=yes],
+            [AS_IF([test "$enable_sdl" = "yes"], AC_MSG_ERROR([*** SDL version >= $SDL_VERSION not found!])); enable_sdl=no])
+    ],
+    [
+        # not found
+        AS_IF([test "$enable_sdl" = "yes"], AC_MSG_ERROR([*** libsdl2 not found!]))
+        enable_sdl=no
+    ])
 ])
 
 
@@ -147,30 +147,33 @@ AX_CHECK_COMPILE_FLAG([-std=c++11], [
 dnl Qt
 AC_ARG_ENABLE([qt], AS_HELP_STRING([--enable-qt], [Enable Qt: needed for pulseaudio and jack GUIs]), [], [enable_qt=check])
 AS_IF([test "$enable_qt" != "no"],
-  [PKG_CHECK_MODULES([Qt5],
+  [PKG_CHECK_MODULES([qt],
     [Qt5Core, Qt5Gui, Qt5Widgets Qt5OpenGL],
     [
-    enable_qt=yes
+        enable_qt=yes
 
-    # do more checks for Qt version and tools
-    qt_CPPFLAGS="`$PKG_CONFIG --cflags-only-I Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $CPPFLAGS"
-    qt_LDFLAGS="`$PKG_CONFIG --libs-only-L Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LDFLAGS"
-    qt_LIBS="`$PKG_CONFIG --libs-only-l Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LIBS"
+        # do more checks for Qt version and tools
+        qt_CPPFLAGS="`$PKG_CONFIG --cflags-only-I Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $CPPFLAGS"
+        qt_LDFLAGS="`$PKG_CONFIG --libs-only-L Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LDFLAGS"
+        qt_LIBS="`$PKG_CONFIG --libs-only-l Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LIBS"
+        AC_SUBST(qt_CPPFLAGS)
+        AC_SUBST(qt_LDFLAGS)
+        AC_SUBST(qt_LIBS)
 
-    if ! `$PKG_CONFIG --atleast-version=5.0.0 Qt5Core`; then
-        AC_MSG_WARN([Qt >= 5.0.0 is required. Try installing libqt5opengl5-dev qtdeclarative5-dev])
-        enable_qt=no
-    fi
+        if ! `$PKG_CONFIG --atleast-version=5.0.0 Qt5Core`; then
+            AC_MSG_WARN([Qt >= 5.0.0 is required. Try installing libqt5opengl5-dev qtdeclarative5-dev])
+            enable_qt=no
+        fi
 
-    AC_CHECK_PROGS(MOC, [moc-qt5 moc])
-    AC_CHECK_PROGS(UIC, [uic-qt5 uic])
-    AC_CHECK_PROGS(RCC, [rcc-qt5 rcc])
-    if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
-        AC_MSG_WARN([Qt utility programs moc, uic, and rcc are required.])
-        enable_qt=no
-    fi
+        AC_CHECK_PROGS(MOC, [moc-qt5 moc])
+        AC_CHECK_PROGS(UIC, [uic-qt5 uic])
+        AC_CHECK_PROGS(RCC, [rcc-qt5 rcc])
+        if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
+            AC_MSG_WARN([Qt utility programs moc, uic, and rcc are required.])
+            enable_qt=no
+        fi
 
-    export QT_SELECT=qt5
+        export QT_SELECT=qt5
     ],
     [AS_IF([test "$enable_qt" = "yes"],
         [AC_MSG_ERROR(["Qt5 not found"])],
