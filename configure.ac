@@ -158,7 +158,7 @@ AS_IF([test "$enable_qt" != "no"],
     qt_LIBS="`$PKG_CONFIG --libs-only-l Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LIBS"
 
     if ! `$PKG_CONFIG --atleast-version=5.0.0 Qt5Core`; then
-        AC_MSG_WARN([Qt >= 5.0.0 is required. Try installing qtdeclarative5-dev])
+        AC_MSG_WARN([Qt >= 5.0.0 is required. Try installing libqt5opengl5-dev qtdeclarative5-dev])
         enable_qt=no
     fi
 

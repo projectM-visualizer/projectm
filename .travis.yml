@@ -47,8 +47,7 @@ matrix:
             - libglm-dev
             - libc++-dev
             - qtdeclarative5-dev
-            - qtbase5-dev
-            - qt5-default
+            - libqt5opengl5-dev
             - libjack-dev
             - libpulse-dev
       env:
