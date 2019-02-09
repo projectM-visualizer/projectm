@@ -182,19 +182,19 @@ AS_IF([test "x$enable_qt" = "xyes"], [
   qt_LIBS="`$PKG_CONFIG --libs-only-l Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LIBS"
 
   if ! `$PKG_CONFIG --atleast-version=5.0.0 Qt5Core`; then
-    AC_MSG_ERROR([Qt >= 5.0.0 is required. Try installing qtdeclarative5-dev])
+      AC_MSG_ERROR([Qt >= 5.0.0 is required. Try installing qtdeclarative5-dev])
   fi
 
   AC_CHECK_PROGS(MOC, [moc-qt5 moc])
   AC_CHECK_PROGS(UIC, [uic-qt5 uic])
   AC_CHECK_PROGS(RCC, [rcc-qt5 rcc])
   if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
-    AC_MSG_ERROR([Qt utility programs moc, uic, and rcc are required.])
+      AC_MSG_ERROR([Qt utility programs moc, uic, and rcc are required.])
   fi
 ])
 
 
-dnl Pulseaudio
+# Pulseaudio
 AC_ARG_ENABLE([pulseaudio], AS_HELP_STRING([--enable-pulseaudio], [Build Pulseaudio]), [], [enable_pulseaudio=check])
 AS_IF([test "$enable_pulseaudio" != "no"],
     [PKG_CHECK_MODULES([libpulse],
@@ -203,6 +203,17 @@ AS_IF([test "$enable_pulseaudio" != "no"],
         [AS_IF([test "$enable_pulseaudio" = "yes"],
             [AC_MSG_ERROR([libpulse required, but not found.])],
             [enable_pulseaudio=no])])])
+
+
+# Jack
+AC_ARG_ENABLE([jack], AS_HELP_STRING([--enable-jack], [Build Jack]), [], [enable_jack=check])
+AS_IF([test "$enable_jack" != "no"],
+    [PKG_CHECK_MODULES([jack],
+    [libpulse],
+    [enable_jack=yes],
+    [AS_IF([test "$enable_jack" = "yes"],
+        [AC_MSG_ERROR([jack required, but not found.])],
+        [enable_jack=no])])])
 
 
 AM_CONDITIONAL([ENABLE_SDL], [test "$enable_sdl" = yes])

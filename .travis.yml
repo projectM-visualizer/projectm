@@ -36,7 +36,23 @@ matrix:
             - libc++-dev
       env:
         - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
-    # linux/gcc
+    # linux/clang with pulseaudio/qt/jack
+    - os: linux
+      addons:
+        apt:
+          sources:
+            - llvm-toolchain-trusty-5.0
+          packages:
+            - clang-5.0
+            - libsdl2-dev
+            - libglm-dev
+            - libc++-dev
+            - qtdeclarative5-dev
+            - libjack-dev
+            - libpulse-dev
+      env:
+        - MATRIX_EVAL="CC=clang-5.0 CXX=clang++-5.0 PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio\""
+     # linux/gcc
     - os: linux
       addons:
         apt:
