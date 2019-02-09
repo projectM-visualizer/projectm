@@ -72,8 +72,9 @@ AC_CONFIG_FILES([
   src/projectM-emscripten/Makefile
   src/projectM-qt/Makefile
   src/projectM-pulseaudio/Makefile
+  src/projectM-jack/Makefile
   src/projectM-test/Makefile
-  ])
+])
 
 
 # SDL
@@ -221,11 +222,11 @@ AS_IF([test "$enable_jack" != "no"],
         [enable_jack=no])])])
 
 
-AM_CONDITIONAL([ENABLE_SDL], [test "$enable_sdl" = yes])
-AM_CONDITIONAL([ENABLE_QT], [test "$enable_qt" = yes])
-AM_CONDITIONAL([ENABLE_JACK], [test "$enable_jack" = yes])
-AM_CONDITIONAL([ENABLE_PULSEAUDIO], [test "$enable_pulseaudio" = yes])
-AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test "$enable_emscripten" = yes])
+AM_CONDITIONAL([ENABLE_SDL], [test x$enable_sdl = xyes])
+AM_CONDITIONAL([ENABLE_QT], [test x$enable_qt = xyes])
+AM_CONDITIONAL([ENABLE_JACK], [test x$enable_jack = xyes])
+AM_CONDITIONAL([ENABLE_PULSEAUDIO], [test x$enable_pulseaudio = xyes])
+AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test x$enable_emscripten = xyes])
 
 
 my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits "
