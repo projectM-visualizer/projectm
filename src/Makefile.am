@@ -11,7 +11,7 @@ if ENABLE_PULSEAUDIO
 endif
 
 if ENABLE_JACK
-  PROJECTM_JACK_SUBDIR = projectM-jack
+  PROJECTM_JACK_SUBDIR = projectM-qt projectM-jack
 endif
 
 if ENABLE_EMSCRIPTEN
