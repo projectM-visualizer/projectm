@@ -24,6 +24,7 @@
 #include <string>
 #include <cstring>
 #include <iostream>
+#include <locale>
 #include <stdlib.h>
 
 #include "Common.hpp"
@@ -1287,26 +1288,17 @@ int Parser::parse_int(std::istream &  fs, int * int_ptr)
 int Parser::string_to_float(char * string, float * float_ptr)
 {
 
-  char ** error_ptr;
-
   if (*string == 0)
     return PROJECTM_PARSE_ERROR;
 
-  error_ptr = (char**)wipemalloc(sizeof(char**));
-
-  (*float_ptr) = strtod(string, error_ptr);
-
-  /* These imply a succesful parse of the string */
-  if ((**error_ptr == '\0') || (**error_ptr == '\r'))
-  {
-    free(error_ptr);
-    error_ptr = NULL;
+  std::istringstream iss(string);
+  iss.imbue(std::locale("C"));
+  iss >> (*float_ptr);
+  if (!iss.fail()) {
     return PROJECTM_SUCCESS;
   }
 
   (*float_ptr) = 0;
-  free(error_ptr);
-  error_ptr = NULL;
   return PROJECTM_PARSE_ERROR;
 }
 
@@ -1315,11 +1307,8 @@ int Parser::parse_float(std::istream &  fs, float * float_ptr)
 {
 
   char string[MAX_TOKEN_SIZE];
-  char ** error_ptr;
   token_t token;
   int sign;
-
-  error_ptr =(char**) wipemalloc(sizeof(char**));
 
   token = parseToken(fs, string);
 
@@ -1339,26 +1328,20 @@ int Parser::parse_float(std::istream &  fs, float * float_ptr)
 
   if (string[0] == 0)
   {
-    free(error_ptr);
-    error_ptr = NULL;
     return PROJECTM_PARSE_ERROR;
   }
 
-  (*float_ptr) = sign*strtod(string, error_ptr);
-
-  /* No conversion was performed */
-  if ((**error_ptr == '\0') || (**error_ptr == '\r'))
-  {
-    free(error_ptr);
-    error_ptr = NULL;
+  std::istringstream iss(string);
+  iss.imbue(std::locale("C"));
+  iss >> (*float_ptr);
+  if (!iss.fail()) {
+    (*float_ptr) *= sign;
     return PROJECTM_SUCCESS;
   }
 
   if (PARSE_DEBUG) printf("parse_float: float conversion failed for string \"%s\"\n", string);
 
   (*float_ptr) = 0;
-  free(error_ptr);
-  error_ptr = NULL;
   return PROJECTM_PARSE_ERROR;
 
 }
