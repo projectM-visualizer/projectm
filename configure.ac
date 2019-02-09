@@ -75,24 +75,36 @@ AC_CONFIG_FILES([
   src/projectM-test/Makefile
   ])
 
-dnl SDL
-AC_ARG_ENABLE([sdl],
-  AS_HELP_STRING([--enable-sdl], [Build SDL2 app]),
-  [], [enable_sdl=no])
-AS_IF([test "x$enable_sdl" = "xyes"], [
-  m4_include([m4/sdl2.m4])
-  SDL_VERSION=2.0.5
-  AS_IF([test "$TRAVIS"], [SDL_VERSION=2.0.2])  # travis has old SDL, we don't care
-  AS_IF([test "EMSCRIPTEN"], [SDL_VERSION=2.0.0])  # emscripten has old SDL, we don't care
-  AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
+
+# SDL
+AC_ARG_ENABLE([sdl], AS_HELP_STRING([--enable-sdl], [Build SDL2 application]), [], [enable_sdl=check])
+AS_IF([test "$enable_sdl" != "no"], [
+    m4_include([m4/sdl2.m4])
+    SDL_VERSION="2.0.5"
+    AS_IF([test "$TRAVIS"], [SDL_VERSION=2.0.2])  # travis has old SDL, we don't care
+    AS_IF([test "$EMSCRIPTEN"], [SDL_VERSION=2.0.0])  # emscripten has old SDL, we don't care
+
+    # Check for libSDL >= $SDL_VERSION
+    found_sdl=no
+    AM_PATH_SDL2($SDL_VERSION,
+        [found_sdl=yes; enable_sdl=yes],
+        [:])
+
+    AC_MSG_CHECKING(SDL2 >= $SDL_VERSION)
+    AS_IF([test "$found_sdl" = "yes"], AC_MSG_RESULT([yes]), AC_MSG_RESULT(no))
+
+    # blow up if user asked for SDL and we don't have it
+    AS_IF([test "$enable_sdl" = "yes" && test "$found_sdl" = "no"], AC_MSG_ERROR([*** SDL version >= $SDL_VERSION not found!]))
 ])
 
-dnl glm
+
+# glm
 AS_IF([test "x$enable_emscripten" != "xyes"], [
   AC_CHECK_HEADER([glm/glm.hpp],, AC_MSG_ERROR(libglm is required.))
 ])
 
-dnl Threading
+
+# Threading
 AC_ARG_ENABLE([threading],
 AS_HELP_STRING([--enable-threading], [multhreading]),
 [], [enable_threading=yes])
@@ -133,11 +145,38 @@ AX_CHECK_COMPILE_FLAG([-std=c++11], [
                         CXXFLAGS="$CXXFLAGS -std=c++11"])
 
 dnl Qt
-AC_ARG_ENABLE([qt],
-  AS_HELP_STRING([--enable-qt], [Enable Qt: needed for pulseaudio and jack GUIs]),
-  [], [enable_qt=no])
+AC_ARG_ENABLE([qt], AS_HELP_STRING([--enable-qt], [Enable Qt: needed for pulseaudio and jack GUIs]), [], [enable_qt=check])
+AS_IF([test "$enable_qt" != "no"],
+  [PKG_CHECK_MODULES([Qt5],
+    [Qt5Core, Qt5Gui, Qt5Widgets Qt5OpenGL],
+    [
+    enable_qt=yes
+
+    # do more checks for Qt version and tools
+    qt_CPPFLAGS="`$PKG_CONFIG --cflags-only-I Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $CPPFLAGS"
+    qt_LDFLAGS="`$PKG_CONFIG --libs-only-L Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LDFLAGS"
+    qt_LIBS="`$PKG_CONFIG --libs-only-l Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LIBS"
+
+    if ! `$PKG_CONFIG --atleast-version=5.0.0 Qt5Core`; then
+        AC_MSG_WARN([Qt >= 5.0.0 is required. Try installing qtdeclarative5-dev])
+        enable_qt=no
+    fi
+
+    AC_CHECK_PROGS(MOC, [moc-qt5 moc])
+    AC_CHECK_PROGS(UIC, [uic-qt5 uic])
+    AC_CHECK_PROGS(RCC, [rcc-qt5 rcc])
+    if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
+        AC_MSG_WARN([Qt utility programs moc, uic, and rcc are required.])
+        enable_qt=no
+    fi
+    ],
+    [AS_IF([test "$enable_qt" = "yes"],
+        [AC_MSG_ERROR(["Qt5 not found"])],
+        [enable_qt=no])]
+)])
+
 AS_IF([test "x$enable_qt" = "xyes"], [
-  PKG_CHECK_MODULES(QT, [Qt5Core, Qt5Gui, Qt5Widgets Qt5OpenGL], [], [AC_MSG_ERROR([Qt libraries are required.])])
+  PKG_CHECK_MODULES(Qt, [Qt5Core, Qt5Gui, Qt5Widgets Qt5OpenGL], [], [AC_MSG_ERROR([Qt libraries are required.])])
   qt_CPPFLAGS="`$PKG_CONFIG --cflags-only-I Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $CPPFLAGS"
   qt_LDFLAGS="`$PKG_CONFIG --libs-only-L Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LDFLAGS"
   qt_LIBS="`$PKG_CONFIG --libs-only-l Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LIBS"
@@ -156,19 +195,15 @@ AS_IF([test "x$enable_qt" = "xyes"], [
 
 
 dnl Pulseaudio
-AC_MSG_CHECKING([libpulse])
-PKG_CHECK_MODULES(PULSE, [libpulse],
-                         [AC_MSG_RESULT([yes]); enable_pulseaudio=yes]
-                         [AC_MSG_RESULT([no])]
-)
+AC_ARG_ENABLE([pulseaudio], AS_HELP_STRING([--enable-pulseaudio], [Build Pulseaudio]), [], [enable_pulseaudio=check])
+AS_IF([test "$enable_pulseaudio" != "no"],
+    [PKG_CHECK_MODULES([libpulse],
+        [libpulse],
+        [enable_pulseaudio=yes],
+        [AS_IF([test "$enable_pulseaudio" = "yes"],
+            [AC_MSG_ERROR([libpulse required, but not found.])],
+            [enable_pulseaudio=no])])])
 
-AC_ARG_ENABLE([pulseaudio],
-AS_HELP_STRING([--enable-pulseaudio], [Build Pulseaudio]),
-                                      [], [enable_pulseaudio=no])
-AS_IF([test "x$enable_pulseaudio" = "xyes"], [
-PKG_CHECK_MODULES(PULSE, [pulse], [], [AC_MSG_ERROR([Pulseaudio libraries are required.])])
-  PKG_CHECK_MODULES(LIBPULSE, [libpulse], [], [AC_MSG_ERROR([Pulseaudio library libpulse is required.])])
-])
 
 AM_CONDITIONAL([ENABLE_SDL], [test "$enable_sdl" = yes])
 AM_CONDITIONAL([ENABLE_QT], [test "$enable_qt" = yes])
