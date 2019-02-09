@@ -30,6 +30,31 @@
 #include "JitContext.hpp"
 
 
+/* A function expression in prefix form */
+class PrefunExpr : public Expr
+{
+public:
+    Func *function;
+    float (*func_ptr)(float *);
+    int num_args;
+    Expr **expr_list;
+
+protected:
+    PrefunExpr() : Expr(FUNCTION) {}
+public:
+    PrefunExpr(Func *func, Expr **expr_list);
+    ~PrefunExpr() override;
+
+    /* Evaluates functions in prefix form */
+    Expr *_optimize() override;
+    float eval(int mesh_i, int mesh_j) override;
+    std::ostream& to_string(std::ostream &out) override;
+#if HAVE_LLVM
+    llvm::Value *_llvm(JitContext &jitx) override;
+#endif
+};
+
+
 /* Evaluates functions in prefix form */
 float PrefunExpr::eval ( int mesh_i, int mesh_j )
 {
@@ -137,6 +162,7 @@ public:
     }
 };
 
+
 class IfAboveExpr : public PrefunExpr
 {
 public:
@@ -178,6 +204,7 @@ public:
     }
 #endif
 };
+
 
 class IfEqualExpr : public PrefunExpr
 {
@@ -284,6 +311,7 @@ public:
 #endif
 };
 
+
 class SinExpr : public PrefunExpr
 {
 public:
@@ -295,6 +323,7 @@ public:
     }
 };
 
+
 class CosExpr : public PrefunExpr
 {
 public:
@@ -305,6 +334,7 @@ public:
         return cosf(val);
     }
 };
+
 
 class LogExpr : public PrefunExpr
 {
@@ -857,74 +887,104 @@ std::ostream& PrefunExpr::to_string(std::ostream& out)
 }
 
 
-AssignExpr::AssignExpr(LValue *lhs_, Expr *rhs_) : Expr(ASSIGN), lhs(lhs_), rhs(rhs_) {}
 
-AssignExpr::~AssignExpr()
-{
-    Expr::delete_expr(lhs);
-    Expr::delete_expr(rhs);
-}
 
-Expr * AssignExpr::_optimize()
+class AssignExpr : public Expr
 {
-    Expr *t = rhs->_optimize();
-    if (t != rhs)
+protected:
+    LValue *lhs;
+    Expr *rhs;
+public:
+    AssignExpr(LValue *lhs_, Expr *rhs_): Expr(ASSIGN), lhs(lhs_), rhs(rhs_) {}
+
+    ~AssignExpr() override
+    {
+        Expr::delete_expr(lhs);
         Expr::delete_expr(rhs);
-    rhs = t;
-    return this;
-}
+    }
 
-float AssignExpr::eval(int mesh_i, int mesh_j)
-{
-    float v = rhs->eval( mesh_i, mesh_j );
-    lhs->set( v );
-    return v;
-}
+    Expr *_optimize() override
+    {
+        Expr *t = rhs->_optimize();
+        if (t != rhs)
+            Expr::delete_expr(rhs);
+        rhs = t;
+        return this;
+    }
 
-std::ostream& AssignExpr::to_string(std::ostream &out)
-{
-    out << lhs << " = " << rhs;
-    return out;
-}
+    float eval(int mesh_i, int mesh_j) override
+    {
+        float v = rhs->eval( mesh_i, mesh_j );
+        lhs->set( v );
+        return v;
+    }
 
-#if HAVE_LLVM
-llvm::Value *AssignExpr::_llvm(JitContext &jitx)
-{
-    llvm::Value *value = Expr::llvm(jitx, rhs);
-    if (nullptr == value)
-        return nullptr;
-    // TODO optimze to only call set_matrix() once at end of program
-    Expr::generate_set_call(jitx, this->lhs, value);
-    return value;
-}
-#endif
+    LValue *getLValue() { return lhs; }
 
-AssignMatrixExpr::AssignMatrixExpr(LValue *lhs_, Expr *rhs_) : AssignExpr(lhs_, rhs_) {}
-
-float AssignMatrixExpr::eval(int mesh_i, int mesh_j)
-{
-    float v = rhs->eval( mesh_i, mesh_j );
-    lhs->set_matrix( mesh_i, mesh_j, v );
-    return v;
-}
-
-std::ostream& AssignMatrixExpr::to_string(std::ostream &out)
-{
-    out << lhs << "[i,j] = " << rhs;
-    return out;
-}
+    std::ostream& to_string(std::ostream &out) override
+    {
+        out << lhs << " = " << rhs;
+        return out;
+    }
 
 #if HAVE_LLVM
-llvm::Value *AssignMatrixExpr::_llvm(JitContext &jitx)
-{
-    llvm::Value *value = Expr::llvm(jitx, rhs);
-    if (nullptr == value)
-        return nullptr;
-    // TODO optimze to only call set_matrix() once at end of program
-    Expr::generate_set_matrix_call(jitx, this->lhs, value);
-    return value;
-}
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Value *value = Expr::llvm(jitx, rhs);
+        if (nullptr == value)
+            return nullptr;
+        // TODO optimze to only call set_matrix() once at end of program
+        Expr::generate_set_call(jitx, this->lhs, value);
+        return value;
+    }
 #endif
+};
+
+
+Expr *Expr::create_assignment(class LValue *lhs, Expr *rhs)
+{
+    return new AssignExpr(lhs, rhs);
+}
+
+
+class AssignMatrixExpr : public AssignExpr
+{
+public:
+    AssignMatrixExpr(LValue *lhs_, Expr *rhs_) : AssignExpr(lhs_, rhs_) {}
+
+    float eval(int mesh_i, int mesh_j) override
+    {
+        float v = rhs->eval( mesh_i, mesh_j );
+        lhs->set_matrix( mesh_i, mesh_j, v );
+        return v;
+    }
+
+    std::ostream& to_string(std::ostream &out) override
+    {
+        out << lhs << "[i,j] = " << rhs;
+        return out;
+    }
+
+#if HAVE_LLVM
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Value *value = Expr::llvm(jitx, rhs);
+        if (nullptr == value)
+            return nullptr;
+        // TODO optimze to only call set_matrix() once at end of program
+        Expr::generate_set_matrix_call(jitx, this->lhs, value);
+        return value;
+    }
+#endif
+};
+
+
+Expr *Expr::create_matrix_assignment(class LValue *lhs, Expr *rhs)
+{
+    return new AssignMatrixExpr(lhs, rhs);
+}
+
+
 
 /* caller only has to delete returned expression.  optimize() will delete unused nodes in original expr;
  * CONSIDER delete old expr for caller?
@@ -938,15 +998,47 @@ Expr *Expr::optimize(Expr *expr)
 }
 
 
-#if HAVE_LLVM
-llvm::Value *ProgramExpr::_llvm(JitContext &jitx)
+class ProgramExpr : public Expr
 {
-    llvm::Value *v = jitx.CreateConstant(0.0f);
-    for (auto it=steps.begin() ; it<steps.end() ; it++)
-        v = Expr::llvm(jitx, *it);
-    return v;
-}
+protected:
+    std::vector<Expr *> steps;
+    bool own;
+public:
+    ProgramExpr(std::vector<Expr*> &steps_, bool ownSteps) : Expr(PROGRAM), steps(steps_), own(ownSteps)
+    {
+    }
+    ~ProgramExpr() override
+    {
+        if (!own)
+            return;
+        for (auto it=steps.begin() ; it<steps.end() ; it++)
+            Expr::delete_expr(*it);
+    }
+    float eval(int mesh_i, int mesh_j) override
+    {
+        float f=0.0f;
+        for (auto it=steps.begin() ; it<steps.end() ; it++)
+            f = (*it)->eval(mesh_i,mesh_j);
+        return f;
+    }
+#if HAVE_LLVM
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Value *v = jitx.CreateConstant(0.0f);
+        for (auto it=steps.begin() ; it<steps.end() ; it++)
+            v = Expr::llvm(jitx, *it);
+        return v;
+    }
 #endif
+};
+
+
+Expr *Expr::create_program_expr(std::vector<Expr*> &steps_, bool ownSteps)
+{
+    return new ProgramExpr(steps_, ownSteps);
+}
+
+
 
 
 // TESTS
