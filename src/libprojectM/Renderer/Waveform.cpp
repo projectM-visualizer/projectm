@@ -8,13 +8,12 @@
 #include "projectM-opengl.h"
 #include "Waveform.hpp"
 #include <algorithm>
+#include <cmath>
 #include "BeatDetect.hpp"
 #include "ShaderEngine.hpp"
 #include <glm/gtc/type_ptr.hpp>
 
 typedef float floatPair[2];
-typedef float floatTriple[3];
-typedef float floatQuad[4];
 
 Waveform::Waveform(int _samples)
 : RenderItem(),samples(_samples), points(_samples), pointContext(_samples)
@@ -42,7 +41,9 @@ void Waveform::InitVertexAttrib() {
 
 void Waveform::Draw(RenderContext &context)
  {
-	float *value1 = new float[samples];
+    const float vol_scale = 0.5f / std::max(0.0001f,sqrtf(context.beatDetect->vol_history));
+
+    float *value1 = new float[samples];
 	float *value2 = new float[samples];
 	context.beatDetect->pcm->getPCM( value1, samples, 0, spectrum, smoothing, 0);
 	context.beatDetect->pcm->getPCM( value2, samples, 1, spectrum, smoothing, 0);
@@ -58,8 +59,8 @@ void Waveform::Draw(RenderContext &context)
 	{
 		waveContext.sample = x/(float)(samples - 1);
 		waveContext.sample_int = x;
-		waveContext.left = value1[x];
-		waveContext.right = value2[x];
+		waveContext.left  = vol_scale * value1[x];
+		waveContext.right = vol_scale * value2[x];
 
 		points[x] = PerPoint(points[x],waveContext);
 	}

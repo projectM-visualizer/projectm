@@ -68,8 +68,9 @@ class DLLEXPORT BeatDetect
 		beat_variance[32];
 		int beat_buffer_pos;
 		float vol_buffer[80],
-		vol_instant,
-		vol_history;
+		vol_instant;
+	public:
+		float vol_history;
 };
 
 #endif /** !_BEAT_DETECT_H */
