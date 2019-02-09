@@ -8,11 +8,10 @@ projectM_pulseaudio_qtheaders = \
 nodist_projectM_pulseaudio_moc_sources = $(projectM_pulseaudio_qtheaders:.hpp=_moc.cpp)
 
 .hpp_moc.cpp:
-	@MOC@ -o$@ $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(CPPFLAGS) $(MOC_CPPFLAGS)\
-	$(qt_CPPFLAGS) $(qt_LDFLAGS) $<
+	@MOC@ -o$@ $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(CPPFLAGS) $(MOC_CPPFLAGS) $<
 
 ui_PulseDeviceChooserDialog.h: PulseDeviceChooserDialog.ui
-	@UIC@ $(qt_CPPFLAGS) -o $@ $<
+	@UIC@ -o $@ $<
 
 AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
