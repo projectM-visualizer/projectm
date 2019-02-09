@@ -54,10 +54,11 @@ public:
 	}
 
     float (*func_ptr)(float*);
-	int llvm_intrinsic;
 private:
     std::string name;
     int num_args;
+public:
+	int llvm_intrinsic;
 };
 
 #endif /** !_FUNC_H */
