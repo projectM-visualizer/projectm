@@ -101,6 +101,7 @@ class QProjectM_MainWindow:public QMainWindow
       void keyReleaseEvent ( QKeyEvent * e );
       QProjectM * qprojectM();
       void refreshPlaylist();
+	  bool eventFilter(QObject *obj, QEvent *event);
 
       QProjectMWidget * qprojectMWidget() { return m_QProjectMWidget; }
 
