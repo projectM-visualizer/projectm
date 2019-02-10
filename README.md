@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/projectM-visualizer/projectm.svg?branch=master)](https://travis-ci.org/projectM-visualizer/projectm)
 [![Backers on Open Collective](https://opencollective.com/projectm/backers/badge.svg)](#backers)
- [![Sponsors on Open Collective](https://opencollective.com/projectm/sponsors/badge.svg)](#sponsors) 
+ [![Sponsors on Open Collective](https://opencollective.com/projectm/sponsors/badge.svg)](#sponsors)
 
 ![Logo](https://github.com/projectM-visualizer/projectm/raw/master/web/logo.png)
 
@@ -71,7 +71,7 @@ Silverjuke (FOSS Jukebox)
 ```
 
 ## Linux (debian/ubuntu)
-* `sudo apt-get install autoconf libtool libsdl2-dev libglm-dev`
+* `sudo apt install autoconf libtool libsdl2-dev libglm-dev qtdeclarative5-dev libqt5opengl5-dev libjack-dev libpulse-dev libsdl-dev`
 
 ## FreeBSD
 * `pkg install gcc autoconf automake libtool mesa-libs libGLU sdl2 glm`
@@ -130,7 +130,7 @@ If you maintain packages of libprojectM, we are happy to work with you! Please n
 
 ## Contributors
 
-This project exists thanks to all the people who contribute. 
+This project exists thanks to all the people who contribute.
 <a href="https://github.com/projectM-visualizer/projectm/graphs/contributors"><img src="https://opencollective.com/projectm/contributors.svg?width=890&button=false" /></a>
 
 
