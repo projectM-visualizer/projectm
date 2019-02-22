@@ -10,4 +10,4 @@ Version: @PACKAGE_VERSION@
 Description: projectM - OpenGL Milkdrop
 Requires:
 Libs: -L${libdir} -lprojectM
-Cflags: -I${includedir}
+Cflags: -I${includedir}/libprojectM
