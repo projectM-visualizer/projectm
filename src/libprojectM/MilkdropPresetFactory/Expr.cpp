@@ -1069,6 +1069,7 @@ struct ExprTest : public Test
 public:
     bool optimize_constant_expr()
     {
+        BuiltinFuncs::init_builtin_func_db();
         Func *sin_fn = BuiltinFuncs::find_func("sin");
         Func *rand_fn = BuiltinFuncs::find_func("rand");
 
