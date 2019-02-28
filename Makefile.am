@@ -5,6 +5,9 @@ PRESETSDIR = presets
 EXTRA_DIST=README.md AUTHORS.txt presets fonts $(PRESETSDIR)
 CLEANFILES=
 
+# stick apps in bin
+# bin_PROGRAMS = $(top_builddir)/bin
+
 # aka /usr/local/share/projectM
 pm_data_dir = $(pkgdatadir)
 pm_font_dir = $(pm_data_dir)/fonts

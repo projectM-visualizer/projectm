@@ -15,7 +15,7 @@ nodist_projectM_qt_moc_sources = $(projectM_qt_qtheaders:.hpp=_moc.cpp)
 
 .hpp_moc.cpp:
 	@MOC@ -o$@ $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(CPPFLAGS) $(MOC_CPPFLAGS)\
-	$(qt_CPPFLAGS) $(qt_LDFLAGS) $(qt_LIBS) $<
+	$(qt_CPPFLAGS) $(qt_LDFLAGS) $<
 
 ui_qprojectm_mainwindow.h: qprojectm_mainwindow.ui
 	@UIC@ -o $@ $<
@@ -63,7 +63,8 @@ AM_CPPFLAGS = \
 	-DSYSCONFDIR=\""$(sysconfdir)"\" \
 	-I${top_srcdir}/src/libprojectM \
 	-I${top_srcdir}/src/libprojectM/Renderer \
-	${QT_CFLAGS} \
+	${qt_CFLAGS} \
+	${qt_CPPFLAGS} \
 	-fPIC
 
 AM_CFLAGS = ${my_CFLAGS} \
