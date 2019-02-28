@@ -31,6 +31,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include <jack/jack.h>
 
@@ -384,5 +385,3 @@ int main( int argc, char **argv ) {
 
 	return 1;
 }
-
-

@@ -1,4 +1,4 @@
-AC_INIT([projectM], [3.1.0], [mischa@mvstg.biz], [projectM], [https://github.com/revmischa/projectm])
+AC_INIT([projectM], [3.1.1], [mischa@mvstg.biz], [projectM], [https://github.com/projectM-visualizer/projectm/])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects tar-pax])
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
@@ -72,27 +72,40 @@ AC_CONFIG_FILES([
   src/projectM-emscripten/Makefile
   src/projectM-qt/Makefile
   src/projectM-pulseaudio/Makefile
+  src/projectM-jack/Makefile
   src/projectM-test/Makefile
-  ])
-
-dnl SDL
-AC_ARG_ENABLE([sdl],
-  AS_HELP_STRING([--enable-sdl], [Build SDL2 app]),
-  [], [enable_sdl=no])
-AS_IF([test "x$enable_sdl" = "xyes"], [
-  m4_include([m4/sdl2.m4])
-  SDL_VERSION=2.0.5
-  AS_IF([test "$TRAVIS"], [SDL_VERSION=2.0.2])  # travis has old SDL, we don't care
-  AS_IF([test "EMSCRIPTEN"], [SDL_VERSION=2.0.0])  # emscripten has old SDL, we don't care
-  AM_PATH_SDL2($SDL_VERSION, :, AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!]))
 ])
 
-dnl glm
+
+# SDL
+AC_ARG_ENABLE([sdl], AS_HELP_STRING([--enable-sdl], [Build SDL2 application]), [], [enable_sdl=check])
+AS_IF([test "$enable_sdl" != "no"], [
+    PKG_CHECK_MODULES([SDL], [sdl2], [
+        m4_include([m4/sdl2.m4])
+        SDL_VERSION="2.0.5"
+        AS_IF([test "$TRAVIS"], [SDL_VERSION=2.0.2])  # travis has old SDL, we don't care
+        AS_IF([test "$EMSCRIPTEN"], [SDL_VERSION=2.0.0])  # emscripten has old SDL, we don't care
+
+        # Check for libSDL >= $SDL_VERSION
+        AM_PATH_SDL2($SDL_VERSION,
+            [enable_sdl=yes],
+            [AS_IF([test "$enable_sdl" = "yes"], AC_MSG_ERROR([*** SDL version >= $SDL_VERSION not found!])); enable_sdl=no])
+    ],
+    [
+        # not found
+        AS_IF([test "$enable_sdl" = "yes"], AC_MSG_ERROR([*** libsdl2 not found!]))
+        enable_sdl=no
+    ])
+])
+
+
+# glm
 AS_IF([test "x$enable_emscripten" != "xyes"], [
   AC_CHECK_HEADER([glm/glm.hpp],, AC_MSG_ERROR(libglm is required.))
 ])
 
-dnl Threading
+
+# Threading
 AC_ARG_ENABLE([threading],
 AS_HELP_STRING([--enable-threading], [multhreading]),
 [], [enable_threading=yes])
@@ -133,32 +146,82 @@ AX_CHECK_COMPILE_FLAG([-std=c++11], [
                         CXXFLAGS="$CXXFLAGS -std=c++11"])
 
 dnl Qt
-AC_ARG_ENABLE([qt],
-  AS_HELP_STRING([--enable-qt], [Build Qt]),
-  [], [enable_qt=no])
-AS_IF([test "x$enable_qt" = "xyes"], [
-  PKG_CHECK_MODULES(QT, [Qt5Core, Qt5Gui, Qt5Widgets Qt5OpenGL], [], [AC_MSG_ERROR([Qt libraries are required.])])
-  qt_CPPFLAGS="`$PKG_CONFIG --cflags-only-I Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $CPPFLAGS"
-  qt_LDFLAGS="`$PKG_CONFIG --libs-only-L Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LDFLAGS"
-  qt_LIBS="`$PKG_CONFIG --libs-only-l Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LIBS"
+AC_ARG_ENABLE([qt], AS_HELP_STRING([--enable-qt], [Enable Qt: needed for pulseaudio and jack GUIs]), [], [enable_qt=check])
+AS_IF([test "$enable_qt" != "no"],
+  [PKG_CHECK_MODULES([qt],
+    [Qt5Core, Qt5Gui, Qt5Widgets Qt5OpenGL],
+    [
+        enable_qt=yes
 
-  if ! `$PKG_CONFIG --atleast-version=5.0.0 Qt5Core`; then
-    AC_MSG_ERROR([Qt >= 5.0.0 is required. Try installing qtdeclarative5-dev])
-  fi
+        # do more checks for Qt version and tools
+        qt_CPPFLAGS="`$PKG_CONFIG --cflags-only-I Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $CPPFLAGS"
+        qt_LDFLAGS="`$PKG_CONFIG --libs-only-L Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LDFLAGS"
+        qt_LIBS="`$PKG_CONFIG --libs-only-l Qt5Core Qt5Gui Qt5Widgets Qt5OpenGL` $LIBS"
+        AC_SUBST(qt_CPPFLAGS)
+        AC_SUBST(qt_LDFLAGS)
+        AC_SUBST(qt_LIBS)
 
-  AC_CHECK_PROGS(MOC, [moc-qt5 moc])
-  AC_CHECK_PROGS(UIC, [uic-qt5 uic])
-  AC_CHECK_PROGS(RCC, [rcc-qt5 rcc])
-  if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
-    AC_MSG_ERROR([Qt utility programs moc, uic, and rcc are required.])
-  fi
+        if ! `$PKG_CONFIG --atleast-version=5.0.0 Qt5Core`; then
+            AC_MSG_WARN([Qt >= 5.0.0 is required. Try installing libqt5opengl5-dev qtdeclarative5-dev])
+            enable_qt=no
+        fi
 
-  PKG_CHECK_MODULES(LIBPULSE, [libpulse], [], [AC_MSG_ERROR([Pulseaudio library libpulse is required.])])
-])
+        AC_CHECK_PROGS(MOC, [moc-qt5 moc])
+        AC_CHECK_PROGS(UIC, [uic-qt5 uic])
+        AC_CHECK_PROGS(RCC, [rcc-qt5 rcc])
+        if test -z "$MOC" || test -z "$UIC" || test -z "$RCC"; then
+            AC_MSG_WARN([Qt utility programs moc, uic, and rcc are required.])
+            enable_qt=no
+        fi
+        MOC="$MOC -qt=5"
+        UIC="$UIC -qt=5"
+        RCC="$RCC -qt=5"
 
-AM_CONDITIONAL([ENABLE_SDL], [test "$enable_sdl" = yes])
-AM_CONDITIONAL([ENABLE_QT], [test "$enable_qt" = yes])
-AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test "$enable_emscripten" = yes])
+        export QT_SELECT=qt5
+    ],
+    [AS_IF([test "$enable_qt" = "yes"],
+        [AC_MSG_ERROR(["Qt5 not found"])],
+        [enable_qt=no])]
+)])
+
+
+# Pulseaudio
+AC_ARG_ENABLE([pulseaudio], AS_HELP_STRING([--enable-pulseaudio], [Build Pulseaudio]), [], [enable_pulseaudio=check])
+AS_IF([test "$enable_pulseaudio" != "no"],
+    [PKG_CHECK_MODULES([libpulse],
+        [libpulse],
+        [
+            # still need qt
+            AS_IF([test "$enable_qt" = "yes"],
+                [enable_pulseaudio=yes],
+                [enable_pulseaudio="Qt required"])
+        ],
+        [AS_IF([test "$enable_pulseaudio" = "yes"],
+            [AC_MSG_ERROR([libpulse required, but not found.])],
+            [enable_pulseaudio=no])])])
+
+
+# Jack
+AC_ARG_ENABLE([jack], AS_HELP_STRING([--enable-jack], [Build Jack]), [], [enable_jack=check])
+AS_IF([test "$enable_jack" != "no"],
+    [PKG_CHECK_MODULES([jack],
+    [jack],
+    [
+        # still need qt
+        AS_IF([test "$enable_qt" = "yes"],
+            [enable_jack=yes],
+            [enable_jack="Qt required"])
+    ],
+    [AS_IF([test "$enable_jack" = "yes"],
+        [AC_MSG_ERROR([jack required, but not found.])],
+        [enable_jack=no])])])
+
+
+AM_CONDITIONAL([ENABLE_SDL], [test "x$enable_sdl" = "xyes"])
+AM_CONDITIONAL([ENABLE_QT], [test "x$enable_qt" = "xyes"])
+AM_CONDITIONAL([ENABLE_JACK], [test "x$enable_jack" = "xyes"])
+AM_CONDITIONAL([ENABLE_PULSEAUDIO], [test "x$enable_pulseaudio" = "xyes"])
+AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test "x$enable_emscripten" = "xyes"])
 
 
 my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits "
@@ -192,7 +255,9 @@ Applications:
 libprojectM:            yes
 Threading:              ${enable_threading}
 SDL:                    ${enable_sdl}
-Qt & Pulseaudio:        ${enable_qt}
+Qt:                     ${enable_qt}
+Pulseaudio:             ${enable_pulseaudio}
+Jack:                   ${enable_jack}
 OpenGLES:               ${enable_gles}
 Emscripten:             ${enable_emscripten}
 ])
