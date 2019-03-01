@@ -1,4 +1,4 @@
-AC_INIT([projectM], [3.1.1], [mischa@mvstg.biz], [projectM], [https://github.com/projectM-visualizer/projectm/])
+AC_INIT([projectM], [3.1.1-rc1], [mischa@mvstg.biz], [projectM], [https://github.com/projectM-visualizer/projectm/])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects tar-pax])
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
@@ -173,9 +173,9 @@ AS_IF([test "$enable_qt" != "no"],
             AC_MSG_WARN([Qt utility programs moc, uic, and rcc are required.])
             enable_qt=no
         fi
-        MOC="$MOC -qt=5"
-        UIC="$UIC -qt=5"
-        RCC="$RCC -qt=5"
+        # MOC="$MOC -qt=5"
+        # UIC="$UIC -qt=5"
+        # RCC="$RCC -qt=5"
 
         export QT_SELECT=qt5
     ],
