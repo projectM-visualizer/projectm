@@ -1,5 +1,12 @@
 SUFFIXES = .hpp .cpp _moc.cpp _qrc.qrc
 
+QT_CXXFLAGS = @QT_CXXFLAGS@
+QT_LIBS     = @QT_LIBS@
+MOC         = @QT_MOC@
+UIC         = @QT_UIC@
+RCC         = @QT_RCC@
+
+
 projectM_qt_qtheaders = qprojectm_mainwindow.hpp \
 	qpresetfiledialog.hpp \
 	qplaylistfiledialog.hpp \
@@ -14,20 +21,19 @@ projectM_qt_qtheaders = qprojectm_mainwindow.hpp \
 nodist_projectM_qt_moc_sources = $(projectM_qt_qtheaders:.hpp=_moc.cpp)
 
 .hpp_moc.cpp:
-	@MOC@ -o$@ $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(CPPFLAGS) $(MOC_CPPFLAGS)\
-	$(qt_CPPFLAGS) $(qt_LDFLAGS) $<
+	$(MOC) -o$@ $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(CPPFLAGS) $<
 
 ui_qprojectm_mainwindow.h: qprojectm_mainwindow.ui
-	@UIC@ -o $@ $<
+	$(UIC) -o $@ $<
 
 ui_qpreseteditordialog.h: qpreseteditordialog.ui
-	@UIC@ -o $@ $<
+	$(UIC) -o $@ $<
 
 ui_qprojectmconfigdialog.h: qprojectmconfigdialog.ui
-	@UIC@ -o $@ $<
+	$(UIC) -o $@ $<
 
 application_qrc.cpp: application.qrc
-	@RCC@ -o $@ $<
+	$(RCC) -o $@ $<
 
 
 BUILT_SOURCES =               \
@@ -63,8 +69,7 @@ AM_CPPFLAGS = \
 	-DSYSCONFDIR=\""$(sysconfdir)"\" \
 	-I${top_srcdir}/src/libprojectM \
 	-I${top_srcdir}/src/libprojectM/Renderer \
-	${qt_CFLAGS} \
-	${qt_CPPFLAGS} \
+	${QT_CXXFLAGS} \
 	-fPIC
 
 AM_CFLAGS = ${my_CFLAGS} \
