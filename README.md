@@ -71,7 +71,7 @@ Silverjuke (FOSS Jukebox)
 ```
 
 ## Linux (debian/ubuntu)
-* `sudo apt install autoconf libtool libsdl2-dev libglm-dev qt5-default qt5-qmake qtdeclarative5-dev libqt5opengl5-dev libjack-dev libpulse-dev libsdl-dev`
+* `sudo apt install autoconf libtool libsdl2-dev libglm-dev qt5-default qtdeclarative5-dev libqt5opengl5-dev libjack-dev libpulse-dev libsdl-dev`
 
 ## FreeBSD
 * `pkg install gcc autoconf automake libtool mesa-libs libGLU sdl2 glm`
