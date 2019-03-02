@@ -47,6 +47,7 @@ matrix:
             - clang-5.0
             - libglm-dev
             - libc++-dev
+            - qt5-default
             - qtdeclarative5-dev
             - libqt5opengl5-dev
             - libjack-dev
