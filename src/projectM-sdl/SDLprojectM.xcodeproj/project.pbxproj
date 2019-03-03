@@ -434,7 +434,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\n\nmkdir -p \"$DSTROOT/Applications\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/projectM SDL.app\" \"$DSTROOT/Applications\"\npkgbuild --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/projectM SDL.pkg\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/projectM SDL.pkg\"\n";
+			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\n\nmkdir -p \"$DSTROOT/Applications\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/projectM SDL.app\" \"$DSTROOT/Applications\"\npkgbuild --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/projectM SDL.pkg\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/projectM SDL.pkg\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/projectM SDL.pkg\" \"$SRCROOT/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
