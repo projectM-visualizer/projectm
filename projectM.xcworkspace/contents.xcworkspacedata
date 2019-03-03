@@ -8,6 +8,6 @@
       location = "group:src/projectM-sdl/SDLprojectM.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:src/projectM-iTunes/projectM Visualizer.xcodeproj">
+      location = "group:/Users/cyber/dev/projectm/src/projectM-iTunes/iTunes Plugin.xcodeproj">
    </FileRef>
 </Workspace>
