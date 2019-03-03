@@ -99,7 +99,6 @@
 		1668546B2105E4FD0042793A /* Pipeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 166854252105E4BD0042793A /* Pipeline.cpp */; };
 		1668546C2105E4FD0042793A /* PipelineContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1668542C2105E4BD0042793A /* PipelineContext.cpp */; };
 		1668546D2105E4FD0042793A /* Renderable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1668542B2105E4BD0042793A /* Renderable.cpp */; };
-		1668546E2105E4FD0042793A /* RenderContext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1668541E2105E4BC0042793A /* RenderContext.cpp */; };
 		1668546F2105E4FD0042793A /* Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 166854282105E4BD0042793A /* Renderer.cpp */; };
 		166854702105E4FD0042793A /* RenderItemDistanceMetric.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 166854212105E4BC0042793A /* RenderItemDistanceMetric.cpp */; };
 		166854712105E4FD0042793A /* RenderItemMatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1668541C2105E4BC0042793A /* RenderItemMatcher.cpp */; };
@@ -224,7 +223,6 @@
 		1668541B2105E4BC0042793A /* PerlinNoise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PerlinNoise.cpp; path = Renderer/PerlinNoise.cpp; sourceTree = "<group>"; };
 		1668541C2105E4BC0042793A /* RenderItemMatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderItemMatcher.cpp; path = Renderer/RenderItemMatcher.cpp; sourceTree = "<group>"; };
 		1668541D2105E4BC0042793A /* VideoEcho.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoEcho.cpp; path = Renderer/VideoEcho.cpp; sourceTree = "<group>"; };
-		1668541E2105E4BC0042793A /* RenderContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderContext.cpp; path = Renderer/RenderContext.cpp; sourceTree = "<group>"; };
 		1668541F2105E4BC0042793A /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Shader.cpp; path = Renderer/Shader.cpp; sourceTree = "<group>"; };
 		166854202105E4BC0042793A /* BeatDetect.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BeatDetect.cpp; path = Renderer/BeatDetect.cpp; sourceTree = "<group>"; };
 		166854212105E4BC0042793A /* RenderItemDistanceMetric.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderItemDistanceMetric.cpp; path = Renderer/RenderItemDistanceMetric.cpp; sourceTree = "<group>"; };
@@ -442,7 +440,6 @@
 				166854252105E4BD0042793A /* Pipeline.cpp */,
 				1668542C2105E4BD0042793A /* PipelineContext.cpp */,
 				1668542B2105E4BD0042793A /* Renderable.cpp */,
-				1668541E2105E4BC0042793A /* RenderContext.cpp */,
 				166854282105E4BD0042793A /* Renderer.cpp */,
 				166854212105E4BC0042793A /* RenderItemDistanceMetric.cpp */,
 				1668541C2105E4BC0042793A /* RenderItemMatcher.cpp */,
@@ -782,7 +779,6 @@
 				1668546B2105E4FD0042793A /* Pipeline.cpp in Sources */,
 				1668546C2105E4FD0042793A /* PipelineContext.cpp in Sources */,
 				1668546D2105E4FD0042793A /* Renderable.cpp in Sources */,
-				1668546E2105E4FD0042793A /* RenderContext.cpp in Sources */,
 				1668546F2105E4FD0042793A /* Renderer.cpp in Sources */,
 				166854702105E4FD0042793A /* RenderItemDistanceMetric.cpp in Sources */,
 				166854712105E4FD0042793A /* RenderItemMatcher.cpp in Sources */,
