@@ -37,9 +37,9 @@ dist-mac: dist
 	xcrun xcodebuild -scheme "projectM SDL" -configuration Release archive -archivePath build/ProjectM.xcarchive
 	xcrun xcodebuild -scheme "iProjectM" -configuration Release archive -archivePath build/iTunes.xcarchive
 	mkdir -p dist
-	mv build/ProjectM.xcarchive/Products/Applications/projectM\ SDL.app dist/
-	mv src/projectM-iTunes/iTunes\ Visualizer.pkg dist
-	zip -r9 dist/projectM-SDL-macOS.zip dist/projectM\ SDL.app
+# mv build/ProjectM.xcarchive/Products/Applications/projectM\ SDL.app dist/
+	mv src/projectM-iTunes/iTunes\ Visualizer.pkg dist/
+	mv src/projectM-sdl/projectM\ SDL.pkg dist/projectM-macOS.pkg
 	mv projectM-*.tar.gz dist/
 	@echo "Success!\nBuilt iTunes plugin installer and SDL apps in dist/"
 
