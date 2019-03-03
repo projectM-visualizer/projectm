@@ -1,5 +1,7 @@
-#!/bin/sh
+#!/bin/sh -e
 
-autoreconf --install || exit 1
+echo "Running autoreconf... make sure you have GNU autotools available on your system"
 
-echo "Now run ./configure && make"
+autoreconf --install
+
+echo "You followed directions! Great work!\nNow run ./configure"

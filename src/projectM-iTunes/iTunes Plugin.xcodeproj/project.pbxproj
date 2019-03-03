@@ -331,9 +331,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C37EBD2A19A0112900220265 /* projectM Visualizer */ = {
+		C37EBD2A19A0112900220265 /* iProjectM Setup */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C37EBD5719A0112900220265 /* Build configuration list for PBXNativeTarget "projectM Visualizer" */;
+			buildConfigurationList = C37EBD5719A0112900220265 /* Build configuration list for PBXNativeTarget "iProjectM Setup" */;
 			buildPhases = (
 				C37EBD2719A0112900220265 /* Sources */,
 				C37EBD2819A0112900220265 /* Frameworks */,
@@ -344,7 +344,7 @@
 			dependencies = (
 				16FE0B2621157D84005F170D /* PBXTargetDependency */,
 			);
-			name = "projectM Visualizer";
+			name = "iProjectM Setup";
 			productName = "projectM Visualizer";
 			productReference = C37EBD2B19A0112900220265 /* projectM Visualizer.app */;
 			productType = "com.apple.product-type.application";
@@ -387,7 +387,7 @@
 					};
 				};
 			};
-			buildConfigurationList = C3F9D7AA17B82CC3009E58CB /* Build configuration list for PBXProject "projectM Visualizer" */;
+			buildConfigurationList = C3F9D7AA17B82CC3009E58CB /* Build configuration list for PBXProject "iTunes Plugin" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -407,7 +407,7 @@
 			projectRoot = "";
 			targets = (
 				C3F9D7AE17B82CC3009E58CB /* iProjectM */,
-				C37EBD2A19A0112900220265 /* projectM Visualizer */,
+				C37EBD2A19A0112900220265 /* iProjectM Setup */,
 			);
 		};
 /* End PBXProject section */
@@ -588,7 +588,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = biz.int80.iProjectM;
+				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.itunes;
 				PRODUCT_NAME = "projectM Visualizer";
 				WRAPPER_EXTENSION = app;
 			};
@@ -633,7 +633,7 @@
 					"$(PROJECT_DIR)/macos/contrib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				PRODUCT_BUNDLE_IDENTIFIER = biz.int80.iProjectM;
+				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.itunes;
 				PRODUCT_NAME = "projectM Visualizer";
 				WRAPPER_EXTENSION = app;
 			};
@@ -824,7 +824,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C37EBD5719A0112900220265 /* Build configuration list for PBXNativeTarget "projectM Visualizer" */ = {
+		C37EBD5719A0112900220265 /* Build configuration list for PBXNativeTarget "iProjectM Setup" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C37EBD5319A0112900220265 /* Debug */,
@@ -833,7 +833,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C3F9D7AA17B82CC3009E58CB /* Build configuration list for PBXProject "projectM Visualizer" */ = {
+		C3F9D7AA17B82CC3009E58CB /* Build configuration list for PBXProject "iTunes Plugin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C3F9D7BF17B82CC3009E58CB /* Debug */,

@@ -1,9 +1,9 @@
-ACLOCAL_AMFLAGS = -I m4
+ACLOCAL_AMFLAGS=-I m4
 AM_CPPFLAGS=-DDATADIR_PATH='"${pkgdatadir}"'
 SUBDIRS=src
-PRESETSDIR = presets
+PRESETSDIR=presets
 EXTRA_DIST=README.md AUTHORS.txt presets fonts $(PRESETSDIR)
-CLEANFILES=
+CLEANFILES=dist
 
 # stick apps in bin
 # bin_PROGRAMS = $(top_builddir)/bin
@@ -31,4 +31,16 @@ src/libprojectM/config.inp: src/libprojectM/config.inp.in Makefile
 	chmod a-w $@.tmp && \
 	mv $@.tmp $@
 
-CLEANFILES += src/libprojectM/config.inp
+# do a macOS build
+dist-mac: dist
+	rm -rf dist
+	xcrun xcodebuild -scheme "projectM SDL" -configuration Release archive -archivePath build/ProjectM.xcarchive
+	xcrun xcodebuild -scheme "iProjectM" -configuration Release archive -archivePath build/iTunes.xcarchive
+	mkdir -p dist
+	mv build/ProjectM.xcarchive/Products/Applications/projectM\ SDL.app dist/
+	mv src/projectM-iTunes/iTunes\ Visualizer.pkg dist
+	zip -r9 dist/projectM-SDL-macOS.zip dist/projectM\ SDL.app
+	mv projectM-*.tar.gz dist/
+	@echo "Success!\nBuilt iTunes plugin installer and SDL apps in dist/"
+
+CLEANFILES+=src/libprojectM/config.inp
