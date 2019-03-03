@@ -76,8 +76,6 @@ projectM::~projectM()
     worker_sync.finish_up();
     printf("e");
     pthread_join(thread, &status);
-    printf("a");
-    pthread_detach(thread);
     printf("n");
     #ifdef SYNC_PRESET_SWITCHES
     pthread_mutex_destroy( &preset_mutex );
