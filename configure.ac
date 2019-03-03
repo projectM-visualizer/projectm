@@ -139,8 +139,10 @@ AC_PREFIX_DEFAULT([/usr/local])
 
 AC_PROG_MKDIR_P
 
-AX_CHECK_COMPILE_FLAG([-stdlib=libc++], [
+AS_IF([grep android <<< ${host}], [],
+  [AX_CHECK_COMPILE_FLAG([-stdlib=libc++], [
                         CXXFLAGS="$CXXFLAGS -stdlib=libc++"])
+])
 
 AX_CHECK_COMPILE_FLAG([-std=c++11], [
                         CXXFLAGS="$CXXFLAGS -std=c++11"])
