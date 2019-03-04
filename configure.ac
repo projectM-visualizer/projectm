@@ -148,10 +148,12 @@ AX_CHECK_COMPILE_FLAG([-std=c++11], [
                         CXXFLAGS="$CXXFLAGS -std=c++11"])
 
 # Qt5
-AX_HAVE_QT  # m4/qt.m4
 AC_ARG_ENABLE([qt], AS_HELP_STRING([--enable-qt], [Enable Qt: needed for pulseaudio and jack GUIs]), [], [enable_qt=check])
 AS_IF([test "$enable_qt" != "no"],
-  [AS_IF([test "$have_qt" = "yes"], [
+  [
+    AX_HAVE_QT  # m4/qt.m4
+
+    AS_IF([test "$have_qt" = "yes"], [
         # we have at least qt5 if $have_qt is true
         enable_qt=yes
         export QT_SELECT=qt5
