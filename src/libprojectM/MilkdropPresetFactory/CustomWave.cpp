@@ -506,9 +506,16 @@ ColoredPoint CustomWave::PerPoint(ColoredPoint p, const WaveformContext context)
         std::vector<Expr *> steps;
         for (auto pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos)
             steps.push_back((*pos)->assign_expr);
-        per_point_program = new ProgramExpr(steps, false);
+        Expr *program_expr  = Expr::create_program_expr(steps, false);
+        Expr *jit = nullptr;
+#if HAVE_LLVM
+        char buffer[100];
+        sprintf(buffer, "wave_%d", id);
+        if (!steps.empty())
+            jit = Expr::jit(program_expr, buffer);
+#endif
+        per_point_program = jit ? jit : program_expr;
     }
-
 
     r_mesh[context.sample_int] = r;
     g_mesh[context.sample_int] = g;
