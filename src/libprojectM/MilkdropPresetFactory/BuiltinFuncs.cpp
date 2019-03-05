@@ -21,13 +21,13 @@
 
 std::map<std::string, Func*> BuiltinFuncs::builtin_func_tree;
 
-int BuiltinFuncs::load_builtin_func(const std::string & name, float (*func_ptr)(float*), int num_args) {
+int BuiltinFuncs::load_builtin_func(const std::string & name, float (*func_ptr)(float*), int num_args, int id) {
 	
   Func * func; 
   int retval; 
 
   /* Create new function */
-  func = new Func(name, func_ptr, num_args);
+  func = new Func(name, func_ptr, num_args, id);
 
   if (func == 0)
     return PROJECTM_OUTOFMEM_ERROR;
@@ -51,15 +51,22 @@ Func * BuiltinFuncs::find_func(const std::string & name) {
 
 }
 
+#if HAVE_LLVM
+#include "llvm/IR/Intrinsics.h"
+#define INTRINSIC(id) llvm::Intrinsic::id
+#else
+#define INTRINSIC(id) 0
+#endif
+
 int BuiltinFuncs::load_all_builtin_func() {
 
   if (load_builtin_func("int", FuncWrappers::int_wrapper, 1) < 0)
     return PROJECTM_ERROR;
-  if (load_builtin_func("abs", FuncWrappers::abs_wrapper, 1) < 0)
+  if (load_builtin_func("abs", FuncWrappers::abs_wrapper, 1, INTRINSIC(fabs)) < 0)
     return PROJECTM_ERROR;
-  if (load_builtin_func("sin", FuncWrappers::sin_wrapper, 1) < 0)
+  if (load_builtin_func("sin", FuncWrappers::sin_wrapper, 1, INTRINSIC(sin)) < 0)
     return PROJECTM_ERROR;
-  if (load_builtin_func("cos", FuncWrappers::cos_wrapper, 1) < 0)
+  if (load_builtin_func("cos", FuncWrappers::cos_wrapper, 1, INTRINSIC(cos)) < 0)
     return PROJECTM_ERROR;
   if (load_builtin_func("tan", FuncWrappers::tan_wrapper, 1) < 0)
     return PROJECTM_ERROR;
@@ -71,21 +78,21 @@ int BuiltinFuncs::load_all_builtin_func() {
     return PROJECTM_ERROR;
   if (load_builtin_func("sqr", FuncWrappers::sqr_wrapper, 1) < 0)
     return PROJECTM_ERROR;
-  if (load_builtin_func("sqrt", FuncWrappers::sqrt_wrapper, 1) < 0)
+  if (load_builtin_func("sqrt", FuncWrappers::sqrt_wrapper, 1, INTRINSIC(sqrt)) < 0)
     return PROJECTM_ERROR;
-  if (load_builtin_func("pow", FuncWrappers::pow_wrapper, 2) < 0)
+  if (load_builtin_func("pow", FuncWrappers::pow_wrapper, 2, INTRINSIC(pow)) < 0)
     return PROJECTM_ERROR;
-  if (load_builtin_func("exp", FuncWrappers::exp_wrapper, 1) < 0)
+  if (load_builtin_func("exp", FuncWrappers::exp_wrapper, 1, INTRINSIC(exp)) < 0)
     return PROJECTM_ERROR;
-  if (load_builtin_func("log", FuncWrappers::log_wrapper, 1) < 0)
+  if (load_builtin_func("log", FuncWrappers::log_wrapper, 1, INTRINSIC(log)) < 0)
     return PROJECTM_ERROR;
-  if (load_builtin_func("log10", FuncWrappers::log10_wrapper, 1) < 0)
+  if (load_builtin_func("log10", FuncWrappers::log10_wrapper, 1, INTRINSIC(log10)) < 0)
     return PROJECTM_ERROR;
   if (load_builtin_func("sign", FuncWrappers::sign_wrapper, 1) < 0)
     return PROJECTM_ERROR;
-  if (load_builtin_func("min", FuncWrappers::min_wrapper, 2) < 0)
+  if (load_builtin_func("min", FuncWrappers::min_wrapper, 2, INTRINSIC(minnum)) < 0)
     return PROJECTM_ERROR;
-  if (load_builtin_func("max", FuncWrappers::max_wrapper, 2) < 0)
+  if (load_builtin_func("max", FuncWrappers::max_wrapper, 2, INTRINSIC(maxnum)) < 0)
     return PROJECTM_ERROR;
   if (load_builtin_func("sigmoid", FuncWrappers::sigmoid_wrapper, 2) < 0)
     return PROJECTM_ERROR;

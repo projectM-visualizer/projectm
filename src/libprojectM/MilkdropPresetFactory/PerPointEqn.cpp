@@ -46,7 +46,7 @@ void PerPointEqn::evaluate(int i)
 PerPointEqn::PerPointEqn(int _index, Param * param, Expr * gen_expr):
     index(_index)
 {
-    assign_expr = new AssignMatrixExpr(param, gen_expr);
+    assign_expr = Expr::create_matrix_assignment(param, gen_expr);
 }
 
 

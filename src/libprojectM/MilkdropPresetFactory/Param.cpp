@@ -38,6 +38,7 @@
 #include <map>
 #include <iostream>
 #include <cassert>
+#include "JitContext.hpp"
 
 /** Constructor */
 Param::Param( const std::string &_name, short int _type, short int _flags, void * _engine_val, void * _matrix,
@@ -131,7 +132,7 @@ Param * Param::new_param_float(const char * name, short int flags, void * engine
 }
 
 /* Creates a new parameter of type int */
-Param * Param::new_param_int(const char * name, short int flags, void * engine_val,        
+Param * Param::new_param_int(const char * name, short int flags, void * engine_val,
                              int upper_bound, int lower_bound, int init_val) {
 
     Param * param;
@@ -208,11 +209,6 @@ struct _Param : public Param
     }
     explicit _Param( const std::string &name_) : Param(name_) {}
 
-    LValue *getExpr() override
-    {
-        return (LValue *)this;
-    }
-
     void _delete_from_tree() override
     {
         /* do nothing, as the param isn't owned by the expresion tree */
@@ -226,7 +222,14 @@ struct _Param : public Param
     {
         set_param(value);
     }
+#if HAVE_LLVM
+    llvm::Value *_llvm(JitContext &jit) override
+    {
+        return Expr::generate_eval_call(jit, this, name.c_str());
+    }
+#endif
 };
+
 
 class _BoolParam : public _Param
 {
@@ -284,6 +287,19 @@ public:
     {
         return *(float *)engine_val;
     }
+#if HAVE_LLVM
+    llvm::Value *_llvm(JitContext &jitx) override
+    {
+        llvm::Constant *ptr = jitx.CreateFloatPtr((float *)engine_val);
+        return jitx.builder.CreateLoad(ptr, name);
+    }
+    virtual llvm::Value *_llvm_set_matrix(JitContext &jitx, llvm::Value *rhs)
+    {
+        llvm::Constant *ptr = jitx.CreateFloatPtr((float *)engine_val);
+        jitx.builder.CreateStore(rhs, ptr, false);
+        return rhs;
+    }
+#endif
 };
 
 /*This isn't that useful yet.  Maybe later
@@ -294,7 +310,7 @@ public:
                         void * eqn_val_, void *matrix_,
                         CValue default_init_val_, CValue upper_bound_,
                         CValue lower_bound_) :
-            _FloatParam(name_, type_, flags_, eqn_val_, matrix_, default_init_val_, upper_bound_, lower_bound_) 
+            _FloatParam(name_, type_, flags_, eqn_val_, matrix_, default_init_val_, upper_bound_, lower_bound_)
     {
         matrix_flag = true;
     }
@@ -312,14 +328,14 @@ public:
     }
 };*/
 
-class _MeshParam : public _FloatParam
+class _MeshParam : public _Param
 {
 public:
     _MeshParam( const std::string &name_, short int type_, short int flags_,
                  void * eqn_val_, void *matrix_,
                  CValue default_init_val_, CValue upper_bound_,
                  CValue lower_bound_) :
-            _FloatParam(name_, type_, flags_, eqn_val_, matrix_, default_init_val_, upper_bound_, lower_bound_) {}
+            _Param(name_, type_, flags_, eqn_val_, matrix_, default_init_val_, upper_bound_, lower_bound_) {}
     float eval(int mesh_i, int mesh_j) override
     {
         assert( type == P_TYPE_DOUBLE );
@@ -346,14 +362,14 @@ public:
 
 
 // TODO merge PointsParam/MeshParam
-class _PointsParam : public _FloatParam
+class _PointsParam : public _Param
 {
 public:
     _PointsParam( const std::string &name_, short int type_, short int flags_,
                  void * eqn_val_, void *matrix_,
                  CValue default_init_val_, CValue upper_bound_,
                  CValue lower_bound_) :
-            _FloatParam(name_, type_, flags_, eqn_val_, matrix_, default_init_val_, upper_bound_, lower_bound_) {}
+            _Param(name_, type_, flags_, eqn_val_, matrix_, default_init_val_, upper_bound_, lower_bound_) {}
     float eval(int mesh_i, int mesh_j) override
     {
         assert( mesh_j == -1 );

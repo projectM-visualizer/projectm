@@ -1,6 +1,6 @@
 [preset00]
-per_frame_1000=// use wavecode
-per_frame_1001=// red circle with blue line
+// use wavecode
+// red circle wave with blue squiggly wave
 
 fDecay=0.980000
 nWaveMode=0

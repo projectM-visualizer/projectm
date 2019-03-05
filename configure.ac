@@ -129,6 +129,19 @@ AC_ARG_ENABLE([gles],
     AC_DEFINE([USE_GLES], [1], [Define USE_GLES])
 ])
 
+dnl LLVM
+dnl unfortuately AX_LLVM macro seems to be out of date, so we're going to rely on the user to make sure LLVM is installed correctly
+AC_ARG_ENABLE([llvm],
+  AS_HELP_STRING([--enable-llvm],[Support for JIT using LLVM]),
+  [], [enable_llvm=no])
+AS_IF([test x"$enable_llvm" = "xyes"], [
+    AC_DEFINE([HAVE_LLVM], [1], [Define HAVE_LLVM])
+    CFLAGS="$CFLAGS -I$(llvm-config --includedir)"
+    CXXFLAGS="$CXXFLAGS -I$(llvm-config --includedir)"
+    LIBS="$LIBS $(llvm-config --libs)"
+    LDFLAGS="$LDFLAGS $(llvm-config --ldflags)"
+])
+
 dnl from https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable answer: https://stackoverflow.com/a/30960268
 dnl ptomato https://stackoverflow.com/users/172999/ptomato
 AC_SUBST([PACKAGE])
@@ -224,6 +237,8 @@ includedir:             ${includedir}
 
 compiler:               ${CC}
 cflags:                 ${CFLAGS} ${my_CFLAGS}
+cxxflags:               ${CXXFLAGS}
+libs:                   ${LIBS}
 ldflags:                ${LDFLAGS}
 
 - - -
@@ -239,4 +254,5 @@ Pulseaudio:             ${enable_pulseaudio}
 Jack:                   ${enable_jack}
 OpenGLES:               ${enable_gles}
 Emscripten:             ${enable_emscripten}
+llvm:                   ${enable_llvm}
 ])

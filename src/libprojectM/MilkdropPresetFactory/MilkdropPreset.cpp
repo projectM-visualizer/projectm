@@ -92,16 +92,16 @@ MilkdropPreset::~MilkdropPreset()
   /// and seems to be working if you use a mutex on the preset switching.
   
   for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); 
-	pos != customWaves.end(); ++pos ) {
+        pos != customWaves.end(); ++pos ) {
   //  __android_log_print(ANDROID_LOG_ERROR, "projectM", "not freeing wave %x", *pos);
     delete(*pos);
   }
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); 
-	pos != customShapes.end(); ++pos ) {
+        pos != customShapes.end(); ++pos ) {
 //__android_log_print(ANDROID_LOG_ERROR, "projectM", "not freeing shape %x", *pos);
 
-	delete(*pos);
+        delete(*pos);
   }
   customWaves.clear();
   customShapes.clear();
@@ -264,8 +264,8 @@ void MilkdropPreset::preloadInitialize() {
 
 }
 
-void MilkdropPreset::postloadInitialize() {
-
+void MilkdropPreset::postloadInitialize()
+{
   /* It's kind of ugly to reset these values here. Should definitely be placed in the parser somewhere */
   this->per_frame_eqn_count = 0;
   this->per_frame_init_eqn_count = 0;
@@ -289,10 +289,10 @@ void MilkdropPreset::postloadInitialize() {
 
 void MilkdropPreset::Render(const BeatDetect &music, const PipelineContext &context)
 {
-	_presetInputs.update(music, context);
+        _presetInputs.update(music, context);
 
-	evaluateFrame();
-	pipeline().Render(music, context);
+        evaluateFrame();
+        pipeline().Render(music, context);
 
 }
 
@@ -322,7 +322,7 @@ void MilkdropPreset::initialize(std::istream & in)
   if ((retval = readIn(in)) < 0)
   {
 
-	if (MILKDROP_PRESET_DEBUG)
+        if (MILKDROP_PRESET_DEBUG)
      std::cerr << "[Preset] failed to load from stream " << std::endl;
 
     /// @bug how should we handle this problem? a well define exception?
@@ -356,7 +356,7 @@ void MilkdropPreset::loadCustomShapeUnspecInitConds()
 {
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes.begin();
-	pos != customShapes.end(); ++pos)
+        pos != customShapes.end(); ++pos)
   {
     assert(*pos);
     (*pos)->loadUnspecInitConds();
@@ -443,7 +443,14 @@ void MilkdropPreset::evalPerPixelEqns()
         std::vector<Expr *> steps;
         for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin(); pos != per_pixel_eqn_tree.end(); ++pos)
             steps.push_back(pos->second->assign_expr);
-        per_pixel_program = new ProgramExpr(steps,false);
+        Expr *program_expr = Expr::create_program_expr(steps, false);
+        Expr *jit = nullptr;
+#if HAVE_LLVM
+        std::string module_name = this->_filename + "_per_pixel";
+        if (!steps.empty())
+            jit = Expr::jit(program_expr, module_name);
+#endif
+        per_pixel_program = jit ? jit : program_expr;
     }
 
     for (int mesh_x = 0; mesh_x < presetInputs().gx; mesh_x++)
@@ -459,8 +466,8 @@ int MilkdropPreset::readIn(std::istream & fs) {
   /* Parse any comments */
   if (Parser::parse_top_comment(fs) < 0)
   {
-	if (MILKDROP_PRESET_DEBUG)
-    		std::cerr << "[Preset::readIn] no left bracket found..." << std::endl;
+        if (MILKDROP_PRESET_DEBUG)
+                    std::cerr << "[Preset::readIn] no left bracket found..." << std::endl;
     return PROJECTM_FAILURE;
   }
 
@@ -517,7 +524,7 @@ int MilkdropPreset::loadPresetFile(const std::string & pathname)
 }
 
 const std::string & MilkdropPreset::name() const {
-	
+
     return filename();
 }
 
