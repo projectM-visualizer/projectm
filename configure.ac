@@ -151,6 +151,11 @@ AX_CHECK_COMPILE_FLAG([-std=c++11], [
 AC_ARG_ENABLE([qt], AS_HELP_STRING([--enable-qt], [Enable Qt: needed for pulseaudio and jack GUIs]), [], [enable_qt=check])
 AS_IF([test "$enable_qt" != "no"],
   [
+    case $host_os in
+      linux*)
+        PATH="$PATH:`pkg-config --variable=host_bins Qt5Core`"
+      ;;
+    esac
     AX_HAVE_QT  # m4/qt.m4
 
     AS_IF([test "$have_qt" = "yes"], [
