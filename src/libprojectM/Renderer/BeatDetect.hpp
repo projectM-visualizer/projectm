@@ -33,6 +33,8 @@
 
 #include "../PCM.hpp"
 #include "../dlldefs.h"
+#include <algorithm>
+#include <cmath>
 
 
 class DLLEXPORT BeatDetect
@@ -58,6 +60,14 @@ class DLLEXPORT BeatDetect
 		void reset();
 		void detectFromSamples();
 		void getBeatVals ( float *vdataL, float *vdataR );
+		float getPCMScale()
+		{
+			// added to address https://github.com/projectM-visualizer/projectm/issues/161
+			// Returning 1.0 results in using the raw PCM data, which can make the presets look pretty unresponsive
+			// if the application volume is low.
+			return 0.5f / std::max(0.0001f,sqrtf(vol_history));
+		}
+
 	private:
 		/** Vars */
 		float beat_buffer[32][80],
@@ -68,8 +78,8 @@ class DLLEXPORT BeatDetect
 		beat_variance[32];
 		int beat_buffer_pos;
 		float vol_buffer[80],
-		vol_instant,
-		vol_history;
+		vol_instant;
+		float vol_history;
 };
 
 #endif /** !_BEAT_DETECT_H */
