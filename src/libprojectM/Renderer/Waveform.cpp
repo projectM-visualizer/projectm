@@ -41,7 +41,8 @@ void Waveform::InitVertexAttrib() {
 
 void Waveform::Draw(RenderContext &context)
  {
-    const float vol_scale = 0.5f / std::max(0.0001f,sqrtf(context.beatDetect->vol_history));
+    // scale PCM data based on vol_history to make it more or less independent of the application output volume
+    const float  vol_scale = context.beatDetect->getPCMScale();
 
     float *value1 = new float[samples];
 	float *value2 = new float[samples];

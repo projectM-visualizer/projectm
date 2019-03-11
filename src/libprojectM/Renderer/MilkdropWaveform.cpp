@@ -196,7 +196,8 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 {
 	float *pcmdataR = context.beatDetect->pcm->pcmdataR;
 	float *pcmdataL = context.beatDetect->pcm->pcmdataL;
-    const float  vol_scale = 0.5f / std::max(0.0001f,sqrtf(context.beatDetect->vol_history));
+	// scale PCM data based on vol_history to make it more or less independent of the application output volume
+    const float  vol_scale = context.beatDetect->getPCMScale();
 
     float r2, theta;
 
@@ -206,7 +207,7 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 	float cos_rot;
 	float sin_rot;
 
-    const float temp_y = -1*(y-1.0f);;
+    const float temp_y = -1*(y-1.0f);
 
 	two_waves = false;
 	loop = false;
