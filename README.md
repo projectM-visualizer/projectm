@@ -64,10 +64,12 @@ Silverjuke (FOSS Jukebox)
 
 # Building From Source
 
-## Building From Source Clone
+## Building From Source
 ```
-./autogen.sh
-./configure && make && sudo make install
+./autogen.sh  # only needed if this is a git clone
+./configure
+make
+sudo make install
 ```
 
 ## Linux (debian/ubuntu)
