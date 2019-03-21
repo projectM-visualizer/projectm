@@ -13,7 +13,12 @@
 #include <sdltoprojectM.h>
 #include <iostream>
 #include <sys/stat.h>
+
+#ifdef WIN32
+#include "SDL.h"
+#else
 #include <SDL2/SDL.h>
+#endif /** WIN32 */
 
 // DATADIR_PATH should be set by the root Makefile if this is being
 // built with autotools.

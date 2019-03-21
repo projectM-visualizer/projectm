@@ -44,7 +44,11 @@ TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX
     // if not data directory specified from user code
     // we use the built-in default directory (unix prefix based)
     if (datadir.empty())
-      datadir = DATADIR_PATH;
+#ifdef WIN32
+		datadir = ".";
+#else
+		datadir = DATADIR_PATH;
+#endif /** WIN32 */
 
     loadTextureDir(datadir + "/presets");
     loadTextureDir(datadir + "/textures");
