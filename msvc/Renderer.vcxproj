@@ -116,47 +116,12 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\BeatDetect.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\Filters.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\MilkdropWaveform.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\PerlinNoise.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\PerPixelMesh.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\Pipeline.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\PipelineContext.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\Renderable.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\RenderContext.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\Renderer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\RenderItemDistanceMetric.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\RenderItemMatcher.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\Shader.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\ShaderEngine.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\Texture.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\TextureManager.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\VideoEcho.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\Waveform.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\KeyHandler.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2\image_DXT.c">
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2\*.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2\image_helper.c">
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2\SOIL2.c">
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2\etc1_utils.c">
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\HLSLTree.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\CodeWriter.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\Engine.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\GLSLGenerator.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\HLSLParser.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\HLSLTokenizer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\*.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
