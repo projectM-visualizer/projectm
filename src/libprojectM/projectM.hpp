@@ -57,6 +57,12 @@
 #define inline
 #endif /** WIN32 */
 
+#ifdef WIN32
+// libs required for win32
+#pragma comment(lib, "psapi.lib")
+#pragma comment(lib, "kernel32.lib")
+#endif /** WIN32 */
+
 #include "dlldefs.h"
 #include "event.h"
 #include "fatal.h"
