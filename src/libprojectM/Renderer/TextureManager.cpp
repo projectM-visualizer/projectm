@@ -7,7 +7,7 @@
 #include "SOIL2/SOIL2.h"
 
 #ifdef WIN32
-#include "win32-dirent.h"
+#include "dirent.h"
 #endif
 
 #ifdef __unix__

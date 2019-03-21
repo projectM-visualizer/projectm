@@ -30,7 +30,7 @@
 #define _PROJECTM_HPP
 
 #ifdef WIN32
-#include "win32-dirent.h"
+#include "dirent.h"
 #else
 #include <dirent.h>
 #endif /** WIN32 */
