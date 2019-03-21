@@ -28,7 +28,9 @@
         #warning "DATADIR_PATH is not defined - falling back to ./"
     #else
         #define DATADIR_PATH "/usr/local/share/projectM"
+#ifndef WIN32
         #warning "DATADIR_PATH is not defined - falling back to /usr/local/share/projectM"
+#endif /** WIN32 */
     #endif
 #endif
 
