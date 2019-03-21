@@ -38,7 +38,7 @@ libprojectM_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
 	dlldefs.h          resource.h\
 	event.h            sdltoprojectM.h\
 	fatal.h            timer.h\
-	fftsg.h            win32-dirent.h\
+	fftsg.h\
 	glError.h          wipemalloc.h\
   omptl/omptl_numeric_extentions_ser.h\
 	omptl/omptl_algorithm_par.h          omptl/omptl_numeric_par.h\
