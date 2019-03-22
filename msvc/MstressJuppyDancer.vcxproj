@@ -38,13 +38,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\GIT\projectm\build-win\projectm\NativePresets\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">squashNativePresets\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MstressJuppyDancer.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MstressJuppyDancer</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.dll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\GIT\projectm\build-win\projectm\NativePresets\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">squashNativePresets\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MstressJuppyDancer.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MstressJuppyDancer</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.dll</TargetExt>
@@ -82,13 +82,13 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>..\libprojectM\Renderer\Debug\Renderer.lib;..\libprojectM\NativePresetFactory\Debug\NativePresetFactory.lib;..\libprojectM\Debug\projectM.lib;..\libprojectM\NativePresetFactory\Debug\NativePresetFactory.lib;..\libprojectM\MilkdropPresetFactory\Debug\MilkdropPresetFactory.lib;..\libprojectM\Renderer\Debug\Renderer.lib;ftgl.lib;freetype.lib;opengl32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Renderer\Debug\Renderer.lib;NativePresetFactory\Debug\NativePresetFactory.lib;libprojectM\Debug\projectM.lib;NativePresetFactory\Debug\NativePresetFactory.lib;MilkdropPresetFactory\Debug\MilkdropPresetFactory.lib;Renderer\Debug\Renderer.lib;opengl32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/GIT/projectm/build-win/projectm/NativePresets/Debug/MstressJuppyDancer.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/GIT/projectm/build-win/projectm/NativePresets/Debug/MstressJuppyDancer.pdb</ProgramDataBaseFile>
+      <ImportLibrary>NativePresets/Debug/MstressJuppyDancer.lib</ImportLibrary>
+      <ProgramDataBaseFile>NativePresets/Debug/MstressJuppyDancer.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -126,13 +126,13 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>..\libprojectM\Renderer\Release\Renderer.lib;..\libprojectM\NativePresetFactory\Release\NativePresetFactory.lib;..\libprojectM\Release\projectM.lib;..\libprojectM\NativePresetFactory\Release\NativePresetFactory.lib;..\libprojectM\MilkdropPresetFactory\Release\MilkdropPresetFactory.lib;..\libprojectM\Renderer\Release\Renderer.lib;ftgl.lib;freetype.lib;opengl32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Renderer\Release\Renderer.lib;NativePresetFactory\Release\NativePresetFactory.lib;libprojectM\Release\projectM.lib;NativePresetFactory\Release\NativePresetFactory.lib;MilkdropPresetFactory\Release\MilkdropPresetFactory.lib;Renderer\Release\Renderer.lib;opengl32.lib;glu32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/GIT/projectm/build-win/projectm/NativePresets/Release/MstressJuppyDancer.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/GIT/projectm/build-win/projectm/NativePresets/Release/MstressJuppyDancer.pdb</ProgramDataBaseFile>
+      <ImportLibrary>NativePresets/Release/MstressJuppyDancer.lib</ImportLibrary>
+      <ProgramDataBaseFile>NativePresets/Release/MstressJuppyDancer.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -140,40 +140,10 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="$(MSBuildThisFileDirectory)../src\NativePresets\CMakeLists.txt">
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/GIT/projectm/src/NativePresets/CMakeLists.txt</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SC:/GIT/projectm/src -BC:/GIT/projectm/build-win/projectm --check-stamp-file C:/GIT/projectm/build-win/projectm/NativePresets/CMakeFiles/generate.stamp
-if %errorlevel% neq 0 goto :cmEnd
-:cmEnd
-endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
-:cmErrorLevel
-exit /b %1
-:cmDone
-if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/GIT/projectm/src/NativePresets/CMakeLists.txt;$(MSBuildThisFileDirectory)../src\NativePresets\CMakeLists.txt;$(MSBuildThisFileDirectory)../src\NativePresets\FindPkgConfig.cmake;$(MSBuildThisFileDirectory)../src\NativePresets\cmake\CPack-projectM.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CPack.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CPackComponent.cmake;C:\Program Files\CMake\share\cmake-3.14\Templates\CPackConfig.cmake.in;$(MSBuildThisFileDirectory)../src\NativePresets\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\GIT\projectm\build-win\projectm\NativePresets\CMakeFiles\generate.stamp</Outputs>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/GIT/projectm/src/NativePresets/CMakeLists.txt</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SC:/GIT/projectm/src -BC:/GIT/projectm/build-win/projectm --check-stamp-file C:/GIT/projectm/build-win/projectm/NativePresets/CMakeFiles/generate.stamp
-if %errorlevel% neq 0 goto :cmEnd
-:cmEnd
-endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
-:cmErrorLevel
-exit /b %1
-:cmDone
-if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/GIT/projectm/src/NativePresets/CMakeLists.txt;$(MSBuildThisFileDirectory)../src\NativePresets\CMakeLists.txt;$(MSBuildThisFileDirectory)../src\NativePresets\FindPkgConfig.cmake;$(MSBuildThisFileDirectory)../src\NativePresets\cmake\CPack-projectM.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CPack.cmake;C:\Program Files\CMake\share\cmake-3.14\Modules\CPackComponent.cmake;C:\Program Files\CMake\share\cmake-3.14\Templates\CPackConfig.cmake.in;$(MSBuildThisFileDirectory)../src\NativePresets\CMakeLists.txt;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\GIT\projectm\build-win\projectm\NativePresets\CMakeFiles\generate.stamp</Outputs>
-      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\NativePresets\MstressJuppyDancer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="C:\GIT\projectm\build-win\projectm\ZERO_CHECK.vcxproj">
+    <ProjectReference Include="squashZERO_CHECK.vcxproj">
       <Project>{A7863C4B-0CDF-33D3-A206-8DC19E45FB41}</Project>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
