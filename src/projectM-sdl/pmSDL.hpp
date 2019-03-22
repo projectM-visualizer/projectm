@@ -13,7 +13,13 @@
 #include <sdltoprojectM.h>
 #include <iostream>
 #include <sys/stat.h>
+
+#ifdef WIN32
+#define SDL_MAIN_HANDLED
+#include "SDL.h"
+#else
 #include <SDL2/SDL.h>
+#endif /** WIN32 */
 
 // DATADIR_PATH should be set by the root Makefile if this is being
 // built with autotools.
@@ -23,7 +29,9 @@
         #warning "DATADIR_PATH is not defined - falling back to ./"
     #else
         #define DATADIR_PATH "/usr/local/share/projectM"
+#ifndef WIN32
         #warning "DATADIR_PATH is not defined - falling back to /usr/local/share/projectM"
+#endif /** WIN32 */
     #endif
 #endif
 

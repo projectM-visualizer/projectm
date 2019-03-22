@@ -65,6 +65,11 @@ class DLLEXPORT BeatDetect
 			// added to address https://github.com/projectM-visualizer/projectm/issues/161
 			// Returning 1.0 results in using the raw PCM data, which can make the presets look pretty unresponsive
 			// if the application volume is low.
+#ifdef WIN32
+// this is broken?
+#undef max
+			//work0around
+#endif /** WIN32 */
 			return 0.5f / std::max(0.0001f,sqrtf(vol_history));
 		}
 

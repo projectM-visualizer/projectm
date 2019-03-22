@@ -25,7 +25,7 @@
 #include "Common.hpp"
 
 #ifdef WIN32
-#include "win32-dirent.h"
+#include "dirent.h"
 #endif
 
 #include "timer.h"

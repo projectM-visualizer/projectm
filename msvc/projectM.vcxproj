@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{DABC69A6-66C3-392C-8A62-EC989B0850A4}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <Keyword>Win32Proj</Keyword>
+    <Platform>x64</Platform>
+    <ProjectName>projectM</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">libprojectM\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">libprojectM.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">projectM</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">libprojectM\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">libprojectM.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">projectM</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\NativePresetFactory;$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>Debug/</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;USE_NATIVE_GLEW;STBI_NO_DDS;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;USE_NATIVE_GLEW;STBI_NO_DDS;projectM_FONT_MENU=\"\\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\\"\";projectM_FONT_TITLE=\"\\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\\"\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\NativePresetFactory;$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\NativePresetFactory;$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\NativePresetFactory;$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>Release/</AssemblerListingLocation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;USE_NATIVE_GLEW;STBI_NO_DDS;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;USE_NATIVE_GLEW;STBI_NO_DDS;projectM_FONT_MENU=\"\\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\\"\";projectM_FONT_TITLE=\"\\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\\"\";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\NativePresetFactory;$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\NativePresetFactory;$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\ConfigFile.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\fftsg.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\KeyHandler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PCM.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PipelineMerger.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Preset.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PresetChooser.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PresetFactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PresetFactoryManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PresetLoader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\projectM.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\TimeKeeper.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\timer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\wipemalloc.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)../msvc\glew.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../msvc\glew.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)../msvc\dlfcn.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="\MilkdropPresetFactory.vcxproj">
+      <Project>{EF3369C9-E934-3F1E-996B-21518B57A809}</Project>
+      <Name>MilkdropPresetFactory</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="\NativePresetFactory.vcxproj">
+      <Project>{E2D4CEE6-B8CB-32AC-8977-52A48C8DA4E1}</Project>
+      <Name>NativePresetFactory</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="\Renderer.vcxproj">
+      <Project>{07427FA1-1771-3A2D-9183-167A8345DEEB}</Project>
+      <Name>Renderer</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="packages\glm.0.9.9.400\build\native\glm.targets" Condition="Exists('packages\glm.0.9.9.400\build\native\glm.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\glm.0.9.9.400\build\native\glm.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glm.0.9.9.400\build\native\glm.targets'))" />
+  </Target>
+</Project>

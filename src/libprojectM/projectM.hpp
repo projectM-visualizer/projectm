@@ -30,7 +30,7 @@
 #define _PROJECTM_HPP
 
 #ifdef WIN32
-#include "win32-dirent.h"
+#include "dirent.h"
 #else
 #include <dirent.h>
 #endif /** WIN32 */
@@ -55,6 +55,12 @@
 #endif /** MACOS */
 #ifdef WIN322
 #define inline
+#endif /** WIN32 */
+
+#ifdef WIN32
+// libs required for win32
+#pragma comment(lib, "psapi.lib")
+#pragma comment(lib, "kernel32.lib")
 #endif /** WIN32 */
 
 #include "dlldefs.h"

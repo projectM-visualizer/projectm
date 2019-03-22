@@ -22,6 +22,8 @@
 # include <OpenGL/gl3ext.h>
 #elif defined(_WIN32)
 # include <windows.h>
+#include "glew.h"
+#include "wglew.h"
 #else /* linux/unix/other */
 # ifdef USE_GLES
 #  include <GLES3/gl3.h>

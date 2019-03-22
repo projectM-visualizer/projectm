@@ -29,6 +29,9 @@
 
 #include "JitContext.hpp"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 /* A function expression in prefix form */
 class PrefunExpr : public Expr
@@ -59,7 +62,11 @@ public:
 float PrefunExpr::eval ( int mesh_i, int mesh_j )
 {
 	assert ( func_ptr );
+#ifdef WIN32
+	float arg_list[3];	// variable length array not supported by MSVC
+#else
 	float arg_list[num_args];	// variable length array supported by GCC
+#endif /** WIN32 */
 
     //printf("numargs %d", num_args);
 

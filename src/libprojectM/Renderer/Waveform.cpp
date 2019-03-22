@@ -12,6 +12,9 @@
 #include "BeatDetect.hpp"
 #include "ShaderEngine.hpp"
 #include <glm/gtc/type_ptr.hpp>
+#ifdef WIN32
+#include <functional>
+#endif /** WIN32 */
 
 typedef float floatPair[2];
 
@@ -50,9 +53,13 @@ void Waveform::Draw(RenderContext &context)
 	context.beatDetect->pcm->getPCM( value2, samples, 1, spectrum, smoothing, 0);
 
 	float mult= scaling*( spectrum ? 0.015f :1.0f);
-
-		std::transform(&value1[0],&value1[samples],&value1[0],std::bind2nd(std::multiplies<float>(),mult));
-		std::transform(&value2[0],&value2[samples],&value2[0],std::bind2nd(std::multiplies<float>(),mult));
+#ifdef WIN32
+	std::transform(&value1[0], &value1[samples], &value1[0], bind2nd(std::multiplies<float>(), mult));
+	std::transform(&value2[0], &value2[samples], &value2[0], bind2nd(std::multiplies<float>(), mult));
+#else
+	std::transform(&value1[0], &value1[samples], &value1[0], std::bind2nd(std::multiplies<float>(), mult));
+	std::transform(&value2[0], &value2[samples], &value2[0], std::bind2nd(std::multiplies<float>(), mult));
+#endif /** WIN32 */
 
 	WaveformContext waveContext(samples, context.beatDetect);
 
