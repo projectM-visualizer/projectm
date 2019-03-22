@@ -1005,7 +1005,7 @@ void Renderer::CompositeShaderOutput(const Pipeline &pipeline, const PipelineCon
     }
 
 
-    int primCount = (FCGSX-2)*(FCGSY-2)*6;
+    const int primCount = (FCGSX-2)*(FCGSY-2)*6;
     composite_shader_vertex tempv[primCount];
     memset(tempv, 0, sizeof(composite_shader_vertex) * primCount);
     int src_idx = 0;

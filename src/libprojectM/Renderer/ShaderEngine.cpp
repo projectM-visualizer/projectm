@@ -1224,7 +1224,11 @@ void ShaderEngine::reset()
 
 GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode, const std::string & shaderTypeString){
 
-    // Create the shaders
+#ifdef WIN32
+	GLenum err = glewInit();
+#endif /** WIN32 */
+
+	// Create the shaders
     GLuint VertexShaderID = glCreateShader(GL_VERTEX_SHADER);
     GLuint FragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
