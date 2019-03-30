@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ -z ${NDK+x} ]; then
+  export NDK=${HOME}/Android/Sdk/ndk-bundle;
+fi
+
+export HOST_TAG=linux-x86_64
+export TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/$HOST_TAG
+export TARGET=arm-linux-androideabi
+export AR=$TOOLCHAIN/bin/$TARGET-ar
+export AS=$TOOLCHAIN/bin/$TARGET-as
+export LD=$TOOLCHAIN/bin/$TARGET-ld
+export RANLIB=$TOOLCHAIN/bin/$TARGET-ranlib
+export STRIP=$TOOLCHAIN/bin/$TARGET-strip
+export CC=$TOOLCHAIN/bin/armv7a-linux-androideabi19-clang
+export CXX=$TOOLCHAIN/bin/armv7a-linux-androideabi19-clang++
+export LIBS_NDK=$NDK/sources/third_party/vulkan/src/libs/
+export CPPFLAGS="-I$LIBS_NDK"
+
+./configure --host arm-linux-androideabi --enable-gles --disable-shared --disable-sdl

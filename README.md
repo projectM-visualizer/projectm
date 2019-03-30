@@ -92,6 +92,13 @@ projectM supports OpenGL ES 2 and 3 for embedded systems. Be sure to configure w
 * projectM is arch-independent, although there are some SSE2 enhancements for x86
 * [Notes on running on raspberry pi](https://github.com/projectM-visualizer/projectm/issues/115)
 
+### Build using NDK for Android
+Install Android Studio, launch SDK Manager and install NDK
+`./autogen.sh`
+`./configure-ndk`
+`make`
+Now you should be able to copy ./src/libprojectM/.libs/libprojectM.a
+into your android app and write JNI wrapper for it
 
 # Using the library
 At its core projectM is a library, [libprojectM](src/libprojectM). This library is responsible for parsing presets, analyzing audio PCM data with beat detection and FFT, applying the preset to the audio feature data and rendering the resulting output with openGL. It can render to an openGL context or a texture.
