@@ -16,5 +16,6 @@ export CC=$TOOLCHAIN/bin/armv7a-linux-androideabi19-clang
 export CXX=$TOOLCHAIN/bin/armv7a-linux-androideabi19-clang++
 export LIBS_NDK=$NDK/sources/third_party/vulkan/src/libs/
 export CPPFLAGS="-I$LIBS_NDK"
+export GL_LIBS="-lGLESv2"
 
-./configure --host arm-linux-androideabi --enable-gles --disable-shared --disable-sdl
+./configure --host arm-linux-androideabi --enable-gles --disable-sdl
