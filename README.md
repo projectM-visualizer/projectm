@@ -64,7 +64,7 @@ Silverjuke (FOSS Jukebox)
 
 # Building From Source
 
-## Building From Source
+## Building From Source (except Windows)
 ```
 ./autogen.sh  # only needed if this is a git clone
 ./configure
@@ -83,6 +83,10 @@ sudo make install
 * `./autogen.sh`
 * `./configure --enable-sdl`
 
+## Windows
+Windows build bypasses the autogen/configure pipeline and uses the Visual Studio/MSVC files in `msvc/`
+
+See `.appveyor.yml` for command line building.
 
 ### OpenGL ES
 projectM supports OpenGL ES 2 and 3 for embedded systems. Be sure to configure with the `--enable--gles` flag.
@@ -103,7 +107,6 @@ There are many other applications that make use of libprojectM that can be found
 ***
 
 # Todo
-* Make it build on windows again. There is support, it just needs updating.
 * Support for the missing Milkdrop waveforms to get full compatibility with Milkdrop presets.
 * Steal cool stuff from the recently-released Milkdrop source.
 * Finish emscripten support for building to wasm/webGL for the web.
