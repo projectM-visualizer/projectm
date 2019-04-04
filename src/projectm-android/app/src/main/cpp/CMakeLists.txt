@@ -36,11 +36,6 @@ add_library(
         IMPORTED
 )
 
-#find_library(
-#        projectm
-#        ./jniLibs/armeabi-v7a/libprojectM.so
-#)
-
 set_target_properties(
         projectM
         PROPERTIES IMPORTED_LOCATION
@@ -50,14 +45,3 @@ target_link_libraries(
         jniwrapper
         ${log-lib}
         projectM)
-
-#set_target_properties(
-#        libprojectM
-#        PROPERTIES IMPORTED_LOCATION
-#        ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/../../../../../../../../libprojectM/.libs/libprojectM.so)
-
-
-#target_link_libraries(
-#        jniwrapper
-#        ${log-lib}
-#        libprojectM)
