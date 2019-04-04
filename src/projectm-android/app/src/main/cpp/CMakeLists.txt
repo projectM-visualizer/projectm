@@ -41,6 +41,8 @@ set_target_properties(
         PROPERTIES IMPORTED_LOCATION
         ${CMAKE_CURRENT_SOURCE_DIR}/../../../jniLibs/armeabi-v7a/libprojectM.so)
 
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../../jniLibs/include/ )
+
 target_link_libraries(
         jniwrapper
         ${log-lib}

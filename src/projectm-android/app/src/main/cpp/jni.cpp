@@ -1,7 +1,7 @@
 #include <jni.h>
 #include <string>
-#include "../../../../../libprojectM/projectM.hpp"
-#include "../../../../../libprojectM/PCM.hpp"
+#include "libprojectM/projectM.hpp"
+#include "libprojectM/PCM.hpp"
 
 projectM *instance = NULL;
 
