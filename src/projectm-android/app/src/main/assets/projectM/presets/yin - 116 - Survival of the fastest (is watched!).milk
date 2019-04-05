@@ -1,0 +1,137 @@
+[preset00]
+fRating=5.000000
+fGammaAdj=1.700000
+fDecay=0.960000
+fVideoEchoZoom=1.001825
+fVideoEchoAlpha=0.000000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=1.007944
+fWaveScale=0.010000
+fWaveSmoothing=0.900000
+fWaveParam=-0.540000
+fModWaveAlphaStart=0.710000
+fModWaveAlphaEnd=1.300000
+fWarpAnimSpeed=1.000000
+fWarpScale=1.331000
+fZoomExponent=0.620260
+fShader=0.000000
+zoom=1.001839
+rot=0.000000
+cx=0.500000
+cy=0.500000
+dx=0.000000
+dy=0.000000
+warp=0.010000
+sx=1.000000
+sy=1.000000
+wave_r=0.200001
+wave_g=1.000000
+wave_b=0.200001
+wave_x=0.500000
+wave_y=0.500000
+ob_size=0.500000
+ob_r=0.100000
+ob_g=1.000000
+ob_b=0.100000
+ob_a=0.000000
+ib_size=0.000000
+ib_r=0.250000
+ib_g=0.250000
+ib_b=0.250000
+ib_a=0.000000
+nMotionVectorsX=0.000000
+nMotionVectorsY=0.000000
+mv_dx=0.000000
+mv_dy=0.000000
+mv_l=5.000000
+mv_r=1.000000
+mv_g=1.000000
+mv_b=1.000000
+mv_a=0.000000
+per_frame_1=ob_a=.01;ob_size=1.;
+per_frame_2=zoom = 1.001;  warp =0; decay = .97; vol = 0.3*(bass+mid+treb);
+per_frame_3=b1x = if( equal( b1x, 0 ), .25+rand(50)/100, b1x );
+per_frame_4=b1y = if( equal( b1y, 0 ), .25+rand(50)/100, b1y );
+per_frame_5=b1vx = if( equal( b1vx, 0 ), 0.008*(-.5+rand(100)/100), b1vx );
+per_frame_6=b1vy = if( equal( b1vy, 0 ), 0.008*(-.5+rand(100)/100), b1vy );
+per_frame_7=b2x = if( equal( b2x, 0 ), .25+rand(50)/100, b2x );
+per_frame_8=b2y = if( equal( b2y, 0 ), .25+rand(50)/100, b2y );
+per_frame_9=b2vx = if( equal( b2vx, 0 ), 0.008*(-.5+rand(100)/100), b2vx );
+per_frame_10=b2vy = if( equal( b2vy, 0 ), 0.008*(-.5+rand(100)/100), b2vy );
+per_frame_11=
+per_frame_12=// o Resolve forces
+per_frame_13=distX = ( b1x -b2x ); distY = ( b1y - b2y ); fAngle = atan2( distY, distX );
+per_frame_14=dist = sqrt(sqr(distX)+sqr(distY));
+per_frame_15=k = 1/sqr(dist);
+per_frame_16=k = if( above( k, .01) , .01, k );
+per_frame_17=k = if(above(fCrashPhase,0),0,k);
+per_frame_18=b1vx=b1vx+k*cos(fAngle-3.14)/FPS;
+per_frame_19=b1vy=b1vy+k*sin(fAngle-3.14)/FPS;
+per_frame_20=b2vx=b2vx+k*cos(fAngle)/FPS;
+per_frame_21=b2vy=b2vy+k*sin(fAngle)/FPS;
+per_frame_22=Blue=if( above(sqrt(sqr(b2vx)+sqr(b2vy) ) , sqrt( sqr(b1vx)+sqr(b1vy) )), 1, 0);
+per_frame_23=
+per_frame_24=// o Apply motion
+per_frame_25=iIndex = (frame%4);fScale = if( above(iIndex,1),(1+.3*bass)*30/FPS,(1+.3*mid)*30/FPS);
+per_frame_26=b1x = b1x + b1vx*fScale;      b1y = b1y + b1vy*fScale;
+per_frame_27=b2x = b2x + b2vx*fScale;      b2y = b2y + b2vy*fScale;
+per_frame_28=
+per_frame_29=// o Collision and "keep-in-screen" check
+per_frame_30=b1vx = if( above( b1x, 1 ), -b1vx, b1vx );
+per_frame_31=b1vx = if( below( b1x, 0 ), -b1vx, b1vx );
+per_frame_32=b1vy = if( above( b1y, 1 ), -b1vy, b1vy );
+per_frame_33=b1vy = if( below( b1y, 0 ), -b1vy, b1vy );
+per_frame_34=b2vx = if( above( b2x, 1 ), -b2vx, b2vx );
+per_frame_35=b2vx = if( below( b2x, 0 ), -b2vx, b2vx );
+per_frame_36=b2vy = if( above( b2y, 1 ), -b2vy, b2vy );
+per_frame_37=b2vy = if( below( b2y, 0 ), -b2vy, b2vy );
+per_frame_38=bCrash = if( below(dist, 0.075), 1, 0);bCrash = if( above( frame, NoCheckUntil) ,bCrash, 0 );
+per_frame_39=
+per_frame_40=kavb1vx = b1vx;     kavb1vy = b1vy;
+per_frame_41=kavb2vx = b2vx;     kavb2vy = b2vy;
+per_frame_42=DotProd1 = cos(fAngle-3.14)*kavb2vx + sin(fAngle-3.14)*kavb2vy;
+per_frame_43=DotProd2 = cos(fAngle)*kavb1vx + sin(fAngle)*kavb1vy;
+per_frame_44=b1vx=if( equal( bCrash,1), -cos(fAngle-3.14)*DotProd1 + kavb2vx, b1vx );
+per_frame_45=b1vy=if( equal( bCrash,1), -cos(fAngle-3.14)*DotProd1 + kavb2vy, b1vy );
+per_frame_46=b2vx=if( equal( bCrash,1), -cos(fAngle)*DotProd2 + kavb1vx, b2vx );
+per_frame_47=b2vy=if( equal( bCrash,1), -sin(fAngle)*DotProd2 + kavb1vy, b2vy );
+per_frame_48=NoCheckUntil = if(equal(bCrash,1),frame + 30,NoCheckUntil );
+per_frame_49=NoCheckUntil = if( equal( frame-2,NoCheckUntil+60 ), 0, NoCheckUntil );
+per_frame_50=
+per_frame_51=// o Determine what to draw
+per_frame_52=fCrashPhase = if( above(NoCheckUntil,0),(60 + NoCheckUntil - frame)/90, 0);
+per_frame_53=totalv = if( equal(fCrashPhase,0),sqrt(sqr(b1vx)+sqr(b1vy))+sqrt(sqr(b2vx)+sqr(b2vy)),totalv);
+per_frame_54=totalv= if(above(totalv,0.04),0.04,totalv);
+per_frame_55=
+per_frame_56=sid=sid+below(iIndex,2)*.0275*(60/FPS);
+per_frame_57=sid=if(above(sid,1),0,sid);
+per_frame_58=wave_mystery=-.5+1.5*sid;
+per_frame_59=wave_r=if(above(iIndex,1),.35,.2);
+per_frame_60=wave_b=if(above(iIndex,1),.35,.2);
+per_frame_61=Blue=if(equal(iIndex,2),-1,0);
+per_frame_62=wave_x=if(equal(Blue,-1),b1x,.5);
+per_frame_63=wave_y=if(equal(Blue,-1),b1y,.5);
+per_frame_64=wave_mystery=if(equal(Blue,-1),-.55,wave_mystery);
+per_frame_65=wave_a=if(equal(Blue,-1),.1+ abs(sqrt(sqr(b1x-.5)+sqr(b1y-.5))-sid), .1+.9*(1-sid));
+per_frame_66=Blue=if(equal(iIndex,3),1,Blue);
+per_frame_67=wave_x=if(equal(Blue,1),b2x,wave_x);
+per_frame_68=wave_y=if(equal(Blue,1),b2y,wave_y);
+per_frame_69=wave_a=if(equal(Blue,1), .1+abs(sqrt(sqr(b2x-.5)+sqr(b2y-.5))-sid),wave_a);
+per_frame_70=wave_mystery=if(equal(Blue,1),-.55,wave_mystery);
+per_frame_71=sid=if(equal(Blue,1),sid-.01*(60/FPS),sid);
+per_frame_72=monitor=sid;
+per_frame_73=prevBass = if(equal( iIndex%2, 0 ), bass, 0 );
+per_frame_74=

@@ -1,0 +1,97 @@
+[preset00]
+fRating=5.000000
+fGammaAdj=1.980000
+fDecay=0.995000
+fVideoEchoZoom=1.021962
+fVideoEchoAlpha=0.000000
+nVideoEchoOrientation=0
+nWaveMode=3
+bAdditiveWaves=1
+bWaveDots=1
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.997965
+fWaveScale=1.003725
+fWaveSmoothing=0.000000
+fWaveParam=-0.500000
+fModWaveAlphaStart=0.710000
+fModWaveAlphaEnd=1.300000
+fWarpAnimSpeed=1.000000
+fWarpScale=1.331000
+fZoomExponent=0.620260
+fShader=1.000000
+zoom=1.001839
+rot=0.000000
+cx=0.500000
+cy=0.500000
+dx=0.000000
+dy=0.000000
+warp=0.009091
+sx=1.000000
+sy=1.000000
+wave_r=0.650000
+wave_g=0.650000
+wave_b=0.650000
+wave_x=0.500000
+wave_y=0.500000
+ob_size=0.000000
+ob_r=0.000000
+ob_g=0.000000
+ob_b=0.000000
+ob_a=0.000000
+ib_size=0.000000
+ib_r=0.250000
+ib_g=0.250000
+ib_b=0.250000
+ib_a=0.000000
+nMotionVectorsX=32.000031
+nMotionVectorsY=32.160015
+mv_dx=0.000000
+mv_dy=0.000000
+mv_l=0.799999
+mv_r=1.000000
+mv_g=1.000000
+mv_b=1.000000
+mv_a=0.000000
+per_frame_1=q1=.5+.3*cos(time/5+3.14/2+sin(time/10+2.352));
+per_frame_2=q2=.5+.3*sin(time/5+3.14/2+cos(time/10+1.22));
+per_frame_3=q3=.5+.3*cos(time/5+sin(time/10+2.352+3.14/2));
+per_frame_4=q4=.5+.3*sin(time/5+cos(time/10+1.22+3.14/2));
+per_frame_5=q5=.1; // rotation speed
+per_frame_6=q6=.01; // rotation angle per frame
+per_frame_7=dist=sqrt( sqr(q3-q1)+sqr(q4-q2) );
+per_frame_8=q7=3+1.5*sin(time/4+1.345); // exp. of gravity atten.
+per_frame_9=f=frame%4;
+per_frame_10=wave_mode = if( equal(f%2,0),0,3);
+per_frame_11=wave_x=if(above(f,1),q1,q3);
+per_frame_12=wave_y=if(above(f,1),1-q2,1-q4);
+per_frame_13=wave_r=if(equal(f%2,0),1,0);
+per_frame_14=wave_b=if(equal(f,0),1,.4+.6*abs(sin(time)));
+per_frame_15=wave_g=if(equal(f%2,0),1,0);
+per_frame_16=wave_r=if(equal(f,3),.4+.6*abs(sin(time)),wave_g);
+per_frame_17=stars=if(equal(frame%8,5),1,0);
+per_frame_18=stars=if(equal(frame%8,7),1,stars);
+per_frame_19=wave_r=if(equal(stars,1),.5,wave_r);
+per_frame_20=wave_g=if(equal(stars,1),.5,wave_g);
+per_frame_21=wave_b=if(equal(stars,1),.5,wave_b);
+per_frame_22=decay=if(above(dist,.55),.995,.993);
+per_frame_23=zoom=1+.005*sin(time*1.5+1.354);
+per_pixel_1=x1=x-q1; y1=y-q2;
+per_pixel_2=x2=x-q3;y2=y-q4;
+per_pixel_3=rot_f1=pow(1-sqrt(sqr(x1)+(sqr(y1))),q7);
+per_pixel_4=rot_f2=pow(1-sqrt(sqr(x2)+(sqr(y2))),q7);
+per_pixel_5=dx=dx+ q5*(x1*sin(q6) - (y1)*cos(q6))*rot_f1;
+per_pixel_6=dy=dy+ q5*(x1*cos(q6) +(y1)*sin(q6))*rot_f1;
+per_pixel_7=dx=dx+q5*(x2*sin(q6)-(y2)*cos(q6))*rot_f2;
+per_pixel_8=dy=dy+q5*(x2*cos(q6)+(y2)*sin(q6))*rot_f2;
+per_pixel_9=
+per_frame_init_1=q1=1;
+per_frame_init_2=time=0;
