@@ -19,6 +19,10 @@ Java_com_github_PeterMalkin_projectm_1android_libprojectMJNIWrapper_onSurfaceCre
         jint window_width,
         jint window_height,
         jstring jasset_path) {
+    if (instance) {
+        ALOGD("Destroy existing instance");
+        delete instance;
+    }
     const char* asset_path_chars = env->GetStringUTFChars(jasset_path, NULL);
     std::string asset_path(asset_path_chars);
     projectM::Settings settings;
@@ -27,6 +31,7 @@ Java_com_github_PeterMalkin_projectm_1android_libprojectMJNIWrapper_onSurfaceCre
     settings.presetURL = asset_path + "/presets";
     ALOGD("presetURL: %s", settings.presetURL.c_str());
     env->ReleaseStringUTFChars(jasset_path, asset_path_chars);
+    ALOGD("Creating new instance");
     instance = new projectM(settings);
 }
 
