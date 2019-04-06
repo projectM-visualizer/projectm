@@ -16,9 +16,10 @@ export CC=$TOOLCHAIN/bin/armv7a-linux-androideabi19-clang
 export CXX=$TOOLCHAIN/bin/armv7a-linux-androideabi19-clang++
 export LIBS_NDK=$NDK/sources/third_party/vulkan/src/libs/
 export CPPFLAGS="-march=armv7-a -I$LIBS_NDK -fPIC"
-export GL_LIBS="-lGLESv2 -lEGL"
+export GL_LIBS="-lGLESv3 -lEGL"
 
-./configure --host arm-linux-androideabi --enable-gles --disable-static \
+./configure --host arm-linux-androideabi \
+    --enable-gles --disable-static --disable-sdl --disable-qt \
     --prefix=`realpath src/projectm-android/app/jniLibs` \
     --libdir='${exec_prefix}/armeabi-v7a' \
     --datarootdir=`realpath src/projectm-android/app/src/main/assets`
