@@ -163,6 +163,8 @@ std::string read_config()
 	FILE *out;
 
 	char* home;
+        char* xdg_home;
+        
 	char projectM_config[1024];
 	char default_config[1024];
 
@@ -171,24 +173,38 @@ std::string read_config()
 	printf("Default config: %s\n", default_config);
 
 	home=getenv("HOME");
+        xdg_home = getenv("XDG_CONFIG_HOME");
+
 	strcpy(projectM_config, home);
         strcat(projectM_config, "/.projectM/config.inp");
 
-
 	if ( ( in = fopen ( projectM_config, "r" ) ) != 0 )
 	{
-		printf ( "reading ~/.projectM/config.inp \n" );
+		printf ( "reading %s \n", projectM_config );
 		fclose ( in );
 		return std::string ( projectM_config );
 	}
 	else {
-                printf ("trying to create ~/.projectM/config.inp \n");
-                strcpy(projectM_config, home);
-                strcat(projectM_config, "/.projectM");
+                if (xdg_home) {
+                        strcpy(projectM_config, xdg_home);
+                        strcat(projectM_config, "/projectM/config.inp");
+                        if ( ( in = fopen ( projectM_config, "r" ) ) != 0 ) {
+                                printf ( "reading %s \n", projectM_config );
+                                fclose ( in );
+                                return std::string ( projectM_config );
+                        }
+                        else {
+                                strcpy(projectM_config, xdg_home);
+                                strcat(projectM_config, "/projectM");
+                        }
+                }
+                else {
+                      strcpy(projectM_config, home);
+                      strcat(projectM_config, "/.projectM");
+                }
                 mkdir(projectM_config, 0755);
-
-                strcpy(projectM_config, home);
-                strcat(projectM_config, "/.projectM/config.inp");
+                strcat(projectM_config, "/config.inp");
+                printf ("trying to create %s \n", projectM_config);
 
                 if ( ( out = fopen ( projectM_config,"w" ) ) !=0 )
                         {
@@ -206,7 +222,7 @@ std::string read_config()
 
 				if ( ( in = fopen ( projectM_config, "r" ) ) != 0 )
 				{
-					printf ( "created ~/.projectM/config.inp successfully\n" );
+					printf ( "created %s successfully\n", projectM_config );
 					fclose ( in );
 					return std::string ( projectM_config );
 				}
@@ -216,7 +232,7 @@ std::string read_config()
 		}
 		else
 		{
-			printf ( "Cannot create ~/.projectM/config.inp, using default config file\n" );
+			printf ( "Cannot create %s, using default config file\n", projectM_config );
 			if ( ( in = fopen ( default_config, "r" ) ) != 0 )
 			{
 				printf ( "Successfully opened default config file\n" );
