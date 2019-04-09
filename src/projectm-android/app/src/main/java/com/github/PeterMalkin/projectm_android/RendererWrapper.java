@@ -7,11 +7,17 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class RendererWrapper implements Renderer {
+    private String mAssetPath;
+
+    public RendererWrapper(String assetPath) {
+        mAssetPath = assetPath;
+    }
+
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         int width = Resources.getSystem().getDisplayMetrics().widthPixels;
         int height = Resources.getSystem().getDisplayMetrics().heightPixels;
-        libprojectMJNIWrapper.onSurfaceCreated(width, height);
+        libprojectMJNIWrapper.onSurfaceCreated(width, height, mAssetPath);
     }
 
     @Override

@@ -1,14 +1,12 @@
 package com.github.PeterMalkin.projectm_android;
 
-import static java.lang.System.loadLibrary;
 
 public class libprojectMJNIWrapper {
     static {
-        System.loadLibrary("c++_shared");
-        loadLibrary("projectM");
+        System.loadLibrary("jniwrapper");
     }
 
-    public static native void onSurfaceCreated(int window_width, int window_height);
+    public static native void onSurfaceCreated(int window_width, int window_height, String assetPath);
 
     public static native void onSurfaceChanged(int width, int height);
 
