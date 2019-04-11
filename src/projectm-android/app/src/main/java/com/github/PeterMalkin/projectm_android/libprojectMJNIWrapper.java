@@ -13,4 +13,6 @@ public class libprojectMJNIWrapper {
     public static native void onDrawFrame();
 
     public static native void addPCM(short pcm_data[], short nsamples);
+
+    public static native void nextPreset();
 }

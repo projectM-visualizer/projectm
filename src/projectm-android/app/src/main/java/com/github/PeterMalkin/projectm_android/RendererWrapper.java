@@ -10,6 +10,8 @@ import javax.microedition.khronos.opengles.GL10;
 public class RendererWrapper implements Renderer {
     private String mAssetPath;
 
+    private Boolean mNextPreset = false;
+
     public RendererWrapper(String assetPath) {
         mAssetPath = assetPath;
     }
@@ -28,8 +30,16 @@ public class RendererWrapper implements Renderer {
         libprojectMJNIWrapper.onSurfaceChanged(width, height);
     }
 
+    public void NextPreset() {
+        mNextPreset = true;
+    }
+
     @Override
     public void onDrawFrame(GL10 gl) {
+        if (mNextPreset) {
+            mNextPreset = false;
+            libprojectMJNIWrapper.nextPreset();
+        }
         libprojectMJNIWrapper.onDrawFrame();
     }
 }

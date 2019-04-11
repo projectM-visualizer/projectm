@@ -9,6 +9,8 @@
         android:glEsVersion="0x00030001"
         android:required="true" />
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" ></uses-permission>
+
     <application
         android:name=".ProjectMApplication"
         android:allowBackup="false"

@@ -17,6 +17,6 @@ Easter Egg Parameter = 1
 Hard Cut Sensitivity = 10       # Lower to make hard cuts more frequent
 Aspect Correction = true	# Custom Shape Aspect Correction
 
-Preset Path = /home/ljonas/tmp/peterm/projectm/src/projectm-android/app/src/main/assets/projectM/presets # preset location
+Preset Path = /home/petermalkin/src/projectm/src/projectm-android/app/src/main/assets/projectM/presets # preset location
 Title Font = Vera.ttf
 Menu Font = VeraMono.ttf
