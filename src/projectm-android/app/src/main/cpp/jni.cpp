@@ -31,7 +31,7 @@ void next_preset(bool hard_cut) {
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_github_PeterMalkin_projectm_1android_libprojectMJNIWrapper_onSurfaceCreated(
+Java_com_github_projectm_1android_libprojectMJNIWrapper_onSurfaceCreated(
         JNIEnv *env,
         jobject obj,
         jint window_width,
@@ -59,7 +59,7 @@ Java_com_github_PeterMalkin_projectm_1android_libprojectMJNIWrapper_onSurfaceCre
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_github_PeterMalkin_projectm_1android_libprojectMJNIWrapper_onSurfaceChanged(
+Java_com_github_projectm_1android_libprojectMJNIWrapper_onSurfaceChanged(
         JNIEnv *env,
         jobject obj,
         jint window_width,
@@ -71,7 +71,7 @@ Java_com_github_PeterMalkin_projectm_1android_libprojectMJNIWrapper_onSurfaceCha
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_github_PeterMalkin_projectm_1android_libprojectMJNIWrapper_onDrawFrame(
+Java_com_github_projectm_1android_libprojectMJNIWrapper_onDrawFrame(
         JNIEnv *env,
         jobject obj) {
     if (!instance) {
@@ -81,7 +81,7 @@ Java_com_github_PeterMalkin_projectm_1android_libprojectMJNIWrapper_onDrawFrame(
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_github_PeterMalkin_projectm_1android_libprojectMJNIWrapper_addPCM(
+Java_com_github_projectm_1android_libprojectMJNIWrapper_addPCM(
         JNIEnv *env,
         jobject obj,
         jshortArray pcm_data,
@@ -95,7 +95,7 @@ Java_com_github_PeterMalkin_projectm_1android_libprojectMJNIWrapper_addPCM(
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_github_PeterMalkin_projectm_1android_libprojectMJNIWrapper_nextPreset(
+Java_com_github_projectm_1android_libprojectMJNIWrapper_nextPreset(
         JNIEnv *env,
         jobject obj) {
     next_preset(true);

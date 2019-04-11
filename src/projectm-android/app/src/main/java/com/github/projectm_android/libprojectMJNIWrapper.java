@@ -1,4 +1,4 @@
-package com.github.PeterMalkin.projectm_android;
+package com.github.projectm_android;
 
 
 public class libprojectMJNIWrapper {

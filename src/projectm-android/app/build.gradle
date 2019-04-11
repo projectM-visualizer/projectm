@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 22
     defaultConfig {
-        applicationId "com.github.PeterMalkin.projectm_android"
+        applicationId "com.github.projectm_android"
         minSdkVersion 22
         targetSdkVersion 22
         versionCode 1
