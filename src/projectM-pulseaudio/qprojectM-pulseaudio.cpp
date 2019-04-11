@@ -158,50 +158,58 @@ int main ( int argc, char*argv[] )
 
 std::string read_config()
 {
-
-	int n;
-
 	char num[512];
 	FILE *in;
 	FILE *out;
 
 	char* home;
-	char projectM_home[1024];
+        char* xdg_home;
+        
 	char projectM_config[1024];
+	char default_config[1024];
 
-	strcpy ( projectM_config, PROJECTM_PREFIX );
-	strcpy ( projectM_config+strlen ( PROJECTM_PREFIX ), CONFIG_FILE );
-	projectM_config[strlen ( PROJECTM_PREFIX ) +strlen ( CONFIG_FILE ) ]='\0';
-	printf ( "dir:%s \n",projectM_config );
-	home=getenv ( "HOME" );
-	strcpy ( projectM_home, home );
-	strcpy ( projectM_home+strlen ( home ), "/.projectM/config.inp" );
-	projectM_home[strlen ( home ) +strlen ( "/.projectM/config.inp" ) ]='\0';
+	strcpy(default_config, PROJECTM_PREFIX);
+        strcat(default_config, CONFIG_FILE);
+	printf("Default config: %s\n", default_config);
 
+	home=getenv("HOME");
+        xdg_home = getenv("XDG_CONFIG_HOME");
 
-	if ( ( in = fopen ( projectM_home, "r" ) ) != 0 )
+	strcpy(projectM_config, home);
+        strcat(projectM_config, "/.projectM/config.inp");
+
+	if ( ( in = fopen ( projectM_config, "r" ) ) != 0 )
 	{
-		printf ( "reading ~/.projectM/config.inp \n" );
+		printf ( "reading %s \n", projectM_config );
 		fclose ( in );
-		return std::string ( projectM_home );
+		return std::string ( projectM_config );
 	}
-	else
-	{
-		printf ( "trying to create ~/.projectM/config.inp \n" );
+	else {
+                if (xdg_home) {
+                        strcpy(projectM_config, xdg_home);
+                        strcat(projectM_config, "/projectM/config.inp");
+                        if ( ( in = fopen ( projectM_config, "r" ) ) != 0 ) {
+                                printf ( "reading %s \n", projectM_config );
+                                fclose ( in );
+                                return std::string ( projectM_config );
+                        }
+                        else {
+                                strcpy(projectM_config, xdg_home);
+                                strcat(projectM_config, "/projectM");
+                        }
+                }
+                else {
+                      strcpy(projectM_config, home);
+                      strcat(projectM_config, "/.projectM");
+                }
+                mkdir(projectM_config, 0755);
+                strcat(projectM_config, "/config.inp");
+                printf ("trying to create %s \n", projectM_config);
 
-		strcpy ( projectM_home, home );
-		strcpy ( projectM_home+strlen ( home ), "/.projectM" );
-		projectM_home[strlen ( home ) +strlen ( "/.projectM" ) ]='\0';
-		mkdir ( projectM_home, 0755 );
+                if ( ( out = fopen ( projectM_config,"w" ) ) !=0 )
+                        {
 
-		strcpy ( projectM_home, home );
-		strcpy ( projectM_home+strlen ( home ), "/.projectM/config.inp" );
-		projectM_home[strlen ( home ) +strlen ( "/.projectM/config.inp" ) ]='\0';
-
-		if ( ( out = fopen ( projectM_home,"w" ) ) !=0 )
-		{
-
-			if ( ( in = fopen ( projectM_config, "r" ) ) != 0 )
+			if ( ( in = fopen ( default_config, "r" ) ) != 0 )
 			{
 
 				while ( fgets ( num,80,in ) !=NULL )
@@ -212,11 +220,11 @@ std::string read_config()
 				fclose ( out );
 
 
-				if ( ( in = fopen ( projectM_home, "r" ) ) != 0 )
+				if ( ( in = fopen ( projectM_config, "r" ) ) != 0 )
 				{
-					printf ( "created ~/.projectM/config.inp successfully\n" );
+					printf ( "created %s successfully\n", projectM_config );
 					fclose ( in );
-					return std::string ( projectM_home );
+					return std::string ( projectM_config );
 				}
 				else{printf ( "This shouldn't happen, using implementation defualts\n" );abort();}
 			}
@@ -224,12 +232,12 @@ std::string read_config()
 		}
 		else
 		{
-			printf ( "Cannot create ~/.projectM/config.inp, using default config file\n" );
-			if ( ( in = fopen ( projectM_config, "r" ) ) != 0 )
+			printf ( "Cannot create %s, using default config file\n", projectM_config );
+			if ( ( in = fopen ( default_config, "r" ) ) != 0 )
 			{
 				printf ( "Successfully opened default config file\n" );
 				fclose ( in );
-				return std::string ( projectM_config );
+				return std::string ( default_config );
 			}
 			else{ printf ( "Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n" );  abort();}
 
