@@ -30,17 +30,35 @@
 #define pmSDL_hpp
 
 
-
-#define FAKE_AUDIO          1
+// Disable these for mic input
+#define WASAPI_LOOPBACK     1
+#define FAKE_AUDIO          0
+// ----------------------------
 #define TEST_ALL_PRESETS    0
 #define STEREOSCOPIC_SBS    1
-
 
 #include "projectM-opengl.h"
 #include <projectM.hpp>
 #include <sdltoprojectM.h>
 #include <iostream>
 #include <sys/stat.h>
+
+
+#ifdef WASAPI_LOOPBACK
+#include <stdio.h>
+#include <windows.h>
+#include <mmsystem.h>
+#include <mmdeviceapi.h>
+#include <audioclient.h>
+#include <avrt.h>
+#include <functiondiscoverykeys_devpkey.h>
+
+#define LOG(format, ...) wprintf(format L"\n", __VA_ARGS__)
+#define ERR(format, ...) LOG(L"Error: " format, __VA_ARGS__)
+
+#endif /** WASAPI_LOOPBACK */
+
+
 
 #ifdef WIN32
 #define SDL_MAIN_HANDLED
@@ -65,6 +83,8 @@
 
 class projectMSDL : public projectM {
 public:
+
+
     bool done;
 
     projectMSDL(Settings settings, int flags);
