@@ -22,6 +22,7 @@ sudo make install
 Windows build bypasses the autogen/configure pipeline and uses the Visual Studio/MSVC files in `msvc/`. See `.appveyor.yml` for command line building.
 
 Some dependencies are included verbatim (glew), while others leverage the NuGet ecosystem and are downloaded automatically (glm, sdl2).
+
 ### OpenGL ES
 projectM supports OpenGL ES 2 and 3 for embedded systems. Be sure to configure with the `--enable--gles` flag.
 
@@ -29,13 +30,22 @@ projectM supports OpenGL ES 2 and 3 for embedded systems. Be sure to configure w
 * projectM is arch-independent, although there are some SSE2 enhancements for x86
 * [Notes on running on raspberry pi](https://github.com/projectM-visualizer/projectm/issues/115)
 
+### Build using NDK for Android
+Install Android Studio, launch SDK Manager and install NDK
+`./autogen.sh`
+`./configure-ndk`
+`make && make install-strip`
+
+Now you should be able to copy ./src/libprojectM/.libs/libprojectM.so
+and appropriate headers to projectm-android, and build it using Android Studio
+
 
 ## libprojectM
 
 libprojectM is the core library. It is made up of three sub-libraries:
 
 #### Renderer
-Made up of everything in src/libprojectM/Renderer. It should project libRenderer
+Made up of everything in src/libprojectM/Renderer. It should project libRenderer.
 
 #### MilkdropPresetFactory / NativePresetFactory
 From their respective folders. Native presets are visualizations that are implemented in C++ instead of .milk preset files. They are completely optional. Milkdrop presets are technically optional but the whole thing is basically useless without them.
