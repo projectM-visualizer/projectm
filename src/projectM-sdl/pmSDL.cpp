@@ -33,6 +33,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "Renderer/ShaderEngine.hpp"
 
+
 void projectMSDL::audioInputCallbackF32(void *userdata, unsigned char *stream, int len) {
     projectMSDL *app = (projectMSDL *) userdata;
     //    printf("LEN: %i\n", len);
@@ -162,7 +163,7 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
     SDL_Keymod sdl_mod = (SDL_Keymod) sdl_evt->key.keysym.mod;
     SDL_Keycode sdl_keycode = sdl_evt->key.keysym.sym;
 
-    // handle keyboard input (for our app first, then projectM)
+	// handle keyboard input (for our app first, then projectM)
     switch (sdl_keycode) {
         case SDLK_f:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
@@ -174,6 +175,67 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
                 return; // handled
             }
             break;
+					case SDLK_LEFT:
+						// selectPrevious(true);
+						break;
+					case SDLK_RIGHT:
+						// selectNext(true);
+						break;
+					case SDLK_UP:
+						break;
+					case SDLK_DOWN:
+						break;
+
+					case SDLK_F3:
+						break;
+
+
+					case SDLK_SPACE:
+						setPresetLock(
+							!isPresetLocked()
+						);
+						break;
+					case SDLK_F1:
+					case SDLK_ESCAPE:
+
+						// exit(1);
+						// show help with other keys
+						sdl_keycode = SDLK_F1;
+						break;
+					case SDLK_DELETE:
+						/*
+						try {
+							if (selectedPresetIndex(index)) {
+								DeleteFile(
+									LPCSTR(
+										getPresetURL(index).c_str()
+									)
+								);
+							}
+						}
+						catch (const std::exception & e) {
+							printf("Delete failed");
+						}
+						*/
+						break;
+					case SDLK_RETURN:
+						/*
+						try {
+							if (selectedPresetIndex(index)) {
+								CopyFile(
+										LPCSTR(
+												app->getPresetURL(index).c_str()
+										),
+										LPCTSTR(L"C:\\"),
+										false
+								);
+							}
+						}
+						catch (const std::exception & e) {
+							printf("Delete failed");
+						}
+								*/
+						break;
     }
 
     // translate into projectM codes and perform default projectM handler
