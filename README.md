@@ -62,40 +62,8 @@ Silverjuke (FOSS Jukebox)
 
 ***
 
-# Building From Source
-
-## Building From Source (except Windows)
-```
-./autogen.sh  # only needed if this is a git clone
-./configure
-make
-sudo make install
-```
-
-## Linux (debian/ubuntu)
-* `sudo apt install autoconf libtool libsdl2-dev libglm-dev qt5-default qtdeclarative5-dev libqt5opengl5-dev libjack-dev libpulse-dev libsdl-dev`
-
-## FreeBSD
-* `pkg install gcc autoconf automake libtool mesa-libs libGLU sdl2 glm`
-
-## Mac OS X
-* `brew install glm sdl2 automake libtool pkg-config`
-* `./autogen.sh`
-* `./configure --enable-sdl`
-
-## Windows
-Windows build bypasses the autogen/configure pipeline and uses the Visual Studio/MSVC files in `msvc/`
-
-See `.appveyor.yml` for command line building.
-
-### OpenGL ES
-projectM supports OpenGL ES 2 and 3 for embedded systems. Be sure to configure with the `--enable--gles` flag.
-
-
-### Raspberry Pi (and other embedded systems)
-* projectM is arch-independent, although there are some SSE2 enhancements for x86
-* [Notes on running on raspberry pi](https://github.com/projectM-visualizer/projectm/issues/115)
-
+# Building from source
+See [BUILDING.md](BUILDING.md)
 
 # Using the library
 At its core projectM is a library, [libprojectM](src/libprojectM). This library is responsible for parsing presets, analyzing audio PCM data with beat detection and FFT, applying the preset to the audio feature data and rendering the resulting output with openGL. It can render to an openGL context or a texture.
