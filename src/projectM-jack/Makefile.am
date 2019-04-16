@@ -28,8 +28,7 @@ projectM_jack_LDADD = \
   ../projectM-qt/libprojectM_qt.a \
   ${jack_LIBS} \
   ${QT_LIBS} \
-  ../libprojectM/libprojectM.la \
-  -lSDL
+  ../libprojectM/libprojectM.la
 projectM_jack_LDFLAGS = -static -fPIC ${QT_LIBS}
 projectM_jack_PROGRAM = projectM-jack
 
