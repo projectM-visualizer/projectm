@@ -11,11 +11,6 @@
 #define FAKE_AUDIO          0
 #define TEST_ALL_PRESETS    0
 
-#ifdef WIN32
-// cannot get SDL audio with win32
-#define FAKE_AUDIO          1
-#endif /** WIN32 */
-
 #if OGL_DEBUG
 void DebugLog(GLenum source,
                GLenum type,
