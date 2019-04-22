@@ -33,4 +33,16 @@ projectM_jack_LDADD = \
 projectM_jack_LDFLAGS = -static -fPIC ${QT_LIBS}
 projectM_jack_PROGRAM = projectM-jack
 
+desktopdir = $(datadir)/applications
+dist_desktop_DATA = projectM-jack.desktop
+
+icondir = $(datadir)/icons/hicolor/scalable/apps
+icon_svg = ${top_srcdir}/src/projectM-qt/images/icons/prjm16-transparent.svg
+
+install-icons:
+	mkdir -p $(DESTDIR)$(icondir); \
+	$(INSTALL_DATA) $(icon_svg) $(DESTDIR)$(icondir)/projectM.svg
+
+install-data-local: install-icons
+
 dist_man_MANS = projectM-jack.1
