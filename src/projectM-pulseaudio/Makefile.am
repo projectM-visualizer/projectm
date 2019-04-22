@@ -66,7 +66,13 @@ CLEANFILES = \
 desktopdir = $(datadir)/applications
 dist_desktop_DATA = projectM-pulseaudio.desktop
 
-icondir = $(datadir)/pixmaps
-dist_icon_DATA = ${top_srcdir}/src/projectM-qt/images/icons/prjm16-transparent.svg
+icondir = $(datadir)/icons/hicolor/scalable/apps
+icon_svg = ${top_srcdir}/src/projectM-qt/images/icons/prjm16-transparent.svg
+
+install-icons:
+	mkdir -p $(DESTDIR)$(icondir); \
+	$(INSTALL_DATA) $(icon_svg) $(DESTDIR)$(icondir)/projectM.svg
+
+install-data-local: install-icons
 
 dist_man_MANS = projectM-pulseaudio.1
