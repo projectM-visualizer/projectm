@@ -24,7 +24,7 @@ Windows build bypasses the autogen/configure pipeline and uses the Visual Studio
 Some dependencies are included verbatim (glew), while others leverage the NuGet ecosystem and are downloaded automatically (glm, sdl2).
 
 ### OpenGL ES
-projectM supports OpenGL ES 2 and 3 for embedded systems. Be sure to configure with the `--enable--gles` flag.
+projectM supports OpenGL ES 3 for embedded systems. Be sure to configure with the `--enable--gles` flag.
 
 ### Raspberry Pi (and other embedded systems)
 * projectM is arch-independent, although there are some SSE2 enhancements for x86
@@ -45,7 +45,7 @@ and appropriate headers to projectm-android, and build it using Android Studio
 libprojectM is the core library. It is made up of three sub-libraries:
 
 #### Renderer
-Made up of everything in src/libprojectM/Renderer. It should project libRenderer.
+Made up of everything in src/libprojectM/Renderer. These files compose the libRenderer sub-library.
 
 #### MilkdropPresetFactory / NativePresetFactory
 From their respective folders. Native presets are visualizations that are implemented in C++ instead of .milk preset files. They are completely optional. Milkdrop presets are technically optional but the whole thing is basically useless without them.
