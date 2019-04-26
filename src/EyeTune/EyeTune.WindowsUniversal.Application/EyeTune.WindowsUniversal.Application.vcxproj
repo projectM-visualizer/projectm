@@ -1,0 +1,178 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{e418be0c-d603-45bc-8d93-eb2a4a7f68d0}</ProjectGuid>
+    <RootNamespace>EyeTune</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.10240.0</WindowsTargetPlatformMinVersion>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Platform)'=='x64'">
+    <QtDir>C:\Qt\5.9.4\winrt_x64_msvc2015</QtDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)'=='Win32'">
+    <QtDir>C:\Qt\5.9.4\msvc2015</QtDir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PackageCertificateKeyFile>EyeTune.WindowsUniversal.Application_StoreKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateThumbprint>633C5524243E1059BABC3BA37297096AABB819F5</PackageCertificateThumbprint>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+    <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
+    <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Platform)'=='ARM'">
+    <Link>
+      <AdditionalDependencies>mincore.lib; %(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store\arm; $(VCInstallDir)\lib\arm</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Platform)'=='Win32'">
+    <Link>
+      <AdditionalDependencies>mincore.lib; %(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories); $(VCInstallDir)\lib\store; $(VCInstallDir)\lib</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Platform)'=='x64'">
+    <Link>
+      <AdditionalDependencies>projectM.WindowsUniversal.SharedLibrary.lib;libEGL.lib;libGLESv2.lib;mincore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store\amd64;$(VCInstallDir)\lib\amd64;..\angle\Release_x64;..\..\x64\Release\projectM.WindowsUniversal.SharedLibrary</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
+    <ClCompile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(SolutionDir);$(ProjectDir);$(IntermediateOutputPath);$(SolutionDir)projectm\msvc;$(SolutionDir)projectm\src\libprojectM;$(SolutionDir)projectm\src\libprojectM\Renderer;$(SolutionDir)projectm\src\libprojectM\Renderer\SOIL2;$(SolutionDir)projectm\src\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
+      <PreprocessorDefinitions>WIN32;SOIL_GLES2;USE_GLES;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;NOMINMAX;ANGLE_STANDALONE_BUILD;GL_GLEXT_PROTOTYPES;EGL_EGLEXT_PROTOTYPES;ANGLE_X64_CPU;_DEBUG;ANGLE_ENABLE_DEBUG_ANNOTATIONS;%(PreprocessorDefinitions);_DEBUG;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";WIN32;USE_GLES;SOIL_GLES2;DISABLE_NATIVE_PRESETS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
+    <ClCompile>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(SolutionDir);$(ProjectDir);$(IntermediateOutputPath);$(SolutionDir)projectm\msvc;$(SolutionDir)projectm\src\libprojectM;$(SolutionDir)projectm\src\libprojectM\Renderer;$(SolutionDir)projectm\src\libprojectM\Renderer\SOIL2;$(SolutionDir)projectm\src\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4453;28204</DisableSpecificWarnings>
+      <PreprocessorDefinitions>EYETUNE_WINRT;WIN32;SOIL_GLES2;USE_GLES;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;NOMINMAX;ANGLE_STANDALONE_BUILD;GL_GLEXT_PROTOTYPES;EGL_EGLEXT_PROTOTYPES;ANGLE_X64_CPU;ANGLE_ENABLE_DEBUG_ANNOTATIONS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;DISABLE_NATIVE_PRESETS</PreprocessorDefinitions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Image Include="Assets\Logo.png" />
+    <Image Include="Assets\SmallLogo.png" />
+    <Image Include="Assets\StoreLogo.png" />
+    <Image Include="Assets\SplashScreen.png" />
+    <Image Include="Assets\WideLogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WASAPICaptureCommon.h" />
+    <ClInclude Include="EyeTuneApp.h" />
+    <ClInclude Include="WASAPICaptureDeviceState.h" />
+    <ClInclude Include="EyeTunePlatformString.h" />
+    <ClInclude Include="EyeTunePopUp.h" />
+    <ClInclude Include="WASAPICapture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="EyeTuneApp.cpp" />
+    <ClCompile Include="WASAPICaptureScenario.cpp" />
+    <ClCompile Include="WASAPICapture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <None Include="Assets\eyetune.psd" />
+    <None Include="Assets\Logo.psd" />
+    <None Include="Assets\SmallLogo.psd" />
+    <None Include="Assets\SplashScreen.psd" />
+    <None Include="Assets\StoreLogo.psd" />
+    <None Include="Assets\WideLogo.psd" />
+    <None Include="EyeTune.WindowsUniversal.Application_StoreKey.pfx" />
+    <None Include="EyeTune.WindowsUniversal.Application_TemporaryKey.pfx" />
+    <None Include="EyeTune_TemporaryKey.pfx" />
+    <None Include="presets\UWP.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\projectM.WindowsUniversal.SharedLibrary\projectM.WindowsUniversal.SharedLibrary.vcxproj">
+      <Project>{9861a7bc-9e57-4a9c-ba26-bb38e0a30a3f}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Package.StoreAssociation.xml" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\..\packages\glm.0.9.9.400\build\native\glm.targets" Condition="Exists('..\..\packages\glm.0.9.9.400\build\native\glm.targets')" />
+    <Import Project="..\..\packages\WindowsStoreOpenGL.0.777.78\build\native\WindowsStoreOpenGL.targets" Condition="Exists('..\..\packages\WindowsStoreOpenGL.0.777.78\build\native\WindowsStoreOpenGL.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\glm.0.9.9.400\build\native\glm.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\glm.0.9.9.400\build\native\glm.targets'))" />
+    <Error Condition="!Exists('..\..\packages\WindowsStoreOpenGL.0.777.78\build\native\WindowsStoreOpenGL.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\WindowsStoreOpenGL.0.777.78\build\native\WindowsStoreOpenGL.targets'))" />
+  </Target>
+</Project>
