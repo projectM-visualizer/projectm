@@ -1224,7 +1224,7 @@ void ShaderEngine::reset()
 
 GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode, const std::string & shaderTypeString){
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(EYETUNE_WINRT)
 	GLenum err = glewInit();
 #endif /** WIN32 */
 

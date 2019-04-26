@@ -287,11 +287,15 @@ public:
   int getWindowHeight() { return _settings.windowHeight; }
   bool getErrorLoadingCurrentPreset() const { return errorLoadingCurrentPreset; }
 
+// WINRT requires the render object
+#if !defined(EYETUNE_WINRT) 
+private: 
+#endif
+  Renderer *renderer;
 private:
   PCM * _pcm;
   double sampledPresetDuration();
   BeatDetect * beatDetect;
-  Renderer *renderer;
   PipelineContext * _pipelineContext;
   PipelineContext * _pipelineContext2;
   Settings _settings;
