@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="WASAPICapture.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="WASAPICaptureScenario.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="EyeTuneApp.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WASAPICapture.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="WASAPICaptureDeviceState.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="WASAPICaptureCommon.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="EyeTunePopUp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="EyeTunePlatformString.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="EyeTuneApp.h">
+      <Filter>src</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Assets\Logo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SmallLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\SplashScreen.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\StoreLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Assets\WideLogo.png">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="EyeTune.WindowsUniversal.Application_StoreKey.pfx" />
+    <None Include="EyeTune.WindowsUniversal.Application_TemporaryKey.pfx" />
+    <None Include="EyeTune_TemporaryKey.pfx" />
+    <None Include="packages.config" />
+    <None Include="Package.StoreAssociation.xml" />
+    <None Include="Assets\eyetune.psd">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\Logo.psd">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\SmallLogo.psd">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\SplashScreen.psd">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\StoreLogo.psd">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\WideLogo.psd">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="presets\UWP.milk">
+      <Filter>presets</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{60ab69da-03c4-4f82-bf1f-682f1d7dac0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{b3d1eca9-3162-463a-bf1a-76025dca1ba0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="presets">
+      <UniqueIdentifier>{7a1ffde6-ec51-4715-a293-20dae50255ff}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
