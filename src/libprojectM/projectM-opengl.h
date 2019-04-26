@@ -20,6 +20,14 @@
 #ifdef __APPLE__
 # include <OpenGL/gl3.h>
 # include <OpenGL/gl3ext.h>
+#elif defined(EYETUNE_WINRT)
+#define GL_GLEXT_PROTOTYPES
+#include <GLES3/gl31.h>
+#include <GLES3/gl3.h>
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
 #elif defined(_WIN32)
 # include <windows.h>
 #include "glew.h"
