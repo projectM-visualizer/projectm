@@ -35,7 +35,7 @@
 #define strcasecmp(s, t) _strcmpi(s, t)
 #endif
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER ) && !defined(EYETUNE_WINRT)
 	#pragma warning( disable : 4244 4305 4996; once : 4018 )
 	#define WIN32_LEAN_AND_MEAN
 	#define NOMINMAX
