@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Globals">
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <ItemsProjectGuid>{780438d3-f45d-40e5-9508-c7eff9ad376b}</ItemsProjectGuid>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);$(MSBuildThisFileDirectory)</AdditionalIncludeDirectories>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectCapability Include="SourceItemsFromImports" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\Param.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\BuiltinFuncs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\BuiltinParams.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\CustomShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\CustomWave.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\Eval.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\Expr.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\Func.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\IdlePreset.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\InitCond.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\MilkdropPreset.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\MilkdropPresetFactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\Param.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\Parser.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\PerFrameEqn.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\PerPixelEqn.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\PerPointEqn.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\MilkdropPresetFactory\PresetFrameIO.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\PresetFactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\ConfigFile.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\fftsg.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\KeyHandler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\PCM.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\PipelineMerger.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Preset.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\PresetChooser.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\PresetFactoryManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\PresetLoader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\projectM.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\BeatDetect.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\Filters.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\hlslparser\src\CodeWriter.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\hlslparser\src\Engine.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\hlslparser\src\GLSLGenerator.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\hlslparser\src\HLSLParser.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\hlslparser\src\HLSLTokenizer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\hlslparser\src\HLSLTree.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\MilkdropWaveform.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\PerlinNoise.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\PerPixelMesh.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\Pipeline.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\PipelineContext.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\Renderable.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\Renderer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\RenderItemDistanceMetric.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\RenderItemMatcher.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\Shader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\ShaderEngine.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\SOIL2\etc1_utils.c">
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\SOIL2\image_DXT.c">
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\SOIL2\image_helper.c">
+      <CompileAs>CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\SOIL2\SOIL2.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\Texture.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\TextureManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\VideoEcho.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\Renderer\Waveform.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\TimeKeeper.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\timer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\projectm\src\libprojectM\wipemalloc.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\packages.config" />
+  </ItemGroup>
+</Project>
