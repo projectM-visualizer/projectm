@@ -298,17 +298,10 @@ void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineCo
     }
 }
 
-void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext)
+void Renderer::RenderFrame(const Pipeline &pipeline, 
+const PipelineContext &pipelineContext)
 {
-    shaderEngine.RenderBlurTextures(pipeline, pipelineContext);
-
-    SetupPass1(pipeline, pipelineContext);
-
-    Interpolation(pipeline, pipelineContext);
-
-    RenderItems(pipeline, pipelineContext);
-
-    FinishPass1();
+    RenderFrameOnlyPass1(pipeline,pipelineContext);
 
     Pass2(pipeline, pipelineContext);
 }
@@ -337,6 +330,10 @@ void Renderer::RenderFrameOnlyPass2(const Pipeline &pipeline, const PipelineCont
     vstartx = 0;
     vstarty = 0;
 }
+
+
+
+
 void Renderer::Interpolation(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
     glActiveTexture(GL_TEXTURE0);
