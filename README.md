@@ -41,6 +41,9 @@ Helix
 [![Silverjuke](https://github.com/projectM-visualizer/projectm/raw/master/web/silverjuke.png)](https://www.silverjuke.net)
 Silverjuke (FOSS Jukebox)
 
+[![Silent Radiance](https://silentradiance.com/demos/projectM_vr/projectm_vr.png)](https://silentradiance.com)
+Silent Radiance Distance Disco
+
 ***
 
 ## Screenshots
@@ -60,6 +63,7 @@ Silverjuke (FOSS Jukebox)
 
 ![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.07%20AM.png)
 
+![Screenshot](https://silentradiance.com/demos/projectM_vr/projectm_vr.png)
 ***
 
 # Building from source

@@ -166,6 +166,9 @@ public:
   void projectM_resetTextures();
   void projectM_setTitle( std::string title );
   void renderFrame();
+  Pipeline * renderFrameOnlyPass1(Pipeline *pPipeline);
+  void renderFrameOnlyPass2(Pipeline *pPipeline,int xoffset,int yoffset,int eye);
+  void renderFrameEndOnSeparatePasses(Pipeline *pPipeline);
   unsigned initRenderToTexture();
   void key_handler( projectMEvent event,
 		    projectMKeycode keycode, projectMModifier modifier );

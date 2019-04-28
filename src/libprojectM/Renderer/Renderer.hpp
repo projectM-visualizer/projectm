@@ -71,6 +71,8 @@ public:
   ~Renderer();
 
   void RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext);
+  void RenderFrameOnlyPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
+  void RenderFrameOnlyPass2(const Pipeline &pipeline, const PipelineContext &pipelineContext,int xoffset,int yoffset,int eye);
   void ResetTextures();
   void reset(int w, int h);
   GLuint initRenderToTexture();
@@ -102,7 +104,12 @@ private:
 
   float* p;
 
-
+  int vstartx; /* view start x position - normally 0, but could be different if doing a subset of the window - like
+                  for virtual reality */
+  int vstarty; /* view start y position - normally 0, but could be different if doing a subset of the window - like
+                  for virtual reality */
+	       /* these are currently set only for rendering to the screen, not to the textbuffer */
+		  
   int vw;
   int vh;
 
