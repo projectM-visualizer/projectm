@@ -304,6 +304,25 @@ void projectM::evaluateSecondPreset()
 
 void projectM::renderFrame()
 {
+    Pipeline pipeline;
+    Pipeline *comboPipeline;
+    
+    comboPipeline = renderFrameOnlyPass1(&pipeline);
+    
+    renderFrameOnlyPass2(comboPipeline,0,0,0);
+    
+    projectM::renderFrameEndOnSeparatePasses(comboPipeline);
+}
+
+
+
+
+
+
+
+
+Pipeline * projectM::renderFrameOnlyPass1(Pipeline *pPipeline) /*pPipeline is a pointer to a Pipeline for use in pass 2. returns the pointer if it was used, else returns NULL */
+{
 #ifdef SYNC_PRESET_SWITCHES
     pthread_mutex_lock(&preset_mutex);
 #endif
@@ -333,8 +352,6 @@ void projectM::renderFrame()
     pipelineContext().presetStartTime = timeKeeper->PresetTimeA();
     pipelineContext().frame = timeKeeper->PresetFrameA();
     pipelineContext().progress = timeKeeper->PresetProgressA();
-
-    //m_activePreset->Render(*beatDetect, pipelineContext());
 
     beatDetect->detectFromSamples();
 
@@ -381,22 +398,20 @@ void projectM::renderFrame()
         evaluateSecondPreset();
 #endif
 
-        Pipeline pipeline;
 
-        pipeline.setStaticPerPixel(settings().meshX, settings().meshY);
+        pPipeline->setStaticPerPixel(settings().meshX, settings().meshY);
 
         assert(_matcher);
         PipelineMerger::mergePipelines( m_activePreset->pipeline(),
-                                        m_activePreset2->pipeline(), pipeline,
+                                        m_activePreset2->pipeline(), *pPipeline,
                                         _matcher->matchResults(),
                                         *_merger, timeKeeper->SmoothRatio());
 
-        renderer->RenderFrame(pipeline, pipelineContext());
+        renderer->RenderFrameOnlyPass1(*pPipeline, pipelineContext());
 
-        // mergePipelines() sets masterAlpha for each RenderItem, reset it before we forget
-        for (RenderItem *drawable : pipeline.drawables)
-            drawable->masterAlpha = 1.0;
-        pipeline.drawables.clear();
+
+        return pPipeline;
+
     }
     else
     {
@@ -411,8 +426,8 @@ void projectM::renderFrame()
         //printf("Normal\n");
 
         m_activePreset->Render(*beatDetect, pipelineContext());
-        renderer->RenderFrame (m_activePreset->pipeline(), pipelineContext());
-
+        renderer->RenderFrameOnlyPass1 (m_activePreset->pipeline(), pipelineContext());
+	return NULL; // indicating no transition
 
     }
 
@@ -421,6 +436,62 @@ void projectM::renderFrame()
 
 
 
+
+}
+
+
+
+
+
+/* eye is 0,or 1, or who knows?*/
+void projectM::renderFrameOnlyPass2(Pipeline *pPipeline,int xoffset,int yoffset,int eye) /*pPipeline can be null if we re not in transition */
+{
+/* eye is currently ignored */
+
+
+#ifdef DEBUG
+    char fname[1024];
+    FILE *f = NULL;
+    int index = 0;
+    int x, y;
+#endif
+
+    if (pPipeline) 
+//    if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
+    {
+        //	 printf("start thread\n");
+        assert ( m_activePreset2.get() );
+
+
+        /* was other stuff */
+	
+        renderer->RenderFrameOnlyPass2(*pPipeline, pipelineContext(),xoffset,yoffset,eye);
+
+    }
+    else
+    {
+
+
+        renderer->RenderFrameOnlyPass2 (m_activePreset->pipeline(), pipelineContext(),xoffset,yoffset,eye);
+
+
+    }
+
+}
+
+
+
+
+void projectM::renderFrameEndOnSeparatePasses(Pipeline *pPipeline) {
+
+    if (pPipeline) {
+       // mergePipelines() sets masterAlpha for each RenderItem, reset it before we forget
+       for (RenderItem *drawable : pPipeline->drawables) {
+           drawable->masterAlpha = 1.0;
+       }
+    pPipeline->drawables.clear();
+    }
+  
     count++;
 #ifndef WIN32
     /** Frame-rate limiter */
@@ -447,11 +518,10 @@ void projectM::renderFrame()
 #endif
 
 #endif /** !WIN32 */
-
 #ifdef SYNC_PRESET_SWITCHES
     pthread_mutex_unlock(&preset_mutex);
 #endif
-
+return;
 }
 
 void projectM::projectM_reset()
