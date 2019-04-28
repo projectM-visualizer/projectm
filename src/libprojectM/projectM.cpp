@@ -304,154 +304,14 @@ void projectM::evaluateSecondPreset()
 
 void projectM::renderFrame()
 {
-#ifdef SYNC_PRESET_SWITCHES
-    pthread_mutex_lock(&preset_mutex);
-#endif
-
-#ifdef DEBUG
-    char fname[1024];
-    FILE *f = NULL;
-    int index = 0;
-    int x, y;
-#endif
-
-    timeKeeper->UpdateTimers();
-/*
-    if (timeKeeper->IsSmoothing())
-    {
-        printf("Smoothing A:%f, B:%f, S:%f\n", timeKeeper->PresetProgressA(), timeKeeper->PresetProgressB(), timeKeeper->SmoothRatio());
-    }
-    else
-    {
-        printf("          A:%f\n", timeKeeper->PresetProgressA());
-    }*/
-
-    mspf= ( int ) ( 1000.0/ ( float ) settings().fps ); //milliseconds per frame
-
-    /// @bug who is responsible for updating this now?"
-    pipelineContext().time = timeKeeper->GetRunningTime();
-    pipelineContext().presetStartTime = timeKeeper->PresetTimeA();
-    pipelineContext().frame = timeKeeper->PresetFrameA();
-    pipelineContext().progress = timeKeeper->PresetProgressA();
-
-    //m_activePreset->Render(*beatDetect, pipelineContext());
-
-    beatDetect->detectFromSamples();
-
-    //m_activePreset->evaluateFrame();
-
-    //if the preset isn't locked and there are more presets
-    if ( renderer->noSwitch==false && !m_presetChooser->empty() )
-    {
-        //if preset is done and we're not already switching
-        if ( timeKeeper->PresetProgressA()>=1.0 && !timeKeeper->IsSmoothing())
-        {
-            if (settings().shuffleEnabled)
-                selectRandom(false);
-            else
-                selectNext(false);
-        }
-
-        else if ((beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) &&
-                 timeKeeper->CanHardCut())
-        {
-            // printf("Hard Cut\n");
-            if (settings().shuffleEnabled)
-                selectRandom(true);
-            else
-                selectNext(true);
-        }
-    }
-
-
-    if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
-    {
-        //	 printf("start thread\n");
-        assert ( m_activePreset2.get() );
-
-#ifdef USE_THREADS
-        worker_sync.wake_up_bg();
-#endif
-
-        m_activePreset->Render(*beatDetect, pipelineContext());
-
-#ifdef USE_THREADS
-        worker_sync.wait_for_bg_to_finish();
-#else
-        evaluateSecondPreset();
-#endif
-
-        Pipeline pipeline;
-
-        pipeline.setStaticPerPixel(settings().meshX, settings().meshY);
-
-        assert(_matcher);
-        PipelineMerger::mergePipelines( m_activePreset->pipeline(),
-                                        m_activePreset2->pipeline(), pipeline,
-                                        _matcher->matchResults(),
-                                        *_merger, timeKeeper->SmoothRatio());
-
-        renderer->RenderFrame(pipeline, pipelineContext());
-
-        // mergePipelines() sets masterAlpha for each RenderItem, reset it before we forget
-        for (RenderItem *drawable : pipeline.drawables)
-            drawable->masterAlpha = 1.0;
-        pipeline.drawables.clear();
-    }
-    else
-    {
-
-
-        if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() > 1.0 )
-        {
-            //printf("End Smooth\n");
-            m_activePreset = std::move(m_activePreset2);
-            timeKeeper->EndSmoothing();
-        }
-        //printf("Normal\n");
-
-        m_activePreset->Render(*beatDetect, pipelineContext());
-        renderer->RenderFrame (m_activePreset->pipeline(), pipelineContext());
-
-
-    }
-
-    //	std::cout<< m_activePreset->absoluteFilePath()<<std::endl;
-    //	renderer->presetName = m_activePreset->absoluteFilePath();
-
-
-
-    count++;
-#ifndef WIN32
-    /** Frame-rate limiter */
-    /** Compute once per preset */
-    if ( this->count%100==0 )
-    {
-        this->renderer->realfps=100.0/ ( ( getTicks ( &timeKeeper->startTime )-this->fpsstart ) /1000 );
-        this->fpsstart=getTicks ( &timeKeeper->startTime );
-    }
-
-#ifndef UNLOCK_FPS
-    int timediff = getTicks ( &timeKeeper->startTime )-this->timestart;
-
-    if ( timediff < this->mspf )
-    {
-        // printf("%s:",this->mspf-timediff);
-        int sleepTime = ( unsigned int ) ( this->mspf-timediff ) * 1000;
-        //		DWRITE ( "usleep: %d\n", sleepTime );
-        if ( sleepTime > 0 && sleepTime < 100000 )
-        {
-            if ( usleep ( sleepTime ) != 0 ) {}}
-    }
-    this->timestart=getTicks ( &timeKeeper->startTime );
-#endif
-
-#endif /** !WIN32 */
-
-#ifdef SYNC_PRESET_SWITCHES
-    pthread_mutex_unlock(&preset_mutex);
-#endif
-
+    Pipeline pipeline;
+    Pipeline *comboPipeline;
+    
+    comboPipeline = renderFrameOnlyPass1(&pipeline);
+    
+    renderFrameOnlyPass2(comboPipeline,0,0,0);
+    
+    projectM::renderFrameEndOnSeparatePasses(comboPipeline);
 }
 
 
@@ -459,18 +319,6 @@ void projectM::renderFrame()
 
 
 
-/* This alternate rendering is as possible:
-Pipeline pipeline;
-Pipeline *comboPipeline;
-comboPipeline = renderFrameOnlyPass1(&pipeline);
-
-for each eye:
-  renderFrameOnlyPass2(comboPipeline,xoffset,yoffset,eye);
-  
-Then
-renderFrameEndOnSeparatePasses(comboPipeline); 
-for the accounting and releasing the mutex
-*/
 
 
 Pipeline * projectM::renderFrameOnlyPass1(Pipeline *pPipeline) /*pPipeline is a pointer to a Pipeline for use in pass 2. returns the pointer if it was used, else returns NULL */
