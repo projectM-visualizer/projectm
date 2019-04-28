@@ -34,6 +34,10 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetec
     this->studio = false;
     this->realfps = 0;
 
+    /* Set up the v xoffset and vy offset to 0 which is normal Only used for VR */
+    this->vstartx = 0;
+    this->vstarty = 0;
+
     this->drawtitle = 0;
 
     //this->title = "Unknown";
@@ -256,7 +260,7 @@ void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineCo
         glViewport(0, 0, texsizeX, texsizeY);
     }
     else
-        glViewport(0, 0, this->vw, this->vh);
+        glViewport(vstartx, vstarty, this->vw, this->vh);
 
     if (shaderEngine.enableCompositeShader(currentPipe->compositeShader, pipeline, pipelineContext)) {
         CompositeShaderOutput(pipeline, pipelineContext);
@@ -309,6 +313,30 @@ void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipe
     Pass2(pipeline, pipelineContext);
 }
 
+void Renderer::RenderFrameOnlyPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext)
+{
+    shaderEngine.RenderBlurTextures(pipeline, pipelineContext);
+
+    SetupPass1(pipeline, pipelineContext);
+
+    Interpolation(pipeline, pipelineContext);
+
+    RenderItems(pipeline, pipelineContext);
+
+    FinishPass1();
+}
+
+
+void Renderer::RenderFrameOnlyPass2(const Pipeline &pipeline, const PipelineContext &pipelineContext,int xoffset,int yoffset,int eye)
+{
+    /* draw in a certain range of the screen */
+    vstartx = xoffset;
+    vstarty = yoffset;
+    // ignore eye
+    Pass2(pipeline, pipelineContext);
+    vstartx = 0;
+    vstarty = 0;
+}
 void Renderer::Interpolation(const Pipeline &pipeline, const PipelineContext &pipelineContext)
 {
     glActiveTexture(GL_TEXTURE0);
@@ -442,7 +470,7 @@ void Renderer::reset(int w, int h)
 
     glClearColor(0, 0, 0, 0);
 
-    glViewport(0, 0, w, h);
+    glViewport(vstartx,vstarty, w, h);
 
     glEnable(GL_BLEND);
 
@@ -697,7 +725,7 @@ void Renderer::draw_stats()
     other_font->Render(buffer);
 
     glRasterPos2f(0, -.13 + offset);
-    sprintf(buffer, "      viewport: %d x %d", vw, vh);
+    sprintf(buffer, "      viewport: +%d,%d %d x %d", vstartx,vstarty,vw, vh);
 
     other_font->Render(buffer);
     glRasterPos2f(0, -.17 + offset);
