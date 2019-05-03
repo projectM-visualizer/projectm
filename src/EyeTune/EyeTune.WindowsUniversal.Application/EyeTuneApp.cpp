@@ -174,6 +174,7 @@ void App::RecreateRenderer()
 		std::string base_path = converted_str;
 		// settings.presetURL = base_path + "\\presets_great\\";
 		settings.presetURL = base_path + "\\presets\\";
+		settings.presetURL = base_path;
 		//        settings.presetURL = base_path + "presets/presets_shader_test";
 		settings.menuFontURL = base_path + "fonts/Vera.ttf";
 		settings.titleFontURL = base_path + "fonts/Vera.ttf";
