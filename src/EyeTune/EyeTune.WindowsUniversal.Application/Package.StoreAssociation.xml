@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <StoreAssociation xmlns="http://schemas.microsoft.com/appx/2010/storeassociation">
-  <Publisher>CN=272C27CF-052F-4A95-9E3B-7B86DU92CC37</Publisher>
+  <Publisher>CN=272C27CF-652F-4A95-9E3B-7A86D492CC37</Publisher>
   <PublisherDisplayName>Mancoast Research Institute</PublisherDisplayName>
   <DeveloperAccountType>MSA</DeveloperAccountType>
   <GeneratePackageHash>http://www.w3.org/2001/04/xmlenc#sha256</GeneratePackageHash>
@@ -364,12 +364,14 @@
       <ReservedName>EyeTune</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
-  <AccountPackageIdentityNames />
-  <PackageInfoList LandingUrl="https://www.microsoft.com/en-us/p/eyetune/9ndcvh0vcwjn">
+  <AccountPackageIdentityNames>
+    <MainPackageIdentityName>13183Mancoast.projectM</MainPackageIdentityName>
+  </AccountPackageIdentityNames>
+  <PackageInfoList LandingUrl="https://developer.microsoft.com/dashboard/Application?appId=9NDCVH0VCWJN">
     <PackageInfo>
       <OsMinVersion>0.0.0.0</OsMinVersion>
       <PackageArchitecture>X64</PackageArchitecture>
-      <PackageMaxArchitectureVersion>0.7.17.0</PackageMaxArchitectureVersion>
+      <PackageMaxArchitectureVersion>0.7.19.0</PackageMaxArchitectureVersion>
     </PackageInfo>
   </PackageInfoList>
 </StoreAssociation>
