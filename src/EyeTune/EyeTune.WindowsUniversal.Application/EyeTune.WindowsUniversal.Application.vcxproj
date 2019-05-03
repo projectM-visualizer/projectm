@@ -62,7 +62,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>EyeTune.WindowsUniversal.Application_StoreKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>633C5524243E1059BABC3BA37297096AABB819F5</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>F028129AF0FD6CEAE10087B60F5EF5406EE27823</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
@@ -148,38 +148,102 @@
     <None Include="EyeTune.WindowsUniversal.Application_StoreKey.pfx" />
     <None Include="EyeTune.WindowsUniversal.Application_TemporaryKey.pfx" />
     <None Include="EyeTune_TemporaryKey.pfx" />
-    <None Include="presets\UWP.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen %26 fiSHbRaiN + flexi + Geiss + shifter - Stonecraft (Beetle Relief mix).milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen %26 flexi + Geiss + martin + Rovastar - Tides (martin's metallics).milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen + Geiss + Martin - Ouboros (Metal Finish 2).milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Adam Eatit Mashup FX 2 martin - disco mix + Lodus + Geiss + Ludicrous speed + Baked Ft another AdamFX Mashup 7_1.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\martin - soma in pink.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\New Creation Sensation -  AdamFx,Flexi,Amandio c n Martin - Star to Another World ft Hexocollie  n Shadow Harlequin n Geiss B.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\ORB - Acid Cycle Gas Giant.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\ORB - Nova Sunrise.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\ORB - Saturns Rings.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Rovastar %26 StudioMusic - More Cherished Desires.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\fed - slowfast 1.1 (geiss composite remix).milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\fiShbRaiN - toffee cream and icing sugar.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Flexi - supersonic.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Fvese - Snowflake Like 2.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Fvese - The Tunnel (Final Stage Mix).milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Geiss - Luz.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Geiss - Mega Swirl 3.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Goody - Vertigo.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\hexcollie - Alex2.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\martin - sparky caleidoscope.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\NeW Adam Master Mashup FX 2 Geiss and Zylot - Reaction Diffusion 3 (Overload Mix 2) AMAZING MASUP .milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\ORB - Mega Spectrum.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\phat_It'sJustNumbers_remix3.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Rovastar - VooV's Movement.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen %26 Geiss + TobiasWolfBoi - Space Gelatin (Color Xplosion).milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\StudioMusic Aderrasi %26 nil - LA movement (Intellectual Sens.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\TEcHNO and SandStorm - Psychodelic Highway.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Telek - Flicker (@xis).milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Unchained - Perverted Dialect.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Zylot - Inside The Planar Portal.milk"><DeploymentContent>true</DeploymentContent></None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Zylot - The Deeper.milk"><DeploymentContent>true</DeploymentContent></None>
+    <None Include="presets\UWP.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen %26 fiSHbRaiN + flexi + Geiss + shifter - Stonecraft (Beetle Relief mix).milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen %26 flexi + Geiss + martin + Rovastar - Tides (martin's metallics).milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen + Geiss + Martin - Ouboros (Metal Finish 2).milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Adam Eatit Mashup FX 2 martin - disco mix + Lodus + Geiss + Ludicrous speed + Baked Ft another AdamFX Mashup 7_1.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\martin - soma in pink.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\New Creation Sensation -  AdamFx,Flexi,Amandio c n Martin - Star to Another World ft Hexocollie  n Shadow Harlequin n Geiss B.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\ORB - Acid Cycle Gas Giant.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\ORB - Nova Sunrise.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\ORB - Saturns Rings.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Rovastar %26 StudioMusic - More Cherished Desires.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\fed - slowfast 1.1 (geiss composite remix).milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\fiShbRaiN - toffee cream and icing sugar.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Flexi - supersonic.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Fvese - Snowflake Like 2.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Fvese - The Tunnel (Final Stage Mix).milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Geiss - Luz.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Geiss - Mega Swirl 3.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Goody - Vertigo.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\hexcollie - Alex2.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\martin - sparky caleidoscope.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\NeW Adam Master Mashup FX 2 Geiss and Zylot - Reaction Diffusion 3 (Overload Mix 2) AMAZING MASUP .milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\ORB - Mega Spectrum.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\phat_It'sJustNumbers_remix3.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Rovastar - VooV's Movement.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen %26 Geiss + TobiasWolfBoi - Space Gelatin (Color Xplosion).milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\StudioMusic Aderrasi %26 nil - LA movement (Intellectual Sens.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\TEcHNO and SandStorm - Psychodelic Highway.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Telek - Flicker (@xis).milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Unchained - Perverted Dialect.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Zylot - Inside The Planar Portal.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Zylot - The Deeper.milk">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\projectM.WindowsUniversal.SharedLibrary\projectM.WindowsUniversal.SharedLibrary.vcxproj">
