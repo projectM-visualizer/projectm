@@ -16,7 +16,7 @@ Its purpose in life is to read in audio input and produce mesmerizing visuals, d
 * Qt5 + Pulseaudio
 * [ALSA, xmms, winamp, jack](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
 * [iTunes plugin (macOS)](https://github.com/projectM-visualizer/projectm/releases/tag/v0.9.1-beta)
-* Windows (in progress)
+* [Windows](https://www.microsoft.com/en-us/p/eyetune/9ndcvh0vcwjn)
 
 ### Download
 Get it from the [Releases](https://github.com/projectM-visualizer/projectm/releases) tab
