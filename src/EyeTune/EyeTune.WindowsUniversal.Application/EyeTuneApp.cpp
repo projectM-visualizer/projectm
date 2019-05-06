@@ -154,7 +154,7 @@ void App::RecreateRenderer()
 		settings.fps = 60;
 		settings.smoothPresetDuration = 3; // seconds
 		settings.presetDuration = 30; // seconds
-		settings.beatSensitivity = 1.5;
+		settings.beatSensitivity = .9;
 		settings.aspectCorrection = 1;
 		settings.shuffleEnabled = 1;
 		settings.softCutRatingsEnabled = 1; // ???
@@ -174,7 +174,7 @@ void App::RecreateRenderer()
 		std::string base_path = converted_str;
 		// settings.presetURL = base_path + "\\presets_great\\";
 		settings.presetURL = base_path + "\\presets\\";
-		settings.presetURL = base_path;
+		// settings.presetURL = base_path;
 		//        settings.presetURL = base_path + "presets/presets_shader_test";
 		settings.menuFontURL = base_path + "fonts/Vera.ttf";
 		settings.titleFontURL = base_path + "fonts/Vera.ttf";

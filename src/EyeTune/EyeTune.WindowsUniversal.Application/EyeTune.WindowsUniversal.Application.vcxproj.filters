@@ -49,14 +49,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <AppxManifest Include="Package.appxmanifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="EyeTune.WindowsUniversal.Application_StoreKey.pfx" />
-    <None Include="EyeTune.WindowsUniversal.Application_TemporaryKey.pfx" />
-    <None Include="EyeTune_TemporaryKey.pfx" />
-    <None Include="packages.config" />
-    <None Include="Package.StoreAssociation.xml" />
     <None Include="Assets\eyetune.psd">
       <Filter>Assets</Filter>
     </None>
@@ -171,6 +163,21 @@
     <None Include="..\..\..\presets\presets_tryptonaut\Zylot - The Deeper.milk">
       <Filter>presets</Filter>
     </None>
+    <None Include="EyeTune.WindowsUniversal.Application_StoreKey.pfx">
+      <Filter>package</Filter>
+    </None>
+    <None Include="EyeTune.WindowsUniversal.Application_TemporaryKey.pfx">
+      <Filter>package</Filter>
+    </None>
+    <None Include="EyeTune_TemporaryKey.pfx">
+      <Filter>package</Filter>
+    </None>
+    <None Include="Package.StoreAssociation.xml">
+      <Filter>package</Filter>
+    </None>
+    <None Include="packages.config">
+      <Filter>package</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
@@ -182,5 +189,13 @@
     <Filter Include="presets">
       <UniqueIdentifier>{7a1ffde6-ec51-4715-a293-20dae50255ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="package">
+      <UniqueIdentifier>{cdd5ddcd-e49d-4fa3-9984-499af3bb9b8b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest">
+      <Filter>package</Filter>
+    </AppxManifest>
   </ItemGroup>
 </Project>
