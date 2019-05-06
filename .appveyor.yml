@@ -26,27 +26,30 @@ init:
 platform:
   - x64
 #  - ARM
+#  - Win32
+
 # add several configurations to build matrix:
 configuration:
   - Release
-  - Debug
+#  - Debug
 #  - AnalysisRelease
 matrix:
   allow_failures:
-#    - platform: ARM
+    - platform: ARM
     - platform: Win32
-#    - configuration: AnalysisRelease
     - configuration: Debug
 
 # scripts to run before build
 before_build:
 # packages from nuget
   - nuget restore %APPVEYOR_BUILD_FOLDER%\msvc\projectM.sln
+  - nuget restore %APPVEYOR_BUILD_FOLDER%\src\EyeTune.WindowsUniversal.Application.sln
 
 # use custom build_script
 build_script:
 - ECHO BUILD %CONFIGURATION% %PLATFORM%
 - ps: msbuild $env:APPVEYOR_BUILD_FOLDER\msvc\projectM.sln /m /p:Configuration=$env:CONFIGURATION /p:Platform=$env:PLATFORM /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+- ps: msbuild $env:APPVEYOR_BUILD_FOLDER\src\EyeTune.WindowsUniversal.Application.sln /m /p:Configuration=$env:CONFIGURATION /p:Platform=$env:PLATFORM /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 # scripts to run after build
 after_build:
