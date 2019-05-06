@@ -151,6 +151,9 @@
     <None Include="presets\UWP.milk" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </None>
+	<None Include="..\..\..\presets\presets_tryptonaut\EoS - dark side of the moon (plus a few more hits and a pill).milk" Link="presets\%(Filename)%(Extension)">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen %26 fiSHbRaiN + flexi + Geiss + shifter - Stonecraft (Beetle Relief mix).milk" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </None>
