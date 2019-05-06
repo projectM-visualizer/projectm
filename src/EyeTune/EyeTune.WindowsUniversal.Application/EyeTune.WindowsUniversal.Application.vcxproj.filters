@@ -349,9 +349,6 @@
     <None Include="..\..\..\presets\presets_tryptonaut\Adam Eatit Mashup FX 2 martin - disco mix + Lodus + Geiss + Ludicrous speed + Aderrasi 2_1.milk">
       <Filter>Presets\presets_tryptonaut</Filter>
     </None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Adam Eatit Mashup FX 2 martin - disco mix + Lodus + Geiss + Ludicrous speed + Eos Ft Flexi n Hexocollie + Baked + Santa Fucking Claus.milk">
-      <Filter>Presets\presets_tryptonaut</Filter>
-    </None>
     <None Include="..\..\..\presets\presets_tryptonaut\Adam Fx 2 Zylot - Age of Science Fierceness 16 - mash0000 - gerber full heaving baby.milk">
       <Filter>Presets\presets_tryptonaut</Filter>
     </None>
@@ -3121,9 +3118,6 @@
     <None Include="..\..\..\presets\presets_tryptonaut\Shreyas - Carnival.milk">
       <Filter>Presets\presets_tryptonaut</Filter>
     </None>
-    <None Include="..\..\..\presets\presets_tryptonaut\skipper skipper kiss me hard - if it weren%27t for you wonderful role playing %27people%27 parts of my solipsistic overmind, i%27d be ungrateful.milk">
-      <Filter>Presets\presets_tryptonaut</Filter>
-    </None>
     <None Include="..\..\..\presets\presets_tryptonaut\skipper skipper kiss me hard - thank god for martin nitorami - tgfmn.milk">
       <Filter>Presets\presets_tryptonaut</Filter>
     </None>
@@ -3299,9 +3293,6 @@
       <Filter>Presets\presets_tryptonaut</Filter>
     </None>
     <None Include="..\..\..\presets\presets_tryptonaut\suksma - diploautomatic autoimmunity vs passivematic aggpressive - float dev.milk">
-      <Filter>Presets\presets_tryptonaut</Filter>
-    </None>
-    <None Include="..\..\..\presets\presets_tryptonaut\suksma - eternal pain and misery is a small price to pay for being able to say i destroyed you - masticate my bowels like you%27re bored.milk">
       <Filter>Presets\presets_tryptonaut</Filter>
     </None>
     <None Include="..\..\..\presets\presets_tryptonaut\suksma - feign shoulder concern when i should be executed - everything is eternally shrinking.milk">
@@ -5086,6 +5077,9 @@
     <None Include="..\..\..\presets\presets_bltc201\Zylot &amp; Rovastar - Sully%27s Trip (The Worstest Mix).milk">
       <Filter>Presets\presets_bltc201</Filter>
     </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Adam Eatit Mashup FX 2 martin-discomix+Lodus+Geiss+Ludicrousspeed+EosFtFlexinHexocollie+Baked+SantaFuckingClaus.milk" />
+    <None Include="..\..\..\presets\presets_tryptonaut\skipper skipper kiss me hard - ifitweren%27tforyouwonderfulroleplaying%27people%27partsofmysolipsisticovermind,i%27dbeungrateful.milk" />
+    <None Include="..\..\..\presets\presets_tryptonaut\suksma-eternalpainandmiseryisasmallpricetopayforbeingabletosayidestroyedyou-masticatemybowelslikeyou%27rebored.milk" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">

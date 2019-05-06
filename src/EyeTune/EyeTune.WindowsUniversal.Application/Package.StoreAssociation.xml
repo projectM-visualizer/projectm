@@ -362,16 +362,17 @@
     <MainPackageIdentityName>13183Mancoast.EyeTune</MainPackageIdentityName>
     <ReservedNames>
       <ReservedName>EyeTune</ReservedName>
+      <ReservedName>Milkdrop</ReservedName>
+      <ReservedName>projectM</ReservedName>
+      <ReservedName>Visualized</ReservedName>
     </ReservedNames>
   </ProductReservedInfo>
-  <AccountPackageIdentityNames>
-    <MainPackageIdentityName>13183Mancoast.projectM</MainPackageIdentityName>
-  </AccountPackageIdentityNames>
+  <AccountPackageIdentityNames />
   <PackageInfoList LandingUrl="https://developer.microsoft.com/dashboard/Application?appId=9NDCVH0VCWJN">
     <PackageInfo>
       <OsMinVersion>0.0.0.0</OsMinVersion>
       <PackageArchitecture>X64</PackageArchitecture>
-      <PackageMaxArchitectureVersion>0.7.19.0</PackageMaxArchitectureVersion>
+      <PackageMaxArchitectureVersion>0.7.21.0</PackageMaxArchitectureVersion>
     </PackageInfo>
   </PackageInfoList>
 </StoreAssociation>
