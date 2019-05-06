@@ -49,7 +49,7 @@ before_build:
 build_script:
 - ECHO BUILD %CONFIGURATION% %PLATFORM%
 - ps: msbuild $env:APPVEYOR_BUILD_FOLDER\msvc\projectM.sln /m /p:Configuration=$env:CONFIGURATION /p:Platform=$env:PLATFORM /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-- ps: msbuild $env:APPVEYOR_BUILD_FOLDER\src\EyeTune.WindowsUniversal.Application.sln /m /p:Configuration=$env:CONFIGURATION /p:Platform=$env:PLATFORM /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+- ps: msbuild $env:APPVEYOR_BUILD_FOLDER\src\EyeTune.WindowsUniversal.Application.sln /m /p:Configuration=$env:CONFIGURATION /p:Platform=$env:PLATFORM /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" /p:AppxPackage=false
 
 # scripts to run after build
 after_build:
