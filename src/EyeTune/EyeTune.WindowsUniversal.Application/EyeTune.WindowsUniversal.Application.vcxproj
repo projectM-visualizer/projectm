@@ -116,79 +116,79 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Image Include="..\..\..\presets\presets_tryptonaut\cells.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\cells.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\clouds.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\clouds.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\clouds2.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\clouds2.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\facade01.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\facade01.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\headphones.tga" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\headphones.tga" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\heart.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\heart.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\Image415.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\Image415.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\kaite.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\kaite.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\lichen.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\lichen.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\M.tga" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\M.tga" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\manyfish.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\manyfish.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\onefish.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\onefish.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\paper.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\paper.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\prayerwheel.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\prayerwheel.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\project.tga" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\project.tga" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\ruin.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\ruin.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\seaweed.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\seaweed.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\sky.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\sky.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\smalltiled_colors3.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\smalltiled_colors3.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\smalltiled_electric_nebula.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\smalltiled_electric_nebula.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\smalltiled_ensign_meat.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\smalltiled_ensign_meat.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\smalltiled_lizard_scales.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\smalltiled_lizard_scales.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\sunrise.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\sunrise.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\Tux.tga" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\Tux.tga" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
-    <Image Include="..\..\..\presets\presets_tryptonaut\wrenches.jpg" Link="presets_tryptonaut\%(Filename)%(Extension)">
+    <Image Include="..\..\..\presets\presets_tryptonaut\wrenches.jpg" Link="presets\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="Assets\Logo.png" />
