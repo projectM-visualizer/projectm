@@ -1783,9 +1783,6 @@
     <None Include="..\..\..\presets\presets_tryptonaut\Hexcollie - wings.milk">
       <Filter>presets_tryptonaut</Filter>
     </None>
-    <None Include="..\..\..\presets\presets_tryptonaut\hexcollie(1), goody(3), stahlregen(3), fed(1) - 2nd collaboration(ps2.0) - 8.milk">
-      <Filter>presets_tryptonaut</Filter>
-    </None>
     <None Include="..\..\..\presets\presets_tryptonaut\Hexcollie, Aderassi, BDRV, AdamFX n Flexi - It%27s a start.milk">
       <Filter>presets_tryptonaut</Filter>
     </None>
@@ -2216,9 +2213,6 @@
       <Filter>presets_tryptonaut</Filter>
     </None>
     <None Include="..\..\..\presets\presets_tryptonaut\Martin - wire dance.milk">
-      <Filter>presets_tryptonaut</Filter>
-    </None>
-    <None Include="..\..\..\presets\presets_tryptonaut\martin + flexi - diamond cutter [prismaticvortex.com] - camille - i wish i wish i wish i was constrained.milk">
       <Filter>presets_tryptonaut</Filter>
     </None>
     <None Include="..\..\..\presets\presets_tryptonaut\martin + suksma + fed + goody and others - blarfff [Zebra puke mash-up by Stahlregen].milk">
@@ -3205,12 +3199,6 @@
     <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen &amp; flexi - mash0000 - engage the mind in dissolving crusts.milk">
       <Filter>presets_tryptonaut</Filter>
     </None>
-    <None Include="..\..\..\presets\presets_tryptonaut\stahlregen &amp; flexi + geiss - tiger no.5 (mashup 16 - random texture flow) - inf fin bnd.milk">
-      <Filter>presets_tryptonaut</Filter>
-    </None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen &amp; Flexi + Geiss - Tiger No.5 (Random texture flow).milk">
-      <Filter>presets_tryptonaut</Filter>
-    </None>
     <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen &amp; flexi + Geiss + Rovastar + Shifter - Even More Fractals for Hexcollie (Reflecto Fcukup).milk">
       <Filter>presets_tryptonaut</Filter>
     </None>
@@ -3218,9 +3206,6 @@
       <Filter>presets_tryptonaut</Filter>
     </None>
     <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen &amp; Geiss - MashUp 16 (Seizure-Inducing Confetti Kaleidoscope RMX).milk">
-      <Filter>presets_tryptonaut</Filter>
-    </None>
-    <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen &amp; Geiss - Tiger No.5 (Seizure-Inducing Confetti Kaleidoscope RMX)_2.milk">
       <Filter>presets_tryptonaut</Filter>
     </None>
     <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen &amp; Geiss + EoS + Martin + Rovastar - Halcyon Jelly Skin.milk">
@@ -3845,6 +3830,21 @@
       <Filter>presets</Filter>
     </None>
     <None Include="..\..\..\presets\presets_tryptonaut\beta106s + Phat - sentinel linearity b nz+ mbinistre ov mbajiq.milk">
+      <Filter>presets_tryptonaut</Filter>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\hexcollie(1), goody(3), stahlregen(3), fed(1) - 2nd collaboration(ps2) - 8.milk">
+      <Filter>presets_tryptonaut</Filter>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\martin + flexi - diamond cutter [prismaticvortex-com] - camille - i wish i wish i wish i was constrained.milk">
+      <Filter>presets_tryptonaut</Filter>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\stahlregen &amp; flexi + geiss - tiger no 5 (mashup 16 - random texture flow) - inf fin bnd.milk">
+      <Filter>presets_tryptonaut</Filter>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen &amp; Flexi + Geiss - Tiger No 5 (Random texture flow).milk">
+      <Filter>presets_tryptonaut</Filter>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Stahlregen &amp; Geiss - Tiger No 5 (Seizure-Inducing Confetti Kaleidoscope RMX)_2.milk">
       <Filter>presets_tryptonaut</Filter>
     </None>
   </ItemGroup>
