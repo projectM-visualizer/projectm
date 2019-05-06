@@ -253,10 +253,6 @@
     <None Include="packages.config">
       <Filter>package</Filter>
     </None>
-    <None Include="..\..\..\presets\presets_tryptonaut\EoS - dark side of the moon (plus a few more hits and a pill).milk" />
-    <None Include="..\..\..\presets\presets_tryptonaut\EoS - pointfield 04 arcs demon_phat edit_v3.milk" />
-    <None Include="..\..\..\presets\presets_tryptonaut\EoS+Phat - Arm_upgrades - transformer.milk" />
-    <None Include="..\..\..\presets\presets_tryptonaut\Martin N AdamFX Infusion = Phat+Yin+EoS_Mandala Chaser Ft AdamFX n Martin - The Beast Mandala Chaser FX H.milk" />
     <None Include="..\..\..\presets\presets_tryptonaut\!!!---flexi + amandio c - organic12-3d-2.milk">
       <Filter>presets_tryptonaut</Filter>
     </None>
@@ -633,9 +629,6 @@
       <Filter>presets_tryptonaut</Filter>
     </None>
     <None Include="..\..\..\presets\presets_tryptonaut\beta106 River of Illusion Dillusion [Bubble].milk">
-      <Filter>presets_tryptonaut</Filter>
-    </None>
-    <None Include="..\..\..\presets\presets_tryptonaut\beta106.S. + Phat - sentinel linearity b nz+ mbinistre ov mbajiq.milk">
       <Filter>presets_tryptonaut</Filter>
     </None>
     <None Include="..\..\..\presets\presets_tryptonaut\beta106i - Airhandler (Last Breath - Crab Handler).milk">
@@ -3837,6 +3830,21 @@
       <Filter>presets_tryptonaut</Filter>
     </None>
     <None Include="..\..\..\presets\presets_tryptonaut\Zylot and Rovastar - Iouo Stone Morphic Fusion.milk">
+      <Filter>presets_tryptonaut</Filter>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\EoS - dark side of the moon (plus a few more hits and a pill).milk">
+      <Filter>presets</Filter>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\EoS - pointfield 04 arcs demon_phat edit_v3.milk">
+      <Filter>presets</Filter>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\EoS+Phat - Arm_upgrades - transformer.milk">
+      <Filter>presets</Filter>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\Martin N AdamFX Infusion = Phat+Yin+EoS_Mandala Chaser Ft AdamFX n Martin - The Beast Mandala Chaser FX H.milk">
+      <Filter>presets</Filter>
+    </None>
+    <None Include="..\..\..\presets\presets_tryptonaut\beta106s + Phat - sentinel linearity b nz+ mbinistre ov mbajiq.milk">
       <Filter>presets_tryptonaut</Filter>
     </None>
   </ItemGroup>
