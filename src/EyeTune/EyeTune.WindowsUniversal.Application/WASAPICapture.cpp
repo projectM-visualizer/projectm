@@ -783,7 +783,7 @@ HRESULT WASAPICapture::ProcessScopeData( BYTE* pData, DWORD cbBytes )
     pi16 = (INT16*)pData;
 
 
-	if (dwNumPoints > 256) dwNumPoints = 256;
+	// if (dwNumPoints > 256) dwNumPoints = 256;
 	m_app->pcm()->addPCM16Data(pi16, dwNumPoints);
 
 	return hr;
