@@ -62,7 +62,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>EyeTune.WindowsUniversal.Application_StoreKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>F028129AF0FD6CEAE10087B60F5EF5406EE27823</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>8DA36A960A0CA32B48F8FCC25DA5207995AEE892</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
