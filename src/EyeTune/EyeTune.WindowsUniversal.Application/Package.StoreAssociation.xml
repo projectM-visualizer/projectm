@@ -372,7 +372,7 @@
     <PackageInfo>
       <OsMinVersion>0.0.0.0</OsMinVersion>
       <PackageArchitecture>X64</PackageArchitecture>
-      <PackageMaxArchitectureVersion>0.7.21.0</PackageMaxArchitectureVersion>
+      <PackageMaxArchitectureVersion>0.7.28.0</PackageMaxArchitectureVersion>
     </PackageInfo>
   </PackageInfoList>
 </StoreAssociation>
