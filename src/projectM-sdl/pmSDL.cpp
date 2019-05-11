@@ -31,6 +31,9 @@ void projectMSDL::audioInputCallbackS16(void *userdata, unsigned char *stream, i
 }
 
 SDL_AudioDeviceID projectMSDL::selectAudioInput(int _count) {
+    // TODO: implement some sort of UI allowing the user to select which audio input device they would like to use
+    
+    
     // ask the user which capture device to use
     // printf("Please select which audio input to use:\n");
     printf("Detected devices:\n");
@@ -59,7 +62,7 @@ int projectMSDL::openAudioInput() {
     SDL_AudioDeviceID selectedAudioDevice = 0;  // device to open
     if (count2 > 1) {
         // need to choose which input device to use
-	selectedAudioDevice = selectAudioInput(count2);
+        selectedAudioDevice = selectAudioInput(count2);
 	if (selectedAudioDevice > count2) {
             SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio input device specified.");
             SDL_Quit();
@@ -86,7 +89,7 @@ int projectMSDL::openAudioInput() {
     }
 
     // read characteristics of opened capture device
-    SDL_Log("Opened audio capture device %i: %s", audioDeviceID, SDL_GetAudioDeviceName(selectedAudioDevice, true));
+    SDL_Log("Opened audio capture device index=%i devId=%i: %s", selectedAudioDevice, audioDeviceID, SDL_GetAudioDeviceName(selectedAudioDevice, true));
     SDL_Log("Sample rate: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
     audioChannelsCount = have.channels;
     audioSampleRate = have.freq;
