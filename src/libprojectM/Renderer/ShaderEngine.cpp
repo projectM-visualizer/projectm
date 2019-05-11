@@ -1154,7 +1154,7 @@ bool ShaderEngine::loadPresetShaders(Pipeline &pipeline, const std::string & pre
             ok = false;
         }
     }
-    
+
     if (!pipeline.compositeShader.programSource.empty()) {
         programID_presetComp = loadPresetShader(PresentCompositeShader, pipeline.compositeShader, pipeline.compositeShaderFilename);
         if (programID_presetComp != GL_FALSE) {
@@ -1184,10 +1184,10 @@ GLuint ShaderEngine::loadPresetShader(const ShaderEngine::PresentShaderType shad
 void ShaderEngine::disablePresetShaders() {
     if (presetCompShaderLoaded)
         glDeleteProgram(programID_presetComp);
-    
+
     if (presetWarpShaderLoaded)
         glDeleteProgram(programID_presetWarp);
-    
+
     presetCompShaderLoaded = false;
     presetWarpShaderLoaded = false;
 }
@@ -1246,10 +1246,10 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
     glCompileShader(FragmentShaderID);
     checkCompileStatus(FragmentShaderID, "Fragment: " + shaderTypeString);
 
-    
+
     // Link the program
     GLuint programID = glCreateProgram();
-    
+
     glAttachShader(programID, VertexShaderID);
     glAttachShader(programID, FragmentShaderID);
     bool linkOK = linkProgram(programID);
