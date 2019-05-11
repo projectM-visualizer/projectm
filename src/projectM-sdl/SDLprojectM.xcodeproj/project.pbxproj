@@ -140,12 +140,10 @@
 
 /* Begin PBXFileReference section */
 		1612C98C207A807000862A3A /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
-		1612CA10207A8D2400862A3A /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shaders; sourceTree = "<group>"; };
 		166853F02105E2850042793A /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		166853F22105E2CF0042793A /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
 		168F714921120210001806E7 /* projectM SDL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "projectM SDL.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		168F714B21120211001806E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		168F717621125ED8001806E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		168F717F21126256001806E7 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
 		169501FF1F7009E9008FAF86 /* pmSDL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pmSDL.hpp; sourceTree = "<group>"; };
@@ -225,7 +223,6 @@
 		168F717521125ED8001806E7 /* projectM */ = {
 			isa = PBXGroup;
 			children = (
-				168F717621125ED8001806E7 /* Info.plist */,
 			);
 			path = projectM;
 			sourceTree = "<group>";
@@ -252,7 +249,6 @@
 				16B52AAA21105A6900830F34 /* config.inp */,
 				16B52AA8211054E900830F34 /* projectMSDL-pkg.plist */,
 				166853F02105E2850042793A /* SDL2.framework */,
-				1612CA10207A8D2400862A3A /* shaders */,
 				1612C98C207A807000862A3A /* libprojectM.xcodeproj */,
 				C307DFD31D565B57002F6B9E /* presets */,
 				16A42128207802AF006F30CE /* Dependencies */,
@@ -335,6 +331,7 @@
 					};
 					C34521431BF02293001707D2 = {
 						CreatedOnToolsVersion = 7.1;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -343,6 +340,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = C345213B1BF02293001707D2;
@@ -560,7 +558,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -617,7 +615,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -646,26 +644,38 @@
 		C345214C1BF02294001707D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				GCC_LINK_WITH_DYNAMIC_LIBRARIES = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/projectM-SDL/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/../Frameworks/ @loader_path/Frameworks/";
 				OTHER_LDFLAGS = (
 					"-framework",
 					SDL2,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
 		C345214D1BF02294001707D2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				GCC_LINK_WITH_DYNAMIC_LIBRARIES = YES;
+				INFOPLIST_FILE = "$(SRCROOT)/projectM-SDL/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/../Frameworks/ @loader_path/Frameworks/";
 				OTHER_LDFLAGS = (
 					"-framework",
 					SDL2,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};
