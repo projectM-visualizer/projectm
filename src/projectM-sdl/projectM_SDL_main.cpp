@@ -31,14 +31,16 @@ void DebugLog(GLenum source,
 #endif
 
 // return path to config file to use
-std::string getConfigFilePath() {
-    const char *path = DATADIR_PATH;
+std::string getConfigFilePath(std::string datadir_path) {
     struct stat sb;
+    const char *path = datadir_path.c_str();
+    
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Looking for configuration file in data dir: %s.\n", path);
     
     // check if datadir exists.
     // it should exist if this application was installed. if not, assume we're developing it and use currect directory
     if (stat(path, &sb) != 0) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "Could not open datadir path %s.\n", DATADIR_PATH);
+        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "Could not open datadir path %s\n", path);
     }
     
     std::string configFilePath = path;
@@ -103,30 +105,34 @@ int main(int argc, char *argv[]) {
     
     projectMSDL *app;
     
+    std::string base_path = DATADIR_PATH;
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Using data directory: %s\n", base_path.c_str());
+
     // load configuration file
-    std::string configFilePath = getConfigFilePath();
-    
+    std::string configFilePath = getConfigFilePath(base_path);
+
     if (! configFilePath.empty()) {
         // found config file, use it
         app = new projectMSDL(configFilePath, 0);
         SDL_Log("Using config from %s", configFilePath.c_str());
     } else {
-        SDL_Log("Config file not found, using development settings");
+        base_path = SDL_GetBasePath();
+        SDL_Log("Config file not found, using built-in settings. Data directory=%s\n", base_path.c_str());
+
         float heightWidthRatio = (float)height / (float)width;
         projectM::Settings settings;
         settings.windowWidth = width;
         settings.windowHeight = height;
-        settings.meshX = 300;
+        settings.meshX = 400;
         settings.meshY = settings.meshX * heightWidthRatio;
         settings.fps   = 60;
         settings.smoothPresetDuration = 3; // seconds
-        settings.presetDuration = 7; // seconds
+        settings.presetDuration = 10; // seconds
         settings.beatSensitivity = 0.8;
         settings.aspectCorrection = 1;
         settings.shuffleEnabled = 1;
         settings.softCutRatingsEnabled = 1; // ???
-        // get path to our app, use CWD for presets/fonts/etc
-        std::string base_path = SDL_GetBasePath();
+        // get path to our app, use CWD or resource dir for presets/fonts/etc
         settings.presetURL = base_path + "presets";
 //        settings.presetURL = base_path + "presets/presets_shader_test";
         settings.menuFontURL = base_path + "fonts/Vera.ttf";
