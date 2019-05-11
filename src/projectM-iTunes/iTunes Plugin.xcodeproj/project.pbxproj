@@ -101,7 +101,6 @@
 		16A4214520781835006F30CE /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/.libs/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
 		16A4214620781835006F30CE /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/.libs/libNativePresetFactory.a; sourceTree = "<group>"; };
 		16A4214720781836006F30CE /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/.libs/libprojectM.a; sourceTree = "<group>"; };
-		16A42150207818F6006F30CE /* Cg.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cg.framework; path = ../../../../../../Library/Frameworks/Cg.framework; sourceTree = "<group>"; };
 		C34E810E1956CD2F001AC5B5 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		C34E81101956CD3A001AC5B5 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		C34E81191956D0C3001AC5B5 /* contrib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = contrib; path = macos/contrib; sourceTree = "<group>"; };
@@ -259,7 +258,6 @@
 		C3F9D7B117B82CC3009E58CB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				16A42150207818F6006F30CE /* Cg.framework */,
 				C3C24434195764870021FCD4 /* libGLEW.a */,
 				C37821FF1956D82A0058A694 /* libc++.1.dylib */,
 				C34E81231956D0DA001AC5B5 /* libbz2.a */,
