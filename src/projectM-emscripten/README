@@ -1,27 +1,27 @@
 Running on the web.
 
-# Easy way:
-* `make run`
-
-
-
-
-# Hard way:
-
 ## Prepare
 * Activate the emsdk (https://github.com/juj/emsdk#installation-instructions)
-* make sure you are in the root directory of this project
-* on fresh repositories: `./autogen.sh`
+* Make sure you are in the root directory of this project
+* On fresh repositories: `./autogen.sh`
 
 ## Compile
-* `emconfigure ./configure --enable-emscripten --enable-gles --enable-sdl`
-* `emmake make -j4`
+* `emconfigure ./configure --enable-emscripten`
+* `emmake make`
 
 ## Create wasm & html files
 * `cd src/projectM-emscripten`
-* `emcc -s USE_SDL=2 -s ALLOW_MEMORY_GROWTH=1 projectW.bc -o projectW.html`
+* `make run`
 
-Does not work? Try:
+## Troubleshooting
 
-* `mkdir vendor && cp /usr/local/Cellar/glm/xx/include/glm ./vendor/`
-* `emmake make -j4 -lvendor`
+### General
+
+Want to restart the process after pulling or changing config?
+* `rm src/projectM-emscripten/projectW*`
+* restart with emconfigure or emmake
+
+### OS X troubleshooting:
+
+#### `./autogen.sh: line 3: autoreconf: command not found`
+fix via `brew install automake`

@@ -27,34 +27,36 @@ typedef struct {
     SDL_AudioDeviceID audioInputDevice;
 } projectMApp;
 
+projectMApp app;
+
 int selectAudioInput(projectMApp *app) {
     int i, count = SDL_GetNumAudioDevices(0);  // param=isCapture (not yet functional)
-    
+
     if (! count) {
         fprintf(stderr, "No audio input capture devices detected\n");
         return 0;
     }
-    
+
     printf("count: %d\n", count);
     for (i = 0; i < count; ++i) {
         printf("Audio device %d: %s\n", i, SDL_GetAudioDeviceName(i, 0));
     }
-    
+
     return 1;
 }
 
-void renderFrame(projectMApp *app) {
+void renderFrame() {
     int i;
     short pcm_data[2][512];
     SDL_Event evt;
-    
+
     SDL_PollEvent(&evt);
     switch (evt.type) {
         case SDL_KEYDOWN:
             // ...
             break;
         case SDL_QUIT:
-            app->done = true;
+            app.done = true;
             break;
     }
 
@@ -91,23 +93,22 @@ void renderFrame(projectMApp *app) {
     }
 
     /** Add the waveform data */
-    app->pm->pcm()->addPCM16(pcm_data);
+    app.pm->pcm()->addPCM16(pcm_data);
 
     glClearColor( 0.0, 0.5, 0.0, 0.0 );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    app->pm->renderFrame();
+    app.pm->renderFrame();
     glFlush();
 
     #if SDL_MAJOR_VERSION==2
-        SDL_RenderPresent(app->rend);
+        SDL_RenderPresent(app.rend);
     #elif SDL_MAJOR_VERSION==1
         SDL_GL_SwapBuffers();
     #endif
 }
 
 int main( int argc, char *argv[] ) {
-    projectMApp app;
     app.done = 0;
 
     int width = 784,
@@ -115,7 +116,7 @@ int main( int argc, char *argv[] ) {
 
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-    
+
     // get an audio input device
     if (! selectAudioInput(&app)) {
         fprintf(stderr, "Failed to open audio input device\n");
@@ -149,7 +150,7 @@ int main( int argc, char *argv[] ) {
             return PROJECTM_ERROR;
         }
     #endif
-    
+
     #ifdef PANTS
     if ( fsaa ) {
         SDL_GL_GetAttribute( SDL_GL_MULTISAMPLEBUFFERS, &value );
@@ -159,8 +160,8 @@ int main( int argc, char *argv[] ) {
     }
     #endif
 
-    app.settings.meshX = 1;
-    app.settings.meshY = 1;
+    app.settings.meshX = 48;
+    app.settings.meshY = 32;
     app.settings.fps   = FPS;
     app.settings.textureSize = 2048;  // idk?
     app.settings.windowWidth = width;
@@ -173,13 +174,13 @@ int main( int argc, char *argv[] ) {
     app.settings.shuffleEnabled = 1;
     app.settings.softCutRatingsEnabled = 1; // ???
 #ifdef EMSCRIPTEN
-    app.settings.presetURL = "/build/presets";
+    app.settings.presetURL = "presets";
 #else
     app.settings.presetURL = "presets_tryptonaut";
     app.settings.menuFontURL = "fonts/Vera.ttf";
     app.settings.titleFontURL = "fonts/Vera.ttf";
 #endif
-    
+
     // init projectM
     app.pm = new projectM(app.settings);
     printf("init projectM\n");
@@ -187,6 +188,25 @@ int main( int argc, char *argv[] ) {
     printf("select random\n");
     app.pm->projectM_resetGL(width, height);
     printf("resetGL\n");
+
+    // Allocate a new a stream given the current directory name
+    DIR * m_dir;
+    if ((m_dir = opendir("/")) == NULL)
+    {
+        printf("error opening /\n");
+    } else {
+		
+		struct dirent * dir_entry;
+		while ((dir_entry = readdir(m_dir)) != NULL)
+		{
+			printf("%s\n", dir_entry->d_name);			
+		}
+	}
+
+
+    for(int i = 0; i < app.pm->getPlaylistSize(); i++) {
+        printf("%d\t%s\n", i, app.pm->getPresetName(i).c_str());
+    }
 
     // mainloop. non-emscripten version here for comparison/testing
 #ifdef EMSCRIPTEN
