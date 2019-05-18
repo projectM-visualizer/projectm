@@ -40,3 +40,4 @@ m4/lt~obsolete.m4
 /src/libprojectM/libprojectM.pc
 /build
 /dist
+.dir-locals.el
