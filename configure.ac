@@ -75,6 +75,7 @@ AC_CONFIG_FILES([
   src/projectM-jack/Makefile
   src/projectM-test/Makefile
   src/projectM-gst/Makefile
+  src/projectM-gst/element/Makefile
 ])
 
 
@@ -214,7 +215,21 @@ AC_ARG_ENABLE([gst], AS_HELP_STRING([--enable-gst], [Build GStreamer]), [], [ena
 AS_IF([test "$enable_gst" != "no"],
     [PKG_CHECK_MODULES([GST],
     [gstreamer-1.0 gstreamer-audio-1.0],
-    [enable_gst=yes],
+    [
+      enable_gst=yes
+
+      dnl set the plugindir where plugins should be installed (for plugins/Makefile.am)
+      if test "x${prefix}" = "x$HOME"; then
+         gstplugindir="$HOME/.gstreamer-1.0/plugins"
+      else
+         gstplugindir="\$(libdir)/gstreamer-1.0"
+      fi
+      AC_SUBST(gstplugindir)
+
+      dnl set proper LDFLAGS for plugins
+      GST_PLUGIN_LDFLAGS='-module -avoid-version -export-symbols-regex [_]*\(gst_\|Gst\|GST_\).*'
+      AC_SUBST(GST_PLUGIN_LDFLAGS)
+    ],
     [AS_IF([test "$enable_gst" = "yes"],
         [AC_MSG_ERROR([gstreamer-1.0 required, but not found.])],
         [enable_gst=no])])])

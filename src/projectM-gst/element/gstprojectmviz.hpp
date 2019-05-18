@@ -7,7 +7,7 @@
 #define _GST_PROJECTMVIZ_H_
 
 #include <gst/audio/gstaudiosink.h>
-#include <projectM.hpp>
+#include "projectM.hpp"
 
 G_BEGIN_DECLS
 

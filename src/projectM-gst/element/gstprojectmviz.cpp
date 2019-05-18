@@ -21,7 +21,7 @@
 
 #include <gst/gst.h>
 #include <gst/audio/gstaudiosink.h>
-#include "gstprojectmviz.h"
+#include "gstprojectmviz.hpp"
 
 GST_DEBUG_CATEGORY_STATIC (gst_projectmviz_debug_category);
 #define GST_CAT_DEFAULT gst_projectmviz_debug_category

@@ -28,7 +28,7 @@
 #include "config.h"
 #endif
 
-#include "element/gstprojectmviz.h"
+#include "element/gstprojectmviz.hpp"
 #include <gst/gst.h>
 #include <stdlib.h>
 
