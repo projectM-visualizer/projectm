@@ -17,7 +17,6 @@ projectM_gst_CXXFLAGS = \
 	${GST_CFLAGS}
 
 projectM_gst_LDADD =
-projectM_gst_LDADD += -Lelement -lgstprojectmviz
 projectM_gst_LDADD += -lasan
 projectM_gst_LDADD += ${GST_LIBS}
 # projectM_gst_LDFLAGS = -static
@@ -26,4 +25,4 @@ projectM_gst_PROGRAM = projectM-gst
 ACLOCAL_AMFLAGS = -I m4
 
 run: all
-	GST_PLUGIN_PATH=element ./projectM-gst a
+	GST_PLUGIN_PATH=element ./projectM-gst /home/cyber/test.flac

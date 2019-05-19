@@ -49,9 +49,7 @@ struct _GstProjectM {
 
 GstProjectM *gst_projectM_new(void);
 void gst_projectM_free(GstProjectM *projectM);
-void gst_projectM_create_pipeline(GstProjectM *projectM);
-void gst_projectM_create_pipeline_playbin(GstProjectM *projectM,
-                                          const char *uri);
+void gst_projectM_create_pipeline(GstProjectM *projectM, const char *uri);
 void gst_projectM_start(GstProjectM *projectM);
 void gst_projectM_stop(GstProjectM *projectM);
 
@@ -63,10 +61,7 @@ gboolean verbose;
 
 static GOptionEntry entries[] = {
     {"verbose", 'v', 0, G_OPTION_ARG_NONE, &verbose, "Be verbose", NULL},
-
-    {NULL}
-
-};
+    {NULL}};
 
 int main(int argc, char *argv[]) {
   GError *error = NULL;
@@ -94,10 +89,10 @@ int main(int argc, char *argv[]) {
     } else {
       uri = g_filename_to_uri(argv[1], NULL, NULL);
     }
-    gst_projectM_create_pipeline_playbin(projectM, uri);
+    gst_projectM_create_pipeline(projectM, uri);
     g_free(uri);
   } else {
-    gst_projectM_create_pipeline(projectM);
+    gst_projectM_create_pipeline(projectM, NULL);
   }
 
   gst_projectM_start(projectM);
@@ -136,89 +131,97 @@ void gst_projectM_free(GstProjectM *projectM) {
   g_free(projectM);
 }
 
-void gst_projectM_create_pipeline_playbin(GstProjectM *projectM,
-                                          const char *uri) {
+void gst_projectM_create_pipeline(GstProjectM *projectM, const char *uri) {
   GstElement *pipeline;
-  GError *error = NULL;
 
+  // make pipeline
   pipeline = gst_pipeline_new(NULL);
-
-  // fake audio source
-  GstElement *audio_src_element = gst_element_factory_make("audiotestsrc", "audio-source");
-  gst_bin_add(GST_BIN(pipeline), audio_src_element);
-
-  /* gst_bin_add(GST_BIN(pipeline), gst_element_factory_make("playbin", "source")); */
-
-  if (error) {
-    g_print("pipeline parsing error: %s\n", error->message);
-    g_clear_error(&error);
-    gst_object_unref(pipeline);
-    return;
-  }
-
   projectM->pipeline = pipeline;
-
   gst_pipeline_set_auto_flush_bus(GST_PIPELINE(pipeline), FALSE);
   projectM->bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline));
   gst_bus_add_watch(projectM->bus, gst_projectM_handle_message, projectM);
 
-  projectM->source_element = audio_src_element;
-  g_print("source_element is %p\n", projectM->source_element);
+  // set up audio source
+  GstElement *audio_src;
+  if (uri) {
+    // read from source URL specified
+    g_print("setting uri to %s\n", uri);
+    GstElement *filesrc = gst_element_factory_make("filesrc", "file-source");
+    g_object_set(filesrc, "location", uri, NULL);
 
-  // create projectM element and add it as the audio sink
-  GstElement *pM_ele = gst_element_factory_make("projectmviz", "projectM-visualizer");
+    // create audio decoder
+    audio_src = gst_element_factory_make("decodebin", "file-decoder");
+
+    gst_bin_add_many(GST_BIN(pipeline), filesrc, audio_src, NULL);
+    gst_element_link(filesrc, audio_src);
+  } else {
+    // fake audio source for testing
+    audio_src = gst_element_factory_make("audiotestsrc", "audio-source");
+    gst_bin_add(GST_BIN(pipeline), audio_src);
+
+    g_object_set(audio_src, "samplesperbuffer", 1600, NULL);
+    g_object_set(audio_src, "num-buffers", 100, NULL);
+  }
+  projectM->source_element = audio_src;
+
+  // tee from audio source to projectM and audio output
+  GstElement *q_viz = gst_element_factory_make("queue", "queue-viz");
+  GstElement *q_out = gst_element_factory_make("queue", "queue-out");
+  GstElement *tee = gst_element_factory_make("tee", "tee");
+
+  // add audio output
+  GstElement *audio_dst =
+      gst_element_factory_make("autoaudiosink", "audio-dest");
+
+  // create projectM output
+  GstElement *pM_ele =
+      gst_element_factory_make("projectmviz", "projectM-visualizer");
   if (!pM_ele) {
-      g_printerr("Could not create projectM element\n");
-      G_BREAKPOINT();
-      return;
-  }
-  gst_bin_add(GST_BIN(pipeline), pM_ele);
-  gst_element_link(audio_src_element, pM_ele);
-  g_print("linked audio source to projectM\n");
-
-  g_print("setting uri to %s\n", uri);
-  g_object_set(projectM->source_element, "samplesperbuffer", 1600, NULL);
-  g_object_set(projectM->source_element, "num-buffers", 100, NULL);
-}
-
-void gst_projectM_create_pipeline(GstProjectM *projectM) {
-  GString *pipe_desc;
-  GstElement *pipeline;
-  GError *error = NULL;
-
-
-
-  pipe_desc = g_string_new("");
-
-  g_string_append(pipe_desc, "videotestsrc name=source num-buffers=100 ! ");
-  g_string_append(pipe_desc, "timeoverlay ! ");
-  g_string_append(pipe_desc, "xvimagesink name=sink ");
-  g_string_append(pipe_desc,
-                  "audiotestsrc samplesperbuffer=1600 num-buffers=100 ! ");
-  g_string_append(pipe_desc, "alsasink ");
-
-  if (verbose)
-    g_print("pipeline: %s\n", pipe_desc->str);
-
-  pipeline = (GstElement *)gst_parse_launch(pipe_desc->str, &error);
-  g_string_free(pipe_desc, FALSE);
-
-  if (error) {
-    g_print("pipeline parsing error: %s\n", error->message);
-    g_clear_error(&error);
-    gst_object_unref(pipeline);
+    g_printerr("Could not create projectM element\n");
+    G_BREAKPOINT();
     return;
   }
 
-  projectM->pipeline = pipeline;
+  // connect tee
+  GstPad *q_viz_sink = gst_element_get_static_pad(q_viz, "sink");
+  GstPad *q_out_sink = gst_element_get_static_pad(q_out, "sink");
+  GstPadTemplate *tee_pad_template =
+      gst_element_class_get_pad_template(GST_ELEMENT_GET_CLASS(tee), "src_%u");
 
-  gst_pipeline_set_auto_flush_bus(GST_PIPELINE(pipeline), FALSE);
-  projectM->bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline));
-  gst_bus_add_watch(projectM->bus, gst_projectM_handle_message, projectM);
+  GstPad *tee_src_viz =
+      gst_element_request_pad(tee, tee_pad_template, NULL, NULL);
+  GstPad *tee_src_out =
+      gst_element_request_pad(tee, tee_pad_template, NULL, NULL);
 
-  projectM->source_element = gst_bin_get_by_name(GST_BIN(pipeline), "source");
-  projectM->sink_element = gst_bin_get_by_name(GST_BIN(pipeline), "sink");
+  // TODO: release request pads when done
 
+  if (gst_pad_link(tee_src_out, q_out_sink) != GST_PAD_LINK_OK) {
+    g_print("Error: cannot connect tee to output queue...\n");
+    return;
+  }
+
+  if (gst_pad_link(tee_src_viz, q_viz_sink) != GST_PAD_LINK_OK) {
+    g_print("Error: cannot connect tee to viz queue...\n");
+    return;
+  }
+
+  // add everything to bin
+  gst_bin_add_many(GST_BIN(pipeline), tee, q_viz, q_out, pM_ele,
+                   audio_dst, NULL);
+
+  // link
+  if (gst_element_link(audio_src, tee) != TRUE) {
+    g_print("Error: cannot link audio source to tee...\n");
+    return;
+  }
+  if (gst_element_link_many(tee, q_viz, pM_ele, NULL) != TRUE) {
+    g_print("Error: cannot link tee to q_viz/pM...\n");
+    return;
+  }
+  if (gst_element_link_many(tee, q_out, audio_dst, NULL) != TRUE) {
+    g_print("Error: cannot link tee to audio_dst...\n");
+    return;
+  }
 }
 
 void gst_projectM_start(GstProjectM *projectM) {
