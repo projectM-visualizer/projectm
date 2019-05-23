@@ -102,6 +102,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
@@ -135,12 +137,17 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(SolutionDir);$(ProjectDir);$(IntermediateOutputPath);$(SolutionDir)..\msvc;$(SolutionDir)\libprojectM;$(SolutionDir)\libprojectM\Renderer;$(SolutionDir)\libprojectM\Renderer\SOIL2;$(SolutionDir)\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;SOIL_GLES2;USE_GLES;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;NOMINMAX;ANGLE_STANDALONE_BUILD;GL_GLEXT_PROTOTYPES;EGL_EGLEXT_PROTOTYPES;ANGLE_X64_CPU;ANGLE_ENABLE_DEBUG_ANNOTATIONS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;DISABLE_NATIVE_PRESETS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EYETUNE_WINRT;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";WIN32;USE_GLES;SOIL_GLES2;DISABLE_NATIVE_PRESETS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <AdditionalDependencies>WindowsApp.lib;libEGL.lib;libGLESv2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImageHasSafeExceptionHandlers />
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm'">
@@ -163,12 +170,13 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(SolutionDir);$(ProjectDir);$(IntermediateOutputPath);$(SolutionDir)..\msvc;$(SolutionDir)\libprojectM;$(SolutionDir)\libprojectM\Renderer;$(SolutionDir)\libprojectM\Renderer\SOIL2;$(SolutionDir)\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;SOIL_GLES2;USE_GLES;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;NOMINMAX;ANGLE_STANDALONE_BUILD;GL_GLEXT_PROTOTYPES;EGL_EGLEXT_PROTOTYPES;ANGLE_X64_CPU;ANGLE_ENABLE_DEBUG_ANNOTATIONS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;DISABLE_NATIVE_PRESETS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EYETUNE_WINRT;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";WIN32;USE_GLES;SOIL_GLES2;DISABLE_NATIVE_PRESETS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <AdditionalDependencies>WindowsApp.lib;libEGL.lib;libGLESv2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -198,7 +206,9 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalDependencies>WindowsApp.lib;libEGL.lib;libGLESv2.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(VCInstallDir)\lib\store\amd64;$(VCInstallDir)\lib\amd64;..\angle\Release_x64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -223,13 +233,13 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\packages\glm.0.9.9.400\build\native\glm.targets" Condition="Exists('..\..\packages\glm.0.9.9.400\build\native\glm.targets')" />
-    <Import Project="..\..\packages\WindowsStoreOpenGL.0.777.78\build\native\WindowsStoreOpenGL.targets" Condition="Exists('..\..\packages\WindowsStoreOpenGL.0.777.78\build\native\WindowsStoreOpenGL.targets')" />
+    <Import Project="..\..\packages\WindowsStoreOpenGL.0.777.79\build\native\WindowsStoreOpenGL.targets" Condition="Exists('..\..\packages\WindowsStoreOpenGL.0.777.79\build\native\WindowsStoreOpenGL.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\glm.0.9.9.400\build\native\glm.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\glm.0.9.9.400\build\native\glm.targets'))" />
-    <Error Condition="!Exists('..\..\packages\WindowsStoreOpenGL.0.777.78\build\native\WindowsStoreOpenGL.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\WindowsStoreOpenGL.0.777.78\build\native\WindowsStoreOpenGL.targets'))" />
+    <Error Condition="!Exists('..\..\packages\WindowsStoreOpenGL.0.777.79\build\native\WindowsStoreOpenGL.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\WindowsStoreOpenGL.0.777.79\build\native\WindowsStoreOpenGL.targets'))" />
   </Target>
 </Project>
