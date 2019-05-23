@@ -61,6 +61,7 @@ int main(Platform::Array<Platform::String^>^)
 App::App() :
     mWindowClosed(false),
     mWindowVisible(true),
+	experimental_presets(false),
     mEglDisplay(EGL_NO_DISPLAY),
     mEglContext(EGL_NO_CONTEXT),
     mEglSurface(EGL_NO_SURFACE)
@@ -114,6 +115,10 @@ void App::loopback() {
 	this->InitializeCapture(nullptr, nullptr);
 }
 
+void App::stoploopback() {
+	this->StopCapture(nullptr, nullptr);
+}
+
 void App::addFakePCM() {
   int i;
   short pcm_data[2][512];
@@ -137,9 +142,29 @@ void App::addFakePCM() {
   app->pcm()->addPCM16(pcm_data);
 }
 
-
 void App::RecreateRenderer()
 {
+	std::string presetdir = "";
+	if (experimental_presets)
+	{
+		presetdir = "\\p\\presets_tryptonaut\\";
+	}
+	else
+	{
+		presetdir = "\\p\\presets\\";
+	}
+	App::RecreateRenderer(presetdir);
+}
+
+void App::RecreateRenderer(std::string presetdir)
+{
+	if (app)
+	{
+		this->stoploopback();
+
+		app = nullptr;
+	}
+
     if (!app)
 	{
 		// "Config file not found, using development settings");
@@ -173,7 +198,7 @@ void App::RecreateRenderer()
         //  std::string base_path = Managed_Str_To_Std_Str(localFolder->Path->ToString()) + "\\";
 		std::string base_path = converted_str;
 		// settings.presetURL = base_path + "\\presets_great\\";
-		settings.presetURL = base_path + "\\p\\presets\\";
+		settings.presetURL = base_path + presetdir;
 		// settings.presetURL = base_path;
 		//        settings.presetURL = base_path + "presets/presets_shader_test";
 		settings.menuFontURL = base_path + "fonts/Vera.ttf";
@@ -315,9 +340,14 @@ void App::OnWindowKeyDown(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Co
 			case Windows::System::VirtualKey::GamepadDPadUp:
 			case Windows::System::VirtualKey::Up:
 
+			*/
+
+			// enable experimental presets
 			case Windows::System::VirtualKey::GamepadDPadDown:
 			case Windows::System::VirtualKey::Down:
-			*/
+				experimental_presets = !experimental_presets;
+				RecreateRenderer();
+				Popup("Experimental Presets : " + experimental_presets.ToString());
 
 			case Windows::System::VirtualKey::GamepadDPadLeft:
 			case Windows::System::VirtualKey::Left:
@@ -340,10 +370,10 @@ void App::OnWindowKeyDown(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Co
 					"Lock/Unlock Preset : SPACE or CTRL : GamepadRightShoulder or GamepadLeftShoulder""\n"
 					"Next preset : RIGHT or N : GamepadRightTrigger or GamepadDPadRight""\n"
 					"Previous preset : LEFT or P : GamepadLeftTrigger or GamepadDPadLeft""\n"
-					"Random preset : ENTER or R : GamepadA or GamepadX or GamepadY""\n";
+					"Random preset : ENTER or R : GamepadA or GamepadX or GamepadY""\n"
+					"Experimental Presets : DOWN : GamepadDPadDown""\n";
 
 					//					"UP \t / GamepadDPadUp \t : Next preset""\n"
-					//					"DOWN \t / GamepadDPadDown \t : Next preset""\n"
 				Popup(Std_Str_To_Managed_Str(presetname));
 				break;
 

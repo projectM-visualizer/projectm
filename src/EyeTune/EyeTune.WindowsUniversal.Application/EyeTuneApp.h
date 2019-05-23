@@ -46,7 +46,9 @@ namespace EyeTune
 
     private:
 		void loopback();
+		void stoploopback();
 		void addFakePCM();
+		void RecreateRenderer(std::string presetdir);
 		void RecreateRenderer();
 		projectM* app;
 
@@ -64,7 +66,7 @@ namespace EyeTune
 
         void InitializeEGL(Windows::UI::Core::CoreWindow^ window);
         void CleanupEGL();
-
+		bool experimental_presets;
         bool mWindowClosed;
         bool mWindowVisible;
         
