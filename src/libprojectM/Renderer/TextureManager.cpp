@@ -76,7 +76,7 @@ TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX
         // blur5 =  64  <-  user sees this as "blur3"
         if (!(i&1) || (i<2))
         {
-#ifdef WIN32
+#if defined WIN32 && defined max
 			w = max(16, w / 2);
 			h = max(16, h / 2);
 #else
