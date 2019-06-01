@@ -1,15 +1,34 @@
-//
-//  main.cpp
-//  projectM-sdl
-//
-//  Created by Mischa Spiegelmock on 6/3/15.
-//
-//  This is an implementation of projectM using libSDL2
+/**
+* projectM -- Milkdrop-esque visualisation SDK
+* Copyright (C)2003-2019 projectM Team
+*
+* This library is free software; you can redistribute it and/or
+* modify it under the terms of the GNU Lesser General Public
+* License as published by the Free Software Foundation; either
+* version 2.1 of the License, or (at your option) any later version.
+*
+* This library is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+* Lesser General Public License for more details.
+*
+* You should have received a copy of the GNU Lesser General Public
+* License along with this library; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+* See 'LICENSE.txt' included within this release
+*
+* projectM-sdl
+* This is an implementation of projectM using libSDL2
+* 
+* main.cpp
+* Authors: Created by Mischa Spiegelmock on 6/3/15.
+*
+* 
+* experimental Stereoscopic SBS driver functionality by
+*	RobertPancoast77@gmail.com
+*/
 
 #include "pmSDL.hpp"
-
-#define FAKE_AUDIO          0
-#define TEST_ALL_PRESETS    0
 
 #if OGL_DEBUG
 void DebugLog(GLenum source,
@@ -92,9 +111,27 @@ int main(int argc, char *argv[]) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 #endif
+
     
     SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-    SDL_GLContext glCtx = SDL_GL_CreateContext(win);
+    
+
+#ifdef STEREOSCOPIC_SBS
+
+	// enable stereo
+	if (SDL_GL_SetAttribute(SDL_GL_STEREO, 1) == 0) 
+	{
+		SDL_Log("SDL_GL_STEREO: true");
+	}
+
+	// requires fullscreen mode
+	SDL_ShowCursor(false);
+	SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN);
+
+#endif
+
+
+	SDL_GLContext glCtx = SDL_GL_CreateContext(win);
 
 
     SDL_Log("GL_VERSION: %s", glGetString(GL_VERSION));
@@ -141,6 +178,10 @@ int main(int argc, char *argv[]) {
         app = new projectMSDL(settings, 0);
     }
     app->init(win, &glCtx);
+
+#ifdef STEREOSCOPIC_SBS
+	app->toggleFullScreen();
+#endif
 
 #if OGL_DEBUG && !USE_GLES
     glEnable(GL_DEBUG_OUTPUT);
