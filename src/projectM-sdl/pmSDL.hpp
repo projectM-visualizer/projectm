@@ -30,8 +30,10 @@
 #define pmSDL_hpp
 
 
-// Disable these for mic input
+// Disable LOOPBACK and FAKE audio to enable microphone input
+#ifdef WIN32
 #define WASAPI_LOOPBACK     1
+#endif /** WIN32 */
 #define FAKE_AUDIO          0
 // ----------------------------
 #define TEST_ALL_PRESETS    0
