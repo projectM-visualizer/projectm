@@ -77,6 +77,8 @@ artifacts:
     name: projectM-sdl-%CONFIGURATION%-%PLATFORM%
   - path: libprojectM-%CONFIGURATION%-%PLATFORM%-%APPVEYOR_REPO_COMMIT%.zip
     name: libprojectM-%CONFIGURATION%-%PLATFORM%
+  - path: msvc\Setup\%CONFIGURATION%\%PLATFORM%\*
+    name: projectM-Setup-%CONFIGURATION%-%PLATFORM%
   
 
 #---------------------------------#

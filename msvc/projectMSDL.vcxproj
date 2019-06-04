@@ -40,13 +40,13 @@
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">projectM-sdl\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">projectMSDL.dir\Debug\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">projectMSDL</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">projectM</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">projectM-sdl\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">projectMSDL.dir\Release\</IntDir>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">projectMSDL</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">projectM</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
@@ -175,6 +175,14 @@
   <ItemGroup>
     <ResourceCompile Include="projectM.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="projectm_qDj_icon.ico">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\glm.0.9.9.400\build\native\glm.targets" Condition="Exists('packages\glm.0.9.9.400\build\native\glm.targets')" />
@@ -188,5 +196,18 @@
     <Error Condition="!Exists('packages\glm.0.9.9.400\build\native\glm.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glm.0.9.9.400\build\native\glm.targets'))" />
     <Error Condition="!Exists('packages\sdl2.nuget.redist.2.0.9\build\native\sdl2.nuget.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\sdl2.nuget.redist.2.0.9\build\native\sdl2.nuget.redist.targets'))" />
     <Error Condition="!Exists('packages\sdl2.nuget.2.0.9\build\native\sdl2.nuget.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\sdl2.nuget.2.0.9\build\native\sdl2.nuget.targets'))" />
+  </Target>
+  <Target Name="Build-Presets" BeforeTargets="PrepareForBuild">
+    <Exec Command="xcopy /Y /Q /I &quot;$(MSBuildThisFileDirectory)../presets\presets_tryptonaut&quot; &quot;$(OutDir)presets&quot;" />
+  </Target>
+  <Target Name="BuildPackage" AfterTargets="Build">
+    <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)..\LICENSE.txt&quot; &quot;$(OutDir)LICENSE.txt&quot;" />
+    <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)..\AUTHORS.txt&quot; &quot;$(OutDir)AUTHORS.txt&quot;" />
+    <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)..\README.md&quot; &quot;$(OutDir)README.md&quot;" />
+    <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)projectm_qDj_icon.ico&quot; &quot;$(OutDir)projectm_qDj_icon.ico&quot;" />
+    <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)Setup.iss&quot; &quot;$(OutDir)Setup.iss&quot;" />
+    <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)setup_inno.bmp&quot; &quot;$(OutDir)setup_inno.bmp&quot;" />
+    <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)setup_inno_small.bmp&quot; &quot;$(OutDir)setup_inno_small.bmp&quot;" />
+    <Exec Command="&quot;c:\Program Files (x86)\Inno Setup 5\ISCC.exe&quot; &quot;/DPlatform=$(Platform)&quot; &quot;/DConfiguration=$(Configuration)&quot; &quot;$(OutDir)Setup.iss&quot;" Condition="Exists('c:\Program Files (x86)\Inno Setup 5\ISCC.exe')" />
   </Target>
 </Project>

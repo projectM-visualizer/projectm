@@ -15,4 +15,10 @@
   <ItemGroup>
     <ResourceCompile Include="projectM.rc" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="projectm_qDj_icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
 </Project>
