@@ -278,7 +278,7 @@ int main(int argc, char *argv[]) {
     SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     
 
-#ifdef STEREOSCOPIC_SBS
+#if STEREOSCOPIC_SBS
 
 	// enable stereo
 	if (SDL_GL_SetAttribute(SDL_GL_STEREO, 1) == 0) 
@@ -326,7 +326,7 @@ int main(int argc, char *argv[]) {
         settings.meshY = settings.meshX * heightWidthRatio;
         settings.fps   = 60;
         settings.smoothPresetDuration = 3; // seconds
-        settings.presetDuration = 10; // seconds
+        settings.presetDuration = 22; // seconds
         settings.beatSensitivity = 0.8;
         settings.aspectCorrection = 1;
         settings.shuffleEnabled = 1;
@@ -341,7 +341,7 @@ int main(int argc, char *argv[]) {
     }
     app->init(win, &glCtx);
 
-#ifdef STEREOSCOPIC_SBS
+#if STEREOSCOPIC_SBS
 	app->toggleFullScreen();
 #endif
 

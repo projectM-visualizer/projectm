@@ -169,7 +169,7 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
                 // command-f: fullscreen
 				// Stereo requires fullscreen
-#ifndef STEREOSCOPIC_SBS
+#if !STEREOSCOPIC_SBS
 				toggleFullScreen();
 #endif
                 return; // handled
