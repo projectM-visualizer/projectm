@@ -75,7 +75,6 @@ void App::Initialize(CoreApplicationView^ applicationView)
     // can make the CoreWindow active and start rendering on the window.
     applicationView->Activated += 
         ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &App::OnActivated);
-
     // Logic for other event handlers could go here.
     // Information about the Suspending and Resuming event handlers can be found here:
     // http://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh994930.aspx
@@ -102,6 +101,22 @@ void App::SetWindow(CoreWindow^ window)
 
     // The CoreWindow has been created, so EGL can be initialized.
     InitializeEGL(window);
+}
+
+// Implements fullscreen toggle
+void App::togglefullscreen()
+{
+	auto applicationView = ApplicationView::GetForCurrentView();
+
+	if (applicationView->IsFullScreenMode)
+	{
+		applicationView->ExitFullScreenMode();
+	}
+	else
+	{
+		applicationView->TryEnterFullScreenMode();
+	}
+
 }
 
 // Initializes scene resources
@@ -336,6 +351,13 @@ void App::OnWindowKeyDown(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Co
 				break;
 
 
+			// ctrl-f or alt-f
+			case Windows::System::VirtualKey::F:
+				if(IsCtrlKeyPressed())
+					togglefullscreen();
+				else if(IsAltKeyPressed())
+					togglefullscreen();
+				break;
 /*
 			case Windows::System::VirtualKey::GamepadDPadUp:
 			case Windows::System::VirtualKey::Up:
@@ -371,6 +393,7 @@ void App::OnWindowKeyDown(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Co
 					"Next preset : RIGHT or N : GamepadRightTrigger or GamepadDPadRight""\n"
 					"Previous preset : LEFT or P : GamepadLeftTrigger or GamepadDPadLeft""\n"
 					"Random preset : ENTER or R : GamepadA or GamepadX or GamepadY""\n"
+					"Toggle Fullscreen (PC Only) : CTRL-F ""\n"
 					"Experimental Presets : DOWN : GamepadDPadDown""\n";
 
 					//					"UP \t / GamepadDPadUp \t : Next preset""\n"
@@ -382,6 +405,20 @@ void App::OnWindowKeyDown(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Co
 			}
 		}
 	}
+}
+
+bool App::IsCtrlKeyPressed()
+{
+	auto ctrlState = CoreWindow::GetForCurrentThread()->GetKeyState(Windows::System::VirtualKey::Control);
+	return (ctrlState & CoreVirtualKeyStates::Down) == CoreVirtualKeyStates::Down;
+}
+
+// The Alt key is represented by the VirtualKey.Menu value.
+// TODO: investigate why alt modifier does not operate
+bool App::IsAltKeyPressed()
+{
+	auto ctrlState = CoreWindow::GetForCurrentThread()->GetKeyState(Windows::System::VirtualKey::Menu);
+	return (ctrlState & CoreVirtualKeyStates::Down) == CoreVirtualKeyStates::Down;
 }
 
 void App::OnSizeChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::WindowSizeChangedEventArgs^ args)
