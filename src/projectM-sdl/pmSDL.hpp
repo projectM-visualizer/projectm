@@ -37,7 +37,7 @@
 #define FAKE_AUDIO          0
 // ----------------------------
 #define TEST_ALL_PRESETS    0
-#define STEREOSCOPIC_SBS    1
+#define STEREOSCOPIC_SBS    0
 
 #include "projectM-opengl.h"
 #include <projectM.hpp>
