@@ -40,6 +40,7 @@ namespace EyeTune
         // IFrameworkView Methods.
         virtual void Initialize(Windows::ApplicationModel::Core::CoreApplicationView^ applicationView);
         virtual void SetWindow(Windows::UI::Core::CoreWindow^ window);
+		void togglefullscreen();
         virtual void Load(Platform::String^ entryPoint);
         virtual void Run();
         virtual void Uninitialize();
@@ -59,6 +60,8 @@ namespace EyeTune
         void OnVisibilityChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::VisibilityChangedEventArgs^ args);
         void OnWindowClosed(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::CoreWindowEventArgs^ args);
 		void OnWindowKeyDown(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Core::KeyEventArgs ^ args);
+		bool IsCtrlKeyPressed();
+		bool IsAltKeyPressed();
 		void OnSizeChanged(Windows::UI::Core::CoreWindow ^ sender, Windows::UI::Core::WindowSizeChangedEventArgs ^ args);
 		void OnResizeCompleted(Windows::UI::Core::CoreWindow ^ sender, Object ^ args);
 		void ResetSize();
