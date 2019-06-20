@@ -32,17 +32,15 @@ You can read more about how it works and the current state of development [here]
 The preset files define the visualizations via pixel shaders and Milkdrop-style equations and parameters. Included with projectM are the bltc201, Milkdrop 1 and 2, projectM, tryptonaut and yin collections. You can grab all of the presets [here](http://spiegelmc.com/pub/projectm_presets.zip).
 
 ### Also Featured In
-[![Kodi](https://github.com/projectM-visualizer/projectm/raw/master/web/kodi.png)](https://kodi.tv/)
-Kodi (formerly XBMC)
+[![Kodi](https://github.com/projectM-visualizer/projectm/raw/master/web/kodi.png) Kodi (formerly XBMC)](https://kodi.tv/)
 
-[![Helix](https://github.com/projectM-visualizer/projectm/raw/master/web/helix.jpg)](http://ghostfiregames.com/helixhome.html)
-Helix
+[![Helix](https://github.com/projectM-visualizer/projectm/raw/master/web/helix.jpg) Helix](http://ghostfiregames.com/helixhome.html)
 
-[![Silverjuke](https://github.com/projectM-visualizer/projectm/raw/master/web/silverjuke.png)](https://www.silverjuke.net)
-Silverjuke (FOSS Jukebox)
 
-[![Silent Radiance](https://silentradiance.com/demos/projectM_vr/projectm_vr.png)](https://silentradiance.com)
-Silent Radiance Distance Disco
+[![Silverjuke](https://github.com/projectM-visualizer/projectm/raw/master/web/silverjuke.png) Silverjuke (FOSS Jukebox)](https://www.silverjuke.net)
+
+[<img src="https://silentradiance.com/demos/projectM_vr/projectm_vr.png" width="200" > Silent Radiance Distance Disco](https://silentradiance.com)
+
 
 ***
 
