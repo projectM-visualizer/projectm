@@ -1,0 +1,1501 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_CONFIG DIALOGEX 0, 0, 390, 292
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_FIXEDSYS | DS_CENTER | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "(window title will be assigned at runtime)"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    CONTROL         "Tab1",IDC_TABS,"SysTabControl32",TCS_HOTTRACK | WS_TABSTOP,6,7,324,255
+    CONTROL         "",IDC_RECT,"Static",SS_BLACKRECT | NOT WS_VISIBLE,8,20,320,240
+    DEFPUSHBUTTON   "OK",IDOK,335,19,50,13
+    PUSHBUTTON      "Cancel",IDCANCEL,335,35,50,13
+    PUSHBUTTON      "Defaults",ID_DEFAULTS,335,51,50,13
+    PUSHBUTTON      "View Docs",ID_DOCS,335,67,50,13
+    PUSHBUTTON      "View Website",ID_WEB,335,83,50,13
+    CTEXT           "For help on any setting, click the '?' in the upper-right\rcorner, and then click the item you need help with.",IDC_STATIC,6,268,186,19,SS_SUNKEN
+    CTEXT           "(...'about' text will be placed in this box automatically, at runtime)",IDC_SZ_ABOUT,198,268,187,19,SS_SUNKEN
+END
+
+IDD_PROPPAGE_2 DIALOGEX 0, 0, 320, 240
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_VISIBLE
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    GROUPBOX        "[ More Settings: ]",IDC_FS_BOX,0,3,319,236
+    RTEXT           "Canvas Stretch:",IDC_STRETCH_CAPTION,5,33,56,10
+    COMBOBOX        IDC_STRETCH,67,30,99,87,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "<-- use if your graphics chip (GPU) is slow !!",IDC_STATIC,169,33,144,8
+    RTEXT           "Mesh Size:",IDC_MESHSIZECOMBO_CAPTION,19,49,43,10
+    COMBOBOX        IDC_MESHSIZECOMBO,67,47,99,123,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "<-- decrease if your processor (CPU) is slow !!",IDC_STATIC,168,50,150,8
+    RTEXT           "Pixel Shaders:",IDC_SHADERS_CAPTION,13,67,49,10
+    COMBOBOX        IDC_SHADERS,67,64,99,87,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "<-- don't touch this.",IDC_STATIC,168,67,144,8
+    RTEXT           "Canvas Size:",IDC_TEXSIZECOMBO_CAPTION,19,84,43,10
+    COMBOBOX        IDC_TEXSIZECOMBO,67,81,99,87,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "<-- don't touch this.",IDC_STATIC,168,84,144,8
+    CONTROL         "Start milkdrop with preset lock [scroll lock key] ON",IDC_CB_SCROLLON,
+                    "Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | WS_TABSTOP,22,116,175,10
+    CONTROL         "Disable preset rating (...all presets have equal chance)",IDC_CB_NORATING,
+                    "Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | WS_TABSTOP,22,129,192,10
+    CONTROL         "Suppress all errors/warnings (for VJ'ing)",IDC_CB_NOWARN2,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,22,142,143,10
+    CONTROL         "Prevent milkdrop from controlling the scroll lock key [default: OFF]",IDC_CB_SCROLLON2,
+                    "Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | WS_TABSTOP,22,155,227,10
+    GROUPBOX        "Brightness control for 16-bit-color video modes",IDC_BRIGHT_SLIDER_BOX,8,182,180,49
+    CONTROL         "Slider1",IDC_BRIGHT_SLIDER,"msctls_trackbar32",WS_TABSTOP,25,193,89,14
+    CTEXT           "0\r\n(bright)",IDC_T1,20,207,25,17
+    CTEXT           "2\r\n(normal)",IDC_T3,54,207,28,18
+    CTEXT           "3",IDC_T4,83,207,8,10
+    CTEXT           "4\r\n(dark)",IDC_T5,91,207,30,18
+    CONTROL         "guess,\r\nbased on my video card",IDC_CB_AUTOGAMMA,
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,129,194,54,30
+    CONTROL         "Scan presets instantly @ startup/dir. change (can cause a pause)",IDC_CB_INSTASCAN,
+                    "Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | NOT WS_VISIBLE | WS_DISABLED | WS_TABSTOP,207,197,100,17
+    CONTROL         "Stereo 3D mode Always ON",IDC_CB_ALWAYS3D,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_DISABLED | WS_TABSTOP,203,207,103,10
+    CONTROL         "Use anisotropic filtering (if available) instead of bilinear interpolation",IDC_CB_ANISO,
+                    "Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | NOT WS_VISIBLE | WS_DISABLED | WS_TABSTOP,203,203,99,10
+    CTEXT           "1",IDC_T2,46,207,8,10
+    COMBOBOX        IDC_TEXFORMAT,205,197,99,87,CBS_DROPDOWNLIST | NOT WS_VISIBLE | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    RTEXT           "Texture Format:",IDC_TEXFORMAT_CAPTION,201,198,55,10,NOT WS_VISIBLE | WS_DISABLED
+END
+
+IDD_PROPPAGE_1 DIALOGEX 0, 0, 320, 240
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_VISIBLE
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    GROUPBOX        "",IDC_STATIC,0,0,319,239
+    RTEXT           "Display Adapter:",IDC_DMS_ADAPTER_CAPTION,68,12,53,9
+    COMBOBOX        IDC_ADAPTER_DMS,126,9,185,191,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "\rDESKTOP MODE\rsettings",IDC_DMS_LABEL,3,17,60,38
+    RTEXT           "Max Framerate:",IDC_DMS_MAXFPS_CAPTION,63,28,58,9
+    COMBOBOX        IDC_DMS_MAXFPS,126,25,81,106,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "More &Options",ID_DM_MORE,261,25,50,15
+    RTEXT           "Multisampling:",IDC_DMS_MULTISAMPLING_CAPTION,5,43,46,9,NOT WS_VISIBLE | WS_DISABLED
+    COMBOBOX        IDC_DMSMS,56,41,81,123,CBS_DROPDOWNLIST | NOT WS_VISIBLE | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Allow Page Tearing",IDC_CB_DMSPT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,126,43,77,10
+    CONTROL         "",IDC_STATIC,"Static",SS_GRAYRECT,0,58,318,1
+    RTEXT           "Display Adapter:",IDC_FS_ADAPTER_CAPTION,68,66,53,9
+    COMBOBOX        IDC_ADAPTER_FS,126,63,185,208,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "FULLSCREEN settings",IDC_FS_LABEL,7,85,50,18
+    RTEXT           "Display Mode:",IDC_DISP_MODE_CAPTION,66,81,55,9
+    COMBOBOX        IDC_DISP_MODE,126,78,185,208,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    RTEXT           "Max Framerate:",IDC_FS_MAXFPS_CAPTION,66,96,55,9
+    COMBOBOX        IDC_FS_MAXFPS,126,94,81,107,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    RTEXT           "Multisampling:",IDC_FS_MULTISAMPLING_CAPTION,4,112,47,9,NOT WS_VISIBLE | WS_DISABLED
+    COMBOBOX        IDC_FSMS,56,110,81,123,CBS_DROPDOWNLIST | NOT WS_VISIBLE | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Allow Page Tearing",IDC_CB_FSPT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,126,112,77,10
+    CONTROL         "Use Fa&ke fullscreen mode",IDC_CB_FAKE,"Button",BS_AUTOCHECKBOX | BS_TOP | WS_TABSTOP,214,112,97,10
+    CONTROL         "",IDC_STATIC,"Static",SS_GRAYRECT,0,127,318,1
+    RTEXT           "Display Adapter:",IDC_W_ADAPTER_CAPTION,68,135,53,9
+    COMBOBOX        IDC_ADAPTER_W,126,132,185,208,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CTEXT           "WINDOWED settings",IDC_W_LABEL,7,145,46,18
+    RTEXT           "Max Framerate:",IDC_W_MAXFPS_CAPTION,56,151,65,9
+    COMBOBOX        IDC_W_MAXFPS,126,148,81,107,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    RTEXT           "Multisampling:",IDC_W_MULTISAMPLING_CAPTION,5,165,46,9,NOT WS_VISIBLE | WS_DISABLED
+    COMBOBOX        IDC_WMS,56,163,81,123,CBS_DROPDOWNLIST | NOT WS_VISIBLE | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Allow Page Tearing",IDC_CB_WPT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,126,165,77,10
+    CONTROL         "Integrate with winamp skin",IDC_CB_SKIN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,214,164,102,10
+    CONTROL         "",IDC_STATIC,"Static",SS_GRAYRECT,0,180,318,1
+    LTEXT           "Start in...",IDC_STATIC,9,192,61,8
+    CONTROL         "&Fullscreen",IDC_CB_FS,"Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | WS_TABSTOP,9,203,48,10
+    CONTROL         "&Desktop Mode",IDC_CB_DMS,"Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | WS_TABSTOP,9,215,61,10
+    CONTROL         "Sa&ve CPU by loosely enforcing Max Framerate",IDC_CB_SAVE_CPU,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,78,185,164,10
+    CONTROL         "Show '&Press F1 for  Help' message at startup",IDC_CB_PRESS_F1_MSG,
+                    "Button",BS_AUTOCHECKBOX | BS_TOP | WS_TABSTOP,78,195,159,10
+    CONTROL         "&Minimize Winamp when going fullscreen",IDC_CB_MIN,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,78,205,141,10
+    CONTROL         "Try to fix slow menus/text (uses more video memory)",IDC_CB_FIXSLOWTEXT,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,78,215,183,10
+    CONTROL         "V&J MODE - show text, menus in a second window",IDC_CB_VJMODE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,78,225,173,10
+    PUSHBUTTON      "Dual&Head",ID_DUALHEAD,262,200,50,15
+    PUSHBUTTON      "&Select Fonts",ID_FONTS,262,217,50,15
+END
+
+IDD_PROPPAGE_3 DIALOGEX 0, 0, 320, 240
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_VISIBLE
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    GROUPBOX        "Image cache:",IDC_BRIGHT_SLIDER_BOX2,5,4,140,83
+    LTEXT           "Max # Images:",IDC_MAX_IMAGES_CAPTION,16,17,49,10
+    COMBOBOX        IDC_MAX_IMAGES,74,14,60,87,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Max Video Mem:",IDC_MAX_BYTES_CAPTION,16,34,55,10
+    COMBOBOX        IDC_MAX_BYTES,74,31,60,87,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Note: cache settings are only relevant if you've put gobs of textures into your milkdrop2\\textures\\ folder.  Otherwise, everything fits in 1 MB of VRAM.",IDC_STATIC,13,49,126,33
+    PUSHBUTTON      "Edit &Sprites",ID_SPRITE,11,93,82,15
+    PUSHBUTTON      "&Edit Custom Messages",ID_MSG,11,110,82,15
+    GROUPBOX        "Song Title Animations and Custom Messages",IDC_STATIC,5,130,169,104
+    LTEXT           "(seconds)",IDC_STATIC,137,140,33,9
+    RTEXT           "Duration of song title animations:",IDC_SONGTITLEANIM_DURATION_LABEL,20,153,110,10
+    EDITTEXT        IDC_SONGTITLEANIM_DURATION,136,151,32,13,ES_AUTOHSCROLL
+    RTEXT           "Time between\r\nRANDOM song title anims",IDC_RAND_TITLE_LABEL,34,166,96,17
+    EDITTEXT        IDC_RAND_TITLE,136,169,32,13,ES_AUTOHSCROLL
+    RTEXT           "Time between\r\nRANDOM custom messages",IDC_RAND_MSG_LABEL,34,185,96,17
+    EDITTEXT        IDC_RAND_MSG,136,188,32,13,ES_AUTOHSCROLL
+    CONTROL         "Automatically show song title anims when song changes?",IDC_CB_TITLE_ANIMS,
+                    "Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | BS_MULTILINE | WS_TABSTOP,41,207,114,18
+    GROUPBOX        "Colored-lens 3D glasses",IDC_STATIC,212,66,104,58,NOT WS_VISIBLE | WS_DISABLED
+    PUSHBUTTON      "Set &right eye lens color",IDRIGHT,226,76,82,14,NOT WS_VISIBLE | WS_DISABLED
+    PUSHBUTTON      "Set &left eye lens color",IDLEFT,216,83,82,14,NOT WS_VISIBLE | WS_DISABLED
+    RTEXT           "Default stereo separation (normal=1):",IDC_3DSEP_LABEL,196,101,119,10,NOT WS_VISIBLE | WS_DISABLED
+    EDITTEXT        IDC_3DSEP,260,97,32,13,ES_AUTOHSCROLL | NOT WS_VISIBLE | WS_DISABLED
+    GROUPBOX        "VJ Mode",IDC_STATIC,188,129,127,63,NOT WS_VISIBLE | WS_DISABLED
+    CONTROL         "Enable &VJ Mode (creates a second window for text input and output and leaves the graphics display text-free; use this in conjunction w/multimon for live shows)",IDC_CB_SEPTEXT,
+                    "Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | NOT WS_VISIBLE | WS_DISABLED | WS_TABSTOP,194,143,121,44
+END
+
+IDD_PROPPAGE_4 DIALOGEX 0, 0, 320, 240
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_VISIBLE
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    GROUPBOX        "Soft Cuts (regular, periodic preset transitions/fades)",IDC_STATIC,5,7,187,96
+    RTEXT           "Time between auto preset changes:",IDC_BETWEEN_TIME_LABEL,20,25,116,10
+    EDITTEXT        IDC_BETWEEN_TIME,142,23,32,13,ES_AUTOHSCROLL
+    RTEXT           "Additional random time:",IDC_BETWEEN_TIME_RANDOM_LABEL,33,39,103,10
+    EDITTEXT        IDC_BETWEEN_TIME_RANDOM,142,38,32,13,ES_AUTOHSCROLL
+    RTEXT           "Auto preset blend time:",IDC_BLEND_AUTO_LABEL,34,55,102,10
+    EDITTEXT        IDC_BLEND_AUTO,142,53,32,13,ES_AUTOHSCROLL
+    RTEXT           "User-solicited preset blend time:",IDC_BLEND_USER_LABEL,26,70,110,10
+    EDITTEXT        IDC_BLEND_USER,142,68,32,13,ES_AUTOHSCROLL
+    LTEXT           "(seconds)",IDC_STATIC,142,83,33,10
+    GROUPBOX        "Hard Cuts (driven by major beats)",IDC_STATIC,5,106,187,91
+    RTEXT           "Average time between hard cuts:",IDC_HARDCUT_BETWEEN_TIME_LABEL,20,119,116,10
+    EDITTEXT        IDC_HARDCUT_BETWEEN_TIME,142,117,32,13,ES_AUTOHSCROLL
+    LTEXT           "(seconds)",IDC_STATIC,142,132,33,10
+    LTEXT           "Loudness threshold:",IDC_HARDCUT_LOUDNESS_LABEL,31,139,71,9
+    CTEXT           "min",IDC_HARDCUT_LOUDNESS_MIN,37,151,14,9
+    CONTROL         "Slider1",IDC_HARDCUT_LOUDNESS,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,51,150,114,16
+    CTEXT           "max",IDC_HARDCUT_LOUDNESS_MAX,165,151,16,9
+    CONTROL         "&Disable hard cuts",IDC_CB_HARDCUTS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,33,171,72,13
+END
+
+IDD_PROPPAGE_5 DIALOGEX 0, 0, 320, 240
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_VISIBLE
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+END
+
+#if defined(APSTUDIO_INVOKED) || defined(DISABLED)
+#if defined(APSTUDIO_INVOKED)
+IDD_PROPPAGE_6$(DISABLED) DIALOGEX 0, 0, 320, 240
+#else
+IDD_PROPPAGE_6 DIALOGEX 0, 0, 320, 240
+#endif
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_VISIBLE
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+END
+#endif
+
+#if defined(APSTUDIO_INVOKED) || defined(DISABLED)
+#if defined(APSTUDIO_INVOKED)
+IDD_PROPPAGE_7$(DISABLED) DIALOGEX 0, 0, 320, 240
+#else
+IDD_PROPPAGE_7 DIALOGEX 0, 0, 320, 240
+#endif
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_VISIBLE
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+END
+#endif
+
+#if defined(APSTUDIO_INVOKED) || defined(DISABLED)
+#if defined(APSTUDIO_INVOKED)
+IDD_PROPPAGE_8$(DISABLED) DIALOGEX 0, 0, 320, 240
+#else
+IDD_PROPPAGE_8 DIALOGEX 0, 0, 320, 240
+#endif
+STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD | WS_VISIBLE
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+END
+#endif
+
+IDD_FONTDIALOG DIALOGEX 0, 0, 354, 175
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_NOPARENTNOTIFY
+CAPTION "Select Fonts"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    LTEXT           "Typeset:",IDC_FONT_CAPTION,85,4,109,9
+    LTEXT           "Size:",IDC_FONTSIZE_CAPTION,217,4,50,10
+    LTEXT           "Bold",IDC_FONTOPTIONS_CAPTION,290,4,16,10
+    LTEXT           "Italics",IDC_FONTOPTIONS_CAPTION2,311,4,20,10
+    LTEXT           "AA",IDC_FONTOPTIONS_CAPTION3,336,4,11,10
+    RTEXT           "Simple font:",IDC_FONT_NAME_1,7,16,70,9
+    COMBOBOX        IDC_FONT1,85,13,127,291,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FONTSIZE1,217,13,65,87,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_FONTBOLD1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,293,16,9,9
+    CONTROL         "",IDC_FONTITAL1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,16,9,9
+    CONTROL         "",IDC_FONTAA1,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,337,16,9,9
+    RTEXT           "Decorative font:",IDC_FONT_NAME_2,7,32,70,9
+    COMBOBOX        IDC_FONT2,85,29,127,291,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FONTSIZE2,217,29,65,87,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_FONTBOLD2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,293,32,9,9
+    CONTROL         "",IDC_FONTITAL2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,32,9,9
+    CONTROL         "",IDC_FONTAA2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,337,32,9,9
+    RTEXT           "Help screen:",IDC_FONT_NAME_3,7,48,70,9
+    COMBOBOX        IDC_FONT3,85,45,127,291,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FONTSIZE3,217,45,65,87,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_FONTBOLD3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,293,48,9,9
+    CONTROL         "",IDC_FONTITAL3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,48,9,9
+    CONTROL         "",IDC_FONTAA3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,337,48,9,9
+    RTEXT           "Playlist:",IDC_FONT_NAME_4,7,65,70,9
+    COMBOBOX        IDC_FONT4,85,61,127,291,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FONTSIZE4,217,61,65,87,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_FONTBOLD4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,293,64,9,9
+    CONTROL         "",IDC_FONTITAL4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,315,64,9,9
+    CONTROL         "",IDC_FONTAA4,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,337,64,9,9
+    RTEXT           "Font 5:",IDC_FONT_NAME_5,7,80,70,9,NOT WS_VISIBLE
+    COMBOBOX        IDC_FONT5,85,77,127,291,CBS_DROPDOWNLIST | CBS_SORT | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FONTSIZE5,217,77,65,87,CBS_DROPDOWNLIST | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_FONTBOLD5,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,293,80,9,9
+    CONTROL         "",IDC_FONTITAL5,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,315,80,9,9
+    CONTROL         "",IDC_FONTAA5,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,337,80,9,9
+    RTEXT           "Font 6:",IDC_FONT_NAME_6,7,96,70,9,NOT WS_VISIBLE
+    COMBOBOX        IDC_FONT6,85,93,127,291,CBS_DROPDOWNLIST | CBS_SORT | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FONTSIZE6,217,93,65,87,CBS_DROPDOWNLIST | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_FONTBOLD6,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,293,96,9,9
+    CONTROL         "",IDC_FONTITAL6,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,315,96,9,9
+    CONTROL         "",IDC_FONTAA6,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,337,96,9,9
+    RTEXT           "Font 7:",IDC_FONT_NAME_7,7,112,70,9,NOT WS_VISIBLE
+    COMBOBOX        IDC_FONT7,85,109,127,291,CBS_DROPDOWNLIST | CBS_SORT | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FONTSIZE7,217,109,65,87,CBS_DROPDOWNLIST | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_FONTBOLD7,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,293,112,9,9
+    CONTROL         "",IDC_FONTITAL7,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,315,112,9,9
+    CONTROL         "",IDC_FONTAA7,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,337,112,9,9
+    RTEXT           "Font 8:",IDC_FONT_NAME_8,7,128,70,9,NOT WS_VISIBLE
+    COMBOBOX        IDC_FONT8,85,125,127,291,CBS_DROPDOWNLIST | CBS_SORT | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FONTSIZE8,217,125,65,87,CBS_DROPDOWNLIST | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_FONTBOLD8,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,293,128,9,9
+    CONTROL         "",IDC_FONTITAL8,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,315,128,9,9
+    CONTROL         "",IDC_FONTAA8,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,337,128,9,9
+    RTEXT           "Font 9:",IDC_FONT_NAME_9,7,144,70,9,NOT WS_VISIBLE
+    COMBOBOX        IDC_FONT9,85,141,127,291,CBS_DROPDOWNLIST | CBS_SORT | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_FONTSIZE9,217,141,65,87,CBS_DROPDOWNLIST | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_FONTBOLD9,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,293,144,9,9
+    CONTROL         "",IDC_FONTITAL9,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,315,144,9,9
+    CONTROL         "",IDC_FONTAA9,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,337,144,9,9
+    CTEXT           "Note: 'AA' stands for anti-aliasing (smoothing); not always available.",IDC_FONT_TEXT,7,160,235,8,SS_CENTERIMAGE
+    DEFPUSHBUTTON   "OK",IDOK,246,158,50,13
+    PUSHBUTTON      "Cancel",IDCANCEL,300,158,50,13
+END
+
+IDD_DESKTOPMODE DIALOGEX 0, 0, 201, 105
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_NOPARENTNOTIFY | WS_EX_CONTEXTHELP
+CAPTION "More Options for Desktop Mode"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    CONTROL         "Show icons",IDC_CB_SHOW_ICONS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,4,51,10
+    CONTROL         "Draw colored boxes around icon text labels",IDC_CB_BOX,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,16,154,10
+    CONTROL         "My desktop icons get occluded (covered) by the taskbar when I use Desktop Mode; fix it!",IDC_CB_MANUAL_SCOOT,
+                    "Button",BS_AUTOCHECKBOX | BS_TOP | BS_MULTILINE | WS_TABSTOP,4,28,184,18
+    LTEXT           "When Windows is in [5-6-5] 16-bit color and there is no\ralpha (transparency) channel, try drawing the icons using...",IDC_DM_ALPHA_FIX_CAPTION,4,50,193,17
+    COMBOBOX        IDC_DM_ALPHA_FIX,4,71,193,291,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "OK",IDOK,91,88,50,13
+    PUSHBUTTON      "Cancel",IDCANCEL,147,88,50,13
+END
+
+IDD_DUALHEAD DIALOGEX 0, 0, 304, 164
+STYLE DS_SETFONT | DS_MODALFRAME | DS_SETFOREGROUND | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_NOPARENTNOTIFY
+CAPTION "Dualhead Options"
+FONT 8, "MS Shell Dlg", 0, 0, 0x1
+BEGIN
+    LTEXT           "Typically, multimon (ie. multiple monitor) setups feature two separate video cards and two separate monitors; each resulting display has its own resolution, and the desktop spans across them in some fashion.",IDC_STATIC,4,4,296,26
+    LTEXT           "DualHead video cards, though, feature a single card that feeds two monitors.  Some of these cards treat the two monitors separately, but some of them treat them as halves of a single double-width (~2048x768) or double-height (~1024x1536) 'virtual screen'.",IDC_STATIC,4,34,296,26
+    GROUPBOX        "For Desktop and *Fake* Fullscreen modes:",IDC_STATIC,4,64,150,96
+    LTEXT           "When a single virtual display spans two real screens Horizontally:",IDC_STATIC,10,75,137,18
+    COMBOBOX        IDC_H_PICK,16,96,104,91,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "When a single virtual display spans two real screens Vertically:",IDC_STATIC,10,113,137,18
+    COMBOBOX        IDC_V_PICK,16,134,104,67,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "As a result, graphics applications can't go 'fullscreen' on just one monitor, because it's really only half of the 'screen', from Windows' point of view.",IDC_STATIC,159,64,141,32
+    LTEXT           "This plug-in, however, will let you get away with it, when you're in Desktop Mode or *Fake* Fullscreen Mode; it just needs to know which half of the display (left/right or top/bottom) you want to use -- or both.",IDC_STATIC,159,100,141,42
+    DEFPUSHBUTTON   "OK",IDOK,196,147,50,13
+    PUSHBUTTON      "Cancel",IDCANCEL,250,147,50,13
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_CONFIG, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 385
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 287
+    END
+
+    IDD_FONTDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 350
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 171
+    END
+
+    IDD_DESKTOPMODE, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 197
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 101
+    END
+
+    IDD_DUALHEAD, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 300
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 160
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_WINDOWED_CONTEXT_MENU MENU 
+BEGIN
+    POPUP "Options:"
+    BEGIN
+        MENUITEM "&Fullscreen\tAlt+Enter",      ID_GO_FS
+        MENUITEM "&Desktop Mode\tAlt+D",        ID_DESKTOP_MODE
+        MENUITEM SEPARATOR
+        MENUITEM "Show &Help\tF1",              ID_SHOWHELP
+        MENUITEM "Show Playlist\tP",            ID_SHOWPLAYLIST
+        MENUITEM SEPARATOR
+        MENUITEM "&Quit",                       ID_QUIT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_PLUGIN_ICON         ICON                    "plugin_icon.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXT
+//
+
+IDR_TEXT1               TEXT                    "text1.bin"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,25,3,0
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", "Nullsoft, Inc."
+            VALUE "FileDescription", "Winamp Visualization Plug-in"
+            VALUE "FileVersion", "2, 25, 3, 0"
+            VALUE "InternalName", "Nullsoft Milkdrop v2"
+            VALUE "LegalCopyright", "Copyright © 2001-2013 Nullsoft, Inc."
+            VALUE "OriginalFilename", "vis_milk2.dll"
+            VALUE "ProductName", "Winamp"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.K.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    65535                   "{C5D175F1-E4E4-47ee-B85C-4EDC6B026A35}"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ABOUT_STRING        "%s by %s\n%s"
+    IDS_SZ_MENU_NAV_TOOLTIP "navigation: ESC: exit, Left Arrow: back, Right Arrow: select, UP/DOWN: change sel"
+    IDS_UNTITLED_MENU_ITEM  "<untitled menu item>"
+    IDS_UNTITLED_MENU       "<untitled menu>"
+    IDS_ON                  "ON"
+    IDS_OFF                 "OFF"
+    IDS_USE_UP_DOWN_ARROW_KEYS 
+                            "(use up/down arrow keys, PGUP, PGDN to change value)"
+    IDS_CURRENT_VALUE_OF_X  "Current value of %s:"
+    IDS_LOAD_FROM_FILE      "Load from file:  [note: preset's wave scaling, as well as q1-q8, will not be imported]"
+    IDS_SAVE_TO_FILE        "Save to file:  [note: preset's wave scaling, as well as q1-q8, will not be exported]"
+    IDS_ENTER_THE_NEW_STRING 
+                            "Enter the new string; hit CTRL+ENTER to apply or ESC to cancel."
+    IDS_MILKDROP_ERROR      "MILKDROP ERROR"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_THIS_PLUGIN_NEEDS_MUSIC_TO_RUN 
+                            "This plug-in cannot run without music.\n\nPlease play some music, through Winamp, and then try running the plug-in again."
+    IDS_NO_MUSIC_PLAYING    "No Music Playing"
+    IDS_UNABLE_TO_READ_DATA_FILE_X "Unable to read the data file:\n   %s"
+    IDS_COULD_NOT_CREATE_MY_VERTEX_DECLARATION 
+                            "Could not create my vertex declaration"
+    IDS_COULD_NOT_CREATE_WF_VERTEX_DECLARATION 
+                            "Could not create WF vertex declaration"
+    IDS_COULD_NOT_CREATE_SPRITE_VERTEX_DECLARATION 
+                            "Could not create sprite vertex declaration"
+    IDS_SHADER_MODEL_2      "shader model 2.0"
+    IDS_SHADER_MODEL_3      "shader model 3.0"
+    IDS_SHADER_MODEL_4      "shader model 4.0"
+    IDS_UKNOWN_CASE_X       "(unknown case: %d)"
+    IDS_FAILED_TO_COMPILE_PIXEL_SHADERS_USING_X 
+                            "Failed to compile pixel shaders using %s [PSVersion=0x%X].\n\nAfter hitting OK here, please return to the config panel (ALT+K),\ngo to the second tab, and for the Pixel Shaders option, select Auto."
+    IDS_FAILED_TO_COMPILE_PIXEL_SHADERS_HARDWARE_MIS_REPORT 
+                            "Your hardware says that it supports %s [PSVersion=0x%X],\nbut it doesn't seem to do it properly -\nmaybe your display driver is just buggy.\n\nYou might want to try updating your display driver\nto the latest WHQL driver from the chipset manufacturer\n(Nvidia, ATI, etc.)."
+    IDS_COULD_NOT_COMPILE_FALLBACK_WV_SHADER 
+                            "Could not compile fallback warp vertex shader"
+    IDS_COULD_NOT_COMPILE_FALLBACK_CV_SHADER 
+                            "Could not compile fallback comp vertex shader"
+    IDS_COULD_NOT_COMPILE_FALLBACK_CP_SHADER 
+                            "Could not compile fallback comp pixel shader"
+    IDS_COULD_NOT_COMPILE_BLUR1_VERTEX_SHADER 
+                            "Could not compile blur1 vertex shader"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_DXC_ERR_CAPSFAIL    "DirectX initialization failed (GetDeviceCaps).\n\nThis means that no valid 3D-accelerated display adapter could be found\non your computer.\nIf you know this is not the case, it is possible that your graphics\nsubsystem is temporarily unstable; please try rebooting your computer,\nand then try to run the plug-in again.  Otherwise, please install a\n3D-accelerated display adapter."
+    IDS_FS_DISPLAY_MODE_SELECTED_IS_INVALID 
+                            "The fullscreen display mode selected from the config panel\nwas invalid, for some reason.  For now, the closest match\n(to the old selection) will be used.\n\nTo fix this, please return to the config panel and select a new\nfullscreen display mode.\n\nThe plug-in will now run using the best match..."
+    IDS_CREATEWINDOW_FAILED "CreateWindow failed"
+    IDS_TRYING_TO_ENTER_FS_MODE_WITH_MULTIPLE_DISPLAYS 
+                            "You are trying to enter fullscreen mode while running\nmultiple displays in a vertical or horizontal span,\nwithout using 'Fake Fullscreen Mode'.  As a result,\n--the image will be stretched over both displays.--\n\nIf you would prefer the plug-in to appear on only one display\n(and still be free to operate on the other display),\nplease return to the config panel, enable 'Fake Fullscreen\nMode', click the 'DualHead' button to configure your DualHead\nsetup, and then try again.\n\nHit OK to proceed, or Cancel to exit now."
+    IDS_TIP                 "Tip"
+    IDS_TRYING_TO_ENTER_FS_MODE_WITH_MULTIPLE_DISPLAYS_2 
+                            "You are trying to enter fullscreen mode while running\nmultiple displays in a vertical or horizontal span,\nbut the display mode you are entering does not stretch\nover both displays.  As a result, --the image will only\nappear on one display, and the other display will be disabled.--\n\nThere are two alternatives:\n\n1. To make the fullscreen image appear on only ONE display\nAND still be free to operate on the other display,\nplease return to the config panel and enable 'Fake Fullscreen Mode',\nthen click 'DualHead' to select which screen you'd like the\nplug-in to occupy.  (--RECOMMENDED--)\n\n2. To make the fullscreen image stretch across BOTH displays,\nreturn to the config panel and select a display mode that\nspans both displays (such as 2048 x 768, or 1024 x 1536).\n\nHit OK to continue, or Cancel to exit now."
+    IDS_UNABLE_TO_CREATE_DIRECTX_DEVICE 
+                            "Unable to create a DirectX device.  (D3DERR_NOTAVAILABLE)\n\nThis could mean that you've chosen a combination of settings that is\nnot available on your video card.  Try resetting the plug-in to its\ndefault settings (via the config panel's 'Default' button), and then\ntry running the plug-in again.\n\nYou might also want to close all other applications, to make sure they're\nnot interfering.\n\nIf you have made any changes to your graphics subsystem since your\nlast reboot (such as updating video drivers, installing new software,\netc.), or have witnessed any strange behaviors, TRY REBOOTING first.\n\n"
+    IDS_OLDER_DISPLAY_ADAPTER_CATENATION 
+                            "NOTE: If you are trying to run the plug-in on an older display adapter\n(such as a Voodoo3 card), try going to the config panel (ALT+K)\nand selecting a fullscreen display mode of a different color depth;\nand selecting a fullscreen display mode of a different color depth;\nsome of these older cards can only do 3D in particular color depths\n(such as 16-bit color, for the Voodoo 3).\n"
+    IDS_OLDER_DISPLAY_ADAPTER_CATENATION_2 
+                            "NOTE: If you are trying to run the plug-in on an older display adapter\n(such as a Voodoo3 card), try changing the color depth that Windows\nis running in; some of these cards can only do 3D in particular color depths\n(such as 16-bit color, for the Voodoo3).\n"
+    IDS_DIRECTX_INIT_FAILED_X 
+                            "DirectX initialization failed (CreateDevice; code %d)\n\nOften this means you don't have enough free video memory.\n"
+    IDS_WINDOW_RESIZE_FAILED 
+                            "Window resize failed.\n\nOften this means the application ran out of video memory;\n    perhaps you tried to make the window too large."
+    IDS_OUT_OF_VIDEO_MEMORY "OUT OF VIDEO MEMORY"
+    IDS_ERROR_CREATING_GDI_FONTS "Error creating GDI fonts"
+    IDS_ERROR_LOADING_MAIN_MENU "Error loading main menu"
+    IDS_ERROR_LOADING_CONTEXT_MENU "Error loading context menu"
+    IDS_ERROR_CREATING_DIRECT3D_DEVICE_FOR_VJ_MODE 
+                            "Error invoking Direct3D 9 for VJ mode;\nDirectX 9 could be missing or corrupt."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_COULD_NOT_COMPILE_BLUR1_PIXEL_SHADER 
+                            "Could not compile blur1 pixel shader"
+    IDS_COULD_NOT_COMPILE_BLUR2_VERTEX_SHADER 
+                            "Could not compile blur2 vertex shader"
+    IDS_COULD_NOT_COMPILE_BLUR2_PIXEL_SHADER 
+                            "Could not compile blur2 pixel shader"
+    IDS_COULD_NOT_CREATE_INTERNAL_CANVAS_TEXTURE_SMALLER_DISPLAY 
+                            "Could not create internal canvas texture! (probably not enough video memory left)\ntry selecting a smaller display mode, or decreasing the color bit depth."
+    IDS_COULD_NOT_CREATE_INTERNAL_CANVAS_TEXTURE_NOT_ENOUGH_VID_MEM_RECOMMENDATION 
+                            "Could not create internal canvas texture! (probably not enough video memory left)\n\n\nRECOMMENDATION: SET THE INTERNAL CANVAS SIZE BACK TO 'AUTO' AND TRY AGAIN"
+    IDS_COULD_NOT_CREATE_INTERNAL_CANVAS_TEXTURE_NOT_ENOUGH_VID_MEM 
+                            "Could not create internal canvas texture! (probably not enough video memory left)\n"
+    IDS_SUCCESSFULLY_CREATED_VS0_VS1 
+                            "Successfully created VS0/VS1 at %d x %d (ideal: %d x %d)"
+    IDS_ERROR_CREATING_BLUR_TEXTURES 
+                            "Error creating blur textures - probably not enough video memory."
+    IDS_COULD_NOT_CREATE_NOISE_TEXTURE "Could not create noise texture"
+    IDS_COULD_NOT_LOCK_NOISE_TEXTURE "Could not lock noise texture"
+    IDS_NOISE_TEXTURE_BYTE_LAYOUT_NOT_RECOGNISED 
+                            "Noise texture byte layout not recognized"
+    IDS_COULD_NOT_CREATE_3D_NOISE_TEXTURE "Could not create 3D noise texture"
+    IDS_COULD_NOT_LOCK_3D_NOISE_TEXTURE "Could not lock 3D noise texture"
+    IDS_3D_NOISE_TEXTURE_BYTE_LAYOUT_NOT_RECOGNISED 
+                            "3D noise texture byte layout not recognized"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MILKDROP_WARNING    "MILKDROP WARNING"
+    IDS_ERROR_CREATING_DOUBLE_SIZED_GDI_TITLE_FONT 
+                            "Error creating double-sized GDI title font"
+    IDS_ERROR_CREATING_DOUBLE_SIZED_D3DX_TITLE_FONT 
+                            "Error creating double-sized d3dx title font"
+    IDS_RATING              "Rating"
+    IDS_DISABLED            "[disabled] "
+    IDS_ARE_YOU_SURE_YOU_WANT_TO_DELETE_PRESET 
+                            "Are you SURE you want to delete this preset? [y/N]"
+    IDS_PRESET_TO_DELETE    "(preset to delete: %s)"
+    IDS_FILE_ALREADY_EXISTS_OVERWRITE_IT 
+                            "This file already exists.  Overwrite it?  [y/N]"
+    IDS_FILE_IN_QUESTION_X_MILK "(file in question: %s.milk)"
+    IDS_ERROR_NO_PRESET_FILE_FOUND_IN_X_MILK 
+                            "ERROR: No preset files found in %s*.milk"
+    IDS_LOAD_WHICH_PRESET_PLUS_COMMANDS 
+                            "Load which preset?  (arrow keys to scroll; Esc/close, Enter/select, INS/rename; DEL/delete)"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ERROR_CREATING_SHADER "Error creating shader:\n"
+    IDS_PLEASE_EXIT_VIS_BEFORE_RUNNING_CONFIG_PANEL 
+                            "Please exit the visualizer before running the config panel."
+    IDS_FPS                 "fps"
+    IDS_PF_MONITOR          "pf monitor"
+    IDS_PRESS_F9_TO_HIDE_SHADER_QREF 
+                            "-- press F9 to hide shader Quick Reference --\n"
+    IDS_PRESS_F9_TO_SHOW_SHADER_QREF 
+                            "-- press F9 to show shader Quick Reference --\n"
+    IDS_WARP_AND_COMPOSITE_SHADERS_LOCKED 
+                            "(keep in mind... warp and composite shaders were locked.)"
+    IDS_WARP_SHADER_LOCKED  "(keep in mind... warp shader was locked.)"
+    IDS_COMPOSITE_SHADER_LOCKED 
+                            "(keep in mind... composite shader was locked.)"
+    IDS_PRESET_USES_HIGHEST_PIXEL_SHADER_VERSION 
+                            "This preset already uses the highest pixel shader version (%d) supported by your graphics chip."
+    IDS_PRESET_HAS_MIXED_VERSIONS_OF_SHADERS 
+                            "This preset has mixed versions of shaders in it."
+    IDS_UPGRADE_SHADERS_TO_USE_PS2 
+                            "Do you want to upgrade all shaders to use (at least) pixel shader 2?  [y/N]"
+    IDS_UPGRADE_SHADERS_TO_USE_PS3 
+                            "Do you want to upgrade all shaders to use (at least) pixel shader 3?  [y/N]"
+    IDS_PRESET_DOES_NOT_USE_PIXEL_SHADERS 
+                            "This preset does not currently use pixel shaders."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_UPGRADE_TO_USE_PS2  "Do you want to upgrade it to use pixel shader 2?  [y/N]"
+    IDS_WARNING_OLD_GPU_MIGHT_NOT_WORK_WITH_PRESET 
+                            "  (WARNING: if you save it, other users with older graphics chips might not be able to use the preset."
+    IDS_PRESET_CURRENTLY_USES_PS2 "This preset currently uses pixel shader 2."
+    IDS_UPGRADE_TO_USE_PS3  "Do you want to upgrade it to use pixel shader 3?  [y/N]"
+    IDS_PRESET_CURRENTLY_USES_PS3 "This preset currently uses pixel shader 3."
+    IDS_UPGRADE_TO_USE_PS4  "Do you want to upgrade it to use pixel shader 4?  [y/N]"
+    IDS_WARNING_DO_NOT_FORGET_WARP_SHADER_WAS_LOCKED 
+                            " WARNING: do not forget WARP shader was LOCKED! "
+    IDS_WARNING_DO_NOT_FORGET_COMPOSITE_SHADER_WAS_LOCKED 
+                            " WARNING: do not forget COMPOSITE shader was LOCKED! "
+    IDS_PRESET_MASH_UP_TEXT1 
+                            "Preset Mash-Up:          use keys 1-5 to change bin;"
+    IDS_PRESET_CURRENTLY_USES_PS2X 
+                            "This preset currently uses pixel shader 2.X."
+    IDS_UPGRADE_TO_USE_PS2X "Do you want to upgrade it to use pixel shader 2.X?  [y/N]"
+    IDS_PRESET_MASH_UP_TEXT2 
+                            "                         up/down/a-z to browse presets for current bin;"
+    IDS_PRESET_MASH_UP_TEXT3 
+                            "                         h to randomize preset (or H = all bins); "
+    IDS_PRESET_MASH_UP_TEXT4 "                         esc exits."
+    IDS_DIRECTORY_OF_X      "Directory of: %s"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_PAGE_X_OF_X         " (page %d of %d) "
+    IDS_LOCKED              "<locked> "
+    IDS_ILLEGAL_CHARACTER   "(illegal character)"
+    IDS_STRING_TOO_LONG     "(string too long)"
+    IDS_DIRECTORY_TO_JUMP_TO "Directory to jump to:"
+    IDS_ERROR_IMPORTING_BAD_FILENAME 
+                            "(error importing - bad filename, or file does not exist)"
+    IDS_ERROR_IMPORTING_BAD_FILENAME_OR_NOT_OVERWRITEABLE 
+                            "(error exporting - bad filename, or file can not be overwritten)"
+    IDS_INVALID_PATH        "(invalid path)"
+    IDS_ENTER_THE_NEW_NAME_FOR_X "Enter the new name for ""%s"":"
+    IDS_PRESET_ORDER_IS_NOW_X "preset order is now %s"
+    IDS_SEQUENTIAL          "SEQUENTIAL"
+    IDS_RANDOM              "RANDOM"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_SHUFFLE_IS_NOW_OFF  "shuffle is now OFF"
+    IDS_SHUFFLE_IS_NOW_ON   "shuffle is now ON"
+    IDS_COMPSHADER_LOCKED   "COMP SHADER LOCKED."
+    IDS_WARPSHADER_LOCKED   "WARP SHADER LOCKED."
+    IDS_ALLSHADERS_LOCKED   "ALL SHADERS LOCKED."
+    IDS_ALLSHADERS_UNLOCKED "ALL SHADERS UNLOCKED."
+    IDS_PS_AUTO_RECOMMENDED " Auto (Recommended)"
+    IDS_PS_DISABLED         " Disabled"
+    IDS_PS_SHADER_MODEL_2   " Shader Model 2"
+    IDS_PS_SHADER_MODEL_3   " Shader Model 3"
+    IDS_TX_8_BITS_PER_CHANNEL "  8 bits per channel"
+    IDS_TX_16_BITS_PER_CHANNEL " 16 bits - CAREFUL"
+    IDS_TX_32_BITS_PER_CHANNEL " 32 bits - CAREFUL"
+    IDS_160X120_SLOW        "160 x 120 SLOW "
+    IDS_192X144_SLOW        "192 x 144 SLOW "
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_SAVE_AS             "Save as:"
+    IDS_AUTO                " Auto "
+    IDS_8X6_FAST            "  8 x  6 FAST "
+    IDS_16X12_FAST          " 16 x 12 fast "
+    IDS_24X18               " 24 x 18 "
+    IDS_32X24               " 32 x 24 "
+    IDS_40X30               " 40 x 30 "
+    IDS_48X36_DEFAULT       " 48 x 36 (default)"
+    IDS_64X48_SLOW          " 64 x 48 "
+    IDS_80X60_SLOW          " 80 x 60 slow "
+    IDS_96X72_SLOW          " 96 x 72 SLOW "
+    IDS_128X96_SLOW         "128 x 96 SLOW "
+    IDS_ERROR_IN_SHELLEXECUTE "error in ShellExecute"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_NONE_BEST_IMAGE_QUALITY " None (best image quality) "
+    IDS_1_25_X              " 1.25 X "
+    IDS_1_33_X              " 1.33 X "
+    IDS_1_5_X               " 1.5 X   (...2x faster)"
+    IDS_1_67_X              " 1.67 X (...3x faster)"
+    IDS_2_X                 " 2 X      (...4x faster)"
+    IDS_3_X                 " 3 X      (...9x faster)"
+    IDS_4_X                 " 4 X      (...16x faster) "
+    IDS_NEAREST_POWER_OF_2  " Nearest power of 2 "
+    IDS_EXACT_RECOMMENDED   " Exact (Recommended) "
+    IDS_PIXEL_SHADERS       "Pixel Shaders"
+    IDS_PIXEL_SHADERS_TEXT  "MilkDrop 1 did not use programmable pixel shaders - instead,\nit used the fixed-function graphics pipeline.  If your graphics chip\nis older and doesn't support pixel shaders, or doesn't support the\nideal pixel shader version (2.0) for MilkDrop 2, then this should be\nauto-detected without a problem, and MilkDrop will simply skip over\nany presets that can't run on your graphics chip.  (These presets will\nalso be hidden from view, in the preset list.)\n\nIf you'd like to force MilkDrop to try and allow higher (or lower)\nversions of pixel shaders, use this option.\n\nFinally, if you want to prevent MilkDrop from running any pixel shader 3,\npresets (because it's too slow for them), you can just set this option\nto version 2.0, and MilkDrop will avoid those presets."
+    IDS_TEXFORMAT           "Texture Format"
+    IDS_TEXFORMAT_TEXT      "This determines the precision of the colors that you see.\nHigher bit depths are better.  A bit depth of 8, for example,\nmeans that in the graphics hardware, the image can have 2^8, or 256,\npossible shades (each) of red, green, and blue.\n\nA bit depth of 8 looks decent, but 16 is much better.\nHOWEVER, only high-end video cards (as of 2007) usually support\nit properly.  Older cards can't do 'bilinear interpolation'\nwith 16-bit render targets, meaning that the image will get\nvery grainy and 'digital' looking, so PLEASE WATCH OUT FOR THIS.\n\n32 bits is excessive and slow, don't ever use it.\n\nNote that your monitor can only show 256 shades of each color;\nhowever, if the internal image (that is repeatedly warped and modified\nfrom frame to frame) has better color precision (~16 bits), then \nthe colors in the image will maintain their fidelity as they slowly\nerode and warp, over time."
+    IDS_CANVAS_SIZE         "Canvas Size"
+    IDS_CANVAS_SIZE_TEXT    "This sets the size of the image that milkdrop uses, internally,\nto drive the visuals.  The bigger the value here, the crisper\nthe image you see.  It's highly recommended that you set this\nto 'auto', which will determine the ideal image (texture) size\nautomatically.  However, if you experience visual problems (such\nas black streaks or missing chunks in the image) due to low\nvideo memory, you might want to set this to a low value (like\n256x256 or 512x512).\n\n'Auto (exact)' means the internal texture size will exactly match\nthe number of pixels on the screen - this is the ideal case.\nIf that doesn't work, try 'Auto (nearest power of 2)' - some older\nvideo cards will have better luck with this option."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_CANVAS_STRETCH      "Canvas Stretch"
+    IDS_CANVAS_STRETCH_TEXT "MilkDrop works with an internal texture, or canvas, to do all of\nits graphics rendering.  The speed (framerate) that MilkDrop runs\nat is inversely proportional to the number of pixels that are in\nthis canvas.  So, to render things internally at a smaller resolution,\nbut stretch them up for display, you can use this option.  It will\nmake the image look a bit softer and less crisp or detailed,\nbut - especially for older graphics hardware - things will run\nmuch faster.\n\nKeep in mind, a stretch factor of 2X, for example, means that there\nwill be half as manypixels to simulate on both the X and Y axes, \nso MilkDrop will actually run FOUR TIMES as fast.  With a stretch\nfactor of 3X, it will run 9X as fast (hypothetically).  And so on."
+    IDS_MAX_IMAGES_BYTES_TEXT 
+                            "This option is only relevant if you've put tons of new textures in your \nwinamp\\plugins\\milkdrop2\\textures directory.   If you have (say you\nset up some kind of art kiosk with thousands of large images), this\noption lets you tweak how much video RAM MilkDrop will try to use to\ncache textures.  The only point of cacheing textures is so that \nwhen loading a new preset, if the preset needs to load textures,\nif they were already loaded once and are still cached in memory, \nthe load will be much smoother.\n\nGo ahead and crank this up; MilkDrop's core internal textures will\nalways take precedence over disk textures anyway, so it's pretty safe."
+    IDS_MENU_EDIT_WARP_SHADER "[ edit warp shader ]"
+    IDS_MENU_EDIT_COMPOSITE_SHADER "[ edit composite shader ]"
+    IDS_MENU_BLUR1_EDGE_DARKEN_AMOUNT "blur1: edge darken amount"
+    IDS_MENU_BLUR1_EDGE_DARKEN_AMOUNT_TT 
+                            "keep this >0.25 to avoid edge artifacts, and <1.0 to avoid black borders."
+    IDS_MENU_BLUR1_MIN_COLOR_VALUE "blur1: min color value"
+    IDS_MENU_BLUR1_MIN_COLOR_VALUE_TT 
+                            "narrowing these to just the color range you need will greatly increase color fidelity in the blurred images."
+    IDS_MENU_BLUR1_MAX_COLOR_VALUE "blur1: max color value"
+    IDS_MENU_BLUR1_MAX_COLOR_VALUE_TT 
+                            "narrowing these to just the color range you need will greatly increase color fidelity in the blurred images."
+    IDS_MENU_BLUR2_MIN_COLOR_VALUE "blur2: min color value"
+    IDS_MENU_BLUR2_MIN_COLOR_VALUE_TT 
+                            "narrowing these to just the color range you need will greatly increase color fidelity in the blurred images.  MUST BE SUBSET OF BLUR1 RANGE."
+    IDS_MENU_BLUR2_MAX_COLOR_VALUE "blur2: max color value"
+    IDS_MENU_BLUR2_MAX_COLOR_VALUE_TT 
+                            "narrowing these to just the color range you need will greatly increase color fidelity in the blurred images.  MUST BE SUBSET OF BLUR1 RANGE."
+    IDS_MENU_BLUR3_MIN_COLOR_VALUE "blur3: min color value"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MESH_SIZE           "Mesh Size"
+    IDS_MESH_SIZE_TEXT      "MilkDrop uses a mesh of polygons to warp the image each frame.\nThis setting determines how finely subdivided that mesh is.\nA larger mesh size will mean finer resolution 'movement' in the\nimage; basically, it will look better.  Watch out, though - \nonly crank this way up if you have a fast CPU."
+    IDS_CB_ALWAYS3D         "Enable this to force all presets to be displayed in 3D mode.\n(Note that you need glasses with differently-colored lenses\n to see the effect.)"
+    IDS_DISABLE_PRESET_RATING "Disable preset rating"
+    IDS_DISABLE_PRESET_RATING_TEXT 
+                            "Check this to turn off the preset rating system.  Normally, when MilkDrop\ngoes to randomly select a preset, it weights them based on their ratings.\nHowever, if you want all presets to have an equal chance of being chosen,\ncheck this box."
+    IDS_CB_NOWARN2          "Check this to disable any & all warning messages that appear in the\nupper-right corner of the screen."
+    IDS_START_WITH_PRESET_LOCK_ON "Start with preset lock ON"
+    IDS_START_WITH_PRESET_LOCK_ON_TEXT 
+                            "Check this to make MilkDrop automatically start in 'preset lock' mode,\nmeaning that the preset will not change until the user changes it\nmanually (either by pressing SPACE, hitting H for a hard cut, or by\nselecting a new preset from the 'L'oad menu).\n\nUse the SCROLL LOCK key while MilkDrop is running to toggle the preset\nlock on or off.  When the SCROLL LOCK light is on, that means that the\npreset lock is also on, and vice versa."
+    IDS_BRIGHT_SLIDER       "The brightness slider lets you control the overall brightness\nof the image.  If the image is continually washed out to bright\npurple or white, you'll want to crank this down to (probably) zero.\nIf the image is chronically dark, crank this up.\n\nNote that the slider is not visible when the nearby 'guess'\ncheckbox is checked.  Uncheck it to manually set the brightness.\n\nAlso note that this brightness adjustment is only a concern in\n16-bit color modes.  (32-bit doesn't have this problem.)  So,\nif you're running Windows in 16-bit color, this slider will affect\nwindowed, desktop, and 'fake' fullscreen modes.  And if you've\nselected a 16-bit fullscreen display mode, it will affect that\ntoo."
+    IDS_CB_AUTOGAMMA        "Check this option to ask milkdrop to make an educated guess\nfor the 'brightness control for 16-bit color' setting, based\non the vendor of your video card.  This usually gets it, but\nnot always.\n\nThe slider is only visible when this option is unchecked.\n\nSee the help for the slider for more information."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_SPRITE              "Click this button to edit milk_img.ini, the file that defines\nall of the custom sprites you can invoke for display while\nmilkdrop is running.  A sprite is an image that you can fade\nin or our, move around, and so on."
+    IDS_MSG                 "Click this button to edit milk_msg.ini, the file that you can\nconfigure to set up custom overlaid text messages that you can\ndisplay while milkdrop is running."
+    IDS_SONGTITLEANIM_DURATION_TEXT 
+                            "The duration, in seconds, of song title animations."
+    IDS_RAND_TITLE_TEXT     "The mean (average) time, in seconds, between randomly-launched\nsong title animations.  Set to a negative value to disable random\nlaunching."
+    IDS_RAND_MSG_TEXT       "The mean (average) time, in seconds, between randomly-launched\ncustom messages (from milk_msg.ini).  Set to a negative value\nto disable random launching."
+    IDS_TITLE_ANIMS_TEXT    "Check this to automatically launch song title animations whenever\nthe track changes."
+    IDS_BETWEEN_TIME_TEXT   "The minimum amount of time that elapses between preset changes\n(excluding hard cuts, which take priority).  The old preset will\nbegin to blend or fade into a new preset after this amount of time,\nplus some random amount of time as specified below in the\n'additional random time' box.  Add these two values together to\nget the maximum amount of time that will elapse between preset\nchanges."
+    IDS_BETWEEN_TIME_RANDOM_TEXT 
+                            "The additional random maximum # of seconds between preset fades\n(aka preset changes) (aka soft cuts)."
+    IDS_BLEND_AUTO_TEXT     "The duration, in seconds, of a soft cut (a normal fade from one preset\nto another) that is initiated because some amount of time has passed.\nA value less than 1 will make for a very quick transition, while a value\naround 3 or 4 will allow you to see some interesting behavior during\nthe blend."
+    IDS_BLEND_USER_TEXT     "The duration, in seconds, of a soft cut (a normal fade from one preset\nto another) that is initiated by you, when you press the 'H' key (for\na Hard cut).  A value less than 1 will make for a very quick transition,\nwhile a value around 3 or 4 will allow you to see some interesting behavior\nduring the blend."
+    IDS_HARDCUT_BETWEEN_TIME_TEXT 
+                            "The amount of time, in seconds, between hard cuts.  Hard cuts are\nset off by loud beats in the music, with (ideally) about this much\ntime in between them."
+    IDS_HARDCUT_LOUDNESS_TEXT 
+                            "Use this slider to adjust the sensitivity of the beat detection\nalgorithm used to detect the beats that cause hard cuts.  A value\nclose to 'min' will cause the algorithm to be very sensitive (so\neven small beats will trigger it); a value close to 'max' will\ncause only the largest beats to trigger it."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_CB_HARDCUTS         "Check this to disable hard cuts; a loud beat\nwill never cause the preset to change."
+    IDS_EDIT_CURRENT_PRESET "--edit current preset"
+    IDS_MOTION              "--MOTION"
+    IDS_DRAWING_CUSTOM_SHAPES "--drawing: custom shapes"
+    IDS_DRAWING_CUSTOM_WAVES "--drawing: custom waves"
+    IDS_DRAWING_SIMPLE_WAVEFORM "--drawing: simple waveform"
+    IDS_DRAWING_BORDERS_MOTION_VECTORS "--drawing: borders, motion vectors"
+    IDS_POST_PROCESSING_MISC "--post-processing, misc."
+    IDS_CUSTOM_WAVE_X       "--custom wave %d"
+    IDS_CUSTOM_SHAPE_X      "--custom shape %d"
+    IDS_MENU_EDIT_PRESET_INIT_CODE "[ edit preset initialization code ]"
+    IDS_MENU_EDIT_PRESET_INIT_CODE_TT 
+                            "read-only: zoom, rot, warp, cx, cy, dx, dy, sx, sy; decay, gamma;\n           echo_zoom, echo_scale, echo_orient;\n           ib_{size|r|g|b|a}, ob_{size|r|g|b|a}, mv_{x|y|dx|dy|l|r|g|b|a};\n           wave_{r|g|b|a|x|y|mode|mystery|usedots|thick|additive|brighten};\n           darken_center, wrap; invert, brighten, darken, solarize\n           time, fps, frame, progress; {bass|mid|treb}[_att]\nwrite:     q1-q8, monitor"
+    IDS_MENU_EDIT_PER_FRAME_EQUATIONS "[ edit per_frame equations ]"
+    IDS_MENU_EDIT_PER_FRAME_EQUATIONS_TT 
+                            "read-only:  time, fps, frame, progress; {bass|mid|treb}[_att]\nread/write: zoom, rot, warp, cx, cy, dx, dy, sx, sy; q1-q8; monitor\n            mv_{x|y|dx|dy|l|r|g|b|a}, ib_{size|r|g|b|a}, ob_{size|r|g|b|a};\n            wave_{r|g|b|a|x|y|mode|mystery|usedots|thick|additive|brighten};\n            darken_center, wrap; invert, brighten, darken, solarize\n            decay, gamma, echo_zoom, echo_alpha, echo_orient"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_ROTATION_AMOUNT_TT 
+                            "controls the amount of rotation.  0=none, 0.1=slightly right, -0.1=slightly clockwise, 0.1=CCW"
+    IDS_MENU_ROTATION_CENTER_OF_X " rot., center of (X)"
+    IDS_MENU_ROTATION_CENTER_OF_X_TT 
+                            "controls where the center of rotation is, horizontally.  0=left, 0.5=center, 1=right"
+    IDS_MENU_ROTATION_CENTER_OF_Y " rot., center of (Y)"
+    IDS_MENU_ROTATION_CENTER_OF_Y_TT 
+                            "controls where the center of rotation is, vertically.  0=top, 0.5=center, 1=bottom"
+    IDS_MENU_TRANSLATION_X  "translation (X)"
+    IDS_MENU_TRANSLATION_X_TT 
+                            "controls amount of constant horizontal motion; -0.01 = slight shift right, 0=none, 0.01 = to left"
+    IDS_MENU_TRANSLATION_Y  "translation (Y)"
+    IDS_MENU_TRANSLATION_Y_TT 
+                            "controls amount of constant vertical motion; -0.01 = slight shift downward, 0=none, 0.01 = upward"
+    IDS_MENU_SCALING_X      "scaling (X)"
+    IDS_MENU_SCALING_X_TT   "controls amount of constant horizontal stretching; 0.99=shrink, 1=normal, 1.01=stretch"
+    IDS_MENU_SCALING_Y      "scaling (Y)"
+    IDS_MENU_SCALING_Y_TT   "controls amount of constant vertical stretching; 0.99=shrink, 1=normal, 1.01=stretch"
+    IDS_MENU_SUSTAIN_LEVEL  "sustain level"
+    IDS_MENU_SUSTAIN_LEVEL_TT 
+                            "controls the eventual fade to black; 1=no fade, 0.9=strong fade; 0.98=recommended."
+    IDS_MENU_DARKEN_CENTER  "darken center"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_DARKEN_CENTER_TT 
+                            "when ON, help keeps the image from getting too bright by continually dimming the center point"
+    IDS_MENU_GAMMA_ADJUSTMENT "gamma adjustment"
+    IDS_MENU_GAMMA_ADJUSTMENT_TT 
+                            "controls brightness; 1=normal, 2=double, 3=triple, etc."
+    IDS_MENU_HUE_SHADER     "hue shader"
+    IDS_MENU_HUE_SHADER_TT  "adds subtle color variations to the image.  0=off, 1=fully on"
+    IDS_MENU_VIDEO_ECHO_ALPHA "video echo: alpha"
+    IDS_MENU_VIDEO_ECHO_ALPHA_TT 
+                            "controls the opacity of the second graphics layer; 0=transparent (off), 0.5=half-mix, 1=opaque"
+    IDS_MENU_VIDEO_ECHO_ZOOM " video echo: zoom"
+    IDS_MENU_VIDEO_ECHO_ZOOM_TT 
+                            "controls the size of the second graphics layer"
+    IDS_MENU_VIDEO_ECHO_ORIENTATION " video echo: orientation"
+    IDS_MENU_VIDEO_ECHO_ORIENTATION_TT 
+                            "selects an orientation for the second graphics layer.  0=normal, 1=flip on x, 2=flip on y, 3=flip on both"
+    IDS_MENU_TEXTURE_WRAP   "texture wrap"
+    IDS_MENU_TEXTURE_WRAP_TT 
+                            "sets whether or not screen elements can drift off of one side and onto the other"
+    IDS_MENU_FILTER_INVERT  "filter: invert"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_FILTER_INVERT_TT "inverts the colors in the image"
+    IDS_MENU_FILTER_BRIGHTEN "filter: brighten"
+    IDS_MENU_FILTER_BRIGHTEN_TT 
+                            "brightens the darker parts of the image (nonlinear; square root filter)"
+    IDS_MENU_FILTER_DARKEN  "filter: darken"
+    IDS_MENU_FILTER_DARKEN_TT 
+                            "darkens the brighter parts of the image (nonlinear; squaring filter)"
+    IDS_MENU_FILTER_SOLARIZE "filter: solarize"
+    IDS_MENU_FILTER_SOLARIZE_TT "emphasizes mid-range colors"
+    IDS_MENU_ENABLED        "enabled"
+    IDS_MENU_ENABLED_TT     "enables or disables this custom waveform/spectrum"
+    IDS_MENU_NUMBER_OF_SAMPLES "number of samples"
+    IDS_MENU_NUMBER_OF_SAMPLES_TT 
+                            "the number of samples (points) that makes up the waveform"
+    IDS_MENU_L_R_SEPARATION "L/R separation"
+    IDS_MENU_L_R_SEPARATION_TT 
+                            "the offset between the left & right channels; useful for doing phase plots. Keep low (<32) when using w/spectrum."
+    IDS_MENU_SCALING        "scaling"
+    IDS_MENU_SCALING_TT     "the size of the wave (1=normal)"
+    IDS_MENU_SMOOTHING_TT   "0=the raw wave; 1=a highly damped (smoothed) wave"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_WAVE_TYPE      "wave type"
+    IDS_MENU_WAVE_TYPE_TT   "each value represents a different way of drawing the waveform"
+    IDS_MENU_SIZE           "size"
+    IDS_MENU_SIZE_TT        "relative size of the waveform"
+    IDS_MENU_SMOOTH         "smoothing"
+    IDS_MENU_SMOOTH_TT      "controls the smoothness of the waveform; 0=natural sound data (no smoothing), 0.9=max. smoothing"
+    IDS_MENU_MYSTERY_PARAMETER "mystery parameter"
+    IDS_MENU_MYSTERY_PARAMETER_TT 
+                            "what this one does is a secret (actually, its effect depends on the 'wave type'"
+    IDS_MENU_POSITION_X     "position (X)"
+    IDS_MENU_POSITION_X_TT  "position of the waveform: 0 = far left edge of screen, 0.5 = center, 1 = far right"
+    IDS_MENU_POSITION_Y     "position (Y)"
+    IDS_MENU_POSITION_Y_TT  "position of the waveform: 0 = very bottom of screen, 0.5 = center, 1 = top"
+    IDS_MENU_COLOR_RED      "color (red)"
+    IDS_MENU_COLOR_RED_TT   "amount of red color in the wave (0..1)"
+    IDS_MENU_COLOR_GREEN    "color (green)"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_COLOR_GREEN_TT "amount of green color in the wave (0..1)"
+    IDS_MENU_COLOR_BLUE     "color (blue)"
+    IDS_MENU_COLOR_BLUE_TT  "amount of blue color in the wave (0..1)"
+    IDS_MENU_OPACITY        "opacity"
+    IDS_MENU_OPACITY_TT     "opacity of the waveform; lower numbers = more transparent"
+    IDS_MENU_USE_DOTS       "use dots"
+    IDS_MENU_USE_DOTS_TT    "if true, the waveform is drawn as dots (instead of lines)"
+    IDS_MENU_DRAW_THICK     "draw thick"
+    IDS_MENU_DRAW_THICK_TT  "if true, the waveform's lines (or dots) are drawn with double thickness"
+    IDS_MENU_MODULATE_OPACITY_BY_VOLUME "modulate opacity by volume"
+    IDS_MENU_MODULATE_OPACITY_BY_VOLUME_TT 
+                            "if true, the waveform opacity is affected by the music's volume"
+    IDS_MENU_MODULATION_TRANSPARENT_VOLUME "modulation: transparent volume"
+    IDS_MENU_MODULATION_TRANSPARENT_VOLUME_TT 
+                            "when the relative volume hits this level, the wave becomes transparent.  1 = normal loudness, 0.5 = extremely quiet, 1.5 = extremely loud"
+    IDS_MENU_MODULATION_OPAQUE_VOLUME "modulation: opaque volume"
+    IDS_MENU_MODULATION_OPAQUE_VOLUME_TT 
+                            "when the relative volume hits this level, the wave becomes opaque.  1 = normal loudness, 0.5 = extremely quiet, 1.5 = extremely loud"
+    IDS_MENU_ADDITIVE_DRAWING "additive drawing"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_ADDITIVE_DRAWING_TT 
+                            "if true, the wave is drawn additively, saturating the image at white"
+    IDS_MENU_COLOR_BRIGHTENING "color brightening"
+    IDS_MENU_COLOR_BRIGHTENING_TT 
+                            "if true, the red, green, and blue color components will be scaled up until at least one of them reaches 1.0"
+    IDS_MENU_OUTER_BORDER_THICKNESS "outer border thickness"
+    IDS_MENU_OUTER_BORDER_THICKNESS_TT 
+                            "thickness of the outer border drawn at the edges of the screen"
+    IDS_MENU_COLOR_RED_OUTER " color (red)"
+    IDS_MENU_COLOR_RED_OUTER_TT "amount of red color in the outer border"
+    IDS_MENU_COLOR_GREEN_OUTER " color (green)"
+    IDS_MENU_COLOR_GREEN_OUTER_TT "amount of green color in the outer border"
+    IDS_MENU_COLOR_BLUE_OUTER " color (blue)"
+    IDS_MENU_COLOR_BLUE_OUTER_TT "amount of blue color in the outer border"
+    IDS_MENU_OPACITY_OUTER  " opacity"
+    IDS_MENU_OPACITY_OUTER_TT 
+                            "opacity of the outer border (0=transparent, 1=opaque)"
+    IDS_MENU_INNER_BORDER_THICKNESS "inner border thickness"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_INNER_BORDER_THICKNESS_TT 
+                            "thickness of the inner border drawn at the edges of the screen"
+    IDS_MENU_COLOR_RED_INNER_TT "amount of red color in the inner border"
+    IDS_MENU_COLOR_GREEN_INNER_TT "amount of green color in the inner border"
+    IDS_MENU_COLOR_BLUE_INNER_TT "amount of blue color in the inner border"
+    IDS_MENU_OPACITY_INNER_TT 
+                            "opacity of the inner border (0=transparent, 1=opaque)"
+    IDS_MENU_MOTION_VECTOR_OPACITY "motion vector opacity"
+    IDS_MENU_MOTION_VECTOR_OPACITY_TT 
+                            "opacity of the motion vectors (0=transparent, 1=opaque)"
+    IDS_MENU_NUM_MOT_VECTORS_X " num. mot. vectors (X)"
+    IDS_MENU_NUM_MOT_VECTORS_X_TT "the number of motion vectors on the x-axis"
+    IDS_MENU_NUM_MOT_VECTORS_Y " num. mot. vectors (Y)"
+    IDS_MENU_NUM_MOT_VECTORS_Y_TT "the number of motion vectors on the y-axis"
+    IDS_MENU_OFFSET_X       " offset (X)"
+    IDS_MENU_OFFSET_X_TT    "horizontal placement offset of the motion vectors"
+    IDS_MENU_OFFSET_Y       " offset (Y)"
+    IDS_MENU_OFFSET_Y_TT    "vertical placement offset of the motion vectors"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_TRAIL_LENGTH   " trail length"
+    IDS_MENU_TRAIL_LENGTH_TT "the length of the motion vectors (1=normal)"
+    IDS_MENU_COLOR_RED_MOTION_VECTOR_TT 
+                            "amount of red color in the motion vectors"
+    IDS_MENU_COLOR_GREEN_MOTION_VECTOR_TT 
+                            "amount of green color in the motion vectors"
+    IDS_MENU_COLOR_BLUE_MOTION_VECTOR_TT 
+                            "amount of blue color in the motion vectors"
+    IDS_MENU_ZOOM_AMOUNT    "zoom amount"
+    IDS_MENU_ZOOM_AMOUNT_TT "controls inward/outward motion.  0.9=zoom out, 1.0=no zoom, 1.1=zoom in"
+    IDS_MENU_ZOOM_EXPONENT  " zoom exponent"
+    IDS_MENU_ZOOM_EXPONENT_TT "controls the curvature of the zoom; 1=normal"
+    IDS_MENU_WARP_AMOUNT    "warp amount"
+    IDS_MENU_WARP_AMOUNT_TT "controls the magnitude of the warping; 0=none, 1=normal, 2=major warping..."
+    IDS_MENU_WARP_SCALE     " warp scale"
+    IDS_MENU_WARP_SCALE_TT  "controls the wavelength of the warp; 1=normal, less=turbulent, more=smoother"
+    IDS_MENU_WARP_SPEED     " warp speed"
+    IDS_MENU_WARP_SPEED_TT  "controls the speed of the warp; 1=normal, less=slower, more=faster"
+    IDS_MENU_ROTATION_AMOUNT "rotation amount"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_BLUR3_MIN_COLOR_VALUE_TT 
+                            "narrowing these to just the color range you need will greatly increase color fidelity in the blurred images.  MUST BE SUBSET OF BLUR1, BLUR2 RANGES."
+    IDS_MENU_BLUR3_MAX_COLOR_VALUE "blur3: max color value"
+    IDS_MENU_BLUR3_MAX_COLOR_VALUE_TT 
+                            "narrowing these to just the color range you need will greatly increase color fidelity in the blurred images.  MUST BE SUBSET OF BLUR1, BLUR2 RANGES."
+    IDS_MENU_EDIT_PER_VERTEX_EQUATIONS "[ edit per_vertex equations ]"
+    IDS_MENU_EDIT_PER_VERTEX_EQUATIONS_TT 
+                            "read-only:  x, y, rad, ang; time, fps, frame, progress; {bass|mid|treb}[_att]\nread/write: dx, dy, zoom, rot, warp, cx, cy, sx, sy, q1-q8"
+    IDS_MENU_EDIT_WARP_SHADER_TT 
+                            "This pixel shader drives the warping, color, etc. of the internal image each frame.\n"
+    IDS_MENU_EDIT_COMPOSITE_SHADER_TT 
+                            "This pixel shader drives the final presentation of the internal image to the screen each frame.\n"
+    IDS_MENU_EDIT_UPGRADE_PRESET_PS_VERSION 
+                            "upgrade preset's pixel shader version"
+    IDS_MENU_EDIT_UPGRADE_PRESET_PS_VERSION_TT 
+                            "Upgrades the preset to the next-available pixel shader version."
+    IDS_MENU_EDIT_DO_A_PRESET_MASH_UP "do a preset mash-up"
+    IDS_MENU_EDIT_DO_A_PRESET_MASH_UP_TT 
+                            "Mix qualities from many different presets to create a new one."
+    IDS_MENU_NUMBER_OF_INSTANCES "number of instances"
+    IDS_MENU_NUMBER_OF_INSTANCES_TT 
+                            "the number of times (num_inst) to draw this shape.  Each instance will have a different value for 'instance' in the per-frame eqs (0,1,2...)"
+    IDS_MENU_EDIT_INIT_CODE_SHAPE_TT 
+                            "IN: time, frame, fps, progress; q1-q8 (from preset init); x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured\nOUT: t1-t8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured"
+    IDS_MENU_EDIT_PER_FRAME_INSTANCE_CODE 
+                            "[ edit per-frame(/per-instance) code ]"
+    IDS_MENU_EDIT_PER_FRAME_INSTANCE_CODE_TT 
+                            "IN: instance, num_inst, time, frame, fps, progress; q1-q8 (from preset init); x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured\nOUT: t1-t8; x,y,rad,ang; r,g,b,a; r2,g2,b2,a2; border_{r|g|b|a}; sides, thick, additive, textured"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_OPACITY_WAVE_TT 
+                            "opacity of the waveform; 0=transparent, 1=opaque"
+    IDS_MENU_USE_SPECTRUM   "use spectrum"
+    IDS_MENU_USE_SPECTRUM_TT 
+                            "if ON, the data in value1 and value2 will constitute a frequency spectrum (instead of waveform values)"
+    IDS_MENU_USE_DOTS_WAVE_TT 
+                            "if ON, the samples will be overdrawn 4X to make them thicker, bolder, and more visible"
+    IDS_MENU_DRAW_THICK_WAVE_TT 
+                            "if ON, the samples will be overdrawn 4X to make them thicker, bolder, and more visible"
+    IDS_MENU_ADDITIVE_DRAWING_WAVE_TT 
+                            "if ON, the samples will add color to sature the image toward white; otherwise, they replace what's there."
+    IDS_MENU_EXPORT_TO_FILE "--export to file"
+    IDS_MENU_EXPORT_TO_FILE_TT 
+                            "export the settings for this custom waveform to a file on disk"
+    IDS_MENU_IMPORT_FROM_FILE "--import from file"
+    IDS_MENU_IMPORT_FROM_FILE_TT 
+                            "import settings for a custom waveform from a file on disk"
+    IDS_MENU_EDIT_INIT_CODE "[ edit initialization code ]"
+    IDS_MENU_EDIT_INIT_CODE_TT 
+                            "IN: time, frame, fps, progress; samples; q1-q8 (from preset init) / OUT: t1-t8"
+    IDS_MENU_EDIT_PER_FRAME_CODE "[ edit per-frame code ]"
+    IDS_MENU_EDIT_PER_FRAME_CODE_TT 
+                            "IN: time, frame, fps, progress; samples; q1-q8, t1-t8; r,g,b,a; {bass|mid|treb}[_att] / OUT: r,g,b,a; samples; t1-t8"
+    IDS_MENU_EDIT_PER_POINT_CODE "[ edit per-point code ]"
+    IDS_MENU_EDIT_PER_POINT_CODE_TT 
+                            "IN: sample [0..1]; value1 [left ch], value2 [right ch], plus all vars for per-frame code / OUT: x,y; r,g,b,a; t1-t8"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_ENABLED_SHAPE_TT "enables or disables this shape"
+    IDS_MENU_NUMBER_OF_SIDES "number of sides"
+    IDS_MENU_NUMBER_OF_SIDES_TT 
+                            "the default number of sides that make up the polygonal shape"
+    IDS_MENU_DRAW_THICK_SHAPE_TT 
+                            "if ON, the border will be overdrawn 4X to make it thicker, bolder, and more visible"
+    IDS_MENU_ADDITIVE_DRAWING_SHAPE_TT 
+                            "if ON, the shape will add color to sature the image toward white; otherwise, it will replace what's there."
+    IDS_MENU_X_POSITION     "x position"
+    IDS_MENU_X_POSITION_TT  "default x position of the shape (0..1; 0=left side, 1=right side)"
+    IDS_MENU_Y_POSITION     "y position"
+    IDS_MENU_Y_POSITION_TT  "default y position of the shape (0..1; 0=bottom, 1=top of screen)"
+    IDS_MENU_RADIUS         "radius"
+    IDS_MENU_RADIUS_TT      "default radius of the shape (0+)"
+    IDS_MENU_ANGLE          "angle"
+    IDS_MENU_ANGLE_TT       "default rotation angle of the shape (0...3.14*2)"
+    IDS_MENU_TEXTURED       "textured"
+    IDS_MENU_TEXTURED_TT    "if ON, the shape will be textured with the image from the previous frame"
+    IDS_MENU_TEXTURE_ZOOM   "texture zoom"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_TEXTURE_ZOOM_TT 
+                            "the portion of the previous frame's image to use with the shape"
+    IDS_MENU_TEXTURE_ANGLE  "texture angle"
+    IDS_MENU_TEXTURE_ANGLE_TT 
+                            "the angle at which to rotate the previous frame's image before applying it to the shape"
+    IDS_MENU_INNER_COLOR_RED "inner color (red)"
+    IDS_MENU_INNER_COLOR_RED_TT 
+                            "default amount of red color toward the center of the shape (0..1)"
+    IDS_MENU_INNER_COLOR_GREEN "inner color (green)"
+    IDS_MENU_INNER_COLOR_GREEN_TT 
+                            "default amount of green color toward the center of the shape (0..1)"
+    IDS_MENU_INNER_COLOR_BLUE "inner color (blue)"
+    IDS_MENU_INNER_COLOR_BLUE_TT 
+                            "default amount of blue color toward the center of the shape (0..1)"
+    IDS_MENU_INNER_OPACITY  "inner opacity"
+    IDS_MENU_INNER_OPACITY_TT 
+                            "default opacity of the center of the shape; 0=transparent, 1=opaque"
+    IDS_MENU_OUTER_COLOR_RED "outer color (red)"
+    IDS_MENU_OUTER_COLOR_RED_TT 
+                            "default amount of red color toward the outer edge of the shape (0..1)"
+    IDS_MENU_OUTER_COLOR_GREEN "outer color (green)"
+    IDS_MENU_OUTER_COLOR_GREEN_TT 
+                            "default amount of green color toward the outer edge of the shape (0..1)"
+    IDS_MENU_OUTER_COLOR_BLUE "outer color (blue)"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MENU_OUTER_COLOR_BLUE_TT 
+                            "default amount of blue color toward the outer edge of the shape (0..1)"
+    IDS_MENU_OUTER_OPACITY  "outer opacity"
+    IDS_MENU_OUTER_OPACITY_TT 
+                            "default opacity of the outer edge of the shape; 0=transparent, 1=opaque"
+    IDS_MENU_BORDER_COLOR_RED "border color (red)"
+    IDS_MENU_BORDER_COLOR_RED_TT 
+                            "default amount of red color in the shape's border (0..1)"
+    IDS_MENU_BORDER_COLOR_GREEN "border color (green)"
+    IDS_MENU_BORDER_COLOR_GREEN_TT 
+                            "default amount of green color in the shape's border (0..1)"
+    IDS_MENU_BORDER_COLOR_BLUE "border color (blue)"
+    IDS_MENU_BORDER_COLOR_BLUE_TT 
+                            "default amount of blue color in the shape's border (0..1)"
+    IDS_MENU_BORDER_OPACITY "border opacity"
+    IDS_MENU_BORDER_OPACITY_TT 
+                            "default opacity of the shape's border; 0=transparent, 1=opaque"
+    IDS_MENU_EXPORT_TO_FILE_SHAPE_TT 
+                            "export the settings for this custom shape to a file on disk"
+    IDS_MENU_IMPORT_FROM_FILE_SHAPE_TT 
+                            "import settings for a custom shape from a file on disk"
+    IDS_ERROR_UNABLE_TO_SAVE_THE_FILE "ERROR: unable to save the file"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ERROR_PRESET_NOT_FOUND_X "ERROR: preset not found: %s"
+    IDS_ERROR_NO_PRESET_FILES_OR_DIRS_FOUND_IN_X 
+                            "ERROR: No preset files OR directories found in %s*.milk"
+    IDS_SCANNING_PRESETS    " scanning presets... "
+    IDS_SPRITE_X_ERROR_COULD_NOT_FIND_IMG_OR_NOT_DEFINED 
+                            "sprite #%d error: could not find 'img=' setting, or sprite is not defined"
+    IDS_WARNING_PRESET_X_ERROR_IN_PRESET_INIT_CODE 
+                            "warning: preset ""%s"": error in 'preset_init' code"
+    IDS_WARNING_PRESET_X_ERROR_IN_PER_FRAME_CODE 
+                            "warning: preset ""%s"": error in 'per-frame' code"
+    IDS_WARNING_PRESET_X_ERROR_IN_PER_VERTEX_CODE 
+                            "warning: preset ""%s"": error in 'per-vertex' code"
+    IDS_HZ                  "Hz"
+    IDS_HELP_MINIMIZE_WINAMP "Help on 'Minimize Winamp...' checkbox"
+    IDS_HELP_MINIMIZE_WINAMP_HELP 
+                            "Enable this if you can sometimes see the Winamp window flickering\nthrough, when you run the plug-in fullscreen.  Enabling this option\nwill force the Winamp window to minimize whenever the plug-in goes\nfullscreen on the same monitor that the Winamp window is on.\nThe Winamp window will be restored as soon as the plug-in returns\nfrom fullscreen mode.\n\nNote that this also applies for 'fake' fullscreen mode (as well as 'real'\nfullscreen mode).\n\nKeep in mind that when running graphically demanding applications\n(such as this plug-in), it's always good to minimize (or close) as many\nother applications as possible, even if they appear to be idle."
+    IDS_DIRECTX_MISSING_OR_CORRUPT_TEXT 
+                            "Failed to initialize DirectX 9.0 or later.\nMilkdrop requires d3dx9_31.dll to be installed.\n\nWould you like to be taken to:\nhttp://www.microsoft.com/download/details.aspx?id=35,\nwhere you can update DirectX 9.0?\n"
+    IDS_PARENT_DIRECTORY    "parent directory"
+    IDS_RAND_TITLE          "Time between random song title animation"
+    IDS_RAND_MSG            "Time between random custom messages"
+    IDS_MAX_IMAGES_BYTES    "Image cache settings"
+    IDS_PAGE_X              " Page %d "
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_SAVE_SUCCESSFUL     "[save successful]"
+    IDS_ERROR_UNABLE_TO_DELETE_THE_FILE "ERROR: unable to delete the file"
+    IDS_PRESET_X_DELETED    "[preset ""%s"" deleted]"
+    IDS_ERROR_A_FILE_ALREADY_EXISTS_WITH_THAT_FILENAME 
+                            "ERROR: a file already exists with that filename"
+    IDS_ERROR_UNABLE_TO_RENAME_FILE "ERROR: unable to rename the file"
+    IDS_RENAME_SUCCESSFUL   "[rename successful]"
+    IDS_SPRITE_X_WARNING_ERROR_IN_INIT_CODE 
+                            "sprite #%d warning: error in initialization code "
+    IDS_SPRITE_X_WARNING_ERROR_IN_PER_FRAME_CODE 
+                            "sprite #%d warning: error in per-frame code"
+    IDS_SPRITE_X_ERROR_BAD_SLOT_INDEX "sprite #%d error: bad slot index"
+    IDS_SPRITE_X_ERROR_IMAGE_FILE_MISSING_OR_CORRUPT 
+                            "sprite #%d error: image file missing or corrupt"
+    IDS_SPRITE_X_ERROR_OUT_OF_MEM 
+                            "sprite #%d error: out of memory, unable to load image"
+    IDS_WARNING_PRESET_X_ERROR_IN_WAVE_X_INIT_CODE 
+                            "warning: preset ""%s"": error in wave %d init code"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_WARNING_PRESET_X_ERROR_IN_WAVE_X_PER_FRAME_CODE 
+                            "warning: preset ""%s"": error in wave %d per-frame code"
+    IDS_WARNING_PRESET_X_ERROR_IN_WAVE_X_PER_POINT_CODE 
+                            "warning: preset ""%s"": error in wave %d per-point code"
+    IDS_WARNING_PRESET_X_ERROR_IN_SHAPE_X_INIT_CODE 
+                            "warning: preset ""%s"": error in shape %d init code"
+    IDS_WARNING_PRESET_X_ERROR_IN_SHAPE_X_PER_FRAME_CODE 
+                            "warning: preset ""%s"": error in shape %d per-frame code"
+    IDS_CONFIG_PANEL_BUTTON_1 "Common Settings"
+    IDS_CONFIG_PANEL_BUTTON_2 "MORE SETTINGS"
+    IDS_CONFIG_PANEL_BUTTON_3 "Artist Tools"
+    IDS_CONFIG_PANEL_BUTTON_4 "Transitions"
+    IDS_CONFIG_PANEL_BUTTON_5 " "
+    IDS_CONFIG_PANEL_BUTTON_6 " "
+    IDS_CONFIG_PANEL_BUTTON_7 " "
+    IDS_CONFIG_PANEL_BUTTON_8 " "
+    IDS_EXTRA_FONT_1_NAME   "Tooltips"
+    IDS_EXTRA_FONT_2_NAME   "Animated Songtitles"
+    IDS_PRESS_F1_MSG        "Press F1 for Help "
+    IDS_GRAPHICS_SUBSYSTEM_IS_TEMPORARILY_UNSTABLE 
+                            "One or more fullscreen display adapters are behaving strangely and will not\nreport a list of display modes.  It's quite possible that your graphics subsystem\nis temporarily unstable.\n\nSUGGESTED ACTION: If you have modified your multimon setup or Windows,\ndisplay settings, or have updated any display drivers or installed\nany new programs, you should probably REBOOT YOUR COMPUTER before\ntrying to configure (or run) the plug-in again."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_UNKNOWN             "UNKNOWN"
+    IDS_DISABLED_PAGE_TEARING "(disabled/pg. tearing)"
+    IDS_NONE                "(none)"
+    IDS_UNLIMITED           "(unlimited)"
+    IDS_X_FRAME_SEC         "%2d frames/sec"
+    IDS_HELP_ON_X_BUTTON    "Help on '%s' button"
+    IDS_FONTS_HELP          "Click this button to alter the fonts that are used to display text\nwhile the plug-in is running."
+    IDS_DUAL_HEAD_HELP      "Click this button for special options concerning DualHead video cards\nthat are capable of running in double-width or double-height display\nmodes.  DualHead cards that support this treat the two monitors as\none giant, double-width or double-height display.\n\nThis would usually mean that when going Fullscreen, the plug-in would be\nstretched over both monitors.  However, when you run the plug-in in\nDesktop Mode or in *Fake* Fullscreen Mode, you can get around this,\nand allow the plug-in to run on just one monitor, leaving you free\nto work on the other."
+    IDS_MULTI_SAMPLING      "Help on Multisampling"
+    IDS_MULTI_SAMPLING_HELP "This controls the level of full-scene anti-aliasing (blending)\nthat the display adapter uses.  Only newer video cards will\ntend to support this feature.  Anti-aliasing softens out the\n'jaggies' that you sometimes see at the pixel level, for example,\nat the silhouette of an object, or on a wireframe object.\n\nA level of '2X' would mean that 3D rendering/rasterization is done\ninternally *at double-resolution*, and then downsampled before final\ndisplay to the user.  A level of '3X' would mean that the rendering\nis done at triple-resolution, and so on.\n\nNote that, due to limitations of the DirectX 8 API, the use of multisampling\ngenerally requires that page tearing be allowed; the one exception is 'true'\nfullscreen mode, where you can have the best of both worlds: you can disable\npage tearing and enable multisampling at the same time."
+    IDS_MAX_FRAMERATE       "Help on Max Framerate"
+    IDS_MAX_FRAMERATE_HELP  "This controls the maximum # of times the image will be updated, per second.\nFramerate is also commonly called ""FPS"", or ""frames per second.""\n\nIf the plug-in is running too quickly for your taste, you can lower the\nmaximum framerate to slow it down.  You might also want to do this if\nthe plug-in is 'hogging the CPU' and slowing down other applications.\n\nTypically, a framerate of 30 looks good; 60 looks great.  The human eye\nhas a hard time processing more than 60 fps, though.\n\nNote that if the animation is rendering below the maximum framerate here,\nyour CPU will likely be in 100%% use, leaving your computer somewhat\nunresponsive.  If this is the case, try lowering the max. framerate\nuntil it takes effect, and then your computer should become more responsive.\n\nAlso keep in mind that it's a good idea to try and set the max. framerate\nto the current refresh rate of your monitor (e.g. 60 Hz, 72 Hz, etc.)\nor an integer factor of that number; for example, at a 72 Hz monitor\nrefresh rate, good max. framerates would be 2, 3, 4, 6, 8, 9, 12, 18,\n24, 36, or 72."
+    IDS_FAKE_FULLSCREEN     "Help on 'fake' fullscreen mode"
+    IDS_FAKE_FULLSCREEN_HELP 
+                            "When this option is enabled, the display mode is never changed by\nthe plug-in; instead, the plug-in 'fakes' fullscreen mode by simply\nthe plug-in; instead, the plug-in 'fakes' fullscreen mode by simply\nthe window on top.\n\nDUALHEAD: Fake fullscreen mode can be especially handy when you have a\ndualhead display adapter that drives two monitors, but really just treats\nthem as one giant display (e.g. **the display mode is something like 2048x768\nor 1024x1536**), where regular fullscreen mode will take over both monitors,\ncreating a very large, stretched image.  HOWEVER, if you use fake\nfullscreen mode, it can (if you want) take over just one monitor, leaving\nyou free to work on the other monitor.  To choose which display to favor\n(or to span both), click the 'DualHead' button and follow the instructions\nthere.\n\nTASKBAR: Note that in fake fullscreen mode, the taskbar will still be visible\n(and usable) if the plug-in does not entirely cover all displays & all monitors.\nIf you don't like it, use 'true' fullscreen mode instead, or move the taskbar\n(...there should be a place to move it to, since the plug-in doesn't cover all\nof your displays).  However, if the plug-in does cover all displays and all\nmonitors, the taskbar should be nicely hidden."
+    IDS_FULLSCREEN_ADAPTER  "Help on fullscreen display adapter selection"
+    IDS_FULLSCREEN_ADAPTER_HELP 
+                            "This lets you select which display adapter (video card) you'd like to\nrun the plug-in on, when it goes fullscreen.  If you only have one video\ncard and monitor in your system, you will only have one choice here; but\nif you have multiple video cards, or a multi-head video card (one card\nthat drives multiple monitors), there should be two or more choices here.\n\nNote that if you have trouble running in fullscreen mode with multiple\ndisplays, you might want to try the 'fake fullscreen mode' option.\nSee its help screen for more information."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_WINDOWED_ADPATER    "Help on windowed-mode display adapter selection"
+    IDS_WINDOWED_ADPATER_HELP 
+                            "This lets you select which display adapter (video card) you'd like to\nrun the plug-in on, when it runs in a window.  If you only have one video\ncard and monitor in your system, you will only have one choice here; but\nif you have multiple video cards, or a multi-head video card (one card\nthat drives multiple monitors), there should be two or more choices here.\n\nThe default window position will be somewhere on the monitor for the\ndisplay adapter you choose here.  You can drag the window to a different\nmonitor, but it is likely to be very slow, because the pixels will have\nto be copied, via Windows, from one display to the next, each frame.\n\nSo, for best performance in windowed mode, be sure to select the monitor\nyou want it to run on here, in advance, and avoid dragging the window to\nanother monitor at runtime."
+    IDS_DESKTOP_ADAPTER     "Help on desktop-mode display adapter selection"
+    IDS_DESKTOP_ADAPTER_HELP 
+                            "This lets you select which display adapter (video card & monitor) you'd like to\nrun the plug-in on, when it runs in desktop mode, replacing your windows wallpaper.\nIf you only have one video card and monitor in your system, you will only have\none choice here; but if you have multiple video cards, or a multi-head video card\n(one card that drives multiple monitors), there should be two or more choices here."
+    IDS_HELP_ON_X_CHECKBOX  "Help on '%s' checkbox"
+    IDS_HELP_ON_X_CHECKBOX_HELP 
+                            "When a new frame of animation is ready for display, the plug-in\nhas a choice of whether or not to synchronize the new frame to the\nmonitor's next vertical scan.\n\nIf there is no synchronization and the new frame is shown immediately,\nthen the update might occure in 'mid-scan', so for that 1/60th of a second,\nyou'll see the old frame toward the top of the monitor, and the new frame\ntoward the bottom, with a sharp line ('tear') somewhere in between.  This\nis especially visible when solid objects on the screen are changing or\nmoving rapidly, from frame to frame.\n\nHowever, if the plug-in waits until the vertical scan is complete to update\nthe image, then at the start of the next vertical scan, the entire image\nwill be ready and will (hopefully) be presented without any tearing.\n\nAlthough page tearing will often cause visible artifacts, it will allow\nthe plug-in to run at its maximum possible framerate.  Generally, though,\npage tearing is considered a bad thing, to be avoided when possible.\n\nNote that this synchronization (done by DirectX and your video driver)\nis usually approximate when running in windowed (or fake fullscreen) modes;\nthus, page tearing is often minimized but can't always be completely eliminated.\n\nNote that multisampling is usually only available when page tearing is\nallowed, due to limitations of the DirectX 8 API.  The one exception is\n'true' fullscreen mode; there, you can disable page tearing and still use\nmultisampling.  (But not in fake fullscreen, windowed, or desktop modes.)"
+    IDS_FORCE_INTO_FS_MODE_HELP 
+                            "Enable this to force the plug-in to start in fullscreen\n(or 'fake fullscreen') mode.\n\n(Note that if 'fake' fullscreen mode is enabled,\nthe plug-in will start in fake fullscreen mode.)"
+    IDS_FORCE_INTO_DESKTOP_MODE_HELP 
+                            "Enable this to force the plug-in to start in desktop mode."
+    IDS_HELP_ON_F1          "Help on 'Press F1...' checkbox"
+    IDS_HELP_ON_F1_HELP     "Disable this to prevent the 'Press F1 for Help' message\nfrom appearing when the plug-in starts."
+    IDS_CB_SKIN_HELP        "Check this box to 'skin' the plug-in's window frame when it runs\nin a window, so that it looks like the rest of the windows that\nmake up Winamp's interface.\n\nThis feature requires Winamp 2.90 or later; if the box is greyed\nout, it means you need a newer version of Winamp."
+    IDS_SAVE_CPU_CHECKBOX   "Help on 'Save CPU' checkbox"
+    IDS_SAVE_CPU_CHECKBOX_HELP 
+                            "Check this box to lower the amount of CPU (processor) that the plug-in uses\nto monitor and limit the framerate.\n\nWhen this box is unchecked, the plug-in will extremely accurately limit the\nframerate, resulting in ultra-smooth animation.  However, there is some cost\nin terms of CPU time - usually in the range of 0-20%%.\n\nWhen this box is checked, though, the plug-in uses a more lenient algorithm to\nlimit the framerate, which uses virtually no CPU time.  However, the framerate\nwill not be as accurately limited (it might vary over time), and animation is\nnot guaranteed to be perfectly smooth.\n\nNote that you can further decrease CPU usage by:\n  1) decreasing the maximum framerate (via the 'Max Framerate' options)\n  2) allowing page tearing (via the 'Allow Page Tearing' checkboxes)"
+    IDS_FS_DISPLAY_MODE     "Help on fullscreen display mode selection"
+    IDS_FS_DISPLAY_MODE_HELP 
+                            "This lets you select which display mode you'd like to use when you\nrun the plug-in fullscreen.\n\nThe first parameter is the pixel color format, which decides\nthe total number of possible colors in the rendered image.\nRGB-555 and RGB-565 are 16-bit color formats, which have poor\ncolor resolution but are often fast.  RGB-888 is a 32-bit color\nformat; it often has superior image quality, but is often slower\nand takes up twice the video memory.\n\nThe next two parameters are the width and height of the display mode,\nin pixels, also known as the 'resolution'.  Higher resolutions are\nusually slower and require more video memory, but look better.\n\nThe last parameter is the refresh rate: the rate at which the\n""monitor refreshes the image you see, in Hertz (cycles per second).\nHigher refresh rates tend to be easier on the eyes."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_TRY_TO_FIX_SLOW_TEXT "Help on 'Try to fix slow text' checkbox"
+    IDS_TRY_TO_FIX_SLOW_TEXT_HELP 
+                            "Many video cards - even new ones - are very slow at drawing onscreen text.\nMost application render onscreen text overtop of the final image\n*every frame*, but since MilkDrop has so many menus, this can severely\ndrop the framerate.\n\nA workaround is invoked by checking this box.  Instead of drawing the\ntext every frame, it is instead drawn to a second image buffer, and then\nonly updated when the text changes.  That separate image buffer is then\noverlaid onto the final image for display, each frame.  By not redrawing\nthe same text over and over, MilkDrop maintains a normal framerate.\n\nThis option is good for maintaining speed, but it uses a substantial amount\nof video memory.  You should probably only use it if you have 32 megabytes\n(or more) of graphics memory.  If there is not enough video memory to set\nup the offscreen image buffer for cacheing the text, it will not be created,\nand MilkDrop will behave as if the box was unchecked."
+    IDS_VJ_MODE             "Help on VJ Mode"
+    IDS_VJ_MODE_HELP        "VJ mode is used by those who want to show MilkDrop on one display\nwhile working with it on the other display.  When VJ mode is on,\ntext is drawn into a second window, instead of being overlaid on\ntop of the graphics.  This leaves the 'VJ' (the person running the\nvisuals for a concert, for example) able to navigate milkdrop's menus\nand edit presets while MilkDrop runs on a second display (likely\nrunning to a projector), without the ugly menus showing up.\n\nIMPORTANT: whichever windowed mode display adapter you have selected \ndetermines which monitor the separate text window appears on, and runs\nbest on.  If you try dragging (moving) it to another monitor, performance\nwill be severely impacted; instead, exit MilkDrop, return to the config\npanel, and set the windowed mode display adapter to reflect the monitor\nyou want the separate text window to appear on."
+    IDS_HELP_ON_X           "Help on '%s'"
+    IDS_DMS_LABEL_HELP      "These settings control the behavior of the plug-in when it is running\nin 'desktop mode'.  In desktop mode, the plug-in is visible in your\nWindows background, replacing your wallpaper with the animated plug-in."
+    IDS_FS_LABEL_HELP       "These settings control the behavior of the plug-in when it is running\nin fullscreen mode.  In fullscreen mode, the plug-in changes the display\nmode to whatever you indicate here, and then uses the entire display\nto render the image.\n\nFullscreen mode also gives the plug-in certain privileges within the\ngraphics subsystem (it enters 'exclusive mode'), so performance is\nusually quite improved."
+    IDS_W_LABEL_HELP        "These settings control the behavior of the plug-in when it is running\nin a window.  In windowed mode, the plug-in renders right into a window,\njust like any other application you might have running.\n\nWhen the plug-in starts, the default window position will be somewhere\non the monitor for the display adapter you choose here.\nYou *can* drag the window to a different monitor, but it is likely to be,\nVERY slow because the pixels will have to be copied, via Windows, from\none display to the next, each frame.\n\nSo, for best performance in windowed mode, be sure to select the monitor\nyou want it to run on here, in advance, and avoid dragging the window to\nanother monitor at runtime."
+    IDS_DM_MORE_HELP        "Click here to bring up a dialog with\nadvanced settings for Desktop Mode."
+    IDS_INITCONFIG_FAILED   "InitConfig() failed!"
+    IDS_UNABLE_TO_LOAD_TABS "Unable to load tabs!"
+    IDS_DOCUMENTATION_FILE_NOT_FOUND 
+                            "the documentation file:\n\n\t%s\n\ncould not be found."
+    IDS_ACCESS_TO_DOCUMENTATION_FILE_DENIED 
+                            "access to the documentation file:\n\n\t%s\n\nwas denied."
+    IDS_ACCESS_TO_DOCUMENTATION_FILE_FAILED_DUE_TO_NO_ASSOC 
+                            "the documentation file:\n\n\t%s\n\ncould not be accessed because there is no application\nassociated with documents of this type."
+    IDS_ACCESS_TO_DOCUMENTATION_FILE_FAILED_CODE_X 
+                            "the documentation file:\n\n\t%s\n\ncould not be accessed (error code: %d)"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ERROR_OPENING_DOCUMENTATION "Error Opening Documentation"
+    IDS_URL_COULD_NOT_OPEN  "the URL\n\n\t%s\n\ncould not be opened."
+    IDS_ACCESS_TO_URL_WAS_DENIED "access to the URL\n\n\t%s\n\nwas denied."
+    IDS_ACCESS_TO_URL_FAILED_DUE_TO_NO_ASSOC 
+                            "the URL\n\n\t%s\n\ncould not be accessed because there is no application\nassociated with documents of this type."
+    IDS_ACCESS_TO_URL_FAILED_CODE_X 
+                            "the URL\n\n\t%s\n\ncould not be accessed (error code: %d)"
+    IDS_ERROR_OPENING_URL   "Error Opening URL"
+    IDS_RESTORE_ALL_DEFAULTS 
+                            "Are you sure you want to restore the default settings?\n\nIf you click YES, the config panel will close and the defaults will be restored."
+    IDS_RESTORE_ALL_DEFAULTS_TITLE "Restore Default Settings?"
+    IDS_OK_HELP             "Click this button to save your changes and return to Winamp."
+    IDS_CANCEL_HELP         "Click this button to cancel any changes and return to Winamp."
+    IDS_RESTORE_DEFAULTS_HELP 
+                            "Click this button to restore all config panel settings\nto their 'factory' defaults and then return to Winamp."
+    IDS_DOCUMENTATION_BUTTON_HELP 
+                            "Click this button to view the documentation for this plug-in."
+    IDS_VIEW_ONLINE_DOCS_HELP 
+                            "Click this button to view the website (homepage) for this plug-in\nusing your default browser."
+    IDS_5_6_5_TEXTURE       "a 5-6-5 texture (no transparency)"
+    IDS_5_5_5_TEXTURE       "a 5-5-5 texture (w/1 bit of transparency)"
+    IDS_8_8_8_TEXTURE       "an 8-8-8 texture (w/8 bits of transparency)"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_NO_ALPHA_FALLBACK   "Help on ""no alpha"" fallback options"
+    IDS_NO_ALPHA_FALLBACK_HELP 
+                            "If you run the plug-in in desktop mode and find that your\ndesktop icons are surrounded by black boxes, then you'll\nwant to experiment with this setting.  The black box means\nthat 'alpha' (transparency) is not working, probably because\nyour current video mode (that Windows is running in) does\nnot have an alpha channel.  To make a long story short,\njust try different options here if you get the 'black box'\neffect, and cross your fingers that one of these works.\n\nNote that the 5-6-5 option uses half as much video memory\nas the 8-8-8 option, so if they both work, use the 5-6-5."
+    IDS_CB_SHOW_ICONS_HELP  "When you're running in desktop mode, this option lets you\nchoose to show or hide the icons that normally sit on your\ndesktop."
+    IDS_CB_BOX              "Help on 'Draw colored boxes...' checkbox"
+    IDS_CB_BOX_HELP         "This option lets you choose whether or not you want to\nsee a solid-colored box around each of the text labels\nfor the icons on your desktop, while the plug-in is running.\n\nIf you turn it off, the icon text labels might be harder\nto read (depending on the current image that the plug-in is\ngenerating), but the icons will also tend to dominate the\nscreen less."
+    IDS_CB_MANUAL_SCOOT     "Help on icon occlusion checkbox"
+    IDS_CB_MANUAL_SCOOT_HELP 
+                            "Normally, when you put your Windows taskbar on the Top or Left\nedge of the screen, Windows nicely scoots your desktop icons out\nfrom underneath it, so that they remain visible.\n\nThis plug-in tries to do the same thing, but on a few video cards,\nthe desktop icons might still be occluded (covered) by the taskbar\nwhen you run the plug-in in Desktop Mode (and the taskbar sits along\nthe Top or Left edge of the screen.)\n\nIf this happens to you, try checking this box - it will try a\ndifferent algorithm for placing the icons, and should manage to\nscoot them out (down or to the right) from underneath the taskbar."
+    IDS_SPAN_BOTH_SCREENS   "span both screens"
+    IDS_USE_LEFT_SCREEN_ONLY "use left screen only"
+    IDS_USE_RIGHT_SCREEN_ONLY "use right screen only"
+    IDS_USE_TOP_SCREEN_ONLY "use top screen only"
+    IDS_USE_BOTTOM_SCREEN_ONLY "use bottom screen only"
+    IDS_COULD_NOT_FIND_FILE_FOR_DESKTOP_MODE_X 
+                            "Could not find the following file:\n\n     %s\n\n...which is required for this plug-in to work properly in Desktop Mode.\nPlease reinstall the plug-in."
+    IDS_MILKDROP_ERROR_FILE_MISSING "MILKDROP ERROR - FILE MISSING"
+    IDS_ERROR_CREATING_GDI_DESKTOP_FONT "Error creating GDI desktop font"
+    IDS_ERROR_CREATING_DESKTOP_FONT "Error creating desktop font"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ERROR_CREATING_TEXTURE_FOR_ICON_BITMAPS 
+                            "Error creating texture for icon bitmaps"
+    IDS_OUTDATED_VMS_DESKTOP_DLL_NEED_TO_REINSTALL 
+                            "It appears that you have an outdated copy of the file 'vms_desktop.dll'\nin your Winamp PLUGINS directory.  Please reinstall the plug-in\nto bring this file up to date."
+    IDS_ERROR_CREATING_HOOK_PROC_DESKTOP_ICONS_NOT_AVAILABLE 
+                            "Error creating hook procedure;\ndesktop icons will not be available."
+    IDS_ERROR_UPDATING_ICON_BITMAPS 
+                            "Error updating icon bitmaps; the number of unique\nicon bitmaps on your desktop exceeded the maximum.\n\nAs a result, not all icons will look correct."
+    IDS_ERROR_UPDATING_ICON_BITMAPS_TOO_MANY_UNIQUE_ICON_BITMAPS 
+                            "Error updating icon bitmaps: there were a lot of unique icon bitmaps,\nbut the plug-in couldn't allocate enough extra texture(s) to hold them all,\nprobably because video memory is low.\n\nAs a result, not all icons will look correct."
+    IDS_ERROR_UPDATING_ICON_BITMAPS_COULD_NOT_GET_LEVEL_DESCRIPTION 
+                            "Error updating icon bitmaps:\ncouldn't get level description"
+    IDS_ERROR_UPDATING_ICON_BITMAPS_LOCKRECT_FAILED 
+                            "Error updating icon bitmaps:\nLockRect failed"
+    IDS_ERROR_UPDATING_ICON_BITMAPS_LR_PBITS_IS_NULL 
+                            "Error updating icon bitmaps:\nlr.pBits == NULL"
+    IDS_ERROR_UPDATING_ICON_BITMAPS_UNKNOWN_PIXEL_FORMAT 
+                            "Error updating icon bitmaps:\nunknown pixel format"
+    IDS_ERROR_UPDATING_ICON_BITMAPS_COULDNT_GET_HDC 
+                            "Error updating icon bitmaps:\ncouldn't get HDC"
+    IDS_ERROR_UPDATING_ICON_BITMAPS_CALL_TO_GETDIBITS_FAILED 
+                            "Error updating icon bitmaps:\ncall #1 to GetDIBits failed."
+    IDS_ERROR_UPDATING_ICON_BITMAPS_CALL_2_TO_GETDIBITS_FAILED 
+                            "Error updating icon bitmaps:\ncall #2 to GetDIBits failed."
+    IDS_ERROR_UPDATING_ICON_BITMAPS_GETICONINFO_FAILED 
+                            "Error updating icon bitmaps:\nGetIconInfo failed."
+    IDS_ERROR_UPDATING_ICON_BITMAPS_SHGETFILEINFO_FAILED 
+                            "Error updating icon bitmaps:\nSHGetFileInfo failed."
+    IDS_UNABLE_TO_REGISTER_WINDOW_CLASS 
+                            "Unable to register the window class;\nPLEASE RESTART WINAMP."
+    IDS_DIRECTX_INIT_FAILED "DirectX initialization failed; unknown color format"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_VJ_MODE_INIT_ERROR  "VJ mode init error: error determining color format\nfor currently-selected Windowed Mode display adapter."
+    IDS_ERROR_REGISTERING_WINDOW_CLASS_FOR_TEXT_WINDOW 
+                            "Error registering window class for text window"
+    IDS_ERROR_CREATING_VJ_WINDOW "Error creating VJ window"
+    IDS_ERROR_CREATING_D3D_DEVICE_FOR_VJ_MODE 
+                            "Error creating D3D device for VJ mode"
+    IDS_ERROR_CREATING_D3DX_FONTS "Error creating D3DX fonts"
+    IDS_UNABLE_TO_INIT_DXCONTEXT 
+                            "Unable to initialize DXContext;\nprobably out of memory."
+    IDS_TO_FREE_UP_SOME_MEMORY_RESTART_WINAMP_THEN_GO_TO_CONFIG 
+                            "To free up some memory, please RESTART WINAMP, then return\n   to the plug-in's config panel and try setting your\n   WINDOWED MODE MULTISAMPLING back to 'NONE.'\n\nThen try running the plug-in again."
+    IDS_TO_FREE_UP_SOME_MEMORY_RESTART_WINAMP_THEN_GO_TO_CONFIG_2 
+                            "To free up some memory, please RESTART WINAMP, then return\n   to the plug-in's config panel and try setting your\n   FAKE FULLSCREEN MODE MULTISAMPLING back to 'NONE.'\n\nThen try running the plug-in again."
+    IDS_TO_FREE_UP_SOME_MEMORY_RESTART_WINAMP_THEN_GO_TO_CONFIG_3 
+                            "To free up some memory, please RESTART WINAMP, then return\n   to the plug-in's config panel and try setting your\n   FULLSCREEN MODE MULTISAMPLING back to 'NONE.'\n\nThen try running the plug-in again."
+    IDS_TO_FREE_UP_VIDEO_MEMORY 
+                            "To free up some video memory, try the following:\n\n1. Try closing all other applications that might be using video memory, especially:\n\n        * WINDOWS MEDIA PLAYER\n        * any video conferencing software, such as NETMEETING\n        * any DVD playback, TV tuner, or TV capture software\n        * any video editing software\n        * any software that uses Overlays, such as Drempels Desktop\n        * any audio dictation software, such as Dragon NaturallySpeaking\n        * any other 3D programs currently running\n\n2. Also try returning to the config panel (ALT+K) and selecting a display mode\n    that uses less video memory.  16-bit display modes use half as much memory\n    as 32-bit display modes, and lower-resolution display modes (such as 640 x 480)\n    use proportionally less video memory.\n\nAfter making these changes, please RESTART WINAMP before trying to run\nthe plug-in again."
+    IDS_TO_FREE_UP_VIDEO_MEMORY_2 
+                            "To free up some video memory, try the following:\n\n1. Try closing all other applications that might be using video memory, especially:\n\n        * WINDOWS MEDIA PLAYER\n        * any video conferencing software, such as NETMEETING\n        * any DVD playback, TV tuner, or TV capture software\n        * any video editing software\n        * any software that uses Overlays, such as Drempels Desktop\n        * any audio dictation software, such as Dragon NaturallySpeaking\n        * any other 3D programs currently running\n\n2. Also try changing your Windows display mode to a lesser bit depth\n    (i.e. 16-bit color), or a smaller resolution.\n\nAfter making these changes, please RESTART WINAMP before trying to run\nthe plug-in again."
+    IDS_MILKDROP_SUGGESTION "MILKDROP SUGGESTION"
+    IDS_DIRECTX_MISSING_OR_CORRUPT "DirectX Missing or Corrupt"
+    IDS_ERROR_THE_PLUGIN_IS_ALREADY_RUNNING 
+                            "Error: the plug-in is already running."
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_MB                  "MB"
+    IDS_GB                  "GB"
+    IDS_MASHUP_GENERAL_POSTPROC " 1. general, postproc: "
+    IDS_MASHUP_MOTION_EQUATIONS " 2. motion, equations: "
+    IDS_MASHUP_WAVEFORMS_SHAPES " 3. waveforms, shapes: "
+    IDS_MASHUP_WARP_SHADER  " 4. warp shader:       "
+    IDS_MASHUP_COMP_SHADER  " 5. comp shader:       "
+    IDS_STRING615           "           tex2D(sampler_billy, uv)    sample pixel from billy.jpg (must be loaded)\n"
+    IDS_STRING616           " pre-body: sampler sampler_billy;    //loads billy.jpg"
+    IDS_STRING617           "           float4  texsize_billy;    //.xy = width and height, .zw = 1/w, 1/h"
+    IDS_STRING618           " sampling textures:"
+    IDS_STRING619           "           tex2D(sampler_main, uv)   //sample pixel from prior frame"
+    IDS_STRING620           "           tex2D(sampler_billy, uv)  //sample pixel from billy.jpg (must be loaded)"
+    IDS_STRING621           "           GetBlur1(uv)              //sample blurred prior-frame pixel (also 2,3)"
+    IDS_STRING622           " inputs:   float2 uv;        //warped UV coordinates [0..1]"
+    IDS_STRING623           "           float2 uv_orig;   //original UV coordinates [0..1]"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_STRING624           "           float  rad;       //radius [0..1]"
+    IDS_STRING625           "           float  ang;       //angle [0..PI*2]"
+    IDS_STRING626           "           // + texsize, aspect, time, fps, rand_frame, rand_preset,"
+    IDS_STRING627           "           //   q1-q32/_qa-_qh, bass, treb_att, vol... - see docs"
+    IDS_STRING628           " output:   float3 ret;       //the new pixel color (r,g,b)"
+    IDS_STRING629           " inputs:   float2 uv;          //UV coordinates [0..1]"
+    IDS_STRING630           "           float  rad;         //radius [0..1]"
+    IDS_STRING631           "           float  ang;         //angle [0..PI*2]"
+    IDS_STRING632           "           float3 hue_shader   //for MilkDrop 1 compatibility"
+    IDS_STRING633           "           // + texsize, aspect, time, fps, rand_frame, rand_preset,"
+    IDS_STRING634           "           //   q1-q32/_qa-_qh, bass, treb_att, vol... - see docs"
+    IDS_STRING635           " output:   float3 ret;         //display pixel color (r,g,b)"
+    IDS_UPGRADE_SHADERS_TO_USE_PS2X 
+                            "Do you want to upgrade all shaders to use (at least) pixel shader 2.X?  [y/N]"
+    IDS_PRESS_ESC_TO_RETURN "Press ESC to return."
+    IDS_COULD_NOT_LOAD_TEXTURE_X "Could not load texture: %hs.%hs"
+    IDS_ERROR_COMPILING_X_X_SHADER "Error compiling %hs %hs shader:\n"
+END
+
+STRINGTABLE 
+BEGIN
+    IDS_ERROR_PARSING_X_X_SHADER "Error parsing %hs %hs shader.\n"
+    IDS_UNABLE_TO_RESOLVE_TEXSIZE_FOR_A_TEXTURE_NOT_IN_USE 
+                            "Unable to resolve texsize for a texture that is not in use!  (%hs)"
+    IDS_KEY_MAPPINGS        "yYYyYzZ"
+END
+
+#endif    // English (U.K.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
