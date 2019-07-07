@@ -6224,6 +6224,15 @@
     <None Include="..\..\..\presets\presets_milkdrop_200\Zylot - Rush.milk" Link="p\presets_milkdrop_200\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="..\..\..\presets\presets_mischa_collection\3dRaGoNs & Unchained - Dragon Science.milk" Link="p\presets_mischa_collection\%(Filename)%(Extension)">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_mischa_collection\Aderrasi - Bow To Gravity.milk" Link="p\presets_mischa_collection\%(Filename)%(Extension)">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="..\..\..\presets\presets_mischa_collection\Aderrasi - Visitor.milk" Link="p\presets_mischa_collection\%(Filename)%(Extension)">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="..\..\..\presets\presets_mischa_collection\86.milk" Link="p\presets_mischa_collection\%(Filename)%(Extension)">
       <DeploymentContent>true</DeploymentContent>
     </None>
