@@ -1,0 +1,86 @@
+[preset00]
+fRating=3.000000
+fGammaAdj=2.000000
+fDecay=1.000000
+fVideoEchoZoom=1.006596
+fVideoEchoAlpha=0.000000
+nVideoEchoOrientation=3
+nWaveMode=7
+bAdditiveWaves=1
+bWaveDots=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=1
+fWaveAlpha=3.394148
+fWaveScale=0.627609
+fWaveSmoothing=0.108000
+fWaveParam=1.000000
+fModWaveAlphaStart=0.710000
+fModWaveAlphaEnd=1.000000
+fWarpAnimSpeed=1.000000
+fWarpScale=1.331000
+fZoomExponent=1.000000
+fShader=0.000000
+zoom=1.000461
+rot=0.000000
+cx=0.500000
+cy=0.500000
+dx=-0.001000
+dy=0.000000
+warp=0.012212
+sx=0.999996
+sy=0.010000
+wave_r=0.500000
+wave_g=0.700000
+wave_b=0.500000
+wave_x=0.500000
+wave_y=0.000000
+ob_size=0.000000
+ob_r=0.010000
+ob_g=0.000000
+ob_b=0.000000
+ob_a=0.059900
+ib_size=0.000000
+ib_r=0.250000
+ib_g=0.250000
+ib_b=0.250000
+ib_a=0.000000
+nMotionVectorsX=12.000000
+nMotionVectorsY=9.000000
+mv_l=0.900000
+mv_r=1.000000
+mv_g=1.000000
+mv_b=1.000000
+mv_a=0.000000
+per_frame_1=warp=decay;
+per_frame_2=dy=-0.0015;
+per_frame_3=dx=-0.0015;
+per_frame_4=ripple1x = if(equal(ripple1r,0),1.01*rand(100),ripple1x);
+per_frame_5=ripple1y = if(equal(ripple1r,0),1.01*rand(100),ripple1y);
+per_frame_6=ripple1s = if(equal(ripple1r,0),1.0001*(25+rand(25)),ripple1s);
+per_frame_7=ripple1r = (ripple1r + ripple1s)*below(ripple1r,2.7);
+per_frame_8=ripple2x = if(equal(ripple2r,0),1.01*rand(100),ripple2x);
+per_frame_9=ripple2y = if(equal(ripple2r,0),1.01*rand(100),ripple2y);
+per_frame_10=ripple2s = if(equal(ripple2r,0),1.0001*(25+rand(25)),ripple2s);
+per_frame_11=ripple2r = (ripple2r + ripple2s)*below(ripple2r,2.7);
+per_frame_12=ripple3x = if(equal(ripple3r,0),1.01*rand(100),ripple3x);
+per_frame_13=ripple3y = if(equal(ripple3r,0),1.01*rand(100),ripple3y);
+per_frame_14=ripple3s = if(equal(ripple3r,0),1.0001*(25+rand(25)),ripple3s);
+per_frame_15=ripple3r = (ripple3r + ripple3s)*below(ripple3r,2.7);
+per_frame_16=q1 = if(equal(frame%3,0),ripple1x,if(equal(frame%3,1),ripple2x,ripple3x));
+per_frame_17=q2 = if(equal(frame%3,0),ripple1y,if(equal(frame%3,1),ripple2y,ripple3y));
+per_frame_18=q3 = if(equal(frame%3,0),ripple1r,if(equal(frame%3,1),ripple2r,ripple3r));
+per_frame_19=wave_r = wave_r + 0.350*( 0.60*sin(0.980*time) + 0.40*sin(1.047*time) );
+per_frame_20=wave_g = wave_g + 0.350*( 0.60*sin(0.835*time) + 0.40*sin(1.081*time) );
+per_frame_21=wave_b = wave_b + 0.350*( 0.60*sin(0.814*time) + 0.40*sin(1.011*time) );
+per_frame_22=wave_y=wave_y+cos(time*.20);
+per_frame_23=
+per_frame_24=
+per_frame_25=
+per_frame_26=

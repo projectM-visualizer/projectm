@@ -1,0 +1,75 @@
+[preset00]
+fRating=3.000000
+fGammaAdj=1.000000
+fDecay=0.925000
+fVideoEchoZoom=1.006595
+fVideoEchoAlpha=0.500000
+nVideoEchoOrientation=1
+nWaveMode=5
+bAdditiveWaves=1
+bWaveDots=0
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=1
+bSolarize=1
+bInvert=0
+fWaveAlpha=4.099998
+fWaveScale=0.552311
+fWaveSmoothing=0.630000
+fWaveParam=0.000000
+fModWaveAlphaStart=0.710000
+fModWaveAlphaEnd=1.300000
+fWarpAnimSpeed=4.000000
+fWarpScale=1.331000
+fZoomExponent=0.999999
+fShader=0.000000
+zoom=1.000722
+rot=0.000000
+cx=0.500000
+cy=0.500000
+dx=0.000000
+dy=0.000000
+warp=1.000737
+sx=1.151247
+sy=0.999999
+wave_r=0.650000
+wave_g=0.650000
+wave_b=0.650000
+wave_x=0.500000
+wave_y=0.500000
+ob_size=0.000000
+ob_r=0.000000
+ob_g=0.000000
+ob_b=0.000000
+ob_a=1.000000
+ib_size=0.005000
+ib_r=0.000000
+ib_g=0.250000
+ib_b=0.000000
+ib_a=1.000000
+nMotionVectorsX=6.400000
+nMotionVectorsY=9.599999
+mv_l=5.000000
+mv_r=1.000000
+mv_g=1.000000
+mv_b=1.000000
+mv_a=0.000000
+per_frame_1=volume = (bass+mid+att);
+per_frame_2=beatrate = if(equal(beatrate,0),1,if(below(volume,0.01),1,beatrate));
+per_frame_3=wave_r = wave_r + 0.350*( 0.60*sin(0.980*time) + 0.40*sin(1.047*time) );
+per_frame_4=wave_g = wave_g + 0.350*( 0.60*sin(0.835*time) + 0.40*sin(1.081*time) );
+per_frame_5=wave_b = wave_b + 0.350*( 0.60*sin(0.814*time) + 0.40*sin(1.011*time) );
+per_frame_6=ib_r=bass;
+per_frame_7=ib_g=mid;
+per_frame_8=ib_b=treb;
+per_frame_9=decay=decay-0.05*(frame%10);
+per_frame_10=rot = .3*tan(.1*sin(pow(rad,4)*20+time)+sin(time*.222)*.1);
+per_pixel_1=zoom=1.1+tan(4) * (0.2*cos(time - ang*4));
+per_pixel_2=zoom=zoom-(beatrate-0.4)*0.18;
+per_pixel_3=rot=0.02*sin(ang*5+(2)/3);
+per_pixel_4=dx = x*2-1;
+per_pixel_5=dy = y*2-1;

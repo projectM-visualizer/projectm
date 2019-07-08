@@ -1,0 +1,246 @@
+[preset00]
+fRating=1.000000
+fGammaAdj=2.500000
+fDecay=0.980000
+fVideoEchoZoom=98.198792
+fVideoEchoAlpha=0.187071
+nVideoEchoOrientation=17
+nWaveMode=5
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=1.700000
+fWaveScale=0.004449
+fWaveSmoothing=0.500000
+fWaveParam=-0.623781
+fModWaveAlphaStart=0.750000
+fModWaveAlphaEnd=0.950000
+fWarpAnimSpeed=1.000000
+fWarpScale=2.853000
+fZoomExponent=0.266715
+fShader=0.780279
+zoom=0.989957
+rot=0.000000
+cx=0.500000
+cy=0.500000
+dx=0.000000
+dy=0.000000
+warp=0.999717
+sx=1.000000
+sy=1.000000
+wave_r=0.438419
+wave_g=0.670745
+wave_b=0.159742
+wave_x=0.572331
+wave_y=0.383331
+ob_size=0.010000
+ob_r=0.480837
+ob_g=0.258702
+ob_b=0.625243
+ob_a=0.362717
+ib_size=0.010000
+ib_r=0.844018
+ib_g=0.252352
+ib_b=0.582220
+ib_a=0.115502
+nMotionVectorsX=12.000000
+nMotionVectorsY=9.000000
+mv_dx=0.061921
+mv_dy=-0.964855
+mv_l=2.417040
+mv_r=0.996388
+mv_g=0.063491
+mv_b=0.031555
+mv_a=0.056745
+wavecode_0_enabled=0
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.000000
+wavecode_0_smoothing=0.500000
+wavecode_0_r=1.000000
+wavecode_0_g=1.000000
+wavecode_0_b=1.000000
+wavecode_0_a=1.000000
+wavecode_1_enabled=0
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=0
+wavecode_1_scaling=1.000000
+wavecode_1_smoothing=0.500000
+wavecode_1_r=1.000000
+wavecode_1_g=1.000000
+wavecode_1_b=1.000000
+wavecode_1_a=1.000000
+wavecode_2_enabled=0
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.000000
+wavecode_2_smoothing=0.500000
+wavecode_2_r=1.000000
+wavecode_2_g=1.000000
+wavecode_2_b=1.000000
+wavecode_2_a=1.000000
+wavecode_3_enabled=0
+wavecode_3_samples=512
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.000000
+wavecode_3_smoothing=0.500000
+wavecode_3_r=1.000000
+wavecode_3_g=1.000000
+wavecode_3_b=1.000000
+wavecode_3_a=1.000000
+shapecode_0_enabled=0
+shapecode_0_sides=4
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=0
+shapecode_0_x=0.500000
+shapecode_0_y=0.500000
+shapecode_0_rad=0.100000
+shapecode_0_ang=0.000000
+shapecode_0_tex_ang=0.000000
+shapecode_0_tex_zoom=1.000000
+shapecode_0_r=1.000000
+shapecode_0_g=0.000000
+shapecode_0_b=0.000000
+shapecode_0_a=1.000000
+shapecode_0_r2=0.000000
+shapecode_0_g2=1.000000
+shapecode_0_b2=0.000000
+shapecode_0_a2=0.000000
+shapecode_0_border_r=1.000000
+shapecode_0_border_g=1.000000
+shapecode_0_border_b=1.000000
+shapecode_0_border_a=0.100000
+shapecode_1_enabled=0
+shapecode_1_sides=4
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_x=0.500000
+shapecode_1_y=0.500000
+shapecode_1_rad=0.100000
+shapecode_1_ang=0.000000
+shapecode_1_tex_ang=0.000000
+shapecode_1_tex_zoom=1.000000
+shapecode_1_r=1.000000
+shapecode_1_g=0.000000
+shapecode_1_b=0.000000
+shapecode_1_a=1.000000
+shapecode_1_r2=0.000000
+shapecode_1_g2=1.000000
+shapecode_1_b2=0.000000
+shapecode_1_a2=0.000000
+shapecode_1_border_r=1.000000
+shapecode_1_border_g=1.000000
+shapecode_1_border_b=1.000000
+shapecode_1_border_a=0.100000
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_x=0.500000
+shapecode_2_y=0.500000
+shapecode_2_rad=0.100000
+shapecode_2_ang=0.000000
+shapecode_2_tex_ang=0.000000
+shapecode_2_tex_zoom=1.000000
+shapecode_2_r=1.000000
+shapecode_2_g=0.000000
+shapecode_2_b=0.000000
+shapecode_2_a=1.000000
+shapecode_2_r2=0.000000
+shapecode_2_g2=1.000000
+shapecode_2_b2=0.000000
+shapecode_2_a2=0.000000
+shapecode_2_border_r=1.000000
+shapecode_2_border_g=1.000000
+shapecode_2_border_b=1.000000
+shapecode_2_border_a=0.100000
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_x=0.500000
+shapecode_3_y=0.500000
+shapecode_3_rad=0.100000
+shapecode_3_ang=0.000000
+shapecode_3_tex_ang=0.000000
+shapecode_3_tex_zoom=1.000000
+shapecode_3_r=1.000000
+shapecode_3_g=0.000000
+shapecode_3_b=0.000000
+shapecode_3_a=1.000000
+shapecode_3_r2=0.000000
+shapecode_3_g2=1.000000
+shapecode_3_b2=0.000000
+shapecode_3_a2=0.000000
+shapecode_3_border_r=1.000000
+shapecode_3_border_g=1.000000
+shapecode_3_border_b=1.000000
+shapecode_3_border_a=0.100000
+per_frame_1=volume = 0.3*(bass+mid+att);
+per_frame_2=beatrate = if(equal(beatrate,0),1,if(below(volume,0.01),1,beatrate));
+per_frame_3=lastbeat = if(equal(lastbeat,0),time,lastbeat);
+per_frame_4=meanbass_att = 0.1*(meanbass_att*9 + bass_att);
+per_frame_5=beat = if(above(volume,0.8),if(below(peakbass_att - bass_att, 0.05*peakbass_att),if(above(time - lastbeat,0.1+0.5*(beatrate-0.1)),1,0),0),0);
+per_frame_6=beatrate = max(if(beat,if(below(time-lastbeat,2*beatrate),0.5*(beatrate + time - lastbeat),beatrate),beatrate),0.1);
+per_frame_7=peakbass_att = if(equal(beat,0),if(above(time - lastbeat,2*beatrate),peakbass_att*0.95,peakbass_att*0.995),bass_att);
+per_frame_8=lastbeat = if(beat,time,lastbeat);
+per_frame_9=peakbass_att = max(if(beat,bass_att,peakbass_att),1.1*meanbass_att);
+per_frame_10=q1=beat;
+per_frame_11=wave_b = min(min(wave_r + treb , wave_b * wave_g) , zoom - zoom);
+per_frame_12=cx = min(min(wave_g * treb , wave_r - time) , zoom - time);
+per_frame_13=wave_r = time + treb;
+per_frame_14=wave_r = min(wave_r + treb , time * wave_b);
+per_frame_15=zoom = zoom * bass;
+per_frame_16=wave_b = wave_b - wave_b;
+per_frame_17=cx = min(cx * time , wave_g * wave_g);
+per_frame_18=wave_b = min(wave_b * treb , treb * wave_r);
+per_frame_19=cx = min(cx * treb , wave_g - time);
+per_frame_20=wave_g = min(min(wave_r * wave_r , time * treb) , wave_b * bass);
+per_frame_21=cx = min(min(cx * wave_b , wave_b + wave_g) , time * treb);
+per_frame_22=wave_r = min(min(wave_r - treb , treb * bass) , wave_b - treb);
+per_frame_23=wave_r = min(min(wave_r + wave_b , wave_b + treb) , wave_r - zoom);
+per_frame_24=wave_r = min(wave_r + wave_g , wave_g * bass);
+per_frame_25=wave_g = min(min(wave_g * treb , bass * wave_r) , wave_r + treb);
+per_frame_26=wave_g = min(min(wave_g - wave_b , wave_b * bass) , wave_b * treb);
+per_frame_27=wave_r = min(min(wave_r * bass , treb - wave_r) , time * treb);
+per_pixel_1=dx = min(rad * ang , ang * ang);
+per_pixel_2=dx = max(dx - 3 , ang * 3);
+per_pixel_3=dx = min(dx - rad , rad + 3);
+per_pixel_4=dx = max(dx * rad , rad + rad);
+per_pixel_5=dx = min(min(max(dx + rad , 3 + 3) , 3 * ang) , 3 - rad);
+per_pixel_6=dx = max(max(dx - ang , ang - 3) , 3 - 3);
+per_pixel_7=dx = max(max(dx * 3 , rad * rad) , rad * ang);
+per_pixel_8=dx = dx + rad;
+per_pixel_9=dx = min(dx * ang , rad * rad);
+per_pixel_10=dx = min(dx + rad , ang * rad);
+per_pixel_11=dx = min(dx - 3 , 3 - rad);
+per_pixel_12=dx = max(min(dx * rad , 3 * rad) , rad * rad);

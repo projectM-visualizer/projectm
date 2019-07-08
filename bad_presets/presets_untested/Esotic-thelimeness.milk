@@ -1,0 +1,88 @@
+[preset00]
+fRating=3.000000
+fGammaAdj=2.880000
+fDecay=0.900000
+fVideoEchoZoom=1.000747
+fVideoEchoAlpha=0.500000
+nVideoEchoOrientation=1
+nWaveMode=7
+bAdditiveWaves=0
+bWaveDots=1
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.999974
+fWaveScale=3.947201
+fWaveSmoothing=0.900000
+fWaveParam=0.907867
+fModWaveAlphaStart=0.750000
+fModWaveAlphaEnd=0.950000
+fWarpAnimSpeed=1.000000
+fWarpScale=1.350000
+fZoomExponent=1.000000
+fShader=0.000000
+zoom=0.969900
+rot=0.000000
+cx=0.500000
+cy=0.500000
+dx=0.011000
+dy=0.005000
+warp=1.508800
+sx=0.999900
+sy=0.999900
+wave_r=0.459832
+wave_g=0.455934
+wave_b=0.068398
+wave_x=0.616198
+wave_y=0.254720
+ob_size=0.008955
+ob_r=0.814673
+ob_g=0.863945
+ob_b=0.301763
+ob_a=0.918911
+ib_size=0.003418
+ib_r=0.080842
+ib_g=0.664011
+ib_b=0.043349
+ib_a=0.456298
+nMotionVectorsX=64.000000
+nMotionVectorsY=48.000000
+mv_dx=-0.908558
+mv_dy=-0.235913
+mv_l=1.663280
+mv_r=0.571669
+mv_g=0.988832
+mv_b=0.114479
+mv_a=0.793629
+per_frame_1=volume = 0.3*(bass+mid+att);
+per_frame_2=beatrate = if(equal(beatrate,0),1,if(below(volume,0.01),1,beatrate));
+per_frame_3=lastbeat = if(equal(lastbeat,0),time,lastbeat);
+per_frame_4=meanbass_att = 0.1*(meanbass_att*9 + bass_att);
+per_frame_5=beat = if(above(volume,0.8),if(below(peakbass_att - bass_att, 0.05*peakbass_att),if(above(time - lastbeat,0.1+0.5*(beatrate-0.1)),1,0),0),0);
+per_frame_6=beatrate = max(if(beat,if(below(time-lastbeat,2*beatrate),0.5*(beatrate + time - lastbeat),beatrate),beatrate),0.1);
+per_frame_7=peakbass_att = if(equal(beat,0),if(above(time - lastbeat,2*beatrate),peakbass_att*0.95,peakbass_att*0.995),bass_att);
+per_frame_8=lastbeat = if(beat,time,lastbeat);
+per_frame_9=peakbass_att = max(if(beat,bass_att,peakbass_att),1.1*meanbass_att);
+per_frame_10=q1=beat;
+per_pixel_1=rot=if(above(bnot(1*bass),bnot(1*treb)),rot*sin(rad*sin(time)),-rot*sin(rad*cos(time)));
+per_pixel_2=warp = peakbass_att * ang;
+per_pixel_3=zoomexp = 0.88871884*sqr(-0.67485964*sign(ang - ang));
+per_pixel_4=cy = 0.34421277*pow(y * q1 , x * q3);
+per_pixel_5=cx = bor(x * rot , q1 * x);
+per_pixel_6=zoomexp=if(below(zoomexp,0.01), 0.01, zoomexp);
+per_pixel_7=zoomexp=if(above(zoomexp,100.0), 100.0, zoomexp);
+per_pixel_8=rot=if(below(rot,-1.0), -1.0, rot);
+per_pixel_9=rot=if(above(rot,1.0), 1.0, rot);
+per_pixel_10=warp=if(below(warp,0.01), 0.01, warp);
+per_pixel_11=warp=if(above(warp,100.0), 100.0, warp);
+per_pixel_12=cx=if(below(cx,-1.0), -1.0, cx);
+per_pixel_13=cx=if(above(cx,2.0), 2.0, cx);
+per_pixel_14=cy=if(below(cy,-1.0), -1.0, cy);
+per_pixel_15=cy=if(above(cy,2.0), 2.0, cy);

@@ -1,0 +1,45 @@
+[preset00]
+fGammaAdj=1.300000
+fDecay=0.980000
+fVideoEchoZoom=1.645000
+fVideoEchoAlpha=0.000000
+nVideoEchoOrientation=3
+nWaveMode=3
+bAdditiveWaves=0
+bWaveDots=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bMotionVectorsOn=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+fWaveAlpha=10.500000
+fWaveScale=2.718000
+fWaveSmoothing=0.700000
+fWaveParam=0.000000
+fModWaveAlphaStart=0.750000
+fModWaveAlphaEnd=0.950000
+fWarpAnimSpeed=1.000000
+fWarpScale=2.358000
+fZoomExponent=1.000000
+fShader=1.000000
+zoom=1.005000
+rot=0.000000
+cx=0.500000
+cy=0.500000
+dx=0.000000
+dy=0.000000
+warp=0.683000
+sx=1.000000
+sy=1.000000
+wave_r=0.750000
+wave_g=0.750000
+wave_b=0.750000
+wave_x=0.500000
+wave_y=0.500000
+per_frame_1=zoom = zoom + 0.013*( 0.60*sin(0.339*time) + 0.40*sin(0.276*time) );
+per_frame_2=rot = rot + 0.007*( 0.60*sin(0.381*time) + 0.40*sin(0.579*time) );
+per_frame_3=cx = cx + 0.110*( 0.60*sin(0.374*time) + 0.40*sin(0.294*time) );
+per_frame_4=cy = cy + 0.110*( 0.60*sin(0.393*time) + 0.40*sin(0.223*time) );
+bRedBlueStereo=1

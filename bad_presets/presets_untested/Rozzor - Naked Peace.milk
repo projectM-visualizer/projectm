@@ -1,0 +1,80 @@
+[preset00]
+fRating=4.000000
+fGammaAdj=2.000000
+fDecay=0.960000
+fVideoEchoZoom=1.006596
+fVideoEchoAlpha=0.000000
+nVideoEchoOrientation=3
+nWaveMode=5
+bAdditiveWaves=0
+bWaveDots=1
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=1.674455
+fWaveScale=4.034452
+fWaveSmoothing=0.900000
+fWaveParam=0.002709
+fModWaveAlphaStart=0.710000
+fModWaveAlphaEnd=1.300000
+fWarpAnimSpeed=1.000000
+fWarpScale=1.331000
+fZoomExponent=1.000000
+fShader=0.000000
+zoom=1.990548
+rot=0.020000
+cx=0.500000
+cy=0.500000
+dx=0.020000
+dy=0.000000
+warp=0.198054
+sx=1.000000
+sy=1.000000
+wave_r=0.111223
+wave_g=0.218618
+wave_b=0.692271
+wave_x=0.821302
+wave_y=0.971744
+ob_size=0.010000
+ob_r=0.437444
+ob_g=0.460049
+ob_b=0.682702
+ob_a=0.580843
+ib_size=0.010000
+ib_r=0.961210
+ib_g=0.982195
+ib_b=0.523429
+ib_a=0.774666
+nMotionVectorsX=12.000000
+nMotionVectorsY=9.000000
+mv_dx=0.755430
+mv_dy=0.166289
+mv_l=1.720940
+mv_r=0.616562
+mv_g=0.970424
+mv_b=0.883387
+mv_a=0.158353
+per_frame_1=slowtime = slowtime+beat*time;
+per_frame_2=vol_now =  .4 * bass + 0.1 * (bass_att + treb + mid);
+per_frame_3=vol_mean =  if(equal(frame%50,0),vol_mean - 0.5 * (vol_mean-vol_now),0.1 * (vol_mean * 9 + vol_now));
+per_frame_4=beat = if(above(vol_now,1.15 * vol_mean),1,0);
+per_frame_5=sinbeat =sin(beat * (vol_now-vol_mean));
+per_frame_6=wave_b = cos(slowtime)  + abs(cos(slowtime));
+per_frame_7=wave_g = abs(sin(slowtime)) ;
+per_frame_8=wave_r = (-1 * cos(slowtime))  + abs(-1 * cos(slowtime)) + 0.2 * (cos(sin(slowtime))+(abs(cos(sin(slowtime)))+cos(sin(slowtime))));
+per_frame_9=ib_r = if(above(wave_r,1),1,if(above(wave_r,0), abs(wave_r),0));
+per_frame_10=ib_g = if(above(wave_g,1),1,if(above(wave_g,0), abs(wave_g),0));
+per_frame_11=ib_b = if(above(wave_b,1),1,if(above(wave_b,0), abs(wave_b),0));
+per_frame_12=ob_r = 1 - if(above(wave_r,1),1,if(above(wave_r,0), abs(wave_r),0));
+per_frame_13=ob_g = 1 - if(above(wave_g,1),1,if(above(wave_g,0), abs(wave_g),0));
+per_frame_14=ob_b = 1 - if(above(wave_b,1),1,if(above(wave_b,0), abs(wave_b),0));
+per_frame_15=warp = .2*sinbeat;
+per_frame_16=sx = -1.07198*sqrt(.143+ warp);
+per_pixel_1=rot = rot + 0.50*( 0.60*sin(0.038*time*x) + 0.40*sin(0.054*time*y) );
