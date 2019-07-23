@@ -9,13 +9,13 @@ projectM is an open-source project that reimplements the esteemed [Winamp Milkdr
 Its purpose in life is to read in audio input and produce mesmerizing visuals, detecting tempo, and rendering advanced equations into a limitless array of user-contributed visualizations.
 
 ### Available For
-* [macOS, Linux (binary)](https://github.com/projectM-visualizer/projectm/releases/tag/v0.9.2-beta)
+* [macOS, Linux (binary)](https://github.com/projectM-visualizer/projectm/releases)
+* [Windows Store (PC, XBOX, Phone)](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
 * [Android](https://play.google.com/store/apps/details?id=com.psperl.projectM)
 * [iOS](https://itunes.apple.com/us/app/projectm-music-visualizer/id530922227?mt=8&ign-mpt=uo%3D4)
+* [iTunes plugin (macOS)](https://github.com/projectM-visualizer/projectm/releases/)
 * Qt5 + Pulseaudio
 * [ALSA, xmms, winamp, jack](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
-* [iTunes plugin (macOS)](https://github.com/projectM-visualizer/projectm/releases/tag/v0.9.1-beta)
-* [Windows Store (PC, XBOX, Phone)](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
 
 ### Download
 Get it from the [Releases](https://github.com/projectM-visualizer/projectm/releases) tab
