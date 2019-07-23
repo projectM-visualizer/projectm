@@ -1,6 +1,5 @@
 [![Build Status](https://travis-ci.org/projectM-visualizer/projectm.svg?branch=master)](https://travis-ci.org/projectM-visualizer/projectm)
 [![Backers on Open Collective](https://opencollective.com/projectm/backers/badge.svg)](#backers)
- [![Sponsors on Open Collective](https://opencollective.com/projectm/sponsors/badge.svg)](#sponsors)
 
 ![Logo](https://github.com/projectM-visualizer/projectm/raw/master/web/logo.png)
 
