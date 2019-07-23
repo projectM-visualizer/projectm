@@ -40,6 +40,8 @@
      inline QPlaylistFileDialog(QWidget * parent = 0): 
 		QFileDialog(parent, OPEN_PLAYLIST_OR_DIRECTORY_TITLE, QString()), m_directorySelectAllowed(true), m_fileSelectAllowed(true) {
 
+	     this->setOption(QFileDialog::DontUseNativeDialog);
+
 	     updateFileMode(selectedFiles());
 	     
 	     //connect(this, SIGNAL(filesSelected(const QStringList&)),
