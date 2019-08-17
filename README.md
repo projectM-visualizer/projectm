@@ -6,7 +6,7 @@
 ## projectM - The most advanced open-source music visualizer
 projectM is an open-source project that reimplements the esteemed [Winamp Milkdrop](https://en.wikipedia.org/wiki/MilkDrop) by Geiss in a more modern, cross-platform reusable library.
 
-Its purpose in life is to read in audio input and produce mesmerizing visuals, detecting tempo, and rendering advanced equations into a limitless array of user-contributed visualizations.
+Its purpose in life is to read an audio input and to produce mesmerizing visuals, detecting tempo, and rendering advanced equations into a limitless array of user-contributed visualizations.
 
 ### Available For
 * [macOS, Linux (binary)](https://github.com/projectM-visualizer/projectm/releases)
@@ -69,9 +69,9 @@ See [BUILDING.md](BUILDING.md)
 # Using the library
 At its core projectM is a library, [libprojectM](src/libprojectM). This library is responsible for parsing presets, analyzing audio PCM data with beat detection and FFT, applying the preset to the audio feature data and rendering the resulting output with openGL. It can render to an openGL context or a texture.
 
-For an example of a simple example use of the library see the [libSDL2 sample code](src/projectM-sdl/projectM_SDL_main.cpp).
+To look at a simple example way of using the library see the [libSDL2 sample code](src/projectM-sdl/projectM_SDL_main.cpp).
 
-There are many other applications that make use of libprojectM that can be found in the [src](src/) directory.
+There are many other applications that make use of libprojectM and that can be found in the [src](src/) directory.
 
 ***
 
