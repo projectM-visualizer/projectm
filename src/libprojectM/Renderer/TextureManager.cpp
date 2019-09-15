@@ -24,9 +24,22 @@
 #include "Common.hpp"
 #include "IdleTextures.hpp"
 #include "Texture.hpp"
+/* OpenGL ES 2.0 cant handle converting textures fro GL_RGB to GL_RGBA via glTexImage2D
+http://docs.gl/es2/glTexImage2D
+
+This causes a GLError INVALID_OPERATION(0x502) whenever making a new Renderer or resizing it.
+
+So because of this, we switch to a PerlinNoiseWithAlpha class to generate the noise textures.
+*/
+#ifdef GL_ES_VERSION_2_0
+#include "PerlinNoiseWithAlpha.hpp"
+#define NOISE_INTERNAL_DATA_FORMAT GL_RGBA
+#else
 #include "PerlinNoise.hpp"
+#define NOISE_INTERNAL_DATA_FORMAT GL_RGB
+#endif
 
-
+ 
 #define NUM_BLUR_TEX    6
 
 
@@ -94,12 +107,16 @@ TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX
         blurTextures.push_back(textureBlur);
     }
 
+#ifdef GL_ES_VERSION_2_0
+    std::unique_ptr<PerlinNoiseWithAlpha> noise(new PerlinNoiseWithAlpha());
+#else
     std::unique_ptr<PerlinNoise> noise(new PerlinNoise());
+#endif
 
     GLuint noise_texture_lq_lite;
     glGenTextures(1, &noise_texture_lq_lite);
     glBindTexture(GL_TEXTURE_2D, noise_texture_lq_lite);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 32, 32, 0, GL_RGB, GL_FLOAT, noise->noise_lq_lite);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 32, 32, 0, NOISE_INTERNAL_DATA_FORMAT, GL_FLOAT, noise->noise_lq_lite);
     Texture * textureNoise_lq_lite = new Texture("noise_lq_lite", noise_texture_lq_lite, GL_TEXTURE_2D, 32, 32, false);
     textureNoise_lq_lite->getSampler(GL_REPEAT, GL_LINEAR);
     textures["noise_lq_lite"] = textureNoise_lq_lite;
@@ -107,7 +124,7 @@ TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX
     GLuint noise_texture_lq;
     glGenTextures(1, &noise_texture_lq);
     glBindTexture(GL_TEXTURE_2D, noise_texture_lq);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGB, GL_FLOAT, noise->noise_lq);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, NOISE_INTERNAL_DATA_FORMAT, GL_FLOAT, noise->noise_lq);
     Texture * textureNoise_lq = new Texture("noise_lq", noise_texture_lq, GL_TEXTURE_2D, 256, 256, false);
     textureNoise_lq->getSampler(GL_REPEAT, GL_LINEAR);
     textures["noise_lq"] = textureNoise_lq;
@@ -115,7 +132,7 @@ TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX
     GLuint noise_texture_mq;
     glGenTextures(1, &noise_texture_mq);
     glBindTexture(GL_TEXTURE_2D, noise_texture_mq);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGB, GL_FLOAT, noise->noise_mq);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, NOISE_INTERNAL_DATA_FORMAT, GL_FLOAT, noise->noise_mq);
     Texture * textureNoise_mq = new Texture("noise_mq", noise_texture_mq, GL_TEXTURE_2D, 256, 256, false);
     textureNoise_mq->getSampler(GL_REPEAT, GL_LINEAR);
     textures["noise_mq"] = textureNoise_mq;
@@ -123,7 +140,7 @@ TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX
     GLuint noise_texture_hq;
     glGenTextures(1, &noise_texture_hq);
     glBindTexture(GL_TEXTURE_2D, noise_texture_hq);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, GL_RGB, GL_FLOAT, noise->noise_hq);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 256, 0, NOISE_INTERNAL_DATA_FORMAT, GL_FLOAT, noise->noise_hq);
     Texture * textureNoise_hq = new Texture("noise_hq", noise_texture_hq, GL_TEXTURE_2D, 256, 256, false);
     textureNoise_hq->getSampler(GL_REPEAT, GL_LINEAR);
     textures["noise_hq"] = textureNoise_hq;
@@ -131,7 +148,7 @@ TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX
     GLuint noise_texture_lq_vol;
     glGenTextures( 1, &noise_texture_lq_vol );
     glBindTexture( GL_TEXTURE_3D, noise_texture_lq_vol );
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, 32 ,32 ,32 ,0 ,GL_RGB ,GL_FLOAT ,noise->noise_lq_vol);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, 32 ,32 ,32 ,0 ,NOISE_INTERNAL_DATA_FORMAT, GL_FLOAT ,noise->noise_lq_vol);
     Texture * textureNoise_lq_vol = new Texture("noisevol_lq", noise_texture_lq_vol, GL_TEXTURE_3D, 32, 32, false);
     textureNoise_lq_vol->getSampler(GL_REPEAT, GL_LINEAR);
     textures["noisevol_lq"] = textureNoise_lq_vol;
@@ -139,10 +156,12 @@ TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX
     GLuint noise_texture_hq_vol;
     glGenTextures( 1, &noise_texture_hq_vol );
     glBindTexture( GL_TEXTURE_3D, noise_texture_hq_vol );
-    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, 32, 32, 32, 0, GL_RGB, GL_FLOAT, noise->noise_hq_vol);
+    glTexImage3D(GL_TEXTURE_3D, 0, GL_RGBA, 32, 32, 32, 0, NOISE_INTERNAL_DATA_FORMAT, GL_FLOAT, noise->noise_hq_vol);
+
     Texture * textureNoise_hq_vol = new Texture("noisevol_hq", noise_texture_hq_vol, GL_TEXTURE_3D, 32, 32, false);
     textureNoise_hq_vol->getSampler(GL_REPEAT, GL_LINEAR);
     textures["noisevol_hq"] = textureNoise_hq_vol;
+
 }
 
 TextureManager::~TextureManager()
