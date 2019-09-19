@@ -1,16 +1,28 @@
 language: cpp
 
-before_script: ./autogen.sh
+compiler:
+  - clang
+  - gcc
+
+before_script:
+  - ./autogen.sh
 before_install:
   - eval "${MATRIX_EVAL}"
 
-# TODO: test different combinations of flags, --enable-sdl, --enable-qt, etc
+addons:
+  apt:
+    packages:
+      - libc++-dev
+      - libsdl2-dev
+      - libglm-dev
+      - libgl1-mesa-dev
+
 script:
   - ./configure $PM_OPTS --prefix=$PWD/local && make -j6 && make install  # build from checkout
   - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure $PM_OPTS --prefix=$PWD/dist_install && make -j6 && make install  # build from dist
   - echo "PWD=$PWD"
   - ls .
-  # - test -e src/projectM-sdl/projectMSDL
+  - test -e src/projectM-sdl/projectMSDL
   - test -e src/libprojectM/libprojectM.la
   - test -e dist_install/share/projectM/fonts/Vera.ttf
   - test -d dist_install/share/projectM/presets
@@ -23,55 +35,26 @@ script:
 # test on GCC and Clang
 matrix:
   include:
-    # linux/clang with SDL
+    #  pulseaudio/qt/jack
     - os: linux
       addons:
         apt:
-          sources:
-            - llvm-toolchain-trusty-5.0
           packages:
-            - clang-5.0
-            - libsdl2-dev
             - libglm-dev
-            - libc++-dev
-      env:
-        - MATRIX_EVAL="CC=clang-5.0 CXX=clang++-5.0 PM_OPTS=\"--enable-sdl\""
-    # linux/clang with pulseaudio/qt/jack
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - llvm-toolchain-trusty-5.0
-          packages:
-            - libsdl2-dev
-            - clang-5.0
-            - libglm-dev
-            - libc++-dev
             - qt5-default
             - qtdeclarative5-dev
             - libqt5opengl5-dev
             - libjack-dev
             - libpulse-dev
-            - libsdl-dev  # for jack
-      env:
-        - MATRIX_EVAL="CC=clang-5.0 CXX=clang++-5.0 PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio\""
-     # linux/gcc
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-7
-            - libsdl2-dev
-            - libglm-dev
             - libc++-dev
+            - libsdl-dev  # for jack
+            - libsdl2-dev  # for tests
       env:
-        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+        - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
 
     # osx/xcode/clang
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode10
       env:
         - MATRIX_EVAL="brew update && brew install sdl2 glm"
 

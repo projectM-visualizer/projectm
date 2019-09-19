@@ -186,7 +186,7 @@ AS_IF([test "$enable_pulseaudio" != "no"],
             # still need qt
             AS_IF([test "$enable_qt" = "yes"],
                 [enable_pulseaudio=yes],
-                [enable_pulseaudio="Qt required"])
+                [enable_pulseaudio="no (Qt required)"])
         ],
         [AS_IF([test "$enable_pulseaudio" = "yes"],
             [AC_MSG_ERROR([libpulse required, but not found.])],
@@ -202,7 +202,7 @@ AS_IF([test "$enable_jack" != "no"],
         # still need qt
         AS_IF([test "$enable_qt" = "yes"],
             [enable_jack=yes],
-            [enable_jack="Qt required"])
+            [enable_jack="no (Qt required)"])
     ],
     [AS_IF([test "$enable_jack" = "yes"],
         [AC_MSG_ERROR([jack required, but not found.])],
