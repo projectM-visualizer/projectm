@@ -47,6 +47,7 @@ matrix:
             - libjack-dev
             - libpulse-dev
             - libsdl-dev  # for jack
+            - libsdl2-dev  # for tests
       env:
         - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
 
