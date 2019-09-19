@@ -46,6 +46,7 @@ matrix:
             - libqt5opengl5-dev
             - libjack-dev
             - libpulse-dev
+            - libc++-dev
             - libsdl-dev  # for jack
             - libsdl2-dev  # for tests
       env:
