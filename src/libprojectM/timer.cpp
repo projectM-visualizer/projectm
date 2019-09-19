@@ -37,7 +37,6 @@ extern "C" {
 
 int projectm_gettimeofday(struct timeval *tv, struct timezone *tz) {
 if (pprojectm_gettimeofday) {
-  fprintf(stderr,"q");
   return (*pprojectm_gettimeofday)(tv,tz);
   }
 return gettimeofday(tv,tz); 
