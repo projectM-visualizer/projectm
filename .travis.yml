@@ -22,31 +22,26 @@ script:
 
 # test on GCC and Clang
 matrix:
+  compiler:
+    - clang
+    - gcc
   include:
-    # linux/clang with SDL
+    # SDL
     - os: linux
       addons:
         apt:
-          sources:
-            - llvm-toolchain-trusty-5.0
           packages:
-            - clang-5.0
             - libsdl2-dev
             - libglm-dev
-            - libc++-dev
       env:
-        - MATRIX_EVAL="CC=clang-5.0 CXX=clang++-5.0 PM_OPTS=\"--enable-sdl\""
+        - MATRIX_EVAL="PM_OPTS=\"--enable-sdl\""
     # linux/clang with pulseaudio/qt/jack
     - os: linux
       addons:
         apt:
-          sources:
-            - llvm-toolchain-trusty-5.0
           packages:
             - libsdl2-dev
-            - clang-5.0
             - libglm-dev
-            - libc++-dev
             - qt5-default
             - qtdeclarative5-dev
             - libqt5opengl5-dev
@@ -54,24 +49,11 @@ matrix:
             - libpulse-dev
             - libsdl-dev  # for jack
       env:
-        - MATRIX_EVAL="CC=clang-5.0 CXX=clang++-5.0 PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio\""
-     # linux/gcc
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-7
-            - libsdl2-dev
-            - libglm-dev
-            - libc++-dev
-      env:
-        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+        - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio\""
 
     # osx/xcode/clang
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode10
       env:
         - MATRIX_EVAL="brew update && brew install sdl2 glm"
 
