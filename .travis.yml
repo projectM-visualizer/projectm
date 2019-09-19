@@ -4,9 +4,15 @@ compiler:
   - clang
   - gcc
 
-before_script: ./autogen.sh
+before_script:
+  - ./autogen.sh
 before_install:
   - eval "${MATRIX_EVAL}"
+
+addons:
+  apt:
+    packages:
+      - libc++-dev
 
 # TODO: test different combinations of flags, --enable-sdl, --enable-qt, etc
 script:
