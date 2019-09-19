@@ -15,14 +15,14 @@ addons:
       - libc++-dev
       - libsdl2-dev
       - libglm-dev
+      - libgl1-mesa-dev
 
-# TODO: test different combinations of flags, --enable-sdl, --enable-qt, etc
 script:
   - ./configure $PM_OPTS --prefix=$PWD/local && make -j6 && make install  # build from checkout
   - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure $PM_OPTS --prefix=$PWD/dist_install && make -j6 && make install  # build from dist
   - echo "PWD=$PWD"
   - ls .
-  # - test -e src/projectM-sdl/projectMSDL
+  - test -e src/projectM-sdl/projectMSDL
   - test -e src/libprojectM/libprojectM.la
   - test -e dist_install/share/projectM/fonts/Vera.ttf
   - test -d dist_install/share/projectM/presets
@@ -35,14 +35,6 @@ script:
 # test on GCC and Clang
 matrix:
   include:
-    # SDL
-    - os: linux
-      addons:
-        apt:
-          packages:
-      env:
-        - MATRIX_EVAL="PM_OPTS=\"--enable-sdl\""
-
     #  pulseaudio/qt/jack
     - os: linux
       addons:
