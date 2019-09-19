@@ -48,7 +48,7 @@ matrix:
             - libpulse-dev
             - libsdl-dev  # for jack
       env:
-        - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio\""
+        - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
 
     # osx/xcode/clang
     - os: osx

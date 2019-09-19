@@ -7,7 +7,7 @@ ${my_CFLAGS} \
 -I${top_srcdir}/src/libprojectM/Renderer \
 ${SDL_CFLAGS}
 
-# TODO investigate these old tests programms projectM_test projectM_test-memleak projectM_test-texture
+# TODO investigate these old tests: projectM_test projectM_test-memleak projectM_test-texture
 bin_PROGRAMS = projectM-unittest
 
 projectM_unittest_SOURCES = projectM-unittest.cpp getConfigFilename.cpp ConfigFile.h getConfigFilename.h
