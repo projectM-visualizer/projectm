@@ -1,5 +1,9 @@
 language: cpp
 
+compiler:
+  - clang
+  - gcc
+
 before_script: ./autogen.sh
 before_install:
   - eval "${MATRIX_EVAL}"
@@ -32,11 +36,8 @@ matrix:
             - libglm-dev
       env:
         - MATRIX_EVAL="PM_OPTS=\"--enable-sdl\""
-      compiler:
-        - clang
-        - gcc
 
-    # pulseaudio/qt/jack
+    #  pulseaudio/qt/jack
     - os: linux
       addons:
         apt:
@@ -51,9 +52,6 @@ matrix:
             - libsdl-dev  # for jack
       env:
         - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio\""
-      compiler:
-        - clang
-        - gcc
 
     # osx/xcode/clang
     - os: osx
