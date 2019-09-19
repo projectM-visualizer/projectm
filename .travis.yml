@@ -13,6 +13,8 @@ addons:
   apt:
     packages:
       - libc++-dev
+      - libsdl2-dev
+      - libglm-dev
 
 # TODO: test different combinations of flags, --enable-sdl, --enable-qt, etc
 script:
@@ -38,8 +40,6 @@ matrix:
       addons:
         apt:
           packages:
-            - libsdl2-dev
-            - libglm-dev
       env:
         - MATRIX_EVAL="PM_OPTS=\"--enable-sdl\""
 
@@ -48,7 +48,6 @@ matrix:
       addons:
         apt:
           packages:
-            - libsdl2-dev
             - libglm-dev
             - qt5-default
             - qtdeclarative5-dev
