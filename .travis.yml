@@ -22,9 +22,6 @@ script:
 
 # test on GCC and Clang
 matrix:
-  compiler:
-    - clang
-    - gcc
   include:
     # SDL
     - os: linux
@@ -35,7 +32,11 @@ matrix:
             - libglm-dev
       env:
         - MATRIX_EVAL="PM_OPTS=\"--enable-sdl\""
-    # linux/clang with pulseaudio/qt/jack
+      compiler:
+        - clang
+        - gcc
+
+    # pulseaudio/qt/jack
     - os: linux
       addons:
         apt:
@@ -50,6 +51,9 @@ matrix:
             - libsdl-dev  # for jack
       env:
         - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio\""
+      compiler:
+        - clang
+        - gcc
 
     # osx/xcode/clang
     - os: osx
