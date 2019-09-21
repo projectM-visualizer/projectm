@@ -38,7 +38,6 @@ fspec_gettimeofday pprojectm_gettimeofday = nullptr;
 
 int projectm_gettimeofday(struct timeval *tv, struct timezone *tz) {
 if (pprojectm_gettimeofday) {
-  fprintf(stderr,"q");
   return (*pprojectm_gettimeofday)(tv,tz);
   }
 return gettimeofday(tv,tz); 
@@ -47,7 +46,6 @@ return gettimeofday(tv,tz);
 
 struct timeval GetCurrentTime() {
     struct timeval now;
-    unsigned int ticks;
 
     projectm_gettimeofday(&now, NULL);
     return now;
