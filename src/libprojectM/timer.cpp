@@ -27,13 +27,14 @@
 #include "timer.h"
 #include <stdlib.h>
 
-fspec_gettimeofday pprojectm_gettimeofday = nullptr;
 
 #ifndef WIN32
 /** Get number of ticks since the given timestamp */
 
 
 extern "C" {
+
+fspec_gettimeofday pprojectm_gettimeofday = nullptr;
 
 int projectm_gettimeofday(struct timeval *tv, struct timezone *tz) {
 if (pprojectm_gettimeofday) {
@@ -64,18 +65,8 @@ unsigned int getTicks( struct timeval *start ) {
 #else
 
 unsigned int getTicks( long start ) {
-if (pprojectm_gettimeofday) {
-    struct timeval now;
-    unsigned long ticks;
-
-    projectm_gettimeofday(&now, NULL);
-    ticks=(now.tv_sec-start->tv_sec)*1000+(now.tv_usec-start->tv_usec)/1000;
-    return(ticks-start);
-    }
-else {
     return GetTickCount() - start;
   }
-}
 
 
 #endif /** !WIN32 */

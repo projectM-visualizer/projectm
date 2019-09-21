@@ -47,11 +47,11 @@ unsigned int getTicks( struct timeval *start );
 extern "C" {
 typedef int (*fspec_gettimeofday)(struct timeval *tv, struct timezone *tz);
 int projectm_gettimeofday(struct timeval *tv, struct timezone *tz);
-
-  }
-
-
 extern  fspec_gettimeofday pprojectm_gettimeofday;
+
+}
+
+
 
 
 struct timeval GetCurrentTime();
