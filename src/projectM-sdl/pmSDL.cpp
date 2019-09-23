@@ -19,11 +19,11 @@
 *
 * projectM-sdl
 * This is an implementation of projectM using libSDL2
-* 
+*
 * pmSDL.cpp
 * Authors: Created by Mischa Spiegelmock on 2017-09-18.
 *
-* 
+*
 * experimental Stereoscopic SBS driver functionality by
 *	RobertPancoast77@gmail.com
 */
@@ -38,7 +38,14 @@ void projectMSDL::audioInputCallbackF32(void *userdata, unsigned char *stream, i
     projectMSDL *app = (projectMSDL *) userdata;
     //    printf("LEN: %i\n", len);
     // stream is (i think) samples*channels floats (native byte order) of len BYTES
-    app->pcm()->addPCMfloat((float *)stream, len/sizeof(float));
+    if (app->audioChannelsCount == 1)
+        app->pcm()->addPCMfloat((float *)stream, len/sizeof(float));
+    else if (app->audioChannelsCount == 2)
+        app->pcm()->addPCMfloat_2ch((float *)stream, len/sizeof(float));
+    else {
+        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Multichannel audio not supported");
+        SDL_Quit();
+    }
 }
 
 void projectMSDL::audioInputCallbackS16(void *userdata, unsigned char *stream, int len) {
@@ -56,8 +63,8 @@ void projectMSDL::audioInputCallbackS16(void *userdata, unsigned char *stream, i
 
 SDL_AudioDeviceID projectMSDL::selectAudioInput(int _count) {
     // TODO: implement some sort of UI allowing the user to select which audio input device they would like to use
-    
-    
+
+
     // ask the user which capture device to use
     // printf("Please select which audio input to use:\n");
     printf("Detected devices:\n");
@@ -97,11 +104,12 @@ int projectMSDL::openAudioInput() {
     SDL_AudioSpec want, have;
 
     // requested format
+    // https://wiki.libsdl.org/SDL_AudioSpec#Remarks
     SDL_zero(want);
-    want.freq = 48000;
+    want.freq = 44100;
     want.format = AUDIO_F32;  // float
     want.channels = 2;
-    want.samples = 512;
+    want.samples = PCM::maxsamples;
     want.callback = projectMSDL::audioInputCallbackF32;
     want.userdata = this;
 
@@ -114,7 +122,7 @@ int projectMSDL::openAudioInput() {
 
     // read characteristics of opened capture device
     SDL_Log("Opened audio capture device index=%i devId=%i: %s", selectedAudioDevice, audioDeviceID, SDL_GetAudioDeviceName(selectedAudioDevice, true));
-    SDL_Log("Sample rate: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
+    SDL_Log("Samples: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
     audioChannelsCount = have.channels;
     audioSampleRate = have.freq;
     audioSampleCount = have.samples;
@@ -146,7 +154,7 @@ void projectMSDL::maximize() {
 void projectMSDL::toggleFullScreen() {
     maximize();
     if (isFullScreen) {
-        SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        SDL_SetWindowFullscreen(win, 0);
         isFullScreen = false;
         SDL_ShowCursor(true);
     } else {
@@ -165,6 +173,15 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 
 	// handle keyboard input (for our app first, then projectM)
     switch (sdl_keycode) {
+        case SDLK_q:
+            if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
+                // cmd/ctrl-q = quit
+                done = 1;
+                return;
+            }
+            break;
+
+
         case SDLK_f:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
                 // command-f: fullscreen
