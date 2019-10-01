@@ -53,7 +53,7 @@
 #endif /** WIN32 */
 
 #endif /** MACOS */
-#ifdef WIN322
+#ifdef WIN32
 #define inline
 #endif /** WIN32 */
 

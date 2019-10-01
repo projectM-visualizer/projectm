@@ -109,6 +109,9 @@ HRESULT get_default_device(IMMDevice **ppMMDevice) {
 #endif /** WASAPI_LOOPBACK */
 
 int main(int argc, char *argv[]) {
+#ifndef WIN32
+srand((int)(time(NULL)));
+#endif
 
 #ifdef WASAPI_LOOPBACK
 	HRESULT hr;
