@@ -16,7 +16,6 @@
 
 Pipeline* Renderer::currentPipe;
 
-
 class Preset;
 
 Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetect, std::string _presetURL,
@@ -33,7 +32,6 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetec
     this->showstats = false;
     this->studio = false;
     this->realfps = 0;
-
     /* Set up the v xoffset and vy offset to 0 which is normal Only used for VR */
     this->vstartx = 0;
     this->vstarty = 0;
@@ -167,7 +165,6 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetec
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 
 
     // CompositeShaderOutput VAO/VBO's
