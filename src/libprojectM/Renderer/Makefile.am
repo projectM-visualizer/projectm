@@ -15,6 +15,7 @@ libRenderer_la_SOURCES = \
   Waveform.cpp \
   Filters.cpp \
   PerlinNoise.cpp \
+  PerlinNoiseWithAlpha.cpp \
   PipelineContext.cpp \
   Renderable.cpp \
   BeatDetect.cpp \
@@ -28,7 +29,7 @@ libRenderer_la_SOURCES = \
 	Filters.hpp                  RenderItemMatcher.hpp        Transformation.hpp\
 	MilkdropWaveform.hpp         RenderItemMergeFunction.hpp  Texture.hpp\
 	PerPixelMesh.hpp             Renderable.hpp               VideoEcho.hpp\
-	PerlinNoise.hpp              Renderer.hpp                 Waveform.hpp\
+	PerlinNoise.hpp  PerlinNoiseWithAlpha.hpp            Renderer.hpp                 Waveform.hpp\
 	Pipeline.hpp                 Shader.hpp\
 	SOIL2/SOIL2.h           SOIL2/stbi_DDS.h\
 	SOIL2/etc1_utils.h      SOIL2/stbi_DDS_c.h\
