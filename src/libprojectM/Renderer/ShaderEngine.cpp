@@ -765,7 +765,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     }
 
     if (ret != GL_FALSE) {
-        std::cerr << "Successfull compilation of " << shaderTypeString << std::endl;
+        std::cerr << "Successful compilation of " << shaderTypeString << std::endl;
     } else {
         std::cerr << "Compilation error (step3) of " << shaderTypeString << std::endl;
 
@@ -1325,5 +1325,3 @@ bool ShaderEngine::enableCompositeShader(Shader &shader, const Pipeline &pipelin
 
     return false;
 }
-
-
