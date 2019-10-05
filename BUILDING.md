@@ -1,5 +1,4 @@
 # Building projectM from source
-When building on *nix and OSX, one uses the autogen/configure workflow. It is suggested to read configure.ac and the assorted Makefile.am files.
 
 
 ```
@@ -22,6 +21,7 @@ sudo make install
 Windows build bypasses the autogen/configure pipeline and uses the Visual Studio/MSVC files in `msvc/`. See `.appveyor.yml` for command line building.
 
 Some dependencies are included verbatim (glew), while others leverage the NuGet ecosystem and are downloaded automatically (glm, sdl2).
+If extra information needed - you can refere to `configure.ac` and the assorted `Makefile.am` files.
 
 ### OpenGL ES
 projectM supports OpenGL ES 3 for embedded systems. Be sure to configure with the `--enable--gles` flag.
