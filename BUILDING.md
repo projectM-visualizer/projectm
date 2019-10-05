@@ -15,7 +15,7 @@ Main build options & their requirements:
 |-----------------|-------------------------------------------------------------------- |----------------------- |
 | `--enable-sdl`  | `libsdl2-dev`                                                      | `projectMSDL`         |
 | `--enable-qt`   | `qt5-default` `qtdeclarative5-dev` `libpulse-dev` `libqt5opengl5`  | `projectM-pulseaudio` |
-| `--enable-jack` | `libjack2-dev`OR`libjack1-dev`; `qt5-default` `qtdeclarative5-dev` | `projectM-jack`       |
+| `--enable-jack` | `libjack2-dev`OR`libjack1-dev`; `qt5-default` `qtdeclarative5-dev` `libqt5opengl5`| `projectM-jack`       |
 
 #### Additional information on dependencies
 * `libglm` for matrix math is required, just the headers though. We are considering "vendoring" them.
