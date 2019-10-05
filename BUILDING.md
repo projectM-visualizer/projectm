@@ -43,9 +43,12 @@ projectM supports OpenGL ES 3 for embedded systems. Be sure to configure with th
 
 ### Build using NDK for Android
 Install Android Studio, launch SDK Manager and install NDK
-`./autogen.sh`
-`./configure-ndk`
-`make && make install-strip`
+
+```sh
+./autogen.sh
+./configure-ndk
+make && make install-strip
+```
 
 Now you should be able to copy ./src/libprojectM/.libs/libprojectM.so
 and appropriate headers to projectm-android, and build it using Android Studio
