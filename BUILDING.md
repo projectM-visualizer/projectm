@@ -17,10 +17,7 @@ Main build options & their requirements:
 | `--enable-qt`   | `qt5-default` `qtdeclarative5-dev` `libpulse-dev` `libqt5opengl5`  | `projectM-pulseaudio` |
 | `--enable-jack` | `libjack2-dev`OR`libjack1-dev`; `qt5-default` `qtdeclarative5-dev` | `projectM-jack`       |
 
-### Building on Windows
-Windows build bypasses the autogen/configure pipeline and uses the Visual Studio/MSVC files in `msvc/`. See `.appveyor.yml` for command line building.
 
-Some dependencies are included verbatim (glew), while others leverage the NuGet ecosystem and are downloaded automatically (glm, sdl2).
 If extra information needed - you can refere to `configure.ac` and the assorted `Makefile.am` files.
 
 ### Building process under *nix systems
@@ -40,6 +37,11 @@ projectM supports OpenGL ES 3 for embedded systems. Be sure to configure with th
 ### Raspberry Pi (and other embedded systems)
 * projectM is arch-independent, although there are some SSE2 enhancements for x86
 * [Notes on running on raspberry pi](https://github.com/projectM-visualizer/projectm/issues/115)
+
+### Building on Windows
+Windows build bypasses the autogen/configure pipeline and uses the Visual Studio/MSVC files in `msvc/`. See `.appveyor.yml` for command line building.
+
+Some dependencies are included verbatim (glew), while others leverage the NuGet ecosystem and are downloaded automatically (glm, sdl2).
 
 ### Build using NDK for Android
 Install Android Studio, launch SDK Manager and install NDK
