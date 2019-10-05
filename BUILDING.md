@@ -17,6 +17,11 @@ Main build options & their requirements:
 | `--enable-qt`   | `qt5-default` `qtdeclarative5-dev` `libpulse-dev` `libqt5opengl5`  | `projectM-pulseaudio` |
 | `--enable-jack` | `libjack2-dev`OR`libjack1-dev`; `qt5-default` `qtdeclarative5-dev` | `projectM-jack`       |
 
+#### Additional information on dependencies
+* `libglm` for matrix math is required, just the headers though. We are considering "vendoring" them.
+* A modified version of `hlslparser` is included in Renderer and used to transpile HLSL shaders to GLSL
+* OpenGL 3+ or OpenGLES is required
+* `libsdl >= 2.0.5` is required for the SDL and emscripten apps. `src/projectM-sdl` is the current reference application implementation. maybe try getting that to build and run as your testbench.
 
 If extra information needed - you can refere to `configure.ac` and the assorted `Makefile.am` files.
 
@@ -67,13 +72,6 @@ Made up of everything in src/libprojectM/Renderer. These files compose the libRe
 From their respective folders. Native presets are visualizations that are implemented in C++ instead of .milk preset files. They are completely optional. Milkdrop presets are technically optional but the whole thing is basically useless without them.
 
 If you don't want native presets, and you probably don't, don't bother with them. Ideally there should be a configure option to disable them, probably on by default (at this time this is needed for autoconf: https://github.com/projectM-visualizer/projectm/issues/99).
-
-
-### Dependencies
-* libglm for matrix math is required, just the headers though. We are considering "vendoring" them.
-* A modified version of hlslparser is included in Renderer and used to transpile HLSL shaders to GLSL
-* OpenGL 3+ or OpenGLES is required
-* libsdl >= 2.0.5 is required for the SDL and emscripten apps. src/projectM-sdl is the current reference application implementation. maybe try getting that to build and run as your testbench.
 
 
 ### Assets
