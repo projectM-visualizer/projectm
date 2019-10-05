@@ -1,15 +1,21 @@
 # Building projectM from source
 
+### Dependencies
+Relevant for Linux distributions, FreeBSD, macOS:
 
+* `autotools` `autoconf`
+* `libtool`, or at least `pkg-config`
+* `which`
 
-### Linux (debian/ubuntu) dependencies
-* `sudo apt install autoconf libtool libsdl2-dev libglm-dev qt5-default qtdeclarative5-dev libqt5opengl5-dev libjack-dev libpulse-dev libsdl-dev`
+* `libglm-dev`
 
-### FreeBSD dependencies
-* `pkg install gcc autoconf automake libtool mesa-libs libGLU sdl2 glm`
+Main build options & their requirements:
 
-### Mac OS X dependencies
-* `brew install glm sdl2 automake libtool pkg-config`
+| Configure flag | Required dependency                                                | Produced binary       |
+|-----------------|-------------------------------------------------------------------- |----------------------- |
+| `--enable-sdl`  | `libsdl2-dev`                                                      | `projectMSDL`         |
+| `--enable-qt`   | `qt5-default` `qtdeclarative5-dev` `libpulse-dev` `libqt5opengl5`  | `projectM-pulseaudio` |
+| `--enable-jack` | `libjack2-dev`OR`libjack1-dev`; `qt5-default` `qtdeclarative5-dev` | `projectM-jack`       |
 
 ### Building on Windows
 Windows build bypasses the autogen/configure pipeline and uses the Visual Studio/MSVC files in `msvc/`. See `.appveyor.yml` for command line building.
