@@ -63,18 +63,18 @@ and appropriate headers to projectm-android, and build it using Android Studio
 
 ## libprojectM
 
-libprojectM is the core library. It is made up of three sub-libraries:
+`libprojectM` is the core library. It is made up of three sub-libraries:
 
 #### Renderer
-Made up of everything in src/libprojectM/Renderer. These files compose the libRenderer sub-library.
+Made up of everything in `src/libprojectM/Renderer`. These files compose the `libRenderer` sub-library.
 
 #### MilkdropPresetFactory / NativePresetFactory
-From their respective folders. Native presets are visualizations that are implemented in C++ instead of .milk preset files. They are completely optional. Milkdrop presets are technically optional but the whole thing is basically useless without them.
+From their respective folders. Native presets are visualizations that are implemented in C++ instead of `.milk` preset files. They are completely optional. Milkdrop presets are technically optional but the whole thing is basically useless without them.
 
 If you don't want native presets, and you probably don't, don't bother with them. Ideally there should be a configure option to disable them, probably on by default (at this time this is needed for autoconf: https://github.com/projectM-visualizer/projectm/issues/99).
 
 
 ### Assets
-libprojectM can either have a configuration hard-coded or load from a configuration file. It's up to each application to decide how to load the config file. The config file can have paths defined specifying where to load fonts and presets from.
+`libprojectM` can either have a configuration hard-coded or load from a configuration file. It's up to each application to decide how to load the config file. The config file can have paths defined specifying where to load fonts and presets from.
 
 You will want to install the config file and presets somewhere, and then define that path for the application you're trying to build.
