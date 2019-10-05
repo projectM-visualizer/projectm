@@ -1,12 +1,6 @@
 # Building projectM from source
 
 
-```
-./autogen.sh  # only needed if this is a git clone
-./configure --enable-sdl
-make
-sudo make install
-```
 
 ### Linux (debian/ubuntu) dependencies
 * `sudo apt install autoconf libtool libsdl2-dev libglm-dev qt5-default qtdeclarative5-dev libqt5opengl5-dev libjack-dev libpulse-dev libsdl-dev`
@@ -22,6 +16,17 @@ Windows build bypasses the autogen/configure pipeline and uses the Visual Studio
 
 Some dependencies are included verbatim (glew), while others leverage the NuGet ecosystem and are downloaded automatically (glm, sdl2).
 If extra information needed - you can refere to `configure.ac` and the assorted `Makefile.am` files.
+
+### Building process under *nix systems
+```sh
+autoreconf --install    # only needed if this is a git clone
+# For macOS automation there is ./autogen.sh provided for autoreconf
+
+./configure --enable-sdl    # Supply your keys here, info in Dependencies
+
+make
+sudo make install
+```
 
 ### OpenGL ES
 projectM supports OpenGL ES 3 for embedded systems. Be sure to configure with the `--enable--gles` flag.
