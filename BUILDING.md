@@ -30,7 +30,7 @@ If extra information needed - you can refere to `configure.ac` and the assorted 
 autoreconf --install    # only needed if this is a git clone
 # For macOS automation there is ./autogen.sh provided for autoreconf
 
-./configure --enable-sdl    # Supply your keys here, info in Dependencies
+./configure --enable-sdl    # supply additional options here, info in Dependencies
 
 make
 sudo make install
