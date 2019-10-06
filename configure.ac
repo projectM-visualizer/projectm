@@ -32,6 +32,7 @@ AS_IF([test "x$enable_emscripten" = "xyes" || test "x$EMSCRIPTEN" = "xyes"], [
   enable_threading=no
   enable_gles=yes
   enable_sdl=yes
+  enable_preset_subdirs=no
 ], [
   dnl Running in a normal OS (not emscripten)
   AX_CHECK_GL
@@ -129,6 +130,13 @@ AC_ARG_ENABLE([gles],
     AC_DEFINE([USE_GLES], [1], [Define USE_GLES])
 ])
 
+AC_ARG_ENABLE([preset_subdirs],
+  AS_HELP_STRING([--enable-preset-subdirs], [Organize presets into subdirectories.]),
+  [], [enable_preset_subdirs=no])
+  AS_IF([test "x$enable_preset_subdirs" = "xyes"], [
+    AC_DEFINE([ENABLE_PRESET_SUBDIRS], [1], [Define ENABLE_PRESET_SUBDIRS])
+])
+
 dnl LLVM
 dnl unfortuately AX_LLVM macro seems to be out of date, so we're going to rely on the user to make sure LLVM is installed correctly
 AC_ARG_ENABLE([llvm],
@@ -214,6 +222,7 @@ AM_CONDITIONAL([ENABLE_QT], [test "x$enable_qt" = "xyes"])
 AM_CONDITIONAL([ENABLE_JACK], [test "x$enable_jack" = "xyes"])
 AM_CONDITIONAL([ENABLE_PULSEAUDIO], [test "x$enable_pulseaudio" = "xyes"])
 AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test "x$enable_emscripten" = "xyes"])
+AM_CONDITIONAL([ENABLE_PRESET_SUBDIRS], [test "x$enable_preset_subdirs" = "xyes"])
 
 
 my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits "
@@ -255,4 +264,5 @@ Jack:                   ${enable_jack}
 OpenGLES:               ${enable_gles}
 Emscripten:             ${enable_emscripten}
 llvm:                   ${enable_llvm}
+Preset subdirs:         ${enable_preset_subdirs}
 ])
