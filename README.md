@@ -14,7 +14,7 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 * [Android](https://play.google.com/store/apps/details?id=com.psperl.projectM)
 * [iOS](https://itunes.apple.com/us/app/projectm-music-visualizer/id530922227?mt=8&ign-mpt=uo%3D4)
 * [iTunes plugin (macOS)](https://github.com/projectM-visualizer/projectm/releases/)
-* Qt5 + Pulseaudio
+* [Qt5](https://www.qt.io/) + [Pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/)
 * [ALSA, xmms, winamp, jack](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
 
 ### Download
