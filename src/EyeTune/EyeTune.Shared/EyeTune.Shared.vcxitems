@@ -55,6 +55,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\hlslparser\src\HLSLTree.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\MilkdropWaveform.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\PerlinNoise.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\PerlinNoiseWithAlpha.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\PerPixelMesh.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\Pipeline.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\PipelineContext.cpp" />
