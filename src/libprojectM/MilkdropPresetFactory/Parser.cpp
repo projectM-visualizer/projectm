@@ -1565,11 +1565,8 @@ InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, MilkdropPreset *
   float val;
   token_t token;
 
-
-  if (preset == NULL)
-    return NULL;
-  if (fs.fail())
-    return NULL;
+  assert(preset);
+  assert(!fs.fail());
 
   if ((token = parseToken(fs, name)) != tEq)
     return NULL;
@@ -1778,7 +1775,7 @@ int Parser::parse_wavecode(char * token, std::istream &  fs, MilkdropPreset * pr
   Param * param;
 
   assert(preset);
-  assert(fs);
+  assert(!fs.fail());
   assert(token);
 
   /* token should be in the form wavecode_N_var, such as wavecode_1_samples */
@@ -1874,14 +1871,13 @@ int Parser::parse_shapecode(char * token, std::istream &  fs, MilkdropPreset * p
   int id;
   CValue init_val;
   Param * param;
-
+    
+    
   /* Null argument checks */
-  if (preset == NULL)
-    return PROJECTM_FAILURE;
-  if (fs.fail())
-    return PROJECTM_FAILURE;
-  if (token == NULL)
-    return PROJECTM_FAILURE;
+  assert(preset);
+  assert(fs);
+  assert(token);
+
 
   /* token should be in the form shapecode_N_var, such as shapecode_1_samples */
 
@@ -1989,14 +1985,8 @@ int Parser::parse_wavecode_prefix(char * token, int * id, char ** var_string)
 
   int len, i, j;
 
-  if (token == NULL)
-    return PROJECTM_FAILURE;
-  /*
-  if (*var_string == NULL)
-    return PROJECTM_FAILURE;
-  */
-  if (id == NULL)
-    return PROJECTM_FAILURE;
+  assert(id);
+  assert(token);
 
   len = strlen(token);
 
@@ -2345,14 +2335,9 @@ int Parser::parse_shape(char * token, std::istream &  fs, MilkdropPreset * prese
   char * eqn_type;
   CustomShape * custom_shape;
 
-
-  if (token == NULL)
-
-    return PROJECTM_FAILURE;
-  if (fs.fail())
-    return PROJECTM_FAILURE;
-  if (preset == NULL)
-    return PROJECTM_FAILURE;
+  assert(preset);
+  assert(!fs.fail());
+  assert(token);
 
   /* Grab custom shape id and equation type (per frame or per point) from string token */
   if (parse_shape_prefix(token, &id, &eqn_type) < 0)
