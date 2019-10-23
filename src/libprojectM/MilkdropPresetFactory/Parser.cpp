@@ -24,7 +24,6 @@
 #include <string>
 #include <cstring>
 #include <iostream>
-#include <locale>
 #include <stdlib.h>
 
 #include "Common.hpp"
@@ -47,7 +46,6 @@
 #include <iostream>
 #include <sstream>
 #include "BuiltinFuncs.hpp"
-#include "MilkdropPresetFactory.hpp"
 
 /* Grabs the next token from the file. The second argument points
    to the raw string */
@@ -280,6 +278,7 @@ Expr **Parser::parse_prefix_args(std::istream &  fs, int num_args, MilkdropPrese
       for (j = 0; j < i; j++)
         Expr::delete_expr(expr_list[j]);
       free(expr_list);
+      expr_list = NULL;
       return NULL;
     }
     /* Assign entry in expression list */
@@ -337,7 +336,7 @@ int Parser::parse_per_pixel_eqn(std::istream &  fs, MilkdropPreset * preset, cha
 
   if (init_string != 0)
   {
-    memcpy(string, init_string, strlen(init_string) + 1);
+    strncpy(string, init_string, strlen(init_string));
   }
   else
   {
@@ -1028,7 +1027,7 @@ TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root)
      of the item to be inserted is greater than the root's
      precedence, then make gen_expr the root */
 
-  if (infix_op->precedence >= (*root)->infix_op->precedence)
+  if (infix_op->precedence > (*root)->infix_op->precedence)
   {
     new_root = TreeExpr::create(infix_op, NULL, *root, NULL);
     (*root) = new_root;
@@ -1284,18 +1283,26 @@ int Parser::parse_int(std::istream &  fs, int * int_ptr)
 /* Parses a floating point number */
 int Parser::string_to_float(char * string, float * float_ptr)
 {
-
+  char ** error_ptr;
+    
   if (*string == 0)
     return PROJECTM_PARSE_ERROR;
-
-  std::istringstream iss(string);
-  iss.imbue(std::locale("C"));
-  iss >> (*float_ptr);
-  if (!iss.fail()) {
+    
+  error_ptr = (char**)wipemalloc(sizeof(char**));
+    
+  (*float_ptr) = strtod(string, error_ptr);
+    
+  /* These imply a succesful parse of the string */
+  if ((**error_ptr == '\0') || (**error_ptr == '\r'))
+  {
+    free(error_ptr);
+    error_ptr = NULL;
     return PROJECTM_SUCCESS;
   }
 
   (*float_ptr) = 0;
+  free(error_ptr);
+  error_ptr = NULL;
   return PROJECTM_PARSE_ERROR;
 }
 
@@ -1304,20 +1311,23 @@ int Parser::parse_float(std::istream &  fs, float * float_ptr)
 {
 
   char string[MAX_TOKEN_SIZE];
+  char ** error_ptr;
   token_t token;
   int sign;
 
+  error_ptr =(char**) wipemalloc(sizeof(char**));
+    
   token = parseToken(fs, string);
 
   switch (token)
   {
   case tMinus:
     sign = -1;
-    parseToken(fs, string);
+    token = parseToken(fs, string);
     break;
   case tPlus:
     sign = 1;
-    parseToken(fs, string);
+    token = parseToken(fs, string);
     break;
   default:
     sign = 1;
@@ -1325,20 +1335,26 @@ int Parser::parse_float(std::istream &  fs, float * float_ptr)
 
   if (string[0] == 0)
   {
+    free(error_ptr);
+    error_ptr = NULL;
     return PROJECTM_PARSE_ERROR;
   }
 
-  std::istringstream iss(string);
-  iss.imbue(std::locale("C"));
-  iss >> (*float_ptr);
-  if (!iss.fail()) {
-    (*float_ptr) *= sign;
+  (*float_ptr) = sign*strtod(string, error_ptr);
+    
+  /* No conversion was performed */
+  if ((**error_ptr == '\0') || (**error_ptr == '\r'))
+  {
+    free(error_ptr);
+    error_ptr = NULL;
     return PROJECTM_SUCCESS;
   }
 
   if (PARSE_DEBUG) printf("parse_float: float conversion failed for string \"%s\"\n", string);
 
   (*float_ptr) = 0;
+  free(error_ptr);
+  error_ptr = NULL;
   return PROJECTM_PARSE_ERROR;
 
 }
@@ -1530,8 +1546,7 @@ InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, MilkdropPres
 
 
 void Parser::parse_string_block(std::istream &  fs, std::string * out_string) {
-
-	std::set<char> skipList;
+    std::set<char> skipList;
 	skipList.insert('`');
 	readStringUntil(fs, out_string, false, skipList);
 
@@ -2283,7 +2298,7 @@ int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int 
     /// HACK the parse_line code already parsed the per_pixel variable name. This handles that case
     /// Parser needs reworked. Don't have time for it. So this is the result.
     if (init_string)
-      memcpy(string, init_string, strlen(init_string)+1);
+      strncpy(string, init_string, strlen(init_string)+1);
     else
     {
       if (parseToken(fs, string) != tEq)
@@ -2299,7 +2314,6 @@ int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int 
     if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL)
     {
       if (PARSE_DEBUG) printf("parse_wave_helper (per_point): equation evaluated to null? (LINE %d)\n", line_count);
-      current_wave = NULL;
       return PROJECTM_PARSE_ERROR;
     }
 
@@ -2308,7 +2322,6 @@ int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int 
     if (custom_wave->add_per_point_eqn(string, gen_expr) < 0)
     {
       Expr::delete_expr(gen_expr);
-      current_wave = NULL;
       return PROJECTM_PARSE_ERROR;
     }
     // This tells the parser we are no longer parsing a custom wave
