@@ -297,7 +297,8 @@ srand((int)(time(NULL)));
 
 
 	SDL_GLContext glCtx = SDL_GL_CreateContext(win);
-
+    SDL_GL_MakeCurrent(win, glCtx);
+    SDL_GL_SetSwapInterval(1); // Enable vsync
 
     SDL_Log("GL_VERSION: %s", glGetString(GL_VERSION));
     SDL_Log("GL_SHADING_LANGUAGE_VERSION: %s", glGetString(GL_SHADING_LANGUAGE_VERSION));
@@ -355,9 +356,12 @@ srand((int)(time(NULL)));
 #endif
 
 #if !FAKE_AUDIO && !WASAPI_LOOPBACK
-    // get an audio input device
-    if (app->openAudioInput())
+    // Init audio capture.
+    if (app->initAudioInput())
 	    app->beginAudioCapture();
+    else {
+        // Exit gracefully?
+    }
 #endif
 
 #if TEST_ALL_PRESETS

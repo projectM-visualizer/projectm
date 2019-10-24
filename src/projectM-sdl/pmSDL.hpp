@@ -39,10 +39,21 @@
 #define TEST_ALL_PRESETS    0
 #define STEREOSCOPIC_SBS    0
 
-#include "projectM-opengl.h"
+#include "imgui.h"
+#include "imgui_impl_sdl.h"
+#include "imgui_impl_opengl3.h"
+
+#include <stdio.h>
+#include <SDL.h>
+
+#include IMGUI_IMPL_OPENGL_LOADER_CUSTOM
 #include <projectM.hpp>
+#include "ShaderEngine.hpp"
 #include <sdltoprojectM.h>
 #include <iostream>
+#include <vector>
+#include <memory>
+#include <sstream>
 #include <sys/stat.h>
 
 
@@ -86,16 +97,16 @@
 class projectMSDL : public projectM {
 public:
 
-
     bool done;
 
     projectMSDL(Settings settings, int flags);
     projectMSDL(std::string config_file, int flags);
     void init(SDL_Window *window, SDL_GLContext *glCtx, const bool renderToTexture = false);
-    int openAudioInput();
+    int initAudioInput();
     void beginAudioCapture();
     void endAudioCapture();
     void toggleFullScreen();
+    void setFullScreen(bool fullscreen);
     void resize(unsigned int width, unsigned int height);
     void renderFrame();
     void pollEvent();
@@ -106,29 +117,54 @@ public:
     virtual void presetSwitchedEvent(bool isHardCut, size_t index) const;
 
 private:
-    SDL_Window *win;
-    SDL_GLContext *glCtx;
-    bool isFullScreen;
-    SDL_AudioDeviceID audioInputDevice;
-    unsigned int width, height;
-    bool renderToTexture;
-    GLuint programID = 0;
+    struct SDLAudioDeviceInfo
+    {
+        std::string name;
+        int index;
+
+        SDLAudioDeviceInfo(std::string _name, int _index) : 
+            name(_name),
+            index(_index) {}
+
+        SDLAudioDeviceInfo() : 
+            name(std::string()),
+            index(0) {}
+    };
+    
+    SDL_Window *m_window;
+    SDL_GLContext *m_glCtx;
+    bool m_isFullScreen;
+    unsigned int m_width, m_height;
+    bool m_renderToTexture;
+    GLuint m_programID = 0;
     GLuint m_vbo = 0;
     GLuint m_vao = 0;
-    GLuint textureID = 0;
+    GLuint m_textureID = 0;
+    bool m_showMenu;
+    unsigned int m_selectedPresetIndex;
+    bool m_shufflePlay;
+    int m_presetDuration;
+    
+    SDL_AudioDeviceID m_audioInputDevice;
 
     // audio input device characteristics
-    unsigned short audioChannelsCount;
-    unsigned short audioSampleRate;
-    unsigned short audioSampleCount;
-    SDL_AudioFormat audioFormat;
-    SDL_AudioDeviceID audioDeviceID;
+    unsigned short m_audioChannelsCount;
+    unsigned short m_audioSampleRate;
+    unsigned short m_audioSampleCount;
+    SDL_AudioFormat m_audioFormat;
+
+    // List of audio capture devices populated by initAudioInput().
+    std::vector<SDLAudioDeviceInfo> m_audioCaptureDevicesInfo;
+
+    int openAudioCaptureDevice(const SDLAudioDeviceInfo& deviceInfo);
+    void releaseAudioCaptureDevice();
+
+    void renderImGuiMenu();
 
     static void audioInputCallbackF32(void *userdata, unsigned char *stream, int len);
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
 
     void keyHandler(SDL_Event *);
-    SDL_AudioDeviceID selectAudioInput(int _count);
     void renderTexture();
 };
 
