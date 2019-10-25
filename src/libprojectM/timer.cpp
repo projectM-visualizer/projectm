@@ -23,7 +23,9 @@
  *
  * Platform-independent timer
  */
+#ifndef WIN32
 #include <stdio.h>
+#endif
 #include "timer.h"
 #include <stdlib.h>
 
