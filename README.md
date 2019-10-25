@@ -19,6 +19,7 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 
 ### Download
 Get it from the [Releases](https://github.com/projectM-visualizer/projectm/releases) tab
+or 
 Download from the [Windows Store (PC, XBOX, Phone)](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
 
 ### Demo Video
