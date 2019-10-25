@@ -30,7 +30,10 @@ Download from the [Windows Store (PC, XBOX, Phone)](https://www.microsoft.com/st
 You can read more about how it works and the current state of development [here](https://lwn.net/Articles/750152/).
 
 ### Presets
-The preset files define the visualizations via pixel shaders and Milkdrop-style equations and parameters. Included with projectM are the bltc201, Milkdrop 1 and 2, projectM, tryptonaut and yin collections. You can grab all of the presets [here](http://spiegelmc.com/pub/projectm_presets.zip).
+The preset files define the visualizations via pixel shaders and Milkdrop-style equations and parameters. Included with projectM are the bltc201, Milkdrop 1 and 2, projectM, tryptonaut and yin collections. You can grab these presets [here](http://spiegelmc.com/pub/projectm_presets.zip).
+
+You can also download an enormous 52,000 pack of presets and textures [here](https://mischa.lol/projectM/52k-presets.zip)(338MB zipped).
+
 
 ### Also Featured In
 [![Kodi](https://github.com/projectM-visualizer/projectm/raw/master/web/kodi.png) Kodi (formerly XBMC)](https://kodi.tv/)
