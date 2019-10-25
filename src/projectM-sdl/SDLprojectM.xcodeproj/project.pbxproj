@@ -155,6 +155,9 @@
 		C345215B1BF025A9001707D2 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		C345215D1BF025CF001707D2 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		C345215F1BF025E5001707D2 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = "../projectM-iTunes/macos/contrib/libbz2.a"; sourceTree = "<group>"; };
+		C34521601BF025E5001707D2 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = "../projectM-iTunes/macos/contrib/libfreetype.a"; sourceTree = "<group>"; };
+		C34521611BF025E5001707D2 /* libftgl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libftgl.a; path = "../projectM-iTunes/macos/contrib/libftgl.a"; sourceTree = "<group>"; };
+		C34521621BF025E5001707D2 /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLEW.a; path = "../projectM-iTunes/macos/contrib/libGLEW.a"; sourceTree = "<group>"; };
 		C34521631BF025E5001707D2 /* libpng15.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng15.a; path = "../projectM-iTunes/macos/contrib/libpng15.a"; sourceTree = "<group>"; };
 		C34521641BF025E5001707D2 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = "../projectM-iTunes/macos/contrib/libz.a"; sourceTree = "<group>"; };
 		C3D30B8F1BF02BE5009AAACD /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../fonts; sourceTree = "<group>"; };
@@ -228,6 +231,9 @@
 			isa = PBXGroup;
 			children = (
 				C345215F1BF025E5001707D2 /* libbz2.a */,
+				C34521601BF025E5001707D2 /* libfreetype.a */,
+				C34521611BF025E5001707D2 /* libftgl.a */,
+				C34521621BF025E5001707D2 /* libGLEW.a */,
 				C34521631BF025E5001707D2 /* libpng15.a */,
 				C34521641BF025E5001707D2 /* libz.a */,
 			);
