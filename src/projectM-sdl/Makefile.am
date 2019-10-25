@@ -4,8 +4,8 @@ ${my_CFLAGS} \
 -DSYSCONFDIR=\""$(sysconfdir)"\" \
 -I${top_srcdir}/src/libprojectM \
 -I${top_srcdir}/src/libprojectM/Renderer \
-${SDL_CFLAGS} \
--I$(top_srcdir)/src/libprojectM/Renderer/imgui
+-I$(top_srcdir)/src/libprojectM/Renderer/imgui \
+${SDL_CFLAGS}
 
 bin_PROGRAMS = projectMSDL
 projectMSDL_SOURCES = pmSDL.cpp projectM_SDL_main.cpp pmSDL.hpp imgui_impl_sdl.cpp

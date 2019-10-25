@@ -7,6 +7,8 @@ libRenderer_la_SOURCES = \
   imgui/imgui_widgets.cpp \
   imgui/imgui.cpp \
   imgui/imgui_impl_opengl3.cpp \
+  imgui/imconfig.h imgui/imgui_impl_opengl3.h imgui/imgui_internal.h imgui/imgui.h \
+  imgui/imstb_rectpack.h imgui/imstb_textedit.h imgui/imstb_truetype.h \
   SOIL2/image_DXT.c \
   SOIL2/image_helper.c \
   SOIL2/SOIL2.c \
@@ -55,6 +57,6 @@ libRenderer_la_CPPFLAGS = ${my_CFLAGS} \
 	-include $(top_builddir)/config.h \
 	-I$(top_srcdir)/src/libprojectM/Renderer/hlslparser/src \
 	-I$(top_srcdir)/src/libprojectM
-
+	
 libRenderer_la_LDFLAGS = \
   ${FTGL_LIBS}
