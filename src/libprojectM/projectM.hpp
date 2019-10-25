@@ -53,9 +53,6 @@
 #endif /** WIN32 */
 
 #endif /** MACOS */
-#ifdef WIN32
-#define inline
-#endif /** WIN32 */
 
 #ifdef WIN32
 // libs required for win32

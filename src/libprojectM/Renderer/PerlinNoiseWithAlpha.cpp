@@ -7,8 +7,11 @@
  */
 
 #include "PerlinNoiseWithAlpha.hpp"
+#ifndef WIN32
+#include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
+#endif
 
 /* The reason for this cousin class is that in Open GLES 2.0 environments,
 the glTexImage2d cannot convert from GL_RGB into GL_RGBA
