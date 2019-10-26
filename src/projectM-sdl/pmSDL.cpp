@@ -34,13 +34,14 @@
 #include "Renderer/ShaderEngine.hpp"
 
 
+
 void projectMSDL::audioInputCallbackF32(void *userdata, unsigned char *stream, int len) {
     projectMSDL *app = (projectMSDL *) userdata;
     //    printf("LEN: %i\n", len);
     // stream is (i think) samples*channels floats (native byte order) of len BYTES
-    if (app->audioChannelsCount == 1)
+    if (app->m_audioChannelsCount == 1)
         app->pcm()->addPCMfloat((float *)stream, len/sizeof(float));
-    else if (app->audioChannelsCount == 2)
+    else if (app->m_audioChannelsCount == 2)
         app->pcm()->addPCMfloat_2ch((float *)stream, len/sizeof(float));
     else {
         SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Multichannel audio not supported");
@@ -54,52 +55,15 @@ void projectMSDL::audioInputCallbackS16(void *userdata, unsigned char *stream, i
     short pcm16[2][512];
 
     for (int i = 0; i < 512; i++) {
-        for (int j = 0; j < app->audioChannelsCount; j++) {
+        for (int j = 0; j < app->m_audioChannelsCount; j++) {
             pcm16[j][i] = stream[i+j];
         }
     }
     app->pcm()->addPCM16(pcm16);
 }
 
-SDL_AudioDeviceID projectMSDL::selectAudioInput(int _count) {
-    // TODO: implement some sort of UI allowing the user to select which audio input device they would like to use
-
-
-    // ask the user which capture device to use
-    // printf("Please select which audio input to use:\n");
-    printf("Detected devices:\n");
-    for (int i = 0; i < _count; i++) {
-        printf("  %i: 🎤%s\n", i, SDL_GetAudioDeviceName(i, true));
-    }
-
-    return 0;
-}
-
-int projectMSDL::openAudioInput() {
-    // get audio driver name (static)
-    const char* driver_name = SDL_GetCurrentAudioDriver();
-    SDL_Log("Using audio driver: %s\n", driver_name);
-
-    // get audio input device
-    unsigned int i, count2 = SDL_GetNumAudioDevices(true);  // capture, please
-    if (count2 == 0) {
-        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio capture devices found");
-        SDL_Quit();
-    }
-    for (i = 0; i < count2; i++) {
-        SDL_Log("Found audio capture device %d: %s", i, SDL_GetAudioDeviceName(i, true));
-    }
-
-    SDL_AudioDeviceID selectedAudioDevice = 0;  // device to open
-    if (count2 > 1) {
-        // need to choose which input device to use
-        selectedAudioDevice = selectAudioInput(count2);
-	if (selectedAudioDevice > count2) {
-            SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio input device specified.");
-            SDL_Quit();
-        }
-    }
-
+// Open a specified audio capture device.
+int projectMSDL::openAudioCaptureDevice(const SDLAudioDeviceInfo& deviceInfo) {
     // params for audio input
     SDL_AudioSpec want, have;
 
@@ -113,7 +77,7 @@ int projectMSDL::openAudioInput() {
     want.callback = projectMSDL::audioInputCallbackF32;
     want.userdata = this;
 
-    audioDeviceID = SDL_OpenAudioDevice(SDL_GetAudioDeviceName(selectedAudioDevice, true), true, &want, &have, 0);
+    SDL_AudioDeviceID audioDeviceID = SDL_OpenAudioDevice(deviceInfo.name.c_str(), true, &want, &have, 0);
 
     if (audioDeviceID == 0) {
         SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Failed to open audio capture device: %s", SDL_GetError());
@@ -121,23 +85,56 @@ int projectMSDL::openAudioInput() {
     }
 
     // read characteristics of opened capture device
-    SDL_Log("Opened audio capture device index=%i devId=%i: %s", selectedAudioDevice, audioDeviceID, SDL_GetAudioDeviceName(selectedAudioDevice, true));
+    SDL_Log("Opened audio capture device index=%i devId=%i: %s", deviceInfo.index, audioDeviceID, deviceInfo.name.c_str());
     SDL_Log("Samples: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
-    audioChannelsCount = have.channels;
-    audioSampleRate = have.freq;
-    audioSampleCount = have.samples;
-    audioFormat = have.format;
-    audioInputDevice = audioDeviceID;
+    m_audioChannelsCount = have.channels;
+    m_audioSampleRate = have.freq;
+    m_audioSampleCount = have.samples;
+    m_audioFormat = have.format;
+    m_audioInputDevice = audioDeviceID;
     return 1;
+}
+
+// Release the audio device currently in use.
+void projectMSDL::releaseAudioCaptureDevice() {
+    endAudioCapture();
+    SDL_CloseAudioDevice(m_audioInputDevice);
+}
+
+// Enumerate audio capture devices and select a default device.
+int projectMSDL::initAudioInput() {
+    // get audio driver name (static)
+    const char* driverName = SDL_GetCurrentAudioDriver();
+    SDL_Log("Using audio driver: %s\n", driverName);
+
+    // get audio input device
+    uint deviceCount = SDL_GetNumAudioDevices(true);  // capture, please
+    if (deviceCount == 0) {
+        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio capture devices found");
+        SDL_Quit();
+    }
+
+    printf("Detected devices:\n");
+    for (uint i = 0; i < deviceCount; i++) {
+        std::string deviceName = SDL_GetAudioDeviceName(i, true);
+
+        // Store this capture device's info.
+        m_audioCaptureDevicesInfo.push_back( SDLAudioDeviceInfo(deviceName, i) );
+
+        printf("  %i: 🎤%s\n", i, deviceName.c_str());
+    }
+
+    // Default to device 0.
+    return openAudioCaptureDevice(m_audioCaptureDevicesInfo[0]);
 }
 
 void projectMSDL::beginAudioCapture() {
     // allocate a buffer to store PCM data for feeding in
-    SDL_PauseAudioDevice(audioDeviceID, false);
+    SDL_PauseAudioDevice(m_audioInputDevice, false);
 }
 
 void projectMSDL::endAudioCapture() {
-    SDL_PauseAudioDevice(audioDeviceID, true);
+    SDL_PauseAudioDevice(m_audioInputDevice, true);
 }
 
 void projectMSDL::maximize() {
@@ -147,21 +144,33 @@ void projectMSDL::maximize() {
         return;
     }
 
-    SDL_SetWindowSize(win, dm.w, dm.h);
+    SDL_SetWindowSize(m_window, dm.w, dm.h);
     resize(dm.w, dm.h);
 }
 
 void projectMSDL::toggleFullScreen() {
     maximize();
-    if (isFullScreen) {
-        SDL_SetWindowFullscreen(win, 0);
-        isFullScreen = false;
+    if (m_isFullScreen) {
+        SDL_SetWindowFullscreen(m_window, 0);
+        m_isFullScreen = false;
         SDL_ShowCursor(true);
     } else {
         SDL_ShowCursor(false);
-        SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN);
-        isFullScreen = true;
+        SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN);
+        m_isFullScreen = true;
     }
+}
+
+void projectMSDL::setFullScreen(bool fullscreen) {
+    if (!fullscreen) {
+        SDL_SetWindowFullscreen(m_window, 0);
+        SDL_ShowCursor(true);
+    } else {
+        SDL_ShowCursor(false);
+        SDL_SetWindowFullscreen(m_window, SDL_WINDOW_FULLSCREEN);
+    }
+
+    m_isFullScreen = fullscreen;
 }
 
 void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
@@ -192,67 +201,69 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
                 return; // handled
             }
             break;
-					case SDLK_LEFT:
-						// selectPrevious(true);
-						break;
-					case SDLK_RIGHT:
-						// selectNext(true);
-						break;
-					case SDLK_UP:
-						break;
-					case SDLK_DOWN:
-						break;
 
-					case SDLK_F3:
-						break;
+        case SDLK_LEFT:
+            // selectPrevious(true);
+            break;
+        case SDLK_RIGHT:
+            // selectNext(true);
+            break;
+        case SDLK_UP:
+            break;
+        case SDLK_DOWN:
+            break;
+
+        case SDLK_F3:
+            m_showMenu = !m_showMenu;   // Toggle config UI.
+            break;
 
 
-					case SDLK_SPACE:
-						setPresetLock(
-							!isPresetLocked()
-						);
-						break;
-					case SDLK_F1:
-					case SDLK_ESCAPE:
+        case SDLK_SPACE:
+            setPresetLock(
+                !isPresetLocked()
+            );
+            break;
+        case SDLK_F1:
+        case SDLK_ESCAPE:
 
-						// exit(1);
-						// show help with other keys
-						sdl_keycode = SDLK_F1;
-						break;
-					case SDLK_DELETE:
-						/*
-						try {
-							if (selectedPresetIndex(index)) {
-								DeleteFile(
-									LPCSTR(
-										getPresetURL(index).c_str()
-									)
-								);
-							}
-						}
-						catch (const std::exception & e) {
-							printf("Delete failed");
-						}
-						*/
-						break;
-					case SDLK_RETURN:
-						/*
-						try {
-							if (selectedPresetIndex(index)) {
-								CopyFile(
-										LPCSTR(
-												app->getPresetURL(index).c_str()
-										),
-										LPCTSTR(L"C:\\"),
-										false
-								);
-							}
-						}
-						catch (const std::exception & e) {
-							printf("Delete failed");
-						}
-								*/
-						break;
+            // exit(1);
+            // show help with other keys
+            sdl_keycode = SDLK_F1;
+            break;
+        case SDLK_DELETE:
+            /*
+            try {
+                if (selectedPresetIndex(index)) {
+                    DeleteFile(
+                        LPCSTR(
+                            getPresetURL(index).c_str()
+                        )
+                    );
+                }
+            }
+            catch (const std::exception & e) {
+                printf("Delete failed");
+            }
+            */
+            break;
+        case SDLK_RETURN:
+            /*
+            try {
+                if (selectedPresetIndex(index)) {
+                    CopyFile(
+                            LPCSTR(
+                                    app->getPresetURL(index).c_str()
+                            ),
+                            LPCTSTR(L"C:\\"),
+                            false
+                    );
+                }
+            }
+            catch (const std::exception & e) {
+                printf("Delete failed");
+            }
+                    */
+            break;
     }
 
     // translate into projectM codes and perform default projectM handler
@@ -284,10 +295,10 @@ void projectMSDL::addFakePCM() {
     pcm()->addPCM16(pcm_data);
 }
 
-void projectMSDL::resize(unsigned int width_, unsigned int height_) {
-    width = width_;
-    height = height_;
-    projectM_resetGL(width, height);
+void projectMSDL::resize(unsigned int width, unsigned int height) {
+    m_width = width;
+    m_height = height;
+    projectM_resetGL(m_width, m_height);
 }
 
 void projectMSDL::pollEvent() {
@@ -295,6 +306,9 @@ void projectMSDL::pollEvent() {
 
     while (SDL_PollEvent(&evt))
     {
+        // Process ImGui events.
+        ImGui_ImplSDL2_ProcessEvent(&evt);
+        
         switch (evt.type) {
             case SDL_WINDOWEVENT:
                 switch (evt.window.event) {
@@ -313,43 +327,188 @@ void projectMSDL::pollEvent() {
     }
 }
 
+void projectMSDL::renderImGuiMenu() {
+
+    // Start the Dear ImGui frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame(m_window);
+    ImGui::NewFrame();
+
+    // Uncomment to show the big demo window (you can browse its code to learn more about Dear ImGui!).
+    // ImGui::ShowDemoWindow(&show_demo_window);
+
+    ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiWindowFlags_AlwaysAutoResize);
+    if (ImGui::Begin("Menu", &m_showMenu)) {
+
+        // Preset playlist.
+        ImGui::BeginChild("Preset Playlist", ImVec2(200, 0), true, ImGuiWindowFlags_AlwaysAutoResize);
+
+        // Get the currently selected preset. 
+        // Would be more efficient in presetSwitchedEvent but const prevents this.
+        selectedPresetIndex(m_selectedPresetIndex);
+
+        uint playlistSize = getPlaylistSize();
+        
+        for (uint i = 0; i < playlistSize; i++) {
+            std::stringstream presetName;  
+            presetName << "[" << i << "] " << getPresetName(i);              
+
+            ImGui::Selectable(presetName.str().c_str(), m_selectedPresetIndex == i);
+
+            bool itemHovered = ImGui::IsItemHovered();
+
+            uint oldSelectedPreset = m_selectedPresetIndex;
+            if (itemHovered && ImGui::IsMouseDoubleClicked(0))    // double click                                                                                                                                                                                                                   
+                m_selectedPresetIndex = i;
+
+            // Show full name of preset in a tooltip.
+            if (itemHovered)
+                ImGui::SetTooltip("%s", presetName.str().c_str());
+
+            // Select new preset if requested.
+            if (oldSelectedPreset != m_selectedPresetIndex)
+                selectPreset(m_selectedPresetIndex, true);
+        }
+        ImGui::EndChild();
+
+        ImGui::SameLine();
+        ImGui::BeginGroup();
+        {
+        // Audio capture device combobox. 
+#if !FAKE_AUDIO && !WASAPI_LOOPBACK
+            ImGui::PushItemWidth(-1);
+            ImGui::Text("Capture Device:"); ImGui::SameLine();
+
+            static uint selectedItem = 0;
+            const char* deviceName = m_audioCaptureDevicesInfo[selectedItem].name.c_str();
+
+            if (ImGui::BeginCombo("##CaptureDeviceCombo", deviceName, 0)) {
+                size_t devicesInfoSize = m_audioCaptureDevicesInfo.size();
+
+                // For each audio capture device.
+                for (size_t i = 0; i < devicesInfoSize; i++) {
+                    bool isSelected = (selectedItem == i);
+                    if (ImGui::Selectable(m_audioCaptureDevicesInfo[i].name.c_str(), isSelected)) {
+                        if (i != selectedItem) {
+                            releaseAudioCaptureDevice();
+                            openAudioCaptureDevice(m_audioCaptureDevicesInfo[i]);
+                        }
+                        selectedItem = i;
+                    }
+
+                    // Set the initial focus when opening the combo (scrolling + for keyboard 
+                    // navigation support in the upcoming navigation branch)
+                    if (isSelected)
+                        ImGui::SetItemDefaultFocus();
+                }
+                
+                ImGui::EndCombo();
+            }
+            ImGui::PopItemWidth();
+            ImGui::Separator();
+#endif       
+
+            // Play mode radio buttons
+            ImGui::Text("Play:"); ImGui::SameLine();
+            if (ImGui::RadioButton("Shuffle", m_shufflePlay == true)) {
+                m_shufflePlay = true;
+                setShuffleEnabled(true); 
+            }
+            ImGui::SameLine();
+            if (ImGui::RadioButton("Continuous", m_shufflePlay == false)) {
+                m_shufflePlay = false;
+                setShuffleEnabled(false); 
+            }
+
+            // Duration slider
+            int oldDuration = m_presetDuration;
+            ImGui::PushItemWidth(-1);
+            ImGui::Text("Duration:"); ImGui::SameLine(); 
+            ImGui::SliderInt("", &m_presetDuration, 1, 60);   
+            if (oldDuration != m_presetDuration)
+                changePresetDuration(m_presetDuration);
+            ImGui::PopItemWidth();
+            ImGui::Separator();
+
+            // Fullscreen enable/disable checkbox.
+            bool oldFullScreen = m_isFullScreen;
+            ImGui::Checkbox("FullScreen", &m_isFullScreen);
+            if (oldFullScreen != m_isFullScreen)
+                setFullScreen(m_isFullScreen);
+        }
+        ImGui::EndGroup();
+    
+    }
+
+    ImGui::End();
+
+    ImGuiIO& io = ImGui::GetIO();
+    
+    ImGui::Render();
+    glViewport(0, 0, (int)io.DisplaySize.x, (int)io.DisplaySize.y);
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
 void projectMSDL::renderFrame() {
     glClearColor( 0.0, 0.0, 0.0, 0.0 );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     projectM::renderFrame();
 
-    if (renderToTexture) {
+    if (m_renderToTexture)
         renderTexture();
-    }
 
-    SDL_GL_SwapWindow(win);
+    if (m_showMenu)
+        renderImGuiMenu();
+
+    SDL_GL_SwapWindow(m_window);
 }
 
 projectMSDL::projectMSDL(Settings settings, int flags) : projectM(settings, flags) {
-    width = getWindowWidth();
-    height = getWindowHeight();
+    m_width = getWindowWidth();
+    m_height = getWindowHeight();
     done = 0;
-    isFullScreen = false;
+    m_isFullScreen = false;
 }
 
 projectMSDL::projectMSDL(std::string config_file, int flags) : projectM(config_file, flags) {
-    width = getWindowWidth();
-    height = getWindowHeight();
+    m_width = getWindowWidth();
+    m_height = getWindowHeight();
     done = 0;
-    isFullScreen = false;
+    m_isFullScreen = false;
 }
 
-void projectMSDL::init(SDL_Window *window, SDL_GLContext *_glCtx, const bool _renderToTexture) {
-    win = window;
-    glCtx = _glCtx;
-    projectM_resetGL(width, height);
+void projectMSDL::init(SDL_Window *window, SDL_GLContext *glCtx, const bool renderToTexture) {
+
+    // Initial settings.
+    m_presetDuration = settings().presetDuration;
+    selectedPresetIndex(m_selectedPresetIndex);
+    m_showMenu = false;
+    m_shufflePlay = isShuffleEnabled();
+
+    m_window = window;
+    m_glCtx = glCtx;
+    projectM_resetGL(m_width, m_height);
+
+    const char* glslVersion = "#version 150";
+
+    // Setup ImGui context
+    IMGUI_CHECKVERSION();
+    m_imguiCtx = ImGui::CreateContext();
+
+    // Setup ImGui style
+    ImGui::StyleColorsDark();
+    //ImGui::StyleColorsClassic();
+
+    // Setup Platform/Renderer bindings
+    ImGui_ImplSDL2_InitForOpenGL(window, glCtx);
+    ImGui_ImplOpenGL3_Init(glslVersion);
 
     // are we rendering to a texture?
-    renderToTexture = _renderToTexture;
+    m_renderToTexture = renderToTexture;
     if (renderToTexture) {
-        programID = ShaderEngine::CompileShaderProgram(ShaderEngine::v2f_c4f_t2f_vert, ShaderEngine::v2f_c4f_t2f_frag, "v2f_c4f_t2f");
-        textureID = projectM::initRenderToTexture();
+        m_programID = ShaderEngine::CompileShaderProgram(ShaderEngine::v2f_c4f_t2f_vert, ShaderEngine::v2f_c4f_t2f_frag, "v2f_c4f_t2f");
+        m_textureID = projectM::initRenderToTexture();
 
         float points[16] = {
             -0.8, -0.8,
@@ -386,8 +545,7 @@ void projectMSDL::init(SDL_Window *window, SDL_GLContext *_glCtx, const bool _re
 }
 
 
-std::string projectMSDL::getActivePresetName()
-{
+std::string projectMSDL::getActivePresetName() {
     unsigned int index = 0;
     if (selectedPresetIndex(index)) {
         return getPresetName(index);
@@ -407,9 +565,9 @@ void projectMSDL::renderTexture() {
 
     glViewport(0, 0, getWindowWidth(), getWindowHeight());
 
-    glUseProgram(programID);
+    glUseProgram(m_programID);
 
-    glUniform1i(glGetUniformLocation(programID, "texture_sampler"), 0);
+    glUniform1i(glGetUniformLocation(m_programID, "texture_sampler"), 0);
 
     glm::mat4 mat_proj = glm::frustum(-1.0f, 1.0f, -1.0f, 1.0f, 2.0f, 10.0f);
 
@@ -427,11 +585,11 @@ void projectMSDL::renderTexture() {
     glm::mat4 mat_transf = glm::mat4(1.0f);
     mat_transf = mat_proj * mat_model;
 
-    glUniformMatrix4fv(glGetUniformLocation(programID, "vertex_transformation"), 1, GL_FALSE, glm::value_ptr(mat_transf));
+    glUniformMatrix4fv(glGetUniformLocation(m_programID, "vertex_transformation"), 1, GL_FALSE, glm::value_ptr(mat_transf));
 
     glActiveTexture(GL_TEXTURE0);
 
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    glBindTexture(GL_TEXTURE_2D, m_textureID);
 
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 
