@@ -140,6 +140,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+  <ClCompile Include="$(MSBuildThisFileDirectory)../src\projectM-sdl\imgui_impl_sdl.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\projectM-sdl\projectM_SDL_main.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\projectM-sdl\pmSDL.cpp" />
   </ItemGroup>
