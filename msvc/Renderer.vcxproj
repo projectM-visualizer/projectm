@@ -49,7 +49,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -67,10 +67,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;USE_NATIVE_GLEW;STBI_NO_DDS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -83,7 +83,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -101,10 +101,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;USE_NATIVE_GLEW;STBI_NO_DDS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src;$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -122,6 +122,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\*.cpp" />
+	<ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\imgui\*.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
