@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/projectM-visualizer/projectm.svg?branch=master)](https://travis-ci.org/projectM-visualizer/projectm)
-[![Backers on Open Collective](https://opencollective.com/projectm/backers/badge.svg)](#backers)
+
 
 ![Logo](https://github.com/projectM-visualizer/projectm/raw/master/web/logo.png)
 
@@ -19,6 +19,8 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 
 ### Download
 Get it from the [Releases](https://github.com/projectM-visualizer/projectm/releases) tab
+or 
+Download from the [Windows Store (PC, XBOX, Phone)](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
 
 ### Demo Video
 [![](http://img.youtube.com/vi/2dSam8zwSFw/0.jpg)](http://www.youtube.com/watch?v=2dSam8zwSFw "Demo")
@@ -101,35 +103,6 @@ If you maintain packages of libprojectM, we are happy to work with you! Please n
 
 ## Authors
 [Authors](https://github.com/projectM-visualizer/projectm/raw/master/AUTHORS.txt)
-
-## Contributors
-
-This project exists thanks to all the people who contribute.
-<a href="https://github.com/projectM-visualizer/projectm/graphs/contributors"><img src="https://opencollective.com/projectm/contributors.svg?width=890&button=false" /></a>
-
-
-## Backers
-
-Thank you to all our backers! 🙏 [[Become a backer](https://opencollective.com/projectm#backer)]
-
-<a href="https://opencollective.com/projectm#backers" target="_blank"><img src="https://opencollective.com/projectm/backers.svg?width=890"></a>
-
-
-## Sponsors
-
-Support this project by becoming a sponsor. Your logo will show up here with a link to your website. [[Become a sponsor](https://opencollective.com/projectm#sponsor)]
-
-<a href="https://opencollective.com/projectm/sponsor/0/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/0/avatar.svg"></a>
-<a href="https://opencollective.com/projectm/sponsor/1/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/1/avatar.svg"></a>
-<a href="https://opencollective.com/projectm/sponsor/2/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/2/avatar.svg"></a>
-<a href="https://opencollective.com/projectm/sponsor/3/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/3/avatar.svg"></a>
-<a href="https://opencollective.com/projectm/sponsor/4/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/4/avatar.svg"></a>
-<a href="https://opencollective.com/projectm/sponsor/5/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/5/avatar.svg"></a>
-<a href="https://opencollective.com/projectm/sponsor/6/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/6/avatar.svg"></a>
-<a href="https://opencollective.com/projectm/sponsor/7/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/7/avatar.svg"></a>
-<a href="https://opencollective.com/projectm/sponsor/8/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/8/avatar.svg"></a>
-<a href="https://opencollective.com/projectm/sponsor/9/website" target="_blank"><img src="https://opencollective.com/projectm/sponsor/9/avatar.svg"></a>
-
 
 
 ## License
