@@ -169,7 +169,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	        break;
 	    case PROJECTM_K_b:
 	      break;
-            case PROJECTM_K_n:
+            case PROJECTM_K_H:
 		selectNext(true);
 	      break;
             case PROJECTM_K_N:
@@ -184,7 +184,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_p:
 	      selectPrevious(true);
 	      break;
-	    case PROJECTM_K_P:
+	    case PROJECTM_K_BACKSPACE:
 	      selectPrevious(false);
 	      break;
 	    case PROJECTM_K_l:
