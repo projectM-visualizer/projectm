@@ -7,9 +7,8 @@ timestamp() {
 # Options
 repo=projectm
 SRC=/d/GIT/$repo
-DEST=$SRC/projectm
-###
 
 echo "Building EyeTune"
-cd $SRC/src && msbuild EyeTune.WindowsUniversal.Application.sln /m /p:Configuration=RELEASE /p:Platform=x64
+cd $SRC/src 
+MSBuild.exe "$SRC/src/EyeTune.WindowsUniversal.Application.sln" //t:Rebuild //p:Configuration=Release
  
