@@ -39,6 +39,18 @@ do
  # $(upload1)
 done
 
-echo "Building EyeTune"
-cd $SRC/src && msbuild EyeTune.WindowsUniversal.Application.sln /m /p:Configuration=RELEASE /p:Platform=x64
- 
+build_logs=$SRC/build_logs
+
+if test ${GCCBUILD+defined}; then
+echo "GCC BUILD"
+filename=$build_logs/projectm-gcc-$(timestamp).txt
+else
+echo "MSVC BUILD"
+filename=$build_logs/projectm-msvc-$(timestamp).txt
+fi
+
+sh -x publish_eyetune_build.sh \
+2>&1 \
+| tee -a $filename
+
+echo "done"
