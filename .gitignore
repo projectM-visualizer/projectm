@@ -40,3 +40,8 @@ m4/lt~obsolete.m4
 /src/libprojectM/libprojectM.pc
 /build
 /dist
+
+
+_sync.bat
+_sync.sh
+to_sync/
