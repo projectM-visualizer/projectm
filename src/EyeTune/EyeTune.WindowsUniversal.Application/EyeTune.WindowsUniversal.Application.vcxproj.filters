@@ -82,6 +82,34 @@
     <None Include="packages.config">
       <Filter>package</Filter>
     </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Assets">
