@@ -1,0 +1,92 @@
+[preset00]
+fRating=2.000000
+fGammaAdj=1.000000
+fDecay=1.000000
+fVideoEchoZoom=1.030293
+fVideoEchoAlpha=0.330000
+nVideoEchoOrientation=0
+nWaveMode=6
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.997757
+fWaveScale=6.006776
+fWaveSmoothing=0.000000
+fWaveParam=0.000000
+fModWaveAlphaStart=0.500000
+fModWaveAlphaEnd=1.000000
+fWarpAnimSpeed=1.000000
+fWarpScale=1.000000
+fZoomExponent=0.999987
+fShader=1.000000
+zoom=0.999900
+rot=0.000000
+cx=0.500000
+cy=0.500000
+dx=0.000010
+dy=0.000010
+warp=0.010000
+sx=1.000000
+sy=1.000000
+wave_r=0.000000
+wave_g=0.000000
+wave_b=0.500000
+wave_x=0.500000
+wave_y=0.500000
+ob_size=0.000000
+ob_r=0.500000
+ob_g=0.100000
+ob_b=0.200000
+ob_a=0.500000
+ib_size=0.005000
+ib_r=0.000000
+ib_g=0.000000
+ib_b=0.000000
+ib_a=0.500000
+nMotionVectorsX=21.119997
+nMotionVectorsY=21.119987
+mv_dx=0.000000
+mv_dy=0.000000
+mv_l=1.600000
+mv_r=0.000000
+mv_g=0.000000
+mv_b=0.000000
+mv_a=0.000000
+per_frame_1=wave_g = abs(sin(time*.675 + .945));
+per_frame_2=wave_b= abs(cos(time + .422));
+per_frame_3=wave_r = abs(sin(time*1.526 + .321 ));
+per_frame_4=warp=0;
+per_frame_5=vol = bass+mid+treb;
+per_frame_6=q1=84;
+per_frame_7=q2=sqrt( sqr(1/(2*q1))+sqr(1/(2*q1)) ) ;
+per_frame_8=q3=sin(time);
+per_frame_9=q3= if( below(q3,0),0,q3);
+per_frame_10=ib_size=time%2;ib_r=1-wave_r;ib_g=1-wave_g;ib_b=1-wave_b;ib_a=.02;
+per_frame_11=
+per_frame_12=q8=0;
+per_pixel_1=blockX = int(q1*x);
+per_pixel_2=blockY=int(q1*y);
+per_pixel_3=centerX=blockX/q1+1/(2*q1);
+per_pixel_4=centerY=blockY/q1+1/(2*q1);
+per_pixel_5=dist=sqrt( sqr(x-centerX)+sqr(y-centerY) );
+per_pixel_6=dx=dx+.4*(x-centerX);
+per_pixel_7=dy=dy+.4*(y-centerY);
+per_pixel_8=boost = if( above(blockX,2*q1/3) ,mid, 0 );
+per_pixel_9=boost = if( below(blockX, q1/3 ) , bass , boost );
+per_pixel_10=boost = if( equal(boost, 0), treb, boost);
+per_pixel_11=height= .75*(1.5-abs(.5-y));
+per_pixel_12=poustia = .5+.75*abs(sin(cos(4.2*time+.389)+7.6*time*frame*(blockX+1)));
+per_pixel_13=zoom=zoom-.08*(1-boost*poustia*height);
+per_pixel_14=zoom=if( above(zoom,1.1),1.1,zoom);
+per_frame_init_1=
+per_frame_init_2=q6 = frame;
+per_frame_init_3=
