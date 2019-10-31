@@ -10,5 +10,5 @@ SRC=/d/GIT/$repo
 
 echo "Building EyeTune"
 cd $SRC/src 
-MSBuild.exe "$SRC/src/EyeTune.WindowsUniversal.Application.sln" //t:Rebuild //p:Configuration=Release
+MSBuild.exe "$SRC/src/EyeTune.WindowsUniversal.Application.sln" //p:Configuration=Release
  
