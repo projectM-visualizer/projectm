@@ -1,3 +1,5 @@
+build_logs/
+
 src/projectM-sdl/SDLprojectM.xcodeproj/xcshareddata
 xcuserdata
 src/libprojectM/config.inp
