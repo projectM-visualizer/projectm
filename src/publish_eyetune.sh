@@ -32,10 +32,13 @@ upload1() {
 
 # iterates
 i="0"
-while [ $i -lt 1000 ]
+while [ $i -lt 5 ]
 do
  echo "iteration number $i"
  i=$[$i+1]
  # $(upload1)
 done
 
+echo "Building EyeTune"
+cd $SRC/src && msbuild EyeTune.WindowsUniversal.Application.sln /m /p:Configuration=RELEASE /p:Platform=x64
+ 
