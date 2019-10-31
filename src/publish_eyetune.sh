@@ -40,6 +40,7 @@ do
 done
 
 build_logs=$SRC/build_logs
+mkdir -p $build_logs
 
 if test ${GCCBUILD+defined}; then
 echo "GCC BUILD"
