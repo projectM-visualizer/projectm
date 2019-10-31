@@ -62,7 +62,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <PackageCertificateKeyFile>EyeTune.WindowsUniversal.Application_StoreKey.pfx</PackageCertificateKeyFile>
-    <PackageCertificateThumbprint>8DA36A960A0CA32B48F8FCC25DA5207995AEE892</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>F028129AF0FD6CEAE10087B60F5EF5406EE27823</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
     <AppxBundle>Always</AppxBundle>
@@ -70,6 +70,9 @@
     <AppInstallerUpdateFrequency>1</AppInstallerUpdateFrequency>
     <AppInstallerCheckForUpdateFrequency>OnApplicationRun</AppInstallerCheckForUpdateFrequency>
     <AppxSymbolPackageEnabled>True</AppxSymbolPackageEnabled>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutDir>
@@ -166,6 +169,11 @@
     <ProjectReference Include="..\projectM.WindowsUniversal.SharedLibrary\projectM.WindowsUniversal.SharedLibrary.vcxproj">
       <Project>{9861a7bc-9e57-4a9c-ba26-bb38e0a30a3f}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_eyetune\*.*" Link="p\%(Filename)%(Extension)">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
