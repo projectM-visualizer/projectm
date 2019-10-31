@@ -162,11 +162,11 @@ void App::RecreateRenderer()
 	std::string presetdir = "";
 	if (experimental_presets)
 	{
-		presetdir = "\\p\\presets_tryptonaut\\";
+		presetdir = "\\e\\";
 	}
 	else
 	{
-		presetdir = "\\p\\presets\\";
+		presetdir = "\\p\\";
 	}
 	App::RecreateRenderer(presetdir);
 }
