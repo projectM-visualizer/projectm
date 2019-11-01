@@ -12,15 +12,14 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PresetFactoryManager.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PresetLoader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\projectM.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\TestRunner.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\TimeKeeper.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\timer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\wipemalloc.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\glew.c" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\dlfcn.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../msvc\glew.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../msvc\dlfcn.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)../src\libprojectM\glew.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)../msvc\glew.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
