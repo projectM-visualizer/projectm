@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="13183Mancoast.EyeTune" Publisher="CN=272C27CF-652F-4A95-9E3B-7A86D492CC37" Version="0.9.5.0" />
+  <Identity Name="13183Mancoast.EyeTune" Publisher="CN=272C27CF-652F-4A95-9E3B-7A86D492CC37" Version="0.9.6.0" />
   <mp:PhoneIdentity PhoneProductId="85ec5d3f-489e-4021-841f-2e4ca03adc1e" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>EyeTune</DisplayName>
