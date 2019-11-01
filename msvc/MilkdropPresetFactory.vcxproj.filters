@@ -1,68 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\BuiltinFuncs.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\Func.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\MilkdropPreset.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\PresetFrameIO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\CustomShape.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\Eval.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\MilkdropPresetFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\PerPixelEqn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\BuiltinParams.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\InitCond.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\Parser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\CustomWave.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\Expr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\PerPointEqn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\Param.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\PerFrameEqn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\IdlePreset.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="C:\GIT\projectm\src\libprojectM\PresetFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\BuiltinFuncs.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\Func.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\MilkdropPreset.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\PresetFrameIO.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\CustomShape.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\Eval.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\MilkdropPresetFactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\PerPixelEqn.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\BuiltinParams.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\InitCond.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\Parser.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\CustomWave.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\Expr.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\PerPointEqn.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\Param.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\PerFrameEqn.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\IdlePreset.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PresetFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\Param.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="C:\GIT\projectm\src\libprojectM\MilkdropPresetFactory\CMakeLists.txt" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)../src\libprojectM\MilkdropPresetFactory\Param.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

@@ -4,9 +4,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\NativePresets\MstressJuppyDancer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="$(MSBuildThisFileDirectory)../src\NativePresets\CMakeLists.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="Source Files">
       <UniqueIdentifier>{086AAEDB-BC71-3D4F-A2E4-9BA153078E68}</UniqueIdentifier>
     </Filter>
