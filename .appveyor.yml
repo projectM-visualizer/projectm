@@ -13,7 +13,7 @@ version: 1.0.1.0.0.7.{build}-{branch}
 #---------------------------------#
 
 # Build worker image (VM template)
-image: Visual Studio 2017
+image: Visual Studio 2019
 # Enable Windows RDP Client Access to Build Worker
 init:
   - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
