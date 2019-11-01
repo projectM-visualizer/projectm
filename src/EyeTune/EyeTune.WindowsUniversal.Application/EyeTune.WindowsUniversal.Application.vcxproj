@@ -176,6 +176,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\presets\presets_community\*.*" Link="e\%(Filename)%(Extension)">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
