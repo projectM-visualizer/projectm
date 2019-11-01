@@ -2,7 +2,7 @@
 
 # Options
 repo=projectm
-SRC=/d/GIT/$repo
+SRC=/c/GIT/$repo
 DEST=$SRC/projectm
 ###
 mkdir -p $DEST
