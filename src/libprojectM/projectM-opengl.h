@@ -30,6 +30,7 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #elif defined(_WIN32)
+#define GLM_FORCE_CXX03
 # include <windows.h>
 #include "glew.h"
 #include "wglew.h"
