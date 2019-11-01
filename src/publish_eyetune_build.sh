@@ -6,7 +6,7 @@ timestamp() {
 
 # Options
 repo=projectm
-SRC=/d/GIT/$repo
+SRC=/c/GIT/$repo
 
 echo "Building EyeTune"
 cd $SRC/src 
