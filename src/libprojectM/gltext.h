@@ -44,7 +44,7 @@ extern "C" {
 #endif
 
 #if !defined(__gl_h_) && !defined(__glcorearb_h_)
-#	error OpenGL header must be included prior to including glText header
+// #	error OpenGL header must be included prior to including glText header
 #endif
 
 #include <stdlib.h> /* malloc(), calloc(), free() */
@@ -956,7 +956,8 @@ GLT_API GLboolean _gltCreateText2DShader(void)
 	glBindAttribLocation(_gltText2DShader, _GLT_TEXT2D_POSITION_LOCATION, "position");
 	glBindAttribLocation(_gltText2DShader, _GLT_TEXT2D_TEXCOORD_LOCATION, "texCoord");
 
-	glBindFragDataLocation(_gltText2DShader, 0, "fragColor");
+	// TODO:
+	// glBindFragDataLocation(_gltText2DShader, 0, "fragColor");
 
 	glLinkProgram(_gltText2DShader);
 
