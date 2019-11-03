@@ -423,23 +423,9 @@ Renderer::~Renderer()
     if (textureManager)
         delete (textureManager);
 
-    //std::cerr << "grid assign end" << std::endl;
-
     free(p);
 
-#ifdef USE_TEXT_MENU
-    //	std::cerr << "freeing title fonts" << std::endl;
-    //if (title_font)
-    //    delete title_font;
-    //if (poly_font)
-    //    delete poly_font;
-    //if (other_font)
-    //    delete other_font;
-    //	std::cerr << "freeing title fonts finished" << std::endl;
-#endif
-    //	std::cerr << "exiting destructor" << std::endl;
-
-    glDeleteBuffers(1, &m_vbo_Interpolation);
+	glDeleteBuffers(1, &m_vbo_Interpolation);
     glDeleteVertexArrays(1, &m_vao_Interpolation);
 
     glDeleteBuffers(1, &m_vbo_CompositeOutput);
