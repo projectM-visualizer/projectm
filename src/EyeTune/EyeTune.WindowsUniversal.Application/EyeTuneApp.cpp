@@ -171,6 +171,108 @@ void App::RecreateRenderer()
 	App::RecreateRenderer(presetdir);
 }
 
+projectMKeycode EyeTune::App::winKeycode(Windows::UI::Core::KeyEventArgs^ args)
+{
+	switch (args->VirtualKey) {
+	case Windows::System::VirtualKey::F1:
+		return PROJECTM_K_F1;
+	case Windows::System::VirtualKey::F2:
+		return PROJECTM_K_F2;
+	case Windows::System::VirtualKey::F3:
+		return PROJECTM_K_F3;
+	case Windows::System::VirtualKey::F4:
+		return PROJECTM_K_F4;
+	case Windows::System::VirtualKey::F5:
+		return PROJECTM_K_F5;
+	case Windows::System::VirtualKey::F6:
+		return PROJECTM_K_F6;
+	case Windows::System::VirtualKey::F7:
+		return PROJECTM_K_F7;
+	case Windows::System::VirtualKey::F8:
+		return PROJECTM_K_F8;
+	case Windows::System::VirtualKey::F9:
+		return PROJECTM_K_F9;
+	case Windows::System::VirtualKey::F10:
+		return PROJECTM_K_F10;
+	case Windows::System::VirtualKey::F11:
+		return PROJECTM_K_F11;
+	case Windows::System::VirtualKey::F12:
+		return PROJECTM_K_F12;
+	case Windows::System::VirtualKey::Escape:
+		return PROJECTM_K_ESCAPE;
+	case Windows::System::VirtualKey::A:
+		return PROJECTM_K_a;
+	case Windows::System::VirtualKey::B:
+		return PROJECTM_K_b;
+	case Windows::System::VirtualKey::C:
+		return PROJECTM_K_c;
+	case Windows::System::VirtualKey::D:
+		return PROJECTM_K_d;
+	case Windows::System::VirtualKey::E:
+		return PROJECTM_K_e;
+	case Windows::System::VirtualKey::F:
+		return PROJECTM_K_f;
+	case Windows::System::VirtualKey::G:
+		return PROJECTM_K_g;
+	case Windows::System::VirtualKey::H:
+		return PROJECTM_K_h;
+	case Windows::System::VirtualKey::I:
+		return PROJECTM_K_i;
+	case Windows::System::VirtualKey::J:
+		return PROJECTM_K_j;
+	case Windows::System::VirtualKey::K:
+		return PROJECTM_K_k;
+	case Windows::System::VirtualKey::L:
+		return PROJECTM_K_l;
+	case Windows::System::VirtualKey::M:
+		return PROJECTM_K_m;
+	case Windows::System::VirtualKey::N:
+		return PROJECTM_K_n;
+	case Windows::System::VirtualKey::O:
+		return PROJECTM_K_o;
+	case Windows::System::VirtualKey::P:
+		return PROJECTM_K_p;
+	case Windows::System::VirtualKey::Q:
+		return PROJECTM_K_q;
+	case Windows::System::VirtualKey::R:
+		return PROJECTM_K_r;
+	case Windows::System::VirtualKey::S:
+		return PROJECTM_K_s;
+	case Windows::System::VirtualKey::T:
+		return PROJECTM_K_t;
+	case Windows::System::VirtualKey::U:
+		return PROJECTM_K_u;
+	case Windows::System::VirtualKey::V:
+		return PROJECTM_K_v;
+	case Windows::System::VirtualKey::W:
+		return PROJECTM_K_w;
+	case Windows::System::VirtualKey::X:
+		return PROJECTM_K_x;
+	case Windows::System::VirtualKey::Y:
+		return PROJECTM_K_y;
+	case Windows::System::VirtualKey::Z:
+		return PROJECTM_K_z;
+	case Windows::System::VirtualKey::Up:
+		return PROJECTM_K_UP;
+	case Windows::System::VirtualKey::Enter:
+		return PROJECTM_K_RETURN;
+	case Windows::System::VirtualKey::Right:
+		return PROJECTM_K_RIGHT;
+	case Windows::System::VirtualKey::Left:
+		return PROJECTM_K_LEFT;
+	case Windows::System::VirtualKey::Down:
+		return PROJECTM_K_DOWN;
+	case Windows::System::VirtualKey::PageUp:
+		return PROJECTM_K_PAGEUP;
+	case Windows::System::VirtualKey::PageDown:
+		return PROJECTM_K_PAGEDOWN;
+
+	default:
+		return PROJECTM_K_NONE;
+	}
+	return projectMKeycode();
+}
+
 void App::RecreateRenderer(std::string presetdir)
 {
 	if (app)
@@ -403,6 +505,10 @@ void App::OnWindowKeyDown(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Co
 			default:
 				break;
 			}
+
+			projectMEvent evt = PROJECTM_KEYDOWN;
+			projectMKeycode key = winKeycode(args);
+			app->default_key_handler(evt, key);
 		}
 	}
 }
