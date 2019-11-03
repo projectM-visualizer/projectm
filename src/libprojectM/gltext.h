@@ -833,7 +833,7 @@ GLT_API void gltTerminate(void)
 #ifdef USE_GLES
 #define GLSL_VERSION "300 es"
 #else
-#define GLSL_VERSION "410"
+#define GLSL_VERSION "330"
 #endif
 	
 static const GLchar* _gltText2DVertexShaderSource =
