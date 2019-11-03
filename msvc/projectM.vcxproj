@@ -63,7 +63,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;USE_NATIVE_GLEW;STBI_NO_DDS;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_FTGL;WIN32;_WINDOWS;USE_NATIVE_GLEW;STBI_NO_DDS;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
     </ClCompile>
     <ResourceCompile>
