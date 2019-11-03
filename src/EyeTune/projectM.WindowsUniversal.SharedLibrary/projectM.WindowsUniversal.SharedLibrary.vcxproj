@@ -125,7 +125,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(SolutionDir);$(ProjectDir);$(IntermediateOutputPath);$(SolutionDir)..\msvc;$(SolutionDir)\libprojectM;$(SolutionDir)\libprojectM\Renderer;$(SolutionDir)\libprojectM\Renderer\SOIL2;$(SolutionDir)\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_FTGL;EYETUNE_WINRT;WIN32;SOIL_GLES2;USE_GLES;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;NOMINMAX;ANGLE_STANDALONE_BUILD;GL_GLEXT_PROTOTYPES;EGL_EGLEXT_PROTOTYPES;ANGLE_X64_CPU;ANGLE_ENABLE_DEBUG_ANNOTATIONS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;DISABLE_NATIVE_PRESETS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_TEXT_MENU;EYETUNE_WINRT;WIN32;SOIL_GLES2;USE_GLES;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;NOMINMAX;ANGLE_STANDALONE_BUILD;GL_GLEXT_PROTOTYPES;EGL_EGLEXT_PROTOTYPES;ANGLE_X64_CPU;ANGLE_ENABLE_DEBUG_ANNOTATIONS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;DISABLE_NATIVE_PRESETS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,7 +139,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(SolutionDir);$(ProjectDir);$(IntermediateOutputPath);$(SolutionDir)..\msvc;$(SolutionDir)\libprojectM;$(SolutionDir)\libprojectM\Renderer;$(SolutionDir)\libprojectM\Renderer\SOIL2;$(SolutionDir)\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_FTGL;EYETUNE_WINRT;EYETUNE_WINRT;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";WIN32;USE_GLES;SOIL_GLES2;DISABLE_NATIVE_PRESETS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_TEXT_MENU;EYETUNE_WINRT;EYETUNE_WINRT;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";WIN32;USE_GLES;SOIL_GLES2;DISABLE_NATIVE_PRESETS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -158,7 +158,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(SolutionDir);$(ProjectDir);$(IntermediateOutputPath);$(SolutionDir)..\msvc;$(SolutionDir)\libprojectM;$(SolutionDir)\libprojectM\Renderer;$(SolutionDir)\libprojectM\Renderer\SOIL2;$(SolutionDir)\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_FTGL;EYETUNE_WINRT;WIN32;SOIL_GLES2;USE_GLES;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;NOMINMAX;ANGLE_STANDALONE_BUILD;GL_GLEXT_PROTOTYPES;EGL_EGLEXT_PROTOTYPES;ANGLE_X64_CPU;ANGLE_ENABLE_DEBUG_ANNOTATIONS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;DISABLE_NATIVE_PRESETS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_TEXT_MENU;EYETUNE_WINRT;WIN32;SOIL_GLES2;USE_GLES;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;NOMINMAX;ANGLE_STANDALONE_BUILD;GL_GLEXT_PROTOTYPES;EGL_EGLEXT_PROTOTYPES;ANGLE_X64_CPU;ANGLE_ENABLE_DEBUG_ANNOTATIONS;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;DISABLE_NATIVE_PRESETS</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -172,7 +172,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(SolutionDir);$(ProjectDir);$(IntermediateOutputPath);$(SolutionDir)..\msvc;$(SolutionDir)\libprojectM;$(SolutionDir)\libprojectM\Renderer;$(SolutionDir)\libprojectM\Renderer\SOIL2;$(SolutionDir)\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_FTGL;EYETUNE_WINRT;EYETUNE_WINRT;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";WIN32;USE_GLES;SOIL_GLES2;DISABLE_NATIVE_PRESETS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_TEXT_MENU;EYETUNE_WINRT;EYETUNE_WINRT;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";WIN32;USE_GLES;SOIL_GLES2;DISABLE_NATIVE_PRESETS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -187,7 +187,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(SolutionDir);$(ProjectDir);$(IntermediateOutputPath);$(SolutionDir)..\msvc;$(SolutionDir)\libprojectM;$(SolutionDir)\libprojectM\Renderer;$(SolutionDir)\libprojectM\Renderer\SOIL2;$(SolutionDir)\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_FTGL;EYETUNE_WINRT;_DEBUG;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";WIN32;USE_GLES;SOIL_GLES2;DISABLE_NATIVE_PRESETS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_TEXT_MENU;EYETUNE_WINRT;_DEBUG;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";WIN32;USE_GLES;SOIL_GLES2;DISABLE_NATIVE_PRESETS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -201,7 +201,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory);$(SolutionDir);$(ProjectDir);$(IntermediateOutputPath);$(SolutionDir)..\msvc;$(SolutionDir)\libprojectM;$(SolutionDir)\libprojectM\Renderer;$(SolutionDir)\libprojectM\Renderer\SOIL2;$(SolutionDir)\libprojectM\Renderer\hlslparser\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>USE_FTGL;EYETUNE_WINRT;EYETUNE_WINRT;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";WIN32;USE_GLES;SOIL_GLES2;DISABLE_NATIVE_PRESETS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>USE_TEXT_MENU;EYETUNE_WINRT;EYETUNE_WINRT;_CRT_SECURE_NO_WARNINGS;_UNICODE;UNICODE;projectM_FONT_MENU="\"$(MSBuildThisFileDirectory)../fonts/VeraMono.ttf\"";projectM_FONT_TITLE="\"$(MSBuildThisFileDirectory)../fonts/Vera.ttf\"";WIN32;USE_GLES;SOIL_GLES2;DISABLE_NATIVE_PRESETS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
