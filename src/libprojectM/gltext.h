@@ -3,12 +3,13 @@
 // License: https://github.com/MrVallentin/glText/blob/master/LICENSE.md
 //
 // Date Created: September 24, 2013
-// Last Modified: October 30, 2018
+// Last Modified: November 03, 2019
 
 // In one C or C++ file, define GLT_IMPLEMENTATION prior to inclusion to create the implementation.
 //   #define GLT_IMPLEMENTATION
 //   #include "gltext.h"
 
+// Copyright (c) 2018-2019 Robert Pancoast
 // Copyright (c) 2013-2018 Christian Vallentin
 //
 // This software is provided 'as-is', without any express or implied
@@ -43,8 +44,8 @@
 extern "C" {
 #endif
 
-#if !defined(__gl_h_) && !defined(__glcorearb_h_)
-// #	error OpenGL header must be included prior to including glText header
+#if !defined(__gl_h_) && !defined(__glcorearb_h_) && !defined(USE_GLES)
+#	error OpenGL header must be included prior to including glText header
 #endif
 
 #include <stdlib.h> /* malloc(), calloc(), free() */
@@ -828,12 +829,19 @@ GLT_API void gltTerminate(void)
 
 	gltInitialized = GL_FALSE;
 }
-
+	
+#ifdef USE_GLES
+#define GLSL_VERSION "300 es"
+#else
+#define GLSL_VERSION "410"
+#endif
+	
 static const GLchar* _gltText2DVertexShaderSource =
-"#version 330 core\n"
+"#version "
+GLSL_VERSION
 "\n"
-"in vec2 position;\n"
-"in vec2 texCoord;\n"
+"layout(location = 0) in vec2 position;\n"
+"layout(location = 1) in vec2 texCoord;\n"
 "\n"
 "uniform mat4 mvp;\n"
 "\n"
@@ -847,15 +855,20 @@ static const GLchar* _gltText2DVertexShaderSource =
 "}\n";
 
 static const GLchar* _gltText2DFragmentShaderSource =
-"#version 330 core\n"
+"#version "
+GLSL_VERSION
 "\n"
+#ifdef USE_GLES
+"precision mediump float;\n"
+"\n"
+#endif
 "out vec4 fragColor;\n"
+"\n"
+"in vec2 fTexCoord;\n"
 "\n"
 "uniform sampler2D diffuse;\n"
 "\n"
-"uniform vec4 color = vec4(1.0, 1.0, 1.0, 1.0);\n"
-"\n"
-"in vec2 fTexCoord;\n"
+"uniform vec4 color;\n"
 "\n"
 "void main()\n"
 "{\n"
@@ -956,8 +969,9 @@ GLT_API GLboolean _gltCreateText2DShader(void)
 	glBindAttribLocation(_gltText2DShader, _GLT_TEXT2D_POSITION_LOCATION, "position");
 	glBindAttribLocation(_gltText2DShader, _GLT_TEXT2D_TEXCOORD_LOCATION, "texCoord");
 
-	// TODO:
-	// glBindFragDataLocation(_gltText2DShader, 0, "fragColor");
+#if !defined(USE_GLES)
+	glBindFragDataLocation(_gltText2DShader, 0, "fragColor");
+#endif
 
 	glLinkProgram(_gltText2DShader);
 
