@@ -21,4 +21,7 @@
   <ItemGroup>
     <ClInclude Include="resource.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\fonts\Vera.ttf" />
+  </ItemGroup>
 </Project>

@@ -183,6 +183,12 @@
   <ItemGroup>
     <ClInclude Include="resource.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Font Include="..\fonts\Vera.ttf">
+      <DeploymentContent>true</DeploymentContent>
+      <FileType>Font</FileType>
+    </Font>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="packages\glm.0.9.9.400\build\native\glm.targets" Condition="Exists('packages\glm.0.9.9.400\build\native\glm.targets')" />

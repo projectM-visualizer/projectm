@@ -12,13 +12,10 @@
 #include "ShaderEngine.hpp"
 
 #ifdef USE_FTGL
-#ifdef WIN32
-#include <ftgl.h>
-#include <FTGLPixmapFont.h>
-#include <FTGLExtrdFont.h>
-#else
-#include <FTGL/ftgl.h>
-#endif
+
+#define GLT_IMPLEMENTATION
+#include "gltext.h"
+
 #endif /** USE_FTGL */
 
 // for final composite grid:
@@ -77,7 +74,6 @@ public:
   void reset(int w, int h);
   GLuint initRenderToTexture();
 
-
   std::string SetPipeline(Pipeline &pipeline);
 
   void setPresetName(const std::string& theValue)
@@ -90,12 +86,22 @@ public:
     return m_presetName;
   }
 
+  
 private:
 
-	PerPixelMesh mesh;
+  PerPixelMesh mesh;
   BeatDetect *beatDetect;
   TextureManager *textureManager;
   static Pipeline* currentPipe;
+
+#ifdef USE_FTGL
+
+  void drawTextonM(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
+                   int verticalAlignment);
+  void drawTextonM(const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
+                   int verticalAlignment);
+
+#endif /** USE_FTGL */
   RenderContext renderContext;
   //per pixel equation variables
   ShaderEngine shaderEngine;
@@ -129,9 +135,9 @@ private:
   GLuint m_vao_CompositeShaderOutput;
 
 #ifdef USE_FTGL
-  FTGLPixmapFont *title_font;
-  FTGLPixmapFont *other_font;
-  FTGLExtrdFont *poly_font;
+  GLTtext *title_font;
+  GLTtext *other_font;
+  GLTtext *poly_font;
 #endif /** USE_FTGL */
 
   void SetupPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);

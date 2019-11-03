@@ -29,6 +29,31 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\*.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\*.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2\*.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2\*.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\SOIL2\*.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\*.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Renderer\hlslparser\src\*.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">

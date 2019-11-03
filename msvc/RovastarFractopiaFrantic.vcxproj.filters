@@ -8,4 +8,7 @@
       <UniqueIdentifier>{086AAEDB-BC71-3D4F-A2E4-9BA153078E68}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
 </Project>
