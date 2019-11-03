@@ -51,6 +51,7 @@ namespace EyeTune
 		void addFakePCM();
 		void RecreateRenderer(std::string presetdir);
 		void RecreateRenderer();
+		projectMKeycode winKeycode(Windows::UI::Core::KeyEventArgs^ args);
 		projectM* app;
 
         // Application lifecycle event handlers.

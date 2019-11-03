@@ -14,6 +14,7 @@
 #ifdef USE_FTGL
 
 #define GLT_IMPLEMENTATION
+#define GLT_DEBUG_PRINT
 #include "gltext.h"
 
 #endif /** USE_FTGL */
