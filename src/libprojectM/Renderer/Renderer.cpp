@@ -17,6 +17,8 @@ Pipeline* Renderer::currentPipe;
 
 class Preset;
 
+#ifdef USE_FTGL
+
 
 void Renderer::drawTextonM(const char* string, GLfloat x, GLfloat y, GLfloat scale,
 	int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP)
@@ -60,6 +62,8 @@ void Renderer::drawTextonM(GLTtext* text, const char* string, GLfloat x, GLfloat
 	gltTerminate();
 }
 
+
+#endif /** USE_FTGL */
 
 Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetect, std::string _presetURL,
         std::string _titlefontURL, std::string _menufontURL, const std::string& datadir) :
@@ -272,17 +276,9 @@ void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineCo
         CompositeOutput(pipeline, pipelineContext);
     }
 
-/* TODO:
- * // FTGLES exists:
- * https://github.com/cdave1/ftgles/ */
-#ifndef EMSCRIPTEN
-    glMatrixMode(GL_MODELVIEW);
-#endif
-    glLoadIdentity();
-    glTranslatef(-0.5, -0.5, 0);
-
     // When console refreshes, there is a chance the preset has been changed by the user
 	refreshConsole();
+	// TODO:
 	draw_title_to_screen(false);
 	if (this->showhelp % 2)
 		draw_help();
@@ -295,40 +291,6 @@ void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineCo
 		draw_preset();
 	if (this->showstats % 2)
 		draw_stats();
-	/*
-
-	
-
-	title_font->FaceSize(50);
-
-	glRasterPos2f(0.01, -0.05);
-	title_font->Render("Help");
-
-	title_font->Render ("Hello World!");*/
-	
-
-	//
- //   draw_title_to_screen(false);
- //   if (this->showhelp % 2)
- //       draw_help();
-	//// TODO:
- //   // if (this->showtitle % 2)
- //       draw_title();
-	//// TODO:
- //   if (this->showfps % 2)
-	//	draw_fps();
- //       // draw_fps(this->realfps);
- //   if (this->showpreset % 2)
- //       draw_preset();
- //   if (this->showstats % 2)
- //       draw_stats();
- //   glTranslatef(0.5, 0.5, 0);
-
- //   if (textureRenderToTexture) {
- //       glBindTexture(GL_TEXTURE_2D, textureRenderToTexture);
- //       glCopyTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 0, 0, texsizeX, texsizeY);
- //       glBindTexture(GL_TEXTURE_2D, 0);
- //   }
 }
 
 void Renderer::RenderFrame(const Pipeline &pipeline, 
