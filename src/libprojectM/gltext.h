@@ -10,6 +10,8 @@
 //   #include "gltext.h"
 
 // Copyright (c) 2018-2019 Robert Pancoast
+// Support OpenGLES
+// 
 // Copyright (c) 2013-2018 Christian Vallentin
 //
 // This software is provided 'as-is', without any express or implied
