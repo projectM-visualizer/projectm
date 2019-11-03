@@ -11,13 +11,13 @@
 #include "Transformation.hpp"
 #include "ShaderEngine.hpp"
 
-#ifdef USE_FTGL
+#ifdef USE_TEXT_MENU
 
 #define GLT_IMPLEMENTATION
 #define GLT_DEBUG_PRINT
 #include "gltext.h"
 
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
 
 // for final composite grid:
 #define FCGSX 32 // final composite gridsize - # verts - should be EVEN.
@@ -95,14 +95,14 @@ private:
   TextureManager *textureManager;
   static Pipeline* currentPipe;
 
-#ifdef USE_FTGL
+#ifdef USE_TEXT_MENU
 
-  void drawTextonM(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
+  void drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
                    int verticalAlignment);
-  void drawTextonM(const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
+  void drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
                    int verticalAlignment);
 
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
   RenderContext renderContext;
   //per pixel equation variables
   ShaderEngine shaderEngine;
@@ -135,11 +135,11 @@ private:
   GLuint m_vbo_CompositeShaderOutput;
   GLuint m_vao_CompositeShaderOutput;
 
-#ifdef USE_FTGL
+#ifdef USE_TEXT_MENU
   GLTtext *title_font;
   GLTtext *other_font;
   GLTtext *poly_font;
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
 
   void SetupPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void Interpolation(const Pipeline &pipeline, const PipelineContext &pipelineContext);
