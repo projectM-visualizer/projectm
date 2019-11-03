@@ -17,16 +17,16 @@ Pipeline* Renderer::currentPipe;
 
 class Preset;
 
-#ifdef USE_FTGL
+#ifdef USE_TEXT_MENU
 
 
-void Renderer::drawTextonM(const char* string, GLfloat x, GLfloat y, GLfloat scale,
+void Renderer::drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale,
 	int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP)
 {
-	drawTextonM(this->title_font, string, x, y, scale, horizontalAlignment, verticalAlignment);
+	drawText(this->title_font, string, x, y, scale, horizontalAlignment, verticalAlignment);
 }
 
-void Renderer::drawTextonM(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale,
+void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale,
 	int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP)
 {
 	// Initialize glText
@@ -63,7 +63,7 @@ void Renderer::drawTextonM(GLTtext* text, const char* string, GLfloat x, GLfloat
 }
 
 
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
 
 Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetect, std::string _presetURL,
         std::string _titlefontURL, std::string _menufontURL, const std::string& datadir) :
@@ -427,7 +427,7 @@ Renderer::~Renderer()
 
     free(p);
 
-#ifdef USE_FTGL
+#ifdef USE_TEXT_MENU
     //	std::cerr << "freeing title fonts" << std::endl;
     //if (title_font)
     //    delete title_font;
@@ -512,13 +512,13 @@ GLuint Renderer::initRenderToTexture()
 
 void Renderer::draw_title_to_texture()
 {
-#ifdef USE_FTGL
+#ifdef USE_TEXT_MENU
     if (this->drawtitle > 100)
     {
         draw_title_to_screen(true);
         this->drawtitle = 0;
     }
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
 }
 
 float title_y;
@@ -526,7 +526,7 @@ float title_y;
 void Renderer::draw_title_to_screen(bool flip)
 {
 
-#ifdef USE_FTGL
+#ifdef USE_TEXT_MENU
     if (this->drawtitle > 0)
     {
     	// TODO:
@@ -590,12 +590,12 @@ void Renderer::draw_title_to_screen(bool flip)
         //glDisable(GL_LIGHTING);
         //glDisable(GL_POLYGON_SMOOTH);
     }
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
 }
 
 void Renderer::draw_title()
 {
-#ifdef USE_FTGL
+#ifdef USE_TEXT_MENU
     //glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
 
     //glColor4f(1.0, 1.0, 1.0, 1.0);
@@ -610,12 +610,12 @@ void Renderer::draw_title()
     ////  glPopMatrix();
     //glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
 }
 
 void Renderer::draw_preset()
 {
-#ifdef USE_FTGL
+#ifdef USE_TEXT_MENU
     //glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
 
     //glColor4f(1.0, 1.0, 1.0, 1.0);
@@ -635,15 +635,15 @@ void Renderer::draw_preset()
 
     //glPopMatrix();
     // glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
 }
 
 void Renderer::draw_help()
 {
 
-#ifdef USE_FTGL
+#ifdef USE_TEXT_MENU
 	// TODO:
-	drawTextonM("Help""\n"
+	drawText("Help""\n"
 		"-------------------------------""\n"
 		"F1: This help menu""\n"
 		"F3: Show preset name""\n"
@@ -705,13 +705,13 @@ void Renderer::draw_help()
     //glPopMatrix();
     ////         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
 }
 
 void Renderer::draw_stats()
 {
 
-#ifdef USE_FTGL
+#ifdef USE_TEXT_MENU
  //   char buffer[128];
  //   float offset = (this->showfps % 2 ? -0.05 : 0.0);
  //   // glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
@@ -762,11 +762,11 @@ void Renderer::draw_stats()
     // glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
 
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
 }
 void Renderer::draw_fps()
 {
-#ifdef USE_FTGL
+#ifdef USE_TEXT_MENU
     //char bufferfps[20];
     //sprintf(bufferfps, "%.1f fps", realfps);
     //// glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
@@ -781,7 +781,7 @@ void Renderer::draw_fps()
     //glPopMatrix();
     //// glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
 }
 
 void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext)
