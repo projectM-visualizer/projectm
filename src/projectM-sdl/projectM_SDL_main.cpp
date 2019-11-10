@@ -305,6 +305,9 @@ srand((int)(time(NULL)));
 
     SDL_SetWindowTitle(win, "projectM Visualizer");
     
+    SDL_GL_MakeCurrent(win, glCtx);  // associate GL context with main window
+    SDL_GL_SetSwapInterval(-1); // Enable adaptive vsync
+    
     projectMSDL *app;
     
     std::string base_path = DATADIR_PATH;
