@@ -287,11 +287,9 @@ public:
   int getWindowHeight() { return _settings.windowHeight; }
   bool getErrorLoadingCurrentPreset() const { return errorLoadingCurrentPreset; }
 
-// WINRT requires the render object
-#if !defined(EYETUNE_WINRT) 
-private: 
-#endif
+  void default_key_handler(projectMEvent event, projectMKeycode keycode);
   Renderer *renderer;
+
 private:
   PCM * _pcm;
   double sampledPresetDuration();
@@ -325,7 +323,6 @@ private:
   /// Deinitialize all preset related tools. Usually done before projectM cleanup
   void destroyPresetTools();
 
-  void default_key_handler( projectMEvent event, projectMKeycode keycode );
   /// The current position of the directory iterator
   PresetIterator * m_presetPos;
 

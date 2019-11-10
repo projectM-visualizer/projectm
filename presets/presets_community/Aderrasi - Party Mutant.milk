@@ -1,0 +1,83 @@
+[preset00]
+fRating=2.000000
+fGammaAdj=1.000000
+fDecay=0.950000
+fVideoEchoZoom=1.000000
+fVideoEchoAlpha=0.500000
+nVideoEchoOrientation=1
+nWaveMode=7
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=100.000000
+fWaveScale=0.463937
+fWaveSmoothing=0.500000
+fWaveParam=0.000000
+fModWaveAlphaStart=0.500000
+fModWaveAlphaEnd=1.000000
+fWarpAnimSpeed=1.000000
+fWarpScale=1.000000
+fZoomExponent=1.000000
+fShader=0.000000
+zoom=1.000000
+rot=0.000000
+cx=0.500000
+cy=0.500000
+dx=0.000010
+dy=0.000010
+warp=0.010000
+sx=1.000000
+sy=1.000000
+wave_r=0.600000
+wave_g=0.600000
+wave_b=0.600000
+wave_x=0.500000
+wave_y=0.100000
+ob_size=0.010000
+ob_r=1.000000
+ob_g=1.000000
+ob_b=1.000000
+ob_a=0.300000
+ib_size=0.015000
+ib_r=1.000000
+ib_g=0.000000
+ib_b=0.000000
+ib_a=0.300000
+nMotionVectorsX=6.400000
+nMotionVectorsY=4.800000
+mv_dx=0.000000
+mv_dy=0.000000
+mv_l=3.500000
+mv_r=0.000000
+mv_g=0.000000
+mv_b=1.000000
+mv_a=0.000000
+per_frame_1=wave_mystery = wave_mystery + 0.25*tan(2.9*bass);
+per_frame_2=q1 = wave_mystery;
+per_frame_3=ob_r = ob_r + 0.8*sin(q1);
+per_frame_4=ob_g = ob_g + 0.7*sin(q1);
+per_frame_5=ob_b = ob_b - 0.6*sin(q1);
+per_frame_6=ib_r = ib_r - 0.5*sin(q1);
+per_frame_7=ib_g = ib_g + 0.5*sin(q1);
+per_frame_8=ib_b = ib_b +0.5*sin(q1);
+per_frame_9=wave_r = wave_r + (ob_r + ib_r)*0.5*sin(1.3*time);
+per_frame_10=wave_g = wave_g + (ib_g + ob_g)*0.5*sin(1.2*time);
+per_frame_11=wave_b = wave_b +  (ib_b + ob_b)*0.5*sin(1.1*time);
+per_pixel_1=kick = above(bass_att,kick)*2 + (1-above(bass_att,kick))*((kick-1.3)*0.9+1.3);
+per_pixel_2=dx_r = equal(kick,2)*0.018*sin(6*time) + (1-equal(kick,2))*dx_r;
+per_pixel_3=dy_r = equal(kick,2)*0.015*sin(7*time) + (1-equal(kick,2))*dy_r;
+per_pixel_4=
+per_pixel_5=rot = rot + 0.3*(0.2*sin(0.5-rad)*5 - 0.2*sin(0.25*rad)*5) * kick;
+per_pixel_6=dy = dy + 2*dy_r * 0.5*sin(0.8*time);
+per_pixel_7=dx = dx + 2*dx_r * 0.5*sin(time);
+per_pixel_8=warp = warp + if (below(kick,0), + 0.5*treb, q1);
+per_pixel_9=zoom = zoom + 0.062*(1.22*cos((2*time)-2*rad)+0.5*cos(1.55*time));

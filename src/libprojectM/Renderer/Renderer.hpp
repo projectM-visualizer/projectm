@@ -11,15 +11,13 @@
 #include "Transformation.hpp"
 #include "ShaderEngine.hpp"
 
-#ifdef USE_FTGL
-#ifdef WIN32
-#include <ftgl.h>
-#include <FTGLPixmapFont.h>
-#include <FTGLExtrdFont.h>
-#else
-#include <FTGL/ftgl.h>
-#endif
-#endif /** USE_FTGL */
+#ifdef USE_TEXT_MENU
+
+#define GLT_IMPLEMENTATION
+#define GLT_DEBUG_PRINT
+#include "gltext.h"
+
+#endif /** USE_TEXT_MENU */
 
 // for final composite grid:
 #define FCGSX 32 // final composite gridsize - # verts - should be EVEN.
@@ -77,7 +75,6 @@ public:
   void reset(int w, int h);
   GLuint initRenderToTexture();
 
-
   std::string SetPipeline(Pipeline &pipeline);
 
   void setPresetName(const std::string& theValue)
@@ -90,12 +87,22 @@ public:
     return m_presetName;
   }
 
+  
 private:
 
-	PerPixelMesh mesh;
+  PerPixelMesh mesh;
   BeatDetect *beatDetect;
   TextureManager *textureManager;
   static Pipeline* currentPipe;
+
+#ifdef USE_TEXT_MENU
+
+  void drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
+                   int verticalAlignment);
+  void drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
+                   int verticalAlignment);
+
+#endif /** USE_TEXT_MENU */
   RenderContext renderContext;
   //per pixel equation variables
   ShaderEngine shaderEngine;
@@ -128,11 +135,11 @@ private:
   GLuint m_vbo_CompositeShaderOutput;
   GLuint m_vao_CompositeShaderOutput;
 
-#ifdef USE_FTGL
-  FTGLPixmapFont *title_font;
-  FTGLPixmapFont *other_font;
-  FTGLExtrdFont *poly_font;
-#endif /** USE_FTGL */
+#ifdef USE_TEXT_MENU
+  GLTtext *title_font;
+  GLTtext *other_font;
+  GLTtext *poly_font;
+#endif /** USE_TEXT_MENU */
 
   void SetupPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void Interpolation(const Pipeline &pipeline, const PipelineContext &pipelineContext);

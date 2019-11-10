@@ -22,6 +22,7 @@
 # include <OpenGL/gl3ext.h>
 #elif defined(EYETUNE_WINRT)
 #define GL_GLEXT_PROTOTYPES
+#define GLM_FORCE_CXX03
 #include <GLES3/gl31.h>
 #include <GLES3/gl3.h>
 #include <GLES2/gl2.h>
@@ -29,6 +30,7 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #elif defined(_WIN32)
+#define GLM_FORCE_CXX03
 # include <windows.h>
 #include "glew.h"
 #include "wglew.h"
