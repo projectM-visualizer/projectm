@@ -19,7 +19,7 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 
 ### Download
 Get it from the [Releases](https://github.com/projectM-visualizer/projectm/releases) tab
-or 
+or
 Download from the [Windows Store (PC, XBOX, Phone)](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
 
 ### Demo Video
@@ -32,7 +32,7 @@ You can read more about how it works and the current state of development [here]
 ### Presets
 The preset files define the visualizations via pixel shaders and Milkdrop-style equations and parameters. Included with projectM are the bltc201, Milkdrop 1 and 2, projectM, tryptonaut and yin collections. You can grab these presets [here](http://spiegelmc.com/pub/projectm_presets.zip).
 
-You can also download an enormous 52,000 pack of presets and textures [here](https://mischa.lol/projectM/52k-presets.zip)(338MB zipped).
+You can also download an enormous 41,000 preset pack of presets [here](https://mischa.lol/projectM/presets_community.zip) (123MB zipped).
 
 
 ### Also Featured In

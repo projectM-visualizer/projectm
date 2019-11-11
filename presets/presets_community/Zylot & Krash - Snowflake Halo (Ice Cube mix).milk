@@ -1,0 +1,261 @@
+[preset00]
+fRating=3.000000
+fGammaAdj=2.000000
+fDecay=0.925000
+fVideoEchoZoom=1.006596
+fVideoEchoAlpha=0.000000
+nVideoEchoOrientation=3
+nWaveMode=3
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=4.099998
+fWaveScale=0.010000
+fWaveSmoothing=0.360000
+fWaveParam=-0.500000
+fModWaveAlphaStart=0.709800
+fModWaveAlphaEnd=1.700000
+fWarpAnimSpeed=1.000000
+fWarpScale=1.331000
+fZoomExponent=1.000000
+fShader=0.000000
+zoom=0.959487
+rot=0.020000
+cx=0.500000
+cy=0.500000
+dx=0.000000
+dy=0.000000
+warp=0.198054
+sx=1.000000
+sy=1.000000
+wave_r=0.650000
+wave_g=0.650000
+wave_b=0.650000
+wave_x=0.500000
+wave_y=0.500000
+ob_size=0.010000
+ob_r=0.000000
+ob_g=0.000000
+ob_b=0.000000
+ob_a=0.000000
+ib_size=0.010000
+ib_r=0.250000
+ib_g=0.250000
+ib_b=0.250000
+ib_a=0.000000
+nMotionVectorsX=12.000000
+nMotionVectorsY=9.000000
+mv_dx=0.000000
+mv_dy=0.000000
+mv_l=0.900000
+mv_r=1.000000
+mv_g=1.000000
+mv_b=1.000000
+mv_a=0.000000
+wavecode_0_enabled=0
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.000000
+wavecode_0_smoothing=0.500000
+wavecode_0_r=1.000000
+wavecode_0_g=1.000000
+wavecode_0_b=1.000000
+wavecode_0_a=1.000000
+wavecode_1_enabled=1
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=1
+wavecode_1_bAdditive=0
+wavecode_1_scaling=0.463735
+wavecode_1_smoothing=0.000000
+wavecode_1_r=1.000000
+wavecode_1_g=1.000000
+wavecode_1_b=1.000000
+wavecode_1_a=1.000000
+wave_1_init1=//pi
+wave_1_init2=t8=3.14159265;
+wave_1_init3=t5 = 1;
+wave_1_per_frame1=rotx = rotx+bass;
+wave_1_per_frame2=roty = roty+mid;
+wave_1_per_frame3=rotz = rotz+treb;
+wave_1_per_frame4=//rotx = 0;
+wave_1_per_frame5=//roty =0;
+wave_1_per_frame6=//rotz = 0;
+wave_1_per_frame7=
+wave_1_per_frame8=//convert rotation values from degrees to radians
+wave_1_per_frame9=t1= t8*rotx/180;
+wave_1_per_frame10=t2 = t8*roty/180;
+wave_1_per_frame11=t3 = t8*rotz/180;
+wave_1_per_frame12=
+wave_1_per_frame13=t4 = 3*sin(time+0.66*t8);
+wave_1_per_frame14=t5 = 10+8*cos(time+0.66*t8);
+wave_1_per_frame15=
+wave_1_per_point1=//Define 3D Shape
+wave_1_per_point2=
+wave_1_per_point3=//Sphere
+wave_1_per_point4=fvar = sample*512;
+wave_1_per_point5=svar = fvar*128;
+wave_1_per_point6=tvar = 0&svar;
+wave_1_per_point7=nsample = tvar*4.5;
+wave_1_per_point8=x1 = -.75+(1.5)*sin(sample);
+wave_1_per_point9=y1 = (1)*cos(t8*nsample);
+wave_1_per_point10=z1 = (1)*sin(t8*nsample);
+wave_1_per_point11=
+wave_1_per_point12=//modulate values to adjust for rotation on multiple axes, convert to world co-ordinates
+wave_1_per_point13=y2 = y1*cos(t1)-z1*sin(t1);
+wave_1_per_point14=z2 = y1*sin(t1)+z1*cos(t1);
+wave_1_per_point15=x2 = z2*sin(t2)+x1*cos(t2);
+wave_1_per_point16=z3 = z2*cos(t2)-x1*sin(t2);
+wave_1_per_point17=x3 = x2*cos(t3)-y2*sin(t3);
+wave_1_per_point18=y3 = y2*cos(t3)+x2*sin(t3);
+wave_1_per_point19=//move resulting shape in 3d space
+wave_1_per_point20=x4 = x3;
+wave_1_per_point21=y4 = y3;
+wave_1_per_point22=z4 = z3+5;
+wave_1_per_point23=//draw 3d shape in 2d
+wave_1_per_point24=x=0.5+0.5*(x4/(1+z4*0.5));
+wave_1_per_point25=y=0.5+0.5*(y4/(1+z4*0.5));
+wave_1_per_point26=
+wave_1_per_point27=a = -.9+sin(nsample+time);
+wave_1_per_point28=a = if(below(a,0),0,a);
+wavecode_2_enabled=0
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.000000
+wavecode_2_smoothing=0.500000
+wavecode_2_r=1.000000
+wavecode_2_g=1.000000
+wavecode_2_b=1.000000
+wavecode_2_a=1.000000
+wavecode_3_enabled=0
+wavecode_3_samples=512
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.000000
+wavecode_3_smoothing=0.500000
+wavecode_3_r=1.000000
+wavecode_3_g=1.000000
+wavecode_3_b=1.000000
+wavecode_3_a=1.000000
+shapecode_0_enabled=0
+shapecode_0_sides=4
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=0
+shapecode_0_x=0.500000
+shapecode_0_y=0.500000
+shapecode_0_rad=0.100000
+shapecode_0_ang=0.000000
+shapecode_0_tex_ang=0.000000
+shapecode_0_tex_zoom=1.000000
+shapecode_0_r=1.000000
+shapecode_0_g=0.000000
+shapecode_0_b=0.000000
+shapecode_0_a=1.000000
+shapecode_0_r2=0.000000
+shapecode_0_g2=1.000000
+shapecode_0_b2=0.000000
+shapecode_0_a2=0.000000
+shapecode_0_border_r=1.000000
+shapecode_0_border_g=1.000000
+shapecode_0_border_b=1.000000
+shapecode_0_border_a=0.100000
+shapecode_1_enabled=0
+shapecode_1_sides=4
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_x=0.500000
+shapecode_1_y=0.500000
+shapecode_1_rad=0.100000
+shapecode_1_ang=0.000000
+shapecode_1_tex_ang=0.000000
+shapecode_1_tex_zoom=1.000000
+shapecode_1_r=1.000000
+shapecode_1_g=0.000000
+shapecode_1_b=0.000000
+shapecode_1_a=1.000000
+shapecode_1_r2=0.000000
+shapecode_1_g2=1.000000
+shapecode_1_b2=0.000000
+shapecode_1_a2=0.000000
+shapecode_1_border_r=1.000000
+shapecode_1_border_g=1.000000
+shapecode_1_border_b=1.000000
+shapecode_1_border_a=0.100000
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_x=0.500000
+shapecode_2_y=0.500000
+shapecode_2_rad=0.100000
+shapecode_2_ang=0.000000
+shapecode_2_tex_ang=0.000000
+shapecode_2_tex_zoom=1.000000
+shapecode_2_r=1.000000
+shapecode_2_g=0.000000
+shapecode_2_b=0.000000
+shapecode_2_a=1.000000
+shapecode_2_r2=0.000000
+shapecode_2_g2=1.000000
+shapecode_2_b2=0.000000
+shapecode_2_a2=0.000000
+shapecode_2_border_r=1.000000
+shapecode_2_border_g=1.000000
+shapecode_2_border_b=1.000000
+shapecode_2_border_a=0.100000
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_x=0.500000
+shapecode_3_y=0.500000
+shapecode_3_rad=0.100000
+shapecode_3_ang=0.000000
+shapecode_3_tex_ang=0.000000
+shapecode_3_tex_zoom=1.000000
+shapecode_3_r=1.000000
+shapecode_3_g=0.000000
+shapecode_3_b=0.000000
+shapecode_3_a=1.000000
+shapecode_3_r2=0.000000
+shapecode_3_g2=1.000000
+shapecode_3_b2=0.000000
+shapecode_3_a2=0.000000
+shapecode_3_border_r=1.000000
+shapecode_3_border_g=1.000000
+shapecode_3_border_b=1.000000
+shapecode_3_border_a=0.100000
+per_frame_1=ff = frame/100;
+per_frame_2=wave_r = sin(5*ff/2)/2+0.5;
+per_frame_3=wave_g = cos(ff/3)/2+0.5;
+per_frame_4=wave_b = cos(3*ff/2)/2+0.5;
+per_frame_5=zoom = zoom - if(below(zoom,0.96),0,0.008);
+per_frame_6=zoom = zoom + 0.15*bass_att;
+per_pixel_1=angval = ang + abs(3.14*sin(time*0.345) + 3.14*sin(time*.234));
+per_pixel_2=rot=(2*abs((sin(time)-0.5))-angval)/1;
