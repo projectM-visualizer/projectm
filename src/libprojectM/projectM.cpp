@@ -71,16 +71,11 @@ projectM::~projectM()
 {
 #ifdef USE_THREADS
     void *status;
-    std::cout << "[projectM] thread ";
-    printf("cl");
     worker_sync.finish_up();
-    printf("e");
     pthread_join(thread, &status);
-    printf("n");
     #ifdef SYNC_PRESET_SWITCHES
     pthread_mutex_destroy( &preset_mutex );
     #endif
-    printf("up");
     std::cout << std::endl;
 #endif
     destroyPresetTools();
@@ -567,6 +562,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
     pthread_mutex_init(&preset_mutex, NULL);
 #endif
 
+    worker_sync.reset();
     if (pthread_create(&thread, NULL, thread_callback, this) != 0)
     {
 
