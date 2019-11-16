@@ -26,9 +26,6 @@ Download from the [Windows Store (PC, XBOX, Phone)](https://www.microsoft.com/st
 [![](http://img.youtube.com/vi/2dSam8zwSFw/0.jpg)](http://www.youtube.com/watch?v=2dSam8zwSFw "Demo")
 
 
-### Project Status
-You can read more about how it works and the current state of development [here](https://lwn.net/Articles/750152/).
-
 ### Presets
 The preset files define the visualizations via pixel shaders and Milkdrop-style equations and parameters. Included with projectM are the bltc201, Milkdrop 1 and 2, projectM, tryptonaut and yin collections. You can grab these presets [here](http://spiegelmc.com/pub/projectm_presets.zip).
 
@@ -68,6 +65,9 @@ You can also download an enormous 41,000 preset pack of presets [here](https://m
 ![Screenshot](https://silentradiance.com/demos/projectM_vr/projectm_vr.png)
 ***
 
+## Architecture
+* [Article](https://lwn.net/Articles/750152/)
+
 # Building from source
 See [BUILDING.md](BUILDING.md)
 
@@ -98,7 +98,6 @@ If you would like to help improve this project, either with documentation, code,
 ## Maintainers
 If you maintain packages of libprojectM, we are happy to work with you! Please note well:
 * The main focus of this project is libprojectM. It's a library that only really depends on OpenGL. The other applications are more like examples and demos.
-* This project was converted to use GNU autotools instead of CMake in 2018. This was due to inflexibility of CMake, issues with OSX and SDL2, an unintuitive configuration interface, standardizing on the most common and well-understood build system, a desire to make it easier for others to get up and running and contribute, and other factors too lengthy to expound on here.
 * Most of the applications (e.g. `src/projectM-*`) are likely outdated and of less utility than the core library. If you desire to use them or depend on them, please file an issue so we can help update them.
 * The "canonical" application for actually viewing the visualizations is now projectM-sdl, based on libSDL2 because it supports audio input and is completely cross-platform.
 * This is an open source project! If you don't like something, feel free to contribute improvements!
