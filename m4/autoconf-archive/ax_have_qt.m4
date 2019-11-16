@@ -86,6 +86,7 @@ qtHaveModule(multimedia):        QT += multimedia
 qtHaveModule(multimediawidgets): QT += multimediawidgets
 qtHaveModule(network):           QT += network
 qtHaveModule(opengl):            QT += opengl
+qtHaveModule(widgets):           QT += widgets
 qtHaveModule(printsupport):      QT += printsupport
 qtHaveModule(qml):               QT += qml
 qtHaveModule(qmltest):           QT += qmltest
