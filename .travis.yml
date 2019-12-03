@@ -8,6 +8,7 @@ before_script:
   - ./autogen.sh
 before_install:
   - eval "${MATRIX_EVAL}"
+  - if [ $TRAVIS_OS_NAME == "osx"  ]; then sudo sntp -sS time.apple.com; fi
 
 addons:
   apt:
