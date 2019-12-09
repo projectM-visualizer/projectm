@@ -31,6 +31,10 @@
 *
 */
 
+#if defined _MSC_VER
+#  include <direct.h>
+#endif
+
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -63,15 +67,23 @@ std::string getConfigFilePath(std::string datadir_path) {
   std::string projectM_config = DATADIR_PATH;
 
   projectM_config = datadir_path;
-  
+
+#ifdef _MSC_VER
   home=getenv("HOME");
-  
+#else
+  home=getenv("USERPROFILE");
+#endif
+    
   projectM_home = std::string(home);
   projectM_home += "/.projectM";
   
   // Create the ~/.projectM directory. If it already exists, mkdir will do nothing
+#if defined _MSC_VER
+  _mkdir(dir.data());
+#else
   mkdir(projectM_home.c_str(), 0755);
-
+#endif
+  
   projectM_home += "/config.inp";
   projectM_config += "/config.inp";
   
