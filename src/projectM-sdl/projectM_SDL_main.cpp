@@ -79,7 +79,7 @@ std::string getConfigFilePath(std::string datadir_path) {
   
   // Create the ~/.projectM directory. If it already exists, mkdir will do nothing
 #if defined _MSC_VER
-  _mkdir(dir.data());
+  _mkdir(projectM_home.c_str());
 #else
   mkdir(projectM_home.c_str(), 0755);
 #endif
