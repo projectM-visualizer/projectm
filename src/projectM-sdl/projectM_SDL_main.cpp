@@ -306,7 +306,11 @@ srand((int)(time(NULL)));
     SDL_SetWindowTitle(win, "projectM Visualizer");
     
     SDL_GL_MakeCurrent(win, glCtx);  // associate GL context with main window
-    SDL_GL_SetSwapInterval(-1); // Enable adaptive vsync
+    int avsync = SDL_GL_SetSwapInterval(-1); // try to enable adaptive vsync
+    if (avsync == -1) { // adaptive vsync not supported
+        SDL_GL_SetSwapInterval(1); // enable updates synchronized with vertical retrace
+    }
+
     
     projectMSDL *app;
     
