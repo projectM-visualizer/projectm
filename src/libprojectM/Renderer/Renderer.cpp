@@ -238,9 +238,9 @@ void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipel
 	totalframes++;
 
 	/*
-	If FPS is displayed (by pressing F5 or config):
+	If FPS is displayed (by pressing F5 or by config):
 		- check if 250 milliseconds has passed (1/4 of a second)
-		- multiply the total rendered frames (totalframes) by four to get the approximate frames per second cound.
+		- multiply the total rendered frames (totalframes) by four to get the approximate frames per second count.
 		- reset the totalframes and timer (lastTime) so we don't trigger for another 250 milliseconds.
 	*/
 	if (this->showfps)
