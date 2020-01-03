@@ -95,11 +95,11 @@ public:
     return m_presetName;
   }
 
-  void setFPS(const int &theValue) { // @CABAN
+  void setFPS(const int &theValue) {
 		m_fps = std::to_string(theValue); 
   }
 
-  std::string fps() const { // @CABAN
+  std::string fps() const {
 		return m_fps;
   }
   

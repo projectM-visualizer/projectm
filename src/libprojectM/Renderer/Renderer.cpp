@@ -236,15 +236,25 @@ void Renderer::ResetTextures()
 void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
 	totalframes++;
-	this->currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-	milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(this->currentTime - this->lastTime);
-	double diff = ms.count();
-	if (diff >= 250)
+
+	/*
+	If FPS is displayed (by pressing F5 or config):
+		- check if 250 milliseconds has passed (1/4 of a second)
+		- multiply the total rendered frames (totalframes) by four to get the approximate frames per second cound.
+		- reset the totalframes and timer (lastTime) so we don't trigger for another 250 milliseconds.
+	*/
+	if (this->showfps)
 	{
-		this->realfps = totalframes * 4;
-		setFPS(realfps);
-		totalframes = 0;
-		this->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+		this->currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+		milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(this->currentTime - this->lastTime);
+		double diff = ms.count();
+		if (diff >= 250)
+		{
+			this->realfps = totalframes * 4;
+			setFPS(realfps);
+			totalframes = 0;
+			this->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+		}
 	}
 	glViewport(0, 0, texsizeX, texsizeY);
 
