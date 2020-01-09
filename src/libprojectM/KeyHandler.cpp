@@ -134,8 +134,11 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		 break;
 
 	    case PROJECTM_K_F5:
-	      if (!renderer->showhelp)
-		      renderer->showfps = !renderer->showfps;
+		  renderer->showfps = !renderer->showfps;
+				if (renderer->showfps)
+				{
+					renderer->showpreset = false;
+				}
 	      break;
 	    case PROJECTM_K_F4:
 		if (!renderer->showhelp)
@@ -143,6 +146,10 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      break;
 	    case PROJECTM_K_F3: {
 	      renderer->showpreset = !renderer->showpreset;
+				if (renderer->showpreset)
+				{
+					renderer->showfps = false;
+				}
 	      break;
 	     }
 	    case PROJECTM_K_F2:
