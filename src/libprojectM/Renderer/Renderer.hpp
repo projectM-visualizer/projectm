@@ -10,6 +10,11 @@
 #include "PerPixelMesh.hpp"
 #include "Transformation.hpp"
 #include "ShaderEngine.hpp"
+#include <iostream>
+#include <chrono>
+#include <ctime>
+
+using namespace std::chrono;
 
 #ifdef USE_TEXT_MENU
 
@@ -53,6 +58,9 @@ public:
 
   bool noSwitch;
 
+  milliseconds lastTime;
+  milliseconds currentTime;
+
   int totalframes;
   float realfps;
 
@@ -87,6 +95,13 @@ public:
     return m_presetName;
   }
 
+  void setFPS(const int &theValue) {
+		m_fps = std::to_string(theValue); 
+  }
+
+  std::string fps() const {
+		return m_fps;
+  }
   
 private:
 
@@ -108,6 +123,7 @@ private:
   ShaderEngine shaderEngine;
   std::string m_presetName;
   std::string m_datadir;
+  std::string m_fps;
 
   float* p;
 
