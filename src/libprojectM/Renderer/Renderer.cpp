@@ -12,8 +12,13 @@
 #include "omptl/omptl_algorithm"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <iostream>
+#include <chrono>
+#include <ctime>
 
 Pipeline* Renderer::currentPipe;
+
+using namespace std::chrono;
 
 class Preset;
 
@@ -71,6 +76,8 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 	title_fontURL(_titlefontURL), menu_fontURL(_menufontURL), presetURL(_presetURL)
 {
 	this->totalframes = 1;
+	this->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+	this->currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 	this->noSwitch = false;
 	this->showfps = false;
 	this->showtitle = false;
@@ -229,6 +236,26 @@ void Renderer::ResetTextures()
 void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
 	totalframes++;
+
+	/*
+	If FPS is displayed (by pressing F5 or by config):
+		- check if 250 milliseconds has passed (1/4 of a second)
+		- multiply the total rendered frames (totalframes) by four to get the approximate frames per second count.
+		- reset the totalframes and timer (lastTime) so we don't trigger for another 250 milliseconds.
+	*/
+	if (this->showfps)
+	{
+		this->currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+		milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(this->currentTime - this->lastTime);
+		double diff = ms.count();
+		if (diff >= 250)
+		{
+			this->realfps = totalframes * 4;
+			setFPS(realfps);
+			totalframes = 0;
+			this->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+		}
+	}
 	glViewport(0, 0, texsizeX, texsizeY);
 
 	renderContext.mat_ortho = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -40.0f, 40.0f);
@@ -549,6 +576,7 @@ void Renderer::draw_help()
 	         "-------------------------------""\n"
 	         "F1: This help menu""\n"
 	         "F3: Show preset name""\n"
+		     "F5: Show FPS""\n"
 	         "L: Lock/Unlock Preset""\n"
 	         "R: Random preset""\n"
 	         "N: Next preset""\n"
@@ -581,8 +609,7 @@ void Renderer::draw_stats()
 void Renderer::draw_fps()
 {
 #ifdef USE_TEXT_MENU
-
-
+	drawText(this->fps().c_str(), 30, 20, 2.5);
 #endif /** USE_TEXT_MENU */
 }
 
