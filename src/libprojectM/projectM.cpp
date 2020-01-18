@@ -656,6 +656,7 @@ int projectM::initPresetTools(int gx, int gy)
 //        std::cerr << "[projectM] Allocating idle preset..." << std::endl;
     m_activePreset = m_presetLoader->loadPreset
             ("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
+	renderer->setPresetName("Geiss & Sperl - Feedback (projectM idle HDR mix)");
 
     renderer->SetPipeline(m_activePreset->pipeline());
 

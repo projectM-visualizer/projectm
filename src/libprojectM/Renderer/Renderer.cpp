@@ -240,7 +240,7 @@ void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipel
 	/*
 	If FPS is displayed (by pressing F5 or by config):
 		- check if 250 milliseconds has passed (1/4 of a second)
-		- multiply the total rendered frames (totalframes) by four to get the approximate frames per second count.
+		- multiply the total rendered frames (totalframes) by the fraction of a second that passed to get the approximate frames per second count.
 		- reset the totalframes and timer (lastTime) so we don't trigger for another 250 milliseconds.
 	*/
 	if (this->showfps)
@@ -250,7 +250,7 @@ void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipel
 		double diff = ms.count();
 		if (diff >= 250)
 		{
-			this->realfps = totalframes * 4;
+			this->realfps = totalframes * (1000 / diff);
 			setFPS(realfps);
 			totalframes = 0;
 			this->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
@@ -572,8 +572,7 @@ void Renderer::draw_help()
 {
 #ifdef USE_TEXT_MENU
 	// TODO: match winamp/milkdrop bindings
-	drawText("Help""\n"
-	         "-------------------------------""\n"
+	drawText("\n"
 	         "F1: This help menu""\n"
 	         "F3: Show preset name""\n"
 		     "F5: Show FPS""\n"
@@ -583,7 +582,7 @@ void Renderer::draw_help()
 	         "P: Previous preset""\n"
 	         "UP: Increase Beat Sensitivity""\n"
 	         "DOWN: Decrease Beat Sensitivity""\n"
-	         "CTRL-F: Fullscreen", 1, 20, 2.5);
+	         "CTRL-F: Fullscreen", 30, 20, 2.5);
 
 #endif /** USE_TEXT_MENU */
 }
