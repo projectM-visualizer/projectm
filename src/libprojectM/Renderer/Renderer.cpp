@@ -572,8 +572,7 @@ void Renderer::draw_help()
 {
 #ifdef USE_TEXT_MENU
 	// TODO: match winamp/milkdrop bindings
-	drawText("Help""\n"
-	         "-------------------------------""\n"
+	drawText("\n"
 	         "F1: This help menu""\n"
 	         "F3: Show preset name""\n"
 		     "F5: Show FPS""\n"
@@ -583,7 +582,7 @@ void Renderer::draw_help()
 	         "P: Previous preset""\n"
 	         "UP: Increase Beat Sensitivity""\n"
 	         "DOWN: Decrease Beat Sensitivity""\n"
-	         "CTRL-F: Fullscreen", 1, 20, 2.5);
+	         "CTRL-F: Fullscreen", 30, 20, 2.5);
 
 #endif /** USE_TEXT_MENU */
 }
