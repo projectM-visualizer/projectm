@@ -96,10 +96,8 @@ public:
     void beginAudioCapture();
     void endAudioCapture();
 	void nextMonitor();
-	void stretchMonitors();
     void toggleFullScreen();
     void resize(unsigned int width, unsigned int height);
-	void move(unsigned int x, unsigned int y);
     void renderFrame();
     void pollEvent();
     void maximize();
