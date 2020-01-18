@@ -332,7 +332,7 @@ srand((int)(time(NULL)));
         projectM::Settings settings;
         settings.windowWidth = width;
         settings.windowHeight = height;
-        settings.meshX = 400;
+        settings.meshX = 128;
         settings.meshY = settings.meshX * heightWidthRatio;
         settings.fps   = 60;
         settings.smoothPresetDuration = 3; // seconds
