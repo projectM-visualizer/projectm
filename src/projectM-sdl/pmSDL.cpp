@@ -151,6 +151,28 @@ void projectMSDL::maximize() {
     resize(dm.w, dm.h);
 }
 
+/* Moves projectM to the next monitor */
+void projectMSDL::nextMonitor()
+{
+	int displayCount = SDL_GetNumVideoDisplays();
+	int currentWindowIndex = SDL_GetWindowDisplayIndex(win);
+	if (displayCount >= 2)
+	{
+		std::vector<SDL_Rect> displayBounds;
+		int nextWindow = currentWindowIndex + 1;
+		if (nextWindow > displayCount) nextWindow = 0;
+
+		for (int i = 0; i < displayCount; i++)
+		{
+			displayBounds.push_back(SDL_Rect());
+			SDL_GetDisplayBounds(i, &displayBounds.back());
+		}
+		SDL_SetWindowPosition(win, displayBounds[nextWindow].x, displayBounds[nextWindow].y);
+		SDL_SetWindowSize(win, displayBounds[nextWindow].w, displayBounds[nextWindow].h);
+		maximize();
+	}
+}
+
 void projectMSDL::toggleFullScreen() {
     maximize();
     if (isFullScreen) {
@@ -180,8 +202,16 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
                 return;
             }
             break;
-
-
+		case SDLK_m:
+			if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+			{
+				// command-m: change [m]onitor
+				// Stereo requires fullscreen
+#if !STEREOSCOPIC_SBS
+				nextMonitor();
+#endif
+				return; // handled
+			}
         case SDLK_f:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
                 // command-f: fullscreen
