@@ -31,7 +31,7 @@ AS_IF([test "x$emscripten_compiler" = "xyes"], [
   AC_DEFINE([EMSCRIPTEN], [1], [Define EMSCRIPTEN])
   enable_gles=yes
   enable_sdl=yes
-  enable_llvm=yes
+  enable_llvm=no
   enable_preset_subdirs=no
   enable_threading=no
   enable_qt=no
