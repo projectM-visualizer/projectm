@@ -22,17 +22,19 @@ AC_LANG(C++)
 AC_CONFIG_MACRO_DIRS([m4 m4/autoconf-archive])
 
 dnl emscripten
-AC_ARG_ENABLE([emscripten],
-AS_HELP_STRING([--enable-emscripten], [Build for web with emscripten]),
-[], [enable_emscripten=no])
-AS_IF([test "x$enable_emscripten" = "xyes" || test "x$EMSCRIPTEN" = "xyes"], [
+m4_include([m4/emscripten.m4])
+AM_EMSCRIPTEN  # set emscripten_compiler=yes/no
+AC_MSG_CHECKING(Emscripten enabled)
+AC_MSG_RESULT("$emscripten_compiler")
+AS_IF([test "x$emscripten_compiler" = "xyes"], [
   dnl Set up emscripten
-  m4_include([m4/emscripten.m4])
   AC_DEFINE([EMSCRIPTEN], [1], [Define EMSCRIPTEN])
-  enable_threading=no
   enable_gles=yes
   enable_sdl=yes
+  enable_llvm=yes
   enable_preset_subdirs=no
+  enable_threading=no
+  enable_qt=no
 ], [
   dnl Running in a normal OS (not emscripten)
   AX_CHECK_GL
@@ -83,7 +85,7 @@ AC_CONFIG_FILES([
 
 # SDL
 AC_ARG_ENABLE([sdl], AS_HELP_STRING([--enable-sdl], [Build SDL2 application]), [], [enable_sdl=check])
-AS_IF([test "$enable_sdl" != "no"], [
+AS_IF([test "$enable_sdl" != "no" && test "x$emscripten_compiler" != "xyes"], [
     PKG_CHECK_MODULES([SDL], [sdl2], [
         m4_include([m4/sdl2.m4])
         SDL_VERSION="2.0.5"
@@ -104,7 +106,7 @@ AS_IF([test "$enable_sdl" != "no"], [
 
 
 # glm
-AS_IF([test "x$enable_emscripten" != "xyes"], [
+AS_IF([test "x$emscripten_compiler" != "xyes"], [
   AC_CHECK_HEADER([glm/glm.hpp],, AC_MSG_ERROR(libglm is required.))
 ])
 

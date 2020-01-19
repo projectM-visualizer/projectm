@@ -1,13 +1,13 @@
 AM_CPPFLAGS = \
 ${my_CFLAGS} \
 -include $(top_builddir)/config.h \
--I$(top_builddir)/vendor \
+-include $(top_builddir)/vendor \
 -DSYSCONFDIR=\""$(sysconfdir)"\" \
 -I${top_srcdir}/src/libprojectM \
 -I${top_srcdir}/src/libprojectM/Renderer \
 ${SDL_CFLAGS}
 
-EMSCRIPTEN_FLAGS =  -s USE_SDL=2 -s USE_WEBGL2=1 
+EMSCRIPTEN_FLAGS =  -s USE_SDL=2 -s USE_WEBGL2=1
 # -s WASM=0
 
 bin_PROGRAMS = projectW.bc
