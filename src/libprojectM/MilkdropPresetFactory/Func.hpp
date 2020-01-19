@@ -40,7 +40,7 @@ public:
     /// \param name a name to uniquely identify the function. 
     /// \param func_ptr a pointer to a function of floating point arguments
     /// \param num_args the number of floating point arguments this function requires
-    Func(const std::string & name, float (*func_ptr)(float*), int num_args );
+    Func(const std::string & name, float (*func_ptr)(float*), int num_args, int llvm_id=0 );
 
     /* Public Prototypes */
     ~Func();
@@ -54,10 +54,11 @@ public:
 	}
 
     float (*func_ptr)(float*);
-private:	
+private:
     std::string name;
     int num_args;
-
+public:
+	int llvm_intrinsic;
 };
 
 #endif /** !_FUNC_H */

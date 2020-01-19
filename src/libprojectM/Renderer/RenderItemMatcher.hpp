@@ -35,7 +35,7 @@ struct MatchResults {
 	/// Computes an optimal matching between two renderable item sets.
 	/// @param lhs the "left-hand side" list of render items.
 	/// @param rhs the "right-hand side" list of render items.
-	/// @returns a list of match pairs, possibly self referencing, and an error estimate of the matching.
+	/// Sets a list of match pairs, possibly self referencing, and an error estimate of the matching.
 	inline virtual void operator()(const RenderItemList & lhs, const RenderItemList & rhs) const {
 		
 		// Ensure the first argument is greater than next to aid the helper function's logic.

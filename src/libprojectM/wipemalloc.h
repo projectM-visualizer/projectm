@@ -57,4 +57,8 @@
  void *wipemalloc( size_t count );
  void wipefree( void *ptr );
 
+/** wipe_aligned_malloc() must be matched with aligned_free() */
+ void *wipe_aligned_alloc( size_t align, size_t count);
+ inline void *wipe_aligned_alloc( size_t count ) { return wipe_aligned_alloc(16,count); }
+ void wipe_aligned_free( void *ptr );
 #endif /** !_WIPEMALLOC_H */

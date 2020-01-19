@@ -10,19 +10,74 @@
 #include <cassert>
 #include "omptl/omptl"
 #include "omptl/omptl_algorithm"
-#include "UserTexture.hpp"
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <iostream>
+#include <chrono>
+#include <ctime>
+
+Pipeline* Renderer::currentPipe;
+
+using namespace std::chrono;
 
 class Preset;
 
-Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetect *beatDetect, std::string _presetURL,
-		std::string _titlefontURL, std::string _menufontURL) :
-	title_fontURL(_titlefontURL), menu_fontURL(_menufontURL), presetURL(_presetURL), m_presetName("None"), vw(width),
-			vh(height), texsize(texsize), mesh(gx, gy)
-{
-	int x;
-	int y;
+#ifdef USE_TEXT_MENU
 
+
+void Renderer::drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale,
+                        int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP)
+{
+	drawText(this->title_font, string, x, y, scale, horizontalAlignment, verticalAlignment);
+}
+
+void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale,
+                        int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP)
+{
+	// Initialize glText
+	gltInit();
+
+	// Creating text
+	text = gltCreateText();
+	// Begin text drawing (this for instance calls glUseProgram)
+	gltBeginDraw();
+
+	// Draw any amount of text between begin and end
+	gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+
+	gltSetText(text, string);
+	// Where horizontal is either:
+	// - GLT_LEFT (default)
+	// - GLT_CENTER
+	// - GLT_RIGHT
+
+	// Where vertical is either:
+	// - GLT_TOP (default)
+	// - GLT_CENTER
+	// - GLT_BOTTOM
+	gltDrawText2DAligned(text, x, y, scale, GLT_LEFT, GLT_TOP);
+
+	// Finish drawing text
+	gltEndDraw();
+
+	// Deleting text
+	gltDeleteText(text);
+
+	// Destroy glText
+	gltTerminate();
+}
+
+
+#endif /** USE_TEXT_MENU */
+
+Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetect, std::string _presetURL,
+                   std::string _titlefontURL, std::string _menufontURL, const std::string& datadir) :
+	mesh(gx, gy), m_presetName("None"), m_datadir(datadir), vw(width), vh(height),
+	title_fontURL(_titlefontURL), menu_fontURL(_menufontURL), presetURL(_presetURL)
+{
 	this->totalframes = 1;
+	this->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+	this->currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 	this->noSwitch = false;
 	this->showfps = false;
 	this->showtitle = false;
@@ -31,6 +86,9 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 	this->showstats = false;
 	this->studio = false;
 	this->realfps = 0;
+	/* Set up the v xoffset and vy offset to 0 which is normal Only used for VR */
+	this->vstartx = 0;
+	this->vstarty = 0;
 
 	this->drawtitle = 0;
 
@@ -38,56 +96,20 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 
 	/** Other stuff... */
 	this->correction = true;
-	this->aspect = (float) height / (float) width;;
 
 	/// @bug put these on member init list
-	this->renderTarget = new RenderTarget(texsize, width, height);
-	this->textureManager = new TextureManager(presetURL);
-	this->beatDetect = beatDetect;
+	this->textureManager = nullptr;
+	this->beatDetect = _beatDetect;
 
-#ifdef USE_FTGL
-	/** Load the standard fonts if they do exist */
-	struct stat buffer;
+	textureRenderToTexture = 0;
 
-	if (stat( title_fontURL.c_str(), &buffer )) {
-	  std::cout << "Could not open font file: " << title_fontURL << std::endl;
-	  exit(1);
-	}
-	if (stat( menu_fontURL.c_str(), &buffer )) {
-	  std::cout << "Could not open font file: " << menu_fontURL << std::endl;
-	  exit(1);
-	}
-
-	title_font = new FTGLPixmapFont(title_fontURL.c_str());
-	other_font = new FTGLPixmapFont(menu_fontURL.c_str());
-	poly_font = new FTGLExtrdFont(title_fontURL.c_str());
-
-	if(title_font->Error()) {
-		fprintf(stderr, "Failed to open font %s\n", title_fontURL.c_str());
-	} else {
-		title_font->UseDisplayList(true);
-	}
-
-	other_font->UseDisplayList(true);
-
-	if(poly_font->Error()) {
-		fprintf(stderr, "Failed to open font %s\n", title_fontURL.c_str());
-	} else {
-		poly_font->UseDisplayList(true);
-		poly_font->Depth(20);
-		poly_font->FaceSize(72);
-	}
-
-#endif /** USE_FTGL */
-
-
-	int size = (mesh.height - 1) *mesh.width * 5 * 2;
-	p = ( float * ) wipemalloc ( size * sizeof ( float ) );
+	int size = (mesh.height - 1) * mesh.width * 4 * 2;
+	p = static_cast<float *>(wipemalloc(size * sizeof(float)));
 
 
 	for (int j = 0; j < mesh.height - 1; j++)
 	{
-		int base = j * mesh.width * 2 * 5;
+		int base = j * mesh.width * 4 * 2;
 
 
 		for (int i = 0; i < mesh.width; i++)
@@ -95,111 +117,177 @@ Renderer::Renderer(int width, int height, int gx, int gy, int texsize, BeatDetec
 			int index = j * mesh.width + i;
 			int index2 = (j + 1) * mesh.width + i;
 
-			int strip = base + i * 10;
-			p[strip + 2] = mesh.identity[index].x;
-			p[strip + 3] = mesh.identity[index].y;
-			p[strip + 4] = 0;
+			int strip = base + i * 8;
+			p[strip + 0] = mesh.identity[index].x;
+			p[strip + 1] = mesh.identity[index].y;
 
-			p[strip + 7] = mesh.identity[index2].x;
-			p[strip + 8] = mesh.identity[index2].y;
-			p[strip + 9] = 0;
+			p[strip + 4] = mesh.identity[index2].x;
+			p[strip + 5] = mesh.identity[index2].y;
 		}
 	}
 
+	renderContext.programID_v2f_c4f = shaderEngine.programID_v2f_c4f;
+	renderContext.programID_v2f_c4f_t2f = shaderEngine.programID_v2f_c4f_t2f;
 
-#ifdef USE_CG
-	shaderEngine.setParams(renderTarget->texsize, renderTarget->textureID[1], aspect, beatDetect, textureManager);
-#endif
+	renderContext.uniform_v2f_c4f_vertex_tranformation = shaderEngine.uniform_v2f_c4f_vertex_tranformation;
+	renderContext.uniform_v2f_c4f_vertex_point_size = shaderEngine.uniform_v2f_c4f_vertex_point_size;
+	renderContext.uniform_v2f_c4f_t2f_vertex_tranformation = shaderEngine.uniform_v2f_c4f_t2f_vertex_tranformation;
+	renderContext.uniform_v2f_c4f_t2f_frag_texture_sampler = shaderEngine.uniform_v2f_c4f_t2f_frag_texture_sampler;
 
+	// Interpolation VAO/VBO's
+	glGenBuffers(1, &m_vbo_Interpolation);
+	glGenVertexArrays(1, &m_vao_Interpolation);
+
+	glBindVertexArray(m_vao_Interpolation);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo_Interpolation);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, static_cast<void*>(nullptr)); // Positions
+
+	glDisableVertexAttribArray(1);
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)(sizeof(float) * 2)); // Textures
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	// CompositeOutput VAO/VBO's
+	glGenBuffers(1, &m_vbo_CompositeOutput);
+	glGenVertexArrays(1, &m_vao_CompositeOutput);
+
+	float composite_buffer_data[8][2] =
+	{
+		{-0.5, -0.5},
+		{0, 1},
+		{-0.5, 0.5},
+		{0, 0},
+		{0.5, 0.5},
+		{1, 0},
+		{0.5, -0.5},
+		{1, 1}
+	};
+
+
+	glBindVertexArray(m_vao_CompositeOutput);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo_CompositeOutput);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8 * 2, composite_buffer_data, GL_STATIC_DRAW);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, static_cast<void*>(nullptr)); // Positions
+
+	glDisableVertexAttribArray(1);
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 4, (void*)(sizeof(float) * 2)); // Textures
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+	// CompositeShaderOutput VAO/VBO's
+	glGenBuffers(1, &m_vbo_CompositeShaderOutput);
+	glGenVertexArrays(1, &m_vao_CompositeShaderOutput);
+
+	glBindVertexArray(m_vao_CompositeShaderOutput);
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo_CompositeShaderOutput);
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(composite_shader_vertex), static_cast<void*>(nullptr));
+	// Positions
+
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(composite_shader_vertex), (void*)(sizeof(float) * 2));
+	// Colors
+
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(composite_shader_vertex), (void*)(sizeof(float) * 6)); // UV
+
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, sizeof(composite_shader_vertex), (void*)(sizeof(float) * 8));
+	// RAD ANG
+
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Renderer::SetPipeline(Pipeline &pipeline)
+std::string Renderer::SetPipeline(Pipeline& pipeline)
 {
 	currentPipe = &pipeline;
-#ifdef USE_CG
 	shaderEngine.reset();
-	shaderEngine.loadShader(pipeline.warpShader);
-	shaderEngine.loadShader(pipeline.compositeShader);
-#endif
+	if (!shaderEngine.loadPresetShaders(pipeline, m_presetName))
+	{
+		return "Shader compilation error";
+	}
+
+	return std::string();
 }
 
 void Renderer::ResetTextures()
 {
 	textureManager->Clear();
 
-	delete (renderTarget);
-	renderTarget = new RenderTarget(texsize, vw, vh);
 	reset(vw, vh);
 
 	textureManager->Preload();
 }
 
-void Renderer::SetupPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext)
+void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
-	//glMatrixMode(GL_PROJECTION);
-	//glPushMatrix();
-	//glMatrixMode(GL_MODELVIEW);
-	//glPushMatrix();
-
 	totalframes++;
-	renderTarget->lock();
-	glViewport(0, 0, renderTarget->texsize, renderTarget->texsize);
 
-	glEnable(GL_TEXTURE_2D);
+	/*
+	If FPS is displayed (by pressing F5 or by config):
+		- check if 250 milliseconds has passed (1/4 of a second)
+		- multiply the total rendered frames (totalframes) by the fraction of a second that passed to get the approximate frames per second count.
+		- reset the totalframes and timer (lastTime) so we don't trigger for another 250 milliseconds.
+	*/
+	if (this->showfps)
+	{
+		this->currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+		milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(this->currentTime - this->lastTime);
+		double diff = ms.count();
+		if (diff >= 250)
+		{
+			this->realfps = totalframes * (1000 / diff);
+			setFPS(realfps);
+			totalframes = 0;
+			this->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+		}
+	}
+	glViewport(0, 0, texsizeX, texsizeY);
 
-	//If using FBO, switch to FBO texture
-
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	glOrtho(0.0, 1, 0.0, 1, -40, 40);
-
-#ifndef EMSCRIPTEN
-	glMatrixMode(GL_MODELVIEW);
-#endif
-	glLoadIdentity();
-
-#ifdef USE_CG
-	shaderEngine.RenderBlurTextures(pipeline, pipelineContext, renderTarget->texsize);
-#endif
+	renderContext.mat_ortho = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f, -40.0f, 40.0f);
 }
 
-void Renderer::RenderItems(const Pipeline &pipeline, const PipelineContext &pipelineContext)
+void Renderer::RenderItems(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
 	renderContext.time = pipelineContext.time;
-	renderContext.texsize = texsize;
+	renderContext.texsize = nearestPower2(std::max(texsizeX, texsizeY));
 	renderContext.aspectCorrect = correction;
 	renderContext.aspectRatio = aspect;
 	renderContext.textureManager = textureManager;
 	renderContext.beatDetect = beatDetect;
 
-	for (std::vector<RenderItem*>::const_iterator pos = pipeline.drawables.begin(); pos != pipeline.drawables.end(); ++pos)
-    {
-      if (*pos != NULL)
-      {
-		(*pos)->Draw(renderContext);
-      }
-    }
+	for (std::vector<RenderItem*>::const_iterator pos = pipeline.drawables.begin(); pos != pipeline.drawables.end(); ++
+	     pos)
+	{
+		if (*pos != nullptr)
+		{
+			(*pos)->Draw(renderContext);
+		}
+	}
 }
 
 void Renderer::FinishPass1()
 {
 	draw_title_to_texture();
-	/** Restore original view state */
-	//glMatrixMode(GL_MODELVIEW);
-	//glPopMatrix();
 
-	//glMatrixMode(GL_PROJECTION);
-	//glPopMatrix();
-
-	renderTarget->unlock();
-
+	textureManager->updateMainTexture();
 }
 
-void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineContext)
+void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
 	//BEGIN PASS 2
 	//
@@ -208,606 +296,610 @@ void Renderer::Pass2(const Pipeline &pipeline, const PipelineContext &pipelineCo
 	//video texture memory and render fullscreen.
 
 	/** Reset the viewport size */
-#ifdef USE_FBO
-	if (renderTarget->renderToTexture)
+	if (textureRenderToTexture)
 	{
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, this->renderTarget->fbuffer[1]);
-		glViewport(0, 0, this->renderTarget->texsize, this->renderTarget->texsize);
+		glViewport(0, 0, texsizeX, texsizeY);
 	}
 	else
-#endif
-		glViewport(0, 0, this->vw, this->vh);
+		glViewport(vstartx, vstarty, this->vw, this->vh);
 
-	glBindTexture(GL_TEXTURE_2D, this->renderTarget->textureID[0]);
-
-#ifndef EMSCRIPTEN
-	glMatrixMode(GL_PROJECTION);
-#endif
-	glLoadIdentity();
-	glOrtho(-0.5, 0.5, -0.5, 0.5, -40, 40);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glLineWidth(this->renderTarget->texsize < 512 ? 1 : this->renderTarget->texsize / 512.0);
-
-	CompositeOutput(pipeline, pipelineContext);
-
-#ifndef EMSCRIPTEN
-	glMatrixMode(GL_MODELVIEW);
-#endif
-	glLoadIdentity();
-	glTranslatef(-0.5, -0.5, 0);
+	if (shaderEngine.enableCompositeShader(currentPipe->compositeShader, pipeline, pipelineContext))
+	{
+		CompositeShaderOutput(pipeline, pipelineContext);
+	}
+	else
+	{
+		CompositeOutput(pipeline, pipelineContext);
+	}
 
 	// When console refreshes, there is a chance the preset has been changed by the user
 	refreshConsole();
+	// TODO:
 	draw_title_to_screen(false);
-	if (this->showhelp % 2)
+	if (this->showhelp == true)
 		draw_help();
-	if (this->showtitle % 2)
+	if (this->showtitle == true)
 		draw_title();
-	if (this->showfps % 2)
-		draw_fps(this->realfps);
-	if (this->showpreset % 2)
+	if (this->showfps == true)
+		draw_fps();
+	// this->realfps
+	if (this->showpreset == true)
 		draw_preset();
-	if (this->showstats % 2)
+	if (this->showstats == true)
 		draw_stats();
-	glTranslatef(0.5, 0.5, 0);
-
-#ifdef USE_FBO
-	if (renderTarget->renderToTexture)
-		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-#endif
 }
 
-void Renderer::RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext)
+void Renderer::RenderFrame(const Pipeline& pipeline,
+                           const PipelineContext& pipelineContext)
 {
-
-#ifdef USE_FBO
-    // when not 'renderToTexture', the user may use its own couple FBO/texture
-    // so retrieve this external FBO if it exists, (0 means no FBO) and unbind it
-    GLint externalFBO = 0;
-    if (!renderTarget->renderToTexture)
-    {
-        glGetIntegerv(GL_FRAMEBUFFER_BINDING, &externalFBO);
-        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-    }
-#endif
-
-	SetupPass1(pipeline, pipelineContext);
-
-#ifdef USE_CG
-	shaderEngine.enableShader(currentPipe->warpShader, pipeline, pipelineContext);
-#endif
-	Interpolation(pipeline);
-#ifdef USE_CG
-	shaderEngine.disableShader();
-#endif
-
-	RenderItems(pipeline, pipelineContext);
-	FinishPass1();
-
-#ifdef USE_FBO
-    // when not 'renderToTexture', the user may use its own couple FBO/texture
-    // if it exists (0 means no external FBO)
-    // then rebind it just before calling the final pass: Pass2
-    if (!renderTarget->renderToTexture && externalFBO != 0)
-        glBindFramebufferEXT (GL_FRAMEBUFFER_EXT, externalFBO);
-#endif
+	RenderFrameOnlyPass1(pipeline, pipelineContext);
 
 	Pass2(pipeline, pipelineContext);
 }
 
-void Renderer::Interpolation(const Pipeline &pipeline)
+void Renderer::RenderFrameOnlyPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
-	if (this->renderTarget->useFBO)
-		glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[1]);
-	else
-		glBindTexture(GL_TEXTURE_2D, renderTarget->textureID[0]);
+	shaderEngine.RenderBlurTextures(pipeline, pipelineContext);
+
+	SetupPass1(pipeline, pipelineContext);
+
+	Interpolation(pipeline, pipelineContext);
+
+	RenderItems(pipeline, pipelineContext);
+
+	FinishPass1();
+}
+
+
+void Renderer::RenderFrameOnlyPass2(const Pipeline& pipeline, const PipelineContext& pipelineContext, int xoffset,
+                                    int yoffset, int eye)
+{
+	/* draw in a certain range of the screen */
+	vstartx = xoffset;
+	vstarty = yoffset;
+	// ignore eye
+	Pass2(pipeline, pipelineContext);
+	vstartx = 0;
+	vstarty = 0;
+}
+
+
+void Renderer::Interpolation(const Pipeline& pipeline, const PipelineContext& pipelineContext)
+{
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureManager->getMainTexture()->texID);
 
 	//Texture wrapping( clamp vs. wrap)
 	if (pipeline.textureWrap == 0)
 	{
-#ifdef USE_GLES1
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-#else
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-#endif
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	}
 	else
 	{
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	}
 
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
-
-	glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
-
-	glColor4f(1.0, 1.0, 1.0, pipeline.screenDecay);
-
-	glEnable(GL_TEXTURE_2D);
-
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-
-
-	//glVertexPointer(2, GL_FLOAT, 0, p);
-	//glTexCoordPointer(2, GL_FLOAT, 0, t);
-#ifndef EMSCRIPTEN
-	glInterleavedArrays(GL_T2F_V3F,0,p);
-#endif
+	int size = (mesh.height - 1) * mesh.width * 4 * 2;
 
 	if (pipeline.staticPerPixel)
 	{
 		for (int j = 0; j < mesh.height - 1; j++)
 		{
-			int base = j * mesh.width * 2 * 5;
+			int base = j * mesh.width * 2 * 4;
 
 			for (int i = 0; i < mesh.width; i++)
 			{
-				int strip = base + i * 10;
-				p[strip] = pipeline.x_mesh[i][j];
-				p[strip + 1] = pipeline.y_mesh[i][j];
+				int strip = base + i * 8;
+				p[strip + 2] = pipeline.x_mesh[i][j];
+				p[strip + 3] = pipeline.y_mesh[i][j];
 
-				p[strip + 5] = pipeline.x_mesh[i][j+1];
-				p[strip + 6] = pipeline.y_mesh[i][j+1];
+				p[strip + 6] = pipeline.x_mesh[i][j + 1];
+				p[strip + 7] = pipeline.y_mesh[i][j + 1];
 			}
 		}
-
 	}
 	else
 	{
 		mesh.Reset();
 		omptl::transform(mesh.p.begin(), mesh.p.end(), mesh.identity.begin(), mesh.p.begin(), &Renderer::PerPixel);
 
-	for (int j = 0; j < mesh.height - 1; j++)
-	{
-		int base = j * mesh.width * 2 * 5;
-
-		for (int i = 0; i < mesh.width; i++)
+		for (int j = 0; j < mesh.height - 1; j++)
 		{
-			int strip = base + i * 10;
-			int index = j * mesh.width + i;
-			int index2 = (j + 1) * mesh.width + i;
+			int base = j * mesh.width * 2 * 4;
 
-			p[strip] = mesh.p[index].x;
-			p[strip + 1] = mesh.p[index].y;
+			for (int i = 0; i < mesh.width; i++)
+			{
+				int strip = base + i * 8;
+				int index = j * mesh.width + i;
+				int index2 = (j + 1) * mesh.width + i;
 
-			p[strip + 5] = mesh.p[index2].x;
-			p[strip + 6] = mesh.p[index2].y;
+				p[strip + 2] = mesh.p[index].x;
+				p[strip + 3] = mesh.p[index].y;
 
-
+				p[strip + 6] = mesh.p[index2].x;
+				p[strip + 7] = mesh.p[index2].y;
+			}
 		}
 	}
 
-	}
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo_Interpolation);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * size, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * size, p, GL_DYNAMIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	shaderEngine.enableWarpShader(currentPipe->warpShader, pipeline, pipelineContext, renderContext.mat_ortho);
+
+	glVertexAttrib4f(1, 1.0, 1.0, 1.0, pipeline.screenDecay);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
+
+	glBindVertexArray(m_vao_Interpolation);
 
 	for (int j = 0; j < mesh.height - 1; j++)
-		glDrawArrays(GL_TRIANGLE_STRIP,j* mesh.width* 2,mesh.width*2);
+		glDrawArrays(GL_TRIANGLE_STRIP, j * mesh.width * 2, mesh.width * 2);
 
-
-	glDisable(GL_TEXTURE_2D);
+	glBindVertexArray(0);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
-Pipeline* Renderer::currentPipe;
 
 Renderer::~Renderer()
 {
-
-	int x;
-
-	if (renderTarget)
-		delete (renderTarget);
 	if (textureManager)
 		delete (textureManager);
 
-	//std::cerr << "grid assign end" << std::endl;
 
 	free(p);
 
-#ifdef USE_FTGL
-	//	std::cerr << "freeing title fonts" << std::endl;
-	if (title_font)
-		delete title_font;
-	if (poly_font)
-		delete poly_font;
-	if (other_font)
-		delete other_font;
-	//	std::cerr << "freeing title fonts finished" << std::endl;
-#endif
-	//	std::cerr << "exiting destructor" << std::endl;
+	glDeleteBuffers(1, &m_vbo_Interpolation);
+	glDeleteVertexArrays(1, &m_vao_Interpolation);
+
+	glDeleteBuffers(1, &m_vbo_CompositeOutput);
+	glDeleteVertexArrays(1, &m_vao_CompositeOutput);
+
+	glDeleteTextures(1, &textureRenderToTexture);
 }
 
 void Renderer::reset(int w, int h)
 {
-	aspect = (float) h / (float) w;
-	this -> vw = w;
-	this -> vh = h;
-
-#if USE_CG
-	shaderEngine.setAspect(aspect);
-#endif
-
-#ifndef EMSCRIPTEN
-	glShadeModel(GL_SMOOTH);
-#endif
+	aspect = static_cast<float>(h) / static_cast<float>(w);
+	this->vw = w;
+	this->vh = h;
 
 	glCullFace(GL_BACK);
-	//glFrontFace( GL_CCW );
+
+#ifndef GL_TRANSITION
+    glEnable(GL_LINE_SMOOTH);
+#endif
 
 	glClearColor(0, 0, 0, 0);
 
-	glViewport(0, 0, w, h);
+	glViewport(vstartx, vstarty, w, h);
 
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-#ifndef USE_GLES1
-	glDrawBuffer(GL_BACK);
-	glReadBuffer(GL_BACK);
-#endif
 	glEnable(GL_BLEND);
+
+	texsizeX = w;
+	texsizeY = h;
+
+	// snap to 16x16 blocks
+	texsizeX = ((texsizeX - 15) / 16) * 16;
+	texsizeY = ((texsizeY - 15) / 16) * 16;
+
+	m_fAspectX = (texsizeY > texsizeX) ? static_cast<float>(texsizeX) / static_cast<float>(texsizeY) : 1.0f;
+	m_fAspectY = (texsizeX > texsizeY) ? static_cast<float>(texsizeY) / static_cast<float>(texsizeX) : 1.0f;
+	m_fInvAspectX = 1.0f / m_fAspectX;
+	m_fInvAspectY = 1.0f / m_fAspectY;
+
+	InitCompositeShaderVertex();
+
+	if (textureManager != nullptr)
+	{
+		delete textureManager;
+	}
+	textureManager = new TextureManager(presetURL, texsizeX, texsizeY, m_datadir);
+
+	shaderEngine.setParams(texsizeX, texsizeY, beatDetect, textureManager);
+	shaderEngine.reset();
+	shaderEngine.loadPresetShaders(*currentPipe, m_presetName);
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glEnable(GL_LINE_SMOOTH);
-
-	glEnable(GL_POINT_SMOOTH);
 	glClear(GL_COLOR_BUFFER_BIT);
-
-#ifndef USE_GLES1
-	glLineStipple(2, 0xAAAA);
-#endif
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-	//glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-	//glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-	//glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
-	if (!this->renderTarget->useFBO)
-	{
-		this->renderTarget->fallbackRescale(w, h);
-	}
 }
 
 GLuint Renderer::initRenderToTexture()
 {
-	return renderTarget->initRenderToTexture();
+	if (textureRenderToTexture == 0)
+	{
+		glGenTextures(1, &textureRenderToTexture);
+		glBindTexture(GL_TEXTURE_2D, textureRenderToTexture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texsizeX, texsizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	return textureRenderToTexture;
 }
 
 void Renderer::draw_title_to_texture()
 {
-#ifdef USE_FTGL
+#ifdef USE_TEXT_MENU
 	if (this->drawtitle > 100)
 	{
 		draw_title_to_screen(true);
 		this->drawtitle = 0;
 	}
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
 }
 
 float title_y;
 
+// TODO:
 void Renderer::draw_title_to_screen(bool flip)
 {
-
-#ifdef USE_FTGL
+#ifdef USE_TEXT_MENU
 	if (this->drawtitle > 0)
 	{
-
-		//setUpLighting();
-
-		//glEnable(GL_POLYGON_SMOOTH);
-		//glEnable( GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
-		glClear(GL_DEPTH_BUFFER_BIT);
-
-		int draw;
-		if (drawtitle >= 80)
-			draw = 80;
-		else
-			draw = drawtitle;
-
-		float easein = ((80 - draw) * .0125);
-		float easein2 = easein * easein;
-
-		if (drawtitle == 1)
-		{
-			title_y = (float) rand() / RAND_MAX;
-			title_y *= 2;
-			title_y -= 1;
-			title_y *= .6;
-		}
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		//glBlendFunc(GL_SRC_ALPHA_SATURATE,GL_ONE);
-		glColor4f(1.0, 1.0, 1.0, 1.0);
-
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-
-		glFrustum(-1, 1, -1 * (float) vh / (float) vw, 1 * (float) vh / (float) vw, 1, 1000);
-		if (flip)
-			glScalef(1, -1, 1);
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadIdentity();
-
-		glTranslatef(-850, title_y * 850 * vh / vw, easein2 * 900 - 900);
-
-		glRotatef(easein2 * 360, 1, 0, 0);
-
-		poly_font->Render(this->title.c_str());
-
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		this->drawtitle++;
-
-		glPopMatrix();
-		glMatrixMode(GL_PROJECTION);
-		glPopMatrix();
-
-		glMatrixMode(GL_MODELVIEW);
-
-		glDisable(GL_CULL_FACE);
-		glDisable(GL_DEPTH_TEST);
-
-		glDisable(GL_COLOR_MATERIAL);
-
-		glDisable(GL_LIGHTING);
-		glDisable(GL_POLYGON_SMOOTH);
 	}
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
 }
 
 void Renderer::draw_title()
 {
-#ifdef USE_FTGL
-	//glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	//  glPushMatrix();
-	//  glTranslatef(this->vw*.001,this->vh*.03, -1);
-	//  glScalef(this->vw*.015,this->vh*.025,0);
-
-	glRasterPos2f(0.01, 0.05);
-	title_font->FaceSize((unsigned) (20 * (this->vh / 512.0)));
-
-	title_font->Render(this->title.c_str());
-	//  glPopMatrix();
-	//glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-#endif /** USE_FTGL */
+#ifdef USE_TEXT_MENU
+	// TODO: investigate possible banner text for GUI
+	// drawText(title_font, this->title.c_str(), 10, 20, 2.5);
+#endif /** USE_TEXT_MENU */
 }
 
 void Renderer::draw_preset()
 {
-#ifdef USE_FTGL
-	//glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	//      glPushMatrix();
-	//glTranslatef(this->vw*.001,this->vh*-.01, -1);
-	//glScalef(this->vw*.003,this->vh*.004,0);
-
-
-	glRasterPos2f(0.01, 0.01);
-
-	title_font->FaceSize((unsigned) (12 * (this->vh / 512.0)));
-	if (this->noSwitch)
-		title_font->Render("[LOCKED]  ");
-	title_font->FaceSize((unsigned) (20 * (this->vh / 512.0)));
-
-	title_font->Render(this->presetName().c_str());
-
-	//glPopMatrix();
-	// glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-#endif /** USE_FTGL */
+#ifdef USE_TEXT_MENU
+	drawText(this->presetName().c_str(), 30, 20, 2.5);
+#endif /** USE_TEXT_MENU */
 }
 
 void Renderer::draw_help()
 {
+#ifdef USE_TEXT_MENU
+	// TODO: match winamp/milkdrop bindings
+	drawText("\n"
+	         "F1: This help menu""\n"
+	         "F3: Show preset name""\n"
+		     "F5: Show FPS""\n"
+	         "L: Lock/Unlock Preset""\n"
+	         "R: Random preset""\n"
+	         "N: Next preset""\n"
+	         "P: Previous preset""\n"
+	         "UP: Increase Beat Sensitivity""\n"
+	         "DOWN: Decrease Beat Sensitivity""\n"
+	         "CTRL-F: Fullscreen", 30, 20, 2.5);
 
-#ifdef USE_FTGL
-	//glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glPushMatrix();
-	glTranslatef(0, 1, 0);
-	//glScalef(this->vw*.02,this->vh*.02 ,0);
-
-
-	title_font->FaceSize((unsigned) (18 * (this->vh / 512.0)));
-
-	glRasterPos2f(0.01, -0.05);
-	title_font->Render("Help");
-
-	glRasterPos2f(0.01, -0.09);
-	title_font->Render("----------------------------");
-
-	glRasterPos2f(0.01, -0.13);
-	title_font->Render("F1: This help menu");
-
-	glRasterPos2f(0.01, -0.17);
-	title_font->Render("F2: Show song title");
-
-	glRasterPos2f(0.01, -0.21);
-	title_font->Render("F3: Show preset name");
-
-	glRasterPos2f(0.01, -0.25);
-	title_font->Render("F4: Show Rendering Settings");
-
-	glRasterPos2f(0.01, -0.29);
-	title_font->Render("F5: Show FPS");
-
-	glRasterPos2f(0.01, -0.35);
-	title_font->Render("F: Fullscreen");
-
-	glRasterPos2f(0.01, -0.39);
-	title_font->Render("L: Lock/Unlock Preset");
-
-	glRasterPos2f(0.01, -0.43);
-	title_font->Render("M: Show Menu");
-
-	glRasterPos2f(0.01, -0.49);
-	title_font->Render("R: Random preset");
-	glRasterPos2f(0.01, -0.53);
-	title_font->Render("N: Next preset");
-
-	glRasterPos2f(0.01, -0.57);
-	title_font->Render("P: Previous preset");
-
-	glPopMatrix();
-	//         glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
 }
 
+// TODO
 void Renderer::draw_stats()
 {
+#ifdef USE_TEXT_MENU
 
-#ifdef USE_FTGL
-	char buffer[128];
-	float offset = (this->showfps % 2 ? -0.05 : 0.0);
-	// glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
+	//sprintf(buffer, "      viewport: +%d,%d %d x %d", vstartx, vstarty, vw, vh);
+	//sprintf(buffer, "          mesh: %d x %d", mesh.width, mesh.height);
+	//sprintf(buffer, "       texsize: %d", renderTarget->texsize);
+	//other_font->Render((renderTarget->useFBO ? "           FBO: on" : "           FBO: off"));
+	//sprintf(buffer, "      textures: %.1fkB", textureManager->getTextureMemorySize() / 1000.0f);
+	//sprintf(buffer, "shader profile: %s", shaderEngine.profileName.c_str());
+	//sprintf(buffer, "   warp shader: %s", currentPipe->warpShader.enabled ? "on" : "off");
+	//sprintf(buffer, "   comp shader: %s", currentPipe->compositeShader.enabled ? "on" : "off");
 
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glPushMatrix();
-	glTranslatef(0.01, 1, 0);
-	glRasterPos2f(0, -.05 + offset);
-	other_font->Render(this->correction ? "  aspect: corrected" : "  aspect: stretched");
-	sprintf(buffer, " (%f)", this->aspect);
-	other_font->Render(buffer);
-
-	glRasterPos2f(0, -.09 + offset);
-	other_font->FaceSize((unsigned) (18 * (vh / 512.0)));
-
-	sprintf(buffer, "       texsize: %d", renderTarget->texsize);
-	other_font->Render(buffer);
-
-	glRasterPos2f(0, -.13 + offset);
-	sprintf(buffer, "      viewport: %d x %d", vw, vh);
-
-	other_font->Render(buffer);
-	glRasterPos2f(0, -.17 + offset);
-	other_font->Render((renderTarget->useFBO ? "           FBO: on" : "           FBO: off"));
-
-	glRasterPos2f(0, -.21 + offset);
-	sprintf(buffer, "          mesh: %d x %d", mesh.width, mesh.height);
-	other_font->Render(buffer);
-
-	glRasterPos2f(0, -.25 + offset);
-	sprintf(buffer, "      textures: %.1fkB", textureManager->getTextureMemorySize() / 1000.0f);
-	other_font->Render(buffer);
-#ifdef USE_CG
-	glRasterPos2f(0, -.29 + offset);
-	sprintf(buffer, "shader profile: %s", shaderEngine.profileName.c_str());
-	other_font->Render(buffer);
-
-	glRasterPos2f(0, -.33 + offset);
-	sprintf(buffer, "   warp shader: %s", currentPipe->warpShader.enabled ? "on" : "off");
-	other_font->Render(buffer);
-
-	glRasterPos2f(0, -.37 + offset);
-	sprintf(buffer, "   comp shader: %s", currentPipe->compositeShader.enabled ? "on" : "off");
-	other_font->Render(buffer);
-#endif
-	glPopMatrix();
-	// glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-
-#endif /** USE_FTGL */
-}
-void Renderer::draw_fps(float realfps)
-{
-#ifdef USE_FTGL
-	char bufferfps[20];
-	sprintf(bufferfps, "%.1f fps", realfps);
-	// glBlendFunc(GL_ONE_MINUS_DST_COLOR,GL_ZERO);
-
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glPushMatrix();
-	glTranslatef(0.01, 1, 0);
-	glRasterPos2f(0, -0.05);
-	title_font->FaceSize((unsigned) (20 * (this->vh / 512.0)));
-	title_font->Render(bufferfps);
-
-	glPopMatrix();
-	// glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-
-#endif /** USE_FTGL */
+#endif /** USE_TEXT_MENU */
 }
 
-void Renderer::CompositeOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext)
+// TODO
+void Renderer::draw_fps()
 {
+#ifdef USE_TEXT_MENU
+	drawText(this->fps().c_str(), 30, 20, 2.5);
+#endif /** USE_TEXT_MENU */
+}
 
-	glMatrixMode(GL_TEXTURE);
-	glLoadIdentity();
+void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext)
+{
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureManager->getMainTexture()->texID);
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	renderContext.mat_ortho = glm::ortho(-0.5f, 0.5f, -0.5f, 0.5f, -40.0f, 40.0f);
+
+	shaderEngine.enableCompositeShader(currentPipe->compositeShader, pipeline, pipelineContext);
+
+	glUniformMatrix4fv(shaderEngine.uniform_v2f_c4f_t2f_vertex_tranformation, 1, GL_FALSE,
+	                   value_ptr(renderContext.mat_ortho));
+	glUniform1i(shaderEngine.uniform_v2f_c4f_t2f_frag_texture_sampler, 0);
 
 	//Overwrite anything on the screen
 	glBlendFunc(GL_ONE, GL_ZERO);
-	glColor4f(1.0, 1.0, 1.0, 1.0f);
+	glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 
-	glEnable(GL_TEXTURE_2D);
-
-#ifdef USE_CG
-	shaderEngine.enableShader(currentPipe->compositeShader, pipeline, pipelineContext);
-#endif
-
-	float tex[4][2] =
-	{
-	{ 0, 1 },
-	{ 0, 0 },
-	{ 1, 0 },
-	{ 1, 1 } };
-
-	float points[4][2] =
-	{
-	{ -0.5, -0.5 },
-	{ -0.5, 0.5 },
-	{ 0.5, 0.5 },
-	{ 0.5, -0.5 } };
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-	glVertexPointer(2, GL_FLOAT, 0, points);
-	glTexCoordPointer(2, GL_FLOAT, 0, tex);
+	glBindVertexArray(m_vao_CompositeOutput);
 
 	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-	glDisable(GL_TEXTURE_2D);
+	glBindVertexArray(0);
+
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-#ifdef USE_CG
-	shaderEngine.disableShader();
-#endif
-
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.compositeDrawables.begin(); pos
-			!= pipeline.compositeDrawables.end(); ++pos)
+	     != pipeline.compositeDrawables.end(); ++pos)
 		(*pos)->Draw(renderContext);
 
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
+/**
+ * Calculates the nearest power of two to the given number using the
+ * appropriate rule
+ */
+int Renderer::nearestPower2(int value)
+{
+	int x = value;
+	int power = 0;
+
+	if (x == 0)
+	{
+		return 0;
+	}
+
+	while ((x & 0x01) != 1)
+	{
+		x >>= 1;
+	}
+
+	if (x == 1)
+	{
+		return value;
+	}
+	x = value;
+	while (x != 0)
+	{
+		x >>= 1;
+		power++;
+	}
+	if (((1 << power) - value) <= (value - (1 << (power - 1))))
+	{
+		return 1 << power;
+	}
+	return 1 << (power - 1);
+	return 0;
+}
+
+float Renderer::SquishToCenter(float x, float fExp)
+{
+	if (x > 0.5f)
+		return powf(x * 2 - 1, fExp) * 0.5f + 0.5f;
+
+	return (1 - powf(1 - x * 2, fExp)) * 0.5f;
+}
+
+void Renderer::UvToMathSpace(float u, float v, float* rad, float* ang)
+{
+	// (screen space = -1..1 on both axes; corresponds to UV space)
+	// uv space = [0..1] on both axes
+	// "math" space = what the preset authors are used to:
+	//      upper left = [0,0]
+	//      bottom right = [1,1]
+	//      rad == 1 at corners of screen
+	//      ang == 0 at three o'clock, and increases counter-clockwise (to 6.28).
+	float px = (u * 2 - 1) * m_fAspectX; // probably 1.0
+	float py = (v * 2 - 1) * m_fAspectY; // probably <1
+
+	*rad = sqrtf(px * px + py * py) / sqrtf(m_fAspectX * m_fAspectX + m_fAspectY * m_fAspectY);
+	*ang = atan2f(py, px);
+	if (*ang < 0)
+		*ang += 6.2831853071796f;
+}
+
+void Renderer::InitCompositeShaderVertex()
+{
+	// BUILD VERTEX LIST for final composite blit
+	memset(m_comp_verts, 0, sizeof(composite_shader_vertex) * FCGSX * FCGSY);
+	float fDivX = 1.0f / static_cast<float>(FCGSX - 2);
+	float fDivY = 1.0f / static_cast<float>(FCGSY - 2);
+	for (int j = 0; j < FCGSY; j++)
+	{
+		int j2 = j - j / (FCGSY / 2);
+		float v = j2 * fDivY;
+		v = SquishToCenter(v, 3.0f);
+		float sy = -((v) * 2 - 1);
+		for (int i = 0; i < FCGSX; i++)
+		{
+			int i2 = i - i / (FCGSX / 2);
+			float u = i2 * fDivX;
+			u = SquishToCenter(u, 3.0f);
+			float sx = (u) * 2 - 1;
+			composite_shader_vertex* pComp = &m_comp_verts[i + j * FCGSX];
+			pComp->x = sx;
+			pComp->y = sy;
+
+			float rad, ang;
+			UvToMathSpace(u, v, &rad, &ang);
+			// fix-ups:
+			if (i == FCGSX / 2 - 1)
+			{
+				if (j < FCGSY / 2 - 1)
+					ang = 3.1415926535898f * 1.5f;
+				else if (j == FCGSY / 2 - 1)
+					ang = 3.1415926535898f * 1.25f;
+				else if (j == FCGSY / 2)
+					ang = 3.1415926535898f * 0.75f;
+				else
+					ang = 3.1415926535898f * 0.5f;
+			}
+			else if (i == FCGSX / 2)
+			{
+				if (j < FCGSY / 2 - 1)
+					ang = 3.1415926535898f * 1.5f;
+				else if (j == FCGSY / 2 - 1)
+					ang = 3.1415926535898f * 1.75f;
+				else if (j == FCGSY / 2)
+					ang = 3.1415926535898f * 0.25f;
+				else
+					ang = 3.1415926535898f * 0.5f;
+			}
+			else if (j == FCGSY / 2 - 1)
+			{
+				if (i < FCGSX / 2 - 1)
+					ang = 3.1415926535898f * 1.0f;
+				else if (i == FCGSX / 2 - 1)
+					ang = 3.1415926535898f * 1.25f;
+				else if (i == FCGSX / 2)
+					ang = 3.1415926535898f * 1.75f;
+				else
+					ang = 3.1415926535898f * 2.0f;
+			}
+			else if (j == FCGSY / 2)
+			{
+				if (i < FCGSX / 2 - 1)
+					ang = 3.1415926535898f * 1.0f;
+				else if (i == FCGSX / 2 - 1)
+					ang = 3.1415926535898f * 0.75f;
+				else if (i == FCGSX / 2)
+					ang = 3.1415926535898f * 0.25f;
+				else
+					ang = 3.1415926535898f * 0.0f;
+			}
+			pComp->tu = u;
+			pComp->tv = v;
+
+			pComp->rad = rad;
+			pComp->ang = ang;
+		}
+	}
+
+	// build index list for final composite blit -
+	// order should be friendly for interpolation of 'ang' value!
+	int* cur_index = &m_comp_indices[0];
+	for (int y = 0; y < FCGSY - 1; y++)
+	{
+		if (y == FCGSY / 2 - 1)
+			continue;
+		for (int x = 0; x < FCGSX - 1; x++)
+		{
+			if (x == FCGSX / 2 - 1)
+				continue;
+			bool left_half = (x < FCGSX / 2);
+			bool top_half = (y < FCGSY / 2);
+			bool center_4 = ((x == FCGSX / 2 || x == FCGSX / 2 - 1) && (y == FCGSY / 2 || y == FCGSY / 2 - 1));
+
+			if ((static_cast<int>(left_half) + static_cast<int>(top_half) + static_cast<int>(center_4)) % 2)
+			{
+				*(cur_index + 0) = (y) * FCGSX + (x);
+				*(cur_index + 1) = (y) * FCGSX + (x + 1);
+				*(cur_index + 2) = (y + 1) * FCGSX + (x + 1);
+				*(cur_index + 3) = (y + 1) * FCGSX + (x + 1);
+				*(cur_index + 4) = (y + 1) * FCGSX + (x);
+				*(cur_index + 5) = (y) * FCGSX + (x);
+			}
+			else
+			{
+				*(cur_index + 0) = (y + 1) * FCGSX + (x);
+				*(cur_index + 1) = (y) * FCGSX + (x);
+				*(cur_index + 2) = (y) * FCGSX + (x + 1);
+				*(cur_index + 3) = (y) * FCGSX + (x + 1);
+				*(cur_index + 4) = (y + 1) * FCGSX + (x + 1);
+				*(cur_index + 5) = (y + 1) * FCGSX + (x);
+			}
+
+			cur_index += 6;
+		}
+	}
+}
+
+
+void Renderer::CompositeShaderOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext)
+{
+	// hue shader
+	float shade[4][3] = {
+		{1.0f, 1.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f},
+		{1.0f, 1.0f, 1.0f}
+	}; // for each vertex, then each comp.
+
+	// pick 4 colors for the 4 corners
+	for (int i = 0; i < 4; i++)
+	{
+		shade[i][0] = 0.6f + 0.3f * sinf(pipelineContext.time * 30.0f * 0.0143f + 3 + i * 21);
+		shade[i][1] = 0.6f + 0.3f * sinf(pipelineContext.time * 30.0f * 0.0107f + 1 + i * 13);
+		shade[i][2] = 0.6f + 0.3f * sinf(pipelineContext.time * 30.0f * 0.0129f + 6 + i * 9);
+		float max = ((shade[i][0] > shade[i][1]) ? shade[i][0] : shade[i][1]);
+		if (shade[i][2] > max) max = shade[i][2];
+		for (int k = 0; k < 3; k++)
+		{
+			shade[i][k] /= max;
+			shade[i][k] = 0.5f + 0.5f * shade[i][k];
+		}
+	}
+
+	// interpolate the 4 colors & apply to all the verts
+	for (int j = 0; j < FCGSY; j++)
+	{
+		for (int i = 0; i < FCGSX; i++)
+		{
+			composite_shader_vertex* pComp = &m_comp_verts[i + j * FCGSX];
+			float x = pComp->x * 0.5f + 0.5f;
+			float y = pComp->y * 0.5f + 0.5f;
+
+			float col[3] = {1, 1, 1};
+			for (int c = 0; c < 3; c++)
+				col[c] = shade[0][c] * (x) * (y) +
+					shade[1][c] * (1 - x) * (y) +
+					shade[2][c] * (x) * (1 - y) +
+					shade[3][c] * (1 - x) * (1 - y);
+
+			pComp->Diffuse[0] = col[0];
+			pComp->Diffuse[1] = col[1];
+			pComp->Diffuse[2] = col[2];
+			pComp->Diffuse[3] = 1.0;
+		}
+	}
+
+
+	const int primCount = (FCGSX - 2) * (FCGSY - 2) * 6;
+	composite_shader_vertex tempv[primCount];
+	memset(tempv, 0, sizeof(composite_shader_vertex) * primCount);
+	int src_idx = 0;
+	for (int i = 0; i < primCount; i++)
+	{
+		tempv[i] = m_comp_verts[m_comp_indices[src_idx++]];
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo_CompositeShaderOutput);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(composite_shader_vertex) * primCount, nullptr, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(composite_shader_vertex) * primCount, tempv, GL_DYNAMIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBlendFunc(GL_ONE, GL_ZERO);
+
+	glBindVertexArray(m_vao_CompositeShaderOutput);
+
+	// Now do the final composite blit, fullscreen;
+	glDrawArrays(GL_TRIANGLES, 0, primCount);
+
+	glBindVertexArray(0);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}

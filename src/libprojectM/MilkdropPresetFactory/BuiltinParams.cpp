@@ -52,7 +52,7 @@ int BuiltinParams::load_builtin_param_float(const std::string & name, void * eng
 std::string lowerName(name);
 std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
 
-  if ((param = new Param(lowerName, P_TYPE_DOUBLE, flags, engine_val, matrix, iv, ub, lb)) == NULL)
+  if ((param = Param::create(lowerName, P_TYPE_DOUBLE, flags, engine_val, matrix, iv, ub, lb)) == NULL)
   {
     return PROJECTM_OUTOFMEM_ERROR;
   }
@@ -171,7 +171,7 @@ int BuiltinParams::load_builtin_param_int(const std::string & name, void * engin
   std::string lowerName(name);
   std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
 
-  param = new Param(lowerName, P_TYPE_INT, flags, engine_val, NULL, iv, ub, lb);
+  param = Param::create(lowerName, P_TYPE_INT, flags, engine_val, NULL, iv, ub, lb);
 
   if (param == NULL)
   {
@@ -224,7 +224,7 @@ int BuiltinParams::load_builtin_param_bool(const std:: string & name, void * eng
 std::string lowerName(name);
 std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), tolower);
 
-  param = new Param(lowerName, P_TYPE_BOOL, flags, engine_val, NULL, iv, ub, lb);
+  param = Param::create(lowerName, P_TYPE_BOOL, flags, engine_val, NULL, iv, ub, lb);
 
   if (param == NULL)
   {
@@ -293,7 +293,7 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("gamma", (void*)&presetOutputs.fGammaAdj, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fGammaAdj");
   load_builtin_param_float("echo_zoom", (void*)&presetOutputs.videoEcho.zoom, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fVideoEchoZoom");
   load_builtin_param_float("echo_alpha", (void*)&presetOutputs.videoEcho.a, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fvideoechoalpha");
-  load_builtin_param_float("wave_a", (void*)&presetOutputs.wave.a, NULL, P_FLAG_NONE, 0.0, 1.0, 0, "fwavealpha");
+    load_builtin_param_float("wave_a", (void*)&presetOutputs.wave.a, NULL, P_FLAG_NONE, 0.2, 1.0, 0, "fwavealpha");  // TEMP FIX: min = 0.2 because some presets have fWaveAlpha=0.0 which is invisible 
   load_builtin_param_float("fwavesmoothing", (void*)&presetOutputs.wave.smoothing, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("fmodwavealphastart", (void*)&presetOutputs.wave.modOpacityStart, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("fmodwavealphaend", (void*)&presetOutputs.wave.modOpacityEnd, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
@@ -367,8 +367,8 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("mv_x", (void*)&presetOutputs.mv.x_num,  NULL,P_FLAG_NONE, 0.0, 64.0, 0.0, "nmotionvectorsx");
   load_builtin_param_float("mv_y", (void*)&presetOutputs.mv.y_num,  NULL,P_FLAG_NONE, 0.0, 48.0, 0.0, "nmotionvectorsy");
   load_builtin_param_float("mv_l", (void*)&presetOutputs.mv.length,  NULL,P_FLAG_NONE, 0.0, 5.0, 0.0, "");
-  load_builtin_param_float("mv_dy", (void*)&presetOutputs.mv.x_offset, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
-  load_builtin_param_float("mv_dx", (void*)&presetOutputs.mv.y_offset,  NULL,P_FLAG_NONE, 0.0, 1.0, -1.0, "");
+  load_builtin_param_float("mv_dx", (void*)&presetOutputs.mv.x_offset, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
+  load_builtin_param_float("mv_dy", (void*)&presetOutputs.mv.y_offset,  NULL,P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("mv_a", (void*)&presetOutputs.mv.a,  NULL,P_FLAG_NONE, 0.0, 1.0, 0.0, "");
 
   load_builtin_param_float("time", (void*)&presetInputs.time,  NULL,P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0.0, "");
@@ -397,7 +397,7 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   for (unsigned int i = 0; i < NUM_Q_VARIABLES;i++) {
 	std::ostringstream os;
 	os << "q" << i;
-	load_builtin_param_float(os.str().c_str(), (void*)&presetOutputs.q[i],  NULL, P_FLAG_PER_PIXEL |P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+	load_builtin_param_float(os.str().c_str(), (void*)&presetOutputs.q[i],  NULL, P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
 
   }
 

@@ -12,8 +12,9 @@ CValue.hpp                InitCond.hpp              PerFrameEqn.hpp\
 CustomShape.hpp           InitCondUtils.hpp         PerPixelEqn.hpp\
 CustomWave.hpp            MilkdropPreset.hpp        PerPointEqn.hpp\
 Eval.hpp                  MilkdropPresetFactory.hpp PresetFrameIO.hpp\
-Expr.hpp                  Param.hpp
+Expr.hpp                  Param.hpp                 JitContext.hpp
 
-:
+
 libMilkdropPresetFactory_la_CPPFLAGS = ${my_CFLAGS} \
+-include $(top_builddir)/config.h \
 -I$(top_srcdir)/src/libprojectM

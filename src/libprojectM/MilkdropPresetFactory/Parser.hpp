@@ -120,9 +120,10 @@ typedef enum {
     tStringBufferFilled /* the string buffer for this line is maxed out */
   } token_t;
 
+class Test;
 class CustomShape;
 class CustomWave;
-class GenExpr;
+class Expr;
 class InfixOp;
 class PerFrameEqn;
 class MilkdropPreset;
@@ -141,10 +142,11 @@ public:
     static int per_frame_init_eqn_count;
     static int last_custom_wave_id;
     static int last_custom_shape_id;
-    static char last_eqn_type[MAX_TOKEN_SIZE];
+    static char last_eqn_type[MAX_TOKEN_SIZE+1];
     static int last_token_size;
     static bool tokenWrapAroundEnabled;
 
+    static Test *test();
     static PerFrameEqn *parse_per_frame_eqn( std::istream & fs, int index,
                                              MilkdropPreset * preset);
     static int parse_per_pixel_eqn( std::istream & fs, MilkdropPreset * preset,
@@ -155,17 +157,17 @@ public:
     static int parse_line( std::istream & fs, MilkdropPreset * preset );
 
     static int get_string_prefix_len(char * string);
-    static TreeExpr * insert_gen_expr(GenExpr * gen_expr, TreeExpr ** root);
+    static TreeExpr * insert_gen_expr(Expr * gen_expr, TreeExpr ** root);
     static TreeExpr * insert_infix_op(InfixOp * infix_op, TreeExpr ** root);
     static token_t parseToken(std::istream & fs, char * string);
-    static GenExpr ** parse_prefix_args(std::istream & fs, int num_args, MilkdropPreset * preset);
-    static GenExpr * parse_infix_op(std::istream & fs, token_t token, TreeExpr * tree_expr, MilkdropPreset * preset);
-    static GenExpr * parse_sign_arg(std::istream & fs);
+    static Expr ** parse_prefix_args(std::istream & fs, int num_args, MilkdropPreset * preset);
+    static Expr * parse_infix_op(std::istream & fs, token_t token, TreeExpr * tree_expr, MilkdropPreset * preset);
+    static Expr * parse_sign_arg(std::istream & fs);
     static int parse_float(std::istream & fs, float * float_ptr);
     static int parse_int(std::istream & fs, int * int_ptr);
-    static int insert_gen_rec(GenExpr * gen_expr, TreeExpr * root);
+    static int insert_gen_rec(Expr * gen_expr, TreeExpr * root);
     static int insert_infix_rec(InfixOp * infix_op, TreeExpr * root);
-    static GenExpr * parse_gen_expr(std::istream & fs, TreeExpr * tree_expr, MilkdropPreset * preset);
+    static Expr * parse_gen_expr(std::istream & fs, TreeExpr * tree_expr, MilkdropPreset * preset);
     static PerFrameEqn * parse_implicit_per_frame_eqn(std::istream & fs, char * param_string, int index, MilkdropPreset * preset);
     static InitCond * parse_per_frame_init_eqn(std::istream & fs, MilkdropPreset * preset, std::map<std::string,Param*> * database);
     static int parse_wavecode_prefix(char * token, int * id, char ** var_string);
@@ -186,6 +188,8 @@ public:
     static int parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_shape, MilkdropPreset * preset);
     static int parse_wave_per_frame_eqn(std::istream & fs, CustomWave * custom_wave, MilkdropPreset * preset);
     static bool wrapsToNextLine(const std::string & str);
+private:
+  static Expr * _parse_gen_expr(std::istream & fs, TreeExpr * tree_expr, MilkdropPreset * preset);
   };
 
 #endif /** !_PARSER_H */

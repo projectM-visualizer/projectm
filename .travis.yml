@@ -1,61 +1,63 @@
 language: cpp
 
-before_script: ./autogen.sh
+compiler:
+  - clang
+  - gcc
+
+before_script:
+  - ./autogen.sh
 before_install:
   - eval "${MATRIX_EVAL}"
+  - if [ $TRAVIS_OS_NAME == "osx"  ]; then sudo sntp -sS time.apple.com; fi
+
+addons:
+  apt:
+    packages:
+      - libc++-dev
+      - libsdl2-dev
+      - libglm-dev
+      - libgl1-mesa-dev
 
 script:
-  - ./configure --prefix=$PWD/local && make -j8 && make install  # build from checkoout
-  - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure --prefix=$PWD/local && make -j8 && make install  # build from dist\
-  - echo "PWD $PWD"
+  - ./configure $PM_OPTS --prefix=$PWD/local && make -j6 && make install  # build from checkout
+  - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure $PM_OPTS --prefix=$PWD/dist_install && make -j6 && make install  # build from dist
+  - echo "PWD=$PWD"
   - ls .
   - test -e src/projectM-sdl/projectMSDL
   - test -e src/libprojectM/libprojectM.la
-  - test -e local/share/projectM/fonts/Vera.ttf
-  - test -e local/share/projectM/shaders/blur.cg
-  - test -d local/share/projectM/presets
-  - test -e local/lib/libprojectM.la
-  - test -e local/include/projectM.hpp
+  - test -e dist_install/share/projectM/fonts/Vera.ttf
+  - test -d dist_install/share/projectM/presets
+  - test -e dist_install/lib/libprojectM.la
+  - test -e dist_install/include/libprojectM/projectM.hpp
+  - test -e dist_install/include/libprojectM/Common.hpp
+  - test -e dist_install/include/libprojectM/PCM.hpp
+  - dist_install/bin/projectM-unittest
 
 # test on GCC and Clang
 matrix:
   include:
-    # linux/clang
+    #  pulseaudio/qt/jack
     - os: linux
       addons:
         apt:
-          sources:
-            - llvm-toolchain-trusty-5.0
           packages:
-            - clang-5.0
-            - libsdl2-dev
-            - libglew-dev
-            - libftgl-dev
-            - libsdl2-dev
-            - libdevil-dev
+            - libglm-dev
+            - qt5-default
+            - qtdeclarative5-dev
+            - libqt5opengl5-dev
+            - libjack-dev
+            - libpulse-dev
+            - libc++-dev
+            - libsdl-dev  # for jack
+            - libsdl2-dev  # for tests
       env:
-        - MATRIX_EVAL="CC=clang-5.0 && CXX=clang++-5.0"
-    # linux/gcc
-    - os: linux
-      addons:
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-7
-            - libsdl2-dev
-            - libglew-dev
-            - libftgl-dev
-            - libsdl2-dev
-            - libdevil-dev
-      env:
-        - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
+        - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
 
     # osx/xcode/clang
     - os: osx
-      osx_image: xcode8
+      osx_image: xcode10
       env:
-        - MATRIX_EVAL="brew update && brew install sdl2"
+        - MATRIX_EVAL="brew update && brew install sdl2 glm"
 
 notifications:
   email:

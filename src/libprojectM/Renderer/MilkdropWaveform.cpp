@@ -5,89 +5,115 @@
  *      Author: pete
  */
 #include <iostream>
-
-#ifdef __linux__
-#include <GL/gl.h>
-#endif
-#ifdef EMSCRIPTEN
-#include <GL/gl.h>
-#endif
-#ifdef WIN32
-#include "glew.h"
-#endif
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#endif
-
+#include "projectM-opengl.h"
 #include <cmath>
-
 #include "MilkdropWaveform.hpp"
 #include "math.h"
 #include "BeatDetect.hpp"
+#include "ShaderEngine.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 MilkdropWaveform::MilkdropWaveform(): RenderItem(),
-	x(0.5), y(0.5), r(1), g(0), b(0), a(1), mystery(0), mode(Line), scale(10), smoothing(0), rot(0), samples(0),modOpacityStart(0),modOpacityEnd(1),
-	modulateAlphaByVolume(false), maximizeColors(false), additive(false), dots(false), thick(false), loop(false) {}
+    x(0.5), y(0.5), r(1), g(0), b(0), a(1), mystery(0), mode(Line), additive(false), dots(false), thick(false),
+    modulateAlphaByVolume(false), maximizeColors(false), scale(10), smoothing(0),
+    modOpacityStart(0), modOpacityEnd(1), rot(0), samples(0), loop(false) {
+
+    Init();
+}
+
+MilkdropWaveform::~MilkdropWaveform() {
+}
+
+void MilkdropWaveform::InitVertexAttrib() {
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glDisableVertexAttribArray(1);
+
+}
+
 
 void MilkdropWaveform::Draw(RenderContext &context)
 {
 	  WaveformMath(context);
 
-	#ifndef EMSCRIPTEN
-		glMatrixMode( GL_MODELVIEW );
-	#endif
-		glPushMatrix();
-		glLoadIdentity();
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-		if(modulateAlphaByVolume) ModulateOpacityByVolume(context);
-		else temp_a = a;
-		MaximizeColors(context);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * samples * 2, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * samples * 2, wavearray, GL_DYNAMIC_DRAW);
 
-	#ifndef USE_GLES1
-		if(dots==1) glEnable(GL_LINE_STIPPLE);
-	#endif
+    if (two_waves) {
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * samples * 2, NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * samples * 2, wavearray2, GL_DYNAMIC_DRAW);
+    }
 
-		//Thick wave drawing
-		if (thick==1)  glLineWidth( (context.texsize < 512 ) ? 2 : 2*context.texsize/512);
-		else glLineWidth( (context.texsize < 512 ) ? 1 : context.texsize/512);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		//Additive wave drawing (vice overwrite)
-		if (additive==1)glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-		else glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glUseProgram(context.programID_v2f_c4f);
+
+    glm::mat4 mat_first_translation = glm::mat4(1.0);
+    mat_first_translation[3][0] = -0.5;
+    mat_first_translation[3][1] = -0.5;
+
+    glm::mat4  mat_scale = glm::mat4(1.0);
+    mat_scale[0][0] = aspectScale;
+
+    float s = glm::sin(glm::radians(-rot));
+    float c = glm::cos(glm::radians(-rot));
+    glm::mat4  mat_rotation = glm::mat4( c,-s, 0, 0,
+                                         s, c, 0, 0,
+                                         0, 0, 1, 0,
+                                         0, 0, 0, 1);
+
+    glm::mat4  mat_second_translation = glm::mat4(1.0);
+    mat_second_translation[3][0] = 0.5;
+    mat_second_translation[3][1] = 0.5;
+
+    glm::mat4 mat_vertex = context.mat_ortho;
+    mat_vertex = mat_first_translation * mat_vertex;
+    mat_vertex = mat_scale * mat_vertex;
+    mat_vertex = mat_rotation * mat_vertex;
+    mat_vertex = mat_second_translation * mat_vertex;
+    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(mat_vertex));
+
+    if(modulateAlphaByVolume) ModulateOpacityByVolume(context);
+    else temp_a = a;
+    MaximizeColors(context);
+
+#ifndef GL_TRANSITION
+    if(dots==1) glEnable(GL_LINE_STIPPLE);
+#endif
+
+    //Thick wave drawing
+    if (thick==1)  glLineWidth( (context.texsize < 512 ) ? 2 : 2*context.texsize/512);
+    else glLineWidth( (context.texsize < 512 ) ? 1 : context.texsize/512);
+
+    //Additive wave drawing (vice overwrite)
+    if (additive==1)glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+    else glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glBindVertexArray(m_vaoID);
+
+    if (loop)
+      glDrawArrays(GL_LINE_LOOP,0,samples);
+    else
+      glDrawArrays(GL_LINE_STRIP,0,samples);
 
 
-		glTranslatef(.5, .5, 0);
-		glRotatef(rot, 0, 0, 1);
-		glScalef(aspectScale, 1.0, 1.0);
-		glTranslatef(-.5, -.5, 0);
+    if (two_waves)
+      {
+        if (loop)
+          glDrawArrays(GL_LINE_LOOP,0,samples);
+        else
+          glDrawArrays(GL_LINE_STRIP,0,samples);
+      }
 
+    glBindVertexArray(0);
 
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDisableClientState(GL_COLOR_ARRAY);
-		glVertexPointer(2,GL_FLOAT,0,wavearray);
-
-		if (loop)
-		  glDrawArrays(GL_LINE_LOOP,0,samples);
-		else
-		  glDrawArrays(GL_LINE_STRIP,0,samples);
-
-
-		if (two_waves)
-		  {
-		    glVertexPointer(2,GL_FLOAT,0,wavearray2);
-		    if (loop)
-		      glDrawArrays(GL_LINE_LOOP,0,samples);
-		    else
-		      glDrawArrays(GL_LINE_STRIP,0,samples);
-		  }
-
-
-	#ifndef USE_GLES1
+#ifndef GL_TRANSITION
 		if(dots==1) glDisable(GL_LINE_STIPPLE);
-	#endif
+#endif
 
-		glPopMatrix();
 }
 
 void MilkdropWaveform::ModulateOpacityByVolume(RenderContext &context)
@@ -107,7 +133,6 @@ void MilkdropWaveform::ModulateOpacityByVolume(RenderContext &context)
 
 void MilkdropWaveform::MaximizeColors(RenderContext &context)
 {
-
 	float wave_r_switch=0, wave_g_switch=0, wave_b_switch=0;
 	//wave color brightening
 	//
@@ -158,23 +183,23 @@ void MilkdropWaveform::MaximizeColors(RenderContext &context)
 		}
 
 
-		glColor4f(wave_r_switch, wave_g_switch, wave_b_switch, temp_a * masterAlpha);
+        glVertexAttrib4f(1, wave_r_switch, wave_g_switch, wave_b_switch, temp_a * masterAlpha);
 	}
 	else
 	{
-		glColor4f(r, g, b, temp_a * masterAlpha);
+        glVertexAttrib4f(1, r, g, b, temp_a * masterAlpha);
 	}
 }
 
 
 void MilkdropWaveform::WaveformMath(RenderContext &context)
 {
+	float *pcmdataR = context.beatDetect->pcm->pcmdataR;
+	float *pcmdataL = context.beatDetect->pcm->pcmdataL;
+	// scale PCM data based on vol_history to make it more or less independent of the application output volume
+    const float  vol_scale = context.beatDetect->getPCMScale();
 
-	int i;
-
-	float r, theta;
-
-	float offset;
+    float r2, theta;
 
 	float wave_x_temp=0;
 	float wave_y_temp=0;
@@ -182,8 +207,7 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 	float cos_rot;
 	float sin_rot;
 
-	offset=x-.5;
-    float temp_y;
+    const float temp_y = -1*(y-1.0f);
 
 	two_waves = false;
 	loop = false;
@@ -192,75 +216,67 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 	{
 
 		case Circle:
-		  {
+	  	{
  		    loop = true;
 			rot =   0;
 			aspectScale=1.0;
-			temp_y=-1*(y-1.0);
 
-
-			samples = 0? 512-32 : context.beatDetect->pcm->numsamples;
+			samples = context.beatDetect->pcm->numsamples;
 
 			float inv_nverts_minus_one = 1.0f/(float)(samples);
 
-	       float last_value = context.beatDetect->pcm->pcmdataR[samples-1]+context.beatDetect->pcm->pcmdataL[samples-1];
-			float first_value = context.beatDetect->pcm->pcmdataR[0]+context.beatDetect->pcm->pcmdataL[0];
+	        float last_value =  vol_scale * (pcmdataR[samples-1]+pcmdataL[samples-1]);
+			float first_value = vol_scale * (pcmdataR[0]+pcmdataL[0]);
 			float offset = first_value-last_value;
 
 			for ( int i=0;i<samples;i++)
 			{
 
-			  float value = context.beatDetect->pcm->pcmdataR[i]+context.beatDetect->pcm->pcmdataL[i];
+			  float value = vol_scale * (pcmdataR[i]+pcmdataL[i]);
 			  value += offset * (i/(float)samples);
 
-			  r=(0.5 + 0.4f*.12*value*scale + mystery)*.5;
-			  theta=i*inv_nverts_minus_one*6.28f + context.time*0.2f;
+              r2=(0.5f + 0.4f*.12f*value*scale + mystery)*.5f;
+              theta=i*inv_nverts_minus_one*6.28f + context.time*0.2f;
 
-			  wavearray[i][0]=(r*cos(theta)*(context.aspectCorrect? context.aspectRatio : 1.0)+x);
-			  wavearray[i][1]=(r*sin(theta)+temp_y);
+              wavearray[i][0]=(r2*cos(theta)*(context.aspectCorrect? context.aspectRatio : 1.0f)+x);
+              wavearray[i][1]=(r2*sin(theta)+temp_y);
 			}
-		  }
-
-			break;
+	    }
+		break;
 
 		case RadialBlob://circularly moving waveform
-
-			rot =   0;
+        {
+			rot = 0;
 			aspectScale = context.aspectRatio;
-
-			temp_y=-1*(y-1.0);
 
 			samples = 512-32;
 			for ( int i=0;i<512-32;i++)
 			{
-				theta=context.beatDetect->pcm->pcmdataL[i+32]*0.06*scale * 1.57 + context.time*2.3;
-				r=(0.53 + 0.43*context.beatDetect->pcm->pcmdataR[i]*0.12*scale+ mystery)*.5;
+                theta=vol_scale*pcmdataL[i+32]*0.06f*scale * 1.57f + context.time*2.3f;
+                r2=(0.53f + 0.43f*vol_scale*pcmdataR[i]*0.12f*scale+ mystery)*.5f;
 
-				wavearray[i][0]=(r*cos(theta)*(context.aspectCorrect ? context.aspectRatio : 1.0)+x);
-				wavearray[i][1]=(r*sin(theta)+temp_y);
+                wavearray[i][0]=(r2*cos(theta)*(context.aspectCorrect ? context.aspectRatio : 1.0f)+x);
+                wavearray[i][1]=(r2*sin(theta)+temp_y);
 			}
-
-			break;
+        }
+        break;
 
 		case Blob2://EXPERIMENTAL
 
-			temp_y=-1*(y-1.0);
 			rot =   0;
 			aspectScale =1.0;
 			samples = 512-32;
 
 			for ( int i=0;i<512-32;i++)
 			{
-				wavearray[i][0]=(context.beatDetect->pcm->pcmdataR[i]*scale*0.5*(context.aspectCorrect ? context.aspectRatio : 1.0) + x);
-				wavearray[i][1]=(context.beatDetect->pcm->pcmdataL[i+32]*scale*0.5 + temp_y);
+				wavearray[i][0]=(vol_scale*pcmdataR[i]*scale*0.5f*(context.aspectCorrect ? context.aspectRatio : 1.0f) + x);
+				wavearray[i][1]=(vol_scale*pcmdataL[i+32]*scale*0.5f + temp_y);
 			}
 
 			break;
 
 		case Blob3://EXPERIMENTAL
 
-			temp_y=-1*(y-1.0);
-
 			rot =   0;
 			aspectScale =1.0;
 
@@ -268,8 +284,8 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 
 			for ( int i=0;i<512-32;i++)
 			{
-				wavearray[i][0]=(context.beatDetect->pcm->pcmdataR[i] * scale*0.5 + x);
-				wavearray[i][1]=( (context.beatDetect->pcm->pcmdataL[i+32]*scale*0.5 + temp_y));
+				wavearray[i][0]=(vol_scale*pcmdataR[i] * scale*0.5f + x);
+				wavearray[i][1]=( (vol_scale*pcmdataL[i+32]*scale*0.5f + temp_y));
 			}
 
 			break;
@@ -279,8 +295,6 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			rot =-mystery*90;
 			aspectScale=1.0;
 
-			temp_y=-1*(y-1.0);
-
 			float w1 = 0.45f + 0.5f*(mystery*0.5f + 0.5f);
 			float w2 = 1.0f - w1;
 			float xx[512], yy[512];
@@ -288,9 +302,9 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 
 			for (int i=0; i<512-32; i++)
 			{
-				xx[i] = -1.0f + 2.0f*(i/(512.0-32.0)) + x;
-				yy[i] =0.4* context.beatDetect->pcm->pcmdataL[i]*0.47f*scale + temp_y;
-				xx[i] += 0.4*context.beatDetect->pcm->pcmdataR[i]*0.44f*scale;
+				xx[i] = -1.0f + 2.0f*(i/(512.0f-32.0f)) + x;
+				yy[i] =  0.4f* vol_scale*pcmdataL[i]*0.47f*scale + temp_y;
+				xx[i] += 0.4f* vol_scale*pcmdataR[i]*0.44f*scale;
 
 				if (i>1)
 				{
@@ -307,36 +321,34 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			rot = 0;
 			aspectScale =1.0;
 
-			temp_y=-1*(y-1.0);
-
 			cos_rot = cosf(context.time*0.3f);
 			sin_rot = sinf(context.time*0.3f);
 			samples = 512-32;
 
 			for ( int i=0;i<512-32;i++)
 			{
-				float x0 = (context.beatDetect->pcm->pcmdataR[i]*context.beatDetect->pcm->pcmdataL[i+32] + context.beatDetect->pcm->pcmdataL[i+32]*context.beatDetect->pcm->pcmdataR[i]);
-				float y0 = (context.beatDetect->pcm->pcmdataR[i]*context.beatDetect->pcm->pcmdataR[i] - context.beatDetect->pcm->pcmdataL[i+32]*context.beatDetect->pcm->pcmdataL[i+32]);
-				wavearray[i][0]=((x0*cos_rot - y0*sin_rot)*scale*0.5*(context.aspectCorrect ? context.aspectRatio : 1.0) + x);
-				wavearray[i][1]=( (x0*sin_rot + y0*cos_rot)*scale*0.5 + temp_y);
+				float x0 = (vol_scale*pcmdataR[i]*vol_scale*pcmdataL[i+32] + vol_scale*pcmdataL[i+32]*vol_scale*pcmdataR[i]);
+				float y0 = (vol_scale*pcmdataR[i]*vol_scale*pcmdataR[i] - vol_scale*pcmdataL[i+32]*vol_scale*pcmdataL[i+32]);
+				wavearray[i][0]=((x0*cos_rot - y0*sin_rot)*scale*0.5f*(context.aspectCorrect ? context.aspectRatio : 1.0f) + x);
+				wavearray[i][1]=( (x0*sin_rot + y0*cos_rot)*scale*0.5f + temp_y);
 			}
 			break;
 
 		case Line://single waveform
 
 
-			wave_x_temp=-2*0.4142*(fabs(fabs(mystery)-.5)-.5);
+			wave_x_temp=-2*0.4142f*(fabs(fabs(mystery)-.5f)-.5f);
 
 			rot = -mystery*90;
-			aspectScale =1.0+wave_x_temp;
-			wave_x_temp=-1*(x-1.0);
-			samples = 0 ? 512-32 : context.beatDetect->pcm->numsamples;
+			aspectScale =1.0f+wave_x_temp;
+			wave_x_temp=-1*(x-1.0f);
+			samples = context.beatDetect->pcm->numsamples;
 
 			for ( int i=0;i<  samples;i++)
 			{
 
 				wavearray[i][0]=i/(float)  samples;
-				wavearray[i][1]=context.beatDetect->pcm->pcmdataR[i]*.04*scale+wave_x_temp;
+				wavearray[i][1]=vol_scale*pcmdataR[i]*.04f*scale+wave_x_temp;
 
 			}
 			//	  printf("%f %f\n",renderTarget->texsize*wave_y_temp,wave_y_temp);
@@ -346,29 +358,29 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 		case DoubleLine://dual waveforms
 
 
-			wave_x_temp=-2*0.4142*(fabs(fabs(mystery)-.5)-.5);
+			wave_x_temp=-2*0.4142f*(fabs(fabs(mystery)-.5f)-.5f);
 
 			rot = -mystery*90;
-			aspectScale =1.0+wave_x_temp;
+			aspectScale =1.0f+wave_x_temp;
 
 
-			samples = 0 ? 512-32 : context.beatDetect->pcm->numsamples;
+			samples = context.beatDetect->pcm->numsamples;
 			two_waves = true;
 
-			double y_adj = y*y*.5;
+			const float y_adj = y*y*.5f;
 
 			wave_y_temp=-1*(x-1);
 
 			for ( int i=0;i<samples;i++)
 			{
 				wavearray[i][0]=i/((float)  samples);
-				wavearray[i][1]= context.beatDetect->pcm->pcmdataL[i]*.04*scale+(wave_y_temp+y_adj);
+				wavearray[i][1]= vol_scale*pcmdataL[i]*.04f*scale+(wave_y_temp+y_adj);
 			}
 
 			for ( int i=0;i<samples;i++)
 			{
 				wavearray2[i][0]=i/((float)  samples);
-				wavearray2[i][1]=context.beatDetect->pcm->pcmdataR[i]*.04*scale+(wave_y_temp-y_adj);
+				wavearray2[i][1]=vol_scale*pcmdataR[i]*.04f*scale+(wave_y_temp-y_adj);
 			}
 
 			break;

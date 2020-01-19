@@ -1,24 +1,10 @@
 
 #include "Common.hpp"
-
-#ifdef USE_GLES1
-	#ifdef EMSCRIPTEN
-	#include <GL/gl.h>
-	#else
-	#include <GLES/gl.h>
-	#endif
-#else
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#else
-#include <GL/gl.h>
-#include <GL/glu.h>
-#endif
-#endif
-
 #include "Renderable.hpp"
+#include "Texture.hpp"
 #include <math.h>
+#include "ShaderEngine.hpp"
+#include <glm/gtc/type_ptr.hpp>
 
 typedef float floatPair[2];
 typedef float floatTriple[3];
@@ -29,44 +15,74 @@ RenderContext::RenderContext()
 
 RenderItem::RenderItem():masterAlpha(1){}
 
-DarkenCenter::DarkenCenter():RenderItem(){}
-MotionVectors::MotionVectors():RenderItem(){}
-Border::Border():RenderItem(){}
+void RenderItem::Init() {
+    glGenVertexArrays(1, &m_vaoID);
+    glGenBuffers(1, &m_vboID);
+
+    glBindVertexArray(m_vaoID);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+
+    InitVertexAttrib();
+
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+RenderItem::~RenderItem() {
+    glDeleteBuffers(1, &m_vboID);
+    glDeleteVertexArrays(1, &m_vaoID);
+}
+
+
+DarkenCenter::DarkenCenter():RenderItem(){
+    Init();
+}
+
+MotionVectors::MotionVectors():RenderItem() {
+    Init();
+}
+
+Border::Border():RenderItem() {
+    Init();
+}
+
+void DarkenCenter::InitVertexAttrib() {
+    float points_colors[6][6] = {
+        { 0.5,  0.5,      0, 0, 0, (3.0f/32.0f) * masterAlpha},
+        { 0.45, 0.5,      0, 0, 0, 0},
+        { 0.5,  0.45,     0, 0, 0, 0},
+        { 0.55, 0.5,      0, 0, 0, 0},
+        { 0.5,  0.55,     0, 0, 0, 0},
+        { 0.45, 0.5,      0, 0, 0, 0}};
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*6, (void*)0); // points
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(float)*6, (void*)(sizeof(float)*2)); // colors
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(points_colors), points_colors, GL_STATIC_DRAW);
+
+}
+
 
 void DarkenCenter::Draw(RenderContext &context)
 	{
-		//float unit=0.05f;
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glUseProgram(context.programID_v2f_c4f);
 
-		float colors[6][4] = {{0, 0, 0, (3.0f/32.0f) * masterAlpha},
-				      {0, 0, 0, 0},
-				      {0, 0, 0, 0},
-				      {0, 0, 0, 0},
-				      {0, 0, 0, 0},
-				      {0, 0, 0, 0}};
+    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
 
-		float points[6][2] = {{ 0.5,  0.5},
-				      { 0.45, 0.5},
-				      { 0.5,  0.45},
-				      { 0.55, 0.5},
-				      { 0.5,  0.55},
-				      { 0.45, 0.5}};
+    glBindVertexArray(m_vaoID);
 
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_COLOR_ARRAY);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDrawArrays(GL_TRIANGLE_FAN,0,6);
 
-		glVertexPointer(2,GL_FLOAT,0,points);
-		glColorPointer(4,GL_FLOAT,0,colors);
-
-		glDrawArrays(GL_TRIANGLE_FAN,0,6);
-
-	}
+    glBindVertexArray(0);
+}
 
 Shape::Shape():RenderItem()
 {
-	 std::string imageUrl = "";
 	     sides = 4;
 	     thickOutline = false;
 	     enabled = true;
@@ -97,7 +113,50 @@ Shape::Shape():RenderItem()
 	     border_a = 0.0; /* alpha color value */
 
 
+    glGenVertexArrays(1, &m_vaoID_texture);
+    glGenBuffers(1, &m_vboID_texture);
+
+    glGenVertexArrays(1, &m_vaoID_not_texture);
+    glGenBuffers(1, &m_vboID_not_texture);
+
+    glBindVertexArray(m_vaoID_texture);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboID_texture);
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(struct_data), (void*)0);     // Positions
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(struct_data), (void*)(sizeof(float)*2));     // Colors
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(struct_data), (void*)(sizeof(float)*6)); // Textures
+
+    glBindVertexArray(m_vaoID_not_texture);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboID_not_texture);
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(struct_data), (void*)0);   // points
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(struct_data), (void*)(sizeof(float)*2));     // Colors
+
+    Init();
 }
+
+Shape::~Shape() {
+    glDeleteBuffers(1, &m_vboID_texture);
+    glDeleteVertexArrays(1, &m_vaoID_texture);
+
+    glDeleteBuffers(1, &m_vboID_not_texture);
+    glDeleteVertexArrays(1, &m_vaoID_not_texture);
+}
+
+void Shape::InitVertexAttrib() {
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);   // points
+    glDisableVertexAttribArray(1);
+}
+
 
 void Shape::Draw(RenderContext &context)
 {
@@ -105,261 +164,268 @@ void Shape::Draw(RenderContext &context)
 	float xval, yval;
 	float t;
 
-			// printf("drawing shape %f\n", ang);
+	float temp_radius= radius*(.707*.707*.707*1.04);
 
-			float temp_radius= radius*(.707*.707*.707*1.04);
-			//Additive Drawing or Overwrite
-			if ( additive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			else    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+	//Additive Drawing or Overwrite
+	if ( additive==0)  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	else    glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 
-			xval= x;
-			yval= -(y-1);
+	xval= x;
+	yval= -(y-1);
 
-			if ( textured)
+    struct_data *buffer_data = new struct_data[sides+2];
+
+	if ( textured)
+	{
+		if (imageUrl !="")
+		{
+            TextureSamplerDesc tex = context.textureManager->getTexture(imageUrl, GL_CLAMP_TO_EDGE, GL_LINEAR);
+            if (tex.first != NULL)
 			{
-				if (imageUrl !="")
-				{
-					GLuint tex= context.textureManager->getTexture(imageUrl);
-					if (tex != 0)
-					{
-						glBindTexture(GL_TEXTURE_2D, tex);
-						context.aspectRatio=1.0;
-					}
-				}
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, tex.first->texID);
+                glBindSampler(0, tex.second->samplerID);
 
-				glMatrixMode(GL_TEXTURE);
-				glPushMatrix();
-				glLoadIdentity();
-
-				glEnable(GL_TEXTURE_2D);
-
-				glEnableClientState(GL_VERTEX_ARRAY);
-				glEnableClientState(GL_COLOR_ARRAY);
-				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-				floatQuad *colors = new float[sides+2][4];
-				floatPair *tex = new float[sides+2][2];
-				floatPair *points = new float[sides+2][2];
-
-				//Define the center point of the shape
-				colors[0][0] = r;
-				colors[0][1] = g;
-				colors[0][2] = b;
-				colors[0][3] = a * masterAlpha;
-			  	   tex[0][0] = 0.5;
-				   tex[0][1] = 0.5;
-				points[0][0] = xval;
-				points[0][1] = yval;
-
-				for ( int i=1;i< sides+2;i++)
-				{
-				  colors[i][0]= r2;
-				  colors[i][1]=g2;
-				  colors[i][2]=b2;
-				  colors[i][3]=a2 * masterAlpha;
-
-				  t = (i-1)/(float) sides;
-				  tex[i][0] =0.5f + 0.5f*cosf(t*3.1415927f*2 +  tex_ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)/ tex_zoom;
-				  tex[i][1] =  0.5f + 0.5f*sinf(t*3.1415927f*2 +  tex_ang + 3.1415927f*0.25f)/ tex_zoom;
-				  points[i][0]=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
-				  points[i][1]=temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
-
-
-				}
-
-				glVertexPointer(2,GL_FLOAT,0,points);
-				glColorPointer(4,GL_FLOAT,0,colors);
-				glTexCoordPointer(2,GL_FLOAT,0,tex);
-
-				glDrawArrays(GL_TRIANGLE_FAN,0,sides+2);
-
-				glDisable(GL_TEXTURE_2D);
-				glPopMatrix();
-				glMatrixMode(GL_MODELVIEW);
-
-				//Reset Texture state since we might have changed it
-/*
-				if(this->renderTarget->useFBO)
-				{
-					glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[1] );
-				}
-				else
-				{
-					glBindTexture( GL_TEXTURE_2D, renderTarget->textureID[0] );
-				}
-*/
-
-				delete[] colors;
-				delete[] tex;
-				delete[] points;							
+				context.aspectRatio=1.0;
 			}
-			else
-			{//Untextured (use color values)
+		}
 
 
-			  glEnableClientState(GL_VERTEX_ARRAY);
-			  glEnableClientState(GL_COLOR_ARRAY);
-			  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		//Define the center point of the shape
+        buffer_data[0].color_r = r;
+        buffer_data[0].color_g = g;
+        buffer_data[0].color_b = b;
+        buffer_data[0].color_a = a * masterAlpha;
+        buffer_data[0].tex_x = 0.5;
+        buffer_data[0].tex_y = 0.5;
+        buffer_data[0].point_x = xval;
+        buffer_data[0].point_y = yval;
 
-			  floatQuad *colors = new float[sides+2][4];
-			  floatPair *points = new float[sides+2][2];
+		for ( int i=1;i< sides+2;i++)
+		{
+            buffer_data[i].color_r=r2;
+            buffer_data[i].color_g=g2;
+            buffer_data[i].color_b=b2;
+            buffer_data[i].color_a=a2 * masterAlpha;
 
-			  //Define the center point of the shape
-			  colors[0][0]=r;
-			  colors[0][1]=g;
-			  colors[0][2]=b;
-			  colors[0][3]=a * masterAlpha;
-			  points[0][0]=xval;
-			  points[0][1]=yval;
+		  t = (i-1)/(float) sides;
+            buffer_data[i].tex_x =0.5f + 0.5f*cosf(t*3.1415927f*2 +  tex_ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)/ tex_zoom;
+            buffer_data[i].tex_y =  0.5f + 0.5f*sinf(t*3.1415927f*2 +  tex_ang + 3.1415927f*0.25f)/ tex_zoom;
+            buffer_data[i].point_x=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
+            buffer_data[i].point_y=temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
 
+		}
 
+        glBindBuffer(GL_ARRAY_BUFFER, m_vboID_texture);
 
-			  for ( int i=1;i< sides+2;i++)
-			    {
-			      colors[i][0]=r2;
-			      colors[i][1]=g2;
-			      colors[i][2]=b2;
-			      colors[i][3]=a2 * masterAlpha;
-			      t = (i-1)/(float) sides;
-			      points[i][0]=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
-			      points[i][1]=temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
+        glBufferData(GL_ARRAY_BUFFER, sizeof(struct_data)*(sides+2), NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(struct_data)*(sides+2), buffer_data, GL_DYNAMIC_DRAW);
 
-			    }
+        glUseProgram(context.programID_v2f_c4f_t2f);
 
-			  glVertexPointer(2,GL_FLOAT,0,points);
-			  glColorPointer(4,GL_FLOAT,0,colors);
+        glUniformMatrix4fv(context.uniform_v2f_c4f_t2f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+        glUniform1i(context.uniform_v2f_c4f_t2f_frag_texture_sampler, 0);
 
+        glBindVertexArray(m_vaoID_texture);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, sides+2);
+        glBindVertexArray(0);
+	}
+	else
+	{//Untextured (use color values)
 
-			  glDrawArrays(GL_TRIANGLE_FAN,0,sides+2);
-			  //draw first n-1 triangular pieces
-
-			  delete[] colors;
-			  delete[] points;
-			}
-			if (thickOutline==1)  glLineWidth(context.texsize < 512 ? 1 : 2*context.texsize/512);
-
-			glEnableClientState(GL_VERTEX_ARRAY);
-			glDisableClientState(GL_COLOR_ARRAY);
-
-			floatPair *points = new float[sides+1][2];
-
-			glColor4f( border_r, border_g, border_b, border_a * masterAlpha);
-
-			for ( int i=0;i< sides;i++)
-			{
-				t = (i-1)/(float) sides;
-				points[i][0]= temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
-				points[i][1]=  temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
-
-			}
-
-			glVertexPointer(2,GL_FLOAT,0,points);
-			glDrawArrays(GL_LINE_LOOP,0,sides);
-
-			if (thickOutline==1)  glLineWidth(context.texsize < 512 ? 1 : context.texsize/512);
-
-			delete[] points;
+	  //Define the center point of the shape
+        buffer_data[0].color_r=r;
+        buffer_data[0].color_g=g;
+        buffer_data[0].color_b=b;
+        buffer_data[0].color_a=a * masterAlpha;
+        buffer_data[0].point_x=xval;
+        buffer_data[0].point_y=yval;
 
 
+	  for ( int i=1;i< sides+2;i++)
+	    {
+            buffer_data[i].color_r=r2;
+            buffer_data[i].color_g=g2;
+            buffer_data[i].color_b=b2;
+            buffer_data[i].color_a=a2 * masterAlpha;
+	      t = (i-1)/(float) sides;
+            buffer_data[i].point_x=temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
+            buffer_data[i].point_y=temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
+	    }
+
+        glBindBuffer(GL_ARRAY_BUFFER, m_vboID_not_texture);
+
+        glBufferData(GL_ARRAY_BUFFER, sizeof(struct_data)*(sides+2), NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(struct_data)*(sides+2), buffer_data, GL_DYNAMIC_DRAW);
+
+        glUseProgram(context.programID_v2f_c4f);
+
+        glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+
+        glBindVertexArray(m_vaoID_not_texture);
+	  	glDrawArrays(GL_TRIANGLE_FAN,0,sides+2);
+        glBindVertexArray(0);
+	}
+
+
+	floatPair *points = new float[sides+1][2];
+
+	for ( int i=0;i< sides;i++)
+	{
+		t = (i-1)/(float) sides;
+		points[i][0]= temp_radius*cosf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)*(context.aspectCorrect ? context.aspectRatio : 1.0)+xval;
+		points[i][1]=  temp_radius*sinf(t*3.1415927f*2 +  ang + 3.1415927f*0.25f)+yval;
+	}
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair)*(sides), NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair)*(sides), points, GL_DYNAMIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    glUseProgram(context.programID_v2f_c4f);
+
+    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+
+    glVertexAttrib4f(1, border_r, border_g, border_b, border_a * masterAlpha);
+
+	if (thickOutline==1)  glLineWidth(context.texsize < 512 ? 1 : 2*context.texsize/512);
+
+    glBindVertexArray(m_vaoID);
+	glDrawArrays(GL_LINE_LOOP,0,sides);
+    glBindVertexArray(0);
+
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glBindSampler(0, 0);
+
+	if (thickOutline==1)  glLineWidth(context.texsize < 512 ? 1 : context.texsize/512);
+
+    delete[] buffer_data;
+	delete[] points;
+}
+
+void MotionVectors::InitVertexAttrib() {
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glDisableVertexAttribArray(1);
 }
 
 void MotionVectors::Draw(RenderContext &context)
 {
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-
 	float  intervalx=1.0/x_num;
 	float  intervaly=1.0/y_num;
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-#ifndef EMSCRIPTEN
-	glPointSize(length);
-#endif
-	glColor4f(r, g, b, a * masterAlpha);
-
 	if (x_num + y_num < 600)
-	  {
-	int size = x_num * y_num ;
-
-	floatPair *points = new float[size][2];
-
-	for (int x=0;x<(int)x_num;x++)
 	{
-		for(int y=0;y<(int)y_num;y++)
+		int size = x_num * y_num ;
+
+		floatPair *points = new float[size][2];
+
+		for (int x=0;x<(int)x_num;x++)
 		{
-			float lx, ly, lz;
-			lx = x_offset+x*intervalx;
-			ly = y_offset+y*intervaly;
+			for(int y=0;y<(int)y_num;y++)
+			{
+                float lx, ly;
+				lx = x_offset+x*intervalx;
+				ly = y_offset+y*intervaly;
 
-			points[(x * (int)y_num) + y][0] = lx;
-			points[(x * (int)y_num) + y][1] = ly;
+				points[(x * (int)y_num) + y][0] = lx;
+				points[(x * (int)y_num) + y][1] = ly;
+			}
 		}
-	}
 
-	glVertexPointer(2,GL_FLOAT,0,points);
-	glDrawArrays(GL_POINTS,0,size);
+        glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-	delete[] points;
+        glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair) * size, NULL, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair) * size, points, GL_DYNAMIC_DRAW);
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        delete[] points;
+
+
+		glUseProgram(context.programID_v2f_c4f);
+
+        glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+
+		#ifndef GL_TRANSITION
+        if (length <= 0.0) {
+            glPointSize(1.0);
+        } else {
+            glPointSize(length);
+        }
+        #endif
+
+        glUniform1f(context.uniform_v2f_c4f_vertex_point_size, length);
+		glVertexAttrib4f(1, r, g, b, a * masterAlpha);
+
+        glBindVertexArray(m_vaoID);
+
+		glDrawArrays(GL_POINTS,0,size);
+
+        glBindVertexArray(0);
 	  }
+}
+
+void Border::InitVertexAttrib() {
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glDisableVertexAttribArray(1);
 }
 
 void Border::Draw(RenderContext &context)
 {
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glDisableClientState(GL_COLOR_ARRAY);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	//Draw Borders
-	float of=outer_size*.5;
-	float iff=inner_size*.5;
-	float texof=1.0-of;
+    //Draw Borders
+    float of=outer_size*.5;
+    float iff=inner_size*.5;
+    float texof=1.0-of;
 
-	//no additive drawing for borders
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glColor4f(outer_r, outer_g, outer_b, outer_a * masterAlpha);
+    float points[40] = {
+        // Outer
+        0,0,            of,0,
+        0,1,            of,texof,
+        1,1,            texof,texof,
+        1,0,            texof,of,
+        of,0,           of,of,
 
-	float pointsA[4][2] = {{0,0},{0,1},{of,0},{of,1}};
-	glVertexPointer(2,GL_FLOAT,0,pointsA);
-	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+        // Inner
+        of,of,          of+iff,of,
+        of,texof,       of+iff,texof-iff,
+        texof,texof,    texof-iff,texof-iff,
+        texof,of,       texof-iff,of+iff,
+        of+iff,of,      of+iff,of+iff,
+    };
 
-	float pointsB[4][2] = {{of,0},{of,of},{texof,0},{texof,of}};
-	glVertexPointer(2,GL_FLOAT,0,pointsB);
-	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-	float pointsC[4][2] = {{texof,0},{texof,1},{1,0},{1,1}};
-	glVertexPointer(2,GL_FLOAT,0,pointsC);
-	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 40, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 40, points, GL_DYNAMIC_DRAW);
 
-	float pointsD[4][2] = {{of,1},{of,texof},{texof,1},{texof,texof}};
-	glVertexPointer(2,GL_FLOAT,0,pointsD);
-	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glColor4f(inner_r, inner_g, inner_b, inner_a * masterAlpha);
+    glUseProgram(context.programID_v2f_c4f);
 
-	// glRect doesn't exist in GLES I think
-	// TODO: replace glRect
-#ifndef USE_GLES1
-	glRectd(of, of, of+iff, texof);
-	glRectd(of+iff, of, texof-iff, of+iff);
-	glRectd(texof-iff, of, texof, texof);
-	glRectd(of+iff, texof, texof-iff, texof-iff);
-#endif
-	
-	float pointsE[4][2] = {{of,of},{of,texof},{of+iff,of},{of+iff,texof}};
-	glVertexPointer(2,GL_FLOAT,0,pointsE);
-	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
 
-	float pointsF[4][2] = {{of+iff,of},{of+iff,of+iff},{texof-iff,of},{texof-iff,of+iff}};
-	glVertexPointer(2,GL_FLOAT,0,pointsF);
-	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+    glVertexAttrib4f(1, outer_r, outer_g, outer_b, outer_a * masterAlpha);
 
-	float pointsG[4][2] = {{texof-iff,of},{texof-iff,texof},{texof,of},{texof,texof}};
-	glVertexPointer(2,GL_FLOAT,0,pointsG);
-	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+    //no additive drawing for borders
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	float pointsH[4][2] = {{of+iff,texof},{of+iff,texof-iff},{texof-iff,texof},{texof-iff,texof-iff}};
-	glVertexPointer(2,GL_FLOAT,0,pointsH);
-	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
+    glBindVertexArray(m_vaoID);
 
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 10);
+
+    glVertexAttrib4f(1, inner_r, inner_g, inner_b, inner_a * masterAlpha);
+
+    // 1st pass for inner
+    glDrawArrays(GL_TRIANGLE_STRIP, 10, 10);
+
+    // 2nd pass for inner
+    glDrawArrays(GL_TRIANGLE_STRIP, 10, 10);
+
+    glBindVertexArray(0);
 }

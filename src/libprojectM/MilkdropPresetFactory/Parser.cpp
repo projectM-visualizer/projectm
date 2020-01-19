@@ -24,6 +24,7 @@
 #include <string>
 #include <cstring>
 #include <iostream>
+#include <locale>
 #include <stdlib.h>
 
 #include "Common.hpp"
@@ -46,6 +47,7 @@
 #include <iostream>
 #include <sstream>
 #include "BuiltinFuncs.hpp"
+#include "MilkdropPresetFactory.hpp"
 
 /* Grabs the next token from the file. The second argument points
    to the raw string */
@@ -60,7 +62,7 @@ int Parser::per_frame_eqn_count;
 int Parser::per_frame_init_eqn_count;
 int Parser::last_custom_wave_id;
 int Parser::last_custom_shape_id;
-char Parser::last_eqn_type[MAX_TOKEN_SIZE];
+char Parser::last_eqn_type[MAX_TOKEN_SIZE+1];
 int Parser::last_token_size;
 
 std::string Parser::lastLinePrefix("");
@@ -251,15 +253,15 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
 /* Parse input in the form of "exp, exp, exp, ...)"
    Returns a general expression list */
 
-GenExpr **Parser::parse_prefix_args(std::istream &  fs, int num_args, MilkdropPreset * preset)
+Expr **Parser::parse_prefix_args(std::istream &  fs, int num_args, MilkdropPreset * preset)
 {
 
   int i, j;
-  GenExpr ** expr_list; /* List of arguments to function */
-  GenExpr * gen_expr;
+  Expr ** expr_list; /* List of arguments to function */
+  Expr * gen_expr;
 
   /* Malloc the expression list */
-  expr_list =  (GenExpr**)wipemalloc(sizeof(GenExpr*)*num_args);
+  expr_list =  (Expr**)wipemalloc(sizeof(Expr*)*num_args);
 
   /* Malloc failed */
   if (expr_list == NULL)
@@ -276,9 +278,8 @@ GenExpr **Parser::parse_prefix_args(std::istream &  fs, int num_args, MilkdropPr
     {
       //if (PARSE_DEBUG) printf("parse_prefix_args: failed to get parameter # %d for function (LINE %d)\n", i+1, line_count);
       for (j = 0; j < i; j++)
-        delete expr_list[j];
+        Expr::delete_expr(expr_list[j]);
       free(expr_list);
-      expr_list = NULL;
       return NULL;
     }
     /* Assign entry in expression list */
@@ -331,12 +332,12 @@ int Parser::parse_per_pixel_eqn(std::istream &  fs, MilkdropPreset * preset, cha
 
 
   char string[MAX_TOKEN_SIZE];
-  GenExpr * gen_expr;
+  Expr * gen_expr;
 
 
   if (init_string != 0)
   {
-    strncpy(string, init_string, strlen(init_string));
+    memcpy(string, init_string, strlen(init_string) + 1);
   }
   else
   {
@@ -360,7 +361,7 @@ int Parser::parse_per_pixel_eqn(std::istream &  fs, MilkdropPreset * preset, cha
     {
 
     }
-    delete gen_expr;
+    Expr::delete_expr(gen_expr);
     return PROJECTM_PARSE_ERROR;
   }
 
@@ -715,19 +716,17 @@ int Parser::parse_line(std::istream &  fs, MilkdropPreset * preset)
 }
 
 
-
 /* Parses a general expression, this function is the meat of the parser */
-GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, MilkdropPreset * preset)
+Expr * Parser::_parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, MilkdropPreset * preset)
 {
-
   int i;
   char string[MAX_TOKEN_SIZE];
   token_t token;
-  GenExpr * gen_expr;
+  Expr * gen_expr;
   float val;
   Param * param = NULL;
   Func * func;
-  GenExpr ** expr_list;
+  Expr ** expr_list;
 
   switch (token = parseToken(fs,string))
   {
@@ -753,22 +752,21 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Mil
         }
         if ( tree_expr != NULL )
         {
-          delete tree_expr;
+          Expr::delete_expr(tree_expr);
         }
         return NULL;
       }
 
       /* Convert function to expression */
-      if ((gen_expr = GenExpr::prefun_to_expr((float (*)(void *))func->func_ptr, expr_list, func->getNumArgs())) == NULL)
+      if ((gen_expr = Expr::prefun_to_expr(func, expr_list)) == NULL)
       {
         if (PARSE_DEBUG) printf("parse_prefix_args: failed to convert prefix function to general expression (LINE %d) \n",
                                   line_count);
         if (tree_expr)
-          delete tree_expr;
+          Expr::delete_expr(tree_expr);
         for (i = 0; i < func->getNumArgs();i++)
-          delete expr_list[i];
+          Expr::delete_expr(expr_list[i]);
         free(expr_list);
-        expr_list = NULL;
         return NULL;
       }
 
@@ -791,7 +789,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Mil
       std::cerr << "token prefix is " << *string << std::endl;
       if (PARSE_DEBUG) printf("parse_gen_expr: implicit multiplication case unimplemented!\n");
       if (tree_expr)
-        delete tree_expr;
+        Expr::delete_expr(tree_expr);
       return NULL;
     }
 
@@ -802,7 +800,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Mil
     {
       if (PARSE_DEBUG) printf("parse_gen_expr:  found left parentice, but failed to create new expression tree \n");
       if (tree_expr)
-      delete tree_expr;
+      Expr::delete_expr(tree_expr);
       return NULL;
     }
 
@@ -818,7 +816,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Mil
       if (PARSE_DEBUG) printf("parse_gen_expr: plus used as prefix (LINE %d)\n", line_count);
 
       /* Treat prefix plus as implict 0 preceding operator */
-      gen_expr = GenExpr::const_to_expr(0);
+      gen_expr = Expr::const_to_expr(0);
 
       return parse_infix_op(fs, tPositive, insert_gen_expr(gen_expr, &tree_expr), preset);
     }
@@ -829,7 +827,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Mil
     {
 
       /* Use the negative infix operator, but first add an implicit zero to the operator tree */
-      gen_expr = GenExpr::const_to_expr(0);
+      gen_expr = Expr::const_to_expr(0);
       //return parse_gen_expr(fs, insert_gen_expr(gen_expr, &tree_expr), preset);
       return parse_infix_op(fs, tNegative, insert_gen_expr(gen_expr, &tree_expr), preset);
     }
@@ -856,17 +854,17 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Mil
     if (*string == 0)
     {
       if (tree_expr)
-        delete tree_expr;
+        Expr::delete_expr(tree_expr);
       return NULL;
     }
 
     /* CASE 1: Check if string is a just a floating point number */
     if (string_to_float(string, &val) != PROJECTM_PARSE_ERROR)
     {
-      if ((gen_expr = GenExpr::const_to_expr(val)) == NULL)
+      if ((gen_expr = Expr::const_to_expr(val)) == NULL)
       {
         if (tree_expr)
-          delete tree_expr;
+          Expr::delete_expr(tree_expr);
         return NULL;
       }
 
@@ -885,7 +883,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Mil
           if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(std::string(string), &current_shape->param_tree)) == NULL)
           {
             if (tree_expr)
-              delete tree_expr;
+              Expr::delete_expr(tree_expr);
             return NULL;
           }
       }
@@ -898,9 +896,9 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Mil
 
 
       /* Convert parameter to an expression */
-      if ((gen_expr = GenExpr::param_to_expr(param)) == NULL)
+      if ((gen_expr = Expr::param_to_expr(param)) == NULL)
       {
-        delete tree_expr;
+        Expr::delete_expr(tree_expr);
         return NULL;
       }
 
@@ -919,7 +917,7 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Mil
           if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(std::string(string), &current_wave->param_tree)) == NULL)
           {
             if (tree_expr)
-              delete tree_expr;
+              Expr::delete_expr(tree_expr);
             return NULL;
           }
       }
@@ -932,9 +930,9 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Mil
       }
 
       /* Convert parameter to an expression */
-      if ((gen_expr = GenExpr::param_to_expr(param)) == NULL)
+      if ((gen_expr = Expr::param_to_expr(param)) == NULL)
       {
-        delete tree_expr;
+        Expr::delete_expr(tree_expr);
         return NULL;
       }
 
@@ -955,9 +953,9 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Mil
       }
 
       /* Convert parameter to an expression */
-      if ((gen_expr = GenExpr::param_to_expr(param)) == NULL)
+      if ((gen_expr = Expr::param_to_expr(param)) == NULL)
       {
-        delete tree_expr;
+        Expr::delete_expr(tree_expr);
         return NULL;
       }
 
@@ -975,11 +973,23 @@ GenExpr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Mil
 
     }
     if (tree_expr)
-      delete tree_expr;
+      Expr::delete_expr(tree_expr);
     return NULL;
   }
 }
 
+
+Expr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, MilkdropPreset * preset)
+{
+  Expr *gen_expr = _parse_gen_expr( fs, tree_expr, preset );
+  if (nullptr == gen_expr)
+    return nullptr;
+  //std::cout << gen_expr << std::endl;
+  Expr *opt = Expr::optimize(gen_expr);
+  gen_expr = nullptr;
+  //std::cout << opt << std::endl << std::endl;
+  return opt;
+}
 
 
 /* Inserts expressions into tree according to operator precedence.
@@ -999,7 +1009,7 @@ TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root)
 
   if (*root == NULL)
   {
-    new_root = new TreeExpr(infix_op, NULL, NULL, NULL);
+    new_root = TreeExpr::create(infix_op, NULL, NULL, NULL);
     *root = new_root;
     return new_root;
   }
@@ -1009,7 +1019,7 @@ TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root)
 
   if ((*root)->infix_op == NULL)
   {
-    new_root = new TreeExpr(infix_op, NULL, *root, NULL);
+    new_root = TreeExpr::create(infix_op, NULL, *root, NULL);
     (*root) = new_root;
     return new_root;
   }
@@ -1020,7 +1030,7 @@ TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root)
 
   if (infix_op->precedence >= (*root)->infix_op->precedence)
   {
-    new_root = new TreeExpr(infix_op, NULL, *root, NULL);
+    new_root = TreeExpr::create(infix_op, NULL, *root, NULL);
     (*root) = new_root;
     return new_root;
   }
@@ -1035,7 +1045,7 @@ TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root)
 }
 
 
-TreeExpr * Parser::insert_gen_expr(GenExpr * gen_expr, TreeExpr ** root)
+TreeExpr * Parser::insert_gen_expr(Expr * gen_expr, TreeExpr ** root)
 {
 
   TreeExpr * new_root;
@@ -1053,7 +1063,7 @@ TreeExpr * Parser::insert_gen_expr(GenExpr * gen_expr, TreeExpr ** root)
 
   if (*root == NULL)
   {
-    new_root = new TreeExpr(NULL, gen_expr, NULL, NULL);
+    new_root = TreeExpr::create(NULL, gen_expr, NULL, NULL);
     *root = new_root;
     return new_root;
   }
@@ -1067,7 +1077,7 @@ TreeExpr * Parser::insert_gen_expr(GenExpr * gen_expr, TreeExpr ** root)
 }
 
 /* A recursive helper function to insert general expression elements into the operator tree */
-int Parser::insert_gen_rec(GenExpr * gen_expr, TreeExpr * root)
+int Parser::insert_gen_rec(Expr * gen_expr, TreeExpr * root)
 {
 
   /* Trivial Case: root is null */
@@ -1085,7 +1095,7 @@ int Parser::insert_gen_rec(GenExpr * gen_expr, TreeExpr * root)
 
   if ((root->left == NULL) && (root->infix_op != NULL))
   {
-    root->left = new TreeExpr(NULL, gen_expr, NULL, NULL);
+    root->left = TreeExpr::create(NULL, gen_expr, NULL, NULL);
     return PROJECTM_SUCCESS;
   }
 
@@ -1095,7 +1105,7 @@ int Parser::insert_gen_rec(GenExpr * gen_expr, TreeExpr * root)
 
   if ((root->right == NULL) && (root->infix_op != NULL))
   {
-    root->right = new TreeExpr(NULL, gen_expr, NULL, NULL);
+    root->right = TreeExpr::create(NULL, gen_expr, NULL, NULL);
     return PROJECTM_SUCCESS;
   }
 
@@ -1103,8 +1113,8 @@ int Parser::insert_gen_rec(GenExpr * gen_expr, TreeExpr * root)
      this succeeds then return. If it fails, try
      recursing down to the right */
 
-  if (insert_gen_rec(gen_expr, root->left) == PROJECTM_FAILURE)
-    return insert_gen_rec(gen_expr, root->right);
+  if (insert_gen_rec(gen_expr, root->leftTree()) == PROJECTM_FAILURE)
+    return insert_gen_rec(gen_expr, root->rightTree());
 
   /* Impossible for control flow to reach here, but in
      the world of C programming, who knows... */
@@ -1131,14 +1141,14 @@ int Parser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root)
      I don't think this will ever happen */
   if (root->left == NULL)
   {
-    root->left = new TreeExpr(infix_op, NULL, root->left, NULL);
+    root->left = TreeExpr::create(infix_op, NULL, root->leftTree(), NULL);
     return PROJECTM_SUCCESS;
   }
 
   /* Right tree is empty, attach this operator to it */
   if (root->right == NULL)
   {
-    root->right = new TreeExpr(infix_op, NULL, root->right, NULL);
+    root->right = TreeExpr::create(infix_op, NULL, root->rightTree(), NULL);
     return PROJECTM_SUCCESS;
   }
 
@@ -1149,29 +1159,29 @@ int Parser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root)
      then insert the expression here, attaching the old right branch
      to the left of the new expression */
 
-  if (root->right->infix_op == NULL)
+  if (root->rightTree()->infix_op == NULL)
   {
-    root->right = new TreeExpr(infix_op, NULL, root->right, NULL);
+    root->right = TreeExpr::create(infix_op, NULL, root->rightTree(), NULL);
     return PROJECTM_SUCCESS;
   }
 
   /* Traverse deeper if the inserting operator precedence is less than the
      the root's right operator precedence */
-  if (infix_op->precedence < root->right->infix_op->precedence)
-    return insert_infix_rec(infix_op, root->right);
+  if (infix_op->precedence < root->rightTree()->infix_op->precedence)
+    return insert_infix_rec(infix_op, root->rightTree());
 
   /* Otherwise, insert the operator here */
 
-  root->right = new TreeExpr(infix_op, NULL, root->right, NULL);
+  root->right = TreeExpr::create(infix_op, NULL, root->rightTree(), NULL);
   return PROJECTM_SUCCESS;
 
 }
 
 /* Parses an infix operator */
-GenExpr * Parser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * tree_expr, MilkdropPreset * preset)
+Expr * Parser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * tree_expr, MilkdropPreset * preset)
 {
 
-  GenExpr * gen_expr;
+  Expr * gen_expr;
 
   switch (token)
   {
@@ -1180,31 +1190,31 @@ GenExpr * Parser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * t
     if (PARSE_DEBUG) printf("parse_infix_op: found addition operator (LINE %d)\n", line_count);
     if (PARSE_DEBUG) std::cerr << "WRAP AROUND IS " <<  tokenWrapAroundEnabled << std::endl;
 
-    return parse_gen_expr(fs, insert_infix_op(Eval::infix_add, &tree_expr), preset);
+    return _parse_gen_expr(fs, insert_infix_op(Eval::infix_add, &tree_expr), preset);
   case tMinus:
     if (PARSE_DEBUG) printf("parse_infix_op: found subtraction operator (LINE %d)\n", line_count);
-    return parse_gen_expr(fs, insert_infix_op(Eval::infix_minus, &tree_expr), preset);
+    return _parse_gen_expr(fs, insert_infix_op(Eval::infix_minus, &tree_expr), preset);
   case tMult:
     if (PARSE_DEBUG) printf("parse_infix_op: found multiplication operator (LINE %d)\n", line_count);
-    return parse_gen_expr(fs, insert_infix_op(Eval::infix_mult, &tree_expr), preset);
+    return _parse_gen_expr(fs, insert_infix_op(Eval::infix_mult, &tree_expr), preset);
   case tDiv:
     if (PARSE_DEBUG) printf("parse_infix_op: found division operator (LINE %d)\n", line_count);
-    return parse_gen_expr(fs, insert_infix_op(Eval::infix_div, &tree_expr), preset);
+    return _parse_gen_expr(fs, insert_infix_op(Eval::infix_div, &tree_expr), preset);
   case tMod:
     if (PARSE_DEBUG) printf("parse_infix_op: found modulo operator (LINE %d)\n", line_count);
-    return parse_gen_expr(fs, insert_infix_op(Eval::infix_mod, &tree_expr), preset);
+    return _parse_gen_expr(fs, insert_infix_op(Eval::infix_mod, &tree_expr), preset);
   case tOr:
     if (PARSE_DEBUG) printf("parse_infix_op: found bitwise or operator (LINE %d)\n", line_count);
-    return parse_gen_expr(fs, insert_infix_op(Eval::infix_or, &tree_expr), preset);
+    return _parse_gen_expr(fs, insert_infix_op(Eval::infix_or, &tree_expr), preset);
   case tAnd:
     if (PARSE_DEBUG) printf("parse_infix_op: found bitwise and operator (LINE %d)\n", line_count);
-    return parse_gen_expr(fs, insert_infix_op(Eval::infix_and, &tree_expr), preset);
+    return _parse_gen_expr(fs, insert_infix_op(Eval::infix_and, &tree_expr), preset);
   case tPositive:
     if (PARSE_DEBUG) printf("parse_infix_op: found positive operator (LINE %d)\n", line_count);
-    return parse_gen_expr(fs, insert_infix_op(Eval::infix_positive, &tree_expr), preset);
+    return _parse_gen_expr(fs, insert_infix_op(Eval::infix_positive, &tree_expr), preset);
   case tNegative:
     if (PARSE_DEBUG) printf("parse_infix_op: found negative operator (LINE %d)\n", line_count);
-    return parse_gen_expr(fs, insert_infix_op(Eval::infix_negative, &tree_expr), preset);
+    return _parse_gen_expr(fs, insert_infix_op(Eval::infix_negative, &tree_expr), preset);
 
   case tEOL:
   case tEOF:
@@ -1212,12 +1222,12 @@ GenExpr * Parser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * t
   case tRPr:
   case tComma:
     if (PARSE_DEBUG) printf("parse_infix_op: terminal found (LINE %d)\n", line_count);
-    gen_expr = new GenExpr(TREE_T, (void*)tree_expr);
+    gen_expr = tree_expr;
     assert(gen_expr);
     return gen_expr;
   default:
     if (PARSE_DEBUG) printf("parse_infix_op: operator or terminal expected, but not found (LINE %d)\n", line_count);
-    delete tree_expr;
+    Expr::delete_expr(tree_expr);
     return NULL;
   }
 
@@ -1242,11 +1252,11 @@ int Parser::parse_int(std::istream &  fs, int * int_ptr)
   {
   case tMinus:
     sign = -1;
-    token = parseToken(fs, string);
+    parseToken(fs, string);
     break;
   case tPlus:
     sign = 1;
-    token = parseToken(fs, string);
+    parseToken(fs, string);
     break;
   default:
     sign = 1;
@@ -1275,26 +1285,17 @@ int Parser::parse_int(std::istream &  fs, int * int_ptr)
 int Parser::string_to_float(char * string, float * float_ptr)
 {
 
-  char ** error_ptr;
-
   if (*string == 0)
     return PROJECTM_PARSE_ERROR;
 
-  error_ptr = (char**)wipemalloc(sizeof(char**));
-
-  (*float_ptr) = strtod(string, error_ptr);
-
-  /* These imply a succesful parse of the string */
-  if ((**error_ptr == '\0') || (**error_ptr == '\r'))
-  {
-    free(error_ptr);
-    error_ptr = NULL;
+  std::istringstream iss(string);
+  iss.imbue(std::locale("C"));
+  iss >> (*float_ptr);
+  if (!iss.fail()) {
     return PROJECTM_SUCCESS;
   }
 
   (*float_ptr) = 0;
-  free(error_ptr);
-  error_ptr = NULL;
   return PROJECTM_PARSE_ERROR;
 }
 
@@ -1303,11 +1304,8 @@ int Parser::parse_float(std::istream &  fs, float * float_ptr)
 {
 
   char string[MAX_TOKEN_SIZE];
-  char ** error_ptr;
   token_t token;
   int sign;
-
-  error_ptr =(char**) wipemalloc(sizeof(char**));
 
   token = parseToken(fs, string);
 
@@ -1315,11 +1313,11 @@ int Parser::parse_float(std::istream &  fs, float * float_ptr)
   {
   case tMinus:
     sign = -1;
-    token = parseToken(fs, string);
+    parseToken(fs, string);
     break;
   case tPlus:
     sign = 1;
-    token = parseToken(fs, string);
+    parseToken(fs, string);
     break;
   default:
     sign = 1;
@@ -1327,26 +1325,20 @@ int Parser::parse_float(std::istream &  fs, float * float_ptr)
 
   if (string[0] == 0)
   {
-    free(error_ptr);
-    error_ptr = NULL;
     return PROJECTM_PARSE_ERROR;
   }
 
-  (*float_ptr) = sign*strtod(string, error_ptr);
-
-  /* No conversion was performed */
-  if ((**error_ptr == '\0') || (**error_ptr == '\r'))
-  {
-    free(error_ptr);
-    error_ptr = NULL;
+  std::istringstream iss(string);
+  iss.imbue(std::locale("C"));
+  iss >> (*float_ptr);
+  if (!iss.fail()) {
+    (*float_ptr) *= sign;
     return PROJECTM_SUCCESS;
   }
 
   if (PARSE_DEBUG) printf("parse_float: float conversion failed for string \"%s\"\n", string);
 
   (*float_ptr) = 0;
-  free(error_ptr);
-  error_ptr = NULL;
   return PROJECTM_PARSE_ERROR;
 
 }
@@ -1358,7 +1350,7 @@ PerFrameEqn * Parser::parse_per_frame_eqn(std::istream &  fs, int index, Milkdro
   char string[MAX_TOKEN_SIZE];
   Param * param;
   PerFrameEqn * per_frame_eqn;
-  GenExpr * gen_expr;
+  Expr * gen_expr;
 
 
   if (parseToken(fs, string) != tEq)
@@ -1393,7 +1385,7 @@ PerFrameEqn * Parser::parse_per_frame_eqn(std::istream &  fs, int index, Milkdro
   if ((per_frame_eqn = new PerFrameEqn(index, param, gen_expr)) == NULL)
   {
     if (PARSE_DEBUG) printf("parse_per_frame_eqn: failed to create a new per frame eqn, out of memory?\n");
-    delete gen_expr;
+    Expr::delete_expr(gen_expr);
     return NULL;
   }
 
@@ -1408,7 +1400,7 @@ PerFrameEqn * Parser::parse_implicit_per_frame_eqn(std::istream &  fs, char * pa
 
   Param * param;
   PerFrameEqn * per_frame_eqn;
-  GenExpr * gen_expr;
+  Expr * gen_expr;
 
   if (fs.fail())
     return NULL;
@@ -1446,7 +1438,7 @@ PerFrameEqn * Parser::parse_implicit_per_frame_eqn(std::istream &  fs, char * pa
   if ((per_frame_eqn = new PerFrameEqn(index, param, gen_expr)) == NULL)
   {
     if (PARSE_DEBUG) printf("parse_implicit_per_frame_eqn: failed to create a new per frame eqn, out of memory?\n");
-    delete gen_expr;
+    Expr::delete_expr(gen_expr);
     return NULL;
   }
 
@@ -1488,7 +1480,7 @@ InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, MilkdropPres
   if (PARSE_DEBUG) printf("parsed_init_cond: parsing initial condition value... (LINE %d)\n", line_count);
 
   /* integer value (boolean is an integer in C) */
-  if ( (param->type == P_TYPE_BOOL))
+  if (param->type == P_TYPE_BOOL)
   {
     int bool_test;
     if ((parse_int(fs, &bool_test)) == PROJECTM_PARSE_ERROR)
@@ -1499,7 +1491,7 @@ InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, MilkdropPres
     init_val.bool_val = bool_test;
   }
 
-  else if ((param->type == P_TYPE_INT))
+  else if (param->type == P_TYPE_INT)
   {
     if ((parse_int(fs, (int*)&init_val.int_val)) == PROJECTM_PARSE_ERROR)
     {
@@ -1539,10 +1531,6 @@ InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, MilkdropPres
 
 void Parser::parse_string_block(std::istream &  fs, std::string * out_string) {
 
-
-	char name[MAX_TOKEN_SIZE];
-	token_t token;
-
 	std::set<char> skipList;
 	skipList.insert('`');
 	readStringUntil(fs, out_string, false, skipList);
@@ -1558,7 +1546,7 @@ InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, MilkdropPreset *
   Param * param = NULL;
   CValue init_val;
   InitCond * init_cond;
-  GenExpr * gen_expr;
+  Expr * gen_expr;
   float val;
   token_t token;
 
@@ -1604,10 +1592,10 @@ InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, MilkdropPreset *
   }
 
   /* Compute initial condition value */
-  val = gen_expr->eval_gen_expr(-1,-1);
+  val = gen_expr->eval(-1,-1);
 
   /* Free the general expression now that we are done with it */
-  delete gen_expr;
+  Expr::delete_expr(gen_expr);
 
   /* integer value (boolean is an integer in C) */
   if (param->type == P_TYPE_BOOL)
@@ -1615,7 +1603,7 @@ InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, MilkdropPreset *
     init_val.bool_val = (bool)val;
   }
 
-  else if ((param->type == P_TYPE_INT))
+  else if (param->type == P_TYPE_INT)
   {
     init_val.int_val = (int)val;
   }
@@ -1675,7 +1663,6 @@ bool Parser::scanForComment(std::istream & fs) {
 
 void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool wrapAround, const std::set<char> & skipList) {
 
-	int string_line_buffer_index = 0;
 	int c;
 
 	/* Loop until a delimiter is found, or the maximum string size is found */
@@ -1698,6 +1685,7 @@ void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool w
 					break;
 				} else {
 					line_count++;
+                    out_buffer->push_back('\n');
 					return;
 				}
 			}
@@ -1732,7 +1720,6 @@ void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool w
 
 
 					if (!wrapsToNextLine(buffer.str())) {
-						wrapAround = false;
 						int buf_size = (int)buffer.str().length();
 						// <= to also remove equal sign parsing from stream
 						for (int k = 0; k <= buf_size; k++) {
@@ -1808,7 +1795,7 @@ int Parser::parse_wavecode(char * token, std::istream &  fs, MilkdropPreset * pr
 
   /* integer value (boolean is an integer in C) */
 
-  if ((param->type == P_TYPE_BOOL))
+  if (param->type == P_TYPE_BOOL)
   {
     int bool_test;
     if ((parse_int(fs, &bool_test)) == PROJECTM_PARSE_ERROR)
@@ -1819,7 +1806,7 @@ int Parser::parse_wavecode(char * token, std::istream &  fs, MilkdropPreset * pr
     }
     init_val.bool_val = bool_test;
   }
-  else if ((param->type == P_TYPE_INT))
+  else if (param->type == P_TYPE_INT)
   {
     if ((parse_int(fs, (int*)&init_val.int_val)) == PROJECTM_PARSE_ERROR)
     {
@@ -1855,10 +1842,7 @@ int Parser::parse_wavecode(char * token, std::istream &  fs, MilkdropPreset * pr
     return PROJECTM_FAILURE;
   }
 
-  std::pair<std::map<std::string, InitCond*>::iterator, bool> inserteePair =
-    custom_wave->init_cond_tree.insert(std::make_pair(init_cond->param->name, init_cond));
-
- // assert(inserteePair.second);
+  custom_wave->init_cond_tree.insert(std::make_pair(init_cond->param->name, init_cond));
 
   line_mode = CUSTOM_WAVE_WAVECODE_LINE_MODE;
 
@@ -1913,7 +1897,7 @@ int Parser::parse_shapecode(char * token, std::istream &  fs, MilkdropPreset * p
 
     fs >> text;
 
-    *((std::string*)param->engine_val) = text;
+    param->set_param(text);
     if (PARSE_DEBUG)
       std::cerr << "parse_shapecode: found image url, text is \""
       << text << "\"" << std::endl;
@@ -1934,7 +1918,7 @@ int Parser::parse_shapecode(char * token, std::istream &  fs, MilkdropPreset * p
   /* integer value (boolean is an integer in C) */
 
 
-  if ((param->type == P_TYPE_BOOL))
+  if (param->type == P_TYPE_BOOL)
   {
     int bool_test;
     if ((parse_int(fs, &bool_test)) == PROJECTM_PARSE_ERROR)
@@ -1944,7 +1928,7 @@ int Parser::parse_shapecode(char * token, std::istream &  fs, MilkdropPreset * p
     }
     init_val.bool_val = bool_test;
   }
-  else if ((param->type == P_TYPE_INT))
+  else if (param->type == P_TYPE_INT)
   {
     if ((parse_int(fs, (int*)&init_val.int_val)) == PROJECTM_PARSE_ERROR)
     {
@@ -2192,7 +2176,7 @@ int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int 
 {
 
   Param * param;
-  GenExpr * gen_expr;
+  Expr * gen_expr;
   char string[MAX_TOKEN_SIZE];
   PerFrameEqn * per_frame_eqn;
   CustomWave * custom_wave;
@@ -2273,7 +2257,7 @@ int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int 
     if ((per_frame_eqn = new PerFrameEqn(custom_wave->per_frame_count++, param, gen_expr)) == NULL)
     {
       if (PARSE_DEBUG) printf("parse_wave (per_frame): failed to create a new per frame eqn, out of memory?\n");
-      delete gen_expr;
+      Expr::delete_expr(gen_expr);
       return PROJECTM_FAILURE;
     }
 
@@ -2299,7 +2283,7 @@ int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int 
     /// HACK the parse_line code already parsed the per_pixel variable name. This handles that case
     /// Parser needs reworked. Don't have time for it. So this is the result.
     if (init_string)
-      strncpy(string, init_string, strlen(init_string)+1);
+      memcpy(string, init_string, strlen(init_string)+1);
     else
     {
       if (parseToken(fs, string) != tEq)
@@ -2315,7 +2299,7 @@ int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int 
     if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL)
     {
       if (PARSE_DEBUG) printf("parse_wave_helper (per_point): equation evaluated to null? (LINE %d)\n", line_count);
-
+      current_wave = NULL;
       return PROJECTM_PARSE_ERROR;
     }
 
@@ -2323,8 +2307,8 @@ int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int 
     /* Add the per point equation */
     if (custom_wave->add_per_point_eqn(string, gen_expr) < 0)
     {
-      delete gen_expr;
-
+      Expr::delete_expr(gen_expr);
+      current_wave = NULL;
       return PROJECTM_PARSE_ERROR;
     }
     // This tells the parser we are no longer parsing a custom wave
@@ -2451,6 +2435,8 @@ int Parser::parse_shape_per_frame_init_eqn(std::istream &  fs, CustomShape * cus
 
   line_mode = CUSTOM_SHAPE_PER_FRAME_INIT_LINE_MODE;
   init_cond->evaluate(true);
+
+  delete init_cond;
   return PROJECTM_SUCCESS;
 }
 
@@ -2458,7 +2444,7 @@ int Parser::parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_sh
 {
 
   Param * param;
-  GenExpr * gen_expr;
+  Expr * gen_expr;
   PerFrameEqn * per_frame_eqn;
 
   char string[MAX_TOKEN_SIZE];
@@ -2504,7 +2490,7 @@ int Parser::parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_sh
   if ((per_frame_eqn = new PerFrameEqn(custom_shape->per_frame_count++, param, gen_expr)) == NULL)
   {
     if (PARSE_DEBUG) printf("parse_shape (per_frame): failed to create a new per frame eqn, out of memory?\n");
-    delete gen_expr;
+    Expr::delete_expr(gen_expr);
     return PROJECTM_FAILURE;
   }
 
@@ -2520,7 +2506,7 @@ int Parser::parse_wave_per_frame_eqn(std::istream &  fs, CustomWave * custom_wav
 {
 
   Param * param;
-  GenExpr * gen_expr;
+  Expr * gen_expr;
   PerFrameEqn * per_frame_eqn;
 
   char string[MAX_TOKEN_SIZE];
@@ -2566,7 +2552,7 @@ int Parser::parse_wave_per_frame_eqn(std::istream &  fs, CustomWave * custom_wav
   if ((per_frame_eqn = new PerFrameEqn(custom_wave->per_frame_count++, param, gen_expr)) == NULL)
   {
     if (PARSE_DEBUG) printf("parse_wave (per_frame): failed to create a new per frame eqn, out of memory?\n");
-    delete gen_expr;
+    Expr::delete_expr(gen_expr);
     return PROJECTM_FAILURE;
   }
 
@@ -2598,3 +2584,144 @@ else
 	return false;
 
 }
+
+
+
+
+
+
+
+// TESTS
+
+
+#include <TestRunner.hpp>
+
+#ifndef NDEBUG
+
+#include <PresetLoader.hpp>
+
+#define TEST(cond) if (!verify(#cond,cond)) return false
+#define TEST2(str,cond) if (!verify(str,cond)) return false
+
+struct ParserTest : public Test
+{
+    ParserTest() : Test("ParserTest")
+    {}
+
+    MilkdropPreset *preset;
+    std::istringstream is;
+    std::istringstream &ss(const char *s) { return is = std::istringstream(s); }
+
+    bool eq(float a, float b)
+    {
+        return std::abs(a-b) < (std::abs(a)+std::abs(b) + 1)/1000.0f;
+    }
+
+public:
+
+    bool test_float()
+    {
+        float f=-1.0f;
+        TEST(PROJECTM_SUCCESS == Parser::parse_float(ss("1.1"),&f));
+        TEST(1.1f == f);
+        TEST(PROJECTM_SUCCESS == Parser::parse_float(ss("+1.2"),&f));
+        TEST(PROJECTM_SUCCESS == Parser::parse_float(ss("-1.3"),&f));
+        TEST(PROJECTM_PARSE_ERROR == Parser::parse_float(ss(""),&f));
+        TEST(PROJECTM_PARSE_ERROR == Parser::parse_float(ss("\n"),&f));
+        TEST(PROJECTM_PARSE_ERROR == Parser::parse_float(ss("+"),&f));
+        return true;
+    }
+
+    bool test_int()
+    {
+        int i=-1;
+        TEST(PROJECTM_SUCCESS == Parser::parse_int(ss("1"),&i));
+        TEST(1 == i);
+        TEST(PROJECTM_SUCCESS == Parser::parse_int(ss("+2"),&i));
+        TEST(PROJECTM_SUCCESS == Parser::parse_int(ss("-3"),&i));
+        TEST(PROJECTM_PARSE_ERROR == Parser::parse_int(ss(""),&i));
+        TEST(PROJECTM_PARSE_ERROR == Parser::parse_int(ss("\n"),&i));
+        TEST(PROJECTM_PARSE_ERROR == Parser::parse_int(ss("+"),&i));
+        return true;
+    }
+
+    bool eval_expr(float expected, const char *s)
+    {
+        float result;
+        Expr *expr_parse = Parser::parse_gen_expr(ss(s),nullptr,preset);
+        TEST(expr_parse != nullptr);
+        // Expr doesn't really expect to run 'non-optimized' expressions any longer
+        Expr *expr = Expr::optimize(expr_parse);
+        expr_parse = nullptr;
+        if (!ParserTest::eq(expected, result=expr->eval(-1,-1)))
+        {
+            std::cout << "failed: expected " << expected << " found " << result << std::endl;
+            return false;
+        }
+        Expr::delete_expr(expr);
+        return true;
+    }
+
+    bool test_eqn()
+    {
+        TEST(eval_expr(1.0f, "1.0"));
+        TEST(eval_expr(-1.0f, "-(1.0)"));         // unary`
+        TEST(eval_expr(0.5f, "5/10.000"));        // binary
+        TEST(eval_expr(1.0f, "sin(3.14159/2)"));
+        preset->presetOutputs().rot = 0.99f;
+        TEST(eval_expr(0.99f, "rot"));
+        return true;
+    }
+
+    // test multi-line expression, and multi-expression line
+    bool test_lines()
+    {
+        // TODO
+        return true;
+    }
+
+    bool test_params()
+    {
+        // TODO
+        return true;
+    }
+
+
+    bool _test()
+    {
+        bool success = true;
+        success &= test_float();
+        success &= test_int();
+        success &= test_eqn();
+        success &= test_lines();
+        success &= test_params();
+        return success;
+    }
+
+    bool test() override
+    {
+        // load IdlePreset
+        PresetLoader *presetLoader = new PresetLoader ( 400, 400, "" );
+        std::unique_ptr<Preset> preset_ptr = presetLoader->loadPreset("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
+        preset = (MilkdropPreset *)preset_ptr.get();
+
+        bool success = _test();
+
+        delete presetLoader;
+        return success;
+    }
+};
+
+Test* Parser::test()
+{
+  return new ParserTest();
+}
+
+#else
+
+Test* Parser::test()
+{
+    return nullptr;
+}
+
+#endif

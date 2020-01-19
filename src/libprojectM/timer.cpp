@@ -23,25 +23,51 @@
  *
  * Platform-independent timer
  */
-
+#ifndef WIN32
+#include <stdio.h>
+#endif
 #include "timer.h"
 #include <stdlib.h>
 
+
 #ifndef WIN32
 /** Get number of ticks since the given timestamp */
+
+
+extern "C" {
+
+fspec_gettimeofday pprojectm_gettimeofday = nullptr;
+
+int projectm_gettimeofday(struct timeval *tv, struct timezone *tz) {
+if (pprojectm_gettimeofday) {
+  return (*pprojectm_gettimeofday)(tv,tz);
+  }
+return gettimeofday(tv,tz); 
+}
+}
+
+struct timeval GetCurrentTime() {
+    struct timeval now;
+
+    projectm_gettimeofday(&now, NULL);
+    return now;
+    }
+
 unsigned int getTicks( struct timeval *start ) {
     struct timeval now;
     unsigned int ticks;
 
-    gettimeofday(&now, NULL);
+    projectm_gettimeofday(&now, NULL);
     ticks=(now.tv_sec-start->tv_sec)*1000+(now.tv_usec-start->tv_usec)/1000;
     return(ticks);
   }
 
 #else
+
 unsigned int getTicks( long start ) {
     return GetTickCount() - start;
   }
+
 
 #endif /** !WIN32 */
 

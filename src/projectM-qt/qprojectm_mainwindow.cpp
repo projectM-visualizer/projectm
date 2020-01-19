@@ -38,6 +38,8 @@
 #include "nullable.hpp"
 #include "qprojectmwidget.hpp"
 
+extern int qInitResources();
+
 class PlaylistWriteFunctor {
 	public:
 		PlaylistWriteFunctor(const QVector<QProjectM_MainWindow::PlaylistItemMetaData*>::iterator & begin,
@@ -77,7 +79,7 @@ QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QM
 		configDialog(0), hHeader(0), vHeader(0), _menuVisible(true), _menuAndStatusBarsVisible(true),
 activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDialog(0)
 {
-
+	qInitResources();
 
 	ui = new Ui::QProjectM_MainWindow();
 	ui->setupUi ( this );
@@ -116,6 +118,7 @@ activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDi
 	m_QProjectMWidget->makeCurrent();
 	m_QProjectMWidget->setFocus();
 	setCentralWidget ( m_QProjectMWidget );
+	m_QProjectMWidget->installEventFilter(this);
 
 	m_timer->start ( 0 );
 
@@ -240,7 +243,7 @@ projectM * QProjectM_MainWindow::GetProjectM()
 
 void QProjectM_MainWindow::addPCM(float * buffer, unsigned int bufferSize) {
 
-	qprojectM()->pcm()->addPCMfloat(buffer, bufferSize);
+	qprojectM()->pcm()->addPCMfloat_2ch(buffer, bufferSize);
 }
 
 void QProjectM_MainWindow::updatePlaylistSelection ( bool hardCut, unsigned int index )
@@ -1313,3 +1316,16 @@ void QProjectM_MainWindow::handleFailedPresetSwitch(const bool isHardCut, const 
 
 }
 
+bool QProjectM_MainWindow::eventFilter(QObject *obj, QEvent *event)
+{
+	    if (event->type() == QEvent::MouseButtonDblClick && ((QMouseEvent*)event)->button() == Qt::LeftButton) {
+			    this->setWindowState ( this->windowState() ^ Qt::WindowFullScreen );
+			    return true;
+		} else if (event->type() == QEvent::MouseButtonPress && ((QMouseEvent*)event)->button() == Qt::RightButton) {
+			    setMenuVisible(!_menuVisible);
+				refreshHeaders();
+				return true;
+		} else {
+			    return false;
+		}
+}

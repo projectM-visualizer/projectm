@@ -1,0 +1,5 @@
+QPulseAudioDeviceChooser_moc.cpp
+QPulseAudioDeviceModel_moc.cpp
+QPulseAudioThread_moc.cpp
+projectM-pulseaudio
+ui_PulseDeviceChooserDialog.h

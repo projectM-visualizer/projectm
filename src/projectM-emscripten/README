@@ -1,7 +1,27 @@
-HOW2COMPILE:
+Running on the web.
 
-emcc -I../libprojectm -I../libprojectM/Renderer -Llib \
-  ../libprojectM/KeyHandler.cpp projectM_SDL_emscripten.cpp \
-  -lRenderer -lprojectM -lMilkdropPresetFactory -lprojectM -lRenderer \
-  -s USE_SDL=2 -s LEGACY_GL_EMULATION=1 \
-  -o build/projectEM.html
+## Prepare
+* Activate the emsdk (https://github.com/juj/emsdk#installation-instructions)
+* Make sure you are in the root directory of this project
+* On fresh repositories: `./autogen.sh`
+
+## Compile
+* `emconfigure ./configure --enable-emscripten`
+* `emmake make`
+
+## Create wasm & html files
+* `cd src/projectM-emscripten`
+* `make run`
+
+## Troubleshooting
+
+### General
+
+Want to restart the process after pulling or changing config?
+* `rm src/projectM-emscripten/projectW*`
+* restart with emconfigure or emmake
+
+### OS X troubleshooting:
+
+#### `./autogen.sh: line 3: autoreconf: command not found`
+fix via `brew install automake`

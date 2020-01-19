@@ -1,0 +1,14 @@
+application_qrc.cpp
+qplaylistfiledialog_moc.cpp
+qplaylistmodel_moc.cpp
+qplaylisttableview_moc.cpp
+qpreseteditordialog_moc.cpp
+qpresetfiledialog_moc.cpp
+qpresettextedit_moc.cpp
+qprojectm_mainwindow_moc.cpp
+qprojectm_moc.cpp
+qprojectmconfigdialog_moc.cpp
+qprojectmwidget_moc.cpp
+ui_qpreseteditordialog.h
+ui_qprojectm_mainwindow.h
+ui_qprojectmconfigdialog.h

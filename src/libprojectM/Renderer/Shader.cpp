@@ -7,6 +7,4 @@
 
 #include "Shader.hpp"
 
-Shader::Shader()
-	: enabled(false)
-	{}
+Shader::Shader() {}

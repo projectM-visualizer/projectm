@@ -24,7 +24,7 @@
 #include <cstdlib>
 
 #ifdef WIN32
-#include "win32-dirent.h"
+#include "dirent.h"
 #else
 #include <dirent.h>
 #endif /** WIN32 */
@@ -42,28 +42,38 @@
 #include "PresetFrameIO.hpp"
 
 #include "PresetFactoryManager.hpp"
+#include "MilkdropPresetFactory.hpp"
+
+#ifdef __SSE2__
+#include <immintrin.h>
+#endif
 
 
-MilkdropPreset::MilkdropPreset(std::istream & in, const std::string & presetName,  PresetOutputs & presetOutputs):
-	Preset(presetName),
-    	builtinParams(_presetInputs, presetOutputs),
-    	_presetOutputs(presetOutputs)
-{
-  initialize(in);
-
-}
-
-MilkdropPreset::MilkdropPreset(const std::string & absoluteFilePath, const std::string & presetName, PresetOutputs & presetOutputs):
+MilkdropPreset::MilkdropPreset(MilkdropPresetFactory *factory, std::istream & in, const std::string & presetName,  PresetOutputs & presetOutputs):
 	Preset(presetName),
     builtinParams(_presetInputs, presetOutputs),
+    per_pixel_program(nullptr),
+    _factory(factory),
+    _presetOutputs(presetOutputs)
+{
+  initialize(in);
+}
+
+
+MilkdropPreset::MilkdropPreset(MilkdropPresetFactory *factory, const std::string & absoluteFilePath, const std::string & presetName, PresetOutputs & presetOutputs):
+	Preset(presetName),
+    builtinParams(_presetInputs, presetOutputs),
+    per_pixel_program(nullptr),
+    _filename(parseFilename(absoluteFilePath)),
     _absoluteFilePath(absoluteFilePath),
-    _presetOutputs(presetOutputs),
-    _filename(parseFilename(absoluteFilePath))
+    _factory(factory),
+    _presetOutputs(presetOutputs)
 {
 
   initialize(absoluteFilePath);
-
 }
+
+
 MilkdropPreset::~MilkdropPreset()
 {
 
@@ -72,6 +82,7 @@ MilkdropPreset::~MilkdropPreset()
   traverse<TraverseFunctors::Delete<InitCond> >(per_frame_init_eqn_tree);
 
   traverse<TraverseFunctors::Delete<PerPixelEqn> >(per_pixel_eqn_tree);
+  Expr::delete_expr(per_pixel_program);
 
   traverseVector<TraverseFunctors::Delete<PerFrameEqn> >(per_frame_eqn_tree);
 
@@ -81,29 +92,28 @@ MilkdropPreset::~MilkdropPreset()
   /// and seems to be working if you use a mutex on the preset switching.
   
   for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); 
-	pos != customWaves.end(); ++pos ) {
+        pos != customWaves.end(); ++pos ) {
   //  __android_log_print(ANDROID_LOG_ERROR, "projectM", "not freeing wave %x", *pos);
     delete(*pos);
   }
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); 
-	pos != customShapes.end(); ++pos ) {
+        pos != customShapes.end(); ++pos ) {
 //__android_log_print(ANDROID_LOG_ERROR, "projectM", "not freeing shape %x", *pos);
 
-	delete(*pos);
+        delete(*pos);
   }
   customWaves.clear();
- customShapes.clear();
- presetOutputs().customWaves.clear();
- presetOutputs().customShapes.clear();
-  presetOutputs().drawables.clear();
+  customShapes.clear();
 
+  if (nullptr != _factory)
+      _factory->releasePreset(this);
 }
 
 /* Adds a per pixel equation according to its string name. This
    will be used only by the parser */
 
-int MilkdropPreset::add_per_pixel_eqn(char * name, GenExpr * gen_expr)
+int MilkdropPreset::add_per_pixel_eqn(char * name, Expr * gen_expr)
 {
 
   PerPixelEqn * per_pixel_eqn = NULL;
@@ -176,15 +186,15 @@ void MilkdropPreset::evalCustomWavePerFrameEquations()
   for (PresetOutputs::cwave_container::iterator pos = customWaves.begin(); pos != customWaves.end(); ++pos)
   {
 
-    std::map<std::string, InitCond*> & init_cond_tree = (*pos)->init_cond_tree;
-    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos)
+    std::map<std::string, InitCond*> & init_cond_tree2 = (*pos)->init_cond_tree;
+    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree2.begin(); _pos != init_cond_tree2.end(); ++_pos)
     {
       assert(_pos->second);
       _pos->second->evaluate();
     }
 
-    std::vector<PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
-    for (std::vector<PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
+    std::vector<PerFrameEqn*> & per_frame_eqn_tree2 = (*pos)->per_frame_eqn_tree;
+    for (std::vector<PerFrameEqn*>::iterator _pos = per_frame_eqn_tree2.begin(); _pos != per_frame_eqn_tree2.end(); ++_pos)
     {
       (*_pos)->evaluate();
     }
@@ -198,15 +208,15 @@ void MilkdropPreset::evalCustomShapePerFrameEquations()
   for (PresetOutputs::cshape_container::iterator pos = customShapes.begin(); pos != customShapes.end(); ++pos)
   {
 
-    std::map<std::string, InitCond*> & init_cond_tree = (*pos)->init_cond_tree;
-    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree.begin(); _pos != init_cond_tree.end(); ++_pos)
+    std::map<std::string, InitCond*> & init_cond_tree2 = (*pos)->init_cond_tree;
+    for (std::map<std::string, InitCond*>::iterator _pos = init_cond_tree2.begin(); _pos != init_cond_tree2.end(); ++_pos)
     {
       assert(_pos->second);
       _pos->second->evaluate();
     }
 
-    std::vector<PerFrameEqn*> & per_frame_eqn_tree = (*pos)->per_frame_eqn_tree;
-    for (std::vector<PerFrameEqn*>::iterator _pos = per_frame_eqn_tree.begin(); _pos != per_frame_eqn_tree.end(); ++_pos)
+    std::vector<PerFrameEqn*> & per_frame_eqn_tree2 = (*pos)->per_frame_eqn_tree;
+    for (std::vector<PerFrameEqn*>::iterator _pos = per_frame_eqn_tree2.begin(); _pos != per_frame_eqn_tree2.end(); ++_pos)
     {
       (*_pos)->evaluate();
     }
@@ -254,8 +264,8 @@ void MilkdropPreset::preloadInitialize() {
 
 }
 
-void MilkdropPreset::postloadInitialize() {
-
+void MilkdropPreset::postloadInitialize()
+{
   /* It's kind of ugly to reset these values here. Should definitely be placed in the parser somewhere */
   this->per_frame_eqn_count = 0;
   this->per_frame_init_eqn_count = 0;
@@ -279,17 +289,15 @@ void MilkdropPreset::postloadInitialize() {
 
 void MilkdropPreset::Render(const BeatDetect &music, const PipelineContext &context)
 {
-	_presetInputs.update(music, context);
+        _presetInputs.update(music, context);
 
-	evaluateFrame();
-	pipeline().Render(music, context);
+        evaluateFrame();
+        pipeline().Render(music, context);
 
 }
 
 void MilkdropPreset::initialize(const std::string & pathname)
 {
-  int retval;
-
   preloadInitialize();
 
 if (MILKDROP_PRESET_DEBUG)
@@ -298,6 +306,11 @@ if (MILKDROP_PRESET_DEBUG)
  loadPresetFile(pathname);
 
   postloadInitialize();
+    
+    if (!presetOutputs().compositeShader.programSource.empty())
+        pipeline().compositeShaderFilename = pathname;
+    if (!presetOutputs().warpShader.programSource.empty())
+        pipeline().warpShaderFilename = pathname;
 }
 
 void MilkdropPreset::initialize(std::istream & in)
@@ -309,7 +322,7 @@ void MilkdropPreset::initialize(std::istream & in)
   if ((retval = readIn(in)) < 0)
   {
 
-	if (MILKDROP_PRESET_DEBUG)
+        if (MILKDROP_PRESET_DEBUG)
      std::cerr << "[Preset] failed to load from stream " << std::endl;
 
     /// @bug how should we handle this problem? a well define exception?
@@ -343,7 +356,7 @@ void MilkdropPreset::loadCustomShapeUnspecInitConds()
 {
 
   for (PresetOutputs::cshape_container::iterator pos = customShapes.begin();
-	pos != customShapes.end(); ++pos)
+        pos != customShapes.end(); ++pos)
   {
     assert(*pos);
     (*pos)->loadUnspecInitConds();
@@ -381,107 +394,80 @@ void MilkdropPreset::evaluateFrame()
 
 }
 
+
+#ifdef __SSE2__
+inline void init_mesh(float **mesh, const float value, const int gx, const int gy)
+{
+  __m128 mvalue = _mm_set_ps1(value);
+  for (int x = 0; x < gx; x++)
+    for (int y = 0; y < gy; y += 4)
+      _mm_store_ps(&mesh[x][y], mvalue);
+}
+#else
+inline void init_mesh(float **mesh, const float value, const int gx, const int gy)
+{
+    for (int x=0; x<gx; x++)
+        for (int y=0; y<gy; y++)
+            mesh[x][y] = value;
+}
+#endif
+
 void MilkdropPreset::initialize_PerPixelMeshes()
 {
+  int gx = presetInputs().gx;
+  int gy = presetInputs().gy;
 
-  int x,y;
-      for (x=0;x<presetInputs().gx;x++){
-	for(y=0;y<presetInputs().gy;y++){
-	  _presetOutputs.cx_mesh[x][y]=presetOutputs().cx;
-	}}
-
-
-
-
-      for (x=0;x<presetInputs().gx;x++){
-	for(y=0;y<presetInputs().gy;y++){
-	  _presetOutputs.cy_mesh[x][y]=presetOutputs().cy;
-	}}
-
-
-
-      for (x=0;x<presetInputs().gx;x++){
-	for(y=0;y<presetInputs().gy;y++){
-	  _presetOutputs.sx_mesh[x][y]=presetOutputs().sx;
-	}}
-
-
-
-
-      for (x=0;x<presetInputs().gx;x++){
-	for(y=0;y<presetInputs().gy;y++){
-	  _presetOutputs.sy_mesh[x][y]=presetOutputs().sy;
-	}}
-
-
-
-      for (x=0;x<presetInputs().gx;x++){
-	for(y=0;y<presetInputs().gy;y++){
-	  _presetOutputs.dx_mesh[x][y]=presetOutputs().dx;
-	}}
-
-//std::cout<<presetOutputs().cx<<","<<presetOutputs().cy<<" "<<presetOutputs().dx<<","<<presetOutputs().dy<<std::endl;
-
-      for (x=0;x<presetInputs().gx;x++){
-	for(y=0;y<presetInputs().gy;y++){
-	  _presetOutputs.dy_mesh[x][y]=presetOutputs().dy;
-	}}
-
-
-
-      for (x=0;x<presetInputs().gx;x++){
-	for(y=0;y<presetInputs().gy;y++){
-	  _presetOutputs.zoom_mesh[x][y]=presetOutputs().zoom;
-	}}
-
-
-
-
-      for (x=0;x<presetInputs().gx;x++){
-	for(y=0;y<presetInputs().gy;y++){
-	  _presetOutputs.zoomexp_mesh[x][y]=presetOutputs().zoomexp;
-	}}
-
-
-
-      for (x=0;x<presetInputs().gx;x++){
-	for(y=0;y<presetInputs().gy;y++){
-	  _presetOutputs.rot_mesh[x][y]=presetOutputs().rot;
-	}}
-
-
-      for (x=0;x<presetInputs().gx;x++){
-	for(y=0;y<presetInputs().gy;y++){
-	  _presetOutputs.warp_mesh[x][y]=presetOutputs().warp;
-	}}
-
-
-
+  init_mesh(_presetOutputs.cx_mesh, presetOutputs().cx, gx, gy);
+  init_mesh(_presetOutputs.cy_mesh, presetOutputs().cy, gx, gy);
+  init_mesh(_presetOutputs.sx_mesh, presetOutputs().sx, gx, gy);
+  init_mesh(_presetOutputs.sy_mesh, presetOutputs().sy, gx, gy);
+  init_mesh(_presetOutputs.dx_mesh, presetOutputs().dx, gx, gy);
+  init_mesh(_presetOutputs.dy_mesh, presetOutputs().dy, gx, gy);
+  init_mesh(_presetOutputs.zoom_mesh, presetOutputs().zoom, gx, gy);
+  init_mesh(_presetOutputs.zoomexp_mesh, presetOutputs().zoomexp, gx, gy);
+  init_mesh(_presetOutputs.rot_mesh, presetOutputs().rot, gx, gy);
+  init_mesh(_presetOutputs.warp_mesh, presetOutputs().warp, gx, gy);
 }
+
+
 // Evaluates all per-pixel equations
 void MilkdropPreset::evalPerPixelEqns()
 {
+    if (nullptr == per_pixel_program)
+    {
+        // This is a little forward looking, but if we want to JIT assignments expressions, we might
+        // as well JIT the batch all together rather than one at a time.  At the moment ProgramExpr is
+        // just a different place to loop over the individual steps, but the idea is that this encapsulates
+        // an optimizable chunk of work.
+        // See also CustomWave which does the same for PerPointEqn
+        std::vector<Expr *> steps;
+        for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin(); pos != per_pixel_eqn_tree.end(); ++pos)
+            steps.push_back(pos->second->assign_expr);
+        Expr *program_expr = Expr::create_program_expr(steps, false);
+        Expr *jit = nullptr;
+#if HAVE_LLVM
+        std::string module_name = this->_filename + "_per_pixel";
+        if (!steps.empty())
+            jit = Expr::jit(program_expr, module_name);
+#endif
+        per_pixel_program = jit ? jit : program_expr;
+    }
 
-  /* Evaluate all per pixel equations in the tree datastructure */
-  for (int mesh_x = 0; mesh_x < presetInputs().gx; mesh_x++)
-	  for (int mesh_y = 0; mesh_y < presetInputs().gy; mesh_y++)
-  for (std::map<int, PerPixelEqn*>::iterator pos = per_pixel_eqn_tree.begin();
-       pos != per_pixel_eqn_tree.end(); ++pos)
-    pos->second->evaluate(mesh_x, mesh_y);
-
+    for (int mesh_x = 0; mesh_x < presetInputs().gx; mesh_x++)
+        for (int mesh_y = 0; mesh_y < presetInputs().gy; mesh_y++)
+            per_pixel_program->eval( mesh_x, mesh_y );
 }
 
 int MilkdropPreset::readIn(std::istream & fs) {
 
-  line_mode_t line_mode;
   presetOutputs().compositeShader.programSource.clear();
   presetOutputs().warpShader.programSource.clear();
 
   /* Parse any comments */
   if (Parser::parse_top_comment(fs) < 0)
   {
-	if (MILKDROP_PRESET_DEBUG)
-    		std::cerr << "[Preset::readIn] no left bracket found..." << std::endl;
+        if (MILKDROP_PRESET_DEBUG)
+                    std::cerr << "[Preset::readIn] no left bracket found..." << std::endl;
     return PROJECTM_FAILURE;
   }
 
@@ -503,7 +489,6 @@ int MilkdropPreset::readIn(std::istream & fs) {
   {
     if (retval == PROJECTM_PARSE_ERROR)
     {
-      line_mode = UNSET_LINE_MODE;
       // std::cerr << "[Preset::readIn()] parse error in file \"" << this->absoluteFilePath() << "\"" << std::endl;
     }
   }
@@ -539,7 +524,7 @@ int MilkdropPreset::loadPresetFile(const std::string & pathname)
 }
 
 const std::string & MilkdropPreset::name() const {
-	
-	return name().empty() ? filename() : name();
+
+    return filename();
 }
 

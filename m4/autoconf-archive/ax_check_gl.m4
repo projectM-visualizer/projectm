@@ -97,6 +97,8 @@ m4_define([_AX_CHECK_GL_PROGRAM],
 #   include <GL/gl.h>
 # elif defined(HAVE_OPENGL_GL_H)
 #   include <OpenGL/gl.h>
+# elif defined(HAVE_GLES_GL_H)
+#   include <GLES/gl.h>
 # else
 #   error no gl.h
 # endif
@@ -232,7 +234,7 @@ AC_DEFUN_ONCE([_WITH_XQUARTZ_GL],[
 # OSX specific setup for OpenGL check
 AC_DEFUN([_AX_CHECK_DARWIN_GL], [
  AC_REQUIRE([_WITH_XQUARTZ_GL])
- AS_IF([test "x$with_xquartz_gl" != "xno"],
+ AS_IF([test "x$with_xquartz_gl" != "xno" && test "x$EMSCRIPTEN" == "x"],
        [GL_LIBS="${GL_LIBS:--lGL}"],
        [GL_LIBS="${GL_LIBS:--framework OpenGL}"])
 ])
@@ -274,7 +276,7 @@ AC_DEFUN([AX_CHECK_GL],
 
  dnl this was cache
  _AX_CHECK_GL_SAVE_FLAGS([CFLAGS])
- AC_CHECK_HEADERS([GL/gl.h OpenGL/gl.h],
+ AC_CHECK_HEADERS([GL/gl.h OpenGL/gl.h GLES/gl.h],
    [ax_check_gl_have_headers="yes";break])
  _AX_CHECK_GL_RESTORE_FLAGS([CFLAGS])
 

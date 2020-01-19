@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\ConfigFile.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\fftsg.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\KeyHandler.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PCM.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PipelineMerger.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\Preset.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PresetChooser.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PresetFactory.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PresetFactoryManager.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\PresetLoader.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\projectM.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\TimeKeeper.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\timer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\wipemalloc.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../msvc\glew.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../msvc\dlfcn.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)../msvc\glew.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{9FD8840E-C452-3595-B8BC-200CDF0F6BF9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{086AAEDB-BC71-3D4F-A2E4-9BA153078E68}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

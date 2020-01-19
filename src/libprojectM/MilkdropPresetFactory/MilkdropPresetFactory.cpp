@@ -17,29 +17,24 @@
 #include "IdlePreset.hpp"
 #include "PresetFrameIO.hpp"
 
-MilkdropPresetFactory::MilkdropPresetFactory(int gx, int gy): _usePresetOutputs(false)
+MilkdropPresetFactory::MilkdropPresetFactory(int gx_, int gy_): gx(gx_), gy(gy_), _presetOutputsCache(nullptr)
 {
 	/* Initializes the builtin function database */
 	BuiltinFuncs::init_builtin_func_db();
 
 	/* Initializes all infix operators */
 	Eval::init_infix_ops();
-
-	_presetOutputs = createPresetOutputs(gx,gy);
-	_presetOutputs2 = createPresetOutputs(gx, gy);
 }
 
 MilkdropPresetFactory::~MilkdropPresetFactory() {
 
-	std::cerr << "[~MilkdropPresetFactory] destroy infix ops" << std::endl;
+//	std::cerr << "[~MilkdropPresetFactory] destroy infix ops" << std::endl;
 	Eval::destroy_infix_ops();
-	std::cerr << "[~MilkdropPresetFactory] destroy builtin func" << std::endl;
+//	std::cerr << "[~MilkdropPresetFactory] destroy builtin func" << std::endl;
 	BuiltinFuncs::destroy_builtin_func_db();
-	std::cerr << "[~MilkdropPresetFactory] delete preset out puts" << std::endl;
-	delete(_presetOutputs);
-        delete(_presetOutputs2);
-	std::cerr << "[~MilkdropPresetFactory] done" << std::endl;
-
+//	std::cerr << "[~MilkdropPresetFactory] delete preset out puts" << std::endl;
+	delete(_presetOutputsCache);
+//	std::cerr << "[~MilkdropPresetFactory] done" << std::endl;
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
@@ -147,8 +142,8 @@ void resetPresetOutputs(PresetOutputs * presetOutputs)
 void MilkdropPresetFactory::reset()
 {
 
-    resetPresetOutputs(_presetOutputs);
-    resetPresetOutputs(_presetOutputs2);
+    if (_presetOutputsCache)
+        resetPresetOutputs(_presetOutputsCache);
 }
 
 PresetOutputs* MilkdropPresetFactory::createPresetOutputs(int gx, int gy)
@@ -204,7 +199,7 @@ PresetOutputs* MilkdropPresetFactory::createPresetOutputs(int gx, int gy)
 
 	/* Q AND T VARIABLES START */
 
-	for (int i = 0;i<NUM_Q_VARIABLES;i++)
+    for (unsigned int i = 0;i<NUM_Q_VARIABLES;i++)
 		presetOutputs->q[i] = 0;
 	
 	/* Q AND T VARIABLES END */
@@ -212,16 +207,36 @@ PresetOutputs* MilkdropPresetFactory::createPresetOutputs(int gx, int gy)
 }
 
 
-std::auto_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url, const std::string & name, const std::string & author) {
+std::unique_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url, const std::string & name, const std::string & author) {
 
-    PresetOutputs *presetOutputs = _usePresetOutputs ? _presetOutputs : _presetOutputs2;
+    PresetOutputs *presetOutputs;
+    // use cached PresetOutputs if there is one, otherwise allocate
+    if (_presetOutputsCache)
+    {
+        presetOutputs = _presetOutputsCache;
+        _presetOutputsCache = nullptr;
+    }
+    else
+    {
+        presetOutputs = createPresetOutputs(gx,gy);
+    }
 
-	_usePresetOutputs = !_usePresetOutputs;
 	resetPresetOutputs(presetOutputs);
 
 	std::string path;
 	if (PresetFactory::protocol(url, path) == PresetFactory::IDLE_PRESET_PROTOCOL) {
-		return IdlePresets::allocate(path, *presetOutputs);
+		return IdlePresets::allocate(this, path, *presetOutputs);
 	} else
-		return std::auto_ptr<Preset>(new MilkdropPreset(url, name, *presetOutputs));
+		return std::unique_ptr<Preset>(new MilkdropPreset(this, url, name, *presetOutputs));
+}
+
+// this gives the preset a way to return the PresetOutput w/o dependency on class projectM behavior
+void MilkdropPresetFactory::releasePreset(Preset *preset_)
+{
+    MilkdropPreset *preset = (MilkdropPreset *)preset_;
+    // return PresetOutputs to the cache
+    if (nullptr == _presetOutputsCache)
+        _presetOutputsCache = &preset->_presetOutputs;
+    else
+        delete &preset->_presetOutputs;
 }

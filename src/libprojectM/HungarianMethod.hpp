@@ -11,10 +11,10 @@
 template <int N=20>
 class HungarianMethod {
 public :
-static const int MAX_SIZE = N;
+static const size_t MAX_SIZE = N;
 
 private:
-int n, max_match;        //n workers and n jobs
+size_t n, max_match;        //n workers and n jobs
 double lx[N], ly[N];        //labels of X and Y parts
 int xy[N];               //xy[x] - vertex that is matched with x,
 int yx[N];               //yx[y] - vertex that is matched with y
@@ -28,15 +28,15 @@ void init_labels(const double cost[N][N])
 {
     memset(lx, 0, sizeof(lx));
     memset(ly, 0, sizeof(ly));
-    for (int x = 0; x < n; x++)
-        for (int y = 0; y < n; y++)
+    for (unsigned int x = 0; x < n; x++)
+        for (unsigned int y = 0; y < n; y++)
             lx[x] = std::max(lx[x], cost[x][y]);
 }
 
 void augment(const double cost[N][N]) //main function of the algorithm
 {
     if (max_match == n) return;        //check wether matching is already perfect
-    int x, y, root;                    //just counters and root vertex
+    unsigned int x, y, root = 0;                //just counters and root vertex
     int q[N], wr = 0, rd = 0;          //q - queue for bfs, wr,rd - write and read
                                        //pos in queue
     memset(S, false, sizeof(S));       //init set S
@@ -120,7 +120,7 @@ void augment(const double cost[N][N]) //main function of the algorithm
 
 void update_labels()
 {
-    int x, y;
+    unsigned int x, y;
     double delta = std::numeric_limits<double>::max();
     for (y = 0; y < n; y++)            //calculate delta using slack
         if (!T[y])
@@ -140,7 +140,7 @@ void add_to_tree(int x, int prevx, const double cost[N][N])
 {
     S[x] = true;                    //add x to S
     prev[x] = prevx;                //we need this when augmenting
-    for (int y = 0; y < n; y++)    //update slacks, because we add new vertex to S
+    for (unsigned int y = 0; y < n; y++)    //update slacks, because we add new vertex to S
         if (lx[x] + ly[y] - cost[x][y] < slack[y])
         {
             slack[y] = lx[x] + ly[y] - cost[x][y];
@@ -154,7 +154,7 @@ public:
 /// \param cost a matrix of two sets I,J where cost[i][j] is the weight of edge i->j
 /// \param logicalSize the number of elements in both I and J
 /// \returns the total cost of the best matching
-inline double operator()(const double cost[N][N], int logicalSize)
+inline double operator()(const double cost[N][N], size_t logicalSize)
 {
 
     n = logicalSize;
@@ -165,7 +165,7 @@ inline double operator()(const double cost[N][N], int logicalSize)
     memset(yx, -1, sizeof(yx));
     init_labels(cost);                    //step 0
     augment(cost);                        //steps 1-3
-    for (int x = 0; x < n; x++)       //forming answer there
+    for (unsigned int x = 0; x < n; x++)       //forming answer there
         ret += cost[x][xy[x]];
     return ret;
 }

@@ -1,5 +1,9 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
-autoreconf --install || exit 1
+set -e # Drop-out from execution if error occurs
 
-echo "Now run ./configure && make"
+printf 'Running autoreconf...'
+
+autoreconf --install
+
+printf '\nSuccess!\nNow please run: ./configure\n'

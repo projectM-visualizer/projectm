@@ -1,8 +1,10 @@
-/build
+build_logs/
 xcuserdata
 src/libprojectM/config.inp
+src/libprojectM/config.inp.b
+src/libprojectM/config.inp.in
 src/projectM-emscripten/build/presets
-src/libprojectM/libprojectM.xcodeproj
+src/libprojectM/libprojectM.xcodeproj/xcshareddata
 presets/custom
 project.xcworkspace
 *.o
@@ -34,3 +36,12 @@ m4/ltoptions.m4
 m4/ltsugar.m4
 m4/ltversion.m4
 m4/lt~obsolete.m4
+/t
+/src/libprojectM/libprojectM.pc
+/build
+/dist
+
+
+_sync.bat
+_sync.sh
+to_sync/

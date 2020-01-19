@@ -30,7 +30,7 @@
 #define _PROJECTM_HPP
 
 #ifdef WIN32
-#include "win32-dirent.h"
+#include "dirent.h"
 #else
 #include <dirent.h>
 #endif /** WIN32 */
@@ -53,8 +53,11 @@
 #endif /** WIN32 */
 
 #endif /** MACOS */
-#ifdef WIN322
-#define inline
+
+#ifdef WIN32
+// libs required for win32
+#pragma comment(lib, "psapi.lib")
+#pragma comment(lib, "kernel32.lib")
 #endif /** WIN32 */
 
 #include "dlldefs.h"
@@ -128,6 +131,7 @@ public:
         std::string presetURL;
         std::string titleFontURL;
         std::string menuFontURL;
+        std::string datadir;
         int smoothPresetDuration;
         int presetDuration;
         float beatSensitivity;
@@ -135,17 +139,33 @@ public:
         float easterEgg;
         bool shuffleEnabled;
         bool softCutRatingsEnabled;
+
+        Settings() :
+            meshX(32),
+            meshY(24),
+            fps(35),
+            textureSize(512),
+            windowWidth(512),
+            windowHeight(512),
+            smoothPresetDuration(10),
+            presetDuration(15),
+            beatSensitivity(10.0),
+            aspectCorrection(true),
+            easterEgg(0.0),
+            shuffleEnabled(true),
+            softCutRatingsEnabled(false) {}
     };
 
   projectM(std::string config_file, int flags = FLAG_NONE);
   projectM(Settings settings, int flags = FLAG_NONE);
 
-  //DLLEXPORT projectM(int gx, int gy, int fps, int texsize, int width, int height,std::string preset_url,std::string title_fonturl, std::string title_menuurl);
-
   void projectM_resetGL( int width, int height );
   void projectM_resetTextures();
   void projectM_setTitle( std::string title );
   void renderFrame();
+  Pipeline * renderFrameOnlyPass1(Pipeline *pPipeline);
+  void renderFrameOnlyPass2(Pipeline *pPipeline,int xoffset,int yoffset,int eye);
+  void renderFrameEndOnSeparatePasses(Pipeline *pPipeline);
   unsigned initRenderToTexture();
   void key_handler( projectMEvent event,
 		    projectMKeycode keycode, projectMModifier modifier );
@@ -242,7 +262,7 @@ public:
   }
 
   /// Occurs when active preset has switched. Switched to index is returned
-  virtual void presetSwitchedEvent(bool isHardCut, unsigned int index) const {};
+  virtual void presetSwitchedEvent(bool isHardCut, size_t index) const {};
   virtual void shuffleEnabledValueChanged(bool isEnabled) const {};
   virtual void presetSwitchFailedEvent(bool hardCut, unsigned int index, const std::string & message) const {};
 
@@ -262,11 +282,18 @@ public:
   void selectPrevious(const bool);
   void selectNext(const bool);
   void selectRandom(const bool);
+    
+  int getWindowWidth() { return _settings.windowWidth; }
+  int getWindowHeight() { return _settings.windowHeight; }
+  bool getErrorLoadingCurrentPreset() const { return errorLoadingCurrentPreset; }
+
+  void default_key_handler(projectMEvent event, projectMKeycode keycode);
+  Renderer *renderer;
+
 private:
   PCM * _pcm;
   double sampledPresetDuration();
   BeatDetect * beatDetect;
-  Renderer *renderer;
   PipelineContext * _pipelineContext;
   PipelineContext * _pipelineContext2;
   Settings _settings;
@@ -296,7 +323,6 @@ private:
   /// Deinitialize all preset related tools. Usually done before projectM cleanup
   void destroyPresetTools();
 
-  void default_key_handler( projectMEvent event, projectMKeycode keycode );
   /// The current position of the directory iterator
   PresetIterator * m_presetPos;
 
@@ -307,10 +333,10 @@ private:
   PresetChooser * m_presetChooser;
 
   /// Currently loaded preset
-  std::auto_ptr<Preset> m_activePreset;
+  std::unique_ptr<Preset> m_activePreset;
 
   /// Destination preset when smooth preset switching
-  std::auto_ptr<Preset> m_activePreset2;
+  std::unique_ptr<Preset> m_activePreset2;
 
   TimeKeeper *timeKeeper;
 
@@ -320,10 +346,11 @@ private:
   MasterRenderItemMerge * _merger;
 
   bool running;
+  bool errorLoadingCurrentPreset;
 
   Pipeline* currentPipe;
 
-  std::string switchPreset(std::auto_ptr<Preset> & targetPreset);
+  std::string switchPreset(std::unique_ptr<Preset> & targetPreset);
   void switchPreset(const bool hardCut);
 
 

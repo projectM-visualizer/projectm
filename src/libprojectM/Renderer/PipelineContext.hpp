@@ -12,7 +12,8 @@ class PipelineContext
 {
 public:
 	int fps;
-    	float time;
+    float time;
+    float presetStartTime;
 	int   frame;
 	float progress;
 

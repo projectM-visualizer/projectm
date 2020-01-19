@@ -42,14 +42,14 @@ int PCM::maxsamples = 2048;
 // number of samples specified.
 #include <iostream>
 PCM::PCM() {
-    initPCM( 2048 );
+    _initPCM( 2048 );
 
     #ifdef DEBUG
     std::cerr << "[PCM] MAX SAMPLES:" << maxsamples << std::endl;
     #endif
   }
 
-void PCM::initPCM(int samples) {
+void PCM::_initPCM(int samples) {
   int i;
 
     waveSmoothing = 0;
@@ -137,6 +137,31 @@ void PCM::addPCMfloat(const float *PCMdata, int samples)
     getPCM(vdataL,512,0,1,0,0);
     getPCM(vdataR,512,1,1,0,0);
 }
+
+
+void PCM::addPCMfloat_2ch(const float *PCMdata, int samples)
+{
+    int i,j;
+
+    for(i=0;i<samples;i+=2)
+    {
+        j=(i/2)+start;
+        PCMd[0][j%maxsamples] = PCMdata[i];
+        PCMd[1][j%maxsamples] = PCMdata[i+1];
+    }
+
+    start+=samples/2;
+    start=start%maxsamples;
+
+    newsamples+=samples/2;
+    if (newsamples>maxsamples)
+        newsamples=maxsamples;
+    numsamples = getPCMnew(pcmdataR,1,0,waveSmoothing,0,0);
+    getPCMnew(pcmdataL,0,0,waveSmoothing,0,1);
+    getPCM(vdataL,512,0,1,0,0);
+    getPCM(vdataR,512,1,1,0,0);
+}
+
 
 void PCM::addPCM16Data(const short* pcm_data, short samples)  {
    int i, j;
@@ -266,7 +291,7 @@ void PCM::addPCM8_512( const unsigned char PCMdata[2][512])
 
 void PCM::getPCM(float *PCMdata, int samples, int channel, int freq, float smoothing, int derive)
 {
-   int i,index;
+   int index;
 
    index=start-1;
 
@@ -274,7 +299,7 @@ void PCM::getPCM(float *PCMdata, int samples, int channel, int freq, float smoot
 
    PCMdata[0]=PCMd[channel][index];
 
-   for(i=1;i<samples;i++)
+   for(int i=1;i<samples;i++)
      {
        index=start-1-i;
        if (index<0) index=maxsamples+index;
@@ -285,7 +310,7 @@ void PCM::getPCM(float *PCMdata, int samples, int channel, int freq, float smoot
    //return derivative of PCM data
    if(derive)
      {
-       for(i=0;i<samples-1;i++)
+       for(int i=0;i<samples-1;i++)
 	 {
 	   PCMdata[i]=PCMdata[i]-PCMdata[i+1];
 	 }

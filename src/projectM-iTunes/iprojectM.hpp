@@ -52,7 +52,7 @@
 #include "libprojectM/projectM.hpp"
 #include "getConfigFilename.h"
 #include <time.h>
-#include <OpenGL/gl.h>
+#include <OpenGL/gl3.h>
 
 #if TARGET_OS_MAC
 #import <Cocoa/Cocoa.h>
@@ -73,25 +73,21 @@
 
 #define	kTVisualPluginCreator			'hook'
 
-#define	kTVisualPluginMajorVersion		2
-#define	kTVisualPluginMinorVersion		2
+#define	kTVisualPluginMajorVersion		3
+#define	kTVisualPluginMinorVersion	    0
 #define	kTVisualPluginReleaseStage		betaStage
 #define	kTVisualPluginNonFinalRelease	0
 
 struct VisualPluginData;
 
-#if TARGET_OS_MAC
 #import <Cocoa/Cocoa.h>
 #import <AppKit/AppKit.h>
 
 // "namespace" our ObjC classname to avoid load conflicts between multiple visualizer plugins
 #define VisualView		iProjectM_VisualView
-#define GLVisualView	iProjectM_GLVisualView
 
 @class VisualView;
-@class GLVisualView;
 
-#endif
 
 #define kInfoTimeOutInSeconds		10							// draw info/artwork for N seconds when it changes or playback starts
 #define kPlayingPulseRateInHz		60							// when iTunes is playing, draw N times a second
@@ -130,6 +126,8 @@ struct VisualPluginData
 
 	Boolean				playing;								// is iTunes currently playing audio?
 	Boolean				padding[3];
+    
+    Boolean             readyToDraw;
 
 	time_t				drawInfoTimeOut;						// when should we stop showing info/artwork?
 
@@ -160,7 +158,7 @@ void		InvalidateVisual( VisualPluginData * visualPluginData );
 
 OSStatus	ConfigureVisual( VisualPluginData * visualPluginData );
 
-void        initProjectM( VisualPluginData * visualPluginData );
+void        initProjectM( VisualPluginData * visualPluginData, std::string presetPath );
 void        renderProjectMTexture( VisualPluginData * visualPluginData );
 void        keypressProjectM( VisualPluginData * visualPluginData, projectMEvent event, projectMKeycode keycode, projectMModifier mod );
 

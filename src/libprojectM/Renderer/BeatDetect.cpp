@@ -36,10 +36,10 @@
 #include <cmath>
 #include "BeatDetect.hpp"
 
-BeatDetect::BeatDetect(PCM *pcm) {
+BeatDetect::BeatDetect(PCM *_pcm) {
   int x,y; 
 
-  this->pcm=pcm;
+  this->pcm=_pcm;
 
   this->vol_instant=0;
   this->vol_history=0;
@@ -70,8 +70,9 @@ BeatDetect::BeatDetect(PCM *pcm) {
     this->treb_att = 0;
     this->mid_att = 0;
     this->bass_att = 0;
+    this->vol_att = 0;
     this->vol = 0;
-
+  
   
   }
 
@@ -87,6 +88,7 @@ void BeatDetect::reset() {
   this->treb_att = 0;
   this->mid_att = 0;
   this->bass_att = 0;
+  this->vol_att = 0;
   }
 
 void BeatDetect::detectFromSamples() {
@@ -168,6 +170,7 @@ void BeatDetect::getBeatVals( float *vdataL,float *vdataR ) {
 	  treb_att=.6 * treb_att + .4 * treb;
 	  mid_att=.6 * mid_att + .4 * mid;
 	  bass_att=.6 * bass_att + .4 * bass;
+      vol_att=.6 * vol_att + .4 * vol;
 
 	  if(bass_att>100)bass_att=100;
 	  if(bass >100)bass=100;
@@ -175,6 +178,7 @@ void BeatDetect::getBeatVals( float *vdataL,float *vdataR ) {
 	  if(mid >100)mid=100;
 	  if(treb_att>100)treb_att=100;
 	  if(treb >100)treb=100;
+      if(vol_att>100)vol_att=100;
 	  if(vol>100)vol=100;
 	  
 	   // *vol=(beat_instant[3])/(beat_history[3]);

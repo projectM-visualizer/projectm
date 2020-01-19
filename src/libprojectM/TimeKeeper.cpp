@@ -14,7 +14,7 @@ TimeKeeper::TimeKeeper(double presetDuration, double smoothDuration, double east
     _easterEgg = easterEgg;
 
 #ifndef WIN32
-	gettimeofday ( &this->startTime, NULL );
+	projectm_gettimeofday ( &this->startTime, NULL );
 #else
 	startTime = GetTickCount();
 #endif /** !WIN32 */
@@ -94,6 +94,16 @@ int TimeKeeper::PresetFrameB()
 int TimeKeeper::PresetFrameA()
   {
     return _presetFrameA;
+  }
+
+int TimeKeeper::PresetTimeB()
+  {
+    return _presetTimeB;
+  }
+
+int TimeKeeper::PresetTimeA()
+  {
+    return _presetTimeA;
   }
 
 double TimeKeeper::sampledPresetDuration() {

@@ -16,7 +16,7 @@
 #include <sstream>
 #include <set>
 
-#ifdef __linux__
+#ifdef __unix__
 extern "C"
 {
 #include <errno.h>
@@ -63,7 +63,7 @@ void PresetLoader::rescan()
 
 	// Clear the directory entry collection
 	clear();
-	
+
 	// If directory already opened, close it first
 	if ( _dir )
 	{
@@ -84,8 +84,8 @@ void PresetLoader::rescan()
 
 	while ( ( dir_entry = readdir ( _dir ) ) != NULL )
 	{
-    if (dir_entry->d_name == 0)
-      continue;
+        if (dir_entry->d_name[0] == 0)
+          continue;
 
 		std::ostringstream out;
 		// Convert char * to friendly string
@@ -121,7 +121,7 @@ void PresetLoader::rescan()
 	// Give all presets equal rating of 3 - why 3? I don't know
 	_ratings = std::vector<RatingList>(TOTAL_RATING_TYPES, RatingList( _presetNames.size(), 3 ));
 	_ratingsSums = std::vector<int>(TOTAL_RATING_TYPES, 3 * _presetNames.size());
-	
+
 
 	assert ( _entries.size() == _presetNames.size() );
 
@@ -130,11 +130,10 @@ void PresetLoader::rescan()
 }
 
 
-std::auto_ptr<Preset> PresetLoader::loadPreset ( unsigned int index )  const
+std::unique_ptr<Preset> PresetLoader::loadPreset ( unsigned int index )  const
 {
 
 	// Check that index isn't insane
-	assert ( index >= 0 );
 	assert ( index < _entries.size() );
 	return _presetFactoryManager.allocate
 		( _entries[index], _presetNames[index] );
@@ -142,9 +141,9 @@ std::auto_ptr<Preset> PresetLoader::loadPreset ( unsigned int index )  const
 }
 
 
-std::auto_ptr<Preset> PresetLoader::loadPreset ( const std::string & url )  const
+std::unique_ptr<Preset> PresetLoader::loadPreset ( const std::string & url )  const
 {
-	std::cout << "Loading preset " << url << std::endl;
+//    std::cout << "Loading preset " << url << std::endl;
 
 	try {
 		/// @bug probably should not use url for preset name
@@ -155,7 +154,7 @@ std::auto_ptr<Preset> PresetLoader::loadPreset ( const std::string & url )  cons
 	} catch (...) {
 		throw PresetFactoryException("preset factory exception of unknown cause");
 	}
-	return std::auto_ptr<Preset>();
+    return std::unique_ptr<Preset>();
 }
 
 void PresetLoader::handleDirectoryError()
@@ -193,11 +192,9 @@ void PresetLoader::handleDirectoryError()
 
 void PresetLoader::setRating(unsigned int index, int rating, const PresetRatingType ratingType)
 {
-	assert ( index >=0 );
-	
 	const unsigned int ratingTypeIndex = static_cast<unsigned int>(ratingType);
 	assert (index < _ratings[ratingTypeIndex].size());
- 
+
 	_ratingsSums[ratingTypeIndex] -= _ratings[ratingTypeIndex][index];
 
 	_ratings[ratingTypeIndex][index] = rating;
@@ -214,12 +211,12 @@ unsigned int PresetLoader::addPresetURL ( const std::string & url, const std::st
 	assert(ratings.size() == TOTAL_RATING_TYPES);
 	assert(ratings.size() == _ratings.size());
 
-	for (int i = 0; i < _ratings.size(); i++)
+    for (unsigned int i = 0; i < _ratings.size(); i++)
 		_ratings[i].push_back(ratings[i]);
 
-	for (int i = 0; i < ratings.size(); i++)
+    for (unsigned int i = 0; i < ratings.size(); i++)
 		_ratingsSums[i] += ratings[i];
-	
+
 	return _entries.size()-1;
 }
 
@@ -228,12 +225,12 @@ void PresetLoader::removePreset ( unsigned int index )
 
 	_entries.erase ( _entries.begin() + index );
 	_presetNames.erase ( _presetNames.begin() + index );
-	
-	for (int i = 0; i < _ratingsSums.size(); i++) {
+
+    for (unsigned int i = 0; i < _ratingsSums.size(); i++) {
 		_ratingsSums[i] -= _ratings[i][index];
 		_ratings[i].erase ( _ratings[i].begin() + index );
 	}
-	
+
 
 }
 
@@ -269,15 +266,15 @@ void PresetLoader::insertPresetURL ( unsigned int index, const std::string & url
 {
 	_entries.insert ( _entries.begin() + index, url );
 	_presetNames.insert ( _presetNames.begin() + index, presetName );
-	
-	
 
-	for (int i = 0; i < _ratingsSums.size();i++) {
+
+
+    for (unsigned int i = 0; i < _ratingsSums.size();i++) {
 		_ratingsSums[i] += _ratings[i][index];
 		_ratings[i].insert ( _ratings[i].begin() + index, ratings[i] );
 	}
 
 	assert ( _entries.size() == _presetNames.size() );
-	
-	
+
+
 }

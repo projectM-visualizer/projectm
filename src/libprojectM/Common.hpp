@@ -30,11 +30,12 @@
 #include <typeinfo>
 #include <cstdarg>
 #include <cassert>
+
 #ifdef _MSC_sVER
 #define strcasecmp(s, t) _strcmpi(s, t)
 #endif
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER ) && !defined(EYETUNE_WINRT)
 	#pragma warning( disable : 4244 4305 4996; once : 4018 )
 	#define WIN32_LEAN_AND_MEAN
 	#define NOMINMAX
@@ -61,7 +62,7 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define STRING_LINE_SIZE 1024
 
 
-#ifdef __linux__
+#ifdef __unix__
 #include <cstdlib>
 #define projectM_isnan std::isnan
 #endif
@@ -79,7 +80,7 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define projectM_isnan(x) ((x) != (x))
 #endif
 
-#ifdef __linux__
+#ifdef __unix__
 #define projectM_fmax fmax
 #endif
 
@@ -91,7 +92,7 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define projectM_fmax(x,y) ((x) >= (y) ? (x): (y))
 #endif
 
-#ifdef __linux__
+#ifdef __unix__
 #define projectM_fmin fmin
 #endif
 
@@ -141,6 +142,7 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #define PATH_SEPARATOR UNIX_PATH_SEPARATOR
 #endif /** WIN32 */
 #include <string>
+#include <algorithm>
 
 const unsigned int NUM_Q_VARIABLES(32);
 const std::string PROJECTM_FILE_EXTENSION("prjm");
@@ -208,24 +210,23 @@ const std::string PROJECTM_MODULE_EXTENSION("so");
 
 inline std::string parseExtension(const std::string & filename) {
 
-const std::size_t start = filename.find_last_of('.');
+    const std::size_t start = filename.find_last_of('.');
 
-if (start == std::string::npos || start >= (filename.length()-1))
-	return "";
-else
-	return filename.substr(start+1, filename.length());
-
+    if (start == std::string::npos || start >= (filename.length()-1))
+        return "";
+    std::string ext = filename.substr(start+1, filename.length());
+    std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
+    return ext;
 }
 
 inline std::string parseFilename(const std::string & filename) {
 
-const std::size_t start = filename.find_last_of('/');
+    const std::size_t start = filename.find_last_of('/');
 
-if (start == std::string::npos || start >= (filename.length()-1))
-	return "";
-else
-	return filename.substr(start+1, filename.length());
-
+    if (start == std::string::npos || start >= (filename.length()-1))
+        return "";
+    else
+        return filename.substr(start+1, filename.length());
 }
 
 inline double meanSquaredError(const double & x, const double & y) {
@@ -245,5 +246,3 @@ enum PresetRatingType {
 typedef std::vector<int> RatingList;
 
 #endif
-
-
