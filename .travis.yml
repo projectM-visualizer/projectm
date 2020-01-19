@@ -60,7 +60,8 @@ matrix:
         - MATRIX_EVAL="brew update && brew install sdl2 glm"
 
     # emscripten
-    - env:
+    - os: linux
+      env:
         - MATRIX_EVAL="docker run -dit --name emscripten -v $(pwd):/src trzeci/emscripten:sdk-incoming-64bit bash"
       services:
         - docker
