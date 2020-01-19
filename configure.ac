@@ -189,7 +189,7 @@ AS_IF([test "$enable_qt" != "no"],
         enable_qt=yes
         export QT_SELECT=qt5
 
-        # we depend on lQt5Gui and lQt5OpenGL
+        # we depend on libQt5Gui and libQt5OpenGL
         # https://github.com/projectM-visualizer/projectm/issues/271
         LIBS="$LIBS -lQt5Gui -lQt5OpenGL"
     ],
