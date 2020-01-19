@@ -16,7 +16,7 @@ endif
 
 if ENABLE_EMSCRIPTEN
   PROJECTM_EMSCRIPTEN_SUBDIR = projectM-emscripten
-	PROJECTM_SDL_SUBDIR =
+	PROJECTM_SDL_SUBDIR = projectM-sdl
 endif
 
 # system headers/libraries/data to install
