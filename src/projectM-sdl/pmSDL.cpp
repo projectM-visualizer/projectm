@@ -151,6 +151,93 @@ void projectMSDL::maximize() {
     resize(dm.w, dm.h);
 }
 
+/* Stretch projectM across multiple monitors */
+void projectMSDL::stretchMonitors()
+{
+	int displayCount = SDL_GetNumVideoDisplays();
+	if (displayCount >= 2)
+	{
+		std::vector<SDL_Rect> displayBounds;
+		for (int i = 0; i < displayCount; i++)
+		{
+			displayBounds.push_back(SDL_Rect());
+			SDL_GetDisplayBounds(i, &displayBounds.back());
+		}
+
+		int furthestX = 0;
+		int furthestY = 0;
+		int widest = 0;
+		int highest = 0;
+		int spanX = 0;
+		int spanY = 0;
+		int spanWidth = 0;
+		int spanHeight = 0;
+
+		bool horizontal = true;
+		bool vertical = true;
+
+		for (int i = 0; i < displayCount; i++)
+		{
+			if (displayBounds[0].x != displayBounds[i].x) vertical = false;
+			if (displayBounds[0].y != displayBounds[i].y) horizontal = false;
+		}
+
+		if (!vertical && !horizontal)
+		{
+			// If multiple montors are not perfectly aligned it's a bit of work to get the correct x,y and
+			// dimensions But in my testing on Windows 10 even with the screen did not render correctly.
+			// @todo more testing and make it work.
+			SDL_Log(
+				"SDL currently only supports multiple monitors that are aligned evenly in a vertical or "
+				"horizontal position.");
+		}
+		else
+		{
+			for (int i = 0; i < displayCount; i++)
+			{
+				if (displayBounds[i].x < furthestX) spanX = displayBounds[i].x; // X furthest left device
+				if (displayBounds[i].y < furthestY) spanY = displayBounds[i].y; // Y highest device
+				if (displayBounds[i].h > highest) highest = displayBounds[i].h; // highest resolution Height
+				if (displayBounds[i].h > widest) widest = displayBounds[i].w;		// highest resolution Width
+				if (horizontal) // perfectly aligned horizonal monitors.
+				{
+					spanHeight = highest;
+					spanWidth = spanWidth + displayBounds[i].w;
+				}
+				else if (vertical) // perfectly aligned vertical monitors.
+				{
+					spanHeight = spanHeight + displayBounds[i].h;
+					spanWidth = widest;
+				}
+			}
+			SDL_SetWindowPosition(win, spanX, spanY);
+			SDL_SetWindowSize(win, spanWidth, spanHeight);
+		}
+	}
+}
+
+/* Moves projectM to the next monitor */
+void projectMSDL::nextMonitor()
+{
+	int displayCount = SDL_GetNumVideoDisplays();
+	int currentWindowIndex = SDL_GetWindowDisplayIndex(win);
+	if (displayCount >= 2)
+	{
+		std::vector<SDL_Rect> displayBounds;
+		int nextWindow = currentWindowIndex + 1;
+		if (nextWindow > displayCount) nextWindow = 0;
+
+		for (int i = 0; i < displayCount; i++)
+		{
+			displayBounds.push_back(SDL_Rect());
+			SDL_GetDisplayBounds(i, &displayBounds.back());
+		}
+		SDL_SetWindowPosition(win, displayBounds[nextWindow].x, displayBounds[nextWindow].y);
+		SDL_SetWindowSize(win, displayBounds[nextWindow].w, displayBounds[nextWindow].h);
+		maximize();
+	}
+}
+
 void projectMSDL::toggleFullScreen() {
     maximize();
     if (isFullScreen) {
@@ -180,8 +267,26 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
                 return;
             }
             break;
-
-
+		case SDLK_s:
+			if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+			{
+				// command-s: [s]tretch monitors
+				// Stereo requires fullscreen
+#if !STEREOSCOPIC_SBS
+				stretchMonitors();
+#endif
+				return; // handled
+			}
+		case SDLK_m:
+			if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+			{
+				// command-m: change [m]onitor
+				// Stereo requires fullscreen
+#if !STEREOSCOPIC_SBS
+				nextMonitor();
+#endif
+				return; // handled
+			}
         case SDLK_f:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
                 // command-f: fullscreen
@@ -298,9 +403,12 @@ void projectMSDL::pollEvent() {
         switch (evt.type) {
             case SDL_WINDOWEVENT:
                 switch (evt.window.event) {
-                    case SDL_WINDOWEVENT_RESIZED:
-                        resize(evt.window.data1, evt.window.data2);
-                        break;
+					case SDL_WINDOWEVENT_RESIZED: 
+						resize(evt.window.data1, evt.window.data2); 
+						break;
+					case SDL_WINDOWEVENT_SIZE_CHANGED: 
+						resize(evt.window.data1, evt.window.data2);
+						break;
                 }
                 break;
             case SDL_KEYDOWN:
