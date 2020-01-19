@@ -95,6 +95,8 @@ public:
     int openAudioInput();
     void beginAudioCapture();
     void endAudioCapture();
+	void stretchMonitors();
+	void nextMonitor();
     void toggleFullScreen();
     void resize(unsigned int width, unsigned int height);
     void renderFrame();
