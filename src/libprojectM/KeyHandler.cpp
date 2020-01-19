@@ -181,12 +181,13 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	        break;
 	    case PROJECTM_K_b:
 	      break;
-            case PROJECTM_K_H:
-		selectNext(true);
-	      break;
-            case PROJECTM_K_N:
-		selectNext(false);
-	      break;
+      case PROJECTM_K_H:
+      case PROJECTM_K_n:
+          selectNext(true);
+          break;
+      case PROJECTM_K_N:
+          selectNext(false);
+          break;
 	    case PROJECTM_K_r:
 		selectRandom(true);
 		break;
@@ -196,6 +197,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_p:
 	      selectPrevious(true);
 	      break;
+	    case PROJECTM_K_P:
 	    case PROJECTM_K_BACKSPACE:
 	      selectPrevious(false);
 	      break;
@@ -262,4 +264,3 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 
 	}
 }
-
