@@ -183,6 +183,10 @@ AS_IF([test "$enable_qt" != "no"],
         # we have at least qt5 if $have_qt is true
         enable_qt=yes
         export QT_SELECT=qt5
+
+        # we depend on lQt5Gui and lQt5OpenGL
+        # https://github.com/projectM-visualizer/projectm/issues/271
+        LIBS="$LIBS -lQt5Gui -lQt5OpenGL"
     ],
     [AS_IF([test "$enable_qt" = "yes"],
         [AC_MSG_ERROR(["Qt5 not found"])],
