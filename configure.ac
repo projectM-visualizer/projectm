@@ -276,7 +276,7 @@ Qt:                     ${enable_qt}
 Pulseaudio:             ${enable_pulseaudio}
 Jack:                   ${enable_jack}
 OpenGLES:               ${enable_gles}
-Emscripten:             ${enable_emscripten}
+Emscripten:             ${emscripten_compiler}
 llvm:                   ${enable_llvm}
 Preset subdirs:         ${enable_preset_subdirs}
 ])
