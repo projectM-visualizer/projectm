@@ -59,7 +59,7 @@ class DLLEXPORT BeatDetect
 		void initBeatDetect();
 		void reset();
 		void detectFromSamples();
-		void getBeatVals ( float *vdataL, float *vdataR );
+		void getBeatVals( float samplerate, unsigned fft_length, float *vdataL, float *vdataR );
 		float getPCMScale()
 		{
 			// added to address https://github.com/projectM-visualizer/projectm/issues/161
@@ -74,17 +74,34 @@ class DLLEXPORT BeatDetect
 		}
 
 	private:
-		/** Vars */
-		float beat_buffer[32][80],
-		beat_instant[32],
-		beat_history[32];
-		float beat_val[32],
-		beat_att[32],
-		beat_variance[32];
 		int beat_buffer_pos;
-		float vol_buffer[80],
-		vol_instant;
-		float vol_history;
+        float bass_buffer[80];
+		float bass_history;
+        float bass_instant;
+
+		float mid_buffer[80];
+        float mid_history;
+		float mid_instant;
+
+		float treb_buffer[80];
+		float treb_history;
+		float treb_instant;
+
+        float vol_buffer[80];
+        float vol_history;
+        float vol_instant;
+
+    //		/** Vars */
+//		float beat_buffer[32][80],
+//		beat_instant[32],
+//		beat_history[32];
+//		float beat_val[32],
+//		beat_att[32],
+//		beat_variance[32];
+//		int beat_buffer_pos;
+//		float vol_buffer[80],
+//		vol_instant;
+//		float vol_history;
 };
 
 #endif /** !_BEAT_DETECT_H */
