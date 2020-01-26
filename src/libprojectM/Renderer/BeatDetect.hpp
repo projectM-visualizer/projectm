@@ -70,7 +70,7 @@ class DLLEXPORT BeatDetect
 #undef max
 			//work0around
 #endif /** WIN32 */
-			return 0.5f / std::max(0.0001f,sqrtf(vol_history));
+			return 4.0f / std::max(0.0001f,sqrtf(vol_history));
 		}
 
 	private:
