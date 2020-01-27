@@ -114,8 +114,9 @@ void BeatDetect::getBeatVals( float samplerate, unsigned fft_length, float *vdat
     assert( 512==fft_length || 1024==fft_length );    // should be power of 2, expect >= 512
 
     // TODO: compute ranges based on samplerate
-    unsigned ranges512[4]  = {0, 3, 23, 200};
-    unsigned ranges1024[4] = {0, 5, 46, 400};
+    // roughly aiming or basee-mid cutoff of 220ish and mid-treb cutoff of 2000ish, if I did my math right
+    unsigned ranges512[4]  = {0, 3 /* 3*441000/512 = =258 */, 23 /* 23*441000/512 = =1981 */ , 200};
+    unsigned ranges1024[4] = {0, 5 /* 5*44100/1024 == 215 */, 46 /* 46*44100/1024 == 1981  */, 400};
     unsigned *ranges = fft_length==1024 ? ranges1024 : ranges512;
 
     bass_instant = 0;
