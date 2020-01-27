@@ -63,6 +63,7 @@
 		1612CA3A207B9ED500862A3A /* InitCond.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1612CA26207B9ED500862A3A /* InitCond.hpp */; };
 		1612CA3B207B9ED500862A3A /* Param.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1612CA27207B9ED500862A3A /* Param.hpp */; };
 		1612CA3C207B9ED500862A3A /* ParamUtils.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1612CA28207B9ED500862A3A /* ParamUtils.hpp */; };
+		1657E01023DF788F00B25D5C /* projectM.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1657E00F23DF788F00B25D5C /* projectM.hpp */; };
 		166854422105E4EC0042793A /* etc1_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 1612C9E4207A85DC00862A3A /* etc1_utils.c */; };
 		166854432105E4EF0042793A /* image_DXT.c in Sources */ = {isa = PBXBuildFile; fileRef = 1612C9E6207A85DC00862A3A /* image_DXT.c */; };
 		166854442105E4FC0042793A /* image_helper.c in Sources */ = {isa = PBXBuildFile; fileRef = 1612C9E7207A85DC00862A3A /* image_helper.c */; };
@@ -220,6 +221,7 @@
 		16178AC5207A68A600D3B0C8 /* KeyHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KeyHandler.cpp; sourceTree = "<group>"; };
 		16178AF7207A691100D3B0C8 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		16178B12207A6F4000D3B0C8 /* libRenderer.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRenderer.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		1657E00F23DF788F00B25D5C /* projectM.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = projectM.hpp; sourceTree = "<group>"; };
 		1668541B2105E4BC0042793A /* PerlinNoise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PerlinNoise.cpp; path = Renderer/PerlinNoise.cpp; sourceTree = "<group>"; };
 		1668541C2105E4BC0042793A /* RenderItemMatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = RenderItemMatcher.cpp; path = Renderer/RenderItemMatcher.cpp; sourceTree = "<group>"; };
 		1668541D2105E4BC0042793A /* VideoEcho.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VideoEcho.cpp; path = Renderer/VideoEcho.cpp; sourceTree = "<group>"; };
@@ -352,6 +354,7 @@
 		1612C9ED207A877D00862A3A /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				1657E00F23DF788F00B25D5C /* projectM.hpp */,
 				1612C9FC207A878800862A3A /* carbontoprojectM.h */,
 				1612C9EF207A878800862A3A /* cocoatoprojectM.h */,
 				1612C9F4207A878800862A3A /* ConfigFile.h */,
@@ -586,6 +589,7 @@
 				1612CA09207A878900862A3A /* fftsg.h in Headers */,
 				1612CA0E207A878900862A3A /* projectM-opengl.h in Headers */,
 				1612CA0B207A878900862A3A /* glxew.h in Headers */,
+				1657E01023DF788F00B25D5C /* projectM.hpp in Headers */,
 				1612CA0D207A878900862A3A /* carbontoprojectM.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

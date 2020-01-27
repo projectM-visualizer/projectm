@@ -36,6 +36,15 @@ src/libprojectM/config.inp: src/libprojectM/config.inp.in Makefile
 	chmod a-w $@.tmp && \
 	mv $@.tmp $@
 
+macOS/Build/Products/Debug/presets:
+	mkdir -p macOS/Build/Products/Debug
+	ln -s $(PWD)/presets macOS/Build/Products/Debug/
+
+build-mac: macOS/Build/Products/Debug/presets
+	xcrun xcodebuild -scheme "projectM SDL" -configuration Debug -derivedDataPath macOS
+	@echo "Products built in macOS/Build/Products/Debug"
+	open macOS/Build/Products/Debug
+
 # do a macOS build
 dist-mac: dist
 	rm -rf dist

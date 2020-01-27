@@ -555,4 +555,7 @@ void projectMSDL::renderTexture() {
 void projectMSDL::presetSwitchedEvent(bool isHardCut, size_t index) const {
     std::string presetName = getPresetName(index);
     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Displaying preset: %s\n", presetName.c_str());
+    
+    std::string newTitle = "projectM ➫ " + presetName;
+    SDL_SetWindowTitle(win, newTitle.c_str());
 }
