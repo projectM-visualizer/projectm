@@ -33,7 +33,7 @@
 
 
 // 1024 is more computationally intensive, but maybe better at detecting lower bass
-#define FFT_LENGTH 512
+#define FFT_LENGTH 1024
 
 
 class 
