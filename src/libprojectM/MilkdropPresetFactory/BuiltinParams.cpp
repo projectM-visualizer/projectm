@@ -396,7 +396,7 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
 
   for (unsigned int i = 0; i < NUM_Q_VARIABLES;i++) {
 	std::ostringstream os;
-	os << "q" << i;
+	os << "q" << i+1;
 	load_builtin_param_float(os.str().c_str(), (void*)&presetOutputs.q[i],  NULL, P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
 
   }
