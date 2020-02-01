@@ -37,6 +37,10 @@
 #include <cmath>
 
 
+// this is the size of the buffer used to determine avg levels of the input audio
+// the actual time represented in the history depends on FPS
+#define BEAT_HISTORY_LENGTH 80
+
 class DLLEXPORT BeatDetect
 {
 	public:
@@ -54,37 +58,45 @@ class DLLEXPORT BeatDetect
 		PCM *pcm;
 
 		/** Methods */
-		BeatDetect(PCM *pcm);
+		explicit BeatDetect(PCM *pcm);
 		~BeatDetect();
-		void initBeatDetect();
 		void reset();
 		void detectFromSamples();
-		void getBeatVals ( float *vdataL, float *vdataR );
+		void getBeatVals( float samplerate, unsigned fft_length, float *vdataL, float *vdataR );
+
+        // getPCMScale() was added to address https://github.com/projectM-visualizer/projectm/issues/161
+        // Returning 1.0 results in using the raw PCM data, which can make the presets look pretty unresponsive
+        // if the application volume is low.
 		float getPCMScale()
 		{
-			// added to address https://github.com/projectM-visualizer/projectm/issues/161
-			// Returning 1.0 results in using the raw PCM data, which can make the presets look pretty unresponsive
-			// if the application volume is low.
+			// the constant here just depends on the particulars of getBeatVals(), the
+			// range of vol_history, and what "looks right".
+			// larger value means larger, more jagged waveform.
 #ifdef WIN32
 // this is broken?
 #undef max
 			//work0around
 #endif /** WIN32 */
-			return 0.5f / std::max(0.0001f,sqrtf(vol_history));
+			return 4.0f / std::max(0.0001f,sqrtf(vol_history));
 		}
 
 	private:
-		/** Vars */
-		float beat_buffer[32][80],
-		beat_instant[32],
-		beat_history[32];
-		float beat_val[32],
-		beat_att[32],
-		beat_variance[32];
 		int beat_buffer_pos;
-		float vol_buffer[80],
-		vol_instant;
-		float vol_history;
+        float bass_buffer[BEAT_HISTORY_LENGTH];
+		float bass_history;
+        float bass_instant;
+
+		float mid_buffer[BEAT_HISTORY_LENGTH];
+        float mid_history;
+		float mid_instant;
+
+		float treb_buffer[BEAT_HISTORY_LENGTH];
+		float treb_history;
+		float treb_instant;
+
+        float vol_buffer[BEAT_HISTORY_LENGTH];
+        float vol_history;
+        float vol_instant;
 };
 
 #endif /** !_BEAT_DETECT_H */
