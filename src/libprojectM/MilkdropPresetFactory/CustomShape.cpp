@@ -208,9 +208,9 @@ CustomShape::CustomShape ( int _id ) : Shape()
 		abort();
 	}
 
-   for (unsigned int i = 1; i <= NUM_Q_VARIABLES;i++) {
+   for (unsigned int i = 0; i < NUM_Q_VARIABLES;i++) {
 	std::ostringstream os;
-	os << "q" << i;
+	os << "q" << i+1;
 	param = Param::new_param_float ( os.str().c_str(), P_FLAG_QVAR, &this->q[i], NULL, MAX_DOUBLE_SIZE,
 		 -MAX_DOUBLE_SIZE, 0.0 );
     if ( !ParamUtils::insert ( param, &this->param_tree ) )
