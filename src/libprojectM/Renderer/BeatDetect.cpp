@@ -109,6 +109,17 @@ void BeatDetect::detectFromSamples()
 }
 
 
+
+float BeatDetect::getPCMScale()
+{
+    // the constant here just depends on the particulars of getBeatVals(), the
+    // range of vol_history, and what "looks right".
+    // larger value means larger, more jagged waveform.
+    return 1.5 / fmax(0.0001f,sqrtf(vol_history));
+}
+
+
+
 void BeatDetect::getBeatVals( float samplerate, unsigned fft_length, float *vdataL, float *vdataR )
 {
     assert( 512==fft_length || 1024==fft_length );    // should be power of 2, expect >= 512
