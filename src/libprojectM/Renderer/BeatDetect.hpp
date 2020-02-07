@@ -67,18 +67,7 @@ class DLLEXPORT BeatDetect
         // getPCMScale() was added to address https://github.com/projectM-visualizer/projectm/issues/161
         // Returning 1.0 results in using the raw PCM data, which can make the presets look pretty unresponsive
         // if the application volume is low.
-		float getPCMScale()
-		{
-			// the constant here just depends on the particulars of getBeatVals(), the
-			// range of vol_history, and what "looks right".
-			// larger value means larger, more jagged waveform.
-#ifdef WIN32
-// this is broken?
-#undef max
-			//work0around
-#endif /** WIN32 */
-			return 4.0f / std::max(0.0001f,sqrtf(vol_history));
-		}
+		float getPCMScale();
 
 	private:
 		int beat_buffer_pos;
