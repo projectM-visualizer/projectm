@@ -12,7 +12,7 @@ projectM_pulseaudio_qtheaders = \
 nodist_projectM_pulseaudio_moc_sources = $(projectM_pulseaudio_qtheaders:.hpp=_moc.cpp)
 
 .hpp_moc.cpp:
-	$(MOC) -o$@ $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(CPPFLAGS) $<
+	$(MOC) -o$@ $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $<
 
 ui_PulseDeviceChooserDialog.h: PulseDeviceChooserDialog.ui
 	$(UIC) -o $@ $<
