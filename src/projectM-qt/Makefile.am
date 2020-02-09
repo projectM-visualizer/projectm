@@ -21,7 +21,7 @@ projectM_qt_qtheaders = qprojectm_mainwindow.hpp \
 nodist_projectM_qt_moc_sources = $(projectM_qt_qtheaders:.hpp=_moc.cpp)
 
 .hpp_moc.cpp:
-	$(MOC) -o$@ $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(CPPFLAGS) $<
+	$(MOC) -o$@ $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $<
 
 ui_qprojectm_mainwindow.h: qprojectm_mainwindow.ui
 	$(UIC) -o $@ $<
