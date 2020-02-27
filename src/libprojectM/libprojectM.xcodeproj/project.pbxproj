@@ -921,6 +921,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../projectM-sdl/projectM-SDL",
 					"$(SRCROOT)/../..",
 					"$(SRCROOT)/Renderer",
 					"$(SRCROOT)/",
@@ -982,6 +983,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../projectM-sdl/projectM-SDL",
 					"$(SRCROOT)/../..",
 					"$(SRCROOT)/Renderer",
 					"$(SRCROOT)/",
