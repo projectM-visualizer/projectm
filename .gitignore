@@ -47,3 +47,6 @@ m4/lt~obsolete.m4
 _sync.bat
 _sync.sh
 to_sync/
+.DS_Store
+src/projectM-sdl/build/
+src/libprojectM/build/
