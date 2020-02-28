@@ -432,12 +432,14 @@ void projectMSDL::pollEvent() {
     {
         switch (evt.type) {
             case SDL_WINDOWEVENT:
+            int h, w;
+            SDL_GL_GetDrawableSize(win,&w,&h);
                 switch (evt.window.event) {
-					case SDL_WINDOWEVENT_RESIZED: 
-						resize(evt.window.data1, evt.window.data2); 
+					case SDL_WINDOWEVENT_RESIZED:
+						resize(w, h);
 						break;
-					case SDL_WINDOWEVENT_SIZE_CHANGED: 
-						resize(evt.window.data1, evt.window.data2);
+					case SDL_WINDOWEVENT_SIZE_CHANGED:
+                        resize(w, h);
 						break;
                 }
                 break;
