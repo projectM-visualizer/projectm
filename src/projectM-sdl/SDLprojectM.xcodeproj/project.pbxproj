@@ -655,6 +655,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SYMROOT = "$(SRCROOT)/build";
 			};
 			name = Debug;
 		};
@@ -680,6 +681,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SYMROOT = "$(SRCROOT)/build";
 			};
 			name = Release;
 		};
