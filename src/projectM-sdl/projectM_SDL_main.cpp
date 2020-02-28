@@ -244,7 +244,6 @@ srand((int)(time(NULL)));
 #if UNLOCK_FPS
     setenv("vblank_mode", "0", 1);
 #endif
-
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
     if (! SDL_VERSION_ATLEAST(2, 0, 5)) {
@@ -278,9 +277,10 @@ srand((int)(time(NULL)));
 #endif
 
     
-    SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     
-
+    SDL_GL_GetDrawableSize(win,&width,&height);
+    
 #if STEREOSCOPIC_SBS
 
 	// enable stereo

@@ -88,11 +88,12 @@ public:
 
 
     bool done;
-
     projectMSDL(Settings settings, int flags);
     projectMSDL(std::string config_file, int flags);
     void init(SDL_Window *window, SDL_GLContext *glCtx, const bool renderToTexture = false);
     int openAudioInput();
+    int toggleAudioInput();
+    int initAudioInput();
     void beginAudioCapture();
     void endAudioCapture();
 	void stretchMonitors();
@@ -120,11 +121,14 @@ private:
     GLuint textureID = 0;
 
     // audio input device characteristics
+    unsigned int NumAudioDevices;
+    unsigned int CurAudioDevice;
     unsigned short audioChannelsCount;
     unsigned short audioSampleRate;
     unsigned short audioSampleCount;
     SDL_AudioFormat audioFormat;
     SDL_AudioDeviceID audioDeviceID;
+    SDL_AudioDeviceID selectedAudioDevice;
 
     static void audioInputCallbackF32(void *userdata, unsigned char *stream, int len);
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);

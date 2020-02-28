@@ -16,7 +16,6 @@
 		168F7156211248E4001806E7 /* SDLprojectM in Executable */ = {isa = PBXBuildFile; fileRef = C34521441BF02294001707D2 /* SDLprojectM */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		168F715921124C0E001806E7 /* config.inp in Support files */ = {isa = PBXBuildFile; fileRef = 16B52AAA21105A6900830F34 /* config.inp */; };
 		168F715A21124C14001806E7 /* fonts in Support files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
-		168F715C21124CDF001806E7 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 166853F02105E2850042793A /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		168F718021126256001806E7 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 168F717F21126256001806E7 /* AppIcon.icns */; };
 		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
 		C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215D1BF025CF001707D2 /* CoreFoundation.framework */; };
@@ -121,7 +120,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				168F715C21124CDF001806E7 /* SDL2.framework in Frameworks */,
 			);
 			name = Frameworks;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -140,8 +138,6 @@
 
 /* Begin PBXFileReference section */
 		1612C98C207A807000862A3A /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
-		166853F02105E2850042793A /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
-		166853F22105E2CF0042793A /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
 		168F714921120210001806E7 /* projectM SDL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "projectM SDL.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		168F714B21120211001806E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		168F717F21126256001806E7 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
@@ -190,7 +186,6 @@
 		161070CE1F7041B0001905AB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				166853F22105E2CF0042793A /* SDL2.framework */,
 				C345215D1BF025CF001707D2 /* CoreFoundation.framework */,
 				C345215B1BF025A9001707D2 /* OpenGL.framework */,
 			);
@@ -242,7 +237,6 @@
 				C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */,
 				16B52AAA21105A6900830F34 /* config.inp */,
 				16B52AA8211054E900830F34 /* projectMSDL-pkg.plist */,
-				166853F02105E2850042793A /* SDL2.framework */,
 				1612C98C207A807000862A3A /* libprojectM.xcodeproj */,
 				C307DFD31D565B57002F6B9E /* presets */,
 				16A42128207802AF006F30CE /* Dependencies */,
@@ -316,7 +310,7 @@
 		C345213C1BF02293001707D2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0920;
+				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = int80;
 				TargetAttributes = {
 					168F714821120210001806E7 = {
@@ -331,11 +325,11 @@
 			};
 			buildConfigurationList = C345213F1BF02293001707D2 /* Build configuration list for PBXProject "SDLprojectM" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
+				Base,
 			);
 			mainGroup = C345213B1BF02293001707D2;
 			productRefGroup = C34521451BF02294001707D2 /* Products */;
@@ -535,6 +529,7 @@
 		C34521491BF02294001707D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -543,12 +538,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -592,6 +589,7 @@
 		C345214A1BF02294001707D2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -600,12 +598,14 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
@@ -646,15 +646,22 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				GCC_LINK_WITH_DYNAMIC_LIBRARIES = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../libprojectM",
+					/usr/local/include,
+					"$(SRCROOT)/../../mac",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/projectM-SDL/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/../Frameworks/ @loader_path/Frameworks/";
-				OTHER_LDFLAGS = (
-					"-framework",
-					SDL2,
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../projectM-iTunes/macos/contrib",
+					/usr/local/lib,
 				);
+				OTHER_LDFLAGS = "-lSDL2";
 				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SYMROOT = "$(SRCROOT)/build";
 			};
 			name = Debug;
 		};
@@ -665,15 +672,22 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				GCC_LINK_WITH_DYNAMIC_LIBRARIES = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../libprojectM",
+					/usr/local/include,
+					"$(SRCROOT)/../../mac",
+				);
 				INFOPLIST_FILE = "$(SRCROOT)/projectM-SDL/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/../Frameworks/ @loader_path/Frameworks/";
-				OTHER_LDFLAGS = (
-					"-framework",
-					SDL2,
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/../projectM-iTunes/macos/contrib",
+					/usr/local/lib,
 				);
+				OTHER_LDFLAGS = "-lSDL2";
 				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SYMROOT = "$(SRCROOT)/build";
 			};
 			name = Release;
 		};
