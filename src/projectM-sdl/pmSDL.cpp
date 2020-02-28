@@ -81,11 +81,11 @@ int projectMSDL::toggleAudioInput() {
     if (CurAudioDevice >= NumAudioDevices)
         CurAudioDevice = 0;
     selectedAudioDevice = CurAudioDevice;
-    InitAudioInput();
+    initAudioInput();
     return 1;
 }
 
-int projectMSDL::InitAudioInput() {
+int projectMSDL::initAudioInput() {
     
 
     // params for audio input
@@ -149,7 +149,7 @@ int projectMSDL::openAudioInput() {
         }
     }
     
-    InitAudioInput();
+    initAudioInput();
     
     return 1;
 }
