@@ -93,7 +93,7 @@ public:
     void init(SDL_Window *window, SDL_GLContext *glCtx, const bool renderToTexture = false);
     int openAudioInput();
     int toggleAudioInput();
-    int InitAudioInput();
+    int initAudioInput();
     void beginAudioCapture();
     void endAudioCapture();
 	void stretchMonitors();
