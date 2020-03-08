@@ -71,6 +71,30 @@ You can also download an enormous 41,000 preset pack of presets [here](https://m
 # Building from source
 See [BUILDING.md](BUILDING.md)
 
+# Keyboard Controls:
+* Up: increase beat sensitivity
+* Down: decrease beat sensitivity
+* Y: toggle shuffle enabled
+* R: jump to random preset
+* N: next preset
+* P: previous preset
+* Shift-N: next preset with hard cut
+* Shift-P: previous preset with hard cut
+* L: lock current preset
+
+* F3: show preset (if supported)
+* F5: show FPS (if supported)
+* H or F1: show help (if supported)
+
+#### Only ProjectM SDL:
+* Cmd/Ctrl-Q: *q*uit
+* Cmd/Ctrl-I: select next audio *i*nput device (as of v3.1.3)
+* Cmd/Ctrl-S: *s*tretch monitors
+* Cmd/Ctrl-M: change *m*onitor
+* Cmd/Ctrl-F: toggle *f*ull screen
+* Space: lock current preset
+
+
 # Using the library
 At its core projectM is a library, [libprojectM](src/libprojectM). This library is responsible for parsing presets, analyzing audio PCM data with beat detection and FFT, applying the preset to the audio feature data and rendering the resulting output with openGL. It can render to an openGL context or a texture.
 
@@ -83,7 +107,7 @@ There are many other applications that make use of libprojectM and that can be f
 # Todo
 * Support for the missing Milkdrop waveforms to get full compatibility with Milkdrop presets.
 * Steal cool stuff from the recently-released Milkdrop source.
-* Finish emscripten support for building to wasm/webGL for the web.
+* Finish [emscripten support](https://github.com/projectM-visualizer/projectm/pull/307) for building to wasm/webGL for the web.
 * Update the [various implementations using libprojectM](src).
 * Update downstream projects with new versions.
 
