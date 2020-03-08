@@ -82,6 +82,7 @@ See [BUILDING.md](BUILDING.md)
 * Shift-P: previous preset with hard cut
 * L: lock current preset
 
+
 * F3: show preset (if supported)
 * F5: show FPS (if supported)
 * H or F1: show help (if supported)
