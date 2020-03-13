@@ -81,7 +81,7 @@ See [BUILDING.md](BUILDING.md)
 * Shift-N: next preset with hard cut
 * Shift-P: previous preset with hard cut
 * L: lock current preset
-
+* F: fullscreen
 
 * F3: show preset (if supported)
 * F5: show FPS (if supported)
