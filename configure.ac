@@ -66,6 +66,7 @@ AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
   Makefile
   src/Makefile
+  src/libprojectM/projectM.hpp
   src/libprojectM/Makefile
   src/libprojectM/Renderer/Makefile
   src/libprojectM/NativePresetFactory/Makefile
