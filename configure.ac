@@ -168,8 +168,8 @@ AS_IF([grep android <<< ${host}], [],
                         CXXFLAGS="$CXXFLAGS -stdlib=libc++"])
 ])
 
-AX_CHECK_COMPILE_FLAG([-std=c++11], [
-                        CXXFLAGS="$CXXFLAGS -std=c++11"])
+AX_CHECK_COMPILE_FLAG([-std=c++14], [
+                        CXXFLAGS="$CXXFLAGS -std=c++14"])
 
 # Qt5
 AC_ARG_ENABLE([qt], AS_HELP_STRING([--enable-qt], [Enable Qt: needed for pulseaudio and jack GUIs]), [], [enable_qt=check])

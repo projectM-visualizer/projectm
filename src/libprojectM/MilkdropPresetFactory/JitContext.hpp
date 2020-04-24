@@ -29,6 +29,12 @@
 
 llvm::LLVMContext& getGlobalContext();
 
+#if LLVM_VERSION_MAJOR >= 10
+#define llvm_make_unique std::make_unique
+#else
+#define llvm_make_unique llvm::make_unique
+#endif
+
 // Wrapper for one module which corresponds to one jit'd Expr
 // TODO consider associating one JitContext with one Preset
 struct Symbol
@@ -55,7 +61,11 @@ struct JitContext
             context(getGlobalContext()), builder(getGlobalContext())
     {
         floatType = llvm::Type::getFloatTy(context);
+#if LLVM_VERSION_MAJOR >= 10
+        module_ptr = std::make_unique<llvm::Module>(name, context);
+#else
         module_ptr = llvm::make_unique<llvm::Module>(name, context);
+#endif
         module = module_ptr.get();
 
         llvm::FastMathFlags fmf;
@@ -65,7 +75,11 @@ struct JitContext
 //        module->setDataLayout(getTargetMachine().createDataLayout());
 
         // Create a new pass manager attached to it.
+#if LLVM_VERSION_MAJOR >= 10
+        fpm = std::make_unique<llvm::legacy::FunctionPassManager>(module);
+#else
         fpm = llvm::make_unique<llvm::legacy::FunctionPassManager>(module);
+#endif
         fpm->add(llvm::createInstructionCombiningPass());
         fpm->add(llvm::createReassociatePass());
         fpm->add(llvm::createGVNPass());
