@@ -187,29 +187,28 @@ void projectMSDL::stretchMonitors()
 			SDL_GetDisplayBounds(i, &displayBounds.back());
 		}
 
-        int mostX = 0;
+		int mostXLeft = 0;
+		int mostXRight = 0;
 		int mostWide = 0;
-		int mostY = 0;
+		int mostYUp = 0;
+		int mostYDown = 0;
 		int mostHigh = 0;
 
 		for (int i = 0; i < displayCount; i++)
 		{
-			if (displayBounds[i].x < mostX) mostX = displayBounds[i].x;
+			if (displayBounds[i].x < mostXLeft) mostXLeft = displayBounds[i].x;
+			if ((displayBounds[i].x + displayBounds[i].w) > mostXRight) mostXRight = displayBounds[i].x + displayBounds[i].w;
 		}
 		for (int i = 0; i < displayCount; i++)
 		{
-			if ((displayBounds[i].x + displayBounds[i].w) > mostWide) mostWide = (displayBounds[i].x + displayBounds[i].w + abs(mostX));
-		}
-		for (int i = 0; i < displayCount; i++)
-		{
-			if (displayBounds[i].y < mostY) mostY = displayBounds[i].y;
-		}
-		for (int i = 0; i < displayCount; i++)
-		{
-			if ((displayBounds[i].y + displayBounds[i].h) > mostHigh) mostHigh = (displayBounds[i].y + displayBounds[i].h + abs(mostY));
+			if (displayBounds[i].y < mostYUp) mostYUp = displayBounds[i].y;
+			if ((displayBounds[i].y + displayBounds[i].h) > mostYDown) mostYDown = displayBounds[i].y + + displayBounds[i].h;
 		}
 
-		SDL_SetWindowPosition(win, mostX, mostY);
+        mostWide = abs(mostXLeft) + abs(mostXRight);
+		mostHigh = abs(mostYUp) + abs(mostYDown);
+
+		SDL_SetWindowPosition(win, mostXLeft, mostYUp);
 		SDL_SetWindowSize(win, mostWide, mostHigh);
 	}
 }
