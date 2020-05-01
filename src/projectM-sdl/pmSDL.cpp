@@ -223,7 +223,7 @@ void projectMSDL::nextMonitor()
 	{
 		std::vector<SDL_Rect> displayBounds;
 		int nextWindow = currentWindowIndex + 1;
-		if (nextWindow > displayCount) nextWindow = 0;
+		if (nextWindow >= displayCount) nextWindow = 0;
 
 		for (int i = 0; i < displayCount; i++)
 		{
@@ -232,7 +232,6 @@ void projectMSDL::nextMonitor()
 		}
 		SDL_SetWindowPosition(win, displayBounds[nextWindow].x, displayBounds[nextWindow].y);
 		SDL_SetWindowSize(win, displayBounds[nextWindow].w, displayBounds[nextWindow].h);
-		maximize();
 	}
 }
 
