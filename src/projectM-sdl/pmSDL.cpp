@@ -187,55 +187,30 @@ void projectMSDL::stretchMonitors()
 			SDL_GetDisplayBounds(i, &displayBounds.back());
 		}
 
-		int furthestX = 0;
-		int furthestY = 0;
-		int widest = 0;
-		int highest = 0;
-		int spanX = 0;
-		int spanY = 0;
-		int spanWidth = 0;
-		int spanHeight = 0;
-
-		bool horizontal = true;
-		bool vertical = true;
+        int mostX = 0;
+		int mostWide = 0;
+		int mostY = 0;
+		int mostHigh = 0;
 
 		for (int i = 0; i < displayCount; i++)
 		{
-			if (displayBounds[0].x != displayBounds[i].x) vertical = false;
-			if (displayBounds[0].y != displayBounds[i].y) horizontal = false;
+			if (displayBounds[i].x < mostX) mostX = displayBounds[i].x;
+		}
+		for (int i = 0; i < displayCount; i++)
+		{
+			if ((displayBounds[i].x + displayBounds[i].w) > mostWide) mostWide = (displayBounds[i].x + displayBounds[i].w + abs(mostX));
+		}
+		for (int i = 0; i < displayCount; i++)
+		{
+			if (displayBounds[i].y < mostY) mostY = displayBounds[i].y;
+		}
+		for (int i = 0; i < displayCount; i++)
+		{
+			if ((displayBounds[i].y + displayBounds[i].h) > mostHigh) mostHigh = (displayBounds[i].y + displayBounds[i].h + abs(mostY));
 		}
 
-		if (!vertical && !horizontal)
-		{
-			// If multiple montors are not perfectly aligned it's a bit of work to get the correct x,y and
-			// dimensions But in my testing on Windows 10 even with the screen did not render correctly.
-			// @todo more testing and make it work.
-			SDL_Log(
-				"SDL currently only supports multiple monitors that are aligned evenly in a vertical or "
-				"horizontal position.");
-		}
-		else
-		{
-			for (int i = 0; i < displayCount; i++)
-			{
-				if (displayBounds[i].x < furthestX) spanX = displayBounds[i].x; // X furthest left device
-				if (displayBounds[i].y < furthestY) spanY = displayBounds[i].y; // Y highest device
-				if (displayBounds[i].h > highest) highest = displayBounds[i].h; // highest resolution Height
-				if (displayBounds[i].h > widest) widest = displayBounds[i].w;		// highest resolution Width
-				if (horizontal) // perfectly aligned horizonal monitors.
-				{
-					spanHeight = highest;
-					spanWidth = spanWidth + displayBounds[i].w;
-				}
-				else if (vertical) // perfectly aligned vertical monitors.
-				{
-					spanHeight = spanHeight + displayBounds[i].h;
-					spanWidth = widest;
-				}
-			}
-			SDL_SetWindowPosition(win, spanX, spanY);
-			SDL_SetWindowSize(win, spanWidth, spanHeight);
-		}
+		SDL_SetWindowPosition(win, mostX, mostY);
+		SDL_SetWindowSize(win, mostWide, mostHigh);
 	}
 }
 
