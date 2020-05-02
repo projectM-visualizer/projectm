@@ -339,7 +339,7 @@ srand((int)(time(NULL)));
 				if (current.refresh_rate > maxRefreshRate) maxRefreshRate = current.refresh_rate;
 			}
 		}
-		if (maxRefreshRate <= 0) maxRefreshRate = 60;
+		if (maxRefreshRate <= 60) maxRefreshRate = 60;
 
         float heightWidthRatio = (float)height / (float)width;
         projectM::Settings settings;
