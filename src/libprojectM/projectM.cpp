@@ -140,8 +140,7 @@ projectM::projectM(ConfigPreset configPreset, int flags)
 			_matcher(NULL),
 			_merger(NULL)
 {
-	struct stat sb;
-	if (!configPreset.config_file.empty() && stat(configPreset.config_file.c_str(), &sb) == 0)
+	if (!configPreset.config_file.empty())
 	{
 		readConfig(configPreset.config_file, configPreset.settings);
 	}
@@ -271,7 +270,7 @@ void projectM::readConfig (const std::string & configFile )
     settings.easterEgg = 0.0;
     settings.softCutRatingsEnabled = 0;
 
-    settings.beatSensitivity = beatDetect->beat_sensitivity = 10.0;
+    settings.beatSensitivity = 10.0;
 
     settings.aspectCorrection = 1;
     
