@@ -385,7 +385,12 @@ srand((int)(time(NULL)));
         
 	// init with settings & config (if config was found)
 	projectM::ConfigPreset configPreset;
-	configPreset.config_file = configFilePath + "config.inp";
+	if (!configFilePath.empty()) {
+		configPreset.config_file = configFilePath + "config.inp";
+	}
+	else {
+		configPreset.config_file = "";
+	}
 	configPreset.settings = settings;
 	
     app = new projectMSDL(configPreset, 0);
