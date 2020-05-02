@@ -156,8 +156,15 @@ public:
             softCutRatingsEnabled(false) {}
     };
 
+    struct ConfigPreset
+	{
+		std::string config_file;
+		Settings settings;
+	};
+
   projectM(std::string config_file, int flags = FLAG_NONE);
   projectM(Settings settings, int flags = FLAG_NONE);
+  projectM(ConfigPreset configPreset, int flags = FLAG_NONE);
 
   void projectM_resetGL( int width, int height );
   void projectM_resetTextures();
@@ -310,6 +317,7 @@ private:
   float fpsstart;
 
   void readConfig(const std::string &configFile);
+  void readConfig(const std::string &configFile, const Settings &settings);
   void readSettings(const Settings &settings);
   void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
   void projectM_reset();

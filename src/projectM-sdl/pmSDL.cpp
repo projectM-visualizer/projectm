@@ -439,18 +439,28 @@ void projectMSDL::renderFrame() {
     SDL_GL_SwapWindow(win);
 }
 
-projectMSDL::projectMSDL(Settings settings, int flags) : projectM(settings, flags) {
-    width = getWindowWidth();
-    height = getWindowHeight();
-    done = 0;
-    isFullScreen = false;
+projectMSDL::projectMSDL(Settings settings, int flags) : projectM(settings, flags)
+{
+	width = getWindowWidth();
+	height = getWindowHeight();
+	done = 0;
+	isFullScreen = false;
 }
 
-projectMSDL::projectMSDL(std::string config_file, int flags) : projectM(config_file, flags) {
-    width = getWindowWidth();
-    height = getWindowHeight();
-    done = 0;
-    isFullScreen = false;
+projectMSDL::projectMSDL(std::string config_file, int flags) : projectM(config_file, flags)
+{
+	width = getWindowWidth();
+	height = getWindowHeight();
+	done = 0;
+	isFullScreen = false;
+}
+
+projectMSDL::projectMSDL(ConfigPreset configPreset, int flags) : projectM(configPreset, flags)
+{
+	width = getWindowWidth();
+	height = getWindowHeight();
+	done = 0;
+	isFullScreen = false;
 }
 
 void projectMSDL::init(SDL_Window *window, SDL_GLContext *_glCtx, const bool _renderToTexture) {
