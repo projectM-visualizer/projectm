@@ -343,7 +343,7 @@ srand((int)(time(NULL)));
     
     std::string base_path = DATADIR_PATH;
 
-    // load configuration file folder (t might be different than DATADIR_PATH)
+    // load configuration file folder (it might be different than DATADIR_PATH)
     std::string configFilePath = getConfigFilePath(base_path);
 
     if (configFilePath.empty()) base_path = SDL_GetBasePath(); // if no configfile was found, use SDL base path.
