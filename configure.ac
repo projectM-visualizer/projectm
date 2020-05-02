@@ -29,12 +29,18 @@ AC_MSG_RESULT("$emscripten_compiler")
 AS_IF([test "x$emscripten_compiler" = "xyes"], [
   dnl Set up emscripten
   AC_DEFINE([EMSCRIPTEN], [1], [Define EMSCRIPTEN])
+  AC_DEFINE([ENABLE_EMSCRIPTEN], [1], [Build projectM-emscripten])
   enable_gles=yes
   enable_sdl=yes
   enable_llvm=no
   enable_preset_subdirs=no
   enable_threading=no
   enable_qt=no
+  dnl Enable SDL2 and WEBGL2 (OpenGL ES 3)
+  EMSCRIPTEN_FLAGS="-g -s USE_SDL=2 -s USE_WEBGL2=1"  # -O2
+  AC_SUBST([EMSCRIPTEN_FLAGS])
+  CFLAGS="$CFLAGS $EMSCRIPTEN_FLAGS"
+  CXXFLAGS="$CXXFLAGS $EMSCRIPTEN_FLAGS"
 ], [
   dnl Running in a normal OS (not emscripten)
   AX_CHECK_GL
@@ -103,7 +109,7 @@ AS_IF([test "$enable_sdl" != "no" && test "x$emscripten_compiler" != "xyes"], [
         enable_sdl=no
     ])
 ])
-
+AM_CONDITIONAL([ENABLE_TEST], [test "$enable_sdl" = "yes"])
 
 # glm
 AS_IF([test "x$emscripten_compiler" != "xyes"], [
