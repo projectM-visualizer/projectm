@@ -128,6 +128,30 @@ projectM::projectM(Settings settings, int flags):
     projectM_resetGL(_settings.windowWidth, _settings.windowHeight);
 }
 
+projectM::projectM(ConfigPreset configPreset, int flags)
+		: _pcm(0),
+			beatDetect(0),
+			renderer(0),
+			_pipelineContext(new PipelineContext()),
+			_pipelineContext2(new PipelineContext()),
+			m_presetPos(0),
+			timeKeeper(NULL),
+			m_flags(flags),
+			_matcher(NULL),
+			_merger(NULL)
+{
+	struct stat sb;
+	if (!configPreset.config_file.empty() && stat(configPreset.config_file.c_str(), &sb) == 0)
+	{
+		readConfig(configPreset.config_file, configPreset.settings);
+	}
+	else
+	{
+		readSettings(configPreset.settings);
+	}
+	projectM_reset();
+	projectM_resetGL(_settings.windowWidth, _settings.windowHeight);
+}
 
 bool projectM::writeConfig(const std::string & configFile, const Settings & settings) {
 
@@ -157,82 +181,102 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
         return false;
 }
 
+void projectM::readConfig(const std::string &configFile, const Settings &settings)
+{
+	std::cout << "[projectM] config file: " << configFile << std::endl;
 
+	ConfigFile config(configFile);
+	_settings.meshX = config.read<int>("Mesh X", settings.meshX);
+	_settings.meshY = config.read<int>("Mesh Y", settings.meshY);
+	_settings.textureSize = config.read<int>("Texture Size", settings.textureSize);
+	_settings.fps = config.read<int>("FPS", settings.fps);
+	_settings.windowWidth = config.read<int>("Window Width", settings.windowWidth);
+	_settings.windowHeight = config.read<int>("Window Height", settings.windowHeight);
+	_settings.smoothPresetDuration = config.read<int>("Smooth Preset Duration",
+		config.read<int>("Smooth Transition Duration", settings.smoothPresetDuration));
+	_settings.presetDuration = config.read<int>("Preset Duration", settings.presetDuration);
+
+	_settings.presetURL = config.read<string>("Preset Path", settings.presetURL);
+
+	_settings.titleFontURL = config.read<string>("Title Font", settings.titleFontURL);
+	_settings.menuFontURL = config.read<string>("Menu Font", settings.menuFontURL);
+
+	_settings.shuffleEnabled = config.read<bool>("Shuffle Enabled", settings.shuffleEnabled);
+
+	_settings.easterEgg = config.read<float>("Easter Egg Parameter", settings.easterEgg);
+	_settings.softCutRatingsEnabled =
+		config.read<bool>("Soft Cut Ratings Enabled", settings.softCutRatingsEnabled);
+
+	projectM_init(_settings.meshX, _settings.meshY, _settings.fps, _settings.textureSize,
+		_settings.windowWidth, _settings.windowHeight);
+
+	_settings.beatSensitivity = beatDetect->beat_sensitivity =
+		config.read<float>("Hard Cut Sensitivity", 10.0);
+
+	if (config.read("Aspect Correction", settings.aspectCorrection))
+	{
+		_settings.aspectCorrection = true;
+		renderer->correction = true;
+	}
+	else
+	{
+		_settings.aspectCorrection = false;
+		renderer->correction = false;
+	}
+}
 
 void projectM::readConfig (const std::string & configFile )
 {
-    std::cout << "[projectM] config file: " << configFile << std::endl;
-
-    ConfigFile config ( configFile );
-    _settings.meshX = config.read<int> ( "Mesh X", 32 );
-    _settings.meshY = config.read<int> ( "Mesh Y", 24 );
-    _settings.textureSize = config.read<int> ( "Texture Size", 512 );
-    _settings.fps = config.read<int> ( "FPS", 35 );
-    _settings.windowWidth  = config.read<int> ( "Window Width", 512 );
-    _settings.windowHeight = config.read<int> ( "Window Height", 512 );
-    _settings.smoothPresetDuration =  config.read<int>
-            ( "Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 10));
-    _settings.presetDuration = config.read<int> ( "Preset Duration", 15 );
+	// if you read a config file with no default settings supplied, we will set them here before loading them with defaults.
+	projectM::Settings settings;
+    settings.meshX = 32;
+    settings.meshY = 24;
+    settings.textureSize = 512;
+    settings.fps = 35;
+    settings.windowWidth = 512;
+    settings.windowHeight = 512;
+    settings.smoothPresetDuration = 10;
+    settings.presetDuration = 15;
 
 #ifdef __unix__
-    _settings.presetURL = config.read<string> ( "Preset Path", "/usr/local/share/projectM/presets" );
+    settings.presetURL = "/usr/local/share/projectM/presets";
 #endif
 
 #ifdef __APPLE__
     /// @bug awful hardcoded hack- need to add intelligence to cmake wrt bundling - carm
-    _settings.presetURL = config.read<string> ( "Preset Path", "../Resources/presets" );
+    settings.presetURL = "../Resources/presets";
 #endif
 
 #ifdef WIN32
-    _settings.presetURL = config.read<string> ( "Preset Path", "/usr/local/share/projectM/presets" );
+    settings.presetURL = "/usr/local/share/projectM/presets";
 #endif
 
 #ifdef __APPLE__
-    _settings.titleFontURL = config.read<string>
-    ( "Title Font",  "../Resources/fonts/Vera.tff");
-    _settings.menuFontURL = config.read<string>
-    ( "Menu Font", "../Resources/fonts/VeraMono.ttf");
+    settings.titleFontURL = "../Resources/fonts/Vera.tff";
+    settings.menuFontURL = "../Resources/fonts/VeraMono.ttf";
 #endif
 
 #ifdef __unix__
-    _settings.titleFontURL = config.read<string>
-            ( "Title Font", "/usr/local/share/projectM/fonts/Vera.tff" );
-    _settings.menuFontURL = config.read<string>
-            ( "Menu Font", "/usr/local/share/projectM/fonts/VeraMono.tff" );
+    settings.titleFontURL = "/usr/local/share/projectM/fonts/Vera.tff";
+    settings.menuFontURL = "/usr/local/share/projectM/fonts/VeraMono.tff";
 #endif
 
 #ifdef WIN32
-    _settings.titleFontURL = config.read<string>
-    ( "Title Font", projectM_FONT_TITLE );
-    _settings.menuFontURL = config.read<string>
-    ( "Menu Font", projectM_FONT_MENU );
+	settings.titleFontURL = projectM_FONT_TITLE;
+	settings.menuFontURL = projectM_FONT_MENU;
 #endif
 
+    settings.shuffleEnabled = 1;
 
-    _settings.shuffleEnabled = config.read<bool> ( "Shuffle Enabled", true);
+    settings.easterEgg = 0.0;
+    settings.softCutRatingsEnabled = 0;
 
-    _settings.easterEgg = config.read<float> ( "Easter Egg Parameter", 0.0);
-    _settings.softCutRatingsEnabled =
-            config.read<bool> ( "Soft Cut Ratings Enabled", false);
+    settings.beatSensitivity = beatDetect->beat_sensitivity = 10.0;
 
-    projectM_init ( _settings.meshX, _settings.meshY, _settings.fps,
-                    _settings.textureSize, _settings.windowWidth,_settings.windowHeight);
-
-    _settings.beatSensitivity = beatDetect->beat_sensitivity = config.read<float> ( "Hard Cut Sensitivity", 10.0 );
-
-
-    if ( config.read ( "Aspect Correction", true ) )
-    {
-        _settings.aspectCorrection = true;
-        renderer->correction = true;
-    }
-    else
-    {
-        _settings.aspectCorrection = false;
-        renderer->correction = false;
-    }
-
-
+    settings.aspectCorrection = 1;
+    
+    // now load the config with default settings.
+	readConfig(configFile, settings);
 }
 
 

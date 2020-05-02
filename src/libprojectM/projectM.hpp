@@ -317,6 +317,7 @@ private:
   float fpsstart;
 
   void readConfig(const std::string &configFile);
+  void readConfig(const std::string &configFile, const Settings &settings);
   void readSettings(const Settings &settings);
   void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
   void projectM_reset();
