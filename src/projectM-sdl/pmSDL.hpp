@@ -78,10 +78,7 @@
     #else
         #define DATADIR_PATH "/usr/local/share/projectM"
 #ifndef WIN32
-        std::string configFilePath = "";
-        configFilePath += getenv("APPDATA");
-        configFilePath += "\\projectM\\"
-        #define DATADIR_PATH "C:\\test"
+        #warning "DATADIR_PATH is not defined - falling back to /usr/local/share/projectM"
 #endif /** WIN32 */
     #endif
 #endif
