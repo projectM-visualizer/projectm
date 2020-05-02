@@ -453,6 +453,14 @@ projectMSDL::projectMSDL(std::string config_file, int flags) : projectM(config_f
     isFullScreen = false;
 }
 
+projectMSDL::projectMSDL(ConfigPreset configPreset, int flags) : projectM(configPreset, flags)
+{
+	width = getWindowWidth();
+	height = getWindowHeight();
+	done = 0;
+	isFullScreen = false;
+}
+
 void projectMSDL::init(SDL_Window *window, SDL_GLContext *_glCtx, const bool _renderToTexture) {
     win = window;
     glCtx = _glCtx;

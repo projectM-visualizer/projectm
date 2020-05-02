@@ -53,28 +53,59 @@ void DebugLog(GLenum source,
 #endif
 
 // return path to config file to use
-std::string getConfigFilePath(std::string datadir_path) {
-    struct stat sb;
-    const char *path = datadir_path.c_str();
-    
-    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Looking for configuration file in data dir: %s.\n", path);
-    
-    // check if datadir exists.
-    // it should exist if this application was installed. if not, assume we're developing it and use currect directory
-    if (stat(path, &sb) != 0) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "Could not open datadir path %s\n", path);
-    }
-    
-    std::string configFilePath = path;
-    configFilePath += "/config.inp";
-    
-    // check if config file exists
-    if (stat(configFilePath.c_str(), &sb) != 0) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "No config file %s found. Using development settings.\n", configFilePath.c_str());
-        return "";
-    }
-    
-    return configFilePath;
+std::string getConfigFilePath(std::string datadir_path)
+{
+	struct stat sb;
+	const char *path = datadir_path.c_str();
+
+	SDL_LogInfo(
+		SDL_LOG_CATEGORY_APPLICATION, "Looking for configuration file in data directory: %s\n", path);
+
+	std::string configFilePath = "";
+
+	// check if datadir exists.
+	// it should exist if this application was installed. if not, try the settings directory.
+	if (stat(path, &sb) != 0)
+	{
+#ifdef WIN32
+		configFilePath += getenv("APPDATA");
+		configFilePath += "\\projectM\\config.inp";
+#else
+		configFilePath += getenv("home");
+		configFilePath += "/.projectM/config.inp";
+#endif
+		SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
+			"Looking for configuration file in settings directory: %s\n", configFilePath.c_str());
+	}
+	else
+	{
+		configFilePath = path;
+		configFilePath += "config.inp";
+	}
+
+	// check if settings config file exists.
+	// if not, assume we're developing it and use the current working directory.
+	if (stat(configFilePath.c_str(), &sb) != 0)
+	{
+		configFilePath = "";
+#ifdef WIN32
+		configFilePath += ".\\config.inp";
+#else
+		configFilePath += "./config.inp";
+#endif
+		SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
+			"Looking for configuration file in current working directory: %s\n", configFilePath.c_str());
+	}
+	
+	// check if config file exists
+	if (stat(configFilePath.c_str(), &sb) != 0)
+	{
+		SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "No config file %s found. Using development settings.\n",
+			configFilePath.c_str());
+		return "";
+	}
+
+	return configFilePath;
 }
 
 
@@ -320,48 +351,46 @@ srand((int)(time(NULL)));
     // load configuration file
     std::string configFilePath = getConfigFilePath(base_path);
 
-    if (! configFilePath.empty()) {
-        // found config file, use it
-        app = new projectMSDL(configFilePath, 0);
-        SDL_Log("Using config from %s", configFilePath.c_str());
-    } else {
-        base_path = SDL_GetBasePath();
-        SDL_Log("Config file not found, using built-in settings. Data directory=%s\n", base_path.c_str());
+    if (configFilePath.empty()) base_path = SDL_GetBasePath();
 
-		// Get max refresh rate from attached displays to use as built-in max FPS.
-		int i = 0;
-		int maxRefreshRate = 0;
-		SDL_DisplayMode current;
-		for (i = 0; i < SDL_GetNumVideoDisplays(); ++i)
+	// Get max refresh rate from attached displays to use as built-in max FPS.
+	int i = 0;
+	int maxRefreshRate = 0;
+	SDL_DisplayMode current;
+	for (i = 0; i < SDL_GetNumVideoDisplays(); ++i)
+	{
+		if (SDL_GetCurrentDisplayMode(i, &current) == 0)
 		{
-			if (SDL_GetCurrentDisplayMode(i, &current) == 0)
-			{
-				if (current.refresh_rate > maxRefreshRate) maxRefreshRate = current.refresh_rate;
-			}
+			if (current.refresh_rate > maxRefreshRate) maxRefreshRate = current.refresh_rate;
 		}
-		if (maxRefreshRate <= 60) maxRefreshRate = 60;
+	}
+	if (maxRefreshRate <= 60) maxRefreshRate = 60;
 
-        float heightWidthRatio = (float)height / (float)width;
-        projectM::Settings settings;
-        settings.windowWidth = width;
-        settings.windowHeight = height;
-        settings.meshX = 128;
-        settings.meshY = settings.meshX * heightWidthRatio;
-		settings.fps = maxRefreshRate;
-        settings.smoothPresetDuration = 3; // seconds
-        settings.presetDuration = 22; // seconds
-        settings.beatSensitivity = 0.8;
-        settings.aspectCorrection = 1;
-        settings.shuffleEnabled = 1;
-        settings.softCutRatingsEnabled = 1; // ???
-        // get path to our app, use CWD or resource dir for presets/fonts/etc
-        settings.presetURL = base_path + "presets";
+    float heightWidthRatio = (float)height / (float)width;
+    projectM::Settings settings;
+    settings.windowWidth = width;
+    settings.windowHeight = height;
+    settings.meshX = 128;
+    settings.meshY = settings.meshX * heightWidthRatio;
+	settings.fps = maxRefreshRate;
+    settings.smoothPresetDuration = 3; // seconds
+    settings.presetDuration = 22; // seconds
+    settings.beatSensitivity = 0.8;
+    settings.aspectCorrection = 1;
+    settings.shuffleEnabled = 1;
+    settings.softCutRatingsEnabled = 1; // ???
+    // get path to our app, use CWD or resource dir for presets/fonts/etc
+    settings.presetURL = base_path + "presets";
 //        settings.presetURL = base_path + "presets/presets_shader_test";
-        settings.menuFontURL = base_path + "fonts/Vera.ttf";
-        settings.titleFontURL = base_path + "fonts/Vera.ttf";
-        // init with settings
-        app = new projectMSDL(settings, 0);
-    }
+    settings.menuFontURL = base_path + "fonts/Vera.ttf";
+    settings.titleFontURL = base_path + "fonts/Vera.ttf";
+        
+	// init with settings & config (if config was found)
+	projectM::ConfigPreset configPreset;
+	configPreset.config_file = configFilePath;
+	configPreset.settings = settings;
+	
+    app = new projectMSDL(settings, 0);
     app->init(win, &glCtx);
 
 #if STEREOSCOPIC_SBS

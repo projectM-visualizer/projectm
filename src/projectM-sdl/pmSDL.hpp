@@ -90,6 +90,7 @@ public:
     bool done;
     projectMSDL(Settings settings, int flags);
     projectMSDL(std::string config_file, int flags);
+    projectMSDL(ConfigPreset configPreset, int flags);
     void init(SDL_Window *window, SDL_GLContext *glCtx, const bool renderToTexture = false);
     int openAudioInput();
     int toggleAudioInput();
