@@ -58,54 +58,50 @@ std::string getConfigFilePath(std::string datadir_path)
 	struct stat sb;
 	const char *path = datadir_path.c_str();
 
-	SDL_LogInfo(
-		SDL_LOG_CATEGORY_APPLICATION, "Looking for configuration file in data directory: %s\n", path);
+	// first check if settings file is in DATA_DIR
+	std::string configFilePath = path;
+	std::string configFullPath = configFilePath;
+	configFullPath += "config.inp";
 
-	std::string configFilePath = "";
-
-	// check if datadir exists.
-	// it should exist if this application was installed. if not, try the settings directory.
-	if (stat(path, &sb) != 0)
+	if (stat(configFullPath.c_str(), &sb) == 0)
 	{
-#ifdef WIN32
-		configFilePath += getenv("APPDATA");
-		configFilePath += "\\projectM\\config.inp";
-#else
-		configFilePath += getenv("home");
-		configFilePath += "/.projectM/config.inp";
-#endif
-		SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
-			"Looking for configuration file in settings directory: %s\n", configFilePath.c_str());
-	}
-	else
-	{
-		configFilePath = path;
-		configFilePath += "config.inp";
+		SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Config: %s was found!\n", configFullPath.c_str());
+		return configFilePath;
 	}
 
-	// check if settings config file exists.
-	// if not, assume we're developing it and use the current working directory.
-	if (stat(configFilePath.c_str(), &sb) != 0)
-	{
-		configFilePath = "";
+	// now check settings directories (windows / other)
+	configFilePath = "";
 #ifdef WIN32
-		configFilePath += ".\\config.inp";
+	configFilePath += getenv("APPDATA");
+	configFilePath += "\\projectM\\";
 #else
-		configFilePath += "./config.inp";
+	configFilePath += getenv("home");
+	configFilePath += "/.projectM/";
 #endif
-		SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
-			"Looking for configuration file in current working directory: %s\n", configFilePath.c_str());
+
+	configFullPath = configFilePath + "config.inp";
+	if (stat(configFullPath.c_str(), &sb) == 0)
+	{
+		SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Config: %s was found!\n", configFullPath.c_str());
+		return configFilePath;
+	}
+
+	// finally try current working directory.
+	configFilePath = "";
+#ifdef WIN32
+	configFilePath += ".\\";
+#else
+	configFilePath += "./";
+#endif
+
+	configFullPath = configFilePath + "config.inp";
+	if (stat(configFullPath.c_str(), &sb) == 0)
+	{
+		SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Config: %s was found!\n", configFullPath.c_str());
+		return configFilePath;
 	}
 	
-	// check if config file exists
-	if (stat(configFilePath.c_str(), &sb) != 0)
-	{
-		SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "No config file %s found. Using development settings.\n",
-			configFilePath.c_str());
-		return "";
-	}
-
-	return configFilePath;
+	return "";
 }
 
 
@@ -346,12 +342,14 @@ srand((int)(time(NULL)));
     projectMSDL *app;
     
     std::string base_path = DATADIR_PATH;
-    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Using data directory: %s\n", base_path.c_str());
 
-    // load configuration file
+    // load configuration file folder (t might be different than DATADIR_PATH)
     std::string configFilePath = getConfigFilePath(base_path);
 
-    if (configFilePath.empty()) base_path = SDL_GetBasePath();
+    if (configFilePath.empty()) base_path = SDL_GetBasePath(); // if no configfile was found, use SDL base path.
+	if (configFilePath != base_path) base_path = configFilePath; // if config file was found in a different directory than DATADIR_PATH, change base path to it.
+
+	SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Using data directory: %s\n", base_path.c_str());
 
 	// Get max refresh rate from attached displays to use as built-in max FPS.
 	int i = 0;
@@ -387,10 +385,10 @@ srand((int)(time(NULL)));
         
 	// init with settings & config (if config was found)
 	projectM::ConfigPreset configPreset;
-	configPreset.config_file = configFilePath;
+	configPreset.config_file = configFilePath + "config.inp";
 	configPreset.settings = settings;
 	
-    app = new projectMSDL(settings, 0);
+    app = new projectMSDL(configPreset, 0);
     app->init(win, &glCtx);
 
 #if STEREOSCOPIC_SBS
