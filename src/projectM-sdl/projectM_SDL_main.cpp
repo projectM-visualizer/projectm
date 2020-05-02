@@ -328,13 +328,26 @@ srand((int)(time(NULL)));
         base_path = SDL_GetBasePath();
         SDL_Log("Config file not found, using built-in settings. Data directory=%s\n", base_path.c_str());
 
+		// Get max refresh rate from attached displays to use as built-in max FPS.
+		int i = 0;
+		int maxRefreshRate = 0;
+		SDL_DisplayMode current;
+		for (i = 0; i < SDL_GetNumVideoDisplays(); ++i)
+		{
+			if (SDL_GetCurrentDisplayMode(i, &current) == 0)
+			{
+				if (current.refresh_rate > maxRefreshRate) maxRefreshRate = current.refresh_rate;
+			}
+		}
+		if (maxRefreshRate <= 60) maxRefreshRate = 60;
+
         float heightWidthRatio = (float)height / (float)width;
         projectM::Settings settings;
         settings.windowWidth = width;
         settings.windowHeight = height;
         settings.meshX = 128;
         settings.meshY = settings.meshX * heightWidthRatio;
-        settings.fps   = 60;
+		settings.fps = maxRefreshRate;
         settings.smoothPresetDuration = 3; // seconds
         settings.presetDuration = 22; // seconds
         settings.beatSensitivity = 0.8;
