@@ -202,11 +202,11 @@ void projectMSDL::stretchMonitors()
 		for (int i = 0; i < displayCount; i++)
 		{
 			if (displayBounds[i].y < mostYUp) mostYUp = displayBounds[i].y;
-			if ((displayBounds[i].y + displayBounds[i].h) > mostYDown) mostYDown = displayBounds[i].y + + displayBounds[i].h;
+			if ((displayBounds[i].y + displayBounds[i].h) > mostYDown) mostYDown = displayBounds[i].y + displayBounds[i].h;
 		}
 
         mostWide = abs(mostXLeft) + abs(mostXRight);
-		mostHigh = abs(mostYUp) + abs(mostYDown);
+        mostHigh = abs(mostYUp) + abs(mostYDown);
 
 		SDL_SetWindowPosition(win, mostXLeft, mostYUp);
 		SDL_SetWindowSize(win, mostWide, mostHigh);
