@@ -67,7 +67,7 @@ BeatDetect::BeatDetect(PCM *_pcm)
     this->mid = 0;
     this->bass = 0;
     this->vol_old = 0;
-    this->beat_sensitivity = 0.80;
+    this->beat_sensitivity = 1.00;
     this->treb_att = 0;
     this->mid_att = 0;
     this->bass_att = 0;
