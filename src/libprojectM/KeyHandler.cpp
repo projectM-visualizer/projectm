@@ -133,13 +133,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		 break;
 		case PROJECTM_K_F6:
 			renderer->showrating = !renderer->showrating;
-			unsigned int i;
-			if (selectedPresetIndex(i))
-			{
-				const int oldRating = getPresetRating(i, HARD_CUT_RATING_TYPE);
-
-				renderer->setRating(oldRating);
-			}
+			// \idea may need to encapsulate this exclusive rendering
 			if (renderer->showrating)
 			{
 				renderer->showpreset = false;

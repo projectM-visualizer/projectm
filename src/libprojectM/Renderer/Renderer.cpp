@@ -30,7 +30,7 @@ void Renderer::drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale,
 {
 	drawText(this->title_font, string, x, y, scale, horizontalAlignment, verticalAlignment);
 }
-
+///@bug changing horizontalAlignment, verticalAlignment doesn't do what expected on WIN32
 void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale,
                         int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP)
 {
@@ -55,7 +55,7 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 	// - GLT_TOP (default)
 	// - GLT_CENTER
 	// - GLT_BOTTOM
-	gltDrawText2DAligned(text, x, y, scale, GLT_LEFT, GLT_TOP);
+	gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
 
 	// Finish drawing text
 	gltEndDraw();

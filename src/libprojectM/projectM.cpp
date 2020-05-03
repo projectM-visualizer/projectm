@@ -835,6 +835,7 @@ void projectM::selectNext(const bool hardCut) {
 std::string projectM::switchPreset(std::unique_ptr<Preset> & targetPreset) {
 
     std::string result;
+	unsigned int index;
 
 #ifdef SYNC_PRESET_SWITCHES
     pthread_mutex_lock(&preset_mutex);
@@ -851,6 +852,10 @@ std::string projectM::switchPreset(std::unique_ptr<Preset> & targetPreset) {
 
 // Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
     renderer->setPresetName(targetPreset->name());
+
+	selectedPresetIndex(index);
+	renderer->setRating(getPresetRating(index, HARD_CUT_RATING_TYPE));
+
     result = renderer->SetPipeline(targetPreset->pipeline());
 
 #ifdef SYNC_PRESET_SWITCHES

@@ -119,7 +119,6 @@ void PresetLoader::rescan()
 		_presetNames.push_back ( *pos );
 
 	// Give all presets equal rating of 3 - why 3? I don't know
-	// This will be useful to implement random cut and pref higher rated presets
 	_ratings = std::vector<RatingList>(TOTAL_RATING_TYPES, RatingList( _presetNames.size(), 3 ));
 	_ratingsSums = std::vector<int>(TOTAL_RATING_TYPES, 3 * _presetNames.size());
 
