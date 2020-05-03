@@ -589,6 +589,7 @@ void projectM::projectM_resetengine()
     {
         beatDetect->reset();
     }
+    beatDetect->beat_sensitivity = _settings.beatSensitivity;
 
 }
 
