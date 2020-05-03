@@ -73,36 +73,9 @@ AC_DEFUN([AX_HAVE_QT],
     am_have_qt_makefile=`mktemp`
     # http://qt-project.org/doc/qt-5/qmake-variable-reference.html#qt
     cat > $am_have_qt_pro << EOF
-qtHaveModule(axcontainer):       QT += axcontainer
-qtHaveModule(axserver):          QT += axserver
-qtHaveModule(concurrent):        QT += concurrent
-qtHaveModule(core):              QT += core
-qtHaveModule(dbus):              QT += dbus
-qtHaveModule(declarative):       QT += declarative
-qtHaveModule(designer):          QT += designer
 qtHaveModule(gui):               QT += gui
-qtHaveModule(help):              QT += help
-qtHaveModule(multimedia):        QT += multimedia
-qtHaveModule(multimediawidgets): QT += multimediawidgets
-qtHaveModule(network):           QT += network
 qtHaveModule(opengl):            QT += opengl
 qtHaveModule(widgets):           QT += widgets
-qtHaveModule(printsupport):      QT += printsupport
-qtHaveModule(qml):               QT += qml
-qtHaveModule(qmltest):           QT += qmltest
-qtHaveModule(x11extras):         QT += x11extras
-qtHaveModule(script):            QT += script
-qtHaveModule(scripttools):       QT += scripttools
-qtHaveModule(sensors):           QT += sensors
-qtHaveModule(serialport):        QT += serialport
-qtHaveModule(sql):               QT += sql
-qtHaveModule(svg):               QT += svg
-qtHaveModule(testlib):           QT += testlib
-qtHaveModule(uitools):           QT += uitools
-qtHaveModule(webkit):            QT += webkit
-qtHaveModule(webkitwidgets):     QT += webkitwidgets
-qtHaveModule(xml):               QT += xml
-qtHaveModule(xmlpatterns):       QT += xmlpatterns
 percent.target = %
 percent.commands = @echo -n "\$(\$(@))\ "
 QMAKE_EXTRA_TARGETS += percent
