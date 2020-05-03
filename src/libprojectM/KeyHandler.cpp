@@ -131,7 +131,21 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_y:
 		this->setShuffleEnabled(!this->isShuffleEnabled());
 		 break;
+		case PROJECTM_K_F6:
+			renderer->showrating = !renderer->showrating;
+			unsigned int i;
+			if (selectedPresetIndex(i))
+			{
+				const int oldRating = getPresetRating(i, HARD_CUT_RATING_TYPE);
 
+				renderer->setRating(oldRating);
+			}
+			if (renderer->showrating)
+			{
+				renderer->showpreset = false;
+				renderer->showfps = false;
+			}
+			break;
 	    case PROJECTM_K_F5:
 		  renderer->showfps = !renderer->showfps;
 			// Initialize counters and reset frame count.
@@ -141,6 +155,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			// Hide preset name from screen and replace it with FPS counter.
 			if (renderer->showfps)
 			{
+				renderer->showrating = false;
 				renderer->showpreset = false;
 			}
 	      break;
@@ -153,6 +168,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			// Hide FPS from screen and replace it with preset name.
 			if (renderer->showpreset)
 			{
+				renderer->showrating = false;
 				renderer->showfps = false;
 			}
 	      break;
@@ -220,38 +236,33 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 //	      nWaveMode=7;
 	      break;
 	    case PROJECTM_K_m:
+		  
 	      break;
 	    case PROJECTM_K_t:
 	      break;
 	    case PROJECTM_K_EQUALS:
 	    case PROJECTM_K_PLUS:
+			unsigned int index;
+			if (selectedPresetIndex(index))
+			{
+				const int oldRating = getPresetRating(index, HARD_CUT_RATING_TYPE);
 
-	    	unsigned int index;
+				if (oldRating >= 5) break;
 
-	    	if (selectedPresetIndex(index)) {
-
-	    		const int oldRating = getPresetRating(index, HARD_CUT_RATING_TYPE);
-
-	    		if (oldRating >= 6)
-	    			  break;
-
-	    		const int rating = oldRating + 1;
-
-	    		changePresetRating(index, rating, HARD_CUT_RATING_TYPE);
-	    	}
-
+				const int rating = oldRating + 1;
+				renderer->setRating(rating);
+				changePresetRating(index, rating, HARD_CUT_RATING_TYPE);
+			}
 	    	break;
-
 	    case PROJECTM_K_MINUS:
 	    	if (selectedPresetIndex(index)) {
 
 	    		const int oldRating = getPresetRating(index, HARD_CUT_RATING_TYPE);
 
-	    		if (oldRating <= 1)
-	    			  break;
+	    		if (oldRating <= 0) break;
 
 	    		const int rating = oldRating - 1;
-
+				renderer->setRating(rating);
 	    		changePresetRating(index, rating, HARD_CUT_RATING_TYPE);
 	    	}
 	    	break;

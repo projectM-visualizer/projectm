@@ -84,6 +84,7 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 	this->showpreset = false;
 	this->showhelp = false;
 	this->showstats = false;
+	this->showrating = false;
 	this->studio = false;
 	this->realfps = 0;
 	/* Set up the v xoffset and vy offset to 0 which is normal Only used for VR */
@@ -327,6 +328,8 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 		draw_preset();
 	if (this->showstats == true)
 		draw_stats();
+	if (this->showrating == true)
+		draw_rating();
 }
 
 void Renderer::RenderFrame(const Pipeline& pipeline,
@@ -612,7 +615,13 @@ void Renderer::draw_fps()
 #endif /** USE_TEXT_MENU */
 }
 
-void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext)
+void Renderer::draw_rating() 
+{
+#ifdef USE_TEXT_MENU
+	drawText(this->rating().c_str(), 30, 20, 2.5);
+#endif
+}
+	void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, textureManager->getMainTexture()->texID);

@@ -280,7 +280,6 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
     projectMModifier mod;
     SDL_Keymod sdl_mod = (SDL_Keymod) sdl_evt->key.keysym.mod;
     SDL_Keycode sdl_keycode = sdl_evt->key.keysym.sym;
-
 	// handle keyboard input (for our app first, then projectM)
     switch (sdl_keycode) {
         case SDLK_q:
@@ -393,6 +392,9 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
     // translate into projectM codes and perform default projectM handler
     evt = sdl2pmEvent(sdl_evt);
     key = sdl2pmKeycode(sdl_keycode);
+
+	//SDL_Log("Scancode Pressed: %s", SDL_GetScancodeName(sdl_evt->key.keysym.scancode));
+	//SDL_Log("Keycode Pressed: %s", SDL_GetKeyName(sdl_evt->key.keysym.sym));
     mod = sdl2pmModifier(sdl_mod);
     key_handler(evt, key, mod);
 }

@@ -52,6 +52,7 @@ public:
   bool showpreset;
   bool showhelp;
   bool showstats;
+  bool showrating;
 
   bool studio;
   bool correction;
@@ -103,7 +104,10 @@ public:
 		return m_fps;
   }
   
-private:
+  void setRating(const int &theValue) { m_rating = std::to_string(theValue); }
+  std::string rating() const { return m_rating; }
+
+	private:
 
   PerPixelMesh mesh;
   BeatDetect *beatDetect;
@@ -124,6 +128,7 @@ private:
   std::string m_presetName;
   std::string m_datadir;
   std::string m_fps;
+  std::string m_rating;
 
   float* p;
 
@@ -179,6 +184,7 @@ private:
   void draw_title();
   void draw_title_to_screen(bool flip);
   void draw_title_to_texture();
+  void draw_rating();
 
   int nearestPower2( int value );
 

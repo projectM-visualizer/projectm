@@ -53,12 +53,12 @@ inline projectMEvent sdl2pmEvent( SDL_Event *event ) { \
             return PROJECTM_KEYUP; \
         case SDL_KEYDOWN: \
             return PROJECTM_KEYDOWN; \
-        default:
-            return PROJECTM_KEYUP; \
-      } \
-  } \
+        default: return PROJECTM_KEYUP;
+		}
+}
 
-inline projectMKeycode sdl2pmKeycode( SDL_Keycode keycode ) { \
+inline projectMKeycode sdl2pmKeycode(SDL_Keycode keycode)
+{
     switch ( keycode ) { \
         case SDLK_F1: \
             return PROJECTM_K_F1; \
@@ -150,15 +150,25 @@ inline projectMKeycode sdl2pmKeycode( SDL_Keycode keycode ) { \
       return PROJECTM_K_DOWN;
     case SDLK_PAGEUP:
       return PROJECTM_K_PAGEUP;
-    case SDLK_PAGEDOWN:
-      return PROJECTM_K_PAGEDOWN;
+    case SDLK_PAGEDOWN: 
+        return PROJECTM_K_PAGEDOWN;
+	case SDLK_EQUALS:
+      return PROJECTM_K_EQUALS;
+	case SDLK_MINUS: return PROJECTM_K_MINUS;
    
-        default: \
-            return PROJECTM_K_NONE; \
-      } \
-  } \
+        default: return PROJECTM_K_NONE;
+		}
+}
 
-inline projectMModifier sdl2pmModifier( SDL_Keymod mod ) { \
+//inline projectMKeycode sdl2pmHandleVirtualKeys(SDL_Event *event)
+//{
+//	const char* virtSym = event->text.text;
+	//if (virtSym == "+") return PROJECTM_K_PLUS;
+
+
+//	return PROJECTM_K_PLUS;
+//}
+	inline projectMModifier sdl2pmModifier( SDL_Keymod mod ) { \
     return PROJECTM_KMOD_LSHIFT; \
   } \
 
