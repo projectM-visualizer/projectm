@@ -218,7 +218,7 @@ void projectM::readConfig (const std::string & configFile )
     projectM_init ( _settings.meshX, _settings.meshY, _settings.fps,
                     _settings.textureSize, _settings.windowWidth,_settings.windowHeight);
 
-    _settings.beatSensitivity = beatDetect->beat_sensitivity = config.read<float> ( "Hard Cut Sensitivity", 10.0 );
+    _settings.beatSensitivity = beatDetect->beat_sensitivity = config.read<float> ( "Hard Cut Sensitivity", 0.8 );
 
 
     if ( config.read ( "Aspect Correction", true ) )

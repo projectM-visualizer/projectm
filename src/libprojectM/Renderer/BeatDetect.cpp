@@ -67,7 +67,7 @@ BeatDetect::BeatDetect(PCM *_pcm)
     this->mid = 0;
     this->bass = 0;
     this->vol_old = 0;
-    this->beat_sensitivity = 10.00;
+    this->beat_sensitivity = 0.80;
     this->treb_att = 0;
     this->mid_att = 0;
     this->bass_att = 0;
@@ -185,6 +185,18 @@ void BeatDetect::getBeatVals( float samplerate, unsigned fft_length, float *vdat
     mid_att  = .6f * mid_att + .4f * mid;
     bass_att = .6f * bass_att + .4f * bass;
     vol_att =  .6f * vol_att + .4f * vol;
+
+    // Use beat sensitivity as a multiplier
+    // 0 is "dead"
+    // 5 is pretty wild so above that doesn't make sense
+    bass_att = bass_att * beat_sensitivity;
+    bass = bass * beat_sensitivity;
+    mid_att = mid_att * beat_sensitivity;
+    mid = mid * beat_sensitivity;
+    treb_att = treb_att * beat_sensitivity;
+    treb = treb * beat_sensitivity;
+    vol_att = vol_att * beat_sensitivity;
+    vol = vol * beat_sensitivity;
 
     if (bass_att>100) bass_att=100;
     if (bass >100) bass=100;
