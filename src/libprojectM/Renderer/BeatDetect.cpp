@@ -115,7 +115,9 @@ float BeatDetect::getPCMScale()
     // the constant here just depends on the particulars of getBeatVals(), the
     // range of vol_history, and what "looks right".
     // larger value means larger, more jagged waveform.
-    return 1.5 / fmax(0.0001f,sqrtf(vol_history));
+
+    // this is also impacted by beat_sensitivity.
+    return (1.5 / fmax(0.0001f,sqrtf(vol_history)))*beat_sensitivity;
 }
 
 
