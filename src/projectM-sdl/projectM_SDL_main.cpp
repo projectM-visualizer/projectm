@@ -352,7 +352,7 @@ srand((int)(time(NULL)));
         settings.presetDuration = 22; // seconds
 		settings.hardcutEnabled = true;
 		settings.hardcutDuration = 60;
-		settings.hardcutSensitivity = 2.0;
+		settings.hardcutSensitivity = 1.0;
         settings.beatSensitivity = 1.0;
         settings.aspectCorrection = 1;
         settings.shuffleEnabled = 1;
