@@ -113,12 +113,12 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	  switch( keycode )
 	    {
 	    case PROJECTM_K_UP:
-            beatDetect->beat_sensitivity += 0.25;
-			if (beatDetect->beat_sensitivity > 5.0) beatDetect->beat_sensitivity = 5.0;
+            beatDetect->beatSensitivity += 0.25;
+			if (beatDetect->beatSensitivity > 5.0) beatDetect->beatSensitivity = 5.0;
 	      break;
 	    case PROJECTM_K_DOWN:
-            beatDetect->beat_sensitivity -= 0.25;
-			if (beatDetect->beat_sensitivity < 0) beatDetect->beat_sensitivity = 0;
+            beatDetect->beatSensitivity -= 0.25;
+			if (beatDetect->beatSensitivity < 0) beatDetect->beatSensitivity = 0;
 	      break;
 		case PROJECTM_K_h:
  		  renderer->showhelp = !renderer->showhelp;
