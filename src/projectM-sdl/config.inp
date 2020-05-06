@@ -17,6 +17,8 @@ Hard Cuts Enabled = false  # Hard Cuts are preset transitions that occur when yo
 Hard Cut Duration = 60     # Number of seconds before you become eligible for a hard cut.
 Hard Cut Sensitivity = 1.0 # Volume sensitivity before a hard cut is triggered.
 
+Beat Sensitivity = 1.0 # Beat Sensitivity impacts how reactive your visualizations are to volume, bass, mid-range, and treble. Range: 0 - 5 (from "dead" to VERY reactive)
+
 Easter Egg Parameter = 1
 
 Aspect Correction = true	# Custom Shape Aspect Correction
