@@ -122,11 +122,10 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      break;
 		case PROJECTM_K_h:
  		  renderer->showhelp = !renderer->showhelp;
-	      renderer->showstats= false;
+	      renderer->showstats=false;
 	    case PROJECTM_K_F1:
 	      renderer->showhelp = !renderer->showhelp;
 	      renderer->showstats=false;
-	      renderer->showfps=false;
 	      break;
 	    case PROJECTM_K_y:
 		this->setShuffleEnabled(!this->isShuffleEnabled());
@@ -147,6 +146,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_F4:
 		if (!renderer->showhelp)
 	       		renderer->showstats = !renderer->showstats;
+	       		renderer->showhelp=false;
 	      break;
 	    case PROJECTM_K_F3: {
 	      renderer->showpreset = !renderer->showpreset;
