@@ -981,3 +981,9 @@ void projectM::getMeshSize(int *w, int *h)	{
     *h = _settings.meshY;
 }
 
+void projectM::setToastMessage(const std::string & toastMessage)
+{
+    if ( renderer )
+        renderer->setToastMessage(toastMessage);
+}
+

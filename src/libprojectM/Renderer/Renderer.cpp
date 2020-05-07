@@ -55,7 +55,7 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 	// - GLT_TOP (default)
 	// - GLT_CENTER
 	// - GLT_BOTTOM
-	gltDrawText2DAligned(text, x, y, scale, GLT_LEFT, GLT_TOP);
+	gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
 
 	// Finish drawing text
 	gltEndDraw();
@@ -76,10 +76,13 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 	title_fontURL(_titlefontURL), menu_fontURL(_menufontURL), presetURL(_presetURL)
 {
 	this->totalframes = 1;
-	this->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-	this->currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+	this->lastTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+	this->currentTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+	this->lastTimeToast = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+	this->currentTimeToast = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 	this->noSwitch = false;
 	this->showfps = false;
+	this->showtoast = false;
 	this->showtitle = false;
 	this->showpreset = false;
 	this->showhelp = false;
@@ -245,15 +248,15 @@ void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipel
 	*/
 	if (this->showfps)
 	{
-		this->currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-		milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(this->currentTime - this->lastTime);
+		this->currentTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+		milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(this->currentTimeFPS - this->lastTimeFPS);
 		double diff = ms.count();
 		if (diff >= 250)
 		{
 			this->realfps = totalframes * (1000 / diff);
 			setFPS(realfps);
 			totalframes = 0;
-			this->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+			this->lastTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 		}
 	}
 	glViewport(0, 0, texsizeX, texsizeY);
@@ -320,6 +323,8 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 		draw_help();
 	if (this->showtitle == true)
 		draw_title();
+	if (this->showtoast == true)
+		draw_toast();
 	if (this->showfps == true)
 		draw_fps();
 	// this->realfps
@@ -610,6 +615,22 @@ void Renderer::draw_fps()
 #ifdef USE_TEXT_MENU
 	drawText(this->fps().c_str(), 30, 20, 2.5);
 #endif /** USE_TEXT_MENU */
+}
+
+void Renderer::draw_toast()
+{
+#ifdef USE_TEXT_MENU
+	drawText(this->toastMessage().c_str(), (vw/2), (vh/2), 2.5, GLT_CENTER, GLT_CENTER);
+#endif /** USE_TEXT_MENU */
+
+	this->currentTimeToast = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+	milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(this->currentTimeToast - this->lastTimeToast);
+	double diff = ms.count();
+	if (diff >= (TOAST_TIME * 1000)) {
+		this->currentTimeToast = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+		this->lastTimeToast = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+		this->showtoast = false;
+	}
 }
 
 void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext)

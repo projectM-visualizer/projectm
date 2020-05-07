@@ -110,6 +110,9 @@ int projectMSDL::initAudioInput() {
 
     // read characteristics of opened capture device
     SDL_Log("Opened audio capture device index=%i devId=%i: %s", selectedAudioDevice, audioDeviceID, SDL_GetAudioDeviceName(selectedAudioDevice, true));
+    std::string deviceToast = "Listening to ";
+    deviceToast += SDL_GetAudioDeviceName(selectedAudioDevice, true);
+    projectM::setToastMessage(deviceToast);
     SDL_Log("Samples: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
     audioChannelsCount = have.channels;
     audioSampleRate = have.freq;
@@ -266,6 +269,7 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
         case SDLK_i:
                 if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
                 {
+                    projectM::setToastMessage("Audio DEvice CHANGED LOL");
                     toggleAudioInput();
                     return; // handled
                 }

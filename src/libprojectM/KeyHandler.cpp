@@ -135,8 +135,8 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_F5:
 		  renderer->showfps = !renderer->showfps;
 			// Initialize counters and reset frame count.
-			renderer->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-			renderer->currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+			renderer->lastTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+			renderer->currentTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 			renderer->totalframes = 0;
 			// Hide preset name from screen and replace it with FPS counter.
 			if (renderer->showfps)
@@ -202,8 +202,13 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      selectPrevious(false);
 	      break;
 	    case PROJECTM_K_l:
-		renderer->noSwitch=!renderer->noSwitch;
-	      break;
+			renderer->noSwitch=!renderer->noSwitch;
+			if (renderer->noSwitch) {
+				renderer->setToastMessage("Preset Locked");
+			} else {
+				renderer->setToastMessage("Unlocked");
+			}
+			break;
 	    case PROJECTM_K_s:
             	renderer->studio = !renderer->studio;
 	    case PROJECTM_K_i:
