@@ -269,7 +269,6 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
         case SDLK_i:
                 if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
                 {
-                    projectM::setToastMessage("Audio DEvice CHANGED LOL");
                     toggleAudioInput();
                     return; // handled
                 }
