@@ -362,7 +362,15 @@ srand((int)(time(NULL)));
         // init with settings
         app = new projectMSDL(settings, 0);
     }
+
+	// If our config or hard-coded settings create a resolution smaller than the monitors, then resize the SDL window to match.
+	if (height > app->getWindowHeight() || width > app->getWindowWidth()) {
+		SDL_SetWindowSize(win, app->getWindowHeight(),app->getWindowWidth());
+		SDL_SetWindowPosition(win, (width / 2)-(app->getWindowHeight()/2), (height / 2)-(app->getWindowWidth()/2));
+	}
     app->init(win, &glCtx);
+
+
 
 #if STEREOSCOPIC_SBS
 	app->toggleFullScreen();
