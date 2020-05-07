@@ -587,20 +587,40 @@ void Renderer::draw_help()
 #endif /** USE_TEXT_MENU */
 }
 
+// fake rounding - substr is good enough.
+std::string Renderer::float_stats(float stat)
+{
+    std::string num_text = std::to_string(stat);
+    std::string rounded = num_text.substr(0, num_text.find(".")+4);
+	return rounded;
+}
+
 // TODO
 void Renderer::draw_stats()
 {
 #ifdef USE_TEXT_MENU
+	std::string stats = "\n";
+	std::string warpShader = (!currentPipe->warpShader.programSource.empty()) ? "ON" : "OFF";
+	std::string compShader = (!currentPipe->compositeShader.programSource.empty()) ? "ON" : "OFF";
 
-	//sprintf(buffer, "      viewport: +%d,%d %d x %d", vstartx, vstarty, vw, vh);
-	//sprintf(buffer, "          mesh: %d x %d", mesh.width, mesh.height);
-	//sprintf(buffer, "       texsize: %d", renderTarget->texsize);
-	//other_font->Render((renderTarget->useFBO ? "           FBO: on" : "           FBO: off"));
-	//sprintf(buffer, "      textures: %.1fkB", textureManager->getTextureMemorySize() / 1000.0f);
-	//sprintf(buffer, "shader profile: %s", shaderEngine.profileName.c_str());
-	//sprintf(buffer, "   warp shader: %s", currentPipe->warpShader.enabled ? "on" : "off");
-	//sprintf(buffer, "   comp shader: %s", currentPipe->compositeShader.enabled ? "on" : "off");
+	stats += "Render:""\n";
+	stats += "Resolution: " + std::to_string(vw) + "x" + std::to_string(vh) + "\n";
+	stats += "Mesh X: " + std::to_string(mesh.width) + "\n";
+	stats += "Mesh Y: " + std::to_string(mesh.height) + "\n";
 
+	stats += "\n";
+	stats += "Beat Detect:""\n";
+	stats += "Sensitivity: " + float_stats(beatDetect->beat_sensitivity) + "\n";
+	stats += "Bass: " + float_stats(beatDetect->bass) + "\n";
+	stats += "Mid Range: " + float_stats(beatDetect->mid) + "\n";
+	stats += "Treble: " + float_stats(beatDetect->treb) + "\n";
+	stats += "Volume: " + float_stats(beatDetect->vol) + "\n";
+
+	stats += "\n";
+	stats += "Preset:""\n";
+	stats += "Warp Shader: " + warpShader + "\n";
+	stats += "Composite Shader: " + compShader + "\n";
+	drawText(stats.c_str(), 30, 20, 2.5);
 #endif /** USE_TEXT_MENU */
 }
 

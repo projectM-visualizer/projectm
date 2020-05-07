@@ -179,8 +179,10 @@ private:
   void draw_title();
   void draw_title_to_screen(bool flip);
   void draw_title_to_texture();
-
-  int nearestPower2( int value );
+  
+  std::string float_stats(float stat);
+  
+int nearestPower2( int value );
 
   GLuint textureRenderToTexture;
 
