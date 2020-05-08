@@ -89,6 +89,8 @@ public:
   void reset(int w, int h);
   GLuint initRenderToTexture();
 
+  bool timeCheck(const milliseconds currentTime, const milliseconds lastTime, const double difference);
+
   std::string SetPipeline(Pipeline &pipeline);
 
   void setPresetName(const std::string& theValue)
@@ -109,15 +111,12 @@ public:
 		return m_fps;
   }
 
-  void setToastMessage(const std::string& theValue)
-  {
-    // Initialize counters
-	lastTimeToast= duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-	currentTimeToast = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-    m_toastMessage = theValue;
-    showtoast = true;
+  milliseconds nowMilliseconds() {
+		return duration_cast<milliseconds>(system_clock::now().time_since_epoch());;
   }
-  
+
+  void setToastMessage(const std::string& theValue);
+
   std::string toastMessage() const {
     return m_toastMessage;
   }
