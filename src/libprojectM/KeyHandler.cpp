@@ -202,12 +202,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      selectPrevious(false);
 	      break;
 	    case PROJECTM_K_l:
-			renderer->noSwitch=!renderer->noSwitch;
-			if (renderer->noSwitch) {
-				renderer->setToastMessage("Preset Locked");
-			} else {
-				renderer->setToastMessage("Unlocked");
-			}
+			setPresetLock(!isPresetLocked());
 			break;
 	    case PROJECTM_K_s:
             	renderer->studio = !renderer->studio;

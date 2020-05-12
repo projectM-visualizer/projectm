@@ -863,6 +863,11 @@ std::string projectM::switchPreset(std::unique_ptr<Preset> & targetPreset) {
 void projectM::setPresetLock ( bool isLocked )
 {
     renderer->noSwitch = isLocked;
+    if (isPresetLocked()) {
+        renderer->setToastMessage("Preset Locked");
+    } else {
+        renderer->setToastMessage("Unlocked");
+    }
 }
 
 bool projectM::isPresetLocked() const
