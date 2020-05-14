@@ -863,6 +863,11 @@ std::string projectM::switchPreset(std::unique_ptr<Preset> & targetPreset) {
 void projectM::setPresetLock ( bool isLocked )
 {
     renderer->noSwitch = isLocked;
+    if (isPresetLocked()) {
+        renderer->setToastMessage("Preset Locked");
+    } else {
+        renderer->setToastMessage("Unlocked");
+    }
 }
 
 bool projectM::isPresetLocked() const
@@ -979,5 +984,11 @@ void projectM::changePresetDuration(int seconds) {
 void projectM::getMeshSize(int *w, int *h)	{
     *w = _settings.meshX;
     *h = _settings.meshY;
+}
+
+void projectM::setToastMessage(const std::string & toastMessage)
+{
+    if ( renderer )
+        renderer->setToastMessage(toastMessage);
 }
 

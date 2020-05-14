@@ -32,7 +32,7 @@ void Renderer::drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale,
 }
 
 void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale,
-                        int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP)
+	int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP)
 {
 	// Initialize glText
 	gltInit();
@@ -42,8 +42,8 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 	// Begin text drawing (this for instance calls glUseProgram)
 	gltBeginDraw();
 
-	// Draw any amount of text between begin and end
-	gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+	// Draw text transparently first.
+	gltColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	gltSetText(text, string);
 	// Where horizontal is either:
@@ -55,7 +55,69 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 	// - GLT_TOP (default)
 	// - GLT_CENTER
 	// - GLT_BOTTOM
-	gltDrawText2DAligned(text, x, y, scale, GLT_LEFT, GLT_TOP);
+	gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
+	GLfloat textWidth = gltGetTextWidth(text, scale);
+	
+	float windowWidth = vw;
+	if (horizontalAlignment == GLT_LEFT) {
+		// if left aligned factor in X offset
+		windowWidth = vw - x;
+	}
+
+	// if our window is greater than the text width, there is no overflow so let's display it normally.
+	if (windowWidth > textWidth)
+	{
+		// redraw without transparency
+		gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+		gltSetText(text, string);
+		gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
+	}
+	else {
+		// if the text is greater than the window width, we have a problem.
+
+		// Option 1: Reduce text length until it fits.
+		// If it's a single line of text then reduce the text and add a "..." to the end.
+		// Before: Geiss & Sperl - Feedback (projectM idle HDR mix)
+		// After: Geiss & Sperl - Feed...
+		//
+		// If it's multiline then just cut the text off.
+		// Before: F1: This help menu
+		//         UP: Increase Beat Sensitivity
+		// After : F1: This help menu
+		//         UP: Increase Beat Sensi 
+
+		std::string substring(string);
+		while (textWidth > windowWidth) {
+			substring.pop_back();
+			string = substring.c_str();
+			gltSetText(text, string);
+
+			gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
+			textWidth = gltGetTextWidth(text, scale);
+		}
+		// if it's not multi-line then append a ...
+		if (substring.find("\n") == -1) {
+			substring.pop_back();
+			substring.pop_back();
+			substring.pop_back();
+			substring += "...";
+		}
+		string = substring.c_str();
+
+		// Option 2: Reduce the scale (size) of the text until it fits.
+		/*
+		while (textWidth > windowWidth) {
+			scale = scale - 0.1;
+			gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
+			textWidth = gltGetTextWidth(text, scale);
+		}
+		*/
+
+		// Redraw now that the text fits.
+		gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+		gltSetText(text, string);
+		gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
+	}
 
 	// Finish drawing text
 	gltEndDraw();
@@ -76,10 +138,13 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 	title_fontURL(_titlefontURL), menu_fontURL(_menufontURL), presetURL(_presetURL)
 {
 	this->totalframes = 1;
-	this->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-	this->currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+	this->lastTimeFPS = nowMilliseconds();
+	this->currentTimeFPS = nowMilliseconds();
+	this->lastTimeToast = nowMilliseconds();
+	this->currentTimeToast = nowMilliseconds();
 	this->noSwitch = false;
 	this->showfps = false;
+	this->showtoast = false;
 	this->showtitle = false;
 	this->showpreset = false;
 	this->showhelp = false;
@@ -245,15 +310,12 @@ void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipel
 	*/
 	if (this->showfps)
 	{
-		this->currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-		milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(this->currentTime - this->lastTime);
-		double diff = ms.count();
-		if (diff >= 250)
-		{
-			this->realfps = totalframes * (1000 / diff);
+		this->currentTimeFPS = nowMilliseconds();
+		if (timeCheck(this->currentTimeFPS, this->lastTimeFPS, (double)250)) {
+			this->realfps = totalframes * (1000 / 250);
 			setFPS(realfps);
 			totalframes = 0;
-			this->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+			this->lastTimeFPS = nowMilliseconds();
 		}
 	}
 	glViewport(0, 0, texsizeX, texsizeY);
@@ -320,6 +382,8 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 		draw_help();
 	if (this->showtitle == true)
 		draw_title();
+	if (this->showtoast == true)
+		draw_toast();
 	if (this->showfps == true)
 		draw_fps();
 	// this->realfps
@@ -543,6 +607,26 @@ void Renderer::draw_title_to_texture()
 
 float title_y;
 
+bool Renderer::timeCheck(const milliseconds currentTime, const milliseconds lastTime, const double difference) {
+	milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime);
+	double diff = ms.count();
+	if (diff >= difference)
+	{
+		return true;
+	} else {
+		return false;
+	}
+}
+
+void Renderer::setToastMessage(const std::string& theValue)
+{
+	// Initialize counters
+	lastTimeToast= nowMilliseconds();
+	currentTimeToast = nowMilliseconds();
+	m_toastMessage = theValue;
+	showtoast = true;
+}
+
 // TODO:
 void Renderer::draw_title_to_screen(bool flip)
 {
@@ -630,6 +714,20 @@ void Renderer::draw_fps()
 #ifdef USE_TEXT_MENU
 	drawText(this->fps().c_str(), 30, 20, 2.5);
 #endif /** USE_TEXT_MENU */
+}
+
+void Renderer::draw_toast()
+{
+#ifdef USE_TEXT_MENU
+	drawText(this->toastMessage().c_str(), (vw/2), (vh/2), 2.5, GLT_CENTER, GLT_CENTER);
+#endif /** USE_TEXT_MENU */
+
+	this->currentTimeToast = nowMilliseconds();
+	if (timeCheck(this->currentTimeToast,this->lastTimeToast,(double)(TOAST_TIME*1000))) {
+		this->currentTimeToast = nowMilliseconds();
+		this->lastTimeToast = nowMilliseconds();
+		this->showtoast = false;
+	}
 }
 
 void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext)
