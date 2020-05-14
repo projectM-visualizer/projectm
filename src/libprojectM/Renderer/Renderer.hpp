@@ -24,6 +24,8 @@ using namespace std::chrono;
 
 #endif /** USE_TEXT_MENU */
 
+#define TOAST_TIME 2
+
 // for final composite grid:
 #define FCGSX 32 // final composite gridsize - # verts - should be EVEN.
 #define FCGSY 24 // final composite gridsize - # verts - should be EVEN.
@@ -41,12 +43,13 @@ typedef struct
 class Texture;
 class BeatDetect;
 class TextureManager;
+class TimeKeeper;
 
 class Renderer
 {
 
 public:
-
+  bool showtoast;
   bool showfps;
   bool showtitle;
   bool showpreset;
@@ -58,8 +61,11 @@ public:
 
   bool noSwitch;
 
-  milliseconds lastTime;
-  milliseconds currentTime;
+  milliseconds lastTimeFPS;
+  milliseconds currentTimeFPS;
+
+  milliseconds lastTimeToast;
+  milliseconds currentTimeToast;
 
   int totalframes;
   float realfps;
@@ -83,6 +89,8 @@ public:
   void reset(int w, int h);
   GLuint initRenderToTexture();
 
+  bool timeCheck(const milliseconds currentTime, const milliseconds lastTime, const double difference);
+
   std::string SetPipeline(Pipeline &pipeline);
 
   void setPresetName(const std::string& theValue)
@@ -102,6 +110,16 @@ public:
   std::string fps() const {
 		return m_fps;
   }
+
+  milliseconds nowMilliseconds() {
+		return duration_cast<milliseconds>(system_clock::now().time_since_epoch());;
+  }
+
+  void setToastMessage(const std::string& theValue);
+
+  std::string toastMessage() const {
+    return m_toastMessage;
+  }
   
 private:
 
@@ -109,6 +127,8 @@ private:
   BeatDetect *beatDetect;
   TextureManager *textureManager;
   static Pipeline* currentPipe;
+  TimeKeeper *timeKeeperFPS;
+  TimeKeeper *timeKeeperToast;
 
 #ifdef USE_TEXT_MENU
 
@@ -124,6 +144,7 @@ private:
   std::string m_presetName;
   std::string m_datadir;
   std::string m_fps;
+  std::string m_toastMessage;
 
   float* p;
 
@@ -172,6 +193,7 @@ private:
 
   void rescale_per_pixel_matrices();
 
+  void draw_toast();
   void draw_fps();
   void draw_stats();
   void draw_help();

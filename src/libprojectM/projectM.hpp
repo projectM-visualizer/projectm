@@ -175,7 +175,7 @@ public:
   void changeTextureSize(int size);
   void changePresetDuration(int seconds);
   void getMeshSize(int *w, int *h);
-
+  void setToastMessage(const std::string & toastMessage);
   const Settings & settings() const {
 		return _settings;
   }
