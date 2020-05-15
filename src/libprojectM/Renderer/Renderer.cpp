@@ -694,7 +694,7 @@ void Renderer::draw_stats()
 
 	stats += "\n";
 	stats += "Beat Detect:""\n";
-	stats += "Sensitivity: " + float_stats(beatDetect->beat_sensitivity) + "\n";
+	stats += "Sensitivity: " + float_stats(beatDetect->beatSensitivity) + "\n";
 	stats += "Bass: " + float_stats(beatDetect->bass) + "\n";
 	stats += "Mid Range: " + float_stats(beatDetect->mid) + "\n";
 	stats += "Treble: " + float_stats(beatDetect->treb) + "\n";
