@@ -224,7 +224,7 @@ void projectM::readConfig (const std::string & configFile )
     
     // Beat Sensitivity impacts how reactive your visualizations are to volume, bass, mid-range, and treble. 
     // Preset authors have developed their visualizations with the default of 1.0.
-    _settings.beatSensitivity = beatDetect->beatSensitivity = config.read<float> ( "Beat Sensitivity", 1.0 );
+    _settings.beatSensitivity = config.read<float> ( "Beat Sensitivity", 1.0 );
 
 
     projectM_init ( _settings.meshX, _settings.meshY, _settings.fps,
