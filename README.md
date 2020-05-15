@@ -72,8 +72,8 @@ You can also download an enormous 41,000 preset pack of presets [here](https://m
 See [BUILDING.md](BUILDING.md)
 
 # Keyboard Controls:
-* Up: increase beat sensitivity
-* Down: decrease beat sensitivity
+* Up: increase beat sensitivity (max 5)
+* Down: decrease beat sensitivity (min 0)
 * Y: toggle shuffle enabled
 * R: jump to random preset
 * N: next preset

@@ -48,7 +48,7 @@ class DLLEXPORT BeatDetect
 		float mid ;
 		float bass ;
 		float vol_old ;
-		float beat_sensitivity;
+		float beatSensitivity;
 		float treb_att ;
 		float mid_att ;
 		float bass_att ;

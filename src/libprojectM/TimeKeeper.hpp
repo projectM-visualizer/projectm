@@ -14,7 +14,7 @@ class TimeKeeper
 
 public:
 
-  TimeKeeper(double presetDuration, double smoothDuration, double easterEgg);
+  TimeKeeper(double presetDuration, double smoothDuration, double hardcutDuration, double easterEgg);
 
   void UpdateTimers();
 
@@ -40,6 +40,7 @@ public:
 
   double sampledPresetDuration();
 
+  void ChangeHardcutDuration(int seconds) { _hardcutDuration = seconds; }
   void ChangePresetDuration(int seconds) { _presetDuration = seconds; }
 
 #ifndef WIN32
@@ -56,6 +57,7 @@ private:
   double _presetDurationA;
   double _presetDurationB;
   double _smoothDuration;
+  double _hardcutDuration;
 
   double _currentTime;
   double _presetTimeA;
