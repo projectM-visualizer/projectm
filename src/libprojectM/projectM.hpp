@@ -134,6 +134,9 @@ public:
         std::string datadir;
         int smoothPresetDuration;
         int presetDuration;
+        bool hardcutEnabled;
+        int hardcutDuration;
+        float hardcutSensitivity;
         float beatSensitivity;
         bool aspectCorrection;
         float easterEgg;
@@ -149,7 +152,10 @@ public:
             windowHeight(512),
             smoothPresetDuration(10),
             presetDuration(15),
-            beatSensitivity(10.0),
+            hardcutEnabled(false),
+            hardcutDuration(60),
+            hardcutSensitivity(2.0),
+            beatSensitivity(1.0),
             aspectCorrection(true),
             easterEgg(0.0),
             shuffleEnabled(true),
@@ -173,6 +179,7 @@ public:
   virtual ~projectM();
 
   void changeTextureSize(int size);
+  void changeHardcutDuration(int seconds);
   void changePresetDuration(int seconds);
   void getMeshSize(int *w, int *h);
   void setToastMessage(const std::string & toastMessage);

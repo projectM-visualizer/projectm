@@ -67,7 +67,7 @@ BeatDetect::BeatDetect(PCM *_pcm)
     this->mid = 0;
     this->bass = 0;
     this->vol_old = 0;
-    this->beat_sensitivity = 10.00;
+    this->beatSensitivity = 1.00;
     this->treb_att = 0;
     this->mid_att = 0;
     this->bass_att = 0;
@@ -115,7 +115,9 @@ float BeatDetect::getPCMScale()
     // the constant here just depends on the particulars of getBeatVals(), the
     // range of vol_history, and what "looks right".
     // larger value means larger, more jagged waveform.
-    return 1.5 / fmax(0.0001f,sqrtf(vol_history));
+
+    // this is also impacted by beatSensitivity.
+    return (1.5 / fmax(0.0001f,sqrtf(vol_history)))*beatSensitivity;
 }
 
 
@@ -185,6 +187,18 @@ void BeatDetect::getBeatVals( float samplerate, unsigned fft_length, float *vdat
     mid_att  = .6f * mid_att + .4f * mid;
     bass_att = .6f * bass_att + .4f * bass;
     vol_att =  .6f * vol_att + .4f * vol;
+
+    // Use beat sensitivity as a multiplier
+    // 0 is "dead"
+    // 5 is pretty wild so above that doesn't make sense
+    bass_att = bass_att * beatSensitivity;
+    bass = bass * beatSensitivity;
+    mid_att = mid_att * beatSensitivity;
+    mid = mid * beatSensitivity;
+    treb_att = treb_att * beatSensitivity;
+    treb = treb * beatSensitivity;
+    vol_att = vol_att * beatSensitivity;
+    vol = vol * beatSensitivity;
 
     if (bass_att>100) bass_att=100;
     if (bass >100) bass=100;

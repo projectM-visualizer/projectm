@@ -350,7 +350,10 @@ srand((int)(time(NULL)));
 		settings.fps = maxRefreshRate;
         settings.smoothPresetDuration = 3; // seconds
         settings.presetDuration = 22; // seconds
-        settings.beatSensitivity = 0.8;
+		settings.hardcutEnabled = true;
+		settings.hardcutDuration = 60;
+		settings.hardcutSensitivity = 1.0;
+        settings.beatSensitivity = 1.0;
         settings.aspectCorrection = 1;
         settings.shuffleEnabled = 1;
         settings.softCutRatingsEnabled = 1; // ???
