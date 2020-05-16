@@ -392,9 +392,6 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
     // translate into projectM codes and perform default projectM handler
     evt = sdl2pmEvent(sdl_evt);
     key = sdl2pmKeycode(sdl_keycode);
-
-	//SDL_Log("Scancode Pressed: %s", SDL_GetScancodeName(sdl_evt->key.keysym.scancode));
-	//SDL_Log("Keycode Pressed: %s", SDL_GetKeyName(sdl_evt->key.keysym.sym));
     mod = sdl2pmModifier(sdl_mod);
     key_handler(evt, key, mod);
 }

@@ -618,7 +618,7 @@ void Renderer::draw_fps()
 void Renderer::draw_rating() 
 {
 #ifdef USE_TEXT_MENU
-	drawText(this->rating().c_str(), 30, 20, 2.5);
+	drawText(("Rating set to: " + this->rating()).c_str(), 30, 20, 2.5);
 #endif
 }
 	void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext)
