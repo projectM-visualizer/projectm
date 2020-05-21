@@ -64,8 +64,11 @@ void refreshConsole() {
   }
 
 }
-
-void projectM::key_handler( projectMEvent event,
+void projectM::setInterface(interface_t interfacet)
+{
+	current_interface = interfacet;
+}
+	void projectM::key_handler( projectMEvent event,
                             projectMKeycode keycode, projectMModifier modifier ) {
 
 	switch( event ) {
@@ -84,7 +87,7 @@ void projectM::key_handler( projectMEvent event,
 	      //shell_key_handler();
 	      break;
 	    case EDITOR_INTERFACE:
-//	      editor_key_handler(event,keycode);
+	      editor_key_handler(event,keycode);
 	      break;
 	    case BROWSER_INTERFACE:
 //	      browser_key_handler(event,keycode,modifier);
@@ -138,6 +141,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			{
 				renderer->showpreset = false;
 				renderer->showfps = false;
+				renderer->showinputtext = false;
 			}
 			break;
 	    case PROJECTM_K_F5:
@@ -151,6 +155,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			{
 				renderer->showrating = false;
 				renderer->showpreset = false;
+				renderer->showinputtext = false;
 			}
 	      break;
 	    case PROJECTM_K_F4:
@@ -164,6 +169,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			{
 				renderer->showrating = false;
 				renderer->showfps = false;
+				renderer->showinputtext = false;
 			}
 	      break;
 	     }
@@ -179,7 +185,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      renderer->studio = !renderer->studio;
 	      break;
 
-	    case PROJECTM_K_ESCAPE: {
+	    case PROJECTM_K_ESCAPE: { //if this has same purpose as F1, move above F1, delete break, and remove sdl_keycode assignment to F1
 //	        exit( 1 );
 	        break;
 	      }
@@ -219,6 +225,11 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_i:
 	        break;
 	    case PROJECTM_K_z:
+			renderer->showpreset = false;
+			renderer->showfps = false;
+			renderer->showrating = false;
+			renderer->showinputtext = true;
+		  setInterface(EDITOR_INTERFACE);
 	      break;
 	    case PROJECTM_K_0:
 //	      nWaveMode=0;
@@ -260,12 +271,35 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    		changePresetRating(index, rating, HARD_CUT_RATING_TYPE);
 	    	}
 	    	break;
-
 	    default:
 	      break;
 	    }
 	default:
 		break;
 
+	}
+}
+// Not sure if this is what editor interface was intended for but this will handle text input
+void projectM::editor_key_handler(projectMEvent event, projectMKeycode keycode)
+{
+	switch (event)
+	{
+		case PROJECTM_KEYDOWN:
+			
+			switch (keycode)
+			{
+				case PROJECTM_K_RETURN:
+					// load preset when we have a name
+					selectPresetByName(renderer->inputText(), true);
+					renderer->showinputtext = false;
+					updateInputText("");
+					setInterface(DEFAULT_INTERFACE);
+					break;
+				default: 
+					// while we're typing, add letter to render string and render it
+
+					break;
+			}
+		default: break;
 	}
 }

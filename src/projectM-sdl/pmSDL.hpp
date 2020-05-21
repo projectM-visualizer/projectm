@@ -88,6 +88,8 @@ public:
 
 
     bool done;
+	bool renderText = false;
+	std::string inputText;
     projectMSDL(Settings settings, int flags);
     projectMSDL(std::string config_file, int flags);
     void init(SDL_Window *window, SDL_GLContext *glCtx, const bool renderToTexture = false);

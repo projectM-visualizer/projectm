@@ -244,6 +244,16 @@ const std::string & PresetLoader::getPresetName ( unsigned int index ) const
 	return _presetNames[index];
 }
 
+unsigned int PresetLoader::getPresetIndex(std::string &name)
+{
+	//Need a better structure than a vector for reverse lookup
+	for (int index = 0; index < _presetNames.size(); index++)
+	{
+		if (_presetNames[index] == name) return index;
+	}
+	return 0;
+}
+
 int PresetLoader::getPresetRating ( unsigned int index, const PresetRatingType ratingType ) const
 {
 	return _ratings[ratingType][index];

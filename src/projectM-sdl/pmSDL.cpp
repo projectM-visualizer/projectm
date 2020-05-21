@@ -386,7 +386,39 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 							printf("Delete failed");
 						}
 								*/
+						inputText = "";
+						SDL_StopTextInput();
+						renderText = false;
 						break;
+					case SDLK_z: 
+                        SDL_StartTextInput();
+						if (!renderText) inputText = "";
+						renderText = true;
+                        break;
+						// Handle backspace
+					case SDLK_BACKSPACE:
+                        if(inputText.length() > 0)
+						{
+							// lop off character
+							inputText.pop_back();
+							updateInputText(inputText);
+						}
+						break;
+						// Handle copy
+					case SDLK_c:
+                        if(SDL_GetModState() & KMOD_CTRL)
+					    {
+						    SDL_SetClipboardText(inputText.c_str());
+					    }
+						break;
+					// Handle paste
+					case SDLK_v:
+                        if(SDL_GetModState() & KMOD_CTRL)
+					    {
+						    inputText = SDL_GetClipboardText();
+							updateInputText(inputText);
+					    }
+					    break;
     }
 
     // translate into projectM codes and perform default projectM handler
@@ -448,6 +480,20 @@ void projectMSDL::pollEvent() {
             case SDL_QUIT:
                 done = true;
                 break;
+			case SDL_TEXTINPUT:
+                if (!(SDL_GetModState() & KMOD_CTRL
+							&& (evt.text.text[0] == 'c' ||
+                                evt.text.text[0] == 'C' ||
+                                evt.text.text[0] == 'v'	||
+                                evt.text.text[0] == 'V')))
+				{
+					inputText += evt.text.text;
+				}
+				if (renderText)
+				{
+                    updateInputText(inputText);
+				}
+				
         }
     }
 }

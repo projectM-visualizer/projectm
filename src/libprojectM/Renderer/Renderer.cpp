@@ -85,6 +85,7 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 	this->showhelp = false;
 	this->showstats = false;
 	this->showrating = false;
+	this->showinputtext = false;
 	this->studio = false;
 	this->realfps = 0;
 	/* Set up the v xoffset and vy offset to 0 which is normal Only used for VR */
@@ -330,6 +331,8 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 		draw_stats();
 	if (this->showrating == true)
 		draw_rating();
+	if (this->showinputtext == true)
+		draw_inputText();
 }
 
 void Renderer::RenderFrame(const Pipeline& pipeline,
@@ -619,6 +622,14 @@ void Renderer::draw_rating()
 {
 #ifdef USE_TEXT_MENU
 	drawText(("Rating set to: " + this->rating()).c_str(), 30, 20, 2.5);
+#endif
+}
+
+void Renderer::draw_inputText()
+{
+#ifdef USE_TEXT_MENU
+	std::string str = defaultInputText() + inputText();
+	drawText(str.c_str(), 30, 20, 2.5);
 #endif
 }
 	void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext)

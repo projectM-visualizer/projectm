@@ -53,6 +53,7 @@ public:
   bool showhelp;
   bool showstats;
   bool showrating;
+	bool showinputtext;
 
   bool studio;
   bool correction;
@@ -107,6 +108,11 @@ public:
   void setRating(const int &theValue) { m_rating = std::to_string(theValue); }
   std::string rating() const { return m_rating; }
 
+  void setInputText(std::string input) { m_inputText = input; }
+  std::string inputText() { return m_inputText; }
+
+  std::string defaultInputText() { return m_defaultInputText; }
+
 	private:
 
   PerPixelMesh mesh;
@@ -129,6 +135,8 @@ public:
   std::string m_datadir;
   std::string m_fps;
   std::string m_rating;
+  std::string m_defaultInputText = "Preset to load: ";
+  std::string m_inputText = m_defaultInputText;
 
   float* p;
 
@@ -185,6 +193,7 @@ public:
   void draw_title_to_screen(bool flip);
   void draw_title_to_texture();
   void draw_rating();
+  void draw_inputText();
 
   int nearestPower2( int value );
 

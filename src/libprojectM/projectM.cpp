@@ -765,10 +765,14 @@ void projectM::selectPreset(unsigned int index, bool hardCut)
         return;
 
 
-    *m_presetPos = m_presetChooser->begin(index);
+    *m_presetPos = m_presetChooser->begin(index); //Can we use selectPresetPosition here?
     switchPreset(hardCut);
 }
-
+void projectM::selectPresetByName(std::string& name, bool hardCut) {
+	unsigned int index = getPresetIndex(name);
+	if (m_presetChooser->empty()) return;
+	selectPreset(index);  
+}
 void projectM::switchPreset(const bool hardCut) {
     std::string result;
 
@@ -879,7 +883,10 @@ std::string projectM::getPresetURL ( unsigned int index ) const
 {
     return m_presetLoader->getPresetURL(index);
 }
-
+unsigned int projectM::getPresetIndex(string& name) const
+{
+	return m_presetLoader->getPresetIndex(name);
+}
 int projectM::getPresetRating ( unsigned int index, const PresetRatingType ratingType) const
 {
     return m_presetLoader->getPresetRating(index, ratingType);
@@ -923,6 +930,11 @@ unsigned int projectM::getPlaylistSize() const
 void projectM::changePresetRating (unsigned int index, int rating, const PresetRatingType ratingType) {
     m_presetLoader->setRating(index, rating, ratingType);
     presetRatingChanged(index, rating, ratingType);
+}
+
+void projectM::updateInputText(std::string value)
+{
+	renderer->setInputText(value);
 }
 
 void projectM::insertPresetURL(unsigned int index, const std::string & presetURL, const std::string & presetName, const RatingList & ratings)
