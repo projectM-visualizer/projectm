@@ -807,10 +807,10 @@ void projectM::switchPreset(const bool hardCut) {
 
 
 void projectM::selectRandom(const bool hardCut) {
-
     if (m_presetChooser->empty())
         return;
-
+    random = true;
+    lastPreset = m_presetPos->lastIndex();
     *m_presetPos = m_presetChooser->weightedRandom(hardCut);
 
     switchPreset(hardCut);
@@ -818,23 +818,26 @@ void projectM::selectRandom(const bool hardCut) {
 }
 
 void projectM::selectPrevious(const bool hardCut) {
-
     if (m_presetChooser->empty())
         return;
 
-
-    m_presetChooser->previousPreset(*m_presetPos);
-
-    switchPreset(hardCut);
+    if (random && lastPreset != m_presetLoader->size()) { // if randomly browsing presets, "previous" should return to last random preset not the index--. Avoid returning to size() because that's the idle:// preset.
+        selectPreset(lastPreset);
+        random = false;
+    }
+    else {
+        m_presetChooser->previousPreset(*m_presetPos);
+        switchPreset(hardCut);
+    }
 }
 
 void projectM::selectNext(const bool hardCut) {
-
     if (m_presetChooser->empty())
         return;
 
     m_presetChooser->nextPreset(*m_presetPos);
-
+    
+    random = false;
     switchPreset(hardCut);
 }
 
