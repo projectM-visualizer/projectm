@@ -822,8 +822,6 @@ void projectM::selectPrevious(const bool hardCut) {
         return;
 
     if (settings().shuffleEnabled && presetHistory.size() >= 1 && presetHistory.back() != m_presetLoader->size()) { // if randomly browsing presets, "previous" should return to last random preset not the index--. Avoid returning to size() because that's the idle:// preset.
-        for (std::vector<int>::const_iterator i = presetFuture.begin(); i != presetFuture.end(); ++i)
-            std::cout << *i << ' ';
         presetFuture.push_back(m_presetPos->lastIndex());
         selectPreset(presetHistory.back());
         presetHistory.pop_back();
