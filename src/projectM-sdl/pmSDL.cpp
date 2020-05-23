@@ -166,6 +166,10 @@ void projectMSDL::endAudioCapture() {
     SDL_PauseAudioDevice(audioDeviceID, true);
 }
 
+void projectMSDL::setHelpText(const std::string & helpText) {
+    projectM::setHelpText(helpText);
+}
+
 void projectMSDL::maximize() {
     SDL_DisplayMode dm;
     if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
