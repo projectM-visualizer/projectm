@@ -63,6 +63,7 @@
 #include "dlldefs.h"
 #include "event.h"
 #include "fatal.h"
+#include <vector>
 
 class PipelineContext;
 #include "PCM.hpp"
@@ -286,11 +287,13 @@ public:
   PipelineContext & pipelineContext2() { return *_pipelineContext2; }
 
   int lastPreset = 0;
+  std::vector<int> presetHistory;  
+  std::vector<int> presetFuture;  
+
 
   void selectPrevious(const bool);
   void selectNext(const bool);
   void selectRandom(const bool);
-  bool random = false;
     
   int getWindowWidth() { return _settings.windowWidth; }
   int getWindowHeight() { return _settings.windowHeight; }

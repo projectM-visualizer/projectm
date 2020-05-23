@@ -219,7 +219,6 @@ inline bool PresetChooser::empty() const {
 }
 
 inline std::unique_ptr<Preset> PresetChooser::directoryIndex(std::size_t index) const {
-    printf("directoryIndex! %i\n", index);
 	return _presetLoader->loadPreset(index);
 }
 
