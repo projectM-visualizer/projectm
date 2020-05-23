@@ -36,6 +36,9 @@ public:
     /// \brief Returns the indexing value used by the current iterator.
     std::size_t operator*() const;
 
+    // Return previous index.
+    std::size_t lastIndex() const;
+
     ///  Allocate a new preset given this iterator's associated preset name
     /// \param presetInputs the preset inputs to associate with the preset upon construction
     /// \param presetOutputs the preset outputs to associate with the preset upon construction
@@ -121,6 +124,10 @@ inline void PresetIterator::setChooser(const PresetChooser & chooser) {
 }
 
 inline std::size_t PresetIterator::operator*() const {
+    return _currentIndex;
+}
+
+inline std::size_t PresetIterator::lastIndex() const {
     return _currentIndex;
 }
 
@@ -212,7 +219,7 @@ inline bool PresetChooser::empty() const {
 }
 
 inline std::unique_ptr<Preset> PresetChooser::directoryIndex(std::size_t index) const {
-
+    printf("directoryIndex! %i\n", index);
 	return _presetLoader->loadPreset(index);
 }
 

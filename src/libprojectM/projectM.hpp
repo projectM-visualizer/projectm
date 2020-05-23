@@ -285,10 +285,12 @@ public:
   PipelineContext & pipelineContext() { return *_pipelineContext; }
   PipelineContext & pipelineContext2() { return *_pipelineContext2; }
 
+  int lastPreset = 0;
 
   void selectPrevious(const bool);
   void selectNext(const bool);
   void selectRandom(const bool);
+  bool random = false;
     
   int getWindowWidth() { return _settings.windowWidth; }
   int getWindowHeight() { return _settings.windowHeight; }
@@ -332,6 +334,9 @@ private:
 
   /// The current position of the directory iterator
   PresetIterator * m_presetPos;
+
+  /// Last PresetPost (when randomizing)
+  PresetIterator * m_lastPresetPos;
 
   /// Required by the preset chooser. Manages a loaded preset directory
   PresetLoader * m_presetLoader;
