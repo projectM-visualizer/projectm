@@ -809,8 +809,8 @@ void projectM::switchPreset(const bool hardCut) {
 void projectM::selectRandom(const bool hardCut) {
     if (m_presetChooser->empty())
         return;
-    random = true;
-    lastPreset = m_presetPos->lastIndex();
+    presetHistory.push_back(m_presetPos->lastIndex());
+    presetFuture.clear();
     *m_presetPos = m_presetChooser->weightedRandom(hardCut);
 
     switchPreset(hardCut);
@@ -821,11 +821,17 @@ void projectM::selectPrevious(const bool hardCut) {
     if (m_presetChooser->empty())
         return;
 
-    if (random && lastPreset != m_presetLoader->size()) { // if randomly browsing presets, "previous" should return to last random preset not the index--. Avoid returning to size() because that's the idle:// preset.
-        selectPreset(lastPreset);
-        random = false;
+    if (settings().shuffleEnabled && presetHistory.size() >= 1 && presetHistory.back() != m_presetLoader->size()) { // if randomly browsing presets, "previous" should return to last random preset not the index--. Avoid returning to size() because that's the idle:// preset.
+        for (std::vector<int>::const_iterator i = presetFuture.begin(); i != presetFuture.end(); ++i)
+            std::cout << *i << ' ';
+        presetFuture.push_back(m_presetPos->lastIndex());
+        selectPreset(presetHistory.back());
+        presetHistory.pop_back();
     }
     else {
+        // if we are not shuffling or there is no random future history, then let's not track a random vector and move fowards in the preset index.
+        presetHistory.clear();
+        presetFuture.clear();
         m_presetChooser->previousPreset(*m_presetPos);
         switchPreset(hardCut);
     }
@@ -834,11 +840,18 @@ void projectM::selectPrevious(const bool hardCut) {
 void projectM::selectNext(const bool hardCut) {
     if (m_presetChooser->empty())
         return;
-
-    m_presetChooser->nextPreset(*m_presetPos);
-    
-    random = false;
-    switchPreset(hardCut);
+    if (settings().shuffleEnabled && presetFuture.size() >= 1 && presetFuture.front() != m_presetLoader->size()) { // if shuffling and we have future presets already stashed then let's go forward rather than truely move randomly.
+        presetHistory.push_back(m_presetPos->lastIndex());
+        selectPreset(presetFuture.back());
+        presetFuture.pop_back();
+    }
+    else {
+        // if we are not shuffling or there is no random history, then let's not track a random vector and move backwards in the preset index.
+        presetFuture.clear();
+        presetHistory.clear();
+        m_presetChooser->nextPreset(*m_presetPos);
+        switchPreset(hardCut);
+    }
 }
 
 /**
