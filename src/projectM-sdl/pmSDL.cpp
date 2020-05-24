@@ -403,7 +403,12 @@ void projectMSDL::resize(unsigned int width_, unsigned int height_) {
 
 void projectMSDL::pollEvent() {
     SDL_Event evt;
-
+    
+    int mousex = 0;
+    float mousexscale = 0;
+    int mousey = 0;
+    float mouseyscale = 0;
+    int mousepressure = 0;
     while (SDL_PollEvent(&evt))
     {
         switch (evt.type) {
@@ -422,11 +427,28 @@ void projectMSDL::pollEvent() {
             case SDL_KEYDOWN:
                 keyHandler(&evt);
                 break;
+            case SDL_MOUSEBUTTONDOWN:
+                // Get mouse coorindates when you click.
+                SDL_GetMouseState(&mousex, &mousey);
+                // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
+                mousexscale = (mousex/(float)width);
+                mouseyscale = ((height-mousey)/(float)height );
+                // Touch. By not supplying a touch type, we will default to random.
+                touch(mousexscale,mouseyscale,mousepressure);
+                break;
             case SDL_QUIT:
                 done = true;
                 break;
         }
     }
+}
+
+void projectMSDL::touch(float x, float y, int pressure, int touchtype) {
+    if (y > 1)
+        y = 1.0;
+    if (x > 1)
+        x = 1.0;
+    projectM::touch(x, y, pressure, touchtype);
 }
 
 void projectMSDL::renderFrame() {
