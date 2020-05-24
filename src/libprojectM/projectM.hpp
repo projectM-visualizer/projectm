@@ -338,7 +338,7 @@ private:
   /// The current position of the directory iterator
   PresetIterator * m_presetPos;
 
-  /// Last PresetPost (when randomizing)
+  /// Last preset index (when randomizing)
   PresetIterator * m_lastPresetPos;
 
   /// Required by the preset chooser. Manages a loaded preset directory
