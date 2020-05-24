@@ -25,6 +25,7 @@ using namespace std::chrono;
 #endif /** USE_TEXT_MENU */
 
 #define TOAST_TIME 2
+#define TOUCH_TIME 5
 
 // for final composite grid:
 #define FCGSX 32 // final composite gridsize - # verts - should be EVEN.
@@ -50,6 +51,11 @@ class Renderer
 
 public:
   bool showtoast;
+  bool showtouch;
+  float touchx;
+  float touchy;
+  int touchp;
+  int touchtype;
   bool showfps;
   bool showtitle;
   bool showpreset;
@@ -66,6 +72,9 @@ public:
 
   milliseconds lastTimeToast;
   milliseconds currentTimeToast;
+
+  milliseconds lastTimeTouch;
+  milliseconds currentTimeTouch;
 
   int totalframes;
   float realfps;
@@ -115,6 +124,8 @@ public:
 		return duration_cast<milliseconds>(system_clock::now().time_since_epoch());;
   }
 
+  void touch(float x, float y, int pressure, int type);
+  
   void setToastMessage(const std::string& theValue);
 
   std::string toastMessage() const {
@@ -181,6 +192,7 @@ private:
   void SetupPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void Interpolation(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderItems(const Pipeline &pipeline, const PipelineContext &pipelineContext);
+  void RenderTouch();
   void FinishPass1();
   void Pass2 (const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void CompositeShaderOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext);
