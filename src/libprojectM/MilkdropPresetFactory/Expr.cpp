@@ -1415,10 +1415,13 @@ Expr *Expr::jit(Expr *root, std::string name)
     std::vector<Type *> arg_typess;
     arg_typess.push_back(IntegerType::get(Context,32));
     arg_typess.push_back(IntegerType::get(Context,32));
-    Constant* c = jitx.module->getOrInsertFunction<Type*>("Expr_eval",
-            Type::getFloatTy(Context),
-            IntegerType::get(Context,32),
-            IntegerType::get(Context,32));
+    
+    auto funccallee = jitx.module->getOrInsertFunction<Type*>("Expr_eval",
+        Type::getFloatTy(Context),
+        IntegerType::get(Context,32),
+        IntegerType::get(Context,32));
+    llvm::Value* c = funccallee.getCallee();
+
     auto *expr_eval_fun = cast<Function>(c);
     BasicBlock *BB = BasicBlock::Create(Context, "EntryBlock", expr_eval_fun);
     jitx.builder.SetInsertPoint(BB);
