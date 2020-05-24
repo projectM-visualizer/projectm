@@ -161,6 +161,21 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 
 	this->drawtitle = 0;
 
+	// This is the default help menu for applications that have not defined any custom menu.
+	const char* defaultHelpMenu = "\n"
+		"F1: This help menu""\n"
+		"F3: Show preset name""\n"
+		"F5: Show FPS""\n"
+		"L: Lock/Unlock Preset""\n"
+		"R: Random preset""\n"
+		"N: Next preset""\n"
+		"P: Previous preset""\n"
+		"UP: Increase Beat Sensitivity""\n"
+		"DOWN: Decrease Beat Sensitivity""\n"
+		"CTRL-F: Fullscreen";
+
+	this->setHelpText(defaultHelpMenu);
+
 	//this->title = "Unknown";
 
 	/** Other stuff... */
@@ -770,17 +785,7 @@ void Renderer::draw_help()
 {
 #ifdef USE_TEXT_MENU
 	// TODO: match winamp/milkdrop bindings
-	drawText("\n"
-	         "F1: This help menu""\n"
-	         "F3: Show preset name""\n"
-		     "F5: Show FPS""\n"
-	         "L: Lock/Unlock Preset""\n"
-	         "R: Random preset""\n"
-	         "N: Next preset""\n"
-	         "P: Previous preset""\n"
-	         "UP: Increase Beat Sensitivity""\n"
-	         "DOWN: Decrease Beat Sensitivity""\n"
-	         "CTRL-F: Fullscreen", 30, 20, 2.5);
+	drawText(this->helpText().c_str(), 30, 20, 2.5);
 
 #endif /** USE_TEXT_MENU */
 }
