@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>iProjectM</string>
+	<string>ProjectM</string>
 	<key>CFBundleIconFile</key>
 	<string></string>
 	<key>CFBundleIdentifier</key>
@@ -13,16 +13,16 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>iProjectM</string>
+	<string>ProjectM</string>
 	<key>CFBundlePackageType</key>
 	<string>hvpl</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.2</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>hook</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2015 projectM. All rights reserved.</string>
+	<string>Copyright © 2020 Mischa Spiegelmock</string>
 </dict>
 </plist>

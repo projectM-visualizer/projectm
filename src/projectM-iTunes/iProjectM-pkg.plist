@@ -8,7 +8,7 @@
 		<key>BundleOverwriteAction</key>
 		<string>upgrade</string>
 		<key>RootRelativeBundlePath</key>
-		<string>Library/iTunes/iTunes Plug-ins/iProjectM.bundle</string>
+		<string>Library/iTunes/iTunes Plug-ins/ProjectM.bundle</string>
 	</dict>
 </array>
 </plist>

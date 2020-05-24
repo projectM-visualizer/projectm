@@ -51,10 +51,9 @@ dist-mac: dist
 	./configure --enable-llvm
 	rm -rf dist
 	xcrun xcodebuild -scheme "projectM SDL" -configuration Release archive -archivePath build/ProjectM.xcarchive
-	xcrun xcodebuild -scheme "iProjectM" -configuration Release archive -archivePath build/iTunes.xcarchive
+	xcrun xcodebuild -scheme "Music Plugin" -configuration Release archive -archivePath build/iTunes.xcarchive
 	mkdir -p dist
-# mv build/ProjectM.xcarchive/Products/Applications/projectM\ SDL.app dist/
-	mv src/projectM-iTunes/iTunes\ Visualizer.pkg dist/iTunes-plugin-macOS.pkg
+	mv src/projectM-iTunes/Music\ Visualizer\ Plugin.pkg dist/Music-plugin-macOS.pkg
 	mv src/projectM-sdl/projectM\ SDL.pkg dist/projectM-macOS.pkg
 	mv projectM-*.tar.gz dist/
 	@echo "Success!\nBuilt iTunes plugin installer and SDL apps in dist/"
