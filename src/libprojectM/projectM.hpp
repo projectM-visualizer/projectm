@@ -182,6 +182,7 @@ public:
   void changeHardcutDuration(int seconds);
   void changePresetDuration(int seconds);
   void getMeshSize(int *w, int *h);
+  void touch(float x, float y, int pressure, int touchtype);
   void setToastMessage(const std::string & toastMessage);
   const Settings & settings() const {
 		return _settings;
