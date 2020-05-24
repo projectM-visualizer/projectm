@@ -810,6 +810,9 @@ void projectM::selectRandom(const bool hardCut) {
     if (m_presetChooser->empty())
         return;
     presetHistory.push_back(m_presetPos->lastIndex());
+    // If presetHistory is tracking more than 10, then delete the oldest entry so we cap to a history of 10.
+    if (presetHistory.size() >= 10)
+        presetHistory.erase(presetHistory.begin());
     presetFuture.clear();
     *m_presetPos = m_presetChooser->weightedRandom(hardCut);
 
