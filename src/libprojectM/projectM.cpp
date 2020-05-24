@@ -1005,3 +1005,8 @@ void projectM::setToastMessage(const std::string & toastMessage)
         renderer->setToastMessage(toastMessage);
 }
 
+void projectM::touch(float x, float y, int pressure, int touchtype)
+{
+    if ( renderer )
+        renderer->touch(x, y, pressure, touchtype);
+}
