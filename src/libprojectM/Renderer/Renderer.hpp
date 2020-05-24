@@ -91,6 +91,8 @@ public:
   milliseconds lastTimeTouch;
   milliseconds currentTimeTouch;
 
+  std::string m_helpText;
+
   int totalframes;
   float realfps;
 
