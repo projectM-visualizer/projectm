@@ -1005,3 +1005,9 @@ void projectM::setToastMessage(const std::string & toastMessage)
         renderer->setToastMessage(toastMessage);
 }
 
+void projectM::setHelpText(const std::string & helpText)
+{
+    if ( renderer )
+        renderer->setHelpText(helpText);
+}
+
