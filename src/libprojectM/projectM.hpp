@@ -190,6 +190,7 @@ public:
   /// Plays a preset immediately
   void selectPreset(unsigned int index, bool hardCut = true);
 
+  /// Plays a preset immediately when given preset name
   void selectPresetByName(std::string& name, bool hardCut = true);
 
   /// Removes a preset from the play list. If it is playing then it will continue as normal until next switch
@@ -246,6 +247,7 @@ public:
 
   void changePresetRating (unsigned int index, int rating, const PresetRatingType ratingType); 
 
+  /// Updates renderer text input by user
   void updateInputText(std::string value);
 
   /// Returns the size of the play list
@@ -293,7 +295,9 @@ public:
   bool getErrorLoadingCurrentPreset() const { return errorLoadingCurrentPreset; }
 
   void default_key_handler(projectMEvent event, projectMKeycode keycode);
+  /// Handles text input (like when loading a preset by name)
   void editor_key_handler(projectMEvent event, projectMKeycode keycode);
+  /// Sets the keyboard interface
   void setInterface(interface_t interfacet);
 
   Renderer *renderer;

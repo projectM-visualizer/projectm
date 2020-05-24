@@ -136,7 +136,7 @@ public:
   std::string m_fps;
   std::string m_rating;
   std::string m_defaultInputText = "Preset to load: ";
-  std::string m_inputText = m_defaultInputText;
+  std::string m_inputText;
 
   float* p;
 

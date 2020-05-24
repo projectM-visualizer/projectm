@@ -86,6 +86,7 @@ class PresetLoader {
 		/// Get a preset name given an index
 		const std::string & getPresetName ( unsigned int index) const;
 
+		/// Get the preset index given a name
 		unsigned int PresetLoader::getPresetIndex(std::string &name);
 
 		/// Returns the number of presets in the active directory

@@ -390,14 +390,14 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 						SDL_StopTextInput();
 						renderText = false;
 						break;
-					case SDLK_z: 
-                        SDL_StartTextInput();
+					case SDLK_z:
+						SDL_StartTextInput();
 						if (!renderText) inputText = "";
 						renderText = true;
-                        break;
+						break;
 						// Handle backspace
 					case SDLK_BACKSPACE:
-                        if(inputText.length() > 0)
+						if (inputText.length() > 0)
 						{
 							// lop off character
 							inputText.pop_back();
@@ -406,19 +406,19 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 						break;
 						// Handle copy
 					case SDLK_c:
-                        if(SDL_GetModState() & KMOD_CTRL)
-					    {
-						    SDL_SetClipboardText(inputText.c_str());
-					    }
+						if (sdl_mod & (KMOD_CTRL | KMOD_GUI))
+						{
+							SDL_SetClipboardText(inputText.c_str());
+						}
 						break;
 					// Handle paste
 					case SDLK_v:
-                        if(SDL_GetModState() & KMOD_CTRL)
-					    {
-						    inputText = SDL_GetClipboardText();
+						if (sdl_mod & (KMOD_CTRL | KMOD_GUI))
+						{
+							inputText = SDL_GetClipboardText();
 							updateInputText(inputText);
-					    }
-					    break;
+						}
+						break;
     }
 
     // translate into projectM codes and perform default projectM handler
@@ -481,17 +481,15 @@ void projectMSDL::pollEvent() {
                 done = true;
                 break;
 			case SDL_TEXTINPUT:
-                if (!(SDL_GetModState() & KMOD_CTRL
-							&& (evt.text.text[0] == 'c' ||
-                                evt.text.text[0] == 'C' ||
-                                evt.text.text[0] == 'v'	||
-                                evt.text.text[0] == 'V')))
+				if (!(SDL_GetModState() & (KMOD_CTRL | KMOD_GUI)
+							&& (evt.text.text[0] == 'c' || evt.text.text[0] == 'C'
+									|| evt.text.text[0] == 'v' || evt.text.text[0] == 'V')))
 				{
 					inputText += evt.text.text;
 				}
 				if (renderText)
 				{
-                    updateInputText(inputText);
+					updateInputText(inputText);
 				}
 				
         }
