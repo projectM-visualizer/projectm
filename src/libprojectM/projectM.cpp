@@ -1010,3 +1010,9 @@ void projectM::touch(float x, float y, int pressure, int touchtype)
     if ( renderer )
         renderer->touch(x, y, pressure, touchtype);
 }
+
+void projectM::setHelpText(const std::string & helpText)
+{
+    if ( renderer )
+        renderer->setHelpText(helpText);
+}
