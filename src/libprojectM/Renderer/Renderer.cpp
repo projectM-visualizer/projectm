@@ -408,16 +408,10 @@ void Renderer::RenderTouch()
 	wave.maximizeColors = false;
 	wave.modulateAlphaByVolume = false;
 
-	// randomize colors
-	float rR = ((double)rand() / (RAND_MAX));
-	float rB = ((double)rand() / (RAND_MAX));
-	float rG = ((double)rand() / (RAND_MAX));
-	float rA = ((double)rand() / (RAND_MAX));
-
-	wave.r = rR;
-	wave.g = rG;
-	wave.b = rB;
-	wave.a = rA;
+	wave.r = touchr;
+	wave.g = touchg;
+	wave.b = touchb;
+	wave.a = toucha;
     wave.x = touchx;
 	wave.y = touchy;
 
@@ -730,6 +724,13 @@ void Renderer::touch(float x, float y, int pressure, int type = 0)
 		type = (rand() % 9) + 1;
 	}
 	touchtype = type;
+
+	// Randomly select colours on touch
+	touchr = ((double)rand() / (RAND_MAX));
+	touchb = ((double)rand() / (RAND_MAX));
+	touchg = ((double)rand() / (RAND_MAX));
+	toucha = ((double)rand() / (RAND_MAX));
+
 	showtouch = true;
 }
 

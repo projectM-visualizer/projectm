@@ -50,12 +50,27 @@ class Renderer
 {
 
 public:
-  bool showtoast;
+    /*  ShowTouch(bool) show touch or not.
+        touchx(float) x for touch waveform to start displaying(scale of 0 - 1 and not the exact coordinates)
+        touchy(float) y for touch waveform to start displaying(scale of 0 - 1 and not the exact coordinates)
+        touchp(int) touch pressure - @TODO not implemented yet!
+        touchtype(int) Waveform type (bias to Circle). 1 = Circle; 2 = RadialBlob; 3 = Blob2; 4 = Blob 3; 5 = DerivativeLine; 6 = Blob5; 7 = Line; 8 DoubleLine; 
+        touchr(double) Red
+        touchb(double) Blue
+        touchg(double) Green
+        toucha(double) Alpha
+    */
   bool showtouch;
   float touchx;
   float touchy;
-  int touchp;
-  int touchtype;
+  int touchp; // Touch Pressure.
+  int touchtype; // Touch Type
+  double touchr;
+  double touchg;
+  double touchb;
+  double toucha;
+  
+  bool showtoast;
   bool showfps;
   bool showtitle;
   bool showpreset;
