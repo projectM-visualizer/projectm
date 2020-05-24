@@ -4,6 +4,9 @@
 #include "Common.hpp"
 #include "KeyHandler.hpp"
 #include "TextureManager.hpp"
+#include "MilkdropWaveform.hpp"
+#include "Waveform.hpp"
+#include "Transformation.hpp"
 #include <iostream>
 #include <algorithm>
 #include <sys/stat.h>
@@ -142,9 +145,12 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 	this->currentTimeFPS = nowMilliseconds();
 	this->lastTimeToast = nowMilliseconds();
 	this->currentTimeToast = nowMilliseconds();
+	this->lastTimeTouch = nowMilliseconds();
+	this->currentTimeTouch = nowMilliseconds();
 	this->noSwitch = false;
 	this->showfps = false;
 	this->showtoast = false;
+	this->showtouch = false;
 	this->showtitle = false;
 	this->showpreset = false;
 	this->showhelp = false;
@@ -340,6 +346,98 @@ void Renderer::RenderItems(const Pipeline& pipeline, const PipelineContext& pipe
 			(*pos)->Draw(renderContext);
 		}
 	}
+	
+	// If we are rendering a touch (time sensitive), then show it.
+	if (showtouch) {
+		RenderTouch();
+	}
+}
+
+void Renderer::RenderTouch()
+{
+	// Handle timers so we only render touch / clicks temporarily.
+	// Touch time is hard coded to 5 seconds.
+	this->currentTimeTouch = nowMilliseconds();
+	if (timeCheck(this->currentTimeTouch, this->lastTimeTouch, (double)(TOUCH_TIME * 1000))) {
+		this->currentTimeTouch = nowMilliseconds();
+		this->lastTimeToast = nowMilliseconds();
+		this->showtouch = false;
+	}
+
+	// Create a waveform and add it to touch pipeline. The touch x / y was based on where you clicked (approximately).
+	Pipeline pipelineTouch;
+	MilkdropWaveform wave;
+	pipelineTouch.drawables.push_back(&wave);
+	switch (touchtype)
+	{
+		case 1:
+			wave.mode = Circle;
+			break;
+		case 2:
+			wave.mode = RadialBlob;
+			break;
+		case 3:
+			wave.mode = Blob2;
+			break;
+		case 4:
+			wave.mode = Blob3;
+			break;
+			/* Lines are not that intuitive for touching.
+		case 5:
+			wave.mode = DerivativeLine;
+			break;
+			*/
+		case 6:
+			wave.mode = Blob5;
+			break;
+		/* Lines are not that intuitive for touching.
+		case 7:
+			wave.mode = Line;
+			break;
+		case 8:
+			wave.mode = DoubleLine;
+			break;
+			*/
+		default:
+			wave.mode = Circle;
+	}
+	 
+	wave.additive = true;
+	wave.modOpacityEnd = 1.1;
+	wave.modOpacityStart = 0.0;
+	wave.maximizeColors = false;
+	wave.modulateAlphaByVolume = false;
+
+	// randomize colors
+	float rR = ((double)rand() / (RAND_MAX));
+	float rB = ((double)rand() / (RAND_MAX));
+	float rG = ((double)rand() / (RAND_MAX));
+	float rA = ((double)rand() / (RAND_MAX));
+
+	wave.r = rR;
+	wave.g = rG;
+	wave.b = rB;
+	wave.a = rA;
+    wave.x = touchx;
+	wave.y = touchy;
+
+	// If we are transitioning out (it's no longer touch time), then let's dull the colours.
+	if (!showtouch) {
+		wave.r = 0.1;
+		wave.g = 0.1;
+		wave.b = 0.1;
+		wave.a = 0.1;
+	}
+	
+	// Render waveform
+	for (std::vector<RenderItem*>::const_iterator pos = pipelineTouch.drawables.begin(); pos != pipelineTouch.drawables.end(); ++
+	     pos)
+	{
+		if (*pos != nullptr)
+		{
+			(*pos)->Draw(renderContext);
+		}
+	}
 }
 
 void Renderer::FinishPass1()
@@ -373,6 +471,7 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 	{
 		CompositeOutput(pipeline, pipelineContext);
 	}
+
 
 	// When console refreshes, there is a chance the preset has been changed by the user
 	refreshConsole();
@@ -616,6 +715,22 @@ bool Renderer::timeCheck(const milliseconds currentTime, const milliseconds last
 	} else {
 		return false;
 	}
+}
+
+void Renderer::touch(float x, float y, int pressure, int type = 0)
+{
+	// Initialize counters
+	lastTimeTouch= nowMilliseconds();
+	currentTimeTouch = nowMilliseconds();
+	touchx = x;
+	touchy = y;
+	touchp = pressure;
+	// If we touched randomly, then assign type to a random number between 0 and 8
+	if (type == 0) {
+		type = (rand() % 9) + 1;
+	}
+	touchtype = type;
+	showtouch = true;
 }
 
 void Renderer::setToastMessage(const std::string& theValue)
