@@ -100,6 +100,7 @@ public:
 	void nextMonitor();
     void toggleFullScreen();
     void resize(unsigned int width, unsigned int height);
+    void touch(float x, float y, int pressure, int touchtype = 0);
     void renderFrame();
     void pollEvent();
     void maximize();
