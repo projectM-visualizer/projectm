@@ -365,6 +365,32 @@ srand((int)(time(NULL)));
         // init with settings
         app = new projectMSDL(settings, 0);
     }
+
+
+std::string modKey = "CTRL";
+
+#if __APPLE_
+modKey = "CMD";
+#endif
+
+	std::string sdlHelpMenu = "\n"
+		"F1: This help menu""\n"
+		"F3: Show preset name""\n"
+		"F5: Show FPS""\n"
+		"L or SPACE: Lock/Unlock Preset""\n"
+		"R: Random preset""\n"
+		"N: Next preset""\n"
+		"P: Previous preset""\n"
+		"UP: Increase Beat Sensitivity""\n"
+		"DOWN: Decrease Beat Sensitivity""\n" +
+		modKey + "-I: Audio Input (listen to next device)""\n" +
+		modKey + "-M: Change Monitor""\n" +
+		modKey + "-S: Stretch Monitors""\n" +
+		modKey + "-F: Fullscreen""\n" +
+		modKey + "-Q: Quit";
+
+	app->setHelpText(sdlHelpMenu.c_str());
+
     app->init(win, &glCtx);
 
 #if STEREOSCOPIC_SBS

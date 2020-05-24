@@ -67,6 +67,8 @@ public:
   milliseconds lastTimeToast;
   milliseconds currentTimeToast;
 
+  std::string m_helpText;
+
   int totalframes;
   float realfps;
 
@@ -101,6 +103,14 @@ public:
   std::string presetName() const
   {
     return m_presetName;
+  }
+
+  void setHelpText(const std::string& theValue) {
+		m_helpText = theValue; 
+  }
+
+  std::string helpText() const {
+		return m_helpText;
   }
 
   void setFPS(const int &theValue) {
