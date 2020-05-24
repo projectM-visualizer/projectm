@@ -5,8 +5,6 @@
 #include "KeyHandler.hpp"
 #include "TextureManager.hpp"
 #include "MilkdropWaveform.hpp"
-#include "Waveform.hpp"
-#include "Transformation.hpp"
 #include <iostream>
 #include <algorithm>
 #include <sys/stat.h>
