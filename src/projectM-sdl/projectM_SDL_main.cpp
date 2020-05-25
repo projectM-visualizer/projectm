@@ -494,6 +494,11 @@ srand((int)(time(NULL)));
 #if !FAKE_AUDIO && !WASAPI_LOOPBACK
     app->endAudioCapture();
 #endif
+
+	// Write back config with current app settings (if we loaded from a config file to begin with)
+	if (!configFilePath.empty()) {
+		projectM::writeConfig(configFilePath, app->settings());
+	}
     delete app;
 
     return PROJECTM_SUCCESS;
