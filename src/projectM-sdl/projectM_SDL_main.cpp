@@ -365,8 +365,8 @@ srand((int)(time(NULL)));
 
 	// If our config or hard-coded settings create a resolution smaller than the monitors, then resize the SDL window to match.
 	if (height > app->getWindowHeight() || width > app->getWindowWidth()) {
-		SDL_SetWindowSize(win, app->getWindowHeight(),app->getWindowWidth());
-		SDL_SetWindowPosition(win, (width / 2)-(app->getWindowHeight()/2), (height / 2)-(app->getWindowWidth()/2));
+		SDL_SetWindowSize(win, app->getWindowWidth(),app->getWindowHeight());
+		SDL_SetWindowPosition(win, (width / 2)-(app->getWindowWidth()/2), (height / 2)-(app->getWindowHeight()/2));
 	}
     app->init(win, &glCtx);
 
