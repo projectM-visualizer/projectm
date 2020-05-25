@@ -366,20 +366,24 @@ srand((int)(time(NULL)));
         app = new projectMSDL(settings, 0);
     }
 
-	// If our config or hard-coded settings create a resolution smaller than the monitors, then resize the SDL window to match.
-	if (height > app->getWindowHeight() || width > app->getWindowWidth()) {
-		SDL_SetWindowSize(win, app->getWindowWidth(),app->getWindowHeight());
-		SDL_SetWindowPosition(win, (width / 2)-(app->getWindowWidth()/2), (height / 2)-(app->getWindowHeight()/2));
-	}
+    // If our config or hard-coded settings create a resolution smaller than the monitors, then resize the SDL window to match.
+    if (height > app->getWindowHeight() || width > app->getWindowWidth()) {
+        SDL_SetWindowSize(win, app->getWindowWidth(),app->getWindowHeight());
+        SDL_SetWindowPosition(win, (width / 2)-(app->getWindowWidth()/2), (height / 2)-(app->getWindowHeight()/2));
+    } else if (height < app->getWindowHeight() || width < app->getWindowWidth()) {
+        // If our config is larger than our monitors resolution then reduce it.
+        SDL_SetWindowSize(win, width, height);
+        SDL_SetWindowPosition(win, 0, 0);
+    }
 
-  // Create a help menu specific to SDL
-  std::string modKey = "CTRL";
+    // Create a help menu specific to SDL
+    std::string modKey = "CTRL";
 
 #if __APPLE_
 modKey = "CMD";
 #endif
 
-	std::string sdlHelpMenu = "\n"
+    std::string sdlHelpMenu = "\n"
 		"F1: This help menu""\n"
 		"F3: Show preset name""\n"
 		"F5: Show FPS""\n"
@@ -394,10 +398,9 @@ modKey = "CMD";
 		modKey + "-S: Stretch Monitors""\n" +
 		modKey + "-F: Fullscreen""\n" +
 		modKey + "-Q: Quit";
-
-	app->setHelpText(sdlHelpMenu.c_str());
+    app->setHelpText(sdlHelpMenu.c_str());
     
-  app->init(win, &glCtx);
+    app->init(win, &glCtx);
 
 #if STEREOSCOPIC_SBS
 	app->toggleFullScreen();
