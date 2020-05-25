@@ -72,8 +72,8 @@ You can also download an enormous 41,000 preset pack of presets [here](https://m
 See [BUILDING.md](BUILDING.md)
 
 # Keyboard Controls:
-* Up: increase beat sensitivity
-* Down: decrease beat sensitivity
+* Up: increase beat sensitivity (max 5)
+* Down: decrease beat sensitivity (min 0)
 * Y: toggle shuffle enabled
 * R: jump to random preset
 * N: next preset
@@ -82,10 +82,10 @@ See [BUILDING.md](BUILDING.md)
 * Shift-P: previous preset with hard cut
 * L: lock current preset
 
-
-* F3: show preset (if supported)
-* F5: show FPS (if supported)
 * H or F1: show help (if supported)
+* F3: show preset (if supported)
+* F4: show stats (if supported)
+* F5: show FPS (if supported)
 
 #### Only ProjectM SDL:
 * Cmd/Ctrl-Q: *q*uit

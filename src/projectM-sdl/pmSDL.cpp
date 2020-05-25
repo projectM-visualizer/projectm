@@ -110,6 +110,9 @@ int projectMSDL::initAudioInput() {
 
     // read characteristics of opened capture device
     SDL_Log("Opened audio capture device index=%i devId=%i: %s", selectedAudioDevice, audioDeviceID, SDL_GetAudioDeviceName(selectedAudioDevice, true));
+    std::string deviceToast = "Listening to ";
+    deviceToast += SDL_GetAudioDeviceName(selectedAudioDevice, true);
+    projectM::setToastMessage(deviceToast);
     SDL_Log("Samples: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
     audioChannelsCount = have.channels;
     audioSampleRate = have.freq;
@@ -161,6 +164,10 @@ void projectMSDL::beginAudioCapture() {
 
 void projectMSDL::endAudioCapture() {
     SDL_PauseAudioDevice(audioDeviceID, true);
+}
+
+void projectMSDL::setHelpText(const std::string & helpText) {
+    projectM::setHelpText(helpText);
 }
 
 void projectMSDL::maximize() {

@@ -215,12 +215,21 @@ void projectM::readConfig (const std::string & configFile )
     _settings.softCutRatingsEnabled =
             config.read<bool> ( "Soft Cut Ratings Enabled", false);
 
+    // Hard Cuts are preset transitions that occur when your music becomes louder. They only occur after a hard cut duration threshold has passed.
+    _settings.hardcutEnabled = config.read<bool> ( "Hard Cuts Enabled", false );
+    // Hard Cut duration is the number of seconds before you become eligible for a hard cut.
+    _settings.hardcutDuration = config.read<int> ( "Hard Cut Duration", 60 );
+    // Hard Cut sensitivity is the volume difference before a "hard cut" is triggered.
+    _settings.hardcutSensitivity = config.read<float> ( "Hard Cut Sensitivity", 1.0 );
+    
+    // Beat Sensitivity impacts how reactive your visualizations are to volume, bass, mid-range, and treble. 
+    // Preset authors have developed their visualizations with the default of 1.0.
+    _settings.beatSensitivity = config.read<float> ( "Beat Sensitivity", 1.0 );
+
+
     projectM_init ( _settings.meshX, _settings.meshY, _settings.fps,
-                    _settings.textureSize, _settings.windowWidth,_settings.windowHeight);
-
-    _settings.beatSensitivity = beatDetect->beat_sensitivity = config.read<float> ( "Hard Cut Sensitivity", 10.0 );
-
-
+                _settings.textureSize, _settings.windowWidth,_settings.windowHeight);
+    
     if ( config.read ( "Aspect Correction", true ) )
     {
         _settings.aspectCorrection = true;
@@ -256,13 +265,17 @@ void projectM::readSettings (const Settings & settings )
 
     _settings.easterEgg = settings.easterEgg;
 
+    _settings.hardcutEnabled = settings.hardcutEnabled;
+    _settings.hardcutDuration = settings.hardcutDuration;
+    _settings.hardcutSensitivity = settings.hardcutSensitivity;
+    
+    _settings.beatSensitivity = settings.beatSensitivity;
+    
     projectM_init ( _settings.meshX, _settings.meshY, _settings.fps,
                     _settings.textureSize, _settings.windowWidth,_settings.windowHeight);
+    
 
-
-    _settings.beatSensitivity = settings.beatSensitivity;
     _settings.aspectCorrection = settings.aspectCorrection;
-
 }
 
 #ifdef USE_THREADS
@@ -362,12 +375,9 @@ Pipeline * projectM::renderFrameOnlyPass1(Pipeline *pPipeline) /*pPipeline is a 
                 selectRandom(false);
             else
                 selectNext(false);
-        }
-
-        else if ((beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) &&
-                 timeKeeper->CanHardCut())
+        } else if (settings().hardcutEnabled && (beatDetect->vol-beatDetect->vol_old>settings().hardcutSensitivity) && timeKeeper->CanHardCut())
         {
-            // printf("Hard Cut\n");
+            // Hard Cuts must be enabled, must have passed the hardcut duration, and the volume must be a greater difference than the hardcut sensitivity.
             if (settings().shuffleEnabled)
                 selectRandom(true);
             else
@@ -534,7 +544,7 @@ void projectM::projectM_reset()
 void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, int height )
 {
     /** Initialise start time */
-    timeKeeper = new TimeKeeper(_settings.presetDuration,_settings.smoothPresetDuration, _settings.easterEgg);
+    timeKeeper = new TimeKeeper(_settings.presetDuration,_settings.smoothPresetDuration, _settings.hardcutDuration, _settings.easterEgg);
 
     /** Nullify frame stash */
 
@@ -588,6 +598,7 @@ void projectM::projectM_resetengine()
     if ( beatDetect != NULL )
     {
         beatDetect->reset();
+        beatDetect->beatSensitivity = _settings.beatSensitivity;
     }
 
 }
@@ -863,6 +874,11 @@ std::string projectM::switchPreset(std::unique_ptr<Preset> & targetPreset) {
 void projectM::setPresetLock ( bool isLocked )
 {
     renderer->noSwitch = isLocked;
+    if (isPresetLocked()) {
+        renderer->setToastMessage("Preset Locked");
+    } else {
+        renderer->setToastMessage("Unlocked");
+    }
 }
 
 bool projectM::isPresetLocked() const
@@ -972,12 +988,26 @@ void projectM::changeTextureSize(int size) {
                             _settings.titleFontURL, _settings.menuFontURL,
                             _settings.datadir);
 }
-
+void projectM::changeHardcutDuration(int seconds) {
+    timeKeeper->ChangeHardcutDuration(seconds);
+}
 void projectM::changePresetDuration(int seconds) {
     timeKeeper->ChangePresetDuration(seconds);
 }
 void projectM::getMeshSize(int *w, int *h)	{
     *w = _settings.meshX;
     *h = _settings.meshY;
+}
+
+void projectM::setToastMessage(const std::string & toastMessage)
+{
+    if ( renderer )
+        renderer->setToastMessage(toastMessage);
+}
+
+void projectM::setHelpText(const std::string & helpText)
+{
+    if ( renderer )
+        renderer->setHelpText(helpText);
 }
 

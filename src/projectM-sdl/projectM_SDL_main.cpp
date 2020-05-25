@@ -350,7 +350,10 @@ srand((int)(time(NULL)));
 		settings.fps = maxRefreshRate;
         settings.smoothPresetDuration = 3; // seconds
         settings.presetDuration = 22; // seconds
-        settings.beatSensitivity = 0.8;
+		settings.hardcutEnabled = true;
+		settings.hardcutDuration = 60;
+		settings.hardcutSensitivity = 1.0;
+        settings.beatSensitivity = 1.0;
         settings.aspectCorrection = 1;
         settings.shuffleEnabled = 1;
         settings.softCutRatingsEnabled = 1; // ???
@@ -368,9 +371,33 @@ srand((int)(time(NULL)));
 		SDL_SetWindowSize(win, app->getWindowWidth(),app->getWindowHeight());
 		SDL_SetWindowPosition(win, (width / 2)-(app->getWindowWidth()/2), (height / 2)-(app->getWindowHeight()/2));
 	}
-    app->init(win, &glCtx);
 
+  // Create a help menu specific to SDL
+  std::string modKey = "CTRL";
 
+#if __APPLE_
+modKey = "CMD";
+#endif
+
+	std::string sdlHelpMenu = "\n"
+		"F1: This help menu""\n"
+		"F3: Show preset name""\n"
+		"F5: Show FPS""\n"
+		"L or SPACE: Lock/Unlock Preset""\n"
+		"R: Random preset""\n"
+		"N: Next preset""\n"
+		"P: Previous preset""\n"
+		"UP: Increase Beat Sensitivity""\n"
+		"DOWN: Decrease Beat Sensitivity""\n" +
+		modKey + "-I: Audio Input (listen to next device)""\n" +
+		modKey + "-M: Change Monitor""\n" +
+		modKey + "-S: Stretch Monitors""\n" +
+		modKey + "-F: Fullscreen""\n" +
+		modKey + "-Q: Quit";
+
+	app->setHelpText(sdlHelpMenu.c_str());
+    
+  app->init(win, &glCtx);
 
 #if STEREOSCOPIC_SBS
 	app->toggleFullScreen();

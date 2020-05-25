@@ -113,20 +113,19 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	  switch( keycode )
 	    {
 	    case PROJECTM_K_UP:
-            beatDetect->beat_sensitivity += 0.25;
-			if (beatDetect->beat_sensitivity > 5.0) beatDetect->beat_sensitivity = 5.0;
+            beatDetect->beatSensitivity += 0.25;
+			if (beatDetect->beatSensitivity > 5.0) beatDetect->beatSensitivity = 5.0;
 	      break;
 	    case PROJECTM_K_DOWN:
-            beatDetect->beat_sensitivity -= 0.25;
-			if (beatDetect->beat_sensitivity < 0) beatDetect->beat_sensitivity = 0;
+            beatDetect->beatSensitivity -= 0.25;
+			if (beatDetect->beatSensitivity < 0) beatDetect->beatSensitivity = 0;
 	      break;
 		case PROJECTM_K_h:
  		  renderer->showhelp = !renderer->showhelp;
-	      renderer->showstats= false;
+	      renderer->showstats=false;
 	    case PROJECTM_K_F1:
 	      renderer->showhelp = !renderer->showhelp;
 	      renderer->showstats=false;
-	      renderer->showfps=false;
 	      break;
 	    case PROJECTM_K_y:
 		this->setShuffleEnabled(!this->isShuffleEnabled());
@@ -135,8 +134,8 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_F5:
 		  renderer->showfps = !renderer->showfps;
 			// Initialize counters and reset frame count.
-			renderer->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-			renderer->currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+			renderer->lastTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+			renderer->currentTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 			renderer->totalframes = 0;
 			// Hide preset name from screen and replace it with FPS counter.
 			if (renderer->showfps)
@@ -147,6 +146,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_F4:
 		if (!renderer->showhelp)
 	       		renderer->showstats = !renderer->showstats;
+	       		renderer->showhelp=false;
 	      break;
 	    case PROJECTM_K_F3: {
 	      renderer->showpreset = !renderer->showpreset;
@@ -202,8 +202,8 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      selectPrevious(false);
 	      break;
 	    case PROJECTM_K_l:
-		renderer->noSwitch=!renderer->noSwitch;
-	      break;
+			setPresetLock(!isPresetLocked());
+			break;
 	    case PROJECTM_K_s:
             	renderer->studio = !renderer->studio;
 	    case PROJECTM_K_i:

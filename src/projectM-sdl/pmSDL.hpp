@@ -100,6 +100,7 @@ public:
 	void nextMonitor();
     void toggleFullScreen();
     void resize(unsigned int width, unsigned int height);
+    void setHelpText(const std::string& theValue);
     void renderFrame();
     void pollEvent();
     void maximize();
