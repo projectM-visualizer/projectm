@@ -183,6 +183,7 @@ public:
   void changePresetDuration(int seconds);
   void getMeshSize(int *w, int *h);
   void touch(float x, float y, int pressure, int touchtype);
+  void touchDrag(float x, float y, int pressure);
   void setHelpText(const std::string & helpText);
   void setToastMessage(const std::string & toastMessage);
   const Settings & settings() const {

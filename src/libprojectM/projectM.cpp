@@ -1011,6 +1011,12 @@ void projectM::touch(float x, float y, int pressure, int touchtype)
         renderer->touch(x, y, pressure, touchtype);
 }
 
+void projectM::touchDrag(float x, float y, int pressure)
+{
+    if ( renderer )
+        renderer->touchDrag(x, y, pressure);
+}
+
 void projectM::setHelpText(const std::string & helpText)
 {
     if ( renderer )

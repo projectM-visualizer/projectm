@@ -88,6 +88,7 @@ public:
 
 
     bool done;
+    bool mouseDown = false;
     projectMSDL(Settings settings, int flags);
     projectMSDL(std::string config_file, int flags);
     void init(SDL_Window *window, SDL_GLContext *glCtx, const bool renderToTexture = false);
@@ -101,6 +102,7 @@ public:
     void toggleFullScreen();
     void resize(unsigned int width, unsigned int height);
     void touch(float x, float y, int pressure, int touchtype = 0);
+    void touchDrag(float x, float y, int pressure);
     void setHelpText(const std::string& theValue);
     void renderFrame();
     void pollEvent();

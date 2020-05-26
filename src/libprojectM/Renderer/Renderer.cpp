@@ -386,20 +386,20 @@ void Renderer::RenderTouch()
 		case 1:
 			wave.mode = Circle;
 			break;
+		/* Radial Blob flies off and doesn't track your mouse.
 		case 2:
 			wave.mode = RadialBlob;
 			break;
+			*/
 		case 3:
 			wave.mode = Blob2;
 			break;
 		case 4:
 			wave.mode = Blob3;
 			break;
-			/* Lines are not that intuitive for touching.
 		case 5:
 			wave.mode = DerivativeLine;
 			break;
-			*/
 		case 6:
 			wave.mode = Blob5;
 			break;
@@ -724,6 +724,7 @@ bool Renderer::timeCheck(const milliseconds currentTime, const milliseconds last
 	}
 }
 
+// Render a waveform when a touch event is triggered.
 void Renderer::touch(float x, float y, int pressure, int type = 0)
 {
 	// Initialize counters
@@ -743,6 +744,19 @@ void Renderer::touch(float x, float y, int pressure, int type = 0)
 	touchb = ((double)rand() / (RAND_MAX));
 	touchg = ((double)rand() / (RAND_MAX));
 	toucha = ((double)rand() / (RAND_MAX));
+
+	showtouch = true;
+}
+
+// Move a waveform when dragging X, Y, and Pressure can change. We also extend the counters so it will stay on screen for as long as you click and drag.
+void Renderer::touchDrag(float x, float y, int pressure)
+{
+	// Initialize counters
+	lastTimeTouch= nowMilliseconds();
+	currentTimeTouch = nowMilliseconds();
+	touchx = x;
+	touchy = y;
+	touchp = pressure;
 
 	showtouch = true;
 }
