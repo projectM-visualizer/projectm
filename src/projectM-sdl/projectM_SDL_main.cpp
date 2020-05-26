@@ -328,16 +328,32 @@ srand((int)(time(NULL)));
         base_path = SDL_GetBasePath();
         SDL_Log("Config file not found, using built-in settings. Data directory=%s\n", base_path.c_str());
 
+		// Get max refresh rate from attached displays to use as built-in max FPS.
+		int i = 0;
+		int maxRefreshRate = 0;
+		SDL_DisplayMode current;
+		for (i = 0; i < SDL_GetNumVideoDisplays(); ++i)
+		{
+			if (SDL_GetCurrentDisplayMode(i, &current) == 0)
+			{
+				if (current.refresh_rate > maxRefreshRate) maxRefreshRate = current.refresh_rate;
+			}
+		}
+		if (maxRefreshRate <= 60) maxRefreshRate = 60;
+
         float heightWidthRatio = (float)height / (float)width;
         projectM::Settings settings;
         settings.windowWidth = width;
         settings.windowHeight = height;
         settings.meshX = 128;
         settings.meshY = settings.meshX * heightWidthRatio;
-        settings.fps   = 60;
+		settings.fps = maxRefreshRate;
         settings.smoothPresetDuration = 3; // seconds
         settings.presetDuration = 22; // seconds
-        settings.beatSensitivity = 0.8;
+		settings.hardcutEnabled = true;
+		settings.hardcutDuration = 60;
+		settings.hardcutSensitivity = 1.0;
+        settings.beatSensitivity = 1.0;
         settings.aspectCorrection = 1;
         settings.shuffleEnabled = 1;
         settings.softCutRatingsEnabled = 1; // ???
@@ -349,6 +365,32 @@ srand((int)(time(NULL)));
         // init with settings
         app = new projectMSDL(settings, 0);
     }
+
+
+std::string modKey = "CTRL";
+
+#if __APPLE_
+modKey = "CMD";
+#endif
+
+	std::string sdlHelpMenu = "\n"
+		"F1: This help menu""\n"
+		"F3: Show preset name""\n"
+		"F5: Show FPS""\n"
+		"L or SPACE: Lock/Unlock Preset""\n"
+		"R: Random preset""\n"
+		"N: Next preset""\n"
+		"P: Previous preset""\n"
+		"UP: Increase Beat Sensitivity""\n"
+		"DOWN: Decrease Beat Sensitivity""\n" +
+		modKey + "-I: Audio Input (listen to next device)""\n" +
+		modKey + "-M: Change Monitor""\n" +
+		modKey + "-S: Stretch Monitors""\n" +
+		modKey + "-F: Fullscreen""\n" +
+		modKey + "-Q: Quit";
+
+	app->setHelpText(sdlHelpMenu.c_str());
+
     app->init(win, &glCtx);
 
 #if STEREOSCOPIC_SBS

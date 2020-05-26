@@ -7,10 +7,11 @@
 #include "TimeKeeper.hpp"
 #include "RandomNumberGenerators.hpp"
 
-TimeKeeper::TimeKeeper(double presetDuration, double smoothDuration, double easterEgg)
+TimeKeeper::TimeKeeper(double presetDuration, double smoothDuration, double hardcutDuration, double easterEgg)
   {
     _smoothDuration = smoothDuration;
     _presetDuration = presetDuration;
+    _hardcutDuration = hardcutDuration;
     _easterEgg = easterEgg;
 
 #ifndef WIN32
@@ -59,7 +60,7 @@ TimeKeeper::TimeKeeper(double presetDuration, double smoothDuration, double east
 
   bool TimeKeeper::CanHardCut()
   {
-    return ((_currentTime - _presetTimeA) > HARD_CUT_DELAY);
+    return ((_currentTime - _presetTimeA) > _hardcutDuration);
   }
 
   double TimeKeeper::SmoothRatio()

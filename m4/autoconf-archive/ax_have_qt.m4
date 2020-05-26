@@ -54,7 +54,7 @@
 #   and this notice are preserved. This file is offered as-is, without any
 #   warranty.
 
-#serial 15
+#serial 17
 
 AU_ALIAS([BNV_HAVE_QT], [AX_HAVE_QT])
 AC_DEFUN([AX_HAVE_QT],
@@ -69,48 +69,26 @@ AC_DEFUN([AX_HAVE_QT],
   if test "$ver" ">" "Qt version 4"; then
     have_qt=yes
     # This pro file dumps qmake's variables, but it only works on Qt 5 or later
-    am_have_qt_pro=`mktemp`
-    am_have_qt_makefile=`mktemp`
+    am_have_qt_dir=`mktemp -d`
+    am_have_qt_pro="$am_have_qt_dir/test.pro"
+    am_have_qt_makefile="$am_have_qt_dir/Makefile"
     # http://qt-project.org/doc/qt-5/qmake-variable-reference.html#qt
     cat > $am_have_qt_pro << EOF
-qtHaveModule(axcontainer):       QT += axcontainer
-qtHaveModule(axserver):          QT += axserver
-qtHaveModule(concurrent):        QT += concurrent
-qtHaveModule(core):              QT += core
-qtHaveModule(dbus):              QT += dbus
-qtHaveModule(declarative):       QT += declarative
-qtHaveModule(designer):          QT += designer
+win32 {
+    CONFIG -= debug_and_release
+    CONFIG += release
+}
 qtHaveModule(gui):               QT += gui
-qtHaveModule(help):              QT += help
-qtHaveModule(multimedia):        QT += multimedia
-qtHaveModule(multimediawidgets): QT += multimediawidgets
-qtHaveModule(network):           QT += network
 qtHaveModule(opengl):            QT += opengl
-qtHaveModule(widgets):           QT += widgets
-qtHaveModule(printsupport):      QT += printsupport
-qtHaveModule(qml):               QT += qml
-qtHaveModule(qmltest):           QT += qmltest
-qtHaveModule(x11extras):         QT += x11extras
-qtHaveModule(script):            QT += script
-qtHaveModule(scripttools):       QT += scripttools
-qtHaveModule(sensors):           QT += sensors
-qtHaveModule(serialport):        QT += serialport
-qtHaveModule(sql):               QT += sql
-qtHaveModule(svg):               QT += svg
-qtHaveModule(testlib):           QT += testlib
-qtHaveModule(uitools):           QT += uitools
-qtHaveModule(webkit):            QT += webkit
-qtHaveModule(webkitwidgets):     QT += webkitwidgets
-qtHaveModule(xml):               QT += xml
-qtHaveModule(xmlpatterns):       QT += xmlpatterns
 percent.target = %
 percent.commands = @echo -n "\$(\$(@))\ "
 QMAKE_EXTRA_TARGETS += percent
 EOF
     qmake $am_have_qt_pro -o $am_have_qt_makefile
-    QT_CXXFLAGS=`make -s -f $am_have_qt_makefile CXXFLAGS INCPATH`
-    QT_LIBS=`make -s -f $am_have_qt_makefile LIBS`
+    QT_CXXFLAGS=`cd $am_have_qt_dir; make -s -f $am_have_qt_makefile CXXFLAGS INCPATH`
+    QT_LIBS=`cd $am_have_qt_dir; make -s -f $am_have_qt_makefile LIBS`
     rm $am_have_qt_pro $am_have_qt_makefile
+    rmdir $am_have_qt_dir
 
     # Look for specific tools in $PATH
     QT_MOC=`which moc`

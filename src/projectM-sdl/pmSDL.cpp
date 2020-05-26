@@ -110,6 +110,9 @@ int projectMSDL::initAudioInput() {
 
     // read characteristics of opened capture device
     SDL_Log("Opened audio capture device index=%i devId=%i: %s", selectedAudioDevice, audioDeviceID, SDL_GetAudioDeviceName(selectedAudioDevice, true));
+    std::string deviceToast = "Listening to ";
+    deviceToast += SDL_GetAudioDeviceName(selectedAudioDevice, true);
+    projectM::setToastMessage(deviceToast);
     SDL_Log("Samples: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
     audioChannelsCount = have.channels;
     audioSampleRate = have.freq;
@@ -163,6 +166,10 @@ void projectMSDL::endAudioCapture() {
     SDL_PauseAudioDevice(audioDeviceID, true);
 }
 
+void projectMSDL::setHelpText(const std::string & helpText) {
+    projectM::setHelpText(helpText);
+}
+
 void projectMSDL::maximize() {
     SDL_DisplayMode dm;
     if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
@@ -187,55 +194,29 @@ void projectMSDL::stretchMonitors()
 			SDL_GetDisplayBounds(i, &displayBounds.back());
 		}
 
-		int furthestX = 0;
-		int furthestY = 0;
-		int widest = 0;
-		int highest = 0;
-		int spanX = 0;
-		int spanY = 0;
-		int spanWidth = 0;
-		int spanHeight = 0;
-
-		bool horizontal = true;
-		bool vertical = true;
+		int mostXLeft = 0;
+		int mostXRight = 0;
+		int mostWide = 0;
+		int mostYUp = 0;
+		int mostYDown = 0;
+		int mostHigh = 0;
 
 		for (int i = 0; i < displayCount; i++)
 		{
-			if (displayBounds[0].x != displayBounds[i].x) vertical = false;
-			if (displayBounds[0].y != displayBounds[i].y) horizontal = false;
+			if (displayBounds[i].x < mostXLeft) mostXLeft = displayBounds[i].x;
+			if ((displayBounds[i].x + displayBounds[i].w) > mostXRight) mostXRight = displayBounds[i].x + displayBounds[i].w;
+		}
+		for (int i = 0; i < displayCount; i++)
+		{
+			if (displayBounds[i].y < mostYUp) mostYUp = displayBounds[i].y;
+			if ((displayBounds[i].y + displayBounds[i].h) > mostYDown) mostYDown = displayBounds[i].y + displayBounds[i].h;
 		}
 
-		if (!vertical && !horizontal)
-		{
-			// If multiple montors are not perfectly aligned it's a bit of work to get the correct x,y and
-			// dimensions But in my testing on Windows 10 even with the screen did not render correctly.
-			// @todo more testing and make it work.
-			SDL_Log(
-				"SDL currently only supports multiple monitors that are aligned evenly in a vertical or "
-				"horizontal position.");
-		}
-		else
-		{
-			for (int i = 0; i < displayCount; i++)
-			{
-				if (displayBounds[i].x < furthestX) spanX = displayBounds[i].x; // X furthest left device
-				if (displayBounds[i].y < furthestY) spanY = displayBounds[i].y; // Y highest device
-				if (displayBounds[i].h > highest) highest = displayBounds[i].h; // highest resolution Height
-				if (displayBounds[i].h > widest) widest = displayBounds[i].w;		// highest resolution Width
-				if (horizontal) // perfectly aligned horizonal monitors.
-				{
-					spanHeight = highest;
-					spanWidth = spanWidth + displayBounds[i].w;
-				}
-				else if (vertical) // perfectly aligned vertical monitors.
-				{
-					spanHeight = spanHeight + displayBounds[i].h;
-					spanWidth = widest;
-				}
-			}
-			SDL_SetWindowPosition(win, spanX, spanY);
-			SDL_SetWindowSize(win, spanWidth, spanHeight);
-		}
+        mostWide = abs(mostXLeft) + abs(mostXRight);
+        mostHigh = abs(mostYUp) + abs(mostYDown);
+
+		SDL_SetWindowPosition(win, mostXLeft, mostYUp);
+		SDL_SetWindowSize(win, mostWide, mostHigh);
 	}
 }
 
@@ -248,7 +229,7 @@ void projectMSDL::nextMonitor()
 	{
 		std::vector<SDL_Rect> displayBounds;
 		int nextWindow = currentWindowIndex + 1;
-		if (nextWindow > displayCount) nextWindow = 0;
+		if (nextWindow >= displayCount) nextWindow = 0;
 
 		for (int i = 0; i < displayCount; i++)
 		{
@@ -257,7 +238,6 @@ void projectMSDL::nextMonitor()
 		}
 		SDL_SetWindowPosition(win, displayBounds[nextWindow].x, displayBounds[nextWindow].y);
 		SDL_SetWindowSize(win, displayBounds[nextWindow].w, displayBounds[nextWindow].h);
-		maximize();
 	}
 }
 

@@ -1,4 +1,4 @@
-AC_INIT([projectM], [3.1.3], [mischa@mvstg.biz], [projectM], [https://github.com/projectM-visualizer/projectm/])
+AC_INIT([projectM], [3.1.5], [mischa@mvstg.biz], [projectM], [https://github.com/projectM-visualizer/projectm/])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects tar-pax])
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
@@ -163,7 +163,7 @@ AC_PREFIX_DEFAULT([/usr/local])
 
 AC_PROG_MKDIR_P
 
-AS_IF([grep android <<< ${host}], [],
+AS_IF([echo ${host} | grep -Fq android], [],
   [AX_CHECK_COMPILE_FLAG([-stdlib=libc++], [
                         CXXFLAGS="$CXXFLAGS -stdlib=libc++"])
 ])
@@ -237,10 +237,10 @@ AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test "x$enable_emscripten" = "xyes"])
 AM_CONDITIONAL([ENABLE_PRESET_SUBDIRS], [test "x$enable_preset_subdirs" = "xyes"])
 
 
-my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits "
+my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits"
 #my_CFLAGS+="-fsanitize=address -fno-omit-frame-pointer "
-my_CFLAGS+='-DDATADIR_PATH=\""$(pkgdatadir)"\" '
-my_CFLAGS+='-I$(top_srcdir)/vendor '
+my_CFLAGS="${my_CFLAGS} -DDATADIR_PATH=\\\"\"\$(pkgdatadir)\\\"\""
+my_CFLAGS="${my_CFLAGS} -I\$(top_srcdir)/vendor"
 AC_SUBST([my_CFLAGS])
 
 

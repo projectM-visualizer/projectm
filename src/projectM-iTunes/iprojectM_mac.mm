@@ -225,7 +225,7 @@ OSStatus DeactivateVisual( VisualPluginData * visualPluginData )
 //
 OSStatus ResizeVisual( VisualPluginData * visualPluginData )
 {
-	visualPluginData->destRect = [visualPluginData->subview bounds];
+    visualPluginData->destRect = [[NSScreen mainScreen] convertRectToBacking:([visualPluginData->subview bounds])];
 
     if (visualPluginData->pm != NULL) {
         visualPluginData->pm->projectM_resetGL(visualPluginData->destRect.size.width, visualPluginData->destRect.size.height);
