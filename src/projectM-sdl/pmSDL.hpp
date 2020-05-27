@@ -88,8 +88,6 @@ public:
 
 
     bool done;
-    bool renderText = false;
-    std::string inputText;
     projectMSDL(Settings settings, int flags);
     projectMSDL(std::string config_file, int flags);
     void init(SDL_Window *window, SDL_GLContext *glCtx, const bool renderToTexture = false);
@@ -108,6 +106,20 @@ public:
     std::string getActivePresetName();
     void addFakePCM();
     
+    //Holds text input information
+	struct inputText
+	{
+		bool isOn = false;
+		bool isRendering = false;
+		std::string text = "";
+		void reset()
+		{
+			isOn = false;
+			isRendering = false;
+			text = "";
+		}
+	} input;
+
     virtual void presetSwitchedEvent(bool isHardCut, size_t index) const;
 
 private:

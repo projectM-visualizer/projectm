@@ -185,7 +185,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      renderer->studio = !renderer->studio;
 	      break;
 
-	    case PROJECTM_K_ESCAPE: { //if this has same purpose as F1, move above F1, delete break, and remove sdl_keycode assignment to F1
+	    case PROJECTM_K_ESCAPE: {
 //	        exit( 1 );
 	        break;
 	      }
@@ -288,6 +288,11 @@ void projectM::editor_key_handler(projectMEvent event, projectMKeycode keycode)
 			
 			switch (keycode)
 			{
+				case PROJECTM_K_ESCAPE:
+					renderer->showinputtext = false;
+					updateInputText("");
+					setInterface(DEFAULT_INTERFACE);
+					break;
 				case PROJECTM_K_RETURN:
 					// load preset when we have a name
 					selectPresetByName(renderer->inputText(), true);
@@ -295,9 +300,7 @@ void projectM::editor_key_handler(projectMEvent event, projectMKeycode keycode)
 					updateInputText("");
 					setInterface(DEFAULT_INTERFACE);
 					break;
-				default: 
-					// while we're typing, add letter to render string and render it
-
+				default:
 					break;
 			}
 		default: break;

@@ -346,12 +346,15 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 							!isPresetLocked()
 						);
 						break;
-					case SDLK_F1:
 					case SDLK_ESCAPE:
-
-						// exit(1);
-						// show help with other keys
-						sdl_keycode = SDLK_F1;
+						if (input.isOn)
+						{
+							input.reset();
+							SDL_StopTextInput();
+						    break;
+						}
+					case SDLK_F1:
+                        sdl_keycode = SDLK_F1;
 						break;
 					case SDLK_DELETE:
 						/*
@@ -386,37 +389,44 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 							printf("Delete failed");
 						}
 								*/
-						inputText = "";
-						SDL_StopTextInput();
-						renderText = false;
+						if (input.isOn)
+						{
+							input.reset();
+							SDL_StopTextInput();
+						}
 						break;
 					case SDLK_z:
-						SDL_StartTextInput();
-						if (!renderText) inputText = "";
-						renderText = true;
+						if (!input.isOn)
+						{
+							SDL_StartTextInput();
+							input.isOn = true;
+						}
 						break;
 						// Handle backspace
 					case SDLK_BACKSPACE:
-						if (inputText.length() > 0)
+						if (input.isOn && input.text.size() > 0)
 						{
 							// lop off character
-							inputText.pop_back();
-							updateInputText(inputText);
+							input.text.pop_back();
+							updateInputText(input.text);
 						}
 						break;
 						// Handle copy
 					case SDLK_c:
-						if (sdl_mod & (KMOD_CTRL | KMOD_GUI))
+						if (input.isOn && (sdl_mod & (KMOD_CTRL | KMOD_GUI)))
 						{
-							SDL_SetClipboardText(inputText.c_str());
+							SDL_SetClipboardText(input.text.c_str());
 						}
 						break;
 					// Handle paste
 					case SDLK_v:
-						if (sdl_mod & (KMOD_CTRL | KMOD_GUI))
+						if (input.isOn && (sdl_mod & (KMOD_CTRL | KMOD_GUI)))
 						{
-							inputText = SDL_GetClipboardText();
-							updateInputText(inputText);
+							if (SDL_HasClipboardText() == SDL_TRUE)
+							{
+								input.text = SDL_GetClipboardText();
+								updateInputText(input.text);
+							}
 						}
 						break;
     }
@@ -481,17 +491,22 @@ void projectMSDL::pollEvent() {
                 done = true;
                 break;
 			case SDL_TEXTINPUT:
-				if (!(SDL_GetModState() & (KMOD_CTRL | KMOD_GUI)
-							&& (evt.text.text[0] == 'c' || evt.text.text[0] == 'C'
-									|| evt.text.text[0] == 'v' || evt.text.text[0] == 'V')))
+				if (input.isOn)
 				{
-					inputText += evt.text.text;
+					if (input.isRendering)
+					{
+						if (!(SDL_GetModState() & (KMOD_CTRL | KMOD_GUI)
+									&& (evt.text.text[0] == 'c' || evt.text.text[0] == 'C'
+											|| evt.text.text[0] == 'v' || evt.text.text[0] == 'V')))
+						{
+							input.text += evt.text.text;
+							updateInputText(input.text);
+						}
+					}
+					else
+						input.isRendering = true;
 				}
-				if (renderText)
-				{
-					updateInputText(inputText);
-				}
-				
+				break;
         }
     }
 }
