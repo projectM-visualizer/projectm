@@ -765,7 +765,7 @@ void projectM::selectPreset(unsigned int index, bool hardCut)
         return;
 
 
-    *m_presetPos = m_presetChooser->begin(index); //Can we use selectPresetPosition here?
+    selectPresetPosition(index);
     switchPreset(hardCut);
 }
 void projectM::selectPresetByName(std::string& name, bool hardCut) {
@@ -933,6 +933,7 @@ unsigned int projectM::getPlaylistSize() const
 }
 
 void projectM::changePresetRating (unsigned int index, int rating, const PresetRatingType ratingType) {
+    renderer->setRating(rating);
     m_presetLoader->setRating(index, rating, ratingType);
     presetRatingChanged(index, rating, ratingType);
 }

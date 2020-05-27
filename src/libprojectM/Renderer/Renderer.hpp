@@ -49,14 +49,17 @@ class Renderer
 {
 
 public:
-  bool showtoast;
-  bool showfps;
-  bool showtitle;
-  bool showpreset;
-  bool showhelp;
-  bool showstats;
-  bool showrating;
-	bool showinputtext;
+	enum : unsigned short int //Bit flags for rendering, limited to 16 flags (change type if we need more)
+  {
+  	SHOW_FPS = 1,
+  	SHOW_HELP = 1 << 1,
+  	SHOW_INPUTTEXT = 1 << 2,
+  	SHOW_PRESET = 1 << 3,
+  	SHOW_RATING = 1 << 4,
+  	SHOW_STATS = 1 << 5,
+  	SHOW_TITLE = 1 << 6,
+  	SHOW_TOAST = 1 << 7
+  };
 
   bool studio;
   bool correction;
@@ -123,14 +126,26 @@ public:
     return m_toastMessage;
   }
   
-  void setRating(const int &theValue) { m_rating = std::to_string(theValue); }
-  std::string rating() const { return m_rating; }
+  void setRating(const int &theValue) {
+      m_rating = std::to_string(theValue);
+  }
 
-  void setInputText(std::string input) { m_inputText = input; }
-  std::string inputText() { return m_inputText; }
+  std::string rating() const {
+      return m_rating;
+  }
 
-  std::string defaultInputText() { return m_defaultInputText; }
+  void setInputText(std::string input) {
+      m_inputText = input;
+  }
 
+  std::string inputText() {
+      return m_inputText;
+  }
+
+    /// Set what menu item to display
+    void toggleDisplayMode(int displaymode);
+    /// Clear bits at display mode, modes can be OR'd
+    void clearDisplayMode(int displaymode);
 	private:
 
   PerPixelMesh mesh;
@@ -139,7 +154,7 @@ public:
   static Pipeline* currentPipe;
   TimeKeeper *timeKeeperFPS;
   TimeKeeper *timeKeeperToast;
-
+  unsigned short int m_displayModes = 0;
 #ifdef USE_TEXT_MENU
 
   void drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
@@ -155,7 +170,6 @@ public:
   std::string m_datadir;
   std::string m_fps;
   std::string m_rating;
-  std::string m_defaultInputText = "Preset to load: ";
   std::string m_inputText;
   std::string m_toastMessage;
 

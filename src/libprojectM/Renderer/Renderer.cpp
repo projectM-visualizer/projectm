@@ -30,7 +30,6 @@ void Renderer::drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale,
 {
 	drawText(this->title_font, string, x, y, scale, horizontalAlignment, verticalAlignment);
 }
-///@bug changing horizontalAlignment, verticalAlignment doesn't do what expected on WIN32
 void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale,
 	int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP)
 {
@@ -143,14 +142,6 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 	this->lastTimeToast = nowMilliseconds();
 	this->currentTimeToast = nowMilliseconds();
 	this->noSwitch = false;
-	this->showfps = false;
-	this->showtoast = false;
-	this->showtitle = false;
-	this->showpreset = false;
-	this->showhelp = false;
-	this->showstats = false;
-	this->showrating = false;
-	this->showinputtext = false;
 	this->studio = false;
 	this->realfps = 0;
 	/* Set up the v xoffset and vy offset to 0 which is normal Only used for VR */
@@ -310,7 +301,7 @@ void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipel
 		- multiply the total rendered frames (totalframes) by the fraction of a second that passed to get the approximate frames per second count.
 		- reset the totalframes and timer (lastTime) so we don't trigger for another 250 milliseconds.
 	*/
-	if (this->showfps)
+	if ((m_displayModes & SHOW_FPS) > 0)
 	{
 		this->currentTimeFPS = nowMilliseconds();
 		if (timeCheck(this->currentTimeFPS, this->lastTimeFPS, (double)250)) {
@@ -380,22 +371,22 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 	refreshConsole();
 	// TODO:
 	draw_title_to_screen(false);
-	if (this->showhelp == true)
+	if ((m_displayModes & SHOW_HELP) > 0)
 		draw_help();
-	if (this->showtitle == true)
+	if ((m_displayModes & SHOW_TITLE) > 0)
 		draw_title();
-	if (this->showtoast == true)
+	if ((m_displayModes & SHOW_TOAST) > 0)
 		draw_toast();
-	if (this->showfps == true)
+	if ((m_displayModes & SHOW_FPS) > 0)
 		draw_fps();
 	// this->realfps
-	if (this->showpreset == true)
+	if ((m_displayModes & SHOW_PRESET) > 0)
 		draw_preset();
-	if (this->showstats == true)
+	if ((m_displayModes & SHOW_STATS) > 0)
 		draw_stats();
-	if (this->showrating == true)
+	if ((m_displayModes & SHOW_RATING) > 0)
 		draw_rating();
-	if (this->showinputtext == true)
+	if ((m_displayModes & SHOW_INPUTTEXT) > 0)
 		draw_inputText();
 }
 
@@ -630,10 +621,10 @@ void Renderer::setToastMessage(const std::string& theValue)
 	lastTimeToast= nowMilliseconds();
 	currentTimeToast = nowMilliseconds();
 	m_toastMessage = theValue;
-	showtoast = true;
+	m_displayModes |= SHOW_TOAST;
 }
 
-// TODO:
+	// TODO:
 void Renderer::draw_title_to_screen(bool flip)
 {
 #ifdef USE_TEXT_MENU
@@ -705,15 +696,14 @@ void Renderer::draw_fps()
 void Renderer::draw_rating() 
 {
 #ifdef USE_TEXT_MENU
-	drawText(("Rating set to: " + this->rating()).c_str(), 30, 20, 2.5);
+	drawText(("Rating: " + this->rating()).c_str(), 30, 20, 2.5);
 #endif
 }
 
 void Renderer::draw_inputText()
 {
 #ifdef USE_TEXT_MENU
-	std::string str = defaultInputText() + inputText();
-	drawText(str.c_str(), 30, 20, 2.5);
+	drawText(("Preset to load: " + inputText()).c_str(), 30, 20, 2.5);
 #endif
 }
 
@@ -727,10 +717,28 @@ void Renderer::draw_toast()
 	if (timeCheck(this->currentTimeToast,this->lastTimeToast,(double)(TOAST_TIME*1000))) {
 		this->currentTimeToast = nowMilliseconds();
 		this->lastTimeToast = nowMilliseconds();
-		this->showtoast = false;
+		clearDisplayMode(SHOW_TOAST);
 	}
 }
 
+void Renderer::toggleDisplayMode(int displaymode)
+{
+	m_displayModes ^= displaymode;
+	switch (displaymode)
+	{
+		case SHOW_HELP: clearDisplayMode(SHOW_STATS); break;
+		case SHOW_INPUTTEXT: clearDisplayMode(SHOW_FPS | SHOW_PRESET | SHOW_RATING); break;
+		case SHOW_FPS: clearDisplayMode(SHOW_RATING | SHOW_PRESET | SHOW_INPUTTEXT); break;
+		case SHOW_PRESET: clearDisplayMode(SHOW_RATING | SHOW_FPS | SHOW_INPUTTEXT); break;
+		case SHOW_RATING: clearDisplayMode(SHOW_FPS | SHOW_PRESET | SHOW_INPUTTEXT); break;
+		case SHOW_STATS: clearDisplayMode(SHOW_HELP); break;
+	}
+}
+
+void Renderer::clearDisplayMode(int displaymode)
+{
+	m_displayModes &= ~displaymode;
+}
 void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
 	glActiveTexture(GL_TEXTURE0);

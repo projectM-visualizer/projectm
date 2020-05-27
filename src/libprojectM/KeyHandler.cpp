@@ -124,57 +124,33 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			if (beatDetect->beat_sensitivity < 0) beatDetect->beat_sensitivity = 0;
 	      break;
 		case PROJECTM_K_h:
- 		  renderer->showhelp = !renderer->showhelp;
-	      renderer->showstats= false;
 	    case PROJECTM_K_F1:
-	      renderer->showhelp = !renderer->showhelp;
-	      renderer->showstats=false;
-	      renderer->showfps=false;
+			renderer->toggleDisplayMode(renderer->SHOW_HELP);
 	      break;
 	    case PROJECTM_K_y:
 		this->setShuffleEnabled(!this->isShuffleEnabled());
 		 break;
 		case PROJECTM_K_F6:
-			renderer->showrating = !renderer->showrating;
-			// \idea may need to encapsulate this exclusive rendering
-			if (renderer->showrating)
-			{
-				renderer->showpreset = false;
-				renderer->showfps = false;
-				renderer->showinputtext = false;
-			}
+			renderer->toggleDisplayMode(renderer->SHOW_RATING);
 			break;
 	    case PROJECTM_K_F5:
-		  renderer->showfps = !renderer->showfps;
+			// Hide preset name from screen and replace it with FPS counter.
+			renderer->toggleDisplayMode(renderer->SHOW_FPS);
 			// Initialize counters and reset frame count.
 			renderer->lastTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 			renderer->currentTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 			renderer->totalframes = 0;
-			// Hide preset name from screen and replace it with FPS counter.
-			if (renderer->showfps)
-			{
-				renderer->showrating = false;
-				renderer->showpreset = false;
-				renderer->showinputtext = false;
-			}
 	      break;
 	    case PROJECTM_K_F4:
-		if (!renderer->showhelp)
-	       		renderer->showstats = !renderer->showstats;
+			renderer->toggleDisplayMode(renderer->SHOW_STATS);
 	      break;
 	    case PROJECTM_K_F3: {
-	      renderer->showpreset = !renderer->showpreset;
 			// Hide FPS from screen and replace it with preset name.
-			if (renderer->showpreset)
-			{
-				renderer->showrating = false;
-				renderer->showfps = false;
-				renderer->showinputtext = false;
-			}
+		    renderer->toggleDisplayMode(renderer->SHOW_PRESET);
 	      break;
 	     }
 	    case PROJECTM_K_F2:
-	      renderer->showtitle = !renderer->showtitle;
+		  renderer->toggleDisplayMode(renderer->SHOW_TITLE);
 	      break;
 #ifndef MACOS
 	    case PROJECTM_K_F9:
@@ -225,10 +201,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_i:
 	        break;
 	    case PROJECTM_K_z:
-			renderer->showpreset = false;
-			renderer->showfps = false;
-			renderer->showrating = false;
-			renderer->showinputtext = true;
+			renderer->toggleDisplayMode(renderer->SHOW_INPUTTEXT);
 		  setInterface(EDITOR_INTERFACE);
 	      break;
 	    case PROJECTM_K_0:
@@ -255,7 +228,6 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 				if (oldRating >= 5) break;
 
 				const int rating = oldRating + 1;
-				renderer->setRating(rating);
 				changePresetRating(index, rating, HARD_CUT_RATING_TYPE);
 			}
 	    	break;
@@ -267,7 +239,6 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    		if (oldRating <= 0) break;
 
 	    		const int rating = oldRating - 1;
-				renderer->setRating(rating);
 	    		changePresetRating(index, rating, HARD_CUT_RATING_TYPE);
 	    	}
 	    	break;
@@ -289,14 +260,14 @@ void projectM::editor_key_handler(projectMEvent event, projectMKeycode keycode)
 			switch (keycode)
 			{
 				case PROJECTM_K_ESCAPE:
-					renderer->showinputtext = false;
+					renderer->clearDisplayMode(renderer->SHOW_INPUTTEXT);
 					updateInputText("");
 					setInterface(DEFAULT_INTERFACE);
 					break;
 				case PROJECTM_K_RETURN:
 					// load preset when we have a name
 					selectPresetByName(renderer->inputText(), true);
-					renderer->showinputtext = false;
+					renderer->clearDisplayMode(renderer->SHOW_INPUTTEXT);
 					updateInputText("");
 					setInterface(DEFAULT_INTERFACE);
 					break;
