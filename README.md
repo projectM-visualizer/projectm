@@ -81,11 +81,14 @@ See [BUILDING.md](BUILDING.md)
 * Shift-N: next preset with hard cut
 * Shift-P: previous preset with hard cut
 * L: lock current preset
-
+* Z: load preset (RETURN to switch preset)
+* +/-: increase/decrease rating
 
 * F3: show preset (if supported)
 * F5: show FPS (if supported)
-* H or F1: show help (if supported)
+* H or F1: show help (if supported) 
+* F6: show rating (if supported)
+
 
 #### Only ProjectM SDL:
 * Cmd/Ctrl-Q: *q*uit
@@ -94,6 +97,7 @@ See [BUILDING.md](BUILDING.md)
 * Cmd/Ctrl-M: change *m*onitor
 * Cmd/Ctrl-F: toggle *f*ull screen
 * Space: lock current preset
+* Escape: show help and exit out of load preset menu
 
 
 # Using the library
