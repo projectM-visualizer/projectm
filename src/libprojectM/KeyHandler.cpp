@@ -228,6 +228,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 				if (oldRating >= 5) break;
 
 				const int rating = oldRating + 1;
+				renderer->setToastMessage("Rating increased to: " + std::to_string(rating));
 				changePresetRating(index, rating, HARD_CUT_RATING_TYPE);
 			}
 	    	break;
@@ -239,6 +240,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    		if (oldRating <= 0) break;
 
 	    		const int rating = oldRating - 1;
+				renderer->setToastMessage("Rating decreased to: " + std::to_string(rating));
 	    		changePresetRating(index, rating, HARD_CUT_RATING_TYPE);
 	    	}
 	    	break;
