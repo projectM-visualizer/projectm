@@ -184,7 +184,16 @@ void projectM::readConfig (const std::string & configFile )
 #endif
 
 #ifdef WIN32
-    _settings.presetURL = config.read<string> ( "Preset Path", "/usr/local/share/projectM/presets" );
+        //Get the path of the executable
+		char exepath[MAX_PATH];
+		GetModuleFileName(NULL, exepath, MAX_PATH);
+
+        //Remove the .exe part of the path
+		std::string exedir(exepath);
+		exedir.erase(exedir.find_last_of("\\") + 1);
+
+        //Set the presetURL
+		_settings.presetURL = exedir + config.read<string>("Preset Path", "presets");
 #endif
 
 #ifdef __APPLE__

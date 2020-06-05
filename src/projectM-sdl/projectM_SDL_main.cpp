@@ -66,7 +66,11 @@ std::string getConfigFilePath(std::string datadir_path) {
     }
     
     std::string configFilePath = path;
-    configFilePath += "/config.inp";
+    #ifdef WIN32
+        configFilePath += "\\config.inp";
+    #else
+        configFilePath += "/config.inp";
+    #endif
     
     // check if config file exists
     if (stat(configFilePath.c_str(), &sb) != 0) {
