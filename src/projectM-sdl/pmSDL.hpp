@@ -82,7 +82,7 @@
             #define DATADIR_PATH "/usr/local/share/projectM"
         #endif
     #endif /** WIN32 */
-    #warning "DATADIR_PATH is not defined - falling back to /usr/local/share/projectM"
+//    #warning "DATADIR_PATH is not defined - falling back to /usr/local/share/projectM"
 #endif
 
 class projectMSDL : public projectM {
@@ -117,7 +117,7 @@ public:
 		void reset()
 		{
 			isOn = false;
-			isRendering = false;
+			//isRendering = false;
 			text = "";
 		}
 	} input;

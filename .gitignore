@@ -50,3 +50,4 @@ to_sync/
 .DS_Store
 src/projectM-sdl/build/
 src/libprojectM/build/
+msvc/ratings.dat

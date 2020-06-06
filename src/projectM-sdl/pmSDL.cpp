@@ -288,6 +288,7 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
         case SDLK_q:
             if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
                 // cmd/ctrl-q = quit
+                writeRatings();
                 done = 1;
                 return;
             }
@@ -345,9 +346,10 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 
 
 					case SDLK_SPACE:
-						setPresetLock(
-							!isPresetLocked()
-						);
+						if (!input.isOn)
+						{
+							setPresetLock(!isPresetLocked());
+						}
 						break;
 					case SDLK_ESCAPE:
 						if (input.isOn)
