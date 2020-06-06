@@ -300,6 +300,9 @@ public:
   /// Sets the keyboard interface
   void setInterface(interface_t interfacet);
 
+  ///Write ratings 
+  void writeRatings();
+
   Renderer *renderer;
 
 private:

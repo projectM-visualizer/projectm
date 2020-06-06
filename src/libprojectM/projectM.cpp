@@ -1019,3 +1019,7 @@ void projectM::setToastMessage(const std::string & toastMessage)
         renderer->setToastMessage(toastMessage);
 }
 
+void projectM::writeRatings()
+{
+	m_presetLoader->writeRatings();
+}

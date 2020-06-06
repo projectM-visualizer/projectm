@@ -15,6 +15,7 @@
 #include <iostream>
 #include <sstream>
 #include <set>
+#include <fstream>
 
 #ifdef __unix__
 extern "C"
@@ -118,18 +119,55 @@ void PresetLoader::rescan()
 	        pos != alphaSortedPresetNameSet.end();++pos )
 		_presetNames.push_back ( *pos );
 
-	// Give all presets equal rating of 3 - why 3? I don't know
-	_ratings = std::vector<RatingList>(TOTAL_RATING_TYPES, RatingList( _presetNames.size(), 3 ));
+	readRatings(_ratings);
+	//Fix rating sums to include saved ratings data
 	_ratingsSums = std::vector<int>(TOTAL_RATING_TYPES, 3 * _presetNames.size());
 
 
 	assert ( _entries.size() == _presetNames.size() );
-
-
-
 }
 
+void PresetLoader::writeRatings()
+{
+	std::ofstream ratingsData("ratings.dat");
+	std::vector<RatingList> ratings = getPresetRatings();
+	std::vector<std::string> presetNames = getPresetNames();
+	// More error checking?
+	if (ratingsData.is_open())
+	{
+		// Default to hard cut ratings
+		for (int i = 0; i < ratings[HARD_CUT_RATING_TYPE].size(); i++)
+		{
+			ratingsData << ratings[HARD_CUT_RATING_TYPE][i] << "\n";
+			//ratingsData << " " << presetNames[i] << "\n";
+		}
+	}
+	ratingsData.close();
+}
 
+void PresetLoader::readRatings(std::vector<RatingList> & ratings)
+{
+	std::ifstream ratingsData("ratings.dat");
+	//If file doesn't exist
+	if (ratingsData.fail())
+	{
+		// Give all presets equal rating of 3
+		ratings = std::vector<RatingList>(TOTAL_RATING_TYPES, RatingList(getPresetNames().size(), 3));
+	}
+	else
+	{
+		std::cout << "Reading ratings..." << std::endl;
+		for (int i = FIRST_RATING_TYPE; i < TOTAL_RATING_TYPES; ++i)
+		{
+			ratings.push_back(RatingList());
+			for (std::string line; std::getline(ratingsData, line);)
+			{
+				ratings[i].push_back(std::stoi(line));
+			}
+		}
+		ratingsData.close();
+	}
+}
 std::unique_ptr<Preset> PresetLoader::loadPreset ( unsigned int index )  const
 {
 
@@ -244,7 +282,11 @@ const std::string & PresetLoader::getPresetName ( unsigned int index ) const
 	return _presetNames[index];
 }
 
-unsigned int PresetLoader::getPresetIndex(std::string &name)
+const std::vector<std::string> &PresetLoader::getPresetNames() const
+{
+	return _presetNames;
+}
+	unsigned int PresetLoader::getPresetIndex(std::string &name)
 {
 	//Need a better structure than a vector for reverse lookup
 	for (int index = 0; index < _presetNames.size(); index++)
@@ -271,7 +313,6 @@ const std::vector<int> & PresetLoader::getPresetRatingsSums() const {
 void PresetLoader::setPresetName(unsigned int index, std::string name) {
 	_presetNames[index] = name;
 }
-
 void PresetLoader::insertPresetURL ( unsigned int index, const std::string & url, const std::string & presetName, const RatingList & ratings)
 {
 	_entries.insert ( _entries.begin() + index, url );
