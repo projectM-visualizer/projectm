@@ -26,6 +26,7 @@ public:
                  std::string datadir = "");
   ~TextureManager();
 
+  // extensions are pushed into this vector when the texturemanager is initialized. This is public so when the shader engine fails at loading a texture, it can return a list of extensions it looked for.
   std::vector<std::string> extensions;
   void Clear();
   void Preload();
