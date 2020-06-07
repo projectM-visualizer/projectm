@@ -20,13 +20,13 @@ class TextureManager
   void loadTextureDir(const std::string & dirname);
   TextureSamplerDesc loadTexture(const std::string name, const std::string imageUrl);
   void ExtractTextureSettings(const std::string qualifiedName, GLint &_wrap_mode, GLint &_filter_mode, std::string & name);
-  std::vector<std::string> extensions;
 
 public:
   TextureManager(std::string _presetsURL, const int texsizeX, const int texsizeY,
                  std::string datadir = "");
   ~TextureManager();
 
+  std::vector<std::string> extensions;
   void Clear();
   void Preload();
   TextureSamplerDesc tryLoadingTexture(const std::string name);
