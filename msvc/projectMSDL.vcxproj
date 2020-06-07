@@ -205,6 +205,7 @@
   </Target>
   <Target Name="Build-Presets" BeforeTargets="PrepareForBuild">
     <Exec Command="xcopy /Y /Q /I &quot;$(MSBuildThisFileDirectory)../presets\presets_tryptonaut&quot; &quot;$(OutDir)presets&quot;" />
+    <Exec Command="xcopy /Y /Q /I &quot;$(MSBuildThisFileDirectory)../presets\textures_tryptonaut&quot; &quot;$(OutDir)textures&quot;" />
   </Target>
   <Target Name="BuildPackage" AfterTargets="Build">
     <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)..\LICENSE.txt&quot; &quot;$(OutDir)LICENSE.txt&quot;" />
