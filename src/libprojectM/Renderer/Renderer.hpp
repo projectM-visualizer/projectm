@@ -134,11 +134,11 @@ public:
       return m_rating;
   }
 
-  void setInputText(std::string input) {
+  void setInputText(std::string& input) {
       m_inputText = input;
   }
 
-  std::string inputText() {
+  std::string inputText() const {
       return m_inputText;
   }
 
