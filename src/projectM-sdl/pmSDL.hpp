@@ -88,6 +88,7 @@ public:
 
 
     bool done;
+    bool wasapi = false; // Used to track if wasapi is currently active. This bool will allow us to run a WASAPI app and still toggle to microphone inputs.
     projectMSDL(Settings settings, int flags);
     projectMSDL(std::string config_file, int flags);
     void init(SDL_Window *window, SDL_GLContext *glCtx, const bool renderToTexture = false);
@@ -135,7 +136,6 @@ private:
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
 
     void keyHandler(SDL_Event *);
-    SDL_AudioDeviceID selectAudioInput(int _count);
     void renderTexture();
 };
 

@@ -234,7 +234,7 @@ srand((int)(time(NULL)));
 		ERR(L"pAudioClient->Start error");
 		return hr;
 	}
-
+	
 	bool bDone = false;
 	bool bFirstPacket = true;
     UINT32 nPasses = 0;
@@ -404,9 +404,16 @@ modKey = "CMD";
 #endif
 
 #if !FAKE_AUDIO && !WASAPI_LOOPBACK
-    // get an audio input device
-    if (app->openAudioInput())
-	    app->beginAudioCapture();
+	// get an audio input device
+	if (app->openAudioInput())
+		app->beginAudioCapture();
+#endif
+
+#ifdef WASAPI_LOOPBACK
+	// Default to WASAPI loopback if it was enabled at compilation.
+	app->wasapi = true;
+	// Notify that loopback capture was started.
+	SDL_Log("Opened audio capture loopback.");
 #endif
 
 #if TEST_ALL_PRESETS
@@ -448,49 +455,50 @@ modKey = "CMD";
         app->addFakePCM();
 #endif
 #ifdef WASAPI_LOOPBACK
-        // drain data while it is available
-        nPasses++;
-		UINT32 nNextPacketSize;
-		for (
-			hr = pAudioCaptureClient->GetNextPacketSize(&nNextPacketSize);
-			SUCCEEDED(hr) && nNextPacketSize > 0;
-			hr = pAudioCaptureClient->GetNextPacketSize(&nNextPacketSize)
-			) {
-			// get the captured data
-			BYTE *pData;
-			UINT32 nNumFramesToRead;
-			DWORD dwFlags;
+		if (app->wasapi) {
+			// drain data while it is available
+			nPasses++;
+			UINT32 nNextPacketSize;
+			for (
+				hr = pAudioCaptureClient->GetNextPacketSize(&nNextPacketSize);
+				SUCCEEDED(hr) && nNextPacketSize > 0;
+				hr = pAudioCaptureClient->GetNextPacketSize(&nNextPacketSize)
+				) {
+				// get the captured data
+				BYTE *pData;
+				UINT32 nNumFramesToRead;
+				DWORD dwFlags;
 
-			hr = pAudioCaptureClient->GetBuffer(
-				&pData,
-				&nNumFramesToRead,
-				&dwFlags,
-				NULL,
-				NULL
-			);
+				hr = pAudioCaptureClient->GetBuffer(
+					&pData,
+					&nNumFramesToRead,
+					&dwFlags,
+					NULL,
+					NULL
+				);
+				if (FAILED(hr)) {
+					return hr;
+				}
+
+				LONG lBytesToWrite = nNumFramesToRead * nBlockAlign;
+
+				/** Add the waveform data */
+				app->pcm()->addPCMfloat((float *)pData, nNumFramesToRead);
+
+				*pnFrames += nNumFramesToRead;
+
+				hr = pAudioCaptureClient->ReleaseBuffer(nNumFramesToRead);
+				if (FAILED(hr)) {
+					return hr;
+				}
+
+				bFirstPacket = false;
+			}
+
 			if (FAILED(hr)) {
 				return hr;
 			}
-
-			LONG lBytesToWrite = nNumFramesToRead * nBlockAlign;
-
-			/** Add the waveform data */
-			app->pcm()->addPCMfloat((float *)pData, nNumFramesToRead);
-
-			*pnFrames += nNumFramesToRead;
-
-			hr = pAudioCaptureClient->ReleaseBuffer(nNumFramesToRead);
-			if (FAILED(hr)) {
-				return hr;
-			}
-
-			bFirstPacket = false;
 		}
-
-		if (FAILED(hr)) {
-			return hr;
-		}
-
 #endif /** WASAPI_LOOPBACK */
 
 #if UNLOCK_FPS
@@ -512,8 +520,9 @@ modKey = "CMD";
     }
     
     SDL_GL_DeleteContext(glCtx);
-#if !FAKE_AUDIO && !WASAPI_LOOPBACK
-    app->endAudioCapture();
+#if !FAKE_AUDIO
+	if (!app->wasapi) // not currently using WASAPI, so we need to endAudioCapture.
+		app->endAudioCapture();
 #endif
     delete app;
 
