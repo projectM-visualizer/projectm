@@ -191,7 +191,7 @@ public:
   void selectPreset(unsigned int index, bool hardCut = true);
 
   /// Plays a preset immediately when given preset name
-  void selectPresetByName(std::string& name, bool hardCut = true);
+  void selectPresetByName(std::string name, bool hardCut = true);
 
   /// Removes a preset from the play list. If it is playing then it will continue as normal until next switch
   void removePreset(unsigned int index);

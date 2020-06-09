@@ -777,7 +777,7 @@ void projectM::selectPreset(unsigned int index, bool hardCut)
     selectPresetPosition(index);
     switchPreset(hardCut);
 }
-void projectM::selectPresetByName(std::string& name, bool hardCut) {
+void projectM::selectPresetByName(std::string name, bool hardCut) {
 	unsigned int index = getPresetIndex(name);
 	if (m_presetChooser->empty()) return;
 	selectPreset(index);  
@@ -897,7 +897,7 @@ std::string projectM::getPresetURL ( unsigned int index ) const
 {
     return m_presetLoader->getPresetURL(index);
 }
-unsigned int projectM::getPresetIndex(string& name) const
+unsigned int projectM::getPresetIndex(std::string& name) const
 {
 	return m_presetLoader->getPresetIndex(name);
 }
