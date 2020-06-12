@@ -454,10 +454,9 @@ modKey = "CMD";
 #if FAKE_AUDIO
 		app->fake_audio = true;
 #endif
-		// fake_audio can also be enabled.
+		// fake_audio can also be enabled dynamically.
 		if (app->fake_audio)
 		{
-			printf("fake\n");
 			app->addFakePCM();
 		}
 #ifdef WASAPI_LOOPBACK
