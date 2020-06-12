@@ -452,8 +452,14 @@ modKey = "CMD";
     while (! app->done) {
         app->renderFrame();
 #if FAKE_AUDIO
-        app->addFakePCM();
+		app->fake_audio = true;
 #endif
+		// fake_audio can also be enabled.
+		if (app->fake_audio)
+		{
+			printf("fake\n");
+			app->addFakePCM();
+		}
 #ifdef WASAPI_LOOPBACK
 		if (app->wasapi) {
 			// drain data while it is available
