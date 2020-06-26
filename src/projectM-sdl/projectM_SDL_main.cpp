@@ -376,6 +376,7 @@ modKey = "CMD";
 	std::string sdlHelpMenu = "\n"
 		"F1: This help menu""\n"
 		"F3: Show preset name""\n"
+		"F4: Show details and statistics""\n"
 		"F5: Show FPS""\n"
 		"L or SPACE: Lock/Unlock Preset""\n"
 		"R: Random preset""\n"
