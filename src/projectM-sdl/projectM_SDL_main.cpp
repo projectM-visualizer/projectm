@@ -394,6 +394,10 @@ modKey = "CMD";
 
     app->init(win, &glCtx);
 
+	// if using built in settings then default to full screen.
+	if (configFilePath.empty())
+		app->toggleFullScreen();
+
 #if STEREOSCOPIC_SBS
 	app->toggleFullScreen();
 #endif
