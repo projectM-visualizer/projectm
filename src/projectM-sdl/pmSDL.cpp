@@ -77,8 +77,8 @@ int projectMSDL::toggleAudioInput() {
             CurAudioDevice = 0; // Return to first audio device in the index.
 #ifdef WASAPI_LOOPBACK
             // If we are at the boundary and WASAPI is enabled then let's load WASAPI instead.
-            projectM::setToastMessage("Listening to loopback audio");
-            SDL_Log("Opened audio capture loopback.");
+            projectM::setToastMessage("Loopback audio selected");
+            SDL_Log("Loopback audio selected");
             this->fake_audio = false; // disable fake_audio in case it was enabled.
             this->wasapi = true; // Track wasapi as on so projectMSDL will listen to it.
 #else
@@ -128,8 +128,8 @@ int projectMSDL::initAudioInput() {
 
     // read characteristics of opened capture device
     SDL_Log("Opened audio capture device index=%i devId=%i: %s", selectedAudioDevice, audioDeviceID, SDL_GetAudioDeviceName(selectedAudioDevice, true));
-    std::string deviceToast = "Listening to ";
-    deviceToast += SDL_GetAudioDeviceName(selectedAudioDevice, true);
+    std::string deviceToast = SDL_GetAudioDeviceName(selectedAudioDevice, true); // Example: Microphone rear
+    deviceToast += " selected";
     projectM::setToastMessage(deviceToast);
 #ifdef DEBUG
     SDL_Log("Samples: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
