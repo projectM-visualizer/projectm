@@ -31,6 +31,14 @@
 *
 */
 
+#if defined _MSC_VER
+#  include <direct.h>
+#endif
+
+#include <fstream>
+#include <iostream>
+#include <string>
+
 #include "pmSDL.hpp"
 
 #if OGL_DEBUG
@@ -54,29 +62,55 @@ void DebugLog(GLenum source,
 
 // return path to config file to use
 std::string getConfigFilePath(std::string datadir_path) {
-    struct stat sb;
-    const char *path = datadir_path.c_str();
-    
-    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Looking for configuration file in data dir: %s.\n", path);
-    
-    // check if datadir exists.
-    // it should exist if this application was installed. if not, assume we're developing it and use currect directory
-    if (stat(path, &sb) != 0) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "Could not open datadir path %s\n", path);
-    }
-    
-    std::string configFilePath = path;
-    configFilePath += "/config.inp";
-    
-    // check if config file exists
-    if (stat(configFilePath.c_str(), &sb) != 0) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "No config file %s found. Using development settings.\n", configFilePath.c_str());
-        return "";
-    }
-    
-    return configFilePath;
-}
+  char* home = NULL;
+  std::string projectM_home;
+  std::string projectM_config = DATADIR_PATH;
 
+  projectM_config = datadir_path;
+
+#ifdef _MSC_VER
+  home=getenv("HOME");
+#else
+  home=getenv("USERPROFILE");
+#endif
+    
+  projectM_home = std::string(home);
+  projectM_home += "/.projectM";
+  
+  // Create the ~/.projectM directory. If it already exists, mkdir will do nothing
+#if defined _MSC_VER
+  _mkdir(projectM_home.c_str());
+#else
+  mkdir(projectM_home.c_str(), 0755);
+#endif
+  
+  projectM_home += "/config.inp";
+  projectM_config += "/config.inp";
+  
+  std::ifstream f_home(projectM_home);
+  std::ifstream f_config(projectM_config);
+    
+  if (f_config.good() && !f_home.good()) {
+    std::ifstream f_src;
+    std::ofstream f_dst;
+      
+    f_src.open(projectM_config, std::ios::in  | std::ios::binary);
+    f_dst.open(projectM_home,   std::ios::out | std::ios::binary);
+    f_dst << f_src.rdbuf();
+    f_dst.close();
+    f_src.close();
+    return std::string(projectM_home);
+  } else if (f_home.good()) {
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "created ~/.projectM/config.inp successfully\n");
+    return std::string(projectM_home);
+  } else if (f_config.good()) {
+    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Cannot create ~/.projectM/config.inp, using default config file\n");
+    return std::string(projectM_config);
+  } else {
+    SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");
+    abort();
+  }
+}
 
 // ref https://blogs.msdn.microsoft.com/matthew_van_eerde/2008/12/16/sample-wasapi-loopback-capture-record-what-you-hear/
 #ifdef WASAPI_LOOPBACK
