@@ -151,6 +151,7 @@ public:
 
   void touch(float x, float y, int pressure, int type);
   void touchDrag(float x, float y, int pressure);
+  void touchDestroy(float x, float y);
   
   void setToastMessage(const std::string& theValue);
 
