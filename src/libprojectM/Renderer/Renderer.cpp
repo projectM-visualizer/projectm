@@ -761,6 +761,12 @@ void Renderer::touchDrag(float x, float y, int pressure)
 	showtouch = true;
 }
 
+// Remove waveform at X Y
+void Renderer::touchDestroy(float x, float y)
+{
+	showtouch = false;
+}
+
 void Renderer::setToastMessage(const std::string& theValue)
 {
 	// Initialize counters

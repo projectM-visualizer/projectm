@@ -432,16 +432,29 @@ void projectMSDL::pollEvent() {
                 keyHandler(&evt);
                 break;
             case SDL_MOUSEBUTTONDOWN:
-                // if it's the first mouse down event (since mouse up or since SDL was launched)
-                if (!mouseDown) {
-                    // Get mouse coorindates when you click.
+                if (evt.button.button == SDL_BUTTON_LEFT) {
+                    // if it's the first mouse down event (since mouse up or since SDL was launched)
+                    if (!mouseDown) {
+                        // Get mouse coorindates when you click.
+                        SDL_GetMouseState(&mousex, &mousey);
+                        // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
+                        mousexscale = (mousex / (float)width);
+                        mouseyscale = ((height - mousey) / (float)height);
+                        // Touch. By not supplying a touch type, we will default to random.
+                        touch(mousexscale, mouseyscale, mousepressure);
+                        mouseDown = true;
+                    }
+                }
+                else if (evt.button.button == SDL_BUTTON_RIGHT)
+                {
+                    mouseDown = false;
+                    // Right Click
                     SDL_GetMouseState(&mousex, &mousey);
                     // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
                     mousexscale = (mousex / (float)width);
                     mouseyscale = ((height - mousey) / (float)height);
-                    // Touch. By not supplying a touch type, we will default to random.
-                    touch(mousexscale, mouseyscale, mousepressure);
-                    mouseDown = true;
+                    // Destroy at the coordinates we clicked.
+                    touchDestroy(mousexscale, mouseyscale);
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
@@ -475,6 +488,10 @@ void projectMSDL::touchDrag(float x, float y, int pressure) {
     projectM::touchDrag(x, y, pressure);
 }
 
+// Remove waveform at X Y
+void projectMSDL::touchDestroy(float x, float y) {
+    projectM::touchDestroy(x, y);
+}
 
 void projectMSDL::renderFrame() {
     glClearColor( 0.0, 0.0, 0.0, 0.0 );

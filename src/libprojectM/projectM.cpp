@@ -1017,6 +1017,13 @@ void projectM::touchDrag(float x, float y, int pressure)
         renderer->touchDrag(x, y, pressure);
 }
 
+
+void projectM::touchDestroy(float x, float y)
+{
+    if ( renderer )
+        renderer->touchDestroy(x, y);
+}
+
 void projectM::setHelpText(const std::string & helpText)
 {
     if ( renderer )

@@ -103,6 +103,7 @@ public:
     void resize(unsigned int width, unsigned int height);
     void touch(float x, float y, int pressure, int touchtype = 0);
     void touchDrag(float x, float y, int pressure);
+    void touchDestroy(float x, float y);
     void setHelpText(const std::string& theValue);
     void renderFrame();
     void pollEvent();
