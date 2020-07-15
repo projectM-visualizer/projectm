@@ -382,12 +382,15 @@ modKey = "CMD";
 		"N: Next preset""\n"
 		"P: Previous preset""\n"
 		"UP: Increase Beat Sensitivity""\n"
-		"DOWN: Decrease Beat Sensitivity""\n" +
-		modKey + "-I: Audio Input (listen to next device)""\n" +
-		modKey + "-M: Change Monitor""\n" +
-		modKey + "-S: Stretch Monitors""\n" +
-		modKey + "-F: Fullscreen""\n" +
-		modKey + "-Q: Quit";
+		"DOWN: Decrease Beat Sensitivity""\n"
+		"Left Click: Drop Random Waveform on Screen""\n"
+		"Right Click: Remove Random Waveform""\n" +
+		modKey + "+Right Click: Remove All Random Waveforms""\n" +
+		modKey + "+I: Audio Input (listen to next device)""\n" +
+		modKey + "+M: Change Monitor""\n" +
+		modKey + "+S: Stretch Monitors""\n" +
+		modKey + "+F: Fullscreen""\n" +
+		modKey + "+Q: Quit";
 
 	app->setHelpText(sdlHelpMenu.c_str());
 

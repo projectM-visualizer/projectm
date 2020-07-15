@@ -104,10 +104,12 @@ public:
     void touch(float x, float y, int pressure, int touchtype = 0);
     void touchDrag(float x, float y, int pressure);
     void touchDestroy(float x, float y);
+    void touchDestroyAll();
     void setHelpText(const std::string& theValue);
     void renderFrame();
     void pollEvent();
     void maximize();
+    bool keymod = false;
     std::string getActivePresetName();
     void addFakePCM();
     

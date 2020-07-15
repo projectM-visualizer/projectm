@@ -1024,6 +1024,12 @@ void projectM::touchDestroy(float x, float y)
         renderer->touchDestroy(x, y);
 }
 
+void projectM::touchDestroyAll()
+{
+    if (renderer)
+        renderer->touchDestroyAll();
+}
+
 void projectM::setHelpText(const std::string & helpText)
 {
     if ( renderer )
