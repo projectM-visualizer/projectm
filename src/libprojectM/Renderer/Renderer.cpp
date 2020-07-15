@@ -706,12 +706,14 @@ void Renderer::touch(float x, float y, int pressure, int type = 0)
 		case 6:
 			wave.mode = Blob5;
 			break;
+		/* Disabling lines because they are not intuitive 
 		case 7:
 			wave.mode = Line;
 			break;
 		case 8:
 			wave.mode = DoubleLine;
 			break;
+		*/
 		default:
 			wave.mode = Circle;
 	}
