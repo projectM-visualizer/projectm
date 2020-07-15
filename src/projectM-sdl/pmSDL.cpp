@@ -261,6 +261,10 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
     SDL_Keymod sdl_mod = (SDL_Keymod) sdl_evt->key.keysym.mod;
     SDL_Keycode sdl_keycode = sdl_evt->key.keysym.sym;
 
+    // Left or Right Gui or Left Ctrl
+    if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+        keymod = true;
+
 	// handle keyboard input (for our app first, then projectM)
     switch (sdl_keycode) {
         case SDLK_q:
@@ -448,11 +452,21 @@ void projectMSDL::pollEvent() {
                 else if (evt.button.button == SDL_BUTTON_RIGHT)
                 {
                     mouseDown = false;
+
+                    // Keymod = Left or Right Gui or Left Ctrl. This is a shortcut to remove all waveforms.
+                    if (keymod) {
+                        touchDestroyAll();
+                        keymod = false;
+                        break;
+                    }
+
                     // Right Click
                     SDL_GetMouseState(&mousex, &mousey);
+
                     // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
                     mousexscale = (mousex / (float)width);
                     mouseyscale = ((height - mousey) / (float)height);
+
                     // Destroy at the coordinates we clicked.
                     touchDestroy(mousexscale, mouseyscale);
                 }
@@ -491,6 +505,11 @@ void projectMSDL::touchDrag(float x, float y, int pressure) {
 // Remove waveform at X Y
 void projectMSDL::touchDestroy(float x, float y) {
     projectM::touchDestroy(x, y);
+}
+
+// Remove all waveforms
+void projectMSDL::touchDestroyAll() {
+    projectM::touchDestroyAll();
 }
 
 void projectMSDL::renderFrame() {

@@ -9,10 +9,12 @@
 #include "Pipeline.hpp"
 #include "PerPixelMesh.hpp"
 #include "Transformation.hpp"
+#include "MilkdropWaveform.hpp"
 #include "ShaderEngine.hpp"
 #include <iostream>
 #include <chrono>
 #include <ctime>
+#include <list>
 
 using namespace std::chrono;
 
@@ -50,8 +52,7 @@ class Renderer
 {
 
 public:
-    /*  ShowTouch(bool) show touch or not.
-        touchx(float) x for touch waveform to start displaying(scale of 0 - 1 and not the exact coordinates)
+    /*  touchx(float) x for touch waveform to start displaying(scale of 0 - 1 and not the exact coordinates)
         touchy(float) y for touch waveform to start displaying(scale of 0 - 1 and not the exact coordinates)
         touchp(int) touch pressure - @TODO not implemented yet!
         touchtype(int) Waveform type (bias to Circle). 1 = Circle; 2 = RadialBlob; 3 = Blob2; 4 = Blob 3; 5 = DerivativeLine; 6 = Blob5; 7 = Line; 8 DoubleLine; 
@@ -60,7 +61,6 @@ public:
         touchg(double) Green
         toucha(double) Alpha
     */
-  bool showtouch;
   float touchx;
   float touchy;
   int touchp; // Touch Pressure.
@@ -88,10 +88,9 @@ public:
   milliseconds lastTimeToast;
   milliseconds currentTimeToast;
 
-  milliseconds lastTimeTouch;
-  milliseconds currentTimeTouch;
-  
   std::string m_helpText;
+
+  std::vector<MilkdropWaveform> waveformList;
 
   int totalframes;
   float realfps;
@@ -152,6 +151,7 @@ public:
   void touch(float x, float y, int pressure, int type);
   void touchDrag(float x, float y, int pressure);
   void touchDestroy(float x, float y);
+  void touchDestroyAll();
   
   void setToastMessage(const std::string& theValue);
 
@@ -219,7 +219,7 @@ private:
   void SetupPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void Interpolation(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderItems(const Pipeline &pipeline, const PipelineContext &pipelineContext);
-  void RenderTouch();
+  void RenderTouch(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void FinishPass1();
   void Pass2 (const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void CompositeShaderOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext);
