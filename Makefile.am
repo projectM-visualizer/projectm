@@ -48,7 +48,7 @@ build-mac: macOS/Build/Products/Debug/presets
 # do a macOS build
 dist-mac: dist
 	make clean
-	./configure --enable-llvm
+	./configure --disable-sdlframework
 	rm -rf dist
 	xcrun xcodebuild -scheme "projectM SDL" -configuration Release archive -archivePath build/ProjectM.xcarchive
 	xcrun xcodebuild -scheme "iProjectM" -configuration Release archive -archivePath build/iTunes.xcarchive

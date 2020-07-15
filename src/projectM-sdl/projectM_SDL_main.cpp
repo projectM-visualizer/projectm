@@ -31,6 +31,14 @@
 *
 */
 
+#if defined _MSC_VER
+#  include <direct.h>
+#endif
+
+#include <fstream>
+#include <iostream>
+#include <string>
+
 #include "pmSDL.hpp"
 
 #if OGL_DEBUG
@@ -54,29 +62,55 @@ void DebugLog(GLenum source,
 
 // return path to config file to use
 std::string getConfigFilePath(std::string datadir_path) {
-    struct stat sb;
-    const char *path = datadir_path.c_str();
-    
-    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Looking for configuration file in data dir: %s.\n", path);
-    
-    // check if datadir exists.
-    // it should exist if this application was installed. if not, assume we're developing it and use currect directory
-    if (stat(path, &sb) != 0) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "Could not open datadir path %s\n", path);
-    }
-    
-    std::string configFilePath = path;
-    configFilePath += "/config.inp";
-    
-    // check if config file exists
-    if (stat(configFilePath.c_str(), &sb) != 0) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "No config file %s found. Using development settings.\n", configFilePath.c_str());
-        return "";
-    }
-    
-    return configFilePath;
-}
+  char* home = NULL;
+  std::string projectM_home;
+  std::string projectM_config = DATADIR_PATH;
 
+  projectM_config = datadir_path;
+
+#ifdef _MSC_VER
+  home=getenv("HOME");
+#else
+  home=getenv("USERPROFILE");
+#endif
+    
+  projectM_home = std::string(home);
+  projectM_home += "/.projectM";
+  
+  // Create the ~/.projectM directory. If it already exists, mkdir will do nothing
+#if defined _MSC_VER
+  _mkdir(projectM_home.c_str());
+#else
+  mkdir(projectM_home.c_str(), 0755);
+#endif
+  
+  projectM_home += "/config.inp";
+  projectM_config += "/config.inp";
+  
+  std::ifstream f_home(projectM_home);
+  std::ifstream f_config(projectM_config);
+    
+  if (f_config.good() && !f_home.good()) {
+    std::ifstream f_src;
+    std::ofstream f_dst;
+      
+    f_src.open(projectM_config, std::ios::in  | std::ios::binary);
+    f_dst.open(projectM_home,   std::ios::out | std::ios::binary);
+    f_dst << f_src.rdbuf();
+    f_dst.close();
+    f_src.close();
+    return std::string(projectM_home);
+  } else if (f_home.good()) {
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "created ~/.projectM/config.inp successfully\n");
+    return std::string(projectM_home);
+  } else if (f_config.good()) {
+    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Cannot create ~/.projectM/config.inp, using default config file\n");
+    return std::string(projectM_config);
+  } else {
+    SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");
+    abort();
+  }
+}
 
 // ref https://blogs.msdn.microsoft.com/matthew_van_eerde/2008/12/16/sample-wasapi-loopback-capture-record-what-you-hear/
 #ifdef WASAPI_LOOPBACK
@@ -366,14 +400,24 @@ srand((int)(time(NULL)));
         app = new projectMSDL(settings, 0);
     }
 
+    // If our config or hard-coded settings create a resolution smaller than the monitors, then resize the SDL window to match.
+    if (height > app->getWindowHeight() || width > app->getWindowWidth()) {
+        SDL_SetWindowSize(win, app->getWindowWidth(),app->getWindowHeight());
+        SDL_SetWindowPosition(win, (width / 2)-(app->getWindowWidth()/2), (height / 2)-(app->getWindowHeight()/2));
+    } else if (height < app->getWindowHeight() || width < app->getWindowWidth()) {
+        // If our config is larger than our monitors resolution then reduce it.
+        SDL_SetWindowSize(win, width, height);
+        SDL_SetWindowPosition(win, 0, 0);
+    }
 
-std::string modKey = "CTRL";
+    // Create a help menu specific to SDL
+    std::string modKey = "CTRL";
 
 #if __APPLE_
 modKey = "CMD";
 #endif
 
-	std::string sdlHelpMenu = "\n"
+    std::string sdlHelpMenu = "\n"
 		"F1: This help menu""\n"
 		"F3: Show preset name""\n"
 		"F5: Show FPS""\n"
@@ -391,9 +435,7 @@ modKey = "CMD";
 		modKey + "+S: Stretch Monitors""\n" +
 		modKey + "+F: Fullscreen""\n" +
 		modKey + "+Q: Quit";
-
-	app->setHelpText(sdlHelpMenu.c_str());
-
+    app->setHelpText(sdlHelpMenu.c_str());
     app->init(win, &glCtx);
 
 #if STEREOSCOPIC_SBS
@@ -518,6 +560,11 @@ modKey = "CMD";
 #if !FAKE_AUDIO && !WASAPI_LOOPBACK
     app->endAudioCapture();
 #endif
+
+    // Write back config with current app settings (if we loaded from a config file to begin with)
+    if (!configFilePath.empty()) {
+        projectM::writeConfig(configFilePath, app->settings());
+    }
     delete app;
 
     return PROJECTM_SUCCESS;
