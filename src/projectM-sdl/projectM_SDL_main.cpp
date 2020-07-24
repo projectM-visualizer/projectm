@@ -69,9 +69,9 @@ std::string getConfigFilePath(std::string datadir_path) {
   projectM_config = datadir_path;
 
 #ifdef _MSC_VER
-  home=getenv("HOME");
-#else
   home=getenv("USERPROFILE");
+#else
+  home=getenv("HOME");
 #endif
     
   projectM_home = std::string(home);
@@ -108,7 +108,7 @@ std::string getConfigFilePath(std::string datadir_path) {
     return std::string(projectM_config);
   } else {
     SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");
-    abort();
+	return "";
   }
 }
 
