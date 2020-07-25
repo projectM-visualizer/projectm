@@ -12,7 +12,8 @@ FileScanner::FileScanner(std::vector<std::string> &rootDirs, std::vector<std::st
 
 void FileScanner::scan(ScanCallback cb) {
 #ifdef WIN32
-    scanGeneric(cb, _rootDir.c_str());
+    for (auto dir : _rootDirs)
+        scanGeneric(cb, dir.c_str());
 #else
     scanPosix(cb);
 #endif
