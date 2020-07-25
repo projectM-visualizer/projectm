@@ -51,6 +51,27 @@ void FileScanner::handleDirectoryError(std::string dir) {
 #endif
 }
 
+std::string FileScanner::extensionMatches(std::string &filename) {
+    // returns file name without extension
+    // TODO: optimize me
+    
+    std::string lowerCaseFileName(filename);
+    std::transform(lowerCaseFileName.begin(), lowerCaseFileName.end(), lowerCaseFileName.begin(), tolower);
+    
+    // Remove extension
+    for (size_t x = 0; x < _extensions.size(); x++)
+    {
+        size_t found = lowerCaseFileName.find(_extensions[x]);
+        if (found != std::string::npos)
+        {
+            std::string name = filename;
+            name.replace(int(found), _extensions[x].size(), "");
+            return name;
+        }
+    }
+    
+    return {};
+}
 
 
 // generic implementation using dirent
@@ -84,21 +105,9 @@ void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
             continue;
         }
         
-        std::string lowerCaseFileName(filename);
-        std::transform(lowerCaseFileName.begin(), lowerCaseFileName.end(), lowerCaseFileName.begin(), tolower);
-        
-        // Remove extension
-        for (size_t x = 0; x < _extensions.size(); x++)
-        {
-            size_t found = lowerCaseFileName.find(_extensions[x]);
-            if (found != std::string::npos)
-            {
-                std::string name = filename;
-                name.replace(int(found), _extensions[x].size(), "");
-                cb(fullPath, name);
-                break;
-            }
-        }
+        auto nameMatched = extensionMatches(filename);
+        if (! nameMatched.empty())
+           cb(fullPath, nameMatched);
     }
     
     if (m_dir)
@@ -140,7 +149,7 @@ void FileScanner::scanPosix(ScanCallback cb) {
         return;
     }
     
-    std::string path, name;
+    std::string path, name, nameMatched;
     
     // traverse dirList
     while( (node = fts_read(fileSystem)) != NULL) {
@@ -151,7 +160,11 @@ void FileScanner::scanPosix(ScanCallback cb) {
                 // found a file
                 path = std::string(node->fts_path);
                 name = std::string(node->fts_name);
-                cb(path, name);
+                
+                // check extension
+                nameMatched = extensionMatches(name);
+                if (! nameMatched.empty())
+                   cb(path, nameMatched);
                 break;
             default:
                 break;

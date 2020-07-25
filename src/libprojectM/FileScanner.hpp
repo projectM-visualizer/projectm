@@ -44,6 +44,7 @@ public:
     FileScanner(std::vector<std::string> &rootDirs, std::vector<std::string> &extensions);
     
     void scan(ScanCallback cb);
+    std::string extensionMatches(std::string &filename);
     
 private:
     std::vector<std::string> _rootDirs;
