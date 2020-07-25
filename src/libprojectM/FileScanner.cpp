@@ -71,7 +71,7 @@ std::string FileScanner::extensionMatches(std::string &filename) {
         }
     }
     
-    return std::string;
+    return std::string();
 }
 
 
