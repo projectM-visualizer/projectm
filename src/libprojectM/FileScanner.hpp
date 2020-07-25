@@ -12,6 +12,7 @@
 #include <iostream>
 #include <functional>
 #include "Common.hpp"
+#include <string.h>
 
 #ifdef WIN32
 #include "dirent.h"
@@ -42,10 +43,10 @@ class FileScanner {
 public:
     FileScanner();
     FileScanner(std::vector<std::string> &rootDirs, std::vector<std::string> &extensions);
-    
+
     void scan(ScanCallback cb);
     std::string extensionMatches(std::string &filename);
-    
+
 private:
     std::vector<std::string> _rootDirs;
     std::vector<std::string> _extensions;
