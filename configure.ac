@@ -1,4 +1,4 @@
-AC_INIT([projectM], [3.1.5], [mischa@mvstg.biz], [projectM], [https://github.com/projectM-visualizer/projectm/])
+AC_INIT([projectM], [3.1.6], [me@mish.dev], [projectM], [https://github.com/projectM-visualizer/projectm/])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects tar-pax])
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
@@ -232,6 +232,7 @@ my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wpointer-arith -Wshadow -W
 #my_CFLAGS+="-fsanitize=address -fno-omit-frame-pointer "
 my_CFLAGS="${my_CFLAGS} -DDATADIR_PATH=\\\"\"\$(pkgdatadir)\\\"\""
 my_CFLAGS="${my_CFLAGS} -I\$(top_srcdir)/vendor"
+my_CFLAGS="${my_CFLAGS} -DGL_SILENCE_DEPRECATION"
 AC_SUBST([my_CFLAGS])
 
 

@@ -19,6 +19,11 @@
 		168F718021126256001806E7 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 168F717F21126256001806E7 /* AppIcon.icns */; };
 		169BC64024CC3B56007B7829 /* presets in Copy Files */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		169BC64224CC3FCA007B7829 /* presets in Support files */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
+		169BC64C24CC8354007B7829 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 169BC64B24CC8353007B7829 /* SDL2.framework */; };
+		169BC64E24CC83CD007B7829 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 169BC64D24CC83CD007B7829 /* SDL2.framework */; };
+		169BC64F24CC83CD007B7829 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 169BC64D24CC83CD007B7829 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		169BC65024CC8401007B7829 /* fonts in Copy Files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
+		169BC65224CC8418007B7829 /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 169BC64D24CC83CD007B7829 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
 		C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215D1BF025CF001707D2 /* CoreFoundation.framework */; };
 		C34521651BF025E5001707D2 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215F1BF025E5001707D2 /* libbz2.a */; };
@@ -123,8 +128,19 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				169BC64F24CC83CD007B7829 /* SDL2.framework in Frameworks */,
 			);
 			name = Frameworks;
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		169BC65124CC840D007B7829 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				169BC65224CC8418007B7829 /* SDL2.framework in CopyFiles */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C34521421BF02293001707D2 /* Copy Files */ = {
@@ -134,6 +150,7 @@
 			dstSubfolderSpec = 16;
 			files = (
 				169BC64024CC3B56007B7829 /* presets in Copy Files */,
+				169BC65024CC8401007B7829 /* fonts in Copy Files */,
 			);
 			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -147,6 +164,8 @@
 		168F717F21126256001806E7 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
 		169501FF1F7009E9008FAF86 /* pmSDL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pmSDL.hpp; sourceTree = "<group>"; };
+		169BC64B24CC8353007B7829 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
+		169BC64D24CC83CD007B7829 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
 		16B52AA8211054E900830F34 /* projectMSDL-pkg.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "projectMSDL-pkg.plist"; sourceTree = "<group>"; };
 		16B52AAA21105A6900830F34 /* config.inp */ = {isa = PBXFileReference; lastKnownFileType = text; path = config.inp; sourceTree = "<group>"; };
 		C307DFD31D565B57002F6B9E /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
@@ -172,9 +191,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				169BC64C24CC8354007B7829 /* SDL2.framework in Frameworks */,
 				1612C9E2207A85C100862A3A /* libMilkdropPresetFactory.a in Frameworks */,
 				1612C9E3207A85C100862A3A /* libNativePresetFactory.a in Frameworks */,
 				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
+				169BC64E24CC83CD007B7829 /* SDL2.framework in Frameworks */,
 				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
 				C34521651BF025E5001707D2 /* libbz2.a in Frameworks */,
 				C34521691BF025E5001707D2 /* libpng15.a in Frameworks */,
@@ -190,6 +211,7 @@
 		161070CE1F7041B0001905AB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				169BC64B24CC8353007B7829 /* SDL2.framework */,
 				C345215D1BF025CF001707D2 /* CoreFoundation.framework */,
 				C345215B1BF025A9001707D2 /* OpenGL.framework */,
 			);
@@ -226,6 +248,7 @@
 		16A42128207802AF006F30CE /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
+				169BC64D24CC83CD007B7829 /* SDL2.framework */,
 				C345215F1BF025E5001707D2 /* libbz2.a */,
 				C34521631BF025E5001707D2 /* libpng15.a */,
 				C34521641BF025E5001707D2 /* libz.a */,
@@ -293,6 +316,7 @@
 				C34521401BF02293001707D2 /* Sources */,
 				C34521411BF02293001707D2 /* Frameworks */,
 				C34521421BF02293001707D2 /* Copy Files */,
+				169BC65124CC840D007B7829 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -472,6 +496,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_UNROLL_LOOPS = YES;
 				INFOPLIST_FILE = "projectM-SDL/Info.plist";
@@ -502,6 +530,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_UNROLL_LOOPS = YES;
@@ -639,6 +671,10 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_LINK_WITH_DYNAMIC_LIBRARIES = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../libprojectM",
@@ -651,7 +687,7 @@
 					"$(SRCROOT)/../projectM-iTunes/macos/contrib",
 					/usr/local/lib,
 				);
-				OTHER_LDFLAGS = "-lSDL2";
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -665,6 +701,10 @@
 				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				GCC_LINK_WITH_DYNAMIC_LIBRARIES = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../libprojectM",
@@ -677,7 +717,7 @@
 					"$(SRCROOT)/../projectM-iTunes/macos/contrib",
 					/usr/local/lib,
 				);
-				OTHER_LDFLAGS = "-lSDL2";
+				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
