@@ -144,7 +144,7 @@ void FileScanner::scanPosix(ScanCallback cb) {
     fileSystem = fts_open(dirList, FTS_LOGICAL|FTS_NOCHDIR|FTS_NOSTAT, &fts_compare);
     if (fileSystem == NULL) {
         std::string s;
-        for (int i = 0; i < _rootDirs.size(); i++)   //doc is the vector
+        for (int i = 0; i < _rootDirs.size(); i++)
             s += _rootDirs[i] + ' ';
         handleDirectoryError(s);
         
