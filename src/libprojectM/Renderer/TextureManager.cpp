@@ -1,7 +1,6 @@
 #include <algorithm>
 #include <vector>
 #include <memory>
-
 #include "projectM-opengl.h"
 
 #include "SOIL2/SOIL2.h"
@@ -342,6 +341,15 @@ void TextureManager::loadTextureDir(const std::string &dirname)
 
         if (filename.length() > 0 && filename[0] == '.')
             continue;
+        
+        if (dir_entry->d_type == DT_DIR) {
+            // recurse
+            std::string subdirPath = dirname + PATH_SEPARATOR + filename;
+            loadTextureDir(subdirPath);
+            continue;
+        } else if (dir_entry->d_type != DT_REG) {
+            continue;
+        }
 
         std::string lowerCaseFileName(filename);
         std::transform(lowerCaseFileName.begin(), lowerCaseFileName.end(), lowerCaseFileName.begin(), tolower);
