@@ -20,7 +20,7 @@ addons:
 
 script:
   - ./configure $PM_OPTS --prefix=$PWD/local && make -j6 && make install  # build from checkout
-  - export PMVER=$(./configure --version | grep -P '([\d\.]+){3}' -m 1 -o)  # get pM version
+  - export PMVER=$(./configure --version | cut -d ' ' -f 3 | grep -m 1 .)  # get pM version
   - make dist && tar -zxf projectM-${PMVER}.tar.gz && cd projectM-${PMVER} && ./configure $PM_OPTS --prefix=$PWD/dist_install && make -j6 && make install  # build from dist
   - echo "PWD=$PWD"
   - ls .
