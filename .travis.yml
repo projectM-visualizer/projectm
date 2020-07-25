@@ -36,8 +36,25 @@ script:
 # test on GCC and Clang
 matrix:
   include:
-    #  pulseaudio/qt/jack
+    #  qt/pulseaudio/jack/sdl
     - os: linux
+      dist: bionic
+      addons:
+        apt:
+          packages:
+            - libglm-dev
+            - qt5-default
+            - qtdeclarative5-dev
+            - libqt5opengl5-dev
+            - libjack-dev
+            - libpulse-dev
+            - libc++-dev
+            - libsdl-dev  # for jack
+            - libsdl2-dev  # for tests
+      env:
+        - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
+    - os: linux
+      dist: xenial
       addons:
         apt:
           packages:

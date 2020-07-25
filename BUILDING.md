@@ -6,19 +6,18 @@ Relevant for Linux distributions, FreeBSD, macOS:
 * `autotools` `autoconf`
 * `libtool`, or at least `pkg-config`
 * `which`
-
 * `libglm-dev`
 
 Main build options & their requirements:
 
 | Configure flag | Required dependency                                                | Produced binary       |
 |-----------------|-------------------------------------------------------------------- |----------------------- |
-| `--enable-sdl`  | `libsdl2-dev`                                                      | `projectMSDL`         |
-| `--enable-qt`   | `qt5-default` `qtdeclarative5-dev` `libpulse-dev` `libqt5opengl5`  | `projectM-pulseaudio` |
+| `--enable-sdl`  | `libsdl2-dev` `libglm-dev`                                         | `projectMSDL`         |
+| `--enable-pulseaudio` | `qt5-default` `qtdeclarative5-dev` `libpulse-dev` `libqt5opengl5`  | `projectM-pulseaudio` |
 | `--enable-jack` | `libjack2-dev`OR`libjack1-dev`; `qt5-default` `qtdeclarative5-dev` `libqt5opengl5`| `projectM-jack`       |
 
 #### Additional information on dependencies
-* `libglm` (headers only) for matrix math is required. 
+* `libglm` (headers only) for matrix math is required.
 * A modified version of `hlslparser` is included in Renderer and used to transpile HLSL shaders to GLSL
 * OpenGL 3+ or OpenGLES is required
 * `libsdl >= 2.0.5` is required for the SDL and emscripten apps. `src/projectM-sdl` is the current reference application implementation. maybe try getting that to build and run as your testbench.
@@ -27,13 +26,16 @@ If extra information needed - you can refere to `configure.ac` and the assorted 
 
 ### Building process under *nix systems
 ```sh
-autoreconf --install    # only needed if this is a git clone
-# For macOS automation there is ./autogen.sh provided for autoreconf
-
+./autogen.sh
 ./configure --enable-sdl    # supply additional options here, info in Dependencies
 
 make
 sudo make install
+```
+
+### Debian/Ubuntu/Mint
+```sh
+sudo apt install clang libsdl1.2-dev libsdl2-dev libglm-dev libgl1-mesa-dev qt5-default qtdeclarative5-dev libqt5opengl5-dev libjack-dev libpulse-dev
 ```
 
 ### OpenGL ES
@@ -59,6 +61,9 @@ make && make install-strip
 
 Now you should be able to copy ./src/libprojectM/.libs/libprojectM.so
 and appropriate headers to projectm-android, and build it using Android Studio
+
+### LLVM JIT
+There are some optmizations for parsing preset equations that leverage the LLVM JIT. You can try `./compile --enable--llvm` to enable them. They may not work with newer version of LLVM (https://github.com/projectM-visualizer/projectm/pull/360)
 
 
 ## libprojectM
