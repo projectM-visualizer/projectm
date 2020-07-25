@@ -10,13 +10,13 @@ before_install:
   - eval "${MATRIX_EVAL}"
   - if [ $TRAVIS_OS_NAME == "osx"  ]; then sudo sntp -sS time.apple.com; fi
 
-addons:
-  apt:
-    packages:
-      - libc++-dev
-      - libsdl2-dev
-      - libglm-dev
-      - libgl1-mesa-dev
+# addons:
+#   apt:
+#     packages:
+#       - libc++-dev
+#       - libsdl2-dev
+#       - libglm-dev
+#       - libgl1-mesa-dev
 
 script:
   - ./configure $PM_OPTS --prefix=$PWD/local && make -j6 && make install  # build from checkout
@@ -43,6 +43,7 @@ matrix:
       addons:
         apt:
           packages:
+            - libglm-dev
             - qt5-default
             - qtdeclarative5-dev
             - libqt5opengl5-dev
@@ -57,6 +58,7 @@ matrix:
       addons:
         apt:
           packages:
+            - libglm-dev
             - qt5-default
             - qtdeclarative5-dev
             - libqt5opengl5-dev
