@@ -118,11 +118,13 @@ void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
     }
 }
 
-
+#ifndef WIN32
 // more optimized posix "fts" directory traversal
 int fts_compare(const FTSENT** one, const FTSENT** two) {
     return (strcmp((*one)->fts_name, (*two)->fts_name));
 }
+#endif
+
 void FileScanner::scanPosix(ScanCallback cb) {
 #ifndef WIN32
     
