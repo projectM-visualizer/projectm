@@ -107,3 +107,11 @@ PresetFactory & PresetFactoryManager::factory(const std::string & extension) {
 bool PresetFactoryManager::extensionHandled(const std::string & extension) const {		
 	return _factoryMap.count(extension);
 }
+
+std::vector<std::string> PresetFactoryManager::extensionsHandled() const {
+    std::vector<std::string> retval;
+    for (auto const& element : _factoryMap) {
+      retval.push_back(element.first);
+    }
+    return retval;
+}

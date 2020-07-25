@@ -5,25 +5,10 @@
 #include <memory> // for auto pointers
 #include <sys/types.h>
 
-#ifdef WIN32
-#include "dirent.h"
-#endif
-
-#ifdef __unix__
-#include <dirent.h>
-#endif
-
-#ifdef EMSCRIPTEN
-#include <dirent.h>
-#endif
-
-#ifdef __APPLE__
-#include <dirent.h>
-#endif
-
 #include <vector>
 #include <map>
 #include "PresetFactoryManager.hpp"
+#include "FileScanner.hpp"
 
 class Preset;
 class PresetFactory;
@@ -102,9 +87,8 @@ class PresetLoader {
 		void rescan();
 		void setPresetName(PresetIndex index, std::string name);
 
-	private:
-		void handleDirectoryError();
-        void addScannedPresetFile(const char *path, const char *name);
+	protected:
+        void addScannedPresetFile(const std::string &path, const std::string &name);
 
 		std::string _dirname;
 		std::vector<int> _ratingsSums;
@@ -116,6 +100,8 @@ class PresetLoader {
 
 		// Indexed by ratingType, preset position.
 		std::vector<RatingList> _ratings;
+    
+        FileScanner fileScanner;
 };
 
 #endif
