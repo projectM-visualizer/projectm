@@ -55,7 +55,7 @@ void *wipe_aligned_alloc( size_t align, size_t size )
 {
     void *mem = NULL;
 
-#if HAVE_ALIGNED_ALLOC==1
+#if HAVE_ALIGNED_ALLOC==1 && !__APPLE__
 
     mem = aligned_alloc( align, size );
 
