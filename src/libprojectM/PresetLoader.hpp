@@ -28,11 +28,10 @@
 class Preset;
 class PresetFactory;
 
+typedef std::size_t PresetIndex;
 
 class PresetLoader {
 	public:
-
-
 		/// Initializes the preset loader with the target directory specified
 		PresetLoader(int gx, int gy, std::string dirname);
 
@@ -40,21 +39,21 @@ class PresetLoader {
 
 		/// Load a preset by specifying its unique identifier given when the preset url
 		/// was added to this loader
-		std::unique_ptr<Preset> loadPreset(unsigned int index) const;
+		std::unique_ptr<Preset> loadPreset(PresetIndex index) const;
 		std::unique_ptr<Preset> loadPreset ( const std::string & url )  const;
 		/// Add a preset to the loader's collection.
 		/// \param url an url referencing the preset
 		/// \param presetName a name for the preset
-		/// \param rating an integer representing the goodness of the preset
+		/// \param ratings an list representing the goodness ratings
 		/// \returns The unique index assigned to the preset in the collection. Used with loadPreset
-		unsigned int addPresetURL ( const std::string & url, const std::string & presetName, const RatingList & ratings);
+		unsigned long addPresetURL(const std::string & url, const std::string & presetName, const RatingList & ratings);
 
 		/// Add a preset to the loader's collection.
 		/// \param index insertion index
 		/// \param url an url referencing the preset
 		/// \param presetName a name for the preset
-		/// \param rating an integer representing the goodness of the preset
-		void insertPresetURL (unsigned int index, const std::string & url, const std::string & presetName, const RatingList & ratings);
+        /// \param ratings an list representing the goodness ratings
+		void insertPresetURL (PresetIndex index, const std::string & url, const std::string & presetName, const RatingList & ratings);
 
 		/// Clears all presets from the collection
 		inline void clear() {
@@ -72,19 +71,19 @@ class PresetLoader {
 
 		/// Removes a preset from the loader
 		/// \param index the unique identifier of the preset url to be removed
-		void removePreset(unsigned int index);
+		void removePreset(PresetIndex index);
 
 		/// Sets the rating of a preset to a new value
-		void setRating(unsigned int index, int rating, const PresetRatingType ratingType);
+		void setRating(PresetIndex index, int rating, const PresetRatingType ratingType);
 
 		/// Get a preset rating given an index
-		int getPresetRating ( unsigned int index, const PresetRatingType ratingType) const;
+		int getPresetRating ( PresetIndex index, const PresetRatingType ratingType) const;
 
 		/// Get a preset url given an index
-		const std::string & getPresetURL ( unsigned int index) const;
+		const std::string & getPresetURL ( PresetIndex index) const;
 
 		/// Get a preset name given an index
-		const std::string & getPresetName ( unsigned int index) const;
+		const std::string & getPresetName ( PresetIndex index) const;
 
 		/// Returns the number of presets in the active directory
 		inline std::size_t size() const {
@@ -101,11 +100,13 @@ class PresetLoader {
 
 		/// Rescans the active preset directory
 		void rescan();
-		void setPresetName(unsigned int index, std::string name);
+		void setPresetName(PresetIndex index, std::string name);
+
 	private:
 		void handleDirectoryError();
+        void addScannedPresetFile(const char *path, const char *name);
+
 		std::string _dirname;
-		DIR * _dir;
 		std::vector<int> _ratingsSums;
 		mutable PresetFactoryManager _presetFactoryManager;
 
@@ -115,8 +116,6 @@ class PresetLoader {
 
 		// Indexed by ratingType, preset position.
 		std::vector<RatingList> _ratings;
-
-
 };
 
 #endif
