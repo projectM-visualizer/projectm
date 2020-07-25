@@ -10,11 +10,12 @@ Relevant for Linux distributions, FreeBSD, macOS:
 
 Main build options & their requirements:
 
-| Configure flag | Required dependency                                                | Produced binary       |
-|-----------------|-------------------------------------------------------------------- |----------------------- |
-| `--enable-sdl`  | `libsdl2-dev` `libglm-dev`                                         | `projectMSDL`         |
-| `--enable-pulseaudio` | `qt5-default` `qtdeclarative5-dev` `libpulse-dev` `libqt5opengl5`  | `projectM-pulseaudio` |
-| `--enable-jack` | `libjack2-dev`OR`libjack1-dev`; `qt5-default` `qtdeclarative5-dev` `libqt5opengl5`| `projectM-jack`       |
+| Configure flag        | Required dependency                                                                    | Produced binary       |
+|-----------------------|----------------------------------------------------------------------------------------|-----------------------|
+| `*`                   | `libglm-dev`                                                                           |                       |
+| `--enable-sdl`        | `libsdl2-dev`                                                                          | `projectMSDL`         |
+| `--enable-pulseaudio` | `qt5-default` `qtdeclarative5-dev` `libpulse-dev` `libqt5opengl5-dev`                  | `projectM-pulseaudio` |
+| `--enable-jack`       | `libjack2-dev`OR`libjack1-dev`; `qt5-default` `qtdeclarative5-dev` `libqt5opengl5-dev` | `projectM-jack`       |
 
 #### Additional information on dependencies
 * `libglm` (headers only) for matrix math is required.
@@ -36,6 +37,7 @@ sudo make install
 ### Debian/Ubuntu/Mint
 ```sh
 sudo apt install clang libsdl1.2-dev libsdl2-dev libglm-dev libgl1-mesa-dev qt5-default qtdeclarative5-dev libqt5opengl5-dev libjack-dev libpulse-dev
+./configure && make -j4 && sudo make install
 ```
 
 ### OpenGL ES
