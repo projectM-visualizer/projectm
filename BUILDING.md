@@ -36,7 +36,7 @@ sudo make install
 
 ### Debian/Ubuntu/Mint
 ```sh
-sudo apt install clang libsdl1.2-dev libsdl2-dev libglm-dev libgl1-mesa-dev qt5-default qtdeclarative5-dev libqt5opengl5-dev libjack-dev libpulse-dev
+sudo apt install clang libsdl2-dev libglm-dev libgl1-mesa-dev qt5-default qtdeclarative5-dev libqt5opengl5-dev libjack-dev libpulse-dev
 ./configure && make -j4 && sudo make install
 ```
 
