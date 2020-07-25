@@ -42,7 +42,6 @@ matrix:
       addons:
         apt:
           packages:
-            - libglm-dev
             - qt5-default
             - qtdeclarative5-dev
             - libqt5opengl5-dev
@@ -57,7 +56,6 @@ matrix:
       addons:
         apt:
           packages:
-            - libglm-dev
             - qt5-default
             - qtdeclarative5-dev
             - libqt5opengl5-dev
