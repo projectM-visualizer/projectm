@@ -30,7 +30,7 @@ public:
  std::unique_ptr<Preset> allocate(const std::string & url, const std::string & name = std::string(),
 	const std::string & author = std::string());
 
- std::string supportedExtensions() const { return "milk prjm"; }
+ std::string supportedExtensions() const { return ".milk .prjm"; }
 
 private:
     static PresetOutputs* createPresetOutputs(int gx, int gy);

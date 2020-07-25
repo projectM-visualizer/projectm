@@ -22,11 +22,12 @@
 
 PresetLoader::PresetLoader (int gx, int gy, std::string dirname = std::string()) :_dirname ( dirname )
 {
+    _presetFactoryManager.initialize(gx,gy);
+
     std::vector<std::string> dirs{_dirname};
     std::vector<std::string> extensions = _presetFactoryManager.extensionsHandled();
     fileScanner = FileScanner(dirs, extensions);
-    
-	_presetFactoryManager.initialize(gx,gy);
+
 	// Do one scan
 	if ( _dirname != std::string() )
 		rescan();
@@ -42,12 +43,20 @@ void PresetLoader::setScanDirectory ( std::string dirname )
 }
 
 void PresetLoader::addScannedPresetFile(const std::string &path, const std::string &name) {
-    // Verify extension is projectm or milkdrop
-    if (!_presetFactoryManager.extensionHandled(parseExtension(path)))
+    auto ext = parseExtension(path);
+    if (ext.empty())
         return;
     
+    ext = "." + ext;
+
+    // Verify extension is projectm or milkdrop
+    if (!_presetFactoryManager.extensionHandled(ext))
+        return;
+    
+//    std::cout << "Loading preset file " << path << std::endl;
+    
     _entries.push_back(path);
-    _presetNames.push_back(name);
+    _presetNames.push_back(name + ext);
 }
 
 void PresetLoader::rescan()
