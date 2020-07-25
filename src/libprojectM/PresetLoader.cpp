@@ -15,36 +15,17 @@
 #include <iostream>
 #include <sstream>
 #include <set>
-#include <fts.h>
-     #include <sys/types.h>
-#ifdef __unix__
-extern "C"
-{
-#include <errno.h>
-}
-#endif
-
-#ifdef __APPLE__
-extern "C"
-{
-#include <errno.h>
-}
-#endif
-
+#include <sys/types.h>
 #include <cassert>
 #include "fatal.h"
-
 #include "Common.hpp"
-
-
-// directory traversal
-int fts_compare(const FTSENT** one, const FTSENT** two) {
-    return (strcmp((*one)->fts_name, (*two)->fts_name));
-}
-
 
 PresetLoader::PresetLoader (int gx, int gy, std::string dirname = std::string()) :_dirname ( dirname )
 {
+    std::vector<std::string> dirs{_dirname};
+    std::vector<std::string> extensions = _presetFactoryManager.extensionsHandled();
+    fileScanner = FileScanner(dirs, extensions);
+    
 	_presetFactoryManager.initialize(gx,gy);
 	// Do one scan
 	if ( _dirname != std::string() )
@@ -60,62 +41,32 @@ void PresetLoader::setScanDirectory ( std::string dirname )
 	_dirname = dirname;
 }
 
-void PresetLoader::addScannedPresetFile(const char *path, const char *name) {
-    auto pathStr = std::string(path);
-
+void PresetLoader::addScannedPresetFile(const std::string &path, const std::string &name) {
     // Verify extension is projectm or milkdrop
-    if (!_presetFactoryManager.extensionHandled(parseExtension(pathStr)))
+    if (!_presetFactoryManager.extensionHandled(parseExtension(path)))
         return;
     
-    auto nameStr = std::string(name);
-    _entries.push_back(pathStr);
-    _presetNames.push_back(nameStr);
+    _entries.push_back(path);
+    _presetNames.push_back(name);
 }
 
 void PresetLoader::rescan()
 {
 	// std::cerr << "Rescanning..." << std::endl;
-
-	// Clear the directory entry collection
-	clear();
-
-    FTS* fileSystem = NULL;
-    FTSENT *node    = NULL;
     
-    // list of directories to scan
-    char **dirList = (char **)malloc(sizeof(char*) * 2);
-    dirList[0] = (char *) _dirname.c_str();
-    dirList[1] = NULL;
+    // Clear the directory entry collection
+    clear();
 
-    // initialize file hierarchy traversal
-    fileSystem = fts_open(dirList, FTS_LOGICAL|FTS_NOCHDIR|FTS_NOSTAT, &fts_compare);
-    if (fileSystem == NULL) {
-        handleDirectoryError();
-        return;
-    }
-        
-    // traverse dirList
-    while( (node = fts_read(fileSystem)) != NULL) {
-        switch (node->fts_info) {
-            case FTS_F:
-            case FTS_SL:
-            case FTS_NSOK:
-                // found a file
-                addScannedPresetFile(node->fts_path, node->fts_name);
-                break;
-            default:
-                break;
-        }
-    }
-    fts_close(fileSystem);
-    
-	// Give all presets equal rating of 3 - why 3? I don't know
-	_ratings = std::vector<RatingList>(TOTAL_RATING_TYPES, RatingList( _presetNames.size(), 3 ));
-	_ratingsSums = std::vector<int>(TOTAL_RATING_TYPES, 3 *_presetNames.size());
+    // scan for presets
+    using namespace std::placeholders;
+    fileScanner.scan(std::bind(&PresetLoader::addScannedPresetFile, this, _1, _2));
 
-	assert ( _entries.size() == _presetNames.size() );
+    // Give all presets equal rating of 3 - why 3? I don't know
+    _ratings = std::vector<RatingList>(TOTAL_RATING_TYPES, RatingList( _presetNames.size(), 3 ));
+    _ratingsSums = std::vector<int>(TOTAL_RATING_TYPES, 3 *_presetNames.size());
+
+    assert ( _entries.size() == _presetNames.size() );
 }
-
 
 std::unique_ptr<Preset> PresetLoader::loadPreset ( PresetIndex index )  const
 {
@@ -124,7 +75,6 @@ std::unique_ptr<Preset> PresetLoader::loadPreset ( PresetIndex index )  const
 	return _presetFactoryManager.allocate
 		( _entries[index], _presetNames[index] );
 }
-
 
 std::unique_ptr<Preset> PresetLoader::loadPreset ( const std::string & url )  const
 {
@@ -141,39 +91,6 @@ std::unique_ptr<Preset> PresetLoader::loadPreset ( const std::string & url )  co
     return std::unique_ptr<Preset>();
 }
 
-void PresetLoader::handleDirectoryError()
-{
-
-#ifdef WIN32
-	std::cerr << "[PresetLoader] warning: errno unsupported on win32 platforms. fix me" << std::endl;
-#else
-
-	switch ( errno )
-	{
-		case ENOENT:
-			std::cerr << "[PresetLoader] ENOENT error. The path \"" << this->_dirname << "\" probably does not exist. \"man open\" for more info." << std::endl;
-			break;
-		case ENOMEM:
-			std::cerr << "[PresetLoader] out of memory! Are you running Windows?" << std::endl;
-			abort();
-		case ENOTDIR:
-			std::cerr << "[PresetLoader] directory specified is not a preset directory! Trying to continue..." << std::endl;
-			break;
-		case ENFILE:
-			std::cerr << "[PresetLoader] Your system has reached its open file limit. Trying to continue..." << std::endl;
-			break;
-		case EMFILE:
-			std::cerr << "[PresetLoader] too many files in use by projectM! Bailing!" << std::endl;
-			break;
-		case EACCES:
-			std::cerr << "[PresetLoader] permissions issue reading the specified preset directory." << std::endl;
-			break;
-		default:
-			break;
-	}
-#endif
-}
-
 void PresetLoader::setRating(PresetIndex index, int rating, const PresetRatingType ratingType)
 {
 	const unsigned int ratingTypeIndex = static_cast<unsigned int>(ratingType);
@@ -183,9 +100,7 @@ void PresetLoader::setRating(PresetIndex index, int rating, const PresetRatingTy
 
 	_ratings[ratingTypeIndex][index] = rating;
 	_ratingsSums[ratingType] += rating;
-
 }
-
 
 unsigned long PresetLoader::addPresetURL ( const std::string & url, const std::string & presetName, const std::vector<int> & ratings)
 {

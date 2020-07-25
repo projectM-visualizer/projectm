@@ -1,29 +1,13 @@
 #include <algorithm>
 #include <vector>
 #include <memory>
-
 #include "projectM-opengl.h"
-
 #include "SOIL2/SOIL2.h"
-
-#ifdef WIN32
-#include "dirent.h"
-#endif
-
-#ifdef __unix__
-#include <dirent.h>
-#endif
-#ifdef EMSCRIPTEN
-#include <dirent.h>
-#endif
-
-#ifdef __APPLE__
-#include <dirent.h>
-#endif
 #include "TextureManager.hpp"
 #include "Common.hpp"
 #include "IdleTextures.hpp"
 #include "Texture.hpp"
+
 /* OpenGL ES 2.0 cant handle converting textures fro GL_RGB to GL_RGBA via glTexImage2D
 http://docs.gl/es2/glTexImage2D
 
@@ -44,8 +28,8 @@ So because of this, we switch to a PerlinNoiseWithAlpha class to generate the no
 
 
 TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX, const int texsizeY, std::string datadir):
-    presetsURL(_presetsURL)
-{
+    presetsURL(_presetsURL) {
+        
     extensions.push_back(".jpg");
     extensions.push_back(".dds");
     extensions.push_back(".png");
@@ -63,9 +47,12 @@ TextureManager::TextureManager(const std::string _presetsURL, const int texsizeX
 		datadir = DATADIR_PATH;
 #endif /** WIN32 */
 
-    loadTextureDir(datadir + "/presets");
-    loadTextureDir(datadir + "/textures");
-    loadTextureDir(_presetsURL);
+    std::vector<std::string> dirsToScan{datadir + "/presets", datadir + "/textures", _presetsURL};
+    FileScanner fileScanner = FileScanner(dirsToScan, extensions);
+
+    // scan for textures
+    using namespace std::placeholders;
+    fileScanner.scan(std::bind(&TextureManager::loadTexture, this, _1, _2));
 
     // Create main texture ans associated samplers
     mainTexture = new Texture("main", texsizeX, texsizeY, false);
@@ -277,7 +264,7 @@ TextureSamplerDesc TextureManager::tryLoadingTexture(const std::string name)
         std::string filename = unqualifiedName + extensions[x];
         std::string fullURL = presetsURL + PATH_SEPARATOR + filename;
 
-        texDesc = loadTexture(name, fullURL);
+        texDesc = loadTexture(fullURL, name);
 
         if (texDesc.first != NULL)
         {
@@ -288,7 +275,7 @@ TextureSamplerDesc TextureManager::tryLoadingTexture(const std::string name)
     return texDesc;
 }
 
-TextureSamplerDesc TextureManager::loadTexture(const std::string name, const std::string fileName)
+TextureSamplerDesc TextureManager::loadTexture(const std::string fileName, const std::string name)
 {
     int width, height;
 
@@ -313,62 +300,13 @@ TextureSamplerDesc TextureManager::loadTexture(const std::string name, const std
     Sampler * sampler = newTexture->getSampler(wrap_mode, filter_mode);
 
     if (textures.find(name) != textures.end()) {
+        std::cerr << "Failed to load texture " << name << std::endl;
         delete textures[name];
     }
 
     textures[name] = newTexture;
 
     return TextureSamplerDesc(newTexture, sampler);
-}
-
-
-void TextureManager::loadTextureDir(const std::string &dirname)
-{
-    DIR * m_dir;
-
-    // Allocate a new a stream given the current directory name
-    if ((m_dir = opendir(dirname.c_str())) == NULL)
-    {
-//        std::cout<<"No Textures Loaded from "<<dirname<<std::endl;
-        return; // no files loaded. m_entries is empty
-    }
-
-    struct dirent * dir_entry;
-
-    while ((dir_entry = readdir(m_dir)) != NULL)
-    {
-        // Convert char * to friendly string
-        std::string filename(dir_entry->d_name);
-
-        if (filename.length() > 0 && filename[0] == '.')
-            continue;
-
-        std::string lowerCaseFileName(filename);
-        std::transform(lowerCaseFileName.begin(), lowerCaseFileName.end(), lowerCaseFileName.begin(), tolower);
-
-        // Remove extension
-        for (size_t x = 0; x < extensions.size(); x++)
-        {
-            size_t found = lowerCaseFileName.find(extensions[x]);
-            if (found != std::string::npos)
-            {
-                std::string name = filename;
-                name.replace(int(found), extensions[x].size(), "");
-
-                // Create full path name
-                std::string fullname = dirname + PATH_SEPARATOR + filename;
-                loadTexture(name, fullname);
-
-                break;
-            }
-        }
-    }
-
-    if (m_dir)
-    {
-        closedir(m_dir);
-        m_dir = 0;
-    }
 }
 
 TextureSamplerDesc TextureManager::getRandomTextureName(std::string random_id)
