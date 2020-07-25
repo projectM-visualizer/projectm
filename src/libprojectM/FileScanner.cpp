@@ -59,13 +59,13 @@ std::string FileScanner::extensionMatches(std::string &filename) {
     std::transform(lowerCaseFileName.begin(), lowerCaseFileName.end(), lowerCaseFileName.begin(), tolower);
     
     // Remove extension
-    for (size_t x = 0; x < _extensions.size(); x++)
+    for (auto ext : _extensions)
     {
-        size_t found = lowerCaseFileName.find(_extensions[x]);
+        size_t found = lowerCaseFileName.find(ext);
         if (found != std::string::npos)
         {
             std::string name = filename;
-            name.replace(int(found), _extensions[x].size(), "");
+            name.replace(int(found), ext.size(), "");
             return name;
         }
     }

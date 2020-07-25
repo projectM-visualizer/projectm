@@ -220,12 +220,12 @@ TextureSamplerDesc TextureManager::getTexture(const std::string fullName, const 
     // Remove extension
     std::string lowerCaseFileName(fullName);
     std::transform(lowerCaseFileName.begin(), lowerCaseFileName.end(), lowerCaseFileName.begin(), tolower);
-    for (size_t x = 0; x < extensions.size(); x++)
+    for (auto ext : extensions)
     {
-        size_t found = lowerCaseFileName.find(extensions[x]);
+        size_t found = lowerCaseFileName.find(ext);
         if (found != std::string::npos)
         {
-            fileName.replace(int(found), extensions[x].size(), "");
+            fileName.replace(int(found), ext.size(), "");
             break;
         }
     }
@@ -259,18 +259,21 @@ TextureSamplerDesc TextureManager::tryLoadingTexture(const std::string name)
 
     ExtractTextureSettings(name, wrap_mode, filter_mode, unqualifiedName);
 
-    for (size_t x = 0; x < extensions.size(); x++)
+    for (auto ext : extensions)
     {
-        std::string filename = unqualifiedName + extensions[x];
+        std::string filename = unqualifiedName + ext;
         std::string fullURL = presetsURL + PATH_SEPARATOR + filename;
 
         texDesc = loadTexture(fullURL, name);
 
         if (texDesc.first != NULL)
         {
+            std::cerr << "Located texture " << name << std::endl;
             break;
         }
     }
+    
+    std::cerr << "Failed to locate texture " << name << std::endl;
 
     return texDesc;
 }
@@ -278,6 +281,8 @@ TextureSamplerDesc TextureManager::tryLoadingTexture(const std::string name)
 TextureSamplerDesc TextureManager::loadTexture(const std::string fileName, const std::string name)
 {
     int width, height;
+//    std::cout << "Loading texture " << name << " at " << fileName << std::endl;
+
     unsigned int tex = SOIL_load_OGL_texture(
                 fileName.c_str(),
                 SOIL_LOAD_AUTO,
