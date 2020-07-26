@@ -453,10 +453,10 @@ modKey = "CMD";
     while (! app->done) {
         app->renderFrame();
 #if FAKE_AUDIO
-		app->fake_audio = true;
+		app->fakeAudio  = true;
 #endif
-		// fake_audio can also be enabled dynamically.
-		if (app->fake_audio)
+		// fakeAudio can also be enabled dynamically.
+		if (app->fakeAudio )
 		{
 			app->addFakePCM();
 		}

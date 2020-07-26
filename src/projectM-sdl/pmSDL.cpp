@@ -79,7 +79,7 @@ int projectMSDL::toggleAudioInput() {
             // If we are at the boundary and WASAPI is enabled then let's load WASAPI instead.
             projectM::setToastMessage("Loopback audio selected");
             SDL_Log("Loopback audio selected");
-            this->fake_audio = false; // disable fake_audio in case it was enabled.
+            this->fakeAudio = false; // disable fakeAudio in case it was enabled.
             this->wasapi = true; // Track wasapi as on so projectMSDL will listen to it.
 #else
             if (NumAudioDevices == 1) // If WASAPI_LOOPBACK was not enabled and there is only one audio device, it's pointless to toggle anything.
@@ -144,7 +144,7 @@ int projectMSDL::initAudioInput() {
 }
 
 int projectMSDL::openAudioInput() {
-    fake_audio = false; // if we are opening an audio input then there is no need for fake audio.
+    fakeAudio = false; // if we are opening an audio input then there is no need for fake audio.
     // get audio driver name (static)
 #ifdef DEBUG
     const char* driver_name = SDL_GetCurrentAudioDriver();
@@ -159,7 +159,7 @@ int projectMSDL::openAudioInput() {
     if (NumAudioDevices == 0) {
         SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio capture devices found");
         projectM::setToastMessage("No audio capture devices found: using simulated audio");
-        fake_audio = true;
+        fakeAudio = true;
         return 0;
     }
 #ifdef DEBUG
