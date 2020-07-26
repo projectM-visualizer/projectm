@@ -20,14 +20,13 @@ class TextureManager
   void loadTextureDir(const std::string & dirname);
   TextureSamplerDesc loadTexture(const std::string name, const std::string imageUrl);
   void ExtractTextureSettings(const std::string qualifiedName, GLint &_wrap_mode, GLint &_filter_mode, std::string & name);
+  std::vector<std::string> extensions;
 
 public:
   TextureManager(std::string _presetsURL, const int texsizeX, const int texsizeY,
                  std::string datadir = "");
   ~TextureManager();
 
-  // extensions are pushed into this vector when the texturemanager is initialized. This is public so when the shader engine fails at loading a texture, it can return a list of extensions it looked for.
-  std::vector<std::string> extensions;
   void Clear();
   void Preload();
   TextureSamplerDesc tryLoadingTexture(const std::string name);

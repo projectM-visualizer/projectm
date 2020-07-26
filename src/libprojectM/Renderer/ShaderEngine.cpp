@@ -590,22 +590,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
 
             if (texDesc.first == NULL)
             {
-                std::string extensionList = "";
-                // prepare a list of extensions we looked for, so it's more clear what a texture is in error logs.
-                if (textureManager->extensions.size() >= 1) {
-                    extensionList = " (";
-                    for (size_t x = 0; x < textureManager->extensions.size(); x++)
-                    {
-                        if (x != (textureManager->extensions.size() - 1)) {
-                            extensionList += textureManager->extensions[x] + ", ";
-                        }
-                        else {
-                            extensionList += "or " + textureManager->extensions[x];
-                        }
-                    }
-                    extensionList += ")";
-                }
-                std::cerr << "Texture loading error for: " << sampler << extensionList << std::endl;
+                std::cerr << "Texture loading error for: " << sampler << std::endl;
             }
             else
             {
