@@ -7,8 +7,6 @@ Relevant for Linux distributions, FreeBSD, macOS:
 * `libtool`, or at least `pkg-config`
 * `which`
 
-* `libglm-dev`
-
 Main build options & their requirements:
 
 | Configure flag | Required dependency                                                | Produced binary       |
@@ -18,7 +16,7 @@ Main build options & their requirements:
 | `--enable-jack` | `libjack2-dev`OR`libjack1-dev`; `qt5-default` `qtdeclarative5-dev` `libqt5opengl5`| `projectM-jack`       |
 
 #### Additional information on dependencies
-* `libglm` (headers only) for matrix math is required. 
+* `libglm` (headers only) for matrix math is required. lives in `vendor/glm`.
 * A modified version of `hlslparser` is included in Renderer and used to transpile HLSL shaders to GLSL
 * OpenGL 3+ or OpenGLES is required
 * `libsdl >= 2.0.5` is required for the SDL and emscripten apps. `src/projectM-sdl` is the current reference application implementation. maybe try getting that to build and run as your testbench.
@@ -46,7 +44,7 @@ projectM supports OpenGL ES 3 for embedded systems. Be sure to configure with th
 ### Building on Windows
 Windows build bypasses the autogen/configure pipeline and uses the Visual Studio/MSVC files in `msvc/`. See `.appveyor.yml` for command line building.
 
-Some dependencies are included verbatim (glew), while others leverage the NuGet ecosystem and are downloaded automatically (glm, sdl2).
+Some dependencies are included verbatim (glew), while others leverage the NuGet ecosystem and are downloaded automatically (sdl2).
 
 ### Build using NDK for Android
 Install Android Studio, launch SDK Manager and install NDK
