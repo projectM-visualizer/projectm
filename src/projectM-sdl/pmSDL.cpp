@@ -469,7 +469,7 @@ projectMSDL::projectMSDL(Settings settings, int flags) : projectM(settings, flag
     width = getWindowWidth();
     height = getWindowHeight();
     done = 0;
-    isFullScreen = true; // default fullscreen for built-in settings.
+    isFullScreen = false;
 }
 
 projectMSDL::projectMSDL(std::string config_file, int flags) : projectM(config_file, flags) {
