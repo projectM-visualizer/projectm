@@ -1,4 +1,4 @@
-AC_INIT([projectM], [3.1.5], [mischa@mvstg.biz], [projectM], [https://github.com/projectM-visualizer/projectm/])
+AC_INIT([projectM], [3.1.7], [me@mish.dev], [projectM], [https://github.com/projectM-visualizer/projectm/])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects tar-pax])
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
@@ -100,12 +100,6 @@ AS_IF([test "$enable_sdl" != "no"], [
         AS_IF([test "$enable_sdl" = "yes"], AC_MSG_ERROR([*** libsdl2 not found!]))
         enable_sdl=no
     ])
-])
-
-
-# glm
-AS_IF([test "x$enable_emscripten" != "xyes"], [
-  AC_CHECK_HEADER([glm/glm.hpp],, AC_MSG_ERROR(libglm is required.))
 ])
 
 
@@ -240,9 +234,16 @@ AM_CONDITIONAL([ENABLE_PRESET_SUBDIRS], [test "x$enable_preset_subdirs" = "xyes"
 my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits"
 #my_CFLAGS+="-fsanitize=address -fno-omit-frame-pointer "
 my_CFLAGS="${my_CFLAGS} -DDATADIR_PATH=\\\"\"\$(pkgdatadir)\\\"\""
-my_CFLAGS="${my_CFLAGS} -I\$(top_srcdir)/vendor"
+my_CFLAGS="${my_CFLAGS} -I\"\$(top_srcdir)/vendor\""  # provides glm headers
+my_CFLAGS="${my_CFLAGS} -DGL_SILENCE_DEPRECATION"
 AC_SUBST([my_CFLAGS])
 
+
+# glm (vendored, this should never fail; headers are in vendor/glm)
+AC_SUBST(CPPFLAGS, "$CPPFLAGS -I${srcdir}/vendor")
+AS_IF([test "x$enable_emscripten" != "xyes"], [
+    AC_CHECK_HEADER([glm/glm.hpp],, AC_MSG_ERROR(vendored libglm not found.))
+])
 
 
 AC_OUTPUT
