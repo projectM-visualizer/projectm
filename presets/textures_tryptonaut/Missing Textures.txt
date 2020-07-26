@@ -1,7 +1,0 @@
-The following textures are missing from the tryptonaut preset pack. Please share them if you have them.
-grad3
-pano_starsmap
-pic
-rose
-shub1
-worms
