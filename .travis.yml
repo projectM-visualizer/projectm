@@ -15,7 +15,6 @@ addons:
     packages:
       - libc++-dev
       - libsdl2-dev
-      - libglm-dev
       - libgl1-mesa-dev
 
 script:
@@ -41,7 +40,6 @@ matrix:
       addons:
         apt:
           packages:
-            - libglm-dev
             - qt5-default
             - qtdeclarative5-dev
             - libqt5opengl5-dev
@@ -57,7 +55,7 @@ matrix:
     - os: osx
       osx_image: xcode10
       env:
-        - MATRIX_EVAL="brew update && brew install sdl2 glm"
+        - MATRIX_EVAL="brew update && brew install sdl2"
 
 notifications:
   email:
