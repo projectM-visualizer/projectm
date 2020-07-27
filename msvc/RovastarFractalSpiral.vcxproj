@@ -53,7 +53,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\NativePresetFactory;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\NativePresetFactory;$(MSBuildThisFileDirectory)../vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -97,7 +97,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\NativePresetFactory;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)../src\libprojectM;$(MSBuildThisFileDirectory);$(MSBuildThisFileDirectory)../src\libprojectM\Renderer;$(MSBuildThisFileDirectory)../src\libprojectM\NativePresetFactory;$(MSBuildThisFileDirectory)../vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -175,13 +175,4 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-    <Import Project="packages\glm.0.9.9.400\build\native\glm.targets" Condition="Exists('packages\glm.0.9.9.400\build\native\glm.targets')" />
-  </ImportGroup>
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('packages\glm.0.9.9.400\build\native\glm.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\glm.0.9.9.400\build\native\glm.targets'))" />
-  </Target>
 </Project>
