@@ -22,6 +22,9 @@ Get it from the [Releases](https://github.com/projectM-visualizer/projectm/relea
 or
 Download from the [Windows Store (PC, XBOX, Phone)](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
 
+### Discord chat
+[Chat with us on Discord.](https://discord.gg/tpEuywB)
+
 ### Demo Video
 [![](http://img.youtube.com/vi/2dSam8zwSFw/0.jpg)](http://www.youtube.com/watch?v=2dSam8zwSFw "Demo")
 
@@ -116,7 +119,8 @@ There are many other applications that make use of libprojectM and that can be f
 
 ## Help
 Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues/new)
-We're on IRC at irc.freenode.net #projectM
+
+[Chat with us on Discord.](https://discord.gg/tpEuywB) or on IRC at irc.freenode.net #projectM.
 
 If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues.
 
