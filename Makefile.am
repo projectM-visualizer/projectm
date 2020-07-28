@@ -2,7 +2,7 @@ ACLOCAL_AMFLAGS=-I m4
 AM_CPPFLAGS=-DDATADIR_PATH='"${pkgdatadir}"'
 SUBDIRS=src
 PRESETSDIR=presets
-EXTRA_DIST=README.md AUTHORS.txt presets fonts $(PRESETSDIR)
+EXTRA_DIST=README.md AUTHORS.txt presets fonts vendor $(PRESETSDIR)
 CLEANFILES=dist
 
 # stick apps in bin
