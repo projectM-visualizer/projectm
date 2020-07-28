@@ -81,7 +81,7 @@ void PresetFactoryManager::registerFactory(const std::string & extensions, Prese
 std::unique_ptr<Preset> PresetFactoryManager::allocate(const std::string & url, const std::string & name)
 {
 	try {
-		const std::string extension = parseExtension (url);
+		const std::string extension = "." + parseExtension(url);
 
 		return factory(extension).allocate(url, name);
 	} catch (const PresetFactoryException & e) {
@@ -98,7 +98,7 @@ PresetFactory & PresetFactoryManager::factory(const std::string & extension) {
 
 	if (!extensionHandled(extension)) {
 		std::ostringstream os;
-		os << "No  preset factory associated with \"" << extension << "\"." << std::endl;
+		os << "No preset factory associated with \"" << extension << "\"." << std::endl;
 		throw PresetFactoryException(os.str());
 	}
 	return *_factoryMap[extension];
@@ -106,4 +106,12 @@ PresetFactory & PresetFactoryManager::factory(const std::string & extension) {
 
 bool PresetFactoryManager::extensionHandled(const std::string & extension) const {		
 	return _factoryMap.count(extension);
+}
+
+std::vector<std::string> PresetFactoryManager::extensionsHandled() const {
+    std::vector<std::string> retval;
+    for (auto const& element : _factoryMap) {
+      retval.push_back(element.first);
+    }
+    return retval;
 }

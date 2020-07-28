@@ -42,7 +42,7 @@ void PerPixelEqn::evaluate(int mesh_i, int mesh_j)
     assign_expr->eval( mesh_i, mesh_j );
 }
 
-PerPixelEqn::PerPixelEqn(int _index, Param * param, Expr * gen_expr):index(_index)
+PerPixelEqn::PerPixelEqn(unsigned long _index, Param * param, Expr * gen_expr):index(_index)
 {
 	assert(index >= 0);
 	assert(param != 0);

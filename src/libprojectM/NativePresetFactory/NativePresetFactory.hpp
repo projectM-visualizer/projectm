@@ -29,7 +29,7 @@ public:
  virtual std::unique_ptr<Preset> allocate(const std::string & url, const std::string & name = std::string(),
 	const std::string & author = std::string());
 
- virtual std::string supportedExtensions() const { return "so dylib"; }
+ virtual std::string supportedExtensions() const { return ".so .dylib"; }
 
 private:
 	PresetLibrary * loadLibrary(const std::string & url);

@@ -117,6 +117,7 @@
 			files = (
 				168F715921124C0E001806E7 /* config.inp in Support files */,
 				168F715A21124C14001806E7 /* fonts in Support files */,
+				169BC64224CC3FCA007B7829 /* presets in Support files */,
 			);
 			name = "Support files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -294,7 +295,6 @@
 				168F714621120210001806E7 /* Frameworks */,
 				168F714721120210001806E7 /* Resources */,
 				168F7155211248DE001806E7 /* Executable */,
-				168F715721124BBB001806E7 /* Copy Presets */,
 				168F715821124BFC001806E7 /* Support files */,
 				168F715B21124CD1001806E7 /* Frameworks */,
 				168F715D21124CF8001806E7 /* Generate Installer Package */,
@@ -418,22 +418,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		168F715721124BBB001806E7 /* Copy Presets */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/../../presets",
-			);
-			name = "Copy Presets";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/presets",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "POUT=\"$BUILT_PRODUCTS_DIR\"/\"$CONTENTS_FOLDER_PATH/Resources/presets\"\nPIN=\"$SRCROOT\"/../../presets\n\nmkdir -p \"$POUT\"\nfor preset_dir in \"$PIN/\"*; do\n  cp \"$preset_dir/\"* \"$POUT/\"\ndone\necho \"Copied presets to $POUT\"\n";
-		};
 		168F715D21124CF8001806E7 /* Generate Installer Package */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 12;

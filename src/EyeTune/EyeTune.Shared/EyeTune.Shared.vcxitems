@@ -36,6 +36,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\MilkdropPresetFactory\PresetFrameIO.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\PresetFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\ConfigFile.cpp" />
+	  <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\FileScanner.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\fftsg.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\KeyHandler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\PCM.cpp" />

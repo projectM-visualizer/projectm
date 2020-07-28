@@ -61,16 +61,14 @@ public:
 
   ///  Load a MilkdropPreset by filename with input and output buffers specified.
   /// \param absoluteFilePath the absolute file path of a MilkdropPreset to load from the file system
-  /// \param MilkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
-  /// \param MilkdropPresetInputs a reference to read only projectM engine variables
-  /// \param MilkdropPresetOutputs initialized and filled with data parsed from a MilkdropPreset
+  /// \param milkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
+  /// \param presetOutputs initialized and filled with data parsed from a MilkdropPreset
   MilkdropPreset(MilkdropPresetFactory *factory, const std::string & absoluteFilePath, const std::string & milkdropPresetName, PresetOutputs & presetOutputs);
 
   ///  Load a MilkdropPreset from an input stream with input and output buffers specified.
   /// \param in an already initialized input stream to read the MilkdropPreset file from
-  /// \param MilkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
-  /// \param MilkdropPresetInputs a reference to read only projectM engine variables
-  /// \param MilkdropPresetOutputs initialized and filled with data parsed from a MilkdropPreset
+  /// \param milkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
+  /// \param presetOutputs initialized and filled with data parsed from a MilkdropPreset
   MilkdropPreset(MilkdropPresetFactory *factory, std::istream & in, const std::string & milkdropPresetName, PresetOutputs & presetOutputs);
 
   ~MilkdropPreset();
@@ -110,13 +108,11 @@ public:
   /// \returns A MilkdropPreset output instance with values computed from most recent evaluateFrame()
   PresetOutputs & presetOutputs() const
   {
-
     return _presetOutputs;
   }
 
   const PresetInputs & presetInputs() const
   {
-
     return _presetInputs;
   }
 
