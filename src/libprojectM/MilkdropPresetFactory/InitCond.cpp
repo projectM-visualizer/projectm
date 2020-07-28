@@ -71,7 +71,7 @@ void InitCond::evaluate(bool evalUser)
 /* WIP */
 void InitCond::init_cond_to_string()
 {
-	int string_length;
+	unsigned long string_length;
 	char string[MAX_TOKEN_SIZE];
 	
 	/* Create a string "param_name=val" */
