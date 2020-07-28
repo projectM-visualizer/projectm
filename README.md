@@ -11,6 +11,7 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 ### Available For
 * [macOS, Linux (binary)](https://github.com/projectM-visualizer/projectm/releases)
 * [Windows Store (PC, XBOX, Phone)](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
+* [Windows (standalone binary)](https://github.com/projectM-visualizer/projectm/releases) (Requires the latest [Visual C++ redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads))
 * [Android](https://play.google.com/store/apps/details?id=com.psperl.projectM)
 * [iOS](https://itunes.apple.com/us/app/projectm-music-visualizer/id530922227?mt=8&ign-mpt=uo%3D4)
 * [iTunes plugin (macOS)](https://github.com/projectM-visualizer/projectm/releases/)

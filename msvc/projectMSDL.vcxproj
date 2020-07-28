@@ -89,7 +89,7 @@
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>projectM-sdl/Debug/projectMSDL.lib</ImportLibrary>
       <ProgramDataBaseFile>projectM-sdl/Debug/projectMSDL.pdb</ProgramDataBaseFile>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -133,7 +133,7 @@
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
       <ImportLibrary>projectM-sdl/Release/projectMSDL.lib</ImportLibrary>
       <ProgramDataBaseFile>projectM-sdl/Release/projectMSDL.pdb</ProgramDataBaseFile>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -176,7 +176,7 @@
     <ResourceCompile Include="projectM.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="projectm_qDj_icon.ico">
+    <Image Include="projectM.ico">
       <DeploymentContent>true</DeploymentContent>
     </Image>
   </ItemGroup>
@@ -208,6 +208,7 @@
     <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)..\LICENSE.txt&quot; &quot;$(OutDir)LICENSE.txt&quot;" />
     <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)..\AUTHORS.txt&quot; &quot;$(OutDir)AUTHORS.txt&quot;" />
     <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)..\README.md&quot; &quot;$(OutDir)README.md&quot;" />
+    <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)projectM.ico&quot; &quot;$(OutDir)projectM.ico&quot;" />
     <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)projectm_qDj_icon.ico&quot; &quot;$(OutDir)projectm_qDj_icon.ico&quot;" />
     <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)Setup.iss&quot; &quot;$(OutDir)Setup.iss&quot;" />
     <Exec Command="copy /Y &quot;$(MSBuildThisFileDirectory)setup_inno.bmp&quot; &quot;$(OutDir)setup_inno.bmp&quot;" />

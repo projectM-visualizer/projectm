@@ -765,7 +765,9 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     }
 
     if (ret != GL_FALSE) {
+#ifdef DEBUG
         std::cerr << "Successful compilation of " << shaderTypeString << std::endl;
+#endif
     } else {
         std::cerr << "Compilation error (step3) of " << shaderTypeString << std::endl;
 
