@@ -61,27 +61,45 @@ void projectMSDL::audioInputCallbackS16(void *userdata, unsigned char *stream, i
     app->pcm()->addPCM16(pcm16);
 }
 
-SDL_AudioDeviceID projectMSDL::selectAudioInput(int _count) {
-    // TODO: implement some sort of UI allowing the user to select which audio input device they would like to use
-
-
-    // ask the user which capture device to use
-    // printf("Please select which audio input to use:\n");
-    printf("Detected devices:\n");
-    for (int i = 0; i < _count; i++) {
-        printf("  %i: 🎤%s\n", i, SDL_GetAudioDeviceName(i, true));
-    }
-
-    return 0;
-}
-
 int projectMSDL::toggleAudioInput() {
-    
-    CurAudioDevice++;
-    if (CurAudioDevice >= NumAudioDevices)
+    // trigger a toggle with CMD-I or CTRL-I
+    if (wasapi) { // we are currently on WASAPI, so we are going to revert to a microphone/line-in input.
+        if (this->openAudioInput())
+            this->beginAudioCapture();
         CurAudioDevice = 0;
-    selectedAudioDevice = CurAudioDevice;
-    initAudioInput();
+        selectedAudioDevice = CurAudioDevice;
+        this->wasapi = false; // Track wasapi as off so projectMSDL will stop listening to WASAPI loopback in pmSDL_main.
+    }
+    else {
+        this->endAudioCapture(); // end current audio capture.
+        CurAudioDevice++; // iterate device index
+        if (CurAudioDevice >= NumAudioDevices) { // We reached outside the boundaries of available audio devices.
+            CurAudioDevice = 0; // Return to first audio device in the index.
+#ifdef WASAPI_LOOPBACK
+            // If we are at the boundary and WASAPI is enabled then let's load WASAPI instead.
+            projectM::setToastMessage("Loopback audio selected");
+            SDL_Log("Loopback audio selected");
+            this->fakeAudio = false; // disable fakeAudio in case it was enabled.
+            this->wasapi = true; // Track wasapi as on so projectMSDL will listen to it.
+#else
+            if (NumAudioDevices == 1) // If WASAPI_LOOPBACK was not enabled and there is only one audio device, it's pointless to toggle anything.
+            {
+                SDL_Log("There is only one audio capture device. There is nothing to toggle at this time.");
+                return 1;
+            }
+            // If WASAPI_LOOPBACK is not enabled and we have multiple input devices, return to device index 0 and let's listen to that device.
+            selectedAudioDevice = CurAudioDevice;
+            initAudioInput();
+            this->beginAudioCapture();
+#endif
+        }
+        else {
+            // This is a normal scenario where we move forward in the audio device index.
+            selectedAudioDevice = CurAudioDevice;
+            initAudioInput();
+            this->beginAudioCapture();
+        }
+    }
     return 1;
 }
 
@@ -105,15 +123,17 @@ int projectMSDL::initAudioInput() {
 
     if (audioDeviceID == 0) {
         SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Failed to open audio capture device: %s", SDL_GetError());
-        SDL_Quit();
+        return 0;
     }
 
     // read characteristics of opened capture device
     SDL_Log("Opened audio capture device index=%i devId=%i: %s", selectedAudioDevice, audioDeviceID, SDL_GetAudioDeviceName(selectedAudioDevice, true));
-    std::string deviceToast = "Listening to ";
-    deviceToast += SDL_GetAudioDeviceName(selectedAudioDevice, true);
+    std::string deviceToast = SDL_GetAudioDeviceName(selectedAudioDevice, true); // Example: Microphone rear
+    deviceToast += " selected";
     projectM::setToastMessage(deviceToast);
+#ifdef DEBUG
     SDL_Log("Samples: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
+#endif
     audioChannelsCount = have.channels;
     audioSampleRate = have.freq;
     audioSampleCount = have.samples;
@@ -124,9 +144,12 @@ int projectMSDL::initAudioInput() {
 }
 
 int projectMSDL::openAudioInput() {
+    fakeAudio = false; // if we are opening an audio input then there is no need for fake audio.
     // get audio driver name (static)
+#ifdef DEBUG
     const char* driver_name = SDL_GetCurrentAudioDriver();
     SDL_Log("Using audio driver: %s\n", driver_name);
+#endif
     
     // get audio input device
     unsigned int i;
@@ -135,23 +158,18 @@ int projectMSDL::openAudioInput() {
     CurAudioDevice = 0;
     if (NumAudioDevices == 0) {
         SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio capture devices found");
-        SDL_Quit();
+        projectM::setToastMessage("No audio capture devices found: using simulated audio");
+        fakeAudio = true;
+        return 0;
     }
+#ifdef DEBUG
     for (i = 0; i < NumAudioDevices; i++) {
         SDL_Log("Found audio capture device %d: %s", i, SDL_GetAudioDeviceName(i, true));
     }
+#endif
     
-    // device to open
+    // default selected Audio Device to 0.
     selectedAudioDevice = 0;
-    if (NumAudioDevices > 1) {
-        // need to choose which input device to use
-        selectedAudioDevice = selectAudioInput(CurAudioDevice);
-    if (selectedAudioDevice > NumAudioDevices) {
-            SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio input device specified.");
-            SDL_Quit();
-        }
-    }
-    
     initAudioInput();
     
     return 1;
@@ -164,6 +182,7 @@ void projectMSDL::beginAudioCapture() {
 
 void projectMSDL::endAudioCapture() {
     SDL_PauseAudioDevice(audioDeviceID, true);
+    SDL_CloseAudioDevice(audioDeviceID);
 }
 
 void projectMSDL::setHelpText(const std::string & helpText) {
@@ -464,6 +483,10 @@ void projectMSDL::init(SDL_Window *window, SDL_GLContext *_glCtx, const bool _re
     win = window;
     glCtx = _glCtx;
     projectM_resetGL(width, height);
+
+#ifdef WASAPI_LOOPBACK
+    wasapi = true;
+#endif
 
     // are we rendering to a texture?
     renderToTexture = _renderToTexture;

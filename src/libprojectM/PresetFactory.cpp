@@ -16,7 +16,9 @@ std::string PresetFactory::protocol(const std::string & url, std::string & path)
 	else {
 		path = url.substr(pos + 3, url.length());
 //        std::cout << "[PresetFactory] path is " << path << std::endl;
+#ifdef DEBUG
         std::cout << "[PresetFactory] url is " << url << std::endl;
+#endif
 		return url.substr(0, pos);
 	}
 
