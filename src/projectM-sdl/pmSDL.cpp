@@ -372,8 +372,8 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 
     // translate into projectM codes and perform default projectM handler
     evt = sdl2pmEvent(sdl_evt);
-    key = sdl2pmKeycode(sdl_keycode);
     mod = sdl2pmModifier(sdl_mod);
+    key = sdl2pmKeycode(sdl_keycode,sdl_mod);
     key_handler(evt, key, mod);
 }
 
