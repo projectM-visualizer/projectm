@@ -132,6 +132,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\TimeKeeper.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\timer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\wipemalloc.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\FileScanner.cpp" />
     <ClInclude Include="$(MSBuildThisFileDirectory)../msvc\glew.h" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../msvc\glew.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
