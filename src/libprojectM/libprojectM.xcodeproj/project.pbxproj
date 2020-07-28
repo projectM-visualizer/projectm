@@ -943,6 +943,7 @@
 					"$(inherited)",
 					/usr/local/include,
 					"$(SRCROOT)/Renderer/hlslparser/src",
+					"$(SRCROOT)/../../vendor",
 				);
 				LIBRARY_SEARCH_PATHS = /Library/Frameworks;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -1007,6 +1008,7 @@
 					"$(inherited)",
 					/usr/local/include,
 					"$(SRCROOT)/Renderer/hlslparser/src",
+					"$(SRCROOT)/../../vendor",
 				);
 				LIBRARY_SEARCH_PATHS = /Library/Frameworks;
 				MTL_ENABLE_DEBUG_INFO = NO;

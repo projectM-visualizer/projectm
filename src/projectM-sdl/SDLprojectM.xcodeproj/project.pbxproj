@@ -602,6 +602,8 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../libprojectM",
 					/usr/local/include,
+					"$(SRCROOT)/../../vendor",
+					"$(SRCROOT)/../../mac",
 				);
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/Frameworks/";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../projectM-iTunes/macos/contrib";
@@ -656,6 +658,8 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../libprojectM",
 					/usr/local/include,
+					"$(SRCROOT)/../../vendor",
+					"$(SRCROOT)/../../mac",
 				);
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/Frameworks/";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../projectM-iTunes/macos/contrib";
@@ -676,11 +680,6 @@
 					"$(PROJECT_DIR)",
 				);
 				GCC_LINK_WITH_DYNAMIC_LIBRARIES = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../libprojectM",
-					/usr/local/include,
-					"$(SRCROOT)/../../mac",
-				);
 				INFOPLIST_FILE = "$(SRCROOT)/projectM-SDL/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/../Frameworks/ @loader_path/Frameworks/";
 				LIBRARY_SEARCH_PATHS = (
@@ -706,11 +705,6 @@
 					"$(PROJECT_DIR)",
 				);
 				GCC_LINK_WITH_DYNAMIC_LIBRARIES = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../libprojectM",
-					/usr/local/include,
-					"$(SRCROOT)/../../mac",
-				);
 				INFOPLIST_FILE = "$(SRCROOT)/projectM-SDL/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/../Frameworks/ @loader_path/Frameworks/";
 				LIBRARY_SEARCH_PATHS = (

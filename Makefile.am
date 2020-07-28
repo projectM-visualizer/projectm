@@ -41,6 +41,7 @@ build-mac: macOS/Build/Products/Debug/presets
 
 # do a macOS build
 dist-mac: dist
+	./autogen.sh
 	make clean
 	./configure --disable-sdlframework
 	rm -rf dist
