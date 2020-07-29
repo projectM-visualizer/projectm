@@ -1,4 +1,4 @@
-EXTRA_DIST=
+EXTRA_DIST=TestRunner.cpp TestRunner.hpp
 CLEANFILES=
 
 SUBDIRS=Renderer NativePresetFactory MilkdropPresetFactory
