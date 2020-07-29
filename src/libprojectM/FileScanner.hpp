@@ -14,28 +14,16 @@
 #include "Common.hpp"
 #include <string.h>
 
-#ifdef WIN32
-#include "dirent.h"
-#else
+#ifdef HAVE_FTS_H
 #include <fts.h>
-#endif
-
-#ifdef __unix__
 extern "C"
 {
 #include <errno.h>
 #include <dirent.h>
 }
+#else
+#include "dirent.h"
 #endif
-
-#ifdef __APPLE__
-extern "C"
-{
-#include <errno.h>
-#include <dirent.h>
-}
-#endif
-
 
 typedef std::function<void (std::string &path, std::string &name)> ScanCallback;
 
