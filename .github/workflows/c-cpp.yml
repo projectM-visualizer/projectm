@@ -13,10 +13,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: dependencies
+      run: sudo apt update && sudo apt install clang libsdl2-dev libgl1-mesa-dev qt5-default qtdeclarative5-dev libqt5opengl5-dev libjack-dev libpulse-dev
     - name: autogen
       run: ./autogen.sh
     - name: configure
-      run: ./configure
+      run: ./configure --enable-sdl --enable-pulseaudio --enable-jack
     - name: make
       run: make
     - name: make check
