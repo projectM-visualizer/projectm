@@ -6,4 +6,5 @@ Exec=projectM-jack
 Icon=projectM
 Type=Application
 Categories=AudioVideo;Audio;
+Keywords=audio;sound;jackd;video;
 Terminal=false
