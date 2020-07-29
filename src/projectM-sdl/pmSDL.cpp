@@ -249,7 +249,7 @@ void projectMSDL::nextMonitor()
 		std::vector<SDL_Rect> displayBounds;
 		int nextWindow = currentWindowIndex + 1;
 		if (nextWindow >= displayCount) nextWindow = 0;
-
+        
 		for (int i = 0; i < displayCount; i++)
 		{
 			displayBounds.push_back(SDL_Rect());
@@ -302,7 +302,13 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 				// command-s: [s]tretch monitors
 				// Stereo requires fullscreen
 #if !STEREOSCOPIC_SBS
-				stretchMonitors();
+                if (!this->strech) {
+                    stretchMonitors();
+                    this->strech = true;
+                } else {
+                    toggleFullScreen();
+                    this->strech = false;
+                }
 #endif
 				return; // handled
 			}
@@ -314,6 +320,7 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 #if !STEREOSCOPIC_SBS
 				nextMonitor();
 #endif
+                this->strech = false;
 				return; // handled
 			}
         case SDLK_f:
@@ -323,6 +330,7 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 #if !STEREOSCOPIC_SBS
 				toggleFullScreen();
 #endif
+                this->strech = false;
                 return; // handled
             }
             break;
