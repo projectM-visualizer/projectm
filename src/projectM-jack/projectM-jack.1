@@ -1,4 +1,4 @@
-.TH projectM-Jack 1 "June 24, 2010"
+.TH projectM-Jack 1 "July 29, 2020"
 .SH NAME
 projectM-jack \- ProjectM module for JackAudio
 .SH DESCRIPTION
@@ -9,6 +9,7 @@ command.
 .B projectM-jack
 provides direct visualisation of a JackAudio stream using
 the projectM audio visualisation tool.
+.PP
 .B projectM-jack
 offers a stereo-input-channel to connect Jack devices with.
 .PP
@@ -16,8 +17,47 @@ offers a stereo-input-channel to connect Jack devices with.
 can be run from the
 .B Applications
 menu after it was installed.
+.SH Keyboard Controls
+.B Up:
+increase beat sensitivity (max 5)
+.PP
+.B Down:
+decrease beat sensitivity (min 0)
+.PP
+.B Y:
+toggle shuffle enabled
+.PP
+.B R:
+jump to random preset
+.PP
+.B N:
+next preset
+.PP
+.B P:
+previous preset
+.PP
+.B Shift-N:
+next preset with hard cut
+.PP
+.B Shift-P:
+previous preset with hard cut
+.PP
+.B L:
+lock current preset
+.PP
+.B H or F1:
+show help (if supported)
+.PP
+.B F3:
+show preset (if supported)
+.PP
+.B F4:
+show stats (if supported)
+.PP
+.B F5:
+show FPS (if supported)
 .SH AUTHOR
 projectM-Jack was written by the projectM-Team.
 .PP
-This manual page was written by Matthias Klumpp <matthias@tenstral.net>,
-for the Debian project (and may be used by others).
+This manual page was written by Matthias Klumpp <matthias@tenstral.net> and
+Dennis Braun <d_braun@kabelmail.de> for the Debian project (and may be used by others).
