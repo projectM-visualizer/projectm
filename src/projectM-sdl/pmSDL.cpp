@@ -302,12 +302,12 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 				// command-s: [s]tretch monitors
 				// Stereo requires fullscreen
 #if !STEREOSCOPIC_SBS
-                if (!this->strech) {
+                if (!this->stretch) { // if stretching is not already enabled, enable it.
                     stretchMonitors();
-                    this->strech = true;
+                    this->stretch = true;
                 } else {
-                    toggleFullScreen();
-                    this->strech = false;
+                    toggleFullScreen(); // else, just toggle full screen so we leave stretch mode.
+                    this->stretch = false;
                 }
 #endif
 				return; // handled
@@ -320,7 +320,7 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 #if !STEREOSCOPIC_SBS
 				nextMonitor();
 #endif
-                this->strech = false;
+                this->stretch = false; // if we are switching monitors, ensure we disable monitor stretching.
 				return; // handled
 			}
         case SDLK_f:
@@ -330,7 +330,7 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 #if !STEREOSCOPIC_SBS
 				toggleFullScreen();
 #endif
-                this->strech = false;
+                this->stretch = false; // if we are toggling fullscreen, ensure we disable monitor stretching.
                 return; // handled
             }
             break;
