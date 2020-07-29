@@ -610,7 +610,10 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
+				OTHER_CFLAGS = (
+					"-DDATADIR_PATH='\"/usr/local/share/projectM\"'",
+					"-DHAVE_FTS_H",
+				);
 			};
 			name = Debug;
 		};
@@ -665,7 +668,10 @@
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../projectM-iTunes/macos/contrib";
 				MACOSX_DEPLOYMENT_TARGET = 10.11;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
+				OTHER_CFLAGS = (
+					"-DDATADIR_PATH='\"/usr/local/share/projectM\"'",
+					"-DHAVE_FTS_H",
+				);
 			};
 			name = Release;
 		};
