@@ -74,7 +74,7 @@ std::string read_config();
 #include <string.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <src/libprojectM/TestRunner.hpp>
+#include "libprojectM/TestRunner.hpp"
 
 //#include <pulsecore/gccmacro.h>
 
@@ -164,7 +164,7 @@ std::string read_config()
 
 	char* home;
         char* xdg_home;
-        
+
 	char projectM_config[1024];
 	char default_config[1024];
 
@@ -248,5 +248,3 @@ std::string read_config()
 
 	abort();
 }
-
-
