@@ -13,6 +13,7 @@ FileScanner::FileScanner(std::vector<std::string> &rootDirs, std::vector<std::st
 void FileScanner::scan(ScanCallback cb) {
 #ifdef HAVE_FTS_H
 	scanPosix(cb);
+    printf("HAVE_FTS\n");
 #else
 	for (auto dir : _rootDirs)
 		scanGeneric(cb, dir.c_str());
