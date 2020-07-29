@@ -63,6 +63,7 @@
 #include "dlldefs.h"
 #include "event.h"
 #include "fatal.h"
+#include <vector>
 
 class PipelineContext;
 #include "PCM.hpp"
@@ -286,6 +287,10 @@ public:
   PipelineContext & pipelineContext() { return *_pipelineContext; }
   PipelineContext & pipelineContext2() { return *_pipelineContext2; }
 
+  int lastPreset = 0;
+  std::vector<int> presetHistory;  
+  std::vector<int> presetFuture;  
+
 
   void selectPrevious(const bool);
   void selectNext(const bool);
@@ -333,6 +338,9 @@ private:
 
   /// The current position of the directory iterator
   PresetIterator * m_presetPos;
+
+  /// Last preset index (when randomizing)
+  PresetIterator * m_lastPresetPos;
 
   /// Required by the preset chooser. Manages a loaded preset directory
   PresetLoader * m_presetLoader;
