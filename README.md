@@ -80,10 +80,10 @@ See [BUILDING.md](BUILDING.md)
 * Down: decrease beat sensitivity (min 0)
 * Y: toggle shuffle enabled
 * R: jump to random preset
-* N: next preset
-* P: previous preset
-* Shift-N: next preset with hard cut
-* Shift-P: previous preset with hard cut
+* N: next preset (hard transition)
+* P: previous preset (hard transition)
+* Shift-N: next preset (soft transition)
+* Shift-P: previous preset (soft transition)
 * L: lock current preset
 
 * H or F1: show help (if supported)

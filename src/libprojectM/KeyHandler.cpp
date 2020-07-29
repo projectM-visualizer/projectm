@@ -41,6 +41,13 @@ void selectRandom(const bool hardCut);
 void selectNext(const bool hardCut);
 void selectPrevious(const bool hardCut);
 
+std::string round_float(float number)
+{
+    std::string num_text = std::to_string(number);
+    std::string rounded = num_text.substr(0, num_text.find(".")+3);
+	return rounded;
+}
+
 void refreshConsole() {
 
   switch (current_interface) {
@@ -115,10 +122,12 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_UP:
             beatDetect->beatSensitivity += 0.25;
 			if (beatDetect->beatSensitivity > 5.0) beatDetect->beatSensitivity = 5.0;
+			renderer->setToastMessage("Beat Sensitivity: "+round_float(beatDetect->beatSensitivity));
 	      break;
 	    case PROJECTM_K_DOWN:
             beatDetect->beatSensitivity -= 0.25;
 			if (beatDetect->beatSensitivity < 0) beatDetect->beatSensitivity = 0;
+			renderer->setToastMessage("Beat Sensitivity: "+round_float(beatDetect->beatSensitivity));
 	      break;
 		case PROJECTM_K_h:
  		  renderer->showhelp = !renderer->showhelp;
@@ -129,6 +138,12 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      break;
 	    case PROJECTM_K_y:
 		this->setShuffleEnabled(!this->isShuffleEnabled());
+		if (this->isShuffleEnabled()) {
+			renderer->setToastMessage("Shuffle Enabled");
+		}
+		else {
+			renderer->setToastMessage("Shuffle Disabled");
+		}
 		 break;
 
 	    case PROJECTM_K_F5:
