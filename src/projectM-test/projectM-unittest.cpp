@@ -23,7 +23,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <cassert>
-#include <src/libprojectM/TestRunner.hpp>
+#include "../libprojectM/TestRunner.hpp"
 #include <SDL2/SDL.h>
 
 int main(int argc, char **argv)
