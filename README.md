@@ -23,7 +23,7 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 ## Android
 * [Google Play](https://play.google.com/store/apps/details?id=com.psperl.projectM)
 ## Xbox / Windows Phne
-* [Windows Store (PC, XBOX, Phone)](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
+* [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
 ## Other
 * [Source Code](https://github.com/projectM-visualizer/projectm/)
 * [Qt5](https://www.qt.io/) + [Pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/)
