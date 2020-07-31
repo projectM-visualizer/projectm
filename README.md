@@ -14,7 +14,7 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 * [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
 * [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
 #### macOS
-* [GitHub Standalone](https://github.com/projectM-visualizer/projectm/releases)
+* [Standalone](https://github.com/projectM-visualizer/projectm/releases)
 * [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
 * [Music.app Plugin](https://github.com/projectM-visualizer/projectm/releases/)
 #### Linux
