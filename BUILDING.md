@@ -39,7 +39,7 @@ sudo apt install clang libsdl2-dev libgl1-mesa-dev qt5-default qtdeclarative5-de
 ```
 
 ### OpenGL ES
-projectM supports OpenGL ES 3 for embedded systems. Be sure to configure with the `--enable--gles` flag.
+projectM supports OpenGL ES 3 for embedded systems. Be sure to configure with the `--enable-gles` flag.
 
 ### Raspberry Pi (and other embedded systems)
 * projectM is arch-independent, although there are some SSE2 enhancements for x86
