@@ -10,7 +10,7 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 
 ### Available For
 ##### Windows
-* [GitHub Standalone](https://github.com/projectM-visualizer/projectm/releases) (Requires the latest [Visual C++ redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads))
+* [Standalone](https://github.com/projectM-visualizer/projectm/releases) (Requires the latest [Visual C++ redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads))
 * [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
 * [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
 #### macOS
