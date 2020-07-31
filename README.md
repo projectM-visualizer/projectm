@@ -9,22 +9,22 @@ projectM is an open-source project that reimplements the esteemed [Winamp Milkdr
 Its purpose in life is to read an audio input and to produce mesmerizing visuals, detecting tempo, and rendering advanced equations into a limitless array of user-contributed visualizations.
 
 ### Available For
-## Windows
+##### Windows
 * [GitHub Standalone](https://github.com/projectM-visualizer/projectm/releases) (Requires the latest [Visual C++ redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads))
 * [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
 * [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
-## macOS
+#### macOS
 * [GitHub Standalone](https://github.com/projectM-visualizer/projectm/releases)
 * [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
 * [iTunes plugin](https://github.com/projectM-visualizer/projectm/releases/)
-## Linux
+#### Linux
 * [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
 * Check your repository for a binary release.
-## Android
+#### Android
 * [Google Play](https://play.google.com/store/apps/details?id=com.psperl.projectM)
-## Xbox / Windows Phne
+#### Xbox / Windows Phne
 * [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
-## Other
+#### Other
 * [Source Code](https://github.com/projectM-visualizer/projectm/)
 * [Qt5](https://www.qt.io/) + [Pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/)
 * [ALSA, xmms, winamp, jack](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
