@@ -21,7 +21,7 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 * [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
 * Check your repository for a binary release.
 #### Android
-* [Google Play](https://play.google.com/store/apps/details?id=com.psperl.projectM)
+* [Google Play](https://play.google.com/store/apps/details?id=com.psperl.prjM)
 #### Xbox / Windows Phone
 * [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
 #### Other
