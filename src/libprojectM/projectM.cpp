@@ -668,6 +668,7 @@ int projectM::initPresetTools(int gx, int gy)
     m_activePreset = m_presetLoader->loadPreset
             ("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
 	renderer->setPresetName("Geiss & Sperl - Feedback (projectM idle HDR mix)");
+    populatePresets();
 
     renderer->SetPipeline(m_activePreset->pipeline());
 
@@ -771,15 +772,42 @@ unsigned int projectM::addPresetURL ( const std::string & presetURL, const std::
 
 void projectM::selectPreset(unsigned int index, bool hardCut)
 {
-
     if (m_presetChooser->empty())
         return;
 
+    populatePresets();
 
     *m_presetPos = m_presetChooser->begin(index);
     switchPreset(hardCut);
 }
 
+// populatePresets is called when a preset is loaded.
+void projectM::populatePresets()
+{
+    if (renderer->showmenu) { // only track a preset list buffer if the preset menu is up.
+        renderer->m_presetList.clear(); // clear preset list buffer from renderer.
+        renderer->m_activePresetID = m_presetPos->lastIndex(); // tell renderer about the active preset ID (so it can be highlighted)
+        
+        int page_start = 0;
+        if (m_presetPos->lastIndex() != m_presetLoader->size())
+        {
+            page_start = renderer->m_activePresetID; // if it's not the idle preset, then set it to the true value
+        }
+        if (page_start < renderer->textMenuPageSize) {
+            page_start = 0; // if we are on page 1, start at the first preset.
+        }
+        if (page_start % renderer->textMenuPageSize == 0) {
+            // if it's a perfect division of the page size, we are good.
+        } else {
+            page_start = page_start - (page_start % renderer->textMenuPageSize); // if not, find closest divisable number for page start
+        }
+        int page_end = page_start + renderer->textMenuPageSize; // page end is page start + page size
+        while (page_start < page_end) {
+            renderer->m_presetList.push_back({page_start, getPresetName(page_start), ""}); // populate the renders preset list.
+            page_start++;
+        }
+    }
+}
 void projectM::switchPreset(const bool hardCut) {
     std::string result;
 
@@ -795,13 +823,14 @@ void projectM::switchPreset(const bool hardCut) {
         timeKeeper->StartSmoothing();
     }
 
+    populatePresets();
+
     if (result.empty()) {
         presetSwitchedEvent(hardCut, **m_presetPos);
         errorLoadingCurrentPreset = false;
     } else {
         presetSwitchFailedEvent(hardCut, **m_presetPos, result);
         errorLoadingCurrentPreset = true;
-
     }
 }
 
