@@ -165,10 +165,9 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 		"F5: Show FPS""\n"
 		"L: Lock/Unlock Preset""\n"
 		"R: Random preset""\n"
-		"N: Next preset""\n"
-		"P: Previous preset""\n"
-		"UP: Increase Beat Sensitivity""\n"
-		"DOWN: Decrease Beat Sensitivity""\n"
+		"N/P: Next+ or Previous- preset""\n"
+		"M: Preset Menu (Arrow Up/Down & Page Up/Down to Navigate)""\n"
+		"Arrow Up/Down: Increase or Decrease Beat Sensitivity""\n"
 		"CTRL-F: Fullscreen";
 
 	this->setHelpText(defaultHelpMenu);
