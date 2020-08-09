@@ -85,7 +85,7 @@ See [BUILDING.md](BUILDING.md)
 * L: lock current preset
 
 * H or F1: show help (if supported)
-* M: Open preset navigation menu  (if supported)
+* M: Open preset navigation menu (if supported)
 * F3: show preset (if supported)
 * F4: show stats (if supported)
 * F5: show FPS (if supported)
