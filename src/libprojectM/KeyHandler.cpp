@@ -233,7 +233,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			if (renderer->showmenu) {
 				renderer->showhelp = false;
 				renderer->showstats = false;
-				populatePresets();
+				populatePresetMenu();
 			}
 			break;
 		case PROJECTM_K_M:
@@ -242,7 +242,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			{
 				renderer->showhelp=false;
 				renderer->showstats=false;
-				populatePresets();
+				populatePresetMenu();
 			}
           break;
       case PROJECTM_K_n:
