@@ -668,7 +668,8 @@ int projectM::initPresetTools(int gx, int gy)
     m_activePreset = m_presetLoader->loadPreset
             ("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
 	renderer->setPresetName("Geiss & Sperl - Feedback (projectM idle HDR mix)");
-    populatePresets();
+    
+    populatePresetMenu();
 
     renderer->SetPipeline(m_activePreset->pipeline());
 
@@ -775,14 +776,14 @@ void projectM::selectPreset(unsigned int index, bool hardCut)
     if (m_presetChooser->empty())
         return;
 
-    populatePresets();
+    populatePresetMenu();
 
     *m_presetPos = m_presetChooser->begin(index);
     switchPreset(hardCut);
 }
 
-// populatePresets is called when a preset is loaded.
-void projectM::populatePresets()
+// populatePresetMenu is called when a preset is loaded.
+void projectM::populatePresetMenu()
 {
     if (renderer->showmenu) { // only track a preset list buffer if the preset menu is up.
         renderer->m_presetList.clear(); // clear preset list buffer from renderer.
@@ -823,8 +824,6 @@ void projectM::switchPreset(const bool hardCut) {
         timeKeeper->StartSmoothing();
     }
 
-    populatePresets();
-
     if (result.empty()) {
         presetSwitchedEvent(hardCut, **m_presetPos);
         errorLoadingCurrentPreset = false;
@@ -832,6 +831,8 @@ void projectM::switchPreset(const bool hardCut) {
         presetSwitchFailedEvent(hardCut, **m_presetPos, result);
         errorLoadingCurrentPreset = true;
     }
+
+    populatePresetMenu();
 }
 
 
@@ -853,7 +854,7 @@ void projectM::selectPrevious(const bool hardCut) {
     if (m_presetChooser->empty())
         return;
 
-    if (settings().shuffleEnabled && presetHistory.size() >= 1 && presetHistory.back() != m_presetLoader->size()) { // if randomly browsing presets, "previous" should return to last random preset not the index--. Avoid returning to size() because that's the idle:// preset.
+    if (settings().shuffleEnabled && presetHistory.size() >= 1 && presetHistory.back() != m_presetLoader->size() && !renderer->showmenu) { // if randomly browsing presets, "previous" should return to last random preset not the index--. Avoid returning to size() because that's the idle:// preset.
         presetFuture.push_back(m_presetPos->lastIndex());
         selectPreset(presetHistory.back());
         presetHistory.pop_back();
@@ -870,7 +871,7 @@ void projectM::selectPrevious(const bool hardCut) {
 void projectM::selectNext(const bool hardCut) {
     if (m_presetChooser->empty())
         return;
-    if (settings().shuffleEnabled && presetFuture.size() >= 1 && presetFuture.front() != m_presetLoader->size()) { // if shuffling and we have future presets already stashed then let's go forward rather than truely move randomly.
+    if (settings().shuffleEnabled && presetFuture.size() >= 1 && presetFuture.front() != m_presetLoader->size() && !renderer->showmenu) { // if shuffling and we have future presets already stashed then let's go forward rather than truely move randomly.
         presetHistory.push_back(m_presetPos->lastIndex());
         selectPreset(presetFuture.back());
         presetFuture.pop_back();
