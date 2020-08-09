@@ -11,6 +11,7 @@ libRenderer_la_SOURCES = \
   Pipeline.cpp \
   Renderer.cpp \
   ShaderEngine.cpp \
+  StaticGlShaders.cpp \
   Texture.cpp \
   Waveform.cpp \
   Filters.cpp \

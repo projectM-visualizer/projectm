@@ -11,389 +11,32 @@
 #include "Texture.hpp"
 #include "HLSLParser.h"
 #include "GLSLGenerator.h"
+#include "StaticGlShaders.h"
 #include <glm/mat4x4.hpp> // glm::mat4
 #include <glm/gtc/matrix_transform.hpp> // glm::translate, glm::rotate, glm::scale, glm::perspective
 #include <glm/gtc/type_ptr.hpp>
 #include <set>
 #include <regex>
 
-#ifdef USE_GLES
-    #define GLSL_VERSION "300 es"
-    #define SHADER_VERSION  M4::GLSLGenerator::Version_300_ES
-#else
-    #define GLSL_VERSION "120"
-    #define SHADER_VERSION  M4::GLSLGenerator::Version_120
-#endif
-
-
 #define FRAND ((rand() % 7381)/7380.0f)
-
-
-std::string presetWarpVertexShader(
-    "#version "
-    GLSL_VERSION
-    "\n"
-    "attribute vec2 vertex_position;\n"
-    "attribute vec4 vertex_color;\n"
-    "attribute vec2 vertex_texture;\n"
-    ""
-    "uniform mat4 vertex_transformation;\n"
-    ""
-    "varying vec4 frag_COLOR;\n"
-    "varying vec4 frag_TEXCOORD0;\n"
-    "varying vec2 frag_TEXCOORD1;\n"
-    ""
-    "void main(){\n"
-    "    vec4 position = vertex_transformation * vec4(vertex_position, 0.0, 1.0);\n"
-    "    gl_Position = position;\n"
-    "    frag_COLOR = vertex_color;\n"
-    "    frag_TEXCOORD0.xy = vertex_texture;\n"
-    "    frag_TEXCOORD0.zw = position.xy;\n"
-    "    frag_TEXCOORD1 = vec2(0.0, 0.0);\n"
-    "}\n");
-
-std::string presetCompVertexShader(
-    "#version "
-    GLSL_VERSION
-    "\n"
-    "attribute vec2 vertex_position;\n"
-    "attribute vec4 vertex_color;\n"
-    "attribute vec2 vertex_texture;\n"
-    "attribute vec2 vertex_rad_ang;\n"
-    ""
-    "varying vec4 frag_COLOR;\n"
-    "varying vec2 frag_TEXCOORD0;\n"
-    "varying vec2 frag_TEXCOORD1;\n"
-    ""
-    "void main(){\n"
-    "    vec4 position = vec4(vertex_position, 0.0, 1.0);\n"
-    "    gl_Position = position;\n"
-    "    frag_COLOR = vertex_color;\n"
-    "    frag_TEXCOORD0 = vertex_texture;\n"
-    "    frag_TEXCOORD1 = vertex_rad_ang;\n"
-    "}\n");
-
-
-const std::string ShaderEngine::v2f_c4f_vert(
-    "#version "
-    GLSL_VERSION
-    "\n"
-    ""
-    "attribute vec2 vertex_position;\n"
-    "attribute vec4 vertex_color;\n"
-    ""
-    "uniform mat4 vertex_transformation;\n"
-    "uniform float vertex_point_size;\n"
-    ""
-    "varying vec4 fragment_color;\n"
-    ""
-    "void main(){\n"
-    "    gl_Position = vertex_transformation * vec4(vertex_position, 0.0, 1.0);\n"
-    "    gl_PointSize = vertex_point_size;\n"
-    "    fragment_color = vertex_color;\n"
-    "}\n");
-
-const std::string ShaderEngine::v2f_c4f_frag(
-    "#version "
-    GLSL_VERSION
-    "\n"
-    ""
-    "varying vec4 fragment_color;\n"
-    ""
-    "void main(){\n"
-    "    gl_FragColor = fragment_color;\n"
-    "}\n");
-
-const std::string ShaderEngine::v2f_c4f_t2f_vert(
-        "#version "
-        GLSL_VERSION
-        "\n"
-        "attribute vec2 vertex_position;\n"
-        "attribute vec4 vertex_color;\n"
-        "attribute vec2 vertex_texture;\n"
-        ""
-        "uniform mat4 vertex_transformation;\n"
-        ""
-        "varying vec4 fragment_color;\n"
-        "varying vec2 fragment_texture;\n"
-        ""
-        "void main(){\n"
-        "    gl_Position = vertex_transformation * vec4(vertex_position, 0.0, 1.0);\n"
-        "    fragment_color = vertex_color;\n"
-        "    fragment_texture = vertex_texture;\n"
-        "}\n");
-
-const std::string ShaderEngine::v2f_c4f_t2f_frag(
-        "#version "
-        GLSL_VERSION
-        "\n"
-        ""
-        "varying vec4 fragment_color;\n"
-        "varying vec2 fragment_texture;\n"
-        ""
-        "uniform sampler2D texture_sampler;\n"
-        ""
-        "varying vec4 color;\n"
-        ""
-        "void main(){\n"
-        "    gl_FragColor = fragment_color * texture2D(texture_sampler, fragment_texture.st);\n"
-        "}\n");
-
-
-std::string PresetShaderIncludes = ""
-"#define  M_PI   3.14159265359\n"
-"#define  M_PI_2 6.28318530718\n"
-"#define  M_INV_PI_2  0.159154943091895\n"
-
-"uniform float4   rand_frame;		// random float4, updated each frame\n"
-"uniform float4   rand_preset;   // random float4, updated once per *preset*\n"
-"uniform float4   _c0;  // .xy: multiplier to use on UV's to paste an image fullscreen, *aspect-aware*; .zw = inverse.\n"
-"uniform float4   _c1, _c2, _c3, _c4;\n"
-"uniform float4   _c5;  //.xy = scale,bias for reading blur1; .zw = scale,bias for reading blur2; \n"
-"uniform float4   _c6;  //.xy = scale,bias for reading blur3; .zw = blur1_min,blur1_max\n"
-"uniform float4   _c7;  // .xy ~= float2(1024,768); .zw ~= float2(1/1024.0, 1/768.0)\n"
-"uniform float4   _c8;  // .xyzw ~= 0.5 + 0.5*cos(time * float4(~0.3, ~1.3, ~5, ~20))\n"
-"uniform float4   _c9;  // .xyzw ~= same, but using sin()\n"
-"uniform float4   _c10;  // .xyzw ~= 0.5 + 0.5*cos(time * float4(~0.005, ~0.008, ~0.013, ~0.022))\n"
-"uniform float4   _c11;  // .xyzw ~= same, but using sin()\n"
-"uniform float4   _c12;  // .xyz = mip info for main image (.x=#across, .y=#down, .z=avg); .w = unused\n"
-"uniform float4   _c13;  //.xy = blur2_min,blur2_max; .zw = blur3_min, blur3_max.\n"
-"uniform float4   _qa;  // q vars bank 1 [q1-q4]\n"
-"uniform float4   _qb;  // q vars bank 2 [q5-q8]\n"
-"uniform float4   _qc;  // q vars ...\n"
-"uniform float4   _qd;  // q vars\n"
-"uniform float4   _qe;  // q vars\n"
-"uniform float4   _qf;  // q vars\n"
-"uniform float4   _qg;  // q vars\n"
-"uniform float4   _qh;  // q vars bank 8 [q29-q32]\n"
-
-"// note: in general, don't use the current time w/the *dynamic* rotations!\n"
-"uniform float4 rot_s1;  // four random, static rotations.  randomized @ preset load time.\n"
-"uniform float4 rot_s2;  // minor translation component (<1).\n"
-"uniform float4 rot_s3;\n"
-"uniform float4 rot_s4;\n"
-
-"uniform float4 rot_d1;  // four random, slowly changing rotations.\n"
-"uniform float4 rot_d2;  \n"
-"uniform float4 rot_d3;\n"
-"uniform float4 rot_d4;\n"
-"uniform float4 rot_f1;  // faster-changing.\n"
-"uniform float4 rot_f2;\n"
-"uniform float4 rot_f3;\n"
-"uniform float4 rot_f4;\n"
-"uniform float4 rot_vf1;  // very-fast-changing.\n"
-"uniform float4 rot_vf2;\n"
-"uniform float4 rot_vf3;\n"
-"uniform float4 rot_vf4;\n"
-"uniform float4 rot_uf1;  // ultra-fast-changing.\n"
-"uniform float4 rot_uf2;\n"
-"uniform float4 rot_uf3;\n"
-"uniform float4 rot_uf4;\n"
-
-"uniform float4 rot_rand1; // random every frame\n"
-"uniform float4 rot_rand2;\n"
-"uniform float4 rot_rand3;\n"
-"uniform float4 rot_rand4;\n"
-
-"#define time     _c2.x\n"
-"#define fps      _c2.y\n"
-"#define frame    _c2.z\n"
-"#define progress _c2.w\n"
-"#define bass _c3.x\n"
-"#define mid  _c3.y\n"
-"#define treb _c3.z\n"
-"#define vol  _c3.w\n"
-"#define bass_att _c4.x\n"
-"#define mid_att  _c4.y\n"
-"#define treb_att _c4.z\n"
-"#define vol_att  _c4.w\n"
-"#define q1 _qa.x\n"
-"#define q2 _qa.y\n"
-"#define q3 _qa.z\n"
-"#define q4 _qa.w\n"
-"#define q5 _qb.x\n"
-"#define q6 _qb.y\n"
-"#define q7 _qb.z\n"
-"#define q8 _qb.w\n"
-"#define q9 _qc.x\n"
-"#define q10 _qc.y\n"
-"#define q11 _qc.z\n"
-"#define q12 _qc.w\n"
-"#define q13 _qd.x\n"
-"#define q14 _qd.y\n"
-"#define q15 _qd.z\n"
-"#define q16 _qd.w\n"
-"#define q17 _qe.x\n"
-"#define q18 _qe.y\n"
-"#define q19 _qe.z\n"
-"#define q20 _qe.w\n"
-"#define q21 _qf.x\n"
-"#define q22 _qf.y\n"
-"#define q23 _qf.z\n"
-"#define q24 _qf.w\n"
-"#define q25 _qg.x\n"
-"#define q26 _qg.y\n"
-"#define q27 _qg.z\n"
-"#define q28 _qg.w\n"
-"#define q29 _qh.x\n"
-"#define q30 _qh.y\n"
-"#define q31 _qh.z\n"
-"#define q32 _qh.w\n"
-
-"#define aspect   _c0\n"
-"#define texsize  _c7 // .xy = (w,h); .zw = (1/(float)w, 1/(float)h)\n"
-"#define roam_cos _c8\n"
-"#define roam_sin _c9\n"
-"#define slow_roam_cos _c10\n"
-"#define slow_roam_sin _c11\n"
-"#define mip_x   _c12.x\n"
-"#define mip_y   _c12.y\n"
-"#define mip_xy  _c12.xy\n"
-"#define mip_avg _c12.z\n"
-"#define blur1_min _c6.z\n"
-"#define blur1_max _c6.w\n"
-"#define blur2_min _c13.x\n"
-"#define blur2_max _c13.y\n"
-"#define blur3_min _c13.z\n"
-"#define blur3_max _c13.w\n"
-
-"#define sampler_FC_main sampler_fc_main\n"
-"#define sampler_PC_main sampler_pc_main\n"
-"#define sampler_FW_main sampler_fw_main\n"
-"#define sampler_PW_main sampler_pw_main\n"
-
-"#define GetMain(uv) (tex2D(sampler_main,uv).xyz)\n"
-"#define GetPixel(uv) (tex2D(sampler_main,uv).xyz)\n"
-"#define GetBlur1(uv) (tex2D(sampler_blur1,uv).xyz*_c5.x + _c5.y)\n"
-"#define GetBlur2(uv) (tex2D(sampler_blur2,uv).xyz*_c5.z + _c5.w)\n"
-"#define GetBlur3(uv) (tex2D(sampler_blur3,uv).xyz*_c6.x + _c6.y)\n"
-
-"#define lum(x) (dot(x,float3(0.32,0.49,0.29)))\n"
-"#define tex2d tex2D\n"
-"#define tex3d tex3D\n"
-;
-
-
-std::string blur_vert(
-    "#version "
-    GLSL_VERSION
-    "\n"
-    "attribute vec2 vertex_position;\n"
-    "attribute vec2 vertex_texture;\n"
-    ""
-    "varying vec2 fragment_texture;\n"
-    ""
-    "void main(){\n"
-    "    gl_Position = vec4(vertex_position, 0.0, 1.0);\n"
-    "    fragment_texture = vertex_texture;\n"
-    "}\n");
-
-
-std::string blur1_frag(
-    "#version "
-    GLSL_VERSION
-    "\n"
-    ""
-    "varying vec2 fragment_texture;\n"
-    ""
-    "uniform sampler2D texture_sampler;\n"
-    "uniform vec4 _c0; // source texsize (.xy), and inverse (.zw)\n"
-    "uniform vec4 _c1; // w1..w4\n"
-    "uniform vec4 _c2; // d1..d4\n"
-    "uniform vec4 _c3; // scale, bias, w_div\n"
-    ""
-    "void main(){\n"
-    ""
-    "   // LONG HORIZ. PASS 1:\n"
-    "   #define srctexsize _c0\n"
-    "   #define w1 _c1.x\n"
-    "   #define w2 _c1.y\n"
-    "   #define w3 _c1.z\n"
-    "   #define w4 _c1.w\n"
-    "   #define d1 _c2.x\n"
-    "   #define d2 _c2.y\n"
-    "   #define d3 _c2.z\n"
-    "   #define d4 _c2.w\n"
-    "   #define fscale _c3.x\n"
-    "   #define fbias  _c3.y\n"
-    "   #define w_div  _c3.z\n"
-    ""
-    "   // note: if you just take one sample at exactly uv.xy, you get an avg of 4 pixels.\n"
-    "   vec2 uv2 = fragment_texture.xy + srctexsize.zw*vec2(1.0,1.0);     // + moves blur UP, LEFT by 1-pixel increments\n"
-    ""
-    "   vec3 blur = \n"
-    "           ( texture2D( texture_sampler, uv2 + vec2( d1*srctexsize.z,0) ).xyz\n"
-    "           + texture2D( texture_sampler, uv2 + vec2(-d1*srctexsize.z,0) ).xyz)*w1 +\n"
-    "           ( texture2D( texture_sampler, uv2 + vec2( d2*srctexsize.z,0) ).xyz\n"
-    "           + texture2D( texture_sampler, uv2 + vec2(-d2*srctexsize.z,0) ).xyz)*w2 +\n"
-    "           ( texture2D( texture_sampler, uv2 + vec2( d3*srctexsize.z,0) ).xyz\n"
-    "           + texture2D( texture_sampler, uv2 + vec2(-d3*srctexsize.z,0) ).xyz)*w3 +\n"
-    "           ( texture2D( texture_sampler, uv2 + vec2( d4*srctexsize.z,0) ).xyz\n"
-    "           + texture2D( texture_sampler, uv2 + vec2(-d4*srctexsize.z,0) ).xyz)*w4\n"
-    "           ;\n"
-    "   blur.xyz *= w_div;\n"
-    ""
-    "   blur.xyz = blur.xyz*fscale + fbias;\n"
-    ""
-    "   gl_FragColor.xyz = blur;\n"
-    "   gl_FragColor.w   = 1.0;\n"
-    "}\n");
-
-std::string blur2_frag(
-    "#version "
-    GLSL_VERSION
-    "\n"
-    ""
-    "varying vec2 fragment_texture;\n"
-    ""
-    "uniform sampler2D texture_sampler;\n"
-    "uniform vec4 _c0; // source texsize (.xy), and inverse (.zw)\n"
-    "uniform vec4 _c5; // w1,w2,d1,d2\n"
-    "uniform vec4 _c6; // w_div, edge_darken_c1, edge_darken_c2, edge_darken_c3\n"
-    ""
-    "void main(){\n"
-    ""
-    "   //SHORT VERTICAL PASS 2:\n"
-    "   #define srctexsize _c0\n"
-    "   #define w1 _c5.x\n"
-    "   #define w2 _c5.y\n"
-    "   #define d1 _c5.z\n"
-    "   #define d2 _c5.w\n"
-    "   #define edge_darken_c1 _c6.y\n"
-    "   #define edge_darken_c2 _c6.z\n"
-    "   #define edge_darken_c3 _c6.w\n"
-    "   #define w_div   _c6.x\n"
-    ""
-    "   // note: if you just take one sample at exactly uv.xy, you get an avg of 4 pixels.\n"
-    "   vec2 uv2 = fragment_texture.xy + srctexsize.zw*vec2(0,0);     // + moves blur UP, LEFT by TWO-pixel increments! (since texture is 1/2 the size of blur1_ps)\n"
-    ""
-    "   vec3 blur = \n"
-    "           ( texture2D( texture_sampler, uv2 + vec2(0, d1*srctexsize.w) ).xyz\n"
-    "           + texture2D( texture_sampler, uv2 + vec2(0,-d1*srctexsize.w) ).xyz)*w1 +\n"
-    "           ( texture2D( texture_sampler, uv2 + vec2(0, d2*srctexsize.w) ).xyz\n"
-    "           + texture2D( texture_sampler, uv2 + vec2(0,-d2*srctexsize.w) ).xyz)*w2\n"
-    "           ;\n"
-    "   blur.xyz *= w_div;\n"
-    ""
-    "   // tone it down at the edges:  (only happens on 1st X pass!)\n"
-    "   float t = min( min(fragment_texture.x, fragment_texture.y), 1.0-max(fragment_texture.x, fragment_texture.y) );\n"
-    "   t = sqrt(t);\n"
-    "   t = edge_darken_c1 + edge_darken_c2*clamp(t*edge_darken_c3, 0.0, 1.0);\n"
-    "   blur.xyz *= t;\n"
-    ""
-    "   gl_FragColor.xyz = blur;\n"
-    "   gl_FragColor.w   = 1.0;\n"
-    "}\n");
-
-
 
 ShaderEngine::ShaderEngine() : presetCompShaderLoaded(false), presetWarpShaderLoaded(false)
 {
-    programID_v2f_c4f = CompileShaderProgram(v2f_c4f_vert, v2f_c4f_frag, "v2f_c4f");
-    programID_v2f_c4f_t2f = CompileShaderProgram(v2f_c4f_t2f_vert, v2f_c4f_t2f_frag, "v2f_c4f_t2f");
+    std::shared_ptr<StaticGlShaders> static_gl_shaders = StaticGlShaders::Get();
 
-    programID_blur1 = CompileShaderProgram(blur_vert, blur1_frag, "blur1");
-    programID_blur2 = CompileShaderProgram(blur_vert, blur2_frag, "blur2");
+    programID_v2f_c4f = CompileShaderProgram(
+        static_gl_shaders->GetV2fC4fVertexShader(),
+        static_gl_shaders->GetV2fC4fFragmentShader(), "v2f_c4f");
+    programID_v2f_c4f_t2f = CompileShaderProgram(
+        static_gl_shaders->GetV2fC4fT2fVertexShader(),
+        static_gl_shaders->GetV2fC4fT2fFragmentShader(), "v2f_c4f_t2f");
+
+    programID_blur1 = CompileShaderProgram(
+        static_gl_shaders->GetBlurVertexShader(),
+        static_gl_shaders->GetBlur1FragmentShader(), "blur1");
+    programID_blur2 = CompileShaderProgram(
+        static_gl_shaders->GetBlurVertexShader(),
+        static_gl_shaders->GetBlur2FragmentShader(), "blur2");
 
     uniform_v2f_c4f_vertex_tranformation = glGetUniformLocation(programID_v2f_c4f, "vertex_transformation");
     uniform_v2f_c4f_vertex_point_size = glGetUniformLocation(programID_v2f_c4f, "vertex_point_size");
@@ -633,7 +276,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     std::string fullSource;
 
     // prepend our HLSL template to the actual program source
-    fullSource.append(PresetShaderIncludes);
+    fullSource.append(StaticGlShaders::Get()->GetPresetShaderHeader());
 
     if (shaderType == PresentWarpShader) {
         fullSource.append(  "#define rad _rad_ang.x\n"
@@ -734,7 +377,9 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     }
 
     // generate GLSL
-    if (!generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader, SHADER_VERSION, "PS")) {
+    if (!generator.Generate(&tree, M4::GLSLGenerator::Target_FragmentShader,
+                            StaticGlShaders::Get()->GetGlslGeneratorVersion(),
+                            "PS")) {
         std::cerr << "Failed to transpile HLSL(step3) " << shaderTypeString << " shader to GLSL" << std::endl;
 #if !DUMP_SHADERS_ON_ERROR
         std::cerr << "Source: " << std::endl << sourcePreprocessed << std::endl;
@@ -746,13 +391,18 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
         return GL_FALSE;
     }
 
-    // now we have GLSL source for the preset shader program (hopefully it's valid!)
-    // copmile the preset shader fragment shader with the standard vertex shader and cross our fingers
+    // now we have GLSL source for the preset shader program (hopefully it's
+    // valid!) copmile the preset shader fragment shader with the standard
+    // vertex shader and cross our fingers
     GLuint ret = 0;
     if (shaderType == PresentWarpShader) {
-        ret = CompileShaderProgram(presetWarpVertexShader, generator.GetResult(), shaderTypeString);  // returns new program
+        ret = CompileShaderProgram(
+            StaticGlShaders::Get()->GetPresetWarpVertexShader(),
+            generator.GetResult(), shaderTypeString);
     } else {
-        ret = CompileShaderProgram(presetCompVertexShader, generator.GetResult(), shaderTypeString);  // returns new program
+        ret = CompileShaderProgram(
+            StaticGlShaders::Get()->GetPresetCompVertexShader(),
+            generator.GetResult(), shaderTypeString);
     }
 
     if (ret != GL_FALSE) {
