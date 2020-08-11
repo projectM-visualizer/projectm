@@ -119,7 +119,16 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 
 		switch (keycode)
 		{
-
+		case PROJECTM_K_HOME:
+			if (renderer->showmenu) { // pageup only does something when the preset menu is active.
+				selectPreset(0);  // jump to top of presets.
+			}
+			break;
+		case PROJECTM_K_END:
+			if (renderer->showmenu) { // pageup only does something when the preset menu is active.
+				selectPreset(m_presetLoader->size() - 1);  // jump to bottom of presets.
+			}
+			break;
 		case PROJECTM_K_PAGEUP:
 			if (renderer->showmenu) { // pageup only does something when the preset menu is active.
 				int upPreset = m_presetPos->lastIndex() - (renderer->textMenuPageSize / 2.0f); // jump up by page size / 2
