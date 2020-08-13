@@ -85,12 +85,13 @@ See [BUILDING.md](BUILDING.md)
 * Up: increase beat sensitivity (max 5)
 * Down: decrease beat sensitivity (min 0)
 * Y: toggle shuffle enabled
-* R: jump to random preset (SHIFT+R for soft transition)
-* N: next preset (hard transition) (SHIFT+N for soft transition)
-* P: previous preset (hard transition)  (SHIFT+P for soft transition)
+* R: jump to random preset
+* N or P: next or previous preset (hard transition)
+* Shift-N or Shift-P: next or previous preset (soft transition)
 * L: lock current preset
 
 * H or F1: show help (if supported)
+* M: Open preset navigation menu (if supported)
 * F3: show preset (if supported)
 * F4: show stats (if supported)
 * F5: show FPS (if supported)
