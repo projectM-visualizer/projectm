@@ -273,14 +273,8 @@ void projectMSDL::toggleFullScreen() {
     }
 }
 
-void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
-    projectMEvent evt;
-    projectMKeycode key;
-    projectMModifier mod;
-    SDL_Keymod sdl_mod = (SDL_Keymod) sdl_evt->key.keysym.mod;
-    SDL_Keycode sdl_keycode = sdl_evt->key.keysym.sym;
-
-    // handle mouse scroll wheel - up++
+void projectMSDL::scrollHandler(SDL_Event* sdl_evt) {
+     // handle mouse scroll wheel - up++
     if (sdl_evt->wheel.y > 0) {
         projectM::selectPrevious(true);
     }
@@ -288,6 +282,14 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
     if (sdl_evt->wheel.y < 0) {
         projectM::selectNext(true);
     }
+}
+
+void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
+    projectMEvent evt;
+    projectMKeycode key;
+    projectMModifier mod;
+    SDL_Keymod sdl_mod = (SDL_Keymod) sdl_evt->key.keysym.mod;
+    SDL_Keycode sdl_keycode = sdl_evt->key.keysym.sym;
 
 	// handle keyboard input (for our app first, then projectM)
     switch (sdl_keycode) {
@@ -460,7 +462,7 @@ void projectMSDL::pollEvent() {
                 }
                 break;
             case SDL_MOUSEWHEEL:
-                keyHandler(&evt);
+                scrollHandler(&evt);
             case SDL_KEYDOWN:
                 keyHandler(&evt);
                 break;

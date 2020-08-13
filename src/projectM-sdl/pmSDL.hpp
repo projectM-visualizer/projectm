@@ -137,6 +137,7 @@ private:
     static void audioInputCallbackF32(void *userdata, unsigned char *stream, int len);
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
 
+    void scrollHandler(SDL_Event *);
     void keyHandler(SDL_Event *);
     void renderTexture();
 };
