@@ -280,6 +280,15 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
     SDL_Keymod sdl_mod = (SDL_Keymod) sdl_evt->key.keysym.mod;
     SDL_Keycode sdl_keycode = sdl_evt->key.keysym.sym;
 
+    // handle mouse scroll wheel - up++
+    if (sdl_evt->wheel.y > 0) {
+        projectM::selectPrevious(true);
+    }
+    // handle mouse scroll wheel - down--
+    if (sdl_evt->wheel.y < 0) {
+        projectM::selectNext(true);
+    }
+
 	// handle keyboard input (for our app first, then projectM)
     switch (sdl_keycode) {
         case SDLK_q:
@@ -450,6 +459,8 @@ void projectMSDL::pollEvent() {
 						break;
                 }
                 break;
+            case SDL_MOUSEWHEEL:
+                keyHandler(&evt);
             case SDL_KEYDOWN:
                 keyHandler(&evt);
                 break;
