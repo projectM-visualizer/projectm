@@ -102,6 +102,7 @@ See [BUILDING.md](BUILDING.md)
 * Cmd/Ctrl-S: *s*tretch monitors
 * Cmd/Ctrl-M: change *m*onitor
 * Cmd/Ctrl-F: toggle *f*ull screen
+* Mouse Scroll Up / Down: next or previous preset (hard transition)
 * Space: lock current preset
 
 
