@@ -204,7 +204,10 @@ inline projectMKeycode sdl2pmKeycode( SDL_Keycode keycode , SDL_Keymod mod ) { \
       return PROJECTM_K_PAGEUP;
     case SDLK_PAGEDOWN:
       return PROJECTM_K_PAGEDOWN;
-   
+    case SDLK_HOME:
+      return PROJECTM_K_HOME;
+    case SDLK_END:
+      return PROJECTM_K_END;
         default: \
             return PROJECTM_K_NONE; \
       } \

@@ -26,13 +26,13 @@ class Preset;
 
 
 void Renderer::drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale,
-                        int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP)
+                        int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f)
 {
-	drawText(this->title_font, string, x, y, scale, horizontalAlignment, verticalAlignment);
+	drawText(this->title_font, string, x, y, scale, horizontalAlignment, verticalAlignment, r, g, b, a);
 }
 
 void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale,
-	int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP)
+	int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f)
 {
 	// Initialize glText
 	gltInit();
@@ -68,7 +68,7 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 	if (windowWidth > textWidth)
 	{
 		// redraw without transparency
-		gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+		gltColor(r, g, b, a);
 		gltSetText(text, string);
 		gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
 	}
@@ -114,7 +114,7 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 		*/
 
 		// Redraw now that the text fits.
-		gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+		gltColor(r, g, b, a);
 		gltSetText(text, string);
 		gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
 	}
@@ -148,6 +148,7 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 	this->showtitle = false;
 	this->showpreset = false;
 	this->showhelp = false;
+	this->showmenu = false;
 	this->showstats = false;
 	this->studio = false;
 	this->realfps = 0;
@@ -164,10 +165,9 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 		"F5: Show FPS""\n"
 		"L: Lock/Unlock Preset""\n"
 		"R: Random preset""\n"
-		"N: Next preset""\n"
-		"P: Previous preset""\n"
-		"UP: Increase Beat Sensitivity""\n"
-		"DOWN: Decrease Beat Sensitivity""\n"
+		"N/P: [N]ext+ or [P]revious-reset""\n"
+		"M: Preset Menu (Arrow Up/Down & Page Up/Down to Navigate)""\n"
+		"Arrow Up/Down: Increase or Decrease Beat Sensitivity""\n"
 		"CTRL-F: Fullscreen";
 
 	this->setHelpText(defaultHelpMenu);
@@ -397,15 +397,18 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 		draw_help();
 	if (this->showtitle == true)
 		draw_title();
-	if (this->showtoast == true)
-		draw_toast();
 	if (this->showfps == true)
 		draw_fps();
 	// this->realfps
+	if (this->showmenu == true)
+		draw_menu();
 	if (this->showpreset == true)
 		draw_preset();
 	if (this->showstats == true)
 		draw_stats();
+	// We should always draw toasts last so they are on top of other text (lp/menu).
+	if (this->showtoast == true) 
+		draw_toast();
 }
 
 void Renderer::RenderFrame(const Pipeline& pipeline,
@@ -590,6 +593,22 @@ void Renderer::reset(int w, int h)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glClear(GL_COLOR_BUFFER_BIT);
+
+#ifdef USE_TEXT_MENU
+	// When the renderer resets, do a check to find out what the maximum number of lines we could display are.
+	int r_textMenuPageSize = 0;
+	int yOffset = textMenuYOffset;
+	while (true) { // infinite loop, only satisifed when we have found the max lines of text on the screen.
+		if (yOffset < vh - textMenuLineHeight) { // if yOffset could be displayed on the screen (vh), then we have room for the next line.
+			r_textMenuPageSize++;
+			yOffset = yOffset + textMenuLineHeight;
+		}
+		else { // if we reached the end of the screen, set textMenuPageSize and move on.
+			textMenuPageSize = r_textMenuPageSize;
+			break;
+		}
+	}
+#endif
 }
 
 GLuint Renderer::initRenderToTexture()
@@ -657,6 +676,26 @@ void Renderer::draw_title()
 #ifdef USE_TEXT_MENU
 	// TODO: investigate possible banner text for GUI
 	// drawText(title_font, this->title.c_str(), 10, 20, 2.5);
+#endif /** USE_TEXT_MENU */
+}
+
+void Renderer::draw_menu()
+{
+#ifdef USE_TEXT_MENU
+	int menu_xOffset = 30; // x axis static point.
+	int menu_yOffset = 60; // y axis start point.
+	float windowHeight = vh;
+	for (auto& it : m_presetList) { // loop over preset buffer
+		if (menu_yOffset  < windowHeight - textMenuLineHeight) { // if we are not at the bottom of the scree, display preset name.
+			if (it.id == m_activePresetID) { // if this is the active preset, add some color.
+				drawText(it.name.c_str(), menu_xOffset, menu_yOffset , 1.5, GLT_LEFT, 0, 1.0, 0.1, 0.1, 1.0);
+			}
+			else {
+				drawText(it.name.c_str(), menu_xOffset, menu_yOffset , 1.5, GLT_LEFT, 0, 1.0, 1.0, 1.0, 1.0);
+			}
+		}
+		menu_yOffset = menu_yOffset + textMenuLineHeight; // increase line y offset so we can track if we reached the bottom of the screen.
+	}
 #endif /** USE_TEXT_MENU */
 }
 

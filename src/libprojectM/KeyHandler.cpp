@@ -117,37 +117,75 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 
 	case PROJECTM_KEYDOWN:
 
-	  switch( keycode )
-	    {
-	    case PROJECTM_K_UP:
-            beatDetect->beatSensitivity += 0.25;
-			if (beatDetect->beatSensitivity > 5.0) beatDetect->beatSensitivity = 5.0;
-			renderer->setToastMessage("Beat Sensitivity: "+round_float(beatDetect->beatSensitivity));
-	      break;
-	    case PROJECTM_K_DOWN:
-            beatDetect->beatSensitivity -= 0.25;
-			if (beatDetect->beatSensitivity < 0) beatDetect->beatSensitivity = 0;
-			renderer->setToastMessage("Beat Sensitivity: "+round_float(beatDetect->beatSensitivity));
-	      break;
+		switch (keycode)
+		{
+		case PROJECTM_K_HOME:
+			if (renderer->showmenu) { // pageup only does something when the preset menu is active.
+				selectPreset(0);  // jump to top of presets.
+			}
+			break;
+		case PROJECTM_K_END:
+			if (renderer->showmenu) { // pageup only does something when the preset menu is active.
+				selectPreset(m_presetLoader->size() - 1);  // jump to bottom of presets.
+			}
+			break;
+		case PROJECTM_K_PAGEUP:
+			if (renderer->showmenu) { // pageup only does something when the preset menu is active.
+				int upPreset = m_presetPos->lastIndex() - (renderer->textMenuPageSize / 2.0f); // jump up by page size / 2
+				if (upPreset < 0) // handle lower boundary
+					upPreset = m_presetLoader->size() - 1;
+				selectPreset(upPreset);  // jump up menu half a page.
+			}
+			break;
+		case PROJECTM_K_PAGEDOWN:
+			if (renderer->showmenu) { // pagedown only does something when the preset menu is active.
+				int downPreset = m_presetPos->lastIndex() + (renderer->textMenuPageSize / 2.0f); // jump down by page size / 2
+				if (downPreset >= (m_presetLoader->size() - 1)) // handle upper boundary
+					downPreset = 0;
+				selectPreset(downPreset); // jump down menu half a page.
+			}
+			break;
+		case PROJECTM_K_UP:
+			if (renderer->showmenu) {
+				selectPrevious(true);
+			}
+			else {
+				beatDetect->beatSensitivity += 0.25;
+				if (beatDetect->beatSensitivity > 5.0) beatDetect->beatSensitivity = 5.0;
+				renderer->setToastMessage("Beat Sensitivity: " + round_float(beatDetect->beatSensitivity));
+			}
+			break;
+		case PROJECTM_K_DOWN:
+			if (renderer->showmenu) {
+				selectNext(true);
+			}
+			else {
+				beatDetect->beatSensitivity -= 0.25;
+				if (beatDetect->beatSensitivity < 0) beatDetect->beatSensitivity = 0;
+				renderer->setToastMessage("Beat Sensitivity: " + round_float(beatDetect->beatSensitivity));
+			}
+			break;
 		case PROJECTM_K_h:
- 		  renderer->showhelp = !renderer->showhelp;
-	      renderer->showstats=false;
-	    case PROJECTM_K_F1:
-	      renderer->showhelp = !renderer->showhelp;
-	      renderer->showstats=false;
-	      break;
-	    case PROJECTM_K_y:
-		this->setShuffleEnabled(!this->isShuffleEnabled());
-		if (this->isShuffleEnabled()) {
-			renderer->setToastMessage("Shuffle Enabled");
-		}
-		else {
-			renderer->setToastMessage("Shuffle Disabled");
-		}
-		 break;
+			renderer->showhelp = !renderer->showhelp;
+			renderer->showstats = false;
+			renderer->showmenu = false;
+		case PROJECTM_K_F1:
+			renderer->showhelp = !renderer->showhelp;
+			renderer->showstats = false;
+			renderer->showmenu = false;
+			break;
+		case PROJECTM_K_y:
+			this->setShuffleEnabled(!this->isShuffleEnabled());
+			if (this->isShuffleEnabled()) {
+				renderer->setToastMessage("Shuffle Enabled");
+			}
+			else {
+				renderer->setToastMessage("Shuffle Disabled");
+			}
+			break;
 
-	    case PROJECTM_K_F5:
-		  renderer->showfps = !renderer->showfps;
+		case PROJECTM_K_F5:
+			renderer->showfps = !renderer->showfps;
 			// Initialize counters and reset frame count.
 			renderer->lastTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
 			renderer->currentTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
@@ -157,46 +195,65 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			{
 				renderer->showpreset = false;
 			}
-	      break;
-	    case PROJECTM_K_F4:
-		if (!renderer->showhelp)
-	       		renderer->showstats = !renderer->showstats;
-	       		renderer->showhelp=false;
-	      break;
-	    case PROJECTM_K_F3: {
-	      renderer->showpreset = !renderer->showpreset;
+			break;
+		case PROJECTM_K_F4:
+			renderer->showstats = !renderer->showstats;
+			if (renderer->showstats) {
+				renderer->showhelp = false;
+				renderer->showmenu = false;
+			}
+			break;
+		case PROJECTM_K_F3: {
+			renderer->showpreset = !renderer->showpreset;
 			// Hide FPS from screen and replace it with preset name.
 			if (renderer->showpreset)
 			{
 				renderer->showfps = false;
 			}
-	      break;
-	     }
-	    case PROJECTM_K_F2:
-	      renderer->showtitle = !renderer->showtitle;
-	      break;
+			break;
+		}
+		case PROJECTM_K_F2:
+			renderer->showtitle = !renderer->showtitle;
+			break;
 #ifndef MACOS
-	    case PROJECTM_K_F9:
+		case PROJECTM_K_F9:
 #else
-        case PROJECTM_K_F8:
+		case PROJECTM_K_F8:
 #endif
 
-	      renderer->studio = !renderer->studio;
-	      break;
+			renderer->studio = !renderer->studio;
+			break;
 
-	    case PROJECTM_K_ESCAPE: {
-//	        exit( 1 );
-	        break;
-	      }
-	    case PROJECTM_K_f:
+		case PROJECTM_K_ESCAPE: {
+			//	        exit( 1 );
+			break;
+		}
+		case PROJECTM_K_f:
 
-	      break;
-	    case PROJECTM_K_a:
-		    renderer->correction = !renderer->correction;
-	        break;
-	    case PROJECTM_K_b:
-	      break;
-      case PROJECTM_K_H:
+			break;
+		case PROJECTM_K_a:
+			renderer->correction = !renderer->correction;
+			break;
+		case PROJECTM_K_b:
+			break;
+		case PROJECTM_K_H:
+		case PROJECTM_K_m:
+			renderer->showmenu = !renderer->showmenu;
+			if (renderer->showmenu) {
+				renderer->showhelp = false;
+				renderer->showstats = false;
+				populatePresetMenu();
+			}
+			break;
+		case PROJECTM_K_M:
+			renderer->showmenu = !renderer->showmenu;
+			if (renderer->showmenu)
+			{
+				renderer->showhelp=false;
+				renderer->showstats=false;
+				populatePresetMenu();
+			}
+          break;
       case PROJECTM_K_n:
           selectNext(true);
           break;
@@ -233,8 +290,6 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      break;
 	    case PROJECTM_K_7:
 //	      nWaveMode=7;
-	      break;
-	    case PROJECTM_K_m:
 	      break;
 	    case PROJECTM_K_t:
 	      break;
