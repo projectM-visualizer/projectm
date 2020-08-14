@@ -11,21 +11,22 @@ FileScanner::FileScanner() {}
 FileScanner::FileScanner(std::vector<std::string> &rootDirs, std::vector<std::string> &extensions) : _rootDirs(rootDirs), _extensions(extensions) {}
 
 void FileScanner::scan(ScanCallback cb) {
-#ifdef WIN32
-    for (auto dir : _rootDirs)
-        scanGeneric(cb, dir.c_str());
+#ifdef HAVE_FTS_H
+	scanPosix(cb);
+    printf("HAVE_FTS\n");
 #else
-    scanPosix(cb);
+	for (auto dir : _rootDirs)
+		scanGeneric(cb, dir.c_str());
 #endif
 }
 
 void FileScanner::handleDirectoryError(std::string dir) {
-#ifdef WIN32
-    std::cerr << "[PresetLoader] warning: errno unsupported on win32 platforms. fix me" << std::endl;
+#ifndef HAVE_FTS_H
+	  std::cerr << "[PresetLoader] warning: errno unsupported on win32, etc platforms. fix me" << std::endl;
 #else
-    
+
     std::cerr << dir << " scan error: ";
-    
+
     switch ( errno )
     {
         case ENOENT:
@@ -55,10 +56,10 @@ void FileScanner::handleDirectoryError(std::string dir) {
 std::string FileScanner::extensionMatches(std::string &filename) {
     // returns file name without extension
     // TODO: optimize me
-    
+
     std::string lowerCaseFileName(filename);
     std::transform(lowerCaseFileName.begin(), lowerCaseFileName.end(), lowerCaseFileName.begin(), tolower);
-    
+
     // Remove extension
     for (auto ext : _extensions)
     {
@@ -70,7 +71,7 @@ std::string FileScanner::extensionMatches(std::string &filename) {
             return name;
         }
     }
-    
+
     return {};
 }
 
@@ -78,23 +79,23 @@ std::string FileScanner::extensionMatches(std::string &filename) {
 // generic implementation using dirent
 void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
     DIR * m_dir;
-        
+
     // Allocate a new a stream given the current directory name
     if ((m_dir = opendir(currentDir)) == NULL)
     {
         return; // no files found in here
     }
-    
+
     struct dirent * dir_entry;
-    
+
     while ((dir_entry = readdir(m_dir)) != NULL)
     {
         // Convert char * to friendly string
         std::string filename(dir_entry->d_name);
-        
+
         if (filename.length() > 0 && filename[0] == '.')
             continue;
-        
+
         std::string fullPath = std::string(currentDir) + PATH_SEPARATOR + filename;
 
         if (dir_entry->d_type == DT_DIR) {
@@ -105,12 +106,12 @@ void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
             // not regular file/link
             continue;
         }
-        
+
         auto nameMatched = extensionMatches(filename);
         if (! nameMatched.empty())
            cb(fullPath, nameMatched);
     }
-    
+
     if (m_dir)
     {
         closedir(m_dir);
@@ -118,7 +119,7 @@ void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
     }
 }
 
-#ifndef WIN32
+#ifdef HAVE_FTS_H
 // more optimized posix "fts" directory traversal
 int fts_compare(const FTSENT** one, const FTSENT** two) {
     return (strcmp((*one)->fts_name, (*two)->fts_name));
@@ -126,12 +127,12 @@ int fts_compare(const FTSENT** one, const FTSENT** two) {
 #endif
 
 void FileScanner::scanPosix(ScanCallback cb) {
-#ifndef WIN32
-    
+#ifdef HAVE_FTS_H
+
     // efficient directory traversal
     FTS* fileSystem = NULL;
     FTSENT *node    = NULL;
-    
+
     // list of directories to scan
     auto rootDirCount = _rootDirs.size();
     char **dirList = (char **)malloc(sizeof(char*) * (rootDirCount + 1));
@@ -139,7 +140,7 @@ void FileScanner::scanPosix(ScanCallback cb) {
         dirList[i] = (char *) _rootDirs[i].c_str();
     }
     dirList[rootDirCount] = NULL;
-    
+
     // initialize file hierarchy traversal
     fileSystem = fts_open(dirList, FTS_LOGICAL|FTS_NOCHDIR|FTS_NOSTAT, &fts_compare);
     if (fileSystem == NULL) {
@@ -147,13 +148,13 @@ void FileScanner::scanPosix(ScanCallback cb) {
         for (int i = 0; i < _rootDirs.size(); i++)
             s += _rootDirs[i] + ' ';
         handleDirectoryError(s);
-        
+
         free(dirList);
         return;
     }
-    
+
     std::string path, name, nameMatched;
-    
+
     // traverse dirList
     while( (node = fts_read(fileSystem)) != NULL) {
         switch (node->fts_info) {
@@ -163,7 +164,7 @@ void FileScanner::scanPosix(ScanCallback cb) {
                 // found a file
                 path = std::string(node->fts_path);
                 name = std::string(node->fts_name);
-                
+
                 // check extension
                 nameMatched = extensionMatches(name);
                 if (! nameMatched.empty())
@@ -175,6 +176,6 @@ void FileScanner::scanPosix(ScanCallback cb) {
     }
     fts_close(fileSystem);
     free(dirList);
-    
+
 #endif
 }

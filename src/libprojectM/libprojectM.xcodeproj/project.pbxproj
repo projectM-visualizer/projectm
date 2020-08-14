@@ -948,7 +948,10 @@
 				LIBRARY_SEARCH_PATHS = /Library/Frameworks;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_CFLAGS = "-fno-stack-check";
+				OTHER_CFLAGS = (
+					"-fno-stack-check",
+					"-DHAVE_FTS_H",
+				);
 			};
 			name = Debug;
 		};
@@ -1012,7 +1015,10 @@
 				);
 				LIBRARY_SEARCH_PATHS = /Library/Frameworks;
 				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_CFLAGS = "-fno-stack-check";
+				OTHER_CFLAGS = (
+					"-fno-stack-check",
+					"-DHAVE_FTS_H",
+				);
 			};
 			name = Release;
 		};

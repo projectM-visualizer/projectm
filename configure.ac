@@ -60,6 +60,7 @@ AS_IF([test "x$enable_emscripten" = "xyes" || test "x$EMSCRIPTEN" = "xyes"], [
 AC_CHECK_LIB(c, dlopen, LIBDL="", AC_CHECK_LIB(dl, dlopen, LIBDL="-ldl"))
 
 AC_CHECK_FUNCS_ONCE([aligned_alloc posix_memalign])
+AC_CHECK_HEADERS_ONCE([fts.h])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
