@@ -273,6 +273,17 @@ void projectMSDL::toggleFullScreen() {
     }
 }
 
+void projectMSDL::scrollHandler(SDL_Event* sdl_evt) {
+     // handle mouse scroll wheel - up++
+    if (sdl_evt->wheel.y > 0) {
+        projectM::selectPrevious(true);
+    }
+    // handle mouse scroll wheel - down--
+    if (sdl_evt->wheel.y < 0) {
+        projectM::selectNext(true);
+    }
+}
+
 void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
     projectMEvent evt;
     projectMKeycode key;
@@ -450,6 +461,8 @@ void projectMSDL::pollEvent() {
 						break;
                 }
                 break;
+            case SDL_MOUSEWHEEL:
+                scrollHandler(&evt);
             case SDL_KEYDOWN:
                 keyHandler(&evt);
                 break;
