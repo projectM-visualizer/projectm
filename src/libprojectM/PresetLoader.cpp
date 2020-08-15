@@ -149,11 +149,14 @@ const std::string & PresetLoader::getPresetName ( PresetIndex index ) const
 	return _presetNames[index];
 }
 
+
+// Get vector of preset names
 const std::vector<std::string> &PresetLoader::getPresetNames() const
 {
 	return _presetNames;
 }
 
+// Get the preset index given a name
 const unsigned int PresetLoader::getPresetIndex(std::string &name) const
 {
 	//Need a better structure than a vector for reverse lookup

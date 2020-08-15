@@ -791,9 +791,9 @@ void projectM::populatePresetMenu()
         if(isTextInputActive()) {
             // if a searchTerm is active, we will populate the preset menu with search terms instead of the page we are on.
             int h = 0;
-            for(unsigned int i = 0; i < getPlaylistSize(); i++) {
-                if (getPresetName(i).find(renderer->searchText()) != std::string::npos) {
-                    if (h < renderer->textMenuPageSize)
+            for(unsigned int i = 0; i < getPlaylistSize(); i++) { // loop over all presets
+                if (getPresetName(i).find(renderer->searchText()) != std::string::npos) { // if term matches
+                    if (h < renderer->textMenuPageSize) // limit to just one page, pagination is not needed.
                     {
                         h++;
                         renderer->m_presetList.push_back({ h, getPresetName(i), "" }); // populate the renders preset list.
@@ -878,11 +878,14 @@ void projectM::selectPrevious(const bool hardCut) {
 
     if (isTextInputActive(true) && renderer->m_presetList.size() >= 1)
     {
+        // if search menu is up, previous is based on search terms.
         if (renderer->m_activePresetID <= 1) {
+            // loop to bottom of page is at top
             renderer->m_activePresetID = renderer->m_presetList.size();
             selectPresetByName(renderer->m_presetList[renderer->m_activePresetID - 1].name,true);
         }
         else {
+            // otherwise move back
             renderer->m_activePresetID--;
             selectPresetByName(renderer->m_presetList[renderer->m_activePresetID-1].name,true);
         }
@@ -905,11 +908,14 @@ void projectM::selectNext(const bool hardCut) {
         return;
     if (isTextInputActive() && renderer->m_presetList.size() >= 1) // if search is active and there are search results
     {
+        // if search menu is down, previous is based on search terms.
         if (renderer->m_activePresetID >= renderer->m_presetList.size()) {
+            // loop to top of page is at bottom
             renderer->m_activePresetID = 1;
             selectPresetByName(renderer->m_presetList[0].name,true);
         }
         else {
+            // otherwise move forward 
             selectPresetByName(renderer->m_presetList[renderer->m_activePresetID].name,true);
             renderer->m_activePresetID++;
         }
@@ -970,6 +976,7 @@ void projectM::setPresetLock ( bool isLocked )
     }
 }
 
+// check if search menu is up and you have search terms (2 chars). nomin means you don't care about search terms.
 bool projectM::isTextInputActive( bool nomin ) const
 {
     if (renderer->showsearch && (renderer->searchText().length() >= 2 || nomin)) 
@@ -1099,12 +1106,14 @@ void projectM::getMeshSize(int *w, int *h)	{
     *h = _settings.meshY;
 }
 
+// toggleSearchText
 void projectM::toggleSearchText()
 {
     if ( renderer )
         renderer->toggleSearchText();
 }
 
+// get index from search results based on preset name
 const unsigned int projectM::getSearchIndex(std::string &name) const
 {
     for (auto& it : renderer->m_presetList) {
@@ -1113,17 +1122,20 @@ const unsigned int projectM::getSearchIndex(std::string &name) const
 	return 0;
 }
 
+// get preset index based on preset name
 unsigned int projectM::getPresetIndex(std::string& name) const
 {
 	return m_presetLoader->getPresetIndex(name);
 }
 
+// load preset based on name
 void projectM::selectPresetByName(std::string name, bool hardCut) {
 	unsigned int index = getPresetIndex(name);
 	if (m_presetChooser->empty()) return;
 	selectPreset(index);  
 }
 
+// update search text based on new keystroke
 void projectM::setSearchText(const std::string & searchKey)
 {
     if ( renderer ) 
@@ -1136,6 +1148,7 @@ void projectM::setSearchText(const std::string & searchKey)
     }
 }
 
+// update search text based on new backspace
 void projectM::deleteSearchText()
 {
     if ( renderer )

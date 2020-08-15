@@ -811,6 +811,7 @@ void Renderer::touchDestroyAll()
 	waveformList.clear();
 }
 
+// turn search menu on / off
 void Renderer::toggleSearchText() {
 	this->showsearch = !this->showsearch;
 	if (this->showsearch)
@@ -820,16 +821,13 @@ void Renderer::toggleSearchText() {
 	}
 }
 
+// search based on new key input
 void Renderer::setSearchText(const std::string& theValue)
 {
 	m_searchText = m_searchText + theValue;
 }
 
-void Renderer::resetSearchText()
-{
-	m_searchText = "";
-}
-
+// search text backspace (delete a key)
 void Renderer::deleteSearchText()
 {
 	if (m_searchText.length() >= 1) {
@@ -856,6 +854,7 @@ void Renderer::draw_title_to_screen(bool flip)
 #endif /** USE_TEXT_MENU */
 }
 
+// render search text menu
 void Renderer::draw_search()
 {
 #ifdef USE_TEXT_MENU
