@@ -176,20 +176,20 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			}
 			break;
 		case PROJECTM_K_h:
-			if (!isTextInputActive(true)) {
+			if (!isTextInputActive(true)) { // disable help when searching.
 				renderer->showhelp = !renderer->showhelp;
 				renderer->showstats = false;
 				renderer->showmenu = false;
 			}
 		case PROJECTM_K_F1:
-			if (!isTextInputActive(true)) {
+			if (!isTextInputActive(true)) { // disable F1 when searching.
 				renderer->showhelp = !renderer->showhelp;
 				renderer->showstats = false;
 				renderer->showmenu = false;
 			}
 			break;
 		case PROJECTM_K_y:
-			if (!isTextInputActive(true)) {
+			if (!isTextInputActive(true)) { // disable shuffle toggle when searching.
 				this->setShuffleEnabled(!this->isShuffleEnabled());
 				if (this->isShuffleEnabled()) {
 					renderer->setToastMessage("Shuffle Enabled");
@@ -200,7 +200,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			}
 			break;
 		case PROJECTM_K_F5:
-			if (!isTextInputActive(true)) {
+			if (!isTextInputActive(true)) { // disable fps when searching.
 				renderer->showfps = !renderer->showfps;
 				// Initialize counters and reset frame count.
 				renderer->lastTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
@@ -214,7 +214,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			}
 			break;
 		case PROJECTM_K_F4:
-			if (!isTextInputActive(true)) {
+			if (!isTextInputActive(true)) { // disable states when searching.
 				renderer->showstats = !renderer->showstats;
 				if (renderer->showstats) {
 					renderer->showhelp = false;
@@ -223,7 +223,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			}
 			break;
 		case PROJECTM_K_F3: {
-			if (!isTextInputActive(true)) {
+			if (!isTextInputActive(true)) { // disable current preset name when searching.
 				renderer->showpreset = !renderer->showpreset;
 				// Hide FPS from screen and replace it with preset name.
 				if (renderer->showpreset)
@@ -261,7 +261,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			break;
 		case PROJECTM_K_H:
 		case PROJECTM_K_m:
-			if (!isTextInputActive(true)) {
+			if (!isTextInputActive(true)) { // disable menu when searching (hint: it's already up).
 				renderer->showmenu = !renderer->showmenu;
 				if (renderer->showmenu) {
 					renderer->showhelp = false;
@@ -271,7 +271,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			}
 			break;
 		case PROJECTM_K_M:
-			if (!isTextInputActive(true)) {
+			if (!isTextInputActive(true)) { // disable menu when searching (hint: it's already up).
 				renderer->showmenu = !renderer->showmenu;
 				if (renderer->showmenu)
 				{
@@ -282,19 +282,19 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			}
           break;
       case PROJECTM_K_n:
-	   if (!isTextInputActive(true))
+	   if (!isTextInputActive(true)) // disable next key when searching (down arrow is more natural)
           selectNext(true);
           break;
       case PROJECTM_K_N:
-		if (!isTextInputActive(true))
+		if (!isTextInputActive(true)) // disable next key when searching (down arrow is more natural)
           selectNext(false);
           break;
 	    case PROJECTM_K_r:
-		if (!isTextInputActive(true))
+		if (!isTextInputActive(true)) // disable random key when searching
 			selectRandom(true);
 		  break;
 	    case PROJECTM_K_R:
-		if (!isTextInputActive(true))
+		if (!isTextInputActive(true)) // disable random key when searching
 			selectRandom(false);
 		break;
 	    case PROJECTM_K_p:
@@ -305,7 +305,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      selectPrevious(false);
 	      break;
 	    case PROJECTM_K_l:
-			if (!isTextInputActive(true))
+			if (!isTextInputActive(true)) // disable lock key when searching
 				setPresetLock(!isPresetLocked());
 			break;
 	    case PROJECTM_K_s:

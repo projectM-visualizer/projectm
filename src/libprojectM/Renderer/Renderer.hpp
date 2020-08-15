@@ -175,7 +175,6 @@ public:
   void setToastMessage(const std::string& theValue);
   void setSearchText(const std::string& theValue);
   void deleteSearchText();
-  void resetSearchText();
 
   std::string toastMessage() const {
     return m_toastMessage;

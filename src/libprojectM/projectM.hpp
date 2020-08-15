@@ -238,7 +238,9 @@ public:
   /// Plays a preset immediately when given preset name
   void selectPresetByName(std::string name, bool hardCut = true);
 
+  // search based on keystroke
   void setSearchText(const std::string & searchKey);
+  // delete part of search term (backspace)
   void deleteSearchText();
 
 
