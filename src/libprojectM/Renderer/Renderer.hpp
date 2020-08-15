@@ -164,6 +164,7 @@ public:
 		return duration_cast<milliseconds>(system_clock::now().time_since_epoch());;
   }
 
+  void toggleSearchText();
   void toggleInput();
   void touch(float x, float y, int pressure, int type);
   void touchDrag(float x, float y, int pressure);
