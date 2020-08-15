@@ -120,17 +120,27 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 		switch (keycode)
 		{
 		case PROJECTM_K_HOME:
-			if (renderer->showmenu) { // pageup only does something when the preset menu is active.
+			if (renderer->showmenu && !isTextInputActive()) { // pageup only does something when the preset menu is active.
 				selectPreset(0);  // jump to top of presets.
+			}
+			else if (renderer->showmenu && isTextInputActive())
+			{
+				renderer->m_activePresetID = 1;
+				selectPresetByName(renderer->m_presetList[0].name,true);
 			}
 			break;
 		case PROJECTM_K_END:
-			if (renderer->showmenu) { // pageup only does something when the preset menu is active.
+			if (renderer->showmenu && !isTextInputActive()) { // pageup only does something when the preset menu is active.
 				selectPreset(m_presetLoader->size() - 1);  // jump to bottom of presets.
+			}
+			else if (renderer->showmenu && isTextInputActive())
+			{
+				renderer->m_activePresetID = renderer->m_presetList.size();
+				selectPresetByName(renderer->m_presetList[renderer->m_activePresetID - 1].name,true);
 			}
 			break;
 		case PROJECTM_K_PAGEUP:
-			if (renderer->showmenu) { // pageup only does something when the preset menu is active.
+			if (renderer->showmenu && !isTextInputActive()) { // pageup only does something when the preset menu is active.
 				int upPreset = m_presetPos->lastIndex() - (renderer->textMenuPageSize / 2.0f); // jump up by page size / 2
 				if (upPreset < 0) // handle lower boundary
 					upPreset = m_presetLoader->size() - 1;
@@ -138,7 +148,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			}
 			break;
 		case PROJECTM_K_PAGEDOWN:
-			if (renderer->showmenu) { // pagedown only does something when the preset menu is active.
+			if (renderer->showmenu && !isTextInputActive()) { // pagedown only does something when the preset menu is active.
 				int downPreset = m_presetPos->lastIndex() + (renderer->textMenuPageSize / 2.0f); // jump down by page size / 2
 				if (downPreset >= (m_presetLoader->size() - 1)) // handle upper boundary
 					downPreset = 0;
@@ -166,49 +176,60 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			}
 			break;
 		case PROJECTM_K_h:
-			renderer->showhelp = !renderer->showhelp;
-			renderer->showstats = false;
-			renderer->showmenu = false;
+			if (!isTextInputActive(true)) {
+				renderer->showhelp = !renderer->showhelp;
+				renderer->showstats = false;
+				renderer->showmenu = false;
+			}
 		case PROJECTM_K_F1:
-			renderer->showhelp = !renderer->showhelp;
-			renderer->showstats = false;
-			renderer->showmenu = false;
-			break;
-		case PROJECTM_K_y:
-			this->setShuffleEnabled(!this->isShuffleEnabled());
-			if (this->isShuffleEnabled()) {
-				renderer->setToastMessage("Shuffle Enabled");
-			}
-			else {
-				renderer->setToastMessage("Shuffle Disabled");
-			}
-			break;
-
-		case PROJECTM_K_F5:
-			renderer->showfps = !renderer->showfps;
-			// Initialize counters and reset frame count.
-			renderer->lastTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-			renderer->currentTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-			renderer->totalframes = 0;
-			// Hide preset name from screen and replace it with FPS counter.
-			if (renderer->showfps)
-			{
-				renderer->showpreset = false;
-			}
-			break;
-		case PROJECTM_K_F4:
-			renderer->showstats = !renderer->showstats;
-			if (renderer->showstats) {
-				renderer->showhelp = false;
+			if (!isTextInputActive(true)) {
+				renderer->showhelp = !renderer->showhelp;
+				renderer->showstats = false;
 				renderer->showmenu = false;
 			}
 			break;
+		case PROJECTM_K_y:
+			if (!isTextInputActive(true)) {
+				this->setShuffleEnabled(!this->isShuffleEnabled());
+				if (this->isShuffleEnabled()) {
+					renderer->setToastMessage("Shuffle Enabled");
+				}
+				else {
+					renderer->setToastMessage("Shuffle Disabled");
+				}
+			}
+			break;
+		case PROJECTM_K_F5:
+			if (!isTextInputActive(true)) {
+				renderer->showfps = !renderer->showfps;
+				// Initialize counters and reset frame count.
+				renderer->lastTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+				renderer->currentTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+				renderer->totalframes = 0;
+				// Hide preset name from screen and replace it with FPS counter.
+				if (renderer->showfps)
+				{
+					renderer->showpreset = false;
+				}
+			}
+			break;
+		case PROJECTM_K_F4:
+			if (!isTextInputActive(true)) {
+				renderer->showstats = !renderer->showstats;
+				if (renderer->showstats) {
+					renderer->showhelp = false;
+					renderer->showmenu = false;
+				}
+			}
+			break;
 		case PROJECTM_K_F3: {
-			renderer->showpreset = !renderer->showpreset;
-			// Hide FPS from screen and replace it with preset name.
-			if (renderer->showpreset)
-			{
-				renderer->showfps = false;
+			if (!isTextInputActive(true)) {
+				renderer->showpreset = !renderer->showpreset;
+				// Hide FPS from screen and replace it with preset name.
+				if (renderer->showpreset)
+				{
+					renderer->showfps = false;
+				}
 			}
 			break;
 		}
@@ -225,7 +246,9 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			break;
 
 		case PROJECTM_K_ESCAPE: {
-			//	        exit( 1 );
+			renderer->showinput = false; // hide input menu
+			setShuffleEnabled(renderer->shuffletrack); // restore shuffle
+			renderer->showmenu = false; // hide input
 			break;
 		}
 		case PROJECTM_K_f:
@@ -238,33 +261,41 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			break;
 		case PROJECTM_K_H:
 		case PROJECTM_K_m:
-			renderer->showmenu = !renderer->showmenu;
-			if (renderer->showmenu) {
-				renderer->showhelp = false;
-				renderer->showstats = false;
-				populatePresetMenu();
+			if (!isTextInputActive(true)) {
+				renderer->showmenu = !renderer->showmenu;
+				if (renderer->showmenu) {
+					renderer->showhelp = false;
+					renderer->showstats = false;
+					populatePresetMenu();
+				}
 			}
 			break;
 		case PROJECTM_K_M:
-			renderer->showmenu = !renderer->showmenu;
-			if (renderer->showmenu)
-			{
-				renderer->showhelp=false;
-				renderer->showstats=false;
-				populatePresetMenu();
+			if (!isTextInputActive(true)) {
+				renderer->showmenu = !renderer->showmenu;
+				if (renderer->showmenu)
+				{
+					renderer->showhelp = false;
+					renderer->showstats = false;
+					populatePresetMenu();
+				}
 			}
           break;
       case PROJECTM_K_n:
+	   if (!isTextInputActive(true))
           selectNext(true);
           break;
       case PROJECTM_K_N:
+		if (!isTextInputActive(true))
           selectNext(false);
           break;
 	    case PROJECTM_K_r:
-		selectRandom(true);
-		break;
+		if (!isTextInputActive(true))
+			selectRandom(true);
+		  break;
 	    case PROJECTM_K_R:
-		selectRandom(false);
+		if (!isTextInputActive(true))
+			selectRandom(false);
 		break;
 	    case PROJECTM_K_p:
 	      selectPrevious(true);
@@ -274,14 +305,27 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	      selectPrevious(false);
 	      break;
 	    case PROJECTM_K_l:
-			setPresetLock(!isPresetLocked());
+			if (!isTextInputActive(true))
+				setPresetLock(!isPresetLocked());
 			break;
 	    case PROJECTM_K_s:
             	renderer->studio = !renderer->studio;
 	    case PROJECTM_K_i:
 	        break;
-	    case PROJECTM_K_z:
-	      break;
+	    case PROJECTM_K_RETURN:
+			renderer->toggleInput();
+			if (renderer->showinput) {
+				renderer->shuffletrack = this->isShuffleEnabled(); // track previous shuffle state.
+				setShuffleEnabled(false); // disable shuffle
+				renderer->showhelp = false;
+				renderer->showstats = false;
+				renderer->showmenu = true;
+				populatePresetMenu();
+			} else {
+				setShuffleEnabled(renderer->shuffletrack); // restore shuffle
+				renderer->showmenu = false;
+			}
+			break;
 	    case PROJECTM_K_0:
 //	      nWaveMode=0;
 	      break;
