@@ -188,6 +188,7 @@ public:
   void touchDestroy(float x, float y);
   void touchDestroyAll();
   void setHelpText(const std::string & helpText);
+  void toggleSearchText(); // turn search text input on / off
   void setToastMessage(const std::string & toastMessage);
   const Settings & settings() const {
 		return _settings;
@@ -228,6 +229,18 @@ public:
 
   /// Returns true if the active preset is locked
   bool isPresetLocked() const;
+
+  /// Returns true if the text based search menu is up.
+  bool isTextInputActive(bool nomin = false) const;
+
+  unsigned int getPresetIndex(std::string &url) const;
+
+  /// Plays a preset immediately when given preset name
+  void selectPresetByName(std::string name, bool hardCut = true);
+
+  void setSearchText(const std::string & searchKey);
+  void deleteSearchText();
+
 
   /// Returns index of currently active preset. In the case where the active
   /// preset was removed from the playlist, this function will return the element
@@ -298,6 +311,8 @@ public:
   std::vector<int> presetHistory;  
   std::vector<int> presetFuture;  
 
+  /// Get the preset index given a name
+	const unsigned int getSearchIndex(std::string &name) const;
 
   void selectPrevious(const bool);
   void selectNext(const bool);
