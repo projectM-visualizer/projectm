@@ -246,7 +246,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			break;
 
 		case PROJECTM_K_ESCAPE: {
-			renderer->showinput = false; // hide input menu
+			renderer->showsearch = false; // hide input menu
 			setShuffleEnabled(renderer->shuffletrack); // restore shuffle
 			renderer->showmenu = false; // hide input
 			break;
@@ -314,7 +314,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	        break;
 	    case PROJECTM_K_RETURN:
 			renderer->toggleSearchText();
-			if (renderer->showinput) {
+			if (renderer->showsearch) {
 				renderer->shuffletrack = this->isShuffleEnabled(); // track previous shuffle state.
 				setShuffleEnabled(false); // disable shuffle
 				renderer->showhelp = false;
