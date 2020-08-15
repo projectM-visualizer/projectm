@@ -797,8 +797,7 @@ void projectM::populatePresetMenu()
                     {
                         h++;
                         renderer->m_presetList.push_back({ h, getPresetName(i), "" }); // populate the renders preset list.
-                        int id = getSearchIndex(renderer->presetName());
-                        if (h == getSearchIndex(getPresetName(id)))
+                        if (h == getSearchIndex(renderer->presetName()))
                         {
                             renderer->m_activePresetID = h;
                         }
