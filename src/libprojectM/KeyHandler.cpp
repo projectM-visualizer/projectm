@@ -313,7 +313,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 	    case PROJECTM_K_i:
 	        break;
 	    case PROJECTM_K_RETURN:
-			renderer->toggleInput();
+			renderer->toggleSearchText();
 			if (renderer->showinput) {
 				renderer->shuffletrack = this->isShuffleEnabled(); // track previous shuffle state.
 				setShuffleEnabled(false); // disable shuffle
