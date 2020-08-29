@@ -385,6 +385,10 @@ Pipeline * projectM::renderFrameOnlyPass1(Pipeline *pPipeline) /*pPipeline is a 
         }
     }
 
+    if ( !timeKeeper->IsSmoothing() )
+    {
+        PipelineMerger::ensureAlphaIsNotBlended(m_activePreset->pipeline());
+    }
 
     if ( timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty() )
     {

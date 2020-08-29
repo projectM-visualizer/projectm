@@ -5,6 +5,14 @@
 const double PipelineMerger::e(2.71828182845904523536);
 const double PipelineMerger::s(0.5);
 
+void PipelineMerger::ensureAlphaIsNotBlended(const Pipeline & a)
+{
+	for ( std::vector<RenderItem*>::const_iterator pos = a.drawables.begin(); pos != a.drawables.end(); ++pos )
+	{
+		( *pos )->masterAlpha = 1.0;
+	}
+}
+
 void PipelineMerger::mergePipelines(const Pipeline & a, const Pipeline & b, Pipeline & out, RenderItemMatcher::MatchResults & results, RenderItemMergeFunction & mergeFunction, float ratio)
 
 {
