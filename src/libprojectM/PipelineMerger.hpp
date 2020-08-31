@@ -16,7 +16,6 @@ public:
     
   static void mergePipelines(const Pipeline &a,  const Pipeline &b, Pipeline &out, 
 	RenderItemMatcher::MatchResults & matching, RenderItemMergeFunction & merger, float ratio);
-  static void ensureAlphaIsNotBlended(const Pipeline & a);
 
 private :
 
