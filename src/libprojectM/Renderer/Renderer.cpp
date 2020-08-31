@@ -69,34 +69,9 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 	if (windowWidth > textWidth)
 	{
 		// redraw without transparency
-		if (highlightable && showsearch && searchText().length() > 1)
+		if (textHighlightable(highlightable))
 		{ 
-			int offset = x;
-			std::string str_find = string;
-			for( size_t pos = 0; ; pos += str_find.length() ) {
-				// find search term
-				pos = str_find.find(searchText());
-
-				// draw everything normal, up to search term.
-				gltColor(r, g, b, a);
-				gltSetText(text, str_find.substr(0,pos).c_str());
-				gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
-
-				// highlight search term
-				GLfloat textWidth = gltGetTextWidth(text, scale);
-				offset = offset + textWidth;
-				gltColor(1.0f, 0.0f, 1.0f, 1.0f);
-				gltSetText(text, searchText().c_str());
-				gltDrawText2DAligned(text, offset, y, scale, horizontalAlignment, verticalAlignment);
-
-				// draw rest of name, normally
-				textWidth = gltGetTextWidth(text, scale);
-				offset = offset + textWidth;
-				gltColor(r, g, b, a);
-				gltSetText(text, str_find.substr(pos+searchText().length(),str_find.length()).c_str());
-				gltDrawText2DAligned(text, offset, y, scale, horizontalAlignment, verticalAlignment);
-				break; // first search hit is useful enough.
-			}
+			drawText(text, string, searchText().c_str(), x, y, scale, horizontalAlignment, verticalAlignment, r, g, b, a, highlightable);
 		} else {
 			gltColor(r, g, b, a);
 			gltSetText(text, string);
@@ -121,34 +96,9 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 			substring += "...";
 		}
 
-		if (highlightable && showsearch && searchText().length() > 1)
+		if (textHighlightable(highlightable))
 		{
-			int offset = x;
-			std::string str_find = substring;
-			for (size_t pos = 0; ; pos += str_find.length()) {
-				// find search term
-				pos = str_find.find(string);
-
-				// draw everything normal, up to search term.
-				gltColor(r, g, b, a);
-				gltSetText(text, str_find.substr(0, pos).c_str());
-				gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
-
-				// highlight search term
-				GLfloat textWidth = gltGetTextWidth(text, scale);
-				offset = offset + textWidth;
-				gltColor(1.0f, 0.0f, 1.0f, 1.0f);
-				gltSetText(text, searchText().c_str());
-				gltDrawText2DAligned(text, offset, y, scale, horizontalAlignment, verticalAlignment);
-
-				// draw rest of name, normally
-				textWidth = gltGetTextWidth(text, scale);
-				offset = offset + textWidth;
-				gltColor(r, g, b, a);
-				gltSetText(text, str_find.substr(pos + searchText().length(), str_find.length()).c_str());
-				gltDrawText2DAligned(text, offset, y, scale, horizontalAlignment, verticalAlignment);
-				break; // first search hit is useful enough.
-			}
+			drawText(text, substring.c_str(), searchText().c_str(), x, y, scale, horizontalAlignment, verticalAlignment, r, g, b, a, highlightable);
 		} else {
 			string = substring.c_str();
 			// Redraw now that the text fits.
@@ -168,6 +118,41 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 	gltTerminate();
 }
 
+// draw text with search term a/k/a needle & highlight text
+void Renderer::drawText(GLTtext* text, const char* string, const char* needle, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f, bool highlightable = false) {
+	int offset = x;
+	std::string str_find = string;
+	for( size_t pos = 0; ; pos += str_find.length() ) {
+		// find search term
+		pos = str_find.find(needle);
+
+		// draw everything normal, up to search term.
+		gltColor(r, g, b, a);
+		gltSetText(text, str_find.substr(0,pos).c_str());
+		gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
+
+		// highlight search term
+		GLfloat textWidth = gltGetTextWidth(text, scale);
+		offset = offset + textWidth;
+		gltColor(1.0f, 0.0f, 1.0f, 1.0f);
+		gltSetText(text, searchText().c_str());
+		gltDrawText2DAligned(text, offset, y, scale, horizontalAlignment, verticalAlignment);
+
+		// draw rest of name, normally
+		textWidth = gltGetTextWidth(text, scale);
+		offset = offset + textWidth;
+		gltColor(r, g, b, a);
+		gltSetText(text, str_find.substr(pos+searchText().length(),str_find.length()).c_str());
+		gltDrawText2DAligned(text, offset, y, scale, horizontalAlignment, verticalAlignment);
+		break; // first search hit is useful enough.
+	}
+}
+
+bool Renderer::textHighlightable(bool highlightable) {
+	if (highlightable && showsearch && searchText().length() > 1)
+		return true;
+	return false;
+}
 
 #endif /** USE_TEXT_MENU */
 
