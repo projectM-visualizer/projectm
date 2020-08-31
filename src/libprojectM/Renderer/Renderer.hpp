@@ -195,11 +195,11 @@ private:
   TimeKeeper *timeKeeperToast;
 
 #ifdef USE_TEXT_MENU
-
-  void drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
-                   int verticalAlignment, float r, float b, float g, float a, bool highlightable);
-  void drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
-                   int verticalAlignment, float r, float b, float g, float a, bool highlightable);
+  // draw text with search term a/k/a needle & highlight text
+  void drawText(GLTtext* text, const char* string, const char* needle, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment, int verticalAlignment, float r, float b, float g, float a, bool highlightable);
+  void drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment, int verticalAlignment, float r, float b, float g, float a, bool highlightable);
+  void drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment, int verticalAlignment, float r, float b, float g, float a, bool highlightable);
+  bool textHighlightable(bool highlightable);
 
 #endif /** USE_TEXT_MENU */
   RenderContext renderContext;
