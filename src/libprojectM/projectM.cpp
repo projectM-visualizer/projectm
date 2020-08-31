@@ -1052,9 +1052,33 @@ void projectM::setToastMessage(const std::string & toastMessage)
         renderer->setToastMessage(toastMessage);
 }
 
+void projectM::touch(float x, float y, int pressure, int touchtype)
+{
+    if ( renderer )
+        renderer->touch(x, y, pressure, touchtype);
+}
+
+void projectM::touchDrag(float x, float y, int pressure)
+{
+    if ( renderer )
+        renderer->touchDrag(x, y, pressure);
+}
+
+
+void projectM::touchDestroy(float x, float y)
+{
+    if ( renderer )
+        renderer->touchDestroy(x, y);
+}
+
+void projectM::touchDestroyAll()
+{
+    if (renderer)
+        renderer->touchDestroyAll();
+}
+
 void projectM::setHelpText(const std::string & helpText)
 {
     if ( renderer )
         renderer->setHelpText(helpText);
 }
-
