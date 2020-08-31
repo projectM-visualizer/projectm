@@ -308,6 +308,10 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
     case SDLK_BACKSPACE:
         projectM::deleteSearchText();
         break;
+    case SDLK_SLASH:
+        break;
+    case SDLK_BACKSLASH:
+        break;
     case SDLK_RETURN:
         if (!projectM::isTextInputActive()) {
             SDL_StartTextInput();

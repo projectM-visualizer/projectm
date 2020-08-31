@@ -1160,6 +1160,19 @@ void projectM::deleteSearchText()
     }
 }
 
+// reset search text
+void projectM::resetSearchText()
+{
+    if ( renderer )
+        renderer->resetSearchText();
+    populatePresetMenu();
+    if (renderer->m_presetList.size() >= 1) {
+        renderer->m_activePresetID = 1;
+        std::string topPreset = renderer->m_presetList.front().name;
+        selectPresetByName(topPreset);
+    }
+}
+
 void projectM::setToastMessage(const std::string & toastMessage)
 {
     if ( renderer )

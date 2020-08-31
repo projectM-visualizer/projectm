@@ -242,7 +242,8 @@ public:
   void setSearchText(const std::string & searchKey);
   // delete part of search term (backspace)
   void deleteSearchText();
-
+  // reset search term (blank)
+  void resetSearchText();
 
   /// Returns index of currently active preset. In the case where the active
   /// preset was removed from the playlist, this function will return the element
