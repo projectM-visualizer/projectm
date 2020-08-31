@@ -827,6 +827,12 @@ void Renderer::setSearchText(const std::string& theValue)
 	m_searchText = m_searchText + theValue;
 }
 
+// reset search text backspace (reset)
+void Renderer::resetSearchText()
+{
+	m_searchText = "";
+}
+
 // search text backspace (delete a key)
 void Renderer::deleteSearchText()
 {
