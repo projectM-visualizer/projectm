@@ -907,7 +907,7 @@ void projectM::selectNext(const bool hardCut) {
         return;
     if (isTextInputActive() && renderer->m_presetList.size() >= 1) // if search is active and there are search results
     {
-        // if search menu is down, previous is based on search terms.
+        // if search menu is down, next is based on search terms.
         if (renderer->m_activePresetID >= renderer->m_presetList.size()) {
             // loop to top of page is at bottom
             renderer->m_activePresetID = 1;
@@ -916,7 +916,6 @@ void projectM::selectNext(const bool hardCut) {
         else {
             // otherwise move forward 
             selectPresetByName(renderer->m_presetList[renderer->m_activePresetID].name,true);
-            renderer->m_activePresetID++;
         }
     } else if (settings().shuffleEnabled && presetFuture.size() >= 1 && presetFuture.front() != m_presetLoader->size() && !renderer->showmenu) { // if shuffling and we have future presets already stashed then let's go forward rather than truely move randomly.
         presetHistory.push_back(m_presetPos->lastIndex());
