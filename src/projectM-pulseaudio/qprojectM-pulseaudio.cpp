@@ -226,7 +226,7 @@ std::string read_config()
 					fclose ( in );
 					return std::string ( projectM_config );
 				}
-				else{printf ( "This shouldn't happen, using implementation defualts\n" );abort();}
+				else{printf ( "This shouldn't happen, using implementation defaults\n" );abort();}
 			}
 			else{printf ( "Cannot find projectM default config, using implementation defaults\n" );abort();}
 		}
@@ -239,7 +239,7 @@ std::string read_config()
 				fclose ( in );
 				return std::string ( default_config );
 			}
-			else{ printf ( "Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n" );  abort();}
+			else{ printf ( "Using implementation defaults, your system is really messed up, I'm surprised we even got this far\n" );  abort();}
 
 		}
 

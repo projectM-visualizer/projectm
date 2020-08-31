@@ -75,12 +75,19 @@ public:
   bool showtitle;
   bool showpreset;
   bool showhelp;
+  bool showmenu;
   bool showstats;
 
   bool studio;
   bool correction;
 
   bool noSwitch;
+
+  struct preset {
+    int id;
+    std::string name, presetPack;
+  };
+
 
   milliseconds lastTimeFPS;
   milliseconds currentTimeFPS;
@@ -96,9 +103,15 @@ public:
   float realfps;
 
   std::string title;
+  int m_activePresetID;
+  std::vector<preset> m_presetList;
+
   int drawtitle;
   int texsizeX;
   int texsizeY;
+  int textMenuPageSize = 10;
+  int textMenuLineHeight = 25;
+  int textMenuYOffset = 60;
   float m_fAspectX;
   float m_fAspectY;
   float m_fInvAspectX;
@@ -106,7 +119,7 @@ public:
 
   Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL, const std::string& datadir = "");
   ~Renderer();
-
+  
   void RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderFrameOnlyPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderFrameOnlyPass2(const Pipeline &pipeline, const PipelineContext &pipelineContext,int xoffset,int yoffset,int eye);
@@ -172,9 +185,9 @@ private:
 #ifdef USE_TEXT_MENU
 
   void drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
-                   int verticalAlignment);
+                   int verticalAlignment, float r, float b, float g, float a);
   void drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
-                   int verticalAlignment);
+                   int verticalAlignment, float r, float b, float g, float a);
 
 #endif /** USE_TEXT_MENU */
   RenderContext renderContext;
@@ -237,6 +250,7 @@ private:
   void draw_fps();
   void draw_stats();
   void draw_help();
+  void draw_menu();
   void draw_preset();
   void draw_title();
   void draw_title_to_screen(bool flip);

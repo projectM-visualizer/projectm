@@ -49,6 +49,8 @@ class PresetFactoryManager {
 		/// \returns true if a factory exists, false otherwise
 		bool extensionHandled(const std::string & extension) const;
 		std::unique_ptr<Preset> allocate(const std::string & url, const std::string & name);
+        std::vector<std::string> extensionsHandled() const;
+
 
 	private:
 		int _gx, _gy;				

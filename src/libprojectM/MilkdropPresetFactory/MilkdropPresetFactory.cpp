@@ -188,8 +188,7 @@ PresetOutputs* MilkdropPresetFactory::createPresetOutputs(int gx, int gy)
 	presetOutputs->bSolarize = 0;
 	presetOutputs->bInvert = 0;
 	presetOutputs->bMotionVectorsOn = 1;
-
-    	presetOutputs->fWarpAnimSpeed = 0;
+    presetOutputs->fWarpAnimSpeed = 0;
 	presetOutputs->fWarpScale = 0;
 	presetOutputs->fShader = 0;
 

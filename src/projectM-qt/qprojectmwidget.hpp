@@ -112,7 +112,7 @@ class QProjectMWidget : public QGLWidget
 
 		void resetProjectM()
 		{
-			std::cout << "reseting" << std::endl;
+			std::cout << "resetting" << std::endl;
 			qDebug() << "reset start";
 
 			emit ( projectM_BeforeDestroy() );

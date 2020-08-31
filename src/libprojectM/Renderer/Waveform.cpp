@@ -57,8 +57,8 @@ void Waveform::Draw(RenderContext &context)
 	std::transform(&value1[0], &value1[samples], &value1[0], bind2nd(std::multiplies<float>(), mult));
 	std::transform(&value2[0], &value2[samples], &value2[0], bind2nd(std::multiplies<float>(), mult));
 #else
-	std::transform(&value1[0], &value1[samples], &value1[0], std::bind2nd(std::multiplies<float>(), mult));
-	std::transform(&value2[0], &value2[samples], &value2[0], std::bind2nd(std::multiplies<float>(), mult));
+	std::transform(&value1[0], &value1[samples], &value1[0], std::bind(std::multiplies<float>(), std::placeholders::_1, mult));
+	std::transform(&value2[0], &value2[samples], &value2[0], std::bind(std::multiplies<float>(), std::placeholders::_1, mult));
 #endif /** WIN32 */
 
 	WaveformContext waveContext(samples, context.beatDetect);
