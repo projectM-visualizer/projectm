@@ -67,6 +67,10 @@ pthread_mutex_t preset_mutex;
 #endif
 #endif
 
+namespace {
+constexpr int kMaxSwitchRetries = 10;
+}
+
 projectM::~projectM()
 {
 #ifdef USE_THREADS
@@ -779,7 +783,9 @@ void projectM::selectPreset(unsigned int index, bool hardCut)
     populatePresetMenu();
 
     *m_presetPos = m_presetChooser->begin(index);
-    switchPreset(hardCut);
+    if(!switchPreset(hardCut).empty()) {
+        selectRandom(hardCut);
+    }
 }
 
 // populatePresetMenu is called when a preset is loaded.
@@ -809,7 +815,8 @@ void projectM::populatePresetMenu()
         }
     }
 }
-void projectM::switchPreset(const bool hardCut) {
+
+std::string projectM::switchPreset(const bool hardCut) {
     std::string result;
 
     if (!hardCut) {
@@ -833,6 +840,8 @@ void projectM::switchPreset(const bool hardCut) {
     }
 
     populatePresetMenu();
+
+    return result;
 }
 
 
@@ -840,13 +849,17 @@ void projectM::selectRandom(const bool hardCut) {
     if (m_presetChooser->empty())
         return;
     presetHistory.push_back(m_presetPos->lastIndex());
+
+    for(int i = 0; i < kMaxSwitchRetries; ++i) {
+        *m_presetPos = m_presetChooser->weightedRandom(hardCut);
+        if(switchPreset(hardCut).empty()) {
+            break;
+        }
+    }
     // If presetHistory is tracking more than 10, then delete the oldest entry so we cap to a history of 10.
     if (presetHistory.size() >= 10)
         presetHistory.erase(presetHistory.begin());
     presetFuture.clear();
-    *m_presetPos = m_presetChooser->weightedRandom(hardCut);
-
-    switchPreset(hardCut);
 
 }
 
@@ -860,11 +873,13 @@ void projectM::selectPrevious(const bool hardCut) {
         presetHistory.pop_back();
     }
     else {
-        // if we are not shuffling or there is no random future history, then let's not track a random vector and move fowards in the preset index.
+        // if we are not shuffling or there is no random future history, then let's not track a random vector and move backwards in the preset index.
         presetHistory.clear();
         presetFuture.clear();
         m_presetChooser->previousPreset(*m_presetPos);
-        switchPreset(hardCut);
+        if(!switchPreset(hardCut).empty()) {
+            selectRandom(hardCut);
+        }
     }
 }
 
@@ -877,11 +892,13 @@ void projectM::selectNext(const bool hardCut) {
         presetFuture.pop_back();
     }
     else {
-        // if we are not shuffling or there is no random history, then let's not track a random vector and move backwards in the preset index.
+        // if we are not shuffling or there is no random history, then let's not track a random vector and move forwards in the preset index.
         presetFuture.clear();
         presetHistory.clear();
         m_presetChooser->nextPreset(*m_presetPos);
-        switchPreset(hardCut);
+        if(!switchPreset(hardCut).empty()) {
+            selectRandom(hardCut);
+        }
     }
 }
 
