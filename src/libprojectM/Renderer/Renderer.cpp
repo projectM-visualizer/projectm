@@ -654,14 +654,27 @@ bool Renderer::timeCheck(const milliseconds currentTime, const milliseconds last
 	}
 }
 
+// If we touched on the renderer where there is an existing waveform.
+bool Renderer::touchedWaveform(float x, float y, int i)
+{
+	if (waveformList[i].x > (x-0.05f) && waveformList[i].x < (x+0.05f) // if x +- 0.5f 
+		&& ((waveformList[i].y > (y-0.05f) && waveformList[i].y < (y+0.05f)) // and y +- 0.5f 
+		|| waveformList[i].mode == Line || waveformList[i].mode == DoubleLine || waveformList[i].mode == DerivativeLine ) // OR it's a line (and y doesn't matter)
+		)
+	{
+		return true;
+	}
+	return false;
+}
+
 // Render a waveform when a touch event is triggered.
 void Renderer::touch(float x, float y, int pressure, int type = 0)
 {
-	// if we left clicked in the approximate position of a waveform, then it doens't make sense to add something on top. Instead give the option to drag the existing waveform.
-	// For lines we don't worry about the x axis.
+
 	for (int i = 0; i < waveformList.size(); i++) {
-		if (waveformList[i].x > (x-0.05f) && waveformList[i].x < (x+0.05f) && ((waveformList[i].y > (y-0.05f) && waveformList[i].y < (y+0.05f)) || waveformList[i].mode == Line || waveformList[i].mode == DoubleLine || waveformList[i].mode == DerivativeLine ))
+		if (touchedWaveform(x, y, i))
 		{
+			// if we touched an existing waveform with left click, drag it and don't continue with adding another.
 			touchDrag(x, y, pressure);
 			return;
 		}
@@ -670,11 +683,6 @@ void Renderer::touch(float x, float y, int pressure, int type = 0)
 	touchx = x;
 	touchy = y;
 	touchp = pressure;
-	// If we touched randomly, then assign type to a random number between 0 and 8
-	if (type == 0) {
-		type = (rand() % 9) + 1;
-	}
-	touchtype = type;
 
 	// Randomly select colours on touch
 	touchr = ((double)rand() / (RAND_MAX));
@@ -682,42 +690,15 @@ void Renderer::touch(float x, float y, int pressure, int type = 0)
 	touchg = ((double)rand() / (RAND_MAX));
 	toucha = ((double)rand() / (RAND_MAX));
 
-	// Create a waveform. The touch x / y was based on where you clicked (approximately).
 	MilkdropWaveform wave;
-	switch (touchtype)
-	{
-		case 1:
-			wave.mode = Circle;
-			break;
-		/* Radial Blob flies off and doesn't track your mouse.
-		case 2:
-			wave.mode = RadialBlob;
-			break;
-			*/
-		case 3:
-			wave.mode = Blob2;
-			break;
-		case 4:
-			wave.mode = Blob3;
-			break;
-		case 5:
-			wave.mode = DerivativeLine;
-			break;
-		case 6:
-			wave.mode = Blob5;
-			break;
-		/* Disabling lines because they are not intuitive 
-		case 7:
-			wave.mode = Line;
-			break;
-		case 8:
-			wave.mode = DoubleLine;
-			break;
-		*/
-		default:
-			wave.mode = Circle;
+	if (type == 0) {
+		// If we touched randomly, then assign type to a random number between 0 and 8
+		wave.mode = static_cast<MilkdropWaveformMode>((rand() % last) + 1);
 	}
-	 
+	else {
+		wave.mode = static_cast<MilkdropWaveformMode>(type);
+	}
+
 	wave.additive = true;
 	wave.modOpacityEnd = 1.1;
 	wave.modOpacityStart = 0.0;
@@ -741,7 +722,7 @@ void Renderer::touchDrag(float x, float y, int pressure)
 	// if we left clicked & held in the approximate position of a waveform, snap to it and adjust x / y to simulate dragging.
 	// For lines we don't worry about the x axis.
 	for (int i = 0; i < waveformList.size(); i++) {
-		if (waveformList[i].x > (x-0.05f) && waveformList[i].x < (x+0.05f) && ((waveformList[i].y > (y-0.05f) && waveformList[i].y < (y+0.05f)) || waveformList[i].mode == Line || waveformList[i].mode == DoubleLine || waveformList[i].mode == DerivativeLine ))
+		if (touchedWaveform(x, y, i))
 		{
 			waveformList[i].x = x;
 			waveformList[i].y = y;
@@ -756,7 +737,7 @@ void Renderer::touchDestroy(float x, float y)
 	// if we right clicked approximately on the position of the waveform, then remove it from the waveform list.
 	// For lines we don't worry about the x axis.
 	for (int i = 0; i < waveformList.size(); i++) {
-		if (waveformList[i].x > (x-0.05f) && waveformList[i].x < (x+0.05f) && ((waveformList[i].y > (y-0.05f) && waveformList[i].y < (y+0.05f)) || waveformList[i].mode == Line || waveformList[i].mode == DoubleLine || waveformList[i].mode == DerivativeLine ))
+		if (touchedWaveform(x, y, i))
 		{
 			waveformList.erase(waveformList.begin() + i);
 		}
@@ -899,8 +880,8 @@ void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& 
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	for (std::vector<RenderItem*>::const_iterator pos = pipeline.compositeDrawables.begin(); pos!= pipeline.compositeDrawables.end(); ++pos)
-		(*pos)->Draw(renderContext);
+	for (auto drawable : pipeline.compositeDrawables)
+		drawable->Draw(renderContext);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
