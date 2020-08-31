@@ -463,14 +463,14 @@ template <class RandomAccessIterator>
 void random_shuffle(RandomAccessIterator first, RandomAccessIterator last,
       const unsigned P)
 {
-	return ::std::random_shuffle(first, last);
+	return random_shuffle(first, last);
 }
 
 template <class RandomAccessIterator, class RandomNumberGenerator>
 void random_shuffle(RandomAccessIterator first, RandomAccessIterator last,
                     RandomNumberGenerator &rgen, const unsigned P)
 {
-	return ::std::random_shuffle(first, last, rgen);
+	return random_shuffle(first, last, rgen);
 }
 
 template <class ForwardIterator, class T>

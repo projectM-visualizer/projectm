@@ -15,12 +15,12 @@ addons:
     packages:
       - libc++-dev
       - libsdl2-dev
-      - libglm-dev
       - libgl1-mesa-dev
 
 script:
   - ./configure $PM_OPTS --prefix=$PWD/local && make -j6 && make install  # build from checkout
-  - make dist && tar -zxf projectM-*.tar.gz && cd projectM-* && ./configure $PM_OPTS --prefix=$PWD/dist_install && make -j6 && make install  # build from dist
+  - export PMVER=$(./configure --version | cut -d ' ' -f 3 | grep -m 1 .)  # get pM version
+  - make dist && tar -zxf projectM-${PMVER}.tar.gz && cd projectM-${PMVER} && ./configure $PM_OPTS --prefix=$PWD/dist_install && make -j6 && make install  # build from dist
   - echo "PWD=$PWD"
   - ls .
   - test -e src/projectM-sdl/projectMSDL
@@ -36,20 +36,33 @@ script:
 # test on GCC and Clang
 matrix:
   include:
-    #  pulseaudio/qt/jack
+    #  qt/pulseaudio/jack/sdl
     - os: linux
+      dist: bionic
       addons:
         apt:
           packages:
-            - libglm-dev
             - qt5-default
             - qtdeclarative5-dev
             - libqt5opengl5-dev
             - libjack-dev
             - libpulse-dev
             - libc++-dev
-            - libsdl-dev  # for jack
-            - libsdl2-dev  # for tests
+            - libsdl2-dev
+      env:
+        - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
+    - os: linux
+      dist: xenial
+      addons:
+        apt:
+          packages:
+            - qt5-default
+            - qtdeclarative5-dev
+            - libqt5opengl5-dev
+            - libjack-dev
+            - libpulse-dev
+            - libc++-dev
+            - libsdl2-dev
       env:
         - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
 
@@ -57,7 +70,7 @@ matrix:
     - os: osx
       osx_image: xcode10
       env:
-        - MATRIX_EVAL="brew update && brew install sdl2 glm"
+        - MATRIX_EVAL="brew update && brew install sdl2"
 
 notifications:
   email:

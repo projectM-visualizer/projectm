@@ -87,7 +87,7 @@ std::string getConfigFilename()
 		return std::string(projectM_config);
 	}
 	
-	printf("Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");
+	printf("Using implementation defaults, your system is really messed up, I'm surprised we even got this far\n");
 	abort();
 }
 

@@ -9,18 +9,28 @@ projectM is an open-source project that reimplements the esteemed [Winamp Milkdr
 Its purpose in life is to read an audio input and to produce mesmerizing visuals, detecting tempo, and rendering advanced equations into a limitless array of user-contributed visualizations.
 
 ### Available For
-* [macOS, Linux (binary)](https://github.com/projectM-visualizer/projectm/releases)
-* [Windows Store (PC, XBOX, Phone)](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
-* [Android](https://play.google.com/store/apps/details?id=com.psperl.projectM)
-* [iOS](https://itunes.apple.com/us/app/projectm-music-visualizer/id530922227?mt=8&ign-mpt=uo%3D4)
-* [iTunes plugin (macOS)](https://github.com/projectM-visualizer/projectm/releases/)
-* [Qt5](https://www.qt.io/) + [Pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/)
+##### Windows
+* [Standalone](https://github.com/projectM-visualizer/projectm/releases) (Requires the latest [Visual C++ redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads))
+* [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
+* [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
+#### macOS
+* [Standalone](https://github.com/projectM-visualizer/projectm/releases)
+* [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
+* [Music.app Plugin](https://github.com/projectM-visualizer/projectm/releases/)
+#### Linux
+* [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
+* Check your repository for a binary release.
+#### Android
+* [Google Play](https://play.google.com/store/apps/details?id=com.psperl.prjM)
+#### Xbox / Windows Phone
+* [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
+#### Other
+* [Source Code](https://github.com/projectM-visualizer/projectm/)
+* [Qt5](https://www.qt.io/)-based [Pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/) and Jack desktop apps in [source code](https://github.com/projectM-visualizer/projectm/)
 * [ALSA, xmms, winamp, jack](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
 
-### Download
-Get it from the [Releases](https://github.com/projectM-visualizer/projectm/releases) tab
-or
-Download from the [Windows Store (PC, XBOX, Phone)](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
+### Discord chat
+[Chat with us on Discord.](https://discord.gg/tpEuywB)
 
 ### Demo Video
 [![](http://img.youtube.com/vi/2dSam8zwSFw/0.jpg)](http://www.youtube.com/watch?v=2dSam8zwSFw "Demo")
@@ -76,23 +86,23 @@ See [BUILDING.md](BUILDING.md)
 * Down: decrease beat sensitivity (min 0)
 * Y: toggle shuffle enabled
 * R: jump to random preset
-* N: next preset
-* P: previous preset
-* Shift-N: next preset with hard cut
-* Shift-P: previous preset with hard cut
+* N or P: next or previous preset (hard transition)
+* Shift-N or Shift-P: next or previous preset (soft transition)
 * L: lock current preset
 
 * H or F1: show help (if supported)
+* M: Open preset navigation menu (if supported)
 * F3: show preset (if supported)
 * F4: show stats (if supported)
 * F5: show FPS (if supported)
 
 #### Only ProjectM SDL:
 * Cmd/Ctrl-Q: *q*uit
-* Cmd/Ctrl-I: select next audio *i*nput device (as of v3.1.3)
+* Cmd/Ctrl-I: select next audio *i*nput device
 * Cmd/Ctrl-S: *s*tretch monitors
 * Cmd/Ctrl-M: change *m*onitor
 * Cmd/Ctrl-F: toggle *f*ull screen
+* Mouse Scroll Up / Down: next or previous preset (hard transition)
 * Space: lock current preset
 
 
@@ -116,7 +126,8 @@ There are many other applications that make use of libprojectM and that can be f
 
 ## Help
 Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues/new)
-We're on IRC at irc.freenode.net #projectM
+
+[Chat with us on Discord.](https://discord.gg/tpEuywB) or on IRC at irc.freenode.net #projectM.
 
 If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues.
 

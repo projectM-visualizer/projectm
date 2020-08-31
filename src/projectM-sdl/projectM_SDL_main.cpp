@@ -69,9 +69,9 @@ std::string getConfigFilePath(std::string datadir_path) {
   projectM_config = datadir_path;
 
 #ifdef _MSC_VER
-  home=getenv("HOME");
-#else
   home=getenv("USERPROFILE");
+#else
+  home=getenv("HOME");
 #endif
     
   projectM_home = std::string(home);
@@ -107,8 +107,8 @@ std::string getConfigFilePath(std::string datadir_path) {
     SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Cannot create ~/.projectM/config.inp, using default config file\n");
     return std::string(projectM_config);
   } else {
-    SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "Using implementation defaults, your system is really messed up, I'm suprised we even got this far\n");
-    abort();
+    SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "Using implementation defaults, your system is really messed up, I'm surprised we even got this far\n");
+	return "";
   }
 }
 
@@ -268,7 +268,7 @@ srand((int)(time(NULL)));
 		ERR(L"pAudioClient->Start error");
 		return hr;
 	}
-
+	
 	bool bDone = false;
 	bool bFirstPacket = true;
     UINT32 nPasses = 0;
@@ -420,6 +420,7 @@ modKey = "CMD";
     std::string sdlHelpMenu = "\n"
 		"F1: This help menu""\n"
 		"F3: Show preset name""\n"
+		"F4: Show details and statistics""\n"
 		"F5: Show FPS""\n"
 		"L or SPACE: Lock/Unlock Preset""\n"
 		"R: Random preset""\n"
@@ -449,9 +450,16 @@ modKey = "CMD";
 #endif
 
 #if !FAKE_AUDIO && !WASAPI_LOOPBACK
-    // get an audio input device
-    if (app->openAudioInput())
-	    app->beginAudioCapture();
+	// get an audio input device
+	if (app->openAudioInput())
+		app->beginAudioCapture();
+#endif
+
+#ifdef WASAPI_LOOPBACK
+	// Default to WASAPI loopback if it was enabled at compilation.
+	app->wasapi = true;
+	// Notify that loopback capture was started.
+	SDL_Log("Opened audio capture loopback.");
 #endif
 
 #if TEST_ALL_PRESETS
@@ -490,52 +498,58 @@ modKey = "CMD";
     while (! app->done) {
         app->renderFrame();
 #if FAKE_AUDIO
-        app->addFakePCM();
+		app->fakeAudio  = true;
 #endif
+		// fakeAudio can also be enabled dynamically.
+		if (app->fakeAudio )
+		{
+			app->addFakePCM();
+		}
 #ifdef WASAPI_LOOPBACK
-        // drain data while it is available
-        nPasses++;
-		UINT32 nNextPacketSize;
-		for (
-			hr = pAudioCaptureClient->GetNextPacketSize(&nNextPacketSize);
-			SUCCEEDED(hr) && nNextPacketSize > 0;
-			hr = pAudioCaptureClient->GetNextPacketSize(&nNextPacketSize)
-			) {
-			// get the captured data
-			BYTE *pData;
-			UINT32 nNumFramesToRead;
-			DWORD dwFlags;
+		if (app->wasapi) {
+			// drain data while it is available
+			nPasses++;
+			UINT32 nNextPacketSize;
+			for (
+				hr = pAudioCaptureClient->GetNextPacketSize(&nNextPacketSize);
+				SUCCEEDED(hr) && nNextPacketSize > 0;
+				hr = pAudioCaptureClient->GetNextPacketSize(&nNextPacketSize)
+				) {
+				// get the captured data
+				BYTE *pData;
+				UINT32 nNumFramesToRead;
+				DWORD dwFlags;
 
-			hr = pAudioCaptureClient->GetBuffer(
-				&pData,
-				&nNumFramesToRead,
-				&dwFlags,
-				NULL,
-				NULL
-			);
+				hr = pAudioCaptureClient->GetBuffer(
+					&pData,
+					&nNumFramesToRead,
+					&dwFlags,
+					NULL,
+					NULL
+				);
+				if (FAILED(hr)) {
+					return hr;
+				}
+
+				LONG lBytesToWrite = nNumFramesToRead * nBlockAlign;
+
+				/** Add the waveform data */
+				app->pcm()->addPCMfloat((float *)pData, nNumFramesToRead);
+
+				*pnFrames += nNumFramesToRead;
+
+				hr = pAudioCaptureClient->ReleaseBuffer(nNumFramesToRead);
+				if (FAILED(hr)) {
+					return hr;
+				}
+
+				bFirstPacket = false;
+			}
+
 			if (FAILED(hr)) {
 				return hr;
 			}
-
-			LONG lBytesToWrite = nNumFramesToRead * nBlockAlign;
-
-			/** Add the waveform data */
-			app->pcm()->addPCMfloat((float *)pData, nNumFramesToRead);
-
-			*pnFrames += nNumFramesToRead;
-
-			hr = pAudioCaptureClient->ReleaseBuffer(nNumFramesToRead);
-			if (FAILED(hr)) {
-				return hr;
-			}
-
-			bFirstPacket = false;
 		}
-
-		if (FAILED(hr)) {
-			return hr;
-		}
-
 #endif /** WASAPI_LOOPBACK */
 
 #if UNLOCK_FPS
@@ -557,8 +571,9 @@ modKey = "CMD";
     }
     
     SDL_GL_DeleteContext(glCtx);
-#if !FAKE_AUDIO && !WASAPI_LOOPBACK
-    app->endAudioCapture();
+#if !FAKE_AUDIO
+	if (!app->wasapi) // not currently using WASAPI, so we need to endAudioCapture.
+		app->endAudioCapture();
 #endif
 
     // Write back config with current app settings (if we loaded from a config file to begin with)

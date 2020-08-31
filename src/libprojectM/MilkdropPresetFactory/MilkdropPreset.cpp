@@ -115,9 +115,7 @@ MilkdropPreset::~MilkdropPreset()
 
 int MilkdropPreset::add_per_pixel_eqn(char * name, Expr * gen_expr)
 {
-
   PerPixelEqn * per_pixel_eqn = NULL;
-  int index;
   Param * param = NULL;
 
   assert(gen_expr);
@@ -134,7 +132,7 @@ int MilkdropPreset::add_per_pixel_eqn(char * name, Expr * gen_expr)
     return PROJECTM_FAILURE;
   }
 
-  index = per_pixel_eqn_tree.size();
+  auto index = per_pixel_eqn_tree.size();
 
   /* Create the per pixel equation given the index, parameter, and general expression */
   if ((per_pixel_eqn = new PerPixelEqn(index, param, gen_expr)) == NULL)
@@ -142,8 +140,6 @@ int MilkdropPreset::add_per_pixel_eqn(char * name, Expr * gen_expr)
     if (PER_PIXEL_EQN_DEBUG) printf("add_per_pixel_eqn: failed to create new per pixel equation!\n");
     return PROJECTM_FAILURE;
   }
-
-
 
   /* Insert the per pixel equation into the preset per pixel database */
   std::pair<std::map<int, PerPixelEqn*>::iterator, bool> inserteeOption = per_pixel_eqn_tree.insert
