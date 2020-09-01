@@ -9,10 +9,12 @@
 #include "Pipeline.hpp"
 #include "PerPixelMesh.hpp"
 #include "Transformation.hpp"
+#include "MilkdropWaveform.hpp"
 #include "ShaderEngine.hpp"
 #include <iostream>
 #include <chrono>
 #include <ctime>
+#include <list>
 
 using namespace std::chrono;
 
@@ -25,6 +27,7 @@ using namespace std::chrono;
 #endif /** USE_TEXT_MENU */
 
 #define TOAST_TIME 2
+#define TOUCH_TIME 5
 
 // for final composite grid:
 #define FCGSX 32 // final composite gridsize - # verts - should be EVEN.
@@ -49,6 +52,24 @@ class Renderer
 {
 
 public:
+    /*  touchx(float) x for touch waveform to start displaying(scale of 0 - 1 and not the exact coordinates)
+        touchy(float) y for touch waveform to start displaying(scale of 0 - 1 and not the exact coordinates)
+        touchp(int) touch pressure - @TODO not implemented yet!
+        touchtype(int) Waveform type (bias to Circle). 1 = Circle; 2 = RadialBlob; 3 = Blob2; 4 = Blob 3; 5 = DerivativeLine; 6 = Blob5; 7 = Line; 8 DoubleLine; 
+        touchr(double) Red
+        touchb(double) Blue
+        touchg(double) Green
+        toucha(double) Alpha
+    */
+  float touchx;
+  float touchy;
+  int touchp; // Touch Pressure.
+  int touchtype; // Touch Type
+  double touchr;
+  double touchg;
+  double touchb;
+  double toucha;
+  
   bool showtoast;
   bool showfps;
   bool showtitle;
@@ -75,6 +96,8 @@ public:
   milliseconds currentTimeToast;
 
   std::string m_helpText;
+
+  std::vector<MilkdropWaveform> waveformList;
 
   int totalframes;
   float realfps;
@@ -138,6 +161,12 @@ public:
 		return duration_cast<milliseconds>(system_clock::now().time_since_epoch());;
   }
 
+  void touch(float x, float y, int pressure, int type);
+  void touchDrag(float x, float y, int pressure);
+  void touchDestroy(float x, float y);
+  void touchDestroyAll();
+  bool touchedWaveform(float x, float y, int i);
+  
   void setToastMessage(const std::string& theValue);
 
   std::string toastMessage() const {
@@ -204,6 +233,7 @@ private:
   void SetupPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void Interpolation(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderItems(const Pipeline &pipeline, const PipelineContext &pipelineContext);
+  void RenderTouch(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void FinishPass1();
   void Pass2 (const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void CompositeShaderOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext);
