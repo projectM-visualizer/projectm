@@ -791,13 +791,15 @@ void projectM::populatePresetMenu()
         if(isTextInputActive()) {
             // if a searchTerm is active, we will populate the preset menu with search terms instead of the page we are on.
             int h = 0;
+            std::string presetName = renderer->presetName();
+            int presetIndex = getSearchIndex(presetName);
             for(unsigned int i = 0; i < getPlaylistSize(); i++) { // loop over all presets
                 if (getPresetName(i).find(renderer->searchText()) != std::string::npos) { // if term matches
                     if (h < renderer->textMenuPageSize) // limit to just one page, pagination is not needed.
                     {
                         h++;
                         renderer->m_presetList.push_back({ h, getPresetName(i), "" }); // populate the renders preset list.
-                        if (h == getSearchIndex(renderer->presetName()))
+                        if (h == presetIndex)
                         {
                             renderer->m_activePresetID = h;
                         }
