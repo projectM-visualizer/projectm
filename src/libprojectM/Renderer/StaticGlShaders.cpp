@@ -1,5 +1,6 @@
 #include "StaticGlShaders.h"
 
+#include <glew.h>
 #include <GL/gl.h>
 
 namespace {
@@ -781,7 +782,7 @@ StaticGlShaders::GlslVersion StaticGlShaders::QueryGlslVersion() {
     int major = std::stoi(major_string);
     int minor = std::stoi(minor_string);
 
-    return GlslVersion{.major = major, .minor = minor};
+    return GlslVersion{major, minor};
 }
 
 std::string StaticGlShaders::AddVersionHeader(std::string shader_text) {
