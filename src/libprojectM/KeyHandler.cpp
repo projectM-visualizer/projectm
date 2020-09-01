@@ -150,7 +150,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 				selectPrevious(true);
 			}
 			else {
-				beatDetect->beatSensitivity += 0.25;
+				beatDetect->beatSensitivity += 0.01;
 				if (beatDetect->beatSensitivity > 5.0) beatDetect->beatSensitivity = 5.0;
 				renderer->setToastMessage("Beat Sensitivity: " + round_float(beatDetect->beatSensitivity));
 			}
@@ -160,7 +160,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 				selectNext(true);
 			}
 			else {
-				beatDetect->beatSensitivity -= 0.25;
+				beatDetect->beatSensitivity -= 0.01;
 				if (beatDetect->beatSensitivity < 0) beatDetect->beatSensitivity = 0;
 				renderer->setToastMessage("Beat Sensitivity: " + round_float(beatDetect->beatSensitivity));
 			}
