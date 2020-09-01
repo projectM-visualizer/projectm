@@ -21,7 +21,6 @@ libRenderer_la_SOURCES = \
   Renderable.cpp \
   BeatDetect.cpp \
   Shader.cpp \
-  StaticGlShaders.cpp \
   TextureManager.cpp \
   VideoEcho.cpp \
   RenderItemDistanceMetric.cpp \
