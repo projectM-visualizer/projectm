@@ -21,6 +21,7 @@ libRenderer_la_SOURCES = \
   Renderable.cpp \
   BeatDetect.cpp \
   Shader.cpp \
+  StaticGlShaders.cpp \
   TextureManager.cpp \
   VideoEcho.cpp \
   RenderItemDistanceMetric.cpp \
@@ -40,6 +41,7 @@ libRenderer_la_SOURCES = \
 	SOIL2/pvr_helper.h      SOIL2/stbi_pkm_c.h\
 	SOIL2/stb_image.h       SOIL2/stbi_pvr.h\
 	SOIL2/stb_image_write.h SOIL2/stbi_pvr_c.h\
+	StaticGlShaders.h\
 	hlslparser/src/CodeWriter.cpp hlslparser/src/Engine.h \
 	hlslparser/src/HLSLParser.h hlslparser/src/HLSLTree.cpp \
 	hlslparser/src/CodeWriter.h hlslparser/src/GLSLGenerator.cpp \
