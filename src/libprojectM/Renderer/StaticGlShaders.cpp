@@ -1,7 +1,11 @@
 #include "StaticGlShaders.h"
 
-#include <glew.h>
+#if defined(_WIN32)
+#include "glew.h"
+#include "wglew.h"
+#else
 #include <GL/gl.h>
+#endif
 
 namespace {
 // Variants of shaders for GLSL1.2
