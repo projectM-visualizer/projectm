@@ -133,6 +133,7 @@ GLSLGenerator::GLSLGenerator() :
     m_scalarSwizzle4Function[0] = 0;
     m_sinCosFunction[0]         = 0;
 	m_bvecTernary[ 0 ]			= 0;
+    m_modfFunction[0]           = 0;
     m_outputPosition            = false;
     m_outputTargets             = 0;
 }
@@ -144,7 +145,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     m_entryName = entryName;
     m_target    = target;
     m_version   = version;
-    m_versionLegacy = (version == Version_110 || version == Version_100_ES);
+    m_versionLegacy = (version == Version_110 || version == Version_120 || version == Version_100_ES);
     m_options   = options;
 
     globalVarsAssignments.clear();
@@ -159,6 +160,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     ChooseUniqueName("tex3Dlod", m_tex3DlodFunction, sizeof(m_tex3DlodFunction));
     ChooseUniqueName("texCUBEbias", m_texCUBEbiasFunction, sizeof(m_texCUBEbiasFunction));
 	ChooseUniqueName( "texCUBElod", m_texCUBElodFunction, sizeof( m_texCUBElodFunction ) );
+	ChooseUniqueName( "modf", m_modfFunction, sizeof( m_modfFunction ) );
 
     for (int i = 0; i < s_numReservedWords; ++i)
     {
@@ -200,6 +202,10 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     if (m_version == Version_110)
     {
         m_writer.WriteLine(0, "#version 110");
+    }
+    if (m_version == Version_120)
+    {
+        m_writer.WriteLine(0, "#version 120");
     }
     else if (m_version == Version_140)
     {
@@ -244,7 +250,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     m_writer.WriteLine(0, "vec4 %s(mat4 m, int i) { return vec4( m[0][i], m[1][i], m[2][i], m[3][i] ); }", m_matrixRowFunction);
 
     // Output the special function used to do matrix cast for OpenGL 2.0
-    if (m_version == Version_110)
+    if (m_versionLegacy)
     {
         m_writer.WriteLine(0, "mat3 %s(mat4 m) { return mat3(m[0][0], m[0][1], m[0][2], m[1][0], m[1][1], m[1][2], m[2][0], m[2][1], m[2][2]); }", m_matrixCtorFunction);
     }
@@ -276,7 +282,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     {
         const char* function = "textureLod";
 
-        if (m_version == Version_110)
+        if (m_versionLegacy)
         {
             m_writer.WriteLine(0, "#extension GL_ARB_shader_texture_lod : require");
             function = "texture2DLod";
@@ -295,7 +301,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
     {
         const char* function = "textureGrad";
 
-        if (m_version == Version_110)
+        if (m_versionLegacy)
         {
             m_writer.WriteLine(0, "#extension GL_ARB_shader_texture_lod : require");
             function = "texture2DGradARB";
@@ -356,7 +362,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
 	{
         const char* function = "textureLod";
 
-        if (m_version == Version_110)
+        if (m_version == Version_110 || m_version == Version_120)
         {
             m_writer.WriteLine(0, "#extension GL_ARB_shader_texture_lod : require");
             function = "textureCubeLod";
@@ -369,6 +375,16 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
 
 		m_writer.WriteLine( 0, "vec4 %s(samplerCube samp, vec4 texCoord) { return %s(samp, texCoord.xyz, texCoord.w);  }", m_texCUBElodFunction, function);
 	}
+
+    if (m_tree->NeedsFunction("modf"))
+    {
+        if (m_version == Version_110 || m_version == Version_120 || m_version == Version_100_ES)
+        {
+            m_writer.WriteLine(0, "float %s(float x, out int ip) { ip = int(x); return x - ip; }", m_modfFunction);
+        } else {
+            m_writer.WriteLine(0, "float %s(float x, out int ip) { return modf(x, ip); }", m_modfFunction);
+        }
+    }
 
     m_writer.WriteLine(0, "vec2  %s(float x) { return  vec2(x, x); }", m_scalarSwizzle2Function);
     m_writer.WriteLine(0, "ivec2 %s(int   x) { return ivec2(x, x); }", m_scalarSwizzle2Function);
@@ -676,11 +692,19 @@ void GLSLGenerator::OutputExpression(HLSLExpression* expression, const HLSLType*
 			default:
 				ASSERT(0);
 			}
-			m_writer.Write("(");
-			OutputExpression(binaryExpression->expression1, dstType1);
-			m_writer.Write("%s", op);
-			OutputExpression(binaryExpression->expression2, dstType2);
-			m_writer.Write(")");
+            if ((m_version == Version_110 || m_version == Version_120 || m_version == Version_100_ES) && binaryExpression->binaryOp == HLSLBinaryOp_Mod) {
+                m_writer.Write("(int(mod(");
+                OutputExpression(binaryExpression->expression1, dstType1);
+                m_writer.Write(",");
+                OutputExpression(binaryExpression->expression2, dstType2);
+                m_writer.Write(")))");
+            } else {
+			    m_writer.Write("(");
+			    OutputExpression(binaryExpression->expression1, dstType1);
+			    m_writer.Write("%s", op);
+			    OutputExpression(binaryExpression->expression2, dstType2);
+			    m_writer.Write(")");
+            }
 		}
     }
     else if (expression->nodeType == HLSLNodeType_ConditionalExpression)
@@ -996,6 +1020,10 @@ void GLSLGenerator::OutputIdentifier(const char* name)
     else if (String_Equal(name, "ddy"))
     {
         name = "dFdy";
+    }
+    else if (String_Equal(name, "modf"))
+    {
+        name = m_modfFunction;
     }
     else 
     {
@@ -1958,7 +1986,7 @@ void GLSLGenerator::OutputDeclarationBody( const HLSLType& type, const char* nam
 
 void GLSLGenerator::OutputCast(const HLSLType& type)
 {
-    if (m_version == Version_110 && type.baseType == HLSLBaseType_Float3x3)
+    if ((m_version == Version_110 || m_version == Version_120) && type.baseType == HLSLBaseType_Float3x3)
         m_writer.Write("%s", m_matrixCtorFunction);
     else
         OutputDeclaration(type, "");

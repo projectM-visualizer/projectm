@@ -32,6 +32,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Renderer/ShaderEngine.hpp"
+#include "Renderer/StaticGlShaders.h"
 
 
 void projectMSDL::audioInputCallbackF32(void *userdata, unsigned char *stream, int len) {
@@ -591,7 +592,9 @@ void projectMSDL::init(SDL_Window *window, SDL_GLContext *_glCtx, const bool _re
     // are we rendering to a texture?
     renderToTexture = _renderToTexture;
     if (renderToTexture) {
-        programID = ShaderEngine::CompileShaderProgram(ShaderEngine::v2f_c4f_t2f_vert, ShaderEngine::v2f_c4f_t2f_frag, "v2f_c4f_t2f");
+        programID = ShaderEngine::CompileShaderProgram(
+            StaticGlShaders::Get()->GetV2fC4fT2fVertexShader(),
+            StaticGlShaders::Get()->GetV2fC4fT2fFragmentShader(), "v2f_c4f_t2f");
         textureID = projectM::initRenderToTexture();
 
         float points[16] = {

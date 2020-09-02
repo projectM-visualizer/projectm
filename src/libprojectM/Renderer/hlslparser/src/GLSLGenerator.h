@@ -29,6 +29,7 @@ public:
     enum Version
     {
         Version_110, // OpenGL 2.0
+        Version_120, // OpenGL 2.1
         Version_140, // OpenGL 3.1
         Version_150, // OpenGL 3.2
         Version_330, // OpenGL 3.3
@@ -156,6 +157,7 @@ private:
     char                m_scalarSwizzle4Function[64];
     char                m_sinCosFunction[64];
 	char                m_bvecTernary[ 64 ];
+	char                m_modfFunction[64];
 
     bool                m_error;
 

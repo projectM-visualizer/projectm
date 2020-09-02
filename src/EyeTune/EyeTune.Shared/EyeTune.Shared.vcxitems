@@ -66,6 +66,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\RenderItemMatcher.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\Shader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\ShaderEngine.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\StaticGlShaders.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\SOIL2\etc1_utils.c">
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
