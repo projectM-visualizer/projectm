@@ -298,121 +298,113 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 
 	// handle keyboard input (for our app first, then projectM)
     switch (sdl_keycode) {
-        case SDLK_q:
-            if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
-                // cmd/ctrl-q = quit
-                done = 1;
-                return;
+
+    case SDLK_q:
+        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
+            // cmd/ctrl-q = quit
+            done = 1;
+            return;
+        }
+        break;
+    case SDLK_BACKSPACE:
+        projectM::deleteSearchText();
+        break;
+    case SDLK_SLASH:
+        break;
+    case SDLK_BACKSLASH:
+        break;
+    case SDLK_RETURN:
+        if (!projectM::isTextInputActive()) {
+            SDL_StartTextInput();
+        }
+        break;
+    case SDLK_ESCAPE:
+        if (projectM::isTextInputActive())                
+            SDL_StopTextInput();
+        break;
+    case SDLK_i:
+        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+        {
+            toggleAudioInput();
+            return; // handled
+        }
+        break;
+    case SDLK_s:
+        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+        {
+            // command-s: [s]tretch monitors
+            // Stereo requires fullscreen
+#if !STEREOSCOPIC_SBS
+            if (!this->stretch) { // if stretching is not already enabled, enable it.
+                stretchMonitors();
+                this->stretch = true;
+            } else {
+                toggleFullScreen(); // else, just toggle full screen so we leave stretch mode.
+                this->stretch = false;
             }
-            break;
-        case SDLK_i:
-                if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
-                {
-                    toggleAudioInput();
-                    return; // handled
-                }
-            break;
-		case SDLK_s:
-			if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
-			{
-				// command-s: [s]tretch monitors
-				// Stereo requires fullscreen
-#if !STEREOSCOPIC_SBS
-                if (!this->stretch) { // if stretching is not already enabled, enable it.
-                    stretchMonitors();
-                    this->stretch = true;
-                } else {
-                    toggleFullScreen(); // else, just toggle full screen so we leave stretch mode.
-                    this->stretch = false;
-                }
 #endif
-				return; // handled
-			}
-		case SDLK_m:
-			if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
-			{
-				// command-m: change [m]onitor
-				// Stereo requires fullscreen
+            return; // handled
+        }
+    case SDLK_m:
+        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+        {
+            // command-m: change [m]onitor
+            // Stereo requires fullscreen
 #if !STEREOSCOPIC_SBS
-				nextMonitor();
+            nextMonitor();
 #endif
-                this->stretch = false; // if we are switching monitors, ensure we disable monitor stretching.
-				return; // handled
-			}
-        case SDLK_f:
-            if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
-                // command-f: fullscreen
-				// Stereo requires fullscreen
+            this->stretch = false; // if we are switching monitors, ensure we disable monitor stretching.
+            return; // handled
+        }
+    case SDLK_f:
+        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
+            // command-f: fullscreen
+            // Stereo requires fullscreen
 #if !STEREOSCOPIC_SBS
-				toggleFullScreen();
+            toggleFullScreen();
 #endif
-                this->stretch = false; // if we are toggling fullscreen, ensure we disable monitor stretching.
-                return; // handled
+            this->stretch = false; // if we are toggling fullscreen, ensure we disable monitor stretching.
+            return; // handled
+        }
+        break;
+    case SDLK_LEFT:
+        // selectPrevious(true);
+        break;
+    case SDLK_RIGHT:
+        // selectNext(true);
+        break;
+    case SDLK_UP:
+        break;
+    case SDLK_DOWN:
+        break;
+
+    case SDLK_F3:
+        break;
+
+
+    case SDLK_SPACE:
+        if (!projectM::isTextInputActive(true))
+            setPresetLock(!isPresetLocked());
+        break;
+    case SDLK_F1:
+        break;
+    case SDLK_DELETE:
+        /*
+        try {
+            if (selectedPresetIndex(index)) {
+                DeleteFile(
+                    LPCSTR(
+                        getPresetURL(index).c_str()
+                    )
+                );
             }
-            break;
-					case SDLK_LEFT:
-						// selectPrevious(true);
-						break;
-					case SDLK_RIGHT:
-						// selectNext(true);
-						break;
-					case SDLK_UP:
-						break;
-					case SDLK_DOWN:
-						break;
-
-					case SDLK_F3:
-						break;
-
-
-					case SDLK_SPACE:
-						setPresetLock(
-							!isPresetLocked()
-						);
-						break;
-					case SDLK_F1:
-					case SDLK_ESCAPE:
-
-						// exit(1);
-						// show help with other keys
-						sdl_keycode = SDLK_F1;
-						break;
-					case SDLK_DELETE:
-						/*
-						try {
-							if (selectedPresetIndex(index)) {
-								DeleteFile(
-									LPCSTR(
-										getPresetURL(index).c_str()
-									)
-								);
-							}
-						}
-						catch (const std::exception & e) {
-							printf("Delete failed");
-						}
-						*/
-						break;
-					case SDLK_RETURN:
-						/*
-						try {
-							if (selectedPresetIndex(index)) {
-								CopyFile(
-										LPCSTR(
-												app->getPresetURL(index).c_str()
-										),
-										LPCTSTR(L"C:\\"),
-										false
-								);
-							}
-						}
-						catch (const std::exception & e) {
-							printf("Delete failed");
-						}
-								*/
-						break;
+        }
+        catch (const std::exception & e) {
+            printf("Delete failed");
+        }
+        */
+        break;
     }
-
     // translate into projectM codes and perform default projectM handler
     evt = sdl2pmEvent(sdl_evt);
     mod = sdl2pmModifier(sdl_mod);
@@ -514,6 +506,13 @@ void projectMSDL::pollEvent() {
                 break;
             case SDL_MOUSEBUTTONUP:
                 mouseDown = false;
+                break;
+            case SDL_TEXTINPUT:
+                if (projectM::isTextInputActive(true))
+                {
+                    projectM::setSearchText(evt.text.text);
+                    projectM::populatePresetMenu();
+                }
                 break;
             case SDL_QUIT:
                 done = true;

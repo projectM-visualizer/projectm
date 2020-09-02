@@ -194,6 +194,10 @@ inline projectMKeycode sdl2pmKeycode( SDL_Keycode keycode , SDL_Keymod mod ) { \
       return PROJECTM_K_UP;
     case SDLK_RETURN:
       return PROJECTM_K_RETURN;
+    case SDLK_SLASH:
+      return PROJECTM_K_SLASH;
+    case SDLK_BACKSLASH:
+      return PROJECTM_K_BACKSLASH;
     case SDLK_RIGHT:
       return PROJECTM_K_RIGHT;
     case SDLK_LEFT:

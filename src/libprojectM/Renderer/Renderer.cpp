@@ -27,13 +27,13 @@ class Preset;
 
 
 void Renderer::drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale,
-                        int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f)
+                        int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f, bool highlightable = false)
 {
-	drawText(this->title_font, string, x, y, scale, horizontalAlignment, verticalAlignment, r, g, b, a);
+	drawText(this->title_font, string, x, y, scale, horizontalAlignment, verticalAlignment, r, g, b, a, highlightable);
 }
 
 void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale,
-	int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f)
+	int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f, bool highlightable = false)
 {
 	// Initialize glText
 	gltInit();
@@ -69,24 +69,16 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 	if (windowWidth > textWidth)
 	{
 		// redraw without transparency
-		gltColor(r, g, b, a);
-		gltSetText(text, string);
-		gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
-	}
-	else {
+		if (textHighlightable(highlightable))
+		{ 
+			drawText(text, string, searchText().c_str(), x, y, scale, horizontalAlignment, verticalAlignment, r, g, b, a, highlightable);
+		} else {
+			gltColor(r, g, b, a);
+			gltSetText(text, string);
+			gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
+		}
+	} else {
 		// if the text is greater than the window width, we have a problem.
-
-		// Option 1: Reduce text length until it fits.
-		// If it's a single line of text then reduce the text and add a "..." to the end.
-		// Before: Geiss & Sperl - Feedback (projectM idle HDR mix)
-		// After: Geiss & Sperl - Feed...
-		//
-		// If it's multiline then just cut the text off.
-		// Before: F1: This help menu
-		//         UP: Increase Beat Sensitivity
-		// After : F1: This help menu
-		//         UP: Increase Beat Sensi 
-
 		std::string substring(string);
 		while (textWidth > windowWidth) {
 			substring.pop_back();
@@ -103,21 +95,17 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 			substring.pop_back();
 			substring += "...";
 		}
-		string = substring.c_str();
 
-		// Option 2: Reduce the scale (size) of the text until it fits.
-		/*
-		while (textWidth > windowWidth) {
-			scale = scale - 0.1;
+		if (textHighlightable(highlightable))
+		{
+			drawText(text, substring.c_str(), searchText().c_str(), x, y, scale, horizontalAlignment, verticalAlignment, r, g, b, a, highlightable);
+		} else {
+			string = substring.c_str();
+			// Redraw now that the text fits.
+			gltColor(r, g, b, a);
+			gltSetText(text, string);
 			gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
-			textWidth = gltGetTextWidth(text, scale);
 		}
-		*/
-
-		// Redraw now that the text fits.
-		gltColor(r, g, b, a);
-		gltSetText(text, string);
-		gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
 	}
 
 	// Finish drawing text
@@ -130,6 +118,41 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 	gltTerminate();
 }
 
+// draw text with search term a/k/a needle & highlight text
+void Renderer::drawText(GLTtext* text, const char* string, const char* needle, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f, bool highlightable = false) {
+	int offset = x;
+	std::string str_find = string;
+	for( size_t pos = 0; ; pos += str_find.length() ) {
+		// find search term
+		pos = str_find.find(needle);
+
+		// draw everything normal, up to search term.
+		gltColor(r, g, b, a);
+		gltSetText(text, str_find.substr(0,pos).c_str());
+		gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
+
+		// highlight search term
+		GLfloat textWidth = gltGetTextWidth(text, scale);
+		offset = offset + textWidth;
+		gltColor(1.0f, 0.0f, 1.0f, 1.0f);
+		gltSetText(text, searchText().c_str());
+		gltDrawText2DAligned(text, offset, y, scale, horizontalAlignment, verticalAlignment);
+
+		// draw rest of name, normally
+		textWidth = gltGetTextWidth(text, scale);
+		offset = offset + textWidth;
+		gltColor(r, g, b, a);
+		gltSetText(text, str_find.substr(pos+searchText().length(),str_find.length()).c_str());
+		gltDrawText2DAligned(text, offset, y, scale, horizontalAlignment, verticalAlignment);
+		break; // first search hit is useful enough.
+	}
+}
+
+bool Renderer::textHighlightable(bool highlightable) {
+	if (highlightable && showsearch && searchText().length() > 1)
+		return true;
+	return false;
+}
 
 #endif /** USE_TEXT_MENU */
 
@@ -149,9 +172,11 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 	this->showtitle = false;
 	this->showpreset = false;
 	this->showhelp = false;
+	this->showsearch = false;
 	this->showmenu = false;
 	this->showstats = false;
 	this->studio = false;
+	this->m_activePresetID = 0;
 	this->realfps = 0;
 	/* Set up the v xoffset and vy offset to 0 which is normal Only used for VR */
 	this->vstartx = 0;
@@ -421,6 +446,8 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 	if (this->showfps == true)
 		draw_fps();
 	// this->realfps
+	if (this->showsearch == true)
+		draw_search();
 	if (this->showmenu == true)
 		draw_menu();
 	if (this->showpreset == true)
@@ -769,6 +796,36 @@ void Renderer::touchDestroyAll()
 	waveformList.clear();
 }
 
+// turn search menu on / off
+void Renderer::toggleSearchText() {
+	this->showsearch = !this->showsearch;
+	if (this->showsearch)
+	{
+		this->showfps = false;
+		this->showtitle = false;
+	}
+}
+
+// search based on new key input
+void Renderer::setSearchText(const std::string& theValue)
+{
+	m_searchText = m_searchText + theValue;
+}
+
+// reset search text backspace (reset)
+void Renderer::resetSearchText()
+{
+	m_searchText = "";
+}
+
+// search text backspace (delete a key)
+void Renderer::deleteSearchText()
+{
+	if (m_searchText.length() >= 1) {
+		m_searchText = m_searchText.substr(0, m_searchText.size() - 1);
+	}
+}
+
 void Renderer::setToastMessage(const std::string& theValue)
 {
 	// Initialize counters
@@ -788,6 +845,17 @@ void Renderer::draw_title_to_screen(bool flip)
 #endif /** USE_TEXT_MENU */
 }
 
+// render search text menu
+void Renderer::draw_search()
+{
+#ifdef USE_TEXT_MENU
+	std::string search = "Search: ";
+	search = search + searchText();
+
+	drawText(search.c_str(), 30, 20, 2.5);
+#endif /** USE_TEXT_MENU */
+}
+
 void Renderer::draw_title()
 {
 #ifdef USE_TEXT_MENU
@@ -802,13 +870,16 @@ void Renderer::draw_menu()
 	int menu_xOffset = 30; // x axis static point.
 	int menu_yOffset = 60; // y axis start point.
 	float windowHeight = vh;
+	float alpha = 1.0;
+	if (this->showsearch) // if search input is up, slightly dim preset menu
+		alpha = 0.82f;
 	for (auto& it : m_presetList) { // loop over preset buffer
-		if (menu_yOffset  < windowHeight - textMenuLineHeight) { // if we are not at the bottom of the scree, display preset name.
+		if (menu_yOffset  < windowHeight - textMenuLineHeight) { // if we are not at the bottom of the screen, display preset name.
 			if (it.id == m_activePresetID) { // if this is the active preset, add some color.
-				drawText(it.name.c_str(), menu_xOffset, menu_yOffset , 1.5, GLT_LEFT, 0, 1.0, 0.1, 0.1, 1.0);
+				drawText(it.name.c_str(), menu_xOffset, menu_yOffset , 1.5, GLT_LEFT, 0, 1.0, 0.1, 0.1, 1.0, true);
 			}
 			else {
-				drawText(it.name.c_str(), menu_xOffset, menu_yOffset , 1.5, GLT_LEFT, 0, 1.0, 1.0, 1.0, 1.0);
+				drawText(it.name.c_str(), menu_xOffset, menu_yOffset , 1.5, GLT_LEFT, 0, 1.0, 1.0, 1.0, alpha, true);
 			}
 		}
 		menu_yOffset = menu_yOffset + textMenuLineHeight; // increase line y offset so we can track if we reached the bottom of the screen.

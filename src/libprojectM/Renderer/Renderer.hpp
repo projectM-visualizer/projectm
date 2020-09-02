@@ -75,8 +75,11 @@ public:
   bool showtitle;
   bool showpreset;
   bool showhelp;
+  bool showsearch;
   bool showmenu;
   bool showstats;
+
+  bool shuffletrack;
 
   bool studio;
   bool correction;
@@ -161,6 +164,8 @@ public:
 		return duration_cast<milliseconds>(system_clock::now().time_since_epoch());;
   }
 
+  void toggleSearchText();
+  void toggleInput();
   void touch(float x, float y, int pressure, int type);
   void touchDrag(float x, float y, int pressure);
   void touchDestroy(float x, float y);
@@ -168,11 +173,18 @@ public:
   bool touchedWaveform(float x, float y, int i);
   
   void setToastMessage(const std::string& theValue);
+  void setSearchText(const std::string& theValue);
+  void resetSearchText();
+  void deleteSearchText();
 
   std::string toastMessage() const {
     return m_toastMessage;
   }
-  
+
+  std::string searchText() const {
+    return m_searchText;
+  }
+
 private:
 
   PerPixelMesh mesh;
@@ -183,11 +195,11 @@ private:
   TimeKeeper *timeKeeperToast;
 
 #ifdef USE_TEXT_MENU
-
-  void drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
-                   int verticalAlignment, float r, float b, float g, float a);
-  void drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment,
-                   int verticalAlignment, float r, float b, float g, float a);
+  // draw text with search term a/k/a needle & highlight text
+  void drawText(GLTtext* text, const char* string, const char* needle, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment, int verticalAlignment, float r, float b, float g, float a, bool highlightable);
+  void drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment, int verticalAlignment, float r, float b, float g, float a, bool highlightable);
+  void drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment, int verticalAlignment, float r, float b, float g, float a, bool highlightable);
+  bool textHighlightable(bool highlightable);
 
 #endif /** USE_TEXT_MENU */
   RenderContext renderContext;
@@ -197,6 +209,7 @@ private:
   std::string m_datadir;
   std::string m_fps;
   std::string m_toastMessage;
+  std::string m_searchText;
 
   float* p;
 
@@ -252,6 +265,7 @@ private:
   void draw_help();
   void draw_menu();
   void draw_preset();
+  void draw_search();
   void draw_title();
   void draw_title_to_screen(bool flip);
   void draw_title_to_texture();
