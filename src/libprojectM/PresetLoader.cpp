@@ -149,6 +149,19 @@ const std::string & PresetLoader::getPresetName ( PresetIndex index ) const
 	return _presetNames[index];
 }
 
+
+// Get vector of preset names
+const std::vector<std::string> &PresetLoader::getPresetNames() const
+{
+	return _presetNames;
+}
+
+// Get the preset index given a name
+const unsigned int PresetLoader::getPresetIndex(std::string &name) const
+{
+	return find(_presetNames.begin(), _presetNames.end(), name) - _presetNames.begin();
+}
+
 int PresetLoader::getPresetRating ( PresetIndex index, const PresetRatingType ratingType ) const
 {
 	return _ratings[ratingType][index];
