@@ -67,6 +67,10 @@ pthread_mutex_t preset_mutex;
 #endif
 #endif
 
+namespace {
+constexpr int kMaxSwitchRetries = 10;
+}
+
 projectM::~projectM()
 {
 #ifdef USE_THREADS
@@ -779,7 +783,9 @@ void projectM::selectPreset(unsigned int index, bool hardCut)
     populatePresetMenu();
 
     *m_presetPos = m_presetChooser->begin(index);
-    switchPreset(hardCut);
+    if(!startPresetTransition(hardCut)) {
+        selectRandom(hardCut);
+    }
 }
 
 // populatePresetMenu is called when a preset is loaded.
@@ -809,44 +815,48 @@ void projectM::populatePresetMenu()
         }
     }
 }
-void projectM::switchPreset(const bool hardCut) {
-    std::string result;
 
-    if (!hardCut) {
-        result = switchPreset(m_activePreset2);
-    } else {
-        result = switchPreset(m_activePreset);
-        if (result.empty())
-            timeKeeper->StartPreset();
-    }
-
-    if (result.empty() && !hardCut) {
-        timeKeeper->StartSmoothing();
-    }
-
-    if (result.empty()) {
-        presetSwitchedEvent(hardCut, **m_presetPos);
-        errorLoadingCurrentPreset = false;
-    } else {
-        presetSwitchFailedEvent(hardCut, **m_presetPos, result);
-        errorLoadingCurrentPreset = true;
-    }
-
+bool projectM::startPresetTransition(bool hard_cut) {
+  std::unique_ptr<Preset> new_preset = switchToCurrentPreset();
+  if (new_preset == nullptr) {
+    presetSwitchFailedEvent(hard_cut, **m_presetPos, "fake error");
+    errorLoadingCurrentPreset = true;
     populatePresetMenu();
-}
+    return false;
+  }
 
+  if (hard_cut) {
+    m_activePreset = std::move(new_preset);
+    timeKeeper->StartPreset();
+  } else {
+    m_activePreset2 = std::move(new_preset);
+    timeKeeper->StartPreset();
+    timeKeeper->StartSmoothing();
+  }
+
+  presetSwitchedEvent(hard_cut, **m_presetPos);
+  errorLoadingCurrentPreset = false;
+
+  populatePresetMenu();
+
+  return true;
+}
 
 void projectM::selectRandom(const bool hardCut) {
     if (m_presetChooser->empty())
         return;
     presetHistory.push_back(m_presetPos->lastIndex());
+
+    for(int i = 0; i < kMaxSwitchRetries; ++i) {
+        *m_presetPos = m_presetChooser->weightedRandom(hardCut);
+        if(startPresetTransition(hardCut)) {
+            break;
+        }
+    }
     // If presetHistory is tracking more than 10, then delete the oldest entry so we cap to a history of 10.
     if (presetHistory.size() >= 10)
         presetHistory.erase(presetHistory.begin());
     presetFuture.clear();
-    *m_presetPos = m_presetChooser->weightedRandom(hardCut);
-
-    switchPreset(hardCut);
 
 }
 
@@ -860,11 +870,13 @@ void projectM::selectPrevious(const bool hardCut) {
         presetHistory.pop_back();
     }
     else {
-        // if we are not shuffling or there is no random future history, then let's not track a random vector and move fowards in the preset index.
+        // if we are not shuffling or there is no random future history, then let's not track a random vector and move backwards in the preset index.
         presetHistory.clear();
         presetFuture.clear();
         m_presetChooser->previousPreset(*m_presetPos);
-        switchPreset(hardCut);
+        if(!startPresetTransition(hardCut)) {
+            selectRandom(hardCut);
+        }
     }
 }
 
@@ -877,45 +889,52 @@ void projectM::selectNext(const bool hardCut) {
         presetFuture.pop_back();
     }
     else {
-        // if we are not shuffling or there is no random history, then let's not track a random vector and move backwards in the preset index.
+        // if we are not shuffling or there is no random history, then let's not track a random vector and move forwards in the preset index.
         presetFuture.clear();
         presetHistory.clear();
         m_presetChooser->nextPreset(*m_presetPos);
-        switchPreset(hardCut);
+        if(!startPresetTransition(hardCut)) {
+            selectRandom(hardCut);
+        }
     }
 }
 
 /**
-* Switches to the target preset.
-* @param targetPreset
-* @return a message indicating an error, empty otherwise.
-*/
-std::string projectM::switchPreset(std::unique_ptr<Preset> & targetPreset) {
-
-    std::string result;
-
+ * Switches the pipeline and renderer to the current preset.
+ * @return the resulting Preset object, or nullptr on failure.
+ */
+std::unique_ptr<Preset> projectM::switchToCurrentPreset() {
+  std::unique_ptr<Preset> new_preset;
 #ifdef SYNC_PRESET_SWITCHES
-    pthread_mutex_lock(&preset_mutex);
+  pthread_mutex_lock(&preset_mutex);
 #endif
-    try {
-        targetPreset = m_presetPos->allocate();
-    } catch (const PresetFactoryException & e) {
-#ifdef SYNC_PRESET_SWITCHES
-        pthread_mutex_unlock(&preset_mutex);
-#endif
-        std::cerr << "problem allocating target preset: " << e.message() << std::endl;
-        return e.message();
-    }
+  try {
+    new_preset = m_presetPos->allocate();
+  } catch (const PresetFactoryException &e) {
+    std::cerr << "problem allocating target preset: " << e.message()
+              << std::endl;
+  }
 
-// Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
-    renderer->setPresetName(targetPreset->name());
-    result = renderer->SetPipeline(targetPreset->pipeline());
-
+  if (new_preset == nullptr) {
 #ifdef SYNC_PRESET_SWITCHES
     pthread_mutex_unlock(&preset_mutex);
 #endif
+    std::cerr << "Could not switch to current preset" << std::endl;
+    return nullptr;
+  }
 
-    return result;
+  // Set preset name here- event is not done because at the moment this function
+  // is oblivious to smooth/hard switches
+  renderer->setPresetName(new_preset->name());
+  std::string result = renderer->SetPipeline(new_preset->pipeline());
+  if (!result.empty()) {
+    std::cerr << "problem setting pipeline: " << result << std::endl;
+  }
+
+#ifdef SYNC_PRESET_SWITCHES
+  pthread_mutex_unlock(&preset_mutex);
+#endif
+  return new_preset;
 }
 
 void projectM::setPresetLock ( bool isLocked )

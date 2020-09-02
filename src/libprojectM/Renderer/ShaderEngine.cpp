@@ -1239,14 +1239,22 @@ GLuint ShaderEngine::CompileShaderProgram(const std::string & VertexShaderCode, 
     char const * VertexSourcePointer = VertexShaderCode.c_str();
     glShaderSource(VertexShaderID, 1, &VertexSourcePointer , NULL);
     glCompileShader(VertexShaderID);
-    checkCompileStatus(VertexShaderID, "Vertex: " + shaderTypeString);
+    if(!checkCompileStatus(VertexShaderID, "Vertex: " + shaderTypeString)) {
+        glDeleteShader(VertexShaderID);
+        glDeleteShader(FragmentShaderID);
+        return GL_FALSE;
+    }
 
 
     // Compile Fragment Shader
     char const * FragmentSourcePointer = FragmentShaderCode.c_str();
     glShaderSource(FragmentShaderID, 1, &FragmentSourcePointer , NULL);
     glCompileShader(FragmentShaderID);
-    checkCompileStatus(FragmentShaderID, "Fragment: " + shaderTypeString);
+    if(!checkCompileStatus(FragmentShaderID, "Fragment: " + shaderTypeString)) {
+        glDeleteShader(VertexShaderID);
+        glDeleteShader(FragmentShaderID);
+        return GL_FALSE;
+    }
 
 
     // Link the program
