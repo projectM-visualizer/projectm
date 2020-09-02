@@ -3,6 +3,7 @@ ${my_CFLAGS} \
 -include $(top_builddir)/config.h \
 -DSYSCONFDIR=\""$(sysconfdir)"\" \
 -I${top_srcdir}/src/libprojectM \
+-I$(top_srcdir)/src/libprojectM/Renderer/hlslparser/src \
 -I${top_srcdir}/src/libprojectM/Renderer \
 ${SDL_CFLAGS}
 
