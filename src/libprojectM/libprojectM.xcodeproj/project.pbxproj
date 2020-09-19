@@ -128,6 +128,7 @@
 		1687174A20C33DF400947E7E /* Pipeline.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1687173520C33DF400947E7E /* Pipeline.hpp */; };
 		1687174B20C33DF400947E7E /* ShaderEngine.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1687173620C33DF400947E7E /* ShaderEngine.hpp */; };
 		1687174E20C33E1000947E7E /* RenderContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1687174D20C33E1000947E7E /* RenderContext.hpp */; };
+		168A57C72516226900E802A0 /* StaticGlShaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 168A57C62516226900E802A0 /* StaticGlShaders.cpp */; };
 		169BC64724CC4D16007B7829 /* FileScanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169BC64524CC4D16007B7829 /* FileScanner.cpp */; };
 		169BC64824CC4D16007B7829 /* FileScanner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169BC64524CC4D16007B7829 /* FileScanner.cpp */; };
 		169BC64924CC4D16007B7829 /* FileScanner.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 169BC64624CC4D16007B7829 /* FileScanner.hpp */; };
@@ -262,6 +263,7 @@
 		1687173520C33DF400947E7E /* Pipeline.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Pipeline.hpp; path = Renderer/Pipeline.hpp; sourceTree = "<group>"; };
 		1687173620C33DF400947E7E /* ShaderEngine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ShaderEngine.hpp; path = Renderer/ShaderEngine.hpp; sourceTree = "<group>"; };
 		1687174D20C33E1000947E7E /* RenderContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = RenderContext.hpp; path = Renderer/RenderContext.hpp; sourceTree = "<group>"; };
+		168A57C62516226900E802A0 /* StaticGlShaders.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StaticGlShaders.cpp; path = Renderer/StaticGlShaders.cpp; sourceTree = "<group>"; };
 		168C688F20BB1FDF000AFC1B /* Engine.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Engine.cpp; path = Renderer/hlslparser/src/Engine.cpp; sourceTree = "<group>"; };
 		168C689120BB1FDF000AFC1B /* GLSLGenerator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = GLSLGenerator.cpp; path = Renderer/hlslparser/src/GLSLGenerator.cpp; sourceTree = "<group>"; };
 		168C689220BB1FDF000AFC1B /* HLSLParser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = HLSLParser.cpp; path = Renderer/hlslparser/src/HLSLParser.cpp; sourceTree = "<group>"; };
@@ -440,6 +442,7 @@
 		16178B3F207A6FD900D3B0C8 /* Renderer */ = {
 			isa = PBXGroup;
 			children = (
+				168A57C62516226900E802A0 /* StaticGlShaders.cpp */,
 				166854412105E4C20042793A /* etc */,
 				1687172220C33DDF00947E7E /* headers */,
 				168C689F20BB265D000AFC1B /* hlslparser */,
@@ -793,6 +796,7 @@
 				166854692105E4FD0042793A /* PerlinNoise.cpp in Sources */,
 				1668546A2105E4FD0042793A /* PerPixelMesh.cpp in Sources */,
 				1668546B2105E4FD0042793A /* Pipeline.cpp in Sources */,
+				168A57C72516226900E802A0 /* StaticGlShaders.cpp in Sources */,
 				1668546C2105E4FD0042793A /* PipelineContext.cpp in Sources */,
 				1668546D2105E4FD0042793A /* Renderable.cpp in Sources */,
 				1668546F2105E4FD0042793A /* Renderer.cpp in Sources */,

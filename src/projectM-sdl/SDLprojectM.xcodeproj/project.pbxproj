@@ -486,7 +486,6 @@
 		168F714D21120211001806E7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -506,7 +505,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 3.1.5;
+				MARKETING_VERSION = 3.1.8;
 				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.projectM-SDL";
@@ -520,7 +519,6 @@
 		168F714E21120211001806E7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -541,7 +539,7 @@
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				MACH_O_TYPE = mh_execute;
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 3.1.5;
+				MARKETING_VERSION = 3.1.8;
 				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.projectM-SDL";
@@ -604,6 +602,7 @@
 					/usr/local/include,
 					"$(SRCROOT)/../../vendor",
 					"$(SRCROOT)/../../mac",
+					"$(SRCROOT)/../libprojectM/Renderer/hlslparser/src",
 				);
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/Frameworks/";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../projectM-iTunes/macos/contrib";
@@ -660,6 +659,7 @@
 					/usr/local/include,
 					"$(SRCROOT)/../../vendor",
 					"$(SRCROOT)/../../mac",
+					"$(SRCROOT)/../libprojectM/Renderer/hlslparser/src",
 				);
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/Frameworks/";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../projectM-iTunes/macos/contrib";
