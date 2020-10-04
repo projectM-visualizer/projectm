@@ -76,3 +76,4 @@ per_pixel_5=dx = dx + 0.03975*pow(rad,x*2)*sin(time);
 per_pixel_6=dy = dy + 0.03975*pow(rad,x*2)*cos(time);
 per_pixel_7=zoom = zoom - 0.125*pow(rad,x*6)*cos(ang*6);
 per_pixel_8=rot = rot - 0.25*(0.75*sin(1.25*time)*pow(rad,x)*sin(1.45*time))*sin(time);
+move=1.000000
