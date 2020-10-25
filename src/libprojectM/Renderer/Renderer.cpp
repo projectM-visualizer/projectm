@@ -16,8 +16,6 @@
 #include <chrono>
 #include <ctime>
 
-Pipeline* Renderer::currentPipe;
-
 using namespace std::chrono;
 
 class Preset;
@@ -482,7 +480,11 @@ void Renderer::Interpolation(const Pipeline& pipeline, const PipelineContext& pi
 	else
 	{
 		mesh.Reset();
-		omptl::transform(mesh.p.begin(), mesh.p.end(), mesh.identity.begin(), mesh.p.begin(), &Renderer::PerPixel);
+		Pipeline *cp = currentPipe;
+		omptl::transform(mesh.p.begin(), mesh.p.end(), mesh.identity.begin(), mesh.p.begin(),
+			[cp](PixelPoint p, PerPixelContext &context) {
+				return cp->PerPixel(p, context);
+			});
 
 		for (int j = 0; j < mesh.height - 1; j++)
 		{
