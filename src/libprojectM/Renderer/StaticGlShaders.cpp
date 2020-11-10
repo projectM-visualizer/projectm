@@ -1,5 +1,7 @@
 #include "StaticGlShaders.h"
 #include "projectM-opengl.h"
+#include <cstring>
+
 
 namespace {
 // Variants of shaders for GLSL1.2
@@ -770,16 +772,74 @@ StaticGlShaders::StaticGlShaders(bool use_gles) : use_gles_(use_gles) {
 }
 
 StaticGlShaders::GlslVersion StaticGlShaders::QueryGlslVersion() {
+    /* In the linux desktop environment with --use-gles configured, the parsing of the GL_SHADING_LANGUAGE_VERSION
+    string comes back as "OpenGL ES GLSL ES 3"
+    And I think this was supposed to be parsing somethign like
+    "3.10 etc etc"
+    This caused exceptions to be raised in the std::stoi section;
+    
+    So - The parsing will look for <anything> <number> ['.' <number>] [<anything else>]
+    and will default to 3.0 for the version in case of errors    
+    */
+    
+    int major = 3;  /* 3.0 is default */
+    int minor = 0;
+
     std::string glsl_version_string = reinterpret_cast<const char *>(
         glGetString(GL_SHADING_LANGUAGE_VERSION));
-    size_t dot_location = glsl_version_string.find('.');
-    size_t end_location = glsl_version_string.find(' ');
-    auto major_string = glsl_version_string.substr(0, dot_location);
-    auto minor_string = glsl_version_string.substr(dot_location + 1,
-                                                   end_location - dot_location);
-    int major = std::stoi(major_string);
-    int minor = std::stoi(minor_string);
 
+    size_t version_len = glsl_version_string.length();
+    /* make a c version of the string and do the conversion to integers manually just for this case */
+    if (version_len) { // find the number
+      size_t position = 0; 
+      char *cstr = new char [version_len+1];
+
+      strcpy(cstr,glsl_version_string.c_str()); 
+      
+      /* scan the anything before the number */
+      while (position<version_len) {
+        char ch = cstr[position];
+	if ((ch >= '0') || (ch <= '9')) {
+          break;
+	  }
+	position++;
+	}
+	
+      /* scan the first number */
+      {
+       	int possible_major = 0;
+        while (position<version_len) {
+          char ch = cstr[position];
+     	  if ((ch >= '0') || (ch <= '9')) {
+	    possible_major = (possible_major * 10) + ch - '0';
+	    }
+	  else if (ch == '.') { /* got the minor */
+	    position++;
+	    int possible_minor = 0;
+            while (position<version_len) {
+     	      if ((ch >= '0') || (ch <= '9')) {
+	        possible_minor = (possible_minor * 10) + ch - '0';
+		}
+	      else break;
+	      position++;
+	      }  /* while scanning the minor version */
+	    if (possible_major) { /* set the minor version only if the major number is valid */
+	      minor = possible_minor;
+	      }
+	    break; // We scanned it
+	    }
+	  else { /* not a number or period */
+	    break;
+	    }
+	  position++;
+	  } /* while scanning the major number */
+        if (possible_major) {
+	  major = possible_major;
+	  }
+	} /* scanning block */
+      delete[] cstr;
+      } /* if there is a string to parse */
+    
     return GlslVersion{major, minor};
 }
 
