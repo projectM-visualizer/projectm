@@ -799,7 +799,7 @@ StaticGlShaders::GlslVersion StaticGlShaders::QueryGlslVersion() {
       /* scan the anything before the number */
       while (position<version_len) {
         char ch = cstr[position];
-	if ((ch >= '0') || (ch <= '9')) {
+	if ((ch >= '0') && (ch <= '9')) {
           break;
 	  }
 	position++;
@@ -810,14 +810,15 @@ StaticGlShaders::GlslVersion StaticGlShaders::QueryGlslVersion() {
        	int possible_major = 0;
         while (position<version_len) {
           char ch = cstr[position];
-     	  if ((ch >= '0') || (ch <= '9')) {
+     	  if ((ch >= '0') && (ch <= '9')) {
 	    possible_major = (possible_major * 10) + ch - '0';
 	    }
 	  else if (ch == '.') { /* got the minor */
-	    position++;
 	    int possible_minor = 0;
+	    position++;
             while (position<version_len) {
-     	      if ((ch >= '0') || (ch <= '9')) {
+	      ch = cstr[position];
+     	      if ((ch >= '0') && (ch <= '9')) {
 	        possible_minor = (possible_minor * 10) + ch - '0';
 		}
 	      else break;
