@@ -103,7 +103,8 @@ template <class ReadFunctor>
 QXmlStreamReader::Error QXmlPlaylistHandler::readPlaylistItem(QXmlStreamReader & reader, ReadFunctor & readFunctor) {
 
 	QString url, name;
-	int rating, breedability;
+	int rating = 3;
+	int breedability = 3;
 
 	while (reader.readNext() != QXmlStreamReader::EndElement)
 		if (reader.name() == "url") {

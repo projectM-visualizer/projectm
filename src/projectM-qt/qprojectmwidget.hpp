@@ -248,7 +248,7 @@ class QProjectMWidget : public QGLWidget
 					e->ignore();
 					return;
 			}
-			projectMModifier modifier;
+			projectMModifier modifier = PROJECTM_KMOD_NONE;
 
 			m_projectM->key_handler ( PROJECTM_KEYDOWN, pkey, modifier );
 			if ( ignore )
