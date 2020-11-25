@@ -770,8 +770,8 @@ void QPulseAudioThread::initialize_callbacks ( QPulseAudioThread * pulseThread )
 	//pa_context_set_drain
 	pa_context_set_subscribe_callback ( context, subscribe_callback, pulseThread );
 
-	if ( op = pa_context_subscribe ( context, ( enum pa_subscription_mask )
-	                                 PA_SUBSCRIPTION_MASK_SOURCE_OUTPUT, NULL, NULL ) )
+	if ( ( op = pa_context_subscribe ( context, ( enum pa_subscription_mask )
+	                                 PA_SUBSCRIPTION_MASK_SOURCE_OUTPUT, NULL, NULL ) ) )
 	{
 		pa_operation_unref ( op );
 	}

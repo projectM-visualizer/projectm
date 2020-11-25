@@ -110,7 +110,7 @@ QXmlStreamReader::Error QXmlPlaylistHandler::readPlaylistItem(QXmlStreamReader &
 			bool repeat;
 			int result;
 
-			while (repeat = (result = reader.readNext()) == QXmlStreamReader::Characters) 	
+			while ((repeat = (result = reader.readNext()) == QXmlStreamReader::Characters))
 				url += reader.text().toString();			
 						
 		} else if (reader.name() == "rating") {
@@ -125,7 +125,7 @@ QXmlStreamReader::Error QXmlPlaylistHandler::readPlaylistItem(QXmlStreamReader &
 			bool repeat;
 			int result;
 
-			while (repeat = (result = reader.readNext()) == QXmlStreamReader::Characters)	
+			while ((repeat = (result = reader.readNext()) == QXmlStreamReader::Characters))
 				name += reader.text().toString();
 		} else {
 			if (reader.name() == "")
