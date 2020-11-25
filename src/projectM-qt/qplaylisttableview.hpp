@@ -83,6 +83,7 @@ class QPlaylistTableView : public QTableView
     
 	 
 	 void dragLeaveEvent ( QDragLeaveEvent * event )  {
+		Q_UNUSED(event);
 		 //qDebug() << "drag leave";
 	 }
 	 

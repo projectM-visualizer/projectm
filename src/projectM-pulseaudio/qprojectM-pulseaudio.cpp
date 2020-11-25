@@ -111,9 +111,6 @@ int main ( int argc, char*argv[] )
 {
 //	if (!TestRunner::run()) exit(1);
 
-	int i;
-	char projectM_data[1024];
-
 	ProjectMApplication app ( argc, argv );
 
 	std::string config_file;

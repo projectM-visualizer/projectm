@@ -108,7 +108,7 @@ m_QPlaylistFileDialog( new QPlaylistFileDialog ( this ))
 
 	//connect(this, SIGNAL(dockLocationChanged ( Qt::DockWidgetArea)), SLOT(dockLocationChanged(Qt::DockWidgetArea)));
 	if (!m_QProjectMWidget->isValid()) {
-		int ret = QMessageBox::warning(this, tr("projectM cannot be started."),
+		QMessageBox::warning(this, tr("projectM cannot be started."),
 					       tr("Your graphics driver or configuration is not supported by projectM. Please contact the developers (carmelo.piccione+projectM@gmail.com or psperl+projectM@gmail.com) with your card and driver information so we can help you get it working."),
 			      QMessageBox::Ok);
 		exit(-1);
@@ -659,6 +659,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 
 
 void QProjectM_MainWindow::refreshHeaders(QResizeEvent * event) {
+	Q_UNUSED(event);
 
 
     hHeader->setSectionResizeMode ( 0, QHeaderView::Fixed);
@@ -1292,6 +1293,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 
 void QProjectM_MainWindow::presetRatingChanged( unsigned int index, int rating, PresetRatingType ratingType)
 {
+	Q_UNUSED(ratingType);
 
 	PlaylistItemVector & lastCache =  *historyHash[previousFilter];
 	const long id = lastCache[index];
@@ -1307,6 +1309,7 @@ void QProjectM_MainWindow::presetRatingChanged( unsigned int index, int rating, 
 
 void QProjectM_MainWindow::handleFailedPresetSwitch(const bool isHardCut, const unsigned int index,
 		const QString & message) {
+	Q_UNUSED(isHardCut);
 
 	qDebug() << "handleFailedPresetSwitch";
 	const QString status = QString("Error switching to preset index %1 (%2)")
@@ -1318,14 +1321,16 @@ void QProjectM_MainWindow::handleFailedPresetSwitch(const bool isHardCut, const 
 
 bool QProjectM_MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-	    if (event->type() == QEvent::MouseButtonDblClick && ((QMouseEvent*)event)->button() == Qt::LeftButton) {
-			    this->setWindowState ( this->windowState() ^ Qt::WindowFullScreen );
-			    return true;
-		} else if (event->type() == QEvent::MouseButtonPress && ((QMouseEvent*)event)->button() == Qt::RightButton) {
-			    setMenuVisible(!_menuVisible);
-				refreshHeaders();
-				return true;
-		} else {
-			    return false;
-		}
+    Q_UNUSED(obj);
+
+	if (event->type() == QEvent::MouseButtonDblClick && ((QMouseEvent*)event)->button() == Qt::LeftButton) {
+		this->setWindowState ( this->windowState() ^ Qt::WindowFullScreen );
+		return true;
+	} else if (event->type() == QEvent::MouseButtonPress && ((QMouseEvent*)event)->button() == Qt::RightButton) {
+		setMenuVisible(!_menuVisible);
+		refreshHeaders();
+		return true;
+	} else {
+		return false;
+	}
 }

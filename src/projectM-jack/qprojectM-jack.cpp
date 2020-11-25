@@ -88,8 +88,6 @@ class ProjectMApplication : public QApplication {
 std::string read_config()
 {
 
-   int n;
-
    char num[512];
    FILE *in;
    FILE *out;
@@ -176,6 +174,7 @@ std::string read_config()
 int
 process (jack_nframes_t nframes, void *arg)
 {
+	Q_UNUSED(arg);
 
 	jack_default_audio_sample_t *in;
 
@@ -191,6 +190,7 @@ process (jack_nframes_t nframes, void *arg)
 
 void jack_shutdown (void *arg)
 {
+	Q_UNUSED(arg);
 	exit (1);
 }
 
@@ -201,7 +201,6 @@ int main (int argc, char **argv) {
 	jack_options_t options = JackNullOption;
 	jack_status_t status;
 	int i;
-	char projectM_data[1024];
 
 	// Start a new application
 	ProjectMApplication app(argc, argv);

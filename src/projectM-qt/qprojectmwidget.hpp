@@ -94,6 +94,7 @@ class QProjectMWidget : public QGLWidget
 	protected slots:
 		inline void mouseMoveEvent ( QMouseEvent * event )
 		{
+			Q_UNUSED(event);
 
 			m_mouseTimer->stop();
 			QApplication::restoreOverrideCursor();
@@ -104,6 +105,7 @@ class QProjectMWidget : public QGLWidget
 
 		inline void leaveEvent ( QEvent * event )
 		{
+			Q_UNUSED(event);
 			/// @bug testing if this resolves a bug for ubuntu users
 			QApplication::restoreOverrideCursor();
 		}
@@ -152,6 +154,8 @@ class QProjectMWidget : public QGLWidget
 
 		void mousePressEvent ( QMouseEvent * event )
 		{
+			Q_UNUSED(event);
+
 			this->setFocus();
 		}
 

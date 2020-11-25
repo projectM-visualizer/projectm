@@ -61,6 +61,7 @@ class XmlWriteFunctor {
 		}
 
 		inline bool nextItem(QString & name, QString & url, int & rating, int & breedability) {
+			Q_UNUSED(name);
 
 			if (m_index >= m_model.rowCount())
 				return false;
@@ -131,6 +132,8 @@ Qt::ItemFlags QPlaylistModel::flags(const QModelIndex &index) const
  bool QPlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
 				int row, int column, const QModelIndex &parent)
 {
+	Q_UNUSED(row);
+	Q_UNUSED(parent);
 	if (!data->hasFormat(PRESET_MIME_TYPE))
 		return false;
 
@@ -312,12 +315,16 @@ QVariant QPlaylistModel::headerData ( int section, Qt::Orientation orientation, 
 
 int QPlaylistModel::rowCount ( const QModelIndex & parent ) const
 {
+	Q_UNUSED(parent);
+
 	return m_projectM.getPlaylistSize();
 }
 
 
 int QPlaylistModel::columnCount ( const QModelIndex & parent ) const
 {
+	Q_UNUSED(parent);
+
 	return softCutRatingsEnabled() ? 3 : 2;
 }
 
@@ -343,6 +350,7 @@ void QPlaylistModel::insertRow (int index, const QString & presetURL, const QStr
 }
 
 bool QPlaylistModel::removeRows ( int row, int count, const QModelIndex & parent)   {
+	Q_UNUSED(parent);
 	
 	beginRemoveRows ( QModelIndex(), row, count);
 
@@ -355,6 +363,8 @@ bool QPlaylistModel::removeRows ( int row, int count, const QModelIndex & parent
 
 bool QPlaylistModel::removeRow ( int index, const QModelIndex & parent)
 {
+	Q_UNUSED(parent);
+
 	beginRemoveRows ( QModelIndex(), index, index );
 	m_projectM.removePreset ( index );	
 	endRemoveRows();
