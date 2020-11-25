@@ -114,7 +114,7 @@ void projectM::projectM_resetTextures()
 
 
 projectM::projectM ( std::string config_file, int flags) :
-        _pcm(0), beatDetect ( 0 ), renderer ( 0 ), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()), m_presetPos(0),
+        renderer ( 0 ), _pcm(0), beatDetect ( 0 ), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()), m_presetPos(0),
         timeKeeper(NULL), m_flags(flags), _matcher(NULL), _merger(NULL)
 {
     readConfig(config_file);
@@ -124,7 +124,7 @@ projectM::projectM ( std::string config_file, int flags) :
 }
 
 projectM::projectM(Settings settings, int flags):
-        _pcm(0), beatDetect ( 0 ), renderer ( 0 ), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()), m_presetPos(0),
+        renderer ( 0 ), _pcm(0), beatDetect ( 0 ), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()), m_presetPos(0),
         timeKeeper(NULL), m_flags(flags), _matcher(NULL), _merger(NULL)
 {
     readSettings(settings);

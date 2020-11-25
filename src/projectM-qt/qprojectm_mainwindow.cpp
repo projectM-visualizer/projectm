@@ -74,10 +74,10 @@ class PlaylistWriteFunctor {
 };
 
 QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QMutex * audioMutex)
-		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), ui(0), m_QPlaylistFileDialog
-		( new QPlaylistFileDialog ( this )), playlistModel(0),
-		configDialog(0), hHeader(0), vHeader(0), _menuVisible(true), _menuAndStatusBarsVisible(true),
-activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDialog(0)
+		:playlistItemCounter(0), m_QPresetEditorDialog(0), hHeader(0), vHeader(0), playlistModel(0),
+		ui(0), configDialog(0), activePresetIndex(new Nullable<long>), _menuVisible(true),
+		_menuAndStatusBarsVisible(true), m_QPresetFileDialog ( new QPresetFileDialog ( this ) ),
+m_QPlaylistFileDialog( new QPlaylistFileDialog ( this ))
 {
 	qInitResources();
 

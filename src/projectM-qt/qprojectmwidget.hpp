@@ -40,7 +40,7 @@ class QProjectMWidget : public QGLWidget
 	public:
 		static const int MOUSE_VISIBLE_TIMEOUT_MS = 5000;
 		QProjectMWidget ( const std::string & config_file, QWidget * parent, QMutex * audioMutex = 0 )
-				: QGLWidget ( parent ), m_config_file ( config_file ), m_projectM ( 0 ), m_audioMutex ( audioMutex ), m_mouseTimer ( 0 )
+				: QGLWidget ( parent ), m_config_file ( config_file ), m_projectM ( 0 ), m_mouseTimer ( 0 ), m_audioMutex ( audioMutex )
 		{
 
 			m_mouseTimer = new QTimer ( this );
