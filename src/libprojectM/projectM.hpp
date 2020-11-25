@@ -315,7 +315,7 @@ public:
   std::vector<int> presetFuture;  
 
   /// Get the preset index given a name
-	const unsigned int getSearchIndex(std::string &name) const;
+  unsigned int getSearchIndex(std::string &name) const;
 
   void selectPrevious(const bool);
   void selectNext(const bool);
