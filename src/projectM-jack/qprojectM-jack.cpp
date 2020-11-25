@@ -89,8 +89,8 @@ std::string read_config()
 {
 
    char num[512];
-   FILE *in;
-   FILE *out;
+   FILE *f_in;
+   FILE *f_out;
 
    char * home;
    char projectM_home[1024];
@@ -111,10 +111,10 @@ std::string read_config()
    projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
 
 
- if ((in = fopen(projectM_home, "r")) != 0)
+ if ((f_in = fopen(projectM_home, "r")) != 0)
    {
      printf("reading ~/.projectM/config.inp \n");
-     fclose(in);
+     fclose(f_in);
      return std::string(projectM_home);
    }
  else
@@ -130,24 +130,24 @@ std::string read_config()
      strcpy(projectM_home+strlen(home), "/.projectM/config.inp");
      projectM_home[strlen(home)+strlen("/.projectM/config.inp")]='\0';
 
-     if((out = fopen(projectM_home,"w"))!=0)
+     if((f_out = fopen(projectM_home,"w"))!=0)
        {
 
-	 if ((in = fopen(projectM_config, "r")) != 0)
+	 if ((f_in = fopen(projectM_config, "r")) != 0)
 	   {
 
-	     while(fgets(num,80,in)!=NULL)
+	     while(fgets(num,80,f_in)!=NULL)
 	       {
-		 fputs(num,out);
+		 fputs(num,f_out);
 	       }
-	     fclose(in);
-	     fclose(out);
+	     fclose(f_in);
+	     fclose(f_out);
 
 
-	     if ((in = fopen(projectM_home, "r")) != 0)
+	     if ((f_in = fopen(projectM_home, "r")) != 0)
 	       {
 		 printf("created ~/.projectM/config.inp successfully\n");
-		 fclose(in);
+		 fclose(f_in);
 		 return std::string(projectM_home);
 	       }
 	     else{printf("This shouldn't happen, using implementation defaults\n");abort();}
@@ -157,9 +157,9 @@ std::string read_config()
      else
        {
 	 printf("Cannot create ~/.projectM/config.inp, using default config file\n");
-	 if ((in = fopen(projectM_config, "r")) != 0)
+	 if ((f_in = fopen(projectM_config, "r")) != 0)
 	   { printf("Successfully opened default config file\n");
-	     fclose(in);
+	     fclose(f_in);
 	     return std::string(projectM_config);}
 	 else{ printf("Using implementation defaults, your system is really messed up, I'm surprised we even got this far\n");  abort();}
 
