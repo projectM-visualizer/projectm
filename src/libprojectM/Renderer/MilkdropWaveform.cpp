@@ -356,7 +356,7 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			break;
 
 		case DoubleLine://dual waveforms
-
+		{
 
 			wave_x_temp=-2*0.4142f*(fabs(fabs(mystery)-.5f)-.5f);
 
@@ -384,6 +384,8 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			}
 
 			break;
-
+		}
+		case last:
+            break;
 	}
 }

@@ -40,7 +40,7 @@ class QProjectMWidget : public QGLWidget
 	public:
 		static const int MOUSE_VISIBLE_TIMEOUT_MS = 5000;
 		QProjectMWidget ( const std::string & config_file, QWidget * parent, QMutex * audioMutex = 0 )
-				: QGLWidget ( parent ), m_config_file ( config_file ), m_projectM ( 0 ), m_audioMutex ( audioMutex ), m_mouseTimer ( 0 )
+				: QGLWidget ( parent ), m_config_file ( config_file ), m_projectM ( 0 ), m_mouseTimer ( 0 ), m_audioMutex ( audioMutex )
 		{
 
 			m_mouseTimer = new QTimer ( this );
@@ -94,6 +94,7 @@ class QProjectMWidget : public QGLWidget
 	protected slots:
 		inline void mouseMoveEvent ( QMouseEvent * event )
 		{
+			Q_UNUSED(event);
 
 			m_mouseTimer->stop();
 			QApplication::restoreOverrideCursor();
@@ -104,6 +105,7 @@ class QProjectMWidget : public QGLWidget
 
 		inline void leaveEvent ( QEvent * event )
 		{
+			Q_UNUSED(event);
 			/// @bug testing if this resolves a bug for ubuntu users
 			QApplication::restoreOverrideCursor();
 		}
@@ -152,6 +154,8 @@ class QProjectMWidget : public QGLWidget
 
 		void mousePressEvent ( QMouseEvent * event )
 		{
+			Q_UNUSED(event);
+
 			this->setFocus();
 		}
 
@@ -244,7 +248,7 @@ class QProjectMWidget : public QGLWidget
 					e->ignore();
 					return;
 			}
-			projectMModifier modifier;
+			projectMModifier modifier = PROJECTM_KMOD_NONE;
 
 			m_projectM->key_handler ( PROJECTM_KEYDOWN, pkey, modifier );
 			if ( ignore )

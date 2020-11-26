@@ -78,7 +78,6 @@ class QPulseAudioThread : public QThread
 		void threadCleanedUp();
 	private:
 	
-		QProjectM_MainWindow * m_qprojectM_MainWindow;
 		static SourceContainer::const_iterator readSettings();
 
 		static void reconnect(SourceContainer::const_iterator pos);
@@ -107,7 +106,8 @@ class QPulseAudioThread : public QThread
 		static SourceContainer s_sourceList;
 		static SourceContainer::const_iterator s_sourcePosition;
 		int argc;
-		char ** argv;	
+		char ** argv;
+		QProjectM_MainWindow * m_qprojectM_MainWindow;
 		static pa_context *context;
 		static pa_stream *stream;
 		static pa_mainloop_api *mainloop_api;

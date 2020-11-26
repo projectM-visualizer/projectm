@@ -161,7 +161,7 @@ llvm::Value *PrefunExpr::_llvm(JitContext &jitx)
 class PrefunExprOne : public PrefunExpr
 {
 public:
-    PrefunExprOne(Func *function, Expr **expr_list_) : PrefunExpr(function,expr_list_) {}
+    PrefunExprOne(Func *fun, Expr **expr_list_) : PrefunExpr(fun,expr_list_) {}
     float eval ( int mesh_i, int mesh_j )
     {
         float val = expr_list[0]->eval ( mesh_i, mesh_j );
@@ -260,7 +260,7 @@ public:
 class IfExpr : public PrefunExpr
 {
 public:
-    IfExpr(Func *function, Expr **expr_list_) : PrefunExpr(function,expr_list_) {}
+    IfExpr(Func *fun, Expr **expr_list_) : PrefunExpr(fun,expr_list_) {}
 
     float eval ( int mesh_i, int mesh_j )
 	{
@@ -322,7 +322,7 @@ public:
 class SinExpr : public PrefunExpr
 {
 public:
-    SinExpr(Func *function, Expr **expr_list_) : PrefunExpr(function,expr_list_) {}
+    SinExpr(Func *fun, Expr **expr_list_) : PrefunExpr(fun,expr_list_) {}
     float eval ( int mesh_i, int mesh_j ) override
     {
         float val = expr_list[0]->eval ( mesh_i, mesh_j );
@@ -334,7 +334,7 @@ public:
 class CosExpr : public PrefunExpr
 {
 public:
-    CosExpr(Func *function, Expr **expr_list_) : PrefunExpr(function,expr_list_) {}
+    CosExpr(Func *fun, Expr **expr_list_) : PrefunExpr(fun,expr_list_) {}
     float eval ( int mesh_i, int mesh_j ) override
     {
         float val = expr_list[0]->eval ( mesh_i, mesh_j );
@@ -346,7 +346,7 @@ public:
 class LogExpr : public PrefunExpr
 {
 public:
-    LogExpr(Func *function, Expr **expr_list_) : PrefunExpr(function,expr_list_) {}
+    LogExpr(Func *fun, Expr **expr_list_) : PrefunExpr(fun,expr_list_) {}
     float eval ( int mesh_i, int mesh_j ) override
     {
         float val = expr_list[0]->eval( mesh_i, mesh_j );

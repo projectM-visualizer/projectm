@@ -74,10 +74,10 @@ class PlaylistWriteFunctor {
 };
 
 QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QMutex * audioMutex)
-		:m_QPresetFileDialog ( new QPresetFileDialog ( this ) ), ui(0), m_QPlaylistFileDialog
-		( new QPlaylistFileDialog ( this )), playlistModel(0),
-		configDialog(0), hHeader(0), vHeader(0), _menuVisible(true), _menuAndStatusBarsVisible(true),
-activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDialog(0)
+		:playlistItemCounter(0), m_QPresetEditorDialog(0), hHeader(0), vHeader(0), playlistModel(0),
+		ui(0), configDialog(0), activePresetIndex(new Nullable<long>), _menuVisible(true),
+		_menuAndStatusBarsVisible(true), m_QPresetFileDialog ( new QPresetFileDialog ( this ) ),
+m_QPlaylistFileDialog( new QPlaylistFileDialog ( this ))
 {
 	qInitResources();
 
@@ -108,7 +108,7 @@ activePresetIndex(new Nullable<long>), playlistItemCounter(0), m_QPresetEditorDi
 
 	//connect(this, SIGNAL(dockLocationChanged ( Qt::DockWidgetArea)), SLOT(dockLocationChanged(Qt::DockWidgetArea)));
 	if (!m_QProjectMWidget->isValid()) {
-		int ret = QMessageBox::warning(this, tr("projectM cannot be started."),
+		QMessageBox::warning(this, tr("projectM cannot be started."),
 					       tr("Your graphics driver or configuration is not supported by projectM. Please contact the developers (carmelo.piccione+projectM@gmail.com or psperl+projectM@gmail.com) with your card and driver information so we can help you get it working."),
 			      QMessageBox::Ok);
 		exit(-1);
@@ -548,6 +548,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 					openPresetEditorDialog(historyHash[previousFilter]->indexOf(activePresetIndex->value()));
 			} else
 				e->ignore();
+			return;
 		case Qt::Key_L:
 
 			if (!(e->modifiers() & Qt::ControlModifier)) {
@@ -659,6 +660,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 
 
 void QProjectM_MainWindow::refreshHeaders(QResizeEvent * event) {
+	Q_UNUSED(event);
 
 
     hHeader->setSectionResizeMode ( 0, QHeaderView::Fixed);
@@ -1231,7 +1233,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 	} else if (presetSelected) {
 		const PlaylistItemVector & oldPlaylistItems = *historyHash.value(previousFilter);
 
-		if ((presetIndexBackup >=0) && (presetIndexBackup < oldPlaylistItems.size())) {
+		if (presetIndexBackup < static_cast<std::size_t>(oldPlaylistItems.size())) {
 			activePresetId = oldPlaylistItems[presetIndexBackup];
 		}
 
@@ -1292,6 +1294,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 
 void QProjectM_MainWindow::presetRatingChanged( unsigned int index, int rating, PresetRatingType ratingType)
 {
+	Q_UNUSED(ratingType);
 
 	PlaylistItemVector & lastCache =  *historyHash[previousFilter];
 	const long id = lastCache[index];
@@ -1307,6 +1310,7 @@ void QProjectM_MainWindow::presetRatingChanged( unsigned int index, int rating, 
 
 void QProjectM_MainWindow::handleFailedPresetSwitch(const bool isHardCut, const unsigned int index,
 		const QString & message) {
+	Q_UNUSED(isHardCut);
 
 	qDebug() << "handleFailedPresetSwitch";
 	const QString status = QString("Error switching to preset index %1 (%2)")
@@ -1318,14 +1322,16 @@ void QProjectM_MainWindow::handleFailedPresetSwitch(const bool isHardCut, const 
 
 bool QProjectM_MainWindow::eventFilter(QObject *obj, QEvent *event)
 {
-	    if (event->type() == QEvent::MouseButtonDblClick && ((QMouseEvent*)event)->button() == Qt::LeftButton) {
-			    this->setWindowState ( this->windowState() ^ Qt::WindowFullScreen );
-			    return true;
-		} else if (event->type() == QEvent::MouseButtonPress && ((QMouseEvent*)event)->button() == Qt::RightButton) {
-			    setMenuVisible(!_menuVisible);
-				refreshHeaders();
-				return true;
-		} else {
-			    return false;
-		}
+    Q_UNUSED(obj);
+
+	if (event->type() == QEvent::MouseButtonDblClick && ((QMouseEvent*)event)->button() == Qt::LeftButton) {
+		this->setWindowState ( this->windowState() ^ Qt::WindowFullScreen );
+		return true;
+	} else if (event->type() == QEvent::MouseButtonPress && ((QMouseEvent*)event)->button() == Qt::RightButton) {
+		setMenuVisible(!_menuVisible);
+		refreshHeaders();
+		return true;
+	} else {
+		return false;
+	}
 }

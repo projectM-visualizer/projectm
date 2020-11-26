@@ -154,7 +154,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			if (isTextInputActive()) break; // don't handle this key if search menu is up.
 			if (renderer->showmenu) {
 				int downPreset = m_presetPos->lastIndex() + (renderer->textMenuPageSize / 2.0f); // jump down by page size / 2
-				if (downPreset >= (m_presetLoader->size() - 1)) // handle upper boundary
+				if (static_cast<std::size_t>(downPreset) >= (m_presetLoader->size() - 1)) // handle upper boundary
 					downPreset = 0;
 				selectPreset(downPreset); // jump down menu half a page.
 			}
