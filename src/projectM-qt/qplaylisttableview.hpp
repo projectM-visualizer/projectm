@@ -110,7 +110,7 @@ class QPlaylistTableView : public QTableView
 			emit(mousePressed(event, selectedIndexes()));
 		}
 		else
-				;
+		{}
 	 }
 	 
 	inline void keyReleaseEvent(QKeyEvent * event) {

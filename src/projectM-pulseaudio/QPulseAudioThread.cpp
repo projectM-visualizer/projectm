@@ -714,7 +714,7 @@ void QPulseAudioThread::run()
 		fprintf ( stderr, "io_new() failed.\n" );
 		goto quit;
 	}
-/*
+*/
 	/* Create a new connection context */
 	if ( ! ( context = pa_context_new ( mainloop_api, client_name ) ) )
 	{

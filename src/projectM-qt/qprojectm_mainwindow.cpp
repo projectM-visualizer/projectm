@@ -548,6 +548,7 @@ void QProjectM_MainWindow::keyReleaseEvent ( QKeyEvent * e )
 					openPresetEditorDialog(historyHash[previousFilter]->indexOf(activePresetIndex->value()));
 			} else
 				e->ignore();
+			return;
 		case Qt::Key_L:
 
 			if (!(e->modifiers() & Qt::ControlModifier)) {

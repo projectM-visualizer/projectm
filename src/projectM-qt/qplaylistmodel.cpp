@@ -303,11 +303,12 @@ QVariant QPlaylistModel::headerData ( int section, Qt::Orientation orientation, 
 		return QString ( tr ( "Preset" ) );
 
 	/// @bug hack. this should be formalized like it is in libprojectM.
-	if ( ( section == 1 ) && ( role == Qt::DisplayRole ))
+	if ( ( section == 1 ) && ( role == Qt::DisplayRole )) {
 		if (columnCount() == 2)
 			return QString ( tr ( "Rating" ) );
 		else
 			return QString ( tr ( "Hard Rating" ) );
+    }
 	if ( ( section == 2 ) && ( role == Qt::DisplayRole ) )
 		return QString ( tr ( "Soft Rating" ) );
 
