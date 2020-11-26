@@ -1232,7 +1232,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 	} else if (presetSelected) {
 		const PlaylistItemVector & oldPlaylistItems = *historyHash.value(previousFilter);
 
-		if ((presetIndexBackup >=0) && (presetIndexBackup < oldPlaylistItems.size())) {
+		if (presetIndexBackup < static_cast<std::size_t>(oldPlaylistItems.size())) {
 			activePresetId = oldPlaylistItems[presetIndexBackup];
 		}
 

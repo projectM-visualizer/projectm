@@ -170,7 +170,7 @@ public:
   void touchDrag(float x, float y, int pressure);
   void touchDestroy(float x, float y);
   void touchDestroyAll();
-  bool touchedWaveform(float x, float y, int i);
+  bool touchedWaveform(float x, float y, std::size_t i);
   
   void setToastMessage(const std::string& theValue);
   void setSearchText(const std::string& theValue);
