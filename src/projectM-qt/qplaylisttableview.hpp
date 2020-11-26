@@ -83,6 +83,7 @@ class QPlaylistTableView : public QTableView
     
 	 
 	 void dragLeaveEvent ( QDragLeaveEvent * event )  {
+		Q_UNUSED(event);
 		 //qDebug() << "drag leave";
 	 }
 	 
@@ -109,7 +110,7 @@ class QPlaylistTableView : public QTableView
 			emit(mousePressed(event, selectedIndexes()));
 		}
 		else
-				;
+		{}
 	 }
 	 
 	inline void keyReleaseEvent(QKeyEvent * event) {

@@ -389,7 +389,7 @@ void Renderer::RenderTouch(const Pipeline& pipeline, const PipelineContext& pipe
 {
 	Pipeline pipelineTouch;
 	MilkdropWaveform wave;
-	for(int x = 0; x < waveformList.size(); x++){
+	for(std::size_t x = 0; x < waveformList.size(); x++){
 		pipelineTouch.drawables.push_back(&wave);
 		wave = waveformList[x];
 
@@ -701,7 +701,7 @@ bool Renderer::timeCheck(const milliseconds currentTime, const milliseconds last
 }
 
 // If we touched on the renderer where there is an existing waveform.
-bool Renderer::touchedWaveform(float x, float y, int i)
+bool Renderer::touchedWaveform(float x, float y, std::size_t i)
 {
 	if (waveformList[i].x > (x-0.05f) && waveformList[i].x < (x+0.05f) // if x +- 0.5f 
 		&& ((waveformList[i].y > (y-0.05f) && waveformList[i].y < (y+0.05f)) // and y +- 0.5f 
@@ -717,7 +717,7 @@ bool Renderer::touchedWaveform(float x, float y, int i)
 void Renderer::touch(float x, float y, int pressure, int type = 0)
 {
 
-	for (int i = 0; i < waveformList.size(); i++) {
+	for (std::size_t i = 0; i < waveformList.size(); i++) {
 		if (touchedWaveform(x, y, i))
 		{
 			// if we touched an existing waveform with left click, drag it and don't continue with adding another.
@@ -767,7 +767,7 @@ void Renderer::touchDrag(float x, float y, int pressure)
 {
 	// if we left clicked & held in the approximate position of a waveform, snap to it and adjust x / y to simulate dragging.
 	// For lines we don't worry about the x axis.
-	for (int i = 0; i < waveformList.size(); i++) {
+	for (std::size_t i = 0; i < waveformList.size(); i++) {
 		if (touchedWaveform(x, y, i))
 		{
 			waveformList[i].x = x;
@@ -782,7 +782,7 @@ void Renderer::touchDestroy(float x, float y)
 {
 	// if we right clicked approximately on the position of the waveform, then remove it from the waveform list.
 	// For lines we don't worry about the x axis.
-	for (int i = 0; i < waveformList.size(); i++) {
+	for (std::size_t i = 0; i < waveformList.size(); i++) {
 		if (touchedWaveform(x, y, i))
 		{
 			waveformList.erase(waveformList.begin() + i);

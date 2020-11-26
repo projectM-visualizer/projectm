@@ -145,6 +145,7 @@ typedef enum {
 
 typedef enum {
     /** Modifiers */
+    PROJECTM_KMOD_NONE = -1,
     PROJECTM_KMOD_LSHIFT,
     PROJECTM_KMOD_RSHIFT,
     PROJECTM_KMOD_CAPS,

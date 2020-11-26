@@ -114,7 +114,7 @@ void projectM::projectM_resetTextures()
 
 
 projectM::projectM ( std::string config_file, int flags) :
-        _pcm(0), beatDetect ( 0 ), renderer ( 0 ), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()), m_presetPos(0),
+        renderer ( 0 ), _pcm(0), beatDetect ( 0 ), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()), m_presetPos(0),
         timeKeeper(NULL), m_flags(flags), _matcher(NULL), _merger(NULL)
 {
     readConfig(config_file);
@@ -124,7 +124,7 @@ projectM::projectM ( std::string config_file, int flags) :
 }
 
 projectM::projectM(Settings settings, int flags):
-        _pcm(0), beatDetect ( 0 ), renderer ( 0 ), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()), m_presetPos(0),
+        renderer ( 0 ), _pcm(0), beatDetect ( 0 ), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()), m_presetPos(0),
         timeKeeper(NULL), m_flags(flags), _matcher(NULL), _merger(NULL)
 {
     readSettings(settings);
@@ -900,7 +900,7 @@ void projectM::selectPrevious(const bool hardCut) {
             renderer->m_activePresetID--;
             selectPresetByName(renderer->m_presetList[renderer->m_activePresetID-1].name,true);
         }
-    } else if (settings().shuffleEnabled && presetHistory.size() >= 1 && presetHistory.back() != m_presetLoader->size() && !renderer->showmenu) { // if randomly browsing presets, "previous" should return to last random preset not the index--. Avoid returning to size() because that's the idle:// preset.
+    } else if (settings().shuffleEnabled && presetHistory.size() >= 1 && static_cast<std::size_t>(presetHistory.back()) != m_presetLoader->size() && !renderer->showmenu) { // if randomly browsing presets, "previous" should return to last random preset not the index--. Avoid returning to size() because that's the idle:// preset.
         presetFuture.push_back(m_presetPos->lastIndex());
         selectPreset(presetHistory.back());
         presetHistory.pop_back();
@@ -922,7 +922,7 @@ void projectM::selectNext(const bool hardCut) {
     if (isTextInputActive() && renderer->m_presetList.size() >= 1) // if search is active and there are search results
     {
         // if search menu is down, next is based on search terms.
-        if (renderer->m_activePresetID >= renderer->m_presetList.size()) {
+        if (static_cast<std::size_t>(renderer->m_activePresetID) >= renderer->m_presetList.size()) {
             // loop to top of page is at bottom
             renderer->m_activePresetID = 1;
             selectPresetByName(renderer->m_presetList[0].name,true);
@@ -931,7 +931,7 @@ void projectM::selectNext(const bool hardCut) {
             // otherwise move forward 
             selectPresetByName(renderer->m_presetList[renderer->m_activePresetID].name,true);
         }
-    } else if (settings().shuffleEnabled && presetFuture.size() >= 1 && presetFuture.front() != m_presetLoader->size() && !renderer->showmenu) { // if shuffling and we have future presets already stashed then let's go forward rather than truely move randomly.
+    } else if (settings().shuffleEnabled && presetFuture.size() >= 1 && static_cast<std::size_t>(presetFuture.front()) != m_presetLoader->size() && !renderer->showmenu) { // if shuffling and we have future presets already stashed then let's go forward rather than truely move randomly.
         presetHistory.push_back(m_presetPos->lastIndex());
         selectPreset(presetFuture.back());
         presetFuture.pop_back();
@@ -1133,7 +1133,7 @@ void projectM::toggleSearchText()
 }
 
 // get index from search results based on preset name
-const unsigned int projectM::getSearchIndex(std::string &name) const
+unsigned int projectM::getSearchIndex(std::string &name) const
 {
     for (auto& it : renderer->m_presetList) {
         if (it.name == name) return it.id;
