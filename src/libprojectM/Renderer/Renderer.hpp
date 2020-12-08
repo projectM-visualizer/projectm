@@ -190,7 +190,7 @@ private:
   PerPixelMesh mesh;
   BeatDetect *beatDetect;
   TextureManager *textureManager;
-  static Pipeline* currentPipe;
+  Pipeline* currentPipe;
   TimeKeeper *timeKeeperFPS;
   TimeKeeper *timeKeeperToast;
 
@@ -251,11 +251,6 @@ private:
   void Pass2 (const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void CompositeShaderOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void CompositeOutput(const Pipeline &pipeline, const PipelineContext &pipelineContext);
-
-  inline static PixelPoint PerPixel(PixelPoint p, PerPixelContext &context)
-  {
-	  return currentPipe->PerPixel(p,context);
-  }
 
   void rescale_per_pixel_matrices();
 
