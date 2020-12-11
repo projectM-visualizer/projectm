@@ -3,8 +3,9 @@
 
 #include <stdio.h>  // vsnprintf
 #include <string.h> // strcmp, strcasecmp
-#include <stdlib.h>	// strtod, strtol
-
+#include <stdlib.h>	// strtol
+#include <locale>
+#include <sstream>
 
 namespace M4 {
 
@@ -40,7 +41,11 @@ int String_Printf(char * buffer, int size, const char * format, ...) {
 }
 
 int String_FormatFloat(char * buffer, int size, float value) {
-    return String_Printf(buffer, size, "%f", value);
+    std::ostringstream oss;
+    oss.imbue(std::locale("C"));
+    oss << value;
+
+    return String_Printf(buffer, size, "%s", oss.str().c_str());
 }
 
 bool String_Equal(const char * a, const char * b) {
@@ -59,8 +64,32 @@ bool String_EqualNoCase(const char * a, const char * b) {
 #endif
 }
 
+static inline double iss_strtod(const char * in, char ** end) {
+    char * in_var = const_cast<char *>(in);
+    double df;
+    std::istringstream iss(in);
+    iss.imbue(std::locale("C"));
+    iss >> df;
+    if(iss.fail()) {
+        *end = in_var;
+        return 0.0;
+    }
+    if(iss.eof()) {
+        *end = in_var + strlen(in);
+        return df;
+    }
+
+    std::streampos pos = iss.tellg();
+    if(iss.fail()) {
+        *end = in_var;
+        return 0.0;
+    }
+    *end = in_var + pos;
+    return df;
+}
+
 double String_ToDouble(const char * str, char ** endptr) {
-	return strtod(str, endptr);
+	return iss_strtod(str, endptr);
 }
 
 int String_ToInteger(const char * str, char ** endptr) {
