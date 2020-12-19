@@ -31,7 +31,7 @@
 #include <cstdarg>
 #include <cassert>
 
-#ifdef _MSC_sVER
+#ifdef _MSC_VER
 #define strcasecmp(s, t) _strcmpi(s, t)
 #endif
 
