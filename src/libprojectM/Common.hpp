@@ -213,7 +213,7 @@ inline std::string parseExtension(const std::string & filename) {
     const std::size_t start = filename.find_last_of('.');
 
     if (start == std::string::npos || start >= (filename.length()-1))
-        return {};
+        return "";
     std::string ext = filename.substr(start+1, filename.length());
     std::transform(ext.begin(), ext.end(), ext.begin(), tolower);
     return ext;
