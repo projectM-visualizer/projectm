@@ -268,5 +268,5 @@ Pulseaudio:             ${enable_pulseaudio}
 Jack:                   ${enable_jack}
 OpenGLES:               ${enable_gles}
 Emscripten:             ${enable_emscripten}
-llvm:                   ${enable_llvm}
+LLVM JIT:               ${enable_llvm}
 ])
