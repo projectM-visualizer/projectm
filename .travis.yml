@@ -68,7 +68,7 @@ matrix:
 
     # osx/xcode/clang
     - os: osx
-      osx_image: xcode10
+      osx_image: xcode12.2
       env:
         - MATRIX_EVAL="brew update && brew install sdl2"
 
