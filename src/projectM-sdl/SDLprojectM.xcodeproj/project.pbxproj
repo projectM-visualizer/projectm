@@ -23,9 +23,6 @@
 		169BC65024CC8401007B7829 /* fonts in Copy Files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
 		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
 		C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215D1BF025CF001707D2 /* CoreFoundation.framework */; };
-		C34521651BF025E5001707D2 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215F1BF025E5001707D2 /* libbz2.a */; };
-		C34521691BF025E5001707D2 /* libpng15.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521631BF025E5001707D2 /* libpng15.a */; };
-		C345216A1BF025E5001707D2 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521641BF025E5001707D2 /* libz.a */; };
 		C60BD89B259CEEC80038831F /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 169BC64B24CC8353007B7829 /* SDL2.framework */; };
 		C60BD89C259CEF4F0038831F /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 169BC64B24CC8353007B7829 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -196,9 +193,6 @@
 				1612C9E3207A85C100862A3A /* libNativePresetFactory.a in Frameworks */,
 				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
 				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
-				C34521651BF025E5001707D2 /* libbz2.a in Frameworks */,
-				C34521691BF025E5001707D2 /* libpng15.a in Frameworks */,
-				C345216A1BF025E5001707D2 /* libz.a in Frameworks */,
 				1612C997207A80A200862A3A /* libprojectM.a in Frameworks */,
 				1612C998207A80A200862A3A /* libRenderer.a in Frameworks */,
 			);
@@ -536,6 +530,7 @@
 		C34521491BF02294001707D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = x86_64;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				ENABLE_TESTABILITY = YES;
@@ -567,6 +562,7 @@
 		C345214A1BF02294001707D2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = x86_64;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "-";
 				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
