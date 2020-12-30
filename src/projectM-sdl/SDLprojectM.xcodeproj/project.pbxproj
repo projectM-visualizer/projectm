@@ -497,7 +497,7 @@
 				GCC_UNROLL_LOOPS = YES;
 				INFOPLIST_FILE = "projectM-SDL/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				MARKETING_VERSION = 3.1.8;
+				MARKETING_VERSION = 3.1.9;
 				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.projectM-SDL";
@@ -522,7 +522,7 @@
 				GCC_UNROLL_LOOPS = YES;
 				INFOPLIST_FILE = "projectM-SDL/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				MARKETING_VERSION = 3.1.8;
+				MARKETING_VERSION = 3.1.9;
 				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.projectM-SDL";
