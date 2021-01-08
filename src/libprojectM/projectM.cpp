@@ -929,6 +929,7 @@ void projectM::selectNext(const bool hardCut) {
         }
         else {
             // otherwise move forward 
+            renderer->m_activePresetID++;
             selectPresetByName(renderer->m_presetList[renderer->m_activePresetID].name,true);
         }
     } else if (settings().shuffleEnabled && presetFuture.size() >= 1 && static_cast<std::size_t>(presetFuture.front()) != m_presetLoader->size() && !renderer->showmenu) { // if shuffling and we have future presets already stashed then let's go forward rather than truely move randomly.
