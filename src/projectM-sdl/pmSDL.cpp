@@ -521,7 +521,7 @@ void projectMSDL::pollEvent() {
 
     // Handle dragging your waveform when mouse is down.
     if (mouseDown) {
-        // Get mouse coorindates when you click.
+        // Get mouse coordinates when you click.
         SDL_GetMouseState(&mousex, &mousey);
         // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
         mousexscale = (mousex / (float)width);
