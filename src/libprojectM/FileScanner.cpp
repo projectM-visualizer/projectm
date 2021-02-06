@@ -75,6 +75,10 @@ std::string FileScanner::extensionMatches(std::string &filename) {
     return {};
 }
 
+bool FileScanner::isValidFilename(std::string &filename) {
+    if (filename.find("__MACOSX") != std::string::npos) return false;
+    return true;
+}
 
 // generic implementation using dirent
 void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
@@ -93,6 +97,8 @@ void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
         // Convert char * to friendly string
         std::string filename(dir_entry->d_name);
 
+        // Some sanity checks
+        if (! isValidFilename(filename)) continue;
         if (filename.length() > 0 && filename[0] == '.')
             continue;
 
@@ -164,6 +170,8 @@ void FileScanner::scanPosix(ScanCallback cb) {
                 // found a file
                 path = std::string(node->fts_path);
                 name = std::string(node->fts_name);
+
+                if (!isValidFilename(path) || !isValidFilename(name)) break;
 
                 // check extension
                 nameMatched = extensionMatches(name);

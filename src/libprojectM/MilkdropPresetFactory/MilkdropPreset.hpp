@@ -35,7 +35,9 @@
 #include <cassert>
 #include <map>
 
-#define MILKDROP_PRESET_DEBUG 0 /* 0 for no debugging, 1 for normal, 2 for insane */
+#ifdef DEBUG
+  #define MILKDROP_PRESET_DEBUG 2 /* 0 for no debugging, 1 for normal, 2 for insane */
+#endif
 
 #include "CustomShape.hpp"
 #include "CustomWave.hpp"
