@@ -47,12 +47,16 @@ void Waveform::Draw(RenderContext &context)
     // scale PCM data based on vol_history to make it more or less independent of the application output volume
     const float  vol_scale = context.beatDetect->getPCMScale();
 
-    float *value1 = new float[samples];
-	float *value2 = new float[samples];
-	context.beatDetect->pcm->getPCM( value1, samples, 0, spectrum, smoothing, 0);
-	context.beatDetect->pcm->getPCM( value2, samples, 1, spectrum, smoothing, 0);
+		// Make sure samples<=points.size().  We could reallocate points, but 512 is probably big enough.
+		size_t samples = std::min(this->points.size(),this->samples);
 
-	float mult= scaling*( spectrum ? 0.015f :1.0f);
+		float *value1 = new float[samples];
+		float *value2 = new float[samples];
+		context.beatDetect->pcm->getPCM( value1, samples, 0, spectrum, smoothing, 0);
+		context.beatDetect->pcm->getPCM( value2, samples, 1, spectrum, smoothing, 0);
+
+		float mult = scaling*( spectrum ? 0.015f :1.0f);
+
 #ifdef WIN32
 	std::transform(&value1[0], &value1[samples], &value1[0], bind2nd(std::multiplies<float>(), mult));
 	std::transform(&value2[0], &value2[samples], &value2[0], bind2nd(std::multiplies<float>(), mult));
