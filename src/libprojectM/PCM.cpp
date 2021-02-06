@@ -338,7 +338,6 @@ void PCM::getPCM(float *PCMdata, int samples, int channel, int freq, float smoot
    if (freq)
      {
        // NOTE some presets set bSpectrum=1 and samples!=2^n, not sure what rdft() does with that
-       assert(samples <= 1024);
        samples = std::min(1024,samples);
        double temppcm[1024];
        for (int i=0;i<samples;i++)
