@@ -48,7 +48,7 @@ void Waveform::Draw(RenderContext &context)
     const float  vol_scale = context.beatDetect->getPCMScale();
 
 		// Make sure samples<=points.size().  We could reallocate points, but 512 is probably big enough.
-		size_t samples = std::min(this->points.size(),this->samples);
+		size_t samples = std::min(this->points.size(), (size_t)this->samples);
 
 		float *value1 = new float[samples];
 		float *value2 = new float[samples];
