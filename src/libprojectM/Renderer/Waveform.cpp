@@ -47,25 +47,30 @@ void Waveform::Draw(RenderContext &context)
     // scale PCM data based on vol_history to make it more or less independent of the application output volume
     const float  vol_scale = context.beatDetect->getPCMScale();
 
-    float *value1 = new float[samples];
-	float *value2 = new float[samples];
-	context.beatDetect->pcm->getPCM( value1, samples, 0, spectrum, smoothing, 0);
-	context.beatDetect->pcm->getPCM( value2, samples, 1, spectrum, smoothing, 0);
+		// Make sure samples<=points.size().  We could reallocate points, but 512 is probably big enough.
+		size_t samples_count = this->samples;
+		if (samples_count > this->points.size())
+				samples_count = this->points.size();
 
-	float mult= scaling*( spectrum ? 0.015f :1.0f);
+		float *value1 = new float[samples_count];
+		float *value2 = new float[samples_count];
+		context.beatDetect->pcm->getPCM( value1, samples_count, 0, spectrum, smoothing, 0);
+		context.beatDetect->pcm->getPCM( value2, samples_count, 1, spectrum, smoothing, 0);
+
+		float mult = scaling*( spectrum ? 0.015f :1.0f);
 #ifdef WIN32
-	std::transform(&value1[0], &value1[samples], &value1[0], bind2nd(std::multiplies<float>(), mult));
-	std::transform(&value2[0], &value2[samples], &value2[0], bind2nd(std::multiplies<float>(), mult));
+	std::transform(&value1[0], &value1[samples_count], &value1[0], bind2nd(std::multiplies<float>(), mult));
+	std::transform(&value2[0], &value2[samples_count], &value2[0], bind2nd(std::multiplies<float>(), mult));
 #else
-	std::transform(&value1[0], &value1[samples], &value1[0], std::bind(std::multiplies<float>(), std::placeholders::_1, mult));
-	std::transform(&value2[0], &value2[samples], &value2[0], std::bind(std::multiplies<float>(), std::placeholders::_1, mult));
+	std::transform(&value1[0], &value1[samples_count], &value1[0], std::bind(std::multiplies<float>(), std::placeholders::_1, mult));
+	std::transform(&value2[0], &value2[samples_count], &value2[0], std::bind(std::multiplies<float>(), std::placeholders::_1, mult));
 #endif /** WIN32 */
 
-	WaveformContext waveContext(samples, context.beatDetect);
+	WaveformContext waveContext(samples_count, context.beatDetect);
 
-	for(int x=0;x< samples;x++)
+	for(size_t x=0;x< samples_count;x++)
 	{
-		waveContext.sample = x/(float)(samples - 1);
+		waveContext.sample = x/(float)(samples_count - 1);
 		waveContext.sample_int = x;
 		waveContext.left  = vol_scale * value1[x];
 		waveContext.right = vol_scale * value2[x];
@@ -82,8 +87,8 @@ void Waveform::Draw(RenderContext &context)
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * samples, NULL, GL_DYNAMIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * samples, &points_transf[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * samples_count, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * samples_count, &points_transf[0], GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -113,8 +118,8 @@ void Waveform::Draw(RenderContext &context)
 
     glBindVertexArray(m_vaoID);
 
-    if (dots)	glDrawArrays(GL_POINTS,0,samples);
-    else  	glDrawArrays(GL_LINE_STRIP,0,samples);
+    if (dots)	glDrawArrays(GL_POINTS,0,samples_count);
+    else  	glDrawArrays(GL_LINE_STRIP,0,samples_count);
 
     glBindVertexArray(0);
 
