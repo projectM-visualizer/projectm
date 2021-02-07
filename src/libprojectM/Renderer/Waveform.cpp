@@ -59,8 +59,8 @@ void Waveform::Draw(RenderContext &context)
 
 		float mult = scaling*( spectrum ? 0.015f :1.0f);
 #ifdef WIN32
-	std::transform(&value1[0], &value1[sample_count], &value1[0], bind2nd(std::multiplies<float>(), mult));
-	std::transform(&value2[0], &value2[sample_count], &value2[0], bind2nd(std::multiplies<float>(), mult));
+	std::transform(&value1[0], &value1[samples_count], &value1[0], bind2nd(std::multiplies<float>(), mult));
+	std::transform(&value2[0], &value2[samples_count], &value2[0], bind2nd(std::multiplies<float>(), mult));
 #else
 	std::transform(&value1[0], &value1[samples_count], &value1[0], std::bind(std::multiplies<float>(), std::placeholders::_1, mult));
 	std::transform(&value2[0], &value2[samples_count], &value2[0], std::bind(std::multiplies<float>(), std::placeholders::_1, mult));
