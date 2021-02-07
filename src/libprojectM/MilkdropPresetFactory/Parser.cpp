@@ -844,6 +844,12 @@ Expr * Parser::_parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Milkd
     if (*string == 0)
     {
       if (PARSE_DEBUG) printf("parse_gen_expr: empty string coupled with terminal (LINE %d) \n", line_count);
+			if (nullptr == tree_expr )
+			{
+				// we will get here if we have a completely empty line e.g. "shape_1_per_frame1=shpt ="
+				// should we return 0 or generate an error?
+				return Expr::const_to_expr(0.0f);
+			}
       return parse_infix_op(fs, token, tree_expr, preset);
 
     }
