@@ -333,40 +333,20 @@ void PCM::getPCM(float *PCMdata, int samples, int channel, int freq, float smoot
        PCMdata[samples-1]=0;
      }
 
-		 // return frequency data instead of PCM (perform FFT)
+   //return frequency data instead of PCM (perform FFT)
 
-		 if (freq)
-		 {
-			 // NOTE some presets set bSpectrum=1 and samples!=2^n, not sure what rdft() does with that
-
-			 // samples needs to be a power of 2 or rdft will blow up
-			 int samples_pow2 = samples;
-			 if ((samples & (samples - 1)) != 0)
-			 {
-				 int power = 1;
-				 // round down to nearest power of 2
-				 while (samples_pow2 >>= 1)
-					 power <<= 1;
-				 samples_pow2 = power;
-			 }
-
-			 double temppcm[1024];
-			 samples_pow2 = std::min(samples_pow2, 1024);
-			 for (int i = 0; i < samples; i++)
-			 {
-				 // fft input
-				 temppcm[i] = (double)PCMdata[i];
-			 }
-			 // fft
-			 rdft(samples_pow2, 1, temppcm, ip, w);
-			 for (int j = 0; j < samples; j++)
-			 {
-				 // get fft output, if we had to get a fewer number of samples than requested
-				 // then we just fill in the rest with 0. this is lame.
-				 // TODO: better solution if requested number of samples is not a power of 2
-				 PCMdata[j] = j < samples_pow2 ? (float)temppcm[j] : 0;
-			 }
-		 }
+   if (freq)
+     {
+       // NOTE some presets set bSpectrum=1 and samples!=2^n, not sure what rdft() does with that
+       assert(samples <= 1024);
+       samples = std::min(1024,samples);
+       double temppcm[1024];
+       for (int i=0;i<samples;i++)
+         {temppcm[i]=(double)PCMdata[i];}
+       rdft(samples, 1, temppcm, ip, w);
+       for (int j=0;j<samples;j++)
+         {PCMdata[j]=(float)temppcm[j];}
+     }
 }
 
 //getPCMnew
