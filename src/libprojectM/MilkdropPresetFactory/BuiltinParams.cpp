@@ -289,6 +289,7 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
 {
 
   load_builtin_param_float("frating", (void*)&presetOutputs.fRating, NULL, P_FLAG_NONE, 0.0 , 5.0, 0.0, "");
+  // 0 will turn off all waviness in our waves... 1 seems better
   load_builtin_param_float("fwavescale", (void*)&presetOutputs.wave.scale, NULL, P_FLAG_NONE, 1.0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
   load_builtin_param_float("gamma", (void*)&presetOutputs.fGammaAdj, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fGammaAdj");
   load_builtin_param_float("echo_zoom", (void*)&presetOutputs.videoEcho.zoom, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "fVideoEchoZoom");
@@ -299,9 +300,9 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_float("fmodwavealphaend", (void*)&presetOutputs.wave.modOpacityEnd, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
   load_builtin_param_float("fWarpAnimSpeed",  (void*)&presetOutputs.fWarpAnimSpeed, NULL, P_FLAG_NONE, 1.0, 1.0, -1.0, "");
   load_builtin_param_float("fWarpScale",  (void*)&presetOutputs.fWarpScale, NULL, P_FLAG_NONE, 1.0, 1.0, -1.0, "");
-  //  load_builtin_param_float("warp", (void*)&presetOutputs.warp, warp_mesh, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0, "");
 
   load_builtin_param_float("fshader", (void*)&presetOutputs.fShader, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
+  // 0.98 seems close to milkdrop2 default
   load_builtin_param_float("decay", (void*)&presetOutputs.screenDecay, NULL, P_FLAG_NONE, 0.98, 1.0, 0, "fdecay");
 
   load_builtin_param_int("echo_orient", (void*)&presetOutputs.videoEcho.orientation, P_FLAG_NONE, 0, 3, 0, "nVideoEchoOrientation");
@@ -320,16 +321,19 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_bool("bmotionvectorson", (void*)&presetOutputs.bMotionVectorsOn, P_FLAG_NONE, false, "");
   load_builtin_param_bool("wave_dots", (void*)&presetOutputs.wave.dots, P_FLAG_NONE, false, "bwavedots");
   load_builtin_param_bool("wave_thick", (void*)&presetOutputs.wave.thick, P_FLAG_NONE, false, "bwavethick");
+  // warp is turned on by default in milkdrop2
   load_builtin_param_float("warp", (void*)&presetOutputs.warp, presetOutputs.warp_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE, 1.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
+  // zoom=1 is the 'do nothing' value, 0 causes Inf values in PresetOutputs::PerPixelMath()
   load_builtin_param_float("zoom", (void*)&presetOutputs.zoom, presetOutputs.zoom_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE, 1.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
   load_builtin_param_float("rot", (void*)&presetOutputs.rot, presetOutputs.rot_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
-  /// @note added huge bug fix here potentially by prevening zoomexp_mesh from being freed when presets dealloc
+  // zoomexp=1 is the 'do nothing' value, 0 effectively forces zoom=1
   load_builtin_param_float("zoomexp", (void*)&presetOutputs.zoomexp, presetOutputs.zoomexp_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE , 1.0, MAX_DOUBLE_SIZE, 0, "fzoomexponent");
 
   load_builtin_param_float("cx", (void*)&presetOutputs.cx, presetOutputs.cx_mesh, P_FLAG_PER_PIXEL | P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
   load_builtin_param_float("cy", (void*)&presetOutputs.cy, presetOutputs.cy_mesh, P_FLAG_PER_PIXEL | P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
   load_builtin_param_float("dx", (void*)&presetOutputs.dx, presetOutputs.dx_mesh,  P_FLAG_PER_PIXEL | P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
   load_builtin_param_float("dy", (void*)&presetOutputs.dy, presetOutputs.dy_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
+  // sx=1 and sy=1 are the 'do nothing' values, 0 causes Inf values in PresetOutputs::PerPixelMath()
   load_builtin_param_float("sx", (void*)&presetOutputs.sx, presetOutputs.sx_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE, 1.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
   load_builtin_param_float("sy", (void*)&presetOutputs.sy, presetOutputs.sy_mesh,  P_FLAG_PER_PIXEL |P_FLAG_NONE, 1.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
 
