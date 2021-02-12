@@ -1,5 +1,8 @@
-AC_INIT([projectM], [3.1.9], [me@mish.dev], [projectM], [https://github.com/projectM-visualizer/projectm/])
+AC_INIT([projectM], [3.1.10], [me@mish.dev], [projectM], [https://github.com/projectM-visualizer/projectm/])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects tar-pax])
+
+AX_IS_RELEASE([git-directory])
+AX_CHECK_ENABLE_DEBUG([no], [DEBUG])
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 LT_INIT
