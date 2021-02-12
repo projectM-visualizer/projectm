@@ -90,8 +90,13 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
 
     last_token_size++;
     /* If the string line buffer is full, quit */
-    if (string_line_buffer_index == (STRING_LINE_SIZE - 1))
-      return tStringBufferFilled;
+    if (string_line_buffer_index == (STRING_LINE_SIZE - 1)) {
+        if (PARSE_DEBUG) {
+            string_line_buffer[string_line_buffer_index++] = '\0';
+            std::cout << "ERROR String line buffer full. Buffer: " << string_line_buffer << std::endl;
+        }
+        return tStringBufferFilled;
+		}
 
     /* Otherwise add this character to the string line buffer */
     string_line_buffer[string_line_buffer_index++] = tolower(c);
@@ -119,6 +124,7 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
             c = EOF;
           else
             c = fs.get();
+          std::cout << "parsing comment, c=" << c << std::endl;
           if (c == EOF)
           {
             line_mode = UNSET_LINE_MODE;
@@ -301,8 +307,9 @@ int Parser::parse_top_comment(std::istream &  fs)
   /* Process tokens until left bracket is found */
   while ((token = parseToken(fs, string)) != tLBr)
   {
-    if (token == tEOF)
-      return PROJECTM_PARSE_ERROR;
+    if (token == tEOF || token == tStringBufferFilled)
+        // filled up the buffer and didn't find a '[' 
+        return PROJECTM_PARSE_ERROR;
   }
 
   /* Done, return success */

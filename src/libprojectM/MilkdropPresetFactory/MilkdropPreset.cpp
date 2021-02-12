@@ -459,24 +459,25 @@ int MilkdropPreset::readIn(std::istream & fs) {
   presetOutputs().compositeShader.programSource.clear();
   presetOutputs().warpShader.programSource.clear();
 
-  /* Parse any comments */
-  if (Parser::parse_top_comment(fs) < 0)
+  /* Parse any comments (aka "[preset00]") */
+  /* We don't do anything with this info so it's okay if it's missing */
+  if (Parser::parse_top_comment(fs) == PROJECTM_SUCCESS)
   {
+      /* Parse the preset name and a left bracket */
+      char tmp_name[MAX_TOKEN_SIZE];
+
+      if (Parser::parse_preset_name(fs, tmp_name) < 0)
+          {
+              std::cerr <<  "[Preset::readIn] loading of preset name failed" << std::endl;
+              fs.seekg(0);
+          }
+      /// @note  We ignore the preset name because [preset00] is just not so useful
+  } else {
+      // no comment found. whatever
         if (MILKDROP_PRESET_DEBUG)
-                    std::cerr << "[Preset::readIn] no left bracket found..." << std::endl;
-    return PROJECTM_FAILURE;
+            std::cerr << "[Preset::readIn] no left bracket found..." << std::endl;
+        fs.seekg(0);
   }
-
-  /* Parse the preset name and a left bracket */
-  char tmp_name[MAX_TOKEN_SIZE];
-
-  if (Parser::parse_preset_name(fs, tmp_name) < 0)
-  {
-    std::cerr <<  "[Preset::readIn] loading of preset name failed" << std::endl;
-    return PROJECTM_ERROR;
-  }
-
-  /// @note  We ignore the preset name because [preset00] is just not so useful
 
   // Loop through each line in file, trying to successfully parse the file.
   // If a line does not parse correctly, keep trucking along to next line.

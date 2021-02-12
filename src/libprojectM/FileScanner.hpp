@@ -25,24 +25,25 @@ extern "C"
 #include "dirent.h"
 #endif
 
-typedef std::function<void (std::string &path, std::string &name)> ScanCallback;
+typedef std::function<void(std::string &path, std::string &name)> ScanCallback;
 
-class FileScanner {
+class FileScanner
+{
 public:
-    FileScanner();
-    FileScanner(std::vector<std::string> &rootDirs, std::vector<std::string> &extensions);
+	FileScanner();
+	FileScanner(std::vector<std::string> &rootDirs, std::vector<std::string> &extensions);
 
-    void scan(ScanCallback cb);
-    std::string extensionMatches(std::string &filename);
+	void scan(ScanCallback cb);
+	std::string extensionMatches(std::string &filename);
 
 private:
-    std::vector<std::string> _rootDirs;
-    std::vector<std::string> _extensions;
+	std::vector<std::string> _rootDirs;
+	std::vector<std::string> _extensions;
 
-    void scanGeneric(ScanCallback cb, const char *dir);
-    void scanPosix(ScanCallback cb);
-    void handleDirectoryError(std::string dir);
+	void scanGeneric(ScanCallback cb, const char *dir);
+	void scanPosix(ScanCallback cb);
+	void handleDirectoryError(std::string dir);
+	bool isValidFilename(std::string &filename);
 };
-
 
 #endif /* FileScanner_hpp */
