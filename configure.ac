@@ -1,4 +1,4 @@
-AC_INIT([projectM], [3.1.10], [me@mish.dev], [projectM], [https://github.com/projectM-visualizer/projectm/])
+AC_INIT([projectM], [3.1.11], [me@mish.dev], [projectM], [https://github.com/projectM-visualizer/projectm/])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects tar-pax])
 
 AX_IS_RELEASE([git-directory])

@@ -124,7 +124,6 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
             c = EOF;
           else
             c = fs.get();
-          std::cout << "parsing comment, c=" << c << std::endl;
           if (c == EOF)
           {
             line_mode = UNSET_LINE_MODE;
