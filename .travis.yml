@@ -20,7 +20,7 @@ addons:
 script:
   - ./configure $PM_OPTS --prefix=$PWD/local && make -j6 && make install  # build from checkout
   - export PMVER=$(./configure --version | cut -d ' ' -f 3 | grep -m 1 .)  # get pM version
-  - make dist && tar -zxf projectM-${PMVER}.tar.gz && cd projectM-${PMVER} && ./configure $PM_OPTS --prefix=$PWD/dist_install && make -j6 && make install  # build from dist
+  - make dist && tar -zxf projectM-${PMVER}.tar.gz && cd projectM-${PMVER} && ./configure $PM_OPTS --prefix=$PWD/dist_installi --enable-test && make -j6 && make install  # build from dist
   - echo "PWD=$PWD"
   - ls .
   - test -e src/projectM-sdl/projectMSDL
@@ -50,7 +50,7 @@ matrix:
             - libc++-dev
             - libsdl2-dev
       env:
-        - MATRIX_EVAL="PM_OPTS=\"--enable-test --enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
+        - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
     - os: linux
       dist: xenial
       addons:
@@ -70,7 +70,7 @@ matrix:
     - os: osx
       osx_image: xcode12.2
       env:
-        - MATRIX_EVAL="--enable-test"
+        - MATRIX_EVAL="PM_OPTS=\"--enable-test\""
 
 notifications:
   email:
