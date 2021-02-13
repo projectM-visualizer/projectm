@@ -200,7 +200,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo BUILT_PRODUCTS_DIR $BUILT_PRODUCTS_DIR IS\nls \"$BUILT_PRODUCTS_DIR\"\n\nset +x\n\nSDL_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-SDL.pkg\"\nMUSIC_PLUGIN_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\"\n\n#productbuild --timestamp --sign '5926VBQM6Y' --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\nproductbuild --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\" \"$SRCROOT/\"\n";
+			shellScript = "echo BUILT_PRODUCTS_DIR $BUILT_PRODUCTS_DIR IS\nls \"$BUILT_PRODUCTS_DIR\"\n\nset -x\n\nmkdir -p \"$DERIVED_FILE_DIR\"\n\nSDL_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-SDL.pkg\"\nMUSIC_PLUGIN_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\"\n\n#productbuild --timestamp --sign '5926VBQM6Y' --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\nproductbuild --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$DERIVED_FILE_DIR/ProjectM.pkg\"\n\necho \"Created installer package $DERIVED_FILE_DIR/ProjectM.pkg\"\n\ncp -rp \"$DERIVED_FILE_DIR/ProjectM.pkg\" \"$SRCROOT/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

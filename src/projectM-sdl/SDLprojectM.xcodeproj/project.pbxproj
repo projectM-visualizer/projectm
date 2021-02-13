@@ -13,8 +13,17 @@
 		1612C9E3207A85C100862A3A /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C9E1207A85BD00862A3A /* libNativePresetFactory.a */; };
 		16355BFE2143C0F400B3748F /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
 		16355BFF2143C0F600B3748F /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
-		168404E925D829620001F02C /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 168404C025D829370001F02C /* SDL2.framework */; };
-		168404EA25D829620001F02C /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 168404C025D829370001F02C /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		1684056125D83FFC0001F02C /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684055E25D83FFC0001F02C /* CoreHaptics.framework */; };
+		1684056225D83FFC0001F02C /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684055F25D83FFC0001F02C /* CoreAudio.framework */; };
+		1684056325D83FFC0001F02C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684056025D83FFC0001F02C /* CoreGraphics.framework */; };
+		1684056425D840030001F02C /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 168404C625D829370001F02C /* libSDL2.a */; };
+		1684056A25D8402D0001F02C /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684056925D8402D0001F02C /* Carbon.framework */; };
+		1684056B25D840320001F02C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1648A5DA25D7FA720075B8FC /* Cocoa.framework */; };
+		1684056F25D8403C0001F02C /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684056E25D8403C0001F02C /* CoreVideo.framework */; };
+		1684057125D840420001F02C /* ForceFeedback.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684057025D840420001F02C /* ForceFeedback.framework */; };
+		1684057525D8405D0001F02C /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684057425D8405D0001F02C /* Metal.framework */; };
+		1684057725D840660001F02C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684057625D840660001F02C /* QuartzCore.framework */; };
+		1684057C25D840900001F02C /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684057B25D840900001F02C /* AudioToolbox.framework */; };
 		168F7156211248E4001806E7 /* SDLprojectM in Executable */ = {isa = PBXBuildFile; fileRef = C34521441BF02294001707D2 /* SDLprojectM */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		168F715921124C0E001806E7 /* config.inp in Support files */ = {isa = PBXBuildFile; fileRef = 16B52AAA21105A6900830F34 /* config.inp */; };
 		168F715A21124C14001806E7 /* fonts in Support files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
@@ -174,13 +183,6 @@
 			remoteGlobalIDString = A75FDB6E23E3A2C900529352;
 			remoteInfo = "hidapi-tvOS";
 		};
-		168404ED25D829720001F02C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = BECDF5FE0761BA81005FE872;
-			remoteInfo = Framework;
-		};
 		168F714F21120496001806E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C345213C1BF02293001707D2 /* Project object */;
@@ -191,17 +193,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		168404EB25D829620001F02C /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				168404EA25D829620001F02C /* SDL2.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		168F7155211248DE001806E7 /* Executable */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -244,6 +235,15 @@
 		1612C98C207A807000862A3A /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
 		1648A5DA25D7FA720075B8FC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		168404AF25D829370001F02C /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = sdl2/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
+		1684055E25D83FFC0001F02C /* CoreHaptics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreHaptics.framework; path = System/Library/Frameworks/CoreHaptics.framework; sourceTree = SDKROOT; };
+		1684055F25D83FFC0001F02C /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		1684056025D83FFC0001F02C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		1684056925D8402D0001F02C /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		1684056E25D8403C0001F02C /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		1684057025D840420001F02C /* ForceFeedback.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ForceFeedback.framework; path = System/Library/Frameworks/ForceFeedback.framework; sourceTree = SDKROOT; };
+		1684057425D8405D0001F02C /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		1684057625D840660001F02C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		1684057B25D840900001F02C /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		168F714921120210001806E7 /* ProjectM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProjectM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		168F714B21120211001806E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		168F717F21126256001806E7 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
@@ -270,13 +270,23 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1684057C25D840900001F02C /* AudioToolbox.framework in Frameworks */,
+				1684057725D840660001F02C /* QuartzCore.framework in Frameworks */,
+				1684057525D8405D0001F02C /* Metal.framework in Frameworks */,
+				1684057125D840420001F02C /* ForceFeedback.framework in Frameworks */,
+				1684056F25D8403C0001F02C /* CoreVideo.framework in Frameworks */,
+				1684056B25D840320001F02C /* Cocoa.framework in Frameworks */,
+				1684056A25D8402D0001F02C /* Carbon.framework in Frameworks */,
+				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
+				1684056425D840030001F02C /* libSDL2.a in Frameworks */,
+				1684056125D83FFC0001F02C /* CoreHaptics.framework in Frameworks */,
+				1684056225D83FFC0001F02C /* CoreAudio.framework in Frameworks */,
+				1684056325D83FFC0001F02C /* CoreGraphics.framework in Frameworks */,
 				1612C9E2207A85C100862A3A /* libMilkdropPresetFactory.a in Frameworks */,
 				1612C9E3207A85C100862A3A /* libNativePresetFactory.a in Frameworks */,
-				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
 				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
 				1612C997207A80A200862A3A /* libprojectM.a in Frameworks */,
 				1612C998207A80A200862A3A /* libRenderer.a in Frameworks */,
-				168404E925D829620001F02C /* SDL2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,6 +296,15 @@
 		161070CE1F7041B0001905AB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1684057B25D840900001F02C /* AudioToolbox.framework */,
+				1684057625D840660001F02C /* QuartzCore.framework */,
+				1684057425D8405D0001F02C /* Metal.framework */,
+				1684057025D840420001F02C /* ForceFeedback.framework */,
+				1684056E25D8403C0001F02C /* CoreVideo.framework */,
+				1684056925D8402D0001F02C /* Carbon.framework */,
+				1684055F25D83FFC0001F02C /* CoreAudio.framework */,
+				1684056025D83FFC0001F02C /* CoreGraphics.framework */,
+				1684055E25D83FFC0001F02C /* CoreHaptics.framework */,
 				1648A5DA25D7FA720075B8FC /* Cocoa.framework */,
 				169BC64B24CC8353007B7829 /* SDL2.framework */,
 				C345215D1BF025CF001707D2 /* CoreFoundation.framework */,
@@ -403,12 +422,10 @@
 				C34521401BF02293001707D2 /* Sources */,
 				C34521411BF02293001707D2 /* Frameworks */,
 				C34521421BF02293001707D2 /* Copy Files */,
-				168404EB25D829620001F02C /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				168404EE25D829720001F02C /* PBXTargetDependency */,
 				1612C9D7207A85BD00862A3A /* PBXTargetDependency */,
 				1612C9D9207A85BD00862A3A /* PBXTargetDependency */,
 				1612C9DB207A85BD00862A3A /* PBXTargetDependency */,
@@ -650,11 +667,6 @@
 			name = NativePresetFactory;
 			targetProxy = 1612C9DA207A85BD00862A3A /* PBXContainerItemProxy */;
 		};
-		168404EE25D829720001F02C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Framework;
-			targetProxy = 168404ED25D829720001F02C /* PBXContainerItemProxy */;
-		};
 		168F715021120496001806E7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = C34521431BF02293001707D2 /* SDLprojectM */;
@@ -671,10 +683,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 5926VBQM6Y;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-				);
 				GCC_UNROLL_LOOPS = YES;
 				INFOPLIST_FILE = "projectM-SDL/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
@@ -698,10 +706,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = 5926VBQM6Y;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-				);
 				GCC_OPTIMIZATION_LEVEL = fast;
 				GCC_UNROLL_LOOPS = YES;
 				INFOPLIST_FILE = "projectM-SDL/Info.plist";
@@ -744,7 +748,6 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -759,16 +762,11 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../libprojectM",
-					/usr/local/include,
 					"$(SRCROOT)/../../vendor",
 					"$(SRCROOT)/../../mac",
 					"$(SRCROOT)/../libprojectM/Renderer/hlslparser/src",
 				);
-				LD_RUNPATH_SEARCH_PATHS = (
-					"@executable_path/",
-					"@loader_path/Frameworks/",
-				);
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../projectM-iTunes/macos/contrib";
+				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -801,7 +799,6 @@
 				CODE_SIGN_IDENTITY = "-";
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -811,16 +808,11 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../libprojectM",
-					/usr/local/include,
 					"$(SRCROOT)/../../vendor",
 					"$(SRCROOT)/../../mac",
 					"$(SRCROOT)/../libprojectM/Renderer/hlslparser/src",
 				);
-				LD_RUNPATH_SEARCH_PATHS = (
-					"@executable_path/",
-					"@loader_path/Frameworks/",
-				);
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../projectM-iTunes/macos/contrib";
+				LIBRARY_SEARCH_PATHS = "";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
@@ -836,20 +828,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5926VBQM6Y;
 				ENABLE_HARDENED_RUNTIME = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-				);
 				INFOPLIST_FILE = "$(SRCROOT)/projectM-SDL/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"@executable_path/",
-					"@loader_path/../Frameworks/",
-					"@loader_path/Frameworks/",
-				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(SRCROOT)/../projectM-iTunes/macos/contrib",
-					/usr/local/lib,
-				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				MARKETING_VERSION = 3.1.11;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
@@ -868,20 +848,8 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5926VBQM6Y;
 				ENABLE_HARDENED_RUNTIME = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)",
-				);
 				INFOPLIST_FILE = "$(SRCROOT)/projectM-SDL/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"@executable_path/",
-					"@loader_path/../Frameworks/",
-					"@loader_path/Frameworks/",
-				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(SRCROOT)/../projectM-iTunes/macos/contrib",
-					/usr/local/lib,
-				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				MARKETING_VERSION = 3.1.11;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
