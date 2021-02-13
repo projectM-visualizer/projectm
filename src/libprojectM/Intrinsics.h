@@ -13,8 +13,4 @@
 #define _HAS_SSE2_ 1
 #endif
 
-#ifdef __arm64__
-#undef _HAS_SSE2_
-#endif
-
 #endif /* PRJMIntrinsics_h */
