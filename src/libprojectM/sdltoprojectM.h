@@ -38,8 +38,11 @@
 #include "event.h"
 
  //#include "projectM/projectM.hpp"
+#ifdef WIN32
 #include <SDL.h>
-
+#else
+#include <SDL2/SDL.h>
+#endif
 
 inline projectMEvent sdl2pmEvent( SDL_Event *event ) { \
 							
