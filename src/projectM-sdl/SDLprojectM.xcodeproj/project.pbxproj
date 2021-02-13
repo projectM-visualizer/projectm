@@ -155,7 +155,9 @@
 
 /* Begin PBXFileReference section */
 		1612C98C207A807000862A3A /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
-		168F714921120210001806E7 /* projectM SDL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "projectM SDL.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1648A5B825D7F9DB0075B8FC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1648A5DA25D7FA720075B8FC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		168F714921120210001806E7 /* Installer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Installer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		168F714B21120211001806E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		168F717F21126256001806E7 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
@@ -204,6 +206,7 @@
 		161070CE1F7041B0001905AB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1648A5DA25D7FA720075B8FC /* Cocoa.framework */,
 				169BC64B24CC8353007B7829 /* SDL2.framework */,
 				C345215D1BF025CF001707D2 /* CoreFoundation.framework */,
 				C345215B1BF025A9001707D2 /* OpenGL.framework */,
@@ -220,6 +223,14 @@
 				1612C9E1207A85BD00862A3A /* libNativePresetFactory.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1648A5B725D7F9DB0075B8FC /* MusicPlugin */ = {
+			isa = PBXGroup;
+			children = (
+				1648A5B825D7F9DB0075B8FC /* Info.plist */,
+			);
+			path = MusicPlugin;
 			sourceTree = "<group>";
 		};
 		168F714A21120210001806E7 /* projectM-SDL */ = {
@@ -263,6 +274,7 @@
 				16A42128207802AF006F30CE /* Dependencies */,
 				168F714A21120210001806E7 /* projectM-SDL */,
 				168F717521125ED8001806E7 /* projectM */,
+				1648A5B725D7F9DB0075B8FC /* MusicPlugin */,
 				161070CE1F7041B0001905AB /* Frameworks */,
 				C34521451BF02294001707D2 /* Products */,
 				C3D30B8F1BF02BE5009AAACD /* fonts */,
@@ -273,7 +285,7 @@
 			isa = PBXGroup;
 			children = (
 				C34521441BF02294001707D2 /* SDLprojectM */,
-				168F714921120210001806E7 /* projectM SDL.app */,
+				168F714921120210001806E7 /* Installer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -281,9 +293,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		168F714821120210001806E7 /* projectM SDL */ = {
+		168F714821120210001806E7 /* Installer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 168F714C21120211001806E7 /* Build configuration list for PBXNativeTarget "projectM SDL" */;
+			buildConfigurationList = 168F714C21120211001806E7 /* Build configuration list for PBXNativeTarget "Installer" */;
 			buildPhases = (
 				168F714521120210001806E7 /* Sources */,
 				168F714621120210001806E7 /* Frameworks */,
@@ -298,9 +310,9 @@
 			dependencies = (
 				168F715021120496001806E7 /* PBXTargetDependency */,
 			);
-			name = "projectM SDL";
+			name = Installer;
 			productName = "projectM-SDL";
-			productReference = 168F714921120210001806E7 /* projectM SDL.app */;
+			productReference = 168F714921120210001806E7 /* Installer.app */;
 			productType = "com.apple.product-type.bundle";
 		};
 		C34521431BF02293001707D2 /* SDLprojectM */ = {
@@ -364,7 +376,7 @@
 			projectRoot = "";
 			targets = (
 				C34521431BF02293001707D2 /* SDLprojectM */,
-				168F714821120210001806E7 /* projectM SDL */,
+				168F714821120210001806E7 /* Installer */,
 			);
 		};
 /* End PBXProject section */
@@ -425,7 +437,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\n\nmkdir -p \"$DSTROOT/Applications\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/projectM SDL.app\" \"$DSTROOT/Applications\"\npkgbuild --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/projectM SDL.pkg\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/projectM SDL.pkg\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/projectM SDL.pkg\" \"$SRCROOT/\"\n";
+			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\n\nmkdir -p \"$DSTROOT/Applications\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/projectM SDL.app\" \"$DSTROOT/Applications\"\npkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/projectM SDL.pkg\"\n#productbuild --timestamp --sign '5926VBQM6Y' --package pmsdl.pkg \"$BUILT_PRODUCTS_DIR/projectM SDL.pkg\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/projectM SDL.pkg\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/projectM SDL.pkg\" \"$SRCROOT/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -660,6 +672,7 @@
 					"$(SRCROOT)/../projectM-iTunes/macos/contrib",
 					/usr/local/lib,
 				);
+				MARKETING_VERSION = 3.1.11;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -691,6 +704,7 @@
 					"$(SRCROOT)/../projectM-iTunes/macos/contrib",
 					/usr/local/lib,
 				);
+				MARKETING_VERSION = 3.1.11;
 				OTHER_LDFLAGS = "";
 				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -702,7 +716,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		168F714C21120211001806E7 /* Build configuration list for PBXNativeTarget "projectM SDL" */ = {
+		168F714C21120211001806E7 /* Build configuration list for PBXNativeTarget "Installer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				168F714D21120211001806E7 /* Debug */,

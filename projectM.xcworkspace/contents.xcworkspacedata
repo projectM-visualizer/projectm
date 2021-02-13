@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Installer.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:src/libprojectM/libprojectM.xcodeproj">
    </FileRef>
    <FileRef

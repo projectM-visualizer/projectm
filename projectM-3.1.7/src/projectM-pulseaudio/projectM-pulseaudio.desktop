@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=projectM PulseAudio Visualization
+GenericName=PulseAudio Stream Visualization
+Comment=Visualization of PulseAudio streams with projectM
+Exec=projectM-pulseaudio
+Icon=projectM
+Terminal=false
+Type=Application
+Categories=AudioVideo;Audio;

@@ -1,0 +1,7 @@
+First install JACK and projectM 1.0
+
+cmake . -DCMAKE_BUILD_TYPE=RELEASE
+make
+make install
+
+You may need to type ccmake . and change the PREFIX if your system prefers /usr instead of /usr/local.

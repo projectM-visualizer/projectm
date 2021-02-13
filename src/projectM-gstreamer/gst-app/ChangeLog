@@ -1,0 +1,50 @@
+2008-03-28  Tim-Philipp Müller  <tim at centricular dot net>
+
+	* src/main.c: (main):
+	  Call g_thread_init() before calling any other GLib function,
+	  such as g_option_context_new().
+
+2006-07-04  Tim-Philipp Müller  <tim at centricular dot net>
+
+	* autogen.sh:
+	* configure.ac:
+	  Run autoheader to create config.h.in; add
+	  AM_CONFIG_HEADER to configure.ac.
+
+2006-07-03  Tim-Philipp Müller  <tim at centricular dot net>
+
+	* Makefile.am:
+	* autogen.sh:
+	* gst-autogen.sh:
+	  Throw an error if autotools versions are too old. We require
+	  automake 1.7 or newer (#346054). Add gst-autogen.sh to check
+	  for this.
+
+	* COPYING:
+	  Add placeholder COPYING file so it doesn't get overwritten
+	  by a GPL one by automake.
+
+2006-05-15  Tim-Philipp Müller  <tim at centricular dot net>
+
+	* configure.ac:
+	* src/Makefile.am:
+	* src/gst-app.h:
+	* src/load.c:
+	* src/load.h:
+	* src/main.c: (handle_file_or_directory), (main):
+	* src/play.c: (play_uri):
+	* src/play.h:
+	  Update for 0.10. Turn into a super-simple command line player.
+
+2004-04-03  Benjamin Otte  <otte@gnome.org>
+
+	* configure.ac:
+	  updated for 0.8
+
+2003-02-06  Thomas Vander Stichele <thomas at apestaart dot org>
+
+        * updated for GStreamer 0.6.0
+
+2002-07-17  Thomas Vander Stichele <thomas at apestaart dot org>
+
+  	* initial creation on a flight to New York

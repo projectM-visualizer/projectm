@@ -1,0 +1,900 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=3
+PSVERSION_WARP=3
+PSVERSION_COMP=3
+[preset00]
+fRating=4.000000
+fGammaAdj=1.980
+fDecay=0.500
+fVideoEchoZoom=0.952
+fVideoEchoAlpha=0.500
+nVideoEchoOrientation=3
+nWaveMode=1
+bAdditiveWaves=1
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=1
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=1
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=0.133
+fWaveSmoothing=0.000
+fWaveParam=-1.000
+fModWaveAlphaStart=1.000
+fModWaveAlphaEnd=1.300
+fWarpAnimSpeed=1.459
+fWarpScale=2.007
+fZoomExponent=1.00000
+fShader=0.000
+zoom=0.99990
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.01000
+sx=0.99990
+sy=1.00000
+wave_r=0.000
+wave_g=0.000
+wave_b=0.000
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=1.000
+ib_size=0.000
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=12.000
+nMotionVectorsY=9.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.900
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=0.800
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+wavecode_0_enabled=0
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.00000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wave_0_per_frame1=t1 = 0;
+wave_0_per_frame2=
+wave_0_per_frame3=//Position
+wave_0_per_frame4=t3 = rand (100)/100;
+wave_0_per_frame5=t3 = 1;
+wave_0_per_frame6=t2 = t3*(rand (100)/100-.5)*4;;
+wave_0_per_frame7=
+wave_0_per_frame8=t4 = 8; //Halme;
+wave_0_per_frame9=
+wavecode_1_enabled=1
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=1
+wavecode_1_bAdditive=0
+wavecode_1_scaling=1.00000
+wavecode_1_smoothing=0.50000
+wavecode_1_r=0.000
+wavecode_1_g=0.000
+wavecode_1_b=0.000
+wavecode_1_a=1.000
+wave_1_per_frame1=t1 = 0;
+wave_1_per_frame2=t2 = t2*.9 + .1*(rand(100)/100-.5);
+wave_1_per_point1=n = t1;
+wave_1_per_point2=len = 7;
+wave_1_per_point3=YCam = reg05; fov = reg06; MaxDist = reg07; SysZ = q18; VisDist = q19;
+wave_1_per_point4=CAng = q8; SAng = q9; Bild = 0; WegX = q1; Hell = q4;
+wave_1_per_point5=
+wave_1_per_point6=Halme = 5;
+wave_1_per_point7=if (n%(len*Halme)== 0,
+wave_1_per_point8=  height = 1 + rand(2);
+wave_1_per_point9=  z0 = SysZ;
+wave_1_per_point10=  dec = if (frame%Halme==0,0,1);
+wave_1_per_point11=  if (n== 0,  x00 = dec*x00 + (1-dec)*(rand(100)/100-.5); ,0);
+wave_1_per_point12=  h1 =   (rand (100)/100)-.5;
+wave_1_per_point13=  x0 = (x00+h1*0.15)*z0/fov;
+wave_1_per_point14=  y0 = reg10*z0*(sin(x0*reg11 + z0*reg13)) * sin(z0*reg12+reg13) + pow(x0,2)*reg14;
+wave_1_per_point15=//  x0 *= MaxDist; y0 *= MaxDist; z0 *= MaxDist;
+wave_1_per_point16=
+wave_1_per_point17=  weg = WegX - x0;
+wave_1_per_point18=  weg = max(min(3-abs(weg),1),0);
+wave_1_per_point19=
+wave_1_per_point20=  y0_ = y0*CAng  +z0*SAng;
+wave_1_per_point21=  z0 = y0*-SAng + z0*CAng;
+wave_1_per_point22=  y0 = y0_; 
+wave_1_per_point23=  fac1 = max(0,(sin(17*z0) * sin(12*x0)*12-8))+1;
+wave_1_per_point24=  fac1 = 1-abs(h1);
+wave_1_per_point25=,0);
+wave_1_per_point26=
+wave_1_per_point27=
+wave_1_per_point28=if (n%len == 0,
+wave_1_per_point29=  size = fov*fac1/len*height;
+wave_1_per_point30=
+wave_1_per_point31=  dx = (rand (100)/100-.5)/2;
+wave_1_per_point32=  dy = (rand (100)/200+.5); ;
+wave_1_per_point33=  dz = (rand (100)/100-.5)/2;
+wave_1_per_point34=  x1 = x0; y1 = y0; z1 = z0;
+wave_1_per_point35=, 
+wave_1_per_point36=  x1 += dx*size;
+wave_1_per_point37=  y1 += dy*size;
+wave_1_per_point38=  z1 += dz*size;
+wave_1_per_point39=  dy -= (y1-y0)*(n%len) * fac1/250; //da stimmt was nicht; geht z0 ein ?
+wave_1_per_point40=//  dy *= .96;
+wave_1_per_point41=);
+wave_1_per_point42=
+wave_1_per_point43=x = fov*x1/z1+.5;
+wave_1_per_point44=y = fov*(y1-YCam)/z1 + 0.5 + Bild/q32;
+wave_1_per_point45=
+wave_1_per_point46=r = 0.4; //Farbton
+wave_1_per_point47=g = 0.5*Hell;  //Helligkeit
+wave_1_per_point48=b = max(0,min ((VisDist-z0)/MaxDist,1));
+wave_1_per_point49=
+wave_1_per_point50=a = .05 * (n%len <= len-2) * (n%len >= 1);
+wave_1_per_point51=a *= (x>=0)*(x<=1)*(y>=0)*(y<=1)*(z0>1) * max(0,1-weg);
+wave_1_per_point52=a *=   (y <= 0.75 + Bild ) * (y > 0.25 + Bild);;
+wave_1_per_point53=
+wave_1_per_point54=t1 += 1;
+wavecode_2_enabled=1
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.00000
+wavecode_2_smoothing=0.50000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=1.000
+wavecode_2_a=1.000
+wave_2_per_frame1=t1 = 0;
+wave_2_per_point1=n = t1;
+wave_2_per_point2=len = 11;
+wave_2_per_point3=YCam = reg05; fov = reg06; MaxDist = reg07; SysZ = q18; VisDist = q19;
+wave_2_per_point4=CAng = q8; SAng = q9; Bild = 0; WegX = q1; X_Shrub = reg20; H_Shrub=reg21;
+wave_2_per_point5=Hell = q4*0.1;
+wave_2_per_point6=
+wave_2_per_point7=part = n%len;
+wave_2_per_point8=if (part== 0,
+wave_2_per_point9=  z0 = SysZ;
+wave_2_per_point10=
+wave_2_per_point11=  x0 = (X_Shrub + 0.08*(rand(1)-0.5))*z0/fov;
+wave_2_per_point12= 
+wave_2_per_point13=  y0 = reg10*z0*(sin(x0*reg11 + z0*reg13)) * sin(z0*reg12+reg13) + pow(x0,2)*reg14;
+wave_2_per_point14=//  x0 *= MaxDist; y0 *= MaxDist; z0 *= MaxDist;
+wave_2_per_point15=
+wave_2_per_point16=  weg = WegX - x0;
+wave_2_per_point17=  weg = max(min(3-abs(weg),1),0);
+wave_2_per_point18=
+wave_2_per_point19=  y0_ = y0*CAng  +z0*SAng;
+wave_2_per_point20=  z0 = y0*-SAng + z0*CAng;
+wave_2_per_point21=  y0 = y0_; 
+wave_2_per_point22=
+wave_2_per_point23=  x1 = x0; y1 = y0-0.2; z1 = z0;
+wave_2_per_point24=  if (rand(100) > 90, H_Shrub *= 3,0);
+wave_2_per_point25=,0);
+wave_2_per_point26=
+wave_2_per_point27=dh = H_Shrub/len * (1.5+sin(x1/4+time));
+wave_2_per_point28=x1 += (rand (2)-1)*dh;
+wave_2_per_point29=y1 +=  rand (2)   *dh/2;
+wave_2_per_point30=
+wave_2_per_point31=x = fov*x1/z1+.5;
+wave_2_per_point32=y = fov*(y1-YCam)/z1 + 0.5 + Bild/q32;
+wave_2_per_point33=
+wave_2_per_point34=r = 0.5; //Farbton
+wave_2_per_point35=g = Hell/3;  //Helligkeit
+wave_2_per_point36=b = max(0,min ((VisDist-z0)/MaxDist,1));
+wave_2_per_point37=
+wave_2_per_point38=a = min(1,max(0,1.1-part/len))*0.5 * (part <= len-3) * (part >= 2) * (z0 > MaxDist*fov*0.5);
+wave_2_per_point39=a *= max(0,1-weg) * (y <= 0.75 + Bild ) * (y > 0.25 + Bild);
+wave_2_per_point40=
+wave_2_per_point41=t1 += 1;
+wavecode_3_enabled=1
+wavecode_3_samples=400
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=1
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=0.000
+wavecode_3_g=0.200
+wavecode_3_b=0.000
+wavecode_3_a=1.000
+wave_3_per_frame1=t1 = 0;
+wave_3_per_point1=n = t1;
+wave_3_per_point2=len = 11;
+wave_3_per_point3=YCam = reg05; fov = reg06; MaxDist = reg07; SysZ = q18; VisDist = q19;
+wave_3_per_point4=CAng = q8; SAng = q9; Bild = 0; WegX = q1; X_Shrub = reg20; H_Shrub=reg21; Lum=reg22;
+wave_3_per_point5=Hell = q4;
+wave_3_per_point6=
+wave_3_per_point7=part = n%len;
+wave_3_per_point8=if (part== 0,
+wave_3_per_point9=  z0 = SysZ;
+wave_3_per_point10=
+wave_3_per_point11=  x0 = (X_Shrub + 0.1*(rand(1)-0.5))*z0/fov;
+wave_3_per_point12= 
+wave_3_per_point13=  y0 = reg10*z0*(sin(x0*reg11 + z0*reg13)) * sin(z0*reg12+reg13) + pow(x0,2)*reg14;
+wave_3_per_point14=//  x0 *= MaxDist; y0 *= MaxDist; z0 *= MaxDist;
+wave_3_per_point15=
+wave_3_per_point16=  weg = WegX - x0;
+wave_3_per_point17=  weg = max(min(3-abs(weg),1),0);
+wave_3_per_point18=
+wave_3_per_point19=  y0_ = y0*CAng  +z0*SAng;
+wave_3_per_point20=  z0 = y0*-SAng + z0*CAng;
+wave_3_per_point21=  y0 = y0_; 
+wave_3_per_point22=
+wave_3_per_point23=  x1 = x0; y1 = y0-0.2; z1 = z0;
+wave_3_per_point24=,0);
+wave_3_per_point25=
+wave_3_per_point26=dh = H_Shrub/len * (1.5+sin(x1/4+time));
+wave_3_per_point27=x1 += (rand (2)-1)*dh;
+wave_3_per_point28=y1 +=  rand (2)   *dh/2;
+wave_3_per_point29=
+wave_3_per_point30=x = fov*x1/z1+.5;
+wave_3_per_point31=y = fov*(y1-YCam)/z1 + 0.5 + Bild/q32;
+wave_3_per_point32=
+wave_3_per_point33=r = ((rand(1) < part/len))*0.7; //Farbton
+wave_3_per_point34=g = part/len * Hell;  //Helligkeit
+wave_3_per_point35=b = max(0,min ((VisDist-z0)/MaxDist,1));
+wave_3_per_point36=
+wave_3_per_point37=a = 0.2 * lum * (z0 > MaxDist*fov*0.5);
+wave_3_per_point38=a *= max(0,1-weg) * (y <= 0.75 + Bild ) * (y > 0.25 + Bild);
+wave_3_per_point39=
+wave_3_per_point40=t1 += 1;
+shapecode_0_enabled=1
+shapecode_0_sides=10
+shapecode_0_additive=0
+shapecode_0_thickOutline=1
+shapecode_0_textured=0
+shapecode_0_num_inst=1024
+shapecode_0_x=0.300
+shapecode_0_y=0.800
+shapecode_0_rad=0.10890
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=0.62832
+shapecode_0_tex_zoom=0.43865
+shapecode_0_r=0.000
+shapecode_0_g=0.000
+shapecode_0_b=0.000
+shapecode_0_a=0.400
+shapecode_0_r2=0.000
+shapecode_0_g2=0.000
+shapecode_0_b2=0.000
+shapecode_0_a2=0.000
+shapecode_0_border_r=0.900
+shapecode_0_border_g=0.100
+shapecode_0_border_b=0.000
+shapecode_0_border_a=0.000
+shape_0_per_frame1=//BAEUME
+shape_0_per_frame2=
+shape_0_per_frame3=n = instance * reg00;
+shape_0_per_frame4=
+shape_0_per_frame5=size = sqrt(gmegabuf(n+6));
+shape_0_per_frame6=if (size > 0,
+shape_0_per_frame7=  YCam = reg05; fov = reg06; MaxDist = reg07; VisDist = q19;
+shape_0_per_frame8=  CAng = q8; SAng = q9; Bild = 0; Hell = q4;
+shape_0_per_frame9=  
+shape_0_per_frame10=  x0 = gmegabuf(n);
+shape_0_per_frame11=  age= gmegabuf(n+9);
+shape_0_per_frame12=  y0 = gmegabuf(n+1)* CAng + gmegabuf(n+2)*SAng;
+shape_0_per_frame13=  z0 = gmegabuf(n+1)*-SAng + gmegabuf(n+2)*CAng;
+shape_0_per_frame14=
+shape_0_per_frame15=  x = fov*x0/z0 + 0.5 ;
+shape_0_per_frame16=  y = fov*(y0-YCam)/z0*q32 + 0.5 + Bild;
+shape_0_per_frame17=
+shape_0_per_frame18=  rad = 3*fov*size/z0;
+shape_0_per_frame19=  out = max (y > 0.75 + Bild  ,y < 0.25 + Bild + rad/3);
+shape_0_per_frame20=  //Pruefe auf Randuberschreitung
+shape_0_per_frame21=  reg50 += out*rad; 
+shape_0_per_frame22=
+shape_0_per_frame23=//  rad *= !out;
+shape_0_per_frame24=  sides = 4 + 6 * min (1,rad*20);
+shape_0_per_frame25=  ang = n;
+shape_0_per_frame26=  
+shape_0_per_frame27=  tex = (rand(100) < 2500*rad);  
+shape_0_per_frame28=//  textured = tex;
+shape_0_per_frame29=  a = min(1,rad*100); a2 = a*0.3;
+shape_0_per_frame30=  r = 0.7*min(1,age/30); r2 = r; //Farbton
+shape_0_per_frame31=  g = if(tex, 0.25, 0.55)*Hell; g2 = 0; //Helligkeit
+shape_0_per_frame32=  b = max(0,min ((VisDist-z0)/MaxDist,1)); b2 = b;
+shape_0_per_frame33=//  a = max(0,min ((VisDist-z0)/MaxDist,1)); a2 = a*0.3;
+shape_0_per_frame34=
+shape_0_per_frame35=, rad = 0;);
+shape_0_per_frame36=
+shape_0_per_frame37=
+shapecode_1_enabled=1
+shapecode_1_sides=5
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_num_inst=800
+shapecode_1_x=0.500
+shapecode_1_y=0.500
+shapecode_1_rad=0.05505
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=1.00000
+shapecode_1_r=0.000
+shapecode_1_g=0.000
+shapecode_1_b=0.000
+shapecode_1_a=0.800
+shapecode_1_r2=1.000
+shapecode_1_g2=0.000
+shapecode_1_b2=0.000
+shapecode_1_a2=0.100
+shapecode_1_border_r=0.000
+shapecode_1_border_g=0.000
+shapecode_1_border_b=1.000
+shapecode_1_border_a=0.000
+shape_1_per_frame1=//BUESCHE
+shape_1_per_frame2=sbase = reg03;
+shape_1_per_frame3=n = instance * reg00+sbase;
+shape_1_per_frame4=YCam = reg05; fov = reg06; MaxDist = reg07; VisDist = q19;
+shape_1_per_frame5=CAng = q8; SAng = q9; Bild = 0; Hell = q4;
+shape_1_per_frame6=
+shape_1_per_frame7=size = sqrt(gmegabuf(n+6))/2;
+shape_1_per_frame8=if (size > 0,
+shape_1_per_frame9=  x0 = gmegabuf(n);
+shape_1_per_frame10=  y0 = gmegabuf(n+1);
+shape_1_per_frame11=  z0 = gmegabuf(n+2);
+shape_1_per_frame12=
+shape_1_per_frame13=  y0_ = y0*CAng  + z0*SAng;
+shape_1_per_frame14=  z0 = y0*-SAng + z0*CAng;
+shape_1_per_frame15=  y0 = y0_; 
+shape_1_per_frame16=
+shape_1_per_frame17=  x = fov*x0/z0 + 0.5 ;
+shape_1_per_frame18=  y = fov*(y0-YCam)/z0*q32 + 0.5 + Bild;
+shape_1_per_frame19=
+shape_1_per_frame20=  rad = 3*fov*size/z0 * (y <= 0.75 + Bild ) * (y > 0.25 + Bild);;
+shape_1_per_frame21=, rad = 0;);
+shape_1_per_frame22=
+shape_1_per_frame23=a = min(1,rad*150); a2 = a*0.3;
+shape_1_per_frame24=r = 0.7; r2 = r; //Farbton
+shape_1_per_frame25=g = 0.3*rand(1)*Hell; g2 = 0.0; //Helligkeit
+shape_1_per_frame26=b = max(0,min ((VisDist-z0)/MaxDist,1)); b2 = b;
+shapecode_2_enabled=1
+shapecode_2_sides=12
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_num_inst=1
+shapecode_2_x=0.800
+shapecode_2_y=0.500
+shapecode_2_rad=0.44484
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=1.22016
+shapecode_2_r=1.000
+shapecode_2_g=0.000
+shapecode_2_b=0.200
+shapecode_2_a=0.100
+shapecode_2_r2=0.000
+shapecode_2_g2=0.000
+shapecode_2_b2=0.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=0.500
+shapecode_2_border_b=0.600
+shapecode_2_border_a=0.200
+shape_2_per_frame1=//BAEUME - Astloch
+shape_2_per_frame2=
+shape_2_per_frame3=n = instance * reg00;
+shape_2_per_frame4=YCam = reg05; fov = reg06; MaxDist = reg07; VisDist = q19;
+shape_2_per_frame5=CAng = q8; SAng = q9; Bild = 0; Hell = q4;
+shape_2_per_frame6=
+shape_2_per_frame7=size = sqrt(gmegabuf(n+6));
+shape_2_per_frame8=if ((size > 0.5) && (frame%3==0),
+shape_2_per_frame9=  x0 = gmegabuf(n);
+shape_2_per_frame10=  y0 = gmegabuf(n+1);
+shape_2_per_frame11=  z0 = gmegabuf(n+2);
+shape_2_per_frame12=  age= gmegabuf(n+9);
+shape_2_per_frame13=  y0_ = y0*CAng  + z0*SAng;
+shape_2_per_frame14=  z0 = y0*-SAng + z0*CAng;
+shape_2_per_frame15=  y0 = y0_; 
+shape_2_per_frame16=
+shape_2_per_frame17=  x = fov*x0/z0 + 0.5 ;
+shape_2_per_frame18=  y = fov*(y0-YCam)/z0*q32 + 0.5 + Bild;
+shape_2_per_frame19=
+shape_2_per_frame20=  rad = fov*size/z0 * (age > 6);
+shape_2_per_frame21=  rad *= (y <= 0.75 + Bild ) * (y > 0.25 + Bild + rad/2);;
+shape_2_per_frame22=  
+shape_2_per_frame23=  a = 1; a2 = 0.5;
+shape_2_per_frame24=  r = 0.75; r2 = r; //Farbton
+shape_2_per_frame25=  g = 0.1*Hell; g2 = 0.0; //Helligkeit
+shape_2_per_frame26=  b = max(0,min ((VisDist-z0)/MaxDist,1)); b2 = b;
+shape_2_per_frame27=  
+shape_2_per_frame28=, rad = 0;);
+shape_2_per_frame29=
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=1000
+shapecode_3_x=0.200
+shapecode_3_y=0.400
+shapecode_3_rad=0.49139
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=0.62531
+shapecode_3_r=1.000
+shapecode_3_g=0.700
+shapecode_3_b=1.000
+shapecode_3_a=0.300
+shapecode_3_r2=0.000
+shapecode_3_g2=0.000
+shapecode_3_b2=0.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=1.000
+shapecode_3_border_b=1.000
+shapecode_3_border_a=0.000
+per_frame_init_1=start = 1;
+per_frame_init_2=SysTime = 0;
+per_frame_init_3=Prog = 0;
+per_frame_init_4=n = 0;
+per_frame_init_5=loop (150000,
+per_frame_init_6=  gmegabuf(n) = 0;
+per_frame_init_7=  megabuf(n) = 0;
+per_frame_init_8=n = n+1;);
+per_frame_init_9=
+per_frame_init_10=
+per_frame_init_11=MaxZw = 1024; reg01 = MaxZw;
+per_frame_init_12=MaxZw2 = 800; reg02 = MaxZw2;
+per_frame_init_13=MaxShape = MaxZw * 0.9;
+per_frame_init_14=MaxShap2 = MaxZw2 * 0.8;
+per_frame_init_15=YCam = 3;  reg05 = YCam; //Hoehe Blickpunkt
+per_frame_init_16=fov   =  .7;  reg06 = fov;   //Blickfeld
+per_frame_init_17=MaxDist = 120; reg07 = MaxDist;
+per_frame_init_18=AngCam  = -.0;  //vert. Kamerawinkel; pos: nach unten
+per_frame_init_19=
+per_frame_init_20=sbase = 20000; reg03 = sbase;//Buesche
+per_frame_init_21=cbase  = 50000; //Konfig-Parameter Baum & Busch
+per_frame_init_22=cbase2 = 51000; //Konfig-Parameter Baum & Busch
+per_frame_init_23=csize = 10;
+per_frame_init_24=
+per_frame_init_25=//Datensatz Zweig
+per_frame_init_26=recsize = 12; reg00 = recsize;
+per_frame_init_27=//0,1,2 : Koordinaten Spitze x,y,z
+per_frame_init_28=//3,4,5 : Wuchsrichtung dx,dy,dz
+per_frame_init_29=//6 : Dicke
+per_frame_init_30=//7     : Zieldicke nach Abschluss Uebergang
+per_frame_init_31=//8: Alter
+per_frame_init_32=//9: Zweiglaenge ges.
+per_frame_init_33=//10: Conf-Record (Kraus, Hang ...)
+per_frame_init_34=
+per_frame_init_35=IstZw = 0; IstZw2 = 0; start = 1;
+per_frame_init_36=
+per_frame_init_37=//Parameter Zweige
+per_frame_init_38=Kraus  = .2; //Krauser Wuchs, 0..1;
+per_frame_init_39=Hang   = .02; //Kleinere Zweige wachsen nach oben / unten, -1...1
+per_frame_init_40=ZwLen  = 13;   //Wuchszeit gesamt, 2...30 
+per_frame_init_41=Verzw  = 12; //Tendenz zur Verzweigung, 3...30
+per_frame_init_42=Straight = .86; //Senkrechter Wuchs mit einem Hauptstamm; 0.5...85;
+per_frame_init_43=Waag     = .8; //kleine Werte: waagerechte Verzweig
+per_frame_init_44=
+per_frame_init_45=//Baeume
+per_frame_init_46=n = cbase;
+per_frame_init_47=//Kraus         //Hang            //Wuchszeit       Verwz;            Straight           Waag
+per_frame_init_48=gmegabuf(n)=.22; gmegabuf(n+1)=.0; gmegabuf(n+2)=12; gmegabuf(n+3)=12; gmegabuf(n+4)=.87; gmegabuf(n+5)=.85;
+per_frame_init_49=n += csize;
+per_frame_init_50=gmegabuf(n)=.05; gmegabuf(n+1)=-0; gmegabuf(n+2)=4; gmegabuf(n+3)=17; gmegabuf(n+4)=0.9; gmegabuf(n+5)=.8;
+per_frame_init_51=
+per_frame_init_52=//Buesche
+per_frame_init_53=n = cbase2;
+per_frame_init_54=//Kraus         //Hang            //Wuchszeit       Verwz;            Straight           Waag
+per_frame_init_55=gmegabuf(n)=.2; gmegabuf(n+1)=.0; gmegabuf(n+2)=3; gmegabuf(n+3)=32; gmegabuf(n+4)=.6; gmegabuf(n+5)=.7;
+per_frame_init_56=n += csize;
+per_frame_init_57=
+per_frame_init_58=tstart = rand (1000)-500;
+per_frame_1=dec_m = pow (0.85, 30/fps); dec_s = pow (0.95, 30/fps); 
+per_frame_2=speed0 = 0.2 + 0.06*sin(time*0.083) ; //##spielen, 0.15... 0.3
+per_frame_3=SysTime = SysTime + (exp(-Bild) * 0.3+ 0.03)/30; 
+per_frame_4=if (SysTime >= 1.2, SysTime = 0; Start = 1, 0);
+per_frame_5=RelZ    = max(0,pow(1-SysTime,1.4));
+per_frame_6=SysZ = RelZ*MaxDist+.1;
+per_frame_7=copyable = (reg50 <= 400);
+per_frame_8=
+per_frame_9= //-------------- Gelaende definieren ------------------
+per_frame_10=if (Start == 1,
+per_frame_11=  n = 0;     loop (MaxZw,  megabuf (n+6) = 0; n+= recsize);
+per_frame_12=  n = sbase; loop (MaxZw2, megabuf (n+6) = 0; n+= recsize);
+per_frame_13=  fov = rand(10)/15 + .5;reg06 = fov;
+per_frame_14=  YCam = 1 + rand(8); reg05 = YCam; ///###
+per_frame_15=  AngCam = (YCam-7) * .015; //neg: nach oben
+per_frame_16=  NumTree = 0;
+per_frame_17=  reg50 = 0; //(Randueberschr. aus shape 1)
+per_frame_18=  CopyNow = 0; 
+per_frame_19=  reg10 = (rand(100)/100-.3)*0.2;
+per_frame_20=  reg11 = (rand (20)-10)*0.0075;
+per_frame_21=  reg12 = (rand (20)-10)*0.01;  
+per_frame_22=  reg13 = (rand (10)-5)*0.01; 
+per_frame_23=  reg14 = ((rand (100)/100)-.4)*0.008;
+per_frame_24=  par1  = rand(10); //fuer Weg
+per_frame_25=  par2  = rand(6);
+per_frame_26=,0);
+per_frame_27=
+per_frame_28=//-------------- Baeume pflanzen ------------------
+per_frame_29=if ((SysZ > 25*fov) && (frame%20==0) && (IstZw < MaxZw/3), 
+per_frame_30=  base = nextfree*recsize;
+per_frame_31=  NumTree += 1;
+per_frame_32=  Prog = int(NumTree/10);
+per_frame_33=  bpow = sin(prog)*.05 + .33;
+per_frame_34=  z0 = SysZ;
+per_frame_35=  x0 = (rand(50)/50-.5)*z0/fov*.8;
+per_frame_36=//  x0 = WegX + 12 * ((NumTree%2)-0.5);
+per_frame_37=  y0 = reg10*z0*(sin(x0*reg11 + z0*reg13)) * sin(z0*reg12+reg13) + pow(x0,2)*reg14; //reg13 im zweiten Term ?
+per_frame_38=  Weg = max(min(4-abs(WegX-x0),1),0);
+per_frame_39=  if (weg == 0,
+per_frame_40=    megabuf (base) = x0;  megabuf (base+1) = y0; megabuf (base+2) = z0;
+per_frame_41=    megabuf (base+3) = 0; megabuf (base+4) = 1;  megabuf (base+5) = 0;
+per_frame_42=    megabuf(base+6) = 1.5;  megabuf(base+7) = 0.8 ;  megabuf(base+8) = 0;
+per_frame_43=    megabuf(base+9) = 0;   megabuf(base+10) = 0; megabuf(base+11) = y0;
+per_frame_44=  ,0);
+per_frame_45=,0);
+per_frame_46=
+per_frame_47=//-------------- Wachstum / Verzweigung Baeume ------------------
+per_frame_48=n = 0; loop (MaxZw, gmegabuf (n+6) = 0; n+=recsize);
+per_frame_49=mindex = 0;
+per_frame_50=while(exec2(
+per_frame_51=n = 0; nextfree = IstZw + 1;
+per_frame_52=loop (min (MaxZw,IstZW), 
+per_frame_53=  base = n*recsize;
+per_frame_54=  Quer = megabuf (base + 6); RQuer = sqrt (Quer);
+per_frame_55=  Alter = megabuf (base + 8);
+per_frame_56=  Height = megabuf(base+1)-megabuf(base+11);
+per_frame_57=  Dist = megabuf (base + 2);
+per_frame_58=  if (Quer > 0,
+per_frame_59=    cb = cbase+csize* megabuf(base + 10);  
+per_frame_60=    Kraus=gmegabuf(cb);   Hang=gmegabuf(cb+1);  ZwLen=gmegabuf(cb+2);
+per_frame_61=    Verzw =gmegabuf(cb+3);    Straight=gmegabuf(cb+4);    Waag =gmegabuf(cb+5);
+per_frame_62=    speed = speed0 * pow(Quer,bpow);
+per_frame_63=    i = 0; loop (3, megabuf(base+i) += megabuf(base+3+i) * speed; i+=1);
+per_frame_64=    megabuf(base+3) += (rand(100)/100-.5)*Kraus*(1-RQuer);
+per_frame_65=    megabuf(base+4) += (rand(100)/100-.5)*Kraus*(1-RQuer) +(.002/Quer)*Hang;
+per_frame_66=    megabuf(base+5) += (rand(100)/100-.5)*Kraus*(1-RQuer);
+per_frame_67=    len = sqrt (pow(megabuf(base+3),2)+pow(megabuf(base+4),2)+pow(megabuf(base+5),2));
+per_frame_68=    i = 0; loop (3, megabuf(base+3+i) /= len; i+=1);
+per_frame_69=    dec = 0.28;
+per_frame_70=    megabuf (base + 6) = (0.996-dec)*megabuf (base + 6) + dec* megabuf(base + 7);
+per_frame_71=    megabuf (base + 8) += 1;     megabuf (base + 9) += len;
+per_frame_72=  ,0);
+per_frame_73=  if ((Quer <=0.000003*Dist) ||(Quer < 0.00001*Dist) && (IstZw > 0.9*MaxZw) 
+per_frame_74=    ||((Quer < 0.003) && ((rand(1000000*Quer*ZwLen) < 20*megabuf (base +9)))),
+per_frame_75=      megabuf (base + 6) = 0;
+per_frame_76=      //ausgewachsen, Zweig kann ausgelistet werden 
+per_frame_77=  , 
+per_frame_78=    //ansonsten: Verzweigung ?
+per_frame_79=    if ( (rand (500 + 500 * (1-quer)) < Verzw*Alter ) && (Height > 0), 
+per_frame_80=      //Suche freien Platz in Umgebung
+per_frame_81=      m = nextfree; nextfree += 1;
+per_frame_82=      if ((m < MaxZw), //noch ein Platz frei ?
+per_frame_83=        newbase = m*recsize;
+per_frame_84=        //Anfangsbed. des neuen Zweiges setzen 
+per_frame_85=        i = 0; loop (3, megabuf(newbase+i) = megabuf(base+i); i+=1); 
+per_frame_86=
+per_frame_87=        //Dicke 
+per_frame_88=        ran = straight + (1-straight)*2*(rand(100)/100-.5);    
+per_frame_89=        megabuf (newbase + 6) = megabuf (base + 6);
+per_frame_90=        megabuf (base + 7) = megabuf (base + 6) * (ran);
+per_frame_91=        megabuf (newbase + 7) = megabuf (base + 6) * (1-ran) ;
+per_frame_92=
+per_frame_93=        //Richtung
+per_frame_94=        megabuf(newbase+3)  =   megabuf(base+3)+ (rand(100)/100-.5); 
+per_frame_95=        megabuf(newbase+4)  =   megabuf(base+4)+ (rand(100)/100-.5); 
+per_frame_96=        megabuf(newbase+5)  =   megabuf(base+5)+ (rand(100)/100-.5); 
+per_frame_97=        megabuf(newbase+4)  *= Waag; 
+per_frame_98=
+per_frame_99=        len = sqrt (pow(megabuf(newbase+3),2)+pow(megabuf(newbase+4),2)+pow(megabuf(newbase+5),2));
+per_frame_100=        i = 0; loop (3, megabuf(newbase+3+i) /= len; i+=1);
+per_frame_101=
+per_frame_102=        /// Alter   
+per_frame_103=        megabuf (base + 8) = 0; megabuf (newbase + 8) = 0; megabuf (newbase + 9)= 0; 
+per_frame_104=        megabuf (newbase + 10)= megabuf (base + 10);;
+per_frame_105=        megabuf (newbase + 11)= megabuf (base + 11);;
+per_frame_106=     ,0);
+per_frame_107=  ,0));
+per_frame_108=  n += 1;
+per_frame_109=);
+per_frame_110=//Loeschen gmegabuf, komprimieren, umkopieren und zuruekkopieren
+per_frame_111=n = 0; m = 0; k= 0; IstZw = 0;
+per_frame_112=loop (MaxZw,
+per_frame_113=  if (megabuf (n + 6) > 0,
+per_frame_114=    IstZW += 1; k = 0;
+per_frame_115=    loop (recsize, 
+per_frame_116=      gmegabuf(mindex+k) = megabuf(n+k); 
+per_frame_117=      megabuf (m+k) = gmegabuf(mindex+k); 
+per_frame_118=       k += 1;);
+per_frame_119=       if (!(m==n), megabuf (n+6) = 0;,0);
+per_frame_120=    m += recsize; mindex += recsize,0); 
+per_frame_121=  n += recsize;
+per_frame_122=);, (IstZW > 0) && (mindex/recsize < MaxShape))); //Ende B
+per_frame_123=
+per_frame_124=
+per_frame_125=
+per_frame_126=//-------------- Buesche pflanzen ------------------
+per_frame_127=if ((SysZ > 10*fov) && (frame%17==0) && (IstZw2 < MaxZw2/3), 
+per_frame_128=  n = 0;
+per_frame_129=  x00 = (rand(50)/50-.5);
+per_frame_130=  loop (8,
+per_frame_131=    base = (n+nextf2)*recsize+sbase;
+per_frame_132=    z0 = SysZ;
+per_frame_133=    x0 = (x00 + (rand(50)/50-.5)*.1)*z0;
+per_frame_134=    y0 = reg10*z0*(sin(x0*reg11 + z0*reg13)) * sin(z0*reg12+reg13) + pow(x0,2)*fov*reg14;
+per_frame_135=    y0 +=  -.001*rand(10);
+per_frame_136=//    x0 *= MaxDist; y0 *= MaxDist; z0 *= MaxDist;
+per_frame_137=    weg = WegX - x0;
+per_frame_138=    weg = max(min(4-abs(weg),1),0);
+per_frame_139=    if (weg == 0,
+per_frame_140=      megabuf (base) = x0;  megabuf (base+1) = y0; megabuf (base+2) = z0;
+per_frame_141=      megabuf (base+3) = rand(100)/100-.5; megabuf (base+4) = 1;  megabuf (base+5) = 0;
+per_frame_142=      megabuf(base+6) = .02;  megabuf(base+7) = .03; ;  megabuf(base+8) = 4;
+per_frame_143=      megabuf(base+9) = 0;    megabuf(base+10) = 0; 
+per_frame_144=    ,0);
+per_frame_145=   n+= 1;);  
+per_frame_146=,0);
+per_frame_147=
+per_frame_148=//-------------- Wachstum / Verzweigung Buesche------------------
+per_frame_149=n = sbase; loop (MaxZw2, gmegabuf (n+6) = 0; n+=recsize);
+per_frame_150=mindex2 = sbase;
+per_frame_151=while(exec2(
+per_frame_152=n = 0; nextf2 = IstZw2 + 1;
+per_frame_153=loop (min (MaxZw2,IstZW2), 
+per_frame_154=  base = n*recsize+sbase;
+per_frame_155=  Quer = megabuf (base + 6); Alter = megabuf (base + 8); 
+per_frame_156=  if (Quer > 0,
+per_frame_157=    cb = cbase2+csize*megabuf(base + 10);  
+per_frame_158=    Kraus=gmegabuf(cb);   Hang=gmegabuf(cb+1);  ZwLen=gmegabuf(cb+2);
+per_frame_159=    Verzw =gmegabuf(cb+3);    Straight=gmegabuf(cb+4);    Waag =gmegabuf(cb+5);
+per_frame_160=    speed = speed0 * pow(megabuf (base + 6),.32);
+per_frame_161=    i = 0; loop (3, megabuf(base+i) += megabuf(base+3+i) * speed; i+=1);
+per_frame_162=    megabuf(base+3) += (rand(100)/100-.5)*Kraus;
+per_frame_163=    megabuf(base+4) += (rand(100)/100-.5)*Kraus +(.002/Quer)*Hang;
+per_frame_164=    megabuf(base+5) += (rand(100)/100-.5)*Kraus;
+per_frame_165=    len = sqrt (pow(megabuf(base+3),2)+pow(megabuf(base+4),2)+pow(megabuf(base+5),2));
+per_frame_166=    i = 0; loop (3, megabuf(base+3+i) /= len; i+=1);
+per_frame_167=    megabuf (base + 9) += len;
+per_frame_168=    dec = 0.3;
+per_frame_169=    megabuf (base + 6) = (0.98-dec)*megabuf (base + 6) + dec* megabuf(base + 7);
+per_frame_170=    megabuf (base + 8) += 1;
+per_frame_171=  ,0);
+per_frame_172=  if ((rand(1000000*Quer*ZwLen) < 50*megabuf (base +8) ), //ausgewachsen, Zweig kann ausgelistet werden
+per_frame_173=      megabuf (base + 6) = 0;
+per_frame_174=  , 
+per_frame_175=    //ansonsten: Verzweigung ?
+per_frame_176=    if ( (rand (500 + 500 * (1-quer)) < Verzw*Alter), 
+per_frame_177=      //Suche freien Platz in Umgebung
+per_frame_178=      m = nextf2; nextf2 += 1;
+per_frame_179=      if ((m < MaxZw2), //noch ein Platz frei ?
+per_frame_180=        newbase = m*recsize+sbase;
+per_frame_181=        //Anfangsbed. des neuen Zweiges setzen 
+per_frame_182=        i = 0; loop (3, megabuf(newbase+i) = megabuf(base+i); i+=1); 
+per_frame_183=
+per_frame_184=        //Dicke 
+per_frame_185=        ran = straight + (1-straight)*2*(rand(100)/100-.5);    
+per_frame_186=        megabuf (newbase + 6) = megabuf (base + 6);
+per_frame_187=        megabuf (base + 7) = megabuf (base + 6) * (ran);
+per_frame_188=        megabuf (newbase + 7) = megabuf (base + 6) * (1-ran) ;
+per_frame_189=
+per_frame_190=        //Richtung
+per_frame_191=        megabuf(newbase+3)  =   megabuf(base+3)+ (rand(100)/100-.5); 
+per_frame_192=        megabuf(newbase+4)  =   megabuf(base+4)+ (rand(100)/100-.5); 
+per_frame_193=        megabuf(newbase+5)  =   megabuf(base+5)+ (rand(100)/100-.5); 
+per_frame_194=        megabuf(newbase+4)  *= Waag; 
+per_frame_195=
+per_frame_196=        len = sqrt (pow(megabuf(newbase+3),2)+pow(megabuf(newbase+4),2)+pow(megabuf(newbase+5),2));
+per_frame_197=        i = 0; loop (3, megabuf(newbase+3+i) /= len; i+=1);
+per_frame_198=
+per_frame_199=        /// Alter   
+per_frame_200=        megabuf (base + 8) = 0; megabuf (newbase + 8) = 0; megabuf (newbase + 9)= 0;
+per_frame_201=        megabuf (newbase + 10)= megabuf (base + 10);;
+per_frame_202=     ,0);
+per_frame_203=  ,0));
+per_frame_204=  n += 1;
+per_frame_205=);
+per_frame_206=
+per_frame_207=//Loeschen gmegabuf, komprimieren, umkopieren und zuruekkopieren
+per_frame_208=n = sbase; m = sbase; k= 0; IstZw2 = 0;
+per_frame_209=loop (MaxZw2,
+per_frame_210=  if (megabuf (n + 6) > 0,
+per_frame_211=    IstZW2 += 1; k = 0;
+per_frame_212=    loop (recsize, 
+per_frame_213=      gmegabuf(mindex2+k) = megabuf(n+k); 
+per_frame_214=      megabuf (m+k) = gmegabuf(mindex2+k); 
+per_frame_215=       k += 1;);
+per_frame_216=       if (!(m==n), megabuf (n+6) = 0;,0);
+per_frame_217=    m += recsize; mindex2 += recsize,0); 
+per_frame_218=  n += recsize;
+per_frame_219=);, (IstZW2 > 0) && (mindex2/recsize < MaxShap2))); //Ende B
+per_frame_220=  
+per_frame_221=
+per_frame_222=CopyNow = (reg50 <= 50) && (reg14 <= .003); //###
+per_frame_223=Zeichnen = if((SysTime >1) && (IstZW ==0) && (IstZw2 == 0),0,1); ///### wird nie null weil SysTime <=1
+per_frame_224=Bild     += Start;
+per_frame_225=Bild = 10;
+per_frame_226=q5 = YCam; 
+per_frame_227=q6 = reg06; //fov
+per_frame_228=q7 = reg07; //MaxDist
+per_frame_229=q8 = cos(AngCam);
+per_frame_230=q9 = sin(AngCam);
+per_frame_231=q10 = reg10; q11 = reg11; q12 = reg12; q13 = reg13; q14 = reg14;
+per_frame_232=
+per_frame_233=q17 = SysTime;
+per_frame_234=q18 = SysZ;
+per_frame_235=VisDist = MaxDist * 1.3;
+per_frame_236=q19 = VisDist;
+per_frame_237=
+per_frame_238=q30 = start;
+per_frame_239=q31 = CopyNow;
+per_frame_240=start = 0;
+per_frame_241=q32 = aspecty;
+per_frame_242=monitor = reg50;
+per_frame_243=
+per_frame_244=//-----------------Wave shrubs, wave 3&4 ----------------
+per_frame_245=h_shrub = abs(sin(RelZ*15))*hfac ;
+per_frame_246=x_shrub = if (h_shrub < 0.1,sin(rand(100))/3,x_shrub+0.1*(rand(1)-.5));
+per_frame_247=if (h_shrub < 0.1, hfac = 1 + rand(2), 0);
+per_frame_248=reg20 = x_shrub;
+per_frame_249=reg21 = h_shrub;
+per_frame_250=reg22 = abs(sin(time*0.15)); //Hell. Blueten
+per_frame_251=
+per_frame_252=//--------------------WEG------------------------------
+per_frame_253=WegX = (cos(RelZ*par1+par2))*SysZ*0.2;
+per_frame_254=x0 = WegX;
+per_frame_255=z0 = SysZ;
+per_frame_256=WegY = reg10*z0*(sin(x0*reg11 + z0*reg13)) * sin(z0*reg12+reg13) + pow(x0,2)*reg14;
+per_frame_257=
+per_frame_258=q1 = WegX;
+per_frame_259=q2 = WegY;
+per_frame_260=q3 = 0.5 + 3 * (1+sin(time*0.072)); //Weg zerklueftet
+per_frame_261=q4 = 1+0*RelZ; //generelle Helligkeit
+per_frame_262=
+per_frame_263=
+per_frame_264=trelx = time + tstart;
+per_frame_265=q25 = copyable;
+per_frame_266=q26 = 0.5 + 0.4*sin(trelx*0.1); //ambient
+per_frame_267=q27 = 0.35 + 0.3*sin(trelx*0.045); //fog
+per_frame_268=q28 = 0.5 + 0.4*sin(trelx*0.013); //sky
+per_frame_269=//q28 = 1;
+per_frame_270=monitor = q28;
+per_frame_271=
+warp_1=`#define sat saturate
+warp_2=`sampler sampler_pw_noise_lq;
+warp_3=`float2 uv1,uv2, rs, uvpat, grasart;
+warp_4=`float  z, sun, tmp, gnd, fels, gras, weg, wstruc, mask, ycomp;
+warp_5=`float3 uvg, uvn, ret1; //Grund; Nebel
+warp_6=`static float2x2 CamRot = float2x2 (q8,-q9,q9,q8);
+warp_7=`static const float fov = q6, YCam = q5, WegX = q1, WegY = q2, WegR = q3, Hell = q4, copyable = q25;
+warp_8=`static const float SysZ = q18, MaxDist = q7, RelZ = SysZ/MaxDist, RelVis = q19/MaxDist;
+warp_9=`
+warp_10=`float noise3_lq (float2 uvi) { float n1,n2,n3;
+warp_11=`  uvi = uvi + time*.001;
+warp_12=`  n1 = tex2D(sampler_noise_lq, (uvi)).r;
+warp_13=`  n2 = tex2D(sampler_noise_lq, (uvi*2)).r;
+warp_14=`  n3 = tex2D(sampler_noise_lq, (uvi*4)).r;
+warp_15=`  return n1 + n2/2 + n3/4 - .875;} 
+warp_16=`
+warp_17=`float alti (float x0, float z0)
+warp_18=`{return q10*z0*(sin(x0*q11 + q13*z0)) * sin(z0*q12+q13) + pow(x0,2)*q14
+warp_19=`        + 4*abs(noise3_lq(.00022*float2(x0,z0)))*RelZ ;} //sin bei z ersetzen ##!
+warp_20=`
+warp_21=`shader_body {
+warp_22=`ret = GetPixel(uv_orig);
+warp_23=`mask = 1;
+warp_24=`uv1 = (uv_orig-float2(.5, .5)) * aspect.xy; 
+warp_25=`
+warp_26=`uvg.z = SysZ;
+warp_27=`uvg.x = uv1.x * uvg.z/fov; 
+warp_28=`uvg.y = alti (uvg.x, uvg.z);
+warp_29=`uvn = uvg;
+warp_30=`float y1 = uvg.y;
+warp_31=`float y2 = alti (uvg.x+4,uvg.z);
+warp_32=`
+warp_33=`weg = WegX - uvg.x  + noise3_lq(uvg.xz*.0014)*WegR;
+warp_34=`wstruc = noise3_lq(weg*0.004 + uvg.xz*0.00);
+warp_35=`weg = saturate(3-abs(weg) - WegR/8);
+warp_36=`
+warp_37=`fels = sat(noise3_lq(.0012*uvg.xz)-.2)*3*(1-weg); //Fels nicht hoeher als YCam !
+warp_38=`
+warp_39=`gras = sat(1-fels)*sat(1-weg) * sat(2+4*noise3_lq(uvg.xz*.0003));;
+warp_40=`grasart = 0.25*ceil(4*tex2D (sampler_noise_lq,uvg.xz*0.000723+q10).xy);
+warp_41=`uvpat = uv*lerp (float2(2,1)*tex2D (sampler_noise_lq,uvg.xz*0.0063).xz, 
+warp_42=`           float2(32,8)*grasart.xy, 
+warp_43=`           saturate(2*gras - 2*weg));
+warp_44=`
+warp_45=`float pat0 = sat(tex2D (sampler_noise_lq,uvpat*RelZ+rand_frame).g +wstruc*weg) ;;
+warp_46=`float pat = lerp (pat0, .0, saturate(fels*2));
+warp_47=`
+warp_48=`uvg.y += fels + (pat-0.5)* gras*1.3 ;
+warp_49=`uvg.y = lerp (uvg.y-weg/2,WegY-wstruc/2,weg*0.7);
+warp_50=`
+warp_51=`//PROJEKTION
+warp_52=`uvg.yz = mul (uvg.yz,CamRot);
+warp_53=`rs     = fov/uvg.z * float2 (uvg.x,uvg.y - YCam);
+warp_54=`gnd = saturate((4*512*RelZ*pow(rs.y+uv1.y,1))) ;
+warp_55=`
+warp_56=`ret1 = float3 (lerp (0.65*sat(.7+grasart.y-gras),0.9-wstruc,weg), (0.3*gnd*pat+weg/16)*Hell*(1+0*(y2-y1)), RelVis-RelZ);
+warp_57=`//ret1.g *= 0.2+0.8*sat(GetBlur2(uv_orig).g); //hm !!!!!!!!!!!!!!
+warp_58=`ret = lerp (ret, ret1, gnd*mask);
+warp_59=`
+warp_60=`//BodenNebel
+warp_61=`uvn.yz = mul (uvn.yz,CamRot);
+warp_62=`rs     = fov/uvn.z * float2 (uvn.x,uvn.y - YCam + 0); //Nebelhoehe noch definieren ####
+warp_63=`float noise = tex2D (sampler_noise_hq,uvn.xz*0.005).r;
+warp_64=`gnd = saturate((1-8000*RelZ*rand_frame.x*pow(rs.y+uv1.y,2)))*0.1*noise;
+warp_65=`ret.b = lerp (ret.b, ret.b*0.15*0, gnd*mask);
+warp_66=`
+warp_67=`uv2.x = 1- abs( frac((uv2.x-.5) * 0.5 ) * float2(2,1.8) - 1.0 ); // Eo.S. mirror code
+warp_68=`
+warp_69=`uv2 = (uv_orig - 0.5)*2+0.6;
+warp_70=`float3 a1 = GetPixel(uv2-float2(0,0));
+warp_71=`float3 copy = a1;
+warp_72=`float cmask = sat (1-pow(2*max(1*abs(uv2.x-0.5), abs(uv2.y-0.5)),2))*0.4;
+warp_73=`if (q30) {ret =  lerp(float3(1,1,0),copy,float3(0,cmask,cmask)*q25) ;};
+warp_74=`//ret = cmask/3;
+warp_75=`}
+warp_76=`
+warp_77=`
+comp_1=`#define sat saturate
+comp_2=`float z, z0, w0, cloud, trel, zglob, struc, mat, bri, dist, radi;
+comp_3=`float2 uv0, uv1, uv2, uv3, uva;
+comp_4=`float3 sky, ambience;
+comp_5=`static const float Hell = q4;
+comp_6=`static const float3 skycolhi = 1;
+comp_7=`static const float3 skycollo = 0.1;
+comp_8=`
+comp_9=`static const float VisDist = q19;
+comp_10=`
+comp_11=`float3 matcol (float x) {return float3(.2*x, pow(x-0.5,2), x*x*0.7) + float3(0.8, 0.75, 0.3);}
+comp_12=`
+comp_13=`shader_body {
+comp_14=`uv += texsize.zw/4;
+comp_15=`
+comp_16=`mat = GetPixel(uv).r;
+comp_17=`bri = GetPixel(uv).g*1.2; 
+comp_18=`float land = sat (2-2*GetPixel(uv).g);
+comp_19=`dist = (1-GetPixel(uv).b)*0.99;
+comp_20=`
+comp_21=`float ov = sat ((uv.y-0.5)*1);
+comp_22=`sky = lerp (skycolhi,skycollo,lerp (ov, 1-ov,q28));
+comp_23=`ambience = lerp (sky, Hell*.2, q26*land); //exp. mit 0*land - 1*land;
+comp_24=`
+comp_25=`float2 uv1 = uv-float2(0.5,0);
+comp_26=`float z = 0.05/(uv1.y);
+comp_27=`float fogdens = tex2D(sampler_noise_hq, float2(uv1.x*z/4+time*0.0047, z)).r * land ;
+comp_28=`ret = lerp (ambience, bri*matcol(mat)*ambience, pow(1-dist,q27*fogdens));
+comp_29=`//ret = fogdens;
+comp_30=`}
+comp_31=`written by martin
+comp_32=`END

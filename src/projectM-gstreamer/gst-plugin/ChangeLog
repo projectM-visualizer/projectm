@@ -1,0 +1,217 @@
+2008-11-04  Stefan Kost  <ensonic@users.sf.net>
+
+	* src/Makefile.am:
+	  Don't install static libs for plugins. Fixes #550851 for the template.
+
+2008-10-30  Stefan Kost  <ensonic@users.sf.net>
+
+	* tools/make_element:
+	  Don't replace GstPlugin.
+
+2008-08-11  Stefan Kost  <ensonic@users.sf.net>
+
+	* README:
+	* src/gstaudiofilter.c:
+	* src/gstplugin.c:
+	* src/gsttransform.c:
+	* tools/make_element:
+	  Integrate new template and improve search'n'replace ops. Update
+	  templates to use current API.
+
+2008-07-26  Stefan Kost  <ensonic@users.sf.net>
+
+	* tools/make_element:
+	  Fix username detection. tries getent first and falls back to grep
+	  passwd. Spotted by Karoly Segesdi.
+
+2008-06-09  Jan Schmidt  <jan.schmidt@sun.com>
+
+	* src/gstplugin.c:
+	Fix some memory leaks, and make the setcaps function actually
+	sets the caps on the other pad.
+
+2008-05-08  Stefan Kost  <ensonic@users.sf.net>
+
+	* README:
+	  Add simple usage explanation and make it look like the other READMEs.
+
+	* src/gstplugin.c:
+	* src/gstplugin.h:
+	* src/gsttransform.c:
+	* src/gsttransform.h:
+	* tools/make_element:
+	  Add year, username and email fields. Update the templates here and
+	  there a bit. Add more comments.
+
+2007-08-01  Tim-Philipp Müller  <tim at centricular dot net>
+
+	* src/gsttransform.c:
+	  Include right header to avoid structure size mismatches etc.
+
+2007-07-25  Tim-Philipp Müller  <tim at centricular dot net>
+
+	Patch by: Steve Fink  <sphink gmail com>
+
+	* src/gstplugin.c:
+	  Use GST_DEBUG_FUNCPTR() macros where it makes sense.
+
+2007-07-19  Stefan Kost  <ensonic@users.sf.net>
+
+	* configure.ac:
+	  Fix CVS-build detection.
+
+2007-01-23  Tim-Philipp Müller  <tim at centricular dot net>
+
+	* src/Makefile.am:
+	  Make clearer which Makefile variables need renaming if the plugin
+	  name is changes (#399746) (pretty it is not, but it's the content
+	  that counts, right?)
+
+2007-01-22  Tim-Philipp Müller  <tim at centricular dot net>
+
+	Patch by: Philip Jägenstedt  <philipj at opera com>
+
+	* tools/make_element:
+	  Translate FOO_IS_MY_PLUGIN macro as well according to the template
+	  (#399323).
+
+2006-07-04  Tim-Philipp Müller  <tim at centricular dot net>
+
+	* autogen.sh:
+	  Run autoheader to create config.h.in and fix the build.`
+
+2006-07-03  Tim-Philipp Müller  <tim at centricular dot net>
+
+	* Makefile.am:
+	* autogen.sh:
+	* gst-autogen.sh:
+	  Throw an error if autotools versions are too old. We require
+	  automake 1.7 or newer (#346054). Add gst-autogen.sh to check
+	  for this.
+
+	* COPYING:
+	  Add placeholder COPYING file so it doesn't get overwritten
+	  by a GPL one by automake.
+
+2006-06-22  Tim-Philipp Müller  <tim at centricular dot net>
+
+	Patch by: Philip Jägenstedt <philip at lysator liu se>
+
+	* src/gstplugin.c: (gst_plugin_template_base_init),
+	(gst_plugin_template_class_init), (gst_plugin_template_init),
+	(plugin_init):
+	  Use GST_BOILERPLATE, add debug category (#345601).
+
+2006-04-20  Stefan Kost  <ensonic@users.sf.net>
+
+        Patch by: Johan Rydberg <jrydberg@gnu.org>
+
+	* src/gstplugin.c: (gst_plugin_template_get_type),
+	(gst_plugin_template_base_init), (gst_plugin_template_class_init),
+	(gst_plugin_template_set_property),
+	(gst_plugin_template_get_property):
+	* src/gstplugin.h:
+	* src/gsttransform.c: (gst_plugin_template_base_init),
+	(gst_plugin_template_set_property),
+	(gst_plugin_template_get_property):
+	* tools/make_element:
+	remove double gst_get_, fix '_' in names
+	
+
+2006-02-26  Tim-Philipp Müller  <tim at centricular dot net>
+
+	* src/gstplugin.c: (gst_plugin_template_init),
+	(gst_plugin_template_chain):
+	  Fix function declaration of  _init() function.
+	  Remove unnecessary assertion clutter in chain function
+	  (that also failed to return a flow value, causing
+	  compiler warnings).
+
+2006-02-07  Stefan Kost  <ensonic@users.sf.net>
+
+	* src/gstplugin.c: (gst_plugin_template_set_caps),
+	(gst_plugin_template_chain):
+	* src/gsttransform.c: (gst_plugin_template_transform_ip):
+	  more code cleanups, more comments
+
+2006-02-07  Stefan Kost  <ensonic@users.sf.net>
+
+	* configure.ac:
+	  allow installing to $HOME
+	* src/gstplugin.c: (gst_plugin_template_base_init),
+	(gst_plugin_template_init):
+	* src/gstplugin.h:
+	* src/gsttransform.c: (gst_plugin_template_base_init),
+	(gst_plugin_template_class_init), (gst_plugin_template_init),
+	(gst_plugin_template_transform_ip),
+	(gst_plugin_template_set_property),
+	(gst_plugin_template_get_property), (plugin_init):
+	* src/gsttransform.h:
+	  add another template
+	* tools/make_element:
+	  fix generator, when template (arg2) is given
+
+2006-01-23  Tim-Philipp Müller  <tim at centricular dot net>
+
+	* src/gstplugin.h:
+	  FOO_BAR_CLASS(klass) should cast to FooBarClass*,
+	  not FooBar*.
+
+2006-01-13  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* autogen.sh:
+	* configure.ac:
+	* src/Makefile.am:
+	* src/gstplugin.c:
+	  bring into the 0.10 world
+	  Fix #315582
+
+2005-12-16  Jan Schmidt  <thaytan@mad.scientist.com>
+
+	* src/gstplugin.c: (gst_plugin_template_class_init):
+	  Need to have the set_property and get_property methods
+	  before installing properties
+
+2005-12-14  Tim-Philipp Müller  <tim at centricular dot net>
+
+	* src/gstplugin.h:
+	  Fix GST_IS_FOO_BAR_CLASS macro.
+
+2005-06-30  Ronald S. Bultje  <rbultje@ronald.bitfreak.net>
+
+	* configure.ac:
+	* src/gstplugin.c: (gst_plugin_template_set_caps),
+	(gst_plugin_template_init), (gst_plugin_template_chain):
+	  Fix for GStreamer 0.9.
+
+2004-04-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* Makefile.am:
+	* autogen.sh:
+	* configure.ac:
+	* src/Makefile.am:
+          use proper LDFLAGS for plugins
+          run in maintainer mode by default
+
+2004-04-22  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac: ... and fix comments too
+
+2004-04-03  Benjamin Otte  <otte@gnome.org>
+
+	* configure.ac:
+	  update for GStreamer 0.8
+
+2004-01-25  Ronald Bultje  <rbultje@ronald.bitfreak.net>
+
+	* src/gstplugin.c: (gst_plugin_template_link),
+	(gst_plugin_template_base_init), (gst_plugin_template_init):
+	  Fix for GStreamer 0.7.x.
+
+2003-02-06  Thomas Vander Stichele <thomas at apestaart dot org>
+
+        * updated for GStreamer 0.6.0
+
+2002-07-17  Thomas Vander Stichele <thomas at apestaart dot org>
+
+  	* initial creation on a flight to New York

@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/" >
+        <file>images/icons/hi16-action-projectm_add_playlist.png</file>
+        <file>images/icons/hi16-action-projectm_edit.png</file>
+        <file>images/icons/hi16-action-projectm_lock.png</file>
+        <file>images/icons/hi16-action-projectm_playlist_clear.png</file>
+        <file>images/icons/hi16-action-projectm_random.png</file>
+        <file>images/icons/hi16-action-projectm_random_no.png</file>
+        <file>images/icons/hi16-action-projectm_remove.png</file>
+        <file>images/icons/hi16-action-projectm_save.png</file>
+        <file>images/icons/hi16-action-projectm_unlock.png</file>
+        <file>images/icons/prjm16-transparent.svg</file>
+        <file>images/icons/rating-1.png</file>
+        <file>images/icons/rating-2.png</file>
+        <file>images/icons/rating-3.png</file>
+        <file>images/icons/rating-4.png</file>
+        <file>images/icons/rating-5.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,261 @@
+[preset00]
+fRating=3.000000
+fGammaAdj=1.000000
+fDecay=0.990000
+fVideoEchoZoom=0.999609
+fVideoEchoAlpha=0.500000
+nVideoEchoOrientation=3
+nWaveMode=2
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=1
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=4.099998
+fWaveScale=0.717203
+fWaveSmoothing=0.630000
+fWaveParam=0.000000
+fModWaveAlphaStart=0.710000
+fModWaveAlphaEnd=1.300000
+fWarpAnimSpeed=1.000000
+fWarpScale=1.331000
+fZoomExponent=1.000000
+fShader=0.000000
+zoom=0.999514
+rot=0.000000
+cx=0.500000
+cy=0.500000
+dx=0.000000
+dy=0.000000
+warp=0.010000
+sx=1.000000
+sy=1.000000
+wave_r=1.000000
+wave_g=1.000000
+wave_b=1.000000
+wave_x=0.500000
+wave_y=0.500000
+ob_size=0.500000
+ob_r=0.010000
+ob_g=0.000000
+ob_b=0.000000
+ob_a=0.000000
+ib_size=0.260000
+ib_r=0.250000
+ib_g=0.250000
+ib_b=0.250000
+ib_a=0.000000
+nMotionVectorsX=19.199995
+nMotionVectorsY=14.400000
+mv_dx=0.000000
+mv_dy=0.000000
+mv_l=3.000000
+mv_r=0.600000
+mv_g=0.000000
+mv_b=1.000000
+mv_a=0.000000
+wavecode_0_enabled=0
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.000000
+wavecode_0_smoothing=0.500000
+wavecode_0_r=1.000000
+wavecode_0_g=1.000000
+wavecode_0_b=1.000000
+wavecode_0_a=1.000000
+wavecode_1_enabled=0
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=0
+wavecode_1_scaling=1.000000
+wavecode_1_smoothing=0.500000
+wavecode_1_r=1.000000
+wavecode_1_g=1.000000
+wavecode_1_b=1.000000
+wavecode_1_a=1.000000
+wavecode_2_enabled=0
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.000000
+wavecode_2_smoothing=0.500000
+wavecode_2_r=1.000000
+wavecode_2_g=1.000000
+wavecode_2_b=1.000000
+wavecode_2_a=1.000000
+wavecode_3_enabled=0
+wavecode_3_samples=512
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.000000
+wavecode_3_smoothing=0.500000
+wavecode_3_r=1.000000
+wavecode_3_g=1.000000
+wavecode_3_b=1.000000
+wavecode_3_a=1.000000
+shapecode_0_enabled=1
+shapecode_0_sides=100
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=1
+shapecode_0_x=0.500000
+shapecode_0_y=0.500000
+shapecode_0_rad=0.402709
+shapecode_0_ang=6.283185
+shapecode_0_tex_ang=6.283185
+shapecode_0_tex_zoom=2.987791
+shapecode_0_r=1.000000
+shapecode_0_g=0.000000
+shapecode_0_b=0.000000
+shapecode_0_a=1.000000
+shapecode_0_r2=0.000000
+shapecode_0_g2=1.000000
+shapecode_0_b2=0.000000
+shapecode_0_a2=0.000000
+shapecode_0_border_r=1.000000
+shapecode_0_border_g=1.000000
+shapecode_0_border_b=1.000000
+shapecode_0_border_a=0.100000
+shape_0_per_frame1=r1 = q1;
+shape_0_per_frame2=r2 = q2;
+shape_0_per_frame3=r3 = q3;
+shape_0_per_frame4=b1 = q2;
+shape_0_per_frame5=b2 = q1;
+shape_0_per_frame6=b3 = q3;
+shape_0_per_frame7=g1 = q3;
+shape_0_per_frame8=g2 = q2; 
+shape_0_per_frame9=g3 = q1;
+shape_0_per_frame10=
+shape_0_per_frame11=//Yes, I half assed these;
+shape_0_per_frame12=
+shape_0_per_frame13=think = q2;
+shape_0_per_frame14=border_r = if(above(q1,0), .5 - .2 * sin (q1), 1 - 1 * sin(time * .25));
+shape_0_per_frame15=border_b = if(below(q1,1), .5 + .2 * sin (q2), 1 - 1 * sin(time * .25));
+shape_0_per_frame16=
+shape_0_per_frame17=textured = q1;
+shape_0_per_frame18=rad = rad - .5 * (q2);
+shape_0_per_frame19=ang = ang - .3 * (q1);
+shape_0_per_frame20=sides = sides - 97 * (q1);
+shapecode_1_enabled=0
+shapecode_1_sides=4
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_x=0.500000
+shapecode_1_y=0.500000
+shapecode_1_rad=0.100000
+shapecode_1_ang=0.000000
+shapecode_1_tex_ang=0.000000
+shapecode_1_tex_zoom=1.000000
+shapecode_1_r=1.000000
+shapecode_1_g=0.000000
+shapecode_1_b=0.000000
+shapecode_1_a=1.000000
+shapecode_1_r2=0.000000
+shapecode_1_g2=1.000000
+shapecode_1_b2=0.000000
+shapecode_1_a2=0.000000
+shapecode_1_border_r=1.000000
+shapecode_1_border_g=1.000000
+shapecode_1_border_b=1.000000
+shapecode_1_border_a=0.100000
+shapecode_2_enabled=0
+shapecode_2_sides=4
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_x=0.500000
+shapecode_2_y=0.500000
+shapecode_2_rad=0.100000
+shapecode_2_ang=0.000000
+shapecode_2_tex_ang=0.000000
+shapecode_2_tex_zoom=1.000000
+shapecode_2_r=1.000000
+shapecode_2_g=0.000000
+shapecode_2_b=0.000000
+shapecode_2_a=1.000000
+shapecode_2_r2=0.000000
+shapecode_2_g2=1.000000
+shapecode_2_b2=0.000000
+shapecode_2_a2=0.000000
+shapecode_2_border_r=1.000000
+shapecode_2_border_g=1.000000
+shapecode_2_border_b=1.000000
+shapecode_2_border_a=0.100000
+shapecode_3_enabled=0
+shapecode_3_sides=4
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_x=0.500000
+shapecode_3_y=0.500000
+shapecode_3_rad=0.100000
+shapecode_3_ang=0.000000
+shapecode_3_tex_ang=0.000000
+shapecode_3_tex_zoom=1.000000
+shapecode_3_r=1.000000
+shapecode_3_g=0.000000
+shapecode_3_b=0.000000
+shapecode_3_a=1.000000
+shapecode_3_r2=0.000000
+shapecode_3_g2=1.000000
+shapecode_3_b2=0.000000
+shapecode_3_a2=0.000000
+shapecode_3_border_r=1.000000
+shapecode_3_border_g=1.000000
+shapecode_3_border_b=1.000000
+shapecode_3_border_a=0.100000
+per_frame_1=monitor=thump_count;
+per_frame_2=
+per_frame_3=vol = bass + treb + mid;
+per_frame_4=thump = if(above(vol,3.7),1, 0);
+per_frame_5=thump_count = if(equal(q1,1),0, (1 - 1 * sin(time + .25))); //My attempt at telling if "thump" just happened.
+per_frame_6=no_thump = if(below(bass,2),1, 0); //When there is no "thump"
+per_frame_7=re_thump = if(above(q2, 1), 1, 0); //If there was just a thump, this is 1
+per_frame_8=
+per_frame_9=wave_r = .2 + .6 * sin (thump);
+per_frame_10=wave_b = .7 - .2 * sin (no_thump);
+per_frame_11=wave_g = .5 + .3 * sin (re_thump);
+per_frame_12=
+per_frame_13=q1 = thump;
+per_frame_14=q2 = thump_count;
+per_frame_15=q3 = no_thump;
+per_frame_16=q4 = re_thump;
+per_frame_17=q5 = if(equal(q3,0), .05 * time, 1 * time);
+per_frame_18=q6 = vol;
+per_frame_19=
+per_frame_20=
+per_frame_21=wave_usedots = thump;
+per_frame_22=wave_thick = thump;
+per_frame_23=wave_additive = thump;
+per_frame_24=wave_brighten = thump;
+per_frame_25=wrap = nothump;
+per_frame_26=
+per_frame_27=
+per_frame_28=//Named after the tool song I was listening to. Check out Aenema to hear it.
+per_pixel_1=zoom_1 = 1 + .05 * sin (rad * 3.14 * q2);
+per_pixel_2=zoom_2 = 1 + .05 * sin (ang * 3.14 * q2);
+per_pixel_3=zoom = if(equal(q1,1), zoom_1, zoom_2);
+per_pixel_4=rot = if(above(q2,1), rot - .04 * sin (rad * .24), rot - .04 * sin (rad * -.24));
+per_pixel_5=dx = if(equal(q1,0),dx + 1 * (q1 * .05), dx + .02 * sin(rad * q2));
+per_pixel_6=dy = if(equal(q1,1),dx + 1 * (q3 * .05), dy - .02 * sin(rad * q2));

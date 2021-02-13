@@ -1,0 +1,85 @@
+[preset00]
+fRating=2
+fGammaAdj=2
+fDecay=1
+fVideoEchoZoom=1
+fVideoEchoAlpha=0.5
+nVideoEchoOrientation=3
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=1
+bTexWrap=0
+bDarkenCenter=1
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=1
+fWaveScale=0.999996
+fWaveSmoothing=0.75
+fWaveParam=-0.4999
+fModWaveAlphaStart=0.75
+fModWaveAlphaEnd=0.95
+fWarpAnimSpeed=1
+fWarpScale=1
+fZoomExponent=1
+fShader=0
+zoom=0.9999
+rot=0.02
+cx=0.5
+cy=0.5
+dx=0
+dy=0
+warp=1
+sx=1
+sy=1
+wave_r=0.5
+wave_g=0.5
+wave_b=0.5
+wave_x=0.5
+wave_y=0.5
+ob_size=0.01
+ob_r=0
+ob_g=0
+ob_b=0
+ob_a=0.1
+ib_size=0.01
+ib_r=0
+ib_g=0
+ib_b=0
+ib_a=0
+nMotionVectorsX=12
+nMotionVectorsY=9
+mv_dx=0
+mv_dy=0
+mv_l=0.9
+mv_r=1
+mv_g=1
+mv_b=1
+mv_a=0
+per_frame_1=warp=0;
+per_frame_2=wave_r = wave_r + 0.45*(0.5*sin(time*0.701)+ 0.3*cos(time*0.438));
+per_frame_3=wave_b = wave_b - 0.4*(0.5*sin(time*4.782)+0.5*cos(time*0.522));
+per_frame_4=wave_g = wave_g + 0.4*sin(time*1.731);
+per_frame_5=decay = decay - equal(frame%100,0)*0.1;
+per_frame_6=vol = 0.167*(bass+mid);
+per_frame_7=xamptarg = if(equal(frame%15,0),min(0.5*vol*bass_att,0.5),xamptarg);
+per_frame_8=xamp = xamp + 0.5*(xamptarg-xamp);
+per_frame_9=xdir = if(above(abs(xpos),xamp),-sign(xpos),if(below(abs(xspeed),0.1),2*above(xpos,0)-1,xdir));
+per_frame_10=xspeed = xspeed + xdir*xamp - xpos - xspeed*0.055*below(abs(xpos),xamp);
+per_frame_11=xpos = xpos + 0.001*xspeed;
+per_frame_12=wave_x = 1.5*xpos + 0.5;
+per_frame_13=yamptarg = if(equal(frame%15,0),min(0.3*vol*treb_att,0.5),yamptarg);
+per_frame_14=yamp = yamp + 0.5*(yamptarg-yamp);
+per_frame_15=ydir = if(above(abs(ypos),yamp),-sign(ypos),if(below(abs(yspeed),0.1),2*above(ypos,0)-1,ydir));
+per_frame_16=yspeed = yspeed + ydir*yamp - ypos - yspeed*0.055*below(abs(ypos),yamp);
+per_frame_17=ypos = ypos + 0.001*yspeed;
+per_frame_18=wave_y = 1.5*ypos + 0.5;
+per_frame_19=q1 = xpos;
+per_frame_20=q2 = -ypos;
+per_pixel_1=cx = (0&(x+q1))-q1;
+per_pixel_2=cy = (0&(y+q2))-q2;
