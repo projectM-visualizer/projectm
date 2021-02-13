@@ -11,7 +11,7 @@ Main build options & their requirements:
 
 | Configure flag        | Required dependency                                                                    | Produced binary       |
 |-----------------------|----------------------------------------------------------------------------------------|-----------------------|
-| `--enable-sdl`        | (submodule in src/projectm-sdl/sdl2)                                                   | `projectMSDL`         |
+| `--enable-sdl`        | `libsdl2-dev`                                                                          | `projectMSDL`         |
 | `--enable-pulseaudio` | `qt5-default` `qtdeclarative5-dev` `libpulse-dev` `libqt5opengl5-dev`                  | `projectM-pulseaudio` |
 | `--enable-jack`       | `libjack2-dev`OR`libjack1-dev`; `qt5-default` `qtdeclarative5-dev` `libqt5opengl5-dev` | `projectM-jack`       |
 
@@ -20,7 +20,6 @@ Main build options & their requirements:
 * A modified version of `hlslparser` is included in Renderer and used to transpile HLSL shaders to GLSL
 * OpenGL 3+ or OpenGLES is required
 * `libsdl >= 2.0.5` is required for the SDL and emscripten apps. `src/projectM-sdl` is the current reference application implementation. maybe try getting that to build and run as your testbench.
-* SDL2 is now provided as a submodule
 
 If extra information needed - you can refere to `configure.ac` and the assorted `Makefile.am` files.
 
@@ -35,7 +34,7 @@ sudo make install
 
 ### Debian/Ubuntu/Mint
 ```sh
-sudo apt install clang libgl1-mesa-dev qt5-default qtdeclarative5-dev libqt5opengl5-dev libjack-dev libpulse-dev
+sudo apt install clang libsdl2-dev libgl1-mesa-dev qt5-default qtdeclarative5-dev libqt5opengl5-dev libjack-dev libpulse-dev
 ./configure && make -j4 && sudo make install
 ```
 

@@ -13,18 +13,6 @@
 		1612C9E3207A85C100862A3A /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C9E1207A85BD00862A3A /* libNativePresetFactory.a */; };
 		16355BFE2143C0F400B3748F /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
 		16355BFF2143C0F600B3748F /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
-		1684056125D83FFC0001F02C /* CoreHaptics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684055E25D83FFC0001F02C /* CoreHaptics.framework */; };
-		1684056225D83FFC0001F02C /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684055F25D83FFC0001F02C /* CoreAudio.framework */; };
-		1684056325D83FFC0001F02C /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684056025D83FFC0001F02C /* CoreGraphics.framework */; };
-		1684056425D840030001F02C /* libSDL2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 168404C625D829370001F02C /* libSDL2.a */; };
-		1684056A25D8402D0001F02C /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684056925D8402D0001F02C /* Carbon.framework */; };
-		1684056B25D840320001F02C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1648A5DA25D7FA720075B8FC /* Cocoa.framework */; };
-		1684056F25D8403C0001F02C /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684056E25D8403C0001F02C /* CoreVideo.framework */; };
-		1684057125D840420001F02C /* ForceFeedback.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684057025D840420001F02C /* ForceFeedback.framework */; };
-		1684057525D8405D0001F02C /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684057425D8405D0001F02C /* Metal.framework */; };
-		1684057725D840660001F02C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684057625D840660001F02C /* QuartzCore.framework */; };
-		1684057C25D840900001F02C /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684057B25D840900001F02C /* AudioToolbox.framework */; };
-		1684059625D84FD10001F02C /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684059525D84FD10001F02C /* IOKit.framework */; };
 		168F7156211248E4001806E7 /* SDLprojectM in Executable */ = {isa = PBXBuildFile; fileRef = C34521441BF02294001707D2 /* SDLprojectM */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		168F715921124C0E001806E7 /* config.inp in Support files */ = {isa = PBXBuildFile; fileRef = 16B52AAA21105A6900830F34 /* config.inp */; };
 		168F715A21124C14001806E7 /* fonts in Support files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
@@ -33,7 +21,6 @@
 		169BC64224CC3FCA007B7829 /* presets in Support files */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		169BC65024CC8401007B7829 /* fonts in Copy Files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
 		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
-		C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215D1BF025CF001707D2 /* CoreFoundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -93,97 +80,6 @@
 			remoteGlobalIDString = 1612C9AC207A856A00862A3A;
 			remoteInfo = NativePresetFactory;
 		};
-		168404BF25D829370001F02C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BECDF66C0761BA81005FE872;
-			remoteInfo = Framework;
-		};
-		168404C125D829370001F02C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A7D88B5423E2437C00DCD162;
-			remoteInfo = "Framework-iOS";
-		};
-		168404C325D829370001F02C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A7D88D1523E24BED00DCD162;
-			remoteInfo = "Framework-tvOS";
-		};
-		168404C525D829370001F02C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BECDF6B30761BA81005FE872;
-			remoteInfo = "Static Library";
-		};
-		168404C725D829370001F02C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A7D88E5423E24D3B00DCD162;
-			remoteInfo = "Static Library-iOS";
-		};
-		168404C925D829370001F02C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A769B23D23E259AE00872273;
-			remoteInfo = "Static Library-tvOS";
-		};
-		168404CB25D829370001F02C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = DB31407717554B71006C0E22;
-			remoteInfo = "Shared Library";
-		};
-		168404CD25D829370001F02C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A75FCEB323E25AB700529352;
-			remoteInfo = "Shared Library-iOS";
-		};
-		168404CF25D829370001F02C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A75FD06C23E25AC700529352;
-			remoteInfo = "Shared Library-tvOS";
-		};
-		168404D125D829370001F02C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = BECDF6BE0761BA81005FE872;
-			remoteInfo = "Standard DMG";
-		};
-		168404D325D829370001F02C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A75FDB8C23E4C74400529352;
-			remoteInfo = hidapi;
-		};
-		168404D525D829370001F02C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A75FDB4923E399AC00529352;
-			remoteInfo = "hidapi-iOS";
-		};
-		168404D725D829370001F02C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = A75FDB6E23E3A2C900529352;
-			remoteInfo = "hidapi-tvOS";
-		};
 		168F714F21120496001806E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = C345213C1BF02293001707D2 /* Project object */;
@@ -235,7 +131,6 @@
 /* Begin PBXFileReference section */
 		1612C98C207A807000862A3A /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
 		1648A5DA25D7FA720075B8FC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		168404AF25D829370001F02C /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = sdl2/Xcode/SDL/SDL.xcodeproj; sourceTree = "<group>"; };
 		1684055E25D83FFC0001F02C /* CoreHaptics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreHaptics.framework; path = System/Library/Frameworks/CoreHaptics.framework; sourceTree = SDKROOT; };
 		1684055F25D83FFC0001F02C /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1684056025D83FFC0001F02C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -273,19 +168,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1612C997207A80A200862A3A /* libprojectM.a in Frameworks */,
-				1684059625D84FD10001F02C /* IOKit.framework in Frameworks */,
-				1684057C25D840900001F02C /* AudioToolbox.framework in Frameworks */,
-				1684057725D840660001F02C /* QuartzCore.framework in Frameworks */,
-				1684057525D8405D0001F02C /* Metal.framework in Frameworks */,
-				1684057125D840420001F02C /* ForceFeedback.framework in Frameworks */,
-				1684056F25D8403C0001F02C /* CoreVideo.framework in Frameworks */,
-				1684056B25D840320001F02C /* Cocoa.framework in Frameworks */,
-				1684056A25D8402D0001F02C /* Carbon.framework in Frameworks */,
-				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
-				1684056425D840030001F02C /* libSDL2.a in Frameworks */,
-				1684056125D83FFC0001F02C /* CoreHaptics.framework in Frameworks */,
-				1684056225D83FFC0001F02C /* CoreAudio.framework in Frameworks */,
-				1684056325D83FFC0001F02C /* CoreGraphics.framework in Frameworks */,
 				1612C9E2207A85C100862A3A /* libMilkdropPresetFactory.a in Frameworks */,
 				1612C9E3207A85C100862A3A /* libNativePresetFactory.a in Frameworks */,
 				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
@@ -328,26 +210,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		168404B025D829370001F02C /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				168404C025D829370001F02C /* SDL2.framework */,
-				168404C225D829370001F02C /* SDL2.framework */,
-				168404C425D829370001F02C /* SDL2.framework */,
-				168404C625D829370001F02C /* libSDL2.a */,
-				168404C825D829370001F02C /* libSDL2.a */,
-				168404CA25D829370001F02C /* libSDL2.a */,
-				168404CC25D829370001F02C /* libSDL2.dylib */,
-				168404CE25D829370001F02C /* libSDL2.dylib */,
-				168404D025D829370001F02C /* libSDL2.dylib */,
-				168404D225D829370001F02C /* SDL2 */,
-				168404D425D829370001F02C /* hidapi.framework */,
-				168404D625D829370001F02C /* hidapi.framework */,
-				168404D825D829370001F02C /* hidapi.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		168F714A21120210001806E7 /* projectM-SDL */ = {
 			isa = PBXGroup;
 			children = (
@@ -371,7 +233,6 @@
 		C345213B1BF02293001707D2 = {
 			isa = PBXGroup;
 			children = (
-				168404AF25D829370001F02C /* SDL.xcodeproj */,
 				C60BD8E1259CF3CA0038831F /* SDLprojectM.entitlements */,
 				169501FF1F7009E9008FAF86 /* pmSDL.hpp */,
 				169501FE1F7009E9008FAF86 /* pmSDL.cpp */,
@@ -474,10 +335,6 @@
 					ProductGroup = 1612C98D207A807000862A3A /* Products */;
 					ProjectRef = 1612C98C207A807000862A3A /* libprojectM.xcodeproj */;
 				},
-				{
-					ProductGroup = 168404B025D829370001F02C /* Products */;
-					ProjectRef = 168404AF25D829370001F02C /* SDL.xcodeproj */;
-				},
 			);
 			projectRoot = "";
 			targets = (
@@ -514,97 +371,6 @@
 			fileType = archive.ar;
 			path = libNativePresetFactory.a;
 			remoteRef = 1612C9E0207A85BD00862A3A /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		168404C025D829370001F02C /* SDL2.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = SDL2.framework;
-			remoteRef = 168404BF25D829370001F02C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		168404C225D829370001F02C /* SDL2.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = SDL2.framework;
-			remoteRef = 168404C125D829370001F02C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		168404C425D829370001F02C /* SDL2.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = SDL2.framework;
-			remoteRef = 168404C325D829370001F02C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		168404C625D829370001F02C /* libSDL2.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libSDL2.a;
-			remoteRef = 168404C525D829370001F02C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		168404C825D829370001F02C /* libSDL2.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libSDL2.a;
-			remoteRef = 168404C725D829370001F02C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		168404CA25D829370001F02C /* libSDL2.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libSDL2.a;
-			remoteRef = 168404C925D829370001F02C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		168404CC25D829370001F02C /* libSDL2.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = libSDL2.dylib;
-			remoteRef = 168404CB25D829370001F02C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		168404CE25D829370001F02C /* libSDL2.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = libSDL2.dylib;
-			remoteRef = 168404CD25D829370001F02C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		168404D025D829370001F02C /* libSDL2.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = libSDL2.dylib;
-			remoteRef = 168404CF25D829370001F02C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		168404D225D829370001F02C /* SDL2 */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.executable";
-			path = SDL2;
-			remoteRef = 168404D125D829370001F02C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		168404D425D829370001F02C /* hidapi.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = hidapi.framework;
-			remoteRef = 168404D325D829370001F02C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		168404D625D829370001F02C /* hidapi.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = hidapi.framework;
-			remoteRef = 168404D525D829370001F02C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		168404D825D829370001F02C /* hidapi.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = hidapi.framework;
-			remoteRef = 168404D725D829370001F02C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -772,7 +538,7 @@
 					"$(SRCROOT)/../../mac",
 					"$(SRCROOT)/../libprojectM/Renderer/hlslparser/src",
 				);
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -819,7 +585,7 @@
 					"$(SRCROOT)/../../mac",
 					"$(SRCROOT)/../libprojectM/Renderer/hlslparser/src",
 				);
-				LIBRARY_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
