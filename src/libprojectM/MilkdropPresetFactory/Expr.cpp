@@ -262,7 +262,7 @@ class IfExpr : public PrefunExpr
 public:
     IfExpr(Func *fun, Expr **expr_list_) : PrefunExpr(fun,expr_list_) {}
 
-    float eval ( int mesh_i, int mesh_j )
+    float eval ( int mesh_i, int mesh_j ) override
 	{
 		// see if_wrapper()
 		float val = expr_list[0]->eval ( mesh_i, mesh_j );
