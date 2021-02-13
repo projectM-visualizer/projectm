@@ -109,7 +109,6 @@
 		166854752105E4FD0042793A /* TextureManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 166854242105E4BD0042793A /* TextureManager.cpp */; };
 		166854762105E4FD0042793A /* VideoEcho.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1668541D2105E4BC0042793A /* VideoEcho.cpp */; };
 		166854772105E4FD0042793A /* Waveform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 166854262105E4BD0042793A /* Waveform.cpp */; };
-		168404F925D82EF30001F02C /* StaticGlShaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 168404F425D82ED70001F02C /* StaticGlShaders.cpp */; };
 		1687173820C33DF400947E7E /* TextureManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1687172320C33DF300947E7E /* TextureManager.hpp */; };
 		1687173920C33DF400947E7E /* Renderable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1687172420C33DF300947E7E /* Renderable.hpp */; };
 		1687173B20C33DF400947E7E /* PipelineContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1687172620C33DF300947E7E /* PipelineContext.hpp */; };
@@ -777,7 +776,6 @@
 				169BC64724CC4D16007B7829 /* FileScanner.cpp in Sources */,
 				1668544D2105E4FC0042793A /* Pipeline.hpp in Sources */,
 				1668544E2105E4FC0042793A /* PipelineContext.hpp in Sources */,
-				168404F925D82EF30001F02C /* StaticGlShaders.cpp in Sources */,
 				1668544F2105E4FC0042793A /* Renderable.hpp in Sources */,
 				166854502105E4FC0042793A /* RenderContext.hpp in Sources */,
 				166854512105E4FC0042793A /* Renderer.hpp in Sources */,
