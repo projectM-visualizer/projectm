@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "1648A5F125D7FBA80075B8FC"
-               BuildableName = "Installer.pkg"
-               BlueprintName = "Installer"
-               ReferencedContainer = "container:Installer.xcodeproj">
+               BlueprintIdentifier = "1612C9AB207A856A00862A3A"
+               BuildableName = "libNativePresetFactory.a"
+               BlueprintName = "NativePresetFactory"
+               ReferencedContainer = "container:libprojectM.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -50,10 +50,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "1648A5F125D7FBA80075B8FC"
-            BuildableName = "Installer.pkg"
-            BlueprintName = "Installer"
-            ReferencedContainer = "container:Installer.xcodeproj">
+            BlueprintIdentifier = "1612C9AB207A856A00862A3A"
+            BuildableName = "libNativePresetFactory.a"
+            BlueprintName = "NativePresetFactory"
+            ReferencedContainer = "container:libprojectM.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

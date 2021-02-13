@@ -177,13 +177,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		168F714621120210001806E7 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C34521411BF02293001707D2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -279,8 +272,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 168F714C21120211001806E7 /* Build configuration list for PBXNativeTarget "ProjectM" */;
 			buildPhases = (
-				168F714521120210001806E7 /* Sources */,
-				168F714621120210001806E7 /* Frameworks */,
 				168F714721120210001806E7 /* Resources */,
 				168F7155211248DE001806E7 /* Executable */,
 				168F715821124BFC001806E7 /* Support files */,
@@ -419,18 +410,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\nPKG_OUT_NAME=ProjectM-SDL.pkg\n\nmkdir -p \"$DSTROOT/Applications\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/ProjectM.app\" \"$DSTROOT/Applications\"\n\n#pkgbuild --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\"\npkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\" \"$SRCROOT/\"\n";
+			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\nPKG_OUT_NAME=ProjectM-SDL.pkg\n\nmkdir -p \"$DSTROOT/Applications\" \"$DERIVED_FILE_DIR\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/ProjectM.app\" \"$DSTROOT/Applications\"\n\necho \"DSTROOT: $DSTROOT/Applications\"\nls \"$DSTROOT/Applications\"\n\n#pkgbuild --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$DERIVED_FILE_DIR/$PKG_OUT_NAME\"\npkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$DERIVED_FILE_DIR/$PKG_OUT_NAME\"\n\necho \"Created installer package $DERIVED_FILE_DIR/$PKG_OUT_NAME\"\n\ncp -rp \"$DERIVED_FILE_DIR/$PKG_OUT_NAME\" \"$SRCROOT/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		168F714521120210001806E7 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C34521401BF02293001707D2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
