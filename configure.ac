@@ -83,9 +83,29 @@ AC_CONFIG_FILES([
   src/projectM-test/Makefile
 ])
 
+AC_ARG_ENABLE([test],
+AS_HELP_STRING([--enable-test], [Unit tests]), [], [enable_test=no])
+AS_IF([test "x$enable_test" = "xyes"], [
+            PKG_CHECK_MODULES([SDL], [sdl2], [
+            m4_include([m4/sdl2.m4])
+            SDL_VERSION="2.0.5"
+            AS_IF([test "$TRAVIS"], [SDL_VERSION=2.0.2])  # travis has old SDL, we don't care
+            AS_IF([test "$EMSCRIPTEN"], [SDL_VERSION=2.0.0])  # emscripten has old SDL, we don't care
+
+            # Check for libSDL >= $SDL_VERSION
+            AM_PATH_SDL2($SDL_VERSION,
+            [enable_test=yes],
+            [AS_IF([test "$enable_test" = "yes"], AC_MSG_ERROR([*** SDL version >= $SDL_VERSION not found!])); enable_sdl=no])
+       ],
+       [
+            # not found
+            AS_IF([test "$enable_test" = "yes"], AC_MSG_ERROR([*** libsdl2 not found!]))
+            enable_test=no
+        ])
+])
 
 # SDL
-AC_ARG_ENABLE([sdl], AS_HELP_STRING([--enable-sdl], [Build SDL2 application]), [], [enable_sdl=check])
+AC_ARG_ENABLE([sdl], AS_HELP_STRING([--enable-sdl], [Build SDL2 application]), [], [enable_sdl=yes])
 AS_IF([test "$enable_sdl" != "no"], [
     PKG_CHECK_MODULES([SDL], [sdl2], [
         m4_include([m4/sdl2.m4])
@@ -100,8 +120,8 @@ AS_IF([test "$enable_sdl" != "no"], [
     ],
     [
         # not found
-        AS_IF([test "$enable_sdl" = "yes"], AC_MSG_ERROR([*** libsdl2 not found!]))
-        enable_sdl=no
+        # enable_sdl=no
+        enable_sdl=yes  # have it anyway in submodule
     ])
 ])
 
@@ -219,6 +239,7 @@ AS_IF([test "$enable_jack" != "no"],
         [enable_jack=no])])])
 
 
+AM_CONDITIONAL([ENABLE_TEST], [test "x$enable_test" = "xyes"])
 AM_CONDITIONAL([ENABLE_SDL], [test "x$enable_sdl" = "xyes"])
 AM_CONDITIONAL([ENABLE_QT], [test "x$enable_qt" = "xyes"])
 AM_CONDITIONAL([ENABLE_JACK], [test "x$enable_jack" = "xyes"])

@@ -15,6 +15,7 @@ addons:
     packages:
       - libc++-dev
       - libgl1-mesa-dev
+      - libsdl2-dev
 
 script:
   - ./configure $PM_OPTS --prefix=$PWD/local && make -j6 && make install  # build from checkout
@@ -47,8 +48,9 @@ matrix:
             - libjack-dev
             - libpulse-dev
             - libc++-dev
+            - libsdl2-dev
       env:
-        - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
+        - MATRIX_EVAL="PM_OPTS=\"--enable-test --enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
     - os: linux
       dist: xenial
       addons:
@@ -60,14 +62,15 @@ matrix:
             - libjack-dev
             - libpulse-dev
             - libc++-dev
+            - libsdl2-dev
       env:
-        - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
+        - MATRIX_EVAL="PM_OPTS=\"--enable-test --enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
 
     # osx/xcode/clang
     - os: osx
       osx_image: xcode12.2
       env:
-        - MATRIX_EVAL=""
+        - MATRIX_EVAL="--enable-test"
 
 notifications:
   email:

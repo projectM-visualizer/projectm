@@ -1,5 +1,5 @@
 if ENABLE_SDL
-  PROJECTM_SDL_SUBDIR = projectM-test projectM-sdl
+  PROJECTM_SDL_SUBDIR = projectM-sdl
 endif
 
 if ENABLE_QT
@@ -16,6 +16,10 @@ endif
 
 if ENABLE_EMSCRIPTEN
   PROJECTM_EMSCRIPTEN_SUBDIR = projectM-emscripten
+endif
+
+if ENABLE_TEST
+	PROJECTM_TEST_SUBDIR = projectM-test
 endif
 
 # system headers/libraries/data to install
