@@ -83,7 +83,6 @@
 		168F716121125D85001806E7 /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
 		C34E810E1956CD2F001AC5B5 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		C34E81101956CD3A001AC5B5 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
-		C34E81191956D0C3001AC5B5 /* contrib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = contrib; path = macos/contrib; sourceTree = "<group>"; };
 		C34E811B1956D0D4001AC5B5 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = macos/contrib/libz.a; sourceTree = "<group>"; };
 		C34E811D1956D0D6001AC5B5 /* libpng15.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng15.a; path = macos/contrib/libpng15.a; sourceTree = "<group>"; };
 		C34E811F1956D0D8001AC5B5 /* libftgl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libftgl.a; path = macos/contrib/libftgl.a; sourceTree = "<group>"; };
@@ -152,7 +151,6 @@
 			children = (
 				168E976D25D800E00073B1B8 /* ProjectM-MusicPlugin.pkg */,
 				168F716121125D85001806E7 /* libprojectM.xcodeproj */,
-				C34E81191956D0C3001AC5B5 /* contrib */,
 				C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */,
 				C3FAE59117B87D8700F4B110 /* getConfigFilename.h */,
 				C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */,

@@ -109,6 +109,7 @@
 		166854752105E4FD0042793A /* TextureManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 166854242105E4BD0042793A /* TextureManager.cpp */; };
 		166854762105E4FD0042793A /* VideoEcho.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1668541D2105E4BC0042793A /* VideoEcho.cpp */; };
 		166854772105E4FD0042793A /* Waveform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 166854262105E4BD0042793A /* Waveform.cpp */; };
+		168404F925D82EF30001F02C /* StaticGlShaders.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 168404F425D82ED70001F02C /* StaticGlShaders.cpp */; };
 		1687173820C33DF400947E7E /* TextureManager.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1687172320C33DF300947E7E /* TextureManager.hpp */; };
 		1687173920C33DF400947E7E /* Renderable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1687172420C33DF300947E7E /* Renderable.hpp */; };
 		1687173B20C33DF400947E7E /* PipelineContext.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 1687172620C33DF300947E7E /* PipelineContext.hpp */; };
@@ -244,6 +245,8 @@
 		1668542B2105E4BD0042793A /* Renderable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Renderable.cpp; path = Renderer/Renderable.cpp; sourceTree = "<group>"; };
 		1668542C2105E4BD0042793A /* PipelineContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PipelineContext.cpp; path = Renderer/PipelineContext.cpp; sourceTree = "<group>"; };
 		1668542D2105E4BD0042793A /* MilkdropWaveform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MilkdropWaveform.cpp; path = Renderer/MilkdropWaveform.cpp; sourceTree = "<group>"; };
+		168404F425D82ED70001F02C /* StaticGlShaders.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = StaticGlShaders.cpp; path = Renderer/StaticGlShaders.cpp; sourceTree = "<group>"; };
+		168404FE25D82FB80001F02C /* Intrinsics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Intrinsics.h; sourceTree = "<group>"; };
 		1687172320C33DF300947E7E /* TextureManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TextureManager.hpp; path = Renderer/TextureManager.hpp; sourceTree = "<group>"; };
 		1687172420C33DF300947E7E /* Renderable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Renderable.hpp; path = Renderer/Renderable.hpp; sourceTree = "<group>"; };
 		1687172620C33DF300947E7E /* PipelineContext.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = PipelineContext.hpp; path = Renderer/PipelineContext.hpp; sourceTree = "<group>"; };
@@ -347,6 +350,7 @@
 				1612CA20207B9ED400862A3A /* PerPixelEqn.hpp */,
 				1612CA15207B9ED400862A3A /* PerPointEqn.hpp */,
 				1612CA24207B9ED500862A3A /* PresetFrameIO.hpp */,
+				168404FE25D82FB80001F02C /* Intrinsics.h */,
 			);
 			name = MilkdropPresetFactory;
 			sourceTree = "<group>";
@@ -443,6 +447,7 @@
 			isa = PBXGroup;
 			children = (
 				168A57C62516226900E802A0 /* StaticGlShaders.cpp */,
+				168404F425D82ED70001F02C /* StaticGlShaders.cpp */,
 				166854412105E4C20042793A /* etc */,
 				1687172220C33DDF00947E7E /* headers */,
 				168C689F20BB265D000AFC1B /* hlslparser */,
@@ -772,6 +777,7 @@
 				169BC64724CC4D16007B7829 /* FileScanner.cpp in Sources */,
 				1668544D2105E4FC0042793A /* Pipeline.hpp in Sources */,
 				1668544E2105E4FC0042793A /* PipelineContext.hpp in Sources */,
+				168404F925D82EF30001F02C /* StaticGlShaders.cpp in Sources */,
 				1668544F2105E4FC0042793A /* Renderable.hpp in Sources */,
 				166854502105E4FC0042793A /* RenderContext.hpp in Sources */,
 				166854512105E4FC0042793A /* Renderer.hpp in Sources */,
@@ -796,7 +802,6 @@
 				166854692105E4FD0042793A /* PerlinNoise.cpp in Sources */,
 				1668546A2105E4FD0042793A /* PerPixelMesh.cpp in Sources */,
 				1668546B2105E4FD0042793A /* Pipeline.cpp in Sources */,
-				168A57C72516226900E802A0 /* StaticGlShaders.cpp in Sources */,
 				1668546C2105E4FD0042793A /* PipelineContext.cpp in Sources */,
 				1668546D2105E4FD0042793A /* Renderable.cpp in Sources */,
 				1668546F2105E4FD0042793A /* Renderer.cpp in Sources */,
@@ -809,6 +814,7 @@
 				166854762105E4FD0042793A /* VideoEcho.cpp in Sources */,
 				166854772105E4FD0042793A /* Waveform.cpp in Sources */,
 				166854422105E4EC0042793A /* etc1_utils.c in Sources */,
+				168A57C72516226900E802A0 /* StaticGlShaders.cpp in Sources */,
 				166854432105E4EF0042793A /* image_DXT.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -944,7 +950,6 @@
 				LIBRARY_SEARCH_PATHS = /Library/Frameworks;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = (
 					"-fno-stack-check",
 					"-DHAVE_FTS_H",
@@ -1005,6 +1010,7 @@
 				LIBRARY_SEARCH_PATHS = /Library/Frameworks;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = (
 					"-fno-stack-check",
 					"-DHAVE_FTS_H",
