@@ -1,3 +1,0 @@
-[submodule "common"]
-        path = common
-        url = https://gitlab.freedesktop.org/gstreamer/common
