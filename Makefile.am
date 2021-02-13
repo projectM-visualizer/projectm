@@ -45,13 +45,10 @@ dist-mac: dist
 	make clean
 	./configure --disable-sdlframework
 	rm -rf dist
-	xcrun xcodebuild -scheme "projectM SDL" -configuration Release archive -archivePath build/ProjectM.xcarchive
-	xcrun xcodebuild -scheme "iProjectM" -configuration Release archive -archivePath build/iTunes.xcarchive
+	xcrun xcodebuild -scheme "Installer" -configuration Release archive -archivePath build/ProjectM.xcarchive
 	mkdir -p dist
-# mv build/ProjectM.xcarchive/Products/Applications/projectM\ SDL.app dist/
-	mv src/projectM-iTunes/iTunes\ Visualizer.pkg dist/Music.app-plugin-macOS.pkg
-	mv src/projectM-sdl/projectM\ SDL.pkg dist/projectM-macOS.pkg
+	mv ProjectM.pkg dist/projectM-macOS.pkg
 	mv projectM-*.tar.gz dist/
-	@echo "Success!\nBuilt iTunes plugin installer and SDL apps in dist/"
+	@echo "Success!\nBuilt plugin installer and SDL app installer in dist/"
 
 CLEANFILES+=src/libprojectM/config.inp

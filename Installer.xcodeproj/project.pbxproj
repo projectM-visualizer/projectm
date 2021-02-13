@@ -6,10 +6,22 @@
 	objectVersion = 54;
 	objects = {
 
-/* Begin PBXBuildFile section */
-		168E978625D803490073B1B8 /* projectM SDL.pkg in Resources */ = {isa = PBXBuildFile; fileRef = 168E977925D801DA0073B1B8 /* projectM SDL.pkg */; };
-		168E978825D8034B0073B1B8 /* ProjectM-MusicPlugin.pkg in Resources */ = {isa = PBXBuildFile; fileRef = 168E976E25D800F90073B1B8 /* ProjectM-MusicPlugin.pkg */; };
-/* End PBXBuildFile section */
+/* Begin PBXAggregateTarget section */
+		16C866C825D81A3200907F43 /* Installer Aggregate */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 16C866C925D81A3200907F43 /* Build configuration list for PBXAggregateTarget "Installer Aggregate" */;
+			buildPhases = (
+				165E796125D81A7C004711AA /* CopyFiles */,
+				165E796A25D81A9A004711AA /* Generate Combined Installer Package */,
+			);
+			dependencies = (
+				165E796025D81A78004711AA /* PBXTargetDependency */,
+				165E795D25D81A6E004711AA /* PBXTargetDependency */,
+			);
+			name = "Installer Aggregate";
+			productName = "Installer Aggregate";
+		};
+/* End PBXAggregateTarget section */
 
 /* Begin PBXContainerItemProxy section */
 		1648A64525D7FD520075B8FC /* PBXContainerItemProxy */ = {
@@ -26,6 +38,20 @@
 			remoteGlobalIDString = 168F714921120210001806E7;
 			remoteInfo = Installer;
 		};
+		165E795C25D81A6E004711AA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 168E975025D7FDDA0073B1B8 /* Music Plugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C3F9D7AE17B82CC3009E58CB;
+			remoteInfo = "Music Plugin Installer";
+		};
+		165E795F25D81A78004711AA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1648A64025D7FD520075B8FC /* SDLprojectM.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 168F714821120210001806E7;
+			remoteInfo = ProjectM;
+		};
 		168E975525D7FDDA0073B1B8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 168E975025D7FDDA0073B1B8 /* Music Plugin.xcodeproj */;
@@ -33,45 +59,32 @@
 			remoteGlobalIDString = C3F9D7AF17B82CC3009E58CB;
 			remoteInfo = "Music Plugin";
 		};
-		168E975C25D7FE930073B1B8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1648A64025D7FD520075B8FC /* SDLprojectM.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 168F714821120210001806E7;
-			remoteInfo = "SDL Installer";
-		};
-		168E975E25D7FE960073B1B8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 168E975025D7FDDA0073B1B8 /* Music Plugin.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = C3F9D7AE17B82CC3009E58CB;
-			remoteInfo = "Music Plugin";
-		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXFileReference section */
-		1648A5F225D7FBA80075B8FC /* Installer.pkg */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Installer.pkg; sourceTree = BUILT_PRODUCTS_DIR; };
-		1648A64025D7FD520075B8FC /* SDLprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDLprojectM.xcodeproj; path = "src/projectM-sdl/SDLprojectM.xcodeproj"; sourceTree = "<group>"; };
-		168E975025D7FDDA0073B1B8 /* Music Plugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Music Plugin.xcodeproj"; path = "src/projectM-MusicPlugin/Music Plugin.xcodeproj"; sourceTree = "<group>"; };
-		168E976E25D800F90073B1B8 /* ProjectM-MusicPlugin.pkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ProjectM-MusicPlugin.pkg"; path = "src/projectM-MusicPlugin/ProjectM-MusicPlugin.pkg"; sourceTree = "<group>"; };
-		168E977925D801DA0073B1B8 /* projectM SDL.pkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = "projectM SDL.pkg"; path = "src/projectM-sdl/projectM SDL.pkg"; sourceTree = "<group>"; };
-/* End PBXFileReference section */
-
-/* Begin PBXFrameworksBuildPhase section */
-		1648A5EF25D7FBA80075B8FC /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
+/* Begin PBXCopyFilesBuildPhase section */
+		165E796125D81A7C004711AA /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-/* End PBXFrameworksBuildPhase section */
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		1648A64025D7FD520075B8FC /* SDLprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDLprojectM.xcodeproj; path = "src/projectM-sdl/SDLprojectM.xcodeproj"; sourceTree = "<group>"; };
+		168E975025D7FDDA0073B1B8 /* Music Plugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Music Plugin.xcodeproj"; path = "src/projectM-MusicPlugin/Music Plugin.xcodeproj"; sourceTree = "<group>"; };
+		168E976E25D800F90073B1B8 /* ProjectM-MusicPlugin.pkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ProjectM-MusicPlugin.pkg"; path = "src/projectM-MusicPlugin/ProjectM-MusicPlugin.pkg"; sourceTree = "<group>"; };
+		16F25E9C25D81737002EC64E /* ProjectM-SDL.pkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ProjectM-SDL.pkg"; path = "src/projectM-sdl/ProjectM-SDL.pkg"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		1648A5E725D7FB650075B8FC = {
 			isa = PBXGroup;
 			children = (
-				168E977925D801DA0073B1B8 /* projectM SDL.pkg */,
+				16F25E9C25D81737002EC64E /* ProjectM-SDL.pkg */,
 				168E976E25D800F90073B1B8 /* ProjectM-MusicPlugin.pkg */,
 				168E975025D7FDDA0073B1B8 /* Music Plugin.xcodeproj */,
 				1648A64025D7FD520075B8FC /* SDLprojectM.xcodeproj */,
@@ -82,7 +95,6 @@
 		1648A5F325D7FBA80075B8FC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1648A5F225D7FBA80075B8FC /* Installer.pkg */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -91,7 +103,7 @@
 			isa = PBXGroup;
 			children = (
 				1648A64625D7FD520075B8FC /* SDLprojectM */,
-				1648A64825D7FD520075B8FC /* Installer.app */,
+				1648A64825D7FD520075B8FC /* ProjectM.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -106,29 +118,6 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXNativeTarget section */
-		1648A5F125D7FBA80075B8FC /* Installer */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1648A5F625D7FBA80075B8FC /* Build configuration list for PBXNativeTarget "Installer" */;
-			buildPhases = (
-				1648A5EE25D7FBA80075B8FC /* Sources */,
-				1648A5EF25D7FBA80075B8FC /* Frameworks */,
-				1648A5F025D7FBA80075B8FC /* Resources */,
-				1648A63525D7FC7D0075B8FC /* ShellScript */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				168E975F25D7FE960073B1B8 /* PBXTargetDependency */,
-				168E975D25D7FE930073B1B8 /* PBXTargetDependency */,
-			);
-			name = Installer;
-			productName = Installer;
-			productReference = 1648A5F225D7FBA80075B8FC /* Installer.pkg */;
-			productType = "com.apple.product-type.bundle";
-		};
-/* End PBXNativeTarget section */
-
 /* Begin PBXProject section */
 		1648A5E825D7FB650075B8FC /* Project object */ = {
 			isa = PBXProject;
@@ -136,7 +125,7 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1240;
 				TargetAttributes = {
-					1648A5F125D7FBA80075B8FC = {
+					16C866C825D81A3200907F43 = {
 						CreatedOnToolsVersion = 12.4;
 					};
 				};
@@ -164,7 +153,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				1648A5F125D7FBA80075B8FC /* Installer */,
+				16C866C825D81A3200907F43 /* Installer Aggregate */,
 			);
 		};
 /* End PBXProject section */
@@ -177,10 +166,10 @@
 			remoteRef = 1648A64525D7FD520075B8FC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1648A64825D7FD520075B8FC /* Installer.app */ = {
+		1648A64825D7FD520075B8FC /* ProjectM.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = Installer.app;
+			path = ProjectM.app;
 			remoteRef = 1648A64725D7FD520075B8FC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -193,20 +182,8 @@
 		};
 /* End PBXReferenceProxy section */
 
-/* Begin PBXResourcesBuildPhase section */
-		1648A5F025D7FBA80075B8FC /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				168E978625D803490073B1B8 /* projectM SDL.pkg in Resources */,
-				168E978825D8034B0073B1B8 /* ProjectM-MusicPlugin.pkg in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
-
 /* Begin PBXShellScriptBuildPhase section */
-		1648A63525D7FC7D0075B8FC /* ShellScript */ = {
+		165E796A25D81A9A004711AA /* Generate Combined Installer Package */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -216,36 +193,27 @@
 			);
 			inputPaths = (
 			);
+			name = "Generate Combined Installer Package";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo $CONFIGURATION_BUILD_DIR IS\nls \"$CONFIGURATION_BUILD_DIR\"\n\nset +x\n\nSDL_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-SDL.pkg\"\nMUSIC_PLUGIN_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\"\n\nproductbuild --timestamp --sign '5926VBQM6Y' --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\" \"$SRCROOT/\"\n";
+			shellScript = "echo $CONFIGURATION_BUILD_DIR IS\nls \"$CONFIGURATION_BUILD_DIR\"\n\nset +x\n\nSDL_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-SDL.pkg\"\nMUSIC_PLUGIN_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\"\n\nproductbuild --timestamp --sign '5926VBQM6Y' --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n#productbuild --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\" \"$SRCROOT/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
-/* Begin PBXSourcesBuildPhase section */
-		1648A5EE25D7FBA80075B8FC /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXSourcesBuildPhase section */
-
 /* Begin PBXTargetDependency section */
-		168E975D25D7FE930073B1B8 /* PBXTargetDependency */ = {
+		165E795D25D81A6E004711AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "SDL Installer";
-			targetProxy = 168E975C25D7FE930073B1B8 /* PBXContainerItemProxy */;
+			name = "Music Plugin Installer";
+			targetProxy = 165E795C25D81A6E004711AA /* PBXContainerItemProxy */;
 		};
-		168E975F25D7FE960073B1B8 /* PBXTargetDependency */ = {
+		165E796025D81A78004711AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			name = "Music Plugin";
-			targetProxy = 168E975E25D7FE960073B1B8 /* PBXContainerItemProxy */;
+			name = ProjectM;
+			targetProxy = 165E795F25D81A78004711AA /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -264,130 +232,21 @@
 			};
 			name = Release;
 		};
-		1648A5F725D7FBA80075B8FC /* Debug */ = {
+		16C866CA25D81A3200907F43 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 5926VBQM6Y;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/src/projectM-sdl/projectM-SDL/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.Installer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-				WRAPPER_EXTENSION = pkg;
 			};
 			name = Debug;
 		};
-		1648A5F825D7FBA80075B8FC /* Release */ = {
+		16C866CB25D81A3200907F43 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_CXX_LIBRARY = "libc++";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 5926VBQM6Y;
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = "$(SRCROOT)/src/projectM-sdl/projectM-SDL/Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.Installer;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx;
-				SKIP_INSTALL = YES;
-				WRAPPER_EXTENSION = pkg;
 			};
 			name = Release;
 		};
@@ -403,11 +262,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1648A5F625D7FBA80075B8FC /* Build configuration list for PBXNativeTarget "Installer" */ = {
+		16C866C925D81A3200907F43 /* Build configuration list for PBXAggregateTarget "Installer Aggregate" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1648A5F725D7FBA80075B8FC /* Debug */,
-				1648A5F825D7FBA80075B8FC /* Release */,
+				16C866CA25D81A3200907F43 /* Debug */,
+				16C866CB25D81A3200907F43 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

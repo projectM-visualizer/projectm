@@ -13,18 +13,17 @@
 		1612C9E3207A85C100862A3A /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1612C9E1207A85BD00862A3A /* libNativePresetFactory.a */; };
 		16355BFE2143C0F400B3748F /* projectM_SDL_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */; };
 		16355BFF2143C0F600B3748F /* pmSDL.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 169501FE1F7009E9008FAF86 /* pmSDL.cpp */; };
+		165E796F25D81B46004711AA /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 169BC64B24CC8353007B7829 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		168F7156211248E4001806E7 /* SDLprojectM in Executable */ = {isa = PBXBuildFile; fileRef = C34521441BF02294001707D2 /* SDLprojectM */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		168F715921124C0E001806E7 /* config.inp in Support files */ = {isa = PBXBuildFile; fileRef = 16B52AAA21105A6900830F34 /* config.inp */; };
 		168F715A21124C14001806E7 /* fonts in Support files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
 		168F718021126256001806E7 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 168F717F21126256001806E7 /* AppIcon.icns */; };
 		169BC64024CC3B56007B7829 /* presets in Copy Files */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		169BC64224CC3FCA007B7829 /* presets in Support files */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
-		169BC64F24CC83CD007B7829 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 169BC64D24CC83CD007B7829 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		169BC65024CC8401007B7829 /* fonts in Copy Files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
 		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
 		C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215D1BF025CF001707D2 /* CoreFoundation.framework */; };
 		C60BD89B259CEEC80038831F /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 169BC64B24CC8353007B7829 /* SDL2.framework */; };
-		C60BD89C259CEF4F0038831F /* SDL2.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 169BC64B24CC8353007B7829 /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -124,7 +123,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				169BC64F24CC83CD007B7829 /* SDL2.framework in Frameworks */,
+				165E796F25D81B46004711AA /* SDL2.framework in Frameworks */,
 			);
 			name = Frameworks;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -135,7 +134,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				C60BD89C259CEF4F0038831F /* SDL2.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,8 +154,7 @@
 /* Begin PBXFileReference section */
 		1612C98C207A807000862A3A /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
 		1648A5DA25D7FA720075B8FC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		168E977825D801D40073B1B8 /* projectM SDL.pkg */ = {isa = PBXFileReference; lastKnownFileType = file; path = "projectM SDL.pkg"; sourceTree = "<group>"; };
-		168F714921120210001806E7 /* SDL Installer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SDL Installer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		168F714921120210001806E7 /* ProjectM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProjectM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		168F714B21120211001806E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		168F717F21126256001806E7 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
@@ -166,6 +163,7 @@
 		169BC64D24CC83CD007B7829 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
 		16B52AA8211054E900830F34 /* projectMSDL-pkg.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "projectMSDL-pkg.plist"; sourceTree = "<group>"; };
 		16B52AAA21105A6900830F34 /* config.inp */ = {isa = PBXFileReference; lastKnownFileType = text; path = config.inp; sourceTree = "<group>"; };
+		16F25E9A25D81709002EC64E /* ProjectM-SDL.pkg */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ProjectM-SDL.pkg"; sourceTree = "<group>"; };
 		C307DFD31D565B57002F6B9E /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
 		C34521441BF02294001707D2 /* SDLprojectM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLprojectM; sourceTree = BUILT_PRODUCTS_DIR; };
 		C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = projectM_SDL_main.cpp; sourceTree = SOURCE_ROOT; };
@@ -234,13 +232,6 @@
 			path = "projectM-SDL";
 			sourceTree = "<group>";
 		};
-		168F717521125ED8001806E7 /* projectM */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = projectM;
-			sourceTree = "<group>";
-		};
 		16A42128207802AF006F30CE /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
@@ -255,7 +246,7 @@
 		C345213B1BF02293001707D2 = {
 			isa = PBXGroup;
 			children = (
-				168E977825D801D40073B1B8 /* projectM SDL.pkg */,
+				16F25E9A25D81709002EC64E /* ProjectM-SDL.pkg */,
 				C60BD8E1259CF3CA0038831F /* SDLprojectM.entitlements */,
 				169501FF1F7009E9008FAF86 /* pmSDL.hpp */,
 				169501FE1F7009E9008FAF86 /* pmSDL.cpp */,
@@ -266,7 +257,6 @@
 				C307DFD31D565B57002F6B9E /* presets */,
 				16A42128207802AF006F30CE /* Dependencies */,
 				168F714A21120210001806E7 /* projectM-SDL */,
-				168F717521125ED8001806E7 /* projectM */,
 				161070CE1F7041B0001905AB /* Frameworks */,
 				C34521451BF02294001707D2 /* Products */,
 				C3D30B8F1BF02BE5009AAACD /* fonts */,
@@ -277,7 +267,7 @@
 			isa = PBXGroup;
 			children = (
 				C34521441BF02294001707D2 /* SDLprojectM */,
-				168F714921120210001806E7 /* SDL Installer.app */,
+				168F714921120210001806E7 /* ProjectM.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -285,9 +275,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		168F714821120210001806E7 /* SDL Installer */ = {
+		168F714821120210001806E7 /* ProjectM */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 168F714C21120211001806E7 /* Build configuration list for PBXNativeTarget "SDL Installer" */;
+			buildConfigurationList = 168F714C21120211001806E7 /* Build configuration list for PBXNativeTarget "ProjectM" */;
 			buildPhases = (
 				168F714521120210001806E7 /* Sources */,
 				168F714621120210001806E7 /* Frameworks */,
@@ -302,9 +292,9 @@
 			dependencies = (
 				168F715021120496001806E7 /* PBXTargetDependency */,
 			);
-			name = "SDL Installer";
+			name = ProjectM;
 			productName = "projectM-SDL";
-			productReference = 168F714921120210001806E7 /* SDL Installer.app */;
+			productReference = 168F714921120210001806E7 /* ProjectM.app */;
 			productType = "com.apple.product-type.bundle";
 		};
 		C34521431BF02293001707D2 /* SDLprojectM */ = {
@@ -341,7 +331,6 @@
 				TargetAttributes = {
 					168F714821120210001806E7 = {
 						CreatedOnToolsVersion = 9.2;
-						ProvisioningStyle = Automatic;
 					};
 					C34521431BF02293001707D2 = {
 						CreatedOnToolsVersion = 7.1;
@@ -368,7 +357,7 @@
 			projectRoot = "";
 			targets = (
 				C34521431BF02293001707D2 /* SDLprojectM */,
-				168F714821120210001806E7 /* SDL Installer */,
+				168F714821120210001806E7 /* ProjectM */,
 			);
 		};
 /* End PBXProject section */
@@ -430,7 +419,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\nPKG_OUT_NAME=ProjectM-SDL.pkg\n\nmkdir -p \"$DSTROOT/Applications\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/projectM SDL.app\" \"$DSTROOT/Applications\"\npkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\" \"$SRCROOT/\"\n";
+			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\nPKG_OUT_NAME=ProjectM-SDL.pkg\n\nmkdir -p \"$DSTROOT/Applications\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/ProjectM.app\" \"$DSTROOT/Applications\"\n\n#pkgbuild --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\"\npkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\" \"$SRCROOT/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -486,9 +475,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5926VBQM6Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -499,8 +489,9 @@
 				MARKETING_VERSION = 3.1.11;
 				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.projectM-SDL";
+				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = app;
@@ -511,9 +502,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5926VBQM6Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
@@ -525,8 +517,9 @@
 				MARKETING_VERSION = 3.1.11;
 				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.projectM-SDL";
+				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = app;
@@ -709,7 +702,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		168F714C21120211001806E7 /* Build configuration list for PBXNativeTarget "SDL Installer" */ = {
+		168F714C21120211001806E7 /* Build configuration list for PBXNativeTarget "ProjectM" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				168F714D21120211001806E7 /* Debug */,

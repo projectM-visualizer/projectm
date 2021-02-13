@@ -219,9 +219,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C3F9D7AE17B82CC3009E58CB /* Music Plugin Installer */ = {
+		C3F9D7AE17B82CC3009E58CB /* Music Plugin */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C3F9D7C117B82CC3009E58CB /* Build configuration list for PBXNativeTarget "Music Plugin Installer" */;
+			buildConfigurationList = C3F9D7C117B82CC3009E58CB /* Build configuration list for PBXNativeTarget "Music Plugin" */;
 			buildPhases = (
 				C3F9D7AB17B82CC3009E58CB /* Sources */,
 				C3F9D7AC17B82CC3009E58CB /* Frameworks */,
@@ -233,7 +233,7 @@
 			dependencies = (
 				16FE0B1C21157D55005F170D /* PBXTargetDependency */,
 			);
-			name = "Music Plugin Installer";
+			name = "Music Plugin";
 			productName = iProjectM;
 			productReference = C3F9D7AF17B82CC3009E58CB /* iProjectM.bundle */;
 			productType = "com.apple.product-type.bundle";
@@ -266,7 +266,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				C3F9D7AE17B82CC3009E58CB /* Music Plugin Installer */,
+				C3F9D7AE17B82CC3009E58CB /* Music Plugin */,
 			);
 		};
 /* End PBXProject section */
@@ -464,7 +464,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5926VBQM6Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/macos/contrib",
@@ -495,6 +498,7 @@
 				MARKETING_VERSION = 2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.music-plugin";
 				PRODUCT_NAME = iProjectM;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Debug;
@@ -503,7 +507,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5926VBQM6Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/macos/contrib",
@@ -534,6 +541,7 @@
 				MARKETING_VERSION = 2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.music-plugin";
 				PRODUCT_NAME = iProjectM;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;
@@ -550,7 +558,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C3F9D7C117B82CC3009E58CB /* Build configuration list for PBXNativeTarget "Music Plugin Installer" */ = {
+		C3F9D7C117B82CC3009E58CB /* Build configuration list for PBXNativeTarget "Music Plugin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C3F9D7C217B82CC3009E58CB /* Debug */,
