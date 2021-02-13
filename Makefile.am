@@ -45,7 +45,7 @@ dist-mac: dist
 	make clean
 	./configure --disable-sdlframework
 	rm -rf dist
-	xcrun xcodebuild -scheme "Installer" -configuration Release archive -archivePath build/ProjectM.xcarchive
+	xcrun xcodebuild -scheme "ProjectM Installer" -configuration Release archive -archivePath build/ProjectM.xcarchive
 	mkdir -p dist
 	mv ProjectM.pkg dist/projectM-macOS.pkg
 	mv projectM-*.tar.gz dist/

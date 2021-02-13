@@ -15,8 +15,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "16C866C825D81A3200907F43"
-               BuildableName = "Installer Aggregate"
-               BlueprintName = "Installer Aggregate"
+               BuildableName = "ProjectM Installer"
+               BlueprintName = "ProjectM Installer"
                ReferencedContainer = "container:Installer.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -51,8 +51,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "16C866C825D81A3200907F43"
-            BuildableName = "Installer Aggregate"
-            BlueprintName = "Installer Aggregate"
+            BuildableName = "ProjectM Installer"
+            BlueprintName = "ProjectM Installer"
             ReferencedContainer = "container:Installer.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

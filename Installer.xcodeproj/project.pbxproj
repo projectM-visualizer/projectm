@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXAggregateTarget section */
-		16C866C825D81A3200907F43 /* Installer Aggregate */ = {
+		16C866C825D81A3200907F43 /* ProjectM Installer */ = {
 			isa = PBXAggregateTarget;
-			buildConfigurationList = 16C866C925D81A3200907F43 /* Build configuration list for PBXAggregateTarget "Installer Aggregate" */;
+			buildConfigurationList = 16C866C925D81A3200907F43 /* Build configuration list for PBXAggregateTarget "ProjectM Installer" */;
 			buildPhases = (
 				165E796125D81A7C004711AA /* CopyFiles */,
 				165E796A25D81A9A004711AA /* Generate Combined Installer Package */,
@@ -18,7 +18,7 @@
 				165E796025D81A78004711AA /* PBXTargetDependency */,
 				165E795D25D81A6E004711AA /* PBXTargetDependency */,
 			);
-			name = "Installer Aggregate";
+			name = "ProjectM Installer";
 			productName = "Installer Aggregate";
 		};
 /* End PBXAggregateTarget section */
@@ -153,7 +153,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				16C866C825D81A3200907F43 /* Installer Aggregate */,
+				16C866C825D81A3200907F43 /* ProjectM Installer */,
 			);
 		};
 /* End PBXProject section */
@@ -200,7 +200,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo BUILT_PRODUCTS_DIR $BUILT_PRODUCTS_DIR IS\nls \"$BUILT_PRODUCTS_DIR\"\n\nset -x\n\nmkdir -p \"$DERIVED_FILE_DIR\"\n\nSDL_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-SDL.pkg\"\nMUSIC_PLUGIN_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\"\n\n#productbuild --timestamp --sign '5926VBQM6Y' --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\nproductbuild --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$DERIVED_FILE_DIR/ProjectM.pkg\"\n\necho \"Created installer package $DERIVED_FILE_DIR/ProjectM.pkg\"\n\ncp -rp \"$DERIVED_FILE_DIR/ProjectM.pkg\" \"$SRCROOT/\"\n";
+			shellScript = "set -euxo pipefail\n\necho BUILT_PRODUCTS_DIR $BUILT_PRODUCTS_DIR\nls \"$BUILT_PRODUCTS_DIR\"\n\nmkdir -p \"$TEMP_DIR\"\n\nSDL_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-SDL.pkg\"\nMUSIC_PLUGIN_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\"\n\n#productbuild --timestamp --sign '5926VBQM6Y' --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\nproductbuild --package \"$SDL_PKG\" --package \"$MUSIC_PLUGIN_PKG\" \"$TEMP_DIR/ProjectM.pkg\"\n\necho \"Created installer package $TEMP_DIR/ProjectM.pkg\"\n\ncp -rp \"$TEMP_DIR/ProjectM.pkg\" \"$SRCROOT/\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -262,7 +263,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		16C866C925D81A3200907F43 /* Build configuration list for PBXAggregateTarget "Installer Aggregate" */ = {
+		16C866C925D81A3200907F43 /* Build configuration list for PBXAggregateTarget "ProjectM Installer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				16C866CA25D81A3200907F43 /* Debug */,

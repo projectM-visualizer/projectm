@@ -24,6 +24,7 @@
 		1684057525D8405D0001F02C /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684057425D8405D0001F02C /* Metal.framework */; };
 		1684057725D840660001F02C /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684057625D840660001F02C /* QuartzCore.framework */; };
 		1684057C25D840900001F02C /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684057B25D840900001F02C /* AudioToolbox.framework */; };
+		1684059625D84FD10001F02C /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1684059525D84FD10001F02C /* IOKit.framework */; };
 		168F7156211248E4001806E7 /* SDLprojectM in Executable */ = {isa = PBXBuildFile; fileRef = C34521441BF02294001707D2 /* SDLprojectM */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		168F715921124C0E001806E7 /* config.inp in Support files */ = {isa = PBXBuildFile; fileRef = 16B52AAA21105A6900830F34 /* config.inp */; };
 		168F715A21124C14001806E7 /* fonts in Support files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
@@ -244,6 +245,7 @@
 		1684057425D8405D0001F02C /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		1684057625D840660001F02C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		1684057B25D840900001F02C /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		1684059525D84FD10001F02C /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		168F714921120210001806E7 /* ProjectM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProjectM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		168F714B21120211001806E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		168F717F21126256001806E7 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
@@ -270,6 +272,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1612C997207A80A200862A3A /* libprojectM.a in Frameworks */,
+				1684059625D84FD10001F02C /* IOKit.framework in Frameworks */,
 				1684057C25D840900001F02C /* AudioToolbox.framework in Frameworks */,
 				1684057725D840660001F02C /* QuartzCore.framework in Frameworks */,
 				1684057525D8405D0001F02C /* Metal.framework in Frameworks */,
@@ -285,7 +289,6 @@
 				1612C9E2207A85C100862A3A /* libMilkdropPresetFactory.a in Frameworks */,
 				1612C9E3207A85C100862A3A /* libNativePresetFactory.a in Frameworks */,
 				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
-				1612C997207A80A200862A3A /* libprojectM.a in Frameworks */,
 				1612C998207A80A200862A3A /* libRenderer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -296,6 +299,7 @@
 		161070CE1F7041B0001905AB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1684059525D84FD10001F02C /* IOKit.framework */,
 				1684057B25D840900001F02C /* AudioToolbox.framework */,
 				1684057625D840660001F02C /* QuartzCore.framework */,
 				1684057425D8405D0001F02C /* Metal.framework */,
@@ -630,7 +634,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\nPKG_OUT_NAME=ProjectM-SDL.pkg\n\nmkdir -p \"$DSTROOT/Applications\" \"$DERIVED_FILE_DIR\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/ProjectM.app\" \"$DSTROOT/Applications\"\n\necho \"DSTROOT: $DSTROOT/Applications\"\nls \"$DSTROOT/Applications\"\n\npkgbuild --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\"\n#pkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\" \"$SRCROOT/\"\n";
+			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\nPKGNAME=ProjectM-SDL.pkg\n\nset -euxo pipefail\n\nmkdir -p \"$DSTROOT/Applications\" \"$DERIVED_FILE_DIR\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/ProjectM.app\" \"$DSTROOT/Applications\"\n\necho \"DSTROOT: $DSTROOT/Applications\"\nls \"$DSTROOT/Applications\"\n\npkgbuild --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$TEMP_DIR/$PKGNAME\"\n#pkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/$PKGNAME\"\n\necho \"Created installer package $TEMP_DIR/$PKGNAME\"\n\n# for combined installer\ncp \"$TEMP_DIR/$PKGNAME\" \"$BUILT_PRODUCTS_DIR/\"\n\n# for convenience\nmv \"$TEMP_DIR/$PKGNAME\" \"$SRCROOT/\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 

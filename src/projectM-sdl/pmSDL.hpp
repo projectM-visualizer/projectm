@@ -66,7 +66,7 @@
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
 #else
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #endif /** WIN32 */
 
 // DATADIR_PATH should be set by the root Makefile if this is being
