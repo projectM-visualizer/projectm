@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "16A49E56207A7C8C00E508EA"
                BuildableName = "libprojectM.a"
-               BlueprintName = "projectM"
+               BlueprintName = "libprojectM"
                ReferencedContainer = "container:libprojectM.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -52,7 +52,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "16A49E56207A7C8C00E508EA"
             BuildableName = "libprojectM.a"
-            BlueprintName = "projectM"
+            BlueprintName = "libprojectM"
             ReferencedContainer = "container:libprojectM.xcodeproj">
          </BuildableReference>
       </MacroExpansion>

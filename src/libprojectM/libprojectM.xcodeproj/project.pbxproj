@@ -661,9 +661,9 @@
 			productReference = 16178B12207A6F4000D3B0C8 /* libRenderer.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		16A49E56207A7C8C00E508EA /* projectM */ = {
+		16A49E56207A7C8C00E508EA /* libprojectM */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 16A49E58207A7C8C00E508EA /* Build configuration list for PBXNativeTarget "projectM" */;
+			buildConfigurationList = 16A49E58207A7C8C00E508EA /* Build configuration list for PBXNativeTarget "libprojectM" */;
 			buildPhases = (
 				16A49E53207A7C8C00E508EA /* Sources */,
 				16A49E54207A7C8C00E508EA /* Frameworks */,
@@ -673,7 +673,7 @@
 			);
 			dependencies = (
 			);
-			name = projectM;
+			name = libprojectM;
 			productName = libprojectM;
 			productReference = 16A49E57207A7C8C00E508EA /* libprojectM.a */;
 			productType = "com.apple.product-type.library.static";
@@ -719,7 +719,7 @@
 			projectRoot = "";
 			targets = (
 				16178B11207A6F4000D3B0C8 /* Renderer */,
-				16A49E56207A7C8C00E508EA /* projectM */,
+				16A49E56207A7C8C00E508EA /* libprojectM */,
 				1612C9A3207A855D00862A3A /* MilkdropPresetFactory */,
 				1612C9AB207A856A00862A3A /* NativePresetFactory */,
 			);
@@ -846,7 +846,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 			};
@@ -859,7 +858,6 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 			};
@@ -873,7 +871,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 			};
@@ -886,7 +883,6 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 			};
@@ -1068,7 +1064,6 @@
 					"$(SRCROOT)",
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = "$(inherited)";
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = projectM;
 			};
 			name = Debug;
@@ -1086,7 +1081,6 @@
 					"$(PROJECT_DIR)",
 					"$(SRCROOT)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				PRODUCT_NAME = projectM;
 			};
 			name = Release;
@@ -1130,7 +1124,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		16A49E58207A7C8C00E508EA /* Build configuration list for PBXNativeTarget "projectM" */ = {
+		16A49E58207A7C8C00E508EA /* Build configuration list for PBXNativeTarget "libprojectM" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				16A49E59207A7C8C00E508EA /* Debug */,
