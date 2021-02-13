@@ -677,16 +677,16 @@ void main(){
 
     vec3 blur =
         (texture(texture_sampler, uv2 + vec2(d1 * srctexsize.z, 0)).xyz +
-texture(texture_sampler, uv2 + vec2(-d1 * srctexsize.z, 0)).xyz) *
+        texture(texture_sampler, uv2 + vec2(-d1 * srctexsize.z, 0)).xyz) *
             w1 +
         (texture(texture_sampler, uv2 + vec2(d2 * srctexsize.z, 0)).xyz +
-texture(texture_sampler, uv2 + vec2(-d2 * srctexsize.z, 0)).xyz) *
+        texture(texture_sampler, uv2 + vec2(-d2 * srctexsize.z, 0)).xyz) *
             w2 +
         (texture(texture_sampler, uv2 + vec2(d3 * srctexsize.z, 0)).xyz +
-texture(texture_sampler, uv2 + vec2(-d3 * srctexsize.z, 0)).xyz) *
+        texture(texture_sampler, uv2 + vec2(-d3 * srctexsize.z, 0)).xyz) *
             w3 +
         (texture(texture_sampler, uv2 + vec2(d4 * srctexsize.z, 0)).xyz +
-texture(texture_sampler, uv2 + vec2(-d4 * srctexsize.z, 0)).xyz) *
+        texture(texture_sampler, uv2 + vec2(-d4 * srctexsize.z, 0)).xyz) *
             w4;
 
     blur.xyz *= w_div;
