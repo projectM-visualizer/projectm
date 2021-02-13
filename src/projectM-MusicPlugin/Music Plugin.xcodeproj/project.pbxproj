@@ -3,10 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		168E97A125D809B10073B1B8 /* ProjectM-pkg.plist in plist */ = {isa = PBXBuildFile; fileRef = 168E979F25D8098F0073B1B8 /* ProjectM-pkg.plist */; };
+		168E97A325D809B20073B1B8 /* ProjectM-plugin-info.plist in plist */ = {isa = PBXBuildFile; fileRef = 168E97A025D8098F0073B1B8 /* ProjectM-plugin-info.plist */; };
 		16FE0B2121157D62005F170D /* libMilkdropPresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 168F716D21125D85001806E7 /* libMilkdropPresetFactory.a */; };
 		16FE0B2221157D63005F170D /* libNativePresetFactory.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 168F716F21125D85001806E7 /* libNativePresetFactory.a */; };
 		16FE0B2321157D63005F170D /* libprojectM.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 168F716B21125D85001806E7 /* libprojectM.a */; };
@@ -14,26 +16,12 @@
 		C34E811C1956D0D4001AC5B5 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811B1956D0D4001AC5B5 /* libz.a */; };
 		C34E811E1956D0D6001AC5B5 /* libpng15.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E811D1956D0D6001AC5B5 /* libpng15.a */; };
 		C34E81241956D0DA001AC5B5 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34E81231956D0DA001AC5B5 /* libbz2.a */; };
-		C37EBD2C19A0112900220265 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7B217B82CC3009E58CB /* Cocoa.framework */; };
-		C37EBD3219A0112900220265 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD3019A0112900220265 /* InfoPlist.strings */; };
-		C37EBD3419A0112900220265 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C37EBD3319A0112900220265 /* main.m */; };
-		C37EBD3819A0112900220265 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD3619A0112900220265 /* Credits.rtf */; };
-		C37EBD3B19A0112900220265 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C37EBD3A19A0112900220265 /* AppDelegate.m */; };
-		C37EBD3E19A0112900220265 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD3C19A0112900220265 /* MainMenu.xib */; };
-		C37EBD4019A0112900220265 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD3F19A0112900220265 /* Images.xcassets */; };
-		C37EBD5B19A0118600220265 /* iTunes Visualizer.pkg in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD5A19A0118600220265 /* iTunes Visualizer.pkg */; };
-		C37EBD5D19A0146F00220265 /* images in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD5C19A0146F00220265 /* images */; };
-		C37EBD5F19A0164400220265 /* selectViz.png in Resources */ = {isa = PBXBuildFile; fileRef = C37EBD5E19A0164400220265 /* selectViz.png */; };
-		C38E8C881B1A12540029901E /* Preferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = C38E8C871B1A12540029901E /* Preferences.xib */; };
-		C38E8C8B1B1A13AE0029901E /* Preferences.m in Sources */ = {isa = PBXBuildFile; fileRef = C38E8C8A1B1A13AE0029901E /* Preferences.m */; };
-		C38E8C8E1B1A14470029901E /* AudioInputDeviceList.m in Sources */ = {isa = PBXBuildFile; fileRef = C38E8C8D1B1A14470029901E /* AudioInputDeviceList.m */; };
 		C3F9D7B317B82CC3009E58CB /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7B217B82CC3009E58CB /* Cocoa.framework */; };
 		C3F9D7CF17B831F3009E58CB /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C3F9D7CE17B831F3009E58CB /* OpenGL.framework */; };
 		C3F9D7D317B83CCB009E58CB /* iprojectM_mac.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */; };
 		C3F9D7D417B83CCB009E58CB /* iprojectM.mm in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D217B83CCB009E58CB /* iprojectM.mm */; };
 		C3F9D7D917B83CF1009E58CB /* iTunesAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3F9D7D617B83CF1009E58CB /* iTunesAPI.cpp */; };
 		C3FAE59217B87D8700F4B110 /* getConfigFilename.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */; };
-		C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in plist */ = {isa = PBXBuildFile; fileRef = C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -72,13 +60,6 @@
 			remoteGlobalIDString = 16A49E56207A7C8C00E508EA;
 			remoteInfo = projectM;
 		};
-		16FE0B2521157D84005F170D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = C3F9D7A717B82CC3009E58CB /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C3F9D7AE17B82CC3009E58CB;
-			remoteInfo = iProjectM;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -88,7 +69,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
-				C3FAE5AA17B898C200F4B110 /* iProjectM-pkg.plist in plist */,
+				168E97A125D809B10073B1B8 /* ProjectM-pkg.plist in plist */,
+				168E97A325D809B20073B1B8 /* ProjectM-plugin-info.plist in plist */,
 			);
 			name = plist;
 			runOnlyForDeploymentPostprocessing = 0;
@@ -96,11 +78,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		168E976D25D800E00073B1B8 /* ProjectM-MusicPlugin.pkg */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ProjectM-MusicPlugin.pkg"; sourceTree = "<group>"; };
+		168E979F25D8098F0073B1B8 /* ProjectM-pkg.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ProjectM-pkg.plist"; sourceTree = "<group>"; };
+		168E97A025D8098F0073B1B8 /* ProjectM-plugin-info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "ProjectM-plugin-info.plist"; sourceTree = "<group>"; };
 		168F716121125D85001806E7 /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
-		16A4214420781835006F30CE /* libRenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRenderer.a; path = ../libprojectM/Renderer/.libs/libRenderer.a; sourceTree = "<group>"; };
-		16A4214520781835006F30CE /* libMilkdropPresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libMilkdropPresetFactory.a; path = ../libprojectM/MilkdropPresetFactory/.libs/libMilkdropPresetFactory.a; sourceTree = "<group>"; };
-		16A4214620781835006F30CE /* libNativePresetFactory.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libNativePresetFactory.a; path = ../libprojectM/NativePresetFactory/.libs/libNativePresetFactory.a; sourceTree = "<group>"; };
-		16A4214720781836006F30CE /* libprojectM.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprojectM.a; path = ../libprojectM/.libs/libprojectM.a; sourceTree = "<group>"; };
 		C34E810E1956CD2F001AC5B5 /* libstdc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libstdc++.dylib"; path = "usr/lib/libstdc++.dylib"; sourceTree = SDKROOT; };
 		C34E81101956CD3A001AC5B5 /* libc++.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.dylib"; path = "usr/lib/libc++.dylib"; sourceTree = SDKROOT; };
 		C34E81191956D0C3001AC5B5 /* contrib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = contrib; path = macos/contrib; sourceTree = "<group>"; };
@@ -110,26 +91,7 @@
 		C34E81211956D0D9001AC5B5 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = macos/contrib/libfreetype.a; sourceTree = "<group>"; };
 		C34E81231956D0DA001AC5B5 /* libbz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbz2.a; path = macos/contrib/libbz2.a; sourceTree = "<group>"; };
 		C37821FF1956D82A0058A694 /* libc++.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libc++.1.dylib"; path = "usr/lib/libc++.1.dylib"; sourceTree = SDKROOT; };
-		C37EBD2B19A0112900220265 /* projectM Visualizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "projectM Visualizer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		C37EBD2F19A0112900220265 /* projectM Visualizer-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "projectM Visualizer-Info.plist"; sourceTree = "<group>"; };
-		C37EBD3119A0112900220265 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		C37EBD3319A0112900220265 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		C37EBD3519A0112900220265 /* projectM Visualizer-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "projectM Visualizer-Prefix.pch"; sourceTree = "<group>"; };
-		C37EBD3719A0112900220265 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
-		C37EBD3919A0112900220265 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
-		C37EBD3A19A0112900220265 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		C37EBD3D19A0112900220265 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		C37EBD3F19A0112900220265 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		C37EBD4619A0112900220265 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		C37EBD5A19A0118600220265 /* iTunes Visualizer.pkg */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.installer-pkg"; path = "iTunes Visualizer.pkg"; sourceTree = "<group>"; };
-		C37EBD5C19A0146F00220265 /* images */ = {isa = PBXFileReference; lastKnownFileType = folder; name = images; path = ../images; sourceTree = "<group>"; };
-		C37EBD5E19A0164400220265 /* selectViz.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = selectViz.png; path = images/selectViz.png; sourceTree = "<group>"; };
-		C37EBD6019A01BEE00220265 /* projectM Visualizer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = "projectM Visualizer.entitlements"; sourceTree = "<group>"; };
-		C38E8C871B1A12540029901E /* Preferences.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Preferences.xib; sourceTree = "<group>"; };
-		C38E8C891B1A13AE0029901E /* Preferences.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Preferences.h; sourceTree = "<group>"; };
-		C38E8C8A1B1A13AE0029901E /* Preferences.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Preferences.m; sourceTree = "<group>"; };
-		C38E8C8C1B1A14470029901E /* AudioInputDeviceList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioInputDeviceList.h; sourceTree = "<group>"; };
-		C38E8C8D1B1A14470029901E /* AudioInputDeviceList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AudioInputDeviceList.m; sourceTree = "<group>"; };
 		C3C24434195764870021FCD4 /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libGLEW.a; path = macos/contrib/libGLEW.a; sourceTree = "<group>"; };
 		C3F9D7AF17B82CC3009E58CB /* iProjectM.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = iProjectM.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		C3F9D7B217B82CC3009E58CB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -145,22 +107,11 @@
 		C3F9D7D817B83CF1009E58CB /* iTunesVisualAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTunesVisualAPI.h; sourceTree = "<group>"; };
 		C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = getConfigFilename.cpp; sourceTree = "<group>"; };
 		C3FAE59117B87D8700F4B110 /* getConfigFilename.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = getConfigFilename.h; sourceTree = "<group>"; };
-		C3FAE59A17B88B9000F4B110 /* projectM Visualizer-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "projectM Visualizer-Info.plist"; sourceTree = "<group>"; };
-		C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "iProjectM-pkg.plist"; sourceTree = SOURCE_ROOT; };
 		C3FAF97517B89F7200F4B110 /* config.inp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.inp; sourceTree = "<group>"; };
-		C3FAF97617B89F7200F4B110 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shaders; sourceTree = "<group>"; };
 		C3FAF97917B8A43B00F4B110 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../fonts; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		C37EBD2819A0112900220265 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C37EBD2C19A0112900220265 /* Cocoa.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C3F9D7AC17B82CC3009E58CB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -180,6 +131,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		168E979E25D8098E0073B1B8 /* Properties */ = {
+			isa = PBXGroup;
+			children = (
+				168E979F25D8098F0073B1B8 /* ProjectM-pkg.plist */,
+				168E97A025D8098F0073B1B8 /* ProjectM-plugin-info.plist */,
+			);
+			path = Properties;
+			sourceTree = "<group>";
+		};
 		168F716221125D85001806E7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -191,54 +151,20 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		C37EBD2D19A0112900220265 /* projectM Visualizer */ = {
-			isa = PBXGroup;
-			children = (
-				C37EBD6019A01BEE00220265 /* projectM Visualizer.entitlements */,
-				C37EBD5C19A0146F00220265 /* images */,
-				C37EBD3919A0112900220265 /* AppDelegate.h */,
-				C37EBD3A19A0112900220265 /* AppDelegate.m */,
-				C37EBD3C19A0112900220265 /* MainMenu.xib */,
-				C38E8C871B1A12540029901E /* Preferences.xib */,
-				C37EBD3F19A0112900220265 /* Images.xcassets */,
-				C37EBD2E19A0112900220265 /* Supporting Files */,
-				C38E8C891B1A13AE0029901E /* Preferences.h */,
-				C38E8C8A1B1A13AE0029901E /* Preferences.m */,
-				C38E8C8C1B1A14470029901E /* AudioInputDeviceList.h */,
-				C38E8C8D1B1A14470029901E /* AudioInputDeviceList.m */,
-			);
-			path = "projectM Visualizer";
-			sourceTree = "<group>";
-		};
-		C37EBD2E19A0112900220265 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				C37EBD2F19A0112900220265 /* projectM Visualizer-Info.plist */,
-				C37EBD3019A0112900220265 /* InfoPlist.strings */,
-				C37EBD3319A0112900220265 /* main.m */,
-				C37EBD3519A0112900220265 /* projectM Visualizer-Prefix.pch */,
-				C37EBD3619A0112900220265 /* Credits.rtf */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		C3F9D7A617B82CC3009E58CB = {
 			isa = PBXGroup;
 			children = (
+				168E976D25D800E00073B1B8 /* ProjectM-MusicPlugin.pkg */,
 				168F716121125D85001806E7 /* libprojectM.xcodeproj */,
-				C37EBD5E19A0164400220265 /* selectViz.png */,
-				C37EBD5A19A0118600220265 /* iTunes Visualizer.pkg */,
 				C34E81191956D0C3001AC5B5 /* contrib */,
 				C3FAF97A17B8A44100F4B110 /* share */,
-				C3FAE5A417B88C5B00F4B110 /* libprojectM */,
-				C3FAE59917B88B9000F4B110 /* iProjectM */,
 				C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */,
 				C3FAE59117B87D8700F4B110 /* getConfigFilename.h */,
 				C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */,
 				C3F9D7D117B83CCB009E58CB /* iprojectM.hpp */,
 				C3F9D7D217B83CCB009E58CB /* iprojectM.mm */,
+				168E979E25D8098E0073B1B8 /* Properties */,
 				C3F9D7D517B83CF1009E58CB /* iTunesVisualAPI */,
-				C37EBD2D19A0112900220265 /* projectM Visualizer */,
 				C3F9D7B117B82CC3009E58CB /* Frameworks */,
 				C3F9D7B017B82CC3009E58CB /* Products */,
 			);
@@ -248,7 +174,6 @@
 			isa = PBXGroup;
 			children = (
 				C3F9D7AF17B82CC3009E58CB /* iProjectM.bundle */,
-				C37EBD2B19A0112900220265 /* projectM Visualizer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -294,32 +219,11 @@
 			path = macos;
 			sourceTree = "<group>";
 		};
-		C3FAE59917B88B9000F4B110 /* iProjectM */ = {
-			isa = PBXGroup;
-			children = (
-				C3FAE5A717B898B000F4B110 /* iProjectM-pkg.plist */,
-				C3FAE59A17B88B9000F4B110 /* projectM Visualizer-Info.plist */,
-			);
-			path = iProjectM;
-			sourceTree = "<group>";
-		};
-		C3FAE5A417B88C5B00F4B110 /* libprojectM */ = {
-			isa = PBXGroup;
-			children = (
-				16A4214520781835006F30CE /* libMilkdropPresetFactory.a */,
-				16A4214620781835006F30CE /* libNativePresetFactory.a */,
-				16A4214720781836006F30CE /* libprojectM.a */,
-				16A4214420781835006F30CE /* libRenderer.a */,
-			);
-			name = libprojectM;
-			sourceTree = "<group>";
-		};
 		C3FAF97A17B8A44100F4B110 /* share */ = {
 			isa = PBXGroup;
 			children = (
 				C3FAF97917B8A43B00F4B110 /* fonts */,
 				C3FAF97517B89F7200F4B110 /* config.inp */,
-				C3FAF97617B89F7200F4B110 /* shaders */,
 			);
 			name = share;
 			sourceTree = "<group>";
@@ -327,27 +231,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C37EBD2A19A0112900220265 /* iProjectM Setup */ = {
+		C3F9D7AE17B82CC3009E58CB /* Music Plugin Installer */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C37EBD5719A0112900220265 /* Build configuration list for PBXNativeTarget "iProjectM Setup" */;
-			buildPhases = (
-				C37EBD2719A0112900220265 /* Sources */,
-				C37EBD2819A0112900220265 /* Frameworks */,
-				C37EBD2919A0112900220265 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				16FE0B2621157D84005F170D /* PBXTargetDependency */,
-			);
-			name = "iProjectM Setup";
-			productName = "projectM Visualizer";
-			productReference = C37EBD2B19A0112900220265 /* projectM Visualizer.app */;
-			productType = "com.apple.product-type.application";
-		};
-		C3F9D7AE17B82CC3009E58CB /* Music Plugin */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C3F9D7C117B82CC3009E58CB /* Build configuration list for PBXNativeTarget "Music Plugin" */;
+			buildConfigurationList = C3F9D7C117B82CC3009E58CB /* Build configuration list for PBXNativeTarget "Music Plugin Installer" */;
 			buildPhases = (
 				C3F9D7AB17B82CC3009E58CB /* Sources */,
 				C3F9D7AC17B82CC3009E58CB /* Frameworks */,
@@ -359,7 +245,7 @@
 			dependencies = (
 				16FE0B1C21157D55005F170D /* PBXTargetDependency */,
 			);
-			name = "Music Plugin";
+			name = "Music Plugin Installer";
 			productName = iProjectM;
 			productReference = C3F9D7AF17B82CC3009E58CB /* iProjectM.bundle */;
 			productType = "com.apple.product-type.bundle";
@@ -372,18 +258,8 @@
 			attributes = {
 				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = projectM;
-				TargetAttributes = {
-					C37EBD2A19A0112900220265 = {
-						DevelopmentTeam = 5926VBQM6Y;
-						SystemCapabilities = {
-							com.apple.Sandbox = {
-								enabled = 1;
-							};
-						};
-					};
-				};
 			};
-			buildConfigurationList = C3F9D7AA17B82CC3009E58CB /* Build configuration list for PBXProject "iTunes Plugin" */;
+			buildConfigurationList = C3F9D7AA17B82CC3009E58CB /* Build configuration list for PBXProject "Music Plugin" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -402,8 +278,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				C3F9D7AE17B82CC3009E58CB /* Music Plugin */,
-				C37EBD2A19A0112900220265 /* iProjectM Setup */,
+				C3F9D7AE17B82CC3009E58CB /* Music Plugin Installer */,
 			);
 		};
 /* End PBXProject section */
@@ -439,53 +314,28 @@
 		};
 /* End PBXReferenceProxy section */
 
-/* Begin PBXResourcesBuildPhase section */
-		C37EBD2919A0112900220265 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C37EBD5D19A0146F00220265 /* images in Resources */,
-				C37EBD5F19A0164400220265 /* selectViz.png in Resources */,
-				C38E8C881B1A12540029901E /* Preferences.xib in Resources */,
-				C37EBD3219A0112900220265 /* InfoPlist.strings in Resources */,
-				C37EBD4019A0112900220265 /* Images.xcassets in Resources */,
-				C37EBD3819A0112900220265 /* Credits.rtf in Resources */,
-				C37EBD3E19A0112900220265 /* MainMenu.xib in Resources */,
-				C37EBD5B19A0118600220265 /* iTunes Visualizer.pkg in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXResourcesBuildPhase section */
-
 /* Begin PBXShellScriptBuildPhase section */
 		C3FAE5AB17B898F800F4B110 /* Generate Installer Package */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
 			name = "Generate Installer Package";
+			outputFileListPaths = (
+			);
 			outputPaths = (
+				"$(SRCROOT)/ProjectM-MusicPlugin.pkg",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "POUT=\"$BUILT_PRODUCTS_DIR\"/\"$CONTENTS_FOLDER_PATH/Resources/presets\"\nPIN=\"$SRCROOT\"/../../presets\n\nmkdir -p \"$POUT\"\nfor preset_dir in \"$PIN/\"*; do\ncp \"$preset_dir/\"* \"$POUT/\"\ndone\necho \"Copied presets to $POUT\"\n\n\npkgbuild --component-plist \"$SRCROOT/iProjectM-pkg.plist\" --root \"$DSTROOT\" \"$SRCROOT/iTunes Visualizer.pkg\"\n";
+			shellScript = "POUT=\"$BUILT_PRODUCTS_DIR\"/\"$CONTENTS_FOLDER_PATH/Resources/presets\"\nPIN=\"$SRCROOT\"/../../presets\n\nmkdir -p \"$POUT\"\nfor preset_dir in \"$PIN/\"*; do\ncp \"$preset_dir/\"* \"$POUT/\"\ndone\necho \"Copied presets to $POUT\"\n\npkgbuild --component-plist \"$SRCROOT/Properties/ProjectM-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\"\n\n# for convenience\ncp \"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\" \"$SRCROOT/ProjectM-MusicPlugin.pkg\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		C37EBD2719A0112900220265 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C37EBD3B19A0112900220265 /* AppDelegate.m in Sources */,
-				C37EBD3419A0112900220265 /* main.m in Sources */,
-				C38E8C8B1B1A13AE0029901E /* Preferences.m in Sources */,
-				C38E8C8E1B1A14470029901E /* AudioInputDeviceList.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C3F9D7AB17B82CC3009E58CB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -505,136 +355,9 @@
 			name = projectM;
 			targetProxy = 16FE0B1B21157D55005F170D /* PBXContainerItemProxy */;
 		};
-		16FE0B2621157D84005F170D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C3F9D7AE17B82CC3009E58CB /* Music Plugin */;
-			targetProxy = 16FE0B2521157D84005F170D /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXVariantGroup section */
-		C37EBD3019A0112900220265 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C37EBD3119A0112900220265 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		C37EBD3619A0112900220265 /* Credits.rtf */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C37EBD3719A0112900220265 /* en */,
-			);
-			name = Credits.rtf;
-			sourceTree = "<group>";
-		};
-		C37EBD3C19A0112900220265 /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				C37EBD3D19A0112900220265 /* Base */,
-			);
-			name = MainMenu.xib;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
-		C37EBD5319A0112900220265 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CODE_SIGN_ENTITLEMENTS = "projectM Visualizer/projectM Visualizer.entitlements";
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LOCAL_LIBRARY_DIR)/Frameworks",
-				);
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "projectM Visualizer/projectM Visualizer-Prefix.pch";
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				INFOPLIST_FILE = "projectM Visualizer/projectM Visualizer-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../libprojectM/.libs\"",
-					"\"$(SRCROOT)/../libprojectM/Renderer/.libs\"",
-					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory/.libs\"",
-					"\"$(SRCROOT)/../libprojectM/NativePresetFactory/.libs\"",
-					"$(SRCROOT)",
-					"\"$(SRCROOT)/../NativePresets/.libs\"",
-					"\"$(SRCROOT)/..\"",
-					"\"$(SRCROOT)/macos/contrib\"",
-					"$(PROJECT_DIR)/macos/contrib",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.itunes;
-				PRODUCT_NAME = "projectM Visualizer";
-				WRAPPER_EXTENSION = app;
-			};
-			name = Debug;
-		};
-		C37EBD5419A0112900220265 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CODE_SIGN_ENTITLEMENTS = "projectM Visualizer/projectM Visualizer.entitlements";
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				ENABLE_NS_ASSERTIONS = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LOCAL_LIBRARY_DIR)/Frameworks",
-				);
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "projectM Visualizer/projectM Visualizer-Prefix.pch";
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				INFOPLIST_FILE = "projectM Visualizer/projectM Visualizer-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../libprojectM/.libs\"",
-					"\"$(SRCROOT)/../libprojectM/Renderer/.libs\"",
-					"\"$(SRCROOT)/../libprojectM/MilkdropPresetFactory/.libs\"",
-					"\"$(SRCROOT)/../libprojectM/NativePresetFactory/.libs\"",
-					"$(SRCROOT)",
-					"\"$(SRCROOT)/../NativePresets/.libs\"",
-					"\"$(SRCROOT)/..\"",
-					"\"$(SRCROOT)/macos/contrib\"",
-					"$(PROJECT_DIR)/macos/contrib",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.itunes;
-				PRODUCT_NAME = "projectM Visualizer";
-				WRAPPER_EXTENSION = app;
-			};
-			name = Release;
-		};
 		C3F9D7BF17B82CC3009E58CB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -766,7 +489,7 @@
 					"${SRCROOT}/../..",
 					"$(SRCROOT)/../libprojectM",
 				);
-				INFOPLIST_FILE = "iProjectM/projectM Visualizer-Info.plist";
+				INFOPLIST_FILE = "Properties/ProjectM-plugin-info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/iTunes/iTunes Plug-ins";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -781,8 +504,8 @@
 					"$(PROJECT_DIR)/macos/contrib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 2.4;
-				PRODUCT_BUNDLE_IDENTIFIER = "biz.int80.${PRODUCT_NAME:rfc1034identifier}";
+				MARKETING_VERSION = 2.5;
+				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.music-plugin";
 				PRODUCT_NAME = iProjectM;
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -805,7 +528,7 @@
 					"${SRCROOT}/../..",
 					"$(SRCROOT)/../libprojectM",
 				);
-				INFOPLIST_FILE = "iProjectM/projectM Visualizer-Info.plist";
+				INFOPLIST_FILE = "Properties/ProjectM-plugin-info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/iTunes/iTunes Plug-ins";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -820,8 +543,8 @@
 					"$(PROJECT_DIR)/macos/contrib",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MARKETING_VERSION = 2.4;
-				PRODUCT_BUNDLE_IDENTIFIER = "biz.int80.${PRODUCT_NAME:rfc1034identifier}";
+				MARKETING_VERSION = 2.5;
+				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.music-plugin";
 				PRODUCT_NAME = iProjectM;
 				WRAPPER_EXTENSION = bundle;
 			};
@@ -830,16 +553,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C37EBD5719A0112900220265 /* Build configuration list for PBXNativeTarget "iProjectM Setup" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C37EBD5319A0112900220265 /* Debug */,
-				C37EBD5419A0112900220265 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		C3F9D7AA17B82CC3009E58CB /* Build configuration list for PBXProject "iTunes Plugin" */ = {
+		C3F9D7AA17B82CC3009E58CB /* Build configuration list for PBXProject "Music Plugin" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C3F9D7BF17B82CC3009E58CB /* Debug */,
@@ -848,7 +562,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C3F9D7C117B82CC3009E58CB /* Build configuration list for PBXNativeTarget "Music Plugin" */ = {
+		C3F9D7C117B82CC3009E58CB /* Build configuration list for PBXNativeTarget "Music Plugin Installer" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C3F9D7C217B82CC3009E58CB /* Debug */,

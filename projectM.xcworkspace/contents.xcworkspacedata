@@ -2,15 +2,15 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:Installer.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:src/libprojectM/libprojectM.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:src/projectM-sdl/SDLprojectM.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:src/projectM-iTunes/iTunes Plugin.xcodeproj">
+      location = "group:src/projectM-MusicPlugin/Music Plugin.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Installer.xcodeproj">
    </FileRef>
 </Workspace>

@@ -3,8 +3,13 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 54;
 	objects = {
+
+/* Begin PBXBuildFile section */
+		168E978625D803490073B1B8 /* projectM SDL.pkg in Resources */ = {isa = PBXBuildFile; fileRef = 168E977925D801DA0073B1B8 /* projectM SDL.pkg */; };
+		168E978825D8034B0073B1B8 /* ProjectM-MusicPlugin.pkg in Resources */ = {isa = PBXBuildFile; fileRef = 168E976E25D800F90073B1B8 /* ProjectM-MusicPlugin.pkg */; };
+/* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		1648A64525D7FD520075B8FC /* PBXContainerItemProxy */ = {
@@ -21,26 +26,42 @@
 			remoteGlobalIDString = 168F714921120210001806E7;
 			remoteInfo = Installer;
 		};
-		1648A64E25D7FD580075B8FC /* PBXContainerItemProxy */ = {
+		168E975525D7FDDA0073B1B8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1648A64925D7FD580075B8FC /* iTunes Plugin.xcodeproj */;
+			containerPortal = 168E975025D7FDDA0073B1B8 /* Music Plugin.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = C3F9D7AF17B82CC3009E58CB;
 			remoteInfo = "Music Plugin";
 		};
-		1648A65025D7FD580075B8FC /* PBXContainerItemProxy */ = {
+		168E975725D7FDDA0073B1B8 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 1648A64925D7FD580075B8FC /* iTunes Plugin.xcodeproj */;
+			containerPortal = 168E975025D7FDDA0073B1B8 /* Music Plugin.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = C37EBD2B19A0112900220265;
 			remoteInfo = "iProjectM Setup";
+		};
+		168E975C25D7FE930073B1B8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1648A64025D7FD520075B8FC /* SDLprojectM.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 168F714821120210001806E7;
+			remoteInfo = "SDL Installer";
+		};
+		168E975E25D7FE960073B1B8 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 168E975025D7FDDA0073B1B8 /* Music Plugin.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = C3F9D7AE17B82CC3009E58CB;
+			remoteInfo = "Music Plugin";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		1648A5F225D7FBA80075B8FC /* Installer.pkg */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Installer.pkg; sourceTree = BUILT_PRODUCTS_DIR; };
 		1648A64025D7FD520075B8FC /* SDLprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDLprojectM.xcodeproj; path = "src/projectM-sdl/SDLprojectM.xcodeproj"; sourceTree = "<group>"; };
-		1648A64925D7FD580075B8FC /* iTunes Plugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "iTunes Plugin.xcodeproj"; path = "src/projectM-iTunes/iTunes Plugin.xcodeproj"; sourceTree = "<group>"; };
+		168E975025D7FDDA0073B1B8 /* Music Plugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Music Plugin.xcodeproj"; path = "src/projectM-MusicPlugin/Music Plugin.xcodeproj"; sourceTree = "<group>"; };
+		168E976E25D800F90073B1B8 /* ProjectM-MusicPlugin.pkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ProjectM-MusicPlugin.pkg"; path = "src/projectM-MusicPlugin/ProjectM-MusicPlugin.pkg"; sourceTree = "<group>"; };
+		168E977925D801DA0073B1B8 /* projectM SDL.pkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = "projectM SDL.pkg"; path = "src/projectM-sdl/projectM SDL.pkg"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +78,9 @@
 		1648A5E725D7FB650075B8FC = {
 			isa = PBXGroup;
 			children = (
-				1648A64925D7FD580075B8FC /* iTunes Plugin.xcodeproj */,
+				168E977925D801DA0073B1B8 /* projectM SDL.pkg */,
+				168E976E25D800F90073B1B8 /* ProjectM-MusicPlugin.pkg */,
+				168E975025D7FDDA0073B1B8 /* Music Plugin.xcodeproj */,
 				1648A64025D7FD520075B8FC /* SDLprojectM.xcodeproj */,
 				1648A5F325D7FBA80075B8FC /* Products */,
 			);
@@ -80,11 +103,11 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		1648A64A25D7FD580075B8FC /* Products */ = {
+		168E975125D7FDDA0073B1B8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1648A64F25D7FD580075B8FC /* iProjectM.bundle */,
-				1648A65125D7FD580075B8FC /* projectM Visualizer.app */,
+				168E975625D7FDDA0073B1B8 /* iProjectM.bundle */,
+				168E975825D7FDDA0073B1B8 /* projectM Visualizer.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -104,6 +127,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				168E975F25D7FE960073B1B8 /* PBXTargetDependency */,
+				168E975D25D7FE930073B1B8 /* PBXTargetDependency */,
 			);
 			name = Installer;
 			productName = Installer;
@@ -116,6 +141,7 @@
 		1648A5E825D7FB650075B8FC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1240;
 				TargetAttributes = {
 					1648A5F125D7FBA80075B8FC = {
@@ -136,8 +162,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 1648A64A25D7FD580075B8FC /* Products */;
-					ProjectRef = 1648A64925D7FD580075B8FC /* iTunes Plugin.xcodeproj */;
+					ProductGroup = 168E975125D7FDDA0073B1B8 /* Products */;
+					ProjectRef = 168E975025D7FDDA0073B1B8 /* Music Plugin.xcodeproj */;
 				},
 				{
 					ProductGroup = 1648A64125D7FD520075B8FC /* Products */;
@@ -166,18 +192,18 @@
 			remoteRef = 1648A64725D7FD520075B8FC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1648A64F25D7FD580075B8FC /* iProjectM.bundle */ = {
+		168E975625D7FDDA0073B1B8 /* iProjectM.bundle */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = iProjectM.bundle;
-			remoteRef = 1648A64E25D7FD580075B8FC /* PBXContainerItemProxy */;
+			remoteRef = 168E975525D7FDDA0073B1B8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		1648A65125D7FD580075B8FC /* projectM Visualizer.app */ = {
+		168E975825D7FDDA0073B1B8 /* projectM Visualizer.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = "projectM Visualizer.app";
-			remoteRef = 1648A65025D7FD580075B8FC /* PBXContainerItemProxy */;
+			remoteRef = 168E975725D7FDDA0073B1B8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -187,6 +213,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				168E978625D803490073B1B8 /* projectM SDL.pkg in Resources */,
+				168E978825D8034B0073B1B8 /* ProjectM-MusicPlugin.pkg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -195,6 +223,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		1648A63525D7FC7D0075B8FC /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -208,7 +237,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\n\nmkdir -p \"$DSTROOT/Applications\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/projectM SDL.app\" \"$DSTROOT/Applications\"\n#pkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/projectM SDL.pkg\"\nproductbuild --timestamp --sign '5926VBQM6Y' --package \"$BUILT_PRODUCTS_DIR/projectM SDL.pkg\" \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\" \"$SRCROOT/\"\n";
+			shellScript = "echo $CONFIGURATION_BUILD_DIR IS\nls \"$CONFIGURATION_BUILD_DIR\"\n\nSDL_PKG=\"$BUILT_PRODUCTS_DIR/projectM SDL.pkg\"\nMUSIC_PLUGIN_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\"\n\nproductbuild --timestamp --sign '5926VBQM6Y' --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\" \"$SRCROOT/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -222,16 +251,31 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		168E975D25D7FE930073B1B8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "SDL Installer";
+			targetProxy = 168E975C25D7FE930073B1B8 /* PBXContainerItemProxy */;
+		};
+		168E975F25D7FE960073B1B8 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Music Plugin";
+			targetProxy = 168E975E25D7FE960073B1B8 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
 		1648A5EC25D7FB650075B8FC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 			};
 			name = Debug;
 		};
 		1648A5ED25D7FB650075B8FC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 			};
 			name = Release;
 		};
@@ -289,9 +333,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = Installer/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/src/projectM-sdl/projectM-SDL/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				MACOSX_DEPLOYMENT_TARGET = 11.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -351,9 +394,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				INFOPLIST_FILE = Installer/Info.plist;
+				INFOPLIST_FILE = "$(SRCROOT)/src/projectM-sdl/projectM-SDL/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				MACOSX_DEPLOYMENT_TARGET = 11.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.Installer;
