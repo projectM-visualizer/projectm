@@ -384,7 +384,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\nPKG_OUT_NAME=ProjectM-SDL.pkg\n\nmkdir -p \"$DSTROOT/Applications\" \"$DERIVED_FILE_DIR\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/ProjectM.app\" \"$DSTROOT/Applications\"\n\necho \"DSTROOT: $DSTROOT/Applications\"\nls \"$DSTROOT/Applications\"\n\n#pkgbuild --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$DERIVED_FILE_DIR/$PKG_OUT_NAME\"\npkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$DERIVED_FILE_DIR/$PKG_OUT_NAME\"\n\necho \"Created installer package $DERIVED_FILE_DIR/$PKG_OUT_NAME\"\n\ncp -rp \"$DERIVED_FILE_DIR/$PKG_OUT_NAME\" \"$SRCROOT/\"\n";
+			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\nPKG_OUT_NAME=ProjectM-SDL.pkg\n\nmkdir -p \"$DSTROOT/Applications\" \"$DERIVED_FILE_DIR\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/ProjectM.app\" \"$DSTROOT/Applications\"\n\necho \"DSTROOT: $DSTROOT/Applications\"\nls \"$DSTROOT/Applications\"\n\n#pkgbuild --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\"\npkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/$PKG_OUT_NAME\" \"$SRCROOT/\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
