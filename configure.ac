@@ -84,7 +84,7 @@ AC_CONFIG_FILES([
 ])
 
 AC_ARG_ENABLE([test],
-AS_HELP_STRING([--enable-test], [Unit tests]), [], [enable_test=no])
+AS_HELP_STRING([--enable-test], [Build test suite]), [], [enable_test=no])
 AS_IF([test "x$enable_test" = "xyes"], [
             PKG_CHECK_MODULES([SDL], [sdl2], [
             m4_include([m4/sdl2.m4])
@@ -293,4 +293,5 @@ Jack:                   ${enable_jack}
 OpenGLES:               ${enable_gles}
 Emscripten:             ${enable_emscripten}
 LLVM JIT:               ${enable_llvm}
+Test suite:             ${enable_test}
 ])
