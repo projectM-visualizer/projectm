@@ -1,0 +1,3 @@
+[submodule "sdl2"]
+	path = src/projectM-sdl/sdl2
+	url = git@github.com:spurious/SDL-mirror.git
