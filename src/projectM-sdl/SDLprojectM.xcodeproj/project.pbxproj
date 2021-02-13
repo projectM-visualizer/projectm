@@ -763,6 +763,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../libprojectM",
 					"$(SRCROOT)/../../vendor",
+					"$(SRCROOT)/sdl2/include",
 					"$(SRCROOT)/../../mac",
 					"$(SRCROOT)/../libprojectM/Renderer/hlslparser/src",
 				);
@@ -809,6 +810,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../libprojectM",
 					"$(SRCROOT)/../../vendor",
+					"$(SRCROOT)/sdl2/include",
 					"$(SRCROOT)/../../mac",
 					"$(SRCROOT)/../libprojectM/Renderer/hlslparser/src",
 				);
