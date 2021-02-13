@@ -14,7 +14,6 @@ addons:
   apt:
     packages:
       - libc++-dev
-      - libsdl2-dev
       - libgl1-mesa-dev
 
 script:
@@ -48,7 +47,6 @@ matrix:
             - libjack-dev
             - libpulse-dev
             - libc++-dev
-            - libsdl2-dev
       env:
         - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
     - os: linux
@@ -62,7 +60,6 @@ matrix:
             - libjack-dev
             - libpulse-dev
             - libc++-dev
-            - libsdl2-dev
       env:
         - MATRIX_EVAL="PM_OPTS=\"--enable-qt --enable-jack --enable-pulseaudio --enable-sdl\""
 
@@ -70,7 +67,7 @@ matrix:
     - os: osx
       osx_image: xcode12.2
       env:
-        - MATRIX_EVAL="brew update && brew install sdl2"
+        - MATRIX_EVAL=""
 
 notifications:
   email:
