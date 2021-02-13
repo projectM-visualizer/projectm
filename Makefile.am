@@ -39,13 +39,12 @@ build-mac: macOS/Build/Products/Debug/presets
 	@echo "Products built in macOS/Build/Products/Debug"
 	open macOS/Build/Products/Debug
 
-# do a macOS build
-dist-mac:
-	./autogen.sh
-	make clean
-	./configure --disable-sdlframework
-	rm -rf dist
+ProjectM.pkg:
 	xcrun xcodebuild -scheme "ProjectM Installer" -configuration Release archive -archivePath build/ProjectM.xcarchive
+
+# do a macOS build
+dist-mac: dist ProjectM.pkg
+	rm -rf dist
 	mkdir -p dist
 	mv ProjectM.pkg dist/projectM-macOS.pkg
 	mv projectM-*.tar.gz dist/
