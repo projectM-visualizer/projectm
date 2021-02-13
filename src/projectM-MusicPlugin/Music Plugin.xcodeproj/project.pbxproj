@@ -107,8 +107,6 @@
 		C3F9D7D817B83CF1009E58CB /* iTunesVisualAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTunesVisualAPI.h; sourceTree = "<group>"; };
 		C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = getConfigFilename.cpp; sourceTree = "<group>"; };
 		C3FAE59117B87D8700F4B110 /* getConfigFilename.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = getConfigFilename.h; sourceTree = "<group>"; };
-		C3FAF97517B89F7200F4B110 /* config.inp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = config.inp; sourceTree = "<group>"; };
-		C3FAF97917B8A43B00F4B110 /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../fonts; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -157,7 +155,6 @@
 				168E976D25D800E00073B1B8 /* ProjectM-MusicPlugin.pkg */,
 				168F716121125D85001806E7 /* libprojectM.xcodeproj */,
 				C34E81191956D0C3001AC5B5 /* contrib */,
-				C3FAF97A17B8A44100F4B110 /* share */,
 				C3FAE59017B87D8700F4B110 /* getConfigFilename.cpp */,
 				C3FAE59117B87D8700F4B110 /* getConfigFilename.h */,
 				C3F9D7D017B83CCB009E58CB /* iprojectM_mac.mm */,
@@ -217,15 +214,6 @@
 			);
 			name = iTunesVisualAPI;
 			path = macos;
-			sourceTree = "<group>";
-		};
-		C3FAF97A17B8A44100F4B110 /* share */ = {
-			isa = PBXGroup;
-			children = (
-				C3FAF97917B8A43B00F4B110 /* fonts */,
-				C3FAF97517B89F7200F4B110 /* config.inp */,
-			);
-			name = share;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

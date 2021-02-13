@@ -3,8 +3,8 @@
 
 #Texture Size = 1024			# Size of internal rendering texture
 
-Mesh X  = 220            	# Width of PerPixel Equation mesh
-Mesh Y  = 125          		# Height of PerPixel Equation mesh
+Mesh X  = 708            	# Width of PerPixel Equation mesh
+Mesh Y  = 400          		# Height of PerPixel Equation mesh
 FPS  = 60          		# Frames Per Second
 Fullscreen  = false
 Window Width  = 512  	       	# startup window width
