@@ -1,4 +1,4 @@
 [submodule "src/projectM-sdl/sdl2"]
 	path = src/projectM-sdl/sdl2
-	url = git@github.com:libsdl-org/SDL.git
+	url = https://github.com/libsdl-org/SDL.git
 	ignore = untracked
