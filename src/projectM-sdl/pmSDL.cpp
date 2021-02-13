@@ -37,9 +37,9 @@
 
 void projectMSDL::audioInputCallbackF32(void *userdata, unsigned char *stream, int len) {
     projectMSDL *app = (projectMSDL *) userdata;
-    printf("\nLEN: %i\n", len);
-    for (int i = 0; i < 64; i++)
-        printf("%X ", stream[i]);
+//    printf("\nLEN: %i\n", len);
+//    for (int i = 0; i < 64; i++)
+//        printf("%X ", stream[i]);
     // stream is (i think) samples*channels floats (native byte order) of len BYTES
     if (app->audioChannelsCount == 1)
         app->pcm()->addPCMfloat((float *)stream, len/sizeof(float));
