@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C3F9D7AE17B82CC3009E58CB"
-               BuildableName = "iProjectM.bundle"
+               BuildableName = "ProjectM.bundle"
                BlueprintName = "Music Plugin"
                ReferencedContainer = "container:Music Plugin.xcodeproj">
             </BuildableReference>
@@ -51,7 +51,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C3F9D7AE17B82CC3009E58CB"
-            BuildableName = "iProjectM.bundle"
+            BuildableName = "ProjectM.bundle"
             BlueprintName = "Music Plugin"
             ReferencedContainer = "container:Music Plugin.xcodeproj">
          </BuildableReference>
