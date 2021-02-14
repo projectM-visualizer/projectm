@@ -141,7 +141,7 @@ public:
 
 private:
     void PerPixelMath_c( const PipelineContext &context);
-#ifdef __SSE2__
+#ifdef _HAS_SSE2_
     void PerPixelMath_sse( const PipelineContext &context);
 #endif
 };

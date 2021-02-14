@@ -29,7 +29,7 @@ libprojectM_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
 	HungarianMethod.hpp        Preset.hpp                 RandomNumberGenerators.hpp\
 	IdleTextures.hpp           PresetChooser.hpp          TimeKeeper.hpp\
 	KeyHandler.hpp             PresetFactory.hpp          projectM.hpp\
-  BackgroundWorker.h \
+  BackgroundWorker.h				 Intrinsics.h \
 	PCM.hpp                    PresetFactoryManager.hpp\
 	projectM.hpp projectM-opengl.h \
 	ConfigFile.h      \
