@@ -19,9 +19,8 @@
 typedef float floatPair[2];
 
 Waveform::Waveform(int _samples)
-: RenderItem(),samples(_samples), points(_samples), pointContext(_samples)
+    : RenderItem(), samples(_samples), points(_samples), pointContext(_samples)
 {
-
 	spectrum = false; /* spectrum data or pcm data */
 	dots = false; /* draw wave as dots or lines */
 	thick = false; /* draw thicker lines */
@@ -43,21 +42,34 @@ void Waveform::InitVertexAttrib() {
 }
 
 void Waveform::Draw(RenderContext &context)
- {
+{
     // scale PCM data based on vol_history to make it more or less independent of the application output volume
-    const float  vol_scale = context.beatDetect->getPCMScale();
+    const float vol_scale = context.beatDetect->getPCMScale();
 
-		// Make sure samples<=points.size().  We could reallocate points, but 512 is probably big enough.
-		size_t samples_count = this->samples;
-		if (samples_count > this->points.size())
-				samples_count = this->points.size();
+	// Make sure samples<=points.size().  We could reallocate points, but 512 is probably big enough.
+    size_t samples_count = this->samples;
+    if (samples_count > this->points.size())
+        samples_count = this->points.size();
 
-		float *value1 = new float[samples_count];
-		float *value2 = new float[samples_count];
-		context.beatDetect->pcm->getPCM( value1, samples_count, 0, spectrum, smoothing, 0);
-		context.beatDetect->pcm->getPCM( value2, samples_count, 1, spectrum, smoothing, 0);
+    float *value1 = new float[samples_count];
+    float *value2 = new float[samples_count];
+    if (spectrum)
+    {
+        context.beatDetect->pcm->getSpectrum( value1, 0, samples_count );
+        context.beatDetect->pcm->getSpectrum( value2, 1, samples_count );
+        for (int i=0 ; i<samples_count ; i++)
+        {
+            value1[i] = sqrt(value1[i]); //get actual magnitude instead of magnitude^2
+            value2[i] = sqrt(value2[i]);
+        }
+    }
+    else
+    {
+        context.beatDetect->pcm->getPCM( value1, 0, samples_count, smoothing );
+        context.beatDetect->pcm->getPCM( value2, 1, samples_count, smoothing );
+    }
 
-		float mult = scaling*( spectrum ? 0.015f :1.0f);
+    float mult = scaling * vol_scale * (spectrum ? 0.015f : 1.0f);
 #ifdef WIN32
 	std::transform(&value1[0], &value1[samples_count], &value1[0], bind2nd(std::multiplies<float>(), mult));
 	std::transform(&value2[0], &value2[samples_count], &value2[0], bind2nd(std::multiplies<float>(), mult));
@@ -68,12 +80,12 @@ void Waveform::Draw(RenderContext &context)
 
 	WaveformContext waveContext(samples_count, context.beatDetect);
 
-	for(size_t x=0;x< samples_count;x++)
+	for (size_t x=0;x< samples_count;x++)
 	{
 		waveContext.sample = x/(float)(samples_count - 1);
 		waveContext.sample_int = x;
-		waveContext.left  = vol_scale * value1[x];
-		waveContext.right = vol_scale * value2[x];
+		waveContext.left  = value1[x];
+		waveContext.right = value2[x];
 
 		points[x] = PerPoint(points[x],waveContext);
 	}
@@ -129,4 +141,4 @@ void Waveform::Draw(RenderContext &context)
 
 	delete[] value1;
 	delete[] value2;
-   }
+}

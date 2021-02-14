@@ -1,0 +1,4 @@
+[preset00]
+// test preset defaults, see BuiltinParams.cpp
+// most minimal preset to make something visible
+wave_r=1

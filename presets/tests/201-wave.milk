@@ -1,20 +1,10 @@
 [preset00]
 per_frame_1000=// simple wave
-per_frame_1001=// MODE=1
+per_frame_1001=// MODE=1 RadialBlob
 
-fDecay=0.980000
+fDecay=0
 nWaveMode=1
-bMaximizeWaveColor=1
-fWaveAlpha=4.400000
-fWaveScale=1.605447
-fZoomExponent=1.000000
-zoom=1.000000
-rot=0.006000
 warp=0.000000
-sx=1.000000
-sy=1.000000
-wave_r=0.900000
-wave_g=0.90000
-wave_b=0.900000
+wave_r=1
 wave_x=0.500000
 wave_y=0.500000

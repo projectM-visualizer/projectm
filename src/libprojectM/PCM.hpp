@@ -29,53 +29,75 @@
 #ifndef _PCM_H
 #define _PCM_H
 
+#include <stdlib.h>
 #include "dlldefs.h"
 
 
-// 1024 is more computationally intensive, but maybe better at detecting lower bass
-#define FFT_LENGTH 1024
-
+// This is number of magnitude values, float array is 2x for R and I values
+#define FFT_LENGTH 512
+class Test;
 
 class 
 #ifdef WIN32 
 DLLEXPORT 
 #endif 
-PCM {
+PCM
+{
 public:
-    float **PCMd;
-    int start;
+    static const size_t maxsamples=2048;
 
-    /** Use wave smoothing */
-    float waveSmoothing;
-
-    int *ip;
-    double *w;
-    int newsamples;
-
-    int numsamples; //size of new PCM info
-    float *pcmdataL;     //holder for most recent pcm data
-    float *pcmdataR;     //holder for most recent pcm data
-
-    /** PCM data */
-    float vdataL[FFT_LENGTH];  //holders for FFT data (spectrum)
-    float vdataR[FFT_LENGTH];
-
-    static int maxsamples;
     PCM();
     ~PCM();
-    void addPCMfloat(const float *PCMdata, int samples);
-    void addPCMfloat_2ch(const float *PCMdata, int samples);
-    void addPCM16(short [2][512]);
-    void addPCM16Data(const short* pcm_data, short samples);
-    void addPCM8( unsigned char [2][1024]);
-	void addPCM8_512( const unsigned char [2][512]);
-    void getPCM(float *data, int samples, int channel, int freq, float smoothing, int derive);
-    void freePCM();
-    int getPCMnew(float *PCMdata, int channel, int freq, float smoothing, int derive,int reset);
+    void addPCMfloat( const float *PCMdata, size_t samples );
+    void addPCMfloat_2ch( const float *PCMdata, size_t samples );
+    void addPCM16( const short [2][512] );
+    void addPCM16Data( const short* pcm_data, size_t samples );
+    void addPCM8( const unsigned char [2][1024] );
+    void addPCM8_512( const unsigned char [2][512] );
+
+    /** PCM data */
+    void getPCM(float *data, int channel, size_t samples, float smoothing);
+    void getSpectrum(float *data, int channel, size_t samples);
+
+  	static Test* test();
 
 private:
-    void _initPCM(int maxsamples);
+    // pcmd 2x2048*4b    = 16K
+    // vdata 2x512x2*8b  = 16K
+    // spectrum 2x512*4b = 4k
+    // w = 512*8b        = 4k
 
-  };
+    // circular PCM buffer
+    // adjust "volume" of PCM data as we go, this simplifies everything downstream...
+    // normalize to range [-1.0,1.0]
+    double level;
+    float pcmL[maxsamples];
+    float pcmR[maxsamples];
+    int start;
+    size_t newsamples;
+
+    // raw FFT data
+    double freqL[FFT_LENGTH*2];
+    double freqR[FFT_LENGTH*2];
+    // magnitude data
+    float spectrumL[FFT_LENGTH];
+    float spectrumR[FFT_LENGTH];
+
+    // for FFT library
+    int *ip;
+    double *w;
+
+    void freePCM();
+
+    // get data out of circular PCM buffer
+    void _copyPCM(float *PCMdata, int channel, size_t count, bool adjust_level);
+    void _copyPCM(double *PCMdata, int channel, size_t count, bool adjust_level);
+    // compute FFT
+    void _updateFFT();
+    void _updateFFT(size_t channel);
+    void _initPCM();
+
+    friend class PCMTest;
+};
 
 #endif /** !_PCM_H */

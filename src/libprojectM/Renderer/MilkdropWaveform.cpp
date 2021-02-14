@@ -35,14 +35,11 @@ void MilkdropWaveform::InitVertexAttrib() {
 
 void MilkdropWaveform::Draw(RenderContext &context)
 {
-    // wavearray is 2048 so don't exceed that
-    // TODO use named constant
-    if (samples > 2048)
-        samples = 2048;
-    if (samples > (int)PCM::maxsamples)
-        samples = (int)PCM::maxsamples;
+    // NOTE MilkdropWaveform does not have a "samples" parameter
+    // so this member variable is just being set in WaveformMath and used here
 
     WaveformMath(context);
+	assert(samples<=512);
 
     for (int waveno=1 ; waveno<=(two_waves?2:1) ; waveno++)
     {
@@ -192,8 +189,11 @@ void MilkdropWaveform::MaximizeColors(RenderContext &context)
 
 void MilkdropWaveform::WaveformMath(RenderContext &context)
 {
-	const float *pcmdataR = context.beatDetect->pcm->pcmdataR;
-	const float *pcmdataL = context.beatDetect->pcm->pcmdataL;
+    float pcmdataL[512];
+	float pcmdataR[512];
+    context.beatDetect->pcm->getPCM(pcmdataL, 0, 512, smoothing);
+    context.beatDetect->pcm->getPCM(pcmdataR, 1, 512, smoothing);
+
 	// scale PCM data based on vol_history to make it more or less independent of the application output volume
     const float  vol_scale = context.beatDetect->getPCMScale();
 
@@ -219,7 +219,7 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			rot =   0;
 			aspectScale=1.0;
 
-			samples = context.beatDetect->pcm->numsamples;
+            samples = 512;
 
 			float inv_nverts_minus_one = 1.0f/(float)(samples);
 
@@ -311,7 +311,8 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 				}
 				wavearray[i][0]=xx[i];
 				wavearray[i][1]=yy[i];
-			}											   		}
+			}
+		}
 		break;
 
 		case Blob5://EXPERIMENTAL
@@ -336,13 +337,13 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 
 
 			wave_x_temp=-2*0.4142f*(fabs(fabs(mystery)-.5f)-.5f);
+            samples = 512;
 
 			rot = -mystery*90;
 			aspectScale =1.0f+wave_x_temp;
 			wave_x_temp=-1*(x-1.0f);
-			samples = context.beatDetect->pcm->numsamples;
 
-			for ( int i=0; i<samples; i++)
+			for ( int i=0; i< samples;i++)
 			{
 				wavearray[i][0]=i/(float)  samples;
 				wavearray[i][1]=vol_scale*pcmdataR[i]*.04f*scale+wave_x_temp;
@@ -359,8 +360,7 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			rot = -mystery*90;
 			aspectScale =1.0f+wave_x_temp;
 
-
-			samples = context.beatDetect->pcm->numsamples;
+            samples = 512;
 			two_waves = true;
 
 			const float y_adj = y*y*.5f;

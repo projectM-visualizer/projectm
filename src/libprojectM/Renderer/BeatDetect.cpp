@@ -104,60 +104,45 @@ void BeatDetect::detectFromSamples()
     treb=0;
     vol=0;
 
-    // TODO: get sample rate from PCM?  Assume 44100
-    getBeatVals(44100.0f, FFT_LENGTH, pcm->pcmdataL, pcm->pcmdataR);
+    float vdataL[FFT_LENGTH];
+    float vdataR[FFT_LENGTH];
+    pcm->getSpectrum(vdataL, 0, FFT_LENGTH);
+    pcm->getSpectrum(vdataR, 1, FFT_LENGTH);
+    getBeatVals(44100.0f, FFT_LENGTH, vdataL, vdataR);
 }
 
 
 
 float BeatDetect::getPCMScale()
 {
-    // the constant here just depends on the particulars of getBeatVals(), the
-    // range of vol_history, and what "looks right".
+    // To simplify things, we try to scale pcm [-1.0 1.0] in PCM.cpp
     // larger value means larger, more jagged waveform.
-
-    // this is also impacted by beatSensitivity.
-    return (1.5 / fmax(0.0001f,sqrtf(vol_history)))*beatSensitivity;
+    return beatSensitivity;
 }
-
 
 
 void BeatDetect::getBeatVals( float samplerate, unsigned fft_length, float *vdataL, float *vdataR )
 {
-    assert( 512==fft_length || 1024==fft_length );    // should be power of 2, expect >= 512
+    assert(fft_length >= 256);
+    unsigned ranges[4]  = {0, 3, 23, 255};
 
-    // TODO: compute ranges based on samplerate
-    // roughly aiming or basee-mid cutoff of 220ish and mid-treb cutoff of 2000ish, if I did my math right
-    unsigned ranges512[4]  = {0, 3 /* 3*441000/512 = =258 */, 23 /* 23*441000/512 = =1981 */ , 200};
-    unsigned ranges1024[4] = {0, 5 /* 5*44100/1024 == 215 */, 46 /* 46*44100/1024 == 1981  */, 400};
-    unsigned *ranges = fft_length==1024 ? ranges1024 : ranges512;
-
-    bass_instant = 0;
-    for (unsigned i=ranges[0]+1 ; i<=ranges[1] ; i++)
-    {
-        bass_instant += (vdataL[i*2]*vdataL[i*2]) + (vdataR[i*2]*vdataR[i*2]);
-    }
-    bass_instant *= 100.0/(ranges[1]-ranges[0]);
+    bass_instant=0;
+    for (unsigned i=ranges[0] ; i<ranges[1] ; i++)
+        bass_instant += vdataL[i] + vdataR[i];
     bass_history -= bass_buffer[beat_buffer_pos] * (1.0/BEAT_HISTORY_LENGTH);
     bass_buffer[beat_buffer_pos] = bass_instant;
     bass_history += bass_instant * (1.0/BEAT_HISTORY_LENGTH);
 
-    mid_instant = 0;
-    for (unsigned i=ranges[1]+1 ; i<=ranges[2] ; i++)
-    {
-        mid_instant += (vdataL[i*2]*vdataL[i*2]) + (vdataR[i*2]*vdataR[i*2]);
-    }
-    mid_instant *= 100.0/(ranges[2]-ranges[1]);
+    mid_instant=0;
+    for (unsigned i=ranges[1] ; i<ranges[2] ; i++)
+        mid_instant += vdataL[i] + vdataR[i];
     mid_history -= mid_buffer[beat_buffer_pos] * (1.0/BEAT_HISTORY_LENGTH);
     mid_buffer[beat_buffer_pos] = mid_instant;
     mid_history += mid_instant * (1.0/BEAT_HISTORY_LENGTH);
 
     treb_instant = 0;
-    for (unsigned i=ranges[2]+1 ; i<=ranges[3] ; i++)
-    {
-        treb_instant += (vdataL[i*2]*vdataL[i*2]) + (vdataR[i*2]*vdataR[i*2]);
-    }
-    treb_instant *= 90.0/(ranges[3]-ranges[2]);
+    for (unsigned i=ranges[2] ; i<ranges[3] ; i++)
+        treb_instant += vdataL[i] + vdataR[i];
     treb_history -= treb_buffer[beat_buffer_pos] * (1.0/BEAT_HISTORY_LENGTH);
     treb_buffer[beat_buffer_pos] = treb_instant;
     treb_history += treb_instant * (1.0/BEAT_HISTORY_LENGTH);
@@ -169,9 +154,9 @@ void BeatDetect::getBeatVals( float samplerate, unsigned fft_length, float *vdat
 
 //    fprintf(stderr, "%6.3f %6.2f %6.3f\n", bass_history/vol_history, mid_history/vol_history, treb_history/vol_history);
     bass = bass_instant / fmax(0.0001, 1.3 * bass_history + 0.2*vol_history);
-    mid  =  mid_instant / fmax(0.0001, 1.3 *  mid_history + 0.2*vol_history);
+    mid  = mid_instant  / fmax(0.0001, 1.3 *  mid_history + 0.2*vol_history);
     treb = treb_instant / fmax(0.0001, 1.3 * treb_history + 0.2*vol_history);
-    vol = vol_instant / fmax(0.0001, 1.5f * vol_history);
+    vol  = vol_instant  / fmax(0.0001, 1.5f * vol_history);
 
     if ( projectM_isnan( treb ) ) {
         treb = 0.0;
@@ -188,6 +173,10 @@ void BeatDetect::getBeatVals( float samplerate, unsigned fft_length, float *vdat
     bass_att = .6f * bass_att + .4f * bass;
     vol_att =  .6f * vol_att + .4f * vol;
 
+/*
+ I don't think this should go here
+ these numbers feedback into themselves e.g. see code just above.
+ It makes more sense to 'hack' these values in PresetInputs::update() if desired.
     // Use beat sensitivity as a multiplier
     // 0 is "dead"
     // 5 is pretty wild so above that doesn't make sense
@@ -199,6 +188,7 @@ void BeatDetect::getBeatVals( float samplerate, unsigned fft_length, float *vdat
     treb = treb * beatSensitivity;
     vol_att = vol_att * beatSensitivity;
     vol = vol * beatSensitivity;
+*/
 
     if (bass_att>100) bass_att=100;
     if (bass >100) bass=100;

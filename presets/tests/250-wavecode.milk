@@ -9,7 +9,6 @@ fWaveAlpha=4.400000
 fWaveScale=1.5
 fZoomExponent=1.000000
 zoom=1.000000
-rot=0.006000
 warp=0.000000
 sx=1.000000
 sy=1.000000
@@ -30,7 +29,7 @@ wavecode_0_r=0.000000
 wavecode_0_g=1.000000
 wavecode_0_b=1.000000
 wavecode_0_a=1.000000
-wave_0_per_point41=x=x+value1;
-wave_0_per_point42=y=y+value2;
+wave_0_per_point41=x=x+value1/2
+wave_0_per_point42=y=y+value2/2;
 
 per_frame_1=zoom=1
