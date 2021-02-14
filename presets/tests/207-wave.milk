@@ -1,9 +1,9 @@
 [preset00]
 per_frame_1000=// simple wave
-per_frame_1001=// MODE=0 Circle
+per_frame_1001=// MODE=7 DoubleLine
 
 fDecay=0.980000
-nWaveMode=0
+nWaveMode=7
 bMaximizeWaveColor=1
 fWaveAlpha=4.400000
 fWaveScale=1.605447

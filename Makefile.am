@@ -18,8 +18,8 @@ pm_font__DATA = fonts/Vera.ttf fonts/VeraMono.ttf
 
 # find and install all preset files
 install-data-local:
-	find "$(PRESETSDIR)" -type d -exec $(MKDIR_P) "$(DESTDIR)/$(pm_data_dir)/{}" \;
-	find "$(PRESETSDIR)" -type f -exec $(INSTALL_DATA) "{}" "$(DESTDIR)/$(pm_data_dir)/{}" \;
+	find "$(PRESETSDIR)" -path "$(PRESETSDIR)/tests" -prune -o -type d -exec $(MKDIR_P) "$(DESTDIR)/$(pm_data_dir)/{}" \;
+	find "$(PRESETSDIR)" -path "$(PRESETSDIR)/tests" -prune -o -type f -exec $(INSTALL_DATA) "{}" "$(DESTDIR)/$(pm_data_dir)/{}" \;
 
 # from https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable answer: https://stackoverflow.com/a/30960268
 # ptomato https://stackoverflow.com/users/172999/ptomato
