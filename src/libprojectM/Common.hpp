@@ -31,6 +31,8 @@
 #include <cstdarg>
 #include <cassert>
 
+#include "Intrinsics.h"
+
 #ifdef _MSC_VER
 #define strcasecmp(s, t) _strcmpi(s, t)
 #endif

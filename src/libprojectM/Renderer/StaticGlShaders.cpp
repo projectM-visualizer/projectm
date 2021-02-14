@@ -467,7 +467,7 @@ uniform sampler2D texture_sampler;
 out vec4 color;
 
 void main(){
-    color = fragment_color * texture2D(texture_sampler, fragment_texture.st);
+    color = fragment_color * texture(texture_sampler, fragment_texture.st);
 }
 )";
 
@@ -676,17 +676,17 @@ void main(){
     vec2 uv2 = fragment_texture.xy + srctexsize.zw*vec2(1.0,1.0);
 
     vec3 blur =
-        (texture2D(texture_sampler, uv2 + vec2(d1 * srctexsize.z, 0)).xyz +
-         texture2D(texture_sampler, uv2 + vec2(-d1 * srctexsize.z, 0)).xyz) *
+        (texture(texture_sampler, uv2 + vec2(d1 * srctexsize.z, 0)).xyz +
+        texture(texture_sampler, uv2 + vec2(-d1 * srctexsize.z, 0)).xyz) *
             w1 +
-        (texture2D(texture_sampler, uv2 + vec2(d2 * srctexsize.z, 0)).xyz +
-         texture2D(texture_sampler, uv2 + vec2(-d2 * srctexsize.z, 0)).xyz) *
+        (texture(texture_sampler, uv2 + vec2(d2 * srctexsize.z, 0)).xyz +
+        texture(texture_sampler, uv2 + vec2(-d2 * srctexsize.z, 0)).xyz) *
             w2 +
-        (texture2D(texture_sampler, uv2 + vec2(d3 * srctexsize.z, 0)).xyz +
-         texture2D(texture_sampler, uv2 + vec2(-d3 * srctexsize.z, 0)).xyz) *
+        (texture(texture_sampler, uv2 + vec2(d3 * srctexsize.z, 0)).xyz +
+        texture(texture_sampler, uv2 + vec2(-d3 * srctexsize.z, 0)).xyz) *
             w3 +
-        (texture2D(texture_sampler, uv2 + vec2(d4 * srctexsize.z, 0)).xyz +
-         texture2D(texture_sampler, uv2 + vec2(-d4 * srctexsize.z, 0)).xyz) *
+        (texture(texture_sampler, uv2 + vec2(d4 * srctexsize.z, 0)).xyz +
+        texture(texture_sampler, uv2 + vec2(-d4 * srctexsize.z, 0)).xyz) *
             w4;
 
     blur.xyz *= w_div;
@@ -730,11 +730,11 @@ void main(){
     vec2 uv2 = fragment_texture.xy + srctexsize.zw*vec2(0,0);
 
     vec3 blur =
-        (texture2D(texture_sampler, uv2 + vec2(0, d1 * srctexsize.w)).xyz +
-         texture2D(texture_sampler, uv2 + vec2(0, -d1 * srctexsize.w)).xyz) *
+        (texture(texture_sampler, uv2 + vec2(0, d1 * srctexsize.w)).xyz +
+        texture(texture_sampler, uv2 + vec2(0, -d1 * srctexsize.w)).xyz) *
             w1 +
-        (texture2D(texture_sampler, uv2 + vec2(0, d2 * srctexsize.w)).xyz +
-         texture2D(texture_sampler, uv2 + vec2(0, -d2 * srctexsize.w)).xyz) *
+        (texture(texture_sampler, uv2 + vec2(0, d2 * srctexsize.w)).xyz +
+        texture(texture_sampler, uv2 + vec2(0, -d2 * srctexsize.w)).xyz) *
             w2;
     blur.xyz *= w_div;
 

@@ -39,19 +39,15 @@ build-mac: macOS/Build/Products/Debug/presets
 	@echo "Products built in macOS/Build/Products/Debug"
 	open macOS/Build/Products/Debug
 
+ProjectM.pkg:
+	xcrun xcodebuild -scheme "ProjectM Installer" -configuration Release archive -archivePath build/ProjectM.xcarchive
+
 # do a macOS build
-dist-mac: dist
-	./autogen.sh
-	make clean
-	./configure --disable-sdlframework
+dist-mac: dist ProjectM.pkg
 	rm -rf dist
-	xcrun xcodebuild -scheme "projectM SDL" -configuration Release archive -archivePath build/ProjectM.xcarchive
-	xcrun xcodebuild -scheme "iProjectM" -configuration Release archive -archivePath build/iTunes.xcarchive
 	mkdir -p dist
-# mv build/ProjectM.xcarchive/Products/Applications/projectM\ SDL.app dist/
-	mv src/projectM-iTunes/iTunes\ Visualizer.pkg dist/Music.app-plugin-macOS.pkg
-	mv src/projectM-sdl/projectM\ SDL.pkg dist/projectM-macOS.pkg
+	mv ProjectM.pkg dist/projectM-macOS.pkg
 	mv projectM-*.tar.gz dist/
-	@echo "Success!\nBuilt iTunes plugin installer and SDL apps in dist/"
+	@echo "Success!\nBuilt plugin installer and SDL app installer in dist/"
 
 CLEANFILES+=src/libprojectM/config.inp
