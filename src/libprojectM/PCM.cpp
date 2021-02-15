@@ -35,6 +35,7 @@
 #include <cassert>
 
 
+// see https://github.com/projectM-visualizer/projectm/issues/161
 class AutoLevel
 {
 private:

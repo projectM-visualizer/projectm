@@ -194,8 +194,16 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
     context.beatDetect->pcm->getPCM(pcmdataL, 0, 512, smoothing);
     context.beatDetect->pcm->getPCM(pcmdataR, 1, 512, smoothing);
 
-	// scale PCM data based on vol_history to make it more or less independent of the application output volume
+    // tie size of waveform to beatSensitivity
     const float  vol_scale = context.beatDetect->getPCMScale();
+    if (vol_scale != 1.0)
+    {
+        for (int i=0 ; i<512 ; i++)
+        {
+            pcmdataL[i] *= vol_scale;
+            pcmdataR[i] *= vol_scale;
+        }
+    }
 
     float r2, theta;
 
@@ -223,14 +231,14 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 
 			float inv_nverts_minus_one = 1.0f/(float)(samples);
 
-	        float last_value =  vol_scale * (pcmdataR[samples-1]+pcmdataL[samples-1]);
-			float first_value = vol_scale * (pcmdataR[0]+pcmdataL[0]);
+	        float last_value =  pcmdataR[samples-1]+pcmdataL[samples-1];
+			float first_value = pcmdataR[0]+pcmdataL[0];
 			float offset = first_value-last_value;
 
 			for ( int i=0;i<samples;i++)
 			{
 
-			  float value = vol_scale * (pcmdataR[i]+pcmdataL[i]);
+			  float value = pcmdataR[i]+pcmdataL[i];
 			  value += offset * (i/(float)samples);
 
               r2=(0.5f + 0.4f*.12f*value*scale + mystery)*.5f;
@@ -250,8 +258,8 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			samples = 512-32;
 			for ( int i=0;i<512-32;i++)
 			{
-                theta=vol_scale*pcmdataL[i+32]*0.06f*scale * 1.57f + context.time*2.3f;
-                r2=(0.53f + 0.43f*vol_scale*pcmdataR[i]*0.12f*scale+ mystery)*.5f;
+                theta=pcmdataL[i+32]*0.06f*scale * 1.57f + context.time*2.3f;
+                r2=(0.53f + 0.43f*pcmdataR[i]*0.12f*scale+ mystery)*.5f;
 
                 wavearray[i][0]=(r2*cos(theta)*(context.aspectCorrect ? context.aspectRatio : 1.0f)+x);
                 wavearray[i][1]=(r2*sin(theta)+temp_y);
@@ -267,8 +275,8 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 
 			for ( int i=0;i<512-32;i++)
 			{
-				wavearray[i][0]=(vol_scale*pcmdataR[i]*scale*0.5f*(context.aspectCorrect ? context.aspectRatio : 1.0f) + x);
-				wavearray[i][1]=(vol_scale*pcmdataL[i+32]*scale*0.5f + temp_y);
+				wavearray[i][0]=(pcmdataR[i]*scale*0.5f*(context.aspectCorrect ? context.aspectRatio : 1.0f) + x);
+				wavearray[i][1]=(pcmdataL[i+32]*scale*0.5f + temp_y);
 			}
 
 			break;
@@ -282,8 +290,8 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 
 			for ( int i=0;i<512-32;i++)
 			{
-				wavearray[i][0]=(vol_scale*pcmdataR[i] * scale*0.5f + x);
-				wavearray[i][1]=( (vol_scale*pcmdataL[i+32]*scale*0.5f + temp_y));
+				wavearray[i][0]=(pcmdataR[i] * scale*0.5f + x);
+				wavearray[i][1]=( (pcmdataL[i+32]*scale*0.5f + temp_y));
 			}
 
 			break;
@@ -301,8 +309,8 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			for (int i=0; i<512-32; i++)
 			{
 				xx[i] = -1.0f + 2.0f*(i/(512.0f-32.0f)) + x;
-				yy[i] =  0.4f* vol_scale*pcmdataL[i]*0.47f*scale + temp_y;
-				xx[i] += 0.4f* vol_scale*pcmdataR[i]*0.44f*scale;
+				yy[i] =  0.4f* pcmdataL[i]*0.47f*scale + temp_y;
+				xx[i] += 0.4f* pcmdataR[i]*0.44f*scale;
 
 				if (i>1)
 				{
@@ -326,8 +334,8 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 
 			for ( int i=0;i<512-32;i++)
 			{
-				float x0 = (vol_scale*pcmdataR[i]*vol_scale*pcmdataL[i+32] + vol_scale*pcmdataL[i+32]*vol_scale*pcmdataR[i]);
-				float y0 = (vol_scale*pcmdataR[i]*vol_scale*pcmdataR[i] - vol_scale*pcmdataL[i+32]*vol_scale*pcmdataL[i+32]);
+				float x0 = (pcmdataR[i]*pcmdataL[i+32] + pcmdataL[i+32]*pcmdataR[i]);
+				float y0 = (pcmdataR[i]*pcmdataR[i] - pcmdataL[i+32]*pcmdataL[i+32]);
 				wavearray[i][0]=((x0*cos_rot - y0*sin_rot)*scale*0.5f*(context.aspectCorrect ? context.aspectRatio : 1.0f) + x);
 				wavearray[i][1]=( (x0*sin_rot + y0*cos_rot)*scale*0.5f + temp_y);
 			}
@@ -346,7 +354,7 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			for ( int i=0; i< samples;i++)
 			{
 				wavearray[i][0]=i/(float)  samples;
-				wavearray[i][1]=vol_scale*pcmdataR[i]*.04f*scale+wave_x_temp;
+				wavearray[i][1]=pcmdataR[i]*.04f*scale+wave_x_temp;
 			}
 			//	  printf("%f %f\n",renderTarget->texsize*wave_y_temp,wave_y_temp);
 
@@ -370,13 +378,13 @@ void MilkdropWaveform::WaveformMath(RenderContext &context)
 			for ( int i=0;i<samples;i++)
 			{
 				wavearray[i][0]=i/((float)  samples);
-				wavearray[i][1]= vol_scale*pcmdataL[i]*.04f*scale+(wave_y_temp+y_adj);
+				wavearray[i][1]= pcmdataL[i]*.04f*scale+(wave_y_temp+y_adj);
 			}
 
 			for ( int i=0;i<samples;i++)
 			{
 				wavearray2[i][0]=i/((float)  samples);
-				wavearray2[i][1]=vol_scale*pcmdataR[i]*.04f*scale+(wave_y_temp-y_adj);
+				wavearray2[i][1]=pcmdataR[i]*.04f*scale+(wave_y_temp-y_adj);
 			}
 
 			break;

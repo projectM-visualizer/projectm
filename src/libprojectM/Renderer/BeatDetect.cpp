@@ -112,15 +112,6 @@ void BeatDetect::detectFromSamples()
 }
 
 
-
-float BeatDetect::getPCMScale()
-{
-    // To simplify things, we try to scale pcm [-1.0 1.0] in PCM.cpp
-    // larger value means larger, more jagged waveform.
-    return beatSensitivity;
-}
-
-
 void BeatDetect::getBeatVals( float samplerate, unsigned fft_length, float *vdataL, float *vdataR )
 {
     assert(fft_length >= 256);
@@ -172,23 +163,6 @@ void BeatDetect::getBeatVals( float samplerate, unsigned fft_length, float *vdat
     mid_att  = .6f * mid_att + .4f * mid;
     bass_att = .6f * bass_att + .4f * bass;
     vol_att =  .6f * vol_att + .4f * vol;
-
-/*
- I don't think this should go here
- these numbers feedback into themselves e.g. see code just above.
- It makes more sense to 'hack' these values in PresetInputs::update() if desired.
-    // Use beat sensitivity as a multiplier
-    // 0 is "dead"
-    // 5 is pretty wild so above that doesn't make sense
-    bass_att = bass_att * beatSensitivity;
-    bass = bass * beatSensitivity;
-    mid_att = mid_att * beatSensitivity;
-    mid = mid * beatSensitivity;
-    treb_att = treb_att * beatSensitivity;
-    treb = treb * beatSensitivity;
-    vol_att = vol_att * beatSensitivity;
-    vol = vol * beatSensitivity;
-*/
 
     if (bass_att>100) bass_att=100;
     if (bass >100) bass=100;
