@@ -69,23 +69,15 @@ void Waveform::Draw(RenderContext &context)
         context.beatDetect->pcm->getPCM( value2, 1, samples_count, smoothing );
     }
 
-    float mult = scaling * vol_scale * (spectrum ? 0.015f : 1.0f);
-#ifdef WIN32
-	std::transform(&value1[0], &value1[samples_count], &value1[0], bind2nd(std::multiplies<float>(), mult));
-	std::transform(&value2[0], &value2[samples_count], &value2[0], bind2nd(std::multiplies<float>(), mult));
-#else
-	std::transform(&value1[0], &value1[samples_count], &value1[0], std::bind(std::multiplies<float>(), std::placeholders::_1, mult));
-	std::transform(&value2[0], &value2[samples_count], &value2[0], std::bind(std::multiplies<float>(), std::placeholders::_1, mult));
-#endif /** WIN32 */
-
+    const float mult = scaling * vol_scale * (spectrum ? 0.015f : 1.0f);
 	WaveformContext waveContext(samples_count, context.beatDetect);
 
 	for (size_t x=0;x< samples_count;x++)
 	{
 		waveContext.sample = x/(float)(samples_count - 1);
 		waveContext.sample_int = x;
-		waveContext.left  = value1[x];
-		waveContext.right = value2[x];
+		waveContext.left  = value1[x] * mult;
+		waveContext.right = value2[x] * mult;
 
 		points[x] = PerPoint(points[x],waveContext);
 	}
