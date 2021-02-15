@@ -24,7 +24,6 @@
  * Takes sound data from wherever and hands it back out.
  * Returns PCM Data or spectrum data, or the derivative of the PCM data
  */
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
@@ -274,7 +273,6 @@ void PCM::getPCM(float *data, int channel, size_t samples, float smoothing)
         freq[1] *= 1.0 / (1.0 + (FFT_LENGTH*FFT_LENGTH*k));
     }
 
-
     // inverse fft
     rdft(FFT_LENGTH*2, -1, freq, ip, w);
     for (size_t j = 0; j < FFT_LENGTH*2; j++)
@@ -288,19 +286,36 @@ void PCM::getPCM(float *data, int channel, size_t samples, float smoothing)
         data[i] = 0;
 }
 
-void PCM::getSpectrum(float *data, int channel, size_t samples)
+
+/* NOTE: Still don't have real support for smoothing parameter, but this gets close to the milkdrop2 default look */
+void PCM::getSpectrum(float *data, int channel, size_t samples, float smoothing)
 {
     assert(channel == 0 || channel == 1);
     _updateFFT();
 
-    // compute magnitudes from R and I value
-    float *spectrum = channel==0 ? spectrumL : spectrumR;
-    // lets just ignore the first pair
-    size_t count = samples <= FFT_LENGTH ? samples : FFT_LENGTH;
-    for (size_t i=0 ; i<count ; i++)
-        data[i] = spectrum[i];
-    for (size_t i=count ; i<samples ; i++)
-        data[0] = 0;
+    float *spectrum = channel == 0 ? spectrumL : spectrumR;
+    if (smoothing == 0)
+    {
+        size_t count = samples <= FFT_LENGTH ? samples : FFT_LENGTH;
+        for (size_t i = 0; i < count; i++)
+            data[i] = spectrum[i];
+        for (size_t i = count; i < samples; i++)
+            data[0] = 0;
+    }
+    else
+    {
+        float l2 = 0, l1 =0 , c = 0, r1, r2;
+        r1 = spectrum[0]; r2 = spectrum[0+1];
+        for (size_t i = 0; i < samples; i++)
+        {
+            l2 = l1;
+            l1 = c;
+            c = r1;
+            r1 = r2;
+            r2 = (i + 2) >= samples ? 0 : spectrum[i + 2];
+            data[i] = (l2 + 4 * l1 + 6 * c + 4 * r1 + r2) / 16.0;
+        }
+    }
 }
 
 void PCM::_updateFFT()
@@ -321,11 +336,14 @@ void PCM::_updateFFT(size_t channel)
     _copyPCM(freq, channel, FFT_LENGTH*2);
     rdft(FFT_LENGTH*2, 1, freq, ip, w);
 
+    // compute magnitude data (m^2 actually)
     float *spectrum = channel==0 ? spectrumL : spectrumR;
-    // compute magnitude data (magnitude^2 actually)
-    for (int i=1 ; i<FFT_LENGTH ; i++)
-        spectrum[i-1] = (freq[i*2]*freq[i*2]+freq[i*2+1]*freq[i*2+1]);
-    spectrum[FFT_LENGTH-1] = (freq[1]*freq[1]);
+    for (size_t i=1 ; i<FFT_LENGTH ; i++)
+    {
+        double m2 = (freq[i * 2] * freq[i * 2] + freq[i * 2 + 1] * freq[i * 2 + 1]);
+        spectrum[i-1] = m2 * ((double)i)/FFT_LENGTH;
+    }
+    spectrum[FFT_LENGTH-1] = freq[1] * freq[1];
 }
 
 inline double constrain(double a, double mn, double mx)
@@ -471,18 +489,13 @@ public:
             float *freq0 = new float[FFT_LENGTH];
             float *freq1 = new float[FFT_LENGTH];
             pcm.level = 1.0;
-            pcm.getSpectrum(freq0, 0, FFT_LENGTH);
-            pcm.getSpectrum(freq1, 0, FFT_LENGTH);
+            pcm.getSpectrum(freq0, 0, FFT_LENGTH, 0.0);
+            pcm.getSpectrum(freq1, 0, FFT_LENGTH, 0.0);
             // freq0 and freq1 should be equal
             for (size_t i = 0; i < FFT_LENGTH; i++)
                 TEST(eq(freq0[i], freq1[i]));
-            TEST(freq0[0] > 100000);
-            TEST(freq0[1] < 20);
-            for (size_t i = 2; i < 5; i++)
-                TEST(freq0[i] < 10);
-            for (size_t i = 5; i < 20; i++)
-                TEST(freq0[i] < 1);
-            for (size_t i = 20; i < FFT_LENGTH; i++)
+            TEST(freq0[0] > 500);
+            for (size_t i = 1; i < FFT_LENGTH; i++)
                 TEST(freq0[i] < 0.1);
             free(data);
             free(freq0);
@@ -498,8 +511,8 @@ public:
             float *freq0 = new float[FFT_LENGTH];
             float *freq1 = new float[FFT_LENGTH];
             pcm.level = 1.0;
-            pcm.getSpectrum(freq0, 0, FFT_LENGTH);
-            pcm.getSpectrum(freq1, 0, FFT_LENGTH);
+            pcm.getSpectrum(freq0, 0, FFT_LENGTH, 0.0);
+            pcm.getSpectrum(freq1, 0, FFT_LENGTH, 0.0);
             // freq0 and freq1 should be equal
             for (size_t i = 0; i < FFT_LENGTH; i++)
                 TEST(eq(freq0[i], freq1[i]));

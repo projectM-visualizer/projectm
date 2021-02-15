@@ -58,7 +58,7 @@ public:
 
     /** PCM data */
     void getPCM(float *data, int channel, size_t samples, float smoothing);
-    void getSpectrum(float *data, int channel, size_t samples);
+    void getSpectrum(float *data, int channel, size_t samples, float smoothing);
 
   	static Test* test();
 

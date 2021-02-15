@@ -55,13 +55,9 @@ void Waveform::Draw(RenderContext &context)
     float *value2 = new float[samples_count];
     if (spectrum)
     {
-        context.beatDetect->pcm->getSpectrum( value1, 0, samples_count );
-        context.beatDetect->pcm->getSpectrum( value2, 1, samples_count );
-        for (size_t i=0 ; i<samples_count ; i++)
-        {
-            value1[i] = sqrt(value1[i]); //get actual magnitude instead of magnitude^2
-            value2[i] = sqrt(value2[i]);
-        }
+        // TODO support smoothing parameter for getSpectrum()
+        context.beatDetect->pcm->getSpectrum( value1, 0, samples_count, 1.0 );
+        context.beatDetect->pcm->getSpectrum( value2, 1, samples_count, 1.0 );
     }
     else
     {
@@ -69,7 +65,7 @@ void Waveform::Draw(RenderContext &context)
         context.beatDetect->pcm->getPCM( value2, 1, samples_count, smoothing );
     }
 
-    const float mult = scaling * vol_scale * (spectrum ? 0.015f : 1.0f);
+    const float mult = scaling * vol_scale * (spectrum ? 0.005f : 1.0f);
 	WaveformContext waveContext(samples_count, context.beatDetect);
 
 	for (size_t x=0;x< samples_count;x++)

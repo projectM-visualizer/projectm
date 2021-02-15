@@ -106,8 +106,8 @@ void BeatDetect::detectFromSamples()
 
     float vdataL[FFT_LENGTH];
     float vdataR[FFT_LENGTH];
-    pcm->getSpectrum(vdataL, 0, FFT_LENGTH);
-    pcm->getSpectrum(vdataR, 1, FFT_LENGTH);
+    pcm->getSpectrum(vdataL, 0, FFT_LENGTH, 0.0);
+    pcm->getSpectrum(vdataR, 1, FFT_LENGTH, 0.0);
     getBeatVals(44100.0f, FFT_LENGTH, vdataL, vdataR);
 }
 
