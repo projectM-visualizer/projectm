@@ -153,10 +153,10 @@ void BeatDetect::getBeatVals( float samplerate, unsigned fft_length, float *vdat
     vol_history += vol_instant * (1.0/BEAT_HISTORY_LENGTH);
 
 //    fprintf(stderr, "%6.3f %6.2f %6.3f\n", bass_history/vol_history, mid_history/vol_history, treb_history/vol_history);
-    bass = bass_instant / fmax(0.0001, 1.3 * bass_history + 0.2*vol_history);
-    mid  = mid_instant  / fmax(0.0001, 1.3 *  mid_history + 0.2*vol_history);
-    treb = treb_instant / fmax(0.0001, 1.3 * treb_history + 0.2*vol_history);
-    vol  = vol_instant  / fmax(0.0001, 1.5f * vol_history);
+    bass = bass_instant / fmax(0.0001, bass_history);
+    mid  = mid_instant  / fmax(0.0001, mid_history);
+    treb = treb_instant / fmax(0.0001, treb_history);
+    vol  = vol_instant  / fmax(0.0001, vol_history);
 
     if ( projectM_isnan( treb ) ) {
         treb = 0.0;

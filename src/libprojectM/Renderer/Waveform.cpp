@@ -57,7 +57,7 @@ void Waveform::Draw(RenderContext &context)
     {
         context.beatDetect->pcm->getSpectrum( value1, 0, samples_count );
         context.beatDetect->pcm->getSpectrum( value2, 1, samples_count );
-        for (int i=0 ; i<samples_count ; i++)
+        for (size_t i=0 ; i<samples_count ; i++)
         {
             value1[i] = sqrt(value1[i]); //get actual magnitude instead of magnitude^2
             value2[i] = sqrt(value2[i]);

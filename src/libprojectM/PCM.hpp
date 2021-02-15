@@ -36,6 +36,7 @@
 // This is number of magnitude values, float array is 2x for R and I values
 #define FFT_LENGTH 512
 class Test;
+class AutoLevel;
 
 class 
 #ifdef WIN32 
@@ -70,7 +71,6 @@ private:
     // circular PCM buffer
     // adjust "volume" of PCM data as we go, this simplifies everything downstream...
     // normalize to range [-1.0,1.0]
-    double level;
     float pcmL[maxsamples];
     float pcmR[maxsamples];
     int start;
@@ -90,14 +90,17 @@ private:
     void freePCM();
 
     // get data out of circular PCM buffer
-    void _copyPCM(float *PCMdata, int channel, size_t count, bool adjust_level);
-    void _copyPCM(double *PCMdata, int channel, size_t count, bool adjust_level);
+    void _copyPCM(float *PCMdata, int channel, size_t count);
+    void _copyPCM(double *PCMdata, int channel, size_t count);
     // compute FFT
     void _updateFFT();
     void _updateFFT(size_t channel);
-    void _initPCM();
 
     friend class PCMTest;
+
+    // state for tracking audio level
+    double level;
+    class AutoLevel *leveler;
 };
 
 #endif /** !_PCM_H */
