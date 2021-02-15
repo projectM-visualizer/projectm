@@ -247,19 +247,33 @@ void PCM::getPCM(float *data, int channel, size_t samples, float smoothing)
     for (int i=0 ; i<FFT_LENGTH*2 ; i++)
         freq[i] = from[i];
 
-    // apply gaussian filter
-    // precompute constant:
-    //   as smoothing->1 k->-inf, so freq->0 (more smoothing)
-    //   also precompute constant part of (i/FFT_LENGTH)^2
-    // The visible effects ramp up as you smoothing gets close to 1.0 (consistent with milkdrop2)
-    double k=-1.0/((1-smoothing)*(1-smoothing)*FFT_LENGTH*FFT_LENGTH);
-    for (int i=1 ; i<FFT_LENGTH ; i++)
+    // The visible effects ramp up as you smoothing value gets close to 1.0 (consistent with milkdrop2)
+    if (1==0) // gaussian
     {
-        float g = pow(2,i*i*k-1);
-        freq[i*2]   *= g;
-        freq[i*2+1] *= g;
+        // precompute constant:
+        double k = -1.0 / ((1 - smoothing) * (1 - smoothing) * FFT_LENGTH * FFT_LENGTH);
+        for (int i = 1; i < FFT_LENGTH; i++)
+        {
+            float g = pow(M_E, i * i * k);
+            freq[i * 2] *= g;
+            freq[i * 2 + 1] *= g;
+        }
+        freq[1] *= pow(M_E, FFT_LENGTH*FFT_LENGTH*k);
     }
-    freq[1] *= pow(2,k);
+    else
+    {
+        // butterworth
+        // this might be slightly faster to compute. pow() is expensive
+        double k = 1.0 / ((1 - smoothing) * (1 - smoothing) * FFT_LENGTH * FFT_LENGTH);
+        for (int i = 1; i < FFT_LENGTH; i++)
+        {
+            float b = 1.0 / (1.0 + (i * i * k));
+            freq[i * 2] *= b;
+            freq[i * 2 + 1] *= b;
+        }
+        freq[1] *= 1.0 / (1.0 + (FFT_LENGTH*FFT_LENGTH*k));
+    }
+
 
     // inverse fft
     rdft(FFT_LENGTH*2, -1, freq, ip, w);
