@@ -8,6 +8,9 @@
       location = "group:src/projectM-sdl/SDLprojectM.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:src/projectM-iTunes/iTunes Plugin.xcodeproj">
+      location = "group:src/projectM-MusicPlugin/Music Plugin.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Installer.xcodeproj">
    </FileRef>
 </Workspace>
