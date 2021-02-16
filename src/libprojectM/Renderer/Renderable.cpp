@@ -189,7 +189,13 @@ void Shape::Draw(RenderContext &context)
 				context.aspectRatio=1.0;
 			}
 		}
-
+		else
+        {
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, context.textureManager->getMainTexture()->texID);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        }
 
 		//Define the center point of the shape
         buffer_data[0].color_r = r;
