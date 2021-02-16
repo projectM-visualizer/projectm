@@ -111,7 +111,7 @@
 		168E975125D7FDDA0073B1B8 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				168E975625D7FDDA0073B1B8 /* iProjectM.bundle */,
+				168E975625D7FDDA0073B1B8 /* ProjectM.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -173,10 +173,10 @@
 			remoteRef = 1648A64725D7FD520075B8FC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		168E975625D7FDDA0073B1B8 /* iProjectM.bundle */ = {
+		168E975625D7FDDA0073B1B8 /* ProjectM.bundle */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = iProjectM.bundle;
+			path = ProjectM.bundle;
 			remoteRef = 168E975525D7FDDA0073B1B8 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -200,7 +200,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -euxo pipefail\n\necho BUILT_PRODUCTS_DIR $BUILT_PRODUCTS_DIR\nls \"$BUILT_PRODUCTS_DIR\"\n\nmkdir -p \"$TEMP_DIR\"\n\nSDL_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-SDL.pkg\"\nMUSIC_PLUGIN_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\"\n\n#productbuild --timestamp --sign '5926VBQM6Y' --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\nproductbuild --package \"$SDL_PKG\" --package \"$MUSIC_PLUGIN_PKG\" \"$TEMP_DIR/ProjectM.pkg\"\n\necho \"Created installer package $TEMP_DIR/ProjectM.pkg\"\n\ncp -rp \"$TEMP_DIR/ProjectM.pkg\" \"$SRCROOT/\"\n";
+			shellScript = "set -euxo pipefail\n\necho BUILT_PRODUCTS_DIR $BUILT_PRODUCTS_DIR\nls \"$BUILT_PRODUCTS_DIR\"\n\nmkdir -p \"$TEMP_DIR\"\n\nSDL_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-SDL.pkg\"\nMUSIC_PLUGIN_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\"\n\nproductbuild --timestamp --sign '5926VBQM6Y' --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n#productbuild --package \"$SDL_PKG\" --package \"$MUSIC_PLUGIN_PKG\" \"$TEMP_DIR/ProjectM.pkg\"\n\necho \"Created installer package $TEMP_DIR/ProjectM.pkg\"\n\ncp -rp \"$TEMP_DIR/ProjectM.pkg\" \"$SRCROOT/\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
