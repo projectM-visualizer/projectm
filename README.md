@@ -120,7 +120,6 @@ There are many other applications that make use of libprojectM and that can be f
 ***
 
 # Todo
-* Support for the missing Milkdrop waveforms to get full compatibility with Milkdrop presets.
 * Steal cool stuff from the recently-released Milkdrop source.
 * Finish [emscripten support](https://github.com/projectM-visualizer/projectm/pull/307) for building to wasm/webGL for the web.
 * Update the [various implementations using libprojectM](src).
@@ -131,9 +130,9 @@ There are many other applications that make use of libprojectM and that can be f
 ## Help
 Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues/new)
 
-[Chat with us on Discord.](https://discord.gg/tpEuywB) or on IRC at irc.freenode.net #projectM.
+[Chat with us on Discord.](https://discord.gg/tpEuywB).
 
-If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues.
+If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues. 
 
 ## Maintainers
 If you maintain packages of libprojectM, we are happy to work with you! Please note well:
