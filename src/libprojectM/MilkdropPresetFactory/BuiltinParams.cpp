@@ -311,7 +311,7 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs & presetInputs, Pre
   load_builtin_param_bool("wave_additive", (void*)&presetOutputs.wave.additive, P_FLAG_NONE, false, "bAdditiveWaves");
   load_builtin_param_bool("bmodwavealphabyvolume", (void*)&presetOutputs.wave.modulateAlphaByVolume, P_FLAG_NONE, false, "");
   load_builtin_param_bool("wave_brighten", (void*)&presetOutputs.wave.maximizeColors, P_FLAG_NONE, false, "bMaximizeWaveColor");
-  load_builtin_param_bool("wrap", (void*)&presetOutputs.textureWrap, P_FLAG_NONE, false, "btexwrap");
+  load_builtin_param_bool("wrap", (void*)&presetOutputs.textureWrap, P_FLAG_NONE, true, "btexwrap");
   load_builtin_param_bool("darken_center", (void*)&presetOutputs.bDarkenCenter, P_FLAG_NONE, false, "bdarkencenter");
   load_builtin_param_bool("bredbluestereo", (void*)&presetOutputs.bRedBlueStereo, P_FLAG_NONE, false, "");
   load_builtin_param_bool("brighten", (void*)&presetOutputs.bBrighten, P_FLAG_NONE, false, "bbrighten");

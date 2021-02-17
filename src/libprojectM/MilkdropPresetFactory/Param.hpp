@@ -60,7 +60,7 @@ class Preset;
 class Test;
 
 
-#ifdef __SSE2__
+#ifdef _HAS_SSE2_
 #include <immintrin.h>
 #endif
 
