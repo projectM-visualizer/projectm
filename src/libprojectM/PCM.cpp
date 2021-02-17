@@ -236,7 +236,7 @@ void PCM::addPCM8_512(const unsigned char PCMdata[2][512])
 // smoothing is the smoothing coefficient
 // returned values are normalized from -1 to 1
 
-void PCM::getPCM(float *data, int channel, size_t samples, float smoothing)
+void PCM::getPCM(float *data, CHANNEL channel, size_t samples, float smoothing)
 {
     assert(channel == 0 || channel == 1);
 
@@ -297,7 +297,7 @@ void PCM::getPCM(float *data, int channel, size_t samples, float smoothing)
 
 
 /* NOTE: Still don't have real support for smoothing parameter, but this gets close to the milkdrop2 default look */
-void PCM::getSpectrum(float *data, int channel, size_t samples, float smoothing)
+void PCM::getSpectrum(float *data, CHANNEL channel, size_t samples, float smoothing)
 {
     assert(channel == 0 || channel == 1);
     _updateFFT();
@@ -498,8 +498,8 @@ public:
             float *freq0 = new float[FFT_LENGTH];
             float *freq1 = new float[FFT_LENGTH];
             pcm.level = 1.0;
-            pcm.getSpectrum(freq0, 0, FFT_LENGTH, 0.0);
-            pcm.getSpectrum(freq1, 0, FFT_LENGTH, 0.0);
+            pcm.getSpectrum(freq0, CHANNEL_0, FFT_LENGTH, 0.0);
+            pcm.getSpectrum(freq1, CHANNEL_1, FFT_LENGTH, 0.0);
             // freq0 and freq1 should be equal
             for (size_t i = 0; i < FFT_LENGTH; i++)
                 TEST(eq(freq0[i], freq1[i]));
@@ -520,8 +520,8 @@ public:
             float *freq0 = new float[FFT_LENGTH];
             float *freq1 = new float[FFT_LENGTH];
             pcm.level = 1.0;
-            pcm.getSpectrum(freq0, 0, FFT_LENGTH, 0.0);
-            pcm.getSpectrum(freq1, 0, FFT_LENGTH, 0.0);
+            pcm.getSpectrum(freq0, CHANNEL_0, FFT_LENGTH, 0.0);
+            pcm.getSpectrum(freq1, CHANNEL_1, FFT_LENGTH, 0.0);
             // freq0 and freq1 should be equal
             for (size_t i = 0; i < FFT_LENGTH; i++)
                 TEST(eq(freq0[i], freq1[i]));

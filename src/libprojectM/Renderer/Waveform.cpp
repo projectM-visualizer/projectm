@@ -56,13 +56,13 @@ void Waveform::Draw(RenderContext &context)
     if (spectrum)
     {
         // TODO support smoothing parameter for getSpectrum()
-        context.beatDetect->pcm->getSpectrum( value1, 0, samples_count, 1.0 );
-        context.beatDetect->pcm->getSpectrum( value2, 1, samples_count, 1.0 );
+        context.beatDetect->pcm->getSpectrum( value1, CHANNEL_0, samples_count, 1.0 );
+        context.beatDetect->pcm->getSpectrum( value2, CHANNEL_1, samples_count, 1.0 );
     }
     else
     {
-        context.beatDetect->pcm->getPCM( value1, 0, samples_count, smoothing );
-        context.beatDetect->pcm->getPCM( value2, 1, samples_count, smoothing );
+        context.beatDetect->pcm->getPCM( value1, CHANNEL_0, samples_count, smoothing );
+        context.beatDetect->pcm->getPCM( value2, CHANNEL_1, samples_count, smoothing );
     }
 
     const float mult = scaling * vol_scale * (spectrum ? 0.005f : 1.0f);

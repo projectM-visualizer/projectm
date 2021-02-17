@@ -39,6 +39,14 @@
 class Test;
 class AutoLevel;
 
+enum CHANNEL
+{
+    CHANNEL_L = 0,
+    CHANNEL_0 = 0,
+    CHANNEL_R = 1,
+    CHANNEL_1 = 1
+};
+
 class 
 #ifdef WIN32 
 DLLEXPORT 
@@ -64,13 +72,13 @@ public:
      * When smoothing=0 is copied directly from PCM buffers. smoothing=1.0 is almost a straight line.
      * The returned data will 'wrap' if more than maxsamples are requested.
      */
-    void getPCM(float *data, int channel, size_t samples, float smoothing);
+    void getPCM(float *data, CHANNEL channel, size_t samples, float smoothing);
 
     /** Spectrum data
      * Smoothing is not fully implemented, only none (smoothing==0) or a little (smoothing!=0).
      * The returned data will be zero padded if more than FFT_LENGTH values are requested
      */
-    void getSpectrum(float *data, int channel, size_t samples, float smoothing);
+    void getSpectrum(float *data, CHANNEL channel, size_t samples, float smoothing);
 
   	static Test* test();
 
