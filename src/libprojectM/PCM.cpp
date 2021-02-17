@@ -262,11 +262,11 @@ void PCM::getPCM(float *data, CHANNEL channel, size_t samples, float smoothing)
         double k = -1.0 / ((1 - smoothing) * (1 - smoothing) * FFT_LENGTH * FFT_LENGTH);
         for (int i = 1; i < FFT_LENGTH; i++)
         {
-            float g = pow(M_E, i * i * k);
+            float g = pow(2.718281828459045, i * i * k);
             freq[i * 2] *= g;
             freq[i * 2 + 1] *= g;
         }
-        freq[1] *= pow(M_E, FFT_LENGTH*FFT_LENGTH*k);
+        freq[1] *= pow(2.718281828459045, FFT_LENGTH*FFT_LENGTH*k);
     }
     else
     {
@@ -402,7 +402,7 @@ void PCM::freePCM()
 // TESTS
 
 
-#include <TestRunner.hpp>
+#include "TestRunner.hpp"
 
 #ifndef NDEBUG
 
