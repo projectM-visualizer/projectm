@@ -489,7 +489,7 @@ public:
             float *data = new float[samples * 2];
             for (size_t i = 0; i < samples; i++)
             {
-                float f = 2 * M_PI * ((double) i) / (samples - 1);
+                float f = 2 * 3.141592653589793 * ((double) i) / (samples - 1);
                 data[i * 2] = sin(f);
                 data[i * 2 + 1] = sin(f + 1.0); // out of phase
             }
