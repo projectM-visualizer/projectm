@@ -19,6 +19,8 @@ PresetInputs::PresetInputs() : PipelineContext()
 void PresetInputs::update(const BeatDetect & music, const PipelineContext & context) {
 
     // Reflect new values form the beat detection unit
+    // see https://github.com/projectM-visualizer/projectm/pull/348
+    // beatSensitivity code moved from BeatDetect to here
     this->bass = music.bass * music.beatSensitivity;
     this->mid = music.mid * music.beatSensitivity;
     this->treb = music.treb * music.beatSensitivity;

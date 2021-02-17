@@ -33,7 +33,8 @@
 #include "dlldefs.h"
 
 
-// This is number of magnitude values, float array is 2x for R and I values
+// FFT_LENGTH is number of magnitude values available from getSpectrum().
+// Internally this is generated using 2xFFT_LENGTH samples per channel.
 #define FFT_LENGTH 512
 class Test;
 class AutoLevel;
@@ -45,24 +46,36 @@ DLLEXPORT
 PCM
 {
 public:
+    /* maximum number of sound samples that are actually stored. */
     static const size_t maxsamples=2048;
 
     PCM();
     ~PCM();
+
     void addPCMfloat( const float *PCMdata, size_t samples );
-    void addPCMfloat_2ch( const float *PCMdata, size_t samples );
+    void addPCMfloat_2ch( const float *PCMdata, size_t count );
     void addPCM16( const short [2][512] );
     void addPCM16Data( const short* pcm_data, size_t samples );
     void addPCM8( const unsigned char [2][1024] );
     void addPCM8_512( const unsigned char [2][512] );
 
-    /** PCM data */
+    /**
+     * PCM data
+     * When smoothing=0 is copied directly from PCM buffers. smoothing=1.0 is almost a straight line.
+     * The returned data will 'wrap' if more than maxsamples are requested.
+     */
     void getPCM(float *data, int channel, size_t samples, float smoothing);
+
+    /** Spectrum data
+     * Smoothing is not fully implemented, only none (smoothing==0) or a little (smoothing!=0).
+     * The returned data will be zero padded if more than FFT_LENGTH values are requested
+     */
     void getSpectrum(float *data, int channel, size_t samples, float smoothing);
 
   	static Test* test();
 
 private:
+    // mem-usage:
     // pcmd 2x2048*4b    = 16K
     // vdata 2x512x2*8b  = 16K
     // spectrum 2x512*4b = 4k
@@ -89,10 +102,11 @@ private:
 
     void freePCM();
 
-    // get data out of circular PCM buffer
+    // copy data out of the circular PCM buffer
     void _copyPCM(float *PCMdata, int channel, size_t count);
     void _copyPCM(double *PCMdata, int channel, size_t count);
-    // compute FFT
+
+    // update FFT data if new samples are available.
     void _updateFFT();
     void _updateFFT(size_t channel);
 
