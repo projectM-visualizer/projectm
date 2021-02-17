@@ -62,6 +62,12 @@ public:
      * I don't know if it's necessary to have both sum and max, but that makes
      * it easier to experiment...
      */
+
+// This is an arbitrary number that helps control
+//   a) how quickly the level can change and
+//   b) keeps code from being affected by how the caller provides data (lot of short buffers, or fewer long buffers)
+    #define AUTOLEVEL_SEGMENT 4096
+
     double updateLevel(size_t samples, double sum, double max)
     {
         if (sum/samples < 0.00001)
@@ -69,7 +75,7 @@ public:
         level_sum += sum;
         level_max = fmax(level_max,max*1.02);
         level_samples += samples;
-        if (level_samples >= 4096 || l0 <= 0)
+        if (level_samples >= AUTOLEVEL_SEGMENT || l0 <= 0)
         {
             double max_recent = fmax(fmax(l0, l1), fmax(l2, level_max));
             l0 = l1; l1 = l2; l2 = level_max; level_max *= 0.95;
@@ -93,6 +99,8 @@ PCM::PCM() : start(0), newsamples(0)
 #error update this code
 #endif
     w  = (double *)wipemalloc(FFT_LENGTH*sizeof(double));
+    // see fftsg.cpp length of ip >= 2+sqrt(n/2)
+    // in this case n=2*FFT_LENGTH, so 34 is big enough to handle FFT_LENGTH=1024
     ip = (int *)wipemalloc(34 * sizeof(int));
     ip[0]=0;
 

@@ -108,6 +108,11 @@ void BeatDetect::detectFromSamples()
     float vdataR[FFT_LENGTH];
     pcm->getSpectrum(vdataL, 0, FFT_LENGTH, 0.0);
     pcm->getSpectrum(vdataR, 1, FFT_LENGTH, 0.0);
+
+    // OK, we're not really using this number 44.1 anywhere
+    // This is more of a nod to the fact that if the actually data rate is REALLY different
+    // then in theory the bass/mid/treb ranges should be adjusted.
+    // In practice, I doubt it would adversely affect the actually display very much
     getBeatVals(44100.0f, FFT_LENGTH, vdataL, vdataR);
 }
 
