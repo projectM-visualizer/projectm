@@ -6,7 +6,7 @@
 #include <cmath>
 #include "Renderer/BeatDetect.hpp"
 
-#ifdef _HAS_SSE2_
+#ifdef __SSE2__
 #include <immintrin.h>
 #endif
 
@@ -235,7 +235,7 @@ void PresetOutputs::PerPixelMath_c(const PipelineContext &context)
 }
 
 
-#ifdef _HAS_SSE2_
+#ifdef __SSE2__
 
 // is there an SSE way to do this?
 inline __m128 _mm_pow(__m128 x, __m128 y)
@@ -448,7 +448,7 @@ void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 
 void PresetOutputs::PerPixelMath(const PipelineContext &context)
 {
-#ifdef _HAS_SSE2_
+#ifdef __SSE2__
 	PerPixelMath_sse(context);
 #else
 	PerPixelMath_c(context);
