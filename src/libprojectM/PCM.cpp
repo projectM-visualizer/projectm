@@ -62,6 +62,12 @@ public:
      * I don't know if it's necessary to have both sum and max, but that makes
      * it easier to experiment...
      */
+
+// This is an arbitrary number that helps control
+//   a) how quickly the level can change and
+//   b) keeps code from being affected by how the caller provides data (lot of short buffers, or fewer long buffers)
+    #define AUTOLEVEL_SEGMENT 4096
+
     double updateLevel(size_t samples, double sum, double max)
     {
         if (sum/samples < 0.00001)
@@ -69,7 +75,7 @@ public:
         level_sum += sum;
         level_max = fmax(level_max,max*1.02);
         level_samples += samples;
-        if (level_samples >= 4096 || l0 <= 0)
+        if (level_samples >= AUTOLEVEL_SEGMENT || l0 <= 0)
         {
             double max_recent = fmax(fmax(l0, l1), fmax(l2, level_max));
             l0 = l1; l1 = l2; l2 = level_max; level_max *= 0.95;
@@ -93,6 +99,8 @@ PCM::PCM() : start(0), newsamples(0)
 #error update this code
 #endif
     w  = (double *)wipemalloc(FFT_LENGTH*sizeof(double));
+    // see fftsg.cpp length of ip >= 2+sqrt(n/2)
+    // in this case n=2*FFT_LENGTH, so 34 is big enough to handle FFT_LENGTH=1024
     ip = (int *)wipemalloc(34 * sizeof(int));
     ip[0]=0;
 
@@ -228,7 +236,7 @@ void PCM::addPCM8_512(const unsigned char PCMdata[2][512])
 // smoothing is the smoothing coefficient
 // returned values are normalized from -1 to 1
 
-void PCM::getPCM(float *data, int channel, size_t samples, float smoothing)
+void PCM::getPCM(float *data, CHANNEL channel, size_t samples, float smoothing)
 {
     assert(channel == 0 || channel == 1);
 
@@ -254,11 +262,11 @@ void PCM::getPCM(float *data, int channel, size_t samples, float smoothing)
         double k = -1.0 / ((1 - smoothing) * (1 - smoothing) * FFT_LENGTH * FFT_LENGTH);
         for (int i = 1; i < FFT_LENGTH; i++)
         {
-            float g = pow(M_E, i * i * k);
+            float g = pow(2.718281828459045, i * i * k);
             freq[i * 2] *= g;
             freq[i * 2 + 1] *= g;
         }
-        freq[1] *= pow(M_E, FFT_LENGTH*FFT_LENGTH*k);
+        freq[1] *= pow(2.718281828459045, FFT_LENGTH*FFT_LENGTH*k);
     }
     else
     {
@@ -289,7 +297,7 @@ void PCM::getPCM(float *data, int channel, size_t samples, float smoothing)
 
 
 /* NOTE: Still don't have real support for smoothing parameter, but this gets close to the milkdrop2 default look */
-void PCM::getSpectrum(float *data, int channel, size_t samples, float smoothing)
+void PCM::getSpectrum(float *data, CHANNEL channel, size_t samples, float smoothing)
 {
     assert(channel == 0 || channel == 1);
     _updateFFT();
@@ -394,7 +402,7 @@ void PCM::freePCM()
 // TESTS
 
 
-#include <TestRunner.hpp>
+#include "TestRunner.hpp"
 
 #ifndef NDEBUG
 
@@ -481,7 +489,7 @@ public:
             float *data = new float[samples * 2];
             for (size_t i = 0; i < samples; i++)
             {
-                float f = 2 * M_PI * ((double) i) / (samples - 1);
+                float f = 2 * 3.141592653589793 * ((double) i) / (samples - 1);
                 data[i * 2] = sin(f);
                 data[i * 2 + 1] = sin(f + 1.0); // out of phase
             }
@@ -490,8 +498,8 @@ public:
             float *freq0 = new float[FFT_LENGTH];
             float *freq1 = new float[FFT_LENGTH];
             pcm.level = 1.0;
-            pcm.getSpectrum(freq0, 0, FFT_LENGTH, 0.0);
-            pcm.getSpectrum(freq1, 0, FFT_LENGTH, 0.0);
+            pcm.getSpectrum(freq0, CHANNEL_0, FFT_LENGTH, 0.0);
+            pcm.getSpectrum(freq1, CHANNEL_1, FFT_LENGTH, 0.0);
             // freq0 and freq1 should be equal
             for (size_t i = 0; i < FFT_LENGTH; i++)
                 TEST(eq(freq0[i], freq1[i]));
@@ -512,8 +520,8 @@ public:
             float *freq0 = new float[FFT_LENGTH];
             float *freq1 = new float[FFT_LENGTH];
             pcm.level = 1.0;
-            pcm.getSpectrum(freq0, 0, FFT_LENGTH, 0.0);
-            pcm.getSpectrum(freq1, 0, FFT_LENGTH, 0.0);
+            pcm.getSpectrum(freq0, CHANNEL_0, FFT_LENGTH, 0.0);
+            pcm.getSpectrum(freq1, CHANNEL_1, FFT_LENGTH, 0.0);
             // freq0 and freq1 should be equal
             for (size_t i = 0; i < FFT_LENGTH; i++)
                 TEST(eq(freq0[i], freq1[i]));

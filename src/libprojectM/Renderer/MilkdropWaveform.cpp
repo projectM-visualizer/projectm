@@ -189,10 +189,11 @@ void MilkdropWaveform::MaximizeColors(RenderContext &context)
 
 void MilkdropWaveform::WaveformMath(RenderContext &context)
 {
+    // NOTE: these buffer sizes are based on the MilkdropWaveformMode implementation later in this method.
     float pcmdataL[512];
 	float pcmdataR[512];
-    context.beatDetect->pcm->getPCM(pcmdataL, 0, 512, smoothing);
-    context.beatDetect->pcm->getPCM(pcmdataR, 1, 512, smoothing);
+    context.beatDetect->pcm->getPCM(pcmdataL, CHANNEL_0, 512, smoothing);
+    context.beatDetect->pcm->getPCM(pcmdataR, CHANNEL_1, 512, smoothing);
 
     // tie size of waveform to beatSensitivity
     const float  vol_scale = context.beatDetect->getPCMScale();
