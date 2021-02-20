@@ -44,6 +44,8 @@ ProjectM.pkg:
 
 # do a macOS build
 dist-mac: dist ProjectM.pkg
+	mac/notarize.sh
+	@echo "Staple: $ xcrun stapler staple $(PWD)/dist/projectM-macOS.pkg"
 	rm -rf dist
 	mkdir -p dist
 	mv ProjectM.pkg dist/projectM-macOS.pkg
