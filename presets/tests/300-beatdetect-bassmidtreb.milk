@@ -3,6 +3,7 @@ fDecay=0.75
 fWarpScale=2.853000
 fZoomExponent=1.000000
 warp=0.000000
+wave_a=0
 cy=1.0
 cx=0.5
 sx=1

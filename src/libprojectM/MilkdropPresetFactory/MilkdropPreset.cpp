@@ -429,6 +429,10 @@ void MilkdropPreset::initialize_PerPixelMeshes()
 // Evaluates all per-pixel equations
 void MilkdropPreset::evalPerPixelEqns()
 {
+    // Quick bail out if there is nothing to do.
+    if (per_pixel_eqn_tree.empty())
+        return;
+
     if (nullptr == per_pixel_program)
     {
         // This is a little forward looking, but if we want to JIT assignments expressions, we might

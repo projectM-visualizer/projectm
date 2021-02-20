@@ -1,0 +1,26 @@
+[preset00]
+per_frame_1000=// simple wave
+per_frame_1001=// MODE=6 Line
+
+fDecay=0
+warp=0.000000
+wave_r=1
+
+// MilkdropWaveform
+nWaveMode=6
+fWaveSmoothing=0.99
+wave_x=0.600000
+wave_y=0.5
+
+// CustomWaveform
+wavecode_0_enabled=1
+wavecode_0_scaling=0.05
+wavecode_0_smoothing=0.99
+wavecode_0_r=0.000000
+wavecode_0_g=1.000000
+wavecode_0_b=1.000000
+wavecode_0_a=1.000000
+wavecode_0_x=0.5
+wavecode_0_y=0.4
+wave_0_per_point1=x=sample;
+wave_0_per_point2=y=y+value1;
