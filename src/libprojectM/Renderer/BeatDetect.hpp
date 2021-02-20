@@ -44,11 +44,14 @@
 class DLLEXPORT BeatDetect
 {
 	public:
-		float treb ;
+        // Does this really belong here? maybe belongs on projectM.Settings?
+        float beatSensitivity;
+
+        float treb ;
 		float mid ;
 		float bass ;
 		float vol_old ;
-		float beatSensitivity;
+
 		float treb_att ;
 		float mid_att ;
 		float bass_att ;
@@ -67,7 +70,10 @@ class DLLEXPORT BeatDetect
         // getPCMScale() was added to address https://github.com/projectM-visualizer/projectm/issues/161
         // Returning 1.0 results in using the raw PCM data, which can make the presets look pretty unresponsive
         // if the application volume is low.
-		float getPCMScale();
+		float getPCMScale()
+        {
+		    return beatSensitivity;
+        }
 
 	private:
 		int beat_buffer_pos;

@@ -1,0 +1,34 @@
+[preset00]
+per_frame_1000=// spectrum vs pcm
+
+fDecay=0
+warp=0.000000
+wave_a=0
+
+// spectrum=0
+wavecode_0_enabled=1
+wavecode_0_bspectrum=0
+wavecode_0_scaling=0.1
+wavecode_0_r=0.000000
+wavecode_0_g=1.000000
+wavecode_0_b=1.000000
+wavecode_0_a=1.000000
+wavecode_0_x=0.5
+wavecode_0_y=0.75
+wave_0_per_point1=x=sample;
+wave_0_per_point2=y=y+value1;
+
+
+// spectrum=1
+wavecode_1_enabled=1
+wavecode_1_bSpectrum=1
+wavecode_1_scaling=1
+wavecode_1_r=1.000000
+wavecode_1_g=1.000000
+wavecode_1_b=1.000000
+wavecode_1_a=1.000000
+wavecode_1_x=0.5
+wavecode_1_y=0.25
+wave_1_per_point1=x=sample;
+wave_1_per_point2=y=0.25+value1;
+

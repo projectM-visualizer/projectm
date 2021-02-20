@@ -19,12 +19,14 @@ PresetInputs::PresetInputs() : PipelineContext()
 void PresetInputs::update(const BeatDetect & music, const PipelineContext & context) {
 
     // Reflect new values form the beat detection unit
-    this->bass = music.bass;
-    this->mid = music.mid;
-    this->treb = music.treb;
-    this->bass_att = music.bass_att;
-    this->mid_att = music.mid_att;
-    this->treb_att = music.treb_att;
+    // see https://github.com/projectM-visualizer/projectm/pull/348
+    // beatSensitivity code moved from BeatDetect to here
+    this->bass = music.bass * music.beatSensitivity;
+    this->mid = music.mid * music.beatSensitivity;
+    this->treb = music.treb * music.beatSensitivity;
+    this->bass_att = music.bass_att * music.beatSensitivity;
+    this->mid_att = music.mid_att * music.beatSensitivity;
+    this->treb_att = music.treb_att * music.beatSensitivity;
 
     // Reflect new values from the pipeline context
     this->fps = context.fps;
