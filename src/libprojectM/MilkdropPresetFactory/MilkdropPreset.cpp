@@ -44,7 +44,7 @@
 #include "PresetFactoryManager.hpp"
 #include "MilkdropPresetFactory.hpp"
 
-#ifdef _HAS_SSE2_
+#ifdef __SSE2__
 #include <immintrin.h>
 #endif
 
@@ -391,7 +391,7 @@ void MilkdropPreset::evaluateFrame()
 }
 
 
-#ifdef _HAS_SSE2_
+#ifdef __SSE2__
 inline void init_mesh(float **mesh, const float value, const int gx, const int gy)
 {
   __m128 mvalue = _mm_set_ps1(value);
