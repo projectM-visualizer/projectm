@@ -195,32 +195,36 @@ void PresetOutputs::PerPixelMath_c(const PipelineContext &context)
             const float orig_y2 = this->orig_y[x][y];
 
             // zoom and stretch
-            const float fZoom2 = std::pow(this->zoom_mesh[x][y], std::pow(this->zoomexp_mesh[x][y],
-					rad_mesh[x][y] * 2.0f - 1.0f));
-			const float fZoom2Inv = 1.0f / fZoom2;
+            const float fZoom2Inv = this->zoom_mesh[x][y] == 1.0 ? 1.0 :
+                    std::pow(this->zoom_mesh[x][y], -1*std::pow(this->zoomexp_mesh[x][y], rad_mesh[x][y] * 2.0f - 1.0f));
 			float u = orig_x2 * 0.5f * fZoom2Inv + 0.5f;
 			u = (u - this->cx_mesh[x][y]) / this->sx_mesh[x][y] + this->cx_mesh[x][y];
 			float v = orig_y2 * 0.5f * fZoom2Inv + 0.5f;
 			v = (v - this->cy_mesh[x][y]) / this->sy_mesh[x][y] + this->cy_mesh[x][y];
 
             // warp
-            const float warp_mesh2 = this->warp_mesh[x][y] * 0.0035f;
+            if (this->warp_mesh[x][y] != 0.0)
+            {
+                const float warp_mesh2 = this->warp_mesh[x][y] * 0.0035f;
+                u += warp_mesh2 * (sinf(fWarpTime * 0.333f + fWarpScaleInv * (orig_x2 * f[0] - orig_y2 * f[3])) +
+                                   cosf(fWarpTime * 0.753f - fWarpScaleInv * (orig_x2 * f[1] - orig_y2 * f[2])));
 
-			u +=
-                (warp_mesh2 * sinf(fWarpTime * 0.333f + fWarpScaleInv * (orig_x2 * f[0] - orig_y2 * f[3]))) +
-                (warp_mesh2 * cosf(fWarpTime * 0.753f - fWarpScaleInv * (orig_x2 * f[1] - orig_y2 * f[2])));
-
-			v +=
-                (warp_mesh2 * cosf(fWarpTime * 0.375f - fWarpScaleInv * (orig_x2 * f[2] + orig_y2 * f[1]))) +
-                (warp_mesh2 * sinf(fWarpTime * 0.825f + fWarpScaleInv * (orig_x2 * f[0] + orig_y2 * f[3])));
+                v += warp_mesh2 * (cosf(fWarpTime * 0.375f - fWarpScaleInv * (orig_x2 * f[2] + orig_y2 * f[1])) +
+                                   sinf(fWarpTime * 0.825f + fWarpScaleInv * (orig_x2 * f[0] + orig_y2 * f[3])));
+            }
 
 			// rotate and translate
-			const float u2 = u - this->cx_mesh[x][y];
-			const float v2 = v - this->cy_mesh[x][y];
-            const float cos_rot = cosf(this->rot_mesh[x][y]);
-            const float sin_rot = sinf(this->rot_mesh[x][y]);
-			this->x_mesh[x][y] = u2 * cos_rot - v2 * sin_rot + this->cx_mesh[x][y] - this->dx_mesh[x][y];
-			this->y_mesh[x][y] = u2 * sin_rot + v2 * cos_rot + this->cy_mesh[x][y] - this->dy_mesh[x][y];
+			if (rot != 0.0)
+            {
+                const float cos_rot = cosf(this->rot_mesh[x][y]);
+                const float sin_rot = sinf(this->rot_mesh[x][y]);
+                const float u2 = u - this->cx_mesh[x][y];
+                const float v2 = v - this->cy_mesh[x][y];
+                u = u2 * cos_rot - v2 * sin_rot + this->cx_mesh[x][y];
+                v = u2 * sin_rot + v2 * cos_rot + this->cy_mesh[x][y];
+            }
+            this->x_mesh[x][y] = u - this->dx_mesh[x][y];
+            this->y_mesh[x][y] = v  - this->dy_mesh[x][y];
 		}
 	}
 }
