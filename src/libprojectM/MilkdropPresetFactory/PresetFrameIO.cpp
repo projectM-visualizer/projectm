@@ -179,59 +179,52 @@ void PresetOutputs::Render(const BeatDetect &music, const PipelineContext &conte
 // N.B. The more optimization that can be done on this method, the better! This is called a lot and can probably be improved.
 void PresetOutputs::PerPixelMath_c(const PipelineContext &context)
 {
-	for (int x = 0; x < gx; x++)
-	{
-		for (int y = 0; y < gy; y++)
-		{
-			const float fZoom2 = std::pow(this->zoom_mesh[x][y], std::pow(this->zoomexp_mesh[x][y],
-					rad_mesh[x][y] * 2.0f - 1.0f));
-			const float fZoom2Inv = 1.0f / fZoom2;
-			this->x_mesh[x][y] = this->orig_x[x][y] * 0.5f * fZoom2Inv + 0.5f;
-			this->x_mesh[x][y] = (this->x_mesh[x][y] - this->cx_mesh[x][y]) / this->sx_mesh[x][y] + this->cx_mesh[x][y];
-			this->y_mesh[x][y] = this->orig_y[x][y] * 0.5f * fZoom2Inv + 0.5f;
-			this->y_mesh[x][y] = (this->y_mesh[x][y] - this->cy_mesh[x][y]) / this->sy_mesh[x][y] + this->cy_mesh[x][y];
-		}
-	}
+    const float fWarpTime = context.time * this->fWarpAnimSpeed;
+    const float fWarpScaleInv = 1.0f / this->fWarpScale;
+    float f[4];
+    f[0] = 11.68f + 4.0f * cosf(fWarpTime * 1.413f + 10);
+    f[1] = 8.77f + 3.0f * cosf(fWarpTime * 1.113f + 7);
+    f[2] = 10.54f + 3.0f * cosf(fWarpTime * 1.233f + 3);
+    f[3] = 11.49f + 4.0f * cosf(fWarpTime * 0.933f + 5);
 
-	const float fWarpTime = context.time * this->fWarpAnimSpeed;
-	const float fWarpScaleInv = 1.0f / this->fWarpScale;
-	float f[4];
-	f[0] = 11.68f + 4.0f * cosf(fWarpTime * 1.413f + 10);
-	f[1] = 8.77f + 3.0f * cosf(fWarpTime * 1.113f + 7);
-	f[2] = 10.54f + 3.0f * cosf(fWarpTime * 1.233f + 3);
-	f[3] = 11.49f + 4.0f * cosf(fWarpTime * 0.933f + 5);
-
-	for (int x = 0; x < gx; x++)
+    for (int x = 0; x < gx; x++)
 	{
 		for (int y = 0; y < gy; y++)
 		{
             const float orig_x2 = this->orig_x[x][y];
             const float orig_y2 = this->orig_y[x][y];
-            const float warp_mesh2 = this->warp_mesh[x][y] * 0.0035f;
 
-			this->x_mesh[x][y] +=
-                (warp_mesh2 * sinf(fWarpTime * 0.333f + fWarpScaleInv * (orig_x2 * f[0] - orig_y2 * f[3]))) +
-                (warp_mesh2 * cosf(fWarpTime * 0.753f - fWarpScaleInv * (orig_x2 * f[1] - orig_y2 * f[2])));
+            // zoom and stretch
+            const float fZoom2Inv = this->zoom_mesh[x][y] == 1.0 ? 1.0 :
+                    std::pow(this->zoom_mesh[x][y], -1*std::pow(this->zoomexp_mesh[x][y], rad_mesh[x][y] * 2.0f - 1.0f));
+			float u = orig_x2 * 0.5f * fZoom2Inv + 0.5f;
+			u = (u - this->cx_mesh[x][y]) / this->sx_mesh[x][y] + this->cx_mesh[x][y];
+			float v = orig_y2 * 0.5f * fZoom2Inv + 0.5f;
+			v = (v - this->cy_mesh[x][y]) / this->sy_mesh[x][y] + this->cy_mesh[x][y];
 
-			this->y_mesh[x][y] +=
-                (warp_mesh2 * cosf(fWarpTime * 0.375f - fWarpScaleInv * (orig_x2 * f[2] + orig_y2 * f[1]))) +
-                (warp_mesh2 * sinf(fWarpTime * 0.825f + fWarpScaleInv * (orig_x2 * f[0] + orig_y2 * f[3])));
-		}
-	}
+            // warp
+            if (this->warp_mesh[x][y] != 0.0)
+            {
+                const float warp_mesh2 = this->warp_mesh[x][y] * 0.0035f;
+                u += warp_mesh2 * (sinf(fWarpTime * 0.333f + fWarpScaleInv * (orig_x2 * f[0] - orig_y2 * f[3])) +
+                                   cosf(fWarpTime * 0.753f - fWarpScaleInv * (orig_x2 * f[1] - orig_y2 * f[2])));
 
-	for (int x = 0; x < gx; x++)
-	{
-		for (int y = 0; y < gy; y++)
-		{
-			const float u2 = this->x_mesh[x][y] - this->cx_mesh[x][y];
-			const float v2 = this->y_mesh[x][y] - this->cy_mesh[x][y];
+                v += warp_mesh2 * (cosf(fWarpTime * 0.375f - fWarpScaleInv * (orig_x2 * f[2] + orig_y2 * f[1])) +
+                                   sinf(fWarpTime * 0.825f + fWarpScaleInv * (orig_x2 * f[0] + orig_y2 * f[3])));
+            }
 
-            const float rot2 = this->rot_mesh[x][y];
-            const float cos_rot = cosf(rot2);
-            const float sin_rot = sinf(rot2);
-
-			this->x_mesh[x][y] = u2 * cos_rot - v2 * sin_rot + this->cx_mesh[x][y] - this->dx_mesh[x][y];
-			this->y_mesh[x][y] = u2 * sin_rot + v2 * cos_rot + this->cy_mesh[x][y] - this->dy_mesh[x][y];
+			// rotate and translate
+			if (rot != 0.0)
+            {
+                const float cos_rot = cosf(this->rot_mesh[x][y]);
+                const float sin_rot = sinf(this->rot_mesh[x][y]);
+                const float u2 = u - this->cx_mesh[x][y];
+                const float v2 = v - this->cy_mesh[x][y];
+                u = u2 * cos_rot - v2 * sin_rot + this->cx_mesh[x][y];
+                v = u2 * sin_rot + v2 * cos_rot + this->cy_mesh[x][y];
+            }
+            this->x_mesh[x][y] = u - this->dx_mesh[x][y];
+            this->y_mesh[x][y] = v - this->dy_mesh[x][y];
 		}
 	}
 }
@@ -291,62 +284,6 @@ inline __m128 _mm_cosf(__m128 x)
 
 void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 {
-	for (int x = 0; x < gx; x++)
-	{
-		for (int y = 0; y < gy; y += 4)
-		{
-			// fZoom2 = std::pow(this->zoom_mesh[x][y], std::pow(this->zoomexp_mesh[x][y],
-			// 		rad_mesh[x][y] * 2.0f - 1.0f));
-			__m128 rad_mesh_scaled =
-				_mm_sub_ps(
-					_mm_mul_ps(
-						_mm_load_ps(&this->rad_mesh[x][y]),
-						_mm_set_ps1(2.0f)),
-					_mm_set_ps1(1.0f));
-            __m128 zoom_mesh2 = _mm_load_ps(&this->zoom_mesh[x][y]);
-            __m128 zoomexp_mesh2 = _mm_load_ps(&this->zoomexp_mesh[x][y]);
-            __m128 fZoom2 = _mm_pow(zoom_mesh2, _mm_pow(zoomexp_mesh2, rad_mesh_scaled));
-			// fZoom2Inv = 1.0f / fZoom2;
-			__m128 fZoomInv = _mm_rcp_ps(fZoom2);
-
-			// this->x_mesh[x][y] = this->orig_x[x][y] * 0.5f * fZoom2Inv + 0.5f;
-            __m128 x_mesh2 =
-				_mm_add_ps(
-					_mm_mul_ps(
-						_mm_load_ps(&this->orig_x[x][y]),
-						_mm_mul_ps(fZoomInv,_mm_set_ps1(0.5f))),		// CONSIDER: common sub-expression
-					_mm_set_ps1(0.5f));
-			// this->x_mesh[x][y] = (this->x_mesh[x][y] - this->cx_mesh[x][y]) / this->sx_mesh[x][y] + this->cx_mesh[x][y];
-            __m128 cx_mesh2 = _mm_load_ps(&this->cx_mesh[x][y]);
-            __m128 sx_mesh2 = _mm_load_ps(&this->sx_mesh[x][y]);
-			_mm_store_ps(&this->x_mesh[x][y],
-				_mm_add_ps(
-					_mm_div_ps(
-                        _mm_sub_ps(x_mesh2,cx_mesh2),
-                        sx_mesh2),
-                    cx_mesh2
-				));
-
-			// this->y_mesh[x][y] = this->orig_y[x][y] * 0.5f * fZoom2Inv + 0.5f;
-            __m128 y_mesh2 =
-				_mm_add_ps(
-					_mm_mul_ps(
-						_mm_load_ps(&this->orig_y[x][y]),
-						_mm_mul_ps(fZoomInv,_mm_set_ps1(0.5f))),
-					_mm_set_ps1(0.5f));
-			// this->y_mesh[x][y] = (this->y_mesh[x][y] - this->cy_mesh[x][y]) / this->sy_mesh[x][y] + this->cy_mesh[x][y];
-            __m128 cy_mesh2 = _mm_load_ps(&this->cy_mesh[x][y]);
-            __m128 sy_mesh2 = _mm_load_ps(&this->sy_mesh[x][y]);
-			_mm_store_ps(&this->y_mesh[x][y],
-				_mm_add_ps(
-					_mm_div_ps(
-                        _mm_sub_ps(y_mesh2,cy_mesh2),
-                        sy_mesh2),
-                    cy_mesh2
-				));
-		}
-	}
-
 	const float fWarpTime = context.time * this->fWarpAnimSpeed;
 	const float fWarpScaleInv = 1.0f / this->fWarpScale;
 	const float f[4] =
@@ -359,89 +296,144 @@ void PresetOutputs::PerPixelMath_sse(const PipelineContext &context)
 
 	for (int x = 0; x < gx; x++)
 	{
-		for (int y = 0; y < gy; y+=4)
+		for (int y = 0; y < gy; y += 4)
 		{
-			//float orig_x = this->orig_x[x][y];
-			//float orig_y = this->orig_y[x][y];
-			//float warp_mesh = this->warp_mesh[x][y] * 0.0035f;
-            const __m128 orig_x2 = _mm_load_ps(&this->orig_x[x][y]);
-            const __m128 orig_y2 = _mm_load_ps(&this->orig_y[x][y]);
-            const __m128 warp_mesh2 = _mm_mul_ps(_mm_load_ps(&this->warp_mesh[x][y]), _mm_set_ps1(0.0035f));
+            // const float orig_x2 = this->orig_x[x][y];
+            // const float orig_y2 = this->orig_y[x][y];
+			const __m128 orig_x2 = _mm_load_ps(&this->orig_x[x][y]);
+			const __m128 orig_y2 = _mm_load_ps(&this->orig_y[x][y]);
 
-			// this->x_mesh[x][y] +=
-			// 	(warp_mesh * sinf(fWarpTime * 0.333f + fWarpScaleInv * (orig_x * f[0] - orig_y * f[3]))) +
-			// 	(warp_mesh * cosf(fWarpTime * 0.753f - fWarpScaleInv * (orig_x * f[1] - orig_y * f[2])));
-			_mm_store_ps(&this->x_mesh[x][y],
-				_mm_add_ps(_mm_load_ps(&this->x_mesh[x][y]),
-					_mm_add_ps(
-                        _mm_mul_ps(warp_mesh2, _mm_sinf(
-							_mm_add_ps(
-								_mm_set_ps1(fWarpTime*0.333f),
-								_mm_mul_ps(_mm_set_ps1(fWarpScaleInv),
-									_mm_sub_ps(
-                                        _mm_mul_ps(orig_x2, _mm_set_ps1(f[0])),
-                                        _mm_mul_ps(orig_y2, _mm_set_ps1(f[3]))
-									))))),
-                        _mm_mul_ps(warp_mesh2, _mm_cosf(
-							_mm_sub_ps(
-								_mm_set_ps1(fWarpTime*0.753f),
-								_mm_mul_ps(_mm_set_ps1(fWarpScaleInv),
-									_mm_sub_ps(
-                                        _mm_mul_ps(orig_x2, _mm_set_ps1(f[1])),
-                                        _mm_mul_ps(orig_y2, _mm_set_ps1(f[2]))
-									))))))));
+			bool zoomOne = this->zoom_mesh[x][y] == 1.0 && this->zoom_mesh[x][y+1] == 1.0 && this->zoom_mesh[x][y+2] == 1.0 && this->zoom_mesh[x][y+3] == 1.0;
+			__m128 fZoom2Inv = _mm_set_ps1(1.0f);
+			if (!zoomOne)
+			{
+                // fZoom2 = std::pow(this->zoom_mesh[x][y], std::pow(this->zoomexp_mesh[x][y],
+                // 		rad_mesh[x][y] * 2.0f - 1.0f));
+                const __m128 rad_mesh_scaled =
+                    _mm_sub_ps(
+                        _mm_mul_ps(
+                            _mm_load_ps(&this->rad_mesh[x][y]),
+                            _mm_set_ps1(2.0f)),
+                        _mm_set_ps1(1.0f));
+                const __m128 zoom_mesh2 = _mm_load_ps(&this->zoom_mesh[x][y]);
+                const __m128 zoomexp_mesh2 = _mm_load_ps(&this->zoomexp_mesh[x][y]);
+                const __m128 fZoom2 = _mm_pow(zoom_mesh2, _mm_pow(zoomexp_mesh2, rad_mesh_scaled));
+                // fZoom2Inv = 1.0f / fZoom2;
+                fZoom2Inv = _mm_rcp_ps(fZoom2);
+			}
 
-			// this->y_mesh[x][y] +=
-			// 	(warp_mesh * cosf(fWarpTime * 0.375f - fWarpScaleInv * (orig_x * f[2] + orig_y * f[1]))) +
-			// 	(warp_mesh * sinf(fWarpTime * 0.825f + fWarpScaleInv * (orig_x * f[0] + orig_y * f[3])));
-			_mm_store_ps(&this->y_mesh[x][y],
-				_mm_add_ps(_mm_load_ps(&this->y_mesh[x][y]),
-					_mm_add_ps(
-                        _mm_mul_ps(warp_mesh2, _mm_cosf(
-							_mm_sub_ps(
-								_mm_set_ps1(fWarpTime*0.375f),
-								_mm_mul_ps(_mm_set_ps1(fWarpScaleInv),
-									_mm_add_ps(
-                                        _mm_mul_ps(orig_x2, _mm_set_ps1(f[2])),
-                                        _mm_mul_ps(orig_y2, _mm_set_ps1(f[1]))
-									))))),
-                        _mm_mul_ps(warp_mesh2, _mm_sinf(
-							_mm_add_ps(
-								_mm_set_ps1(fWarpTime*0.825f),
-								_mm_mul_ps(_mm_set_ps1(fWarpScaleInv),
-									_mm_add_ps(
-                                        _mm_mul_ps(orig_x2, _mm_set_ps1(f[0])),
-                                        _mm_mul_ps(orig_y2, _mm_set_ps1(f[3]))
-									))))))));
-		}
-	}
-	for (int x = 0; x < gx; x++)
-	{
-		for (int y = 0; y < gy; y+=4)
-		{
-			// const float u2 = this->x_mesh[x][y] - this->cx_mesh[x][y];
-			// const float v2 = this->y_mesh[x][y] - this->cy_mesh[x][y];
-			const __m128 u2 = _mm_sub_ps(_mm_load_ps(&this->x_mesh[x][y]),_mm_load_ps(&this->cx_mesh[x][y]));
-			const __m128 v2 = _mm_sub_ps(_mm_load_ps(&this->y_mesh[x][y]),_mm_load_ps(&this->cy_mesh[x][y]));
-
-			// const float rot = this->rot_mesh[x][y];
-			// const float cos_rot = cosf(rot);
-			// const float sin_rot = sinf(rot);
-			__m128 sin_rot, cos_rot;
-			_mm_sincosf(_mm_load_ps(&this->rot_mesh[x][y]), sin_rot, cos_rot);
-
-			// this->x_mesh[x][y] = u2 * cos_rot - v2 * sin_rot + this->cx_mesh[x][y] - this->dx_mesh[x][y];
-			_mm_store_ps(&this->x_mesh[x][y],
+			// float u = orig_x2 * 0.5f * fZoom2Inv + 0.5f;
+            __m128 u =
 				_mm_add_ps(
-					_mm_sub_ps(_mm_mul_ps(u2, cos_rot), _mm_mul_ps(v2,sin_rot)),
-					_mm_sub_ps(_mm_load_ps(&this->cx_mesh[x][y]), _mm_load_ps(&this->dx_mesh[x][y]))
-					));
-			// this->y_mesh[x][y] = u2 * sin_rot + v2 * cos_rot + this->cy_mesh[x][y] - this->dy_mesh[x][y];
-			_mm_store_ps(&this->y_mesh[x][y],
+					_mm_mul_ps(
+						orig_x2,
+						_mm_mul_ps(fZoom2Inv,_mm_set_ps1(0.5f))),		// CONSIDER: common sub-expression
+					_mm_set_ps1(0.5f));
+			// u = (u - this->cx_mesh[x][y]) / this->sx_mesh[x][y] + this->cx_mesh[x][y];
+            const __m128 cx_mesh2 = _mm_load_ps(&this->cx_mesh[x][y]);
+            const __m128 sx_mesh2 = _mm_load_ps(&this->sx_mesh[x][y]);
+			u = _mm_add_ps(
+					_mm_div_ps(
+                        _mm_sub_ps(u,cx_mesh2),
+                        sx_mesh2),
+                    cx_mesh2
+				);
+
+			// float v = orig_y2 * 0.5f * fZoom2Inv + 0.5f;
+            __m128 v =
 				_mm_add_ps(
-					_mm_add_ps(_mm_mul_ps(u2, sin_rot), _mm_mul_ps(v2,cos_rot)),
-					_mm_sub_ps(_mm_load_ps(&this->cy_mesh[x][y]), _mm_load_ps(&this->dy_mesh[x][y]))
-					));
+					_mm_mul_ps(
+						orig_y2,
+						_mm_mul_ps(fZoom2Inv,_mm_set_ps1(0.5f))),
+					_mm_set_ps1(0.5f));
+			// v = (v - this->cy_mesh[x][y]) / this->sy_mesh[x][y] + this->cy_mesh[x][y];
+            const __m128 cy_mesh2 = _mm_load_ps(&this->cy_mesh[x][y]);
+            const __m128 sy_mesh2 = _mm_load_ps(&this->sy_mesh[x][y]);
+			v = _mm_add_ps(
+					_mm_div_ps(
+                        _mm_sub_ps(v,cy_mesh2),
+                        sy_mesh2),
+                    cy_mesh2
+				);
+
+            // warp
+            bool warpZero = this->warp_mesh[x][y] == 0.0 && this->warp_mesh[x][y+1] == 0.00 && this->warp_mesh[x][y+2] == 0.00 && this->warp_mesh[x][y+3] == 0.00;
+            if (!warpZero)
+            {
+                // const float warp_mesh2 = this->warp_mesh[x][y] * 0.0035f;
+                const __m128 warp_mesh2 = _mm_mul_ps(_mm_load_ps(&this->warp_mesh[x][y]), _mm_set_ps1(0.0035f));
+
+                // u +=
+                // 	(warp_mesh * sinf(fWarpTime * 0.333f + fWarpScaleInv * (orig_x2 * f[0] - orig_y2 * f[3]))) +
+                // 	(warp_mesh * cosf(fWarpTime * 0.753f - fWarpScaleInv * (orig_x2 * f[1] - orig_y2 * f[2])));
+                u = _mm_add_ps(u,
+                        _mm_add_ps(
+                            _mm_mul_ps(warp_mesh2, _mm_sinf(
+                                _mm_add_ps(
+                                    _mm_set_ps1(fWarpTime*0.333f),
+                                    _mm_mul_ps(_mm_set_ps1(fWarpScaleInv),
+                                        _mm_sub_ps(
+                                            _mm_mul_ps(orig_x2, _mm_set_ps1(f[0])),
+                                            _mm_mul_ps(orig_y2, _mm_set_ps1(f[3]))
+                                        ))))),
+                            _mm_mul_ps(warp_mesh2, _mm_cosf(
+                                _mm_sub_ps(
+                                    _mm_set_ps1(fWarpTime*0.753f),
+                                    _mm_mul_ps(_mm_set_ps1(fWarpScaleInv),
+                                        _mm_sub_ps(
+                                            _mm_mul_ps(orig_x2, _mm_set_ps1(f[1])),
+                                            _mm_mul_ps(orig_y2, _mm_set_ps1(f[2]))
+                                        )))))));
+
+                // v +=
+                // 	(warp_mesh * cosf(fWarpTime * 0.375f - fWarpScaleInv * (orig_x2 * f[2] + orig_y2 * f[1]))) +
+                // 	(warp_mesh * sinf(fWarpTime * 0.825f + fWarpScaleInv * (orig_x2 * f[0] + orig_y2 * f[3])));
+                v = _mm_add_ps(v,
+                        _mm_add_ps(
+                            _mm_mul_ps(warp_mesh2, _mm_cosf(
+                                _mm_sub_ps(
+                                    _mm_set_ps1(fWarpTime*0.375f),
+                                    _mm_mul_ps(_mm_set_ps1(fWarpScaleInv),
+                                        _mm_add_ps(
+                                            _mm_mul_ps(orig_x2, _mm_set_ps1(f[2])),
+                                            _mm_mul_ps(orig_y2, _mm_set_ps1(f[1]))
+                                        ))))),
+                            _mm_mul_ps(warp_mesh2, _mm_sinf(
+                                _mm_add_ps(
+                                    _mm_set_ps1(fWarpTime*0.825f),
+                                    _mm_mul_ps(_mm_set_ps1(fWarpScaleInv),
+                                        _mm_add_ps(
+                                            _mm_mul_ps(orig_x2, _mm_set_ps1(f[0])),
+                                            _mm_mul_ps(orig_y2, _mm_set_ps1(f[3]))
+                                        )))))));
+			}
+
+            bool rotZero = this->rot_mesh[x][y] == 0.0 && this->rot_mesh[x][y+1] == 0.00 && this->rot_mesh[x][y+2] == 0.00 && this->rot_mesh[x][y+3] == 0.00;
+            if (!rotZero)
+            {
+                // const float u2 = u - this->cx_mesh[x][y];
+                // const float v2 = v - this->cy_mesh[x][y];
+                const __m128 u2 = _mm_sub_ps(u,_mm_load_ps(&this->cx_mesh[x][y]));
+                const __m128 v2 = _mm_sub_ps(v,_mm_load_ps(&this->cy_mesh[x][y]));
+
+                // const float cos_rot = cosf(this->rot_mesh[x][y]);
+                // const float sin_rot = sinf(this->rot_mesh[x][y]);
+                __m128 sin_rot, cos_rot;
+                _mm_sincosf(_mm_load_ps(&this->rot_mesh[x][y]), sin_rot, cos_rot);
+
+                // u = u2 * cos_rot - v2 * sin_rot + this->cx_mesh[x][y];
+                u = _mm_add_ps(
+                        _mm_sub_ps(_mm_mul_ps(u2, cos_rot), _mm_mul_ps(v2,sin_rot)),
+                        _mm_load_ps(&this->cx_mesh[x][y]));
+                // v = u2 * sin_rot + v2 * cos_rot + this->cy_mesh[x][y];
+                v = _mm_add_ps(
+                        _mm_add_ps(_mm_mul_ps(u2, sin_rot), _mm_mul_ps(v2,cos_rot)),
+                        _mm_load_ps(&this->cy_mesh[x][y]));
+			}
+            // this->x_mesh[x][y] = u - this->dx_mesh[x][y];
+            // this->y_mesh[x][y] = v  - this->dy_mesh[x][y];
+            _mm_store_ps(&this->x_mesh[x][y], _mm_sub_ps(u, _mm_load_ps(&this->dx_mesh[x][y])));
+            _mm_store_ps(&this->y_mesh[x][y], _mm_sub_ps(v, _mm_load_ps(&this->dy_mesh[x][y])));
 		}
 	}
 }
@@ -494,7 +486,7 @@ void PresetOutputs::Initialize ( int _gx, int _gy )
 			float origx = x / (float) (gx - 1);
 			float origy = -((y / (float) (gy - 1)) - 1);
 
-			rad_mesh[x][y]=hypot ( ( origx-.5 ) *2, ( origy-.5 ) *2 ) * .7071067;
+			rad_mesh[x][y]=hypot ( ( origx-.5 ) *2, ( origy-.5 ) *2 );
 			orig_x[x][y] = (origx - .5) * 2;
 			orig_y[x][y] = (origy - .5) * 2;
 		}
