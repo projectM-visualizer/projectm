@@ -224,7 +224,7 @@ void PresetOutputs::PerPixelMath_c(const PipelineContext &context)
                 v = u2 * sin_rot + v2 * cos_rot + this->cy_mesh[x][y];
             }
             this->x_mesh[x][y] = u - this->dx_mesh[x][y];
-            this->y_mesh[x][y] = v  - this->dy_mesh[x][y];
+            this->y_mesh[x][y] = v - this->dy_mesh[x][y];
 		}
 	}
 }
