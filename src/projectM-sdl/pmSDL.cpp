@@ -107,7 +107,7 @@ int projectMSDL::toggleAudioInput() {
 }
 
 int projectMSDL::initAudioInput() {
-    
+
 
     // params for audio input
     SDL_AudioSpec want, have;
@@ -142,7 +142,7 @@ int projectMSDL::initAudioInput() {
     audioSampleCount = have.samples;
     audioFormat = have.format;
     audioInputDevice = audioDeviceID;
-    
+
     return 1;
 }
 
@@ -153,7 +153,7 @@ int projectMSDL::openAudioInput() {
     const char* driver_name = SDL_GetCurrentAudioDriver();
     SDL_Log("Using audio driver: %s\n", driver_name);
 #endif
-    
+
     // get audio input device
     NumAudioDevices = SDL_GetNumAudioDevices(true);  // capture, please
 
@@ -169,11 +169,11 @@ int projectMSDL::openAudioInput() {
         SDL_Log("Found audio capture device %d: %s", i, SDL_GetAudioDeviceName(i, true));
     }
 #endif
-    
+
     // default selected Audio Device to 0.
     selectedAudioDevice = 0;
     initAudioInput();
-    
+
     return 1;
 }
 
@@ -251,7 +251,7 @@ void projectMSDL::nextMonitor()
 		std::vector<SDL_Rect> displayBounds;
 		int nextWindow = currentWindowIndex + 1;
 		if (nextWindow >= displayCount) nextWindow = 0;
-        
+
 		for (int i = 0; i < displayCount; i++)
 		{
 			displayBounds.push_back(SDL_Rect());
@@ -320,7 +320,7 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
         }
         break;
     case SDLK_ESCAPE:
-        if (projectM::isTextInputActive())                
+        if (projectM::isTextInputActive())
             SDL_StopTextInput();
         break;
     case SDLK_i:
@@ -443,7 +443,7 @@ void projectMSDL::resize(unsigned int width_, unsigned int height_) {
 
 void projectMSDL::pollEvent() {
     SDL_Event evt;
-    
+
     int mousex = 0;
     float mousexscale = 0;
     int mousey = 0;
@@ -528,12 +528,12 @@ void projectMSDL::pollEvent() {
         // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
         mousexscale = (mousex / (float)width);
         mouseyscale = ((height - mousey) / (float)height);
-        // Drag Touch. 
+        // Drag Touch.
         touchDrag(mousexscale, mouseyscale, mousepressure);
     }
 }
 
-// This touches the screen to generate a waveform at X / Y. 
+// This touches the screen to generate a waveform at X / Y.
 void projectMSDL::touch(float x, float y, int pressure, int touchtype) {
 #ifdef PROJECTM_TOUCH_ENABLED
     projectM::touch(x, y, pressure, touchtype);
@@ -695,7 +695,7 @@ void projectMSDL::renderTexture() {
 void projectMSDL::presetSwitchedEvent(bool isHardCut, size_t index) const {
     std::string presetName = getPresetName(index);
     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Displaying preset: %s\n", presetName.c_str());
-    
+
     std::string newTitle = "projectM ➫ " + presetName;
     SDL_SetWindowTitle(win, newTitle.c_str());
 }
