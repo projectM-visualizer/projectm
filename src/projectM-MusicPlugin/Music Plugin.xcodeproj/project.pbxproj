@@ -311,7 +311,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "set -euxo pipefail\n\nPOUT=\"$BUILT_PRODUCTS_DIR\"/\"$CONTENTS_FOLDER_PATH/Resources/presets\"\nPIN=\"$SRCROOT\"/../../presets\n\nmkdir -p \"$POUT\"\nfor preset_dir in \"$PIN/\"*; do\ncp \"$preset_dir/\"* \"$POUT/\"\ndone\necho \"Copied presets to $POUT\"\n\nPKGNAME=ProjectM-MusicPlugin.pkg\n\nmkdir -p \"$TEMP_DIR\"\npkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/Properties/ProjectM-pkg.plist\" --root \"$DSTROOT\" \"$TEMP_DIR/$PKGNAME\"\n\n# for combined installer\ncp \"$TEMP_DIR/$PKGNAME\" \"$BUILT_PRODUCTS_DIR/\"\n\n# for convenience\nmv \"$TEMP_DIR/$PKGNAME\" \"$SRCROOT/\"\n";
+			shellScript = "set -euxo pipefail\n\nPOUT=\"$BUILT_PRODUCTS_DIR\"/\"$CONTENTS_FOLDER_PATH/Resources/presets\"\nPIN=\"$SRCROOT\"/../../presets\n\nmkdir -p \"$POUT\"\nfor preset_dir in \"$PIN/\"*; do\ncp \"$preset_dir/\"* \"$POUT/\"\ndone\necho \"Copied presets to $POUT\"\n\nPKGNAME=ProjectM-MusicPlugin.pkg\n\nmkdir -p \"$TEMP_DIR\"\npkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/Properties/ProjectM-pkg.plist\" --root \"$DSTROOT\" \"$TEMP_DIR/$PKGNAME\"\n#pkgbuild --component-plist \"$SRCROOT/Properties/ProjectM-pkg.plist\" --root \"$DSTROOT\" \"$TEMP_DIR/$PKGNAME\"\n\n# for combined installer\ncp \"$TEMP_DIR/$PKGNAME\" \"$BUILT_PRODUCTS_DIR/\"\n\n# for convenience\nmv \"$TEMP_DIR/$PKGNAME\" \"$SRCROOT/\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -367,6 +367,7 @@
 				CODE_SIGN_IDENTITY = "Developer ID Application: Mischa Spiegelmock (5926VBQM6Y)";
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_LOCATION = YES;
+				DEVELOPMENT_TEAM = 5926VBQM6Y;
 				DYLIB_CURRENT_VERSION = 1.0.0;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -392,6 +393,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks/";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CODE_SIGN_FLAGS = "--timestamp";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "";
 				SDKROOT = macosx;
@@ -428,6 +430,7 @@
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_LOCATION = YES;
+				DEVELOPMENT_TEAM = 5926VBQM6Y;
 				DYLIB_CURRENT_VERSION = 1.0.0;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
@@ -446,6 +449,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks/";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CODE_SIGN_FLAGS = "--timestamp";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				OTHER_LDFLAGS = "";
 				SDKROOT = macosx;
@@ -457,10 +461,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 5926VBQM6Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/macos/contrib",
@@ -491,7 +492,6 @@
 				MARKETING_VERSION = 2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.music-plugin";
 				PRODUCT_NAME = ProjectM;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Debug;
@@ -500,10 +500,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 5926VBQM6Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/macos/contrib",
@@ -534,7 +531,6 @@
 				MARKETING_VERSION = 2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.music-plugin";
 				PRODUCT_NAME = ProjectM;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;

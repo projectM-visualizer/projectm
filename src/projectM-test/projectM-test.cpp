@@ -24,15 +24,8 @@
 #include "sdltoprojectM.h"
 #include "ConfigFile.h"
 #include "getConfigFilename.h"
+#include "projectM-opengl.h"
 #include <stdlib.h>
-
-#ifdef __unix__
-#include <GL/gl.h>
-#endif
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#endif
-
 #include <cassert>
 
 projectM *globalPM= NULL;
