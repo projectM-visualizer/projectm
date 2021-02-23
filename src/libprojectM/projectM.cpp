@@ -19,6 +19,7 @@
 *
 */
 
+#include "projectM-opengl.h"
 #include "RenderItemMatcher.hpp"
 #include "RenderItemMergeFunction.hpp"
 #include "fatal.h"

@@ -922,6 +922,7 @@
 				OTHER_CFLAGS = (
 					"-fno-stack-check",
 					"-DHAVE_FTS_H",
+					"-DUSE_TEXT_MENU",
 				);
 			};
 			name = Debug;
@@ -958,6 +959,7 @@
 				OTHER_CFLAGS = (
 					"-fno-stack-check",
 					"-DHAVE_FTS_H",
+					"-DUSE_TEXT_MENU",
 				);
 			};
 			name = Release;
