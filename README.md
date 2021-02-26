@@ -59,21 +59,21 @@ You can also download an enormous 41,000 preset pack of presets [here](https://m
 ***
 
 ## Screenshots
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.20%20AM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.20%20AM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.33.50%20AM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.33.50%20AM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.14.41%20PM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.14.41%20PM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.13.53%20PM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.13.53%20PM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.15.36%20PM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.15.36%20PM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.49.32%20PM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.49.32%20PM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.50.37%20PM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.50.37%20PM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.07%20AM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.07%20AM.png)
 
 ![Screenshot](https://silentradiance.com/demos/projectM_vr/projectm_vr.png)
 ***
@@ -132,7 +132,7 @@ Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues
 
 [Chat with us on Discord.](https://discord.gg/tpEuywB).
 
-If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues. 
+If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues.
 
 ## Maintainers
 If you maintain packages of libprojectM, we are happy to work with you! Please note well:
