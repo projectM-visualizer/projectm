@@ -244,7 +244,6 @@
 		1668542B2105E4BD0042793A /* Renderable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Renderable.cpp; path = Renderer/Renderable.cpp; sourceTree = "<group>"; };
 		1668542C2105E4BD0042793A /* PipelineContext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PipelineContext.cpp; path = Renderer/PipelineContext.cpp; sourceTree = "<group>"; };
 		1668542D2105E4BD0042793A /* MilkdropWaveform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MilkdropWaveform.cpp; path = Renderer/MilkdropWaveform.cpp; sourceTree = "<group>"; };
-		168404F425D82ED70001F02C /* StaticGlShaders.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = StaticGlShaders.cpp; path = Renderer/StaticGlShaders.cpp; sourceTree = "<group>"; };
 		168404FE25D82FB80001F02C /* Intrinsics.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Intrinsics.h; sourceTree = "<group>"; };
 		1687172320C33DF300947E7E /* TextureManager.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = TextureManager.hpp; path = Renderer/TextureManager.hpp; sourceTree = "<group>"; };
 		1687172420C33DF300947E7E /* Renderable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Renderable.hpp; path = Renderer/Renderable.hpp; sourceTree = "<group>"; };
@@ -446,7 +445,6 @@
 			isa = PBXGroup;
 			children = (
 				168A57C62516226900E802A0 /* StaticGlShaders.cpp */,
-				168404F425D82ED70001F02C /* StaticGlShaders.cpp */,
 				166854412105E4C20042793A /* etc */,
 				1687172220C33DDF00947E7E /* headers */,
 				168C689F20BB265D000AFC1B /* hlslparser */,

@@ -1,28 +1,23 @@
 # config.inp
 # Configuration File for projectM
 
-#Texture Size = 1024			# Size of internal rendering texture
-
-Mesh X  = 708            	# Width of PerPixel Equation mesh
-Mesh Y  = 400          		# Height of PerPixel Equation mesh
-FPS  = 60          		# Frames Per Second
-Fullscreen  = false
-Window Width  = 512  	       	# startup window width
-Window Height = 512            	# startup window height
-
+Mesh X  = 708                   # Width of PerPixel Equation mesh
+Mesh Y  = 400                   # Height of PerPixel Equation mesh
+FPS     = 60                    # Frames Per Second
 Smooth Transition Duration = 1  # in seconds
-Preset Duration = 10 	     	# in seconds
+Preset Duration = 10            # in seconds
+Hard Cuts Enabled = false       # Hard Cuts are preset transitions that occur when your music becomes louder. They only occur after a hard cut duration threshold has passed.
+Hard Cut Duration = 60          # Number of seconds before you become eligible for a hard cut.
+Hard Cut Sensitivity = 1.0      # Volume sensitivity before a hard cut is triggered.
+Beat Sensitivity = 1.0          # Beat Sensitivity impacts how reactive your visualizations are to volume, bass, mid-range, and treble. Default 1.0. Range: 0 - 5 (from "dead" to VERY reactive).
 
-Hard Cuts Enabled = false  # Hard Cuts are preset transitions that occur when your music becomes louder. They only occur after a hard cut duration threshold has passed. 
-Hard Cut Duration = 60     # Number of seconds before you become eligible for a hard cut.
-Hard Cut Sensitivity = 1.0 # Volume sensitivity before a hard cut is triggered.
-
-Beat Sensitivity = 1.0 # Beat Sensitivity impacts how reactive your visualizations are to volume, bass, mid-range, and treble. Default 1.0. Range: 0 - 5 (from "dead" to VERY reactive).
-
+# mostly ignored in projectM-SDL
+#Texture Size = 1024			# Size of internal rendering texture
+Window Width  = 512            # startup window width
+Window Height = 512            # startup window height
+Fullscreen  = false
 Easter Egg Parameter = 1
-
 Aspect Correction = true	# Custom Shape Aspect Correction
-
 Preset Path = presets # preset location
 Title Font = Vera.ttf
 Menu Font = VeraMono.ttf

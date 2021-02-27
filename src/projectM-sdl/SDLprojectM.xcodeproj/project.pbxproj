@@ -17,9 +17,12 @@
 		168F715921124C0E001806E7 /* config.inp in Support files */ = {isa = PBXBuildFile; fileRef = 16B52AAA21105A6900830F34 /* config.inp */; };
 		168F715A21124C14001806E7 /* fonts in Support files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
 		168F718021126256001806E7 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 168F717F21126256001806E7 /* AppIcon.icns */; };
+		168FECCD25EA83F800E3E133 /* loopback.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 168FECCB25EA83F800E3E133 /* loopback.cpp */; };
+		168FECD425EA86E900E3E133 /* setup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 168FECD225EA86E900E3E133 /* setup.cpp */; };
 		169BC64024CC3B56007B7829 /* presets in Copy Files */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		169BC64224CC3FCA007B7829 /* presets in Support files */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
 		169BC65024CC8401007B7829 /* fonts in Copy Files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
+		16CFA3AC25EABCB100E7893C /* audioCapture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 16CFA3AA25EABCB100E7893C /* audioCapture.cpp */; };
 		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
 /* End PBXBuildFile section */
 
@@ -144,12 +147,18 @@
 		168F714921120210001806E7 /* ProjectM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProjectM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		168F714B21120211001806E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		168F717F21126256001806E7 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
+		168FECCB25EA83F800E3E133 /* loopback.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = loopback.cpp; sourceTree = "<group>"; };
+		168FECCC25EA83F800E3E133 /* loopback.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = loopback.hpp; sourceTree = "<group>"; };
+		168FECD225EA86E900E3E133 /* setup.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = setup.cpp; sourceTree = "<group>"; };
+		168FECD325EA86E900E3E133 /* setup.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = setup.hpp; sourceTree = "<group>"; };
 		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
 		169501FF1F7009E9008FAF86 /* pmSDL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pmSDL.hpp; sourceTree = "<group>"; };
 		169BC64B24CC8353007B7829 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
 		169BC64D24CC83CD007B7829 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
 		16B52AA8211054E900830F34 /* projectMSDL-pkg.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "projectMSDL-pkg.plist"; sourceTree = "<group>"; };
 		16B52AAA21105A6900830F34 /* config.inp */ = {isa = PBXFileReference; lastKnownFileType = text; path = config.inp; sourceTree = "<group>"; };
+		16CFA3AA25EABCB100E7893C /* audioCapture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = audioCapture.cpp; sourceTree = "<group>"; };
+		16CFA3AB25EABCB100E7893C /* audioCapture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = audioCapture.hpp; sourceTree = "<group>"; };
 		C307DFD31D565B57002F6B9E /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
 		C34521441BF02294001707D2 /* SDLprojectM */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SDLprojectM; sourceTree = BUILT_PRODUCTS_DIR; };
 		C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = projectM_SDL_main.cpp; sourceTree = SOURCE_ROOT; };
@@ -233,6 +242,12 @@
 		C345213B1BF02293001707D2 = {
 			isa = PBXGroup;
 			children = (
+				16CFA3AA25EABCB100E7893C /* audioCapture.cpp */,
+				16CFA3AB25EABCB100E7893C /* audioCapture.hpp */,
+				168FECD225EA86E900E3E133 /* setup.cpp */,
+				168FECD325EA86E900E3E133 /* setup.hpp */,
+				168FECCB25EA83F800E3E133 /* loopback.cpp */,
+				168FECCC25EA83F800E3E133 /* loopback.hpp */,
 				C60BD8E1259CF3CA0038831F /* SDLprojectM.entitlements */,
 				169501FF1F7009E9008FAF86 /* pmSDL.hpp */,
 				169501FE1F7009E9008FAF86 /* pmSDL.cpp */,
@@ -412,6 +427,9 @@
 			files = (
 				16355BFE2143C0F400B3748F /* projectM_SDL_main.cpp in Sources */,
 				16355BFF2143C0F600B3748F /* pmSDL.cpp in Sources */,
+				168FECCD25EA83F800E3E133 /* loopback.cpp in Sources */,
+				168FECD425EA86E900E3E133 /* setup.cpp in Sources */,
+				16CFA3AC25EABCB100E7893C /* audioCapture.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
