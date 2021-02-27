@@ -136,11 +136,17 @@ AC_ARG_ENABLE([llvm],
   AS_HELP_STRING([--enable-llvm],[Support for JIT using LLVM]),
   [], [enable_llvm=no])
 AS_IF([test x"$enable_llvm" = "xyes"], [
-    AC_DEFINE([HAVE_LLVM], [1], [Define HAVE_LLVM])
-    CFLAGS="$CFLAGS -I$(llvm-config --includedir)"
-    CXXFLAGS="$CXXFLAGS -I$(llvm-config --includedir)"
-    LIBS="$LIBS $(llvm-config --libs)"
-    LDFLAGS="$LDFLAGS $(llvm-config --ldflags)"
+  LLVM_VERSION="$(llvm-config --version)"
+  AX_COMPARE_VERSION([$LLVM_VERSION], [ge], [10.0.0], [
+      AC_DEFINE([HAVE_LLVM], [1], [Define HAVE_LLVM])
+      CFLAGS="$CFLAGS -I$(llvm-config --includedir)"
+      CXXFLAGS="$CXXFLAGS -I$(llvm-config --includedir)"
+      LIBS="$LIBS $(llvm-config --libs)"
+      LDFLAGS="$LDFLAGS $(llvm-config --ldflags)"
+      echo "Found llvm version=$LLVM_VERSION"
+    ],[
+      AC_MSG_ERROR( [Requires LLVM_VERSION >= 10.0.0] )
+    ])
 ])
 
 dnl from https://stackoverflow.com/questions/30897170/ac-subst-does-not-expand-variable answer: https://stackoverflow.com/a/30960268
