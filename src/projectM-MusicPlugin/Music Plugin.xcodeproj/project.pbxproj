@@ -308,10 +308,11 @@
 			);
 			outputPaths = (
 				"$(SRCROOT)/ProjectM-MusicPlugin.pkg",
+				"$(TEMP_DIR)/ProjectM-MusicPlugin.pkg",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
-			shellScript = "set -euxo pipefail\n\nPOUT=\"$BUILT_PRODUCTS_DIR\"/\"$CONTENTS_FOLDER_PATH/Resources/presets\"\nPIN=\"$SRCROOT\"/../../presets\n\nmkdir -p \"$POUT\"\nfor preset_dir in \"$PIN/\"*; do\ncp \"$preset_dir/\"* \"$POUT/\"\ndone\necho \"Copied presets to $POUT\"\n\nPKGNAME=ProjectM-MusicPlugin.pkg\n\nmkdir -p \"$TEMP_DIR\"\npkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/Properties/ProjectM-pkg.plist\" --root \"$DSTROOT\" \"$TEMP_DIR/$PKGNAME\"\n#pkgbuild --component-plist \"$SRCROOT/Properties/ProjectM-pkg.plist\" --root \"$DSTROOT\" \"$TEMP_DIR/$PKGNAME\"\n\n# for combined installer\ncp \"$TEMP_DIR/$PKGNAME\" \"$BUILT_PRODUCTS_DIR/\"\n\n# for convenience\nmv \"$TEMP_DIR/$PKGNAME\" \"$SRCROOT/\"\n";
+			shellScript = "set -euxo pipefail\n\nPOUT=\"$BUILT_PRODUCTS_DIR\"/\"$CONTENTS_FOLDER_PATH/Resources/presets\"\nPIN=\"$SRCROOT\"/../../presets\n\nmkdir -p \"$POUT\"\nfor preset_dir in \"$PIN/\"*; do\ncp \"$preset_dir/\"* \"$POUT/\"\ndone\necho \"Copied presets to $POUT\"\n\nPKGNAME=ProjectM-MusicPlugin.pkg\n\nmkdir -p \"$TEMP_DIR\"\n#pkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/Properties/ProjectM-pkg.plist\" --root \"$DSTROOT\" \"$TEMP_DIR/$PKGNAME\"\npkgbuild --component-plist \"$SRCROOT/Properties/ProjectM-pkg.plist\" --root \"$DSTROOT\" \"$TEMP_DIR/$PKGNAME\"\n\n# for combined installer\ncp \"$TEMP_DIR/$PKGNAME\" \"$BUILT_PRODUCTS_DIR/\"\n\n# for convenience\nmv \"$TEMP_DIR/$PKGNAME\" \"$SRCROOT/\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -461,7 +462,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5926VBQM6Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/macos/contrib",
@@ -492,6 +496,7 @@
 				MARKETING_VERSION = 2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.music-plugin";
 				PRODUCT_NAME = ProjectM;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Debug;
@@ -500,7 +505,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 5926VBQM6Y;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/macos/contrib",
@@ -531,6 +539,7 @@
 				MARKETING_VERSION = 2.5;
 				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.music-plugin";
 				PRODUCT_NAME = ProjectM;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;

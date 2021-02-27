@@ -24,7 +24,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		16CF110C25E1B35F00B4A951 /* Distribution.xml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 16CF110B25E1B35F00B4A951 /* Distribution.xml */; };
+		16CF110C25E1B35F00B4A951 /* Distribution.xml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 16CF110B25E1B35F00B4A951 /* Distribution.xml */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
