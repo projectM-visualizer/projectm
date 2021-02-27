@@ -20,6 +20,7 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 * [Standalone](https://github.com/projectM-visualizer/projectm/releases)
 * [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
 * [Music.app Plugin](https://github.com/projectM-visualizer/projectm/releases/)
+* [Brew](https://formulae.brew.sh/formula/projectm)
 #### Linux
 * [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
 * Check your repository for a binary release.
