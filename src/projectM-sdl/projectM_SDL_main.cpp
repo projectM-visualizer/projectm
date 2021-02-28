@@ -413,7 +413,7 @@ srand((int)(time(NULL)));
     // Create a help menu specific to SDL
     std::string modKey = "CTRL";
 
-#if __APPLE_
+#if __APPLE__
 modKey = "CMD";
 #endif
 
@@ -428,10 +428,12 @@ modKey = "CMD";
 		"P: Previous preset""\n"
 		"UP: Increase Beat Sensitivity""\n"
 		"DOWN: Decrease Beat Sensitivity""\n"
+#ifdef PROJECTM_TOUCH_ENABLED
 		"Left Click: Drop Random Waveform on Screen""\n"
 		"Right Click: Remove Random Waveform""\n" +
-		modKey + "+Right Click: Remove All Random Waveforms""\n" +
-		modKey + "+I: Audio Input (listen to next device)""\n" +
+		modKey + "+Right Click: Remove All Random Waveforms""\n"
+#endif
+		+ modKey + "+I: Audio Input (listen to next device)""\n" +
 		modKey + "+M: Change Monitor""\n" +
 		modKey + "+S: Stretch Monitors""\n" +
 		modKey + "+F: Fullscreen""\n" +
