@@ -1,11 +1,3 @@
-//
-//  setup.cpp
-//  SDLprojectM
-//
-//  Created by Cyber on 2/27/21.
-//  Copyright © 2021 int80. All rights reserved.
-//
-
 #include "setup.hpp"
 
 #if OGL_DEBUG
@@ -16,7 +8,7 @@ void debugGL(GLenum source,
              GLsizei length,
              const GLchar* message,
              const void* userParam) {
-    
+
     /*if (type != GL_DEBUG_TYPE_OTHER)*/
     {
         std::cerr << " -- \n" << "Type: " <<
@@ -32,36 +24,36 @@ std::string getConfigFilePath(std::string datadir_path) {
     char* home = NULL;
     std::string projectM_home;
     std::string projectM_config = DATADIR_PATH;
-    
+
     projectM_config = datadir_path;
-    
+
 #ifdef _MSC_VER
     home=getenv("USERPROFILE");
 #else
     home=getenv("HOME");
 #endif
-    
+
     projectM_home = std::string(home);
     projectM_home += "/.projectM";
-    
+
     // Create the ~/.projectM directory. If it already exists, mkdir will do nothing
 #if defined _MSC_VER
     _mkdir(projectM_home.c_str());
 #else
     mkdir(projectM_home.c_str(), 0755);
 #endif
-    
+
     projectM_home += "/config.inp";
     projectM_config += "/config.inp";
-    
+
     std::ifstream f_home(projectM_home);
     std::ifstream f_config(projectM_config);
     std::cout << "f_home " << f_home.good() << "\n";
-    
+
     if (f_config.good() && !f_home.good()) {
         std::ifstream f_src;
         std::ofstream f_dst;
-        
+
         f_src.open(projectM_config, std::ios::in  | std::ios::binary);
         f_dst.open(projectM_home,   std::ios::out | std::ios::binary);
         f_dst << f_src.rdbuf();
@@ -114,7 +106,7 @@ void initStereoscopicView(SDL_Window *win) {
     {
         SDL_Log("SDL_GL_STEREO: true");
     }
-    
+
     // requires fullscreen mode
     SDL_ShowCursor(false);
     SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN);
@@ -138,11 +130,11 @@ void testAllPresets(projectMSDL *app) {
             buildErrors++;
         }
     }
-    
+
     if (app->getPlaylistSize()) {
         fprintf(stdout, "Preset loading errors: %d/%d [%d%%]\n", buildErrors, app->getPlaylistSize(), (buildErrors*100) / app->getPlaylistSize());
     }
-    
+
     delete app;
 }
 
@@ -150,18 +142,18 @@ void testAllPresets(projectMSDL *app) {
 projectMSDL *setupSDLApp() {
     projectMSDL *app;
     seedRand();
-    
+
 #if UNLOCK_FPS
     setenv("vblank_mode", "0", 1);
 #endif
-    
+
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-    
+
     if (! SDL_VERSION_ATLEAST(2, 0, 5)) {
         SDL_Log("SDL version 2.0.5 or greater is required. You have %i.%i.%i", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
         exit(1);
     }
-    
+
     // default window size to usable bounds (e.g. minus menubar and dock)
     SDL_Rect initialWindowBounds;
 #if SDL_VERSION_ATLEAST(2, 0, 5)
@@ -172,31 +164,31 @@ projectMSDL *setupSDLApp() {
 #endif
     int width = initialWindowBounds.w;
     int height = initialWindowBounds.h;
-    
+
     initGL();
-    
+
     SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     SDL_GL_GetDrawableSize(win,&width,&height);
-    
+
     initStereoscopicView(win);
-    
+
     SDL_GLContext glCtx = SDL_GL_CreateContext(win);
     dumpOpenGLInfo();
-    
+
     SDL_SetWindowTitle(win, "projectM");
-    
+
     SDL_GL_MakeCurrent(win, glCtx);  // associate GL context with main window
     int avsync = SDL_GL_SetSwapInterval(-1); // try to enable adaptive vsync
     if (avsync == -1) { // adaptive vsync not supported
         SDL_GL_SetSwapInterval(1); // enable updates synchronized with vertical retrace
     }
-    
+
     std::string base_path = DATADIR_PATH;
     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Using data directory: %s\n", base_path.c_str());
-    
+
     // load configuration file
     std::string configFilePath = getConfigFilePath(base_path);
-    
+
     if (! configFilePath.empty()) {
         // found config file, use it
         app = new projectMSDL(glCtx, configFilePath, 0);
@@ -205,7 +197,7 @@ projectMSDL *setupSDLApp() {
         // use some sane defaults if config file not found
         base_path = SDL_GetBasePath();
         SDL_Log("Config file not found, using built-in settings. Data directory=%s\n", base_path.c_str());
-        
+
         // Get max refresh rate from attached displays to use as built-in max FPS.
         int i = 0;
         int maxRefreshRate = 0;
@@ -218,7 +210,7 @@ projectMSDL *setupSDLApp() {
             }
         }
         if (maxRefreshRate <= 60) maxRefreshRate = 60;
-        
+
         float heightWidthRatio = (float)height / (float)width;
         projectM::Settings settings;
         settings.windowWidth = width;
@@ -243,7 +235,7 @@ projectMSDL *setupSDLApp() {
         // init with settings
         app = new projectMSDL(glCtx, settings, 0);
     }
-    
+
     // center window and full desktop screen
     SDL_DisplayMode dm;
     if (SDL_GetDesktopDisplayMode(0, &dm) == 0) {
@@ -255,14 +247,14 @@ projectMSDL *setupSDLApp() {
     SDL_SetWindowPosition(win, initialWindowBounds.x, initialWindowBounds.y);
     SDL_SetWindowSize(win, width, height);
     app->resize(width, height);
-    
+
     // Create a help menu specific to SDL
     std::string modKey = "CTRL";
-    
+
 #if __APPLE__
     modKey = "CMD";
 #endif
-    
+
     std::string sdlHelpMenu = "\n"
     "F1: This help menu""\n"
     "F3: Show preset name""\n"
@@ -286,28 +278,28 @@ projectMSDL *setupSDLApp() {
     modKey + "+Q: Quit";
     app->setHelpText(sdlHelpMenu.c_str());
     app->init(win);
-    
+
 #if STEREOSCOPIC_SBS
     app->toggleFullScreen();
 #endif
 #if FAKE_AUDIO
     app->fakeAudio  = true;
 #endif
-    
+
     enableGLDebugOutput();
     configureLoopback(app);
-    
+
 #if !FAKE_AUDIO && !WASAPI_LOOPBACK
     // get an audio input device
     if (app->openAudioInput())
         app->beginAudioCapture();
 #endif
-    
+
 #if TEST_ALL_PRESETS
     testAllPresets(app);
     return 0;
 #endif
-    
+
     return app;
 }
 

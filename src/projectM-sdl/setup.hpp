@@ -1,11 +1,3 @@
-//
-//  setup.hpp
-//  SDLprojectM
-//
-//  Created by Cyber on 2/27/21.
-//  Copyright © 2021 int80. All rights reserved.
-//
-
 #ifndef setup_hpp
 #define setup_hpp
 
