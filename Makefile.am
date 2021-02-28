@@ -39,17 +39,12 @@ build-mac: macOS/Build/Products/Debug/presets
 	@echo "Products built in macOS/Build/Products/Debug"
 	open macOS/Build/Products/Debug
 
-ProjectM.pkg:
+build-mac-release:
 	xcrun xcodebuild -allowProvisioningUpdates -scheme "ProjectM Installer" -configuration Release archive -archivePath build/ProjectM.xcarchive
 
 # do a macOS build
-dist-mac: dist ProjectM.pkg
-	xcrun altool --notarize-app --primary-bundle-id "net.projectm.installer" \
-		--asc-provider 'MischaSpiegelmock10100337' \
-		--username thadwooster@gmail.com --password @keychain:AC_PASSWORD \
-		--file "$(PWD)/ProjectM.pkg"
-	@echo "Progress: $ xcrun altool -u thadwooster@gmail.com -p @keychain:AC_PASSWORD --notarization-info UUID"
-	@echo "Staple: $ xcrun stapler staple $(PWD)/dist/projectM-macOS.pkg"
+dist-mac: dist build-mac-release
+	mac/notarize.sh
 	rm -rf dist
 	mkdir -p dist
 	mv ProjectM.pkg dist/projectM-macOS.pkg
