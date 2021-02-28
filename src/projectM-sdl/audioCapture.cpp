@@ -9,9 +9,9 @@ int projectMSDL::initAudioInput() {
     SDL_zero(want);
     want.freq = 44100;
     want.format = AUDIO_F32;  // float
-    want.channels = 1;  // mono is fine
-//    want.samples = PCM::maxsamples;
-    want.samples = 256;
+    want.channels = 2;  // mono might be better?
+    // lower might reduce latency
+    want.samples = PCM::maxsamples;
     want.callback = projectMSDL::audioInputCallbackF32;
     want.userdata = this;
 
@@ -27,9 +27,9 @@ int projectMSDL::initAudioInput() {
     std::string deviceToast = SDL_GetAudioDeviceName(selectedAudioDevice, true); // Example: Microphone rear
     deviceToast += " selected";
     projectM::setToastMessage(deviceToast);
-//#ifdef DEBUG
+#ifdef DEBUG
     SDL_Log("Samples: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
-//#endif
+#endif
     audioChannelsCount = have.channels;
     audioSampleRate = have.freq;
     audioSampleCount = have.samples;
