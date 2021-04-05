@@ -29,9 +29,9 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 #### Xbox / Windows Phone
 * [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
 #### Other
-* [Source Code](https://github.com/projectM-visualizer/projectm/)
-* [Qt5](https://www.qt.io/)-based [Pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/) and Jack desktop apps in [source code](https://github.com/projectM-visualizer/projectm/)
-* [ALSA, xmms, winamp, jack](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
+* [Source code](https://github.com/projectM-visualizer/projectm/)
+* [Qt5](https://www.qt.io/)-based [PulseAudio](https://www.freedesktop.org/wiki/Software/PulseAudio/) and JACK desktop apps in [source code](https://github.com/projectM-visualizer/projectm/)
+* [ALSA, XMMS, Winamp, JACK](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
 
 ### Discord chat
 [Chat with us on Discord.](https://discord.gg/tpEuywB)
@@ -112,7 +112,7 @@ See [BUILDING.md](BUILDING.md)
 
 
 # Using the library
-At its core projectM is a library, [libprojectM](src/libprojectM). This library is responsible for parsing presets, analyzing audio PCM data with beat detection and FFT, applying the preset to the audio feature data and rendering the resulting output with openGL. It can render to an openGL context or a texture.
+At its core projectM is a library, [libprojectM](src/libprojectM). This library is responsible for parsing presets, analyzing audio PCM data with beat detection and FFT, applying the preset to the audio feature data and rendering the resulting output with openGL. It can render to an OpenGL context or a texture.
 
 To look at a simple example way of using the library see the [libSDL2 sample code](src/projectM-sdl/projectM_SDL_main.cpp).
 
