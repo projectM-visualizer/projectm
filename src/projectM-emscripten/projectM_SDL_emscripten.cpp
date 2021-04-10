@@ -9,11 +9,11 @@
 
 #ifdef __APPLE__
 #include <OpenGL/gl.h>
-#include "SDL.h"
+#include <SDL2/SDL.h>
 #elif EMSCRIPTEN
 #include <emscripten.h>
 #include <GL/gl.h>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #endif
 
 const float FPS = 60;
@@ -29,7 +29,7 @@ typedef struct {
 
 projectMApp app;
 
-int selectAudioInput(projectMApp *app) {
+int selectAudioInput(projectMApp *app_) {
     int i, count = SDL_GetNumAudioDevices(0);  // param=isCapture (not yet functional)
 
     if (! count) {
@@ -133,23 +133,14 @@ int main( int argc, char *argv[] ) {
     // SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
     // SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
-    #if SDL_MAJOR_VERSION==2
-        app.win = SDL_CreateWindow("SDL Fun Party Time", 50, 50, width, height, 0);
-        app.rend = SDL_CreateRenderer(app.win, 0, SDL_RENDERER_ACCELERATED);
-        if (! app.rend) {
-            fprintf(stderr, "Failed to create renderer: %s\n", SDL_GetError());
-            return PROJECTM_ERROR;
-        }
-        SDL_SetWindowTitle(app.win, "SDL Fun Party Time");
-        printf("SDL init version 2\n");
-    #elif SDL_MAJOR_VERSION==1
-        screen = SDL_SetVideoMode(width, height, 32, SDL_OPENGL | SDL_DOUBLEBUF);
-        printf("SDL init version 1\n");
-        if (! screen) {
-            fprintf(stderr, "Failed to create renderer with SDL_SetVideoMode(): %s\n", SDL_GetError());
-            return PROJECTM_ERROR;
-        }
-    #endif
+    app.win = SDL_CreateWindow("SDL Fun Party Time", 50, 50, width, height, 0);
+    app.rend = SDL_CreateRenderer(app.win, 0, SDL_RENDERER_ACCELERATED);
+    if (! app.rend) {
+        fprintf(stderr, "Failed to create renderer: %s\n", SDL_GetError());
+        return PROJECTM_ERROR;
+    }
+    SDL_SetWindowTitle(app.win, "SDL Fun Party Time");
+    printf("SDL init version 2\n");
 
     #ifdef PANTS
     if ( fsaa ) {
