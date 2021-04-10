@@ -74,8 +74,7 @@ matrix:
 
     # emscripten
     - os: linux
-      env:
-        -|
+      env: |
           MATRIX_EVAL="docker run -dit emscripten/emsdk
           -v $(pwd):/src
           --name emscripten
