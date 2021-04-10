@@ -30,7 +30,6 @@ typedef struct
 
 projectMApp app;
 
-// https://stackoverflow.com/questions/61756004/why-do-i-get-unsupported-shader-version-using-version-300-es-at-emscripten
 static void fatal(const char *const fmt, ...)
 {
 	va_list args;
@@ -38,20 +37,9 @@ static void fatal(const char *const fmt, ...)
 	vprintf(fmt, args);
 	printf("\n");
 	va_end(args);
-	for (;;)
-	{
-		SDL_Delay(1000);
-	}
+  SDL_Quit(1);
 }
 
-static void _set_SDL_Attribute(SDL_GLattr attr, int value, const char *attrName)
-#define set_SDL_Attribute(x, v) _set_SDL_Attribute(x, v, #x)
-{
-	if (SDL_GL_SetAttribute(attr, value) != 0)
-	{
-		fatal("SDL set attrib failed: %s, %s", attrName, SDL_GetError());
-	}
-}
 
 int selectAudioInput(projectMApp *app_)
 {
