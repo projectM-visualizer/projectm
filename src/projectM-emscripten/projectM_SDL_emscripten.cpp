@@ -37,7 +37,7 @@ static void fatal(const char *const fmt, ...)
 	vprintf(fmt, args);
 	printf("\n");
 	va_end(args);
-  SDL_Quit(1);
+  SDL_Quit();
 }
 
 
