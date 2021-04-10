@@ -39,6 +39,7 @@ AS_IF([test "x$emscripten_compiler" = "xyes"], [
   enable_preset_subdirs=no
   enable_threading=no
   enable_qt=no
+  enable_test=no
   dnl Enable SDL2 and WEBGL2 (OpenGL ES 3)
   EMSCRIPTEN_FLAGS="-g -lgl -s ALLOW_MEMORY_GROWTH=1 -s USE_SDL=2 -s USE_WEBGL2=1 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -O3"
   AC_SUBST([EMSCRIPTEN_FLAGS])
@@ -112,8 +113,8 @@ AS_IF([test "$enable_sdl" != "no" && test "x$emscripten_compiler" != "xyes"], [
         AS_IF([test "$enable_sdl" = "yes"], AC_MSG_ERROR([*** libsdl2 not found!]))
         enable_sdl=no
     ])
+    AM_CONDITIONAL([ENABLE_TEST], [test "$enable_sdl" = "yes"])
 ])
-AM_CONDITIONAL([ENABLE_TEST], [test "$enable_sdl" = "yes"])
 
 
 # Threading
@@ -233,7 +234,7 @@ AM_CONDITIONAL([ENABLE_SDL], [test "x$enable_sdl" = "xyes"])
 AM_CONDITIONAL([ENABLE_QT], [test "x$enable_qt" = "xyes"])
 AM_CONDITIONAL([ENABLE_JACK], [test "x$enable_jack" = "xyes"])
 AM_CONDITIONAL([ENABLE_PULSEAUDIO], [test "x$enable_pulseaudio" = "xyes"])
-AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test "x$enable_emscripten" = "xyes"])
+AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test "x$emscripten_compiler" = "xyes"])
 
 
 my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits"
