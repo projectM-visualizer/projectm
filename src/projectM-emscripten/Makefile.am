@@ -7,7 +7,6 @@ ${my_CFLAGS} \
 -I${top_srcdir}/src/libprojectM/Renderer \
 ${SDL_CFLAGS}
 
-EMSCRIPTEN_FLAGS = $(AM_CPPFLAGS) -g -s USE_SDL=2 -s USE_WEBGL2
 # -s WASM=0
 # -O2
 
@@ -17,8 +16,10 @@ EMSCRIPTEN_FLAGS = $(AM_CPPFLAGS) -g -s USE_SDL=2 -s USE_WEBGL2
 # libprojectW_la_LDFLAGS = $(EMSCRIPTEN_FLAGS) -static
 # projectW_la_PROGRAM = projectW.js
 
-projectW.html:
-	emcc -s ALLOW_MEMORY_GROWTH=1 $(EMSCRIPTEN_FLAGS) ${top_srcdir}/src/libprojectM/.libs/libprojectM.a ../libprojectM/KeyHandler.cpp projectM_SDL_emscripten.cpp -o projectW.html
+projectW.html: projectM_SDL_emscripten.cpp  Makefile.am
+	emcc -s $(EMSCRIPTEN_FLAGS) $(AM_CPPFLAGS) ${top_srcdir}/src/libprojectM/.libs/libprojectM.a \
+	../libprojectM/KeyHandler.cpp projectM_SDL_emscripten.cpp \
+	-o projectW.html
 
 run: projectW.html
 	emrun projectW.html

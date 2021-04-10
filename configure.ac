@@ -40,7 +40,7 @@ AS_IF([test "x$emscripten_compiler" = "xyes"], [
   enable_threading=no
   enable_qt=no
   dnl Enable SDL2 and WEBGL2 (OpenGL ES 3)
-  EMSCRIPTEN_FLAGS="-g -s USE_SDL=2 -s USE_WEBGL2=1"  # -O2
+  EMSCRIPTEN_FLAGS="-g -lgl -s ALLOW_MEMORY_GROWTH=1 -s USE_SDL=2 -s USE_WEBGL2=1 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2"  # -O2
   AC_SUBST([EMSCRIPTEN_FLAGS])
   CFLAGS="$CFLAGS $EMSCRIPTEN_FLAGS"
   CXXFLAGS="$CXXFLAGS $EMSCRIPTEN_FLAGS"
@@ -246,7 +246,8 @@ AC_SUBST([my_CFLAGS])
 
 # glm (vendored, this should never fail; headers are in vendor/glm)
 AC_SUBST(CPPFLAGS, "$CPPFLAGS -I${srcdir}/vendor")
-AS_IF([test "x$enable_emscripten" != "xyes"], [
+AC_MSG_RESULT($emscripten_compiler)
+AS_IF([test "x$emscripten_compiler" != "xyes"], [
     AC_CHECK_HEADER([glm/glm.hpp],, AC_MSG_ERROR(vendored libglm not found.))
 ])
 
