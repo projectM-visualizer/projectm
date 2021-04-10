@@ -75,7 +75,13 @@ matrix:
     # emscripten
     - os: linux
       env:
-        - MATRIX_EVAL="docker run -dit --name emscripten -v $(pwd):/src trzeci/emscripten:sdk-incoming-64bit bash"
+        -|
+          MATRIX_EVAL="docker run -dit emscripten/emsdk
+          -v $(pwd):/src
+          --name emscripten
+          --build-arg=EMSCRIPTEN_VERSION=1.38.43-upstream
+          --tag emscripten/emsdk:1.38.43-upstream
+          bash"
       services:
         - docker
       script:
