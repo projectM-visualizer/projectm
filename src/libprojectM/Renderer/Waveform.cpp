@@ -19,9 +19,8 @@
 typedef float floatPair[2];
 
 Waveform::Waveform(int _samples)
-: RenderItem(),samples(_samples), points(_samples), pointContext(_samples)
+    : RenderItem(), samples(_samples), points(_samples), pointContext(_samples)
 {
-
 	spectrum = false; /* spectrum data or pcm data */
 	dots = false; /* draw wave as dots or lines */
 	thick = false; /* draw thicker lines */
@@ -43,32 +42,38 @@ void Waveform::InitVertexAttrib() {
 }
 
 void Waveform::Draw(RenderContext &context)
- {
+{
     // scale PCM data based on vol_history to make it more or less independent of the application output volume
-    const float  vol_scale = context.beatDetect->getPCMScale();
+    const float vol_scale = context.beatDetect->getPCMScale();
 
-    float *value1 = new float[samples];
-	float *value2 = new float[samples];
-	context.beatDetect->pcm->getPCM( value1, samples, 0, spectrum, smoothing, 0);
-	context.beatDetect->pcm->getPCM( value2, samples, 1, spectrum, smoothing, 0);
+	// Make sure samples<=points.size().  We could reallocate points, but 512 is probably big enough.
+    size_t samples_count = this->samples;
+    if (samples_count > this->points.size())
+        samples_count = this->points.size();
 
-	float mult= scaling*( spectrum ? 0.015f :1.0f);
-#ifdef WIN32
-	std::transform(&value1[0], &value1[samples], &value1[0], bind2nd(std::multiplies<float>(), mult));
-	std::transform(&value2[0], &value2[samples], &value2[0], bind2nd(std::multiplies<float>(), mult));
-#else
-	std::transform(&value1[0], &value1[samples], &value1[0], std::bind2nd(std::multiplies<float>(), mult));
-	std::transform(&value2[0], &value2[samples], &value2[0], std::bind2nd(std::multiplies<float>(), mult));
-#endif /** WIN32 */
+    float *value1 = new float[samples_count];
+    float *value2 = new float[samples_count];
+    if (spectrum)
+    {
+        // TODO support smoothing parameter for getSpectrum()
+        context.beatDetect->pcm->getSpectrum( value1, CHANNEL_0, samples_count, 1.0 );
+        context.beatDetect->pcm->getSpectrum( value2, CHANNEL_1, samples_count, 1.0 );
+    }
+    else
+    {
+        context.beatDetect->pcm->getPCM( value1, CHANNEL_0, samples_count, smoothing );
+        context.beatDetect->pcm->getPCM( value2, CHANNEL_1, samples_count, smoothing );
+    }
 
-	WaveformContext waveContext(samples, context.beatDetect);
+    const float mult = scaling * vol_scale * (spectrum ? 0.005f : 1.0f);
+	WaveformContext waveContext(samples_count, context.beatDetect);
 
-	for(int x=0;x< samples;x++)
+	for (size_t x=0;x< samples_count;x++)
 	{
-		waveContext.sample = x/(float)(samples - 1);
+		waveContext.sample = x/(float)(samples_count - 1);
 		waveContext.sample_int = x;
-		waveContext.left  = vol_scale * value1[x];
-		waveContext.right = vol_scale * value2[x];
+		waveContext.left  = value1[x] * mult;
+		waveContext.right = value2[x] * mult;
 
 		points[x] = PerPoint(points[x],waveContext);
 	}
@@ -82,8 +87,8 @@ void Waveform::Draw(RenderContext &context)
 
     glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * samples, NULL, GL_DYNAMIC_DRAW);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * samples, &points_transf[0], GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * samples_count, NULL, GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(ColoredPoint) * samples_count, &points_transf[0], GL_DYNAMIC_DRAW);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -113,8 +118,8 @@ void Waveform::Draw(RenderContext &context)
 
     glBindVertexArray(m_vaoID);
 
-    if (dots)	glDrawArrays(GL_POINTS,0,samples);
-    else  	glDrawArrays(GL_LINE_STRIP,0,samples);
+    if (dots)	glDrawArrays(GL_POINTS,0,samples_count);
+    else  	glDrawArrays(GL_LINE_STRIP,0,samples_count);
 
     glBindVertexArray(0);
 
@@ -124,4 +129,4 @@ void Waveform::Draw(RenderContext &context)
 
 	delete[] value1;
 	delete[] value2;
-   }
+}

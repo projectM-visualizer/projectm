@@ -61,6 +61,7 @@ class XmlWriteFunctor {
 		}
 
 		inline bool nextItem(QString & name, QString & url, int & rating, int & breedability) {
+			Q_UNUSED(name);
 
 			if (m_index >= m_model.rowCount())
 				return false;
@@ -131,6 +132,8 @@ Qt::ItemFlags QPlaylistModel::flags(const QModelIndex &index) const
  bool QPlaylistModel::dropMimeData(const QMimeData *data, Qt::DropAction action,
 				int row, int column, const QModelIndex &parent)
 {
+	Q_UNUSED(row);
+	Q_UNUSED(parent);
 	if (!data->hasFormat(PRESET_MIME_TYPE))
 		return false;
 
@@ -246,44 +249,45 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 		return QVariant();
 	
 	unsigned int pos;
-	
+	const int rowidx = index.row();
+
 	switch ( role )
 	{
 		case Qt::DisplayRole:
 			if ( index.column() == 0 )
-				return QVariant ( QString ( m_projectM.getPresetName ( index.row() ).c_str() ) );
+				return QVariant ( QString ( m_projectM.getPresetName ( rowidx ).c_str() ) );
 			else if (index.column() == 1)
-				return ratingToIcon ( m_projectM.getPresetRating(index.row(), HARD_CUT_RATING_TYPE) );
+				return ratingToIcon ( m_projectM.getPresetRating(rowidx, HARD_CUT_RATING_TYPE) );
 			else
-				return ratingToIcon ( m_projectM.getPresetRating(index.row(), SOFT_CUT_RATING_TYPE) );
+				return ratingToIcon ( m_projectM.getPresetRating(rowidx, SOFT_CUT_RATING_TYPE) );
 		case Qt::ToolTipRole:
 			if ( index.column() == 0 )
-				return QVariant ( QString ( m_projectM.getPresetName ( index.row() ).c_str() ) );
+				return QVariant ( QString ( m_projectM.getPresetName ( rowidx ).c_str() ) );
 			else if (index.column() == 1)
-				return QString ( getSillyRatingToolTip(m_projectM.getPresetRating(index.row(), HARD_CUT_RATING_TYPE)));
-			else return 		getBreedabilityToolTip(m_projectM.getPresetRating(index.row(), SOFT_CUT_RATING_TYPE));
+				return QString ( getSillyRatingToolTip(m_projectM.getPresetRating(rowidx, HARD_CUT_RATING_TYPE)));
+			else return 		getBreedabilityToolTip(m_projectM.getPresetRating(rowidx, SOFT_CUT_RATING_TYPE));
 		case Qt::DecorationRole:
 			if ( index.column() == 1 )
-				return ratingToIcon ( m_projectM.getPresetRating(index.row(), HARD_CUT_RATING_TYPE) );
+				return ratingToIcon ( m_projectM.getPresetRating(rowidx, HARD_CUT_RATING_TYPE) );
 			else if (index.column() == 2)
-				return breedabilityToIcon ( m_projectM.getPresetRating(index.row(), SOFT_CUT_RATING_TYPE) );
+				return breedabilityToIcon ( m_projectM.getPresetRating(rowidx, SOFT_CUT_RATING_TYPE) );
 			else
 				return QVariant();
 		case QPlaylistModel::RatingRole:
-			return QVariant (  m_projectM.getPresetRating(index.row(), HARD_CUT_RATING_TYPE)  );
+			return QVariant (  m_projectM.getPresetRating(rowidx, HARD_CUT_RATING_TYPE)  );
 		case QPlaylistModel::BreedabilityRole:
-			return QVariant (  m_projectM.getPresetRating(index.row(), SOFT_CUT_RATING_TYPE)  );
+			return QVariant (  m_projectM.getPresetRating(rowidx, SOFT_CUT_RATING_TYPE)  );
 		case Qt::BackgroundRole:
 	
 			if (!m_projectM.selectedPresetIndex(pos))
-				return QVariant();						
-			if (m_projectM.isPresetLocked() && ( index.row() == pos ) )
-                return QColor(Qt::red);
-			if (!m_projectM.isPresetLocked() && ( index.row() == pos ) )
-                return QColor(Qt::green);
+				return QVariant();
+			if (m_projectM.isPresetLocked() && rowidx >= 0 && static_cast<unsigned int>(rowidx) == pos )
+				return QColor(Qt::red);
+			if (!m_projectM.isPresetLocked() && rowidx >= 0 && static_cast<unsigned int>(rowidx) == pos )
+				return QColor(Qt::green);
 			return QVariant();
 		case QPlaylistModel::URLInfoRole:
-			return QVariant ( QString ( m_projectM.getPresetURL ( index.row() ).c_str() ) );
+			return QVariant ( QString ( m_projectM.getPresetURL ( rowidx ).c_str() ) );
 		default:
 			
 			return QVariant();
@@ -299,11 +303,12 @@ QVariant QPlaylistModel::headerData ( int section, Qt::Orientation orientation, 
 		return QString ( tr ( "Preset" ) );
 
 	/// @bug hack. this should be formalized like it is in libprojectM.
-	if ( ( section == 1 ) && ( role == Qt::DisplayRole ))
+	if ( ( section == 1 ) && ( role == Qt::DisplayRole )) {
 		if (columnCount() == 2)
 			return QString ( tr ( "Rating" ) );
 		else
 			return QString ( tr ( "Hard Rating" ) );
+    }
 	if ( ( section == 2 ) && ( role == Qt::DisplayRole ) )
 		return QString ( tr ( "Soft Rating" ) );
 
@@ -312,12 +317,16 @@ QVariant QPlaylistModel::headerData ( int section, Qt::Orientation orientation, 
 
 int QPlaylistModel::rowCount ( const QModelIndex & parent ) const
 {
+	Q_UNUSED(parent);
+
 	return m_projectM.getPlaylistSize();
 }
 
 
 int QPlaylistModel::columnCount ( const QModelIndex & parent ) const
 {
+	Q_UNUSED(parent);
+
 	return softCutRatingsEnabled() ? 3 : 2;
 }
 
@@ -343,6 +352,7 @@ void QPlaylistModel::insertRow (int index, const QString & presetURL, const QStr
 }
 
 bool QPlaylistModel::removeRows ( int row, int count, const QModelIndex & parent)   {
+	Q_UNUSED(parent);
 	
 	beginRemoveRows ( QModelIndex(), row, count);
 
@@ -355,6 +365,8 @@ bool QPlaylistModel::removeRows ( int row, int count, const QModelIndex & parent
 
 bool QPlaylistModel::removeRow ( int index, const QModelIndex & parent)
 {
+	Q_UNUSED(parent);
+
 	beginRemoveRows ( QModelIndex(), index, index );
 	m_projectM.removePreset ( index );	
 	endRemoveRows();

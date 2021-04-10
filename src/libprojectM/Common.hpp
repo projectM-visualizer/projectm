@@ -30,8 +30,9 @@
 #include <typeinfo>
 #include <cstdarg>
 #include <cassert>
+#include <locale>
 
-#ifdef _MSC_sVER
+#ifdef _MSC_VER
 #define strcasecmp(s, t) _strcmpi(s, t)
 #endif
 
@@ -233,6 +234,25 @@ inline double meanSquaredError(const double & x, const double & y) {
 		return (x-y)*(x-y);
 }
 
+template <typename charT>
+struct caseInsensitiveEqual {
+    caseInsensitiveEqual(const std::locale &loc) : loc_(loc) {}
+    bool operator()(charT ch1, charT ch2) { return std::toupper(ch1, loc_) == std::toupper(ch2, loc_); }
+
+private:
+    const std::locale &loc_;
+};
+
+template <typename T>
+int caseInsensitiveSubstringFind(const T &haystack, const T &needle, const std::locale &loc = std::locale()) {
+    typename T::const_iterator it = std::search(
+        haystack.begin(), haystack.end(), 
+        needle.begin(),	needle.end(),
+        caseInsensitiveEqual<typename T::value_type>(loc));
+    if (it != haystack.end()) return it - haystack.begin();
+
+    return std::string::npos;
+}
 
 enum PresetRatingType {
 	FIRST_RATING_TYPE = 0,

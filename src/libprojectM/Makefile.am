@@ -24,12 +24,12 @@ libprojectM_la_LIBADD = \
 libprojectM_la_SOURCES = ConfigFile.cpp Preset.cpp PresetLoader.cpp timer.cpp \
   KeyHandler.cpp PresetChooser.cpp TimeKeeper.cpp PCM.cpp PresetFactory.cpp \
 	fftsg.cpp wipemalloc.cpp PipelineMerger.cpp PresetFactoryManager.cpp projectM.cpp \
-	TestRunner.cpp TestRunner.hpp \
+	TestRunner.cpp TestRunner.hpp FileScanner.cpp         FileScanner.hpp\
   Common.hpp                 PipelineMerger.hpp         PresetLoader.hpp\
 	HungarianMethod.hpp        Preset.hpp                 RandomNumberGenerators.hpp\
 	IdleTextures.hpp           PresetChooser.hpp          TimeKeeper.hpp\
 	KeyHandler.hpp             PresetFactory.hpp          projectM.hpp\
-        BackgroundWorker.h \
+  BackgroundWorker.h				 \
 	PCM.hpp                    PresetFactoryManager.hpp\
 	projectM.hpp projectM-opengl.h \
 	ConfigFile.h      \

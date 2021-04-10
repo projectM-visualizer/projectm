@@ -63,6 +63,7 @@
 #include "dlldefs.h"
 #include "event.h"
 #include "fatal.h"
+#include <vector>
 
 class PipelineContext;
 #include "PCM.hpp"
@@ -134,6 +135,9 @@ public:
         std::string datadir;
         int smoothPresetDuration;
         int presetDuration;
+        bool hardcutEnabled;
+        int hardcutDuration;
+        float hardcutSensitivity;
         float beatSensitivity;
         bool aspectCorrection;
         float easterEgg;
@@ -149,7 +153,10 @@ public:
             windowHeight(512),
             smoothPresetDuration(10),
             presetDuration(15),
-            beatSensitivity(10.0),
+            hardcutEnabled(false),
+            hardcutDuration(60),
+            hardcutSensitivity(2.0),
+            beatSensitivity(1.0),
             aspectCorrection(true),
             easterEgg(0.0),
             shuffleEnabled(true),
@@ -173,9 +180,16 @@ public:
   virtual ~projectM();
 
   void changeTextureSize(int size);
+  void changeHardcutDuration(int seconds);
   void changePresetDuration(int seconds);
   void getMeshSize(int *w, int *h);
-
+  void touch(float x, float y, int pressure, int touchtype);
+  void touchDrag(float x, float y, int pressure);
+  void touchDestroy(float x, float y);
+  void touchDestroyAll();
+  void setHelpText(const std::string & helpText);
+  void toggleSearchText(); // turn search text input on / off
+  void setToastMessage(const std::string & toastMessage);
   const Settings & settings() const {
 		return _settings;
   }
@@ -189,6 +203,9 @@ public:
 
   /// Plays a preset immediately
   void selectPreset(unsigned int index, bool hardCut = true);
+
+  /// Populates a page full of presets for the renderer to use.
+  void populatePresetMenu();
 
   /// Removes a preset from the play list. If it is playing then it will continue as normal until next switch
   void removePreset(unsigned int index);
@@ -212,6 +229,21 @@ public:
 
   /// Returns true if the active preset is locked
   bool isPresetLocked() const;
+
+  /// Returns true if the text based search menu is up.
+  bool isTextInputActive(bool nomin = false) const;
+
+  unsigned int getPresetIndex(std::string &url) const;
+
+  /// Plays a preset immediately when given preset name
+  void selectPresetByName(std::string name, bool hardCut = true);
+
+  // search based on keystroke
+  void setSearchText(const std::string & searchKey);
+  // delete part of search term (backspace)
+  void deleteSearchText();
+  // reset search term (blank)
+  void resetSearchText();
 
   /// Returns index of currently active preset. In the case where the active
   /// preset was removed from the playlist, this function will return the element
@@ -262,13 +294,13 @@ public:
   }
 
   /// Occurs when active preset has switched. Switched to index is returned
-  virtual void presetSwitchedEvent(bool isHardCut, size_t index) const {};
-  virtual void shuffleEnabledValueChanged(bool isEnabled) const {};
-  virtual void presetSwitchFailedEvent(bool hardCut, unsigned int index, const std::string & message) const {};
+  virtual void presetSwitchedEvent(bool /*isHardCut*/, size_t /*index*/) const {};
+  virtual void shuffleEnabledValueChanged(bool /*isEnabled*/) const {};
+  virtual void presetSwitchFailedEvent(bool /*hardCut*/, unsigned int /*index*/, const std::string & /*message*/) const {};
 
 
   /// Occurs whenever preset rating has changed via changePresetRating() method
-  virtual void presetRatingChanged(unsigned int index, int rating, PresetRatingType ratingType) const {};
+  virtual void presetRatingChanged(unsigned int /*index*/, int /*rating*/, PresetRatingType /*ratingType*/) const {};
 
 
   inline PCM * pcm() {
@@ -278,6 +310,12 @@ public:
   PipelineContext & pipelineContext() { return *_pipelineContext; }
   PipelineContext & pipelineContext2() { return *_pipelineContext2; }
 
+  int lastPreset = 0;
+  std::vector<int> presetHistory;  
+  std::vector<int> presetFuture;  
+
+  /// Get the preset index given a name
+  unsigned int getSearchIndex(std::string &name) const;
 
   void selectPrevious(const bool);
   void selectNext(const bool);
@@ -326,6 +364,9 @@ private:
   /// The current position of the directory iterator
   PresetIterator * m_presetPos;
 
+  /// Last preset index (when randomizing)
+  PresetIterator * m_lastPresetPos;
+
   /// Required by the preset chooser. Manages a loaded preset directory
   PresetLoader * m_presetLoader;
 
@@ -350,8 +391,8 @@ private:
 
   Pipeline* currentPipe;
 
-  std::string switchPreset(std::unique_ptr<Preset> & targetPreset);
-  void switchPreset(const bool hardCut);
+  std::unique_ptr<Preset> switchToCurrentPreset();
+  bool startPresetTransition(bool hard_cut);
 
 
 

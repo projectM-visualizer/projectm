@@ -90,8 +90,13 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
 
     last_token_size++;
     /* If the string line buffer is full, quit */
-    if (string_line_buffer_index == (STRING_LINE_SIZE - 1))
-      return tStringBufferFilled;
+    if (string_line_buffer_index == (STRING_LINE_SIZE - 1)) {
+        if (PARSE_DEBUG) {
+            string_line_buffer[string_line_buffer_index++] = '\0';
+            std::cout << "ERROR String line buffer full. Buffer: " << string_line_buffer << std::endl;
+        }
+        return tStringBufferFilled;
+		}
 
     /* Otherwise add this character to the string line buffer */
     string_line_buffer[string_line_buffer_index++] = tolower(c);
@@ -301,8 +306,9 @@ int Parser::parse_top_comment(std::istream &  fs)
   /* Process tokens until left bracket is found */
   while ((token = parseToken(fs, string)) != tLBr)
   {
-    if (token == tEOF)
-      return PROJECTM_PARSE_ERROR;
+    if (token == tEOF || token == tStringBufferFilled)
+        // filled up the buffer and didn't find a '[' 
+        return PROJECTM_PARSE_ERROR;
   }
 
   /* Done, return success */
@@ -844,8 +850,13 @@ Expr * Parser::_parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Milkd
     if (*string == 0)
     {
       if (PARSE_DEBUG) printf("parse_gen_expr: empty string coupled with terminal (LINE %d) \n", line_count);
+      if (nullptr == tree_expr && (token==tEOF||token==tEOL))
+      {
+        // we will get here if we have a completely empty line e.g. "shape_1_per_frame1=shpt ="
+        // we return 0 because returning NULL would indicate an error
+        return Expr::const_to_expr(0.0f);
+      }
       return parse_infix_op(fs, token, tree_expr, preset);
-
     }
 
   default:
@@ -2668,8 +2679,16 @@ public:
         TEST(eval_expr(-1.0f, "-(1.0)"));         // unary`
         TEST(eval_expr(0.5f, "5/10.000"));        // binary
         TEST(eval_expr(1.0f, "sin(3.14159/2)"));
-        preset->presetOutputs().rot = 0.99f;
+				// emtpy expression evals to 0, NULL usually means error in this parser
+				TEST(eval_expr(0.0f, ""));
+				TEST(eval_expr(0.0f, " "));
+				TEST(eval_expr(0.0f, "\n"));
+				TEST(eval_expr(0.0f, " \n"));
+				preset->presetOutputs().rot = 0.99f;
         TEST(eval_expr(0.99f, "rot"));
+
+				// random other stuff to parse
+				Parser::parse_gen_expr(ss("0.5 + 0.5*sin(q8*0.613 + 1);"),nullptr,preset);
         return true;
     }
 

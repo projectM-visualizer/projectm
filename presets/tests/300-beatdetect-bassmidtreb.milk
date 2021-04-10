@@ -1,0 +1,70 @@
+[preset00]
+fDecay=0.75
+fWarpScale=2.853000
+fZoomExponent=1.000000
+warp=0.000000
+wave_a=0
+cy=1.0
+cx=0.5
+sx=1
+sy=1
+dx=0
+dy=0.02
+zoom=1.0
+ob_size=0
+ib_size=0.0
+
+per_pixel_1=cx=x
+
+wavecode_0_enabled=1
+wavecode_0_r=1
+wavecode_0_g=0
+wavecode_0_b=0
+wavecode_0_mode=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1.0
+wavecode_0_smoothing=0.0
+wavecode_0_r=0.000000
+wavecode_0_g=1.000000
+wavecode_0_b=1.000000
+wavecode_0_a=1.000000
+wave_0_per_frame1=t1=if(above(bass,9.5),0.95,bass/10)
+wave_0_per_point1=x=0.01666 + 0.3*sample;
+wave_0_per_point2=y=t1 + value1/20;
+
+
+wavecode_1_enabled=1
+wavecode_1_r=0
+wavecode_1_g=1
+wavecode_1_b=0
+wavecode_1_mode=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=1
+wavecode_1_scaling=1.0
+wavecode_1_smoothing=0.0
+wavecode_1_r=0.000000
+wavecode_1_g=1.000000
+wavecode_1_b=1.000000
+wavecode_1_a=1.000000
+wave_1_per_frame1=t1=if(above(mid,9.5),0.95,mid/10)
+wave_1_per_point1=x=0.35 + 0.3*sample;
+wave_1_per_point2=y=t1 + value2/20;
+
+
+wavecode_2_enabled=1
+wavecode_2_r=0
+wavecode_2_g=0
+wavecode_2_b=1
+wavecode_2_mode=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=1
+wavecode_2_scaling=1.0
+wavecode_2_smoothing=0.0
+wavecode_2_r=0.000000
+wavecode_2_g=1.000000
+wavecode_2_b=1.000000
+wavecode_2_a=1.000000
+wave_2_per_frame1=t1=if(above(treb,9.5),0.95,treb/10)
+wave_2_per_point1=x=0.6833 + 0.3*sample;
+wave_2_per_point2=y=t1 + value1/20;

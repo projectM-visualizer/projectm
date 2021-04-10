@@ -19,6 +19,7 @@
 *
 */
 
+#include "projectM-opengl.h"
 #include "RenderItemMatcher.hpp"
 #include "RenderItemMergeFunction.hpp"
 #include "fatal.h"
@@ -67,6 +68,10 @@ pthread_mutex_t preset_mutex;
 #endif
 #endif
 
+namespace {
+constexpr int kMaxSwitchRetries = 10;
+}
+
 projectM::~projectM()
 {
 #ifdef USE_THREADS
@@ -110,7 +115,7 @@ void projectM::projectM_resetTextures()
 
 
 projectM::projectM ( std::string config_file, int flags) :
-        _pcm(0), beatDetect ( 0 ), renderer ( 0 ), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()), m_presetPos(0),
+        renderer ( 0 ), _pcm(0), beatDetect ( 0 ), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()), m_presetPos(0),
         timeKeeper(NULL), m_flags(flags), _matcher(NULL), _merger(NULL)
 {
     readConfig(config_file);
@@ -120,7 +125,7 @@ projectM::projectM ( std::string config_file, int flags) :
 }
 
 projectM::projectM(Settings settings, int flags):
-        _pcm(0), beatDetect ( 0 ), renderer ( 0 ), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()), m_presetPos(0),
+        renderer ( 0 ), _pcm(0), beatDetect ( 0 ), _pipelineContext(new PipelineContext()), _pipelineContext2(new PipelineContext()), m_presetPos(0),
         timeKeeper(NULL), m_flags(flags), _matcher(NULL), _merger(NULL)
 {
     readSettings(settings);
@@ -215,12 +220,21 @@ void projectM::readConfig (const std::string & configFile )
     _settings.softCutRatingsEnabled =
             config.read<bool> ( "Soft Cut Ratings Enabled", false);
 
+    // Hard Cuts are preset transitions that occur when your music becomes louder. They only occur after a hard cut duration threshold has passed.
+    _settings.hardcutEnabled = config.read<bool> ( "Hard Cuts Enabled", false );
+    // Hard Cut duration is the number of seconds before you become eligible for a hard cut.
+    _settings.hardcutDuration = config.read<int> ( "Hard Cut Duration", 60 );
+    // Hard Cut sensitivity is the volume difference before a "hard cut" is triggered.
+    _settings.hardcutSensitivity = config.read<float> ( "Hard Cut Sensitivity", 1.0 );
+    
+    // Beat Sensitivity impacts how reactive your visualizations are to volume, bass, mid-range, and treble. 
+    // Preset authors have developed their visualizations with the default of 1.0.
+    _settings.beatSensitivity = config.read<float> ( "Beat Sensitivity", 1.0 );
+
+
     projectM_init ( _settings.meshX, _settings.meshY, _settings.fps,
-                    _settings.textureSize, _settings.windowWidth,_settings.windowHeight);
-
-    _settings.beatSensitivity = beatDetect->beat_sensitivity = config.read<float> ( "Hard Cut Sensitivity", 10.0 );
-
-
+                _settings.textureSize, _settings.windowWidth,_settings.windowHeight);
+    
     if ( config.read ( "Aspect Correction", true ) )
     {
         _settings.aspectCorrection = true;
@@ -256,13 +270,17 @@ void projectM::readSettings (const Settings & settings )
 
     _settings.easterEgg = settings.easterEgg;
 
+    _settings.hardcutEnabled = settings.hardcutEnabled;
+    _settings.hardcutDuration = settings.hardcutDuration;
+    _settings.hardcutSensitivity = settings.hardcutSensitivity;
+    
+    _settings.beatSensitivity = settings.beatSensitivity;
+    
     projectM_init ( _settings.meshX, _settings.meshY, _settings.fps,
                     _settings.textureSize, _settings.windowWidth,_settings.windowHeight);
+    
 
-
-    _settings.beatSensitivity = settings.beatSensitivity;
     _settings.aspectCorrection = settings.aspectCorrection;
-
 }
 
 #ifdef USE_THREADS
@@ -362,12 +380,9 @@ Pipeline * projectM::renderFrameOnlyPass1(Pipeline *pPipeline) /*pPipeline is a 
                 selectRandom(false);
             else
                 selectNext(false);
-        }
-
-        else if ((beatDetect->vol-beatDetect->vol_old>beatDetect->beat_sensitivity ) &&
-                 timeKeeper->CanHardCut())
+        } else if (settings().hardcutEnabled && (beatDetect->vol-beatDetect->vol_old>settings().hardcutSensitivity) && timeKeeper->CanHardCut())
         {
-            // printf("Hard Cut\n");
+            // Hard Cuts must be enabled, must have passed the hardcut duration, and the volume must be a greater difference than the hardcut sensitivity.
             if (settings().shuffleEnabled)
                 selectRandom(true);
             else
@@ -534,7 +549,7 @@ void projectM::projectM_reset()
 void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, int height )
 {
     /** Initialise start time */
-    timeKeeper = new TimeKeeper(_settings.presetDuration,_settings.smoothPresetDuration, _settings.easterEgg);
+    timeKeeper = new TimeKeeper(_settings.presetDuration,_settings.smoothPresetDuration, _settings.hardcutDuration, _settings.easterEgg);
 
     /** Nullify frame stash */
 
@@ -588,6 +603,7 @@ void projectM::projectM_resetengine()
     if ( beatDetect != NULL )
     {
         beatDetect->reset();
+        beatDetect->beatSensitivity = _settings.beatSensitivity;
     }
 
 }
@@ -657,6 +673,8 @@ int projectM::initPresetTools(int gx, int gy)
     m_activePreset = m_presetLoader->loadPreset
             ("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
 	renderer->setPresetName("Geiss & Sperl - Feedback (projectM idle HDR mix)");
+    
+    populatePresetMenu();
 
     renderer->SetPipeline(m_activePreset->pipeline());
 
@@ -760,109 +778,235 @@ unsigned int projectM::addPresetURL ( const std::string & presetURL, const std::
 
 void projectM::selectPreset(unsigned int index, bool hardCut)
 {
-
     if (m_presetChooser->empty())
         return;
 
+    populatePresetMenu();
 
     *m_presetPos = m_presetChooser->begin(index);
-    switchPreset(hardCut);
-}
-
-void projectM::switchPreset(const bool hardCut) {
-    std::string result;
-
-    if (!hardCut) {
-        result = switchPreset(m_activePreset2);
-    } else {
-        result = switchPreset(m_activePreset);
-        if (result.empty())
-            timeKeeper->StartPreset();
-    }
-
-    if (result.empty() && !hardCut) {
-        timeKeeper->StartSmoothing();
-    }
-
-    if (result.empty()) {
-        presetSwitchedEvent(hardCut, **m_presetPos);
-        errorLoadingCurrentPreset = false;
-    } else {
-        presetSwitchFailedEvent(hardCut, **m_presetPos, result);
-        errorLoadingCurrentPreset = true;
-
+    if(!startPresetTransition(hardCut)) {
+        selectRandom(hardCut);
     }
 }
 
+// populatePresetMenu is called when a preset is loaded.
+void projectM::populatePresetMenu()
+{
+    if (renderer->showmenu) { // only track a preset list buffer if the preset menu is up.
+        renderer->m_presetList.clear(); // clear preset list buffer from renderer.
+      
+        if(isTextInputActive()) {
+            // if a searchTerm is active, we will populate the preset menu with search terms instead of the page we are on.
+            int h = 0;
+            std::string presetName = renderer->presetName();
+            int presetIndex = getSearchIndex(presetName);
+            for(unsigned int i = 0; i < getPlaylistSize(); i++) { // loop over all presets
+                if (caseInsensitiveSubstringFind(getPresetName(i), renderer->searchText()) != std::string::npos) { // if term matches
+                    if (h < renderer->textMenuPageSize) // limit to just one page, pagination is not needed.
+                    {
+                        h++;
+                        renderer->m_presetList.push_back({ h, getPresetName(i), "" }); // populate the renders preset list.
+                        if (h == presetIndex)
+                        {
+                            renderer->m_activePresetID = h;
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            // normal preset menu, based on pagination.
+            renderer->m_activePresetID = m_presetPos->lastIndex(); // tell renderer about the active preset ID (so it can be highlighted)
+            int page_start = 0;
+            if (m_presetPos->lastIndex() != m_presetLoader->size())
+            {
+                page_start = renderer->m_activePresetID; // if it's not the idle preset, then set it to the true value
+            }
+            if (page_start < renderer->textMenuPageSize) {
+                page_start = 0; // if we are on page 1, start at the first preset.
+            }
+            if (page_start % renderer->textMenuPageSize == 0) {
+                // if it's a perfect division of the page size, we are good.
+            }
+            else {
+                page_start = page_start - (page_start % renderer->textMenuPageSize); // if not, find closest divisable number for page start
+            }
+            int page_end = page_start + renderer->textMenuPageSize; // page end is page start + page size
+            while (page_start < page_end) {
+                renderer->m_presetList.push_back({ page_start, getPresetName(page_start), "" }); // populate the renders preset list.
+                page_start++;
+            }
+        }
+    }
+}
+
+bool projectM::startPresetTransition(bool hard_cut) {
+  std::unique_ptr<Preset> new_preset = switchToCurrentPreset();
+  if (new_preset == nullptr) {
+    presetSwitchFailedEvent(hard_cut, **m_presetPos, "fake error");
+    errorLoadingCurrentPreset = true;
+    populatePresetMenu();
+    return false;
+  }
+
+  if (hard_cut) {
+    m_activePreset = std::move(new_preset);
+    timeKeeper->StartPreset();
+  } else {
+    m_activePreset2 = std::move(new_preset);
+    timeKeeper->StartPreset();
+    timeKeeper->StartSmoothing();
+  }
+
+  presetSwitchedEvent(hard_cut, **m_presetPos);
+  errorLoadingCurrentPreset = false;
+
+  populatePresetMenu();
+
+  return true;
+}
 
 void projectM::selectRandom(const bool hardCut) {
-
     if (m_presetChooser->empty())
         return;
+    presetHistory.push_back(m_presetPos->lastIndex());
 
-    *m_presetPos = m_presetChooser->weightedRandom(hardCut);
-
-    switchPreset(hardCut);
+    for(int i = 0; i < kMaxSwitchRetries; ++i) {
+        *m_presetPos = m_presetChooser->weightedRandom(hardCut);
+        if(startPresetTransition(hardCut)) {
+            break;
+        }
+    }
+    // If presetHistory is tracking more than 10, then delete the oldest entry so we cap to a history of 10.
+    if (presetHistory.size() >= 10)
+        presetHistory.erase(presetHistory.begin());
+    presetFuture.clear();
 
 }
 
 void projectM::selectPrevious(const bool hardCut) {
-
     if (m_presetChooser->empty())
         return;
 
-
-    m_presetChooser->previousPreset(*m_presetPos);
-
-    switchPreset(hardCut);
+    if (isTextInputActive(true) && renderer->m_presetList.size() >= 1)
+    {
+        // if search menu is up, previous is based on search terms.
+        if (renderer->m_activePresetID <= 1) {
+            // loop to bottom of page is at top
+            renderer->m_activePresetID = renderer->m_presetList.size();
+            selectPresetByName(renderer->m_presetList[renderer->m_activePresetID - 1].name,true);
+        }
+        else {
+            // otherwise move back
+            renderer->m_activePresetID--;
+            selectPresetByName(renderer->m_presetList[renderer->m_activePresetID-1].name,true);
+        }
+    } else if (settings().shuffleEnabled && presetHistory.size() >= 1 && static_cast<std::size_t>(presetHistory.back()) != m_presetLoader->size() && !renderer->showmenu) { // if randomly browsing presets, "previous" should return to last random preset not the index--. Avoid returning to size() because that's the idle:// preset.
+        presetFuture.push_back(m_presetPos->lastIndex());
+        selectPreset(presetHistory.back());
+        presetHistory.pop_back();
+    }
+    else {
+        // if we are not shuffling or there is no random future history, then let's not track a random vector and move backwards in the preset index.
+        presetHistory.clear();
+        presetFuture.clear();
+        m_presetChooser->previousPreset(*m_presetPos);
+        if(!startPresetTransition(hardCut)) {
+            selectRandom(hardCut);
+        }
+    }
 }
 
 void projectM::selectNext(const bool hardCut) {
-
     if (m_presetChooser->empty())
         return;
-
-    m_presetChooser->nextPreset(*m_presetPos);
-
-    switchPreset(hardCut);
+    if (isTextInputActive() && renderer->m_presetList.size() >= 1) // if search is active and there are search results
+    {
+        // if search menu is down, next is based on search terms.
+        if (static_cast<std::size_t>(renderer->m_activePresetID) >= renderer->m_presetList.size()) {
+            // loop to top of page is at bottom
+            renderer->m_activePresetID = 1;
+            selectPresetByName(renderer->m_presetList[0].name,true);
+        }
+        else {
+            // otherwise move forward 
+            renderer->m_activePresetID++;
+            selectPresetByName(renderer->m_presetList[renderer->m_activePresetID].name,true);
+        }
+    } else if (settings().shuffleEnabled && presetFuture.size() >= 1 && static_cast<std::size_t>(presetFuture.front()) != m_presetLoader->size() && !renderer->showmenu) { // if shuffling and we have future presets already stashed then let's go forward rather than truely move randomly.
+        presetHistory.push_back(m_presetPos->lastIndex());
+        selectPreset(presetFuture.back());
+        presetFuture.pop_back();
+    }
+    else {
+        // if we are not shuffling or there is no random history, then let's not track a random vector and move forwards in the preset index.
+        presetFuture.clear();
+        presetHistory.clear();
+        m_presetChooser->nextPreset(*m_presetPos);
+        if(!startPresetTransition(hardCut)) {
+            selectRandom(hardCut);
+        }
+    }
 }
 
 /**
-* Switches to the target preset.
-* @param targetPreset
-* @return a message indicating an error, empty otherwise.
-*/
-std::string projectM::switchPreset(std::unique_ptr<Preset> & targetPreset) {
-
-    std::string result;
-
+ * Switches the pipeline and renderer to the current preset.
+ * @return the resulting Preset object, or nullptr on failure.
+ */
+std::unique_ptr<Preset> projectM::switchToCurrentPreset() {
+  std::unique_ptr<Preset> new_preset;
 #ifdef SYNC_PRESET_SWITCHES
-    pthread_mutex_lock(&preset_mutex);
+  pthread_mutex_lock(&preset_mutex);
 #endif
-    try {
-        targetPreset = m_presetPos->allocate();
-    } catch (const PresetFactoryException & e) {
-#ifdef SYNC_PRESET_SWITCHES
-        pthread_mutex_unlock(&preset_mutex);
-#endif
-        std::cerr << "problem allocating target preset: " << e.message() << std::endl;
-        return e.message();
-    }
+  try {
+    new_preset = m_presetPos->allocate();
+  } catch (const PresetFactoryException &e) {
+    std::cerr << "problem allocating target preset: " << e.message()
+              << std::endl;
+  }
 
-// Set preset name here- event is not done because at the moment this function is oblivious to smooth/hard switches
-    renderer->setPresetName(targetPreset->name());
-    result = renderer->SetPipeline(targetPreset->pipeline());
-
+  if (new_preset == nullptr) {
 #ifdef SYNC_PRESET_SWITCHES
     pthread_mutex_unlock(&preset_mutex);
 #endif
+    std::cerr << "Could not switch to current preset" << std::endl;
+    return nullptr;
+  }
 
-    return result;
+  // Set preset name here- event is not done because at the moment this function
+  // is oblivious to smooth/hard switches
+  renderer->setPresetName(new_preset->name());
+  std::string result = renderer->SetPipeline(new_preset->pipeline());
+  if (!result.empty()) {
+    std::cerr << "problem setting pipeline: " << result << std::endl;
+  }
+
+#ifdef SYNC_PRESET_SWITCHES
+  pthread_mutex_unlock(&preset_mutex);
+#endif
+  return new_preset;
 }
 
 void projectM::setPresetLock ( bool isLocked )
 {
     renderer->noSwitch = isLocked;
+    if (isPresetLocked()) {
+        renderer->setToastMessage("Preset Locked");
+    } else {
+        renderer->setToastMessage("Unlocked");
+    }
+}
+
+// check if search menu is up and you have search terms (2 chars). nomin means you don't care about search terms.
+bool projectM::isTextInputActive( bool nomin ) const
+{
+    if (renderer->showsearch && (renderer->searchText().length() >= 2 || nomin)) 
+    {
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 bool projectM::isPresetLocked() const
@@ -972,7 +1116,9 @@ void projectM::changeTextureSize(int size) {
                             _settings.titleFontURL, _settings.menuFontURL,
                             _settings.datadir);
 }
-
+void projectM::changeHardcutDuration(int seconds) {
+    timeKeeper->ChangeHardcutDuration(seconds);
+}
 void projectM::changePresetDuration(int seconds) {
     timeKeeper->ChangePresetDuration(seconds);
 }
@@ -981,3 +1127,107 @@ void projectM::getMeshSize(int *w, int *h)	{
     *h = _settings.meshY;
 }
 
+// toggleSearchText
+void projectM::toggleSearchText()
+{
+    if ( renderer )
+        renderer->toggleSearchText();
+}
+
+// get index from search results based on preset name
+unsigned int projectM::getSearchIndex(std::string &name) const
+{
+    for (auto& it : renderer->m_presetList) {
+        if (it.name == name) return it.id;
+    }
+	return 0;
+}
+
+// get preset index based on preset name
+unsigned int projectM::getPresetIndex(std::string& name) const
+{
+	return m_presetLoader->getPresetIndex(name);
+}
+
+// load preset based on name
+void projectM::selectPresetByName(std::string name, bool hardCut) {
+	unsigned int index = getPresetIndex(name);
+	if (m_presetChooser->empty()) return;
+	selectPreset(index);  
+}
+
+// update search text based on new keystroke
+void projectM::setSearchText(const std::string & searchKey)
+{
+    if ( renderer ) 
+        renderer->setSearchText(searchKey);
+    populatePresetMenu();
+    if (renderer->m_presetList.size() >= 1) {
+        std::string topPreset = renderer->m_presetList.front().name;
+        renderer->m_activePresetID = 1;
+        selectPresetByName(topPreset);
+    }
+}
+
+// update search text based on new backspace
+void projectM::deleteSearchText()
+{
+    if ( renderer )
+        renderer->deleteSearchText();
+    populatePresetMenu();
+    if (renderer->m_presetList.size() >= 1) {
+        renderer->m_activePresetID = 1;
+        std::string topPreset = renderer->m_presetList.front().name;
+        selectPresetByName(topPreset);
+    }
+}
+
+// reset search text
+void projectM::resetSearchText()
+{
+    if ( renderer )
+        renderer->resetSearchText();
+    populatePresetMenu();
+    if (renderer->m_presetList.size() >= 1) {
+        renderer->m_activePresetID = 1;
+        std::string topPreset = renderer->m_presetList.front().name;
+        selectPresetByName(topPreset);
+    }
+}
+
+void projectM::setToastMessage(const std::string & toastMessage)
+{
+    if ( renderer )
+        renderer->setToastMessage(toastMessage);
+}
+
+void projectM::touch(float x, float y, int pressure, int touchtype)
+{
+    if ( renderer )
+        renderer->touch(x, y, pressure, touchtype);
+}
+
+void projectM::touchDrag(float x, float y, int pressure)
+{
+    if ( renderer )
+        renderer->touchDrag(x, y, pressure);
+}
+
+
+void projectM::touchDestroy(float x, float y)
+{
+    if ( renderer )
+        renderer->touchDestroy(x, y);
+}
+
+void projectM::touchDestroyAll()
+{
+    if (renderer)
+        renderer->touchDestroyAll();
+}
+
+void projectM::setHelpText(const std::string & helpText)
+{
+    if ( renderer )
+        renderer->setHelpText(helpText);
+}

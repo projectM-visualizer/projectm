@@ -58,7 +58,7 @@ inline projectMEvent sdl2pmEvent( SDL_Event *event ) { \
       } \
   } \
 
-inline projectMKeycode sdl2pmKeycode( SDL_Keycode keycode ) { \
+inline projectMKeycode sdl2pmKeycode( SDL_Keycode keycode , SDL_Keymod mod ) { \
     switch ( keycode ) { \
         case SDLK_F1: \
             return PROJECTM_K_F1; \
@@ -87,61 +87,117 @@ inline projectMKeycode sdl2pmKeycode( SDL_Keycode keycode ) { \
 	  case SDLK_ESCAPE: \
 	    return PROJECTM_K_ESCAPE; 
     case SDLK_a:
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_A;
       return PROJECTM_K_a;
     case SDLK_b:
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_B;
       return PROJECTM_K_b;
     case SDLK_c:  
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_C;
       return PROJECTM_K_c;
-    case SDLK_d: 
+    case SDLK_d:
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_D;
       return PROJECTM_K_d; 
     case SDLK_e:
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_E;
       return PROJECTM_K_e; 
     case SDLK_f: 
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_F;
       return PROJECTM_K_f; 
     case SDLK_g: 
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_G;
       return PROJECTM_K_g; 
     case SDLK_h: 
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_H;
       return PROJECTM_K_h; 
-    case SDLK_i: 
+    case SDLK_i:
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_I;
       return PROJECTM_K_i; 
     case SDLK_j:
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_J;
       return PROJECTM_K_j;
     case SDLK_k:
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_K;
       return PROJECTM_K_k;
-    case SDLK_l:  
+    case SDLK_l:
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_L;
       return PROJECTM_K_l;
-    case SDLK_m: 
+    case SDLK_m:
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_M;
       return PROJECTM_K_m; 
     case SDLK_n:
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_N;
       return PROJECTM_K_n; 
-    case SDLK_o: 
+    case SDLK_o:
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_O;
       return PROJECTM_K_o; 
     case SDLK_p: 
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_P;
       return PROJECTM_K_p; 
-    case SDLK_q: 
+    case SDLK_q:
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_Q;
       return PROJECTM_K_q; 
     case SDLK_r: 
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_R;
       return PROJECTM_K_r; 
     case SDLK_s: 
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_S;
       return PROJECTM_K_s; 
     case SDLK_t:
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_T;
       return PROJECTM_K_t; 
-    case SDLK_u: 
+    case SDLK_u:
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_U;
       return PROJECTM_K_u; 
     case SDLK_v: 
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_V;
       return PROJECTM_K_v; 
     case SDLK_w: 
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_W;
       return PROJECTM_K_w; 
     case SDLK_x: 
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_X;
       return PROJECTM_K_x; 
     case SDLK_y: 
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_Y;
       return PROJECTM_K_y; 
     case SDLK_z: 
+      if (mod & KMOD_SHIFT)
+        return PROJECTM_K_Z;
       return PROJECTM_K_z; 
     case SDLK_UP:
       return PROJECTM_K_UP;
     case SDLK_RETURN:
       return PROJECTM_K_RETURN;
+    case SDLK_SLASH:
+      return PROJECTM_K_SLASH;
+    case SDLK_BACKSLASH:
+      return PROJECTM_K_BACKSLASH;
     case SDLK_RIGHT:
       return PROJECTM_K_RIGHT;
     case SDLK_LEFT:
@@ -152,7 +208,10 @@ inline projectMKeycode sdl2pmKeycode( SDL_Keycode keycode ) { \
       return PROJECTM_K_PAGEUP;
     case SDLK_PAGEDOWN:
       return PROJECTM_K_PAGEDOWN;
-   
+    case SDLK_HOME:
+      return PROJECTM_K_HOME;
+    case SDLK_END:
+      return PROJECTM_K_END;
         default: \
             return PROJECTM_K_NONE; \
       } \

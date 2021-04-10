@@ -1,0 +1,35 @@
+[preset00]
+// use wavecode
+// red circle wave with blue squiggly wave
+
+fDecay=0.980000
+nWaveMode=0
+bMaximizeWaveColor=1
+fWaveAlpha=4.400000
+fWaveScale=1.5
+fZoomExponent=1.000000
+zoom=1.000000
+warp=0.000000
+sx=1.000000
+sy=1.000000
+wave_r=0.00000
+wave_g=0.0000
+wave_b=0.00000
+wave_a=0.00000
+wave_x=0.500000
+wave_y=0.5000000
+
+wavecode_0_enabled=1
+wavecode_0_mode=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=1
+wavecode_0_scaling=1.000000
+wavecode_0_smoothing=0.500000
+wavecode_0_r=0.000000
+wavecode_0_g=1.000000
+wavecode_0_b=1.000000
+wavecode_0_a=1.000000
+wave_0_per_point41=x=x+value1/2
+wave_0_per_point42=y=y+value2/2;
+
+per_frame_1=zoom=1

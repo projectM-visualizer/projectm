@@ -1,5 +1,8 @@
-AC_INIT([projectM], [3.1.1-rc8], [mischa@mvstg.biz], [projectM], [https://github.com/projectM-visualizer/projectm/])
+AC_INIT([projectM], [3.1.13], [me@mish.dev], [projectM], [https://github.com/projectM-visualizer/projectm/])
 AM_INIT_AUTOMAKE([-Wall -Werror foreign subdir-objects tar-pax])
+
+AX_IS_RELEASE([git-directory])
+AX_CHECK_ENABLE_DEBUG([no], [DEBUG])
 
 m4_ifdef([AM_PROG_AR], [AM_PROG_AR])
 LT_INIT
@@ -69,6 +72,7 @@ AS_IF([test "x$emscripten_compiler" = "xyes"], [
 AC_CHECK_LIB(c, dlopen, LIBDL="", AC_CHECK_LIB(dl, dlopen, LIBDL="-ldl"))
 
 AC_CHECK_FUNCS_ONCE([aligned_alloc posix_memalign])
+AC_CHECK_HEADERS_ONCE([fts.h])
 
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
@@ -111,11 +115,6 @@ AS_IF([test "$enable_sdl" != "no" && test "x$emscripten_compiler" != "xyes"], [
 ])
 AM_CONDITIONAL([ENABLE_TEST], [test "$enable_sdl" = "yes"])
 
-# glm
-AS_IF([test "x$emscripten_compiler" != "xyes"], [
-  AC_CHECK_HEADER([glm/glm.hpp],, AC_MSG_ERROR(libglm is required.))
-])
-
 
 # Threading
 AC_ARG_ENABLE([threading],
@@ -141,13 +140,6 @@ AC_ARG_ENABLE([gles],
     AC_DEFINE([USE_GLES], [1], [Define USE_GLES])
 ])
 
-AC_ARG_ENABLE([preset_subdirs],
-  AS_HELP_STRING([--enable-preset-subdirs], [Organize presets into subdirectories.]),
-  [], [enable_preset_subdirs=no])
-  AS_IF([test "x$enable_preset_subdirs" = "xyes"], [
-    AC_DEFINE([ENABLE_PRESET_SUBDIRS], [1], [Define ENABLE_PRESET_SUBDIRS])
-])
-
 dnl LLVM
 dnl unfortuately AX_LLVM macro seems to be out of date, so we're going to rely on the user to make sure LLVM is installed correctly
 AC_ARG_ENABLE([llvm],
@@ -171,7 +163,7 @@ AC_PREFIX_DEFAULT([/usr/local])
 
 AC_PROG_MKDIR_P
 
-AS_IF([grep android <<< ${host}], [],
+AS_IF([echo ${host} | grep -Fq android], [],
   [AX_CHECK_COMPILE_FLAG([-stdlib=libc++], [
                         CXXFLAGS="$CXXFLAGS -stdlib=libc++"])
 ])
@@ -242,15 +234,21 @@ AM_CONDITIONAL([ENABLE_QT], [test "x$enable_qt" = "xyes"])
 AM_CONDITIONAL([ENABLE_JACK], [test "x$enable_jack" = "xyes"])
 AM_CONDITIONAL([ENABLE_PULSEAUDIO], [test "x$enable_pulseaudio" = "xyes"])
 AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test "x$enable_emscripten" = "xyes"])
-AM_CONDITIONAL([ENABLE_PRESET_SUBDIRS], [test "x$enable_preset_subdirs" = "xyes"])
 
 
-my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits "
+my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits"
 #my_CFLAGS+="-fsanitize=address -fno-omit-frame-pointer "
-my_CFLAGS+='-DDATADIR_PATH=\""$(pkgdatadir)"\" '
-my_CFLAGS+='-I$(top_srcdir)/vendor '
+my_CFLAGS="${my_CFLAGS} -DDATADIR_PATH=\\\"\"\$(pkgdatadir)\\\"\""
+my_CFLAGS="${my_CFLAGS} -I\"\$(top_srcdir)/vendor\""  # provides glm headers
+my_CFLAGS="${my_CFLAGS} -DGL_SILENCE_DEPRECATION"
 AC_SUBST([my_CFLAGS])
 
+
+# glm (vendored, this should never fail; headers are in vendor/glm)
+AC_SUBST(CPPFLAGS, "$CPPFLAGS -I${srcdir}/vendor")
+AS_IF([test "x$enable_emscripten" != "xyes"], [
+    AC_CHECK_HEADER([glm/glm.hpp],, AC_MSG_ERROR(vendored libglm not found.))
+])
 
 
 AC_OUTPUT
@@ -283,6 +281,5 @@ Pulseaudio:             ${enable_pulseaudio}
 Jack:                   ${enable_jack}
 OpenGLES:               ${enable_gles}
 Emscripten:             ${emscripten_compiler}
-llvm:                   ${enable_llvm}
-Preset subdirs:         ${enable_preset_subdirs}
+LLVM JIT:               ${enable_llvm}
 ])

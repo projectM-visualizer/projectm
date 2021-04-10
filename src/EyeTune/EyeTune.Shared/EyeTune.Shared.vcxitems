@@ -36,6 +36,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\MilkdropPresetFactory\PresetFrameIO.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\PresetFactory.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\ConfigFile.cpp" />
+	  <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\FileScanner.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\fftsg.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\KeyHandler.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\PCM.cpp" />
@@ -65,6 +66,7 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\RenderItemMatcher.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\Shader.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\ShaderEngine.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\StaticGlShaders.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\libprojectM\Renderer\SOIL2\etc1_utils.c">
       <CompileAs>CompileAsC</CompileAs>
     </ClCompile>

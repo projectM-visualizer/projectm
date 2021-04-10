@@ -13,16 +13,16 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>projectM SDL.app</string>
+	<string>ProjectM.app</string>
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.1.1</string>
+	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This app visualizes sound.</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>LGPL</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app visualizes sound.</string>
 </dict>
 </plist>

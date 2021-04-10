@@ -31,6 +31,14 @@
 *
 */
 
+#if defined _MSC_VER
+#  include <direct.h>
+#endif
+
+#include <fstream>
+#include <iostream>
+#include <string>
+
 #include "pmSDL.hpp"
 
 #if OGL_DEBUG
@@ -54,29 +62,55 @@ void DebugLog(GLenum source,
 
 // return path to config file to use
 std::string getConfigFilePath(std::string datadir_path) {
-    struct stat sb;
-    const char *path = datadir_path.c_str();
-    
-    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Looking for configuration file in data dir: %s.\n", path);
-    
-    // check if datadir exists.
-    // it should exist if this application was installed. if not, assume we're developing it and use currect directory
-    if (stat(path, &sb) != 0) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "Could not open datadir path %s\n", path);
-    }
-    
-    std::string configFilePath = path;
-    configFilePath += "/config.inp";
-    
-    // check if config file exists
-    if (stat(configFilePath.c_str(), &sb) != 0) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "No config file %s found. Using development settings.\n", configFilePath.c_str());
-        return "";
-    }
-    
-    return configFilePath;
-}
+  char* home = NULL;
+  std::string projectM_home;
+  std::string projectM_config = DATADIR_PATH;
 
+  projectM_config = datadir_path;
+
+#ifdef _MSC_VER
+  home=getenv("USERPROFILE");
+#else
+  home=getenv("HOME");
+#endif
+    
+  projectM_home = std::string(home);
+  projectM_home += "/.projectM";
+  
+  // Create the ~/.projectM directory. If it already exists, mkdir will do nothing
+#if defined _MSC_VER
+  _mkdir(projectM_home.c_str());
+#else
+  mkdir(projectM_home.c_str(), 0755);
+#endif
+  
+  projectM_home += "/config.inp";
+  projectM_config += "/config.inp";
+  
+  std::ifstream f_home(projectM_home);
+  std::ifstream f_config(projectM_config);
+    
+  if (f_config.good() && !f_home.good()) {
+    std::ifstream f_src;
+    std::ofstream f_dst;
+      
+    f_src.open(projectM_config, std::ios::in  | std::ios::binary);
+    f_dst.open(projectM_home,   std::ios::out | std::ios::binary);
+    f_dst << f_src.rdbuf();
+    f_dst.close();
+    f_src.close();
+    return std::string(projectM_home);
+  } else if (f_home.good()) {
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "created ~/.projectM/config.inp successfully\n");
+    return std::string(projectM_home);
+  } else if (f_config.good()) {
+    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Cannot create ~/.projectM/config.inp, using default config file\n");
+    return std::string(projectM_config);
+  } else {
+    SDL_LogWarn(SDL_LOG_CATEGORY_ERROR, "Using implementation defaults, your system is really messed up, I'm surprised we even got this far\n");
+	return "";
+  }
+}
 
 // ref https://blogs.msdn.microsoft.com/matthew_van_eerde/2008/12/16/sample-wasapi-loopback-capture-record-what-you-hear/
 #ifdef WASAPI_LOOPBACK
@@ -234,7 +268,7 @@ srand((int)(time(NULL)));
 		ERR(L"pAudioClient->Start error");
 		return hr;
 	}
-
+	
 	bool bDone = false;
 	bool bFirstPacket = true;
     UINT32 nPasses = 0;
@@ -244,7 +278,6 @@ srand((int)(time(NULL)));
 #if UNLOCK_FPS
     setenv("vblank_mode", "0", 1);
 #endif
-
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
     if (! SDL_VERSION_ATLEAST(2, 0, 5)) {
@@ -271,16 +304,17 @@ srand((int)(time(NULL)));
 
 #else
 	// Disabling compatibility profile
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
 #endif
 
     
-    SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+    SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     
-
+    SDL_GL_GetDrawableSize(win,&width,&height);
+    
 #if STEREOSCOPIC_SBS
 
 	// enable stereo
@@ -328,16 +362,32 @@ srand((int)(time(NULL)));
         base_path = SDL_GetBasePath();
         SDL_Log("Config file not found, using built-in settings. Data directory=%s\n", base_path.c_str());
 
+		// Get max refresh rate from attached displays to use as built-in max FPS.
+		int i = 0;
+		int maxRefreshRate = 0;
+		SDL_DisplayMode current;
+		for (i = 0; i < SDL_GetNumVideoDisplays(); ++i)
+		{
+			if (SDL_GetCurrentDisplayMode(i, &current) == 0)
+			{
+				if (current.refresh_rate > maxRefreshRate) maxRefreshRate = current.refresh_rate;
+			}
+		}
+		if (maxRefreshRate <= 60) maxRefreshRate = 60;
+
         float heightWidthRatio = (float)height / (float)width;
         projectM::Settings settings;
         settings.windowWidth = width;
         settings.windowHeight = height;
         settings.meshX = 128;
         settings.meshY = settings.meshX * heightWidthRatio;
-        settings.fps   = 60;
+		settings.fps = maxRefreshRate;
         settings.smoothPresetDuration = 3; // seconds
         settings.presetDuration = 22; // seconds
-        settings.beatSensitivity = 0.8;
+		settings.hardcutEnabled = true;
+		settings.hardcutDuration = 60;
+		settings.hardcutSensitivity = 1.0;
+        settings.beatSensitivity = 1.0;
         settings.aspectCorrection = 1;
         settings.shuffleEnabled = 1;
         settings.softCutRatingsEnabled = 1; // ???
@@ -349,6 +399,46 @@ srand((int)(time(NULL)));
         // init with settings
         app = new projectMSDL(settings, 0);
     }
+
+    // If our config or hard-coded settings create a resolution smaller than the monitors, then resize the SDL window to match.
+    if (height > app->getWindowHeight() || width > app->getWindowWidth()) {
+        SDL_SetWindowSize(win, app->getWindowWidth(),app->getWindowHeight());
+        SDL_SetWindowPosition(win, (width / 2)-(app->getWindowWidth()/2), (height / 2)-(app->getWindowHeight()/2));
+    } else if (height < app->getWindowHeight() || width < app->getWindowWidth()) {
+        // If our config is larger than our monitors resolution then reduce it.
+        SDL_SetWindowSize(win, width, height);
+        SDL_SetWindowPosition(win, 0, 0);
+    }
+
+    // Create a help menu specific to SDL
+    std::string modKey = "CTRL";
+
+#if __APPLE__
+modKey = "CMD";
+#endif
+
+    std::string sdlHelpMenu = "\n"
+		"F1: This help menu""\n"
+		"F3: Show preset name""\n"
+		"F4: Show details and statistics""\n"
+		"F5: Show FPS""\n"
+		"L or SPACE: Lock/Unlock Preset""\n"
+		"R: Random preset""\n"
+		"N: Next preset""\n"
+		"P: Previous preset""\n"
+		"UP: Increase Beat Sensitivity""\n"
+		"DOWN: Decrease Beat Sensitivity""\n"
+#ifdef PROJECTM_TOUCH_ENABLED
+		"Left Click: Drop Random Waveform on Screen""\n"
+		"Right Click: Remove Random Waveform""\n" +
+		modKey + "+Right Click: Remove All Random Waveforms""\n"
+#endif
+		+ modKey + "+I: Audio Input (listen to next device)""\n" +
+		modKey + "+M: Change Monitor""\n" +
+		modKey + "+S: Stretch Monitors""\n" +
+		modKey + "+F: Fullscreen""\n" +
+		modKey + "+Q: Quit";
+    app->setHelpText(sdlHelpMenu.c_str());
     app->init(win, &glCtx);
 
 #if STEREOSCOPIC_SBS
@@ -362,9 +452,16 @@ srand((int)(time(NULL)));
 #endif
 
 #if !FAKE_AUDIO && !WASAPI_LOOPBACK
-    // get an audio input device
-    if (app->openAudioInput())
-	    app->beginAudioCapture();
+	// get an audio input device
+	if (app->openAudioInput())
+		app->beginAudioCapture();
+#endif
+
+#ifdef WASAPI_LOOPBACK
+	// Default to WASAPI loopback if it was enabled at compilation.
+	app->wasapi = true;
+	// Notify that loopback capture was started.
+	SDL_Log("Opened audio capture loopback.");
 #endif
 
 #if TEST_ALL_PRESETS
@@ -403,52 +500,58 @@ srand((int)(time(NULL)));
     while (! app->done) {
         app->renderFrame();
 #if FAKE_AUDIO
-        app->addFakePCM();
+		app->fakeAudio  = true;
 #endif
+		// fakeAudio can also be enabled dynamically.
+		if (app->fakeAudio )
+		{
+			app->addFakePCM();
+		}
 #ifdef WASAPI_LOOPBACK
-        // drain data while it is available
-        nPasses++;
-		UINT32 nNextPacketSize;
-		for (
-			hr = pAudioCaptureClient->GetNextPacketSize(&nNextPacketSize);
-			SUCCEEDED(hr) && nNextPacketSize > 0;
-			hr = pAudioCaptureClient->GetNextPacketSize(&nNextPacketSize)
-			) {
-			// get the captured data
-			BYTE *pData;
-			UINT32 nNumFramesToRead;
-			DWORD dwFlags;
+		if (app->wasapi) {
+			// drain data while it is available
+			nPasses++;
+			UINT32 nNextPacketSize;
+			for (
+				hr = pAudioCaptureClient->GetNextPacketSize(&nNextPacketSize);
+				SUCCEEDED(hr) && nNextPacketSize > 0;
+				hr = pAudioCaptureClient->GetNextPacketSize(&nNextPacketSize)
+				) {
+				// get the captured data
+				BYTE *pData;
+				UINT32 nNumFramesToRead;
+				DWORD dwFlags;
 
-			hr = pAudioCaptureClient->GetBuffer(
-				&pData,
-				&nNumFramesToRead,
-				&dwFlags,
-				NULL,
-				NULL
-			);
+				hr = pAudioCaptureClient->GetBuffer(
+					&pData,
+					&nNumFramesToRead,
+					&dwFlags,
+					NULL,
+					NULL
+				);
+				if (FAILED(hr)) {
+					return hr;
+				}
+
+				LONG lBytesToWrite = nNumFramesToRead * nBlockAlign;
+
+				/** Add the waveform data */
+				app->pcm()->addPCMfloat((float *)pData, nNumFramesToRead);
+
+				*pnFrames += nNumFramesToRead;
+
+				hr = pAudioCaptureClient->ReleaseBuffer(nNumFramesToRead);
+				if (FAILED(hr)) {
+					return hr;
+				}
+
+				bFirstPacket = false;
+			}
+
 			if (FAILED(hr)) {
 				return hr;
 			}
-
-			LONG lBytesToWrite = nNumFramesToRead * nBlockAlign;
-
-			/** Add the waveform data */
-			app->pcm()->addPCMfloat((float *)pData, nNumFramesToRead);
-
-			*pnFrames += nNumFramesToRead;
-
-			hr = pAudioCaptureClient->ReleaseBuffer(nNumFramesToRead);
-			if (FAILED(hr)) {
-				return hr;
-			}
-
-			bFirstPacket = false;
 		}
-
-		if (FAILED(hr)) {
-			return hr;
-		}
-
 #endif /** WASAPI_LOOPBACK */
 
 #if UNLOCK_FPS
@@ -470,9 +573,15 @@ srand((int)(time(NULL)));
     }
     
     SDL_GL_DeleteContext(glCtx);
-#if !FAKE_AUDIO && !WASAPI_LOOPBACK
-    app->endAudioCapture();
+#if !FAKE_AUDIO
+	if (!app->wasapi) // not currently using WASAPI, so we need to endAudioCapture.
+		app->endAudioCapture();
 #endif
+
+    // Write back config with current app settings (if we loaded from a config file to begin with)
+    if (!configFilePath.empty()) {
+        projectM::writeConfig(configFilePath, app->settings());
+    }
     delete app;
 
     return PROJECTM_SUCCESS;

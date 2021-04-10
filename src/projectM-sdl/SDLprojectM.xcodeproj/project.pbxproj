@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,13 +16,11 @@
 		168F7156211248E4001806E7 /* SDLprojectM in Executable */ = {isa = PBXBuildFile; fileRef = C34521441BF02294001707D2 /* SDLprojectM */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		168F715921124C0E001806E7 /* config.inp in Support files */ = {isa = PBXBuildFile; fileRef = 16B52AAA21105A6900830F34 /* config.inp */; };
 		168F715A21124C14001806E7 /* fonts in Support files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
-		168F715C21124CDF001806E7 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 166853F02105E2850042793A /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		168F718021126256001806E7 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 168F717F21126256001806E7 /* AppIcon.icns */; };
+		169BC64024CC3B56007B7829 /* presets in Copy Files */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
+		169BC64224CC3FCA007B7829 /* presets in Support files */ = {isa = PBXBuildFile; fileRef = C307DFD31D565B57002F6B9E /* presets */; };
+		169BC65024CC8401007B7829 /* fonts in Copy Files */ = {isa = PBXBuildFile; fileRef = C3D30B8F1BF02BE5009AAACD /* fonts */; };
 		C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215B1BF025A9001707D2 /* OpenGL.framework */; };
-		C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215D1BF025CF001707D2 /* CoreFoundation.framework */; };
-		C34521651BF025E5001707D2 /* libbz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C345215F1BF025E5001707D2 /* libbz2.a */; };
-		C34521691BF025E5001707D2 /* libpng15.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521631BF025E5001707D2 /* libpng15.a */; };
-		C345216A1BF025E5001707D2 /* libz.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C34521641BF025E5001707D2 /* libz.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,19 +109,9 @@
 			files = (
 				168F715921124C0E001806E7 /* config.inp in Support files */,
 				168F715A21124C14001806E7 /* fonts in Support files */,
+				169BC64224CC3FCA007B7829 /* presets in Support files */,
 			);
 			name = "Support files";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		168F715B21124CD1001806E7 /* Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				168F715C21124CDF001806E7 /* SDL2.framework in Frameworks */,
-			);
-			name = Frameworks;
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		C34521421BF02293001707D2 /* Copy Files */ = {
@@ -132,6 +120,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				169BC64024CC3B56007B7829 /* presets in Copy Files */,
+				169BC65024CC8401007B7829 /* fonts in Copy Files */,
 			);
 			name = "Copy Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -140,13 +130,24 @@
 
 /* Begin PBXFileReference section */
 		1612C98C207A807000862A3A /* libprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libprojectM.xcodeproj; path = ../libprojectM/libprojectM.xcodeproj; sourceTree = "<group>"; };
-		166853F02105E2850042793A /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
-		166853F22105E2CF0042793A /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
-		168F714921120210001806E7 /* projectM SDL.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "projectM SDL.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1648A5DA25D7FA720075B8FC /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		1684055E25D83FFC0001F02C /* CoreHaptics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreHaptics.framework; path = System/Library/Frameworks/CoreHaptics.framework; sourceTree = SDKROOT; };
+		1684055F25D83FFC0001F02C /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		1684056025D83FFC0001F02C /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		1684056925D8402D0001F02C /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		1684056E25D8403C0001F02C /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		1684057025D840420001F02C /* ForceFeedback.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ForceFeedback.framework; path = System/Library/Frameworks/ForceFeedback.framework; sourceTree = SDKROOT; };
+		1684057425D8405D0001F02C /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		1684057625D840660001F02C /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		1684057B25D840900001F02C /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		1684059525D84FD10001F02C /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		168F714921120210001806E7 /* ProjectM.app */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ProjectM.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		168F714B21120211001806E7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		168F717F21126256001806E7 /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 		169501FE1F7009E9008FAF86 /* pmSDL.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pmSDL.cpp; sourceTree = "<group>"; };
 		169501FF1F7009E9008FAF86 /* pmSDL.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = pmSDL.hpp; sourceTree = "<group>"; };
+		169BC64B24CC8353007B7829 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
+		169BC64D24CC83CD007B7829 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
 		16B52AA8211054E900830F34 /* projectMSDL-pkg.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "projectMSDL-pkg.plist"; sourceTree = "<group>"; };
 		16B52AAA21105A6900830F34 /* config.inp */ = {isa = PBXFileReference; lastKnownFileType = text; path = config.inp; sourceTree = "<group>"; };
 		C307DFD31D565B57002F6B9E /* presets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = presets; path = ../../presets; sourceTree = "<group>"; };
@@ -158,28 +159,18 @@
 		C34521631BF025E5001707D2 /* libpng15.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng15.a; path = "../projectM-iTunes/macos/contrib/libpng15.a"; sourceTree = "<group>"; };
 		C34521641BF025E5001707D2 /* libz.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libz.a; path = "../projectM-iTunes/macos/contrib/libz.a"; sourceTree = "<group>"; };
 		C3D30B8F1BF02BE5009AAACD /* fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fonts; path = ../../fonts; sourceTree = "<group>"; };
+		C60BD8E1259CF3CA0038831F /* SDLprojectM.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SDLprojectM.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		168F714621120210001806E7 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C34521411BF02293001707D2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1612C997207A80A200862A3A /* libprojectM.a in Frameworks */,
 				1612C9E2207A85C100862A3A /* libMilkdropPresetFactory.a in Frameworks */,
 				1612C9E3207A85C100862A3A /* libNativePresetFactory.a in Frameworks */,
-				C345215E1BF025CF001707D2 /* CoreFoundation.framework in Frameworks */,
 				C345215C1BF025A9001707D2 /* OpenGL.framework in Frameworks */,
-				C34521651BF025E5001707D2 /* libbz2.a in Frameworks */,
-				C34521691BF025E5001707D2 /* libpng15.a in Frameworks */,
-				C345216A1BF025E5001707D2 /* libz.a in Frameworks */,
-				1612C997207A80A200862A3A /* libprojectM.a in Frameworks */,
 				1612C998207A80A200862A3A /* libRenderer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -190,7 +181,18 @@
 		161070CE1F7041B0001905AB /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				166853F22105E2CF0042793A /* SDL2.framework */,
+				1684059525D84FD10001F02C /* IOKit.framework */,
+				1684057B25D840900001F02C /* AudioToolbox.framework */,
+				1684057625D840660001F02C /* QuartzCore.framework */,
+				1684057425D8405D0001F02C /* Metal.framework */,
+				1684057025D840420001F02C /* ForceFeedback.framework */,
+				1684056E25D8403C0001F02C /* CoreVideo.framework */,
+				1684056925D8402D0001F02C /* Carbon.framework */,
+				1684055F25D83FFC0001F02C /* CoreAudio.framework */,
+				1684056025D83FFC0001F02C /* CoreGraphics.framework */,
+				1684055E25D83FFC0001F02C /* CoreHaptics.framework */,
+				1648A5DA25D7FA720075B8FC /* Cocoa.framework */,
+				169BC64B24CC8353007B7829 /* SDL2.framework */,
 				C345215D1BF025CF001707D2 /* CoreFoundation.framework */,
 				C345215B1BF025A9001707D2 /* OpenGL.framework */,
 			);
@@ -217,16 +219,10 @@
 			path = "projectM-SDL";
 			sourceTree = "<group>";
 		};
-		168F717521125ED8001806E7 /* projectM */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = projectM;
-			sourceTree = "<group>";
-		};
 		16A42128207802AF006F30CE /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
+				169BC64D24CC83CD007B7829 /* SDL2.framework */,
 				C345215F1BF025E5001707D2 /* libbz2.a */,
 				C34521631BF025E5001707D2 /* libpng15.a */,
 				C34521641BF025E5001707D2 /* libz.a */,
@@ -237,17 +233,16 @@
 		C345213B1BF02293001707D2 = {
 			isa = PBXGroup;
 			children = (
+				C60BD8E1259CF3CA0038831F /* SDLprojectM.entitlements */,
 				169501FF1F7009E9008FAF86 /* pmSDL.hpp */,
 				169501FE1F7009E9008FAF86 /* pmSDL.cpp */,
 				C345214E1BF022A5001707D2 /* projectM_SDL_main.cpp */,
 				16B52AAA21105A6900830F34 /* config.inp */,
 				16B52AA8211054E900830F34 /* projectMSDL-pkg.plist */,
-				166853F02105E2850042793A /* SDL2.framework */,
 				1612C98C207A807000862A3A /* libprojectM.xcodeproj */,
 				C307DFD31D565B57002F6B9E /* presets */,
 				16A42128207802AF006F30CE /* Dependencies */,
 				168F714A21120210001806E7 /* projectM-SDL */,
-				168F717521125ED8001806E7 /* projectM */,
 				161070CE1F7041B0001905AB /* Frameworks */,
 				C34521451BF02294001707D2 /* Products */,
 				C3D30B8F1BF02BE5009AAACD /* fonts */,
@@ -258,7 +253,7 @@
 			isa = PBXGroup;
 			children = (
 				C34521441BF02294001707D2 /* SDLprojectM */,
-				168F714921120210001806E7 /* projectM SDL.app */,
+				168F714921120210001806E7 /* ProjectM.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -266,17 +261,13 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		168F714821120210001806E7 /* projectM SDL */ = {
+		168F714821120210001806E7 /* ProjectM */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 168F714C21120211001806E7 /* Build configuration list for PBXNativeTarget "projectM SDL" */;
+			buildConfigurationList = 168F714C21120211001806E7 /* Build configuration list for PBXNativeTarget "ProjectM" */;
 			buildPhases = (
-				168F714521120210001806E7 /* Sources */,
-				168F714621120210001806E7 /* Frameworks */,
 				168F714721120210001806E7 /* Resources */,
 				168F7155211248DE001806E7 /* Executable */,
-				168F715721124BBB001806E7 /* Copy Presets */,
 				168F715821124BFC001806E7 /* Support files */,
-				168F715B21124CD1001806E7 /* Frameworks */,
 				168F715D21124CF8001806E7 /* Generate Installer Package */,
 			);
 			buildRules = (
@@ -284,9 +275,9 @@
 			dependencies = (
 				168F715021120496001806E7 /* PBXTargetDependency */,
 			);
-			name = "projectM SDL";
+			name = ProjectM;
 			productName = "projectM-SDL";
-			productReference = 168F714921120210001806E7 /* projectM SDL.app */;
+			productReference = 168F714921120210001806E7 /* ProjectM.app */;
 			productType = "com.apple.product-type.bundle";
 		};
 		C34521431BF02293001707D2 /* SDLprojectM */ = {
@@ -316,26 +307,25 @@
 		C345213C1BF02293001707D2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0920;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = int80;
 				TargetAttributes = {
 					168F714821120210001806E7 = {
 						CreatedOnToolsVersion = 9.2;
-						ProvisioningStyle = Automatic;
 					};
 					C34521431BF02293001707D2 = {
 						CreatedOnToolsVersion = 7.1;
-						ProvisioningStyle = Manual;
 					};
 				};
 			};
 			buildConfigurationList = C345213F1BF02293001707D2 /* Build configuration list for PBXProject "SDLprojectM" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
+				Base,
 			);
 			mainGroup = C345213B1BF02293001707D2;
 			productRefGroup = C34521451BF02294001707D2 /* Products */;
@@ -349,7 +339,7 @@
 			projectRoot = "";
 			targets = (
 				C34521431BF02293001707D2 /* SDLprojectM */,
-				168F714821120210001806E7 /* projectM SDL */,
+				168F714821120210001806E7 /* ProjectM */,
 			);
 		};
 /* End PBXProject section */
@@ -397,24 +387,9 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		168F715721124BBB001806E7 /* Copy Presets */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/../../presets",
-			);
-			name = "Copy Presets";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/presets",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "POUT=\"$BUILT_PRODUCTS_DIR\"/\"$CONTENTS_FOLDER_PATH/Resources/presets\"\nPIN=\"$SRCROOT\"/../../presets\n\nmkdir -p \"$POUT\"\nfor preset_dir in \"$PIN/\"*; do\n  cp \"$preset_dir/\"* \"$POUT/\"\ndone\necho \"Copied presets to $POUT\"\n";
-		};
 		168F715D21124CF8001806E7 /* Generate Installer Package */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 12;
 			files = (
 			);
@@ -422,22 +397,15 @@
 			);
 			name = "Generate Installer Package";
 			outputPaths = (
-				"$(BUILT_PRODUCTS_DIR)/projectM SDL.pkg",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\n\nmkdir -p \"$DSTROOT/Applications\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/projectM SDL.app\" \"$DSTROOT/Applications\"\npkgbuild --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/projectM SDL.pkg\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/projectM SDL.pkg\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/projectM SDL.pkg\" \"$SRCROOT/\"\n";
+			shellScript = "ls \"$CONFIGURATION_BUILD_DIR\"\nPKGNAME=ProjectM-SDL.pkg\n\nset -euxo pipefail\n\nmkdir -p \"$DSTROOT/Applications\" \"$DERIVED_FILE_DIR\"\ncp -rp \"$CONFIGURATION_BUILD_DIR/ProjectM.app\" \"$DSTROOT/Applications\"\n\necho \"DSTROOT: $DSTROOT/Applications\"\nls \"$DSTROOT/Applications\"\n\n#pkgbuild --timestamp --sign '5926VBQM6Y' --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/$PKGNAME\"\npkgbuild --component-plist \"$SRCROOT/projectMSDL-pkg.plist\" --root \"$DSTROOT\" \"$BUILT_PRODUCTS_DIR/$PKGNAME\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/$PKGNAME\"\n\n# for combined installer\n#cp \"$BUILT_PRODUCTS_DIR/$PKGNAME\" \"$TEMP_DIR/\" \n\n# for convenience\ncp \"$BUILT_PRODUCTS_DIR/$PKGNAME\" \"$SRCROOT/\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		168F714521120210001806E7 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		C34521401BF02293001707D2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -481,24 +449,20 @@
 		168F714D21120211001806E7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "-";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				DEVELOPMENT_TEAM = 5926VBQM6Y;
+				GCC_UNROLL_LOOPS = YES;
 				INFOPLIST_FILE = "projectM-SDL/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				MACH_O_TYPE = mh_execute;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 3.1.12;
 				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.projectM-SDL";
+				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = app;
@@ -508,24 +472,21 @@
 		168F714E21120211001806E7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "-";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				DEVELOPMENT_TEAM = 5926VBQM6Y;
+				GCC_OPTIMIZATION_LEVEL = fast;
+				GCC_UNROLL_LOOPS = YES;
 				INFOPLIST_FILE = "projectM-SDL/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
-				MACH_O_TYPE = mh_execute;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MARKETING_VERSION = 3.1.12;
 				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
-				PRODUCT_BUNDLE_IDENTIFIER = "net.projectm.projectM-SDL";
+				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				WRAPPER_EXTENSION = app;
@@ -535,35 +496,31 @@
 		C34521491BF02294001707D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				CODE_SIGN_ENTITLEMENTS = SDLprojectM.entitlements;
+				CODE_SIGN_IDENTITY = "Developer ID Application: Mischa Spiegelmock (5926VBQM6Y)";
+				DEVELOPMENT_TEAM = 5926VBQM6Y;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
-				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -571,116 +528,117 @@
 					"$(inherited)",
 				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../libprojectM",
+					"$(SRCROOT)/../../vendor",
 					/usr/local/include,
+					"$(SRCROOT)/../../mac",
+					"$(SRCROOT)/../libprojectM/Renderer/hlslparser/src",
 				);
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/Frameworks/";
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../projectM-iTunes/macos/contrib";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
+				OTHER_CODE_SIGN_FLAGS = "--timestamp";
+				OTHER_LDFLAGS = "-lSDL2";
 			};
 			name = Debug;
 		};
 		C345214A1BF02294001707D2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
+				CODE_SIGN_ENTITLEMENTS = SDLprojectM.entitlements;
+				CODE_SIGN_IDENTITY = "Developer ID Application: Mischa Spiegelmock (5926VBQM6Y)";
+				DEVELOPMENT_TEAM = 5926VBQM6Y;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = /Library/Frameworks;
-				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/../libprojectM",
+					"$(SRCROOT)/../../vendor",
 					/usr/local/include,
+					"$(SRCROOT)/../../mac",
+					"$(SRCROOT)/../libprojectM/Renderer/hlslparser/src",
 				);
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/Frameworks/";
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/../projectM-iTunes/macos/contrib";
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-DDATADIR_PATH='\"/usr/local/share/projectM\"'";
+				OTHER_CODE_SIGN_FLAGS = "--timestamp";
+				OTHER_LDFLAGS = "-lSDL2";
 			};
 			name = Release;
 		};
 		C345214C1BF02294001707D2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
-				GCC_LINK_WITH_DYNAMIC_LIBRARIES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5926VBQM6Y;
 				INFOPLIST_FILE = "$(SRCROOT)/projectM-SDL/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/../Frameworks/ @loader_path/Frameworks/";
-				OTHER_LDFLAGS = (
-					"-framework",
-					SDL2,
-				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				MARKETING_VERSION = 3.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SYMROOT = "$(SRCROOT)/build";
 			};
 			name = Debug;
 		};
 		C345214D1BF02294001707D2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "-";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = "";
-				GCC_LINK_WITH_DYNAMIC_LIBRARIES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 5926VBQM6Y;
 				INFOPLIST_FILE = "$(SRCROOT)/projectM-SDL/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "@executable_path/ @loader_path/../Frameworks/ @loader_path/Frameworks/";
-				OTHER_LDFLAGS = (
-					"-framework",
-					SDL2,
-				);
+				LIBRARY_SEARCH_PATHS = /usr/local/lib;
+				MARKETING_VERSION = 3.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = net.projectm.sdl;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SYMROOT = "$(SRCROOT)/build";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		168F714C21120211001806E7 /* Build configuration list for PBXNativeTarget "projectM SDL" */ = {
+		168F714C21120211001806E7 /* Build configuration list for PBXNativeTarget "ProjectM" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				168F714D21120211001806E7 /* Debug */,

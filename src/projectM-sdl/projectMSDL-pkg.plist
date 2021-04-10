@@ -6,7 +6,7 @@
 		<key>BundleOverwriteAction</key>
 		<string>upgrade</string>
 		<key>RootRelativeBundlePath</key>
-		<string>/Applications/projectM SDL.app</string>
+		<string>/Applications/ProjectM.app</string>
 		<key>BundleIsVersionChecked</key>
 		<true/>
 	</dict>

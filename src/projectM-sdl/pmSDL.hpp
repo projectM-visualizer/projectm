@@ -88,20 +88,31 @@ public:
 
 
     bool done;
-
+    bool mouseDown = false;
+    bool wasapi = false; // Used to track if wasapi is currently active. This bool will allow us to run a WASAPI app and still toggle to microphone inputs.
+    bool fakeAudio = false; // Used to track fake audio, so we can turn it off and on.
+    bool stretch = false; // used for toggling stretch mode
     projectMSDL(Settings settings, int flags);
     projectMSDL(std::string config_file, int flags);
     void init(SDL_Window *window, SDL_GLContext *glCtx, const bool renderToTexture = false);
     int openAudioInput();
+    int toggleAudioInput();
+    int initAudioInput();
     void beginAudioCapture();
     void endAudioCapture();
 	void stretchMonitors();
 	void nextMonitor();
     void toggleFullScreen();
     void resize(unsigned int width, unsigned int height);
+    void touch(float x, float y, int pressure, int touchtype = 0);
+    void touchDrag(float x, float y, int pressure);
+    void touchDestroy(float x, float y);
+    void touchDestroyAll();
+    void setHelpText(const std::string& theValue);
     void renderFrame();
     void pollEvent();
     void maximize();
+    bool keymod = false;
     std::string getActivePresetName();
     void addFakePCM();
     
@@ -120,17 +131,20 @@ private:
     GLuint textureID = 0;
 
     // audio input device characteristics
+    unsigned int NumAudioDevices;
+    unsigned int CurAudioDevice;
     unsigned short audioChannelsCount;
     unsigned short audioSampleRate;
     unsigned short audioSampleCount;
     SDL_AudioFormat audioFormat;
     SDL_AudioDeviceID audioDeviceID;
+    SDL_AudioDeviceID selectedAudioDevice;
 
     static void audioInputCallbackF32(void *userdata, unsigned char *stream, int len);
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
 
+    void scrollHandler(SDL_Event *);
     void keyHandler(SDL_Event *);
-    SDL_AudioDeviceID selectAudioInput(int _count);
     void renderTexture();
 };
 

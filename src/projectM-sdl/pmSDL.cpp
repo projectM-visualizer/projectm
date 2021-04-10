@@ -32,11 +32,14 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Renderer/ShaderEngine.hpp"
+#include "Renderer/StaticGlShaders.h"
 
 
 void projectMSDL::audioInputCallbackF32(void *userdata, unsigned char *stream, int len) {
     projectMSDL *app = (projectMSDL *) userdata;
-    //    printf("LEN: %i\n", len);
+//    printf("\nLEN: %i\n", len);
+//    for (int i = 0; i < 64; i++)
+//        printf("%X ", stream[i]);
     // stream is (i think) samples*channels floats (native byte order) of len BYTES
     if (app->audioChannelsCount == 1)
         app->pcm()->addPCMfloat((float *)stream, len/sizeof(float));
@@ -61,44 +64,50 @@ void projectMSDL::audioInputCallbackS16(void *userdata, unsigned char *stream, i
     app->pcm()->addPCM16(pcm16);
 }
 
-SDL_AudioDeviceID projectMSDL::selectAudioInput(int _count) {
-    // TODO: implement some sort of UI allowing the user to select which audio input device they would like to use
-
-
-    // ask the user which capture device to use
-    // printf("Please select which audio input to use:\n");
-    printf("Detected devices:\n");
-    for (int i = 0; i < _count; i++) {
-        printf("  %i: 🎤%s\n", i, SDL_GetAudioDeviceName(i, true));
+int projectMSDL::toggleAudioInput() {
+    // trigger a toggle with CMD-I or CTRL-I
+    if (wasapi) { // we are currently on WASAPI, so we are going to revert to a microphone/line-in input.
+        if (this->openAudioInput())
+            this->beginAudioCapture();
+        CurAudioDevice = 0;
+        selectedAudioDevice = CurAudioDevice;
+        this->wasapi = false; // Track wasapi as off so projectMSDL will stop listening to WASAPI loopback in pmSDL_main.
     }
-
-    return 0;
-}
-
-int projectMSDL::openAudioInput() {
-    // get audio driver name (static)
-    const char* driver_name = SDL_GetCurrentAudioDriver();
-    SDL_Log("Using audio driver: %s\n", driver_name);
-
-    // get audio input device
-    unsigned int i, count2 = SDL_GetNumAudioDevices(true);  // capture, please
-    if (count2 == 0) {
-        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio capture devices found");
-        SDL_Quit();
-    }
-    for (i = 0; i < count2; i++) {
-        SDL_Log("Found audio capture device %d: %s", i, SDL_GetAudioDeviceName(i, true));
-    }
-
-    SDL_AudioDeviceID selectedAudioDevice = 0;  // device to open
-    if (count2 > 1) {
-        // need to choose which input device to use
-        selectedAudioDevice = selectAudioInput(count2);
-	if (selectedAudioDevice > count2) {
-            SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio input device specified.");
-            SDL_Quit();
+    else {
+        this->endAudioCapture(); // end current audio capture.
+        CurAudioDevice++; // iterate device index
+        if (CurAudioDevice >= NumAudioDevices) { // We reached outside the boundaries of available audio devices.
+            CurAudioDevice = 0; // Return to first audio device in the index.
+#ifdef WASAPI_LOOPBACK
+            // If we are at the boundary and WASAPI is enabled then let's load WASAPI instead.
+            projectM::setToastMessage("Loopback audio selected");
+            SDL_Log("Loopback audio selected");
+            this->fakeAudio = false; // disable fakeAudio in case it was enabled.
+            this->wasapi = true; // Track wasapi as on so projectMSDL will listen to it.
+#else
+            if (NumAudioDevices == 1) // If WASAPI_LOOPBACK was not enabled and there is only one audio device, it's pointless to toggle anything.
+            {
+                SDL_Log("There is only one audio capture device. There is nothing to toggle at this time.");
+                return 1;
+            }
+            // If WASAPI_LOOPBACK is not enabled and we have multiple input devices, return to device index 0 and let's listen to that device.
+            selectedAudioDevice = CurAudioDevice;
+            initAudioInput();
+            this->beginAudioCapture();
+#endif
+        }
+        else {
+            // This is a normal scenario where we move forward in the audio device index.
+            selectedAudioDevice = CurAudioDevice;
+            initAudioInput();
+            this->beginAudioCapture();
         }
     }
+    return 1;
+}
+
+int projectMSDL::initAudioInput() {
+
 
     // params for audio input
     SDL_AudioSpec want, have;
@@ -117,17 +126,54 @@ int projectMSDL::openAudioInput() {
 
     if (audioDeviceID == 0) {
         SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Failed to open audio capture device: %s", SDL_GetError());
-        SDL_Quit();
+        return 0;
     }
 
     // read characteristics of opened capture device
     SDL_Log("Opened audio capture device index=%i devId=%i: %s", selectedAudioDevice, audioDeviceID, SDL_GetAudioDeviceName(selectedAudioDevice, true));
+    std::string deviceToast = SDL_GetAudioDeviceName(selectedAudioDevice, true); // Example: Microphone rear
+    deviceToast += " selected";
+    projectM::setToastMessage(deviceToast);
+#ifdef DEBUG
     SDL_Log("Samples: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
+#endif
     audioChannelsCount = have.channels;
     audioSampleRate = have.freq;
     audioSampleCount = have.samples;
     audioFormat = have.format;
     audioInputDevice = audioDeviceID;
+
+    return 1;
+}
+
+int projectMSDL::openAudioInput() {
+    fakeAudio = false; // if we are opening an audio input then there is no need for fake audio.
+    // get audio driver name (static)
+#ifdef DEBUG
+    const char* driver_name = SDL_GetCurrentAudioDriver();
+    SDL_Log("Using audio driver: %s\n", driver_name);
+#endif
+
+    // get audio input device
+    NumAudioDevices = SDL_GetNumAudioDevices(true);  // capture, please
+
+    CurAudioDevice = 0;
+    if (NumAudioDevices == 0) {
+        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio capture devices found");
+        projectM::setToastMessage("No audio capture devices found: using simulated audio");
+        fakeAudio = true;
+        return 0;
+    }
+#ifdef DEBUG
+    for (unsigned int i = 0; i < NumAudioDevices; i++) {
+        SDL_Log("Found audio capture device %d: %s", i, SDL_GetAudioDeviceName(i, true));
+    }
+#endif
+
+    // default selected Audio Device to 0.
+    selectedAudioDevice = 0;
+    initAudioInput();
+
     return 1;
 }
 
@@ -138,6 +184,11 @@ void projectMSDL::beginAudioCapture() {
 
 void projectMSDL::endAudioCapture() {
     SDL_PauseAudioDevice(audioDeviceID, true);
+    SDL_CloseAudioDevice(audioDeviceID);
+}
+
+void projectMSDL::setHelpText(const std::string & helpText) {
+    projectM::setHelpText(helpText);
 }
 
 void projectMSDL::maximize() {
@@ -164,55 +215,29 @@ void projectMSDL::stretchMonitors()
 			SDL_GetDisplayBounds(i, &displayBounds.back());
 		}
 
-		int furthestX = 0;
-		int furthestY = 0;
-		int widest = 0;
-		int highest = 0;
-		int spanX = 0;
-		int spanY = 0;
-		int spanWidth = 0;
-		int spanHeight = 0;
-
-		bool horizontal = true;
-		bool vertical = true;
+		int mostXLeft = 0;
+		int mostXRight = 0;
+		int mostWide = 0;
+		int mostYUp = 0;
+		int mostYDown = 0;
+		int mostHigh = 0;
 
 		for (int i = 0; i < displayCount; i++)
 		{
-			if (displayBounds[0].x != displayBounds[i].x) vertical = false;
-			if (displayBounds[0].y != displayBounds[i].y) horizontal = false;
+			if (displayBounds[i].x < mostXLeft) mostXLeft = displayBounds[i].x;
+			if ((displayBounds[i].x + displayBounds[i].w) > mostXRight) mostXRight = displayBounds[i].x + displayBounds[i].w;
+		}
+		for (int i = 0; i < displayCount; i++)
+		{
+			if (displayBounds[i].y < mostYUp) mostYUp = displayBounds[i].y;
+			if ((displayBounds[i].y + displayBounds[i].h) > mostYDown) mostYDown = displayBounds[i].y + displayBounds[i].h;
 		}
 
-		if (!vertical && !horizontal)
-		{
-			// If multiple montors are not perfectly aligned it's a bit of work to get the correct x,y and
-			// dimensions But in my testing on Windows 10 even with the screen did not render correctly.
-			// @todo more testing and make it work.
-			SDL_Log(
-				"SDL currently only supports multiple monitors that are aligned evenly in a vertical or "
-				"horizontal position.");
-		}
-		else
-		{
-			for (int i = 0; i < displayCount; i++)
-			{
-				if (displayBounds[i].x < furthestX) spanX = displayBounds[i].x; // X furthest left device
-				if (displayBounds[i].y < furthestY) spanY = displayBounds[i].y; // Y highest device
-				if (displayBounds[i].h > highest) highest = displayBounds[i].h; // highest resolution Height
-				if (displayBounds[i].h > widest) widest = displayBounds[i].w;		// highest resolution Width
-				if (horizontal) // perfectly aligned horizonal monitors.
-				{
-					spanHeight = highest;
-					spanWidth = spanWidth + displayBounds[i].w;
-				}
-				else if (vertical) // perfectly aligned vertical monitors.
-				{
-					spanHeight = spanHeight + displayBounds[i].h;
-					spanWidth = widest;
-				}
-			}
-			SDL_SetWindowPosition(win, spanX, spanY);
-			SDL_SetWindowSize(win, spanWidth, spanHeight);
-		}
+        mostWide = abs(mostXLeft) + abs(mostXRight);
+        mostHigh = abs(mostYUp) + abs(mostYDown);
+
+		SDL_SetWindowPosition(win, mostXLeft, mostYUp);
+		SDL_SetWindowSize(win, mostWide, mostHigh);
 	}
 }
 
@@ -225,7 +250,7 @@ void projectMSDL::nextMonitor()
 	{
 		std::vector<SDL_Rect> displayBounds;
 		int nextWindow = currentWindowIndex + 1;
-		if (nextWindow > displayCount) nextWindow = 0;
+		if (nextWindow >= displayCount) nextWindow = 0;
 
 		for (int i = 0; i < displayCount; i++)
 		{
@@ -234,7 +259,6 @@ void projectMSDL::nextMonitor()
 		}
 		SDL_SetWindowPosition(win, displayBounds[nextWindow].x, displayBounds[nextWindow].y);
 		SDL_SetWindowSize(win, displayBounds[nextWindow].w, displayBounds[nextWindow].h);
-		maximize();
 	}
 }
 
@@ -251,6 +275,17 @@ void projectMSDL::toggleFullScreen() {
     }
 }
 
+void projectMSDL::scrollHandler(SDL_Event* sdl_evt) {
+     // handle mouse scroll wheel - up++
+    if (sdl_evt->wheel.y > 0) {
+        projectM::selectPrevious(true);
+    }
+    // handle mouse scroll wheel - down--
+    if (sdl_evt->wheel.y < 0) {
+        projectM::selectNext(true);
+    }
+}
+
 void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
     projectMEvent evt;
     projectMKeycode key;
@@ -258,112 +293,123 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
     SDL_Keymod sdl_mod = (SDL_Keymod) sdl_evt->key.keysym.mod;
     SDL_Keycode sdl_keycode = sdl_evt->key.keysym.sym;
 
+    // Left or Right Gui or Left Ctrl
+    if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+        keymod = true;
+
 	// handle keyboard input (for our app first, then projectM)
     switch (sdl_keycode) {
-        case SDLK_q:
-            if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
-                // cmd/ctrl-q = quit
-                done = 1;
-                return;
+
+    case SDLK_q:
+        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
+            // cmd/ctrl-q = quit
+            done = 1;
+            return;
+        }
+        break;
+    case SDLK_BACKSPACE:
+        projectM::deleteSearchText();
+        break;
+    case SDLK_SLASH:
+        break;
+    case SDLK_BACKSLASH:
+        break;
+    case SDLK_RETURN:
+        if (!projectM::isTextInputActive()) {
+            SDL_StartTextInput();
+        }
+        break;
+    case SDLK_ESCAPE:
+        if (projectM::isTextInputActive())
+            SDL_StopTextInput();
+        break;
+    case SDLK_i:
+        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+        {
+            toggleAudioInput();
+            return; // handled
+        }
+        break;
+    case SDLK_s:
+        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+        {
+            // command-s: [s]tretch monitors
+            // Stereo requires fullscreen
+#if !STEREOSCOPIC_SBS
+            if (!this->stretch) { // if stretching is not already enabled, enable it.
+                stretchMonitors();
+                this->stretch = true;
+            } else {
+                toggleFullScreen(); // else, just toggle full screen so we leave stretch mode.
+                this->stretch = false;
             }
-            break;
-		case SDLK_s:
-			if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
-			{
-				// command-s: [s]tretch monitors
-				// Stereo requires fullscreen
-#if !STEREOSCOPIC_SBS
-				stretchMonitors();
 #endif
-				return; // handled
-			}
-		case SDLK_m:
-			if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
-			{
-				// command-m: change [m]onitor
-				// Stereo requires fullscreen
+            return; // handled
+        }
+    case SDLK_m:
+        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+        {
+            // command-m: change [m]onitor
+            // Stereo requires fullscreen
 #if !STEREOSCOPIC_SBS
-				nextMonitor();
+            nextMonitor();
 #endif
-				return; // handled
-			}
-        case SDLK_f:
-            if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
-                // command-f: fullscreen
-				// Stereo requires fullscreen
+            this->stretch = false; // if we are switching monitors, ensure we disable monitor stretching.
+            return; // handled
+        }
+    case SDLK_f:
+        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
+            // command-f: fullscreen
+            // Stereo requires fullscreen
 #if !STEREOSCOPIC_SBS
-				toggleFullScreen();
+            toggleFullScreen();
 #endif
-                return; // handled
+            this->stretch = false; // if we are toggling fullscreen, ensure we disable monitor stretching.
+            return; // handled
+        }
+        break;
+    case SDLK_LEFT:
+        // selectPrevious(true);
+        break;
+    case SDLK_RIGHT:
+        // selectNext(true);
+        break;
+    case SDLK_UP:
+        break;
+    case SDLK_DOWN:
+        break;
+
+    case SDLK_F3:
+        break;
+
+
+    case SDLK_SPACE:
+        if (!projectM::isTextInputActive(true))
+            setPresetLock(!isPresetLocked());
+        break;
+    case SDLK_F1:
+        break;
+    case SDLK_DELETE:
+        /*
+        try {
+            if (selectedPresetIndex(index)) {
+                DeleteFile(
+                    LPCSTR(
+                        getPresetURL(index).c_str()
+                    )
+                );
             }
-            break;
-					case SDLK_LEFT:
-						// selectPrevious(true);
-						break;
-					case SDLK_RIGHT:
-						// selectNext(true);
-						break;
-					case SDLK_UP:
-						break;
-					case SDLK_DOWN:
-						break;
-
-					case SDLK_F3:
-						break;
-
-
-					case SDLK_SPACE:
-						setPresetLock(
-							!isPresetLocked()
-						);
-						break;
-					case SDLK_F1:
-					case SDLK_ESCAPE:
-
-						// exit(1);
-						// show help with other keys
-						sdl_keycode = SDLK_F1;
-						break;
-					case SDLK_DELETE:
-						/*
-						try {
-							if (selectedPresetIndex(index)) {
-								DeleteFile(
-									LPCSTR(
-										getPresetURL(index).c_str()
-									)
-								);
-							}
-						}
-						catch (const std::exception & e) {
-							printf("Delete failed");
-						}
-						*/
-						break;
-					case SDLK_RETURN:
-						/*
-						try {
-							if (selectedPresetIndex(index)) {
-								CopyFile(
-										LPCSTR(
-												app->getPresetURL(index).c_str()
-										),
-										LPCTSTR(L"C:\\"),
-										false
-								);
-							}
-						}
-						catch (const std::exception & e) {
-							printf("Delete failed");
-						}
-								*/
-						break;
+        }
+        catch (const std::exception & e) {
+            printf("Delete failed");
+        }
+        */
+        break;
     }
-
     // translate into projectM codes and perform default projectM handler
     evt = sdl2pmEvent(sdl_evt);
-    key = sdl2pmKeycode(sdl_keycode);
     mod = sdl2pmModifier(sdl_mod);
+    key = sdl2pmKeycode(sdl_keycode,sdl_mod);
     key_handler(evt, key, mod);
 }
 
@@ -398,27 +444,115 @@ void projectMSDL::resize(unsigned int width_, unsigned int height_) {
 void projectMSDL::pollEvent() {
     SDL_Event evt;
 
+    int mousex = 0;
+    float mousexscale = 0;
+    int mousey = 0;
+    float mouseyscale = 0;
+    int mousepressure = 0;
     while (SDL_PollEvent(&evt))
     {
         switch (evt.type) {
             case SDL_WINDOWEVENT:
+            int h, w;
+            SDL_GL_GetDrawableSize(win,&w,&h);
                 switch (evt.window.event) {
-					case SDL_WINDOWEVENT_RESIZED: 
-						resize(evt.window.data1, evt.window.data2); 
+					case SDL_WINDOWEVENT_RESIZED:
+						resize(w, h);
 						break;
-					case SDL_WINDOWEVENT_SIZE_CHANGED: 
-						resize(evt.window.data1, evt.window.data2);
+					case SDL_WINDOWEVENT_SIZE_CHANGED:
+                        resize(w, h);
 						break;
                 }
                 break;
+            case SDL_MOUSEWHEEL:
+                scrollHandler(&evt);
             case SDL_KEYDOWN:
                 keyHandler(&evt);
+                break;
+            case SDL_MOUSEBUTTONDOWN:
+                if (evt.button.button == SDL_BUTTON_LEFT) {
+                    // if it's the first mouse down event (since mouse up or since SDL was launched)
+                    if (!mouseDown) {
+                        // Get mouse coorindates when you click.
+                        SDL_GetMouseState(&mousex, &mousey);
+                        // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
+                        mousexscale = (mousex / (float)width);
+                        mouseyscale = ((height - mousey) / (float)height);
+                        // Touch. By not supplying a touch type, we will default to random.
+                        touch(mousexscale, mouseyscale, mousepressure);
+                        mouseDown = true;
+                    }
+                }
+                else if (evt.button.button == SDL_BUTTON_RIGHT)
+                {
+                    mouseDown = false;
+
+                    // Keymod = Left or Right Gui or Left Ctrl. This is a shortcut to remove all waveforms.
+                    if (keymod) {
+                        touchDestroyAll();
+                        keymod = false;
+                        break;
+                    }
+
+                    // Right Click
+                    SDL_GetMouseState(&mousex, &mousey);
+
+                    // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
+                    mousexscale = (mousex / (float)width);
+                    mouseyscale = ((height - mousey) / (float)height);
+
+                    // Destroy at the coordinates we clicked.
+                    touchDestroy(mousexscale, mouseyscale);
+                }
+                break;
+            case SDL_MOUSEBUTTONUP:
+                mouseDown = false;
+                break;
+            case SDL_TEXTINPUT:
+                if (projectM::isTextInputActive(true))
+                {
+                    projectM::setSearchText(evt.text.text);
+                    projectM::populatePresetMenu();
+                }
                 break;
             case SDL_QUIT:
                 done = true;
                 break;
         }
     }
+
+    // Handle dragging your waveform when mouse is down.
+    if (mouseDown) {
+        // Get mouse coordinates when you click.
+        SDL_GetMouseState(&mousex, &mousey);
+        // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
+        mousexscale = (mousex / (float)width);
+        mouseyscale = ((height - mousey) / (float)height);
+        // Drag Touch.
+        touchDrag(mousexscale, mouseyscale, mousepressure);
+    }
+}
+
+// This touches the screen to generate a waveform at X / Y.
+void projectMSDL::touch(float x, float y, int pressure, int touchtype) {
+#ifdef PROJECTM_TOUCH_ENABLED
+    projectM::touch(x, y, pressure, touchtype);
+#endif
+}
+
+// This moves the X Y of your existing waveform that was generated by a touch (only if you held down your click and dragged your mouse around).
+void projectMSDL::touchDrag(float x, float y, int pressure) {
+    projectM::touchDrag(x, y, pressure);
+}
+
+// Remove waveform at X Y
+void projectMSDL::touchDestroy(float x, float y) {
+    projectM::touchDestroy(x, y);
+}
+
+// Remove all waveforms
+void projectMSDL::touchDestroyAll() {
+    projectM::touchDestroyAll();
 }
 
 void projectMSDL::renderFrame() {
@@ -453,10 +587,16 @@ void projectMSDL::init(SDL_Window *window, SDL_GLContext *_glCtx, const bool _re
     glCtx = _glCtx;
     projectM_resetGL(width, height);
 
+#ifdef WASAPI_LOOPBACK
+    wasapi = true;
+#endif
+
     // are we rendering to a texture?
     renderToTexture = _renderToTexture;
     if (renderToTexture) {
-        programID = ShaderEngine::CompileShaderProgram(ShaderEngine::v2f_c4f_t2f_vert, ShaderEngine::v2f_c4f_t2f_frag, "v2f_c4f_t2f");
+        programID = ShaderEngine::CompileShaderProgram(
+            StaticGlShaders::Get()->GetV2fC4fT2fVertexShader(),
+            StaticGlShaders::Get()->GetV2fC4fT2fFragmentShader(), "v2f_c4f_t2f");
         textureID = projectM::initRenderToTexture();
 
         float points[16] = {
@@ -555,4 +695,7 @@ void projectMSDL::renderTexture() {
 void projectMSDL::presetSwitchedEvent(bool isHardCut, size_t index) const {
     std::string presetName = getPresetName(index);
     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Displaying preset: %s\n", presetName.c_str());
+
+    std::string newTitle = "projectM ➫ " + presetName;
+    SDL_SetWindowTitle(win, newTitle.c_str());
 }

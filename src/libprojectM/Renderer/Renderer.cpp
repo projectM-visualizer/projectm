@@ -4,6 +4,7 @@
 #include "Common.hpp"
 #include "KeyHandler.hpp"
 #include "TextureManager.hpp"
+#include "MilkdropWaveform.hpp"
 #include <iostream>
 #include <algorithm>
 #include <sys/stat.h>
@@ -16,8 +17,6 @@
 #include <chrono>
 #include <ctime>
 
-Pipeline* Renderer::currentPipe;
-
 using namespace std::chrono;
 
 class Preset;
@@ -26,13 +25,13 @@ class Preset;
 
 
 void Renderer::drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale,
-                        int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP)
+                        int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f, bool highlightable = false)
 {
-	drawText(this->title_font, string, x, y, scale, horizontalAlignment, verticalAlignment);
+	drawText(this->title_font, string, x, y, scale, horizontalAlignment, verticalAlignment, r, g, b, a, highlightable);
 }
 
 void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale,
-                        int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP)
+	int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f, bool highlightable = false)
 {
 	// Initialize glText
 	gltInit();
@@ -42,8 +41,8 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 	// Begin text drawing (this for instance calls glUseProgram)
 	gltBeginDraw();
 
-	// Draw any amount of text between begin and end
-	gltColor(1.0f, 1.0f, 1.0f, 1.0f);
+	// Draw text transparently first.
+	gltColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	gltSetText(text, string);
 	// Where horizontal is either:
@@ -55,7 +54,57 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 	// - GLT_TOP (default)
 	// - GLT_CENTER
 	// - GLT_BOTTOM
-	gltDrawText2DAligned(text, x, y, scale, GLT_LEFT, GLT_TOP);
+	gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
+	GLfloat textWidth = gltGetTextWidth(text, scale);
+	
+	float windowWidth = vw;
+	if (horizontalAlignment == GLT_LEFT) {
+		// if left aligned factor in X offset
+		windowWidth = vw - x;
+	}
+
+	// if our window is greater than the text width, there is no overflow so let's display it normally.
+	if (windowWidth > textWidth)
+	{
+		// redraw without transparency
+		if (textHighlightable(highlightable))
+		{ 
+			drawText(text, string, searchText().c_str(), x, y, scale, horizontalAlignment, verticalAlignment, r, g, b, a, highlightable);
+		} else {
+			gltColor(r, g, b, a);
+			gltSetText(text, string);
+			gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
+		}
+	} else {
+		// if the text is greater than the window width, we have a problem.
+		std::string substring(string);
+		while (textWidth > windowWidth) {
+			substring.pop_back();
+			string = substring.c_str();
+			gltSetText(text, string);
+
+			gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
+			textWidth = gltGetTextWidth(text, scale);
+		}
+		// if it's not multi-line then append a ...
+		if (substring.find("\n") == -1) {
+			substring.pop_back();
+			substring.pop_back();
+			substring.pop_back();
+			substring += "...";
+		}
+
+		if (textHighlightable(highlightable))
+		{
+			drawText(text, substring.c_str(), searchText().c_str(), x, y, scale, horizontalAlignment, verticalAlignment, r, g, b, a, highlightable);
+		} else {
+			string = substring.c_str();
+			// Redraw now that the text fits.
+			gltColor(r, g, b, a);
+			gltSetText(text, string);
+			gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
+		}
+	}
 
 	// Finish drawing text
 	gltEndDraw();
@@ -67,6 +116,47 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 	gltTerminate();
 }
 
+// draw text with search term a/k/a needle & highlight text
+void Renderer::drawText(GLTtext* text, const char* string, const char* needle, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f, bool highlightable = false) {
+	int offset = x;
+	std::string str_find = string;
+	std::string str_needle = needle;
+	for( size_t pos = 0; ; pos += str_find.length() ) {
+		// find search term
+		pos = caseInsensitiveSubstringFind(str_find, str_needle);
+
+		std::string needle_found = str_needle;
+		if (pos != std::string::npos) {
+			needle_found = str_find.substr(pos, str_needle.length());
+		}
+
+		// draw everything normal, up to search term.
+		gltColor(r, g, b, a);
+		gltSetText(text, str_find.substr(0,pos).c_str());
+		gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
+
+		// highlight search term
+		GLfloat textWidth = gltGetTextWidth(text, scale);
+		offset = offset + textWidth;
+		gltColor(1.0f, 0.0f, 1.0f, 1.0f);
+		gltSetText(text, needle_found.c_str());
+		gltDrawText2DAligned(text, offset, y, scale, horizontalAlignment, verticalAlignment);
+
+		// draw rest of name, normally
+		textWidth = gltGetTextWidth(text, scale);
+		offset = offset + textWidth;
+		gltColor(r, g, b, a);
+		gltSetText(text, str_find.substr(pos+needle_found.length(), str_find.length()).c_str());
+		gltDrawText2DAligned(text, offset, y, scale, horizontalAlignment, verticalAlignment);
+		break; // first search hit is useful enough.
+	}
+}
+
+bool Renderer::textHighlightable(bool highlightable) {
+	if (highlightable && showsearch && searchText().length() > 1)
+		return true;
+	return false;
+}
 
 #endif /** USE_TEXT_MENU */
 
@@ -76,21 +166,41 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 	title_fontURL(_titlefontURL), menu_fontURL(_menufontURL), presetURL(_presetURL)
 {
 	this->totalframes = 1;
-	this->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-	this->currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+	this->lastTimeFPS = nowMilliseconds();
+	this->currentTimeFPS = nowMilliseconds();
+	this->lastTimeToast = nowMilliseconds();
+	this->currentTimeToast = nowMilliseconds();
 	this->noSwitch = false;
 	this->showfps = false;
+	this->showtoast = false;
 	this->showtitle = false;
 	this->showpreset = false;
 	this->showhelp = false;
+	this->showsearch = false;
+	this->showmenu = false;
 	this->showstats = false;
 	this->studio = false;
+	this->m_activePresetID = 0;
 	this->realfps = 0;
 	/* Set up the v xoffset and vy offset to 0 which is normal Only used for VR */
 	this->vstartx = 0;
 	this->vstarty = 0;
 
 	this->drawtitle = 0;
+
+	// This is the default help menu for applications that have not defined any custom menu.
+	const char* defaultHelpMenu = "\n"
+		"F1: This help menu""\n"
+		"F3: Show preset name""\n"
+		"F5: Show FPS""\n"
+		"L: Lock/Unlock Preset""\n"
+		"R: Random preset""\n"
+		"N/P: [N]ext+ or [P]revious-reset""\n"
+		"M: Preset Menu (Arrow Up/Down & Page Up/Down to Navigate)""\n"
+		"Arrow Up/Down: Increase or Decrease Beat Sensitivity""\n"
+		"CTRL-F: Fullscreen";
+
+	this->setHelpText(defaultHelpMenu);
 
 	//this->title = "Unknown";
 
@@ -245,15 +355,12 @@ void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipel
 	*/
 	if (this->showfps)
 	{
-		this->currentTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
-		milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(this->currentTime - this->lastTime);
-		double diff = ms.count();
-		if (diff >= 250)
-		{
-			this->realfps = totalframes * (1000 / diff);
+		this->currentTimeFPS = nowMilliseconds();
+		if (timeCheck(this->currentTimeFPS, this->lastTimeFPS, (double)250)) {
+			this->realfps = totalframes * (1000 / 250);
 			setFPS(realfps);
 			totalframes = 0;
-			this->lastTime = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+			this->lastTimeFPS = nowMilliseconds();
 		}
 	}
 	glViewport(0, 0, texsizeX, texsizeY);
@@ -270,12 +377,31 @@ void Renderer::RenderItems(const Pipeline& pipeline, const PipelineContext& pipe
 	renderContext.textureManager = textureManager;
 	renderContext.beatDetect = beatDetect;
 
-	for (std::vector<RenderItem*>::const_iterator pos = pipeline.drawables.begin(); pos != pipeline.drawables.end(); ++
-	     pos)
+	for (std::vector<RenderItem*>::const_iterator pos = pipeline.drawables.begin(); pos != pipeline.drawables.end(); ++pos)
 	{
 		if (*pos != nullptr)
-		{
 			(*pos)->Draw(renderContext);
+	}
+	
+	// If we have touch waveforms, render them.
+	if (waveformList.size() >= 1) {
+		RenderTouch(pipeline,pipelineContext);
+	}
+}
+
+void Renderer::RenderTouch(const Pipeline& pipeline, const PipelineContext& pipelineContext)
+{
+	Pipeline pipelineTouch;
+	MilkdropWaveform wave;
+	for(std::size_t x = 0; x < waveformList.size(); x++){
+		pipelineTouch.drawables.push_back(&wave);
+		wave = waveformList[x];
+
+		// Render waveform
+		for (std::vector<RenderItem*>::const_iterator pos = pipelineTouch.drawables.begin(); pos != pipelineTouch.drawables.end(); ++pos)
+		{
+			if (*pos != nullptr)
+				(*pos)->Draw(renderContext);
 		}
 	}
 }
@@ -312,6 +438,7 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 		CompositeOutput(pipeline, pipelineContext);
 	}
 
+
 	// When console refreshes, there is a chance the preset has been changed by the user
 	refreshConsole();
 	// TODO:
@@ -323,10 +450,17 @@ void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineCo
 	if (this->showfps == true)
 		draw_fps();
 	// this->realfps
+	if (this->showsearch == true)
+		draw_search();
+	if (this->showmenu == true)
+		draw_menu();
 	if (this->showpreset == true)
 		draw_preset();
 	if (this->showstats == true)
 		draw_stats();
+	// We should always draw toasts last so they are on top of other text (lp/menu).
+	if (this->showtoast == true) 
+		draw_toast();
 }
 
 void Renderer::RenderFrame(const Pipeline& pipeline,
@@ -403,7 +537,11 @@ void Renderer::Interpolation(const Pipeline& pipeline, const PipelineContext& pi
 	else
 	{
 		mesh.Reset();
-		omptl::transform(mesh.p.begin(), mesh.p.end(), mesh.identity.begin(), mesh.p.begin(), &Renderer::PerPixel);
+		Pipeline *cp = currentPipe;
+		omptl::transform(mesh.p.begin(), mesh.p.end(), mesh.identity.begin(), mesh.p.begin(),
+			[cp](PixelPoint p, PerPixelContext &context) {
+				return cp->PerPixel(p, context);
+			});
 
 		for (int j = 0; j < mesh.height - 1; j++)
 		{
@@ -511,6 +649,22 @@ void Renderer::reset(int w, int h)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glClear(GL_COLOR_BUFFER_BIT);
+
+#ifdef USE_TEXT_MENU
+	// When the renderer resets, do a check to find out what the maximum number of lines we could display are.
+	int r_textMenuPageSize = 0;
+	int yOffset = textMenuYOffset;
+	while (true) { // infinite loop, only satisifed when we have found the max lines of text on the screen.
+		if (yOffset < vh - textMenuLineHeight) { // if yOffset could be displayed on the screen (vh), then we have room for the next line.
+			r_textMenuPageSize++;
+			yOffset = yOffset + textMenuLineHeight;
+		}
+		else { // if we reached the end of the screen, set textMenuPageSize and move on.
+			textMenuPageSize = r_textMenuPageSize;
+			break;
+		}
+	}
+#endif
 }
 
 GLuint Renderer::initRenderToTexture()
@@ -543,6 +697,152 @@ void Renderer::draw_title_to_texture()
 
 float title_y;
 
+bool Renderer::timeCheck(const milliseconds currentTime, const milliseconds lastTime, const double difference) {
+	milliseconds ms = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastTime);
+	double diff = ms.count();
+	if (diff >= difference)
+	{
+		return true;
+	} else {
+		return false;
+	}
+}
+
+// If we touched on the renderer where there is an existing waveform.
+bool Renderer::touchedWaveform(float x, float y, std::size_t i)
+{
+	if (waveformList[i].x > (x-0.05f) && waveformList[i].x < (x+0.05f) // if x +- 0.5f 
+		&& ((waveformList[i].y > (y-0.05f) && waveformList[i].y < (y+0.05f)) // and y +- 0.5f 
+		|| waveformList[i].mode == Line || waveformList[i].mode == DoubleLine || waveformList[i].mode == DerivativeLine ) // OR it's a line (and y doesn't matter)
+		)
+	{
+		return true;
+	}
+	return false;
+}
+
+// Render a waveform when a touch event is triggered.
+void Renderer::touch(float x, float y, int pressure, int type = 0)
+{
+
+	for (std::size_t i = 0; i < waveformList.size(); i++) {
+		if (touchedWaveform(x, y, i))
+		{
+			// if we touched an existing waveform with left click, drag it and don't continue with adding another.
+			touchDrag(x, y, pressure);
+			return;
+		}
+	}
+
+	touchx = x;
+	touchy = y;
+	touchp = pressure;
+
+	// Randomly select colours on touch
+	touchr = ((double)rand() / (RAND_MAX));
+	touchb = ((double)rand() / (RAND_MAX));
+	touchg = ((double)rand() / (RAND_MAX));
+	toucha = ((double)rand() / (RAND_MAX));
+
+	MilkdropWaveform wave;
+	if (type == 0) {
+		// If we touched randomly, then assign type to a random number between 0 and 8
+		wave.mode = static_cast<MilkdropWaveformMode>((rand() % last) + 1);
+	}
+	else {
+		wave.mode = static_cast<MilkdropWaveformMode>(type);
+	}
+
+	wave.additive = true;
+	wave.modOpacityEnd = 1.1;
+	wave.modOpacityStart = 0.0;
+	wave.maximizeColors = true;
+	wave.modulateAlphaByVolume = false;
+
+	wave.r = touchr;
+	wave.g = touchg;
+	wave.b = touchb;
+	wave.a = toucha;
+    wave.x = touchx;
+	wave.y = touchy;
+
+	// add new waveform to waveformTouchList
+	waveformList.push_back(wave);
+}
+
+// Move a waveform when dragging X, Y, and Pressure can change. We also extend the counters so it will stay on screen for as long as you click and drag.
+void Renderer::touchDrag(float x, float y, int pressure)
+{
+	// if we left clicked & held in the approximate position of a waveform, snap to it and adjust x / y to simulate dragging.
+	// For lines we don't worry about the x axis.
+	for (std::size_t i = 0; i < waveformList.size(); i++) {
+		if (touchedWaveform(x, y, i))
+		{
+			waveformList[i].x = x;
+			waveformList[i].y = y;
+		}
+	}
+	touchp = pressure;
+}
+
+// Remove waveform at X Y
+void Renderer::touchDestroy(float x, float y)
+{
+	// if we right clicked approximately on the position of the waveform, then remove it from the waveform list.
+	// For lines we don't worry about the x axis.
+	for (std::size_t i = 0; i < waveformList.size(); i++) {
+		if (touchedWaveform(x, y, i))
+		{
+			waveformList.erase(waveformList.begin() + i);
+		}
+	}
+}
+
+// Remove all waveforms
+void Renderer::touchDestroyAll()
+{
+	waveformList.clear();
+}
+
+// turn search menu on / off
+void Renderer::toggleSearchText() {
+	this->showsearch = !this->showsearch;
+	if (this->showsearch)
+	{
+		this->showfps = false;
+		this->showtitle = false;
+	}
+}
+
+// search based on new key input
+void Renderer::setSearchText(const std::string& theValue)
+{
+	m_searchText = m_searchText + theValue;
+}
+
+// reset search text backspace (reset)
+void Renderer::resetSearchText()
+{
+	m_searchText = "";
+}
+
+// search text backspace (delete a key)
+void Renderer::deleteSearchText()
+{
+	if (m_searchText.length() >= 1) {
+		m_searchText = m_searchText.substr(0, m_searchText.size() - 1);
+	}
+}
+
+void Renderer::setToastMessage(const std::string& theValue)
+{
+	// Initialize counters
+	lastTimeToast= nowMilliseconds();
+	currentTimeToast = nowMilliseconds();
+	m_toastMessage = theValue;
+	showtoast = true;
+}
+
 // TODO:
 void Renderer::draw_title_to_screen(bool flip)
 {
@@ -553,11 +853,45 @@ void Renderer::draw_title_to_screen(bool flip)
 #endif /** USE_TEXT_MENU */
 }
 
+// render search text menu
+void Renderer::draw_search()
+{
+#ifdef USE_TEXT_MENU
+	std::string search = "Search: ";
+	search = search + searchText();
+
+	drawText(search.c_str(), 30, 20, 2.5);
+#endif /** USE_TEXT_MENU */
+}
+
 void Renderer::draw_title()
 {
 #ifdef USE_TEXT_MENU
 	// TODO: investigate possible banner text for GUI
 	// drawText(title_font, this->title.c_str(), 10, 20, 2.5);
+#endif /** USE_TEXT_MENU */
+}
+
+void Renderer::draw_menu()
+{
+#ifdef USE_TEXT_MENU
+	int menu_xOffset = 30; // x axis static point.
+	int menu_yOffset = 60; // y axis start point.
+	float windowHeight = vh;
+	float alpha = 1.0;
+	if (this->showsearch) // if search input is up, slightly dim preset menu
+		alpha = 0.82f;
+	for (auto& it : m_presetList) { // loop over preset buffer
+		if (menu_yOffset  < windowHeight - textMenuLineHeight) { // if we are not at the bottom of the screen, display preset name.
+			if (it.id == m_activePresetID) { // if this is the active preset, add some color.
+				drawText(it.name.c_str(), menu_xOffset, menu_yOffset , 1.5, GLT_LEFT, 0, 1.0, 0.1, 0.1, 1.0, true);
+			}
+			else {
+				drawText(it.name.c_str(), menu_xOffset, menu_yOffset , 1.5, GLT_LEFT, 0, 1.0, 1.0, 1.0, alpha, true);
+			}
+		}
+		menu_yOffset = menu_yOffset + textMenuLineHeight; // increase line y offset so we can track if we reached the bottom of the screen.
+	}
 #endif /** USE_TEXT_MENU */
 }
 
@@ -572,35 +906,45 @@ void Renderer::draw_help()
 {
 #ifdef USE_TEXT_MENU
 	// TODO: match winamp/milkdrop bindings
-	drawText("\n"
-	         "F1: This help menu""\n"
-	         "F3: Show preset name""\n"
-		     "F5: Show FPS""\n"
-	         "L: Lock/Unlock Preset""\n"
-	         "R: Random preset""\n"
-	         "N: Next preset""\n"
-	         "P: Previous preset""\n"
-	         "UP: Increase Beat Sensitivity""\n"
-	         "DOWN: Decrease Beat Sensitivity""\n"
-	         "CTRL-F: Fullscreen", 30, 20, 2.5);
+	drawText(this->helpText().c_str(), 30, 20, 2.5);
 
 #endif /** USE_TEXT_MENU */
+}
+
+// fake rounding - substr is good enough.
+std::string Renderer::float_stats(float stat)
+{
+    std::string num_text = std::to_string(stat);
+    std::string rounded = num_text.substr(0, num_text.find(".")+4);
+	return rounded;
 }
 
 // TODO
 void Renderer::draw_stats()
 {
 #ifdef USE_TEXT_MENU
+	std::string stats = "\n";
+	std::string warpShader = (!currentPipe->warpShader.programSource.empty()) ? "ON" : "OFF";
+	std::string compShader = (!currentPipe->compositeShader.programSource.empty()) ? "ON" : "OFF";
 
-	//sprintf(buffer, "      viewport: +%d,%d %d x %d", vstartx, vstarty, vw, vh);
-	//sprintf(buffer, "          mesh: %d x %d", mesh.width, mesh.height);
-	//sprintf(buffer, "       texsize: %d", renderTarget->texsize);
-	//other_font->Render((renderTarget->useFBO ? "           FBO: on" : "           FBO: off"));
-	//sprintf(buffer, "      textures: %.1fkB", textureManager->getTextureMemorySize() / 1000.0f);
-	//sprintf(buffer, "shader profile: %s", shaderEngine.profileName.c_str());
-	//sprintf(buffer, "   warp shader: %s", currentPipe->warpShader.enabled ? "on" : "off");
-	//sprintf(buffer, "   comp shader: %s", currentPipe->compositeShader.enabled ? "on" : "off");
+	stats += "Render:""\n";
+	stats += "Resolution: " + std::to_string(vw) + "x" + std::to_string(vh) + "\n";
+	stats += "Mesh X: " + std::to_string(mesh.width) + "\n";
+	stats += "Mesh Y: " + std::to_string(mesh.height) + "\n";
 
+	stats += "\n";
+	stats += "Beat Detect:""\n";
+	stats += "Sensitivity: " + float_stats(beatDetect->beatSensitivity) + "\n";
+	stats += "Bass: " + float_stats(beatDetect->bass) + "\n";
+	stats += "Mid Range: " + float_stats(beatDetect->mid) + "\n";
+	stats += "Treble: " + float_stats(beatDetect->treb) + "\n";
+	stats += "Volume: " + float_stats(beatDetect->vol) + "\n";
+
+	stats += "\n";
+	stats += "Preset:""\n";
+	stats += "Warp Shader: " + warpShader + "\n";
+	stats += "Composite Shader: " + compShader + "\n";
+	drawText(stats.c_str(), 30, 20, 2.5);
 #endif /** USE_TEXT_MENU */
 }
 
@@ -610,6 +954,20 @@ void Renderer::draw_fps()
 #ifdef USE_TEXT_MENU
 	drawText(this->fps().c_str(), 30, 20, 2.5);
 #endif /** USE_TEXT_MENU */
+}
+
+void Renderer::draw_toast()
+{
+#ifdef USE_TEXT_MENU
+	drawText(this->toastMessage().c_str(), (vw/2), (vh/2), 2.5, GLT_CENTER, GLT_CENTER);
+#endif /** USE_TEXT_MENU */
+
+	this->currentTimeToast = nowMilliseconds();
+	if (timeCheck(this->currentTimeToast,this->lastTimeToast,(double)(TOAST_TIME*1000))) {
+		this->currentTimeToast = nowMilliseconds();
+		this->lastTimeToast = nowMilliseconds();
+		this->showtoast = false;
+	}
 }
 
 void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& pipelineContext)
@@ -640,9 +998,8 @@ void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& 
 
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	for (std::vector<RenderItem*>::const_iterator pos = pipeline.compositeDrawables.begin(); pos
-	     != pipeline.compositeDrawables.end(); ++pos)
-		(*pos)->Draw(renderContext);
+	for (auto drawable : pipeline.compositeDrawables)
+		drawable->Draw(renderContext);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

@@ -1,10 +1,13 @@
 build_logs/
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
 xcuserdata
 src/libprojectM/config.inp
 src/libprojectM/config.inp.b
 src/libprojectM/config.inp.in
 src/projectM-emscripten/build/presets
-src/libprojectM/libprojectM.xcodeproj/xcshareddata
 presets/custom
 project.xcworkspace
 *.o
@@ -45,3 +48,7 @@ m4/lt~obsolete.m4
 _sync.bat
 _sync.sh
 to_sync/
+.DS_Store
+src/projectM-sdl/build/
+src/libprojectM/build/
+*.pkg
