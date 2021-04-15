@@ -7,11 +7,33 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
+set(CMAKE_POSITION_INDEPENDENT_CODE YES)
+
+# The API (SO) and detailed library versions for the shared library.
+set(PROJECTM_SO_VERSION "3")
+set(PROJECTM_LIB_VERSION "3.1.1")
 
 project(projectm
         LANGUAGES C CXX
         VERSION 1.1.0
         )
+
+if(NOT MSVC)
+    include(EnableCFlagsIfSupported)
+    enable_cflags_if_supported(
+            -Wall
+            -Wchar-subscripts
+            -Wformat-security
+            -Wpointer-arith
+            -Wshadow
+            -Wsign-compare
+            -Wtype-limits
+    )
+endif()
+
+set(PROJECTM_DATADIR_PATH "${CMAKE_INSTALL_PREFIX}/share/projectM" CACHE STRING "Default (absolute) path to the projectM data files (presets etc.)")
+set(PROJECTM_LIB_DIR "${CMAKE_INSTALL_PREFIX}/lib" CACHE STRING "Library installation directory, relative to the install prefix.")
+set(PROJECTM_INCLUDE_DIR "${CMAKE_INSTALL_PREFIX}/include" CACHE STRING "Header installation directory, relative to the install prefix.")
 
 # Feature options, including dependencies.
 option(ENABLE_EMSCRIPTEN "Build for web with emscripten" OFF)
@@ -27,9 +49,9 @@ option(USE_SYSTEM_GLM OFF "Use system/external GLM library instead of the bundle
 
 if(NOT USE_SYSTEM_GLM)
     # Pre-instantiate some templates for commonly used specializations.
-    set(GLM_STATIC_LIBRARY_ENABLE ON)
-    add_subdirectory(vendor/glm)
-    add_library(GLM::GLM ALIAS glm_static)
+    add_library(glm_headers INTERFACE)
+    target_include_directories(glm_headers INTERFACE "${CMAKE_SOURCE_DIR}/vendor")
+    add_library(GLM::GLM ALIAS glm_headers)
     message(STATUS "Using bundled GLM library")
 else()
     find_package(GLM REQUIRED)
@@ -59,25 +81,51 @@ endif()
 
 if(ENABLE_LLVM)
     find_package(LLVM REQUIRED)
+    set(HAVE_LLVM TRUE)
 endif()
 
 if(ENABLE_PULSEAUDIO)
     find_package(Pulseaudio REQUIRED)
+    set(HAVE_LLVM TRUE)
 endif()
 
 if(ENABLE_JACK)
     find_package(JACK REQUIRED)
 endif()
 
-message(STATUS "projectM build configuration:")
-message(STATUS "    ENABLE_QT: ${ENABLE_QT}")
-message(STATUS "    ENABLE_SDL: ${ENABLE_SDL}")
-message(STATUS "    ENABLE_GLES: ${ENABLE_GLES}")
-message(STATUS "    ENABLE_THREADING: ${ENABLE_THREADING}")
-message(STATUS "    ENABLE_PULSEAUDIO: ${ENABLE_PULSEAUDIO}")
-message(STATUS "    ENABLE_JACK: ${ENABLE_JACK}")
-message(STATUS "    ENABLE_LLVM: ${ENABLE_LLVM}")
-message(STATUS "    ENABLE_EMSCRIPTEN: ${ENABLE_EMSCRIPTEN}")
-message(STATUS "    USE_SYSTEM_GLM: ${USE_SYSTEM_GLM}")
+# Create global configuration header
+configure_file(config.h.in "${CMAKE_BINARY_DIR}/include/config.h")
+include_directories("${CMAKE_BINARY_DIR}/include")
+add_compile_definitions(HAVE_CONFIG_H)
 
 add_subdirectory(src)
+
+message(STATUS "")
+message(STATUS "projectM v${PROJECT_VERSION}")
+message(STATUS "    =====")
+message(STATUS "")
+message(STATUS "    prefix:                 ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "    libdir:                 ${PROJECTM_LIB_DIR}")
+message(STATUS "    includeidr:             ${PROJECTM_INCLUDE_DIR}")
+message(STATUS "")
+message(STATUS "    compiler:               ${CMAKE_CXX_COMPILER}")
+message(STATUS "    cflags:                 ${CMAKE_C_FLAGS}")
+message(STATUS "    cxxflags:               ${CMAKE_CXX_FLAGS}")
+message(STATUS "    ldflags:                ${CMAKE_SHARED_LINKER_FLAGS}")
+message(STATUS "")
+message(STATUS "    DATADIR_PATH:           ${PROJECTM_DATADIR_PATH}")
+message(STATUS "    - - -")
+message(STATUS "")
+message(STATUS "    Applications:")
+message(STATUS "    =====")
+message(STATUS "")
+message(STATUS "    libprojectM:            YES")
+message(STATUS "    Threading:              ${ENABLE_THREADING}")
+message(STATUS "    SDL:                    ${ENABLE_SDL}")
+message(STATUS "    Qt:                     ${ENABLE_QT}")
+message(STATUS "    Pulseaudio:             ${ENABLE_PULSEAUDIO}")
+message(STATUS "    JACK:                   ${ENABLE_JACK}")
+message(STATUS "    OpenGLES:               ${ENABLE_GLES}")
+message(STATUS "    Emscripten:             ${ENABLE_EMSCRIPTEN}")
+message(STATUS "    LLVM JIT:               ${ENABLE_LLVM}")
+message(STATUS "    USE_SYSTEM_GLM:         ${USE_SYSTEM_GLM}")

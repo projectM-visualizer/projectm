@@ -8,7 +8,7 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GLM DEFAULT_MSG GLM_INCLUDE_DIR)
 
 if(GLM_FOUND AND NOT TARGET GLM::GLM)
-    add_library(GLM::GLM UNKNOWN IMPORTED)
+    add_library(GLM::GLM INTERFACE)
 
     target_include_directories(GLM::GLM
             INTERFACE

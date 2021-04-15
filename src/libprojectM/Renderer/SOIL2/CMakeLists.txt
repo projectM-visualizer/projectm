@@ -20,3 +20,14 @@ add_library(SOIL2 STATIC
         stbi_pvr.h
         stbi_pvr_c.h
         )
+
+target_include_directories(SOIL2
+        PUBLIC
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+        )
+
+target_link_libraries(SOIL2
+        PUBLIC
+        OpenGL::OpenGL
+        OpenGL::GLX
+        )

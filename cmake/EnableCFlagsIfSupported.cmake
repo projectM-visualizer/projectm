@@ -1,0 +1,21 @@
+include(CheckCompilerFlag)
+include(CheckLinkerFlag)
+
+macro(enable_cflags_if_supported)
+    foreach(flag ${ARGN})
+        check_compiler_flag(CXX "${flag}" CXXFLAG_${flag}_SUPPORTED)
+        if(CXXFLAG_${flag}_supported)
+            add_compile_options("${flag}")
+        endif()
+    endforeach()
+endmacro()
+
+
+macro(enable_target_linker_flags_if_supported target access)
+    foreach(flag ${ARGN})
+        check_linker_flag(CXX "LINKER:${flag}" LDFLAG_${flag}_SUPPORTED)
+        if(LDFLAG_${flag}_SUPPORTED)
+            target_link_options(${target} ${access} LINKER:${flag})
+        endif()
+    endforeach()
+endmacro()
