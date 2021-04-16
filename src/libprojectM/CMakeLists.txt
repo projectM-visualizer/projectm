@@ -114,6 +114,12 @@ install(FILES
         COMPONENT Devel
         )
 
+# If the path is not absolute, need to add the prefix path (and hope the result is absolute).
+if(NOT IS_ABSOLUTE PROJECTM_DATADIR_PATH)
+    set(PROJECTM_DATADIR_PATH_ABSOLUTE "${CMAKE_INSTALL_PREFIX}/${PROJECTM_DATADIR_PATH}")
+else()
+    set(PROJECTM_DATADIR_PATH_ABSOLUTE "${PROJECTM_DATADIR_PATH}")
+endif()
 configure_file(config.inp.cmake.in "${CMAKE_BINARY_DIR}/config.inp" @ONLY)
 
 install(FILES "${CMAKE_BINARY_DIR}/config.inp"

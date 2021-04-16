@@ -17,6 +17,6 @@ Easter Egg Parameter = 1
 Hard Cut Sensitivity = 10       # Lower to make hard cuts more frequent
 Aspect Correction = true	# Custom Shape Aspect Correction
 
-Preset Path = @PROJECTM_DATADIR_PATH@/presets # preset location
+Preset Path = @PROJECTM_DATADIR_PATH_ABSOLUTE@/presets # preset location
 Title Font = Vera.ttf
 Menu Font = VeraMono.ttf
