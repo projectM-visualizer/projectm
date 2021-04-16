@@ -9,6 +9,11 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_POSITION_INDEPENDENT_CODE YES)
 
+option(ENABLE_DEBUG_POSTFIX "Add \"d\" after library names for debug builds" ON)
+if(ENABLE_DEBUG_POSTFIX)
+    set(CMAKE_DEBUG_POSTFIX d)
+endif()
+
 # The API (SO) and detailed library versions for the shared library.
 set(PROJECTM_SO_VERSION "3")
 set(PROJECTM_LIB_VERSION "3.1.1")
