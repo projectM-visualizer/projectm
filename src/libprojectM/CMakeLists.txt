@@ -1,7 +1,7 @@
 add_compile_definitions(
         DATADIR_PATH="${PROJECTM_DATADIR_PATH}"
         GL_SILENCE_DEPRECATION
-        )
+)
 
 add_subdirectory(MilkdropPresetFactory)
 add_subdirectory(NativePresetFactory)
@@ -95,3 +95,33 @@ target_link_libraries(projectM_shared
         )
 
 enable_target_linker_flags_if_supported(projectM_shared PRIVATE --no-undefined)
+
+install(TARGETS projectM_static projectM_shared
+        LIBRARY DESTINATION "${PROJECTM_LIB_DIR}"
+        RUNTIME DESTINATION "${PROJECTM_LIB_DIR}"
+        ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}"
+        COMPONENT Runtime
+        )
+
+install(FILES
+        Common.hpp
+        PCM.hpp
+        dlldefs.h
+        event.h
+        fatal.h
+        projectM.hpp
+        DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM"
+        COMPONENT Devel
+        )
+
+configure_file(config.inp.cmake.in "${CMAKE_BINARY_DIR}/config.inp" @ONLY)
+
+install(FILES "${CMAKE_BINARY_DIR}/config.inp"
+        DESTINATION "${PROJECTM_DATADIR_PATH}/"
+        COMPONENT Runtime
+        )
+
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/fonts"
+        DESTINATION "${PROJECTM_DATADIR_PATH}"
+        COMPONENT Runtime
+        )
