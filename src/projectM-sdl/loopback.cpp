@@ -6,6 +6,13 @@
 // ref https://blogs.msdn.microsoft.com/matthew_van_eerde/2008/12/16/sample-wasapi-loopback-capture-record-what-you-hear/
 #ifdef WASAPI_LOOPBACK
 
+IAudioCaptureClient *pAudioCaptureClient;
+UINT32 foo = 0;
+PUINT32 pnFrames = &foo;
+UINT32 nBlockAlign = 0;
+UINT32 nPasses = 0;
+bool bFirstPacket = true;
+
 HRESULT get_default_device(IMMDevice **ppMMDevice) {
     HRESULT hr = S_OK;
     IMMDeviceEnumerator *pMMDeviceEnumerator;
@@ -18,21 +25,22 @@ HRESULT get_default_device(IMMDevice **ppMMDevice) {
                           );
     if (FAILED(hr)) {
         ERR(L"CoCreateInstance(IMMDeviceEnumerator) failed: hr = 0x%08x", hr);
-        return hr;
+        return false;
     }
     
     // get the default render endpoint
     hr = pMMDeviceEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, ppMMDevice);
     if (FAILED(hr)) {
         ERR(L"IMMDeviceEnumerator::GetDefaultAudioEndpoint failed: hr = 0x%08x", hr);
-        return hr;
+        return false;
     }
     
     return S_OK;
 }
 #endif /** WASAPI_LOOPBACK */
 
-void initLoopback() {
+bool initLoopback()
+{
 #ifdef WASAPI_LOOPBACK
     HRESULT hr;
     
@@ -47,13 +55,11 @@ void initLoopback() {
     if (NULL == pMMDevice) {
         hr = get_default_device(&pMMDevice);
         if (FAILED(hr)) {
-            return hr;
+            return false;
         }
     }
     
     bool bInt16 = false;
-    UINT32 foo = 0;
-    PUINT32 pnFrames = &foo;
     
     // activate an IAudioClient
     IAudioClient *pAudioClient;
@@ -64,7 +70,7 @@ void initLoopback() {
                              );
     if (FAILED(hr)) {
         ERR(L"IMMDevice::Activate(IAudioClient) failed: hr = 0x%08x", hr);
-        return hr;
+        return false;
     }
     
     // get the default device periodicity
@@ -72,7 +78,7 @@ void initLoopback() {
     hr = pAudioClient->GetDevicePeriod(&hnsDefaultDevicePeriod, NULL);
     if (FAILED(hr)) {
         ERR(L"IAudioClient::GetDevicePeriod failed: hr = 0x%08x", hr);
-        return hr;
+        return false;
     }
     
     // get the default device format
@@ -80,7 +86,7 @@ void initLoopback() {
     hr = pAudioClient->GetMixFormat(&pwfx);
     if (FAILED(hr)) {
         ERR(L"IAudioClient::GetMixFormat failed: hr = 0x%08x", hr);
-        return hr;
+        return false;
     }
     
     if (bInt16) {
@@ -119,7 +125,7 @@ void initLoopback() {
         }
     }
     
-    UINT32 nBlockAlign = pwfx->nBlockAlign;
+    nBlockAlign = pwfx->nBlockAlign;
     *pnFrames = 0;
     
     // call IAudioClient::Initialize
@@ -134,31 +140,30 @@ void initLoopback() {
                                   );
     if (FAILED(hr)) {
         ERR(L"pAudioClient->Initialize error");
-        return hr;
+        return false;
     }
     
     // activate an IAudioCaptureClient
-    IAudioCaptureClient *pAudioCaptureClient;
     hr = pAudioClient->GetService(
                                   __uuidof(IAudioCaptureClient),
                                   (void**)&pAudioCaptureClient
                                   );
     if (FAILED(hr)) {
         ERR(L"pAudioClient->GetService error");
-        return hr;
+        return false;
     }
     
     // call IAudioClient::Start
     hr = pAudioClient->Start();
     if (FAILED(hr)) {
         ERR(L"pAudioClient->Start error");
-        return hr;
+        return false;
     }
     
     bool bDone = false;
-    bool bFirstPacket = true;
-    UINT32 nPasses = 0;
 #endif /** WASAPI_LOOPBACK */
+
+    return true;
 }
 
 void configureLoopback(projectMSDL *app) {
@@ -170,8 +175,10 @@ void configureLoopback(projectMSDL *app) {
 #endif
 }
 
-void processLoopbackFrame(projectMSDL *app) {
+bool processLoopbackFrame(projectMSDL *app) {
 #ifdef WASAPI_LOOPBACK
+	HRESULT hr;
+
     if (app->wasapi) {
         // drain data while it is available
         nPasses++;
@@ -194,7 +201,7 @@ void processLoopbackFrame(projectMSDL *app) {
                                                 NULL
                                                 );
             if (FAILED(hr)) {
-                return hr;
+                return false;
             }
             
             LONG lBytesToWrite = nNumFramesToRead * nBlockAlign;
@@ -206,14 +213,14 @@ void processLoopbackFrame(projectMSDL *app) {
             
             hr = pAudioCaptureClient->ReleaseBuffer(nNumFramesToRead);
             if (FAILED(hr)) {
-                return hr;
+                return false;
             }
             
             bFirstPacket = false;
         }
         
         if (FAILED(hr)) {
-            return hr;
+            return false;
         }
     }
 #endif /** WASAPI_LOOPBACK */
