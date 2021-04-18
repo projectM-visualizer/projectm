@@ -1,5 +1,8 @@
 #include "setup.hpp"
 
+#include <chrono>
+#include <cmath>
+
 #if OGL_DEBUG
 void debugGL(GLenum source,
              GLenum type,
@@ -142,6 +145,12 @@ void testAllPresets(projectMSDL *app) {
 projectMSDL *setupSDLApp() {
     projectMSDL *app;
     seedRand();
+        
+    if (!initLoopback())
+		{
+			SDL_Log("Failed to initialize audio loopback devide.");
+			exit(1);
+		}
 
 #if UNLOCK_FPS
     setenv("vblank_mode", "0", 1);
@@ -304,18 +313,21 @@ projectMSDL *setupSDLApp() {
 }
 
 int64_t startUnlockedFPSCounter() {
-    struct timespec now;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &now);
-    return ( ((int64_t)now.tv_sec * 1000L) + (now.tv_nsec / 1000000L) );
+	using namespace std::chrono;
+	auto currentTime = steady_clock::now();
+	auto currentTimeMs = time_point_cast<milliseconds>(currentTime);
+	auto elapsedMs = currentTime.time_since_epoch();
+
+	return elapsedMs.count();
 }
 
 void advanceUnlockedFPSCounterFrame(int64_t startFrame) {
     static int32_t frameCount = 0;
-    struct timespec now;
 
     frameCount++;
-    clock_gettime(CLOCK_MONOTONIC_RAW, &now);
-    if (( ((int64_t)now.tv_sec * 1000L) + (now.tv_nsec / 1000000L) ) - startFrame > 5000) {
+	auto currentElapsedMs = startUnlockedFPSCounter();
+	if (currentElapsedMs - startFrame > 5000)
+	{
         printf("Frames[%d]\n", frameCount);
         exit(0);
     }
