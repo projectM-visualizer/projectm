@@ -64,18 +64,23 @@ add_library(projectM_static STATIC
 
 set_target_properties(projectM_static PROPERTIES
         OUTPUT_NAME projectM
+        EXPORT_NAME static
         )
 
 target_include_directories(projectM_static
         PUBLIC
-        "${CMAKE_CURRENT_SOURCE_DIR}"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/MilkdropPresetFactory>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/NativePresetFactory>"
+        "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
         )
 
 target_link_libraries(projectM_static
         PUBLIC
-        MilkdropPresetFactory
-        NativePresetFactory
-        Renderer
+        OpenGL::OpenGL
+        OpenGL::GLX
         )
 
 if(ENABLE_THREADING)
@@ -86,6 +91,11 @@ if(ENABLE_THREADING)
 endif()
 
 add_library(projectM_shared SHARED
+        $<TARGET_OBJECTS:MilkdropPresetFactory>
+        $<TARGET_OBJECTS:NativePresetFactory>
+        $<TARGET_OBJECTS:Renderer>
+        $<TARGET_OBJECTS:hlslparser>
+        $<TARGET_OBJECTS:SOIL2>
         $<TARGET_OBJECTS:projectM_static>
         )
 
@@ -93,11 +103,23 @@ set_target_properties(projectM_shared PROPERTIES
         OUTPUT_NAME projectM
         VERSION "${PROJECTM_LIB_VERSION}"
         SOVERSION "${PROJECTM_SO_VERSION}"
+        EXPORT_NAME shared
+        )
+
+target_include_directories(projectM_shared
+        PUBLIC
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/MilkdropPresetFactory>"
+        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/NativePresetFactory>"
+        "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
         )
 
 target_link_libraries(projectM_shared
         PUBLIC
-        projectM_static
+        OpenGL::OpenGL
+        OpenGL::GLX
         ${CMAKE_DL_LIBS}
         )
 
@@ -111,6 +133,7 @@ endif()
 enable_target_linker_flags_if_supported(projectM_shared PRIVATE --no-undefined)
 
 install(TARGETS projectM_static projectM_shared
+        EXPORT libprojectMTargets
         LIBRARY DESTINATION "${PROJECTM_LIB_DIR}"
         RUNTIME DESTINATION "${PROJECTM_LIB_DIR}"
         ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}"
@@ -128,6 +151,59 @@ install(FILES
         COMPONENT Devel
         )
 
+
+
+# CMake target exports
+
+# For use from a local projectM build tree (without installing)
+export(TARGETS
+        MilkdropPresetFactory
+        NativePresetFactory
+        Renderer
+        hlslparser
+        SOIL2
+        projectM_static
+        projectM_shared
+        NAMESPACE libprojectM::
+        FILE projectM-exports.cmake
+        )
+
+export(PACKAGE libprojectM)
+
+
+
+# For use from an installed package (system install, vcpkg, homebrew etc.)
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/libprojectMConfigVersion.cmake"
+        VERSION ${PROJECT_VERSION}
+        COMPATIBILITY AnyNewerVersion
+)
+
+configure_package_config_file(libprojectMConfig.cmake.in
+        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/libprojectMConfig.cmake"
+        INSTALL_DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectM"
+        PATH_VARS PROJECTM_BIN_DIR PROJECTM_INCLUDE_DIR PROJECTM_DATADIR_PATH
+        )
+
+install(FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/libprojectMConfigVersion.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/libprojectMConfig.cmake"
+        DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectM"
+        COMPONENT Devel
+        )
+
+install(EXPORT libprojectMTargets
+        FILE libprojectMTargets.cmake
+        NAMESPACE libprojectM::
+        DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectM"
+        COMPONENT Devel
+        )
+
+
+
+# pkgconfig export
 macro(set_pkg_config_path varname path)
     if(IS_ABSOLUTE "${path}")
         set(${varname} "${path}")
@@ -147,6 +223,8 @@ install(FILES "${CMAKE_BINARY_DIR}/libprojectM.pc"
         COMPONENT Devel
         )
 
+
+
 # If the path is not absolute, need to add the prefix path (and hope the result is absolute).
 if(NOT IS_ABSOLUTE PROJECTM_DATADIR_PATH)
     set(PROJECTM_DATADIR_PATH_ABSOLUTE "${CMAKE_INSTALL_PREFIX}/${PROJECTM_DATADIR_PATH}")
@@ -164,3 +242,4 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/fonts"
         DESTINATION "${PROJECTM_DATADIR_PATH}"
         COMPONENT Runtime
         )
+

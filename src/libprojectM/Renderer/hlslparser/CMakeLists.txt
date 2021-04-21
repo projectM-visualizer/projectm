@@ -1,4 +1,4 @@
-add_library(hlslparser STATIC
+add_library(hlslparser OBJECT
         src/CodeWriter.cpp
         src/CodeWriter.h
         src/Engine.cpp

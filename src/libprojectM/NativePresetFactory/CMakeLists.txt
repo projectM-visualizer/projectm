@@ -1,4 +1,4 @@
-add_library(NativePresetFactory STATIC
+add_library(NativePresetFactory OBJECT
         MilkdropCompatability.hpp
         NativePreset.hpp
         NativePresetFactory.cpp

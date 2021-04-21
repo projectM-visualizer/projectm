@@ -1,4 +1,4 @@
-add_library(MilkdropPresetFactory STATIC
+add_library(MilkdropPresetFactory OBJECT
         BuiltinFuncs.cpp
         BuiltinFuncs.hpp
         BuiltinParams.cpp

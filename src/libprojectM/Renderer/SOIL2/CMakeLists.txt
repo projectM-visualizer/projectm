@@ -1,4 +1,4 @@
-add_library(SOIL2 STATIC
+add_library(SOIL2 OBJECT
         etc1_utils.c
         etc1_utils.h
         image_DXT.c
