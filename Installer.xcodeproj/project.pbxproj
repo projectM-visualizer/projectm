@@ -207,7 +207,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -euxo pipefail\n\necho BUILT_PRODUCTS_DIR $BUILT_PRODUCTS_DIR\nls \"$BUILT_PRODUCTS_DIR\"\n\nmkdir -p \"$TEMP_DIR\"\n\nSDL_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-SDL.pkg\"\nMUSIC_PLUGIN_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\"\n\n#productbuild --timestamp --sign '5926VBQM6Y' --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\nproductbuild --timestamp --sign '5926VBQM6Y' --distribution mac/Distribution.xml --package-path \"$BUILT_PRODUCTS_DIR\" \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n#productbuild --package \"$SDL_PKG\" --package \"$MUSIC_PLUGIN_PKG\" \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\" \"$SRCROOT/\"\n";
+			shellScript = "set -euxo pipefail\n\necho BUILT_PRODUCTS_DIR $BUILT_PRODUCTS_DIR\nls \"$BUILT_PRODUCTS_DIR\"\n\nmkdir -p \"$TEMP_DIR\"\n\nSDL_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-SDL.pkg\"\nMUSIC_PLUGIN_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\"\n\n\n#productbuild --timestamp --sign '5926VBQM6Y' --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\nproductbuild --timestamp --sign '5926VBQM6Y' --distribution mac/Distribution.xml --package-path \"$BUILT_PRODUCTS_DIR\" \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n#productbuild --package \"$SDL_PKG\" --package \"$MUSIC_PLUGIN_PKG\" \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\" \"$SRCROOT/\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
