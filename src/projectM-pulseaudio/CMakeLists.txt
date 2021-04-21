@@ -40,3 +40,19 @@ install(TARGETS projectM-pulseaudio
         RUNTIME DESTINATION "${PROJECTM_BIN_DIR}"
         COMPONENT Applications
         )
+
+install(FILES "${CMAKE_SOURCE_DIR}/src/projectM-qt/images/icons/prjm16-transparent.svg"
+        DESTINATION "share/icons/hicolor/scalable/apps"
+        COMPONENT Applications
+        RENAME projectM.svg
+        )
+
+install(FILES projectM-pulseaudio.desktop
+        DESTINATION "share/applications"
+        COMPONENT Applications
+        )
+
+install(FILES projectM-pulseaudio.1
+        DESTINATION "share/man/man1"
+        COMPONENT Applications
+        )

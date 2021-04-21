@@ -78,6 +78,13 @@ target_link_libraries(projectM_static
         Renderer
         )
 
+if(ENABLE_THREADING)
+    target_link_libraries(projectM_static
+            PUBLIC
+            Threads::Threads
+            )
+endif()
+
 add_library(projectM_shared SHARED
         $<TARGET_OBJECTS:projectM_static>
         )
@@ -93,6 +100,13 @@ target_link_libraries(projectM_shared
         projectM_static
         ${CMAKE_DL_LIBS}
         )
+
+if(ENABLE_THREADING)
+    target_link_libraries(projectM_shared
+            PUBLIC
+            Threads::Threads
+            )
+endif()
 
 enable_target_linker_flags_if_supported(projectM_shared PRIVATE --no-undefined)
 
@@ -114,14 +128,33 @@ install(FILES
         COMPONENT Devel
         )
 
+macro(set_pkg_config_path varname path)
+    if(IS_ABSOLUTE "${path}")
+        set(${varname} "${path}")
+    else()
+        set(${varname} "\${prefix}/${path}")
+    endif()
+endmacro()
+
+set(PKGCONFIG_PREFIX "${CMAKE_INSTALL_PREFIX}")
+set_pkg_config_path(PKGCONFIG_LIB_DIR "${PROJECTM_LIB_DIR}")
+set_pkg_config_path(PKGCONFIG_INCLUDE_DIR "${PROJECTM_INCLUDE_DIR}")
+set_pkg_config_path(PKGCONFIG_DATADIR_PATH "${PROJECTM_DATADIR_PATH}")
+
+configure_file(libprojectM.pc.cmake.in "${CMAKE_BINARY_DIR}/libprojectM.pc" @ONLY)
+install(FILES "${CMAKE_BINARY_DIR}/libprojectM.pc"
+        DESTINATION "${PROJECTM_LIB_DIR}/pkgconfig"
+        COMPONENT Devel
+        )
+
 # If the path is not absolute, need to add the prefix path (and hope the result is absolute).
 if(NOT IS_ABSOLUTE PROJECTM_DATADIR_PATH)
     set(PROJECTM_DATADIR_PATH_ABSOLUTE "${CMAKE_INSTALL_PREFIX}/${PROJECTM_DATADIR_PATH}")
 else()
     set(PROJECTM_DATADIR_PATH_ABSOLUTE "${PROJECTM_DATADIR_PATH}")
 endif()
-configure_file(config.inp.cmake.in "${CMAKE_BINARY_DIR}/config.inp" @ONLY)
 
+configure_file(config.inp.cmake.in "${CMAKE_BINARY_DIR}/config.inp" @ONLY)
 install(FILES "${CMAKE_BINARY_DIR}/config.inp"
         DESTINATION "${PROJECTM_DATADIR_PATH}/"
         COMPONENT Runtime
