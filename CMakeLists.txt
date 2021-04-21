@@ -172,3 +172,11 @@ if(ENABLE_LLVM)
 endif()
 message(STATUS "    libvisual plug-in:       ${ENABLE_LIBVISUAL}")
 message(STATUS "    Use system GLM:          ${USE_SYSTEM_GLM}")
+
+message(AUTHOR_WARNING
+        "The CMake build scripts for projectM are still in active development.\n"
+        "This means that build parameters, exported target names and other things can change "
+        "at any time until the new build system is officially documented and announced to be "
+        "fully supported.\n"
+        "DO NOT base any production work on it yet!\n"
+        )
