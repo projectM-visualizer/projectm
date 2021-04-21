@@ -154,7 +154,7 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
     config.add("Easter Egg Parameter", settings.easterEgg);
     config.add("Shuffle Enabled", settings.shuffleEnabled);
     config.add("Soft Cut Ratings Enabled", settings.softCutRatingsEnabled);
-    std::fstream file(configFile.c_str());
+    std::fstream file(configFile.c_str(), std::ios_base::trunc | std::ios_base::out);
     if (file) {
         file << config;
         return true;
@@ -164,7 +164,7 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
 
 
 
-void projectM::readConfig (const std::string & configFile )
+void projectM::readConfig (const std::string & configFile)
 {
     std::cout << "[projectM] config file: " << configFile << std::endl;
 

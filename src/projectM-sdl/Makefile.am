@@ -8,7 +8,9 @@ ${my_CFLAGS} \
 ${SDL_CFLAGS}
 
 bin_PROGRAMS = projectMSDL
-projectMSDL_SOURCES = pmSDL.cpp projectM_SDL_main.cpp pmSDL.hpp
+projectMSDL_SOURCES = pmSDL.cpp projectM_SDL_main.cpp pmSDL.hpp \
+											setup.cpp setup.hpp loopback.cpp loopback.hpp \
+				              audioCapture.cpp audioCapture.hpp
 projectMSDL_LDADD =
 #projectMSDL_LDADD += -lasan
 projectMSDL_LDADD += ${SDL_LIBS}	../libprojectM/libprojectM.la

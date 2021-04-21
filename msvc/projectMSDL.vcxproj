@@ -142,6 +142,9 @@
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\projectM-sdl\projectM_SDL_main.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\projectM-sdl\pmSDL.cpp" />
+    <ClCompile Include="..\src\projectM-sdl\audioCapture.cpp" />
+    <ClCompile Include="..\src\projectM-sdl\loopback.cpp" />
+    <ClCompile Include="..\src\projectM-sdl\setup.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="\MilkdropPresetFactory.vcxproj">
@@ -181,6 +184,10 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\projectM-sdl\audioCapture.hpp" />
+    <ClInclude Include="..\src\projectM-sdl\loopback.hpp" />
+    <ClInclude Include="..\src\projectM-sdl\pmSDL.hpp" />
+    <ClInclude Include="..\src\projectM-sdl\setup.hpp" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
