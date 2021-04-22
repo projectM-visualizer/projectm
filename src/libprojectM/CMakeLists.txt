@@ -89,6 +89,13 @@ if(ENABLE_THREADING)
             )
 endif()
 
+if(ENABLE_LLVM)
+    target_link_libraries(projectM_static
+            PUBLIC
+            LLVM::LLVM
+            )
+endif()
+
 add_library(projectM_shared SHARED
         $<TARGET_OBJECTS:MilkdropPresetFactory>
         $<TARGET_OBJECTS:NativePresetFactory>
@@ -125,6 +132,13 @@ if(ENABLE_THREADING)
     target_link_libraries(projectM_shared
             PUBLIC
             Threads::Threads
+            )
+endif()
+
+if(ENABLE_LLVM)
+    target_link_libraries(projectM_shared
+            PUBLIC
+            LLVM::LLVM
             )
 endif()
 
