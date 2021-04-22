@@ -11,9 +11,15 @@ if(ENABLE_PRESETS)
             presets_stock
             presets_tryptonaut
             presets_yin
-            tests
             DESTINATION "${PROJECTM_DATADIR_PATH}/presets"
             COMPONENT Presets
             )
 
+    if(ENABLE_TESTING)
+        install(DIRECTORY
+                tests
+                DESTINATION "${PROJECTM_DATADIR_PATH}/presets"
+                COMPONENT Tests
+                )
+    endif()
 endif()
