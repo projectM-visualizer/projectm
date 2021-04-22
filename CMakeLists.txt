@@ -92,7 +92,7 @@ if(ENABLE_THREADING)
     if(NOT CMAKE_USE_PTHREADS_INIT)
         message(FATAL_ERROR "Threading support requested - pthread support is required, but not available.")
     endif()
-    add_compile_definitions(USE_THREADS=1)
+    set(USE_THREADS YES)
 endif()
 
 if(ENABLE_LLVM)
@@ -119,10 +119,7 @@ if(ENABLE_LIBVISUAL)
     set(PROJECTM_LIBVISUAL_DIR "${LIBVISUAL_PLUGINSBASEDIR}/actor" CACHE STRING "Installation directory for the libvisual plug-in library.")
 endif()
 
-# Create global configuration header
-configure_file(config.h.in "${CMAKE_BINARY_DIR}/include/config.h")
-include_directories("${CMAKE_BINARY_DIR}/include")
-add_compile_definitions(HAVE_CONFIG_H)
+include(features.cmake)
 
 add_subdirectory(presets)
 add_subdirectory(src)
