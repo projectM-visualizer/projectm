@@ -53,16 +53,14 @@ cmake_dependent_option(ENABLE_JACK "Build JACK-based Qt and SDL UIs" OFF "ENABLE
 cmake_dependent_option(ENABLE_LLVM "Enable LLVM JIT support" OFF "NOT ENABLE_EMSCRIPTEN" OFF)
 cmake_dependent_option(ENABLE_LIBVISUAL "Build and install the projectM libvisual plug-in" OFF "NOT ENABLE_EMSCRIPTEN;CMAKE_SYSTEM_NAME STREQUAL Linux" OFF)
 
-option(USE_SYSTEM_GLM OFF "Use system/external GLM library instead of the bundled one")
+find_package(GLM)
+if(NOT TARGET GLM::GLM)
+    add_library(GLM::GLM INTERFACE IMPORTED)
+    set_target_properties(GLM::GLM PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_SOURCE_DIR}/vendor"
+            )
 
-if(NOT USE_SYSTEM_GLM)
-    # Pre-instantiate some templates for commonly used specializations.
-    add_library(glm_headers INTERFACE)
-    target_include_directories(glm_headers INTERFACE "${CMAKE_SOURCE_DIR}/vendor")
-    add_library(GLM::GLM ALIAS glm_headers)
-    message(STATUS "Using bundled GLM library")
-else()
-    find_package(GLM REQUIRED)
+    message(STATUS "GLM library not found, using bundled version.")
 endif()
 
 if(ENABLE_EMSCRIPTEN)

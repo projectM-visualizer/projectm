@@ -3,15 +3,21 @@ find_path(GLM_INCLUDE_DIR
         glm/glm.hpp
         )
 
+find_file(GLM_INCLUDE_FILE
+        glm/glm.hpp
+        )
+
 include(FindPackageHandleStandardArgs)
 
-find_package_handle_standard_args(GLM DEFAULT_MSG GLM_INCLUDE_DIR)
+find_package_handle_standard_args(GLM DEFAULT_MSG GLM_INCLUDE_FILE GLM_INCLUDE_DIR)
 
 if(GLM_FOUND AND NOT TARGET GLM::GLM)
-    add_library(GLM::GLM INTERFACE)
+    add_library(GLM_INTERFACE_LIBRARY INTERFACE)
 
-    target_include_directories(GLM::GLM
+    target_include_directories(GLM_INTERFACE_LIBRARY
             INTERFACE
             ${GLM_INCLUDE_DIR}
             )
+
+    add_library(GLM::GLM ALIAS GLM_INTERFACE_LIBRARY)
 endif()
