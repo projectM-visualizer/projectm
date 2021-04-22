@@ -28,6 +28,5 @@ target_include_directories(SOIL2
 
 target_link_libraries(SOIL2
         PUBLIC
-        OpenGL::OpenGL
-        OpenGL::GLX
+        ${PROJECTM_OPENGL_LIBRARIES}
         )
