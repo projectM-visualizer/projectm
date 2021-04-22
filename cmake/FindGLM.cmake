@@ -12,12 +12,9 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GLM DEFAULT_MSG GLM_INCLUDE_FILE GLM_INCLUDE_DIR)
 
 if(GLM_FOUND AND NOT TARGET GLM::GLM)
-    add_library(GLM_INTERFACE_LIBRARY INTERFACE)
+    add_library(GLM::GLM INTERFACE IMPORTED)
 
-    target_include_directories(GLM_INTERFACE_LIBRARY
-            INTERFACE
-            ${GLM_INCLUDE_DIR}
+    set_target_properties(GLM::GLM PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${GLM_INCLUDE_DIR}"
             )
-
-    add_library(GLM::GLM ALIAS GLM_INTERFACE_LIBRARY)
 endif()

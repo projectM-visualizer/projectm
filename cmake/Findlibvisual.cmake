@@ -31,15 +31,12 @@ find_package_handle_standard_args(libvisual
         )
 
 if(LIBVISUAL_FOUND AND NOT TARGET libvisual::libvisual)
+    add_library(libvisual::libvisual INTERFACE IMPORTED)
 
-    add_library(LIBVISUAL_INTERFACE_LIBRRARY INTERFACE)
-
-    set_target_properties(LIBVISUAL_INTERFACE_LIBRRARY PROPERTIES
+    set_target_properties(libvisual::libvisual PROPERTIES
             INTERFACE_LINK_LIBRARIES "${LIBVISUAL_LIBRARIES}"
             INTERFACE_LINK_DIRECTORIES "${LIBVISUAL_LIBRARY_DIRS}"
             INTERFACE_INCLUDE_DIRECTORIES "${LIBVISUAL_INCLUDEDIR}"
             INTERFACE_COMPILE_OPTIONS "${LIBVISUAL_CFLAGS}"
             )
-
-    add_library(libvisual::libvisual ALIAS LIBVISUAL_INTERFACE_LIBRRARY)
 endif()

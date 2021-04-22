@@ -44,12 +44,12 @@ find_package_handle_standard_args(LLVM
         )
 
 if(LLVM_FOUND AND NOT TARGET LLVM::LLVM)
-    add_library(LLVM_INTERFACE_LIBRARY INTERFACE)
-    set_target_properties(LLVM_INTERFACE_LIBRARY PROPERTIES
+    add_library(LLVM::LLVM INTERFACE IMPORTED)
+
+    set_target_properties(LLVM::LLVM PROPERTIES
             INTERFACE_LINK_LIBRARIES "${LLVM_LIBRARIES}"
             INTERFACE_LINK_DIRECTORIES "${LLVM_LIB_DIR}"
             INTERFACE_INCLUDE_DIRECTORIES "${LLVM_INCLUDE_DIR}"
             INTERFACE_LINK_OPTIONS "${LLVM_LDFLAGS}"
             )
-    add_library(LLVM::LLVM ALIAS LLVM_INTERFACE_LIBRARY)
 endif()

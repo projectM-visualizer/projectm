@@ -33,13 +33,12 @@ find_package_handle_standard_args(Pulseaudio
         )
 
 if(Pulseaudio_FOUND AND NOT TARGET Pulseaudio::Pulseaudio)
-    add_library(Pulseaudio_INTERFACE_LIBRARY INTERFACE)
+    add_library(Pulseaudio::Pulseaudio INTERFACE IMPORTED)
 
-    set_target_properties(Pulseaudio_INTERFACE_LIBRARY PROPERTIES
+    set_target_properties(Pulseaudio::Pulseaudio PROPERTIES
             INTERFACE_LINK_LIBRARIES "${PULSEAUDIO_LIBRARIES}"
             INTERFACE_LINK_DIRECTORIES "${PULSEAUDIO_LIBRARY_DIRS}"
             INTERFACE_INCLUDE_DIRECTORIES "${PULSEAUDIO_INCLUDEDIR}"
             INTERFACE_COMPILE_OPTIONS "${PULSEAUDIO_CFLAGS}"
             )
-    add_library(Pulseaudio::Pulseaudio ALIAS Pulseaudio_INTERFACE_LIBRARY)
 endif()
