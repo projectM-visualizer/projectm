@@ -59,7 +59,7 @@ unset(_std_c_headers)
 
 # Create global configuration header
 file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/include")
-configure_file(config.h.in "${CMAKE_BINARY_DIR}/include/config.h")
+configure_file(config.h.cmake.in "${CMAKE_BINARY_DIR}/include/config.h")
 include_directories("${CMAKE_BINARY_DIR}/include")
 add_compile_definitions(HAVE_CONFIG_H)
 
