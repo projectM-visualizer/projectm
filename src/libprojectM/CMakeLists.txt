@@ -3,6 +3,27 @@ add_compile_definitions(
         GL_SILENCE_DEPRECATION
 )
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    # dirent.h support
+    set(MSVC_EXTRA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/msvc")
+    include_directories("${MSVC_EXTRA_INCLUDE_DIR}")
+    
+    add_library(dlfcn OBJECT
+            msvc/dlfcn.c
+            msvc/dlfcn.h
+            )
+
+    # Additional preprocessor definitions for Windows builds
+    add_compile_definitions(
+            USE_TEXT_MENU
+            USE_FTGL
+            USE_NATIVE_GLEW
+            STBI_NO_DDS
+            projectM_FONT_MENU="${CMAKE_SOURCE_DIR}/fonts/VeraMono.ttf"
+            projectM_FONT_TITLE="${CMAKE_SOURCE_DIR}/fonts/Vera.ttf"
+            )
+endif()
+
 add_subdirectory(MilkdropPresetFactory)
 add_subdirectory(NativePresetFactory)
 add_subdirectory(Renderer)
@@ -15,6 +36,7 @@ add_library(projectM_static STATIC
         $<TARGET_OBJECTS:Renderer>
         $<TARGET_OBJECTS:hlslparser>
         $<TARGET_OBJECTS:SOIL2>
+        $<$<PLATFORM_ID:Windows>:$<TARGET_OBJECTS:dlfcn>>
         Common.hpp
         ConfigFile.cpp
         ConfigFile.h
@@ -74,10 +96,13 @@ target_include_directories(projectM_static
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/MilkdropPresetFactory>"
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/NativePresetFactory>"
+        "$<BUILD_INTERFACE:${MSVC_EXTRA_INCLUDE_DIR}>"
         "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
         )
 
 target_link_libraries(projectM_static
+        PRIVATE
+        GLM::GLM
         PUBLIC
         ${PROJECTM_OPENGL_LIBRARIES}
         )
@@ -96,61 +121,77 @@ if(ENABLE_LLVM)
             )
 endif()
 
-add_library(projectM_shared SHARED
-        $<TARGET_OBJECTS:MilkdropPresetFactory>
-        $<TARGET_OBJECTS:NativePresetFactory>
-        $<TARGET_OBJECTS:Renderer>
-        $<TARGET_OBJECTS:hlslparser>
-        $<TARGET_OBJECTS:SOIL2>
-        $<TARGET_OBJECTS:projectM_static>
-        )
-
-set_target_properties(projectM_shared PROPERTIES
-        OUTPUT_NAME projectM
-        VERSION "${PROJECTM_LIB_VERSION}"
-        SOVERSION "${PROJECTM_SO_VERSION}"
-        EXPORT_NAME shared
-        )
-
-target_include_directories(projectM_shared
-        PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/MilkdropPresetFactory>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/NativePresetFactory>"
-        "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
-        )
-
-target_link_libraries(projectM_shared
-        PUBLIC
-        ${PROJECTM_OPENGL_LIBRARIES}
-        ${CMAKE_DL_LIBS}
-        )
-
-if(ENABLE_THREADING)
-    target_link_libraries(projectM_shared
-            PUBLIC
-            Threads::Threads
-            )
-endif()
-
-if(ENABLE_LLVM)
-    target_link_libraries(projectM_shared
-            PUBLIC
-            LLVM::LLVM
-            )
-endif()
-
-enable_target_linker_flags_if_supported(projectM_shared PRIVATE --no-undefined)
-
-install(TARGETS projectM_static projectM_shared
+install(TARGETS projectM_static
         EXPORT libprojectMTargets
         LIBRARY DESTINATION "${PROJECTM_LIB_DIR}"
         RUNTIME DESTINATION "${PROJECTM_LIB_DIR}"
         ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}"
         COMPONENT Runtime
         )
+
+# Building projectM as a Windows DLL is not (yet) supported.
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    add_library(projectM_shared SHARED
+            $<TARGET_OBJECTS:MilkdropPresetFactory>
+            $<TARGET_OBJECTS:NativePresetFactory>
+            $<TARGET_OBJECTS:Renderer>
+            $<TARGET_OBJECTS:hlslparser>
+            $<TARGET_OBJECTS:SOIL2>
+            $<TARGET_OBJECTS:projectM_static>
+            )
+
+    set_target_properties(projectM_shared PROPERTIES
+            OUTPUT_NAME projectM
+            VERSION "${PROJECTM_LIB_VERSION}"
+            SOVERSION "${PROJECTM_SO_VERSION}"
+            EXPORT_NAME shared
+            )
+
+    target_include_directories(projectM_shared
+            PUBLIC
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/MilkdropPresetFactory>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/NativePresetFactory>"
+            "$<BUILD_INTERFACE:${MSVC_EXTRA_INCLUDE_DIR}>"
+            "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
+            )
+
+    target_link_libraries(projectM_shared
+            PRIVATE
+            GLM::GLM
+            PUBLIC
+            ${PROJECTM_OPENGL_LIBRARIES}
+            ${CMAKE_DL_LIBS}
+            )
+
+    if(ENABLE_THREADING)
+        target_link_libraries(projectM_shared
+                PUBLIC
+                Threads::Threads
+                )
+    endif()
+
+    if(ENABLE_LLVM)
+        target_link_libraries(projectM_shared
+                PUBLIC
+                LLVM::LLVM
+                )
+    endif()
+
+    enable_target_linker_flags_if_supported(projectM_shared PRIVATE --no-undefined)
+
+    install(TARGETS projectM_shared
+            EXPORT libprojectMTargets
+            LIBRARY DESTINATION "${PROJECTM_LIB_DIR}"
+            RUNTIME DESTINATION "${PROJECTM_LIB_DIR}"
+            ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}"
+            COMPONENT Runtime
+            )
+
+    set(EXPORT_SHARED_LIB_TARGET projectM_shared)
+endif()
 
 install(FILES
         Common.hpp
@@ -175,7 +216,7 @@ export(TARGETS
         hlslparser
         SOIL2
         projectM_static
-        projectM_shared
+        ${EXPORT_SHARED_LIB_TARGET}
         NAMESPACE libprojectM::
         FILE projectM-exports.cmake
         )

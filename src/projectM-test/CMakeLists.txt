@@ -25,6 +25,7 @@ target_link_libraries(projectM-unittest
         PRIVATE
         projectM_static
         SDL2::SDL2
+        SDL2::SDL2main
         ${CMAKE_DL_LIBS}
         )
 

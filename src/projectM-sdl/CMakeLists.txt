@@ -18,7 +18,9 @@ target_compile_definitions(projectMSDL
 target_link_libraries(projectMSDL
         PRIVATE
         projectM_static
+        GLM::GLM
         SDL2::SDL2
+        SDL2::SDL2main
         ${CMAKE_DL_LIBS}
         )
 

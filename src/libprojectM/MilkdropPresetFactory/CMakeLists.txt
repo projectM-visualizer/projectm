@@ -46,6 +46,12 @@ target_include_directories(MilkdropPresetFactory
         "${CMAKE_CURRENT_SOURCE_DIR}"
         )
 
+target_link_libraries(MilkdropPresetFactory
+        PUBLIC
+        GLM::GLM
+        ${PROJECTM_OPENGL_LIBRARIES}
+        )
+
 if(ENABLE_LLVM)
     target_link_libraries(MilkdropPresetFactory
             PUBLIC

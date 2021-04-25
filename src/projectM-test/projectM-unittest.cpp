@@ -25,11 +25,17 @@
 #include <cassert>
 #include <src/libprojectM/TestRunner.hpp>
 #include <SDL2/SDL.h>
+#ifdef WIN32
+#include <GL/glew.h>
+#endif /** WIN32 */
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
     SDL_Window *win = SDL_CreateWindow("projectM", 0, 0, 100, 100, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     SDL_GLContext glCtx = SDL_GL_CreateContext(win);
+#ifdef WIN32
+	GLenum err = glewInit();
+#endif /** WIN32 */
 
     // try unit tests
     if (!TestRunner::run())

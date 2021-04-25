@@ -52,6 +52,7 @@ target_include_directories(Renderer
 
 target_link_libraries(Renderer
         PUBLIC
+        GLM::GLM
         hlslparser
         SOIL2
         )

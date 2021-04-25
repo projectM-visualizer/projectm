@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
 include(CMakeDependentOption)
 include(CheckSymbolExists)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_POSITION_INDEPENDENT_CODE YES)
@@ -22,9 +20,12 @@ project(projectm
         LANGUAGES C CXX
         VERSION 3.1.13
         )
+        
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+include(EnableCFlagsIfSupported)
 
 if(NOT MSVC)
-    include(EnableCFlagsIfSupported)
     enable_cflags_if_supported(
             -Wall
             -Wchar-subscripts
@@ -84,6 +85,10 @@ else()
     # GLX is required by SOIL2 on platforms with the X Window System (e.g. most Linux distributions)
     if(TARGET OpenGL::GLX)
         list(APPEND PROJECTM_OPENGL_LIBRARIES OpenGL::GLX)
+    endif()
+    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+        find_package(GLEW REQUIRED)
+        list(APPEND PROJECTM_OPENGL_LIBRARIES GLEW::glew)
     endif()
 endif()
 

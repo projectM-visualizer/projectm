@@ -55,7 +55,7 @@
 #include "TimeKeeper.hpp"
 #include "RenderItemMergeFunction.hpp"
 
-#ifdef USE_THREADS
+#if USE_THREADS
 #include "pthread.h"
 
 #include "BackgroundWorker.h"
@@ -74,7 +74,7 @@ constexpr int kMaxSwitchRetries = 10;
 
 projectM::~projectM()
 {
-#ifdef USE_THREADS
+#if USE_THREADS
     void *status;
     worker_sync.finish_up();
     pthread_join(thread, &status);
@@ -283,7 +283,7 @@ void projectM::readSettings (const Settings & settings )
     _settings.aspectCorrection = settings.aspectCorrection;
 }
 
-#ifdef USE_THREADS
+#if USE_THREADS
 static void *thread_callback(void *prjm)
 {
     projectM *p = (projectM *)prjm;
@@ -396,13 +396,13 @@ Pipeline * projectM::renderFrameOnlyPass1(Pipeline *pPipeline) /*pPipeline is a 
         //	 printf("start thread\n");
         assert ( m_activePreset2.get() );
 
-#ifdef USE_THREADS
+#if USE_THREADS
         worker_sync.wake_up_bg();
 #endif
 
         m_activePreset->Render(*beatDetect, pipelineContext());
 
-#ifdef USE_THREADS
+#if USE_THREADS
         worker_sync.wait_for_bg_to_finish();
 #else
         evaluateSecondPreset();
@@ -571,7 +571,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
     initPresetTools(gx, gy);
 
 
-#ifdef USE_THREADS
+#if USE_THREADS
 
     #ifdef SYNC_PRESET_SWITCHES
     pthread_mutex_init(&preset_mutex, NULL);

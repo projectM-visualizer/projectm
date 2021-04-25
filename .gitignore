@@ -42,6 +42,10 @@ m4/lt~obsolete.m4
 /build
 /dist
 
+# Visual Studio w/CMake
+/out
+/.vs
+/CMakeSettings.json
 
 _sync.bat
 _sync.sh
