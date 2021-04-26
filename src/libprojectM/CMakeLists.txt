@@ -121,6 +121,13 @@ if(ENABLE_LLVM)
             )
 endif()
 
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    target_link_libraries(projectM_static
+        PUBLIC
+        "-framework CoreFoundation"
+        )
+endif()
+
 install(TARGETS projectM_static
         EXPORT libprojectMTargets
         LIBRARY DESTINATION "${PROJECTM_LIB_DIR}"
@@ -178,6 +185,13 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
                 PUBLIC
                 LLVM::LLVM
                 )
+    endif()
+
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        target_link_libraries(projectM_shared
+            PUBLIC
+            "-framework CoreFoundation"
+            )
     endif()
 
     enable_target_linker_flags_if_supported(projectM_shared PRIVATE --no-undefined)
