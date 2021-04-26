@@ -75,6 +75,15 @@ endif()
 
 if(ENABLE_SDL)
     find_package(SDL2 REQUIRED)
+
+    # Temporary fix to deal with wrong include dir set by SDL2's CMake configuration.
+    get_target_property(_SDL2_INCLUDE_DIR SDL2::SDL2 INTERFACE_INCLUDE_DIRECTORIES)
+    if(_SDL2_INCLUDE_DIR MATCHES "(.+)/SDL2\$")
+        message(STATUS "SDL2 include dir contains \"SDL2\" subdir (SDL bug #4004) - fixing to \"${CMAKE_MATCH_1}\".")
+        set_target_properties(SDL2::SDL2 PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_MATCH_1}"
+            )
+    endif()
 endif()
 
 if(ENABLE_GLES)
