@@ -22,7 +22,7 @@ project(projectm
         LANGUAGES C CXX
         VERSION 3.1.13
         )
-        
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 include(EnableCFlagsIfSupported)
@@ -86,8 +86,12 @@ if(ENABLE_SDL)
     if(_SDL2_INCLUDE_DIR MATCHES "(.+)/SDL2\$")
         message(STATUS "SDL2 include dir contains \"SDL2\" subdir (SDL bug #4004) - fixing to \"${CMAKE_MATCH_1}\".")
         set_target_properties(SDL2::SDL2 PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_MATCH_1}"
-            )
+                INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_MATCH_1}"
+                )
+    endif()
+
+    if(SDL2_VERSION VERSION_LESS "2.0.5")
+        message(FATAL_ERROR "SDL2 libraries were found, but have version ${SDL2_VERSION}. At least version 2.0.5 is required.")
     endif()
 endif()
 
