@@ -30,3 +30,7 @@ target_link_libraries(SOIL2
         PUBLIC
         ${PROJECTM_OPENGL_LIBRARIES}
         )
+        
+set_target_properties(SOIL2 PROPERTIES
+        FOLDER libprojectM
+        )

@@ -17,3 +17,7 @@ target_link_libraries(NativePresetFactory
         GLM::GLM
         ${PROJECTM_OPENGL_LIBRARIES}
         )
+        
+set_target_properties(NativePresetFactory PROPERTIES
+        FOLDER libprojectM
+        )

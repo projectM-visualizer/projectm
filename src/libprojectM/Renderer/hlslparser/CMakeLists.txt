@@ -17,3 +17,7 @@ target_include_directories(hlslparser
         PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}/src"
         )
+
+set_target_properties(hlslparser PROPERTIES
+        FOLDER libprojectM
+        )

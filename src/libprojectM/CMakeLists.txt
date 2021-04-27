@@ -12,6 +12,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
             msvc/dlfcn.c
             msvc/dlfcn.h
             )
+            
+    set_target_properties(dlfcn PROPERTIES
+            FOLDER libprojectM
+            )
 
     # Additional preprocessor definitions for Windows builds
     add_compile_definitions(
@@ -87,6 +91,7 @@ add_library(projectM_static STATIC
 set_target_properties(projectM_static PROPERTIES
         OUTPUT_NAME projectM
         EXPORT_NAME static
+        FOLDER libprojectM
         )
 
 target_include_directories(projectM_static
@@ -152,6 +157,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
             VERSION "${PROJECTM_LIB_VERSION}"
             SOVERSION "${PROJECTM_SO_VERSION}"
             EXPORT_NAME shared
+            FOLDER libprojectM
             )
 
     target_include_directories(projectM_shared

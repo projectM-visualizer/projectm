@@ -52,6 +52,10 @@ target_link_libraries(MilkdropPresetFactory
         ${PROJECTM_OPENGL_LIBRARIES}
         )
 
+set_target_properties(MilkdropPresetFactory PROPERTIES
+        FOLDER libprojectM
+        )
+
 if(ENABLE_LLVM)
     target_link_libraries(MilkdropPresetFactory
             PUBLIC

@@ -56,3 +56,7 @@ target_link_libraries(Renderer
         hlslparser
         SOIL2
         )
+        
+set_target_properties(Renderer PROPERTIES
+        FOLDER libprojectM
+        )
