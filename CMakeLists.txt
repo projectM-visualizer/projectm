@@ -65,6 +65,9 @@ if(NOT TARGET GLM::GLM)
             )
 
     message(STATUS "GLM library not found, using bundled version.")
+    set(USE_SYSTEM_GLM OFF)
+else()
+    set(USE_SYSTEM_GLM ON)
 endif()
 
 if(ENABLE_EMSCRIPTEN)
