@@ -25,20 +25,6 @@ project(projectm
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-include(EnableCFlagsIfSupported)
-
-if(NOT MSVC)
-    enable_cflags_if_supported(
-            -Wall
-            -Wchar-subscripts
-            -Wformat-security
-            -Wpointer-arith
-            -Wshadow
-            -Wsign-compare
-            -Wtype-limits
-    )
-endif()
-
 set(PROJECTM_BIN_DIR "bin" CACHE STRING "Executable installation directory, relative to the install prefix.")
 set(PROJECTM_DATADIR_PATH "share/projectM" CACHE STRING "Default (absolute) path to the projectM data files (presets etc.)")
 set(PROJECTM_LIB_DIR "lib" CACHE STRING "Library installation directory, relative to the install prefix.")

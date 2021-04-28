@@ -7,6 +7,37 @@ include(CheckFunctionExists)
 include(CheckIncludeFileCXX)
 include(CheckEnumValueExists)
 include(CheckIncludeFiles)
+include(EnableCFlagsIfSupported)
+
+add_compile_definitions(
+        $<$<CONFIG:DEBUG>:DEBUG>
+        )
+
+if(NOT MSVC)
+    enable_cflags_if_supported(
+            -Wall
+            -Wchar-subscripts
+            -Wformat-security
+            -Wpointer-arith
+            -Wshadow
+            -Wsign-compare
+            -Wtype-limits
+            -fopenmp
+    )
+
+    enable_linker_flags_if_supported(
+            -fopenmp
+    )
+else()
+    enable_cflags_if_supported(
+            /W4
+            /openmp
+    )
+
+    enable_linker_flags_if_supported(
+            /openmp
+    )
+endif()
 
 check_function_exists(aligned_alloc HAVE_ALIGNED_ALLOC)
 check_include_file_cxx("dlfcn.h" HAVE_DLFCN_H)
