@@ -133,8 +133,8 @@ public:
         std::string titleFontURL;
         std::string menuFontURL;
         std::string datadir;
-        int smoothPresetDuration;
-        int presetDuration;
+        double smoothPresetDuration;
+        double presetDuration;
         bool hardcutEnabled;
         int hardcutDuration;
         float hardcutSensitivity;
@@ -151,8 +151,8 @@ public:
             textureSize(512),
             windowWidth(512),
             windowHeight(512),
-            smoothPresetDuration(10),
-            presetDuration(15),
+            smoothPresetDuration(10.0),
+            presetDuration(15.0),
             hardcutEnabled(false),
             hardcutDuration(60),
             hardcutSensitivity(2.0),
@@ -181,7 +181,9 @@ public:
 
   void changeTextureSize(int size);
   void changeHardcutDuration(int seconds);
+  void changeHardcutDuration(double seconds);
   void changePresetDuration(int seconds);
+  void changePresetDuration(double seconds);
   void getMeshSize(int *w, int *h);
   void touch(float x, float y, int pressure, int touchtype);
   void touchDrag(float x, float y, int pressure);

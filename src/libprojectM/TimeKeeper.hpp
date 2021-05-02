@@ -42,6 +42,8 @@ public:
 
   void ChangeHardcutDuration(int seconds) { _hardcutDuration = seconds; }
   void ChangePresetDuration(int seconds) { _presetDuration = seconds; }
+  void ChangeHardcutDuration(double seconds) { _hardcutDuration = seconds; }
+  void ChangePresetDuration(double seconds) { _presetDuration = seconds; }
 
 #ifndef WIN32
   /* The first ticks value of the application */
