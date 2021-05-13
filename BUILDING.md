@@ -1,5 +1,80 @@
 # Building projectM from source
 
+## Quick Start (Debian / Ubuntu)
+
+For other operating systems (Windows/macOS), see the OS-specific sections below.
+
+### Install the build tools and dependencies
+
+Mandatory packages:
+
+```bash
+sudo apt install build-essential libgl1-mesa-dev mesa-common-dev libsdl2-dev libglm-dev
+```
+
+Optional packages for additional features:
+
+```bash
+sudo apt install qtbase5-dev # For building Qt-based UIs
+sudo apt install llvm-dev # for using the experimental LLVM Jit
+sudo apt install libvisual-0.4-dev # To build the libvisual plug-in
+sudo apt install libjack-jackd2-dev # To build the JACK visualizer application
+```
+
+### Download the projectM sources
+
+If you want to use a stable version of projectM, download the latest release from
+the [Releases page on GitHub](https://github.com/projectM-visualizer/projectm/releases) and unpack it. You can then skip
+to the next step.
+
+If you prefer a bleeding-edge version or want to modify the code, clone the Git repository:
+
+```bash
+sudo apt install git # Probably already installed
+git clone https://github.com/projectM-visualizer/projectm.git /path/to/local/repo
+cd /path/to/local/repo
+git fetch --all --tags
+```
+
+### Build and install projectM
+
+Older projectM releases use autoconf/automake for building. If your repository has a `CMakeLists.txt` file on the top
+level, skip to the CMake part right below.
+
+Replace `/usr/local` with your preferred installation prefix.
+
+#### Configure the project using autoconf
+
+```bash
+sudo apt install autoconf automake libtool
+./autogen.sh
+./configure --prefix=/usr/local
+```
+
+#### Configure the project using CMake
+
+```bash
+sudo apt install cmake
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
+```
+
+#### Build and install
+
+Independent of the method of configuration, this will build projectM and install it to /usr/local or the configured
+installation prefix set in the step before:
+
+```bash
+make -j && sudo make install
+```
+
+**Note**: You won't need to use `sudo` if the install prefix is writeable by your non-privileged user.
+
+#### Test projectM
+
+If you have a desktop environment installed, you can now run `[prefix]/bin/projectMSDL`.
+
 ## Dependencies
 
 Depending on the OS/distribution and packaging system, libraries might be split into separate packages with binaries and
