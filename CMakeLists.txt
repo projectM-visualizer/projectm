@@ -1,4 +1,10 @@
-cmake_minimum_required(VERSION 3.19 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
+
+if(CMAKE_VERSION VERSION_LESS 3.19 AND CMAKE_GENERATOR STREQUAL "Xcode")
+    message(AUTHOR_WARNING "Using a CMake version before 3.19 with a recent Xcode SDK and the Xcode generator "
+            "will likely result in CMake failing to find the AppleClang compiler. Either upgrade CMake to at least "
+            "version 3.19 or use a different generator, e.g. \"Unix Makefiles\" or \"Ninja\".")
+endif()
 
 include(CMakeDependentOption)
 include(CheckSymbolExists)

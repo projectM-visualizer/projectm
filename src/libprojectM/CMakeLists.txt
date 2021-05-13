@@ -34,13 +34,7 @@ add_subdirectory(Renderer)
 
 # CMake cannot combine multiple static libraries using target_link_libraries.
 # This syntax will pull in the compiled object files into the final library.
-add_library(projectM_static STATIC
-        $<TARGET_OBJECTS:MilkdropPresetFactory>
-        $<TARGET_OBJECTS:NativePresetFactory>
-        $<TARGET_OBJECTS:Renderer>
-        $<TARGET_OBJECTS:hlslparser>
-        $<TARGET_OBJECTS:SOIL2>
-        $<$<PLATFORM_ID:Windows>:$<TARGET_OBJECTS:dlfcn>>
+add_library(projectM_main OBJECT
         Common.hpp
         ConfigFile.cpp
         ConfigFile.h
@@ -86,6 +80,26 @@ add_library(projectM_static STATIC
         timer.h
         wipemalloc.cpp
         wipemalloc.h
+        )
+
+target_include_directories(projectM_main
+        PRIVATE
+        "${CMAKE_CURRENT_SOURCE_DIR}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Renderer"
+        "${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src"
+        "${CMAKE_CURRENT_SOURCE_DIR}/MilkdropPresetFactory"
+        "${CMAKE_CURRENT_SOURCE_DIR}/NativePresetFactory"
+        "${MSVC_EXTRA_INCLUDE_DIR}"
+        )
+
+add_library(projectM_static STATIC
+        $<TARGET_OBJECTS:projectM_main>
+        $<TARGET_OBJECTS:MilkdropPresetFactory>
+        $<TARGET_OBJECTS:NativePresetFactory>
+        $<TARGET_OBJECTS:Renderer>
+        $<TARGET_OBJECTS:hlslparser>
+        $<TARGET_OBJECTS:SOIL2>
+        $<$<PLATFORM_ID:Windows>:$<TARGET_OBJECTS:dlfcn>>
         )
 
 set_target_properties(projectM_static PROPERTIES
@@ -144,12 +158,13 @@ install(TARGETS projectM_static
 # Building projectM as a Windows DLL is not (yet) supported.
 if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_library(projectM_shared SHARED
+            $<TARGET_OBJECTS:projectM_main>
             $<TARGET_OBJECTS:MilkdropPresetFactory>
             $<TARGET_OBJECTS:NativePresetFactory>
             $<TARGET_OBJECTS:Renderer>
             $<TARGET_OBJECTS:hlslparser>
             $<TARGET_OBJECTS:SOIL2>
-            $<TARGET_OBJECTS:projectM_static>
+            $<$<PLATFORM_ID:Windows>:$<TARGET_OBJECTS:dlfcn>>
             )
 
     set_target_properties(projectM_shared PROPERTIES
