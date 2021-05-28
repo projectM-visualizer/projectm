@@ -114,7 +114,12 @@ GLSLGenerator::GLSLGenerator() :
     m_tree                      = NULL;
     m_entryName                 = NULL;
     m_target                    = Target_VertexShader;
+#ifdef USE_GLES
+    m_version                   = Version_300_ES;
+#else
     m_version                   = Version_330;
+#endif
+	
     m_versionLegacy             = false;
     m_inAttribPrefix            = NULL;
     m_outAttribPrefix           = NULL;
@@ -233,7 +238,7 @@ bool GLSLGenerator::Generate(HLSLTree* tree, Target target, Version version, con
         m_writer.WriteLine(0, "precision highp float;");
     }
     else if (m_version == Version_300_ES)
-    {
+    {  
         m_writer.WriteLine(0, "#version 300 es");
         m_writer.WriteLine(0, "precision highp float;");
         m_writer.WriteLine(0, "precision highp sampler3D;");
