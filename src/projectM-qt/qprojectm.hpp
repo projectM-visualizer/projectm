@@ -54,4 +54,5 @@ class QProjectM : public QObject, public projectM {
 
 
 };
+
 #endif

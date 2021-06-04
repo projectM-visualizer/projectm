@@ -33,7 +33,7 @@ ui_qprojectmconfigdialog.h: qprojectmconfigdialog.ui
 	$(UIC) -o $@ $<
 
 application_qrc.cpp: application.qrc
-	$(RCC) -o $@ $<
+	$(RCC) -name application -o $@ $<
 
 
 BUILT_SOURCES =               \

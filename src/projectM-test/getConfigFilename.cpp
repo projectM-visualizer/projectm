@@ -16,6 +16,10 @@
 #include <fcntl.h>	
 #include <sys/stat.h>
 #include <cstdio>
+#ifdef WIN32
+#include <windows.h>
+#include <stdio.h>
+#endif
 
 // get the full pathname of a configfile
 std::string getConfigFilename()
@@ -48,7 +52,11 @@ std::string getConfigFilename()
 	printf("trying to create ~/.projectM/config.inp \n");
 	
 	projectM_home[strlen(home) + strlen("/.projectM")] = '\0';
+#ifdef WIN32
+	CreateDirectory(home, NULL);
+#else
 	mkdir(projectM_home, 0755);
+#endif
 	
 	strcpy(projectM_home + strlen(home), "/.projectM/config.inp");
 	projectM_home[strlen(home) + strlen("/.projectM/config.inp")] = '\0';
