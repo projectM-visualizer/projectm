@@ -83,7 +83,7 @@ void seedRand() {
 }
 
 void initGL() {
-#ifdef USE_GLES
+#if USE_GLES
     // use GLES 2.0 (this may need adjusting)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
@@ -182,6 +182,11 @@ projectMSDL *setupSDLApp() {
     initStereoscopicView(win);
 
     SDL_GLContext glCtx = SDL_GL_CreateContext(win);
+
+#if defined(WIN32)
+	GLenum err = glewInit();
+#endif /** WIN32 */
+
     dumpOpenGLInfo();
 
     SDL_SetWindowTitle(win, "projectM");
