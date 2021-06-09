@@ -92,6 +92,13 @@ target_include_directories(projectM_main
         "${MSVC_EXTRA_INCLUDE_DIR}"
         )
 
+target_link_libraries(projectM_main
+        PRIVATE
+        GLM::GLM
+        PUBLIC
+        ${PROJECTM_OPENGL_LIBRARIES}
+        )
+
 add_library(projectM_static STATIC
         $<TARGET_OBJECTS:projectM_main>
         $<TARGET_OBJECTS:MilkdropPresetFactory>

@@ -73,18 +73,8 @@ endif()
 if(ENABLE_SDL)
     find_package(SDL2 REQUIRED)
 
-    # Temporary fix to deal with wrong include dir set by SDL2's CMake configuration.
-    get_target_property(_SDL2_INCLUDE_DIR SDL2::SDL2 INTERFACE_INCLUDE_DIRECTORIES)
-    if(_SDL2_INCLUDE_DIR MATCHES "(.+)/SDL2\$")
-        message(STATUS "SDL2 include dir contains \"SDL2\" subdir (SDL bug #4004) - fixing to \"${CMAKE_MATCH_1}\".")
-        set_target_properties(SDL2::SDL2 PROPERTIES
-                INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_MATCH_1}"
-                )
-    endif()
-
-    if(SDL2_VERSION VERSION_LESS "2.0.5")
-        message(FATAL_ERROR "SDL2 libraries were found, but have version ${SDL2_VERSION}. At least version 2.0.5 is required.")
-    endif()
+    # Apply some fixes, as SDL2's CMake support is new and still a WiP.
+    include(SDL2Target)
 endif()
 
 if(ENABLE_GLES)
@@ -197,3 +187,8 @@ message(AUTHOR_WARNING
         "fully supported.\n"
         "DO NOT base any production work on it yet!\n"
         )
+
+# Create CPack configuration
+set(CPACK_PACKAGE_NAME "projectM")
+set(CPACK_VERBATIM_VARIABLES YES)
+include(CPack)
