@@ -224,5 +224,6 @@ bool processLoopbackFrame(projectMSDL *app) {
         }
     }
 #endif /** WASAPI_LOOPBACK */
-    
+
+    return true;
 }
