@@ -10,8 +10,7 @@
 //
 //
 
-#ifndef __MILKDROP_PRESET_FACTORY_HPP
-#define __MILKDROP_PRESET_FACTORY_HPP
+#pragma once
 
 #include <memory>
 #include "../PresetFactory.hpp"
@@ -26,15 +25,15 @@ class MilkdropPresetFactory : public PresetFactory
 public:
     MilkdropPresetFactory(int gx, int gy);
 
-    virtual ~MilkdropPresetFactory();
+    ~MilkdropPresetFactory() override;
 
     // called by ~MilkdropPreset
     void releasePreset(Preset* preset);
 
-    std::unique_ptr<Preset> allocate(const std::string& url, const std::string& name = std::string(),
-                                     const std::string& author = std::string());
+    std::unique_ptr<Preset> allocate(const std::string& url, const std::string& name,
+                                     const std::string& author) override;
 
-    std::string supportedExtensions() const
+    std::string supportedExtensions() const override
     {
         return ".milk .prjm";
     }
@@ -44,9 +43,7 @@ private:
 
     void reset();
 
-    int gx;
-    int gy;
-    PresetOutputs* _presetOutputsCache;
+    int gx{ 0 };
+    int gy{ 0 };
+    PresetOutputs* _presetOutputsCache{ nullptr };
 };
-
-#endif

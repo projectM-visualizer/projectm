@@ -19,7 +19,7 @@ public:
     /// Allocate a new idle preset instance
     /// \returns a newly allocated auto pointer of an idle preset instance
     static std::unique_ptr<Preset>
-    allocate(MilkdropPresetFactory* factory, const std::string& path, PresetOutputs& outputs);
+    allocate(MilkdropPresetFactory* factory, const std::string& path, PresetOutputs* outputs);
 
 private:
     static std::string presetText();
