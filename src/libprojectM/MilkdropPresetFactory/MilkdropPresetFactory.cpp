@@ -31,19 +31,23 @@ MilkdropPresetFactory::MilkdropPresetFactory(int gx_, int gy_)
 
 MilkdropPresetFactory::~MilkdropPresetFactory()
 {
-
-//	std::cerr << "[~MilkdropPresetFactory] destroy infix ops" << std::endl;
     Eval::destroy_infix_ops();
-//	std::cerr << "[~MilkdropPresetFactory] destroy builtin func" << std::endl;
     BuiltinFuncs::destroy_builtin_func_db();
-//	std::cerr << "[~MilkdropPresetFactory] delete preset out puts" << std::endl;
-    delete (_presetOutputsCache);
-//	std::cerr << "[~MilkdropPresetFactory] done" << std::endl;
+
+    if (_presetOutputsCache)
+    {
+        delete (_presetOutputsCache);
+        _presetOutputsCache = nullptr;
+    }
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
 void resetPresetOutputs(PresetOutputs* presetOutputs)
 {
+    if (!presetOutputs)
+    {
+        return;
+    }
 
     presetOutputs->zoom = 1.0;
     presetOutputs->zoomexp = 1.0;
@@ -147,7 +151,6 @@ void resetPresetOutputs(PresetOutputs* presetOutputs)
 /* Reinitializes the engine variables to a default (conservative and sane) value */
 void MilkdropPresetFactory::reset()
 {
-
     if (_presetOutputsCache)
     {
         resetPresetOutputs(_presetOutputsCache);
@@ -237,25 +240,32 @@ MilkdropPresetFactory::allocate(const std::string& url, const std::string& name,
     std::string path;
     if (PresetFactory::protocol(url, path) == PresetFactory::IDLE_PRESET_PROTOCOL)
     {
-        return IdlePresets::allocate(this, path, *presetOutputs);
+        return IdlePresets::allocate(this, path, presetOutputs);
     }
     else
     {
-        return std::unique_ptr<Preset>(new MilkdropPreset(this, url, name, *presetOutputs));
+        return std::unique_ptr<Preset>(new MilkdropPreset(this, url, name, presetOutputs));
     }
 }
 
 // this gives the preset a way to return the PresetOutput w/o dependency on class projectM behavior
-void MilkdropPresetFactory::releasePreset(Preset* preset_)
+void MilkdropPresetFactory::releasePreset(Preset* preset)
 {
-    MilkdropPreset* preset = (MilkdropPreset*) preset_;
-    // return PresetOutputs to the cache
-    if (nullptr == _presetOutputsCache)
+    auto milkdropPreset = dynamic_cast<MilkdropPreset*>(preset);
+
+    if (!milkdropPreset || !milkdropPreset->_presetOutputs)
     {
-        _presetOutputsCache = &preset->_presetOutputs;
+        // Instance is not a MilkdropPreset or has no PresetOutput object.
+        return;
+    }
+
+    // return PresetOutputs to the cache
+    if (!_presetOutputsCache)
+    {
+        _presetOutputsCache = milkdropPreset->_presetOutputs;
     }
     else
     {
-        delete &preset->_presetOutputs;
+        delete milkdropPreset->_presetOutputs;
     }
 }

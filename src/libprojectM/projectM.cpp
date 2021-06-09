@@ -706,6 +706,8 @@ int projectM::initPresetTools(int gx, int gy)
 
 void projectM::destroyPresetTools()
 {
+    m_activePreset.reset();
+    m_activePreset2.reset();
 
     if ( m_presetPos )
         delete ( m_presetPos );

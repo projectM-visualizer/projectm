@@ -44,16 +44,9 @@ public:
 
     /** Construct a new builtin parameter database with variables references given by
      * the preset input and output structures */
-    BuiltinParams(PresetInputs& presetInputs, PresetOutputs& presetOutputs);
+    BuiltinParams(PresetInputs& presetInputs, PresetOutputs* presetOutputs);
 
     ~BuiltinParams();
-
-    /** Param database initalizer / destructor functions */
-    int init_builtin_param_db(const PresetInputs& presetInputs, PresetOutputs& presetOutputs);
-
-    int load_all_builtin_param(const PresetInputs& presetInputs, PresetOutputs& presetOutputs);
-
-    int destroy_builtin_param_db();
 
     int insert_param_alt_name(Param* param, const std::string& salt_name);
 
@@ -81,6 +74,14 @@ public:
         traverse(builtin_param_tree, fun);
     }
 
+
+protected:
+    /** Param database initalizer / destructor functions */
+    int init_builtin_param_db(const PresetInputs& presetInputs, PresetOutputs* presetOutputs);
+
+    int load_all_builtin_param(const PresetInputs& presetInputs, PresetOutputs* presetOutputs);
+
+    int destroy_builtin_param_db();
 
 private:
     static const bool BUILTIN_PARAMS_DEBUG = false;
