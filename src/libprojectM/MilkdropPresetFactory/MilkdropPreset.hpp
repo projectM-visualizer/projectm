@@ -72,14 +72,14 @@ public:
     /// \param milkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
     /// \param presetOutputs initialized and filled with data parsed from a MilkdropPreset
     MilkdropPreset(MilkdropPresetFactory* factory, const std::string& absoluteFilePath,
-                   const std::string& milkdropPresetName, PresetOutputs& presetOutputs);
+                   const std::string& milkdropPresetName, PresetOutputs* presetOutputs);
 
     ///  Load a MilkdropPreset from an input stream with input and output buffers specified.
     /// \param in an already initialized input stream to read the MilkdropPreset file from
     /// \param milkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
     /// \param presetOutputs initialized and filled with data parsed from a MilkdropPreset
     MilkdropPreset(MilkdropPresetFactory* factory, std::istream& in, const std::string& milkdropPresetName,
-                   PresetOutputs& presetOutputs);
+                   PresetOutputs* presetOutputs);
 
     ~MilkdropPreset();
 
@@ -118,7 +118,7 @@ public:
     /// \returns A MilkdropPreset output instance with values computed from most recent evaluateFrame()
     PresetOutputs& presetOutputs() const
     {
-        return _presetOutputs;
+        return *_presetOutputs;
     }
 
     const PresetInputs& presetInputs() const
@@ -144,7 +144,7 @@ public:
 
     PresetOutputs& pipeline()
     {
-        return _presetOutputs;
+        return *_presetOutputs;
     }
 
     void Render(const BeatDetect& music, const PipelineContext& context);
@@ -204,8 +204,8 @@ private:
 
     void postloadInitialize();
 
-    MilkdropPresetFactory* _factory;
-    PresetOutputs& _presetOutputs;
+    MilkdropPresetFactory* _factory{ nullptr };
+    PresetOutputs* _presetOutputs{ nullptr };
 
     template<class CustomObject>
     void transfer_q_variables(std::vector<CustomObject*>& customObjects);
@@ -225,7 +225,7 @@ void MilkdropPreset::transfer_q_variables(std::vector<CustomObject*>& customObje
         custom_object = *pos;
         for (unsigned int i = 0; i < NUM_Q_VARIABLES; i++)
         {
-            custom_object->q[i] = _presetOutputs.q[i];
+            custom_object->q[i] = _presetOutputs->q[i];
         }
     }
 

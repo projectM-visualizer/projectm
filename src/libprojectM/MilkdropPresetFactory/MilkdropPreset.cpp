@@ -55,9 +55,8 @@
 
 
 MilkdropPreset::MilkdropPreset(MilkdropPresetFactory* factory, std::istream& in, const std::string& presetName,
-                               PresetOutputs& presetOutputs)
-    :
-    Preset(presetName)
+                               PresetOutputs* presetOutputs)
+    : Preset(presetName)
     , builtinParams(_presetInputs, presetOutputs)
     , per_pixel_program(nullptr)
     , _factory(factory)
@@ -68,9 +67,8 @@ MilkdropPreset::MilkdropPreset(MilkdropPresetFactory* factory, std::istream& in,
 
 
 MilkdropPreset::MilkdropPreset(MilkdropPresetFactory* factory, const std::string& absoluteFilePath,
-                               const std::string& presetName, PresetOutputs& presetOutputs)
-    :
-    Preset(presetName)
+                               const std::string& presetName, PresetOutputs* presetOutputs)
+    : Preset(presetName)
     , builtinParams(_presetInputs, presetOutputs)
     , per_pixel_program(nullptr)
     , _filename(parseFilename(absoluteFilePath))
@@ -117,7 +115,7 @@ MilkdropPreset::~MilkdropPreset()
     customWaves.clear();
     customShapes.clear();
 
-    if (nullptr != _factory)
+    if (_factory)
     {
         _factory->releasePreset(this);
     }
@@ -302,14 +300,17 @@ void MilkdropPreset::postloadInitialize()
 
 
 /// @bug are you handling all the q variables conditions? in particular, the un-init case?
-//m_presetOutputs.q1 = 0;
-//m_presetOutputs.q2 = 0;
-//m_presetOutputs.q3 = 0;
-//m_presetOutputs.q4 = 0;
-//m_presetOutputs.q5 = 0;
-//m_presetOutputs.q6 = 0;
-//m_presetOutputs.q7 = 0;
-//m_presetOutputs.q8 = 0;
+//    if (_presetOutputs)
+//    {
+//        _presetOutputs->q1 = 0;
+//        _presetOutputs->q2 = 0;
+//        _presetOutputs->q3 = 0;
+//        _presetOutputs->q4 = 0;
+//        _presetOutputs->q5 = 0;
+//        _presetOutputs->q6 = 0;
+//        _presetOutputs->q7 = 0;
+//        _presetOutputs->q8 = 0;
+//    }
 
 }
 
@@ -423,9 +424,12 @@ void MilkdropPreset::evaluateFrame()
     evalCustomShapePerFrameEquations();
 
     // Setup pointers of the custom waves and shapes to the preset outputs instance
-    /// @slow an extra O(N) per frame, could do this during eval
-    _presetOutputs.customWaves = PresetOutputs::cwave_container(customWaves);
-    _presetOutputs.customShapes = PresetOutputs::cshape_container(customShapes);
+    if (_presetOutputs)
+    {
+        /// @slow an extra O(N) per frame, could do this during eval
+        _presetOutputs->customWaves = PresetOutputs::cwave_container(customWaves);
+        _presetOutputs->customShapes = PresetOutputs::cshape_container(customShapes);
+    }
 
 }
 
@@ -458,16 +462,21 @@ void MilkdropPreset::initialize_PerPixelMeshes()
     int gx = presetInputs().gx;
     int gy = presetInputs().gy;
 
-    init_mesh(_presetOutputs.cx_mesh, presetOutputs().cx, gx, gy);
-    init_mesh(_presetOutputs.cy_mesh, presetOutputs().cy, gx, gy);
-    init_mesh(_presetOutputs.sx_mesh, presetOutputs().sx, gx, gy);
-    init_mesh(_presetOutputs.sy_mesh, presetOutputs().sy, gx, gy);
-    init_mesh(_presetOutputs.dx_mesh, presetOutputs().dx, gx, gy);
-    init_mesh(_presetOutputs.dy_mesh, presetOutputs().dy, gx, gy);
-    init_mesh(_presetOutputs.zoom_mesh, presetOutputs().zoom, gx, gy);
-    init_mesh(_presetOutputs.zoomexp_mesh, presetOutputs().zoomexp, gx, gy);
-    init_mesh(_presetOutputs.rot_mesh, presetOutputs().rot, gx, gy);
-    init_mesh(_presetOutputs.warp_mesh, presetOutputs().warp, gx, gy);
+    if (!_presetOutputs)
+    {
+        return;
+    }
+
+    init_mesh(_presetOutputs->cx_mesh, _presetOutputs->cx, gx, gy);
+    init_mesh(_presetOutputs->cy_mesh, _presetOutputs->cy, gx, gy);
+    init_mesh(_presetOutputs->sx_mesh, _presetOutputs->sx, gx, gy);
+    init_mesh(_presetOutputs->sy_mesh, _presetOutputs->sy, gx, gy);
+    init_mesh(_presetOutputs->dx_mesh, _presetOutputs->dx, gx, gy);
+    init_mesh(_presetOutputs->dy_mesh, _presetOutputs->dy, gx, gy);
+    init_mesh(_presetOutputs->zoom_mesh, _presetOutputs->zoom, gx, gy);
+    init_mesh(_presetOutputs->zoomexp_mesh, _presetOutputs->zoomexp, gx, gy);
+    init_mesh(_presetOutputs->rot_mesh, _presetOutputs->rot, gx, gy);
+    init_mesh(_presetOutputs->warp_mesh, _presetOutputs->warp, gx, gy);
 }
 
 
@@ -514,9 +523,11 @@ void MilkdropPreset::evalPerPixelEqns()
 
 int MilkdropPreset::readIn(std::istream& fs)
 {
-
-    presetOutputs().compositeShader.programSource.clear();
-    presetOutputs().warpShader.programSource.clear();
+    if (_presetOutputs)
+    {
+        _presetOutputs->compositeShader.programSource.clear();
+        _presetOutputs->warpShader.programSource.clear();
+    }
 
     /* Parse any comments (aka "[preset00]") */
     /* We don't do anything with this info so it's okay if it's missing */

@@ -204,7 +204,7 @@ std::string IdlePresets::presetText()
 }
 
 std::unique_ptr<Preset>
-IdlePresets::allocate(MilkdropPresetFactory* factory, const std::string& name, PresetOutputs& presetOutputs)
+IdlePresets::allocate(MilkdropPresetFactory* factory, const std::string& name, PresetOutputs* presetOutputs)
 {
 
     if (name == IDLE_PRESET_NAME)
