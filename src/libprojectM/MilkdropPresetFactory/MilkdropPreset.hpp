@@ -36,10 +36,10 @@
 #include <map>
 
 #ifdef DEBUG
-  /* 0 for no debugging, 1 for normal, 2 for insane */
-  #define MILKDROP_PRESET_DEBUG 1
+/* 0 for no debugging, 1 for normal, 2 for insane */
+#define MILKDROP_PRESET_DEBUG 1
 #else
-  #define MILKDROP_PRESET_DEBUG 0
+#define MILKDROP_PRESET_DEBUG 0
 #endif
 
 #include "CustomShape.hpp"
@@ -53,8 +53,11 @@
 #include "Preset.hpp"
 
 class MilkdropPresetFactory;
+
 class CustomWave;
+
 class CustomShape;
+
 class InitCond;
 
 
@@ -64,174 +67,202 @@ class MilkdropPreset : public Preset
 public:
 
 
-  ///  Load a MilkdropPreset by filename with input and output buffers specified.
-  /// \param absoluteFilePath the absolute file path of a MilkdropPreset to load from the file system
-  /// \param milkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
-  /// \param presetOutputs initialized and filled with data parsed from a MilkdropPreset
-  MilkdropPreset(MilkdropPresetFactory *factory, const std::string & absoluteFilePath, const std::string & milkdropPresetName, PresetOutputs & presetOutputs);
+    ///  Load a MilkdropPreset by filename with input and output buffers specified.
+    /// \param absoluteFilePath the absolute file path of a MilkdropPreset to load from the file system
+    /// \param milkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
+    /// \param presetOutputs initialized and filled with data parsed from a MilkdropPreset
+    MilkdropPreset(MilkdropPresetFactory* factory, const std::string& absoluteFilePath,
+                   const std::string& milkdropPresetName, PresetOutputs& presetOutputs);
 
-  ///  Load a MilkdropPreset from an input stream with input and output buffers specified.
-  /// \param in an already initialized input stream to read the MilkdropPreset file from
-  /// \param milkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
-  /// \param presetOutputs initialized and filled with data parsed from a MilkdropPreset
-  MilkdropPreset(MilkdropPresetFactory *factory, std::istream & in, const std::string & milkdropPresetName, PresetOutputs & presetOutputs);
+    ///  Load a MilkdropPreset from an input stream with input and output buffers specified.
+    /// \param in an already initialized input stream to read the MilkdropPreset file from
+    /// \param milkdropPresetName a descriptive name for the MilkdropPreset. Usually just the file name
+    /// \param presetOutputs initialized and filled with data parsed from a MilkdropPreset
+    MilkdropPreset(MilkdropPresetFactory* factory, std::istream& in, const std::string& milkdropPresetName,
+                   PresetOutputs& presetOutputs);
 
-  ~MilkdropPreset();
+    ~MilkdropPreset();
 
-  /// All "builtin" parameters for this MilkdropPreset. Anything *but* user defined parameters and
-  /// custom waves / shapes objects go here.
-  /// @bug encapsulate
-  BuiltinParams builtinParams;
-
-
-  /// Used by parser to find/create custom waves and shapes. May be refactored
-  template <class CustomObject>
-  static CustomObject * find_custom_object(int id, std::vector<CustomObject*> & customObjects);
+    /// All "builtin" parameters for this MilkdropPreset. Anything *but* user defined parameters and
+    /// custom waves / shapes objects go here.
+    /// @bug encapsulate
+    BuiltinParams builtinParams;
 
 
-  int per_pixel_eqn_string_index;
-  int per_frame_eqn_string_index;
-  int per_frame_init_eqn_string_index;
-
-  int per_frame_eqn_count,
-  per_frame_init_eqn_count;
+    /// Used by parser to find/create custom waves and shapes. May be refactored
+    template<class CustomObject>
+    static CustomObject* find_custom_object(int id, std::vector<CustomObject*>& customObjects);
 
 
-  /// Used by parser
-  /// @bug refactor
-  int add_per_pixel_eqn( char *name, Expr *gen_expr );
+    int per_pixel_eqn_string_index;
+    int per_frame_eqn_string_index;
+    int per_frame_init_eqn_string_index;
 
-  /// Accessor method to retrieve the absolute file path of the loaded MilkdropPreset
-  /// \returns a file path string
-  std::string absoluteFilePath() const
-  {
-    return _absoluteFilePath;
-  }
+    int per_frame_eqn_count,
+        per_frame_init_eqn_count;
 
 
-  /// Accessor method for the MilkdropPreset outputs instance associated with this MilkdropPreset
-  /// \returns A MilkdropPreset output instance with values computed from most recent evaluateFrame()
-  PresetOutputs & presetOutputs() const
-  {
-    return _presetOutputs;
-  }
+    /// Used by parser
+    /// @bug refactor
+    int add_per_pixel_eqn(char* name, Expr* gen_expr);
 
-  const PresetInputs & presetInputs() const
-  {
-    return _presetInputs;
-  }
+    /// Accessor method to retrieve the absolute file path of the loaded MilkdropPreset
+    /// \returns a file path string
+    std::string absoluteFilePath() const
+    {
+        return _absoluteFilePath;
+    }
+
+
+    /// Accessor method for the MilkdropPreset outputs instance associated with this MilkdropPreset
+    /// \returns A MilkdropPreset output instance with values computed from most recent evaluateFrame()
+    PresetOutputs& presetOutputs() const
+    {
+        return _presetOutputs;
+    }
+
+    const PresetInputs& presetInputs() const
+    {
+        return _presetInputs;
+    }
 
 
 // @bug encapsulate
 
-  PresetOutputs::cwave_container customWaves;
-  PresetOutputs::cshape_container customShapes;
+    PresetOutputs::cwave_container customWaves;
+    PresetOutputs::cshape_container customShapes;
 
-  /// @bug encapsulate
-  /* Data structures that contain equation and initial condition information */
-  std::vector<PerFrameEqn*>  per_frame_eqn_tree;   /* per frame equations */
-  std::map<int, PerPixelEqn*>  per_pixel_eqn_tree; /* per pixel equation tree */
-  Expr *per_pixel_program;
-  std::map<std::string,InitCond*>  per_frame_init_eqn_tree; /* per frame initial equations */
-  std::map<std::string,InitCond*>  init_cond_tree; /* initial conditions */
-  std::map<std::string,Param*> user_param_tree; /* user parameter splay tree */
+    /// @bug encapsulate
+    /* Data structures that contain equation and initial condition information */
+    std::vector<PerFrameEqn*> per_frame_eqn_tree;   /* per frame equations */
+    std::map<int, PerPixelEqn*> per_pixel_eqn_tree; /* per pixel equation tree */
+    Expr* per_pixel_program;
+    std::map<std::string, InitCond*> per_frame_init_eqn_tree; /* per frame initial equations */
+    std::map<std::string, InitCond*> init_cond_tree; /* initial conditions */
+    std::map<std::string, Param*> user_param_tree; /* user parameter splay tree */
 
 
-  PresetOutputs & pipeline() { return _presetOutputs; } 
+    PresetOutputs& pipeline()
+    {
+        return _presetOutputs;
+    }
 
-  void Render(const BeatDetect &music, const PipelineContext &context);
-  const std::string & name() const;
-  const std::string & filename() const { return _filename; } 
+    void Render(const BeatDetect& music, const PipelineContext& context);
+
+    const std::string& name() const;
+
+    const std::string& filename() const
+    {
+        return _filename;
+    }
+
 private:
-  std::string _filename; 
-  PresetInputs _presetInputs;
-  /// Evaluates the MilkdropPreset for a frame given the current values of MilkdropPreset inputs / outputs
-  /// All calculated values are stored in the associated MilkdropPreset outputs instance
-  void evaluateFrame();
+    std::string _filename;
+    PresetInputs _presetInputs;
 
-  // The absolute file path of the MilkdropPreset
-  std::string _absoluteFilePath;
+    /// Evaluates the MilkdropPreset for a frame given the current values of MilkdropPreset inputs / outputs
+    /// All calculated values are stored in the associated MilkdropPreset outputs instance
+    void evaluateFrame();
 
-  // The absolute path of the MilkdropPreset
-  std::string _absolutePath;
+    // The absolute file path of the MilkdropPreset
+    std::string _absoluteFilePath;
 
-  void initialize(const std::string & pathname);
-  void initialize(std::istream & in);
+    // The absolute path of the MilkdropPreset
+    std::string _absolutePath;
 
-  int loadPresetFile(const std::string & pathname);
+    void initialize(const std::string& pathname);
 
-  void loadBuiltinParamsUnspecInitConds();
-  void loadCustomWaveUnspecInitConds();
-  void loadCustomShapeUnspecInitConds();
+    void initialize(std::istream& in);
 
-  void evalCustomWavePerFrameEquations();
-  void evalCustomShapePerFrameEquations();
-  void evalPerFrameInitEquations();
-  void evalCustomWaveInitConditions();
-  void evalCustomShapeInitConditions();
-  void evalPerPixelEqns();
-  void evalPerFrameEquations();
-  void initialize_PerPixelMeshes();
-  int readIn(std::istream & fs);
+    int loadPresetFile(const std::string& pathname);
 
-  void preloadInitialize();
-  void postloadInitialize();
+    void loadBuiltinParamsUnspecInitConds();
 
-  MilkdropPresetFactory *_factory;
-  PresetOutputs & _presetOutputs;
+    void loadCustomWaveUnspecInitConds();
 
-template <class CustomObject>
-void transfer_q_variables(std::vector<CustomObject*> & customObjects);
+    void loadCustomShapeUnspecInitConds();
 
-friend class MilkdropPresetFactory;
+    void evalCustomWavePerFrameEquations();
+
+    void evalCustomShapePerFrameEquations();
+
+    void evalPerFrameInitEquations();
+
+    void evalCustomWaveInitConditions();
+
+    void evalCustomShapeInitConditions();
+
+    void evalPerPixelEqns();
+
+    void evalPerFrameEquations();
+
+    void initialize_PerPixelMeshes();
+
+    int readIn(std::istream& fs);
+
+    void preloadInitialize();
+
+    void postloadInitialize();
+
+    MilkdropPresetFactory* _factory;
+    PresetOutputs& _presetOutputs;
+
+    template<class CustomObject>
+    void transfer_q_variables(std::vector<CustomObject*>& customObjects);
+
+    friend class MilkdropPresetFactory;
 };
 
 
-template <class CustomObject>
-void MilkdropPreset::transfer_q_variables(std::vector<CustomObject*> & customObjects)
+template<class CustomObject>
+void MilkdropPreset::transfer_q_variables(std::vector<CustomObject*>& customObjects)
 {
- 	CustomObject * custom_object;
+    CustomObject* custom_object;
 
-	for (typename std::vector<CustomObject*>::iterator pos = customObjects.begin(); pos != customObjects.end();++pos) {
-
-		custom_object = *pos;
-		for (unsigned int i = 0; i < NUM_Q_VARIABLES; i++)
-			custom_object->q[i] = _presetOutputs.q[i];
-	}
-
-
-}
-
-template <class CustomObject>
-CustomObject * MilkdropPreset::find_custom_object(int id, std::vector<CustomObject*> & customObjects)
-{
-
-  CustomObject * custom_object = NULL;
-
-
-  for (typename std::vector<CustomObject*>::iterator pos = customObjects.begin(); pos != customObjects.end();++pos) {
-	if ((*pos)->id == id) {
-		custom_object = *pos;
-		break;
-	}
-  }
-
-  if (custom_object == NULL)
-  {
-
-    if ((custom_object = new CustomObject(id)) == NULL)
+    for (typename std::vector<CustomObject*>::iterator pos = customObjects.begin(); pos != customObjects.end(); ++pos)
     {
-      return NULL;
+
+        custom_object = *pos;
+        for (unsigned int i = 0; i < NUM_Q_VARIABLES; i++)
+        {
+            custom_object->q[i] = _presetOutputs.q[i];
+        }
     }
 
-      customObjects.push_back(custom_object);
 
-  }
-
-  assert(custom_object);
-  return custom_object;
 }
 
+template<class CustomObject>
+CustomObject* MilkdropPreset::find_custom_object(int id, std::vector<CustomObject*>& customObjects)
+{
+
+    CustomObject* custom_object = NULL;
+
+
+    for (typename std::vector<CustomObject*>::iterator pos = customObjects.begin(); pos != customObjects.end(); ++pos)
+    {
+        if ((*pos)->id == id)
+        {
+            custom_object = *pos;
+            break;
+        }
+    }
+
+    if (custom_object == NULL)
+    {
+
+        if ((custom_object = new CustomObject(id)) == NULL)
+        {
+            return NULL;
+        }
+
+        customObjects.push_back(custom_object);
+
+    }
+
+    assert(custom_object);
+    return custom_object;
+}
 
 
 #endif /** !_MilkdropPreset_HPP */

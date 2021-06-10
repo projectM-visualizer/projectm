@@ -33,44 +33,52 @@
 #include <map>
 #include <cstdio>
 
-class BuiltinParams {
+class BuiltinParams
+{
 
 public:
-   typedef std::map<std::string, std::string> AliasMap;
+    typedef std::map<std::string, std::string> AliasMap;
 
     /** Default constructor leaves database in an uninitialized state.  */
     BuiltinParams();
 
     /** Construct a new builtin parameter database with variables references given by
      * the preset input and output structures */
-     BuiltinParams(PresetInputs &  presetInputs, PresetOutputs & presetOutputs);
+    BuiltinParams(PresetInputs& presetInputs, PresetOutputs& presetOutputs);
 
     ~BuiltinParams();
 
     /** Param database initalizer / destructor functions */
-    int init_builtin_param_db(const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
-    int load_all_builtin_param(const PresetInputs & presetInputs, PresetOutputs & presetOutputs);
+    int init_builtin_param_db(const PresetInputs& presetInputs, PresetOutputs& presetOutputs);
+
+    int load_all_builtin_param(const PresetInputs& presetInputs, PresetOutputs& presetOutputs);
+
     int destroy_builtin_param_db();
 
-    int insert_param_alt_name( Param *param, const std::string& salt_name );
-    Param *find_builtin_param( const std::string & name );
-    int load_builtin_param_float( const std::string & name, void *engine_val, void *matrix,
-                                  short int flags,
-                                  float init_val, float upper_bound,
-                                  float lower_bound, const std::string & alt_name );
-    int load_builtin_param_int( const std::string & name, void *engine_val, short int flags,
-                                int init_val, int upper_bound,
-                                int lower_bound, const std::string & alt_name );
-    int load_builtin_param_bool( const std::string & name, void *engine_val, short int flags,
-                                int init_val, const std::string & alt_name );
+    int insert_param_alt_name(Param* param, const std::string& salt_name);
 
-    int load_builtin_param_string( const std::string & name, std::string * engine_val, short int flags);
+    Param* find_builtin_param(const std::string& name);
 
-    int insert_builtin_param( Param *param );
+    int load_builtin_param_float(const std::string& name, void* engine_val, void* matrix,
+                                 short int flags,
+                                 float init_val, float upper_bound,
+                                 float lower_bound, const std::string& alt_name);
 
-    template <class Fun>
-    void apply(Fun & fun) {
-	traverse(builtin_param_tree, fun);
+    int load_builtin_param_int(const std::string& name, void* engine_val, short int flags,
+                               int init_val, int upper_bound,
+                               int lower_bound, const std::string& alt_name);
+
+    int load_builtin_param_bool(const std::string& name, void* engine_val, short int flags,
+                                int init_val, const std::string& alt_name);
+
+    int load_builtin_param_string(const std::string& name, std::string* engine_val, short int flags);
+
+    int insert_builtin_param(Param* param);
+
+    template<class Fun>
+    void apply(Fun& fun)
+    {
+        traverse(builtin_param_tree, fun);
     }
 
 
@@ -81,6 +89,7 @@ private:
     AliasMap aliasMap;
 
     // Internal datastructure to store the parameters
-    std::map<std::string,Param*> builtin_param_tree;
+    std::map<std::string, Param*> builtin_param_tree;
 };
+
 #endif
