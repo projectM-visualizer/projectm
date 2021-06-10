@@ -17,56 +17,60 @@
 #include "IdlePreset.hpp"
 #include "PresetFrameIO.hpp"
 
-MilkdropPresetFactory::MilkdropPresetFactory(int gx_, int gy_): gx(gx_), gy(gy_), _presetOutputsCache(nullptr)
+MilkdropPresetFactory::MilkdropPresetFactory(int gx_, int gy_)
+    : gx(gx_)
+    , gy(gy_)
+    , _presetOutputsCache(nullptr)
 {
-	/* Initializes the builtin function database */
-	BuiltinFuncs::init_builtin_func_db();
+    /* Initializes the builtin function database */
+    BuiltinFuncs::init_builtin_func_db();
 
-	/* Initializes all infix operators */
-	Eval::init_infix_ops();
+    /* Initializes all infix operators */
+    Eval::init_infix_ops();
 }
 
-MilkdropPresetFactory::~MilkdropPresetFactory() {
+MilkdropPresetFactory::~MilkdropPresetFactory()
+{
 
 //	std::cerr << "[~MilkdropPresetFactory] destroy infix ops" << std::endl;
-	Eval::destroy_infix_ops();
+    Eval::destroy_infix_ops();
 //	std::cerr << "[~MilkdropPresetFactory] destroy builtin func" << std::endl;
-	BuiltinFuncs::destroy_builtin_func_db();
+    BuiltinFuncs::destroy_builtin_func_db();
 //	std::cerr << "[~MilkdropPresetFactory] delete preset out puts" << std::endl;
-	delete(_presetOutputsCache);
+    delete (_presetOutputsCache);
 //	std::cerr << "[~MilkdropPresetFactory] done" << std::endl;
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
-void resetPresetOutputs(PresetOutputs * presetOutputs)
+void resetPresetOutputs(PresetOutputs* presetOutputs)
 {
 
-    presetOutputs->zoom=1.0;
+    presetOutputs->zoom = 1.0;
     presetOutputs->zoomexp = 1.0;
-    presetOutputs->rot= 0.0;
-    presetOutputs->warp= 0.0;
+    presetOutputs->rot = 0.0;
+    presetOutputs->warp = 0.0;
 
-    presetOutputs->sx= 1.0;
-    presetOutputs->sy= 1.0;
-    presetOutputs->dx= 0.0;
-    presetOutputs->dy= 0.0;
-    presetOutputs->cx= 0.5;
-    presetOutputs->cy= 0.5;
+    presetOutputs->sx = 1.0;
+    presetOutputs->sy = 1.0;
+    presetOutputs->dx = 0.0;
+    presetOutputs->dy = 0.0;
+    presetOutputs->cx = 0.5;
+    presetOutputs->cy = 0.5;
 
-    presetOutputs->screenDecay=.98;
+    presetOutputs->screenDecay = .98;
 
-    presetOutputs->wave.r= 1.0;
-    presetOutputs->wave.g= 0.2;
-    presetOutputs->wave.b= 0.0;
-    presetOutputs->wave.x= 0.5;
-    presetOutputs->wave.y= 0.5;
-    presetOutputs->wave.mystery= 0.0;
+    presetOutputs->wave.r = 1.0;
+    presetOutputs->wave.g = 0.2;
+    presetOutputs->wave.b = 0.0;
+    presetOutputs->wave.x = 0.5;
+    presetOutputs->wave.y = 0.5;
+    presetOutputs->wave.mystery = 0.0;
 
-    presetOutputs->border.outer_size= 0.0;
-    presetOutputs->border.outer_r= 0.0;
-    presetOutputs->border.outer_g= 0.0;
-    presetOutputs->border.outer_b= 0.0;
-    presetOutputs->border.outer_a= 0.0;
+    presetOutputs->border.outer_size = 0.0;
+    presetOutputs->border.outer_r = 0.0;
+    presetOutputs->border.outer_g = 0.0;
+    presetOutputs->border.outer_b = 0.0;
+    presetOutputs->border.outer_a = 0.0;
 
     presetOutputs->border.inner_size = 0.0;
     presetOutputs->border.inner_r = 0.0;
@@ -106,7 +110,7 @@ void resetPresetOutputs(PresetOutputs * presetOutputs)
     presetOutputs->bInvert = 0;
     presetOutputs->bMotionVectorsOn = 1;
 
-    presetOutputs->wave.a =1.0;
+    presetOutputs->wave.a = 1.0;
     presetOutputs->wave.scale = 1.0;
     presetOutputs->wave.smoothing = 0;
     presetOutputs->wave.mystery = 0;
@@ -119,19 +123,21 @@ void resetPresetOutputs(PresetOutputs * presetOutputs)
     /* PER_PIXEL CONSTANT END */
     /* Q VARIABLES START */
 
-    for (int i = 0;i< 32;i++)
+    for (int i = 0; i < 32; i++)
+    {
         presetOutputs->q[i] = 0;
+    }
 
 //	for ( std::vector<CustomWave*>::iterator pos = presetOutputs->customWaves.begin();
 //	        pos != presetOutputs->customWaves.end(); ++pos )
 //		if ( *pos != 0 ) delete ( *pos );
-	
+
 //	for ( std::vector<CustomShape*>::iterator pos = presetOutputs->customShapes.begin();
 //	        pos != presetOutputs->customShapes.end(); ++pos )
 //		if ( *pos != 0 ) delete ( *pos );
-	
-	presetOutputs->customWaves.clear();
-	presetOutputs->customShapes.clear();
+
+    presetOutputs->customWaves.clear();
+    presetOutputs->customShapes.clear();
 
     /* Q VARIABLES END */
 
@@ -143,72 +149,78 @@ void MilkdropPresetFactory::reset()
 {
 
     if (_presetOutputsCache)
+    {
         resetPresetOutputs(_presetOutputsCache);
+    }
 }
 
 PresetOutputs* MilkdropPresetFactory::createPresetOutputs(int gx, int gy)
 {
 
-	PresetOutputs *presetOutputs = new PresetOutputs();
+    PresetOutputs* presetOutputs = new PresetOutputs();
 
-	presetOutputs->Initialize(gx,gy);
+    presetOutputs->Initialize(gx, gy);
 
-	/* PER FRAME CONSTANTS BEGIN */
-	presetOutputs->zoom=1.0;
-	presetOutputs->zoomexp = 1.0;
-	presetOutputs->rot= 0.0;
-	presetOutputs->warp= 0.0;
+    /* PER FRAME CONSTANTS BEGIN */
+    presetOutputs->zoom = 1.0;
+    presetOutputs->zoomexp = 1.0;
+    presetOutputs->rot = 0.0;
+    presetOutputs->warp = 0.0;
 
-	presetOutputs->sx= 1.0;
-	presetOutputs->sy= 1.0;
-	presetOutputs->dx= 0.0;
-	presetOutputs->dy= 0.0;
-	presetOutputs->cx= 0.5;
-	presetOutputs->cy= 0.5;
+    presetOutputs->sx = 1.0;
+    presetOutputs->sy = 1.0;
+    presetOutputs->dx = 0.0;
+    presetOutputs->dy = 0.0;
+    presetOutputs->cx = 0.5;
+    presetOutputs->cy = 0.5;
 
-	presetOutputs->screenDecay=.98;
+    presetOutputs->screenDecay = .98;
 
 
 //_presetInputs.meshx = 0;
 //_presetInputs.meshy = 0;
 
 
-	/* PER_FRAME CONSTANTS END */
-	presetOutputs->fRating = 0;
-	presetOutputs->fGammaAdj = 1.0;
-	presetOutputs->videoEcho.zoom = 1.0;
-	presetOutputs->videoEcho.a = 0;
-	presetOutputs->videoEcho.orientation = Normal;
+    /* PER_FRAME CONSTANTS END */
+    presetOutputs->fRating = 0;
+    presetOutputs->fGammaAdj = 1.0;
+    presetOutputs->videoEcho.zoom = 1.0;
+    presetOutputs->videoEcho.a = 0;
+    presetOutputs->videoEcho.orientation = Normal;
 
-	presetOutputs->textureWrap = 0;
-	presetOutputs->bDarkenCenter = 0;
-	presetOutputs->bRedBlueStereo = 0;
-	presetOutputs->bBrighten = 0;
-	presetOutputs->bDarken = 0;
-	presetOutputs->bSolarize = 0;
-	presetOutputs->bInvert = 0;
-	presetOutputs->bMotionVectorsOn = 1;
+    presetOutputs->textureWrap = 0;
+    presetOutputs->bDarkenCenter = 0;
+    presetOutputs->bRedBlueStereo = 0;
+    presetOutputs->bBrighten = 0;
+    presetOutputs->bDarken = 0;
+    presetOutputs->bSolarize = 0;
+    presetOutputs->bInvert = 0;
+    presetOutputs->bMotionVectorsOn = 1;
     presetOutputs->fWarpAnimSpeed = 0;
-	presetOutputs->fWarpScale = 0;
-	presetOutputs->fShader = 0;
+    presetOutputs->fWarpScale = 0;
+    presetOutputs->fShader = 0;
 
-	/* PER_PIXEL CONSTANTS BEGIN */
+    /* PER_PIXEL CONSTANTS BEGIN */
 
-	/* PER_PIXEL CONSTANT END */
+    /* PER_PIXEL CONSTANT END */
 
-	/* Q AND T VARIABLES START */
+    /* Q AND T VARIABLES START */
 
-    for (unsigned int i = 0;i<NUM_Q_VARIABLES;i++)
-		presetOutputs->q[i] = 0;
-	
-	/* Q AND T VARIABLES END */
+    for (unsigned int i = 0; i < NUM_Q_VARIABLES; i++)
+    {
+        presetOutputs->q[i] = 0;
+    }
+
+    /* Q AND T VARIABLES END */
     return presetOutputs;
 }
 
 
-std::unique_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url, const std::string & name, const std::string & author) {
+std::unique_ptr<Preset>
+MilkdropPresetFactory::allocate(const std::string& url, const std::string& name, const std::string& author)
+{
 
-    PresetOutputs *presetOutputs;
+    PresetOutputs* presetOutputs;
     // use cached PresetOutputs if there is one, otherwise allocate
     if (_presetOutputsCache)
     {
@@ -217,25 +229,33 @@ std::unique_ptr<Preset> MilkdropPresetFactory::allocate(const std::string & url,
     }
     else
     {
-        presetOutputs = createPresetOutputs(gx,gy);
+        presetOutputs = createPresetOutputs(gx, gy);
     }
 
-	resetPresetOutputs(presetOutputs);
+    resetPresetOutputs(presetOutputs);
 
-	std::string path;
-	if (PresetFactory::protocol(url, path) == PresetFactory::IDLE_PRESET_PROTOCOL) {
-		return IdlePresets::allocate(this, path, *presetOutputs);
-	} else
-		return std::unique_ptr<Preset>(new MilkdropPreset(this, url, name, *presetOutputs));
+    std::string path;
+    if (PresetFactory::protocol(url, path) == PresetFactory::IDLE_PRESET_PROTOCOL)
+    {
+        return IdlePresets::allocate(this, path, *presetOutputs);
+    }
+    else
+    {
+        return std::unique_ptr<Preset>(new MilkdropPreset(this, url, name, *presetOutputs));
+    }
 }
 
 // this gives the preset a way to return the PresetOutput w/o dependency on class projectM behavior
-void MilkdropPresetFactory::releasePreset(Preset *preset_)
+void MilkdropPresetFactory::releasePreset(Preset* preset_)
 {
-    MilkdropPreset *preset = (MilkdropPreset *)preset_;
+    MilkdropPreset* preset = (MilkdropPreset*) preset_;
     // return PresetOutputs to the cache
     if (nullptr == _presetOutputsCache)
+    {
         _presetOutputsCache = &preset->_presetOutputs;
+    }
     else
+    {
         delete &preset->_presetOutputs;
+    }
 }
