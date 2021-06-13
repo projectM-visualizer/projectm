@@ -56,7 +56,7 @@ public:
     void evaluate(int mesh_i, int mesh_j);
     virtual ~PerPixelEqn();
 
-    PerPixelEqn(int index, Param * param, Expr * gen_expr);
+    PerPixelEqn(unsigned long index, Param * param, Expr * gen_expr);
 
     Expr *assign_expr;
   };
