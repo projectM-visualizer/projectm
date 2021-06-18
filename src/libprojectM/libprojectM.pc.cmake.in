@@ -1,0 +1,13 @@
+prefix=@PKGCONFIG_PREFIX@
+exec_prefix=${prefix}
+libdir=@PKGCONFIG_LIB_DIR@
+includedir=@PKGCONFIG_INCLUDE_DIR@
+pkgdatadir=@PKGCONFIG_DATADIR_PATH@
+sysconfdir=@PKGCONFIG_DATADIR_PATH@
+
+Name: libprojectM
+Version: @PROJECT_VERSION@
+Description: projectM - OpenGL Milkdrop
+Requires:
+Libs: -L${libdir} -lprojectM
+Cflags: -I${includedir}

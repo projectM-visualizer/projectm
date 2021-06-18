@@ -23,6 +23,10 @@
 		};
 /* End PBXAggregateTarget section */
 
+/* Begin PBXBuildFile section */
+		16CF110C25E1B35F00B4A951 /* Distribution.xml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 16CF110B25E1B35F00B4A951 /* Distribution.xml */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		1648A64525D7FD520075B8FC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -68,6 +72,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				16CF110C25E1B35F00B4A951 /* Distribution.xml in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,6 +82,7 @@
 		1648A64025D7FD520075B8FC /* SDLprojectM.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDLprojectM.xcodeproj; path = "src/projectM-sdl/SDLprojectM.xcodeproj"; sourceTree = "<group>"; };
 		168E975025D7FDDA0073B1B8 /* Music Plugin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = "Music Plugin.xcodeproj"; path = "src/projectM-MusicPlugin/Music Plugin.xcodeproj"; sourceTree = "<group>"; };
 		168E976E25D800F90073B1B8 /* ProjectM-MusicPlugin.pkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ProjectM-MusicPlugin.pkg"; path = "src/projectM-MusicPlugin/ProjectM-MusicPlugin.pkg"; sourceTree = "<group>"; };
+		16CF110B25E1B35F00B4A951 /* Distribution.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = Distribution.xml; path = mac/Distribution.xml; sourceTree = "<group>"; };
 		16F25E9C25D81737002EC64E /* ProjectM-SDL.pkg */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ProjectM-SDL.pkg"; path = "src/projectM-sdl/ProjectM-SDL.pkg"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -84,6 +90,7 @@
 		1648A5E725D7FB650075B8FC = {
 			isa = PBXGroup;
 			children = (
+				16CF110B25E1B35F00B4A951 /* Distribution.xml */,
 				16F25E9C25D81737002EC64E /* ProjectM-SDL.pkg */,
 				168E976E25D800F90073B1B8 /* ProjectM-MusicPlugin.pkg */,
 				168E975025D7FDDA0073B1B8 /* Music Plugin.xcodeproj */,
@@ -200,7 +207,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "set -euxo pipefail\n\necho BUILT_PRODUCTS_DIR $BUILT_PRODUCTS_DIR\nls \"$BUILT_PRODUCTS_DIR\"\n\nmkdir -p \"$TEMP_DIR\"\n\nSDL_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-SDL.pkg\"\nMUSIC_PLUGIN_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\"\n\nproductbuild --timestamp --sign '5926VBQM6Y' --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n#productbuild --package \"$SDL_PKG\" --package \"$MUSIC_PLUGIN_PKG\" \"$TEMP_DIR/ProjectM.pkg\"\n\necho \"Created installer package $TEMP_DIR/ProjectM.pkg\"\n\ncp -rp \"$TEMP_DIR/ProjectM.pkg\" \"$SRCROOT/\"\n";
+			shellScript = "set -euxo pipefail\n\necho BUILT_PRODUCTS_DIR $BUILT_PRODUCTS_DIR\nls \"$BUILT_PRODUCTS_DIR\"\n\nmkdir -p \"$TEMP_DIR\"\n\nSDL_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-SDL.pkg\"\nMUSIC_PLUGIN_PKG=\"$BUILT_PRODUCTS_DIR/ProjectM-MusicPlugin.pkg\"\n\n\n#productbuild --timestamp --sign '5926VBQM6Y' --package $SDL_PKG --package $MUSIC_PLUGIN_PKG \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\nproductbuild --timestamp --sign '5926VBQM6Y' --distribution mac/Distribution.xml --package-path \"$BUILT_PRODUCTS_DIR\" \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n#productbuild --package \"$SDL_PKG\" --package \"$MUSIC_PLUGIN_PKG\" \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\necho \"Created installer package $BUILT_PRODUCTS_DIR/ProjectM.pkg\"\n\ncp -rp \"$BUILT_PRODUCTS_DIR/ProjectM.pkg\" \"$SRCROOT/\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

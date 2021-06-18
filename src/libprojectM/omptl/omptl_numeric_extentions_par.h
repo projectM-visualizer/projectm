@@ -123,7 +123,7 @@ struct _TransformAccumulate< ::std::input_iterator_tag >
 template <class Iterator, class T, class UnaryFunction, class BinaryFunction>
 T transform_accumulate(Iterator first, Iterator last, const T init,
 			UnaryFunction unary_op, BinaryFunction binary_op,
-			const unsigned P = omp_get_max_threads())
+			const unsigned P)
 {
 	return ::omptl::_TransformAccumulate
 	<typename ::std::iterator_traits<Iterator>::iterator_category>
@@ -134,7 +134,7 @@ T transform_accumulate(Iterator first, Iterator last, const T init,
 template <class Iterator, class T, class UnaryFunction>
 T transform_accumulate(Iterator first, Iterator last,
 			const T init, UnaryFunction unary_op,
-			const unsigned P=omp_get_max_threads())
+			const unsigned P)
 {
 	typedef typename UnaryFunction::result_type RT;
 	return ::omptl::transform_accumulate(first, last, init, unary_op,

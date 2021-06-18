@@ -15,11 +15,11 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\TimeKeeper.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\timer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../src\libprojectM\wipemalloc.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)../msvc\glew.c" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)../msvc\GL\glew.c" />
     <ClCompile Include="$(MSBuildThisFileDirectory)../msvc\dlfcn.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)../msvc\glew.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)../msvc\GL\glew.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

@@ -39,12 +39,29 @@
 #define TEST_ALL_PRESETS    0
 #define STEREOSCOPIC_SBS    0
 
+// projectM
 #include "projectM-opengl.h"
 #include <projectM.hpp>
+#include "Renderer/ShaderEngine.hpp"
+#include "Renderer/StaticGlShaders.h"
 #include <sdltoprojectM.h>
+
+// projectM SDL
+#include "setup.hpp"
+#include "loopback.hpp"
+#include "audioCapture.hpp"
+
+
+#if defined _MSC_VER
+#  include <direct.h>
+#endif
+
+#include <fstream>
+#include <string>
 #include <iostream>
 #include <sys/stat.h>
-
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #ifdef WASAPI_LOOPBACK
 #include <stdio.h>
@@ -60,14 +77,13 @@
 
 #endif /** WASAPI_LOOPBACK */
 
-
-
 #ifdef WIN32
 #define SDL_MAIN_HANDLED
 #include "SDL.h"
 #else
 #include <SDL2/SDL.h>
 #endif /** WIN32 */
+
 
 // DATADIR_PATH should be set by the root Makefile if this is being
 // built with autotools.
@@ -84,17 +100,18 @@
 #endif
 
 class projectMSDL : public projectM {
+    
 public:
-
-
     bool done;
     bool mouseDown = false;
     bool wasapi = false; // Used to track if wasapi is currently active. This bool will allow us to run a WASAPI app and still toggle to microphone inputs.
     bool fakeAudio = false; // Used to track fake audio, so we can turn it off and on.
     bool stretch = false; // used for toggling stretch mode
-    projectMSDL(Settings settings, int flags);
-    projectMSDL(std::string config_file, int flags);
-    void init(SDL_Window *window, SDL_GLContext *glCtx, const bool renderToTexture = false);
+    SDL_GLContext glCtx;
+
+    projectMSDL(SDL_GLContext glCtx, Settings settings, int flags);
+    projectMSDL(SDL_GLContext glCtx, std::string config_file, int flags);
+    void init(SDL_Window *window, const bool renderToTexture = false);
     int openAudioInput();
     int toggleAudioInput();
     int initAudioInput();
@@ -120,7 +137,6 @@ public:
 
 private:
     SDL_Window *win;
-    SDL_GLContext *glCtx;
     bool isFullScreen;
     SDL_AudioDeviceID audioInputDevice;
     unsigned int width, height;

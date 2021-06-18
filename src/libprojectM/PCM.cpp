@@ -406,7 +406,7 @@ void PCM::freePCM()
 
 #ifndef NDEBUG
 
-#include <PresetLoader.hpp>
+#include "PresetLoader.hpp"
 
 #define TEST(cond) if (!verify(__FILE__ ": " #cond,cond)) return false
 #define TEST2(str,cond) if (!verify(str,cond)) return false

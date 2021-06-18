@@ -39,11 +39,12 @@ build-mac: macOS/Build/Products/Debug/presets
 	@echo "Products built in macOS/Build/Products/Debug"
 	open macOS/Build/Products/Debug
 
-ProjectM.pkg:
-	xcrun xcodebuild -scheme "ProjectM Installer" -configuration Release archive -archivePath build/ProjectM.xcarchive
+build-mac-release:
+	xcrun xcodebuild -allowProvisioningUpdates -scheme "ProjectM Installer" -configuration Release archive -archivePath build/ProjectM.xcarchive
 
 # do a macOS build
-dist-mac: dist ProjectM.pkg
+dist-mac: dist build-mac-release
+	mac/notarize.sh
 	rm -rf dist
 	mkdir -p dist
 	mv ProjectM.pkg dist/projectM-macOS.pkg

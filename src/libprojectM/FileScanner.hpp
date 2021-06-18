@@ -14,7 +14,7 @@
 #include "Common.hpp"
 #include <string.h>
 
-#ifdef HAVE_FTS_H
+#if HAVE_FTS_H
 #include <fts.h>
 extern "C"
 {

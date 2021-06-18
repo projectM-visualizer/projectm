@@ -13,13 +13,14 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 
 ### Available For
 ##### Windows
-* [Standalone](https://github.com/projectM-visualizer/projectm/releases) (Requires the latest [Visual C++ redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads))
+* [Standalone](https://github.com/projectM-visualizer/projectm/releases) ([latest build](https://ci.appveyor.com/project/revmischa/projectm/build/artifacts)) - (Requires the latest [Visual C++ redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads))
 * [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
 * [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
 #### macOS
 * [Standalone](https://github.com/projectM-visualizer/projectm/releases)
 * [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
 * [Music.app Plugin](https://github.com/projectM-visualizer/projectm/releases/)
+* [Brew](https://formulae.brew.sh/formula/projectm)
 #### Linux
 * [Steam](https://store.steampowered.com/app/1358800/projectM_Music_Visualizer/)
 * Check your repository for a binary release.
@@ -28,9 +29,9 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 #### Xbox / Windows Phone
 * [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
 #### Other
-* [Source Code](https://github.com/projectM-visualizer/projectm/)
-* [Qt5](https://www.qt.io/)-based [Pulseaudio](https://www.freedesktop.org/wiki/Software/PulseAudio/) and Jack desktop apps in [source code](https://github.com/projectM-visualizer/projectm/)
-* [ALSA, xmms, winamp, jack](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
+* [Source code](https://github.com/projectM-visualizer/projectm/)
+* [Qt5](https://www.qt.io/)-based [PulseAudio](https://www.freedesktop.org/wiki/Software/PulseAudio/) and JACK desktop apps in [source code](https://github.com/projectM-visualizer/projectm/)
+* [ALSA, XMMS, Winamp, JACK](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
 
 ### Discord chat
 [Chat with us on Discord.](https://discord.gg/tpEuywB)
@@ -59,21 +60,21 @@ You can also download an enormous 41,000 preset pack of presets [here](https://m
 ***
 
 ## Screenshots
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.20%20AM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.20%20AM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.33.50%20AM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.33.50%20AM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.14.41%20PM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.14.41%20PM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.13.53%20PM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.13.53%20PM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.15.36%20PM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-07-18%20at%202.15.36%20PM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.49.32%20PM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.49.32%20PM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.50.37%20PM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-08-16%20at%204.50.37%20PM.png)
 
-![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-iTunes/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.07%20AM.png)
+![Screenshot](https://github.com/projectM-visualizer/projectm/raw/master/src/projectM-MusicPlugin/projectM%20screenshots/Screen%20Shot%202014-08-25%20at%2012.31.07%20AM.png)
 
 ![Screenshot](https://silentradiance.com/demos/projectM_vr/projectm_vr.png)
 ***
@@ -111,7 +112,7 @@ See [BUILDING.md](BUILDING.md)
 
 
 # Using the library
-At its core projectM is a library, [libprojectM](src/libprojectM). This library is responsible for parsing presets, analyzing audio PCM data with beat detection and FFT, applying the preset to the audio feature data and rendering the resulting output with openGL. It can render to an openGL context or a texture.
+At its core projectM is a library, [libprojectM](src/libprojectM). This library is responsible for parsing presets, analyzing audio PCM data with beat detection and FFT, applying the preset to the audio feature data and rendering the resulting output with openGL. It can render to an OpenGL context or a texture.
 
 To look at a simple example way of using the library see the [libSDL2 sample code](src/projectM-sdl/projectM_SDL_main.cpp).
 
@@ -132,7 +133,7 @@ Report issues on [GitHub](https://github.com/projectM-visualizer/projectm/issues
 
 [Chat with us on Discord.](https://discord.gg/tpEuywB).
 
-If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues. 
+If you would like to help improve this project, either with documentation, code, porting, hardware or anything else please let us know! We gladly accept pull requests and issues.
 
 ## Maintainers
 If you maintain packages of libprojectM, we are happy to work with you! Please note well:
