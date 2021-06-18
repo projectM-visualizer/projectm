@@ -55,7 +55,7 @@ struct JitContext
             context(getGlobalContext()), builder(getGlobalContext())
     {
         floatType = llvm::Type::getFloatTy(context);
-        module_ptr = llvm::make_unique<llvm::Module>(name, context);
+        module_ptr = std::make_unique<llvm::Module>(name, context);
         module = module_ptr.get();
 
         llvm::FastMathFlags fmf;
@@ -65,7 +65,7 @@ struct JitContext
 //        module->setDataLayout(getTargetMachine().createDataLayout());
 
         // Create a new pass manager attached to it.
-        fpm = llvm::make_unique<llvm::legacy::FunctionPassManager>(module);
+        fpm = std::make_unique<llvm::legacy::FunctionPassManager>(module);
         fpm->add(llvm::createInstructionCombiningPass());
         fpm->add(llvm::createReassociatePass());
         fpm->add(llvm::createGVNPass());
