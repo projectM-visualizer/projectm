@@ -196,7 +196,7 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 		"L: Lock/Unlock Preset""\n"
 		"R: Random preset""\n"
 		"N/P: [N]ext+ or [P]revious-reset""\n"
-		"M: Preset Menu (Arrow Up/Down & Page Up/Down to Navigate)""\n"
+		"M/Return: Preset Menu (Arrow Up/Down & Page Up/Down to Navigate)""\n"
 		"Arrow Up/Down: Increase or Decrease Beat Sensitivity""\n"
 		"CTRL-F: Fullscreen";
 

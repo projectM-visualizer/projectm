@@ -228,6 +228,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			// Hide FPS from screen and replace it with preset name.
 			if (renderer->showpreset)
 			{
+				renderer->showsearch = false;
 				renderer->showfps = false;
 			}
 			break;
@@ -263,6 +264,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 			if (isTextInputActive(true)) break; // disable when searching.
 			renderer->showmenu = !renderer->showmenu;
 			if (renderer->showmenu) {
+				renderer->showfps = false;
 				renderer->showhelp = false;
 				renderer->showstats = false;
 				populatePresetMenu();
@@ -316,6 +318,8 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
 				setShuffleEnabled(false); // disable shuffle
 				renderer->showhelp = false;
 				renderer->showstats = false;
+				renderer->showtitle = false;
+				renderer->showpreset = false;
 				renderer->showmenu = true;
 				populatePresetMenu();
 			} else {
