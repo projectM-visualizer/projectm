@@ -25,6 +25,10 @@
 #include "Expr.hpp"
 #include "Param.hpp"
 
+#if HAVE_LLVM
+#include "JitContext.hpp"
+#endif
+
 #include <cassert>
 #include <cstdio>
 #include <map>

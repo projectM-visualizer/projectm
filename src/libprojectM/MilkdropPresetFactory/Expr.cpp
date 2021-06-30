@@ -130,7 +130,7 @@ llvm::Value *PrefunExpr::_llvm(JitContext &jitx)
         auto function_ptr = llvm::ConstantExpr::getIntToPtr(fn_const , prefun_ptr_type);
         std::vector<llvm::Value *> args;
         args.push_back(x);
-        return jitx.builder.CreateCall(function_ptr, args);
+        return jitx.builder.CreateCall(prefun_type, function_ptr, args);
     }
 
     // fallback, call function wrapper e.g. float (*fn)(float *)
@@ -153,7 +153,7 @@ llvm::Value *PrefunExpr::_llvm(JitContext &jitx)
 
     std::vector<llvm::Value *> args;
     args.push_back(array);
-    return jitx.builder.CreateCall(function_ptr, args);
+    return jitx.builder.CreateCall(prefun_type, function_ptr, args);
 }
 #endif
 
@@ -1329,7 +1329,7 @@ Value * Expr::generate_eval_call(JitContext &jitx, Expr *expr, const char *name)
     args.push_back(thisConstant);
     args.push_back(jitx.mesh_i);
     args.push_back(jitx.mesh_j);
-    Value *ret = jitx.builder.CreateCall(thunkFunctionPtr, args, name);
+    Value *ret = jitx.builder.CreateCall(evalFunctionType, thunkFunctionPtr, args, name);
     return ret;
 }
 
@@ -1354,7 +1354,7 @@ Value * Expr::generate_set_call(JitContext &jitx, Expr *expr, Value *value)
     std::vector<Value *> args;
     args.push_back(thisConstant);
     args.push_back(value);
-    jitx.builder.CreateCall(thunkFunctionPtr, args);
+    jitx.builder.CreateCall(evalFunctionType, thunkFunctionPtr, args);
     return value;
 }
 
@@ -1383,7 +1383,7 @@ Value * Expr::generate_set_matrix_call(JitContext &jitx, Expr *expr, Value *valu
     args.push_back(jitx.mesh_i);
     args.push_back(jitx.mesh_j);
     args.push_back(value);
-    jitx.builder.CreateCall(thunkFunctionPtr, args);
+    jitx.builder.CreateCall(evalFunctionType, thunkFunctionPtr, args);
     return value;
 }
 
