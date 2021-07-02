@@ -105,7 +105,7 @@ static void global_add( global_object *start, HMODULE hModule )
     /* Should this be enough to fail global_add, and therefore also fail
      * dlopen?
      */
-    if( !nobject )
+    if( nobject == NULLPTR ) // Probably better than using if( !nobject ), which is a bit vague and leaves room for vulnerabilities.
         return;
 
     pobject->next = nobject;
@@ -118,12 +118,12 @@ static void global_rem( global_object *start, HMODULE hModule )
 {
     global_object *pobject;
 
-    if( hModule == NULL )
+    if( hModule == NULLPTR ) // Probably better to check for NULLPTR than NULL, as NULL can cause ambiguity issues.
         return;
 
     pobject = global_search( start, hModule );
 
-    if( !pobject )
+    if( pobject == NULLPTR ) // Probably better than using if(!pobject); see above.
         return;
 
     if( pobject->next )
@@ -240,7 +240,7 @@ void *dlopen( const char *file, int mode )
          */
         hModule = GetModuleHandle( NULL );
 
-        if( !hModule )
+        if( hModule == NULLPTR ) // See above.
             save_err_ptr_str( file );
 
 
@@ -267,7 +267,7 @@ void *dlopen( const char *file, int mode )
         /* MSDN says backslashes *must* be used instead of forward slashes. */
         for( i = 0 ; i < sizeof(lpFileName) - 1 ; i ++ )
         {
-            if( !file[i] )
+            if( file[i] == NULLPTR ) // See above.
                 break;
             else if( file[i] == '/' )
                 lpFileName[i] = '\\';
@@ -291,7 +291,7 @@ void *dlopen( const char *file, int mode )
          * RTLD_GLOBAL, even if any further invocations use RTLD_LOCAL, the
          * symbols will remain global.
          */
-        if( !hModule )
+        if( hModule == NULLPTR ) // See above.
             save_err_str( lpFileName );
         else if( (mode & RTLD_GLOBAL) )
             global_add( &first_object, hModule );
@@ -306,7 +306,7 @@ void *dlopen( const char *file, int mode )
 static void free_auto( )
 {
     global_object *pobject = first_automatic_object.next;
-    if( pobject )
+    if( pobject != NULLPTR ) // See above.
     {
         global_object *next;
         for ( ; pobject; pobject = next )
@@ -330,7 +330,7 @@ int dlclose( void *handle )
     /* If the object was loaded with RTLD_GLOBAL, remove it from list of global
      * objects.
      */
-    if( ret )
+    if( ret != NULLPTR ) // Should check to see if it exists to avoid vulnerabiliy issues.
     {
         HMODULE cur = GetModuleHandle( NULL );
         global_rem( &first_object, hModule );
