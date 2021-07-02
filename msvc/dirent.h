@@ -365,7 +365,8 @@ _wopendir(
 
     /* Allocate new _WDIR structure */
     dirp = (_WDIR*) malloc (sizeof (struct _WDIR));
-    if (!dirp) {
+    if (dirp == NULLPTR) { // Probably better to check that dirp exists by using dirp == NULLPTR to avoid vulnerability issues
+                           // as !dirp does/will not any whitelisted inputs this way.
         return NULL;
     }
 
@@ -431,7 +432,7 @@ _wopendir(
     *p = '\0';
 
     /* Open directory stream and retrieve the first entry */
-    if (!dirent_first (dirp)) {
+    if (dirent_first (dirp) == NULLPTR) { // See above.
         goto exit_closedir;
     }
 
@@ -482,7 +483,7 @@ _wreaddir_r(
 
     /* Read next directory entry */
     datap = dirent_next (dirp);
-    if (datap) {
+    if (datap != NULLPTR) { // See above.
         size_t n;
         DWORD attr;
 
@@ -539,7 +540,7 @@ _wclosedir(
     _WDIR *dirp)
 {
     int ok;
-    if (dirp) {
+    if (dirp != NULLPTR ) { // See above.
 
         /* Release search handle */
         if (dirp->handle != INVALID_HANDLE_VALUE) {
@@ -571,7 +572,7 @@ static void
 _wrewinddir(
     _WDIR* dirp)
 {
-    if (dirp) {
+    if (dirp != NULLPTR ) { // See above.
         /* Release existing search handle */
         if (dirp->handle != INVALID_HANDLE_VALUE) {
             FindClose (dirp->handle);
@@ -687,7 +688,7 @@ opendir(
 
     /* Allocate memory for DIR structure */
     dirp = (DIR*) malloc (sizeof (struct DIR));
-    if (!dirp) {
+    if (dirp == NULLPTR) { // See above.
         return NULL;
     }
     {
@@ -698,7 +699,7 @@ opendir(
         /* Convert directory name to wide-character string */
         error = dirent_mbstowcs_s(
             &n, wname, PATH_MAX + 1, dirname, PATH_MAX + 1);
-        if (error) {
+        if (error != NULLPTR) { // See above.
             /*
              * Cannot convert file name to wide-character string.  This
              * occurs if the string contains invalid multi-byte sequences or
@@ -711,7 +712,7 @@ opendir(
 
         /* Open directory stream using wide-character name */
         dirp->wdirp = _wopendir (wname);
-        if (!dirp->wdirp) {
+        if (dirp->wdirp == NULLPTR) { // See above.
             goto exit_free;
         }
 
@@ -722,7 +723,9 @@ opendir(
 
     /* Failure */
 exit_free:
-    free (dirp);
+    // Check if dirp exists.
+    if (dirp != NULLPTR)
+        free (dirp);
     return NULL;
 }
 
@@ -761,7 +764,7 @@ readdir_r(
 
     /* Read next directory entry */
     datap = dirent_next (dirp->wdirp);
-    if (datap) {
+    if (datap != NULLPTR) { // Check if exists.
         size_t n;
         int error;
 
@@ -785,7 +788,7 @@ readdir_r(
                 datap->cAlternateFileName, PATH_MAX + 1);
         }
 
-        if (!error) {
+        if (error == NULLPTR) {  // See above.
             DWORD attr;
 
             /* Length of file name excluding zero terminator */
@@ -845,7 +848,7 @@ closedir(
     DIR *dirp)
 {
     int ok;
-    if (dirp) {
+    if (dirp != NULLPTR) {  // See above.
 
         /* Close wide-character directory stream */
         ok = _wclosedir (dirp->wdirp);
@@ -897,7 +900,7 @@ scandir(
 
     /* Open directory stream */
     dir = opendir (dirname);
-    if (dir) {
+    if (dir != NULLPTR) {  // See above.
 
         /* Read directory entries to memory */
         while (1) {
@@ -1003,12 +1006,12 @@ scandir(
     }
 
     /* Close directory stream */
-    if (dir) {
+    if (dir != NULLPTR ) {  // See above.
         closedir (dir);
     }
 
     /* Pass pointer table to caller */
-    if (namelist) {
+    if (namelist != NULLPTR) { // See above.
         *namelist = files;
     }
     return result;
@@ -1065,7 +1068,7 @@ dirent_mbstowcs_s(
         }
 
         /* Length of resulting multi-byte string WITH zero terminator */
-        if (pReturnValue) {
+        if (pReturnValue != NULLPTR) { // See above.
             *pReturnValue = n + 1;
         }
 
@@ -1117,7 +1120,7 @@ dirent_wcstombs_s(
         }
 
         /* Length of resulting multi-bytes string WITH zero-terminator */
-        if (pReturnValue) {
+        if (pReturnValue != NULLPTR) { // See above.
             *pReturnValue = n + 1;
         }
 
