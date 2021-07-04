@@ -120,9 +120,15 @@ void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y,
 void Renderer::drawText(GLTtext* text, const char* string, const char* needle, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f, bool highlightable = false) {
 	int offset = x;
 	std::string str_find = string;
+	std::string str_needle = needle;
 	for( size_t pos = 0; ; pos += str_find.length() ) {
 		// find search term
-		pos = str_find.find(needle);
+		pos = caseInsensitiveSubstringFind(str_find, str_needle);
+
+		std::string needle_found = str_needle;
+		if (pos != std::string::npos) {
+			needle_found = str_find.substr(pos, str_needle.length());
+		}
 
 		// draw everything normal, up to search term.
 		gltColor(r, g, b, a);
@@ -133,14 +139,14 @@ void Renderer::drawText(GLTtext* text, const char* string, const char* needle, G
 		GLfloat textWidth = gltGetTextWidth(text, scale);
 		offset = offset + textWidth;
 		gltColor(1.0f, 0.0f, 1.0f, 1.0f);
-		gltSetText(text, searchText().c_str());
+		gltSetText(text, needle_found.c_str());
 		gltDrawText2DAligned(text, offset, y, scale, horizontalAlignment, verticalAlignment);
 
 		// draw rest of name, normally
 		textWidth = gltGetTextWidth(text, scale);
 		offset = offset + textWidth;
 		gltColor(r, g, b, a);
-		gltSetText(text, str_find.substr(pos+searchText().length(),str_find.length()).c_str());
+		gltSetText(text, str_find.substr(pos+needle_found.length(), str_find.length()).c_str());
 		gltDrawText2DAligned(text, offset, y, scale, horizontalAlignment, verticalAlignment);
 		break; // first search hit is useful enough.
 	}
@@ -190,7 +196,7 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 		"L: Lock/Unlock Preset""\n"
 		"R: Random preset""\n"
 		"N/P: [N]ext+ or [P]revious-reset""\n"
-		"M: Preset Menu (Arrow Up/Down & Page Up/Down to Navigate)""\n"
+		"M/Return: Preset Menu (Arrow Up/Down & Page Up/Down to Navigate)""\n"
 		"Arrow Up/Down: Increase or Decrease Beat Sensitivity""\n"
 		"CTRL-F: Fullscreen";
 

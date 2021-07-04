@@ -11,7 +11,7 @@ FileScanner::FileScanner() {}
 FileScanner::FileScanner(std::vector<std::string> &rootDirs, std::vector<std::string> &extensions) : _rootDirs(rootDirs), _extensions(extensions) {}
 
 void FileScanner::scan(ScanCallback cb) {
-#ifdef HAVE_FTS_H
+#if HAVE_FTS_H
 	scanPosix(cb);
 #else
 	for (auto dir : _rootDirs)
@@ -124,7 +124,7 @@ void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
     }
 }
 
-#ifdef HAVE_FTS_H
+#if HAVE_FTS_H
 // more optimized posix "fts" directory traversal
 int fts_compare(const FTSENT** one, const FTSENT** two) {
     return (strcmp((*one)->fts_name, (*two)->fts_name));
@@ -132,7 +132,7 @@ int fts_compare(const FTSENT** one, const FTSENT** two) {
 #endif
 
 void FileScanner::scanPosix(ScanCallback cb) {
-#ifdef HAVE_FTS_H
+#if HAVE_FTS_H
 
     // efficient directory traversal
     FTS* fileSystem = NULL;

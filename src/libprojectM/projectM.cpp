@@ -55,7 +55,7 @@
 #include "TimeKeeper.hpp"
 #include "RenderItemMergeFunction.hpp"
 
-#ifdef USE_THREADS
+#if USE_THREADS
 #include "pthread.h"
 
 #include "BackgroundWorker.h"
@@ -74,7 +74,7 @@ constexpr int kMaxSwitchRetries = 10;
 
 projectM::~projectM()
 {
-#ifdef USE_THREADS
+#if USE_THREADS
     void *status;
     worker_sync.finish_up();
     pthread_join(thread, &status);
@@ -154,7 +154,7 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
     config.add("Easter Egg Parameter", settings.easterEgg);
     config.add("Shuffle Enabled", settings.shuffleEnabled);
     config.add("Soft Cut Ratings Enabled", settings.softCutRatingsEnabled);
-    std::fstream file(configFile.c_str());
+    std::fstream file(configFile.c_str(), std::ios_base::trunc | std::ios_base::out);
     if (file) {
         file << config;
         return true;
@@ -164,7 +164,7 @@ bool projectM::writeConfig(const std::string & configFile, const Settings & sett
 
 
 
-void projectM::readConfig (const std::string & configFile )
+void projectM::readConfig (const std::string & configFile)
 {
     std::cout << "[projectM] config file: " << configFile << std::endl;
 
@@ -175,9 +175,9 @@ void projectM::readConfig (const std::string & configFile )
     _settings.fps = config.read<int> ( "FPS", 35 );
     _settings.windowWidth  = config.read<int> ( "Window Width", 512 );
     _settings.windowHeight = config.read<int> ( "Window Height", 512 );
-    _settings.smoothPresetDuration =  config.read<int>
+    _settings.smoothPresetDuration =  config.read<double>
             ( "Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 10));
-    _settings.presetDuration = config.read<int> ( "Preset Duration", 15 );
+    _settings.presetDuration = config.read<double> ( "Preset Duration", 15 );
 
 #ifdef __unix__
     _settings.presetURL = config.read<string> ( "Preset Path", "/usr/local/share/projectM/presets" );
@@ -223,7 +223,7 @@ void projectM::readConfig (const std::string & configFile )
     // Hard Cuts are preset transitions that occur when your music becomes louder. They only occur after a hard cut duration threshold has passed.
     _settings.hardcutEnabled = config.read<bool> ( "Hard Cuts Enabled", false );
     // Hard Cut duration is the number of seconds before you become eligible for a hard cut.
-    _settings.hardcutDuration = config.read<int> ( "Hard Cut Duration", 60 );
+    _settings.hardcutDuration = config.read<double> ( "Hard Cut Duration", 60 );
     // Hard Cut sensitivity is the volume difference before a "hard cut" is triggered.
     _settings.hardcutSensitivity = config.read<float> ( "Hard Cut Sensitivity", 1.0 );
     
@@ -283,7 +283,7 @@ void projectM::readSettings (const Settings & settings )
     _settings.aspectCorrection = settings.aspectCorrection;
 }
 
-#ifdef USE_THREADS
+#if USE_THREADS
 static void *thread_callback(void *prjm)
 {
     projectM *p = (projectM *)prjm;
@@ -396,13 +396,13 @@ Pipeline * projectM::renderFrameOnlyPass1(Pipeline *pPipeline) /*pPipeline is a 
         //	 printf("start thread\n");
         assert ( m_activePreset2.get() );
 
-#ifdef USE_THREADS
+#if USE_THREADS
         worker_sync.wake_up_bg();
 #endif
 
         m_activePreset->Render(*beatDetect, pipelineContext());
 
-#ifdef USE_THREADS
+#if USE_THREADS
         worker_sync.wait_for_bg_to_finish();
 #else
         evaluateSecondPreset();
@@ -571,7 +571,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
     initPresetTools(gx, gy);
 
 
-#ifdef USE_THREADS
+#if USE_THREADS
 
     #ifdef SYNC_PRESET_SWITCHES
     pthread_mutex_init(&preset_mutex, NULL);
@@ -801,7 +801,7 @@ void projectM::populatePresetMenu()
             std::string presetName = renderer->presetName();
             int presetIndex = getSearchIndex(presetName);
             for(unsigned int i = 0; i < getPlaylistSize(); i++) { // loop over all presets
-                if (getPresetName(i).find(renderer->searchText()) != std::string::npos) { // if term matches
+                if (caseInsensitiveSubstringFind(getPresetName(i), renderer->searchText()) != std::string::npos) { // if term matches
                     if (h < renderer->textMenuPageSize) // limit to just one page, pagination is not needed.
                     {
                         h++;
@@ -1116,10 +1116,18 @@ void projectM::changeTextureSize(int size) {
                             _settings.titleFontURL, _settings.menuFontURL,
                             _settings.datadir);
 }
+
 void projectM::changeHardcutDuration(int seconds) {
     timeKeeper->ChangeHardcutDuration(seconds);
 }
 void projectM::changePresetDuration(int seconds) {
+    timeKeeper->ChangePresetDuration(seconds);
+}
+
+void projectM::changeHardcutDuration(double seconds) {
+    timeKeeper->ChangeHardcutDuration(seconds);
+}
+void projectM::changePresetDuration(double seconds) {
     timeKeeper->ChangePresetDuration(seconds);
 }
 void projectM::getMeshSize(int *w, int *h)	{

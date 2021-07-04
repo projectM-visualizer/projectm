@@ -16,7 +16,6 @@ class StaticGlShaders {
 
         static std::shared_ptr<StaticGlShaders> instance(
             new StaticGlShaders(use_gles));
-
         return instance;
     }
 
@@ -44,14 +43,17 @@ class StaticGlShaders {
         int major, minor;
     };
 
-    // Constructs a StaticGlShaders, overriding the version to GLES3 if
-    // `use_gles` is true.
-    StaticGlShaders(bool use_gles);
-
     // Queries the system GLSL version using
     // `glGetString(GL_SHADING_LANGUAGE_VERSION)` and returns the major and
     // minor numbers.
     GlslVersion QueryGlslVersion();
+
+    // Constructs a StaticGlShaders, overriding the version to GLES3 if
+    // `use_gles` is true.
+    // Note - this happens after GlslVersion is called, because it uses the 
+    // version to determine things.
+    StaticGlShaders(bool use_gles);
+
 
     // Prepends a string of the form "#version <number>\n" to the provided
     // shader text, where <number> is derived from the queried GLSL version (or
