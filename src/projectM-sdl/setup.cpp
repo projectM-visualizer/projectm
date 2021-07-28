@@ -1,5 +1,7 @@
 #include "setup.hpp"
 
+#include <SDL2/SDL_hints.h>
+
 #include <chrono>
 #include <cmath>
 
@@ -154,6 +156,10 @@ projectMSDL *setupSDLApp() {
 
 #if UNLOCK_FPS
     setenv("vblank_mode", "0", 1);
+#endif
+
+#ifdef SDL_HINT_AUDIO_INCLUDE_MONITORS
+    SDL_SetHint(SDL_HINT_AUDIO_INCLUDE_MONITORS, "1");
 #endif
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
