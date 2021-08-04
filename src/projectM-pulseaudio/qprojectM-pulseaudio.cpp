@@ -74,7 +74,7 @@ std::string read_config();
 #include <string.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <src/libprojectM/TestRunner.hpp>
+#include <TestRunner.hpp>
 
 //#include <pulsecore/gccmacro.h>
 
