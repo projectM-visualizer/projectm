@@ -26,7 +26,7 @@
 #include <QMainWindow>
 #include <QCloseEvent>
 #include <cassert>
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QHash>
 #include <QtDebug>
 #include <QMutex>

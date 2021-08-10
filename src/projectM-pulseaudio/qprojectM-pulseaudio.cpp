@@ -93,7 +93,8 @@ int fps=30, fullscreen=0;
 class ProjectMApplication : public QApplication {
 	public:
 		ProjectMApplication(int& argc, char ** argv) :
-			QApplication(argc, argv) { }
+			QApplication(argc, argv) {
+		}
 		virtual ~ProjectMApplication() { }
 
 		// catch exceptions which are thrown in slots

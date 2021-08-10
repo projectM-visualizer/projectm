@@ -42,6 +42,5 @@ target_include_directories(projectM-qt
 target_link_libraries(projectM-qt
         PUBLIC
         projectM_static
-        Qt5::Gui
-        Qt5::OpenGL
+        ${QT_LINK_TARGETS}
         )

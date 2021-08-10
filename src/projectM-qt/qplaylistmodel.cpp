@@ -382,9 +382,12 @@ void QPlaylistModel::clear()
 
 void QPlaylistModel::clearItems()
 {
-	beginRemoveRows ( QModelIndex(), 0, rowCount()-1 );
-	m_projectM.clearPlaylist();
-	endRemoveRows();
+    if (rowCount() > 0)
+    {
+        beginRemoveRows(QModelIndex(), 0, rowCount() - 1);
+        m_projectM.clearPlaylist();
+        endRemoveRows();
+    }
 }
 
 

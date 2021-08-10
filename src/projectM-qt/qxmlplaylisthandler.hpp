@@ -55,15 +55,15 @@ QXmlStreamReader::Error QXmlPlaylistHandler::readPlaylist (QIODevice * device, R
 	{
 		case QXmlStreamReader::StartElement:			
 
-			if (reader.name() == "presetplaylist") {
+			if (reader.name().toString() == "presetplaylist") {
 			
 			}
-			else if (reader.name() == "description") {
+			else if (reader.name().toString() == "description") {
 				reader.readNext();
 				readFunc.setPlaylistDesc(reader.text().toString().replace("&amp;", "&"));
 				
 			}
-			else if (reader.name() == "item") {
+			else if (reader.name().toString() == "item") {
 				readPlaylistItem<ReadFunctor>(reader, readFunc);
 				break;
 			} 
@@ -107,29 +107,29 @@ QXmlStreamReader::Error QXmlPlaylistHandler::readPlaylistItem(QXmlStreamReader &
 	int breedability = 3;
 
 	while (reader.readNext() != QXmlStreamReader::EndElement)
-		if (reader.name() == "url") {
+		if (reader.name().toString() == "url") {
 			bool repeat;
 			int result;
 
 			while ((repeat = (result = reader.readNext()) == QXmlStreamReader::Characters))
 				url += reader.text().toString();			
 						
-		} else if (reader.name() == "rating") {
+		} else if (reader.name().toString() == "rating") {
 			reader.readNext();
 			rating = reader.text().toString().toInt();		
 			reader.readNext();
-		} else if (reader.name() == "breedability") {
+		} else if (reader.name().toString() == "breedability") {
 			reader.readNext();
 			breedability = reader.text().toString().toInt();
 			reader.readNext();
-		} else if (reader.name() == "name") {
+		} else if (reader.name().toString() == "name") {
 			bool repeat;
 			int result;
 
 			while ((repeat = (result = reader.readNext()) == QXmlStreamReader::Characters))
 				name += reader.text().toString();
 		} else {
-			if (reader.name() == "")
+			if (reader.name().toString() == "")
 				continue;
 			else if (reader.hasError())
 				return reader.error();

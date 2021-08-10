@@ -29,7 +29,7 @@ class QPresetEditorDialog : public QDialog {
 	Q_OBJECT
 
 	public:
-		QPresetEditorDialog(QProjectMWidget * widget, QWidget * parent = 0, Qt::WindowFlags f = 0);
+		QPresetEditorDialog(QProjectMWidget * widget, QWidget * parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 		void setPreset(QString url, int rowIndex);
 		const QString & presetUrl() const;
 		

@@ -24,7 +24,7 @@
 
 #include <iostream>
 #include "qprojectm.hpp"
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QMutex>
 #include <QtDebug>
 #include <QKeyEvent>
@@ -32,7 +32,7 @@
 #include <QApplication>
 #include <QSettings>
 
-class QProjectMWidget : public QGLWidget
+class QProjectMWidget : public QOpenGLWidget
 {
 
 		Q_OBJECT        // must include this if you use Qt signals/slots
@@ -40,7 +40,7 @@ class QProjectMWidget : public QGLWidget
 	public:
 		static const int MOUSE_VISIBLE_TIMEOUT_MS = 5000;
 		QProjectMWidget ( const std::string & config_file, QWidget * parent, QMutex * audioMutex = 0 )
-				: QGLWidget ( parent ), m_config_file ( config_file ), m_projectM ( 0 ), m_mouseTimer ( 0 ), m_audioMutex ( audioMutex )
+				: QOpenGLWidget ( parent ), m_config_file ( config_file ), m_projectM ( 0 ), m_mouseTimer ( 0 ), m_audioMutex ( audioMutex )
 		{
 
 			m_mouseTimer = new QTimer ( this );
@@ -61,7 +61,7 @@ class QProjectMWidget : public QGLWidget
 
 
 
-		void resizeGL ( int w, int h )
+		void resizeGL ( int w, int h ) override
 		{
 			// Setup viewport, projection etc
 			setup_opengl ( w,h );
@@ -158,6 +158,11 @@ class QProjectMWidget : public QGLWidget
 
 			this->setFocus();
 		}
+
+		void updateGL()
+        {
+		    paintGL();
+        }
 
 	signals:
 		void projectM_Initialized ( QProjectM * );
@@ -257,7 +262,7 @@ class QProjectMWidget : public QGLWidget
 
 		}
 
-		void initializeGL()
+		void initializeGL() override
 		{
 
 		        if (m_projectM == 0) {
@@ -266,7 +271,7 @@ class QProjectMWidget : public QGLWidget
 			}
 		}
 
-		inline void paintGL()
+		void paintGL() override
 		{
 			m_projectM->renderFrame();
 		}
