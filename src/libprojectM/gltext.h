@@ -832,7 +832,7 @@ GLT_API void gltTerminate(void)
 	gltInitialized = GL_FALSE;
 }
 	
-#ifdef USE_GLES
+#if USE_GLES
 #define GLSL_VERSION "300 es"
 #else
 #define GLSL_VERSION "330"
@@ -860,7 +860,7 @@ static const GLchar* _gltText2DFragmentShaderSource =
 "#version "
 GLSL_VERSION
 "\n"
-#ifdef USE_GLES
+#if USE_GLES
 "precision mediump float;\n"
 "\n"
 #endif

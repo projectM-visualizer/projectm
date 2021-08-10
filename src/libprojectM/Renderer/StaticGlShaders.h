@@ -10,7 +10,7 @@ class StaticGlShaders {
     // Returns the singleton StaticGlShaders instance.
     static std::shared_ptr<StaticGlShaders> Get() {
         bool use_gles = false;
-#ifdef USE_GLES
+#if USE_GLES
         use_gles = true;
 #endif
 
