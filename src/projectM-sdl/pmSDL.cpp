@@ -63,19 +63,6 @@ void projectMSDL::setHelpText(const std::string& helpText)
     projectm_set_help_text(_projectM, helpText.c_str());
 }
 
-void projectMSDL::maximize()
-{
-    SDL_DisplayMode dm;
-    if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
-    {
-        SDL_Log("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
-        return;
-    }
-
-    SDL_SetWindowSize(win, dm.w, dm.h);
-    resize(dm.w, dm.h);
-}
-
 /* Stretch projectM across multiple monitors */
 void projectMSDL::stretchMonitors()
 {
@@ -153,7 +140,6 @@ void projectMSDL::nextMonitor()
 
 void projectMSDL::toggleFullScreen()
 {
-    maximize();
     if (isFullScreen)
     {
         SDL_SetWindowFullscreen(win, 0);
@@ -163,7 +149,7 @@ void projectMSDL::toggleFullScreen()
     else
     {
         SDL_ShowCursor(false);
-        SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN);
+        SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN_DESKTOP);
         isFullScreen = true;
     }
 }
@@ -355,7 +341,14 @@ void projectMSDL::resize(unsigned int width_, unsigned int height_)
 {
     width = width_;
     height = height_;
-    projectm_set_window_size(_projectM, width, height);
+
+		// Hide cursor if window size equals desktop size
+	  SDL_DisplayMode dm;
+	  if (SDL_GetDesktopDisplayMode(0, &dm) == 0) {
+		    SDL_ShowCursor(isFullScreen ? SDL_DISABLE : SDL_ENABLE);
+	  }
+
+	  projectm_set_window_size(_projectM, width, height);
 }
 
 void projectMSDL::pollEvent()

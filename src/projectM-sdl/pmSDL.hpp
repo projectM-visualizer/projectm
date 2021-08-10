@@ -122,7 +122,6 @@ public:
     void setHelpText(const std::string& theValue);
     void renderFrame();
     void pollEvent();
-    void maximize();
     bool keymod = false;
     std::string getActivePresetName();
     void addFakePCM();
