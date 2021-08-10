@@ -190,7 +190,7 @@ void QPulseAudioThread::connectDevice ( const QModelIndex & index )
 {	
 	
 	if (index.isValid())
-		reconnect(s_sourceList.begin() + index.row());
+		reconnect(s_sourceList.find(index.row()));
 	else
 		reconnect(s_sourceList.end());
 	

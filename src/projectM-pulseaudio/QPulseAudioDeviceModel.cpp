@@ -46,12 +46,10 @@ QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt
 	if (index.row() >= rowCount())
 		return QVariant();
 
-	QHash<int, QString>::const_iterator pos;
 	switch ( role )
 	{
 		case Qt::DisplayRole:
-			pos = _devices.begin() + index.row();			
-			return *pos;
+			return _devices[index.row()];
 		case Qt::DecorationRole:
 		{
 			QIcon icon(":/check.png");
@@ -61,15 +59,14 @@ QVariant QPulseAudioDeviceModel::data ( const QModelIndex & index, int role = Qt
 		}
 		
 		case Qt::ToolTipRole:
-			pos = _devices.begin() + index.row();
-			if (_devicePosition == _devices.begin() + index.row())
- 				return *pos + " (active)";			
+			if (_devicePosition.key() == index.row())
+ 				return _devices[index.row()] + " (active)";
 			else
-				return *pos + " (inactive)";
+				return _devices[index.row()] + " (inactive)";
 						
 			
 		case Qt::BackgroundRole:
-			if (_devicePosition == _devices.begin() + index.row()) {
+			if (_devicePosition.key() == index.row()) {
                 return QColor(Qt::green);
 			} else {
                 return QColor(Qt::white);

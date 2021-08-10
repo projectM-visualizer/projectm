@@ -85,7 +85,7 @@ m_QPlaylistFileDialog( new QPlaylistFileDialog ( this ))
 	m_QProjectMWidget = new QProjectMWidget ( config_file, this, audioMutex);
 
 	m_timer = new QTimer ( this );
-	connect ( m_timer, SIGNAL ( timeout() ), m_QProjectMWidget, SLOT ( updateGL() ) );
+	connect ( m_timer, SIGNAL ( timeout() ), m_QProjectMWidget, SLOT ( update() ) );
 
 	connect ( ui->lockPresetCheckBox, SIGNAL ( stateChanged ( int ) ),
 	          m_QProjectMWidget, SLOT ( setPresetLock ( int ) ) );
@@ -104,16 +104,7 @@ m_QPlaylistFileDialog( new QPlaylistFileDialog ( this ))
 	connect ( m_QProjectMWidget, SIGNAL ( projectM_Initialized(QProjectM*) ),
 		  this, SLOT ( postProjectM_Initialize() ) );
 
-	//connect(this, SIGNAL(dockLocationChanged ( Qt::DockWidgetArea)), SLOT(dockLocationChanged(Qt::DockWidgetArea)));
-	if (!m_QProjectMWidget->isValid()) {
-		QMessageBox::warning(this, tr("projectM cannot be started."),
-					       tr("Your graphics driver or configuration is not supported by projectM. Please contact the developers (carmelo.piccione+projectM@gmail.com or psperl+projectM@gmail.com) with your card and driver information so we can help you get it working."),
-			      QMessageBox::Ok);
-		exit(-1);
-	}
-
-
-	m_QProjectMWidget->makeCurrent();
+    m_QProjectMWidget->makeCurrent();
 	m_QProjectMWidget->setFocus();
 	setCentralWidget ( m_QProjectMWidget );
 	m_QProjectMWidget->installEventFilter(this);
@@ -135,7 +126,6 @@ m_QPlaylistFileDialog( new QPlaylistFileDialog ( this ))
 
 	connect ( ui->presetSearchBarLineEdit, SIGNAL ( textChanged ( const QString& ) ),
 		  this, SLOT ( updateFilteredPlaylist ( const QString& ) ) );
-
 }
 
 void QProjectM_MainWindow::dockLocationChanged(Qt::DockWidgetArea area) {

@@ -33,7 +33,7 @@ class QPulseAudioDeviceChooser : public QDialog, public Ui::pulseDeviceChooserDi
 	Q_OBJECT
 
 	public:
-		QPulseAudioDeviceChooser(QPulseAudioThread * pulseAudioThread, QWidget * parent, Qt::WindowFlags f=0);
+		QPulseAudioDeviceChooser(QPulseAudioThread * pulseAudioThread, QWidget * parent, Qt::WindowFlags f = Qt::WindowFlags());
 
 	typedef QHash<int, QString> SourceContainer;
 	public slots:
