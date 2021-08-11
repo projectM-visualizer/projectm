@@ -1,6 +1,7 @@
 add_compile_definitions(
         DATADIR_PATH="${PROJECTM_DATADIR_PATH}"
         GL_SILENCE_DEPRECATION
+        USE_TEXT_MENU
 )
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
@@ -19,7 +20,6 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     # Additional preprocessor definitions for Windows builds
     add_compile_definitions(
-            USE_TEXT_MENU
             USE_FTGL
             USE_NATIVE_GLEW
             STBI_NO_DDS
