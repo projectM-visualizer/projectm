@@ -890,7 +890,7 @@ void projectM::selectPrevious(const bool hardCut) {
     if (m_presetChooser->empty())
         return;
 
-    if (isTextInputActive(true) && renderer->m_presetList.size() >= 1)
+    if (isTextInputActive() && renderer->m_presetList.size() >= 1)
     {
         // if search menu is up, previous is based on search terms.
         if (renderer->m_activePresetID <= 1) {
@@ -901,7 +901,7 @@ void projectM::selectPrevious(const bool hardCut) {
         else {
             // otherwise move back
             renderer->m_activePresetID--;
-            selectPresetByName(renderer->m_presetList[renderer->m_activePresetID-1].name,true);
+            selectPresetByName(renderer->m_presetList[renderer->m_activePresetID - 1].name,true);
         }
     } else if (settings().shuffleEnabled && presetHistory.size() >= 1 && static_cast<std::size_t>(presetHistory.back()) != m_presetLoader->size() && !renderer->showmenu) { // if randomly browsing presets, "previous" should return to last random preset not the index--. Avoid returning to size() because that's the idle:// preset.
         presetFuture.push_back(m_presetPos->lastIndex());
@@ -922,6 +922,7 @@ void projectM::selectPrevious(const bool hardCut) {
 void projectM::selectNext(const bool hardCut) {
     if (m_presetChooser->empty())
         return;
+
     if (isTextInputActive() && renderer->m_presetList.size() >= 1) // if search is active and there are search results
     {
         // if search menu is down, next is based on search terms.
@@ -933,7 +934,7 @@ void projectM::selectNext(const bool hardCut) {
         else {
             // otherwise move forward 
             renderer->m_activePresetID++;
-            selectPresetByName(renderer->m_presetList[renderer->m_activePresetID].name,true);
+            selectPresetByName(renderer->m_presetList[renderer->m_activePresetID - 1].name,true);
         }
     } else if (settings().shuffleEnabled && presetFuture.size() >= 1 && static_cast<std::size_t>(presetFuture.front()) != m_presetLoader->size() && !renderer->showmenu) { // if shuffling and we have future presets already stashed then let's go forward rather than truely move randomly.
         presetHistory.push_back(m_presetPos->lastIndex());
@@ -1161,6 +1162,10 @@ unsigned int projectM::getPresetIndex(std::string& name) const
 
 // load preset based on name
 void projectM::selectPresetByName(std::string name, bool hardCut) {
+    if (name == "")
+    {
+        return;
+    }
 	unsigned int index = getPresetIndex(name);
 	if (m_presetChooser->empty()) return;
 	selectPreset(index);  
