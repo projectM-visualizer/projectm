@@ -79,6 +79,10 @@ if(ENABLE_SDL)
 endif()
 
 if(ENABLE_GLES)
+    # Might be implemented in the CMake OpenGL module.
+    # We may provide a find module in the future, and add support for CMake's own module later:
+    # https://gitlab.kitware.com/cmake/cmake/-/blob/3fc3b43933d0b486aa4eb5d63fc257475feff348/Modules/FindOpenGL.cmake#L520
+    message(FATAL_ERROR "GLES support is currently not implemented for CMake builds.")
     find_package(GLES3 REQUIRED)
 else()
     find_package(OpenGL REQUIRED)
