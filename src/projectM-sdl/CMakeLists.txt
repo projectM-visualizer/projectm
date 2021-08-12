@@ -1,3 +1,7 @@
+if(NOT ENABLE_SDL)
+    return()
+endif()
+
 add_executable(projectMSDL
         audioCapture.cpp
         audioCapture.hpp
