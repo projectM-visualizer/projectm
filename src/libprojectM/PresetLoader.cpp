@@ -157,7 +157,7 @@ const std::vector<std::string> &PresetLoader::getPresetNames() const
 }
 
 // Get the preset index given a name
-const unsigned int PresetLoader::getPresetIndex(std::string &name) const
+unsigned int PresetLoader::getPresetIndex(const std::string& name) const
 {
 	return find(_presetNames.begin(), _presetNames.end(), name) - _presetNames.begin();
 }
