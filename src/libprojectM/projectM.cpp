@@ -1146,7 +1146,7 @@ void projectM::toggleSearchText()
 }
 
 // get index from search results based on preset name
-unsigned int projectM::getSearchIndex(std::string &name) const
+unsigned int projectM::getSearchIndex(const std::string& name) const
 {
     for (auto& it : renderer->m_presetList) {
         if (it.name == name) return it.id;
@@ -1155,7 +1155,7 @@ unsigned int projectM::getSearchIndex(std::string &name) const
 }
 
 // get preset index based on preset name
-unsigned int projectM::getPresetIndex(std::string& name) const
+unsigned int projectM::getPresetIndex(const std::string& name) const
 {
 	return m_presetLoader->getPresetIndex(name);
 }

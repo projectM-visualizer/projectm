@@ -67,8 +67,11 @@ add_library(projectM_main OBJECT
         PresetLoader.cpp
         PresetLoader.hpp
         projectM.cpp
+        projectM.h
         projectM.hpp
         projectM-opengl.h
+        ProjectMCWrapper.cpp
+        ProjectMCWrapper.hpp
         RandomNumberGenerators.hpp
         resource.h
         sdltoprojectM.h
@@ -84,6 +87,8 @@ add_library(projectM_main OBJECT
 
 target_include_directories(projectM_main
         PRIVATE
+        "${CMAKE_CURRENT_BINARY_DIR}/include"
+        "${CMAKE_SOURCE_DIR}/src"
         "${CMAKE_CURRENT_SOURCE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/Renderer"
         "${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src"
@@ -97,6 +102,13 @@ target_link_libraries(projectM_main
         GLM::GLM
         PUBLIC
         ${PROJECTM_OPENGL_LIBRARIES}
+        )
+
+include(GenerateExportHeader)
+
+generate_export_header(projectM_main
+        BASE_NAME projectM
+        EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_export.h"
         )
 
 add_library(projectM_static STATIC
@@ -244,7 +256,9 @@ install(FILES
         dlldefs.h
         event.h
         fatal.h
+        projectM.h
         projectM.hpp
+        "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_export.h"
         DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM"
         COMPONENT Devel
         )
