@@ -37,6 +37,7 @@ set(PROJECTM_LIB_DIR "lib" CACHE STRING "Library installation directory, relativ
 set(PROJECTM_INCLUDE_DIR "include" CACHE STRING "Header installation directory, relative to the install prefix.")
 
 # Feature options, including dependencies.
+option(ENABLE_CXX_INTERFACE "Enable exporting all C++ symbols, not only the C API, in the shared library. Warning: This is dangerous!" OFF)
 option(ENABLE_PRESETS "Build and install bundled presets" ON)
 option(ENABLE_NATIVE_PRESETS "Build and install native libraries written in C/C++" OFF)
 option(ENABLE_TESTING "Build and install the projectM test suite" OFF)
@@ -161,6 +162,16 @@ if(ENABLE_LIBVISUAL)
     set(PROJECTM_LIBVISUAL_DIR "${LIBVISUAL_PLUGINSBASEDIR}/actor" CACHE STRING "Installation directory for the libvisual plug-in library.")
 endif()
 
+if(ENABLE_CXX_INTERFACE)
+    set(CMAKE_C_VISIBILITY_PRESET default)
+    set(CMAKE_CXX_VISIBILITY_PRESET default)
+    set(CMAKE_VISIBILITY_INLINES_HIDDEN OFF)
+else()
+    set(CMAKE_C_VISIBILITY_PRESET hidden)
+    set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+    set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
+endif()
+
 include(features.cmake)
 
 add_subdirectory(presets)
@@ -223,6 +234,15 @@ message(AUTHOR_WARNING
         "fully supported.\n"
         "DO NOT base any production work on it yet!\n"
         )
+
+if(ENABLE_CXX_INTERFACE)
+    message(AUTHOR_WARNING "This build is configured to export all C++ symbols in the shared library.\n"
+            "Using C++ STL types across library borders only works if all components were built "
+            "with the exact same toolchain and C++ language level, otherwise it will cause crashes.\n"
+            "Enabling this option will not export additional symbols in Windows DLL builds.\n"
+            "Only use this if you know what you're doing. You have been warned!"
+            )
+endif()
 
 # Create CPack configuration
 set(CPACK_PACKAGE_NAME "projectM")

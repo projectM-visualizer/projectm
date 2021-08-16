@@ -166,6 +166,8 @@ public:
   projectM(std::string config_file, int flags = FLAG_NONE);
   projectM(Settings settings, int flags = FLAG_NONE);
 
+  virtual ~projectM();
+
   void projectM_resetGL( int width, int height );
   void projectM_resetTextures();
   void projectM_setTitle( std::string title );
@@ -176,8 +178,6 @@ public:
   unsigned initRenderToTexture();
   void key_handler( projectMEvent event,
 		    projectMKeycode keycode, projectMModifier modifier );
-
-  virtual ~projectM();
 
   void changeTextureSize(int size);
   void changeHardcutDuration(int seconds);
@@ -235,7 +235,7 @@ public:
   /// Returns true if the text based search menu is up.
   bool isTextInputActive(bool nomin = false) const;
 
-  unsigned int getPresetIndex(std::string &url) const;
+  unsigned int getPresetIndex(const std::string& url) const;
 
   /// Plays a preset immediately when given preset name
   void selectPresetByName(std::string name, bool hardCut = true);
@@ -317,7 +317,7 @@ public:
   std::vector<int> presetFuture;  
 
   /// Get the preset index given a name
-  unsigned int getSearchIndex(std::string &name) const;
+  unsigned int getSearchIndex(const std::string& name) const;
 
   void selectPrevious(const bool);
   void selectNext(const bool);
