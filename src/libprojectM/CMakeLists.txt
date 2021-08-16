@@ -100,6 +100,9 @@ target_link_libraries(projectM_main
         )
 
 add_library(projectM_static STATIC
+        # Xcode needs at least one source file, otherwise it won't create the static library.
+        StaticLibDummy.cpp
+
         $<TARGET_OBJECTS:projectM_main>
         $<TARGET_OBJECTS:MilkdropPresetFactory>
         $<TARGET_OBJECTS:NativePresetFactory>
