@@ -1,7 +1,7 @@
 # Building projectM from source
 
 
-Suggested: use CMake. See BUILDING-cmake.md.
+Suggested: use CMake. See [BUILDING-cmake.md](./BUILDING-cmake.md).
 
 This document describes the deprecated GNU Autotools setup.
 
