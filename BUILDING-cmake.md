@@ -2,6 +2,24 @@
 
 This file contains in-depth information for building with the CMake build system.
 
+## Quickstart
+
+Want to build it fast?
+
+Required tools: `cmake`. 
+
+```shell
+mkdir build
+cd build
+cmake ..
+make -j8
+```
+
+Output binaries will be in `build/src/...`.
+
+SDL2 binary can be found in `build/src/projectM-sdl/projectMSDL`.
+
+
 ## Selecting a specific project file generator
 
 To specify a CMake generator, use the `-G` switch, followed by the generator name. Some newer generators take an
