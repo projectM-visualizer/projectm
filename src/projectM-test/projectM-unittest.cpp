@@ -23,7 +23,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <cassert>
-#include <src/libprojectM/TestRunner.hpp>
+#include <TestRunner.hpp>
 #include <SDL2/SDL.h>
 #ifdef WIN32
 #include <GL/glew.h>

@@ -1,7 +1,7 @@
 ACLOCAL_AMFLAGS=-I m4
 AM_CPPFLAGS=-DDATADIR_PATH='"${pkgdatadir}"'
 SUBDIRS=src
-PRESETSDIR=presets
+PRESETSDIR=@srcdir@/presets
 EXTRA_DIST=README.md AUTHORS.txt presets fonts vendor $(PRESETSDIR)
 CLEANFILES=dist
 

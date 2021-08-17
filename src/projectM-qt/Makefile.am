@@ -58,7 +58,7 @@ libprojectM_qt_a_SOURCES = \
 	qxmlplaylisthandler.hpp \
 	nullable.hpp \
 	application.qrc \
-	images/*
+	@srcdir@/images/*
 
 nodist_libprojectM_qt_a_SOURCES = \
 	application_qrc.cpp \
