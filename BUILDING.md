@@ -1,5 +1,11 @@
 # Building projectM from source
 
+
+Suggested: use CMake. See BUILDING-cmake.md.
+
+This document describes the deprecated GNU Autotools setup.
+
+
 ## Quick Start (Debian / Ubuntu)
 
 For other operating systems (Windows/macOS), see the OS-specific sections below.
