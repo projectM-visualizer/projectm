@@ -42,7 +42,7 @@ static int mainLoop(void *userData) {
 #endif
     
     // frame rate limiter
-    int fps = app->settings().fps;
+    int fps = app->settings()->fps;
     if (fps <= 0)
         fps = 60;
     const Uint32 frame_delay = 1000/fps;
@@ -68,7 +68,7 @@ static int mainLoop(void *userData) {
 #endif
     }
     
-    return PROJECTM_SUCCESS;
+    return 0;
 }
 
 int main(int argc, char *argv[]) {
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
     // Write back config with current app settings (if we loaded from a config file to begin with)
     std::string configFilePath = getConfigFilePath(DATADIR_PATH);
     if (!configFilePath.empty()) {
-        projectM::writeConfig(configFilePath, app->settings());
+        projectm_write_config(configFilePath.c_str(), app->settings());
     }
     
     // cleanup

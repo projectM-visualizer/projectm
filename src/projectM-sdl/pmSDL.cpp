@@ -30,13 +30,48 @@
 
 #include "pmSDL.hpp"
 
-void projectMSDL::setHelpText(const std::string & helpText) {
-    projectM::setHelpText(helpText);
+#include <vector>
+
+projectMSDL::projectMSDL(SDL_GLContext glCtx, projectm_settings* settings, int flags)
+    : glCtx(glCtx)
+    , _projectM(projectm_create_settings(settings, flags))
+    , _settings(settings)
+{
+    width = projectm_get_window_width(_projectM);
+    height = projectm_get_window_height(_projectM);
+    done = false;
+    isFullScreen = false;
 }
 
-void projectMSDL::maximize() {
+projectMSDL::projectMSDL(SDL_GLContext glCtx, std::string config_file, int flags)
+    : glCtx(glCtx)
+    , _projectM(projectm_create(config_file.c_str(), flags))
+    , _settings(projectm_get_settings(_projectM))
+{
+    width = projectm_get_window_width(_projectM);
+    height = projectm_get_window_height(_projectM);
+    done = 0;
+    isFullScreen = false;
+}
+
+projectMSDL::~projectMSDL()
+{
+    projectm_free_settings(_settings);
+    _settings = nullptr;
+    projectm_destroy(_projectM);
+    _projectM = nullptr;
+}
+
+void projectMSDL::setHelpText(const std::string& helpText)
+{
+    projectm_set_help_text(_projectM, helpText.c_str());
+}
+
+void projectMSDL::maximize()
+{
     SDL_DisplayMode dm;
-    if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
+    if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
+    {
         SDL_Log("SDL_GetDesktopDisplayMode failed: %s", SDL_GetError());
         return;
     }
@@ -48,88 +83,111 @@ void projectMSDL::maximize() {
 /* Stretch projectM across multiple monitors */
 void projectMSDL::stretchMonitors()
 {
-	int displayCount = SDL_GetNumVideoDisplays();
-	if (displayCount >= 2)
-	{
-		std::vector<SDL_Rect> displayBounds;
-		for (int i = 0; i < displayCount; i++)
-		{
-			displayBounds.push_back(SDL_Rect());
-			SDL_GetDisplayBounds(i, &displayBounds.back());
-		}
+    int displayCount = SDL_GetNumVideoDisplays();
+    if (displayCount >= 2)
+    {
+        std::vector<SDL_Rect> displayBounds;
+        for (int i = 0; i < displayCount; i++)
+        {
+            displayBounds.push_back(SDL_Rect());
+            SDL_GetDisplayBounds(i, &displayBounds.back());
+        }
 
-		int mostXLeft = 0;
-		int mostXRight = 0;
-		int mostWide = 0;
-		int mostYUp = 0;
-		int mostYDown = 0;
-		int mostHigh = 0;
+        int mostXLeft = 0;
+        int mostXRight = 0;
+        int mostWide = 0;
+        int mostYUp = 0;
+        int mostYDown = 0;
+        int mostHigh = 0;
 
-		for (int i = 0; i < displayCount; i++)
-		{
-			if (displayBounds[i].x < mostXLeft) mostXLeft = displayBounds[i].x;
-			if ((displayBounds[i].x + displayBounds[i].w) > mostXRight) mostXRight = displayBounds[i].x + displayBounds[i].w;
-		}
-		for (int i = 0; i < displayCount; i++)
-		{
-			if (displayBounds[i].y < mostYUp) mostYUp = displayBounds[i].y;
-			if ((displayBounds[i].y + displayBounds[i].h) > mostYDown) mostYDown = displayBounds[i].y + displayBounds[i].h;
-		}
+        for (int i = 0; i < displayCount; i++)
+        {
+            if (displayBounds[i].x < mostXLeft)
+            {
+                mostXLeft = displayBounds[i].x;
+            }
+            if ((displayBounds[i].x + displayBounds[i].w) > mostXRight)
+            {
+                mostXRight = displayBounds[i].x + displayBounds[i].w;
+            }
+        }
+        for (int i = 0; i < displayCount; i++)
+        {
+            if (displayBounds[i].y < mostYUp)
+            {
+                mostYUp = displayBounds[i].y;
+            }
+            if ((displayBounds[i].y + displayBounds[i].h) > mostYDown)
+            {
+                mostYDown = displayBounds[i].y + displayBounds[i].h;
+            }
+        }
 
         mostWide = abs(mostXLeft) + abs(mostXRight);
         mostHigh = abs(mostYUp) + abs(mostYDown);
 
-		SDL_SetWindowPosition(win, mostXLeft, mostYUp);
-		SDL_SetWindowSize(win, mostWide, mostHigh);
-	}
+        SDL_SetWindowPosition(win, mostXLeft, mostYUp);
+        SDL_SetWindowSize(win, mostWide, mostHigh);
+    }
 }
 
 /* Moves projectM to the next monitor */
 void projectMSDL::nextMonitor()
 {
-	int displayCount = SDL_GetNumVideoDisplays();
-	int currentWindowIndex = SDL_GetWindowDisplayIndex(win);
-	if (displayCount >= 2)
-	{
-		std::vector<SDL_Rect> displayBounds;
-		int nextWindow = currentWindowIndex + 1;
-		if (nextWindow >= displayCount) nextWindow = 0;
+    int displayCount = SDL_GetNumVideoDisplays();
+    int currentWindowIndex = SDL_GetWindowDisplayIndex(win);
+    if (displayCount >= 2)
+    {
+        std::vector<SDL_Rect> displayBounds;
+        int nextWindow = currentWindowIndex + 1;
+        if (nextWindow >= displayCount)
+        {
+            nextWindow = 0;
+        }
 
-		for (int i = 0; i < displayCount; i++)
-		{
-			displayBounds.push_back(SDL_Rect());
-			SDL_GetDisplayBounds(i, &displayBounds.back());
-		}
-		SDL_SetWindowPosition(win, displayBounds[nextWindow].x, displayBounds[nextWindow].y);
-		SDL_SetWindowSize(win, displayBounds[nextWindow].w, displayBounds[nextWindow].h);
-	}
+        for (int i = 0; i < displayCount; i++)
+        {
+            displayBounds.push_back(SDL_Rect());
+            SDL_GetDisplayBounds(i, &displayBounds.back());
+        }
+        SDL_SetWindowPosition(win, displayBounds[nextWindow].x, displayBounds[nextWindow].y);
+        SDL_SetWindowSize(win, displayBounds[nextWindow].w, displayBounds[nextWindow].h);
+    }
 }
 
-void projectMSDL::toggleFullScreen() {
+void projectMSDL::toggleFullScreen()
+{
     maximize();
-    if (isFullScreen) {
+    if (isFullScreen)
+    {
         SDL_SetWindowFullscreen(win, 0);
         isFullScreen = false;
         SDL_ShowCursor(true);
-    } else {
+    }
+    else
+    {
         SDL_ShowCursor(false);
         SDL_SetWindowFullscreen(win, SDL_WINDOW_FULLSCREEN);
         isFullScreen = true;
     }
 }
 
-void projectMSDL::scrollHandler(SDL_Event* sdl_evt) {
-     // handle mouse scroll wheel - up++
-    if (sdl_evt->wheel.y > 0) {
-        projectM::selectPrevious(true);
+void projectMSDL::scrollHandler(SDL_Event* sdl_evt)
+{
+    // handle mouse scroll wheel - up++
+    if (sdl_evt->wheel.y > 0)
+    {
+        projectm_select_previous(_projectM, true);
     }
     // handle mouse scroll wheel - down--
-    if (sdl_evt->wheel.y < 0) {
-        projectM::selectNext(true);
+    if (sdl_evt->wheel.y < 0)
+    {
+        projectm_select_next(_projectM, true);
     }
 }
 
-void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
+void projectMSDL::keyHandler(SDL_Event* sdl_evt)
+{
     projectMEvent evt;
     projectMKeycode key;
     projectMModifier mod;
@@ -138,153 +196,174 @@ void projectMSDL::keyHandler(SDL_Event *sdl_evt) {
 
     // Left or Right Gui or Left Ctrl
     if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+    {
         keymod = true;
+    }
 
-	// handle keyboard input (for our app first, then projectM)
-    switch (sdl_keycode) {
+    // handle keyboard input (for our app first, then projectM)
+    switch (sdl_keycode)
+    {
 
-    case SDLK_q:
-        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
-            // cmd/ctrl-q = quit
-            done = 1;
-            return;
-        }
-        break;
-    case SDLK_BACKSPACE:
-        projectM::deleteSearchText();
-        break;
-    case SDLK_SLASH:
-        break;
-    case SDLK_BACKSLASH:
-        break;
-    case SDLK_RETURN:
-        if (!projectM::isTextInputActive()) {
-            SDL_StartTextInput();
-        }
-        break;
-    case SDLK_ESCAPE:
-        if (projectM::isTextInputActive())
-            SDL_StopTextInput();
-        break;
-    case SDLK_i:
-        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
-        {
-            toggleAudioInput();
-            return; // handled
-        }
-        break;
-    case SDLK_s:
-        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
-        {
-            // command-s: [s]tretch monitors
-            // Stereo requires fullscreen
-#if !STEREOSCOPIC_SBS
-            if (!this->stretch) { // if stretching is not already enabled, enable it.
-                stretchMonitors();
-                this->stretch = true;
-            } else {
-                toggleFullScreen(); // else, just toggle full screen so we leave stretch mode.
-                this->stretch = false;
+        case SDLK_q:
+            if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+            {
+                // cmd/ctrl-q = quit
+                done = 1;
+                return;
             }
-#endif
-            return; // handled
-        }
-    case SDLK_m:
-        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
-        {
-            // command-m: change [m]onitor
-            // Stereo requires fullscreen
-#if !STEREOSCOPIC_SBS
-            nextMonitor();
-#endif
-            this->stretch = false; // if we are switching monitors, ensure we disable monitor stretching.
-            return; // handled
-        }
-    case SDLK_f:
-        if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL) {
-            // command-f: fullscreen
-            // Stereo requires fullscreen
-#if !STEREOSCOPIC_SBS
-            toggleFullScreen();
-#endif
-            this->stretch = false; // if we are toggling fullscreen, ensure we disable monitor stretching.
-            return; // handled
-        }
-        break;
-    case SDLK_LEFT:
-        // selectPrevious(true);
-        break;
-    case SDLK_RIGHT:
-        // selectNext(true);
-        break;
-    case SDLK_UP:
-        break;
-    case SDLK_DOWN:
-        break;
-
-    case SDLK_F3:
-        break;
-
-
-    case SDLK_SPACE:
-        if (!projectM::isTextInputActive(true))
-            setPresetLock(!isPresetLocked());
-        break;
-    case SDLK_F1:
-        break;
-    case SDLK_DELETE:
-        /*
-        try {
-            if (selectedPresetIndex(index)) {
-                DeleteFile(
-                    LPCSTR(
-                        getPresetURL(index).c_str()
-                    )
-                );
+            break;
+        case SDLK_BACKSPACE:
+            projectm_delete_search_text(_projectM);
+            break;
+        case SDLK_SLASH:
+            break;
+        case SDLK_BACKSLASH:
+            break;
+        case SDLK_RETURN:
+            if (!projectm_is_text_input_active(_projectM, false))
+            {
+                SDL_StartTextInput();
             }
-        }
-        catch (const std::exception & e) {
-            printf("Delete failed");
-        }
-        */
-        break;
+            break;
+        case SDLK_ESCAPE:
+            if (projectm_is_text_input_active(_projectM, false))
+            {
+                SDL_StopTextInput();
+            }
+            break;
+        case SDLK_i:
+            if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+            {
+                toggleAudioInput();
+                return; // handled
+            }
+            break;
+        case SDLK_s:
+            if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+            {
+                // command-s: [s]tretch monitors
+                // Stereo requires fullscreen
+#if !STEREOSCOPIC_SBS
+                if (!this->stretch)
+                { // if stretching is not already enabled, enable it.
+                    stretchMonitors();
+                    this->stretch = true;
+                }
+                else
+                {
+                    toggleFullScreen(); // else, just toggle full screen so we leave stretch mode.
+                    this->stretch = false;
+                }
+#endif
+                return; // handled
+            }
+        case SDLK_m:
+            if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+            {
+                // command-m: change [m]onitor
+                // Stereo requires fullscreen
+#if !STEREOSCOPIC_SBS
+                nextMonitor();
+#endif
+                this->stretch = false; // if we are switching monitors, ensure we disable monitor stretching.
+                return; // handled
+            }
+        case SDLK_f:
+            if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+            {
+                // command-f: fullscreen
+                // Stereo requires fullscreen
+#if !STEREOSCOPIC_SBS
+                toggleFullScreen();
+#endif
+                this->stretch = false; // if we are toggling fullscreen, ensure we disable monitor stretching.
+                return; // handled
+            }
+            break;
+        case SDLK_LEFT:
+            // selectPrevious(true);
+            break;
+        case SDLK_RIGHT:
+            // selectNext(true);
+            break;
+        case SDLK_UP:
+            break;
+        case SDLK_DOWN:
+            break;
+
+        case SDLK_F3:
+            break;
+
+
+        case SDLK_SPACE:
+            if (!projectm_is_text_input_active(_projectM, true))
+            {
+                projectm_lock_preset(_projectM, !projectm_is_preset_locked(_projectM));
+            }
+            break;
+        case SDLK_F1:
+            break;
+        case SDLK_DELETE:
+            /*
+            try {
+                if (selectedPresetIndex(index)) {
+                    DeleteFile(
+                        LPCSTR(
+                            getPresetURL(index).c_str()
+                        )
+                    );
+                }
+            }
+            catch (const std::exception & e) {
+                printf("Delete failed");
+            }
+            */
+            break;
     }
     // translate into projectM codes and perform default projectM handler
     evt = sdl2pmEvent(sdl_evt);
     mod = sdl2pmModifier(sdl_mod);
-    key = sdl2pmKeycode(sdl_keycode,sdl_mod);
-    key_handler(evt, key, mod);
+    key = sdl2pmKeycode(sdl_keycode, sdl_mod);
+    projectm_key_handler(_projectM, evt, key, mod);
 }
 
-void projectMSDL::addFakePCM() {
+void projectMSDL::addFakePCM()
+{
     int i;
     short pcm_data[2][512];
     /** Produce some fake PCM data to stuff into projectM */
-    for ( i = 0 ; i < 512 ; i++ ) {
-        if ( i % 2 == 0 ) {
-            pcm_data[0][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
-            pcm_data[1][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
-        } else {
-            pcm_data[0][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
-            pcm_data[1][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
+    for (i = 0; i < 512; i++)
+    {
+        if (i % 2 == 0)
+        {
+            pcm_data[0][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+            pcm_data[1][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
         }
-        if ( i % 2 == 1 ) {
+        else
+        {
+            pcm_data[0][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+            pcm_data[1][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+        }
+        if (i % 2 == 1)
+        {
             pcm_data[0][i] = -pcm_data[0][i];
             pcm_data[1][i] = -pcm_data[1][i];
         }
     }
 
     /** Add the waveform data */
-    pcm()->addPCM16(pcm_data);
+    projectm_pcm_add_16bit_2ch_512(_projectM, pcm_data);
 }
 
-void projectMSDL::resize(unsigned int width_, unsigned int height_) {
+void projectMSDL::resize(unsigned int width_, unsigned int height_)
+{
     width = width_;
     height = height_;
-    projectM_resetGL(width, height);
+    projectm_reset_gl(_projectM, width, height);
 }
 
-void projectMSDL::pollEvent() {
+void projectMSDL::pollEvent()
+{
     SDL_Event evt;
 
     int mousex = 0;
@@ -294,17 +373,19 @@ void projectMSDL::pollEvent() {
     int mousepressure = 0;
     while (SDL_PollEvent(&evt))
     {
-        switch (evt.type) {
+        switch (evt.type)
+        {
             case SDL_WINDOWEVENT:
-            int h, w;
-            SDL_GL_GetDrawableSize(win,&w,&h);
-                switch (evt.window.event) {
-					case SDL_WINDOWEVENT_RESIZED:
-						resize(w, h);
-						break;
-					case SDL_WINDOWEVENT_SIZE_CHANGED:
+                int h, w;
+                SDL_GL_GetDrawableSize(win, &w, &h);
+                switch (evt.window.event)
+                {
+                    case SDL_WINDOWEVENT_RESIZED:
                         resize(w, h);
-						break;
+                        break;
+                    case SDL_WINDOWEVENT_SIZE_CHANGED:
+                        resize(w, h);
+                        break;
                 }
                 break;
             case SDL_MOUSEWHEEL:
@@ -313,14 +394,16 @@ void projectMSDL::pollEvent() {
                 keyHandler(&evt);
                 break;
             case SDL_MOUSEBUTTONDOWN:
-                if (evt.button.button == SDL_BUTTON_LEFT) {
+                if (evt.button.button == SDL_BUTTON_LEFT)
+                {
                     // if it's the first mouse down event (since mouse up or since SDL was launched)
-                    if (!mouseDown) {
+                    if (!mouseDown)
+                    {
                         // Get mouse coorindates when you click.
                         SDL_GetMouseState(&mousex, &mousey);
                         // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
-                        mousexscale = (mousex / (float)width);
-                        mouseyscale = ((height - mousey) / (float)height);
+                        mousexscale = (mousex / (float) width);
+                        mouseyscale = ((height - mousey) / (float) height);
                         // Touch. By not supplying a touch type, we will default to random.
                         touch(mousexscale, mouseyscale, mousepressure);
                         mouseDown = true;
@@ -331,7 +414,8 @@ void projectMSDL::pollEvent() {
                     mouseDown = false;
 
                     // Keymod = Left or Right Gui or Left Ctrl. This is a shortcut to remove all waveforms.
-                    if (keymod) {
+                    if (keymod)
+                    {
                         touchDestroyAll();
                         keymod = false;
                         break;
@@ -341,8 +425,8 @@ void projectMSDL::pollEvent() {
                     SDL_GetMouseState(&mousex, &mousey);
 
                     // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
-                    mousexscale = (mousex / (float)width);
-                    mouseyscale = ((height - mousey) / (float)height);
+                    mousexscale = (mousex / (float) width);
+                    mouseyscale = ((height - mousey) / (float) height);
 
                     // Destroy at the coordinates we clicked.
                     touchDestroy(mousexscale, mouseyscale);
@@ -352,10 +436,10 @@ void projectMSDL::pollEvent() {
                 mouseDown = false;
                 break;
             case SDL_TEXTINPUT:
-                if (projectM::isTextInputActive(true))
+                if (projectm_is_text_input_active(_projectM, true))
                 {
-                    projectM::setSearchText(evt.text.text);
-                    projectM::populatePresetMenu();
+                    projectm_set_search_text(_projectM, evt.text.text);
+                    projectm_populate_preset_menu(_projectM);
                 }
                 break;
             case SDL_QUIT:
@@ -365,179 +449,90 @@ void projectMSDL::pollEvent() {
     }
 
     // Handle dragging your waveform when mouse is down.
-    if (mouseDown) {
+    if (mouseDown)
+    {
         // Get mouse coordinates when you click.
         SDL_GetMouseState(&mousex, &mousey);
         // Scale those coordinates. libProjectM supports a scale of 0.1 instead of absolute pixel coordinates.
-        mousexscale = (mousex / (float)width);
-        mouseyscale = ((height - mousey) / (float)height);
+        mousexscale = (mousex / (float) width);
+        mouseyscale = ((height - mousey) / (float) height);
         // Drag Touch.
         touchDrag(mousexscale, mouseyscale, mousepressure);
     }
 }
 
 // This touches the screen to generate a waveform at X / Y.
-void projectMSDL::touch(float x, float y, int pressure, int touchtype) {
+void projectMSDL::touch(float x, float y, int pressure, int touchtype)
+{
 #ifdef PROJECTM_TOUCH_ENABLED
-    projectM::touch(x, y, pressure, touchtype);
+    projectm_touch(_projectM, x, y, pressure, static_cast<projectm_touch_type>(touchtype));
 #endif
 }
 
 // This moves the X Y of your existing waveform that was generated by a touch (only if you held down your click and dragged your mouse around).
-void projectMSDL::touchDrag(float x, float y, int pressure) {
-    projectM::touchDrag(x, y, pressure);
+void projectMSDL::touchDrag(float x, float y, int pressure)
+{
+    projectm_touch_drag(_projectM, x, y, pressure);
 }
 
 // Remove waveform at X Y
-void projectMSDL::touchDestroy(float x, float y) {
-    projectM::touchDestroy(x, y);
+void projectMSDL::touchDestroy(float x, float y)
+{
+    projectm_touch_destroy(_projectM, x, y);
 }
 
 // Remove all waveforms
-void projectMSDL::touchDestroyAll() {
-    projectM::touchDestroyAll();
+void projectMSDL::touchDestroyAll()
+{
+    projectm_touch_destroy_all(_projectM);
 }
 
-void projectMSDL::renderFrame() {
-    glClearColor( 0.0, 0.0, 0.0, 0.0 );
+void projectMSDL::renderFrame()
+{
+    glClearColor(0.0, 0.0, 0.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    projectM::renderFrame();
-
-    if (renderToTexture) {
-        renderTexture();
-    }
+    projectm_render_frame(_projectM);
 
     SDL_GL_SwapWindow(win);
 }
 
-projectMSDL::projectMSDL(SDL_GLContext glCtx, Settings settings, int flags) : projectM(settings, flags), glCtx(glCtx) {
-    width = getWindowWidth();
-    height = getWindowHeight();
-    done = 0;
-    isFullScreen = false;
-}
-
-projectMSDL::projectMSDL(SDL_GLContext glCtx, std::string config_file, int flags) : projectM(config_file, flags), glCtx(glCtx) {
-    width = getWindowWidth();
-    height = getWindowHeight();
-    done = 0;
-    isFullScreen = false;
-}
-
-void projectMSDL::init(SDL_Window *window, const bool _renderToTexture) {
+void projectMSDL::init(SDL_Window* window, const bool _renderToTexture)
+{
     win = window;
-    projectM_resetGL(width, height);
+    projectm_reset_gl(_projectM, width, height);
 
 #ifdef WASAPI_LOOPBACK
     wasapi = true;
 #endif
-
-    // are we rendering to a texture?
-    renderToTexture = _renderToTexture;
-    if (renderToTexture) {
-        programID = ShaderEngine::CompileShaderProgram(
-            StaticGlShaders::Get()->GetV2fC4fT2fVertexShader(),
-            StaticGlShaders::Get()->GetV2fC4fT2fFragmentShader(), "v2f_c4f_t2f");
-        textureID = projectM::initRenderToTexture();
-
-        float points[16] = {
-            -0.8, -0.8,
-            0.0,    0.0,
-
-            -0.8, 0.8,
-            0.0,   1.0,
-
-            0.8, -0.8,
-            1.0,    0.0,
-
-            0.8, 0.8,
-            1.0,    1.0,
-        };
-
-        glGenBuffers(1, &m_vbo);
-        glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 16, points, GL_DYNAMIC_DRAW);
-
-        glGenVertexArrays(1, &m_vao);
-        glBindVertexArray(m_vao);
-
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)0); // Positions
-
-        glDisableVertexAttribArray(1);
-
-        glEnableVertexAttribArray(2);
-        glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float)*4, (void*)(sizeof(float)*2)); // Textures
-
-        glBindVertexArray(0);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-    }
 }
 
 
 std::string projectMSDL::getActivePresetName()
 {
     unsigned int index = 0;
-    if (selectedPresetIndex(index)) {
-        return getPresetName(index);
+    if (projectm_selected_preset_index(_projectM, &index))
+    {
+        auto presetName = projectm_get_preset_name(_projectM, index);
+        std::string presetNameString(presetName);
+        projectm_free_string(presetName);
+        return presetNameString;
     }
-    return std::string();
+    return {};
 }
 
+void projectMSDL::presetSwitchedEvent(bool isHardCut, size_t index) const
+{
+    auto presetName =  projectm_get_preset_name(_projectM, index);
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Displaying preset: %s\n", presetName);
 
-void projectMSDL::renderTexture() {
-    static int frame = 0;
-    frame++;
+    std::string newTitle = "projectM ➫ " + std::string(presetName);
+    projectm_free_string(presetName);
 
-    glClear(GL_COLOR_BUFFER_BIT);
-    glClear(GL_DEPTH_BUFFER_BIT);
-
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-    glViewport(0, 0, getWindowWidth(), getWindowHeight());
-
-    glUseProgram(programID);
-
-    glUniform1i(glGetUniformLocation(programID, "texture_sampler"), 0);
-
-    glm::mat4 mat_proj = glm::frustum(-1.0f, 1.0f, -1.0f, 1.0f, 2.0f, 10.0f);
-
-    glEnable(GL_DEPTH_TEST);
-
-    glm::mat4 mat_model = glm::mat4(1.0f);
-    mat_model = glm::translate(mat_model, glm::vec3(cos(frame*0.023),
-                                                    cos(frame*0.017),
-                                                    -5+sin(frame*0.022)*2));
-    mat_model = glm::rotate(mat_model, glm::radians((float) sin(frame*0.0043)*360),
-                            glm::vec3(sin(frame*0.0017),
-                                      sin(frame *0.0032),
-                                      1));
-
-    glm::mat4 mat_transf = glm::mat4(1.0f);
-    mat_transf = mat_proj * mat_model;
-
-    glUniformMatrix4fv(glGetUniformLocation(programID, "vertex_transformation"), 1, GL_FALSE, glm::value_ptr(mat_transf));
-
-    glActiveTexture(GL_TEXTURE0);
-
-    glBindTexture(GL_TEXTURE_2D, textureID);
-
-    glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
-
-    glBindVertexArray(m_vao);
-
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-    glBindVertexArray(0);
-
-    glDisable(GL_DEPTH_TEST);
-}
-
-void projectMSDL::presetSwitchedEvent(bool isHardCut, size_t index) const {
-    std::string presetName = getPresetName(index);
-    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Displaying preset: %s\n", presetName.c_str());
-
-    std::string newTitle = "projectM ➫ " + presetName;
     SDL_SetWindowTitle(win, newTitle.c_str());
+}
+
+const projectm_settings* projectMSDL::settings()
+{
+    return _settings;
 }

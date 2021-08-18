@@ -3,6 +3,8 @@
 
 #include "pmSDL.hpp"
 
+#include <string>
+
 class projectMSDL;
 
 void debugGL(GLenum source,

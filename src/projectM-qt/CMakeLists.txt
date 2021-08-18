@@ -41,6 +41,6 @@ target_include_directories(projectM-qt
 
 target_link_libraries(projectM-qt
         PUBLIC
-        projectM_static
+        projectM::libprojectM
         ${QT_LINK_TARGETS}
         )
