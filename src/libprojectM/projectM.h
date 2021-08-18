@@ -24,6 +24,10 @@
 #include "libprojectM/projectM_export.h"
 #include "libprojectM/event.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct projectm; //!< Opaque projectM instance type.
 typedef projectm* projectm_handle; //!< A pointer to the opaque projectM instance.
 
@@ -878,3 +882,7 @@ PROJECTM_EXPORT void projectm_pcm_add_8bit_2ch_1024(projectm_handle instance, co
  * @param pcm_data The audio data.
  */
 PROJECTM_EXPORT void projectm_pcm_add_8bit_2ch_512(projectm_handle instance, const unsigned char pcm_data[2][512]);
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
