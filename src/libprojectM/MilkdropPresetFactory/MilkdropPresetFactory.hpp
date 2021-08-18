@@ -15,9 +15,9 @@
 #include <memory>
 #include "../PresetFactory.hpp"
 
-class DLLEXPORT PresetOutputs;
+class PresetOutputs;
 
-class DLLEXPORT PresetInputs;
+class PresetInputs;
 
 class MilkdropPresetFactory : public PresetFactory
 {

@@ -32,7 +32,6 @@
 #define _BEAT_DETECT_H
 
 #include "../PCM.hpp"
-#include "../dlldefs.h"
 #include <algorithm>
 #include <cmath>
 
@@ -41,7 +40,7 @@
 // the actual time represented in the history depends on FPS
 #define BEAT_HISTORY_LENGTH 80
 
-class DLLEXPORT BeatDetect
+class BeatDetect
 {
 	public:
         // Does this really belong here? maybe belongs on projectM.Settings?

@@ -33,7 +33,7 @@
 #include <string>
 
 /* Function Type */
-class DLLEXPORT Func {
+class Func {
 public:
 
     /// Create a new function wrapper object

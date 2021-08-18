@@ -30,7 +30,6 @@
 #define _PCM_H
 
 #include <stdlib.h>
-#include "dlldefs.h"
 
 
 // FFT_LENGTH is number of magnitude values available from getSpectrum().
@@ -47,11 +46,7 @@ enum CHANNEL
     CHANNEL_1 = 1
 };
 
-class 
-#ifdef WIN32 
-DLLEXPORT 
-#endif 
-PCM
+class PCM
 {
 public:
     /* maximum number of sound samples that are actually stored. */
