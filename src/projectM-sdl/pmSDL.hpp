@@ -41,9 +41,7 @@
 
 // projectM
 #include <projectM-opengl.h>
-extern "C" {
-    #include <projectM.h>
-};
+#include <projectM.h>
 #include <sdltoprojectM.h>
 
 // projectM SDL
@@ -103,7 +101,7 @@ class projectMSDL {
     
 public:
     projectMSDL(SDL_GLContext glCtx, projectm_settings* settings, int flags);
-    projectMSDL(SDL_GLContext glCtx, std::string config_file, int flags);
+    projectMSDL(SDL_GLContext glCtx, const std::string& config_file, int flags);
 
     ~projectMSDL();
 
@@ -128,7 +126,6 @@ public:
     bool keymod = false;
     std::string getActivePresetName();
     void addFakePCM();
-
     const projectm_settings* settings();
 
     bool done{ false };
@@ -156,7 +153,6 @@ private:
     SDL_AudioDeviceID audioInputDevice{ 0 };
     unsigned int width{ 0 };
     unsigned int height{ 0 };
-    bool renderToTexture;
     GLuint programID{ 0 };
     GLuint m_vbo{ 0 };
     GLuint m_vao{ 0 };
