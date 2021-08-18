@@ -39,8 +39,7 @@ projectMSDL::projectMSDL(SDL_GLContext glCtx, projectm_settings* settings, int f
 {
     width = projectm_get_window_width(_projectM);
     height = projectm_get_window_height(_projectM);
-    done = false;
-    isFullScreen = false;
+    projectm_set_preset_switched_event_callback(_projectM, &projectMSDL::presetSwitchedEvent, static_cast<void*>(this));
 }
 
 projectMSDL::projectMSDL(SDL_GLContext glCtx, std::string config_file, int flags)
@@ -50,8 +49,7 @@ projectMSDL::projectMSDL(SDL_GLContext glCtx, std::string config_file, int flags
 {
     width = projectm_get_window_width(_projectM);
     height = projectm_get_window_height(_projectM);
-    done = 0;
-    isFullScreen = false;
+    projectm_set_preset_switched_event_callback(_projectM, &projectMSDL::presetSwitchedEvent, static_cast<void*>(this));
 }
 
 projectMSDL::~projectMSDL()
@@ -521,15 +519,16 @@ std::string projectMSDL::getActivePresetName()
     return {};
 }
 
-void projectMSDL::presetSwitchedEvent(bool isHardCut, size_t index) const
+void projectMSDL::presetSwitchedEvent(bool isHardCut, unsigned int index, void* context)
 {
-    auto presetName =  projectm_get_preset_name(_projectM, index);
+    auto app = reinterpret_cast<projectMSDL*>(context);
+    auto presetName =  projectm_get_preset_name(app->_projectM, index);
     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Displaying preset: %s\n", presetName);
 
     std::string newTitle = "projectM ➫ " + std::string(presetName);
     projectm_free_string(presetName);
 
-    SDL_SetWindowTitle(win, newTitle.c_str());
+    SDL_SetWindowTitle(app->win, newTitle.c_str());
 }
 
 const projectm_settings* projectMSDL::settings()

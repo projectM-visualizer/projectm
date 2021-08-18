@@ -122,31 +122,32 @@ PROJECTM_EXPORT char* projectm_alloc_string(unsigned int length);
 /**
  * @brief Frees the memory of an allocated string.
  *
- * Frees the memory allocated by a call to projectm_alloc_string() or any
- * (const) char* pointers returned by an API call.
+ * <p>Frees the memory allocated by a call to projectm_alloc_string() or any
+ * (const) char* pointers returned by an API call.</p>
  *
- * Do not use free() to delete the pointer!
+ * <p>Do not use free() to delete the pointer!</p>
  *
  * @param settings A pointer returned by projectm_alloc_string().
  */
 PROJECTM_EXPORT void projectm_free_string(const char* str);
 
 /**
- * @brief Allocates memory for a projectm_settings_t struct and returns the pointer.
+ * @brief Allocates memory for a projectm_settings struct and returns the pointer.
  *
  * To free the allocated memory, call projectm_free_settings(). Do not use free()!
  *
- * @return A pointer to a zero-initialized projectm_settings_t struct.
+ * @return A pointer to a zero-initialized projectm_settings struct.
  */
 PROJECTM_EXPORT projectm_settings* projectm_alloc_settings();
 
 /**
- * @brief Frees the memory of an allocated projectm_settings_t structure.
+ * @brief Frees the memory of an allocated projectm_settings structure.
  *
- * Frees the memory allocated by a call to projectm_alloc_settings() or any
- * projectm_settings_t* returned by an API call.
+ * <p>Frees the memory allocated by a call to projectm_alloc_settings() or any
+ * projectm_settings pointer returned by an API call. Any non-null char pointers
+ * will also be free'd using projectm_free_string().</p>
  *
- * Do not use free() to delete the pointer!
+ * <p>Do not use free() to delete the pointer!</p>
  *
  * @param settings A pointer returned by projectm_alloc_settings().
  */
@@ -160,14 +161,18 @@ PROJECTM_EXPORT void projectm_free_settings(const projectm_settings* settings);
  *
  * @param is_hard_cut True if the preset was switched using a hard cut via beat detection.
  * @param index The playlist index of the new preset.
+ * @param user_data A user-defined data pointer that was provided when registering the callback,
+ *                  e.g. context information.
  */
-typedef void(* projectm_preset_switched_event)(bool is_hard_cut, unsigned int index);
+typedef void(* projectm_preset_switched_event)(bool is_hard_cut, unsigned int index, void* user_data);
 
 /**
  * @brief Callback function that is executed is the shuffle setting has changed.
  * @param shuffle_enabled True if shuffle is enabled, false if it was disabled.
+ * @param user_data A user-defined data pointer that was provided when registering the callback,
+ *                  e.g. context information.
  */
-typedef void(* projectm_shuffle_enable_changed_event)(bool shuffle_enabled);
+typedef void(* projectm_shuffle_enable_changed_event)(bool shuffle_enabled, void* user_data);
 
 /**
  * @brief Callback function that is executed if a preset change failed.
@@ -178,8 +183,11 @@ typedef void(* projectm_shuffle_enable_changed_event)(bool shuffle_enabled);
  * @param is_hard_cut True if the preset was switched using a hard cut via beat detection.
  * @param index The playlist index of the new preset.
  * @param message The error message.
+ * @param user_data A user-defined data pointer that was provided when registering the callback,
+ *                  e.g. context information.
  */
-typedef void(* projectm_preset_switch_failed_event)(bool is_hard_cut, unsigned int index, const char* message);
+typedef void(* projectm_preset_switch_failed_event)(bool is_hard_cut, unsigned int index, const char* message,
+                                                    void* user_data);
 
 /**
  * @brief Callback function that is executed if a preset rating has been changed.
@@ -189,9 +197,11 @@ typedef void(* projectm_preset_switch_failed_event)(bool is_hard_cut, unsigned i
  * @param index The playlist index of the new preset.
  * @param rating The new rating value.
  * @param rating_type The rating type that has been changed.
+ * @param user_data A user-defined data pointer that was provided when registering the callback,
+ *                  e.g. context information.
  */
 typedef void(* projectm_preset_rating_changed_event)(unsigned int index, int rating,
-                                                     projectm_preset_rating_type rating_type);
+                                                     projectm_preset_rating_type rating_type, void* user_data);
 
 
 
@@ -226,35 +236,55 @@ PROJECTM_EXPORT void projectm_destroy(projectm_handle instance);
 
 /**
  * @brief Sets a callback function that will be called when a preset changes.
+ *
+ * Only one callback can be registered per projectM instance. To remove the callback, use NULL.
+ *
  * @param instance The projectM instance handle.
  * @param callback A pointer to the callback function.
+ * @param user_data A pointer to any data that will be sent back in the callback, e.g. context information.
  */
 PROJECTM_EXPORT void projectm_set_preset_switched_event_callback(projectm_handle instance,
-                                                                 projectm_preset_switched_event callback);
+                                                                 projectm_preset_switched_event callback,
+                                                                 void* user_data);
 
 /**
  * @brief Sets a callback function that will be called when the shuffle setting changes.
+ *
+ * Only one callback can be registered per projectM instance. To remove the callback, use NULL.
+ *
  * @param instance The projectM instance handle.
  * @param callback A pointer to the callback function.
+ * @param user_data A pointer to any data that will be sent back in the callback, e.g. context information.
  */
 PROJECTM_EXPORT void projectm_set_shuffle_enable_changed_event_callback(projectm_handle instance,
-                                                                        projectm_shuffle_enable_changed_event callback);
+                                                                        projectm_shuffle_enable_changed_event callback,
+                                                                        void* user_data);
 
 /**
  * @brief Sets a callback function that will be called when a preset change failed.
+ *
+ * Only one callback can be registered per projectM instance. To remove the callback, use NULL.
+ *
  * @param instance The projectM instance handle.
  * @param callback A pointer to the callback function.
+ * @param user_data A pointer to any data that will be sent back in the callback, e.g. context information.
  */
 PROJECTM_EXPORT void projectm_set_preset_switch_failed_event_callback(projectm_handle instance,
-                                                                      projectm_preset_switch_failed_event callback);
+                                                                      projectm_preset_switch_failed_event callback,
+                                                                      void* user_data);
 
 /**
  * @brief Sets a callback function that will be called when a preset rating changed.
+ *
+ * Only one callback can be registered per projectM instance. To remove the callback, use NULL.
+ *
  * @param instance The projectM instance handle.
  * @param callback A pointer to the callback function.
+ * @param user_data A pointer to any data that will be sent back in the callback, e.g. context information.
  */
 PROJECTM_EXPORT void projectm_set_preset_rating_changed_event_callback(projectm_handle instance,
-                                                                       projectm_preset_rating_changed_event callback);
+                                                                       projectm_preset_rating_changed_event callback,
+                                                                       void* user_data);
 
 /**
  * @brief Reset the projectM OpenGL renderer.
