@@ -531,6 +531,11 @@ void projectMSDL::presetSwitchedEvent(bool isHardCut, unsigned int index, void* 
     SDL_SetWindowTitle(app->win, newTitle.c_str());
 }
 
+projectm_handle projectMSDL::projectM()
+{
+    return _projectM;
+}
+
 const projectm_settings* projectMSDL::settings()
 {
     return _settings;

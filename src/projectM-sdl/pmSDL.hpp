@@ -126,6 +126,7 @@ public:
     bool keymod = false;
     std::string getActivePresetName();
     void addFakePCM();
+    projectm_handle projectM();
     const projectm_settings* settings();
 
     bool done{ false };
