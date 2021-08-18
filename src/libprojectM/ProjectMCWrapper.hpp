@@ -47,4 +47,9 @@ public:
     projectm_shuffle_enable_changed_event _shuffleEnableChangedEventCallback{ nullptr };
     projectm_preset_switch_failed_event _presetSwitchFailedEventCallback{ nullptr };
     projectm_preset_rating_changed_event _presetRatingChangedEventCallback{ nullptr };
+
+    void* _presetSwitchedEventUserData{ nullptr };
+    void* _shuffleEnableChangedEventUserData{ nullptr };
+    void* _presetSwitchFailedEventUserData{ nullptr };
+    void* _presetRatingChangedEventUserData{ nullptr };
 };

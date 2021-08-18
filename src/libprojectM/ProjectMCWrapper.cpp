@@ -19,7 +19,7 @@ void projectMWrapper::presetSwitchedEvent(bool isHardCut, size_t presetIndex) co
 {
     if (_presetSwitchedEventCallback)
     {
-        _presetSwitchedEventCallback(isHardCut, presetIndex);
+        _presetSwitchedEventCallback(isHardCut, presetIndex, _presetSwitchedEventUserData);
     }
 }
 
@@ -27,7 +27,7 @@ void projectMWrapper::shuffleEnabledValueChanged(bool shuffle_enabled) const
 {
     if (_shuffleEnableChangedEventCallback)
     {
-        _shuffleEnableChangedEventCallback(shuffle_enabled);
+        _shuffleEnableChangedEventCallback(shuffle_enabled, _shuffleEnableChangedEventUserData);
     }
 }
 
@@ -36,7 +36,8 @@ void projectMWrapper::presetSwitchFailedEvent(bool isHardCut, unsigned int prese
 {
     if (_presetSwitchFailedEventCallback)
     {
-        _presetSwitchFailedEventCallback(isHardCut, presetIndex, failureMessage.c_str());
+        _presetSwitchFailedEventCallback(isHardCut, presetIndex,
+                                         failureMessage.c_str(), _presetSwitchFailedEventUserData);
     }
 }
 
@@ -44,7 +45,8 @@ void projectMWrapper::presetRatingChanged(unsigned int presetIndex, int rating, 
 {
     if (_presetRatingChangedEventCallback)
     {
-        _presetRatingChangedEventCallback(presetIndex, rating, static_cast<projectm_preset_rating_type>(ratingType));
+        _presetRatingChangedEventCallback(presetIndex, rating, static_cast<projectm_preset_rating_type>(ratingType),
+                                          _presetRatingChangedEventUserData);
     }
 }
 
@@ -159,31 +161,36 @@ void projectm_destroy(projectm_handle instance)
     delete projectMInstance;
 }
 
-void projectm_set_preset_switched_event_callback(projectm_handle instance, projectm_preset_switched_event callback)
+void projectm_set_preset_switched_event_callback(projectm_handle instance, projectm_preset_switched_event callback,
+                                                 void* user_data)
 {
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->_presetSwitchedEventCallback = callback;
+    projectMInstance->_presetSwitchedEventUserData = user_data;
 }
 
 void projectm_set_shuffle_enable_changed_event_callback(projectm_handle instance,
-                                                        projectm_shuffle_enable_changed_event callback)
+                                                        projectm_shuffle_enable_changed_event callback, void* user_data)
 {
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->_shuffleEnableChangedEventCallback = callback;
+    projectMInstance->_shuffleEnableChangedEventUserData = user_data;
 }
 
 void projectm_set_preset_switch_failed_event_callback(projectm_handle instance,
-                                                      projectm_preset_switch_failed_event callback)
+                                                      projectm_preset_switch_failed_event callback, void* user_data)
 {
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->_presetSwitchFailedEventCallback = callback;
+    projectMInstance->_presetSwitchFailedEventUserData = user_data;
 }
 
 void projectm_set_preset_rating_changed_event_callback(projectm_handle instance,
-                                                       projectm_preset_rating_changed_event callback)
+                                                       projectm_preset_rating_changed_event callback, void* user_data)
 {
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->_presetRatingChangedEventCallback = callback;
+    projectMInstance->_presetRatingChangedEventUserData = user_data;
 }
 
 void projectm_reset_gl(projectm_handle instance, int width, int height)
