@@ -39,7 +39,7 @@ class QProjectMWidget : public QOpenGLWidget
 
 	public:
 		static const int MOUSE_VISIBLE_TIMEOUT_MS = 5000;
-		QProjectMWidget ( const std::string & config_file, QWidget * parent, QMutex * audioMutex = 0 )
+		QProjectMWidget ( const QString& config_file, QWidget * parent, QMutex * audioMutex = 0 )
 				: QOpenGLWidget ( parent ), m_config_file ( config_file ), m_projectM ( 0 ), m_mouseTimer ( 0 ), m_audioMutex ( audioMutex )
 		{
 
@@ -65,26 +65,24 @@ class QProjectMWidget : public QOpenGLWidget
 		{
 			// Setup viewport, projection etc
 			setup_opengl ( w,h );
-			m_projectM->projectM_resetGL ( w, h );
+            projectm_reset_gl(m_projectM->instance(), w, h);
 		}
 
-		inline const std::string & configFile()
+		inline const QString& configFile()
 		{
 			return m_config_file;
 		}
 
 		inline void seizePresetLock()
 		{
-
 			m_presetSeizeMutex.lock();
-			m_presetWasLocked = qprojectM()->isPresetLocked();
-			qprojectM()->setPresetLock ( true );
-
+			m_presetWasLocked = projectm_is_preset_locked(qprojectM()->instance());
+            projectm_lock_preset(qprojectM()->instance(), true);
 		}
 
 		inline void releasePresetLock()
 		{
-			qprojectM()->setPresetLock ( m_presetWasLocked );
+		    projectm_lock_preset(qprojectM()->instance(),  m_presetWasLocked);
 			m_presetSeizeMutex.unlock();
 		}
 
@@ -142,13 +140,13 @@ class QProjectMWidget : public QOpenGLWidget
 
 		void setPresetLock ( int state )
 		{
-			m_projectM->setPresetLock ( ( bool ) state );
+            projectm_lock_preset(m_projectM->instance(), static_cast<bool>(state));
 			emit ( presetLockChanged ( ( bool ) state ) );
 		}
 
 		void setShuffleEnabled ( int state )
 		{
-			m_projectM->setShuffleEnabled ( ( bool ) state );
+            projectm_set_shuffle_enabled(m_projectM->instance(), static_cast<bool>(state));
 			emit ( shuffleEnabledChanged ( ( bool ) state ) );
 		}
 
@@ -177,7 +175,7 @@ class QProjectMWidget : public QOpenGLWidget
 				QApplication::setOverrideCursor ( Qt::BlankCursor );
 		}
 	private:
-		std::string m_config_file;
+		QString m_config_file;
 		QProjectM * m_projectM;
 		void destroyProjectM()
 		{
@@ -255,7 +253,7 @@ class QProjectMWidget : public QOpenGLWidget
 			}
 			projectMModifier modifier = PROJECTM_KMOD_NONE;
 
-			m_projectM->key_handler ( PROJECTM_KEYDOWN, pkey, modifier );
+            projectm_key_handler(m_projectM->instance(), PROJECTM_KEYDOWN, pkey, modifier);
 			if ( ignore )
 				e->ignore();
 
@@ -273,7 +271,7 @@ class QProjectMWidget : public QOpenGLWidget
 
 		void paintGL() override
 		{
-			m_projectM->renderFrame();
+            projectm_render_frame(m_projectM->instance());
 		}
 
 	private:

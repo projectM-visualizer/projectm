@@ -46,7 +46,7 @@
 #include <math.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <projectM.hpp>
+#include <projectM.h>
 #include <qprojectm_mainwindow.hpp>
 #include <QApplication>
 #include <QtDebug>
@@ -60,8 +60,6 @@
 #include <QThread>
 #include <QTimer>
 #define CONFIG_FILE "/share/projectM/config.inp"
-
-std::string read_config();
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -80,6 +78,8 @@ std::string read_config();
 
 #include "QPulseAudioThread.hpp"
 #include "QPulseAudioDeviceChooser.hpp"
+
+QString read_config();
 
 int dumpFrame = 0;
 int frameNumber = 0;
@@ -114,7 +114,7 @@ int main ( int argc, char*argv[] )
 
 	ProjectMApplication app ( argc, argv );
 
-	std::string config_file;
+	QString config_file;
 	config_file = read_config();
 
 
@@ -154,7 +154,7 @@ int main ( int argc, char*argv[] )
 }
 
 
-std::string read_config()
+QString read_config()
 {
 	char num[512];
 	FILE *in;
@@ -180,7 +180,7 @@ std::string read_config()
 	{
 		printf ( "reading %s \n", projectM_config );
 		fclose ( in );
-		return std::string ( projectM_config );
+		return projectM_config;
 	}
 	else {
                 if (xdg_home) {
@@ -189,7 +189,7 @@ std::string read_config()
                         if ( ( in = fopen ( projectM_config, "r" ) ) != 0 ) {
                                 printf ( "reading %s \n", projectM_config );
                                 fclose ( in );
-                                return std::string ( projectM_config );
+                                return projectM_config;
                         }
                         else {
                                 strcpy(projectM_config, xdg_home);
@@ -222,7 +222,7 @@ std::string read_config()
 				{
 					printf ( "created %s successfully\n", projectM_config );
 					fclose ( in );
-					return std::string ( projectM_config );
+					return projectM_config;
 				}
 				else{printf ( "This shouldn't happen, using implementation defaults\n" );abort();}
 			}
@@ -235,7 +235,7 @@ std::string read_config()
 			{
 				printf ( "Successfully opened default config file\n" );
 				fclose ( in );
-				return std::string ( default_config );
+				return default_config;
 			}
 			else{ printf ( "Using implementation defaults, your system is really messed up, I'm surprised we even got this far\n" );  abort();}
 

@@ -19,6 +19,8 @@
  *
  */
 
+#include "projectM.h"
+
 #include <QIcon>
 #include <QXmlStreamReader>
 #include <QtDebug>
@@ -82,10 +84,13 @@ class XmlWriteFunctor {
 };
 
 bool QPlaylistModel::softCutRatingsEnabled() const {
-	return m_projectM.settings().softCutRatingsEnabled;
+    auto projectMSettings = projectm_get_settings(m_projectM);
+    auto softCutRatingsEnabledValue = projectMSettings->soft_cut_ratings_enabled;
+    projectm_free_settings(projectMSettings);
+    return softCutRatingsEnabledValue;
 }
 
-QPlaylistModel::QPlaylistModel ( projectM & _projectM, QObject * parent ) :
+QPlaylistModel::QPlaylistModel ( projectm* _projectM, QObject * parent ) :
 		QAbstractTableModel ( parent ), m_projectM ( _projectM )
 {
 
@@ -104,13 +109,13 @@ bool QPlaylistModel::setData ( const QModelIndex & index, const QVariant & value
 {
 	if ( role == QPlaylistModel::RatingRole )
 	{
-		m_projectM.changePresetRating(index.row(), value.toInt(), HARD_CUT_RATING_TYPE);
+        projectm_change_preset_rating(m_projectM, index.row(), value.toInt(), PROJECTM_HARD_CUT_RATING_TYPE);
 		return true;
 	} else if (role == QPlaylistModel::BreedabilityRole) {
-		m_projectM.changePresetRating(index.row(), value.toInt(), SOFT_CUT_RATING_TYPE);
+	    projectm_change_preset_rating(m_projectM, index.row(), value.toInt(), PROJECTM_SOFT_CUT_RATING_TYPE);
 		return true;
 	} else if (role == QPlaylistModel::NameRole) {
-		m_projectM.changePresetName(index.row(), value.toString().toStdString());
+        projectm_change_preset_name(m_projectM, index.row(), value.toString().toLocal8Bit().data());
 		return true;
 	}
 	else
@@ -255,42 +260,57 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 	{
 		case Qt::DisplayRole:
 			if ( index.column() == 0 )
-				return QVariant ( QString ( m_projectM.getPresetName ( rowidx ).c_str() ) );
+            {
+			    auto presetName = projectm_get_preset_name(m_projectM, rowidx);
+			    QString qPresetName = QString(presetName);
+                projectm_free_string(presetName);
+                return qPresetName;
+            }
 			else if (index.column() == 1)
-				return ratingToIcon ( m_projectM.getPresetRating(rowidx, HARD_CUT_RATING_TYPE) );
+			    return ratingToIcon (projectm_get_preset_rating(m_projectM, rowidx, PROJECTM_HARD_CUT_RATING_TYPE) );
 			else
-				return ratingToIcon ( m_projectM.getPresetRating(rowidx, SOFT_CUT_RATING_TYPE) );
+			    return ratingToIcon ( projectm_get_preset_rating(m_projectM, rowidx, PROJECTM_SOFT_CUT_RATING_TYPE) );
 		case Qt::ToolTipRole:
 			if ( index.column() == 0 )
-				return QVariant ( QString ( m_projectM.getPresetName ( rowidx ).c_str() ) );
+			{
+			    auto presetName = projectm_get_preset_name(m_projectM, rowidx);
+			    QString qPresetName = QString(presetName);
+			    projectm_free_string(presetName);
+			    return qPresetName;
+			}
 			else if (index.column() == 1)
-				return QString ( getSillyRatingToolTip(m_projectM.getPresetRating(rowidx, HARD_CUT_RATING_TYPE)));
-			else return 		getBreedabilityToolTip(m_projectM.getPresetRating(rowidx, SOFT_CUT_RATING_TYPE));
+			    return QString ( getSillyRatingToolTip(projectm_get_preset_rating(m_projectM, rowidx, PROJECTM_HARD_CUT_RATING_TYPE)));
+			else return 		getBreedabilityToolTip(projectm_get_preset_rating(m_projectM, rowidx, PROJECTM_SOFT_CUT_RATING_TYPE));
 		case Qt::DecorationRole:
 			if ( index.column() == 1 )
-				return ratingToIcon ( m_projectM.getPresetRating(rowidx, HARD_CUT_RATING_TYPE) );
+				return ratingToIcon (projectm_get_preset_rating(m_projectM, rowidx, PROJECTM_HARD_CUT_RATING_TYPE) );
 			else if (index.column() == 2)
-				return breedabilityToIcon ( m_projectM.getPresetRating(rowidx, SOFT_CUT_RATING_TYPE) );
+			    return breedabilityToIcon ( projectm_get_preset_rating(m_projectM, rowidx, PROJECTM_SOFT_CUT_RATING_TYPE) );
 			else
 				return QVariant();
 		case QPlaylistModel::RatingRole:
-			return QVariant (  m_projectM.getPresetRating(rowidx, HARD_CUT_RATING_TYPE)  );
+		    return QVariant (  projectm_get_preset_rating(m_projectM, rowidx, PROJECTM_HARD_CUT_RATING_TYPE)  );
 		case QPlaylistModel::BreedabilityRole:
-			return QVariant (  m_projectM.getPresetRating(rowidx, SOFT_CUT_RATING_TYPE)  );
+		    return QVariant (  projectm_get_preset_rating(m_projectM, rowidx, PROJECTM_SOFT_CUT_RATING_TYPE)  );
 		case Qt::BackgroundRole:
 	
-			if (!m_projectM.selectedPresetIndex(pos))
+			if (!projectm_selected_preset_index(m_projectM, &pos))
 				return QVariant();
-			if (m_projectM.isPresetLocked() && rowidx >= 0 && static_cast<unsigned int>(rowidx) == pos )
+			if (projectm_is_preset_locked(m_projectM) && rowidx >= 0 && static_cast<unsigned int>(rowidx) == pos )
 				return QColor(Qt::red);
-			if (!m_projectM.isPresetLocked() && rowidx >= 0 && static_cast<unsigned int>(rowidx) == pos )
+			if (!projectm_is_preset_locked(m_projectM) && rowidx >= 0 && static_cast<unsigned int>(rowidx) == pos )
 				return QColor(Qt::green);
 			return QVariant();
 		case QPlaylistModel::URLInfoRole:
-			return QVariant ( QString ( m_projectM.getPresetURL ( rowidx ).c_str() ) );
+        {
+            auto presetUrl = projectm_get_preset_url(m_projectM, rowidx);
+            QString qPresetUrl(presetUrl);
+            projectm_free_string(presetUrl);
+            return qPresetUrl;
+        }
 		default:
 			
-			return QVariant();
+			return {};
 	}
 }
 
@@ -319,7 +339,7 @@ int QPlaylistModel::rowCount ( const QModelIndex & parent ) const
 {
 	Q_UNUSED(parent);
 
-	return m_projectM.getPlaylistSize();
+	return projectm_get_playlist_size(m_projectM);
 }
 
 
@@ -332,22 +352,20 @@ int QPlaylistModel::columnCount ( const QModelIndex & parent ) const
 
 void QPlaylistModel::appendRow ( const QString & presetURL, const QString & presetName, int rating, int breedability )
 {
-	RatingList ratings;
-	ratings.push_back(rating);
-	ratings.push_back(breedability);
+    auto ratings = new int[2]{ rating, breedability };
 
 	beginInsertRows ( QModelIndex(), rowCount(), rowCount() );
-	m_projectM.addPresetURL ( presetURL.toStdString(), presetName.toStdString(), ratings);
+	projectm_add_preset_url(m_projectM, presetURL.toLocal8Bit().data(), presetName.toLocal8Bit().data(), ratings, 2);
 	endInsertRows();
+
+	delete[] ratings;
 }
 
 void QPlaylistModel::insertRow (int index, const QString & presetURL, const QString & presetName, int rating, int breedability)  {
-	RatingList ratings;
-	ratings.push_back(rating);
-	ratings.push_back(breedability);
+    auto ratings = new int[2]{ rating, breedability };
 
 	beginInsertRows ( QModelIndex(), index, index);
-	m_projectM.insertPresetURL (index, presetURL.toStdString(), presetName.toStdString(), ratings);
+	projectm_insert_preset_url(m_projectM, index, presetURL.toLocal8Bit().data(), presetName.toLocal8Bit().data(), ratings, 2);
 	endInsertRows();
 }
 
@@ -357,7 +375,7 @@ bool QPlaylistModel::removeRows ( int row, int count, const QModelIndex & parent
 	beginRemoveRows ( QModelIndex(), row, count);
 
 	for (int i = 0; i < count; i++) {
-		m_projectM.removePreset (row );
+        projectm_remove_preset(m_projectM, row);
 	}
 	endRemoveRows();
 	return true;
@@ -368,7 +386,7 @@ bool QPlaylistModel::removeRow ( int index, const QModelIndex & parent)
 	Q_UNUSED(parent);
 
 	beginRemoveRows ( QModelIndex(), index, index );
-	m_projectM.removePreset ( index );	
+	projectm_remove_preset(m_projectM, index);
 	endRemoveRows();
 	return true;
 }
@@ -385,7 +403,7 @@ void QPlaylistModel::clearItems()
     if (rowCount() > 0)
     {
         beginRemoveRows(QModelIndex(), 0, rowCount() - 1);
-        m_projectM.clearPlaylist();
+        projectm_clear_playlist(m_projectM);
         endRemoveRows();
     }
 }

@@ -22,7 +22,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <math.h>
-#include <projectM.hpp>
+#include <projectM.h>
 #include <qprojectm_mainwindow.hpp>
 #include <QApplication>
 
@@ -40,7 +40,7 @@
 
 #define QPROJECTM_JACK_CONFIG_FILE "/config.inp"
 
-std::string read_config();
+QString read_config();
 
 jack_port_t *input_port;
 jack_client_t *client;
@@ -57,7 +57,7 @@ volatile enum ClientState {
 } client_state = Init;
 
 
-projectM *globalPM = NULL;
+projectm* globalPM = nullptr;
 
 int dumpFrame = 0;
 int frameNumber = 0;
@@ -85,7 +85,7 @@ class ProjectMApplication : public QApplication {
 		}
 };
 
-std::string read_config()
+QString read_config()
 {
 
    char num[512];
@@ -115,7 +115,7 @@ std::string read_config()
    {
      printf("reading ~/.projectM/config.inp \n");
      fclose(f_in);
-     return std::string(projectM_home);
+     return projectM_home;
    }
  else
    {
@@ -148,7 +148,7 @@ std::string read_config()
 	       {
 		 printf("created ~/.projectM/config.inp successfully\n");
 		 fclose(f_in);
-		 return std::string(projectM_home);
+		 return projectM_home;
 	       }
 	     else{printf("This shouldn't happen, using implementation defaults\n");abort();}
 	   }
@@ -160,7 +160,7 @@ std::string read_config()
 	 if ((f_in = fopen(projectM_config, "r")) != 0)
 	   { printf("Successfully opened default config file\n");
 	     fclose(f_in);
-	     return std::string(projectM_config);}
+	     return projectM_config;}
 	 else{ printf("Using implementation defaults, your system is really messed up, I'm surprised we even got this far\n");  abort();}
 
        }
@@ -182,7 +182,7 @@ process (jack_nframes_t nframes, void *arg)
 
 	//memcpy (out, in,sizeof (jack_default_audio_sample_t) * nframes);
 
-	globalPM->pcm()->addPCMfloat(in,nframes);
+    projectm_pcm_add_float_1ch_data(globalPM, in, nframes);
 //		printf("%x %f\n",nframes,in[128]);
 
 	return 0;
@@ -205,8 +205,7 @@ int main (int argc, char **argv) {
 	// Start a new application
 	ProjectMApplication app(argc, argv);
 
-	std::string config_file;
-	config_file = read_config();
+	auto config_file = read_config();
 
 
 	QProjectM_MainWindow * mainWindow = new QProjectM_MainWindow(config_file, 0);

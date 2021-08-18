@@ -49,6 +49,8 @@ class QProjectMWidget;
 template <class T>
 class Nullable;
 
+struct projectm;
+
 namespace Ui {
 class QProjectM_MainWindow;
 }
@@ -64,7 +66,7 @@ class QProjectM_MainWindow:public QMainWindow
 		void shuttingDown();
 	public:
 	
-	projectM * GetProjectM();
+	projectm* GetProjectM();
 
       typedef struct PlaylistItemMetaData {
 		PlaylistItemMetaData() {}
@@ -92,7 +94,7 @@ class QProjectM_MainWindow:public QMainWindow
 		
       typedef QVector<long> PlaylistItemVector;
 
-      QProjectM_MainWindow(const std::string & config_file, QMutex * audioMutex);
+      QProjectM_MainWindow(const QString& config_file, QMutex * audioMutex);
       virtual ~QProjectM_MainWindow();
       void registerSettingsAction(QAction * action);
       void unregisterSettingsAction(QAction * action);
@@ -161,7 +163,7 @@ void presetSoftCut();
 	void updatePlaylistUrl(const QString & url);
 	unsigned long playlistItemCounter;
 	QSize _oldPlaylistSize;	
-	void readConfig(const std::string & configFile);
+	void readConfig(const QString& configFile);
 	void writeConfig();
 	void copyPlaylist();
 	

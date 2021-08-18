@@ -34,6 +34,12 @@ add_library(projectM-qt STATIC
         qxmlplaylisthandler.hpp
         )
 
+set_target_properties(projectM-qt PROPERTIES
+        C_VISIBILITY_PRESET default
+        CXX_VISIBILITY_PRESET default
+        VISIBILITY_INLINES_HIDDEN OFF
+        )
+
 target_include_directories(projectM-qt
         PUBLIC
         "${CMAKE_CURRENT_SOURCE_DIR}"
