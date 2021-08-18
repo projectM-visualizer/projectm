@@ -128,8 +128,6 @@ public:
     bool keymod = false;
     std::string getActivePresetName();
     void addFakePCM();
-    
-    virtual void presetSwitchedEvent(bool isHardCut, size_t index) const;
 
     const projectm_settings* settings();
 
@@ -142,6 +140,8 @@ public:
     SDL_GLContext glCtx{ nullptr };
 
 private:
+    static void presetSwitchedEvent(bool isHardCut, unsigned int index, void* context);
+
     static void audioInputCallbackF32(void *userdata, unsigned char *stream, int len);
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
 
