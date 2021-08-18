@@ -40,7 +40,7 @@ typedef projectm* projectm_handle; //!< A pointer to the opaque projectM instanc
  * projectm_free_settings() will automatically call projectm_free_string() on it. If you free it on your own, remember
  * to reset the pointer to NULL after doing so!</p>
  */
-typedef struct projectm_settings
+struct PROJECTM_EXPORT projectm_settings
 {
     int mesh_x; //!< Per-pixel mesh X resolution.
     int mesh_y; //!< Per-pixel mesh Y resolution.
@@ -62,7 +62,7 @@ typedef struct projectm_settings
     float easter_egg; //!< Used as the "sigma" value for a gaussian RNG to randomize preset duration. Unused on Windows.
     bool shuffle_enabled; //!< Enable playlist shuffle, selecting a random preset on each switch instead of the next in list.
     bool soft_cut_ratings_enabled; //!< If true, use soft cut ratings on soft cuts and hard cut ratings on hard cuts. If false, the hard cut rating is always used.
-} projectm_settings_t;
+};
 
 /**
  * Flags that influence projectM instance creation.
@@ -138,7 +138,7 @@ PROJECTM_EXPORT void projectm_free_string(const char* str);
  *
  * @return A pointer to a zero-initialized projectm_settings_t struct.
  */
-PROJECTM_EXPORT projectm_settings_t* projectm_alloc_settings();
+PROJECTM_EXPORT projectm_settings* projectm_alloc_settings();
 
 /**
  * @brief Frees the memory of an allocated projectm_settings_t structure.
@@ -150,7 +150,7 @@ PROJECTM_EXPORT projectm_settings_t* projectm_alloc_settings();
  *
  * @param settings A pointer returned by projectm_alloc_settings().
  */
-PROJECTM_EXPORT void projectm_free_settings(const projectm_settings_t* settings);
+PROJECTM_EXPORT void projectm_free_settings(const projectm_settings* settings);
 
 
 /**
@@ -213,7 +213,7 @@ PROJECTM_EXPORT projectm_handle projectm_create(const char* setting_file_path, i
  * @return A projectM handle for the newly created instance that must be used in subsequent API calls.
  *         NULL if the instance could not be created successfully.
  */
-PROJECTM_EXPORT projectm_handle projectm_create_settings(projectm_settings_t* settings, int flags);
+PROJECTM_EXPORT projectm_handle projectm_create_settings(const projectm_settings* settings, int flags);
 
 /**
  * @brief Destroys the given instance and frees the resources.
@@ -446,7 +446,7 @@ PROJECTM_EXPORT void projectm_set_toast_message(projectm_handle instance, const 
  * @param instance The projectM instance handle.
  * @return A struct with all currently used settings.
  */
-PROJECTM_EXPORT projectm_settings_t* projectm_get_settings(projectm_handle instance);
+PROJECTM_EXPORT projectm_settings* projectm_get_settings(projectm_handle instance);
 
 /**
  * @brief Saves the given settings struct into a file.
@@ -457,7 +457,7 @@ PROJECTM_EXPORT projectm_settings_t* projectm_get_settings(projectm_handle insta
  * @param config_file The filename to store the settings in.
  * @param settings The settings struct to store.
  */
-PROJECTM_EXPORT void projectm_write_config(const char* config_file, const projectm_settings_t* settings);
+PROJECTM_EXPORT void projectm_write_config(const char* config_file, const projectm_settings* settings);
 
 /**
  * @brief Selects a preset, but does not display it.
@@ -503,6 +503,13 @@ PROJECTM_EXPORT void projectm_clear_playlist(projectm_handle instance);
  * @param lock True to lock the current preset, false to enable automatic transitions.
  */
 PROJECTM_EXPORT void projectm_lock_preset(projectm_handle instance, bool lock);
+
+/**
+ * @brief Returns whether the current preset is locked or not.
+ * @param instance The projectM instance handle.
+ * @return True if the preset lock is enabled, false otherwise.
+ */
+PROJECTM_EXPORT bool projectm_is_preset_locked(projectm_handle instance);
 
 /**
  * @brief Returns whether the search text input mode is active or not.
@@ -735,6 +742,16 @@ PROJECTM_EXPORT int projectm_get_window_height(projectm_handle instance);
  */
 PROJECTM_EXPORT bool projectm_get_error_loading_current_preset(projectm_handle instance);
 
+
+/**
+ * @brief Returns the maximum number of audio samples that can be stored.
+ *
+ * Each PCM data update should not exceed this number of samples. If more samples
+ * are added, only this number of samples is stored and the remainder discarded.
+ *
+ * @return The number of audio samples that are stored, per channel.
+ */
+PROJECTM_EXPORT unsigned int projectm_pcm_get_max_samples();
 
 /**
  * @brief Adds 1-channel 32-bit floating-point audio samples.
