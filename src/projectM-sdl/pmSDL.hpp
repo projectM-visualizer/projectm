@@ -40,10 +40,10 @@
 #define STEREOSCOPIC_SBS    0
 
 // projectM
-#include "projectM-opengl.h"
-#include <projectM.hpp>
-#include "Renderer/ShaderEngine.hpp"
-#include "Renderer/StaticGlShaders.h"
+#include <projectM-opengl.h>
+extern "C" {
+    #include <projectM.h>
+};
 #include <sdltoprojectM.h>
 
 // projectM SDL
@@ -99,18 +99,14 @@
     #endif
 #endif
 
-class projectMSDL : public projectM {
+class projectMSDL {
     
 public:
-    bool done;
-    bool mouseDown = false;
-    bool wasapi = false; // Used to track if wasapi is currently active. This bool will allow us to run a WASAPI app and still toggle to microphone inputs.
-    bool fakeAudio = false; // Used to track fake audio, so we can turn it off and on.
-    bool stretch = false; // used for toggling stretch mode
-    SDL_GLContext glCtx;
-
-    projectMSDL(SDL_GLContext glCtx, Settings settings, int flags);
+    projectMSDL(SDL_GLContext glCtx, projectm_settings* settings, int flags);
     projectMSDL(SDL_GLContext glCtx, std::string config_file, int flags);
+
+    ~projectMSDL();
+
     void init(SDL_Window *window, const bool renderToTexture = false);
     int openAudioInput();
     int toggleAudioInput();
@@ -135,33 +131,46 @@ public:
     
     virtual void presetSwitchedEvent(bool isHardCut, size_t index) const;
 
+    const projectm_settings* settings();
+
+    bool done{ false };
+    bool mouseDown{ false };
+    bool wasapi{ false }; // Used to track if wasapi is currently active. This bool will allow us to run a WASAPI app and still toggle to microphone inputs.
+    bool fakeAudio{ false }; // Used to track fake audio, so we can turn it off and on.
+    bool stretch{ false }; // used for toggling stretch mode
+
+    SDL_GLContext glCtx{ nullptr };
+
 private:
-    SDL_Window *win;
-    bool isFullScreen;
-    SDL_AudioDeviceID audioInputDevice;
-    unsigned int width, height;
-    bool renderToTexture;
-    GLuint programID = 0;
-    GLuint m_vbo = 0;
-    GLuint m_vao = 0;
-    GLuint textureID = 0;
-
-    // audio input device characteristics
-    unsigned int NumAudioDevices;
-    unsigned int CurAudioDevice;
-    unsigned short audioChannelsCount;
-    unsigned short audioSampleRate;
-    unsigned short audioSampleCount;
-    SDL_AudioFormat audioFormat;
-    SDL_AudioDeviceID audioDeviceID;
-    SDL_AudioDeviceID selectedAudioDevice;
-
     static void audioInputCallbackF32(void *userdata, unsigned char *stream, int len);
     static void audioInputCallbackS16(void *userdata, unsigned char *stream, int len);
 
     void scrollHandler(SDL_Event *);
     void keyHandler(SDL_Event *);
-    void renderTexture();
+
+    projectm_handle _projectM{ nullptr };
+    projectm_settings* _settings{ nullptr };
+
+    SDL_Window *win{ nullptr };
+    bool isFullScreen{ false };
+    SDL_AudioDeviceID audioInputDevice{ 0 };
+    unsigned int width{ 0 };
+    unsigned int height{ 0 };
+    bool renderToTexture;
+    GLuint programID{ 0 };
+    GLuint m_vbo{ 0 };
+    GLuint m_vao{ 0 };
+    GLuint textureID{ 0 };
+
+    // audio input device characteristics
+    unsigned int NumAudioDevices{ 0 };
+    unsigned int CurAudioDevice{ 0 };
+    unsigned short audioChannelsCount{ 0 };
+    unsigned short audioSampleRate{ 0 };
+    unsigned short audioSampleCount{ 0 };
+    SDL_AudioFormat audioFormat{ 0 };
+    SDL_AudioDeviceID audioDeviceID{ 0 };
+    SDL_AudioDeviceID selectedAudioDevice{ 0 };
 };
 
 

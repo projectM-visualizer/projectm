@@ -32,9 +32,12 @@ add_subdirectory(MilkdropPresetFactory)
 add_subdirectory(NativePresetFactory)
 add_subdirectory(Renderer)
 
+set(PROJECTM_EXPORT_HEADER "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_export.h")
+
 # CMake cannot combine multiple static libraries using target_link_libraries.
 # This syntax will pull in the compiled object files into the final library.
 add_library(projectM_main OBJECT
+        "${PROJECTM_EXPORT_HEADER}"
         Common.hpp
         ConfigFile.cpp
         ConfigFile.h
@@ -104,81 +107,90 @@ target_link_libraries(projectM_main
         ${PROJECTM_OPENGL_LIBRARIES}
         )
 
+target_compile_options(projectM_main
+        PRIVATE
+        -DprojectM_main_EXPORTS
+        )
+
 include(GenerateExportHeader)
 
 generate_export_header(projectM_main
         BASE_NAME projectM
-        EXPORT_FILE_NAME "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM/projectM_export.h"
+        EXPORT_FILE_NAME "${PROJECTM_EXPORT_HEADER}"
         )
 
-add_library(projectM_static STATIC
-        # Xcode needs at least one source file, otherwise it won't create the static library.
-        StaticLibDummy.cpp
+if (ENABLE_STATIC_LIB)
+    add_library(projectM_static STATIC
+            # Xcode needs at least one source file, otherwise it won't create the static library.
+            StaticLibDummy.cpp
 
-        $<TARGET_OBJECTS:projectM_main>
-        $<TARGET_OBJECTS:MilkdropPresetFactory>
-        $<TARGET_OBJECTS:NativePresetFactory>
-        $<TARGET_OBJECTS:Renderer>
-        $<TARGET_OBJECTS:hlslparser>
-        $<TARGET_OBJECTS:SOIL2>
-        $<$<PLATFORM_ID:Windows>:$<TARGET_OBJECTS:dlfcn>>
-        )
-
-set_target_properties(projectM_static PROPERTIES
-        OUTPUT_NAME projectM
-        EXPORT_NAME static
-        FOLDER libprojectM
-        )
-
-target_include_directories(projectM_static
-        PUBLIC
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/MilkdropPresetFactory>"
-        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/NativePresetFactory>"
-        "$<BUILD_INTERFACE:${MSVC_EXTRA_INCLUDE_DIR}>"
-        "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
-        )
-
-target_link_libraries(projectM_static
-        PRIVATE
-        GLM::GLM
-        PUBLIC
-        ${PROJECTM_OPENGL_LIBRARIES}
-        )
-
-if(ENABLE_THREADING)
-    target_link_libraries(projectM_static
-            PUBLIC
-            Threads::Threads
+            $<TARGET_OBJECTS:projectM_main>
+            $<TARGET_OBJECTS:MilkdropPresetFactory>
+            $<TARGET_OBJECTS:NativePresetFactory>
+            $<TARGET_OBJECTS:Renderer>
+            $<TARGET_OBJECTS:hlslparser>
+            $<TARGET_OBJECTS:SOIL2>
+            $<$<PLATFORM_ID:Windows>:$<TARGET_OBJECTS:dlfcn>>
             )
-endif()
 
-if(ENABLE_LLVM)
-    target_link_libraries(projectM_static
-            PUBLIC
-            LLVM::LLVM
+    set_target_properties(projectM_static PROPERTIES
+            OUTPUT_NAME projectM
+            EXPORT_NAME static
+            FOLDER libprojectM
             )
-endif()
 
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    target_include_directories(projectM_static
+            PUBLIC
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/MilkdropPresetFactory>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/NativePresetFactory>"
+            "$<BUILD_INTERFACE:${MSVC_EXTRA_INCLUDE_DIR}>"
+            "$<INSTALL_INTERFACE:${PROJECTM_INCLUDE_DIR}>"
+            )
+
     target_link_libraries(projectM_static
-        PUBLIC
-        "-framework CoreFoundation"
-        )
+            PRIVATE
+            GLM::GLM
+            PUBLIC
+            ${PROJECTM_OPENGL_LIBRARIES}
+            )
+
+    if(ENABLE_THREADING)
+        target_link_libraries(projectM_static
+                PUBLIC
+                Threads::Threads
+                )
+    endif()
+
+    if(ENABLE_LLVM)
+        target_link_libraries(projectM_static
+                PUBLIC
+                LLVM::LLVM
+                )
+    endif()
+
+    if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+        target_link_libraries(projectM_static
+            PUBLIC
+            "-framework CoreFoundation"
+            )
+    endif()
+
+    install(TARGETS projectM_static
+            EXPORT libprojectMTargets
+            LIBRARY DESTINATION "${PROJECTM_LIB_DIR}"
+            RUNTIME DESTINATION "${PROJECTM_LIB_DIR}"
+            ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}"
+            COMPONENT Runtime
+            )
+
+    set(EXPORT_SHARED_LIB_TARGET projectM_static)
 endif()
 
-install(TARGETS projectM_static
-        EXPORT libprojectMTargets
-        LIBRARY DESTINATION "${PROJECTM_LIB_DIR}"
-        RUNTIME DESTINATION "${PROJECTM_LIB_DIR}"
-        ARCHIVE DESTINATION "${PROJECTM_LIB_DIR}"
-        COMPONENT Runtime
-        )
-
-# Building projectM as a Windows DLL is not (yet) supported.
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
+if(ENABLE_SHARED_LIB)
     add_library(projectM_shared SHARED
             $<TARGET_OBJECTS:projectM_main>
             $<TARGET_OBJECTS:MilkdropPresetFactory>
@@ -199,6 +211,7 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
 
     target_include_directories(projectM_shared
             PUBLIC
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer>"
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src>"
@@ -250,6 +263,12 @@ if(NOT CMAKE_SYSTEM_NAME STREQUAL "Windows")
     set(EXPORT_SHARED_LIB_TARGET projectM_shared)
 endif()
 
+if(ENABLE_SHARED_LINKING)
+    add_library(projectM::libprojectM ALIAS projectM_shared)
+else()
+    add_library(projectM::libprojectM ALIAS projectM_static)
+endif()
+
 install(FILES
         Common.hpp
         PCM.hpp
@@ -274,7 +293,7 @@ export(TARGETS
         Renderer
         hlslparser
         SOIL2
-        projectM_static
+        ${EXPORT_STATIC_LIB_TARGET}
         ${EXPORT_SHARED_LIB_TARGET}
         NAMESPACE libprojectM::
         FILE projectM-exports.cmake

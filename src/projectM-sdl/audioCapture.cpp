@@ -1,4 +1,6 @@
 #include "audioCapture.hpp"
+#include "pmSDL.hpp"
+
 
 int projectMSDL::initAudioInput() {
     // params for audio input
@@ -11,7 +13,7 @@ int projectMSDL::initAudioInput() {
     want.format = AUDIO_F32;  // float
     want.channels = 2;  // mono might be better?
     // lower might reduce latency
-    want.samples = PCM::maxsamples;
+    want.samples = projectm_pcm_get_max_samples();
     want.callback = projectMSDL::audioInputCallbackF32;
     want.userdata = this;
 
@@ -26,7 +28,7 @@ int projectMSDL::initAudioInput() {
     SDL_Log("Opened audio capture device index=%i devId=%i: %s", selectedAudioDevice, audioDeviceID, SDL_GetAudioDeviceName(selectedAudioDevice, true));
     std::string deviceToast = SDL_GetAudioDeviceName(selectedAudioDevice, true); // Example: Microphone rear
     deviceToast += " selected";
-    projectM::setToastMessage(deviceToast);
+    projectm_set_toast_message(_projectM, deviceToast.c_str());
 #ifdef DEBUG
     SDL_Log("Samples: %i, frequency: %i, channels: %i, format: %i", have.samples, have.freq, have.channels, have.format);
 #endif
@@ -46,9 +48,9 @@ void projectMSDL::audioInputCallbackF32(void *userdata, unsigned char *stream, i
 //        printf("%X ", stream[i]);
     // stream is (i think) samples*channels floats (native byte order) of len BYTES
     if (app->audioChannelsCount == 1)
-        app->pcm()->addPCMfloat((float *)stream, len/sizeof(float));
+        projectm_pcm_add_float_1ch_data(app->_projectM, reinterpret_cast<float*>(stream), len/sizeof(float));
     else if (app->audioChannelsCount == 2)
-        app->pcm()->addPCMfloat_2ch((float *)stream, len/sizeof(float));
+        projectm_pcm_add_float_2ch_data(app->_projectM, reinterpret_cast<float*>(stream), len/sizeof(float));
     else {
         SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Multichannel audio not supported");
         SDL_Quit();
@@ -65,7 +67,7 @@ void projectMSDL::audioInputCallbackS16(void *userdata, unsigned char *stream, i
             pcm16[j][i] = stream[i+j];
         }
     }
-    app->pcm()->addPCM16(pcm16);
+    projectm_pcm_add_16bit_2ch_512(app->_projectM, pcm16);
 }
 
 int projectMSDL::toggleAudioInput() {
@@ -124,7 +126,7 @@ int projectMSDL::openAudioInput() {
     CurAudioDevice = 0;
     if (NumAudioDevices == 0) {
         SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio capture devices found");
-        projectM::setToastMessage("No audio capture devices found: using simulated audio");
+        projectm_set_toast_message(_projectM, "No audio capture devices found: using simulated audio");
         fakeAudio = true;
         return 0;
     }

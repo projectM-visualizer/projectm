@@ -126,23 +126,6 @@ void enableGLDebugOutput() {
 #endif
 }
 
-void testAllPresets(projectMSDL *app) {
-    uint buildErrors = 0;
-    for(unsigned int i = 0; i < app->getPlaylistSize(); i++) {
-        std::cout << i << "\t" << app->getPresetName(i) << std::endl;
-        app->selectPreset(i);
-        if (app->getErrorLoadingCurrentPreset()) {
-            buildErrors++;
-        }
-    }
-
-    if (app->getPlaylistSize()) {
-        fprintf(stdout, "Preset loading errors: %d/%d [%d%%]\n", buildErrors, app->getPlaylistSize(), (buildErrors*100) / app->getPlaylistSize());
-    }
-
-    delete app;
-}
-
 // initialize SDL, openGL, config
 projectMSDL *setupSDLApp() {
     projectMSDL *app;
@@ -232,26 +215,32 @@ projectMSDL *setupSDLApp() {
         if (maxRefreshRate <= 60) maxRefreshRate = 60;
 
         float heightWidthRatio = (float)height / (float)width;
-        projectM::Settings settings;
-        settings.windowWidth = width;
-        settings.windowHeight = height;
-        settings.meshX = 128;
-        settings.meshY = settings.meshX * heightWidthRatio;
-        settings.fps = maxRefreshRate;
-        settings.smoothPresetDuration = 3; // seconds
-        settings.presetDuration = 22; // seconds
-        settings.hardcutEnabled = true;
-        settings.hardcutDuration = 60;
-        settings.hardcutSensitivity = 1.0;
-        settings.beatSensitivity = 1.0;
-        settings.aspectCorrection = 1;
-        settings.shuffleEnabled = 1;
-        settings.softCutRatingsEnabled = 1; // ???
+        std::string presetURL = base_path + "presets";
+        std::string menuFontURL = base_path + "presets";
+        std::string titleFontURL = base_path + "presets";
+
+        auto settings = projectm_alloc_settings();
+        settings->window_width = width;
+        settings->window_height = height;
+        settings->mesh_x = 128;
+        settings->mesh_y = settings->mesh_x * heightWidthRatio;
+        settings->fps = maxRefreshRate;
+        settings->smooth_preset_duration = 3; // seconds
+        settings->preset_duration = 22; // seconds
+        settings->hardcut_enabled = true;
+        settings->hardcut_duration = 60;
+        settings->hardcut_sensitivity = 1.0;
+        settings->beat_sensitivity = 1.0;
+        settings->aspect_correction = 1;
+        settings->shuffle_enabled = 1;
+        settings->soft_cut_ratings_enabled = 1; // ???
         // get path to our app, use CWD or resource dir for presets/fonts/etc
-        settings.presetURL = base_path + "presets";
-        //        settings.presetURL = base_path + "presets/presets_shader_test";
-        settings.menuFontURL = base_path + "fonts/Vera.ttf";
-        settings.titleFontURL = base_path + "fonts/Vera.ttf";
+        settings->preset_url = projectm_alloc_string(presetURL.length() + 1);
+        strncpy(settings->preset_url, presetURL.c_str(), presetURL.length());
+        settings->menu_font_url = projectm_alloc_string(menuFontURL.length() + 1);
+        strncpy(settings->menu_font_url, menuFontURL.c_str(), menuFontURL.length());
+        settings->title_font_url = projectm_alloc_string(titleFontURL.length() + 1);
+        strncpy(settings->title_font_url, titleFontURL.c_str(), titleFontURL.length());
         // init with settings
         app = new projectMSDL(glCtx, settings, 0);
     }
