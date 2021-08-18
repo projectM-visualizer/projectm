@@ -25,7 +25,7 @@
 #include <QSettings>
 #include "qprojectmwidget.hpp"
 
-QProjectMConfigDialog::QProjectMConfigDialog(const std::string & configFile, QProjectMWidget * qprojectMWidget, QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f), _settings("projectM", "qprojectM"), _configFile(configFile), _qprojectMWidget(qprojectMWidget) {
+QProjectMConfigDialog::QProjectMConfigDialog(const QString& configFile, QProjectMWidget * qprojectMWidget, QWidget * parent, Qt::WindowFlags f) : QDialog(parent, f), _settings("projectM", "qprojectM"), _configFile(configFile), _qprojectMWidget(qprojectMWidget) {
 
 
 	_ui.setupUi(this);
@@ -123,27 +123,36 @@ void QProjectMConfigDialog::openTitleFontFileDialog() {
 }
 
 void QProjectMConfigDialog::saveConfig() {
+    // Will only keep data_dir.
+    auto settings = projectm_get_settings(_qprojectMWidget->qprojectM()->instance());
 
-	projectM::Settings settings = _qprojectMWidget->qprojectM()->settings();
+    projectm_free_string(settings->title_font_url);
+    projectm_free_string(settings->menu_font_url);
+    projectm_free_string(settings->preset_url);
 
-	settings.meshX = _ui.meshSizeWidthSpinBox->value();
-	settings.meshY = _ui.meshSizeHeightSpinBox->value();
-	settings.windowHeight = _ui.windowHeightSpinBox->value();
-	settings.windowWidth = _ui.windowWidthSpinBox->value();
-	settings.titleFontURL = _ui.titleFontPathLineEdit->text().toStdString();
-	settings.menuFontURL = _ui.menuFontPathLineEdit->text().toStdString();
-	settings.presetURL = _ui.startupPlaylistDirectoryLineEdit->text().toStdString();
-	settings.textureSize = _ui.textureSizeComboBox->itemData(_ui.textureSizeComboBox->currentIndex()).toInt();
-	settings.smoothPresetDuration = _ui.smoothPresetDurationSpinBox->value();
-	settings.presetDuration = _ui.presetDurationSpinBox->value();
-	settings.fps = _ui.maxFPSSpinBox->value();
-	settings.aspectCorrection = _ui.useAspectCorrectionCheckBox->checkState() == Qt::Checked;
-	settings.beatSensitivity = _ui.beatSensitivitySpinBox->value();
-	settings.easterEgg = _ui.easterEggParameterSpinBox->value();
-	settings.shuffleEnabled = _ui.shuffleOnStartupCheckBox->checkState() == Qt::Checked;
-	settings.softCutRatingsEnabled = _ui.softCutRatingsEnabledCheckBox->checkState() == Qt::Checked;
+	settings->mesh_x = _ui.meshSizeWidthSpinBox->value();
+	settings->mesh_y = _ui.meshSizeHeightSpinBox->value();
+	settings->window_height = _ui.windowHeightSpinBox->value();
+	settings->window_width = _ui.windowWidthSpinBox->value();
+	settings->title_font_url = projectm_alloc_string(_ui.titleFontPathLineEdit->text().length() + 1);
+	strncpy(settings->title_font_url, _ui.titleFontPathLineEdit->text().toLocal8Bit().data(), _ui.titleFontPathLineEdit->text().length());
+	settings->menu_font_url = projectm_alloc_string(_ui.menuFontPathLineEdit->text().length() + 1);
+	strncpy(settings->menu_font_url, _ui.menuFontPathLineEdit->text().toLocal8Bit().data(), _ui.menuFontPathLineEdit->text().length());
+	settings->preset_url = projectm_alloc_string(_ui.startupPlaylistDirectoryLineEdit->text().length() + 1);
+	strncpy(settings->preset_url, _ui.startupPlaylistDirectoryLineEdit->text().toLocal8Bit().data(), _ui.startupPlaylistDirectoryLineEdit->text().length());
+	settings->texture_size = _ui.textureSizeComboBox->itemData(_ui.textureSizeComboBox->currentIndex()).toInt();
+	settings->smooth_preset_duration = _ui.smoothPresetDurationSpinBox->value();
+	settings->preset_duration = _ui.presetDurationSpinBox->value();
+	settings->fps = _ui.maxFPSSpinBox->value();
+	settings->aspect_correction = _ui.useAspectCorrectionCheckBox->checkState() == Qt::Checked;
+	settings->beat_sensitivity = _ui.beatSensitivitySpinBox->value();
+	settings->easter_egg = _ui.easterEggParameterSpinBox->value();
+	settings->shuffle_enabled = _ui.shuffleOnStartupCheckBox->checkState() == Qt::Checked;
+	settings->soft_cut_ratings_enabled = _ui.softCutRatingsEnabledCheckBox->checkState() == Qt::Checked;
 
-	projectM::writeConfig(_configFile, settings);
+	projectm_write_config(_configFile.toLocal8Bit().data(), settings);
+
+    projectm_free_settings(settings);
 
 	QSettings qSettings("projectM", "qprojectM");
 
@@ -167,29 +176,31 @@ void QProjectMConfigDialog::populateTextureSizeComboBox() {
 
 void QProjectMConfigDialog::loadConfig() {
 
-	const projectM::Settings & settings = (* _qprojectMWidget->qprojectM()).settings();
+    auto settings = projectm_get_settings(_qprojectMWidget->qprojectM()->instance());
 
-	_ui.meshSizeWidthSpinBox->setValue(settings.meshX);
-	_ui.meshSizeHeightSpinBox->setValue(settings.meshY);
+	_ui.meshSizeWidthSpinBox->setValue(settings->mesh_x);
+	_ui.meshSizeHeightSpinBox->setValue(settings->mesh_y);
 
-	_ui.titleFontPathLineEdit->setText(settings.titleFontURL.c_str());
-	_ui.menuFontPathLineEdit->setText(settings.menuFontURL.c_str());
+	_ui.titleFontPathLineEdit->setText(settings->title_font_url);
+	_ui.menuFontPathLineEdit->setText(settings->menu_font_url);
 
-	_ui.startupPlaylistDirectoryLineEdit->setText(settings.presetURL.c_str());
-	_ui.useAspectCorrectionCheckBox->setCheckState(settings.aspectCorrection ? Qt::Checked : Qt::Unchecked);
-	_ui.maxFPSSpinBox->setValue(settings.fps);
-	_ui.beatSensitivitySpinBox->setValue(settings.beatSensitivity);
-	_ui.windowHeightSpinBox->setValue(settings.windowHeight);
-	_ui.windowWidthSpinBox->setValue(settings.windowWidth);
-	_ui.shuffleOnStartupCheckBox->setCheckState(settings.shuffleEnabled ? Qt::Checked : Qt::Unchecked);
+	_ui.startupPlaylistDirectoryLineEdit->setText(settings->preset_url);
+	_ui.useAspectCorrectionCheckBox->setCheckState(settings->aspect_correction ? Qt::Checked : Qt::Unchecked);
+	_ui.maxFPSSpinBox->setValue(settings->fps);
+	_ui.beatSensitivitySpinBox->setValue(settings->beat_sensitivity);
+	_ui.windowHeightSpinBox->setValue(settings->window_height);
+	_ui.windowWidthSpinBox->setValue(settings->window_width);
+	_ui.shuffleOnStartupCheckBox->setCheckState(settings->shuffle_enabled ? Qt::Checked : Qt::Unchecked);
 	 populateTextureSizeComboBox();
-	_ui.textureSizeComboBox->insertItem(0, QString("%1").arg(settings.textureSize), settings.textureSize);
+	_ui.textureSizeComboBox->insertItem(0, QString("%1").arg(settings->texture_size), settings->texture_size);
 	_ui.textureSizeComboBox->setCurrentIndex(0);
 
-	_ui.smoothPresetDurationSpinBox->setValue(settings.smoothPresetDuration);
-	_ui.presetDurationSpinBox->setValue(settings.presetDuration);
-	_ui.easterEggParameterSpinBox->setValue(settings.easterEgg);
-	_ui.softCutRatingsEnabledCheckBox->setCheckState(settings.softCutRatingsEnabled ? Qt::Checked : Qt::Unchecked);
+	_ui.smoothPresetDurationSpinBox->setValue(settings->smooth_preset_duration);
+	_ui.presetDurationSpinBox->setValue(settings->preset_duration);
+	_ui.easterEggParameterSpinBox->setValue(settings->easter_egg);
+	_ui.softCutRatingsEnabledCheckBox->setCheckState(settings->soft_cut_ratings_enabled ? Qt::Checked : Qt::Unchecked);
+
+	projectm_free_settings(settings);
 
 	QSettings qSettings("projectM", "qprojectM");
 	_ui.fullscreenOnStartupCheckBox->setCheckState(qSettings.value("FullscreenOnStartup", false).toBool() ? Qt::Checked : Qt::Unchecked);

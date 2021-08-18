@@ -32,6 +32,7 @@
 
 class QXmlStreamReader;
 class QDragMoveEvent;
+struct projectm;
 
 class QPlaylistModel : public QAbstractTableModel
  {
@@ -43,7 +44,7 @@ static const int RatingRole = Qt::UserRole+1;
 static const int NameRole = Qt::UserRole+2;
 static const int BreedabilityRole = Qt::UserRole+3;
 
-     QPlaylistModel(projectM & _projectM, QObject * parent = 0);
+     QPlaylistModel(projectm* _projectM, QObject * parent = 0);
      ~QPlaylistModel() { }
 bool setData(const QModelIndex & index, const QVariant & value, int role=Qt::EditRole);
 
@@ -101,7 +102,7 @@ public slots:
 	void readPlaylistItem(QXmlStreamReader & reader);
 	static QString PRESET_MIME_TYPE;
 	QVariant ratingToIcon(int rating) const;
-	projectM & m_projectM;
+	projectm* m_projectM;
 	QString m_playlistName;
 	QString m_playlistDesc;
 

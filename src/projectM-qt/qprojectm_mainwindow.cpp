@@ -71,7 +71,7 @@ class PlaylistWriteFunctor {
 
 };
 
-QProjectM_MainWindow::QProjectM_MainWindow ( const std::string & config_file, QMutex * audioMutex)
+QProjectM_MainWindow::QProjectM_MainWindow ( const QString& config_file, QMutex * audioMutex)
 		:playlistItemCounter(0), m_QPresetEditorDialog(0), hHeader(0), vHeader(0), playlistModel(0),
 		ui(0), configDialog(0), activePresetIndex(new Nullable<long>), _menuVisible(true),
 		_menuAndStatusBarsVisible(true), m_QPresetFileDialog ( new QPresetFileDialog ( this ) ),
@@ -153,7 +153,7 @@ void QProjectM_MainWindow::popupPlaylistContextMenu(QMouseEvent * mouseEvent,con
 		}
 }
 
-void QProjectM_MainWindow::readConfig(const std::string & configFile ) {
+void QProjectM_MainWindow::readConfig(const QString& configFile ) {
 
 	QSettings settings ( "projectM", "qprojectM" );
 
@@ -165,16 +165,16 @@ void QProjectM_MainWindow::readConfig(const std::string & configFile ) {
 	setMenuVisible(settings.value("MenuOnStartup", false).toBool());
 
 
+	int wvw = projectm_get_window_width(qprojectM()->instance());
+	int wvh = projectm_get_window_height(qprojectM()->instance());
 
-	ConfigFile config ( configFile );
+	auto projectMSettings = projectm_get_settings(qprojectM()->instance());
 
-	int wvw = config.read<int> ( "Window Width", 1024 );
-	int wvh = config.read<int> ( "Window Height", 768 );
+	ui->shuffleEnabledCheckBox->setCheckState(projectMSettings->shuffle_enabled ? Qt::Checked : Qt::Unchecked);
 
-	ui->shuffleEnabledCheckBox->setCheckState(qprojectM()->settings().shuffleEnabled ? Qt::Checked : Qt::Unchecked);
+    projectm_free_settings(projectMSettings);
 
-
-	this->resize(wvw,wvh);
+	this->resize(wvw, wvh);
 }
 
 QProjectM_MainWindow::~QProjectM_MainWindow()
@@ -224,23 +224,26 @@ QProjectM * QProjectM_MainWindow::qprojectM()
 }
 
 
-projectM * QProjectM_MainWindow::GetProjectM()
+projectm* QProjectM_MainWindow::GetProjectM()
 {
-	return m_QProjectMWidget->qprojectM();
+	return m_QProjectMWidget->qprojectM()->instance();
 }
 
-void QProjectM_MainWindow::addPCM(float * buffer, unsigned int bufferSize) {
-
-	qprojectM()->pcm()->addPCMfloat_2ch(buffer, bufferSize);
+void QProjectM_MainWindow::addPCM(float * buffer, unsigned int bufferSize)
+{
+    projectm_pcm_add_float_2ch_data(qprojectM()->instance(), buffer, bufferSize);
 }
 
 void QProjectM_MainWindow::updatePlaylistSelection ( bool hardCut, unsigned int index )
 {
+    auto presetName = projectm_get_preset_name(qprojectM()->instance(), index);
 
 	if ( hardCut )
-		statusBar()->showMessage ( tr(QString( "*** Hard cut to \"%1\" ***" ).arg(this->qprojectM()->getPresetName(index).c_str()).toStdString().c_str()) , 2000 );
+	    statusBar()->showMessage ( tr(QString( "*** Hard cut to \"%1\" ***" ).arg(presetName).toStdString().c_str()) , 2000 );
 	else
-		statusBar()->showMessage ( tr ( "*** Soft cut to \"%1\" ***" ).arg(this->qprojectM()->getPresetName(index).c_str()).toStdString().c_str(), 2000);
+	    statusBar()->showMessage ( tr ( "*** Soft cut to \"%1\" ***" ).arg(presetName).toStdString().c_str(), 2000);
+
+    projectm_free_string(presetName);
 
 	*activePresetIndex = (*historyHash[previousFilter])[index];
 }
@@ -256,8 +259,7 @@ void QProjectM_MainWindow::selectPlaylistItem ( const QModelIndex & index )
 
 void QProjectM_MainWindow::selectPlaylistItem ( int rowIndex)
 {
-
-	qprojectM()->selectPreset (rowIndex);
+    projectm_select_preset(qprojectM()->instance(), static_cast<unsigned int>(rowIndex), true);
 	*activePresetIndex = rowIndex;
 
 	playlistModel->updateItemHighlights();
@@ -269,7 +271,7 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 {
 	QSettings qSettings("projectM", "qprojectM");
 
-	playlistModel = new QPlaylistModel ( *qprojectM(), this );
+	playlistModel = new QPlaylistModel ( qprojectM()->instance(), this );
 	ui->tableView->setModel ( playlistModel );
 
 	/// @bug only do this at startup? fix me
@@ -281,7 +283,11 @@ void QProjectM_MainWindow::postProjectM_Initialize()
 	//if (firstOfRefreshPlaylist) {
 		QString playlistFile;
 		if ((playlistFile = qSettings.value("PlaylistFile", QString()).toString()) == QString())
-			url = QString(qprojectM()->settings().presetURL.c_str());
+        {
+		    auto projectMSettings = projectm_get_settings(qprojectM()->instance());
+		    url = QString(projectMSettings->preset_url);
+		    projectm_free_settings(projectMSettings);
+        }
 		else
 			url = playlistFile;
 
@@ -654,7 +660,11 @@ void QProjectM_MainWindow::refreshHeaders(QResizeEvent * event) {
     hHeader->setSectionResizeMode ( 0, QHeaderView::Fixed);
     hHeader->setSectionResizeMode ( 1, QHeaderView::ResizeToContents);
 
-	const int numRatings =  qprojectM()->settings().softCutRatingsEnabled ? 2 : 1;
+    auto settings = projectm_get_settings(qprojectM()->instance());
+
+    const int numRatings =  settings->soft_cut_ratings_enabled ? 2 : 1;
+
+    projectm_free_settings(settings);
 
 	int sizeTotal = 0;
 	for (int i = 0; i < numRatings; i++) {
@@ -925,7 +935,7 @@ void QProjectM_MainWindow::copyPlaylist()
 	historyHash.insert ( QString(), items );
 
 	uint index;
-	if (qprojectM()->selectedPresetIndex(index))
+	if (projectm_selected_preset_index(qprojectM()->instance(), &index))
 		*activePresetIndex =  index;
 	else
 		activePresetIndex->nullify();
@@ -1079,7 +1089,7 @@ void QProjectM_MainWindow::presetHardCut() {
 	if (selectedPlaylistIndexes.empty())
 		return;
 
-	qprojectM()->selectPreset(selectedPlaylistIndexes[0].row(), true);
+    projectm_select_preset(qprojectM()->instance(), selectedPlaylistIndexes[0].row(), true);
 }
 
 
@@ -1087,7 +1097,7 @@ void QProjectM_MainWindow::presetSoftCut() {
 	if (selectedPlaylistIndexes.empty())
 		return;
 
-	qprojectM()->selectPreset(selectedPlaylistIndexes[0].row(), false);
+	projectm_select_preset(qprojectM()->instance(), selectedPlaylistIndexes[0].row(), false);
 }
 
 
@@ -1213,7 +1223,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 
 	const QString filter = text.toLower();
 	unsigned int presetIndexBackup ;
-	bool presetSelected = qprojectM()->selectedPresetIndex(presetIndexBackup);
+	bool presetSelected = projectm_selected_preset_index(qprojectM()->instance(), &presetIndexBackup);
 	Nullable<unsigned int> activePresetId;
 
 	if (!presetSelected && activePresetIndex->hasValue()) {
@@ -1231,7 +1241,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 
 	playlistModel->clearItems();
 
-	Q_ASSERT(!qprojectM()->presetPositionValid());
+	Q_ASSERT(!projectm_preset_position_valid(qprojectM()->instance()));
 
 	bool presetExistsWithinFilter = false;
 	if ( historyHash.contains ( filter ) )
@@ -1244,7 +1254,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 			playlistModel->appendRow ( data.url, data.name,  data.rating, data.breedability);
 
 			if (activePresetId.hasValue() && data.id == activePresetId.value()) {
-				qprojectM()->selectPresetPosition(playlistModel->rowCount()-1);
+				projectm_select_preset_position(qprojectM()->instance(), playlistModel->rowCount()-1);
 				presetExistsWithinFilter = true;
 			}
 		}
@@ -1263,7 +1273,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 			{
 				playlistModel->appendRow ( data.url, data.name, data.rating, data.breedability);
 				if (activePresetId.hasValue() && data.id == activePresetId.value()) {
-					qprojectM()->selectPresetPosition(playlistModel->rowCount()-1);
+				    projectm_select_preset_position(qprojectM()->instance(), playlistModel->rowCount()-1);
 					presetExistsWithinFilter = true;
 				}
 
@@ -1273,7 +1283,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 		historyHash.insert ( filter, playlistItems2 );
 	}
 
-	Q_ASSERT(presetExistsWithinFilter == qprojectM()->presetPositionValid());
+	Q_ASSERT(presetExistsWithinFilter == projectm_preset_position_valid(qprojectM()->instance()));
 
 	previousFilter = filter;
 	qprojectMWidget()->releasePresetLock();

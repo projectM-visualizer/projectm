@@ -28,7 +28,7 @@ class QProjectMConfigDialog : public QDialog {
 	Q_OBJECT
 
 	public:
-		QProjectMConfigDialog(const std::string & configFile, QProjectMWidget * widget, QWidget * parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
+		QProjectMConfigDialog(const QString& configFile, QProjectMWidget * widget, QWidget * parent = 0, Qt::WindowFlags f = Qt::WindowFlags());
 	private:
 		void loadConfig();
 	private slots:
@@ -42,7 +42,7 @@ class QProjectMConfigDialog : public QDialog {
 
 	private:
 		 QSettings _settings;
-		 const std::string _configFile;
+		 const QString _configFile;
 		 QProjectMWidget * _qprojectMWidget;
 		 Ui::QProjectMConfigDialog _ui;
 		 void populateTextureSizeComboBox();
