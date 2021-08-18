@@ -60,7 +60,6 @@
 #pragma comment(lib, "kernel32.lib")
 #endif /** WIN32 */
 
-#include "dlldefs.h"
 #include "event.h"
 #include "fatal.h"
 #include <vector>
@@ -116,7 +115,7 @@ class RandomizerFunctor {
 	const PresetChooser & m_chooser;
 };
 
-class DLLEXPORT projectM
+class projectM
 {
 public:
 	static const int FLAG_NONE = 0;

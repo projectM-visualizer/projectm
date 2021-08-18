@@ -43,7 +43,7 @@
 #define INFIX_OR 5
 #define INFIX_AND 6
 
-class DLLEXPORT InfixOp;
+class InfixOp;
 
 class Eval {
 public:

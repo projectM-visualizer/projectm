@@ -53,8 +53,6 @@
 extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 #endif /** MACOS */
 
-#include "dlldefs.h"
-
 #define DEFAULT_FONT_PATH "/home/carm/fonts/courier1.glf"
 #define MAX_TOKEN_SIZE 512
 #define MAX_PATH_SIZE 4096

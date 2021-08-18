@@ -9,5 +9,5 @@ Name: libprojectM
 Version: @PROJECT_VERSION@
 Description: projectM - OpenGL Milkdrop
 Requires:
-Libs: -L${libdir} -lprojectM
-Cflags: -I${includedir}
+Libs: -L${libdir} -l:projectM.a
+Cflags: -I${includedir} -DPROJECTM_STATIC_DEFINE

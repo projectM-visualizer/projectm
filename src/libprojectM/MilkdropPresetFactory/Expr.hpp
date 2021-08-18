@@ -30,7 +30,6 @@
 #define _EXPR_H
 
 #include "config.h"
-#include "dlldefs.h"
 #include "CValue.hpp"
 #include "Func.hpp"
 #include <iostream>

@@ -27,8 +27,7 @@
  * $Log: event.h,v $
  */
 
-#ifndef _PROJECTM_EVENT_H
-#define _PROJECTM_EVENT_H
+#pragma once
 
 typedef enum {
     /** Event types */
@@ -152,6 +151,3 @@ typedef enum {
     PROJECTM_KMOD_LCTRL,
     PROJECTM_KMOD_RCTRL,
   } projectMModifier;
-
-#endif /** !_PROJECTM_EVENT_H */
-
