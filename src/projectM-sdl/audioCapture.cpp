@@ -86,7 +86,7 @@ int projectMSDL::toggleAudioInput() {
             CurAudioDevice = 0; // Return to first audio device in the index.
 #ifdef WASAPI_LOOPBACK
             // If we are at the boundary and WASAPI is enabled then let's load WASAPI instead.
-            projectM::setToastMessage("Loopback audio selected");
+            projectm_set_toast_message(_projectM, "Loopback audio selected");
             SDL_Log("Loopback audio selected");
             this->fakeAudio = false; // disable fakeAudio in case it was enabled.
             this->wasapi = true; // Track wasapi as on so projectMSDL will listen to it.
