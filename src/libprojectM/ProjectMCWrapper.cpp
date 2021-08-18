@@ -55,7 +55,7 @@ projectMWrapper* handle_to_instance(projectm_handle instance)
     return reinterpret_cast<projectMWrapper*>(instance);
 }
 
-char* PROJECTM_EXPORT projectm_alloc_string(unsigned int length)
+char* projectm_alloc_string(unsigned int length)
 {
     try
     {
