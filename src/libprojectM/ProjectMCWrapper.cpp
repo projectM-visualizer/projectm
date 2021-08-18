@@ -53,7 +53,7 @@ projectMWrapper* handle_to_instance(projectm_handle instance)
     return reinterpret_cast<projectMWrapper*>(instance);
 }
 
-char* projectm_alloc_string(unsigned int length)
+char* PROJECTM_EXPORT projectm_alloc_string(unsigned int length)
 {
     try
     {
@@ -80,11 +80,11 @@ void projectm_free_string(const char* str)
     delete[] str;
 }
 
-projectm_settings_t* projectm_alloc_settings()
+projectm_settings* projectm_alloc_settings()
 {
     try
     {
-        return new projectm_settings_t{};
+        return new projectm_settings{};
     }
     catch (...)
     {
@@ -92,7 +92,7 @@ projectm_settings_t* projectm_alloc_settings()
     }
 }
 
-void projectm_free_settings(projectm_settings_t* settings)
+void projectm_free_settings(const projectm_settings* settings)
 {
     if (settings)
     {
@@ -118,7 +118,7 @@ projectm_handle projectm_create(const char* setting_file_path, int flags)
     }
 }
 
-projectm_handle projectm_create_settings(const projectm_settings_t* settings, int flags)
+projectm_handle projectm_create_settings(const projectm_settings* settings, int flags)
 {
     try
     {
@@ -299,7 +299,7 @@ void projectm_set_toast_message(projectm_handle instance, const char* toast_mess
     projectMInstance->setToastMessage(toast_message);
 }
 
-projectm_settings_t* projectm_get_settings(projectm_handle instance)
+projectm_settings* projectm_get_settings(projectm_handle instance)
 {
     auto projectMInstance = handle_to_instance(instance);
     const auto& settings = projectMInstance->settings();
@@ -329,7 +329,7 @@ projectm_settings_t* projectm_get_settings(projectm_handle instance)
     return settingsStruct;
 }
 
-void projectm_write_config(const char* config_file, const projectm_settings_t* settings)
+void projectm_write_config(const char* config_file, const projectm_settings* settings)
 {
     projectM::Settings cppSettings;
     cppSettings.meshX = settings->mesh_x;
@@ -390,6 +390,12 @@ void projectm_lock_preset(projectm_handle instance, bool lock)
 {
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->setPresetLock(lock);
+}
+
+bool projectm_is_preset_locked(projectm_handle instance)
+{
+    auto projectMInstance = handle_to_instance(instance);
+    return projectMInstance->isPresetLocked();
 }
 
 bool projectm_is_text_input_active(projectm_handle instance, bool no_minimum_length)
@@ -593,6 +599,11 @@ bool projectm_get_error_loading_current_preset(projectm_handle instance)
     return projectMInstance->getErrorLoadingCurrentPreset();
 }
 
+unsigned int projectm_pcm_get_max_samples()
+{
+    return PCM::maxsamples;
+}
+
 void projectm_pcm_add_float_1ch_data(projectm_handle instance, const float* pcm_data, unsigned int sample_count)
 {
     auto projectMInstance = handle_to_instance(instance);
@@ -628,4 +639,3 @@ void projectm_pcm_add_8bit_2ch_512(projectm_handle instance, const unsigned char
     auto projectMInstance = handle_to_instance(instance);
     projectMInstance->pcm()->addPCM8_512(pcm_data);
 }
-
