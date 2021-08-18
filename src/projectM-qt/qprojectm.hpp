@@ -21,38 +21,62 @@
 
 #ifndef QPROJECTM_HPP
 #define QPROJECTM_HPP
-#include "projectM.hpp"
+
+#include "projectM.h"
+
 #include <QObject>
+#include <QString>
 
-class QProjectM : public QObject, public projectM {
-	
-	Q_OBJECT
+class QProjectM : public QObject
+{
 
-	public:
-		QProjectM(const std::string & config_file):projectM(config_file, projectM::FLAG_DISABLE_PLAYLIST_LOAD) {}
+Q_OBJECT
 
-		void presetSwitchedEvent(bool hardCut, unsigned int index) const {
-			presetSwitchedSignal(hardCut, index);
-		}
+public:
+    explicit QProjectM(const QString& config_file)
+        : _projectM(projectm_create(config_file.toLocal8Bit().data(), projectM::FLAG_DISABLE_PLAYLIST_LOAD))
+    {
+        projectm_set_preset_switched_event_callback(_projectM, &QProjectM::presetSwitchedEvent, this);
+        projectm_set_preset_switch_failed_event_callback(_projectM, &QProjectM::presetSwitchFailedEvent, this);
+        projectm_set_preset_rating_changed_event_callback(_projectM, &QProjectM::presetRatingChanged, this);
+    }
 
-		void presetSwitchFailedEvent(bool hardCut, unsigned int index, const std::string & message) const {
-			presetSwitchFailedSignal(hardCut, index, QString(message.c_str()));
-		}
+    projectm* instance() const
+    {
+        return _projectM;
+    }
 
-		void presetRatingChanged(unsigned int index, int rating,
-						PresetRatingType ratingType) const {
-			 presetRatingChangedSignal(index, rating, ratingType);
-		}
+signals:
 
-	signals:
-		void presetSwitchedSignal(bool hardCut, unsigned int index) const;
-		void presetSwitchFailedSignal(bool hardCut, unsigned int index, const QString & message) const;
-		void presetRatingChangedSignal(unsigned int index, int rating,
-				PresetRatingType ratingType) const;
+    void presetSwitchedSignal(bool hardCut, unsigned int index) const;
 
-	public slots:
+    void presetSwitchFailedSignal(bool hardCut, unsigned int index, const QString& message) const;
 
+    void presetRatingChangedSignal(unsigned int index, int rating,
+                                   projectm_preset_rating_type ratingType) const;
 
+protected:
+
+    static void presetSwitchedEvent(bool hardCut, unsigned int index, void* context)
+    {
+        auto qProjectM = reinterpret_cast<QProjectM*>(context);
+        qProjectM->presetSwitchedSignal(hardCut, index);
+    }
+
+    static void presetSwitchFailedEvent(bool hardCut, unsigned int index, const char* message, void* context)
+    {
+        auto qProjectM = reinterpret_cast<QProjectM*>(context);
+        qProjectM->presetSwitchFailedSignal(hardCut, index, QString(message));
+    }
+
+    static void presetRatingChanged(unsigned int index, int rating,
+                                    projectm_preset_rating_type ratingType, void* context)
+    {
+        auto qProjectM = reinterpret_cast<QProjectM*>(context);
+        qProjectM->presetRatingChangedSignal(index, rating, ratingType);
+    }
+
+    projectm* _projectM{ nullptr };
 };
 
 #endif
