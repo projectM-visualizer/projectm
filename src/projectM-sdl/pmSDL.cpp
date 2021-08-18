@@ -42,7 +42,7 @@ projectMSDL::projectMSDL(SDL_GLContext glCtx, projectm_settings* settings, int f
     projectm_set_preset_switched_event_callback(_projectM, &projectMSDL::presetSwitchedEvent, static_cast<void*>(this));
 }
 
-projectMSDL::projectMSDL(SDL_GLContext glCtx, std::string config_file, int flags)
+projectMSDL::projectMSDL(SDL_GLContext glCtx, const std::string& config_file, int flags)
     : glCtx(glCtx)
     , _projectM(projectm_create(config_file.c_str(), flags))
     , _settings(projectm_get_settings(_projectM))
@@ -522,7 +522,7 @@ std::string projectMSDL::getActivePresetName()
 void projectMSDL::presetSwitchedEvent(bool isHardCut, unsigned int index, void* context)
 {
     auto app = reinterpret_cast<projectMSDL*>(context);
-    auto presetName =  projectm_get_preset_name(app->_projectM, index);
+    auto presetName = projectm_get_preset_name(app->_projectM, index);
     SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Displaying preset: %s\n", presetName);
 
     std::string newTitle = "projectM ➫ " + std::string(presetName);
