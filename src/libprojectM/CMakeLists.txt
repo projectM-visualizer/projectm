@@ -90,7 +90,7 @@ add_library(projectM_main OBJECT
 
 target_include_directories(projectM_main
         PRIVATE
-        "${CMAKE_CURRENT_BINARY_DIR}/include"
+        "${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM"
         "${CMAKE_SOURCE_DIR}/src"
         "${CMAKE_CURRENT_SOURCE_DIR}"
         "${CMAKE_CURRENT_SOURCE_DIR}/Renderer"
@@ -141,7 +141,7 @@ if (ENABLE_STATIC_LIB)
 
     target_include_directories(projectM_static
             PUBLIC
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM>"
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer>"
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src>"
@@ -211,7 +211,7 @@ if(ENABLE_SHARED_LIB)
 
     target_include_directories(projectM_shared
             PUBLIC
-            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>"
+            "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include/libprojectM>"
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer>"
             "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Renderer/hlslparser/src>"
