@@ -21,8 +21,8 @@
 
 #pragma once
 
-#include "libprojectM/projectM_export.h"
-#include "libprojectM/event.h"
+#include "projectM_export.h"
+#include "event.h"
 
 #ifdef __cplusplus
 extern "C" {
