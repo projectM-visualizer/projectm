@@ -152,8 +152,8 @@ private:
     SDL_Window *win{ nullptr };
     bool isFullScreen{ false };
     SDL_AudioDeviceID audioInputDevice{ 0 };
-    unsigned int width{ 0 };
-    unsigned int height{ 0 };
+    size_t width{ 0 };
+    size_t height{ 0 };
     GLuint programID{ 0 };
     GLuint m_vbo{ 0 };
     GLuint m_vao{ 0 };

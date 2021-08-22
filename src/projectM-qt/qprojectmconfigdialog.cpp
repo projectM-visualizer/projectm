@@ -141,7 +141,7 @@ void QProjectMConfigDialog::saveConfig() {
 	settings->preset_url = projectm_alloc_string(_ui.startupPlaylistDirectoryLineEdit->text().length() + 1);
 	strncpy(settings->preset_url, _ui.startupPlaylistDirectoryLineEdit->text().toLocal8Bit().data(), _ui.startupPlaylistDirectoryLineEdit->text().length());
 	settings->texture_size = _ui.textureSizeComboBox->itemData(_ui.textureSizeComboBox->currentIndex()).toInt();
-	settings->smooth_preset_duration = _ui.smoothPresetDurationSpinBox->value();
+	settings->soft_cut_duration = _ui.smoothPresetDurationSpinBox->value();
 	settings->preset_duration = _ui.presetDurationSpinBox->value();
 	settings->fps = _ui.maxFPSSpinBox->value();
 	settings->aspect_correction = _ui.useAspectCorrectionCheckBox->checkState() == Qt::Checked;
@@ -195,7 +195,7 @@ void QProjectMConfigDialog::loadConfig() {
 	_ui.textureSizeComboBox->insertItem(0, QString("%1").arg(settings->texture_size), settings->texture_size);
 	_ui.textureSizeComboBox->setCurrentIndex(0);
 
-	_ui.smoothPresetDurationSpinBox->setValue(settings->smooth_preset_duration);
+	_ui.smoothPresetDurationSpinBox->setValue(settings->soft_cut_duration);
 	_ui.presetDurationSpinBox->setValue(settings->preset_duration);
 	_ui.easterEggParameterSpinBox->setValue(settings->easter_egg);
 	_ui.softCutRatingsEnabledCheckBox->setCheckState(settings->soft_cut_ratings_enabled ? Qt::Checked : Qt::Unchecked);

@@ -9,9 +9,9 @@
 
 TimeKeeper::TimeKeeper(double presetDuration, double smoothDuration, double hardcutDuration, double easterEgg)
   {
-    _smoothDuration = smoothDuration;
+    _softCutDuration = smoothDuration;
     _presetDuration = presetDuration;
-    _hardcutDuration = hardcutDuration;
+    _hardCutDuration = hardcutDuration;
     _easterEgg = easterEgg;
 
 #ifndef WIN32
@@ -60,12 +60,12 @@ TimeKeeper::TimeKeeper(double presetDuration, double smoothDuration, double hard
 
   bool TimeKeeper::CanHardCut()
   {
-    return ((_currentTime - _presetTimeA) > _hardcutDuration);
+    return ((_currentTime - _presetTimeA) > _hardCutDuration);
   }
 
   double TimeKeeper::SmoothRatio()
   {
-    return (_currentTime - _presetTimeB) / _smoothDuration;
+    return (_currentTime - _presetTimeB) / _softCutDuration;
   }
   bool TimeKeeper::IsSmoothing()
   {

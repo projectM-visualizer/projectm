@@ -40,10 +40,13 @@ public:
 
   double sampledPresetDuration();
 
-  void ChangeHardcutDuration(int seconds) { _hardcutDuration = seconds; }
+  void ChangeHardCutDuration(int seconds) { _hardCutDuration = seconds; }
+  void ChangeHardCutDuration(double seconds) { _hardCutDuration = seconds; }
+  void ChangeSoftCutDuration(int seconds) { _softCutDuration = seconds; }
+  void ChangeSoftCutDuration(double seconds) { _softCutDuration = seconds; }
   void ChangePresetDuration(int seconds) { _presetDuration = seconds; }
-  void ChangeHardcutDuration(double seconds) { _hardcutDuration = seconds; }
   void ChangePresetDuration(double seconds) { _presetDuration = seconds; }
+  void ChangeEasterEgg(float value) { _easterEgg = value; }
 
 #ifndef WIN32
   /* The first ticks value of the application */
@@ -58,8 +61,8 @@ private:
   double _presetDuration;
   double _presetDurationA;
   double _presetDurationB;
-  double _smoothDuration;
-  double _hardcutDuration;
+  double _softCutDuration;
+  double _hardCutDuration;
 
   double _currentTime;
   double _presetTimeA;

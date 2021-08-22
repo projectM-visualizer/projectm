@@ -225,11 +225,11 @@ projectMSDL *setupSDLApp() {
         settings->mesh_x = 128;
         settings->mesh_y = settings->mesh_x * heightWidthRatio;
         settings->fps = maxRefreshRate;
-        settings->smooth_preset_duration = 3; // seconds
+        settings->soft_cut_duration = 3; // seconds
         settings->preset_duration = 22; // seconds
-        settings->hardcut_enabled = true;
-        settings->hardcut_duration = 60;
-        settings->hardcut_sensitivity = 1.0;
+        settings->hard_cut_enabled = true;
+        settings->hard_cut_duration = 60;
+        settings->hard_cut_sensitivity = 1.0;
         settings->beat_sensitivity = 1.0;
         settings->aspect_correction = 1;
         settings->shuffle_enabled = 1;
