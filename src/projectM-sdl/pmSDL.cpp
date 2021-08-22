@@ -37,8 +37,7 @@ projectMSDL::projectMSDL(SDL_GLContext glCtx, projectm_settings* settings, int f
     , _projectM(projectm_create_settings(settings, flags))
     , _settings(settings)
 {
-    width = projectm_get_window_width(_projectM);
-    height = projectm_get_window_height(_projectM);
+    projectm_get_window_size(_projectM, &width, &height);
     projectm_set_preset_switched_event_callback(_projectM, &projectMSDL::presetSwitchedEvent, static_cast<void*>(this));
 }
 
@@ -47,8 +46,7 @@ projectMSDL::projectMSDL(SDL_GLContext glCtx, const std::string& config_file, in
     , _projectM(projectm_create(config_file.c_str(), flags))
     , _settings(projectm_get_settings(_projectM))
 {
-    width = projectm_get_window_width(_projectM);
-    height = projectm_get_window_height(_projectM);
+    projectm_get_window_size(_projectM, &width, &height);
     projectm_set_preset_switched_event_callback(_projectM, &projectMSDL::presetSwitchedEvent, static_cast<void*>(this));
 }
 
@@ -175,12 +173,12 @@ void projectMSDL::scrollHandler(SDL_Event* sdl_evt)
     // handle mouse scroll wheel - up++
     if (sdl_evt->wheel.y > 0)
     {
-        projectm_select_previous(_projectM, true);
+        projectm_select_previous_preset(_projectM, true);
     }
     // handle mouse scroll wheel - down--
     if (sdl_evt->wheel.y < 0)
     {
-        projectm_select_next(_projectM, true);
+        projectm_select_next_preset(_projectM, true);
     }
 }
 
@@ -357,7 +355,7 @@ void projectMSDL::resize(unsigned int width_, unsigned int height_)
 {
     width = width_;
     height = height_;
-    projectm_reset_gl(_projectM, width, height);
+    projectm_set_window_size(_projectM, width, height);
 }
 
 void projectMSDL::pollEvent()
@@ -498,7 +496,7 @@ void projectMSDL::renderFrame()
 void projectMSDL::init(SDL_Window* window, const bool _renderToTexture)
 {
     win = window;
-    projectm_reset_gl(_projectM, width, height);
+    projectm_set_window_size(_projectM, width, height);
 
 #ifdef WASAPI_LOOPBACK
     wasapi = true;
@@ -509,7 +507,7 @@ void projectMSDL::init(SDL_Window* window, const bool _renderToTexture)
 std::string projectMSDL::getActivePresetName()
 {
     unsigned int index = 0;
-    if (projectm_selected_preset_index(_projectM, &index))
+    if (projectm_get_selected_preset_index(_projectM, &index))
     {
         auto presetName = projectm_get_preset_name(_projectM, index);
         std::string presetNameString(presetName);

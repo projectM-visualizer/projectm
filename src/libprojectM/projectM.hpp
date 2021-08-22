@@ -121,55 +121,40 @@ public:
 	static const int FLAG_NONE = 0;
 	static const int FLAG_DISABLE_PLAYLIST_LOAD = 1 << 0;
 
-    struct Settings {
-        int meshX;
-        int meshY;
-        int fps;
-        int textureSize;
-        int windowWidth;
-        int windowHeight;
+    class Settings {
+    public:
+        size_t meshX{ 32 };
+        size_t meshY{ 24 };
+        size_t fps{ 35 };
+        size_t textureSize{ 512 };
+        size_t windowWidth{ 512 };
+        size_t windowHeight{ 512 };
         std::string presetURL;
         std::string titleFontURL;
         std::string menuFontURL;
         std::string datadir;
-        double smoothPresetDuration;
-        double presetDuration;
-        bool hardcutEnabled;
-        int hardcutDuration;
-        float hardcutSensitivity;
-        float beatSensitivity;
-        bool aspectCorrection;
-        float easterEgg;
-        bool shuffleEnabled;
-        bool softCutRatingsEnabled;
-
-        Settings() :
-            meshX(32),
-            meshY(24),
-            fps(35),
-            textureSize(512),
-            windowWidth(512),
-            windowHeight(512),
-            smoothPresetDuration(10.0),
-            presetDuration(15.0),
-            hardcutEnabled(false),
-            hardcutDuration(60),
-            hardcutSensitivity(2.0),
-            beatSensitivity(1.0),
-            aspectCorrection(true),
-            easterEgg(0.0),
-            shuffleEnabled(true),
-            softCutRatingsEnabled(false) {}
-    };
+        double presetDuration{ 15.0 };
+        double softCutDuration{ 10.0 };
+        double hardCutDuration{ 60.0 };
+        bool hardCutEnabled{ false };
+        float hardCutSensitivity{ 2.0 };
+        float beatSensitivity{ 1.0 };
+        bool aspectCorrection{ true };
+        float easterEgg{ 0.0 };
+        bool shuffleEnabled{ true };
+        bool softCutRatingsEnabled{ false };
+  };
 
   projectM(std::string config_file, int flags = FLAG_NONE);
   projectM(Settings settings, int flags = FLAG_NONE);
 
   virtual ~projectM();
 
-  void projectM_resetGL( int width, int height );
+  void projectM_resetGL(size_t width, size_t height);
   void projectM_resetTextures();
-  void projectM_setTitle( std::string title );
+
+  std::string getTitle() const;
+  void setTitle(const std::string& title);
   void renderFrame();
   Pipeline * renderFrameOnlyPass1(Pipeline *pPipeline);
   void renderFrameOnlyPass2(Pipeline *pPipeline,int xoffset,int yoffset,int eye);
@@ -178,12 +163,26 @@ public:
   void key_handler( projectMEvent event,
 		    projectMKeycode keycode, projectMModifier modifier );
 
-  void changeTextureSize(int size);
-  void changeHardcutDuration(int seconds);
-  void changeHardcutDuration(double seconds);
-  void changePresetDuration(int seconds);
-  void changePresetDuration(double seconds);
-  void getMeshSize(int *w, int *h);
+  void setTextureSize(size_t size);
+  size_t getTextureSize() const;
+  double getSoftCutDuration() const;
+  void setSoftCutDuration(int seconds);
+  void setSoftCutDuration(double seconds);
+  double getHardCutDuration() const;
+  void setHardCutDuration(int seconds);
+  void setHardCutDuration(double seconds);
+  bool getHardCutEnabled() const;
+  void setHardCutEnabled(bool enabled);
+  float getHardCutSensitivity() const;
+  void setHardCutSensitivity(float sensitivity);
+  void setPresetDuration(int seconds);
+  void setPresetDuration(double seconds);
+  bool getAspectCorrection() const;
+  void setAspectCorrection(bool enabled);
+  float getEasterEgg() const;
+  void setEasterEgg(float value);
+  void getMeshSize(size_t& w, size_t& h) const;
+  void setMeshSize(size_t w, size_t h);
   void touch(float x, float y, int pressure, int touchtype);
   void touchDrag(float x, float y, int pressure);
   void touchDestroy(float x, float y);
@@ -239,6 +238,8 @@ public:
   /// Plays a preset immediately when given preset name
   void selectPresetByName(std::string name, bool hardCut = true);
 
+  // search based on keystroke
+  std::string getSearchText() const;
   // search based on keystroke
   void setSearchText(const std::string & searchKey);
   // delete part of search term (backspace)
@@ -395,7 +396,7 @@ private:
   std::unique_ptr<Preset> switchToCurrentPreset();
   bool startPresetTransition(bool hard_cut);
 
-
+  void recreateRenderer();
 
 };
 #endif

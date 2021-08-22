@@ -174,6 +174,7 @@ public:
   bool touchedWaveform(float x, float y, std::size_t i);
   
   void setToastMessage(const std::string& theValue);
+  std::string getSearchText() const;
   void setSearchText(const std::string& theValue);
   void resetSearchText();
   void deleteSearchText();

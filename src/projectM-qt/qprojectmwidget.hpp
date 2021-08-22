@@ -65,7 +65,7 @@ class QProjectMWidget : public QOpenGLWidget
 		{
 			// Setup viewport, projection etc
 			setup_opengl ( w,h );
-            projectm_reset_gl(m_projectM->instance(), w, h);
+			projectm_set_window_size(m_projectM->instance(), static_cast<size_t>(w), static_cast<size_t>(h));
 		}
 
 		inline const QString& configFile()

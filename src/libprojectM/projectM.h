@@ -24,6 +24,8 @@
 #include "projectM_export.h"
 #include "event.h"
 
+#include <stddef.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -56,11 +58,11 @@ struct PROJECTM_EXPORT projectm_settings
     char* title_font_url; //!< Path to the "title" font that is used to render the preset name.
     char* menu_font_url; //!< Path to the "menu" font that is used to render the built-in on-screen menu.
     char* data_dir; //!< Path to data files like default fonts and presets.
-    double smooth_preset_duration; //!< Blend-over duration between two presets in seconds.
     double preset_duration; //!< Display duration for each preset in seconds.
-    bool hardcut_enabled; //!< Set to true to enable fast beat-driven preset switches.
-    int hardcut_duration; //!< Minimum time a preset is displayed before a hardcut can happen in seconds.
-    float hardcut_sensitivity; //!< Beat sensitivity value that must be surpassed for a hardcut.
+    double soft_cut_duration; //!< Blend-over duration between two presets in seconds.
+    double hard_cut_duration; //!< Minimum time in seconds a preset is displayed before a hard cut can happen.
+    bool hard_cut_enabled; //!< Set to true to enable fast beat-driven preset switches.
+    float hard_cut_sensitivity; //!< Beat sensitivity value that must be surpassed for a hard cut.
     float beat_sensitivity; //!< Beat sensitivity. Standard sensitivity is 1.0.
     bool aspect_correction; //!< Use aspect ration correction in presets that support it.
     float easter_egg; //!< Used as the "sigma" value for a gaussian RNG to randomize preset duration. Unused on Windows.
@@ -127,7 +129,7 @@ PROJECTM_EXPORT char* projectm_alloc_string(unsigned int length);
  * @brief Frees the memory of an allocated string.
  *
  * <p>Frees the memory allocated by a call to projectm_alloc_string() or any
- * (const) char* pointers returned by an API call.</p>
+ * (const) char* pointers returned by a projectM API call.</p>
  *
  * <p>Do not use free() to delete the pointer!</p>
  *
@@ -138,7 +140,11 @@ PROJECTM_EXPORT void projectm_free_string(const char* str);
 /**
  * @brief Allocates memory for a projectm_settings struct and returns the pointer.
  *
- * To free the allocated memory, call projectm_free_settings(). Do not use free()!
+ * <p>This will not allocate memory for the char* members in the struct. These will be set to NULL initially.
+ * To store a string in these members, use projectm_alloc_string() to allocate the required memory. Do not use
+ * malloc()!</p>
+ *
+ * <p>To free the allocated memory, call projectm_free_settings(). Do not use free()!</p>
  *
  * @return A pointer to a zero-initialized projectm_settings struct.
  */
@@ -293,15 +299,13 @@ PROJECTM_EXPORT void projectm_set_preset_rating_changed_event_callback(projectm_
 /**
  * @brief Reset the projectM OpenGL renderer.
  *
- * Required if anything invalidates the state of the current OpenGL context projectM is rendering to.
- * This is the case on window resizes, restoring a window from minimized state or other events that
- * required recreating of OpenGL objects.
+ * <p>Required if anything invalidates the state of the current OpenGL context projectM is rendering to.</p>
+ *
+ * <p>For resize events, it is sufficient to call projectm_set_window_size()</p>
  *
  * @param instance The projectM instance handle.
- * @param width The rendering viewport width.
- * @param height The rendering viewport height.
  */
-PROJECTM_EXPORT void projectm_reset_gl(projectm_handle instance, int width, int height);
+PROJECTM_EXPORT void projectm_reset_gl(projectm_handle instance);
 
 
 /**
@@ -312,6 +316,13 @@ PROJECTM_EXPORT void projectm_reset_gl(projectm_handle instance, int width, int 
  * @param instance The projectM instance handle.
  */
 PROJECTM_EXPORT void projectm_reset_textures(projectm_handle instance);
+
+/**
+ * @brief Returns the current title text.
+ * @param instance The projectM instance handle.
+ * @return The currently set title text.
+ */
+PROJECTM_EXPORT const char* projectm_get_title(projectm_handle instance);
 
 /**
  * @brief Sets the current title text and displays it.
@@ -344,11 +355,11 @@ PROJECTM_EXPORT unsigned int projectm_init_render_to_texture(projectm_handle ins
 /**
  * @brief Key handler that processes user input.
  *
- * This method can be used to send user input in the host application to projectM, for example
- * to switch presets, display the help and search menus or change settings like beat sensitivity.
+ * <p>This method can be used to send user input in the host application to projectM, for example
+ * to switch presets, display the help and search menus or change settings like beat sensitivity.</p>
  *
- * All actions executed by the key handler can also be run programmatically if the host application
- * is not able to redirect keyboard input to projectM.
+ * <p>All actions executed by the key handler can also be run programmatically if the host application
+ * is not able to redirect keyboard input to projectM.</p>
  *
  * @param instance The projectM instance handle.
  * @param event The key event, valid are either PROJECTM_KEYUP or PROJECTM_KEYDOWN.
@@ -361,11 +372,11 @@ PROJECTM_EXPORT void projectm_key_handler(projectm_handle instance, projectMEven
 /**
  * @brief Default key handler that processes user input.
  *
- * This method can be used to send user input in the host application to projectM, for example
- * to switch presets, display the help and search menus or change settings like beat sensitivity.
+ * <p>This method can be used to send user input in the host application to projectM, for example
+ * to switch presets, display the help and search menus or change settings like beat sensitivity.</p>
  *
- * All actions executed by the key handler can also be run programmatically if the host application
- * is not able to redirect keyboard input to projectM.
+ * <p>All actions executed by the key handler can also be run programmatically if the host application
+ * is not able to redirect keyboard input to projectM.</p>
  *
  * @param instance The projectM instance handle.
  * @param event The key event, valid are either PROJECTM_KEYUP or PROJECTM_KEYDOWN.
@@ -373,13 +384,28 @@ PROJECTM_EXPORT void projectm_key_handler(projectm_handle instance, projectMEven
  */
 PROJECTM_EXPORT void projectm_default_key_handler(projectm_handle instance, projectMEvent event,
                                                   projectMKeycode keycode);
+
+/**
+ * @brief Returns the size of the internal render texture.
+ * @param instance The projectM instance handle.
+ * @return The size of the internal rendering texture.
+ */
+PROJECTM_EXPORT size_t projectm_get_texture_size(projectm_handle instance);
+
 /**
  * @brief Changes the size of the internal render texture.
  * @note This will recreate the internal renderer.
  * @param instance The projectM instance handle.
  * @param size The new size of the render texture. Must be a power of 2.
  */
-PROJECTM_EXPORT void projectm_set_texture_size(projectm_handle instance, int size);
+PROJECTM_EXPORT void projectm_set_texture_size(projectm_handle instance, size_t size);
+
+/**
+ * @brief Returns the minimum display time before a hard cut can happen.
+ * @param instance The projectM instance handle.
+ * @return The minimum number of seconds the preset will be displayed before a hard cut.
+ */
+PROJECTM_EXPORT double projectm_get_hard_cut_duration(projectm_handle instance);
 
 /**
  * @brief Sets the minimum display time before a hard cut can happen.
@@ -392,22 +418,162 @@ PROJECTM_EXPORT void projectm_set_texture_size(projectm_handle instance, int siz
  * @param instance The projectM instance handle.
  * @param seconds Minimum number of seconds the preset will be displayed before a hard cut.
  */
-PROJECTM_EXPORT void projectm_set_hardcut_duration(projectm_handle instance, double seconds);
+PROJECTM_EXPORT void projectm_set_hard_cut_duration(projectm_handle instance, double seconds);
+
+/**
+ * @brief Returns whether hard cuts are enabled or not.
+ * @param instance The projectM instance handle.
+ * @return True if hard cuts are enabled, false otherwise.
+ */
+PROJECTM_EXPORT bool projectm_get_hard_cut_enabled(projectm_handle instance);
+
+/**
+ * @brief Enables or disables hard cuts.
+ *
+ * Even if enabled, the hard cut duration must be set to a value lower than the preset duration
+ * to work properly.
+ *
+ * @param instance The projectM instance handle.
+ * @param enabled True to enable hard cuts, false to disable.
+ */
+PROJECTM_EXPORT void projectm_set_hard_cut_enabled(projectm_handle instance, bool enabled);
+
+/**
+ * @brief Returns the current hard cut sensitivity.
+ * @param instance The projectM instance handle.
+ * @return The current hard cut sensitivity.
+ */
+PROJECTM_EXPORT float projectm_get_hard_cut_sensitivity(projectm_handle instance);
+
+/**
+ * @brief Sets the hard cut volume sensitivity.
+ *
+ * The beat detection volume difference that must be surpassed to trigger a hard cut.
+ *
+ * @param instance The projectM instance handle.
+ * @param sensitivity The volume threshold that triggers a hard cut if surpassed.
+ */
+PROJECTM_EXPORT void projectm_set_hard_cut_sensitivity(projectm_handle instance, float sensitivity);
+
+/**
+ * @brief Returns the time in seconds for a soft transition between two presets.
+ * @param instance The projectM instance handle.
+ * @return Time in seconds it takes to smoothly transition from one preset to another.
+ */
+PROJECTM_EXPORT double projectm_get_soft_cut_duration(projectm_handle instance);
+
+/**
+ * @brief Sets the time in seconds for a soft transition between two presets.
+ *
+ * During a soft cut, both presets are rendered and slowly transitioned from one
+ * to the other.
+ *
+ * @param instance The projectM instance handle.
+ * @param seconds Time in seconds it takes to smoothly transition from one preset to another.
+ */
+PROJECTM_EXPORT void projectm_set_soft_cut_duration(projectm_handle instance, double seconds);
 
 /**
  * @brief Sets the preset display duration before switching to the next using a soft cut.
+ *
+ * This can be considered as the maximum time a preset is displayed. If this time is reached,
+ * a smooth cut will be initiated. A hard cut, if any, will always happen before this time.
+ *
  * @param instance The projectM instance handle.
  * @param seconds The number of seconds a preset will be displayed before the next is shown.
  */
 PROJECTM_EXPORT void projectm_set_preset_duration(projectm_handle instance, double seconds);
 
 /**
- * @brief returns the per-pixel equation mesh size in units.
+ * @brief Returns the per-pixel equation mesh size in units.
  * @param instance The projectM instance handle.
  * @param width The width of the mesh.
  * @param height The height of the mesh.
  */
-PROJECTM_EXPORT void projectm_get_mesh_size(projectm_handle instance, int* width, int* height);
+PROJECTM_EXPORT void projectm_get_mesh_size(projectm_handle instance, size_t* width, size_t* height);
+
+/**
+ * @brief Sets the per-pixel equation mesh size in units.
+ * @note This will recreate the renderer.
+ * @param instance The projectM instance handle.
+ * @param width The new width of the mesh.
+ * @param height The new height of the mesh.
+ */
+PROJECTM_EXPORT void projectm_set_mesh_size(projectm_handle instance, size_t width, size_t height);
+
+/**
+ * @brief Returns the target frames per second count.
+ * @note This is not the actual FPS, but the targeted refresh framerate if the integrating application.
+ * @param instance The projectM instance handle.
+ */
+PROJECTM_EXPORT size_t projectm_get_fps(projectm_handle instance);
+
+/**
+ * @brief Returns the search path for presets and textures.
+ * @param instance The projectM instance handle.
+ * @return The path used to search for presets and textures.
+ */
+PROJECTM_EXPORT const char* projectm_get_preset_path(projectm_handle instance);
+
+/**
+ * @brief Returns the path and filename of the font used to render the title overlay text.
+ * @param instance The projectM instance handle.
+ * @return The path and filename of the title text font.
+ */
+PROJECTM_EXPORT const char* projectm_get_title_font_filename(projectm_handle instance);
+
+/**
+ * @brief Returns the path and filename of the font used to render the menu overlay text.
+ * @param instance The projectM instance handle.
+ * @return The path and filename of the menu text font.
+ */
+PROJECTM_EXPORT const char* projectm_get_menu_font_filename(projectm_handle instance);
+
+/**
+ * @brief Returns the path projectM uses to search for additional data.
+ * @param instance The projectM instance handle.
+ * @return The data dir path.
+ */
+PROJECTM_EXPORT const char* projectm_get_data_dir_path(projectm_handle instance);
+
+/**
+ * @brief Enabled or disables aspect ratio correction in presets that support it.
+ *
+ * This sets a flag presets can use to aspect-correct rendered shapes, which otherwise would
+ * be distorted if the viewport isn't exactly square.
+ *
+ * @param instance The projectM instance handle.
+ * @param enabled True to enable aspect correction, false to disable it.
+ */
+PROJECTM_EXPORT void projectm_set_aspect_correction(projectm_handle instance, bool enabled);
+
+/**
+ * @brief Returns whether aspect ratio correction is enabled or not.
+ * @param instance The projectM instance handle.
+ * @return True if aspect ratio correction is enabled, false otherwise.
+ */
+PROJECTM_EXPORT bool projectm_get_aspect_correction(projectm_handle instance);
+
+/**
+ * @brief Sets the "easter egg" value.
+ *
+ * <p>This doesn't enable any fancy feature, it only influences the randomized display time of presets. It's
+ * passed as the "sigma" value of the gaussian random number generator used to determine the maximum display time,
+ * effectively multiplying the generated number of seconds by this amount.</p>
+ *
+ * <p>See function sampledPresetDuration() of the TimeKeeper class on how it is used.</p>
+ *
+ * @param instance The projectM instance handle.
+ * @param value The new "easter egg" value.
+ */
+PROJECTM_EXPORT void projectm_set_easter_egg(projectm_handle instance, float value);
+
+/**
+ * @brief Returns the current "easter egg" value.
+ * @param instance The projectM instance handle.
+ * @return The current "easter egg" value.
+ */
+PROJECTM_EXPORT float projectm_get_easter_egg(projectm_handle instance);
 
 /**
  * @brief Starts a touch event or moves an existing waveform.
@@ -574,6 +740,13 @@ PROJECTM_EXPORT unsigned int projectm_get_preset_index(projectm_handle instance,
 PROJECTM_EXPORT void projectm_select_preset_by_name(projectm_handle instance, const char* preset_name, bool hard_cut);
 
 /**
+ * @brief Returns the current preset search text.
+ * @param instance The projectM instance handle.
+ * @return The current search text used to search for presets in the playlist.
+ */
+PROJECTM_EXPORT const char* projectm_get_search_text(projectm_handle instance);
+
+/**
  * @brief Sets the current preset search text.
  * @param instance The projectM instance handle.
  * @param search_text The search text used to search for presets in the current playlist.
@@ -604,7 +777,7 @@ PROJECTM_EXPORT void projectm_reset_search_text(projectm_handle instance);
  * @param index A valid pointer to an unsigned int that will receive the preset index.
  * @return True if a preset idnex was returned, false if no preset was selected, e.g. the playlist is empty.
  */
-PROJECTM_EXPORT bool projectm_selected_preset_index(projectm_handle instance, unsigned int* index);
+PROJECTM_EXPORT bool projectm_get_selected_preset_index(projectm_handle instance, unsigned int* index);
 
 /**
  * @brief Adds a new preset at the end of the playlist.
@@ -658,7 +831,8 @@ PROJECTM_EXPORT bool projectm_preset_position_valid(projectm_handle instance);
  * @param index The playlist index to return the filename for.
  * @return The full path and filename of the preset at the given index.
  */
-PROJECTM_EXPORT const char* projectm_get_preset_url(projectm_handle instance, unsigned int index);
+PROJECTM_EXPORT const char* projectm_get_preset_filename(projectm_handle instance, unsigned int index);
+
 /**
  * @brief Returns the display name of the preset at the requested playlist index.
  * @note Make sure the index is inside the playlist bounds!
@@ -674,7 +848,7 @@ PROJECTM_EXPORT const char* projectm_get_preset_name(projectm_handle instance, u
  * @param index the playlist item index to change.
  * @param name The new display name.
  */
-PROJECTM_EXPORT void projectm_change_preset_name(projectm_handle instance, unsigned int index, const char* name);
+PROJECTM_EXPORT void projectm_set_preset_name(projectm_handle instance, unsigned int index, const char* name);
 
 /**
  * @brief Returns the rating for the given index and transition type.
@@ -693,8 +867,8 @@ PROJECTM_EXPORT int projectm_get_preset_rating(projectm_handle instance, unsigne
  * @param rating The new rating value.
  * @param rating_type The type of the rating, either hard or soft cut.
  */
-PROJECTM_EXPORT void projectm_change_preset_rating(projectm_handle instance, unsigned int index, int rating,
-                                                   projectm_preset_rating_type rating_type);
+PROJECTM_EXPORT void projectm_set_preset_rating(projectm_handle instance, unsigned int index, int rating,
+                                                projectm_preset_rating_type rating_type);
 
 /**
  * @brief Returns the number of presets in the current playlist.
@@ -704,18 +878,18 @@ PROJECTM_EXPORT void projectm_change_preset_rating(projectm_handle instance, uns
 PROJECTM_EXPORT unsigned int projectm_get_playlist_size(projectm_handle instance);
 
 /**
+ * @brief Returns whether playlist shuffling is currently enabled or not.
+ * @param instance The projectM instance handle.
+ * @return True if shuffle is enabled, false if not.
+ */
+PROJECTM_EXPORT bool projectm_get_shuffle_enabled(projectm_handle instance);
+
+/**
  * @brief Enables or disables preset playlist shuffling.
  * @param instance The projectM instance handle.
  * @param shuffle_enabled True to randomly select the next preset, false to skip to the next item in line.
  */
 PROJECTM_EXPORT void projectm_set_shuffle_enabled(projectm_handle instance, bool shuffle_enabled);
-
-/**
- * @brief Returns whether playlist shuffling is currently enabled or not.
- * @param instance The projectM instance handle.
- * @return True if shuffle is enabled, false if not.
- */
-PROJECTM_EXPORT bool projectm_is_shuffle_enabled(projectm_handle instance);
 
 /**
  * @brief Gets the index of the provided preset name in the current search result list.
@@ -733,7 +907,7 @@ PROJECTM_EXPORT unsigned int projectm_get_search_index(projectm_handle instance,
  * @param instance The projectM instance handle.
  * @param hard_cut True to immediately perform to the previous preset, false to do a soft transition.
  */
-PROJECTM_EXPORT void projectm_select_previous(projectm_handle instance, bool hard_cut);
+PROJECTM_EXPORT void projectm_select_previous_preset(projectm_handle instance, bool hard_cut);
 
 /**
  * @brief Switches to the next preset in the current playlist.
@@ -743,7 +917,7 @@ PROJECTM_EXPORT void projectm_select_previous(projectm_handle instance, bool har
  * @param instance The projectM instance handle.
  * @param hard_cut True to immediately perform to the next preset, false to do a soft transition.
  */
-PROJECTM_EXPORT void projectm_select_next(projectm_handle instance, bool hard_cut);
+PROJECTM_EXPORT void projectm_select_next_preset(projectm_handle instance, bool hard_cut);
 
 /**
  * @brief Switches to a random preset in the current playlist.
@@ -753,21 +927,26 @@ PROJECTM_EXPORT void projectm_select_next(projectm_handle instance, bool hard_cu
  * @param instance The projectM instance handle.
  * @param hard_cut True to immediately perform to a random preset, false to do a soft transition.
  */
-PROJECTM_EXPORT void projectm_select_random(projectm_handle instance, bool hard_cut);
+PROJECTM_EXPORT void projectm_select_random_preset(projectm_handle instance, bool hard_cut);
 
 /**
- * @brief Returns the current viewport width in pixels.
+ * @brief Returns the current viewport size in pixels.
  * @param instance The projectM instance handle.
- * @return The viewport width in pixels.
+ * @param width Valid pointer to a size_t variable that will receive the window width value.
+ * @param height Valid pointer to a size_t variable that will receive the window height value.
  */
-PROJECTM_EXPORT int projectm_get_window_width(projectm_handle instance);
+PROJECTM_EXPORT void projectm_get_window_size(projectm_handle instance, size_t* width, size_t* height);
 
 /**
- * @brief Returns the current viewport height in pixels.
+ * @brief Sets the current viewport size in pixels.
+ *
+ * Calling this function will reset the OpenGL renderer.
+ *
  * @param instance The projectM instance handle.
- * @return The viewport height in pixels.
+ * @param width New viewport width in pixels.
+ * @param height New viewport height in pixels.
  */
-PROJECTM_EXPORT int projectm_get_window_height(projectm_handle instance);
+PROJECTM_EXPORT void projectm_set_window_size(projectm_handle instance, size_t width, size_t height);
 
 /**
  * @brief Returns whether the current preset was loaded successfully or not.
