@@ -164,9 +164,9 @@ void QProjectM_MainWindow::readConfig(const QString& configFile ) {
 
 	setMenuVisible(settings.value("MenuOnStartup", false).toBool());
 
-
-	int wvw = projectm_get_window_width(qprojectM()->instance());
-	int wvh = projectm_get_window_height(qprojectM()->instance());
+    size_t windowWidth;
+    size_t windowHeight;
+	projectm_get_window_size(qprojectM()->instance(), &windowWidth, &windowHeight);
 
 	auto projectMSettings = projectm_get_settings(qprojectM()->instance());
 
@@ -174,7 +174,7 @@ void QProjectM_MainWindow::readConfig(const QString& configFile ) {
 
     projectm_free_settings(projectMSettings);
 
-	this->resize(wvw, wvh);
+    this->resize(static_cast<int>(windowWidth), static_cast<int>(windowHeight));
 }
 
 QProjectM_MainWindow::~QProjectM_MainWindow()
@@ -935,7 +935,7 @@ void QProjectM_MainWindow::copyPlaylist()
 	historyHash.insert ( QString(), items );
 
 	uint index;
-	if (projectm_selected_preset_index(qprojectM()->instance(), &index))
+	if (projectm_get_selected_preset_index(qprojectM()->instance(), &index))
 		*activePresetIndex =  index;
 	else
 		activePresetIndex->nullify();
@@ -1223,7 +1223,7 @@ void QProjectM_MainWindow::updateFilteredPlaylist ( const QString & text )
 
 	const QString filter = text.toLower();
 	unsigned int presetIndexBackup ;
-	bool presetSelected = projectm_selected_preset_index(qprojectM()->instance(), &presetIndexBackup);
+	bool presetSelected = projectm_get_selected_preset_index(qprojectM()->instance(), &presetIndexBackup);
 	Nullable<unsigned int> activePresetId;
 
 	if (!presetSelected && activePresetIndex->hasValue()) {

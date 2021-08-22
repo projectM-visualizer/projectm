@@ -109,13 +109,13 @@ bool QPlaylistModel::setData ( const QModelIndex & index, const QVariant & value
 {
 	if ( role == QPlaylistModel::RatingRole )
 	{
-        projectm_change_preset_rating(m_projectM, index.row(), value.toInt(), PROJECTM_HARD_CUT_RATING_TYPE);
+        projectm_set_preset_rating(m_projectM, index.row(), value.toInt(), PROJECTM_HARD_CUT_RATING_TYPE);
 		return true;
 	} else if (role == QPlaylistModel::BreedabilityRole) {
-	    projectm_change_preset_rating(m_projectM, index.row(), value.toInt(), PROJECTM_SOFT_CUT_RATING_TYPE);
+        projectm_set_preset_rating(m_projectM, index.row(), value.toInt(), PROJECTM_SOFT_CUT_RATING_TYPE);
 		return true;
 	} else if (role == QPlaylistModel::NameRole) {
-        projectm_change_preset_name(m_projectM, index.row(), value.toString().toLocal8Bit().data());
+		projectm_set_preset_name(m_projectM, index.row(), value.toString().toLocal8Bit().data());
 		return true;
 	}
 	else
@@ -294,7 +294,7 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 		    return QVariant (  projectm_get_preset_rating(m_projectM, rowidx, PROJECTM_SOFT_CUT_RATING_TYPE)  );
 		case Qt::BackgroundRole:
 	
-			if (!projectm_selected_preset_index(m_projectM, &pos))
+			if (!projectm_get_selected_preset_index(m_projectM, &pos))
 				return QVariant();
 			if (projectm_is_preset_locked(m_projectM) && rowidx >= 0 && static_cast<unsigned int>(rowidx) == pos )
 				return QColor(Qt::red);
@@ -303,7 +303,7 @@ QVariant QPlaylistModel::data ( const QModelIndex & index, int role = Qt::Displa
 			return QVariant();
 		case QPlaylistModel::URLInfoRole:
         {
-            auto presetUrl = projectm_get_preset_url(m_projectM, rowidx);
+            auto presetUrl = projectm_get_preset_filename(m_projectM, rowidx);
             QString qPresetUrl(presetUrl);
             projectm_free_string(presetUrl);
             return qPresetUrl;

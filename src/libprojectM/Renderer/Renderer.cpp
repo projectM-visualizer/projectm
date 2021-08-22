@@ -814,6 +814,11 @@ void Renderer::toggleSearchText() {
 	}
 }
 
+std::string Renderer::getSearchText() const
+{
+    return m_searchText;
+}
+
 // search based on new key input
 void Renderer::setSearchText(const std::string& theValue)
 {
