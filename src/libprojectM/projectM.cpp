@@ -836,6 +836,10 @@ void projectM::populatePresetMenu()
                 page_start = page_start - (page_start % renderer->textMenuPageSize); // if not, find closest divisable number for page start
             }
             int page_end = page_start + renderer->textMenuPageSize; // page end is page start + page size
+            if (page_end > m_presetLoader->size())
+            {
+                page_end = m_presetLoader->size();
+            }
             while (page_start < page_end) {
                 renderer->m_presetList.push_back({ page_start, getPresetName(page_start), "" }); // populate the renders preset list.
                 page_start++;
