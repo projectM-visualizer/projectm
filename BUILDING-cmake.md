@@ -56,7 +56,7 @@ create an `.xcodeproj` bundle which you can open in Xcode. It also adds support 
 be required if your application using projectM needs to be notarized for store deployment.
 
 ```shell
-cmake -G "Xcode" -S /path/to/source/dir -B /path/to/build/dir
+cmake -G Xcode -S /path/to/source/dir -B /path/to/build/dir
 ```
 
 If you develop on Windows, you will possibly use Visual Studio. While recent visual Studio versions have CMake support
