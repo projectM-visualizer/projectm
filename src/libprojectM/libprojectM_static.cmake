@@ -40,6 +40,7 @@ target_link_libraries(projectM_static
         GLM::GLM
         PUBLIC
         ${PROJECTM_OPENGL_LIBRARIES}
+        ${CMAKE_DL_LIBS}
         )
 
 if(ENABLE_THREADING)
