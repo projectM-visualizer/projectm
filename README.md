@@ -149,3 +149,6 @@ If you maintain packages of libprojectM, we are happy to work with you! Please n
 
 ## License
 [LGPL](https://github.com/projectM-visualizer/projectm/raw/master/LICENSE.txt)
+
+## Wiki
+More information for developers is available from the [projectM Wiki](https://github.com/projectM-visualizer/projectm/wiki).
