@@ -25,16 +25,25 @@ AC_LANG(C++)
 AC_CONFIG_MACRO_DIRS([m4 m4/autoconf-archive])
 
 dnl emscripten
-AC_ARG_ENABLE([emscripten],
-AS_HELP_STRING([--enable-emscripten], [Build for web with emscripten]),
-[], [enable_emscripten=no])
-AS_IF([test "x$enable_emscripten" = "xyes" || test "x$EMSCRIPTEN" = "xyes"], [
+m4_include([m4/emscripten.m4])
+AM_EMSCRIPTEN  # set emscripten_compiler=yes/no
+AC_MSG_CHECKING(Emscripten enabled)
+AC_MSG_RESULT("$emscripten_compiler")
+AS_IF([test "x$emscripten_compiler" = "xyes"], [
   dnl Set up emscripten
-  m4_include([m4/emscripten.m4])
   AC_DEFINE([EMSCRIPTEN], [1], [Define EMSCRIPTEN])
-  enable_threading=no
+  AC_DEFINE([ENABLE_EMSCRIPTEN], [1], [Build projectM-emscripten])
   enable_gles=yes
   enable_sdl=yes
+  enable_llvm=no
+  enable_preset_subdirs=no
+  enable_threading=no
+  enable_qt=no
+  dnl Enable SDL2 and WEBGL2 (OpenGL ES 3)
+  EMSCRIPTEN_FLAGS="-g -lgl -s ALLOW_MEMORY_GROWTH=1 -s USE_SDL=2 -s USE_WEBGL2=1 -s MIN_WEBGL_VERSION=2 -s MAX_WEBGL_VERSION=2 -O3"
+  AC_SUBST([EMSCRIPTEN_FLAGS])
+  CFLAGS="$CFLAGS $EMSCRIPTEN_FLAGS"
+  CXXFLAGS="$CXXFLAGS $EMSCRIPTEN_FLAGS"
 ], [
   dnl Running in a normal OS (not emscripten)
   AX_CHECK_GL
@@ -86,7 +95,7 @@ AC_CONFIG_FILES([
 
 # SDL
 AC_ARG_ENABLE([sdl], AS_HELP_STRING([--enable-sdl], [Build SDL2 application]), [], [enable_sdl=check])
-AS_IF([test "$enable_sdl" != "no"], [
+AS_IF([test "$enable_sdl" != "no" && test "x$emscripten_compiler" != "xyes"], [
     PKG_CHECK_MODULES([SDL], [sdl2], [
         m4_include([m4/sdl2.m4])
         SDL_VERSION="2.0.5"
@@ -105,6 +114,7 @@ AS_IF([test "$enable_sdl" != "no"], [
     ])
 ])
 
+AM_CONDITIONAL([ENABLE_TEST], [test "$enable_sdl" = "yes"])
 
 # Threading
 AC_ARG_ENABLE([threading],
@@ -223,7 +233,7 @@ AM_CONDITIONAL([ENABLE_SDL], [test "x$enable_sdl" = "xyes"])
 AM_CONDITIONAL([ENABLE_QT], [test "x$enable_qt" = "xyes"])
 AM_CONDITIONAL([ENABLE_JACK], [test "x$enable_jack" = "xyes"])
 AM_CONDITIONAL([ENABLE_PULSEAUDIO], [test "x$enable_pulseaudio" = "xyes"])
-AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test "x$enable_emscripten" = "xyes"])
+AM_CONDITIONAL([ENABLE_EMSCRIPTEN], [test "x$emscripten_compiler" = "xyes"])
 
 
 my_CFLAGS="-Wall -Wchar-subscripts -Wformat-security -Wpointer-arith -Wshadow -Wsign-compare -Wtype-limits"
@@ -236,7 +246,8 @@ AC_SUBST([my_CFLAGS])
 
 # glm (vendored, this should never fail; headers are in vendor/glm)
 AC_SUBST(CPPFLAGS, "$CPPFLAGS -I${srcdir}/vendor")
-AS_IF([test "x$enable_emscripten" != "xyes"], [
+AC_MSG_RESULT($emscripten_compiler)
+AS_IF([test "x$emscripten_compiler" != "xyes"], [
     AC_CHECK_HEADER([glm/glm.hpp],, AC_MSG_ERROR(vendored libglm not found.))
 ])
 
@@ -270,6 +281,6 @@ Qt:                     ${enable_qt}
 Pulseaudio:             ${enable_pulseaudio}
 Jack:                   ${enable_jack}
 OpenGLES:               ${enable_gles}
-Emscripten:             ${enable_emscripten}
+Emscripten:             ${emscripten_compiler}
 LLVM JIT:               ${enable_llvm}
 ])

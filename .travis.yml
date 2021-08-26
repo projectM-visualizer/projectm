@@ -72,6 +72,21 @@ matrix:
       env:
         - MATRIX_EVAL="brew update && brew install sdl2"
 
+    # emscripten
+    - os: linux
+      env: >
+          MATRIX_EVAL="docker run -dit
+          -v $(pwd):/src
+          --name emscripten
+          emscripten/emsdk
+          bash"
+      services:
+        - docker
+      script:
+        - docker exec -it emscripten emconfigure ./configure
+        - docker exec -it emscripten emmake make
+
+
 notifications:
   email:
     on_success: never

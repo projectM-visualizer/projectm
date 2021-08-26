@@ -6,7 +6,7 @@ Running on the web.
 * On fresh repositories: `./autogen.sh`
 
 ## Compile
-* `emconfigure ./configure --enable-emscripten`
+* `emconfigure ./configure`
 * `emmake make`
 
 ## Create wasm & html files

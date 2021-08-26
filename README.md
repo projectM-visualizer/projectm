@@ -32,6 +32,9 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 * [Source code](https://github.com/projectM-visualizer/projectm/)
 * [Qt5](https://www.qt.io/)-based [PulseAudio](https://www.freedesktop.org/wiki/Software/PulseAudio/) and JACK desktop apps in [source code](https://github.com/projectM-visualizer/projectm/)
 * [ALSA, XMMS, Winamp, JACK](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
+#### Experimental / In-Progress
+* [Web+Emscripten](src/projectM-emscripten/README.md)
+* [Gstreamer](https://github.com/projectM-visualizer/projectm/pull/207)
 
 ### Discord chat
 [Chat with us on Discord.](https://discord.gg/tpEuywB)
