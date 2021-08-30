@@ -31,9 +31,10 @@
 #include <EGL/eglext.h>
 #elif defined(_WIN32)
 #define GLM_FORCE_CXX03
+# include <winsock2.h>
 # include <windows.h>
-#include "GL/glew.h"
-#include "GL/wglew.h"
+# include "GL/glew.h"
+# include "GL/wglew.h"
 #else /* linux/unix/other */
 # if USE_GLES
 #  include <GLES3/gl3.h>
