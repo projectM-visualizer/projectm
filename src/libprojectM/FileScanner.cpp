@@ -6,6 +6,11 @@
 
 #include "FileScanner.hpp"
 
+#ifndef WIN32
+#include <sys/stat.h>
+#include <sys/types.h>
+#endif
+
 FileScanner::FileScanner() {}
 
 FileScanner::FileScanner(std::vector<std::string> &rootDirs, std::vector<std::string> &extensions) : _rootDirs(rootDirs), _extensions(extensions) {}
@@ -98,10 +103,27 @@ void FileScanner::scanGeneric(ScanCallback cb, const char *currentDir) {
 
         // Some sanity checks
         if (! isValidFilename(filename)) continue;
-        if (filename.length() > 0 && filename[0] == '.')
+        if (filename.length() == 0 || filename[0] == '.')
             continue;
 
         std::string fullPath = std::string(currentDir) + PATH_SEPARATOR + filename;
+
+#ifndef WIN32
+        // filesystems are free to return DT_UNKNOWN
+        if (dir_entry->d_type == DT_UNKNOWN)
+        {
+            struct stat stat_path;
+            if (stat(fullPath.c_str(), &stat_path) == 0)
+            {
+                /**/ if (S_ISDIR(stat_path.st_mode))
+                    dir_entry->d_type = DT_DIR;
+                else if (S_ISLNK(stat_path.st_mode))
+                    dir_entry->d_type = DT_LNK;
+                else if (S_ISREG(stat_path.st_mode))
+                    dir_entry->d_type = DT_REG;
+            }
+        }
+#endif
 
         if (dir_entry->d_type == DT_DIR) {
             // recurse into dir
