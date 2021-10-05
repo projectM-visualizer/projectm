@@ -30,7 +30,7 @@ Its purpose in life is to read an audio input and to produce mesmerizing visuals
 * [Windows Store](https://www.microsoft.com/store/apps/9NDCVH0VCWJN)
 #### Other
 * [Source code](https://github.com/projectM-visualizer/projectm/)
-* [LV2 + VST2 audio plugin](https://github.com/DISTRHO/ProM/)
+* [LV2, VST2 and VST3 audio plugin](https://github.com/DISTRHO/ProM/)
 * [Qt5](https://www.qt.io/)-based [PulseAudio](https://www.freedesktop.org/wiki/Software/PulseAudio/) and JACK desktop apps in [source code](https://github.com/projectM-visualizer/projectm/)
 * [ALSA, XMMS, Winamp, JACK](https://sourceforge.net/projects/projectm/files/) (source, unmaintained)
 
