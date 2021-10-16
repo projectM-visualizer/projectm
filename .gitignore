@@ -58,3 +58,6 @@ src/libprojectM/build/
 # CLion
 cmake-build-*
 .idea
+
+# Visual Studio Code
+.vscode/
