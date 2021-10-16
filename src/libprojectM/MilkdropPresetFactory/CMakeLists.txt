@@ -50,6 +50,7 @@ target_link_libraries(MilkdropPresetFactory
         PUBLIC
         GLM::GLM
         ${PROJECTM_OPENGL_LIBRARIES}
+        ${CMAKE_DL_LIBS}
         )
 
 set_target_properties(MilkdropPresetFactory PROPERTIES

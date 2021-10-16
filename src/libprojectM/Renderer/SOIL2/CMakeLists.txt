@@ -29,6 +29,7 @@ target_include_directories(SOIL2
 target_link_libraries(SOIL2
         PUBLIC
         ${PROJECTM_OPENGL_LIBRARIES}
+        ${CMAKE_DL_LIBS}
         )
         
 set_target_properties(SOIL2 PROPERTIES

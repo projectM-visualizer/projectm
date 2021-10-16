@@ -100,6 +100,7 @@ target_link_libraries(projectM_main
         GLM::GLM
         PUBLIC
         ${PROJECTM_OPENGL_LIBRARIES}
+        ${CMAKE_DL_LIBS}
         )
 
 include(GenerateExportHeader)
