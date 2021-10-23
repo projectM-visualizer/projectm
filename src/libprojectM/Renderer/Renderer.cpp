@@ -858,27 +858,28 @@ void Renderer::debugWriteMainTextureToFile() const {
 		static const std::string prefix{"frame_texture_contents-"};
 		const auto prefixLen = prefix.size();
 		constexpr auto fileNameMaxLength = 150;
+		constexpr auto fileExtensionLength = 4;
 		char fileNameBuffer[fileNameMaxLength];
 		std::memcpy(fileNameBuffer, prefix.data(), prefixLen);
 		auto t = std::time(nullptr);
 		auto tm = *std::localtime(&t);
-		const auto bytes_written = std::strftime(fileNameBuffer + prefixLen, fileNameMaxLength - prefixLen, "%Y-%m-%d-%H:%M:%S", &tm);
-		const auto offset = prefixLen + bytes_written;
+		const auto bytesWritten = std::strftime(fileNameBuffer + prefixLen, fileNameMaxLength - prefixLen, "%Y-%m-%d-%H:%M:%S", &tm);
+		const auto offset = prefixLen + bytesWritten;
 		const auto spaceLeft = fileNameMaxLength - offset;
-		std::snprintf(fileNameBuffer + offset, spaceLeft-4, "%d.bmp", frameNumber);
+		std::snprintf(fileNameBuffer + offset, spaceLeft - fileExtensionLength, "%d.bmp", frameNumber);
 		stbi_write_bmp( fileNameBuffer, width, height, 4, data);
 	};
 
 	glGenFramebuffers(1, &fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mainTexture->texID, 0);
-	auto data_size = mainTexture->width * mainTexture->height * 4;
-	GLubyte* pixels = new GLubyte[data_size];
+	auto dataSize = mainTexture->width * mainTexture->height * 4;
+	GLubyte* pixels = new GLubyte[dataSize];
 	glReadPixels(0, 0, mainTexture->width, mainTexture->height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glDeleteFramebuffers(1, &fbo);
 	safeWriteFile(totalframes, pixels, mainTexture->width, mainTexture->height);
-	delete pixels;
+	delete[] pixels;
 }
 
 void Renderer::setToastMessage(const std::string& theValue)

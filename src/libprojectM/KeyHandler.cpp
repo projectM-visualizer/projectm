@@ -311,7 +311,7 @@ void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode
             renderer->studio = !renderer->studio;
 	    case PROJECTM_K_i:
 	        break;
-		case PROJECTM_K_d:	// d stand for write DEBUG output.
+		case PROJECTM_K_d:	// d stands for write DEBUG output.
 			renderer->writeNextFrameToFile = true;
 			break;
 	    case PROJECTM_K_RETURN:
