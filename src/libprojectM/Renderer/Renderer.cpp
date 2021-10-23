@@ -7,6 +7,9 @@
 #include "MilkdropWaveform.hpp"
 #include <iostream>
 #include <algorithm>
+#include <cstdio>
+#include <cstring>
+#include <sys/select.h>
 #include <sys/stat.h>
 #include <cassert>
 #include "omptl/omptl"
@@ -16,6 +19,7 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
+#include "stb_image_write.h"
 
 using namespace std::chrono;
 
@@ -411,6 +415,11 @@ void Renderer::FinishPass1()
 	draw_title_to_texture();
 
 	textureManager->updateMainTexture();
+	if(writeNextFrameToFile) {
+		debugWriteMainTextureToFile();
+		writeNextFrameToFile = false;
+    }
+
 }
 
 void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineContext)
@@ -837,6 +846,40 @@ void Renderer::deleteSearchText()
 	if (m_searchText.length() >= 1) {
 		m_searchText = m_searchText.substr(0, m_searchText.size() - 1);
 	}
+}
+
+
+
+void Renderer::debugWriteMainTextureToFile() const {
+	GLuint fbo;
+	auto mainTexture = textureManager->getMainTexture();
+
+	const auto safeWriteFile = [](const auto frameNumber, auto data, const auto width, const auto height) {
+		static const std::string prefix{"frame_texture_contents-"};
+		const auto prefixLen = prefix.size();
+		constexpr auto fileNameMaxLength = 150;
+		constexpr auto fileExtensionLength = 4;
+		char fileNameBuffer[fileNameMaxLength];
+		std::memcpy(fileNameBuffer, prefix.data(), prefixLen);
+		auto t = std::time(nullptr);
+		auto tm = *std::localtime(&t);
+		const auto bytesWritten = std::strftime(fileNameBuffer + prefixLen, fileNameMaxLength - prefixLen, "%Y-%m-%d-%H:%M:%S", &tm);
+		const auto offset = prefixLen + bytesWritten;
+		const auto spaceLeft = fileNameMaxLength - offset;
+		std::snprintf(fileNameBuffer + offset, spaceLeft - fileExtensionLength, "%d.bmp", frameNumber);
+		stbi_write_bmp( fileNameBuffer, width, height, 4, data);
+	};
+
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mainTexture->texID, 0);
+	auto dataSize = mainTexture->width * mainTexture->height * 4;
+	GLubyte* pixels = new GLubyte[dataSize];
+	glReadPixels(0, 0, mainTexture->width, mainTexture->height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDeleteFramebuffers(1, &fbo);
+	safeWriteFile(totalframes, pixels, mainTexture->width, mainTexture->height);
+	delete[] pixels;
 }
 
 void Renderer::setToastMessage(const std::string& theValue)
