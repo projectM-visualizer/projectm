@@ -86,6 +86,7 @@ public:
   bool correction;
 
   bool noSwitch;
+  bool writeNextFrameToFile;
 
   struct preset {
     int id;
@@ -123,7 +124,7 @@ public:
 
   Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL, const std::string& datadir = "");
   ~Renderer();
-  
+
   void RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderFrameOnlyPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderFrameOnlyPass2(const Pipeline &pipeline, const PipelineContext &pipelineContext,int xoffset,int yoffset,int eye);
@@ -146,7 +147,7 @@ public:
   }
 
   void setHelpText(const std::string& theValue) {
-		m_helpText = theValue; 
+		m_helpText = theValue;
   }
 
   std::string helpText() const {
@@ -154,7 +155,7 @@ public:
   }
 
   void setFPS(const int &theValue) {
-		m_fps = std::to_string(theValue); 
+		m_fps = std::to_string(theValue);
   }
 
   std::string fps() const {
@@ -172,13 +173,14 @@ public:
   void touchDestroy(float x, float y);
   void touchDestroyAll();
   bool touchedWaveform(float x, float y, std::size_t i);
-  
+
   void setToastMessage(const std::string& theValue);
   std::string getSearchText() const;
   void setSearchText(const std::string& theValue);
   void resetSearchText();
   void deleteSearchText();
-
+  /// Writes the contents of current mainTexture in TextureManager to a bmp file
+  void debugWriteMainTextureToFile() const;
   std::string toastMessage() const {
     return m_toastMessage;
   }
