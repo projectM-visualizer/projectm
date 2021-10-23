@@ -16,6 +16,7 @@
 #include <iostream>
 #include <chrono>
 #include <ctime>
+#include "stb_image_write.h"
 
 using namespace std::chrono;
 
@@ -411,6 +412,10 @@ void Renderer::FinishPass1()
 	draw_title_to_texture();
 
 	textureManager->updateMainTexture();
+	if(writeNextFrameToFile) {
+		debugWriteMainTextureToFile();
+    }
+
 }
 
 void Renderer::Pass2(const Pipeline& pipeline, const PipelineContext& pipelineContext)
@@ -837,6 +842,23 @@ void Renderer::deleteSearchText()
 	if (m_searchText.length() >= 1) {
 		m_searchText = m_searchText.substr(0, m_searchText.size() - 1);
 	}
+}
+
+void Renderer::debugWriteMainTextureToFile() const {
+	GLuint fbo;
+	auto mainTexture = textureManager->getMainTexture();
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mainTexture->texID, 0);
+	auto data_size = mainTexture->width * mainTexture->height * 4;
+	GLubyte* pixels = new GLubyte[data_size];
+	glReadPixels(0, 0, mainTexture->width, mainTexture->height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+	std::stringstream ss;
+	ss << "texture_contents" << this->totalframes << ".bmp";
+	auto textureFileName = ss.str();
+	stbi_write_bmp( textureFileName.c_str(), mainTexture->width, mainTexture->height, 4, pixels );
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glDeleteFramebuffers(1, &fbo);
 }
 
 void Renderer::setToastMessage(const std::string& theValue)
