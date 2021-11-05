@@ -16,6 +16,7 @@ target_link_libraries(NativePresetFactory
         PUBLIC
         GLM::GLM
         ${PROJECTM_OPENGL_LIBRARIES}
+        ${CMAKE_DL_LIBS}
         )
         
 set_target_properties(NativePresetFactory PROPERTIES
