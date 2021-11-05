@@ -5,7 +5,7 @@ add_library(projectM_shared SHARED
 
         $<TARGET_OBJECTS:projectM_main>
         $<TARGET_OBJECTS:MilkdropPresetFactory>
-        $<TARGET_OBJECTS:NativePresetFactory>
+        $<$<TARGET_EXISTS:NativePresetFactory>:$<TARGET_OBJECTS:NativePresetFactory>>
         $<TARGET_OBJECTS:Renderer>
         $<TARGET_OBJECTS:hlslparser>
         $<TARGET_OBJECTS:SOIL2>
@@ -76,4 +76,4 @@ install(TARGETS projectM_shared
         COMPONENT Runtime
         )
 
-set(EXPORT_SHARED_LIB_TARGET projectM_shared)
+list(APPEND EXPORTED_TARGETS projectM_shared)

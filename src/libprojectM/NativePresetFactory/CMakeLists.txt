@@ -1,3 +1,7 @@
+if(NOT ENABLE_NATIVE_PRESETS)
+    return()
+endif()
+
 add_library(NativePresetFactory OBJECT
         MilkdropCompatability.hpp
         NativePreset.hpp
@@ -22,3 +26,5 @@ target_link_libraries(NativePresetFactory
 set_target_properties(NativePresetFactory PROPERTIES
         FOLDER libprojectM
         )
+
+set(EXPORTED_TARGETS ${EXPORTED_TARGETS} NativePresetFactory PARENT_SCOPE)
