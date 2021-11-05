@@ -9,14 +9,10 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
-#include <sys/select.h>
-#include <sys/stat.h>
 #include <cassert>
-#include "omptl/omptl"
 #include "omptl/omptl_algorithm"
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <iostream>
 #include <chrono>
 #include <ctime>
 #include "stb_image_write.h"
