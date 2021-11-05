@@ -30,6 +30,18 @@ target_link_libraries(SOIL2
         PUBLIC
         ${PROJECTM_OPENGL_LIBRARIES}
         )
+
+if(USE_GLES)
+    target_compile_definitions(SOIL2
+            PRIVATE
+            SOIL_GLES3
+            SOIL_NO_EGL
+            )
+    target_link_libraries(SOIL2
+            PUBLIC
+            ${CMAKE_DL_LIBS}
+            )
+endif()
         
 set_target_properties(SOIL2 PROPERTIES
         FOLDER libprojectM

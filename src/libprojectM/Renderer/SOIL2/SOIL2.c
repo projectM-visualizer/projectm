@@ -41,6 +41,13 @@
 	#include <EGL/egl.h>
 #endif
 
+#if defined( SOIL_GLES3 )
+    #include <GLES3/gl3.h>
+    #include <GLES3/gl3ext.h>
+
+	#define APIENTRY GL_APIENTRY
+#endif
+
 #if defined( SOIL_GLES2 )
 	#ifdef SOIL_PLATFORM_IOS
 		#include <OpenGLES/ES2/gl.h>
@@ -216,12 +223,12 @@ void * SOIL_GL_GetProcAddress(const char *proc)
 
 #if defined( SOIL_PLATFORM_IOS )
 	func = dlsym( RTLD_DEFAULT, proc );
-#elif defined( SOIL_GLES2 ) || defined( SOIL_GLES1 )
+#elif defined( SOIL_GLES2 ) || defined( SOIL_GLES1 ) || defined( SOIL_GLES3 )
 	#ifndef SOIL_NO_EGL
 		func = eglGetProcAddress( proc );
 	#else
 		func = NULL;
-	#endif
+    #endif
 #elif defined( SOIL_PLATFORM_WIN32 )
 	func =  wglGetProcAddress( proc );
 
