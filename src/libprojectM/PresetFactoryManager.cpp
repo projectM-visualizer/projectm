@@ -10,17 +10,16 @@
 //
 //
 #include "PresetFactoryManager.hpp"
-
-#ifndef DISABLE_MILKDROP_PRESETS
 #include "MilkdropPresetFactory/MilkdropPresetFactory.hpp"
-#endif
 
-#ifndef DISABLE_NATIVE_PRESETS
+#ifdef ENABLE_NATIVE_PRESETS
 #include "NativePresetFactory/NativePresetFactory.hpp"
 #endif
 
+#include "config.h"
 #include "Common.hpp"
 #include <sstream>
+
 PresetFactoryManager::PresetFactoryManager() : _gx(0), _gy(0), initialized(false) {}
 
 PresetFactoryManager::~PresetFactoryManager() {
@@ -45,13 +44,11 @@ void PresetFactoryManager::initialize(int gx, int gy) {
 	}
 	  
 	PresetFactory * factory;
-	
-	#ifndef DISABLE_MILKDROP_PRESETS
+
 	factory = new MilkdropPresetFactory(_gx, _gy);
 	registerFactory(factory->supportedExtensions(), factory);		
-	#endif
-	
-	#ifndef DISABLE_NATIVE_PRESETS
+
+	#ifdef ENABLE_NATIVE_PRESETS
 	factory = new NativePresetFactory();
 	registerFactory(factory->supportedExtensions(), factory);
 	#endif

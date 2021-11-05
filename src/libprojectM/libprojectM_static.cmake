@@ -5,7 +5,7 @@ add_library(projectM_static STATIC
 
         $<TARGET_OBJECTS:projectM_main>
         $<TARGET_OBJECTS:MilkdropPresetFactory>
-        $<TARGET_OBJECTS:NativePresetFactory>
+        $<$<TARGET_EXISTS:NativePresetFactory>:$<TARGET_OBJECTS:NativePresetFactory>>
         $<TARGET_OBJECTS:Renderer>
         $<TARGET_OBJECTS:hlslparser>
         $<TARGET_OBJECTS:SOIL2>
@@ -71,7 +71,7 @@ install(TARGETS projectM_static
         COMPONENT Runtime
         )
 
-set(EXPORT_SHARED_LIB_TARGET projectM_static)
+list(APPEND EXPORTED_TARGETS projectM_static)
 
 
 # pkg-config export, only supports static library on UNIX systems.
