@@ -43,7 +43,7 @@ cmake_dependent_option(ENABLE_SHARED_LINKING "Link all built UI applications aga
 option(ENABLE_DOXYGEN "Build and install Doxygen source code documentation in PROJECTM_DATADIR_PATH/docs." OFF)
 option(ENABLE_CXX_INTERFACE "Enable exporting all C++ symbols, not only the C API, in the shared library. Warning: This is not very portable." OFF)
 option(ENABLE_PRESETS "Build and install bundled presets" ON)
-option(ENABLE_NATIVE_PRESETS "Build and install native libraries written in C/C++" OFF)
+option(ENABLE_NATIVE_PRESETS "Build and install native preset loading support and preset libraries written in C/C++" OFF)
 option(ENABLE_TESTING "Build and install the projectM test suite" OFF)
 option(ENABLE_EMSCRIPTEN "Build for web with emscripten" OFF)
 cmake_dependent_option(ENABLE_SDL "Enable SDL2 support" ON "NOT ENABLE_EMSCRIPTEN;NOT ENABLE_TESTING" ON)

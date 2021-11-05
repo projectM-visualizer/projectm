@@ -28,6 +28,15 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
             )
 endif()
 
+# List of targets used in export().
+# Optional libraries will be added to the list as configured in the build options.
+set(EXPORTED_TARGETS
+        MilkdropPresetFactory
+        Renderer
+        hlslparser
+        SOIL2
+        )
+
 add_subdirectory(MilkdropPresetFactory)
 add_subdirectory(NativePresetFactory)
 add_subdirectory(Renderer)
@@ -147,13 +156,7 @@ endif()
 
 # For use from a local projectM build tree (without installing)
 export(TARGETS
-        MilkdropPresetFactory
-        NativePresetFactory
-        Renderer
-        hlslparser
-        SOIL2
-        ${EXPORT_STATIC_LIB_TARGET}
-        ${EXPORT_SHARED_LIB_TARGET}
+        ${EXPORTED_TARGETS}
         NAMESPACE libprojectM::
         FILE projectM-exports.cmake
         )
