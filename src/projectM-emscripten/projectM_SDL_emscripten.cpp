@@ -5,32 +5,31 @@
  */
 
 #include <math.h>
-#include <projectM.hpp>
+#include <projectM.h>
 
-#ifdef __APPLE__
-#include <OpenGL/gl.h>
-#include "SDL.h"
-#elif EMSCRIPTEN
 #include <emscripten.h>
 #include <GL/gl.h>
 #include <SDL.h>
-#endif
+
+#include <string>
+
+#include <dirent.h>
 
 const float FPS = 60;
 
 typedef struct {
-    projectM *pm;
+    projectm_handle pm;
     SDL_Window *win;
     SDL_Renderer *rend;
     bool done;
-    projectM::Settings settings;
+    projectm_settings settings;
     SDL_AudioDeviceID audioInputDevice;
 } projectMApp;
 
 projectMApp app;
 
-int selectAudioInput(projectMApp *app) {
-    int i, count = SDL_GetNumAudioDevices(0);  // param=isCapture (not yet functional)
+int selectAudioInput(projectMApp *application) {
+    int i, count = SDL_GetNumAudioDevices(1);
 
     if (! count) {
         fprintf(stderr, "No audio input capture devices detected\n");
@@ -93,19 +92,15 @@ void renderFrame() {
     }
 
     /** Add the waveform data */
-    app.pm->pcm()->addPCM16(pcm_data);
+    projectm_pcm_add_16bit_2ch_512(app.pm, pcm_data);
 
     glClearColor( 0.0, 0.5, 0.0, 0.0 );
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    app.pm->renderFrame();
+    projectm_render_frame(app.pm);
     glFlush();
 
-    #if SDL_MAJOR_VERSION==2
-        SDL_RenderPresent(app.rend);
-    #elif SDL_MAJOR_VERSION==1
-        SDL_GL_SwapBuffers();
-    #endif
+    SDL_RenderPresent(app.rend);
 }
 
 int main( int argc, char *argv[] ) {
@@ -133,23 +128,15 @@ int main( int argc, char *argv[] ) {
     // SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
     // SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
-    #if SDL_MAJOR_VERSION==2
-        app.win = SDL_CreateWindow("SDL Fun Party Time", 50, 50, width, height, 0);
-        app.rend = SDL_CreateRenderer(app.win, 0, SDL_RENDERER_ACCELERATED);
-        if (! app.rend) {
-            fprintf(stderr, "Failed to create renderer: %s\n", SDL_GetError());
-            return PROJECTM_ERROR;
-        }
-        SDL_SetWindowTitle(app.win, "SDL Fun Party Time");
-        printf("SDL init version 2\n");
-    #elif SDL_MAJOR_VERSION==1
-        screen = SDL_SetVideoMode(width, height, 32, SDL_OPENGL | SDL_DOUBLEBUF);
-        printf("SDL init version 1\n");
-        if (! screen) {
-            fprintf(stderr, "Failed to create renderer with SDL_SetVideoMode(): %s\n", SDL_GetError());
-            return PROJECTM_ERROR;
-        }
-    #endif
+    app.win = SDL_CreateWindow("SDL Fun Party Time", 50, 50, width, height, 0);
+    app.rend = SDL_CreateRenderer(app.win, 0, SDL_RENDERER_ACCELERATED);
+    if (! app.rend) {
+        fprintf(stderr, "Failed to create renderer: %s\n", SDL_GetError());
+        return 1;
+    }
+    SDL_SetWindowTitle(app.win, "SDL Fun Party Time");
+    printf("SDL init version 2\n");
+
 
     #ifdef PANTS
     if ( fsaa ) {
@@ -159,34 +146,28 @@ int main( int argc, char *argv[] ) {
         printf( "SDL_GL_MULTISAMPLESAMPLES: requested %d, got %d\n", fsaa, value );
     }
     #endif
-
-    app.settings.meshX = 48;
-    app.settings.meshY = 32;
+    app.settings.mesh_x = 48;
+    app.settings.mesh_y = 32;
     app.settings.fps   = FPS;
-    app.settings.textureSize = 2048;  // idk?
-    app.settings.windowWidth = width;
-    app.settings.windowHeight = height;
-    app.settings.smoothPresetDuration = 3; // seconds
-    app.settings.presetDuration = 5; // seconds
-    app.settings.beatSensitivity = 0.8;
-    app.settings.aspectCorrection = 1;
-    app.settings.easterEgg = 0; // ???
-    app.settings.shuffleEnabled = 1;
-    app.settings.softCutRatingsEnabled = 1; // ???
-#ifdef EMSCRIPTEN
-    app.settings.presetURL = "presets";
-#else
-    app.settings.presetURL = "presets_tryptonaut";
-    app.settings.menuFontURL = "fonts/Vera.ttf";
-    app.settings.titleFontURL = "fonts/Vera.ttf";
-#endif
+    app.settings.texture_size = 2048;  // idk?
+    app.settings.window_width = width;
+    app.settings.window_height = height;
+    app.settings.soft_cut_duration = 3; // seconds
+    app.settings.preset_duration = 5; // seconds
+    app.settings.beat_sensitivity = 0.8;
+    app.settings.aspect_correction = 1;
+    app.settings.easter_egg = 0; // ???
+    app.settings.shuffle_enabled = 1;
+    app.settings.soft_cut_ratings_enabled = 1; // ???
+    app.settings.preset_url = projectm_alloc_string(8);
+    strncpy(app.settings.preset_url, "presets", 8);
 
     // init projectM
-    app.pm = new projectM(app.settings);
+    app.pm = projectm_create_settings(&(app.settings), PROJECTM_FLAG_NONE);
     printf("init projectM\n");
-    app.pm->selectRandom(true);
+    projectm_select_random_preset(app.pm, true);
     printf("select random\n");
-    app.pm->projectM_resetGL(width, height);
+    projectm_set_window_size(app.pm, width, height);
     printf("resetGL\n");
 
     // Allocate a new a stream given the current directory name
@@ -195,17 +176,19 @@ int main( int argc, char *argv[] ) {
     {
         printf("error opening /\n");
     } else {
-		
+
 		struct dirent * dir_entry;
 		while ((dir_entry = readdir(m_dir)) != NULL)
 		{
-			printf("%s\n", dir_entry->d_name);			
+			printf("%s\n", dir_entry->d_name);
 		}
 	}
 
-
-    for(int i = 0; i < app.pm->getPlaylistSize(); i++) {
-        printf("%d\t%s\n", i, app.pm->getPresetName(i).c_str());
+    auto playlistSize = projectm_get_playlist_size(app.pm);
+    for(unsigned int i = 0; i < playlistSize; i++) {
+        auto presetName = projectm_get_preset_name(app.pm, i);
+        printf("%u\t%s\n", i, presetName);
+        projectm_free_string(presetName);
     }
 
     // mainloop. non-emscripten version here for comparison/testing
@@ -224,5 +207,5 @@ int main( int argc, char *argv[] ) {
     }
 #endif
 
-    return PROJECTM_SUCCESS;
+    return 0;
 }

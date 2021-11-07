@@ -43,7 +43,6 @@
 
 #if defined( SOIL_GLES3 )
     #include <GLES3/gl3.h>
-    #include <GLES3/gl3ext.h>
 
 	#define APIENTRY GL_APIENTRY
 #endif

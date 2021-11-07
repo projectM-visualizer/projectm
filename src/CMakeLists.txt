@@ -1,5 +1,6 @@
 add_subdirectory(libprojectM)
 add_subdirectory(NativePresets)
+add_subdirectory(projectM-emscripten)
 add_subdirectory(projectM-qt)
 add_subdirectory(projectM-jack)
 add_subdirectory(projectM-libvisual)
