@@ -1,4 +1,4 @@
-if(NOT ENABLE_SDL)
+if(NOT ENABLE_SDL OR NOT ENABLE_SDL_UI)
     return()
 endif()
 
