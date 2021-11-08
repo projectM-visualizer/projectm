@@ -44,7 +44,7 @@
 #include <SDL2/SDL.h>
 #endif
 
-inline projectMEvent sdl2pmEvent( SDL_Event *event ) { \
+inline projectMEvent sdl2pmEvent(const SDL_Event *event ) { \
 							
     switch ( event->type ) { \
         case SDL_WINDOWEVENT_RESIZED:
