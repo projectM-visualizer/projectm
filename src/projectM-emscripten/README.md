@@ -2,11 +2,7 @@
 
 This application is a sample entry point for the emscripten-built version of projectM.
 
-It's a very basic application, only displaying the "idle" preset. Missing features:
-
-- No audio capture capabilities, only renders fake random audio.
-- Input/hotkey support is not implemented.
-- No presets are packaged into the virtual file system.
+It's a very basic application, only displaying the "idle" preset. No presets are currently packaged into the virtual file system.
 
 ## Limitations
 

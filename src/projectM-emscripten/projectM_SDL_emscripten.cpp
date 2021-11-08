@@ -6,6 +6,7 @@
 
 #include <math.h>
 #include <projectM.h>
+#include <sdltoprojectM.h>
 
 #include <emscripten.h>
 #include <GL/gl.h>
@@ -17,85 +18,185 @@
 
 const float FPS = 60;
 
-typedef struct {
-    projectm_handle pm;
-    SDL_Window *win;
-    SDL_Renderer *rend;
-    bool done;
+struct projectMApp
+{
+    projectm_handle pm{ nullptr };
+    SDL_Window* win{ nullptr };
+    SDL_Renderer* rend{ nullptr };
+    bool done{ false };
     projectm_settings settings;
-    SDL_AudioDeviceID audioInputDevice;
-} projectMApp;
+    SDL_AudioDeviceID audioInputDevice{ 0 };
+    int audioInputDevicesCount{ 0 };
+    int audioChannelsCount{ 0 };
+    bool isFullscreen{ false };
+};
 
 projectMApp app;
 
-int selectAudioInput(projectMApp *application) {
-    int i, count = SDL_GetNumAudioDevices(1);
-
-    if (! count) {
-        fprintf(stderr, "No audio input capture devices detected\n");
-        return 0;
+void audioInputCallbackF32(void* userdata, unsigned char* stream, int len)
+{
+    if (app.audioChannelsCount == 1)
+    {
+        projectm_pcm_add_float_1ch_data(app.pm, reinterpret_cast<float*>(stream), len / sizeof(float));
     }
-
-    printf("count: %d\n", count);
-    for (i = 0; i < count; ++i) {
-        printf("Audio device %d: %s\n", i, SDL_GetAudioDeviceName(i, 0));
+    else if (app.audioChannelsCount == 2)
+    {
+        projectm_pcm_add_float_2ch_data(app.pm, reinterpret_cast<float*>(stream), len / sizeof(float));
     }
-
-    return 1;
+    else
+    {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Multichannel audio not supported");
+    }
 }
 
-void renderFrame() {
-    int i;
-    short pcm_data[2][512];
+bool selectAudioInput(projectMApp* application)
+{
+    app.audioInputDevicesCount = SDL_GetNumAudioDevices(1);
+
+    if (!app.audioInputDevicesCount)
+    {
+        fprintf(stderr, "No audio input capture devices detected. Faking audio using random data.\n");
+        return false;
+    }
+
+    printf("count: %d\n", app.audioInputDevicesCount);
+    for (int i = 0; i < app.audioInputDevicesCount; ++i)
+    {
+        printf("Audio device %d: %s\n", i, SDL_GetAudioDeviceName(i, 1));
+    }
+
+    SDL_AudioSpec want, have;
+
+    SDL_zero(want);
+    want.freq = 44100;
+    want.format = AUDIO_F32;
+    want.channels = 2;
+    want.samples = projectm_pcm_get_max_samples();
+    want.callback = &audioInputCallbackF32;
+
+    // Start with first device
+    app.audioInputDevice = SDL_OpenAudioDevice(SDL_GetAudioDeviceName(0, true), true, &want, &have, 0);
+    app.audioChannelsCount = have.channels;
+
+    if (have.channels == 1 || have.channels == 2)
+    {
+        SDL_PauseAudioDevice(app.audioInputDevice, false);
+        printf("Audio device specs: Channels=%d, Samplerate=%d, Format=%d\n", have.channels, have.freq, have.format);
+    }
+    return true;
+}
+
+void keyHandler(const SDL_Event& sdl_evt)
+{
+    projectMEvent evt;
+    projectMKeycode key;
+    projectMModifier mod;
+    auto sdl_mod = static_cast<SDL_Keymod>(sdl_evt.key.keysym.mod);
+    SDL_Keycode sdl_keycode = sdl_evt.key.keysym.sym;
+    bool keyMod = false;
+
+    // Left or Right Gui or Left Ctrl
+    if (sdl_mod & KMOD_LGUI || sdl_mod & KMOD_RGUI || sdl_mod & KMOD_LCTRL)
+    {
+        keyMod = true;
+    }
+
+    // handle keyboard input (for our app first, then projectM)
+    switch (sdl_keycode)
+    {
+        case SDLK_BACKSPACE:
+            projectm_delete_search_text(app.pm);
+            break;
+        case SDLK_RETURN:
+            if (!projectm_is_text_input_active(app.pm, false))
+            {
+                SDL_StartTextInput();
+            }
+            break;
+        case SDLK_ESCAPE:
+            if (projectm_is_text_input_active(app.pm, false))
+            {
+                SDL_StopTextInput();
+            }
+            break;
+        case SDLK_f:
+            if (keyMod)
+            {
+                app.isFullscreen = !app.isFullscreen;
+                SDL_SetWindowFullscreen(app.win, app.isFullscreen ? SDL_WINDOW_FULLSCREEN : 0);
+                return; // handled
+            }
+            break;
+
+        case SDLK_SPACE:
+            if (!projectm_is_text_input_active(app.pm, true))
+            {
+                projectm_lock_preset(app.pm, !projectm_is_preset_locked(app.pm));
+            }
+            break;
+
+    }
+
+    // translate into projectM codes and perform default projectM handler
+    evt = sdl2pmEvent(&sdl_evt);
+    mod = sdl2pmModifier(sdl_mod);
+    key = sdl2pmKeycode(sdl_keycode, sdl_mod);
+    projectm_key_handler(app.pm, evt, key, mod);
+}
+
+void renderFrame()
+{
     SDL_Event evt;
 
     SDL_PollEvent(&evt);
-    switch (evt.type) {
+    switch (evt.type)
+    {
         case SDL_KEYDOWN:
-            // ...
+            keyHandler(evt);
+            break;
+        case SDL_TEXTINPUT:
+            if (projectm_is_text_input_active(app.pm, true))
+            {
+                projectm_set_search_text(app.pm, evt.text.text);
+                projectm_populate_preset_menu(app.pm);
+            }
             break;
         case SDL_QUIT:
             app.done = true;
             break;
     }
 
+    if (app.audioInputDevicesCount == 0)
+    {
+        short pcm_data[2][512];
 
-//        projectMEvent evt;
-//        projectMKeycode key;
-//        projectMModifier mod;
-//
-//        /** Process SDL events */
-//        SDL_Event event;
-//        while ( SDL_PollEvent( &event ) ) {
-//            /** Translate into projectM codes and process */
-//            evt = sdl2pmEvent( event );
-//            key = sdl2pmKeycode( event.key.keysym.sym );
-//            mod = sdl2pmModifier( (SDLMod)event.key.keysym.mod );
-//            if ( evt == PROJECTM_KEYDOWN ) {
-//                pm->key_handler( evt, key, mod );
-//              }
-//          }
+        /** Produce some fake PCM data to stuff into projectM */
+        for (int i = 0; i < 512; i++)
+        {
+            if (i % 2 == 0)
+            {
+                pcm_data[0][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+                pcm_data[1][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+            }
+            else
+            {
+                pcm_data[0][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+                pcm_data[1][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+            }
+            if (i % 2 == 1)
+            {
+                pcm_data[0][i] = -pcm_data[0][i];
+                pcm_data[1][i] = -pcm_data[1][i];
+            }
+        }
 
-    /** Produce some fake PCM data to stuff into projectM */
-    for ( i = 0 ; i < 512 ; i++ ) {
-        if ( i % 2 == 0 ) {
-            pcm_data[0][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
-            pcm_data[1][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
-          } else {
-            pcm_data[0][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
-            pcm_data[1][i] = (float)( rand() / ( (float)RAND_MAX ) * (pow(2,14) ) );
-          }
-        if ( i % 2 == 1 ) {
-            pcm_data[0][i] = -pcm_data[0][i];
-            pcm_data[1][i] = -pcm_data[1][i];
-          }
+        /** Add the waveform data */
+        projectm_pcm_add_16bit_2ch_512(app.pm, pcm_data);
     }
 
-    /** Add the waveform data */
-    projectm_pcm_add_16bit_2ch_512(app.pm, pcm_data);
 
-    glClearColor( 0.0, 0.5, 0.0, 0.0 );
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(0.0, 0.5, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     projectm_render_frame(app.pm);
     glFlush();
@@ -103,53 +204,25 @@ void renderFrame() {
     SDL_RenderPresent(app.rend);
 }
 
-int main( int argc, char *argv[] ) {
-    app.done = 0;
-
-    int width = 784,
-        height = 784;
-
+int main(int argc, char* argv[])
+{
+    int width = 1024;
+    int height = 1024;
 
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
-    // get an audio input device
-    if (! selectAudioInput(&app)) {
-        fprintf(stderr, "Failed to open audio input device\n");
-        return 1;
-    }
-
-    // SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
-    // SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
-    // SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );
-    // SDL_GL_SetAttribute( SDL_GL_ACCUM_RED_SIZE, 8 );
-    // SDL_GL_SetAttribute( SDL_GL_ACCUM_GREEN_SIZE, 8 );
-    // SDL_GL_SetAttribute( SDL_GL_ACCUM_BLUE_SIZE, 8 );
-    // SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, 8 );
-    // SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
-    // SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-
-    app.win = SDL_CreateWindow("SDL Fun Party Time", 50, 50, width, height, 0);
+    app.win = SDL_CreateWindow("projectM", 50, 50, width, height, 0);
     app.rend = SDL_CreateRenderer(app.win, 0, SDL_RENDERER_ACCELERATED);
-    if (! app.rend) {
+    if (!app.rend)
+    {
         fprintf(stderr, "Failed to create renderer: %s\n", SDL_GetError());
         return 1;
     }
-    SDL_SetWindowTitle(app.win, "SDL Fun Party Time");
-    printf("SDL init version 2\n");
 
-
-    #ifdef PANTS
-    if ( fsaa ) {
-        SDL_GL_GetAttribute( SDL_GL_MULTISAMPLEBUFFERS, &value );
-        printf( "SDL_GL_MULTISAMPLEBUFFERS: requested 1, got %d\n", value );
-        SDL_GL_GetAttribute( SDL_GL_MULTISAMPLESAMPLES, &value );
-        printf( "SDL_GL_MULTISAMPLESAMPLES: requested %d, got %d\n", fsaa, value );
-    }
-    #endif
     app.settings.mesh_x = 48;
     app.settings.mesh_y = 32;
-    app.settings.fps   = FPS;
-    app.settings.texture_size = 2048;  // idk?
+    app.settings.fps = FPS;
+    app.settings.texture_size = 1024;
     app.settings.window_width = width;
     app.settings.window_height = height;
     app.settings.soft_cut_duration = 3; // seconds
@@ -170,42 +243,37 @@ int main( int argc, char *argv[] ) {
     projectm_set_window_size(app.pm, width, height);
     printf("resetGL\n");
 
+    // get an audio input device
+    if (!selectAudioInput(&app))
+    {
+        fprintf(stderr, "Failed to open audio input device\n");
+        return 1;
+    }
+
     // Allocate a new a stream given the current directory name
-    DIR * m_dir;
-    if ((m_dir = opendir("/")) == NULL)
+    DIR* m_dir;
+    if ((m_dir = opendir("/")) == nullptr)
     {
         printf("error opening /\n");
-    } else {
-
-		struct dirent * dir_entry;
-		while ((dir_entry = readdir(m_dir)) != NULL)
-		{
-			printf("%s\n", dir_entry->d_name);
-		}
-	}
+    }
+    else
+    {
+        struct dirent* dir_entry;
+        while ((dir_entry = readdir(m_dir)) != nullptr)
+        {
+            printf("%s\n", dir_entry->d_name);
+        }
+    }
 
     auto playlistSize = projectm_get_playlist_size(app.pm);
-    for(unsigned int i = 0; i < playlistSize; i++) {
+    for (unsigned int i = 0; i < playlistSize; i++)
+    {
         auto presetName = projectm_get_preset_name(app.pm, i);
         printf("%u\t%s\n", i, presetName);
         projectm_free_string(presetName);
     }
 
-    // mainloop. non-emscripten version here for comparison/testing
-#ifdef EMSCRIPTEN
     emscripten_set_main_loop(renderFrame, 0, 0);
-#else
-    // standard main loop
-    const Uint32 frame_delay = 1000/FPS;
-    Uint32 last_time = SDL_GetTicks();
-    while (! app.done) {
-        renderFrame(&app);
-        Uint32 elapsed = SDL_GetTicks() - last_time;
-        if (elapsed < frame_delay)
-            SDL_Delay(frame_delay - elapsed);
-        last_time = SDL_GetTicks();
-    }
-#endif
 
     return 0;
 }
