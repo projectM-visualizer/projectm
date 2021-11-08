@@ -2,7 +2,7 @@
 
 This application is a sample entry point for the emscripten-built version of projectM.
 
-It's a very basic application, only displaying the "idle" preset. No presets are currently packaged into the virtual file system.
+It's a very basic application without many features.
 
 ## Limitations
 
@@ -35,5 +35,6 @@ emcmake ..
 emmake
 ```
 
-If the build was successful, you will find the projectM_SDL_emscripten.html, .js and .wasm files in
-the `cmake-build-emscripten/src/projectM-emscripten`directory.
+If the build was successful, you will find the projectM_SDL_emscripten.html, .data, .js and .wasm files in
+the `cmake-build-emscripten/src/projectM-emscripten`directory. The .data file includes all presets as a virtual
+filesystem.

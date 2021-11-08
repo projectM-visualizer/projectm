@@ -14,8 +14,6 @@
 
 #include <string>
 
-#include <dirent.h>
-
 const float FPS = 60;
 
 struct projectMApp
@@ -144,6 +142,17 @@ void keyHandler(const SDL_Event& sdl_evt)
     projectm_key_handler(app.pm, evt, key, mod);
 }
 
+void presetSwitchedEvent(bool isHardCut, unsigned int index, void* context)
+{
+    auto presetName = projectm_get_preset_name(app.pm, index);
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "Displaying preset: %s\n", presetName);
+
+    std::string newTitle = "projectM ➫ " + std::string(presetName);
+    projectm_free_string(presetName);
+
+    SDL_SetWindowTitle(app.win, newTitle.c_str());
+}
+
 void renderFrame()
 {
     SDL_Event evt;
@@ -220,57 +229,33 @@ int main(int argc, char* argv[])
     }
 
     app.settings.mesh_x = 48;
-    app.settings.mesh_y = 32;
+    app.settings.mesh_y = 48;
     app.settings.fps = FPS;
     app.settings.texture_size = 1024;
     app.settings.window_width = width;
     app.settings.window_height = height;
     app.settings.soft_cut_duration = 3; // seconds
-    app.settings.preset_duration = 5; // seconds
-    app.settings.beat_sensitivity = 0.8;
+    app.settings.preset_duration = 30; //seconds
+    app.settings.beat_sensitivity = 0.9;
     app.settings.aspect_correction = 1;
     app.settings.easter_egg = 0; // ???
     app.settings.shuffle_enabled = 1;
     app.settings.soft_cut_ratings_enabled = 1; // ???
     app.settings.preset_url = projectm_alloc_string(8);
-    strncpy(app.settings.preset_url, "presets", 8);
+    strncpy(app.settings.preset_url, "/presets", 8);
 
     // init projectM
     app.pm = projectm_create_settings(&(app.settings), PROJECTM_FLAG_NONE);
-    printf("init projectM\n");
     projectm_select_random_preset(app.pm, true);
-    printf("select random\n");
     projectm_set_window_size(app.pm, width, height);
-    printf("resetGL\n");
+    projectm_set_preset_switched_event_callback(app.pm, &presetSwitchedEvent, nullptr);
+    printf("projectM initialized.\n");
 
     // get an audio input device
     if (!selectAudioInput(&app))
     {
         fprintf(stderr, "Failed to open audio input device\n");
         return 1;
-    }
-
-    // Allocate a new a stream given the current directory name
-    DIR* m_dir;
-    if ((m_dir = opendir("/")) == nullptr)
-    {
-        printf("error opening /\n");
-    }
-    else
-    {
-        struct dirent* dir_entry;
-        while ((dir_entry = readdir(m_dir)) != nullptr)
-        {
-            printf("%s\n", dir_entry->d_name);
-        }
-    }
-
-    auto playlistSize = projectm_get_playlist_size(app.pm);
-    for (unsigned int i = 0; i < playlistSize; i++)
-    {
-        auto presetName = projectm_get_preset_name(app.pm, i);
-        printf("%u\t%s\n", i, presetName);
-        projectm_free_string(presetName);
     }
 
     emscripten_set_main_loop(renderFrame, 0, 0);
