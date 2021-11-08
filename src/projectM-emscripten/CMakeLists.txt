@@ -13,3 +13,8 @@ target_link_libraries(projectM_SDL_emscripten
         PRIVATE
         projectM::libprojectM
         )
+
+target_link_options(projectM_SDL_emscripten
+        PRIVATE
+        "SHELL:--preload-file ${CMAKE_SOURCE_DIR}/presets@/presets"
+        )
