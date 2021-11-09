@@ -14,7 +14,7 @@
 
 #include <string>
 
-const float FPS = 60;
+const int FPS = 60;
 
 struct projectMApp
 {
@@ -25,6 +25,7 @@ struct projectMApp
     projectm_settings settings;
     SDL_AudioDeviceID audioInputDevice{ 0 };
     int audioInputDevicesCount{ 0 };
+    int audioInputDeviceIndex{ 0 };
     int audioChannelsCount{ 0 };
     bool isFullscreen{ false };
 };
@@ -41,14 +42,18 @@ void audioInputCallbackF32(void* userdata, unsigned char* stream, int len)
     {
         projectm_pcm_add_float_2ch_data(app.pm, reinterpret_cast<float*>(stream), len / sizeof(float));
     }
-    else
-    {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Multichannel audio not supported");
-    }
 }
 
-bool selectAudioInput(projectMApp* application)
+bool selectAudioInput(projectMApp* application, int audioDeviceIndex)
 {
+    // Valid audio devices in SDL have an ID of at least 2.
+    if (app.audioInputDevice >= 2)
+    {
+        SDL_PauseAudioDevice(app.audioInputDevice, true);
+        SDL_CloseAudioDevice(app.audioInputDevice);
+        app.audioInputDevice = 0;
+    }
+
     app.audioInputDevicesCount = SDL_GetNumAudioDevices(1);
 
     if (!app.audioInputDevicesCount)
@@ -57,11 +62,18 @@ bool selectAudioInput(projectMApp* application)
         return false;
     }
 
-    printf("count: %d\n", app.audioInputDevicesCount);
     for (int i = 0; i < app.audioInputDevicesCount; ++i)
     {
         printf("Audio device %d: %s\n", i, SDL_GetAudioDeviceName(i, 1));
     }
+
+    // Just wrap to 0 if index is out of range.
+    if (audioDeviceIndex < 0 || audioDeviceIndex >= app.audioInputDevicesCount)
+    {
+        audioDeviceIndex = 0;
+    }
+
+    app.audioInputDeviceIndex = audioDeviceIndex;
 
     SDL_AudioSpec want, have;
 
@@ -72,15 +84,24 @@ bool selectAudioInput(projectMApp* application)
     want.samples = projectm_pcm_get_max_samples();
     want.callback = &audioInputCallbackF32;
 
+    std::string audioDeviceName = SDL_GetAudioDeviceName(audioDeviceIndex, true);
+
     // Start with first device
-    app.audioInputDevice = SDL_OpenAudioDevice(SDL_GetAudioDeviceName(0, true), true, &want, &have, 0);
+    app.audioInputDevice = SDL_OpenAudioDevice(audioDeviceName.c_str(), true, &want, &have, 0);
     app.audioChannelsCount = have.channels;
 
-    if (have.channels == 1 || have.channels == 2)
+    if (app.audioChannelsCount == 1 || app.audioChannelsCount == 2)
     {
         SDL_PauseAudioDevice(app.audioInputDevice, false);
+
         printf("Audio device specs: Channels=%d, Samplerate=%d, Format=%d\n", have.channels, have.freq, have.format);
+        projectm_set_toast_message(app.pm, audioDeviceName.c_str());
     }
+    else
+    {
+        fprintf(stderr, "Audio input capture device has invalid number of channels. Faking audio data.\n");
+    }
+
     return true;
 }
 
@@ -105,23 +126,34 @@ void keyHandler(const SDL_Event& sdl_evt)
         case SDLK_BACKSPACE:
             projectm_delete_search_text(app.pm);
             break;
+
         case SDLK_RETURN:
             if (!projectm_is_text_input_active(app.pm, false))
             {
                 SDL_StartTextInput();
             }
             break;
+
         case SDLK_ESCAPE:
             if (projectm_is_text_input_active(app.pm, false))
             {
                 SDL_StopTextInput();
             }
             break;
+
         case SDLK_f:
             if (keyMod)
             {
                 app.isFullscreen = !app.isFullscreen;
                 SDL_SetWindowFullscreen(app.win, app.isFullscreen ? SDL_WINDOW_FULLSCREEN : 0);
+                return; // handled
+            }
+            break;
+
+        case SDLK_i:
+            if (keyMod)
+            {
+                selectAudioInput(&app, app.audioInputDeviceIndex + 1);
                 return; // handled
             }
             break;
@@ -153,6 +185,27 @@ void presetSwitchedEvent(bool isHardCut, unsigned int index, void* context)
     SDL_SetWindowTitle(app.win, newTitle.c_str());
 }
 
+void generateRandomAudioData()
+{
+    short pcm_data[2][512];
+
+    for (int i = 0; i < 512; i++)
+    {
+        pcm_data[0][i] = static_cast<short>((static_cast<double>(rand()) / (static_cast<double>(RAND_MAX)) *
+                                             (pow(2, 14))));
+        pcm_data[1][i] = static_cast<short>((static_cast<double>(rand()) / (static_cast<double>(RAND_MAX)) *
+                                             (pow(2, 14))));
+
+        if (i % 2 == 1)
+        {
+            pcm_data[0][i] = -pcm_data[0][i];
+            pcm_data[1][i] = -pcm_data[1][i];
+        }
+    }
+
+    projectm_pcm_add_16bit_2ch_512(app.pm, pcm_data);
+}
+
 void renderFrame()
 {
     SDL_Event evt;
@@ -163,6 +216,7 @@ void renderFrame()
         case SDL_KEYDOWN:
             keyHandler(evt);
             break;
+
         case SDL_TEXTINPUT:
             if (projectm_is_text_input_active(app.pm, true))
             {
@@ -170,39 +224,16 @@ void renderFrame()
                 projectm_populate_preset_menu(app.pm);
             }
             break;
+
         case SDL_QUIT:
             app.done = true;
             break;
     }
 
-    if (app.audioInputDevicesCount == 0)
+    if (app.audioChannelsCount > 2 || app.audioChannelsCount < 1)
     {
-        short pcm_data[2][512];
-
-        /** Produce some fake PCM data to stuff into projectM */
-        for (int i = 0; i < 512; i++)
-        {
-            if (i % 2 == 0)
-            {
-                pcm_data[0][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
-                pcm_data[1][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
-            }
-            else
-            {
-                pcm_data[0][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
-                pcm_data[1][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
-            }
-            if (i % 2 == 1)
-            {
-                pcm_data[0][i] = -pcm_data[0][i];
-                pcm_data[1][i] = -pcm_data[1][i];
-            }
-        }
-
-        /** Add the waveform data */
-        projectm_pcm_add_16bit_2ch_512(app.pm, pcm_data);
+        generateRandomAudioData();
     }
-
 
     glClearColor(0.0, 0.5, 0.0, 0.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -237,10 +268,10 @@ int main(int argc, char* argv[])
     app.settings.soft_cut_duration = 3; // seconds
     app.settings.preset_duration = 30; //seconds
     app.settings.beat_sensitivity = 0.9;
-    app.settings.aspect_correction = 1;
+    app.settings.aspect_correction = true;
     app.settings.easter_egg = 0; // ???
-    app.settings.shuffle_enabled = 1;
-    app.settings.soft_cut_ratings_enabled = 1; // ???
+    app.settings.shuffle_enabled = true;
+    app.settings.soft_cut_ratings_enabled = true; // ???
     app.settings.preset_url = projectm_alloc_string(8);
     strncpy(app.settings.preset_url, "/presets", 8);
 
@@ -252,7 +283,7 @@ int main(int argc, char* argv[])
     printf("projectM initialized.\n");
 
     // get an audio input device
-    if (!selectAudioInput(&app))
+    if (!selectAudioInput(&app, 0))
     {
         fprintf(stderr, "Failed to open audio input device\n");
         return 1;
