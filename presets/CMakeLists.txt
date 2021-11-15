@@ -11,6 +11,7 @@ if(ENABLE_PRESETS)
             presets_stock
             presets_tryptonaut
             presets_yin
+            textures
             DESTINATION "${PROJECTM_DATADIR_PATH}/presets"
             COMPONENT Presets
             )
