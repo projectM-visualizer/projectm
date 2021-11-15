@@ -455,6 +455,7 @@ const Intrinsic _intrinsic[] =
 
         INTRINSIC_FLOAT1_FUNCTION( "floor" ),
         INTRINSIC_FLOAT1_FUNCTION( "ceil" ),
+        INTRINSIC_FLOAT1_FUNCTION( "round" ),
         INTRINSIC_FLOAT1_FUNCTION( "frac" ),
 
         INTRINSIC_FLOAT2_FUNCTION( "fmod" ),
