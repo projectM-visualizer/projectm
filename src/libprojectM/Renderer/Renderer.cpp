@@ -21,173 +21,19 @@ using namespace std::chrono;
 
 class Preset;
 
-#ifdef USE_TEXT_MENU
-
-
-void Renderer::drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale,
-                        int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f, bool highlightable = false)
-{
-	drawText(this->title_font, string, x, y, scale, horizontalAlignment, verticalAlignment, r, g, b, a, highlightable);
-}
-
-void Renderer::drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale,
-	int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f, bool highlightable = false)
-{
-	// Initialize glText
-	gltInit();
-
-	// Creating text
-	text = gltCreateText();
-	// Begin text drawing (this for instance calls glUseProgram)
-	gltBeginDraw();
-
-	// Draw text transparently first.
-	gltColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-	gltSetText(text, string);
-	// Where horizontal is either:
-	// - GLT_LEFT (default)
-	// - GLT_CENTER
-	// - GLT_RIGHT
-
-	// Where vertical is either:
-	// - GLT_TOP (default)
-	// - GLT_CENTER
-	// - GLT_BOTTOM
-	gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
-	GLfloat textWidth = gltGetTextWidth(text, scale);
-	
-	float windowWidth = vw;
-	if (horizontalAlignment == GLT_LEFT) {
-		// if left aligned factor in X offset
-		windowWidth = vw - x;
-	}
-
-	// if our window is greater than the text width, there is no overflow so let's display it normally.
-	if (windowWidth > textWidth)
-	{
-		// redraw without transparency
-		if (textHighlightable(highlightable))
-		{ 
-			drawText(text, string, searchText().c_str(), x, y, scale, horizontalAlignment, verticalAlignment, r, g, b, a, highlightable);
-		} else {
-			gltColor(r, g, b, a);
-			gltSetText(text, string);
-			gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
-		}
-	} else {
-		// if the text is greater than the window width, we have a problem.
-		std::string substring(string);
-		while (textWidth > windowWidth) {
-			substring.pop_back();
-			string = substring.c_str();
-			gltSetText(text, string);
-
-			gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
-			textWidth = gltGetTextWidth(text, scale);
-		}
-		// if it's not multi-line then append a ...
-		if (substring.find("\n") == -1) {
-			substring.pop_back();
-			substring.pop_back();
-			substring.pop_back();
-			substring += "...";
-		}
-
-		if (textHighlightable(highlightable))
-		{
-			drawText(text, substring.c_str(), searchText().c_str(), x, y, scale, horizontalAlignment, verticalAlignment, r, g, b, a, highlightable);
-		} else {
-			string = substring.c_str();
-			// Redraw now that the text fits.
-			gltColor(r, g, b, a);
-			gltSetText(text, string);
-			gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
-		}
-	}
-
-	// Finish drawing text
-	gltEndDraw();
-
-	// Deleting text
-	gltDeleteText(text);
-
-	// Destroy glText
-	gltTerminate();
-}
-
-// draw text with search term a/k/a needle & highlight text
-void Renderer::drawText(GLTtext* text, const char* string, const char* needle, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment = GLT_LEFT, int verticalAlignment = GLT_TOP, float r = 1.0f, float b  = 1.0f, float g  = 1.0f, float a  = 1.0f, bool highlightable = false) {
-	int offset = x;
-	std::string str_find = string;
-	std::string str_needle = needle;
-	for( size_t pos = 0; ; pos += str_find.length() ) {
-		// find search term
-		pos = caseInsensitiveSubstringFind(str_find, str_needle);
-
-		std::string needle_found = str_needle;
-		if (pos != std::string::npos) {
-			needle_found = str_find.substr(pos, str_needle.length());
-		}
-
-		// draw everything normal, up to search term.
-		gltColor(r, g, b, a);
-		gltSetText(text, str_find.substr(0,pos).c_str());
-		gltDrawText2DAligned(text, x, y, scale, horizontalAlignment, verticalAlignment);
-
-		// highlight search term
-		GLfloat textWidth = gltGetTextWidth(text, scale);
-		offset = offset + textWidth;
-		gltColor(1.0f, 0.0f, 1.0f, 1.0f);
-		gltSetText(text, needle_found.c_str());
-		gltDrawText2DAligned(text, offset, y, scale, horizontalAlignment, verticalAlignment);
-
-		// draw rest of name, normally
-		textWidth = gltGetTextWidth(text, scale);
-		offset = offset + textWidth;
-		gltColor(r, g, b, a);
-		gltSetText(text, str_find.substr(pos+needle_found.length(), str_find.length()).c_str());
-		gltDrawText2DAligned(text, offset, y, scale, horizontalAlignment, verticalAlignment);
-		break; // first search hit is useful enough.
-	}
-}
-
-bool Renderer::textHighlightable(bool highlightable) {
-	if (highlightable && showsearch && searchText().length() > 1)
-		return true;
-	return false;
-}
-
-#endif /** USE_TEXT_MENU */
-
 Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetect, std::string _presetURL,
-                   std::string _titlefontURL, std::string _menufontURL, const std::string& datadir) :
-	mesh(gx, gy), m_presetName("None"), m_datadir(datadir), vw(width), vh(height),
-	title_fontURL(_titlefontURL), menu_fontURL(_menufontURL), presetURL(_presetURL)
+                   std::string _titlefontURL, std::string _menufontURL, const std::string& datadir)
+    : mesh(gx, gy)
+    , beatDetect(_beatDetect)
+    , m_presetName("None")
+    , m_datadir(datadir)
+    , vw(width)
+    , vh(height)
+    , title_fontURL(std::move(_titlefontURL))
+    , menu_fontURL(std::move(_menufontURL))
+    , presetURL(std::move(_presetURL))
+    , m_menuText(width)
 {
-	this->totalframes = 1;
-	this->lastTimeFPS = nowMilliseconds();
-	this->currentTimeFPS = nowMilliseconds();
-	this->lastTimeToast = nowMilliseconds();
-	this->currentTimeToast = nowMilliseconds();
-	this->noSwitch = false;
-	this->showfps = false;
-	this->showtoast = false;
-	this->showtitle = false;
-	this->showpreset = false;
-	this->showhelp = false;
-	this->showsearch = false;
-	this->showmenu = false;
-	this->showstats = false;
-	this->studio = false;
-	this->m_activePresetID = 0;
-	this->realfps = 0;
-	/* Set up the v xoffset and vy offset to 0 which is normal Only used for VR */
-	this->vstartx = 0;
-	this->vstarty = 0;
-
-	this->drawtitle = 0;
-
 	// This is the default help menu for applications that have not defined any custom menu.
 	const char* defaultHelpMenu = "\n"
 		"F1: This help menu""\n"
@@ -202,20 +48,8 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 
 	this->setHelpText(defaultHelpMenu);
 
-	//this->title = "Unknown";
-
-	/** Other stuff... */
-	this->correction = true;
-
-	/// @bug put these on member init list
-	this->textureManager = nullptr;
-	this->beatDetect = _beatDetect;
-
-	textureRenderToTexture = 0;
-
 	int size = (mesh.height - 1) * mesh.width * 4 * 2;
 	p = static_cast<float *>(wipemalloc(size * sizeof(float)));
-
 
 	for (int j = 0; j < mesh.height - 1; j++)
 	{
@@ -607,6 +441,10 @@ Renderer::~Renderer()
 	glDeleteVertexArrays(1, &m_vao_CompositeOutput);
 
 	glDeleteTextures(1, &textureRenderToTexture);
+
+#ifdef USE_TEXT_MENU
+    MenuText::CleanUp();
+#endif
 }
 
 void Renderer::reset(int w, int h)
@@ -636,8 +474,6 @@ void Renderer::reset(int w, int h)
 
 	m_fAspectX = (texsizeY > texsizeX) ? static_cast<float>(texsizeX) / static_cast<float>(texsizeY) : 1.0f;
 	m_fAspectY = (texsizeX > texsizeY) ? static_cast<float>(texsizeY) / static_cast<float>(texsizeX) : 1.0f;
-	m_fInvAspectX = 1.0f / m_fAspectX;
-	m_fInvAspectY = 1.0f / m_fAspectY;
 
 	InitCompositeShaderVertex();
 
@@ -656,6 +492,8 @@ void Renderer::reset(int w, int h)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 #ifdef USE_TEXT_MENU
+    m_menuText.SetViewportWidth(w);
+
 	// When the renderer resets, do a check to find out what the maximum number of lines we could display are.
 	int r_textMenuPageSize = 0;
 	int yOffset = textMenuYOffset;
@@ -904,7 +742,9 @@ void Renderer::draw_search()
 	std::string search = "Search: ";
 	search = search + searchText();
 
-	drawText(search.c_str(), 30, 20, 2.5);
+    m_menuText.DrawBegin();
+    m_menuText.Draw(search, 30, 20, 2.5);
+    m_menuText.DrawEnd();
 #endif /** USE_TEXT_MENU */
 }
 
@@ -912,7 +752,9 @@ void Renderer::draw_title()
 {
 #ifdef USE_TEXT_MENU
 	// TODO: investigate possible banner text for GUI
+    // m_menuText.DrawBegin();
 	// drawText(title_font, this->title.c_str(), 10, 20, 2.5);
+    // m_menuText.DrawEnd();
 #endif /** USE_TEXT_MENU */
 }
 
@@ -925,24 +767,34 @@ void Renderer::draw_menu()
 	float alpha = 1.0;
 	if (this->showsearch) // if search input is up, slightly dim preset menu
 		alpha = 0.82f;
+    m_menuText.DrawBegin();
 	for (auto& it : m_presetList) { // loop over preset buffer
 		if (menu_yOffset  < windowHeight - textMenuLineHeight) { // if we are not at the bottom of the screen, display preset name.
 			if (it.id == m_activePresetID) { // if this is the active preset, add some color.
-				drawText(it.name.c_str(), menu_xOffset, menu_yOffset , 1.5, GLT_LEFT, 0, 1.0, 0.1, 0.1, 1.0, true);
+				m_menuText.Draw(it.name, menu_xOffset, menu_yOffset , 1.5,
+                                MenuText::HorizontalAlignment::Left,
+                                MenuText::VerticalAlignment::Top,
+                                1.0, 0.1, 0.1, 1.0, true, m_searchText);
 			}
 			else {
-				drawText(it.name.c_str(), menu_xOffset, menu_yOffset , 1.5, GLT_LEFT, 0, 1.0, 1.0, 1.0, alpha, true);
+				m_menuText.Draw(it.name, menu_xOffset, menu_yOffset , 1.5,
+                                MenuText::HorizontalAlignment::Left,
+                                MenuText::VerticalAlignment::Top,
+                                1.0, 1.0, 1.0, alpha, true, m_searchText);
 			}
 		}
 		menu_yOffset = menu_yOffset + textMenuLineHeight; // increase line y offset so we can track if we reached the bottom of the screen.
 	}
+    m_menuText.DrawEnd();
 #endif /** USE_TEXT_MENU */
 }
 
 void Renderer::draw_preset()
 {
 #ifdef USE_TEXT_MENU
-	drawText(this->presetName().c_str(), 30, 20, 2.5);
+    m_menuText.DrawBegin();
+	m_menuText.Draw(this->presetName(), 30, 20, 2.5);
+    m_menuText.DrawEnd();
 #endif /** USE_TEXT_MENU */
 }
 
@@ -950,8 +802,9 @@ void Renderer::draw_help()
 {
 #ifdef USE_TEXT_MENU
 	// TODO: match winamp/milkdrop bindings
-	drawText(this->helpText().c_str(), 30, 20, 2.5);
-
+    m_menuText.DrawBegin();
+	m_menuText.Draw(this->helpText(), 30, 20, 2.5);
+    m_menuText.DrawEnd();
 #endif /** USE_TEXT_MENU */
 }
 
@@ -988,7 +841,9 @@ void Renderer::draw_stats()
 	stats += "Preset:""\n";
 	stats += "Warp Shader: " + warpShader + "\n";
 	stats += "Composite Shader: " + compShader + "\n";
-	drawText(stats.c_str(), 30, 20, 2.5);
+    m_menuText.DrawBegin();
+	m_menuText.Draw(stats, 30, 20, 2.5);
+    m_menuText.DrawEnd();
 #endif /** USE_TEXT_MENU */
 }
 
@@ -996,14 +851,19 @@ void Renderer::draw_stats()
 void Renderer::draw_fps()
 {
 #ifdef USE_TEXT_MENU
-	drawText(this->fps().c_str(), 30, 20, 2.5);
+    m_menuText.DrawBegin();
+	m_menuText.Draw(this->fps(), 30, 20, 2.5);
+    m_menuText.DrawEnd();
 #endif /** USE_TEXT_MENU */
 }
 
 void Renderer::draw_toast()
 {
 #ifdef USE_TEXT_MENU
-	drawText(this->toastMessage().c_str(), (vw/2), (vh/2), 2.5, GLT_CENTER, GLT_CENTER);
+    m_menuText.DrawBegin();
+	m_menuText.Draw(this->toastMessage(), (vw/2), (vh/2), 2.5,
+                    MenuText::HorizontalAlignment::Center, MenuText::VerticalAlignment::Center);
+    m_menuText.DrawEnd();
 #endif /** USE_TEXT_MENU */
 
 	this->currentTimeToast = nowMilliseconds();
