@@ -3,29 +3,25 @@
 
 #include "BeatDetect.hpp"
 #include "Common.hpp"
-#include <string>
-#include <set>
-#include "projectM-opengl.h"
-#include "Pipeline.hpp"
-#include "PerPixelMesh.hpp"
-#include "Transformation.hpp"
 #include "MilkdropWaveform.hpp"
+#include "PerPixelMesh.hpp"
+#include "Pipeline.hpp"
 #include "ShaderEngine.hpp"
-#include <iostream>
+#include "Transformation.hpp"
+#include "projectM-opengl.h"
+#ifdef USE_TEXT_MENU
+#include "MenuText.h"
+#endif /** USE_TEXT_MENU */
+
 #include <chrono>
 #include <ctime>
+#include <iostream>
 #include <list>
+#include <set>
+#include <string>
+
 
 using namespace std::chrono;
-
-#ifdef USE_TEXT_MENU
-
-#define GLT_IMPLEMENTATION
-#define GLT_DEBUG_PRINT
-#define __gl_h_  // gltext doesn't do a great job of noticing we included gl
-#include "gltext.h"
-
-#endif /** USE_TEXT_MENU */
 
 #define TOAST_TIME 2
 #define TOUCH_TIME 5
@@ -62,66 +58,68 @@ public:
         touchg(double) Green
         toucha(double) Alpha
     */
-  float touchx;
-  float touchy;
-  int touchp; // Touch Pressure.
-  int touchtype; // Touch Type
-  double touchr;
-  double touchg;
-  double touchb;
-  double toucha;
+  float touchx{ 0.0 };
+  float touchy{ 0.0 };
+  int touchp{ 0 }; // Touch Pressure.
+  int touchtype{ 0 }; // Touch Type
+  double touchr{ 0.0 };
+  double touchg{ 0.0 };
+  double touchb{ 0.0 };
+  double toucha{ 0.0 };
   
-  bool showtoast;
-  bool showfps;
-  bool showtitle;
-  bool showpreset;
-  bool showhelp;
-  bool showsearch;
-  bool showmenu;
-  bool showstats;
+  bool showtoast{ false };
+  bool showfps{ false };
+  bool showtitle{ false };
+  bool showpreset{ false };
+  bool showhelp{ false };
+  bool showsearch{ false };
+  bool showmenu{ false };
+  bool showstats{ false };
 
-  bool shuffletrack;
+  bool shuffletrack{ false };
 
-  bool studio;
-  bool correction;
+  bool studio{ false };
+  bool correction{ true };
 
-  bool noSwitch;
+  bool noSwitch{ false };
   bool writeNextFrameToFile;
 
   struct preset {
     int id;
-    std::string name, presetPack;
+    std::string name;
+    std::string presetPack;
   };
 
 
-  milliseconds lastTimeFPS;
-  milliseconds currentTimeFPS;
+  milliseconds lastTimeFPS{ nowMilliseconds() };
+  milliseconds currentTimeFPS{ nowMilliseconds() };
 
-  milliseconds lastTimeToast;
-  milliseconds currentTimeToast;
+  milliseconds lastTimeToast{ nowMilliseconds() };
+  milliseconds currentTimeToast{ nowMilliseconds() };
 
   std::string m_helpText;
 
   std::vector<MilkdropWaveform> waveformList;
 
-  int totalframes;
-  float realfps;
+  int totalframes{ 1 };
+  float realfps{ 0.0 };
 
   std::string title;
-  int m_activePresetID;
+  int m_activePresetID{ 0 };
   std::vector<preset> m_presetList;
 
-  int drawtitle;
-  int texsizeX;
-  int texsizeY;
-  int textMenuPageSize = 10;
-  int textMenuLineHeight = 25;
-  int textMenuYOffset = 60;
-  float m_fAspectX;
-  float m_fAspectY;
-  float m_fInvAspectX;
-  float m_fInvAspectY;
+  int drawtitle{ 0 };
+  int texsizeX{ 0 };
+  int texsizeY{ 0 };
+  int textMenuPageSize{ 10 };
+  int textMenuLineHeight{ 25 };
+  int textMenuYOffset{ 60 };
+  float m_fAspectX{ 1.0 };
+  float m_fAspectY{ 1.0 };
+  float m_fInvAspectX{ 1.0 };
+  float m_fInvAspectY{ 1.0 };
 
+  Renderer() = delete;
   Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL, const std::string& datadir = "");
   ~Renderer();
 
@@ -192,20 +190,10 @@ public:
 private:
 
   PerPixelMesh mesh;
-  BeatDetect *beatDetect;
-  TextureManager *textureManager;
-  Pipeline* currentPipe;
-  TimeKeeper *timeKeeperFPS;
-  TimeKeeper *timeKeeperToast;
+  BeatDetect *beatDetect{ nullptr };
+  TextureManager *textureManager{ nullptr };
+  Pipeline* currentPipe{ nullptr };
 
-#ifdef USE_TEXT_MENU
-  // draw text with search term a/k/a needle & highlight text
-  void drawText(GLTtext* text, const char* string, const char* needle, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment, int verticalAlignment, float r, float b, float g, float a, bool highlightable);
-  void drawText(GLTtext* text, const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment, int verticalAlignment, float r, float b, float g, float a, bool highlightable);
-  void drawText(const char* string, GLfloat x, GLfloat y, GLfloat scale, int horizontalAlignment, int verticalAlignment, float r, float b, float g, float a, bool highlightable);
-  bool textHighlightable(bool highlightable);
-
-#endif /** USE_TEXT_MENU */
   RenderContext renderContext;
   //per pixel equation variables
   ShaderEngine shaderEngine;
@@ -215,16 +203,25 @@ private:
   std::string m_toastMessage;
   std::string m_searchText;
 
-  float* p;
+  float* p{ nullptr };
 
-  int vstartx; /* view start x position - normally 0, but could be different if doing a subset of the window - like
-                  for virtual reality */
-  int vstarty; /* view start y position - normally 0, but could be different if doing a subset of the window - like
-                  for virtual reality */
-	       /* these are currently set only for rendering to the screen, not to the textbuffer */
-		  
-  int vw;
-  int vh;
+  /**
+   * @brief View start x position
+   *
+   * <p>Normally 0, but could be different if doing a subset of the window - like for virtual reality</p>
+   */
+  int vstartx{ 0 };
+
+  /**
+   * @brief View start y position
+   *
+   * <p>Normally 0, but could be different if doing a subset of the window - like
+   * for virtual reality. These are currently set only for rendering to the screen, not to the textbuffer.</p>
+  */
+  int vstarty{ 0 };
+
+  int vw{ 0 };
+  int vh{ 0 };
 
   float aspect;
 
@@ -232,19 +229,17 @@ private:
   std::string menu_fontURL;
   std::string presetURL;
 
-  GLuint m_vbo_Interpolation;
-  GLuint m_vao_Interpolation;
+  GLuint m_vbo_Interpolation{ 0 };
+  GLuint m_vao_Interpolation{ 0 };
 
-  GLuint m_vbo_CompositeOutput;
-  GLuint m_vao_CompositeOutput;
+  GLuint m_vbo_CompositeOutput{ 0 };
+  GLuint m_vao_CompositeOutput{ 0 };
 
-  GLuint m_vbo_CompositeShaderOutput;
-  GLuint m_vao_CompositeShaderOutput;
+  GLuint m_vbo_CompositeShaderOutput{ 0 };
+  GLuint m_vao_CompositeShaderOutput{ 0 };
 
 #ifdef USE_TEXT_MENU
-  GLTtext *title_font;
-  GLTtext *other_font;
-  GLTtext *poly_font;
+  MenuText m_menuText;
 #endif /** USE_TEXT_MENU */
 
   void SetupPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
@@ -273,7 +268,7 @@ private:
   
 int nearestPower2( int value );
 
-  GLuint textureRenderToTexture;
+  GLuint textureRenderToTexture{ 0 };
 
   void InitCompositeShaderVertex();
   float SquishToCenter(float x, float fExp);

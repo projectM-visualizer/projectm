@@ -6,31 +6,33 @@ add_library(Renderer OBJECT
         BeatDetect.hpp
         Filters.cpp
         Filters.hpp
+        MenuText.cpp
+        MenuText.h
         MilkdropWaveform.cpp
         MilkdropWaveform.hpp
+        PerPixelMesh.cpp
+        PerPixelMesh.hpp
         PerlinNoise.cpp
         PerlinNoise.hpp
         PerlinNoiseWithAlpha.cpp
         PerlinNoiseWithAlpha.hpp
-        PerPixelMesh.cpp
-        PerPixelMesh.hpp
-        PipelineContext.cpp
-        PipelineContext.hpp
         Pipeline.cpp
         Pipeline.hpp
-        Renderable.cpp
-        Renderable.hpp
-        Renderer.cpp
-        Renderer.hpp
+        PipelineContext.cpp
+        PipelineContext.hpp
         RenderItemDistanceMetric.cpp
         RenderItemDistanceMetric.hpp
         RenderItemMatcher.cpp
         RenderItemMatcher.hpp
         RenderItemMergeFunction.hpp
+        Renderable.cpp
+        Renderable.hpp
+        Renderer.cpp
+        Renderer.hpp
         Shader.cpp
+        Shader.hpp
         ShaderEngine.cpp
         ShaderEngine.hpp
-        Shader.hpp
         StaticGlShaders.cpp
         Texture.cpp
         Texture.hpp
