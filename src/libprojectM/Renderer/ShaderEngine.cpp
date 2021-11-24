@@ -110,18 +110,15 @@ bool ShaderEngine::checkCompileStatus(GLuint shader, const std::string & shaderT
     return false;
 }
 
-void ShaderEngine::setParams(const int _texsizeX, const int _texsizeY, BeatDetect *_beatDetect,
-        TextureManager *_textureManager)
+void ShaderEngine::setParams(int _texsizeX, int _texsizeY,
+                             float _aspectX, float _aspectY,
+                             BeatDetect *_beatDetect, TextureManager *_textureManager)
 {
     this->beatDetect = _beatDetect;
     this->textureManager = _textureManager;
 
-    aspectX = 1;
-    aspectY = 1;
-    if (_texsizeX > _texsizeY)
-        aspectY = (float)_texsizeY/(float)_texsizeX;
-    else
-        aspectX = (float)_texsizeX/(float)_texsizeY;
+    this->aspectX = _aspectX;
+    this->aspectY = _aspectY;
 
     this->texsizeX = _texsizeX;
     this->texsizeY = _texsizeY;
@@ -439,7 +436,7 @@ void ShaderEngine::SetupShaderVariables(GLuint program, const Pipeline &pipeline
     glUniform4f(glGetUniformLocation(program, "rand_frame"), (rand() % 100) * .01, (rand() % 100) * .01, (rand()% 100) * .01, (rand() % 100) * .01);
     glUniform4f(glGetUniformLocation(program, "rand_preset"), rand_preset[0], rand_preset[1], rand_preset[2], rand_preset[3]);
 
-    glUniform4f(glGetUniformLocation(program, "_c0"), aspectX, aspectY, 1 / aspectX, 1 / aspectY);
+    glUniform4f(glGetUniformLocation(program, "_c0"), aspectX, aspectY, 1.0f / aspectX, 1.0f / aspectY);
     glUniform4f(glGetUniformLocation(program, "_c1"), 0.0, 0.0, 0.0, 0.0);
     glUniform4f(glGetUniformLocation(program, "_c2"), time_since_preset_start_wrapped, context.fps,  context.frame, context.progress);
     glUniform4f(glGetUniformLocation(program, "_c3"), beatDetect->bass/100, beatDetect->mid/100, beatDetect->treb/100, beatDetect->vol/100);

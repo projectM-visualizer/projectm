@@ -187,6 +187,8 @@ public:
     return m_searchText;
   }
 
+  void UpdateContext(PipelineContext& context);
+
 private:
 
   PerPixelMesh mesh;

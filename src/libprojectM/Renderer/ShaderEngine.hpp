@@ -42,7 +42,9 @@ public:
     bool enableWarpShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext, const glm::mat4 & mat_ortho);
     bool enableCompositeShader(Shader &shader, const Pipeline &pipeline, const PipelineContext &pipelineContext);
     void RenderBlurTextures(const Pipeline  &pipeline, const PipelineContext &pipelineContext);
-    void setParams(const int _texsizeX, const int texsizeY, BeatDetect *beatDetect, TextureManager *_textureManager);
+    void setParams(int _texsizeX, int texsizeY,
+                   float _aspectX, float _aspectY,
+                   BeatDetect *beatDetect, TextureManager *_textureManager);
     void reset();
 
     static GLuint CompileShaderProgram(const std::string & VertexShaderCode, const std::string & FragmentShaderCode, const std::string & shaderTypeString);

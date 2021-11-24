@@ -35,6 +35,13 @@ public:
 
     float **x_mesh;
     float **y_mesh;
+
+    int pixelsx;
+    int pixelsy;
+
+    float aspectx;
+    float aspecty;
+
     float **rad_mesh;
     float **theta_mesh;
 

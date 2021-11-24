@@ -456,6 +456,12 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs& presetInputs, Pres
     load_builtin_param_int("meshx", (void*) &presetInputs.gx, P_FLAG_READONLY, 32, 96, 8, "");
     load_builtin_param_int("meshy", (void*) &presetInputs.gy, P_FLAG_READONLY, 24, 72, 6, "");
 
+    load_builtin_param_int("pixelsx", (void*) &presetInputs.pixelsx, P_FLAG_READONLY, 512, 4096, 16, "");
+    load_builtin_param_int("pixelsy", (void*) &presetInputs.pixelsy, P_FLAG_READONLY, 512, 72, 6, "");
+
+    load_builtin_param_float("aspectx", (void*) &presetInputs.aspectx, nullptr, P_FLAG_READONLY, 1.0, MAX_DOUBLE_SIZE, 1.0, "");
+    load_builtin_param_float("aspecty", (void*) &presetInputs.aspecty, nullptr, P_FLAG_READONLY, 1.0, MAX_DOUBLE_SIZE, 1.0, "");
+
     return PROJECTM_SUCCESS;
 
 }

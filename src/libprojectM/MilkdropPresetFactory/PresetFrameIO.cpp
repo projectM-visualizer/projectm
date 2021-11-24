@@ -34,6 +34,12 @@ void PresetInputs::update(const BeatDetect & music, const PipelineContext & cont
 
     this->frame = context.frame;
     this->progress = context.progress;
+
+    this->pixelsx = context.pixelsx;
+    this->pixelsy = context.pixelsy;
+
+    this->aspectx = context.aspectx;
+    this->aspecty = context.aspecty;
 }
 
 
@@ -79,6 +85,10 @@ void PresetInputs::Initialize ( int _gx, int _gy )
 	y_per_pixel = 0;
 	rad_per_pixel = 0;
 	ang_per_pixel = 0;
+    pixelsx = 512;
+    pixelsx = 512;
+    aspectx = 1.0;
+    aspecty = 1.0;
 	// ***
 
 	this->x_mesh    = alloc_mesh(gx, gy);

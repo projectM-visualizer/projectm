@@ -361,10 +361,12 @@ Pipeline * projectM::renderFrameOnlyPass1(Pipeline *pPipeline) /*pPipeline is a 
     mspf= ( int ) ( 1000.0/ ( float ) settings().fps ); //milliseconds per frame
 
     /// @bug who is responsible for updating this now?"
-    pipelineContext().time = timeKeeper->GetRunningTime();
-    pipelineContext().presetStartTime = timeKeeper->PresetTimeA();
-    pipelineContext().frame = timeKeeper->PresetFrameA();
-    pipelineContext().progress = timeKeeper->PresetProgressA();
+    auto& context = pipelineContext();
+    context.time = timeKeeper->GetRunningTime();
+    context.presetStartTime = timeKeeper->PresetTimeA();
+    context.frame = timeKeeper->PresetFrameA();
+    context.progress = timeKeeper->PresetProgressA();
+    renderer->UpdateContext(context);
 
     beatDetect->detectFromSamples();
 
