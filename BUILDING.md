@@ -1,10 +1,8 @@
 # Building projectM from source
 
-
 Suggested: use CMake. See [BUILDING-cmake.md](./BUILDING-cmake.md).
 
 This document describes the deprecated GNU Autotools setup.
-
 
 ## Quick Start (Debian / Ubuntu)
 
@@ -262,21 +260,8 @@ sudo make install
 
 ## Building on Windows
 
-### Using the provided project files
-
-Windows build bypasses the autogen/configure pipeline and uses manually created Visual Studio/MSVC project files
-in `msvc/`. See `.appveyor.yml` for command line building.
-
-Some dependencies are included verbatim (GLEW), while others leverage the NuGet ecosystem and are downloaded
-automatically (SDL2).
-
-The Visual Studio solution is quite old and unmaintained. If you experience issues importing it, try using CMake to
-generate the solution for your Visual Studio version instead.
-
-### With CMake
-
-To build the projectM library and the SDL-based standalone application, CMake can be used as on any other platform.
-Using vcpkg to pull in the build dependencies is highly recommended, as CMake can't use NuGet (NuGet pulls in
+To build the projectM library and the SDL-based standalone application, CMake must be used to create the project files
+first. Using vcpkg to pull in the build dependencies is highly recommended, as CMake can't use NuGet (NuGet pulls in
 dependencies using the project files, while CMake requires the libraries before creating the project files).
 
 #### Installing the dependencies with vcpkg
