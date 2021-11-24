@@ -1,10 +1,8 @@
 # Building projectM from source
 
-
 Suggested: use CMake. See [BUILDING-cmake.md](./BUILDING-cmake.md).
 
 This document describes the deprecated GNU Autotools setup.
-
 
 ## Quick Start (Debian / Ubuntu)
 
@@ -25,6 +23,7 @@ sudo apt install qtbase5-dev # For building Qt-based UIs
 sudo apt install llvm-dev # for using the experimental LLVM Jit
 sudo apt install libvisual-0.4-dev # To build the libvisual plug-in
 sudo apt install libjack-jackd2-dev # To build the JACK visualizer application
+sudo apt install ninja # To build projectM with Ninja instead of make
 ```
 
 ### Download the projectM sources
@@ -49,14 +48,6 @@ level, skip to the CMake part right below.
 
 Replace `/usr/local` with your preferred installation prefix.
 
-#### Configure the project using autoconf
-
-```bash
-sudo apt install autoconf automake libtool
-./autogen.sh
-./configure --prefix=/usr/local
-```
-
 #### Configure the project using CMake
 
 ```bash
@@ -66,13 +57,15 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local ..
 ```
 
+To generate Ninja scripts instead of Makefiles, add `-GNinja` to the above command.
+
 #### Build and install
 
-Independent of the method of configuration, this will build projectM and install it to /usr/local or the configured
-installation prefix set in the step before:
+These commands will build projectM and install it to /usr/local or the configured installation prefix set in the step
+before:
 
 ```bash
-make -j && sudo make install
+cmake --build . -- -j && sudo cmake --build . --target install 
 ```
 
 **Note**: You won't need to use `sudo` if the install prefix is writeable by your non-privileged user.
@@ -101,7 +94,6 @@ development files. To build projectM, both binaries and development files need t
 
 #### Only relevant for Linux distributions, FreeBSD and macOS:
 
-* **pkgconfig**: Required to find some library dependencies.
 * [**Qt5**](https://www.qt.io/): Qt cross-platform UI framework. Used to build the Pulseaudio and JACK visualizer
   applications. Requires the `Gui` and `OpenGL` component libraries/frameworks.
 * [**Pulseaudio**](https://www.freedesktop.org/wiki/Software/PulseAudio/): Sound system for POSIX platforms. Required to
@@ -109,25 +101,13 @@ development files. To build projectM, both binaries and development files need t
 * [**JACK**](https://jackaudio.org/): Real-time audio server. Required to build the JACK visualizer application.
 * [**libvisual 0.4**](http://libvisual.org/): Audio visualization library with plug-in support. Required to build the
   projectM libvisual plug-in.
-
-#### When using the classic autotools-based build system on UNIX platforms:
-
-* **GNU [automake](https://www.gnu.org/software/automake/) and [autoconf](https://www.gnu.org/software/autoconf/)**:
-  Used to create the configuration script and generate the Makefiles.
-* [**libtool**](https://www.gnu.org/software/libtool/): Optional. Used by autoconf is available.
-* [**which**](https://carlowood.github.io/which/): Determines full paths of shell executables. Should already be
-  installed by default on the majority of POSIX-compliant OSes.
-
-#### When using the new CMake-based build system:
-
 * [**CMake**](https://cmake.org/): Used to generate platform-specific build files.
 
 ### Only relevant for Windows:
 
 * [**vcpkg**](https://github.com/microsoft/vcpkg): C++ Library Manager for Windows. Optional, but recommended to install
   the aforementioned library dependencies and/or using CMake to configure the build.
-* [**NuGet**](https://www.nuget.org/): Dependency manager for .NET. Optional, but recommended when building with the
-  pre-created Visual Studio solutions.
+* [**NuGet**](https://www.nuget.org/): Dependency manager for .NET. Required to build the EyeTune app.
 * [**GLEW**](http://glew.sourceforge.net/): The OpenGL Extension Wrangler Library. Only required if using CMake to
   configure the build, the pre-created solutions use a bundled copy of GLEW.
 
@@ -217,47 +197,6 @@ by any additional arguments. CMake will pass these *unchanged and unchecked* to 
 
 ```shell
 cmake --build /path/to/build/dir --config Release -- -j 4
-```
-
-### Building with automake/autoconf
-
-projectM ships with a set of scripts to check build dependencies and configure the build according to the user's
-preferences and toolchain.
-
-**Note**: These scripts might be removed in the future in favor of using CMake as the sole build system tool on all
-platforms, so if you're planning to base new work on the projectM libraries, consider using CMake instead.
-
-The source distribution only contains templates for the configure script and other files, so these need to be generated
-first. `cd` into the top-level source directory and execute:
-
-```shell
-./autogen.sh
-```
-
-You should now have an executable `configure` script ready. This will be used to check the platform and dependencies and
-finally configure the Makefiles for the actual build. The script accepts numerous parameters to customize the build. The
-most important ones and their requirements are listed in the table below. To get a full list of available parameters,
-options and influential environment variables, run `./configure --help`.
-
-#### Important build options and their requirements:
-
-| Configure flag        | Required dependencies | Produced binary       |
-|-----------------------|-----------------------|-----------------------|
-| `--enable-sdl`        | `SDL2`                | `projectMSDL`         |
-| `--enable-pulseaudio` | `Qt5`, `Pulseaudio`   | `projectM-pulseaudio` |
-| `--enable-jack`       | `Qt5`, `JACK`         | `projectM-jack`       |
-| `--enable-threading`  | `pthreads`            |                       |
-| `--enable-llvm`       | `LLVM`                |                       |
-| `--enable-gles`       | `GLES3`               |                       |
-
-For example, to configure the project to build and install only the libprojectM libraries and the SDL-based standalone
-visualizer in the default location (`/usr/local`), run the following commands:
-
-```shell
-./configure --enable-sdl    # supply additional options here, info in Dependencies
-
-make
-sudo make install
 ```
 
 ## Building on Windows
@@ -370,22 +309,17 @@ cmake --build "<path to build dir>" --config Release
 
 ### Build using NDK for Android
 
-Install Android Studio, launch SDK Manager and install NDK
+To build projectM using the Android SDK, please refer to the official NDK docs:
 
-```sh
-./autogen.sh
-./configure-ndk
-make && make install-strip
-```
+> https://developer.android.com/ndk/guides/cmake
 
-Now you should be able to copy ./src/libprojectM/.libs/libprojectM.so and appropriate headers to projectm-android, and
-build it using Android Studio
+It is highly recommended using the latest NDK and CMake >= 3.21 for building.
 
 ### LLVM JIT
 
-There are some optimizations for parsing preset equations that leverage the LLVM JIT. You can
-try `./compile --enable--llvm` to enable them. They may not work with newer version of
-LLVM (https://github.com/projectM-visualizer/projectm/pull/360)
+There are some optimizations for parsing preset equations that leverage the LLVM JIT. You can try adding the CMake
+option `-DENABLE_LLVM=ON` to enable them. They may not work with a newer version of
+LLVM (https://github.com/projectM-visualizer/projectm/pull/360).
 
 ## libprojectM
 
@@ -395,15 +329,15 @@ LLVM (https://github.com/projectM-visualizer/projectm/pull/360)
 
 Made up of everything in `src/libprojectM/Renderer`. These files compose the `libRenderer` sub-library.
 
-#### MilkdropPresetFactory / NativePresetFactory
+#### Native Presets
 
-From their respective folders. Native presets are visualizations that are implemented in C++ instead of `.milk` preset
-files. They are completely optional. Milkdrop presets are technically optional but the whole thing is basically useless
-without them.
+These are not built by default.
 
-If you don't want native presets, and you probably don't, don't bother with them. Ideally there should be a configure
-option to disable them, probably on by default (at this time this is needed for
-autoconf: https://github.com/projectM-visualizer/projectm/issues/99).
+Native presets are visualizations that are implemented in C++ instead of `.milk` preset files. They are completely
+optional. Milkdrop presets are also technically optional but the whole thing is basically useless without them.
+
+If you don't want native presets, and you probably don't, don't bother with them. To enable loading and building these
+presets, add `-DENABLE_NATIVE_PRESETS=ON` to the CMake configuration command.
 
 ### Assets
 
