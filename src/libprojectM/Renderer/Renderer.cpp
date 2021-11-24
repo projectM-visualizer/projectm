@@ -647,7 +647,7 @@ void Renderer::reset(int w, int h)
 	}
 	textureManager = new TextureManager(presetURL, texsizeX, texsizeY, m_datadir);
 
-	shaderEngine.setParams(texsizeX, texsizeY, beatDetect, textureManager);
+	shaderEngine.setParams(texsizeX, texsizeY, m_fAspectX, m_fAspectY, beatDetect, textureManager);
 	shaderEngine.reset();
 	shaderEngine.loadPresetShaders(*currentPipe, m_presetName);
 
@@ -876,6 +876,16 @@ void Renderer::debugWriteMainTextureToFile() const {
 	glDeleteFramebuffers(1, &fbo);
 	safeWriteFile(totalframes, pixels, mainTexture->width, mainTexture->height);
 	delete[] pixels;
+}
+
+void Renderer::UpdateContext(PipelineContext& context)
+{
+    context.pixelsx = vw;
+    context.pixelsy = vh;
+
+    // It's actually the inverse of the aspect ratio.
+    context.aspectx = m_fInvAspectX;
+    context.aspecty = m_fInvAspectY;
 }
 
 void Renderer::setToastMessage(const std::string& theValue)

@@ -55,9 +55,8 @@ void Waveform::Draw(RenderContext &context)
     float *value2 = new float[samples_count];
     if (spectrum)
     {
-        // TODO support smoothing parameter for getSpectrum()
-        context.beatDetect->pcm->getSpectrum( value1, CHANNEL_0, samples_count, 1.0 );
-        context.beatDetect->pcm->getSpectrum( value2, CHANNEL_1, samples_count, 1.0 );
+        context.beatDetect->pcm->getSpectrum( value1, CHANNEL_0, samples_count, smoothing );
+        context.beatDetect->pcm->getSpectrum( value2, CHANNEL_1, samples_count, smoothing );
     }
     else
     {

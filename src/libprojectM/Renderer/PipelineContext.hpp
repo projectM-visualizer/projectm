@@ -17,7 +17,13 @@ public:
 	int   frame;
 	float progress;
 
-	PipelineContext();
+    int pixelsx;
+    int pixelsy;
+
+    float aspectx;
+    float aspecty;
+
+    PipelineContext();
 	virtual ~PipelineContext();
 };
 
