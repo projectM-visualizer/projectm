@@ -45,7 +45,7 @@ int String_FormatFloat(char * buffer, int size, float value) {
     oss.imbue(std::locale("C"));
     oss << value;
 
-    return String_Printf(buffer, size, "%s", oss.str().c_str());
+    return String_Printf(buffer, size, "float(%s)", oss.str().c_str());
 }
 
 bool String_Equal(const char * a, const char * b) {
