@@ -1,0 +1,13 @@
+[preset00]
+per_frame_1000=// spectrum vs pcm
+
+fDecay=0
+warp=0.000000
+wave_a=0
+
+// Display noise_lq texture.
+// Alpha channel is not used, but present.
+comp_1=`shader_body
+comp_2=`{
+comp_3=`ret = tex2D(sampler_fw_noise_lq, uv).xyz;
+comp_4=`}

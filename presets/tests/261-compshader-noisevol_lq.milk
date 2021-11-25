@@ -1,0 +1,13 @@
+[preset00]
+per_frame_1000=// spectrum vs pcm
+
+fDecay=0
+warp=0.000000
+wave_a=0
+
+// Display noisevol_lq texture and cycle through the cube's slices over time.
+// Alpha channel is not used, but present.
+comp_1=`shader_body
+comp_2=`{
+comp_3=`ret = tex3D(sampler_fw_noisevol_lq, float3(uv, time / 10.0)).xyz;
+comp_4=`}
