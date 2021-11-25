@@ -28,7 +28,7 @@ void Brighten::Draw(RenderContext &context)
 {
     glUseProgram(context.programID_v2f_c4f);
 
-    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
 
     glBindVertexArray(m_vaoID);
 
@@ -61,7 +61,7 @@ void Darken::Draw(RenderContext &context)
 {
     glUseProgram(context.programID_v2f_c4f);
 
-    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
 
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 
@@ -92,7 +92,7 @@ void Invert::Draw(RenderContext &context)
 
     glUseProgram(context.programID_v2f_c4f);
 
-    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
 
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 
@@ -122,7 +122,7 @@ void Solarize::Draw(RenderContext &context)
 {
     glUseProgram(context.programID_v2f_c4f);
 
-    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
 
     glVertexAttrib4f(1, 1.0, 1.0, 1.0, 1.0);
 

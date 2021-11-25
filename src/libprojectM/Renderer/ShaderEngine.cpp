@@ -38,9 +38,9 @@ ShaderEngine::ShaderEngine() : presetCompShaderLoaded(false), presetWarpShaderLo
         static_gl_shaders->GetBlurVertexShader(),
         static_gl_shaders->GetBlur2FragmentShader(), "blur2");
 
-    uniform_v2f_c4f_vertex_tranformation = glGetUniformLocation(programID_v2f_c4f, "vertex_transformation");
+    uniform_v2f_c4f_vertex_transformation = glGetUniformLocation(programID_v2f_c4f, "vertex_transformation");
     uniform_v2f_c4f_vertex_point_size = glGetUniformLocation(programID_v2f_c4f, "vertex_point_size");
-    uniform_v2f_c4f_t2f_vertex_tranformation = glGetUniformLocation(programID_v2f_c4f_t2f, "vertex_transformation");
+    uniform_v2f_c4f_t2f_vertex_transformation = glGetUniformLocation(programID_v2f_c4f_t2f, "vertex_transformation");
     uniform_v2f_c4f_t2f_frag_texture_sampler = glGetUniformLocation(programID_v2f_c4f_t2f, "texture_sampler");
 
     uniform_blur1_sampler = glGetUniformLocation(programID_blur1, "texture_sampler");
@@ -948,7 +948,7 @@ bool ShaderEngine::enableWarpShader(Shader &shader, const Pipeline &pipeline, co
 
     glUseProgram(programID_v2f_c4f_t2f);
 
-    glUniformMatrix4fv(uniform_v2f_c4f_t2f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(mat_ortho));
+    glUniformMatrix4fv(uniform_v2f_c4f_t2f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(mat_ortho));
     glUniform1i(uniform_v2f_c4f_t2f_frag_texture_sampler, 0);
 
     return false;

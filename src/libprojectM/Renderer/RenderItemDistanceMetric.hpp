@@ -9,11 +9,28 @@
 #define RenderItemDISTANCEMETRIC_H_
 
 #include "Common.hpp"
-#include "Renderable.hpp"
+#include "Shape.hpp"
 #include <limits>
 #include <functional>
 #include <map>
 
+struct TypeIdPair {
+    TypeIdPair(const std::type_info & info1, const std::type_info & info2): id1(info1.name()), id2(info2.name()) {}
+    TypeIdPair(const std::string & _id1, const std::string & _id2): id1(_id1), id2(_id2) {}
+    std::string id1;
+    std::string id2;
+    inline bool operator<(const TypeIdPair & rhs) const {
+        return this->id1 < rhs.id1 || (this->id1 == rhs.id1 && this->id2 < rhs.id2);
+    }
+
+    inline bool operator>(const TypeIdPair & rhs) const {
+        return !operator<(rhs) && !operator==(rhs);
+    }
+
+    inline bool operator==(const TypeIdPair & rhs) const {
+        return this->id1 == rhs.id1 && this->id2 == rhs.id2;
+    }
+};
 
 /// Compares two render items and returns zero if they are virtually equivalent and large values
 /// when they are dissimilar. If two render items cannot be compared, NOT_COMPARABLE_VALUE is returned.

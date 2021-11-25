@@ -9,7 +9,7 @@
 #define RenderItemMergeFunction_HPP_
 
 #include "Common.hpp"
-#include "Renderable.hpp"
+#include "Border.hpp"
 #include "Waveform.hpp"
 #include <limits>
 #include <functional>

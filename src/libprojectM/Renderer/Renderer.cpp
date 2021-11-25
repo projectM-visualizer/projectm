@@ -73,9 +73,9 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 	renderContext.programID_v2f_c4f = shaderEngine.programID_v2f_c4f;
 	renderContext.programID_v2f_c4f_t2f = shaderEngine.programID_v2f_c4f_t2f;
 
-	renderContext.uniform_v2f_c4f_vertex_tranformation = shaderEngine.uniform_v2f_c4f_vertex_tranformation;
+	renderContext.uniform_v2f_c4f_vertex_transformation = shaderEngine.uniform_v2f_c4f_vertex_transformation;
 	renderContext.uniform_v2f_c4f_vertex_point_size = shaderEngine.uniform_v2f_c4f_vertex_point_size;
-	renderContext.uniform_v2f_c4f_t2f_vertex_tranformation = shaderEngine.uniform_v2f_c4f_t2f_vertex_tranformation;
+	renderContext.uniform_v2f_c4f_t2f_vertex_transformation = shaderEngine.uniform_v2f_c4f_t2f_vertex_transformation;
 	renderContext.uniform_v2f_c4f_t2f_frag_texture_sampler = shaderEngine.uniform_v2f_c4f_t2f_frag_texture_sampler;
 
 	// Interpolation VAO/VBO's
@@ -896,8 +896,8 @@ void Renderer::CompositeOutput(const Pipeline& pipeline, const PipelineContext& 
 
 	shaderEngine.enableCompositeShader(currentPipe->compositeShader, pipeline, pipelineContext);
 
-	glUniformMatrix4fv(shaderEngine.uniform_v2f_c4f_t2f_vertex_tranformation, 1, GL_FALSE,
-	                   value_ptr(renderContext.mat_ortho));
+	glUniformMatrix4fv(shaderEngine.uniform_v2f_c4f_t2f_vertex_transformation, 1, GL_FALSE,
+                       value_ptr(renderContext.mat_ortho));
 	glUniform1i(shaderEngine.uniform_v2f_c4f_t2f_frag_texture_sampler, 0);
 
 	//Overwrite anything on the screen

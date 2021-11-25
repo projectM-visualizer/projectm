@@ -8,7 +8,7 @@
 #ifndef FILTERS_HPP_
 #define FILTERS_HPP_
 
-#include "Renderable.hpp"
+#include "RenderItem.hpp"
 
 class Brighten : public RenderItem
 {

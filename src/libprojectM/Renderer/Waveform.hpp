@@ -8,7 +8,8 @@
 #ifndef WAVEFORM_HPP_
 #define WAVEFORM_HPP_
 
-#include "Renderable.hpp"
+#include "RenderItem.hpp"
+
 #include <vector>
 
 class ColoredPoint

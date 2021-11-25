@@ -1,13 +1,18 @@
 #ifndef PRESET_FRAME_IO_HPP
 #define PRESET_FRAME_IO_HPP
-#include <vector>
-#include "Renderer/MilkdropWaveform.hpp"
-#include "Renderer/Pipeline.hpp"
-#include "Renderer/Filters.hpp"
+
 #include "CustomShape.hpp"
 #include "CustomWave.hpp"
+
+#include "Renderer/Border.hpp"
+#include "Renderer/DarkenCenter.hpp"
+#include "Renderer/Filters.hpp"
+#include "Renderer/MilkdropWaveform.hpp"
+#include "Renderer/MotionVectors.hpp"
+#include "Renderer/Pipeline.hpp"
 #include "Renderer/VideoEcho.hpp"
 
+#include <vector>
 
 /// Container for all *read only* engine variables a preset requires to
 /// evaluate milkdrop equations. Every preset object needs a reference to one of these.

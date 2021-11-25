@@ -18,7 +18,7 @@ typedef std::vector<std::pair<RenderItem*, RenderItem*> > RenderItemMatchList;
 
 class MatchResults;
 
-class RenderItemMatcher : public std::binary_function<RenderItemList, RenderItemList, MatchResults> {
+class RenderItemMatcher : public std::binary_function<RenderItem::List, RenderItem::List, MatchResults> {
 
 public:
 
@@ -36,7 +36,7 @@ struct MatchResults {
 	/// @param lhs the "left-hand side" list of render items.
 	/// @param rhs the "right-hand side" list of render items.
 	/// Sets a list of match pairs, possibly self referencing, and an error estimate of the matching.
-	inline virtual void operator()(const RenderItemList & lhs, const RenderItemList & rhs) const {
+	inline virtual void operator()(const RenderItem::List & lhs, const RenderItem::List & rhs) const {
 		
 		// Ensure the first argument is greater than next to aid the helper function's logic.
 		if (lhs.size() >= rhs.size()) {
@@ -68,9 +68,9 @@ private:
 	/// @idea interface this entirely allow overriding of its type.
 	mutable MasterRenderItemDistance _distanceFunction;
 	
-	double computeMatching(const RenderItemList & lhs, const RenderItemList & rhs) const;
+	double computeMatching(const RenderItem::List & lhs, const RenderItem::List & rhs) const;
 
-	void setMatches(const RenderItemList & lhs_src, const RenderItemList & rhs_src) const;
+	void setMatches(const RenderItem::List & lhs_src, const RenderItem::List & rhs_src) const;
 
 };
 
