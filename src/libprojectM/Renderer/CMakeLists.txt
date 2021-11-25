@@ -8,14 +8,12 @@ add_library(Renderer OBJECT
         Filters.hpp
         MenuText.cpp
         MenuText.h
+        MilkdropNoise.cpp
+        MilkdropNoise.hpp
         MilkdropWaveform.cpp
         MilkdropWaveform.hpp
         PerPixelMesh.cpp
         PerPixelMesh.hpp
-        PerlinNoise.cpp
-        PerlinNoise.hpp
-        PerlinNoiseWithAlpha.cpp
-        PerlinNoiseWithAlpha.hpp
         Pipeline.cpp
         Pipeline.hpp
         PipelineContext.cpp
