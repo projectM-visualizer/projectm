@@ -55,9 +55,9 @@ public:
     GLuint programID_v2f_c4f;
     GLuint programID_v2f_c4f_t2f;
 
-    GLint uniform_v2f_c4f_vertex_tranformation;
+    GLint uniform_v2f_c4f_vertex_transformation;
     GLint uniform_v2f_c4f_vertex_point_size;
-    GLint uniform_v2f_c4f_t2f_vertex_tranformation;
+    GLint uniform_v2f_c4f_t2f_vertex_transformation;
     GLint uniform_v2f_c4f_t2f_frag_texture_sampler;
 
     const static std::string v2f_c4f_vert;

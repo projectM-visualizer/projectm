@@ -86,7 +86,7 @@ void VideoEcho::Draw(RenderContext &context)
 
     glUseProgram(context.programID_v2f_c4f_t2f);
 
-    glUniformMatrix4fv(context.uniform_v2f_c4f_t2f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+    glUniformMatrix4fv(context.uniform_v2f_c4f_t2f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
     glUniform1i(context.uniform_v2f_c4f_t2f_frag_texture_sampler, 0);
 
 

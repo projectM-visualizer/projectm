@@ -3,7 +3,6 @@
 
 #include <vector>
 #include "PerPixelMesh.hpp"
-#include "Renderable.hpp"
 #include "Filters.hpp"
 #include "PipelineContext.hpp"
 #include "Shader.hpp"
