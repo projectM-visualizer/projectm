@@ -93,7 +93,7 @@ void Waveform::Draw(RenderContext &context)
 
     glUseProgram(context.programID_v2f_c4f);
 
-    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_tranformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
+    glUniformMatrix4fv(context.uniform_v2f_c4f_vertex_transformation, 1, GL_FALSE, glm::value_ptr(context.mat_ortho));
 
 	if (additive)  glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 	else glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -109,6 +109,8 @@ void Waveform::Draw(RenderContext &context)
 	}
     else
     {
+        glLineWidth(1);
+
 #ifndef GL_TRANSITION
         glPointSize(context.texsize <= 512 ? 1 : context.texsize/512);
 #endif

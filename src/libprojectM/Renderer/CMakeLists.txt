@@ -4,6 +4,10 @@ add_subdirectory(SOIL2)
 add_library(Renderer OBJECT
         BeatDetect.cpp
         BeatDetect.hpp
+        Border.cpp
+        Border.hpp
+        DarkenCenter.cpp
+        DarkenCenter.hpp
         Filters.cpp
         Filters.hpp
         MenuText.cpp
@@ -12,25 +16,30 @@ add_library(Renderer OBJECT
         MilkdropNoise.hpp
         MilkdropWaveform.cpp
         MilkdropWaveform.hpp
+        MotionVectors.cpp
+        MotionVectors.hpp
         PerPixelMesh.cpp
         PerPixelMesh.hpp
         Pipeline.cpp
         Pipeline.hpp
         PipelineContext.cpp
         PipelineContext.hpp
+        RenderContext.hpp
+        RenderItem.cpp
+        RenderItem.hpp
         RenderItemDistanceMetric.cpp
         RenderItemDistanceMetric.hpp
         RenderItemMatcher.cpp
         RenderItemMatcher.hpp
         RenderItemMergeFunction.hpp
-        Renderable.cpp
-        Renderable.hpp
         Renderer.cpp
         Renderer.hpp
         Shader.cpp
         Shader.hpp
         ShaderEngine.cpp
         ShaderEngine.hpp
+        Shape.cpp
+        Shape.hpp
         StaticGlShaders.cpp
         Texture.cpp
         Texture.hpp

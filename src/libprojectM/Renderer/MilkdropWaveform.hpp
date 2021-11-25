@@ -8,7 +8,7 @@
 #ifndef MILKDROPWAVEFORM_HPP_
 #define MILKDROPWAVEFORM_HPP_
 
-#include "Renderable.hpp"
+#include "RenderItem.hpp"
 
 enum MilkdropWaveformMode
 	{

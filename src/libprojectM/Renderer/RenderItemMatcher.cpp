@@ -1,6 +1,6 @@
 #include "RenderItemMatcher.hpp"
 
-double RenderItemMatcher::computeMatching(const RenderItemList & lhs, const RenderItemList & rhs) const {
+double RenderItemMatcher::computeMatching(const RenderItem::List & lhs, const RenderItem::List & rhs) const {
         for (unsigned int i = 0; i < lhs.size();i++) {
             unsigned int j;
 			for (j = 0; j < rhs.size();j++)
@@ -18,7 +18,7 @@ double RenderItemMatcher::computeMatching(const RenderItemList & lhs, const Rend
 
 
 void RenderItemMatcher::setMatches
-	(const RenderItemList & lhs_src, const RenderItemList & rhs_src) const {
+	(const RenderItem::List & lhs_src, const RenderItem::List & rhs_src) const {
 
       for (unsigned int i = 0; i < lhs_src.size();i++) {
 		const int j = _hungarianMethod.matching(i);

@@ -9,7 +9,7 @@
 #define VIDEOECHO_HPP_
 
 #include "projectM-opengl.h"
-#include "Renderable.hpp"
+#include "RenderItem.hpp"
 #include "Common.hpp"
 
 enum Orientation
