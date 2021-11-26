@@ -206,6 +206,8 @@ void Renderer::RenderItems(const Pipeline& pipeline, const PipelineContext& pipe
 {
 	renderContext.time = pipelineContext.time;
 	renderContext.texsize = nearestPower2(std::max(texsizeX, texsizeY));
+    renderContext.viewportSizeX = vw;
+    renderContext.viewportSizeY = vh;
 	renderContext.aspectCorrect = correction;
 	renderContext.aspectRatio = aspect;
 	renderContext.textureManager = textureManager;

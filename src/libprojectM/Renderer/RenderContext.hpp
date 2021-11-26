@@ -14,6 +14,8 @@ class RenderContext
 public:
     float time{ 0.0 }; //!< Time since the preset started, in seconds.
     int texsize{ 512 }; //!< Size of the internal render texture.
+    int viewportSizeX{ 0 }; //!< Horizontal viewport size in pixels
+    int viewportSizeY{ 0 }; //!< Vertical viewport size in pixels
     float aspectRatio{ 1.0 }; //!< X aspect ratio.
     bool aspectCorrect{ false }; //!< Aspect ratio correction.
     BeatDetect *beatDetect{ nullptr }; //!< Beat detection class to retrieve beat-related values.
