@@ -592,7 +592,7 @@ void Renderer::touch(float x, float y, int pressure, int type = 0)
 	MilkdropWaveform wave;
 	if (type == 0) {
 		// If we touched randomly, then assign type to a random number between 0 and 8
-		wave.mode = static_cast<MilkdropWaveformMode>((rand() % last) + 1);
+		wave.mode = static_cast<MilkdropWaveformMode>((rand() % last));
 	}
 	else {
 		wave.mode = static_cast<MilkdropWaveformMode>(type);

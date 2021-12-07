@@ -327,7 +327,7 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs& presetInputs, Pres
 
     load_builtin_param_int("echo_orient", (void*) &presetOutputs->videoEcho.orientation, P_FLAG_NONE, 0, 3, 0,
                            "nVideoEchoOrientation");
-    load_builtin_param_int("wave_mode", (void*) &presetOutputs->wave.mode, P_FLAG_NONE, 0, 7, 0, "nwavemode");
+    load_builtin_param_int("wave_mode", (void*) &presetOutputs->wave.mode, P_FLAG_NONE, 0, 8, 0, "nwavemode");
 
     load_builtin_param_bool("wave_additive", (void*) &presetOutputs->wave.additive, P_FLAG_NONE, false,
                             "bAdditiveWaves");
