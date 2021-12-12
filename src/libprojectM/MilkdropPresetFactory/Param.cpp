@@ -107,9 +107,13 @@ Param* Param::new_param_float(const char* name, short int flags, void* engine_va
 {
     assert(engine_val);
 
-    CValue iv{ .float_val = init_val };
-    CValue ub{ .float_val = upper_bound };
-    CValue lb{ .float_val = lower_bound };
+    CValue iv;
+    CValue ub;
+    CValue lb;
+
+    iv.float_val = init_val;
+    ub.float_val = upper_bound;
+    lb.float_val = lower_bound;
 
     return Param::create(name, P_TYPE_DOUBLE, flags, engine_val, matrix,iv, ub, lb);
 }
@@ -120,9 +124,13 @@ Param* Param::new_param_int(const char* name, short int flags, void* engine_val,
 {
     assert(engine_val);
 
-    CValue iv{ .int_val = init_val };
-    CValue ub{ .int_val = upper_bound };
-    CValue lb{ .int_val = lower_bound };
+    CValue iv;
+    CValue ub;
+    CValue lb;
+
+    iv.int_val = init_val;
+    ub.int_val = upper_bound;
+    lb.int_val = lower_bound;
 
     return Param::create(name, P_TYPE_INT, flags, engine_val, nullptr, iv, ub, lb);
 }
@@ -133,9 +141,13 @@ Param* Param::new_param_bool(const char* name, short int flags, void* engine_val
 {
     assert(engine_val);
 
-    CValue iv{ .bool_val = init_val };
-    CValue ub{ .bool_val = upper_bound };
-    CValue lb{ .bool_val = lower_bound };
+    CValue iv;
+    CValue ub;
+    CValue lb;
+
+    iv.bool_val = init_val;
+    ub.bool_val = upper_bound;
+    lb.bool_val = lower_bound;
 
     return Param::create(name, P_TYPE_BOOL, flags, engine_val, nullptr, iv, ub, lb);
 }
@@ -145,9 +157,13 @@ Param* Param::new_param_string(const char* name, short int flags, void* engine_v
 {
     assert(engine_val);
 
-    CValue iv{ .bool_val = false };
-    CValue ub{ .bool_val = false };
-    CValue lb{ .bool_val = false };
+    CValue iv;
+    CValue ub;
+    CValue lb;
+
+    iv.bool_val = false;
+    ub.bool_val = false;
+    lb.bool_val = false;
 
     return Param::create(name, P_TYPE_STRING, flags, engine_val, nullptr, iv, ub, lb);
 }

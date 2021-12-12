@@ -57,76 +57,60 @@ void Shape::InitVertexAttrib()
 
 void Shape::Draw(RenderContext& context)
 {
-    float xval{ x };
-    float yval{ -(y - 1) };
-    float t;
-
-    float temp_radius{ radius * (.707f * .707f * .707f * 1.04f) };
+    constexpr float pi = 3.141592653589793f;
 
     // Additive Drawing or Overwrite
-    if (additive == 0)
+    glBlendFunc(GL_SRC_ALPHA, additive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
+
+    std::vector<ShapeVertexShaderData> vertexData(sides + 2);
+
+    vertexData[0].color_r = r;
+    vertexData[0].color_g = g;
+    vertexData[0].color_b = b;
+    vertexData[0].color_a = a * masterAlpha;
+    vertexData[0].tex_x = 0.5;
+    vertexData[0].tex_y = 0.5;
+    vertexData[0].point_x = x;
+    vertexData[0].point_y = -(y - 1.0f);
+
+    for (int i = 1; i < sides + 1; i++)
     {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    }
-    else
-    {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        float cornerProgress = static_cast<float>(i - 1) / static_cast<float>(sides);
+        float angle = cornerProgress * pi * 2.0f + ang + pi * 0.25f;
+
+        vertexData[i].color_r = r2;
+        vertexData[i].color_g = g2;
+        vertexData[i].color_b = b2;
+        vertexData[i].color_a = a2 * masterAlpha;
+        // Todo: There's still some issue with aspect ratio here, as everything gets squashed horizontally if Y > x.
+        vertexData[i].point_x = vertexData[0].point_x + radius * 0.5f * cosf(angle) * context.aspectY;
+        vertexData[i].point_y = vertexData[0].point_y + radius * 0.5f * sinf(angle);
     }
 
-    auto vertexData = new ShapeVertexShaderData[sides + 2];
+    // Duplicate last vertex.
+    vertexData[sides + 1] = vertexData[1];
 
     if (textured)
     {
-        if (!imageUrl.empty())
-        {
-            TextureSamplerDesc tex = context.textureManager->getTexture(imageUrl, GL_CLAMP_TO_EDGE, GL_LINEAR);
-            if (tex.first != NULL)
-            {
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, tex.first->texID);
-                glBindSampler(0, tex.second->samplerID);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, context.textureManager->getMainTexture()->texID);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-                context.aspectRatio = 1.0;
-            }
-        }
-        else
+        for (int i = 1; i < sides + 1; i++)
         {
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, context.textureManager->getMainTexture()->texID);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+            float cornerProgress = static_cast<float>(i - 1) / static_cast<float>(sides);
+
+            vertexData[i].tex_x =
+                0.5f + 0.5f * cosf(cornerProgress * pi * 2.0f + ang + pi * 0.25f) / tex_zoom * context.aspectY;
+            vertexData[i].tex_y = 0.5f + 0.5f * sinf(cornerProgress * pi * 2.0f + ang + pi * 0.25f) / tex_zoom;
         }
 
-        // Define the center point of the shape
-        vertexData[0].color_r = r;
-        vertexData[0].color_g = g;
-        vertexData[0].color_b = b;
-        vertexData[0].color_a = a * masterAlpha;
-        vertexData[0].tex_x = 0.5;
-        vertexData[0].tex_y = 0.5;
-        vertexData[0].point_x = xval;
-        vertexData[0].point_y = yval;
-
-        for (int i = 1; i < sides + 2; i++)
-        {
-            vertexData[i].color_r = r2;
-            vertexData[i].color_g = g2;
-            vertexData[i].color_b = b2;
-            vertexData[i].color_a = a2 * masterAlpha;
-
-            t = static_cast<float>(i - 1) / static_cast<float>(sides);
-            vertexData[i].tex_x = 0.5f + 0.5f * cosf(t * 3.1415927f * 2 + tex_ang + 3.1415927f * 0.25f) *
-                                         (context.aspectCorrect ? context.aspectRatio : 1.0) / tex_zoom;
-            vertexData[i].tex_y = 0.5f + 0.5f * sinf(t * 3.1415927f * 2 + tex_ang + 3.1415927f * 0.25f) / tex_zoom;
-            vertexData[i].point_x = temp_radius * cosf(t * 3.1415927f * 2 + ang + 3.1415927f * 0.25f) *
-                                    (context.aspectCorrect ? context.aspectRatio : 1.0) + xval;
-            vertexData[i].point_y = temp_radius * sinf(t * 3.1415927f * 2 + ang + 3.1415927f * 0.25f) + yval;
-        }
+        vertexData[sides + 1] = vertexData[1];
 
         glBindBuffer(GL_ARRAY_BUFFER, m_vboID_texture);
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertexShaderData) * (sides + 2), NULL, GL_DYNAMIC_DRAW);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertexShaderData) * (sides + 2), vertexData, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertexShaderData) * (sides + 2), vertexData.data(), GL_DYNAMIC_DRAW);
 
         glUseProgram(context.programID_v2f_c4f_t2f);
 
@@ -144,30 +128,9 @@ void Shape::Draw(RenderContext& context)
     else
     {//Untextured (use color values)
 
-        //Define the center point of the shape
-        vertexData[0].color_r = r;
-        vertexData[0].color_g = g;
-        vertexData[0].color_b = b;
-        vertexData[0].color_a = a * masterAlpha;
-        vertexData[0].point_x = xval;
-        vertexData[0].point_y = yval;
-
-        for (int i = 1; i < sides + 2; i++)
-        {
-            vertexData[i].color_r = r2;
-            vertexData[i].color_g = g2;
-            vertexData[i].color_b = b2;
-            vertexData[i].color_a = a2 * masterAlpha;
-            t = static_cast<float>(i - 1) / static_cast<float>(sides);
-            vertexData[i].point_x = temp_radius * cosf(t * 3.1415927f * 2 + ang + 3.1415927f * 0.25f) *
-                                    (context.aspectCorrect ? context.aspectRatio : 1.0) + xval;
-            vertexData[i].point_y = temp_radius * sinf(t * 3.1415927f * 2 + ang + 3.1415927f * 0.25f) + yval;
-        }
-
         glBindBuffer(GL_ARRAY_BUFFER, m_vboID_not_texture);
 
-        glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertexShaderData) * (sides + 2), NULL, GL_DYNAMIC_DRAW);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertexShaderData) * (sides + 2), vertexData, GL_DYNAMIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(ShapeVertexShaderData) * (sides + 2), vertexData.data(), GL_DYNAMIC_DRAW);
 
         glUseProgram(context.programID_v2f_c4f);
 
@@ -181,14 +144,12 @@ void Shape::Draw(RenderContext& context)
 
     if (border_a > 0.0f)
     {
-        auto points = new float[sides + 1][2];
+        std::vector<ShapeVertex> points(sides + 1);
 
-        for (int i = 0; i < sides; i++)
+        for (int i = 0; i < sides + 1; i++)
         {
-            t = (i - 1) / (float) sides;
-            points[i][0] = temp_radius * cosf(t * 3.1415927f * 2 + ang + 3.1415927f * 0.25f) *
-                           (context.aspectCorrect ? context.aspectRatio : 1.0) + xval;
-            points[i][1] = temp_radius * sinf(t * 3.1415927f * 2 + ang + 3.1415927f * 0.25f) + yval;
+            points[i].x = vertexData[i + 1].point_x;
+            points[i].y = vertexData[i + 1].point_y;
         }
 
         glUseProgram(context.programID_v2f_c4f);
@@ -221,37 +182,33 @@ void Shape::Draw(RenderContext& context)
                 case 1:
                     for (auto j = 0; j < sides + 1; j++)
                     {
-                        points[j][0] += incrementX;
+                        points[j].x += incrementX;
                     }
                     break;
 
                 case 2:
                     for (auto j = 0; j < sides + 1; j++)
                     {
-                        points[j][1] += incrementY;
+                        points[j].y += incrementY;
                     }
                     break;
 
                 case 3:
                     for (auto j = 0; j < sides + 1; j++)
                     {
-                        points[j][0] -= incrementX;
+                        points[j].x -= incrementX;
                     }
                     break;
             }
 
-            glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair) * (sides), points, GL_DYNAMIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(floatPair) * (sides), points.data(), GL_DYNAMIC_DRAW);
             glDrawArrays(GL_LINE_LOOP, 0, sides);
         }
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-
-        delete[] points;
     }
 
     glDisable(GL_LINE_SMOOTH);
     glUseProgram(0);
-
-    delete[] vertexData;
 }

@@ -43,469 +43,165 @@
 #define MAX_SAMPLE_SIZE 4096
 
 
-CustomWave::CustomWave(int _id) : Waveform(512),
-    id(_id),
-    per_frame_count(0),
-    r(0),
-    g(0),
-    b(0),
-    a(0),
-    per_point_program(nullptr)
+CustomWave::CustomWave(int _id)
+    : Waveform(512)
+    , id(_id)
 {
+    this->r_mesh.resize(MAX_SAMPLE_SIZE);
+    this->g_mesh.resize(MAX_SAMPLE_SIZE);
+    this->b_mesh.resize(MAX_SAMPLE_SIZE);
+    this->a_mesh.resize(MAX_SAMPLE_SIZE);
+    this->x_mesh.resize(MAX_SAMPLE_SIZE);
+    this->y_mesh.resize(MAX_SAMPLE_SIZE);
+
+    /* Start: Load custom wave parameters */
+    ParamUtils::insert(Param::new_param_float(
+        "r", P_FLAG_NONE | P_FLAG_PER_POINT, &r, r_mesh.data(), 1.0, 0.0, .5), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "g", P_FLAG_NONE | P_FLAG_PER_POINT, &g, g_mesh.data(), 1.0, 0.0, .5), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "b", P_FLAG_NONE | P_FLAG_PER_POINT, &b, b_mesh.data(), 1.0, 0.0, .5), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "a", P_FLAG_NONE | P_FLAG_PER_POINT, &this->a, this->a_mesh.data(), 1.0, 0.0, .5), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "x", P_FLAG_NONE | P_FLAG_PER_POINT, &this->x, this->x_mesh.data(), 1.0, 0.0, .5), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "y", P_FLAG_NONE | P_FLAG_PER_POINT, &this->y, this->y_mesh.data(), 1.0, 0.0, .5), &param_tree);
+    ParamUtils::insert(Param::new_param_bool(
+        "enabled", P_FLAG_NONE, &this->enabled, 1, 0, 0), &param_tree);
+    ParamUtils::insert(Param::new_param_int(
+        "sep", P_FLAG_NONE, &this->sep, 100, -100, 0), &param_tree);
+    ParamUtils::insert(Param::new_param_bool(
+        "bspectrum", P_FLAG_NONE, &this->spectrum, 1, 0, 0), &param_tree);
+    ParamUtils::insert(Param::new_param_bool(
+        "bdrawthick", P_FLAG_NONE, &this->thick, 1, 0, 0), &param_tree);
+    ParamUtils::insert(Param::new_param_bool(
+        "busedots", P_FLAG_NONE, &this->dots, 1, 0, 0), &param_tree);
+    ParamUtils::insert(Param::new_param_bool(
+        "badditive", P_FLAG_NONE, &this->additive, 1, 0, 0), &param_tree);
+    ParamUtils::insert(Param::new_param_int(
+        "samples", P_FLAG_NONE, &this->samples, 2048, 1, 512), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "sample", P_FLAG_READONLY | P_FLAG_NONE, &this->sample, nullptr, 1.0, 0.0, 0.0), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "value1", P_FLAG_READONLY | P_FLAG_NONE, &this->v1, nullptr, 1.0, -1.0, 0.0), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "value2", P_FLAG_READONLY | P_FLAG_NONE, &this->v2, nullptr, 1.0, -1.0, 0.0), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "smoothing", P_FLAG_NONE, &this->smoothing, nullptr, 1.0, 0.0, 0.0), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "scaling", P_FLAG_NONE, &this->scaling, nullptr, MAX_DOUBLE_SIZE, 0.0, 1.0), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "t1", P_FLAG_TVAR, &this->t1, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "t2", P_FLAG_TVAR, &this->t2, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "t3", P_FLAG_TVAR, &this->t3, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "t4", P_FLAG_TVAR, &this->t4, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "t5", P_FLAG_TVAR, &this->t5, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "t6", P_FLAG_TVAR, &this->t6, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0),&param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "t7", P_FLAG_TVAR, &this->t7, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &param_tree);
+    ParamUtils::insert(Param::new_param_float(
+        "t8", P_FLAG_TVAR, &this->t8, nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &param_tree);
+
+    for (unsigned int i = 0; i < NUM_Q_VARIABLES; i++)
+    {
+        std::ostringstream os;
+        os << "q" << i + 1;
+        ParamUtils::insert(Param::new_param_float(
+            os.str().c_str(), P_FLAG_QVAR, &this->q[i], nullptr, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE,0.0), &this->param_tree);
+    }
 
-  Param * param;
-
-  /// @bug deprecate the use of wipemalloc
-  this->r_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  this->g_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  this->b_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  this->a_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  this->x_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-  this->y_mesh = (float*)wipemalloc(MAX_SAMPLE_SIZE*sizeof(float));
-
-  /* Start: Load custom wave parameters */
-
-  if ((param = Param::new_param_float("r", P_FLAG_NONE | P_FLAG_PER_POINT, &this->r, this->r_mesh, 1.0, 0.0, .5)) == NULL)
-  {
-    ;
-    /// @bug make exception
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &param_tree))
-  {
-    /// @bug make exception
-    abort();
-  }
-
-  if ((param = Param::new_param_float("g", P_FLAG_NONE | P_FLAG_PER_POINT, &this->g,  this->g_mesh, 1.0, 0.0, .5)) == NULL)
-  {
-    ;
-    /// @bug make exception
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &param_tree))
-  {
-    ;
-    /// @bug make exception
-    abort();
-  }
-
-  if ((param = Param::new_param_float("b", P_FLAG_NONE | P_FLAG_PER_POINT, &this->b,  this->b_mesh, 1.0, 0.0, .5)) == NULL)
-  {
-    ;
-    /// @bug make exception
-    abort();
-
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-    /// @bug make exception
-    abort();
-  }
-
-  if ((param = Param::new_param_float("a", P_FLAG_NONE | P_FLAG_PER_POINT, &this->a,  this->a_mesh, 1.0, 0.0, .5)) == NULL)
-  {
-    ;
-    /// @bug make exception
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-    /// @bug make exception
-    abort();
-  }
-
-  if ((param = Param::new_param_float("x", P_FLAG_NONE | P_FLAG_PER_POINT, &this->x,  this->x_mesh, 1.0, 0.0, .5)) == NULL)
-  {
-    ;
-    /// @bug make exception
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-    /// @bug make exception
-    abort();
-  }
-
-  if ((param = Param::new_param_float("y", P_FLAG_NONE | P_FLAG_PER_POINT, &this->y,  this->y_mesh, 1.0, 0.0, .5)) == NULL)
-  {
-    ;
-    /// @bug make exception
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-
-    /// @bug make exception
-    abort();
-
-  }
-
-  if ((param = Param::new_param_bool("enabled", P_FLAG_NONE, &this->enabled, 1, 0, 0)) == NULL)
-  {
-    ;
-    /// @bug make exception
-    abort();
-
-
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-
-    /// @bug make exception
-    abort();
-
-  }
-
-  if ((param = Param::new_param_int("sep", P_FLAG_NONE, &this->sep, 100, -100, 0)) == NULL)
-  {
-    ;
-    /// @bug make exception
-    abort();
-
-
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-    /// @bug make exception
-    abort();
-
-
-  }
-
-  if ((param = Param::new_param_bool("bspectrum", P_FLAG_NONE, &this->spectrum, 1, 0, 0)) == NULL)
-  {
-    /// @bug make exception
-    abort();
-
-
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    /// @bug make exception
-    abort();
-
-  }
-
-  if ((param = Param::new_param_bool("bdrawthick", P_FLAG_NONE, &this->thick, 1, 0, 0)) == NULL)
-  {
-    /// @bug make exception
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    /// @bug make exception
-    abort();
-
-  }
-
-  if ((param = Param::new_param_bool("busedots", P_FLAG_NONE, &this->dots, 1, 0, 0)) == NULL)
-  {
-
-    /// @bug make exception
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-    abort();
-  }
-
-  if ((param = Param::new_param_bool("badditive", P_FLAG_NONE, &this->additive, 1, 0, 0)) == NULL)
-  {
-    ;
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-    abort();
-  }
-
-  if ((param = Param::new_param_int("samples", P_FLAG_NONE, &this->samples, 2048, 1, 512)) == NULL)
-  {
-    ;
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-    abort();
-  }
-
-  if ((param = Param::new_param_float("sample", P_FLAG_READONLY | P_FLAG_NONE,
-                                      &this->sample, NULL, 1.0, 0.0, 0.0)) == NULL)
-  {
-    ;
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    abort();
-  }
-
-  if ((param = Param::new_param_float("value1", P_FLAG_READONLY | P_FLAG_NONE, &this->v1, NULL, 1.0, -1.0, 0.0)) == NULL)
-  {
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    abort();
-  }
-
-  if ((param = Param::new_param_float("value2", P_FLAG_READONLY | P_FLAG_NONE, &this->v2, NULL, 1.0, -1.0, 0.0)) == NULL)
-  {
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-    abort();
-  }
-
-  if ((param = Param::new_param_float("smoothing", P_FLAG_NONE, &this->smoothing, NULL, 1.0, 0.0, 0.0)) == NULL)
-  {
-    ;
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-    abort();
-  }
-
-  if ((param = Param::new_param_float("scaling", P_FLAG_NONE, &this->scaling, NULL, MAX_DOUBLE_SIZE, 0.0, 1.0)) == NULL)
-  {
-    ;
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-    abort();
-  }
-
-  if ((param = Param::new_param_float("t1", P_FLAG_TVAR, &this->t1, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
-  {
-    ;
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-    abort();
-  }
-
-  if ((param = Param::new_param_float("t2", P_FLAG_TVAR, &this->t2, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
-  {
-    ;
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    abort();
-  }
-
-  if ((param = Param::new_param_float("t3", P_FLAG_TVAR, &this->t3, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
-  {
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-
-    abort();
-  }
-  if ((param = Param::new_param_float("t4", P_FLAG_TVAR, &this->t4, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
-  {
-
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    abort();
-  }
-  if ((param = Param::new_param_float("t5", P_FLAG_TVAR, &this->t5, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
-  {
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    abort();
-  }
-  
-  if ((param = Param::new_param_float("t6", P_FLAG_TVAR, &this->t6, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
-  {
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-
-    abort();
-  }
-  if ((param = Param::new_param_float("t7", P_FLAG_TVAR, &this->t7, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
-  {
-
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-    abort();
-  }
-
-  if ((param = Param::new_param_float("t8", P_FLAG_TVAR, &this->t8, NULL, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0)) == NULL)
-  {
-    ;
-    abort();
-  }
-
-  if (!ParamUtils::insert(param, &this->param_tree))
-  {
-    ;
-    abort();
-  }
-
-  for (unsigned int i = 0; i < NUM_Q_VARIABLES;i++) {
-	std::ostringstream os;
-	os << "q" << i+1;
-	param = Param::new_param_float ( os.str().c_str(), P_FLAG_QVAR, &this->q[i], NULL, MAX_DOUBLE_SIZE,
-		 -MAX_DOUBLE_SIZE, 0.0 );
-    if ( !ParamUtils::insert ( param, &this->param_tree ) )
-	{
-		abort();
-	}
-  }
-	
      /* End of parameter loading. Note that the read only parameters associated
      with custom waves (ie, sample) are variables stored in PresetFrameIO.hpp,
-     and not specific to the custom wave datastructure. */
-
+     and not specific to the custom wave data structure. */
 }
 
 CustomWave::~CustomWave()
 {
+  for (const auto& eqn : per_point_eqn_tree)
+  {
+      delete eqn;
+  }
 
+  for (const auto& eqn : per_frame_eqn_tree)
+  {
+      delete eqn;
+  }
 
-  for (std::vector<PerPointEqn*>::iterator pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end(); ++pos)
-    delete(*pos);
+  for (const auto& cond : init_cond_tree)
+  {
+      delete cond.second;
+  }
 
-  for (std::vector<PerFrameEqn*>::iterator pos = per_frame_eqn_tree.begin(); pos != per_frame_eqn_tree.end(); ++pos)
-    delete(*pos);
+  for (const auto& cond : per_frame_init_eqn_tree)
+  {
+      delete cond.second;
+  }
 
-  for (std::map<std::string, InitCond*>::iterator pos = init_cond_tree.begin(); pos != init_cond_tree.end(); ++pos)
-    delete(pos->second);
-
-  for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos)
-    delete(pos->second);
-
-  for (std::map<std::string, Param*>::iterator pos = param_tree.begin(); pos != param_tree.end(); ++pos)
-    delete(pos->second);
-
-  free(r_mesh);
-  free(g_mesh);
-  free(b_mesh);
-  free(a_mesh);
-  free(x_mesh);
-  free(y_mesh);
+  for (const auto& param : param_tree)
+  {
+      delete param.second;
+  }
 }
-
-
 
 
 // Comments: index is not passed, so we assume monotonic increment by 1 is ok here
-int CustomWave::add_per_point_eqn(char * name, Expr * gen_expr)
+int CustomWave::add_per_point_eqn(char* name, Expr* gen_expr)
 {
+    /* Argument checks */
+    if (!gen_expr || !name)
+    {
+        return PROJECTM_FAILURE;
+    }
 
-  PerPointEqn * per_point_eqn;
-  int index;
-  Param * param = NULL;
+    if (CUSTOM_WAVE_DEBUG)
+    {
+        printf("add_per_point_eqn: per pixel equation (name = \"%s\")\n", name);
+    }
 
-  /* Argument checks */
-  if (gen_expr == NULL)
-    return PROJECTM_FAILURE;
-  if (name == NULL)
-    return PROJECTM_FAILURE;
+    /* Search for the parameter so we know what matrix the per pixel equation is referencing */
+    auto param = ParamUtils::find<ParamUtils::AUTO_CREATE>(name, &param_tree);
+    if (!param)
+    {
+        if (CUSTOM_WAVE_DEBUG)
+        {
+            printf("add_per_point_eqn: failed to allocate a new parameter!\n");
+        }
+        return PROJECTM_FAILURE;
+    }
 
-  if (CUSTOM_WAVE_DEBUG) printf("add_per_point_eqn: per pixel equation (name = \"%s\")\n", name);
+    /* Get largest index in the tree */
+    per_point_eqn_tree.push_back(new PerPointEqn(static_cast<int>(per_point_eqn_tree.size()), param, gen_expr));
 
-  /* Search for the parameter so we know what matrix the per pixel equation is referencing */
-
-  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(name,&param_tree)) == NULL)
-  {
-    if (CUSTOM_WAVE_DEBUG) printf("add_per_point_eqn: failed to allocate a new parameter!\n");
-    return PROJECTM_FAILURE;
-
-  }
-
-  /* Get largest index in the tree */
-  index = per_point_eqn_tree.size();
-
-  /* Create the per point equation given the index, parameter, and general expression */
-  if ((per_point_eqn = new PerPointEqn(index, param, gen_expr)) == NULL)
-    return PROJECTM_FAILURE;
-  if (CUSTOM_WAVE_DEBUG)
-    printf("add_per_point_eqn: created new equation (index = %d) (name = \"%s\")\n", per_point_eqn->index, param->name.c_str());
-
-  /* Insert the per pixel equation into the preset per pixel database */
-
-  per_point_eqn_tree.push_back(per_point_eqn);
-
-  /* Done */
-  return PROJECTM_SUCCESS;
+    /* Done */
+    return PROJECTM_SUCCESS;
 }
-
 
 void CustomWave::evalInitConds()
 {
-
-  for (std::map<std::string, InitCond*>::iterator pos = per_frame_init_eqn_tree.begin(); pos != per_frame_init_eqn_tree.end(); ++pos)
-  {
-    assert(pos->second);
-    pos->second->evaluate();
-  }
-
+    for (auto& eqn: per_frame_init_eqn_tree)
+    {
+        assert(eqn.second);
+        eqn.second->evaluate();
+    }
 }
 
-ColoredPoint CustomWave::PerPoint(ColoredPoint p, const WaveformContext context)
+Waveform::ColoredPoint CustomWave::PerPoint(ColoredPoint p, const Context& context)
 {
-    if (nullptr == per_point_program)
+    if (!per_point_program)
     {
         // see comment in MilkdropPreset, collect a list of assignments into one ProgramExpr
         // which (theoretically) could be compiled together.
-        std::vector<Expr *> steps;
-        for (auto pos = per_point_eqn_tree.begin(); pos != per_point_eqn_tree.end();++pos)
-            steps.push_back((*pos)->assign_expr);
+        std::vector<Expr*> steps;
+        for (const auto& eqn : per_point_eqn_tree)
+        {
+            steps.push_back(eqn->assign_expr);
+        }
         Expr *program_expr  = Expr::create_program_expr(steps, false);
         Expr *jit = nullptr;
 #if HAVE_LLVM

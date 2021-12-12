@@ -67,6 +67,12 @@ private:
         float tex_y; //!< The vertex y (v) texture coordinate.
     };
 
+    struct ShapeVertex
+    {
+        float x{ .0f }; //!< The vertex X coordinate.
+        float y{ .0f }; //!< The vertex Y coordinate.
+    };
+
     GLuint m_vboID_texture{ 0 }; //!< Vertex buffer object ID for a textured shape.
     GLuint m_vaoID_texture{ 0 }; //!< Vertex array object ID for a textured shape.
 
