@@ -16,8 +16,10 @@ public:
     int texsize{ 512 }; //!< Size of the internal render texture.
     int viewportSizeX{ 0 }; //!< Horizontal viewport size in pixels
     int viewportSizeY{ 0 }; //!< Vertical viewport size in pixels
-    float aspectRatio{ 1.0 }; //!< X aspect ratio.
-    bool aspectCorrect{ false }; //!< Aspect ratio correction.
+    float aspectX{ 1.0 }; //!< X aspect ratio.
+    float aspectY{ 1.0 }; //!< Y aspect ratio.
+    float invAspectX{ 1.0 }; //!< Inverse X aspect ratio.
+    float invAspectY{ 1.0 }; //!< Inverse Y aspect ratio.
     BeatDetect *beatDetect{ nullptr }; //!< Beat detection class to retrieve beat-related values.
     TextureManager *textureManager{ nullptr }; //!< Holds all loaded textures for shader access.
     GLuint programID_v2f_c4f{ 0 }; //!< Vertex shader program ID (no texture coordinates)

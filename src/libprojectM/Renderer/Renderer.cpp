@@ -208,8 +208,10 @@ void Renderer::RenderItems(const Pipeline& pipeline, const PipelineContext& pipe
 	renderContext.texsize = nearestPower2(std::max(texsizeX, texsizeY));
     renderContext.viewportSizeX = vw;
     renderContext.viewportSizeY = vh;
-	renderContext.aspectCorrect = correction;
-	renderContext.aspectRatio = aspect;
+	renderContext.aspectX = m_fAspectX;
+	renderContext.aspectY = m_fAspectY;
+    renderContext.invAspectX = m_fInvAspectX;
+    renderContext.invAspectY = m_fInvAspectY;
 	renderContext.textureManager = textureManager;
 	renderContext.beatDetect = beatDetect;
 
@@ -476,6 +478,9 @@ void Renderer::reset(int w, int h)
 
 	m_fAspectX = (texsizeY > texsizeX) ? static_cast<float>(texsizeX) / static_cast<float>(texsizeY) : 1.0f;
 	m_fAspectY = (texsizeX > texsizeY) ? static_cast<float>(texsizeY) / static_cast<float>(texsizeX) : 1.0f;
+
+    m_fInvAspectX = 1.0f / m_fAspectX;
+    m_fInvAspectY = 1.0f / m_fAspectY;
 
 	InitCompositeShaderVertex();
 
@@ -840,6 +845,7 @@ void Renderer::draw_stats()
 	stats += "Resolution: " + std::to_string(vw) + "x" + std::to_string(vh) + "\n";
 	stats += "Mesh X: " + std::to_string(mesh.width) + "\n";
 	stats += "Mesh Y: " + std::to_string(mesh.height) + "\n";
+    stats += "Time: " + std::to_string(renderContext.time) + "\n";
 
 	stats += "\n";
 	stats += "Beat Detect:""\n";
