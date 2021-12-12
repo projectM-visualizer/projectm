@@ -21,24 +21,14 @@
 
 /* Basic Parameter Functions */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
-
-#include "fatal.h"
 #include "Common.hpp"
-
-#include "CustomShape.hpp"
-#include "Eval.hpp"
 #include "Expr.hpp"
-#include "InitCond.hpp"
 #include "Param.hpp"
-#include "Preset.hpp"
-#include <map>
-#include <iostream>
+
 #include <cassert>
-#include "JitContext.hpp"
+#include <cstdio>
+#include <map>
+#include <stdexcept>
 
 /** Constructor */
 Param::Param( const std::string &_name, short int _type, short int _flags, void * _engine_val, void * _matrix,
@@ -84,9 +74,9 @@ Param::~Param() {
 
 
 /* Returns nonzero if the string is valid parameter name */
-bool Param::is_valid_param_string( const char * string ) {
+bool Param::is_valid_param_string(const char* string) {
 
-    if (string == NULL)
+    if (!string)
         return false;
 
     /* This ensures the first character is non numeric */
@@ -112,82 +102,54 @@ bool Param::is_valid_param_string( const char * string ) {
 
 
 /* Loads a float parameter into the builtin database */
-Param * Param::new_param_float(const char * name, short int flags, void * engine_val, void * matrix,
-                               float upper_bound, float lower_bound, float init_val) {
-
-    Param * param;
-    CValue iv, ub, lb;
+Param* Param::new_param_float(const char* name, short int flags, void* engine_val, void* matrix,
+                              float upper_bound, float lower_bound, float init_val)
+{
     assert(engine_val);
 
-    iv.float_val = init_val;
-    ub.float_val = upper_bound;
-    lb.float_val = lower_bound;
+    CValue iv{ .float_val = init_val };
+    CValue ub{ .float_val = upper_bound };
+    CValue lb{ .float_val = lower_bound };
 
-    if ((param = Param::create(name, P_TYPE_DOUBLE, flags, engine_val, matrix,iv, ub, lb)) == NULL)
-        return NULL;
-
-
-    /* Finished, return success */
-    return param;
+    return Param::create(name, P_TYPE_DOUBLE, flags, engine_val, matrix,iv, ub, lb);
 }
 
 /* Creates a new parameter of type int */
-Param * Param::new_param_int(const char * name, short int flags, void * engine_val,
-                             int upper_bound, int lower_bound, int init_val) {
-
-    Param * param;
-    CValue iv, ub, lb;
+Param* Param::new_param_int(const char* name, short int flags, void* engine_val,
+                            int upper_bound, int lower_bound, int init_val)
+{
     assert(engine_val);
 
-    iv.int_val = init_val;
-    ub.int_val = upper_bound;
-    lb.int_val = lower_bound;
+    CValue iv{ .int_val = init_val };
+    CValue ub{ .int_val = upper_bound };
+    CValue lb{ .int_val = lower_bound };
 
-    if ((param = Param::create(name, P_TYPE_INT, flags, engine_val, NULL, iv, ub, lb)) == NULL)
-        return NULL;
-
-
-    /* Finished, return success */
-    return param;
+    return Param::create(name, P_TYPE_INT, flags, engine_val, nullptr, iv, ub, lb);
 }
 
 /* Creates a new parameter of type bool */
-Param * Param::new_param_bool(const char * name, short int flags, void * engine_val,
-                              bool upper_bound, bool lower_bound, bool init_val) {
-
-    Param * param;
-    CValue iv, ub, lb;
+Param* Param::new_param_bool(const char* name, short int flags, void* engine_val,
+                             bool upper_bound, bool lower_bound, bool init_val)
+{
     assert(engine_val);
 
-    iv.bool_val = init_val;
-    ub.bool_val = upper_bound;
-    lb.bool_val = lower_bound;
+    CValue iv{ .bool_val = init_val };
+    CValue ub{ .bool_val = upper_bound };
+    CValue lb{ .bool_val = lower_bound };
 
-    if ((param = Param::create(name, P_TYPE_BOOL, flags, engine_val, NULL, iv, ub, lb)) == NULL)
-        return NULL;
-
-
-    /* Finished, return success */
-    return param;
+    return Param::create(name, P_TYPE_BOOL, flags, engine_val, nullptr, iv, ub, lb);
 }
 
 /* Creates a new parameter of type string */
-Param * Param::new_param_string(const char * name, short int flags, void * engine_val) {
-
-    Param * param;
-    CValue iv, ub, lb;
+Param* Param::new_param_string(const char* name, short int flags, void* engine_val)
+{
     assert(engine_val);
 
-    iv.bool_val = 0;
-    ub.bool_val = 0;
-    lb.bool_val = 0;
+    CValue iv{ .bool_val = false };
+    CValue ub{ .bool_val = false };
+    CValue lb{ .bool_val = false };
 
-    if ((param = Param::create(name, P_TYPE_STRING, flags, engine_val, NULL, iv, ub, lb)) == NULL)
-        return NULL;
-
-
-    /* Finished, return success */
-    return param;
+    return Param::create(name, P_TYPE_STRING, flags, engine_val, nullptr, iv, ub, lb);
 }
 
 
@@ -301,32 +263,6 @@ public:
     }
 #endif
 };
-
-/*This isn't that useful yet.  Maybe later
-class _AlwaysMatrixParam : public _FloatParam
-{
-public:
-    _AlwaysMatrixParam( const std::string &name_, short int type_, short int flags_,
-                        void * eqn_val_, void *matrix_,
-                        CValue default_init_val_, CValue upper_bound_,
-                        CValue lower_bound_) :
-            _FloatParam(name_, type_, flags_, eqn_val_, matrix_, default_init_val_, upper_bound_, lower_bound_)
-    {
-        matrix_flag = true;
-    }
-    float eval(int mesh_i, int mesh_j) override
-    {
-        assert( mesh_i >=0 && mesh_j >= 0 );
-        return ((float **)matrix)[mesh_i][mesh_j];
-    }
-    void set_matrix(int mesh_i, int mesh_j, float value) override
-    {
-        assert( mesh_i >=0 && mesh_j >= 0);
-        // Yup, presets write to read-only ALWAYS_MATRIX parameters
-        // assert(!(flags & P_FLAG_READONLY));
-        ((float **)matrix)[mesh_i][mesh_j] = value;
-    }
-};*/
 
 class _MeshParam : public _Param
 {
