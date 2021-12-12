@@ -269,11 +269,6 @@ void MilkdropWaveform::WaveformMath(RenderContext& context)
         }
     }
 
-    float r2, theta;
-
-    float wave_x_temp{ 0.0f };
-    float wave_y_temp{ 0.0f };
-
     // Aspect multipliers
     float aspectX{ 1.0f };
     float aspectY{ 1.0f };
@@ -286,8 +281,6 @@ void MilkdropWaveform::WaveformMath(RenderContext& context)
     {
         aspectX = static_cast<float>(context.viewportSizeX) / static_cast<float>(context.viewportSizeY);
     }
-
-    const float temp_y = -1 * (y - 1.0f);
 
     loop = false;
 

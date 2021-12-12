@@ -18,109 +18,99 @@
  * See 'LICENSE.txt' included within this release
  *
  */
-/**
- * $Id$
- *
- * Encapsulation of a custom wave
- *
- * $Log$
- */
-
-#ifndef _CUSTOM_WAVE_H
-#define _CUSTOM_WAVE_H
+#pragma once
 
 #define CUSTOM_WAVE_DEBUG 0
 
-class CustomWave;
 class Expr;
 class PerPointEqn;
 class Preset;
 
-#include <vector>
-
-#include "Common.hpp"
-#include "Param.hpp"
-#include "PerFrameEqn.hpp"
 #include "Renderer/Waveform.hpp"
 
+#include "Common.hpp"
+
+#include "MilkdropPresetFactory/Param.hpp"
+#include "MilkdropPresetFactory/PerFrameEqn.hpp"
+
 #include <map>
+#include <vector>
 
 class CustomWave : public Waveform
 {
 public:
+     CustomWave() = delete;
 
-     /** Empty constructor leaves wave in undefined state **/
-     //CustomWave() {}
+     /**
+      * @brief Initializes a custom waveform with the given ID
+      * @param id The ID (index) of the custom wave.
+      */
+     explicit CustomWave(int id);
 
-     /** Initializes a custom wave id given the integer id */
-     CustomWave(int id);
+    ~CustomWave() override;
 
-    /** Destructor is necessary so we can free the per point matrices **/
-    virtual ~CustomWave();
+    int add_per_point_eqn(char* name, Expr* gen_expr);
 
-    ColoredPoint PerPoint(ColoredPoint p, const WaveformContext context);
+    void evalCustomWaveInitConditions(Preset* preset);
+
+    void loadUnspecInitConds();
+
+    void evalInitConds();
+
+    ColoredPoint PerPoint(ColoredPoint p, const Context& context) override;
 
     /* Numerical id */
-    int id;
-    int per_frame_count;
+    int id{ 0 };
+    int per_frame_count{ 0 };
 
     /* Parameter tree associated with this custom wave */
     std::map<std::string,Param*> param_tree;
 
     /* Engine variables */
-    float x; /* x position for per point equations */
-    float y; /* y position for per point equations */
-    float r; /* red color value */
-    float g; /* green color value */
-    float b; /* blue color value */
-    float a; /* alpha color value */
-    float * x_mesh;
-    float * y_mesh;
-    float * r_mesh;
-    float * b_mesh;
-    float * g_mesh;
-    float * a_mesh;
+    float x{ 0.0f }; /* x position for per point equations */
+    float y{ 0.0f }; /* y position for per point equations */
+    float r{ 0.0f }; /* red color value */
+    float g{ 0.0f }; /* green color value */
+    float b{ 0.0f }; /* blue color value */
+    float a{ 0.0f }; /* alpha color value */
 
-    bool enabled; /* if true then wave is visible, hidden otherwise */
+    std::vector<float> x_mesh;
+    std::vector<float> y_mesh;
+    std::vector<float> r_mesh;
+    std::vector<float> b_mesh;
+    std::vector<float> g_mesh;
+    std::vector<float> a_mesh;
 
-    float sample;
+    bool enabled{ false }; /* if true then wave is visible, hidden otherwise */
+
+    float sample{ 0.0f };
 
     /* stupid t variables */
-    float t1;
-    float t2;
-    float t3;
-    float t4;
-    float t5;
-    float t6;
-    float t7;
-    float t8;
+    float t1{ 0.0f };
+    float t2{ 0.0f };
+    float t3{ 0.0f };
+    float t4{ 0.0f };
+    float t5{ 0.0f };
+    float t6{ 0.0f };
+    float t7{ 0.0f };
+    float t8{ 0.0f };
 
 
     /* stupider q variables */
-    float q[NUM_Q_VARIABLES];
+    float q[NUM_Q_VARIABLES]{};
 
-    float v1,v2;
+    float v2{ 0.0f};
+    float v1{ 0.0f};
 
     /* Data structures to hold per frame and per point equations */
     std::map<std::string,InitCond*>  init_cond_tree;
     std::vector<PerFrameEqn*>  per_frame_eqn_tree;
     std::vector<PerPointEqn*>  per_point_eqn_tree;
-    Expr *per_point_program;
+    Expr* per_point_program{ nullptr };
     std::map<std::string,InitCond*>  per_frame_init_eqn_tree;
 
     /* Denotes the index of the last character for each string buffer */
     int per_point_eqn_string_index;
     int per_frame_eqn_string_index;
     int per_frame_init_eqn_string_index;
-
-    int add_per_point_eqn(char * name, Expr * gen_expr);
-    void evalCustomWaveInitConditions(Preset *preset);
-    
-
-    void loadUnspecInitConds();
-
-    void evalInitConds();
-
 };
-
-#endif /** !_CUSTOM_WAVE_H */

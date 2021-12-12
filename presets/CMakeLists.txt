@@ -1,7 +1,7 @@
 if(ENABLE_TESTING)
     install(DIRECTORY
             tests
-            DESTINATION "${PROJECTM_DATADIR_PATH}/presets"
+            DESTINATION "presets"
             COMPONENT Tests
             )
 endif()
