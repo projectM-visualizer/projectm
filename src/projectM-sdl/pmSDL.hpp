@@ -160,13 +160,13 @@ private:
 
     // audio input device characteristics
     unsigned int NumAudioDevices{ 0 };
-    unsigned int CurAudioDevice{ 0 };
+    int CurAudioDevice{ 0 };            // SDL's device indexes are 0-based, -1 means "system default"
     unsigned short audioChannelsCount{ 0 };
     unsigned short audioSampleRate{ 0 };
     unsigned short audioSampleCount{ 0 };
     SDL_AudioFormat audioFormat{ 0 };
     SDL_AudioDeviceID audioDeviceID{ 0 };
-    SDL_AudioDeviceID selectedAudioDevice{ 0 };
+    int selectedAudioDevice{ 0 };
 };
 
 

@@ -17,7 +17,9 @@ int projectMSDL::initAudioInput() {
     want.callback = projectMSDL::audioInputCallbackF32;
     want.userdata = this;
 
-    audioDeviceID = SDL_OpenAudioDevice(SDL_GetAudioDeviceName(selectedAudioDevice, true), true, &want, &have, 0);
+    // index -1 means "system deafult", which is used if we pass deviceName == NULL
+    const char *deviceName = selectedAudioDevice == -1 ? NULL : SDL_GetAudioDeviceName(selectedAudioDevice, true);
+    audioDeviceID = SDL_OpenAudioDevice(deviceName, true, &want, &have, 0);
 
     if (audioDeviceID == 0) {
         SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Failed to open audio capture device: %s", SDL_GetError());
@@ -25,8 +27,10 @@ int projectMSDL::initAudioInput() {
     }
 
     // read characteristics of opened capture device
-    SDL_Log("Opened audio capture device index=%i devId=%i: %s", selectedAudioDevice, audioDeviceID, SDL_GetAudioDeviceName(selectedAudioDevice, true));
-    std::string deviceToast = SDL_GetAudioDeviceName(selectedAudioDevice, true); // Example: Microphone rear
+    if(deviceName == NULL)
+        deviceName = "<System default capture device>";
+    SDL_Log("Opened audio capture device index=%i devId=%i: %s", selectedAudioDevice, audioDeviceID, deviceName);
+    std::string deviceToast = deviceName; // Example: Microphone rear
     deviceToast += " selected";
     projectm_set_toast_message(_projectM, deviceToast.c_str());
 #ifdef DEBUG
@@ -75,15 +79,15 @@ int projectMSDL::toggleAudioInput() {
     if (wasapi) { // we are currently on WASAPI, so we are going to revert to a microphone/line-in input.
         if (this->openAudioInput())
             this->beginAudioCapture();
-        CurAudioDevice = 0;
+        CurAudioDevice = -1;        // start from system default device
         selectedAudioDevice = CurAudioDevice;
         this->wasapi = false; // Track wasapi as off so projectMSDL will stop listening to WASAPI loopback in pmSDL_main.
     }
     else {
         this->endAudioCapture(); // end current audio capture.
         CurAudioDevice++; // iterate device index
-        if (CurAudioDevice >= NumAudioDevices) { // We reached outside the boundaries of available audio devices.
-            CurAudioDevice = 0; // Return to first audio device in the index.
+        if (CurAudioDevice >= (int)NumAudioDevices) { // We reached outside the boundaries of available audio devices.
+            CurAudioDevice = -1; // Return to the default audio device.
 #ifdef WASAPI_LOOPBACK
             // If we are at the boundary and WASAPI is enabled then let's load WASAPI instead.
             projectm_set_toast_message(_projectM, "Loopback audio selected");
@@ -91,9 +95,9 @@ int projectMSDL::toggleAudioInput() {
             this->fakeAudio = false; // disable fakeAudio in case it was enabled.
             this->wasapi = true; // Track wasapi as on so projectMSDL will listen to it.
 #else
-            if (NumAudioDevices == 1) // If WASAPI_LOOPBACK was not enabled and there is only one audio device, it's pointless to toggle anything.
+            if (NumAudioDevices == 0) // If WASAPI_LOOPBACK was not enabled and there is only the default audio device, it's pointless to toggle anything.
             {
-                SDL_Log("There is only one audio capture device. There is nothing to toggle at this time.");
+                SDL_Log("Only the default audio capture device is available. There is nothing to toggle at this time.");
                 return 1;
             }
             // If WASAPI_LOOPBACK is not enabled and we have multiple input devices, return to device index 0 and let's listen to that device.
@@ -123,22 +127,25 @@ int projectMSDL::openAudioInput() {
     // get audio input device
     NumAudioDevices = SDL_GetNumAudioDevices(true);  // capture, please
 
-    CurAudioDevice = 0;
-    if (NumAudioDevices == 0) {
-        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio capture devices found");
-        projectm_set_toast_message(_projectM, "No audio capture devices found: using simulated audio");
-        fakeAudio = true;
-        return 0;
-    }
 #ifdef DEBUG
     for (unsigned int i = 0; i < NumAudioDevices; i++) {
         SDL_Log("Found audio capture device %d: %s", i, SDL_GetAudioDeviceName(i, true));
     }
 #endif
 
-    // default selected Audio Device to 0.
-    selectedAudioDevice = 0;
-    initAudioInput();
+    // We start with the system default capture device (index -1).
+    // Note: this might work even if NumAudioDevices == 0 (example: if only a
+    // monitor device exists, and SDL_HINT_AUDIO_INCLUDE_MONITORS is not set).
+    // So we always try it, and revert to fakeAudio if the default fails _and_ NumAudioDevices == 0.
+    CurAudioDevice = -1;
+    selectedAudioDevice = -1;
+    if(!initAudioInput() && NumAudioDevices == 0) {
+        // the default device doesn't work, and there's no other device to try
+        SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "No audio capture devices found");
+        projectm_set_toast_message(_projectM, "No audio capture devices found: using simulated audio");
+        fakeAudio = true;
+        return 0;
+    }
 
     return 1;
 }
