@@ -62,7 +62,7 @@ You can also download an enormous 41,000 preset pack of presets [here](https://m
 
 [![Kodi](https://github.com/projectM-visualizer/projectm/raw/master/web/kodi.png) Kodi (formerly XBMC)](https://kodi.tv/)
 
-[![Helix](https://github.com/projectM-visualizer/projectm/raw/master/web/helix.jpg) Helix](http://ghostfiregames.com/helixhome.html)
+[![Helix](https://github.com/projectM-visualizer/projectm/raw/master/web/helix.jpg) Helix](https://web.archive.org/web/20180628174410/http://ghostfiregames.com/helixhome.html)
 
 [![Silverjuke](https://github.com/projectM-visualizer/projectm/raw/master/web/silverjuke.png) Silverjuke (FOSS Jukebox)](https://www.silverjuke.net)
 
