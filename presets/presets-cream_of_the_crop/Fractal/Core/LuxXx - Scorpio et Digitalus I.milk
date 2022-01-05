@@ -1,0 +1,373 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=2
+PSVERSION_WARP=2
+PSVERSION_COMP=2
+[preset00]
+fRating=5.000000
+fGammaAdj=1.280
+fDecay=0.800
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=3
+nWaveMode=5
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=1
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=1
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=0.001
+fWaveScale=1.448
+fWaveSmoothing=0.500
+fWaveParam=0.000
+fModWaveAlphaStart=0.500
+fModWaveAlphaEnd=1.000
+fWarpAnimSpeed=1.000
+fWarpScale=2.853
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00600
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=0.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.500
+wave_g=0.500
+wave_b=0.500
+wave_x=0.500
+wave_y=0.500
+ob_size=0.005
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.010
+ib_r=0.250
+ib_g=0.250
+ib_b=0.250
+ib_a=0.000
+nMotionVectorsX=0.000
+nMotionVectorsY=0.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=1.000
+mv_r=1.000
+mv_g=1.000
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.000
+wavecode_0_enabled=0
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=0
+wavecode_0_bAdditive=0
+wavecode_0_scaling=1.00000
+wavecode_0_smoothing=0.50000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wavecode_1_enabled=0
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=0
+wavecode_1_bAdditive=0
+wavecode_1_scaling=1.00000
+wavecode_1_smoothing=0.50000
+wavecode_1_r=1.000
+wavecode_1_g=1.000
+wavecode_1_b=1.000
+wavecode_1_a=1.000
+wavecode_2_enabled=0
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=0
+wavecode_2_bAdditive=0
+wavecode_2_scaling=1.00000
+wavecode_2_smoothing=0.50000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=1.000
+wavecode_2_a=1.000
+wavecode_3_enabled=0
+wavecode_3_samples=512
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=1.000
+shapecode_0_enabled=1
+shapecode_0_sides=100
+shapecode_0_additive=0
+shapecode_0_thickOutline=1
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.370
+shapecode_0_y=0.500
+shapecode_0_rad=2.71585
+shapecode_0_ang=3.64425
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=1.00000
+shapecode_0_r=0.000
+shapecode_0_g=0.000
+shapecode_0_b=0.000
+shapecode_0_a=0.400
+shapecode_0_r2=0.000
+shapecode_0_g2=0.000
+shapecode_0_b2=0.000
+shapecode_0_a2=0.200
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=0.000
+shape_0_init1=t1 = rand(100)*0.01;
+shape_0_init2=t2 = rand(100)*0.01;
+shape_0_per_frame1=// Loadus & Geiss custom shape design
+shape_0_per_frame2=
+shape_0_per_frame3=ang = q4*(0.13 + 0.1*t1);
+shape_0_per_frame4=rad = rad * (0.5 + 0.2*t2);
+shape_0_per_frame5=r = min(1,max(0,r + 0.2*sin(time*0.417 + 1)));
+shape_0_per_frame6=g = min(1,max(0,g + 0.2*sin(time*0.391 + 2)));
+shape_0_per_frame7=b = min(1,max(0,b + 0.2*sin(time*0.432 + 4)));
+shape_0_per_frame8=r2 = min(1,max(0,r2 + 0.2*sin(time*0.657 + 3)));
+shape_0_per_frame9=g2 = min(1,max(0,g2 + 0.2*sin(time*0.737 + 5)));
+shape_0_per_frame10=b2 = min(1,max(0,b2 + 0.2*sin(time*0.884 + 6)));
+shapecode_1_enabled=1
+shapecode_1_sides=50
+shapecode_1_additive=1
+shapecode_1_thickOutline=0
+shapecode_1_textured=1
+shapecode_1_num_inst=1
+shapecode_1_x=0.370
+shapecode_1_y=0.500
+shapecode_1_rad=0.80410
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=1.88496
+shapecode_1_tex_zoom=1.34785
+shapecode_1_r=1.000
+shapecode_1_g=1.000
+shapecode_1_b=1.000
+shapecode_1_a=1.000
+shapecode_1_r2=1.000
+shapecode_1_g2=1.000
+shapecode_1_b2=1.000
+shapecode_1_a2=0.000
+shapecode_1_border_r=1.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=1.000
+shapecode_1_border_a=0.000
+shape_1_init1=t1 = rand(100)*0.01;
+shape_1_init2=t2 = rand(100)*0.01;
+shape_1_per_frame1=// Loadus & Geiss custom shape design
+shape_1_per_frame2=
+shape_1_per_frame3=x = x + 0.05*sin(time*1.05+33);
+shape_1_per_frame4=y = y + 0.03*sin(time*1.09+24);
+shape_1_per_frame5=ang = q4*(0.2 + 0.1*t1);
+shape_1_per_frame6=rad = rad * (0.9 + 0.2*t2);
+shape_1_per_frame7=r = q3;
+shape_1_per_frame8=g = q1;
+shape_1_per_frame9=b = q2;
+shape_1_per_frame10=
+shape_1_per_frame11=//r = min(1,max(0,r + 0.1*sin(time*0.417 + 1)));
+shape_1_per_frame12=//g = min(1,max(0,g + 0.1*sin(time*0.391 + 2)));
+shape_1_per_frame13=//b = min(1,max(0,b + 0.1*sin(time*0.432 + 4)));
+shape_1_per_frame14=r2 = min(1,max(0,r2 + 0.1*sin(time*0.457 + 3)));
+shape_1_per_frame15=g2 = min(1,max(0,g2 + 0.1*sin(time*0.437 + 5)));
+shape_1_per_frame16=b2 = min(1,max(0,b2 + 0.1*sin(time*0.484 + 6)));
+shapecode_2_enabled=1
+shapecode_2_sides=50
+shapecode_2_additive=1
+shapecode_2_thickOutline=0
+shapecode_2_textured=1
+shapecode_2_num_inst=1
+shapecode_2_x=0.670
+shapecode_2_y=0.430
+shapecode_2_rad=0.69954
+shapecode_2_ang=4.20974
+shapecode_2_tex_ang=1.88496
+shapecode_2_tex_zoom=0.90529
+shapecode_2_r=1.000
+shapecode_2_g=1.000
+shapecode_2_b=1.000
+shapecode_2_a=1.000
+shapecode_2_r2=1.000
+shapecode_2_g2=1.000
+shapecode_2_b2=1.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=1.000
+shapecode_2_border_a=0.000
+shape_2_init1=t1 = rand(100)*0.01;
+shape_2_init2=t2 = rand(100)*0.01;
+shape_2_per_frame1=// Loadus & Geiss custom shape design
+shape_2_per_frame2=
+shape_2_per_frame3=x = x + 0.05*sin(time*0.17+24);
+shape_2_per_frame4=y = y + 0.03*sin(time*0.23+28);
+shape_2_per_frame5=ang = q4*(0.5 + 0.1*t1);
+shape_2_per_frame6=rad = rad * (0.9 + 0.2*t2);
+shape_2_per_frame7=r = q1;
+shape_2_per_frame8=g = q3;
+shape_2_per_frame9=b = q2;
+shape_2_per_frame10=
+shape_2_per_frame11=//r = min(1,max(0,r + 0.1*sin(time*0.417 + 1)));
+shape_2_per_frame12=//g = min(1,max(0,g + 0.1*sin(time*0.391 + 2)));
+shape_2_per_frame13=//b = min(1,max(0,b + 0.1*sin(time*0.432 + 4)));
+shape_2_per_frame14=r2 = min(1,max(0,r2 + 0.1*sin(time*0.457 + 3)));
+shape_2_per_frame15=g2 = min(1,max(0,g2 + 0.1*sin(time*0.437 + 5)));
+shape_2_per_frame16=b2 = min(1,max(0,b2 + 0.1*sin(time*0.484 + 6)));
+shapecode_3_enabled=1
+shapecode_3_sides=50
+shapecode_3_additive=1
+shapecode_3_thickOutline=0
+shapecode_3_textured=1
+shapecode_3_num_inst=1
+shapecode_3_x=0.670
+shapecode_3_y=0.430
+shapecode_3_rad=0.37003
+shapecode_3_ang=4.20974
+shapecode_3_tex_ang=3.76991
+shapecode_3_tex_zoom=1.00000
+shapecode_3_r=1.000
+shapecode_3_g=1.000
+shapecode_3_b=1.000
+shapecode_3_a=1.000
+shapecode_3_r2=1.000
+shapecode_3_g2=1.000
+shapecode_3_b2=1.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=1.000
+shapecode_3_border_b=1.000
+shapecode_3_border_a=0.000
+shape_3_init1=t1 = rand(100)*0.01;
+shape_3_init2=t2 = rand(100)*0.01;
+shape_3_per_frame1=// Loadus & Geiss custom shape design
+shape_3_per_frame2=
+shape_3_per_frame3=x = x + 0.25*sin(time*0.17+32);
+shape_3_per_frame4=y = y + 0.23*sin(time*0.13+12);
+shape_3_per_frame5=ang = q4*(0.2 + 0.1*t1);
+shape_3_per_frame6=rad = rad * (0.9 + 0.2*t2);
+shape_3_per_frame7=//r = min(1,max(0,r + 0.1*sin(time*0.117 + 1)));
+shape_3_per_frame8=//g = min(1,max(0,g + 0.1*sin(time*0.191 + 2)));
+shape_3_per_frame9=//b = min(1,max(0,b + 0.1*sin(time*0.132 + 4)));
+shape_3_per_frame10=//r2 = min(1,max(0,r2 + 0.1*sin(time*0.457 + 3)));
+shape_3_per_frame11=//g2 = min(1,max(0,g2 + 0.1*sin(time*0.437 + 5)));
+shape_3_per_frame12=//b2 = min(1,max(0,b2 + 0.1*sin(time*0.484 + 6)));
+shape_3_per_frame13=r = q1;
+shape_3_per_frame14=b = q3;
+shape_3_per_frame15=g = q2;
+shape_3_per_frame16=r2 = q2;
+shape_3_per_frame17=b2 = q1;
+shape_3_per_frame18=g2 = q3;
+per_frame_init_1=
+per_frame_init_2=c_x = 0.5;
+per_frame_init_3=c_y = 0.5;
+per_frame_1=q1 = aspectx;
+per_frame_2=q2 = aspecty;
+per_frame_3=rot = 0;
+per_frame_4=zoom = 1;
+per_frame_5=warp = 0;
+per_frame_6=
+per_frame_7=vol = bass*8 + mid*5 + treb*3;
+per_frame_8=m = m*0.96 + vol*0.06;
+per_frame_9=monitor = vol-m;
+per_frame_10=beat = above(vol,res)*above(vol,m)*above(vol,10);
+per_frame_11=diff = (1-beat)*diff + beat*(vol-res);
+per_frame_12=res = beat*(vol + m*0.15) + (1-beat)*(res -  (0.15+diff*0.03)*60/fps);
+per_frame_13=res = max(0,res);
+per_frame_14=
+per_frame_15=r = if(beat, 0.02*(rand(200)-100)*0.01,r);
+per_frame_16=rot = r;
+per_frame_17=
+per_frame_18=c_x = if(beat,0.5 + 0.5*(rand(200)-100)*0.01, c_x);
+per_frame_19=c_y = if(beat,0.5 + 0.5*(rand(200)-100)*0.01, c_y);
+per_frame_20=v = if(beat,0.035 + 0.025*(rand(200)-100)*0.01, v);
+per_frame_21=
+per_frame_22=
+per_frame_23=q3 = c_x;
+per_frame_24=q4 = c_y;
+per_frame_25=q5 = v;
+per_frame_26=q6 = beat;
+per_pixel_1=d = (pow(sqrt(sqr(x-q3)+sqr(y-q4)),0.5)-0.);
+per_pixel_2=v = q5;
+per_pixel_3=dx = v*(x-q3)*d;
+per_pixel_4=dy = v*(y-q4)*d;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // sample previous frame
+warp_4=`    ret = tex2D( sampler_main, uv ).xyz;
+warp_5=`
+warp_6=`    // motion blur:
+warp_7=`    // 'v' points exactly one pixel, in the direction of motion
+warp_8=`    float2 v = normalize(uv-uv_orig)*texsize.zw;
+warp_9=`    float3 s;
+warp_10=`    ret = max(ret, tex2D(sampler_main, uv+v)*0.97);
+warp_11=`    ret = max(ret, tex2D(sampler_main, uv-v)*0.97);
+warp_12=`    ret = max(ret, tex2D(sampler_main, uv+v*2)*0.90);
+warp_13=`    ret = max(ret, tex2D(sampler_main, uv-v*2)*0.90);
+warp_14=`
+warp_15=`    // darken over time
+warp_16=`    ret *= 0.95;
+warp_17=`
+warp_18=`    // add noise
+warp_19=`    //float2 uv_noise = uv*texsize_noise_lq.zw*texsize.xy + rand_frame.xy;
+warp_20=`    //ret += (tex2D(sampler_noise_lq, uv_noise)*2-1)*0.02;
+warp_21=`}
+comp_1=`// tribute to suksma!
+comp_2=`
+comp_3=`shader_body
+comp_4=`{
+comp_5=`    float2 uv2;
+comp_6=`
+comp_7=`    float4 c = float4(1,0.4,0.15,0.1);
+comp_8=`
+comp_9=`    uv2 = uv + float2(1,0)*texsize.zw;
+comp_10=`    float gx1 = GetPixel(uv2)*c.x + GetBlur1(uv2)*c.y + GetBlur2(uv2)*c.z + GetBlur3(uv2)*c.w;
+comp_11=`    uv2 = uv + float2(-1,0)*texsize.zw;
+comp_12=`    float gx2 = GetPixel(uv2)*c.x + GetBlur1(uv2)*c.y + GetBlur2(uv2)*c.z + GetBlur3(uv2)*c.w;
+comp_13=`
+comp_14=`    uv2 = uv + float2(0,1)*texsize.zw;
+comp_15=`    float gy1 = GetPixel(uv2)*c.x + GetBlur1(uv2)*c.y + GetBlur2(uv2)*c.z + GetBlur3(uv2)*c.w;
+comp_16=`    uv2 = uv + float2(0,-1)*texsize.zw;
+comp_17=`    float gy2 = GetPixel(uv2)*c.x + GetBlur1(uv2)*c.y + GetBlur2(uv2)*c.z + GetBlur3(uv2)*c.w;
+comp_18=`
+comp_19=`    float3 g = normalize(float3(gx1-gx2, gy1-gy2, 0.14));
+comp_20=`
+comp_21=`    ret = 0.5 + 0.5*g;
+comp_22=`    ret *= saturate(length(ret.xy-0.5)*5);
+comp_23=`    ret = ret.xxy;
+comp_24=`    ret += 1.15;
+comp_25=`    ret *= lerp(ret,ret*(GetBlur3(uv)-GetBlur1(uv)*treb_att),pow(hue_shader.xzy,bass_att));
+comp_26=`    ret *= ret;
+comp_27=`
+comp_28=`    //ret *= 1.5; //old gamma effect    
+comp_29=`}
