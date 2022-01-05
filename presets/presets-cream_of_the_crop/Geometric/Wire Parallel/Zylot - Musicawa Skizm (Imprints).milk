@@ -1,0 +1,368 @@
+MILKDROP_PRESET_VERSION=201
+PSVERSION=4
+PSVERSION_WARP=4
+PSVERSION_COMP=4
+[preset00]
+fRating=5.000000
+fGammaAdj=2.000
+fDecay=0.900
+fVideoEchoZoom=1.000
+fVideoEchoAlpha=0.000
+nVideoEchoOrientation=0
+nWaveMode=0
+bAdditiveWaves=0
+bWaveDots=0
+bWaveThick=0
+bModWaveAlphaByVolume=0
+bMaximizeWaveColor=0
+bTexWrap=0
+bDarkenCenter=0
+bRedBlueStereo=0
+bBrighten=0
+bDarken=0
+bSolarize=0
+bInvert=0
+fWaveAlpha=1.000
+fWaveScale=1.000
+fWaveSmoothing=0.750
+fWaveParam=0.000
+fModWaveAlphaStart=0.750
+fModWaveAlphaEnd=0.950
+fWarpAnimSpeed=1.000
+fWarpScale=1.000
+fZoomExponent=1.00000
+fShader=0.000
+zoom=1.00000
+rot=0.00000
+cx=0.500
+cy=0.500
+dx=0.00000
+dy=0.00000
+warp=1.00000
+sx=1.00000
+sy=1.00000
+wave_r=0.500
+wave_g=0.500
+wave_b=0.500
+wave_x=0.500
+wave_y=0.500
+ob_size=0.000
+ob_r=0.000
+ob_g=0.000
+ob_b=0.000
+ob_a=0.000
+ib_size=0.000
+ib_r=0.000
+ib_g=0.000
+ib_b=0.000
+ib_a=0.000
+nMotionVectorsX=64.000
+nMotionVectorsY=48.000
+mv_dx=0.000
+mv_dy=0.000
+mv_l=0.000
+mv_r=0.000
+mv_g=0.700
+mv_b=1.000
+mv_a=0.000
+b1n=0.000
+b2n=0.000
+b3n=0.000
+b1x=1.000
+b2x=1.000
+b3x=1.000
+b1ed=0.250
+wavecode_0_enabled=1
+wavecode_0_samples=512
+wavecode_0_sep=0
+wavecode_0_bSpectrum=0
+wavecode_0_bUseDots=0
+wavecode_0_bDrawThick=1
+wavecode_0_bAdditive=0
+wavecode_0_scaling=0.46374
+wavecode_0_smoothing=0.00000
+wavecode_0_r=1.000
+wavecode_0_g=1.000
+wavecode_0_b=1.000
+wavecode_0_a=1.000
+wave_0_init1=red = rand(100)*.01;
+wave_0_init2=green = rand(100)*.01;
+wave_0_init3=blue = rand(100)*.01;
+wave_0_init4=count = 20;
+wave_0_per_frame1=count = if(above(count,1),count - 1,22);
+wave_0_per_frame2=
+wave_0_per_frame3=r = if(above(count,10),red,1);
+wave_0_per_frame4=g = if(above(count,10),green,1);
+wave_0_per_frame5=b = if(above(count,10),blue,1);
+wave_0_per_point1=x = .5 + sample*cos(time*q1);
+wave_0_per_point2=y = .5 + sample*sin(time*q1);
+wave_0_per_point3=
+wave_0_per_point4=r = r + sin(sample*(30*sample)-time);
+wave_0_per_point5=g = g + sin(sample*(30*sample)-time);
+wave_0_per_point6=b = b + sin(sample*(30*sample)-time);
+wave_0_per_point7=
+wave_0_per_point8=count = if(above(count,1),count - 1,22);
+wave_0_per_point9=
+wave_0_per_point10=r = if(below(sample,.3),if(below(count,10),red,r),r);
+wave_0_per_point11=g = if(below(sample,.3),if(below(count,10),green,g),g);
+wave_0_per_point12=b = if(below(sample,.3),if(below(count,10),blue,b),b);
+wave_0_per_point13=
+wave_0_per_point14=
+wave_0_per_point15=red = if(equal(q2,1),rand(100)*.01,red);
+wave_0_per_point16=green = if(equal(q2,1),rand(100)*.01,green);
+wave_0_per_point17=blue = if(equal(q2,1),rand(100)*.01,blue);
+wavecode_1_enabled=1
+wavecode_1_samples=512
+wavecode_1_sep=0
+wavecode_1_bSpectrum=0
+wavecode_1_bUseDots=0
+wavecode_1_bDrawThick=1
+wavecode_1_bAdditive=0
+wavecode_1_scaling=0.46374
+wavecode_1_smoothing=0.00000
+wavecode_1_r=0.000
+wavecode_1_g=0.000
+wavecode_1_b=0.000
+wavecode_1_a=1.000
+wave_1_init1=red = rand(100)*.01;
+wave_1_init2=green = rand(100)*.01;
+wave_1_init3=blue = rand(100)*.01;
+wave_1_init4=count = 22;
+wave_1_per_frame1=count = if(above(count,1),count - 1,22);
+wave_1_per_frame2=
+wave_1_per_frame3=r = if(above(count,10),red,1);
+wave_1_per_frame4=g = if(above(count,10),green,1);
+wave_1_per_frame5=b = if(above(count,10),blue,1);
+wave_1_per_point1=x = .5 + sample*cos(time*q1+3.15);
+wave_1_per_point2=y = .5 + sample*sin(time*q1+3.15);
+wave_1_per_point3=
+wave_1_per_point4=r = r + sin(sample*(30*sample)-time);
+wave_1_per_point5=g = g + sin(sample*(30*sample)-time);
+wave_1_per_point6=b = b + sin(sample*(30*sample)-time);
+wave_1_per_point7=
+wave_1_per_point8=count = if(above(count,1),count - 1,22);
+wave_1_per_point9=
+wave_1_per_point10=r = if(below(sample,.3),if(below(count,10),red,r),r);
+wave_1_per_point11=g = if(below(sample,.3),if(below(count,10),green,g),g);
+wave_1_per_point12=b = if(below(sample,.3),if(below(count,10),blue,b),b);
+wave_1_per_point13=
+wave_1_per_point14=red = if(equal(q2,1),rand(100)*.01,red);
+wave_1_per_point15=green = if(equal(q2,1),rand(100)*.01,green);
+wave_1_per_point16=blue = if(equal(q2,1),rand(100)*.01,blue);
+wavecode_2_enabled=1
+wavecode_2_samples=512
+wavecode_2_sep=0
+wavecode_2_bSpectrum=0
+wavecode_2_bUseDots=0
+wavecode_2_bDrawThick=1
+wavecode_2_bAdditive=0
+wavecode_2_scaling=0.46374
+wavecode_2_smoothing=0.00000
+wavecode_2_r=1.000
+wavecode_2_g=1.000
+wavecode_2_b=1.000
+wavecode_2_a=1.000
+wave_2_per_point1=fvar = sample*512;
+wave_2_per_point2=svar = fvar/16;
+wave_2_per_point3=tvar = 0&svar;
+wave_2_per_point4=nsample = tvar*3+2.5*sin(time*1.795);
+wave_2_per_point5=
+wave_2_per_point6=x = .5 + (.1 + .02*bass)*cos(nsample);
+wave_2_per_point7=y = .5 + (.1 + .02*bass)*sin(nsample);
+wave_2_per_point8=
+wave_2_per_point9=a = -.7+sin(sample*10+time*sin(time*.338));
+wave_2_per_point10=a = if(below(a,0),0,a);
+wave_2_per_point11=
+wave_2_per_point12=r = 4+.2*sin(time*4);
+wave_2_per_point13=g = 4+.2*sin(time*5);
+wave_2_per_point14=b = 4+.2*sin(time*6);
+wavecode_3_enabled=0
+wavecode_3_samples=512
+wavecode_3_sep=0
+wavecode_3_bSpectrum=0
+wavecode_3_bUseDots=0
+wavecode_3_bDrawThick=0
+wavecode_3_bAdditive=0
+wavecode_3_scaling=1.00000
+wavecode_3_smoothing=0.50000
+wavecode_3_r=1.000
+wavecode_3_g=1.000
+wavecode_3_b=1.000
+wavecode_3_a=1.000
+shapecode_0_enabled=0
+shapecode_0_sides=3
+shapecode_0_additive=0
+shapecode_0_thickOutline=0
+shapecode_0_textured=0
+shapecode_0_num_inst=1
+shapecode_0_x=0.500
+shapecode_0_y=0.500
+shapecode_0_rad=0.17114
+shapecode_0_ang=0.00000
+shapecode_0_tex_ang=0.00000
+shapecode_0_tex_zoom=1.00000
+shapecode_0_r=1.000
+shapecode_0_g=0.000
+shapecode_0_b=0.000
+shapecode_0_a=0.000
+shapecode_0_r2=0.000
+shapecode_0_g2=1.000
+shapecode_0_b2=0.000
+shapecode_0_a2=0.000
+shapecode_0_border_r=1.000
+shapecode_0_border_g=1.000
+shapecode_0_border_b=1.000
+shapecode_0_border_a=1.000
+shape_0_per_frame1=x = .5 + (.5-(bass*.2))*cos(time*q1);
+shape_0_per_frame2=y = .5 + (.5-(bass*.2))*sin(time*q1);
+shape_0_per_frame3=ang = time;
+shapecode_1_enabled=0
+shapecode_1_sides=3
+shapecode_1_additive=0
+shapecode_1_thickOutline=0
+shapecode_1_textured=0
+shapecode_1_num_inst=1
+shapecode_1_x=0.500
+shapecode_1_y=0.500
+shapecode_1_rad=0.16122
+shapecode_1_ang=0.00000
+shapecode_1_tex_ang=0.00000
+shapecode_1_tex_zoom=1.00000
+shapecode_1_r=1.000
+shapecode_1_g=0.000
+shapecode_1_b=0.000
+shapecode_1_a=0.000
+shapecode_1_r2=0.000
+shapecode_1_g2=1.000
+shapecode_1_b2=0.000
+shapecode_1_a2=0.000
+shapecode_1_border_r=1.000
+shapecode_1_border_g=1.000
+shapecode_1_border_b=1.000
+shapecode_1_border_a=1.000
+shape_1_per_frame1=x = .5 + (.5-(bass*.2))*cos(time*q1+3.15);
+shape_1_per_frame2=y = .5 + (.5-(bass*.2))*sin(time*q1+3.15);
+shape_1_per_frame3=ang = time;
+shapecode_2_enabled=0
+shapecode_2_sides=100
+shapecode_2_additive=0
+shapecode_2_thickOutline=0
+shapecode_2_textured=0
+shapecode_2_num_inst=1
+shapecode_2_x=0.500
+shapecode_2_y=0.500
+shapecode_2_rad=0.06852
+shapecode_2_ang=0.00000
+shapecode_2_tex_ang=0.00000
+shapecode_2_tex_zoom=1.00000
+shapecode_2_r=0.000
+shapecode_2_g=0.000
+shapecode_2_b=0.000
+shapecode_2_a=0.000
+shapecode_2_r2=1.000
+shapecode_2_g2=1.000
+shapecode_2_b2=1.000
+shapecode_2_a2=0.000
+shapecode_2_border_r=1.000
+shapecode_2_border_g=1.000
+shapecode_2_border_b=1.000
+shapecode_2_border_a=1.000
+shape_2_per_frame1=x = .5 + (.5-(bass*.2))*cos(time*q1+3.15);
+shape_2_per_frame2=y = .5 + (.5-(bass*.2))*sin(time*q1+3.15);
+shape_2_per_frame3=
+shape_2_per_frame4=//splitting time, man I wish there were more waves and shapes, but at least that nifty frame%n trick rocks.
+shape_2_per_frame5=
+shape_2_per_frame6=x = if(equal(frame%3,0),x + .07*cos(-time-.9),if(equal(frame%3,1),x + .07*cos(-time+1.2),x + .07*cos(-time+3.3)));
+shape_2_per_frame7=y = if(equal(frame%3,0),y + .07*sin(-time-.9),if(equal(frame%3,1),y + .07*sin(-time+1.2),y + .07*sin(-time+3.3)));
+shape_2_per_frame8=
+shape_2_per_frame9=//Color happy time, as usual I use 1 of three shapes to represent either bass treb or mid range,t o make sure
+shape_2_per_frame10=//all of your music is in the preset.
+shape_2_per_frame11=
+shape_2_per_frame12=border_r = if(equal(frame%3,0),bass,if(equal(frame%3,1),0,0));
+shape_2_per_frame13=border_g = if(equal(frame%3,0),0,if(equal(frame%3,1),treb,0));
+shape_2_per_frame14=border_b = if(equal(frame%3,0),0,if(equal(frame%3,1),0,mid));
+shape_2_per_frame15=r = if(equal(frame%3,0),bass,if(equal(frame%3,1),0,0));
+shape_2_per_frame16=g = if(equal(frame%3,0),0,if(equal(frame%3,1),treb,0));
+shape_2_per_frame17=b = if(equal(frame%3,0),0,if(equal(frame%3,1),0,mid));
+shape_2_per_frame18=a = if(above(bass+mid+treb,1),1,0);
+shapecode_3_enabled=0
+shapecode_3_sides=100
+shapecode_3_additive=0
+shapecode_3_thickOutline=0
+shapecode_3_textured=0
+shapecode_3_num_inst=1
+shapecode_3_x=0.500
+shapecode_3_y=0.500
+shapecode_3_rad=0.07798
+shapecode_3_ang=0.00000
+shapecode_3_tex_ang=0.00000
+shapecode_3_tex_zoom=1.00000
+shapecode_3_r=1.000
+shapecode_3_g=0.000
+shapecode_3_b=0.000
+shapecode_3_a=0.000
+shapecode_3_r2=1.000
+shapecode_3_g2=1.000
+shapecode_3_b2=1.000
+shapecode_3_a2=0.000
+shapecode_3_border_r=1.000
+shapecode_3_border_g=1.000
+shapecode_3_border_b=1.000
+shapecode_3_border_a=1.000
+shape_3_per_frame1=x = .5 + (.5-(bass*.2))*cos(time*q1);
+shape_3_per_frame2=y = .5 + (.5-(bass*.2))*sin(time*q1);
+shape_3_per_frame3=
+shape_3_per_frame4=//splitting time, man I wish there were more waves and shapes, but at least that nifty frame%n trick rocks.
+shape_3_per_frame5=
+shape_3_per_frame6=x = if(equal(frame%3,0),x + .07*cos(-time-.9),if(equal(frame%3,1),x + .07*cos(-time+1.2),x + .07*cos(-time+3.3)));
+shape_3_per_frame7=y = if(equal(frame%3,0),y + .07*sin(-time-.9),if(equal(frame%3,1),y + .07*sin(-time+1.2),y + .07*sin(-time+3.3)));
+shape_3_per_frame8=
+shape_3_per_frame9=//Color happy time, as usual I use 1 of three shapes to represent either bass treb or mid range,t o make sure
+shape_3_per_frame10=//all of your music is in the preset.
+shape_3_per_frame11=
+shape_3_per_frame12=border_r = if(equal(frame%3,0),bass,if(equal(frame%3,1),0,0));
+shape_3_per_frame13=border_g = if(equal(frame%3,0),0,if(equal(frame%3,1),treb,0));
+shape_3_per_frame14=border_b = if(equal(frame%3,0),0,if(equal(frame%3,1),0,mid));
+shape_3_per_frame15=r = if(equal(frame%3,0),bass,if(equal(frame%3,1),0,0));
+shape_3_per_frame16=g = if(equal(frame%3,0),0,if(equal(frame%3,1),treb,0));
+shape_3_per_frame17=b = if(equal(frame%3,0),0,if(equal(frame%3,1),0,mid));
+shape_3_per_frame18=a = if(above(bass+mid+treb,1),1,0);
+per_frame_1=warp=0;
+per_frame_2=volume = 0.3*(bass+mid+att);
+per_frame_3=beatrate = if(equal(beatrate,0),1,if(below(volume,0.01),1,beatrate));
+per_frame_4=lastbeat = if(equal(lastbeat,0),time,lastbeat);
+per_frame_5=meanbass_att = 0.1*(meanbass_att*9 + bass_att);
+per_frame_6=peakbass_att = if(above(bass_att,peakbass_att),bass_att,peakbass_att);
+per_frame_7=beat = if(above(volume,0.8),if(below(peakbass_att - bass_att, 0.05*peakbass_att),if(above(time - lastbeat,0.1+0.5*(beatrate-0.1)),1,0),0),0);
+per_frame_8=beatrate = max(if(beat,if(below(time-lastbeat,2*beatrate),0.1*(beatrate*9 + time - lastbeat),beatrate),beatrate),0.1);
+per_frame_9=peakbass_att = if(equal(beat,0),if(above(time - lastbeat,2*beatrate),peakbass_att*0.95,peakbass_att*0.995),bass_att);
+per_frame_10=lastbeat = if(beat,time,lastbeat);
+per_frame_11=peakbass_att = max(if(beat,bass_att,peakbass_att),1.1*meanbass_att);
+per_frame_12=beatcounter = if(above(beat,0),beatcounter +1, beatcounter);
+per_frame_13=beatcounter = if(above(beatcounter,101), 0, beatcounter);
+per_frame_14=beateven=beatcounter%2;
+per_frame_15=
+per_frame_16=timer = if(equal(beat,1),rand(30)*.1,timer);
+per_frame_17=q1 = timer;
+per_frame_18=q2 = beat;
+per_frame_19=
+per_frame_20=wave_a=0;
+warp_1=`shader_body
+warp_2=`{
+warp_3=`    // sample previous frame
+warp_4=`    ret = tex2D( sampler_fc_main, uv ).xyz;
+warp_5=`    
+warp_6=`    // darken (decay) over time
+warp_7=`    if(ret.x+ret.y+ret.z > 1){ret *= 1.05;ret+= .00275;}else{ret *= 0.99;ret -= 0.004;}
+warp_8=`    if(ret.x+ret.y+ret.z > 3){ret = 0;}
+warp_9=`
+warp_10=`    ret = lerp(ret,ret+GetBlur1(uv)*.035,abs(ret-1));
+warp_11=`}
+comp_1=`shader_body
+comp_2=`{
+comp_3=`    ret = tex2D(sampler_main, uv).xyz;
+comp_4=`    ret *= 2.00; //gamma
+comp_5=`
+comp_6=`    ret += GetBlur1(uv);
+comp_7=`
+comp_8=`}
