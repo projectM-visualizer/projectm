@@ -1,18 +1,7 @@
-if(ENABLE_PRESETS)
-
+if(ENABLE_TESTING)
     install(DIRECTORY
-            presets-cream_of_the_crop
-            presets-En_D
-            textures
+            tests
             DESTINATION "${PROJECTM_DATADIR_PATH}/presets"
-            COMPONENT Presets
+            COMPONENT Tests
             )
-
-    if(ENABLE_TESTING)
-        install(DIRECTORY
-                tests
-                DESTINATION "${PROJECTM_DATADIR_PATH}/presets"
-                COMPONENT Tests
-                )
-    endif()
 endif()
