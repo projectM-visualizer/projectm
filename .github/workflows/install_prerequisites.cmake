@@ -25,10 +25,7 @@ elseif("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Linux")
             mesa-common-dev
             libsdl2-dev
             libglm-dev
-            qtbase5-dev
             llvm-dev
-            libvisual-0.4-dev
-            libjack-jackd2-dev
 
             RESULT_VARIABLE result
             )
