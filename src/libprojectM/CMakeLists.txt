@@ -177,7 +177,7 @@ write_basic_package_version_file(
 configure_package_config_file(libprojectMConfig.cmake.in
         "${CMAKE_CURRENT_BINARY_DIR}/libprojectM/libprojectMConfig.cmake"
         INSTALL_DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectM"
-        PATH_VARS PROJECTM_BIN_DIR PROJECTM_INCLUDE_DIR PROJECTM_DATADIR_PATH
+        PATH_VARS PROJECTM_BIN_DIR PROJECTM_INCLUDE_DIR
         )
 
 install(FILES
@@ -192,24 +192,5 @@ install(EXPORT libprojectMTargets
         NAMESPACE libprojectM::
         DESTINATION "${PROJECTM_LIB_DIR}/cmake/libprojectM"
         COMPONENT Devel
-        )
-
-
-# If the path is not absolute, need to add the prefix path (and hope the result is absolute).
-if(NOT IS_ABSOLUTE PROJECTM_DATADIR_PATH)
-    set(PROJECTM_DATADIR_PATH_ABSOLUTE "${CMAKE_INSTALL_PREFIX}/${PROJECTM_DATADIR_PATH}")
-else()
-    set(PROJECTM_DATADIR_PATH_ABSOLUTE "${PROJECTM_DATADIR_PATH}")
-endif()
-
-configure_file(config.inp.cmake.in "${CMAKE_BINARY_DIR}/config.inp" @ONLY)
-install(FILES "${CMAKE_BINARY_DIR}/config.inp"
-        DESTINATION "${PROJECTM_DATADIR_PATH}/"
-        COMPONENT Runtime
-        )
-
-install(DIRECTORY "${CMAKE_SOURCE_DIR}/fonts"
-        DESTINATION "${PROJECTM_DATADIR_PATH}"
-        COMPONENT Runtime
         )
 

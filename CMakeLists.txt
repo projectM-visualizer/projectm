@@ -21,43 +21,39 @@ if(ENABLE_DEBUG_POSTFIX)
 endif()
 
 # The API (SO) and detailed library versions for the shared library.
-set(PROJECTM_SO_VERSION "3")
-set(PROJECTM_LIB_VERSION "3.1.1")
+set(PROJECTM_SO_VERSION "4")
+set(PROJECTM_LIB_VERSION "4.0.0")
 
-project(projectm
+project(libprojectM
         LANGUAGES C CXX
-        VERSION 3.1.13
+        VERSION 3.99
         )
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 set(PROJECTM_BIN_DIR "bin" CACHE STRING "Executable installation directory, relative to the install prefix.")
-set(PROJECTM_DATADIR_PATH "share/projectM" CACHE STRING "Default (absolute) path to the projectM data files (presets etc.)")
 set(PROJECTM_LIB_DIR "lib" CACHE STRING "Library installation directory, relative to the install prefix.")
 set(PROJECTM_INCLUDE_DIR "include" CACHE STRING "Header installation directory, relative to the install prefix.")
 
 if(CMAKE_SYSTEM_NAME STREQUAL Emscripten)
     set(ENABLE_EMSCRIPTEN ON CACHE BOOL "Build for web with emscripten. Will also build the SDL2-based entrypoint." FORCE)
+else()
+    set(ENABLE_EMSCRIPTEN OFF CACHE BOOL "Build for web with emscripten. Requires emscripten toolset for building." FORCE)
 endif()
 
 # Feature options, including dependencies.
 option(ENABLE_STATIC_LIB "Build and install libprojectM as a static library" ON)
 cmake_dependent_option(ENABLE_SHARED_LIB "Build and install libprojectM as a shared library" ON "NOT ENABLE_EMSCRIPTEN;NOT CMAKE_SYSTEM_NAME STREQUAL Windows" OFF)
-cmake_dependent_option(ENABLE_SHARED_LINKING "Link all built UI applications against the shared library." OFF "ENABLE_SHARED_LIB" OFF)
+cmake_dependent_option(ENABLE_SHARED_LINKING "Link the SDL test UI against the shared library." OFF "ENABLE_SHARED_LIB" OFF)
 option(ENABLE_DOXYGEN "Build and install Doxygen source code documentation in PROJECTM_DATADIR_PATH/docs." OFF)
 option(ENABLE_CXX_INTERFACE "Enable exporting all C++ symbols, not only the C API, in the shared library. Warning: This is not very portable." OFF)
 option(ENABLE_PRESETS "Build and install bundled presets" ON)
 option(ENABLE_NATIVE_PRESETS "Build and install native preset loading support and preset libraries written in C/C++" OFF)
-option(ENABLE_TESTING "Build and install the projectM test suite" OFF)
-cmake_dependent_option(ENABLE_SDL "Enable SDL2 support" ON "NOT ENABLE_EMSCRIPTEN;NOT ENABLE_TESTING" ON)
-cmake_dependent_option(ENABLE_SDL_UI "Build the SDL2-based reference UI" ON "NOT ENABLE_EMSCRIPTEN" OFF)
+option(ENABLE_TESTING "Build the libprojectM test suite" OFF)
+cmake_dependent_option(ENABLE_SDL_UI "Build the SDL2-based developer test UI" OFF "NOT ENABLE_EMSCRIPTEN" OFF)
 cmake_dependent_option(ENABLE_GLES "Enable OpenGL ES support" OFF "NOT ENABLE_EMSCRIPTEN" ON)
 cmake_dependent_option(ENABLE_THREADING "Enable multithreading support" ON "NOT ENABLE_EMSCRIPTEN;NOT CMAKE_SYSTEM_NAME STREQUAL Windows" OFF)
-cmake_dependent_option(ENABLE_PULSEAUDIO "Build PulseAudio-based Qt UI" OFF "NOT ENABLE_EMSCRIPTEN;CMAKE_SYSTEM_NAME STREQUAL Linux" OFF)
-cmake_dependent_option(ENABLE_JACK "Build JACK-based Qt and SDL UIs" OFF "NOT ENABLE_EMSCRIPTEN;CMAKE_SYSTEM_NAME STREQUAL Linux" OFF)
-cmake_dependent_option(ENABLE_QT "Build Qt UI library" OFF "NOT ENABLE_PULSEAUDIO;NOT ENABLE_JACK" ON)
 cmake_dependent_option(ENABLE_LLVM "Enable LLVM JIT support" OFF "NOT ENABLE_EMSCRIPTEN" OFF)
-cmake_dependent_option(ENABLE_LIBVISUAL "Build and install the projectM libvisual plug-in" OFF "NOT ENABLE_EMSCRIPTEN;CMAKE_SYSTEM_NAME STREQUAL Linux" OFF)
 
 if(NOT ENABLE_STATIC_LIB AND NOT ENABLE_SHARED_LIB)
     message(FATAL_ERROR "At least one of either ENABLE_STATIC_LIB or ENABLE_SHARED_LIB options must be set to ON.")
@@ -107,7 +103,7 @@ if(ENABLE_EMSCRIPTEN)
 
     set(USE_GLES ON)
 else()
-    if(ENABLE_SDL)
+    if(ENABLE_SDL_UI)
         find_package(SDL2 REQUIRED)
 
         # Apply some fixes, as SDL2's CMake support is new and still a WiP.
@@ -160,51 +156,6 @@ else()
         unset(HAVE_LLVM)
     endif()
 
-    if(ENABLE_PULSEAUDIO)
-        find_package(Pulseaudio REQUIRED)
-    endif()
-
-    if(ENABLE_JACK)
-        find_package(JACK REQUIRED)
-    endif()
-
-    if(ENABLE_PULSEAUDIO OR ENABLE_JACK)
-        set(QT_REQUIRED_COMPONENTS Gui Widgets OpenGL Xml)
-        if(DEFINED QT_VERSION)
-            find_package(Qt${QT_VERSION} REQUIRED COMPONENTS ${QT_REQUIRED_COMPONENTS})
-        else()
-            # Try to determine the Qt version available, starting with Qt6
-            message(STATUS "Determining Qt version. To use a specific version, set QT_VERSION to either 5 or 6.")
-            find_package(Qt6 QUIET COMPONENTS ${QT_REQUIRED_COMPONENTS})
-            if(TARGET Qt6::Core)
-                set(QT_VERSION 6)
-            else()
-                find_package(Qt5 QUIET COMPONENTS ${QT_REQUIRED_COMPONENTS})
-                if(TARGET Qt5::Core)
-                    set(QT_VERSION 5)
-                else()
-                    message(FATAL_ERROR "Could not find either Qt 5 or 6, one is required to build the PulseAudio or JACK UIs.")
-                endif()
-            endif()
-        endif()
-
-        # OpenGLWidgets were put into their own component since Qt 6.
-        if(QT_VERSION EQUAL 6)
-            list(APPEND QT_REQUIRED_COMPONENTS OpenGLWidgets)
-            find_package(Qt6 REQUIRED COMPONENTS OpenGLWidgets)
-        endif()
-
-        set(QT_LINK_TARGETS "")
-        foreach(component ${QT_REQUIRED_COMPONENTS})
-            list(APPEND QT_LINK_TARGETS Qt${QT_VERSION}::${component})
-        endforeach()
-    endif()
-
-    if(ENABLE_LIBVISUAL)
-        find_package(libvisual REQUIRED)
-        set(PROJECTM_LIBVISUAL_DIR "${LIBVISUAL_PLUGINSBASEDIR}/actor" CACHE STRING "Installation directory for the libvisual plug-in library.")
-    endif()
-
 endif()
 
 if(ENABLE_CXX_INTERFACE)
@@ -221,23 +172,21 @@ include(features.cmake)
 
 add_subdirectory(presets)
 add_subdirectory(src)
+add_subdirectory(tests)
 
 message(STATUS "")
-message(STATUS "projectM v${PROJECT_VERSION}")
+message(STATUS "libprojectM v${PROJECT_VERSION}")
 message(STATUS "==============================================")
 message(STATUS "")
 message(STATUS "    prefix:                  ${CMAKE_INSTALL_PREFIX}")
 message(STATUS "    libdir:                  ${PROJECTM_LIB_DIR}")
 message(STATUS "    includedir:              ${PROJECTM_INCLUDE_DIR}")
 message(STATUS "    bindir:                  ${PROJECTM_BIN_DIR}")
-message(STATUS "    libvisual plugin dir:    ${PROJECTM_LIBVISUAL_DIR}")
 message(STATUS "")
 message(STATUS "    compiler:                ${CMAKE_CXX_COMPILER}")
 message(STATUS "    cflags:                  ${CMAKE_C_FLAGS}")
 message(STATUS "    cxxflags:                ${CMAKE_CXX_FLAGS}")
 message(STATUS "    ldflags:                 ${CMAKE_SHARED_LINKER_FLAGS}")
-message(STATUS "")
-message(STATUS "    DATADIR_PATH:            ${PROJECTM_DATADIR_PATH}")
 message(STATUS "")
 message(STATUS "Features:")
 message(STATUS "==============================================")
@@ -245,7 +194,7 @@ message(STATUS "")
 message(STATUS "    Presets:                 ${ENABLE_PRESETS}")
 message(STATUS "    Native presets:          ${ENABLE_NATIVE_PRESETS}")
 message(STATUS "    Threading:               ${ENABLE_THREADING}")
-message(STATUS "    SDL2:                    ${ENABLE_SDL}")
+message(STATUS "    SDL2:                    ${ENABLE_SDL_UI}")
 if(ENABLE_SDL)
     message(STATUS "        SDL2 version:        ${SDL2_VERSION}")
 endif()
@@ -263,30 +212,10 @@ message(STATUS "==============================================")
 message(STATUS "")
 message(STATUS "    libprojectM static:      ${ENABLE_STATIC_LIB}")
 message(STATUS "    libprojectM shared:      ${ENABLE_SHARED_LIB}")
-message(STATUS "    SDL2 UI:                 ${ENABLE_SDL_UI}")
+message(STATUS "    SDL2 Test UI:            ${ENABLE_SDL_UI}")
 message(STATUS "    Doxygen API docs:        ${ENABLE_DOXYGEN}")
 message(STATUS "    Tests:                   ${ENABLE_TESTING}")
-message(STATUS "    PulseAudio UI:           ${ENABLE_PULSEAUDIO}")
-if(ENABLE_PULSEAUDIO)
-    message(STATUS "        PulseAudio version:  ${PULSEAUDIO_VERSION}")
-endif()
-message(STATUS "    JACK UI:                 ${ENABLE_JACK}")
-if(ENABLE_JACK)
-    message(STATUS "        JACK version:        ${JACK_VERSION}")
-endif()
-if(ENABLE_PULSEAUDIO OR ENABLE_JACK)
-    message(STATUS "    Qt version:              ${Qt${QT_VERSION}_VERSION}")
-endif()
-message(STATUS "    libvisual plug-in:       ${ENABLE_LIBVISUAL}")
 message(STATUS "")
-
-message(AUTHOR_WARNING
-        "The CMake build scripts for projectM are still in active development.\n"
-        "This means that build parameters, exported target names and other things can change "
-        "at any time until the new build system is officially documented and announced to be "
-        "fully supported.\n"
-        "DO NOT base any production work on it yet!\n"
-        )
 
 if(ENABLE_CXX_INTERFACE)
     message(AUTHOR_WARNING "This build is configured to export all C++ symbols in the shared library.\n"
