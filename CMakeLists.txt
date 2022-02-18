@@ -43,7 +43,7 @@ endif()
 
 # Feature options, including dependencies.
 option(ENABLE_STATIC_LIB "Build and install libprojectM as a static library" ON)
-cmake_dependent_option(ENABLE_SHARED_LIB "Build and install libprojectM as a shared library" ON "NOT ENABLE_EMSCRIPTEN;NOT CMAKE_SYSTEM_NAME STREQUAL Windows" OFF)
+cmake_dependent_option(ENABLE_SHARED_LIB "Build and install libprojectM as a shared library" ON "NOT ENABLE_EMSCRIPTEN" OFF)
 cmake_dependent_option(ENABLE_SHARED_LINKING "Link the SDL test UI against the shared library." OFF "ENABLE_SHARED_LIB" OFF)
 option(ENABLE_DOXYGEN "Build and install Doxygen source code documentation in PROJECTM_DATADIR_PATH/docs." OFF)
 option(ENABLE_CXX_INTERFACE "Enable exporting all C++ symbols, not only the C API, in the shared library. Warning: This is not very portable." OFF)

@@ -34,29 +34,21 @@ const unsigned C = 12;
 template <typename T>
 T log2N_(T n)
 {
-	if (n == 0)
-		return 0;
+    assert(n > 0);
+    const std::size_t N = CHAR_BIT*sizeof(T);
 
-	const unsigned b[] =
-#if (WORD_BIT == 32)
-		{0x2u, 0xCu, 0xF0u, 0xFF00u, 0xFFFF0000u};
-#else // 64-bit
-		{0x2u, 0xCu, 0xF0u, 0xFF00u, 0xFFFF0000u, 0xFFFFFFFF00000000u};
-	assert(WORD_BIT == 64);
-#endif
-	const T S[] = {1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u};
+    T result = 0;
+    for (std::size_t i = 1; i < N; ++i)
+    {
+        const std::size_t M = N-i;
+        if ( n >= (std::size_t(1) << M) )
+        {
+            n >>= M;
+            result |= M;
+        }
+    }
 
-	T result = 0u; // result of log2(v) will go here
-	for (int i = static_cast<int>(sizeof(T)); i >= 0; --i)
-	{
-		if (n & b[i])
-		{
-			n >>= S[i];
-			result |= S[i];
-		}
-	}
-
-	return result;
+    return result;
 }
 
 template<typename Iterator>

@@ -2,13 +2,14 @@ set(libprojectM_VERSION @PROJECT_VERSION@)
 
 @PACKAGE_INIT@
 
-set_and_check(libprojectM_BIN_DIR "@PACKAGE_PROJECTM_BIN_DIR@")
-set_and_check(libprojectM_INCLUDE_DIR "@PACKAGE_PROJECTM_INCLUDE_DIR@")
-set_and_check(libprojectM_DATA_DIR "@PACKAGE_PROJECTM_DATADIR_PATH@")
-
 include(CMakeFindDependencyMacro)
 
 find_dependency(OpenGL)
 if("@ENABLE_THREADING@") # ENABLE_THREADING
     find_dependency(Threads)
 endif()
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    find_dependency(GLEW)
+endif()
+
+include("${CMAKE_CURRENT_LIST_DIR}/libprojectMTargets.cmake")
