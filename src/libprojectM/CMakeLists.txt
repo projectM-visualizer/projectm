@@ -161,9 +161,6 @@ export(TARGETS
         FILE projectM-exports.cmake
         )
 
-export(PACKAGE libprojectM)
-
-
 
 # For use from an installed package (system install, vcpkg, homebrew etc.)
 include(CMakePackageConfigHelpers)

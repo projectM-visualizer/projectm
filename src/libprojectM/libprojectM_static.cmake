@@ -18,7 +18,7 @@ target_compile_options(projectM_static
         )
 
 set_target_properties(projectM_static PROPERTIES
-        OUTPUT_NAME projectM
+        OUTPUT_NAME $<IF:$<PLATFORM_ID:Windows>,libprojectM,projectM>
         EXPORT_NAME static
         FOLDER libprojectM
         )
