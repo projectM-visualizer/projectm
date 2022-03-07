@@ -1,6 +1,6 @@
 if("${CMAKE_HOST_SYSTEM_NAME}" STREQUAL "Windows")
     execute_process(COMMAND "${CMAKE_COMMAND}"
-            -G "Visual Studio 16 2019"
+            -G "Visual Studio 17 2022"
             -A "X64"
             -S "$ENV{GITHUB_WORKSPACE}"
             -B "$ENV{GITHUB_WORKSPACE}/cmake-build"
