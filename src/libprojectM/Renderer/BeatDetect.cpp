@@ -76,11 +76,6 @@ BeatDetect::BeatDetect(PCM* _pcm)
 }
 
 
-BeatDetect::~BeatDetect()
-{
-}
-
-
 void BeatDetect::reset()
 {
     this->treb = 0;
