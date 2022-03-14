@@ -38,41 +38,19 @@
 
 
 BeatDetect::BeatDetect(PCM* _pcm)
+    : pcm(_pcm)
 {
-    this->pcm = _pcm;
-
-    this->vol_instant = 0;
-    this->vol_history = 0;
     for (unsigned y = 0; y < this->vol_buffer.size(); y++)
         this->vol_buffer[y] = 0;
 
-    this->beat_buffer_pos = 0;
-
-    this->bass_instant = 0;
-    this->bass_history = 0;
     for (unsigned y = 0; y < this->bass_buffer.size(); y++)
         this->bass_buffer[y] = 0;
 
-    this->mid_instant = 0;
-    this->mid_history = 0;
     for (unsigned y = 0; y < this->mid_buffer.size(); y++)
         this->mid_buffer[y] = 0;
 
-    this->treb_instant = 0;
-    this->treb_history = 0;
     for (unsigned y = 0; y < this->treb_buffer.size(); y++)
         this->treb_buffer[y] = 0;
-
-    this->treb = 0;
-    this->mid = 0;
-    this->bass = 0;
-    this->vol_old = 0;
-    this->beatSensitivity = 1.00;
-    this->treb_att = 0;
-    this->mid_att = 0;
-    this->bass_att = 0;
-    this->vol_att = 0;
-    this->vol = 0;
 }
 
 

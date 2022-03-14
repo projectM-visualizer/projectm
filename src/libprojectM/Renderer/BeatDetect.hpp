@@ -40,18 +40,18 @@ class BeatDetect
 {
 public:
     // Does this really belong here? maybe belongs on projectM.Settings?
-    float beatSensitivity;
+    float beatSensitivity = 1.f;
 
-    float treb;
-    float mid;
-    float bass;
-    float vol_old;
+    float treb = 0.f;
+    float mid = 0.f;
+    float bass = 0.f;
+    float vol_old = 0.f;
 
-    float treb_att;
-    float mid_att;
-    float bass_att;
-    float vol;
-    float vol_att;
+    float treb_att = 0.f;
+    float mid_att = 0.f;
+    float bass_att = 0.f;
+    float vol = 0.f;
+    float vol_att = 0.f;
 
     PCM* pcm;
 
@@ -74,23 +74,23 @@ private:
     // the actual time represented in the history depends on FPS
     static size_t constexpr BEAT_HISTORY_LENGTH = 80;
 
-    int beat_buffer_pos;
+    int beat_buffer_pos = 0;
 
     std::array<float, BEAT_HISTORY_LENGTH> bass_buffer;
-    float bass_history;
-    float bass_instant;
+    float bass_history = 0.f;
+    float bass_instant = 0.f;
 
     std::array<float, BEAT_HISTORY_LENGTH> mid_buffer;
-    float mid_history;
-    float mid_instant;
+    float mid_history = 0.f;
+    float mid_instant = 0.f;
 
     std::array<float, BEAT_HISTORY_LENGTH> treb_buffer;
-    float treb_history;
-    float treb_instant;
+    float treb_history = 0.f;
+    float treb_instant = 0.f;
 
     std::array<float, BEAT_HISTORY_LENGTH> vol_buffer;
-    float vol_history;
-    float vol_instant;
+    float vol_history = 0.f;
+    float vol_instant = 0.f;
 };
 
 #endif /** !_BEAT_DETECT_H */
