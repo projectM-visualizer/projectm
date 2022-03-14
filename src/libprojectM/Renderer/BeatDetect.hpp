@@ -33,65 +33,65 @@
 
 #include "../PCM.hpp"
 #include <algorithm>
-#include <cmath>
 #include <array>
+#include <cmath>
 
 class BeatDetect
 {
-	public:
-        // Does this really belong here? maybe belongs on projectM.Settings?
-        float beatSensitivity;
+public:
+    // Does this really belong here? maybe belongs on projectM.Settings?
+    float beatSensitivity;
 
-        float treb ;
-		float mid ;
-		float bass ;
-		float vol_old ;
+    float treb;
+    float mid;
+    float bass;
+    float vol_old;
 
-		float treb_att ;
-		float mid_att ;
-		float bass_att ;
-		float vol;
-        float vol_att ;
+    float treb_att;
+    float mid_att;
+    float bass_att;
+    float vol;
+    float vol_att;
 
-		PCM *pcm;
+    PCM* pcm;
 
-		/** Methods */
-		explicit BeatDetect(PCM *pcm);
-		~BeatDetect();
-		void reset();
-		void detectFromSamples();
-		void getBeatVals( float samplerate, unsigned fft_length, float *vdataL, float *vdataR );
+    /** Methods */
+    explicit BeatDetect(PCM* pcm);
+    ~BeatDetect();
+    void reset();
+    void detectFromSamples();
+    void getBeatVals(float samplerate, unsigned fft_length, float* vdataL, float* vdataR);
 
-        // getPCMScale() was added to address https://github.com/projectM-visualizer/projectm/issues/161
-        // Returning 1.0 results in using the raw PCM data, which can make the presets look pretty unresponsive
-        // if the application volume is low.
-		float getPCMScale()
-        {
-		    return beatSensitivity;
-        }
+    // getPCMScale() was added to address https://github.com/projectM-visualizer/projectm/issues/161
+    // Returning 1.0 results in using the raw PCM data, which can make the presets look pretty unresponsive
+    // if the application volume is low.
+    float getPCMScale()
+    {
+        return beatSensitivity;
+    }
 
-	private:
-        // this is the size of the buffer used to determine avg levels of the input audio
-        // the actual time represented in the history depends on FPS
-        static size_t constexpr BEAT_HISTORY_LENGTH = 80;
+private:
+    // this is the size of the buffer used to determine avg levels of the input audio
+    // the actual time represented in the history depends on FPS
+    static size_t constexpr BEAT_HISTORY_LENGTH = 80;
 
-		int beat_buffer_pos;
+    int beat_buffer_pos;
 
-        std::array<float, BEAT_HISTORY_LENGTH> bass_buffer;
-		float bass_history;
-        float bass_instant;
+    std::array<float, BEAT_HISTORY_LENGTH> bass_buffer;
+    float bass_history;
+    float bass_instant;
 
-        std::array<float, BEAT_HISTORY_LENGTH> mid_buffer;
-        float mid_history;
-		float mid_instant;
+    std::array<float, BEAT_HISTORY_LENGTH> mid_buffer;
+    float mid_history;
+    float mid_instant;
 
-        std::array<float, BEAT_HISTORY_LENGTH> treb_buffer;
-		float treb_history;
-		float treb_instant;
+    std::array<float, BEAT_HISTORY_LENGTH> treb_buffer;
+    float treb_history;
+    float treb_instant;
 
-        std::array<float, BEAT_HISTORY_LENGTH> vol_buffer;
-        float vol_history;
-        float vol_instant;
+    std::array<float, BEAT_HISTORY_LENGTH> vol_buffer;
+    float vol_history;
+    float vol_instant;
 };
 
 #endif /** !_BEAT_DETECT_H */
