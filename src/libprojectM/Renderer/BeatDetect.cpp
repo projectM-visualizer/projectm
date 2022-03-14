@@ -34,6 +34,8 @@
 #include "BeatDetect.hpp"
 #include "Common.hpp"
 #include "PCM.hpp"
+
+#include <algorithm>
 #include <cmath>
 
 
