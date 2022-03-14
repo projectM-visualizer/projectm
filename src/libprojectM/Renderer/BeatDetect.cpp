@@ -121,15 +121,15 @@ void BeatDetect::getBeatVals(float samplerate, unsigned fft_length, float* vdata
     treb = treb_instant / std::max(0.0001f, treb_history);
     vol = vol_instant / std::max(0.0001f, vol_history);
 
-    if (projectM_isnan(treb))
+    if (std::isnan(treb))
     {
         treb = 0.0;
     }
-    if (projectM_isnan(mid))
+    if (std::isnan(mid))
     {
         mid = 0.0;
     }
-    if (projectM_isnan(bass))
+    if (std::isnan(bass))
     {
         bass = 0.0;
     }

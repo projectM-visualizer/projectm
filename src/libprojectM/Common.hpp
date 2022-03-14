@@ -62,24 +62,6 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 
 
 #ifdef __unix__
-#include <cstdlib>
-#define projectM_isnan std::isnan
-#endif
-
-#ifdef EMSCRIPTEN
-#include <cstdlib>
-#define projectM_isnan isnan
-#endif
-
-#ifdef WIN32
-#define projectM_isnan(x) ((x) != (x))
-#endif
-
-#ifdef __APPLE__
-#define projectM_isnan(x) ((x) != (x))
-#endif
-
-#ifdef __unix__
 #define projectM_fmax fmax
 #endif
 
