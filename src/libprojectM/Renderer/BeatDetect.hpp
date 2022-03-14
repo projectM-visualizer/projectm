@@ -57,7 +57,6 @@ public:
 
     /** Methods */
     explicit BeatDetect(PCM* pcm);
-    ~BeatDetect();
     void reset();
     void detectFromSamples();
     void getBeatVals(float samplerate, unsigned fft_length, float* vdataL, float* vdataR);
