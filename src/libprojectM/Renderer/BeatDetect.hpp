@@ -72,7 +72,7 @@ private:
     // the actual time represented in the history depends on FPS
     static size_t constexpr BEAT_HISTORY_LENGTH = 80;
 
-    int beat_buffer_pos = 0;
+    size_t beat_buffer_pos = 0;
 
     std::array<float, BEAT_HISTORY_LENGTH> bass_buffer;
     float bass_history = 0.f;
