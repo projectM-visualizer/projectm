@@ -43,24 +43,24 @@ BeatDetect::BeatDetect(PCM *_pcm)
 
     this->vol_instant=0;
     this->vol_history=0;
-    for (unsigned y=0;y<BEAT_HISTORY_LENGTH;y++)
+    for (unsigned y=0; y < this->vol_buffer.size(); y++)
         this->vol_buffer[y]=0;
 
     this->beat_buffer_pos=0;
 
     this->bass_instant = 0;
     this->bass_history = 0;
-    for (unsigned y=0;y<BEAT_HISTORY_LENGTH;y++)
+    for (unsigned y=0; y < this->bass_buffer.size(); y++)
         this->bass_buffer[y]=0;
 
     this->mid_instant = 0;
     this->mid_history = 0;
-    for (unsigned y=0;y<BEAT_HISTORY_LENGTH;y++)
+    for (unsigned y = 0; y < this->mid_buffer.size(); y++)
         this->mid_buffer[y]=0;
 
     this->treb_instant = 0;
     this->treb_history = 0;
-    for (unsigned y=0;y<BEAT_HISTORY_LENGTH;y++)
+    for (unsigned y = 0; y < this->treb_buffer.size(); y++)
         this->treb_buffer[y]=0;
 
     this->treb = 0;
@@ -125,28 +125,28 @@ void BeatDetect::getBeatVals( float samplerate, unsigned fft_length, float *vdat
     bass_instant=0;
     for (unsigned i=ranges[0] ; i<ranges[1] ; i++)
         bass_instant += vdataL[i] + vdataR[i];
-    bass_history -= bass_buffer[beat_buffer_pos] * (1.0/BEAT_HISTORY_LENGTH);
+    bass_history -= bass_buffer[beat_buffer_pos] * (1.0/bass_buffer.size());
     bass_buffer[beat_buffer_pos] = bass_instant;
-    bass_history += bass_instant * (1.0/BEAT_HISTORY_LENGTH);
+    bass_history += bass_instant * (1.0/bass_buffer.size());
 
     mid_instant=0;
     for (unsigned i=ranges[1] ; i<ranges[2] ; i++)
         mid_instant += vdataL[i] + vdataR[i];
-    mid_history -= mid_buffer[beat_buffer_pos] * (1.0/BEAT_HISTORY_LENGTH);
+    mid_history -= mid_buffer[beat_buffer_pos] * (1.0/mid_buffer.size());
     mid_buffer[beat_buffer_pos] = mid_instant;
-    mid_history += mid_instant * (1.0/BEAT_HISTORY_LENGTH);
+    mid_history += mid_instant * (1.0/mid_buffer.size());
 
     treb_instant = 0;
     for (unsigned i=ranges[2] ; i<ranges[3] ; i++)
         treb_instant += vdataL[i] + vdataR[i];
-    treb_history -= treb_buffer[beat_buffer_pos] * (1.0/BEAT_HISTORY_LENGTH);
+    treb_history -= treb_buffer[beat_buffer_pos] * (1.0/treb_buffer.size());
     treb_buffer[beat_buffer_pos] = treb_instant;
-    treb_history += treb_instant * (1.0/BEAT_HISTORY_LENGTH);
+    treb_history += treb_instant * (1.0/treb_buffer.size());
 
     vol_instant  = (bass_instant + mid_instant + treb_instant) / 3.0f;
-    vol_history -= (vol_buffer[beat_buffer_pos])* (1.0/BEAT_HISTORY_LENGTH);
+    vol_history -= (vol_buffer[beat_buffer_pos]) * (1.0/vol_buffer.size());
     vol_buffer[beat_buffer_pos] = vol_instant;
-    vol_history += vol_instant * (1.0/BEAT_HISTORY_LENGTH);
+    vol_history += vol_instant * (1.0/vol_buffer.size());
 
 //    fprintf(stderr, "%6.3f %6.2f %6.3f\n", bass_history/vol_history, mid_history/vol_history, treb_history/vol_history);
     bass = bass_instant / fmax(0.0001, bass_history);

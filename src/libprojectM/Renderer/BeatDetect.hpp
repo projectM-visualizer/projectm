@@ -34,11 +34,7 @@
 #include "../PCM.hpp"
 #include <algorithm>
 #include <cmath>
-
-
-// this is the size of the buffer used to determine avg levels of the input audio
-// the actual time represented in the history depends on FPS
-#define BEAT_HISTORY_LENGTH 80
+#include <array>
 
 class BeatDetect
 {
@@ -75,20 +71,25 @@ class BeatDetect
         }
 
 	private:
+        // this is the size of the buffer used to determine avg levels of the input audio
+        // the actual time represented in the history depends on FPS
+        static size_t constexpr BEAT_HISTORY_LENGTH = 80;
+
 		int beat_buffer_pos;
-        float bass_buffer[BEAT_HISTORY_LENGTH];
+
+        std::array<float, BEAT_HISTORY_LENGTH> bass_buffer;
 		float bass_history;
         float bass_instant;
 
-		float mid_buffer[BEAT_HISTORY_LENGTH];
+        std::array<float, BEAT_HISTORY_LENGTH> mid_buffer;
         float mid_history;
 		float mid_instant;
 
-		float treb_buffer[BEAT_HISTORY_LENGTH];
+        std::array<float, BEAT_HISTORY_LENGTH> treb_buffer;
 		float treb_history;
 		float treb_instant;
 
-        float vol_buffer[BEAT_HISTORY_LENGTH];
+        std::array<float, BEAT_HISTORY_LENGTH> vol_buffer;
         float vol_history;
         float vol_instant;
 };
