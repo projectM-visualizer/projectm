@@ -32,9 +32,7 @@
 #define _BEAT_DETECT_H
 
 #include "../PCM.hpp"
-#include <algorithm>
 #include <array>
-#include <cmath>
 
 class BeatDetect
 {
