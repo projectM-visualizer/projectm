@@ -139,22 +139,14 @@ void BeatDetect::getBeatVals(float samplerate, unsigned fft_length, float* vdata
     bass_att = .6f * bass_att + .4f * bass;
     vol_att = .6f * vol_att + .4f * vol;
 
-    if (bass_att > 100)
-        bass_att = 100;
-    if (bass > 100)
-        bass = 100;
-    if (mid_att > 100)
-        mid_att = 100;
-    if (mid > 100)
-        mid = 100;
-    if (treb_att > 100)
-        treb_att = 100;
-    if (treb > 100)
-        treb = 100;
-    if (vol_att > 100)
-        vol_att = 100;
-    if (vol > 100)
-        vol = 100;
+    bass_att = std::min(bass_att, 100.f);
+    bass = std::min(bass, 100.f);
+    mid_att = std::min(mid_att, 100.f);
+    mid = std::min(mid, 100.f);
+    treb_att = std::min(treb_att, 100.f);
+    treb = std::min(treb, 100.f);
+    vol_att = std::min(vol_att, 100.f);
+    vol = std::min(vol, 100.f);
 
     beat_buffer_pos++;
     if (beat_buffer_pos > 79)
