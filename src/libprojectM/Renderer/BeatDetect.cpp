@@ -40,17 +40,10 @@
 BeatDetect::BeatDetect(PCM* _pcm)
     : pcm(_pcm)
 {
-    for (unsigned y = 0; y < this->vol_buffer.size(); y++)
-        this->vol_buffer[y] = 0;
-
-    for (unsigned y = 0; y < this->bass_buffer.size(); y++)
-        this->bass_buffer[y] = 0;
-
-    for (unsigned y = 0; y < this->mid_buffer.size(); y++)
-        this->mid_buffer[y] = 0;
-
-    for (unsigned y = 0; y < this->treb_buffer.size(); y++)
-        this->treb_buffer[y] = 0;
+    this->vol_buffer.fill(0);
+    this->bass_buffer.fill(0);
+    this->mid_buffer.fill(0);
+    this->treb_buffer.fill(0);
 }
 
 
