@@ -109,11 +109,6 @@ extern FILE *fmemopen(void *buf, size_t len, const char *pMode);
 /* default float upper bound */
 #define DEFAULT_DOUBLE_UB MAX_DOUBLE_SIZE
 
-#ifdef WIN32
-#include <float.h>
-#define isnan _isnan
-#endif /** WIN32 */
-
 /** Per-platform path separators */
 #define WIN32_PATH_SEPARATOR '\\'
 #define UNIX_PATH_SEPARATOR '/'
