@@ -562,7 +562,7 @@ void projectM::projectM_init ( int gx, int gy, int fps, int texsize, int width, 
     if (!_pcm)
         _pcm = new PCM();
     assert(pcm());
-    beatDetect = new BeatDetect ( _pcm );
+    beatDetect = new BeatDetect ( *_pcm );
 
     if ( _settings.fps > 0 )
         mspf= ( int ) ( 1000.0/ ( float ) _settings.fps );
