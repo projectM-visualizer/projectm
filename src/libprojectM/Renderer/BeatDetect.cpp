@@ -42,10 +42,6 @@
 BeatDetect::BeatDetect(PCM* _pcm)
     : pcm(_pcm)
 {
-    this->vol_buffer.fill(0);
-    this->bass_buffer.fill(0);
-    this->mid_buffer.fill(0);
-    this->treb_buffer.fill(0);
 }
 
 
