@@ -104,8 +104,6 @@ private:
     int *ip;
     double *w;
 
-    void freePCM();
-
     // copy data out of the circular PCM buffer
     void _copyPCM(float *PCMdata, int channel, size_t count);
     void _copyPCM(double *PCMdata, int channel, size_t count);

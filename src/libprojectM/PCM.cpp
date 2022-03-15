@@ -379,16 +379,6 @@ void PCM::_copyPCM(double *to, int channel, size_t count)
     }
 }
 
-//Free stuff
-void PCM::freePCM()
-{
-  free(ip);
-  free(w);
-  ip = NULL;
-  w = NULL;
-}
-
-
 
 // TESTS
 
