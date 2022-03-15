@@ -29,6 +29,7 @@
 #ifndef _PCM_H
 #define _PCM_H
 
+#include <array>
 #include <stdlib.h>
 
 
@@ -87,17 +88,17 @@ private:
     // circular PCM buffer
     // adjust "volume" of PCM data as we go, this simplifies everything downstream...
     // normalize to range [-1.0,1.0]
-    float pcmL[maxsamples];
-    float pcmR[maxsamples];
+    std::array<float, maxsamples> pcmL{0.f};
+    std::array<float, maxsamples> pcmR{0.f};
     int start;
     size_t newsamples;
 
     // raw FFT data
-    double freqL[FFT_LENGTH*2];
-    double freqR[FFT_LENGTH*2];
+    std::array<double, 2*FFT_LENGTH> freqL{0.0};
+    std::array<double, 2*FFT_LENGTH> freqR{0.0};
     // magnitude data
-    float spectrumL[FFT_LENGTH];
-    float spectrumR[FFT_LENGTH];
+    std::array<float, FFT_LENGTH> spectrumL{0.f};
+    std::array<float, FFT_LENGTH> spectrumR{0.f};
 
     // for FFT library
     int *ip;
