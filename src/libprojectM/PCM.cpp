@@ -86,7 +86,7 @@ public:
 };
 
 
-PCM::PCM() : start(0), newsamples(0)
+PCM::PCM()
 {
     leveler = new AutoLevel();
 
