@@ -71,18 +71,18 @@ public:
         if (sum / samples < 0.00001)
             return level;
         level_sum += sum;
-        level_max = fmax(level_max, max * 1.02);
+        level_max = std::max(level_max, max * 1.02);
         level_samples += samples;
         if (level_samples >= AUTOLEVEL_SEGMENT || l0 <= 0)
         {
-            double max_recent = fmax(fmax(l0, l1), fmax(l2, level_max));
+            double max_recent = std::max(std::max(l0, l1), std::max(l2, level_max));
             l0 = l1;
             l1 = l2;
             l2 = level_max;
             level_max *= 0.95;
             level_sum = level_samples = 0;
             level = (l0 <= 0) ? max_recent : level * 0.96 + max_recent * 0.04;
-            level = fmax(level, 0.0001);
+            level = std::max(level, 0.0001);
         }
         return level;
     }
@@ -126,7 +126,7 @@ void PCM::addPCMfloat(const float* PCMdata, size_t samples)
         a=pcmL[j] = PCMdata[i];
         pcmR[j] = PCMdata[i];
         sum += std::abs(a);
-        max = fmax(max, a);
+        max = std::max(max, a);
     }
     start = (start+samples)%maxsamples;
     newsamples += samples;
@@ -145,7 +145,7 @@ void PCM::addPCMfloat_2ch(const float* PCMdata, size_t count)
         a = pcmL[j] = PCMdata[i*2];
         b = pcmR[j] = PCMdata[i*2+1];
         sum += std::abs(a) + std::abs(b);
-        max = fmax(fmax(max, std::abs(a)), std::abs(b));
+        max = std::max(std::max(max, std::abs(a)), std::abs(b));
     }
     start = (start + samples) % maxsamples;
     newsamples += samples;
@@ -162,7 +162,7 @@ void PCM::addPCM16Data(const short* pcm_data, size_t samples)
         a = pcmL[j] = (pcm_data[i * 2 + 0] / 16384.0);
         b = pcmR[j] = (pcm_data[i * 2 + 1] / 16384.0);
         sum += std::abs(a) + std::abs(b);
-        max = fmax(fmax(max, a), b);
+        max = std::max(std::max(max, a), b);
     }
     start = (start + samples) % maxsamples;
     newsamples += samples;
@@ -180,7 +180,7 @@ void PCM::addPCM16(const short PCMdata[2][512])
         a=pcmL[j]=(PCMdata[0][i]/16384.0);
         b=pcmR[j]=(PCMdata[1][i]/16384.0);
         sum += std::abs(a) + std::abs(b);
-        max = fmax(fmax(max, a), b);
+        max = std::max(std::max(max, a), b);
     }
 	start = (start+samples) % maxsamples;
     newsamples += samples;
@@ -198,7 +198,7 @@ void PCM::addPCM8(const unsigned char PCMdata[2][1024])
         a=pcmL[j]=(((float)PCMdata[0][i] - 128.0) / 64 );
         b=pcmR[j]=(((float)PCMdata[1][i] - 128.0) / 64 );
         sum += std::abs(a) + std::abs(b);
-        max = fmax(fmax(max, a), b);
+        max = std::max(std::max(max, a), b);
     }
     start = (start + samples) % maxsamples;
     newsamples += samples;
@@ -216,7 +216,7 @@ void PCM::addPCM8_512(const unsigned char PCMdata[2][512])
         a=pcmL[j]=(((float)PCMdata[0][i] - 128.0 ) / 64 );
         b=pcmR[j]=(((float)PCMdata[1][i] - 128.0 ) / 64 );
         sum += std::abs(a) + std::abs(b);
-        max = fmax(fmax(max, a), b);
+        max = std::max(std::max(max, a), b);
     }
     start = (start + samples) % maxsamples;
     newsamples += samples;
