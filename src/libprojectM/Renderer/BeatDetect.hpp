@@ -51,10 +51,10 @@ public:
     float vol{0.f};
     float vol_att{0.f};
 
-    PCM* pcm;
+    PCM& pcm;
 
     /** Methods */
-    explicit BeatDetect(PCM* pcm);
+    explicit BeatDetect(PCM& pcm);
     void reset();
     void detectFromSamples();
     void getBeatVals(float samplerate, unsigned fft_length, float* vdataL, float* vdataR);
