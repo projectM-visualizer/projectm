@@ -38,18 +38,18 @@ class BeatDetect
 {
 public:
     // Does this really belong here? maybe belongs on projectM.Settings?
-    float beatSensitivity = 1.f;
+    float beatSensitivity{1.f};
 
-    float treb = 0.f;
-    float mid = 0.f;
-    float bass = 0.f;
-    float vol_old = 0.f;
+    float treb{0.f};
+    float mid{0.f};
+    float bass{0.f};
+    float vol_old{0.f};
 
-    float treb_att = 0.f;
-    float mid_att = 0.f;
-    float bass_att = 0.f;
-    float vol = 0.f;
-    float vol_att = 0.f;
+    float treb_att{0.f};
+    float mid_att{0.f};
+    float bass_att{0.f};
+    float vol{0.f};
+    float vol_att{0.f};
 
     PCM* pcm;
 
@@ -70,25 +70,25 @@ public:
 private:
     // this is the size of the buffer used to determine avg levels of the input audio
     // the actual time represented in the history depends on FPS
-    static size_t constexpr BEAT_HISTORY_LENGTH = 80;
+    static size_t constexpr BEAT_HISTORY_LENGTH{80};
 
-    size_t beat_buffer_pos = 0;
+    size_t beat_buffer_pos{0};
 
     std::array<float, BEAT_HISTORY_LENGTH> bass_buffer{0.f};
-    float bass_history = 0.f;
-    float bass_instant = 0.f;
+    float bass_history{0.f};
+    float bass_instant{0.f};
 
     std::array<float, BEAT_HISTORY_LENGTH> mid_buffer{0.f};
-    float mid_history = 0.f;
-    float mid_instant = 0.f;
+    float mid_history{0.f};
+    float mid_instant{0.f};
 
     std::array<float, BEAT_HISTORY_LENGTH> treb_buffer{0.f};
-    float treb_history = 0.f;
-    float treb_instant = 0.f;
+    float treb_history{0.f};
+    float treb_instant{0.f};
 
     std::array<float, BEAT_HISTORY_LENGTH> vol_buffer{0.f};
-    float vol_history = 0.f;
-    float vol_instant = 0.f;
+    float vol_history{0.f};
+    float vol_instant{0.f};
 };
 
 #endif /** !_BEAT_DETECT_H */
