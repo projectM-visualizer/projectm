@@ -96,9 +96,7 @@ PCM::PCM()
     //Allocate FFT workspace
     // per rdft() documentation
     //    length of ip >= 2+sqrt(n) and length of w == n/2
-#if FFT_LENGTH > 1024
-#error update this code
-#endif
+    static_assert(FFT_LENGTH <= 1024, "update this code");
     w = (double*) wipemalloc(FFT_LENGTH * sizeof(double));
     // see fftsg.cpp length of ip >= 2+sqrt(n/2)
     // in this case n=2*FFT_LENGTH, so 34 is big enough to handle FFT_LENGTH=1024
