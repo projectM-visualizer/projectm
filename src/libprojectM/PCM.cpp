@@ -103,13 +103,6 @@ PCM::PCM() : start(0), newsamples(0)
     // in this case n=2*FFT_LENGTH, so 34 is big enough to handle FFT_LENGTH=1024
     ip = (int *)wipemalloc(34 * sizeof(int));
     ip[0]=0;
-
-    memset(pcmL, 0, sizeof(pcmL));
-    memset(pcmR, 0, sizeof(pcmR));
-    memset(freqL, 0, sizeof(freqL));
-    memset(freqR, 0, sizeof(freqR));
-    memset(spectrumL, 0, sizeof(spectrumL));
-    memset(spectrumR, 0, sizeof(spectrumR));
 }
 
 
@@ -251,7 +244,7 @@ void PCM::getPCM(float *data, CHANNEL channel, size_t samples, float smoothing)
 
     // copy
     double freq[FFT_LENGTH*2];
-    double *from = channel==0 ? freqL : freqR;
+    auto const& from = channel==0 ? freqL : freqR;
     for (int i=0 ; i<FFT_LENGTH*2 ; i++)
         freq[i] = from[i];
 
@@ -302,7 +295,7 @@ void PCM::getSpectrum(float *data, CHANNEL channel, size_t samples, float smooth
     assert(channel == 0 || channel == 1);
     _updateFFT();
 
-    float *spectrum = channel == 0 ? spectrumL : spectrumR;
+    auto const& spectrum = channel == 0 ? spectrumL : spectrumR;
     if (smoothing == 0)
     {
         size_t count = samples <= FFT_LENGTH ? samples : FFT_LENGTH;
@@ -341,12 +334,12 @@ void PCM::_updateFFT(size_t channel)
 {
     assert(channel == 0 || channel == 1);
 
-    double *freq = channel==0 ? freqL : freqR;
-    _copyPCM(freq, channel, FFT_LENGTH*2);
-    rdft(FFT_LENGTH*2, 1, freq, ip, w);
+    auto& freq = channel==0 ? freqL : freqR;
+    _copyPCM(freq.data(), channel, FFT_LENGTH*2);
+    rdft(FFT_LENGTH*2, 1, freq.data(), ip, w);
 
     // compute magnitude data (m^2 actually)
-    float *spectrum = channel==0 ? spectrumL : spectrumR;
+    auto& spectrum = channel==0 ? spectrumL : spectrumR;
     for (size_t i=1 ; i<FFT_LENGTH ; i++)
     {
         double m2 = (freq[i * 2] * freq[i * 2] + freq[i * 2 + 1] * freq[i * 2 + 1]);
@@ -365,7 +358,7 @@ void PCM::_copyPCM(float *to, int channel, size_t count)
 {
     assert(channel == 0 || channel == 1);
     assert(count < maxsamples);
-    const float *from = channel==0 ? pcmL : pcmR;
+    auto const& from = channel==0 ? pcmL : pcmR;
     const double volume = 1.0 / level;
     for (size_t i=0, pos=start ; i<count ; i++)
     {
@@ -378,7 +371,7 @@ void PCM::_copyPCM(float *to, int channel, size_t count)
 void PCM::_copyPCM(double *to, int channel, size_t count)
 {
     assert(channel == 0 || channel == 1);
-    const float *from = channel==0 ? pcmL : pcmR;
+    auto const& from = channel==0 ? pcmL : pcmR;
     const double volume = 1.0 / level;
     for (size_t i=0, pos=start ; i<count ; i++)
     {
