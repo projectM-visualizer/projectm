@@ -55,13 +55,13 @@ void Waveform::Draw(RenderContext &context)
     float *value2 = new float[samples_count];
     if (spectrum)
     {
-        context.beatDetect->pcm->getSpectrum( value1, CHANNEL_0, samples_count, smoothing );
-        context.beatDetect->pcm->getSpectrum( value2, CHANNEL_1, samples_count, smoothing );
+        context.beatDetect->pcm.getSpectrum( value1, CHANNEL_0, samples_count, smoothing );
+        context.beatDetect->pcm.getSpectrum( value2, CHANNEL_1, samples_count, smoothing );
     }
     else
     {
-        context.beatDetect->pcm->getPCM( value1, CHANNEL_0, samples_count, smoothing );
-        context.beatDetect->pcm->getPCM( value2, CHANNEL_1, samples_count, smoothing );
+        context.beatDetect->pcm.getPCM( value1, CHANNEL_0, samples_count, smoothing );
+        context.beatDetect->pcm.getPCM( value2, CHANNEL_1, samples_count, smoothing );
     }
 
     const float mult = scaling * vol_scale * (spectrum ? 0.005f : 1.0f);
