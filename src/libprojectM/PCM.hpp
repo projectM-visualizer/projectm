@@ -90,8 +90,8 @@ private:
     // normalize to range [-1.0,1.0]
     std::array<float, maxsamples> pcmL{0.f};
     std::array<float, maxsamples> pcmR{0.f};
-    int start;
-    size_t newsamples;
+    int start{0};
+    size_t newsamples{0};
 
     // raw FFT data
     std::array<double, 2*FFT_LENGTH> freqL{0.0};
