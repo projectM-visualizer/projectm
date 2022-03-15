@@ -245,7 +245,7 @@ void PCM::getPCM(float *data, CHANNEL channel, size_t samples, float smoothing)
     // copy
     double freq[FFT_LENGTH*2];
     auto const& from = channel==0 ? freqL : freqR;
-    for (int i=0 ; i<FFT_LENGTH*2 ; i++)
+    for (size_t i=0 ; i<FFT_LENGTH*2 ; i++)
         freq[i] = from[i];
 
     // The visible effects ramp up as you smoothing value gets close to 1.0 (consistent with milkdrop2)
@@ -253,7 +253,7 @@ void PCM::getPCM(float *data, CHANNEL channel, size_t samples, float smoothing)
     {
         // precompute constant:
         double k = -1.0 / ((1 - smoothing) * (1 - smoothing) * FFT_LENGTH * FFT_LENGTH);
-        for (int i = 1; i < FFT_LENGTH; i++)
+        for (size_t i = 1; i < FFT_LENGTH; i++)
         {
             float g = pow(2.718281828459045, i * i * k);
             freq[i * 2] *= g;
@@ -266,7 +266,7 @@ void PCM::getPCM(float *data, CHANNEL channel, size_t samples, float smoothing)
         // butterworth
         // this might be slightly faster to compute. pow() is expensive
         double k = 1.0 / ((1 - smoothing) * (1 - smoothing) * FFT_LENGTH * FFT_LENGTH);
-        for (int i = 1; i < FFT_LENGTH; i++)
+        for (size_t i = 1; i < FFT_LENGTH; i++)
         {
             float b = 1.0 / (1.0 + (i * i * k));
             freq[i * 2] *= b;
