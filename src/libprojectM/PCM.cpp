@@ -125,7 +125,7 @@ void PCM::addPCMfloat(const float* PCMdata, size_t samples)
         size_t j=(i+start)%maxsamples;
         a=pcmL[j] = PCMdata[i];
         pcmR[j] = PCMdata[i];
-        sum += fabs(a);
+        sum += std::abs(a);
         max = fmax(max, a);
     }
     start = (start+samples)%maxsamples;
@@ -144,8 +144,8 @@ void PCM::addPCMfloat_2ch(const float* PCMdata, size_t count)
         size_t j=(start+i)%maxsamples;
         a = pcmL[j] = PCMdata[i*2];
         b = pcmR[j] = PCMdata[i*2+1];
-        sum += fabs(a) + fabs(b);
-        max = fmax(fmax(max, fabs(a)), fabs(b));
+        sum += std::abs(a) + std::abs(b);
+        max = fmax(fmax(max, std::abs(a)), std::abs(b));
     }
     start = (start + samples) % maxsamples;
     newsamples += samples;
@@ -161,7 +161,7 @@ void PCM::addPCM16Data(const short* pcm_data, size_t samples)
         size_t j = (i + start) % maxsamples;
         a = pcmL[j] = (pcm_data[i * 2 + 0] / 16384.0);
         b = pcmR[j] = (pcm_data[i * 2 + 1] / 16384.0);
-        sum += fabs(a) + fabs(b);
+        sum += std::abs(a) + std::abs(b);
         max = fmax(fmax(max, a), b);
     }
     start = (start + samples) % maxsamples;
@@ -179,7 +179,7 @@ void PCM::addPCM16(const short PCMdata[2][512])
 		size_t j=(i+start) % maxsamples;
         a=pcmL[j]=(PCMdata[0][i]/16384.0);
         b=pcmR[j]=(PCMdata[1][i]/16384.0);
-        sum += fabs(a) + fabs(b);
+        sum += std::abs(a) + std::abs(b);
         max = fmax(fmax(max, a), b);
     }
 	start = (start+samples) % maxsamples;
@@ -197,7 +197,7 @@ void PCM::addPCM8(const unsigned char PCMdata[2][1024])
         size_t j= (i+start) % maxsamples;
         a=pcmL[j]=(((float)PCMdata[0][i] - 128.0) / 64 );
         b=pcmR[j]=(((float)PCMdata[1][i] - 128.0) / 64 );
-        sum += fabs(a) + fabs(b);
+        sum += std::abs(a) + std::abs(b);
         max = fmax(fmax(max, a), b);
     }
     start = (start + samples) % maxsamples;
@@ -215,7 +215,7 @@ void PCM::addPCM8_512(const unsigned char PCMdata[2][512])
         size_t j = (i+start) % maxsamples;
         a=pcmL[j]=(((float)PCMdata[0][i] - 128.0 ) / 64 );
         b=pcmR[j]=(((float)PCMdata[1][i] - 128.0 ) / 64 );
-        sum += fabs(a) + fabs(b);
+        sum += std::abs(a) + std::abs(b);
         max = fmax(fmax(max, a), b);
     }
     start = (start + samples) % maxsamples;
@@ -407,7 +407,7 @@ struct PCMTest : public Test {
 
     bool eq(float a, float b)
     {
-        return fabs(a - b) < (fabs(a) + fabs(b) + 1) / 1000.0f;
+        return std::abs(a - b) < (std::abs(a) + std::abs(b) + 1) / 1000.0f;
     }
 
 public:
