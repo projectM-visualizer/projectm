@@ -92,24 +92,12 @@ public:
 PCM::PCM()
 {
     leveler = new AutoLevel();
-
-    //Allocate FFT workspace
-    // per rdft() documentation
-    //    length of ip >= 2+sqrt(n) and length of w == n/2
-    static_assert(FFT_LENGTH <= 1024, "update this code");
-    w = (double*) wipemalloc(FFT_LENGTH * sizeof(double));
-    // see fftsg.cpp length of ip >= 2+sqrt(n/2)
-    // in this case n=2*FFT_LENGTH, so 34 is big enough to handle FFT_LENGTH=1024
-    ip = (int*) wipemalloc(34 * sizeof(int));
-    ip[0] = 0;
 }
 
 
 PCM::~PCM()
 {
     delete leveler;
-    free(w);
-    free(ip);
 }
 
 #include <iostream>
@@ -275,7 +263,7 @@ void PCM::getPCM(float* data, CHANNEL channel, size_t samples, float smoothing)
     }
 
     // inverse fft
-    rdft(FFT_LENGTH * 2, -1, freq, ip, w);
+    rdft(FFT_LENGTH * 2, -1, freq, ip.data(), w.data());
     for (size_t j = 0; j < FFT_LENGTH * 2; j++)
         freq[j] *= 1.0 / FFT_LENGTH;
 
@@ -336,7 +324,7 @@ void PCM::_updateFFT(size_t channel)
 
     auto& freq = channel == 0 ? freqL : freqR;
     _copyPCM(freq.data(), channel, FFT_LENGTH * 2);
-    rdft(FFT_LENGTH * 2, 1, freq.data(), ip, w);
+    rdft(FFT_LENGTH * 2, 1, freq.data(), ip.data(), w.data());
 
     // compute magnitude data (m^2 actually)
     auto& spectrum = channel == 0 ? spectrumL : spectrumR;
