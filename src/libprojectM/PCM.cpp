@@ -39,18 +39,16 @@
 class AutoLevel
 {
 private:
-    double level;
+    double level{0.01};
     // accumulate sample data
-    size_t level_samples;
-    double level_sum;
-    double level_max;
-    double l0,l1,l2;
+    size_t level_samples{0};
+    double level_sum{0.0};
+    double level_max{0.0};
+    double l0{-1.0};
+    double l1{-1.0};
+    double l2{-1.0};
 
 public:
-    AutoLevel() : level(0.01),level_samples(0),level_sum(0),level_max(0),l0(-1),l1(-1),l2(-1)
-    {
-    }
-
     /*
      * Here is where we try to do auto volume setting.  Doing this here
      * means that none of the code downstream (waveforms, beatdetect, etc) needs
