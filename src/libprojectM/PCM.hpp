@@ -34,7 +34,7 @@
 
 // FFT_LENGTH is number of magnitude values available from getSpectrum().
 // Internally this is generated using 2xFFT_LENGTH samples per channel.
-#define FFT_LENGTH 512
+size_t constexpr FFT_LENGTH = 512;
 class Test;
 class AutoLevel;
 
@@ -50,7 +50,7 @@ class PCM
 {
 public:
     /* maximum number of sound samples that are actually stored. */
-    static const size_t maxsamples=2048;
+    static constexpr size_t maxsamples=2048;
 
     PCM();
     ~PCM();
