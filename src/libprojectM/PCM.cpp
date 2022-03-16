@@ -210,6 +210,29 @@ void PCM::addPCM8_512(const unsigned char PCMdata[2][512])
 }
 
 
+template<size_t aSize, size_t ipSize, size_t wSize>
+void rdft(
+    int const isgn,
+    std::array<double, aSize>& a,
+    std::array<int, ipSize>& ip,
+    std::array<double, wSize>& w)
+{
+    // per rdft() documentation
+    //    length of ip >= 2+sqrt(n/2) and length of w == n/2
+    //    n: length of a, power of 2, n >= 2
+    // see fftsg.cpp
+    static_assert((ipSize - 2) * (ipSize - 2) >= aSize,
+                  "rdft invariant not preserved: length of ip >= 2+sqrt(n/2)");
+    static_assert(2 * wSize == aSize,
+                  "rdft invariant not preserved: length of w == n/2");
+    static_assert(aSize >= 2,
+                  "rdft invariant not preserved: n >= 2");
+    static_assert((aSize & (aSize - 1)) == 0,
+                  "rdft invariant not preserved: n is power of two");
+    rdft(aSize, isgn, a.data(), ip.data(), w.data());
+}
+
+
 // puts sound data requested at provided pointer
 //
 // samples is number of PCM samples to return
@@ -230,7 +253,7 @@ void PCM::getPCM(float* data, CHANNEL channel, size_t samples, float smoothing)
     _updateFFT();
 
     // copy
-    double freq[FFT_LENGTH * 2];
+    std::array<double, 2 * FFT_LENGTH> freq;
     auto const& from = channel == 0 ? freqL : freqR;
     for (size_t i = 0; i < FFT_LENGTH * 2; i++)
         freq[i] = from[i];
@@ -263,7 +286,7 @@ void PCM::getPCM(float* data, CHANNEL channel, size_t samples, float smoothing)
     }
 
     // inverse fft
-    rdft(FFT_LENGTH * 2, -1, freq, ip.data(), w.data());
+    rdft(-1, freq, ip, w);
     for (size_t j = 0; j < FFT_LENGTH * 2; j++)
         freq[j] *= 1.0 / FFT_LENGTH;
 
@@ -423,7 +446,7 @@ public:
         // float_2ch
         {
             const size_t samples = 301;
-            std::array<float, 2*samples> data;
+            std::array<float, 2 * samples> data;
             for (size_t i = 0; i < samples; i++)
             {
                 data[i * 2] = ((float) i) / (samples - 1);
@@ -455,7 +478,7 @@ public:
         // low frequency
         {
             const size_t samples = 1024;
-            std::array<float, 2*samples> data;
+            std::array<float, 2 * samples> data;
             for (size_t i = 0; i < samples; i++)
             {
                 float f = 2 * 3.141592653589793 * ((double) i) / (samples - 1);

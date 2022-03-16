@@ -100,14 +100,8 @@ private:
     std::array<float, FFT_LENGTH> spectrumL{0.f};
     std::array<float, FFT_LENGTH> spectrumR{0.f};
 
-    // for FFT library
-    // per rdft() documentation
-    //    length of ip >= 2+sqrt(n/2) and length of w == n/2
-    // n is the length of freqL, freqR.
-    // see fftsg.cpp
     std::array<double, FFT_LENGTH> w{0.0};
     std::array<int, 34> ip{0};
-    static_assert(FFT_LENGTH <= 1024, "update this code");
 
     // copy data out of the circular PCM buffer
     void _copyPCM(float *PCMdata, int channel, size_t count);
