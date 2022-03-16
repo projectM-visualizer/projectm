@@ -182,12 +182,12 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     pmShader.textures["fw_main"] = textureManager->getTexture("main", GL_REPEAT, GL_LINEAR);
     pmShader.textures["pw_main"] = textureManager->getTexture("main", GL_REPEAT, GL_NEAREST);
 
-    pmShader.textures["noise_lq"] = textureManager->getTexture("noise_lq", GL_CLAMP_TO_EDGE, GL_LINEAR);
-    pmShader.textures["noise_lq_lite"] = textureManager->getTexture("noise_lq_lite", GL_CLAMP_TO_EDGE, GL_LINEAR);
-    pmShader.textures["noise_mq"] = textureManager->getTexture("noise_mq", GL_CLAMP_TO_EDGE, GL_LINEAR);
-    pmShader.textures["noise_hq"] = textureManager->getTexture("noise_hq", GL_CLAMP_TO_EDGE, GL_LINEAR);
-    pmShader.textures["noisevol_lq"] = textureManager->getTexture("noisevol_lq", GL_CLAMP_TO_EDGE, GL_LINEAR);
-    pmShader.textures["noisevol_hq"] = textureManager->getTexture("noisevol_hq", GL_CLAMP_TO_EDGE, GL_LINEAR);
+    pmShader.textures["noise_lq"] = textureManager->getTexture("noise_lq", GL_REPEAT, GL_LINEAR);
+    pmShader.textures["noise_lq_lite"] = textureManager->getTexture("noise_lq_lite", GL_REPEAT, GL_LINEAR);
+    pmShader.textures["noise_mq"] = textureManager->getTexture("noise_mq", GL_REPEAT, GL_LINEAR);
+    pmShader.textures["noise_hq"] = textureManager->getTexture("noise_hq", GL_REPEAT, GL_LINEAR);
+    pmShader.textures["noisevol_lq"] = textureManager->getTexture("noisevol_lq", GL_REPEAT, GL_LINEAR);
+    pmShader.textures["noisevol_hq"] = textureManager->getTexture("noisevol_hq", GL_REPEAT, GL_LINEAR);
 
 
 
@@ -246,9 +246,9 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
     if (found != std::string::npos)
     {
         blur1_enabled = blur2_enabled = blur3_enabled = true;
-        pmShader.textures["blur3"] = textureManager->getTexture("blur3", GL_CLAMP_TO_EDGE, GL_LINEAR);
-        pmShader.textures["blur2"] = textureManager->getTexture("blur2", GL_CLAMP_TO_EDGE, GL_LINEAR);
-        pmShader.textures["blur1"] = textureManager->getTexture("blur1", GL_CLAMP_TO_EDGE, GL_LINEAR);
+        pmShader.textures["blur3"] = textureManager->getTexture("blur3", GL_REPEAT, GL_LINEAR);
+        pmShader.textures["blur2"] = textureManager->getTexture("blur2", GL_REPEAT, GL_LINEAR);
+        pmShader.textures["blur1"] = textureManager->getTexture("blur1", GL_REPEAT, GL_LINEAR);
     }
     else
     {
@@ -256,8 +256,8 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
         if (found != std::string::npos)
         {
             blur1_enabled = blur2_enabled = true;
-            pmShader.textures["blur2"] = textureManager->getTexture("blur2", GL_CLAMP_TO_EDGE, GL_LINEAR);
-            pmShader.textures["blur1"] = textureManager->getTexture("blur1", GL_CLAMP_TO_EDGE, GL_LINEAR);
+            pmShader.textures["blur2"] = textureManager->getTexture("blur2", GL_REPEAT, GL_LINEAR);
+            pmShader.textures["blur1"] = textureManager->getTexture("blur1", GL_REPEAT, GL_LINEAR);
         }
         else
         {
@@ -265,7 +265,7 @@ GLuint ShaderEngine::compilePresetShader(const PresentShaderType shaderType, Sha
             if (found != std::string::npos)
             {
                 blur1_enabled = true;
-                pmShader.textures["blur1"] = textureManager->getTexture("blur1", GL_CLAMP_TO_EDGE, GL_LINEAR);
+                pmShader.textures["blur1"] = textureManager->getTexture("blur1", GL_REPEAT, GL_LINEAR);
             }
         }
     }
