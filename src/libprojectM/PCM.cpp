@@ -74,15 +74,6 @@ double PCM::AutoLevel::updateLevel(size_t samples, double sum, double max)
 }
 
 
-PCM::PCM()
-{
-}
-
-
-PCM::~PCM()
-{
-}
-
 #include <iostream>
 
 
