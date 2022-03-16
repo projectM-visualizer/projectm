@@ -313,7 +313,8 @@ void PCM::_copyPCM(double* to, int channel, size_t count)
     if (!verify(str, cond)) \
     return false
 
-struct PCMTest : public Test {
+class PCMTest : public Test {
+public:
     PCMTest()
         : Test("PCMTest")
     {
@@ -324,7 +325,6 @@ struct PCMTest : public Test {
         return std::abs(a - b) < (std::abs(a) + std::abs(b) + 1) / 1000.0f;
     }
 
-public:
     /* smoke test for each addPCM method */
     bool test_addpcm()
     {
