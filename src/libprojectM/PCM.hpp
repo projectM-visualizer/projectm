@@ -51,7 +51,7 @@ class PCM
 {
 public:
     /* maximum number of sound samples that are actually stored. */
-    static constexpr size_t maxsamples=2048;
+    static constexpr size_t maxSamples=2048;
 
     PCM();
     ~PCM();
@@ -88,10 +88,10 @@ private:
     // circular PCM buffer
     // adjust "volume" of PCM data as we go, this simplifies everything downstream...
     // normalize to range [-1.0,1.0]
-    std::array<float, maxsamples> pcmL{0.f};
-    std::array<float, maxsamples> pcmR{0.f};
+    std::array<float, maxSamples> pcmL{0.f};
+    std::array<float, maxSamples> pcmR{0.f};
     int start{0};
-    size_t newsamples{0};
+    size_t newSamples{0};
 
     // raw FFT data
     std::array<double, 2*FFT_LENGTH> freqL{0.0};

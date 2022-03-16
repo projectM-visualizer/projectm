@@ -729,7 +729,7 @@ bool projectm_get_error_loading_current_preset(projectm_handle instance)
 
 unsigned int projectm_pcm_get_max_samples()
 {
-    return PCM::maxsamples;
+    return PCM::maxSamples;
 }
 
 void projectm_pcm_add_float_1ch_data(projectm_handle instance, const float* pcm_data, unsigned int sample_count)
