@@ -319,7 +319,7 @@ void PCM::_updateFFTChannel(size_t channel)
     assert(channel == 0 || channel == 1);
 
     auto& freq = channel == 0 ? freqL : freqR;
-    _copyPCM(freq.data(), channel, FFT_LENGTH * 2);
+    _copyPCM(freq.data(), channel, freq.size());
     rdft(FFT_LENGTH * 2, 1, freq.data(), ip.data(), w.data());
 
     // compute magnitude data (m^2 actually)
@@ -409,10 +409,10 @@ public:
                 pcm.addPCMfloat(data.data(), samples);
             std::array<float, samples> copy;
             pcm.level = 1.0;
-            pcm._copyPCM(copy.data(), 0, samples);
+            pcm._copyPCM(copy.data(), 0, copy.size());
             for (size_t i = 0; i < samples; i++)
                 TEST(eq(copy[i], ((float) samples - 1 - i) / (samples - 1)));
-            pcm._copyPCM(copy.data(), 1, samples);
+            pcm._copyPCM(copy.data(), 1, copy.size());
             for (size_t i = 0; i < samples; i++)
                 TEST(eq(copy[i], ((float) samples - 1 - i) / (samples - 1)));
         }
@@ -431,8 +431,8 @@ public:
             std::array<float, samples> copy0;
             std::array<float, samples> copy1;
             pcm.level = 1;
-            pcm._copyPCM(copy0.data(), 0, samples);
-            pcm._copyPCM(copy1.data(), 1, samples);
+            pcm._copyPCM(copy0.data(), 0, copy0.size());
+            pcm._copyPCM(copy1.data(), 1, copy1.size());
             for (size_t i = 0; i < samples; i++)
                 TEST(eq(1.0, copy0[i] + copy1[i]));
         }
