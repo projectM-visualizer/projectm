@@ -10,6 +10,14 @@
 std::vector<Test *> TestRunner::tests;
 
 
+bool Test::verify(const char *test, bool success)
+{
+    if (!success)
+        std::cout << "failed " << test << std::endl;
+    return success;
+}
+
+
 bool TestRunner::run()
 {
     if (tests.empty())
