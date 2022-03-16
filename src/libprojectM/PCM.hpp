@@ -37,7 +37,6 @@
 // Internally this is generated using 2xFFT_LENGTH samples per channel.
 size_t constexpr FFT_LENGTH = 512;
 class Test;
-class AutoLevel;
 
 enum CHANNEL
 {
