@@ -108,13 +108,13 @@ void PCM::addPCMfloat(const float* PCMdata, size_t samples)
     float a, sum = 0, max = 0;
     for (size_t i = 0; i < samples; i++)
     {
-        size_t j=(i+start)%maxSamples;
-        a=pcmL[j] = PCMdata[i];
+        size_t j = (i + start) % maxSamples;
+        a = pcmL[j] = PCMdata[i];
         pcmR[j] = PCMdata[i];
         sum += std::abs(a);
         max = std::max(max, a);
     }
-    start = (start+samples)%maxSamples;
+    start = (start + samples) % maxSamples;
     newSamples += samples;
     level = leveler->updateLevel(samples, sum, max);
 }
@@ -127,9 +127,9 @@ void PCM::addPCMfloat_2ch(const float* PCMdata, size_t count)
     float a, b, sum = 0, max = 0;
     for (size_t i = 0; i < samples; i++)
     {
-        size_t j=(start+i)%maxSamples;
-        a = pcmL[j] = PCMdata[i*2];
-        b = pcmR[j] = PCMdata[i*2+1];
+        size_t j = (start + i) % maxSamples;
+        a = pcmL[j] = PCMdata[i * 2];
+        b = pcmR[j] = PCMdata[i * 2 + 1];
         sum += std::abs(a) + std::abs(b);
         max = std::max(std::max(max, std::abs(a)), std::abs(b));
     }
@@ -162,13 +162,13 @@ void PCM::addPCM16(const short PCMdata[2][512])
     float a, b, sum = 0, max = 0;
     for (size_t i = 0; i < samples; i++)
     {
-		size_t j=(i+start) % maxSamples;
-        a=pcmL[j]=(PCMdata[0][i]/16384.0);
-        b=pcmR[j]=(PCMdata[1][i]/16384.0);
+        size_t j = (i + start) % maxSamples;
+        a = pcmL[j] = (PCMdata[0][i] / 16384.0);
+        b = pcmR[j] = (PCMdata[1][i] / 16384.0);
         sum += std::abs(a) + std::abs(b);
         max = std::max(std::max(max, a), b);
     }
-	start = (start+samples) % maxSamples;
+    start = (start + samples) % maxSamples;
     newSamples += samples;
     level = leveler->updateLevel(samples, sum / 2, max);
 }
@@ -180,9 +180,9 @@ void PCM::addPCM8(const unsigned char PCMdata[2][1024])
     float a, b, sum = 0, max = 0;
     for (size_t i = 0; i < samples; i++)
     {
-        size_t j= (i+start) % maxSamples;
-        a=pcmL[j]=(((float)PCMdata[0][i] - 128.0) / 64 );
-        b=pcmR[j]=(((float)PCMdata[1][i] - 128.0) / 64 );
+        size_t j = (i + start) % maxSamples;
+        a = pcmL[j] = (((float) PCMdata[0][i] - 128.0) / 64);
+        b = pcmR[j] = (((float) PCMdata[1][i] - 128.0) / 64);
         sum += std::abs(a) + std::abs(b);
         max = std::max(std::max(max, a), b);
     }
@@ -198,9 +198,9 @@ void PCM::addPCM8_512(const unsigned char PCMdata[2][512])
     float a, b, sum = 0, max = 0;
     for (size_t i = 0; i < samples; i++)
     {
-        size_t j = (i+start) % maxSamples;
-        a=pcmL[j]=(((float)PCMdata[0][i] - 128.0 ) / 64 );
-        b=pcmR[j]=(((float)PCMdata[1][i] - 128.0 ) / 64 );
+        size_t j = (i + start) % maxSamples;
+        a = pcmL[j] = (((float) PCMdata[0][i] - 128.0) / 64);
+        b = pcmR[j] = (((float) PCMdata[1][i] - 128.0) / 64);
         sum += std::abs(a) + std::abs(b);
         max = std::max(std::max(max, a), b);
     }
@@ -370,11 +370,11 @@ void PCM::_copyPCM(float* to, int channel, size_t count)
 {
     assert(channel == 0 || channel == 1);
     assert(count < maxSamples);
-    auto const& from = channel==0 ? pcmL : pcmR;
+    auto const& from = channel == 0 ? pcmL : pcmR;
     const double volume = 1.0 / level;
     for (size_t i = 0, pos = start; i < count; i++)
     {
-        if (pos==0)
+        if (pos == 0)
             pos = maxSamples;
         to[i] = from[--pos] * volume;
     }
@@ -387,7 +387,7 @@ void PCM::_copyPCM(double* to, int channel, size_t count)
     const double volume = 1.0 / level;
     for (size_t i = 0, pos = start; i < count; i++)
     {
-        if (pos==0)
+        if (pos == 0)
             pos = maxSamples;
         to[i] = from[--pos] * volume;
     }
