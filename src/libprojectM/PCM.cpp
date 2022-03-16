@@ -221,7 +221,7 @@ void rdft(
     //    length of ip >= 2+sqrt(n/2) and length of w == n/2
     //    n: length of a, power of 2, n >= 2
     // see fftsg.cpp
-    static_assert((ipSize - 2) * (ipSize - 2) >= aSize,
+    static_assert(2 * (ipSize - 2) * (ipSize - 2) >= aSize,
                   "rdft invariant not preserved: length of ip >= 2+sqrt(n/2)");
     static_assert(2 * wSize == aSize,
                   "rdft invariant not preserved: length of w == n/2");
