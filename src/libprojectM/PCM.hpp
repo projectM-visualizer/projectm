@@ -113,9 +113,26 @@ private:
 
     friend class PCMTest;
 
+    // see https://github.com/projectM-visualizer/projectm/issues/161
+    class AutoLevel
+    {
+    public:
+        double updateLevel(size_t samples, double sum, double max);
+
+    private:
+        double level{0.01};
+        // accumulate sample data
+        size_t level_samples{0};
+        double level_sum{0.0};
+        double level_max{0.0};
+        double l0{-1.0};
+        double l1{-1.0};
+        double l2{-1.0};
+    };
+
     // state for tracking audio level
     double level;
-    class AutoLevel* leveler;
+    AutoLevel leveler;
 };
 
 #endif /** !_PCM_H */
