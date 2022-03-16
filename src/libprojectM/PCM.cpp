@@ -110,7 +110,7 @@ void PCM::addPCMfloat_2ch(const float* PCMdata, size_t count)
 }
 
 
-void PCM::addPCM16Data(const short* pcm_data, size_t samples)
+void PCM::addPCM16Data(const int16_t* pcm_data, size_t samples)
 {
     float a, b, sum = 0, max = 0;
     for (size_t i = 0; i < samples; ++i)
@@ -127,7 +127,7 @@ void PCM::addPCM16Data(const short* pcm_data, size_t samples)
 }
 
 
-void PCM::addPCM16(const short PCMdata[2][512])
+void PCM::addPCM16(const int16_t PCMdata[2][512])
 {
     const int samples = 512;
     float a, b, sum = 0, max = 0;
@@ -145,7 +145,7 @@ void PCM::addPCM16(const short PCMdata[2][512])
 }
 
 
-void PCM::addPCM8(const unsigned char PCMdata[2][1024])
+void PCM::addPCM8(const uint8_t PCMdata[2][1024])
 {
     const int samples = 1024;
     float a, b, sum = 0, max = 0;
@@ -163,7 +163,7 @@ void PCM::addPCM8(const unsigned char PCMdata[2][1024])
 }
 
 
-void PCM::addPCM8_512(const unsigned char PCMdata[2][512])
+void PCM::addPCM8_512(const uint8_t PCMdata[2][512])
 {
     const size_t samples = 512;
     float a, b, sum = 0, max = 0;

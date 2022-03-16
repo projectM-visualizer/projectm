@@ -30,6 +30,7 @@
 #define _PCM_H
 
 #include <array>
+#include <cstdint>
 #include <stdlib.h>
 
 
@@ -54,10 +55,10 @@ public:
 
     void addPCMfloat(const float* PCMdata, size_t samples);
     void addPCMfloat_2ch(const float* PCMdata, size_t count);
-    void addPCM16(const short[2][512]);
-    void addPCM16Data(const short* pcm_data, size_t samples);
-    void addPCM8(const unsigned char[2][1024]);
-    void addPCM8_512(const unsigned char[2][512]);
+    void addPCM16(const int16_t[2][512]);
+    void addPCM16Data(const int16_t* pcm_data, size_t samples);
+    void addPCM8(const uint8_t[2][1024]);
+    void addPCM8_512(const uint8_t[2][512]);
 
     /**
      * PCM data
