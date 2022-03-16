@@ -330,10 +330,11 @@ void PCM::_updateFFT(size_t channel)
     spectrum[FFT_LENGTH - 1] = freq[1] * freq[1];
 }
 
-inline double constrain(double a, double mn, double mx)
+// CPP17: std::clamp
+inline double clamp(double x, double lo, double hi)
 {
-    return a > mx ? mx : a < mn ? mn
-                                : a;
+    return x > hi ? hi : x < lo ? lo
+                                : x;
 }
 
 // pull data from circular buffer
