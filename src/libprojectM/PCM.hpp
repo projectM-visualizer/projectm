@@ -105,7 +105,7 @@ private:
 
     // update FFT data if new samples are available.
     void _updateFFT();
-    void _updateFFT(size_t channel);
+    void _updateFFTChannel(size_t channel);
 
     friend class PCMTest;
 

@@ -309,12 +309,12 @@ void PCM::_updateFFT()
         return;
     }
 
-    _updateFFT(0);
-    _updateFFT(1);
+    _updateFFTChannel(0);
+    _updateFFTChannel(1);
     newSamples = 0;
 }
 
-void PCM::_updateFFT(size_t channel)
+void PCM::_updateFFTChannel(size_t channel)
 {
     assert(channel == 0 || channel == 1);
 
