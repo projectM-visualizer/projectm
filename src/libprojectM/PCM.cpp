@@ -35,69 +35,52 @@
 #include <cassert>
 
 
-// see https://github.com/projectM-visualizer/projectm/issues/161
-class AutoLevel
+/*
+ * Here is where we try to do auto volume setting.  Doing this here
+ * means that none of the code downstream (waveforms, beatdetect, etc) needs
+ * to worry about it.
+ *
+ * 1) Don't over react to level changes within a song
+ * 2) Ignore silence/gaps
+ *
+ * I don't know if it's necessary to have both sum and max, but that makes
+ * it easier to experiment...
+ */
+double PCM::AutoLevel::updateLevel(size_t samples, double sum, double max)
 {
-private:
-    double level{0.01};
-    // accumulate sample data
-    size_t level_samples{0};
-    double level_sum{0.0};
-    double level_max{0.0};
-    double l0{-1.0};
-    double l1{-1.0};
-    double l2{-1.0};
-
-public:
-    /*
-     * Here is where we try to do auto volume setting.  Doing this here
-     * means that none of the code downstream (waveforms, beatdetect, etc) needs
-     * to worry about it.
-     *
-     * 1) Don't over react to level changes within a song
-     * 2) Ignore silence/gaps
-     *
-     * I don't know if it's necessary to have both sum and max, but that makes
-     * it easier to experiment...
-     */
 
     // This is an arbitrary number that helps control
     //   a) how quickly the level can change and
     //   b) keeps code from being affected by how the caller provides data (lot of short buffers, or fewer long buffers)
-#define AUTOLEVEL_SEGMENT 4096
+    size_t constexpr AUTOLEVEL_SEGMENT = 4096;
 
-    double updateLevel(size_t samples, double sum, double max)
-    {
-        if (sum / samples < 0.00001)
-            return level;
-        level_sum += sum;
-        level_max = std::max(level_max, max * 1.02);
-        level_samples += samples;
-        if (level_samples >= AUTOLEVEL_SEGMENT || l0 <= 0)
-        {
-            double max_recent = std::max(std::max(l0, l1), std::max(l2, level_max));
-            l0 = l1;
-            l1 = l2;
-            l2 = level_max;
-            level_max *= 0.95;
-            level_sum = level_samples = 0;
-            level = (l0 <= 0) ? max_recent : level * 0.96 + max_recent * 0.04;
-            level = std::max(level, 0.0001);
-        }
+    if (sum / samples < 0.00001)
         return level;
+    level_sum += sum;
+    level_max = std::max(level_max, max * 1.02);
+    level_samples += samples;
+    if (level_samples >= AUTOLEVEL_SEGMENT || l0 <= 0)
+    {
+        double max_recent = std::max(std::max(l0, l1), std::max(l2, level_max));
+        l0 = l1;
+        l1 = l2;
+        l2 = level_max;
+        level_max *= 0.95;
+        level_sum = level_samples = 0;
+        level = (l0 <= 0) ? max_recent : level * 0.96 + max_recent * 0.04;
+        level = std::max(level, 0.0001);
     }
-};
+    return level;
+}
 
 
 PCM::PCM()
 {
-    leveler = new AutoLevel();
 }
 
 
 PCM::~PCM()
 {
-    delete leveler;
 }
 
 #include <iostream>
@@ -116,7 +99,7 @@ void PCM::addPCMfloat(const float* PCMdata, size_t samples)
     }
     start = (start + samples) % maxSamples;
     newSamples += samples;
-    level = leveler->updateLevel(samples, sum, max);
+    level = leveler.updateLevel(samples, sum, max);
 }
 
 
@@ -135,7 +118,7 @@ void PCM::addPCMfloat_2ch(const float* PCMdata, size_t count)
     }
     start = (start + samples) % maxSamples;
     newSamples += samples;
-    level = leveler->updateLevel(samples, sum / 2, max);
+    level = leveler.updateLevel(samples, sum / 2, max);
 }
 
 
@@ -152,7 +135,7 @@ void PCM::addPCM16Data(const short* pcm_data, size_t samples)
     }
     start = (start + samples) % maxSamples;
     newSamples += samples;
-    level = leveler->updateLevel(samples, sum / 2, max);
+    level = leveler.updateLevel(samples, sum / 2, max);
 }
 
 
@@ -170,7 +153,7 @@ void PCM::addPCM16(const short PCMdata[2][512])
     }
     start = (start + samples) % maxSamples;
     newSamples += samples;
-    level = leveler->updateLevel(samples, sum / 2, max);
+    level = leveler.updateLevel(samples, sum / 2, max);
 }
 
 
@@ -188,7 +171,7 @@ void PCM::addPCM8(const unsigned char PCMdata[2][1024])
     }
     start = (start + samples) % maxSamples;
     newSamples += samples;
-    level = leveler->updateLevel(samples, sum / 2, max);
+    level = leveler.updateLevel(samples, sum / 2, max);
 }
 
 
@@ -206,7 +189,7 @@ void PCM::addPCM8_512(const unsigned char PCMdata[2][512])
     }
     start = (start + samples) % maxSamples;
     newSamples += samples;
-    level = leveler->updateLevel(samples, sum / 2, max);
+    level = leveler.updateLevel(samples, sum / 2, max);
 }
 
 
