@@ -51,32 +51,32 @@ class PCM
 {
 public:
     /* maximum number of sound samples that are actually stored. */
-    static constexpr size_t maxSamples=2048;
+    static constexpr size_t maxSamples = 2048;
 
     PCM();
     ~PCM();
 
-    void addPCMfloat( const float *PCMdata, size_t samples );
-    void addPCMfloat_2ch( const float *PCMdata, size_t count );
-    void addPCM16( const short [2][512] );
-    void addPCM16Data( const short* pcm_data, size_t samples );
-    void addPCM8( const unsigned char [2][1024] );
-    void addPCM8_512( const unsigned char [2][512] );
+    void addPCMfloat(const float* PCMdata, size_t samples);
+    void addPCMfloat_2ch(const float* PCMdata, size_t count);
+    void addPCM16(const short[2][512]);
+    void addPCM16Data(const short* pcm_data, size_t samples);
+    void addPCM8(const unsigned char[2][1024]);
+    void addPCM8_512(const unsigned char[2][512]);
 
     /**
      * PCM data
      * When smoothing=0 is copied directly from PCM buffers. smoothing=1.0 is almost a straight line.
      * The returned data will 'wrap' if more than maxsamples are requested.
      */
-    void getPCM(float *data, CHANNEL channel, size_t samples, float smoothing);
+    void getPCM(float* data, CHANNEL channel, size_t samples, float smoothing);
 
     /** Spectrum data
      * Smoothing is not fully implemented, only none (smoothing==0) or a little (smoothing!=0).
      * The returned data will be zero padded if more than FFT_LENGTH values are requested
      */
-    void getSpectrum(float *data, CHANNEL channel, size_t samples, float smoothing);
+    void getSpectrum(float* data, CHANNEL channel, size_t samples, float smoothing);
 
-  	static Test* test();
+    static Test* test();
 
 private:
     // mem-usage:
@@ -94,8 +94,8 @@ private:
     size_t newSamples{0};
 
     // raw FFT data
-    std::array<double, 2*FFT_LENGTH> freqL{0.0};
-    std::array<double, 2*FFT_LENGTH> freqR{0.0};
+    std::array<double, 2 * FFT_LENGTH> freqL{0.0};
+    std::array<double, 2 * FFT_LENGTH> freqR{0.0};
     // magnitude data
     std::array<float, FFT_LENGTH> spectrumL{0.f};
     std::array<float, FFT_LENGTH> spectrumR{0.f};
@@ -104,8 +104,8 @@ private:
     std::array<int, 34> ip{0};
 
     // copy data out of the circular PCM buffer
-    void _copyPCM(float *PCMdata, int channel, size_t count);
-    void _copyPCM(double *PCMdata, int channel, size_t count);
+    void _copyPCM(float* PCMdata, int channel, size_t count);
+    void _copyPCM(double* PCMdata, int channel, size_t count);
 
     // update FFT data if new samples are available.
     void _updateFFT();
@@ -115,7 +115,7 @@ private:
 
     // state for tracking audio level
     double level;
-    class AutoLevel *leveler;
+    class AutoLevel* leveler;
 };
 
 #endif /** !_PCM_H */
