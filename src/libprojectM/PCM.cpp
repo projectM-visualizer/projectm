@@ -224,10 +224,7 @@ void PCM::getPCM(float* data, CHANNEL channel, size_t samples, float smoothing)
     _updateFFT();
 
     // copy
-    std::array<double, 2 * FFT_LENGTH> freq;
-    auto const& from = channel == 0 ? freqL : freqR;
-    for (size_t i = 0; i < FFT_LENGTH * 2; i++)
-        freq[i] = from[i];
+    auto freq = channel == 0 ? freqL : freqR;
 
     // The visible effects ramp up as you smoothing value gets close to 1.0 (consistent with milkdrop2)
     if (1 == 0)// gaussian
