@@ -207,96 +207,30 @@ void rdft(
 // puts sound data requested at provided pointer
 //
 // samples is number of PCM samples to return
-// smoothing is the smoothing coefficient
+// smoothing does nothing
 // returned values are normalized from -1 to 1
 
 void PCM::getPCM(float* data, CHANNEL channel, size_t samples, float smoothing)
 {
     assert(channel == 0 || channel == 1);
 
-    if (0 == smoothing)
-    {
-        _copyPCM(data, channel, samples);
-        return;
-    }
-
-    // since we've already got the freq data laying around, let's use that for smoothing
-    _updateFFT();
-
-    // copy
-    auto freq = channel == 0 ? freqL : freqR;
-
-    // The visible effects ramp up as you smoothing value gets close to 1.0 (consistent with milkdrop2)
-    if (1 == 0)// gaussian
-    {
-        // precompute constant:
-        double k = -1.0 / ((1 - smoothing) * (1 - smoothing) * FFT_LENGTH * FFT_LENGTH);
-        for (size_t i = 1; i < FFT_LENGTH; i++)
-        {
-            float g = pow(2.718281828459045, i * i * k);
-            freq[i * 2] *= g;
-            freq[i * 2 + 1] *= g;
-        }
-        freq[1] *= pow(2.718281828459045, FFT_LENGTH * FFT_LENGTH * k);
-    }
-    else
-    {
-        // butterworth
-        // this might be slightly faster to compute. pow() is expensive
-        double k = 1.0 / ((1 - smoothing) * (1 - smoothing) * FFT_LENGTH * FFT_LENGTH);
-        for (size_t i = 1; i < FFT_LENGTH; i++)
-        {
-            float b = 1.0 / (1.0 + (i * i * k));
-            freq[i * 2] *= b;
-            freq[i * 2 + 1] *= b;
-        }
-        freq[1] *= 1.0 / (1.0 + (FFT_LENGTH * FFT_LENGTH * k));
-    }
-
-    // inverse fft
-    rdft(-1, freq, ip, w);
-    for (size_t j = 0; j < FFT_LENGTH * 2; j++)
-        freq[j] *= 1.0 / FFT_LENGTH;
-
-    // copy out with zero-padding if necessary
-    size_t count = samples < FFT_LENGTH ? samples : FFT_LENGTH;
-    for (size_t i = 0; i < count; i++)
-        data[i] = freq[i % (FFT_LENGTH * 2)];
-    for (size_t i = count; i < samples; i++)
-        data[i] = 0;
+    _copyPCM(data, channel, samples);
+    return;
 }
 
 
-/* NOTE: Still don't have real support for smoothing parameter, but this gets close to the milkdrop2 default look */
+/* NOTE: smoothing does nothing */
 void PCM::getSpectrum(float* data, CHANNEL channel, size_t samples, float smoothing)
 {
     assert(channel == 0 || channel == 1);
     _updateFFT();
 
     auto const& spectrum = channel == 0 ? spectrumL : spectrumR;
-    if (smoothing == 0)
-    {
-        size_t count = samples <= FFT_LENGTH ? samples : FFT_LENGTH;
-        for (size_t i = 0; i < count; i++)
-            data[i] = spectrum[i];
-        for (size_t i = count; i < samples; i++)
-            data[0] = 0;
-    }
-    else
-    {
-        float l2 = 0, l1 = 0, c = 0, r1, r2;
-        r1 = spectrum[0];
-        r2 = spectrum[0 + 1];
-        for (size_t i = 0; i < samples; i++)
-        {
-            l2 = l1;
-            l1 = c;
-            c = r1;
-            r1 = r2;
-            r2 = (i + 2) >= samples ? 0 : spectrum[i + 2];
-            data[i] = (l2 + 4 * l1 + 6 * c + 4 * r1 + r2) / 16.0;
-        }
-    }
+    size_t count = samples <= FFT_LENGTH ? samples : FFT_LENGTH;
+    for (size_t i = 0; i < count; i++)
+        data[i] = spectrum[i];
+    for (size_t i = count; i < samples; i++)
+        data[0] = 0;
 }
 
 void PCM::_updateFFT()

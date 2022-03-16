@@ -62,13 +62,13 @@ public:
 
     /**
      * PCM data
-     * When smoothing=0 is copied directly from PCM buffers. smoothing=1.0 is almost a straight line.
+     * smoothing does nothing
      * The returned data will 'wrap' if more than maxsamples are requested.
      */
     void getPCM(float* data, CHANNEL channel, size_t samples, float smoothing);
 
     /** Spectrum data
-     * Smoothing is not fully implemented, only none (smoothing==0) or a little (smoothing!=0).
+     * smoothing does nothing
      * The returned data will be zero padded if more than FFT_LENGTH values are requested
      */
     void getSpectrum(float* data, CHANNEL channel, size_t samples, float smoothing);
