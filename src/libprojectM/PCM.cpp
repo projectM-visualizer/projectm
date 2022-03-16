@@ -304,12 +304,14 @@ void PCM::getSpectrum(float* data, CHANNEL channel, size_t samples, float smooth
 
 void PCM::_updateFFT()
 {
-    if (newSamples > 0)
+    if (newSamples == 0)
     {
-        _updateFFT(0);
-        _updateFFT(1);
-        newSamples = 0;
+        return;
     }
+
+    _updateFFT(0);
+    _updateFFT(1);
+    newSamples = 0;
 }
 
 void PCM::_updateFFT(size_t channel)
