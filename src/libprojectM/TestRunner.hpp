@@ -27,12 +27,7 @@ protected:
     explicit Test(std::string name_) : name(name_) {};
     const std::string name;
 
-    bool verify(const char *test, bool success)
-    {
-        if (!success)
-            std::cout << "failed " << test << std::endl;
-        return success;
-    }
+    bool verify(const char *test, bool success);
 };
 
 
