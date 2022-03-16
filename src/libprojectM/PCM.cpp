@@ -251,7 +251,7 @@ void PCM::_updateFFTChannel(size_t channel)
 
     auto& freq = channel == 0 ? freqL : freqR;
     _copyPCM(freq.data(), channel, freq.size());
-    rdft(FFT_LENGTH * 2, 1, freq.data(), ip.data(), w.data());
+    rdft(1, freq, ip, w);
 
     // compute magnitude data (m^2 actually)
     auto& spectrum = channel == 0 ? spectrumL : spectrumR;
