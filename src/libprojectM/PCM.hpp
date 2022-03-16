@@ -53,9 +53,6 @@ public:
     /* maximum number of sound samples that are actually stored. */
     static constexpr size_t maxSamples = 2048;
 
-    PCM();
-    ~PCM();
-
     void addPCMfloat(const float* PCMdata, size_t samples);
     void addPCMfloat_2ch(const float* PCMdata, size_t count);
     void addPCM16(const short[2][512]);
