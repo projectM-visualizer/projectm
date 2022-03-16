@@ -74,9 +74,6 @@ double PCM::AutoLevel::updateLevel(size_t samples, double sum, double max)
 }
 
 
-#include <iostream>
-
-
 void PCM::addPCMfloat(const float* PCMdata, size_t samples)
 {
     float a, sum = 0, max = 0;
