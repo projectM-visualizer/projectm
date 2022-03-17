@@ -37,23 +37,6 @@
 class BeatDetect
 {
 public:
-    // Does this really belong here? maybe belongs on projectM.Settings?
-    float beatSensitivity{1.f};
-
-    float treb{0.f};
-    float mid{0.f};
-    float bass{0.f};
-    float vol_old{0.f};
-
-    float treb_att{0.f};
-    float mid_att{0.f};
-    float bass_att{0.f};
-    float vol{0.f};
-    float vol_att{0.f};
-
-    PCM& pcm;
-
-    /** Methods */
     explicit BeatDetect(PCM& pcm);
     void reset();
 
@@ -69,6 +52,21 @@ public:
     {
         return beatSensitivity;
     }
+
+    float beatSensitivity{1.f};
+
+    float treb{0.f};
+    float mid{0.f};
+    float bass{0.f};
+    float vol_old{0.f};
+
+    float treb_att{0.f};
+    float mid_att{0.f};
+    float bass_att{0.f};
+    float vol{0.f};
+    float vol_att{0.f};
+
+    PCM& pcm;
 
 private:
     // this is the size of the buffer used to determine avg levels of the input audio
