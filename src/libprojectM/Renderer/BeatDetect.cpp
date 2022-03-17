@@ -59,24 +59,16 @@ void BeatDetect::reset()
 }
 
 
-void BeatDetect::detectFromSamples()
+void BeatDetect::calculateBeatStatistics()
 {
+    size_t constexpr fft_length = FFT_LENGTH;
     float vdataL[FFT_LENGTH];
     float vdataR[FFT_LENGTH];
     pcm.getSpectrum(vdataL, CHANNEL_0, FFT_LENGTH, 0.0);
     pcm.getSpectrum(vdataR, CHANNEL_1, FFT_LENGTH, 0.0);
 
-    // OK, we're not really using this number 44.1 anywhere
-    // This is more of a nod to the fact that if the actually data rate is REALLY different
-    // then in theory the bass/mid/treb ranges should be adjusted.
-    // In practice, I doubt it would adversely affect the actually display very much
-    getBeatVals(44100.0f, FFT_LENGTH, vdataL, vdataR);
-}
 
-
-void BeatDetect::getBeatVals(float samplerate, unsigned fft_length, float* vdataL, float* vdataR)
-{
-    assert(fft_length >= 256);
+    static_assert(fft_length >= 256, "fft_length too small");
     unsigned ranges[4] = {0, 3, 23, 255};
 
     bass_instant = 0;
