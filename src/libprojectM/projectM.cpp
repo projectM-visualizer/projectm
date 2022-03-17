@@ -368,7 +368,7 @@ Pipeline * projectM::renderFrameOnlyPass1(Pipeline *pPipeline) /*pPipeline is a 
     context.progress = timeKeeper->PresetProgressA();
     renderer->UpdateContext(context);
 
-    beatDetect->detectFromSamples();
+    beatDetect->calculateBeatStatistics();
 
     //m_activePreset->evaluateFrame();
 
