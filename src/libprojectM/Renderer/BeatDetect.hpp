@@ -56,8 +56,11 @@ public:
     /** Methods */
     explicit BeatDetect(PCM& pcm);
     void reset();
-    void detectFromSamples();
-    void getBeatVals(float samplerate, unsigned fft_length, float* vdataL, float* vdataR);
+
+    /**
+     * Calculates and updates information about the beat
+     */
+    void calculateBeatStatistics();
 
     // getPCMScale() was added to address https://github.com/projectM-visualizer/projectm/issues/161
     // Returning 1.0 results in using the raw PCM data, which can make the presets look pretty unresponsive
