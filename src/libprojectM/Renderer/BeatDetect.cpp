@@ -61,12 +61,6 @@ void BeatDetect::reset()
 
 void BeatDetect::detectFromSamples()
 {
-    vol_old = vol;
-    bass = 0;
-    mid = 0;
-    treb = 0;
-    vol = 0;
-
     float vdataL[FFT_LENGTH];
     float vdataR[FFT_LENGTH];
     pcm.getSpectrum(vdataL, CHANNEL_0, FFT_LENGTH, 0.0);
