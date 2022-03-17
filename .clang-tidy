@@ -1,0 +1,34 @@
+Checks: '
+-*,
+
+readability-*,
+-readability-named-parameter,
+-readability-magic-numbers,
+-readability-make-member-function-const,
+
+cppcoreguidelines-*,
+-cppcoreguidelines-owning-memory,
+-cppcoreguidelines-pro-type-union-access,
+-cppcoreguidelines-avoid-magic-numbers,
+-cppcoreguidelines-pro-bounds-constant-array-index,
+-cppcoreguidelines-pro-bounds-pointer-arithmetic,
+
+bugprone-*,
+-bugprone-easily-swappable-parameters,
+
+modernize-*,
+performance-*,
+misc-*'
+
+CheckOptions:
+  - key: readability-identifier-naming.VariableCase
+    value: lower_case
+  - key: readability-identifier-naming.ClassCase
+    value: lower_case
+  - key: readability-identifier-naming.ScopedEnumConstantCase
+    value: lower_case
+  - key: readability-identifier-naming.PrivateMemberPrefix
+    value: m_
+
+  - key: readability-uppercase-literal-suffix.NewSuffixes
+    value: L;LL;Lu;LLu
