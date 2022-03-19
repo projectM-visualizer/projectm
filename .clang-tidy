@@ -22,11 +22,41 @@ misc-*'
 
 CheckOptions:
   - key: readability-identifier-naming.VariableCase
-    value: lower_case
+    value: camelBack
+  - key: readability-identifier-naming.LocalVariableCase
+    value: camelBack
+  - key: readability-identifier-naming.ParameterCase
+    value: camelBack
   - key: readability-identifier-naming.ClassCase
-    value: lower_case
+    value: CamelCase
+  - key: readability-identifier-naming.StructCase
+    value: CamelCase
+  - key: readability-identifier-naming.StructIgnoredRegexp
+    value: ^projectm_.*
+  - key: readability-identifier-naming.MemberCase
+    value: camelBack
+  - key: readability-identifier-naming.PublicMethodCase
+    value: CamelCase
+  - key: readability-identifier-naming.ProtectedMethodCase
+    value: CamelCase
+  - key: readability-identifier-naming.PrivateMethodCase
+    value: CamelCase
+  - key: readability-identifier-naming.MethodCase
+    value: CamelCase
+  - key: readability-identifier-naming.FunctionCase
+    value: CamelCase
+  - key: readability-identifier-naming.GlobalFunctionCase
+    value: CamelCase
+  - key: readability-identifier-naming.GlobalFunctionIgnoredRegexp
+    value: ^projectm_.*
   - key: readability-identifier-naming.ScopedEnumConstantCase
-    value: lower_case
+    value: CamelCase
+  - key: readability-identifier-naming.MacroDefinitionCase
+    value: UPPER_CASE
+  - key: readability-identifier-naming.PrivateMemberCase
+    value: camelBack
+  - key: readability-identifier-naming.ProtectedMemberPrefix
+    value: m_
   - key: readability-identifier-naming.PrivateMemberPrefix
     value: m_
 
