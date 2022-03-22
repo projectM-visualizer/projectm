@@ -490,26 +490,34 @@ int Parser::parse_line(std::istream &  fs, MilkdropPreset * preset)
     /* Per frame equation case */
     if (!strncmp(eqn_string, PER_FRAME_STRING, PER_FRAME_STRING_LENGTH))
     {
-	tokenWrapAroundEnabled = true;
-      /* Sometimes per frame equations are implicitly defined without the
-      per_frame_ prefix. This informs the parser that one could follow */
-      line_mode = PER_FRAME_LINE_MODE;
+        tokenWrapAroundEnabled = true;
+        /* Sometimes per frame equations are implicitly defined without the
+        per_frame_ prefix. This informs the parser that one could follow */
+        line_mode = PER_FRAME_LINE_MODE;
 
-      //if (PARSE_DEBUG) printf("parse_line: per frame equation found...(LINE %d)\n", line_count);
+        //if (PARSE_DEBUG) printf("parse_line: per frame equation found...(LINE %d)\n", line_count);
 
-      /* Parse the per frame equation */
-      if ((per_frame_eqn = parse_per_frame_eqn(fs, ++per_frame_eqn_count, preset)) == NULL)
-      {
-        if (PARSE_DEBUG) printf("parse_line: per frame equation parsing failed (LINE %d)\n", line_count);
-        tokenWrapAroundEnabled = false;
-        return PROJECTM_PARSE_ERROR;
-      }
+        /* Parse the per frame equation */
+        per_frame_eqn = parse_per_frame_eqn(fs, ++per_frame_eqn_count, preset);
+        do
+        {
+            if (per_frame_eqn == nullptr)
+            {
+                if (PARSE_DEBUG)
+                {
+                    printf("parse_line: per frame equation parsing failed (LINE %d)\n", line_count);
+                }
+                tokenWrapAroundEnabled = false;
+                return PROJECTM_PARSE_ERROR;
+            }
 
-      /* Insert the equation in the per frame equation tree */
-      preset->per_frame_eqn_tree.push_back(per_frame_eqn);
+            /* Insert the equation in the per frame equation tree */
+            preset->per_frame_eqn_tree.push_back(per_frame_eqn);
 
-      return PROJECTM_SUCCESS;
+            per_frame_eqn = parse_per_frame_eqn(fs, ++per_frame_eqn_count, preset);
+        } while (per_frame_eqn != nullptr);
 
+        return PROJECTM_SUCCESS;
     }
 
     /* Wavecode initial condition case */
@@ -1355,63 +1363,93 @@ int Parser::parse_float(std::istream &  fs, float * float_ptr)
 }
 
 /* Parses a per frame equation. That is, interprets a stream of data as a per frame equation */
-PerFrameEqn * Parser::parse_per_frame_eqn(std::istream &  fs, int index, MilkdropPreset * preset)
+PerFrameEqn* Parser::parse_per_frame_eqn(std::istream& fs, int index, MilkdropPreset* preset)
 {
 
-  char string[MAX_TOKEN_SIZE];
-  Param * param;
-  PerFrameEqn * per_frame_eqn;
-  Expr * gen_expr;
+    Param* param{ nullptr };
+    Expr* gen_expr{ nullptr };
+    PerFrameEqn* per_frame_eqn{ nullptr };
 
+    std::array<char, MAX_TOKEN_SIZE> string{ 0 };
 
-  if (parseToken(fs, string) != tEq)
-  {
-    if (PARSE_DEBUG) printf("parse_per_frame_eqn: no equal sign after string \"%s\" (LINE %d)\n", string, line_count);
-    return NULL;
-  }
+    token_t token = parseToken(fs, string.data());
 
-  /* Find the parameter associated with the string, create one if necessary */
-  if ((param = ParamUtils::find(string, &preset->builtinParams, &preset->user_param_tree)) == NULL)
-  {
-    return NULL;
-  }
-  if (PARSE_DEBUG) std::cerr << "parse_per_frame_eqn: parameter \"" << param->name << "\" retrieved (LINE" << line_count << ")" << std::endl;
-  /* Make sure parameter is writable */
-  if (param->flags & P_FLAG_READONLY)
-  {
-    if (PARSE_DEBUG) std::cerr << "parse_per_frame_eqn: parameter \"" << param->name << "\" %s is marked as read only (LINE " << line_count << ")" << std::endl;
-    return NULL;
-  }
+    if (token == tEOL)
+    {
+        return nullptr;
+    }
 
-  /* Parse right side of equation as an expression */
-  if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL)
-  {
-    if (PARSE_DEBUG) printf("parse_per_frame_eqn: equation evaluated to null (LINE %d)\n", line_count);
-    return NULL;
-  }
+    if (token != tEq)
+    {
+        if (PARSE_DEBUG)
+        {
+            printf("parse_per_frame_eqn: no equal sign after string \"%s\" (LINE %d)\n", string.data(), line_count);
+        }
+        return nullptr;
+    }
 
-  if (PARSE_DEBUG) printf("parse_per_frame_eqn: finished per frame equation evaluation (LINE %d)\n", line_count);
+    /* Find the parameter associated with the string, create one if necessary */
+    if ((param = ParamUtils::find(string.data(), &preset->builtinParams, &preset->user_param_tree)) == nullptr)
+    {
+        return NULL;
+    }
+    if (PARSE_DEBUG)
+    {
+        std::cerr << "parse_per_frame_eqn: parameter \"" << param->name << "\" retrieved (LINE" << line_count << ")"
+                  << std::endl;
+    }
+    /* Make sure parameter is writable */
+    if (param->flags & P_FLAG_READONLY)
+    {
+        if (PARSE_DEBUG)
+        {
+            std::cerr << "parse_per_frame_eqn: parameter \"" << param->name << "\" %s is marked as read only (LINE "
+                      << line_count << ")" << std::endl;
+        }
+        return nullptr;
+    }
 
-  /* Create a new per frame equation */
-  if ((per_frame_eqn = new PerFrameEqn(index, param, gen_expr)) == NULL)
-  {
-    if (PARSE_DEBUG) printf("parse_per_frame_eqn: failed to create a new per frame eqn, out of memory?\n");
-    Expr::delete_expr(gen_expr);
-    return NULL;
-  }
+    /* Parse right side of equation as an expression */
+    if ((gen_expr = parse_gen_expr(fs, nullptr, preset)) == nullptr)
+    {
+        if (PARSE_DEBUG)
+        {
+            printf("parse_per_frame_eqn: equation evaluated to null (LINE %d)\n", line_count);
+        }
+        return NULL;
+    }
 
-  if (PARSE_DEBUG) printf("parse_per_frame_eqn: per_frame eqn parsed succesfully\n");
+    if (PARSE_DEBUG)
+    {
+        printf("parse_per_frame_eqn: finished per frame equation evaluation (LINE %d)\n", line_count);
+    }
 
-  return per_frame_eqn;
+    /* Create a new per frame equation */
+    if ((per_frame_eqn = new PerFrameEqn(index, param, gen_expr)) == nullptr)
+    {
+        if (PARSE_DEBUG)
+        {
+            printf("parse_per_frame_eqn: failed to create a new per frame eqn, out of memory?\n");
+        }
+        Expr::delete_expr(gen_expr);
+        return NULL;
+    }
+
+    if (PARSE_DEBUG)
+    {
+        printf("parse_per_frame_eqn: per_frame eqn parsed succesfully\n");
+    }
+
+    return per_frame_eqn;
 }
 
 /* Parses an 'implicit' per frame equation. That is, interprets a stream of data as a per frame equation without a prefix */
 PerFrameEqn * Parser::parse_implicit_per_frame_eqn(std::istream &  fs, char * param_string, int index, MilkdropPreset * preset)
 {
 
-  Param * param;
-  PerFrameEqn * per_frame_eqn;
-  Expr * gen_expr;
+  Param* param{ nullptr };
+  Expr* gen_expr{ nullptr };
+  PerFrameEqn* per_frame_eqn{ nullptr };
 
   if (fs.fail())
     return NULL;
@@ -2454,129 +2492,190 @@ int Parser::parse_shape_per_frame_init_eqn(std::istream &  fs, CustomShape * cus
 int Parser::parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_shape, MilkdropPreset * preset)
 {
 
-  Param * param;
-  Expr * gen_expr;
-  PerFrameEqn * per_frame_eqn;
+    Param* param{ nullptr };
+    Expr* gen_expr{ nullptr };
+    PerFrameEqn* per_frame_eqn{ nullptr };
 
-  char string[MAX_TOKEN_SIZE];
+    std::array<char, MAX_TOKEN_SIZE> string{ 0 };
 
-  if (PARSE_DEBUG) printf("parse_shape (per_frame): [start] (custom shape id = %d)\n", custom_shape->id);
+    if (PARSE_DEBUG)
+    {
+        printf("parse_shape (per_frame): [start] (custom shape id = %d)\n", custom_shape->id);
+    }
 
-  if (parseToken(fs, string) != tEq)
-  {
-    if (PARSE_DEBUG) printf("parse_shape (per_frame): no equal sign after string \"%s\" (LINE %d)\n", string, line_count);
-    return PROJECTM_PARSE_ERROR;
-  }
+    token_t token = parseToken(fs, string.data());
+    do
+    {
+        if (token != tEq)
+        {
+            if (PARSE_DEBUG)
+            {
+                printf("parse_shape (per_frame): no equal sign after string \"%s\" (LINE %d)\n", string.data(), line_count);
+            }
+            return PROJECTM_PARSE_ERROR;
+        }
 
-  /* Find the parameter associated with the string in the custom shape database */
-  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string, &custom_shape->param_tree)) == NULL)
-  {
-    if (PARSE_DEBUG) printf("parse_shape (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string);
-    return PROJECTM_FAILURE;
-  }
+        /* Find the parameter associated with the string in the custom shape database */
+        if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string.data(), &custom_shape->param_tree)) == nullptr)
+        {
+            if (PARSE_DEBUG)
+            {
+                printf("parse_shape (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string.data());
+            }
+            return PROJECTM_FAILURE;
+        }
 
 
-  /* Make sure parameter is writable */
-  if (param->flags & P_FLAG_READONLY)
-  {
-    if (PARSE_DEBUG) printf("parse_shape (per_frame): parameter %s is marked as read only (LINE %d)\n", param->name.c_str(), line_count);
-    return PROJECTM_PARSE_ERROR;
-  }
+        /* Make sure parameter is writable */
+        if ((param->flags & P_FLAG_READONLY) == P_FLAG_READONLY)
+        {
+            if (PARSE_DEBUG)
+            {
+                printf("parse_shape (per_frame): parameter %s is marked as read only (LINE %d)\n", param->name.c_str(),
+                       line_count);
+            }
+            return PROJECTM_PARSE_ERROR;
+        }
 
-  /* Parse right side of equation as an expression */
+        /* Parse right side of equation as an expression */
 
-  current_shape = custom_shape;
-  if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL)
-  {
-    if (PARSE_DEBUG) printf("parse_shape (per_frame): equation evaluated to null (LINE %d)\n", line_count);
-    current_shape = NULL;
-    return PROJECTM_PARSE_ERROR;
-  }
+        current_shape = custom_shape;
+        if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL)
+        {
+            if (PARSE_DEBUG)
+            {
+                printf("parse_shape (per_frame): equation evaluated to null (LINE %d)\n", line_count);
+            }
+            current_shape = nullptr;
+            return PROJECTM_PARSE_ERROR;
+        }
 
-  current_shape = NULL;
+        current_shape = nullptr;
 
-  if (PARSE_DEBUG) printf("parse_shape (per_frame): [finished parsing equation] (LINE %d)\n", line_count);
 
-  /* Create a new per frame equation */
-  if ((per_frame_eqn = new PerFrameEqn(custom_shape->per_frame_count++, param, gen_expr)) == NULL)
-  {
-    if (PARSE_DEBUG) printf("parse_shape (per_frame): failed to create a new per frame eqn, out of memory?\n");
-    Expr::delete_expr(gen_expr);
-    return PROJECTM_FAILURE;
-  }
+        if (PARSE_DEBUG)
+        {
+            printf("parse_shape (per_frame): [finished parsing equation] (LINE %d)\n", line_count);
+        }
 
-  custom_shape->per_frame_eqn_tree.push_back(per_frame_eqn);
+        /* Create a new per frame equation */
+        if ((per_frame_eqn = new PerFrameEqn(custom_shape->per_frame_count++, param, gen_expr)) == nullptr)
+        {
+            if (PARSE_DEBUG)
+            {
+                printf("parse_shape (per_frame): failed to create a new per frame eqn, out of memory?\n");
+            }
+            Expr::delete_expr(gen_expr);
+            return PROJECTM_FAILURE;
+        }
 
-  /// \idea add string buffer update for easy >> and <<
+        custom_shape->per_frame_eqn_tree.push_back(per_frame_eqn);
 
-  line_mode = CUSTOM_SHAPE_PER_FRAME_LINE_MODE;
-  return PROJECTM_SUCCESS;
+        token = parseToken(fs, string.data());
+    } while (token != tEOL);
+
+    /// \idea add string buffer update for easy >> and <<
+
+    line_mode = CUSTOM_SHAPE_PER_FRAME_LINE_MODE;
+    return PROJECTM_SUCCESS;
 }
 
 int Parser::parse_wave_per_frame_eqn(std::istream &  fs, CustomWave * custom_wave, MilkdropPreset * preset)
 {
 
-  Param * param;
-  Expr * gen_expr;
-  PerFrameEqn * per_frame_eqn;
+    Param* param{ nullptr };
+    Expr* gen_expr{ nullptr };
+    PerFrameEqn* per_frame_eqn{ nullptr };
 
-  char string[MAX_TOKEN_SIZE];
+    std::array<char, MAX_TOKEN_SIZE> string{ 0 };
 
-  if (PARSE_DEBUG) printf("parse_wave (per_frame): [start] (custom shape id = %d)\n", custom_wave->id);
+    if (PARSE_DEBUG)
+    {
+        printf("parse_wave (per_frame): [start] (custom shape id = %d)\n", custom_wave->id);
+    }
 
-  if (parseToken(fs, string) != tEq)
-  {
-    if (PARSE_DEBUG) printf("parse_wave (per_frame): no equal sign after string \"%s\" (LINE %d)\n", string, line_count);
-    return PROJECTM_PARSE_ERROR;
-  }
+    token_t token = parseToken(fs, string.data());
+    do
+    {
+        if (token != tEq)
+        {
+            if (PARSE_DEBUG)
+            {
+                printf("parse_wave (per_frame): no equal sign after string \"%s\" (LINE %d)\n",
+                       string.data(), line_count);
+            }
+            return PROJECTM_PARSE_ERROR;
+        }
 
-  /* Find the parameter associated with the string in the custom shape database */
-  if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string, &custom_wave->param_tree)) == NULL)
-  {
-    if (PARSE_DEBUG) printf("parse_wave (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n", string);
-    return PROJECTM_FAILURE;
-  }
-
-
-  /* Make sure parameter is writable */
-  if (param->flags & P_FLAG_READONLY)
-  {
-    if (PARSE_DEBUG) printf("parse_wave (per_frame): parameter %s is marked as read only (LINE %d)\n", param->name.c_str(), line_count);
-    return PROJECTM_FAILURE;
-  }
-
-  /* Parse right side of equation as an expression */
-
-  current_wave = custom_wave;
-  if ((gen_expr = parse_gen_expr(fs, NULL, preset)) == NULL)
-  {
-    if (PARSE_DEBUG) printf("parse_wave (per_frame): equation evaluated to null (LINE %d)\n", line_count);
-    current_wave = NULL;
-    return PROJECTM_PARSE_ERROR;
-  }
-
-  current_wave = NULL;
-
-  if (PARSE_DEBUG) printf("parse_wave (per_frame): [finished parsing equation] (LINE %d)\n", line_count);
-
-  /* Create a new per frame equation */
-  if ((per_frame_eqn = new PerFrameEqn(custom_wave->per_frame_count++, param, gen_expr)) == NULL)
-  {
-    if (PARSE_DEBUG) printf("parse_wave (per_frame): failed to create a new per frame eqn, out of memory?\n");
-    Expr::delete_expr(gen_expr);
-    return PROJECTM_FAILURE;
-  }
-
-  custom_wave->per_frame_eqn_tree.push_back(per_frame_eqn);
-  if (PARSE_DEBUG) printf("parse_wave (per_frame): equation %d associated with custom wave %d [success]\n",
-                            per_frame_eqn->index, custom_wave->id);
+        /* Find the parameter associated with the string in the custom shape database */
+        if ((param = ParamUtils::find<ParamUtils::AUTO_CREATE>(string.data(), &custom_wave->param_tree)) == nullptr)
+        {
+            if (PARSE_DEBUG)
+            {
+                printf("parse_wave (per_frame): parameter \"%s\" not found or cannot be wipemalloc'ed!!\n",
+                       string.data());
+            }
+            return PROJECTM_FAILURE;
+        }
 
 
-  /* Need to add stuff to string buffer so the editor can read the equations.
-     Why not make a nice little helper function for this? - here it is: */
+        /* Make sure parameter is writable */
+        if ((param->flags & P_FLAG_READONLY) == P_FLAG_READONLY)
+        {
+            if (PARSE_DEBUG)
+            {
+                printf("parse_wave (per_frame): parameter %s is marked as read only (LINE %d)\n",
+                       param->name.c_str(), line_count);
+            }
+            return PROJECTM_FAILURE;
+        }
 
-  line_mode = CUSTOM_WAVE_PER_FRAME_LINE_MODE;
-  return PROJECTM_SUCCESS;
+        /* Parse right side of equation as an expression */
+
+        current_wave = custom_wave;
+        if ((gen_expr = parse_gen_expr(fs, nullptr, preset)) == nullptr)
+        {
+            if (PARSE_DEBUG)
+            {
+                printf("parse_wave (per_frame): equation evaluated to null (LINE %d)\n", line_count);
+            }
+            current_wave = nullptr;
+            return PROJECTM_PARSE_ERROR;
+        }
+
+        current_wave = nullptr;
+
+        if (PARSE_DEBUG)
+        {
+            printf("parse_wave (per_frame): [finished parsing equation] (LINE %d)\n", line_count);
+        }
+
+        /* Create a new per frame equation */
+        if ((per_frame_eqn = new PerFrameEqn(custom_wave->per_frame_count++, param, gen_expr)) == nullptr)
+        {
+            if (PARSE_DEBUG)
+            {
+                printf("parse_wave (per_frame): failed to create a new per frame eqn, out of memory?\n");
+            }
+            Expr::delete_expr(gen_expr);
+            return PROJECTM_FAILURE;
+        }
+
+        custom_wave->per_frame_eqn_tree.push_back(per_frame_eqn);
+        if (PARSE_DEBUG)
+        {
+            printf("parse_wave (per_frame): equation %d associated with custom wave %d [success]\n",
+                   per_frame_eqn->index, custom_wave->id);
+        }
+
+        token = parseToken(fs, string.data());
+    } while (token != tEOL);
+
+    /* Need to add stuff to string buffer so the editor can read the equations.
+       Why not make a nice little helper function for this? - here it is: */
+
+    line_mode = CUSTOM_WAVE_PER_FRAME_LINE_MODE;
+    return PROJECTM_SUCCESS;
 }
 
 
