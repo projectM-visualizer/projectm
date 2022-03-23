@@ -101,8 +101,8 @@ private:
     std::array<int, 34> m_ip{0};
 
     // copy data out of the circular PCM buffer
-    void CopyPcm(float* pcmData, int channel, size_t count);
-    void CopyPcm(double* pcmData, int channel, size_t count);
+    void CopyPcm(float* to, int channel, size_t count);
+    void CopyPcm(double* to, int channel, size_t count);
 
     // update FFT data if new samples are available.
     void UpdateFFT();
