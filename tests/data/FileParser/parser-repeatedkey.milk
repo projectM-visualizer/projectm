@@ -1,0 +1,5 @@
+// Key repeated several times. Only the first should be used.
+[preset00]
+warp=0
+warp=1
+warp=2

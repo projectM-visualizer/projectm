@@ -32,7 +32,7 @@
 #include <time.h>
 
 #include "MilkdropPreset.hpp"
-#include "Parser.hpp"
+#include "OldParser.hpp"
 #include "ParamUtils.hpp"
 #include "InitCondUtils.hpp"
 #include "fatal.h"
@@ -538,12 +538,12 @@ int MilkdropPreset::readIn(std::istream& fs)
 
     /* Parse any comments (aka "[preset00]") */
     /* We don't do anything with this info so it's okay if it's missing */
-    if (Parser::parse_top_comment(fs) == PROJECTM_SUCCESS)
+    if (OldParser::parse_top_comment(fs) == PROJECTM_SUCCESS)
     {
         /* Parse the preset name and a left bracket */
         char tmp_name[maxTokenSize];
 
-        if (Parser::parse_preset_name(fs, tmp_name) < 0)
+        if (OldParser::parse_preset_name(fs, tmp_name) < 0)
         {
             std::cerr << "[Preset::readIn] loading of preset name failed" << std::endl;
             fs.seekg(0);
@@ -563,7 +563,7 @@ int MilkdropPreset::readIn(std::istream& fs)
     // Loop through each line in file, trying to successfully parse the file.
     // If a line does not parse correctly, keep trucking along to next line.
     int retval;
-    while ((retval = Parser::parse_line(fs, this)) != EOF)
+    while ((retval = OldParser::parse_line(fs, this)) != EOF)
     {
         if (retval == PROJECTM_PARSE_ERROR)
         {
