@@ -52,36 +52,36 @@ double Pcm::AutoLevel::UpdateLevel(size_t samples, double sum, double max)
     // This is an arbitrary number that helps control
     //   a) how quickly the level can change and
     //   b) keeps code from being affected by how the caller provides data (lot of short buffers, or fewer long buffers)
-    size_t constexpr AUTOLEVEL_SEGMENT = 4096;
+    size_t constexpr autolevelSegment = 4096;
 
     if (sum / samples < 0.00001)
         return m_level;
     m_levelSum += sum;
     m_levelax = std::max(m_levelax, max * 1.02);
     m_levelSamples += samples;
-    if (m_levelSamples >= AUTOLEVEL_SEGMENT || m_l0 <= 0)
+    if (m_levelSamples >= autolevelSegment || m_l0 <= 0)
     {
-        double max_recent = std::max(std::max(m_l0, m_l1), std::max(m_l2, m_levelax));
+        double maxRecent = std::max(std::max(m_l0, m_l1), std::max(m_l2, m_levelax));
         m_l0 = m_l1;
         m_l1 = m_l2;
         m_l2 = m_levelax;
         m_levelax *= 0.95;
         m_levelSum = m_levelSamples = 0;
-        m_level = (m_l0 <= 0) ? max_recent : m_level * 0.96 + max_recent * 0.04;
+        m_level = (m_l0 <= 0) ? maxRecent : m_level * 0.96 + maxRecent * 0.04;
         m_level = std::max(m_level, 0.0001);
     }
     return m_level;
 }
 
 
-void Pcm::AddPcmFloat(const float* PCMdata, size_t samples)
+void Pcm::AddPcmFloat(const float* pcmData, size_t samples)
 {
     float a, sum = 0, max = 0;
     for (size_t i = 0; i < samples; i++)
     {
         size_t j = (i + m_start) % maxSamples;
-        a = m_pcmL[j] = PCMdata[i];
-        m_pcmR[j] = PCMdata[i];
+        a = m_pcmL[j] = pcmData[i];
+        m_pcmR[j] = pcmData[i];
         sum += std::abs(a);
         max = std::max(max, a);
     }
@@ -92,15 +92,15 @@ void Pcm::AddPcmFloat(const float* PCMdata, size_t samples)
 
 
 /* NOTE: this method expects total samples, not samples per channel */
-void Pcm::AddPcmFloat2Ch(const float* PCMdata, size_t count)
+void Pcm::AddPcmFloat2Ch(const float* pcmData, size_t count)
 {
     size_t samples = count / 2;
     float a, b, sum = 0, max = 0;
     for (size_t i = 0; i < samples; i++)
     {
         size_t j = (m_start + i) % maxSamples;
-        a = m_pcmL[j] = PCMdata[i * 2];
-        b = m_pcmR[j] = PCMdata[i * 2 + 1];
+        a = m_pcmL[j] = pcmData[i * 2];
+        b = m_pcmR[j] = pcmData[i * 2 + 1];
         sum += std::abs(a) + std::abs(b);
         max = std::max(std::max(max, std::abs(a)), std::abs(b));
     }
@@ -127,15 +127,15 @@ void Pcm::AddPcm16Data(const int16_t* pcm_data, size_t samples)
 }
 
 
-void Pcm::AddPcm16(const int16_t PCMdata[2][512])
+void Pcm::AddPcm16(const int16_t pcmData[2][512])
 {
     const int samples = 512;
     float a, b, sum = 0, max = 0;
     for (size_t i = 0; i < samples; i++)
     {
         size_t j = (i + m_start) % maxSamples;
-        a = m_pcmL[j] = (PCMdata[0][i] / 16384.0);
-        b = m_pcmR[j] = (PCMdata[1][i] / 16384.0);
+        a = m_pcmL[j] = (pcmData[0][i] / 16384.0);
+        b = m_pcmR[j] = (pcmData[1][i] / 16384.0);
         sum += std::abs(a) + std::abs(b);
         max = std::max(std::max(max, a), b);
     }
@@ -145,15 +145,15 @@ void Pcm::AddPcm16(const int16_t PCMdata[2][512])
 }
 
 
-void Pcm::AddPcm8(const uint8_t PCMdata[2][1024])
+void Pcm::AddPcm8(const uint8_t pcmData[2][1024])
 {
     const int samples = 1024;
     float a, b, sum = 0, max = 0;
     for (size_t i = 0; i < samples; i++)
     {
         size_t j = (i + m_start) % maxSamples;
-        a = m_pcmL[j] = (((float) PCMdata[0][i] - 128.0) / 64);
-        b = m_pcmR[j] = (((float) PCMdata[1][i] - 128.0) / 64);
+        a = m_pcmL[j] = (((float) pcmData[0][i] - 128.0) / 64);
+        b = m_pcmR[j] = (((float) pcmData[1][i] - 128.0) / 64);
         sum += std::abs(a) + std::abs(b);
         max = std::max(std::max(max, a), b);
     }
@@ -163,15 +163,15 @@ void Pcm::AddPcm8(const uint8_t PCMdata[2][1024])
 }
 
 
-void Pcm::AddPcm8(const uint8_t PCMdata[2][512])
+void Pcm::AddPcm8(const uint8_t pcmData[2][512])
 {
     const size_t samples = 512;
     float a, b, sum = 0, max = 0;
     for (size_t i = 0; i < samples; i++)
     {
         size_t j = (i + m_start) % maxSamples;
-        a = m_pcmL[j] = (((float) PCMdata[0][i] - 128.0) / 64);
-        b = m_pcmR[j] = (((float) PCMdata[1][i] - 128.0) / 64);
+        a = m_pcmL[j] = (((float) pcmData[0][i] - 128.0) / 64);
+        b = m_pcmR[j] = (((float) pcmData[1][i] - 128.0) / 64);
         sum += std::abs(a) + std::abs(b);
         max = std::max(std::max(max, a), b);
     }
@@ -182,7 +182,7 @@ void Pcm::AddPcm8(const uint8_t PCMdata[2][512])
 
 
 template<size_t aSize, size_t ipSize, size_t wSize>
-void rdft(
+void Rdft(
     int const isgn,
     std::array<double, aSize>& a,
     std::array<int, ipSize>& ip,
@@ -251,7 +251,7 @@ void Pcm::UpdateFFTChannel(size_t channel)
 
     auto& freq = channel == 0 ? m_freqL : m_freqR;
     CopyPcm(freq.data(), channel, freq.size());
-    rdft(1, freq, m_ip, m_w);
+    Rdft(1, freq, m_ip, m_w);
 
     // compute magnitude data (m^2 actually)
     auto& spectrum = channel == 0 ? m_spectrumL : m_spectrumR;
@@ -264,7 +264,7 @@ void Pcm::UpdateFFTChannel(size_t channel)
 }
 
 // CPP17: std::clamp
-inline double clamp(double x, double lo, double hi)
+inline double Clamp(double x, double lo, double hi)
 {
     return x > hi ? hi : x < lo ? lo
                                 : x;
@@ -320,13 +320,13 @@ public:
     {
     }
 
-    bool eq(float a, float b)
+    bool Eq(float a, float b)
     {
         return std::abs(a - b) < (std::abs(a) + std::abs(b) + 1) / 1000.0f;
     }
 
     /* smoke test for each addPCM method */
-    bool test_addpcm()
+    bool TestAddpcm()
     {
         Pcm pcm;
 
@@ -342,10 +342,10 @@ public:
             pcm.m_level = 1.0;
             pcm.CopyPcm(copy.data(), 0, copy.size());
             for (size_t i = 0; i < samples; i++)
-                TEST(eq(copy[i], ((float) samples - 1 - i) / (samples - 1)));
+                TEST(Eq(copy[i], ((float) samples - 1 - i) / (samples - 1)));
             pcm.CopyPcm(copy.data(), 1, copy.size());
             for (size_t i = 0; i < samples; i++)
-                TEST(eq(copy[i], ((float) samples - 1 - i) / (samples - 1)));
+                TEST(Eq(copy[i], ((float) samples - 1 - i) / (samples - 1)));
         }
 
         // float_2ch
@@ -365,18 +365,18 @@ public:
             pcm.CopyPcm(copy0.data(), 0, copy0.size());
             pcm.CopyPcm(copy1.data(), 1, copy1.size());
             for (size_t i = 0; i < samples; i++)
-                TEST(eq(1.0, copy0[i] + copy1[i]));
+                TEST(Eq(1.0, copy0[i] + copy1[i]));
         }
 
         //        void PCM::addPCM16Data(const short* pcm_data, size_t samples)
-        //        void PCM::addPCM16(const short PCMdata[2][512])
-        //        void PCM::addPCM8(const unsigned char PCMdata[2][1024])
-        //        void PCM::addPCM8_512(const unsigned char PCMdata[2][512])
+        //        void PCM::addPCM16(const short pcmData[2][512])
+        //        void PCM::addPCM8(const unsigned char pcmData[2][1024])
+        //        void PCM::addPCM8_512(const unsigned char pcmData[2][512])
 
         return true;
     }
 
-    bool test_fft()
+    bool TestFft()
     {
         Pcm pcm;
 
@@ -399,7 +399,7 @@ public:
             pcm.GetSpectrum(freq1.data(), CHANNEL_1, fftLength, 0.0);
             // freq0 and freq1 should be equal
             for (size_t i = 0; i < fftLength; i++)
-                TEST(eq(freq0[i], freq1[i]));
+                TEST(Eq(freq0[i], freq1[i]));
             TEST(freq0[0] > 500);
             for (size_t i = 1; i < fftLength; i++)
                 TEST(freq0[i] < 0.1);
@@ -418,7 +418,7 @@ public:
             pcm.GetSpectrum(freq1.data(), CHANNEL_1, fftLength, 0.0);
             // freq0 and freq1 should be equal
             for (size_t i = 0; i < fftLength; i++)
-                TEST(eq(freq0[i], freq1[i]));
+                TEST(Eq(freq0[i], freq1[i]));
             for (size_t i = 0; i < fftLength - 1; i++)
                 TEST(0 == freq0[i]);
             TEST(freq0[fftLength - 1] > 100000);
@@ -430,8 +430,8 @@ public:
 
     bool test() override
     {
-        TEST(test_addpcm());
-        TEST(test_fft());
+        TEST(TestAddpcm());
+        TEST(TestFft());
         return true;
     }
 };
