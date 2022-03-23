@@ -559,7 +559,7 @@ void projectM::projectM_init(int gx, int gy, int fps, int texsize, int width, in
 
     if (!_pcm)
     {
-        _pcm = new PCM();
+        _pcm = new Pcm();
     }
     assert(pcm());
     beatDetect = new BeatDetect(*_pcm);

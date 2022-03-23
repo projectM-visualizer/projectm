@@ -36,7 +36,7 @@
 
 // FFT_LENGTH is number of magnitude values available from getSpectrum().
 // Internally this is generated using 2xFFT_LENGTH samples per channel.
-size_t constexpr FFT_LENGTH = 512;
+size_t constexpr fftLength = 512;
 class Test;
 
 enum CHANNEL
@@ -47,33 +47,33 @@ enum CHANNEL
     CHANNEL_1 = 1
 };
 
-class PCM
+class Pcm
 {
 public:
     /* maximum number of sound samples that are actually stored. */
     static constexpr size_t maxSamples = 2048;
 
-    void addPCMfloat(const float* PCMdata, size_t samples);
-    void addPCMfloat_2ch(const float* PCMdata, size_t count);
-    void addPCM16(const int16_t[2][512]);
-    void addPCM16Data(const int16_t* pcm_data, size_t samples);
-    void addPCM8(const uint8_t[2][1024]);
-    void addPCM8_512(const uint8_t[2][512]);
+    void AddPcmFloat(const float* pcmData, size_t samples);
+    void AddPcmFloat2Ch(const float* pcmData, size_t count);
+    void AddPcm16(const int16_t pcmData[2][512]);
+    void AddPcm16Data(const int16_t* pcmData, size_t samples);
+    void AddPcm8(const uint8_t pcmData[2][1024]);
+    void AddPcm8(const uint8_t pcmData[2][512]);
 
     /**
      * PCM data
      * smoothing does nothing
      * The returned data will 'wrap' if more than maxsamples are requested.
      */
-    void getPCM(float* data, CHANNEL channel, size_t samples, float smoothing);
+    void GetPcm(float* data, CHANNEL channel, size_t samples, float smoothing);
 
     /** Spectrum data
      * smoothing does nothing
      * The returned data will be zero padded if more than FFT_LENGTH values are requested
      */
-    void getSpectrum(float* data, CHANNEL channel, size_t samples, float smoothing);
+    void GetSpectrum(float* data, CHANNEL channel, size_t samples, float smoothing);
 
-    static Test* test();
+    static Test* MakeTest();
 
 private:
     // mem-usage:
@@ -85,28 +85,28 @@ private:
     // circular PCM buffer
     // adjust "volume" of PCM data as we go, this simplifies everything downstream...
     // normalize to range [-1.0,1.0]
-    std::array<float, maxSamples> pcmL{0.f};
-    std::array<float, maxSamples> pcmR{0.f};
-    int start{0};
-    size_t newSamples{0};
+    std::array<float, maxSamples> m_pcmL{0.f};
+    std::array<float, maxSamples> m_pcmR{0.f};
+    int m_start{0};
+    size_t m_newSamples{0};
 
     // raw FFT data
-    std::array<double, 2 * FFT_LENGTH> freqL{0.0};
-    std::array<double, 2 * FFT_LENGTH> freqR{0.0};
+    std::array<double, 2 * fftLength> m_freqL{0.0};
+    std::array<double, 2 * fftLength> m_freqR{0.0};
     // magnitude data
-    std::array<float, FFT_LENGTH> spectrumL{0.f};
-    std::array<float, FFT_LENGTH> spectrumR{0.f};
+    std::array<float, fftLength> m_spectrumL{0.f};
+    std::array<float, fftLength> m_spectrumR{0.f};
 
-    std::array<double, FFT_LENGTH> w{0.0};
-    std::array<int, 34> ip{0};
+    std::array<double, fftLength> m_w{0.0};
+    std::array<int, 34> m_ip{0};
 
     // copy data out of the circular PCM buffer
-    void _copyPCM(float* PCMdata, int channel, size_t count);
-    void _copyPCM(double* PCMdata, int channel, size_t count);
+    void CopyPcm(float* pcmData, int channel, size_t count);
+    void CopyPcm(double* pcmData, int channel, size_t count);
 
     // update FFT data if new samples are available.
-    void _updateFFT();
-    void _updateFFTChannel(size_t channel);
+    void UpdateFFT();
+    void UpdateFFTChannel(size_t channel);
 
     friend class PCMTest;
 
@@ -114,22 +114,22 @@ private:
     class AutoLevel
     {
     public:
-        double updateLevel(size_t samples, double sum, double max);
+        double UpdateLevel(size_t samples, double sum, double max);
 
     private:
-        double level{0.01};
+        double m_level{0.01};
         // accumulate sample data
-        size_t level_samples{0};
-        double level_sum{0.0};
-        double level_max{0.0};
-        double l0{-1.0};
-        double l1{-1.0};
-        double l2{-1.0};
+        size_t m_levelSamples{0};
+        double m_levelSum{0.0};
+        double m_levelax{0.0};
+        double m_l0{-1.0};
+        double m_l1{-1.0};
+        double m_l2{-1.0};
     };
 
     // state for tracking audio level
-    double level;
-    AutoLevel leveler;
+    double m_level;
+    AutoLevel m_leveler;
 };
 
 #endif /** !_PCM_H */

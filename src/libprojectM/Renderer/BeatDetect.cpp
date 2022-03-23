@@ -39,7 +39,7 @@
 #include <cmath>
 
 
-BeatDetect::BeatDetect(PCM& _pcm)
+BeatDetect::BeatDetect(Pcm& _pcm)
     : pcm(_pcm)
 {
 }
@@ -61,11 +61,11 @@ void BeatDetect::reset()
 
 void BeatDetect::calculateBeatStatistics()
 {
-    size_t constexpr fft_length = FFT_LENGTH;
-    float vdataL[FFT_LENGTH];
-    float vdataR[FFT_LENGTH];
-    pcm.getSpectrum(vdataL, CHANNEL_0, FFT_LENGTH, 0.0);
-    pcm.getSpectrum(vdataR, CHANNEL_1, FFT_LENGTH, 0.0);
+    size_t constexpr fft_length = fftLength;
+    float vdataL[fftLength];
+    float vdataR[fftLength];
+    pcm.GetSpectrum(vdataL, CHANNEL_0, fftLength, 0.0);
+    pcm.GetSpectrum(vdataR, CHANNEL_1, fftLength, 0.0);
 
 
     static_assert(fft_length >= 256, "fft_length too small");
