@@ -76,6 +76,15 @@ public:
     static auto MakeTest() -> Test*;
 
 private:
+    template<int signalAmplitude, int signalOffset, class SampleType>
+    void AddPcm(
+        const SampleType* pcmData,
+        size_t lOffset,
+        size_t lStride,
+        size_t rOffset,
+        size_t rStride,
+        size_t count);
+
     // mem-usage:
     // pcmd 2x2048*4b    = 16K
     // vdata 2x512x2*8b  = 16K
