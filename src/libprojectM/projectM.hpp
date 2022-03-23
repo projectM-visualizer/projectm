@@ -77,7 +77,7 @@ class PipelineContext;
 
 class BeatDetect;
 
-class PCM;
+class Pcm;
 
 class Func;
 
@@ -260,7 +260,6 @@ public:
     /// Writes a settings configuration to the specified file
     static bool writeConfig(const std::string& configFile, const Settings& settings);
 
-
     /// Sets preset iterator position to the passed in index
     void selectPresetPosition(unsigned int index);
 
@@ -382,7 +381,7 @@ public:
     };
 
 
-    inline PCM* pcm()
+    inline Pcm* pcm()
     {
         return _pcm;
     }
@@ -432,10 +431,9 @@ public:
     Renderer* renderer;
 
 private:
-    PCM* _pcm;
+    Pcm* _pcm;
 
     double sampledPresetDuration();
-
     BeatDetect* beatDetect;
     PipelineContext* _pipelineContext;
     PipelineContext* _pipelineContext2;
