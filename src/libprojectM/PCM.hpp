@@ -31,7 +31,7 @@
 
 #include <array>
 #include <cstdint>
-#include <stdlib.h>
+#include <cstdlib>
 
 
 // FFT_LENGTH is number of magnitude values available from getSpectrum().
@@ -73,7 +73,7 @@ public:
      */
     void GetSpectrum(float* data, CHANNEL channel, size_t samples, float smoothing);
 
-    static Test* MakeTest();
+    static auto MakeTest() -> Test*;
 
 private:
     // mem-usage:
@@ -114,7 +114,7 @@ private:
     class AutoLevel
     {
     public:
-        double UpdateLevel(size_t samples, double sum, double max);
+        auto UpdateLevel(size_t samples, double sum, double max) -> double;
 
     private:
         double m_level{0.01};
@@ -128,8 +128,8 @@ private:
     };
 
     // state for tracking audio level
-    double m_level;
-    AutoLevel m_leveler;
+    double m_level{1.f};
+    AutoLevel m_leveler{};
 };
 
 #endif /** !_PCM_H */
