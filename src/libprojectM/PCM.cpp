@@ -46,7 +46,7 @@
  * I don't know if it's necessary to have both sum and max, but that makes
  * it easier to experiment...
  */
-double Pcm::AutoLevel::UpdateLevel(size_t samples, double sum, double max)
+auto Pcm::AutoLevel::UpdateLevel(size_t samples, double sum, double max) -> double
 {
 
     // This is an arbitrary number that helps control
@@ -326,7 +326,7 @@ public:
     }
 
     /* smoke test for each addPCM method */
-    bool TestAddpcm()
+    auto TestAddpcm() -> bool
     {
         Pcm pcm;
 
@@ -376,7 +376,7 @@ public:
         return true;
     }
 
-    bool TestFft()
+    auto TestFft() -> bool
     {
         Pcm pcm;
 
@@ -428,7 +428,7 @@ public:
         return true;
     }
 
-    bool test() override
+    auto test() -> bool override
     {
         TEST(TestAddpcm());
         TEST(TestFft());
@@ -436,7 +436,7 @@ public:
     }
 };
 
-Test* Pcm::MakeTest()
+auto Pcm::MakeTest() -> Test*
 {
     return new PCMTest();
 }
