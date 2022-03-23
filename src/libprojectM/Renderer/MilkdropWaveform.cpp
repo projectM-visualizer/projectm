@@ -255,12 +255,12 @@ void MilkdropWaveform::WaveformMath(RenderContext& context)
 
     if (mode != MilkdropWaveformMode::SpectrumLine)
     {
-        context.beatDetect->pcm.getPCM(pcmDataL.data(), CHANNEL_0, pcmDataL.size(), smoothing);
-        context.beatDetect->pcm.getPCM(pcmDataR.data(), CHANNEL_1, pcmDataL.size(), smoothing);
+        context.beatDetect->pcm.GetPcm(pcmDataL.data(), CHANNEL_0, pcmDataL.size(), smoothing);
+        context.beatDetect->pcm.GetPcm(pcmDataR.data(), CHANNEL_1, pcmDataL.size(), smoothing);
     }
     else
     {
-        context.beatDetect->pcm.getSpectrum(pcmDataL.data(), CHANNEL_0, pcmDataL.size(), smoothing);
+        context.beatDetect->pcm.GetSpectrum(pcmDataL.data(), CHANNEL_0, pcmDataL.size(), smoothing);
     }
 
     // tie size of waveform to beatSensitivity

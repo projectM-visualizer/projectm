@@ -37,7 +37,7 @@
 class BeatDetect
 {
 public:
-    explicit BeatDetect(PCM& pcm);
+    explicit BeatDetect(Pcm& pcm);
     void reset();
 
     /**
@@ -66,7 +66,7 @@ public:
     float vol{0.f};
     float vol_att{0.f};
 
-    PCM& pcm;
+    Pcm& pcm;
 
 private:
     // this is the size of the buffer used to determine avg levels of the input audio

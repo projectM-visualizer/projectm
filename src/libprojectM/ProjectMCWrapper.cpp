@@ -729,41 +729,41 @@ bool projectm_get_error_loading_current_preset(projectm_handle instance)
 
 unsigned int projectm_pcm_get_max_samples()
 {
-    return PCM::maxSamples;
+    return Pcm::maxSamples;
 }
 
 void projectm_pcm_add_float_1ch_data(projectm_handle instance, const float* pcm_data, unsigned int sample_count)
 {
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->pcm()->addPCMfloat(pcm_data, sample_count);
+    projectMInstance->pcm()->AddPcmFloat(pcm_data, sample_count);
 }
 
 void projectm_pcm_add_float_2ch_data(projectm_handle instance, const float* pcm_data, unsigned int sample_count)
 {
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->pcm()->addPCMfloat_2ch(pcm_data, sample_count);
+    projectMInstance->pcm()->AddPcmFloat2Ch(pcm_data, sample_count);
 }
 
 void projectm_pcm_add_16bit_2ch_512(projectm_handle instance, const short (* pcm_data)[512])
 {
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->pcm()->addPCM16(pcm_data);
+    projectMInstance->pcm()->AddPcm16(pcm_data);
 }
 
 void projectm_pcm_add_16bit_2ch_data(projectm_handle instance, const short* pcm_data, unsigned int sample_count)
 {
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->pcm()->addPCM16Data(pcm_data, sample_count);
+    projectMInstance->pcm()->AddPcm16Data(pcm_data, sample_count);
 }
 
 void projectm_pcm_add_8bit_2ch_1024(projectm_handle instance, const unsigned char (* pcm_data)[1024])
 {
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->pcm()->addPCM8(pcm_data);
+    projectMInstance->pcm()->AddPcm8(pcm_data);
 }
 
 void projectm_pcm_add_8bit_2ch_512(projectm_handle instance, const unsigned char (* pcm_data)[512])
 {
     auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->pcm()->addPCM8_512(pcm_data);
+    projectMInstance->pcm()->AddPcm8(pcm_data);
 }
