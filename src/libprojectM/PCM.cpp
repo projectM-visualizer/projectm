@@ -219,7 +219,7 @@ void Pcm::UpdateFFTChannel(size_t channel)
 }
 
 // CPP17: std::clamp
-inline double Clamp(double x, double lo, double hi)
+auto Clamp(double x, double lo, double hi) -> double
 {
     return x > hi ? hi : x < lo ? lo
                                 : x;
