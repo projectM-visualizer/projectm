@@ -24,9 +24,9 @@
  * Takes sound data from wherever and hands it back out.
  * Returns PCM Data or spectrum data, or the derivative of the PCM data
  */
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
 
 #include "Common.hpp"
 #include "PCM.hpp"
