@@ -27,8 +27,8 @@ add_library(MilkdropPresetFactory OBJECT
         Param.cpp
         Param.hpp
         ParamUtils.hpp
-        Parser.cpp
-        Parser.hpp
+        OldParser.cpp
+        OldParser.hpp
         PerFrameEqn.cpp
         PerFrameEqn.hpp
         PerPixelEqn.cpp
@@ -37,6 +37,8 @@ add_library(MilkdropPresetFactory OBJECT
         PerPointEqn.hpp
         PresetFrameIO.cpp
         PresetFrameIO.hpp
+        FileParser.cpp
+        FileParser.hpp
         )
 
 target_include_directories(MilkdropPresetFactory

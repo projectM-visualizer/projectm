@@ -1,0 +1,8 @@
+// Used to test the value conversion functions for init params.
+[preset00]
+fVideoEchoAlpha=0.500 pounds
+fSomeWeirdStuff=X
+nVideoEchoOrientation=3 // Have a comment.
+nSomeWeirdStuff=X
+bAdditiveWaves=1
+bSomeWeirdStuff=X

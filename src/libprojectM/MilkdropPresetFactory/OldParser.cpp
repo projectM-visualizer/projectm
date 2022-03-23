@@ -30,6 +30,7 @@
 #include "InitCond.hpp"
 #include "MilkdropPresetFactory.hpp"
 #include "Param.hpp"
+#include "OldParser.hpp"
 #include "ParamUtils.hpp"
 #include "PerFrameEqn.hpp"
 #include "PerPixelEqn.hpp"
@@ -50,24 +51,24 @@
 /* Grabs the next token from the file. The second argument points
    to the raw string */
 
-line_mode_t Parser::line_mode;
-CustomWave *Parser::current_wave;
-CustomShape *Parser::current_shape;
-int Parser::string_line_buffer_index;
-char Parser::string_line_buffer[stringLineSize];
-unsigned int Parser::line_count;
-int Parser::per_frame_eqn_count;
-int Parser::per_frame_init_eqn_count;
-int Parser::last_custom_wave_id;
-int Parser::last_custom_shape_id;
-char Parser::last_eqn_type[maxTokenSize+1];
-int Parser::last_token_size;
+line_mode_t OldParser::line_mode;
+CustomWave *OldParser::current_wave;
+CustomShape *OldParser::current_shape;
+int OldParser::string_line_buffer_index;
+char OldParser::string_line_buffer[stringLineSize];
+unsigned int OldParser::line_count;
+int OldParser::per_frame_eqn_count;
+int OldParser::per_frame_init_eqn_count;
+int OldParser::last_custom_wave_id;
+int OldParser::last_custom_shape_id;
+char OldParser::last_eqn_type[maxTokenSize + 1];
+int OldParser::last_token_size;
 
-std::string Parser::lastLinePrefix("");
+std::string OldParser::lastLinePrefix("");
 
-bool Parser::tokenWrapAroundEnabled(false);
+bool OldParser::tokenWrapAroundEnabled(false);
 
-token_t Parser::parseToken(std::istream &  fs, char * string)
+token_t OldParser::parseToken(std::istream &  fs, char * string)
 {
 
   int c;
@@ -255,7 +256,7 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
 /* Parse input in the form of "exp, exp, exp, ...)"
    Returns a general expression list */
 
-Expr **Parser::parse_prefix_args(std::istream &  fs, int num_args, MilkdropPreset * preset)
+Expr **OldParser::parse_prefix_args(std::istream &  fs, int num_args, MilkdropPreset * preset)
 {
 
   int i, j;
@@ -294,7 +295,7 @@ Expr **Parser::parse_prefix_args(std::istream &  fs, int num_args, MilkdropPrese
 }
 
 /* Parses a comment at the top of the file. Stops when left bracket is found */
-int Parser::parse_top_comment(std::istream &  fs)
+int OldParser::parse_top_comment(std::istream &  fs)
 {
 
   char string[maxTokenSize];
@@ -314,7 +315,7 @@ int Parser::parse_top_comment(std::istream &  fs)
 
 /* Right Bracket is parsed by this function.
    puts a new string into name */
-int Parser::parse_preset_name(std::istream &  fs, char * name)
+int OldParser::parse_preset_name(std::istream &  fs, char * name)
 {
 
   token_t token;
@@ -330,7 +331,7 @@ int Parser::parse_preset_name(std::istream &  fs, char * name)
 
 
 /* Parses per pixel equations */
-int Parser::parse_per_pixel_eqn(std::istream &  fs, MilkdropPreset * preset, char * init_string)
+int OldParser::parse_per_pixel_eqn(std::istream &  fs, MilkdropPreset * preset, char * init_string)
 {
 
 
@@ -372,7 +373,7 @@ int Parser::parse_per_pixel_eqn(std::istream &  fs, MilkdropPreset * preset, cha
 }
 
 /* Parses an equation line, this function is way too big, should add some helper functions */
-int Parser::parse_line(std::istream &  fs, MilkdropPreset * preset)
+int OldParser::parse_line(std::istream &  fs, MilkdropPreset * preset)
 {
 
   char eqn_string[maxTokenSize];
@@ -725,7 +726,7 @@ int Parser::parse_line(std::istream &  fs, MilkdropPreset * preset)
 
 
 /* Parses a general expression, this function is the meat of the parser */
-Expr * Parser::_parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, MilkdropPreset * preset)
+Expr * OldParser::_parse_gen_expr (std::istream &  fs, TreeExpr * tree_expr, MilkdropPreset * preset)
 {
   int i;
   char string[maxTokenSize];
@@ -994,7 +995,7 @@ Expr * Parser::_parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Milkd
 }
 
 
-Expr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, MilkdropPreset * preset)
+Expr * OldParser::parse_gen_expr (std::istream &  fs, TreeExpr * tree_expr, MilkdropPreset * preset)
 {
   Expr *gen_expr = _parse_gen_expr( fs, tree_expr, preset );
   if (nullptr == gen_expr)
@@ -1008,7 +1009,7 @@ Expr * Parser::parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, Milkdr
 /* Inserts expressions into tree according to operator precedence.
    If root is null, a new tree is created, with infix_op as only element */
 
-TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root)
+TreeExpr * OldParser::insert_infix_op(InfixOp * infix_op, TreeExpr **root)
 {
 
   TreeExpr * new_root;
@@ -1058,7 +1059,7 @@ TreeExpr * Parser::insert_infix_op(InfixOp * infix_op, TreeExpr **root)
 }
 
 
-TreeExpr * Parser::insert_gen_expr(Expr * gen_expr, TreeExpr ** root)
+TreeExpr * OldParser::insert_gen_expr(Expr * gen_expr, TreeExpr ** root)
 {
 
   TreeExpr * new_root;
@@ -1090,7 +1091,7 @@ TreeExpr * Parser::insert_gen_expr(Expr * gen_expr, TreeExpr ** root)
 }
 
 /* A recursive helper function to insert general expression elements into the operator tree */
-int Parser::insert_gen_rec(Expr * gen_expr, TreeExpr * root)
+int OldParser::insert_gen_rec(Expr * gen_expr, TreeExpr * root)
 {
 
   /* Trivial Case: root is null */
@@ -1137,7 +1138,7 @@ int Parser::insert_gen_rec(Expr * gen_expr, TreeExpr * root)
 
 
 /* A recursive helper function to insert infix arguments by operator precedence */
-int Parser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root)
+int OldParser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root)
 {
 
   /* Shouldn't happen, implies a parse error */
@@ -1191,7 +1192,7 @@ int Parser::insert_infix_rec(InfixOp * infix_op, TreeExpr * root)
 }
 
 /* Parses an infix operator */
-Expr * Parser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * tree_expr, MilkdropPreset * preset)
+Expr * OldParser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * tree_expr, MilkdropPreset * preset)
 {
 
   Expr * gen_expr;
@@ -1253,7 +1254,7 @@ Expr * Parser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * tree
 }
 
 /* Parses an integer, checks for +/- prefix */
-int Parser::parse_int(std::istream &  fs, int * int_ptr)
+int OldParser::parse_int(std::istream &  fs, int * int_ptr)
 {
 
   char string[maxTokenSize];
@@ -1298,7 +1299,7 @@ int Parser::parse_int(std::istream &  fs, int * int_ptr)
 
 }
 /* Parses a floating point number */
-int Parser::string_to_float(char * string, float * float_ptr)
+int OldParser::string_to_float(char * string, float * float_ptr)
 {
 
   if (*string == 0)
@@ -1316,7 +1317,7 @@ int Parser::string_to_float(char * string, float * float_ptr)
 }
 
 /* Parses a floating point number */
-int Parser::parse_float(std::istream &  fs, float * float_ptr)
+int OldParser::parse_float(std::istream &  fs, float * float_ptr)
 {
 
   char string[maxTokenSize];
@@ -1360,7 +1361,7 @@ int Parser::parse_float(std::istream &  fs, float * float_ptr)
 }
 
 /* Parses a per frame equation. That is, interprets a stream of data as a per frame equation */
-PerFrameEqn* Parser::parse_per_frame_eqn(std::istream& fs, int index, MilkdropPreset* preset)
+PerFrameEqn * OldParser::parse_per_frame_eqn(std::istream &  fs, int index, MilkdropPreset * preset)
 {
 
     Param* param{ nullptr };
@@ -1441,7 +1442,7 @@ PerFrameEqn* Parser::parse_per_frame_eqn(std::istream& fs, int index, MilkdropPr
 }
 
 /* Parses an 'implicit' per frame equation. That is, interprets a stream of data as a per frame equation without a prefix */
-PerFrameEqn * Parser::parse_implicit_per_frame_eqn(std::istream &  fs, char * param_string, int index, MilkdropPreset * preset)
+PerFrameEqn * OldParser::parse_implicit_per_frame_eqn(std::istream &  fs, char * param_string, int index, MilkdropPreset * preset)
 {
 
   Param* param{ nullptr };
@@ -1494,7 +1495,7 @@ PerFrameEqn * Parser::parse_implicit_per_frame_eqn(std::istream &  fs, char * pa
 }
 
 /* Parses an initial condition */
-InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, MilkdropPreset * preset)
+InitCond * OldParser::parse_init_cond(std::istream &  fs, char * name, MilkdropPreset * preset)
 {
 
   Param * param;
@@ -1575,14 +1576,14 @@ InitCond * Parser::parse_init_cond(std::istream &  fs, char * name, MilkdropPres
 }
 
 
-void Parser::parse_string_block(std::istream &  fs, std::string * out_string) {
+void OldParser::parse_string_block(std::istream &  fs, std::string * out_string) {
 
 	std::set<char> skipList;
 	skipList.insert('`');
 	readStringUntil(fs, out_string, false, skipList);
 }
 
-InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, MilkdropPreset * preset, std::map<std::string,Param*> * database)
+InitCond * OldParser::parse_per_frame_init_eqn(std::istream &  fs, MilkdropPreset * preset, std::map<std::string,Param*> * database)
 {
 
   char name[maxTokenSize];
@@ -1678,7 +1679,7 @@ InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, MilkdropPreset *
   return init_cond;
 }
 
-bool Parser::scanForComment(std::istream & fs) {
+bool OldParser::scanForComment(std::istream & fs) {
 
   int c;
   c = fs.get();
@@ -1704,7 +1705,7 @@ bool Parser::scanForComment(std::istream & fs) {
   }
 }
 
-void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool wrapAround, const std::set<char> & skipList) {
+void OldParser::readStringUntil(std::istream & fs, std::string * out_buffer, bool wrapAround, const std::set<char> & skipList) {
 
 	int c;
 
@@ -1795,7 +1796,7 @@ void Parser::readStringUntil(std::istream & fs, std::string * out_buffer, bool w
 
 
 }
-int Parser::parse_wavecode(char * token, std::istream &  fs, MilkdropPreset * preset)
+int OldParser::parse_wavecode(char * token, std::istream &  fs, MilkdropPreset * preset)
 {
 
   char * var_string;
@@ -1893,7 +1894,7 @@ int Parser::parse_wavecode(char * token, std::istream &  fs, MilkdropPreset * pr
   return PROJECTM_SUCCESS;
 }
 
-int Parser::parse_shapecode(char * token, std::istream &  fs, MilkdropPreset * preset)
+int OldParser::parse_shapecode(char * token, std::istream &  fs, MilkdropPreset * preset)
 {
 
   char * var_string;
@@ -2012,7 +2013,7 @@ int Parser::parse_shapecode(char * token, std::istream &  fs, MilkdropPreset * p
 }
 
 
-int Parser::parse_wavecode_prefix(char * token, int * id, char ** var_string)
+int OldParser::parse_wavecode_prefix(char * token, int * id, char ** var_string)
 {
 
   int len, i;
@@ -2057,7 +2058,7 @@ int Parser::parse_wavecode_prefix(char * token, int * id, char ** var_string)
 }
 
 
-int Parser::parse_shapecode_prefix(char * token, int * id, char ** var_string)
+int OldParser::parse_shapecode_prefix(char * token, int * id, char ** var_string)
 {
 
   int len, i;
@@ -2101,7 +2102,7 @@ int Parser::parse_shapecode_prefix(char * token, int * id, char ** var_string)
 
 }
 
-int Parser::parse_wave_prefix(char * token, int * id, char ** eqn_string)
+int OldParser::parse_wave_prefix(char * token, int * id, char ** eqn_string)
 {
 
   int len, i;
@@ -2144,7 +2145,7 @@ int Parser::parse_wave_prefix(char * token, int * id, char ** eqn_string)
 
 }
 
-int Parser::parse_shape_prefix(char * token, int * id, char ** eqn_string)
+int OldParser::parse_shape_prefix(char * token, int * id, char ** eqn_string)
 {
 
   int len, i;
@@ -2187,7 +2188,7 @@ int Parser::parse_shape_prefix(char * token, int * id, char ** eqn_string)
 }
 
 /* Parses custom wave equations */
-int Parser::parse_wave(char * token, std::istream &  fs, MilkdropPreset * preset)
+int OldParser::parse_wave(char * token, std::istream &  fs, MilkdropPreset * preset)
 {
 
   int id;
@@ -2215,7 +2216,7 @@ int Parser::parse_wave(char * token, std::istream &  fs, MilkdropPreset * preset
 
 }
 
-int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int id, char * eqn_type, char * init_string)
+int OldParser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int id, char * eqn_type, char * init_string)
 {
 
   Param * param;
@@ -2368,7 +2369,7 @@ int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int 
 }
 
 /* Parses custom shape equations */
-int Parser::parse_shape(char * token, std::istream &  fs, MilkdropPreset * preset)
+int OldParser::parse_shape(char * token, std::istream &  fs, MilkdropPreset * preset)
 {
 
   int id;
@@ -2423,7 +2424,7 @@ int Parser::parse_shape(char * token, std::istream &  fs, MilkdropPreset * prese
    Returns -1 if syntax error
 */
 
-int Parser::get_string_prefix_len(char * string)
+int OldParser::get_string_prefix_len(char * string)
 {
 
   int i = 0;
@@ -2461,7 +2462,7 @@ int Parser::get_string_prefix_len(char * string)
   return i;
 }
 
-int Parser::parse_shape_per_frame_init_eqn(std::istream &  fs, CustomShape * custom_shape, MilkdropPreset * preset)
+int OldParser::parse_shape_per_frame_init_eqn(std::istream &  fs, CustomShape * custom_shape, MilkdropPreset * preset)
 {
   InitCond * init_cond;
 
@@ -2483,7 +2484,7 @@ int Parser::parse_shape_per_frame_init_eqn(std::istream &  fs, CustomShape * cus
   return PROJECTM_SUCCESS;
 }
 
-int Parser::parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_shape, MilkdropPreset * preset)
+int OldParser::parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_shape, MilkdropPreset * preset)
 {
 
     Param* param{ nullptr };
@@ -2574,7 +2575,7 @@ int Parser::parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_sh
     return PROJECTM_SUCCESS;
 }
 
-int Parser::parse_wave_per_frame_eqn(std::istream &  fs, CustomWave * custom_wave, MilkdropPreset * preset)
+int OldParser::parse_wave_per_frame_eqn(std::istream &  fs, CustomWave * custom_wave, MilkdropPreset * preset)
 {
 
     Param* param{ nullptr };
@@ -2673,7 +2674,7 @@ int Parser::parse_wave_per_frame_eqn(std::istream &  fs, CustomWave * custom_wav
 }
 
 
-bool Parser::wrapsToNextLine(const std::string & str) {
+bool OldParser::wrapsToNextLine(const std::string & str) {
 
 std::size_t lastLineEndIndex =
 	lastLinePrefix.find_last_not_of("0123456789");

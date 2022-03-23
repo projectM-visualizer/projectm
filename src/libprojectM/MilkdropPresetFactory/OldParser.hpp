@@ -129,7 +129,7 @@ class PerFrameEqn;
 class MilkdropPreset;
 class TreeExpr;
 
-class Parser {
+class OldParser {
 public:
     static std::string lastLinePrefix;
     static line_mode_t line_mode;
