@@ -74,110 +74,65 @@ auto Pcm::AutoLevel::UpdateLevel(size_t samples, double sum, double max) -> doub
 }
 
 
+template<int signalAmplitude, int signalOffset, class SampleType>
+void Pcm::AddPcm(
+        const SampleType* pcmData,
+        size_t lOffset,
+        size_t lStride,
+        size_t rOffset,
+        size_t rStride,
+        size_t count)
+{
+    float sum = 0;
+    float max = 0;
+    for (size_t i = 0; i < count; i++)
+    {
+        size_t j = (m_start + i) % maxSamples;
+        m_pcmL[j] = (pcmData[lOffset + i * lStride]-signalOffset)/float(signalAmplitude);
+        m_pcmR[j] = (pcmData[rOffset + i * rStride]-signalOffset)/float(signalAmplitude);
+        sum += std::abs(m_pcmL[j]) + std::abs(m_pcmR[j]);
+        max = std::max(std::max(max, std::abs(m_pcmL[j])), std::abs(m_pcmR[j]));
+    }
+    m_start = (m_start + count) % maxSamples;
+    m_newSamples += count;
+    m_level = m_leveler.UpdateLevel(count, sum / 2, max);
+}
+
+
 void Pcm::AddPcmFloat(const float* pcmData, size_t samples)
 {
-    float a, sum = 0, max = 0;
-    for (size_t i = 0; i < samples; i++)
-    {
-        size_t j = (i + m_start) % maxSamples;
-        a = m_pcmL[j] = pcmData[i];
-        m_pcmR[j] = pcmData[i];
-        sum += std::abs(a);
-        max = std::max(max, a);
-    }
-    m_start = (m_start + samples) % maxSamples;
-    m_newSamples += samples;
-    m_level = m_leveler.UpdateLevel(samples, sum, max);
+    AddPcm<1, 0>(pcmData, 0, 1, 0, 1, samples);
 }
 
 
 /* NOTE: this method expects total samples, not samples per channel */
-void Pcm::AddPcmFloat2Ch(const float* pcmData, size_t count)
+void Pcm::AddPcmFloat2Ch(const float* pcmData, size_t samples)
 {
-    size_t samples = count / 2;
-    float a, b, sum = 0, max = 0;
-    for (size_t i = 0; i < samples; i++)
-    {
-        size_t j = (m_start + i) % maxSamples;
-        a = m_pcmL[j] = pcmData[i * 2];
-        b = m_pcmR[j] = pcmData[i * 2 + 1];
-        sum += std::abs(a) + std::abs(b);
-        max = std::max(std::max(max, std::abs(a)), std::abs(b));
-    }
-    m_start = (m_start + samples) % maxSamples;
-    m_newSamples += samples;
-    m_level = m_leveler.UpdateLevel(samples, sum / 2, max);
+    AddPcm<1, 0>(pcmData, 0, 2, 1, 2, samples/2);
 }
 
 
-void Pcm::AddPcm16Data(const int16_t* pcm_data, size_t samples)
+void Pcm::AddPcm16Data(const int16_t* pcmData, size_t samples)
 {
-    float a, b, sum = 0, max = 0;
-    for (size_t i = 0; i < samples; ++i)
-    {
-        size_t j = (i + m_start) % maxSamples;
-        a = m_pcmL[j] = (pcm_data[i * 2 + 0] / 16384.0);
-        b = m_pcmR[j] = (pcm_data[i * 2 + 1] / 16384.0);
-        sum += std::abs(a) + std::abs(b);
-        max = std::max(std::max(max, a), b);
-    }
-    m_start = (m_start + samples) % maxSamples;
-    m_newSamples += samples;
-    m_level = m_leveler.UpdateLevel(samples, sum / 2, max);
+    AddPcm<16384, 0>(pcmData, 0, 1, 0, 1, samples);
 }
 
 
 void Pcm::AddPcm16(const int16_t pcmData[2][512])
 {
-    const int samples = 512;
-    float a, b, sum = 0, max = 0;
-    for (size_t i = 0; i < samples; i++)
-    {
-        size_t j = (i + m_start) % maxSamples;
-        a = m_pcmL[j] = (pcmData[0][i] / 16384.0);
-        b = m_pcmR[j] = (pcmData[1][i] / 16384.0);
-        sum += std::abs(a) + std::abs(b);
-        max = std::max(std::max(max, a), b);
-    }
-    m_start = (m_start + samples) % maxSamples;
-    m_newSamples += samples;
-    m_level = m_leveler.UpdateLevel(samples, sum / 2, max);
+    AddPcm<16384, 0>(*pcmData, 0, 1, 512, 1, 512);
 }
 
 
 void Pcm::AddPcm8(const uint8_t pcmData[2][1024])
 {
-    const int samples = 1024;
-    float a, b, sum = 0, max = 0;
-    for (size_t i = 0; i < samples; i++)
-    {
-        size_t j = (i + m_start) % maxSamples;
-        a = m_pcmL[j] = (((float) pcmData[0][i] - 128.0) / 64);
-        b = m_pcmR[j] = (((float) pcmData[1][i] - 128.0) / 64);
-        sum += std::abs(a) + std::abs(b);
-        max = std::max(std::max(max, a), b);
-    }
-    m_start = (m_start + samples) % maxSamples;
-    m_newSamples += samples;
-    m_level = m_leveler.UpdateLevel(samples, sum / 2, max);
+    AddPcm<64, 128>(*pcmData, 0, 1, 1024, 1, 1024);
 }
 
 
 void Pcm::AddPcm8(const uint8_t pcmData[2][512])
 {
-    const size_t samples = 512;
-    float a, b, sum = 0, max = 0;
-    for (size_t i = 0; i < samples; i++)
-    {
-        size_t j = (i + m_start) % maxSamples;
-        a = m_pcmL[j] = (((float) pcmData[0][i] - 128.0) / 64);
-        b = m_pcmR[j] = (((float) pcmData[1][i] - 128.0) / 64);
-        sum += std::abs(a) + std::abs(b);
-        max = std::max(std::max(max, a), b);
-    }
-    m_start = (m_start + samples) % maxSamples;
-    m_newSamples += samples;
-    m_level = m_leveler.UpdateLevel(samples, sum / 2, max);
+    AddPcm<64, 128>(*pcmData, 0, 1, 512, 1, 512);
 }
 
 
@@ -313,7 +268,8 @@ void Pcm::CopyPcm(double* to, int channel, size_t count)
     if (!verify(str, cond)) \
     return false
 
-class PCMTest : public Test {
+class PCMTest : public Test
+{
 public:
     PCMTest()
         : Test("PCMTest")
