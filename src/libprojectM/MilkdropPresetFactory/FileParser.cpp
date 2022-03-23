@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <fstream>
+#include <functional>
 #include <sstream>
 #include <vector>
 
@@ -192,7 +193,7 @@ void FileParser::StripComment(std::string& line)
 void FileParser::StripMultilineComment(std::string& code)
 {
     size_t commentPos;
-    while((commentPos = code.find("/*")) != std::string::npos)
+    while ((commentPos = code.find("/*")) != std::string::npos)
     {
         auto endPos = code.find("*/");
         if (endPos != std::string::npos && endPos > commentPos)
