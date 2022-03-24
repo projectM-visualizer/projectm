@@ -53,10 +53,10 @@ public:
     /* maximum number of sound samples that are actually stored. */
     static constexpr size_t maxSamples = 2048;
 
-    void AddPcmFloat(const float* pcmData, size_t samples);
+    void AddPcmFloat(const float* pcmData, size_t count);
     void AddPcmFloat2Ch(const float* pcmData, size_t count);
     void AddPcm16(const int16_t pcmData[2][512]);
-    void AddPcm16Data(const int16_t* pcmData, size_t samples);
+    void AddPcm16Data(const int16_t* pcmData, size_t count);
     void AddPcm8(const uint8_t pcmData[2][1024]);
     void AddPcm8(const uint8_t pcmData[2][512]);
 
@@ -96,7 +96,7 @@ private:
     // normalize to range [-1.0,1.0]
     std::array<float, maxSamples> m_pcmL{0.f};
     std::array<float, maxSamples> m_pcmR{0.f};
-    int m_start{0};
+    size_t m_start{0};
     size_t m_newSamples{0};
 
     // raw FFT data
@@ -110,8 +110,8 @@ private:
     std::array<int, 34> m_ip{0};
 
     // copy data out of the circular PCM buffer
-    void CopyPcm(float* to, int channel, size_t count) const;
-    void CopyPcm(double* to, int channel, size_t count) const;
+    void CopyPcm(float* to, size_t channel, size_t count) const;
+    void CopyPcm(double* to, size_t channel, size_t count) const;
 
     // update FFT data if new samples are available.
     void UpdateFFT();
