@@ -440,7 +440,7 @@ auto Pcm::MakeTest() -> Test*
 
 #else
 
-Test* PCM::test()
+auto Pcm::MakeTest() -> Test*
 {
     return nullptr;
 }
