@@ -52,7 +52,7 @@ public:
 	bool modulateAlphaByVolume{ false };
 	bool maximizeColors{ false };
 	float scale{ 10.0f };
-	float smoothing{ 0.0f };
+	float smoothing{ 0.0f }; // DOES NOTHING
 
 	float modOpacityStart{ 0.0f };
 	float modOpacityEnd{ 1.0f };
