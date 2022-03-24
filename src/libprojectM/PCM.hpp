@@ -76,13 +76,16 @@ public:
     static auto MakeTest() -> Test*;
 
 private:
-    template<int signalAmplitude, int signalOffset, class SampleType>
-    void AddPcm(
-        const SampleType* pcmData,
+    // CPP20: Could use a struct for the first 5 params to clarify on call site
+    // together with designated initializers
+    template<
         size_t lOffset,
         size_t rOffset,
         size_t stride,
-        size_t count);
+        int signalAmplitude,
+        int signalOffset,
+        class SampleType>
+    void AddPcm(const SampleType* pcmData, size_t count);
 
     // mem-usage:
     // pcmd 2x2048*4b    = 16K

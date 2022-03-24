@@ -74,21 +74,24 @@ auto Pcm::AutoLevel::UpdateLevel(size_t samples, double sum, double max) -> doub
 }
 
 
-template<int signalAmplitude, int signalOffset, class SampleType>
+template<
+    size_t lOffset,
+    size_t rOffset,
+    size_t stride,
+    int signalAmplitude,
+    int signalOffset,
+    class SampleType>
 void Pcm::AddPcm(
-        const SampleType* pcmData,
-        size_t lOffset,
-        size_t rOffset,
-        size_t stride,
-        size_t count)
+    const SampleType* pcmData,
+    size_t count)
 {
     float sum = 0;
     float max = 0;
     for (size_t i = 0; i < count; i++)
     {
         size_t j = (m_start + i) % maxSamples;
-        m_pcmL[j] = (pcmData[lOffset + i * stride]-signalOffset)/float(signalAmplitude);
-        m_pcmR[j] = (pcmData[rOffset + i * stride]-signalOffset)/float(signalAmplitude);
+        m_pcmL[j] = (pcmData[lOffset + i * stride] - signalOffset) / float(signalAmplitude);
+        m_pcmR[j] = (pcmData[rOffset + i * stride] - signalOffset) / float(signalAmplitude);
         sum += std::abs(m_pcmL[j]) + std::abs(m_pcmR[j]);
         max = std::max(std::max(max, std::abs(m_pcmL[j])), std::abs(m_pcmR[j]));
     }
@@ -100,38 +103,38 @@ void Pcm::AddPcm(
 
 void Pcm::AddPcmFloat(const float* pcmData, size_t samples)
 {
-    AddPcm<1, 0>(pcmData, 0, 0, 1, samples);
+    AddPcm<0, 0, 1, 1, 0>(pcmData, samples);
 }
 
 
 /* NOTE: this method expects total samples, not samples per channel */
 void Pcm::AddPcmFloat2Ch(const float* pcmData, size_t samples)
 {
-    AddPcm<1, 0>(pcmData, 0, 1, 2, samples/2);
+    AddPcm<0, 1, 2, 1, 0>(pcmData, samples / 2);
 }
 
 
 void Pcm::AddPcm16Data(const int16_t* pcmData, size_t samples)
 {
-    AddPcm<16384, 0>(pcmData, 0, 0, 1, samples);
+    AddPcm<0, 0, 1, 16384, 0>(pcmData, samples);
 }
 
 
 void Pcm::AddPcm16(const int16_t pcmData[2][512])
 {
-    AddPcm<16384, 0>(*pcmData, 0, 512, 1, 512);
+    AddPcm<0, 512, 1, 16384, 0>(*pcmData, 512);
 }
 
 
 void Pcm::AddPcm8(const uint8_t pcmData[2][1024])
 {
-    AddPcm<64, 128>(*pcmData, 0, 1024, 1, 1024);
+    AddPcm<0, 1024, 1, 64, 128>(*pcmData, 1024);
 }
 
 
 void Pcm::AddPcm8(const uint8_t pcmData[2][512])
 {
-    AddPcm<64, 128>(*pcmData, 0, 512, 1, 512);
+    AddPcm<0, 512, 1, 64, 128>(*pcmData, 512);
 }
 
 
