@@ -61,8 +61,9 @@ TEST(FileParser, EmptyValue)
 
     const auto& values = parser.PresetValues();
 
-    // Lines with empty values should be ignored
-    EXPECT_TRUE(values.find("empty_value") == values.end());
+    // Lines with empty values should be stored as such
+    ASSERT_FALSE(values.find("empty_value") == values.end());
+    EXPECT_EQ(values.at("empty_value"), "");
 }
 
 TEST(FileParser, EmptyKey)

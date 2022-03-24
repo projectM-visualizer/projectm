@@ -168,7 +168,7 @@ void FileParser::ParseLine(const std::string& line)
     std::string value(line.begin() + varNameDelimiterPos + 1, line.end());
 
     // Only add first occurrence to mimic Milkdrop behaviour
-    if (!varName.empty() && !value.empty() && m_presetValues.find(varName) == m_presetValues.end())
+    if (!varName.empty() && m_presetValues.find(varName) == m_presetValues.end())
     {
         m_presetValues.emplace(std::move(varName), std::move(value));
     }
