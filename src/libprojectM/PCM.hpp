@@ -65,7 +65,7 @@ public:
      * smoothing does nothing
      * The returned data will 'wrap' if more than maxsamples are requested.
      */
-    void GetPcm(float* data, CHANNEL channel, size_t samples, float smoothing);
+    void GetPcm(float* data, CHANNEL channel, size_t samples, float smoothing) const;
 
     /** Spectrum data
      * smoothing does nothing
@@ -112,12 +112,12 @@ private:
     std::array<int, 34> m_ip{0};
 
     // copy data out of the circular PCM buffer
-    void CopyPcm(float* to, int channel, size_t count);
-    void CopyPcm(double* to, int channel, size_t count);
+    void CopyPcm(float* to, int channel, size_t count) const;
+    void CopyPcm(double* to, int channel, size_t count) const;
 
     // update FFT data if new samples are available.
     void UpdateFFT();
-    void UpdateFFTChannel(size_t channel);
+    void UpdateFftChannel(size_t channel);
 
     friend class PCMTest;
 
