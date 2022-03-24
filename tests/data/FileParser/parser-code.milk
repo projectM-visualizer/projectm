@@ -1,7 +1,8 @@
 // Very simple multi-line equation
 per_frame_1=r=1.0;
 per_frame_2=g=1.0;
-per_frame_3=b=1.0;
+per_frame_3=
+per_frame_4=b=1.0;
 
 // A gap in numbering should terminate parsing
 per_frame_gap_1=r=1.0;
