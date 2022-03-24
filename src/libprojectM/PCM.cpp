@@ -46,7 +46,10 @@
  * I don't know if it's necessary to have both sum and max, but that makes
  * it easier to experiment...
  */
-auto Pcm::AutoLevel::UpdateLevel(size_t samples, double sum, double max) -> double
+auto Pcm::AutoLevel::UpdateLevel(
+    size_t const samples,
+    double const sum,
+    double const max) -> double
 {
 
     // This is an arbitrary number that helps control
@@ -61,7 +64,7 @@ auto Pcm::AutoLevel::UpdateLevel(size_t samples, double sum, double max) -> doub
     m_levelSamples += samples;
     if (m_levelSamples >= autolevelSegment || m_l0 <= 0)
     {
-        double maxRecent = std::max(std::max(m_l0, m_l1), std::max(m_l2, m_levelax));
+        double const maxRecent = std::max(std::max(m_l0, m_l1), std::max(m_l2, m_levelax));
         m_l0 = m_l1;
         m_l1 = m_l2;
         m_l2 = m_levelax;
@@ -82,14 +85,14 @@ template<
     int signalOffset,
     class SampleType>
 void Pcm::AddPcm(
-    const SampleType* pcmData,
-    size_t count)
+    SampleType const* const pcmData,
+    size_t const count)
 {
     float sum = 0;
     float max = 0;
     for (size_t i = 0; i < count; i++)
     {
-        size_t j = (m_start + i) % maxSamples;
+        size_t const j = (m_start + i) % maxSamples;
         m_pcmL[j] = (pcmData[lOffset + i * stride] - signalOffset) / float(signalAmplitude);
         m_pcmR[j] = (pcmData[rOffset + i * stride] - signalOffset) / float(signalAmplitude);
         sum += std::abs(m_pcmL[j]) + std::abs(m_pcmR[j]);
@@ -101,38 +104,38 @@ void Pcm::AddPcm(
 }
 
 
-void Pcm::AddPcmFloat(const float* pcmData, size_t samples)
+void Pcm::AddPcmFloat(float const* const pcmData, size_t const samples)
 {
     AddPcm<0, 0, 1, 1, 0>(pcmData, samples);
 }
 
 
 /* NOTE: this method expects total samples, not samples per channel */
-void Pcm::AddPcmFloat2Ch(const float* pcmData, size_t samples)
+void Pcm::AddPcmFloat2Ch(float const* const pcmData, size_t const samples)
 {
     AddPcm<0, 1, 2, 1, 0>(pcmData, samples / 2);
 }
 
 
-void Pcm::AddPcm16Data(const int16_t* pcmData, size_t samples)
+void Pcm::AddPcm16Data(int16_t const* const pcmData, size_t const samples)
 {
     AddPcm<0, 0, 1, 16384, 0>(pcmData, samples);
 }
 
 
-void Pcm::AddPcm16(const int16_t pcmData[2][512])
+void Pcm::AddPcm16(int16_t const pcmData[2][512])
 {
     AddPcm<0, 512, 1, 16384, 0>(*pcmData, 512);
 }
 
 
-void Pcm::AddPcm8(const uint8_t pcmData[2][1024])
+void Pcm::AddPcm8(uint8_t const pcmData[2][1024])
 {
     AddPcm<0, 1024, 1, 64, 128>(*pcmData, 1024);
 }
 
 
-void Pcm::AddPcm8(const uint8_t pcmData[2][512])
+void Pcm::AddPcm8(uint8_t const pcmData[2][512])
 {
     AddPcm<0, 512, 1, 64, 128>(*pcmData, 512);
 }
@@ -167,7 +170,11 @@ void Rdft(
 // smoothing does nothing
 // returned values are normalized from -1 to 1
 
-void Pcm::GetPcm(float* data, CHANNEL channel, size_t samples, float smoothing)
+void Pcm::GetPcm(
+    float* const data,
+    CHANNEL const channel,
+    size_t const samples,
+    float const smoothing) const
 {
     assert(channel == 0 || channel == 1);
 
@@ -177,13 +184,17 @@ void Pcm::GetPcm(float* data, CHANNEL channel, size_t samples, float smoothing)
 
 
 /* NOTE: smoothing does nothing */
-void Pcm::GetSpectrum(float* data, CHANNEL channel, size_t samples, float smoothing)
+void Pcm::GetSpectrum(
+    float* const data,
+    CHANNEL const channel,
+    size_t const samples,
+    float const smoothing)
 {
     assert(channel == 0 || channel == 1);
     UpdateFFT();
 
     auto const& spectrum = channel == 0 ? m_spectrumL : m_spectrumR;
-    size_t count = samples <= fftLength ? samples : fftLength;
+    size_t const count = samples <= fftLength ? samples : fftLength;
     for (size_t i = 0; i < count; i++)
         data[i] = spectrum[i];
     for (size_t i = count; i < samples; i++)
@@ -197,12 +208,12 @@ void Pcm::UpdateFFT()
         return;
     }
 
-    UpdateFFTChannel(0);
-    UpdateFFTChannel(1);
+    UpdateFftChannel(0);
+    UpdateFftChannel(1);
     m_newSamples = 0;
 }
 
-void Pcm::UpdateFFTChannel(size_t channel)
+void Pcm::UpdateFftChannel(size_t const channel)
 {
     assert(channel == 0 || channel == 1);
 
@@ -214,21 +225,21 @@ void Pcm::UpdateFFTChannel(size_t channel)
     auto& spectrum = channel == 0 ? m_spectrumL : m_spectrumR;
     for (size_t i = 1; i < fftLength; i++)
     {
-        double m2 = (freq[i * 2] * freq[i * 2] + freq[i * 2 + 1] * freq[i * 2 + 1]);
+        double const m2 = (freq[i * 2] * freq[i * 2] + freq[i * 2 + 1] * freq[i * 2 + 1]);
         spectrum[i - 1] = m2 * ((double) i) / fftLength;
     }
     spectrum[fftLength - 1] = freq[1] * freq[1];
 }
 
 // CPP17: std::clamp
-auto Clamp(double x, double lo, double hi) -> double
+auto Clamp(double const x, double const lo, double const hi) -> double
 {
     return x > hi ? hi : x < lo ? lo
                                 : x;
 }
 
 // pull data from circular buffer
-void Pcm::CopyPcm(float* to, int channel, size_t count)
+void Pcm::CopyPcm(float* const to, int const channel, size_t const count) const
 {
     assert(channel == 0 || channel == 1);
     assert(count < maxSamples);
@@ -242,11 +253,11 @@ void Pcm::CopyPcm(float* to, int channel, size_t count)
     }
 }
 
-void Pcm::CopyPcm(double* to, int channel, size_t count)
+void Pcm::CopyPcm(double* const to, int const channel, size_t const count) const
 {
     assert(channel == 0 || channel == 1);
     auto const& from = channel == 0 ? m_pcmL : m_pcmR;
-    const double volume = 1.0 / m_level;
+    double const volume = 1.0 / m_level;
     for (size_t i = 0, pos = m_start; i < count; i++)
     {
         if (pos == 0)
@@ -278,7 +289,7 @@ public:
     {
     }
 
-    bool Eq(float a, float b)
+    bool Eq(float const a, float const b)
     {
         return std::abs(a - b) < (std::abs(a) + std::abs(b) + 1) / 1000.0f;
     }
@@ -290,7 +301,7 @@ public:
 
         // mono float
         {
-            constexpr size_t samples = 301;
+            size_t constexpr samples = 301;
             std::array<float, samples> data;
             for (size_t i = 0; i < samples; i++)
                 data[i] = ((float) i) / (samples - 1);
@@ -308,7 +319,7 @@ public:
 
         // float_2ch
         {
-            const size_t samples = 301;
+            size_t constexpr samples = 301;
             std::array<float, 2 * samples> data;
             for (size_t i = 0; i < samples; i++)
             {
@@ -340,11 +351,11 @@ public:
 
         // low frequency
         {
-            const size_t samples = 1024;
+            size_t constexpr samples = 1024;
             std::array<float, 2 * samples> data;
             for (size_t i = 0; i < samples; i++)
             {
-                float f = 2 * 3.141592653589793 * ((double) i) / (samples - 1);
+                float const f = 2 * 3.141592653589793 * ((double) i) / (samples - 1);
                 data[i * 2] = sin(f);
                 data[i * 2 + 1] = sin(f + 1.0);// out of phase
             }
@@ -365,8 +376,8 @@ public:
 
         // high frequency
         {
-            const size_t samples = 2;
-            float data[4] = {1.0, 0.0, 0.0, 1.0};
+            size_t constexpr samples = 2;
+            float constexpr data[4] = {1.0, 0.0, 0.0, 1.0};
             for (size_t i = 0; i < 1024; i++)
                 pcm.AddPcmFloat2Ch(data, samples * 2);
             std::array<float, fftLength> freq0;
