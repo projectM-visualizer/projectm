@@ -39,13 +39,13 @@ void Waveform::Draw(RenderContext &context)
 
     if (spectrum)
     {
-        context.beatDetect->pcm.GetSpectrum(pcmL, CHANNEL_0, sampleCount, 0.0f );
-        context.beatDetect->pcm.GetSpectrum(pcmR, CHANNEL_1, sampleCount, 0.0f );
+        context.beatDetect->pcm.GetSpectrum(pcmL, CHANNEL_0, sampleCount);
+        context.beatDetect->pcm.GetSpectrum(pcmR, CHANNEL_1, sampleCount);
     }
     else
     {
-        context.beatDetect->pcm.GetPcm(pcmL, CHANNEL_0, sampleCount, 0.0f );
-        context.beatDetect->pcm.GetPcm(pcmR, CHANNEL_1, sampleCount, 0.0f );
+        context.beatDetect->pcm.GetPcm(pcmL, CHANNEL_0, sampleCount);
+        context.beatDetect->pcm.GetPcm(pcmR, CHANNEL_1, sampleCount);
     }
 
     const float mult = scaling * vol_scale * (spectrum ? 0.05f : 1.0f);
