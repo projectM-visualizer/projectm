@@ -80,9 +80,8 @@ private:
     void AddPcm(
         const SampleType* pcmData,
         size_t lOffset,
-        size_t lStride,
         size_t rOffset,
-        size_t rStride,
+        size_t stride,
         size_t count);
 
     // mem-usage:
