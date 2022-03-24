@@ -167,14 +167,12 @@ void Rdft(
 // puts sound data requested at provided pointer
 //
 // samples is number of PCM samples to return
-// smoothing does nothing
 // returned values are normalized from -1 to 1
 
 void Pcm::GetPcm(
     float* const data,
     CHANNEL const channel,
-    size_t const samples,
-    float const smoothing) const
+    size_t const samples) const
 {
     assert(channel == 0 || channel == 1);
 
@@ -183,12 +181,10 @@ void Pcm::GetPcm(
 }
 
 
-/* NOTE: smoothing does nothing */
 void Pcm::GetSpectrum(
     float* const data,
     CHANNEL const channel,
-    size_t const samples,
-    float const smoothing)
+    size_t const samples)
 {
     assert(channel == 0 || channel == 1);
     UpdateFFT();
@@ -364,8 +360,8 @@ public:
             std::array<float, fftLength> freq0;
             std::array<float, fftLength> freq1;
             pcm.m_level = 1.0;
-            pcm.GetSpectrum(freq0.data(), CHANNEL_0, fftLength, 0.0);
-            pcm.GetSpectrum(freq1.data(), CHANNEL_1, fftLength, 0.0);
+            pcm.GetSpectrum(freq0.data(), CHANNEL_0, fftLength);
+            pcm.GetSpectrum(freq1.data(), CHANNEL_1, fftLength);
             // freq0 and freq1 should be equal
             for (size_t i = 0; i < fftLength; i++)
                 TEST(Eq(freq0[i], freq1[i]));
@@ -383,8 +379,8 @@ public:
             std::array<float, fftLength> freq0;
             std::array<float, fftLength> freq1;
             pcm.m_level = 1.0;
-            pcm.GetSpectrum(freq0.data(), CHANNEL_0, fftLength, 0.0);
-            pcm.GetSpectrum(freq1.data(), CHANNEL_1, fftLength, 0.0);
+            pcm.GetSpectrum(freq0.data(), CHANNEL_0, fftLength);
+            pcm.GetSpectrum(freq1.data(), CHANNEL_1, fftLength);
             // freq0 and freq1 should be equal
             for (size_t i = 0; i < fftLength; i++)
                 TEST(Eq(freq0[i], freq1[i]));

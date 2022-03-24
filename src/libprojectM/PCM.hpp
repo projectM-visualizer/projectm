@@ -62,16 +62,14 @@ public:
 
     /**
      * PCM data
-     * smoothing does nothing
      * The returned data will 'wrap' if more than maxsamples are requested.
      */
-    void GetPcm(float* data, CHANNEL channel, size_t samples, float smoothing) const;
+    void GetPcm(float* data, CHANNEL channel, size_t samples) const;
 
     /** Spectrum data
-     * smoothing does nothing
      * The returned data will be zero padded if more than FFT_LENGTH values are requested
      */
-    void GetSpectrum(float* data, CHANNEL channel, size_t samples, float smoothing);
+    void GetSpectrum(float* data, CHANNEL channel, size_t samples);
 
     static auto MakeTest() -> Test*;
 
