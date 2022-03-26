@@ -87,8 +87,6 @@ add_library(projectM_main OBJECT
         TestRunner.hpp
         TimeKeeper.cpp
         TimeKeeper.hpp
-        timer.cpp
-        timer.h
         wipemalloc.cpp
         wipemalloc.h
         )

@@ -29,17 +29,9 @@
 #include "dirent.h"
 #endif
 
-#include "timer.h"
 #include <iostream>
-#ifdef __unix__
-#include "time.h"
-#endif
 
-#ifdef WIN32
-#include <time.h>
-#endif
 #include "PipelineContext.hpp"
-#include <iostream>
 #include "projectM.hpp"
 #include "BeatDetect.hpp"
 #include "Preset.hpp"
@@ -510,8 +502,9 @@ void projectM::renderFrameEndOnSeparatePasses(Pipeline *pPipeline) {
     /** Compute once per preset */
     if ( this->count%100==0 )
     {
-        this->renderer->realfps=100.0/ ( ( getTicks ( &timeKeeper->startTime )-this->fpsstart ) /1000 );
-        this->fpsstart=getTicks ( &timeKeeper->startTime );
+        auto ticks = static_cast<float>(timeKeeper->GetRunningTime());
+        this->renderer->realfps = 100.0f / ((ticks - this->fpsstart) * 0.001f);
+        this->fpsstart = ticks;
     }
 
 #ifndef UNLOCK_FPS
