@@ -1,117 +1,109 @@
-#ifndef WIN32
-#include <sys/time.h>
-#else
-#endif /** !WIN32 */
-#include <stdlib.h>
-
 #include "TimeKeeper.hpp"
+
 #include "RandomNumberGenerators.hpp"
 
+#include <algorithm>
+
 TimeKeeper::TimeKeeper(double presetDuration, double smoothDuration, double hardcutDuration, double easterEgg)
-  {
-    _softCutDuration = smoothDuration;
-    _presetDuration = presetDuration;
-    _hardCutDuration = hardcutDuration;
-    _easterEgg = easterEgg;
+    : m_easterEgg(easterEgg)
+    , m_presetDuration(presetDuration)
+    , m_softCutDuration(smoothDuration)
+    , m_hardCutDuration(hardcutDuration)
+{
+    UpdateTimers();
+}
 
-#ifndef WIN32
-	projectm_gettimeofday ( &this->startTime, NULL );
-#else
-	startTime = GetTickCount();
-#endif /** !WIN32 */
+void TimeKeeper::UpdateTimers()
+{
+    auto currentTime = std::chrono::high_resolution_clock::now();
 
-	UpdateTimers();
-  }
+    m_currentTime = std::chrono::duration<double>(currentTime - m_startTime).count();
+    m_presetFrameA++;
+    m_presetFrameB++;
+}
 
-  void TimeKeeper::UpdateTimers()
-  {
-#ifndef WIN32
-	_currentTime = getTicks ( &startTime ) * 0.001;
-#else
-	_currentTime = getTicks ( startTime ) * 0.001;
-#endif /** !WIN32 */
+void TimeKeeper::StartPreset()
+{
+    m_isSmoothing = false;
+    m_presetTimeA = m_currentTime;
+    m_presetFrameA = 1;
+    m_presetDurationA = sampledPresetDuration();
+}
 
-	_presetFrameA++;
-	_presetFrameB++;
+void TimeKeeper::StartSmoothing()
+{
+    m_isSmoothing = true;
+    m_presetTimeB = m_currentTime;
+    m_presetFrameB = 1;
+    m_presetDurationB = sampledPresetDuration();
+}
 
-  }
+void TimeKeeper::EndSmoothing()
+{
+    m_isSmoothing = false;
+    m_presetTimeA = m_presetTimeB;
+    m_presetFrameA = m_presetFrameB;
+    m_presetDurationA = m_presetDurationB;
+}
 
-  void TimeKeeper::StartPreset()
-  {
-    _isSmoothing = false;
-    _presetTimeA = _currentTime;
-    _presetFrameA = 1;
-    _presetDurationA = sampledPresetDuration();
-  }
-  void TimeKeeper::StartSmoothing()
-  {
-    _isSmoothing = true;
-    _presetTimeB = _currentTime;
-    _presetFrameB = 1;
-    _presetDurationB = sampledPresetDuration();
-  }
-  void TimeKeeper::EndSmoothing()
-  {
-    _isSmoothing = false;
-    _presetTimeA = _presetTimeB;
-    _presetFrameA = _presetFrameB;
-    _presetDurationA = _presetDurationB;
-  }
+bool TimeKeeper::CanHardCut()
+{
+    return (m_currentTime - m_presetTimeA) > m_hardCutDuration;
+}
 
-  bool TimeKeeper::CanHardCut()
-  {
-    return ((_currentTime - _presetTimeA) > _hardCutDuration);
-  }
+double TimeKeeper::SmoothRatio()
+{
+    return (m_currentTime - m_presetTimeB) / m_softCutDuration;
+}
 
-  double TimeKeeper::SmoothRatio()
-  {
-    return (_currentTime - _presetTimeB) / _softCutDuration;
-  }
-  bool TimeKeeper::IsSmoothing()
-  {
-    return _isSmoothing;
-  }
+bool TimeKeeper::IsSmoothing()
+{
+    return m_isSmoothing;
+}
 
-  double TimeKeeper::GetRunningTime()
-  {
-    return _currentTime;
-  }
+double TimeKeeper::GetRunningTime()
+{
+    return m_currentTime;
+}
 
-  double TimeKeeper::PresetProgressA()
-  {
-    if (_isSmoothing) return 1.0;
-    else return (_currentTime - _presetTimeA) / _presetDurationA;
-  }
-  double TimeKeeper::PresetProgressB()
-  {
-    return (_currentTime - _presetTimeB) / _presetDurationB;
-  }
+double TimeKeeper::PresetProgressA()
+{
+    if (m_isSmoothing)
+    {
+        return 1.0;
+    }
+
+    return (m_currentTime - m_presetTimeA) / m_presetDurationA;
+}
+
+double TimeKeeper::PresetProgressB()
+{
+    return (m_currentTime - m_presetTimeB) / m_presetDurationB;
+}
 
 int TimeKeeper::PresetFrameB()
-  {
-    return _presetFrameB;
-  }
+{
+    return m_presetFrameB;
+}
 
 int TimeKeeper::PresetFrameA()
-  {
-    return _presetFrameA;
-  }
+{
+    return m_presetFrameA;
+}
 
 int TimeKeeper::PresetTimeB()
-  {
-    return _presetTimeB;
-  }
+{
+    return m_presetTimeB;
+}
 
 int TimeKeeper::PresetTimeA()
-  {
-    return _presetTimeA;
-  }
+{
+    return m_presetTimeA;
+}
 
-double TimeKeeper::sampledPresetDuration() {
-#ifdef WIN32
-	return  _presetDuration;
-#else
-		return fmax(1, fmin(60, RandomNumberGenerators::gaussian
-			(_presetDuration, _easterEgg)));
-#endif
+double TimeKeeper::sampledPresetDuration()
+{
+    return std::max<double>(1, std::min<double>(60, RandomNumberGenerators::gaussian
+        (m_presetDuration, m_easterEgg)));
+
 }
