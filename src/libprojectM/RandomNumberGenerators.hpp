@@ -9,14 +9,14 @@
 
 namespace RandomNumberGenerators {
 
-inline float uniform()
+inline double uniform()
 /* Uniform random number generator x(n+1)= a*x(n) mod c
 				with a = pow(7,5) and c = pow(2,31)-1.
 				Copyright (c) Tao Pang 1997. */
 	{
 		const int ia=16807,ic=2147483647,iq=127773,ir=2836;
 		int il,ih,it;
-		float rc;
+		double rc;
 		static int iseed = rand();
 		ih = iseed/iq;
 		il = iseed%iq;
@@ -33,10 +33,10 @@ inline float uniform()
 		return iseed/rc;
 	}
 
-inline float gaussian(float mean, float sigma)
+inline double gaussian(double mean, double sigma)
 {
 
-    float x1, x2, w, y1;
+    double x1, x2, w, y1;
  
 	do {
 		x1 = 2.0 * uniform() - 1.0;
@@ -46,8 +46,8 @@ inline float gaussian(float mean, float sigma)
 
 	w = sqrt( (-2.0 * log( w ) ) / w );
 	y1 = x1 * w;
-	
-	float ret = y1*sigma + mean;
+
+    double ret = y1*sigma + mean;
 
 	return ret;
 }

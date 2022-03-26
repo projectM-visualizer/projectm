@@ -1,77 +1,100 @@
-#ifndef TimeKeeper_HPP
-#define TimeKeeper_HPP
+#pragma once
 
-#ifndef WIN32
-#include <sys/time.h>
-#endif
-
-#include "timer.h"
-
-#define HARD_CUT_DELAY 3
+#include <chrono>
 
 class TimeKeeper
 {
 
 public:
 
-  TimeKeeper(double presetDuration, double smoothDuration, double hardcutDuration, double easterEgg);
+    TimeKeeper(double presetDuration, double smoothDuration, double hardcutDuration, double easterEgg);
 
-  void UpdateTimers();
+    void UpdateTimers();
 
-  void StartPreset();
-  void StartSmoothing();
-  void EndSmoothing();
- 
-  bool CanHardCut();
+    void StartPreset();
 
-  double SmoothRatio();
-  bool IsSmoothing();
+    void StartSmoothing();
 
-  double GetRunningTime(); 
+    void EndSmoothing();
 
-  double PresetProgressA();
-  double PresetProgressB();
+    bool CanHardCut();
 
-  int PresetFrameA();
-  int PresetFrameB();
+    double SmoothRatio();
 
-  int PresetTimeA();
-  int PresetTimeB();
+    bool IsSmoothing();
 
-  double sampledPresetDuration();
+    double GetRunningTime();
 
-  void ChangeHardCutDuration(int seconds) { _hardCutDuration = seconds; }
-  void ChangeHardCutDuration(double seconds) { _hardCutDuration = seconds; }
-  void ChangeSoftCutDuration(int seconds) { _softCutDuration = seconds; }
-  void ChangeSoftCutDuration(double seconds) { _softCutDuration = seconds; }
-  void ChangePresetDuration(int seconds) { _presetDuration = seconds; }
-  void ChangePresetDuration(double seconds) { _presetDuration = seconds; }
-  void ChangeEasterEgg(float value) { _easterEgg = value; }
+    double PresetProgressA();
 
-#ifndef WIN32
-  /* The first ticks value of the application */
-  struct timeval startTime;
-#else  
-  long startTime;
-#endif /** !WIN32 */
+    double PresetProgressB();
+
+    int PresetFrameA();
+
+    int PresetFrameB();
+
+    int PresetTimeA();
+
+    int PresetTimeB();
+
+    double sampledPresetDuration();
+
+    inline void ChangeHardCutDuration(int seconds)
+    {
+        m_hardCutDuration = seconds;
+    }
+
+    inline void ChangeHardCutDuration(double seconds)
+    {
+        m_hardCutDuration = seconds;
+    }
+
+    inline void ChangeSoftCutDuration(int seconds)
+    {
+        m_softCutDuration = seconds;
+    }
+
+    inline void ChangeSoftCutDuration(double seconds)
+    {
+        m_softCutDuration = seconds;
+    }
+
+    inline void ChangePresetDuration(int seconds)
+    {
+        m_presetDuration = seconds;
+    }
+
+    inline void ChangePresetDuration(double seconds)
+    {
+        m_presetDuration = seconds;
+    }
+
+    inline void ChangeEasterEgg(float value)
+    {
+        m_easterEgg = value;
+    }
 
 private:
 
-  double _easterEgg;
-  double _presetDuration;
-  double _presetDurationA;
-  double _presetDurationB;
-  double _softCutDuration;
-  double _hardCutDuration;
+    /* The first ticks value of the application */
+    std::chrono::high_resolution_clock::time_point m_startTime{ std::chrono::high_resolution_clock::now() };
 
-  double _currentTime;
-  double _presetTimeA;
-  double _presetTimeB;
-  int _presetFrameA;
-  int _presetFrameB;
+    double m_easterEgg{ 0.0 };
 
-  bool _isSmoothing;
-  
+    double m_presetDuration{ 0.0 };
+    double m_presetDurationA{ 0.0 };
+    double m_presetDurationB{ 0.0 };
+    double m_softCutDuration{ 0.0 };
+    double m_hardCutDuration{ 0.0 };
+
+    double m_currentTime{ 0.0 };
+    double m_presetTimeA{ 0.0 };
+    double m_presetTimeB{ 0.0 };
+
+    int m_presetFrameA{ 0 };
+    int m_presetFrameB{ 0 };
+
+    bool m_isSmoothing{ false };
+
 
 };
-#endif
