@@ -27,7 +27,6 @@ MilkdropWaveform::~MilkdropWaveform()
 
 void MilkdropWaveform::InitVertexAttrib()
 {
-
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, (void*) 0);
     glDisableVertexAttribArray(1);
@@ -48,7 +47,7 @@ void MilkdropWaveform::Draw(RenderContext& context)
 
     for (int waveIndex = 0; waveIndex < 2; waveIndex++)
     {
-        auto waveVertices = (waveIndex == 0) ? wave1Vertices : wave2Vertices;
+        auto* const waveVertices = (waveIndex == 0) ? wave1Vertices : wave2Vertices;
         if (!waveVertices)
         {
             continue;
@@ -56,7 +55,7 @@ void MilkdropWaveform::Draw(RenderContext& context)
 
         // Smoothen the waveform
         // Instead of using the "break" index like Milkdrop, we simply have two separate arrays.
-        auto smoothedSamples = SmoothWave(waveVertices, samples, smoothedWave);
+        const auto smoothedSamples = SmoothWave(waveVertices, samples, smoothedWave);
 
         glUseProgram(context.programID_v2f_c4f);
 
@@ -78,11 +77,11 @@ void MilkdropWaveform::Draw(RenderContext& context)
         }
 
         // Always draw "thick" dots.
-        auto iterations = thick || dots ? 4 : 1;
+        const auto iterations = thick || dots ? 4 : 1;
 
         // Need to use +/- 1.0 here instead of 2.0 used in Milkdrop to achieve the same rendering result.
-        auto incrementX = 1.0f / static_cast<float>(context.viewportSizeX);
-        auto incrementY = 1.0f / static_cast<float>(context.viewportSizeY);
+        const auto incrementX = 1.0f / static_cast<float>(context.viewportSizeX);
+        const auto incrementY = 1.0f / static_cast<float>(context.viewportSizeY);
 
         GLuint drawType = dots ? GL_POINTS : (loop ? GL_LINE_LOOP : GL_LINE_STRIP);
 
@@ -96,7 +95,6 @@ void MilkdropWaveform::Draw(RenderContext& context)
             switch (iteration)
             {
                 case 0:
-                default:
                     break;
 
                 case 1:
@@ -216,8 +214,14 @@ void MilkdropWaveform::MaximizeColors(RenderContext& context)
         float cb{ b };
 
         float max = cr;
-        if (max < cg) max = cg;
-        if (max < cb) max = cb;
+        if (max < cg)
+        {
+            max = cg;
+        }
+        if (max < cb)
+        {
+            max = cb;
+        }
         if (max > 0.01f)
         {
             cr = cr / max * fMaximizeWaveColorAmount + cr * (1.0f - fMaximizeWaveColorAmount);
@@ -237,6 +241,7 @@ void MilkdropWaveform::MaximizeColors(RenderContext& context)
 void MilkdropWaveform::WaveformMath(RenderContext& context)
 {
     constexpr float PI{ 3.14159274101257324219f };
+    constexpr size_t audioSamples{ 512 };
 
     delete[] wave1Vertices;
     wave1Vertices = nullptr;
@@ -245,24 +250,24 @@ void MilkdropWaveform::WaveformMath(RenderContext& context)
     wave2Vertices = nullptr;
 
     // NOTE: Buffer size is always 512 samples, waveform points 480 or less since some waveforms use a positive offset!
-    float pcmDataL[512]{ 0.0f };
-    float pcmDataR[512]{ 0.0f };
+    std::array<float, audioSamples> pcmDataL{ 0.0f };
+    std::array<float, audioSamples> pcmDataR{ 0.0f };
 
     if (mode != MilkdropWaveformMode::SpectrumLine)
     {
-        context.beatDetect->pcm.getPCM(pcmDataL, CHANNEL_0, 512, smoothing);
-        context.beatDetect->pcm.getPCM(pcmDataR, CHANNEL_1, 512, smoothing);
+        context.beatDetect->pcm.getPCM(pcmDataL.data(), CHANNEL_0, pcmDataL.size(), smoothing);
+        context.beatDetect->pcm.getPCM(pcmDataR.data(), CHANNEL_1, pcmDataL.size(), smoothing);
     }
     else
     {
-        context.beatDetect->pcm.getSpectrum(pcmDataL, CHANNEL_0, 512, smoothing);
+        context.beatDetect->pcm.getSpectrum(pcmDataL.data(), CHANNEL_0, pcmDataL.size(), smoothing);
     }
 
     // tie size of waveform to beatSensitivity
     const float vol_scale = context.beatDetect->getPCMScale();
     if (vol_scale != 1.0)
     {
-        for (int i = 0; i < 512; i++)
+        for (int i = 0; i < pcmDataL.size(); i++)
         {
             pcmDataL[i] *= vol_scale;
             pcmDataR[i] *= vol_scale;
@@ -308,9 +313,9 @@ void MilkdropWaveform::WaveformMath(RenderContext& context)
 
             wave1Vertices = new WaveformVertex[samples]();
 
-            int sampleOffset = (NumWaveformSamples - samples) / 2;
+            const int sampleOffset = (NumWaveformSamples - samples) / 2;
 
-            float inverseSamplesMinusOne = 1.0f / static_cast<float>(samples);
+            const float inverseSamplesMinusOne = 1.0f / static_cast<float>(samples);
 
             for (int i = 0; i < samples; i++)
             {
@@ -379,10 +384,10 @@ void MilkdropWaveform::WaveformMath(RenderContext& context)
 
             int sampleOffset = (NumWaveformSamples - samples) / 2;
 
-            float w1 = 0.45f + 0.5f * (mysteryWaveParam * 0.5f + 0.5f);
-            float w2 = 1.0f - w1;
+            const float w1 = 0.45f + 0.5f * (mysteryWaveParam * 0.5f + 0.5f);
+            const float w2 = 1.0f - w1;
 
-            float inverseSamples = 1.0f / static_cast<float>(samples);
+            const float inverseSamples = 1.0f / static_cast<float>(samples);
 
             for (int i = 0; i < samples; i++)
             {
@@ -409,13 +414,13 @@ void MilkdropWaveform::WaveformMath(RenderContext& context)
 
             wave1Vertices = new WaveformVertex[samples]();
 
-            float cosineRotation = cosf(context.time * 0.3f);
-            float sineRotation = sinf(context.time * 0.3f);
+            const float cosineRotation = cosf(context.time * 0.3f);
+            const float sineRotation = sinf(context.time * 0.3f);
 
             for (int i = 0; i < samples; i++)
             {
-                float x0 = (pcmDataR[i] * pcmDataL[i + 32] + pcmDataL[i] * pcmDataR[i + 32]);
-                float y0 = (pcmDataR[i] * pcmDataR[i] - pcmDataL[i + 32] * pcmDataL[i + 32]);
+                const float x0 = (pcmDataR[i] * pcmDataL[i + 32] + pcmDataL[i] * pcmDataR[i + 32]);
+                const float y0 = (pcmDataR[i] * pcmDataR[i] - pcmDataL[i + 32] * pcmDataL[i + 32]);
                 wave1Vertices[i].x = ((x0 * cosineRotation - y0 * sineRotation) * 0.5f * aspectY) + x;
                 wave1Vertices[i].y = ((x0 * sineRotation + y0 * cosineRotation) * 0.5f * aspectX) + y;
             }
@@ -446,18 +451,18 @@ void MilkdropWaveform::WaveformMath(RenderContext& context)
                 wave2Vertices = new WaveformVertex[samples]();
             }
 
-            int sampleOffset = (NumWaveformSamples - samples) / 2;
+            const int sampleOffset = (NumWaveformSamples - samples) / 2;
 
-            float angle = PI * 0.5f * mysteryWaveParam; // from -PI/2 to PI/2
+            const float angle = PI * 0.5f * mysteryWaveParam; // from -PI/2 to PI/2
             float dx = cosf(angle);
             float dy = sinf(angle);
 
-            float edgeX[2]{
+            std::array<float, 2> edgeX{
                 x * cosf(angle + PI * 0.5f) - dx * 3.0f,
                 x * cosf(angle + PI * 0.5f) + dx * 3.0f
             };
 
-            float edgeY[2]{
+            std::array<float, 2> edgeY{
                 x * sinf(angle + PI * 0.5f) - dy * 3.0f,
                 x * sinf(angle + PI * 0.5f) + dy * 3.0f
             };
@@ -502,15 +507,12 @@ void MilkdropWaveform::WaveformMath(RenderContext& context)
                                 clip = true;
                             }
                             break;
-
-                        default:
-                            break;
                     }
 
                     if (clip)
                     {
-                        float diffX = edgeX[i] - edgeX[1 - i];
-                        float diffY = edgeY[i] - edgeY[1 - i];
+                        const float diffX = edgeX[i] - edgeX[1 - i];
+                        const float diffY = edgeY[i] - edgeY[1 - i];
                         edgeX[i] = edgeX[1 - i] + diffX * t;
                         edgeY[i] = edgeY[1 - i] + diffY * t;
                     }
@@ -520,9 +522,9 @@ void MilkdropWaveform::WaveformMath(RenderContext& context)
             dx = (edgeX[1] - edgeX[0]) / static_cast<float>(samples);
             dy = (edgeY[1] - edgeY[0]) / static_cast<float>(samples);
 
-            float angle2 = atan2f(dy, dx);
-            float perpetualDX = cosf(angle2 + PI * 0.5f);
-            float perpetualDY = sinf(angle2 + PI * 0.5f);
+            const float angle2 = atan2f(dy, dx);
+            const float perpetualDX = cosf(angle2 + PI * 0.5f);
+            const float perpetualDY = sinf(angle2 + PI * 0.5f);
 
             if (mode == MilkdropWaveformMode::Line)
             {
@@ -538,7 +540,7 @@ void MilkdropWaveform::WaveformMath(RenderContext& context)
             {
                 for (int i = 0; i < samples; i++)
                 {
-                    float f = 0.1f * logf(pcmDataL[i * 2] + pcmDataL[i * 2 + 1]);
+                    const float f = 0.1f * logf(pcmDataL[i * 2] + pcmDataL[i * 2 + 1]);
                     wave1Vertices[i].x = edgeX[0] + dx * static_cast<float>(i) + perpetualDX * f;
                     wave1Vertices[i].y = edgeY[0] + dy * static_cast<float>(i) + perpetualDY * f;
                 }
@@ -590,23 +592,23 @@ int MilkdropWaveform::SmoothWave(const MilkdropWaveform::WaveformVertex* inputVe
     constexpr float inverseSum{ 1.0f / (c1 + c2 + c3 + c4) };
 
     int outputIndex = 0;
-    int iBelow = 0;
-    int iAbove2 = 1;
+    int indexBelow = 0;
+    int indexAbove2 = 1;
 
     for (auto inputIndex = 0; inputIndex < vertexCount - 1; inputIndex++)
     {
-        int iAbove = iAbove2;
-        iAbove2 = std::min(vertexCount - 1, inputIndex + 2);
+        int indexAbove = indexAbove2;
+        indexAbove2 = std::min(vertexCount - 1, inputIndex + 2);
         outputVertices[outputIndex] = inputVertices[inputIndex];
-        outputVertices[outputIndex + 1].x = (c1 * inputVertices[iBelow].x
+        outputVertices[outputIndex + 1].x = (c1 * inputVertices[indexBelow].x
                                              + c2 * inputVertices[inputIndex].x
-                                             + c3 * inputVertices[iAbove].x
-                                             + c4 * inputVertices[iAbove2].x) * inverseSum;
-        outputVertices[outputIndex + 1].y = (c1 * inputVertices[iBelow].y
+                                             + c3 * inputVertices[indexAbove].x
+                                             + c4 * inputVertices[indexAbove2].x) * inverseSum;
+        outputVertices[outputIndex + 1].y = (c1 * inputVertices[indexBelow].y
                                              + c2 * inputVertices[inputIndex].y
-                                             + c3 * inputVertices[iAbove].y
-                                             + c4 * inputVertices[iAbove2].y) * inverseSum;
-        iBelow = inputIndex;
+                                             + c3 * inputVertices[indexAbove].y
+                                             + c4 * inputVertices[indexAbove2].y) * inverseSum;
+        indexBelow = inputIndex;
         outputIndex += 2;
     }
 
