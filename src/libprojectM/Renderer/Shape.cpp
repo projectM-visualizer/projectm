@@ -75,8 +75,8 @@ void Shape::Draw(RenderContext& context)
 
     for (int i = 1; i < sides + 1; i++)
     {
-        float cornerProgress = static_cast<float>(i - 1) / static_cast<float>(sides);
-        float angle = cornerProgress * pi * 2.0f + ang + pi * 0.25f;
+        const float cornerProgress = static_cast<float>(i - 1) / static_cast<float>(sides);
+        const float angle = cornerProgress * pi * 2.0f + ang + pi * 0.25f;
 
         vertexData[i].color_r = r2;
         vertexData[i].color_g = g2;
@@ -99,7 +99,7 @@ void Shape::Draw(RenderContext& context)
 
         for (int i = 1; i < sides + 1; i++)
         {
-            float cornerProgress = static_cast<float>(i - 1) / static_cast<float>(sides);
+            const float cornerProgress = static_cast<float>(i - 1) / static_cast<float>(sides);
 
             vertexData[i].tex_x =
                 0.5f + 0.5f * cosf(cornerProgress * pi * 2.0f + ang + pi * 0.25f) / tex_zoom * context.aspectY;
@@ -163,11 +163,11 @@ void Shape::Draw(RenderContext& context)
         glBindVertexArray(m_vaoID);
         glBindBuffer(GL_ARRAY_BUFFER, m_vboID);
 
-        auto iterations = thickOutline ? 4 : 1;
+        const auto iterations = thickOutline ? 4 : 1;
 
         // Need to use +/- 1.0 here instead of 2.0 used in Milkdrop to achieve the same rendering result.
-        auto incrementX = 1.0f / static_cast<float>(context.viewportSizeX);
-        auto incrementY = 1.0f / static_cast<float>(context.viewportSizeY);
+        const auto incrementX = 1.0f / static_cast<float>(context.viewportSizeX);
+        const auto incrementY = 1.0f / static_cast<float>(context.viewportSizeY);
 
         // If thick outline is used, draw the shape four times with slight offsets
         // (top left, top right, bottom right, bottom left).
@@ -176,7 +176,6 @@ void Shape::Draw(RenderContext& context)
             switch (iteration)
             {
                 case 0:
-                default:
                     break;
 
                 case 1:
