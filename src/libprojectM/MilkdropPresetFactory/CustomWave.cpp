@@ -19,29 +19,22 @@
  *
  */
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-
-#include <sstream>
+#include "CustomWave.hpp"
 
 #include "Common.hpp"
-#include "fatal.h"
-
-#include "CustomWave.hpp"
-#include "Eval.hpp"
 #include "Expr.hpp"
-#include "InitCond.hpp"
+#include "InitCondUtils.hpp"
 #include "Param.hpp"
-#include "PerFrameEqn.hpp"
+#include "ParamUtils.hpp"
 #include "PerPointEqn.hpp"
 #include "Preset.hpp"
-#include <map>
-#include "ParamUtils.hpp"
-#include "InitCondUtils.hpp"
-#include "wipemalloc.h"
-#define MAX_SAMPLE_SIZE 4096
+#include "fatal.h"
 
+#include <cstdio>
+#include <map>
+#include <sstream>
+
+#define MAX_SAMPLE_SIZE 4096
 
 CustomWave::CustomWave(int _id)
     : Waveform(512)
@@ -175,7 +168,7 @@ int CustomWave::add_per_point_eqn(char* name, Expr* gen_expr)
         return PROJECTM_FAILURE;
     }
 
-    /* Get largest index in the tree */
+    /* Create a new per point equation given the next available index, parameter, and general expression tree */
     per_point_eqn_tree.push_back(new PerPointEqn(static_cast<int>(per_point_eqn_tree.size()), param, gen_expr));
 
     /* Done */
