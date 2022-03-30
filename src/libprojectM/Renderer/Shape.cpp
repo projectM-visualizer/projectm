@@ -92,8 +92,27 @@ void Shape::Draw(RenderContext& context)
 
     if (textured)
     {
+        auto textureAspectY = context.aspectY;
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, context.textureManager->getMainTexture()->texID);
+        if (image.empty())
+        {
+            glBindTexture(GL_TEXTURE_2D, context.textureManager->getMainTexture()->texID);
+        }
+        else
+        {
+            auto texture = context.textureManager->getTexture(image, GL_CLAMP_TO_BORDER, GL_LINEAR);
+            if (texture.first)
+            {
+                glBindTexture(GL_TEXTURE_2D, texture.first->texID);
+                glBindSampler(0, texture.second->samplerID);
+                textureAspectY = 1.0f;
+            }
+            else
+            {
+                // No texture found, fall back to main texture.
+                glBindTexture(GL_TEXTURE_2D, context.textureManager->getMainTexture()->texID);
+            }
+        }
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
@@ -102,7 +121,7 @@ void Shape::Draw(RenderContext& context)
             const float cornerProgress = static_cast<float>(i - 1) / static_cast<float>(sides);
 
             vertexData[i].tex_x =
-                0.5f + 0.5f * cosf(cornerProgress * pi * 2.0f + ang + pi * 0.25f) / tex_zoom * context.aspectY;
+                0.5f + 0.5f * cosf(cornerProgress * pi * 2.0f + ang + pi * 0.25f) / tex_zoom * textureAspectY;
             vertexData[i].tex_y = 0.5f + 0.5f * sinf(cornerProgress * pi * 2.0f + ang + pi * 0.25f) / tex_zoom;
         }
 
