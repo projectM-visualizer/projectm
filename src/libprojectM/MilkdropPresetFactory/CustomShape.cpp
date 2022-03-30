@@ -124,6 +124,9 @@ CustomShape::CustomShape(int _id)
             MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, 0.0), &this->param_tree);
     }
 
+    // projectM custom addition: Specify a texture file for use on shapes!
+    ParamUtils::insert(Param::new_param_string("image", P_FLAG_READONLY, &this->image), &this->text_properties_tree);
+
 }
 
 /* Frees a custom shape form object */

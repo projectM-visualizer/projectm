@@ -19,7 +19,7 @@ public:
 
     virtual void Draw(RenderContext& context);
 
-    std::string imageUrl; //!< Texture filename to be rendered on this shape
+    std::string image; //!< Texture filename to be rendered on this shape
 
     int sides{ 4 }; //!< Number of sides (vertices)
     bool thickOutline{ false }; //!< If true, the shape is rendered with a thick line, otherwise a single-pixel line.
