@@ -153,9 +153,9 @@ void TextureManager::Preload()
                 ,&width,&height);
 
 
-    Texture * newTex = new Texture("M", tex, GL_TEXTURE_2D, width, height, true);
+    Texture * newTex = new Texture("m", tex, GL_TEXTURE_2D, width, height, true);
     newTex->getSampler(GL_CLAMP_TO_EDGE, GL_LINEAR);
-    textures["M"] = newTex;
+    textures["m"] = newTex;
 
     //    tex = SOIL_load_OGL_texture_from_memory(
     //                project_data,
