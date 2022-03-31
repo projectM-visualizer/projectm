@@ -25,6 +25,8 @@ public:
 
     double GetRunningTime();
 
+    double GetPresetDuration();
+
     double PresetProgressA();
 
     double PresetProgressB();

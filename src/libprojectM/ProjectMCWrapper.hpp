@@ -21,24 +21,22 @@
 
 #pragma once
 
-#include "projectM.hpp"
+#include "ProjectM.hpp"
 #include "projectM.h"
 
-class projectMWrapper : public projectM
+class projectMWrapper : public ProjectM
 {
 public:
-    projectMWrapper(std::string configFile, int flags);
+    projectMWrapper(const std::string& configFile, int flags);
 
-    projectMWrapper(Settings settings, int flags);
+    projectMWrapper(const Settings& settings, int flags);
 
-    void presetSwitchedEvent(bool isHardCut, size_t presetIndex) const override;
+    void OnPresetSwitched(bool isHardCut, size_t presetIndex) const override;
 
-    void shuffleEnabledValueChanged(bool shuffle_enabled) const override;
+    void OnPresetSwitchFailed(bool isHardCut, unsigned int presetIndex,
+                              const std::string& failureMessage) const override;
 
-    void presetSwitchFailedEvent(bool isHardCut, unsigned int presetIndex,
-                                 const std::string& failureMessage) const override;
-
-    void presetRatingChanged(unsigned int presetIndex, int rating, PresetRatingType ratingType) const override;
+    void OnPresetRatingChanged(unsigned int presetIndex, int rating, PresetRatingType ratingType) const override;
 
     projectm_preset_switched_event _presetSwitchedEventCallback{ nullptr };
     projectm_shuffle_enable_changed_event _shuffleEnableChangedEventCallback{ nullptr };

@@ -1,7 +1,5 @@
 #pragma once
 
-#ifdef USE_TEXT_MENU
-
 #include "projectM-opengl.h"
 
 #include <string>
@@ -148,5 +146,3 @@ protected:
     int _viewportWidth{ 0 }; //!< The viewport width in pixels that can be used.
     GLTtext* _glTextInstance{ nullptr }; //!< The glText instance pointer.
 };
-
-#endif

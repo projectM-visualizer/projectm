@@ -20,7 +20,7 @@
  */
 
 #include "video_init.h"
-#include <projectM.hpp>
+#include <ProjectM.hpp>
 #include "sdltoprojectM.h"
 #include "ConfigFile.h"
 #include "getConfigFilename.h"

@@ -21,6 +21,12 @@
 
 #pragma once
 
+#ifdef WIN32
+// Libraries required for win32
+#pragma comment(lib, "psapi.lib")
+#pragma comment(lib, "kernel32.lib")
+#endif /** WIN32 */
+
 #include "projectM_export.h"
 #include "event.h"
 
@@ -34,9 +40,9 @@ struct projectm; //!< Opaque projectM instance type.
 typedef projectm* projectm_handle; //!< A pointer to the opaque projectM instance.
 
 /**
- * @brief projectM instance settings.
+ * @brief projectM instance GetSettings.
  *
- * <p>Use this struct to provide settings for projectM, for example if your application handles projectM configuration
+ * <p>Use this struct to provide GetSettings for projectM, for example if your application handles projectM configuration
  * internally instead of using the default configuration file.</p>
  *
  * <p>Always allocate the struct using the projectm_alloc_settings() and free it with the projectm_free_settings()
@@ -44,7 +50,7 @@ typedef projectm* projectm_handle; //!< A pointer to the opaque projectM instanc
  *
  * <p>To allocate memory for char* members, always use projectm_alloc_string(). If any pointer is not NULL,
  * projectm_free_settings() will automatically call projectm_free_string() on it. If you free it on your own, remember
- * to reset the pointer to NULL after doing so!</p>
+ * to Reset the pointer to NULL after doing so!</p>
  */
 struct PROJECTM_EXPORT projectm_settings
 {
@@ -55,8 +61,6 @@ struct PROJECTM_EXPORT projectm_settings
     int window_width; //!< Width of the rendering viewport.
     int window_height; //!< Height of the rendering viewport.
     char* preset_url; //!< Path to a preset playlist in XML format to be loaded. Use FLAG_DISABLE_PLAYLIST_LOAD to skip loading a playlist.
-    char* title_font_url; //!< Path to the "title" font that is used to render the preset name.
-    char* menu_font_url; //!< Path to the "menu" font that is used to render the built-in on-screen menu.
     char* data_dir; //!< Path to data files like default fonts and presets.
     double preset_duration; //!< Display duration for each preset in seconds.
     double soft_cut_duration; //!< Blend-over duration between two presets in seconds.
@@ -101,7 +105,7 @@ enum projectm_pcm_channel
 };
 
 /**
- * Waveform render types used in the touch start method.
+ * Waveform render types used in the Touch start method.
  */
 enum projectm_touch_type
 {
@@ -216,9 +220,9 @@ typedef void(* projectm_preset_rating_changed_event)(unsigned int index, int rat
 
 
 /**
- * @brief Creates a new projectM instance, reading settings from the given file.
- * @param setting_file_path A path to the settings file to read the configuration from.
- *                          If NULL or an empty path are provided, default settings will be used.
+ * @brief Creates a new projectM instance, reading GetSettings from the given file.
+ * @param setting_file_path A path to the GetSettings file to read the configuration from.
+ *                          If NULL or an empty path are provided, default GetSettings will be used.
  * @param flags Any combination of values from the projectm_flags enumeration.
  * @return A projectM handle for the newly created instance that must be used in subsequent API calls.
  *         NULL if the instance could not be created successfully.
@@ -226,9 +230,9 @@ typedef void(* projectm_preset_rating_changed_event)(unsigned int index, int rat
 PROJECTM_EXPORT projectm_handle projectm_create(const char* setting_file_path, int flags);
 
 /**
- * @brief Creates a new projectM instance, reading settings from the given file.
- * @param settings A pointer to a projectm_settings_t with the settings to be used by the new instance.
- *                 If this pointer is NULL, default settings will be used.
+ * @brief Creates a new projectM instance, reading GetSettings from the given file.
+ * @param settings A pointer to a projectm_settings_t with the GetSettings to be used by the new instance.
+ *                 If this pointer is NULL, default GetSettings will be used.
  * @param flags Any combination of values from the projectm_flags enumeration.
  * @return A projectM handle for the newly created instance that must be used in subsequent API calls.
  *         NULL if the instance could not be created successfully.
@@ -307,30 +311,6 @@ PROJECTM_EXPORT void projectm_set_preset_rating_changed_event_callback(projectm_
  */
 PROJECTM_EXPORT void projectm_reset_gl(projectm_handle instance);
 
-
-/**
- * @brief Reloads all textures.
- *
- * Also resets the OpenGL renderer without changing the viewport size. Useful if preset paths were changed.
- *
- * @param instance The projectM instance handle.
- */
-PROJECTM_EXPORT void projectm_reset_textures(projectm_handle instance);
-
-/**
- * @brief Returns the current title text.
- * @param instance The projectM instance handle.
- * @return The currently set title text.
- */
-PROJECTM_EXPORT const char* projectm_get_title(projectm_handle instance);
-
-/**
- * @brief Sets the current title text and displays it.
- * @param instance The projectM instance handle.
- * @param title The title text to display.
- */
-PROJECTM_EXPORT void projectm_set_title(projectm_handle instance, const char* title);
-
 /**
  * @brief Renders a single frame.
  *
@@ -356,7 +336,7 @@ PROJECTM_EXPORT unsigned int projectm_init_render_to_texture(projectm_handle ins
  * @brief Key handler that processes user input.
  *
  * <p>This method can be used to send user input in the host application to projectM, for example
- * to switch presets, display the help and search menus or change settings like beat sensitivity.</p>
+ * to switch presets, display the help and search menus or change GetSettings like beat sensitivity.</p>
  *
  * <p>All actions executed by the key handler can also be run programmatically if the host application
  * is not able to redirect keyboard input to projectM.</p>
@@ -373,7 +353,7 @@ PROJECTM_EXPORT void projectm_key_handler(projectm_handle instance, projectMEven
  * @brief Default key handler that processes user input.
  *
  * <p>This method can be used to send user input in the host application to projectM, for example
- * to switch presets, display the help and search menus or change settings like beat sensitivity.</p>
+ * to switch presets, display the help and search menus or change GetSettings like beat sensitivity.</p>
  *
  * <p>All actions executed by the key handler can also be run programmatically if the host application
  * is not able to redirect keyboard input to projectM.</p>
@@ -485,6 +465,17 @@ PROJECTM_EXPORT void projectm_set_soft_cut_duration(projectm_handle instance, do
 PROJECTM_EXPORT void projectm_set_preset_duration(projectm_handle instance, double seconds);
 
 /**
+ * @brief Returns the preset display duration before switching to the next using a soft cut.
+ *
+ * This can be considered as the maximum time a preset is displayed. If this time is reached,
+ * a smooth cut will be initiated. A hard cut, if any, will always happen before this time.
+ *
+ * @param instance The projectM instance handle.
+ * @return The number of seconds a preset will be displayed before the next is shown.
+ */
+PROJECTM_EXPORT double projectm_get_preset_duration(projectm_handle instance);
+
+/**
  * @brief Returns the per-pixel equation mesh size in units.
  * @param instance The projectM instance handle.
  * @param width The width of the mesh.
@@ -514,20 +505,6 @@ PROJECTM_EXPORT size_t projectm_get_fps(projectm_handle instance);
  * @return The path used to search for presets and textures.
  */
 PROJECTM_EXPORT const char* projectm_get_preset_path(projectm_handle instance);
-
-/**
- * @brief Returns the path and filename of the font used to render the title overlay text.
- * @param instance The projectM instance handle.
- * @return The path and filename of the title text font.
- */
-PROJECTM_EXPORT const char* projectm_get_title_font_filename(projectm_handle instance);
-
-/**
- * @brief Returns the path and filename of the font used to render the menu overlay text.
- * @param instance The projectM instance handle.
- * @return The path and filename of the menu text font.
- */
-PROJECTM_EXPORT const char* projectm_get_menu_font_filename(projectm_handle instance);
 
 /**
  * @brief Returns the path projectM uses to search for additional data.
@@ -576,17 +553,17 @@ PROJECTM_EXPORT void projectm_set_easter_egg(projectm_handle instance, float val
 PROJECTM_EXPORT float projectm_get_easter_egg(projectm_handle instance);
 
 /**
- * @brief Starts a touch event or moves an existing waveform.
+ * @brief Starts a Touch event or moves an existing waveform.
  *
  * This will add or move waveforms in addition to the preset waveforms. If there is an existing waveform
  * at the given coordinates, it will be centered on the new coordinates. If there is no waveform, a new one
  * will be added.
  *
  * @param instance The projectM instance handle.
- * @param x The x coordinate of the touch event.
- * @param y The y coordinate of the touch event.
+ * @param x The x coordinate of the Touch event.
+ * @param y The y coordinate of the Touch event.
  * @param pressure  The amount of pressure applied in a range from 0.0 to 1.0.
- * @param touch_type The waveform type that will be rendered on touch.
+ * @param touch_type The waveform type that will be rendered on Touch.
  */
 PROJECTM_EXPORT void projectm_touch(projectm_handle instance, float x, float y,
                                     int pressure, projectm_touch_type touch_type);
@@ -601,15 +578,15 @@ PROJECTM_EXPORT void projectm_touch(projectm_handle instance, float x, float y,
 PROJECTM_EXPORT void projectm_touch_drag(projectm_handle instance, float x, float y, int pressure);
 
 /**
- * @brief Removes any additional touch waveforms under the given coordinates.
+ * @brief Removes any additional Touch waveforms under the given coordinates.
  * @param instance The projectM instance handle.
- * @param x The last known x touch coordinate.
- * @param y The last known y touch coordinate.
+ * @param x The last known x Touch coordinate.
+ * @param y The last known y Touch coordinate.
  */
 PROJECTM_EXPORT void projectm_touch_destroy(projectm_handle instance, float x, float y);
 
 /**
- * @brief Removes all touch waveforms from the screen.
+ * @brief Removes all Touch waveforms from the screen.
  *
  * Preset-defined waveforms will still be displayed.
  *
@@ -630,7 +607,7 @@ PROJECTM_EXPORT void projectm_set_help_text(projectm_handle instance, const char
 /**
  * @brief Displays a short message in the center of the rendering area for a few seconds.
  *
- * <p>Useful to display song titles and changed audio settings. Used internally by projectM to display setting
+ * <p>Useful to display song titles and changed audio GetSettings. Used internally by projectM to display setting
  * changes like preset lock.</p>
  *
  * <p>Only one toast message is shown at a time. If this method is called while another message is shown, it
@@ -642,20 +619,20 @@ PROJECTM_EXPORT void projectm_set_help_text(projectm_handle instance, const char
 PROJECTM_EXPORT void projectm_set_toast_message(projectm_handle instance, const char* toast_message);
 
 /**
- * @brief Returns a structure with the current projectM settings.
+ * @brief Returns a structure with the current projectM GetSettings.
  * @param instance The projectM instance handle.
- * @return A struct with all currently used settings.
+ * @return A struct with all currently used GetSettings.
  */
 PROJECTM_EXPORT projectm_settings* projectm_get_settings(projectm_handle instance);
 
 /**
- * @brief Saves the given settings struct into a file.
+ * @brief Saves the given GetSettings struct into a file.
  *
  * The file can be loaded during projectM initialization. This is useful if the application needs to
- * keep settings separate from the global system/user configuration.
+ * keep GetSettings separate from the global system/user configuration.
  *
- * @param config_file The filename to store the settings in.
- * @param settings The settings struct to store.
+ * @param config_file The filename to store the GetSettings in.
+ * @param settings The GetSettings struct to store.
  */
 PROJECTM_EXPORT void projectm_write_config(const char* config_file, const projectm_settings* settings);
 
@@ -940,7 +917,7 @@ PROJECTM_EXPORT void projectm_get_window_size(projectm_handle instance, size_t* 
 /**
  * @brief Sets the current viewport size in pixels.
  *
- * Calling this function will reset the OpenGL renderer.
+ * Calling this function will Reset the OpenGL renderer.
  *
  * @param instance The projectM instance handle.
  * @param width New viewport width in pixels.

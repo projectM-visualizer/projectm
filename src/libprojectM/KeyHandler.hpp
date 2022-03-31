@@ -28,12 +28,12 @@
 #define _KEY_HANDLER_HPP
 
 #include "event.h"
-class projectM;
-void default_key_handler(projectM *PM, projectMEvent event, projectMKeycode keycode);
+class ProjectM;
+void default_key_handler(ProjectM *PM, projectMEvent event, projectMKeycode keycode);
 void refreshConsole();
 #if defined(__CPLUSPLUS) && !defined(MACOS)
 extern "C" void key_handler(projectM *PM, projectMEvent event, projectMKeycode keycode, projectMModifier modifier );
 #else
-extern void key_handler(projectM *PM, projectMEvent event, projectMKeycode keycode, projectMModifier modifier );
+extern void key_handler(ProjectM *PM, projectMEvent event, projectMKeycode keycode, projectMModifier modifier );
 #endif
 #endif /** !_KEY_HANDLER_HPP */

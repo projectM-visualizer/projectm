@@ -58,7 +58,7 @@ void MenuText::Draw(std::string textLine,
                     bool highlightable,
                     const std::string& highlightText) const
 {
-    if (!gltInitialized || !_glTextInstance)
+    if (!gltInitialized || !_glTextInstance || _viewportWidth <= 0)
     {
         return;
     }

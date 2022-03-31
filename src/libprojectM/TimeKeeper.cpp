@@ -66,6 +66,11 @@ double TimeKeeper::GetRunningTime()
     return m_currentTime;
 }
 
+double TimeKeeper::GetPresetDuration()
+{
+    return m_presetDuration;
+}
+
 double TimeKeeper::PresetProgressA()
 {
     if (m_isSmoothing)

@@ -199,7 +199,7 @@ projectMSDL *setupSDLApp() {
     } else {
         // use some sane defaults if config file not found
         base_path = SDL_GetBasePath();
-        SDL_Log("Config file not found, using built-in settings. Data directory=%s\n", base_path.c_str());
+        SDL_Log("Config file not found, using built-in GetSettings. Data directory=%s\n", base_path.c_str());
 
         // Get max refresh rate from attached displays to use as built-in max FPS.
         int i = 0;
@@ -237,10 +237,6 @@ projectMSDL *setupSDLApp() {
         // get path to our app, use CWD or resource dir for presets/fonts/etc
         settings->preset_url = projectm_alloc_string(presetURL.length() + 1);
         strncpy(settings->preset_url, presetURL.c_str(), presetURL.length());
-        settings->menu_font_url = projectm_alloc_string(menuFontURL.length() + 1);
-        strncpy(settings->menu_font_url, menuFontURL.c_str(), menuFontURL.length());
-        settings->title_font_url = projectm_alloc_string(titleFontURL.length() + 1);
-        strncpy(settings->title_font_url, titleFontURL.c_str(), titleFontURL.length());
         // init with settings
         app = new projectMSDL(glCtx, settings, 0);
     }

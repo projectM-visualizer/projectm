@@ -19,7 +19,7 @@
  *
  */
 
-#include <projectM.hpp>
+#include <ProjectM.hpp>
 #include <iostream>
 #include <stdlib.h>
 #include <cassert>

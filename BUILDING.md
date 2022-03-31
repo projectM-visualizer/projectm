@@ -245,7 +245,7 @@ If you use the CMake GUI, check the "Specify toolchain file for cross-compiling"
 configuration assistant, then select the above `vcpkg.cmake` file on the second page.
 
 Another option is to open the project folder in a recent Visual Studio version as a CMake project and configure CMake
-using Visual Studio's JSON-based settings file.
+using Visual Studio's JSON-based GetSettings file.
 
 #### Building the solution
 

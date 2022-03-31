@@ -176,10 +176,10 @@ use the `install` target and copy files from there.
 
 In the top-level build directory, CMake creates a few files that are present on any platform:
 
-- `CMakeCache.txt`: This file contains all variables and build settings CMake needs to remember from the first
+- `CMakeCache.txt`: This file contains all variables and build GetSettings CMake needs to remember from the first
   configuration run. This file can be edited on demand either manually or using a CMake UI to change any values. On the
   next build, CMake will regenerate the project files if this file has been modified.
-- `cmake_install.cmake`: Contains generated install-related settings.
+- `cmake_install.cmake`: Contains generated install-related GetSettings.
 - `install_manifest.txt`: After installing the project, this file contains a list with absolute filenames of all
   installed files. It can be used for packaging or deleting installed files as CMake doesn't define an `uninstall`
   target.

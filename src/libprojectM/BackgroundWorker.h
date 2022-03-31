@@ -1,84 +1,72 @@
-//
-// Created by matthew on 1/11/19.
-//
+#pragma once
 
-#ifndef PROJECTM_BELLEW_BACKGROUNDWORKER_H
-#define PROJECTM_BELLEW_BACKGROUNDWORKER_H
+#include <condition_variable>
+#include <mutex>
 
-
-
-// Small class to encapsulate synchronization of a simple background task runner
-// see projectM.cpp
-
+/**
+ * Small class to encapsulate synchronization of a simple background task runner
+ */
 class BackgroundWorkerSync
 {
-    pthread_mutex_t mutex;
-    pthread_cond_t  condition_start_work;
-    pthread_cond_t  condition_work_done;
-    volatile bool there_is_work_to_do;
-    volatile bool finished;
-
 public:
-    BackgroundWorkerSync() : there_is_work_to_do(false), finished(false)
-    {
-        pthread_mutex_init(&mutex, NULL);
-        pthread_cond_init(&condition_start_work, NULL);
-        pthread_cond_init(&condition_work_done, NULL);
-    }
+    BackgroundWorkerSync() = default;
 
-    void reset()
+    void Reset()
     {
-        there_is_work_to_do = false;
-        finished = false;
+        m_isWorkToDo = false;
+        m_finished = false;
     }
 
     // called by foreground
-    void wake_up_bg()
+    void WakeUpBackgroundTask()
     {
-        pthread_mutex_lock(&mutex);
-        there_is_work_to_do = true;
-        pthread_cond_signal(&condition_start_work);
-        pthread_mutex_unlock(&mutex);
+        std::lock_guard<std::mutex> guard(m_mutex);
+        m_isWorkToDo = true;
+        m_conditionStartWork.notify_one();
     }
 
     // called by foreground
-    void wait_for_bg_to_finish()
+    void WaitForBackgroundTaskToFinish()
     {
-        pthread_mutex_lock(&mutex);
-        while (there_is_work_to_do)
-            pthread_cond_wait(&condition_work_done, &mutex);
-        pthread_mutex_unlock(&mutex);
+        std::unique_lock<std::mutex> guard(m_mutex);
+        while (m_isWorkToDo)
+        {
+            m_conditionWorkDone.wait(guard);
+        }
     }
 
     // called by foreground() when shutting down, background thread should exit
-    void finish_up()
+    void FinishUp()
     {
-        pthread_mutex_lock(&mutex);
-        finished = true;
-        pthread_cond_signal(&condition_start_work);
-        pthread_mutex_unlock(&mutex);
+        std::lock_guard<std::mutex> guard(m_mutex);
+        m_finished = true;
+        m_conditionStartWork.notify_all();
     }
 
     // called by background
-    bool wait_for_work()
+    auto WaitForWork() -> bool
     {
-        pthread_mutex_lock(&mutex);
-        while (!there_is_work_to_do && !finished)
-            pthread_cond_wait(&condition_start_work, &mutex);
-        pthread_mutex_unlock(&mutex);
-        return !finished;
+        std::unique_lock<std::mutex> guard(m_mutex);
+        while (!m_isWorkToDo && !m_finished)
+        {
+            m_conditionStartWork.wait(guard);
+        }
+        return !m_finished;
     }
 
     // called by background
-    void finished_work()
+    void FinishedWork()
     {
-        pthread_mutex_lock(&mutex);
-        there_is_work_to_do = false;
-        pthread_cond_signal(&condition_work_done);
-        pthread_mutex_unlock(&mutex);
+        std::lock_guard<std::mutex> guard(m_mutex);
+        m_isWorkToDo = false;
+        m_conditionWorkDone.notify_one();
     }
+
+private:
+    mutable std::mutex m_mutex; //!< Mutex that controls access to the work flags.
+    std::condition_variable m_conditionStartWork;
+    std::condition_variable m_conditionWorkDone;
+    volatile bool m_isWorkToDo{ false };
+    volatile bool m_finished{ false };
 
 };
-
-
-#endif //PROJECTM_BELLEW_BACKGROUNDWORKER_H

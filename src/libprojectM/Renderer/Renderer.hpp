@@ -120,13 +120,12 @@ public:
   float m_fInvAspectY{ 1.0 };
 
   Renderer() = delete;
-  Renderer(int width, int height, int gx, int gy, BeatDetect *_beatDetect, std::string presetURL, std::string title_fontURL, std::string menu_fontURL, const std::string& datadir = "");
+  Renderer(int width, int height, int gx, int gy, BeatDetect& _beatDetect, std::string presetURL, const std::string& datadir = "");
   ~Renderer();
 
   void RenderFrame(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderFrameOnlyPass1(const Pipeline &pipeline, const PipelineContext &pipelineContext);
   void RenderFrameOnlyPass2(const Pipeline &pipeline, const PipelineContext &pipelineContext,int xoffset,int yoffset,int eye);
-  void ResetTextures();
   void reset(int w, int h);
   GLuint initRenderToTexture();
 
@@ -192,7 +191,7 @@ public:
 private:
 
   PerPixelMesh mesh;
-  BeatDetect *beatDetect{ nullptr };
+  BeatDetect& beatDetect;
   TextureManager *textureManager{ nullptr };
   Pipeline* currentPipe{ nullptr };
 
@@ -227,8 +226,6 @@ private:
 
   float aspect;
 
-  std::string title_fontURL;
-  std::string menu_fontURL;
   std::string presetURL;
 
   GLuint m_vbo_Interpolation{ 0 };

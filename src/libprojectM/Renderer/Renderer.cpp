@@ -21,16 +21,14 @@ using namespace std::chrono;
 
 class Preset;
 
-Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetect, std::string _presetURL,
-                   std::string _titlefontURL, std::string _menufontURL, const std::string& datadir)
+Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect& _beatDetect, std::string _presetURL,
+                   const std::string& datadir)
     : mesh(gx, gy)
     , beatDetect(_beatDetect)
     , m_presetName("None")
     , m_datadir(datadir)
     , vw(width)
     , vh(height)
-    , title_fontURL(std::move(_titlefontURL))
-    , menu_fontURL(std::move(_menufontURL))
     , presetURL(std::move(_presetURL))
     , m_menuText(width)
 {
@@ -41,7 +39,7 @@ Renderer::Renderer(int width, int height, int gx, int gy, BeatDetect* _beatDetec
 		"F5: Show FPS""\n"
 		"L: Lock/Unlock Preset""\n"
 		"R: Random preset""\n"
-		"N/P: [N]ext+ or [P]revious-reset""\n"
+		"N/P: [N]ext+ or [P]revious-Reset""\n"
 		"M/Return: Preset Menu (Arrow Up/Down & Page Up/Down to Navigate)""\n"
 		"Arrow Up/Down: Increase or Decrease Beat Sensitivity""\n"
 		"CTRL-F: Fullscreen";
@@ -168,15 +166,6 @@ std::string Renderer::SetPipeline(Pipeline& pipeline)
 	return std::string();
 }
 
-void Renderer::ResetTextures()
-{
-	textureManager->Clear();
-
-	reset(vw, vh);
-
-	textureManager->Preload();
-}
-
 void Renderer::SetupPass1(const Pipeline& pipeline, const PipelineContext& pipelineContext)
 {
 	totalframes++;
@@ -213,7 +202,7 @@ void Renderer::RenderItems(const Pipeline& pipeline, const PipelineContext& pipe
     renderContext.invAspectX = m_fInvAspectX;
     renderContext.invAspectY = m_fInvAspectY;
 	renderContext.textureManager = textureManager;
-	renderContext.beatDetect = beatDetect;
+	renderContext.beatDetect = &beatDetect;
 
 	for (std::vector<RenderItem*>::const_iterator pos = pipeline.drawables.begin(); pos != pipeline.drawables.end(); ++pos)
 	{
@@ -490,7 +479,7 @@ void Renderer::reset(int w, int h)
 	}
 	textureManager = new TextureManager(presetURL, texsizeX, texsizeY, m_datadir);
 
-	shaderEngine.setParams(texsizeX, texsizeY, m_fAspectX, m_fAspectY, beatDetect, textureManager);
+	shaderEngine.setParams(texsizeX, texsizeY, m_fAspectX, m_fAspectY, &beatDetect, textureManager);
 	shaderEngine.reset();
 	shaderEngine.loadPresetShaders(*currentPipe, m_presetName);
 
@@ -849,11 +838,11 @@ void Renderer::draw_stats()
 
 	stats += "\n";
 	stats += "Beat Detect:""\n";
-	stats += "Sensitivity: " + float_stats(beatDetect->beatSensitivity) + "\n";
-	stats += "Bass: " + float_stats(beatDetect->bass) + "\n";
-	stats += "Mid Range: " + float_stats(beatDetect->mid) + "\n";
-	stats += "Treble: " + float_stats(beatDetect->treb) + "\n";
-	stats += "Volume: " + float_stats(beatDetect->vol) + "\n";
+	stats += "Sensitivity: " + float_stats(beatDetect.beatSensitivity) + "\n";
+	stats += "Bass: " + float_stats(beatDetect.bass) + "\n";
+	stats += "Mid Range: " + float_stats(beatDetect.mid) + "\n";
+	stats += "Treble: " + float_stats(beatDetect.treb) + "\n";
+	stats += "Volume: " + float_stats(beatDetect.vol) + "\n";
 
 	stats += "\n";
 	stats += "Preset:""\n";
