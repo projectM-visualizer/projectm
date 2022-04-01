@@ -515,7 +515,7 @@ private:
 #if USE_THREADS
     void ThreadWorker();
 
-    mutable std::mutex m_presetSwitchMutex; //!< Mutex for locking preset switching while rendering and vice versa.
+    mutable std::recursive_mutex m_presetSwitchMutex; //!< Mutex for locking preset switching while rendering and vice versa.
     std::thread m_workerThread; //!< Background worker for preloading presets.
     BackgroundWorkerSync m_workerSync; //!< Background work synchronizer.
 #endif
