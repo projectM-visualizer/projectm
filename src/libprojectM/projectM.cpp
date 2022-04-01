@@ -47,20 +47,6 @@
 #include "TimeKeeper.hpp"
 #include "RenderItemMergeFunction.hpp"
 
-#if USE_THREADS
-
-#include "pthread.h"
-
-#include "BackgroundWorker.h"
-
-pthread_t thread;
-BackgroundWorkerSync worker_sync;
-
-#ifdef SYNC_PRESET_SWITCHES
-pthread_mutex_t preset_mutex;
-#endif
-#endif
-
 namespace {
 constexpr int kMaxSwitchRetries = 10;
 }
@@ -68,14 +54,10 @@ constexpr int kMaxSwitchRetries = 10;
 projectM::~projectM()
 {
 #if USE_THREADS
-    void* status;
-    worker_sync.finish_up();
-    pthread_join(thread, &status);
-#ifdef SYNC_PRESET_SWITCHES
-    pthread_mutex_destroy( &preset_mutex );
+    m_workerSync.FinishUp();
+    m_workerThread.join();
 #endif
-    std::cout << std::endl;
-#endif
+
     destroyPresetTools();
 
     if (renderer)
@@ -305,26 +287,16 @@ void projectM::readSettings(const Settings& settings)
 }
 
 #if USE_THREADS
-
-static void* thread_callback(void* prjm)
+void projectM::ThreadWorker()
 {
-    projectM* p = (projectM*) prjm;
-    p->thread_func(prjm);
-    return NULL;
-}
-
-
-void* projectM::thread_func(void* vptr_args)
-{
-    //  printf("in thread: %f\n", timeKeeper->PresetProgressB());
     while (true)
     {
-        if (!worker_sync.wait_for_work())
+        if (!m_workerSync.WaitForWork())
         {
-            return NULL;
+            return;
         }
         evaluateSecondPreset();
-        worker_sync.finished_work();
+        m_workerSync.FinishedWork();
     }
 }
 
@@ -356,8 +328,8 @@ void projectM::renderFrame()
 Pipeline* projectM::renderFrameOnlyPass1(
     Pipeline* pPipeline) /*pPipeline is a pointer to a Pipeline for use in pass 2. returns the pointer if it was used, else returns NULL */
 {
-#ifdef SYNC_PRESET_SWITCHES
-    pthread_mutex_lock(&preset_mutex);
+#if USE_THREADS
+    std::lock_guard<std::mutex> guard(m_presetSwitchMutex);
 #endif
 
 #ifdef DEBUG
@@ -429,17 +401,16 @@ Pipeline* projectM::renderFrameOnlyPass1(
         assert(m_activePreset2.get());
 
 #if USE_THREADS
-        worker_sync.wake_up_bg();
+        m_workerSync.WakeUpBackgroundTask();
 #endif
 
         m_activePreset->Render(*beatDetect, pipelineContext());
 
 #if USE_THREADS
-        worker_sync.wait_for_bg_to_finish();
+        m_workerSync.WaitForBackgroundTaskToFinish();
 #else
         evaluateSecondPreset();
 #endif
-
 
         pPipeline->setStaticPerPixel(settings().meshX, settings().meshY);
 
@@ -560,10 +531,6 @@ void projectM::renderFrameEndOnSeparatePasses(Pipeline* pPipeline)
 #endif
 
 #endif /** !WIN32 */
-#ifdef SYNC_PRESET_SWITCHES
-    pthread_mutex_unlock(&preset_mutex);
-#endif
-    return;
 }
 
 void projectM::projectM_reset()
@@ -611,21 +578,9 @@ void projectM::projectM_init(int gx, int gy, int fps, int texsize, int width, in
 
     initPresetTools(gx, gy);
 
-
 #if USE_THREADS
-
-#ifdef SYNC_PRESET_SWITCHES
-    pthread_mutex_init(&preset_mutex, NULL);
-#endif
-
-    worker_sync.reset();
-    if (pthread_create(&thread, NULL, thread_callback, this) != 0)
-    {
-
-        std::cerr << "[projectM] failed to allocate a thread! try building with option USE_THREADS turned off"
-                  << std::endl;;
-        exit(EXIT_FAILURE);
-    }
+    m_workerSync.Reset();
+    m_workerThread = std::thread(&projectM::ThreadWorker, this);
 #endif
 
     /// @bug order of operatoins here is busted
@@ -1070,30 +1025,24 @@ void projectM::selectNext(const bool hardCut)
  * Switches the pipeline and renderer to the current preset.
  * @return the resulting Preset object, or nullptr on failure.
  */
-std::unique_ptr<Preset> projectM::switchToCurrentPreset()
-{
-    std::unique_ptr<Preset> new_preset;
-#ifdef SYNC_PRESET_SWITCHES
-    pthread_mutex_lock(&preset_mutex);
-#endif
-    try
-    {
-        new_preset = m_presetPos->allocate();
-    }
-    catch (const PresetFactoryException& e)
-    {
-        std::cerr << "problem allocating target preset: " << e.message()
-                  << std::endl;
-    }
+std::unique_ptr<Preset> projectM::switchToCurrentPreset() {
+  std::unique_ptr<Preset> new_preset;
 
-    if (new_preset == nullptr)
-    {
-#ifdef SYNC_PRESET_SWITCHES
-        pthread_mutex_unlock(&preset_mutex);
+#if USE_THREADS
+    std::lock_guard<std::mutex> guard(m_presetSwitchMutex);
 #endif
-        std::cerr << "Could not switch to current preset" << std::endl;
-        return nullptr;
-    }
+
+  try {
+    new_preset = m_presetPos->allocate();
+  } catch (const PresetFactoryException &e) {
+    std::cerr << "problem allocating target preset: " << e.message()
+              << std::endl;
+  }
+
+  if (new_preset == nullptr) {
+    std::cerr << "Could not switch to current preset" << std::endl;
+    return nullptr;
+  }
 
     // Set preset name here- event is not done because at the moment this function
     // is oblivious to smooth/hard switches
@@ -1104,10 +1053,7 @@ std::unique_ptr<Preset> projectM::switchToCurrentPreset()
         std::cerr << "problem setting pipeline: " << result << std::endl;
     }
 
-#ifdef SYNC_PRESET_SWITCHES
-    pthread_mutex_unlock(&preset_mutex);
-#endif
-    return new_preset;
+  return new_preset;
 }
 
 void projectM::setPresetLock(bool isLocked)
