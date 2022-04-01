@@ -329,7 +329,7 @@ Pipeline* projectM::renderFrameOnlyPass1(
     Pipeline* pPipeline) /*pPipeline is a pointer to a Pipeline for use in pass 2. returns the pointer if it was used, else returns NULL */
 {
 #if USE_THREADS
-    std::lock_guard<std::mutex> guard(m_presetSwitchMutex);
+    std::lock_guard<std::recursive_mutex> guard(m_presetSwitchMutex);
 #endif
 
 #ifdef DEBUG
@@ -1029,7 +1029,7 @@ std::unique_ptr<Preset> projectM::switchToCurrentPreset() {
   std::unique_ptr<Preset> new_preset;
 
 #if USE_THREADS
-    std::lock_guard<std::mutex> guard(m_presetSwitchMutex);
+    std::lock_guard<std::recursive_mutex> guard(m_presetSwitchMutex);
 #endif
 
   try {
