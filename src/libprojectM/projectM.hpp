@@ -71,6 +71,12 @@
 #include "fatal.h"
 #include <vector>
 
+#if USE_THREADS
+#include <mutex>
+#include <thread>
+#include "BackgroundWorker.h"
+#endif
+
 class PipelineContext;
 
 #include "PCM.hpp"
@@ -506,6 +512,13 @@ private:
 
     void recreateRenderer();
 
+#if USE_THREADS
+    void ThreadWorker();
+
+    mutable std::mutex m_presetSwitchMutex; //!< Mutex for locking preset switching while rendering and vice versa.
+    std::thread m_workerThread; //!< Background worker for preloading presets.
+    BackgroundWorkerSync m_workerSync; //!< Background work synchronizer.
+#endif
 };
 
 #endif

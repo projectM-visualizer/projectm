@@ -52,7 +52,7 @@ option(ENABLE_NATIVE_PRESETS "Build and install native preset loading support an
 option(ENABLE_TESTING "Build the libprojectM test suite" OFF)
 cmake_dependent_option(ENABLE_SDL_UI "Build the SDL2-based developer test UI" OFF "NOT ENABLE_EMSCRIPTEN" OFF)
 cmake_dependent_option(ENABLE_GLES "Enable OpenGL ES support" OFF "NOT ENABLE_EMSCRIPTEN" ON)
-cmake_dependent_option(ENABLE_THREADING "Enable multithreading support" ON "NOT ENABLE_EMSCRIPTEN;NOT CMAKE_SYSTEM_NAME STREQUAL Windows" OFF)
+option(ENABLE_THREADING "Enable multithreading support. Use with care with emscripten." ON)
 cmake_dependent_option(ENABLE_LLVM "Enable LLVM JIT support" OFF "NOT ENABLE_EMSCRIPTEN" OFF)
 
 if(NOT ENABLE_STATIC_LIB AND NOT ENABLE_SHARED_LIB)
@@ -101,6 +101,13 @@ if(ENABLE_EMSCRIPTEN)
         "SHELL:-s ALLOW_MEMORY_GROWTH=1"
         )
 
+    if(ENABLE_THREADING)
+        message(AUTHOR_WARNING "Threading on emscripten is deemed stable, but may have issues. Use with care.\n"
+                "See https://emscripten.org/docs/porting/pthreads.html for more information.")
+        add_compile_options(-pthread)
+        add_link_options(-pthread)
+    endif()
+
     set(USE_GLES ON)
 else()
     if(ENABLE_SDL_UI)
@@ -138,11 +145,7 @@ else()
     endif()
 
     if(ENABLE_THREADING)
-        set(CMAKE_THREAD_PREFER_PTHREAD YES)
         find_package(Threads REQUIRED)
-        if(NOT CMAKE_USE_PTHREADS_INIT)
-            message(FATAL_ERROR "Threading support requested - pthread support is required, but not available.")
-        endif()
         set(USE_THREADS YES)
     endif()
 
