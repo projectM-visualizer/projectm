@@ -53,12 +53,24 @@ public:
     /* maximum number of sound samples that are actually stored. */
     static constexpr size_t maxSamples = 2048;
 
-    void AddPcmFloat(const float* pcmData, size_t count);
-    void AddPcmFloat2Ch(const float* pcmData, size_t count);
-    void AddPcm16(const int16_t pcmData[2][512]);
-    void AddPcm16Data(const int16_t* pcmData, size_t count);
-    void AddPcm8(const uint8_t pcmData[2][1024]);
-    void AddPcm8(const uint8_t pcmData[2][512]);
+    /**
+     * @brief Adds a mono pcm buffer to the storage
+     * @param samples The buffer to be added
+     * @param count The amount of samples in the buffer
+     */
+    void AddMono(const float* samples, size_t count);
+    void AddMono(const uint8_t* samples, size_t count);
+    void AddMono(const int16_t* samples, size_t count);
+
+    /**
+     * @brief Adds a stereo pcm buffer to the storage
+     * @param samples The buffer to be added.
+     * The channels are expected to be interleaved, LRLR.
+     * @param count The amount of samples in each channel (not total samples)
+     */
+    void AddStereo(const float* samples, size_t count);
+    void AddStereo(const uint8_t* samples, size_t count);
+    void AddStereo(const int16_t* samples, size_t count);
 
     /**
      * PCM data
@@ -83,7 +95,7 @@ private:
         int signalAmplitude,
         int signalOffset,
         class SampleType>
-    void AddPcm(const SampleType* pcmData, size_t count);
+    void AddPcm(const SampleType* samples, size_t count);
 
     // mem-usage:
     // pcmd 2x2048*4b    = 16K

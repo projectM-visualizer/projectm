@@ -52,26 +52,13 @@ void projectMSDL::audioInputCallbackF32(void *userdata, unsigned char *stream, i
 //        printf("%X ", stream[i]);
     // stream is (i think) samples*channels floats (native byte order) of len BYTES
     if (app->audioChannelsCount == 1)
-        projectm_pcm_add_float_1ch_data(app->_projectM, reinterpret_cast<float*>(stream), len/sizeof(float));
+        projectm_pcm_add_float(app->_projectM, reinterpret_cast<float*>(stream), len/sizeof(float)/2, PROJECTM_MONO);
     else if (app->audioChannelsCount == 2)
-        projectm_pcm_add_float_2ch_data(app->_projectM, reinterpret_cast<float*>(stream), len/sizeof(float));
+        projectm_pcm_add_float(app->_projectM, reinterpret_cast<float*>(stream), len/sizeof(float)/2, PROJECTM_STEREO);
     else {
         SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Multichannel audio not supported");
         SDL_Quit();
     }
-}
-
-void projectMSDL::audioInputCallbackS16(void *userdata, unsigned char *stream, int len) {
-    //    printf("LEN: %i\n", len);
-    projectMSDL *app = (projectMSDL *) userdata;
-    short pcm16[2][512];
-
-    for (int i = 0; i < 512; i++) {
-        for (int j = 0; j < app->audioChannelsCount; j++) {
-            pcm16[j][i] = stream[i+j];
-        }
-    }
-    projectm_pcm_add_16bit_2ch_512(app->_projectM, pcm16);
 }
 
 int projectMSDL::toggleAudioInput() {
