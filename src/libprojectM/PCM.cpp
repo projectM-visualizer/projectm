@@ -88,7 +88,7 @@ template<
     int signalOffset,
     class SampleType>
 void Pcm::AddPcm(
-    SampleType const* const pcmData,
+    SampleType const* const samples,
     size_t const count)
 {
     float sum = 0;
@@ -96,8 +96,8 @@ void Pcm::AddPcm(
     for (size_t i = 0; i < count; i++)
     {
         size_t const j = (m_start + i) % maxSamples;
-        m_pcmL[j] = (pcmData[lOffset + i * stride] - signalOffset) / float(signalAmplitude);
-        m_pcmR[j] = (pcmData[rOffset + i * stride] - signalOffset) / float(signalAmplitude);
+        m_pcmL[j] = (samples[lOffset + i * stride] - signalOffset) / float(signalAmplitude);
+        m_pcmR[j] = (samples[rOffset + i * stride] - signalOffset) / float(signalAmplitude);
         sum += std::abs(m_pcmL[j]) + std::abs(m_pcmR[j]);
         max = std::max(std::max(max, std::abs(m_pcmL[j])), std::abs(m_pcmR[j]));
     }
@@ -107,40 +107,31 @@ void Pcm::AddPcm(
 }
 
 
-void Pcm::AddPcmFloat(float const* const pcmData, size_t const count)
+void Pcm::AddMono(float const* const samples, size_t const count)
 {
-    AddPcm<0, 0, 1, 1, 0>(pcmData, count);
+    AddPcm<0, 0, 1, 1, 0>(samples, count);
+}
+void Pcm::AddMono(uint8_t const* const samples, size_t const count)
+{
+    AddPcm<0, 0, 1, 128, 0>(samples, count);
+}
+void Pcm::AddMono(int16_t const* const samples, size_t const count)
+{
+    AddPcm<0, 0, 1, 32768, 0>(samples, count);
 }
 
 
-/* NOTE: this method expects total samples, not samples per channel */
-void Pcm::AddPcmFloat2Ch(float const* const pcmData, size_t const count)
+void Pcm::AddStereo(float const* const samples, size_t const count)
 {
-    AddPcm<0, 1, 2, 1, 0>(pcmData, count / 2);
+    AddPcm<0, 1, 2, 1, 0>(samples, count);
 }
-
-
-void Pcm::AddPcm16Data(int16_t const* const pcmData, size_t const count)
+void Pcm::AddStereo(uint8_t const* const samples, size_t const count)
 {
-    AddPcm<0, 0, 1, 16384, 0>(pcmData, count);
+    AddPcm<0, 1, 2, 128, 0>(samples, count);
 }
-
-
-void Pcm::AddPcm16(int16_t const pcmData[2][512])
+void Pcm::AddStereo(int16_t const* const samples, size_t const count)
 {
-    AddPcm<0, 512, 1, 16384, 0>(static_cast<int16_t const*>(*pcmData), 512);
-}
-
-
-void Pcm::AddPcm8(uint8_t const pcmData[2][1024])
-{
-    AddPcm<0, 1024, 1, 64, 128>(static_cast<uint8_t const*>(*pcmData), 1024);
-}
-
-
-void Pcm::AddPcm8(uint8_t const pcmData[2][512])
-{
-    AddPcm<0, 512, 1, 64, 128>(static_cast<uint8_t const*>(*pcmData), 512);
+    AddPcm<0, 1, 2, 32768, 0>(samples, count);
 }
 
 
@@ -315,7 +306,7 @@ public:
             }
             for (size_t i = 0; i < 10; i++)
             {
-                pcm.AddPcmFloat(data.data(), samples);
+                pcm.AddMono(data.data(), samples);
             }
             std::array<float, samples> copy{};
             pcm.m_level = 1.0;
@@ -342,7 +333,7 @@ public:
             }
             for (size_t i = 0; i < 10; i++)
             {
-                pcm.AddPcmFloat2Ch(data.data(), samples * 2);
+                pcm.AddStereo(data.data(), samples);
             }
             std::array<float, samples> copy0{};
             std::array<float, samples> copy1{};
@@ -377,8 +368,8 @@ public:
                 data[i * 2] = std::sin(f);
                 data[i * 2 + 1] = std::sin(f + 1.f);// out of phase
             }
-            pcm.AddPcmFloat2Ch(data.data(), samples * 2);
-            pcm.AddPcmFloat2Ch(data.data(), samples * 2);
+            pcm.AddStereo(data.data(), samples);
+            pcm.AddStereo(data.data(), samples);
             std::array<float, fftLength> freq0{};
             std::array<float, fftLength> freq1{};
             pcm.m_level = 1.0;
@@ -402,7 +393,7 @@ public:
             std::array<float, 4> constexpr data{1.0, 0.0, 0.0, 1.0};
             for (size_t i = 0; i < 1024; i++)
             {
-                pcm.AddPcmFloat2Ch(data.data(), samples * 2);
+                pcm.AddStereo(data.data(), samples);
             }
             std::array<float, fftLength> freq0{};
             std::array<float, fftLength> freq1{};

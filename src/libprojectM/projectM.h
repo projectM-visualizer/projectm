@@ -80,6 +80,14 @@ enum projectm_flags
 };
 
 /**
+ * For specifying audio data format.
+ */
+enum projectm_channels {
+    PROJECTM_MONO = 1,
+    PROJECTM_STEREO = 2
+};
+
+/**
  * Rating types supported by projectM. Used to control preset selection for different types
  * of transitions (hard/soft).
  */
@@ -967,100 +975,56 @@ PROJECTM_EXPORT bool projectm_get_error_loading_current_preset(projectm_handle i
 PROJECTM_EXPORT unsigned int projectm_pcm_get_max_samples();
 
 /**
- * @brief Adds 1-channel 32-bit floating-point audio samples.
+ * @brief Adds 32-bit floating-point audio samples.
  *
- * <p>This function is used to add new audio data to projectM's internal audio buffer. It is internally converted
- * to 2-channel float data, duplicating the channel.</p>
+ * This function is used to add new audio data to projectM's internal audio buffer. It is internally converted
+ * to 2-channel float data, duplicating the channel.
  *
- * <p>If possible, always use projectm_pcm_add_float_2ch_data() for best performance and quality.</p>
+ * If stereo, the channel order in samples is LRLRLR.
  *
  * @param instance The projectM instance handle.
- * @param pcm_data An array of PCM samples.
- * @param sample_count The number of audio samples in pcm_data.
+ * @param samples An array of PCM samples.
+ * Each sample is expected to be within the range -1 to 1.
+ * @param count The number of audio samples in a channel.
+ * @param channels If the buffer is mono or stereo.
+ * Can be PROJECTM_MONO or PROJECTM_STEREO.
  */
-PROJECTM_EXPORT void projectm_pcm_add_float_1ch_data(projectm_handle instance, const float* pcm_data,
-                                                     unsigned int sample_count);
+PROJECTM_EXPORT void projectm_pcm_add_float(projectm_handle instance, const float* samples,
+                                                     unsigned int count, projectm_channels channels);
 
 /**
- * @brief Adds 2-channel 32-bit floating-point audio samples.
+ * @brief Adds 16-bit integer audio samples.
  *
- * <p>This function is used to add new audio data to projectM's internal audio buffer.</p>
+ * This function is used to add new audio data to projectM's internal audio buffer. It is internally converted
+ * to 2-channel float data, duplicating the channel.
  *
- * <p>This function represents projectM's internal audio data format. If possible, always use this function for best
- * performance and quality.</p>
- *
- * <p>Channel order in pcm_data is LRLRLR.</p>
+ * If stereo, the channel order in samples is LRLRLR.
  *
  * @param instance The projectM instance handle.
- * @param pcm_data An array of PCM samples, two floats per sample.
- * @param sample_count The number of audio samples in pcm_data. Half the actual size of pcm_data.
+ * @param samples An array of PCM samples.
+ * @param count The number of audio samples in a channel.
+ * @param channels If the buffer is mono or stereo.
+ * Can be PROJECTM_MONO or PROJECTM_STEREO.
  */
-PROJECTM_EXPORT void projectm_pcm_add_float_2ch_data(projectm_handle instance, const float* pcm_data,
-                                                     unsigned int sample_count);
+PROJECTM_EXPORT void projectm_pcm_add_int16(projectm_handle instance, const int16_t* samples,
+                                                     unsigned int count, projectm_channels channels);
 
 /**
- * @brief Adds 512 2-channel 16-bit integer audio samples.
+ * @brief Adds 8-bit unsigned integer audio samples.
  *
- * <p>This function is used to add new audio data to projectM's internal audio buffer. It is internally converted
- * to 2-channel float data.</p>
+ * This function is used to add new audio data to projectM's internal audio buffer. It is internally converted
+ * to 2-channel float data, duplicating the channel.
  *
- * <p>If possible, always use projectm_pcm_add_float_2ch_data() for best performance and quality.</p>
- *
- * <p>Channel indices are 0 for the left channel and 1 for the right channel. Use the projectm_pcm_channel
- * enum values instead of numerical indices for readability.</p>
+ * If stereo, the channel order in samples is LRLRLR.
  *
  * @param instance The projectM instance handle.
- * @param pcm_data The audio data.
+ * @param samples An array of PCM samples.
+ * @param count The number of audio samples in a channel.
+ * @param channels If the buffer is mono or stereo.
+ * Can be PROJECTM_MONO or PROJECTM_STEREO.
  */
-PROJECTM_EXPORT void projectm_pcm_add_16bit_2ch_512(projectm_handle instance, const short pcm_data[2][512]);
-
-/**
- * @brief Adds 2-channel 16-bit integer audio samples.</p>
- *
- * <p>This function is used to add new audio data to projectM's internal audio buffer. It is internally converted
- * to 2-channel float data.</p>
- *
- * <p>If possible, always use projectm_pcm_add_float_2ch_data() for best performance and quality.</p>
- *
- * <p>Channel order in pcm_data is LRLRLR.</p>
- *
- * @param instance The projectM instance handle.
- * @param pcm_data The audio data.
- */
-PROJECTM_EXPORT void projectm_pcm_add_16bit_2ch_data(projectm_handle instance, const short* pcm_data,
-                                                     unsigned int sample_count);
-
-/**
- * @brief Adds 1024 2-channel 8-bit integer audio samples.
- *
- * <p>This function is used to add new audio data to projectM's internal audio buffer. It is internally converted
- * to 2-channel float data.</p>
- *
- * <p>If possible, always use projectm_pcm_add_float_2ch_data() for best performance and quality.</p>
- *
- * <p>Channel indices are 0 for the left channel and 1 for the right channel. Use the projectm_pcm_channel
- * enum values instead of numerical indices for readability.</p>
- *
- * @param instance The projectM instance handle.
- * @param pcm_data The audio data.
- */
-PROJECTM_EXPORT void projectm_pcm_add_8bit_2ch_1024(projectm_handle instance, const unsigned char pcm_data[2][1024]);
-
-/**
- * @brief Adds 512 2-channel 8-bit integer audio samples.
- *
- * <p>This function is used to add new audio data to projectM's internal audio buffer. It is internally converted
- * to 2-channel float data.</p>
- *
- * <p>If possible, always use projectm_pcm_add_float_2ch_data() for best performance and quality.</p>
- *
- * <p>Channel indices are 0 for the left channel and 1 for the right channel. Use the projectm_pcm_channel
- * enum values instead of numerical indices for readability.</p>
- *
- * @param instance The projectM instance handle.
- * @param pcm_data The audio data.
- */
-PROJECTM_EXPORT void projectm_pcm_add_8bit_2ch_512(projectm_handle instance, const unsigned char pcm_data[2][512]);
+PROJECTM_EXPORT void projectm_pcm_add_uint8(projectm_handle instance, const uint8_t* samples,
+                                                     unsigned int count, projectm_channels channels);
 
 #ifdef __cplusplus
 } // extern "C"

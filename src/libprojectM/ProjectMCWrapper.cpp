@@ -732,38 +732,30 @@ unsigned int projectm_pcm_get_max_samples()
     return Pcm::maxSamples;
 }
 
-void projectm_pcm_add_float_1ch_data(projectm_handle instance, const float* pcm_data, unsigned int sample_count)
+template<class BufferType>
+static auto PcmAdd(projectm_handle instance, const BufferType* samples, unsigned int count, projectm_channels channels) -> void
 {
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->pcm()->AddPcmFloat(pcm_data, sample_count);
+    auto* projectMInstance = handle_to_instance(instance);
+
+    if(channels == PROJECTM_MONO) {
+        projectMInstance->pcm()->AddMono(samples, count);
+    }
+    else {
+        projectMInstance->pcm()->AddStereo(samples, count);
+    }
 }
 
-void projectm_pcm_add_float_2ch_data(projectm_handle instance, const float* pcm_data, unsigned int sample_count)
+auto projectm_pcm_add_float(projectm_handle instance, const float* samples, unsigned int count, projectm_channels channels) -> void
 {
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->pcm()->AddPcmFloat2Ch(pcm_data, sample_count);
+    PcmAdd(instance, samples, count, channels);
 }
 
-void projectm_pcm_add_16bit_2ch_512(projectm_handle instance, const short (* pcm_data)[512])
+auto projectm_pcm_add_int16(projectm_handle instance, const int16_t* samples, unsigned int count, projectm_channels channels) -> void
 {
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->pcm()->AddPcm16(pcm_data);
+    PcmAdd(instance, samples, count, channels);
 }
 
-void projectm_pcm_add_16bit_2ch_data(projectm_handle instance, const short* pcm_data, unsigned int sample_count)
+auto projectm_pcm_add_uint8(projectm_handle instance, const uint8_t* samples, unsigned int count, projectm_channels channels) -> void
 {
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->pcm()->AddPcm16Data(pcm_data, sample_count);
-}
-
-void projectm_pcm_add_8bit_2ch_1024(projectm_handle instance, const unsigned char (* pcm_data)[1024])
-{
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->pcm()->AddPcm8(pcm_data);
-}
-
-void projectm_pcm_add_8bit_2ch_512(projectm_handle instance, const unsigned char (* pcm_data)[512])
-{
-    auto projectMInstance = handle_to_instance(instance);
-    projectMInstance->pcm()->AddPcm8(pcm_data);
+    PcmAdd(instance, samples, count, channels);
 }

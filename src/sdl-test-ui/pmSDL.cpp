@@ -312,29 +312,29 @@ void projectMSDL::keyHandler(SDL_Event* sdl_evt)
 void projectMSDL::addFakePCM()
 {
     int i;
-    short pcm_data[2][512];
+    int16_t pcm_data[2*512];
     /** Produce some fake PCM data to stuff into projectM */
     for (i = 0; i < 512; i++)
     {
         if (i % 2 == 0)
         {
-            pcm_data[0][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
-            pcm_data[1][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+            pcm_data[2*i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+            pcm_data[2*i+1] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
         }
         else
         {
-            pcm_data[0][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
-            pcm_data[1][i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+            pcm_data[2*i] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
+            pcm_data[2*i+1] = (float) (rand() / ((float) RAND_MAX) * (pow(2, 14)));
         }
         if (i % 2 == 1)
         {
-            pcm_data[0][i] = -pcm_data[0][i];
-            pcm_data[1][i] = -pcm_data[1][i];
+            pcm_data[2*i] = -pcm_data[2*i];
+            pcm_data[2*i+1] = -pcm_data[2*i+1];
         }
     }
 
     /** Add the waveform data */
-    projectm_pcm_add_16bit_2ch_512(_projectM, pcm_data);
+    projectm_pcm_add_int16(_projectM, pcm_data, 512, PROJECTM_STEREO);
 }
 
 void projectMSDL::resize(unsigned int width_, unsigned int height_)
