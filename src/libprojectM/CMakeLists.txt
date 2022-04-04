@@ -77,8 +77,8 @@ add_library(projectM_main OBJECT
         PresetFactoryManager.hpp
         PresetLoader.cpp
         PresetLoader.hpp
-        projectM.cpp
-        projectM.hpp
+        ProjectM.cpp
+        ProjectM.hpp
         projectM-opengl.h
         RandomNumberGenerators.hpp
         resource.h
@@ -143,7 +143,7 @@ if(ENABLE_CXX_INTERFACE)
             Common.hpp
             PCM.hpp
             fatal.h
-            projectM.hpp
+            ProjectM.hpp
             DESTINATION "${PROJECTM_INCLUDE_DIR}/libprojectM"
             COMPONENT Devel
             )

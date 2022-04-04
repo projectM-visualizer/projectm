@@ -31,7 +31,7 @@
 #include <iostream>
 
 #include "PipelineContext.hpp"
-#include "projectM.hpp"
+#include "ProjectM.hpp"
 #include "BeatDetect.hpp"
 #include "Preset.hpp"
 #include "PipelineMerger.hpp"
@@ -50,7 +50,7 @@ namespace {
 constexpr int kMaxSwitchRetries = 10;
 }
 
-projectM::~projectM()
+ProjectM::~ProjectM()
 {
 #if USE_THREADS
     m_workerSync.FinishUp();
@@ -83,18 +83,18 @@ projectM::~projectM()
     delete (_pipelineContext2);
 }
 
-unsigned projectM::initRenderToTexture()
+unsigned ProjectM::initRenderToTexture()
 {
     return renderer->initRenderToTexture();
 }
 
-void projectM::projectM_resetTextures()
+void ProjectM::projectM_resetTextures()
 {
     renderer->ResetTextures();
 }
 
 
-projectM::projectM(std::string config_file, int flags)
+ProjectM::ProjectM(std::string config_file, int flags)
     :
     renderer(0)
     , _pcm(0)
@@ -113,7 +113,7 @@ projectM::projectM(std::string config_file, int flags)
 
 }
 
-projectM::projectM(Settings settings, int flags)
+ProjectM::ProjectM(Settings settings, int flags)
     :
     renderer(0)
     , _pcm(0)
@@ -132,7 +132,7 @@ projectM::projectM(Settings settings, int flags)
 }
 
 
-bool projectM::writeConfig(const std::string& configFile, const Settings& settings)
+bool ProjectM::writeConfig(const std::string& configFile, const Settings& settings)
 {
 
     ConfigFile config(configFile);
@@ -166,7 +166,7 @@ bool projectM::writeConfig(const std::string& configFile, const Settings& settin
 }
 
 
-void projectM::readConfig(const std::string& configFile)
+void ProjectM::readConfig(const std::string& configFile)
 {
     std::cout << "[projectM] config file: " << configFile << std::endl;
 
@@ -252,7 +252,7 @@ void projectM::readConfig(const std::string& configFile)
 }
 
 
-void projectM::readSettings(const Settings& settings)
+void ProjectM::readSettings(const Settings& settings)
 {
     _settings.meshX = settings.meshX;
     _settings.meshY = settings.meshY;
@@ -286,7 +286,8 @@ void projectM::readSettings(const Settings& settings)
 }
 
 #if USE_THREADS
-void projectM::ThreadWorker()
+
+void ProjectM::ThreadWorker()
 {
     while (true)
     {
@@ -301,7 +302,7 @@ void projectM::ThreadWorker()
 
 #endif
 
-void projectM::evaluateSecondPreset()
+void ProjectM::evaluateSecondPreset()
 {
     pipelineContext2().time = timeKeeper->GetRunningTime();
     pipelineContext2().presetStartTime = timeKeeper->PresetTimeB();
@@ -311,7 +312,7 @@ void projectM::evaluateSecondPreset()
     m_activePreset2->Render(*beatDetect, pipelineContext2());
 }
 
-void projectM::renderFrame()
+void ProjectM::renderFrame()
 {
     Pipeline pipeline;
     Pipeline* comboPipeline;
@@ -320,11 +321,11 @@ void projectM::renderFrame()
 
     renderFrameOnlyPass2(comboPipeline, 0, 0, 0);
 
-    projectM::renderFrameEndOnSeparatePasses(comboPipeline);
+    ProjectM::renderFrameEndOnSeparatePasses(comboPipeline);
 }
 
 
-Pipeline* projectM::renderFrameOnlyPass1(
+Pipeline* ProjectM::renderFrameOnlyPass1(
     Pipeline* pPipeline) /*pPipeline is a pointer to a Pipeline for use in pass 2. returns the pointer if it was used, else returns NULL */
 {
 #if USE_THREADS
@@ -453,7 +454,7 @@ Pipeline* projectM::renderFrameOnlyPass1(
 
 
 /* eye is 0,or 1, or who knows?*/
-void projectM::renderFrameOnlyPass2(Pipeline* pPipeline, int xoffset, int yoffset,
+void ProjectM::renderFrameOnlyPass2(Pipeline* pPipeline, int xoffset, int yoffset,
                                     int eye) /*pPipeline can be null if we re not in transition */
 {
 /* eye is currently ignored */
@@ -490,7 +491,7 @@ void projectM::renderFrameOnlyPass2(Pipeline* pPipeline, int xoffset, int yoffse
 }
 
 
-void projectM::renderFrameEndOnSeparatePasses(Pipeline* pPipeline)
+void ProjectM::renderFrameEndOnSeparatePasses(Pipeline* pPipeline)
 {
 
     if (pPipeline)
@@ -532,7 +533,7 @@ void projectM::renderFrameEndOnSeparatePasses(Pipeline* pPipeline)
 #endif /** !WIN32 */
 }
 
-void projectM::projectM_reset()
+void ProjectM::projectM_reset()
 {
     this->mspf = 0;
     this->timed = 0;
@@ -544,7 +545,7 @@ void projectM::projectM_reset()
     projectM_resetengine();
 }
 
-void projectM::projectM_init(int gx, int gy, int fps, int texsize, int width, int height)
+void ProjectM::projectM_init(int gx, int gy, int fps, int texsize, int width, int height)
 {
     /** Initialise start time */
     timeKeeper = new TimeKeeper(_settings.presetDuration, _settings.softCutDuration, _settings.hardCutDuration,
@@ -593,7 +594,7 @@ void projectM::projectM_init(int gx, int gy, int fps, int texsize, int width, in
 }
 
 /* Reinitializes the engine variables to a default (conservative and sane) value */
-void projectM::projectM_resetengine()
+void ProjectM::projectM_resetengine()
 {
 
     if (beatDetect != NULL)
@@ -605,7 +606,7 @@ void projectM::projectM_resetengine()
 }
 
 /** Resets OpenGL state */
-void projectM::projectM_resetGL(size_t width, size_t height)
+void ProjectM::projectM_resetGL(size_t width, size_t height)
 {
     /** Stash the new dimensions */
     _settings.windowWidth = width;
@@ -614,13 +615,13 @@ void projectM::projectM_resetGL(size_t width, size_t height)
 }
 
 /** Sets the title to display */
-std::string projectM::getTitle() const
+std::string ProjectM::getTitle() const
 {
     return renderer->title;
 }
 
 /** Sets the title to display */
-void projectM::setTitle(const std::string& title)
+void ProjectM::setTitle(const std::string& title)
 {
     if (title != renderer->title)
     {
@@ -630,7 +631,7 @@ void projectM::setTitle(const std::string& title)
 }
 
 
-int projectM::initPresetTools(int gx, int gy)
+int ProjectM::initPresetTools(int gx, int gy)
 {
 
     /* Set the seed to the current time in seconds */
@@ -704,7 +705,7 @@ int projectM::initPresetTools(int gx, int gy)
     return PROJECTM_SUCCESS;
 }
 
-void projectM::destroyPresetTools()
+void ProjectM::destroyPresetTools()
 {
     m_activePreset.reset();
     m_activePreset2.reset();
@@ -744,7 +745,7 @@ void projectM::destroyPresetTools()
 }
 
 /// @bug queuePreset case isn't handled
-void projectM::removePreset(unsigned int index)
+void ProjectM::removePreset(unsigned int index)
 {
 
     size_t chooserIndex = **m_presetPos;
@@ -776,7 +777,7 @@ void projectM::removePreset(unsigned int index)
 }
 
 unsigned int
-projectM::addPresetURL(const std::string& presetURL, const std::string& presetName, const RatingList& ratings)
+ProjectM::addPresetURL(const std::string& presetURL, const std::string& presetName, const RatingList& ratings)
 {
     bool restorePosition = false;
 
@@ -795,7 +796,7 @@ projectM::addPresetURL(const std::string& presetURL, const std::string& presetNa
     return index;
 }
 
-void projectM::selectPreset(unsigned int index, bool hardCut)
+void ProjectM::selectPreset(unsigned int index, bool hardCut)
 {
     if (m_presetChooser->empty())
     {
@@ -812,7 +813,7 @@ void projectM::selectPreset(unsigned int index, bool hardCut)
 }
 
 // populatePresetMenu is called when a preset is loaded.
-void projectM::populatePresetMenu()
+void ProjectM::populatePresetMenu()
 {
     if (renderer->showmenu)
     { // only track a preset list buffer if the preset menu is up.
@@ -878,7 +879,7 @@ void projectM::populatePresetMenu()
     }
 }
 
-bool projectM::startPresetTransition(bool hard_cut)
+bool ProjectM::startPresetTransition(bool hard_cut)
 {
     std::unique_ptr<Preset> new_preset = switchToCurrentPreset();
     if (new_preset == nullptr)
@@ -909,7 +910,7 @@ bool projectM::startPresetTransition(bool hard_cut)
     return true;
 }
 
-void projectM::selectRandom(const bool hardCut)
+void ProjectM::selectRandom(const bool hardCut)
 {
     if (m_presetChooser->empty())
     {
@@ -934,7 +935,7 @@ void projectM::selectRandom(const bool hardCut)
 
 }
 
-void projectM::selectPrevious(const bool hardCut)
+void ProjectM::selectPrevious(const bool hardCut)
 {
     if (m_presetChooser->empty())
     {
@@ -977,7 +978,7 @@ void projectM::selectPrevious(const bool hardCut)
     }
 }
 
-void projectM::selectNext(const bool hardCut)
+void ProjectM::selectNext(const bool hardCut)
 {
     if (m_presetChooser->empty())
     {
@@ -1024,24 +1025,28 @@ void projectM::selectNext(const bool hardCut)
  * Switches the pipeline and renderer to the current preset.
  * @return the resulting Preset object, or nullptr on failure.
  */
-std::unique_ptr<Preset> projectM::switchToCurrentPreset() {
-  std::unique_ptr<Preset> new_preset;
-
+std::unique_ptr<Preset> ProjectM::switchToCurrentPreset()
+{
+    std::unique_ptr<Preset> new_preset;
 #if USE_THREADS
     std::lock_guard<std::recursive_mutex> guard(m_presetSwitchMutex);
 #endif
 
-  try {
-    new_preset = m_presetPos->allocate();
-  } catch (const PresetFactoryException &e) {
-    std::cerr << "problem allocating target preset: " << e.message()
-              << std::endl;
-  }
+    try
+    {
+        new_preset = m_presetPos->allocate();
+    }
+    catch (const PresetFactoryException& e)
+    {
+        std::cerr << "problem allocating target preset: " << e.message()
+                  << std::endl;
+    }
 
-  if (new_preset == nullptr) {
-    std::cerr << "Could not switch to current preset" << std::endl;
-    return nullptr;
-  }
+    if (new_preset == nullptr)
+    {
+        std::cerr << "Could not switch to current preset" << std::endl;
+        return nullptr;
+    }
 
     // Set preset name here- event is not done because at the moment this function
     // is oblivious to smooth/hard switches
@@ -1052,10 +1057,10 @@ std::unique_ptr<Preset> projectM::switchToCurrentPreset() {
         std::cerr << "problem setting pipeline: " << result << std::endl;
     }
 
-  return new_preset;
+    return new_preset;
 }
 
-void projectM::setPresetLock(bool isLocked)
+void ProjectM::setPresetLock(bool isLocked)
 {
     renderer->noSwitch = isLocked;
     if (isPresetLocked())
@@ -1069,7 +1074,7 @@ void projectM::setPresetLock(bool isLocked)
 }
 
 // check if search menu is up and you have search terms (2 chars). nomin means you don't care about search terms.
-bool projectM::isTextInputActive(bool nomin) const
+bool ProjectM::isTextInputActive(bool nomin) const
 {
     if (renderer->showsearch && (renderer->searchText().length() >= 2 || nomin))
     {
@@ -1081,38 +1086,38 @@ bool projectM::isTextInputActive(bool nomin) const
     }
 }
 
-bool projectM::isPresetLocked() const
+bool ProjectM::isPresetLocked() const
 {
     return renderer->noSwitch;
 }
 
-std::string projectM::getPresetURL(unsigned int index) const
+std::string ProjectM::getPresetURL(unsigned int index) const
 {
     return m_presetLoader->getPresetURL(index);
 }
 
-int projectM::getPresetRating(unsigned int index, const PresetRatingType ratingType) const
+int ProjectM::getPresetRating(unsigned int index, const PresetRatingType ratingType) const
 {
     return m_presetLoader->getPresetRating(index, ratingType);
 }
 
-std::string projectM::getPresetName(unsigned int index) const
+std::string ProjectM::getPresetName(unsigned int index) const
 {
     return m_presetLoader->getPresetName(index);
 }
 
-void projectM::clearPlaylist()
+void ProjectM::clearPlaylist()
 {
     m_presetLoader->clear();
     *m_presetPos = m_presetChooser->end();
 }
 
-void projectM::selectPresetPosition(unsigned int index)
+void ProjectM::selectPresetPosition(unsigned int index)
 {
     *m_presetPos = m_presetChooser->begin(index);
 }
 
-bool projectM::selectedPresetIndex(unsigned int& index) const
+bool ProjectM::selectedPresetIndex(unsigned int& index) const
 {
 
     if (*m_presetPos == m_presetChooser->end())
@@ -1125,24 +1130,24 @@ bool projectM::selectedPresetIndex(unsigned int& index) const
 }
 
 
-bool projectM::presetPositionValid() const
+bool ProjectM::presetPositionValid() const
 {
 
     return (*m_presetPos != m_presetChooser->end());
 }
 
-unsigned int projectM::getPlaylistSize() const
+unsigned int ProjectM::getPlaylistSize() const
 {
     return m_presetLoader->size();
 }
 
-void projectM::changePresetRating(unsigned int index, int rating, const PresetRatingType ratingType)
+void ProjectM::changePresetRating(unsigned int index, int rating, const PresetRatingType ratingType)
 {
     m_presetLoader->setRating(index, rating, ratingType);
     presetRatingChanged(index, rating, ratingType);
 }
 
-void projectM::insertPresetURL(unsigned int index, const std::string& presetURL, const std::string& presetName,
+void ProjectM::insertPresetURL(unsigned int index, const std::string& presetURL, const std::string& presetName,
                                const RatingList& ratings)
 {
     bool atEndPosition = false;
@@ -1184,117 +1189,117 @@ void projectM::insertPresetURL(unsigned int index, const std::string& presetURL,
 
 }
 
-void projectM::changePresetName(unsigned int index, std::string name)
+void ProjectM::changePresetName(unsigned int index, std::string name)
 {
     m_presetLoader->setPresetName(index, name);
 }
 
 
-void projectM::setTextureSize(size_t size)
+void ProjectM::setTextureSize(size_t size)
 {
     _settings.textureSize = size;
 
     recreateRenderer();
 }
 
-size_t projectM::getTextureSize() const
+size_t ProjectM::getTextureSize() const
 {
     return _settings.textureSize;
 }
 
-double projectM::getSoftCutDuration() const
+double ProjectM::getSoftCutDuration() const
 {
     return _settings.softCutDuration;
 }
 
-void projectM::setSoftCutDuration(int seconds)
+void ProjectM::setSoftCutDuration(int seconds)
 {
     _settings.softCutDuration = static_cast<double>(seconds);
     timeKeeper->ChangeSoftCutDuration(seconds);
 }
 
-void projectM::setSoftCutDuration(double seconds)
+void ProjectM::setSoftCutDuration(double seconds)
 {
     _settings.softCutDuration = seconds;
     timeKeeper->ChangeSoftCutDuration(seconds);
 }
 
-double projectM::getHardCutDuration() const
+double ProjectM::getHardCutDuration() const
 {
     return _settings.hardCutDuration;
 }
 
-void projectM::setHardCutDuration(int seconds)
+void ProjectM::setHardCutDuration(int seconds)
 {
     _settings.hardCutDuration = seconds;
     timeKeeper->ChangeHardCutDuration(seconds);
 }
 
-void projectM::setHardCutDuration(double seconds)
+void ProjectM::setHardCutDuration(double seconds)
 {
     _settings.hardCutDuration = static_cast<int>(seconds);
     timeKeeper->ChangeHardCutDuration(seconds);
 }
 
-bool projectM::getHardCutEnabled() const
+bool ProjectM::getHardCutEnabled() const
 {
     return _settings.hardCutEnabled;
 }
 
-void projectM::setHardCutEnabled(bool enabled)
+void ProjectM::setHardCutEnabled(bool enabled)
 {
     _settings.hardCutEnabled = enabled;
 }
 
-float projectM::getHardCutSensitivity() const
+float ProjectM::getHardCutSensitivity() const
 {
     return _settings.hardCutSensitivity;
 }
 
-void projectM::setHardCutSensitivity(float sensitivity)
+void ProjectM::setHardCutSensitivity(float sensitivity)
 {
     _settings.hardCutSensitivity = sensitivity;
 }
 
-void projectM::setPresetDuration(int seconds)
+void ProjectM::setPresetDuration(int seconds)
 {
     timeKeeper->ChangePresetDuration(seconds);
 }
 
-void projectM::setPresetDuration(double seconds)
+void ProjectM::setPresetDuration(double seconds)
 {
     timeKeeper->ChangePresetDuration(seconds);
 }
 
-bool projectM::getAspectCorrection() const
+bool ProjectM::getAspectCorrection() const
 {
     return _settings.aspectCorrection;
 }
 
-void projectM::setAspectCorrection(bool enabled)
+void ProjectM::setAspectCorrection(bool enabled)
 {
     _settings.aspectCorrection = enabled;
     renderer->correction = enabled;
 }
 
-float projectM::getEasterEgg() const
+float ProjectM::getEasterEgg() const
 {
     return _settings.easterEgg;
 }
 
-void projectM::setEasterEgg(float value)
+void ProjectM::setEasterEgg(float value)
 {
     _settings.easterEgg = value;
     timeKeeper->ChangeEasterEgg(value);
 }
 
-void projectM::getMeshSize(size_t& w, size_t& h) const
+void ProjectM::getMeshSize(size_t& w, size_t& h) const
 {
     w = _settings.meshX;
     h = _settings.meshY;
 }
 
-void projectM::setMeshSize(size_t w, size_t h)
+void ProjectM::setMeshSize(size_t w, size_t h)
 {
     _settings.meshX = w;
     _settings.meshY = h;
@@ -1303,7 +1308,7 @@ void projectM::setMeshSize(size_t w, size_t h)
 }
 
 // toggleSearchText
-void projectM::toggleSearchText()
+void ProjectM::toggleSearchText()
 {
     if (renderer)
     {
@@ -1312,7 +1317,7 @@ void projectM::toggleSearchText()
 }
 
 // get index from search results based on preset name
-unsigned int projectM::getSearchIndex(const std::string& name) const
+unsigned int ProjectM::getSearchIndex(const std::string& name) const
 {
     for (auto& it: renderer->m_presetList)
     {
@@ -1325,13 +1330,13 @@ unsigned int projectM::getSearchIndex(const std::string& name) const
 }
 
 // get preset index based on preset name
-unsigned int projectM::getPresetIndex(const std::string& name) const
+unsigned int ProjectM::getPresetIndex(const std::string& name) const
 {
     return m_presetLoader->getPresetIndex(name);
 }
 
 // load preset based on name
-void projectM::selectPresetByName(std::string name, bool hardCut)
+void ProjectM::selectPresetByName(std::string name, bool hardCut)
 {
     if (name == "")
     {
@@ -1345,13 +1350,13 @@ void projectM::selectPresetByName(std::string name, bool hardCut)
     selectPreset(index);
 }
 
-std::string projectM::getSearchText() const
+std::string ProjectM::getSearchText() const
 {
     return renderer->getSearchText();
 }
 
 // update search text based on new keystroke
-void projectM::setSearchText(const std::string& searchKey)
+void ProjectM::setSearchText(const std::string& searchKey)
 {
     if (renderer)
     {
@@ -1367,7 +1372,7 @@ void projectM::setSearchText(const std::string& searchKey)
 }
 
 // update search text based on new backspace
-void projectM::deleteSearchText()
+void ProjectM::deleteSearchText()
 {
     if (renderer)
     {
@@ -1383,7 +1388,7 @@ void projectM::deleteSearchText()
 }
 
 // reset search text
-void projectM::resetSearchText()
+void ProjectM::resetSearchText()
 {
     if (renderer)
     {
@@ -1398,7 +1403,7 @@ void projectM::resetSearchText()
     }
 }
 
-void projectM::setToastMessage(const std::string& toastMessage)
+void ProjectM::setToastMessage(const std::string& toastMessage)
 {
     if (renderer)
     {
@@ -1406,7 +1411,7 @@ void projectM::setToastMessage(const std::string& toastMessage)
     }
 }
 
-void projectM::touch(float x, float y, int pressure, int touchtype)
+void ProjectM::touch(float x, float y, int pressure, int touchtype)
 {
     if (renderer)
     {
@@ -1414,7 +1419,7 @@ void projectM::touch(float x, float y, int pressure, int touchtype)
     }
 }
 
-void projectM::touchDrag(float x, float y, int pressure)
+void ProjectM::touchDrag(float x, float y, int pressure)
 {
     if (renderer)
     {
@@ -1423,7 +1428,7 @@ void projectM::touchDrag(float x, float y, int pressure)
 }
 
 
-void projectM::touchDestroy(float x, float y)
+void ProjectM::touchDestroy(float x, float y)
 {
     if (renderer)
     {
@@ -1431,7 +1436,7 @@ void projectM::touchDestroy(float x, float y)
     }
 }
 
-void projectM::touchDestroyAll()
+void ProjectM::touchDestroyAll()
 {
     if (renderer)
     {
@@ -1439,7 +1444,7 @@ void projectM::touchDestroyAll()
     }
 }
 
-void projectM::setHelpText(const std::string& helpText)
+void ProjectM::setHelpText(const std::string& helpText)
 {
     if (renderer)
     {
@@ -1447,7 +1452,7 @@ void projectM::setHelpText(const std::string& helpText)
     }
 }
 
-void projectM::recreateRenderer()
+void ProjectM::recreateRenderer()
 {
     delete renderer;
     renderer = new Renderer(_settings.windowWidth, _settings.windowHeight,
