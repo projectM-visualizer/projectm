@@ -104,57 +104,48 @@ protected:
 class MasterRenderItemDistance : public RenderItemDistance<RenderItem, RenderItem>
 {
 
-    typedef std::map<TypeIdPair, RenderItemDistanceMetric*> DistanceMetricMap;
+    using DistanceMetricMap = std::map<TypeIdPair, std::unique_ptr<RenderItemDistanceMetric>>;
 
 public:
-    ~MasterRenderItemDistance() override
-    {
-        // CPP17: Use decomposition (auto& [key, distanceMetric] : ...)
-        for (auto& entry : m_distanceMetricMap) {
-            delete (entry.second);
-        }
-        m_distanceMetricMap.clear();
-    }
+    ~MasterRenderItemDistance() override = default;
 
-    inline void AddMetric(RenderItemDistanceMetric* fun)
+    inline void AddMetric(std::unique_ptr<RenderItemDistanceMetric>&& fun)
     {
-        m_distanceMetricMap[fun->TypeIds()] = fun;
+        m_distanceMetricMap[fun->TypeIds()] = std::move(fun);
     }
 
 protected:
     inline auto ComputeDistance(const RenderItem* lhs, const RenderItem* rhs) const -> double override
     {
 
-        RenderItemDistanceMetric* metric;
-
-        TypeIdPair pair(typeid(lhs).name(), typeid(rhs).name());
+        TypeIdPair pair{typeid(lhs).name(), typeid(rhs).name()};
 
 
         // If specialized metric exists, use it to get higher granularity
         // of correctness
-        if (m_distanceMetricMap.count(pair))
+        if (m_distanceMetricMap.count(pair) != 0)
         {
-            metric = m_distanceMetricMap[pair];
+            return (*m_distanceMetricMap[pair])(lhs, rhs);
         }
-        else if (m_distanceMetricMap.count(pair = TypeIdPair(typeid(rhs).name(), typeid(lhs).name())))
+
+        pair = {pair.second, pair.first};
+
+        if (m_distanceMetricMap.count(pair) != 0)
         {
-            metric = m_distanceMetricMap[pair];
-        }
-        else
-        {// Failing that, use rtti && shape distance if its a shape type
-
-            const double rttiError = m_rttiDistance(lhs, rhs);
-
-            /// @bug This is a non elegant approach to supporting shape distance
-            if (rttiError == 0 && m_shapeXYDistance.Supported(lhs, rhs))
-            {
-                return m_shapeXYDistance(lhs, rhs);
-            }
-             
-            return rttiError;
+            return (*m_distanceMetricMap[pair])(rhs, lhs);
         }
 
-        return (*metric)(lhs, rhs);
+        // Failing that, use rtti && shape distance if its a shape type
+
+        const double rttiError = m_rttiDistance(lhs, rhs);
+
+        /// @bug This is a non elegant approach to supporting shape distance
+        if (rttiError == 0 && m_shapeXYDistance.Supported(lhs, rhs))
+        {
+            return m_shapeXYDistance(lhs, rhs);
+        }
+
+        return rttiError;
     }
 
 private:
