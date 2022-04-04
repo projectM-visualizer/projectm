@@ -18,57 +18,30 @@
  * See 'LICENSE.txt' included within this release
  *
  */
-/**
- * $Id: projectM.hpp,v 1.1.1.1 2005/12/23 18:05:11 psperl Exp $
- *
- * Encapsulation of ProjectM engine
- *
- * $Log$
- */
+#pragma once
 
-#ifndef _PROJECTM_HPP
-#define _PROJECTM_HPP
-
-#ifdef WIN32
-#include "dirent.h"
-#else
-
-#include <dirent.h>
-
-#endif /** WIN32 */
-
-#include <cmath>
-#include <cstdio>
-#include <string>
-#include <cstdlib>
-
-#ifndef WIN32
-
-#include <unistd.h>
-
-#endif
-
-#include <sys/types.h>
-
-#ifdef __APPLE__
-//#include <MacWindows.h>
-//#include <gl.h>
-//#include <glu.h>
-#else
-#ifdef WIN32
-#include <windows.h>
-#endif /** WIN32 */
-
-#endif /** MACOS */
+#include "Common.hpp"
+#include "PCM.hpp"
+#include "event.h"
+#include "fatal.h"
 
 #ifdef WIN32
 // libs required for win32
 #pragma comment(lib, "psapi.lib")
 #pragma comment(lib, "kernel32.lib")
+
+#pragma warning (disable:4244)
+#pragma warning (disable:4305)
+
+#include <windows.h>
+#else
+#include <unistd.h>
 #endif /** WIN32 */
 
-#include "event.h"
-#include "fatal.h"
+#include <sys/types.h>
+
+#include <memory>
+#include <string>
 #include <vector>
 
 #if USE_THREADS
@@ -80,8 +53,6 @@
 #endif
 
 class PipelineContext;
-
-#include "PCM.hpp"
 
 class BeatDetect;
 
@@ -106,23 +77,6 @@ class Pipeline;
 class RenderItemMatcher;
 
 class MasterRenderItemMerge;
-
-#include "Common.hpp"
-
-#include <memory>
-
-#ifdef WIN32
-#pragma warning (disable:4244)
-#pragma warning (disable:4305)
-#endif /** WIN32 */
-
-#ifdef __APPLE__2
-#define inline
-#endif
-
-/** KEEP THIS UP TO DATE! */
-#define PROJECTM_VERSION "2.0.00"
-#define PROJECTM_TITLE "projectM 2.0.00"
 
 /** Interface types */
 typedef enum

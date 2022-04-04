@@ -19,32 +19,30 @@
 *
 */
 
-#include "projectM-opengl.h"
+#include "ProjectM.hpp"
+
+#include "BeatDetect.hpp"
+#include "ConfigFile.h"
+#include "PCM.hpp"                    //Sound data handler (buffering, FFT, etc.)
+#include "PipelineContext.hpp"
+#include "PipelineMerger.hpp"
+#include "Preset.hpp"
+#include "PresetChooser.hpp"
 #include "RenderItemMatcher.hpp"
 #include "RenderItemMergeFunction.hpp"
+#include "Renderer.hpp"
+#include "TimeKeeper.hpp"
 #include "fatal.h"
+#include "projectM-opengl.h"
 
 #ifdef WIN32
 #include "dirent.h"
+#else
+#include <dirent.h>
 #endif
 
 #include <iostream>
-
-#include "PipelineContext.hpp"
-#include "ProjectM.hpp"
-#include "BeatDetect.hpp"
-#include "Preset.hpp"
-#include "PipelineMerger.hpp"
-#include "PCM.hpp"                    //Sound data handler (buffering, FFT, etc.)
-
 #include <map>
-
-#include "Renderer.hpp"
-#include "PresetChooser.hpp"
-#include "ConfigFile.h"
-#include "TextureManager.hpp"
-#include "TimeKeeper.hpp"
-#include "RenderItemMergeFunction.hpp"
 
 namespace {
 constexpr int kMaxSwitchRetries = 10;
