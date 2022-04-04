@@ -61,7 +61,7 @@ public:
 
     inline auto TypeIds() const -> TypeIdPair override
     {
-        return TypeIdPair(typeid(const R1*).name(), typeid(const R2*).name());
+        return {typeid(const R1*).name(), typeid(const R2*).name()};
     }
 };
 
