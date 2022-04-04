@@ -217,10 +217,10 @@ protected:
 
 		RenderItemMergeFunction * mergeFunction;
 
-		TypeIdPair pair(typeid(lhs), typeid(rhs));
+		TypeIdPair pair(typeid(lhs).name(), typeid(rhs).name());
 		if (_mergeFunctionMap.count(pair)) {
 			mergeFunction = _mergeFunctionMap[pair];
-		} else if (_mergeFunctionMap.count(pair = TypeIdPair(typeid(rhs), typeid(lhs)))) {
+		} else if (_mergeFunctionMap.count(pair = TypeIdPair(typeid(rhs).name(), typeid(lhs).name()))) {
 			mergeFunction = _mergeFunctionMap[pair];
 		} else {
 			mergeFunction  = 0;
