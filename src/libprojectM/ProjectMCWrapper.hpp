@@ -21,10 +21,10 @@
 
 #pragma once
 
-#include "projectM.hpp"
+#include "ProjectM.hpp"
 #include "projectM.h"
 
-class projectMWrapper : public projectM
+class projectMWrapper : public ProjectM
 {
 public:
     projectMWrapper(std::string configFile, int flags);

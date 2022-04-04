@@ -27,7 +27,7 @@
 #include "BeatDetect.hpp"
 #include "PresetChooser.hpp"
 #include "Renderer.hpp"
-#include "projectM.hpp"
+#include "ProjectM.hpp"
 
 #include <iostream>
 #include "TimeKeeper.hpp"
@@ -71,8 +71,8 @@ void refreshConsole() {
 
 }
 
-void projectM::key_handler( projectMEvent event,
-                            projectMKeycode keycode, projectMModifier modifier ) {
+void ProjectM::key_handler(projectMEvent event,
+                           projectMKeycode keycode, projectMModifier modifier ) {
 
 	switch( event ) {
 
@@ -110,7 +110,7 @@ void projectM::key_handler( projectMEvent event,
 	}
 }
 
-void projectM::default_key_handler( projectMEvent event, projectMKeycode keycode) {
+void ProjectM::default_key_handler(projectMEvent event, projectMKeycode keycode) {
 
 	switch( event ) {
 

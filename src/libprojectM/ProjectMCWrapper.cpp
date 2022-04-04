@@ -6,12 +6,12 @@
 #include <utility>
 
 projectMWrapper::projectMWrapper(std::string configFile, int flags)
-    : projectM(std::move(configFile), flags)
+    : ProjectM(std::move(configFile), flags)
 {
 }
 
-projectMWrapper::projectMWrapper(projectM::Settings settings, int flags)
-    : projectM(std::move(settings), flags)
+projectMWrapper::projectMWrapper(ProjectM::Settings settings, int flags)
+    : ProjectM(std::move(settings), flags)
 {
 }
 
@@ -124,7 +124,7 @@ projectm_handle projectm_create_settings(const projectm_settings* settings, int 
 {
     try
     {
-        projectM::Settings cppSettings;
+        ProjectM::Settings cppSettings;
         cppSettings.meshX = settings->mesh_x;
         cppSettings.meshY = settings->mesh_y;
         cppSettings.fps = settings->fps;
@@ -452,7 +452,7 @@ projectm_settings* projectm_get_settings(projectm_handle instance)
 
 void projectm_write_config(const char* config_file, const projectm_settings* settings)
 {
-    projectM::Settings cppSettings;
+    ProjectM::Settings cppSettings;
     cppSettings.meshX = settings->mesh_x;
     cppSettings.meshY = settings->mesh_y;
     cppSettings.fps = settings->fps;
@@ -474,7 +474,7 @@ void projectm_write_config(const char* config_file, const projectm_settings* set
     cppSettings.shuffleEnabled = settings->shuffle_enabled;
     cppSettings.softCutRatingsEnabled = settings->soft_cut_ratings_enabled;
 
-    projectM::writeConfig(config_file, cppSettings);
+    ProjectM::writeConfig(config_file, cppSettings);
 }
 
 void projectm_select_preset_position(projectm_handle instance, unsigned int index)
