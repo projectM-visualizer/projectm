@@ -216,7 +216,7 @@ public:
 
     const Settings& settings() const
     {
-        return _settings;
+        return m_settings;
     }
 
     /// Writes a settings configuration to the specified file
@@ -312,7 +312,7 @@ public:
 
     inline void setShuffleEnabled(bool value)
     {
-        _settings.shuffleEnabled = value;
+        m_settings.shuffleEnabled = value;
 
         /// idea@ call a virtualfunction shuffleChanged()
     }
@@ -320,7 +320,7 @@ public:
 
     inline bool isShuffleEnabled() const
     {
-        return _settings.shuffleEnabled;
+        return m_settings.shuffleEnabled;
     }
 
     /// Occurs when active preset has switched. Switched to index is returned
@@ -345,19 +345,19 @@ public:
 
     inline Pcm* pcm()
     {
-        return _pcm;
+        return m_pcm;
     }
 
     void* thread_func(void* vptr_args);
 
     PipelineContext& pipelineContext()
     {
-        return *_pipelineContext;
+        return *m_pipelineContext;
     }
 
     PipelineContext& pipelineContext2()
     {
-        return *_pipelineContext2;
+        return *m_pipelineContext2;
     }
 
     int lastPreset = 0;
@@ -375,42 +375,39 @@ public:
 
     int getWindowWidth()
     {
-        return _settings.windowWidth;
+        return m_settings.windowWidth;
     }
 
     int getWindowHeight()
     {
-        return _settings.windowHeight;
+        return m_settings.windowHeight;
     }
 
     bool getErrorLoadingCurrentPreset() const
     {
-        return errorLoadingCurrentPreset;
+        return m_errorLoadingCurrentPreset;
     }
 
     void default_key_handler(projectMEvent event, projectMKeycode keycode);
 
-    Renderer* renderer;
+    Renderer* m_renderer;
 
 private:
-    Pcm* _pcm;
+    Pcm* m_pcm;
 
     double sampledPresetDuration();
-    BeatDetect* beatDetect;
-    PipelineContext* _pipelineContext;
-    PipelineContext* _pipelineContext2;
-    Settings _settings;
 
-
-    int wvw;      //windowed dimensions
-    int wvh;
+    BeatDetect* m_beatDetect;
+    PipelineContext* m_pipelineContext;
+    PipelineContext* m_pipelineContext2;
+    Settings m_settings;
 
     /** Timing information */
-    int mspf;
-    int timed;
-    int timestart;
-    int count;
-    float fpsstart;
+    int m_mspf;
+    int m_timed;
+    int m_timeStart;
+    int m_count;
+    float m_fpsStart;
 
     void readConfig(const std::string& configFile);
 
@@ -448,17 +445,14 @@ private:
     /// Destination preset when smooth preset switching
     std::unique_ptr<Preset> m_activePreset2;
 
-    TimeKeeper* timeKeeper;
+    TimeKeeper* m_timeKeeper;
 
     int m_flags;
 
-    RenderItemMatcher* _matcher;
-    MasterRenderItemMerge* _merger;
+    RenderItemMatcher* m_matcher;
+    MasterRenderItemMerge* m_merger;
 
-    bool running;
-    bool errorLoadingCurrentPreset;
-
-    Pipeline* currentPipe;
+    bool m_errorLoadingCurrentPreset;
 
     std::unique_ptr<Preset> switchToCurrentPreset();
 
@@ -475,5 +469,3 @@ private:
     BackgroundWorkerSync m_workerSync; //!< Background work synchronizer.
 #endif
 };
-
-#endif
