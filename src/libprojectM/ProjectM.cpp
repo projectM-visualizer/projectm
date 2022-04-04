@@ -56,29 +56,6 @@ ProjectM::~ProjectM()
 #endif
 
     destroyPresetTools();
-
-    if (m_renderer)
-    {
-        delete (m_renderer);
-    }
-    if (m_beatDetect)
-    {
-        delete (m_beatDetect);
-    }
-    if (m_pcm)
-    {
-        delete (m_pcm);
-        m_pcm = 0;
-    }
-
-    if (m_timeKeeper)
-    {
-        delete m_timeKeeper;
-        m_timeKeeper = NULL;
-    }
-
-    delete (m_pipelineContext);
-    delete (m_pipelineContext2);
 }
 
 unsigned ProjectM::initRenderToTexture()
@@ -93,16 +70,9 @@ void ProjectM::projectM_resetTextures()
 
 
 ProjectM::ProjectM(std::string config_file, int flags)
-    : m_renderer(0)
-    , m_pcm(0)
-    , m_beatDetect(0)
+    : m_flags(flags)
     , m_pipelineContext(new PipelineContext())
     , m_pipelineContext2(new PipelineContext())
-    , m_presetPos(0)
-    , m_timeKeeper(NULL)
-    , m_flags(flags)
-    , m_matcher(NULL)
-    , m_merger(NULL)
 {
     readConfig(config_file);
     projectM_reset();
@@ -111,16 +81,9 @@ ProjectM::ProjectM(std::string config_file, int flags)
 }
 
 ProjectM::ProjectM(Settings settings, int flags)
-    : m_renderer(0)
-    , m_pcm(0)
-    , m_beatDetect(0)
+    : m_flags(flags)
     , m_pipelineContext(new PipelineContext())
     , m_pipelineContext2(new PipelineContext())
-    , m_presetPos(0)
-    , m_timeKeeper(NULL)
-    , m_flags(flags)
-    , m_matcher(NULL)
-    , m_merger(NULL)
 {
     readSettings(settings);
     projectM_reset();
@@ -502,7 +465,7 @@ void ProjectM::projectM_reset()
 void ProjectM::projectM_init(int gx, int gy, int fps, int texsize, int width, int height)
 {
     /** Initialise start time */
-    m_timeKeeper = new TimeKeeper(m_settings.presetDuration, m_settings.softCutDuration, m_settings.hardCutDuration,
+    m_timeKeeper = std::make_unique<TimeKeeper>(m_settings.presetDuration, m_settings.softCutDuration, m_settings.hardCutDuration,
                                 m_settings.easterEgg);
 
     /** Nullify frame stash */
@@ -511,14 +474,9 @@ void ProjectM::projectM_init(int gx, int gy, int fps, int texsize, int width, in
     /** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
     assert(!m_beatDetect);
 
-    if (!m_pcm)
-    {
-        m_pcm = new Pcm();
-    }
-    assert(pcm());
-    m_beatDetect = new BeatDetect(*m_pcm);
+    m_beatDetect = std::make_unique<BeatDetect>(m_pcm);
 
-    this->m_renderer = new Renderer(width, height, gx, gy, m_beatDetect, settings().presetURL, settings().titleFontURL,
+    this->m_renderer = std::make_unique<Renderer>(width, height, gx, gy, m_beatDetect.get(), settings().presetURL, settings().titleFontURL,
                                   settings().menuFontURL, settings().datadir);
 
     initPresetTools(gx, gy);
@@ -531,7 +489,6 @@ void ProjectM::projectM_init(int gx, int gy, int fps, int texsize, int width, in
     /// @bug order of operatoins here is busted
     //renderer->setPresetName ( m_activePreset->name() );
     m_timeKeeper->StartPreset();
-    assert(pcm());
 
     // ToDo: Calculate the real FPS instead
     pipelineContext().fps = fps;
@@ -585,16 +542,16 @@ int ProjectM::initPresetTools(int gx, int gy)
 
     std::string url = (m_flags & FLAG_DISABLE_PLAYLIST_LOAD) ? std::string() : settings().presetURL;
 
-    if ((m_presetLoader = new PresetLoader(gx, gy, url)) == 0)
+    if ((m_presetLoader = std::make_unique<PresetLoader>(gx, gy, url)) == 0)
     {
         m_presetLoader = 0;
         std::cerr << "[projectM] error allocating preset loader" << std::endl;
         return PROJECTM_FAILURE;
     }
 
-    if ((m_presetChooser = new PresetChooser(*m_presetLoader, settings().softCutRatingsEnabled)) == 0)
+    if ((m_presetChooser = std::make_unique<PresetChooser>(*m_presetLoader, settings().softCutRatingsEnabled)) == 0)
     {
-        delete (m_presetLoader);
+        m_presetLoader.reset();
 
         m_presetChooser = 0;
         m_presetLoader = 0;
@@ -606,7 +563,7 @@ int ProjectM::initPresetTools(int gx, int gy)
     // Start the iterator
     if (!m_presetPos)
     {
-        m_presetPos = new PresetIterator();
+        m_presetPos = std::make_unique<PresetIterator>();
     }
 
     // Initialize a preset queue position as well
@@ -633,8 +590,8 @@ int ProjectM::initPresetTools(int gx, int gy)
         ///< m_presetLoader->directoryName() << "\"" << std::endl;
     }
 
-    m_matcher = new RenderItemMatcher();
-    m_merger = new MasterRenderItemMerge();
+    m_matcher = std::make_unique<RenderItemMatcher>();
+    m_merger = std::make_unique<MasterRenderItemMerge>();
     //_merger->add(new WaveFormMergeFunction());
     m_merger->add(new ShapeMerge());
     m_merger->add(new BorderMerge());
@@ -655,39 +612,11 @@ void ProjectM::destroyPresetTools()
 {
     m_activePreset.reset();
     m_activePreset2.reset();
-
-    if (m_presetPos)
-    {
-        delete (m_presetPos);
-    }
-
-    m_presetPos = 0;
-
-    if (m_presetChooser)
-    {
-        delete (m_presetChooser);
-    }
-
-    m_presetChooser = 0;
-
-    if (m_presetLoader)
-    {
-        delete (m_presetLoader);
-    }
-
-    m_presetLoader = 0;
-
-    if (m_matcher)
-    {
-        delete m_matcher;
-        m_matcher = NULL;
-    }
-
-    if (m_merger)
-    {
-        delete m_merger;
-        m_merger = NULL;
-    }
+    m_presetPos.reset();
+    m_presetChooser.reset();
+    m_presetLoader.reset();
+    m_matcher.reset();
+    m_merger.reset();
 }
 
 /// @bug queuePreset case isn't handled
@@ -862,7 +791,7 @@ void ProjectM::selectRandom(const bool hardCut)
     {
         return;
     }
-    presetHistory.push_back(m_presetPos->lastIndex());
+    m_presetHistory.push_back(m_presetPos->lastIndex());
 
     for (int i = 0; i < kMaxSwitchRetries; ++i)
     {
@@ -873,11 +802,11 @@ void ProjectM::selectRandom(const bool hardCut)
         }
     }
     // If presetHistory is tracking more than 10, then delete the oldest entry so we cap to a history of 10.
-    if (presetHistory.size() >= 10)
+    if (m_presetHistory.size() >= 10)
     {
-        presetHistory.erase(presetHistory.begin());
+        m_presetHistory.erase(m_presetHistory.begin());
     }
-    presetFuture.clear();
+    m_presetFuture.clear();
 
 }
 
@@ -904,18 +833,18 @@ void ProjectM::selectPrevious(const bool hardCut)
             selectPresetByName(m_renderer->m_presetList[m_renderer->m_activePresetID - 1].name, true);
         }
     }
-    else if (settings().shuffleEnabled && presetHistory.size() >= 1 &&
-             static_cast<std::size_t>(presetHistory.back()) != m_presetLoader->size() && !m_renderer->showmenu)
+    else if (settings().shuffleEnabled && m_presetHistory.size() >= 1 &&
+             static_cast<std::size_t>(m_presetHistory.back()) != m_presetLoader->size() && !m_renderer->showmenu)
     { // if randomly browsing presets, "previous" should return to last random preset not the index--. Avoid returning to size() because that's the idle:// preset.
-        presetFuture.push_back(m_presetPos->lastIndex());
-        selectPreset(presetHistory.back());
-        presetHistory.pop_back();
+        m_presetFuture.push_back(m_presetPos->lastIndex());
+        selectPreset(m_presetHistory.back());
+        m_presetHistory.pop_back();
     }
     else
     {
         // if we are not shuffling or there is no random future history, then let's not track a random vector and move backwards in the preset index.
-        presetHistory.clear();
-        presetFuture.clear();
+        m_presetHistory.clear();
+        m_presetFuture.clear();
         m_presetChooser->previousPreset(*m_presetPos);
         if (!startPresetTransition(hardCut))
         {
@@ -947,18 +876,18 @@ void ProjectM::selectNext(const bool hardCut)
             selectPresetByName(m_renderer->m_presetList[m_renderer->m_activePresetID - 1].name, true);
         }
     }
-    else if (settings().shuffleEnabled && presetFuture.size() >= 1 &&
-             static_cast<std::size_t>(presetFuture.front()) != m_presetLoader->size() && !m_renderer->showmenu)
+    else if (settings().shuffleEnabled && m_presetFuture.size() >= 1 &&
+             static_cast<std::size_t>(m_presetFuture.front()) != m_presetLoader->size() && !m_renderer->showmenu)
     { // if shuffling and we have future presets already stashed then let's go forward rather than truely move randomly.
-        presetHistory.push_back(m_presetPos->lastIndex());
-        selectPreset(presetFuture.back());
-        presetFuture.pop_back();
+        m_presetHistory.push_back(m_presetPos->lastIndex());
+        selectPreset(m_presetFuture.back());
+        m_presetFuture.pop_back();
     }
     else
     {
         // if we are not shuffling or there is no random history, then let's not track a random vector and move forwards in the preset index.
-        presetFuture.clear();
-        presetHistory.clear();
+        m_presetFuture.clear();
+        m_presetHistory.clear();
         m_presetChooser->nextPreset(*m_presetPos);
         if (!startPresetTransition(hardCut))
         {
@@ -1400,10 +1329,9 @@ void ProjectM::setHelpText(const std::string& helpText)
 
 void ProjectM::recreateRenderer()
 {
-    delete m_renderer;
-    m_renderer = new Renderer(m_settings.windowWidth, m_settings.windowHeight,
-                              m_settings.meshX, m_settings.meshY,
-                            m_beatDetect, m_settings.presetURL,
-                              m_settings.titleFontURL, m_settings.menuFontURL,
-                              m_settings.datadir);
+    m_renderer = std::make_unique<Renderer>(m_settings.windowWidth, m_settings.windowHeight,
+                                            m_settings.meshX, m_settings.meshY,
+                                            m_beatDetect.get(), m_settings.presetURL,
+                                            m_settings.titleFontURL, m_settings.menuFontURL,
+                                            m_settings.datadir);
 }

@@ -738,10 +738,10 @@ static auto PcmAdd(projectm_handle instance, const BufferType* samples, unsigned
     auto* projectMInstance = handle_to_instance(instance);
 
     if(channels == PROJECTM_MONO) {
-        projectMInstance->pcm()->AddMono(samples, count);
+        projectMInstance->pcm().AddMono(samples, count);
     }
     else {
-        projectMInstance->pcm()->AddStereo(samples, count);
+        projectMInstance->pcm().AddStereo(samples, count);
     }
 }
 

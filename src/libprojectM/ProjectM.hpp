@@ -343,7 +343,7 @@ public:
     };
 
 
-    inline Pcm* pcm()
+    inline Pcm& pcm()
     {
         return m_pcm;
     }
@@ -359,10 +359,6 @@ public:
     {
         return *m_pipelineContext2;
     }
-
-    int lastPreset = 0;
-    std::vector<int> presetHistory;
-    std::vector<int> presetFuture;
 
     /// Get the preset index given a name
     unsigned int getSearchIndex(const std::string& name) const;
@@ -390,19 +386,8 @@ public:
 
     void default_key_handler(projectMEvent event, projectMKeycode keycode);
 
-    Renderer* m_renderer;
-
 private:
-    Pcm* m_pcm;
-
     double sampledPresetDuration();
-
-    BeatDetect* m_beatDetect;
-    PipelineContext* m_pipelineContext;
-    PipelineContext* m_pipelineContext2;
-    Settings m_settings;
-
-    int m_count;
 
     void readConfig(const std::string& configFile);
 
@@ -422,38 +407,38 @@ private:
     /// Deinitialize all preset related tools. Usually done before projectM cleanup
     void destroyPresetTools();
 
-    /// The current position of the directory iterator
-    PresetIterator* m_presetPos;
-
-    /// Last preset index (when randomizing)
-    PresetIterator* m_lastPresetPos;
-
-    /// Required by the preset chooser. Manages a loaded preset directory
-    PresetLoader* m_presetLoader;
-
-    /// Provides accessor functions to choose presets
-    PresetChooser* m_presetChooser;
-
-    /// Currently loaded preset
-    std::unique_ptr<Preset> m_activePreset;
-
-    /// Destination preset when smooth preset switching
-    std::unique_ptr<Preset> m_activePreset2;
-
-    TimeKeeper* m_timeKeeper;
-
-    int m_flags;
-
-    RenderItemMatcher* m_matcher;
-    MasterRenderItemMerge* m_merger;
-
-    bool m_errorLoadingCurrentPreset;
-
     std::unique_ptr<Preset> switchToCurrentPreset();
 
     bool startPresetTransition(bool hard_cut);
 
     void recreateRenderer();
+
+    class Pcm m_pcm; //!< Audio data buffer and analyzer instance.
+
+    Settings m_settings; //!< The projectM settings.
+
+    int m_flags{ 0 }; //!< Behaviour flags.
+
+    std::vector<int> m_presetHistory; //!< List of previously played preset indices.
+    std::vector<int> m_presetFuture; //!< List of preset indices queued for playing.
+
+    /** Timing information */
+    int m_count{ 0 }; //!< Rendered frame count since start
+
+    bool m_errorLoadingCurrentPreset{ false }; //!< Error flag for preset loading errors.
+
+    std::unique_ptr<Renderer> m_renderer; //!< The Preset renderer.
+    std::unique_ptr<BeatDetect> m_beatDetect; //!< The beat detection class.
+    std::unique_ptr<class PipelineContext> m_pipelineContext; //!< Pipeline context for the first/current preset.
+    std::unique_ptr<class PipelineContext> m_pipelineContext2; //!< Pipeline context for the next/transitioning preset.
+    std::unique_ptr<PresetIterator> m_presetPos; //!< The current position of the directory iterator.
+    std::unique_ptr<PresetLoader> m_presetLoader; //!< Required by the preset chooser. Manages a loaded preset directory.
+    std::unique_ptr<PresetChooser> m_presetChooser; //!< Provides accessor functions to choose presets.
+    std::unique_ptr<Preset> m_activePreset; //!< Currently loaded preset.
+    std::unique_ptr<Preset> m_activePreset2; //!< Destination preset when smooth preset switching.
+    std::unique_ptr<TimeKeeper> m_timeKeeper; //!< Keeps the different timers used to render and switch presets.
+    std::unique_ptr<RenderItemMatcher> m_matcher; //!< Render item matcher for preset transitions.
+    std::unique_ptr<MasterRenderItemMerge> m_merger; //!< Render item merger for preset transitions.
 
 #if USE_THREADS
 
