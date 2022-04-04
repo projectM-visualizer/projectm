@@ -72,9 +72,11 @@
 #include <vector>
 
 #if USE_THREADS
+
 #include <mutex>
 #include <thread>
 #include "BackgroundWorker.h"
+
 #endif
 
 class PipelineContext;
@@ -147,7 +149,7 @@ private:
     const PresetChooser& m_chooser;
 };
 
-class projectM
+class ProjectM
 {
 public:
     static const int FLAG_NONE = 0;
@@ -178,11 +180,11 @@ public:
         bool softCutRatingsEnabled{ false };
     };
 
-    projectM(std::string config_file, int flags = FLAG_NONE);
+    ProjectM(std::string config_file, int flags = FLAG_NONE);
 
-    projectM(Settings settings, int flags = FLAG_NONE);
+    ProjectM(Settings settings, int flags = FLAG_NONE);
 
-    virtual ~projectM();
+    virtual ~ProjectM();
 
     void projectM_resetGL(size_t width, size_t height);
 
@@ -511,6 +513,7 @@ private:
     void recreateRenderer();
 
 #if USE_THREADS
+
     void ThreadWorker();
 
     mutable std::recursive_mutex m_presetSwitchMutex; //!< Mutex for locking preset switching while rendering and vice versa.
