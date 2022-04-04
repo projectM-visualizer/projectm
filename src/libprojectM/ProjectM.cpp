@@ -57,76 +57,74 @@ ProjectM::~ProjectM()
 
     destroyPresetTools();
 
-    if (renderer)
+    if (m_renderer)
     {
-        delete (renderer);
+        delete (m_renderer);
     }
-    if (beatDetect)
+    if (m_beatDetect)
     {
-        delete (beatDetect);
+        delete (m_beatDetect);
     }
-    if (_pcm)
+    if (m_pcm)
     {
-        delete (_pcm);
-        _pcm = 0;
-    }
-
-    if (timeKeeper)
-    {
-        delete timeKeeper;
-        timeKeeper = NULL;
+        delete (m_pcm);
+        m_pcm = 0;
     }
 
-    delete (_pipelineContext);
-    delete (_pipelineContext2);
+    if (m_timeKeeper)
+    {
+        delete m_timeKeeper;
+        m_timeKeeper = NULL;
+    }
+
+    delete (m_pipelineContext);
+    delete (m_pipelineContext2);
 }
 
 unsigned ProjectM::initRenderToTexture()
 {
-    return renderer->initRenderToTexture();
+    return m_renderer->initRenderToTexture();
 }
 
 void ProjectM::projectM_resetTextures()
 {
-    renderer->ResetTextures();
+    m_renderer->ResetTextures();
 }
 
 
 ProjectM::ProjectM(std::string config_file, int flags)
-    :
-    renderer(0)
-    , _pcm(0)
-    , beatDetect(0)
-    , _pipelineContext(new PipelineContext())
-    , _pipelineContext2(new PipelineContext())
+    : m_renderer(0)
+    , m_pcm(0)
+    , m_beatDetect(0)
+    , m_pipelineContext(new PipelineContext())
+    , m_pipelineContext2(new PipelineContext())
     , m_presetPos(0)
-    , timeKeeper(NULL)
+    , m_timeKeeper(NULL)
     , m_flags(flags)
-    , _matcher(NULL)
-    , _merger(NULL)
+    , m_matcher(NULL)
+    , m_merger(NULL)
 {
     readConfig(config_file);
     projectM_reset();
-    projectM_resetGL(_settings.windowWidth, _settings.windowHeight);
+    projectM_resetGL(m_settings.windowWidth, m_settings.windowHeight);
 
 }
 
 ProjectM::ProjectM(Settings settings, int flags)
-    :
-    renderer(0)
-    , _pcm(0)
-    , beatDetect(0)
-    , _pipelineContext(new PipelineContext())
-    , _pipelineContext2(new PipelineContext())
+    : m_renderer(0)
+    , m_pcm(0)
+    , m_beatDetect(0)
+    , m_pipelineContext(new PipelineContext())
+    , m_pipelineContext2(new PipelineContext())
     , m_presetPos(0)
-    , timeKeeper(NULL)
+    , m_timeKeeper(NULL)
     , m_flags(flags)
-    , _matcher(NULL)
-    , _merger(NULL)
+    , m_matcher(NULL)
+    , m_merger(NULL)
 {
     readSettings(settings);
     projectM_reset();
-    projectM_resetGL(_settings.windowWidth, _settings.windowHeight);
+    projectM_resetGL(m_settings.windowWidth, m_settings.windowHeight);
 }
 
 
@@ -169,18 +167,18 @@ void ProjectM::readConfig(const std::string& configFile)
     std::cout << "[projectM] config file: " << configFile << std::endl;
 
     ConfigFile config(configFile);
-    _settings.meshX = config.read<int>("Mesh X", 32);
-    _settings.meshY = config.read<int>("Mesh Y", 24);
-    _settings.textureSize = config.read<int>("Texture Size", 512);
-    _settings.fps = config.read<int>("FPS", 35);
-    _settings.windowWidth = config.read<int>("Window Width", 512);
-    _settings.windowHeight = config.read<int>("Window Height", 512);
-    _settings.softCutDuration = config.read<double>
+    m_settings.meshX = config.read<int>("Mesh X", 32);
+    m_settings.meshY = config.read<int>("Mesh Y", 24);
+    m_settings.textureSize = config.read<int>("Texture Size", 512);
+    m_settings.fps = config.read<int>("FPS", 35);
+    m_settings.windowWidth = config.read<int>("Window Width", 512);
+    m_settings.windowHeight = config.read<int>("Window Height", 512);
+    m_settings.softCutDuration = config.read<double>
         ("Smooth Preset Duration", config.read<int>("Smooth Transition Duration", 10));
-    _settings.presetDuration = config.read<double>("Preset Duration", 15);
+    m_settings.presetDuration = config.read<double>("Preset Duration", 15);
 
 #ifdef __unix__
-    _settings.presetURL = config.read<string>("Preset Path", "/usr/local/share/projectM/presets");
+    m_settings.presetURL = config.read<string>("Preset Path", "/usr/local/share/projectM/presets");
 #endif
 
 #ifdef __APPLE__
@@ -200,9 +198,9 @@ void ProjectM::readConfig(const std::string& configFile)
 #endif
 
 #ifdef __unix__
-    _settings.titleFontURL = config.read<string>
+    m_settings.titleFontURL = config.read<string>
         ("Title Font", "/usr/local/share/projectM/fonts/Vera.tff");
-    _settings.menuFontURL = config.read<string>
+    m_settings.menuFontURL = config.read<string>
         ("Menu Font", "/usr/local/share/projectM/fonts/VeraMono.tff");
 #endif
 
@@ -214,36 +212,36 @@ void ProjectM::readConfig(const std::string& configFile)
 #endif
 
 
-    _settings.shuffleEnabled = config.read<bool>("Shuffle Enabled", true);
+    m_settings.shuffleEnabled = config.read<bool>("Shuffle Enabled", true);
 
-    _settings.easterEgg = config.read<float>("Easter Egg Parameter", 0.0);
-    _settings.softCutRatingsEnabled =
+    m_settings.easterEgg = config.read<float>("Easter Egg Parameter", 0.0);
+    m_settings.softCutRatingsEnabled =
         config.read<bool>("Soft Cut Ratings Enabled", false);
 
     // Hard Cuts are preset transitions that occur when your music becomes louder. They only occur after a hard cut duration threshold has passed.
-    _settings.hardCutEnabled = config.read<bool>("Hard Cuts Enabled", false);
+    m_settings.hardCutEnabled = config.read<bool>("Hard Cuts Enabled", false);
     // Hard Cut duration is the number of seconds before you become eligible for a hard cut.
-    _settings.hardCutDuration = config.read<double>("Hard Cut Duration", 60);
+    m_settings.hardCutDuration = config.read<double>("Hard Cut Duration", 60);
     // Hard Cut sensitivity is the volume difference before a "hard cut" is triggered.
-    _settings.hardCutSensitivity = config.read<float>("Hard Cut Sensitivity", 1.0);
+    m_settings.hardCutSensitivity = config.read<float>("Hard Cut Sensitivity", 1.0);
 
     // Beat Sensitivity impacts how reactive your visualizations are to volume, bass, mid-range, and treble. 
     // Preset authors have developed their visualizations with the default of 1.0.
-    _settings.beatSensitivity = config.read<float>("Beat Sensitivity", 1.0);
+    m_settings.beatSensitivity = config.read<float>("Beat Sensitivity", 1.0);
 
 
-    projectM_init(_settings.meshX, _settings.meshY, _settings.fps,
-                  _settings.textureSize, _settings.windowWidth, _settings.windowHeight);
+    projectM_init(m_settings.meshX, m_settings.meshY, m_settings.fps,
+                  m_settings.textureSize, m_settings.windowWidth, m_settings.windowHeight);
 
     if (config.read("Aspect Correction", true))
     {
-        _settings.aspectCorrection = true;
-        renderer->correction = true;
+        m_settings.aspectCorrection = true;
+        m_renderer->correction = true;
     }
     else
     {
-        _settings.aspectCorrection = false;
-        renderer->correction = false;
+        m_settings.aspectCorrection = false;
+        m_renderer->correction = false;
     }
 
 
@@ -252,35 +250,35 @@ void ProjectM::readConfig(const std::string& configFile)
 
 void ProjectM::readSettings(const Settings& settings)
 {
-    _settings.meshX = settings.meshX;
-    _settings.meshY = settings.meshY;
-    _settings.textureSize = settings.textureSize;
-    _settings.fps = settings.fps;
-    _settings.windowWidth = settings.windowWidth;
-    _settings.windowHeight = settings.windowHeight;
-    _settings.softCutDuration = settings.softCutDuration;
-    _settings.presetDuration = settings.presetDuration;
-    _settings.softCutRatingsEnabled = settings.softCutRatingsEnabled;
+    m_settings.meshX = settings.meshX;
+    m_settings.meshY = settings.meshY;
+    m_settings.textureSize = settings.textureSize;
+    m_settings.fps = settings.fps;
+    m_settings.windowWidth = settings.windowWidth;
+    m_settings.windowHeight = settings.windowHeight;
+    m_settings.softCutDuration = settings.softCutDuration;
+    m_settings.presetDuration = settings.presetDuration;
+    m_settings.softCutRatingsEnabled = settings.softCutRatingsEnabled;
 
-    _settings.presetURL = settings.presetURL;
-    _settings.titleFontURL = settings.titleFontURL;
-    _settings.menuFontURL = settings.menuFontURL;
-    _settings.shuffleEnabled = settings.shuffleEnabled;
-    _settings.datadir = settings.datadir;
+    m_settings.presetURL = settings.presetURL;
+    m_settings.titleFontURL = settings.titleFontURL;
+    m_settings.menuFontURL = settings.menuFontURL;
+    m_settings.shuffleEnabled = settings.shuffleEnabled;
+    m_settings.datadir = settings.datadir;
 
-    _settings.easterEgg = settings.easterEgg;
+    m_settings.easterEgg = settings.easterEgg;
 
-    _settings.hardCutEnabled = settings.hardCutEnabled;
-    _settings.hardCutDuration = settings.hardCutDuration;
-    _settings.hardCutSensitivity = settings.hardCutSensitivity;
+    m_settings.hardCutEnabled = settings.hardCutEnabled;
+    m_settings.hardCutDuration = settings.hardCutDuration;
+    m_settings.hardCutSensitivity = settings.hardCutSensitivity;
 
-    _settings.beatSensitivity = settings.beatSensitivity;
+    m_settings.beatSensitivity = settings.beatSensitivity;
 
-    projectM_init(_settings.meshX, _settings.meshY, _settings.fps,
-                  _settings.textureSize, _settings.windowWidth, _settings.windowHeight);
+    projectM_init(m_settings.meshX, m_settings.meshY, m_settings.fps,
+                  m_settings.textureSize, m_settings.windowWidth, m_settings.windowHeight);
 
 
-    _settings.aspectCorrection = settings.aspectCorrection;
+    m_settings.aspectCorrection = settings.aspectCorrection;
 }
 
 #if USE_THREADS
@@ -302,12 +300,12 @@ void ProjectM::ThreadWorker()
 
 void ProjectM::evaluateSecondPreset()
 {
-    pipelineContext2().time = timeKeeper->GetRunningTime();
-    pipelineContext2().presetStartTime = timeKeeper->PresetTimeB();
-    pipelineContext2().frame = timeKeeper->PresetFrameB();
-    pipelineContext2().progress = timeKeeper->PresetProgressB();
+    pipelineContext2().time = m_timeKeeper->GetRunningTime();
+    pipelineContext2().presetStartTime = m_timeKeeper->PresetTimeB();
+    pipelineContext2().frame = m_timeKeeper->PresetFrameB();
+    pipelineContext2().progress = m_timeKeeper->PresetProgressB();
 
-    m_activePreset2->Render(*beatDetect, pipelineContext2());
+    m_activePreset2->Render(*m_beatDetect, pipelineContext2());
 }
 
 void ProjectM::renderFrame()
@@ -337,7 +335,7 @@ Pipeline* ProjectM::renderFrameOnlyPass1(
     int x, y;
 #endif
 
-    timeKeeper->UpdateTimers();
+    m_timeKeeper->UpdateTimers();
 /*
     if (timeKeeper->IsSmoothing())
     {
@@ -348,25 +346,25 @@ Pipeline* ProjectM::renderFrameOnlyPass1(
         printf("          A:%f\n", timeKeeper->PresetProgressA());
     }*/
 
-    mspf = (int) (1000.0 / (float) settings().fps); //milliseconds per frame
+    m_mspf = (int) (1000.0 / (float) settings().fps); //milliseconds per frame
 
     /// @bug who is responsible for updating this now?"
     auto& context = pipelineContext();
-    context.time = timeKeeper->GetRunningTime();
-    context.presetStartTime = timeKeeper->PresetTimeA();
-    context.frame = timeKeeper->PresetFrameA();
-    context.progress = timeKeeper->PresetProgressA();
-    renderer->UpdateContext(context);
+    context.time = m_timeKeeper->GetRunningTime();
+    context.presetStartTime = m_timeKeeper->PresetTimeA();
+    context.frame = m_timeKeeper->PresetFrameA();
+    context.progress = m_timeKeeper->PresetProgressA();
+    m_renderer->UpdateContext(context);
 
-    beatDetect->CalculateBeatStatistics();
+    m_beatDetect->CalculateBeatStatistics();
 
     //m_activePreset->evaluateFrame();
 
     //if the preset isn't locked and there are more presets
-    if (renderer->noSwitch == false && !m_presetChooser->empty())
+    if (m_renderer->noSwitch == false && !m_presetChooser->empty())
     {
         //if preset is done and we're not already switching
-        if (timeKeeper->PresetProgressA() >= 1.0 && !timeKeeper->IsSmoothing())
+        if (m_timeKeeper->PresetProgressA() >= 1.0 && !m_timeKeeper->IsSmoothing())
         {
             if (settings().shuffleEnabled)
             {
@@ -377,8 +375,8 @@ Pipeline* ProjectM::renderFrameOnlyPass1(
                 selectNext(false);
             }
         }
-        else if (settings().hardCutEnabled && (beatDetect->vol - beatDetect->volOld > settings().hardCutSensitivity) &&
-                 timeKeeper->CanHardCut())
+        else if (settings().hardCutEnabled && (m_beatDetect->vol - m_beatDetect->volOld > settings().hardCutSensitivity) &&
+                 m_timeKeeper->CanHardCut())
         {
             // Hard Cuts must be enabled, must have passed the hardcut duration, and the volume must be a greater difference than the hardcut sensitivity.
             if (settings().shuffleEnabled)
@@ -393,7 +391,7 @@ Pipeline* ProjectM::renderFrameOnlyPass1(
     }
 
 
-    if (timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty())
+    if (m_timeKeeper->IsSmoothing() && m_timeKeeper->SmoothRatio() <= 1.0 && !m_presetChooser->empty())
     {
         //	 printf("start thread\n");
         assert(m_activePreset2.get());
@@ -402,7 +400,7 @@ Pipeline* ProjectM::renderFrameOnlyPass1(
         m_workerSync.WakeUpBackgroundTask();
 #endif
 
-        m_activePreset->Render(*beatDetect, pipelineContext());
+        m_activePreset->Render(*m_beatDetect, pipelineContext());
 
 #if USE_THREADS
         m_workerSync.WaitForBackgroundTaskToFinish();
@@ -412,13 +410,13 @@ Pipeline* ProjectM::renderFrameOnlyPass1(
 
         pPipeline->setStaticPerPixel(settings().meshX, settings().meshY);
 
-        assert(_matcher);
+        assert(m_matcher);
         PipelineMerger::mergePipelines(m_activePreset->pipeline(),
                                        m_activePreset2->pipeline(), *pPipeline,
-                                       _matcher->matchResults(),
-                                       *_merger, timeKeeper->SmoothRatio());
+                                       m_matcher->matchResults(),
+                                       *m_merger, m_timeKeeper->SmoothRatio());
 
-        renderer->RenderFrameOnlyPass1(*pPipeline, pipelineContext());
+        m_renderer->RenderFrameOnlyPass1(*pPipeline, pipelineContext());
 
 
         return pPipeline;
@@ -428,16 +426,16 @@ Pipeline* ProjectM::renderFrameOnlyPass1(
     {
 
 
-        if (timeKeeper->IsSmoothing() && timeKeeper->SmoothRatio() > 1.0)
+        if (m_timeKeeper->IsSmoothing() && m_timeKeeper->SmoothRatio() > 1.0)
         {
             //printf("End Smooth\n");
             m_activePreset = std::move(m_activePreset2);
-            timeKeeper->EndSmoothing();
+            m_timeKeeper->EndSmoothing();
         }
         //printf("Normal\n");
 
-        m_activePreset->Render(*beatDetect, pipelineContext());
-        renderer->RenderFrameOnlyPass1(m_activePreset->pipeline(), pipelineContext());
+        m_activePreset->Render(*m_beatDetect, pipelineContext());
+        m_renderer->RenderFrameOnlyPass1(m_activePreset->pipeline(), pipelineContext());
         return NULL; // indicating no transition
 
     }
@@ -474,14 +472,14 @@ void ProjectM::renderFrameOnlyPass2(Pipeline* pPipeline, int xoffset, int yoffse
 
         /* was other stuff */
 
-        renderer->RenderFrameOnlyPass2(*pPipeline, pipelineContext(), xoffset, yoffset, eye);
+        m_renderer->RenderFrameOnlyPass2(*pPipeline, pipelineContext(), xoffset, yoffset, eye);
 
     }
     else
     {
 
 
-        renderer->RenderFrameOnlyPass2(m_activePreset->pipeline(), pipelineContext(), xoffset, yoffset, eye);
+        m_renderer->RenderFrameOnlyPass2(m_activePreset->pipeline(), pipelineContext(), xoffset, yoffset, eye);
 
 
     }
@@ -502,30 +500,30 @@ void ProjectM::renderFrameEndOnSeparatePasses(Pipeline* pPipeline)
         pPipeline->drawables.clear();
     }
 
-    count++;
+    m_count++;
 #ifndef WIN32
     /** Frame-rate limiter */
     /** Compute once per preset */
-    if (this->count % 100 == 0)
+    if (this->m_count % 100 == 0)
     {
-        auto ticks = static_cast<float>(timeKeeper->GetRunningTime());
-        this->renderer->realfps = 100.0f / ((ticks - this->fpsstart) * 0.001f);
-        this->fpsstart = ticks;
+        auto ticks = static_cast<float>(m_timeKeeper->GetRunningTime());
+        this->m_renderer->realfps = 100.0f / ((ticks - this->m_fpsStart) * 0.001f);
+        this->m_fpsStart = ticks;
     }
 
 #ifndef UNLOCK_FPS
-    int timediff = getTicks ( &timeKeeper->startTime )-this->timestart;
+    int timediff = getTicks ( &m_timeKeeper->m_startTime )-this->m_timeStart;
 
-    if ( timediff < this->mspf )
+    if ( timediff < this->m_mspf )
     {
-        // printf("%s:",this->mspf-timediff);
-        int sleepTime = ( unsigned int ) ( this->mspf-timediff ) * 1000;
+        // printf("%s:",this->m_mspf-timediff);
+        int sleepTime = ( unsigned int ) ( this->m_mspf-timediff ) * 1000;
         //		DWRITE ( "usleep: %d\n", sleepTime );
         if ( sleepTime > 0 && sleepTime < 100000 )
         {
             if ( usleep ( sleepTime ) != 0 ) {}}
     }
-    this->timestart=getTicks ( &timeKeeper->startTime );
+    this->m_timeStart=getTicks ( &m_timeKeeper->m_startTime );
 #endif
 
 #endif /** !WIN32 */
@@ -533,12 +531,12 @@ void ProjectM::renderFrameEndOnSeparatePasses(Pipeline* pPipeline)
 
 void ProjectM::projectM_reset()
 {
-    this->mspf = 0;
-    this->timed = 0;
-    this->timestart = 0;
-    this->count = 0;
+    this->m_mspf = 0;
+    this->m_timed = 0;
+    this->m_timeStart = 0;
+    this->m_count = 0;
 
-    this->fpsstart = 0;
+    this->m_fpsStart = 0;
 
     projectM_resetengine();
 }
@@ -546,44 +544,44 @@ void ProjectM::projectM_reset()
 void ProjectM::projectM_init(int gx, int gy, int fps, int texsize, int width, int height)
 {
     /** Initialise start time */
-    timeKeeper = new TimeKeeper(_settings.presetDuration, _settings.softCutDuration, _settings.hardCutDuration,
-                                _settings.easterEgg);
+    m_timeKeeper = new TimeKeeper(m_settings.presetDuration, m_settings.softCutDuration, m_settings.hardCutDuration,
+                                m_settings.easterEgg);
 
     /** Nullify frame stash */
 
     /** Initialise per-pixel matrix calculations */
     /** We need to initialise this before the builtin param db otherwise bass/mid etc won't bind correctly */
-    assert(!beatDetect);
+    assert(!m_beatDetect);
 
-    if (!_pcm)
+    if (!m_pcm)
     {
-        _pcm = new Pcm();
+        m_pcm = new Pcm();
     }
     assert(pcm());
-    beatDetect = new BeatDetect(*_pcm);
+    m_beatDetect = new BeatDetect(*m_pcm);
 
-    if (_settings.fps > 0)
+    if (m_settings.fps > 0)
     {
-        mspf = (int) (1000.0 / (float) _settings.fps);
+        m_mspf = (int) (1000.0 / (float) m_settings.fps);
     }
     else
     {
-        mspf = 0;
+        m_mspf = 0;
     }
 
-    this->renderer = new Renderer(width, height, gx, gy, beatDetect, settings().presetURL, settings().titleFontURL,
+    this->m_renderer = new Renderer(width, height, gx, gy, m_beatDetect, settings().presetURL, settings().titleFontURL,
                                   settings().menuFontURL, settings().datadir);
 
     initPresetTools(gx, gy);
 
 #if USE_THREADS
     m_workerSync.Reset();
-    m_workerThread = std::thread(&projectM::ThreadWorker, this);
+    m_workerThread = std::thread(&ProjectM::ThreadWorker, this);
 #endif
 
     /// @bug order of operatoins here is busted
     //renderer->setPresetName ( m_activePreset->name() );
-    timeKeeper->StartPreset();
+    m_timeKeeper->StartPreset();
     assert(pcm());
 
     pipelineContext().fps = fps;
@@ -595,10 +593,10 @@ void ProjectM::projectM_init(int gx, int gy, int fps, int texsize, int width, in
 void ProjectM::projectM_resetengine()
 {
 
-    if (beatDetect != NULL)
+    if (m_beatDetect != NULL)
     {
-        beatDetect->Reset();
-        beatDetect->beatSensitivity = _settings.beatSensitivity;
+        m_beatDetect->Reset();
+        m_beatDetect->beatSensitivity = m_settings.beatSensitivity;
     }
 
 }
@@ -607,24 +605,24 @@ void ProjectM::projectM_resetengine()
 void ProjectM::projectM_resetGL(size_t width, size_t height)
 {
     /** Stash the new dimensions */
-    _settings.windowWidth = width;
-    _settings.windowHeight = height;
-    renderer->reset(width, height);
+    m_settings.windowWidth = width;
+    m_settings.windowHeight = height;
+    m_renderer->reset(width, height);
 }
 
 /** Sets the title to display */
 std::string ProjectM::getTitle() const
 {
-    return renderer->title;
+    return m_renderer->title;
 }
 
 /** Sets the title to display */
 void ProjectM::setTitle(const std::string& title)
 {
-    if (title != renderer->title)
+    if (title != m_renderer->title)
     {
-        renderer->title = title;
-        renderer->drawtitle = 1;
+        m_renderer->title = title;
+        m_renderer->drawtitle = 1;
     }
 }
 
@@ -671,11 +669,11 @@ int ProjectM::initPresetTools(int gx, int gy)
 //        std::cerr << "[projectM] Allocating idle preset..." << std::endl;
     m_activePreset = m_presetLoader->loadPreset
         ("idle://Geiss & Sperl - Feedback (projectM idle HDR mix).milk");
-    renderer->setPresetName("Geiss & Sperl - Feedback (projectM idle HDR mix)");
+    m_renderer->setPresetName("Geiss & Sperl - Feedback (projectM idle HDR mix)");
 
     populatePresetMenu();
 
-    renderer->SetPipeline(m_activePreset->pipeline());
+    m_renderer->SetPipeline(m_activePreset->pipeline());
 
     // Case where no valid presets exist in directory. Could also mean
     // playlist initialization was deferred
@@ -685,15 +683,15 @@ int ProjectM::initPresetTools(int gx, int gy)
         ///< m_presetLoader->directoryName() << "\"" << std::endl;
     }
 
-    _matcher = new RenderItemMatcher();
-    _merger = new MasterRenderItemMerge();
+    m_matcher = new RenderItemMatcher();
+    m_merger = new MasterRenderItemMerge();
     //_merger->add(new WaveFormMergeFunction());
-    _merger->add(new ShapeMerge());
-    _merger->add(new BorderMerge());
+    m_merger->add(new ShapeMerge());
+    m_merger->add(new BorderMerge());
     //_merger->add(new BorderMergeFunction());
 
     /// @bug These should be requested by the preset factories.
-    _matcher->distanceFunction().addMetric(new ShapeXYDistance());
+    m_matcher->distanceFunction().addMetric(new ShapeXYDistance());
 
     //std::cerr << "[projectM] Idle preset allocated." << std::endl;
 
@@ -729,16 +727,16 @@ void ProjectM::destroyPresetTools()
 
     m_presetLoader = 0;
 
-    if (_matcher)
+    if (m_matcher)
     {
-        delete _matcher;
-        _matcher = NULL;
+        delete m_matcher;
+        m_matcher = NULL;
     }
 
-    if (_merger)
+    if (m_merger)
     {
-        delete _merger;
-        _merger = NULL;
+        delete m_merger;
+        m_merger = NULL;
     }
 }
 
@@ -813,28 +811,28 @@ void ProjectM::selectPreset(unsigned int index, bool hardCut)
 // populatePresetMenu is called when a preset is loaded.
 void ProjectM::populatePresetMenu()
 {
-    if (renderer->showmenu)
+    if (m_renderer->showmenu)
     { // only track a preset list buffer if the preset menu is up.
-        renderer->m_presetList.clear(); // clear preset list buffer from renderer.
+        m_renderer->m_presetList.clear(); // clear preset list buffer from renderer.
 
         if (isTextInputActive())
         {
             // if a searchTerm is active, we will populate the preset menu with search terms instead of the page we are on.
             int h = 0;
-            std::string presetName = renderer->presetName();
+            std::string presetName = m_renderer->presetName();
             int presetIndex = getSearchIndex(presetName);
             for (unsigned int i = 0; i < getPlaylistSize(); i++)
             { // loop over all presets
-                if (CaseInsensitiveSubstringFind(getPresetName(i), renderer->searchText()) != std::string::npos)
+                if (CaseInsensitiveSubstringFind(getPresetName(i), m_renderer->searchText()) != std::string::npos)
                 { // if term matches
-                    if (h < renderer->textMenuPageSize) // limit to just one page, pagination is not needed.
+                    if (h < m_renderer->textMenuPageSize) // limit to just one page, pagination is not needed.
                     {
                         h++;
-                        renderer->m_presetList.push_back(
+                        m_renderer->m_presetList.push_back(
                             { h, getPresetName(i), "" }); // populate the renders preset list.
                         if (h == presetIndex)
                         {
-                            renderer->m_activePresetID = h;
+                            m_renderer->m_activePresetID = h;
                         }
                     }
                 }
@@ -843,33 +841,33 @@ void ProjectM::populatePresetMenu()
         else
         {
             // normal preset menu, based on pagination.
-            renderer->m_activePresetID = m_presetPos->lastIndex(); // tell renderer about the active preset ID (so it can be highlighted)
+            m_renderer->m_activePresetID = m_presetPos->lastIndex(); // tell renderer about the active preset ID (so it can be highlighted)
             int page_start = 0;
             if (m_presetPos->lastIndex() != m_presetLoader->size())
             {
-                page_start = renderer->m_activePresetID; // if it's not the idle preset, then set it to the true value
+                page_start = m_renderer->m_activePresetID; // if it's not the idle preset, then set it to the true value
             }
-            if (page_start < renderer->textMenuPageSize)
+            if (page_start < m_renderer->textMenuPageSize)
             {
                 page_start = 0; // if we are on page 1, start at the first preset.
             }
-            if (page_start % renderer->textMenuPageSize == 0)
+            if (page_start % m_renderer->textMenuPageSize == 0)
             {
                 // if it's a perfect division of the page size, we are good.
             }
             else
             {
                 page_start = page_start - (page_start %
-                                           renderer->textMenuPageSize); // if not, find closest divisable number for page start
+                                           m_renderer->textMenuPageSize); // if not, find closest divisable number for page start
             }
-            int page_end = page_start + renderer->textMenuPageSize; // page end is page start + page size
+            int page_end = page_start + m_renderer->textMenuPageSize; // page end is page start + page size
             if (page_end > m_presetLoader->size())
             {
                 page_end = m_presetLoader->size();
             }
             while (page_start < page_end)
             {
-                renderer->m_presetList.push_back(
+                m_renderer->m_presetList.push_back(
                     { page_start, getPresetName(page_start), "" }); // populate the renders preset list.
                 page_start++;
             }
@@ -883,7 +881,7 @@ bool ProjectM::startPresetTransition(bool hard_cut)
     if (new_preset == nullptr)
     {
         presetSwitchFailedEvent(hard_cut, **m_presetPos, "fake error");
-        errorLoadingCurrentPreset = true;
+        m_errorLoadingCurrentPreset = true;
         populatePresetMenu();
         return false;
     }
@@ -891,17 +889,17 @@ bool ProjectM::startPresetTransition(bool hard_cut)
     if (hard_cut)
     {
         m_activePreset = std::move(new_preset);
-        timeKeeper->StartPreset();
+        m_timeKeeper->StartPreset();
     }
     else
     {
         m_activePreset2 = std::move(new_preset);
-        timeKeeper->StartPreset();
-        timeKeeper->StartSmoothing();
+        m_timeKeeper->StartPreset();
+        m_timeKeeper->StartSmoothing();
     }
 
     presetSwitchedEvent(hard_cut, **m_presetPos);
-    errorLoadingCurrentPreset = false;
+    m_errorLoadingCurrentPreset = false;
 
     populatePresetMenu();
 
@@ -940,24 +938,24 @@ void ProjectM::selectPrevious(const bool hardCut)
         return;
     }
 
-    if (isTextInputActive() && renderer->m_presetList.size() >= 1)
+    if (isTextInputActive() && m_renderer->m_presetList.size() >= 1)
     {
         // if search menu is up, previous is based on search terms.
-        if (renderer->m_activePresetID <= 1)
+        if (m_renderer->m_activePresetID <= 1)
         {
             // loop to bottom of page is at top
-            renderer->m_activePresetID = renderer->m_presetList.size();
-            selectPresetByName(renderer->m_presetList[renderer->m_activePresetID - 1].name, true);
+            m_renderer->m_activePresetID = m_renderer->m_presetList.size();
+            selectPresetByName(m_renderer->m_presetList[m_renderer->m_activePresetID - 1].name, true);
         }
         else
         {
             // otherwise move back
-            renderer->m_activePresetID--;
-            selectPresetByName(renderer->m_presetList[renderer->m_activePresetID - 1].name, true);
+            m_renderer->m_activePresetID--;
+            selectPresetByName(m_renderer->m_presetList[m_renderer->m_activePresetID - 1].name, true);
         }
     }
     else if (settings().shuffleEnabled && presetHistory.size() >= 1 &&
-             static_cast<std::size_t>(presetHistory.back()) != m_presetLoader->size() && !renderer->showmenu)
+             static_cast<std::size_t>(presetHistory.back()) != m_presetLoader->size() && !m_renderer->showmenu)
     { // if randomly browsing presets, "previous" should return to last random preset not the index--. Avoid returning to size() because that's the idle:// preset.
         presetFuture.push_back(m_presetPos->lastIndex());
         selectPreset(presetHistory.back());
@@ -983,24 +981,24 @@ void ProjectM::selectNext(const bool hardCut)
         return;
     }
 
-    if (isTextInputActive() && renderer->m_presetList.size() >= 1) // if search is active and there are search results
+    if (isTextInputActive() && m_renderer->m_presetList.size() >= 1) // if search is active and there are search results
     {
         // if search menu is down, next is based on search terms.
-        if (static_cast<std::size_t>(renderer->m_activePresetID) >= renderer->m_presetList.size())
+        if (static_cast<std::size_t>(m_renderer->m_activePresetID) >= m_renderer->m_presetList.size())
         {
             // loop to top of page is at bottom
-            renderer->m_activePresetID = 1;
-            selectPresetByName(renderer->m_presetList[0].name, true);
+            m_renderer->m_activePresetID = 1;
+            selectPresetByName(m_renderer->m_presetList[0].name, true);
         }
         else
         {
-            // otherwise move forward 
-            renderer->m_activePresetID++;
-            selectPresetByName(renderer->m_presetList[renderer->m_activePresetID - 1].name, true);
+            // otherwise move forward
+            m_renderer->m_activePresetID++;
+            selectPresetByName(m_renderer->m_presetList[m_renderer->m_activePresetID - 1].name, true);
         }
     }
     else if (settings().shuffleEnabled && presetFuture.size() >= 1 &&
-             static_cast<std::size_t>(presetFuture.front()) != m_presetLoader->size() && !renderer->showmenu)
+             static_cast<std::size_t>(presetFuture.front()) != m_presetLoader->size() && !m_renderer->showmenu)
     { // if shuffling and we have future presets already stashed then let's go forward rather than truely move randomly.
         presetHistory.push_back(m_presetPos->lastIndex());
         selectPreset(presetFuture.back());
@@ -1048,8 +1046,8 @@ std::unique_ptr<Preset> ProjectM::switchToCurrentPreset()
 
     // Set preset name here- event is not done because at the moment this function
     // is oblivious to smooth/hard switches
-    renderer->setPresetName(new_preset->name());
-    std::string result = renderer->SetPipeline(new_preset->pipeline());
+    m_renderer->setPresetName(new_preset->name());
+    std::string result = m_renderer->SetPipeline(new_preset->pipeline());
     if (!result.empty())
     {
         std::cerr << "problem setting pipeline: " << result << std::endl;
@@ -1060,21 +1058,21 @@ std::unique_ptr<Preset> ProjectM::switchToCurrentPreset()
 
 void ProjectM::setPresetLock(bool isLocked)
 {
-    renderer->noSwitch = isLocked;
+    m_renderer->noSwitch = isLocked;
     if (isPresetLocked())
     {
-        renderer->setToastMessage("Preset Locked");
+        m_renderer->setToastMessage("Preset Locked");
     }
     else
     {
-        renderer->setToastMessage("Unlocked");
+        m_renderer->setToastMessage("Unlocked");
     }
 }
 
 // check if search menu is up and you have search terms (2 chars). nomin means you don't care about search terms.
 bool ProjectM::isTextInputActive(bool nomin) const
 {
-    if (renderer->showsearch && (renderer->searchText().length() >= 2 || nomin))
+    if (m_renderer->showsearch && (m_renderer->searchText().length() >= 2 || nomin))
     {
         return true;
     }
@@ -1086,7 +1084,7 @@ bool ProjectM::isTextInputActive(bool nomin) const
 
 bool ProjectM::isPresetLocked() const
 {
-    return renderer->noSwitch;
+    return m_renderer->noSwitch;
 }
 
 std::string ProjectM::getPresetURL(unsigned int index) const
@@ -1195,112 +1193,112 @@ void ProjectM::changePresetName(unsigned int index, std::string name)
 
 void ProjectM::setTextureSize(size_t size)
 {
-    _settings.textureSize = size;
+    m_settings.textureSize = size;
 
     recreateRenderer();
 }
 
 size_t ProjectM::getTextureSize() const
 {
-    return _settings.textureSize;
+    return m_settings.textureSize;
 }
 
 double ProjectM::getSoftCutDuration() const
 {
-    return _settings.softCutDuration;
+    return m_settings.softCutDuration;
 }
 
 void ProjectM::setSoftCutDuration(int seconds)
 {
-    _settings.softCutDuration = static_cast<double>(seconds);
-    timeKeeper->ChangeSoftCutDuration(seconds);
+    m_settings.softCutDuration = static_cast<double>(seconds);
+    m_timeKeeper->ChangeSoftCutDuration(seconds);
 }
 
 void ProjectM::setSoftCutDuration(double seconds)
 {
-    _settings.softCutDuration = seconds;
-    timeKeeper->ChangeSoftCutDuration(seconds);
+    m_settings.softCutDuration = seconds;
+    m_timeKeeper->ChangeSoftCutDuration(seconds);
 }
 
 double ProjectM::getHardCutDuration() const
 {
-    return _settings.hardCutDuration;
+    return m_settings.hardCutDuration;
 }
 
 void ProjectM::setHardCutDuration(int seconds)
 {
-    _settings.hardCutDuration = seconds;
-    timeKeeper->ChangeHardCutDuration(seconds);
+    m_settings.hardCutDuration = seconds;
+    m_timeKeeper->ChangeHardCutDuration(seconds);
 }
 
 void ProjectM::setHardCutDuration(double seconds)
 {
-    _settings.hardCutDuration = static_cast<int>(seconds);
-    timeKeeper->ChangeHardCutDuration(seconds);
+    m_settings.hardCutDuration = static_cast<int>(seconds);
+    m_timeKeeper->ChangeHardCutDuration(seconds);
 }
 
 bool ProjectM::getHardCutEnabled() const
 {
-    return _settings.hardCutEnabled;
+    return m_settings.hardCutEnabled;
 }
 
 void ProjectM::setHardCutEnabled(bool enabled)
 {
-    _settings.hardCutEnabled = enabled;
+    m_settings.hardCutEnabled = enabled;
 }
 
 float ProjectM::getHardCutSensitivity() const
 {
-    return _settings.hardCutSensitivity;
+    return m_settings.hardCutSensitivity;
 }
 
 void ProjectM::setHardCutSensitivity(float sensitivity)
 {
-    _settings.hardCutSensitivity = sensitivity;
+    m_settings.hardCutSensitivity = sensitivity;
 }
 
 void ProjectM::setPresetDuration(int seconds)
 {
-    timeKeeper->ChangePresetDuration(seconds);
+    m_timeKeeper->ChangePresetDuration(seconds);
 }
 
 void ProjectM::setPresetDuration(double seconds)
 {
-    timeKeeper->ChangePresetDuration(seconds);
+    m_timeKeeper->ChangePresetDuration(seconds);
 }
 
 bool ProjectM::getAspectCorrection() const
 {
-    return _settings.aspectCorrection;
+    return m_settings.aspectCorrection;
 }
 
 void ProjectM::setAspectCorrection(bool enabled)
 {
-    _settings.aspectCorrection = enabled;
-    renderer->correction = enabled;
+    m_settings.aspectCorrection = enabled;
+    m_renderer->correction = enabled;
 }
 
 float ProjectM::getEasterEgg() const
 {
-    return _settings.easterEgg;
+    return m_settings.easterEgg;
 }
 
 void ProjectM::setEasterEgg(float value)
 {
-    _settings.easterEgg = value;
-    timeKeeper->ChangeEasterEgg(value);
+    m_settings.easterEgg = value;
+    m_timeKeeper->ChangeEasterEgg(value);
 }
 
 void ProjectM::getMeshSize(size_t& w, size_t& h) const
 {
-    w = _settings.meshX;
-    h = _settings.meshY;
+    w = m_settings.meshX;
+    h = m_settings.meshY;
 }
 
 void ProjectM::setMeshSize(size_t w, size_t h)
 {
-    _settings.meshX = w;
-    _settings.meshY = h;
+    m_settings.meshX = w;
+    m_settings.meshY = h;
 
     recreateRenderer();
 }
@@ -1308,16 +1306,16 @@ void ProjectM::setMeshSize(size_t w, size_t h)
 // toggleSearchText
 void ProjectM::toggleSearchText()
 {
-    if (renderer)
+    if (m_renderer)
     {
-        renderer->toggleSearchText();
+        m_renderer->toggleSearchText();
     }
 }
 
 // get index from search results based on preset name
 unsigned int ProjectM::getSearchIndex(const std::string& name) const
 {
-    for (auto& it: renderer->m_presetList)
+    for (auto& it: m_renderer->m_presetList)
     {
         if (it.name == name)
         {
@@ -1350,21 +1348,21 @@ void ProjectM::selectPresetByName(std::string name, bool hardCut)
 
 std::string ProjectM::getSearchText() const
 {
-    return renderer->getSearchText();
+    return m_renderer->getSearchText();
 }
 
 // update search text based on new keystroke
 void ProjectM::setSearchText(const std::string& searchKey)
 {
-    if (renderer)
+    if (m_renderer)
     {
-        renderer->setSearchText(searchKey);
+        m_renderer->setSearchText(searchKey);
     }
     populatePresetMenu();
-    if (renderer->m_presetList.size() >= 1)
+    if (m_renderer->m_presetList.size() >= 1)
     {
-        std::string topPreset = renderer->m_presetList.front().name;
-        renderer->m_activePresetID = 1;
+        std::string topPreset = m_renderer->m_presetList.front().name;
+        m_renderer->m_activePresetID = 1;
         selectPresetByName(topPreset);
     }
 }
@@ -1372,15 +1370,15 @@ void ProjectM::setSearchText(const std::string& searchKey)
 // update search text based on new backspace
 void ProjectM::deleteSearchText()
 {
-    if (renderer)
+    if (m_renderer)
     {
-        renderer->deleteSearchText();
+        m_renderer->deleteSearchText();
     }
     populatePresetMenu();
-    if (renderer->m_presetList.size() >= 1)
+    if (m_renderer->m_presetList.size() >= 1)
     {
-        renderer->m_activePresetID = 1;
-        std::string topPreset = renderer->m_presetList.front().name;
+        m_renderer->m_activePresetID = 1;
+        std::string topPreset = m_renderer->m_presetList.front().name;
         selectPresetByName(topPreset);
     }
 }
@@ -1388,74 +1386,74 @@ void ProjectM::deleteSearchText()
 // reset search text
 void ProjectM::resetSearchText()
 {
-    if (renderer)
+    if (m_renderer)
     {
-        renderer->resetSearchText();
+        m_renderer->resetSearchText();
     }
     populatePresetMenu();
-    if (renderer->m_presetList.size() >= 1)
+    if (m_renderer->m_presetList.size() >= 1)
     {
-        renderer->m_activePresetID = 1;
-        std::string topPreset = renderer->m_presetList.front().name;
+        m_renderer->m_activePresetID = 1;
+        std::string topPreset = m_renderer->m_presetList.front().name;
         selectPresetByName(topPreset);
     }
 }
 
 void ProjectM::setToastMessage(const std::string& toastMessage)
 {
-    if (renderer)
+    if (m_renderer)
     {
-        renderer->setToastMessage(toastMessage);
+        m_renderer->setToastMessage(toastMessage);
     }
 }
 
 void ProjectM::touch(float x, float y, int pressure, int touchtype)
 {
-    if (renderer)
+    if (m_renderer)
     {
-        renderer->touch(x, y, pressure, touchtype);
+        m_renderer->touch(x, y, pressure, touchtype);
     }
 }
 
 void ProjectM::touchDrag(float x, float y, int pressure)
 {
-    if (renderer)
+    if (m_renderer)
     {
-        renderer->touchDrag(x, y, pressure);
+        m_renderer->touchDrag(x, y, pressure);
     }
 }
 
 
 void ProjectM::touchDestroy(float x, float y)
 {
-    if (renderer)
+    if (m_renderer)
     {
-        renderer->touchDestroy(x, y);
+        m_renderer->touchDestroy(x, y);
     }
 }
 
 void ProjectM::touchDestroyAll()
 {
-    if (renderer)
+    if (m_renderer)
     {
-        renderer->touchDestroyAll();
+        m_renderer->touchDestroyAll();
     }
 }
 
 void ProjectM::setHelpText(const std::string& helpText)
 {
-    if (renderer)
+    if (m_renderer)
     {
-        renderer->setHelpText(helpText);
+        m_renderer->setHelpText(helpText);
     }
 }
 
 void ProjectM::recreateRenderer()
 {
-    delete renderer;
-    renderer = new Renderer(_settings.windowWidth, _settings.windowHeight,
-                            _settings.meshX, _settings.meshY,
-                            beatDetect, _settings.presetURL,
-                            _settings.titleFontURL, _settings.menuFontURL,
-                            _settings.datadir);
+    delete m_renderer;
+    m_renderer = new Renderer(m_settings.windowWidth, m_settings.windowHeight,
+                              m_settings.meshX, m_settings.meshY,
+                            m_beatDetect, m_settings.presetURL,
+                              m_settings.titleFontURL, m_settings.menuFontURL,
+                              m_settings.datadir);
 }
