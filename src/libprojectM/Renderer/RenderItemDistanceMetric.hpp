@@ -24,30 +24,24 @@ double constexpr notComparableValue = 1.0;
 /// when they are dissimilar. If two render items cannot be compared, notComparableValue is returned.
 inline auto Compute(const RenderItem* lhs, const RenderItem* rhs) -> double
 {
-    auto const rttiDistance = [lhs, rhs]() {
-        if (typeid(*lhs) == typeid(*rhs))
-        {
-            return 0.0;
-        }
-        return notComparableValue;
+    bool const sameType = typeid(*lhs) == typeid(*rhs);
+
+    auto const rttiDistance = [sameType]() {
+        return sameType ? 0.0 : notComparableValue;
     };
 
-    auto const shapeDistance = [lhs, rhs]() {
-        auto const* const lShape = dynamic_cast<Shape const*>(lhs);
-        auto const* const rShape = dynamic_cast<Shape const*>(rhs);
-        if ((lShape != nullptr) && (rShape != nullptr))
-        {
-            //CPP20: std::midpoint
-            return (meanSquaredError(lShape->x, rShape->x) + meanSquaredError(lShape->y, rShape->y)) / 2;
-        }
+    auto const* const lShape = dynamic_cast<Shape const*>(lhs);
+    auto const* const rShape = dynamic_cast<Shape const*>(rhs);
+    bool const bothShape = lShape != nullptr && rShape != nullptr;
 
-        return notComparableValue;
+    auto const shapeDistance = [lShape, rShape, bothShape]() {
+        //CPP20: std::midpoint
+        return bothShape
+            ? (meanSquaredError(lShape->x, rShape->x) + meanSquaredError(lShape->y, rShape->y)) / 2
+            : notComparableValue;
     };
 
-    bool const bothShape =
-        dynamic_cast<Shape const*>(lhs) != nullptr && dynamic_cast<Shape const*>(rhs) != nullptr;
-
-    return bothShape ? shapeDistance() : rttiDistance();
+    return sameType && bothShape ? shapeDistance() : rttiDistance();
 }
 }// namespace MasterRenderItemDistance
 
