@@ -103,55 +103,20 @@ protected:
 
 class MasterRenderItemDistance : public RenderItemDistance<RenderItem, RenderItem>
 {
-
-    using DistanceMetricMap = std::map<TypeIdPair, std::unique_ptr<RenderItemDistanceMetric>>;
-
 public:
     ~MasterRenderItemDistance() override = default;
-
-    inline void AddMetric(std::unique_ptr<RenderItemDistanceMetric>&& fun)
-    {
-        m_distanceMetricMap[fun->TypeIds()] = std::move(fun);
-    }
 
 protected:
     inline auto ComputeDistance(const RenderItem* lhs, const RenderItem* rhs) const -> double override
     {
+        bool const bothShape = m_shapeXYDistance.Supported(lhs, rhs);
 
-        TypeIdPair pair{typeid(lhs).name(), typeid(rhs).name()};
-
-
-        // If specialized metric exists, use it to get higher granularity
-        // of correctness
-        if (m_distanceMetricMap.count(pair) != 0)
-        {
-            return (*m_distanceMetricMap.at(pair))(lhs, rhs);
-        }
-
-        pair = {pair.second, pair.first};
-
-        if (m_distanceMetricMap.count(pair) != 0)
-        {
-            return (*m_distanceMetricMap.at(pair))(rhs, lhs);
-        }
-
-        // Failing that, use rtti && shape distance if its a shape type
-
-        const double rttiError = m_rttiDistance(lhs, rhs);
-
-        /// @bug This is a non elegant approach to supporting shape distance
-        if (rttiError == 0 && m_shapeXYDistance.Supported(lhs, rhs))
-        {
-            return m_shapeXYDistance(lhs, rhs);
-        }
-
-        return rttiError;
+        return bothShape ? m_shapeXYDistance(lhs, rhs) : m_rttiDistance(lhs, rhs);
     }
 
 private:
     RTIRenderItemDistance m_rttiDistance;
     ShapeXYDistance m_shapeXYDistance;
-    DistanceMetricMap m_distanceMetricMap;
 };
 
 #endif /* RenderItemDISTANCEMETRIC_H_ */
