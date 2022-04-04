@@ -21,9 +21,7 @@ using TypeIdPair = std::pair<std::string, std::string>;
 class RenderItemDistanceMetric : public std::binary_function<const RenderItem*, const RenderItem*, double>
 {
 public:
-    virtual ~RenderItemDistanceMetric()
-    {
-    }
+    virtual ~RenderItemDistanceMetric() = default;
     const static double NOT_COMPARABLE_VALUE;
     virtual double operator()(const RenderItem* r1, const RenderItem* r2) const = 0;
     virtual TypeIdPair typeIdPair() const = 0;
@@ -67,12 +65,7 @@ public:
 class RTIRenderItemDistance : public RenderItemDistance<RenderItem, RenderItem>
 {
 public:
-    RTIRenderItemDistance()
-    {
-    }
-    virtual ~RTIRenderItemDistance()
-    {
-    }
+    ~RTIRenderItemDistance() override = default;
 
 protected:
     virtual inline double computeDistance(const RenderItem* lhs, const RenderItem* rhs) const
@@ -96,12 +89,7 @@ class ShapeXYDistance : public RenderItemDistance<Shape, Shape>
 {
 
 public:
-    ShapeXYDistance()
-    {
-    }
-    virtual ~ShapeXYDistance()
-    {
-    }
+    ~ShapeXYDistance() override = default;
 
 protected:
     virtual inline double computeDistance(const Shape* lhs, const Shape* rhs) const
@@ -117,10 +105,8 @@ class MasterRenderItemDistance : public RenderItemDistance<RenderItem, RenderIte
     typedef std::map<TypeIdPair, RenderItemDistanceMetric*> DistanceMetricMap;
 
 public:
-    MasterRenderItemDistance()
-    {
-    }
-    virtual ~MasterRenderItemDistance()
+    MasterRenderItemDistance() = default;
+     ~MasterRenderItemDistance() override
     {
         for (DistanceMetricMap::iterator it = _distanceMetricMap.begin(); it != _distanceMetricMap.end(); ++it)
             delete (it->second);
