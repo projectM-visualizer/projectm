@@ -336,17 +336,6 @@ Pipeline* ProjectM::renderFrameOnlyPass1(
 #endif
 
     m_timeKeeper->UpdateTimers();
-/*
-    if (timeKeeper->IsSmoothing())
-    {
-        printf("Smoothing A:%f, B:%f, S:%f\n", timeKeeper->PresetProgressA(), timeKeeper->PresetProgressB(), timeKeeper->SmoothRatio());
-    }
-    else
-    {
-        printf("          A:%f\n", timeKeeper->PresetProgressA());
-    }*/
-
-    m_mspf = (int) (1000.0 / (float) settings().fps); //milliseconds per frame
 
     /// @bug who is responsible for updating this now?"
     auto& context = pipelineContext();
@@ -501,42 +490,11 @@ void ProjectM::renderFrameEndOnSeparatePasses(Pipeline* pPipeline)
     }
 
     m_count++;
-#ifndef WIN32
-    /** Frame-rate limiter */
-    /** Compute once per preset */
-    if (this->m_count % 100 == 0)
-    {
-        auto ticks = static_cast<float>(m_timeKeeper->GetRunningTime());
-        this->m_renderer->realfps = 100.0f / ((ticks - this->m_fpsStart) * 0.001f);
-        this->m_fpsStart = ticks;
-    }
-
-#ifndef UNLOCK_FPS
-    int timediff = getTicks ( &m_timeKeeper->m_startTime )-this->m_timeStart;
-
-    if ( timediff < this->m_mspf )
-    {
-        // printf("%s:",this->m_mspf-timediff);
-        int sleepTime = ( unsigned int ) ( this->m_mspf-timediff ) * 1000;
-        //		DWRITE ( "usleep: %d\n", sleepTime );
-        if ( sleepTime > 0 && sleepTime < 100000 )
-        {
-            if ( usleep ( sleepTime ) != 0 ) {}}
-    }
-    this->m_timeStart=getTicks ( &m_timeKeeper->m_startTime );
-#endif
-
-#endif /** !WIN32 */
 }
 
 void ProjectM::projectM_reset()
 {
-    this->m_mspf = 0;
-    this->m_timed = 0;
-    this->m_timeStart = 0;
     this->m_count = 0;
-
-    this->m_fpsStart = 0;
 
     projectM_resetengine();
 }
@@ -560,15 +518,6 @@ void ProjectM::projectM_init(int gx, int gy, int fps, int texsize, int width, in
     assert(pcm());
     m_beatDetect = new BeatDetect(*m_pcm);
 
-    if (m_settings.fps > 0)
-    {
-        m_mspf = (int) (1000.0 / (float) m_settings.fps);
-    }
-    else
-    {
-        m_mspf = 0;
-    }
-
     this->m_renderer = new Renderer(width, height, gx, gy, m_beatDetect, settings().presetURL, settings().titleFontURL,
                                   settings().menuFontURL, settings().datadir);
 
@@ -584,6 +533,7 @@ void ProjectM::projectM_init(int gx, int gy, int fps, int texsize, int width, in
     m_timeKeeper->StartPreset();
     assert(pcm());
 
+    // ToDo: Calculate the real FPS instead
     pipelineContext().fps = fps;
     pipelineContext2().fps = fps;
 
