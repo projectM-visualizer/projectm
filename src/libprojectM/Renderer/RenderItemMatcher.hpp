@@ -57,16 +57,11 @@ struct MatchResults {
 
 	inline double weight(int i, int j) const { return _weights[i][j]; }
 
-	MasterRenderItemDistance & distanceFunction() { return _distanceFunction; }
-
 private:
 	mutable HungarianMethod<MAXIMUM_SET_SIZE> _hungarianMethod;
 	mutable double _weights[MAXIMUM_SET_SIZE][MAXIMUM_SET_SIZE];
 
 	mutable MatchResults _results;
-
-	/// @idea interface this entirely allow overriding of its type.
-	mutable MasterRenderItemDistance _distanceFunction;
 	
 	double computeMatching(const RenderItem::List & lhs, const RenderItem::List & rhs) const;
 
