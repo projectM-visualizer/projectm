@@ -125,14 +125,14 @@ protected:
         // of correctness
         if (m_distanceMetricMap.count(pair) != 0)
         {
-            return (*m_distanceMetricMap[pair])(lhs, rhs);
+            return (*m_distanceMetricMap.at(pair))(lhs, rhs);
         }
 
         pair = {pair.second, pair.first};
 
         if (m_distanceMetricMap.count(pair) != 0)
         {
-            return (*m_distanceMetricMap[pair])(rhs, lhs);
+            return (*m_distanceMetricMap.at(pair))(rhs, lhs);
         }
 
         // Failing that, use rtti && shape distance if its a shape type
@@ -149,9 +149,9 @@ protected:
     }
 
 private:
-    mutable RTIRenderItemDistance m_rttiDistance;
-    mutable ShapeXYDistance m_shapeXYDistance;
-    mutable DistanceMetricMap m_distanceMetricMap;
+    RTIRenderItemDistance m_rttiDistance;
+    ShapeXYDistance m_shapeXYDistance;
+    DistanceMetricMap m_distanceMetricMap;
 };
 
 #endif /* RenderItemDISTANCEMETRIC_H_ */
