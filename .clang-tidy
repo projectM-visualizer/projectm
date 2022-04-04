@@ -62,3 +62,6 @@ CheckOptions:
 
   - key: readability-uppercase-literal-suffix.NewSuffixes
     value: L;LL;Lu;LLu
+
+  - key: cppcoreguidelines-special-member-functions.AllowSoleDefaultDtor
+    value: true
