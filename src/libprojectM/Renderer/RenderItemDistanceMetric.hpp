@@ -22,7 +22,7 @@ class RenderItemDistanceMetric : public std::binary_function<const RenderItem*, 
 {
 public:
     virtual ~RenderItemDistanceMetric() = default;
-    const static double notComparableValue;
+    static double constexpr notComparableValue = 1.0;
     virtual auto operator()(const RenderItem* r1, const RenderItem* r2) const -> double = 0;
     virtual auto TypeIds() const -> TypeIdPair = 0;
 };

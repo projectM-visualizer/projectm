@@ -27,7 +27,6 @@ add_library(Renderer OBJECT
         RenderContext.hpp
         RenderItem.cpp
         RenderItem.hpp
-        RenderItemDistanceMetric.cpp
         RenderItemDistanceMetric.hpp
         RenderItemMatcher.cpp
         RenderItemMatcher.hpp
