@@ -109,8 +109,10 @@ class MasterRenderItemDistance : public RenderItemDistance<RenderItem, RenderIte
 public:
     ~MasterRenderItemDistance() override
     {
-        for (DistanceMetricMap::iterator it = m_distanceMetricMap.begin(); it != m_distanceMetricMap.end(); ++it)
-            delete (it->second);
+        // CPP17: Use decomposition (auto& [key, distanceMetric] : ...)
+        for (auto& entry : m_distanceMetricMap) {
+            delete (entry.second);
+        }
         m_distanceMetricMap.clear();
     }
 
