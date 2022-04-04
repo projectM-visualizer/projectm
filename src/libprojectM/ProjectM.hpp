@@ -402,12 +402,7 @@ private:
     PipelineContext* m_pipelineContext2;
     Settings m_settings;
 
-    /** Timing information */
-    int m_mspf;
-    int m_timed;
-    int m_timeStart;
     int m_count;
-    float m_fpsStart;
 
     void readConfig(const std::string& configFile);
 
