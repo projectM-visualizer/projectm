@@ -6,7 +6,7 @@ double RenderItemMatcher::computeMatching(const RenderItem::List & lhs, const Re
 			for (j = 0; j < rhs.size();j++)
 				_weights[i][j] = _distanceFunction(lhs[i], rhs[j]);
 			for (; j < lhs.size();j++)
-				_weights[i][j] = RenderItemDistanceMetric::NOT_COMPARABLE_VALUE;
+				_weights[i][j] = RenderItemDistanceMetric::notComparableValue;
 		}
 
 		
@@ -24,7 +24,7 @@ void RenderItemMatcher::setMatches
 		const int j = _hungarianMethod.matching(i);
 
 		// hack
-		if (true || _weights[i][j] == RenderItemDistanceMetric::NOT_COMPARABLE_VALUE) {
+		if (true || _weights[i][j] == RenderItemDistanceMetric::notComparableValue) {
  			_results.unmatchedLeft.push_back(lhs_src[i]);
 			_results.unmatchedRight.push_back(rhs_src[i]);
 		} else {

@@ -691,7 +691,7 @@ int projectM::initPresetTools(int gx, int gy)
     //_merger->add(new BorderMergeFunction());
 
     /// @bug These should be requested by the preset factories.
-    _matcher->distanceFunction().addMetric(new ShapeXYDistance());
+    _matcher->distanceFunction().AddMetric(new ShapeXYDistance());
 
     //std::cerr << "[projectM] Idle preset allocated." << std::endl;
 

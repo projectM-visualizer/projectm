@@ -22,40 +22,40 @@ class RenderItemDistanceMetric : public std::binary_function<const RenderItem*, 
 {
 public:
     virtual ~RenderItemDistanceMetric() = default;
-    const static double NOT_COMPARABLE_VALUE;
+    const static double notComparableValue;
     virtual double operator()(const RenderItem* r1, const RenderItem* r2) const = 0;
-    virtual TypeIdPair typeIdPair() const = 0;
+    virtual TypeIdPair TypeIds() const = 0;
 };
 
 // A base class to construct render item distance metrics. Just specify your two concrete
-// render item types as template parameters and override the computeDistance() function.
+// render item types as template parameters and override the ComputeDistance() function.
 template<class R1, class R2>
 class RenderItemDistance : public RenderItemDistanceMetric
 {
 
 protected:
     // Override to create your own distance fmetric for your specified custom types.
-    virtual double computeDistance(const R1* r1, const R2* r2) const = 0;
+    virtual double ComputeDistance(const R1* r1, const R2* r2) const = 0;
 
 public:
     inline virtual double operator()(const RenderItem* r1, const RenderItem* r2) const
     {
-        if (supported(r1, r2))
-            return computeDistance(dynamic_cast<const R1*>(r1), dynamic_cast<const R2*>(r2));
-        else if (supported(r2, r1))
-            return computeDistance(dynamic_cast<const R1*>(r2), dynamic_cast<const R2*>(r1));
+        if (Supported(r1, r2))
+            return ComputeDistance(dynamic_cast<const R1*>(r1), dynamic_cast<const R2*>(r2));
+        else if (Supported(r2, r1))
+            return ComputeDistance(dynamic_cast<const R1*>(r2), dynamic_cast<const R2*>(r1));
         else
-            return NOT_COMPARABLE_VALUE;
+            return notComparableValue;
     }
 
     // Returns true if and only if r1 and r2 are the same type as or derived from R1, R2 respectively
-    inline bool supported(const RenderItem* r1, const RenderItem* r2) const
+    inline bool Supported(const RenderItem* r1, const RenderItem* r2) const
     {
         return dynamic_cast<const R1*>(r1) && dynamic_cast<const R2*>(r2);
         //return typeid(r1) == typeid(const R1 *) && typeid(r2) == typeid(const R2 *);
     }
 
-    inline TypeIdPair typeIdPair() const
+    inline TypeIdPair TypeIds() const
     {
         return TypeIdPair(typeid(const R1*).name(), typeid(const R2*).name());
     }
@@ -68,7 +68,7 @@ public:
     ~RTIRenderItemDistance() override = default;
 
 protected:
-    virtual inline double computeDistance(const RenderItem* lhs, const RenderItem* rhs) const
+    virtual inline double ComputeDistance(const RenderItem* lhs, const RenderItem* rhs) const
     {
         if (typeid(*lhs) == typeid(*rhs))
         {
@@ -79,7 +79,7 @@ protected:
         else
         {
             //std::cerr << typeid(*lhs).name() << " and " << typeid(*rhs).name() <<  "not comparable" << std::endl;
-            return NOT_COMPARABLE_VALUE;
+            return notComparableValue;
         }
     }
 };
@@ -92,7 +92,7 @@ public:
     ~ShapeXYDistance() override = default;
 
 protected:
-    virtual inline double computeDistance(const Shape* lhs, const Shape* rhs) const
+    virtual inline double ComputeDistance(const Shape* lhs, const Shape* rhs) const
     {
         return (meanSquaredError(lhs->x, rhs->x) + meanSquaredError(lhs->y, rhs->y)) / 2;
     }
@@ -108,18 +108,18 @@ public:
     MasterRenderItemDistance() = default;
      ~MasterRenderItemDistance() override
     {
-        for (DistanceMetricMap::iterator it = _distanceMetricMap.begin(); it != _distanceMetricMap.end(); ++it)
+        for (DistanceMetricMap::iterator it = m_distanceMetricMap.begin(); it != m_distanceMetricMap.end(); ++it)
             delete (it->second);
-        _distanceMetricMap.clear();
+        m_distanceMetricMap.clear();
     }
 
-    inline void addMetric(RenderItemDistanceMetric* fun)
+    inline void AddMetric(RenderItemDistanceMetric* fun)
     {
-        _distanceMetricMap[fun->typeIdPair()] = fun;
+        m_distanceMetricMap[fun->TypeIds()] = fun;
     }
 
 protected:
-    virtual inline double computeDistance(const RenderItem* lhs, const RenderItem* rhs) const
+    virtual inline double ComputeDistance(const RenderItem* lhs, const RenderItem* rhs) const
     {
 
         RenderItemDistanceMetric* metric;
@@ -129,22 +129,22 @@ protected:
 
         // If specialized metric exists, use it to get higher granularity
         // of correctness
-        if (_distanceMetricMap.count(pair))
+        if (m_distanceMetricMap.count(pair))
         {
-            metric = _distanceMetricMap[pair];
+            metric = m_distanceMetricMap[pair];
         }
-        else if (_distanceMetricMap.count(pair = TypeIdPair(typeid(rhs).name(), typeid(lhs).name())))
+        else if (m_distanceMetricMap.count(pair = TypeIdPair(typeid(rhs).name(), typeid(lhs).name())))
         {
-            metric = _distanceMetricMap[pair];
+            metric = m_distanceMetricMap[pair];
         }
         else
         {// Failing that, use rtti && shape distance if its a shape type
 
-            const double rttiError = _rttiDistance(lhs, rhs);
+            const double rttiError = m_rttiDistance(lhs, rhs);
 
             /// @bug This is a non elegant approach to supporting shape distance
-            if (rttiError == 0 && _shapeXYDistance.supported(lhs, rhs))
-                return _shapeXYDistance(lhs, rhs);
+            if (rttiError == 0 && m_shapeXYDistance.Supported(lhs, rhs))
+                return m_shapeXYDistance(lhs, rhs);
             else
                 return rttiError;
         }
@@ -153,9 +153,9 @@ protected:
     }
 
 private:
-    mutable RTIRenderItemDistance _rttiDistance;
-    mutable ShapeXYDistance _shapeXYDistance;
-    mutable DistanceMetricMap _distanceMetricMap;
+    mutable RTIRenderItemDistance m_rttiDistance;
+    mutable ShapeXYDistance m_shapeXYDistance;
+    mutable DistanceMetricMap m_distanceMetricMap;
 };
 
 #endif /* RenderItemDISTANCEMETRIC_H_ */
