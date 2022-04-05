@@ -73,10 +73,6 @@ class TimeKeeper;
 
 class Pipeline;
 
-class RenderItemMatcher;
-
-class MasterRenderItemMerge;
-
 class ProjectM
 {
 public:
@@ -376,8 +372,6 @@ private:
     std::unique_ptr<Preset> m_activePreset;                    //!< Currently loaded preset.
     std::unique_ptr<Preset> m_activePreset2;                   //!< Destination preset when smooth preset switching.
     std::unique_ptr<TimeKeeper> m_timeKeeper;                  //!< Keeps the different timers used to render and switch presets.
-    std::unique_ptr<RenderItemMatcher> m_matcher;              //!< Render item matcher for preset transitions.
-    std::unique_ptr<MasterRenderItemMerge> m_merger;           //!< Render item merger for preset transitions.
 
 #if USE_THREADS
     mutable std::recursive_mutex m_presetSwitchMutex; //!< Mutex for locking preset switching while rendering and vice versa.
