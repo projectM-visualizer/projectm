@@ -142,16 +142,10 @@ public:
 
     void RenderFrame();
 
-    Pipeline* RenderFrameOnlyPass1(Pipeline* pPipeline);
-
-    void RenderFrameOnlyPass2(Pipeline* pPipeline, int xoffset, int yoffset, int eye);
-
-    void RenderFrameEndOnSeparatePasses(Pipeline* pPipeline);
-
     unsigned InitRenderToTexture();
 
     void KeyHandler(projectMEvent event,
-                     projectMKeycode keycode, projectMModifier modifier);
+                    projectMKeycode keycode, projectMModifier modifier);
 
     void SetTextureSize(size_t size);
 
@@ -289,7 +283,6 @@ public:
     /// Returns the size of the play list
     unsigned int PlaylistSize() const;
 
-    void EvaluateSecondPreset();
 
     inline void SetShuffleEnabled(bool value)
     {
@@ -305,38 +298,20 @@ public:
     }
 
     /// Occurs when active preset has switched. Switched to index is returned
-    virtual void PresetSwitchedEvent(bool /*isHardCut*/, size_t /*index*/) const
-    {
-    };
+    virtual void PresetSwitchedEvent(bool /*isHardCut*/, size_t /*index*/) const {};
 
-    virtual void ShuffleEnabledValueChanged(bool /*isEnabled*/) const
-    {
-    };
+    virtual void ShuffleEnabledValueChanged(bool /*isEnabled*/) const {};
 
-    virtual void PresetSwitchFailedEvent(bool /*hardCut*/, unsigned int /*index*/, const std::string& /*message*/) const
-    {
-    };
+    virtual void PresetSwitchFailedEvent(bool /*hardCut*/, unsigned int /*index*/, const std::string& /*message*/) const {};
 
 
     /// Occurs whenever preset rating has changed via ChangePresetRating() method
-    virtual void PresetRatingChanged(unsigned int /*index*/, int /*rating*/, PresetRatingType /*ratingType*/) const
-    {
-    };
+    virtual void PresetRatingChanged(unsigned int /*index*/, int /*rating*/, PresetRatingType /*ratingType*/) const {};
 
 
     inline Pcm& Pcm()
     {
         return m_pcm;
-    }
-
-    class PipelineContext& PipelineContext()
-    {
-        return *m_pipelineContext;
-    }
-
-    class PipelineContext& PipelineContext2()
-    {
-        return *m_pipelineContext2;
     }
 
     /// Get the preset index given a name
@@ -366,6 +341,23 @@ public:
     void DefaultKeyHandler(projectMEvent event, projectMKeycode keycode);
 
 private:
+    void EvaluateSecondPreset();
+
+    Pipeline* RenderFrameOnlyPass1(Pipeline* pPipeline);
+
+    void RenderFrameOnlyPass2(Pipeline* pPipeline, int xoffset, int yoffset, int eye);
+
+    void RenderFrameEndOnSeparatePasses(Pipeline* pPipeline);
+
+    class PipelineContext& PipelineContext()
+    {
+        return *m_pipelineContext;
+    }
+
+    class PipelineContext& PipelineContext2()
+    {
+        return *m_pipelineContext2;
+    }
 
     void ReadConfig(const std::string& configFile);
 
@@ -389,39 +381,42 @@ private:
 
     void RecreateRenderer();
 
-    class Pcm m_pcm; //!< Audio data buffer and analyzer instance.
+    #if USE_THREADS
 
-    class Settings m_settings; //!< The projectM Settings.
+        void ThreadWorker();
 
-    Flags m_flags{ Flags::None }; //!< Behaviour flags.
+    #endif
 
-    std::vector<int> m_presetHistory; //!< List of previously played preset indices.
+    class Pcm m_pcm;//!< Audio data buffer and analyzer instance.
+
+    class Settings m_settings;//!< The projectM Settings.
+
+    Flags m_flags{Flags::None};//!< Behaviour flags.
+
+    std::vector<int> m_presetHistory;//!< List of previously played preset indices.
     std::vector<int> m_presetFuture; //!< List of preset indices queued for playing.
 
     /** Timing information */
-    int m_count{ 0 }; //!< Rendered frame count since start
+    int m_count{0};//!< Rendered frame count since start
 
-    bool m_errorLoadingCurrentPreset{ false }; //!< Error flag for preset loading errors.
+    bool m_errorLoadingCurrentPreset{false};//!< Error flag for preset loading errors.
 
-    std::unique_ptr<Renderer> m_renderer; //!< The Preset renderer.
-    std::unique_ptr<BeatDetect> m_beatDetect; //!< The beat detection class.
+    std::unique_ptr<Renderer> m_renderer;                     //!< The Preset renderer.
+    std::unique_ptr<BeatDetect> m_beatDetect;                 //!< The beat detection class.
     std::unique_ptr<class PipelineContext> m_pipelineContext; //!< Pipeline context for the first/current preset.
-    std::unique_ptr<class PipelineContext> m_pipelineContext2; //!< Pipeline context for the next/transitioning preset.
-    std::unique_ptr<PresetIterator> m_presetPos; //!< The current position of the directory iterator.
-    std::unique_ptr<PresetLoader> m_presetLoader; //!< Required by the preset chooser. Manages a loaded preset directory.
-    std::unique_ptr<PresetChooser> m_presetChooser; //!< Provides accessor functions to choose presets.
-    std::unique_ptr<Preset> m_activePreset; //!< Currently loaded preset.
-    std::unique_ptr<Preset> m_activePreset2; //!< Destination preset when smooth preset switching.
-    std::unique_ptr<TimeKeeper> m_timeKeeper; //!< Keeps the different timers used to render and switch presets.
-    std::unique_ptr<RenderItemMatcher> m_matcher; //!< Render item matcher for preset transitions.
-    std::unique_ptr<MasterRenderItemMerge> m_merger; //!< Render item merger for preset transitions.
+    std::unique_ptr<class PipelineContext> m_pipelineContext2;//!< Pipeline context for the next/transitioning preset.
+    std::unique_ptr<PresetIterator> m_presetPos;              //!< The current position of the directory iterator.
+    std::unique_ptr<PresetLoader> m_presetLoader;             //!< Required by the preset chooser. Manages a loaded preset directory.
+    std::unique_ptr<PresetChooser> m_presetChooser;           //!< Provides accessor functions to choose presets.
+    std::unique_ptr<Preset> m_activePreset;                   //!< Currently loaded preset.
+    std::unique_ptr<Preset> m_activePreset2;                  //!< Destination preset when smooth preset switching.
+    std::unique_ptr<TimeKeeper> m_timeKeeper;                 //!< Keeps the different timers used to render and switch presets.
+    std::unique_ptr<RenderItemMatcher> m_matcher;             //!< Render item matcher for preset transitions.
+    std::unique_ptr<MasterRenderItemMerge> m_merger;          //!< Render item merger for preset transitions.
 
 #if USE_THREADS
-
-    void ThreadWorker();
-
-    mutable std::recursive_mutex m_presetSwitchMutex; //!< Mutex for locking preset switching while rendering and vice versa.
-    std::thread m_workerThread; //!< Background worker for preloading presets.
-    BackgroundWorkerSync m_workerSync; //!< Background work synchronizer.
+    mutable std::recursive_mutex m_presetSwitchMutex;//!< Mutex for locking preset switching while rendering and vice versa.
+    std::thread m_workerThread;                      //!< Background worker for preloading presets.
+    BackgroundWorkerSync m_workerSync;               //!< Background work synchronizer.
 #endif
 };
