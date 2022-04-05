@@ -88,21 +88,6 @@ typedef enum
     BROWSER_INTERFACE
 } interface_t;
 
-/// A functor class that allows users of this library to specify random preset behavior
-class RandomizerFunctor
-{
-
-public:
-    RandomizerFunctor(PresetChooser& chooser);
-
-    virtual ~RandomizerFunctor();
-
-    virtual double operator()(int index);
-
-private:
-    const PresetChooser& m_chooser;
-};
-
 class ProjectM
 {
 public:
@@ -233,17 +218,6 @@ public:
 
     /// Removes a preset from the play list. If it is playing then it will continue as normal until next switch
     void removePreset(unsigned int index);
-
-    /// Sets the randomization functor. If set to null, the traversal will move in order according to the playlist
-    void setRandomizer(RandomizerFunctor* functor);
-
-    /// Tell projectM to play a particular preset when it chooses to switch
-    /// If the preset is locked the queued item will be not switched to until the lock is released
-    /// Subsequent calls to this function effectively nullifies previous calls.
-    void queuePreset(unsigned int index);
-
-    /// Returns true if a preset is queued up to play next
-    bool isPresetQueued() const;
 
     /// Removes entire playlist, The currently loaded preset will end up sticking until new presets are added
     void clearPlaylist();
@@ -387,7 +361,6 @@ public:
     void default_key_handler(projectMEvent event, projectMKeycode keycode);
 
 private:
-    double sampledPresetDuration();
 
     void readConfig(const std::string& configFile);
 
@@ -396,8 +369,6 @@ private:
     void projectM_init(int gx, int gy, int fps, int texsize, int width, int height);
 
     void projectM_reset();
-
-    void projectM_initengine();
 
     void projectM_resetengine();
 
