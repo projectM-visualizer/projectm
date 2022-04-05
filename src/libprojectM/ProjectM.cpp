@@ -27,8 +27,6 @@
 #include "PipelineMerger.hpp"
 #include "Preset.hpp"
 #include "PresetChooser.hpp"
-#include "RenderItemMatcher.hpp"
-#include "RenderItemMergeFunction.hpp"
 #include "Renderer.hpp"
 #include "TimeKeeper.hpp"
 #include "fatal.h"
@@ -330,11 +328,11 @@ auto ProjectM::RenderFrameOnlyPass1(Pipeline* pipeline) -> Pipeline*
 
         pipeline->setStaticPerPixel(Settings().meshX, Settings().meshY);
 
-        assert(m_matcher);
-        PipelineMerger::mergePipelines(m_activePreset->pipeline(),
-                                       m_activePreset2->pipeline(), *pipeline,
-                                       m_matcher->matchResults(),
-                                       *m_merger, m_timeKeeper->SmoothRatio());
+        PipelineMerger::mergePipelines(
+            m_activePreset->pipeline(),
+            m_activePreset2->pipeline(),
+            *pipeline,
+            m_timeKeeper->SmoothRatio());
 
         m_renderer->RenderFrameOnlyPass1(*pipeline, PipelineContext());
 
@@ -504,14 +502,6 @@ auto ProjectM::InitializePresetTools() -> void
 
     m_renderer->SetPipeline(m_activePreset->pipeline());
 
-    m_matcher = std::make_unique<RenderItemMatcher>();
-    m_merger = std::make_unique<MasterRenderItemMerge>();
-    m_merger->add(new ShapeMerge());
-    m_merger->add(new BorderMerge());
-
-    /// @bug These should be requested by the preset factories.
-    m_matcher->distanceFunction().addMetric(new ShapeXYDistance());
-
     ResetEngine();
 }
 
@@ -596,7 +586,7 @@ void ProjectM::PopulatePresetMenu()
             for (unsigned int i = 0; i < PlaylistSize(); i++)
             { // loop over all presets
                 if (CaseInsensitiveSubstringFind(PresetName(i), m_renderer->searchText()) != std::string::npos)
-                { // if term matches
+                {                                         // if term matches
                     if (h < m_renderer->textMenuPageSize) // limit to just one page, pagination is not needed.
                     {
                         h++;
