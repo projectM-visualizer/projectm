@@ -58,7 +58,7 @@ ProjectM::~ProjectM()
     DestroyPresetTools();
 }
 
-unsigned ProjectM::InitRenderToTexture()
+auto ProjectM::InitRenderToTexture() -> unsigned
 {
     return m_renderer->initRenderToTexture();
 }
@@ -91,7 +91,7 @@ ProjectM::ProjectM(class Settings settings, Flags flags)
 }
 
 
-bool ProjectM::WriteConfig(const std::string& configFile, const class Settings& settings)
+auto ProjectM::WriteConfig(const std::string& configFile, const class Settings& settings) -> bool
 {
 
     ConfigFile config(configFile);
@@ -284,8 +284,8 @@ void ProjectM::RenderFrame()
 }
 
 
-Pipeline* ProjectM::RenderFrameOnlyPass1(
-    Pipeline* pPipeline) /*pPipeline is a pointer to a Pipeline for use in pass 2. returns the pointer if it was used, else returns NULL */
+auto ProjectM::RenderFrameOnlyPass1(
+    Pipeline* pPipeline) -> Pipeline* /*pPipeline is a pointer to a Pipeline for use in pass 2. returns the pointer if it was used, else returns NULL */
 {
 #if USE_THREADS
     std::lock_guard<std::recursive_mutex> guard(m_presetSwitchMutex);
@@ -518,7 +518,7 @@ void ProjectM::ResetOpenGL(size_t width, size_t height)
 }
 
 /** Sets the title to display */
-std::string ProjectM::Title() const
+auto ProjectM::Title() const -> std::string
 {
     return m_renderer->title;
 }
@@ -534,7 +534,7 @@ void ProjectM::SetTitle(const std::string& title)
 }
 
 
-int ProjectM::InitializePresetTools(int gx, int gy)
+auto ProjectM::InitializePresetTools(int gx, int gy) -> int
 {
 
     /* Set the seed to the current time in seconds */
@@ -655,8 +655,8 @@ void ProjectM::RemovePreset(unsigned int index)
 
 }
 
-unsigned int
-ProjectM::AddPresetURL(const std::string& presetURL, const std::string& presetName, const RatingList& ratingList)
+auto
+ProjectM::AddPresetURL(const std::string& presetURL, const std::string& presetName, const RatingList& ratingList) -> unsigned int
 {
     bool restorePosition = false;
 
@@ -904,7 +904,7 @@ void ProjectM::SelectNext(const bool hardCut)
  * Switches the pipeline and renderer to the current preset.
  * @return the resulting Preset object, or nullptr on failure.
  */
-std::unique_ptr<Preset> ProjectM::SwitchToCurrentPreset()
+auto ProjectM::SwitchToCurrentPreset() -> std::unique_ptr<Preset>
 {
     std::unique_ptr<Preset> new_preset;
 #if USE_THREADS
@@ -953,7 +953,7 @@ void ProjectM::SetPresetLocked(bool isLocked)
 }
 
 // check if search menu is up and you have search terms (2 chars). nomin means you don't care about search terms.
-bool ProjectM::TextInputActive(bool nomin) const
+auto ProjectM::TextInputActive(bool nomin) const -> bool
 {
     if (m_renderer->showsearch && (m_renderer->searchText().length() >= 2 || nomin))
     {
@@ -965,22 +965,22 @@ bool ProjectM::TextInputActive(bool nomin) const
     }
 }
 
-bool ProjectM::PresetLocked() const
+auto ProjectM::PresetLocked() const -> bool
 {
     return m_renderer->noSwitch;
 }
 
-std::string ProjectM::PresetURL(unsigned int index) const
+auto ProjectM::PresetURL(unsigned int index) const -> std::string
 {
     return m_presetLoader->getPresetURL(index);
 }
 
-int ProjectM::PresetRating(unsigned int index, const PresetRatingType ratingType) const
+auto ProjectM::PresetRating(unsigned int index, const PresetRatingType ratingType) const -> int
 {
     return m_presetLoader->getPresetRating(index, ratingType);
 }
 
-std::string ProjectM::PresetName(unsigned int index) const
+auto ProjectM::PresetName(unsigned int index) const -> std::string
 {
     return m_presetLoader->getPresetName(index);
 }
@@ -996,7 +996,7 @@ void ProjectM::SelectPresetPosition(unsigned int index)
     *m_presetPos = m_presetChooser->begin(index);
 }
 
-bool ProjectM::SelectedPresetIndex(unsigned int& index) const
+auto ProjectM::SelectedPresetIndex(unsigned int& index) const -> bool
 {
 
     if (*m_presetPos == m_presetChooser->end())
@@ -1009,13 +1009,13 @@ bool ProjectM::SelectedPresetIndex(unsigned int& index) const
 }
 
 
-bool ProjectM::PresetPositionValid() const
+auto ProjectM::PresetPositionValid() const -> bool
 {
 
     return (*m_presetPos != m_presetChooser->end());
 }
 
-unsigned int ProjectM::PlaylistSize() const
+auto ProjectM::PlaylistSize() const -> unsigned int
 {
     return m_presetLoader->size();
 }
@@ -1081,12 +1081,12 @@ void ProjectM::SetTextureSize(size_t size)
     RecreateRenderer();
 }
 
-size_t ProjectM::TextureSize() const
+auto ProjectM::TextureSize() const -> size_t
 {
     return m_settings.textureSize;
 }
 
-double ProjectM::SoftCutDuration() const
+auto ProjectM::SoftCutDuration() const -> double
 {
     return m_settings.softCutDuration;
 }
@@ -1103,7 +1103,7 @@ void ProjectM::SetSoftCutDuration(double seconds)
     m_timeKeeper->ChangeSoftCutDuration(seconds);
 }
 
-double ProjectM::HardCutDuration() const
+auto ProjectM::HardCutDuration() const -> double
 {
     return m_settings.hardCutDuration;
 }
@@ -1120,7 +1120,7 @@ void ProjectM::SetHardCutDuration(double seconds)
     m_timeKeeper->ChangeHardCutDuration(seconds);
 }
 
-bool ProjectM::HardCutEnabled() const
+auto ProjectM::HardCutEnabled() const -> bool
 {
     return m_settings.hardCutEnabled;
 }
@@ -1130,7 +1130,7 @@ void ProjectM::SetHardCutEnabled(bool enabled)
     m_settings.hardCutEnabled = enabled;
 }
 
-float ProjectM::HardCutSensitivity() const
+auto ProjectM::HardCutSensitivity() const -> float
 {
     return m_settings.hardCutSensitivity;
 }
@@ -1150,7 +1150,7 @@ void ProjectM::SetPresetDuration(double seconds)
     m_timeKeeper->ChangePresetDuration(seconds);
 }
 
-bool ProjectM::AspectCorrection() const
+auto ProjectM::AspectCorrection() const -> bool
 {
     return m_settings.aspectCorrection;
 }
@@ -1161,7 +1161,7 @@ void ProjectM::SetAspectCorrection(bool enabled)
     m_renderer->correction = enabled;
 }
 
-float ProjectM::EasterEgg() const
+auto ProjectM::EasterEgg() const -> float
 {
     return m_settings.easterEgg;
 }
@@ -1196,7 +1196,7 @@ void ProjectM::ToggleSearchText()
 }
 
 // get index from search results based on preset name
-unsigned int ProjectM::SearchIndex(const std::string& name) const
+auto ProjectM::SearchIndex(const std::string& name) const -> unsigned int
 {
     for (auto& it: m_renderer->m_presetList)
     {
@@ -1209,7 +1209,7 @@ unsigned int ProjectM::SearchIndex(const std::string& name) const
 }
 
 // get preset index based on preset name
-unsigned int ProjectM::PresetIndex(const std::string& url) const
+auto ProjectM::PresetIndex(const std::string& url) const -> unsigned int
 {
     return m_presetLoader->getPresetIndex(url);
 }
@@ -1229,7 +1229,7 @@ void ProjectM::SelectPresetByName(std::string name, bool hardCut)
     SelectPreset(index);
 }
 
-std::string ProjectM::SearchText() const
+auto ProjectM::SearchText() const -> std::string
 {
     return m_renderer->getSearchText();
 }

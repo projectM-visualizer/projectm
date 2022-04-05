@@ -136,38 +136,38 @@ public:
 
     void ResetTextures();
 
-    std::string Title() const;
+    auto Title() const -> std::string;
 
     void SetTitle(const std::string& title);
 
     void RenderFrame();
 
-    unsigned InitRenderToTexture();
+    auto InitRenderToTexture() -> unsigned;
 
     void KeyHandler(projectMEvent event,
                     projectMKeycode keycode, projectMModifier modifier);
 
     void SetTextureSize(size_t size);
 
-    size_t TextureSize() const;
+    auto TextureSize() const -> size_t;
 
-    double SoftCutDuration() const;
+    auto SoftCutDuration() const -> double;
 
     void SetSoftCutDuration(int seconds);
 
     void SetSoftCutDuration(double seconds);
 
-    double HardCutDuration() const;
+    auto HardCutDuration() const -> double;
 
     void SetHardCutDuration(int seconds);
 
     void SetHardCutDuration(double seconds);
 
-    bool HardCutEnabled() const;
+    auto HardCutEnabled() const -> bool;
 
     void SetHardCutEnabled(bool enabled);
 
-    float HardCutSensitivity() const;
+    auto HardCutSensitivity() const -> float;
 
     void SetHardCutSensitivity(float sensitivity);
 
@@ -175,11 +175,11 @@ public:
 
     void SetPresetDuration(double seconds);
 
-    bool AspectCorrection() const;
+    auto AspectCorrection() const -> bool;
 
     void SetAspectCorrection(bool enabled);
 
-    float EasterEgg() const;
+    auto EasterEgg() const -> float;
 
     void SetEasterEgg(float value);
 
@@ -200,13 +200,13 @@ public:
     void ToggleSearchText(); // turn search text input on / off
     void SetToastMessage(const std::string& toastMessage);
 
-    const Settings& Settings() const
+    auto Settings() const -> const Settings&
     {
         return m_settings;
     }
 
     /// Writes a Settings configuration to the specified file
-    static bool WriteConfig(const std::string& configFile, const class Settings& settings);
+    static auto WriteConfig(const std::string& configFile, const class Settings& settings) -> bool;
 
     /// Sets preset iterator position to the passed in index
     void SelectPresetPosition(unsigned int index);
@@ -227,18 +227,18 @@ public:
     void SetPresetLocked(bool isLocked);
 
     /// Returns true if the active preset is locked
-    bool PresetLocked() const;
+    auto PresetLocked() const -> bool;
 
     /// Returns true if the text based search menu is up.
-    bool TextInputActive(bool nomin = false) const;
+    auto TextInputActive(bool nomin = false) const -> bool;
 
-    unsigned int PresetIndex(const std::string& url) const;
+    auto PresetIndex(const std::string& url) const -> unsigned int;
 
     /// Plays a preset immediately when given preset name
     void SelectPresetByName(std::string name, bool hardCut = true);
 
     // search based on keystroke
-    std::string SearchText() const;
+    auto SearchText() const -> std::string;
 
     // search based on keystroke
     void SetSearchText(const std::string& searchKey);
@@ -253,11 +253,11 @@ public:
     /// preset was removed from the playlist, this function will return the element
     /// before active preset (thus the next in order preset is invariant with respect
     /// to the removal)
-    bool SelectedPresetIndex(unsigned int& index) const;
+    auto SelectedPresetIndex(unsigned int& index) const -> bool;
 
     /// Add a preset url to the play list. Appended to bottom. Returns index of preset
-    unsigned int
-    AddPresetURL(const std::string& presetURL, const std::string& presetName, const RatingList& ratingList);
+    auto
+    AddPresetURL(const std::string& presetURL, const std::string& presetName, const RatingList& ratingList) -> unsigned int;
 
     /// Insert a preset url to the play list at the suggested index.
     void InsertPresetURL(unsigned int index,
@@ -265,23 +265,23 @@ public:
 
     /// Returns true if the selected preset position points to an actual preset in the
     /// currently loaded playlist
-    bool PresetPositionValid() const;
+    auto PresetPositionValid() const -> bool;
 
     /// Returns the url associated with a preset index
-    std::string PresetURL(unsigned int index) const;
+    auto PresetURL(unsigned int index) const -> std::string;
 
     /// Returns the preset name associated with a preset index
-    std::string PresetName(unsigned int index) const;
+    auto PresetName(unsigned int index) const -> std::string;
 
     void ChangePresetName(unsigned int index, std::string name);
 
     /// Returns the rating associated with a preset index
-    int PresetRating(unsigned int index, const PresetRatingType ratingType) const;
+    auto PresetRating(unsigned int index, const PresetRatingType ratingType) const -> int;
 
     void ChangePresetRating(unsigned int index, int rating, const PresetRatingType ratingType);
 
     /// Returns the size of the play list
-    unsigned int PlaylistSize() const;
+    auto PlaylistSize() const -> unsigned int;
 
 
     inline void SetShuffleEnabled(bool value)
@@ -292,7 +292,7 @@ public:
     }
 
 
-    inline bool ShuffleEnabled() const
+    inline auto ShuffleEnabled() const -> bool
     {
         return m_settings.shuffleEnabled;
     }
@@ -309,13 +309,13 @@ public:
     virtual void PresetRatingChanged(unsigned int /*index*/, int /*rating*/, PresetRatingType /*ratingType*/) const {};
 
 
-    inline Pcm& Pcm()
+    inline auto Pcm() -> Pcm&
     {
         return m_pcm;
     }
 
     /// Get the preset index given a name
-    unsigned int SearchIndex(const std::string& name) const;
+    auto SearchIndex(const std::string& name) const -> unsigned int;
 
     void SelectPrevious(const bool);
 
@@ -323,17 +323,17 @@ public:
 
     void SelectRandom(const bool);
 
-    int WindowWidth()
+    auto WindowWidth() -> int
     {
         return m_settings.windowWidth;
     }
 
-    int WindowHeight()
+    auto WindowHeight() -> int
     {
         return m_settings.windowHeight;
     }
 
-    bool ErrorLoadingCurrentPreset() const
+    auto ErrorLoadingCurrentPreset() const -> bool
     {
         return m_errorLoadingCurrentPreset;
     }
@@ -343,18 +343,18 @@ public:
 private:
     void EvaluateSecondPreset();
 
-    Pipeline* RenderFrameOnlyPass1(Pipeline* pPipeline);
+    auto RenderFrameOnlyPass1(Pipeline* pPipeline) -> Pipeline*;
 
     void RenderFrameOnlyPass2(Pipeline* pPipeline, int xoffset, int yoffset, int eye);
 
     void RenderFrameEndOnSeparatePasses(Pipeline* pPipeline);
 
-    class PipelineContext& PipelineContext()
+    auto PipelineContext() -> class PipelineContext&
     {
         return *m_pipelineContext;
     }
 
-    class PipelineContext& PipelineContext2()
+    auto PipelineContext2() -> class PipelineContext&
     {
         return *m_pipelineContext2;
     }
@@ -370,14 +370,14 @@ private:
     void ResetEngine();
 
     /// Initializes preset loading / management libraries
-    int InitializePresetTools(int gx, int gy);
+    auto InitializePresetTools(int gx, int gy) -> int;
 
     /// Deinitialize all preset related tools. Usually done before projectM cleanup
     void DestroyPresetTools();
 
-    std::unique_ptr<Preset> SwitchToCurrentPreset();
+    auto SwitchToCurrentPreset() -> std::unique_ptr<Preset>;
 
-    bool StartPresetTransition(bool hard_cut);
+    auto StartPresetTransition(bool hard_cut) -> bool;
 
     void RecreateRenderer();
 
