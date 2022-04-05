@@ -6,12 +6,12 @@
 #include <utility>
 
 projectMWrapper::projectMWrapper(std::string configFile, int flags)
-    : ProjectM(std::move(configFile), flags)
+    : ProjectM(std::move(configFile), static_cast<ProjectM::Flags>(flags))
 {
 }
 
 projectMWrapper::projectMWrapper(ProjectM::Settings settings, int flags)
-    : ProjectM(std::move(settings), flags)
+    : ProjectM(std::move(settings), static_cast<ProjectM::Flags>(flags))
 {
 }
 

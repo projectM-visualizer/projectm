@@ -69,7 +69,7 @@ void ProjectM::projectM_resetTextures()
 }
 
 
-ProjectM::ProjectM(std::string config_file, int flags)
+ProjectM::ProjectM(std::string config_file, Flags flags)
     : m_flags(flags)
     , m_pipelineContext(new PipelineContext())
     , m_pipelineContext2(new PipelineContext())
@@ -80,7 +80,7 @@ ProjectM::ProjectM(std::string config_file, int flags)
 
 }
 
-ProjectM::ProjectM(Settings settings, int flags)
+ProjectM::ProjectM(Settings settings, Flags flags)
     : m_flags(flags)
     , m_pipelineContext(new PipelineContext())
     , m_pipelineContext2(new PipelineContext())
@@ -540,7 +540,11 @@ int ProjectM::initPresetTools(int gx, int gy)
     /* Set the seed to the current time in seconds */
     srand(time(NULL));
 
-    std::string url = (m_flags & FLAG_DISABLE_PLAYLIST_LOAD) ? std::string() : settings().presetURL;
+    std::string url;
+    if ((m_flags & Flags::DisablePlaylistLoad) == Flags::DisablePlaylistLoad)
+    {
+        url = settings().presetURL;
+    }
 
     if ((m_presetLoader = std::make_unique<PresetLoader>(gx, gy, url)) == 0)
     {

@@ -91,8 +91,15 @@ typedef enum
 class ProjectM
 {
 public:
-    static const int FLAG_NONE = 0;
-    static const int FLAG_DISABLE_PLAYLIST_LOAD = 1 << 0;
+    /*
+     * Behaviour flags for the projectM instance. Currently, it's only used to prevent automatically filling
+     * the preset playlist by traversing the preset path for files.
+     */
+    enum Flags
+    {
+        None = 0, //!< No special flags.
+        DisablePlaylistLoad = 1 << 0 //!< Prevent automatic playlist loading on startup.
+    };
 
     class Settings
     {
@@ -119,9 +126,9 @@ public:
         bool softCutRatingsEnabled{ false };
     };
 
-    ProjectM(std::string config_file, int flags = FLAG_NONE);
+    ProjectM(std::string config_file, Flags flags = Flags::None);
 
-    ProjectM(Settings settings, int flags = FLAG_NONE);
+    ProjectM(Settings settings, Flags flags = Flags::None);
 
     virtual ~ProjectM();
 
@@ -388,7 +395,7 @@ private:
 
     Settings m_settings; //!< The projectM settings.
 
-    int m_flags{ 0 }; //!< Behaviour flags.
+    Flags m_flags{ Flags::None }; //!< Behaviour flags.
 
     std::vector<int> m_presetHistory; //!< List of previously played preset indices.
     std::vector<int> m_presetFuture; //!< List of preset indices queued for playing.
