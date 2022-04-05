@@ -71,7 +71,7 @@ void refreshConsole() {
 
 }
 
-void ProjectM::key_handler(projectMEvent event,
+void ProjectM::KeyHandler(projectMEvent event,
                            projectMKeycode keycode, projectMModifier modifier ) {
 
 	switch( event ) {
@@ -96,10 +96,10 @@ void ProjectM::key_handler(projectMEvent event,
 //	      browser_key_handler(event,keycode,modifier);
 	      break;
 	    case DEFAULT_INTERFACE:
-	      default_key_handler(event,keycode);
+            DefaultKeyHandler(event, keycode);
 	      break;
 	    default:
-	      default_key_handler(event,keycode);
+            DefaultKeyHandler(event, keycode);
 	      break;
 
 	    }
@@ -110,7 +110,7 @@ void ProjectM::key_handler(projectMEvent event,
 	}
 }
 
-void ProjectM::default_key_handler(projectMEvent event, projectMKeycode keycode) {
+void ProjectM::DefaultKeyHandler(projectMEvent event, projectMKeycode keycode) {
 
 	switch( event ) {
 
@@ -120,47 +120,47 @@ void ProjectM::default_key_handler(projectMEvent event, projectMKeycode keycode)
 		{
 		case PROJECTM_K_HOME:
 			if (m_renderer->showmenu) {
-				if (!isTextInputActive()) {
-					selectPreset(0);  // jump to top of presets.
+				if (!TextInputActive()) {
+                    SelectPreset(0);  // jump to top of presets.
 				} 
 				else {
                     m_renderer->m_activePresetID = 1; // jump to top of search results.
-					selectPresetByName(m_renderer->m_presetList[0].name,true);
+                    SelectPresetByName(m_renderer->m_presetList[0].name, true);
 				}
 			}
 			break;
 		case PROJECTM_K_END:
 			if (m_renderer->showmenu) {
-				if (!isTextInputActive()) {
-					selectPreset(m_presetLoader->size() - 1);  // jump to bottom of presets.
+				if (!TextInputActive()) {
+                    SelectPreset(m_presetLoader->size() - 1);  // jump to bottom of presets.
 				}
 				else {
                     m_renderer->m_activePresetID = m_renderer->m_presetList.size();  // jump to top of search results.
-					selectPresetByName(m_renderer->m_presetList[m_renderer->m_activePresetID - 1].name,true);
+                    SelectPresetByName(m_renderer->m_presetList[m_renderer->m_activePresetID - 1].name, true);
 				}
 			}
 			break;
 		case PROJECTM_K_PAGEUP:
-			if (isTextInputActive()) break; // don't handle this key if search menu is up.
+			if (TextInputActive()) break; // don't handle this key if search menu is up.
 			if (m_renderer->showmenu) {
 				int upPreset = m_presetPos->lastIndex() - (m_renderer->textMenuPageSize / 2.0f); // jump up by page size / 2
 				if (upPreset < 0) // handle lower boundary
 					upPreset = m_presetLoader->size() - 1;
-				selectPreset(upPreset);  // jump up menu half a page.
+                SelectPreset(upPreset);  // jump up menu half a page.
 			}
 			break;
 		case PROJECTM_K_PAGEDOWN:
-			if (isTextInputActive()) break; // don't handle this key if search menu is up.
+			if (TextInputActive()) break; // don't handle this key if search menu is up.
 			if (m_renderer->showmenu) {
 				int downPreset = m_presetPos->lastIndex() + (m_renderer->textMenuPageSize / 2.0f); // jump down by page size / 2
 				if (static_cast<std::size_t>(downPreset) >= (m_presetLoader->size() - 1)) // handle upper boundary
 					downPreset = 0;
-				selectPreset(downPreset); // jump down menu half a page.
+                SelectPreset(downPreset); // jump down menu half a page.
 			}
 			break;
 		case PROJECTM_K_UP:
 			if (m_renderer->showmenu) {
-				selectPrevious(true);
+                SelectPrevious(true);
 			}
 			else {
                 m_beatDetect->beatSensitivity += 0.01;
@@ -171,7 +171,7 @@ void ProjectM::default_key_handler(projectMEvent event, projectMKeycode keycode)
 			break;
 		case PROJECTM_K_DOWN:
 			if (m_renderer->showmenu) {
-				selectNext(true);
+                SelectNext(true);
 			}
 			else {
                 m_beatDetect->beatSensitivity -= 0.01;
@@ -181,21 +181,21 @@ void ProjectM::default_key_handler(projectMEvent event, projectMKeycode keycode)
 			}
 			break;
 		case PROJECTM_K_h:
-			if (isTextInputActive(true)) break; // disable when searching.
+			if (TextInputActive(true)) break; // disable when searching.
             m_renderer->showhelp = !m_renderer->showhelp;
             m_renderer->showstats = false;
             m_renderer->showmenu = false;
 			break;
 		case PROJECTM_K_F1:
-			if (isTextInputActive(true)) break; // disable when searching.
+			if (TextInputActive(true)) break; // disable when searching.
             m_renderer->showhelp = !m_renderer->showhelp;
             m_renderer->showstats = false;
             m_renderer->showmenu = false;
 			break;
 		case PROJECTM_K_y:
-			if (isTextInputActive(true)) break; // disable when searching.
-			this->setShuffleEnabled(!this->isShuffleEnabled());
-			if (this->isShuffleEnabled()) {
+			if (TextInputActive(true)) break; // disable when searching.
+            this->SetShuffleEnabled(!this->ShuffleEnabled());
+			if (this->ShuffleEnabled()) {
                 m_renderer->setToastMessage("Shuffle Enabled");
 			}
 			else {
@@ -203,7 +203,7 @@ void ProjectM::default_key_handler(projectMEvent event, projectMKeycode keycode)
 			}
 			break;
 		case PROJECTM_K_F5:
-			if (isTextInputActive(true)) break; // disable when searching.
+			if (TextInputActive(true)) break; // disable when searching.
             m_renderer->showfps = !m_renderer->showfps;
 			// Initialize counters and reset frame count.
             m_renderer->lastTimeFPS = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
@@ -216,7 +216,7 @@ void ProjectM::default_key_handler(projectMEvent event, projectMKeycode keycode)
 			}
 			break;
 		case PROJECTM_K_F4:
-			if (isTextInputActive(true)) break; // disable when searching.
+			if (TextInputActive(true)) break; // disable when searching.
             m_renderer->showstats = !m_renderer->showstats;
 			if (m_renderer->showstats) {
                 m_renderer->showhelp = false;
@@ -224,7 +224,7 @@ void ProjectM::default_key_handler(projectMEvent event, projectMKeycode keycode)
 			}
 			break;
 		case PROJECTM_K_F3: {
-			if (isTextInputActive(true)) break; // disable when searching.
+			if (TextInputActive(true)) break; // disable when searching.
             m_renderer->showpreset = !m_renderer->showpreset;
 			// Hide FPS from screen and replace it with preset name.
 			if (m_renderer->showpreset)
@@ -248,7 +248,7 @@ void ProjectM::default_key_handler(projectMEvent event, projectMKeycode keycode)
 
 		case PROJECTM_K_ESCAPE: {
             m_renderer->showsearch = false; // hide input menu
-			setShuffleEnabled(m_renderer->shuffletrack); // restore shuffle
+            SetShuffleEnabled(m_renderer->shuffletrack); // restore shuffle
             m_renderer->showmenu = false; // hide input
 			break;
 		}
@@ -262,51 +262,51 @@ void ProjectM::default_key_handler(projectMEvent event, projectMKeycode keycode)
 			break;
 		case PROJECTM_K_H:
 		case PROJECTM_K_m:
-			if (isTextInputActive(true)) break; // disable when searching.
+			if (TextInputActive(true)) break; // disable when searching.
             m_renderer->showmenu = !m_renderer->showmenu;
 			if (m_renderer->showmenu) {
                 m_renderer->showfps = false;
                 m_renderer->showhelp = false;
                 m_renderer->showstats = false;
-				populatePresetMenu();
+                PopulatePresetMenu();
 			}
 			break;
 		case PROJECTM_K_M:
-			if (isTextInputActive(true)) break; // disable when searching.
+			if (TextInputActive(true)) break; // disable when searching.
             m_renderer->showmenu = !m_renderer->showmenu;
 			if (m_renderer->showmenu)
 			{
                 m_renderer->showhelp = false;
                 m_renderer->showstats = false;
-				populatePresetMenu();
+                PopulatePresetMenu();
 			}
 			break;
       case PROJECTM_K_n:
-	  	    if (isTextInputActive(true)) break; // disable when searching.
-            selectNext(true);
+	  	    if (TextInputActive(true)) break; // disable when searching.
+            SelectNext(true);
             break;
       case PROJECTM_K_N:
-		    if (isTextInputActive(true)) break; // disable when searching.
-            selectNext(false);
+		    if (TextInputActive(true)) break; // disable when searching.
+            SelectNext(false);
             break;
 	    case PROJECTM_K_r:
-		    if (isTextInputActive(true)) break; // disable when searching.
-		    selectRandom(true);
+		    if (TextInputActive(true)) break; // disable when searching.
+            SelectRandom(true);
 		    break;
 	    case PROJECTM_K_R:
-		    if (isTextInputActive(true)) break; // disable when searching.
-		    selectRandom(false);
+		    if (TextInputActive(true)) break; // disable when searching.
+            SelectRandom(false);
 		    break;
 	    case PROJECTM_K_p:
-	        selectPrevious(true);
+            SelectPrevious(true);
 	        break;
 	    case PROJECTM_K_P:
 	    case PROJECTM_K_BACKSPACE:
-	        selectPrevious(false);
+            SelectPrevious(false);
 	        break;
 	    case PROJECTM_K_l:
-		    if (isTextInputActive(true)) break; // disable when searching.
-		    setPresetLock(!isPresetLocked());
+		    if (TextInputActive(true)) break; // disable when searching.
+            SetPresetLocked(!PresetLocked());
 		    break;
 	    case PROJECTM_K_s:
             m_renderer->studio = !m_renderer->studio;
@@ -318,16 +318,16 @@ void ProjectM::default_key_handler(projectMEvent event, projectMKeycode keycode)
 	    case PROJECTM_K_RETURN:
             m_renderer->toggleSearchText();
 			if (m_renderer->showsearch) {
-                m_renderer->shuffletrack = this->isShuffleEnabled(); // track previous shuffle state.
-				setShuffleEnabled(false); // disable shuffle
+                m_renderer->shuffletrack = this->ShuffleEnabled(); // track previous shuffle state.
+                SetShuffleEnabled(false); // disable shuffle
                 m_renderer->showhelp = false;
                 m_renderer->showstats = false;
                 m_renderer->showtitle = false;
                 m_renderer->showpreset = false;
                 m_renderer->showmenu = true;
-				populatePresetMenu();
+                PopulatePresetMenu();
 			} else {
-				setShuffleEnabled(m_renderer->shuffletrack); // restore shuffle
+                SetShuffleEnabled(m_renderer->shuffletrack); // restore shuffle
                 m_renderer->showmenu = false;
 			}
 			break;
@@ -347,31 +347,31 @@ void ProjectM::default_key_handler(projectMEvent event, projectMKeycode keycode)
 
 	    	unsigned int index;
 
-	    	if (selectedPresetIndex(index)) {
+	    	if (SelectedPresetIndex(index)) {
 
-	    		const int oldRating = getPresetRating(index, HARD_CUT_RATING_TYPE);
+	    		const int oldRating = PresetRating(index, HARD_CUT_RATING_TYPE);
 
 	    		if (oldRating >= 6)
 	    			  break;
 
 	    		const int rating = oldRating + 1;
 
-	    		changePresetRating(index, rating, HARD_CUT_RATING_TYPE);
+                ChangePresetRating(index, rating, HARD_CUT_RATING_TYPE);
 	    	}
 
 	    	break;
 
 	    case PROJECTM_K_MINUS:
-	    	if (selectedPresetIndex(index)) {
+	    	if (SelectedPresetIndex(index)) {
 
-	    		const int oldRating = getPresetRating(index, HARD_CUT_RATING_TYPE);
+	    		const int oldRating = PresetRating(index, HARD_CUT_RATING_TYPE);
 
 	    		if (oldRating <= 1)
 	    			  break;
 
 	    		const int rating = oldRating - 1;
 
-	    		changePresetRating(index, rating, HARD_CUT_RATING_TYPE);
+                ChangePresetRating(index, rating, HARD_CUT_RATING_TYPE);
 	    	}
 	    	break;
 
