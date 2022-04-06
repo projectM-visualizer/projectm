@@ -110,8 +110,10 @@ int BuiltinParams::load_builtin_param_float(const std::string& name, void* engin
    Generally, do this on projectm exit */
 int BuiltinParams::destroy_builtin_param_db()
 {
+    for(auto const& it : builtin_param_tree) {
+        delete it.second;
+    }
 
-    traverse<TraverseFunctors::Delete<Param> >(builtin_param_tree);
     return PROJECTM_SUCCESS;
 }
 

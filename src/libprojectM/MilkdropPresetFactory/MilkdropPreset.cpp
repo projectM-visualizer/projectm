@@ -84,16 +84,23 @@ MilkdropPreset::MilkdropPreset(MilkdropPresetFactory* factory, const std::string
 MilkdropPreset::~MilkdropPreset()
 {
 
-    traverse<TraverseFunctors::Delete<InitCond> >(init_cond_tree);
+    for(auto const& it : init_cond_tree) {
+        delete it.second;
+    }
+    for(auto const& it : per_frame_init_eqn_tree) {
+        delete it.second;
+    }
+    for(auto const& it : per_pixel_eqn_tree) {
+        delete it.second;
+    }
 
-    traverse<TraverseFunctors::Delete<InitCond> >(per_frame_init_eqn_tree);
-
-    traverse<TraverseFunctors::Delete<PerPixelEqn> >(per_pixel_eqn_tree);
     Expr::delete_expr(per_pixel_program);
 
     traverseVector<TraverseFunctors::Delete<PerFrameEqn> >(per_frame_eqn_tree);
 
-    traverse<TraverseFunctors::Delete<Param> >(user_param_tree);
+    for(auto const& it : user_param_tree) {
+        delete it.second;
+    }
 
     /// Testing deletion of render items by the preset. would be nice if it worked,
     /// and seems to be working if you use a mutex on the preset switching.

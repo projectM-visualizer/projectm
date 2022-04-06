@@ -93,20 +93,6 @@ const std::string MILKDROP_FILE_EXTENSION("milk");
 const std::string PROJECTM_MODULE_EXTENSION("so");
 
 template<class TraverseFunctor, class Container>
-void traverse(Container& container)
-{
-
-    TraverseFunctor functor;
-
-    for (typename Container::iterator pos = container.begin(); pos != container.end(); ++pos)
-    {
-        assert(pos->second);
-        functor(pos->second);
-    }
-}
-
-
-template<class TraverseFunctor, class Container>
 void traverseVector(Container& container)
 {
 

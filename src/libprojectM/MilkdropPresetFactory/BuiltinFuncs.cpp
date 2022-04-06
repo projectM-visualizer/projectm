@@ -16,7 +16,6 @@
 /* Loads a builtin function */
 #include "BuiltinFuncs.hpp"
 
-#include "Common.hpp"
 #include <string>
 #include <iostream>
 #include "fatal.h"
@@ -147,7 +146,9 @@ int BuiltinFuncs::init_builtin_func_db() {
    Generally, do this on projectm exit */
 int BuiltinFuncs::destroy_builtin_func_db() {
 
-traverse<TraverseFunctors::Delete<Func> >(builtin_func_tree);
+    for(auto const& it : builtin_func_tree) {
+        delete it.second;
+    }
 
 builtin_func_tree.clear();
 initialized = false;
