@@ -96,7 +96,9 @@ MilkdropPreset::~MilkdropPreset()
 
     Expr::delete_expr(per_pixel_program);
 
-    traverseVector<TraverseFunctors::Delete<PerFrameEqn> >(per_frame_eqn_tree);
+    for(auto const& elem : per_frame_eqn_tree) {
+        delete elem;
+    }
 
     for(auto const& it : user_param_tree) {
         delete it.second;

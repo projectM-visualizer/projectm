@@ -131,7 +131,9 @@ CustomShape::CustomShape(int _id)
 /* Frees a custom shape form object */
 CustomShape::~CustomShape()
 {
-    traverseVector<TraverseFunctors::Delete<PerFrameEqn> >(per_frame_eqn_tree);
+    for(auto const& elem : per_frame_eqn_tree) {
+        delete elem;
+    }
     for(auto const& it : init_cond_tree) {
         delete it.second;
     }
