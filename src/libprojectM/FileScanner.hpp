@@ -11,7 +11,6 @@
 #include <vector>
 #include <iostream>
 #include <functional>
-#include "Common.hpp"
 #include <string.h>
 
 #if HAVE_FTS_H

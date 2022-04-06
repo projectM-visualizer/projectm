@@ -24,7 +24,6 @@
 #include <string.h>
 
 #include "fatal.h"
-#include "Common.hpp"
 
 #include "Param.hpp"
 #include "PerFrameEqn.hpp"

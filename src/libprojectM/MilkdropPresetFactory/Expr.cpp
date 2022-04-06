@@ -26,6 +26,7 @@
 
 #include "Eval.hpp"
 #include "BuiltinFuncs.hpp"
+#include "Common.hpp"
 
 #include "JitContext.hpp"
 

@@ -18,7 +18,6 @@
 #include <sys/types.h>
 #include <cassert>
 #include "fatal.h"
-#include "Common.hpp"
 
 PresetLoader::PresetLoader (int gx, int gy, std::string dirname = std::string()) :_dirname ( dirname )
 {

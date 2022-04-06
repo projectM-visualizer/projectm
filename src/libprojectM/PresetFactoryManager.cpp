@@ -17,7 +17,6 @@
 #endif
 
 #include "config.h"
-#include "Common.hpp"
 #include <sstream>
 
 PresetFactoryManager::PresetFactoryManager() : _gx(0), _gy(0), initialized(false) {}

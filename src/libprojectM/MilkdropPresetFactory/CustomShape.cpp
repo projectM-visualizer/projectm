@@ -20,7 +20,6 @@
  */
 
 #include <sstream>
-#include "Common.hpp"
 #include "fatal.h"
 
 #include "CustomShape.hpp"

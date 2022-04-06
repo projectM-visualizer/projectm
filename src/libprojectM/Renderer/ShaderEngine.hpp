@@ -8,7 +8,6 @@
 #ifndef SHADERENGINE_HPP_
 #define SHADERENGINE_HPP_
 
-#include "Common.hpp"
 #include "projectM-opengl.h"
 
 class ShaderEngine;

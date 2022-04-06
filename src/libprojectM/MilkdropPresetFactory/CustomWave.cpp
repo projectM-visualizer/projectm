@@ -21,7 +21,6 @@
 
 #include "CustomWave.hpp"
 
-#include "Common.hpp"
 #include "Expr.hpp"
 #include "InitCondUtils.hpp"
 #include "Param.hpp"
