@@ -826,7 +826,7 @@ void projectM::populatePresetMenu()
             int presetIndex = getSearchIndex(presetName);
             for (unsigned int i = 0; i < getPlaylistSize(); i++)
             { // loop over all presets
-                if (caseInsensitiveSubstringFind(getPresetName(i), renderer->searchText()) != std::string::npos)
+                if (CaseInsensitiveSubstringFind(getPresetName(i), renderer->searchText()) != std::string::npos)
                 { // if term matches
                     if (h < renderer->textMenuPageSize) // limit to just one page, pagination is not needed.
                     {
