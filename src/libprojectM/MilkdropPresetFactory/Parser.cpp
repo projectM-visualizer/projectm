@@ -55,13 +55,13 @@ line_mode_t Parser::line_mode;
 CustomWave *Parser::current_wave;
 CustomShape *Parser::current_shape;
 int Parser::string_line_buffer_index;
-char Parser::string_line_buffer[STRING_LINE_SIZE];
+char Parser::string_line_buffer[stringLineSize];
 unsigned int Parser::line_count;
 int Parser::per_frame_eqn_count;
 int Parser::per_frame_init_eqn_count;
 int Parser::last_custom_wave_id;
 int Parser::last_custom_shape_id;
-char Parser::last_eqn_type[MAX_TOKEN_SIZE+1];
+char Parser::last_eqn_type[maxTokenSize+1];
 int Parser::last_token_size;
 
 std::string Parser::lastLinePrefix("");
@@ -75,11 +75,11 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
   int i;
 
   if (string != NULL)
-    memset(string, 0, MAX_TOKEN_SIZE);
+    memset(string, 0, maxTokenSize);
 
 
   /* Loop until a delimiter is found, or the maximum string size is found */
-  for (i = 0; i < MAX_TOKEN_SIZE;i++)
+  for (i = 0; i < maxTokenSize;i++)
   {
     //c = fgetc(fs);
     if (!fs || fs.eof())
@@ -89,7 +89,7 @@ token_t Parser::parseToken(std::istream &  fs, char * string)
 
     last_token_size++;
     /* If the string line buffer is full, quit */
-    if (string_line_buffer_index == (STRING_LINE_SIZE - 1)) {
+    if (string_line_buffer_index == (stringLineSize - 1)) {
         if (PARSE_DEBUG) {
             string_line_buffer[string_line_buffer_index++] = '\0';
             std::cout << "ERROR String line buffer full. Buffer: " << string_line_buffer << std::endl;
@@ -299,7 +299,7 @@ Expr **Parser::parse_prefix_args(std::istream &  fs, int num_args, MilkdropPrese
 int Parser::parse_top_comment(std::istream &  fs)
 {
 
-  char string[MAX_TOKEN_SIZE];
+  char string[maxTokenSize];
   token_t token;
 
   /* Process tokens until left bracket is found */
@@ -336,7 +336,7 @@ int Parser::parse_per_pixel_eqn(std::istream &  fs, MilkdropPreset * preset, cha
 {
 
 
-  char string[MAX_TOKEN_SIZE];
+  char string[maxTokenSize];
   Expr * gen_expr;
 
 
@@ -377,13 +377,13 @@ int Parser::parse_per_pixel_eqn(std::istream &  fs, MilkdropPreset * preset, cha
 int Parser::parse_line(std::istream &  fs, MilkdropPreset * preset)
 {
 
-  char eqn_string[MAX_TOKEN_SIZE];
+  char eqn_string[maxTokenSize];
   token_t token;
   InitCond * init_cond;
   PerFrameEqn * per_frame_eqn;
 
   /* Clear the string line buffer */
-  memset(string_line_buffer, 0, STRING_LINE_SIZE);
+  memset(string_line_buffer, 0, stringLineSize);
   string_line_buffer_index = 0;
 
   tokenWrapAroundEnabled = false;
@@ -733,7 +733,7 @@ int Parser::parse_line(std::istream &  fs, MilkdropPreset * preset)
 Expr * Parser::_parse_gen_expr ( std::istream &  fs, TreeExpr * tree_expr, MilkdropPreset * preset)
 {
   int i;
-  char string[MAX_TOKEN_SIZE];
+  char string[maxTokenSize];
   token_t token;
   Expr * gen_expr;
   float val;
@@ -1258,7 +1258,7 @@ Expr * Parser::parse_infix_op(std::istream &  fs, token_t token, TreeExpr * tree
 int Parser::parse_int(std::istream &  fs, int * int_ptr)
 {
 
-  char string[MAX_TOKEN_SIZE];
+  char string[maxTokenSize];
   token_t token;
   int sign;
   char * end_ptr = (char*)" ";
@@ -1321,7 +1321,7 @@ int Parser::string_to_float(char * string, float * float_ptr)
 int Parser::parse_float(std::istream &  fs, float * float_ptr)
 {
 
-  char string[MAX_TOKEN_SIZE];
+  char string[maxTokenSize];
   token_t token;
   int sign;
 
@@ -1369,7 +1369,7 @@ PerFrameEqn* Parser::parse_per_frame_eqn(std::istream& fs, int index, MilkdropPr
     Expr* gen_expr{ nullptr };
     PerFrameEqn* per_frame_eqn{ nullptr };
 
-    std::array<char, MAX_TOKEN_SIZE> string{ 0 };
+    std::array<char, maxTokenSize> string{ 0 };
 
     token_t token = parseToken(fs, string.data());
 
@@ -1590,7 +1590,7 @@ void Parser::parse_string_block(std::istream &  fs, std::string * out_string) {
 InitCond * Parser::parse_per_frame_init_eqn(std::istream &  fs, MilkdropPreset * preset, std::map<std::string,Param*> * database)
 {
 
-  char name[MAX_TOKEN_SIZE];
+  char name[maxTokenSize];
   Param * param = NULL;
   CValue init_val;
   InitCond * init_cond;
@@ -1940,7 +1940,7 @@ int Parser::parse_shapecode(char * token, std::istream &  fs, MilkdropPreset * p
   if ((param = ParamUtils::find<ParamUtils::NO_CREATE>(var_string, &custom_shape->text_properties_tree)) != NULL)
   {
 
-    std::string text;//[MAX_TOKEN_SIZE];
+    std::string text;//[maxTokenSize];
     //token_t token = parseToken(fs, text);
 
     fs >> text;
@@ -2043,7 +2043,7 @@ int Parser::parse_wavecode_prefix(char * token, int * id, char ** var_string)
   /* This loop grabs the integer id for this custom wave */
   while ((i < len) && (token[i] >=  48) && (token[i] <= 57))
   {
-    if (j >= MAX_TOKEN_SIZE)
+    if (j >= maxTokenSize)
       return PROJECTM_FAILURE;
 
     (*id) = 10*(*id) + (token[i]-48);
@@ -2088,7 +2088,7 @@ int Parser::parse_shapecode_prefix(char * token, int * id, char ** var_string)
   /* This loop grabs the integer id for this custom shape */
   while ((i < len) && (token[i] >=  48) && (token[i] <= 57))
   {
-    if (j >= MAX_TOKEN_SIZE)
+    if (j >= maxTokenSize)
       return PROJECTM_FAILURE;
 
     (*id) = 10*(*id) + (token[i]-48);
@@ -2131,7 +2131,7 @@ int Parser::parse_wave_prefix(char * token, int * id, char ** eqn_string)
   /* This loop grabs the integer id for this custom wave */
   while ((i < len) && (token[i] >=  48) && (token[i] <= 57))
   {
-    if (j >= MAX_TOKEN_SIZE)
+    if (j >= maxTokenSize)
       return PROJECTM_FAILURE;
 
     (*id) = 10*(*id) + (token[i]-48);
@@ -2174,7 +2174,7 @@ int Parser::parse_shape_prefix(char * token, int * id, char ** eqn_string)
   /* This loop grabs the integer id for this custom wave */
   while ((i < len) && (token[i] >=  48) && (token[i] <= 57))
   {
-    if (j >= MAX_TOKEN_SIZE)
+    if (j >= maxTokenSize)
       return PROJECTM_FAILURE;
 
     (*id) = 10*(*id) + (token[i]-48);
@@ -2214,7 +2214,7 @@ int Parser::parse_wave(char * token, std::istream &  fs, MilkdropPreset * preset
     return PROJECTM_FAILURE;
   }
 
-  strncpy(last_eqn_type, eqn_type, MAX_TOKEN_SIZE);
+  strncpy(last_eqn_type, eqn_type, maxTokenSize);
 
   return parse_wave_helper(fs, preset, id, eqn_type, 0);
 
@@ -2225,7 +2225,7 @@ int Parser::parse_wave_helper(std::istream &  fs, MilkdropPreset  * preset, int 
 
   Param * param;
   Expr * gen_expr;
-  char string[MAX_TOKEN_SIZE];
+  char string[maxTokenSize];
   PerFrameEqn * per_frame_eqn;
   CustomWave * custom_wave;
   InitCond * init_cond;
@@ -2495,7 +2495,7 @@ int Parser::parse_shape_per_frame_eqn(std::istream & fs, CustomShape * custom_sh
     Expr* gen_expr{ nullptr };
     PerFrameEqn* per_frame_eqn{ nullptr };
 
-    std::array<char, MAX_TOKEN_SIZE> string{ 0 };
+    std::array<char, maxTokenSize> string{ 0 };
 
     if (PARSE_DEBUG)
     {
@@ -2586,7 +2586,7 @@ int Parser::parse_wave_per_frame_eqn(std::istream &  fs, CustomWave * custom_wav
     Expr* gen_expr{ nullptr };
     PerFrameEqn* per_frame_eqn{ nullptr };
 
-    std::array<char, MAX_TOKEN_SIZE> string{ 0 };
+    std::array<char, maxTokenSize> string{ 0 };
 
     if (PARSE_DEBUG)
     {

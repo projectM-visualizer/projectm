@@ -245,7 +245,7 @@ TextureSamplerDesc TextureManager::tryLoadingTexture(const std::string name)
     for (auto ext : extensions)
     {
         std::string filename = unqualifiedName + ext;
-        std::string fullURL = presetsURL + PATH_SEPARATOR + filename;
+        std::string fullURL = presetsURL + pathSeparator + filename;
 
         texDesc = loadTexture(fullURL, name);
 

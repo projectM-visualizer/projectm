@@ -63,9 +63,9 @@ Param::Param(const std::string &_name) : LValue(PARAMETER),
 {
         engine_val = (float *)&local_value;
 
-        default_init_val.float_val = DEFAULT_DOUBLE_IV;
-        upper_bound.float_val = DEFAULT_DOUBLE_UB;
-        lower_bound.float_val = DEFAULT_DOUBLE_LB;
+        default_init_val.float_val = defaultDoubleIv;
+        upper_bound.float_val = defaultDoubleUb;
+        lower_bound.float_val = defaultDoubleLb;
 
     /// @note may have fixed a recent bug. testing
     *((float*)engine_val) = default_init_val.float_val;

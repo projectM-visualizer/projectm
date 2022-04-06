@@ -303,13 +303,13 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs& presetInputs, Pres
 
     load_builtin_param_float("frating", (void*) &presetOutputs->fRating, NULL, P_FLAG_NONE, 0.0, 5.0, 0.0, "");
     // 0 will turn off all waviness in our waves... 1 seems better
-    load_builtin_param_float("fwavescale", (void*) &presetOutputs->wave.scale, NULL, P_FLAG_NONE, 1.0, MAX_DOUBLE_SIZE,
-                             -MAX_DOUBLE_SIZE, "");
-    load_builtin_param_float("gamma", (void*) &presetOutputs->fGammaAdj, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, 0,
+    load_builtin_param_float("fwavescale", (void*) &presetOutputs->wave.scale, NULL, P_FLAG_NONE, 1.0, maxDoubleSize,
+                             -maxDoubleSize, "");
+    load_builtin_param_float("gamma", (void*) &presetOutputs->fGammaAdj, NULL, P_FLAG_NONE, 0.0, maxDoubleSize, 0,
                              "fGammaAdj");
     load_builtin_param_float("echo_zoom", (void*) &presetOutputs->videoEcho.zoom, NULL, P_FLAG_NONE, 0.0,
-                             MAX_DOUBLE_SIZE, 0, "fVideoEchoZoom");
-    load_builtin_param_float("echo_alpha", (void*) &presetOutputs->videoEcho.a, NULL, P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE,
+                             maxDoubleSize, 0, "fVideoEchoZoom");
+    load_builtin_param_float("echo_alpha", (void*) &presetOutputs->videoEcho.a, NULL, P_FLAG_NONE, 0.0, maxDoubleSize,
                              0, "fvideoechoalpha");
     load_builtin_param_float("wave_a", (void*) &presetOutputs->wave.a, NULL, P_FLAG_NONE, 1.0, 1.0, 0, "fwavealpha");
     load_builtin_param_float("fwavesmoothing", (void*) &presetOutputs->wave.smoothing, NULL, P_FLAG_NONE, 0.0, 1.0,
@@ -349,29 +349,29 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs& presetInputs, Pres
     load_builtin_param_bool("wave_thick", (void*) &presetOutputs->wave.thick, P_FLAG_NONE, false, "bwavethick");
     // warp is turned on by default in milkdrop2
     load_builtin_param_float("warp", (void*) &presetOutputs->warp, presetOutputs->warp_mesh,
-                             P_FLAG_PER_PIXEL | P_FLAG_NONE, 1.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
+                             P_FLAG_PER_PIXEL | P_FLAG_NONE, 1.0, maxDoubleSize, minDoubleSize, "");
     // zoom=1 is the 'do nothing' value, 0 causes Inf values in PresetOutputs::PerPixelMath()
     load_builtin_param_float("zoom", (void*) &presetOutputs->zoom, presetOutputs->zoom_mesh,
-                             P_FLAG_PER_PIXEL | P_FLAG_NONE, 1.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
+                             P_FLAG_PER_PIXEL | P_FLAG_NONE, 1.0, maxDoubleSize, minDoubleSize, "");
     load_builtin_param_float("rot", (void*) &presetOutputs->rot, presetOutputs->rot_mesh,
-                             P_FLAG_PER_PIXEL | P_FLAG_NONE, 0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
+                             P_FLAG_PER_PIXEL | P_FLAG_NONE, 0.0, maxDoubleSize, minDoubleSize, "");
     // zoomexp=1 is the 'do nothing' value, 0 effectively forces zoom=1
     load_builtin_param_float("zoomexp", (void*) &presetOutputs->zoomexp, presetOutputs->zoomexp_mesh,
-                             P_FLAG_PER_PIXEL | P_FLAG_NONE, 1.0, MAX_DOUBLE_SIZE, 0, "fzoomexponent");
+                             P_FLAG_PER_PIXEL | P_FLAG_NONE, 1.0, maxDoubleSize, 0, "fzoomexponent");
 
     load_builtin_param_float("cx", (void*) &presetOutputs->cx, presetOutputs->cx_mesh, P_FLAG_PER_PIXEL | P_FLAG_NONE,
-                             0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
+                             0.0, maxDoubleSize, minDoubleSize, "");
     load_builtin_param_float("cy", (void*) &presetOutputs->cy, presetOutputs->cy_mesh, P_FLAG_PER_PIXEL | P_FLAG_NONE,
-                             0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
+                             0.0, maxDoubleSize, minDoubleSize, "");
     load_builtin_param_float("dx", (void*) &presetOutputs->dx, presetOutputs->dx_mesh, P_FLAG_PER_PIXEL | P_FLAG_NONE,
-                             0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
+                             0.0, maxDoubleSize, minDoubleSize, "");
     load_builtin_param_float("dy", (void*) &presetOutputs->dy, presetOutputs->dy_mesh, P_FLAG_PER_PIXEL | P_FLAG_NONE,
-                             0.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
+                             0.0, maxDoubleSize, minDoubleSize, "");
     // sx=1 and sy=1 are the 'do nothing' values, 0 causes Inf values in PresetOutputs::PerPixelMath()
     load_builtin_param_float("sx", (void*) &presetOutputs->sx, presetOutputs->sx_mesh, P_FLAG_PER_PIXEL | P_FLAG_NONE,
-                             1.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
+                             1.0, maxDoubleSize, minDoubleSize, "");
     load_builtin_param_float("sy", (void*) &presetOutputs->sy, presetOutputs->sy_mesh, P_FLAG_PER_PIXEL | P_FLAG_NONE,
-                             1.0, MAX_DOUBLE_SIZE, MIN_DOUBLE_SIZE, "");
+                             1.0, maxDoubleSize, minDoubleSize, "");
 
 
     load_builtin_param_float("b1n", (void*) &presetOutputs->blur1n, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
@@ -414,42 +414,42 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs& presetInputs, Pres
     load_builtin_param_float("mv_dy", (void*) &presetOutputs->mv.y_offset, NULL, P_FLAG_NONE, 0.0, 1.0, -1.0, "");
     load_builtin_param_float("mv_a", (void*) &presetOutputs->mv.a, NULL, P_FLAG_NONE, 0.0, 1.0, 0.0, "");
 
-    load_builtin_param_float("time", (void*) &presetInputs.time, NULL, P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0.0, "");
-    load_builtin_param_float("bass", (void*) &presetInputs.bass, NULL, P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0.0, "");
-    load_builtin_param_float("mid", (void*) &presetInputs.mid, NULL, P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, "");
+    load_builtin_param_float("time", (void*) &presetInputs.time, NULL, P_FLAG_READONLY, 0.0, maxDoubleSize, 0.0, "");
+    load_builtin_param_float("bass", (void*) &presetInputs.bass, NULL, P_FLAG_READONLY, 0.0, maxDoubleSize, 0.0, "");
+    load_builtin_param_float("mid", (void*) &presetInputs.mid, NULL, P_FLAG_READONLY, 0.0, maxDoubleSize, 0, "");
 
-    load_builtin_param_float("treb", (void*) &presetInputs.treb, NULL, P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0, "");
+    load_builtin_param_float("treb", (void*) &presetInputs.treb, NULL, P_FLAG_READONLY, 0.0, maxDoubleSize, 0, "");
 
 
-    load_builtin_param_float("bass_att", (void*) &presetInputs.bass_att, NULL, P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0,
+    load_builtin_param_float("bass_att", (void*) &presetInputs.bass_att, NULL, P_FLAG_READONLY, 0.0, maxDoubleSize, 0,
                              "");
-    load_builtin_param_float("mid_att", (void*) &presetInputs.mid_att, NULL, P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0,
+    load_builtin_param_float("mid_att", (void*) &presetInputs.mid_att, NULL, P_FLAG_READONLY, 0.0, maxDoubleSize, 0,
                              "");
-    load_builtin_param_float("treb_att", (void*) &presetInputs.treb_att, NULL, P_FLAG_READONLY, 0.0, MAX_DOUBLE_SIZE, 0,
+    load_builtin_param_float("treb_att", (void*) &presetInputs.treb_att, NULL, P_FLAG_READONLY, 0.0, maxDoubleSize, 0,
                              "");
-    load_builtin_param_int("frame", (void*) &presetInputs.frame, P_FLAG_READONLY, 0, MAX_INT_SIZE, 0, "");
+    load_builtin_param_int("frame", (void*) &presetInputs.frame, P_FLAG_READONLY, 0, maxIntSize, 0, "");
     load_builtin_param_float("progress", (void*) &presetInputs.progress, NULL, P_FLAG_READONLY, 0.0, 1, 0, "");
-    load_builtin_param_int("fps", (void*) &presetInputs.fps, P_FLAG_READONLY, 15, MAX_INT_SIZE, 0, "");
+    load_builtin_param_int("fps", (void*) &presetInputs.fps, P_FLAG_READONLY, 15, maxIntSize, 0, "");
 
     load_builtin_param_float("x", (void*) &presetInputs.x_per_pixel, presetInputs.origx,
                              P_FLAG_PER_PIXEL | P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_NONE,
-                             0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+                             0, maxDoubleSize, -maxDoubleSize, "");
     load_builtin_param_float("y", (void*) &presetInputs.y_per_pixel, presetInputs.origy,
                              P_FLAG_PER_PIXEL | P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_NONE,
-                             0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+                             0, maxDoubleSize, -maxDoubleSize, "");
     load_builtin_param_float("ang", (void*) &presetInputs.ang_per_pixel, presetInputs.origtheta,
                              P_FLAG_PER_PIXEL | P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_NONE,
-                             0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+                             0, maxDoubleSize, -maxDoubleSize, "");
     load_builtin_param_float("rad", (void*) &presetInputs.rad_per_pixel, presetInputs.origrad,
                              P_FLAG_PER_PIXEL | P_FLAG_ALWAYS_MATRIX | P_FLAG_READONLY | P_FLAG_NONE,
-                             0, MAX_DOUBLE_SIZE, -MAX_DOUBLE_SIZE, "");
+                             0, maxDoubleSize, -maxDoubleSize, "");
 
-    for (unsigned int i = 0; i < NUM_Q_VARIABLES; i++)
+    for (unsigned int i = 0; i < numQVariables; i++)
     {
         std::ostringstream os;
         os << "q" << i + 1;
-        load_builtin_param_float(os.str().c_str(), (void*) &presetOutputs->q[i], NULL, P_FLAG_QVAR, 0, MAX_DOUBLE_SIZE,
-                                 -MAX_DOUBLE_SIZE, "");
+        load_builtin_param_float(os.str().c_str(), (void*) &presetOutputs->q[i], NULL, P_FLAG_QVAR, 0, maxDoubleSize,
+                                 -maxDoubleSize, "");
 
     }
 
@@ -460,8 +460,8 @@ int BuiltinParams::load_all_builtin_param(const PresetInputs& presetInputs, Pres
     load_builtin_param_int("pixelsx", (void*) &presetInputs.pixelsx, P_FLAG_READONLY, 512, 4096, 16, "");
     load_builtin_param_int("pixelsy", (void*) &presetInputs.pixelsy, P_FLAG_READONLY, 512, 72, 6, "");
 
-    load_builtin_param_float("aspectx", (void*) &presetInputs.aspectx, nullptr, P_FLAG_READONLY, 1.0, MAX_DOUBLE_SIZE, 1.0, "");
-    load_builtin_param_float("aspecty", (void*) &presetInputs.aspecty, nullptr, P_FLAG_READONLY, 1.0, MAX_DOUBLE_SIZE, 1.0, "");
+    load_builtin_param_float("aspectx", (void*) &presetInputs.aspectx, nullptr, P_FLAG_READONLY, 1.0, maxDoubleSize, 1.0, "");
+    load_builtin_param_float("aspecty", (void*) &presetInputs.aspecty, nullptr, P_FLAG_READONLY, 1.0, maxDoubleSize, 1.0, "");
 
     return PROJECTM_SUCCESS;
 

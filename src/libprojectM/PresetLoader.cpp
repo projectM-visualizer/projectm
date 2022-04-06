@@ -42,7 +42,7 @@ void PresetLoader::setScanDirectory ( std::string dirname )
 }
 
 void PresetLoader::addScannedPresetFile(const std::string &path, const std::string &name) {
-    auto ext = parseExtension(path);
+    auto ext = ParseExtension(path);
     if (ext.empty())
         return;
     

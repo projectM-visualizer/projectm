@@ -38,41 +38,41 @@
 //CPP17: std::filesystem::path::preferred_separator
 /** Per-platform path separators */
 #ifdef WIN32
-char constexpr PATH_SEPARATOR{'\\'};
+char constexpr pathSeparator{'\\'};
 #else
-char constexpr PATH_SEPARATOR{'/'};
+char constexpr pathSeparator{'/'};
 #endif /** WIN32 */
 
-char constexpr DEFAULT_FONT_PATH[]{"/home/carm/fonts/courier1.glf"};
-size_t constexpr MAX_TOKEN_SIZE{512};
-size_t constexpr MAX_PATH_SIZE{4096};
+char constexpr defaultFontPath[]{"/home/carm/fonts/courier1.glf"};
+size_t constexpr maxTokenSize{512};
+size_t constexpr maxPathSize{4096};
 
-size_t constexpr STRING_BUFFER_SIZE{1024 * 150};
-size_t constexpr STRING_LINE_SIZE{1024};
+size_t constexpr stringBufferSize{1024 * 150};
+size_t constexpr stringLineSize{1024};
 
-double constexpr MAX_DOUBLE_SIZE{10000000.0};
-double constexpr MIN_DOUBLE_SIZE{-MAX_DOUBLE_SIZE};
+double constexpr maxDoubleSize{10000000.0};
+double constexpr minDoubleSize{-maxDoubleSize};
 
-int constexpr MAX_INT_SIZE{10000000};
-int constexpr MIN_INT_SIZE{-MAX_INT_SIZE};
+int constexpr maxIntSize{10000000};
+int constexpr minIntSize{-maxIntSize};
 
 /* default float initial value */
-double constexpr DEFAULT_DOUBLE_IV{0.0};
+double constexpr defaultDoubleIv{0.0};
 
 /* default float lower bound */
-double constexpr DEFAULT_DOUBLE_LB{MIN_DOUBLE_SIZE};
+double constexpr defaultDoubleLb{minDoubleSize};
 
 /* default float upper bound */
-double constexpr DEFAULT_DOUBLE_UB{MAX_DOUBLE_SIZE};
+double constexpr defaultDoubleUb{maxDoubleSize};
 
-unsigned int const NUM_Q_VARIABLES(32);
-std::string const PROJECTM_FILE_EXTENSION("prjm");
-std::string const MILKDROP_FILE_EXTENSION("milk");
-std::string const PROJECTM_MODULE_EXTENSION("so");
+unsigned int const numQVariables(32);
+std::string const projectmFileExtension("prjm");
+std::string const milkdropFileExtension("milk");
+std::string const projectmModuleExtension("so");
 
 
 //CPP17: std::filesystem::path::extension
-inline std::string parseExtension(const std::string& filename)
+inline std::string ParseExtension(const std::string& filename)
 {
 
     const std::size_t start = filename.find_last_of('.');
@@ -85,7 +85,7 @@ inline std::string parseExtension(const std::string& filename)
 }
 
 //CPP17: std::filesystem::path::filename
-inline std::string parseFilename(const std::string& filename)
+inline std::string ParseFilename(const std::string& filename)
 {
 
     const std::size_t start = filename.find_last_of('/');
@@ -96,7 +96,7 @@ inline std::string parseFilename(const std::string& filename)
         return filename.substr(start + 1, filename.length());
 }
 
-inline double meanSquaredError(const double& x, const double& y)
+inline double MeanSquaredError(const double& x, const double& y)
 {
     return (x - y) * (x - y);
 }
