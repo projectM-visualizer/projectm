@@ -44,10 +44,6 @@
 typedef unsigned int uint;
 #endif
 
-#ifdef DEBUG
-//extern FILE *debugFile;
-#endif
-
 #ifdef __APPLE__
 #include <cstdio>
 extern FILE* fmemopen(void* buf, size_t len, const char* pMode);
