@@ -32,22 +32,8 @@
 #include <typeinfo>
 #include <vector>
 
-#ifdef _MSC_VER
-#define strcasecmp(s, t) _strcmpi(s, t)
-#endif
-
-#if defined(_MSC_VER) && !defined(EYETUNE_WINRT)
-#pragma warning(disable : 4244 4305 4996; once : 4018)
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
-typedef unsigned int uint;
-#endif
-
-#ifdef __APPLE__
-#include <cstdio>
-extern FILE* fmemopen(void* buf, size_t len, const char* pMode);
-#endif /** MACOS */
+#include <algorithm>
+#include <string>
 
 //CPP17: std::filesystem::path::preferred_separator
 /** Per-platform path separators */
@@ -56,9 +42,6 @@ char constexpr PATH_SEPARATOR{'\\'};
 #else
 char constexpr PATH_SEPARATOR{'/'};
 #endif /** WIN32 */
-
-#include <algorithm>
-#include <string>
 
 char constexpr DEFAULT_FONT_PATH[]{"/home/carm/fonts/courier1.glf"};
 size_t constexpr MAX_TOKEN_SIZE{512};
