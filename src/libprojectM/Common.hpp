@@ -117,30 +117,22 @@ inline double meanSquaredError(const double& x, const double& y)
     return (x - y) * (x - y);
 }
 
-template<typename charT>
-struct caseInsensitiveEqual {
-    caseInsensitiveEqual(const std::locale& loc)
-        : loc_(loc)
-    {
-    }
-    bool operator()(charT ch1, charT ch2)
-    {
-        return std::toupper(ch1, loc_) == std::toupper(ch2, loc_);
-    }
-
-private:
-    const std::locale& loc_;
-};
-
 template<typename T>
-int caseInsensitiveSubstringFind(const T& haystack, const T& needle, const std::locale& loc = std::locale())
+auto CaseInsensitiveSubstringFind(const T& haystack, const T& needle, const std::locale& loc = std::locale()) -> size_t
 {
-    typename T::const_iterator it = std::search(
-        haystack.begin(), haystack.end(),
-        needle.begin(), needle.end(),
-        caseInsensitiveEqual<typename T::value_type>(loc));
+    auto const it = std::search(
+        haystack.cbegin(),
+        haystack.cend(),
+        needle.cbegin(),
+        needle.cend(),
+        [&loc](typename T::value_type ch1, typename T::value_type ch2) {
+            return std::toupper(ch1, loc) == std::toupper(ch2, loc);
+        });
+
     if (it != haystack.end())
+    {
         return it - haystack.begin();
+    }
 
     return std::string::npos;
 }

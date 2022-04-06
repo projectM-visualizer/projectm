@@ -124,7 +124,7 @@ void MenuText::HighlightNeedle(const std::string& textLine,
                                float a = 1.0f) const
 {
 
-    size_t pos = caseInsensitiveSubstringFind(textLine, highlightText);
+    size_t pos = CaseInsensitiveSubstringFind(textLine, highlightText);
 
     gltColor(r, g, b, a);
 
