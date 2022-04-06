@@ -88,6 +88,7 @@ std::string const MILKDROP_FILE_EXTENSION("milk");
 std::string const PROJECTM_MODULE_EXTENSION("so");
 
 
+//CPP17: std::filesystem::path::extension
 inline std::string parseExtension(const std::string& filename)
 {
 
@@ -100,6 +101,7 @@ inline std::string parseExtension(const std::string& filename)
     return ext;
 }
 
+//CPP17: std::filesystem::path::filename
 inline std::string parseFilename(const std::string& filename)
 {
 
