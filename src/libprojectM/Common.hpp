@@ -92,31 +92,6 @@ const std::string PROJECTM_FILE_EXTENSION("prjm");
 const std::string MILKDROP_FILE_EXTENSION("milk");
 const std::string PROJECTM_MODULE_EXTENSION("so");
 
-template<class TraverseFunctor, class Container>
-void traverse(Container& container, TraverseFunctor& functor)
-{
-
-    for (typename Container::iterator pos = container.begin(); pos != container.end(); ++pos)
-    {
-        assert(pos->second);
-        functor(pos->second);
-    }
-}
-
-namespace TraverseFunctors {
-template<class Data>
-class Delete
-{
-
-public:
-    void operator()(Data* data)
-    {
-        assert(data);
-        delete (data);
-    }
-};
-}// namespace TraverseFunctors
-
 
 inline std::string parseExtension(const std::string& filename)
 {

@@ -151,7 +151,9 @@ CustomShape::~CustomShape()
 void CustomShape::loadUnspecInitConds()
 {
     InitCondUtils::LoadUnspecInitCond fun(this->init_cond_tree, this->per_frame_init_eqn_tree);
-    traverse(param_tree, fun);
+    for(auto const& it : param_tree) {
+        fun(it.second);
+    }
 }
 
 void CustomShape::evalInitConds()

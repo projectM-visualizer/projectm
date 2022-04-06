@@ -382,7 +382,9 @@ void MilkdropPreset::loadBuiltinParamsUnspecInitConds()
     InitCondUtils::LoadUnspecInitCond loadUnspecInitCond(this->init_cond_tree, this->per_frame_init_eqn_tree);
 
     this->builtinParams.apply(loadUnspecInitCond);
-    traverse(user_param_tree, loadUnspecInitCond);
+    for(auto const& it : user_param_tree) {
+        loadUnspecInitCond(it.second);
+    }
 
 }
 
