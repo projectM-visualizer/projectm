@@ -71,7 +71,9 @@ public:
     template<class Fun>
     void apply(Fun& fun)
     {
-        traverse(builtin_param_tree, fun);
+        for(auto const& it : builtin_param_tree) {
+            fun(it.second);
+        }
     }
 
 
