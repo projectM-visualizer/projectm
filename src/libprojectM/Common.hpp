@@ -61,15 +61,6 @@ extern FILE* fmemopen(void* buf, size_t len, const char* pMode);
 #define STRING_LINE_SIZE 1024
 
 
-#ifndef TRUE
-#define TRUE true
-#endif
-
-#ifndef FALSE
-#define FALSE false
-#endif
-
-
 #define MAX_DOUBLE_SIZE 10000000.0
 #define MIN_DOUBLE_SIZE -10000000.0
 

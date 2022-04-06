@@ -7,7 +7,6 @@
 #include "InitCondUtils.hpp"
 #include <sstream>
 #include <stdio.h>
-#include "Common.hpp"
 
 BuiltinParams::BuiltinParams()
 {
@@ -225,7 +224,7 @@ int BuiltinParams::load_builtin_param_bool(const std::string& name, void* engine
     CValue iv, ub, lb;
 
     iv.int_val = init_val;
-    ub.int_val = TRUE;
+    ub.int_val = true;
     lb.int_val = false;
 
     std::string lowerName(name);
