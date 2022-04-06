@@ -61,30 +61,6 @@ extern FILE* fmemopen(void* buf, size_t len, const char* pMode);
 #define STRING_LINE_SIZE 1024
 
 
-#ifdef __unix__
-#define projectM_fmax fmax
-#endif
-
-#ifdef WIN32
-#define projectM_fmax(x, y) ((x) >= (y) ? (x) : (y))
-#endif
-
-#ifdef __APPLE__
-#define projectM_fmax(x, y) ((x) >= (y) ? (x) : (y))
-#endif
-
-#ifdef __unix__
-#define projectM_fmin fmin
-#endif
-
-#ifdef WIN32
-#define projectM_fmin(x, y) ((x) <= (y) ? (x) : (y))
-#endif
-
-#ifdef __APPLE__
-#define projectM_fmin(x, y) ((x) <= (y) ? (x) : (y))
-#endif
-
 #ifndef TRUE
 #define TRUE true
 #endif
