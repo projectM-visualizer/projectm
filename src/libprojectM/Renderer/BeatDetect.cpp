@@ -32,7 +32,6 @@
 #include "wipemalloc.h"
 
 #include "BeatDetect.hpp"
-#include "Common.hpp"
 #include "PCM.hpp"
 
 #include <algorithm>

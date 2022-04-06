@@ -21,7 +21,6 @@
 
 #include <stdio.h>
 
-#include "Common.hpp"
 #include "fatal.h"
 #include "KeyHandler.hpp"
 #include "event.h"

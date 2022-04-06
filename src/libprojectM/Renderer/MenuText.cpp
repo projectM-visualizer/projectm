@@ -1,8 +1,7 @@
+#include "Common.hpp"
 #ifdef USE_TEXT_MENU
 
 #include "MenuText.h"
-
-#include "Common.hpp"
 
 #define GLT_IMPLEMENTATION
 #include "gltext.h"

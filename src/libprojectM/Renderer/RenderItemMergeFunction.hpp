@@ -8,7 +8,6 @@
 #ifndef RenderItemMergeFunction_HPP_
 #define RenderItemMergeFunction_HPP_
 
-#include "Common.hpp"
 #include "Border.hpp"
 #include "Waveform.hpp"
 #include <limits>

@@ -15,6 +15,8 @@
 
 /* Loads a builtin function */
 #include "BuiltinFuncs.hpp"
+
+#include "Common.hpp"
 #include <string>
 #include <iostream>
 #include "fatal.h"

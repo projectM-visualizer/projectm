@@ -5,6 +5,7 @@
 //
 
 #include "FileScanner.hpp"
+#include "Common.hpp"
 
 #ifndef WIN32
 #include <sys/stat.h>

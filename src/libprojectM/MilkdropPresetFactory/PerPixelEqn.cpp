@@ -25,7 +25,6 @@
 #include <iostream>
 
 #include "fatal.h"
-#include "Common.hpp"
 
 #include "Expr.hpp"
 #include "Eval.hpp"

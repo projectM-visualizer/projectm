@@ -10,7 +10,6 @@
 
 #include "projectM-opengl.h"
 #include "RenderItem.hpp"
-#include "Common.hpp"
 
 enum Orientation
 {

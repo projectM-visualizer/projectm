@@ -2,7 +2,6 @@
 #define Renderer_HPP
 
 #include "BeatDetect.hpp"
-#include "Common.hpp"
 #include "MilkdropWaveform.hpp"
 #include "PerPixelMesh.hpp"
 #include "Pipeline.hpp"

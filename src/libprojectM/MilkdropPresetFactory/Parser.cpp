@@ -27,7 +27,6 @@
 #include <locale>
 #include <stdlib.h>
 
-#include "Common.hpp"
 #include "fatal.h"
 
 #include "CustomWave.hpp"

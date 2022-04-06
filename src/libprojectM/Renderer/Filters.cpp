@@ -5,7 +5,6 @@
  *      Author: pete
  */
 
-#include "Common.hpp"
 #include "projectM-opengl.h"
 #include "Filters.hpp"
 #include "ShaderEngine.hpp"
