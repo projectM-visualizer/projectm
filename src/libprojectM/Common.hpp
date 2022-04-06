@@ -49,44 +49,43 @@ typedef unsigned int uint;
 extern FILE* fmemopen(void* buf, size_t len, const char* pMode);
 #endif /** MACOS */
 
-#define DEFAULT_FONT_PATH "/home/carm/fonts/courier1.glf"
-#define MAX_TOKEN_SIZE 512
-#define MAX_PATH_SIZE 4096
-
-#define STRING_BUFFER_SIZE 1024 * 150
-#define STRING_LINE_SIZE 1024
-
-
-#define MAX_DOUBLE_SIZE 10000000.0
-#define MIN_DOUBLE_SIZE -10000000.0
-
-#define MAX_INT_SIZE 10000000
-#define MIN_INT_SIZE -10000000
-
-/* default float initial value */
-#define DEFAULT_DOUBLE_IV 0.0
-
-/* default float lower bound */
-#define DEFAULT_DOUBLE_LB MIN_DOUBLE_SIZE
-
-/* default float upper bound */
-#define DEFAULT_DOUBLE_UB MAX_DOUBLE_SIZE
-
+//CPP17: std::filesystem::path::preferred_separator
 /** Per-platform path separators */
-#define WIN32_PATH_SEPARATOR '\\'
-#define UNIX_PATH_SEPARATOR '/'
 #ifdef WIN32
-#define PATH_SEPARATOR WIN32_PATH_SEPARATOR
+char constexpr PATH_SEPARATOR{'\\'};
 #else
-#define PATH_SEPARATOR UNIX_PATH_SEPARATOR
+char constexpr PATH_SEPARATOR{'/'};
 #endif /** WIN32 */
+
 #include <algorithm>
 #include <string>
 
-const unsigned int NUM_Q_VARIABLES(32);
-const std::string PROJECTM_FILE_EXTENSION("prjm");
-const std::string MILKDROP_FILE_EXTENSION("milk");
-const std::string PROJECTM_MODULE_EXTENSION("so");
+char constexpr DEFAULT_FONT_PATH[]{"/home/carm/fonts/courier1.glf"};
+size_t constexpr MAX_TOKEN_SIZE{512};
+size_t constexpr MAX_PATH_SIZE{4096};
+
+size_t constexpr STRING_BUFFER_SIZE{1024 * 150};
+size_t constexpr STRING_LINE_SIZE{1024};
+
+double constexpr MAX_DOUBLE_SIZE{10000000.0};
+double constexpr MIN_DOUBLE_SIZE{-MAX_DOUBLE_SIZE};
+
+int constexpr MAX_INT_SIZE{10000000};
+int constexpr MIN_INT_SIZE{-MAX_INT_SIZE};
+
+/* default float initial value */
+double constexpr DEFAULT_DOUBLE_IV{0.0};
+
+/* default float lower bound */
+double constexpr DEFAULT_DOUBLE_LB{MIN_DOUBLE_SIZE};
+
+/* default float upper bound */
+double constexpr DEFAULT_DOUBLE_UB{MAX_DOUBLE_SIZE};
+
+unsigned int const NUM_Q_VARIABLES(32);
+std::string const PROJECTM_FILE_EXTENSION("prjm");
+std::string const MILKDROP_FILE_EXTENSION("milk");
+std::string const PROJECTM_MODULE_EXTENSION("so");
 
 
 inline std::string parseExtension(const std::string& filename)
